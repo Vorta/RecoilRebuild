@@ -24,15 +24,23 @@ int gAltClipPassEnabled = 0;
 
 // Reimplements 0x47a1d0: zClipAlt_BuildFrustumPlanes
 // (GameZRecoil/zModel/zmodel.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL zClipAlt_BuildFrustumPlanes(zClass_CameraDataPartial *cameraData) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zClipAlt_BuildFrustumPlanes(
+    zClass_CameraDataPartial *cameraData
+) {
     zMath::MatStackPushPtr(cameraData->worldTransform);
-    zMath_Mat_TransformNormalBatch(&cameraData->localFrustumLeftNormal, cameraData->worldFrustumNormals, 6);
+    zMath_Mat_TransformNormalBatch(
+        &cameraData->localFrustumLeftNormal,
+        cameraData->worldFrustumNormals,
+        6
+    );
     zMath::MatStackPopPtr();
 }
 
 namespace zClipAlt {
 // Reimplements 0x476120: zClipAlt::SetSourceRect
-void RECOIL_FASTCALL SetSourceRect(const zClipAltFloatRect *rect) {
+void RECOIL_FASTCALL SetSourceRect(
+    const zClipAltFloatRect *rect
+) {
     g_zClipAlt_SourceLeft = rect->left;
     g_zClipAlt_SourceTop = rect->top;
     g_zClipAlt_SourceRight = rect->right;
@@ -43,7 +51,10 @@ void RECOIL_FASTCALL SetSourceRect(const zClipAltFloatRect *rect) {
 }
 
 // Reimplements 0x479f90: zClipAlt::SetTargetRect (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
-void RECOIL_FASTCALL SetTargetRect(const zClipAltFloatRect *rect, int replicate) {
+void RECOIL_FASTCALL SetTargetRect(
+    const zClipAltFloatRect *rect,
+    int replicate
+) {
     gClipRect_Alt.flags = 0x0f;
     gClipRect_Alt.xMin = rect->left;
     gClipRect_Alt.yMin = rect->top;
@@ -75,10 +86,15 @@ void RECOIL_FASTCALL SetTargetRect(const zClipAltFloatRect *rect, int replicate)
 
 // Reimplements 0x4766a0: zClipAlt::RemapPointXYInPlace
 // (D:\Proj\Battlesport\zClip.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL RemapPointXYInPlace(float *point) {
+RECOIL_NOINLINE int RECOIL_FASTCALL RemapPointXYInPlace(
+    float *point
+) {
     g_Clip_PolyVerts[0].x = point[0];
     g_Clip_PolyVerts[0].y = point[1];
-    if (zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, 1) == 0) {
+    if (zClipRect::TrivialRejectPolyXY(
+        &gClipRect_Alt,
+        1
+    ) == 0) {
         return 0;
     }
 

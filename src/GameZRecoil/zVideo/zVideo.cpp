@@ -1,9 +1,9 @@
 #include "GameZRecoil/zVideo/zVideo.h"
 
+#include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/include/zClipRect.h"
 #include "GameZRecoil/include/zDi.h"
 #include "GameZRecoil/include/zImage.h"
-#include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
@@ -20,12 +20,12 @@
 #include <string.h>
 
 #if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
-extern "C" void (__cdecl *__imp__free)(void *); // VC5 retail import-pointer call shape.
+extern "C" void(__cdecl *__imp__free)(void *); // VC5 retail import-pointer call shape.
 #endif
 
 namespace {
-typedef void (RECOIL_CDECL *zVideo_FlushProc)();
-typedef void (RECOIL_FASTCALL *zVideo_ImageProc)(zVidImagePartial *image);
+typedef void(RECOIL_CDECL *zVideo_FlushProc)();
+typedef void(RECOIL_FASTCALL *zVideo_ImageProc)(zVidImagePartial *image);
 } // namespace
 
 extern "C" {
@@ -216,12 +216,15 @@ struct zVideoFxPass3Slot {
     float sinFreq;
     float sinPhase;
 
-    RECOIL_NOINLINE void RECOIL_THISCALL SetRectAndPayload(int rectLeftPixels,
-                                                           int rectTopPixels,
-                                                           int currentRadiusPixels,
-                                                           int maxRadiusPixels,
-                                                           int extentPixels,
-                                                           float sinFreqValue, float sinPhaseValue);
+    RECOIL_NOINLINE void RECOIL_THISCALL SetRectAndPayload(
+        int rectLeftPixels,
+        int rectTopPixels,
+        int currentRadiusPixels,
+        int maxRadiusPixels,
+        int extentPixels,
+        float sinFreqValue,
+        float sinPhaseValue
+    );
 };
 
 struct zVideoFxPass3Config {
@@ -238,23 +241,62 @@ struct zVideoFxPass3Config {
     zVideoFxPass3Slot slots[5];
     int slotWriteIndex;
 
-    RECOIL_NOINLINE void RECOIL_THISCALL SetInputRectByIndex(int index,
-                                                             HudUiRect *rectOrNull);
-    RECOIL_NOINLINE void RECOIL_THISCALL QueuePrimitiveRaw(void *primitive,
-                                                           int width,
-                                                           int height,
-                                                           int pitchBytes);
+    RECOIL_NOINLINE void RECOIL_THISCALL SetInputRectByIndex(
+        int index,
+        HudUiRect *rectOrNull
+    );
+    RECOIL_NOINLINE void RECOIL_THISCALL QueuePrimitiveRaw(
+        void *primitive,
+        int width,
+        int height,
+        int pitchBytes
+    );
 };
 #if defined(_M_IX86) || defined(__i386__)
 RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3RootElement) == 0x48);
-RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3RootElement, packedColor16) == 0x38);
-RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3RootElement, alpha) == 0x40);
-RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Config, rootElement) == 0x28);
-RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Slot, currentRadius) == 0x38);
-RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Slot, sinPhase) == 0x48);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideoFxPass3RootElement,
+        packedColor16
+    ) == 0x38
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideoFxPass3RootElement,
+        alpha
+    ) == 0x40
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideoFxPass3Config,
+        rootElement
+    ) == 0x28
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideoFxPass3Slot,
+        currentRadius
+    ) == 0x38
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideoFxPass3Slot,
+        sinPhase
+    ) == 0x48
+);
 RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Slot) == 0x4c);
-RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Config, slots) == 0x70);
-RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Config, slotWriteIndex) == 0x1ec);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideoFxPass3Config,
+        slots
+    ) == 0x70
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideoFxPass3Config,
+        slotWriteIndex
+    ) == 0x1ec
+);
 #endif
 zVideoFxPass3Config g_zVideo_FxPass3ConfigLocal = {0};
 zVidRect32 g_zVideo_PrimarySurfaceRectScratch = {0};
@@ -272,16 +314,20 @@ HWND g_zVideo_hWnd = 0;
 RECT g_zVideo_CachedClientRectScreen = {0};
 
 // Reimplements 0x4a6cf0: zVid_PackColorRGB
-RECOIL_NOINLINE unsigned int RECOIL_FASTCALL zVid_PackColorRGB(unsigned char red,
-                                                                unsigned char green,
-                                                                unsigned char blue) {
+RECOIL_NOINLINE unsigned int RECOIL_FASTCALL zVid_PackColorRGB(
+    unsigned char red,
+    unsigned char green,
+    unsigned char blue
+) {
     return ((g_zVideo_PixelPack_GMaskShifted & green) << g_zVideo_PixelPack_GShift) |
            ((g_zVideo_PixelPack_RMaskShifted & red) << g_zVideo_PixelPack_RShift) |
            (blue >> g_zVideo_PixelPack_BShiftTo8);
 }
 
 // Reimplements 0x4a6ca0: zVid_PackColor00RRGGBB
-RECOIL_NOINLINE unsigned int RECOIL_FASTCALL zVid_PackColor00RRGGBB(unsigned int color00RRGGBB) {
+RECOIL_NOINLINE unsigned int RECOIL_FASTCALL zVid_PackColor00RRGGBB(
+    unsigned int color00RRGGBB
+) {
     const unsigned char red = (unsigned char)(color00RRGGBB);
     const unsigned char green = (unsigned char)(color00RRGGBB >> 8);
     const unsigned char blue = (unsigned char)(color00RRGGBB >> 16);
@@ -292,7 +338,9 @@ RECOIL_NOINLINE unsigned int RECOIL_FASTCALL zVid_PackColor00RRGGBB(unsigned int
 }
 
 // Reimplements 0x4a6d40: zVid_PackColorRgbFloats
-RECOIL_NOINLINE unsigned short RECOIL_FASTCALL zVid_PackColorRgbFloats(zVideo_ColorRgbFloat *color) {
+RECOIL_NOINLINE unsigned short RECOIL_FASTCALL zVid_PackColorRgbFloats(
+    zVideo_ColorRgbFloat *color
+) {
     const int red = (int)(color->r + 0.5f);
     const int green = (int)(color->g + 0.5f);
     const int blue = (int)(color->b + 0.5f);
@@ -304,13 +352,16 @@ RECOIL_NOINLINE unsigned short RECOIL_FASTCALL zVid_PackColorRgbFloats(zVideo_Co
 }
 
 // Reimplements 0x4a6b80: zVideo_SetClearColorPacked16
-RECOIL_NOINLINE void RECOIL_FASTCALL zVideo_SetClearColorPacked16(unsigned int packedColor16) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zVideo_SetClearColorPacked16(
+    unsigned int packedColor16
+) {
     g_zVideo_ClearColorPacked16 = packedColor16;
 }
 
 // Reimplements 0x4a7250: zVideo_SetPendingFogTargetColorFromRgb01
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zVideo_SetPendingFogTargetColorFromRgb01(zVideo_ColorRgbFloat *color) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zVideo_SetPendingFogTargetColorFromRgb01(
+    zVideo_ColorRgbFloat *color
+) {
     g_zVideo_D3DColorAttrBiasR = color->r * 255.0f;
     g_zVideo_D3DColorAttrBiasG = color->g * 255.0f;
     g_zVideo_D3DColorAttrBiasB = color->b * 255.0f;
@@ -335,8 +386,9 @@ zVideo_SetPendingFogTargetColorFromRgb01(zVideo_ColorRgbFloat *color) {
 
 // Reimplements 0x479ce0: zVideo_SetActiveViewContext
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zVideo_SetActiveViewContext(zClass_CameraDataPartial *viewContext) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zVideo_SetActiveViewContext(
+    zClass_CameraDataPartial *viewContext
+) {
     g_zVideo_pActiveViewContext = viewContext;
 
     if (viewContext->nearClip < 1.0f) {
@@ -353,7 +405,11 @@ zVideo_SetActiveViewContext(zClass_CameraDataPartial *viewContext) {
 
     int windowX;
     int windowY;
-    if (zClass_Window::gwWindowGetSize(viewContext->windowNode, &windowX, &windowY) != 0) {
+    if (zClass_Window::gwWindowGetSize(
+        viewContext->windowNode,
+        &windowX,
+        &windowY
+    ) != 0) {
         windowX = 0;
         windowY = 0;
     }
@@ -361,7 +417,11 @@ zVideo_SetActiveViewContext(zClass_CameraDataPartial *viewContext) {
     viewContext = g_zVideo_pActiveViewContext;
     int width;
     int height;
-    if (zClass_Window::gwWindowGetResolution(viewContext->windowNode, &width, &height) != 0) {
+    if (zClass_Window::gwWindowGetResolution(
+        viewContext->windowNode,
+        &width,
+        &height
+    ) != 0) {
         width = zVideo::GetPrimarySurfaceWidth();
         height = zVideo::GetPrimarySurfaceHeight();
     }
@@ -409,28 +469,46 @@ zVideo_SetActiveViewContext(zClass_CameraDataPartial *viewContext) {
     g_zVideo_ProjectClipBottom = viewportBottom - 0.00100000005f;
 
     viewContext = g_zVideo_pActiveViewContext;
-    zMath_Setup_Projection(viewportOriginX, viewportOriginY, (float)(width) * 0.5f,
-                           (float)(height) * 0.5f, viewContext->viewportScaleX,
-                           viewContext->viewportScaleY, viewContext->nearClip,
-                           viewContext->farClip);
+    zMath_Setup_Projection(
+        viewportOriginX,
+        viewportOriginY,
+        (float)(width) * 0.5f,
+        (float)(height) * 0.5f,
+        viewContext->viewportScaleX,
+        viewContext->viewportScaleY,
+        viewContext->nearClip,
+        viewContext->farClip
+    );
 
     int fovXBits;
     int fovYBits;
-    memcpy(&fovXBits, &viewContext->fovX, sizeof(fovXBits));
-    memcpy(&fovYBits, &viewContext->fovY, sizeof(fovYBits));
-    zMath_SetScreenSize(fovXBits, fovYBits);
+    memcpy(
+        &fovXBits,
+        &viewContext->fovX,
+        sizeof(fovXBits)
+    );
+    memcpy(
+        &fovYBits,
+        &viewContext->fovY,
+        sizeof(fovYBits)
+    );
+    zMath_SetScreenSize(
+        fovXBits,
+        fovYBits
+    );
 }
 
 // Reimplements 0x44d600: zVideo_sw::RenderFrame
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 RECOIL_NOINLINE int RECOIL_FASTCALL zVideo_sw_RenderFrame(
-    zClass_NodePartial *camera, int updateFxPass3Local) {
+    zClass_NodePartial *camera,
+    int updateFxPass3Local
+) {
     const int queuedLensFlareSampleCount = zRndr_LensFlare_GetQueuedSampleCount();
     zMat4x3 slotBuffer = {0};
     zMath::MatStackPushPtr((float *)&slotBuffer);
 
-    g_zVideo_pActiveViewContext =
-        (zClass_CameraDataPartial *)(camera->classData);
+    g_zVideo_pActiveViewContext = (zClass_CameraDataPartial *)(camera->classData);
     zClass_NodePartial *world = zClass_Camera::gwCameraGetWorld(camera);
     zClass_CameraDataPartial *viewContext = g_zVideo_pActiveViewContext;
     zClass_WindowDataPartial *windowData =
@@ -445,14 +523,14 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zVideo_sw_RenderFrame(
 
         if (g_zClass_CameraAutoClipDistanceScale > 1.0f) {
             g_zClass_CameraAutoClipDistanceScale = 1.0f;
-        } else if (g_zClass_CameraAutoClipDistanceScale <
-                   g_zClass_CameraAutoClipDistanceMinScale) {
-            g_zClass_CameraAutoClipDistanceScale =
-                g_zClass_CameraAutoClipDistanceMinScale;
+        } else if (g_zClass_CameraAutoClipDistanceScale < g_zClass_CameraAutoClipDistanceMinScale) {
+            g_zClass_CameraAutoClipDistanceScale = g_zClass_CameraAutoClipDistanceMinScale;
         }
 
-        zClass_Camera::gwCameraSetClipDistance(camera,
-                                               g_zClass_CameraAutoClipDistanceScale);
+        zClass_Camera::gwCameraSetClipDistance(
+            camera,
+            g_zClass_CameraAutoClipDistanceScale
+        );
     }
 
     zClass_World::InitLightPointInPolygonXZ(world);
@@ -472,8 +550,11 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zVideo_sw_RenderFrame(
             g_Variant_CurrentTag = viewContext->variantTag;
         } else {
             g_Variant_FilterEnabled = 0;
-            zClass_cls_di::FindBestPickCandidateBelowPoint(world, &viewContext->cameraPos,
-                                                           &pickCandidates);
+            zClass_cls_di::FindBestPickCandidateBelowPoint(
+                world,
+                &viewContext->cameraPos,
+                &pickCandidates
+            );
             g_Variant_FilterEnabled = variantFilterEnabled;
 
             if (pickCandidates.candidateCount <= 0) {
@@ -481,8 +562,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zVideo_sw_RenderFrame(
                 viewContext = g_zVideo_pActiveViewContext;
                 g_Variant_CurrentTag = viewContext->variantTag;
             } else if (pickCandidates.entries[0].variantTag.count > 0) {
-                g_zVideo_pActiveViewContext->variantTag =
-                    pickCandidates.entries[0].variantTag;
+                g_zVideo_pActiveViewContext->variantTag = pickCandidates.entries[0].variantTag;
                 viewContext = g_zVideo_pActiveViewContext;
                 g_Variant_CurrentTag = pickCandidates.entries[0].variantTag;
             }
@@ -493,7 +573,11 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zVideo_sw_RenderFrame(
     }
 
     zVideoD3D::SceneEnter();
-    zClass_Camera::RenderWorld(world, camera, g_zVideo_pActiveViewContext);
+    zClass_Camera::RenderWorld(
+        world,
+        camera,
+        g_zVideo_pActiveViewContext
+    );
     zMath::MatStackPopPtr();
 
     ((zVideo_FlushProc)g_zVideo_pfnFlushSortedPolys)();
@@ -507,14 +591,23 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zVideo_sw_RenderFrame(
         zRndr_LensFlare_BuildVisibleSampleListFromQueue(queuedLensFlareSampleCount);
     for (int sampleIndex = 0; sampleIndex < visibleLensFlareSampleCount; ++sampleIndex) {
         zVec3 visibleSamplePoint = {0};
-        zRndr_SpanOcclusion_FilterSampleList(sampleIndex, &visibleSamplePoint);
+        zRndr_SpanOcclusion_FilterSampleList(
+            sampleIndex,
+            &visibleSamplePoint
+        );
         zClass_cls_di::SetStopAfterFirstHit(0x40000);
         zClass_cls_di::SetBreakOnFirstCandidate(1);
         viewContext = g_zVideo_pActiveViewContext;
         const int raycastHit = zClass_cls_di::RaycastFindClosest(
-            viewContext->worldNode, &pickCandidates, viewContext->cameraPos.x,
-            viewContext->cameraPos.y, viewContext->cameraPos.z, visibleSamplePoint.x,
-            visibleSamplePoint.y, visibleSamplePoint.z);
+            viewContext->worldNode,
+            &pickCandidates,
+            viewContext->cameraPos.x,
+            viewContext->cameraPos.y,
+            viewContext->cameraPos.z,
+            visibleSamplePoint.x,
+            visibleSamplePoint.y,
+            visibleSamplePoint.z
+        );
         zClass_cls_di::SetBreakOnFirstCandidate(0);
         if (raycastHit != 0 || pickCandidates.candidateCount == 0) {
             zRndr_LensFlare_DrawVisibleSample(sampleIndex);
@@ -526,8 +619,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zVideo_sw_RenderFrame(
     ((zVideo_FlushProc)g_zVideo_pfnFlushQuadBatch)();
     zVideoD3D::SceneLeave();
 
-    if (zClass_TypeList::CountNodes(8) > 1 &&
-        (windowData->clearPolyIndexFlags & 0x80000000) != 0) {
+    if (zClass_TypeList::CountNodes(8) > 1 && (windowData->clearPolyIndexFlags & 0x80000000) != 0) {
         const int clearPolyCount = windowData->clearPolyIndexFlags & 0x7fffffff;
         for (int i = 0; i < clearPolyCount; ++i) {
             zClass_WindowClearPoly *poly = &windowData->clearPolys[i];
@@ -571,8 +663,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zVideo_sw_RenderFrame(
 
 // Reimplements 0x47a0c0: zVideo_UpdateProjectionStateFromCameraData
 // (GameZRecoil/zVideo/zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zVideo_UpdateProjectionStateFromCameraData(zClass_CameraDataPartial *cameraData) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zVideo_UpdateProjectionStateFromCameraData(
+    zClass_CameraDataPartial *cameraData
+) {
     zMat4x3 slotBuffer = {0};
     zMath::MatStackPushPtr((float *)(&slotBuffer));
     zMath::MatLoadIdentity();
@@ -583,7 +676,10 @@ zVideo_UpdateProjectionStateFromCameraData(zClass_CameraDataPartial *cameraData)
     cameraData->localFrustumLeftNormal.y = 0.0f;
     cameraData->localFrustumLeftNormal.z = 0.0f;
     zMath::MatRotateY(cameraData->frustumYaw);
-    zMath_Vec3Array_UntransformDirection(&cameraData->localFrustumLeftNormal, 1);
+    zMath_Vec3Array_UntransformDirection(
+        &cameraData->localFrustumLeftNormal,
+        1
+    );
     zMath::MatStackPopPtr();
 
     cameraData->localFrustumRightNormal.x = -cameraData->localFrustumLeftNormal.x;
@@ -594,7 +690,10 @@ zVideo_UpdateProjectionStateFromCameraData(zClass_CameraDataPartial *cameraData)
     cameraData->localFrustumBottomNormal.y = -1.0f;
     cameraData->localFrustumBottomNormal.z = 0.0f;
     zMath::MatRotateX(cameraData->frustumPitch);
-    zMath_Vec3Array_UntransformDirection(&cameraData->localFrustumBottomNormal, 1);
+    zMath_Vec3Array_UntransformDirection(
+        &cameraData->localFrustumBottomNormal,
+        1
+    );
     zMath::MatStackPopPtr();
 
     cameraData->localFrustumTopNormal.x = cameraData->localFrustumBottomNormal.x;
@@ -609,7 +708,10 @@ zVideo_UpdateProjectionStateFromCameraData(zClass_CameraDataPartial *cameraData)
     cameraData->localFrustumFarNormal.z = 1.0f;
 }
 
-static zVec3 zVideo_SubtractVec3(zVec3 *lhs, zVec3 *rhs) {
+static zVec3 zVideo_SubtractVec3(
+    zVec3 *lhs,
+    zVec3 *rhs
+) {
     zVec3 delta;
     delta.x = lhs->x - rhs->x;
     delta.y = lhs->y - rhs->y;
@@ -617,14 +719,24 @@ static zVec3 zVideo_SubtractVec3(zVec3 *lhs, zVec3 *rhs) {
     return delta;
 }
 
-static float zVideo_DotVec3(zVec3 *lhs, zVec3 *rhs) {
+static float zVideo_DotVec3(
+    zVec3 *lhs,
+    zVec3 *rhs
+) {
     return lhs->x * rhs->x + lhs->y * rhs->y + lhs->z * rhs->z;
 }
 
-static int zVideo_TestSpherePlane(zVec3 *delta, zVec3 *normal, float radius,
-                                           int planeBit,
-                                           int *clipMaskInOut) {
-    const float dot = zVideo_DotVec3(delta, normal);
+static int zVideo_TestSpherePlane(
+    zVec3 *delta,
+    zVec3 *normal,
+    float radius,
+    int planeBit,
+    int *clipMaskInOut
+) {
+    const float dot = zVideo_DotVec3(
+        delta,
+        normal
+    );
     if (-radius >= dot) {
         return planeBit;
     }
@@ -638,16 +750,25 @@ static int zVideo_TestSpherePlane(zVec3 *delta, zVec3 *normal, float radius,
 
 // Reimplements 0x478c70: zVideo_FrustumTestSphereClipMask
 // (GameZRecoil/zModel/zModel_Display.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-zVideo_FrustumTestSphereClipMask(zVec3 *sphereCenter, int *clipMaskInOut, float radius) {
+RECOIL_NOINLINE int RECOIL_FASTCALL zVideo_FrustumTestSphereClipMask(
+    zVec3 *sphereCenter,
+    int *clipMaskInOut,
+    float radius
+) {
     const int oldMask = *clipMaskInOut;
     *clipMaskInOut = 0;
 
     zClass_CameraDataPartial *viewContext = g_zVideo_pActiveViewContext;
     zVec3 delta;
     if ((oldMask & 0x10) != 0) {
-        delta = zVideo_SubtractVec3(sphereCenter, &viewContext->nearClipCenter);
-        const float dot = zVideo_DotVec3(&delta, &viewContext->worldFrustumNormals[4]);
+        delta = zVideo_SubtractVec3(
+            sphereCenter,
+            &viewContext->nearClipCenter
+        );
+        const float dot = zVideo_DotVec3(
+            &delta,
+            &viewContext->worldFrustumNormals[4]
+        );
         if (dot < radius) {
             if (-radius >= dot) {
                 return 0x10;
@@ -659,39 +780,58 @@ zVideo_FrustumTestSphereClipMask(zVec3 *sphereCenter, int *clipMaskInOut, float 
     }
 
     viewContext = g_zVideo_pActiveViewContext;
-    delta = zVideo_SubtractVec3(sphereCenter, &viewContext->cameraPos);
+    delta = zVideo_SubtractVec3(
+        sphereCenter,
+        &viewContext->cameraPos
+    );
 
     if ((oldMask & 1) != 0) {
-        const int result =
-            zVideo_TestSpherePlane(&delta, &viewContext->worldFrustumNormals[0], radius, 1,
-                                   clipMaskInOut);
+        const int result = zVideo_TestSpherePlane(
+            &delta,
+            &viewContext->worldFrustumNormals[0],
+            radius,
+            1,
+            clipMaskInOut
+        );
         if (result != 0) {
             return result;
         }
     }
 
     if ((oldMask & 2) != 0) {
-        const int result =
-            zVideo_TestSpherePlane(&delta, &viewContext->worldFrustumNormals[1], radius, 2,
-                                   clipMaskInOut);
+        const int result = zVideo_TestSpherePlane(
+            &delta,
+            &viewContext->worldFrustumNormals[1],
+            radius,
+            2,
+            clipMaskInOut
+        );
         if (result != 0) {
             return result;
         }
     }
 
     if ((oldMask & 4) != 0) {
-        const int result =
-            zVideo_TestSpherePlane(&delta, &viewContext->worldFrustumNormals[2], radius, 4,
-                                   clipMaskInOut);
+        const int result = zVideo_TestSpherePlane(
+            &delta,
+            &viewContext->worldFrustumNormals[2],
+            radius,
+            4,
+            clipMaskInOut
+        );
         if (result != 0) {
             return result;
         }
     }
 
     if ((oldMask & 8) != 0) {
-        const int result =
-            zVideo_TestSpherePlane(&delta, &viewContext->worldFrustumNormals[3], radius, 8,
-                                   clipMaskInOut);
+        const int result = zVideo_TestSpherePlane(
+            &delta,
+            &viewContext->worldFrustumNormals[3],
+            radius,
+            8,
+            clipMaskInOut
+        );
         if (result != 0) {
             return result;
         }
@@ -699,10 +839,17 @@ zVideo_FrustumTestSphereClipMask(zVec3 *sphereCenter, int *clipMaskInOut, float 
 
     if ((oldMask & 0x20) != 0) {
         viewContext = g_zVideo_pActiveViewContext;
-        delta = zVideo_SubtractVec3(sphereCenter, &viewContext->farClipCenter);
-        const int result =
-            zVideo_TestSpherePlane(&delta, &viewContext->worldFrustumNormals[5], radius, 0x20,
-                                   clipMaskInOut);
+        delta = zVideo_SubtractVec3(
+            sphereCenter,
+            &viewContext->farClipCenter
+        );
+        const int result = zVideo_TestSpherePlane(
+            &delta,
+            &viewContext->worldFrustumNormals[5],
+            radius,
+            0x20,
+            clipMaskInOut
+        );
         if (result != 0) {
             return result;
         }
@@ -734,9 +881,24 @@ RECOIL_NOINLINE void RECOIL_CDECL zVideo_RestoreIconicFullscreenWindowIfNeeded()
 
 RECOIL_STATIC_ASSERT(sizeof(zVidHwApiDeviceRecordPartial) == 0x6ec);
 RECOIL_STATIC_ASSERT(sizeof(zVidD3DDriverRecordPartial) == 0x190);
-RECOIL_STATIC_ASSERT(offsetof(zVidHwApiDeviceRecordPartial, m_deviceFeatureFlags) == 0xa4);
-RECOIL_STATIC_ASSERT(offsetof(zVidHwApiDeviceRecordPartial, m_acceptedD3DDeviceCount) == 0xa8);
-RECOIL_STATIC_ASSERT(offsetof(zVidHwApiDeviceRecordPartial, m_d3dDrivers) == 0xac);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidHwApiDeviceRecordPartial,
+        m_deviceFeatureFlags
+    ) == 0xa4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidHwApiDeviceRecordPartial,
+        m_acceptedD3DDeviceCount
+    ) == 0xa8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidHwApiDeviceRecordPartial,
+        m_d3dDrivers
+    ) == 0xac
+);
 RECOIL_STATIC_ASSERT(sizeof(DDCAPS) == 0x17c);
 RECOIL_STATIC_ASSERT(sizeof(DDSURFACEDESC) == 0x6c);
 RECOIL_STATIC_ASSERT(sizeof(D3DDEVICEDESC) == 0xfc);
@@ -747,60 +909,239 @@ RECOIL_STATIC_ASSERT(sizeof(zVideo_QuadBatchItemPartial) == 0x80);
 RECOIL_STATIC_ASSERT(sizeof(zVideo_XyzVertex) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zVideo_ColorRgbFloat) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zVideo_TexCoord) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(zVideo_RenderClass, textureHandle) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(zVideo_RenderClass, textureMapBlend) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(zVideo_RenderClass, textureAddressU) == 0x14);
-RECOIL_STATIC_ASSERT(offsetof(zVideo_RenderClass, textureAddressV) == 0x18);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_RenderClass,
+        textureHandle
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_RenderClass,
+        textureMapBlend
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_RenderClass,
+        textureAddressU
+    ) == 0x14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_RenderClass,
+        textureAddressV
+    ) == 0x18
+);
 RECOIL_STATIC_ASSERT(sizeof(zVideo_RenderClass) == 0x1c);
 RECOIL_STATIC_ASSERT(sizeof(zVideo_SortedPolyQueueEntry) == 0x80c);
 RECOIL_STATIC_ASSERT(sizeof(zVideo_OverwriteQueueEntry) == 0x810);
-RECOIL_STATIC_ASSERT(offsetof(zVideo_SortedPolyQueueEntry, vertices) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(zVideo_OverwriteQueueEntry, vertices) == 0x10);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_SortedPolyQueueEntry,
+        vertices
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_OverwriteQueueEntry,
+        vertices
+    ) == 0x10
+);
 RECOIL_STATIC_ASSERT(sizeof(zVideo_TextureRecordPartial) == 0x1c);
-RECOIL_STATIC_ASSERT(offsetof(zVideo_TextureRecordPartial, m_textureHandle) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(zVideo_TextureRecordPartial, m_alphaMode) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(zVideo_TextureRecordPartial, m_uWrapMode) == 0x14);
-RECOIL_STATIC_ASSERT(offsetof(zVideo_TextureRecordPartial, m_vWrapMode) == 0x18);
-RECOIL_STATIC_ASSERT(offsetof(zVideo_SurfaceStatePartial, locked) == 0x14);
-RECOIL_STATIC_ASSERT(offsetof(zVideo_SurfaceStatePartial, pageLockActive) == 0x18);
-RECOIL_STATIC_ASSERT(offsetof(zVideo_SurfaceStatePartial, surf) == 0x1c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_TextureRecordPartial,
+        m_textureHandle
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_TextureRecordPartial,
+        m_alphaMode
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_TextureRecordPartial,
+        m_uWrapMode
+    ) == 0x14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_TextureRecordPartial,
+        m_vWrapMode
+    ) == 0x18
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_SurfaceStatePartial,
+        locked
+    ) == 0x14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_SurfaceStatePartial,
+        pageLockActive
+    ) == 0x18
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_SurfaceStatePartial,
+        surf
+    ) == 0x1c
+);
 RECOIL_STATIC_ASSERT(sizeof(zVidTexturePackRecord) == 0x28);
 RECOIL_STATIC_ASSERT(sizeof(zVidTexturePackHeader) == 0x18);
-RECOIL_STATIC_ASSERT(offsetof(zVidTexturePackEntry, fileHandle) == 0x80);
-RECOIL_STATIC_ASSERT(offsetof(zVidTexturePackEntry, header) == 0x84);
-RECOIL_STATIC_ASSERT(offsetof(zVidTexturePackEntry, records) == 0x9c);
-RECOIL_STATIC_ASSERT(offsetof(zVidTexturePackEntry, paletteTableBaseIndex) == 0xa0);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidTexturePackEntry,
+        fileHandle
+    ) == 0x80
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidTexturePackEntry,
+        header
+    ) == 0x84
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidTexturePackEntry,
+        records
+    ) == 0x9c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidTexturePackEntry,
+        paletteTableBaseIndex
+    ) == 0xa0
+);
 RECOIL_STATIC_ASSERT(sizeof(zVidTexturePackEntry) == 0xa4);
-RECOIL_STATIC_ASSERT(offsetof(zVidPaletteRemapRecipe, color1R) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(zVidPaletteRemapRecipe, color0Strength) == 0x18);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidPaletteRemapRecipe,
+        color1R
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidPaletteRemapRecipe,
+        color0Strength
+    ) == 0x18
+);
 RECOIL_STATIC_ASSERT(sizeof(zVidPaletteRemapRecipe) == 0x20);
-RECOIL_STATIC_ASSERT(offsetof(zVidImagePartial, width) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(zVidImagePartial, formatFlagsPacked) == 0x09);
-RECOIL_STATIC_ASSERT(offsetof(zVidImagePartial, uPow2Shift) == 0x0a);
-RECOIL_STATIC_ASSERT(offsetof(zVidImagePartial, vPow2Shift) == 0x0b);
-RECOIL_STATIC_ASSERT(offsetof(zVidImagePartial, textureAddressFlagsPacked) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(zVidImagePartial, paletteMetaPacked) == 0x0e);
-RECOIL_STATIC_ASSERT(offsetof(zVidImagePartial, pixels) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(zVidImagePartial, alphaMap) == 0x14);
-RECOIL_STATIC_ASSERT(offsetof(zVidImagePartial, palette) == 0x18);
-RECOIL_STATIC_ASSERT(offsetof(zVidImagePartial, widthScale) == 0x1c);
-RECOIL_STATIC_ASSERT(offsetof(zVidImagePartial, queuedAlphaMap) == 0x20);
-RECOIL_STATIC_ASSERT(offsetof(zVidImagePartial, uShiftFrom20) == 0x24);
-RECOIL_STATIC_ASSERT(offsetof(zVidImagePartial, uMask) == 0x28);
-RECOIL_STATIC_ASSERT(offsetof(zVidImagePartial, vMaskFixed20) == 0x2c);
-RECOIL_STATIC_ASSERT(offsetof(zVidImagePartial, surface) == 0x30);
-RECOIL_STATIC_ASSERT(offsetof(zVidImagePartial, pitchWords) == 0x34);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        width
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        formatFlagsPacked
+    ) == 0x09
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        uPow2Shift
+    ) == 0x0a
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        vPow2Shift
+    ) == 0x0b
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        textureAddressFlagsPacked
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        paletteMetaPacked
+    ) == 0x0e
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        pixels
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        alphaMap
+    ) == 0x14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        palette
+    ) == 0x18
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        widthScale
+    ) == 0x1c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        queuedAlphaMap
+    ) == 0x20
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        uShiftFrom20
+    ) == 0x24
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        uMask
+    ) == 0x28
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        vMaskFixed20
+    ) == 0x2c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        surface
+    ) == 0x30
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        pitchWords
+    ) == 0x34
+);
 RECOIL_STATIC_ASSERT(sizeof(zVidRect32) == sizeof(RECT));
 
 namespace zVid {
 // Reimplements 0x408280: zVid::SetAccelerationOption
-RECOIL_NOINLINE void RECOIL_FASTCALL SetAccelerationOption(int accelerationOption) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetAccelerationOption(
+    int accelerationOption
+) {
     *ZOPT_VIDEO_ACCELERATION = accelerationOption;
     g_zOpt_HwMode = accelerationOption;
 }
 
 // Reimplements 0x408290: zVid::SetHwApiOption
-RECOIL_NOINLINE void RECOIL_FASTCALL SetHwApiOption(int hwApiOption) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetHwApiOption(
+    int hwApiOption
+) {
     *ZOPT_HW_API = hwApiOption;
 }
 
@@ -835,7 +1176,9 @@ RECOIL_NOINLINE int RECOIL_CDECL GetTexturePackLoadState() {
 }
 
 // Reimplements 0x46d5b0: zVid::SetTexturePackLoadState
-RECOIL_NOINLINE void RECOIL_FASTCALL SetTexturePackLoadState(int texturePackLoadState) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetTexturePackLoadState(
+    int texturePackLoadState
+) {
     g_zVid_TexturePackLoadState = texturePackLoadState;
 }
 
@@ -845,76 +1188,186 @@ RECOIL_NOINLINE int RECOIL_CDECL GetVideoModeIndexFromOptions() {
 }
 
 // Reimplements 0x408720: zVid::SetVideoModeIndex
-RECOIL_NOINLINE void RECOIL_FASTCALL SetVideoModeIndex(int modeIndex) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetVideoModeIndex(
+    int modeIndex
+) {
     switch (modeIndex) {
     case 2:
         *ZOPT_VIDEO_MODE = 2;
-        zOpt::RenderSection_SetPosition(0, 0);
-        zOpt::RenderSection_SetSize(320, 200);
-        zOpt::WindowSection_SetPosition(0, 0);
-        zOpt::WindowSection_SetSize(640, 400);
-        zOpt::DisplaySection_SetPosition(0, 0);
-        zOpt::DisplaySection_SetSize(640, 400);
+        zOpt::RenderSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::RenderSection_SetSize(
+            320,
+            200
+        );
+        zOpt::WindowSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::WindowSection_SetSize(
+            640,
+            400
+        );
+        zOpt::DisplaySection_SetPosition(
+            0,
+            0
+        );
+        zOpt::DisplaySection_SetSize(
+            640,
+            400
+        );
         zOpt::DisplaySection_SetBitsPerPixel(16);
         zOpt::SetReplicateMode(1);
         return;
 
     case 3:
         *ZOPT_VIDEO_MODE = 3;
-        zOpt::RenderSection_SetPosition(0, 0);
-        zOpt::RenderSection_SetSize(320, 240);
-        zOpt::WindowSection_SetPosition(0, 0);
-        zOpt::WindowSection_SetSize(640, 480);
-        zOpt::DisplaySection_SetPosition(0, 0);
-        zOpt::DisplaySection_SetSize(640, 480);
+        zOpt::RenderSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::RenderSection_SetSize(
+            320,
+            240
+        );
+        zOpt::WindowSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::WindowSection_SetSize(
+            640,
+            480
+        );
+        zOpt::DisplaySection_SetPosition(
+            0,
+            0
+        );
+        zOpt::DisplaySection_SetSize(
+            640,
+            480
+        );
         zOpt::DisplaySection_SetBitsPerPixel(16);
         zOpt::SetReplicateMode(1);
         return;
 
     case 4:
         *ZOPT_VIDEO_MODE = 4;
-        zOpt::RenderSection_SetPosition(0, 0);
-        zOpt::RenderSection_SetSize(640, 400);
-        zOpt::WindowSection_SetPosition(0, 0);
-        zOpt::WindowSection_SetSize(640, 400);
-        zOpt::DisplaySection_SetPosition(0, 0);
-        zOpt::DisplaySection_SetSize(640, 400);
+        zOpt::RenderSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::RenderSection_SetSize(
+            640,
+            400
+        );
+        zOpt::WindowSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::WindowSection_SetSize(
+            640,
+            400
+        );
+        zOpt::DisplaySection_SetPosition(
+            0,
+            0
+        );
+        zOpt::DisplaySection_SetSize(
+            640,
+            400
+        );
         zOpt::DisplaySection_SetBitsPerPixel(16);
         zOpt::SetReplicateMode(0);
         return;
 
     case 5:
         *ZOPT_VIDEO_MODE = 5;
-        zOpt::RenderSection_SetPosition(0, 0);
-        zOpt::RenderSection_SetSize(640, 480);
-        zOpt::WindowSection_SetPosition(0, 0);
-        zOpt::WindowSection_SetSize(640, 480);
-        zOpt::DisplaySection_SetPosition(0, 0);
-        zOpt::DisplaySection_SetSize(640, 480);
+        zOpt::RenderSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::RenderSection_SetSize(
+            640,
+            480
+        );
+        zOpt::WindowSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::WindowSection_SetSize(
+            640,
+            480
+        );
+        zOpt::DisplaySection_SetPosition(
+            0,
+            0
+        );
+        zOpt::DisplaySection_SetSize(
+            640,
+            480
+        );
         zOpt::DisplaySection_SetBitsPerPixel(16);
         zOpt::SetReplicateMode(0);
         return;
 
     case 6:
         *ZOPT_VIDEO_MODE = 6;
-        zOpt::RenderSection_SetPosition(0, 0);
-        zOpt::RenderSection_SetSize(800, 600);
-        zOpt::WindowSection_SetPosition(0, 0);
-        zOpt::WindowSection_SetSize(800, 600);
-        zOpt::DisplaySection_SetPosition(0, 0);
-        zOpt::DisplaySection_SetSize(800, 600);
+        zOpt::RenderSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::RenderSection_SetSize(
+            800,
+            600
+        );
+        zOpt::WindowSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::WindowSection_SetSize(
+            800,
+            600
+        );
+        zOpt::DisplaySection_SetPosition(
+            0,
+            0
+        );
+        zOpt::DisplaySection_SetSize(
+            800,
+            600
+        );
         zOpt::DisplaySection_SetBitsPerPixel(16);
         zOpt::SetReplicateMode(0);
         return;
 
     case 7:
         *ZOPT_VIDEO_MODE = 7;
-        zOpt::RenderSection_SetPosition(0, 0);
-        zOpt::RenderSection_SetSize(1024, 768);
-        zOpt::WindowSection_SetPosition(0, 0);
-        zOpt::WindowSection_SetSize(1024, 768);
-        zOpt::DisplaySection_SetPosition(0, 0);
-        zOpt::DisplaySection_SetSize(1024, 768);
+        zOpt::RenderSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::RenderSection_SetSize(
+            1024,
+            768
+        );
+        zOpt::WindowSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::WindowSection_SetSize(
+            1024,
+            768
+        );
+        zOpt::DisplaySection_SetPosition(
+            0,
+            0
+        );
+        zOpt::DisplaySection_SetSize(
+            1024,
+            768
+        );
         zOpt::DisplaySection_SetBitsPerPixel(16);
         zOpt::SetReplicateMode(0);
         return;
@@ -926,7 +1379,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetVideoModeIndex(int modeIndex) {
 }
 
 RECOIL_NOINLINE int RECOIL_FASTCALL QueryDeviceVideoMemoryBytes(
-    int deviceIndexOrMinus1, int *totalBytes, int *freeBytes) {
+    int deviceIndexOrMinus1,
+    int *totalBytes,
+    int *freeBytes
+) {
     if (g_zVideo_RendererType == 0) {
         *freeBytes = 0;
         *totalBytes = 0;
@@ -951,7 +1407,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL QueryDeviceVideoMemoryBytes(
 }
 
 RECOIL_NOINLINE int RECOIL_FASTCALL QueryTextureMemoryBytes(
-    int deviceIndexOrMinus1, int *totalBytes, int *freeBytes) {
+    int deviceIndexOrMinus1,
+    int *totalBytes,
+    int *freeBytes
+) {
     if (g_zVideo_pDirectDraw2 == 0 && deviceIndexOrMinus1 == -1) {
         *freeBytes = 0;
         *totalBytes = 0;
@@ -971,7 +1430,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL QueryTextureMemoryBytes(
 }
 
 // Reimplements 0x4a59a0: zVid::SetCachedClientRectUpdateMask
-RECOIL_NOINLINE void RECOIL_FASTCALL SetCachedClientRectUpdateMask(int mask) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetCachedClientRectUpdateMask(
+    int mask
+) {
     g_zVid_CachedClientRectUpdateMask = mask;
 }
 
@@ -984,18 +1445,21 @@ RECOIL_NOINLINE char *RECOIL_CDECL GetSelectedHwApiDescriptionOrDefault() {
 
 // Reimplements 0x4a9940: zVid::GetSelectedD3DDeviceNameOrDefault
 RECOIL_NOINLINE char *RECOIL_CDECL GetSelectedD3DDeviceNameOrDefault() {
-    return g_zVideo_pSelectedD3DDeviceInfo != 0
-               ? g_zVideo_pSelectedD3DDeviceInfo->m_deviceName
-               : (char *)("GameZ");
+    return g_zVideo_pSelectedD3DDeviceInfo != 0 ? g_zVideo_pSelectedD3DDeviceInfo->m_deviceName
+                                                : (char *)("GameZ");
 }
 
 // Reimplements 0x4a7430: zVid::GetHwApiDescription
-RECOIL_NOINLINE char *RECOIL_FASTCALL GetHwApiDescription(int index) {
+RECOIL_NOINLINE char *RECOIL_FASTCALL GetHwApiDescription(
+    int index
+) {
     return g_zVideo_HwApiDeviceTable[index].m_driverDescription;
 }
 
 // Reimplements 0x4a7450: zVid::GetHwApiDriverName
-RECOIL_NOINLINE char *RECOIL_FASTCALL GetHwApiDriverName(int index) {
+RECOIL_NOINLINE char *RECOIL_FASTCALL GetHwApiDriverName(
+    int index
+) {
     return g_zVideo_HwApiDeviceTable[index].m_driverName;
 }
 } // namespace zVid
@@ -1003,11 +1467,19 @@ RECOIL_NOINLINE char *RECOIL_FASTCALL GetHwApiDriverName(int index) {
 // Reimplements 0x4bdc00: zVideoFxPass3Slot::SetRectAndPayload
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Slot::SetRectAndPayload(
-    int rectLeftPixels, int rectTopPixels, int currentRadiusPixels,
-    int maxRadiusPixels, int extentPixels, float sinFreqValue,
-    float sinPhaseValue) {
+    int rectLeftPixels,
+    int rectTopPixels,
+    int currentRadiusPixels,
+    int maxRadiusPixels,
+    int extentPixels,
+    float sinFreqValue,
+    float sinPhaseValue
+) {
     if (base.ftable != 0) {
-        base.SetPos(rectLeftPixels, rectTopPixels);
+        base.SetPos(
+            rectLeftPixels,
+            rectTopPixels
+        );
     } else {
         base.x = rectLeftPixels;
         base.y = rectTopPixels;
@@ -1023,7 +1495,9 @@ RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Slot::SetRectAndPayload(
 // Reimplements 0x4bee00: zVideoFxPass3Config::SetInputRectByIndex
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Config::SetInputRectByIndex(
-    int index, HudUiRect *rectOrNull) {
+    int index,
+    HudUiRect *rectOrNull
+) {
     if (index < 2) {
         inputRectsOrNull[index] = rectOrNull;
     }
@@ -1031,9 +1505,11 @@ RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Config::SetInputRectByIndex(
 
 namespace zVideo_buff {
 // Reimplements 0x4a69c0: zVideo_buff::ClipCoordToRange
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipCoordToRange(int *coordPtr,
-                                                              int minCoord,
-                                                              int maxCoord) {
+RECOIL_NOINLINE int RECOIL_FASTCALL ClipCoordToRange(
+    int *coordPtr,
+    int minCoord,
+    int maxCoord
+) {
     const int coord = *coordPtr;
     int clipped = 0;
     if (coord < minCoord) {
@@ -1049,9 +1525,11 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipCoordToRange(int *coordPtr,
 
 // Reimplements 0x4a6fe0: zVideo_buff::CopySurfaceRectToImage
 // (GameZRecoil/zImage/zvid_buff.c)
-RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL
-CopySurfaceRectToImage(int sourceSelector, zVidRect32 *rect,
-                       zVidImagePartial *imageOrNull) {
+RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL CopySurfaceRectToImage(
+    int sourceSelector,
+    zVidRect32 *rect,
+    zVidImagePartial *imageOrNull
+) {
     zVideo_SurfaceStatePartial *surfaceState = 0;
     if (sourceSelector == 0) {
         surfaceState = &g_zVideo_SwSurfaceState;
@@ -1072,26 +1550,42 @@ CopySurfaceRectToImage(int sourceSelector, zVidRect32 *rect,
     int dstOffsetY = 0;
     const int originalWidth = rect->right - rect->left;
 
-    int clipped = ClipCoordToRange(&rect->left, 0, surfaceWidth);
+    int clipped = ClipCoordToRange(
+        &rect->left,
+        0,
+        surfaceWidth
+    );
     if (clipped < 0) {
         dstOffsetX = -clipped;
     } else if (clipped > 0) {
         return 0;
     }
 
-    clipped = ClipCoordToRange(&rect->right, 0, surfaceWidth);
+    clipped = ClipCoordToRange(
+        &rect->right,
+        0,
+        surfaceWidth
+    );
     if (clipped < 0) {
         return 0;
     }
 
-    clipped = ClipCoordToRange(&rect->top, 0, surfaceHeight);
+    clipped = ClipCoordToRange(
+        &rect->top,
+        0,
+        surfaceHeight
+    );
     if (clipped < 0) {
         dstOffsetY = -clipped;
     } else if (clipped > 0) {
         return 0;
     }
 
-    clipped = ClipCoordToRange(&rect->bottom, 0, surfaceHeight);
+    clipped = ClipCoordToRange(
+        &rect->bottom,
+        0,
+        surfaceHeight
+    );
     if (clipped < 0) {
         return 0;
     }
@@ -1109,38 +1603,45 @@ CopySurfaceRectToImage(int sourceSelector, zVidRect32 *rect,
             return 0;
         }
 
-        zVid_Image::SetSize(image, (short)(clippedHeight),
-                            (short)(clippedWidth));
-        image->pixels =
-            malloc((size_t)(image->pixelCount) * sizeof(unsigned short));
+        zVid_Image::SetSize(
+            image,
+            (short)(clippedHeight),
+            (short)(clippedWidth)
+        );
+        image->pixels = malloc((size_t)(image->pixelCount) * sizeof(unsigned short));
     }
 
-    unsigned char * dstBytes = (unsigned char *)(image->pixels) +
-                     (originalWidth * dstOffsetY + dstOffsetX) * sizeof(unsigned short);
+    unsigned char *dstBytes = (unsigned char *)(image->pixels) +
+                              (originalWidth * dstOffsetY + dstOffsetX) * sizeof(unsigned short);
     unsigned char *srcBytes =
         surfacePixels + (pitchWords * rect->top + rect->left) * sizeof(unsigned short);
     const int rowBytes = clippedWidth * (int)(sizeof(unsigned short));
-    const int dstStrideBytes =
-        originalWidth * (int)(sizeof(unsigned short));
-    const int srcStrideBytes =
-        pitchWords * (int)(sizeof(unsigned short));
+    const int dstStrideBytes = originalWidth * (int)(sizeof(unsigned short));
+    const int srcStrideBytes = pitchWords * (int)(sizeof(unsigned short));
 
     {
-    for (int row = clippedHeight; row > 0; --row) {
-        memcpy(dstBytes, srcBytes, (size_t)(rowBytes));
-        dstBytes += dstStrideBytes;
-        srcBytes += srcStrideBytes;
-    }
+        for (int row = clippedHeight; row > 0; --row) {
+            memcpy(
+                dstBytes,
+                srcBytes,
+                (size_t)(rowBytes)
+            );
+            dstBytes += dstStrideBytes;
+            srcBytes += srcStrideBytes;
+        }
     }
 
     return image;
 }
 
 // Reimplements 0x4a69e0: zVideo_buff::BltSourceToPrimaryClipped
-RECOIL_NOINLINE void RECOIL_FASTCALL BltSourceToPrimaryClipped(zVidImagePartial *srcImage,
-                                                               int dstX, int dstY,
-                                                               int srcColorKeyEnable,
-                                                               zVidRect32 *srcRect) {
+RECOIL_NOINLINE void RECOIL_FASTCALL BltSourceToPrimaryClipped(
+    zVidImagePartial *srcImage,
+    int dstX,
+    int dstY,
+    int srcColorKeyEnable,
+    zVidRect32 *srcRect
+) {
     zVidRect32 srcRectLocal;
     int srcX;
     int srcY;
@@ -1172,15 +1673,22 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltSourceToPrimaryClipped(zVidImagePartial 
     dstRectLocal.right = srcRight - srcX + dstX;
     dstRectLocal.bottom = srcBottom - srcY + dstY;
 
-    int clipped =
-        ClipCoordToRange(&dstRectLocal.left, 0, g_zVideo_PrimarySurfaceState.width - 1);
+    int clipped = ClipCoordToRange(
+        &dstRectLocal.left,
+        0,
+        g_zVideo_PrimarySurfaceState.width - 1
+    );
     if (clipped < 0) {
         srcRectLocal.left -= clipped;
     } else if (clipped > 0) {
         return;
     }
 
-    clipped = ClipCoordToRange(&dstRectLocal.right, 0, g_zVideo_PrimarySurfaceState.width);
+    clipped = ClipCoordToRange(
+        &dstRectLocal.right,
+        0,
+        g_zVideo_PrimarySurfaceState.width
+    );
     if (clipped < 0) {
         return;
     }
@@ -1188,14 +1696,22 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltSourceToPrimaryClipped(zVidImagePartial 
         srcRectLocal.right -= clipped;
     }
 
-    clipped = ClipCoordToRange(&dstRectLocal.top, 0, g_zVideo_PrimarySurfaceState.height - 1);
+    clipped = ClipCoordToRange(
+        &dstRectLocal.top,
+        0,
+        g_zVideo_PrimarySurfaceState.height - 1
+    );
     if (clipped < 0) {
         srcRectLocal.top -= clipped;
     } else if (clipped > 0) {
         return;
     }
 
-    clipped = ClipCoordToRange(&dstRectLocal.bottom, 0, g_zVideo_PrimarySurfaceState.height);
+    clipped = ClipCoordToRange(
+        &dstRectLocal.bottom,
+        0,
+        g_zVideo_PrimarySurfaceState.height
+    );
     if (clipped < 0) {
         return;
     }
@@ -1216,31 +1732,47 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltSourceToPrimaryClipped(zVidImagePartial 
     const DWORD bltFlags = DDBLT_WAIT | DDBLT_KEYSRCOVERRIDE |
                            ((srcImage->formatFlagsPacked & 0x02u) != 0 ? DDBLT_KEYSRC : 0);
     const HRESULT hresult =
-        primarySurface->Blt((RECT *)&dstRectLocal, srcImage->surface,
-                            (RECT *)&srcRectLocal, bltFlags, 0);
+        primarySurface
+            ->Blt(
+                (RECT *)&dstRectLocal,
+                srcImage->surface,
+                (RECT *)&srcRectLocal,
+                bltFlags,
+                0
+            );
 
     if (wasLocked != 0) {
         zVideo_dd::LockSurfaceState(&g_zVideo_PrimarySurfaceState);
     }
 
     if (hresult != DD_OK) {
-        zVideo_dd::ReportError((int)(hresult),
-                               "D:\\Proj\\GameZRecoil\\zVideo\\zvid_buff.c", 0x150);
+        zVideo_dd::ReportError(
+            (int)(hresult),
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_buff.c",
+            0x150
+        );
     }
 }
 } // namespace zVideo_buff
 
 namespace zVideo {
 namespace {
-int MakeShiftedMask(int bits) {
+int MakeShiftedMask(
+    int bits
+) {
     return ((1 << bits) - 1) << (8 - bits);
 }
 } // namespace
 
 // Reimplements 0x4a6bf0: zVideo::PixelPack_SetupFromMasks
-RECOIL_NOINLINE void RECOIL_FASTCALL
-PixelPack_SetupFromMasks(int redBits, int greenBits, int blueBits,
-                         unsigned int redMask, unsigned int greenMask, unsigned int blueMask) {
+RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_SetupFromMasks(
+    int redBits,
+    int greenBits,
+    int blueBits,
+    unsigned int redMask,
+    unsigned int greenMask,
+    unsigned int blueMask
+) {
     g_zVideo_PixelPack_RMask = redMask;
     g_zVideo_PixelPack_GMask = greenMask;
     g_zVideo_PixelPack_BMask = blueMask;
@@ -1258,9 +1790,15 @@ PixelPack_SetupFromMasks(int redBits, int greenBits, int blueBits,
 
 // Reimplements 0x4a6db0: zVideo::TexturePixelPack_SetupFromMasks
 RECOIL_NOINLINE void RECOIL_FASTCALL TexturePixelPack_SetupFromMasks(
-    int redBits, int greenBits, int blueBits, int alphaBits,
-    unsigned int redMask, unsigned int greenMask, unsigned int blueMask,
-    unsigned int alphaMask) {
+    int redBits,
+    int greenBits,
+    int blueBits,
+    int alphaBits,
+    unsigned int redMask,
+    unsigned int greenMask,
+    unsigned int blueMask,
+    unsigned int alphaMask
+) {
     g_zVideo_TexturePixelPack_ABits = alphaBits;
     g_zVideo_TexturePixelPack_RMask = redMask;
     g_zVideo_TexturePixelPack_AMask = alphaMask;
@@ -1285,8 +1823,9 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TexturePixelPack_SetupFromMasks(
 }
 
 // Reimplements 0x4a6b40: zVideo::SetRendererTypeAndActivePath
-RECOIL_NOINLINE int RECOIL_FASTCALL
-SetRendererTypeAndActivePath(int rendererType) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SetRendererTypeAndActivePath(
+    int rendererType
+) {
     const int previousRendererType = g_zVideo_RendererType;
     g_zVideo_RendererType = rendererType;
     g_zVideo_ActiveRendererPath = rendererType;
@@ -1294,7 +1833,9 @@ SetRendererTypeAndActivePath(int rendererType) {
 }
 
 // Reimplements 0x4a71c0: zVideo::SetHalfResAdjustMode
-RECOIL_NOINLINE int RECOIL_FASTCALL SetHalfResAdjustMode(int mode) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SetHalfResAdjustMode(
+    int mode
+) {
     int previousMode;
     if (mode == g_zVideo_HalfResAdjustMode) {
         return mode;
@@ -1308,7 +1849,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetHalfResAdjustMode(int mode) {
     previousMode = g_zVideo_HalfResAdjustMode;
     g_zVideo_HalfResAdjustMode = mode;
     if (mode == 0 && g_zVideo_RendererType == 0) {
-        g_zVideo_pfnBltPrimaryToSwRectDirect(0, 0);
+        g_zVideo_pfnBltPrimaryToSwRectDirect(
+            0,
+            0
+        );
     }
 
     return previousMode;
@@ -1316,7 +1860,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetHalfResAdjustMode(int mode) {
 
 // Reimplements 0x437ef0: zVideo::HandleSoftwareModeHotkeyCommand
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL HandleSoftwareModeHotkeyCommand(int) {
+RECOIL_NOINLINE void RECOIL_FASTCALL HandleSoftwareModeHotkeyCommand(
+    int
+) {
     if (g_zVideo_SoftwareModeHotkeyEnabled == 0) {
         return;
     }
@@ -1415,38 +1961,64 @@ RECOIL_NOINLINE int RECOIL_CDECL GetDisplayModeBpp() {
 
 // Reimplements 0x4c7fd0: zVideo::LoadPaletteFileAndApplyBrightness
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL LoadPaletteFileAndApplyBrightness(const char *palettePath) {
+RECOIL_NOINLINE int RECOIL_FASTCALL LoadPaletteFileAndApplyBrightness(
+    const char *palettePath
+) {
     if (palettePath != 0) {
-        strcpy(g_zVideo_PalettePathBuffer, palettePath);
+        strcpy(
+            g_zVideo_PalettePathBuffer,
+            palettePath
+        );
     }
 
-    FILE *paletteStream = fopen(g_zVideo_PalettePathBuffer, "rb");
+    FILE *paletteStream = fopen(
+        g_zVideo_PalettePathBuffer,
+        "rb"
+    );
     if (paletteStream == 0) {
-        fprintf(stderr, "ZVID: could not open palette %s\n", g_zVideo_PalettePathBuffer);
+        fprintf(
+            stderr,
+            "ZVID: could not open palette %s\n",
+            g_zVideo_PalettePathBuffer
+        );
         return 0x800;
     }
 
-    fread(g_zVideo_PaletteFileEntries, 3, 256, paletteStream);
+    fread(
+        g_zVideo_PaletteFileEntries,
+        3,
+        256,
+        paletteStream
+    );
     fclose(paletteStream);
     return ApplyBrightnessToPaletteEntries(g_zVideo_PaletteFileEntries);
 }
 
 // Reimplements 0x4c8070: zVideo::ApplyBrightnessToPaletteEntries
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ApplyBrightnessToPaletteEntries(PALETTEENTRY *paletteEntries) {
+RECOIL_NOINLINE int RECOIL_FASTCALL ApplyBrightnessToPaletteEntries(
+    PALETTEENTRY *paletteEntries
+) {
     if (g_zVideo_IsInitialized == 0) {
         return 0x5a560000;
     }
 
     if (paletteEntries != 0) {
-        memcpy(g_zVideo_SystemPaletteEntries, paletteEntries, sizeof(g_zVideo_SystemPaletteEntries));
+        memcpy(
+            g_zVideo_SystemPaletteEntries,
+            paletteEntries,
+            sizeof(g_zVideo_SystemPaletteEntries)
+        );
     }
 
     PALETTEENTRY adjustedEntries[256];
-    memcpy(adjustedEntries, g_zVideo_SystemPaletteEntries, sizeof(adjustedEntries));
+    memcpy(
+        adjustedEntries,
+        g_zVideo_SystemPaletteEntries,
+        sizeof(adjustedEntries)
+    );
 
-    const int brightnessDelta =
-        ((int)(g_zVideo_PaletteBrightnessLevel) << 3) - 32;
+    const int brightnessDelta = ((int)(g_zVideo_PaletteBrightnessLevel) << 3) - 32;
     if (brightnessDelta > 0) {
         for (int index = 0; index < 256; ++index) {
             const int red = adjustedEntries[index].peRed + brightnessDelta;
@@ -1467,11 +2039,17 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ApplyBrightnessToPaletteEntries(PALETTEENTRY
         }
     }
 
-    return g_zVideo_pfnPaletteSetEntries(0, 256, adjustedEntries);
+    return g_zVideo_pfnPaletteSetEntries(
+        0,
+        256,
+        adjustedEntries
+    );
 }
 
 // Reimplements 0x4a7990: zVideo::Init_SetSurfaceGeometryFromModeIndex
-RECOIL_NOINLINE void RECOIL_FASTCALL Init_SetSurfaceGeometryFromModeIndex(int modeIndex) {
+RECOIL_NOINLINE void RECOIL_FASTCALL Init_SetSurfaceGeometryFromModeIndex(
+    int modeIndex
+) {
     switch (modeIndex) {
     case 2:
         g_zVideo_UseHalfResBackbuffer = 1;
@@ -1536,13 +2114,17 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Init_SetSurfaceGeometryFromModeIndex(int mo
 }
 
 // Reimplements 0x4a66f0: zVideo::Init_ApplyModeIndex
-RECOIL_NOINLINE int RECOIL_FASTCALL Init_ApplyModeIndex(int modeIndex) {
+RECOIL_NOINLINE int RECOIL_FASTCALL Init_ApplyModeIndex(
+    int modeIndex
+) {
     Init_SetSurfaceGeometryFromModeIndex(modeIndex);
     return g_zVideo_pfnSetVideoMode(modeIndex);
 }
 
 // Reimplements 0x4a7af0: zVideo::SetVideoMode
-RECOIL_NOINLINE int RECOIL_FASTCALL SetVideoMode(int modeIndex) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SetVideoMode(
+    int modeIndex
+) {
     if (g_zVideo_IsInitialized == 0) {
         return 0x5a560000;
     }
@@ -1552,18 +2134,30 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetVideoMode(int modeIndex) {
 }
 
 // Reimplements 0x4a6760: zVideo::CallClearSwSurfaceAndZBuffer
-RECOIL_NOINLINE void RECOIL_FASTCALL CallClearSwSurfaceAndZBuffer(zVidRect32 *surfaceRect,
-                                                                  zVidRect32 *zRect) {
-    g_zVideo_pfnClearSwSurfaceAndZBuffer(surfaceRect, zRect);
+RECOIL_NOINLINE void RECOIL_FASTCALL CallClearSwSurfaceAndZBuffer(
+    zVidRect32 *surfaceRect,
+    zVidRect32 *zRect
+) {
+    g_zVideo_pfnClearSwSurfaceAndZBuffer(
+        surfaceRect,
+        zRect
+    );
 }
 
 // Reimplements 0x4a6830: zVideo::CallClearPrimarySurfaceAndZBuffer
-RECOIL_NOINLINE void RECOIL_FASTCALL CallClearPrimarySurfaceAndZBuffer(zVidRect32 *rect) {
-    g_zVideo_pfnClearStateSurfaceAndZBuffer(rect, &g_zVideo_PrimarySurfaceState);
+RECOIL_NOINLINE void RECOIL_FASTCALL CallClearPrimarySurfaceAndZBuffer(
+    zVidRect32 *rect
+) {
+    g_zVideo_pfnClearStateSurfaceAndZBuffer(
+        rect,
+        &g_zVideo_PrimarySurfaceState
+    );
 }
 
 // Reimplements 0x4a7b20: zVideo::ExchangeClearScreenBufferEnabled
-RECOIL_NOINLINE int RECOIL_FASTCALL ExchangeClearScreenBufferEnabled(int enable) {
+RECOIL_NOINLINE int RECOIL_FASTCALL ExchangeClearScreenBufferEnabled(
+    int enable
+) {
     const int previous = g_zVideo_ClearScreenBufferEnabled;
     g_zVideo_ClearScreenBufferEnabled = enable;
     return previous;
@@ -1596,9 +2190,12 @@ RECOIL_NOINLINE int RECOIL_CDECL Dispatch_UnlockPrimarySurfaceState() {
 }
 
 // Reimplements 0x48d420: zVideo::Fx_SetSurfaceState
-RECOIL_NOINLINE void RECOIL_FASTCALL Fx_SetSurfaceState(void *pixels, int width,
-                                                        int height,
-                                                        int pitchBytes) {
+RECOIL_NOINLINE void RECOIL_FASTCALL Fx_SetSurfaceState(
+    void *pixels,
+    int width,
+    int height,
+    int pitchBytes
+) {
     g_zVideo_FxSurfaceWidth = width;
     g_zVideo_FxSurfaceHeight = height;
     g_zVideo_FxSurfacePitchBytes = pitchBytes;
@@ -1606,13 +2203,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Fx_SetSurfaceState(void *pixels, int width,
     g_zVideo_FxSurfacePitchPixels16 = pitchBytes / 2;
 }
 
-static unsigned short RECOIL_FASTCALL zVideoBlendBlurPixel3(unsigned short before,
-                                                           unsigned short center,
-                                                           unsigned short after,
-                                                           unsigned int rbMask,
-                                                           unsigned int greenMask) {
-    const unsigned int rb =
-        (before & rbMask) + ((center & rbMask) << 1) + (after & rbMask);
+static unsigned short RECOIL_FASTCALL zVideoBlendBlurPixel3(
+    unsigned short before,
+    unsigned short center,
+    unsigned short after,
+    unsigned int rbMask,
+    unsigned int greenMask
+) {
+    const unsigned int rb = (before & rbMask) + ((center & rbMask) << 1) + (after & rbMask);
     const unsigned int green =
         (before & greenMask) + ((center & greenMask) << 1) + (after & greenMask);
     return (unsigned short)(((rb >> 2) & rbMask) | ((green >> 2) & greenMask));
@@ -1620,8 +2218,10 @@ static unsigned short RECOIL_FASTCALL zVideoBlendBlurPixel3(unsigned short befor
 
 // Reimplements 0x48e380: zVideo::buff_BlurRegionCombined
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionCombined(zVidRect32 *rectOrNull,
-                                                             int) {
+RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionCombined(
+    zVidRect32 *rectOrNull,
+    int
+) {
     int left;
     int top;
     int right;
@@ -1654,14 +2254,18 @@ RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionCombined(zVidRect32 *rectOrN
     unsigned int redMask;
     unsigned int greenMask;
     unsigned int blueMask;
-    PixelPack_GetRgbMasks(&redMask, &greenMask, &blueMask);
+    PixelPack_GetRgbMasks(
+        &redMask,
+        &greenMask,
+        &blueMask
+    );
     const unsigned int rbMask = redMask | blueMask;
 
     if (columnCount > 0) {
-        unsigned short *src = g_zVideo_FxSurfacePixels16 +
-                              (top - 1) * g_zVideo_FxSurfacePitchPixels16 + left;
-        unsigned short *dst = g_zVideo_FxPass3_ScratchPixels16 +
-                              (top - 1) * g_zVideo_FxSurfaceWidth + left;
+        unsigned short *src =
+            g_zVideo_FxSurfacePixels16 + (top - 1) * g_zVideo_FxSurfacePitchPixels16 + left;
+        unsigned short *dst =
+            g_zVideo_FxPass3_ScratchPixels16 + (top - 1) * g_zVideo_FxSurfaceWidth + left;
         int count = columnCount;
         while (count != 0) {
             *dst++ = *src++;
@@ -1671,24 +2275,26 @@ RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionCombined(zVidRect32 *rectOrN
 
     int y;
     for (y = top; y < bottom; ++y) {
-        unsigned short *dst = g_zVideo_FxPass3_ScratchPixels16 +
-                              y * g_zVideo_FxSurfaceWidth + left;
-        unsigned short *src = g_zVideo_FxSurfacePixels16 +
-                              y * g_zVideo_FxSurfacePitchPixels16 + left;
+        unsigned short *dst = g_zVideo_FxPass3_ScratchPixels16 + y * g_zVideo_FxSurfaceWidth + left;
+        unsigned short *src =
+            g_zVideo_FxSurfacePixels16 + y * g_zVideo_FxSurfacePitchPixels16 + left;
         int x;
         for (x = 0; x < columnCount; ++x) {
-            dst[x] = zVideoBlendBlurPixel3(src[x - g_zVideo_FxSurfacePitchPixels16],
-                                           src[x],
-                                           src[x + g_zVideo_FxSurfacePitchPixels16],
-                                           rbMask, greenMask);
+            dst[x] = zVideoBlendBlurPixel3(
+                src[x - g_zVideo_FxSurfacePitchPixels16],
+                src[x],
+                src[x + g_zVideo_FxSurfacePitchPixels16],
+                rbMask,
+                greenMask
+            );
         }
     }
 
     if (columnCount > 0) {
-        unsigned short *src = g_zVideo_FxSurfacePixels16 +
-                              bottom * g_zVideo_FxSurfacePitchPixels16 + left;
-        unsigned short *dst = g_zVideo_FxPass3_ScratchPixels16 +
-                              bottom * g_zVideo_FxSurfaceWidth + left;
+        unsigned short *src =
+            g_zVideo_FxSurfacePixels16 + bottom * g_zVideo_FxSurfacePitchPixels16 + left;
+        unsigned short *dst =
+            g_zVideo_FxPass3_ScratchPixels16 + bottom * g_zVideo_FxSurfaceWidth + left;
         int count = columnCount;
         while (count != 0) {
             *dst++ = *src++;
@@ -1697,17 +2303,21 @@ RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionCombined(zVidRect32 *rectOrN
     }
 
     for (y = top - 1; y <= bottom; ++y) {
-        unsigned short *src = g_zVideo_FxPass3_ScratchPixels16 +
-                              y * g_zVideo_FxSurfaceWidth + left;
-        unsigned short *dst = g_zVideo_FxSurfacePixels16 +
-                              y * g_zVideo_FxSurfacePitchPixels16 + left;
+        unsigned short *src = g_zVideo_FxPass3_ScratchPixels16 + y * g_zVideo_FxSurfaceWidth + left;
+        unsigned short *dst =
+            g_zVideo_FxSurfacePixels16 + y * g_zVideo_FxSurfacePitchPixels16 + left;
         if (columnCount > 0) {
             dst[0] = src[0];
         }
         int x;
         for (x = 1; x < columnCount - 1; ++x) {
-            dst[x] = zVideoBlendBlurPixel3(src[x - 1], src[x], src[x + 1],
-                                           rbMask, greenMask);
+            dst[x] = zVideoBlendBlurPixel3(
+                src[x - 1],
+                src[x],
+                src[x + 1],
+                rbMask,
+                greenMask
+            );
         }
         if (columnCount > 1) {
             dst[columnCount - 1] = src[columnCount - 1];
@@ -1717,8 +2327,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionCombined(zVidRect32 *rectOrN
 
 // Reimplements 0x48e670: zVideo::buff_BlurRegionVertical
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionVertical(zVidRect32 *rectOrNull,
-                                                             int) {
+RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionVertical(
+    zVidRect32 *rectOrNull,
+    int
+) {
     int left;
     int top;
     int right;
@@ -1751,29 +2363,34 @@ RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionVertical(zVidRect32 *rectOrN
     unsigned int redMask;
     unsigned int greenMask;
     unsigned int blueMask;
-    PixelPack_GetRgbMasks(&redMask, &greenMask, &blueMask);
+    PixelPack_GetRgbMasks(
+        &redMask,
+        &greenMask,
+        &blueMask
+    );
     const unsigned int rbMask = redMask | blueMask;
 
     int y;
     for (y = top; y < bottom; ++y) {
-        unsigned short *dst = g_zVideo_FxPass3_ScratchPixels16 +
-                              y * g_zVideo_FxSurfaceWidth + left;
-        unsigned short *src = g_zVideo_FxSurfacePixels16 +
-                              y * g_zVideo_FxSurfacePitchPixels16 + left;
+        unsigned short *dst = g_zVideo_FxPass3_ScratchPixels16 + y * g_zVideo_FxSurfaceWidth + left;
+        unsigned short *src =
+            g_zVideo_FxSurfacePixels16 + y * g_zVideo_FxSurfacePitchPixels16 + left;
         int x;
         for (x = 0; x < columnCount; ++x) {
-            dst[x] = zVideoBlendBlurPixel3(src[x - g_zVideo_FxSurfacePitchPixels16],
-                                           src[x],
-                                           src[x + g_zVideo_FxSurfacePitchPixels16],
-                                           rbMask, greenMask);
+            dst[x] = zVideoBlendBlurPixel3(
+                src[x - g_zVideo_FxSurfacePitchPixels16],
+                src[x],
+                src[x + g_zVideo_FxSurfacePitchPixels16],
+                rbMask,
+                greenMask
+            );
         }
     }
 
     for (y = top; y < bottom; ++y) {
-        unsigned short *src = g_zVideo_FxPass3_ScratchPixels16 +
-                              y * g_zVideo_FxSurfaceWidth + left;
-        unsigned short *dst = g_zVideo_FxSurfacePixels16 +
-                              y * g_zVideo_FxSurfacePitchPixels16 + left;
+        unsigned short *src = g_zVideo_FxPass3_ScratchPixels16 + y * g_zVideo_FxSurfaceWidth + left;
+        unsigned short *dst =
+            g_zVideo_FxSurfacePixels16 + y * g_zVideo_FxSurfacePitchPixels16 + left;
         int x;
         for (x = 0; x < columnCount; ++x) {
             dst[x] = src[x];
@@ -1783,8 +2400,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionVertical(zVidRect32 *rectOrN
 
 // Reimplements 0x48e870: zVideo::buff_BlurRegionHorizontal
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionHorizontal(zVidRect32 *rectOrNull,
-                                                               int) {
+RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionHorizontal(
+    zVidRect32 *rectOrNull,
+    int
+) {
     int left;
     int top;
     int right;
@@ -1817,19 +2436,28 @@ RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionHorizontal(zVidRect32 *rectO
     unsigned int redMask;
     unsigned int greenMask;
     unsigned int blueMask;
-    PixelPack_GetRgbMasks(&redMask, &greenMask, &blueMask);
+    PixelPack_GetRgbMasks(
+        &redMask,
+        &greenMask,
+        &blueMask
+    );
     const unsigned int rbMask = redMask | blueMask;
 
     int y;
     for (y = top; y <= bottom; ++y) {
-        unsigned short *src = g_zVideo_FxSurfacePixels16 +
-                              y * g_zVideo_FxSurfacePitchPixels16 + left;
-        unsigned short *scratch = g_zVideo_FxPass3_ScratchPixels16 +
-                                  y * g_zVideo_FxSurfaceWidth + left;
+        unsigned short *src =
+            g_zVideo_FxSurfacePixels16 + y * g_zVideo_FxSurfacePitchPixels16 + left;
+        unsigned short *scratch =
+            g_zVideo_FxPass3_ScratchPixels16 + y * g_zVideo_FxSurfaceWidth + left;
         int x;
         for (x = 0; x < columnCount; ++x) {
-            scratch[x] = zVideoBlendBlurPixel3(src[x - 1], src[x], src[x + 1],
-                                               rbMask, greenMask);
+            scratch[x] = zVideoBlendBlurPixel3(
+                src[x - 1],
+                src[x],
+                src[x + 1],
+                rbMask,
+                greenMask
+            );
         }
         for (x = 0; x < columnCount; ++x) {
             src[x] = scratch[x];
@@ -1839,14 +2467,25 @@ RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionHorizontal(zVidRect32 *rectO
 
 // Reimplements 0x48ea00: zVideo::buff_BlurRegionByMode
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionByMode(zVidRect32 *rectOrNull,
-                                                           int mode) {
+RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionByMode(
+    zVidRect32 *rectOrNull,
+    int mode
+) {
     if (mode == 1) {
-        buff_BlurRegionHorizontal(rectOrNull, mode);
+        buff_BlurRegionHorizontal(
+            rectOrNull,
+            mode
+        );
     } else if (mode == 2) {
-        buff_BlurRegionVertical(rectOrNull, mode);
+        buff_BlurRegionVertical(
+            rectOrNull,
+            mode
+        );
     } else {
-        buff_BlurRegionCombined(rectOrNull, mode);
+        buff_BlurRegionCombined(
+            rectOrNull,
+            mode
+        );
     }
 }
 
@@ -1854,7 +2493,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionByMode(zVidRect32 *rectOrNul
 
 // Reimplements 0x4bee20: zVideoFxPass3Config::QueuePrimitiveRaw
 RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Config::QueuePrimitiveRaw(
-    void *primitive, int width, int height, int pitchBytes) {
+    void *primitive,
+    int width,
+    int height,
+    int pitchBytes
+) {
     surfacePixels = (unsigned short *)(primitive);
     surfaceWidth = width;
     surfaceHeight = height;
@@ -1865,15 +2508,20 @@ namespace zVideo {
 
 // Reimplements 0x4bed30: zVideoFxPass3Config::UpdateLocal
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_UpdateLocal(zVideoFxPass3Config *config,
-                                                               float deltaTime) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_UpdateLocal(
+    zVideoFxPass3Config *config,
+    float deltaTime
+) {
     ((HudUiContainer *)(config))->UpdateAll(deltaTime);
     config->slotWriteIndex = 0;
 }
 
 // Reimplements 0x4bed50: zVideoFxPass3Config::SetPrimaryElementParamsLocal
 RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_SetPrimaryElementParamsLocal(
-    zVideoFxPass3Config *config, unsigned int packedColor, double primaryAlpha) {
+    zVideoFxPass3Config *config,
+    unsigned int packedColor,
+    double primaryAlpha
+) {
     config->rootElement.packedColor16 = (unsigned short)(packedColor);
     config->rootElement.alpha = primaryAlpha;
     if (config->rootElement.base.ftable != 0) {
@@ -1884,25 +2532,43 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_SetPrimaryElementParams
 }
 
 // Reimplements 0x4beee0: zVideo::FxPass3_SetPrimaryElementParamsLocal
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_SetPrimaryElementParamsLocal(unsigned int packedColor,
-                                                                          double primaryAlpha) {
-    zVideoFxPass3Config_SetPrimaryElementParamsLocal(&g_zVideo_FxPass3ConfigLocal, packedColor,
-                                               primaryAlpha);
+RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_SetPrimaryElementParamsLocal(
+    unsigned int packedColor,
+    double primaryAlpha
+) {
+    zVideoFxPass3Config_SetPrimaryElementParamsLocal(
+        &g_zVideo_FxPass3ConfigLocal,
+        packedColor,
+        primaryAlpha
+    );
 }
 
 // Reimplements 0x4bed90: zVideoFxPass3Config::QueueElementLocal
 RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_QueueElementLocal(
-    zVideoFxPass3Config *config, int rectLeftPixels, int rectTopPixels,
-    int currentRadiusPixels, int maxRadiusPixels, int extentPixels,
-    float sinFreq, float sinPhase) {
+    zVideoFxPass3Config *config,
+    int rectLeftPixels,
+    int rectTopPixels,
+    int currentRadiusPixels,
+    int maxRadiusPixels,
+    int extentPixels,
+    float sinFreq,
+    float sinPhase
+) {
     const int slotIndex = config->slotWriteIndex;
     zVideoFxPass3Slot *const slot = &config->slots[slotIndex];
     if (slotIndex < 4) {
         config->slotWriteIndex = slotIndex + 1;
     }
 
-    slot->SetRectAndPayload(rectLeftPixels, rectTopPixels, currentRadiusPixels, maxRadiusPixels,
-                            extentPixels, sinFreq, sinPhase);
+    slot->SetRectAndPayload(
+        rectLeftPixels,
+        rectTopPixels,
+        currentRadiusPixels,
+        maxRadiusPixels,
+        extentPixels,
+        sinFreq,
+        sinPhase
+    );
     if (slot->base.ftable != 0) {
         slot->base.SetVisible(1);
     }
@@ -1912,43 +2578,86 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_QueueElementLocal(
 
 // Reimplements 0x4bef10: zVideo::FxPass3_QueueElementLocal
 RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_QueueElementLocal(
-    int rectLeftPixels, int rectTopPixels, int currentRadiusPixels,
-    int maxRadiusPixels, int extentPixels, float sinFreq, float sinPhase) {
-    zVideoFxPass3Config_QueueElementLocal(&g_zVideo_FxPass3ConfigLocal, rectLeftPixels, rectTopPixels,
-                                    currentRadiusPixels, maxRadiusPixels, extentPixels, sinFreq,
-                                    sinPhase);
+    int rectLeftPixels,
+    int rectTopPixels,
+    int currentRadiusPixels,
+    int maxRadiusPixels,
+    int extentPixels,
+    float sinFreq,
+    float sinPhase
+) {
+    zVideoFxPass3Config_QueueElementLocal(
+        &g_zVideo_FxPass3ConfigLocal,
+        rectLeftPixels,
+        rectTopPixels,
+        currentRadiusPixels,
+        maxRadiusPixels,
+        extentPixels,
+        sinFreq,
+        sinPhase
+    );
 }
 
 // Reimplements 0x4bef50: zVideo::FxPass3_QueuePrimitive
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_QueuePrimitive(void *primitive, int width,
-                                                            int height,
-                                                            int pitchBytes) {
-    g_zVideo_FxPass3ConfigLocal.QueuePrimitiveRaw(primitive, width, height, pitchBytes);
+RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_QueuePrimitive(
+    void *primitive,
+    int width,
+    int height,
+    int pitchBytes
+) {
+    g_zVideo_FxPass3ConfigLocal.QueuePrimitiveRaw(
+        primitive,
+        width,
+        height,
+        pitchBytes
+    );
 }
 
 // Reimplements 0x4bef40: zVideo::FxPass3_SetInputRectByIndex
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_SetInputRectByIndex(int index,
-                                                                 HudUiRect *rectOrNull) {
-    g_zVideo_FxPass3ConfigLocal.SetInputRectByIndex(index, rectOrNull);
+RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_SetInputRectByIndex(
+    int index,
+    HudUiRect *rectOrNull
+) {
+    g_zVideo_FxPass3ConfigLocal.SetInputRectByIndex(
+        index,
+        rectOrNull
+    );
 }
 
 // Reimplements 0x4bef70: zVideo::FxPass3_UpdateLocal
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_UpdateLocal(float deltaTime) {
-    zVideoFxPass3Config_UpdateLocal(&g_zVideo_FxPass3ConfigLocal, deltaTime);
+RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_UpdateLocal(
+    float deltaTime
+) {
+    zVideoFxPass3Config_UpdateLocal(
+        &g_zVideo_FxPass3ConfigLocal,
+        deltaTime
+    );
 }
 
 // Reimplements 0x4a6770: zVideo::RunPostprocessOnSwBuffer
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 RECOIL_NOINLINE void RECOIL_CDECL RunPostprocessOnSwBuffer() {
     g_zVideo_pfnLockSurfaceState(&g_zVideo_SwSurfaceState);
-    zRndr::SetFrameBufferRegion(g_zVideo_SwSurfaceState.pixels, 0, 0,
-                                g_zVideo_SwSurfaceState.pitch);
-    Fx_SetSurfaceState(g_zVideo_SwSurfaceState.pixels, g_zVideo_SwSurfaceState.width,
-                       g_zVideo_SwSurfaceState.height, g_zVideo_SwSurfaceState.pitch);
-    FxPass3_QueuePrimitive(g_zVideo_SwSurfaceState.pixels, g_zVideo_SwSurfaceState.width,
-                           g_zVideo_SwSurfaceState.height, g_zVideo_SwSurfaceState.pitch);
+    zRndr::SetFrameBufferRegion(
+        g_zVideo_SwSurfaceState.pixels,
+        0,
+        0,
+        g_zVideo_SwSurfaceState.pitch
+    );
+    Fx_SetSurfaceState(
+        g_zVideo_SwSurfaceState.pixels,
+        g_zVideo_SwSurfaceState.width,
+        g_zVideo_SwSurfaceState.height,
+        g_zVideo_SwSurfaceState.pitch
+    );
+    FxPass3_QueuePrimitive(
+        g_zVideo_SwSurfaceState.pixels,
+        g_zVideo_SwSurfaceState.width,
+        g_zVideo_SwSurfaceState.height,
+        g_zVideo_SwSurfaceState.pitch
+    );
 }
 
 // Reimplements 0x4a6840: zVideo::RunPostprocessOnPrimaryBuffer
@@ -1957,12 +2666,24 @@ RECOIL_NOINLINE int RECOIL_CDECL RunPostprocessOnPrimaryBuffer() {
         g_zVideo_pfnLockSurfaceState(&g_zVideo_PrimarySurfaceState);
     }
 
-    zRndr::SetFrameBufferRegion(g_zVideo_PrimarySurfaceState.pixels, 0, 0,
-                                g_zVideo_PrimarySurfaceState.pitch);
-    Fx_SetSurfaceState(g_zVideo_PrimarySurfaceState.pixels, g_zVideo_PrimarySurfaceState.width,
-                       g_zVideo_PrimarySurfaceState.height, g_zVideo_PrimarySurfaceState.pitch);
-    FxPass3_QueuePrimitive(g_zVideo_PrimarySurfaceState.pixels, g_zVideo_PrimarySurfaceState.width,
-                           g_zVideo_PrimarySurfaceState.height, g_zVideo_PrimarySurfaceState.pitch);
+    zRndr::SetFrameBufferRegion(
+        g_zVideo_PrimarySurfaceState.pixels,
+        0,
+        0,
+        g_zVideo_PrimarySurfaceState.pitch
+    );
+    Fx_SetSurfaceState(
+        g_zVideo_PrimarySurfaceState.pixels,
+        g_zVideo_PrimarySurfaceState.width,
+        g_zVideo_PrimarySurfaceState.height,
+        g_zVideo_PrimarySurfaceState.pitch
+    );
+    FxPass3_QueuePrimitive(
+        g_zVideo_PrimarySurfaceState.pixels,
+        g_zVideo_PrimarySurfaceState.width,
+        g_zVideo_PrimarySurfaceState.height,
+        g_zVideo_PrimarySurfaceState.pitch
+    );
 
     if (g_zVideo_UseHalfResBackbuffer != 0) {
         g_zVideo_pfnUnlockSurfaceState(&g_zVideo_PrimarySurfaceState);
@@ -1972,13 +2693,20 @@ RECOIL_NOINLINE int RECOIL_CDECL RunPostprocessOnPrimaryBuffer() {
 }
 
 // Reimplements 0x4a6900: zVideo::AdjustSurfacesIfEnabled
-RECOIL_NOINLINE int RECOIL_FASTCALL
-AdjustSurfacesIfEnabled(zVidRect32 *srcRect, zVidRect32 *dstRect, int waitForPresent,
-                        int blitPrimaryToSwFirst) {
+RECOIL_NOINLINE int RECOIL_FASTCALL AdjustSurfacesIfEnabled(
+    zVidRect32 *srcRect,
+    zVidRect32 *dstRect,
+    int waitForPresent,
+    int blitPrimaryToSwFirst
+) {
     int result = g_zVideo_AdjustSurfacesDisableGate;
     if (result <= 0) {
-        result = g_zVideo_pfnAdjustSurfaces(srcRect, dstRect, waitForPresent,
-                                            blitPrimaryToSwFirst);
+        result = g_zVideo_pfnAdjustSurfaces(
+            srcRect,
+            dstRect,
+            waitForPresent,
+            blitPrimaryToSwFirst
+        );
         ++g_zVideo_FrameTick;
     }
 
@@ -1986,8 +2714,10 @@ AdjustSurfacesIfEnabled(zVidRect32 *srcRect, zVidRect32 *dstRect, int waitForPre
 }
 
 // Reimplements 0x4a77a0: zVideo::BindRendererDispatch
-RECOIL_NOINLINE void RECOIL_FASTCALL BindRendererDispatch(int rendererType,
-                                                          int fullscreenOption) {
+RECOIL_NOINLINE void RECOIL_FASTCALL BindRendererDispatch(
+    int rendererType,
+    int fullscreenOption
+) {
     SetRendererTypeAndActivePath(rendererType);
     g_zVideo_FullscreenOption = fullscreenOption;
     g_zVideo_pfnOpenVideoMode = zVideo_dd::OpenVideoMode;
@@ -1998,10 +2728,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindRendererDispatch(int rendererType,
     g_zVideo_pfnLockSurfaceState = zVideo_dd::LockSurfaceState;
     g_zVideo_pfnUnlockSurfaceState = zVideo_dd::UnlockSurfaceState;
     g_zVideo_pfnClearZBufferRect = zVideo_dd::ZBuffer_DepthFillRect;
-    g_zVideo_pfnClearSwSurfaceAndZBuffer =
-        (zVideo_ClearSwSurfaceAndZBufferProc)(0x004a82f0);
-    g_zVideo_pfnClearStateSurfaceAndZBuffer =
-        (zVideo_ClearStateSurfaceAndZBufferProc)(0x004a8220);
+    g_zVideo_pfnClearSwSurfaceAndZBuffer = (zVideo_ClearSwSurfaceAndZBufferProc)(0x004a82f0);
+    g_zVideo_pfnClearStateSurfaceAndZBuffer = (zVideo_ClearStateSurfaceAndZBufferProc)(0x004a8220);
     g_zVideo_pfnUpdateFogColor = (zVideo_UpdateFogColorProc)(0x004aab30);
     g_zVideo_pfnQueryTextureMemoryBytes = zVid::QueryTextureMemoryBytes;
     g_zVideo_pfnQueryDeviceVideoMemoryBytes = zVid::QueryDeviceVideoMemoryBytes;
@@ -2042,21 +2770,31 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindRendererDispatch(int rendererType,
 }
 
 // Reimplements 0x4a8870: zVideo::CommitHwApiDeviceSelection
-RECOIL_NOINLINE void RECOIL_FASTCALL CommitHwApiDeviceSelection(int hwApiIndex) {
-    BindRendererDispatch(1, 1);
+RECOIL_NOINLINE void RECOIL_FASTCALL CommitHwApiDeviceSelection(
+    int hwApiIndex
+) {
+    BindRendererDispatch(
+        1,
+        1
+    );
     zVidHwApiDeviceRecordPartial &selected = g_zVideo_HwApiDeviceTable[hwApiIndex];
     g_zVideo_pSelectedHwApiDeviceRecord = &selected;
     g_zVideo_pSelectedD3DDeviceInfo = selected.m_d3dDrivers;
 }
 
 // Reimplements 0x4a7490: zVideo::SelectHwApiDeviceOrFallback
-RECOIL_NOINLINE int RECOIL_FASTCALL SelectHwApiDeviceOrFallback(int hwApiIndex) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SelectHwApiDeviceOrFallback(
+    int hwApiIndex
+) {
     if (hwApiIndex != -1) {
         CommitHwApiDeviceSelection(hwApiIndex);
         return 1;
     }
 
-    BindRendererDispatch(0, 1);
+    BindRendererDispatch(
+        0,
+        1
+    );
     g_zVideo_pSelectedHwApiDeviceRecord = &g_zVideo_HwApiDeviceTable[0];
     g_zVideo_pSelectedD3DDeviceInfo = 0;
     return 0;
@@ -2081,31 +2819,59 @@ RECOIL_NOINLINE int RECOIL_CDECL ModuleInit() {
     g_zVideo_InverseZTolerancePending = 0.0199999996f;
     g_zVideo_D3DAppendFanCloseVertexPending = 0;
 
-    PixelPack_SetupFromMasks(0, 0, 0, 0, 0, 0);
-    TexturePixelPack_SetupFromMasks(4, 4, 4, 4, 0xf000, 0x0f00, 0x00f0, 0x000f);
-    BindRendererDispatch(0, 1);
+    PixelPack_SetupFromMasks(
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    );
+    TexturePixelPack_SetupFromMasks(
+        4,
+        4,
+        4,
+        4,
+        0xf000,
+        0x0f00,
+        0x00f0,
+        0x000f
+    );
+    BindRendererDispatch(
+        0,
+        1
+    );
     zVideo_dd::StartupEnumerateAndDefaultSelect();
     atexit(AtExitReleaseAllInterfacesAndSurfaces);
     return 0;
 }
 
 // Reimplements 0x4a75f0: zVideo::InitVideoSystem
-RECOIL_NOINLINE int RECOIL_FASTCALL InitVideoSystem(HWND hWnd,
-                                                             int rendererBackend,
-                                                             int fullscreen,
-                                                             int modeIndex) {
+RECOIL_NOINLINE int RECOIL_FASTCALL InitVideoSystem(
+    HWND hWnd,
+    int rendererBackend,
+    int fullscreen,
+    int modeIndex
+) {
     if (g_zVideo_IsInitialized != 0) {
         return 0x5a560001;
     }
 
     g_zVideo_hWnd = hWnd;
     g_zVideo_FrameTick = 0;
-    BindRendererDispatch(rendererBackend, fullscreen);
+    BindRendererDispatch(
+        rendererBackend,
+        fullscreen
+    );
 
     const int openResult = g_zVideo_pfnOpenVideoMode(modeIndex);
     if (openResult != 0) {
-        zError::ReportOld(0x800, "D:\\Proj\\GameZRecoil\\zVideo\\zvid_init.c", 0x7a,
-                          "Failed to open video mode");
+        zError::ReportOld(
+            0x800,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_init.c",
+            0x7a,
+            "Failed to open video mode"
+        );
         return openResult;
     }
 
@@ -2113,24 +2879,34 @@ RECOIL_NOINLINE int RECOIL_FASTCALL InitVideoSystem(HWND hWnd,
     g_zVideo_IsInitialized = 1;
     const int setModeResult = SetVideoMode(modeIndex);
     if (setModeResult != 0) {
-        zError::ReportOld(0x800, "D:\\Proj\\GameZRecoil\\zVideo\\zvid_init.c", 0x86,
-                          "Failed to set video mode");
+        zError::ReportOld(
+            0x800,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_init.c",
+            0x86,
+            "Failed to set video mode"
+        );
         ShutdownVideoSystem();
         return setModeResult;
     }
 
     if (g_zVideo_RendererType != 0) {
         g_zImage_DefaultTextureRecord =
-            g_zVideo_pfnCreateTextureRecord(0, &zVid_Image::g_zImage_DefaultImage, 0, 0, 0);
+            g_zVideo_pfnCreateTextureRecord(
+                0,
+                &zVid_Image::g_zImage_DefaultImage,
+                0,
+                0,
+                0
+            );
         g_zVideo_QuadBatchCount = 0;
         {
-        for (int itemIndex = 0; itemIndex < 16; ++itemIndex) {
-            zVideo_QuadBatchItemPartial &item = g_zVideo_QuadBatchItemsBase[itemIndex];
-            item.vertices[3].specular = 0xff000000;
-            item.vertices[2].specular = 0xff000000;
-            item.vertices[1].specular = 0xff000000;
-            item.vertices[0].specular = 0xff000000;
-        }
+            for (int itemIndex = 0; itemIndex < 16; ++itemIndex) {
+                zVideo_QuadBatchItemPartial &item = g_zVideo_QuadBatchItemsBase[itemIndex];
+                item.vertices[3].specular = 0xff000000;
+                item.vertices[2].specular = 0xff000000;
+                item.vertices[1].specular = 0xff000000;
+                item.vertices[0].specular = 0xff000000;
+            }
         }
     }
 
@@ -2152,10 +2928,18 @@ RECOIL_NOINLINE int RECOIL_CDECL ShutdownVideoSystem() {
 
 // Reimplements 0x4a7700: zVideo::UpdateCachedClientRectScreenCoords
 RECOIL_NOINLINE int RECOIL_CDECL UpdateCachedClientRectScreenCoords() {
-    GetClientRect(g_zVideo_hWnd, &g_zVideo_CachedClientRectScreen);
-    ClientToScreen(g_zVideo_hWnd, (POINT *)(&g_zVideo_CachedClientRectScreen.left));
-    ClientToScreen(g_zVideo_hWnd,
-                   (POINT *)(&g_zVideo_CachedClientRectScreen.right));
+    GetClientRect(
+        g_zVideo_hWnd,
+        &g_zVideo_CachedClientRectScreen
+    );
+    ClientToScreen(
+        g_zVideo_hWnd,
+        (POINT *)(&g_zVideo_CachedClientRectScreen.left)
+    );
+    ClientToScreen(
+        g_zVideo_hWnd,
+        (POINT *)(&g_zVideo_CachedClientRectScreen.right)
+    );
     return 0;
 }
 
@@ -2167,14 +2951,18 @@ RECOIL_NOINLINE void RECOIL_CDECL AtExitReleaseAllInterfacesAndSurfaces() {
 
 namespace zVideo {
 // Reimplements 0x4a7220: zVideo::SetFogColorFromRgb01
-RECOIL_NOINLINE void RECOIL_FASTCALL SetFogColorFromRgb01(zVideo_ColorRgbFloat *color) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetFogColorFromRgb01(
+    zVideo_ColorRgbFloat *color
+) {
     g_zVideo_FogColorPendingR255 = color->r * 255.0f;
     g_zVideo_FogColorPendingG255 = color->g * 255.0f;
     g_zVideo_FogColorPendingB255 = color->b * 255.0f;
 }
 
 // Reimplements 0x4a7300: zVideo::SetFogTargetColorFromRgb01
-RECOIL_NOINLINE void RECOIL_FASTCALL SetFogTargetColorFromRgb01(zVideo_ColorRgbFloat *color) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetFogTargetColorFromRgb01(
+    zVideo_ColorRgbFloat *color
+) {
     g_zVideo_FogTargetColorR255 = color->r * 255.0f;
     g_zVideo_FogTargetColorG255 = color->g * 255.0f;
     g_zVideo_FogTargetColorB255 = color->b * 255.0f;
@@ -2209,27 +2997,33 @@ RECOIL_NOINLINE void RECOIL_CDECL CommitFogTargetColorIfChanged() {
 }
 
 // Reimplements 0x4a6b90: zVideo::PixelPack_GetRgbBits
-RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_GetRgbBits(int *outRBits,
-                                                          int *outGBits,
-                                                          int *outBBits) {
+RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_GetRgbBits(
+    int *outRBits,
+    int *outGBits,
+    int *outBBits
+) {
     *outRBits = g_zVideo_PixelPack_RBits;
     *outGBits = g_zVideo_PixelPack_GBits;
     *outBBits = g_zVideo_PixelPack_BBits;
 }
 
 // Reimplements 0x4a6bb0: zVideo::PixelPack_GetRgbMasks
-RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_GetRgbMasks(unsigned int *outRMask,
-                                                           unsigned int *outGMask,
-                                                           unsigned int *outBMask) {
+RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_GetRgbMasks(
+    unsigned int *outRMask,
+    unsigned int *outGMask,
+    unsigned int *outBMask
+) {
     *outRMask = g_zVideo_PixelPack_RMask;
     *outGMask = g_zVideo_PixelPack_GMask;
     *outBMask = g_zVideo_PixelPack_BMask;
 }
 
 // Reimplements 0x4a6bd0: zVideo::PixelPack_GetPackingParams
-RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_GetPackingParams(int *outPackedBase,
-                                                                int *outSumMinus8,
-                                                                int *outBShiftTo8) {
+RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_GetPackingParams(
+    int *outPackedBase,
+    int *outSumMinus8,
+    int *outBShiftTo8
+) {
     *outPackedBase = g_zVideo_PixelPack_RShift;
     *outSumMinus8 = g_zVideo_PixelPack_GShift;
     *outBShiftTo8 = g_zVideo_PixelPack_BShiftTo8;
@@ -2243,14 +3037,13 @@ RECOIL_NOINLINE void RECOIL_CDECL Noise_InitBuffers() {
     const int height = zVideo::GetPrimarySurfaceHeight();
 
     g_zVid_NoiseByteTableSize = width * 0x19;
-    g_zVid_NoiseByteTable = (unsigned char *)(
-        malloc((size_t)(g_zVid_NoiseByteTableSize)));
+    g_zVid_NoiseByteTable = (unsigned char *)(malloc((size_t)(g_zVid_NoiseByteTableSize)));
     for (int i = 0; i < g_zVid_NoiseByteTableSize; ++i) {
         g_zVid_NoiseByteTable[i] = (unsigned char)(rand());
     }
 
-    g_zVideo_FxPass3_ScratchPixels16 = (unsigned short *)(
-        malloc((size_t)(height * width) * sizeof(unsigned short)));
+    g_zVideo_FxPass3_ScratchPixels16 =
+        (unsigned short *)(malloc((size_t)(height * width) * sizeof(unsigned short)));
     g_zVideo_FxSurfacePixels16 = 0;
     g_zVideo_FxSurfaceWidth = 0;
     g_zVideo_FxSurfaceHeight = 0;
@@ -2273,7 +3066,10 @@ RECOIL_NOINLINE void RECOIL_CDECL Noise_ShutdownBuffers() {
 }
 
 // Reimplements 0x48d910: zVid::DrawNoiseRect (GameZRecoil/zImage/zvid_buff.c)
-RECOIL_NOINLINE void RECOIL_FASTCALL DrawNoiseRect(zVidRect32 *rectOrNull, double intensity) {
+RECOIL_NOINLINE void RECOIL_FASTCALL DrawNoiseRect(
+    zVidRect32 *rectOrNull,
+    double intensity
+) {
     if (intensity < 0.00390625) {
         return;
     }
@@ -2294,7 +3090,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DrawNoiseRect(zVidRect32 *rectOrNull, doubl
     int rBits = 0;
     int gBits = 0;
     int bBits = 0;
-    zVideo::PixelPack_GetRgbBits(&rBits, &gBits, &bBits);
+    zVideo::PixelPack_GetRgbBits(
+        &rBits,
+        &gBits,
+        &bBits
+    );
 
     int gShift = bBits;
     const int rShift = bBits + gBits;
@@ -2304,8 +3104,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DrawNoiseRect(zVidRect32 *rectOrNull, doubl
 
     for (int y = yMin; y < yMax; ++y) {
         const int noiseRange = g_zVid_NoiseByteTableSize - rowWidth;
-        unsigned char *noiseBytes =
-            g_zVid_NoiseByteTable + (rand() * noiseRange) / 0x7fff;
+        unsigned char *noiseBytes = g_zVid_NoiseByteTable + (rand() * noiseRange) / 0x7fff;
         unsigned short *dstPixels =
             g_zVideo_FxSurfacePixels16 + y * g_zVideo_FxSurfacePitchPixels16 + xMin;
 
@@ -2313,8 +3112,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DrawNoiseRect(zVidRect32 *rectOrNull, doubl
             const unsigned char noiseValue = noiseBytes[x];
             if (noiseValue < threshold) {
                 const unsigned short level = (unsigned short)(noiseValue & 0x1f);
-                dstPixels[x] = (unsigned short)(
-                    (level << rShift) | (level << gShift) | level);
+                dstPixels[x] = (unsigned short)((level << rShift) | (level << gShift) | level);
             }
         }
     }
@@ -2335,13 +3133,20 @@ RECOIL_NOINLINE int RECOIL_CDECL ShutdownFrameScratchBuffers() {
 } // namespace zVid
 
 namespace zVideo_FxSurface {
-static int TruncateFloat(float value)
-{
+static int TruncateFloat(
+    float value
+) {
     return (int)(value);
 }
 
-static int FxLineOutCode(int x, int y, int left, int top, int right, int bottom)
-{
+static int FxLineOutCode(
+    int x,
+    int y,
+    int left,
+    int top,
+    int right,
+    int bottom
+) {
     int outCode = 0;
     if (x < left) {
         outCode |= 1;
@@ -2358,8 +3163,11 @@ static int FxLineOutCode(int x, int y, int left, int top, int right, int bottom)
     return outCode;
 }
 
-static unsigned short BlendFxSurfacePixel565(unsigned short dst, unsigned short color, int alpha)
-{
+static unsigned short BlendFxSurfacePixel565(
+    unsigned short dst,
+    unsigned short color,
+    int alpha
+) {
     const int dstValue = (int)(dst);
     const int colorValue = (int)(color);
     const int redDelta = (((colorValue & 0xf800) - (dstValue & 0xf800)) * alpha) >> 8;
@@ -2369,8 +3177,11 @@ static unsigned short BlendFxSurfacePixel565(unsigned short dst, unsigned short 
     return (unsigned short)(redApplied + (greenDelta & 0xffe0) + blueDelta);
 }
 
-static unsigned short BlendFxSurfacePixel555(unsigned short dst, unsigned short color, int alpha)
-{
+static unsigned short BlendFxSurfacePixel555(
+    unsigned short dst,
+    unsigned short color,
+    int alpha
+) {
     const int dstValue = (int)(dst);
     const int colorValue = (int)(color);
     const int redDelta = (((colorValue & 0x7c00) - (dstValue & 0x7c00)) * alpha) >> 8;
@@ -2379,8 +3190,11 @@ static unsigned short BlendFxSurfacePixel555(unsigned short dst, unsigned short 
     return (unsigned short)(dstValue + (redDelta & 0xfc00) + (greenDelta & 0xffe0) + blueDelta);
 }
 
-static void DrawFxSurfaceSpanPixel(unsigned short *pixel, unsigned short color, int alpha)
-{
+static void DrawFxSurfaceSpanPixel(
+    unsigned short *pixel,
+    unsigned short color,
+    int alpha
+) {
     if (zRndr::g_pixelPackGreenBits == 5) {
         if (alpha <= 7) {
             return;
@@ -2389,7 +3203,11 @@ static void DrawFxSurfaceSpanPixel(unsigned short *pixel, unsigned short color, 
             *pixel = color;
             return;
         }
-        *pixel = BlendFxSurfacePixel555(*pixel, color, alpha);
+        *pixel = BlendFxSurfacePixel555(
+            *pixel,
+            color,
+            alpha
+        );
         return;
     }
 
@@ -2400,26 +3218,170 @@ static void DrawFxSurfaceSpanPixel(unsigned short *pixel, unsigned short color, 
         *pixel = color;
         return;
     }
-    *pixel = BlendFxSurfacePixel565(*pixel, color, alpha);
+    *pixel = BlendFxSurfacePixel565(
+        *pixel,
+        color,
+        alpha
+    );
+}
+
+// Reimplements 0x48ea20: zVideo_FxSurface::ApplyBlueTintRect
+// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL ApplyBlueTintRect(
+    zVidRect32 *rectOrNull
+) {
+    zVidRect32 clipRect;
+    if (rectOrNull != 0) {
+        clipRect.left = rectOrNull->left;
+        clipRect.top = rectOrNull->top;
+        clipRect.right = rectOrNull->right;
+        clipRect.bottom = rectOrNull->bottom;
+    } else {
+        clipRect.left = 0;
+        clipRect.top = 0;
+        clipRect.right = g_zVideo_FxSurfaceWidth - 1;
+        clipRect.bottom = g_zVideo_FxSurfaceHeight - 1;
+    }
+
+    unsigned int redMask;
+    unsigned int greenMask;
+    unsigned int blueMask;
+    zVideo::PixelPack_GetRgbMasks(
+        &redMask,
+        &greenMask,
+        &blueMask
+    );
+
+    if (g_zVideo_ActiveRendererPath != 0) {
+        zVideo_dd3d::QueueSolidQuad(
+            blueMask,
+            &clipRect,
+            0.3
+        );
+        return;
+    }
+
+    const unsigned int pairedGreenMask = greenMask | (greenMask << 16);
+    const unsigned int pairedRedMask = redMask | (redMask << 16);
+    const unsigned int pairedBlueMask = blueMask | (blueMask << 16);
+    const unsigned int halvedRedGreenMask =
+        ((pairedGreenMask >> 1) & pairedGreenMask) | ((pairedRedMask >> 1) & pairedRedMask);
+
+    unsigned short *row =
+        g_zVideo_FxSurfacePixels16 + clipRect.top * g_zVideo_FxSurfacePitchPixels16 + clipRect.left;
+    const int rowPairCount = (clipRect.right - clipRect.left - 1) >> 1;
+    int y = clipRect.top;
+    if (y >= clipRect.bottom) {
+        return;
+    }
+
+    do {
+        unsigned int *pixelPair = (unsigned int *)(row);
+        int remainingPairs = rowPairCount;
+        do {
+            const unsigned int value = *pixelPair;
+            *pixelPair = (((value >> 1) & halvedRedGreenMask) | (value & pairedBlueMask));
+            ++pixelPair;
+        } while (remainingPairs-- != 0);
+
+        row += g_zVideo_FxSurfacePitchPixels16;
+        ++y;
+    } while (y < clipRect.bottom);
+}
+
+// Reimplements 0x48eb80: zVideo_FxSurface::ApplyGreenMaskRect
+// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
+RECOIL_NOINLINE void RECOIL_FASTCALL ApplyGreenMaskRect(
+    zVidRect32 *rectOrNull
+) {
+    zVidRect32 clipRect;
+    if (rectOrNull != 0) {
+        clipRect.left = rectOrNull->left;
+        clipRect.top = rectOrNull->top;
+        clipRect.right = rectOrNull->right;
+        clipRect.bottom = rectOrNull->bottom;
+    } else {
+        clipRect.left = 0;
+        clipRect.top = 0;
+        clipRect.right = g_zVideo_FxSurfaceWidth - 1;
+        clipRect.bottom = g_zVideo_FxSurfaceHeight - 1;
+    }
+
+    unsigned int redMask;
+    unsigned int greenMask;
+    unsigned int blueMask;
+    zVideo::PixelPack_GetRgbMasks(
+        &redMask,
+        &greenMask,
+        &blueMask
+    );
+
+    if (g_zVideo_ActiveRendererPath != 0) {
+        zVideo_dd3d::QueueSolidQuad(
+            greenMask,
+            &clipRect,
+            0.3
+        );
+        return;
+    }
+
+    const unsigned int pairedGreenMask = greenMask | (greenMask << 16);
+    unsigned short *row =
+        g_zVideo_FxSurfacePixels16 + clipRect.top * g_zVideo_FxSurfacePitchPixels16 + clipRect.left;
+    const int rowPairCount = (clipRect.right - clipRect.left - 1) >> 1;
+    int y = clipRect.top;
+    if (y >= clipRect.bottom) {
+        return;
+    }
+
+    do {
+        unsigned int *pixelPair = (unsigned int *)(row);
+        int remainingPairs = rowPairCount;
+        do {
+            *pixelPair &= pairedGreenMask;
+            ++pixelPair;
+        } while (remainingPairs-- != 0);
+
+        row += g_zVideo_FxSurfacePitchPixels16;
+        ++y;
+    } while (y < clipRect.bottom);
 }
 
 // Reimplements 0x48ed60: zVideo_FxSurface::DrawAlphaBlendedLine
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL DrawAlphaBlendedLine(zVidRect32 *clipRect, int x1,
-                                                          int y1, int x0, int y0,
-                                                          unsigned int color16,
-                                                          float alphaEnd,
-                                                          float alphaStart,
-                                                          int clipInset)
-{
+RECOIL_NOINLINE void RECOIL_FASTCALL DrawAlphaBlendedLine(
+    zVidRect32 *clipRect,
+    int x1,
+    int y1,
+    int x0,
+    int y0,
+    unsigned int color16,
+    float alphaEnd,
+    float alphaStart,
+    int clipInset
+) {
     int dx = x0 - x1;
     int dy = y0 - y1;
     const int left = clipRect->left + clipInset;
     const int top = clipRect->top + clipInset;
     const int right = clipRect->right - clipInset;
     const int bottom = clipRect->bottom - clipInset;
-    int startOutCode = FxLineOutCode(x1, y1, left, top, right, bottom);
-    int endOutCode = FxLineOutCode(x0, y0, left, top, right, bottom);
+    int startOutCode = FxLineOutCode(
+        x1,
+        y1,
+        left,
+        top,
+        right,
+        bottom
+    );
+    int endOutCode = FxLineOutCode(
+        x0,
+        y0,
+        left,
+        top,
+        right,
+        bottom
+    );
     if ((startOutCode & endOutCode) != 0) {
         return;
     }
@@ -2544,7 +3506,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DrawAlphaBlendedLine(zVidRect32 *clipRect, 
                 unsigned short *spanPixel = pixel;
                 int spanCount = clipInset;
                 while (spanCount != 0) {
-                    DrawFxSurfaceSpanPixel(spanPixel, packedColor, alpha);
+                    DrawFxSurfaceSpanPixel(
+                        spanPixel,
+                        packedColor,
+                        alpha
+                    );
                     spanPixel += yStepPitch;
                     --spanCount;
                 }
@@ -2573,7 +3539,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DrawAlphaBlendedLine(zVidRect32 *clipRect, 
                 unsigned short *spanPixel = pixel;
                 int spanCount = clipInset;
                 while (spanCount != 0) {
-                    DrawFxSurfaceSpanPixel(spanPixel, packedColor, alpha);
+                    DrawFxSurfaceSpanPixel(
+                        spanPixel,
+                        packedColor,
+                        alpha
+                    );
                     spanPixel += xStep;
                     --spanCount;
                 }
@@ -2593,10 +3563,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DrawAlphaBlendedLine(zVidRect32 *clipRect, 
 
 // Reimplements 0x48ec90: zVideo_FxSurface::DrawColoredLinesBatch
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL DrawColoredLinesBatch(zVideoFxColoredLineRecord *lines,
-                                                           int count,
-                                                           zVidRect32 *clipRectOrNull)
-{
+RECOIL_NOINLINE void RECOIL_FASTCALL DrawColoredLinesBatch(
+    zVideoFxColoredLineRecord *lines,
+    int count,
+    zVidRect32 *clipRectOrNull
+) {
     zVidRect32 clipRect;
     if (clipRectOrNull != 0) {
         clipRect.left = clipRectOrNull->left;
@@ -2625,9 +3596,17 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DrawColoredLinesBatch(zVideoFxColoredLineRe
 
     for (int index = 0; index < count; ++index) {
         zVideoFxColoredLineRecord *line = &lines[index];
-        DrawAlphaBlendedLine(&clipRect, line->x + line->width, line->y + line->height,
-                             line->x, line->y, line->color16, line->alphaEnd,
-                             line->alphaStart, line->clipInset);
+        DrawAlphaBlendedLine(
+            &clipRect,
+            line->x + line->width,
+            line->y + line->height,
+            line->x,
+            line->y,
+            line->color16,
+            line->alphaEnd,
+            line->alphaStart,
+            line->clipInset
+        );
     }
 }
 } // namespace zVideo_FxSurface
@@ -2637,20 +3616,24 @@ zVidImagePartial g_zImage_DefaultImage = {0};
 
 // Reimplements 0x46ec00: zVid_Image::Create
 RECOIL_NOINLINE zVidImagePartial *RECOIL_CDECL Create() {
-    zVidImagePartial *image =
-        (zVidImagePartial *)(malloc(sizeof(zVidImagePartial)));
+    zVidImagePartial *image = (zVidImagePartial *)(malloc(sizeof(zVidImagePartial)));
     if (image != 0) {
-        memset(image, 0, sizeof(zVidImagePartial));
+        memset(
+            image,
+            0,
+            sizeof(zVidImagePartial)
+        );
     }
     return image;
 }
 
 // Reimplements 0x46ecc0: zVid_Image::Destroy
-RECOIL_NOINLINE int RECOIL_FASTCALL Destroy(zVidImagePartial *image) {
+RECOIL_NOINLINE int RECOIL_FASTCALL Destroy(
+    zVidImagePartial *image
+) {
     if (image != 0) {
         if (image->surface != 0) {
-            ((zVideo_ImageProc)(g_zVideo_pfnImageEnsureSurfaceForCurrentDevice))(
-                image);
+            ((zVideo_ImageProc)(g_zVideo_pfnImageEnsureSurfaceForCurrentDevice))(image);
         }
 
         ReleaseOwnedBuffers(image);
@@ -2665,7 +3648,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Destroy(zVidImagePartial *image) {
 }
 
 // Reimplements 0x46d5a0: zVid_Image::ReleaseIfNotDefault
-RECOIL_NOINLINE int RECOIL_FASTCALL ReleaseIfNotDefault(zVidImagePartial *image) {
+RECOIL_NOINLINE int RECOIL_FASTCALL ReleaseIfNotDefault(
+    zVidImagePartial *image
+) {
     if (image != &g_zImage_DefaultImage) {
         Destroy(image);
     }
@@ -2674,23 +3659,41 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReleaseIfNotDefault(zVidImagePartial *image)
 }
 
 // Reimplements 0x48f500: zVid_Image::BlitToActiveTarget
-RECOIL_NOINLINE void RECOIL_FASTCALL BlitToActiveTarget(zVidImagePartial *image, int dstX,
-                                                        int dstY, int clipFlags,
-                                                        zVidRect32 *srcRect) {
+RECOIL_NOINLINE void RECOIL_FASTCALL BlitToActiveTarget(
+    zVidImagePartial *image,
+    int dstX,
+    int dstY,
+    int clipFlags,
+    zVidRect32 *srcRect
+) {
     if (image->surface != 0 && zRndr::g_frameBuffer == zVideo::GetPrimarySurfacePixels()) {
-        zVideo_buff::BltSourceToPrimaryClipped(image, dstX, dstY, clipFlags & 0xffff, srcRect);
+        zVideo_buff::BltSourceToPrimaryClipped(
+            image,
+            dstX,
+            dstY,
+            clipFlags & 0xffff,
+            srcRect
+        );
         return;
     }
 
-    g_zVideo_pfnBltSourceToPrimary(image, dstX, dstY, clipFlags, srcRect);
+    g_zVideo_pfnBltSourceToPrimary(
+        image,
+        dstX,
+        dstY,
+        clipFlags,
+        srcRect
+    );
 }
 
 // Reimplements 0x46ecf0: zVid_Image::ReleaseOwnedBuffers
-RECOIL_NOINLINE void RECOIL_FASTCALL ReleaseOwnedBuffers(zVidImagePartial *image) {
+RECOIL_NOINLINE void RECOIL_FASTCALL ReleaseOwnedBuffers(
+    zVidImagePartial *image
+) {
 #if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
-    void (__cdecl *freeProc)(void *) = __imp__free;
+    void(__cdecl * freeProc)(void *) = __imp__free;
 #else
-    void (__cdecl *freeProc)(void *) = free;
+    void(__cdecl * freeProc)(void *) = free;
 #endif
 
     if (image->pixels != 0 && (image->formatFlagsPacked & 0x20) != 0) {
@@ -2714,27 +3717,36 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ReleaseOwnedBuffers(zVidImagePartial *image
 }
 
 // Reimplements 0x46ec20: zVid_Image::QueryBytesPerPixel
-RECOIL_NOINLINE int RECOIL_FASTCALL QueryBytesPerPixel(zVidImagePartial *image) {
+RECOIL_NOINLINE int RECOIL_FASTCALL QueryBytesPerPixel(
+    zVidImagePartial *image
+) {
     return (image->formatFlagsPacked & 1) != 0 ? 2 : 1;
 }
 
 // Reimplements 0x46ec30: zVid_Image::SetHeaderFlagsByte
-RECOIL_NOINLINE int RECOIL_FASTCALL SetHeaderFlagsByte(zVidImagePartial *image,
-                                                                unsigned char flags) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SetHeaderFlagsByte(
+    zVidImagePartial *image,
+    unsigned char flags
+) {
     image->headerFlagsByte = flags;
     return 0;
 }
 
 // Reimplements 0x46ec60: zVid_Image::SetFormatCode
-RECOIL_NOINLINE int RECOIL_FASTCALL SetFormatCode(zVidImagePartial *image,
-                                                           unsigned char formatCode) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SetFormatCode(
+    zVidImagePartial *image,
+    unsigned char formatCode
+) {
     image->formatFlagsPacked = formatCode;
     return 0;
 }
 
 // Reimplements 0x46ec90: zVid_Image::SetSize
-RECOIL_NOINLINE int RECOIL_FASTCALL SetSize(zVidImagePartial *image, short width,
-                                                     short height) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SetSize(
+    zVidImagePartial *image,
+    short width,
+    short height
+) {
     image->width = width;
     image->height = height;
     image->pixelCount = (int)(width) * (int)(height);
@@ -2748,7 +3760,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetSize(zVidImagePartial *image, short width
 
 // Reimplements 0x4902b0: zVid_Image::CalcPow2ScratchFields
 // (GameZRecoil/zImage/zimg_texture.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL CalcPow2ScratchFields(zVidImagePartial *image) {
+RECOIL_NOINLINE void RECOIL_FASTCALL CalcPow2ScratchFields(
+    zVidImagePartial *image
+) {
     image->vPow2Shift = 0;
     image->uPow2Shift = 0;
 
@@ -2772,8 +3786,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL CalcPow2ScratchFields(zVidImagePartial *ima
 }
 
 // Reimplements 0x46ec70: zVid_Image_SetPixels
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zVid_Image_SetPixels(zVidImagePartial *image, void *pixels, char *alphaMap) {
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zVid_Image_SetPixels(
+    zVidImagePartial *image,
+    void *pixels,
+    char *alphaMap
+) {
     image->pixels = pixels;
     image->alphaMap = alphaMap;
     if (alphaMap != 0) {
@@ -2784,8 +3801,9 @@ zVid_Image_SetPixels(zVidImagePartial *image, void *pixels, char *alphaMap) {
 }
 
 // Reimplements 0x4a6e80: zVideo_buff_CaptureSurfaceToImage
-extern "C" RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL
-zVideo_buff_CaptureSurfaceToImage(int sourceSelector) {
+extern "C" RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL zVideo_buff_CaptureSurfaceToImage(
+    int sourceSelector
+) {
     zVideo::Dispatch_LockDisplayModeSurfaceState();
 
     zVideo_SurfaceStatePartial *surfaceState = 0;
@@ -2802,33 +3820,46 @@ zVideo_buff_CaptureSurfaceToImage(int sourceSelector) {
     const int width = surfaceState->width;
     const int height = surfaceState->height;
     const unsigned int pitchWords = (unsigned int)(surfaceState->pitch) >> 1;
-    unsigned char * srcPixels = (unsigned char *)(surfaceState->pixels);
+    unsigned char *srcPixels = (unsigned char *)(surfaceState->pixels);
 
     zVidImagePartial *image = zVid_Image::Create();
     if (image == 0) {
         return 0;
     }
 
-    zVid_Image::SetSize(image, (short)(width), (short)(height));
-    void *dstPixels =
-        malloc((size_t)(image->pixelCount) * sizeof(unsigned short));
+    zVid_Image::SetSize(
+        image,
+        (short)(width),
+        (short)(height)
+    );
+    void *dstPixels = malloc((size_t)(image->pixelCount) * sizeof(unsigned short));
     image->formatFlagsPacked |= 0x20u;
-    zVid_Image_SetPixels(image, dstPixels, 0);
+    zVid_Image_SetPixels(
+        image,
+        dstPixels,
+        0
+    );
 
-    unsigned char * dstBytes = (unsigned char *)(dstPixels);
+    unsigned char *dstBytes = (unsigned char *)(dstPixels);
     if (width == (int)(pitchWords)) {
-        memcpy(dstBytes, srcPixels,
-                    (size_t)(image->pixelCount) * sizeof(unsigned short));
+        memcpy(
+            dstBytes,
+            srcPixels,
+            (size_t)(image->pixelCount) * sizeof(unsigned short)
+        );
     } else if (height > 0) {
         const int rowBytes = width * sizeof(unsigned short);
-        const int pitchBytes =
-            (int)(pitchWords * sizeof(unsigned short));
+        const int pitchBytes = (int)(pitchWords * sizeof(unsigned short));
         {
-        for (int row = 0; row < height; ++row) {
-            memcpy(dstBytes, srcPixels, (size_t)(rowBytes));
-            dstBytes += rowBytes;
-            srcPixels += pitchBytes;
-        }
+            for (int row = 0; row < height; ++row) {
+                memcpy(
+                    dstBytes,
+                    srcPixels,
+                    (size_t)(rowBytes)
+                );
+                dstBytes += rowBytes;
+                srcPixels += pitchBytes;
+            }
         }
     }
 
@@ -2837,7 +3868,9 @@ zVideo_buff_CaptureSurfaceToImage(int sourceSelector) {
 }
 
 // Reimplements 0x46ec40: zVid_Image::QueryPixelDataBytes
-RECOIL_NOINLINE int RECOIL_FASTCALL QueryPixelDataBytes(zVidImagePartial *image) {
+RECOIL_NOINLINE int RECOIL_FASTCALL QueryPixelDataBytes(
+    zVidImagePartial *image
+) {
     if (image->paletteMetaPacked != 0) {
         return image->pixelCount;
     }
@@ -2846,7 +3879,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL QueryPixelDataBytes(zVidImagePartial *image)
 }
 
 // Reimplements 0x46d870: zVid_Image::ClearZeroAlphaPixelsInPlace
-RECOIL_NOINLINE void RECOIL_FASTCALL ClearZeroAlphaPixelsInPlace(zVidImagePartial *image) {
+RECOIL_NOINLINE void RECOIL_FASTCALL ClearZeroAlphaPixelsInPlace(
+    zVidImagePartial *image
+) {
     if (image->paletteMetaPacked != 0) {
         return;
     }
@@ -2903,42 +3938,74 @@ RECOIL_STATIC_ASSERT(sizeof(zVidImageFileHeader) == 0x10);
 } // namespace
 
 // Reimplements 0x46ed70: zVid_Image::ReadHeader
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadHeader(FILE *file, zVidImagePartial *image) {
+RECOIL_NOINLINE int RECOIL_FASTCALL ReadHeader(
+    FILE *file,
+    zVidImagePartial *image
+) {
     if (file == 0 || image == 0) {
         return -1;
     }
 
     zVidImageFileHeader header = {0};
-    fread(&header, 0x10, 1, file);
-    SetSize(image, header.width, header.height);
-    SetFormatCode(image, header.formatCode);
-    SetHeaderFlagsByte(image, header.headerFlags);
+    fread(
+        &header,
+        0x10,
+        1,
+        file
+    );
+    SetSize(
+        image,
+        header.width,
+        header.height
+    );
+    SetFormatCode(
+        image,
+        header.formatCode
+    );
+    SetHeaderFlagsByte(
+        image,
+        header.headerFlags
+    );
     image->paletteMetaPacked = header.paletteMeta;
     image->textureAddressFlagsPacked = header.textureAddressFlagsPacked;
     return 0;
 }
 
 // Reimplements 0x46ede0: zVid_Image::ReadData
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadData(FILE *file, zVidImagePartial *image,
-                                                      int bytesPerPixel) {
+RECOIL_NOINLINE int RECOIL_FASTCALL ReadData(
+    FILE *file,
+    zVidImagePartial *image,
+    int bytesPerPixel
+) {
     if (bytesPerPixel == 0) {
         bytesPerPixel = QueryBytesPerPixel(image);
     }
 
-    if (bytesPerPixel != QueryBytesPerPixel(image) && bytesPerPixel > QueryBytesPerPixel(image)) {
-        return -1;
+    if (bytesPerPixel != QueryBytesPerPixel(image)) {
+        if (bytesPerPixel <= QueryBytesPerPixel(image)) {
+            return -1;
+        }
+        return 0;
     }
 
     const int pixelBytes = QueryPixelDataBytes(image);
-    if (fread(image->pixels, 1, pixelBytes, file) != (size_t)(pixelBytes)) {
+    if (fread(
+        image->pixels,
+        1,
+        pixelBytes,
+        file
+    ) != (size_t)(pixelBytes)) {
         return -1;
     }
 
     if ((image->formatFlagsPacked & 0x08) != 0) {
-        image->alphaMap =
-            (char *)(malloc((size_t)(image->pixelCount)));
-        if (fread(image->alphaMap, 1, image->pixelCount, file) !=
-            (size_t)(image->pixelCount)) {
+        image->alphaMap = (char *)(malloc((size_t)(image->pixelCount)));
+        if (fread(
+            image->alphaMap,
+            1,
+            image->pixelCount,
+            file
+        ) != (size_t)(image->pixelCount)) {
             image->formatFlagsPacked |= 0x40;
             return -1;
         }
@@ -2948,8 +4015,12 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadData(FILE *file, zVidImagePartial *image
     if ((image->formatFlagsPacked & 0x10) == 0 && image->paletteMetaPacked != 0) {
         const int paletteBytes = bytesPerPixel * image->paletteMetaPacked;
         image->palette = malloc((size_t)(paletteBytes));
-        if (fread(image->palette, 1, paletteBytes, file) !=
-            (size_t)(paletteBytes)) {
+        if (fread(
+            image->palette,
+            1,
+            paletteBytes,
+            file
+        ) != (size_t)(paletteBytes)) {
             image->formatFlagsPacked |= 0x80;
             return -1;
         }
@@ -2960,11 +4031,15 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadData(FILE *file, zVidImagePartial *image
         int rBits = 0;
         int gBits = 0;
         int bBits = 0;
-        zVideo::PixelPack_GetRgbBits(&rBits, &gBits, &bBits);
+        zVideo::PixelPack_GetRgbBits(
+            &rBits,
+            &gBits,
+            &bBits
+        );
         if (rBits == 5) {
             unsigned short *colors = image->paletteMetaPacked == 0
-                                        ? (unsigned short *)(image->pixels)
-                                        : (unsigned short *)(image->palette);
+                                         ? (unsigned short *)(image->pixels)
+                                         : (unsigned short *)(image->palette);
             int count =
                 image->paletteMetaPacked == 0 ? image->pixelCount : image->paletteMetaPacked;
             while (count > 0) {
@@ -2978,61 +4053,73 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadData(FILE *file, zVidImagePartial *image
 
     if (image->paletteMetaPacked != 0) {
         image->palette = zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
-            (unsigned short *)(image->palette), image->paletteMetaPacked);
+            (unsigned short *)(image->palette),
+            image->paletteMetaPacked
+        );
     }
 
     return 0;
 }
 
 // Reimplements 0x46ef70: zVid_Image::ReadFromFile
-RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL ReadFromFile(FILE *file) {
+RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL ReadFromFile(
+    FILE *file
+) {
     zVidImagePartial *image = Create();
-    if (ReadHeader(file, image) != 0) {
+    if (ReadHeader(
+        file,
+        image
+    ) != 0) {
         return 0;
     }
 
     image->pixels = malloc(QueryPixelDataBytes(image));
-    ReadData(file, image, 0);
+    ReadData(
+        file,
+        image,
+        0
+    );
     image->formatFlagsPacked |= 0x20;
     return image;
 }
 
 // Reimplements 0x46e9b0: zVid_Image::ResampleSquare
-RECOIL_NOINLINE void RECOIL_FASTCALL ResampleSquare(zVidImagePartial *image,
-                                                    int sideLength) {
+RECOIL_NOINLINE void RECOIL_FASTCALL ResampleSquare(
+    zVidImagePartial *image,
+    int sideLength
+) {
     const float inverseSideLength = 1.0f / (float)(sideLength);
     unsigned short *oldPixels = (unsigned short *)(image->pixels);
     char *oldAlphaMap = image->alphaMap;
     const int sourceWidth = image->width;
     const int sourceHeight = image->height;
-    const float xScale = (float)(sourceWidth) * inverseSideLength;
-    const float yScale = (float)(sourceHeight) * inverseSideLength;
+    const float xScale = (float)(sourceWidth)*inverseSideLength;
+    const float yScale = (float)(sourceHeight)*inverseSideLength;
 
     const unsigned int pixelCount = (unsigned int)(sideLength * sideLength);
-    unsigned short *newPixels =
-        (unsigned short *)(malloc(pixelCount * sizeof(unsigned short)));
+    unsigned short *newPixels = (unsigned short *)(malloc(pixelCount * sizeof(unsigned short)));
     char *newAlphaMap = 0;
     if (oldAlphaMap != 0) {
         newAlphaMap = (char *)(malloc(pixelCount));
     }
 
     {
-    for (int dstY = 0; dstY < sideLength; ++dstY) {
-        const int srcY = (int)((float)(dstY) * yScale);
-        unsigned short *newPixelCursor = &newPixels[dstY * sideLength];
-        char *newAlphaCursor = newAlphaMap != 0 ? &newAlphaMap[dstY * sideLength] : 0;
+        for (int dstY = 0; dstY < sideLength; ++dstY) {
+            const int srcY = (int)((float)(dstY)*yScale);
+            unsigned short *newPixelCursor = &newPixels[dstY * sideLength];
+            char *newAlphaCursor = newAlphaMap != 0 ? &newAlphaMap[dstY * sideLength] : 0;
 
-        {
-        for (int dstX = 0; dstX < sideLength; ++dstX) {
-            const int srcX = (int)((float)(dstX) * xScale);
-            const int sourceIndex = srcY * sourceWidth + srcX;
-            *newPixelCursor++ = oldPixels[sourceIndex];
-            if (oldAlphaMap != 0) {
-                *newAlphaCursor++ = oldAlphaMap[sourceIndex];
+            {
+                for (int dstX = 0; dstX < sideLength; ++dstX) {
+                    const int srcX = (int)((float)(dstX)*xScale);
+                    const int sourceIndex = srcY * sourceWidth + srcX;
+                    *newPixelCursor++ = oldPixels[sourceIndex];
+                    if (oldAlphaMap != 0) {
+                        *newAlphaCursor++ = oldAlphaMap[sourceIndex];
+                    }
+                }
             }
         }
-        }
-    }
     }
 
     free(image->pixels);
@@ -3048,7 +4135,9 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ResampleSquare(zVidImagePartial *image,
 
 namespace zVid_PaletteRemap {
 // Reimplements 0x46e680: zVid_PaletteRemap::FindRecipeIndex
-RECOIL_NOINLINE int RECOIL_FASTCALL FindRecipeIndex(zVidPaletteRemapRecipe *recipe) {
+RECOIL_NOINLINE int RECOIL_FASTCALL FindRecipeIndex(
+    zVidPaletteRemapRecipe *recipe
+) {
     for (int i = 0; i < g_zVid_PaletteRemapRecipeCount; ++i) {
         zVidPaletteRemapRecipe *candidate = &g_zVid_PaletteRemapRecipes[i];
         if (recipe->color0R == candidate->color0R && recipe->color0G == candidate->color0G &&
@@ -3064,15 +4153,21 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindRecipeIndex(zVidPaletteRemapRecipe *reci
 }
 
 // Reimplements 0x46e4e0: zVid_PaletteRemap::ApplyRecipeToPaletteVariant
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyRecipeToPaletteVariant(zVidPaletteRemapRecipe *recipe,
-                                                                 unsigned short *sourceColors,
-                                                                 int colorCount,
-                                                                 int variantIndex,
-                                                                 unsigned short *destColors) {
+RECOIL_NOINLINE void RECOIL_FASTCALL ApplyRecipeToPaletteVariant(
+    zVidPaletteRemapRecipe *recipe,
+    unsigned short *sourceColors,
+    int colorCount,
+    int variantIndex,
+    unsigned short *destColors
+) {
     int rBits = 0;
     int gBits = 0;
     int bBits = 0;
-    zVideo::PixelPack_GetRgbBits(&rBits, &gBits, &bBits);
+    zVideo::PixelPack_GetRgbBits(
+        &rBits,
+        &gBits,
+        &bBits
+    );
 
     const float variantWeight = (float)(variantIndex) * 0.0322580636f;
     const float inverseVariantWeight = 1.0f - variantWeight;
@@ -3092,13 +4187,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyRecipeToPaletteVariant(zVidPaletteRema
 
         zVideo_ColorRgbFloat color = {0};
         color.r = ((recipe->color0R - r) * inverseVariantWeight * recipe->color0Strength +
-                   (recipe->color1R - r) * variantWeight * recipe->color1Strength + r) *
+                      (recipe->color1R - r) * variantWeight * recipe->color1Strength + r) *
                   255.0f;
         color.g = ((recipe->color1G - g) * variantWeight * recipe->color1Strength +
-                   (recipe->color0G - g) * inverseVariantWeight * recipe->color0Strength + g) *
+                      (recipe->color0G - g) * inverseVariantWeight * recipe->color0Strength + g) *
                   255.0f;
         color.b = ((recipe->color1B - b) * variantWeight * recipe->color1Strength +
-                   (recipe->color0B - b) * inverseVariantWeight * recipe->color0Strength + b) *
+                      (recipe->color0B - b) * inverseVariantWeight * recipe->color0Strength + b) *
                   255.0f;
 
         *destColors++ = zVid_PackColorRgbFloats(&color);
@@ -3108,8 +4203,9 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyRecipeToPaletteVariant(zVidPaletteRema
 } // namespace zVid_PaletteRemap
 
 // Reimplements 0x46e720: zVid_PaletteRemap_BuildPaletteVariant
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zVid_PaletteRemap_BuildPaletteVariant(zVidPaletteRemapRecipe *recipe) {
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zVid_PaletteRemap_BuildPaletteVariant(
+    zVidPaletteRemapRecipe *recipe
+) {
     const int existingIndex = zVid_PaletteRemap::FindRecipeIndex(recipe);
     if (existingIndex >= 0) {
         return existingIndex;
@@ -3118,42 +4214,54 @@ zVid_PaletteRemap_BuildPaletteVariant(zVidPaletteRemapRecipe *recipe) {
     ++g_zVid_PaletteRemapRecipeCount;
     g_zVid_PaletteRemapRecipes = (zVidPaletteRemapRecipe *)(realloc(
         g_zVid_PaletteRemapRecipes,
-        (size_t)(g_zVid_PaletteRemapRecipeCount) * sizeof(zVidPaletteRemapRecipe)));
+        (size_t)(g_zVid_PaletteRemapRecipeCount) * sizeof(zVidPaletteRemapRecipe)
+    ));
     g_zVid_PaletteRemapRecipes[g_zVid_PaletteRemapRecipeCount - 1] = *recipe;
 
-    const size_t expandedPaletteBytes =
-        ((size_t)(g_zVid_PaletteRemapRecipeCount) << 14) + 0x200;
+    const size_t expandedPaletteBytes = ((size_t)(g_zVid_PaletteRemapRecipeCount) << 14) + 0x200;
     for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
         zVidImagePartial *image = g_zImage_TexDirEntries[i].image;
-        if (image == 0 || image->paletteMetaPacked == 0 ||
-            (image->formatFlagsPacked & 0x10) != 0) {
+        if (image == 0 || image->paletteMetaPacked == 0 || (image->formatFlagsPacked & 0x10) != 0) {
             continue;
         }
 
-        image->palette = realloc(image->palette, expandedPaletteBytes);
+        image->palette = realloc(
+            image->palette,
+            expandedPaletteBytes
+        );
         unsigned short *palette = (unsigned short *)(image->palette);
         {
-        for (int variant = 0; variant < 32; ++variant) {
-            zVid_PaletteRemap::ApplyRecipeToPaletteVariant(
-                recipe, palette, image->paletteMetaPacked, variant,
-                &palette[((g_zVid_PaletteRemapRecipeCount << 5) + variant - 0x1f) * 0x100]);
-        }
+            for (int variant = 0; variant < 32; ++variant) {
+                zVid_PaletteRemap::ApplyRecipeToPaletteVariant(
+                    recipe,
+                    palette,
+                    image->paletteMetaPacked,
+                    variant,
+                    &palette[((g_zVid_PaletteRemapRecipeCount << 5) + variant - 0x1f) * 0x100]
+                );
+            }
         }
     }
 
-    for (int tableIndex = 0; tableIndex < g_zVid_PaletteRemapVariantTableCount;
-         ++tableIndex) {
+    for (int tableIndex = 0; tableIndex < g_zVid_PaletteRemapVariantTableCount; ++tableIndex) {
         unsigned short *oldTable = g_zVid_PaletteRemapVariantTables[tableIndex];
         g_zVid_PaletteRemapVariantTables[tableIndex] =
-            (unsigned short *)(realloc(oldTable, expandedPaletteBytes));
+            (unsigned short *)(realloc(
+                oldTable,
+                expandedPaletteBytes
+            ));
         unsigned short *table = g_zVid_PaletteRemapVariantTables[tableIndex];
 
         {
-        for (int variant = 0; variant < 32; ++variant) {
-            zVid_PaletteRemap::ApplyRecipeToPaletteVariant(
-                recipe, table, 0x100, variant,
-                &table[((g_zVid_PaletteRemapRecipeCount << 5) + variant - 0x1f) * 0x100]);
-        }
+            for (int variant = 0; variant < 32; ++variant) {
+                zVid_PaletteRemap::ApplyRecipeToPaletteVariant(
+                    recipe,
+                    table,
+                    0x100,
+                    variant,
+                    &table[((g_zVid_PaletteRemapRecipeCount << 5) + variant - 0x1f) * 0x100]
+                );
+            }
         }
 
         for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
@@ -3169,27 +4277,34 @@ zVid_PaletteRemap_BuildPaletteVariant(zVidPaletteRemapRecipe *recipe) {
 
 // Reimplements 0x46e8d0: zVid_PaletteRemap_BuildAllRecipeVariantsForPalette
 extern "C" RECOIL_NOINLINE unsigned short *RECOIL_FASTCALL
-zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(unsigned short *palette,
-                                                   int colorCount) {
+zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
+    unsigned short *palette,
+    int colorCount
+) {
     if (g_zVid_PaletteRemapRecipeCount == 0) {
         return palette;
     }
 
     unsigned short *result = (unsigned short *)(realloc(
-        palette, ((size_t)(g_zVid_PaletteRemapRecipeCount) << 14) + 0x200));
+        palette,
+        ((size_t)(g_zVid_PaletteRemapRecipeCount) << 14) + 0x200
+    ));
 
-    for (int recipeIndex = 0; recipeIndex < g_zVid_PaletteRemapRecipeCount;
-         ++recipeIndex) {
-        unsigned short *dest = (unsigned short *)(
-            (unsigned char *)(result) + 0x200 + recipeIndex * 0x4000);
+    for (int recipeIndex = 0; recipeIndex < g_zVid_PaletteRemapRecipeCount; ++recipeIndex) {
+        unsigned short *dest =
+            (unsigned short *)((unsigned char *)(result) + 0x200 + recipeIndex * 0x4000);
         zVidPaletteRemapRecipe *recipe = &g_zVid_PaletteRemapRecipes[recipeIndex];
         {
-        for (int variant = 0; variant < 32; ++variant) {
-            zVid_PaletteRemap::ApplyRecipeToPaletteVariant(recipe, result, colorCount, variant,
-                                                           dest);
-            dest =
-                (unsigned short *)((unsigned char *)(dest) + 0x200);
-        }
+            for (int variant = 0; variant < 32; ++variant) {
+                zVid_PaletteRemap::ApplyRecipeToPaletteVariant(
+                    recipe,
+                    result,
+                    colorCount,
+                    variant,
+                    dest
+                );
+                dest = (unsigned short *)((unsigned char *)(dest) + 0x200);
+            }
         }
     }
 
@@ -3197,8 +4312,9 @@ zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(unsigned short *palette,
 }
 
 // Reimplements 0x46e960: zVid_PaletteRemap_FindRecipeIndexFromRgb
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zVid_PaletteRemap_FindRecipeIndexFromRgb(zColorRgb *rgb) {
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zVid_PaletteRemap_FindRecipeIndexFromRgb(
+    zColorRgb *rgb
+) {
     zVidPaletteRemapRecipe recipe = {0};
     recipe.color1R = rgb->red;
     recipe.color1G = rgb->green;
@@ -3208,13 +4324,18 @@ zVid_PaletteRemap_FindRecipeIndexFromRgb(zColorRgb *rgb) {
 }
 
 // Reimplements 0x46dae0: zVid_TexturePackEntry_LoadFromFile
-extern "C" RECOIL_NOINLINE FILE *RECOIL_FASTCALL
-zVid_TexturePackEntry_LoadFromFile(zVidTexturePackEntry *entry) {
+extern "C" RECOIL_NOINLINE FILE *RECOIL_FASTCALL zVid_TexturePackEntry_LoadFromFile(
+    zVidTexturePackEntry *entry
+) {
     if (g_zVid_TexturePackLoadState == 0) {
         return 0;
     }
 
-    entry->fileHandle = zUtil_ZRDR_OpenFileResolved(0, entry->filePath, "rb");
+    entry->fileHandle = zUtil_ZRDR_OpenFileResolved(
+        0,
+        entry->filePath,
+        "rb"
+    );
     if (entry->fileHandle == 0) {
         return 0;
     }
@@ -3227,9 +4348,14 @@ zVid_TexturePackEntry_LoadFromFile(zVidTexturePackEntry *entry) {
     }
 
     entry->records = (zVidTexturePackRecord *)(malloc(
-        (size_t)(entry->header.recordCount) * sizeof(zVidTexturePackRecord)));
-    if (fread(entry->records, sizeof(zVidTexturePackRecord), entry->header.recordCount,
-                   entry->fileHandle) != (size_t)(entry->header.recordCount)) {
+        (size_t)(entry->header.recordCount) * sizeof(zVidTexturePackRecord)
+    ));
+    if (fread(
+            entry->records,
+            sizeof(zVidTexturePackRecord),
+            entry->header.recordCount,
+            entry->fileHandle
+        ) != (size_t)(entry->header.recordCount)) {
         fclose(entry->fileHandle);
         entry->fileHandle = 0;
         free(entry->records);
@@ -3246,17 +4372,27 @@ zVid_TexturePackEntry_LoadFromFile(zVidTexturePackEntry *entry) {
     g_zVid_PaletteRemapVariantTableCount += entry->header.paletteTableCount;
     g_zVid_PaletteRemapVariantTables = (unsigned short **)(realloc(
         g_zVid_PaletteRemapVariantTables,
-        (size_t)(g_zVid_PaletteRemapVariantTableCount) * sizeof(unsigned short *)));
+        (size_t)(g_zVid_PaletteRemapVariantTableCount) * sizeof(unsigned short *)
+    ));
 
     int rBits = 0;
     int gBits = 0;
     int bBits = 0;
-    zVideo::PixelPack_GetRgbBits(&rBits, &gBits, &bBits);
+    zVideo::PixelPack_GetRgbBits(
+        &rBits,
+        &gBits,
+        &bBits
+    );
 
     while (tableIndex < g_zVid_PaletteRemapVariantTableCount) {
         unsigned short *table = (unsigned short *)(malloc(0x200));
         g_zVid_PaletteRemapVariantTables[tableIndex] = table;
-        if (fread(table, 2, 0x100, entry->fileHandle) != 0x100) {
+        if (fread(
+            table,
+            2,
+            0x100,
+            entry->fileHandle
+        ) != 0x100) {
             fclose(entry->fileHandle);
             entry->fileHandle = 0;
             free(entry->records);
@@ -3266,20 +4402,23 @@ zVid_TexturePackEntry_LoadFromFile(zVidTexturePackEntry *entry) {
 
         if (gBits == 5) {
             {
-            for (int byteOffset = 0; byteOffset < 0x200; byteOffset += 2) {
-                unsigned short *color = (unsigned short *)(
-                    (unsigned char *)(table) + byteOffset);
-                const unsigned short value = *color;
-                const unsigned short shifted = (unsigned short)(value >> 1);
-                const unsigned short lowXor = (unsigned char)(
-                    (unsigned char)(value) ^ (unsigned char)(shifted));
-                *color = (unsigned short)((lowXor & 0x1f) ^ shifted);
-            }
+                for (int byteOffset = 0; byteOffset < 0x200; byteOffset += 2) {
+                    unsigned short *color =
+                        (unsigned short *)((unsigned char *)(table) + byteOffset);
+                    const unsigned short value = *color;
+                    const unsigned short shifted = (unsigned short)(value >> 1);
+                    const unsigned short lowXor =
+                        (unsigned char)((unsigned char)(value) ^ (unsigned char)(shifted));
+                    *color = (unsigned short)((lowXor & 0x1f) ^ shifted);
+                }
             }
         }
 
         g_zVid_PaletteRemapVariantTables[tableIndex] =
-            zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(table, 0x100);
+            zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
+                table,
+                0x100
+            );
         ++tableIndex;
     }
 
@@ -3292,15 +4431,27 @@ extern "C" RECOIL_NOINLINE void RECOIL_CDECL zVid_TexturePack_EnsureDefaultImage
         return;
     }
 
-    g_zVid_TexturePacks = (zVidTexturePackEntry *)(
-        realloc(g_zVid_TexturePacks, (size_t)(g_zVid_TexturePackCount + 1) *
-                                              sizeof(zVidTexturePackEntry)));
+    g_zVid_TexturePacks = (zVidTexturePackEntry *)(realloc(
+        g_zVid_TexturePacks,
+        (size_t)(g_zVid_TexturePackCount + 1) * sizeof(zVidTexturePackEntry)
+    ));
     zVidTexturePackEntry *entry = &g_zVid_TexturePacks[g_zVid_TexturePackCount];
-    memset(entry, 0, sizeof(*entry));
-    strcpy(entry->filePath, "image.zbd");
+    memset(
+        entry,
+        0,
+        sizeof(*entry)
+    );
+    strcpy(
+        entry->filePath,
+        "image.zbd"
+    );
 
     if (zVid_TexturePackEntry_LoadFromFile(entry) == 0) {
-        sprintf(entry->filePath, "r%s", "image.zbd");
+        sprintf(
+            entry->filePath,
+            "r%s",
+            "image.zbd"
+        );
         if (zVid_TexturePackEntry_LoadFromFile(entry) == 0) {
             return;
         }
@@ -3317,8 +4468,11 @@ zVid_TexturePack_EnsureBuiltinTexturePacksLoaded() {
         for (int i = 0; i < g_zVid_BuiltinTexturePackCount; ++i) {
             zVidTexturePackEntry *const entry = &g_zVid_BuiltinTexturePacks[i];
             if (entry->fileHandle == 0) {
-                entry->fileHandle = zUtil_ZRDR_OpenFileResolved(g_zImage_MissionResourcePaths,
-                                                                entry->filePath, "rb");
+                entry->fileHandle = zUtil_ZRDR_OpenFileResolved(
+                    g_zImage_MissionResourcePaths,
+                    entry->filePath,
+                    "rb"
+                );
             }
         }
         return;
@@ -3333,60 +4487,122 @@ zVid_TexturePack_EnsureBuiltinTexturePacksLoaded() {
     if (g_zVideo_pfnQueryTextureMemoryBytes(-1, &totalBytes, &freeBytes) != 0 &&
         g_zVideo_ActiveRendererPath != 0) {
         candidateSize = (unsigned int)(totalBytes) >> 20;
-        sprintf(filePath, "r%s%d.%s", "texture", candidateSize, "zbd");
+        sprintf(
+            filePath,
+            "r%s%d.%s",
+            "texture",
+            candidateSize,
+            "zbd"
+        );
         probeWasRendererMemory = 1;
     } else {
         switch (*g_zImage_TextureMemoryOption) {
         case 1:
-            sprintf(filePath, "%s8.%s", "texture", "zbd");
+            sprintf(
+                filePath,
+                "%s8.%s",
+                "texture",
+                "zbd"
+            );
             candidateSize = 8;
             break;
         case 2:
-            sprintf(filePath, "%s6.%s", "texture", "zbd");
+            sprintf(
+                filePath,
+                "%s6.%s",
+                "texture",
+                "zbd"
+            );
             candidateSize = 6;
             break;
         case 3:
-            sprintf(filePath, "%s4.%s", "texture", "zbd");
+            sprintf(
+                filePath,
+                "%s4.%s",
+                "texture",
+                "zbd"
+            );
             candidateSize = 4;
             break;
         case 4:
-            sprintf(filePath, "%s2.%s", "texture", "zbd");
+            sprintf(
+                filePath,
+                "%s2.%s",
+                "texture",
+                "zbd"
+            );
             candidateSize = 2;
             break;
         default:
-            sprintf(filePath, "%s", "texturemax.zbd");
+            sprintf(
+                filePath,
+                "%s",
+                "texturemax.zbd"
+            );
             candidateSize = 8;
             break;
         }
     }
 
     g_zVid_BuiltinTexturePacks = (zVidTexturePackEntry *)(realloc(
-        g_zVid_BuiltinTexturePacks, (size_t)(g_zVid_BuiltinTexturePackCount + 1) *
-                                        sizeof(zVidTexturePackEntry)));
+        g_zVid_BuiltinTexturePacks,
+        (size_t)(g_zVid_BuiltinTexturePackCount + 1) * sizeof(zVidTexturePackEntry)
+    ));
     zVidTexturePackEntry *const entry = &g_zVid_BuiltinTexturePacks[g_zVid_BuiltinTexturePackCount];
-    memset(entry, 0, sizeof(*entry));
-    strcpy(entry->filePath, filePath);
+    memset(
+        entry,
+        0,
+        sizeof(*entry)
+    );
+    strcpy(
+        entry->filePath,
+        filePath
+    );
 
     if (zVid_TexturePackEntry_LoadFromFile(entry) == 0) {
         {
-        for (int size = candidateSize; size >= -1; --size) {
-            if (size > 0) {
-                if (probeWasRendererMemory != 0) {
-                    sprintf(filePath, "r%s%d.%s", "texture", size, "zbd");
+            for (int size = candidateSize; size >= -1; --size) {
+                if (size > 0) {
+                    if (probeWasRendererMemory != 0) {
+                        sprintf(
+                            filePath,
+                            "r%s%d.%s",
+                            "texture",
+                            size,
+                            "zbd"
+                        );
+                    } else {
+                        sprintf(
+                            filePath,
+                            "%s%d.%s",
+                            "texture",
+                            size,
+                            "zbd"
+                        );
+                    }
+                } else if (size == 0) {
+                    sprintf(
+                        filePath,
+                        "%s",
+                        "texturemax.zbd"
+                    );
                 } else {
-                    sprintf(filePath, "%s%d.%s", "texture", size, "zbd");
+                    sprintf(
+                        filePath,
+                        "%s.%s",
+                        "texture",
+                        "zbd"
+                    );
                 }
-            } else if (size == 0) {
-                sprintf(filePath, "%s", "texturemax.zbd");
-            } else {
-                sprintf(filePath, "%s.%s", "texture", "zbd");
-            }
 
-            strcpy(entry->filePath, filePath);
-            if (zVid_TexturePackEntry_LoadFromFile(entry) != 0) {
-                break;
+                strcpy(
+                    entry->filePath,
+                    filePath
+                );
+                if (zVid_TexturePackEntry_LoadFromFile(entry) != 0) {
+                    break;
+                }
             }
-        }
         }
     }
 
@@ -3396,8 +4612,12 @@ zVid_TexturePack_EnsureBuiltinTexturePacksLoaded() {
 }
 
 namespace {
-zVidImagePartial *LoadTexturePackImageByName(zVidTexturePackEntry *entries, int count,
-                                             const char *imageName, bool builtin) {
+zVidImagePartial *LoadTexturePackImageByName(
+    zVidTexturePackEntry *entries,
+    int count,
+    const char *imageName,
+    bool builtin
+) {
     zVidImagePartial *result = 0;
     for (int i = 0; i < count && result == 0; ++i) {
         zVidTexturePackEntry *entry = &entries[i];
@@ -3405,14 +4625,21 @@ zVidImagePartial *LoadTexturePackImageByName(zVidTexturePackEntry *entries, int 
             continue;
         }
 
-        for (int recordIndex = 0;
-             recordIndex < entry->header.recordCount && result == 0; ++recordIndex) {
+        for (int recordIndex = 0; recordIndex < entry->header.recordCount && result == 0;
+            ++recordIndex) {
             zVidTexturePackRecord *record = &entry->records[recordIndex];
-            if (_stricmp(record->name, imageName) != 0) {
+            if (_stricmp(
+                record->name,
+                imageName
+            ) != 0) {
                 continue;
             }
 
-            fseek(entry->fileHandle, record->fileOffset, SEEK_SET);
+            fseek(
+                entry->fileHandle,
+                record->fileOffset,
+                SEEK_SET
+            );
             result = zVid_Image::ReadFromFile(entry->fileHandle);
             if (record->paletteIndex != -1) {
                 const int tableIndex = entry->paletteTableBaseIndex + record->paletteIndex;
@@ -3434,25 +4661,38 @@ zVidImagePartial *LoadTexturePackImageByName(zVidTexturePackEntry *entries, int 
 } // namespace
 
 // Reimplements 0x46d940: zVid_TexturePack_LoadImageByName
-extern "C" RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL
-zVid_TexturePack_LoadImageByName(const char *imageName) {
+extern "C" RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL zVid_TexturePack_LoadImageByName(
+    const char *imageName
+) {
     if (g_zVid_TexturePackCount == 0) {
         zVid_TexturePack_EnsureDefaultImagePackLoaded();
     }
 
-    return LoadTexturePackImageByName(g_zVid_TexturePacks, g_zVid_TexturePackCount, imageName,
-                                      false);
+    return LoadTexturePackImageByName(
+        g_zVid_TexturePacks,
+        g_zVid_TexturePackCount,
+        imageName,
+        false
+    );
 }
 
 // Reimplements 0x46dd30: zVid_TexturePack_LoadBuiltinImageByName
 extern "C" RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL
-zVid_TexturePack_LoadBuiltinImageByName(const char *imageName) {
-    return LoadTexturePackImageByName(g_zVid_BuiltinTexturePacks, g_zVid_BuiltinTexturePackCount,
-                                      imageName, true);
+zVid_TexturePack_LoadBuiltinImageByName(
+    const char *imageName
+) {
+    return LoadTexturePackImageByName(
+        g_zVid_BuiltinTexturePacks,
+        g_zVid_BuiltinTexturePackCount,
+        imageName,
+        true
+    );
 }
 
 namespace zVid_TexturePack {
-void ClosePackEntry(zVidTexturePackEntry &entry) {
+void ClosePackEntry(
+    zVidTexturePackEntry &entry
+) {
     if (entry.fileHandle != 0) {
         fclose(entry.fileHandle);
         entry.fileHandle = 0;
@@ -3464,7 +4704,9 @@ void ClosePackEntry(zVidTexturePackEntry &entry) {
     }
 }
 
-void FreePackEntryRecords(zVidTexturePackEntry &entry) {
+void FreePackEntryRecords(
+    zVidTexturePackEntry &entry
+) {
     if (entry.records != 0) {
         free(entry.records);
         entry.records = 0;
@@ -3533,7 +4775,8 @@ RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
 
             if (entry.texture != 0 && g_zVideo_pfnTextureRecordDestroy != 0) {
                 ((zVideo_DestroyTextureRecordProc)(g_zVideo_pfnTextureRecordDestroy))(
-                    entry.texture);
+                    entry.texture
+                );
                 entry.texture = 0;
             }
         }
@@ -3546,8 +4789,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
     g_zImage_TexDirEntryCount = 0;
 
     if (g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces != 0) {
-        ((zVideo_ReleaseAllTextureUploadSurfacesProc)(
-            g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces))();
+        ((zVideo_ReleaseAllTextureUploadSurfacesProc)(g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces))();
     }
 
     for (int i_2693 = 0; i_2693 < g_zVid_PaletteRemapVariantTableCount; ++i_2693) {
@@ -3575,42 +4817,58 @@ RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
 
 namespace zVideo_dd3d {
 // Reimplements 0x4a6750: zVideo_dd3d::CallClearZBufferRect
-RECOIL_NOINLINE void RECOIL_FASTCALL CallClearZBufferRect(zVidRect32 *rect) {
+RECOIL_NOINLINE void RECOIL_FASTCALL CallClearZBufferRect(
+    zVidRect32 *rect
+) {
     g_zVideo_pfnClearZBufferRect(rect);
 }
 
 // Reimplements 0x4a6b60: zVideo_dd3d::SetPendingWireframeState
-RECOIL_NOINLINE void RECOIL_FASTCALL SetPendingWireframeState(int pendingWireframeState) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetPendingWireframeState(
+    int pendingWireframeState
+) {
     g_zVideo_PendingWireframeState = pendingWireframeState;
 }
 
 // Reimplements 0x4a6b70: zVideo_dd3d::SetPendingDitherEnable
-RECOIL_NOINLINE void RECOIL_FASTCALL SetPendingDitherEnable(int enabled) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetPendingDitherEnable(
+    int enabled
+) {
     g_zVideo_PendingDitherEnable = enabled;
 }
 
 // Reimplements 0x4a9ac0: zVideo_dd3d::BeginSceneAndFlushPendingRenderStates
-RECOIL_NOINLINE int RECOIL_CDECL BeginSceneAndFlushPendingRenderStates()
-{
+RECOIL_NOINLINE int RECOIL_CDECL BeginSceneAndFlushPendingRenderStates() {
     const HRESULT hresult = g_zVideo_pD3DDevice->BeginScene();
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError((int)(hresult),
-                                      "D:\\Proj\\GameZRecoil\\zVideo\\zvid_ddd3d.c", 76);
+        return zVideo_dd::ReportError(
+            (int)(hresult),
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_ddd3d.c",
+            76
+        );
     }
 
     const int pendingWireframeState = g_zVideo_PendingWireframeState;
     if (pendingWireframeState == 0) {
-        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_FILLMODE, D3DFILL_SOLID);
+        g_zVideo_pD3DDevice->SetRenderState(
+            D3DRENDERSTATE_FILLMODE,
+            D3DFILL_SOLID
+        );
         g_zVideo_PendingWireframeState = -1;
     } else if (pendingWireframeState == 1) {
-        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_FILLMODE, D3DFILL_WIREFRAME);
+        g_zVideo_pD3DDevice->SetRenderState(
+            D3DRENDERSTATE_FILLMODE,
+            D3DFILL_WIREFRAME
+        );
         g_zVideo_PendingWireframeState = -1;
     }
 
     const int pendingDitherEnable = g_zVideo_PendingDitherEnable;
     if (pendingDitherEnable != -1) {
-        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_DITHERENABLE,
-                                            (DWORD)(pendingDitherEnable));
+        g_zVideo_pD3DDevice->SetRenderState(
+            D3DRENDERSTATE_DITHERENABLE,
+            (DWORD)(pendingDitherEnable)
+        );
         g_zVideo_PendingDitherEnable = -1;
     }
 
@@ -3618,12 +4876,14 @@ RECOIL_NOINLINE int RECOIL_CDECL BeginSceneAndFlushPendingRenderStates()
 }
 
 // Reimplements 0x4a9b40: zVideo_dd3d::EndScene
-RECOIL_NOINLINE int RECOIL_CDECL EndScene()
-{
+RECOIL_NOINLINE int RECOIL_CDECL EndScene() {
     const HRESULT hresult = g_zVideo_pD3DDevice->EndScene();
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError((int)(hresult),
-                                      "D:\\Proj\\GameZRecoil\\zVideo\\zvid_ddd3d.c", 115);
+        return zVideo_dd::ReportError(
+            (int)(hresult),
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_ddd3d.c",
+            115
+        );
     }
 
     return 0;
@@ -3632,21 +4892,32 @@ RECOIL_NOINLINE int RECOIL_CDECL EndScene()
 namespace {
 const char *kZVideoDirect3DSourceFile = "D:\\Proj\\GameZRecoil\\zVideo\\zvid_ddd3d.c";
 
-DWORD PackFogColorFrom255Floats(float red, float green, float blue) {
+DWORD PackFogColorFrom255Floats(
+    float red,
+    float green,
+    float blue
+) {
     const DWORD redByte = (DWORD)((int)(red + 0.5f));
     const DWORD greenByte = (DWORD)((int)(green + 0.5f));
     const DWORD blueByte = (DWORD)((int)(blue + 0.5f));
     return ((redByte << 8) | greenByte) << 8 | blueByte;
 }
 
-DWORD PackD3DColorFrom16(unsigned int packedColor16, int alpha) {
+DWORD PackD3DColorFrom16(
+    unsigned int packedColor16,
+    int alpha
+) {
     const DWORD red = (packedColor16 & g_zVideo_PixelPack_RMask) >> g_zVideo_PixelPack_RShift;
     const DWORD green = (packedColor16 & g_zVideo_PixelPack_GMask) >> g_zVideo_PixelPack_GShift;
     const DWORD blue = (packedColor16 & g_zVideo_PixelPack_BMask) << g_zVideo_PixelPack_BShiftTo8;
     return ((((red | ((DWORD)(alpha) << 8)) << 8) | green) << 8) | blue;
 }
 
-void WriteFlatTlVertex(D3DTLVERTEX &dst, const zVideo_XyzVertex &src, DWORD packedColor) {
+void WriteFlatTlVertex(
+    D3DTLVERTEX &dst,
+    const zVideo_XyzVertex &src,
+    DWORD packedColor
+) {
     dst.sx = src.x;
     dst.sy = src.y;
     dst.sz = src.z;
@@ -3655,36 +4926,55 @@ void WriteFlatTlVertex(D3DTLVERTEX &dst, const zVideo_XyzVertex &src, DWORD pack
     dst.specular = 0xff000000;
 }
 
-void CopyFlatVerticesReverse(D3DTLVERTEX *dst, const zVideo_XyzVertex *vertices,
-                             int vertexCount, DWORD packedColor) {
+void CopyFlatVerticesReverse(
+    D3DTLVERTEX *dst,
+    const zVideo_XyzVertex *vertices,
+    int vertexCount,
+    DWORD packedColor
+) {
     for (int i = 0; i < vertexCount; ++i) {
-        WriteFlatTlVertex(dst[i], vertices[vertexCount - 1 - i], packedColor);
+        WriteFlatTlVertex(
+            dst[i],
+            vertices[vertexCount - 1 - i],
+            packedColor
+        );
     }
 }
 
-void CopyGouraudVerticesReverse(D3DTLVERTEX *dst, const zVideo_XyzVertex *vertices,
-                                const unsigned int *packedColors16, int vertexCount,
-                                int alpha) {
+void CopyGouraudVerticesReverse(
+    D3DTLVERTEX *dst,
+    const zVideo_XyzVertex *vertices,
+    const unsigned int *packedColors16,
+    int vertexCount,
+    int alpha
+) {
     for (int i = 0; i < vertexCount; ++i) {
         const int sourceIndex = vertexCount - 1 - i;
-        WriteFlatTlVertex(dst[i], vertices[sourceIndex],
-                          PackD3DColorFrom16(packedColors16[sourceIndex], alpha));
+        WriteFlatTlVertex(
+            dst[i],
+            vertices[sourceIndex],
+            PackD3DColorFrom16(packedColors16[sourceIndex], alpha)
+        );
     }
 }
 
-DWORD PackColorAttrConstant(const zVideo_ColorRgbFloat &baseColor, float attr1Scale,
-                            DWORD alphaBits) {
-    const DWORD red =
-        (DWORD)((int)(baseColor.r * attr1Scale + 0.5f));
-    const DWORD green =
-        (DWORD)((int)(baseColor.g * attr1Scale + 0.5f));
-    const DWORD blue =
-        (DWORD)((int)(baseColor.b * attr1Scale + 0.5f));
+DWORD PackColorAttrConstant(
+    const zVideo_ColorRgbFloat &baseColor,
+    float attr1Scale,
+    DWORD alphaBits
+) {
+    const DWORD red = (DWORD)((int)(baseColor.r * attr1Scale + 0.5f));
+    const DWORD green = (DWORD)((int)(baseColor.g * attr1Scale + 0.5f));
+    const DWORD blue = (DWORD)((int)(baseColor.b * attr1Scale + 0.5f));
     return alphaBits | (((red << 8) | green) << 8) | blue;
 }
 
-DWORD PackColorAttrBiased(const zVideo_ColorRgbFloat &baseColor, float attr1Scale, float attr0Value,
-                          DWORD alphaBits) {
+DWORD PackColorAttrBiased(
+    const zVideo_ColorRgbFloat &baseColor,
+    float attr1Scale,
+    float attr0Value,
+    DWORD alphaBits
+) {
     float red = baseColor.r * attr1Scale + attr0Value * g_zVideo_D3DColorAttrBiasR;
     float green = baseColor.g * attr1Scale + attr0Value * g_zVideo_D3DColorAttrBiasG;
     float blue = baseColor.b * attr1Scale + attr0Value * g_zVideo_D3DColorAttrBiasB;
@@ -3704,36 +4994,54 @@ DWORD PackColorAttrBiased(const zVideo_ColorRgbFloat &baseColor, float attr1Scal
     return alphaBits | (((redByte << 8) | greenByte) << 8) | blueByte;
 }
 
-void FillColorAttrSpecularReverse(const float *attr2, int vertexCount) {
+void FillColorAttrSpecularReverse(
+    const float *attr2,
+    int vertexCount
+) {
     for (int i = 0; i < vertexCount; ++i) {
         DWORD specular = 0xff000000;
         if (attr2 != 0) {
             const float source = attr2[vertexCount - 1 - i];
-            specular =
-                (DWORD)((int)(0.5f + (1.0f - source) * 255.0f))
-                << 24;
+            specular = (DWORD)((int)(0.5f + (1.0f - source) * 255.0f)) << 24;
         }
         g_zVideo_D3DSubmitTempVertices[i].specular = specular;
     }
 }
 
-void FillColorAttrColorsReverse(const zVideo_ColorRgbFloat &baseColor, const float *attr0,
-                                float attr1Scale, DWORD alphaBits, int vertexCount) {
-    const DWORD constantColor = PackColorAttrConstant(baseColor, attr1Scale, alphaBits);
+void FillColorAttrColorsReverse(
+    const zVideo_ColorRgbFloat &baseColor,
+    const float *attr0,
+    float attr1Scale,
+    DWORD alphaBits,
+    int vertexCount
+) {
+    const DWORD constantColor = PackColorAttrConstant(
+        baseColor,
+        attr1Scale,
+        alphaBits
+    );
     for (int i = 0; i < vertexCount; ++i) {
         DWORD color = constantColor;
         if (attr0 != 0) {
             const float attr0Value = attr0[vertexCount - 1 - i];
             if (attr0Value > (1.0f / 255.0f)) {
-                color = PackColorAttrBiased(baseColor, attr1Scale, attr0Value, alphaBits);
+                color = PackColorAttrBiased(
+                    baseColor,
+                    attr1Scale,
+                    attr0Value,
+                    alphaBits
+                );
             }
         }
         g_zVideo_D3DSubmitTempVertices[i].color = color;
     }
 }
 
-void CopyPositionsReverse(D3DTLVERTEX *dst, const zVideo_XyzVertex *vertices,
-                          int vertexCount) {
+void CopyPositionsReverse(
+    D3DTLVERTEX *dst,
+    const zVideo_XyzVertex *vertices,
+    int vertexCount
+) {
     for (int i = 0; i < vertexCount; ++i) {
         const zVideo_XyzVertex &src = vertices[vertexCount - 1 - i];
         dst[i].sx = src.x;
@@ -3743,12 +5051,18 @@ void CopyPositionsReverse(D3DTLVERTEX *dst, const zVideo_XyzVertex *vertices,
     }
 }
 
-DWORD PackAlphaWhite(float alpha) {
+DWORD PackAlphaWhite(
+    float alpha
+) {
     return ((DWORD)((int)(alpha * 255.0f)) << 24) | 0x00ffffff;
 }
 
-void WriteTexturedTlVertex(D3DTLVERTEX &dst, const zVideo_XyzVertex &src,
-                           const zVideo_TexCoord &texCoord, DWORD color) {
+void WriteTexturedTlVertex(
+    D3DTLVERTEX &dst,
+    const zVideo_XyzVertex &src,
+    const zVideo_TexCoord &texCoord,
+    DWORD color
+) {
     dst.sx = src.x;
     dst.sy = src.y;
     dst.sz = src.z;
@@ -3759,16 +5073,29 @@ void WriteTexturedTlVertex(D3DTLVERTEX &dst, const zVideo_XyzVertex &src,
     dst.tv = texCoord.v;
 }
 
-void CopyTexturedVerticesReverse(D3DTLVERTEX *dst, const zVideo_XyzVertex *vertices,
-                                 const zVideo_TexCoord *texCoords, int vertexCount,
-                                 DWORD color) {
+void CopyTexturedVerticesReverse(
+    D3DTLVERTEX *dst,
+    const zVideo_XyzVertex *vertices,
+    const zVideo_TexCoord *texCoords,
+    int vertexCount,
+    DWORD color
+) {
     for (int i = 0; i < vertexCount; ++i) {
         const int sourceIndex = vertexCount - 1 - i;
-        WriteTexturedTlVertex(dst[i], vertices[sourceIndex], texCoords[sourceIndex], color);
+        WriteTexturedTlVertex(
+            dst[i],
+            vertices[sourceIndex],
+            texCoords[sourceIndex],
+            color
+        );
     }
 }
 
-DWORD PackGrayColor(float gray, DWORD alphaBits, bool clampHigh) {
+DWORD PackGrayColor(
+    float gray,
+    DWORD alphaBits,
+    bool clampHigh
+) {
     DWORD grayByte = (DWORD)((int)(gray));
     if (clampHigh && grayByte > 0xff) {
         grayByte = 0xff;
@@ -3776,7 +5103,11 @@ DWORD PackGrayColor(float gray, DWORD alphaBits, bool clampHigh) {
     return alphaBits | (((grayByte << 8) | grayByte) << 8) | grayByte;
 }
 
-DWORD PackPolygonBiasedColor(float grayBase, float attr0Value, DWORD alphaBits) {
+DWORD PackPolygonBiasedColor(
+    float grayBase,
+    float attr0Value,
+    DWORD alphaBits
+) {
     float red = grayBase + attr0Value * g_zVideo_D3DColorAttrBiasR;
     float green = grayBase + attr0Value * g_zVideo_D3DColorAttrBiasG;
     float blue = grayBase + attr0Value * g_zVideo_D3DColorAttrBiasB;
@@ -3796,10 +5127,18 @@ DWORD PackPolygonBiasedColor(float grayBase, float attr0Value, DWORD alphaBits) 
     return alphaBits | (((redByte << 8) | greenByte) << 8) | blueByte;
 }
 
-void FillPolygonColorsReverse(const float *attr0, float grayBase, DWORD alphaBits,
-                              int vertexCount) {
+void FillPolygonColorsReverse(
+    const float *attr0,
+    float grayBase,
+    DWORD alphaBits,
+    int vertexCount
+) {
     if (attr0 == 0) {
-        const DWORD color = PackGrayColor(grayBase, alphaBits, false);
+        const DWORD color = PackGrayColor(
+            grayBase,
+            alphaBits,
+            false
+        );
         for (int i = 0; i < vertexCount; ++i) {
             g_zVideo_D3DSubmitTempVertices[i].color = color;
         }
@@ -3810,31 +5149,55 @@ void FillPolygonColorsReverse(const float *attr0, float grayBase, DWORD alphaBit
         const float attr0Value = attr0[vertexCount - 1 - i];
         DWORD color;
         if (attr0Value > (1.0f / 255.0f)) {
-            color = PackPolygonBiasedColor(grayBase, attr0Value, alphaBits);
+            color = PackPolygonBiasedColor(
+                grayBase,
+                attr0Value,
+                alphaBits
+            );
         } else {
-            color = PackGrayColor(grayBase, alphaBits, true);
+            color = PackGrayColor(
+                grayBase,
+                alphaBits,
+                true
+            );
         }
         g_zVideo_D3DSubmitTempVertices[i].color = color;
     }
 }
 
-void FillPolygonLitColorsReverse(const float *attr1, const float *attr0, DWORD alphaBits,
-                                 int vertexCount) {
+void FillPolygonLitColorsReverse(
+    const float *attr1,
+    const float *attr0,
+    DWORD alphaBits,
+    int vertexCount
+) {
     for (int i = 0; i < vertexCount; ++i) {
         const int sourceIndex = vertexCount - 1 - i;
         const float grayBase = (1.0f - attr1[sourceIndex]) * 255.0f;
         DWORD color;
         if (attr0 != 0 && attr0[sourceIndex] > (1.0f / 255.0f)) {
-            color = PackPolygonBiasedColor(grayBase, attr0[sourceIndex], alphaBits);
+            color = PackPolygonBiasedColor(
+                grayBase,
+                attr0[sourceIndex],
+                alphaBits
+            );
         } else {
-            color = PackGrayColor(grayBase, alphaBits, attr0 != 0);
+            color = PackGrayColor(
+                grayBase,
+                alphaBits,
+                attr0 != 0
+            );
         }
         g_zVideo_D3DSubmitTempVertices[i].color = color;
     }
 }
 
-void CopyPositionUvReversePreserveColor(D3DTLVERTEX *dst, const zVideo_XyzVertex *vertices,
-                                        const zVideo_TexCoord *uvPairs, int vertexCount) {
+void CopyPositionUvReversePreserveColor(
+    D3DTLVERTEX *dst,
+    const zVideo_XyzVertex *vertices,
+    const zVideo_TexCoord *uvPairs,
+    int vertexCount
+) {
     for (int i = 0; i < vertexCount; ++i) {
         const int sourceIndex = vertexCount - 1 - i;
         const zVideo_XyzVertex &src = vertices[sourceIndex];
@@ -3848,9 +5211,13 @@ void CopyPositionUvReversePreserveColor(D3DTLVERTEX *dst, const zVideo_XyzVertex
     }
 }
 
-void CopyPositionUvWithPreparedColorReverse(D3DTLVERTEX *dst, const zVideo_XyzVertex *vertices,
-                                            const zVideo_TexCoord *uvPairs,
-                                            const D3DTLVERTEX *prepared, int vertexCount) {
+void CopyPositionUvWithPreparedColorReverse(
+    D3DTLVERTEX *dst,
+    const zVideo_XyzVertex *vertices,
+    const zVideo_TexCoord *uvPairs,
+    const D3DTLVERTEX *prepared,
+    int vertexCount
+) {
     for (int i = 0; i < vertexCount; ++i) {
         const int sourceIndex = vertexCount - 1 - i;
         const zVideo_XyzVertex &src = vertices[sourceIndex];
@@ -3866,7 +5233,10 @@ void CopyPositionUvWithPreparedColorReverse(D3DTLVERTEX *dst, const zVideo_XyzVe
     }
 }
 
-void AppendFanCloseVertexIfNeeded(D3DTLVERTEX *vertices, int &count) {
+void AppendFanCloseVertexIfNeeded(
+    D3DTLVERTEX *vertices,
+    int &count
+) {
     if (g_zVideo_D3DAppendFanCloseVertexPending != 0) {
         vertices[count] = vertices[1];
         ++count;
@@ -3876,9 +5246,12 @@ void AppendFanCloseVertexIfNeeded(D3DTLVERTEX *vertices, int &count) {
 } // namespace
 
 // Reimplements 0x4a9b70: zVideo_dd3d::PresentDisplayModeSurface
-RECOIL_NOINLINE int RECOIL_FASTCALL
-PresentDisplayModeSurface(zVidRect32 *srcRect, zVidRect32 *dstRect, int waitForPresent,
-                          int blitPrimaryToSwFirst) {
+RECOIL_NOINLINE int RECOIL_FASTCALL PresentDisplayModeSurface(
+    zVidRect32 *srcRect,
+    zVidRect32 *dstRect,
+    int waitForPresent,
+    int blitPrimaryToSwFirst
+) {
     if (g_zVideo_DisplayModeSurfaceState.surf == 0) {
         return 0x400;
     }
@@ -3886,13 +5259,20 @@ PresentDisplayModeSurface(zVidRect32 *srcRect, zVidRect32 *dstRect, int waitForP
     for (;;) {
         if (blitPrimaryToSwFirst != 0) {
             const DWORD bltFlags = waitForPresent != 0 ? DDBLT_WAIT : 0;
-            g_zVideo_SwSurfaceState.surf->Blt((RECT *)(dstRect),
-                                              g_zVideo_PrimarySurfaceState.surf,
-                                              (RECT *)(srcRect), bltFlags, 0);
+            g_zVideo_SwSurfaceState.surf->Blt(
+                (RECT *)(dstRect),
+                g_zVideo_PrimarySurfaceState.surf,
+                (RECT *)(srcRect),
+                bltFlags,
+                0
+            );
         }
 
-        HRESULT hresult = g_zVideo_DisplayModeSurfaceState.surf->Flip(
-            0, waitForPresent != 0 ? DDFLIP_WAIT : 0);
+        HRESULT hresult =
+            g_zVideo_DisplayModeSurfaceState.surf->Flip(
+                0,
+                waitForPresent != 0 ? DDFLIP_WAIT : 0
+            );
         if (hresult == DD_OK) {
             return 0;
         }
@@ -3909,15 +5289,23 @@ PresentDisplayModeSurface(zVidRect32 *srcRect, zVidRect32 *dstRect, int waitForP
             continue;
         }
 
-        zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile, 0xae);
+        zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0xae
+        );
         return 0x5a56ffff;
     }
 }
 
 // Reimplements 0x4aa0f0: zVideo_dd3d::CreateTextureRecord
-RECOIL_NOINLINE zVideo_TextureRecordPartial *RECOIL_FASTCALL
-CreateTextureRecord(const char *textureName, zVidImagePartial *image, int useAlpha,
-                    int clampU, int clampV) {
+RECOIL_NOINLINE zVideo_TextureRecordPartial *RECOIL_FASTCALL CreateTextureRecord(
+    const char *textureName,
+    zVidImagePartial *image,
+    int useAlpha,
+    int clampU,
+    int clampV
+) {
     IDirectDrawSurface *uploadSurface = 0;
     IDirectDrawSurface *textureSurface = 0;
     IDirect3DTexture2 *uploadTexture = 0;
@@ -3930,42 +5318,63 @@ CreateTextureRecord(const char *textureName, zVidImagePartial *image, int useAlp
     if ((DWORD)(width) > selectedDeviceDesc->dwMaxTextureWidth ||
         (DWORD)(height) > selectedDeviceDesc->dwMaxTextureHeight) {
         zError::ReportOld(
-            0x200, kZVideoDirect3DSourceFile, 0x20e,
-            "Texture [%s] dimensions [%d x %d] are too large.  Using default texture.", textureName,
-            width, height);
+            0x200,
+            kZVideoDirect3DSourceFile,
+            0x20e,
+            "Texture [%s] dimensions [%d x %d] are too large.  Using default texture.",
+            textureName,
+            width,
+            height
+        );
         return g_zImage_DefaultTextureRecord;
     }
 
     if ((g_zVideo_D3DHalDeviceDesc.dpcTriCaps.dwTextureCaps & D3DPTEXTURECAPS_POW2) != 0 &&
         (FloorPowerOfTwo(width) != width || FloorPowerOfTwo(height) != height)) {
         zError::ReportOld(
-            0x200, kZVideoDirect3DSourceFile, 0x224,
+            0x200,
+            kZVideoDirect3DSourceFile,
+            0x224,
             "Texture [%s] dimensions [%d x %d] are not power of 2.Using default texture.",
-            textureName, image->width, image->height);
+            textureName,
+            image->width,
+            image->height
+        );
         return g_zImage_DefaultTextureRecord;
     }
 
     if (width > height * 8 || height > width * 8) {
         zError::ReportOld(
-            0x200, kZVideoDirect3DSourceFile, 0x233,
+            0x200,
+            kZVideoDirect3DSourceFile,
+            0x233,
             "Texture [%s] dimensions [%d x %d] have bad aspect ratio.Using default texture.",
-            textureName, width, height);
+            textureName,
+            width,
+            height
+        );
         return g_zImage_DefaultTextureRecord;
     }
 
     if ((g_zVideo_D3DHalDeviceDesc.dpcTriCaps.dwTextureCaps & D3DPTEXTURECAPS_SQUAREONLY) != 0 &&
         image->width != image->height) {
-        const int squareSide = FloorPowerOfTwo(
-            (int)(sqrt((double)(height * width))));
-        zVid_Image::ResampleSquare(image, squareSide);
+        const int squareSide = FloorPowerOfTwo((int)(sqrt((double)(height * width))));
+        zVid_Image::ResampleSquare(
+            image,
+            squareSide
+        );
         width = image->width;
         height = image->height;
     }
 
     if (image->palette != 0) {
-        zError::ReportOld(0x200, kZVideoDirect3DSourceFile, 0x24a,
-                          "Texture [%s] Palettes not supported  Using default texture.",
-                          textureName);
+        zError::ReportOld(
+            0x200,
+            kZVideoDirect3DSourceFile,
+            0x24a,
+            "Texture [%s] Palettes not supported  Using default texture.",
+            textureName
+        );
         return g_zImage_DefaultTextureRecord;
     }
 
@@ -4023,15 +5432,33 @@ CreateTextureRecord(const char *textureName, zVidImagePartial *image, int useAlp
     desc.ddpfPixelFormat.dwGBitMask = greenMask;
     desc.ddpfPixelFormat.dwBBitMask = blueMask;
     desc.ddpfPixelFormat.dwRGBAlphaBitMask = alphaMask;
-    zVideo::TexturePixelPack_SetupFromMasks(redBits, greenBits, blueBits, alphaBits, redMask,
-                                            greenMask, blueMask, alphaMask);
+    zVideo::TexturePixelPack_SetupFromMasks(
+        redBits,
+        greenBits,
+        blueBits,
+        alphaBits,
+        redMask,
+        greenMask,
+        blueMask,
+        alphaMask
+    );
 
-    HRESULT hresult = g_zVideo_pDirectDraw2->CreateSurface(&desc, &uploadSurface, 0);
+    HRESULT hresult = g_zVideo_pDirectDraw2->CreateSurface(
+        &desc,
+        &uploadSurface,
+        0
+    );
     zVideo_TextureRecordPartial *result = 0;
     if (hresult == DD_OK) {
-        UploadImageToSurface(uploadSurface, image, useAlpha);
-        hresult = uploadSurface->QueryInterface(IID_IDirect3DTexture2,
-                                                (void **)(&uploadTexture));
+        UploadImageToSurface(
+            uploadSurface,
+            image,
+            useAlpha
+        );
+        hresult = uploadSurface->QueryInterface(
+            IID_IDirect3DTexture2,
+            (void **)(&uploadTexture)
+        );
     }
 
     D3DTEXTUREHANDLE textureHandle = 0;
@@ -4041,17 +5468,26 @@ CreateTextureRecord(const char *textureName, zVidImagePartial *image, int useAlp
             desc.ddsCaps.dwCaps |= DDSCAPS_NONLOCALVIDMEM;
         }
 
-        hresult = g_zVideo_pDirectDraw2->CreateSurface(&desc, &textureSurface, 0);
+        hresult = g_zVideo_pDirectDraw2->CreateSurface(
+            &desc,
+            &textureSurface,
+            0
+        );
     }
     if (hresult == DD_OK) {
-        hresult = textureSurface->QueryInterface(IID_IDirect3DTexture2,
-                                                 (void **)(&texture));
+        hresult = textureSurface->QueryInterface(
+            IID_IDirect3DTexture2,
+            (void **)(&texture)
+        );
     }
     if (hresult == DD_OK) {
         hresult = texture->Load(uploadTexture);
     }
     if (hresult == DD_OK) {
-        hresult = texture->GetHandle(g_zVideo_pD3DDevice, &textureHandle);
+        hresult = texture->GetHandle(
+            g_zVideo_pD3DDevice,
+            &textureHandle
+        );
     }
     if (hresult == DD_OK) {
         result = TextureRecord_Create();
@@ -4068,8 +5504,11 @@ CreateTextureRecord(const char *textureName, zVidImagePartial *image, int useAlp
     }
 
     if (hresult != DD_OK) {
-        zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                               0x30f);
+        zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0x30f
+        );
         if (texture != 0) {
             texture->Release();
         }
@@ -4099,51 +5538,85 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDeviceState() {
     zBufferDesc.dwMipMapCount = 0x10;
 
     HRESULT hresult = g_zVideo_pDirectDraw2->CreateSurface(
-        &zBufferDesc, (IDirectDrawSurface **)(&g_zVideo_pZBufferSurface), 0);
+        &zBufferDesc,
+        (IDirectDrawSurface **)(&g_zVideo_pZBufferSurface),
+        0
+    );
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                      0xd3);
+        return zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0xd3
+        );
     }
 
     hresult = g_zVideo_pZBufferSurface->QueryInterface(
-        IID_IDirectDrawSurface, (void **)(&g_zVideo_pZBufferAttachSurface));
+        IID_IDirectDrawSurface,
+        (void **)(&g_zVideo_pZBufferAttachSurface)
+    );
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                      0xd9);
+        return zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0xd9
+        );
     }
 
     hresult = g_zVideo_SwSurfaceState.surf->AddAttachedSurface(
-        (IDirectDrawSurface3 *)(g_zVideo_pZBufferAttachSurface));
+        (IDirectDrawSurface3 *)(g_zVideo_pZBufferAttachSurface)
+    );
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                      0xde);
+        return zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0xde
+        );
     }
 
-    hresult = g_zVideo_pDirectDraw2->QueryInterface(IID_IDirect3D2,
-                                                    (void **)(&g_zVideo_pD3D2));
+    hresult = g_zVideo_pDirectDraw2->QueryInterface(
+        IID_IDirect3D2,
+        (void **)(&g_zVideo_pD3D2)
+    );
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                      0xe5);
+        return zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0xe5
+        );
     }
 
     hresult = g_zVideo_pD3D2->CreateDevice(
         *g_zVideo_pSelectedD3DDeviceInfo->pD3DDeviceGuid,
-        (IDirectDrawSurface *)(g_zVideo_SwSurfaceState.surf), &g_zVideo_pD3DDevice);
+        (IDirectDrawSurface *)(g_zVideo_SwSurfaceState.surf),
+        &g_zVideo_pD3DDevice
+    );
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                      0xed);
+        return zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0xed
+        );
     }
 
-    hresult = g_zVideo_pD3D2->CreateViewport(&g_zVideo_pD3DViewport2, 0);
+    hresult = g_zVideo_pD3D2->CreateViewport(
+        &g_zVideo_pD3DViewport2,
+        0
+    );
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                      0xf4);
+        return zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0xf4
+        );
     }
 
     hresult = g_zVideo_pD3DDevice->AddViewport(g_zVideo_pD3DViewport2);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                      0xf9);
+        return zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0xf9
+        );
     }
 
     const int width = g_zVideo_DisplayModeSurfaceState.width;
@@ -4163,20 +5636,32 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDeviceState() {
 
     hresult = g_zVideo_pD3DViewport2->SetViewport2(&viewport2);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                      0x10a);
+        return zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0x10a
+        );
     }
 
     hresult = g_zVideo_pD3DDevice->SetCurrentViewport(g_zVideo_pD3DViewport2);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                      0x10f);
+        return zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0x10f
+        );
     }
 
-    hresult = g_zVideo_pD3D2->CreateMaterial(&g_zVideo_pD3DMaterial2, 0);
+    hresult = g_zVideo_pD3D2->CreateMaterial(
+        &g_zVideo_pD3DMaterial2,
+        0
+    );
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                      0x116);
+        return zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0x116
+        );
     }
 
     D3DMATERIAL mat = {0};
@@ -4191,40 +5676,88 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDeviceState() {
 
     hresult = g_zVideo_pD3DMaterial2->SetMaterial(&mat);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                      0x124);
+        return zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0x124
+        );
     }
 
-    hresult = g_zVideo_pD3DMaterial2->GetHandle(g_zVideo_pD3DDevice, &g_zVideo_D3DMaterialHandle);
+    hresult = g_zVideo_pD3DMaterial2->GetHandle(
+        g_zVideo_pD3DDevice,
+        &g_zVideo_D3DMaterialHandle
+    );
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                      0x12a);
+        return zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0x12a
+        );
     }
 
     hresult = g_zVideo_pD3DViewport2->SetBackground(g_zVideo_D3DMaterialHandle);
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                      0x12f);
+        return zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0x12f
+        );
     }
 
     g_zVideo_D3DHelDeviceDesc.dwSize = sizeof(g_zVideo_D3DHelDeviceDesc);
     g_zVideo_D3DHalDeviceDesc.dwSize = sizeof(g_zVideo_D3DHalDeviceDesc);
-    hresult = g_zVideo_pD3DDevice->GetCaps(&g_zVideo_D3DHalDeviceDesc, &g_zVideo_D3DHelDeviceDesc);
+    hresult = g_zVideo_pD3DDevice->GetCaps(
+        &g_zVideo_D3DHalDeviceDesc,
+        &g_zVideo_D3DHelDeviceDesc
+    );
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                      0x139);
+        return zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0x139
+        );
     }
 
-    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_CULLMODE, 1);
-    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZENABLE, 1);
-    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZFUNC, 7);
-    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, 0);
-    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 1);
-    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 1);
-    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAG, 2);
-    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMIN, 2);
-    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, 5);
-    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, 6);
+    g_zVideo_pD3DDevice->SetRenderState(
+        D3DRENDERSTATE_CULLMODE,
+        1
+    );
+    g_zVideo_pD3DDevice->SetRenderState(
+        D3DRENDERSTATE_ZENABLE,
+        1
+    );
+    g_zVideo_pD3DDevice->SetRenderState(
+        D3DRENDERSTATE_ZFUNC,
+        7
+    );
+    g_zVideo_pD3DDevice->SetRenderState(
+        D3DRENDERSTATE_SPECULARENABLE,
+        0
+    );
+    g_zVideo_pD3DDevice->SetRenderState(
+        D3DRENDERSTATE_SHADEMODE,
+        1
+    );
+    g_zVideo_pD3DDevice->SetRenderState(
+        D3DRENDERSTATE_TEXTUREPERSPECTIVE,
+        1
+    );
+    g_zVideo_pD3DDevice->SetRenderState(
+        D3DRENDERSTATE_TEXTUREMAG,
+        2
+    );
+    g_zVideo_pD3DDevice->SetRenderState(
+        D3DRENDERSTATE_TEXTUREMIN,
+        2
+    );
+    g_zVideo_pD3DDevice->SetRenderState(
+        D3DRENDERSTATE_SRCBLEND,
+        5
+    );
+    g_zVideo_pD3DDevice->SetRenderState(
+        D3DRENDERSTATE_DESTBLEND,
+        6
+    );
 
     g_zVideo_PendingWireframeState = -1;
     SetFogEnable(1);
@@ -4233,92 +5766,148 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDeviceState() {
 }
 
 // Reimplements 0x4aa9e0: zVideo_dd3d::SetFogEnable
-RECOIL_NOINLINE void RECOIL_FASTCALL SetFogEnable(int enable) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetFogEnable(
+    int enable
+) {
     if (g_zVideo_CachedFogEnableRenderState != enable) {
-        g_zVideo_pD3DDevice->SetRenderState((D3DRENDERSTATETYPE)(0x1c),
-                                            (DWORD)(enable));
+        g_zVideo_pD3DDevice->SetRenderState(
+            (D3DRENDERSTATETYPE)(0x1c),
+            (DWORD)(enable)
+        );
         g_zVideo_CachedFogEnableRenderState = enable;
     }
 
     if (g_zVideo_CachedFogModeLightState != 3) {
-        g_zVideo_pD3DDevice->SetLightState((D3DLIGHTSTATETYPE)(4), 3);
+        g_zVideo_pD3DDevice->SetLightState(
+            (D3DLIGHTSTATETYPE)(4),
+            3
+        );
         g_zVideo_CachedFogModeLightState = 3;
     }
 }
 
 // Reimplements 0x4aaa30: zVideo_dd3d::SetFogStart
-RECOIL_NOINLINE void RECOIL_STDCALL SetFogStart(float fogStart) {
+RECOIL_NOINLINE void RECOIL_STDCALL SetFogStart(
+    float fogStart
+) {
     if (g_zVideo_CachedFogStartLightStateValue != fogStart) {
-        g_zVideo_pD3DDevice->SetLightState((D3DLIGHTSTATETYPE)(5),
-                                           *(DWORD *)(&fogStart));
+        g_zVideo_pD3DDevice->SetLightState(
+            (D3DLIGHTSTATETYPE)(5),
+            *(DWORD *)(&fogStart)
+        );
         g_zVideo_CachedFogStartLightStateValue = fogStart;
     }
 }
 
 // Reimplements 0x4aaa60: zVideo_dd3d::SetFogEnd
-RECOIL_NOINLINE void RECOIL_STDCALL SetFogEnd(float fogEnd) {
+RECOIL_NOINLINE void RECOIL_STDCALL SetFogEnd(
+    float fogEnd
+) {
     if (g_zVideo_CachedFogEndLightStateValue != fogEnd) {
-        g_zVideo_pD3DDevice->SetLightState((D3DLIGHTSTATETYPE)(5),
-                                           *(DWORD *)(&fogEnd));
+        g_zVideo_pD3DDevice->SetLightState(
+            (D3DLIGHTSTATETYPE)(5),
+            *(DWORD *)(&fogEnd)
+        );
         g_zVideo_CachedFogEndLightStateValue = fogEnd;
     }
 }
 
 // Reimplements 0x4aaa90: zVideo_dd3d::ApplyFogStateFromGlobals
-RECOIL_NOINLINE void RECOIL_STDCALL ApplyFogStateFromGlobals(float fogStart, float fogEnd,
-                                                             float unused) {
+RECOIL_NOINLINE void RECOIL_STDCALL ApplyFogStateFromGlobals(
+    float fogStart,
+    float fogEnd,
+    float unused
+) {
     (void)unused;
-    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 1);
+    g_zVideo_pD3DDevice->SetRenderState(
+        D3DRENDERSTATE_FOGENABLE,
+        1
+    );
 
-    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_FOGCOLOR,
-                                        PackFogColorFrom255Floats(g_zVideo_FogColorPendingR255,
-                                                                  g_zVideo_FogColorPendingG255,
-                                                                  g_zVideo_FogColorPendingB255));
+    g_zVideo_pD3DDevice->SetRenderState(
+        D3DRENDERSTATE_FOGCOLOR,
+        PackFogColorFrom255Floats(
+            g_zVideo_FogColorPendingR255,
+            g_zVideo_FogColorPendingG255,
+            g_zVideo_FogColorPendingB255
+        )
+    );
 
-    g_zVideo_pD3DDevice->SetLightState(D3DLIGHTSTATE_FOGMODE, D3DFOG_LINEAR);
-    g_zVideo_pD3DDevice->SetLightState((D3DLIGHTSTATETYPE)(5),
-                                       *(DWORD *)(&fogStart));
-    g_zVideo_pD3DDevice->SetLightState((D3DLIGHTSTATETYPE)(6),
-                                       *(DWORD *)(&fogEnd));
+    g_zVideo_pD3DDevice->SetLightState(
+        D3DLIGHTSTATE_FOGMODE,
+        D3DFOG_LINEAR
+    );
+    g_zVideo_pD3DDevice->SetLightState(
+        (D3DLIGHTSTATETYPE)(5),
+        *(DWORD *)(&fogStart)
+    );
+    g_zVideo_pD3DDevice->SetLightState(
+        (D3DLIGHTSTATETYPE)(6),
+        *(DWORD *)(&fogEnd)
+    );
 }
 
 // Reimplements 0x4aab30: zVideo_dd3d::UpdateFogColor
 RECOIL_NOINLINE void RECOIL_CDECL UpdateFogColor() {
-    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_FOGCOLOR,
-                                        PackFogColorFrom255Floats(g_zVideo_FogColorAppliedR255,
-                                                                  g_zVideo_FogColorAppliedG255,
-                                                                  g_zVideo_FogColorAppliedB255));
+    g_zVideo_pD3DDevice->SetRenderState(
+        D3DRENDERSTATE_FOGCOLOR,
+        PackFogColorFrom255Floats(
+            g_zVideo_FogColorAppliedR255,
+            g_zVideo_FogColorAppliedG255,
+            g_zVideo_FogColorAppliedB255
+        )
+    );
 }
 
 // Reimplements 0x4accc0: zVideo_dd3d::SetQuadBatchDepthAndRhw
-RECOIL_NOINLINE void RECOIL_STDCALL SetQuadBatchDepthAndRhw(float depthAndRhw) {
+RECOIL_NOINLINE void RECOIL_STDCALL SetQuadBatchDepthAndRhw(
+    float depthAndRhw
+) {
     {
-    for (int itemIndex = 0; itemIndex < 16; ++itemIndex) {
-        zVideo_QuadBatchItemPartial &item = g_zVideo_QuadBatchItemsBase[itemIndex];
-        {
-        for (int vertexIndex = 0; vertexIndex < 4; ++vertexIndex) {
-            item.vertices[vertexIndex].sz = depthAndRhw;
-            item.vertices[vertexIndex].rhw = depthAndRhw;
+        for (int itemIndex = 0; itemIndex < 16; ++itemIndex) {
+            zVideo_QuadBatchItemPartial &item = g_zVideo_QuadBatchItemsBase[itemIndex];
+            {
+                for (int vertexIndex = 0; vertexIndex < 4; ++vertexIndex) {
+                    item.vertices[vertexIndex].sz = depthAndRhw;
+                    item.vertices[vertexIndex].rhw = depthAndRhw;
+                }
+            }
         }
-        }
-    }
     }
 }
 
 // Reimplements 0x4aab90: zVideo_dd3d::SubmitPolyFlatColor16
-RECOIL_NOINLINE void RECOIL_FASTCALL
-SubmitPolyFlatColor16(zVideo_XyzVertex *vertices, unsigned int packedColor16, int alpha,
-                      int renderParam, int vertexCount, int queueMode) {
-    const DWORD packedColor = PackD3DColorFrom16(packedColor16, alpha);
+RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyFlatColor16(
+    zVideo_XyzVertex *vertices,
+    unsigned int packedColor16,
+    int alpha,
+    int renderParam,
+    int vertexCount,
+    int queueMode
+) {
+    const DWORD packedColor = PackD3DColorFrom16(
+        packedColor16,
+        alpha
+    );
 
     if (alpha >= 0xff) {
-        CopyFlatVerticesReverse(g_zVideo_D3DSubmitTempVertices, vertices, vertexCount, packedColor);
+        CopyFlatVerticesReverse(
+            g_zVideo_D3DSubmitTempVertices,
+            vertices,
+            vertexCount,
+            packedColor
+        );
 
         if (queueMode != 0) {
             const int queueIndex = g_zVideo_OverwriteQueueCount;
             if (queueIndex >= 0x180) {
-                zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x503,
-                                  "Not enough ZVID_MAX_OVERWRITE_POLYS: needs %d", queueIndex);
+                zError::ReportOld(
+                    0x400,
+                    kZVideoDirect3DSourceFile,
+                    0x503,
+                    "Not enough ZVID_MAX_OVERWRITE_POLYS: needs %d",
+                    queueIndex
+                );
                 return;
             }
 
@@ -4329,27 +5918,43 @@ SubmitPolyFlatColor16(zVideo_XyzVertex *vertices, unsigned int packedColor16, in
             entry.renderClass = 0;
             entry.renderParam = renderParam;
             if (vertexCount > 0) {
-                memcpy(entry.vertices, g_zVideo_D3DSubmitTempVertices,
-                            (size_t)(vertexCount) * sizeof(D3DTLVERTEX));
+                memcpy(
+                    entry.vertices,
+                    g_zVideo_D3DSubmitTempVertices,
+                    (size_t)(vertexCount) * sizeof(D3DTLVERTEX)
+                );
             }
             return;
         }
 
         if (g_zVideo_D3DRenderState_TextureHandle != 0) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_TEXTUREHANDLE,
+                0
+            );
             g_zVideo_D3DRenderState_TextureHandle = 0;
         }
         if (g_zVideo_D3DRenderState_ShadeMode != 1) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 1);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_SHADEMODE,
+                1
+            );
             g_zVideo_D3DRenderState_ShadeMode = 1;
         }
 
         const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-            (D3DPRIMITIVETYPE)(6), (D3DVERTEXTYPE)(3),
-            g_zVideo_D3DSubmitTempVertices, (DWORD)(vertexCount), 0);
+            (D3DPRIMITIVETYPE)(6),
+            (D3DVERTEXTYPE)(3),
+            g_zVideo_D3DSubmitTempVertices,
+            (DWORD)(vertexCount),
+            0
+        );
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                   0x520);
+            zVideo_dd::ReportError(
+                (int)(hresult),
+                kZVideoDirect3DSourceFile,
+                0x520
+            );
         }
         return;
     }
@@ -4357,8 +5962,13 @@ SubmitPolyFlatColor16(zVideo_XyzVertex *vertices, unsigned int packedColor16, in
     if (queueMode != 0) {
         const int queueIndex = g_zVideo_OverwriteQueueCount;
         if (queueIndex >= 0x180) {
-            zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x528,
-                              "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d", queueIndex);
+            zError::ReportOld(
+                0x400,
+                kZVideoDirect3DSourceFile,
+                0x528,
+                "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d",
+                queueIndex
+            );
             return;
         }
 
@@ -4369,15 +5979,25 @@ SubmitPolyFlatColor16(zVideo_XyzVertex *vertices, unsigned int packedColor16, in
         entry.renderClass = 0;
         entry.renderParam = renderParam;
         if (vertexCount > 0) {
-            CopyFlatVerticesReverse(entry.vertices, vertices, vertexCount, packedColor);
+            CopyFlatVerticesReverse(
+                entry.vertices,
+                vertices,
+                vertexCount,
+                packedColor
+            );
         }
         return;
     }
 
     const int queueIndex = g_zVideo_SortedPolyQueueCount;
     if ((unsigned int)(queueIndex) >= 0x100) {
-        zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x547,
-                          "Not enough MAX_TRANSPARENT_POLYS: need %d", queueIndex);
+        zError::ReportOld(
+            0x400,
+            kZVideoDirect3DSourceFile,
+            0x547,
+            "Not enough MAX_TRANSPARENT_POLYS: need %d",
+            queueIndex
+        );
         return;
     }
 
@@ -4386,24 +6006,44 @@ SubmitPolyFlatColor16(zVideo_XyzVertex *vertices, unsigned int packedColor16, in
     entry.renderClass = 0;
     entry.renderParam = renderParam;
     if (vertexCount > 0) {
-        CopyFlatVerticesReverse(entry.vertices, vertices, vertexCount, packedColor);
+        CopyFlatVerticesReverse(
+            entry.vertices,
+            vertices,
+            vertexCount,
+            packedColor
+        );
     }
     ++g_zVideo_SortedPolyQueueCount;
 }
 
 // Reimplements 0x4aaef0: zVideo_dd3d::SubmitPolyGouraudColor16
 RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyGouraudColor16(
-    zVideo_XyzVertex *vertices, unsigned int *packedColors16, int alpha,
-    int renderParam, int vertexCount, int queueMode) {
+    zVideo_XyzVertex *vertices,
+    unsigned int *packedColors16,
+    int alpha,
+    int renderParam,
+    int vertexCount,
+    int queueMode
+) {
     if (alpha >= 0xff) {
-        CopyGouraudVerticesReverse(g_zVideo_D3DSubmitTempVertices, vertices, packedColors16,
-                                   vertexCount, alpha);
+        CopyGouraudVerticesReverse(
+            g_zVideo_D3DSubmitTempVertices,
+            vertices,
+            packedColors16,
+            vertexCount,
+            alpha
+        );
 
         if (queueMode != 0) {
             const int queueIndex = g_zVideo_OverwriteQueueCount;
             if (queueIndex >= 0x180) {
-                zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x59d,
-                                  "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d", queueIndex);
+                zError::ReportOld(
+                    0x400,
+                    kZVideoDirect3DSourceFile,
+                    0x59d,
+                    "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d",
+                    queueIndex
+                );
                 return;
             }
 
@@ -4414,27 +6054,43 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyGouraudColor16(
             entry.renderClass = 0;
             entry.renderParam = renderParam;
             if (vertexCount > 0) {
-                memcpy(entry.vertices, g_zVideo_D3DSubmitTempVertices,
-                            (size_t)(vertexCount) * sizeof(D3DTLVERTEX));
+                memcpy(
+                    entry.vertices,
+                    g_zVideo_D3DSubmitTempVertices,
+                    (size_t)(vertexCount) * sizeof(D3DTLVERTEX)
+                );
             }
             return;
         }
 
         if (g_zVideo_D3DRenderState_TextureHandle != 0) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_TEXTUREHANDLE,
+                0
+            );
             g_zVideo_D3DRenderState_TextureHandle = 0;
         }
         if (g_zVideo_D3DRenderState_ShadeMode != 1) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 1);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_SHADEMODE,
+                1
+            );
             g_zVideo_D3DRenderState_ShadeMode = 1;
         }
 
         const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-            (D3DPRIMITIVETYPE)(6), (D3DVERTEXTYPE)(3),
-            g_zVideo_D3DSubmitTempVertices, (DWORD)(vertexCount), 0);
+            (D3DPRIMITIVETYPE)(6),
+            (D3DVERTEXTYPE)(3),
+            g_zVideo_D3DSubmitTempVertices,
+            (DWORD)(vertexCount),
+            0
+        );
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                   0x5bb);
+            zVideo_dd::ReportError(
+                (int)(hresult),
+                kZVideoDirect3DSourceFile,
+                0x5bb
+            );
         }
         return;
     }
@@ -4442,8 +6098,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyGouraudColor16(
     if (queueMode != 0) {
         const int queueIndex = g_zVideo_OverwriteQueueCount;
         if (queueIndex >= 0x180) {
-            zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x5c3,
-                              "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d", queueIndex);
+            zError::ReportOld(
+                0x400,
+                kZVideoDirect3DSourceFile,
+                0x5c3,
+                "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d",
+                queueIndex
+            );
             return;
         }
 
@@ -4454,16 +6115,26 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyGouraudColor16(
         entry.renderClass = 0;
         entry.renderParam = renderParam;
         if (vertexCount > 0) {
-            CopyGouraudVerticesReverse(entry.vertices, vertices, packedColors16, vertexCount,
-                                       alpha);
+            CopyGouraudVerticesReverse(
+                entry.vertices,
+                vertices,
+                packedColors16,
+                vertexCount,
+                alpha
+            );
         }
         return;
     }
 
     const int queueIndex = g_zVideo_SortedPolyQueueCount;
     if ((unsigned int)(queueIndex) >= 0x100) {
-        zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x5e2,
-                          "Not enough MAX_TRANSPARENT_POLYS: need %d", queueIndex);
+        zError::ReportOld(
+            0x400,
+            kZVideoDirect3DSourceFile,
+            0x5e2,
+            "Not enough MAX_TRANSPARENT_POLYS: need %d",
+            queueIndex
+        );
         return;
     }
 
@@ -4472,35 +6143,67 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyGouraudColor16(
     entry.renderClass = 0;
     entry.renderParam = renderParam;
     if (vertexCount > 0) {
-        CopyGouraudVerticesReverse(entry.vertices, vertices, packedColors16, vertexCount, alpha);
+        CopyGouraudVerticesReverse(
+            entry.vertices,
+            vertices,
+            packedColors16,
+            vertexCount,
+            alpha
+        );
     }
     ++g_zVideo_SortedPolyQueueCount;
 }
 
 // Reimplements 0x4ab320: zVideo_dd3d::SubmitPolyColorAttr
 RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyColorAttr(
-    zVideo_XyzVertex *vertices, unsigned int packedColor16, zVideo_ColorRgbFloat *baseColor,
-    float *attr1, float *attr0, float *attr2, int alpha, int vertexCount,
-    unsigned int renderParam, int queueMode) {
+    zVideo_XyzVertex *vertices,
+    unsigned int packedColor16,
+    zVideo_ColorRgbFloat *baseColor,
+    float *attr1,
+    float *attr0,
+    float *attr2,
+    int alpha,
+    int vertexCount,
+    unsigned int renderParam,
+    int queueMode
+) {
     (void)packedColor16;
 
     const float attr1Scale = 1.0f - *attr1;
     const DWORD alphaBits = alpha < 0xff ? (DWORD)(alpha << 24) : 0xff000000;
 
-    FillColorAttrSpecularReverse(attr2, vertexCount);
-    FillColorAttrColorsReverse(*baseColor, attr0, attr1Scale, alphaBits, vertexCount);
+    FillColorAttrSpecularReverse(
+        attr2,
+        vertexCount
+    );
+    FillColorAttrColorsReverse(
+        *baseColor,
+        attr0,
+        attr1Scale,
+        alphaBits,
+        vertexCount
+    );
 
     if (alpha < 0xff) {
         return;
     }
 
-    CopyPositionsReverse(g_zVideo_D3DSubmitTempVertices, vertices, vertexCount);
+    CopyPositionsReverse(
+        g_zVideo_D3DSubmitTempVertices,
+        vertices,
+        vertexCount
+    );
 
     if (queueMode != 0) {
         const int queueIndex = g_zVideo_OverwriteQueueCount;
         if (queueIndex >= 0x180) {
-            zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x69c,
-                              "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d", queueIndex);
+            zError::ReportOld(
+                0x400,
+                kZVideoDirect3DSourceFile,
+                0x69c,
+                "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d",
+                queueIndex
+            );
             return;
         }
 
@@ -4511,49 +6214,77 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyColorAttr(
         entry.renderClass = 0;
         entry.renderParam = (int)(renderParam);
         if (vertexCount > 0) {
-            memcpy(entry.vertices, g_zVideo_D3DSubmitTempVertices,
-                        (size_t)(vertexCount) * sizeof(D3DTLVERTEX));
+            memcpy(
+                entry.vertices,
+                g_zVideo_D3DSubmitTempVertices,
+                (size_t)(vertexCount) * sizeof(D3DTLVERTEX)
+            );
         }
         return;
     }
 
     if (g_zVideo_D3DRenderState_TextureHandle != 0) {
-        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
+        g_zVideo_pD3DDevice->SetRenderState(
+            D3DRENDERSTATE_TEXTUREHANDLE,
+            0
+        );
         g_zVideo_D3DRenderState_TextureHandle = 0;
     }
     if (g_zVideo_D3DRenderState_ShadeMode != 1) {
-        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 1);
+        g_zVideo_pD3DDevice->SetRenderState(
+            D3DRENDERSTATE_SHADEMODE,
+            1
+        );
         g_zVideo_D3DRenderState_ShadeMode = 1;
     }
 
     const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-        (D3DPRIMITIVETYPE)(6), (D3DVERTEXTYPE)(3),
-        g_zVideo_D3DSubmitTempVertices, (DWORD)(vertexCount), 0);
+        (D3DPRIMITIVETYPE)(6),
+        (D3DVERTEXTYPE)(3),
+        g_zVideo_D3DSubmitTempVertices,
+        (DWORD)(vertexCount),
+        0
+    );
     if (hresult != DD_OK) {
-        zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                               0x6ba);
+        zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0x6ba
+        );
     }
 }
 
 // Reimplements 0x4ab6d0: zVideo_dd3d::SubmitPolyRenderClass
-RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(zVideo_XyzVertex *vertices,
-                                                           zVideo_TexCoord *texCoords,
-                                                           int vertexCount,
-                                                           zVideo_RenderClass *renderClass,
-                                                           unsigned int renderParam, float alpha,
-                                                           int queueMode) {
-    const bool opaquePath =
-        renderClass->textureMapBlend != (D3DTEXTUREBLEND)(4) && alpha >= 1.0f;
+RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(
+    zVideo_XyzVertex *vertices,
+    zVideo_TexCoord *texCoords,
+    int vertexCount,
+    zVideo_RenderClass *renderClass,
+    unsigned int renderParam,
+    float alpha,
+    int queueMode
+) {
+    const bool opaquePath = renderClass->textureMapBlend != (D3DTEXTUREBLEND)(4) && alpha >= 1.0f;
 
     if (opaquePath) {
-        CopyTexturedVerticesReverse(g_zVideo_D3DSubmitTempVertices, vertices, texCoords,
-                                    vertexCount, 0xffffffff);
+        CopyTexturedVerticesReverse(
+            g_zVideo_D3DSubmitTempVertices,
+            vertices,
+            texCoords,
+            vertexCount,
+            0xffffffff
+        );
 
         if (queueMode != 0) {
             const int queueIndex = g_zVideo_OverwriteQueueCount;
             if (queueIndex >= 0x180) {
-                zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x6fd,
-                                  "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d", queueIndex);
+                zError::ReportOld(
+                    0x400,
+                    kZVideoDirect3DSourceFile,
+                    0x6fd,
+                    "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d",
+                    queueIndex
+                );
                 return;
             }
 
@@ -4564,43 +6295,64 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(zVideo_XyzVertex *ver
             entry.renderClass = (int)(renderClass);
             entry.renderParam = (int)(renderParam);
             if (vertexCount > 0) {
-                memcpy(entry.vertices, g_zVideo_D3DSubmitTempVertices,
-                            (size_t)(vertexCount) * sizeof(D3DTLVERTEX));
+                memcpy(
+                    entry.vertices,
+                    g_zVideo_D3DSubmitTempVertices,
+                    (size_t)(vertexCount) * sizeof(D3DTLVERTEX)
+                );
             }
             return;
         }
 
         if (g_zVideo_D3DRenderState_ShadeMode != 1) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 1);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_SHADEMODE,
+                1
+            );
             g_zVideo_D3DRenderState_ShadeMode = 1;
         }
         if (g_zVideo_D3DRenderState_TextureHandle != renderClass->textureHandle) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE,
-                                                renderClass->textureHandle);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_TEXTUREHANDLE,
+                renderClass->textureHandle
+            );
             g_zVideo_D3DRenderState_TextureHandle = renderClass->textureHandle;
         }
         if (g_zVideo_D3DRenderState_TextureMapBlend != renderClass->textureMapBlend) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND,
-                                                renderClass->textureMapBlend);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_TEXTUREMAPBLEND,
+                renderClass->textureMapBlend
+            );
             g_zVideo_D3DRenderState_TextureMapBlend = renderClass->textureMapBlend;
         }
         if (g_zVideo_D3DRenderState_TextureAddressU != renderClass->textureAddressU) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREADDRESSU,
-                                                renderClass->textureAddressU);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_TEXTUREADDRESSU,
+                renderClass->textureAddressU
+            );
             g_zVideo_D3DRenderState_TextureAddressU = renderClass->textureAddressU;
         }
         if (g_zVideo_D3DRenderState_TextureAddressV != renderClass->textureAddressV) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREADDRESSV,
-                                                renderClass->textureAddressV);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_TEXTUREADDRESSV,
+                renderClass->textureAddressV
+            );
             g_zVideo_D3DRenderState_TextureAddressV = renderClass->textureAddressV;
         }
 
         const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-            (D3DPRIMITIVETYPE)(6), (D3DVERTEXTYPE)(3),
-            g_zVideo_D3DSubmitTempVertices, (DWORD)(vertexCount), 0);
+            (D3DPRIMITIVETYPE)(6),
+            (D3DVERTEXTYPE)(3),
+            g_zVideo_D3DSubmitTempVertices,
+            (DWORD)(vertexCount),
+            0
+        );
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                   0x71d);
+            zVideo_dd::ReportError(
+                (int)(hresult),
+                kZVideoDirect3DSourceFile,
+                0x71d
+            );
         }
         return;
     }
@@ -4609,8 +6361,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(zVideo_XyzVertex *ver
     if (queueMode != 0) {
         const int queueIndex = g_zVideo_OverwriteQueueCount;
         if (queueIndex >= 0x180) {
-            zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x725,
-                              "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d", queueIndex);
+            zError::ReportOld(
+                0x400,
+                kZVideoDirect3DSourceFile,
+                0x725,
+                "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d",
+                queueIndex
+            );
             return;
         }
 
@@ -4621,16 +6378,26 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(zVideo_XyzVertex *ver
         entry.renderClass = (int)(renderClass);
         entry.renderParam = (int)(renderParam);
         if (vertexCount > 0) {
-            CopyTexturedVerticesReverse(entry.vertices, vertices, texCoords, vertexCount,
-                                        alphaWhite);
+            CopyTexturedVerticesReverse(
+                entry.vertices,
+                vertices,
+                texCoords,
+                vertexCount,
+                alphaWhite
+            );
         }
         return;
     }
 
     const int queueIndex = g_zVideo_SortedPolyQueueCount;
     if ((unsigned int)(queueIndex) >= 0x100) {
-        zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x74c,
-                          "Not enough MAX_TRANSPARENT_POLYS: need %d", queueIndex);
+        zError::ReportOld(
+            0x400,
+            kZVideoDirect3DSourceFile,
+            0x74c,
+            "Not enough MAX_TRANSPARENT_POLYS: need %d",
+            queueIndex
+        );
         return;
     }
 
@@ -4639,39 +6406,70 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(zVideo_XyzVertex *ver
     entry.renderClass = (int)(renderClass);
     entry.renderParam = (int)(renderParam);
     if (vertexCount > 0) {
-        CopyTexturedVerticesReverse(entry.vertices, vertices, texCoords, vertexCount, alphaWhite);
+        CopyTexturedVerticesReverse(
+            entry.vertices,
+            vertices,
+            texCoords,
+            vertexCount,
+            alphaWhite
+        );
     }
     ++g_zVideo_SortedPolyQueueCount;
 }
 
 // Reimplements 0x4abb20: zVideo_dd3d::SubmitPolygon
-RECOIL_NOINLINE void RECOIL_FASTCALL
-SubmitPolygon(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *attr1, float *attr0,
-              float *attr2, int vertexCount, zVideo_RenderClass *renderClass,
-              unsigned int renderParam, float alpha, int queueMode) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolygon(
+    zVideo_XyzVertex *vertices,
+    zVideo_TexCoord *uvPairs,
+    float *attr1,
+    float *attr0,
+    float *attr2,
+    int vertexCount,
+    zVideo_RenderClass *renderClass,
+    unsigned int renderParam,
+    float alpha,
+    int queueMode
+) {
     const float attr1Scale = 1.0f - *attr1;
-    const DWORD alphaBits =
-        alpha < 1.0f ? ((DWORD)((int)(alpha * 255.0f)) << 24)
-                     : 0xff000000;
+    const DWORD alphaBits = alpha < 1.0f ? ((DWORD)((int)(alpha * 255.0f)) << 24) : 0xff000000;
     const float grayBase = attr1Scale * 255.0f;
 
-    FillColorAttrSpecularReverse(attr2, vertexCount);
-    FillPolygonColorsReverse(attr0, grayBase, alphaBits, vertexCount);
+    FillColorAttrSpecularReverse(
+        attr2,
+        vertexCount
+    );
+    FillPolygonColorsReverse(
+        attr0,
+        grayBase,
+        alphaBits,
+        vertexCount
+    );
 
-    const bool opaquePath =
-        renderClass->textureMapBlend != (D3DTEXTUREBLEND)(4) && alpha >= 1.0f;
+    const bool opaquePath = renderClass->textureMapBlend != (D3DTEXTUREBLEND)(4) && alpha >= 1.0f;
 
     if (opaquePath) {
         int preparedVertexCount = vertexCount;
-        CopyPositionUvReversePreserveColor(g_zVideo_D3DSubmitTempVertices, vertices, uvPairs,
-                                           preparedVertexCount);
-        AppendFanCloseVertexIfNeeded(g_zVideo_D3DSubmitTempVertices, preparedVertexCount);
+        CopyPositionUvReversePreserveColor(
+            g_zVideo_D3DSubmitTempVertices,
+            vertices,
+            uvPairs,
+            preparedVertexCount
+        );
+        AppendFanCloseVertexIfNeeded(
+            g_zVideo_D3DSubmitTempVertices,
+            preparedVertexCount
+        );
 
         if (queueMode != 0) {
             const int queueIndex = g_zVideo_OverwriteQueueCount;
             if (queueIndex >= 0x180) {
-                zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x82a,
-                                  "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d", queueIndex);
+                zError::ReportOld(
+                    0x400,
+                    kZVideoDirect3DSourceFile,
+                    0x82a,
+                    "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d",
+                    queueIndex
+                );
                 return;
             }
 
@@ -4682,42 +6480,64 @@ SubmitPolygon(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *attr1
             entry.renderClass = (int)(renderClass);
             entry.renderParam = (int)(renderParam);
             if (preparedVertexCount > 0) {
-                memcpy(entry.vertices, g_zVideo_D3DSubmitTempVertices,
-                            (size_t)(preparedVertexCount) * sizeof(D3DTLVERTEX));
+                memcpy(
+                    entry.vertices,
+                    g_zVideo_D3DSubmitTempVertices,
+                    (size_t)(preparedVertexCount) * sizeof(D3DTLVERTEX)
+                );
             }
             return;
         }
 
         if (g_zVideo_D3DRenderState_ShadeMode != 2) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 2);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_SHADEMODE,
+                2
+            );
             g_zVideo_D3DRenderState_ShadeMode = 2;
         }
         if (g_zVideo_D3DRenderState_TextureHandle != renderClass->textureHandle) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE,
-                                                renderClass->textureHandle);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_TEXTUREHANDLE,
+                renderClass->textureHandle
+            );
             g_zVideo_D3DRenderState_TextureHandle = renderClass->textureHandle;
         }
         if (g_zVideo_D3DRenderState_TextureMapBlend != (D3DTEXTUREBLEND)(2)) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND, 2);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_TEXTUREMAPBLEND,
+                2
+            );
             g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(2);
         }
         if (g_zVideo_D3DRenderState_TextureAddressU != renderClass->textureAddressU) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREADDRESSU,
-                                                renderClass->textureAddressU);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_TEXTUREADDRESSU,
+                renderClass->textureAddressU
+            );
             g_zVideo_D3DRenderState_TextureAddressU = renderClass->textureAddressU;
         }
         if (g_zVideo_D3DRenderState_TextureAddressV != renderClass->textureAddressV) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREADDRESSV,
-                                                renderClass->textureAddressV);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_TEXTUREADDRESSV,
+                renderClass->textureAddressV
+            );
             g_zVideo_D3DRenderState_TextureAddressV = renderClass->textureAddressV;
         }
 
         const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-            (D3DPRIMITIVETYPE)(6), (D3DVERTEXTYPE)(3),
-            g_zVideo_D3DSubmitTempVertices, (DWORD)(preparedVertexCount), 0);
+            (D3DPRIMITIVETYPE)(6),
+            (D3DVERTEXTYPE)(3),
+            g_zVideo_D3DSubmitTempVertices,
+            (DWORD)(preparedVertexCount),
+            0
+        );
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                   0x84a);
+            zVideo_dd::ReportError(
+                (int)(hresult),
+                kZVideoDirect3DSourceFile,
+                0x84a
+            );
         }
         return;
     }
@@ -4725,8 +6545,13 @@ SubmitPolygon(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *attr1
     if (queueMode != 0) {
         const int queueIndex = g_zVideo_OverwriteQueueCount;
         if (queueIndex >= 0x180) {
-            zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x853,
-                              "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d", queueIndex);
+            zError::ReportOld(
+                0x400,
+                kZVideoDirect3DSourceFile,
+                0x853,
+                "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d",
+                queueIndex
+            );
             return;
         }
 
@@ -4737,18 +6562,31 @@ SubmitPolygon(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *attr1
         entry.renderParam = (int)(renderParam);
         int preparedVertexCount = vertexCount;
         if (vertexCount > 0) {
-            CopyPositionUvWithPreparedColorReverse(entry.vertices, vertices, uvPairs,
-                                                   g_zVideo_D3DSubmitTempVertices, vertexCount);
+            CopyPositionUvWithPreparedColorReverse(
+                entry.vertices,
+                vertices,
+                uvPairs,
+                g_zVideo_D3DSubmitTempVertices,
+                vertexCount
+            );
         }
-        AppendFanCloseVertexIfNeeded(entry.vertices, preparedVertexCount);
+        AppendFanCloseVertexIfNeeded(
+            entry.vertices,
+            preparedVertexCount
+        );
         entry.vertexCount = preparedVertexCount;
         return;
     }
 
     const int queueIndex = g_zVideo_SortedPolyQueueCount;
     if ((unsigned int)(queueIndex) >= 0x100) {
-        zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x88a,
-                          "Not enough MAX_TRANSPARENT_POLYS: need %d", queueIndex);
+        zError::ReportOld(
+            0x400,
+            kZVideoDirect3DSourceFile,
+            0x88a,
+            "Not enough MAX_TRANSPARENT_POLYS: need %d",
+            queueIndex
+        );
         return;
     }
 
@@ -4757,40 +6595,73 @@ SubmitPolygon(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *attr1
     entry.renderParam = (int)(renderParam);
     int preparedVertexCount = vertexCount;
     if (vertexCount > 0) {
-        CopyPositionUvWithPreparedColorReverse(entry.vertices, vertices, uvPairs,
-                                               g_zVideo_D3DSubmitTempVertices, vertexCount);
+        CopyPositionUvWithPreparedColorReverse(
+            entry.vertices,
+            vertices,
+            uvPairs,
+            g_zVideo_D3DSubmitTempVertices,
+            vertexCount
+        );
     }
-    AppendFanCloseVertexIfNeeded(entry.vertices, preparedVertexCount);
+    AppendFanCloseVertexIfNeeded(
+        entry.vertices,
+        preparedVertexCount
+    );
     entry.vertexCount = preparedVertexCount;
     ++g_zVideo_SortedPolyQueueCount;
 }
 
 // Reimplements 0x4ac370: zVideo_dd3d::SubmitPolygonLit
-RECOIL_NOINLINE void RECOIL_FASTCALL
-SubmitPolygonLit(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *attr1, float *attr0,
-                 float *attr2, int vertexCount, zVideo_RenderClass *renderClass,
-                 unsigned int renderParam, float alpha, int queueMode) {
-    const DWORD alphaBits =
-        alpha < 1.0f ? ((DWORD)((int)(alpha * 255.0f)) << 24)
-                     : 0xff000000;
+RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolygonLit(
+    zVideo_XyzVertex *vertices,
+    zVideo_TexCoord *uvPairs,
+    float *attr1,
+    float *attr0,
+    float *attr2,
+    int vertexCount,
+    zVideo_RenderClass *renderClass,
+    unsigned int renderParam,
+    float alpha,
+    int queueMode
+) {
+    const DWORD alphaBits = alpha < 1.0f ? ((DWORD)((int)(alpha * 255.0f)) << 24) : 0xff000000;
 
-    FillColorAttrSpecularReverse(attr2, vertexCount);
-    FillPolygonLitColorsReverse(attr1, attr0, alphaBits, vertexCount);
+    FillColorAttrSpecularReverse(
+        attr2,
+        vertexCount
+    );
+    FillPolygonLitColorsReverse(
+        attr1,
+        attr0,
+        alphaBits,
+        vertexCount
+    );
 
-    const bool opaquePath =
-        renderClass->textureMapBlend != (D3DTEXTUREBLEND)(4) && alpha >= 1.0f;
+    const bool opaquePath = renderClass->textureMapBlend != (D3DTEXTUREBLEND)(4) && alpha >= 1.0f;
 
     if (opaquePath) {
         int preparedVertexCount = vertexCount;
-        CopyPositionUvReversePreserveColor(g_zVideo_D3DSubmitTempVertices, vertices, uvPairs,
-                                           preparedVertexCount);
-        AppendFanCloseVertexIfNeeded(g_zVideo_D3DSubmitTempVertices, preparedVertexCount);
+        CopyPositionUvReversePreserveColor(
+            g_zVideo_D3DSubmitTempVertices,
+            vertices,
+            uvPairs,
+            preparedVertexCount
+        );
+        AppendFanCloseVertexIfNeeded(
+            g_zVideo_D3DSubmitTempVertices,
+            preparedVertexCount
+        );
 
         if (queueMode != 0) {
             const int queueIndex = g_zVideo_OverwriteQueueCount;
             if (queueIndex >= 0x180) {
-                zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x983,
-                                  "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d", queueIndex);
+                zError::ReportOld(
+                    0x400,
+                    kZVideoDirect3DSourceFile,
+                    0x983,
+                    "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d",
+                    queueIndex
+                );
                 return;
             }
 
@@ -4801,42 +6672,64 @@ SubmitPolygonLit(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *at
             entry.renderClass = (int)(renderClass);
             entry.renderParam = (int)(renderParam);
             if (preparedVertexCount > 0) {
-                memcpy(entry.vertices, g_zVideo_D3DSubmitTempVertices,
-                            (size_t)(preparedVertexCount) * sizeof(D3DTLVERTEX));
+                memcpy(
+                    entry.vertices,
+                    g_zVideo_D3DSubmitTempVertices,
+                    (size_t)(preparedVertexCount) * sizeof(D3DTLVERTEX)
+                );
             }
             return;
         }
 
         if (g_zVideo_D3DRenderState_ShadeMode != 2) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 2);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_SHADEMODE,
+                2
+            );
             g_zVideo_D3DRenderState_ShadeMode = 2;
         }
         if (g_zVideo_D3DRenderState_TextureHandle != renderClass->textureHandle) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE,
-                                                renderClass->textureHandle);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_TEXTUREHANDLE,
+                renderClass->textureHandle
+            );
             g_zVideo_D3DRenderState_TextureHandle = renderClass->textureHandle;
         }
         if (g_zVideo_D3DRenderState_TextureMapBlend != (D3DTEXTUREBLEND)(2)) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND, 2);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_TEXTUREMAPBLEND,
+                2
+            );
             g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(2);
         }
         if (g_zVideo_D3DRenderState_TextureAddressU != renderClass->textureAddressU) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREADDRESSU,
-                                                renderClass->textureAddressU);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_TEXTUREADDRESSU,
+                renderClass->textureAddressU
+            );
             g_zVideo_D3DRenderState_TextureAddressU = renderClass->textureAddressU;
         }
         if (g_zVideo_D3DRenderState_TextureAddressV != renderClass->textureAddressV) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREADDRESSV,
-                                                renderClass->textureAddressV);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_TEXTUREADDRESSV,
+                renderClass->textureAddressV
+            );
             g_zVideo_D3DRenderState_TextureAddressV = renderClass->textureAddressV;
         }
 
         const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-            (D3DPRIMITIVETYPE)(6), (D3DVERTEXTYPE)(3),
-            g_zVideo_D3DSubmitTempVertices, (DWORD)(preparedVertexCount), 0);
+            (D3DPRIMITIVETYPE)(6),
+            (D3DVERTEXTYPE)(3),
+            g_zVideo_D3DSubmitTempVertices,
+            (DWORD)(preparedVertexCount),
+            0
+        );
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                   0x9a4);
+            zVideo_dd::ReportError(
+                (int)(hresult),
+                kZVideoDirect3DSourceFile,
+                0x9a4
+            );
         }
         return;
     }
@@ -4844,8 +6737,13 @@ SubmitPolygonLit(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *at
     if (queueMode != 0) {
         const int queueIndex = g_zVideo_OverwriteQueueCount;
         if (queueIndex >= 0x180) {
-            zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x9ad,
-                              "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d", queueIndex);
+            zError::ReportOld(
+                0x400,
+                kZVideoDirect3DSourceFile,
+                0x9ad,
+                "Not enough ZVID_MAX_OVERWRITE_POLYS: need %d",
+                queueIndex
+            );
             return;
         }
 
@@ -4856,18 +6754,31 @@ SubmitPolygonLit(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *at
         entry.renderParam = (int)(renderParam);
         int preparedVertexCount = vertexCount;
         if (vertexCount > 0) {
-            CopyPositionUvWithPreparedColorReverse(entry.vertices, vertices, uvPairs,
-                                                   g_zVideo_D3DSubmitTempVertices, vertexCount);
+            CopyPositionUvWithPreparedColorReverse(
+                entry.vertices,
+                vertices,
+                uvPairs,
+                g_zVideo_D3DSubmitTempVertices,
+                vertexCount
+            );
         }
-        AppendFanCloseVertexIfNeeded(entry.vertices, preparedVertexCount);
+        AppendFanCloseVertexIfNeeded(
+            entry.vertices,
+            preparedVertexCount
+        );
         entry.vertexCount = preparedVertexCount;
         return;
     }
 
     const int queueIndex = g_zVideo_SortedPolyQueueCount;
     if ((unsigned int)(queueIndex) >= 0x100) {
-        zError::ReportOld(0x400, kZVideoDirect3DSourceFile, 0x9e4,
-                          "Not enough MAX_TRANSPARENT_POLYS: need %d", queueIndex);
+        zError::ReportOld(
+            0x400,
+            kZVideoDirect3DSourceFile,
+            0x9e4,
+            "Not enough MAX_TRANSPARENT_POLYS: need %d",
+            queueIndex
+        );
         return;
     }
 
@@ -4876,18 +6787,28 @@ SubmitPolygonLit(zVideo_XyzVertex *vertices, zVideo_TexCoord *uvPairs, float *at
     entry.renderParam = (int)(renderParam);
     int preparedVertexCount = vertexCount;
     if (vertexCount > 0) {
-        CopyPositionUvWithPreparedColorReverse(entry.vertices, vertices, uvPairs,
-                                               g_zVideo_D3DSubmitTempVertices, vertexCount);
+        CopyPositionUvWithPreparedColorReverse(
+            entry.vertices,
+            vertices,
+            uvPairs,
+            g_zVideo_D3DSubmitTempVertices,
+            vertexCount
+        );
     }
-    AppendFanCloseVertexIfNeeded(entry.vertices, preparedVertexCount);
+    AppendFanCloseVertexIfNeeded(
+        entry.vertices,
+        preparedVertexCount
+    );
     entry.vertexCount = preparedVertexCount;
     ++g_zVideo_SortedPolyQueueCount;
 }
 
 // Reimplements 0x4acbd0: zVideo_dd3d::DrawPointColor16
-RECOIL_NOINLINE void RECOIL_FASTCALL DrawPointColor16(zVideo_XyzVertex *pointPos,
-                                                      unsigned int packedColor16,
-                                                      int pointCount) {
+RECOIL_NOINLINE void RECOIL_FASTCALL DrawPointColor16(
+    zVideo_XyzVertex *pointPos,
+    unsigned int packedColor16,
+    int pointCount
+) {
     (void)pointCount;
 
     D3DTLVERTEX &vertex = g_zVideo_D3DSubmitTempVertices[0];
@@ -4895,30 +6816,49 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DrawPointColor16(zVideo_XyzVertex *pointPos
     vertex.sy = pointPos->y;
     vertex.sz = pointPos->z;
     vertex.rhw = pointPos->z;
-    vertex.color = PackD3DColorFrom16(packedColor16, 0xff);
+    vertex.color = PackD3DColorFrom16(
+        packedColor16,
+        0xff
+    );
     vertex.specular = 0xff000000;
 
     if (g_zVideo_D3DRenderState_TextureHandle != 0) {
-        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
+        g_zVideo_pD3DDevice->SetRenderState(
+            D3DRENDERSTATE_TEXTUREHANDLE,
+            0
+        );
         g_zVideo_D3DRenderState_TextureHandle = 0;
     }
     if (g_zVideo_D3DRenderState_ShadeMode != 1) {
-        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 1);
+        g_zVideo_pD3DDevice->SetRenderState(
+            D3DRENDERSTATE_SHADEMODE,
+            1
+        );
         g_zVideo_D3DRenderState_ShadeMode = 1;
     }
 
     const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-        (D3DPRIMITIVETYPE)(1), (D3DVERTEXTYPE)(3),
-        g_zVideo_D3DSubmitTempVertices, 1, 0);
+        (D3DPRIMITIVETYPE)(1),
+        (D3DVERTEXTYPE)(3),
+        g_zVideo_D3DSubmitTempVertices,
+        1,
+        0
+    );
     if (hresult != DD_OK) {
-        zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                               0xa4c);
+        zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0xa4c
+        );
     }
 }
 
 // Reimplements 0x4acd00: zVideo_dd3d::QueueSolidQuad
-RECOIL_NOINLINE void RECOIL_FASTCALL QueueSolidQuad(unsigned int packedColor16,
-                                                    zVidRect32 *clipRect, double alpha) {
+RECOIL_NOINLINE void RECOIL_FASTCALL QueueSolidQuad(
+    unsigned int packedColor16,
+    zVidRect32 *clipRect,
+    double alpha
+) {
     const int batchIndex = g_zVideo_QuadBatchCount;
     if ((unsigned int)(batchIndex) >= 0x10) {
         return;
@@ -4952,7 +6892,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL QueueSolidQuad(unsigned int packedColor16,
     item.vertices[3].sy = bottom;
 
     const int alphaByte = (int)(alpha * 255.0);
-    const DWORD packedColor = PackD3DColorFrom16(packedColor16, alphaByte);
+    const DWORD packedColor = PackD3DColorFrom16(
+        packedColor16,
+        alphaByte
+    );
     for (int i = 0; i < 4; ++i) {
         item.vertices[i].color = packedColor;
     }
@@ -4968,23 +6911,32 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushSortedPolys() {
     }
 
     if (g_zVideo_D3DRenderState_ShadeMode != 2) {
-        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 2);
+        g_zVideo_pD3DDevice->SetRenderState(
+            D3DRENDERSTATE_SHADEMODE,
+            2
+        );
         queueCount = g_zVideo_SortedPolyQueueCount;
         g_zVideo_D3DRenderState_ShadeMode = 2;
     }
     if (g_zVideo_D3DRenderState_AlphaBlendEnable != 1) {
-        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+        g_zVideo_pD3DDevice->SetRenderState(
+            D3DRENDERSTATE_ALPHABLENDENABLE,
+            1
+        );
         queueCount = g_zVideo_SortedPolyQueueCount;
         g_zVideo_D3DRenderState_AlphaBlendEnable = 1;
     }
     if (g_zVideo_D3DRenderState_ZWriteEnable != 0) {
-        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
+        g_zVideo_pD3DDevice->SetRenderState(
+            D3DRENDERSTATE_ZWRITEENABLE,
+            0
+        );
         queueCount = g_zVideo_SortedPolyQueueCount;
         g_zVideo_D3DRenderState_ZWriteEnable = 0;
     }
 
     for (unsigned int i = 0; i < (unsigned int)(queueCount); ++i) {
-        g_zVideo_SortedPolyDrawOrder[i] = queueCount - (int)(i) - 1;
+        g_zVideo_SortedPolyDrawOrder[i] = queueCount - (int)(i)-1;
         queueCount = g_zVideo_SortedPolyQueueCount;
     }
 
@@ -5004,15 +6956,18 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushSortedPolys() {
         }
     } while (swapped);
 
-    for (unsigned int i_4102 = 0; i_4102 < (unsigned int)(g_zVideo_SortedPolyQueueCount); ++i_4102) {
+    for (unsigned int i_4102 = 0; i_4102 < (unsigned int)(g_zVideo_SortedPolyQueueCount);
+        ++i_4102) {
         const int drawIndex = g_zVideo_SortedPolyDrawOrder[i_4102];
         zVideo_SortedPolyQueueEntry &entry = g_zVideo_SortedPolyQueueBase[drawIndex];
         zVideo_RenderClass *renderClass = (zVideo_RenderClass *)(entry.renderClass);
 
         if (renderClass != 0) {
             if (g_zVideo_D3DRenderState_TextureHandle != renderClass->textureHandle) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE,
-                                                    renderClass->textureHandle);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_TEXTUREHANDLE,
+                    renderClass->textureHandle
+                );
                 g_zVideo_D3DRenderState_TextureHandle = renderClass->textureHandle;
             }
 
@@ -5022,45 +6977,70 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushSortedPolys() {
                 (entry.vertices[0].color & 0xff000000) != 0xff000000;
             if (forceTransparentTextureBlend) {
                 if (g_zVideo_D3DRenderState_TextureMapBlend != (D3DTEXTUREBLEND)(4)) {
-                    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND, 4);
+                    g_zVideo_pD3DDevice->SetRenderState(
+                        D3DRENDERSTATE_TEXTUREMAPBLEND,
+                        4
+                    );
                     g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(4);
                 }
             } else if (g_zVideo_D3DRenderState_TextureMapBlend != textureMapBlend) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND,
-                                                    textureMapBlend);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_TEXTUREMAPBLEND,
+                    textureMapBlend
+                );
                 g_zVideo_D3DRenderState_TextureMapBlend = textureMapBlend;
             }
 
             if (g_zVideo_D3DRenderState_TextureAddressU != renderClass->textureAddressU) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREADDRESSU,
-                                                    renderClass->textureAddressU);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_TEXTUREADDRESSU,
+                    renderClass->textureAddressU
+                );
                 g_zVideo_D3DRenderState_TextureAddressU = renderClass->textureAddressU;
             }
             if (g_zVideo_D3DRenderState_TextureAddressV != renderClass->textureAddressV) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREADDRESSV,
-                                                    renderClass->textureAddressV);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_TEXTUREADDRESSV,
+                    renderClass->textureAddressV
+                );
                 g_zVideo_D3DRenderState_TextureAddressV = renderClass->textureAddressV;
             }
         } else if (g_zVideo_D3DRenderState_TextureHandle != 0) {
-            g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
+            g_zVideo_pD3DDevice->SetRenderState(
+                D3DRENDERSTATE_TEXTUREHANDLE,
+                0
+            );
             g_zVideo_D3DRenderState_TextureHandle = 0;
         }
 
         const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-            D3DPT_TRIANGLEFAN, (D3DVERTEXTYPE)(3), entry.vertices,
-            (DWORD)(entry.vertexCount), 0);
+            D3DPT_TRIANGLEFAN,
+            (D3DVERTEXTYPE)(3),
+            entry.vertices,
+            (DWORD)(entry.vertexCount),
+            0
+        );
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                   0xb09);
+            zVideo_dd::ReportError(
+                (int)(hresult),
+                kZVideoDirect3DSourceFile,
+                0xb09
+            );
         }
     }
 
     if (g_zVideo_D3DRenderState_AlphaBlendEnable != 0) {
-        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+        g_zVideo_pD3DDevice->SetRenderState(
+            D3DRENDERSTATE_ALPHABLENDENABLE,
+            0
+        );
         g_zVideo_D3DRenderState_AlphaBlendEnable = 0;
     }
     if (g_zVideo_D3DRenderState_ZWriteEnable != 1) {
-        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
+        g_zVideo_pD3DDevice->SetRenderState(
+            D3DRENDERSTATE_ZWRITEENABLE,
+            1
+        );
         g_zVideo_D3DRenderState_ZWriteEnable = 1;
     }
     g_zVideo_SortedPolyQueueCount = 0;
@@ -5073,45 +7053,77 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushQuadBatch() {
     }
 
     if (g_zVideo_D3DRenderState_ShadeMode != 2) {
-        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 2);
+        g_zVideo_pD3DDevice->SetRenderState(
+            D3DRENDERSTATE_SHADEMODE,
+            2
+        );
         g_zVideo_D3DRenderState_ShadeMode = 2;
     }
     if (g_zVideo_D3DRenderState_AlphaBlendEnable != 1) {
-        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+        g_zVideo_pD3DDevice->SetRenderState(
+            D3DRENDERSTATE_ALPHABLENDENABLE,
+            1
+        );
         g_zVideo_D3DRenderState_AlphaBlendEnable = 1;
     }
     if (g_zVideo_D3DRenderState_ZWriteEnable != 0) {
-        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
+        g_zVideo_pD3DDevice->SetRenderState(
+            D3DRENDERSTATE_ZWRITEENABLE,
+            0
+        );
         g_zVideo_D3DRenderState_ZWriteEnable = 0;
     }
     if (g_zVideo_D3DRenderState_TextureHandle != 0) {
-        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
+        g_zVideo_pD3DDevice->SetRenderState(
+            D3DRENDERSTATE_TEXTUREHANDLE,
+            0
+        );
         g_zVideo_D3DRenderState_TextureHandle = 0;
     }
 
-    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZFUNC, D3DCMP_ALWAYS);
+    g_zVideo_pD3DDevice->SetRenderState(
+        D3DRENDERSTATE_ZFUNC,
+        D3DCMP_ALWAYS
+    );
 
     for (unsigned int i = 0; i < (unsigned int)(g_zVideo_QuadBatchCount); ++i) {
-        g_zVideo_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, (D3DVERTEXTYPE)(3),
-                                           g_zVideo_QuadBatchItemsBase[i].vertices, 4, 0);
+        g_zVideo_pD3DDevice->DrawPrimitive(
+            D3DPT_TRIANGLEFAN,
+            (D3DVERTEXTYPE)(3),
+            g_zVideo_QuadBatchItemsBase[i].vertices,
+            4,
+            0
+        );
     }
 
     g_zVideo_QuadBatchCount = 0;
-    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZFUNC, D3DCMP_GREATEREQUAL);
+    g_zVideo_pD3DDevice->SetRenderState(
+        D3DRENDERSTATE_ZFUNC,
+        D3DCMP_GREATEREQUAL
+    );
 
     if (g_zVideo_D3DRenderState_AlphaBlendEnable != 0) {
-        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+        g_zVideo_pD3DDevice->SetRenderState(
+            D3DRENDERSTATE_ALPHABLENDENABLE,
+            0
+        );
         g_zVideo_D3DRenderState_AlphaBlendEnable = 0;
     }
     if (g_zVideo_D3DRenderState_ZWriteEnable != 1) {
-        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
+        g_zVideo_pD3DDevice->SetRenderState(
+            D3DRENDERSTATE_ZWRITEENABLE,
+            1
+        );
         g_zVideo_D3DRenderState_ZWriteEnable = 1;
     }
 }
 
 // Reimplements 0x4ad250: zVideo_dd3d::FlushOverwritePolys
 RECOIL_NOINLINE void RECOIL_CDECL FlushOverwritePolys() {
-    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZFUNC, D3DCMP_ALWAYS);
+    g_zVideo_pD3DDevice->SetRenderState(
+        D3DRENDERSTATE_ZFUNC,
+        D3DCMP_ALWAYS
+    );
 
     for (int i = 0; i < g_zVideo_OverwriteQueueCount; ++i) {
         zVideo_OverwriteQueueEntry &entry = g_zVideo_OverwriteQueueBase[i];
@@ -5120,24 +7132,34 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushOverwritePolys() {
         switch (entry.type) {
         case 0: {
             if (g_zVideo_D3DRenderState_ShadeMode != 2) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 2);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_SHADEMODE,
+                    2
+                );
                 g_zVideo_D3DRenderState_ShadeMode = 2;
             }
             if (g_zVideo_D3DRenderState_AlphaBlendEnable != 1) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_ALPHABLENDENABLE,
+                    1
+                );
                 g_zVideo_D3DRenderState_AlphaBlendEnable = 1;
             }
             if (g_zVideo_D3DRenderState_ZWriteEnable != 0) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_ZWRITEENABLE,
+                    0
+                );
                 g_zVideo_D3DRenderState_ZWriteEnable = 0;
             }
 
-            zVideo_RenderClass *renderClass =
-                (zVideo_RenderClass *)(entry.renderClass);
+            zVideo_RenderClass *renderClass = (zVideo_RenderClass *)(entry.renderClass);
             if (renderClass != 0) {
                 if (g_zVideo_D3DRenderState_TextureHandle != renderClass->textureHandle) {
-                    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE,
-                                                        renderClass->textureHandle);
+                    g_zVideo_pD3DDevice->SetRenderState(
+                        D3DRENDERSTATE_TEXTUREHANDLE,
+                        renderClass->textureHandle
+                    );
                     g_zVideo_D3DRenderState_TextureHandle = renderClass->textureHandle;
                 }
 
@@ -5146,42 +7168,63 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushOverwritePolys() {
                     textureMapBlend != (D3DTEXTUREBLEND)(4) &&
                     (entry.vertices[0].color & 0xff000000) != 0xff000000;
                 if (forceTransparentTextureBlend) {
-                    if (g_zVideo_D3DRenderState_TextureMapBlend !=
-                        (D3DTEXTUREBLEND)(4)) {
-                        g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND, 4);
+                    if (g_zVideo_D3DRenderState_TextureMapBlend != (D3DTEXTUREBLEND)(4)) {
+                        g_zVideo_pD3DDevice->SetRenderState(
+                            D3DRENDERSTATE_TEXTUREMAPBLEND,
+                            4
+                        );
                         g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(4);
                     }
                 } else if (g_zVideo_D3DRenderState_TextureMapBlend != textureMapBlend) {
-                    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND,
-                                                        textureMapBlend);
+                    g_zVideo_pD3DDevice->SetRenderState(
+                        D3DRENDERSTATE_TEXTUREMAPBLEND,
+                        textureMapBlend
+                    );
                     g_zVideo_D3DRenderState_TextureMapBlend = textureMapBlend;
                 }
 
                 if (g_zVideo_D3DRenderState_TextureAddressU != renderClass->textureAddressU) {
-                    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREADDRESSU,
-                                                        renderClass->textureAddressU);
+                    g_zVideo_pD3DDevice->SetRenderState(
+                        D3DRENDERSTATE_TEXTUREADDRESSU,
+                        renderClass->textureAddressU
+                    );
                     g_zVideo_D3DRenderState_TextureAddressU = renderClass->textureAddressU;
                 }
                 if (g_zVideo_D3DRenderState_TextureAddressV != renderClass->textureAddressV) {
-                    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREADDRESSV,
-                                                        renderClass->textureAddressV);
+                    g_zVideo_pD3DDevice->SetRenderState(
+                        D3DRENDERSTATE_TEXTUREADDRESSV,
+                        renderClass->textureAddressV
+                    );
                     g_zVideo_D3DRenderState_TextureAddressV = renderClass->textureAddressV;
                 }
             } else if (g_zVideo_D3DRenderState_TextureHandle != 0) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_TEXTUREHANDLE,
+                    0
+                );
                 g_zVideo_D3DRenderState_TextureHandle = 0;
             }
 
             hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-                D3DPT_TRIANGLEFAN, (D3DVERTEXTYPE)(3), entry.vertices,
-                (DWORD)(entry.vertexCount), 0);
+                D3DPT_TRIANGLEFAN,
+                (D3DVERTEXTYPE)(3),
+                entry.vertices,
+                (DWORD)(entry.vertexCount),
+                0
+            );
 
             if (g_zVideo_D3DRenderState_AlphaBlendEnable != 0) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_ALPHABLENDENABLE,
+                    0
+                );
                 g_zVideo_D3DRenderState_AlphaBlendEnable = 0;
             }
             if (g_zVideo_D3DRenderState_ZWriteEnable != 1) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_ZWRITEENABLE,
+                    1
+                );
                 g_zVideo_D3DRenderState_ZWriteEnable = 1;
             }
             break;
@@ -5191,85 +7234,124 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushOverwritePolys() {
         case 2:
         case 3:
             if (g_zVideo_D3DRenderState_TextureHandle != 0) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_TEXTUREHANDLE,
+                    0
+                );
                 g_zVideo_D3DRenderState_TextureHandle = 0;
             }
             if (g_zVideo_D3DRenderState_ShadeMode != 1) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 1);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_SHADEMODE,
+                    1
+                );
                 g_zVideo_D3DRenderState_ShadeMode = 1;
             }
             hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-                D3DPT_TRIANGLEFAN, (D3DVERTEXTYPE)(3), entry.vertices,
-                (DWORD)(entry.vertexCount), 0);
+                D3DPT_TRIANGLEFAN,
+                (D3DVERTEXTYPE)(3),
+                entry.vertices,
+                (DWORD)(entry.vertexCount),
+                0
+            );
             break;
 
         case 4: {
             if (g_zVideo_D3DRenderState_ShadeMode != 1) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 1);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_SHADEMODE,
+                    1
+                );
                 g_zVideo_D3DRenderState_ShadeMode = 1;
             }
 
-            zVideo_RenderClass *renderClass =
-                (zVideo_RenderClass *)(entry.renderClass);
+            zVideo_RenderClass *renderClass = (zVideo_RenderClass *)(entry.renderClass);
             if (g_zVideo_D3DRenderState_TextureHandle != renderClass->textureHandle) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE,
-                                                    renderClass->textureHandle);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_TEXTUREHANDLE,
+                    renderClass->textureHandle
+                );
                 g_zVideo_D3DRenderState_TextureHandle = renderClass->textureHandle;
             }
             if (g_zVideo_D3DRenderState_TextureMapBlend != renderClass->textureMapBlend) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND,
-                                                    renderClass->textureMapBlend);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_TEXTUREMAPBLEND,
+                    renderClass->textureMapBlend
+                );
                 g_zVideo_D3DRenderState_TextureMapBlend = renderClass->textureMapBlend;
             }
             if (g_zVideo_D3DRenderState_TextureAddressU != renderClass->textureAddressU) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREADDRESSU,
-                                                    renderClass->textureAddressU);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_TEXTUREADDRESSU,
+                    renderClass->textureAddressU
+                );
                 g_zVideo_D3DRenderState_TextureAddressU = renderClass->textureAddressU;
             }
             if (g_zVideo_D3DRenderState_TextureAddressV != renderClass->textureAddressV) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREADDRESSV,
-                                                    renderClass->textureAddressV);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_TEXTUREADDRESSV,
+                    renderClass->textureAddressV
+                );
                 g_zVideo_D3DRenderState_TextureAddressV = renderClass->textureAddressV;
             }
 
             hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-                D3DPT_TRIANGLEFAN, (D3DVERTEXTYPE)(3), entry.vertices,
-                (DWORD)(entry.vertexCount), 0);
+                D3DPT_TRIANGLEFAN,
+                (D3DVERTEXTYPE)(3),
+                entry.vertices,
+                (DWORD)(entry.vertexCount),
+                0
+            );
             break;
         }
 
         case 5:
         case 6: {
             if (g_zVideo_D3DRenderState_ShadeMode != 2) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, 2);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_SHADEMODE,
+                    2
+                );
                 g_zVideo_D3DRenderState_ShadeMode = 2;
             }
 
-            zVideo_RenderClass *renderClass =
-                (zVideo_RenderClass *)(entry.renderClass);
+            zVideo_RenderClass *renderClass = (zVideo_RenderClass *)(entry.renderClass);
             if (g_zVideo_D3DRenderState_TextureHandle != renderClass->textureHandle) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE,
-                                                    renderClass->textureHandle);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_TEXTUREHANDLE,
+                    renderClass->textureHandle
+                );
                 g_zVideo_D3DRenderState_TextureHandle = renderClass->textureHandle;
             }
             if (g_zVideo_D3DRenderState_TextureMapBlend != (D3DTEXTUREBLEND)(2)) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND, 2);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_TEXTUREMAPBLEND,
+                    2
+                );
                 g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(2);
             }
             if (g_zVideo_D3DRenderState_TextureAddressU != renderClass->textureAddressU) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREADDRESSU,
-                                                    renderClass->textureAddressU);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_TEXTUREADDRESSU,
+                    renderClass->textureAddressU
+                );
                 g_zVideo_D3DRenderState_TextureAddressU = renderClass->textureAddressU;
             }
             if (g_zVideo_D3DRenderState_TextureAddressV != renderClass->textureAddressV) {
-                g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREADDRESSV,
-                                                    renderClass->textureAddressV);
+                g_zVideo_pD3DDevice->SetRenderState(
+                    D3DRENDERSTATE_TEXTUREADDRESSV,
+                    renderClass->textureAddressV
+                );
                 g_zVideo_D3DRenderState_TextureAddressV = renderClass->textureAddressV;
             }
 
             hresult = g_zVideo_pD3DDevice->DrawPrimitive(
-                D3DPT_TRIANGLEFAN, (D3DVERTEXTYPE)(3), entry.vertices,
-                (DWORD)(entry.vertexCount), 0);
+                D3DPT_TRIANGLEFAN,
+                (D3DVERTEXTYPE)(3),
+                entry.vertices,
+                (DWORD)(entry.vertexCount),
+                0
+            );
             break;
         }
 
@@ -5278,17 +7360,25 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushOverwritePolys() {
         }
 
         if (hresult != DD_OK) {
-            zVideo_dd::ReportError((int)(hresult), kZVideoDirect3DSourceFile,
-                                   0xbb7);
+            zVideo_dd::ReportError(
+                (int)(hresult),
+                kZVideoDirect3DSourceFile,
+                0xbb7
+            );
         }
     }
 
-    g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_ZFUNC, D3DCMP_GREATEREQUAL);
+    g_zVideo_pD3DDevice->SetRenderState(
+        D3DRENDERSTATE_ZFUNC,
+        D3DCMP_GREATEREQUAL
+    );
     g_zVideo_OverwriteQueueCount = 0;
 }
 
 // Reimplements 0x4ad680: zVideo_dd3d::FloorPowerOfTwo
-RECOIL_NOINLINE int RECOIL_FASTCALL FloorPowerOfTwo(int value) {
+RECOIL_NOINLINE int RECOIL_FASTCALL FloorPowerOfTwo(
+    int value
+) {
     int powerOfTwo = 1;
     do {
         powerOfTwo <<= 1;
@@ -5303,17 +7393,23 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FloorPowerOfTwo(int value) {
 
 // Reimplements 0x4aa9d0: zVideo_dd3d::TextureRecord_Create
 RECOIL_NOINLINE zVideo_TextureRecordPartial *RECOIL_CDECL TextureRecord_Create() {
-    return (zVideo_TextureRecordPartial *)(
-        calloc(1, sizeof(zVideo_TextureRecordPartial)));
+    return (zVideo_TextureRecordPartial *)(calloc(
+        1,
+        sizeof(zVideo_TextureRecordPartial)
+    ));
 }
 
 // Reimplements 0x4aa8b0: zVideo_dd3d::TextureRecord_LockUploadSurface
 RECOIL_NOINLINE int RECOIL_FASTCALL TextureRecord_LockUploadSurface(
-    zVideo_TextureRecordPartial *textureRecord, void **outPixels, int *outPitchBytes) {
+    zVideo_TextureRecordPartial *textureRecord,
+    void **outPixels,
+    int *outPitchBytes
+) {
     DDSURFACEDESC lockedDescOut = {0};
     if (zVideo_dd::LockSurface_WaitRestore(
             (IDirectDrawSurface3 *)(textureRecord->m_uploadSurface),
-            &lockedDescOut) != 0) {
+            &lockedDescOut
+        ) != 0) {
         return 0;
     }
 
@@ -5323,10 +7419,12 @@ RECOIL_NOINLINE int RECOIL_FASTCALL TextureRecord_LockUploadSurface(
 }
 
 // Reimplements 0x4aa6f0: zVideo_dd3d::ConvertImagePixelsForTexture
-RECOIL_NOINLINE void RECOIL_FASTCALL ConvertImagePixelsForTexture(unsigned short *dstPixels,
-                                                                  zVidImagePartial *image,
-                                                                  int pitchBytes,
-                                                                  int useAlpha) {
+RECOIL_NOINLINE void RECOIL_FASTCALL ConvertImagePixelsForTexture(
+    unsigned short *dstPixels,
+    zVidImagePartial *image,
+    int pitchBytes,
+    int useAlpha
+) {
     (void)useAlpha;
 
     const int width = image->width;
@@ -5337,19 +7435,19 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ConvertImagePixelsForTexture(unsigned short
     if (image->alphaMap == 0) {
         const unsigned int redGreenMask = g_zVideo_PixelPack_RMask | g_zVideo_PixelPack_GMask;
         {
-        for (int row = 0; row < height; ++row) {
-            unsigned short *dstCursor = (unsigned short *)(dstRowBytes);
-            {
-            for (int column = 0; column < width; ++column) {
-                const unsigned short src = *srcPixels++;
-                const unsigned short alphaBit = src != 0 ? 0x8000 : 0;
-                *dstCursor++ =
-                    (unsigned short)((src & g_zVideo_PixelPack_BMask) |
-                                               ((src >> 1) & (redGreenMask >> 1)) | alphaBit);
+            for (int row = 0; row < height; ++row) {
+                unsigned short *dstCursor = (unsigned short *)(dstRowBytes);
+                {
+                    for (int column = 0; column < width; ++column) {
+                        const unsigned short src = *srcPixels++;
+                        const unsigned short alphaBit = src != 0 ? 0x8000 : 0;
+                        *dstCursor++ =
+                            (unsigned short)((src & g_zVideo_PixelPack_BMask) |
+                                             ((src >> 1) & (redGreenMask >> 1)) | alphaBit);
+                    }
+                }
+                dstRowBytes += pitchBytes;
             }
-            }
-            dstRowBytes += pitchBytes;
-        }
         }
         return;
     }
@@ -5372,51 +7470,66 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ConvertImagePixelsForTexture(unsigned short
     }
 
     {
-    for (int row = 0; row < height; ++row) {
-        unsigned short *dstCursor = (unsigned short *)(dstRowBytes);
-        {
-        for (int column = 0; column < width; ++column) {
-            const unsigned short src = *srcPixels++;
-            const unsigned int alpha = (*alphaCursor++ & 0xf0) << 8;
-            *dstCursor++ =
-                (unsigned short)(((src >> 1) & (g_zVideo_PixelPack_BMask >> 1)) |
-                                           ((greenAlphaMask & src) >> greenAlphaShift) |
-                                           ((redAlphaMask & src) >> redAlphaShift) | alpha);
+        for (int row = 0; row < height; ++row) {
+            unsigned short *dstCursor = (unsigned short *)(dstRowBytes);
+            {
+                for (int column = 0; column < width; ++column) {
+                    const unsigned short src = *srcPixels++;
+                    const unsigned int alpha = (*alphaCursor++ & 0xf0) << 8;
+                    *dstCursor++ =
+                        (unsigned short)(((src >> 1) & (g_zVideo_PixelPack_BMask >> 1)) |
+                                         ((greenAlphaMask & src) >> greenAlphaShift) |
+                                         ((redAlphaMask & src) >> redAlphaShift) | alpha);
+                }
+            }
+            dstRowBytes += pitchBytes;
         }
-        }
-        dstRowBytes += pitchBytes;
-    }
     }
 }
 
 // Reimplements 0x4aa600: zVideo_dd3d::UploadImageToSurface
-RECOIL_NOINLINE int RECOIL_FASTCALL UploadImageToSurface(IDirectDrawSurface *uploadSurface,
-                                                                  zVidImagePartial *image,
-                                                                  int useAlpha) {
+RECOIL_NOINLINE int RECOIL_FASTCALL UploadImageToSurface(
+    IDirectDrawSurface *uploadSurface,
+    zVidImagePartial *image,
+    int useAlpha
+) {
     DDSURFACEDESC lockedDescOut = {0};
-    zVideo_dd::LockSurface_WaitRestore((IDirectDrawSurface3 *)(uploadSurface),
-                                       &lockedDescOut);
+    zVideo_dd::LockSurface_WaitRestore(
+        (IDirectDrawSurface3 *)(uploadSurface),
+        &lockedDescOut
+    );
 
     unsigned char *dstPixels = (unsigned char *)(lockedDescOut.lpSurface);
     unsigned char *srcPixels = (unsigned char *)(image->pixels);
     if (useAlpha != 0) {
-        ConvertImagePixelsForTexture((unsigned short *)(dstPixels), image,
-                                     lockedDescOut.lPitch, useAlpha);
+        ConvertImagePixelsForTexture(
+            (unsigned short *)(dstPixels),
+            image,
+            lockedDescOut.lPitch,
+            useAlpha
+        );
     } else {
         const int width = image->width;
         const int height = image->height;
         if (lockedDescOut.lPitch == width) {
             const int bytesPerPixel = (g_zVideo_DisplayModeBpp + 7) >> 3;
-            memcpy(dstPixels, srcPixels,
-                        (size_t)(height * bytesPerPixel * width));
+            memcpy(
+                dstPixels,
+                srcPixels,
+                (size_t)(height * bytesPerPixel * width)
+            );
         } else {
             const int rowCopyBytes = (g_zVideo_DisplayModeBpp * width + 7) >> 3;
             {
-            for (int row = 0; row < height; ++row) {
-                memcpy(dstPixels, srcPixels, (size_t)(rowCopyBytes));
-                dstPixels += lockedDescOut.lPitch;
-                srcPixels += width << 1;
-            }
+                for (int row = 0; row < height; ++row) {
+                    memcpy(
+                        dstPixels,
+                        srcPixels,
+                        (size_t)(rowCopyBytes)
+                    );
+                    dstPixels += lockedDescOut.lPitch;
+                    srcPixels += width << 1;
+                }
             }
         }
     }
@@ -5426,17 +7539,20 @@ RECOIL_NOINLINE int RECOIL_FASTCALL UploadImageToSurface(IDirectDrawSurface *upl
 }
 
 // Reimplements 0x4aa8f0: zVideo_dd3d::TextureRecord_UnlockUploadSurface
-RECOIL_NOINLINE int RECOIL_FASTCALL
-TextureRecord_UnlockUploadSurface(zVideo_TextureRecordPartial *textureRecord) {
+RECOIL_NOINLINE int RECOIL_FASTCALL TextureRecord_UnlockUploadSurface(
+    zVideo_TextureRecordPartial *textureRecord
+) {
     return zVideo_dd::UnlockSurface_WaitRestore(
-               (IDirectDrawSurface3 *)(textureRecord->m_uploadSurface)) == 0
+               (IDirectDrawSurface3 *)(textureRecord->m_uploadSurface)
+           ) == 0
                ? 1
                : 0;
 }
 
 // Reimplements 0x4aa900: zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef
-RECOIL_NOINLINE void RECOIL_FASTCALL
-TextureRecord_ReleaseUploadSurfaceRef(zVideo_TextureRecordPartial *textureRecord) {
+RECOIL_NOINLINE void RECOIL_FASTCALL TextureRecord_ReleaseUploadSurfaceRef(
+    zVideo_TextureRecordPartial *textureRecord
+) {
     if (textureRecord->m_uploadSurface != 0) {
         textureRecord->m_uploadSurface->Release();
         textureRecord->m_uploadSurface = 0;
@@ -5444,8 +7560,10 @@ TextureRecord_ReleaseUploadSurfaceRef(zVideo_TextureRecordPartial *textureRecord
 }
 
 // Reimplements 0x4aa920: zVideo_dd3d::TextureRecord_FinalizeUpload
-RECOIL_NOINLINE void RECOIL_FASTCALL
-TextureRecord_FinalizeUpload(zVideo_TextureRecordPartial *textureRecord, zVidImagePartial *image) {
+RECOIL_NOINLINE void RECOIL_FASTCALL TextureRecord_FinalizeUpload(
+    zVideo_TextureRecordPartial *textureRecord,
+    zVidImagePartial *image
+) {
     IDirectDrawSurface *uploadSurface = textureRecord->m_uploadSurface;
     if (uploadSurface == 0) {
         return;
@@ -5453,12 +7571,19 @@ TextureRecord_FinalizeUpload(zVideo_TextureRecordPartial *textureRecord, zVidIma
 
     IDirect3DTexture2 *targetTexture = textureRecord->m_texture;
     if (image != 0) {
-        UploadImageToSurface(uploadSurface, image, image->formatFlagsPacked & 2);
+        UploadImageToSurface(
+            uploadSurface,
+            image,
+            image->formatFlagsPacked & 2
+        );
     }
 
     IDirect3DTexture2 *uploadTexture = 0;
-    HRESULT hresult = uploadSurface->QueryInterface(IID_IDirect3DTexture2,
-                                                    (void **)(&uploadTexture));
+    HRESULT hresult =
+        uploadSurface->QueryInterface(
+            IID_IDirect3DTexture2,
+            (void **)(&uploadTexture)
+        );
     if (hresult != DD_OK) {
         return;
     }
@@ -5470,8 +7595,9 @@ TextureRecord_FinalizeUpload(zVideo_TextureRecordPartial *textureRecord, zVidIma
 }
 
 // Reimplements 0x4aa980: zVideo_dd3d::TextureRecord_Destroy
-RECOIL_NOINLINE void RECOIL_FASTCALL
-TextureRecord_Destroy(zVideo_TextureRecordPartial *textureRecord) {
+RECOIL_NOINLINE void RECOIL_FASTCALL TextureRecord_Destroy(
+    zVideo_TextureRecordPartial *textureRecord
+) {
     if (textureRecord == g_zImage_DefaultTextureRecord) {
         return;
     }
@@ -5493,8 +7619,7 @@ TextureRecord_Destroy(zVideo_TextureRecordPartial *textureRecord) {
 namespace zVideoD3D {
 
 // Reimplements 0x4a74d0: zVideoD3D::SceneEnter
-RECOIL_NOINLINE int RECOIL_CDECL SceneEnter()
-{
+RECOIL_NOINLINE int RECOIL_CDECL SceneEnter() {
     if (g_zVideo_D3DSceneDepth <= 0) {
         zVideo_dd3d::BeginSceneAndFlushPendingRenderStates();
         ++g_zVideo_D3DSceneDepth;
@@ -5504,8 +7629,7 @@ RECOIL_NOINLINE int RECOIL_CDECL SceneEnter()
 }
 
 // Reimplements 0x4a74f0: zVideoD3D::SceneLeave
-RECOIL_NOINLINE int RECOIL_CDECL SceneLeave()
-{
+RECOIL_NOINLINE int RECOIL_CDECL SceneLeave() {
     int depth = g_zVideo_D3DSceneDepth;
     if (depth > 0) {
         if (depth <= 1) {
@@ -5535,29 +7659,43 @@ const size_t kD3DDescZBufferBitDepthOffset = 0xa0;
 const size_t kD3DDescMaxTextureWidthOffset = 0xb4;
 const size_t kD3DDescMaxTextureHeightOffset = 0xb8;
 
-unsigned int D3DDescReadDword(const D3DDEVICEDESC *desc, size_t offset) {
-    return *(const unsigned int *)((const unsigned char *)(desc) +
-                                                    offset);
+unsigned int D3DDescReadDword(
+    const D3DDEVICEDESC *desc,
+    size_t offset
+) {
+    return *(const unsigned int *)((const unsigned char *)(desc) + offset);
 }
 
-void D3DDriverDescWriteDword(zVidD3DDriverRecordPartial &driver, size_t offset,
-                             unsigned int value) {
+void D3DDriverDescWriteDword(
+    zVidD3DDriverRecordPartial &driver,
+    size_t offset,
+    unsigned int value
+) {
     *(unsigned int *)(&driver.m_hwDesc[offset]) = value;
 }
 
-template <typename InterfaceT> void ReleaseComInterface(InterfaceT *&value) {
+template <typename InterfaceT>
+void ReleaseComInterface(
+    InterfaceT *&value
+) {
     if (value != 0) {
         value->Release();
         value = 0;
     }
 }
 
-bool PageUnlockBeforeRelease(zVideo_SurfaceStatePartial &state, int reportLine) {
+bool PageUnlockBeforeRelease(
+    zVideo_SurfaceStatePartial &state,
+    int reportLine
+) {
     if (state.surf != 0 && state.pageLockActive != 0) {
         const HRESULT hresult = state.surf->PageUnlock(0);
         if (hresult != DD_OK) {
-            ReportError((int)(hresult), kZVideoDirectDrawSourceFile,
-                        reportLine);
+            ReportError(
+                (int)(hresult),
+                kZVideoDirectDrawSourceFile,
+                reportLine
+            );
             return false;
         }
 
@@ -5567,11 +7705,21 @@ bool PageUnlockBeforeRelease(zVideo_SurfaceStatePartial &state, int reportLine) 
     return true;
 }
 
-bool BltFillWithRestore(IDirectDrawSurface3 *surface, zVidRect32 *rect, DWORD flags, DDBLTFX *bltFx,
-                        int reportLine) {
+bool BltFillWithRestore(
+    IDirectDrawSurface3 *surface,
+    zVidRect32 *rect,
+    DWORD flags,
+    DDBLTFX *bltFx,
+    int reportLine
+) {
     for (;;) {
-        HRESULT hresult =
-            surface->Blt((RECT *)(rect), 0, 0, flags, bltFx);
+        HRESULT hresult = surface->Blt(
+            (RECT *)(rect),
+            0,
+            0,
+            flags,
+            bltFx
+        );
         if (hresult == DD_OK) {
             return true;
         }
@@ -5583,7 +7731,11 @@ bool BltFillWithRestore(IDirectDrawSurface3 *surface, zVidRect32 *rect, DWORD fl
             }
         }
 
-        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, reportLine);
+        ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            reportLine
+        );
         return false;
     }
 }
@@ -5739,15 +7891,19 @@ const DirectDrawErrorName kDirectDrawErrorNames[] = {
     {D3DERR_VIEWPORTDATANOTSET, "D3DERR_VIEWPORTDATANOTSET"},
 };
 
-const char *GetDirectDrawErrorName(int hresult) {
+const char *GetDirectDrawErrorName(
+    int hresult
+) {
     {
         int entryIndex1;
-        for (entryIndex1 = 0; entryIndex1 < (int)(sizeof(kDirectDrawErrorNames) / sizeof((kDirectDrawErrorNames)[0])); ++entryIndex1) {
-            const DirectDrawErrorName & entry = (kDirectDrawErrorNames)[entryIndex1];
-        if (entry.hresult == hresult) {
-            return entry.name;
+        for (entryIndex1 = 0;
+            entryIndex1 < (int)(sizeof(kDirectDrawErrorNames) / sizeof((kDirectDrawErrorNames)[0]));
+            ++entryIndex1) {
+            const DirectDrawErrorName &entry = (kDirectDrawErrorNames)[entryIndex1];
+            if (entry.hresult == hresult) {
+                return entry.name;
+            }
         }
-    }
     }
 
     return "Unknown Error";
@@ -5755,15 +7911,24 @@ const char *GetDirectDrawErrorName(int hresult) {
 } // namespace
 
 // Reimplements 0x4a93d0: zVideo_dd::EnumDirectDrawDeviceCallback
-BOOL CALLBACK EnumDirectDrawDeviceCallback(GUID *guid, LPSTR driverDescription, LPSTR driverName,
-                                           LPVOID context) {
+BOOL CALLBACK EnumDirectDrawDeviceCallback(
+    GUID *guid,
+    LPSTR driverDescription,
+    LPSTR driverName,
+    LPVOID context
+) {
     (void)context;
 
     const int acceptedIndex = g_zVideo_NumAcceptedDirectDrawDevices;
     const int ordinal = g_zVideo_DirectDrawEnumOrdinal;
     g_zVideo_DirectDrawEnumOrdinal = ordinal + 1;
 
-    printf("\n%d: Device [%s] - %s\n", ordinal, driverName, driverDescription);
+    printf(
+        "\n%d: Device [%s] - %s\n",
+        ordinal,
+        driverName,
+        driverDescription
+    );
     fflush(stdout);
 
     if (g_zVideo_NumAcceptedDirectDrawDevices >= 4) {
@@ -5772,7 +7937,11 @@ BOOL CALLBACK EnumDirectDrawDeviceCallback(GUID *guid, LPSTR driverDescription, 
     }
 
     zVidHwApiDeviceRecordPartial &entry = g_zVideo_HwApiDeviceTable[acceptedIndex];
-    memset(&entry, 0, sizeof(entry));
+    memset(
+        &entry,
+        0,
+        sizeof(entry)
+    );
     if (guid != 0) {
         entry.pDirectDrawGuid = &entry.m_directDrawGuidStorage;
         entry.m_directDrawGuidStorage = *guid;
@@ -5780,36 +7949,64 @@ BOOL CALLBACK EnumDirectDrawDeviceCallback(GUID *guid, LPSTR driverDescription, 
         entry.pDirectDrawGuid = 0;
     }
 
-    strncpy(entry.m_driverName, driverName, sizeof(entry.m_driverName));
-    strncpy(entry.m_driverDescription, driverDescription, sizeof(entry.m_driverDescription));
+    strncpy(
+        entry.m_driverName,
+        driverName,
+        sizeof(entry.m_driverName)
+    );
+    strncpy(
+        entry.m_driverDescription,
+        driverDescription,
+        sizeof(entry.m_driverDescription)
+    );
     g_zVideo_pSelectedHwApiDeviceRecord = &entry;
 
     CreateDirectDraw2ForSelectedDevice();
 
-    memset(&g_zVideo_DDrawCapsHal, 0, sizeof(g_zVideo_DDrawCapsHal));
-    memset(&g_zVideo_DDrawCapsHel, 0, sizeof(g_zVideo_DDrawCapsHel));
+    memset(
+        &g_zVideo_DDrawCapsHal,
+        0,
+        sizeof(g_zVideo_DDrawCapsHal)
+    );
+    memset(
+        &g_zVideo_DDrawCapsHel,
+        0,
+        sizeof(g_zVideo_DDrawCapsHel)
+    );
     g_zVideo_DDrawCapsHal.dwSize = sizeof(g_zVideo_DDrawCapsHal);
     g_zVideo_DDrawCapsHel.dwSize = sizeof(g_zVideo_DDrawCapsHel);
 
     const HRESULT capsResult =
-        g_zVideo_pDirectDraw2->GetCaps(&g_zVideo_DDrawCapsHal, &g_zVideo_DDrawCapsHel);
+        g_zVideo_pDirectDraw2->GetCaps(
+            &g_zVideo_DDrawCapsHal,
+            &g_zVideo_DDrawCapsHel
+        );
     if (capsResult != DD_OK) {
-        ReportError((int)(capsResult), kZVideoDirectDrawSourceFile, 0x739);
+        ReportError(
+            (int)(capsResult),
+            kZVideoDirectDrawSourceFile,
+            0x739
+        );
         return FALSE;
     }
 
     if ((g_zVideo_DDrawCapsHal.dwCaps & 0x200) != 0 ||
         (g_zVideo_DDrawCapsHel.dwCaps & 0x200) != 0) {
         entry.m_deviceFeatureFlags = 1;
-        strncat(entry.m_driverName, "[AGP]",
-                     sizeof(entry.m_driverName) - strlen(entry.m_driverName) - 1);
+        strncat(
+            entry.m_driverName,
+            "[AGP]",
+            sizeof(entry.m_driverName) - strlen(entry.m_driverName) - 1
+        );
     }
 
     DDSCAPS videoMemCaps = {0};
     videoMemCaps.dwCaps = DDSCAPS_VIDEOMEMORY;
     if (g_zVideo_pDirectDraw2->GetAvailableVidMem(
-            &videoMemCaps, (DWORD *)(&entry.m_videoMemTotalBytes),
-            (DWORD *)(&entry.m_videoMemFreeBytes)) != DD_OK) {
+            &videoMemCaps,
+            (DWORD *)(&entry.m_videoMemTotalBytes),
+            (DWORD *)(&entry.m_videoMemFreeBytes)
+        ) != DD_OK) {
         entry.m_videoMemFreeBytes = 0;
         entry.m_videoMemTotalBytes = 0;
     }
@@ -5817,8 +8014,10 @@ BOOL CALLBACK EnumDirectDrawDeviceCallback(GUID *guid, LPSTR driverDescription, 
     DDSCAPS textureMemCaps = {0};
     textureMemCaps.dwCaps = DDSCAPS_TEXTURE;
     if (g_zVideo_pDirectDraw2->GetAvailableVidMem(
-            &textureMemCaps, (DWORD *)(&entry.m_textureMemTotalBytes),
-            (DWORD *)(&entry.m_textureMemFreeBytes)) != DD_OK) {
+            &textureMemCaps,
+            (DWORD *)(&entry.m_textureMemTotalBytes),
+            (DWORD *)(&entry.m_textureMemFreeBytes)
+        ) != DD_OK) {
         entry.m_textureMemFreeBytes = 0;
         entry.m_textureMemTotalBytes = 0;
     }
@@ -5832,16 +8031,28 @@ BOOL CALLBACK EnumDirectDrawDeviceCallback(GUID *guid, LPSTR driverDescription, 
 }
 
 // Reimplements 0x4a96b0: zVideo_dd::EnumDirect3DDeviceCallback
-HRESULT CALLBACK EnumDirect3DDeviceCallback(GUID *guid, LPSTR deviceDescription, LPSTR deviceName,
-                                            D3DDEVICEDESC *hwDesc, D3DDEVICEDESC *,
-                                            LPVOID context) {
+HRESULT CALLBACK EnumDirect3DDeviceCallback(
+    GUID *guid,
+    LPSTR deviceDescription,
+    LPSTR deviceName,
+    D3DDEVICEDESC *hwDesc,
+    D3DDEVICEDESC *,
+    LPVOID context
+) {
     zVidHwApiDeviceRecordPartial *entry = (zVidHwApiDeviceRecordPartial *)(context);
     zVidD3DDriverRecordPartial &driver = entry->m_d3dDrivers[entry->m_acceptedD3DDeviceCount];
 
-    printf("DRIVER:%s - %s\n", deviceName, deviceDescription);
+    printf(
+        "DRIVER:%s - %s\n",
+        deviceName,
+        deviceDescription
+    );
     fflush(stdout);
 
-    const unsigned int descFlags = D3DDescReadDword(hwDesc, kD3DDescFlagsOffset);
+    const unsigned int descFlags = D3DDescReadDword(
+        hwDesc,
+        kD3DDescFlagsOffset
+    );
     if (descFlags == 0) {
         printf("-----SKIPPED - Does not interface with hardware\n");
         fflush(stdout);
@@ -5849,13 +8060,19 @@ HRESULT CALLBACK EnumDirect3DDeviceCallback(GUID *guid, LPSTR deviceDescription,
     }
 
     if ((descFlags & D3DDD_COLORMODEL) != 0 &&
-        D3DDescReadDword(hwDesc, kD3DDescColorModelOffset) != D3DCOLOR_RGB) {
+        D3DDescReadDword(
+            hwDesc,
+            kD3DDescColorModelOffset
+        ) != D3DCOLOR_RGB) {
         printf("-----SKIPPED - Does not support RGB color\n");
         fflush(stdout);
         return 1;
     }
 
-    if ((D3DDescReadDword(hwDesc, kD3DDescZBufferBitDepthOffset) & DDBD_16) == 0) {
+    if ((D3DDescReadDword(
+        hwDesc,
+        kD3DDescZBufferBitDepthOffset
+    ) & DDBD_16) == 0) {
         printf("-----SKIPPED - Does not support 16-bit Z buffer\n");
         fflush(stdout);
         return 1;
@@ -5863,8 +8080,12 @@ HRESULT CALLBACK EnumDirect3DDeviceCallback(GUID *guid, LPSTR deviceDescription,
 
     if (entry->m_acceptedD3DDeviceCount >= 4) {
         TeardownVideoSubsystem();
-        zError::ReportOld(0x800, kZVideoDirectDrawSourceFile, 0x7d3,
-                          "Maximum number of Direct3D drivers exceeded");
+        zError::ReportOld(
+            0x800,
+            kZVideoDirectDrawSourceFile,
+            0x7d3,
+            "Maximum number of Direct3D drivers exceeded"
+        );
         return 0;
     }
 
@@ -5875,18 +8096,42 @@ HRESULT CALLBACK EnumDirect3DDeviceCallback(GUID *guid, LPSTR deviceDescription,
         driver.pD3DDeviceGuid = 0;
     }
 
-    memcpy(driver.m_hwDesc, hwDesc, kD3DDescCopyBytes);
-    if (D3DDescReadDword((D3DDEVICEDESC *)(driver.m_hwDesc),
-                         kD3DDescMaxTextureWidthOffset) == 0) {
-        D3DDriverDescWriteDword(driver, kD3DDescMaxTextureWidthOffset, 0x100);
+    memcpy(
+        driver.m_hwDesc,
+        hwDesc,
+        kD3DDescCopyBytes
+    );
+    if (D3DDescReadDword(
+        (D3DDEVICEDESC *)(driver.m_hwDesc),
+        kD3DDescMaxTextureWidthOffset
+    ) == 0) {
+        D3DDriverDescWriteDword(
+            driver,
+            kD3DDescMaxTextureWidthOffset,
+            0x100
+        );
     }
-    if (D3DDescReadDword((D3DDEVICEDESC *)(driver.m_hwDesc),
-                         kD3DDescMaxTextureHeightOffset) == 0) {
-        D3DDriverDescWriteDword(driver, kD3DDescMaxTextureHeightOffset, 0x100);
+    if (D3DDescReadDword(
+        (D3DDEVICEDESC *)(driver.m_hwDesc),
+        kD3DDescMaxTextureHeightOffset
+    ) == 0) {
+        D3DDriverDescWriteDword(
+            driver,
+            kD3DDescMaxTextureHeightOffset,
+            0x100
+        );
     }
 
-    strncpy(driver.m_deviceName, deviceName, sizeof(driver.m_deviceName));
-    strncpy(driver.m_deviceDescription, deviceDescription, sizeof(driver.m_deviceDescription));
+    strncpy(
+        driver.m_deviceName,
+        deviceName,
+        sizeof(driver.m_deviceName)
+    );
+    strncpy(
+        driver.m_deviceDescription,
+        deviceDescription,
+        sizeof(driver.m_deviceDescription)
+    );
     printf("+++++OK\n");
     fflush(stdout);
     entry->m_acceptedD3DDeviceCount += 1;
@@ -5896,25 +8141,49 @@ HRESULT CALLBACK EnumDirect3DDeviceCallback(GUID *guid, LPSTR deviceDescription,
 
 // Reimplements 0x4a6930: zVideo_dd::PrepareWindowForMode
 RECOIL_NOINLINE int RECOIL_CDECL PrepareWindowForMode() {
-    SetMenu(g_zVideo_hWnd, 0);
-    SetWindowLongA(g_zVideo_hWnd, GWL_EXSTYLE, 0x00040000);
-    SetWindowLongA(g_zVideo_hWnd, GWL_STYLE, (LONG)(0x82000000u));
+    SetMenu(
+        g_zVideo_hWnd,
+        0
+    );
+    SetWindowLongA(
+        g_zVideo_hWnd,
+        GWL_EXSTYLE,
+        0x00040000
+    );
+    SetWindowLongA(
+        g_zVideo_hWnd,
+        GWL_STYLE,
+        (LONG)(0x82000000u)
+    );
     UpdateWindow(g_zVideo_hWnd);
     SetFocus(g_zVideo_hWnd);
 
     if (g_zVideo_hWnd != 0) {
         HDC screenDc = GetDC(0);
-        if ((GetDeviceCaps(screenDc, RASTERCAPS) & RC_PALETTE) != 0) {
-            GetSystemPaletteEntries(screenDc, 0, 0x100, g_zVideo_SystemPaletteEntries);
+        if ((GetDeviceCaps(
+            screenDc,
+            RASTERCAPS
+        ) & RC_PALETTE) != 0) {
+            GetSystemPaletteEntries(
+                screenDc,
+                0,
+                0x100,
+                g_zVideo_SystemPaletteEntries
+            );
         }
-        ReleaseDC(0, screenDc);
+        ReleaseDC(
+            0,
+            screenDc
+        );
     }
 
     return 0;
 }
 
 // Reimplements 0x4a7d20: zVideo_dd::OpenVideoMode
-RECOIL_NOINLINE int RECOIL_FASTCALL OpenVideoMode(int) {
+RECOIL_NOINLINE int RECOIL_FASTCALL OpenVideoMode(
+    int
+) {
     if (PrepareWindowForMode() != 0) {
         return 1;
     }
@@ -5925,30 +8194,50 @@ RECOIL_NOINLINE int RECOIL_FASTCALL OpenVideoMode(int) {
 // Reimplements 0x4a9390: zVideo_dd::RunDirectDrawDeviceEnumeration
 RECOIL_NOINLINE int RECOIL_CDECL RunDirectDrawDeviceEnumeration() {
     printf("\nENUMERATE GRAPHICS DEVICES...\n");
-    const HRESULT hresult = DirectDrawEnumerateA(EnumDirectDrawDeviceCallback, 0);
+    const HRESULT hresult = DirectDrawEnumerateA(
+        EnumDirectDrawDeviceCallback,
+        0
+    );
     if (hresult == DD_OK) {
         return 1;
     }
 
-    ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x6ad);
+    ReportError(
+        (int)(hresult),
+        kZVideoDirectDrawSourceFile,
+        0x6ad
+    );
     return 0;
 }
 
 // Reimplements 0x4a8800: zVideo_dd::CreateDirectDraw2ForSelectedDevice
 RECOIL_NOINLINE int RECOIL_CDECL CreateDirectDraw2ForSelectedDevice() {
     IDirectDraw *directDraw1 = 0;
-    const HRESULT createResult = DirectDrawCreate(
-        g_zVideo_pSelectedHwApiDeviceRecord->pDirectDrawGuid, &directDraw1, 0);
+    const HRESULT createResult =
+        DirectDrawCreate(
+            g_zVideo_pSelectedHwApiDeviceRecord->pDirectDrawGuid,
+            &directDraw1,
+            0
+        );
     if (createResult != DD_OK) {
-        return ReportError((int)(createResult), kZVideoDirectDrawSourceFile,
-                           0x3c4);
+        return ReportError(
+            (int)(createResult),
+            kZVideoDirectDrawSourceFile,
+            0x3c4
+        );
     }
 
-    const HRESULT queryResult = directDraw1->QueryInterface(
-        IID_IDirectDraw2, (void **)(&g_zVideo_pDirectDraw2));
+    const HRESULT queryResult =
+        directDraw1->QueryInterface(
+            IID_IDirectDraw2,
+            (void **)(&g_zVideo_pDirectDraw2)
+        );
     if (queryResult != DD_OK) {
-        return ReportError((int)(queryResult), kZVideoDirectDrawSourceFile,
-                           0x3cb);
+        return ReportError(
+            (int)(queryResult),
+            kZVideoDirectDrawSourceFile,
+            0x3cb
+        );
     }
 
     directDraw1->Release();
@@ -5956,23 +8245,37 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDirectDraw2ForSelectedDevice() {
 }
 
 // Reimplements 0x4a95e0: zVideo_dd::EnumerateDirect3DDevicesForRecord
-RECOIL_NOINLINE int RECOIL_FASTCALL
-EnumerateDirect3DDevicesForRecord(zVidHwApiDeviceRecordPartial *entry) {
+RECOIL_NOINLINE int RECOIL_FASTCALL EnumerateDirect3DDevicesForRecord(
+    zVidHwApiDeviceRecordPartial *entry
+) {
     unsigned char unusedStackZeroing[0x68] = {0};
     (void)unusedStackZeroing;
 
-    printf("  Direct3D drivers for %s\n", entry->m_driverName);
+    printf(
+        "  Direct3D drivers for %s\n",
+        entry->m_driverName
+    );
     fflush(stdout);
 
-    const HRESULT queryResult = g_zVideo_pDirectDraw2->QueryInterface(
-        IID_IDirect3D2, (void **)(&g_zVideo_pD3D2));
+    const HRESULT queryResult =
+        g_zVideo_pDirectDraw2->QueryInterface(
+            IID_IDirect3D2,
+            (void **)(&g_zVideo_pD3D2)
+        );
     if (queryResult != DD_OK) {
-        ReportError((int)(queryResult), kZVideoDirectDrawSourceFile, 0x781);
+        ReportError(
+            (int)(queryResult),
+            kZVideoDirectDrawSourceFile,
+            0x781
+        );
         return 0;
     }
 
     entry->m_acceptedD3DDeviceCount = 0;
-    g_zVideo_pD3D2->EnumDevices(EnumDirect3DDeviceCallback, entry);
+    g_zVideo_pD3D2->EnumDevices(
+        EnumDirect3DDeviceCallback,
+        entry
+    );
     ReleaseComInterface(g_zVideo_pD3D2);
 
     if (entry->m_acceptedD3DDeviceCount == 0) {
@@ -6001,13 +8304,24 @@ RECOIL_NOINLINE int RECOIL_CDECL ShutdownVideoSystem() {
 }
 
 // Reimplements 0x4a8060: zVideo_dd::LockDirectDrawSurface
-RECOIL_NOINLINE int RECOIL_FASTCALL
-LockDirectDrawSurface(IDirectDrawSurface3 *surface, DDSURFACEDESC *outLockedSurfaceDesc) {
-    memset(outLockedSurfaceDesc, 0, sizeof(*outLockedSurfaceDesc));
+RECOIL_NOINLINE int RECOIL_FASTCALL LockDirectDrawSurface(
+    IDirectDrawSurface3 *surface,
+    DDSURFACEDESC *outLockedSurfaceDesc
+) {
+    memset(
+        outLockedSurfaceDesc,
+        0,
+        sizeof(*outLockedSurfaceDesc)
+    );
     outLockedSurfaceDesc->dwSize = sizeof(*outLockedSurfaceDesc);
 
     for (;;) {
-        HRESULT hresult = surface->Lock(0, outLockedSurfaceDesc, DDLOCK_WAIT, 0);
+        HRESULT hresult = surface->Lock(
+            0,
+            outLockedSurfaceDesc,
+            DDLOCK_WAIT,
+            0
+        );
         if (hresult == DD_OK) {
             return 0;
         }
@@ -6019,13 +8333,19 @@ LockDirectDrawSurface(IDirectDrawSurface3 *surface, DDSURFACEDESC *outLockedSurf
             }
         }
 
-        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x1b9);
+        ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x1b9
+        );
         return 0x5a56ffff;
     }
 }
 
 // Reimplements 0x4a80c0: zVideo_dd::UnlockDirectDrawSurface
-RECOIL_NOINLINE int RECOIL_FASTCALL UnlockDirectDrawSurface(IDirectDrawSurface3 *surface) {
+RECOIL_NOINLINE int RECOIL_FASTCALL UnlockDirectDrawSurface(
+    IDirectDrawSurface3 *surface
+) {
     for (;;) {
         HRESULT hresult = surface->Unlock(0);
         if (hresult == DD_OK) {
@@ -6039,19 +8359,34 @@ RECOIL_NOINLINE int RECOIL_FASTCALL UnlockDirectDrawSurface(IDirectDrawSurface3 
             }
         }
 
-        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x1d7);
+        ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x1d7
+        );
         return 0x5a56ffff;
     }
 }
 
 // Reimplements 0x4a8100: zVideo_dd::LockSurface_WaitRestore
-RECOIL_NOINLINE int RECOIL_FASTCALL LockSurface_WaitRestore(IDirectDrawSurface3 *surface,
-                                                                     DDSURFACEDESC *lockedDescOut) {
-    memset(lockedDescOut, 0, sizeof(*lockedDescOut));
+RECOIL_NOINLINE int RECOIL_FASTCALL LockSurface_WaitRestore(
+    IDirectDrawSurface3 *surface,
+    DDSURFACEDESC *lockedDescOut
+) {
+    memset(
+        lockedDescOut,
+        0,
+        sizeof(*lockedDescOut)
+    );
     lockedDescOut->dwSize = sizeof(*lockedDescOut);
 
     for (;;) {
-        HRESULT hresult = surface->Lock(0, lockedDescOut, DDLOCK_WAIT, 0);
+        HRESULT hresult = surface->Lock(
+            0,
+            lockedDescOut,
+            DDLOCK_WAIT,
+            0
+        );
         if (hresult == DD_OK) {
             return 0;
         }
@@ -6063,14 +8398,19 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LockSurface_WaitRestore(IDirectDrawSurface3 
             }
         }
 
-        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x1fd);
+        ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x1fd
+        );
         return 0x5a56ffff;
     }
 }
 
 // Reimplements 0x4a8160: zVideo_dd::UnlockSurface_WaitRestore
-RECOIL_NOINLINE int RECOIL_FASTCALL
-UnlockSurface_WaitRestore(IDirectDrawSurface3 *surface) {
+RECOIL_NOINLINE int RECOIL_FASTCALL UnlockSurface_WaitRestore(
+    IDirectDrawSurface3 *surface
+) {
     for (;;) {
         HRESULT hresult = surface->Unlock(0);
         if (hresult == DD_OK) {
@@ -6084,14 +8424,19 @@ UnlockSurface_WaitRestore(IDirectDrawSurface3 *surface) {
             }
         }
 
-        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x21b);
+        ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x21b
+        );
         return 0x5a56ffff;
     }
 }
 
 // Reimplements 0x4a7fc0: zVideo_dd::LockSurfaceState
-RECOIL_NOINLINE int RECOIL_FASTCALL
-LockSurfaceState(zVideo_SurfaceStatePartial *surfaceState) {
+RECOIL_NOINLINE int RECOIL_FASTCALL LockSurfaceState(
+    zVideo_SurfaceStatePartial *surfaceState
+) {
     if (g_zVideo_FullscreenOption != 0) {
         goto CheckLocked;
     }
@@ -6106,7 +8451,10 @@ CheckLocked:
     }
 
     DDSURFACEDESC lockedSurfaceDesc;
-    const int result = LockDirectDrawSurface(surfaceState->surf, &lockedSurfaceDesc);
+    const int result = LockDirectDrawSurface(
+        surfaceState->surf,
+        &lockedSurfaceDesc
+    );
     if (result == 0) {
         const int locked = 1;
         surfaceState->width = (int)(lockedSurfaceDesc.dwWidth);
@@ -6121,8 +8469,9 @@ CheckLocked:
 }
 
 // Reimplements 0x4a8030: zVideo_dd::UnlockSurfaceState
-RECOIL_NOINLINE int RECOIL_FASTCALL
-UnlockSurfaceState(zVideo_SurfaceStatePartial *surfaceState) {
+RECOIL_NOINLINE int RECOIL_FASTCALL UnlockSurfaceState(
+    zVideo_SurfaceStatePartial *surfaceState
+) {
     if (g_zVideo_FullscreenOption != 0) {
         goto CheckLocked;
     }
@@ -6141,10 +8490,11 @@ CheckLocked:
 }
 
 // Reimplements 0x4a83d0: zVideo_dd::Image_LazyCreateBackingSurface
-RECOIL_NOINLINE IDirectDrawSurface3 *RECOIL_FASTCALL
-Image_LazyCreateBackingSurface(zVidImagePartial *image, unsigned int ddsCapsFlags) {
-    if (image->alphaMap != 0 || image->pixels == 0 || image->height == 0 ||
-        image->width == 0) {
+RECOIL_NOINLINE IDirectDrawSurface3 *RECOIL_FASTCALL Image_LazyCreateBackingSurface(
+    zVidImagePartial *image,
+    unsigned int ddsCapsFlags
+) {
+    if (image->alphaMap != 0 || image->pixels == 0 || image->height == 0 || image->width == 0) {
         return 0;
     }
 
@@ -6158,10 +8508,16 @@ Image_LazyCreateBackingSurface(zVidImagePartial *image, unsigned int ddsCapsFlag
     desc.ddsCaps.dwCaps = ddsCapsFlags | DDSCAPS_OFFSCREENPLAIN;
     image->surface = 0;
 
-    HRESULT hresult = g_zVideo_pDirectDraw2->CreateSurface(&desc, &baseSurface, 0);
+    HRESULT hresult = g_zVideo_pDirectDraw2->CreateSurface(
+        &desc,
+        &baseSurface,
+        0
+    );
     if (hresult == DD_OK) {
-        hresult = baseSurface->QueryInterface(IID_IDirectDrawSurface3,
-                                              (void **)(&surface3));
+        hresult = baseSurface->QueryInterface(
+            IID_IDirectDrawSurface3,
+            (void **)(&surface3)
+        );
         if (hresult == DD_OK) {
             image->surface = surface3;
             Image_PopulateSurfaceFromHeapPixels(image);
@@ -6169,18 +8525,28 @@ Image_LazyCreateBackingSurface(zVidImagePartial *image, unsigned int ddsCapsFlag
         }
     }
 
-    ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x2ed);
+    ReportError(
+        (int)(hresult),
+        kZVideoDirectDrawSourceFile,
+        0x2ed
+    );
     return image->surface;
 }
 
 // Reimplements 0x4a8500: zVideo_dd::Image_PopulateSurfaceFromHeapPixels
-RECOIL_NOINLINE int RECOIL_FASTCALL
-Image_PopulateSurfaceFromHeapPixels(zVidImagePartial *image) {
+RECOIL_NOINLINE int RECOIL_FASTCALL Image_PopulateSurfaceFromHeapPixels(
+    zVidImagePartial *image
+) {
     DDSURFACEDESC lockedSurfaceDesc = {0};
     lockedSurfaceDesc.dwSize = sizeof(lockedSurfaceDesc);
 
     for (;;) {
-        HRESULT hresult = image->surface->Lock(0, &lockedSurfaceDesc, DDLOCK_WAIT, 0);
+        HRESULT hresult = image->surface->Lock(
+            0,
+            &lockedSurfaceDesc,
+            DDLOCK_WAIT,
+            0
+        );
         if (hresult == DD_OK) {
             break;
         }
@@ -6188,13 +8554,20 @@ Image_PopulateSurfaceFromHeapPixels(zVidImagePartial *image) {
         if (hresult == DDERR_SURFACELOST) {
             const HRESULT restoreResult = image->surface->Restore();
             if (restoreResult != DD_OK) {
-                ReportError((int)(restoreResult), kZVideoDirectDrawSourceFile,
-                            0x31b);
+                ReportError(
+                    (int)(restoreResult),
+                    kZVideoDirectDrawSourceFile,
+                    0x31b
+                );
             }
             continue;
         }
 
-        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x31f);
+        ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x31f
+        );
         return 0;
     }
 
@@ -6202,11 +8575,15 @@ Image_PopulateSurfaceFromHeapPixels(zVidImagePartial *image) {
     unsigned char *srcPixels = (unsigned char *)(image->pixels);
     unsigned char *dstPixels = (unsigned char *)(lockedSurfaceDesc.lpSurface);
     {
-    for (int row = 0; row < image->height; ++row) {
-        memcpy(dstPixels, srcPixels, rowBytes);
-        dstPixels += lockedSurfaceDesc.lPitch;
-        srcPixels += rowBytes;
-    }
+        for (int row = 0; row < image->height; ++row) {
+            memcpy(
+                dstPixels,
+                srcPixels,
+                rowBytes
+            );
+            dstPixels += lockedSurfaceDesc.lPitch;
+            srcPixels += rowBytes;
+        }
     }
 
     free(image->pixels);
@@ -6222,34 +8599,46 @@ Image_PopulateSurfaceFromHeapPixels(zVidImagePartial *image) {
         if (hresult == DDERR_SURFACELOST) {
             const HRESULT restoreResult = image->surface->Restore();
             if (restoreResult != DD_OK) {
-                ReportError((int)(restoreResult), kZVideoDirectDrawSourceFile,
-                            0x33b);
+                ReportError(
+                    (int)(restoreResult),
+                    kZVideoDirectDrawSourceFile,
+                    0x33b
+                );
             }
             continue;
         }
 
-        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x33f);
+        ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x33f
+        );
         return 0;
     }
 }
 
 // Reimplements 0x4a84c0: zVideo_dd::Image_LazyCreateVideoMemorySurface
-RECOIL_NOINLINE IDirectDrawSurface3 *RECOIL_FASTCALL
-Image_LazyCreateVideoMemorySurface(zVidImagePartial *image) {
-    const int featureFlags =
-        g_zVideo_pSelectedHwApiDeviceRecord != 0
-            ? g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags
-            : 0;
+RECOIL_NOINLINE IDirectDrawSurface3 *RECOIL_FASTCALL Image_LazyCreateVideoMemorySurface(
+    zVidImagePartial *image
+) {
+    const int featureFlags = g_zVideo_pSelectedHwApiDeviceRecord != 0
+                                 ? g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags
+                                 : 0;
     if (g_zVideo_UseHalfResBackbuffer == 0 && featureFlags == 0) {
         return 0;
     }
 
     const unsigned int caps = (featureFlags != 0 ? 0x20000000 : 0) + DDSCAPS_VIDEOMEMORY;
-    return Image_LazyCreateBackingSurface(image, caps);
+    return Image_LazyCreateBackingSurface(
+        image,
+        caps
+    );
 }
 
 // Reimplements 0x4a8650: zVideo_dd::Image_EnsureSurfaceForCurrentDevice
-RECOIL_NOINLINE void RECOIL_FASTCALL Image_EnsureSurfaceForCurrentDevice(zVidImagePartial *image) {
+RECOIL_NOINLINE void RECOIL_FASTCALL Image_EnsureSurfaceForCurrentDevice(
+    zVidImagePartial *image
+) {
     if (g_zVideo_IsInitialized != 0 && image->surface != 0) {
         image->surface->Release();
     }
@@ -6261,8 +8650,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Image_EnsureSurfaceForCurrentDevice(zVidIma
 }
 
 // Reimplements 0x4a8680: zVideo_dd::Image_UploadPixelsToSurface
-RECOIL_NOINLINE int RECOIL_FASTCALL Image_UploadPixelsToSurface(zVidImagePartial *image,
-                                                                         HDC *outHdc) {
+RECOIL_NOINLINE int RECOIL_FASTCALL Image_UploadPixelsToSurface(
+    zVidImagePartial *image,
+    HDC *outHdc
+) {
     if (g_zVideo_RendererType == 2) {
         return 0;
     }
@@ -6273,7 +8664,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Image_UploadPixelsToSurface(zVidImagePartial
                     g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags != 0
                 ? 0x20004000
                 : DDSCAPS_SYSTEMMEMORY;
-        if (Image_LazyCreateBackingSurface(image, caps) == 0) {
+        if (Image_LazyCreateBackingSurface(
+            image,
+            caps
+        ) == 0) {
             return 0;
         }
     }
@@ -6283,13 +8677,19 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Image_UploadPixelsToSurface(zVidImagePartial
         return 1;
     }
 
-    ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x36d);
+    ReportError(
+        (int)(hresult),
+        kZVideoDirectDrawSourceFile,
+        0x36d
+    );
     return 0;
 }
 
 // Reimplements 0x4a86f0: zVideo_dd::Image_ReleaseSurface
-RECOIL_NOINLINE int RECOIL_FASTCALL Image_ReleaseSurface(zVidImagePartial *image,
-                                                                  HDC hdc) {
+RECOIL_NOINLINE int RECOIL_FASTCALL Image_ReleaseSurface(
+    zVidImagePartial *image,
+    HDC hdc
+) {
     if (image->surface == 0) {
         return 0;
     }
@@ -6299,43 +8699,73 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Image_ReleaseSurface(zVidImagePartial *image
         return 1;
     }
 
-    ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x382);
+    ReportError(
+        (int)(hresult),
+        kZVideoDirectDrawSourceFile,
+        0x382
+    );
     return 0;
 }
 
 // Reimplements 0x4a7d90: zVideo_dd::BltSwToPrimaryRectDirect
-RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRectDirect(zVidRect32 *srcRect,
-                                                              zVidRect32 *dstRect) {
+RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRectDirect(
+    zVidRect32 *srcRect,
+    zVidRect32 *dstRect
+) {
     const HRESULT hresult = g_zVideo_PrimarySurfaceState.surf->Blt(
-        (RECT *)(dstRect), g_zVideo_SwSurfaceState.surf,
-        (RECT *)(srcRect), DDBLT_WAIT, 0);
+        (RECT *)(dstRect),
+        g_zVideo_SwSurfaceState.surf,
+        (RECT *)(srcRect),
+        DDBLT_WAIT,
+        0
+    );
     if (hresult != DD_OK) {
-        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0xe9);
+        ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0xe9
+        );
     }
 }
 
 // Reimplements 0x4a7dd0: zVideo_dd::BltPrimaryToSwRectDirect
-RECOIL_NOINLINE void RECOIL_FASTCALL BltPrimaryToSwRectDirect(zVidRect32 *srcRect,
-                                                              zVidRect32 *dstRect) {
+RECOIL_NOINLINE void RECOIL_FASTCALL BltPrimaryToSwRectDirect(
+    zVidRect32 *srcRect,
+    zVidRect32 *dstRect
+) {
     const HRESULT hresult = g_zVideo_SwSurfaceState.surf->Blt(
-        (RECT *)(dstRect), g_zVideo_PrimarySurfaceState.surf,
-        (RECT *)(srcRect), DDBLT_WAIT, 0);
+        (RECT *)(dstRect),
+        g_zVideo_PrimarySurfaceState.surf,
+        (RECT *)(srcRect),
+        DDBLT_WAIT,
+        0
+    );
     if (hresult != DD_OK) {
-        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0xfc);
+        ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0xfc
+        );
     }
 }
 
 // Reimplements 0x4a7e10: zVideo_dd::BltSwToPrimaryRect
-RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRect(zVidImagePartial *srcImage,
-                                                        int srcColorKeyEnable,
-                                                        zVidRect32 *srcRect, zVidRect32 *dstRect) {
+RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRect(
+    zVidImagePartial *srcImage,
+    int srcColorKeyEnable,
+    zVidRect32 *srcRect,
+    zVidRect32 *dstRect
+) {
     if (srcImage->surface == 0) {
         const unsigned int caps =
             g_zVideo_pSelectedHwApiDeviceRecord != 0 &&
                     g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags != 0
                 ? 0x20004000
                 : DDSCAPS_SYSTEMMEMORY;
-        if (Image_LazyCreateBackingSurface(srcImage, caps) == 0) {
+        if (Image_LazyCreateBackingSurface(
+            srcImage,
+            caps
+        ) == 0) {
             return;
         }
     }
@@ -6360,8 +8790,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRect(zVidImagePartial *srcIma
         dstRectLocal.bottom = srcRectLocal.bottom - srcRectLocal.top;
     }
 
-    int clipped = zVideo_buff::ClipCoordToRange(&dstRectLocal.left, 0,
-                                                         g_zVideo_PrimarySurfaceState.width - 1);
+    int clipped = zVideo_buff::ClipCoordToRange(
+        &dstRectLocal.left,
+        0,
+        g_zVideo_PrimarySurfaceState.width - 1
+    );
     if (clipped < 0) {
         srcRectLocal.left -= clipped;
     } else if (clipped > 0) {
@@ -6369,7 +8802,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRect(zVidImagePartial *srcIma
     }
 
     clipped =
-        zVideo_buff::ClipCoordToRange(&dstRectLocal.right, 0, g_zVideo_PrimarySurfaceState.width);
+        zVideo_buff::ClipCoordToRange(
+            &dstRectLocal.right,
+            0,
+            g_zVideo_PrimarySurfaceState.width
+        );
     if (clipped < 0) {
         return;
     }
@@ -6377,8 +8814,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRect(zVidImagePartial *srcIma
         srcRectLocal.right -= clipped;
     }
 
-    clipped = zVideo_buff::ClipCoordToRange(&dstRectLocal.top, 0,
-                                            g_zVideo_PrimarySurfaceState.height - 1);
+    clipped = zVideo_buff::ClipCoordToRange(
+        &dstRectLocal.top,
+        0,
+        g_zVideo_PrimarySurfaceState.height - 1
+    );
     if (clipped < 0) {
         srcRectLocal.top -= clipped;
     } else if (clipped > 0) {
@@ -6386,7 +8826,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRect(zVidImagePartial *srcIma
     }
 
     clipped =
-        zVideo_buff::ClipCoordToRange(&dstRectLocal.bottom, 0, g_zVideo_PrimarySurfaceState.height);
+        zVideo_buff::ClipCoordToRange(
+            &dstRectLocal.bottom,
+            0,
+            g_zVideo_PrimarySurfaceState.height
+        );
     if (clipped < 0) {
         return;
     }
@@ -6401,21 +8845,33 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRect(zVidImagePartial *srcIma
 
     const DWORD bltFlags =
         DDBLT_WAIT | DDBLT_KEYSRCOVERRIDE | (srcColorKeyEnable != 0 ? DDBLT_KEYSRC : 0);
-    const HRESULT hresult = g_zVideo_PrimarySurfaceState.surf->Blt(
-        (RECT *)(&dstRectLocal), srcImage->surface,
-        (RECT *)(&srcRectLocal), bltFlags, 0);
+    const HRESULT hresult =
+        g_zVideo_PrimarySurfaceState.surf
+            ->Blt(
+                (RECT *)(&dstRectLocal),
+                srcImage->surface,
+                (RECT *)(&srcRectLocal),
+                bltFlags,
+                0
+            );
 
     if (wasLocked != 0) {
         LockSurfaceState(&g_zVideo_PrimarySurfaceState);
     }
 
     if (hresult != DD_OK) {
-        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x159);
+        ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x159
+        );
     }
 }
 
 // Reimplements 0x4a81a0: zVideo_dd::ZBuffer_DepthFillRect
-RECOIL_NOINLINE void RECOIL_FASTCALL ZBuffer_DepthFillRect(zVidRect32 *dstRect) {
+RECOIL_NOINLINE void RECOIL_FASTCALL ZBuffer_DepthFillRect(
+    zVidRect32 *dstRect
+) {
     if (g_zVideo_pZBufferSurface == 0) {
         return;
     }
@@ -6423,19 +8879,32 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ZBuffer_DepthFillRect(zVidRect32 *dstRect) 
     DDBLTFX bltFx = {0};
     bltFx.dwSize = sizeof(bltFx);
     bltFx.dwFillDepth = 0;
-    BltFillWithRestore(g_zVideo_pZBufferSurface, dstRect, DDBLT_DEPTHFILL, &bltFx, 0x242);
+    BltFillWithRestore(
+        g_zVideo_pZBufferSurface,
+        dstRect,
+        DDBLT_DEPTHFILL,
+        &bltFx,
+        0x242
+    );
 }
 
 // Reimplements 0x4a8220: zVideo_dd::ClearScreenAndZBufferRect
-RECOIL_NOINLINE void RECOIL_FASTCALL
-ClearScreenAndZBufferRect(zVidRect32 *dstRect, zVideo_SurfaceStatePartial *colorSurfaceState) {
+RECOIL_NOINLINE void RECOIL_FASTCALL ClearScreenAndZBufferRect(
+    zVidRect32 *dstRect,
+    zVideo_SurfaceStatePartial *colorSurfaceState
+) {
     DDBLTFX bltFx = {0};
     bltFx.dwSize = sizeof(bltFx);
 
     if (g_zVideo_ClearScreenBufferEnabled != 0) {
         bltFx.dwFillColor = g_zVideo_ClearColorPacked16;
-        if (!BltFillWithRestore(colorSurfaceState->surf, dstRect, DDBLT_COLORFILL | DDBLT_WAIT,
-                                &bltFx, 0x267)) {
+        if (!BltFillWithRestore(
+                colorSurfaceState->surf,
+                dstRect,
+                DDBLT_COLORFILL | DDBLT_WAIT,
+                &bltFx,
+                0x267
+            )) {
             return;
         }
     }
@@ -6445,19 +8914,32 @@ ClearScreenAndZBufferRect(zVidRect32 *dstRect, zVideo_SurfaceStatePartial *color
     }
 
     bltFx.dwFillDepth = 0;
-    BltFillWithRestore(g_zVideo_pZBufferSurface, dstRect, DDBLT_DEPTHFILL, &bltFx, 0x27f);
+    BltFillWithRestore(
+        g_zVideo_pZBufferSurface,
+        dstRect,
+        DDBLT_DEPTHFILL,
+        &bltFx,
+        0x27f
+    );
 }
 
 // Reimplements 0x4a82f0: zVideo_dd::ClearSwBackbufferAndZBufferRects
-RECOIL_NOINLINE void RECOIL_FASTCALL ClearSwBackbufferAndZBufferRects(zVidRect32 *colorRect,
-                                                                      zVidRect32 *zRect) {
+RECOIL_NOINLINE void RECOIL_FASTCALL ClearSwBackbufferAndZBufferRects(
+    zVidRect32 *colorRect,
+    zVidRect32 *zRect
+) {
     DDBLTFX bltFx = {0};
     bltFx.dwSize = sizeof(bltFx);
 
     if (g_zVideo_ClearScreenBufferEnabled != 0) {
         bltFx.dwFillColor = g_zVideo_ClearColorPacked16;
-        if (!BltFillWithRestore(g_zVideo_SwSurfaceState.surf, colorRect,
-                                DDBLT_COLORFILL | DDBLT_WAIT, &bltFx, 0x2a5)) {
+        if (!BltFillWithRestore(
+                g_zVideo_SwSurfaceState.surf,
+                colorRect,
+                DDBLT_COLORFILL | DDBLT_WAIT,
+                &bltFx,
+                0x2a5
+            )) {
             return;
         }
     }
@@ -6467,7 +8949,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ClearSwBackbufferAndZBufferRects(zVidRect32
     }
 
     bltFx.dwFillDepth = 0;
-    BltFillWithRestore(g_zVideo_pZBufferSurface, zRect, DDBLT_DEPTHFILL, &bltFx, 0x2bd);
+    BltFillWithRestore(
+        g_zVideo_pZBufferSurface,
+        zRect,
+        DDBLT_DEPTHFILL,
+        &bltFx,
+        0x2bd
+    );
 }
 
 // Reimplements 0x4a7d70: zVideo_dd::FlipToGDIIfAttached
@@ -6479,24 +8967,41 @@ RECOIL_NOINLINE void RECOIL_CDECL FlipToGDIIfAttached() {
 
 // Reimplements 0x4a8720: zVideo_dd::SetDisplayMode
 RECOIL_NOINLINE int RECOIL_CDECL SetDisplayMode() {
-    HRESULT hresult = g_zVideo_pDirectDraw2->SetCooperativeLevel(g_zVideo_hWnd, 0x13);
+    HRESULT hresult = g_zVideo_pDirectDraw2->SetCooperativeLevel(
+        g_zVideo_hWnd,
+        0x13
+    );
     if (hresult != DD_OK) {
-        ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x393);
+        ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x393
+        );
         return 0;
     }
 
-    hresult = g_zVideo_pDirectDraw2->SetDisplayMode(g_zVideo_DisplayModeSurfaceState.width,
-                                                    g_zVideo_DisplayModeSurfaceState.height,
-                                                    g_zVideo_DisplayModeBpp, 0, 0);
+    hresult = g_zVideo_pDirectDraw2->SetDisplayMode(
+        g_zVideo_DisplayModeSurfaceState.width,
+        g_zVideo_DisplayModeSurfaceState.height,
+        g_zVideo_DisplayModeBpp,
+        0,
+        0
+    );
     if (hresult == DD_OK) {
         return 1;
     }
 
-    ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x39c);
+    ReportError(
+        (int)(hresult),
+        kZVideoDirectDrawSourceFile,
+        0x39c
+    );
     return 0;
 }
 
-RECOIL_NOINLINE int RECOIL_FASTCALL SetVideoMode(int) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SetVideoMode(
+    int
+) {
     if (SetDisplayMode() == 0) {
         return 1;
     }
@@ -6550,24 +9055,33 @@ RECOIL_NOINLINE int RECOIL_CDECL RestoreDisplaySurfaces() {
     if (g_zVideo_DisplayModeSurfaceState.surf != 0) {
         const HRESULT hresult = g_zVideo_DisplayModeSurfaceState.surf->Restore();
         if (hresult != DD_OK) {
-            return ReportError((int)(hresult), kZVideoDirectDrawSourceFile,
-                               0x5e1);
+            return ReportError(
+                (int)(hresult),
+                kZVideoDirectDrawSourceFile,
+                0x5e1
+            );
         }
     }
 
     if (g_zVideo_PrimarySurfaceState.surf != 0) {
         const HRESULT hresult = g_zVideo_PrimarySurfaceState.surf->Restore();
         if (hresult != DD_OK) {
-            return ReportError((int)(hresult), kZVideoDirectDrawSourceFile,
-                               0x5e8);
+            return ReportError(
+                (int)(hresult),
+                kZVideoDirectDrawSourceFile,
+                0x5e8
+            );
         }
     }
 
     if (g_zVideo_SwSurfaceState.surf != 0) {
         const HRESULT hresult = g_zVideo_SwSurfaceState.surf->Restore();
         if (hresult != DD_OK) {
-            return ReportError((int)(hresult), kZVideoDirectDrawSourceFile,
-                               0x5ef);
+            return ReportError(
+                (int)(hresult),
+                kZVideoDirectDrawSourceFile,
+                0x5ef
+            );
         }
     }
 
@@ -6575,48 +9089,84 @@ RECOIL_NOINLINE int RECOIL_CDECL RestoreDisplaySurfaces() {
 }
 
 // Reimplements 0x4a8f80: zVideo_dd::InitFullscreenSoftwarePixelPack
-RECOIL_NOINLINE int RECOIL_FASTCALL
-InitFullscreenSoftwarePixelPack(IDirectDrawSurface3 *displaySurface) {
+RECOIL_NOINLINE int RECOIL_FASTCALL InitFullscreenSoftwarePixelPack(
+    IDirectDrawSurface3 *displaySurface
+) {
     DDPIXELFORMAT pixelFormat = {0};
     pixelFormat.dwSize = sizeof(pixelFormat);
 
     const HRESULT hresult = displaySurface->GetPixelFormat(&pixelFormat);
     if (hresult != DD_OK) {
-        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x597);
+        return ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x597
+        );
     }
 
     if (pixelFormat.dwGBitMask == 0x07e0) {
-        zVideo::PixelPack_SetupFromMasks(5, 6, 5, pixelFormat.dwRBitMask, pixelFormat.dwGBitMask,
-                                         pixelFormat.dwBBitMask);
+        zVideo::PixelPack_SetupFromMasks(
+            5,
+            6,
+            5,
+            pixelFormat.dwRBitMask,
+            pixelFormat.dwGBitMask,
+            pixelFormat.dwBBitMask
+        );
         return 0;
     }
 
     if (pixelFormat.dwGBitMask == 0x03e0) {
-        zVideo::PixelPack_SetupFromMasks(5, 5, 5, pixelFormat.dwRBitMask, pixelFormat.dwGBitMask,
-                                         pixelFormat.dwBBitMask);
+        zVideo::PixelPack_SetupFromMasks(
+            5,
+            5,
+            5,
+            pixelFormat.dwRBitMask,
+            pixelFormat.dwGBitMask,
+            pixelFormat.dwBBitMask
+        );
         return 0;
     }
 
     if (pixelFormat.dwGBitMask == 0xff00) {
-        zVideo::PixelPack_SetupFromMasks(5, 6, 5, pixelFormat.dwRBitMask, pixelFormat.dwGBitMask,
-                                         pixelFormat.dwBBitMask);
+        zVideo::PixelPack_SetupFromMasks(
+            5,
+            6,
+            5,
+            pixelFormat.dwRBitMask,
+            pixelFormat.dwGBitMask,
+            pixelFormat.dwBBitMask
+        );
         return 0;
     }
 
     TeardownVideoSubsystem();
-    zError::ReportOld(0x800, kZVideoDirectDrawSourceFile, 0x5bd, "Unrecognized pixel format");
+    zError::ReportOld(
+        0x800,
+        kZVideoDirectDrawSourceFile,
+        0x5bd,
+        "Unrecognized pixel format"
+    );
     return 0x5a56ffff;
 }
 
 // Reimplements 0x4a88b0: zVideo_dd::CreateSurface3FromDesc
-RECOIL_NOINLINE HRESULT RECOIL_FASTCALL CreateSurface3FromDesc(IDirectDraw2 *directDraw,
-                                                               DDSURFACEDESC *desc,
-                                                               IDirectDrawSurface3 **outSurface) {
+RECOIL_NOINLINE HRESULT RECOIL_FASTCALL CreateSurface3FromDesc(
+    IDirectDraw2 *directDraw,
+    DDSURFACEDESC *desc,
+    IDirectDrawSurface3 **outSurface
+) {
     IDirectDrawSurface *createdSurface = 0;
-    HRESULT result = directDraw->CreateSurface(desc, &createdSurface, 0);
+    HRESULT result = directDraw->CreateSurface(
+        desc,
+        &createdSurface,
+        0
+    );
     if (result == DD_OK) {
-        result = createdSurface->QueryInterface(IID_IDirectDrawSurface3,
-                                                (void **)(outSurface));
+        result = createdSurface->QueryInterface(
+            IID_IDirectDrawSurface3,
+            (void **)(outSurface)
+        );
         if (result == DD_OK) {
             return createdSurface->Release();
         }
@@ -6653,51 +9203,86 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateHalfResBackbufferSurfaces() {
     desc.dwFlags = 0x21;
     desc.ddsCaps.dwCaps = 0x218;
 
-    HRESULT hresult = CreateSurface3FromDesc(g_zVideo_pDirectDraw2, &desc,
-                                             &g_zVideo_DisplayModeSurfaceState.surf);
+    HRESULT hresult = CreateSurface3FromDesc(
+        g_zVideo_pDirectDraw2,
+        &desc,
+        &g_zVideo_DisplayModeSurfaceState.surf
+    );
     if (hresult != DD_OK) {
-        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x41f);
+        return ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x41f
+        );
     }
 
     DDSCAPS attachedCaps = {0};
     attachedCaps.dwCaps = DDSCAPS_BACKBUFFER;
     g_zVideo_PrimaryHasAttachedBackbuffer = 1;
     hresult = g_zVideo_DisplayModeSurfaceState.surf->GetAttachedSurface(
-        &attachedCaps, &g_zVideo_PrimarySurfaceState.surf);
+        &attachedCaps,
+        &g_zVideo_PrimarySurfaceState.surf
+    );
     if (hresult != DD_OK) {
-        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x429);
+        return ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x429
+        );
     }
 
     desc.dwFlags = 0x07;
     if ((gfxFlagsOption->payloadOrBuffer & 0x10000) != 0) {
         desc.ddsCaps.dwCaps = 0x4040;
     } else {
-        const int featureFlags =
-            g_zVideo_pSelectedHwApiDeviceRecord != 0
-                ? g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags
-                : 0;
+        const int featureFlags = g_zVideo_pSelectedHwApiDeviceRecord != 0
+                                     ? g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags
+                                     : 0;
         desc.ddsCaps.dwCaps = (featureFlags != 0 ? 0x20003800 : 0) + 0x840;
     }
     desc.dwWidth = (DWORD)(g_zVideo_SwSurfaceState.width);
     desc.dwHeight = (DWORD)(g_zVideo_SwSurfaceState.height);
 
-    hresult = CreateSurface3FromDesc(g_zVideo_pDirectDraw2, &desc, &g_zVideo_SwSurfaceState.surf);
+    hresult = CreateSurface3FromDesc(
+        g_zVideo_pDirectDraw2,
+        &desc,
+        &g_zVideo_SwSurfaceState.surf
+    );
     if (hresult != DD_OK) {
-        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x43f);
+        return ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x43f
+        );
     }
 
     if (InitFullscreenSoftwarePixelPack(g_zVideo_DisplayModeSurfaceState.surf) != 0) {
         return 1;
     }
 
-    hresult = g_zVideo_pDirectDraw2->CreateClipper(0, &g_zVideo_pClipper, 0);
+    hresult = g_zVideo_pDirectDraw2->CreateClipper(
+        0,
+        &g_zVideo_pClipper,
+        0
+    );
     if (hresult != DD_OK) {
-        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x447);
+        return ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x447
+        );
     }
 
-    hresult = g_zVideo_pClipper->SetHWnd(0, g_zVideo_hWnd);
+    hresult = g_zVideo_pClipper->SetHWnd(
+        0,
+        g_zVideo_hWnd
+    );
     if (hresult != DD_OK) {
-        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x44b);
+        return ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x44b
+        );
     }
 
     hresult = g_zVideo_DisplayModeSurfaceState.surf->SetClipper(g_zVideo_pClipper);
@@ -6705,7 +9290,11 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateHalfResBackbufferSurfaces() {
         return 0;
     }
 
-    return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x450);
+    return ReportError(
+        (int)(hresult),
+        kZVideoDirectDrawSourceFile,
+        0x450
+    );
 }
 
 // Reimplements 0x4a8b20: zVideo_dd::CreateFullscreenSoftwareSurfaces
@@ -6722,10 +9311,17 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenSoftwareSurfaces() {
     desc.dwFlags = 1;
     desc.ddsCaps.dwCaps = 0xa00;
 
-    HRESULT hresult = CreateSurface3FromDesc(g_zVideo_pDirectDraw2, &desc,
-                                             &g_zVideo_DisplayModeSurfaceState.surf);
+    HRESULT hresult = CreateSurface3FromDesc(
+        g_zVideo_pDirectDraw2,
+        &desc,
+        &g_zVideo_DisplayModeSurfaceState.surf
+    );
     if (hresult != DD_OK) {
-        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x4cc);
+        return ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x4cc
+        );
     }
 
     if (LockSurfaceState(&g_zVideo_DisplayModeSurfaceState) == 0) {
@@ -6733,11 +9329,17 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenSoftwareSurfaces() {
     } else {
         g_zVideo_DisplayModeSurfaceState.surf->Release();
         desc.ddsCaps.dwCaps = 0x200;
-        hresult = CreateSurface3FromDesc(g_zVideo_pDirectDraw2, &desc,
-                                         &g_zVideo_DisplayModeSurfaceState.surf);
+        hresult = CreateSurface3FromDesc(
+            g_zVideo_pDirectDraw2,
+            &desc,
+            &g_zVideo_DisplayModeSurfaceState.surf
+        );
         if (hresult != DD_OK) {
-            return ReportError((int)(hresult), kZVideoDirectDrawSourceFile,
-                               0x4da);
+            return ReportError(
+                (int)(hresult),
+                kZVideoDirectDrawSourceFile,
+                0x4da
+            );
         }
     }
 
@@ -6753,9 +9355,17 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenSoftwareSurfaces() {
     desc.dwHeight = (DWORD)(g_zVideo_DisplayModeSurfaceState.height);
 
     hresult =
-        CreateSurface3FromDesc(g_zVideo_pDirectDraw2, &desc, &g_zVideo_PrimarySurfaceState.surf);
+        CreateSurface3FromDesc(
+            g_zVideo_pDirectDraw2,
+            &desc,
+            &g_zVideo_PrimarySurfaceState.surf
+        );
     if (hresult != DD_OK) {
-        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x4f7);
+        return ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x4f7
+        );
     }
 
     desc.dwFlags = 7;
@@ -6768,23 +9378,46 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenSoftwareSurfaces() {
     desc.dwWidth = (DWORD)(g_zVideo_DisplayModeSurfaceState.width);
     desc.dwHeight = (DWORD)(g_zVideo_DisplayModeSurfaceState.height);
 
-    hresult = CreateSurface3FromDesc(g_zVideo_pDirectDraw2, &desc, &g_zVideo_SwSurfaceState.surf);
+    hresult = CreateSurface3FromDesc(
+        g_zVideo_pDirectDraw2,
+        &desc,
+        &g_zVideo_SwSurfaceState.surf
+    );
     if (hresult != DD_OK) {
-        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x50d);
+        return ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x50d
+        );
     }
 
     if (InitFullscreenSoftwarePixelPack(g_zVideo_DisplayModeSurfaceState.surf) != 0) {
         return 1;
     }
 
-    hresult = g_zVideo_pDirectDraw2->CreateClipper(0, &g_zVideo_pClipper, 0);
+    hresult = g_zVideo_pDirectDraw2->CreateClipper(
+        0,
+        &g_zVideo_pClipper,
+        0
+    );
     if (hresult != DD_OK) {
-        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x515);
+        return ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x515
+        );
     }
 
-    hresult = g_zVideo_pClipper->SetHWnd(0, g_zVideo_hWnd);
+    hresult = g_zVideo_pClipper->SetHWnd(
+        0,
+        g_zVideo_hWnd
+    );
     if (hresult != DD_OK) {
-        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x519);
+        return ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x519
+        );
     }
 
     hresult = g_zVideo_DisplayModeSurfaceState.surf->SetClipper(g_zVideo_pClipper);
@@ -6792,7 +9425,11 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenSoftwareSurfaces() {
         return 0;
     }
 
-    return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x51d);
+    return ReportError(
+        (int)(hresult),
+        kZVideoDirectDrawSourceFile,
+        0x51d
+    );
 }
 
 // Reimplements 0x4a8dc0: zVideo_dd::CreateFullscreenHardwareSurfaces
@@ -6803,19 +9440,32 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenHardwareSurfaces() {
     desc.dwFlags = 0x21;
     desc.ddsCaps.dwCaps = 0x2218;
 
-    HRESULT hresult = CreateSurface3FromDesc(g_zVideo_pDirectDraw2, &desc,
-                                             &g_zVideo_DisplayModeSurfaceState.surf);
+    HRESULT hresult = CreateSurface3FromDesc(
+        g_zVideo_pDirectDraw2,
+        &desc,
+        &g_zVideo_DisplayModeSurfaceState.surf
+    );
     if (hresult != DD_OK) {
-        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x53b);
+        return ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x53b
+        );
     }
 
     g_zVideo_PrimaryHasAttachedBackbuffer = 1;
     DDSCAPS attachedCaps = {0};
     attachedCaps.dwCaps = DDSCAPS_BACKBUFFER;
     hresult = g_zVideo_DisplayModeSurfaceState.surf->GetAttachedSurface(
-        &attachedCaps, &g_zVideo_SwSurfaceState.surf);
+        &attachedCaps,
+        &g_zVideo_SwSurfaceState.surf
+    );
     if (hresult != DD_OK) {
-        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x546);
+        return ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x546
+        );
     }
 
     desc.dwFlags = 7;
@@ -6825,23 +9475,46 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenHardwareSurfaces() {
     desc.ddsCaps.dwCaps = (featureFlags != 0 ? 0x20003800 : 0) + 0x840;
 
     hresult =
-        CreateSurface3FromDesc(g_zVideo_pDirectDraw2, &desc, &g_zVideo_PrimarySurfaceState.surf);
+        CreateSurface3FromDesc(
+            g_zVideo_pDirectDraw2,
+            &desc,
+            &g_zVideo_PrimarySurfaceState.surf
+        );
     if (hresult != DD_OK) {
-        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x557);
+        return ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x557
+        );
     }
 
     if (InitFullscreenSoftwarePixelPack(g_zVideo_DisplayModeSurfaceState.surf) != 0) {
         return 1;
     }
 
-    hresult = g_zVideo_pDirectDraw2->CreateClipper(0, &g_zVideo_pClipper, 0);
+    hresult = g_zVideo_pDirectDraw2->CreateClipper(
+        0,
+        &g_zVideo_pClipper,
+        0
+    );
     if (hresult != DD_OK) {
-        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x55f);
+        return ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x55f
+        );
     }
 
-    hresult = g_zVideo_pClipper->SetHWnd(0, g_zVideo_hWnd);
+    hresult = g_zVideo_pClipper->SetHWnd(
+        0,
+        g_zVideo_hWnd
+    );
     if (hresult != DD_OK) {
-        return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x563);
+        return ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x563
+        );
     }
 
     hresult = g_zVideo_DisplayModeSurfaceState.surf->SetClipper(g_zVideo_pClipper);
@@ -6849,7 +9522,11 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenHardwareSurfaces() {
         return 0;
     }
 
-    return ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x567);
+    return ReportError(
+        (int)(hresult),
+        kZVideoDirectDrawSourceFile,
+        0x567
+    );
 }
 
 // Reimplements 0x4a91b0: zVideo_dd::ReleaseAllInterfacesAndSurfaces
@@ -6861,12 +9538,18 @@ RECOIL_NOINLINE int RECOIL_CDECL ReleaseAllInterfacesAndSurfaces() {
     ReleaseComInterface(g_zVideo_pClipper);
     ReleaseComInterface(g_zVideo_pZBufferSurface);
 
-    if (!PageUnlockBeforeRelease(g_zVideo_SwSurfaceState, 0x652)) {
+    if (!PageUnlockBeforeRelease(
+        g_zVideo_SwSurfaceState,
+        0x652
+    )) {
         return 0;
     }
     ReleaseComInterface(g_zVideo_SwSurfaceState.surf);
 
-    if (!PageUnlockBeforeRelease(g_zVideo_PrimarySurfaceState, 0x662)) {
+    if (!PageUnlockBeforeRelease(
+        g_zVideo_PrimarySurfaceState,
+        0x662
+    )) {
         return 0;
     }
     ReleaseComInterface(g_zVideo_PrimarySurfaceState.surf);
@@ -6877,7 +9560,9 @@ RECOIL_NOINLINE int RECOIL_CDECL ReleaseAllInterfacesAndSurfaces() {
 }
 
 // Reimplements 0x4a9160: zVideo_dd::VerifySurfaceStateLocking
-RECOIL_NOINLINE void RECOIL_FASTCALL VerifySurfaceStateLocking(int callerContext) {
+RECOIL_NOINLINE void RECOIL_FASTCALL VerifySurfaceStateLocking(
+    int callerContext
+) {
     if ((g_zVideo_SurfaceLockVerifyFlags & 0x20) == 0) {
         return;
     }
@@ -6886,9 +9571,15 @@ RECOIL_NOINLINE void RECOIL_FASTCALL VerifySurfaceStateLocking(int callerContext
     args.size = sizeof(args);
     args.callerContext = callerContext;
     const int hresult = g_zVideo_pSurfaceLockVerifier->vtable->VerifySurfaceState(
-        g_zVideo_pSurfaceLockVerifier, &args);
+        g_zVideo_pSurfaceLockVerifier,
+        &args
+    );
     if (hresult != DD_OK) {
-        ReportError(hresult, kZVideoDirectDrawSourceFile, 0x61a);
+        ReportError(
+            hresult,
+            kZVideoDirectDrawSourceFile,
+            0x61a
+        );
     }
 }
 
@@ -6909,39 +9600,58 @@ RECOIL_NOINLINE void RECOIL_CDECL TeardownVideoSubsystem() {
     }
 
     if (g_zVideo_pDirectDraw2 != 0) {
-        g_zVideo_pDirectDraw2->SetCooperativeLevel(g_zVideo_hWnd, 8);
+        g_zVideo_pDirectDraw2->SetCooperativeLevel(
+            g_zVideo_hWnd,
+            8
+        );
         g_zVideo_pDirectDraw2->Release();
         g_zVideo_pDirectDraw2 = 0;
     }
 }
 
 // Reimplements 0x4a9890: zVideo_dd::PaletteSetEntries
-RECOIL_NOINLINE int RECOIL_FASTCALL PaletteSetEntries(unsigned short firstEntry,
-                                                               unsigned short entryCount,
-                                                               PALETTEENTRY *entries) {
+RECOIL_NOINLINE int RECOIL_FASTCALL PaletteSetEntries(
+    unsigned short firstEntry,
+    unsigned short entryCount,
+    PALETTEENTRY *entries
+) {
     if (g_zVideo_DisplayModeBpp != 8) {
         return 0;
     }
 
-    const HRESULT hresult = g_zVideo_pDDPalette->SetEntries(0, firstEntry, entryCount, entries);
+    const HRESULT hresult = g_zVideo_pDDPalette->SetEntries(
+        0,
+        firstEntry,
+        entryCount,
+        entries
+    );
     if (hresult == DD_OK) {
         return 0;
     }
 
-    ReportError((int)(hresult), kZVideoDirectDrawSourceFile, 0x823);
+    ReportError(
+        (int)(hresult),
+        kZVideoDirectDrawSourceFile,
+        0x823
+    );
     return 0x5a56ffff;
 }
 
 // Reimplements 0x4ad6a0: zVideo_dd::ReportError
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL ReportError(int hresult,
-                                                                      const char *sourceFile,
-                                                                      int sourceLine) {
+RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL ReportError(
+    int hresult,
+    const char *sourceFile,
+    int sourceLine
+) {
     if (hresult == DD_OK) {
         return 0;
     }
 
     char errorNameBuffer[0x100];
-    sprintf(errorNameBuffer, GetDirectDrawErrorName(hresult));
+    sprintf(
+        errorNameBuffer,
+        GetDirectDrawErrorName(hresult)
+    );
 
     if (hresult == DDERR_OUTOFVIDEOMEMORY) {
         int textureMemTotalBytes = 0;
@@ -6950,17 +9660,35 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL ReportError(int hresult,
         int videoMemFreeBytes = 0;
 
         if (g_zVideo_pfnQueryTextureMemoryBytes != 0) {
-            g_zVideo_pfnQueryTextureMemoryBytes(-1, &textureMemTotalBytes, &textureMemFreeBytes);
+            g_zVideo_pfnQueryTextureMemoryBytes(
+                -1,
+                &textureMemTotalBytes,
+                &textureMemFreeBytes
+            );
         }
         if (g_zVideo_pfnQueryDeviceVideoMemoryBytes != 0) {
-            g_zVideo_pfnQueryDeviceVideoMemoryBytes(-1, &videoMemTotalBytes, &videoMemFreeBytes);
+            g_zVideo_pfnQueryDeviceVideoMemoryBytes(
+                -1,
+                &videoMemTotalBytes,
+                &videoMemFreeBytes
+            );
         }
     }
 
     char reportMessageBuffer[0x100];
-    sprintf(reportMessageBuffer, "DirectDraw Error [%s] %s:%d\n", errorNameBuffer, sourceFile,
-                 sourceLine);
-    zError::ReportOld(0x400, sourceFile, sourceLine, reportMessageBuffer);
+    sprintf(
+        reportMessageBuffer,
+        "DirectDraw Error [%s] %s:%d\n",
+        errorNameBuffer,
+        sourceFile,
+        sourceLine
+    );
+    zError::ReportOld(
+        0x400,
+        sourceFile,
+        sourceLine,
+        reportMessageBuffer
+    );
     return -1;
 }
 } // namespace zVideo_dd

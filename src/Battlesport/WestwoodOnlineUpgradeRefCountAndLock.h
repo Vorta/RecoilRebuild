@@ -7,8 +7,7 @@
 
 #include <windows.h>
 
-struct WestwoodOnlineUpgradeRefCountAndLock
-{
+struct WestwoodOnlineUpgradeRefCountAndLock {
     long refCount;
     CRITICAL_SECTION lock;
 
@@ -16,5 +15,15 @@ struct WestwoodOnlineUpgradeRefCountAndLock
 };
 
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeRefCountAndLock) == 0x1c);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeRefCountAndLock, refCount) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeRefCountAndLock, lock) == 0x04);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeRefCountAndLock,
+        refCount
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeRefCountAndLock,
+        lock
+    ) == 0x04
+);

@@ -35,64 +35,124 @@ namespace {
 int g_matrixIdentityFlagSlots[32] = {0};
 float *g_matrixSlots[32] = {0};
 
-zVec3 Subtract(const zVec3 &lhs, const zVec3 &rhs) {
+zVec3 Subtract(
+    const zVec3 &lhs,
+    const zVec3 &rhs
+) {
     zVec3 result = {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z};
     return result;
 }
 
-zVec3 Cross(const zVec3 &lhs, const zVec3 &rhs) {
-    zVec3 result = {lhs.y * rhs.z - lhs.z * rhs.y, lhs.z * rhs.x - lhs.x * rhs.z,
-            lhs.x * rhs.y - lhs.y * rhs.x};
+zVec3 Cross(
+    const zVec3 &lhs,
+    const zVec3 &rhs
+) {
+    zVec3 result = {lhs.y * rhs.z - lhs.z * rhs.y,
+        lhs.z * rhs.x - lhs.x * rhs.z,
+        lhs.x * rhs.y - lhs.y * rhs.x};
     return result;
 }
 
-float Dot(const zVec3 &lhs, const zVec3 &rhs) {
+float Dot(
+    const zVec3 &lhs,
+    const zVec3 &rhs
+) {
     return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
 }
 
-float NegateFloatSignBit(float value) {
+float NegateFloatSignBit(
+    float value
+) {
     unsigned int bits = 0;
-    memcpy(&bits, &value, sizeof(bits));
+    memcpy(
+        &bits,
+        &value,
+        sizeof(bits)
+    );
     bits ^= 0x80000000u;
-    memcpy(&value, &bits, sizeof(value));
+    memcpy(
+        &value,
+        &bits,
+        sizeof(value)
+    );
     return value;
 }
 
-float FastSqrtEstimate(float value) {
+float FastSqrtEstimate(
+    float value
+) {
     unsigned int bits = 0;
-    memcpy(&bits, &value, sizeof(bits));
+    memcpy(
+        &bits,
+        &value,
+        sizeof(bits)
+    );
     bits = (bits >> 1) + 0x1fc00000u;
-    memcpy(&value, &bits, sizeof(value));
+    memcpy(
+        &value,
+        &bits,
+        sizeof(value)
+    );
     return value;
 }
 
-zVec3 Add(const zVec3 &lhs, const zVec3 &rhs) {
+zVec3 Add(
+    const zVec3 &lhs,
+    const zVec3 &rhs
+) {
     zVec3 result = {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
     return result;
 }
 
-zVec3 Scale(const zVec3 &value, float scale) {
+zVec3 Scale(
+    const zVec3 &value,
+    float scale
+) {
     zVec3 result = {value.x * scale, value.y * scale, value.z * scale};
     return result;
 }
 
-void BuildUvOverZPlane(const zVec3 *triVerts, const zVec3 &edge21, const zVec3 &edge01,
-                       float edge21LenSq, float edge01LenSq, float edgeDotScaled, float invGram,
-                       const zVec2 &recipZGrad, float recipZBase, float uv0, float uv1, float uv2,
-                       zVec2 *outGrad, float *outBase) {
+void BuildUvOverZPlane(
+    const zVec3 *triVerts,
+    const zVec3 &edge21,
+    const zVec3 &edge01,
+    float edge21LenSq,
+    float edge01LenSq,
+    float edgeDotScaled,
+    float invGram,
+    const zVec2 &recipZGrad,
+    float recipZBase,
+    float uv0,
+    float uv1,
+    float uv2,
+    zVec2 *outGrad,
+    float *outBase
+) {
     const float delta21 = uv2 - uv1;
     const float delta01 = uv0 - uv1;
     const zVec3 plane =
         Add(Scale(edge21, delta21 * edge01LenSq * invGram - delta01 * edgeDotScaled),
-            Scale(edge01, delta01 * edge21LenSq * invGram - delta21 * edgeDotScaled));
-    const float originDelta = uv0 - Dot(plane, triVerts[0]);
+            Scale(
+                edge01,
+                delta01 * edge21LenSq * invGram - delta21 * edgeDotScaled
+            ));
+    const float originDelta = uv0 - Dot(
+        plane,
+        triVerts[0]
+    );
 
     outGrad->x = originDelta * recipZGrad.x + plane.x * g_zMath_InvProjScaleX;
     outGrad->y = originDelta * recipZGrad.y + plane.y * g_zMath_InvProjScaleY;
     *outBase = originDelta * recipZBase + plane.z;
 }
 
-void TransformBBoxCorner(const zMat4x3 *matrix, float x, float y, float z, float *out) {
+void TransformBBoxCorner(
+    const zMat4x3 *matrix,
+    float x,
+    float y,
+    float z,
+    float *out
+) {
     out[0] = x * matrix->xx + y * matrix->yx + z * matrix->zx + matrix->posX;
     out[1] = x * matrix->xy + y * matrix->yy + z * matrix->zy + matrix->posY;
     out[2] = x * matrix->xz + y * matrix->yz + z * matrix->zz + matrix->posZ;
@@ -101,11 +161,17 @@ void TransformBBoxCorner(const zMat4x3 *matrix, float x, float y, float z, float
 
 // Reimplements 0x474710: zMath_Mat_TransformNormalBatch
 // (D:\Proj\GameZRecoil\zMath\zmath_matrix.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Mat_TransformNormalBatch(const zVec3 *normals,
-                                                                    zVec3 *outNormals,
-                                                                    int count) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Mat_TransformNormalBatch(
+    const zVec3 *normals,
+    zVec3 *outNormals,
+    int count
+) {
     if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-        memcpy(outNormals, normals, count * sizeof(zVec3));
+        memcpy(
+            outNormals,
+            normals,
+            count * sizeof(zVec3)
+        );
         return;
     }
 
@@ -116,19 +182,18 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Mat_TransformNormalBatch(const zVec3 
     const zMat4x3 *matrix = (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
     for (int i = 0; i < count; ++i) {
         const zVec3 normal = normals[i];
-        outNormals[i].x =
-            normal.x * matrix->xx + normal.y * matrix->yx + normal.z * matrix->zx;
-        outNormals[i].z =
-            normal.x * matrix->xz + normal.y * matrix->yz + normal.z * matrix->zz;
-        outNormals[i].y =
-            normal.x * matrix->xy + normal.y * matrix->yy + normal.z * matrix->zy;
+        outNormals[i].x = normal.x * matrix->xx + normal.y * matrix->yx + normal.z * matrix->zx;
+        outNormals[i].z = normal.x * matrix->xz + normal.y * matrix->yz + normal.z * matrix->zz;
+        outNormals[i].y = normal.x * matrix->xy + normal.y * matrix->yy + normal.z * matrix->zy;
     }
 }
 
 // Reimplements 0x4745e0: zMath_Vec3Array_UntransformDirection
 // (D:\Proj\GameZRecoil\zMath\zmath_vec.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Vec3Array_UntransformDirection(zVec3 *vectors,
-                                                                          int count) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Vec3Array_UntransformDirection(
+    zVec3 *vectors,
+    int count
+) {
     if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
         return;
     }
@@ -148,8 +213,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Vec3Array_UntransformDirection(zVec3 
 
 // Reimplements 0x4743e0: zMath_SetScreenSize
 // (D:\Proj\GameZRecoil\zMath\zmath_proj.cpp)
-RECOIL_NOINLINE void RECOIL_STDCALL zMath_SetScreenSize(int screenWidthPx,
-                                                        int screenHeightPx) {
+RECOIL_NOINLINE void RECOIL_STDCALL zMath_SetScreenSize(
+    int screenWidthPx,
+    int screenHeightPx
+) {
     g_zMath_ScreenWidthPx = screenWidthPx;
     g_zMath_ScreenHeightPx = screenHeightPx;
 }
@@ -157,8 +224,15 @@ RECOIL_NOINLINE void RECOIL_STDCALL zMath_SetScreenSize(int screenWidthPx,
 // Reimplements 0x474400: zMath_Setup_Projection
 // (D:\Proj\GameZRecoil\zMath\zmath_proj.cpp)
 RECOIL_NOINLINE void RECOIL_STDCALL zMath_Setup_Projection(
-    float viewportOriginX, float viewportOriginY, float halfViewWidthPx, float halfViewHeightPx,
-    float focalScaleX, float focalScaleY, float clipDistance, float projDepth) {
+    float viewportOriginX,
+    float viewportOriginY,
+    float halfViewWidthPx,
+    float halfViewHeightPx,
+    float focalScaleX,
+    float focalScaleY,
+    float clipDistance,
+    float projDepth
+) {
     g_zMath_FocalScaleX = focalScaleX;
     g_zMath_FocalScaleY = focalScaleY;
     g_zMath_InvFocalScaleX = 1.0f / focalScaleX;
@@ -179,12 +253,31 @@ RECOIL_NOINLINE void RECOIL_STDCALL zMath_Setup_Projection(
 
 // Reimplements 0x4753e0: zMath_BuildPerspectiveTextureInterpolants
 RECOIL_NOINLINE void RECOIL_FASTCALL zMath_BuildPerspectiveTextureInterpolants(
-    const zVec3 *triVerts, const zVec2 *triUVs, zVec2 *outRecipZGrad, float *outRecipZBase,
-    zVec2 *outUOverZGrad, float *outUOverZBase, zVec2 *outVOverZGrad, float *outVOverZBase) {
-    const zVec3 edge21 = Subtract(triVerts[2], triVerts[1]);
-    const zVec3 edge01 = Subtract(triVerts[0], triVerts[1]);
-    const zVec3 normal = Cross(edge21, edge01);
-    const float normalDotOrigin = Dot(normal, triVerts[0]);
+    const zVec3 *triVerts,
+    const zVec2 *triUVs,
+    zVec2 *outRecipZGrad,
+    float *outRecipZBase,
+    zVec2 *outUOverZGrad,
+    float *outUOverZBase,
+    zVec2 *outVOverZGrad,
+    float *outVOverZBase
+) {
+    const zVec3 edge21 = Subtract(
+        triVerts[2],
+        triVerts[1]
+    );
+    const zVec3 edge01 = Subtract(
+        triVerts[0],
+        triVerts[1]
+    );
+    const zVec3 normal = Cross(
+        edge21,
+        edge01
+    );
+    const float normalDotOrigin = Dot(
+        normal,
+        triVerts[0]
+    );
 
     if (normalDotOrigin == 0.0f) {
         outRecipZGrad->x = 0.0f;
@@ -197,9 +290,18 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_BuildPerspectiveTextureInterpolants(
         *outRecipZBase = reciprocalNormalDot * normal.z;
     }
 
-    const float edge21LenSq = Dot(edge21, edge21);
-    const float edge01LenSq = Dot(edge01, edge01);
-    const float edgeDot = Dot(edge21, edge01);
+    const float edge21LenSq = Dot(
+        edge21,
+        edge21
+    );
+    const float edge01LenSq = Dot(
+        edge01,
+        edge01
+    );
+    const float edgeDot = Dot(
+        edge21,
+        edge01
+    );
     const float gramDeterminant = edge01LenSq * edge21LenSq - edgeDot * edgeDot;
     if (gramDeterminant == 0.0f) {
         outUOverZGrad->x = 0.0f;
@@ -213,12 +315,38 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_BuildPerspectiveTextureInterpolants(
 
     const float invGram = 1.0f / gramDeterminant;
     const float edgeDotScaled = edgeDot * invGram;
-    BuildUvOverZPlane(triVerts, edge21, edge01, edge21LenSq, edge01LenSq, edgeDotScaled, invGram,
-                      *outRecipZGrad, *outRecipZBase, triUVs[0].x, triUVs[1].x, triUVs[2].x,
-                      outUOverZGrad, outUOverZBase);
-    BuildUvOverZPlane(triVerts, edge21, edge01, edge21LenSq, edge01LenSq, edgeDotScaled, invGram,
-                      *outRecipZGrad, *outRecipZBase, triUVs[0].y, triUVs[1].y, triUVs[2].y,
-                      outVOverZGrad, outVOverZBase);
+    BuildUvOverZPlane(
+        triVerts,
+        edge21,
+        edge01,
+        edge21LenSq,
+        edge01LenSq,
+        edgeDotScaled,
+        invGram,
+        *outRecipZGrad,
+        *outRecipZBase,
+        triUVs[0].x,
+        triUVs[1].x,
+        triUVs[2].x,
+        outUOverZGrad,
+        outUOverZBase
+    );
+    BuildUvOverZPlane(
+        triVerts,
+        edge21,
+        edge01,
+        edge21LenSq,
+        edge01LenSq,
+        edgeDotScaled,
+        invGram,
+        *outRecipZGrad,
+        *outRecipZBase,
+        triUVs[0].y,
+        triUVs[1].y,
+        triUVs[2].y,
+        outVOverZGrad,
+        outVOverZBase
+    );
 }
 
 namespace zMath {
@@ -229,7 +357,9 @@ int *g_currentMatrixIdentityFlagSlot = &g_matrixIdentityFlagSlots[0];
 float **g_currentMatrixPtrSlot = &g_matrixSlots[0];
 
 // Reimplements 0x472f30: zMath::MatStackPushPtr
-RECOIL_NOINLINE void RECOIL_FASTCALL MatStackPushPtr(float *matrix) {
+RECOIL_NOINLINE void RECOIL_FASTCALL MatStackPushPtr(
+    float *matrix
+) {
     ++g_currentMatrixIdentityFlagSlot;
     ++g_currentMatrixPtrSlot;
     *g_currentMatrixPtrSlot = matrix;
@@ -237,12 +367,18 @@ RECOIL_NOINLINE void RECOIL_FASTCALL MatStackPushPtr(float *matrix) {
 }
 
 // Reimplements 0x472ef0: zMath::MatStackPushAndCloneParent (GameZRecoil/zMath/zmath_matstack.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL MatStackPushAndCloneParent(float *newSlotBuffer) {
+RECOIL_NOINLINE void RECOIL_FASTCALL MatStackPushAndCloneParent(
+    float *newSlotBuffer
+) {
     ++g_currentMatrixIdentityFlagSlot;
     ++g_currentMatrixPtrSlot;
     *g_currentMatrixIdentityFlagSlot = g_currentMatrixIdentityFlagSlot[-1];
     *g_currentMatrixPtrSlot = newSlotBuffer;
-    memcpy(*g_currentMatrixPtrSlot, g_currentMatrixPtrSlot[-1], sizeof(zMat4x3));
+    memcpy(
+        *g_currentMatrixPtrSlot,
+        g_currentMatrixPtrSlot[-1],
+        sizeof(zMat4x3)
+    );
 }
 
 // Reimplements 0x472f60: zMath::MatStackPopPtr
@@ -264,7 +400,11 @@ RECOIL_NOINLINE void RECOIL_CDECL MatLoadCameraScratchA() {
 // Reimplements 0x4732f0: zMath::MatLoadIdentity
 RECOIL_NOINLINE void RECOIL_CDECL MatLoadIdentity() {
     float *matrix = *g_currentMatrixPtrSlot;
-    memset(matrix, 0, 12 * sizeof(float));
+    memset(
+        matrix,
+        0,
+        12 * sizeof(float)
+    );
     matrix[0] = 1.0f;
     matrix[4] = 1.0f;
     matrix[8] = 1.0f;
@@ -272,7 +412,9 @@ RECOIL_NOINLINE void RECOIL_CDECL MatLoadIdentity() {
 }
 
 // Reimplements 0x402f60: zMath::Vec3Normalize
-RECOIL_NOINLINE float RECOIL_FASTCALL Vec3Normalize(zVec3 *vec) {
+RECOIL_NOINLINE float RECOIL_FASTCALL Vec3Normalize(
+    zVec3 *vec
+) {
     const float length = sqrt(vec->x * vec->x + vec->y * vec->y + vec->z * vec->z);
     if (length != 0.0f) {
         const float reciprocalLength = 1.0f / length;
@@ -285,7 +427,10 @@ RECOIL_NOINLINE float RECOIL_FASTCALL Vec3Normalize(zVec3 *vec) {
 
 // Reimplements 0x4727f0: zMath::Vec3NormalizeXZ
 // (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL Vec3NormalizeXZ(zVec3 *vec, zVec3 *out) {
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3NormalizeXZ(
+    zVec3 *vec,
+    zVec3 *out
+) {
     const float savedY = vec->y;
     vec->y = 0.0f;
     const float length = sqrt(vec->x * vec->x + vec->y * vec->y + vec->z * vec->z);
@@ -302,7 +447,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Vec3NormalizeXZ(zVec3 *vec, zVec3 *out) {
 
 // Reimplements 0x472cc0: zMath::Vec3Perp2D
 // (D:\Proj\GameZRecoil\zMath\zmath_vec2.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Perp2D(const zVec3 *in, zVec3 *out) {
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Perp2D(
+    const zVec3 *in,
+    zVec3 *out
+) {
     out->z = 0.0f;
     if (in->x == 0.0f) {
         out->x = 1.0f;
@@ -318,7 +466,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Perp2D(const zVec3 *in, zVec3 *out) {
 
 // Reimplements 0x4745c0: zMath::Vec3PerpXZ
 // (D:\Proj\GameZRecoil\zMath\zmath_vec.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL Vec3PerpXZ(const zVec3 *in, zVec3 *out) {
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3PerpXZ(
+    const zVec3 *in,
+    zVec3 *out
+) {
     out->x = -in->z;
     out->y = 0.0f;
     out->z = in->x;
@@ -326,8 +477,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Vec3PerpXZ(const zVec3 *in, zVec3 *out) {
 
 // Reimplements 0x472770: zMath::Vec3ScaleAdd
 // (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL Vec3ScaleAdd(const zVec3 *vec, const zVec3 *delta,
-                                                  float scale, zVec3 *out) {
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3ScaleAdd(
+    const zVec3 *vec,
+    const zVec3 *delta,
+    float scale,
+    zVec3 *out
+) {
     out->x = vec->x + delta->x * scale;
     out->y = vec->y + delta->y * scale;
     out->z = vec->z + delta->z * scale;
@@ -335,10 +490,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Vec3ScaleAdd(const zVec3 *vec, const zVec3 
 
 // Reimplements 0x472860: zMath::Vec3Reflect
 // (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Reflect(zVec3 *normal, zVec3 *incident,
-                                                 zVec3 *reflected) {
-    const float dot =
-        normal->x * incident->x + normal->y * incident->y + normal->z * incident->z;
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Reflect(
+    zVec3 *normal,
+    zVec3 *incident,
+    zVec3 *reflected
+) {
+    const float dot = normal->x * incident->x + normal->y * incident->y + normal->z * incident->z;
     if (dot == 0.0f) {
         reflected->x = incident->x * -1.0f;
         reflected->y = incident->y * -1.0f;
@@ -363,7 +520,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Reflect(zVec3 *normal, zVec3 *incident,
 
 // Reimplements 0x472960: zMath::Vec3Lerp
 // (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Lerp(zVec3 *inOut, const zVec3 *other, float t) {
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Lerp(
+    zVec3 *inOut,
+    const zVec3 *other,
+    float t
+) {
     const float otherScale = 1.0f - t;
     inOut->x = inOut->x * t + other->x * otherScale;
     inOut->y = inOut->y * t + other->y * otherScale;
@@ -372,16 +533,26 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Lerp(zVec3 *inOut, const zVec3 *other, 
 
 // Reimplements 0x4729f0: zMath::Vec3LerpNormalize
 // (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL Vec3LerpNormalize(zVec3 *inOut, const zVec3 *other,
-                                                       float t) {
-    Vec3Lerp(inOut, other, t);
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3LerpNormalize(
+    zVec3 *inOut,
+    const zVec3 *other,
+    float t
+) {
+    Vec3Lerp(
+        inOut,
+        other,
+        t
+    );
     Vec3Normalize(inOut);
 }
 
 // Reimplements 0x4729b0: zMath::Vec3DirectionTo
 // (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
-RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DirectionTo(const zVec3 *from, const zVec3 *to,
-                                                      zVec3 *outDir) {
+RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DirectionTo(
+    const zVec3 *from,
+    const zVec3 *to,
+    zVec3 *outDir
+) {
     outDir->x = to->x - from->x;
     outDir->y = to->y - from->y;
     outDir->z = to->z - from->z;
@@ -390,8 +561,12 @@ RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DirectionTo(const zVec3 *from, const z
 
 // Reimplements 0x472a10: zMath::Vec3Slerp
 // (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Slerp(const zVec3 *a, const zVec3 *b, float t,
-                                               zVec3 *out) {
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Slerp(
+    const zVec3 *a,
+    const zVec3 *b,
+    float t,
+    zVec3 *out
+) {
     if (t == 0.0f) {
         *out = *a;
         return;
@@ -402,10 +577,16 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Slerp(const zVec3 *a, const zVec3 *b, f
         return;
     }
 
-    const float dot = Dot(*a, *b);
+    const float dot = Dot(
+        *a,
+        *b
+    );
     if (dot < -0.95f) {
         zVec3 perpendicular;
-        Vec3Perp2D(a, &perpendicular);
+        Vec3Perp2D(
+            a,
+            &perpendicular
+        );
 
         const float angle = 3.14159274f * t;
         const float sinAngle = sin(angle);
@@ -426,7 +607,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Slerp(const zVec3 *a, const zVec3 *b, f
 
     const float sinOmegaSq = 1.0f - dot * dot;
     const float sinOmega = sinOmegaSq <= 0.0f ? 0.0f : FastSqrtEstimate(sinOmegaSq);
-    const float omega = atan2(sinOmega, dot);
+    const float omega = atan2(
+        sinOmega,
+        dot
+    );
     const float aScale = sin((1.0f - t) * omega);
     const float bScale = sin(t * omega);
 
@@ -442,20 +626,31 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Vec3Slerp(const zVec3 *a, const zVec3 *b, f
 
 // Reimplements 0x475210: zMath::LineVsSphereHit
 // (D:\Proj\GameZRecoil\zMath\zMathGeom.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL LineVsSphereHit(const zVec3 *segA, const zVec3 *segB,
-                                                    float radius,
-                                                    const zVec3 *sphereCenterRelSegB,
-                                                    zVec3 *outInwardNormal) {
+RECOIL_NOINLINE int RECOIL_FASTCALL LineVsSphereHit(
+    const zVec3 *segA,
+    const zVec3 *segB,
+    float radius,
+    const zVec3 *sphereCenterRelSegB,
+    zVec3 *outInwardNormal
+) {
     zVec3 lineDelta = {segA->x - segB->x, segA->y - segB->y, segA->z - segB->z};
 
-    const float lineLengthSq = Dot(lineDelta, lineDelta);
+    const float lineLengthSq = Dot(
+        lineDelta,
+        lineDelta
+    );
     if (lineLengthSq == 0.0f) {
         return 0;
     }
 
-    const float centerDotLine = Dot(*sphereCenterRelSegB, lineDelta);
-    float centerDistMinusRadius =
-        Dot(*sphereCenterRelSegB, *sphereCenterRelSegB) - radius * radius;
+    const float centerDotLine = Dot(
+        *sphereCenterRelSegB,
+        lineDelta
+    );
+    float centerDistMinusRadius = Dot(
+        *sphereCenterRelSegB,
+        *sphereCenterRelSegB
+    ) - radius * radius;
 
     float hitScale = 0.0f;
     if (centerDistMinusRadius == 0.0f) {
@@ -501,8 +696,11 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LineVsSphereHit(const zVec3 *segA, const zVe
 
 // Reimplements 0x42d560: zMath::Vec3Midpoint
 // (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
-RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL Vec3Midpoint(const zVec3 *a, const zVec3 *b,
-                                                    zVec3 *outMidpoint) {
+RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL Vec3Midpoint(
+    const zVec3 *a,
+    const zVec3 *b,
+    zVec3 *outMidpoint
+) {
     outMidpoint->x = (a->x + b->x) * 0.5f;
     outMidpoint->y = (a->y + b->y) * 0.5f;
     outMidpoint->z = (a->z + b->z) * 0.5f;
@@ -511,20 +709,25 @@ RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL Vec3Midpoint(const zVec3 *a, const zVec3 
 
 // Reimplements 0x4726d0: zMath::Vec3DeltaLength
 // (D:\Proj\GameZRecoil\zMath.cpp)
-RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DeltaLength(const zVec3 *a, const zVec3 *b) {
+RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DeltaLength(
+    const zVec3 *a,
+    const zVec3 *b
+) {
     g_zMath_Vec3DeltaScratch.x = a->x - b->x;
     g_zMath_Vec3DeltaScratch.y = a->y - b->y;
     g_zMath_Vec3DeltaScratch.z = a->z - b->z;
 
-    const float lengthSq =
-        g_zMath_Vec3DeltaScratch.x * g_zMath_Vec3DeltaScratch.x +
-        g_zMath_Vec3DeltaScratch.y * g_zMath_Vec3DeltaScratch.y +
-        g_zMath_Vec3DeltaScratch.z * g_zMath_Vec3DeltaScratch.z;
+    const float lengthSq = g_zMath_Vec3DeltaScratch.x * g_zMath_Vec3DeltaScratch.x +
+                           g_zMath_Vec3DeltaScratch.y * g_zMath_Vec3DeltaScratch.y +
+                           g_zMath_Vec3DeltaScratch.z * g_zMath_Vec3DeltaScratch.z;
     return sqrt(lengthSq);
 }
 
 // Reimplements 0x472670: zMath::Vec3DeltaLengthSq (GameZRecoil/zMath.cpp)
-RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DeltaLengthSq(const zVec3 *a, const zVec3 *b) {
+RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DeltaLengthSq(
+    const zVec3 *a,
+    const zVec3 *b
+) {
     g_zMath_Vec3DeltaScratch.x = a->x - b->x;
     g_zMath_Vec3DeltaScratch.y = a->y - b->y;
     g_zMath_Vec3DeltaScratch.z = a->z - b->z;
@@ -536,7 +739,10 @@ RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DeltaLengthSq(const zVec3 *a, const zV
 
 // Reimplements 0x472730: zMath::Vec3DistSqXZ
 // (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
-RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DistSqXZ(const zVec3 *a, const zVec3 *b) {
+RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DistSqXZ(
+    const zVec3 *a,
+    const zVec3 *b
+) {
     g_zMath_Vec3DeltaScratch.x = a->x - b->x;
     g_zMath_Vec3DeltaScratch.z = a->z - b->z;
 
@@ -545,20 +751,34 @@ RECOIL_NOINLINE float RECOIL_FASTCALL Vec3DistSqXZ(const zVec3 *a, const zVec3 *
 }
 
 // Reimplements 0x473210: zMath::MatCopyCurrentTo
-RECOIL_NOINLINE zMat4x3 *RECOIL_STDCALL MatCopyCurrentTo(zMat4x3 *out) {
-    memcpy(out, *g_currentMatrixPtrSlot, sizeof(zMat4x3));
+RECOIL_NOINLINE zMat4x3 *RECOIL_STDCALL MatCopyCurrentTo(
+    zMat4x3 *out
+) {
+    memcpy(
+        out,
+        *g_currentMatrixPtrSlot,
+        sizeof(zMat4x3)
+    );
     return out;
 }
 
 // Reimplements 0x473250: zMath::MatLoadCurrentFrom
-RECOIL_NOINLINE void RECOIL_FASTCALL MatLoadCurrentFrom(const zMat4x3 *src) {
-    memcpy(*g_currentMatrixPtrSlot, src, sizeof(zMat4x3));
+RECOIL_NOINLINE void RECOIL_FASTCALL MatLoadCurrentFrom(
+    const zMat4x3 *src
+) {
+    memcpy(
+        *g_currentMatrixPtrSlot,
+        src,
+        sizeof(zMat4x3)
+    );
     *g_currentMatrixIdentityFlagSlot = 0;
 }
 
 // Reimplements 0x473280: zMath::MatLoadRotationFrom3x3
 // (D:\Proj\GameZRecoil\zMath\zmath_matload.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL MatLoadRotationFrom3x3(const zMat4x3 *src) {
+RECOIL_NOINLINE void RECOIL_FASTCALL MatLoadRotationFrom3x3(
+    const zMat4x3 *src
+) {
     zMat4x3 *const matrix = (zMat4x3 *)(*g_currentMatrixPtrSlot);
     matrix->xx = src->xx;
     matrix->xy = src->xy;
@@ -573,10 +793,17 @@ RECOIL_NOINLINE void RECOIL_FASTCALL MatLoadRotationFrom3x3(const zMat4x3 *src) 
 }
 
 // Reimplements 0x473370: zMath::MatMultiply
-RECOIL_NOINLINE void RECOIL_FASTCALL MatMultiply(const zMat4x3 *src, int mode) {
+RECOIL_NOINLINE void RECOIL_FASTCALL MatMultiply(
+    const zMat4x3 *src,
+    int mode
+) {
     zMat4x3 *current = (zMat4x3 *)(*g_currentMatrixPtrSlot);
     if (*g_currentMatrixIdentityFlagSlot != 0) {
-        memcpy(current, src, sizeof(zMat4x3));
+        memcpy(
+            current,
+            src,
+            sizeof(zMat4x3)
+        );
         *g_currentMatrixIdentityFlagSlot = 0;
         return;
     }
@@ -609,7 +836,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL MatMultiply(const zMat4x3 *src, int mode) {
 }
 
 // Reimplements 0x4737e0: zMath::MatTranslate (GameZRecoil/zMath/zmath_matrix.cpp)
-RECOIL_NOINLINE void RECOIL_STDCALL MatTranslate(float tx, float ty, float tz) {
+RECOIL_NOINLINE void RECOIL_STDCALL MatTranslate(
+    float tx,
+    float ty,
+    float tz
+) {
     zMat4x3 *matrix = (zMat4x3 *)(*g_currentMatrixPtrSlot);
 
     if (*g_currentMatrixIdentityFlagSlot != 0) {
@@ -627,7 +858,9 @@ RECOIL_NOINLINE void RECOIL_STDCALL MatTranslate(float tx, float ty, float tz) {
 }
 
 // Reimplements 0x473970: zMath::MatRotateX (GameZRecoil/zMath/zmath_matrix.cpp)
-RECOIL_NOINLINE void RECOIL_STDCALL MatRotateX(float angleRad) {
+RECOIL_NOINLINE void RECOIL_STDCALL MatRotateX(
+    float angleRad
+) {
     const float sinAngle = sin(angleRad);
     const float cosAngle = cos(angleRad);
     zMat4x3 *matrix = (zMat4x3 *)(*g_currentMatrixPtrSlot);
@@ -658,7 +891,9 @@ RECOIL_NOINLINE void RECOIL_STDCALL MatRotateX(float angleRad) {
 }
 
 // Reimplements 0x473b10: zMath::MatRotateY
-RECOIL_NOINLINE void RECOIL_STDCALL MatRotateY(float angleRad) {
+RECOIL_NOINLINE void RECOIL_STDCALL MatRotateY(
+    float angleRad
+) {
     const float sinAngle = sin(angleRad);
     const float cosAngle = cos(angleRad);
     zMat4x3 *matrix = (zMat4x3 *)(*g_currentMatrixPtrSlot);
@@ -701,7 +936,9 @@ RECOIL_NOINLINE void RECOIL_STDCALL MatRotateY(float angleRad) {
 }
 
 // Reimplements 0x473cc0: zMath::MatRotateZ (GameZRecoil/zMath/zmath_matrix.cpp)
-RECOIL_NOINLINE void RECOIL_STDCALL MatRotateZ(float angleRad) {
+RECOIL_NOINLINE void RECOIL_STDCALL MatRotateZ(
+    float angleRad
+) {
     const float sinAngle = sin(angleRad);
     const float cosAngle = cos(angleRad);
     zMat4x3 *matrix = (zMat4x3 *)(*g_currentMatrixPtrSlot);
@@ -732,8 +969,11 @@ RECOIL_NOINLINE void RECOIL_STDCALL MatRotateZ(float angleRad) {
 }
 
 // Reimplements 0x474010: zMath::MatApplyLocalTRS
-RECOIL_NOINLINE void RECOIL_FASTCALL MatApplyLocalTRS(const zVec3 *angles, const zVec3 *position,
-                                                      const zVec3 *scale) {
+RECOIL_NOINLINE void RECOIL_FASTCALL MatApplyLocalTRS(
+    const zVec3 *angles,
+    const zVec3 *position,
+    const zVec3 *scale
+) {
     const float sx = sin(angles->x);
     const float cx = cos(angles->x);
     const float sy = sin(angles->y);
@@ -782,15 +1022,21 @@ RECOIL_NOINLINE void RECOIL_FASTCALL MatApplyLocalTRS(const zVec3 *angles, const
         local.zz *= scale->z;
     }
 
-    MatMultiply(&local, 1);
+    MatMultiply(
+        &local,
+        1
+    );
     *g_currentMatrixIdentityFlagSlot = 0;
 }
 
 // Reimplements 0x474260: zMath::MatBuildEulerRotation3x3
 // (D:\Proj\GameZRecoil\zMath\zmath_mat.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL MatBuildEulerRotation3x3(zMat4x3 *outBasis,
-                                                              float angleX, float angleY,
-                                                              float angleZ) {
+RECOIL_NOINLINE void RECOIL_FASTCALL MatBuildEulerRotation3x3(
+    zMat4x3 *outBasis,
+    float angleX,
+    float angleY,
+    float angleZ
+) {
     const float sx = sin(angleX);
     const float cx = cos(angleX);
     const float sy = sin(angleY);
@@ -817,22 +1063,32 @@ RECOIL_NOINLINE void RECOIL_FASTCALL MatBuildEulerRotation3x3(zMat4x3 *outBasis,
 }
 
 // Reimplements 0x474d10: zMath::Vec3DirectionAnglesBetweenPoints
-RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL Vec3DirectionAnglesBetweenPoints(const zVec3 *pointA,
-                                                                        const zVec3 *pointB,
-                                                                        zVec3 *outAngles) {
+RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL Vec3DirectionAnglesBetweenPoints(
+    const zVec3 *pointA,
+    const zVec3 *pointB,
+    zVec3 *outAngles
+) {
     const float dx = pointA->x - pointB->x;
     const float dy = pointB->y - pointA->y;
     const float dz = pointA->z - pointB->z;
-    outAngles->x = atan2(dy, sqrt(dx * dx + dz * dz));
-    outAngles->y = atan2(dx, dz);
+    outAngles->x = atan2(
+        dy,
+        sqrt(dx * dx + dz * dz)
+    );
+    outAngles->y = atan2(
+        dx,
+        dz
+    );
     outAngles->z = 0.0f;
     return outAngles;
 }
 
 // Reimplements 0x473fc0: zMath::Vec3ArrayProjectToCachedY
-RECOIL_NOINLINE void RECOIL_FASTCALL Vec3ArrayProjectToCachedY(const zVec3 *points,
-                                                               float *outValues,
-                                                               int count) {
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3ArrayProjectToCachedY(
+    const zVec3 *points,
+    float *outValues,
+    int count
+) {
     for (int i = 0; i < count; ++i) {
         outValues[i] = points[i].x * g_zMath_CameraScratchA.xy +
                        points[i].y * g_zMath_CameraScratchA.yy +
@@ -841,8 +1097,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Vec3ArrayProjectToCachedY(const zVec3 *poin
 }
 
 // Reimplements 0x474f40: zMath::Vec3RotateY
-RECOIL_NOINLINE void RECOIL_FASTCALL Vec3RotateY(zVec3 *outVec, const zVec3 *inVec,
-                                                 float yawAngle) {
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3RotateY(
+    zVec3 *outVec,
+    const zVec3 *inVec,
+    float yawAngle
+) {
     const float sinAngle = sin(yawAngle);
     const float cosAngle = cos(yawAngle);
     outVec->x = sinAngle * inVec->z + cosAngle * inVec->x;
@@ -852,8 +1111,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Vec3RotateY(zVec3 *outVec, const zVec3 *inV
 
 // Reimplements 0x474670: zMath::Vec3ArrayTransformDirection
 // (D:\Proj\GameZRecoil\zMath\zmath_vec.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL Vec3ArrayTransformDirection(zVec3 *vectors,
-                                                                 int count) {
+RECOIL_NOINLINE void RECOIL_FASTCALL Vec3ArrayTransformDirection(
+    zVec3 *vectors,
+    int count
+) {
     if (*g_currentMatrixIdentityFlagSlot != 0 || count <= 0) {
         return;
     }
@@ -868,8 +1129,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Vec3ArrayTransformDirection(zVec3 *vectors,
 }
 
 // Reimplements 0x4747d0: zMath::MatTransformPointBatchInPlace
-RECOIL_NOINLINE void RECOIL_FASTCALL MatTransformPointBatchInPlace(zVec3 *points,
-                                                                   int count) {
+RECOIL_NOINLINE void RECOIL_FASTCALL MatTransformPointBatchInPlace(
+    zVec3 *points,
+    int count
+) {
     if (*g_currentMatrixIdentityFlagSlot != 0 || count == 0) {
         return;
     }
@@ -887,9 +1150,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL MatTransformPointBatchInPlace(zVec3 *points
 }
 
 // Reimplements 0x474b20: zMath::ProjectPointBatch
-RECOIL_NOINLINE void RECOIL_FASTCALL ProjectPointBatch(const zVec3 *viewPoints,
-                                                       zProjectedPoint *projectedPoints,
-                                                       int count) {
+RECOIL_NOINLINE void RECOIL_FASTCALL ProjectPointBatch(
+    const zVec3 *viewPoints,
+    zProjectedPoint *projectedPoints,
+    int count
+) {
     for (int i = 0; i < count; ++i) {
         const float reciprocalZ = 1.0f / viewPoints[i].z;
         projectedPoints[i].reciprocalZ = reciprocalZ;
@@ -902,8 +1167,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ProjectPointBatch(const zVec3 *viewPoints,
 
 // Reimplements 0x4bd800: zMath::ClipLineSegmentPointToZ
 // (D:\Proj\GameZ\z_math.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ClipLineSegmentPointToZ(zVec3 *pointToClip,
-                                                             const zVec3 *otherPoint, float clipZ) {
+RECOIL_NOINLINE void RECOIL_FASTCALL ClipLineSegmentPointToZ(
+    zVec3 *pointToClip,
+    const zVec3 *otherPoint,
+    float clipZ
+) {
     const float t = (clipZ - pointToClip->z) / (otherPoint->z - pointToClip->z);
 
     pointToClip->x = (otherPoint->x - pointToClip->x) * t + pointToClip->x;
@@ -913,7 +1181,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ClipLineSegmentPointToZ(zVec3 *pointToClip,
 
 // Reimplements 0x4bd720: zMath::ClipLineSegmentToZRange
 // (D:\Proj\GameZ\z_math.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipLineSegmentToZRange(zVec3 *pointA, zVec3 *pointB) {
+RECOIL_NOINLINE int RECOIL_FASTCALL ClipLineSegmentToZRange(
+    zVec3 *pointA,
+    zVec3 *pointB
+) {
     if (pointA->z > g_zMath_ClipZUpperBound && pointB->z > g_zMath_ClipZUpperBound) {
         return 0;
     }
@@ -923,17 +1194,33 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipLineSegmentToZRange(zVec3 *pointA, zVec3
     }
 
     if (pointA->z < g_zMath_ClipZLowerBound) {
-        ClipLineSegmentPointToZ(pointA, pointB, g_zMath_ClipZLowerBound);
+        ClipLineSegmentPointToZ(
+            pointA,
+            pointB,
+            g_zMath_ClipZLowerBound
+        );
     }
     if (pointB->z < g_zMath_ClipZLowerBound) {
-        ClipLineSegmentPointToZ(pointB, pointA, g_zMath_ClipZLowerBound);
+        ClipLineSegmentPointToZ(
+            pointB,
+            pointA,
+            g_zMath_ClipZLowerBound
+        );
     }
 
     if (pointB->z > g_zMath_ClipZUpperBound) {
-        ClipLineSegmentPointToZ(pointB, pointA, g_zMath_ClipZUpperBound);
+        ClipLineSegmentPointToZ(
+            pointB,
+            pointA,
+            g_zMath_ClipZUpperBound
+        );
     }
     if (pointA->z > g_zMath_ClipZUpperBound) {
-        ClipLineSegmentPointToZ(pointA, pointB, g_zMath_ClipZUpperBound);
+        ClipLineSegmentPointToZ(
+            pointA,
+            pointB,
+            g_zMath_ClipZUpperBound
+        );
     }
 
     return 1;
@@ -941,8 +1228,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipLineSegmentToZRange(zVec3 *pointA, zVec3
 
 // Reimplements 0x476480: zMath::ProjectPointAndClampToScreenClip
 // (GameZRecoil/zMath/zMath.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ProjectPointAndClampToScreenClip(const zVec3 *srcPoint,
-                                                                              zVec3 *dstPoint) {
+RECOIL_NOINLINE int RECOIL_FASTCALL ProjectPointAndClampToScreenClip(
+    const zVec3 *srcPoint,
+    zVec3 *dstPoint
+) {
     zMat4x3 slotBuffer = {0};
     MatStackPushPtr((float *)(&slotBuffer));
     MatLoadCameraScratchB();
@@ -969,7 +1258,11 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ProjectPointAndClampToScreenClip(const zVec3
             dstPoint->z = -dstPoint->z;
         }
 
-        ProjectPointBatch(dstPoint, (zProjectedPoint *)(dstPoint), 1);
+        ProjectPointBatch(
+            dstPoint,
+            (zProjectedPoint *)(dstPoint),
+            1
+        );
         if (dstPoint->x < -5000.0f) {
             dstPoint->x = -5000.0f;
         } else if (dstPoint->x > 5000.0f) {
@@ -982,7 +1275,11 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ProjectPointAndClampToScreenClip(const zVec3
         return result;
     }
 
-    ProjectPointBatch(dstPoint, (zProjectedPoint *)(dstPoint), 1);
+    ProjectPointBatch(
+        dstPoint,
+        (zProjectedPoint *)(dstPoint),
+        1
+    );
 
     int result = 0;
     if (dstPoint->x < g_zVideo_ProjectClipLeft) {
@@ -1007,7 +1304,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ProjectPointAndClampToScreenClip(const zVec3
 
 // Reimplements 0x474fc0: zMath::ApproxExpNeg
 // (D:\Proj\GameZRecoil\zMath\zmath.cpp)
-RECOIL_NOINLINE float RECOIL_STDCALL ApproxExpNeg(float x) {
+RECOIL_NOINLINE float RECOIL_STDCALL ApproxExpNeg(
+    float x
+) {
     if (g_zMath_ApproxExpNegDirty != 0) {
         g_zMath_ApproxExpNegScale = 51.0f;
         for (int i = 0; i < 256; ++i) {
@@ -1030,7 +1329,11 @@ RECOIL_NOINLINE float RECOIL_STDCALL ApproxExpNeg(float x) {
 
 // Reimplements 0x473690: zMath_Mat_Scale
 // (GameZRecoil/zMath/zmth_main.c)
-RECOIL_NOINLINE void RECOIL_CDECL zMath_Mat_Scale(float sx, float sy, float sz) {
+RECOIL_NOINLINE void RECOIL_CDECL zMath_Mat_Scale(
+    float sx,
+    float sy,
+    float sz
+) {
     zMat4x3 *matrix = (zMat4x3 *)*zMath::g_currentMatrixPtrSlot;
     if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
         matrix->xx = sx;
@@ -1071,31 +1374,43 @@ RECOIL_NOINLINE zVec2 RECOIL_CDECL zMath_Project_GetLastScreenScaleXY() {
 
 // Reimplements 0x474d90: zMath_Vec3_ElevationAngleBetweenPoints
 // (GameZRecoil/zMath/Math.c)
-RECOIL_NOINLINE float RECOIL_FASTCALL zMath_Vec3_ElevationAngleBetweenPoints(const zVec3 *pointA,
-                                                                             const zVec3 *pointB) {
+RECOIL_NOINLINE float RECOIL_FASTCALL zMath_Vec3_ElevationAngleBetweenPoints(
+    const zVec3 *pointA,
+    const zVec3 *pointB
+) {
     const float dx = pointA->x - pointB->x;
     const float dy = pointB->y - pointA->y;
     const float dz = pointA->z - pointB->z;
-    return atan2(sqrt(dx * dx + dz * dz), dy);
+    return atan2(
+        sqrt(dx * dx + dz * dz),
+        dy
+    );
 }
 
 // Reimplements 0x4731f0: zMath_Mat_SetupCamera
 RECOIL_NOINLINE void RECOIL_CDECL zMath_Mat_SetupCamera() {
     zMath::MatLoadCameraScratchB();
-    zMath::MatMultiply((const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]), 1);
+    zMath::MatMultiply(
+        (const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]),
+        1
+    );
 }
 
 // Reimplements 0x472fb0: zMath_Mat_LoadProjection
-RECOIL_NOINLINE void RECOIL_STDCALL zMath_Mat_LoadProjection(float zOffset) {
+RECOIL_NOINLINE void RECOIL_STDCALL zMath_Mat_LoadProjection(
+    float zOffset
+) {
     float parentYaw = 0.0f;
     if (zMath::g_currentMatrixIdentityFlagSlot[-1] == 0) {
-        parentYaw = zMath_Mat_ExtractYaw(
-            (const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]));
+        parentYaw = zMath_Mat_ExtractYaw((const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]));
     }
 
     zMath::MatLoadIdentity();
     zMath::MatRotateY(zOffset - parentYaw);
-    zMath::MatMultiply((const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]), 1);
+    zMath::MatMultiply(
+        (const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]),
+        1
+    );
 
     zMat4x3 *current = (zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
     const zMat4x3 *parent = (const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]);
@@ -1106,14 +1421,20 @@ RECOIL_NOINLINE void RECOIL_STDCALL zMath_Mat_LoadProjection(float zOffset) {
     zMat4x3 slotBuffer = {0};
     zMath::MatStackPushPtr((float *)(&slotBuffer));
     zMath::MatLoadCameraScratchB();
-    zMath::MatMultiply((const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]), 1);
+    zMath::MatMultiply(
+        (const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]),
+        1
+    );
     zMath::MatStackPopPtr();
     zMath::MatLoadCurrentFrom(&slotBuffer);
 }
 
 // Reimplements 0x474bc0: zMath_UnprojectPointBatch
 RECOIL_NOINLINE void RECOIL_FASTCALL zMath_UnprojectPointBatch(
-    const zProjectedPoint *projectedPoints, zVec3 *outPoints, int count) {
+    const zProjectedPoint *projectedPoints,
+    zVec3 *outPoints,
+    int count
+) {
     for (int i = 0; i < count; ++i) {
         const float z = 1.0f / projectedPoints[i].reciprocalZ;
         outPoints[i].z = z;
@@ -1124,10 +1445,17 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_UnprojectPointBatch(
 
 // Reimplements 0x474c20: zMath_UnprojectPointBatchZBuf
 RECOIL_NOINLINE void RECOIL_FASTCALL zMath_UnprojectPointBatchZBuf(
-    const zProjectedPoint *projectedPoints, zVec3 *outPoints, int count) {
+    const zProjectedPoint *projectedPoints,
+    zVec3 *outPoints,
+    int count
+) {
     for (int i = 0; i < count; ++i) {
         zVec3 viewPoint = {0};
-        zMath_UnprojectPointBatch(&projectedPoints[i], &viewPoint, 1);
+        zMath_UnprojectPointBatch(
+            &projectedPoints[i],
+            &viewPoint,
+            1
+        );
 
         const zMat4x3 &matrix = zMath::g_zMath_CameraScratchA;
         outPoints[i].x = viewPoint.x * matrix.xx + viewPoint.y * matrix.yx +
@@ -1144,7 +1472,9 @@ RECOIL_NOINLINE void RECOIL_CDECL zMath_Mat_LoadView() {
     zVec3 parentEuler = {0};
     if (zMath::g_currentMatrixIdentityFlagSlot[-1] == 0) {
         zMath_Mat_ExtractEulerAngles(
-            (const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]), &parentEuler);
+            (const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]),
+            &parentEuler
+        );
     }
 
     zMath::MatLoadCameraScratchA();
@@ -1157,21 +1487,44 @@ RECOIL_NOINLINE void RECOIL_CDECL zMath_Mat_LoadView() {
     current->zz = -current->zz;
 
     zVec3 cameraEuler = {0};
-    zMath_Mat_ExtractEulerAngles(current, &cameraEuler);
+    zMath_Mat_ExtractEulerAngles(
+        current,
+        &cameraEuler
+    );
 
     zQuat parentQuat = {0};
-    zMath_Quat_FromEuler(&parentQuat, parentEuler.y, parentEuler.x, parentEuler.z);
+    zMath_Quat_FromEuler(
+        &parentQuat,
+        parentEuler.y,
+        parentEuler.x,
+        parentEuler.z
+    );
 
     zQuat cameraQuat = {0};
-    zMath_Quat_FromEuler(&cameraQuat, cameraEuler.y, cameraEuler.x, cameraEuler.z);
+    zMath_Quat_FromEuler(
+        &cameraQuat,
+        cameraEuler.y,
+        cameraEuler.x,
+        cameraEuler.z
+    );
 
     zQuat relativeQuat = {0};
-    zMath_Quat_MultiplyInverse(&cameraQuat, &parentQuat, &relativeQuat);
+    zMath_Quat_MultiplyInverse(
+        &cameraQuat,
+        &parentQuat,
+        &relativeQuat
+    );
 
     zMat4x3 viewMatrix = {0};
-    zMath_Quat_ToMatrix(&relativeQuat, &viewMatrix);
+    zMath_Quat_ToMatrix(
+        &relativeQuat,
+        &viewMatrix
+    );
     zMath::MatLoadCurrentFrom(&viewMatrix);
-    zMath::MatMultiply((const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]), 1);
+    zMath::MatMultiply(
+        (const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]),
+        1
+    );
 
     current = (zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
     const zMat4x3 *parent = (const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]);
@@ -1181,7 +1534,10 @@ RECOIL_NOINLINE void RECOIL_CDECL zMath_Mat_LoadView() {
 
     zMath::MatStackPushPtr((float *)(&viewMatrix));
     zMath::MatLoadCameraScratchB();
-    zMath::MatMultiply((const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]), 1);
+    zMath::MatMultiply(
+        (const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]),
+        1
+    );
     zMath::MatStackPopPtr();
     zMath::MatLoadCurrentFrom(&viewMatrix);
 }
@@ -1197,30 +1553,51 @@ RECOIL_NOINLINE int RECOIL_CDECL zMath_Mat_IsCurrentIdentity() {
 }
 
 // Reimplements 0x474de0: zMath_Mat_ExtractYaw
-RECOIL_NOINLINE float RECOIL_FASTCALL zMath_Mat_ExtractYaw(const zMat4x3 *matrix) {
+RECOIL_NOINLINE float RECOIL_FASTCALL zMath_Mat_ExtractYaw(
+    const zMat4x3 *matrix
+) {
     if (matrix->zx == 0.0f && matrix->zz == 0.0f) {
         return 0.0f;
     }
 
-    return atan2(matrix->zx, matrix->zz);
+    return atan2(
+        matrix->zx,
+        matrix->zz
+    );
 }
 
 // Reimplements 0x474e10: zMath_Mat_ExtractEulerAngles
-RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Mat_ExtractEulerAngles(const zMat4x3 *matrix,
-                                                                  zVec3 *outEuler) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Mat_ExtractEulerAngles(
+    const zMat4x3 *matrix,
+    zVec3 *outEuler
+) {
     const float yaw = zMath_Mat_ExtractYaw(matrix);
     const float horizontalLength = sqrt(matrix->zx * matrix->zx + matrix->zz * matrix->zz);
-    const float pitch = atan2(-matrix->zy, horizontalLength);
+    const float pitch = atan2(
+        -matrix->zy,
+        horizontalLength
+    );
 
     zVec3 rowX = {0};
-    zMath::Vec3RotateY(&rowX, (const zVec3 *)(matrix), -yaw);
+    zMath::Vec3RotateY(
+        &rowX,
+        (const zVec3 *)(matrix),
+        -yaw
+    );
 
     zVec3 flattenedRowX = {0};
-    zMath_Vec3_RotateX(&flattenedRowX, &rowX, -pitch);
+    zMath_Vec3_RotateX(
+        &flattenedRowX,
+        &rowX,
+        -pitch
+    );
 
     const float rollHorizontalLength =
         sqrt(flattenedRowX.x * flattenedRowX.x + flattenedRowX.z * flattenedRowX.z);
-    float roll = atan2(flattenedRowX.y, rollHorizontalLength);
+    float roll = atan2(
+        flattenedRowX.y,
+        rollHorizontalLength
+    );
     if (matrix->yy < 0.0f) {
         roll = 3.14159274f - roll;
     }
@@ -1231,8 +1608,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Mat_ExtractEulerAngles(const zMat4x3 
 }
 
 // Reimplements 0x474ec0: zMath_Vec3_RotateX
-RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Vec3_RotateX(zVec3 *outVec, const zVec3 *inVec,
-                                                        float angleX) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Vec3_RotateX(
+    zVec3 *outVec,
+    const zVec3 *inVec,
+    float angleX
+) {
     const float sinAngle = sin(angleX);
     const float cosAngle = cos(angleX);
     outVec->x = inVec->x;
@@ -1242,20 +1622,32 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Vec3_RotateX(zVec3 *outVec, const zVe
 
 // Reimplements 0x474580: zMath_Vec3_DirFromYaw
 // (D:\Proj\GameZRecoil\zMath\zmath_vec.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Vec3_DirFromYaw(zVec3 *outDir, float yawAngle) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Vec3_DirFromYaw(
+    zVec3 *outDir,
+    float yawAngle
+) {
     outDir->x = 0.0f;
     outDir->y = 0.0f;
     outDir->z = 0.0f;
 
     const zVec3 forward = {0.0f, 0.0f, -1.0f};
-    zMath::Vec3RotateY(outDir, &forward, yawAngle);
+    zMath::Vec3RotateY(
+        outDir,
+        &forward,
+        yawAngle
+    );
 }
 
 // Reimplements 0x473e60: zMath_Camera_StageInverseRotation
 // (GameZRecoil/zMath/zmath_camera.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zMath_Camera_StageInverseRotation(const zMat4x3 *worldMatrix) {
-    memcpy(&zMath::g_zMath_CameraScratchA, worldMatrix, sizeof(zMat4x3));
+RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Camera_StageInverseRotation(
+    const zMat4x3 *worldMatrix
+) {
+    memcpy(
+        &zMath::g_zMath_CameraScratchA,
+        worldMatrix,
+        sizeof(zMat4x3)
+    );
 
     zMath::g_zMath_CameraScratchA.yx = NegateFloatSignBit(zMath::g_zMath_CameraScratchA.yx);
     zMath::g_zMath_CameraScratchA.yy = NegateFloatSignBit(zMath::g_zMath_CameraScratchA.yy);
@@ -1264,7 +1656,11 @@ zMath_Camera_StageInverseRotation(const zMat4x3 *worldMatrix) {
     zMath::g_zMath_CameraScratchA.zy = NegateFloatSignBit(zMath::g_zMath_CameraScratchA.zy);
     zMath::g_zMath_CameraScratchA.zz = NegateFloatSignBit(zMath::g_zMath_CameraScratchA.zz);
 
-    memcpy(&zMath::g_zMath_CameraScratchB, &zMath::g_zMath_CameraScratchA, sizeof(zMat4x3));
+    memcpy(
+        &zMath::g_zMath_CameraScratchB,
+        &zMath::g_zMath_CameraScratchA,
+        sizeof(zMat4x3)
+    );
 
     const float yx = zMath::g_zMath_CameraScratchA.yx;
     const float zx = zMath::g_zMath_CameraScratchB.zx;
@@ -1277,29 +1673,31 @@ zMath_Camera_StageInverseRotation(const zMat4x3 *worldMatrix) {
     zMath::g_zMath_CameraScratchB.xz = zx;
     zMath::g_zMath_CameraScratchB.yz = zy;
 
-    zMath::g_zMath_CameraScratchB.posX =
-        NegateFloatSignBit(zMath::g_zMath_CameraScratchB.posX);
-    zMath::g_zMath_CameraScratchB.posY =
-        NegateFloatSignBit(zMath::g_zMath_CameraScratchB.posY);
-    zMath::g_zMath_CameraScratchB.posZ =
-        NegateFloatSignBit(zMath::g_zMath_CameraScratchB.posZ);
+    zMath::g_zMath_CameraScratchB.posX = NegateFloatSignBit(zMath::g_zMath_CameraScratchB.posX);
+    zMath::g_zMath_CameraScratchB.posY = NegateFloatSignBit(zMath::g_zMath_CameraScratchB.posY);
+    zMath::g_zMath_CameraScratchB.posZ = NegateFloatSignBit(zMath::g_zMath_CameraScratchB.posZ);
 
-    const zVec3 pos = {zMath::g_zMath_CameraScratchB.posX, zMath::g_zMath_CameraScratchB.posY,
-                       zMath::g_zMath_CameraScratchB.posZ};
-    zMath::g_zMath_CameraScratchB.posZ =
-        pos.x * zMath::g_zMath_CameraScratchB.xz + pos.y * zMath::g_zMath_CameraScratchB.yz +
-        pos.z * zMath::g_zMath_CameraScratchB.zz;
-    zMath::g_zMath_CameraScratchB.posY =
-        pos.x * zMath::g_zMath_CameraScratchB.xy + pos.y * zMath::g_zMath_CameraScratchB.yy +
-        pos.z * zMath::g_zMath_CameraScratchB.zy;
-    zMath::g_zMath_CameraScratchB.posX =
-        pos.x * zMath::g_zMath_CameraScratchB.xx + pos.y * zMath::g_zMath_CameraScratchB.yx +
-        pos.z * zMath::g_zMath_CameraScratchB.zx;
+    const zVec3 pos = {zMath::g_zMath_CameraScratchB.posX,
+        zMath::g_zMath_CameraScratchB.posY,
+        zMath::g_zMath_CameraScratchB.posZ};
+    zMath::g_zMath_CameraScratchB.posZ = pos.x * zMath::g_zMath_CameraScratchB.xz +
+                                         pos.y * zMath::g_zMath_CameraScratchB.yz +
+                                         pos.z * zMath::g_zMath_CameraScratchB.zz;
+    zMath::g_zMath_CameraScratchB.posY = pos.x * zMath::g_zMath_CameraScratchB.xy +
+                                         pos.y * zMath::g_zMath_CameraScratchB.yy +
+                                         pos.z * zMath::g_zMath_CameraScratchB.zy;
+    zMath::g_zMath_CameraScratchB.posX = pos.x * zMath::g_zMath_CameraScratchB.xx +
+                                         pos.y * zMath::g_zMath_CameraScratchB.yx +
+                                         pos.z * zMath::g_zMath_CameraScratchB.zx;
 }
 
 // Reimplements 0x4757c0: zMath_Quat_FromEuler
-RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Quat_FromEuler(zQuat *outQuat, float angle0,
-                                                          float angle1, float angle2) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Quat_FromEuler(
+    zQuat *outQuat,
+    float angle0,
+    float angle1,
+    float angle2
+) {
     const float sin0 = sin(angle0 * 0.5f);
     const float cos0 = cos(angle0 * 0.5f);
     const float sin1 = sin(angle1 * 0.5f);
@@ -1320,8 +1718,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Quat_FromEuler(zQuat *outQuat, float 
 
 // Reimplements 0x475910: zMath_Quat_Multiply
 // (D:\Proj\GameZRecoil\zMath\zMath_Quat.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Quat_Multiply(const zQuat *quatA, const zQuat *quatB,
-                                                         zQuat *outAB) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Quat_Multiply(
+    const zQuat *quatA,
+    const zQuat *quatB,
+    zQuat *outAB
+) {
     outAB->w =
         quatB->w * quatA->w - quatA->x * quatB->x - quatA->y * quatB->y - quatA->z * quatB->z;
     outAB->x =
@@ -1333,9 +1734,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Quat_Multiply(const zQuat *quatA, con
 }
 
 // Reimplements 0x4759d0: zMath_Quat_MultiplyInverse
-RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Quat_MultiplyInverse(const zQuat *quatA,
-                                                                const zQuat *quatB,
-                                                                zQuat *outAConjB) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Quat_MultiplyInverse(
+    const zQuat *quatA,
+    const zQuat *quatB,
+    zQuat *outAConjB
+) {
     outAConjB->w =
         quatB->z * quatA->z + quatA->y * quatB->y + quatB->w * quatA->w + quatB->x * quatA->x;
     outAConjB->x =
@@ -1347,7 +1750,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Quat_MultiplyInverse(const zQuat *qua
 }
 
 // Reimplements 0x475a80: zMath_Quat_ToMatrix
-RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Quat_ToMatrix(const zQuat *quat, zMat4x3 *outMatrix3x3) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Quat_ToMatrix(
+    const zQuat *quat,
+    zMat4x3 *outMatrix3x3
+) {
     const float x2 = quat->x + quat->x;
     const float y2 = quat->y + quat->y;
     const float z2 = quat->z + quat->z;
@@ -1375,11 +1781,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Quat_ToMatrix(const zQuat *quat, zMat
 
 // Reimplements 0x475b80: zMath_Quat_FromRotationVector
 // (D:\Proj\GameZRecoil\zMath\zMath_Quat.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Quat_FromRotationVector(const zVec3 *rotationVector,
-                                                                   zQuat *outQuat) {
-    const float length =
-        sqrt(rotationVector->x * rotationVector->x + rotationVector->y * rotationVector->y +
-                  rotationVector->z * rotationVector->z);
+RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Quat_FromRotationVector(
+    const zVec3 *rotationVector,
+    zQuat *outQuat
+) {
+    const float length = sqrt(
+        rotationVector->x * rotationVector->x + rotationVector->y * rotationVector->y +
+        rotationVector->z * rotationVector->z
+    );
 
     if (length == 0.0f) {
         outQuat->w = 1.0f;
@@ -1398,10 +1807,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Quat_FromRotationVector(const zVec3 *
 }
 
 // Reimplements 0x4744f0: zMath_Vec3Array_AddScaled
-RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Vec3Array_AddScaled(zVec3 *outArray,
-                                                               const zVec3 *biasArray,
-                                                               const zVec3 *srcArray,
-                                                               int count, float scale) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Vec3Array_AddScaled(
+    zVec3 *outArray,
+    const zVec3 *biasArray,
+    const zVec3 *srcArray,
+    int count,
+    float scale
+) {
     for (int i = 0; i < count; ++i) {
         outArray[i].x = biasArray[i].x + srcArray[i].x * scale;
         outArray[i].y = biasArray[i].y + srcArray[i].y * scale;
@@ -1410,8 +1822,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Vec3Array_AddScaled(zVec3 *outArray,
 }
 
 // Reimplements 0x475070: zMath_Vec3_TriangleNormal (GameZRecoil/zMath/zmath_vec3.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Vec3_TriangleNormal(const zVec3 *p0, const zVec3 *p1,
-                                                               const zVec3 *p2, zVec3 *outNormal) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Vec3_TriangleNormal(
+    const zVec3 *p0,
+    const zVec3 *p1,
+    const zVec3 *p2,
+    zVec3 *outNormal
+) {
     const zVec3 edge01 = {p1->x - p0->x, p1->y - p0->y, p1->z - p0->z};
     const zVec3 edge02 = {p2->x - p0->x, p2->y - p0->y, p2->z - p0->z};
 
@@ -1422,10 +1838,19 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Vec3_TriangleNormal(const zVec3 *p0, 
 }
 
 // Reimplements 0x475130: zMath_SolveLinearGradient2D (GameZRecoil/zMath/zMathMisc.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL zMath_SolveLinearGradient2D(float *outDuDx, float *outDuDy,
-                                                                 float ax, float ay, float bx,
-                                                                 float by, float cx, float cy,
-                                                                 float ua, float ub, float uc) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zMath_SolveLinearGradient2D(
+    float *outDuDx,
+    float *outDuDy,
+    float ax,
+    float ay,
+    float bx,
+    float by,
+    float cx,
+    float cy,
+    float ua,
+    float ub,
+    float uc
+) {
     const float dxAB = ax - bx;
     const float dyAB = ay - by;
     const float dxCB = cx - bx;
@@ -1446,8 +1871,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_SolveLinearGradient2D(float *outDuDx,
 }
 
 // Reimplements 0x4727a0: zMath_Vec3_DivScalar
-RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Vec3_DivScalar(const zVec3 *vec, zVec3 *out,
-                                                          float scalar) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Vec3_DivScalar(
+    const zVec3 *vec,
+    zVec3 *out,
+    float scalar
+) {
     if (scalar == 0.0f) {
         if (out != vec) {
             *out = *vec;
@@ -1462,9 +1890,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Vec3_DivScalar(const zVec3 *vec, zVec
 }
 
 // Reimplements 0x474b70: zMath_ProjectSphereBatch
-RECOIL_NOINLINE void RECOIL_FASTCALL zMath_ProjectSphereBatch(const zVec3 *spherePoints,
-                                                              zProjectedSphere *projectedSpheres,
-                                                              int count) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zMath_ProjectSphereBatch(
+    const zVec3 *spherePoints,
+    zProjectedSphere *projectedSpheres,
+    int count
+) {
     for (int i = 0; i < count; ++i) {
         const float reciprocalZ = 1.0f / spherePoints[i].z;
         projectedSpheres[i].x =
@@ -1477,21 +1907,73 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zMath_ProjectSphereBatch(const zVec3 *spher
 
 namespace zFloat {
 // Reimplements 0x490330: zFloat::Set255f
-RECOIL_NOINLINE void RECOIL_FASTCALL Set255f(float *value) {
+RECOIL_NOINLINE void RECOIL_FASTCALL Set255f(
+    float *value
+) {
     *value = 255.0f;
 }
 } // namespace zFloat
 
 // Reimplements 0x474870: zMath_Mat_TransformBBoxToCorners
-RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Mat_TransformBBoxToCorners(const zMat4x3 *matrix,
-                                                                      const zBBox3f *bbox,
-                                                                      zBBoxCorners *outCorners) {
-    TransformBBoxCorner(matrix, bbox->minX, bbox->minY, bbox->maxZ, &outCorners->values[0]);
-    TransformBBoxCorner(matrix, bbox->maxX, bbox->minY, bbox->maxZ, &outCorners->values[3]);
-    TransformBBoxCorner(matrix, bbox->maxX, bbox->minY, bbox->minZ, &outCorners->values[6]);
-    TransformBBoxCorner(matrix, bbox->minX, bbox->minY, bbox->minZ, &outCorners->values[9]);
-    TransformBBoxCorner(matrix, bbox->minX, bbox->maxY, bbox->maxZ, &outCorners->values[12]);
-    TransformBBoxCorner(matrix, bbox->maxX, bbox->maxY, bbox->maxZ, &outCorners->values[15]);
-    TransformBBoxCorner(matrix, bbox->maxX, bbox->maxY, bbox->minZ, &outCorners->values[18]);
-    TransformBBoxCorner(matrix, bbox->minX, bbox->maxY, bbox->minZ, &outCorners->values[21]);
+RECOIL_NOINLINE void RECOIL_FASTCALL zMath_Mat_TransformBBoxToCorners(
+    const zMat4x3 *matrix,
+    const zBBox3f *bbox,
+    zBBoxCorners *outCorners
+) {
+    TransformBBoxCorner(
+        matrix,
+        bbox->minX,
+        bbox->minY,
+        bbox->maxZ,
+        &outCorners->values[0]
+    );
+    TransformBBoxCorner(
+        matrix,
+        bbox->maxX,
+        bbox->minY,
+        bbox->maxZ,
+        &outCorners->values[3]
+    );
+    TransformBBoxCorner(
+        matrix,
+        bbox->maxX,
+        bbox->minY,
+        bbox->minZ,
+        &outCorners->values[6]
+    );
+    TransformBBoxCorner(
+        matrix,
+        bbox->minX,
+        bbox->minY,
+        bbox->minZ,
+        &outCorners->values[9]
+    );
+    TransformBBoxCorner(
+        matrix,
+        bbox->minX,
+        bbox->maxY,
+        bbox->maxZ,
+        &outCorners->values[12]
+    );
+    TransformBBoxCorner(
+        matrix,
+        bbox->maxX,
+        bbox->maxY,
+        bbox->maxZ,
+        &outCorners->values[15]
+    );
+    TransformBBoxCorner(
+        matrix,
+        bbox->maxX,
+        bbox->maxY,
+        bbox->minZ,
+        &outCorners->values[18]
+    );
+    TransformBBoxCorner(
+        matrix,
+        bbox->minX,
+        bbox->maxY,
+        bbox->minZ,
+        &outCorners->values[21]
+    );
 }

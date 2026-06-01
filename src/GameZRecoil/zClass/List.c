@@ -7,11 +7,11 @@
 #include <string.h>
 
 namespace zDi {
-RECOIL_NOINLINE int RECOIL_FASTCALL GetRefCount(zDiPartial *self);
+    RECOIL_NOINLINE int RECOIL_FASTCALL GetRefCount(zDiPartial * self);
 }
 
 namespace zModel_DiPool {
-RECOIL_NOINLINE int RECOIL_FASTCALL FreeIfUnreferenced(zDiPartial *di);
+    RECOIL_NOINLINE int RECOIL_FASTCALL FreeIfUnreferenced(zDiPartial * di);
 }
 
 extern "C" {
@@ -23,29 +23,48 @@ int g_zClass_TypeList_PeakLiveLinkCount = 0;
 // Recovered storage order at 0x539bac is 6,0,1,2,3,4,5,7,8,9,10,13,14,15,11,12.
 zClass_TypeListBucket g_zClass_TypeList_Buckets[16] = {0};
 zClass_TypeListLink **g_zClassCallbackPriorityHeadSlotPtrs[6] = {
-    &g_zClass_TypeList_Buckets[1].head, &g_zClass_TypeList_Buckets[2].head,
-    &g_zClass_TypeList_Buckets[3].head, &g_zClass_TypeList_Buckets[4].head,
-    &g_zClass_TypeList_Buckets[5].head, &g_zClass_TypeList_Buckets[6].head,
+    &g_zClass_TypeList_Buckets[1].head,
+    &g_zClass_TypeList_Buckets[2].head,
+    &g_zClass_TypeList_Buckets[3].head,
+    &g_zClass_TypeList_Buckets[4].head,
+    &g_zClass_TypeList_Buckets[5].head,
+    &g_zClass_TypeList_Buckets[6].head,
 };
 zClass_TypeListLink **g_zClass_TypeList_HeadSlotPtrs[16] = {
-    &g_zClass_TypeList_Buckets[1].head,  &g_zClass_TypeList_Buckets[2].head,
-    &g_zClass_TypeList_Buckets[3].head,  &g_zClass_TypeList_Buckets[4].head,
-    &g_zClass_TypeList_Buckets[5].head,  &g_zClass_TypeList_Buckets[6].head,
-    &g_zClass_TypeList_Buckets[0].head,  &g_zClass_TypeList_Buckets[7].head,
-    &g_zClass_TypeList_Buckets[8].head,  &g_zClass_TypeList_Buckets[9].head,
-    &g_zClass_TypeList_Buckets[10].head, &g_zClass_TypeList_Buckets[14].head,
-    &g_zClass_TypeList_Buckets[15].head, &g_zClass_TypeList_Buckets[11].head,
-    &g_zClass_TypeList_Buckets[12].head, &g_zClass_TypeList_Buckets[13].head,
+    &g_zClass_TypeList_Buckets[1].head,
+    &g_zClass_TypeList_Buckets[2].head,
+    &g_zClass_TypeList_Buckets[3].head,
+    &g_zClass_TypeList_Buckets[4].head,
+    &g_zClass_TypeList_Buckets[5].head,
+    &g_zClass_TypeList_Buckets[6].head,
+    &g_zClass_TypeList_Buckets[0].head,
+    &g_zClass_TypeList_Buckets[7].head,
+    &g_zClass_TypeList_Buckets[8].head,
+    &g_zClass_TypeList_Buckets[9].head,
+    &g_zClass_TypeList_Buckets[10].head,
+    &g_zClass_TypeList_Buckets[14].head,
+    &g_zClass_TypeList_Buckets[15].head,
+    &g_zClass_TypeList_Buckets[11].head,
+    &g_zClass_TypeList_Buckets[12].head,
+    &g_zClass_TypeList_Buckets[13].head,
 };
 zClass_TypeListLink **g_zClass_TypeList_TailSlotPtrs[16] = {
-    &g_zClass_TypeList_Buckets[1].tail,  &g_zClass_TypeList_Buckets[2].tail,
-    &g_zClass_TypeList_Buckets[3].tail,  &g_zClass_TypeList_Buckets[4].tail,
-    &g_zClass_TypeList_Buckets[5].tail,  &g_zClass_TypeList_Buckets[6].tail,
-    &g_zClass_TypeList_Buckets[0].tail,  &g_zClass_TypeList_Buckets[7].tail,
-    &g_zClass_TypeList_Buckets[8].tail,  &g_zClass_TypeList_Buckets[9].tail,
-    &g_zClass_TypeList_Buckets[10].tail, &g_zClass_TypeList_Buckets[14].tail,
-    &g_zClass_TypeList_Buckets[15].tail, &g_zClass_TypeList_Buckets[11].tail,
-    &g_zClass_TypeList_Buckets[12].tail, &g_zClass_TypeList_Buckets[13].tail,
+    &g_zClass_TypeList_Buckets[1].tail,
+    &g_zClass_TypeList_Buckets[2].tail,
+    &g_zClass_TypeList_Buckets[3].tail,
+    &g_zClass_TypeList_Buckets[4].tail,
+    &g_zClass_TypeList_Buckets[5].tail,
+    &g_zClass_TypeList_Buckets[6].tail,
+    &g_zClass_TypeList_Buckets[0].tail,
+    &g_zClass_TypeList_Buckets[7].tail,
+    &g_zClass_TypeList_Buckets[8].tail,
+    &g_zClass_TypeList_Buckets[9].tail,
+    &g_zClass_TypeList_Buckets[10].tail,
+    &g_zClass_TypeList_Buckets[14].tail,
+    &g_zClass_TypeList_Buckets[15].tail,
+    &g_zClass_TypeList_Buckets[11].tail,
+    &g_zClass_TypeList_Buckets[12].tail,
+    &g_zClass_TypeList_Buckets[13].tail,
 };
 zClass_TypeListLink *g_zClass_FilterIterCursor = 0;
 const char *g_zClass_FilterIterText = 0;
@@ -58,12 +77,20 @@ namespace {
     const int kTypeListInsertedFlag = 0x01;
     const char *kListSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\List.c";
 
-    typedef int (RECOIL_FASTCALL *RemoveChildProc)(zClass_NodePartial *,
-                                                            zClass_NodePartial *);
+    typedef int(RECOIL_FASTCALL * RemoveChildProc)(
+        zClass_NodePartial *,
+        zClass_NodePartial *
+    );
 
-    int RemoveAllChildren(zClass_NodePartial *node, RemoveChildProc removeChild) {
+    int RemoveAllChildren(
+        zClass_NodePartial * node,
+        RemoveChildProc removeChild
+    ){
         while (node->listCountB > 0) {
-            const int result = removeChild(node, node->listB[0]);
+            const int result = removeChild(
+                node,
+                node->listB[0]
+            );
             if (result != 0) {
                 return result;
             }
@@ -72,7 +99,7 @@ namespace {
         return 0;
     }
 
-    int DeleteObject3DWhenDetached(zClass_NodePartial *node) {
+    int DeleteObject3DWhenDetached(zClass_NodePartial * node) {
         if (node->listCountA != 0) {
             return 1;
         }
@@ -86,53 +113,94 @@ namespace zClass_List {
     RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNodeFromLists(zClass_NodePartial * node) {
         switch (node->classId) {
         case 1:
-            zClass_TypeList::MarkPendingRemoval(8, node);
+            zClass_TypeList::MarkPendingRemoval(
+                8,
+                node
+            );
             break;
         case 2:
-            zClass_TypeList::MarkPendingRemoval(13, node);
+            zClass_TypeList::MarkPendingRemoval(
+                13,
+                node
+            );
             break;
         case 3:
-            zClass_TypeList::MarkPendingRemoval(14, node);
+            zClass_TypeList::MarkPendingRemoval(
+                14,
+                node
+            );
             break;
         case 4:
-            zClass_TypeList::MarkPendingRemoval(15, node);
+            zClass_TypeList::MarkPendingRemoval(
+                15,
+                node
+            );
             break;
         case 7:
-            zClass_TypeList::MarkPendingRemoval(11, node);
+            zClass_TypeList::MarkPendingRemoval(
+                11,
+                node
+            );
             break;
         case 8:
-            zClass_TypeList::MarkPendingRemoval(12, node);
+            zClass_TypeList::MarkPendingRemoval(
+                12,
+                node
+            );
             break;
         case 9:
-            zClass_TypeList::MarkPendingRemoval(9, node);
+            zClass_TypeList::MarkPendingRemoval(
+                9,
+                node
+            );
             break;
         case 10:
-            zClass_TypeList::MarkPendingRemoval(10, node);
+            zClass_TypeList::MarkPendingRemoval(
+                10,
+                node
+            );
             break;
         default:
             if ((unsigned int)(node->classId) > 11) {
-                zError::ReportOld(0x200, kListSourceFile, 0x75d,
-                                  "Unknown class type while deleting node from lists.\n");
+                zError::ReportOld(
+                    0x200,
+                    kListSourceFile,
+                    0x75d,
+                    "Unknown class type while deleting node from lists.\n"
+                );
             }
             break;
         }
 
         if ((node->flags & kTypeListInsertedFlag) != 0) {
-            zClass_TypeList::MarkPendingRemoval(kQueuedTreeBucket, node);
+            zClass_TypeList::MarkPendingRemoval(
+                kQueuedTreeBucket,
+                node
+            );
         }
 
         if (node->actionCallback != 0 && node->callbackPriority >= 0 &&
             node->callbackPriority < 6) {
-            zClass_TypeList::MarkPendingRemoval(node->callbackPriority, node);
+            zClass_TypeList::MarkPendingRemoval(
+                node->callbackPriority,
+                node
+            );
         }
 
-        zClass_TypeList::MarkPendingRemoval(6, node);
+        zClass_TypeList::MarkPendingRemoval(
+            6,
+            node
+        );
         return 0;
     }
 
     // Reimplements 0x44f690: zClass_List::IterateBucketFiltered
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL IterateBucketFiltered(
-        const char *filterText, int bucket, zClass_NodePredicate predicate) {
+    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL
+    IterateBucketFiltered(
+        const char *filterText,
+        int bucket,
+        zClass_NodePredicate predicate
+    ){
         if (filterText != 0) {
             g_zClass_FilterIterText = filterText;
             g_zClass_FilterIterCursor = zClass_TypeList::GetBucketHead(bucket);
@@ -155,14 +223,20 @@ namespace zClass_List {
     // Reimplements 0x44f1d0: zClass_List::gwListDeleteANode (GameZRecoil/zClass/List.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL gwListDeleteANode(zClass_NodePartial * node) {
         unsigned int displayInstanceWord = 0;
-        int result = zClass_Class::gwNodeGetUserData(node, &displayInstanceWord);
+        int result = zClass_Class::gwNodeGetUserData(
+            node,
+            &displayInstanceWord
+        );
         if (result != 0) {
             return result;
         }
 
         if (displayInstanceWord != 0) {
             zDiPartial *displayInstance = (zDiPartial *)(unsigned int)displayInstanceWord;
-            zClass_Class::gwNodeSetDisplayInstance(node, 0);
+            zClass_Class::gwNodeSetDisplayInstance(
+                node,
+                0
+            );
             if (zDi::GetRefCount(displayInstance) == 0) {
                 result = zModel_DiPool::FreeIfUnreferenced(displayInstance);
                 if (result != 0) {
@@ -171,98 +245,27 @@ namespace zClass_List {
             }
         }
 
+        // Jump table at 0x44f600 uses the constructor class-id order:
+        // camera, world, window, display, object3D, lod, sequence, animate, light, sound, switch.
         switch (node->classId) {
         case 1:
-            result = RemoveAllChildren(node, zClass_Object3D::RemoveChild);
+            result = RemoveAllChildren(
+                node,
+                zClass_Camera::gwCameraRemoveChild
+            );
             if (result != 0) {
                 return result;
             }
             return DeleteObject3DWhenDetached(node);
 
-        case 2:
-            result = RemoveAllChildren(node, zClass_Animate::RemoveChild);
-            if (result != 0) {
-                return result;
-            }
-            if (node->listCountA != 0) {
-                return 1;
-            }
-            return zClass_Animate::DeleteNode(node);
-
-        case 3:
-            result = RemoveAllChildren(node, zClass_Lod::RemoveChild);
-            if (result != 0) {
-                return result;
-            }
-            return DeleteObject3DWhenDetached(node);
-
-        case 4:
-            result = RemoveAllChildren(node, zClass_Sequence::RemoveChild);
-            if (result != 0) {
-                return result;
-            }
-            return DeleteObject3DWhenDetached(node);
-
-        case 5:
-            result = RemoveAllChildren(node, zClass_Camera::gwCameraRemoveChild);
-            if (result != 0) {
-                return result;
-            }
-            return DeleteObject3DWhenDetached(node);
-
-        case 6:
-            result = RemoveAllChildren(node, zClass::RemoveChildChecked);
-            if (result != 0) {
-                return result;
-            }
-            return DeleteObject3DWhenDetached(node);
-
-        case 7:
-            result = RemoveAllChildren(node, zClass_Display::RemoveChild);
-            if (result != 0) {
-                return result;
-            }
-            return DeleteObject3DWhenDetached(node);
-
-        case 8:
-            result = RemoveAllChildren(node, zClass_Class::RemoveChildValidated);
-            if (result != 0) {
-                return result;
-            }
-            return DeleteObject3DWhenDetached(node);
-
-        case 9: {
-            result = RemoveAllChildren(node, zClass_Light::RemoveChild);
-            if (result != 0) {
-                return result;
-            }
-            zClass_LightDataPartial *lightData =
-                (zClass_LightDataPartial *)(node->classData);
-            if (lightData->attachedWorldCount > 0 || node->listCountA != 0) {
-                return 1;
-            }
-            return zClass_Light::DeleteNode(node);
-        }
-
-        case 10: {
-            result = RemoveAllChildren(node, zClass_Sound::RemoveChild);
-            if (result != 0) {
-                return result;
-            }
-            zClass_SoundDataPartial *soundData =
-                (zClass_SoundDataPartial *)(node->classData);
-            if (soundData->attachedWorldCount > 0 || node->listCountA != 0) {
-                return 1;
-            }
-            return zClass_Sound::DeleteNode(node);
-        }
-
-        case 11: {
-            zClass_WorldDataPartial *worldData =
-                (zClass_WorldDataPartial *)(node->classData);
+        case 2: {
+            zClass_WorldDataPartial *worldData = (zClass_WorldDataPartial *)(node->classData);
 
             while (worldData->lightCount > 0) {
-                result = zClass_World::RemoveLight(node, worldData->lightNodes[0]);
+                result = zClass_World::RemoveLight(
+                    node,
+                    worldData->lightNodes[0]
+                );
                 if (result != 0) {
                     return result;
                 }
@@ -275,7 +278,10 @@ namespace zClass_List {
             }
 
             while (worldData->soundCount > 0) {
-                result = zClass_World::RemoveSound(node, worldData->soundNodes[0]);
+                result = zClass_World::RemoveSound(
+                    node,
+                    worldData->soundNodes[0]
+                );
                 if (result != 0) {
                     return result;
                 }
@@ -287,25 +293,32 @@ namespace zClass_List {
                 worldData->soundDataList = 0;
             }
 
-            result = RemoveAllChildren(node, zClass_World::RemoveChildAtGrid);
+            result = RemoveAllChildren(
+                node,
+                zClass_World::RemoveChildAtGrid
+            );
             if (result != 0) {
                 return result;
             }
 
             {
-            for (int row = 0; row < worldData->areaGridRowCount; ++row) {
-                zWorldAreaPartial *area = worldData->areaGridRows[row];
-                {
-                for (int col = 0; col < worldData->areaGridColCount; ++col) {
-                    while (area[col].childCount > 0) {
-                        result = zClass_World::RemoveChildAtGrid(node, area[col].childList[0]);
-                        if (result != 0) {
-                            return result;
+                for (int row = 0; row < worldData->areaGridRowCount; ++row) {
+                    zWorldAreaPartial *area = worldData->areaGridRows[row];
+                    {
+                        for (int col = 0; col < worldData->areaGridColCount; ++col) {
+                            while (area[col].childCount > 0) {
+                                result =
+                                    zClass_World::RemoveChildAtGrid(
+                                        node,
+                                        area[col].childList[0]
+                                    );
+                                if (result != 0) {
+                                    return result;
+                                }
+                            }
                         }
                     }
                 }
-                }
-            }
             }
 
             if (node->listCountA != 0) {
@@ -314,10 +327,119 @@ namespace zClass_List {
             return zClass_World::DeleteNode(node);
         }
 
+        case 3:
+            result = RemoveAllChildren(
+                node,
+                zClass::RemoveChildChecked
+            );
+            if (result != 0) {
+                return result;
+            }
+            return DeleteObject3DWhenDetached(node);
+
+        case 4:
+            result = RemoveAllChildren(
+                node,
+                zClass_Display::RemoveChild
+            );
+            if (result != 0) {
+                return result;
+            }
+            return DeleteObject3DWhenDetached(node);
+
+        case 5:
+            result = RemoveAllChildren(
+                node,
+                zClass_Object3D::RemoveChild
+            );
+            if (result != 0) {
+                return result;
+            }
+            return DeleteObject3DWhenDetached(node);
+
+        case 6:
+            result = RemoveAllChildren(
+                node,
+                zClass_Lod::RemoveChild
+            );
+            if (result != 0) {
+                return result;
+            }
+            return DeleteObject3DWhenDetached(node);
+
+        case 7:
+            result = RemoveAllChildren(
+                node,
+                zClass_Sequence::RemoveChild
+            );
+            if (result != 0) {
+                return result;
+            }
+            return DeleteObject3DWhenDetached(node);
+
+        case 8:
+            result = RemoveAllChildren(
+                node,
+                zClass_Animate::RemoveChild
+            );
+            if (result != 0) {
+                return result;
+            }
+            if (node->listCountA != 0) {
+                return 1;
+            }
+            return zClass_Animate::DeleteNode(node);
+
+        case 9: {
+            result = RemoveAllChildren(
+                node,
+                zClass_Light::RemoveChild
+            );
+            if (result != 0) {
+                return result;
+            }
+            zClass_LightDataPartial *lightData = (zClass_LightDataPartial *)(node->classData);
+            if (lightData->attachedWorldCount > 0 || node->listCountA != 0) {
+                return 1;
+            }
+            return zClass_Light::DeleteNode(node);
+        }
+
+        case 10: {
+            result = RemoveAllChildren(
+                node,
+                zClass_Sound::RemoveChild
+            );
+            if (result != 0) {
+                return result;
+            }
+            zClass_SoundDataPartial *soundData = (zClass_SoundDataPartial *)(node->classData);
+            if (soundData->attachedWorldCount > 0 || node->listCountA != 0) {
+                return 1;
+            }
+            return zClass_Sound::DeleteNode(node);
+        }
+
+        case 11:
+            result = RemoveAllChildren(
+                node,
+                zClass_Class::RemoveChildValidated
+            );
+            if (result != 0) {
+                return result;
+            }
+            return DeleteObject3DWhenDetached(node);
+
         default:
-            zError::ReportOld(0x400, kListSourceFile, 0x8d4,
-                              "Unrecognized node class type while deleting node %p (%s): %d\n",
-                              node, node, node->classId);
+            zError::ReportOld(
+                0x400,
+                kListSourceFile,
+                0x8d4,
+                "Unrecognized node class type while deleting node %p (%s) : %d\n",
+                node,
+                node,
+                node->classId
+            );
             return 3;
         }
     }
@@ -333,7 +455,10 @@ namespace zClass_List {
             while (link != 0 && deletedInLastPass == 0) {
                 zClass_NodePartial *node = link->node;
                 if (gwListDeleteANode(node) == 0) {
-                    zClass_TypeList::MarkPendingRemoval(bucket, node);
+                    zClass_TypeList::MarkPendingRemoval(
+                        bucket,
+                        node
+                    );
                     deletedInLastPass = 1;
                 } else {
                     link = link->next;
@@ -345,14 +470,22 @@ namespace zClass_List {
         }
 
         if (link != 0) {
-            zError::ReportOld(0x400, kListSourceFile, 0x92d,
-                              "Unable to delete all nodes from list.\n");
+            zError::ReportOld(
+                0x400,
+                kListSourceFile,
+                0x92d,
+                "Unable to delete all nodes from list.\n"
+            );
             return 1;
         }
 
         if (zClass_TypeList::CountNodes(bucket) != 0) {
-            zError::ReportOld(0x400, kListSourceFile, 0x935,
-                              "Deleted list still contains nodes.\n");
+            zError::ReportOld(
+                0x400,
+                kListSourceFile,
+                0x935,
+                "Deleted list still contains nodes.\n"
+            );
             return 1;
         }
 
@@ -372,7 +505,10 @@ namespace zClass_TypeList {
 
         zClass_TypeListLink *link = g_zClass_TypeList_FreeLinkHead;
         if (link == 0) {
-            return (zClass_TypeListLink *)(calloc(1, sizeof(zClass_TypeListLink)));
+            return (zClass_TypeListLink *)(calloc(
+                1,
+                sizeof(zClass_TypeListLink)
+            ));
         }
 
         zClass_TypeListLink *next = link->next;
@@ -458,7 +594,10 @@ namespace zClass_TypeList {
         } while (removed);
 
         if (bucket >= 0 && bucket < 16) {
-            zClass_TypeList::SetPendingRemovalDirty(bucket, 0);
+            zClass_TypeList::SetPendingRemovalDirty(
+                bucket,
+                0
+            );
         }
     }
 
@@ -466,7 +605,7 @@ namespace zClass_TypeList {
     RECOIL_NOINLINE int RECOIL_FASTCALL CountNodes(int bucket) {
         int count = 0;
         for (zClass_TypeListLink *link = zClass_TypeList::Head(bucket); link != 0;
-             link = link->next) {
+            link = link->next) {
             ++count;
         }
         return count;
@@ -476,8 +615,12 @@ namespace zClass_TypeList {
     RECOIL_NOINLINE void RECOIL_FASTCALL PrintBucket(int bucket) {
         int index = 0;
         for (zClass_TypeListLink *link = zClass_TypeList::Head(bucket); link != 0;
-             link = link->next) {
-            printf("Node %d desc: %s\n", index, link->node->name);
+            link = link->next) {
+            printf(
+                "Node %d desc: %s\n",
+                index,
+                link->node->name
+            );
             ++index;
         }
     }
@@ -488,8 +631,10 @@ namespace zClass_TypeList {
     }
 
     // Reimplements 0x44eed0: zClass_TypeList::MarkPendingRemoval
-    RECOIL_NOINLINE int RECOIL_FASTCALL MarkPendingRemoval(int bucket,
-                                                                    zClass_NodePartial *node) {
+    RECOIL_NOINLINE int RECOIL_FASTCALL MarkPendingRemoval(
+        int bucket,
+        zClass_NodePartial *node
+    ){
         zClass_TypeListLink *link = zClass_TypeList::Head(bucket);
         if (link == 0) {
             return 1;
@@ -502,7 +647,10 @@ namespace zClass_TypeList {
         if (link != 0) {
             link->pendingRemove = 1;
             if (bucket >= 0 && bucket < 16) {
-                zClass_TypeList::SetPendingRemovalDirty(bucket, 1);
+                zClass_TypeList::SetPendingRemovalDirty(
+                    bucket,
+                    1
+                );
             }
         }
 
@@ -510,8 +658,10 @@ namespace zClass_TypeList {
     }
 
     // Reimplements 0x44ed90: zClass_TypeList::Insert
-    RECOIL_NOINLINE int RECOIL_FASTCALL Insert(int bucket,
-                                                        zClass_NodePartial *node) {
+    RECOIL_NOINLINE int RECOIL_FASTCALL Insert(
+        int bucket,
+        zClass_NodePartial *node
+    ){
         zClass_TypeListLink *link = AllocLink();
         link->node = node;
 
@@ -530,7 +680,10 @@ namespace zClass_TypeList {
                 zClass_NodePartial *child = node->listA[i];
                 if ((child->flags & kTypeListInsertedFlag) == 0 &&
                     child->classId != kZClassNodeWorld) {
-                    InsertChildNodes(kQueuedTreeBucket, child);
+                    InsertChildNodes(
+                        kQueuedTreeBucket,
+                        child
+                    );
                 }
             }
         }
@@ -539,8 +692,10 @@ namespace zClass_TypeList {
     }
 
     // Reimplements 0x44ee10: zClass_TypeList::InsertChildNodes
-    RECOIL_NOINLINE int RECOIL_FASTCALL InsertChildNodes(int bucket,
-                                                                  zClass_NodePartial *node) {
+    RECOIL_NOINLINE int RECOIL_FASTCALL InsertChildNodes(
+        int bucket,
+        zClass_NodePartial *node
+    ){
         zClass_TypeListLink *link = AllocLink();
         link->node = node;
 
@@ -560,7 +715,10 @@ namespace zClass_TypeList {
                 zClass_NodePartial *child = node->listA[i];
                 if ((child->flags & kTypeListInsertedFlag) == 0 &&
                     child->classId != kZClassNodeWorld) {
-                    InsertChildNodes(kQueuedTreeBucket, child);
+                    InsertChildNodes(
+                        kQueuedTreeBucket,
+                        child
+                    );
                 }
             }
         }
@@ -586,8 +744,7 @@ namespace zClass_TypeList {
 
         for (zClass_TypeListLink *link = bucket; link != 0; link = link->next) {
             zClass_NodePartial *node = link->node;
-            zClass_NodeActionCallback callback =
-                (zClass_NodeActionCallback)(node->actionCallback);
+            zClass_NodeActionCallback callback = (zClass_NodeActionCallback)(node->actionCallback);
             if (callback == 0) {
                 link->pendingRemove = 1;
             } else if (link->pendingRemove == 0 && (node->flags & 0x04) != 0) {
@@ -673,7 +830,10 @@ namespace gwNode {
         }
 
         zClass_Class::gwNodeUpdate(node);
-        zClass_TypeList::MarkPendingRemoval(kQueuedTreeBucket, node);
+        zClass_TypeList::MarkPendingRemoval(
+            kQueuedTreeBucket,
+            node
+        );
         return 0;
     }
 
@@ -759,11 +919,17 @@ namespace zClass {
     }
 
     // Reimplements 0x44ecf0: zClass::FindByTypeAndName
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL FindByTypeAndName(int bucket,
-                                                                          const char *name) {
+    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL
+    FindByTypeAndName(
+        int bucket,
+        const char *name
+    ){
         for (zClass_TypeListLink *link = zClass_TypeList::Head(bucket); link != 0;
-             link = link->next) {
-            if (strcmp(link->node->name, name) == 0) {
+            link = link->next) {
+            if (strcmp(
+                link->node->name,
+                name
+            ) == 0) {
                 return link->node;
             }
         }
@@ -772,32 +938,46 @@ namespace zClass {
     }
 
     // Reimplements 0x44f720: zClass::FindNextByTypePrefix_Predicate
-    RECOIL_NOINLINE int RECOIL_FASTCALL FindNextByTypePrefix_Predicate(zClass_NodePartial *
-                                                                                node) {
-        return strncmp(node->name, g_zClass_FilterIterText,
-                            (size_t)(g_zClass_FilterIterPrefixLen)) == 0;
+    RECOIL_NOINLINE int RECOIL_FASTCALL FindNextByTypePrefix_Predicate(zClass_NodePartial * node) {
+        return strncmp(
+                   node->name,
+                   g_zClass_FilterIterText,
+                   (size_t)(g_zClass_FilterIterPrefixLen)
+               ) == 0;
     }
 
     // Reimplements 0x44f6f0: zClass::FindNextByTypePrefix
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL FindNextByTypePrefix(const char *prefixText,
-                                                                             int bucket) {
+    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL
+    FindNextByTypePrefix(
+        const char *prefixText,
+        int bucket
+    ){
         if (prefixText != 0) {
             g_zClass_FilterIterPrefixLen = (int)(strlen(prefixText));
         }
 
-        return zClass_List::IterateBucketFiltered(prefixText, bucket,
-                                                  FindNextByTypePrefix_Predicate);
+        return zClass_List::IterateBucketFiltered(
+            prefixText,
+            bucket,
+            FindNextByTypePrefix_Predicate
+        );
     }
 
     // Reimplements 0x452810: zClass::AnyNodeMatchesPredicateRecursive
-    RECOIL_NOINLINE int RECOIL_FASTCALL AnyNodeMatchesPredicateRecursive(
-        zClass_NodePartial * root, zClass_NodePredicate predicate) {
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    AnyNodeMatchesPredicateRecursive(
+        zClass_NodePartial * root,
+        zClass_NodePredicate predicate
+    ){
         if (predicate(root) == 1) {
             return 1;
         }
 
         for (int i = root->listCountB - 1; i >= 0; --i) {
-            if (AnyNodeMatchesPredicateRecursive(root->listB[i], predicate) == 1) {
+            if (AnyNodeMatchesPredicateRecursive(
+                root->listB[i],
+                predicate
+            ) == 1) {
                 return 1;
             }
         }
@@ -806,20 +986,34 @@ namespace zClass {
     }
 
     // Reimplements 0x44f870: zClass::RemoveChildChecked
-    RECOIL_NOINLINE int RECOIL_FASTCALL RemoveChildChecked(zClass_NodePartial * parent,
-                                                                    zClass_NodePartial * child) {
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    RemoveChildChecked(
+        zClass_NodePartial * parent,
+        zClass_NodePartial * child
+    ){
         if (parent == 0) {
-            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Window.c", 0xb6,
-                              "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
+                0xb6,
+                "Null node pointer."
+            );
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Window.c", 0xb7,
-                              "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
+                0xb7,
+                "Null node pointer."
+            );
             return 5;
         }
 
-        return zClass_Class::RemoveChildGeneric(parent, child);
+        return zClass_Class::RemoveChildGeneric(
+            parent,
+            child
+        );
     }
 }
 
@@ -832,14 +1026,23 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x44f750: zClass_Class::gwNodeFindNextByName_Predicate
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeFindNextByName_Predicate(zClass_NodePartial *
-                                                                                node) {
-        return strcmp(node->name, g_zClass_FilterIterText) == 0;
+    RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeFindNextByName_Predicate(zClass_NodePartial * node) {
+        return strcmp(
+            node->name,
+            g_zClass_FilterIterText
+        ) == 0;
     }
 
     // Reimplements 0x44f740: zClass_Class::gwNodeFindNextByName
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL gwNodeFindNextByName(const char *name,
-                                                                             int bucket) {
-        return zClass_List::IterateBucketFiltered(name, bucket, gwNodeFindNextByName_Predicate);
+    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL
+    gwNodeFindNextByName(
+        const char *name,
+        int bucket
+    ){
+        return zClass_List::IterateBucketFiltered(
+            name,
+            bucket,
+            gwNodeFindNextByName_Predicate
+        );
     }
 }

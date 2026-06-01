@@ -51,10 +51,13 @@ struct zRndr_LineClipRect2I {
 RECOIL_STATIC_ASSERT(sizeof(zRndr_LineClipRect2I) == 0x10);
 
 extern "C" {
-typedef void (RECOIL_FASTCALL *zVideo_BltSourceToPrimaryProc)(void *self, int dstX,
-                                                              int dstY,
-                                                              int clipFlags,
-                                                              void *srcRect);
+typedef void(RECOIL_FASTCALL *zVideo_BltSourceToPrimaryProc)(
+    void *self,
+    int dstX,
+    int dstY,
+    int clipFlags,
+    void *srcRect
+);
 
 extern zVideo_BltSourceToPrimaryProc g_zVideo_pfnBltSourceToPrimary;
 }
@@ -148,20 +151,36 @@ struct OverwriteQueuedPolyDrawCmd {
     unsigned char unknown_488[0x04];
 };
 
-typedef void (RECOIL_FASTCALL *SpanBuildProc)(SpanNodePartial **spanList, int columnIndex,
-                                              int *spanCount);
-typedef void (RECOIL_FASTCALL *OverlayBlendRowProc)(unsigned short *rowPixels16,
-                                                    int pixelCount);
-typedef void (RECOIL_FASTCALL *SpanRoutineProc)(int spanOpContext,
-                                                int pixelCount);
-typedef void (RECOIL_FASTCALL *PointOpProc)(void *frameBuffer, int y, int x,
-                                            int color16);
-typedef void (RECOIL_FASTCALL *FlatImmediateSpanProc)(int flatSpanOpEcxArg,
-                                                      int flatSpanOpEdxArg,
-                                                      int pixelCount);
-typedef void (RECOIL_FASTCALL *TexturedQueuedSpanProc)(int texU, int texV,
-                                                       int pixelCount,
-                                                       int texVShift);
+typedef void(RECOIL_FASTCALL *SpanBuildProc)(
+    SpanNodePartial **spanList,
+    int columnIndex,
+    int *spanCount
+);
+typedef void(RECOIL_FASTCALL *OverlayBlendRowProc)(
+    unsigned short *rowPixels16,
+    int pixelCount
+);
+typedef void(RECOIL_FASTCALL *SpanRoutineProc)(
+    int spanOpContext,
+    int pixelCount
+);
+typedef void(RECOIL_FASTCALL *PointOpProc)(
+    void *frameBuffer,
+    int y,
+    int x,
+    int color16
+);
+typedef void(RECOIL_FASTCALL *FlatImmediateSpanProc)(
+    int flatSpanOpEcxArg,
+    int flatSpanOpEdxArg,
+    int pixelCount
+);
+typedef void(RECOIL_FASTCALL *TexturedQueuedSpanProc)(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
 
 extern void *g_frameBuffer;
 extern int g_activeRegionWidth;
@@ -300,333 +319,572 @@ RECOIL_NOINLINE int RECOIL_CDECL InitGlobals();
 RECOIL_NOINLINE void RECOIL_STDCALL SetInverseZTolerance(float inverseZTolerance);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetPerspectiveTextureDeltaX(int deltaX);
 RECOIL_NOINLINE void RECOIL_STDCALL SetPerspectiveTextureFarZ(float farZ);
-RECOIL_NOINLINE void RECOIL_STDCALL
-SetPerspectiveAdaptiveCorrection(float perspectiveAdaptiveCorrection);
-RECOIL_NOINLINE void RECOIL_FASTCALL SetPerspectiveAdaptiveSpanParams(int minSpan,
-                                                                      int maxSpan,
-                                                                      float slope);
-RECOIL_NOINLINE void *RECOIL_FASTCALL GetActiveRegionState(int *outWidth,
-                                                           int *outHeight,
-                                                           int *outBitsPerPixel,
-                                                           int *outPitchBytes);
-RECOIL_NOINLINE void RECOIL_FASTCALL SetFrameBufferRegion(void *pixels,
-                                                          zOpt_ViewRectSection *activeRegionRect,
-                                                          int bitsPerPixel,
-                                                          int pitchBytes);
+RECOIL_NOINLINE void RECOIL_STDCALL SetPerspectiveAdaptiveCorrection(
+    float perspectiveAdaptiveCorrection
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SetPerspectiveAdaptiveSpanParams(
+    int minSpan,
+    int maxSpan,
+    float slope
+);
+RECOIL_NOINLINE void *RECOIL_FASTCALL GetActiveRegionState(
+    int *outWidth,
+    int *outHeight,
+    int *outBitsPerPixel,
+    int *outPitchBytes
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SetFrameBufferRegion(
+    void *pixels,
+    zOpt_ViewRectSection *activeRegionRect,
+    int bitsPerPixel,
+    int pitchBytes
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetActiveRegionSizeFromRect(HudUiRect *rect);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetVideoStrideMirrors(int stride);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanOcclusionAddPolygon(const zVec3 *vertices,
-                                                             int vertCount);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanOcclusionSubmitOccluderRect(const HudUiRect *rect,
-                                                                     int halveIfReplicate,
-                                                                     float z);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanOcclusionAddPolygon(
+    const zVec3 *vertices,
+    int vertCount
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanOcclusionSubmitOccluderRect(
+    const HudUiRect *rect,
+    int halveIfReplicate,
+    float z
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL SpanOcclusionInit(int height);
 RECOIL_NOINLINE void RECOIL_CDECL SpanOcclusionBuildColumnHeadTable();
-RECOIL_NOINLINE void RECOIL_FASTCALL
-SpanOcclusionRasterizeOccluderPoly(SpanOccluderPolyPartial *poly, int vertCount);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanOcclusionRasterizeOccluderPoly(
+    SpanOccluderPolyPartial *poly,
+    int vertCount
+);
 RECOIL_NOINLINE void RECOIL_CDECL SpanOcclusionResetFrame();
 RECOIL_NOINLINE void RECOIL_CDECL SpanOcclusionShutdown();
-RECOIL_NOINLINE void RECOIL_FASTCALL OverlayBlendRow555_Scalar(unsigned short *rowPixels16,
-                                                               int pixelCount);
-RECOIL_NOINLINE void RECOIL_FASTCALL OverlayBlendRow565_Scalar(unsigned short *rowPixels16,
-                                                               int pixelCount);
+RECOIL_NOINLINE void RECOIL_FASTCALL OverlayBlendRow555_Scalar(
+    unsigned short *rowPixels16,
+    int pixelCount
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL OverlayBlendRow565_Scalar(
+    unsigned short *rowPixels16,
+    int pixelCount
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL OverlayBlendRow555_Mmx(
+    unsigned short *rowPixels16,
+    int pixelCount
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL OverlayBlendRow565_Mmx(
+    unsigned short *rowPixels16,
+    int pixelCount
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL SpanMmxSetPixelFormatMasks(int greenBits);
 RECOIL_NOINLINE void RECOIL_CDECL SelectSpanRoutines();
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565_Mmx_FromPal8(FogParamsPartial *params,
-                                                                    int packedRed,
-                                                                    int packedGreen,
-                                                                    int packedBlue);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565ConstAlphaFromPal8(int texU,
-                                                                         int texV,
-                                                                         int pixelCount,
-                                                                         int texVShift);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromPal8To565(int texU, int texV,
-                                                               int pixelCount,
-                                                               int texVShift);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromTex16To565(int texU,
-                                                                int texV,
-                                                                int pixelCount,
-                                                                int texVShift);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565FromTex16Alpha8(int texU,
-                                                                      int texV,
-                                                                      int pixelCount,
-                                                                      int texVShift);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555FromTex16Alpha8(int texU,
-                                                                      int texV,
-                                                                      int pixelCount,
-                                                                      int texVShift);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565_Mmx_FromPal8(
+    FogParamsPartial *params,
+    int packedRed,
+    int packedGreen,
+    int packedBlue
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565ConstAlphaFromPal8(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromPal8To565(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromTex16To565(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565FromTex16Alpha8(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555FromTex16Alpha8(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565ConstAlphaFromTex16Alpha8(
-    int texU, int texV, int pixelCount, int texVShift);
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555ConstAlphaFromTex16Alpha8(
-    int texU, int texV, int pixelCount, int texVShift);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565MmxFromTex16Alpha8(int texU,
-                                                                         int texV,
-                                                                         int pixelCount,
-                                                                         int texVShift);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555MmxFromTex16Alpha8(int texU,
-                                                                         int texV,
-                                                                         int pixelCount,
-                                                                         int texVShift);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565FromPal8Alpha8(int texU,
-                                                                     int texV,
-                                                                     int pixelCount,
-                                                                     int texVShift);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555FromPal8Alpha8(int texU,
-                                                                     int texV,
-                                                                     int pixelCount,
-                                                                     int texVShift);
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565MmxFromTex16Alpha8(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555MmxFromTex16Alpha8(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565FromPal8Alpha8(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555FromPal8Alpha8(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565ConstAlphaFromPal8Alpha8(
-    int texU, int texV, int pixelCount, int texVShift);
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555ConstAlphaFromPal8Alpha8(
-    int texU, int texV, int pixelCount, int texVShift);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565MmxFromPal8Alpha8(int texU,
-                                                                        int texV,
-                                                                        int pixelCount,
-                                                                        int texVShift);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555MmxFromPal8Alpha8(int texU,
-                                                                        int texV,
-                                                                        int pixelCount,
-                                                                        int texVShift);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565ConstAlphaFromTex16(int texU,
-                                                                          int texV,
-                                                                          int pixelCount,
-                                                                          int texVShift);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555ConstAlphaFromTex16(int texU,
-                                                                          int texV,
-                                                                          int pixelCount,
-                                                                          int texVShift);
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565MmxFromPal8Alpha8(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555MmxFromPal8Alpha8(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565ConstAlphaFromTex16(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555ConstAlphaFromTex16(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565ConstAlphaFastFromPal8(
-    int texU, int texV, int pixelCount, int texVShift);
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555ConstAlphaFastFromPal8(
-    int texU, int texV, int pixelCount, int texVShift);
-RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan565Scalar(unsigned short *pixels,
-                                                           int pixelCount,
-                                                           int fogCoordFixed24,
-                                                           int fogCoordStepFixed24);
-RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan555Scalar(unsigned short *pixels,
-                                                           int pixelCount,
-                                                           int fogCoordFixed24,
-                                                           int fogCoordStepFixed24);
-RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan565Mmx(unsigned short *pixels,
-                                                        int pixelCount,
-                                                        int fogCoordFixed24,
-                                                        int fogCoordStepFixed24);
-RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan555Mmx(unsigned short *pixels,
-                                                        int pixelCount,
-                                                        int fogCoordFixed24,
-                                                        int fogCoordStepFixed24);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromTex16SwitchVShift(int texU,
-                                                                     int texV,
-                                                                     int pixelCount,
-                                                                     int texVShift);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromTex16SwitchVShift(int texU,
-                                                                       int texV,
-                                                                       int pixelCount,
-                                                                       int texVShift);
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan565Scalar(
+    unsigned short *pixels,
+    int pixelCount,
+    int fogCoordFixed24,
+    int fogCoordStepFixed24
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan555Scalar(
+    unsigned short *pixels,
+    int pixelCount,
+    int fogCoordFixed24,
+    int fogCoordStepFixed24
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan565Mmx(
+    unsigned short *pixels,
+    int pixelCount,
+    int fogCoordFixed24,
+    int fogCoordStepFixed24
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan555Mmx(
+    unsigned short *pixels,
+    int pixelCount,
+    int fogCoordFixed24,
+    int fogCoordStepFixed24
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromTex16SwitchVShift(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromTex16SwitchVShift(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL SpanMmxSetTexUvMasksAndVShift(int texVShift);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromTex16(int texU, int texV,
-                                                         int pixelCount,
-                                                         int texVShift);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromTex16ExplicitVShift(int texU,
-                                                                       int texV,
-                                                                       int pixelCount,
-                                                                       int texVShift);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromPal8SwitchVShift(int texU,
-                                                                    int texV,
-                                                                    int pixelCount,
-                                                                    int texVShift);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromPal8SwitchVShift(int texU,
-                                                                      int texV,
-                                                                      int pixelCount,
-                                                                      int texVShift);
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanShade16FromPal8SwitchVShift(int texU,
-                                                                     int texV,
-                                                                     int pixelCount,
-                                                                     int texVShift);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromTex16(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromTex16ExplicitVShift(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromPal8SwitchVShift(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromPal8SwitchVShift(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanShade16FromPal8SwitchVShift(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL FogColor_SetRgb01Clamped(zColorRgb *color);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetFogTargetColorRgb01Clamped(zColorRgb *color);
 RECOIL_NOINLINE void RECOIL_CDECL CommitDirectFogParamsIfChanged();
 RECOIL_NOINLINE void RECOIL_CDECL CommitFogColorParamsIfChanged();
 RECOIL_NOINLINE void RECOIL_CDECL CommitStagedFogParamsIfChanged();
-RECOIL_NOINLINE void RECOIL_FASTCALL BlendPackedColor565WithFogInPlace(int *ioPackedColor,
-                                                                       int blend255);
+RECOIL_NOINLINE void RECOIL_FASTCALL BlendPackedColor565WithFogInPlace(
+    int *ioPackedColor,
+    int blend255
+);
 RECOIL_NOINLINE void RECOIL_CDECL LensFlare_ResetSampleQueue();
 RECOIL_NOINLINE void RECOIL_FASTCALL LensFlare_DrawQueuedSample16_ClippedFramebuffer(
-    LensFlareSamplePartial *sample, int yOffsetPixels, float screenScale);
+    LensFlareSamplePartial *sample,
+    int yOffsetPixels,
+    float screenScale
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(
-    int yOffsetPixels, float screenScale);
+    int yOffsetPixels,
+    float screenScale
+);
 } // namespace zRndr
 
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SpanOcclusion_InsertSpanNode_Local(
-    zRndr::SpanNodePartial **spanList, int columnIndex, int *spanCount);
+    zRndr::SpanNodePartial **spanList,
+    int columnIndex,
+    int *spanCount
+);
 
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest(
-    zRndr::SpanNodePartial **spanList, int columnIndex, int *spanCount);
+    zRndr::SpanNodePartial **spanList,
+    int columnIndex,
+    int *spanCount
+);
 
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SpanOcclusion_BuildSpanList(
-    zRndr::SpanNodePartial **spanList, int columnIndex, int *spanCount);
+    zRndr::SpanNodePartial **spanList,
+    int columnIndex,
+    int *spanCount
+);
 
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SpanOcclusion_BuildSpanListFast(
-    zRndr::SpanNodePartial **spanList, int columnIndex, int *spanCount);
+    zRndr::SpanNodePartial **spanList,
+    int columnIndex,
+    int *spanCount
+);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zRndr_SpanOcclusion_TestColumnVisibility(int columnIndex, int *isVisible);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SpanOcclusion_TestColumnVisibility(
+    int columnIndex,
+    int *isVisible
+);
 
-RECOIL_NOINLINE int RECOIL_FASTCALL
-zRndr_SpanOcclusion_TestPointVisibility(zVec3 *samplePoint);
+RECOIL_NOINLINE int RECOIL_FASTCALL zRndr_SpanOcclusion_TestPointVisibility(zVec3 *samplePoint);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SpanOcclusion_TestSample(int x, int y,
-                                                                    int color16);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SpanOcclusion_TestSample(
+    int x,
+    int y,
+    int color16
+);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zRndr_DrawCircleOctants16_Framebuffer(int y, int x, int packedColor);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawCircleOctants16_Framebuffer(
+    int y,
+    int x,
+    int packedColor
+);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawCircleOutline16_Framebuffer(int centerX,
-                                                                           int centerY,
-                                                                           int radius,
-                                                                           int packedColor,
-                                                                           int auxArg);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawCircleOutline16_Framebuffer(
+    int centerX,
+    int centerY,
+    int radius,
+    int packedColor,
+    int auxArg
+);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_PlotPixel16(unsigned short *dstPixels, int y,
-                                                       int x, int color16);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_PlotPixel16(
+    unsigned short *dstPixels,
+    int y,
+    int x,
+    int color16
+);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawLine16(unsigned short *dstPixels, int x0,
-                                                      int y0, int x1,
-                                                      int y1, int color16);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawLine16(
+    unsigned short *dstPixels,
+    int x0,
+    int y0,
+    int x1,
+    int y1,
+    int color16
+);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawLine16_Segmented(unsigned short *dstPixels,
-                                                                int x0, int y0,
-                                                                int x1, int y1,
-                                                                int color16,
-                                                                int segmentCount);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawLine16_Segmented(
+    unsigned short *dstPixels,
+    int x0,
+    int y0,
+    int x1,
+    int y1,
+    int color16,
+    int segmentCount
+);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawLine16_Clipped(unsigned short *dstPixels,
-                                                              const zRndr_LineClipRect2I *clipRect,
-                                                              int x0, int y0,
-                                                              int x1, int y1,
-                                                              int color16);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawLine16_Clipped(
+    unsigned short *dstPixels,
+    const zRndr_LineClipRect2I *clipRect,
+    int x0,
+    int y0,
+    int x1,
+    int y1,
+    int color16
+);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FillSpan16Opaque(int packedColor16,
-                                                            int pixelCount);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FillSpan16Opaque(
+    int packedColor16,
+    int pixelCount
+);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FillSpan555Solid(int packedColor16,
-                                                            int blendAlpha,
-                                                            int pixelCount);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FillSpan555Solid(
+    int packedColor16,
+    int blendAlpha,
+    int pixelCount
+);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FillSpan565Solid(int packedColor16,
-                                                            int blendAlpha,
-                                                            int pixelCount);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FillSpan565Solid(
+    int packedColor16,
+    int blendAlpha,
+    int pixelCount
+);
 
 RECOIL_NOINLINE int RECOIL_FASTCALL zRndr_SpanOcclusion_TestSpanDepthOrderPair(
-    zRndr::SpanNodePartial *lhs, zRndr::SpanNodePartial *rhs);
+    zRndr::SpanNodePartial *lhs,
+    zRndr::SpanNodePartial *rhs
+);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_RasterizePolyWithSpanList(zVec3 *vertices,
-                                                                     zVec3 *planeVerts,
-                                                                     int vertCount,
-                                                                     int spanOpContext);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_RasterizePolyWithSpanList(
+    zVec3 *vertices,
+    zVec3 *planeVerts,
+    int vertCount,
+    int spanOpContext
+);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_RasterizePoly(zVec3 *vertices, int vertCount,
-                                                         int spanOpContext);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_RasterizePoly(
+    zVec3 *vertices,
+    int vertCount,
+    int spanOpContext
+);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawFlatImmediate(zVec3 *vertices, zVec3 *planeVertices,
-                                                             int vertCount,
-                                                             int flatSpanOpEdxArg,
-                                                             int flatSpanOpEcxArg);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawFlatImmediate(
+    zVec3 *vertices,
+    zVec3 *planeVertices,
+    int vertCount,
+    int flatSpanOpEdxArg,
+    int flatSpanOpEcxArg
+);
 
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SubmitPolyWithSpanList(
-    zVec3 *entryVertices, zVec3 *entryPlaneVertices, int spanOpContext,
-    int alpha255, int vertCount, int queueOverwrite);
+    zVec3 *entryVertices,
+    zVec3 *entryPlaneVertices,
+    int spanOpContext,
+    int alpha255,
+    int vertCount,
+    int queueOverwrite
+);
 
 RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL zRndr_TextureMip_SelectVariantImage(
-    zImage_TexDirEntryPartial *entry, const zVec3 *triVerts, int vertCount,
-    const zVec2 *vertexUvPairs, const zVec2 *mipParamsA, const zVec2 *mipParamsB,
-    const zVec2 *mipParamsC);
+    zImage_TexDirEntryPartial *entry,
+    const zVec3 *triVerts,
+    int vertCount,
+    const zVec2 *vertexUvPairs,
+    const zVec2 *mipParamsA,
+    const zVec2 *mipParamsB,
+    const zVec2 *mipParamsC
+);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawFlatQueued(zImage_TexDirEntryPartial *entry,
-                                                          zVec3 *polyVerts, zVec3 *triVerts,
-                                                          zVec2 *triUVs, int vertCount,
-                                                          int paletteIndex);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawFlatQueued(
+    zImage_TexDirEntryPartial *entry,
+    zVec3 *polyVerts,
+    zVec3 *triVerts,
+    zVec2 *triUVs,
+    int vertCount,
+    int paletteIndex
+);
 
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawTexturedQueuedAlpha(
-    zImage_TexDirEntryPartial *entry, zVec3 *projectedVerts, zVec3 *clippedTriVerts,
-    zVec3 *triVerts, zVec2 *triUVs, int vertCount, int variantIndex);
+    zImage_TexDirEntryPartial *entry,
+    zVec3 *projectedVerts,
+    zVec3 *clippedTriVerts,
+    zVec3 *triVerts,
+    zVec2 *triUVs,
+    int vertCount,
+    int variantIndex
+);
 
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawTexturedQueued(
-    zImage_TexDirEntryPartial *entry, zVec3 *projectedVerts, zVec3 *clippedTriVerts,
-    zVec3 *triVerts, zVec2 *triUVs, zVec3 *shadeTriplet, int vertCount,
-    int fanTriIndex, int texKey);
+    zImage_TexDirEntryPartial *entry,
+    zVec3 *projectedVerts,
+    zVec3 *clippedTriVerts,
+    zVec3 *triVerts,
+    zVec2 *triUVs,
+    zVec3 *shadeTriplet,
+    int vertCount,
+    int fanTriIndex,
+    int texKey
+);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL Renderer_DrawPolyTLV(zImage_TexDirEntryPartial *entry,
-                                                          zVec3 *polyVerts, zVec3 *triVerts,
-                                                          zVec2 *triUVs, int vertexCount,
-                                                          float alpha, int texKey);
+RECOIL_NOINLINE void RECOIL_FASTCALL Renderer_DrawPolyTLV(
+    zImage_TexDirEntryPartial *entry,
+    zVec3 *polyVerts,
+    zVec3 *triVerts,
+    zVec2 *triUVs,
+    int vertexCount,
+    float alpha,
+    int texKey
+);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zRndr_DrawTexturedFanTri(zImage_TexDirEntryPartial *entry, zVec3 *projectedVerts,
-                         zVec3 *clippedTriVerts, zVec3 *triVerts, zVec2 *triUVs,
-                         int vertCount, int alpha255, int variantIndex);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawTexturedFanTri(
+    zImage_TexDirEntryPartial *entry,
+    zVec3 *projectedVerts,
+    zVec3 *clippedTriVerts,
+    zVec3 *triVerts,
+    zVec2 *triUVs,
+    int vertCount,
+    int alpha255,
+    int variantIndex
+);
 
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SubmitTexturedPolyUniformAlphaOrShade(
-    zVec3 *projectedPolyVerts, zVec3 *clippedTriVerts, zVec3 *triData9f, zVec2 *triUVs,
-    int vertexCount, zImage_TexDirEntryPartial *entry, float alphaOrShadeF,
-    int queueOverwrite);
+    zVec3 *projectedPolyVerts,
+    zVec3 *clippedTriVerts,
+    zVec3 *triData9f,
+    zVec2 *triUVs,
+    int vertexCount,
+    zImage_TexDirEntryPartial *entry,
+    float alphaOrShadeF,
+    int queueOverwrite
+);
 
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
-    zVec3 *projectedPolyVerts, zVec3 *clippedTriVerts, zVec3 *triData9f, zVec2 *triUVs,
-    float *perVertexAlphaOrShadeF, int shadeOrSpanMode, int vertexCount,
-    zImage_TexDirEntryPartial *entry, int preservePaletteRemapKey,
-    int queueOverwrite);
+    zVec3 *projectedPolyVerts,
+    zVec3 *clippedTriVerts,
+    zVec3 *triData9f,
+    zVec2 *triUVs,
+    float *perVertexAlphaOrShadeF,
+    int shadeOrSpanMode,
+    int vertexCount,
+    zImage_TexDirEntryPartial *entry,
+    int preservePaletteRemapKey,
+    int queueOverwrite
+);
 
 RECOIL_NOINLINE void RECOIL_CDECL zRndr_FlushTransparentQueue();
 RECOIL_NOINLINE void RECOIL_CDECL zRndr_FlushOverwriteQueue();
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_OverlayRect_Submit(unsigned int packedColor16,
-                                                              zVidRect32 *rectOrNull,
-                                                              double alpha);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_OverlayRect_Submit(
+    unsigned int packedColor16,
+    zVidRect32 *rectOrNull,
+    double alpha
+);
 RECOIL_NOINLINE void RECOIL_CDECL zRndr_OverlayRect_FlushSw();
 
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawImmediateLine(int x0, int y0,
-                                                             int x1, int y1,
-                                                             int color16);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawImmediateLine(
+    int x0,
+    int y0,
+    int x1,
+    int y1,
+    int color16
+);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zRndr_DrawClippedImmediateLineStrip(const zRndr_LinePoint2I *points, int segmentCount,
-                                    const void *clipRect, int color16);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawClippedImmediateLineStrip(
+    const zRndr_LinePoint2I *points,
+    int segmentCount,
+    const void *clipRect,
+    int color16
+);
 
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_LensFlare_QueueProjectedSample(
-    zProjectedPoint *projectedPoint, int packedColor16, int lensFlareSource);
+    zProjectedPoint *projectedPoint,
+    int packedColor16,
+    int lensFlareSource
+);
 
 RECOIL_NOINLINE int RECOIL_CDECL zRndr_LensFlare_GetQueuedSampleCount();
 
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(int startIndex);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(
+    int startIndex
+);
 
-RECOIL_NOINLINE int RECOIL_FASTCALL
-zRndr_LensFlare_BuildVisibleSampleListFromQueue(int startIndex);
+RECOIL_NOINLINE int RECOIL_FASTCALL zRndr_LensFlare_BuildVisibleSampleListFromQueue(int startIndex);
 
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_LensFlare_SetVisibleSampleStage(
-    int stageIndex, zImage_TexDirEntryPartial *stageTexDirEntry);
+    int stageIndex,
+    zImage_TexDirEntryPartial *stageTexDirEntry
+);
 
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_LensFlare_DrawSampleStageClipped(
-    const zVec2 *sampleCenter, zImage_TexDirEntryPartial *stageTexDirEntry, float sampleRadius,
-    const zRndr_LineClipRect2I *clipRect);
+    const zVec2 *sampleCenter,
+    zImage_TexDirEntryPartial *stageTexDirEntry,
+    float sampleRadius,
+    const zRndr_LineClipRect2I *clipRect
+);
 
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_LensFlare_DrawVisibleSampleStages(
-    zRndr_LensFlareVisibleSampleDef *visibleSampleDef, float visibilityAlpha);
+    zRndr_LensFlareVisibleSampleDef *visibleSampleDef,
+    float visibilityAlpha
+);
 
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_LensFlare_DrawVisibleSample(int sampleIndex);
 
 RECOIL_NOINLINE void RECOIL_CDECL zRndr_LensFlare_DrawVisibleSamples();
 
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zRndr_SpanOcclusion_FilterSampleList(int visibleSampleIndex, zVec3 *outPoint);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SpanOcclusion_FilterSampleList(
+    int visibleSampleIndex,
+    zVec3 *outPoint
+);
 
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FogTargetColorStaged_SetRgb01Clamped(zColorRgb *color);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SetPaletteRemapKey(zVidPaletteRemapRecipe *recipe,
-                                                              float shadeLevel);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SetPaletteRemapKey(
+    zVidPaletteRemapRecipe *recipe,
+    float shadeLevel
+);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SetPaletteRemapKeyFromRgb01(zColorRgb *rgb01,
-                                                                       float shadeLevel);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SetPaletteRemapKeyFromRgb01(
+    zColorRgb *rgb01,
+    float shadeLevel
+);
 
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zRndr_SetPaletteShadeRecipeIndex(zVidPaletteRemapRecipe *recipe);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SetPaletteShadeRecipeIndex(
+    zVidPaletteRemapRecipe *recipe
+);

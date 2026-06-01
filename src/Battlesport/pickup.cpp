@@ -4,12 +4,12 @@
 #include "Battlesport/player.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/include/OptCatalog.h"
-#include "GameZRecoil/zError/zError.h"
-#include "GameZRecoil/zEffect/zEffect.h"
-#include "GameZRecoil/zGame/zGame.h"
-#include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/include/zDi.h"
 #include "GameZRecoil/include/zImage.h"
+#include "GameZRecoil/zEffect/zEffect.h"
+#include "GameZRecoil/zError/zError.h"
+#include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zLoc/zLoc.h"
 #include "GameZRecoil/zModel/zModel.h"
@@ -55,13 +55,48 @@ struct PickupArchiveRecord {
     float respawnDelay;
 };
 
-RECOIL_STATIC_ASSERT(offsetof(PickupArchiveRecord, typeIndex) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(PickupArchiveRecord, pickupId) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(PickupArchiveRecord, amount) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(PickupArchiveRecord, position) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(PickupArchiveRecord, rotation) == 0x1c);
-RECOIL_STATIC_ASSERT(offsetof(PickupArchiveRecord, spawnParam) == 0x28);
-RECOIL_STATIC_ASSERT(offsetof(PickupArchiveRecord, respawnDelay) == 0x2c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PickupArchiveRecord,
+        typeIndex
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PickupArchiveRecord,
+        pickupId
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PickupArchiveRecord,
+        amount
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PickupArchiveRecord,
+        position
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PickupArchiveRecord,
+        rotation
+    ) == 0x1c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PickupArchiveRecord,
+        spawnParam
+    ) == 0x28
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PickupArchiveRecord,
+        respawnDelay
+    ) == 0x2c
+);
 RECOIL_STATIC_ASSERT(sizeof(PickupArchiveRecord) == 0x30);
 
 namespace {
@@ -70,7 +105,10 @@ const char kPickupPuppiesEasyZrd[] = "puppies_easy.zrd";
 const char kPickupPuppiesHardZrd[] = "puppies_hard.zrd";
 const char kPickupPuppiesDefaultZrd[] = "puppies.zrd";
 
-template <typename T> zZbdSectionCallback ZbdCallbackPtr(T callback) {
+template <typename T>
+zZbdSectionCallback ZbdCallbackPtr(
+    T callback
+) {
     RECOIL_STATIC_ASSERT(sizeof(T) == sizeof(zZbdSectionCallback));
     union {
         T callback;
@@ -83,12 +121,13 @@ template <typename T> zZbdSectionCallback ZbdCallbackPtr(T callback) {
 
 PickupPkt11Delta g_PickupPkt11Flag2Delta = {{0x11, sizeof(PickupPkt11Delta), 0}, 0, 0, 0};
 PickupPkt11Delta g_PickupPkt11Flag8Delta = {{0x11, sizeof(PickupPkt11Delta), 0}, 0, 0, 0};
-PickupPkt12AirdropSpawnChuteRelay g_PickupPkt12AirdropSpawnChuteRelay = {
-    {0x12, sizeof(PickupPkt12AirdropSpawnChuteRelay), 0}, {0.0f, 0.0f, 0.0f}, 0, 0, 0};
+PickupPkt12AirdropSpawnChuteRelay g_PickupPkt12AirdropSpawnChuteRelay =
+    {{0x12, sizeof(PickupPkt12AirdropSpawnChuteRelay), 0}, {0.0f, 0.0f, 0.0f}, 0, 0, 0};
 
 // Reimplements 0x41db40: PickupType::GetByIndex_Pure (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE PickupType *RECOIL_FASTCALL
-PickupType::GetByIndex_Pure(int pickupTypeIndex) {
+RECOIL_NOINLINE PickupType *RECOIL_FASTCALL PickupType::GetByIndex_Pure(
+    int pickupTypeIndex
+) {
     if (pickupTypeIndex < 40) {
         return &g_PickupTypes[pickupTypeIndex];
     }
@@ -97,7 +136,9 @@ PickupType::GetByIndex_Pure(int pickupTypeIndex) {
 }
 
 // Reimplements 0x41e1c0: PickupType::GetByIndex (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE PickupType *RECOIL_FASTCALL PickupType::GetByIndex(int pickupTypeIndex) {
+RECOIL_NOINLINE PickupType *RECOIL_FASTCALL PickupType::GetByIndex(
+    int pickupTypeIndex
+) {
     if (pickupTypeIndex >= 0 && pickupTypeIndex < 40) {
         return &g_PickupTypes[pickupTypeIndex];
     }
@@ -107,11 +148,16 @@ RECOIL_NOINLINE PickupType *RECOIL_FASTCALL PickupType::GetByIndex(int pickupTyp
 
 // Reimplements 0x41dd60: PickupType::FindByLogicalName
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-PickupType::FindByLogicalName(const char *logicalName, int *outTypeIndex) {
+RECOIL_NOINLINE int RECOIL_FASTCALL PickupType::FindByLogicalName(
+    const char *logicalName,
+    int *outTypeIndex
+) {
     for (int index = 0; index < 40; ++index) {
         const PickupType &pickupType = g_PickupTypes[index];
-        if (pickupType.logicalName != 0 && strcmp(logicalName, pickupType.logicalName) == 0) {
+        if (pickupType.logicalName != 0 && strcmp(
+            logicalName,
+            pickupType.logicalName
+        ) == 0) {
             *outTypeIndex = pickupType.typeIndex;
             return 1;
         }
@@ -124,22 +170,29 @@ PickupType::FindByLogicalName(const char *logicalName, int *outTypeIndex) {
 namespace PickupTypeKeyTable {
 // Reimplements 0x41e1e0: PickupTypeKeyTable::FindIndex
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL FindIndex(const char *logicalName) {
+RECOIL_NOINLINE int RECOIL_FASTCALL FindIndex(
+    const char *logicalName
+) {
     for (int index = 0; index < 40; ++index) {
         const char *const candidateName = g_PickupTypes[index].logicalName;
-        if (candidateName != 0 && strcmp(logicalName, candidateName) == 0) {
+        if (candidateName != 0 && strcmp(
+            logicalName,
+            candidateName
+        ) == 0) {
             return index;
         }
     }
 
     return -1;
 }
-}
+} // namespace PickupTypeKeyTable
 
 namespace PickupTypeMeta {
 // Reimplements 0x41e1a0: PickupTypeMeta::FindByName
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE PickupType *RECOIL_FASTCALL FindByName(const char *typeName) {
+RECOIL_NOINLINE PickupType *RECOIL_FASTCALL FindByName(
+    const char *typeName
+) {
     const int index = PickupTypeKeyTable::FindIndex(typeName);
     if (index < 0) {
         return 0;
@@ -152,7 +205,9 @@ RECOIL_NOINLINE PickupType *RECOIL_FASTCALL FindByName(const char *typeName) {
 namespace Net {
 // Reimplements 0x41de30: Net::IsOptEntryActiveInAnySlot
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL IsOptEntryActiveInAnySlot(OptCatalogEntryDef *optEntry) {
+RECOIL_NOINLINE int RECOIL_FASTCALL IsOptEntryActiveInAnySlot(
+    OptCatalogEntryDef *optEntry
+) {
     zUtil_PlayerStateStorage *const playerState =
         (zUtil_PlayerStateStorage *)((void *)(g_GameStateOrMapTable->playerState));
 
@@ -172,7 +227,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL IsOptEntryActiveInAnySlot(OptCatalogEntryDef
 
 namespace zClass_Node {
 // Reimplements 0x41ceb0: zClass_Node::ClearPickupFlagsRecursive (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ClearPickupFlagsRecursive(zClass_NodePartial *node) {
+RECOIL_NOINLINE int RECOIL_FASTCALL ClearPickupFlagsRecursive(
+    zClass_NodePartial *node
+) {
     node->flags &= ~0x40018;
 
     for (int i = 0; i < node->listCountB; ++i) {
@@ -183,7 +240,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClearPickupFlagsRecursive(zClass_NodePartial
 }
 
 // Reimplements 0x41cef0: zClass_Node::SetPickupFlagsRecursive (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL SetPickupFlagsRecursive(zClass_NodePartial *node) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SetPickupFlagsRecursive(
+    zClass_NodePartial *node
+) {
     node->flags = (node->flags & ~0x08) | 0x40010;
 
     for (int i = 0; i < node->listCountB; ++i) {
@@ -197,23 +256,35 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetPickupFlagsRecursive(zClass_NodePartial *
 // Reimplements 0x438990: PickupAirdropSpawnRef::InitNodesFromCarrierNodeName
 // (D:\Proj\Battlesport\pickup.cpp)
 RECOIL_NOINLINE PickupAirdropSpawnRef *RECOIL_THISCALL
-PickupAirdropSpawnRef::InitNodesFromCarrierNodeName(const char *carrierNodeName) {
-    carrierNode = zClass::FindByTypeAndName(6, carrierNodeName);
-    dropAttachNode = zClass_Class::FindSubNodeByName(carrierNode, "healthy");
+PickupAirdropSpawnRef::InitNodesFromCarrierNodeName(
+    const char *carrierNodeName
+) {
+    carrierNode = zClass::FindByTypeAndName(
+        6,
+        carrierNodeName
+    );
+    dropAttachNode = zClass_Class::FindSubNodeByName(
+        carrierNode,
+        "healthy"
+    );
     return this;
 }
 
 // Reimplements 0x438a70: PickupAirdropSpawnRef::GetWorldPos
 // (D:\Proj\Battlesport\pickup.cpp)
 RECOIL_NOINLINE zVec3 *RECOIL_THISCALL PickupAirdropSpawnRef::GetWorldPos() {
-    gwNode::GetWorldPosition(carrierNode, &worldPos);
+    gwNode::GetWorldPosition(
+        carrierNode,
+        &worldPos
+    );
     return &worldPos;
 }
 
 // Reimplements 0x438a20: PickupAirdropSpawnRef::CanSpawnWithClearance
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL
-PickupAirdropSpawnRef::CanSpawnWithClearance(float clearanceRadius) {
+RECOIL_NOINLINE int RECOIL_THISCALL PickupAirdropSpawnRef::CanSpawnWithClearance(
+    float clearanceRadius
+) {
     if ((dropAttachNode->flags & 4) == 0) {
         return 0;
     }
@@ -224,13 +295,17 @@ PickupAirdropSpawnRef::CanSpawnWithClearance(float clearanceRadius) {
         return 0;
     }
 
-    return Pickup::SpawnListHasEntryNearXZ(GetWorldPos(), clearanceRadius) == 0;
+    return Pickup::SpawnListHasEntryNearXZ(
+        GetWorldPos(),
+        clearanceRadius
+    ) == 0;
 }
 
 // Reimplements 0x4389c0: PickupAirdropSpawnRef::SpawnPickupTypeAndRelay
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL
-PickupAirdropSpawnRef::SpawnPickupTypeAndRelay(int pickupTypeIndex) {
+RECOIL_NOINLINE int RECOIL_THISCALL PickupAirdropSpawnRef::SpawnPickupTypeAndRelay(
+    int pickupTypeIndex
+) {
     if ((dropAttachNode->flags & 4) == 0) {
         return 0;
     }
@@ -240,18 +315,25 @@ PickupAirdropSpawnRef::SpawnPickupTypeAndRelay(int pickupTypeIndex) {
             return 0;
         }
 
-        Pickup::SendPkt12_AirdropSpawnChuteRelay(pickupTypeIndex, &worldPos,
-                                                  Pickup::GetNextPickupId());
+        Pickup::SendPkt12_AirdropSpawnChuteRelay(
+            pickupTypeIndex,
+            &worldPos,
+            Pickup::GetNextPickupId()
+        );
     }
 
-    Pickup::SpawnWithAirdropChute(pickupTypeIndex, &worldPos);
+    Pickup::SpawnWithAirdropChute(
+        pickupTypeIndex,
+        &worldPos
+    );
     return 1;
 }
 
 // Reimplements 0x438a90: PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL
-PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName(const char *carrierNodeName) {
+RECOIL_NOINLINE void RECOIL_FASTCALL PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName(
+    const char *carrierNodeName
+) {
     PickupAirdropSpawnRef *const spawnRef = new PickupAirdropSpawnRef;
     g_Pickup_GlobalAirdropSpawnRef = spawnRef->InitNodesFromCarrierNodeName(carrierNodeName);
 
@@ -281,7 +363,8 @@ RECOIL_NOINLINE int RECOIL_CDECL PickupAirdropSpawnRef::TrySpawnRandomPickupFrom
     }
 
     return g_Pickup_GlobalAirdropSpawnRef->SpawnPickupTypeAndRelay(
-        Pickup::SelectNextVTOLSpawnTypeIndex());
+        Pickup::SelectNextVTOLSpawnTypeIndex()
+    );
 }
 
 // Reimplements 0x41cc10: PickupSpawnList::Primary_Init (D:\Proj\Battlesport\pickup.cpp)
@@ -309,8 +392,10 @@ RECOIL_NOINLINE void RECOIL_CDECL PickupRespawnQueue::Init() {
 }
 
 // Reimplements 0x41d8a0: PickupSpawnList::RemoveAndFreeNode (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL PickupSpawnList::RemoveAndFreeNode(PickupSpawnDef *node,
-                                                                        PickupSpawnList *list) {
+RECOIL_NOINLINE void RECOIL_FASTCALL PickupSpawnList::RemoveAndFreeNode(
+    PickupSpawnDef *node,
+    PickupSpawnList *list
+) {
     if (node != 0 && list->count != 0) {
         PickupSpawnDef *current = list->head;
         if (node == current) {
@@ -340,7 +425,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL PickupSpawnList::RemoveAndFreeNode(PickupSp
     zClass_NodePartial *const pickupObj = node->pickupObj;
     if (pickupObj != 0) {
         if (pickupObj->listA != 0) {
-            zClass_World::RemoveChildAtGrid(pickupObj->listA[0], pickupObj);
+            zClass_World::RemoveChildAtGrid(
+                pickupObj->listA[0],
+                pickupObj
+            );
         }
 
         zClass_Util::DestroyNodeRecursive(pickupObj);
@@ -354,7 +442,10 @@ RECOIL_NOINLINE void RECOIL_THISCALL PickupSpawnList::Clear() {
     PickupSpawnDef *node = head;
     while (node != 0) {
         PickupSpawnDef *const next = node->next;
-        PickupSpawnList::RemoveAndFreeNode(node, this);
+        PickupSpawnList::RemoveAndFreeNode(
+            node,
+            this
+        );
         node = next;
     }
 
@@ -455,8 +546,9 @@ RECOIL_NOINLINE void RECOIL_CDECL PickupRespawnQueue::Update() {
 namespace Pickup {
 // Reimplements 0x41ddf0: Pickup::SelectPuppiesZrdByDifficulty
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE const char *RECOIL_FASTCALL
-SelectPuppiesZrdByDifficulty(const char *extraSearchPath) {
+RECOIL_NOINLINE const char *RECOIL_FASTCALL SelectPuppiesZrdByDifficulty(
+    const char *extraSearchPath
+) {
     const char *filename = kPickupPuppiesDefaultZrd;
     const int difficultyMode = zOpt::GetGameDifficultyMode();
     if (difficultyMode == 0) {
@@ -465,7 +557,10 @@ SelectPuppiesZrdByDifficulty(const char *extraSearchPath) {
         filename = kPickupPuppiesHardZrd;
     }
 
-    if (zReader::TryResolvePath(filename, extraSearchPath) == 0) {
+    if (zReader::TryResolvePath(
+        filename,
+        extraSearchPath
+    ) == 0) {
         filename = kPickupPuppiesDefaultZrd;
     }
 
@@ -485,27 +580,45 @@ RECOIL_NOINLINE int RECOIL_CDECL InitAndLoadPuppySpawns() {
 
     g_PickupSpawnList_Primary.Clear();
 
-    zClass::FindNextByTypePrefix("pu", 6);
-    zClass_NodePartial *pickupObj = zClass::FindNextByTypePrefix(0, 6);
+    zClass::FindNextByTypePrefix(
+        "pu",
+        6
+    );
+    zClass_NodePartial *pickupObj = zClass::FindNextByTypePrefix(
+        0,
+        6
+    );
     while (pickupObj != 0) {
-        if (strlen(pickupObj->name) > 5 &&
-            isdigit((unsigned char)(pickupObj->name[2])) != 0) {
+        if (strlen(pickupObj->name) > 5 && isdigit((unsigned char)(pickupObj->name[2])) != 0) {
             zVec3 zeroVec = {0.0f, 0.0f, 0.0f};
             *(int *)(pickupObj->name + 0x18) = g_NextPickupId;
             if (AssignBvolGroupAndId(pickupObj) != 0) {
                 PickupSpawnDef *const spawn =
-                    CreateSpawnDefAndLink(pickupObj, &zeroVec, &zeroVec, 0, 0);
+                    CreateSpawnDefAndLink(
+                        pickupObj,
+                        &zeroVec,
+                        &zeroVec,
+                        0,
+                        0
+                    );
                 if (spawn->pickupType->weaponKeyName != 0) {
                     ++spawn->pickupType->weaponPresenceCount;
                 }
             }
         }
 
-        pickupObj = zClass::FindNextByTypePrefix(0, 6);
+        pickupObj = zClass::FindNextByTypePrefix(
+            0,
+            6
+        );
     }
 
     zReader::Node *const treeRoot =
-        zReader::LoadNodeFromPath(SelectPuppiesZrdByDifficulty(0), 0, 0);
+        zReader::LoadNodeFromPath(
+            SelectPuppiesZrdByDifficulty(0),
+            0,
+            0
+        );
     if (treeRoot == 0) {
         return 0;
     }
@@ -571,11 +684,18 @@ RECOIL_NOINLINE int RECOIL_CDECL InitAndLoadPuppySpawns() {
         g_PickupSpawnList_NetworkCopy.Clear();
         PickupSpawnDef *primarySpawn = g_PickupSpawnList_Primary.head;
         while (primarySpawn != 0) {
-            PickupSpawnDef *const copy =
-                (PickupSpawnDef *)(malloc(sizeof(PickupSpawnDef)));
+            PickupSpawnDef *const copy = (PickupSpawnDef *)(malloc(sizeof(PickupSpawnDef)));
             if (copy != 0) {
-                memset(copy, 0, sizeof(*copy));
-                memcpy(copy, primarySpawn, sizeof(*copy));
+                memset(
+                    copy,
+                    0,
+                    sizeof(*copy)
+                );
+                memcpy(
+                    copy,
+                    primarySpawn,
+                    sizeof(*copy)
+                );
                 copy->next = 0;
                 if (g_PickupSpawnList_NetworkCopy.count == 0) {
                     g_PickupSpawnList_NetworkCopy.head = copy;
@@ -596,8 +716,10 @@ RECOIL_NOINLINE int RECOIL_CDECL InitAndLoadPuppySpawns() {
 
 // Reimplements 0x41e430: Pickup::SpawnListHasEntryNearXZ
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL SpawnListHasEntryNearXZ(zVec3 *position,
-                                                            float clearanceRadius) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SpawnListHasEntryNearXZ(
+    zVec3 *position,
+    float clearanceRadius
+) {
     PickupSpawnDef *spawn = g_PickupSpawnList_Primary.head;
     while (spawn != 0) {
         if (fabs(spawn->position.x - position->x) < clearanceRadius &&
@@ -612,8 +734,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SpawnListHasEntryNearXZ(zVec3 *position,
 
 // Reimplements 0x41e540: Pickup::MapVTOLDropGroupVariantToTypeIndex
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-MapVTOLDropGroupVariantToTypeIndex(int dropGroupIndex, int dropVariantIndex) {
+RECOIL_NOINLINE int RECOIL_FASTCALL MapVTOLDropGroupVariantToTypeIndex(
+    int dropGroupIndex,
+    int dropVariantIndex
+) {
     if (dropGroupIndex < 2 || dropGroupIndex > 9) {
         return 0;
     }
@@ -649,7 +773,10 @@ RECOIL_NOINLINE int RECOIL_CDECL SelectNextVTOLSpawnTypeIndex() {
 
             if (available != 0) {
                 g_Pickup_LastVTOLDropIndex = cursor;
-                return MapVTOLDropGroupVariantToTypeIndex(dropGroupIndex, dropVariantIndex);
+                return MapVTOLDropGroupVariantToTypeIndex(
+                    dropGroupIndex,
+                    dropVariantIndex
+                );
             }
         }
 
@@ -657,12 +784,17 @@ RECOIL_NOINLINE int RECOIL_CDECL SelectNextVTOLSpawnTypeIndex() {
     }
 
     g_Pickup_LastVTOLDropIndex = 3;
-    return MapVTOLDropGroupVariantToTypeIndex(1, 1);
+    return MapVTOLDropGroupVariantToTypeIndex(
+        1,
+        1
+    );
 }
 
 // Reimplements 0x41ccf0: Pickup::Init (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL Init(zClass_NodePartial *sceneNode,
-                                         const char *pickupsCfgPath) {
+RECOIL_NOINLINE int RECOIL_FASTCALL Init(
+    zClass_NodePartial *sceneNode,
+    const char *pickupsCfgPath
+) {
     g_Pickup_SceneNode = sceneNode;
 
     zSndSample *const defaultPickupSound = zSnd::FindSampleByName("snd_pickup");
@@ -670,8 +802,15 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Init(zClass_NodePartial *sceneNode,
         PickupType &pickupType = g_PickupTypes[index];
 
         char templateName[0x28];
-        sprintf(templateName, "pu%03d", pickupType.typeIndex);
-        pickupType.templateNode = zClass::FindByTypeAndName(6, templateName);
+        sprintf(
+            templateName,
+            "pu%03d",
+            pickupType.typeIndex
+        );
+        pickupType.templateNode = zClass::FindByTypeAndName(
+            6,
+            templateName
+        );
         pickupType.pickupSound = defaultPickupSound;
         pickupType.nameSuffixMax = 0;
 
@@ -683,27 +822,48 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Init(zClass_NodePartial *sceneNode,
         }
     }
 
-    zReader::Node *const rootNode = zReader::LoadNodeFromPath(pickupsCfgPath, 0, 0);
+    zReader::Node *const rootNode = zReader::LoadNodeFromPath(
+        pickupsCfgPath,
+        0,
+        0
+    );
     if (rootNode == 0) {
-        zError::ReportOld(0x200, "D:\\Proj\\Battlesport\\pickup.cpp", 0xc1,
-                          "Pickup: Unable to load %s", pickupsCfgPath);
+        zError::ReportOld(
+            0x200,
+            "D:\\Proj\\Battlesport\\pickup.cpp",
+            0xc1,
+            "Pickup: Unable to load %s",
+            pickupsCfgPath
+        );
         return 0;
     }
 
-    zReader::Node *const pickupDataNode = zReader_GetNamedNode(rootNode, "PICKUP_DATA");
+    zReader::Node *const pickupDataNode = zReader_GetNamedNode(
+        rootNode,
+        "PICKUP_DATA"
+    );
     if (pickupDataNode != 0) {
         zReader::Node *const pickupData = pickupDataNode->value.nodes;
         const int pickupDataCount = pickupData[0].value.i32;
         for (int fieldIndex = 1; fieldIndex < pickupDataCount; fieldIndex += 2) {
             int pickupTypeIndex = 0;
             const char *const logicalName = pickupData[fieldIndex].value.str;
-            if (PickupType::FindByLogicalName(logicalName, &pickupTypeIndex) == 0) {
+            if (PickupType::FindByLogicalName(
+                logicalName,
+                &pickupTypeIndex
+            ) == 0) {
                 continue;
             }
 
             PickupType &pickupType = g_PickupTypes[pickupTypeIndex];
-            zReader::Node *const entryNode = zReader_GetNamedNode(pickupDataNode, logicalName);
-            zReader::Node *const soundNode = zReader_GetNamedNode(entryNode, "SOUND");
+            zReader::Node *const entryNode = zReader_GetNamedNode(
+                pickupDataNode,
+                logicalName
+            );
+            zReader::Node *const soundNode = zReader_GetNamedNode(
+                entryNode,
+                "SOUND"
+            );
             if (soundNode != 0) {
                 zSndSample *const pickupSound =
                     zSnd::FindSampleByName(soundNode->value.nodes[1].value.str);
@@ -714,7 +874,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Init(zClass_NodePartial *sceneNode,
                 }
             }
 
-            zReader::Node *const imageNode = zReader_GetNamedNode(entryNode, "IMAGE");
+            zReader::Node *const imageNode = zReader_GetNamedNode(
+                entryNode,
+                "IMAGE"
+            );
             if (imageNode != 0 && pickupType.optMetaImage == 0) {
                 pickupType.optMetaImage =
                     zImage::TexDir_FindOrCreateByPath(imageNode->value.nodes[1].value.str);
@@ -723,14 +886,21 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Init(zClass_NodePartial *sceneNode,
     }
 
     zReader::FreeLoadedTree(rootNode);
-    zUtil_ZAR::RegisterSectionHandler("Pickup", ZbdCallbackPtr(&ArchiveWriteAll),
-                                      ZbdCallbackPtr(&ArchiveReadRecord), 300, 0);
+    zUtil_ZAR::RegisterSectionHandler(
+        "Pickup",
+        ZbdCallbackPtr(&ArchiveWriteAll),
+        ZbdCallbackPtr(&ArchiveReadRecord),
+        300,
+        0
+    );
     return 1;
 }
 
 // Reimplements 0x433e40: Pickup::SendPkt11_Flag2Delta
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL SendPkt11_Flag2Delta(PickupSpawnDef *spawn) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SendPkt11_Flag2Delta(
+    PickupSpawnDef *spawn
+) {
     g_PickupPkt11Flag2Delta.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
     g_PickupPkt11Flag2Delta.flags = 2;
     g_PickupPkt11Flag2Delta.pickupId = spawn->pickupId;
@@ -739,7 +909,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SendPkt11_Flag2Delta(PickupSpawnDef *spawn) 
 
 // Reimplements 0x433e70: Pickup::SendPkt11_Flag8Delta
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL SendPkt11_Flag8Delta(PickupSpawnDef *spawn) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SendPkt11_Flag8Delta(
+    PickupSpawnDef *spawn
+) {
     g_PickupPkt11Flag8Delta.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
     g_PickupPkt11Flag8Delta.flags = 8;
     g_PickupPkt11Flag8Delta.pickupId = spawn->pickupId;
@@ -748,10 +920,16 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SendPkt11_Flag8Delta(PickupSpawnDef *spawn) 
 
 // Reimplements 0x433ea0: Pickup::SendPkt11_CreateDelta
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt11_CreateDelta(PickupSpawnDef *spawn) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt11_CreateDelta(
+    PickupSpawnDef *spawn
+) {
     PickupPkt11CreateDelta *const packet =
         (PickupPkt11CreateDelta *)(malloc(sizeof(PickupPkt11CreateDelta)));
-    memset(packet, 0, sizeof(PickupPkt11CreateDelta));
+    memset(
+        packet,
+        0,
+        sizeof(PickupPkt11CreateDelta)
+    );
 
     packet->header.packetType = 0x11;
     packet->header.packetSizeBytes = sizeof(PickupPkt11CreateDelta);
@@ -771,15 +949,23 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt11_CreateDelta(PickupSpawnDef *spawn
 
 // Reimplements 0x433f40: Pickup::HandlePkt11_SpawnDelta
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-HandlePkt11_SpawnDelta(int, PickupPkt11CreateDelta *packet) {
-    PickupSpawnDef *const spawn =
-        FindSpawnByPickupId(packet->pickupId, &g_PickupSpawnList_Primary);
+RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt11_SpawnDelta(
+    int,
+    PickupPkt11CreateDelta *packet
+) {
+    PickupSpawnDef *const spawn = FindSpawnByPickupId(
+        packet->pickupId,
+        &g_PickupSpawnList_Primary
+    );
     const unsigned int flags = packet->flags;
 
     if ((flags & 1u) != 0 && spawn == 0) {
         PickupParsedZrdEntry entry;
-        memset(&entry, 0, sizeof(entry));
+        memset(
+            &entry,
+            0,
+            sizeof(entry)
+        );
         entry.typeDesc = PickupType::GetByIndex((int)(packet->typeKeyIndex));
         entry.amount = packet->amount;
         entry.position = packet->position;
@@ -799,16 +985,29 @@ HandlePkt11_SpawnDelta(int, PickupPkt11CreateDelta *packet) {
     }
 
     if ((flags & 2u) != 0) {
-        PickupSpawnList::RemoveAndFreeNode(spawn, &g_PickupSpawnList_Primary);
+        PickupSpawnList::RemoveAndFreeNode(
+            spawn,
+            &g_PickupSpawnList_Primary
+        );
         return 1;
     }
 
     if ((flags & 8u) != 0) {
         zClass_NodePartial *const pickupObj = spawn->pickupObj;
         zClass_Node::ClearPickupFlagsRecursive(pickupObj);
-        zClass_Class::gwNodeSetRaycastable(pickupObj, 0);
-        zClass_Class::gwNodeSetPickable(pickupObj, 0);
-        RemoveObject(0, pickupObj, 0);
+        zClass_Class::gwNodeSetRaycastable(
+            pickupObj,
+            0
+        );
+        zClass_Class::gwNodeSetPickable(
+            pickupObj,
+            0
+        );
+        RemoveObject(
+            0,
+            pickupObj,
+            0
+        );
     }
 
     return 1;
@@ -816,32 +1015,49 @@ HandlePkt11_SpawnDelta(int, PickupPkt11CreateDelta *packet) {
 
 // Reimplements 0x434050: Pickup::SendPkt12_AirdropSpawnChuteRelay
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL
-SendPkt12_AirdropSpawnChuteRelay(int pickupTypeIndex, zVec3 *spawnPos, int nextPickupId) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt12_AirdropSpawnChuteRelay(
+    int pickupTypeIndex,
+    zVec3 *spawnPos,
+    int nextPickupId
+) {
     g_PickupPkt12AirdropSpawnChuteRelay.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
     g_PickupPkt12AirdropSpawnChuteRelay.spawnPos = *spawnPos;
-    g_PickupPkt12AirdropSpawnChuteRelay.pickupTypeIndex =
-        (unsigned short)(pickupTypeIndex);
+    g_PickupPkt12AirdropSpawnChuteRelay.pickupTypeIndex = (unsigned short)(pickupTypeIndex);
     g_PickupPkt12AirdropSpawnChuteRelay.nextPickupId = nextPickupId;
     zNetwork_SendPacketReliable(&g_PickupPkt12AirdropSpawnChuteRelay.header);
 }
 
 // Reimplements 0x4340a0: Pickup::HandlePkt12_AirdropSpawnChuteRelay
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-HandlePkt12_AirdropSpawnChuteRelay(int, PickupPkt12AirdropSpawnChuteRelay *packet) {
+RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt12_AirdropSpawnChuteRelay(
+    int,
+    PickupPkt12AirdropSpawnChuteRelay *packet
+) {
     SetNextPickupId(packet->nextPickupId);
-    SpawnWithAirdropChute((int)(packet->pickupTypeIndex), &packet->spawnPos);
+    SpawnWithAirdropChute(
+        (int)(packet->pickupTypeIndex),
+        &packet->spawnPos
+    );
     return 1;
 }
 
 // Reimplements 0x41db60: Pickup::AssignBvolGroupAndId
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL AssignBvolGroupAndId(zClass_NodePartial *pickupObj) {
-    zClass_NodePartial *const bvolNode = zClass_Class::FindSubNodeByName(pickupObj, "bvol");
+RECOIL_NOINLINE int RECOIL_FASTCALL AssignBvolGroupAndId(
+    zClass_NodePartial *pickupObj
+) {
+    zClass_NodePartial *const bvolNode = zClass_Class::FindSubNodeByName(
+        pickupObj,
+        "bvol"
+    );
     if (bvolNode == 0) {
-        zError::ReportOld(0x400, "D:\\Proj\\Battlesport\\pickup.cpp", 0x152,
-                          "Pickup: (%s) has no bvol child node", pickupObj);
+        zError::ReportOld(
+            0x400,
+            "D:\\Proj\\Battlesport\\pickup.cpp",
+            0x152,
+            "Pickup: (%s) has no bvol child node",
+            pickupObj
+        );
         return 0;
     }
 
@@ -862,29 +1078,49 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AssignBvolGroupAndId(zClass_NodePartial *pic
     }
 
     pickupObj->flags = (pickupObj->flags & ~0x08) | 0x20;
-    zClass_Class::gwNodeSetActive(bvolNode, 0);
-    zClass_Node::SetDiFlagBit0Recursive(pickupObj, 0);
+    zClass_Class::gwNodeSetActive(
+        bvolNode,
+        0
+    );
+    zClass_Node::SetDiFlagBit0Recursive(
+        pickupObj,
+        0
+    );
     return 1;
 }
 
 // Reimplements 0x41dab0: Pickup::CreateObjectInstance
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CreateObjectInstance(int typeIndex,
-                                                                         int overrideAmount) {
+RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CreateObjectInstance(
+    int typeIndex,
+    int overrideAmount
+) {
     PickupType *const pickupType = PickupType::GetByIndex_Pure(typeIndex);
     if (pickupType == 0 || pickupType->templateNode == 0) {
         return 0;
     }
 
     zClass_NodePartial *const pickupObj =
-        zClass_cls_util::CopyNodeWithCloneOptions(pickupType->templateNode, 1, 0);
+        zClass_cls_util::CopyNodeWithCloneOptions(
+            pickupType->templateNode,
+            1,
+            0
+        );
     if (pickupObj == 0) {
         return 0;
     }
 
     char pickupName[0x40];
-    sprintf(pickupName, "pu%03d%02d", pickupType->typeIndex, pickupType->nameSuffixMax);
-    zClass_Class::gwNodeSetName(pickupObj, pickupName);
+    sprintf(
+        pickupName,
+        "pu%03d%02d",
+        pickupType->typeIndex,
+        pickupType->nameSuffixMax
+    );
+    zClass_Class::gwNodeSetName(
+        pickupObj,
+        pickupName
+    );
 
     int amount = overrideAmount;
     if (amount == 0) {
@@ -903,14 +1139,20 @@ RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CreateObjectInstance(int typ
 // Reimplements 0x41d920: Pickup::CreateSpawnDefAndLink
 // (D:\Proj\Battlesport\pickup.cpp)
 RECOIL_NOINLINE PickupSpawnDef *RECOIL_FASTCALL CreateSpawnDefAndLink(
-    zClass_NodePartial *pickupObj, zVec3 *position, zVec3 *rotation, int spawnParam,
-    int linkToScene) {
+    zClass_NodePartial *pickupObj,
+    zVec3 *position,
+    zVec3 *rotation,
+    int spawnParam,
+    int linkToScene
+) {
     if (linkToScene != 0) {
-        zClass_Class::AddChild(g_Pickup_SceneNode, pickupObj);
+        zClass_Class::AddChild(
+            g_Pickup_SceneNode,
+            pickupObj
+        );
     }
 
-    PickupSpawnDef *const spawn =
-        (PickupSpawnDef *)(malloc(sizeof(PickupSpawnDef)));
+    PickupSpawnDef *const spawn = (PickupSpawnDef *)(malloc(sizeof(PickupSpawnDef)));
 
     PickupType *pickupType = 0;
     const int pickupTypeIndex = *(int *)(pickupObj->name + 0x1c);
@@ -948,96 +1190,208 @@ RECOIL_NOINLINE PickupSpawnDef *RECOIL_FASTCALL CreateSpawnDefAndLink(
     spawn->next = 0;
     ++g_PickupSpawnList_Primary.count;
 
-    zClass_Node::SetContextRecursive(pickupObj, (zClass_NodePartial *)spawn, 0x240000);
+    zClass_Node::SetContextRecursive(
+        pickupObj,
+        (zClass_NodePartial *)spawn,
+        0x240000
+    );
     return spawn;
 }
 
 // Reimplements 0x41dcf0: Pickup::RegisterExistingObject
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RegisterExistingObject(int, zClass_NodePartial *pickupObj,
-                                                            int) {
+RECOIL_NOINLINE void RECOIL_FASTCALL RegisterExistingObject(
+    int,
+    zClass_NodePartial *pickupObj,
+    int
+) {
     zVec3 worldPos;
-    gwNode::GetWorldPosition(pickupObj, &worldPos);
+    gwNode::GetWorldPosition(
+        pickupObj,
+        &worldPos
+    );
 
     if (pickupObj->listCountA == 1 && pickupObj->listA[0] != 0) {
-        zClass_Class::RemoveChild(pickupObj->listA[0], pickupObj);
+        zClass_Class::RemoveChild(
+            pickupObj->listA[0],
+            pickupObj
+        );
     }
 
-    zClass_Class::gwNodeSetActive(pickupObj, 1);
-    zClass_Object3D::gwObject3DSetPosition(pickupObj, worldPos.x, worldPos.y, worldPos.z);
-    CreateSpawnDefAndLink(pickupObj, &worldPos, 0, 0, 1);
+    zClass_Class::gwNodeSetActive(
+        pickupObj,
+        1
+    );
+    zClass_Object3D::gwObject3DSetPosition(
+        pickupObj,
+        worldPos.x,
+        worldPos.y,
+        worldPos.z
+    );
+    CreateSpawnDefAndLink(
+        pickupObj,
+        &worldPos,
+        0,
+        0,
+        1
+    );
 }
 
 // Reimplements 0x41dc60: Pickup::SpawnWithAirdropChute
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL SpawnWithAirdropChute(int typeIndex, zVec3 *position) {
-    zClass_NodePartial *const pickupObj = CreateObjectInstance(typeIndex, 0);
+RECOIL_NOINLINE int RECOIL_FASTCALL SpawnWithAirdropChute(
+    int typeIndex,
+    zVec3 *position
+) {
+    zClass_NodePartial *const pickupObj = CreateObjectInstance(
+        typeIndex,
+        0
+    );
     if (pickupObj == 0) {
         return 0;
     }
 
-    SetVariantFromTerrain(pickupObj, position);
+    SetVariantFromTerrain(
+        pickupObj,
+        position
+    );
 
     zEffectAnimEntry *const chuteTemplate = zEffectAnim::FindEntryByName("chutes");
     zEffectAnimEntry *const chuteEntry = zEffectAnim::SetTransformRotAndVelocity_Thunk(
-        chuteTemplate, 0, position->x, position->y, position->z, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        0.0f);
+        chuteTemplate,
+        0,
+        position->x,
+        position->y,
+        position->z,
+        0.0f,
+        0.0f,
+        0.0f,
+        0.0f,
+        0.0f,
+        0.0f
+    );
     zClass_NodePartial *const chuteRoot = zEffectAnim::GetRootNodeOrNull(chuteEntry);
-    zClass_NodePartial *const attachNode = zClass_Class::FindSubNodeByName(chuteRoot, "airdroppup");
-    zClass_Class::AddChild(attachNode, pickupObj);
-    zClass_Class::gwNodeSetActive(pickupObj, 0);
+    zClass_NodePartial *const attachNode = zClass_Class::FindSubNodeByName(
+        chuteRoot,
+        "airdroppup"
+    );
+    zClass_Class::AddChild(
+        attachNode,
+        pickupObj
+    );
+    zClass_Class::gwNodeSetActive(
+        pickupObj,
+        0
+    );
     zEffectAnimEntry::SetOnStateDoneCallback(
-        chuteEntry, (void *)&RegisterExistingObject, pickupObj);
+        chuteEntry,
+        (void *)&RegisterExistingObject,
+        pickupObj
+    );
     return 1;
 }
 
 // Reimplements 0x41da20: Pickup::SpawnAt
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE PickupSpawnDef *RECOIL_FASTCALL SpawnAt(int typeIndex, int amount,
-                                                        zVec3 *position, zVec3 *rotation,
-    int spawnParam) {
-    zClass_NodePartial *const pickupObj = CreateObjectInstance(typeIndex, amount);
+RECOIL_NOINLINE PickupSpawnDef *RECOIL_FASTCALL SpawnAt(
+    int typeIndex,
+    int amount,
+    zVec3 *position,
+    zVec3 *rotation,
+    int spawnParam
+) {
+    zClass_NodePartial *const pickupObj = CreateObjectInstance(
+        typeIndex,
+        amount
+    );
     if (pickupObj == 0) {
         return 0;
     }
 
-    SetVariantFromTerrain(pickupObj, position);
-    zClass_Object3D::gwObject3DSetPosition(pickupObj, position->x, position->y, position->z);
+    SetVariantFromTerrain(
+        pickupObj,
+        position
+    );
+    zClass_Object3D::gwObject3DSetPosition(
+        pickupObj,
+        position->x,
+        position->y,
+        position->z
+    );
 
     if (rotation != 0) {
-        zClass_Object3D::gwObject3DSetRotation(pickupObj, rotation->x, rotation->y, rotation->z);
+        zClass_Object3D::gwObject3DSetRotation(
+            pickupObj,
+            rotation->x,
+            rotation->y,
+            rotation->z
+        );
     }
 
     PickupSpawnDef *const spawn =
-        CreateSpawnDefAndLink(pickupObj, position, rotation, spawnParam, 1);
-    strcpy(spawn->name, pickupObj->name);
+        CreateSpawnDefAndLink(
+            pickupObj,
+            position,
+            rotation,
+            spawnParam,
+            1
+        );
+    strcpy(
+        spawn->name,
+        pickupObj->name
+    );
     return spawn;
 }
 
 // Reimplements 0x41ea30: Pickup::SpawnAtCarrierNodeByName
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SpawnAtCarrierNodeByName(const char *carrierNodeName,
-                                                              int typeIndex, int amount) {
-    zClass_NodePartial *const carrierNode = zClass::FindByTypeAndName(6, carrierNodeName);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpawnAtCarrierNodeByName(
+    const char *carrierNodeName,
+    int typeIndex,
+    int amount
+) {
+    zClass_NodePartial *const carrierNode = zClass::FindByTypeAndName(
+        6,
+        carrierNodeName
+    );
     if (carrierNode == 0) {
         return;
     }
 
     zVec3 position;
-    gwNode::GetWorldPosition(carrierNode, &position);
+    gwNode::GetWorldPosition(
+        carrierNode,
+        &position
+    );
 
     zVec3 rotation;
-    zClass_Object3D::gwObject3DGetRotation(carrierNode, &rotation.x, &rotation.y, &rotation.z);
-    SpawnAt(typeIndex, amount, &position, &rotation, 0);
+    zClass_Object3D::gwObject3DGetRotation(
+        carrierNode,
+        &rotation.x,
+        &rotation.y,
+        &rotation.z
+    );
+    SpawnAt(
+        typeIndex,
+        amount,
+        &position,
+        &rotation,
+        0
+    );
 }
 
 // Reimplements 0x41dc30: Pickup::SpawnFromParsedZrdEntry
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE PickupSpawnDef *RECOIL_FASTCALL
-SpawnFromParsedZrdEntry(PickupParsedZrdEntry *entry) {
-    PickupSpawnDef *const spawn =
-        SpawnAt(entry->typeDesc->typeIndex, entry->amount, &entry->position, &entry->rotation,
-                entry->param);
+RECOIL_NOINLINE PickupSpawnDef *RECOIL_FASTCALL SpawnFromParsedZrdEntry(
+    PickupParsedZrdEntry *entry
+) {
+    PickupSpawnDef *const spawn = SpawnAt(
+        entry->typeDesc->typeIndex,
+        entry->amount,
+        &entry->position,
+        &entry->rotation,
+        entry->param
+    );
     if (spawn != 0) {
         spawn->respawnDelay = entry->respawnDelay;
     }
@@ -1046,26 +1400,38 @@ SpawnFromParsedZrdEntry(PickupParsedZrdEntry *entry) {
 
 // Reimplements 0x41e330: Pickup::SetVariantFromTerrain
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetVariantFromTerrain(zClass_NodePartial *pickupObj,
-                                                           zVec3 *position) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetVariantFromTerrain(
+    zClass_NodePartial *pickupObj,
+    zVec3 *position
+) {
     zTag4::Clear(&g_VariantTag_Current);
     g_Variant_CurrentTag = g_VariantTag_Current;
 
     PlayerProbeSampleCandidateBuffer candidateBuffer;
-    zClass_cls_di::BuildPickCandidateListBelowPoint(g_Pickup_SceneNode, &candidateBuffer,
-                                                    position->x, 500.0f, position->z);
+    zClass_cls_di::BuildPickCandidateListBelowPoint(
+        g_Pickup_SceneNode,
+        &candidateBuffer,
+        position->x,
+        500.0f,
+        position->z
+    );
 
     int bestCandidateIndex;
     int selectedImpactSlot;
     float taggedHeight;
-    Player::SelectProbeSampleHeightFromCandidates(&candidateBuffer, &bestCandidateIndex,
-                                                  position->y, 0.5f, 1, &selectedImpactSlot,
-                                                  &taggedHeight);
+    Player::SelectProbeSampleHeightFromCandidates(
+        &candidateBuffer,
+        &bestCandidateIndex,
+        position->y,
+        0.5f,
+        1,
+        &selectedImpactSlot,
+        &taggedHeight
+    );
 
     int variantTag = 255;
     if (candidateBuffer.candidateCount != 0) {
-        zClassDiPickCandidateEntry *const candidate =
-            &candidateBuffer.entries[bestCandidateIndex];
+        zClassDiPickCandidateEntry *const candidate = &candidateBuffer.entries[bestCandidateIndex];
         zClass_NodePartial *const worldChild = zClass_Class::gwNodeGetWorldChild(candidate->node);
         if (worldChild != 0) {
             variantTag = worldChild->nodeType;
@@ -1074,37 +1440,89 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetVariantFromTerrain(zClass_NodePartial *p
         }
     }
 
-    zClass_Class::gwNodeSetNodeType(pickupObj, variantTag);
-    zDi::SetVariantTagIfUnset((zDiPartial *)(pickupObj->userDataOrDiRef), variantTag);
+    zClass_Class::gwNodeSetNodeType(
+        pickupObj,
+        variantTag
+    );
+    zDi::SetVariantTagIfUnset(
+        (zDiPartial *)(pickupObj->userDataOrDiRef),
+        variantTag
+    );
 }
 
 // Reimplements 0x41e6c0: Pickup::RespawnSpawnDef
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RespawnSpawnDef(PickupSpawnDef *spawn) {
+RECOIL_NOINLINE void RECOIL_FASTCALL RespawnSpawnDef(
+    PickupSpawnDef *spawn
+) {
     zClass_NodePartial *const pickupObj = spawn->pickupObj;
 
-    zClass_Class::gwNodeSetActive(pickupObj, 1);
-    zClass_Class::gwNodeSetRaycastable(pickupObj, 1);
-    zClass_Class::gwNodeSetPickable(pickupObj, 1);
-    zClass_Class::gwNodeSetName(pickupObj, spawn->name);
+    zClass_Class::gwNodeSetActive(
+        pickupObj,
+        1
+    );
+    zClass_Class::gwNodeSetRaycastable(
+        pickupObj,
+        1
+    );
+    zClass_Class::gwNodeSetPickable(
+        pickupObj,
+        1
+    );
+    zClass_Class::gwNodeSetName(
+        pickupObj,
+        spawn->name
+    );
     zClass_Node::SetPickupFlagsRecursive(pickupObj);
 
-    zClass_Object3D::gwObject3DSetPosition(pickupObj, spawn->position.x, spawn->position.y,
-                                           spawn->position.z);
-    zClass_Object3D::gwObject3DSetRotation(pickupObj, spawn->rotation.x, spawn->rotation.y,
-                                           spawn->rotation.z);
-    zClass_Object3D::gwObject3DSetScale(pickupObj, 1.0f, 1.0f, 1.0f);
-    zClass_Object3D::gwObject3DSetLitFlag(pickupObj, 1);
-    zClass_Object3D::gwObject3DSetAlphaScale(pickupObj, 0.0f);
-    zClass_Object3D_ModelRefLerpQueue::Add(pickupObj, 0, 0, 0.0f, 1.0f, 7.0f);
+    zClass_Object3D::gwObject3DSetPosition(
+        pickupObj,
+        spawn->position.x,
+        spawn->position.y,
+        spawn->position.z
+    );
+    zClass_Object3D::gwObject3DSetRotation(
+        pickupObj,
+        spawn->rotation.x,
+        spawn->rotation.y,
+        spawn->rotation.z
+    );
+    zClass_Object3D::gwObject3DSetScale(
+        pickupObj,
+        1.0f,
+        1.0f,
+        1.0f
+    );
+    zClass_Object3D::gwObject3DSetLitFlag(
+        pickupObj,
+        1
+    );
+    zClass_Object3D::gwObject3DSetAlphaScale(
+        pickupObj,
+        0.0f
+    );
+    zClass_Object3D_ModelRefLerpQueue::Add(
+        pickupObj,
+        0,
+        0,
+        0.0f,
+        1.0f,
+        7.0f
+    );
 }
 
 // Reimplements 0x41cf50: Pickup::RemoveObject
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RemoveObject(zEffectAnimEntry *animEntry,
-                                                  zClass_NodePartial *pickupObj, int) {
+RECOIL_NOINLINE void RECOIL_FASTCALL RemoveObject(
+    zEffectAnimEntry *animEntry,
+    zClass_NodePartial *pickupObj,
+    int
+) {
     PickupSpawnDef *const spawn = (PickupSpawnDef *)(pickupObj->callbackContext);
-    zClass_Class::gwNodeSetActive(pickupObj, 0);
+    zClass_Class::gwNodeSetActive(
+        pickupObj,
+        0
+    );
 
     if (spawn != 0 && spawn->respawnDelay != 0.0f) {
         if (zOpt::GetNetworkEnabled() != 0 && animEntry != 0) {
@@ -1136,7 +1554,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RemoveObject(zEffectAnimEntry *animEntry,
             SendPkt11_Flag2Delta(spawn);
         }
 
-        zClass_Class::RemoveChild(pickupObj->listA[0], pickupObj);
+        zClass_Class::RemoveChild(
+            pickupObj->listA[0],
+            pickupObj
+        );
     }
 
     if (spawn != 0 && g_PickupSpawnList_Primary.count != 0) {
@@ -1174,8 +1595,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RemoveObject(zEffectAnimEntry *animEntry,
 
 // Reimplements 0x41d0c0: Pickup::OnCollected
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL OnCollected(zClass_NodePartial *hitNode,
-                                                zUtil_SaveGameState *saveState) {
+RECOIL_NOINLINE int RECOIL_FASTCALL OnCollected(
+    zClass_NodePartial *hitNode,
+    zUtil_SaveGameState *saveState
+) {
     zClass_NodePartial *pickupObj = hitNode;
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     if (ResolveOwnerFromBvolHit(&pickupObj) == 0) {
@@ -1184,37 +1607,78 @@ RECOIL_NOINLINE int RECOIL_FASTCALL OnCollected(zClass_NodePartial *hitNode,
 
     const int pickupTypeId = *(int *)(pickupObj->name + 0x1c);
     PickupSpawnDef *spawn = GetSpawnDefFromNode(pickupObj);
-    if (spawn == 0 || ApplyEffect(pickupTypeId, spawn->amount, saveState) == 0) {
+    if (spawn == 0 || ApplyEffect(
+        pickupTypeId,
+        spawn->amount,
+        saveState
+    ) == 0) {
         return 0;
     }
 
     zClass_Node::ClearPickupFlagsRecursive(pickupObj);
-    zClass_Class::gwNodeSetRaycastable(pickupObj, 0);
-    zClass_Class::gwNodeSetPickable(pickupObj, 0);
+    zClass_Class::gwNodeSetRaycastable(
+        pickupObj,
+        0
+    );
+    zClass_Class::gwNodeSetPickable(
+        pickupObj,
+        0
+    );
 
     PickupType *const pickupType = &g_PickupTypes[pickupTypeId];
     if (pickupType->weaponKeyName != 0) {
-        g_HudSensorTracker.ShowObjectivePickupInfo(1, 1, pickupType->optEntry);
+        g_HudSensorTracker.ShowObjectivePickupInfo(
+            1,
+            1,
+            pickupType->optEntry
+        );
         if (zOpt::GetNetworkEnabled() == 0) {
-            RemoveOtherSpawnsWithSameOptEntry(pickupType->optEntry, pickupObj);
+            RemoveOtherSpawnsWithSameOptEntry(
+                pickupType->optEntry,
+                pickupObj
+            );
         }
     }
 
     char pickupAnimName[8];
-    sprintf(pickupAnimName, "pu%03d", pickupTypeId);
+    sprintf(
+        pickupAnimName,
+        "pu%03d",
+        pickupTypeId
+    );
     zEffectAnimEntry *const animEntry = zEffectAnim::FindEntryByName(pickupAnimName);
     if (animEntry == 0) {
-        RemoveObject(0, pickupObj, 0);
+        RemoveObject(
+            0,
+            pickupObj,
+            0
+        );
         return 1;
     }
 
     zVec3 worldPosition;
-    gwNode::GetWorldPosition(pickupObj, &worldPosition);
+    gwNode::GetWorldPosition(
+        pickupObj,
+        &worldPosition
+    );
     pickupType->pickupSound->PlayA3DSimple(1.0f);
-    zClass_Class::gwNodeSetName(pickupObj, pickupAnimName);
+    zClass_Class::gwNodeSetName(
+        pickupObj,
+        pickupAnimName
+    );
     zEffectAnimEntry *const runtimeEntry = zEffectAnim::SetTransformRefs_Thunk(
-        animEntry, pickupObj, pickupObj, &worldPosition, playerState->rootNode, 0);
-    zEffectAnimEntry::SetOnStateDoneCallback(runtimeEntry, (void *)RemoveObject, pickupObj);
+        animEntry,
+        pickupObj,
+        pickupObj,
+        &worldPosition,
+        playerState->rootNode,
+        0
+    );
+    zEffectAnimEntry::SetOnStateDoneCallback(
+        runtimeEntry,
+        (void *)RemoveObject,
+        pickupObj
+    );
     GetSpawnDefFromNode(pickupObj)->refCount = 1;
     return 1;
 }
@@ -1224,7 +1688,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL OnCollected(zClass_NodePartial *hitNode,
 RECOIL_NOINLINE void RECOIL_CDECL ReconcilePrimaryAndNetworkCopySpawnLists() {
     PickupSpawnDef *primarySpawn = g_PickupSpawnList_Primary.head;
     while (primarySpawn != 0) {
-        if (SpawnListContainsPickupId(primarySpawn, &g_PickupSpawnList_NetworkCopy) == 0) {
+        if (SpawnListContainsPickupId(
+            primarySpawn,
+            &g_PickupSpawnList_NetworkCopy
+        ) == 0) {
             SendPkt11_CreateDelta(primarySpawn);
         }
 
@@ -1233,7 +1700,10 @@ RECOIL_NOINLINE void RECOIL_CDECL ReconcilePrimaryAndNetworkCopySpawnLists() {
 
     PickupSpawnDef *networkCopySpawn = g_PickupSpawnList_NetworkCopy.head;
     while (networkCopySpawn != 0) {
-        if (SpawnListContainsPickupId(networkCopySpawn, &g_PickupSpawnList_Primary) == 0) {
+        if (SpawnListContainsPickupId(
+            networkCopySpawn,
+            &g_PickupSpawnList_Primary
+        ) == 0) {
             SendPkt11_Flag2Delta(networkCopySpawn);
         }
 
@@ -1243,8 +1713,10 @@ RECOIL_NOINLINE void RECOIL_CDECL ReconcilePrimaryAndNetworkCopySpawnLists() {
 
 // Reimplements 0x41e900: Pickup::SpawnListContainsPickupId
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL SpawnListContainsPickupId(PickupSpawnDef *spawn,
-                                                              PickupSpawnList *list) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SpawnListContainsPickupId(
+    PickupSpawnDef *spawn,
+    PickupSpawnList *list
+) {
     PickupSpawnDef *entry = list->head;
     if (entry == 0) {
         return 0;
@@ -1269,7 +1741,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SpawnListContainsPickupId(PickupSpawnDef *sp
 
 // Reimplements 0x41cf30: Pickup::ResolveOwnerFromBvolHit
 // (src/Battlesport/pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ResolveOwnerFromBvolHit(zClass_NodePartial **nodeInOut) {
+RECOIL_NOINLINE int RECOIL_FASTCALL ResolveOwnerFromBvolHit(
+    zClass_NodePartial **nodeInOut
+) {
     zClass_NodePartial *const node = *nodeInOut;
     if (node == 0 || (node->flags & 0x40000) == 0) {
         return 0;
@@ -1282,8 +1756,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ResolveOwnerFromBvolHit(zClass_NodePartial *
 }
 
 // Reimplements 0x41e930: Pickup::FindSpawnByPickupId (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE PickupSpawnDef *RECOIL_FASTCALL FindSpawnByPickupId(int pickupId,
-                                                                    PickupSpawnList *list) {
+RECOIL_NOINLINE PickupSpawnDef *RECOIL_FASTCALL FindSpawnByPickupId(
+    int pickupId,
+    PickupSpawnList *list
+) {
     PickupSpawnDef *spawn = list->head;
     while (spawn != 0) {
         if (spawn->pickupId == pickupId) {
@@ -1297,21 +1773,23 @@ RECOIL_NOINLINE PickupSpawnDef *RECOIL_FASTCALL FindSpawnByPickupId(int pickupId
 }
 
 // Reimplements 0x41e950: Pickup::GetSpawnDefFromNode (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE PickupSpawnDef *RECOIL_FASTCALL
-GetSpawnDefFromNode(zClass_NodePartial *pickupNode) {
+RECOIL_NOINLINE PickupSpawnDef *RECOIL_FASTCALL GetSpawnDefFromNode(
+    zClass_NodePartial *pickupNode
+) {
     return (PickupSpawnDef *)(pickupNode->callbackContext);
 }
 
 // Reimplements 0x41ea00: Pickup::FindOptMetaImageByOptEntry
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL
-FindOptMetaImageByOptEntry(OptCatalogEntryDef *optEntry) {
+RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL FindOptMetaImageByOptEntry(
+    OptCatalogEntryDef *optEntry
+) {
     {
-    for (int index = 0x11; index <= 0x21; ++index) {
-        if (g_PickupTypes[index].optEntry == optEntry) {
-            return g_PickupTypes[index].optMetaImage;
+        for (int index = 0x11; index <= 0x21; ++index) {
+            if (g_PickupTypes[index].optEntry == optEntry) {
+                return g_PickupTypes[index].optMetaImage;
+            }
         }
-    }
     }
 
     return 0;
@@ -1319,16 +1797,20 @@ FindOptMetaImageByOptEntry(OptCatalogEntryDef *optEntry) {
 
 // Reimplements 0x41e980: Pickup::FindDroppableTypeForPlayerCurrentWeapon
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE PickupType *RECOIL_FASTCALL
-FindDroppableTypeForPlayerCurrentWeapon(zUtil_SaveGameState *saveState) {
+RECOIL_NOINLINE PickupType *RECOIL_FASTCALL FindDroppableTypeForPlayerCurrentWeapon(
+    zUtil_SaveGameState *saveState
+) {
     const char *const keyName =
         saveState->playerState->activeAltGunController->optCatalogEntry->keyName;
     {
-    for (int index = 0x11; index <= 0x21; ++index) {
-        if (strcmp(keyName, g_PickupTypes[index].weaponKeyName) == 0) {
-            return &g_PickupTypes[index];
+        for (int index = 0x11; index <= 0x21; ++index) {
+            if (strcmp(
+                keyName,
+                g_PickupTypes[index].weaponKeyName
+            ) == 0) {
+                return &g_PickupTypes[index];
+            }
         }
-    }
     }
 
     return &g_PickupTypes[0];
@@ -1336,14 +1818,18 @@ FindDroppableTypeForPlayerCurrentWeapon(zUtil_SaveGameState *saveState) {
 
 // Reimplements 0x41e2f0: Pickup::RemoveOtherSpawnsWithSameOptEntry
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL
-RemoveOtherSpawnsWithSameOptEntry(OptCatalogEntryDef *optEntry,
-                                  zClass_NodePartial *keepPickupObj) {
+RECOIL_NOINLINE void RECOIL_FASTCALL RemoveOtherSpawnsWithSameOptEntry(
+    OptCatalogEntryDef *optEntry,
+    zClass_NodePartial *keepPickupObj
+) {
     PickupSpawnDef *spawn = g_PickupSpawnList_Primary.head;
     while (spawn != 0) {
         PickupSpawnDef *const next = spawn->next;
         if (spawn->pickupObj != keepPickupObj && spawn->pickupType->optEntry == optEntry) {
-            PickupSpawnList::RemoveAndFreeNode(spawn, &g_PickupSpawnList_Primary);
+            PickupSpawnList::RemoveAndFreeNode(
+                spawn,
+                &g_PickupSpawnList_Primary
+            );
         }
         spawn = next;
     }
@@ -1351,10 +1837,15 @@ RemoveOtherSpawnsWithSameOptEntry(OptCatalogEntryDef *optEntry,
 
 // Reimplements 0x41d650: Pickup::GrantAmmoOrWeapon
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-GrantAmmoOrWeapon(PickupType *pickupType, char *messageBuffer, zUtil_SaveGameState *saveState,
-                  int weaponBankIndex, int weaponSideIndex, int pairedWeaponSideIndex,
-                  int overrideAmount) {
+RECOIL_NOINLINE int RECOIL_FASTCALL GrantAmmoOrWeapon(
+    PickupType *pickupType,
+    char *messageBuffer,
+    zUtil_SaveGameState *saveState,
+    int weaponBankIndex,
+    int weaponSideIndex,
+    int pairedWeaponSideIndex,
+    int overrideAmount
+) {
     const float kUnlimitedAmmoSentinel = 123456792.0f;
 
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -1367,8 +1858,12 @@ GrantAmmoOrWeapon(PickupType *pickupType, char *messageBuffer, zUtil_SaveGameSta
     const float maxAmount = controller->optCatalogEntry->ammoOrChargeMax;
     if (controller->ammoOrCharge != kUnlimitedAmmoSentinel &&
         controller->ammoOrCharge >= maxAmount && pickupType->weaponKeyName == 0) {
-        zLoc::FormatMessage(messageBuffer, 64, 0x237,
-                            zLoc::GetMessageString(pickupType->msgIdOrClassId));
+        zLoc::FormatMessage(
+            messageBuffer,
+            64,
+            0x237,
+            zLoc::GetMessageString(pickupType->msgIdOrClassId)
+        );
         return 0;
     }
 
@@ -1381,19 +1876,26 @@ GrantAmmoOrWeapon(PickupType *pickupType, char *messageBuffer, zUtil_SaveGameSta
         if ((controller->flags & 4) == 0) {
             controller->flags |= 4;
             ++g_HudSensorTracker.primaryGunDispatchCount;
-            if ((pairedController->flags & 4) != 0 &&
-                pairedController->ammoOrCharge != 0.0f) {
-                HudUiMessage::ApplySideImageSwap(weaponBankIndex, weaponSideIndex);
+            if ((pairedController->flags & 4) != 0 && pairedController->ammoOrCharge != 0.0f) {
+                HudUiMessage::ApplySideImageSwap(
+                    weaponBankIndex,
+                    weaponSideIndex
+                );
                 updateValueText = 0;
             } else {
-                HudUiMessage::SelectVariantDisplay(weaponBankIndex, weaponSideIndex);
+                HudUiMessage::SelectVariantDisplay(
+                    weaponBankIndex,
+                    weaponSideIndex
+                );
                 bank->selectedSide = weaponSideIndex;
             }
         }
     } else if (controller->ammoOrCharge == 0.0f) {
         if (playerState->activeAltGunController == controller) {
-            HudUiMessage::SelectVariantDisplay(controller->weaponBankIndex,
-                                               controller->weaponSideIndex + 3);
+            HudUiMessage::SelectVariantDisplay(
+                controller->weaponBankIndex,
+                controller->weaponSideIndex + 3
+            );
         }
 
         if (pairedController->ammoOrCharge == 0.0f) {
@@ -1408,17 +1910,29 @@ GrantAmmoOrWeapon(PickupType *pickupType, char *messageBuffer, zUtil_SaveGameSta
         }
 
         if (updateValueText != 0) {
-            HudUiMessage::SetValueIfOwnerMatches(weaponBankIndex, weaponSideIndex,
-                                                 controller->ammoOrCharge);
+            HudUiMessage::SetValueIfOwnerMatches(
+                weaponBankIndex,
+                weaponSideIndex,
+                controller->ammoOrCharge
+            );
         }
     }
 
     if (overrideAmount == 1) {
-        zLoc::FormatMessage(messageBuffer, 64, 0x23f,
-                            zLoc::GetMessageString(pickupType->msgIdOrClassId));
+        zLoc::FormatMessage(
+            messageBuffer,
+            64,
+            0x23f,
+            zLoc::GetMessageString(pickupType->msgIdOrClassId)
+        );
     } else {
-        zLoc::FormatMessage(messageBuffer, 64, 0x240, overrideAmount,
-                            zLoc::GetMessageString(pickupType->msgIdOrClassId));
+        zLoc::FormatMessage(
+            messageBuffer,
+            64,
+            0x240,
+            overrideAmount,
+            zLoc::GetMessageString(pickupType->msgIdOrClassId)
+        );
     }
 
     if (pickupType->weaponKeyName != 0) {
@@ -1437,8 +1951,11 @@ GrantAmmoOrWeapon(PickupType *pickupType, char *messageBuffer, zUtil_SaveGameSta
 
 // Reimplements 0x41d220: Pickup::ApplyEffect
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-ApplyEffect(int pickupTypeId, int overrideAmount, zUtil_SaveGameState *saveState) {
+RECOIL_NOINLINE int RECOIL_FASTCALL ApplyEffect(
+    int pickupTypeId,
+    int overrideAmount,
+    zUtil_SaveGameState *saveState
+) {
     const float kUnlimitedAmmoSentinel = 123456792.0f;
     const float kStatusPickupFullThreshold = 0.99000001f;
 
@@ -1448,7 +1965,11 @@ ApplyEffect(int pickupTypeId, int overrideAmount, zUtil_SaveGameState *saveState
     char message[64];
 
     if (pickupTypeId == 0x385) {
-        zLoc::FormatMessage(message, sizeof(message), 0x243);
+        zLoc::FormatMessage(
+            message,
+            sizeof(message),
+            0x243
+        );
         HudUiMessage::ClearDisplay(playerState->activeAltGunController->weaponBankIndex);
         HudUiMessage::ClearDisplay(playerState->activePrimaryGunController->weaponBankIndex);
 
@@ -1459,37 +1980,65 @@ ApplyEffect(int pickupTypeId, int overrideAmount, zUtil_SaveGameState *saveState
             bank.controllerB.ammoOrCharge = kUnlimitedAmmoSentinel;
             bank.controllerB.flags |= 4;
             bank.selectedSide = 0;
-            HudUiMessage::ApplySideImageSwap(bankIndex, 1);
-            HudUiMessage::SetValueIfOwnerMatches(bankIndex, 0, kUnlimitedAmmoSentinel);
-            HudUiMessage::SelectVariantDisplay(bankIndex, 0);
+            HudUiMessage::ApplySideImageSwap(
+                bankIndex,
+                1
+            );
+            HudUiMessage::SetValueIfOwnerMatches(
+                bankIndex,
+                0,
+                kUnlimitedAmmoSentinel
+            );
+            HudUiMessage::SelectVariantDisplay(
+                bankIndex,
+                0
+            );
         }
 
         zUtil_PlayerStateStorage *const displayPlayerState =
-            (zUtil_PlayerStateStorage *)(
-                (void *)(g_GameStateOrMapTable->playerState));
+            (zUtil_PlayerStateStorage *)((void *)(g_GameStateOrMapTable->playerState));
         PlayerGunFireController *activeController = displayPlayerState->activeAltGunController;
         HudUiMessage::UpdateSelectedWeaponDisplay(
-            activeController->weaponBankIndex, activeController->weaponSideIndex,
-            activeController->ammoOrCharge);
+            activeController->weaponBankIndex,
+            activeController->weaponSideIndex,
+            activeController->ammoOrCharge
+        );
         activeController = displayPlayerState->activePrimaryGunController;
         HudUiMessage::UpdateSelectedWeaponDisplay(
-            activeController->weaponBankIndex, activeController->weaponSideIndex,
-            activeController->ammoOrCharge);
+            activeController->weaponBankIndex,
+            activeController->weaponSideIndex,
+            activeController->ammoOrCharge
+        );
     } else if (pickupTypeId == 0x386) {
-        sprintf(message, zLoc::GetMessageString(0x20d));
-        Player::UpdateStatusMeter(saveState, 0, 0.0f);
+        sprintf(
+            message,
+            zLoc::GetMessageString(0x20d)
+        );
+        Player::UpdateStatusMeter(
+            saveState,
+            0,
+            0.0f
+        );
     } else if (pickupTypeId == 0x387) {
-        zLoc::FormatMessage(message, sizeof(message), 0x247);
+        zLoc::FormatMessage(
+            message,
+            sizeof(message),
+            0x247
+        );
         playerState->nanitePanelLevel = 123456789;
         HudUiMgr::SetNanitePanelCount(3);
     } else if (pickupTypeId < 0 || pickupTypeId > 0x27) {
-        zError::ReportOld(0x200, "D:\\Proj\\Battlesport\\pickup.cpp", 0x370,
-                          "Unhandled Pickup Type: %d", pickupTypeId);
+        zError::ReportOld(
+            0x200,
+            "D:\\Proj\\Battlesport\\pickup.cpp",
+            0x370,
+            "Unhandled Pickup Type: %d",
+            pickupTypeId
+        );
         return 0;
     } else {
         const int normalizedWeaponId =
-            pickupTypeId >= 0x11 && pickupTypeId <= 0x21 ? pickupTypeId - 0x11
-                                                         : pickupTypeId;
+            pickupTypeId >= 0x11 && pickupTypeId <= 0x21 ? pickupTypeId - 0x11 : pickupTypeId;
         if (normalizedWeaponId >= 0 && normalizedWeaponId <= 0x10) {
             int weaponBankIndex;
             int weaponSideIndex;
@@ -1502,8 +2051,14 @@ ApplyEffect(int pickupTypeId, int overrideAmount, zUtil_SaveGameState *saveState
             }
 
             result = GrantAmmoOrWeapon(
-                &g_PickupTypes[pickupTypeId], message, saveState, weaponBankIndex,
-                weaponSideIndex, weaponSideIndex == 0 ? 1 : 0, overrideAmount);
+                &g_PickupTypes[pickupTypeId],
+                message,
+                saveState,
+                weaponBankIndex,
+                weaponSideIndex,
+                weaponSideIndex == 0 ? 1 : 0,
+                overrideAmount
+            );
         } else {
             switch (pickupTypeId) {
             case 0x22:
@@ -1511,19 +2066,29 @@ ApplyEffect(int pickupTypeId, int overrideAmount, zUtil_SaveGameState *saveState
                 if (pickupTypeId == 0x23) {
                     overrideAmount = (int)(masterCommonData->maxHealth);
                 }
-                zLoc::FormatMessage(message, sizeof(message),
-                                    g_PickupTypes[pickupTypeId].msgIdOrClassId);
+                zLoc::FormatMessage(
+                    message,
+                    sizeof(message),
+                    g_PickupTypes[pickupTypeId].msgIdOrClassId
+                );
                 if (masterCommonData->invMaxHealth * playerState->statusMeterValue >
                     kStatusPickupFullThreshold) {
                     result = 0;
                 } else {
-                    result = Player::UpdateStatusMeter(saveState, 1,
-                                                       (float)(overrideAmount));
+                    result = Player::UpdateStatusMeter(
+                        saveState,
+                        1,
+                        (float)(overrideAmount)
+                    );
                 }
                 break;
 
             case 0x24:
-                zLoc::FormatMessage(message, sizeof(message), 0x20d);
+                zLoc::FormatMessage(
+                    message,
+                    sizeof(message),
+                    0x20d
+                );
                 if (playerState->nanitePanelLevel >= 3) {
                     result = 0;
                 } else {
@@ -1533,39 +2098,70 @@ ApplyEffect(int pickupTypeId, int overrideAmount, zUtil_SaveGameState *saveState
                 break;
 
             case 0x25:
-                zLoc::FormatMessage(message, sizeof(message), 0x241);
-                HudUiMgr::SetModeCounterState(1, 1);
+                zLoc::FormatMessage(
+                    message,
+                    sizeof(message),
+                    0x241
+                );
+                HudUiMgr::SetModeCounterState(
+                    1,
+                    1
+                );
                 playerState->amphibUnlocked = 1;
                 break;
 
             case 0x26:
-                zLoc::FormatMessage(message, sizeof(message), 0x242);
-                HudUiMgr::SetModeCounterState(2, 1);
+                zLoc::FormatMessage(
+                    message,
+                    sizeof(message),
+                    0x242
+                );
+                HudUiMgr::SetModeCounterState(
+                    2,
+                    1
+                );
                 playerState->hoverUnlocked = 1;
                 break;
 
             case 0x27:
-                zLoc::FormatMessage(message, sizeof(message), 0x245);
-                HudUiMgr::SetModeCounterState(3, 1);
+                zLoc::FormatMessage(
+                    message,
+                    sizeof(message),
+                    0x245
+                );
+                HudUiMgr::SetModeCounterState(
+                    3,
+                    1
+                );
                 playerState->subUnlocked = 1;
                 break;
 
             default:
-                zError::ReportOld(0x200, "D:\\Proj\\Battlesport\\pickup.cpp", 0x370,
-                                  "Unhandled Pickup Type: %d", pickupTypeId);
+                zError::ReportOld(
+                    0x200,
+                    "D:\\Proj\\Battlesport\\pickup.cpp",
+                    0x370,
+                    "Unhandled Pickup Type: %d",
+                    pickupTypeId
+                );
                 return 0;
             }
         }
     }
 
-    HudUi::ShowTopMessageLine(message, 5.0f);
+    HudUi::ShowTopMessageLine(
+        message,
+        5.0f
+    );
     return result;
 }
 
 // Reimplements 0x41e780: Pickup::ArchiveWriteAll
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ArchiveWriteAll(zZbdSectionCallbackCtx *callbackCtx,
-                                                    void *userData) {
+RECOIL_NOINLINE int RECOIL_FASTCALL ArchiveWriteAll(
+    zZbdSectionCallbackCtx *callbackCtx,
+    void *userData
+) {
     (void)userData;
 
     int result = 1;
@@ -1583,8 +2179,13 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ArchiveWriteAll(zZbdSectionCallbackCtx *call
             record.rotation = spawn->rotation;
             record.spawnParam = spawn->spawnParam;
             record.respawnDelay = spawn->respawnDelay;
-            result = zUtil_ZAR::WriteSectionBlob(callbackCtx, pickupObj->name, &record,
-                                                 sizeof(record));
+            result =
+                zUtil_ZAR::WriteSectionBlob(
+                    callbackCtx,
+                    pickupObj->name,
+                    &record,
+                    sizeof(record)
+                );
         }
 
         spawn = spawn->next;
@@ -1596,9 +2197,13 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ArchiveWriteAll(zZbdSectionCallbackCtx *call
 
 // Reimplements 0x41e840: Pickup::ArchiveReadRecord
 // (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ArchiveReadRecord(zZbdSectionCallbackCtx *callbackCtx,
-                                                       const char *sectionToken, void *buffer,
-                                                       unsigned int size, void *userData) {
+RECOIL_NOINLINE void RECOIL_FASTCALL ArchiveReadRecord(
+    zZbdSectionCallbackCtx *callbackCtx,
+    const char *sectionToken,
+    void *buffer,
+    unsigned int size,
+    void *userData
+) {
     (void)callbackCtx;
     (void)sectionToken;
     (void)size;
@@ -1612,17 +2217,22 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ArchiveReadRecord(zZbdSectionCallbackCtx *c
         }
     }
 
-    PickupSpawnDef *const spawn = SpawnAt(record->typeIndex, record->amount,
-                                          (zVec3 *)(&record->position),
-                                          (zVec3 *)(&record->rotation),
-                                          record->spawnParam);
+    PickupSpawnDef *const spawn = SpawnAt(
+        record->typeIndex,
+        record->amount,
+        (zVec3 *)(&record->position),
+        (zVec3 *)(&record->rotation),
+        record->spawnParam
+    );
     if (spawn != 0) {
         spawn->respawnDelay = record->respawnDelay;
     }
 }
 
 // Reimplements 0x41e960: Pickup::SetNextPickupId (D:\Proj\Battlesport\pickup.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL SetNextPickupId(int nextPickupId) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SetNextPickupId(
+    int nextPickupId
+) {
     const int oldNextPickupId = g_NextPickupId;
     g_NextPickupId = nextPickupId;
     return oldNextPickupId;
@@ -1645,14 +2255,14 @@ namespace PickupTypeTable {
 // Reimplements 0x41cca0: PickupTypeTable::FreeOptMeta
 RECOIL_NOINLINE void RECOIL_CDECL FreeOptMeta() {
     {
-    for (int index = 0; index < 40; ++index) {
-        PickupType &pickupType = g_PickupTypes[index];
-        zVidImagePartial *const image = pickupType.optMetaImage;
-        if (image != 0) {
-            zVid_Image::ReleaseIfNotDefault(image);
-            pickupType.optMetaImage = 0;
+        for (int index = 0; index < 40; ++index) {
+            PickupType &pickupType = g_PickupTypes[index];
+            zVidImagePartial *const image = pickupType.optMetaImage;
+            if (image != 0) {
+                zVid_Image::ReleaseIfNotDefault(image);
+                pickupType.optMetaImage = 0;
+            }
         }
-    }
     }
 }
 } // namespace PickupTypeTable

@@ -65,7 +65,9 @@ extern int g_zMath_FogTableDirty;              /* 0x4E0E8C: rebuild flag */
  * If length is zero, vector is unchanged.
  * NOTE: Located outside main zMath range (early .text).
  * ================================================================== */
-float __cdecl zMath_Vec3_Normalize(float *v) {
+float __cdecl zMath_Vec3_Normalize(
+    float *v
+) {
     float len = sqrtf(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
     if (len != 0.0f) {
         float inv = 1.0f / len;
@@ -80,7 +82,10 @@ float __cdecl zMath_Vec3_Normalize(float *v) {
  * zMath_Vec3_Distance -- 0x4726D0
  * Returns the distance between two 3D points.
  * ================================================================== */
-float __cdecl zMath_Vec3_Distance(const float *a, const float *b) {
+float __cdecl zMath_Vec3_Distance(
+    const float *a,
+    const float *b
+) {
     float dx = a[0] - b[0];
     float dy = a[1] - b[1];
     float dz = a[2] - b[2];
@@ -91,7 +96,10 @@ float __cdecl zMath_Vec3_Distance(const float *a, const float *b) {
  * zMath_Vec3_DistSqXZ -- 0x472730
  * Returns the squared distance in the XZ plane (ignores Y).
  * ================================================================== */
-float __cdecl zMath_Vec3_DistSqXZ(const float *a, const float *b) {
+float __cdecl zMath_Vec3_DistSqXZ(
+    const float *a,
+    const float *b
+) {
     float dx = a[0] - b[0];
     float dz = a[2] - b[2];
     return dx * dx + dz * dz;
@@ -101,7 +109,12 @@ float __cdecl zMath_Vec3_DistSqXZ(const float *a, const float *b) {
  * zMath_Vec3_ScaleAdd -- 0x472770
  * out = a + b * t
  * ================================================================== */
-void __cdecl zMath_Vec3_ScaleAdd(float *out, const float *a, const float *b, float t) {
+void __cdecl zMath_Vec3_ScaleAdd(
+    float *out,
+    const float *a,
+    const float *b,
+    float t
+) {
     out[0] = a[0] + b[0] * t;
     out[1] = a[1] + b[1] * t;
     out[2] = a[2] + b[2] * t;
@@ -111,7 +124,11 @@ void __cdecl zMath_Vec3_ScaleAdd(float *out, const float *a, const float *b, flo
  * zMath_Vec3_DivScalar -- 0x4727A0
  * out = v / s, with zero-division protection (returns unchanged).
  * ================================================================== */
-void __cdecl zMath_Vec3_DivScalar(float *out, const float *v, float s) {
+void __cdecl zMath_Vec3_DivScalar(
+    float *out,
+    const float *v,
+    float s
+) {
     if (s == 0.0f) {
         out[0] = v[0];
         out[1] = v[1];
@@ -128,7 +145,9 @@ void __cdecl zMath_Vec3_DivScalar(float *out, const float *v, float s) {
  * zMath_Vec3_NormalizeXZ -- 0x4727F0
  * Normalizes a Vec3 in the XZ plane only (Y set to 0).
  * ================================================================== */
-void __cdecl zMath_Vec3_NormalizeXZ(float *v) {
+void __cdecl zMath_Vec3_NormalizeXZ(
+    float *v
+) {
     float len = sqrtf(v[0] * v[0] + v[2] * v[2]);
     if (len != 0.0f) {
         float inv = 1.0f / len;
@@ -141,9 +160,16 @@ void __cdecl zMath_Vec3_NormalizeXZ(float *v) {
 /* ==================================================================
  * zMath_Vec3_Reflect -- 0x472860
  * Reflects vector 'dir' off a surface with normal 'n'.
- * out = dir - 2 * dot(dir, n) * n
+ * out = dir - 2 * dot(
+     dir,
+     n
+ ) * n
  * ================================================================== */
-void __cdecl zMath_Vec3_Reflect(float *out, const float *dir, const float *n) {
+void __cdecl zMath_Vec3_Reflect(
+    float *out,
+    const float *dir,
+    const float *n
+) {
     float dot = dir[0] * n[0] + dir[1] * n[1] + dir[2] * n[2];
     float factor = 2.0f * dot;
     out[0] = dir[0] - factor * n[0];
@@ -155,7 +181,12 @@ void __cdecl zMath_Vec3_Reflect(float *out, const float *dir, const float *n) {
  * zMath_Vec3_Lerp -- 0x472960
  * out = a + (b - a) * t  (linear interpolation)
  * ================================================================== */
-void __cdecl zMath_Vec3_Lerp(float *out, const float *a, const float *b, float t) {
+void __cdecl zMath_Vec3_Lerp(
+    float *out,
+    const float *a,
+    const float *b,
+    float t
+) {
     out[0] = a[0] + (b[0] - a[0]) * t;
     out[1] = a[1] + (b[1] - a[1]) * t;
     out[2] = a[2] + (b[2] - a[2]) * t;
@@ -165,7 +196,11 @@ void __cdecl zMath_Vec3_Lerp(float *out, const float *a, const float *b, float t
  * zMath_Vec3_DirectionTo -- 0x4729B0
  * Computes normalized direction from 'from' to 'to'.
  * ================================================================== */
-void __cdecl zMath_Vec3_DirectionTo(float *out, const float *from, const float *to) {
+void __cdecl zMath_Vec3_DirectionTo(
+    float *out,
+    const float *from,
+    const float *to
+) {
     out[0] = to[0] - from[0];
     out[1] = to[1] - from[1];
     out[2] = to[2] - from[2];
@@ -176,7 +211,12 @@ void __cdecl zMath_Vec3_DirectionTo(float *out, const float *from, const float *
  * zMath_Vec3_LerpNormalize -- 0x4729F0
  * Lerp then normalize. Used for blending directions.
  * ================================================================== */
-void __cdecl zMath_Vec3_LerpNormalize(float *out, const float *a, const float *b, float t) {
+void __cdecl zMath_Vec3_LerpNormalize(
+    float *out,
+    const float *a,
+    const float *b,
+    float t
+) {
     out[0] = a[0] + (b[0] - a[0]) * t;
     out[1] = a[1] + (b[1] - a[1]) * t;
     out[2] = a[2] + (b[2] - a[2]) * t;
@@ -189,12 +229,22 @@ void __cdecl zMath_Vec3_LerpNormalize(float *out, const float *a, const float *b
  * Falls back to lerp+normalize when vectors are nearly parallel
  * (dot > +/-SLERP_THRESHOLD).
  * ================================================================== */
-void __cdecl zMath_Vec3_Slerp(float *out, const float *a, const float *b, float t) {
+void __cdecl zMath_Vec3_Slerp(
+    float *out,
+    const float *a,
+    const float *b,
+    float t
+) {
     float dot = a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 
     /* Clamp and handle near-parallel case */
     if (dot > SLERP_THRESHOLD || dot < -SLERP_THRESHOLD) {
-        zMath_Vec3_LerpNormalize(out, a, b, t);
+        zMath_Vec3_LerpNormalize(
+            out,
+            a,
+            b,
+            t
+        );
         return;
     }
 
@@ -210,9 +260,16 @@ void __cdecl zMath_Vec3_Slerp(float *out, const float *a, const float *b, float 
 
 /* ==================================================================
  * zMath_Vec3_Perp2D -- 0x472CC0
- * Returns 2D perpendicular in the XY plane: out = (-v.y, v.x, 0).
+ * Returns 2D perpendicular in the XY plane: out =(
+     -v.y,
+     v.x,
+     0
+ ).
  * ================================================================== */
-void __cdecl zMath_Vec3_Perp2D(float *out, const float *v) {
+void __cdecl zMath_Vec3_Perp2D(
+    float *out,
+    const float *v
+) {
     out[0] = -v[1];
     out[1] = v[0];
     out[2] = 0.0f;
@@ -220,9 +277,16 @@ void __cdecl zMath_Vec3_Perp2D(float *out, const float *v) {
 
 /* ==================================================================
  * zMath_Vec3_PerpXZ -- 0x4745C0
- * Returns perpendicular in the XZ plane: out = (-v.z, 0, v.x).
+ * Returns perpendicular in the XZ plane: out =(
+     -v.z,
+     0,
+     v.x
+ ).
  * ================================================================== */
-void __cdecl zMath_Vec3_PerpXZ(float *out, const float *v) {
+void __cdecl zMath_Vec3_PerpXZ(
+    float *out,
+    const float *v
+) {
     out[0] = -v[2];
     out[1] = 0.0f;
     out[2] = v[0];
@@ -232,8 +296,13 @@ void __cdecl zMath_Vec3_PerpXZ(float *out, const float *v) {
  * zMath_Vec3_ScaleAddBatch -- 0x4744F0
  * Batch version: out[i] = a[i] + b[i] * t, for 'count' Vec3s.
  * ================================================================== */
-void __cdecl zMath_Vec3_ScaleAddBatch(float *out, const float *a, const float *b, float t,
-                                      int count) {
+void __cdecl zMath_Vec3_ScaleAddBatch(
+    float *out,
+    const float *a,
+    const float *b,
+    float t,
+    int count
+) {
     for (int i = 0; i < count; i++) {
         out[0] = a[0] + b[0] * t;
         out[1] = a[1] + b[1] * t;
@@ -251,7 +320,11 @@ void __cdecl zMath_Vec3_ScaleAddBatch(float *out, const float *a, const float *b
  * out.y = in.y
  * out.z = -sin*in.x + cos*in.z
  * ================================================================== */
-void __cdecl zMath_Vec3_RotateAroundY(float *out, const float *in, float angle) {
+void __cdecl zMath_Vec3_RotateAroundY(
+    float *out,
+    const float *in,
+    float angle
+) {
     float c = cosf(angle);
     float s = sinf(angle);
     out[0] = c * in[0] + s * in[2];
@@ -266,7 +339,11 @@ void __cdecl zMath_Vec3_RotateAroundY(float *out, const float *in, float angle) 
  * out.y = cos*in.y - sin*in.z
  * out.z = sin*in.y + cos*in.z
  * ================================================================== */
-void __cdecl zMath_Vec3_RotateAroundX(float *out, const float *in, float angle) {
+void __cdecl zMath_Vec3_RotateAroundX(
+    float *out,
+    const float *in,
+    float angle
+) {
     float c = cosf(angle);
     float s = sinf(angle);
     out[0] = in[0];
@@ -281,13 +358,23 @@ void __cdecl zMath_Vec3_RotateAroundX(float *out, const float *in, float angle) 
  * out[1] = yaw   = atan2(dz, dx)
  * out[2] = 0 (no roll)
  * ================================================================== */
-void __cdecl zMath_Vec3_DirectionAngles(const float *from, const float *to, float *out) {
+void __cdecl zMath_Vec3_DirectionAngles(
+    const float *from,
+    const float *to,
+    float *out
+) {
     float dx = from[0] - to[0];
     float dy = to[1] - from[1];
     float dz = from[2] - to[2];
 
-    out[1] = atan2f(dz, dx);
-    out[0] = atan2f(sqrtf(dx * dx + dz * dz), dy);
+    out[1] = atan2f(
+        dz,
+        dx
+    );
+    out[0] = atan2f(
+        sqrtf(dx * dx + dz * dz),
+        dy
+    );
     out[2] = 0.0f;
 }
 
@@ -296,11 +383,17 @@ void __cdecl zMath_Vec3_DirectionAngles(const float *from, const float *to, floa
  * Returns the elevation/pitch angle from 'from' toward 'to'.
  * = atan2(horizontalDist, dy)
  * ================================================================== */
-float __cdecl zMath_Vec3_ElevationAngle(const float *from, const float *to) {
+float __cdecl zMath_Vec3_ElevationAngle(
+    const float *from,
+    const float *to
+) {
     float dx = from[0] - to[0];
     float dz = from[2] - to[2];
     float dy = to[1] - from[1];
-    return atan2f(sqrtf(dx * dx + dz * dz), dy);
+    return atan2f(
+        sqrtf(dx * dx + dz * dz),
+        dy
+    );
 }
 
 /* ==================================================================
@@ -312,7 +405,9 @@ float __cdecl zMath_Vec3_ElevationAngle(const float *from, const float *to) {
  * Handles floating-point math errors (set via _matherr).
  * In retail build this is a no-op/stub.
  * ================================================================== */
-int __cdecl zMath_Main_MathErrHandler(void *exception) {
+int __cdecl zMath_Main_MathErrHandler(
+    void *exception
+) {
     /* Retail: stub/no-op */
     return 0;
 }
@@ -325,14 +420,23 @@ int __cdecl zMath_Main_MathErrHandler(void *exception) {
  * zMath_GetProjectedScreenSize -- 0x472ED0
  * Returns the projected screen-space size of an object at distance z.
  * ================================================================== */
-float __cdecl zMath_GetProjectedScreenSize(float worldSize, float z);
+float __cdecl zMath_GetProjectedScreenSize(
+    float worldSize,
+    float z
+);
 
 /* ==================================================================
  * zMath_MatStack_Push -- 0x472EF0
  * Pushes the current matrix, copies it to the new top of stack.
  * ================================================================== */
-void __cdecl zMath_MatStack_Push(void) {
-    memcpy(g_zMath_CurrentMatrixPtr + 12, g_zMath_CurrentMatrixPtr, 0x30);
+void __cdecl zMath_MatStack_Push(
+    void
+) {
+    memcpy(
+        g_zMath_CurrentMatrixPtr + 12,
+        g_zMath_CurrentMatrixPtr,
+        0x30
+    );
     g_zMath_CurrentMatrixPtr += 12;
     g_zMath_MatStackDirtyPtr++;
     *g_zMath_MatStackDirtyPtr = g_zMath_MatStackDirtyPtr[-1]; /* copy dirty flag */
@@ -342,7 +446,9 @@ void __cdecl zMath_MatStack_Push(void) {
  * zMath_MatStack_PushNew -- 0x472F30
  * Pushes and marks the new matrix as "clean" (not dirty).
  * ================================================================== */
-void __cdecl zMath_MatStack_PushNew(void) {
+void __cdecl zMath_MatStack_PushNew(
+    void
+) {
     g_zMath_CurrentMatrixPtr += 12;
     g_zMath_MatStackDirtyPtr++;
     *g_zMath_MatStackDirtyPtr = 0;
@@ -352,7 +458,9 @@ void __cdecl zMath_MatStack_PushNew(void) {
  * zMath_MatStack_Pop -- 0x472F60
  * Pops the matrix stack by one level.
  * ================================================================== */
-void __cdecl zMath_MatStack_Pop(void) {
+void __cdecl zMath_MatStack_Pop(
+    void
+) {
     g_zMath_CurrentMatrixPtr -= 12;
     g_zMath_MatStackDirtyPtr--;
 }
@@ -361,16 +469,28 @@ void __cdecl zMath_MatStack_Pop(void) {
  * zMath_Mat_LoadProjection -- 0x472F90
  * Copies the global projection matrix into the given destination.
  * ================================================================== */
-void __cdecl zMath_Mat_LoadProjection(float *dst) {
-    memcpy(dst, g_zMath_ProjectionMatrix, 0x30);
+void __cdecl zMath_Mat_LoadProjection(
+    float *dst
+) {
+    memcpy(
+        dst,
+        g_zMath_ProjectionMatrix,
+        0x30
+    );
 }
 
 /* ==================================================================
  * zMath_Mat_LoadView -- 0x472FA0
  * Copies the global view matrix into the given destination.
  * ================================================================== */
-void __cdecl zMath_Mat_LoadView(float *dst) {
-    memcpy(dst, g_zMath_ViewMatrix, 0x30);
+void __cdecl zMath_Mat_LoadView(
+    float *dst
+) {
+    memcpy(
+        dst,
+        g_zMath_ViewMatrix,
+        0x30
+    );
 }
 
 /* ==================================================================
@@ -389,7 +509,11 @@ void __cdecl zMath_Mat_SetupCamera(const float *worldTransform);
  * Transforms a single point by a 4x3 matrix (rotation + translation).
  * out = M * in + T
  * ================================================================== */
-void __cdecl zMath_Mat_TransformPoint(float *out, const float *mat, const float *in) {
+void __cdecl zMath_Mat_TransformPoint(
+    float *out,
+    const float *mat,
+    const float *in
+) {
     out[0] = mat[0] * in[0] + mat[1] * in[1] + mat[2] * in[2] + mat[3];
     out[1] = mat[4] * in[0] + mat[5] * in[1] + mat[6] * in[2] + mat[7];
     out[2] = mat[8] * in[0] + mat[9] * in[1] + mat[10] * in[2] + mat[11];
@@ -400,8 +524,14 @@ void __cdecl zMath_Mat_TransformPoint(float *out, const float *mat, const float 
  * Copies a source matrix (48 bytes) into the current stack matrix.
  * Marks dirty flag.
  * ================================================================== */
-void __cdecl zMath_Mat_Load(const float *src) {
-    memcpy(g_zMath_CurrentMatrixPtr, src, 0x30);
+void __cdecl zMath_Mat_Load(
+    const float *src
+) {
+    memcpy(
+        g_zMath_CurrentMatrixPtr,
+        src,
+        0x30
+    );
     *g_zMath_MatStackDirtyPtr = 1;
 }
 
@@ -412,8 +542,14 @@ void __cdecl zMath_Mat_Load(const float *src) {
  *   [0 1 0 0]
  *   [0 0 1 0]
  * ================================================================== */
-void __cdecl zMath_Mat_LoadIdentity(void) {
-    memset(g_zMath_CurrentMatrixPtr, 0, 0x30);
+void __cdecl zMath_Mat_LoadIdentity(
+    void
+) {
+    memset(
+        g_zMath_CurrentMatrixPtr,
+        0,
+        0x30
+    );
     g_zMath_CurrentMatrixPtr[0] = 1.0f;
     g_zMath_CurrentMatrixPtr[5] = 1.0f;
     g_zMath_CurrentMatrixPtr[10] = 1.0f;
@@ -430,15 +566,27 @@ void __cdecl zMath_Mat_Multiply(const float *rhs);
 
 /* ==================================================================
  * zMath_Mat_Scale -- 0x473690
- * Scales the current matrix by (sx, sy, sz).
+ * Scales the current matrix by(
+     sx,
+     sy,
+     sz
+ ).
  * ================================================================== */
-void __cdecl zMath_Mat_Scale(float sx, float sy, float sz);
+void __cdecl zMath_Mat_Scale(
+    float sx,
+    float sy,
+    float sz
+);
 
 /* ==================================================================
  * zMath_Mat_Translate -- 0x4737E0
  * Applies a translation (tx, ty, tz) to the current matrix.
  * ================================================================== */
-void __cdecl zMath_Mat_Translate(float tx, float ty, float tz);
+void __cdecl zMath_Mat_Translate(
+    float tx,
+    float ty,
+    float tz
+);
 
 /* ==================================================================
  * zMath_Mat_RotateX -- 0x473970
@@ -467,52 +615,97 @@ void __cdecl zMath_Mat_RotateZ(float angle);
  * Inverts a world transform to produce a view matrix.
  * Rotation transposed, translation negated and rotated.
  * ================================================================== */
-void __cdecl zMath_Mat_BuildViewFromWorld(float *viewOut, const float *world);
+void __cdecl zMath_Mat_BuildViewFromWorld(
+    float *viewOut,
+    const float *world
+);
 
 /* ==================================================================
  * zMath_Mat_TransformPointBatch -- 0x473FC0
  * Transforms an array of Vec3 points by the given matrix.
  * ================================================================== */
-void __cdecl zMath_Mat_TransformPointBatch(float *outArray, const float *mat, const float *inArray,
-                                           int count);
+void __cdecl zMath_Mat_TransformPointBatch(
+    float *outArray,
+    const float *mat,
+    const float *inArray,
+    int count
+);
 
 /* ==================================================================
  * zMath_Mat_BuildFromEulerTRS -- 0x474010
- * Builds a 4x3 matrix from Euler angles (X,Y,Z), translation, and scale.
+ * Builds a 4x3 matrix from Euler angles(
+     X,
+     Y,
+     Z
+ ), translation, and scale.
  * ================================================================== */
-void __cdecl zMath_Mat_BuildFromEulerTRS(float *mat, float rx, float ry, float rz, float tx,
-                                         float ty, float tz, float sx, float sy, float sz);
+void __cdecl zMath_Mat_BuildFromEulerTRS(
+    float *mat,
+    float rx,
+    float ry,
+    float rz,
+    float tx,
+    float ty,
+    float tz,
+    float sx,
+    float sy,
+    float sz
+);
 
 /* ==================================================================
  * zMath_Mat_BuildFromAngles -- 0x474260
- * Builds a rotation matrix from Euler angles (pitch, yaw, roll).
+ * Builds a rotation matrix from Euler angles(
+     pitch,
+     yaw,
+     roll
+ ).
  * ================================================================== */
-void __cdecl zMath_Mat_BuildFromAngles(float *mat, float pitch, float yaw, float roll);
+void __cdecl zMath_Mat_BuildFromAngles(
+    float *mat,
+    float pitch,
+    float yaw,
+    float roll
+);
 
 /* ==================================================================
  * zMath_SetScreenSize -- 0x4743E0
  * Stores screen dimensions for projection calculations.
  * ================================================================== */
-void __cdecl zMath_SetScreenSize(int width, int height);
+void __cdecl zMath_SetScreenSize(
+    int width,
+    int height
+);
 
 /* ==================================================================
  * zMath_SetViewport -- 0x474400
  * Sets projection scale and offset globals from viewport dimensions.
  * Also computes inverse projection scales for unprojection.
  * ================================================================== */
-void __cdecl zMath_SetViewport(float left, float top, float right, float bottom, float nearZ,
-                               float farZ);
+void __cdecl zMath_SetViewport(
+    float left,
+    float top,
+    float right,
+    float bottom,
+    float nearZ,
+    float farZ
+);
 
 /* ==================================================================
  * zMath_Mat_ExtractAnglesDown -- 0x474580
  * Extracts pitch/heading from a matrix by examining the forward (-Z) column.
  * ================================================================== */
-void __cdecl zMath_Mat_ExtractAnglesDown(const float *mat, float *outAngles);
+void __cdecl zMath_Mat_ExtractAnglesDown(
+    const float *mat,
+    float *outAngles
+);
 
 /* ==================================================================
  * zMath_Mat_ExtractYaw -- 0x474DE0
  * Extracts the yaw (heading around Y) from a rotation matrix.
- * Returns atan2(m20, m00).
+ * Returns atan2(
+     m20,
+     m00
+ ).
  * ================================================================== */
 float __cdecl zMath_Mat_ExtractYaw(const float *mat);
 
@@ -520,7 +713,10 @@ float __cdecl zMath_Mat_ExtractYaw(const float *mat);
  * zMath_Mat_ExtractEulerAngles -- 0x474E10
  * Extracts all three Euler angles (pitch, yaw, roll) from a rotation matrix.
  * ================================================================== */
-void __cdecl zMath_Mat_ExtractEulerAngles(const float *mat, float *outAngles);
+void __cdecl zMath_Mat_ExtractEulerAngles(
+    const float *mat,
+    float *outAngles
+);
 
 /* ==================================================================
  * SECTION 6: NORMAL/BBOX TRANSFORMS
@@ -531,30 +727,47 @@ void __cdecl zMath_Mat_ExtractEulerAngles(const float *mat, float *outAngles);
  * Transforms an array of normals by the 3x3 rotation part of a matrix
  * (no translation). Source and destination are separate arrays.
  * ================================================================== */
-void __cdecl zMath_Mat_TransformNormalBatch(float *outNormals, const float *mat,
-                                            const float *inNormals, int count);
+void __cdecl zMath_Mat_TransformNormalBatch(
+    float *outNormals,
+    const float *mat,
+    const float *inNormals,
+    int count
+);
 
 /* ==================================================================
  * zMath_Mat_TransformNormalBatchInPlace -- 0x474670
  * In-place version: transforms normals in the same array.
  * ================================================================== */
-void __cdecl zMath_Mat_TransformNormalBatchInPlace(float *normals, const float *mat, int count);
+void __cdecl zMath_Mat_TransformNormalBatchInPlace(
+    float *normals,
+    const float *mat,
+    int count
+);
 
 /* ==================================================================
  * zMath_Mat_TransformNormalBatchToOut -- 0x474710
  * Transforms normals from source array to a separate output array.
  * (Similar to TransformNormalBatch but with different stride/layout.)
  * ================================================================== */
-void __cdecl zMath_Mat_TransformNormalBatchToOut(float *outNormals, const float *mat,
-                                                 const float *inNormals, int count);
+void __cdecl zMath_Mat_TransformNormalBatchToOut(
+    float *outNormals,
+    const float *mat,
+    const float *inNormals,
+    int count
+);
 
 /* ==================================================================
  * zMath_BBox_Transform -- 0x474870
  * Transforms an axis-aligned bounding box by a matrix.
  * Produces a new AABB that encloses the transformed corners.
  * ================================================================== */
-void __cdecl zMath_BBox_Transform(float *outMin, float *outMax, const float *mat,
-                                  const float *inMin, const float *inMax);
+void __cdecl zMath_BBox_Transform(
+    float *outMin,
+    float *outMax,
+    const float *mat,
+    const float *inMin,
+    const float *inMax
+);
 
 /* ==================================================================
  * SECTION 7: PERSPECTIVE PROJECTION
@@ -569,7 +782,11 @@ void __cdecl zMath_BBox_Transform(float *outMin, float *outMax, const float *mat
  *   dst.y   = src.y * ProjScaleY * invZ + ProjOffsetY
  *   dst.z   = invZ   (raw reciprocal depth)
  * ================================================================== */
-void __cdecl zMath_ProjectPointBatch(const float *srcArray, float *dstArray, int count) {
+void __cdecl zMath_ProjectPointBatch(
+    const float *srcArray,
+    float *dstArray,
+    int count
+) {
     for (int i = 0; i < count; i++) {
         float invZ = 1.0f / srcArray[2];
         dstArray[0] = srcArray[0] * g_zMath_ProjScaleX * invZ + g_zMath_ProjOffsetX;
@@ -586,7 +803,11 @@ void __cdecl zMath_ProjectPointBatch(const float *srcArray, float *dstArray, int
  *   dst.z = invZ * ZBufScale
  * Used for hardware (D3D) rendering path.
  * ================================================================== */
-void __cdecl zMath_ProjectPointBatchZBuf(const float *srcArray, float *dstArray, int count) {
+void __cdecl zMath_ProjectPointBatchZBuf(
+    const float *srcArray,
+    float *dstArray,
+    int count
+) {
     for (int i = 0; i < count; i++) {
         float invZ = 1.0f / srcArray[2];
         dstArray[0] = invZ * srcArray[0] * g_zMath_ProjScaleX + g_zMath_ProjOffsetX;
@@ -606,7 +827,11 @@ void __cdecl zMath_ProjectPointBatchZBuf(const float *srcArray, float *dstArray,
  *   dst.y = (src.y - OffsetY) * InvProjScaleY * invZ
  *   dst.z = invZ
  * ================================================================== */
-void __cdecl zMath_UnprojectPointBatch(const float *srcArray, float *dstArray, int count) {
+void __cdecl zMath_UnprojectPointBatch(
+    const float *srcArray,
+    float *dstArray,
+    int count
+) {
     if (count <= 0)
         return;
     for (int i = 0; i < count; i++) {
@@ -630,7 +855,10 @@ void __cdecl zMath_UnprojectPointBatch(const float *srcArray, float *dstArray, i
  * Table: fogTable[i] = exp(-i * FOG_SCALE)
  * Returns fog alpha in [0, 1] range.
  * ================================================================== */
-float __cdecl zMath_FogTableLookup(int unused, float distance) {
+float __cdecl zMath_FogTableLookup(
+    int unused,
+    float distance
+) {
     /* Rebuild table if dirty */
     if (g_zMath_FogTableDirty) {
         g_zMath_FogRange = 51.0f;
@@ -658,10 +886,17 @@ float __cdecl zMath_FogTableLookup(int unused, float distance) {
 /* ==================================================================
  * zMath_TriangleNormal -- 0x475070
  * Computes the normalized face normal from three triangle vertices.
- * normal = normalize(cross(v1 - v0, v2 - v0))
+ * normal = normalize(cross(
+     v1 - v0,
+     v2 - v0
+ ))
  * ================================================================== */
-void __cdecl zMath_TriangleNormal(const float *v0, const float *v1, const float *v2,
-                                  float *outNormal) {
+void __cdecl zMath_TriangleNormal(
+    const float *v0,
+    const float *v1,
+    const float *v2,
+    float *outNormal
+) {
     float e1[3], e2[3];
     e1[0] = v1[0] - v0[0];
     e1[1] = v1[1] - v0[1];
@@ -684,8 +919,19 @@ void __cdecl zMath_TriangleNormal(const float *v0, const float *v1, const float 
  * Used for computing parametric coordinates (UV mapping, line-line
  * intersection). Returns 0 if degenerate (parallel lines).
  * ================================================================== */
-void __cdecl zMath_SolveLinear2x2(float *outU, float *outV, float px, float py, float x0, float y0,
-                                  float x1, float y1, float z0, float z1, float z2);
+void __cdecl zMath_SolveLinear2x2(
+    float *outU,
+    float *outV,
+    float px,
+    float py,
+    float x0,
+    float y0,
+    float x1,
+    float y1,
+    float z0,
+    float z1,
+    float z2
+);
 
 /* ==================================================================
  * zMath_RaySphereIntersect -- 0x475210
@@ -694,8 +940,13 @@ void __cdecl zMath_SolveLinear2x2(float *outU, float *outV, float px, float py, 
  * Returns 1 on hit (outHitNormal set), 0 on miss.
  * Uses fast inverse sqrt bit hack: (*(int*)&x >> 1) + 0x1FC00000
  * ================================================================== */
-int __cdecl zMath_RaySphereIntersect(const float *rayOrigin, const float *sphereCenter,
-                                     float radius, const float *rayDir, float *outHitNormal) {
+int __cdecl zMath_RaySphereIntersect(
+    const float *rayOrigin,
+    const float *sphereCenter,
+    float radius,
+    const float *rayDir,
+    float *outHitNormal
+) {
     float delta[3];
     delta[0] = rayOrigin[0] - sphereCenter[0];
     delta[1] = rayOrigin[1] - sphereCenter[1];
@@ -773,9 +1024,16 @@ int __cdecl zMath_RaySphereIntersect(const float *rayOrigin, const float *sphere
  * Takes: triangle vertices (9 floats), UV coords (6 floats),
  *        and outputs screen-space partial derivatives.
  * ================================================================== */
-void __cdecl zMath_TriangleScreenGradients(const float *triVerts, const float *uvCoords,
-                                           float *outScreenNormal, float *outDepth, float *outDuDxy,
-                                           float *outDuDepth, float *outDvDxy, float *outDvDepth);
+void __cdecl zMath_TriangleScreenGradients(
+    const float *triVerts,
+    const float *uvCoords,
+    float *outScreenNormal,
+    float *outDepth,
+    float *outDuDxy,
+    float *outDuDepth,
+    float *outDvDxy,
+    float *outDvDepth
+);
 
 /* ==================================================================
  * SECTION 10: QUATERNION OPERATIONS
@@ -787,7 +1045,12 @@ void __cdecl zMath_TriangleScreenGradients(const float *triVerts, const float *u
  * Uses half-angle formula with ZYX rotation order.
  * q = [w, x, y, z]
  * ================================================================== */
-void __cdecl zMath_Quat_FromEuler(float *qOut, float pitch, float yaw, float roll) {
+void __cdecl zMath_Quat_FromEuler(
+    float *qOut,
+    float pitch,
+    float yaw,
+    float roll
+) {
     float sp = sinf(pitch * 0.5f), cp = cosf(pitch * 0.5f);
     float sy = sinf(yaw * 0.5f), cy = cosf(yaw * 0.5f);
     float sr = sinf(roll * 0.5f), cr = cosf(roll * 0.5f);
@@ -808,7 +1071,11 @@ void __cdecl zMath_Quat_FromEuler(float *qOut, float pitch, float yaw, float rol
  * Hamilton product: out = q1 * q2
  * Both quaternions are [w, x, y, z].
  * ================================================================== */
-float *__cdecl zMath_Quat_Multiply(const float *q1, const float *q2, float *out) {
+float *__cdecl zMath_Quat_Multiply(
+    const float *q1,
+    const float *q2,
+    float *out
+) {
     out[0] = q2[0] * q1[0] - q1[1] * q2[1] - q1[2] * q2[2] - q1[3] * q2[3];
     out[1] = q2[0] * q1[1] + q1[0] * q2[1] + q2[3] * q1[2] - q1[3] * q2[2];
     out[2] = q2[0] * q1[2] + q1[0] * q2[2] + q1[3] * q2[1] - q2[3] * q1[1];
@@ -821,7 +1088,11 @@ float *__cdecl zMath_Quat_Multiply(const float *q1, const float *q2, float *out)
  * Multiplies q1 by the conjugate of q2: out = q2* * q1
  * Effectively computes the relative rotation from q2 to q1.
  * ================================================================== */
-float *__cdecl zMath_Quat_MultiplyInverse(const float *q1, const float *q2, float *out) {
+float *__cdecl zMath_Quat_MultiplyInverse(
+    const float *q1,
+    const float *q2,
+    float *out
+) {
     out[0] = q2[3] * q1[3] + q1[2] * q2[2] + q2[0] * q1[0] + q2[1] * q1[1];
     out[1] = q2[0] * q1[1] - q1[0] * q2[1] - q2[3] * q1[2] + q1[3] * q2[2];
     out[2] = q2[0] * q1[2] - q1[0] * q2[2] - q1[3] * q2[1] + q2[3] * q1[1];
@@ -838,7 +1109,10 @@ float *__cdecl zMath_Quat_MultiplyInverse(const float *q1, const float *q2, floa
  *   [2(xy-wz)    1-2(xx+zz) 2(wx+yz)]
  *   [2(wy+xz)    2(yz-wx)   1-2(xx+yy)]
  * ================================================================== */
-void __cdecl zMath_Quat_ToMatrix(const float *q, float *mat) {
+void __cdecl zMath_Quat_ToMatrix(
+    const float *q,
+    float *mat
+) {
     float tx = 2.0f * q[1]; /* 2x */
     float ty = 2.0f * q[2]; /* 2y */
     float tz = 2.0f * q[3]; /* 2z */
@@ -866,9 +1140,17 @@ void __cdecl zMath_Quat_ToMatrix(const float *q, float *mat) {
  * zMath_Quat_FromRotationVector -- 0x475B80
  * Converts a rotation vector (axis * angle) to a quaternion.
  * The vector length is the rotation angle in radians.
- * If length is 0, returns identity quaternion (1, 0, 0, 0).
+ * If length is 0, returns identity quaternion(
+     1,
+     0,
+     0,
+     0
+ ).
  * ================================================================== */
-int __cdecl zMath_Quat_FromRotationVector(const float *rv, float *qOut) {
+int __cdecl zMath_Quat_FromRotationVector(
+    const float *rv,
+    float *qOut
+) {
     float angle = sqrtf(rv[0] * rv[0] + rv[1] * rv[1] + rv[2] * rv[2]);
     if (angle == 0.0f) {
         qOut[0] = 1.0f; /* w = 1 */
@@ -889,7 +1171,7 @@ int __cdecl zMath_Quat_FromRotationVector(const float *rv, float *qOut) {
 /* ==================================================================
  * END OF FILE
  *
- * Function summary (61 zMath functions total):
+ * Function summary (61 zMath functions total) :
  *   Vec3 operations:  18 functions (0x402F60, 0x4726D0-0x472CC0, 0x4744F0-0x474F40)
  *   Matrix stack:      6 functions (0x472ED0-0x472FA0)
  *   Core matrix:      10 functions (0x472FB0-0x473CC0)

@@ -31,6 +31,7 @@ zDEClient_CraterDisplaySourceEntry *g_zDEClient_CraterDisplaySourceList = 0;
 zDEClient_CraterEventTemplate g_zDEClient_CraterEventTemplateDefaults = {0};
 zReader::Node *g_zDEClient_ConfigReaderRoot = 0;
 int g_zDEClient_RebuildBltRectOnReload = 1;
+int g_zDEClient_FeatureListFlags = 0;
 zDEClient_FeatureEntry *g_zDEClient_FeatureListBegin = 0;
 zDEClient_FeatureEntry *g_zDEClient_FeatureListEnd = 0;
 zDEClient_FeatureEntry *g_zDEClient_FeatureListCapacityEnd = 0;
@@ -43,7 +44,10 @@ zDEClient_NetRelayCallback g_zDEClientQSandNetRelayCallback = 0;
 zDEClient_NetRelayCallback g_zDEClientCraterNetRelayCallback = 0;
 
 namespace {
-template <typename T> zZbdSectionCallback ZbdCallbackPtr(T callback) {
+template <typename T>
+zZbdSectionCallback ZbdCallbackPtr(
+    T callback
+) {
     RECOIL_STATIC_ASSERT(sizeof(T) == sizeof(zZbdSectionCallback));
     union {
         T callback;
@@ -53,11 +57,15 @@ template <typename T> zZbdSectionCallback ZbdCallbackPtr(T callback) {
     return value.raw;
 }
 
-bool IsNil(const zDEClient_MapTreeNode *node) {
+bool IsNil(
+    const zDEClient_MapTreeNode *node
+) {
     return node == 0 || node == g_zDEClient_FeatureMapTreeNil;
 }
 
-zDEClient_MapTreeNode *TreeMinimum(zDEClient_MapTreeNode *node) {
+zDEClient_MapTreeNode *TreeMinimum(
+    zDEClient_MapTreeNode *node
+) {
     while (!IsNil(node->left)) {
         node = node->left;
     }
@@ -65,7 +73,9 @@ zDEClient_MapTreeNode *TreeMinimum(zDEClient_MapTreeNode *node) {
     return node;
 }
 
-zDEClient_MapTreeNode *TreeMaximum(zDEClient_MapTreeNode *node) {
+zDEClient_MapTreeNode *TreeMaximum(
+    zDEClient_MapTreeNode *node
+) {
     while (!IsNil(node->right)) {
         node = node->right;
     }
@@ -73,7 +83,10 @@ zDEClient_MapTreeNode *TreeMaximum(zDEClient_MapTreeNode *node) {
     return node;
 }
 
-void RotateTreeLeft(zDEClient_MapTreeState *tree, zDEClient_MapTreeNode *node) {
+void RotateTreeLeft(
+    zDEClient_MapTreeState *tree,
+    zDEClient_MapTreeNode *node
+) {
     zDEClient_MapTreeNode *const pivot = node->right;
     node->right = pivot->left;
     if (!IsNil(pivot->left)) {
@@ -93,7 +106,10 @@ void RotateTreeLeft(zDEClient_MapTreeState *tree, zDEClient_MapTreeNode *node) {
     node->parent = pivot;
 }
 
-void RotateTreeRight(zDEClient_MapTreeState *tree, zDEClient_MapTreeNode *node) {
+void RotateTreeRight(
+    zDEClient_MapTreeState *tree,
+    zDEClient_MapTreeNode *node
+) {
     zDEClient_MapTreeNode *const pivot = node->left;
     node->left = pivot->right;
     if (!IsNil(pivot->right)) {
@@ -113,7 +129,9 @@ void RotateTreeRight(zDEClient_MapTreeState *tree, zDEClient_MapTreeNode *node) 
     node->parent = pivot;
 }
 
-void ResetHeader(zDEClient_MapTreeState *tree) {
+void ResetHeader(
+    zDEClient_MapTreeState *tree
+) {
     if (tree->header == 0) {
         return;
     }
@@ -123,8 +141,11 @@ void ResetHeader(zDEClient_MapTreeState *tree) {
     tree->header->right = tree->header;
 }
 
-void Transplant(zDEClient_MapTreeState *tree, zDEClient_MapTreeNode *oldNode,
-                zDEClient_MapTreeNode *newNode) {
+void Transplant(
+    zDEClient_MapTreeState *tree,
+    zDEClient_MapTreeNode *oldNode,
+    zDEClient_MapTreeNode *newNode
+) {
     if (oldNode->parent == tree->header) {
         tree->header->parent = newNode;
     } else if (oldNode == oldNode->parent->left) {
@@ -138,7 +159,9 @@ void Transplant(zDEClient_MapTreeState *tree, zDEClient_MapTreeNode *oldNode,
     }
 }
 
-void RefreshHeaderExtents(zDEClient_MapTreeState *tree) {
+void RefreshHeaderExtents(
+    zDEClient_MapTreeState *tree
+) {
     zDEClient_MapTreeNode *const root = tree->header != 0 ? tree->header->parent : 0;
     if (tree->nodeCount <= 0 || IsNil(root)) {
         ResetHeader(tree);
@@ -149,7 +172,9 @@ void RefreshHeaderExtents(zDEClient_MapTreeState *tree) {
     tree->header->right = TreeMaximum(root);
 }
 
-void EnsureFeatureMapTreeInitialized(zDEClient_MapTreeState *tree) {
+void EnsureFeatureMapTreeInitialized(
+    zDEClient_MapTreeState *tree
+) {
     if (g_zDEClient_FeatureMapTreeNil == 0) {
         g_zDEClient_FeatureMapTreeNil =
             (zDEClient_MapTreeNode *)(::operator new(sizeof(zDEClient_MapTreeNode)));
@@ -162,8 +187,7 @@ void EnsureFeatureMapTreeInitialized(zDEClient_MapTreeState *tree) {
     }
 
     if (tree->header == 0) {
-        tree->header =
-            (zDEClient_MapTreeNode *)(::operator new(sizeof(zDEClient_MapTreeNode)));
+        tree->header = (zDEClient_MapTreeNode *)(::operator new(sizeof(zDEClient_MapTreeNode)));
         tree->header->left = tree->header;
         tree->header->parent = g_zDEClient_FeatureMapTreeNil;
         tree->header->right = tree->header;
@@ -174,7 +198,9 @@ void EnsureFeatureMapTreeInitialized(zDEClient_MapTreeState *tree) {
     }
 }
 
-int zReaderArrayCount(zReader::Node *node) {
+int zReaderArrayCount(
+    zReader::Node *node
+) {
     if (node == 0 || node->type != zReader::ZRDR_NODE_ARRAY || node->value.nodes == 0) {
         return 0;
     }
@@ -182,7 +208,10 @@ int zReaderArrayCount(zReader::Node *node) {
     return node->value.nodes[0].value.i32;
 }
 
-char *zReaderArrayString(zReader::Node *node, int index) {
+char *zReaderArrayString(
+    zReader::Node *node,
+    int index
+) {
     return node->value.nodes[index].value.str;
 }
 } // namespace
@@ -190,7 +219,9 @@ char *zReaderArrayString(zReader::Node *node, int index) {
 namespace zDEClient_Crater {
 // Reimplements 0x433ad0: zDEClient_Crater::Execute
 // (D:\Proj\GameZRecoil\RecoilApp\zDEClient_Crater.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL Execute(zDEClient_CraterEventTemplate *eventTemplate) {
+RECOIL_NOINLINE int RECOIL_FASTCALL Execute(
+    zDEClient_CraterEventTemplate *eventTemplate
+) {
     if (eventTemplate->radius <= 0.0f) {
         eventTemplate->radius = -eventTemplate->radius;
         return 1;
@@ -208,7 +239,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Execute(zDEClient_CraterEventTemplate *event
     g_NetPkt0F_CraterEventSendBuf.radius = eventTemplate->radius;
 
     if (zNetwork::IsHost() != 0) {
-        NetRelayCallback(zNetwork_GetLocalPlayerKey(), &g_NetPkt0F_CraterEventSendBuf);
+        NetRelayCallback(
+            zNetwork_GetLocalPlayerKey(),
+            &g_NetPkt0F_CraterEventSendBuf
+        );
         return 0;
     }
 
@@ -218,8 +252,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Execute(zDEClient_CraterEventTemplate *event
 
 // Reimplements 0x433b70: zDEClient_Crater::NetRelayCallback
 // (D:\Proj\GameZRecoil\RecoilApp\zDEClient_Crater.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-NetRelayCallback(int, NetPkt0F_CraterEvent *packet) {
+RECOIL_NOINLINE int RECOIL_FASTCALL NetRelayCallback(
+    int,
+    NetPkt0F_CraterEvent *packet
+) {
     zDEClient_CraterEventTemplate eventTemplate;
     InitEventTemplateDefaults(&eventTemplate);
 
@@ -247,7 +283,9 @@ NetRelayCallback(int, NetPkt0F_CraterEvent *packet) {
 
 // Reimplements 0x456ad0: zDEClient_Crater::DestroyFeature
 // (D:\Proj\GameZRecoil\zDEClient\zdec_crater.c)
-RECOIL_NOINLINE void RECOIL_FASTCALL DestroyFeature(zDEClient_CraterFeature *featureInstance) {
+RECOIL_NOINLINE void RECOIL_FASTCALL DestroyFeature(
+    zDEClient_CraterFeature *featureInstance
+) {
     if (featureInstance == 0) {
         return;
     }
@@ -265,25 +303,37 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DestroyFeature(zDEClient_CraterFeature *fea
 
 // Reimplements 0x456b00: zDEClient_Crater::InitEventTemplateDefaults
 // (D:\Proj\GameZRecoil\zDEClient\zdec_crater.c)
-RECOIL_NOINLINE void RECOIL_FASTCALL
-InitEventTemplateDefaults(zDEClient_CraterEventTemplate *eventTemplate) {
-    memcpy(eventTemplate, &g_zDEClient_CraterEventTemplateDefaults,
-                sizeof(zDEClient_CraterEventTemplate));
+RECOIL_NOINLINE void RECOIL_FASTCALL InitEventTemplateDefaults(
+    zDEClient_CraterEventTemplate *eventTemplate
+) {
+    memcpy(
+        eventTemplate,
+        &g_zDEClient_CraterEventTemplateDefaults,
+        sizeof(zDEClient_CraterEventTemplate)
+    );
 }
 
 // Reimplements 0x457040:
 // zDEClient_Crater::CreateFeatureStructFromEventTemplate
 // (D:\Proj\GameZRecoil\zDEClient\zdec_crater.c)
-RECOIL_NOINLINE zDEClient_CraterFeature *RECOIL_FASTCALL
-CreateFeatureStructFromEventTemplate(zDEClient_CraterEventTemplate *eventTemplate) {
+RECOIL_NOINLINE zDEClient_CraterFeature *RECOIL_FASTCALL CreateFeatureStructFromEventTemplate(
+    zDEClient_CraterEventTemplate *eventTemplate
+) {
     zDEClient_CraterFeature *result =
         (zDEClient_CraterFeature *)(malloc(sizeof(zDEClient_CraterFeature)));
-    memset(result, 0, sizeof(zDEClient_CraterFeature));
+    memset(
+        result,
+        0,
+        sizeof(zDEClient_CraterFeature)
+    );
 
     result->featureType = 1;
-    memcpy(&result->eventTemplate, eventTemplate, sizeof(result->eventTemplate));
-    result->points = (zVec3 *)(
-        malloc((size_t)(result->eventTemplate.pointCount) * sizeof(zVec3)));
+    memcpy(
+        &result->eventTemplate,
+        eventTemplate,
+        sizeof(result->eventTemplate)
+    );
+    result->points = (zVec3 *)(malloc((size_t)(result->eventTemplate.pointCount) * sizeof(zVec3)));
     result->clipPatchOutput = zGeometry_ClipPatchOutput::Create();
 
     if ((result->eventTemplate.featureFlags & 0x1008) != 0) {
@@ -305,8 +355,9 @@ CreateFeatureStructFromEventTemplate(zDEClient_CraterEventTemplate *eventTemplat
 // Reimplements 0x456c80:
 // zDEClient_Crater::InitFeatureFromEventTemplate
 // (D:\Proj\GameZRecoil\zDEClient\zdec_crater.c)
-RECOIL_NOINLINE zDEClient_CraterFeature *RECOIL_FASTCALL
-InitFeatureFromEventTemplate(zDEClient_CraterEventTemplate *eventTemplate) {
+RECOIL_NOINLINE zDEClient_CraterFeature *RECOIL_FASTCALL InitFeatureFromEventTemplate(
+    zDEClient_CraterEventTemplate *eventTemplate
+) {
     zDEClient_CraterFeature *featureInstance = CreateFeatureStructFromEventTemplate(eventTemplate);
     zVec3 *currentPoint = featureInstance->points;
 
@@ -318,10 +369,18 @@ InitFeatureFromEventTemplate(zDEClient_CraterEventTemplate *eventTemplate) {
 
     int gridCol;
     int gridRow;
-    zClass_World::WorldToGridCoordsClamped(world, &gridCol, eventTemplate->center.x,
-                                           eventTemplate->center.z, &gridRow);
+    zClass_World::WorldToGridCoordsClamped(
+        world,
+        &gridCol,
+        eventTemplate->center.x,
+        eventTemplate->center.z,
+        &gridRow
+    );
 
-    zDEClient_FeatureGridCell *featureGridCell = zDEClient::GetFeatureGridCell(gridCol, gridRow);
+    zDEClient_FeatureGridCell *featureGridCell = zDEClient::GetFeatureGridCell(
+        gridCol,
+        gridRow
+    );
     featureInstance->featureGridCell = featureGridCell;
     if (featureGridCell == 0) {
         DestroyFeature(featureInstance);
@@ -404,10 +463,12 @@ InitFeatureFromEventTemplate(zDEClient_CraterEventTemplate *eventTemplate) {
             zGeometry_ClipPatchNodeView **nodeCursor = featureGridCell->nodes;
             for (int i = 0; i < nodeCount; ++i) {
                 zGeometry_ClipPatchNodeView *node = *nodeCursor;
-                if (strcmp(node->name, "ZDEC_FEATURE") == 0) {
+                if (strcmp(
+                    node->name,
+                    "ZDEC_FEATURE"
+                ) == 0) {
                     zDEClient_FeatureContextOverlapView *context =
-                        (zDEClient_FeatureContextOverlapView *)(
-                            node->callbackContext);
+                        (zDEClient_FeatureContextOverlapView *)(node->callbackContext);
                     if (context != 0) {
                         const int featureType = context->featureType;
                         if (featureType == 1) {
@@ -440,10 +501,15 @@ InitFeatureFromEventTemplate(zDEClient_CraterEventTemplate *eventTemplate) {
 
 // Reimplements 0x4570e0: zDEClient_Crater::Build
 // (D:\Proj\GameZRecoil\zDEClient\zdec_crater.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL Build(zDEClient_CraterFeature *featureInstance) {
+RECOIL_NOINLINE int RECOIL_FASTCALL Build(
+    zDEClient_CraterFeature *featureInstance
+) {
     int result = zGeometry_Model::ClipPatch(
-        featureInstance->eventTemplate.pointCount, featureInstance->points,
-        featureInstance->featureGridCell, featureInstance->clipPatchOutput);
+        featureInstance->eventTemplate.pointCount,
+        featureInstance->points,
+        featureInstance->featureGridCell,
+        featureInstance->clipPatchOutput
+    );
 
     if (result <= 0) {
         if (result < 0) {
@@ -468,13 +534,20 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Build(zDEClient_CraterFeature *featureInstan
 
 // Reimplements 0x457140: zDEClient_Crater::CreateFeature
 // (D:\Proj\GameZRecoil\zDEClient\zdec_crater.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-CreateFeature(zDEClient_CraterFeature *featureInstance) {
+RECOIL_NOINLINE int RECOIL_FASTCALL CreateFeature(
+    zDEClient_CraterFeature *featureInstance
+) {
     zClass_NodePartial *node = 0;
     zDiPartial *displayInstance = zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition(
-        featureInstance->clipPatchOutput->partitions, zDEClient::GetCameraNode(), &node);
+        featureInstance->clipPatchOutput->partitions,
+        zDEClient::GetCameraNode(),
+        &node
+    );
     if (node != 0) {
-        zClass_Class::gwNodeSetName(node, "ZDEC_FEATURE");
+        zClass_Class::gwNodeSetName(
+            node,
+            "ZDEC_FEATURE"
+        );
         node->callbackContext = (zClass_NodePartial *)(featureInstance);
     }
 
@@ -504,12 +577,10 @@ CreateFeature(zDEClient_CraterFeature *featureInstance) {
 
     zClipUV *uvPairs = 0;
     if (hasMaterialUv) {
-        uvPairs = (zClipUV *)(
-            malloc((size_t)(uvCenterIndex + 1) * sizeof(zClipUV)));
+        uvPairs = (zClipUV *)(malloc((size_t)(uvCenterIndex + 1) * sizeof(zClipUV)));
     }
 
-    zVec3 *const midPoints =
-        (zVec3 *)(malloc((size_t)(pointCount) * sizeof(zVec3)));
+    zVec3 *const midPoints = (zVec3 *)(malloc((size_t)(pointCount) * sizeof(zVec3)));
 
     const zVec3 center = featureInstance->eventTemplate.center;
     const float lowCenterY =
@@ -557,7 +628,13 @@ CreateFeature(zDEClient_CraterFeature *featureInstance) {
             polygonMaterial = material;
         }
 
-        zGeometry_Model::AddPolygonToDi(displayInstance, 4, polygonPoints, polygonMaterial, uvList);
+        zGeometry_Model::AddPolygonToDi(
+            displayInstance,
+            4,
+            polygonPoints,
+            polygonMaterial,
+            uvList
+        );
     }
 
     for (int i_463 = 0; i_463 < pointCount; ++i_463) {
@@ -580,7 +657,13 @@ CreateFeature(zDEClient_CraterFeature *featureInstance) {
             polygonMaterial = material;
         }
 
-        zGeometry_Model::AddPolygonToDi(displayInstance, 3, polygonPoints, polygonMaterial, uvList);
+        zGeometry_Model::AddPolygonToDi(
+            displayInstance,
+            3,
+            polygonPoints,
+            polygonMaterial,
+            uvList
+        );
     }
 
     free(midPoints);
@@ -588,42 +671,62 @@ CreateFeature(zDEClient_CraterFeature *featureInstance) {
         free(uvPairs);
     }
 
-    zClass_Class::gwNodeSetDisplayInstance(node, displayInstance);
+    zClass_Class::gwNodeSetDisplayInstance(
+        node,
+        displayInstance
+    );
     return 0;
 }
 
 // Reimplements 0x456b20: zDEClient_Crater::InstanceEvent
 // (D:\Proj\GameZRecoil\zDEClient\zdec_crater.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-InstanceEvent(zDEClient_CraterEventTemplate *eventTemplate, int playEffectAnim) {
+RECOIL_NOINLINE int RECOIL_FASTCALL InstanceEvent(
+    zDEClient_CraterEventTemplate *eventTemplate,
+    int playEffectAnim
+) {
     const float vertexMergeEpsilon = zModel_Const::GetVertexMergeEpsilon();
     zModel_Const::SetVertexMergeEpsilon(0.00499999989f);
 
     zDEClient_CraterFeature *const featureInstance = InitFeatureFromEventTemplate(eventTemplate);
     if (featureInstance == 0) {
-        zError::ReportOld(0x100, "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_crater.cpp", 0x8b,
-                          "Failed to instance crater: Build Failed");
+        zError::ReportOld(
+            0x100,
+            "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_crater.cpp",
+            0x8b,
+            "Failed to instance crater: Build Failed"
+        );
         zModel_Const::SetVertexMergeEpsilon(vertexMergeEpsilon);
         return -1;
     }
 
     if (Build(featureInstance) == 0) {
         DestroyFeature(featureInstance);
-        zError::ReportOld(0x100, "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_crater.cpp", 0xc3,
-                          "Failed to instance crater: Clip Failed");
+        zError::ReportOld(
+            0x100,
+            "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_crater.cpp",
+            0xc3,
+            "Failed to instance crater: Clip Failed"
+        );
         zModel_Const::SetVertexMergeEpsilon(vertexMergeEpsilon);
         return -1;
     }
 
     if (CreateFeature(featureInstance) != 0) {
         DestroyFeature(featureInstance);
-        zError::ReportOld(0x100, "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_crater.cpp", 0xd2,
-                          "Failed to instance crater: Tesselation Failed");
+        zError::ReportOld(
+            0x100,
+            "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_crater.cpp",
+            0xd2,
+            "Failed to instance crater: Tesselation Failed"
+        );
         zModel_Const::SetVertexMergeEpsilon(vertexMergeEpsilon);
         return -1;
     }
 
-    zDEClient::AppendFeatureEntry(1, eventTemplate);
+    zDEClient::AppendFeatureEntry(
+        1,
+        eventTemplate
+    );
     zDEClient::SubmitFeatureGeometry(featureInstance->clipPatchOutput);
     zGeometry_ClipPatchOutput::ApplyNodeDiPairs(featureInstance->clipPatchOutput);
     zModel_Const::SetVertexMergeEpsilon(vertexMergeEpsilon);
@@ -631,9 +734,18 @@ InstanceEvent(zDEClient_CraterEventTemplate *eventTemplate, int playEffectAnim) 
     if (playEffectAnim != 0 && featureInstance->displaySourceEntry != 0 &&
         featureInstance->displaySourceEntry->effectAnimEntry != 0) {
         zEffectAnim::SetTransformRotAndVelocity_Thunk(
-            featureInstance->displaySourceEntry->effectAnimEntry, 0,
-            featureInstance->eventTemplate.center.x, featureInstance->eventTemplate.center.y,
-            featureInstance->eventTemplate.center.z, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+            featureInstance->displaySourceEntry->effectAnimEntry,
+            0,
+            featureInstance->eventTemplate.center.x,
+            featureInstance->eventTemplate.center.y,
+            featureInstance->eventTemplate.center.z,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f
+        );
     }
 
     return 0;
@@ -641,22 +753,28 @@ InstanceEvent(zDEClient_CraterEventTemplate *eventTemplate, int playEffectAnim) 
 
 // Reimplements 0x456c50: zDEClient_Crater::InstanceEventMaybeRelay
 // (D:\Proj\GameZRecoil\zDEClient\zdec_crater.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-InstanceEventMaybeRelay(zDEClient_CraterEventTemplate *eventTemplate) {
+RECOIL_NOINLINE int RECOIL_FASTCALL InstanceEventMaybeRelay(
+    zDEClient_CraterEventTemplate *eventTemplate
+) {
     if (g_zDEClientCraterNetRelayCallback != 0 &&
         g_zDEClientCraterNetRelayCallback(eventTemplate) == 0) {
         return -1;
     }
 
-    return InstanceEvent(eventTemplate, 1);
+    return InstanceEvent(
+        eventTemplate,
+        1
+    );
 }
 } // namespace zDEClient_Crater
 
 namespace zDEClient_QSand {
 // Reimplements 0x433d40: zDEClient_QSand::NetRelayCallback
 // (D:\Proj\GameZRecoil\RecoilApp\zDEClient_QSand.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-NetRelayCallback(int, NetPkt10_QSandEvent *packet) {
+RECOIL_NOINLINE int RECOIL_FASTCALL NetRelayCallback(
+    int,
+    NetPkt10_QSandEvent *packet
+) {
     zDEClient_QSandEventTemplate eventTemplate;
     zDEClient::CopyQSandEventTemplateDefaults(&eventTemplate);
 
@@ -682,7 +800,9 @@ NetRelayCallback(int, NetPkt10_QSandEvent *packet) {
 
 // Reimplements 0x455ea0: zDEClient_QSand::DestroyFeature
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.c)
-RECOIL_NOINLINE void RECOIL_FASTCALL DestroyFeature(zDEClient_QSandFeature *featureInstance) {
+RECOIL_NOINLINE void RECOIL_FASTCALL DestroyFeature(
+    zDEClient_QSandFeature *featureInstance
+) {
     if (featureInstance == 0) {
         return;
     }
@@ -701,20 +821,27 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DestroyFeature(zDEClient_QSandFeature *feat
 // Reimplements 0x4563d0:
 // zDEClient_QSand::CreateFeatureStructFromEventTemplate
 // (D:\Proj\GameZRecoil\zDEClient\zdec_qsand.c)
-RECOIL_NOINLINE zDEClient_QSandFeature *RECOIL_FASTCALL
-CreateFeatureStructFromEventTemplate(zDEClient_QSandEventTemplate *eventTemplate) {
+RECOIL_NOINLINE zDEClient_QSandFeature *RECOIL_FASTCALL CreateFeatureStructFromEventTemplate(
+    zDEClient_QSandEventTemplate *eventTemplate
+) {
     zDEClient_QSandFeature *result =
         (zDEClient_QSandFeature *)(malloc(sizeof(zDEClient_QSandFeature)));
-    memset(result, 0, sizeof(zDEClient_QSandFeature));
+    memset(
+        result,
+        0,
+        sizeof(zDEClient_QSandFeature)
+    );
 
     result->featureType = 3;
-    memcpy(&result->eventTemplate, eventTemplate, sizeof(result->eventTemplate));
-    result->points =
-        (zVec3 *)(malloc(result->eventTemplate.pointCount * sizeof(zVec3)));
+    memcpy(
+        &result->eventTemplate,
+        eventTemplate,
+        sizeof(result->eventTemplate)
+    );
+    result->points = (zVec3 *)(malloc(result->eventTemplate.pointCount * sizeof(zVec3)));
     result->clipPatchOutput = zGeometry_ClipPatchOutput::Create();
 
-    if ((result->eventTemplate.featureFlags & 0x1008) != 0 &&
-        result->eventTemplate.material == 0) {
+    if ((result->eventTemplate.featureFlags & 0x1008) != 0 && result->eventTemplate.material == 0) {
         result->eventTemplate.material = g_zDEClient_QuickSandMaterial;
         result->eventTemplate.materialCycle = g_zDEClient_QuickSandMaterialCycle;
     }
@@ -725,8 +852,9 @@ CreateFeatureStructFromEventTemplate(zDEClient_QSandEventTemplate *eventTemplate
 // Reimplements 0x456010:
 // zDEClient_QSand::InitFeatureFromEventTemplate
 // (D:\Proj\GameZRecoil\zDEClient\zdec_qsand.c)
-RECOIL_NOINLINE zDEClient_QSandFeature *RECOIL_FASTCALL
-InitFeatureFromEventTemplate(zDEClient_QSandEventTemplate *eventTemplate) {
+RECOIL_NOINLINE zDEClient_QSandFeature *RECOIL_FASTCALL InitFeatureFromEventTemplate(
+    zDEClient_QSandEventTemplate *eventTemplate
+) {
     zDEClient_QSandFeature *featureInstance = CreateFeatureStructFromEventTemplate(eventTemplate);
     zVec3 *currentPoint = featureInstance->points;
 
@@ -738,10 +866,18 @@ InitFeatureFromEventTemplate(zDEClient_QSandEventTemplate *eventTemplate) {
 
     int gridCol;
     int gridRow;
-    zClass_World::WorldToGridCoordsClamped(world, &gridCol, eventTemplate->center.x,
-                                           eventTemplate->center.z, &gridRow);
+    zClass_World::WorldToGridCoordsClamped(
+        world,
+        &gridCol,
+        eventTemplate->center.x,
+        eventTemplate->center.z,
+        &gridRow
+    );
 
-    zDEClient_FeatureGridCell *featureGridCell = zDEClient::GetFeatureGridCell(gridCol, gridRow);
+    zDEClient_FeatureGridCell *featureGridCell = zDEClient::GetFeatureGridCell(
+        gridCol,
+        gridRow
+    );
     featureInstance->featureGridCell = featureGridCell;
     if (featureGridCell == 0) {
         DestroyFeature(featureInstance);
@@ -824,10 +960,12 @@ InitFeatureFromEventTemplate(zDEClient_QSandEventTemplate *eventTemplate) {
             zGeometry_ClipPatchNodeView **nodeCursor = featureGridCell->nodes;
             for (int i = 0; i < nodeCount; ++i) {
                 zGeometry_ClipPatchNodeView *node = *nodeCursor;
-                if (strcmp(node->name, "ZDEC_FEATURE") == 0) {
+                if (strcmp(
+                    node->name,
+                    "ZDEC_FEATURE"
+                ) == 0) {
                     zDEClient_FeatureContextOverlapView *context =
-                        (zDEClient_FeatureContextOverlapView *)(
-                            node->callbackContext);
+                        (zDEClient_FeatureContextOverlapView *)(node->callbackContext);
                     if (context != 0) {
                         const int featureType = context->featureType;
                         if (featureType == 1) {
@@ -860,10 +998,15 @@ InitFeatureFromEventTemplate(zDEClient_QSandEventTemplate *eventTemplate) {
 
 // Reimplements 0x456450: zDEClient_QSand::Build
 // (D:\Proj\GameZRecoil\zDEClient\zdec_qsand.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL Build(zDEClient_QSandFeature *featureInstance) {
+RECOIL_NOINLINE int RECOIL_FASTCALL Build(
+    zDEClient_QSandFeature *featureInstance
+) {
     int result = zGeometry_Model::ClipPatch(
-        featureInstance->eventTemplate.pointCount, featureInstance->points,
-        featureInstance->featureGridCell, featureInstance->clipPatchOutput);
+        featureInstance->eventTemplate.pointCount,
+        featureInstance->points,
+        featureInstance->featureGridCell,
+        featureInstance->clipPatchOutput
+    );
 
     if (result <= 0) {
         if (result < 0) {
@@ -888,11 +1031,15 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Build(zDEClient_QSandFeature *featureInstanc
 
 // Reimplements 0x4564b0: zDEClient_QSand::CreateFeature
 // (D:\Proj\GameZRecoil\zDEClient\zdec_qsand.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-CreateFeature(zDEClient_QSandFeature *featureInstance) {
+RECOIL_NOINLINE int RECOIL_FASTCALL CreateFeature(
+    zDEClient_QSandFeature *featureInstance
+) {
     zClass_NodePartial *node = 0;
     zDiPartial *displayInstance = zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition(
-        featureInstance->clipPatchOutput->partitions, zDEClient::GetCameraNode(), &node);
+        featureInstance->clipPatchOutput->partitions,
+        zDEClient::GetCameraNode(),
+        &node
+    );
     if (displayInstance == 0 || node == 0) {
         if (displayInstance != 0) {
             zModel_DiPool::FreeIfUnreferenced(displayInstance);
@@ -905,7 +1052,10 @@ CreateFeature(zDEClient_QSandFeature *featureInstance) {
         return -1;
     }
 
-    zClass_Class::gwNodeSetName(node, "ZDEC_FEATURE");
+    zClass_Class::gwNodeSetName(
+        node,
+        "ZDEC_FEATURE"
+    );
     node->callbackContext = (zClass_NodePartial *)(featureInstance);
 
     zVec3 *const points = featureInstance->points;
@@ -927,12 +1077,10 @@ CreateFeature(zDEClient_QSandFeature *featureInstance) {
 
     zClipUV *uvPairs = 0;
     if (hasMaterialUv) {
-        uvPairs = (zClipUV *)(
-            malloc((size_t)(uvCenterIndex + 1) * sizeof(zClipUV)));
+        uvPairs = (zClipUV *)(malloc((size_t)(uvCenterIndex + 1) * sizeof(zClipUV)));
     }
 
-    zVec3 *const midPoints =
-        (zVec3 *)(malloc((size_t)(pointCount) * sizeof(zVec3)));
+    zVec3 *const midPoints = (zVec3 *)(malloc((size_t)(pointCount) * sizeof(zVec3)));
 
     const zVec3 center = featureInstance->eventTemplate.center;
     const float lowCenterY =
@@ -982,7 +1130,13 @@ CreateFeature(zDEClient_QSandFeature *featureInstance) {
             material = featureInstance->eventTemplate.materialCycle;
         }
 
-        zGeometry_Model::AddPolygonToDi(displayInstance, 4, polygonPoints, material, uvList);
+        zGeometry_Model::AddPolygonToDi(
+            displayInstance,
+            4,
+            polygonPoints,
+            material,
+            uvList
+        );
     }
 
     for (int i_860 = 0; i_860 < pointCount; ++i_860) {
@@ -1005,12 +1159,21 @@ CreateFeature(zDEClient_QSandFeature *featureInstance) {
             material = featureInstance->eventTemplate.materialCycle;
         }
 
-        zGeometry_Model::AddPolygonToDi(displayInstance, 3, polygonPoints, material, uvList);
+        zGeometry_Model::AddPolygonToDi(
+            displayInstance,
+            3,
+            polygonPoints,
+            material,
+            uvList
+        );
     }
 
     zClass_NodePartial *capNode = 0;
     zDiPartial *const capDisplayInstance = zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition(
-        featureInstance->clipPatchOutput->partitions, zDEClient::GetCameraNode(), &capNode);
+        featureInstance->clipPatchOutput->partitions,
+        zDEClient::GetCameraNode(),
+        &capNode
+    );
     if (capDisplayInstance == 0 || capNode == 0) {
         if (capDisplayInstance != 0) {
             zModel_DiPool::FreeIfUnreferenced(capDisplayInstance);
@@ -1023,7 +1186,10 @@ CreateFeature(zDEClient_QSandFeature *featureInstance) {
         return -1;
     }
 
-    zClass_Class::gwNodeSetName(capNode, "ZDEC_FEATURE");
+    zClass_Class::gwNodeSetName(
+        capNode,
+        "ZDEC_FEATURE"
+    );
     capNode->callbackContext = (zClass_NodePartial *)(featureInstance);
 
     for (int i_901 = 0; i_901 < pointCount; ++i_901) {
@@ -1046,7 +1212,13 @@ CreateFeature(zDEClient_QSandFeature *featureInstance) {
             material = sideMaterial;
         }
 
-        zGeometry_Model::AddPolygonToDi(capDisplayInstance, 3, polygonPoints, material, uvList);
+        zGeometry_Model::AddPolygonToDi(
+            capDisplayInstance,
+            3,
+            polygonPoints,
+            material,
+            uvList
+        );
     }
 
     free(midPoints);
@@ -1059,8 +1231,9 @@ CreateFeature(zDEClient_QSandFeature *featureInstance) {
 
 // Reimplements 0x455ef0: zDEClient_QSand::InstanceEventMaybeRelay
 // (D:\Proj\GameZRecoil\zDEClient\zdec_qsand.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-InstanceEventMaybeRelay(zDEClient_QSandEventTemplate *eventTemplate) {
+RECOIL_NOINLINE int RECOIL_FASTCALL InstanceEventMaybeRelay(
+    zDEClient_QSandEventTemplate *eventTemplate
+) {
     if (g_zDEClientQSandNetRelayCallback != 0 &&
         g_zDEClientQSandNetRelayCallback(eventTemplate) == 0) {
         return -1;
@@ -1075,29 +1248,44 @@ InstanceEventMaybeRelay(zDEClient_QSandEventTemplate *eventTemplate) {
 
     zDEClient_QSandFeature *const featureInstance = InitFeatureFromEventTemplate(eventTemplate);
     if (featureInstance == 0) {
-        zError::ReportOld(0x100, "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_qsand.cpp", 0x81,
-                          "Failed to instance quick sand: Build Failed");
+        zError::ReportOld(
+            0x100,
+            "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_qsand.cpp",
+            0x81,
+            "Failed to instance quick sand: Build Failed"
+        );
         zModel_Const::SetVertexMergeEpsilon(vertexMergeEpsilon);
         return -1;
     }
 
     if (Build(featureInstance) == 0) {
         DestroyFeature(featureInstance);
-        zError::ReportOld(0x100, "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_qsand.cpp", 0x92,
-                          "Failed to instance quick sand: Clip Failed");
+        zError::ReportOld(
+            0x100,
+            "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_qsand.cpp",
+            0x92,
+            "Failed to instance quick sand: Clip Failed"
+        );
         zModel_Const::SetVertexMergeEpsilon(vertexMergeEpsilon);
         return -1;
     }
 
     if (CreateFeature(featureInstance) != 0) {
         DestroyFeature(featureInstance);
-        zError::ReportOld(0x100, "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_qsand.cpp", 0xa1,
-                          "Failed to instance quick sand: Tesselation Failed");
+        zError::ReportOld(
+            0x100,
+            "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_qsand.cpp",
+            0xa1,
+            "Failed to instance quick sand: Tesselation Failed"
+        );
         zModel_Const::SetVertexMergeEpsilon(vertexMergeEpsilon);
         return -1;
     }
 
-    zDEClient::AppendFeatureEntry(3, eventTemplate);
+    zDEClient::AppendFeatureEntry(
+        3,
+        eventTemplate
+    );
     zDEClient::SubmitFeatureGeometry(featureInstance->clipPatchOutput);
     zGeometry_ClipPatchOutput::ApplyNodeDiPairs(featureInstance->clipPatchOutput);
 
@@ -1110,8 +1298,8 @@ namespace zGeometry_ClipPatchOutput {
 // Reimplements 0x46af00: zGeometry_ClipPatchOutput::Create
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
 RECOIL_NOINLINE zGeometry_ClipPatchOutputPartial *RECOIL_CDECL Create() {
-    zGeometry_ClipPatchOutputPartial *result = (zGeometry_ClipPatchOutputPartial *)(
-        malloc(sizeof(zGeometry_ClipPatchOutputPartial)));
+    zGeometry_ClipPatchOutputPartial *result =
+        (zGeometry_ClipPatchOutputPartial *)(malloc(sizeof(zGeometry_ClipPatchOutputPartial)));
     result->pointCount = 0;
     result->points = 0;
     result->partitionCount = 0;
@@ -1121,7 +1309,9 @@ RECOIL_NOINLINE zGeometry_ClipPatchOutputPartial *RECOIL_CDECL Create() {
 
 // Reimplements 0x46af20: zGeometry_ClipPatchOutput::Destroy
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL Destroy(zGeometry_ClipPatchOutputPartial *self) {
+RECOIL_NOINLINE void RECOIL_FASTCALL Destroy(
+    zGeometry_ClipPatchOutputPartial *self
+) {
     if (self->partitions != 0) {
         free(self->partitions);
     }
@@ -1131,32 +1321,40 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Destroy(zGeometry_ClipPatchOutputPartial *s
 
 // Reimplements 0x46ae40: zGeometry_ClipPatchOutput::ApplyNodeDiPairs
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-ApplyNodeDiPairs(zGeometry_ClipPatchOutputPartial *self) {
+RECOIL_NOINLINE int RECOIL_FASTCALL ApplyNodeDiPairs(
+    zGeometry_ClipPatchOutputPartial *self
+) {
     {
-    for (int partitionIndex = 0; partitionIndex < self->partitionCount; ++partitionIndex) {
-        zGeometry_ClipPatchPartitionOutput *const partition = &self->partitions[partitionIndex];
-        for (int i = 0; i < partition->nodeDiPairCount; ++i) {
-            zGeometry_ClipPatchNodeDiPair *const pair = &partition->nodeDiPairs[i];
+        for (int partitionIndex = 0; partitionIndex < self->partitionCount; ++partitionIndex) {
+            zGeometry_ClipPatchPartitionOutput *const partition = &self->partitions[partitionIndex];
+            for (int i = 0; i < partition->nodeDiPairCount; ++i) {
+                zGeometry_ClipPatchNodeDiPair *const pair = &partition->nodeDiPairs[i];
 
-            unsigned int oldDisplayInstanceValue = 0;
-            zClass_Class::gwNodeGetUserData(pair->node, &oldDisplayInstanceValue);
-            zClass_Class::gwNodeSetDisplayInstance(pair->node, pair->di);
+                unsigned int oldDisplayInstanceValue = 0;
+                zClass_Class::gwNodeGetUserData(
+                    pair->node,
+                    &oldDisplayInstanceValue
+                );
+                zClass_Class::gwNodeSetDisplayInstance(
+                    pair->node,
+                    pair->di
+                );
 
-            if (oldDisplayInstanceValue != 0) {
-                zModel_DiPool::FreeIfUnreferenced((zDiPartial *)(
-                    (unsigned int)(oldDisplayInstanceValue)));
+                if (oldDisplayInstanceValue != 0) {
+                    zModel_DiPool::FreeIfUnreferenced(
+                        (zDiPartial *)((unsigned int)(oldDisplayInstanceValue))
+                    );
+                }
+            }
+
+            ++partition->featureGridCell->featureCount;
+
+            if (partition->nodeDiPairs != 0) {
+                free(partition->nodeDiPairs);
+                partition->nodeDiPairs = 0;
+                partition->nodeDiPairCount = 0;
             }
         }
-
-        ++partition->featureGridCell->featureCount;
-
-        if (partition->nodeDiPairs != 0) {
-            free(partition->nodeDiPairs);
-            partition->nodeDiPairs = 0;
-            partition->nodeDiPairCount = 0;
-        }
-    }
     }
 
     return 0;
@@ -1168,8 +1366,10 @@ namespace zDEClient {
 // zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
 RECOIL_NOINLINE zDiPartial *RECOIL_FASTCALL CreateFeatureNodeAndDiFromClipPatchPartition(
-    zGeometry_ClipPatchPartitionOutput *partitionOutput, zClass_NodePartial *parentNode,
-    zClass_NodePartial **outNode) {
+    zGeometry_ClipPatchPartitionOutput *partitionOutput,
+    zClass_NodePartial *parentNode,
+    zClass_NodePartial **outNode
+) {
     if (partitionOutput == 0) {
         return 0;
     }
@@ -1187,7 +1387,10 @@ RECOIL_NOINLINE zDiPartial *RECOIL_FASTCALL CreateFeatureNodeAndDiFromClipPatchP
         *outNode = child;
     }
 
-    zClass_Class::gwNodeSetNodeType(child, 0xff);
+    zClass_Class::gwNodeSetNodeType(
+        child,
+        0xff
+    );
 
     for (int i = 0; i < partitionOutput->nodeDiPairCount; ++i) {
         zGeometry_ClipPatchNodeView *const node = partitionOutput->nodeDiPairs[i].node;
@@ -1196,14 +1399,23 @@ RECOIL_NOINLINE zDiPartial *RECOIL_FASTCALL CreateFeatureNodeAndDiFromClipPatchP
         }
 
         int nodeType;
-        zClass_Class::gwNodeGetNodeType(node, &nodeType);
+        zClass_Class::gwNodeGetNodeType(
+            node,
+            &nodeType
+        );
         if (nodeType != 0xff) {
-            zClass_Class::gwNodeSetNodeType(child, nodeType);
+            zClass_Class::gwNodeSetNodeType(
+                child,
+                nodeType
+            );
             break;
         }
     }
 
-    zClass_Class::gwNodeSetFlag17(child, 1);
+    zClass_Class::gwNodeSetFlag17(
+        child,
+        1
+    );
 
     zDiPartial *const displayInstance = zModel_DiPool::AllocFromFreeList();
     if (displayInstance == 0) {
@@ -1215,15 +1427,22 @@ RECOIL_NOINLINE zDiPartial *RECOIL_FASTCALL CreateFeatureNodeAndDiFromClipPatchP
         return 0;
     }
 
-    zClass_Class::AddChild(parentNode, child);
-    zClass_Class::gwNodeSetDisplayInstance(child, displayInstance);
+    zClass_Class::AddChild(
+        parentNode,
+        child
+    );
+    zClass_Class::gwNodeSetDisplayInstance(
+        child,
+        displayInstance
+    );
     return displayInstance;
 }
 } // namespace zDEClient
 
 // Reimplements 0x4588c0: zDEClient_MapTreeState::IterNextNodeRef
-RECOIL_NOINLINE zDEClient_MapTreeNode **RECOIL_THISCALL
-zDEClient_MapTreeState::IterNextNodeRef(zDEClient_MapTreeNode **nodeRef) {
+RECOIL_NOINLINE zDEClient_MapTreeNode **RECOIL_THISCALL zDEClient_MapTreeState::IterNextNodeRef(
+    zDEClient_MapTreeNode **nodeRef
+) {
     zDEClient_MapTreeNode *node = *nodeRef;
     if (!IsNil(node->right)) {
         *nodeRef = TreeMinimum(node->right);
@@ -1245,8 +1464,9 @@ zDEClient_MapTreeState::IterNextNodeRef(zDEClient_MapTreeNode **nodeRef) {
 }
 
 // Reimplements 0x458970: zDEClient_MapTreeState::IterPrevNodeRef
-RECOIL_NOINLINE void RECOIL_THISCALL
-zDEClient_MapTreeState::IterPrevNodeRef(zDEClient_MapTreeNode **nodeRef) {
+RECOIL_NOINLINE void RECOIL_THISCALL zDEClient_MapTreeState::IterPrevNodeRef(
+    zDEClient_MapTreeNode **nodeRef
+) {
     zDEClient_MapTreeNode *node = *nodeRef;
     if (node->colorOrNil == 0 && node->parent->parent == node) {
         *nodeRef = node->right;
@@ -1270,8 +1490,11 @@ zDEClient_MapTreeState::IterPrevNodeRef(zDEClient_MapTreeNode **nodeRef) {
 // Reimplements 0x4585a0: zDEClient_MapTreeState::InsertAt
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
 RECOIL_NOINLINE zDEClient_MapTreeNode **RECOIL_THISCALL zDEClient_MapTreeState::InsertAt(
-    zDEClient_MapTreeNode **outNode, zDEClient_MapTreeNode *where,
-    zDEClient_MapTreeNode *parent, zGeometry_ClipPatchNodeDiPair *key) {
+    zDEClient_MapTreeNode **outNode,
+    zDEClient_MapTreeNode *where,
+    zDEClient_MapTreeNode *parent,
+    zGeometry_ClipPatchNodeDiPair *key
+) {
     zDEClient_MapTreeNode *inserted =
         (zDEClient_MapTreeNode *)(::operator new(sizeof(zDEClient_MapTreeNode)));
     inserted->left = g_zDEClient_FeatureMapTreeNil;
@@ -1282,8 +1505,7 @@ RECOIL_NOINLINE zDEClient_MapTreeNode **RECOIL_THISCALL zDEClient_MapTreeState::
 
     ++nodeCount;
 
-    if (parent != header && where == g_zDEClient_FeatureMapTreeNil &&
-        !(key->node < parent->key)) {
+    if (parent != header && where == g_zDEClient_FeatureMapTreeNil && !(key->node < parent->key)) {
         parent->right = inserted;
         if (parent == header->right) {
             header->right = inserted;
@@ -1312,12 +1534,18 @@ RECOIL_NOINLINE zDEClient_MapTreeNode **RECOIL_THISCALL zDEClient_MapTreeState::
             } else {
                 if (fixup == parentNode->right) {
                     fixup = parentNode;
-                    RotateTreeLeft(this, fixup);
+                    RotateTreeLeft(
+                        this,
+                        fixup
+                    );
                 }
 
                 fixup->parent->colorOrNil = 1;
                 fixup->parent->parent->colorOrNil = 0;
-                RotateTreeRight(this, fixup->parent->parent);
+                RotateTreeRight(
+                    this,
+                    fixup->parent->parent
+                );
             }
         } else {
             zDEClient_MapTreeNode *const uncle = grandParent->left;
@@ -1329,12 +1557,18 @@ RECOIL_NOINLINE zDEClient_MapTreeNode **RECOIL_THISCALL zDEClient_MapTreeState::
             } else {
                 if (fixup == parentNode->left) {
                     fixup = parentNode;
-                    RotateTreeRight(this, fixup);
+                    RotateTreeRight(
+                        this,
+                        fixup
+                    );
                 }
 
                 fixup->parent->colorOrNil = 1;
                 fixup->parent->parent->colorOrNil = 0;
-                RotateTreeLeft(this, fixup->parent->parent);
+                RotateTreeLeft(
+                    this,
+                    fixup->parent->parent
+                );
             }
         }
     }
@@ -1345,8 +1579,9 @@ RECOIL_NOINLINE zDEClient_MapTreeNode **RECOIL_THISCALL zDEClient_MapTreeState::
 }
 
 // Reimplements 0x458510: zDEClient_MapTreeState::DestroySubtree
-RECOIL_NOINLINE void RECOIL_THISCALL
-zDEClient_MapTreeState::DestroySubtree(zDEClient_MapTreeNode *node) {
+RECOIL_NOINLINE void RECOIL_THISCALL zDEClient_MapTreeState::DestroySubtree(
+    zDEClient_MapTreeNode *node
+) {
     while (!IsNil(node)) {
         DestroySubtree(node->right);
         zDEClient_MapTreeNode *const left = node->left;
@@ -1357,23 +1592,41 @@ zDEClient_MapTreeState::DestroySubtree(zDEClient_MapTreeNode *node) {
 
 // Reimplements 0x457fe0: zDEClient_MapTreeState::EraseAndAdvance
 RECOIL_NOINLINE zDEClient_MapTreeNode **RECOIL_THISCALL zDEClient_MapTreeState::EraseAndAdvance(
-    zDEClient_MapTreeNode **outNext, zDEClient_MapTreeNode *node) {
+    zDEClient_MapTreeNode **outNext,
+    zDEClient_MapTreeNode *node
+) {
     zDEClient_MapTreeNode *next = node;
     IterNextNodeRef(&next);
 
     if (IsNil(node->left)) {
-        Transplant(this, node, node->right);
+        Transplant(
+            this,
+            node,
+            node->right
+        );
     } else if (IsNil(node->right)) {
-        Transplant(this, node, node->left);
+        Transplant(
+            this,
+            node,
+            node->left
+        );
     } else {
         zDEClient_MapTreeNode *successor = TreeMinimum(node->right);
         if (successor->parent != node) {
-            Transplant(this, successor, successor->right);
+            Transplant(
+                this,
+                successor,
+                successor->right
+            );
             successor->right = node->right;
             successor->right->parent = successor;
         }
 
-        Transplant(this, node, successor);
+        Transplant(
+            this,
+            node,
+            successor
+        );
         successor->left = node->left;
         successor->left->parent = successor;
         successor->colorOrNil = node->colorOrNil;
@@ -1391,7 +1644,10 @@ RECOIL_NOINLINE zDEClient_MapTreeNode **RECOIL_THISCALL zDEClient_MapTreeState::
 
 // Reimplements 0x457e80: zDEClient_MapTreeState::EraseRange
 RECOIL_NOINLINE zDEClient_MapTreeNode **RECOIL_THISCALL zDEClient_MapTreeState::EraseRange(
-    zDEClient_MapTreeNode **outNext, zDEClient_MapTreeNode *first, zDEClient_MapTreeNode *last) {
+    zDEClient_MapTreeNode **outNext,
+    zDEClient_MapTreeNode *first,
+    zDEClient_MapTreeNode *last
+) {
     if (nodeCount != 0 && first == header->left && last == header) {
         DestroySubtree(header->parent);
         nodeCount = 0;
@@ -1401,7 +1657,10 @@ RECOIL_NOINLINE zDEClient_MapTreeNode **RECOIL_THISCALL zDEClient_MapTreeState::
     }
 
     while (first != last) {
-        EraseAndAdvance(&first, first);
+        EraseAndAdvance(
+            &first,
+            first
+        );
     }
 
     *outNext = first;
@@ -1411,8 +1670,10 @@ RECOIL_NOINLINE zDEClient_MapTreeNode **RECOIL_THISCALL zDEClient_MapTreeState::
 // Reimplements 0x457d90: zDEClient_MapTreeState::FindOrInsertKey
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
 RECOIL_NOINLINE zDEClient_MapTreeLocateResult *RECOIL_THISCALL
-zDEClient_MapTreeState::FindOrInsertKey(zDEClient_MapTreeLocateResult *outResult,
-                                        zGeometry_ClipPatchNodeDiPair *key) {
+zDEClient_MapTreeState::FindOrInsertKey(
+    zDEClient_MapTreeLocateResult *outResult,
+    zGeometry_ClipPatchNodeDiPair *key
+) {
     EnsureFeatureMapTreeInitialized(this);
 
     zGeometry_ClipPatchNodeView *const nodeKey = key->node;
@@ -1433,7 +1694,12 @@ zDEClient_MapTreeState::FindOrInsertKey(zDEClient_MapTreeLocateResult *outResult
 
     if (allowInsert != 0) {
         zDEClient_MapTreeNode *inserted = 0;
-        InsertAt(&inserted, cursor, parent, key);
+        InsertAt(
+            &inserted,
+            cursor,
+            parent,
+            key
+        );
         outResult->node = inserted;
         outResult->inserted = 1;
         return outResult;
@@ -1443,7 +1709,12 @@ zDEClient_MapTreeState::FindOrInsertKey(zDEClient_MapTreeLocateResult *outResult
     if (insertLeft != 0) {
         if (parent == header->left) {
             zDEClient_MapTreeNode *inserted = 0;
-            InsertAt(&inserted, cursor, parent, key);
+            InsertAt(
+                &inserted,
+                cursor,
+                parent,
+                key
+            );
             outResult->node = inserted;
             outResult->inserted = 1;
             return outResult;
@@ -1455,7 +1726,12 @@ zDEClient_MapTreeState::FindOrInsertKey(zDEClient_MapTreeLocateResult *outResult
 
     if (candidate->key < nodeKey) {
         zDEClient_MapTreeNode *inserted = 0;
-        InsertAt(&inserted, cursor, parent, key);
+        InsertAt(
+            &inserted,
+            cursor,
+            parent,
+            key
+        );
         outResult->node = inserted;
         outResult->inserted = 1;
         return outResult;
@@ -1466,22 +1742,125 @@ zDEClient_MapTreeState::FindOrInsertKey(zDEClient_MapTreeLocateResult *outResult
     return outResult;
 }
 
+// Reimplements 0x457cc0: zDEClient_MapTreeState::InitState
+// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+RECOIL_NOINLINE zDEClient_MapTreeState *RECOIL_THISCALL zDEClient_MapTreeState::InitState(
+    char *modeValue,
+    char *flagsValue
+) {
+    mode = *modeValue;
+    flags = *flagsValue;
+    allowInsert = 0;
+
+    if (g_zDEClient_FeatureMapTreeNil == 0) {
+        g_zDEClient_FeatureMapTreeNil =
+            (zDEClient_MapTreeNode *)(::operator new(sizeof(zDEClient_MapTreeNode)));
+        g_zDEClient_FeatureMapTreeNil->left = 0;
+        g_zDEClient_FeatureMapTreeNil->parent = 0;
+        g_zDEClient_FeatureMapTreeNil->right = 0;
+        g_zDEClient_FeatureMapTreeNil->key = 0;
+        g_zDEClient_FeatureMapTreeNil->colorOrNil = 1;
+    }
+
+    ++g_zDEClient_FeatureMapTreeNilRefCount;
+
+    header = (zDEClient_MapTreeNode *)(::operator new(sizeof(zDEClient_MapTreeNode)));
+    header->left = header;
+    header->parent = g_zDEClient_FeatureMapTreeNil;
+    header->right = header;
+    header->key = 0;
+    header->colorOrNil = 0;
+    nodeCount = 0;
+    return this;
+}
+
+// Reimplements 0x4576e0: zDEClient_MapTreeState::Destroy
+// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+RECOIL_NOINLINE void RECOIL_THISCALL zDEClient_MapTreeState::Destroy() {
+    zDEClient_MapTreeNode *outNext = 0;
+    EraseRange(
+        &outNext,
+        header->left,
+        header
+    );
+
+    ::operator delete(header);
+    header = 0;
+    nodeCount = 0;
+
+    --g_zDEClient_FeatureMapTreeNilRefCount;
+    if (g_zDEClient_FeatureMapTreeNilRefCount == 0) {
+        ::operator delete(g_zDEClient_FeatureMapTreeNil);
+        g_zDEClient_FeatureMapTreeNil = 0;
+    }
+}
+
 namespace zDEClient {
+// Reimplements 0x457650: zDEClient::InitFeatureSystem
+// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL InitFeatureSystem() {
+    InitFeatureEntryListAndMapTree();
+    RegisterFeatureSystemCleanupAtExit();
+}
+
+// Reimplements 0x457660: zDEClient::InitFeatureEntryListAndMapTree
+// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL InitFeatureEntryListAndMapTree() {
+    char modeValue = 0;
+    char flagsValue = 0;
+    g_zDEClient_FeatureMapTree.InitState(
+        &modeValue,
+        &flagsValue
+    );
+
+    g_zDEClient_FeatureListFlags = (unsigned char)(modeValue);
+    g_zDEClient_FeatureListBegin = 0;
+    g_zDEClient_FeatureListEnd = 0;
+    g_zDEClient_FeatureListCapacityEnd = 0;
+}
+
+// Reimplements 0x4576a0: zDEClient::RegisterFeatureSystemCleanupAtExit
+// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL RegisterFeatureSystemCleanupAtExit() {
+    atexit(ShutdownFeatureSystem);
+}
+
+// Reimplements 0x4576b0: zDEClient::ShutdownFeatureSystem
+// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL ShutdownFeatureSystem() {
+    ::operator delete(g_zDEClient_FeatureListBegin);
+    g_zDEClient_FeatureListBegin = 0;
+    g_zDEClient_FeatureListEnd = 0;
+    g_zDEClient_FeatureListCapacityEnd = 0;
+
+    g_zDEClient_FeatureMapTree.Destroy();
+}
+
 // Reimplements 0x455ed0: zDEClient::CopyQSandEventTemplateDefaults
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.c)
-RECOIL_NOINLINE void RECOIL_FASTCALL
-CopyQSandEventTemplateDefaults(zDEClient_QSandEventTemplate *eventTemplate) {
-    memcpy(eventTemplate, &g_zDEClient_QuickSandEventTemplateDefaults,
-           sizeof(zDEClient_QSandEventTemplate));
+RECOIL_NOINLINE void RECOIL_FASTCALL CopyQSandEventTemplateDefaults(
+    zDEClient_QSandEventTemplate *eventTemplate
+) {
+    memcpy(
+        eventTemplate,
+        &g_zDEClient_QuickSandEventTemplateDefaults,
+        sizeof(zDEClient_QSandEventTemplate)
+    );
 }
 
 // Reimplements 0x4558f0: zDEClient::LoadConfigResources
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL LoadConfigResources(zClass_NodePartial *worldNode) {
+RECOIL_NOINLINE int RECOIL_FASTCALL LoadConfigResources(
+    zClass_NodePartial *worldNode
+) {
     int textureLoadPending = 0;
     if (worldNode == 0) {
-        zError::ReportOld(0x200, "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp", 0x44,
-                          "Failed to DEClient: world node is NULL.");
+        zError::ReportOld(
+            0x200,
+            "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp",
+            0x44,
+            "Failed to DEClient: world node is NULL."
+        );
         return -1;
     }
 
@@ -1489,71 +1868,124 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadConfigResources(zClass_NodePartial *worl
     SetCameraNode(worldNode);
     zVideo::ReturnSuccessStub();
 
-    g_zDEClient_ConfigReaderRoot = zReader::LoadNodeFromPath("declient.zrd", 0, 0);
+    g_zDEClient_ConfigReaderRoot = zReader::LoadNodeFromPath(
+        "declient.zrd",
+        0,
+        0
+    );
     srand((unsigned int)(time(0)));
 
     if (g_zDEClient_ConfigReaderRoot == 0) {
-        zError::ReportOld(0x100, "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp", 0x57,
-                          "Failed to read (%s), using defaults", "declient.zrd");
+        zError::ReportOld(
+            0x100,
+            "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp",
+            0x57,
+            "Failed to read (%s), using defaults",
+            "declient.zrd"
+        );
     }
 
-    zReader::Node *const craterNode = zReader_GetNamedNode(g_zDEClient_ConfigReaderRoot, "CRATER");
+    zReader::Node *const craterNode = zReader_GetNamedNode(
+        g_zDEClient_ConfigReaderRoot,
+        "CRATER"
+    );
     g_zDEClient_CraterEventTemplateDefaults.featureFlags = 0x100c;
     g_zDEClient_CraterEventTemplateDefaults.pointCount = 7;
     g_zDEClient_CraterEventTemplateDefaults.slope = 0.0f;
     g_zDEClient_CraterEventTemplateDefaults.depth = 4.0f;
     g_zDEClient_CraterEventTemplateDefaults.radius = 20.0f;
 
-    zReader::ReadNamedInt(craterNode, "POINTS",
-                          &g_zDEClient_CraterEventTemplateDefaults.pointCount);
-    zReader::ReadNamedFloat(craterNode, "SLOPE", &g_zDEClient_CraterEventTemplateDefaults.slope);
-    zReader::ReadNamedFloat(craterNode, "DEPTH", &g_zDEClient_CraterEventTemplateDefaults.depth);
-    zReader::ReadNamedFloat(craterNode, "RADIUS", &g_zDEClient_CraterEventTemplateDefaults.radius);
+    zReader::ReadNamedInt(
+        craterNode,
+        "POINTS",
+        &g_zDEClient_CraterEventTemplateDefaults.pointCount
+    );
+    zReader::ReadNamedFloat(
+        craterNode,
+        "SLOPE",
+        &g_zDEClient_CraterEventTemplateDefaults.slope
+    );
+    zReader::ReadNamedFloat(
+        craterNode,
+        "DEPTH",
+        &g_zDEClient_CraterEventTemplateDefaults.depth
+    );
+    zReader::ReadNamedFloat(
+        craterNode,
+        "RADIUS",
+        &g_zDEClient_CraterEventTemplateDefaults.radius
+    );
 
     g_zDEClient_CraterDisplaySourceCount = 1;
-    g_zDEClient_CraterDisplaySourceList = (zDEClient_CraterDisplaySourceEntry *)(
-        calloc(1, sizeof(zDEClient_CraterDisplaySourceEntry)));
+    g_zDEClient_CraterDisplaySourceList = (zDEClient_CraterDisplaySourceEntry *)(calloc(
+        1,
+        sizeof(zDEClient_CraterDisplaySourceEntry)
+    ));
 
     zDEClient_CraterDisplaySourceEntry *defaultDisplaySource = g_zDEClient_CraterDisplaySourceList;
     if (LoadMaterialFromTexturePath_Local(
             &defaultDisplaySource->craterMaterial,
-            (char *)(zReader::ReadNamedString(craterNode, "DEFAULT_TEXTURE"))) != 0) {
+            (char *)(zReader::ReadNamedString(
+                craterNode,
+                "DEFAULT_TEXTURE"
+            ))
+        ) != 0) {
         textureLoadPending = 1;
     }
 
     defaultDisplaySource->effectAnimEntry =
-        zEffectAnim::FindEntryByName(zReader::ReadNamedString(craterNode, "DEFAULT_ANIM"));
+        zEffectAnim::FindEntryByName(zReader::ReadNamedString(
+            craterNode,
+            "DEFAULT_ANIM"
+        ));
 
-    zReader::Node *const textureAnimNode = zReader_GetNamedNode(craterNode, "TEXTURE_ANIM");
+    zReader::Node *const textureAnimNode = zReader_GetNamedNode(
+        craterNode,
+        "TEXTURE_ANIM"
+    );
     if (textureAnimNode != 0) {
         const int textureAnimCount = zReaderArrayCount(textureAnimNode);
         const int additionalDisplaySourceCount = (textureAnimCount - 1) / 2;
         g_zDEClient_CraterDisplaySourceCount += additionalDisplaySourceCount;
 
-        g_zDEClient_CraterDisplaySourceList = (zDEClient_CraterDisplaySourceEntry *)(
-            realloc(g_zDEClient_CraterDisplaySourceList,
-                         (size_t)(g_zDEClient_CraterDisplaySourceCount) *
-                             sizeof(zDEClient_CraterDisplaySourceEntry)));
+        g_zDEClient_CraterDisplaySourceList = (zDEClient_CraterDisplaySourceEntry *)(realloc(
+            g_zDEClient_CraterDisplaySourceList,
+            (size_t)(g_zDEClient_CraterDisplaySourceCount) *
+                sizeof(zDEClient_CraterDisplaySourceEntry)
+        ));
 
         zDEClient_CraterDisplaySourceEntry *displaySource = &g_zDEClient_CraterDisplaySourceList[1];
         for (int i = 1; i < textureAnimCount; i += 2) {
-            char *const sourceTexturePath = zReaderArrayString(textureAnimNode, i);
-            if (LoadMaterialFromTexturePath_Local(&displaySource->sourceMaterial,
-                                                  sourceTexturePath) != 0) {
+            char *const sourceTexturePath = zReaderArrayString(
+                textureAnimNode,
+                i
+            );
+            if (LoadMaterialFromTexturePath_Local(
+                    &displaySource->sourceMaterial,
+                    sourceTexturePath
+                ) != 0) {
                 textureLoadPending = 1;
             }
 
             zReader::Node *const entryNode =
-                zReader_GetNamedNode(textureAnimNode, sourceTexturePath);
+                zReader_GetNamedNode(
+                    textureAnimNode,
+                    sourceTexturePath
+                );
             if (entryNode != 0) {
-                if (LoadMaterialFromTexturePath_Local(&displaySource->craterMaterial,
-                                                      zReaderArrayString(entryNode, 1)) != 0) {
+                if (LoadMaterialFromTexturePath_Local(
+                        &displaySource->craterMaterial,
+                        zReaderArrayString(entryNode, 1)
+                    ) != 0) {
                     textureLoadPending = 1;
                 }
 
                 if (zReaderArrayCount(entryNode) > 2) {
                     displaySource->effectAnimEntry =
-                        zEffectAnim::FindEntryByName(zReaderArrayString(entryNode, 2));
+                        zEffectAnim::FindEntryByName(zReaderArrayString(
+                            entryNode,
+                            2
+                        ));
                 } else {
                     displaySource->effectAnimEntry =
                         g_zDEClient_CraterDisplaySourceList[0].effectAnimEntry;
@@ -1565,12 +1997,18 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadConfigResources(zClass_NodePartial *worl
     }
 
     zReader::Node *const quickSandNode =
-        zReader_GetNamedNode(g_zDEClient_ConfigReaderRoot, "QUICK_SAND");
+        zReader_GetNamedNode(
+            g_zDEClient_ConfigReaderRoot,
+            "QUICK_SAND"
+        );
     if (quickSandNode == 0) {
         g_zDEClient_QuickSandEnabled = 0;
     } else {
         zReader::Node *const defaultTextureNode =
-            zReader_GetNamedNode(quickSandNode, "DEFAULT_TEXTURE");
+            zReader_GetNamedNode(
+                quickSandNode,
+                "DEFAULT_TEXTURE"
+            );
         int textureCount = 1;
         if (defaultTextureNode != 0) {
             zReader::Node *const defaultTextureArray = defaultTextureNode->value.nodes;
@@ -1579,8 +2017,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadConfigResources(zClass_NodePartial *worl
             g_zDEClient_QuickSandTextureCount = textureCount;
 
             if (textureCount > 0) {
-                g_zDEClient_QuickSandTexturePaths = (char **)(
-                    malloc((size_t)(textureCount) * sizeof(char *)));
+                g_zDEClient_QuickSandTexturePaths =
+                    (char **)(malloc((size_t)(textureCount) * sizeof(char *)));
                 for (int i = 0; i < textureCount; ++i) {
                     g_zDEClient_QuickSandTexturePaths[i] = defaultTextureArray[i + 2].value.str;
                 }
@@ -1597,28 +2035,50 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadConfigResources(zClass_NodePartial *worl
         g_zDEClient_QuickSandEventTemplateDefaults.depth = 4.0f;
         g_zDEClient_QuickSandEventTemplateDefaults.radius = 20.0f;
 
-        zReader::ReadNamedInt(quickSandNode, "POINTS",
-                              &g_zDEClient_QuickSandEventTemplateDefaults.pointCount);
-        zReader::ReadNamedFloat(quickSandNode, "SLOPE",
-                                &g_zDEClient_QuickSandEventTemplateDefaults.slope);
-        zReader::ReadNamedFloat(quickSandNode, "DEPTH",
-                                &g_zDEClient_QuickSandEventTemplateDefaults.depth);
-        zReader::ReadNamedFloat(quickSandNode, "RADIUS",
-                                &g_zDEClient_QuickSandEventTemplateDefaults.radius);
+        zReader::ReadNamedInt(
+            quickSandNode,
+            "POINTS",
+            &g_zDEClient_QuickSandEventTemplateDefaults.pointCount
+        );
+        zReader::ReadNamedFloat(
+            quickSandNode,
+            "SLOPE",
+            &g_zDEClient_QuickSandEventTemplateDefaults.slope
+        );
+        zReader::ReadNamedFloat(
+            quickSandNode,
+            "DEPTH",
+            &g_zDEClient_QuickSandEventTemplateDefaults.depth
+        );
+        zReader::ReadNamedFloat(
+            quickSandNode,
+            "RADIUS",
+            &g_zDEClient_QuickSandEventTemplateDefaults.radius
+        );
 
         zModel_MaterialPartial material;
         zModel_Material::ResetDefaults(&material);
         material.flags = (unsigned short)(material.flags | 0x0100);
 
         if (textureCount > 1) {
-            zModel_Material::SetCycleTextureCount(&material, textureCount);
-            zModel_Material::SetCycleTextureSpeed(&material, g_zDEClient_QuickSandAnimSpeed);
-            zModel_Material::SetCycleTextureLoop(&material, 1);
+            zModel_Material::SetCycleTextureCount(
+                &material,
+                textureCount
+            );
+            zModel_Material::SetCycleTextureSpeed(
+                &material,
+                g_zDEClient_QuickSandAnimSpeed
+            );
+            zModel_Material::SetCycleTextureLoop(
+                &material,
+                1
+            );
 
             for (int i = 0; i < textureCount; ++i) {
                 zModel_Material::AddCycleTexture(
                     &material,
-                    zImage::TexDir_FindOrAppendByPath(g_zDEClient_QuickSandTexturePaths[i]));
+                    zImage::TexDir_FindOrAppendByPath(g_zDEClient_QuickSandTexturePaths[i])
+                );
             }
 
             textureLoadPending = 1;
@@ -1630,12 +2090,19 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadConfigResources(zClass_NodePartial *worl
         } else {
             material.flags = (unsigned short)(material.flags & 0xfeff);
             g_zDEClient_QuickSandMaterial = 0;
-            zError::ReportOld(0x100, "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp", 0xef,
-                              "Quick sand will NOT be textured");
+            zError::ReportOld(
+                0x100,
+                "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp",
+                0xef,
+                "Quick sand will NOT be textured"
+            );
         }
 
         if (g_zDEClient_QuickSandMaterial != 0) {
-            zModel_Material::SetUserTag(g_zDEClient_QuickSandMaterial, 3);
+            zModel_Material::SetUserTag(
+                g_zDEClient_QuickSandMaterial,
+                3
+            );
         }
 
         if (textureCount >= 1 && g_zDEClient_QuickSandTexturePaths != 0) {
@@ -1643,7 +2110,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadConfigResources(zClass_NodePartial *worl
             material.flags = (unsigned short)(material.flags | 0x0100);
             material.currentTextureDirectoryEntry =
                 zImage::FindTexDirEntryByName(g_zDEClient_QuickSandTexturePaths[0]);
-            zModel_Material::SetUserTag(&material, 0);
+            zModel_Material::SetUserTag(
+                &material,
+                0
+            );
             g_zDEClient_QuickSandMaterialCycle = zModel_Material::Clone(&material);
             g_zDEClient_QuickSandEnabled = 1;
         } else {
@@ -1661,8 +2131,13 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadConfigResources(zClass_NodePartial *worl
     g_zDEClient_ConfigReaderRoot = 0;
 
     if (rebuildBltRectOnReload != 0) {
-        zUtil_ZAR::RegisterSectionHandler("zDEClient", ZbdCallbackPtr(&WriteFeatureSectionsToZAR),
-                                          ZbdCallbackPtr(&ApplyFeatureEntry), 0x3e8, 0);
+        zUtil_ZAR::RegisterSectionHandler(
+            "zDEClient",
+            ZbdCallbackPtr(&WriteFeatureSectionsToZAR),
+            ZbdCallbackPtr(&ApplyFeatureEntry),
+            0x3e8,
+            0
+        );
     }
 
     return 0;
@@ -1670,8 +2145,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadConfigResources(zClass_NodePartial *worl
 
 // Reimplements 0x455dd0: zDEClient::LoadMaterialFromTexturePath_Local
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.c)
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL
-LoadMaterialFromTexturePath_Local(zModel_MaterialPartial **outMaterial, char *texturePath) {
+RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL LoadMaterialFromTexturePath_Local(
+    zModel_MaterialPartial **outMaterial,
+    char *texturePath
+) {
     int result = 0;
     zImage_TexDirEntryPartial *textureDirectoryEntry = zImage::FindTexDirEntryByName(texturePath);
     if (textureDirectoryEntry == 0) {
@@ -1695,18 +2172,21 @@ LoadMaterialFromTexturePath_Local(zModel_MaterialPartial **outMaterial, char *te
 
 // Reimplements 0x458aa0: zDEClient::SetCameraNode
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetCameraNode(zClass_NodePartial *cameraNode) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetCameraNode(
+    zClass_NodePartial *cameraNode
+) {
     if (cameraNode != 0) {
         g_zDEClient_CameraNode = cameraNode;
-        g_zDEClient_CameraNodeClassData =
-            (zClass_CameraDataPartial *)(cameraNode->classData);
+        g_zDEClient_CameraNodeClassData = (zClass_CameraDataPartial *)(cameraNode->classData);
     }
 }
 
 // Reimplements 0x458ac0: zDEClient::GetFeatureGridCell
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
-RECOIL_NOINLINE zDEClient_FeatureGridCell *RECOIL_FASTCALL
-GetFeatureGridCell(int gridCol, int gridRow) {
+RECOIL_NOINLINE zDEClient_FeatureGridCell *RECOIL_FASTCALL GetFeatureGridCell(
+    int gridCol,
+    int gridRow
+) {
     if (g_zDEClient_CameraNodeClassData == 0) {
         return 0;
     }
@@ -1724,9 +2204,11 @@ RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL GetCameraNode() {
 
 // Reimplements 0x458a30: zDEClient::CopyFeatureEntriesForward
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
-RECOIL_NOINLINE zDEClient_FeatureEntry *RECOIL_STDCALL
-CopyFeatureEntriesForward(zDEClient_FeatureEntry *first, zDEClient_FeatureEntry *last,
-                          zDEClient_FeatureEntry *dest) {
+RECOIL_NOINLINE zDEClient_FeatureEntry *RECOIL_STDCALL CopyFeatureEntriesForward(
+    zDEClient_FeatureEntry *first,
+    zDEClient_FeatureEntry *last,
+    zDEClient_FeatureEntry *dest
+) {
     while (first != last) {
         if (dest != 0) {
             *dest = *first;
@@ -1741,9 +2223,11 @@ CopyFeatureEntriesForward(zDEClient_FeatureEntry *first, zDEClient_FeatureEntry 
 
 // Reimplements 0x458a70: zDEClient::FillFeatureEntries
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
-RECOIL_NOINLINE void RECOIL_STDCALL FillFeatureEntries(zDEClient_FeatureEntry *dest,
-                                                       unsigned int count,
-                                                       const zDEClient_FeatureEntry *value) {
+RECOIL_NOINLINE void RECOIL_STDCALL FillFeatureEntries(
+    zDEClient_FeatureEntry *dest,
+    unsigned int count,
+    const zDEClient_FeatureEntry *value
+) {
     while (count != 0) {
         if (dest != 0) {
             *dest = *value;
@@ -1756,8 +2240,10 @@ RECOIL_NOINLINE void RECOIL_STDCALL FillFeatureEntries(zDEClient_FeatureEntry *d
 
 // Reimplements 0x457840: zDEClient::AppendFeatureEntry
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL AppendFeatureEntry(int featureType,
-                                                                const void *featureEventData) {
+RECOIL_NOINLINE int RECOIL_FASTCALL AppendFeatureEntry(
+    int featureType,
+    const void *featureEventData
+) {
     size_t eventDataBytes = 0;
     if (featureType == 1) {
         eventDataBytes = sizeof(zDEClient_CraterEventTemplate);
@@ -1769,23 +2255,34 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AppendFeatureEntry(int featureType,
 
     zDEClient_FeatureEntry featureEntry;
     featureEntry.featureType = featureType;
-    memset(&featureEntry.eventData, 0, sizeof(featureEntry.eventData));
-    memcpy(&featureEntry.eventData, featureEventData, eventDataBytes);
+    memset(
+        &featureEntry.eventData,
+        0,
+        sizeof(featureEntry.eventData)
+    );
+    memcpy(
+        &featureEntry.eventData,
+        featureEventData,
+        eventDataBytes
+    );
     featureEntry.reloadFlag = 0;
 
     if (g_zDEClient_FeatureListEnd == g_zDEClient_FeatureListCapacityEnd) {
-        const ptrdiff_t oldCount =
-            g_zDEClient_FeatureListBegin != 0
-                ? g_zDEClient_FeatureListEnd - g_zDEClient_FeatureListBegin
-                : 0;
+        const ptrdiff_t oldCount = g_zDEClient_FeatureListBegin != 0
+                                       ? g_zDEClient_FeatureListEnd - g_zDEClient_FeatureListBegin
+                                       : 0;
         const ptrdiff_t capacityIncrement = oldCount > 1 ? oldCount : 1;
         const ptrdiff_t newCapacity = oldCount + capacityIncrement;
 
-        zDEClient_FeatureEntry *const newEntries = (zDEClient_FeatureEntry *)(
-            ::operator new((size_t)(newCapacity) * sizeof(zDEClient_FeatureEntry)));
+        zDEClient_FeatureEntry *const newEntries = (zDEClient_FeatureEntry *)(::operator new(
+            (size_t)(newCapacity) * sizeof(zDEClient_FeatureEntry)
+        ));
 
-        CopyFeatureEntriesForward(g_zDEClient_FeatureListBegin, g_zDEClient_FeatureListEnd,
-                                  newEntries);
+        CopyFeatureEntriesForward(
+            g_zDEClient_FeatureListBegin,
+            g_zDEClient_FeatureListEnd,
+            newEntries
+        );
 
         ::operator delete(g_zDEClient_FeatureListBegin);
         g_zDEClient_FeatureListBegin = newEntries;
@@ -1793,60 +2290,95 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AppendFeatureEntry(int featureType,
         g_zDEClient_FeatureListCapacityEnd = newEntries + newCapacity;
     }
 
-    FillFeatureEntries(g_zDEClient_FeatureListEnd, 1, &featureEntry);
+    FillFeatureEntries(
+        g_zDEClient_FeatureListEnd,
+        1,
+        &featureEntry
+    );
     ++g_zDEClient_FeatureListEnd;
     return 0;
 }
 
 // Reimplements 0x4575f0: zDEClient::SubmitFeatureGeometry
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL
-SubmitFeatureGeometry(zGeometry_ClipPatchOutputPartial *clipPatchOutput) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SubmitFeatureGeometry(
+    zGeometry_ClipPatchOutputPartial *clipPatchOutput
+) {
     if (clipPatchOutput == 0) {
         return;
     }
 
     for (int partitionIndex = 0; partitionIndex < clipPatchOutput->partitionCount;
-         ++partitionIndex) {
+        ++partitionIndex) {
         zGeometry_ClipPatchPartitionOutput *const partition =
             &clipPatchOutput->partitions[partitionIndex];
         {
-        for (int pairIndex = 0; pairIndex < partition->nodeDiPairCount; ++pairIndex) {
-            zDEClient_MapTreeLocateResult result;
-            g_zDEClient_FeatureMapTree.FindOrInsertKey(&result, &partition->nodeDiPairs[pairIndex]);
-        }
+            for (int pairIndex = 0; pairIndex < partition->nodeDiPairCount; ++pairIndex) {
+                zDEClient_MapTreeLocateResult result;
+                g_zDEClient_FeatureMapTree.FindOrInsertKey(
+                    &result,
+                    &partition->nodeDiPairs[pairIndex]
+                );
+            }
         }
     }
 }
 
 // Reimplements 0x457b40: zDEClient::WriteFeatureSectionsToZAR
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-WriteFeatureSectionsToZAR(zZbdSectionCallbackCtx *callbackCtx) {
+RECOIL_NOINLINE int RECOIL_FASTCALL WriteFeatureSectionsToZAR(
+    zZbdSectionCallbackCtx *callbackCtx
+) {
     int craterSectionIndex = 0;
     int qSandSectionIndex = 0;
     zDEClient_FeatureEntry featureEntry;
     featureEntry.reloadFlag = 1;
 
     int result =
-        zUtil_ZAR::WriteSectionBlob(callbackCtx, "Dummy", &featureEntry, sizeof(featureEntry));
+        zUtil_ZAR::WriteSectionBlob(
+            callbackCtx,
+            "Dummy",
+            &featureEntry,
+            sizeof(featureEntry)
+        );
 
     for (zDEClient_FeatureEntry *entry = g_zDEClient_FeatureListBegin;
-         entry != g_zDEClient_FeatureListEnd && result != 0; ++entry) {
-        memcpy(&featureEntry, entry, sizeof(featureEntry));
+        entry != g_zDEClient_FeatureListEnd && result != 0;
+        ++entry) {
+        memcpy(
+            &featureEntry,
+            entry,
+            sizeof(featureEntry)
+        );
         featureEntry.reloadFlag = 0;
 
         char sectionName[0x40];
         if (featureEntry.featureType == 1) {
-            sprintf(sectionName, "Crater%d", craterSectionIndex);
+            sprintf(
+                sectionName,
+                "Crater%d",
+                craterSectionIndex
+            );
             ++craterSectionIndex;
-            result = zUtil_ZAR::WriteSectionBlob(callbackCtx, sectionName, &featureEntry,
-                                                 sizeof(featureEntry));
+            result = zUtil_ZAR::WriteSectionBlob(
+                callbackCtx,
+                sectionName,
+                &featureEntry,
+                sizeof(featureEntry)
+            );
         } else if (featureEntry.featureType == 3) {
-            sprintf(sectionName, "QSand%d", qSandSectionIndex);
+            sprintf(
+                sectionName,
+                "QSand%d",
+                qSandSectionIndex
+            );
             ++qSandSectionIndex;
-            result = zUtil_ZAR::WriteSectionBlob(callbackCtx, sectionName, &featureEntry,
-                                                 sizeof(featureEntry));
+            result = zUtil_ZAR::WriteSectionBlob(
+                callbackCtx,
+                sectionName,
+                &featureEntry,
+                sizeof(featureEntry)
+            );
         }
     }
 
@@ -1855,8 +2387,11 @@ WriteFeatureSectionsToZAR(zZbdSectionCallbackCtx *callbackCtx) {
 
 // Reimplements 0x457c10: zDEClient::ApplyFeatureEntry
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
-RECOIL_NOINLINE void RECOIL_STDCALL ApplyFeatureEntry(zDEClient_FeatureEntry *container, void *,
-                                                      void *) {
+RECOIL_NOINLINE void RECOIL_STDCALL ApplyFeatureEntry(
+    zDEClient_FeatureEntry *container,
+    void *,
+    void *
+) {
     if (container->reloadFlag != 0) {
         ClearFeatureDisplayNodes();
         ClearFeatureEntriesAndMapTree();
@@ -1864,7 +2399,10 @@ RECOIL_NOINLINE void RECOIL_STDCALL ApplyFeatureEntry(zDEClient_FeatureEntry *co
     }
 
     if (container->featureType == 1) {
-        zDEClient_Crater::InstanceEvent(&container->eventData.crater, 0);
+        zDEClient_Crater::InstanceEvent(
+            &container->eventData.crater,
+            0
+        );
     } else if (container->featureType == 3) {
         zDEClient_QSand::InstanceEventMaybeRelay(&container->eventData.quickSand);
     }
@@ -1872,13 +2410,19 @@ RECOIL_NOINLINE void RECOIL_STDCALL ApplyFeatureEntry(zDEClient_FeatureEntry *co
 
 // Reimplements 0x457c50: zDEClient::DispatchFeatureEventTemplates
 // (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL
-DispatchFeatureEventTemplates(zDEClient_CraterFeatureDispatch craterHandler,
-                              zDEClient_QSandFeatureDispatch qSandHandler) {
+RECOIL_NOINLINE void RECOIL_FASTCALL DispatchFeatureEventTemplates(
+    zDEClient_CraterFeatureDispatch craterHandler,
+    zDEClient_QSandFeatureDispatch qSandHandler
+) {
     for (zDEClient_FeatureEntry *entry = g_zDEClient_FeatureListBegin;
-         entry != g_zDEClient_FeatureListEnd; ++entry) {
+        entry != g_zDEClient_FeatureListEnd;
+        ++entry) {
         zDEClient_FeatureEntry featureEntry;
-        memcpy(&featureEntry, entry, sizeof(featureEntry));
+        memcpy(
+            &featureEntry,
+            entry,
+            sizeof(featureEntry)
+        );
 
         if (featureEntry.featureType == 1) {
             if (craterHandler != 0) {
@@ -1901,13 +2445,20 @@ RECOIL_NOINLINE void RECOIL_CDECL ClearFeatureDisplayNodes() {
     while (node != header) {
         zGeometry_ClipPatchNodeView *key = node->key;
         if (key != 0) {
-            GameZ_ZBD::ReloadDisplayInstancesFromCurrentPath_Local(key, 1);
+            GameZ_ZBD::ReloadDisplayInstancesFromCurrentPath_Local(
+                key,
+                1
+            );
 
             const int gridCol = key->gridCol;
             const int gridRow = key->gridRow;
             if (gridCol >= 0 && gridRow >= 0) {
                 zWorldAreaPartial *area =
-                    zClass_World::GetAreaPartitionAtGrid(key->listA[0], gridCol, gridRow);
+                    zClass_World::GetAreaPartitionAtGrid(
+                        key->listA[0],
+                        gridCol,
+                        gridRow
+                    );
                 if (area != 0) {
                     area->displayRefreshQueued = 0;
                 }
@@ -1917,23 +2468,37 @@ RECOIL_NOINLINE void RECOIL_CDECL ClearFeatureDisplayNodes() {
         g_zDEClient_FeatureMapTree.IterNextNodeRef(&node);
     }
 
-    zClass_NodePartial *child = zClass::FindByTypeAndName(6, "ZDEC_FEATURE");
+    zClass_NodePartial *child = zClass::FindByTypeAndName(
+        6,
+        "ZDEC_FEATURE"
+    );
     while (child != 0) {
         while (child->listCountA > 0) {
-            zClass_Class::RemoveChild(child->listA[0], child);
+            zClass_Class::RemoveChild(
+                child->listA[0],
+                child
+            );
         }
 
         unsigned int displayInstanceValue = 0;
-        zClass_Class::gwNodeGetUserData(child, &displayInstanceValue);
+        zClass_Class::gwNodeGetUserData(
+            child,
+            &displayInstanceValue
+        );
         if (displayInstanceValue != 0) {
-            zDiPartial *displayInstance =
-                (zDiPartial *)((unsigned int)(displayInstanceValue));
-            zClass_Class::gwNodeSetDisplayInstance(child, 0);
+            zDiPartial *displayInstance = (zDiPartial *)((unsigned int)(displayInstanceValue));
+            zClass_Class::gwNodeSetDisplayInstance(
+                child,
+                0
+            );
             zModel_DiPool::FreeIfUnreferenced(displayInstance);
         }
 
         zClass_Class::DeleteNodeByType(child);
-        child = zClass::FindByTypeAndName(6, "ZDEC_FEATURE");
+        child = zClass::FindByTypeAndName(
+            6,
+            "ZDEC_FEATURE"
+        );
     }
 }
 
@@ -1943,8 +2508,11 @@ RECOIL_NOINLINE int RECOIL_CDECL ClearFeatureEntriesAndMapTree() {
 
     if (g_zDEClient_FeatureMapTree.header != 0) {
         zDEClient_MapTreeNode *outNext = 0;
-        g_zDEClient_FeatureMapTree.EraseRange(&outNext, g_zDEClient_FeatureMapTree.header->left,
-                                              g_zDEClient_FeatureMapTree.header);
+        g_zDEClient_FeatureMapTree.EraseRange(
+            &outNext,
+            g_zDEClient_FeatureMapTree.header->left,
+            g_zDEClient_FeatureMapTree.header
+        );
     }
 
     return 0;

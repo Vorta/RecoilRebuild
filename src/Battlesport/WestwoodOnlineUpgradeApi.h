@@ -8,8 +8,7 @@
 
 #include <unknwn.h>
 
-struct WestwoodOnlineUpgradeBootstrapServerRecord
-{
+struct WestwoodOnlineUpgradeBootstrapServerRecord {
     int m_gameType;
     unsigned char reserved004[0x10];
     WestwoodOnlineUpgradeBootstrapServerRecord *m_next;
@@ -21,30 +20,34 @@ struct WestwoodOnlineUpgradeBootstrapServerRecord
     unsigned char reserved0f8[0x0c];
 };
 
-struct WestwoodOnlineUpgradeBrowseRecord
-{
+struct WestwoodOnlineUpgradeBrowseRecord {
     int m_recordFlags;
-    unsigned char reserved004[0x30];
+    unsigned char reserved004[0x04];
+    int m_displayMetric0;
+    int m_displayMetric1;
+    unsigned char reserved010[0x18];
+    int m_latencyMs;
+    unsigned char reserved02c[0x04];
+    WestwoodOnlineUpgradeBrowseRecord *m_next;
     char m_sessionName[0xa3];
     char m_serverAddress[0x35];
 };
 
-struct WestwoodOnlineUpgradeConnectContext
-{
+struct WestwoodOnlineUpgradeConnectContext {
     unsigned char reserved000[0x24];
     char m_requestText[0x34];
 };
 
-struct WestwoodOnlineUpgradeSessionRequest
-{
+struct WestwoodOnlineUpgradeSessionRequest {
     int m_rowFlags;
-    unsigned char reserved004[0x1c];
+    unsigned char reserved004[0x14];
+    unsigned int m_hostIpv4Packed;
+    unsigned char reserved01c[0x04];
     WestwoodOnlineUpgradeSessionRequest *m_next;
     char m_sessionName[0x34];
 };
 
-struct WestwoodOnlineUpgradeQueryRequest
-{
+struct WestwoodOnlineUpgradeQueryRequest {
     int m_listMode;
     int m_queryVariant;
     int m_queryMaxPlayers;
@@ -56,8 +59,7 @@ struct WestwoodOnlineUpgradeQueryRequest
     char m_serverAddress[0x35];
 };
 
-struct WestwoodOnlineUpgradeApiInitState
-{
+struct WestwoodOnlineUpgradeApiInitState {
     unsigned int structSize;
     HINSTANCE moduleHandlePrimary;
     HINSTANCE moduleHandleSecondary;
@@ -69,17 +71,18 @@ struct WestwoodOnlineUpgradeApiInitState
     CRITICAL_SECTION criticalSection1;
     CRITICAL_SECTION criticalSection2;
 
-    RECOIL_NOINLINE static HRESULT RECOIL_STDCALL
-    Init(WestwoodOnlineUpgradeApiInitState *self,
-         HANDLE bootstrapServerListEvent,
-         HINSTANCE moduleHandle);
+    RECOIL_NOINLINE static HRESULT RECOIL_STDCALL Init(
+        WestwoodOnlineUpgradeApiInitState *self,
+        HANDLE bootstrapServerListEvent,
+        HINSTANCE moduleHandle
+    );
 };
 
-struct WestwoodOnlineUpgradeApi
-{
+struct WestwoodOnlineUpgradeApi {
     RECOIL_NOINLINE static int RECOIL_CDECL Init();
-    RECOIL_NOINLINE int RECOIL_THISCALL
-    CreateInstanceAndLoadConfig(HANDLE bootstrapServerListEvent);
+    RECOIL_NOINLINE int RECOIL_THISCALL CreateInstanceAndLoadConfig(
+        HANDLE bootstrapServerListEvent
+    );
     RECOIL_NOINLINE static void RECOIL_CDECL Shutdown();
 };
 
@@ -108,8 +111,8 @@ extern "C" HANDLE g_WestwoodOnlineUpgradeFailureEvent;
 extern "C" WestwoodOnlineUpgradeBootstrapServerRecord
     g_WestwoodOnlineUpgradeSelectedBootstrapServer;
 extern "C" WestwoodOnlineUpgradeBrowseRecord g_WestwoodOnlineUpgradeCachedBrowseRecord;
-extern "C" WestwoodOnlineUpgradeBrowseRecord
-    g_WestwoodOnlineUpgradeCachedBrowseRecordList[1024];
+extern "C" WestwoodOnlineUpgradeBrowseRecord g_WestwoodOnlineUpgradeCachedBrowseRecordList[1024];
+extern "C" int g_WestwoodOnlineUpgradeCachedBrowseRecordListCount;
 extern "C" HANDLE g_WestwoodOnlineUpgradeCloseHandle0;
 extern "C" HANDLE g_WestwoodOnlineUpgradeCloseHandle1;
 extern "C" HANDLE g_WestwoodOnlineUpgradeCloseHandle2;
@@ -119,34 +122,193 @@ extern const IID g_WestwoodOnlineUpgradeApiEventSink_IID;
 
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeApiInitState) == 0x64);
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeBootstrapServerRecord) == 0x104);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeBootstrapServerRecord, m_gameType) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeBootstrapServerRecord, m_next) == 0x14);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeBootstrapServerRecord, m_serverName) == 0x18);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeBootstrapServerRecord, m_serverType) == 0x5f);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeBootstrapServerRecord, m_connectData) == 0x64);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeBootstrapServerRecord, m_playerName) == 0xe4);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeBootstrapServerRecord, m_connectString) == 0xee);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeBootstrapServerRecord,
+        m_gameType
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeBootstrapServerRecord,
+        m_next
+    ) == 0x14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeBootstrapServerRecord,
+        m_serverName
+    ) == 0x18
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeBootstrapServerRecord,
+        m_serverType
+    ) == 0x5f
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeBootstrapServerRecord,
+        m_connectData
+    ) == 0x64
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeBootstrapServerRecord,
+        m_playerName
+    ) == 0xe4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeBootstrapServerRecord,
+        m_connectString
+    ) == 0xee
+);
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeBrowseRecord) == 0x10c);
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeConnectContext) == 0x58);
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeSessionRequest) == 0x58);
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeQueryRequest) == 0x10c);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeBrowseRecord, m_recordFlags) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeBrowseRecord, m_sessionName) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeBrowseRecord, m_serverAddress) == 0xd7);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeConnectContext, m_requestText) == 0x24);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeSessionRequest, m_rowFlags) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeSessionRequest, m_next) == 0x20);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeSessionRequest, m_sessionName) ==
-                     0x24);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeQueryRequest, m_sessionName) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeQueryRequest, m_serverAddress) == 0xd7);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeApiInitState, structSize) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeApiInitState, moduleHandlePrimary) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeApiInitState, moduleHandleSecondary) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeApiInitState, moduleHandleTertiary) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeApiInitState, bootstrapServerListEvent) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeApiInitState, statusTextEvent) == 0x14);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeApiInitState, failureEvent) == 0x18);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeApiInitState, criticalSection0) == 0x1c);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeApiInitState, criticalSection1) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeApiInitState, criticalSection2) == 0x4c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeBrowseRecord,
+        m_recordFlags
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeBrowseRecord,
+        m_displayMetric0
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeBrowseRecord,
+        m_displayMetric1
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeBrowseRecord,
+        m_latencyMs
+    ) == 0x28
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeBrowseRecord,
+        m_next
+    ) == 0x30
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeBrowseRecord,
+        m_sessionName
+    ) == 0x34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeBrowseRecord,
+        m_serverAddress
+    ) == 0xd7
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeConnectContext,
+        m_requestText
+    ) == 0x24
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeSessionRequest,
+        m_rowFlags
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeSessionRequest,
+        m_hostIpv4Packed
+    ) == 0x18
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeSessionRequest,
+        m_next
+    ) == 0x20
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeSessionRequest,
+        m_sessionName
+    ) == 0x24
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeQueryRequest,
+        m_sessionName
+    ) == 0x34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeQueryRequest,
+        m_serverAddress
+    ) == 0xd7
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeApiInitState,
+        structSize
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeApiInitState,
+        moduleHandlePrimary
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeApiInitState,
+        moduleHandleSecondary
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeApiInitState,
+        moduleHandleTertiary
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeApiInitState,
+        bootstrapServerListEvent
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeApiInitState,
+        statusTextEvent
+    ) == 0x14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeApiInitState,
+        failureEvent
+    ) == 0x18
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeApiInitState,
+        criticalSection0
+    ) == 0x1c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeApiInitState,
+        criticalSection1
+    ) == 0x34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeApiInitState,
+        criticalSection2
+    ) == 0x4c
+);

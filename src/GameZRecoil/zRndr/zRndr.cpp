@@ -14,16 +14,26 @@
 #include <string.h>
 
 namespace {
-template <class T> const T &MinValue(const T &lhs, const T &rhs) {
+template <class T>
+const T &MinValue(
+    const T &lhs,
+    const T &rhs
+) {
     return lhs < rhs ? lhs : rhs;
 }
 
-template <class T> const T &MaxValue(const T &lhs, const T &rhs) {
+template <class T>
+const T &MaxValue(
+    const T &lhs,
+    const T &rhs
+) {
     return lhs < rhs ? rhs : lhs;
 }
 
-void sort(float *first, float *last)
-{
+void sort(
+    float *first,
+    float *last
+) {
     for (float *it = first + 1; it < last; ++it) {
         float value = *it;
         float *scan = it;
@@ -34,7 +44,7 @@ void sort(float *first, float *last)
         *scan = value;
     }
 }
-}
+} // namespace
 
 extern "C" {
 zVideo_BltSourceToPrimaryProc g_zVideo_pfnBltSourceToPrimary = 0;
@@ -186,40 +196,180 @@ int g_defaultGraphicsFlags = 0;
 int *g_graphicsFlags = 0;
 
 RECOIL_STATIC_ASSERT(sizeof(FogParamsPartial) == 0xa0);
-RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColorRed) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColorGreen) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColorBlue) == 0x14);
-RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColor16) == 0x18);
-RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColor16Dup) == 0x1c);
-RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColorRamp) == 0x20);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        FogParamsPartial,
+        packedColorRed
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        FogParamsPartial,
+        packedColorGreen
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        FogParamsPartial,
+        packedColorBlue
+    ) == 0x14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        FogParamsPartial,
+        packedColor16
+    ) == 0x18
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        FogParamsPartial,
+        packedColor16Dup
+    ) == 0x1c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        FogParamsPartial,
+        packedColorRamp
+    ) == 0x20
+);
 RECOIL_STATIC_ASSERT(sizeof(SpanOccluderPolyPartial) == 0x64);
 RECOIL_STATIC_ASSERT(sizeof(SpanNodePartial) == 0x18);
 RECOIL_STATIC_ASSERT(sizeof(LensFlareSamplePartial) == 0x14);
 RECOIL_STATIC_ASSERT(sizeof(QueuedVec3) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(TransparentQueuedPolyDrawCmd) == 0x384);
-RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, polyVerts) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, triVerts) == 0x32c);
-RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, scanConvertMode) == 0x368);
-RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, savedInvDepthBias) == 0x370);
-RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, alphaOrShadeBits) == 0x378);
-RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, shadeOrSpanMode) == 0x37c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        TransparentQueuedPolyDrawCmd,
+        polyVerts
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        TransparentQueuedPolyDrawCmd,
+        triVerts
+    ) == 0x32c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        TransparentQueuedPolyDrawCmd,
+        scanConvertMode
+    ) == 0x368
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        TransparentQueuedPolyDrawCmd,
+        savedInvDepthBias
+    ) == 0x370
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        TransparentQueuedPolyDrawCmd,
+        alphaOrShadeBits
+    ) == 0x378
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        TransparentQueuedPolyDrawCmd,
+        shadeOrSpanMode
+    ) == 0x37c
+);
 RECOIL_STATIC_ASSERT(sizeof(OverwriteQueuedPolyDrawCmd) == 0x48c);
-RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, polyVerts) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, triVerts) == 0x328);
-RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, alphaOrShadeF) == 0x34c);
-RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, shadeOrSpanMode) == 0x350);
-RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, vertexCount) == 0x354);
-RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, materialRef) == 0x370);
-RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, scanConvertMode) == 0x478);
-RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, savedInvDepthBias) == 0x480);
-RECOIL_STATIC_ASSERT(offsetof(LensFlareSamplePartial, packedColor16) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(LensFlareSamplePartial, lensFlareSource) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(SpanNodePartial, next) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(SpanNodePartial, sampleXMin) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(SpanNodePartial, sampleXMax) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(SpanNodePartial, invDepth) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(SpanNodePartial, invDepthStep) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(SpanNodePartial, depthSlope) == 0x14);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        OverwriteQueuedPolyDrawCmd,
+        polyVerts
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        OverwriteQueuedPolyDrawCmd,
+        triVerts
+    ) == 0x328
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        OverwriteQueuedPolyDrawCmd,
+        alphaOrShadeF
+    ) == 0x34c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        OverwriteQueuedPolyDrawCmd,
+        shadeOrSpanMode
+    ) == 0x350
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        OverwriteQueuedPolyDrawCmd,
+        vertexCount
+    ) == 0x354
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        OverwriteQueuedPolyDrawCmd,
+        materialRef
+    ) == 0x370
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        OverwriteQueuedPolyDrawCmd,
+        scanConvertMode
+    ) == 0x478
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        OverwriteQueuedPolyDrawCmd,
+        savedInvDepthBias
+    ) == 0x480
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        LensFlareSamplePartial,
+        packedColor16
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        LensFlareSamplePartial,
+        lensFlareSource
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        SpanNodePartial,
+        next
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        SpanNodePartial,
+        sampleXMin
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        SpanNodePartial,
+        sampleXMax
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        SpanNodePartial,
+        invDepth
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        SpanNodePartial,
+        invDepthStep
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        SpanNodePartial,
+        depthSlope
+    ) == 0x14
+);
 
 namespace {
 struct ScanVertex {
@@ -227,35 +377,54 @@ struct ScanVertex {
     float y;
 };
 
-int Fixed16FromFloat(float value) {
+int Fixed16FromFloat(
+    float value
+) {
     const double scaled = (double)(value) * 65536.0;
     return (int)(scaled >= 0.0 ? scaled + 0.5 : scaled - 0.5);
 }
 
-int ScanlineStartFromY(float y) {
+int ScanlineStartFromY(
+    float y
+) {
     return (Fixed16FromFloat(y) + 0x7fff) >> 16;
 }
 
-int ScanlineEndFromY(float y) {
+int ScanlineEndFromY(
+    float y
+) {
     return (Fixed16FromFloat(y) - 0x8041) >> 16;
 }
 
-int SpanStartFromX(float x) {
+int SpanStartFromX(
+    float x
+) {
     return (Fixed16FromFloat(x) + 0x7fff) >> 16;
 }
 
-int SpanEndFromX(float x) {
+int SpanEndFromX(
+    float x
+) {
     return (Fixed16FromFloat(x) - 0x8001) >> 16;
 }
 
-float FloatFromBits(unsigned int bits) {
+float FloatFromBits(
+    unsigned int bits
+) {
     float value = 0.0f;
-    memcpy(&value, &bits, sizeof(value));
+    memcpy(
+        &value,
+        &bits,
+        sizeof(value)
+    );
     return value;
 }
 
-void AppendSpanListNode(SpanNodePartial **spanList, int *spanCount,
-                        SpanNodePartial *node) {
+void AppendSpanListNode(
+    SpanNodePartial **spanList,
+    int *spanCount,
+    SpanNodePartial *node
+) {
     if (*spanCount > 0) {
         SpanNodePartial *previous = spanList[*spanCount - 1];
         if (node->sampleXMin == previous->sampleXMax + 1) {
@@ -273,7 +442,10 @@ void AppendSpanListNode(SpanNodePartial **spanList, int *spanCount,
     g_spanLastNode = node;
 }
 
-float SpanDepthAtX(const SpanNodePartial *span, int x) {
+float SpanDepthAtX(
+    const SpanNodePartial *span,
+    int x
+) {
     if (x == span->sampleXMin) {
         return span->invDepth;
     }
@@ -284,16 +456,30 @@ float SpanDepthAtX(const SpanNodePartial *span, int x) {
     return span->invDepth + (float)(x - span->sampleXMin) * span->depthSlope;
 }
 
-float SpanDepthAtX(int sampleXMin, float invDepth, float depthSlope, int x) {
+float SpanDepthAtX(
+    int sampleXMin,
+    float invDepth,
+    float depthSlope,
+    int x
+) {
     return invDepth + (float)(x - sampleXMin) * depthSlope;
 }
 
-float SpanDepthAtXByParts(int sampleXMin, float invDepth, float depthSlope, int x) {
+float SpanDepthAtXByParts(
+    int sampleXMin,
+    float invDepth,
+    float depthSlope,
+    int x
+) {
     return invDepth + (float)(x - sampleXMin) * depthSlope;
 }
 
-void LinkSpanNode(int columnIndex, SpanNodePartial *previous, SpanNodePartial *node,
-                  SpanNodePartial *next) {
+void LinkSpanNode(
+    int columnIndex,
+    SpanNodePartial *previous,
+    SpanNodePartial *node,
+    SpanNodePartial *next
+) {
     node->next = next;
     if (previous != 0) {
         previous->next = node;
@@ -305,8 +491,11 @@ void LinkSpanNode(int columnIndex, SpanNodePartial *previous, SpanNodePartial *n
     g_spanIterNode = node;
 }
 
-void InsertPendingSpanSorted(SpanNodePartial **spanList, int columnIndex,
-                             int *spanCount) {
+void InsertPendingSpanSorted(
+    SpanNodePartial **spanList,
+    int columnIndex,
+    int *spanCount
+) {
     *spanCount = 0;
     if (g_spanColumnHeadTable == 0 || g_spanAllocCursor == 0 || columnIndex < 0 ||
         columnIndex >= g_spanColumnCountPadded) {
@@ -324,10 +513,22 @@ void InsertPendingSpanSorted(SpanNodePartial **spanList, int columnIndex,
     }
 
     while (current != 0 && current->sampleXMin <= pending->sampleXMax + 1) {
-        pending->sampleXMin = MinValue(pending->sampleXMin, current->sampleXMin);
-        pending->sampleXMax = MaxValue(pending->sampleXMax, current->sampleXMax);
-        pending->invDepth = MaxValue(pending->invDepth, current->invDepth);
-        pending->invDepthStep = MaxValue(pending->invDepthStep, current->invDepthStep);
+        pending->sampleXMin = MinValue(
+            pending->sampleXMin,
+            current->sampleXMin
+        );
+        pending->sampleXMax = MaxValue(
+            pending->sampleXMax,
+            current->sampleXMax
+        );
+        pending->invDepth = MaxValue(
+            pending->invDepth,
+            current->invDepth
+        );
+        pending->invDepthStep = MaxValue(
+            pending->invDepthStep,
+            current->invDepthStep
+        );
         current = current->next;
     }
 
@@ -340,12 +541,19 @@ void InsertPendingSpanSorted(SpanNodePartial **spanList, int columnIndex,
 
     g_spanIterPrevLink = previous;
     g_spanIterNode = pending;
-    AppendSpanListNode(spanList, spanCount, pending);
+    AppendSpanListNode(
+        spanList,
+        spanCount,
+        pending
+    );
     ++g_spanAllocCursor;
 }
 
-void InsertPendingSpanNoDepthTest(SpanNodePartial **spanList, int columnIndex,
-                                  int *spanCount) {
+void InsertPendingSpanNoDepthTest(
+    SpanNodePartial **spanList,
+    int columnIndex,
+    int *spanCount
+) {
     *spanCount = 0;
     if (g_spanColumnHeadTable == 0 || g_spanAllocCursor == 0 || columnIndex < 0 ||
         columnIndex >= g_spanColumnCountPadded) {
@@ -362,8 +570,17 @@ void InsertPendingSpanNoDepthTest(SpanNodePartial **spanList, int columnIndex,
     }
 
     if (current == 0 || pending->sampleXMax < current->sampleXMin) {
-        LinkSpanNode(columnIndex, previous, pending, current);
-        AppendSpanListNode(spanList, spanCount, pending);
+        LinkSpanNode(
+            columnIndex,
+            previous,
+            pending,
+            current
+        );
+        AppendSpanListNode(
+            spanList,
+            spanCount,
+            pending
+        );
         ++g_spanAllocCursor;
         return;
     }
@@ -378,22 +595,34 @@ void InsertPendingSpanNoDepthTest(SpanNodePartial **spanList, int columnIndex,
         if (currentMin < pending->sampleXMin) {
             if (currentMax >= pending->sampleXMin) {
                 current->sampleXMax = pending->sampleXMin - 1;
-                current->invDepthStep = SpanDepthAtX(currentMin, currentInvDepth, currentDepthSlope,
-                                                     current->sampleXMax);
+                current->invDepthStep = SpanDepthAtX(
+                    currentMin,
+                    currentInvDepth,
+                    currentDepthSlope,
+                    current->sampleXMax
+                );
 
                 if (currentMax > pending->sampleXMax) {
                     SpanNodePartial *rightSplit = pending + 1;
                     rightSplit->sampleXMin = pending->sampleXMax + 1;
                     rightSplit->sampleXMax = currentMax;
-                    rightSplit->invDepth = SpanDepthAtX(currentMin, currentInvDepth,
-                                                        currentDepthSlope, rightSplit->sampleXMin);
+                    rightSplit->invDepth = SpanDepthAtX(
+                        currentMin,
+                        currentInvDepth,
+                        currentDepthSlope,
+                        rightSplit->sampleXMin
+                    );
                     rightSplit->invDepthStep = currentInvDepthStep;
                     rightSplit->depthSlope = currentDepthSlope;
                     rightSplit->next = current->next;
 
                     pending->next = rightSplit;
                     current->next = pending;
-                    AppendSpanListNode(spanList, spanCount, pending);
+                    AppendSpanListNode(
+                        spanList,
+                        spanCount,
+                        pending
+                    );
                     g_spanIterPrevLink = current;
                     g_spanIterNode = pending;
                     g_spanLastNode = rightSplit;
@@ -420,17 +649,34 @@ void InsertPendingSpanNoDepthTest(SpanNodePartial **spanList, int columnIndex,
 
         current->sampleXMin = pending->sampleXMax + 1;
         current->invDepth =
-            SpanDepthAtX(currentMin, currentInvDepth, currentDepthSlope, current->sampleXMin);
+            SpanDepthAtX(
+                currentMin,
+                currentInvDepth,
+                currentDepthSlope,
+                current->sampleXMin
+            );
         break;
     }
 
-    LinkSpanNode(columnIndex, previous, pending, current);
-    AppendSpanListNode(spanList, spanCount, pending);
+    LinkSpanNode(
+        columnIndex,
+        previous,
+        pending,
+        current
+    );
+    AppendSpanListNode(
+        spanList,
+        spanCount,
+        pending
+    );
     ++g_spanAllocCursor;
 }
 
-void BuildVisibleSpanListWithDepthTest(SpanNodePartial **spanList, int columnIndex,
-                                       int *spanCount) {
+void BuildVisibleSpanListWithDepthTest(
+    SpanNodePartial **spanList,
+    int columnIndex,
+    int *spanCount
+) {
     *spanCount = 0;
     if (g_spanColumnHeadTable == 0 || g_spanAllocCursor == 0 || columnIndex < 0 ||
         columnIndex >= g_spanColumnCountPadded) {
@@ -452,7 +698,10 @@ void BuildVisibleSpanListWithDepthTest(SpanNodePartial **spanList, int columnInd
 
         SpanNodePartial occluder = *current;
         const bool pendingInFront =
-            zRndr_SpanOcclusion_TestSpanDepthOrderPair(pending, &occluder) != 0;
+            zRndr_SpanOcclusion_TestSpanDepthOrderPair(
+                pending,
+                &occluder
+            ) != 0;
 
         const int pendingMin = pending->sampleXMin;
         const int pendingMax = pending->sampleXMax;
@@ -465,16 +714,29 @@ void BuildVisibleSpanListWithDepthTest(SpanNodePartial **spanList, int columnInd
                 const int splitMax = occluder.sampleXMax;
                 pending->sampleXMax = splitMax;
                 pending->invDepthStep =
-                    SpanDepthAtX(pendingMin, pendingInvDepth, pendingDepthSlope, splitMax);
-                AppendSpanListNode(spanList, spanCount, pending);
+                    SpanDepthAtX(
+                        pendingMin,
+                        pendingInvDepth,
+                        pendingDepthSlope,
+                        splitMax
+                    );
+                AppendSpanListNode(
+                    spanList,
+                    spanCount,
+                    pending
+                );
                 ++g_spanAllocCursor;
 
                 pending = g_spanAllocCursor;
                 pending->next = 0;
                 pending->sampleXMin = splitMax + 1;
                 pending->sampleXMax = pendingMax;
-                pending->invDepth = SpanDepthAtX(pendingMin, pendingInvDepth, pendingDepthSlope,
-                                                 pending->sampleXMin);
+                pending->invDepth = SpanDepthAtX(
+                    pendingMin,
+                    pendingInvDepth,
+                    pendingDepthSlope,
+                    pending->sampleXMin
+                );
                 pending->invDepthStep = pendingInvDepthStep;
                 pending->depthSlope = pendingDepthSlope;
                 current = current->next;
@@ -482,7 +744,11 @@ void BuildVisibleSpanListWithDepthTest(SpanNodePartial **spanList, int columnInd
             }
 
             if (occluder.sampleXMax >= pendingMax) {
-                AppendSpanListNode(spanList, spanCount, pending);
+                AppendSpanListNode(
+                    spanList,
+                    spanCount,
+                    pending
+                );
                 ++g_spanAllocCursor;
                 return;
             }
@@ -498,8 +764,12 @@ void BuildVisibleSpanListWithDepthTest(SpanNodePartial **spanList, int columnInd
 
             if (occluder.sampleXMax >= pendingMin) {
                 pending->sampleXMin = occluder.sampleXMax + 1;
-                pending->invDepth = SpanDepthAtX(pendingMin, pendingInvDepth, pendingDepthSlope,
-                                                 pending->sampleXMin);
+                pending->invDepth = SpanDepthAtX(
+                    pendingMin,
+                    pendingInvDepth,
+                    pendingDepthSlope,
+                    pending->sampleXMin
+                );
             }
 
             current = current->next;
@@ -510,8 +780,17 @@ void BuildVisibleSpanListWithDepthTest(SpanNodePartial **spanList, int columnInd
             const int leftMax = occluder.sampleXMin - 1;
             pending->sampleXMax = leftMax;
             pending->invDepthStep =
-                SpanDepthAtX(pendingMin, pendingInvDepth, pendingDepthSlope, leftMax);
-            AppendSpanListNode(spanList, spanCount, pending);
+                SpanDepthAtX(
+                    pendingMin,
+                    pendingInvDepth,
+                    pendingDepthSlope,
+                    leftMax
+                );
+            AppendSpanListNode(
+                spanList,
+                spanCount,
+                pending
+            );
             ++g_spanAllocCursor;
 
             if (occluder.sampleXMax >= pendingMax) {
@@ -523,7 +802,12 @@ void BuildVisibleSpanListWithDepthTest(SpanNodePartial **spanList, int columnInd
             pending->sampleXMin = occluder.sampleXMax + 1;
             pending->sampleXMax = pendingMax;
             pending->invDepth =
-                SpanDepthAtX(pendingMin, pendingInvDepth, pendingDepthSlope, pending->sampleXMin);
+                SpanDepthAtX(
+                    pendingMin,
+                    pendingInvDepth,
+                    pendingDepthSlope,
+                    pending->sampleXMin
+                );
             pending->invDepthStep = pendingInvDepthStep;
             pending->depthSlope = pendingDepthSlope;
         }
@@ -531,12 +815,19 @@ void BuildVisibleSpanListWithDepthTest(SpanNodePartial **spanList, int columnInd
         current = current->next;
     }
 
-    AppendSpanListNode(spanList, spanCount, pending);
+    AppendSpanListNode(
+        spanList,
+        spanCount,
+        pending
+    );
     ++g_spanAllocCursor;
 }
 
-void InsertPendingSpanWithDepthTest(SpanNodePartial **spanList, int columnIndex,
-                                    int *spanCount) {
+void InsertPendingSpanWithDepthTest(
+    SpanNodePartial **spanList,
+    int columnIndex,
+    int *spanCount
+) {
     *spanCount = 0;
     if (g_spanColumnHeadTable == 0 || g_spanAllocCursor == 0 || columnIndex < 0 ||
         columnIndex >= g_spanColumnCountPadded) {
@@ -559,7 +850,10 @@ void InsertPendingSpanWithDepthTest(SpanNodePartial **spanList, int columnIndex,
         }
 
         const bool pendingInFront =
-            zRndr_SpanOcclusion_TestSpanDepthOrderPair(pending, current) != 0;
+            zRndr_SpanOcclusion_TestSpanDepthOrderPair(
+                pending,
+                current
+            ) != 0;
 
         const int pendingMin = pending->sampleXMin;
         const int pendingMax = pending->sampleXMax;
@@ -576,22 +870,34 @@ void InsertPendingSpanWithDepthTest(SpanNodePartial **spanList, int columnIndex,
 
             if (currentMin < pendingMin) {
                 current->sampleXMax = pendingMin - 1;
-                current->invDepthStep = SpanDepthAtX(currentMin, currentInvDepth, currentDepthSlope,
-                                                     current->sampleXMax);
+                current->invDepthStep = SpanDepthAtX(
+                    currentMin,
+                    currentInvDepth,
+                    currentDepthSlope,
+                    current->sampleXMax
+                );
 
                 if (currentMax > pendingMax) {
                     SpanNodePartial *rightSplit = pending + 1;
                     rightSplit->sampleXMin = pendingMax + 1;
                     rightSplit->sampleXMax = currentMax;
-                    rightSplit->invDepth = SpanDepthAtX(currentMin, currentInvDepth,
-                                                        currentDepthSlope, rightSplit->sampleXMin);
+                    rightSplit->invDepth = SpanDepthAtX(
+                        currentMin,
+                        currentInvDepth,
+                        currentDepthSlope,
+                        rightSplit->sampleXMin
+                    );
                     rightSplit->invDepthStep = currentInvDepthStep;
                     rightSplit->depthSlope = currentDepthSlope;
                     rightSplit->next = current->next;
 
                     pending->next = rightSplit;
                     current->next = pending;
-                    AppendSpanListNode(spanList, spanCount, pending);
+                    AppendSpanListNode(
+                        spanList,
+                        spanCount,
+                        pending
+                    );
                     g_spanIterPrevLink = current;
                     g_spanIterNode = pending;
                     g_spanLastNode = rightSplit;
@@ -617,7 +923,12 @@ void InsertPendingSpanWithDepthTest(SpanNodePartial **spanList, int columnIndex,
 
             current->sampleXMin = pendingMax + 1;
             current->invDepth =
-                SpanDepthAtX(currentMin, currentInvDepth, currentDepthSlope, current->sampleXMin);
+                SpanDepthAtX(
+                    currentMin,
+                    currentInvDepth,
+                    currentDepthSlope,
+                    current->sampleXMin
+                );
             break;
         }
 
@@ -628,8 +939,12 @@ void InsertPendingSpanWithDepthTest(SpanNodePartial **spanList, int columnIndex,
 
             if (current->sampleXMax >= pendingMin) {
                 pending->sampleXMin = current->sampleXMax + 1;
-                pending->invDepth = SpanDepthAtX(pendingMin, pendingInvDepth, pendingDepthSlope,
-                                                 pending->sampleXMin);
+                pending->invDepth = SpanDepthAtX(
+                    pendingMin,
+                    pendingInvDepth,
+                    pendingDepthSlope,
+                    pending->sampleXMin
+                );
             }
 
             previous = current;
@@ -641,9 +956,23 @@ void InsertPendingSpanWithDepthTest(SpanNodePartial **spanList, int columnIndex,
             const int leftMax = current->sampleXMin - 1;
             pending->sampleXMax = leftMax;
             pending->invDepthStep =
-                SpanDepthAtX(pendingMin, pendingInvDepth, pendingDepthSlope, leftMax);
-            LinkSpanNode(columnIndex, previous, pending, current);
-            AppendSpanListNode(spanList, spanCount, pending);
+                SpanDepthAtX(
+                    pendingMin,
+                    pendingInvDepth,
+                    pendingDepthSlope,
+                    leftMax
+                );
+            LinkSpanNode(
+                columnIndex,
+                previous,
+                pending,
+                current
+            );
+            AppendSpanListNode(
+                spanList,
+                spanCount,
+                pending
+            );
             ++g_spanAllocCursor;
 
             if (current->sampleXMax >= pendingMax) {
@@ -656,7 +985,12 @@ void InsertPendingSpanWithDepthTest(SpanNodePartial **spanList, int columnIndex,
             pending->sampleXMin = current->sampleXMax + 1;
             pending->sampleXMax = pendingMax;
             pending->invDepth =
-                SpanDepthAtX(pendingMin, pendingInvDepth, pendingDepthSlope, pending->sampleXMin);
+                SpanDepthAtX(
+                    pendingMin,
+                    pendingInvDepth,
+                    pendingDepthSlope,
+                    pending->sampleXMin
+                );
             pending->invDepthStep = pendingInvDepthStep;
             pending->depthSlope = pendingDepthSlope;
             current = current->next;
@@ -667,38 +1001,72 @@ void InsertPendingSpanWithDepthTest(SpanNodePartial **spanList, int columnIndex,
         current = current->next;
     }
 
-    LinkSpanNode(columnIndex, previous, pending, current);
-    AppendSpanListNode(spanList, spanCount, pending);
+    LinkSpanNode(
+        columnIndex,
+        previous,
+        pending,
+        current
+    );
+    AppendSpanListNode(
+        spanList,
+        spanCount,
+        pending
+    );
     ++g_spanAllocCursor;
 }
 
-void RECOIL_FASTCALL SpanRoutineUnavailable(int, int) {}
+void RECOIL_FASTCALL SpanRoutineUnavailable(
+    int,
+    int
+) {}
 
-void RECOIL_FASTCALL PointOpUnavailable(void *, int, int, int) {}
+void RECOIL_FASTCALL PointOpUnavailable(
+    void *,
+    int,
+    int,
+    int
+) {}
 
-void RECOIL_FASTCALL TexturedQueuedSpanRoutineUnavailable(int, int, int,
-                                                          int) {}
+void RECOIL_FASTCALL TexturedQueuedSpanRoutineUnavailable(
+    int,
+    int,
+    int,
+    int
+) {}
 
-void RECOIL_FASTCALL FlatImmediateSpanRoutineUnavailable(int, int, int) {
-}
+void RECOIL_FASTCALL FlatImmediateSpanRoutineUnavailable(
+    int,
+    int,
+    int
+) {}
 
-bool FogParamsDifferFromActive(const FogParamsPartial &params) {
+bool FogParamsDifferFromActive(
+    const FogParamsPartial &params
+) {
     const float kCommitThreshold = 0.01f;
     return fabs(g_fogParamsActive.colorRgb01[0] - params.colorRgb01[0]) >= kCommitThreshold ||
            fabs(g_fogParamsActive.colorRgb01[1] - params.colorRgb01[1]) >= kCommitThreshold ||
            fabs(g_fogParamsActive.colorRgb01[2] - params.colorRgb01[2]) >= kCommitThreshold;
 }
 
-void CommitFogParamsIfChanged(const FogParamsPartial &params) {
+void CommitFogParamsIfChanged(
+    const FogParamsPartial &params
+) {
     if (FogParamsDifferFromActive(params)) {
-        memcpy(&g_fogParamsActive, &params, sizeof(params));
+        memcpy(
+            &g_fogParamsActive,
+            &params,
+            sizeof(params)
+        );
     }
 }
 } // namespace
 
 // Reimplements 0x490430: zRndr::SetPerspectiveTextureDeltaX
 // (D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetPerspectiveTextureDeltaX(int deltaX) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetPerspectiveTextureDeltaX(
+    int deltaX
+) {
     g_perspectiveTextureDeltaXInput = deltaX;
 
     int clampedDeltaX = deltaX;
@@ -720,26 +1088,30 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetPerspectiveTextureDeltaX(int deltaX) {
 
 // Reimplements 0x4904a0: zRndr::SetPerspectiveTextureFarZ
 // (D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp)
-RECOIL_NOINLINE void RECOIL_STDCALL SetPerspectiveTextureFarZ(float farZ) {
+RECOIL_NOINLINE void RECOIL_STDCALL SetPerspectiveTextureFarZ(
+    float farZ
+) {
     if (farZ != 0.0f) {
         g_perspectiveTextureFarZInv = 1.0f / farZ;
     }
 }
 
 // Reimplements 0x4904d0: zRndr::SetPerspectiveAdaptiveCorrection
-RECOIL_NOINLINE void RECOIL_STDCALL
-SetPerspectiveAdaptiveCorrection(float perspectiveAdaptiveCorrection) {
+RECOIL_NOINLINE void RECOIL_STDCALL SetPerspectiveAdaptiveCorrection(
+    float perspectiveAdaptiveCorrection
+) {
     const float plusOne = perspectiveAdaptiveCorrection + 1.0f;
     g_spanDepthBias = perspectiveAdaptiveCorrection;
     g_spanDepthBiasPlusOne = plusOne;
-    g_spanDepthBiasPlusOneInv =
-        (plusOne == 0.0f || plusOne != plusOne) ? 0.0f : 1.0f / plusOne;
+    g_spanDepthBiasPlusOneInv = (plusOne == 0.0f || plusOne != plusOne) ? 0.0f : 1.0f / plusOne;
 }
 
 // Reimplements 0x490480: zRndr::SetPerspectiveAdaptiveSpanParams
-RECOIL_NOINLINE void RECOIL_FASTCALL SetPerspectiveAdaptiveSpanParams(int minSpan,
-                                                                      int maxSpan,
-                                                                      float slope) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetPerspectiveAdaptiveSpanParams(
+    int minSpan,
+    int maxSpan,
+    float slope
+) {
     g_perspectiveAdaptiveMinSpan = minSpan;
     g_perspectiveAdaptiveMaxSpan = maxSpan;
     g_perspectiveAdaptiveSlope = slope;
@@ -789,8 +1161,9 @@ RECOIL_NOINLINE int RECOIL_CDECL InitGlobals() {
     g_lensFlareSampleQueueCount = 0;
     g_lensFlareVisibleSampleCount = 0;
 
-    zColorRgb color = {FloatFromBits(0x3d23d70a), FloatFromBits(0x3d23d70a),
-                       FloatFromBits(0x3d23d70a)};
+    zColorRgb color = {FloatFromBits(0x3d23d70a),
+        FloatFromBits(0x3d23d70a),
+        FloatFromBits(0x3d23d70a)};
     FogColor_SetRgb01Clamped(&color);
     FogColor_SetRgb01Clamped((zColorRgb *)(g_fogColorParams.colorRgb01));
     g_fogTargetParamsStaged = g_fogColorParams;
@@ -828,21 +1201,22 @@ RECOIL_NOINLINE int RECOIL_CDECL InitGlobals() {
 }
 
 // Reimplements 0x48d450: zRndr::OverlayBlendRow555_Scalar
-RECOIL_NOINLINE void RECOIL_FASTCALL OverlayBlendRow555_Scalar(unsigned short *rowPixels16,
-                                                               int pixelCount) {
+RECOIL_NOINLINE void RECOIL_FASTCALL OverlayBlendRow555_Scalar(
+    unsigned short *rowPixels16,
+    int pixelCount
+) {
     int pairCount = pixelCount >> 1;
     unsigned int *rowPairs = (unsigned int *)(rowPixels16);
     while (pairCount > 0) {
         const unsigned int packedPair = *rowPairs;
         const unsigned int loLanes =
-            ((((packedPair & 0x03e07c1fU) * (unsigned int)(g_swOverlayDstScale5)) >>
-              5) +
-             g_swOverlayPremulPackedRot16) &
+            ((((packedPair & 0x03e07c1fU) * (unsigned int)(g_swOverlayDstScale5)) >> 5) +
+                g_swOverlayPremulPackedRot16) &
             0x03e07c1fU;
-        const unsigned int hiLanes = ((((packedPair >> 5) & 0x03e0f81fU) *
-                                        (unsigned int)(g_swOverlayDstScale5)) +
-                                       g_swOverlayPremulPacked) &
-                                      0x7c1f03e0U;
+        const unsigned int hiLanes =
+            ((((packedPair >> 5) & 0x03e0f81fU) * (unsigned int)(g_swOverlayDstScale5)) +
+                g_swOverlayPremulPacked) &
+            0x7c1f03e0U;
         *rowPairs = hiLanes | loLanes;
         ++rowPairs;
         --pairCount;
@@ -850,8 +1224,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL OverlayBlendRow555_Scalar(unsigned short *r
 }
 
 // Reimplements 0x48d4b0: zRndr::OverlayBlendRow565_Scalar
-RECOIL_NOINLINE void RECOIL_FASTCALL OverlayBlendRow565_Scalar(unsigned short *rowPixels16,
-                                                               int pixelCount) {
+RECOIL_NOINLINE void RECOIL_FASTCALL OverlayBlendRow565_Scalar(
+    unsigned short *rowPixels16,
+    int pixelCount
+) {
     const int srcScale5 = (int)(g_overlayBlendAlpha * 32.0);
     const unsigned int src = g_overlayBlendPackedColor16;
     const unsigned int redMask = g_pixelPackRedMask;
@@ -861,8 +1237,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL OverlayBlendRow565_Scalar(unsigned short *r
     for (int i = 0; i < pixelCount; ++i) {
         const unsigned int dst = rowPixels16[i];
         const unsigned int red =
-            (((dst & redMask) * g_swOverlayDstScale5 + (src & redMask) * srcScale5) >> 5) &
-            redMask;
+            (((dst & redMask) * g_swOverlayDstScale5 + (src & redMask) * srcScale5) >> 5) & redMask;
         const unsigned int green =
             (((dst & greenMask) * g_swOverlayDstScale5 + (src & greenMask) * srcScale5) >> 5) &
             greenMask;
@@ -873,8 +1248,36 @@ RECOIL_NOINLINE void RECOIL_FASTCALL OverlayBlendRow565_Scalar(unsigned short *r
     }
 }
 
+// Reimplements 0x48d510: zRndr::OverlayBlendRow555_Mmx
+// Original assembly uses MMX qwords and processes four pixels per iteration; this C body
+// preserves the functional row contract while binary-safe assembly remains deferred.
+RECOIL_NOINLINE void RECOIL_FASTCALL OverlayBlendRow555_Mmx(
+    unsigned short *rowPixels16,
+    int pixelCount
+) {
+    OverlayBlendRow555_Scalar(
+        rowPixels16,
+        pixelCount & ~0x3
+    );
+}
+
+// Reimplements 0x48d5f0: zRndr::OverlayBlendRow565_Mmx
+// Original assembly uses MMX qwords and processes four pixels per iteration; this C body
+// preserves the functional row contract while binary-safe assembly remains deferred.
+RECOIL_NOINLINE void RECOIL_FASTCALL OverlayBlendRow565_Mmx(
+    unsigned short *rowPixels16,
+    int pixelCount
+) {
+    OverlayBlendRow565_Scalar(
+        rowPixels16,
+        pixelCount & ~0x3
+    );
+}
+
 // Reimplements 0x49e140: zRndr::SpanMmxSetPixelFormatMasks
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanMmxSetPixelFormatMasks(int greenBits) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanMmxSetPixelFormatMasks(
+    int greenBits
+) {
     short redPacked;
     if (greenBits == 5) {
         g_mmxMaskGreenBits[3] = 0x03e0U;
@@ -911,10 +1314,21 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanMmxSetPixelFormatMasks(int greenBits) {
 
 // Reimplements 0x48ff80: zRndr::SelectSpanRoutines
 RECOIL_NOINLINE void RECOIL_CDECL SelectSpanRoutines() {
-    zVideo::PixelPack_GetRgbBits(&g_pixelPackRedBits, &g_pixelPackGreenBits, &g_pixelPackBlueBits);
-    zVideo::PixelPack_GetRgbMasks(&g_pixelPackRedMask, &g_pixelPackGreenMask, &g_pixelPackBlueMask);
-    zVideo::PixelPack_GetPackingParams(&g_pixelPackRedShift, &g_pixelPackGreenShift,
-                                       &g_pixelPackBlueShift);
+    zVideo::PixelPack_GetRgbBits(
+        &g_pixelPackRedBits,
+        &g_pixelPackGreenBits,
+        &g_pixelPackBlueBits
+    );
+    zVideo::PixelPack_GetRgbMasks(
+        &g_pixelPackRedMask,
+        &g_pixelPackGreenMask,
+        &g_pixelPackBlueMask
+    );
+    zVideo::PixelPack_GetPackingParams(
+        &g_pixelPackRedShift,
+        &g_pixelPackGreenShift,
+        &g_pixelPackBlueShift
+    );
 
     if (g_graphicsFlags != 0) {
         *g_graphicsFlags &= ~4;
@@ -922,8 +1336,11 @@ RECOIL_NOINLINE void RECOIL_CDECL SelectSpanRoutines() {
 
     const int graphicsFlags = g_graphicsFlags != 0 ? *g_graphicsFlags : 0;
     const bool useShortAdaptiveSpans = (graphicsFlags & 8) != 0;
-    SetPerspectiveAdaptiveSpanParams(useShortAdaptiveSpans ? 0x10 : 0x20,
-                                     useShortAdaptiveSpans ? 0x40 : 0x200, 0.100000001f);
+    SetPerspectiveAdaptiveSpanParams(
+        useShortAdaptiveSpans ? 0x10 : 0x20,
+        useShortAdaptiveSpans ? 0x40 : 0x200,
+        0.100000001f
+    );
 
     if (g_bytesPerPixel != 2) {
         return;
@@ -936,14 +1353,14 @@ RECOIL_NOINLINE void RECOIL_CDECL SelectSpanRoutines() {
     g_pfnImmediateRaster5 = (SpanRoutineProc)zRndr_DrawLine16_Clipped;
     g_pfnSelectedSpanOp = (SpanRoutineProc)zRndr_FillSpan16Opaque;
     g_pfnSelectedSpanOp_Mode0 = SpanMasked16FromTex16SwitchVShift;
-    g_pfnFlatImmediateSpanOp =
-        g_pixelPackGreenBits == 5 ? (FlatImmediateSpanProc)zRndr_FillSpan555Solid
-                                  : (FlatImmediateSpanProc)zRndr_FillSpan565Solid;
+    g_pfnFlatImmediateSpanOp = g_pixelPackGreenBits == 5
+                                   ? (FlatImmediateSpanProc)zRndr_FillSpan555Solid
+                                   : (FlatImmediateSpanProc)zRndr_FillSpan565Solid;
 
-    if ((graphicsFlags & 4) != 0) {
-        g_pfnTexturedQueuedSpanOp_Mode0 =
-            zSys::CheckCpuSignatureMask() != 0 ? SpanCopy16FromTex16ExplicitVShift
-                                               : SpanCopy16FromTex16;
+    if ((graphicsFlags & 0x4) != 0) {
+        g_pfnTexturedQueuedSpanOp_Mode0 = zSys::CheckCpuSignatureMask() != 0
+                                              ? SpanCopy16FromTex16ExplicitVShift
+                                              : SpanCopy16FromTex16;
         g_pfnTexturedQueuedSpanOp_Mode1 = SpanCopy16FromPal8SwitchVShift;
         g_pfnTexturedQueuedFinalize = g_pixelPackGreenBits == 5
                                           ? (SpanRoutineProc)FogBlendSpan555Mmx
@@ -958,7 +1375,7 @@ RECOIL_NOINLINE void RECOIL_CDECL SelectSpanRoutines() {
         g_pfnTexturedQueuedFinalizeAlt = 0;
     }
 
-    if ((graphicsFlags & 4) != 0) {
+    if ((graphicsFlags & 0x4) != 0) {
         SpanMmxSetPixelFormatMasks(g_pixelPackGreenBits);
     }
 
@@ -1011,10 +1428,12 @@ RECOIL_NOINLINE void RECOIL_CDECL SelectSpanRoutines() {
 }
 
 // Reimplements 0x4903f0: zRndr::GetActiveRegionState
-RECOIL_NOINLINE void *RECOIL_FASTCALL GetActiveRegionState(int *outWidth,
-                                                           int *outHeight,
-                                                           int *outBitsPerPixel,
-                                                           int *outPitchBytes) {
+RECOIL_NOINLINE void *RECOIL_FASTCALL GetActiveRegionState(
+    int *outWidth,
+    int *outHeight,
+    int *outBitsPerPixel,
+    int *outPitchBytes
+) {
     *outWidth = g_activeRegionWidth;
     *outHeight = g_activeRegionHeight;
     *outBitsPerPixel = g_bytesPerPixel << 3;
@@ -1023,10 +1442,12 @@ RECOIL_NOINLINE void *RECOIL_FASTCALL GetActiveRegionState(int *outWidth,
 }
 
 // Reimplements 0x490340: zRndr::SetFrameBufferRegion
-RECOIL_NOINLINE void RECOIL_FASTCALL SetFrameBufferRegion(void *pixels,
-                                                          zOpt_ViewRectSection *activeRegionRect,
-                                                          int bitsPerPixel,
-                                                          int pitchBytes) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetFrameBufferRegion(
+    void *pixels,
+    zOpt_ViewRectSection *activeRegionRect,
+    int bitsPerPixel,
+    int pitchBytes
+) {
     g_frameBuffer = pixels;
     if (activeRegionRect != 0) {
         g_activeRegionWidth = activeRegionRect->rightExclusive - activeRegionRect->x;
@@ -1047,7 +1468,9 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetFrameBufferRegion(void *pixels,
 
 // Reimplements 0x4903c0: zRndr::SetActiveRegionSizeFromRect
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetActiveRegionSizeFromRect(HudUiRect *rect) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetActiveRegionSizeFromRect(
+    HudUiRect *rect
+) {
     if (rect != 0) {
         g_activeRegionWidth = rect->right - rect->left;
         g_activeRegionHeight = rect->bottom - rect->top;
@@ -1055,14 +1478,18 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetActiveRegionSizeFromRect(HudUiRect *rect
 }
 
 // Reimplements 0x4903e0: zRndr::SetVideoStrideMirrors
-RECOIL_NOINLINE void RECOIL_FASTCALL SetVideoStrideMirrors(int stride) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetVideoStrideMirrors(
+    int stride
+) {
     g_videoStrideMirror1 = stride;
     g_videoStrideMirror0 = stride;
 }
 
 // Reimplements 0x490710: zRndr::SpanOcclusionAddPolygon
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanOcclusionAddPolygon(const zVec3 *vertices,
-                                                             int vertCount) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanOcclusionAddPolygon(
+    const zVec3 *vertices,
+    int vertCount
+) {
     const int slotIndex = g_spanOccluderPolyCount;
     if (slotIndex >= 7) {
         return;
@@ -1081,8 +1508,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanOcclusionAddPolygon(const zVec3 *vertic
 
 // Reimplements 0x490610: zRndr::SpanOcclusionSubmitOccluderRect
 // (D:\Proj\Battlesport\zrndr_span.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL
-SpanOcclusionSubmitOccluderRect(const HudUiRect *rect, int halveIfReplicate, float z) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanOcclusionSubmitOccluderRect(
+    const HudUiRect *rect,
+    int halveIfReplicate,
+    float z
+) {
     zVec3 vertices[4];
     vertices[0].x = (float)(rect->left);
     vertices[0].y = (float)(rect->top);
@@ -1095,10 +1525,10 @@ SpanOcclusionSubmitOccluderRect(const HudUiRect *rect, int halveIfReplicate, flo
 
     if (halveIfReplicate != 0) {
         {
-        for (int index = 0; index < 4; ++index) {
-            vertices[index].x *= 0.5f;
-            vertices[index].y *= 0.5f;
-        }
+            for (int index = 0; index < 4; ++index) {
+                vertices[index].x *= 0.5f;
+                vertices[index].y *= 0.5f;
+            }
         }
     }
 
@@ -1106,17 +1536,27 @@ SpanOcclusionSubmitOccluderRect(const HudUiRect *rect, int halveIfReplicate, flo
     vertices[1].z = z;
     vertices[2].z = z;
     vertices[3].z = z;
-    SpanOcclusionAddPolygon(vertices, 4);
+    SpanOcclusionAddPolygon(
+        vertices,
+        4
+    );
 }
 
 // Reimplements 0x490520: zRndr::SpanOcclusionInit
-RECOIL_NOINLINE int RECOIL_FASTCALL SpanOcclusionInit(int height) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SpanOcclusionInit(
+    int height
+) {
     g_spanColumnCount = height;
     g_spanColumnCountPadded = height + 0x80;
-    g_spanColumnHeadTable = (SpanNodePartial **)(
-        calloc((size_t)(g_spanColumnCountPadded), sizeof(SpanNodePartial *)));
+    g_spanColumnHeadTable =
+        (SpanNodePartial **)(calloc(
+            (size_t)(g_spanColumnCountPadded),
+            sizeof(SpanNodePartial *)
+        ));
     g_spanPoolBase = (SpanNodePartial *)(calloc(
-        (size_t)(g_spanColumnCountPadded) << 8, sizeof(SpanNodePartial)));
+        (size_t)(g_spanColumnCountPadded) << 8,
+        sizeof(SpanNodePartial)
+    ));
 
     SpanOcclusionBuildColumnHeadTable();
     g_spanOccluderPolyCount = 0;
@@ -1136,14 +1576,18 @@ RECOIL_NOINLINE void RECOIL_CDECL SpanOcclusionBuildColumnHeadTable() {
     g_spanIterPrevLink = 0;
 
     for (int i_1084 = 0; i_1084 < g_spanOccluderPolyCount; ++i_1084) {
-        SpanOcclusionRasterizeOccluderPoly(&g_spanOccluderPolys[i_1084],
-                                           g_spanOccluderPolys[i_1084].vertCount);
+        SpanOcclusionRasterizeOccluderPoly(
+            &g_spanOccluderPolys[i_1084],
+            g_spanOccluderPolys[i_1084].vertCount
+        );
     }
 }
 
 // Reimplements 0x4927d0: zRndr::SpanOcclusionRasterizeOccluderPoly
-RECOIL_NOINLINE void RECOIL_FASTCALL
-SpanOcclusionRasterizeOccluderPoly(SpanOccluderPolyPartial *poly, int vertCount) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanOcclusionRasterizeOccluderPoly(
+    SpanOccluderPolyPartial *poly,
+    int vertCount
+) {
     if (poly == 0 || vertCount <= 0) {
         return;
     }
@@ -1153,7 +1597,10 @@ SpanOcclusionRasterizeOccluderPoly(SpanOccluderPolyPartial *poly, int vertCount)
     vertices[0].x = poly->vertices[0][0];
     vertices[0].y = poly->vertices[0][1];
 
-    const int sourceCount = MinValue(vertCount, 8);
+    const int sourceCount = MinValue(
+        vertCount,
+        8
+    );
     for (int i = 1; i < sourceCount; ++i) {
         const float x = poly->vertices[i][0];
         const float y = poly->vertices[i][1];
@@ -1176,8 +1623,14 @@ SpanOcclusionRasterizeOccluderPoly(SpanOccluderPolyPartial *poly, int vertCount)
     float minY = vertices[0].y;
     float maxY = vertices[0].y;
     for (int i_1121 = 1; i_1121 < reducedCount; ++i_1121) {
-        minY = MinValue(minY, vertices[i_1121].y);
-        maxY = MaxValue(maxY, vertices[i_1121].y);
+        minY = MinValue(
+            minY,
+            vertices[i_1121].y
+        );
+        maxY = MaxValue(
+            maxY,
+            vertices[i_1121].y
+        );
     }
 
     const int yStart = ScanlineStartFromY(minY);
@@ -1202,8 +1655,14 @@ SpanOcclusionRasterizeOccluderPoly(SpanOccluderPolyPartial *poly, int vertCount)
                 continue;
             }
 
-            const float edgeMinY = MinValue(a.y, b.y);
-            const float edgeMaxY = MaxValue(a.y, b.y);
+            const float edgeMinY = MinValue(
+                a.y,
+                b.y
+            );
+            const float edgeMaxY = MaxValue(
+                a.y,
+                b.y
+            );
             if (sampleY < edgeMinY || sampleY >= edgeMaxY) {
                 continue;
             }
@@ -1216,7 +1675,10 @@ SpanOcclusionRasterizeOccluderPoly(SpanOccluderPolyPartial *poly, int vertCount)
             continue;
         }
 
-        sort(intersections, intersections + intersectionCount);
+        sort(
+            intersections,
+            intersections + intersectionCount
+        );
         for (int i_1163 = 0; i_1163 + 1 < intersectionCount; i_1163 += 2) {
             const int xMin = SpanStartFromX(intersections[i_1163]);
             const int xMax = SpanEndFromX(intersections[i_1163 + 1]);
@@ -1234,7 +1696,11 @@ SpanOcclusionRasterizeOccluderPoly(SpanOccluderPolyPartial *poly, int vertCount)
             SpanBuildProc buildProc = g_pfnBuildSpanList != 0
                                           ? g_pfnBuildSpanList
                                           : zRndr_SpanOcclusion_InsertSpanNode_Local;
-            buildProc(spanList, y, &spanCount);
+            buildProc(
+                spanList,
+                y,
+                &spanCount
+            );
         }
     }
 }
@@ -1258,20 +1724,21 @@ RECOIL_NOINLINE void RECOIL_CDECL SpanOcclusionShutdown() {
 }
 
 // Reimplements 0x49e0e0: zRndr::SpanAlphaBlend565_Mmx_FromPal8
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565_Mmx_FromPal8(FogParamsPartial *params,
-                                                                    int packedRed,
-                                                                    int packedGreen,
-                                                                    int packedBlue) {
-    const unsigned int packedColor16 =
-        (unsigned int)(packedRed | packedGreen | packedBlue);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565_Mmx_FromPal8(
+    FogParamsPartial *params,
+    int packedRed,
+    int packedGreen,
+    int packedBlue
+) {
+    const unsigned int packedColor16 = (unsigned int)(packedRed | packedGreen | packedBlue);
     params->packedColorRed = packedRed;
     params->packedColorGreen = packedGreen;
     params->packedColorBlue = packedBlue;
     params->packedColor16 = (int)(packedColor16);
     params->packedColor16Dup = (int)(packedColor16 | (packedColor16 << 16));
 
-    const unsigned int rampStep = ((unsigned int)(packedRed | packedGreen) << 11) |
-                                   ((unsigned int)(packedBlue) >> 5);
+    const unsigned int rampStep =
+        ((unsigned int)(packedRed | packedGreen) << 11) | ((unsigned int)(packedBlue) >> 5);
     unsigned int rampValue = 0;
     for (int i = 31; i >= 0; --i) {
         params->packedColorRamp[i] = (int)(rampValue);
@@ -1280,23 +1747,46 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565_Mmx_FromPal8(FogParamsPar
 }
 
 namespace {
-int SpanTex16SampleIndex(int texU, int texV, int texVShift,
-                                  int texUMask);
-unsigned short BlendPixel565Alpha8(unsigned short dstPixel, unsigned short srcPixel,
-                                  int alpha);
-unsigned int BlendPair565Alpha5(unsigned int dstPair, unsigned short srcPixel, int alpha);
-unsigned short BlendPixel555Alpha8(unsigned short dstPixel, unsigned short srcPixel,
-                                  int alpha);
-unsigned int BlendPair555Alpha5(unsigned int dstPair, unsigned short srcPixel, int alpha);
-unsigned short BlendPixel555ConstAlphaMap(unsigned short dstPixel, unsigned short srcPixel,
-                                         int alpha);
+int SpanTex16SampleIndex(
+    int texU,
+    int texV,
+    int texVShift,
+    int texUMask
+);
+unsigned short BlendPixel565Alpha8(
+    unsigned short dstPixel,
+    unsigned short srcPixel,
+    int alpha
+);
+unsigned int BlendPair565Alpha5(
+    unsigned int dstPair,
+    unsigned short srcPixel,
+    int alpha
+);
+unsigned short BlendPixel555Alpha8(
+    unsigned short dstPixel,
+    unsigned short srcPixel,
+    int alpha
+);
+unsigned int BlendPair555Alpha5(
+    unsigned int dstPair,
+    unsigned short srcPixel,
+    int alpha
+);
+unsigned short BlendPixel555ConstAlphaMap(
+    unsigned short dstPixel,
+    unsigned short srcPixel,
+    int alpha
+);
 } // namespace
 
 // Reimplements 0x49c230: zRndr::SpanAlphaBlend565ConstAlphaFromPal8
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565ConstAlphaFromPal8(int texU,
-                                                                         int texV,
-                                                                         int pixelCount,
-                                                                         int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565ConstAlphaFromPal8(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     unsigned short *dst = g_spanCurrentDst16;
     for (int i = 0; i < pixelCount; ++i) {
         const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
@@ -1327,17 +1817,27 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565ConstAlphaFromPal8(int tex
 }
 
 // Reimplements 0x49c020: zRndr::SpanMasked16FromPal8To565
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromPal8To565(int texU, int texV,
-                                                               int pixelCount,
-                                                               int texVShift) {
-    SpanAlphaBlend565ConstAlphaFromPal8(texU, texV, pixelCount, texVShift);
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromPal8To565(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
+    SpanAlphaBlend565ConstAlphaFromPal8(
+        texU,
+        texV,
+        pixelCount,
+        texVShift
+    );
 }
 
 // Reimplements 0x49c150: zRndr::SpanMasked16FromTex16To565
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromTex16To565(int texU,
-                                                                int texV,
-                                                                int pixelCount,
-                                                                int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromTex16To565(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     unsigned short *dst = g_spanCurrentDst16;
     const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexels);
     for (int i = 0; i < pixelCount; ++i) {
@@ -1357,24 +1857,34 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromTex16To565(int texU,
 }
 
 // Reimplements 0x49c360: zRndr::SpanAlphaBlend565FromTex16Alpha8
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565FromTex16Alpha8(int texU,
-                                                                      int texV,
-                                                                      int pixelCount,
-                                                                      int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565FromTex16Alpha8(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     unsigned short *dst = g_spanCurrentDst16;
     const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexels);
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
 
     if ((pixelCount & 1) != 0) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
         const int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
             const unsigned short sourceTexel = texels16[sourceIndex];
             if (alpha >= 0xf8) {
                 *dst = sourceTexel;
             } else {
-                *dst = BlendPixel565Alpha8(*dst, sourceTexel, alpha);
+                *dst = BlendPixel565Alpha8(
+                    *dst,
+                    sourceTexel,
+                    alpha
+                );
             }
         }
 
@@ -1384,50 +1894,77 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565FromTex16Alpha8(int texU,
     }
 
     {
-    for (int pairCount = pixelCount >> 1; pairCount != 0; --pairCount) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
-        const int alpha = alphaMap[sourceIndex];
-        if (alpha >= 8) {
-            const unsigned short sourceTexel = texels16[sourceIndex];
-            unsigned int packedPixels = 0;
-            if (alpha >= 0xf8) {
-                packedPixels = (unsigned int)(sourceTexel) |
-                               ((unsigned int)(sourceTexel) << 16);
-            } else {
-                memcpy(&packedPixels, dst, sizeof(packedPixels));
-                packedPixels = BlendPair565Alpha5(packedPixels, sourceTexel, alpha);
+        for (int pairCount = pixelCount >> 1; pairCount != 0; --pairCount) {
+            const int sourceIndex =
+                SpanTex16SampleIndex(
+                    texU,
+                    texV,
+                    texVShift,
+                    g_spanActiveTexUMask
+                );
+            const int alpha = alphaMap[sourceIndex];
+            if (alpha >= 8) {
+                const unsigned short sourceTexel = texels16[sourceIndex];
+                unsigned int packedPixels = 0;
+                if (alpha >= 0xf8) {
+                    packedPixels =
+                        (unsigned int)(sourceTexel) | ((unsigned int)(sourceTexel) << 16);
+                } else {
+                    memcpy(
+                        &packedPixels,
+                        dst,
+                        sizeof(packedPixels)
+                    );
+                    packedPixels = BlendPair565Alpha5(
+                        packedPixels,
+                        sourceTexel,
+                        alpha
+                    );
+                }
+
+                memcpy(
+                    dst,
+                    &packedPixels,
+                    sizeof(packedPixels)
+                );
             }
 
-            memcpy(dst, &packedPixels, sizeof(packedPixels));
+            texU += g_spanTexUAdvance * 2;
+            texV += g_spanTexVAdvance * 2;
+            dst += 2;
         }
-
-        texU += g_spanTexUAdvance * 2;
-        texV += g_spanTexVAdvance * 2;
-        dst += 2;
-    }
     }
 }
 
 // Reimplements 0x49c560: zRndr::SpanAlphaBlend555FromTex16Alpha8
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555FromTex16Alpha8(int texU,
-                                                                      int texV,
-                                                                      int pixelCount,
-                                                                      int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555FromTex16Alpha8(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     unsigned short *dst = g_spanCurrentDst16;
     const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexels);
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
 
     if ((pixelCount & 1) != 0) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
         const int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
             const unsigned short sourceTexel = texels16[sourceIndex];
             if (alpha >= 0xf8) {
                 *dst = sourceTexel;
             } else {
-                *dst = BlendPixel555Alpha8(*dst, sourceTexel, alpha);
+                *dst = BlendPixel555Alpha8(
+                    *dst,
+                    sourceTexel,
+                    alpha
+                );
             }
         }
 
@@ -1437,53 +1974,84 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555FromTex16Alpha8(int texU,
     }
 
     {
-    for (int pairCount = pixelCount >> 1; pairCount != 0; --pairCount) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
-        const int alpha = alphaMap[sourceIndex];
-        if (alpha >= 8) {
-            const unsigned short sourceTexel = texels16[sourceIndex];
-            unsigned int packedPixels = 0;
-            if (alpha >= 0xf8) {
-                packedPixels = (unsigned int)(sourceTexel) |
-                               ((unsigned int)(sourceTexel) << 16);
-            } else {
-                memcpy(&packedPixels, dst, sizeof(packedPixels));
-                packedPixels = BlendPair555Alpha5(packedPixels, sourceTexel, alpha);
+        for (int pairCount = pixelCount >> 1; pairCount != 0; --pairCount) {
+            const int sourceIndex =
+                SpanTex16SampleIndex(
+                    texU,
+                    texV,
+                    texVShift,
+                    g_spanActiveTexUMask
+                );
+            const int alpha = alphaMap[sourceIndex];
+            if (alpha >= 8) {
+                const unsigned short sourceTexel = texels16[sourceIndex];
+                unsigned int packedPixels = 0;
+                if (alpha >= 0xf8) {
+                    packedPixels =
+                        (unsigned int)(sourceTexel) | ((unsigned int)(sourceTexel) << 16);
+                } else {
+                    memcpy(
+                        &packedPixels,
+                        dst,
+                        sizeof(packedPixels)
+                    );
+                    packedPixels = BlendPair555Alpha5(
+                        packedPixels,
+                        sourceTexel,
+                        alpha
+                    );
+                }
+
+                memcpy(
+                    dst,
+                    &packedPixels,
+                    sizeof(packedPixels)
+                );
             }
 
-            memcpy(dst, &packedPixels, sizeof(packedPixels));
+            texU += g_spanTexUAdvance * 2;
+            texV += g_spanTexVAdvance * 2;
+            dst += 2;
         }
-
-        texU += g_spanTexUAdvance * 2;
-        texV += g_spanTexVAdvance * 2;
-        dst += 2;
-    }
     }
 }
 
 // Reimplements 0x49c970: zRndr::SpanAlphaBlend565ConstAlphaFromTex16Alpha8
 RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565ConstAlphaFromTex16Alpha8(
-    int texU, int texV, int pixelCount, int texVShift) {
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     unsigned short *dst = g_spanCurrentDst16;
     const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexels);
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
     float alphaScale = 0.0f;
-    memcpy(&alphaScale, &g_spanActiveConstAlphaBits, sizeof(alphaScale));
+    memcpy(
+        &alphaScale,
+        &g_spanActiveConstAlphaBits,
+        sizeof(alphaScale)
+    );
 
     for (int i = 0; i < pixelCount; ++i) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
-        const double alphaScaled = (double)(alphaMap[sourceIndex]) *
-                                   (double)(alphaScale);
-        const int alpha = (int)(alphaScaled >= 0.0 ? alphaScaled + 0.5
-                                                              : alphaScaled - 0.5);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
+        const double alphaScaled = (double)(alphaMap[sourceIndex]) * (double)(alphaScale);
+        const int alpha = (int)(alphaScaled >= 0.0 ? alphaScaled + 0.5 : alphaScaled - 0.5);
         const unsigned short sourceTexel = texels16[sourceIndex];
         if (alpha > 3) {
             if (alpha >= 0xfc) {
                 *dst = sourceTexel;
             } else {
-                *dst = BlendPixel565Alpha8(*dst, sourceTexel, alpha);
+                *dst = BlendPixel565Alpha8(
+                    *dst,
+                    sourceTexel,
+                    alpha
+                );
             }
         }
 
@@ -1495,26 +2063,40 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565ConstAlphaFromTex16Alpha8(
 
 // Reimplements 0x49ca90: zRndr::SpanAlphaBlend555ConstAlphaFromTex16Alpha8
 RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555ConstAlphaFromTex16Alpha8(
-    int texU, int texV, int pixelCount, int texVShift) {
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     unsigned short *dst = g_spanCurrentDst16;
     const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexels);
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
     float alphaScale = 0.0f;
-    memcpy(&alphaScale, &g_spanActiveConstAlphaBits, sizeof(alphaScale));
+    memcpy(
+        &alphaScale,
+        &g_spanActiveConstAlphaBits,
+        sizeof(alphaScale)
+    );
 
     for (int i = 0; i < pixelCount; ++i) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
-        const double alphaScaled = (double)(alphaMap[sourceIndex]) *
-                                   (double)(alphaScale);
-        const int alpha = (int)(alphaScaled >= 0.0 ? alphaScaled + 0.5
-                                                              : alphaScaled - 0.5);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
+        const double alphaScaled = (double)(alphaMap[sourceIndex]) * (double)(alphaScale);
+        const int alpha = (int)(alphaScaled >= 0.0 ? alphaScaled + 0.5 : alphaScaled - 0.5);
         const unsigned short sourceTexel = texels16[sourceIndex];
         if (alpha > 7) {
             if (alpha >= 0xfc) {
                 *dst = sourceTexel;
             } else {
-                *dst = BlendPixel555ConstAlphaMap(*dst, sourceTexel, alpha);
+                *dst = BlendPixel555ConstAlphaMap(
+                    *dst,
+                    sourceTexel,
+                    alpha
+                );
             }
         }
 
@@ -1525,19 +2107,29 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555ConstAlphaFromTex16Alpha8(
 }
 
 // Reimplements 0x49cbb0: zRndr::SpanAlphaBlend565MmxFromTex16Alpha8
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565MmxFromTex16Alpha8(int texU,
-                                                                         int texV,
-                                                                         int pixelCount,
-                                                                         int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565MmxFromTex16Alpha8(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     unsigned short *dst = g_spanCurrentDst16;
     const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexels);
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
 
     const int quadPixels = pixelCount & ~3;
     for (int i = 0; i < quadPixels; ++i) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
-        *dst = BlendPixel565Alpha8(*dst, texels16[sourceIndex], alphaMap[sourceIndex]);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
+        *dst = BlendPixel565Alpha8(
+            *dst,
+            texels16[sourceIndex],
+            alphaMap[sourceIndex]
+        );
 
         texU += g_spanTexUAdvance;
         texV += g_spanTexVAdvance;
@@ -1545,15 +2137,23 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565MmxFromTex16Alpha8(int tex
     }
 
     for (int i_1490 = quadPixels; i_1490 < pixelCount; ++i_1490) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
         const int alpha = alphaMap[sourceIndex];
         const unsigned short sourceTexel = texels16[sourceIndex];
         if (alpha > 3) {
             if (alpha >= 0xfc) {
                 *dst = sourceTexel;
             } else {
-                *dst = BlendPixel565Alpha8(*dst, sourceTexel, alpha);
+                *dst = BlendPixel565Alpha8(
+                    *dst,
+                    sourceTexel,
+                    alpha
+                );
             }
         }
 
@@ -1564,19 +2164,29 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565MmxFromTex16Alpha8(int tex
 }
 
 // Reimplements 0x49cea0: zRndr::SpanAlphaBlend555MmxFromTex16Alpha8
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555MmxFromTex16Alpha8(int texU,
-                                                                         int texV,
-                                                                         int pixelCount,
-                                                                         int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555MmxFromTex16Alpha8(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     unsigned short *dst = g_spanCurrentDst16;
     const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexels);
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
 
     const int quadPixels = pixelCount & ~3;
     for (int i = 0; i < quadPixels; ++i) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
-        *dst = BlendPixel555Alpha8(*dst, texels16[sourceIndex], alphaMap[sourceIndex]);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
+        *dst = BlendPixel555Alpha8(
+            *dst,
+            texels16[sourceIndex],
+            alphaMap[sourceIndex]
+        );
 
         texU += g_spanTexUAdvance;
         texV += g_spanTexVAdvance;
@@ -1584,15 +2194,23 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555MmxFromTex16Alpha8(int tex
     }
 
     for (int i_1529 = quadPixels; i_1529 < pixelCount; ++i_1529) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
         const int alpha = alphaMap[sourceIndex];
         const unsigned short sourceTexel = texels16[sourceIndex];
         if (alpha > 7) {
             if (alpha >= 0xfc) {
                 *dst = sourceTexel;
             } else {
-                *dst = BlendPixel555Alpha8(*dst, sourceTexel, alpha);
+                *dst = BlendPixel555Alpha8(
+                    *dst,
+                    sourceTexel,
+                    alpha
+                );
             }
         }
 
@@ -1603,25 +2221,35 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555MmxFromTex16Alpha8(int tex
 }
 
 // Reimplements 0x49d1a0: zRndr::SpanAlphaBlend565FromPal8Alpha8
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565FromPal8Alpha8(int texU,
-                                                                     int texV,
-                                                                     int pixelCount,
-                                                                     int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565FromPal8Alpha8(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     unsigned short *dst = g_spanCurrentDst16;
     const unsigned char *texels8 = g_spanActiveTexels;
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
     const unsigned short *palette = g_spanActiveTexPalette;
 
     if ((pixelCount & 1) != 0) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
         const int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
             const unsigned short sourcePixel = palette[texels8[sourceIndex]];
             if (alpha >= 0xf8) {
                 *dst = sourcePixel;
             } else {
-                *dst = BlendPixel565Alpha8(*dst, sourcePixel, alpha);
+                *dst = BlendPixel565Alpha8(
+                    *dst,
+                    sourcePixel,
+                    alpha
+                );
             }
         }
 
@@ -1631,8 +2259,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565FromPal8Alpha8(int texU,
     }
 
     for (int i = pixelCount >> 1; i != 0; --i) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
         const int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
             const unsigned short sourcePixel = palette[texels8[sourceIndex]];
@@ -1641,9 +2273,21 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565FromPal8Alpha8(int texU,
                 dst[1] = sourcePixel;
             } else {
                 unsigned int packedPixels = 0;
-                memcpy(&packedPixels, dst, sizeof(packedPixels));
-                packedPixels = BlendPair565Alpha5(packedPixels, sourcePixel, alpha);
-                memcpy(dst, &packedPixels, sizeof(packedPixels));
+                memcpy(
+                    &packedPixels,
+                    dst,
+                    sizeof(packedPixels)
+                );
+                packedPixels = BlendPair565Alpha5(
+                    packedPixels,
+                    sourcePixel,
+                    alpha
+                );
+                memcpy(
+                    dst,
+                    &packedPixels,
+                    sizeof(packedPixels)
+                );
             }
         }
 
@@ -1654,25 +2298,35 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565FromPal8Alpha8(int texU,
 }
 
 // Reimplements 0x49d3b0: zRndr::SpanAlphaBlend555FromPal8Alpha8
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555FromPal8Alpha8(int texU,
-                                                                     int texV,
-                                                                     int pixelCount,
-                                                                     int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555FromPal8Alpha8(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     unsigned short *dst = g_spanCurrentDst16;
     const unsigned char *texels8 = g_spanActiveTexels;
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
     const unsigned short *palette = g_spanActiveTexPalette;
 
     if ((pixelCount & 1) != 0) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
         const int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
             const unsigned short sourcePixel = palette[texels8[sourceIndex]];
             if (alpha >= 0xf8) {
                 *dst = sourcePixel;
             } else {
-                *dst = BlendPixel555Alpha8(*dst, sourcePixel, alpha);
+                *dst = BlendPixel555Alpha8(
+                    *dst,
+                    sourcePixel,
+                    alpha
+                );
             }
         }
 
@@ -1682,8 +2336,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555FromPal8Alpha8(int texU,
     }
 
     for (int i = pixelCount >> 1; i != 0; --i) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
         const int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
             const unsigned short sourcePixel = palette[texels8[sourceIndex]];
@@ -1692,9 +2350,21 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555FromPal8Alpha8(int texU,
                 dst[1] = sourcePixel;
             } else {
                 unsigned int packedPixels = 0;
-                memcpy(&packedPixels, dst, sizeof(packedPixels));
-                packedPixels = BlendPair555Alpha5(packedPixels, sourcePixel, alpha);
-                memcpy(dst, &packedPixels, sizeof(packedPixels));
+                memcpy(
+                    &packedPixels,
+                    dst,
+                    sizeof(packedPixels)
+                );
+                packedPixels = BlendPair555Alpha5(
+                    packedPixels,
+                    sourcePixel,
+                    alpha
+                );
+                memcpy(
+                    dst,
+                    &packedPixels,
+                    sizeof(packedPixels)
+                );
             }
         }
 
@@ -1706,28 +2376,42 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555FromPal8Alpha8(int texU,
 
 // Reimplements 0x49d810: zRndr::SpanAlphaBlend565ConstAlphaFromPal8Alpha8
 RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565ConstAlphaFromPal8Alpha8(
-    int texU, int texV, int pixelCount, int texVShift) {
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     unsigned short *dst = g_spanCurrentDst16;
     const unsigned char *texels8 = g_spanActiveTexels;
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
     const unsigned short *palette = g_spanActiveTexPalette;
 
     float alphaScale = 0.0f;
-    memcpy(&alphaScale, &g_spanActiveConstAlphaBits, sizeof(alphaScale));
+    memcpy(
+        &alphaScale,
+        &g_spanActiveConstAlphaBits,
+        sizeof(alphaScale)
+    );
 
     for (int i = 0; i < pixelCount; ++i) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
         const unsigned short sourcePixel = palette[texels8[sourceIndex]];
-        const double alphaScaled = (double)(alphaMap[sourceIndex]) *
-                                   (double)(alphaScale);
-        const int alpha = (int)(alphaScaled >= 0.0 ? alphaScaled + 0.5
-                                                              : alphaScaled - 0.5);
+        const double alphaScaled = (double)(alphaMap[sourceIndex]) * (double)(alphaScale);
+        const int alpha = (int)(alphaScaled >= 0.0 ? alphaScaled + 0.5 : alphaScaled - 0.5);
         if (alpha > 3) {
             if (alpha >= 0xfc) {
                 *dst = sourcePixel;
             } else {
-                *dst = BlendPixel565Alpha8(*dst, sourcePixel, alpha);
+                *dst = BlendPixel565Alpha8(
+                    *dst,
+                    sourcePixel,
+                    alpha
+                );
             }
         }
 
@@ -1739,28 +2423,42 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565ConstAlphaFromPal8Alpha8(
 
 // Reimplements 0x49d950: zRndr::SpanAlphaBlend555ConstAlphaFromPal8Alpha8
 RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555ConstAlphaFromPal8Alpha8(
-    int texU, int texV, int pixelCount, int texVShift) {
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     unsigned short *dst = g_spanCurrentDst16;
     const unsigned char *texels8 = g_spanActiveTexels;
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
     const unsigned short *palette = g_spanActiveTexPalette;
 
     float alphaScale = 0.0f;
-    memcpy(&alphaScale, &g_spanActiveConstAlphaBits, sizeof(alphaScale));
+    memcpy(
+        &alphaScale,
+        &g_spanActiveConstAlphaBits,
+        sizeof(alphaScale)
+    );
 
     for (int i = 0; i < pixelCount; ++i) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
         const unsigned short sourcePixel = palette[texels8[sourceIndex]];
-        const double alphaScaled = (double)(alphaMap[sourceIndex]) *
-                                   (double)(alphaScale);
-        const int alpha = (int)(alphaScaled >= 0.0 ? alphaScaled + 0.5
-                                                              : alphaScaled - 0.5);
+        const double alphaScaled = (double)(alphaMap[sourceIndex]) * (double)(alphaScale);
+        const int alpha = (int)(alphaScaled >= 0.0 ? alphaScaled + 0.5 : alphaScaled - 0.5);
         if (alpha > 7) {
             if (alpha >= 0xfc) {
                 *dst = sourcePixel;
             } else {
-                *dst = BlendPixel555ConstAlphaMap(*dst, sourcePixel, alpha);
+                *dst = BlendPixel555ConstAlphaMap(
+                    *dst,
+                    sourcePixel,
+                    alpha
+                );
             }
         }
 
@@ -1771,10 +2469,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555ConstAlphaFromPal8Alpha8(
 }
 
 // Reimplements 0x49da80: zRndr::SpanAlphaBlend565MmxFromPal8Alpha8
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565MmxFromPal8Alpha8(int texU,
-                                                                        int texV,
-                                                                        int pixelCount,
-                                                                        int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565MmxFromPal8Alpha8(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     unsigned short *dst = g_spanCurrentDst16;
     const unsigned char *texels8 = g_spanActiveTexels;
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
@@ -1782,9 +2482,17 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565MmxFromPal8Alpha8(int texU
 
     const int quadPixels = pixelCount & ~3;
     for (int i = 0; i < quadPixels; ++i) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
-        *dst = BlendPixel565Alpha8(*dst, palette[texels8[sourceIndex]], alphaMap[sourceIndex]);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
+        *dst = BlendPixel565Alpha8(
+            *dst,
+            palette[texels8[sourceIndex]],
+            alphaMap[sourceIndex]
+        );
 
         texU += g_spanTexUAdvance;
         texV += g_spanTexVAdvance;
@@ -1792,15 +2500,23 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565MmxFromPal8Alpha8(int texU
     }
 
     for (int i_1733 = quadPixels; i_1733 < pixelCount; ++i_1733) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
         const int alpha = alphaMap[sourceIndex];
         const unsigned short sourcePixel = palette[texels8[sourceIndex]];
         if (alpha > 3) {
             if (alpha >= 0xfc) {
                 *dst = sourcePixel;
             } else {
-                *dst = BlendPixel565Alpha8(*dst, sourcePixel, alpha);
+                *dst = BlendPixel565Alpha8(
+                    *dst,
+                    sourcePixel,
+                    alpha
+                );
             }
         }
 
@@ -1811,10 +2527,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565MmxFromPal8Alpha8(int texU
 }
 
 // Reimplements 0x49ddb0: zRndr::SpanAlphaBlend555MmxFromPal8Alpha8
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555MmxFromPal8Alpha8(int texU,
-                                                                        int texV,
-                                                                        int pixelCount,
-                                                                        int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555MmxFromPal8Alpha8(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     unsigned short *dst = g_spanCurrentDst16;
     const unsigned char *texels8 = g_spanActiveTexels;
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
@@ -1822,9 +2540,17 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555MmxFromPal8Alpha8(int texU
 
     const int quadPixels = pixelCount & ~3;
     for (int i = 0; i < quadPixels; ++i) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
-        *dst = BlendPixel555Alpha8(*dst, palette[texels8[sourceIndex]], alphaMap[sourceIndex]);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
+        *dst = BlendPixel555Alpha8(
+            *dst,
+            palette[texels8[sourceIndex]],
+            alphaMap[sourceIndex]
+        );
 
         texU += g_spanTexUAdvance;
         texV += g_spanTexVAdvance;
@@ -1832,15 +2558,23 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555MmxFromPal8Alpha8(int texU
     }
 
     for (int i_1773 = quadPixels; i_1773 < pixelCount; ++i_1773) {
-        const int sourceIndex =
-            SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
         const int alpha = alphaMap[sourceIndex];
         const unsigned short sourcePixel = palette[texels8[sourceIndex]];
         if (alpha > 7) {
             if (alpha >= 0xfc) {
                 *dst = sourcePixel;
             } else {
-                *dst = BlendPixel555Alpha8(*dst, sourcePixel, alpha);
+                *dst = BlendPixel555Alpha8(
+                    *dst,
+                    sourcePixel,
+                    alpha
+                );
             }
         }
 
@@ -1851,10 +2585,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555MmxFromPal8Alpha8(int texU
 }
 
 // Reimplements 0x49c760: zRndr::SpanAlphaBlend565ConstAlphaFromTex16
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565ConstAlphaFromTex16(int texU,
-                                                                          int texV,
-                                                                          int pixelCount,
-                                                                          int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565ConstAlphaFromTex16(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     unsigned short *dst = g_spanCurrentDst16;
     const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexels);
     for (int i = 0; i < pixelCount; ++i) {
@@ -1885,10 +2621,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565ConstAlphaFromTex16(int te
 }
 
 // Reimplements 0x49c860: zRndr::SpanAlphaBlend555ConstAlphaFromTex16
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555ConstAlphaFromTex16(int texU,
-                                                                          int texV,
-                                                                          int pixelCount,
-                                                                          int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555ConstAlphaFromTex16(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     unsigned short *dst = g_spanCurrentDst16;
     const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexels);
     for (int i = 0; i < pixelCount; ++i) {
@@ -1920,14 +2658,17 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555ConstAlphaFromTex16(int te
 
 // Reimplements 0x49d5c0: zRndr::SpanAlphaBlend565ConstAlphaFastFromPal8
 RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565ConstAlphaFastFromPal8(
-    int texU, int texV, int pixelCount, int texVShift) {
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     unsigned short *dst = g_spanCurrentDst16;
     for (int i = 0; i < pixelCount; ++i) {
         const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
         const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
         const unsigned char sourceIndex = g_spanActiveTexels[vIndex + uIndex];
-        const int srcColor =
-            (short)(g_spanActiveTexPalette[sourceIndex]);
+        const int srcColor = (short)(g_spanActiveTexPalette[sourceIndex]);
         if (g_spanActiveConstAlphaBits > 3) {
             if (g_spanActiveConstAlphaBits >= 0xfc) {
                 *dst = (unsigned short)(srcColor);
@@ -1953,14 +2694,17 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend565ConstAlphaFastFromPal8(
 
 // Reimplements 0x49d6e0: zRndr::SpanAlphaBlend555ConstAlphaFastFromPal8
 RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555ConstAlphaFastFromPal8(
-    int texU, int texV, int pixelCount, int texVShift) {
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     unsigned short *dst = g_spanCurrentDst16;
     for (int i = 0; i < pixelCount; ++i) {
         const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
         const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
         const unsigned char sourceIndex = g_spanActiveTexels[vIndex + uIndex];
-        const int srcColor =
-            (short)(g_spanActiveTexPalette[sourceIndex]);
+        const int srcColor = (short)(g_spanActiveTexPalette[sourceIndex]);
         if (g_spanActiveConstAlphaBits > 7) {
             if (g_spanActiveConstAlphaBits >= 0xfc) {
                 *dst = (unsigned short)(srcColor);
@@ -1985,23 +2729,35 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanAlphaBlend555ConstAlphaFastFromPal8(
 }
 
 namespace {
-unsigned int RotateRight32(unsigned int value, int count) {
+unsigned int RotateRight32(
+    unsigned int value,
+    int count
+) {
     return (value >> count) | (value << (32 - count));
 }
 
-bool FogCoordIsFullyFogged(unsigned int fogCoordFixed24) {
+bool FogCoordIsFullyFogged(
+    unsigned int fogCoordFixed24
+) {
     return (int)(fogCoordFixed24) >= 0x1000000;
 }
 
-bool FogCoordUsesRamp(unsigned int fogCoordFixed24) {
+bool FogCoordUsesRamp(
+    unsigned int fogCoordFixed24
+) {
     return (int)(fogCoordFixed24) >= 0x80000;
 }
 
-unsigned int FogRampIndex(unsigned int fogCoordFixed24) {
+unsigned int FogRampIndex(
+    unsigned int fogCoordFixed24
+) {
     return (0x1000000u - fogCoordFixed24) >> 19;
 }
 
-unsigned short FogBlendPixel565(unsigned short pixel, unsigned int fogCoordFixed24) {
+unsigned short FogBlendPixel565(
+    unsigned short pixel,
+    unsigned int fogCoordFixed24
+) {
     if (FogCoordIsFullyFogged(fogCoordFixed24)) {
         return (unsigned short)(g_fogParamsActive.packedColor16);
     }
@@ -2011,16 +2767,21 @@ unsigned short FogBlendPixel565(unsigned short pixel, unsigned int fogCoordFixed
     }
 
     const unsigned int rampIndex = FogRampIndex(fogCoordFixed24);
-    const unsigned int rampValue =
-        (unsigned int)(g_fogParamsActive.packedColorRamp[rampIndex]);
+    const unsigned int rampValue = (unsigned int)(g_fogParamsActive.packedColorRamp[rampIndex]);
     const unsigned int pixel32 = pixel;
     const unsigned int green = ((((pixel32 & 0x07e0u) >> 5) * rampIndex) + rampValue) & 0x07e0u;
     const unsigned int redBlue =
-        (((pixel32 & 0xf81fu) * rampIndex + RotateRight32(rampValue, 11)) >> 5) & 0xf81fu;
+        (((pixel32 & 0xf81fu) * rampIndex + RotateRight32(
+            rampValue,
+            11
+        )) >> 5) & 0xf81fu;
     return (unsigned short)(green + redBlue);
 }
 
-unsigned short FogBlendPixel555(unsigned short pixel, unsigned int fogCoordFixed24) {
+unsigned short FogBlendPixel555(
+    unsigned short pixel,
+    unsigned int fogCoordFixed24
+) {
     if (FogCoordIsFullyFogged(fogCoordFixed24)) {
         return (unsigned short)(g_fogParamsActive.packedColor16);
     }
@@ -2030,16 +2791,21 @@ unsigned short FogBlendPixel555(unsigned short pixel, unsigned int fogCoordFixed
     }
 
     const unsigned int rampIndex = FogRampIndex(fogCoordFixed24);
-    const unsigned int rampValue =
-        (unsigned int)(g_fogParamsActive.packedColorRamp[rampIndex]);
+    const unsigned int rampValue = (unsigned int)(g_fogParamsActive.packedColorRamp[rampIndex]);
     const unsigned int pixel32 = pixel;
     const unsigned int green = ((((pixel32 & 0x03e0u) >> 5) * rampIndex) + rampValue) & 0x03e0u;
     const unsigned int redBlue =
-        (((pixel32 & 0x7c1fu) * rampIndex + RotateRight32(rampValue, 11)) >> 5) & 0x7c1fu;
+        (((pixel32 & 0x7c1fu) * rampIndex + RotateRight32(
+            rampValue,
+            11
+        )) >> 5) & 0x7c1fu;
     return (unsigned short)(green + redBlue);
 }
 
-unsigned int FogBlendPair565(unsigned int packedPixels, unsigned int fogCoordFixed24) {
+unsigned int FogBlendPair565(
+    unsigned int packedPixels,
+    unsigned int fogCoordFixed24
+) {
     if (FogCoordIsFullyFogged(fogCoordFixed24)) {
         return (unsigned int)(g_fogParamsActive.packedColor16Dup);
     }
@@ -2049,17 +2815,22 @@ unsigned int FogBlendPair565(unsigned int packedPixels, unsigned int fogCoordFix
     }
 
     const unsigned int rampIndex = FogRampIndex(fogCoordFixed24);
-    const unsigned int rampValue =
-        (unsigned int)(g_fogParamsActive.packedColorRamp[rampIndex]);
+    const unsigned int rampValue = (unsigned int)(g_fogParamsActive.packedColorRamp[rampIndex]);
     const unsigned int green =
         ((((packedPixels & 0xf81f07e0u) >> 5) * rampIndex) + rampValue) & 0xf81f07e0u;
     const unsigned int redBlue =
-        (((packedPixels & 0x07e0f81fu) * rampIndex + RotateRight32(rampValue, 11)) >> 5) &
+        (((packedPixels & 0x07e0f81fu) * rampIndex + RotateRight32(
+            rampValue,
+            11
+        )) >> 5) &
         0x07e0f81fu;
     return green + redBlue;
 }
 
-unsigned int FogBlendPair555(unsigned int packedPixels, unsigned int fogCoordFixed24) {
+unsigned int FogBlendPair555(
+    unsigned int packedPixels,
+    unsigned int fogCoordFixed24
+) {
     if (FogCoordIsFullyFogged(fogCoordFixed24)) {
         return (unsigned int)(g_fogParamsActive.packedColor16Dup);
     }
@@ -2069,19 +2840,23 @@ unsigned int FogBlendPair555(unsigned int packedPixels, unsigned int fogCoordFix
     }
 
     const unsigned int rampIndex = FogRampIndex(fogCoordFixed24);
-    const unsigned int rampValue =
-        (unsigned int)(g_fogParamsActive.packedColorRamp[rampIndex]);
+    const unsigned int rampValue = (unsigned int)(g_fogParamsActive.packedColorRamp[rampIndex]);
     const unsigned int green =
         ((((packedPixels & 0x7c1f03e0u) >> 5) * rampIndex) + rampValue) & 0x7c1f03e0u;
     const unsigned int redBlue =
-        (((packedPixels & 0x03e07c1fu) * rampIndex + RotateRight32(rampValue, 11)) >> 5) &
+        (((packedPixels & 0x03e07c1fu) * rampIndex + RotateRight32(
+            rampValue,
+            11
+        )) >> 5) &
         0x03e07c1fu;
     return green + redBlue;
 }
 
-short SaturatingSubWord(unsigned short minuend, unsigned short subtrahend) {
-    const int result =
-        (short)(minuend) - (short)(subtrahend);
+short SaturatingSubWord(
+    unsigned short minuend,
+    unsigned short subtrahend
+) {
+    const int result = (short)(minuend) - (short)(subtrahend);
     if (result > 0x7fff) {
         return 0x7fff;
     }
@@ -2091,40 +2866,64 @@ short SaturatingSubWord(unsigned short minuend, unsigned short subtrahend) {
     return (short)(result);
 }
 
-unsigned short MultiplyLowWord(short lhs, short rhs) {
-    return (unsigned short)((int)(lhs) *
-                                      (int)(rhs));
+unsigned short MultiplyLowWord(
+    short lhs,
+    short rhs
+) {
+    return (unsigned short)((int)(lhs) * (int)(rhs));
 }
 
-unsigned short FogBlendMmxLane(unsigned short pixel, unsigned short fogFactor, int lane,
-                              int redShift, int redTermShift) {
+unsigned short FogBlendMmxLane(
+    unsigned short pixel,
+    unsigned short fogFactor,
+    int lane,
+    int redShift,
+    int redTermShift
+) {
     const short factor = (short)(fogFactor);
     const short redDelta =
-        SaturatingSubWord(g_mmxBitsRed255[lane], (unsigned short)(pixel >> redShift));
-    const short greenDelta =
-        SaturatingSubWord(g_mmxBitsGreen255[lane],
-                          (unsigned short)((pixel & g_mmxMaskGreenBits[lane]) >> 5));
+        SaturatingSubWord(
+            g_mmxBitsRed255[lane],
+            (unsigned short)(pixel >> redShift)
+        );
+    const short greenDelta = SaturatingSubWord(
+        g_mmxBitsGreen255[lane],
+        (unsigned short)((pixel & g_mmxMaskGreenBits[lane]) >> 5)
+    );
     const short blueDelta = SaturatingSubWord(
-        g_mmxBitsBlue255[lane], (unsigned short)(pixel & g_mmxMaskBlueBits[lane]));
+        g_mmxBitsBlue255[lane],
+        (unsigned short)(pixel & g_mmxMaskBlueBits[lane])
+    );
 
-    const unsigned short redProduct = MultiplyLowWord(redDelta, factor);
-    const unsigned short greenProduct = MultiplyLowWord(greenDelta, factor);
-    const unsigned short blueProduct = MultiplyLowWord(blueDelta, factor);
+    const unsigned short redProduct = MultiplyLowWord(
+        redDelta,
+        factor
+    );
+    const unsigned short greenProduct = MultiplyLowWord(
+        greenDelta,
+        factor
+    );
+    const unsigned short blueProduct = MultiplyLowWord(
+        blueDelta,
+        factor
+    );
 
     const unsigned short redTerm =
         (unsigned short)(redProduct << redTermShift) & g_mmxMaskRedPacked[lane];
     const unsigned short greenTerm =
-        (unsigned short)((short)(greenProduct) >> 3) &
-        g_mmxMaskGreenPacked[lane];
-    const unsigned short blueTerm =
-        (unsigned short)((short)(blueProduct) >> 8);
+        (unsigned short)((short)(greenProduct) >> 3) & g_mmxMaskGreenPacked[lane];
+    const unsigned short blueTerm = (unsigned short)((short)(blueProduct) >> 8);
 
     return (unsigned short)(pixel + redTerm + greenTerm + blueTerm);
 }
 
-unsigned int BlendMmxQuad(unsigned short *pixels, unsigned int fogCoordFixed24,
-                           unsigned int fogCoordStepFixed24, int redShift,
-                           int redTermShift) {
+unsigned int BlendMmxQuad(
+    unsigned short *pixels,
+    unsigned int fogCoordFixed24,
+    unsigned int fogCoordStepFixed24,
+    int redShift,
+    int redTermShift
+) {
     unsigned int coord = fogCoordFixed24;
     coord += fogCoordStepFixed24;
     g_mmxFogFactors[0] = (unsigned short)(coord >> 16);
@@ -2136,10 +2935,16 @@ unsigned int BlendMmxQuad(unsigned short *pixels, unsigned int fogCoordFixed24,
     g_mmxFogFactors[3] = (unsigned short)(coord >> 16);
 
     {
-    for (int lane = 0; lane < 4; ++lane) {
-        pixels[lane] =
-            FogBlendMmxLane(pixels[lane], g_mmxFogFactors[lane], lane, redShift, redTermShift);
-    }
+        for (int lane = 0; lane < 4; ++lane) {
+            pixels[lane] =
+                FogBlendMmxLane(
+                    pixels[lane],
+                    g_mmxFogFactors[lane],
+                    lane,
+                    redShift,
+                    redTermShift
+                );
+        }
     }
 
     coord += fogCoordStepFixed24;
@@ -2147,63 +2952,112 @@ unsigned int BlendMmxQuad(unsigned short *pixels, unsigned int fogCoordFixed24,
     return coord;
 }
 
-void FogBlendSpanMmxCore(unsigned short *pixels, int pixelCount,
-                         int fogCoordFixed24, int fogCoordStepFixed24,
-                         int redShift, int redTermShift,
-                         void(RECOIL_FASTCALL *tailScalar)(unsigned short *, int,
-                                                           int, int)) {
+void FogBlendSpanMmxCore(
+    unsigned short *pixels,
+    int pixelCount,
+    int fogCoordFixed24,
+    int fogCoordStepFixed24,
+    int redShift,
+    int redTermShift,
+    void(RECOIL_FASTCALL *tailScalar)(
+        unsigned short *,
+        int,
+        int,
+        int
+    )
+) {
     unsigned short *cursor = pixels;
     int remaining = pixelCount;
     unsigned int fogCoord = (unsigned int)(fogCoordFixed24);
     const unsigned int fogStep = (unsigned int)(fogCoordStepFixed24);
 
-    int headPixels =
-        (int)((unsigned int)(pixels) & 3u);
+    int headPixels = (int)((unsigned int)(pixels) & 3u);
     if ((unsigned int)(headPixels) >= (unsigned int)(remaining)) {
         headPixels = remaining;
     }
 
     if (headPixels != 0) {
-        tailScalar(cursor, headPixels, (int)(fogCoord), fogCoordStepFixed24);
+        tailScalar(
+            cursor,
+            headPixels,
+            (int)(fogCoord),
+            fogCoordStepFixed24
+        );
         cursor += headPixels;
-        fogCoord += (unsigned int)(headPixels) * fogStep;
+        fogCoord += (unsigned int)(headPixels)*fogStep;
         remaining -= headPixels;
     }
 
     const int tailPixels = remaining & 3;
     unsigned int quadCount = (unsigned int)(remaining) >> 2;
     while (quadCount != 0) {
-        fogCoord = BlendMmxQuad(cursor, fogCoord, fogStep, redShift, redTermShift);
+        fogCoord = BlendMmxQuad(
+            cursor,
+            fogCoord,
+            fogStep,
+            redShift,
+            redTermShift
+        );
         cursor += 4;
         --quadCount;
     }
 
     if (tailPixels != 0) {
-        tailScalar(cursor, tailPixels, (int)(fogCoord), fogCoordStepFixed24);
+        tailScalar(
+            cursor,
+            tailPixels,
+            (int)(fogCoord),
+            fogCoordStepFixed24
+        );
     }
 }
 
-int SpanTex16SampleIndex(int texU, int texV, int texVShift,
-                                  int texUMask) {
+int SpanTex16SampleIndex(
+    int texU,
+    int texV,
+    int texVShift,
+    int texUMask
+) {
     const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
     const int uIndex = (texU >> 20) & texUMask;
     return vIndex + uIndex;
 }
 
-unsigned short SpanTex16Sample(int texU, int texV, int texVShift,
-                              int texUMask) {
+unsigned short SpanTex16Sample(
+    int texU,
+    int texV,
+    int texVShift,
+    int texUMask
+) {
     const unsigned short *texels = (const unsigned short *)(g_spanActiveTexels);
-    return texels[SpanTex16SampleIndex(texU, texV, texVShift, texUMask)];
+    return texels[SpanTex16SampleIndex(
+        texU,
+        texV,
+        texVShift,
+        texUMask
+    )];
 }
 
-unsigned short SpanPal8SampleExpanded(int texU, int texV, int texVShift,
-                                     int texUMask) {
-    const int sourceIndex = SpanTex16SampleIndex(texU, texV, texVShift, texUMask);
+unsigned short SpanPal8SampleExpanded(
+    int texU,
+    int texV,
+    int texVShift,
+    int texUMask
+) {
+    const int sourceIndex = SpanTex16SampleIndex(
+        texU,
+        texV,
+        texVShift,
+        texUMask
+    );
     return g_spanActiveTexPalette[g_spanActiveTexels[sourceIndex]];
 }
 
-unsigned short BlendPixel565Alpha8(unsigned short dstPixel, unsigned short srcPixel,
-                                  int alpha) {
+unsigned short BlendPixel565Alpha8(
+    unsigned short dstPixel,
+    unsigned short srcPixel,
+    int alpha
+) {
     const int dstColor = (short)(dstPixel);
     const int srcColor = srcPixel;
     const int greenDelta = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
@@ -2214,23 +3068,28 @@ unsigned short BlendPixel565Alpha8(unsigned short dstPixel, unsigned short srcPi
     return (unsigned short)(blended);
 }
 
-unsigned int BlendPair565Alpha5(unsigned int dstPair, unsigned short srcPixel,
-                                 int alpha) {
-    const unsigned int srcPair =
-        (unsigned int)(srcPixel) | ((unsigned int)(srcPixel) << 16);
+unsigned int BlendPair565Alpha5(
+    unsigned int dstPair,
+    unsigned short srcPixel,
+    int alpha
+) {
+    const unsigned int srcPair = (unsigned int)(srcPixel) | ((unsigned int)(srcPixel) << 16);
     const unsigned int alpha5 = (unsigned int)(alpha >> 3);
     const unsigned int inverseAlpha5 = 0x1fu - alpha5;
     const unsigned int lowTerms =
         ((((dstPair & 0x07e0f81fu) * inverseAlpha5) + ((srcPair & 0x07e0f81fu) * alpha5)) >> 5) &
         0x07e0f81fu;
     const unsigned int highTerms = ((((dstPair >> 5) & 0x07c0f83fu) * inverseAlpha5) +
-                                     (((srcPair >> 5) & 0x07c0f83fu) * alpha5)) &
-                                    0xf81f07e0u;
+                                       (((srcPair >> 5) & 0x07c0f83fu) * alpha5)) &
+                                   0xf81f07e0u;
     return lowTerms | highTerms;
 }
 
-unsigned short BlendPixel555Alpha8(unsigned short dstPixel, unsigned short srcPixel,
-                                  int alpha) {
+unsigned short BlendPixel555Alpha8(
+    unsigned short dstPixel,
+    unsigned short srcPixel,
+    int alpha
+) {
     const int dstColor = (short)(dstPixel);
     const int srcColor = srcPixel;
     const int redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
@@ -2241,37 +3100,51 @@ unsigned short BlendPixel555Alpha8(unsigned short dstPixel, unsigned short srcPi
     return (unsigned short)(blended);
 }
 
-unsigned int BlendPair555Alpha5(unsigned int dstPair, unsigned short srcPixel,
-                                 int alpha) {
-    const unsigned int srcPair =
-        (unsigned int)(srcPixel) | ((unsigned int)(srcPixel) << 16);
+unsigned int BlendPair555Alpha5(
+    unsigned int dstPair,
+    unsigned short srcPixel,
+    int alpha
+) {
+    const unsigned int srcPair = (unsigned int)(srcPixel) | ((unsigned int)(srcPixel) << 16);
     const unsigned int alpha5 = (unsigned int)(alpha >> 3);
     const unsigned int inverseAlpha5 = 0x1fu - alpha5;
     const unsigned int lowTerms =
         ((((dstPair & 0x03e07c1fu) * inverseAlpha5) + ((srcPair & 0x03e07c1fu) * alpha5)) >> 5) &
         0x03e07c1fu;
     const unsigned int highTerms = ((((dstPair >> 5) & 0x03e0f81fu) * inverseAlpha5) +
-                                     (((srcPair >> 5) & 0x03e0f81fu) * alpha5)) &
-                                    0x7c1f03e0u;
+                                       (((srcPair >> 5) & 0x03e0f81fu) * alpha5)) &
+                                   0x7c1f03e0u;
     return highTerms | lowTerms;
 }
 
-unsigned short BlendPixel555ConstAlphaMap(unsigned short dstPixel, unsigned short srcPixel,
-                                         int alpha) {
+unsigned short BlendPixel555ConstAlphaMap(
+    unsigned short dstPixel,
+    unsigned short srcPixel,
+    int alpha
+) {
     const int dstColor = (short)(dstPixel);
     const int srcColor = srcPixel;
     const int redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
     const int greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
     const int blueDelta = (((srcColor & 0x001f) - (dstColor & 0x001f)) * alpha) >> 8;
-    return (unsigned short)(dstColor + (redDelta & 0xfffffc00) +
-                                      (greenDelta & 0xffffffe0) + blueDelta);
+    return (unsigned short)(dstColor + (redDelta & 0xfffffc00) + (greenDelta & 0xffffffe0) +
+                            blueDelta);
 }
 
-void SpanCopy16FromTex16Forward(int texU, int texV, int pixelCount,
-                                int texVShift) {
+void SpanCopy16FromTex16Forward(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     unsigned short *dst = g_spanCurrentDst16;
     for (int i = 0; i < pixelCount; ++i) {
-        dst[i] = SpanTex16Sample(texU, texV, texVShift, g_spanActiveTexUMask);
+        dst[i] = SpanTex16Sample(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
         texU += g_spanTexUAdvance;
         texV += g_spanTexVAdvance;
     }
@@ -2279,16 +3152,21 @@ void SpanCopy16FromTex16Forward(int texU, int texV, int pixelCount,
 } // namespace
 
 // Reimplements 0x49e200: zRndr::FogBlendSpan565Scalar
-RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan565Scalar(unsigned short *pixels,
-                                                           int pixelCount,
-                                                           int fogCoordFixed24,
-                                                           int fogCoordStepFixed24) {
+RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan565Scalar(
+    unsigned short *pixels,
+    int pixelCount,
+    int fogCoordFixed24,
+    int fogCoordStepFixed24
+) {
     unsigned int fogCoord = (unsigned int)(fogCoordFixed24);
     const unsigned int fogStep = (unsigned int)(fogCoordStepFixed24);
     unsigned int pairCount = (unsigned int)(pixelCount) >> 1;
 
     if ((pixelCount & 1) != 0) {
-        *pixels = FogBlendPixel565(*pixels, fogCoord);
+        *pixels = FogBlendPixel565(
+            *pixels,
+            fogCoord
+        );
         ++pixels;
         fogCoord += fogStep;
     }
@@ -2297,7 +3175,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan565Scalar(unsigned short *pixel
     while (pairCount != 0) {
         const unsigned int packedPixels =
             (unsigned int)(pixels[0]) | ((unsigned int)(pixels[1]) << 16);
-        const unsigned int blended = FogBlendPair565(packedPixels, fogCoord);
+        const unsigned int blended = FogBlendPair565(
+            packedPixels,
+            fogCoord
+        );
         pixels[0] = (unsigned short)(blended);
         pixels[1] = (unsigned short)(blended >> 16);
 
@@ -2308,16 +3189,21 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan565Scalar(unsigned short *pixel
 }
 
 // Reimplements 0x49e300: zRndr::FogBlendSpan555Scalar
-RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan555Scalar(unsigned short *pixels,
-                                                           int pixelCount,
-                                                           int fogCoordFixed24,
-                                                           int fogCoordStepFixed24) {
+RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan555Scalar(
+    unsigned short *pixels,
+    int pixelCount,
+    int fogCoordFixed24,
+    int fogCoordStepFixed24
+) {
     unsigned int fogCoord = (unsigned int)(fogCoordFixed24);
     const unsigned int fogStep = (unsigned int)(fogCoordStepFixed24);
     unsigned int pairCount = (unsigned int)(pixelCount) >> 1;
 
     if ((pixelCount & 1) != 0) {
-        *pixels = FogBlendPixel555(*pixels, fogCoord);
+        *pixels = FogBlendPixel555(
+            *pixels,
+            fogCoord
+        );
         ++pixels;
         fogCoord += fogStep;
     }
@@ -2326,7 +3212,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan555Scalar(unsigned short *pixel
     while (pairCount != 0) {
         const unsigned int packedPixels =
             (unsigned int)(pixels[0]) | ((unsigned int)(pixels[1]) << 16);
-        const unsigned int blended = FogBlendPair555(packedPixels, fogCoord);
+        const unsigned int blended = FogBlendPair555(
+            packedPixels,
+            fogCoord
+        );
         pixels[0] = (unsigned short)(blended);
         pixels[1] = (unsigned short)(blended >> 16);
 
@@ -2337,52 +3226,84 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan555Scalar(unsigned short *pixel
 }
 
 // Reimplements 0x49e400: zRndr::FogBlendSpan565Mmx
-RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan565Mmx(unsigned short *pixels,
-                                                        int pixelCount,
-                                                        int fogCoordFixed24,
-                                                        int fogCoordStepFixed24) {
-    FogBlendSpanMmxCore(pixels, pixelCount, fogCoordFixed24, fogCoordStepFixed24, 11, 3,
-                        FogBlendSpan565Scalar);
+RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan565Mmx(
+    unsigned short *pixels,
+    int pixelCount,
+    int fogCoordFixed24,
+    int fogCoordStepFixed24
+) {
+    FogBlendSpanMmxCore(
+        pixels,
+        pixelCount,
+        fogCoordFixed24,
+        fogCoordStepFixed24,
+        11,
+        3,
+        FogBlendSpan565Scalar
+    );
 }
 
 // Reimplements 0x49e560: zRndr::FogBlendSpan555Mmx
-RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan555Mmx(unsigned short *pixels,
-                                                        int pixelCount,
-                                                        int fogCoordFixed24,
-                                                        int fogCoordStepFixed24) {
-    FogBlendSpanMmxCore(pixels, pixelCount, fogCoordFixed24, fogCoordStepFixed24, 10, 2,
-                        FogBlendSpan555Scalar);
+RECOIL_NOINLINE void RECOIL_FASTCALL FogBlendSpan555Mmx(
+    unsigned short *pixels,
+    int pixelCount,
+    int fogCoordFixed24,
+    int fogCoordStepFixed24
+) {
+    FogBlendSpanMmxCore(
+        pixels,
+        pixelCount,
+        fogCoordFixed24,
+        fogCoordStepFixed24,
+        10,
+        2,
+        FogBlendSpan555Scalar
+    );
 }
 
 // Reimplements 0x49e6c0: zRndr::SpanCopy16FromTex16SwitchVShift
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromTex16SwitchVShift(int texU,
-                                                                     int texV,
-                                                                     int pixelCount,
-                                                                     int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromTex16SwitchVShift(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     if (texVShift < 10 || texVShift > 17) {
         return;
     }
 
     const int texUMask = (1 << (20 - texVShift)) - 1;
     for (int i = 0; i < pixelCount; ++i) {
-        g_spanCurrentDst16[pixelCount - i - 1] = SpanTex16Sample(texU, texV, texVShift, texUMask);
+        g_spanCurrentDst16[pixelCount - i - 1] = SpanTex16Sample(
+            texU,
+            texV,
+            texVShift,
+            texUMask
+        );
         texU += g_spanTexUAdvance;
         texV += g_spanTexVAdvance;
     }
 }
 
 // Reimplements 0x49b7e0: zRndr::SpanMasked16FromTex16SwitchVShift
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromTex16SwitchVShift(int texU,
-                                                                       int texV,
-                                                                       int pixelCount,
-                                                                       int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromTex16SwitchVShift(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     if (texVShift < 10 || texVShift > 17) {
         return;
     }
 
     const int texUMask = (1 << (20 - texVShift)) - 1;
     for (int i = 0; i < pixelCount; ++i) {
-        const unsigned short source = SpanTex16Sample(texU, texV, texVShift, texUMask);
+        const unsigned short source = SpanTex16Sample(
+            texU,
+            texV,
+            texVShift,
+            texUMask
+        );
         if (source != 0) {
             g_spanCurrentDst16[pixelCount - i - 1] = source;
         }
@@ -2392,7 +3313,9 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromTex16SwitchVShift(int texU,
 }
 
 // Reimplements 0x49ea40: zRndr::SpanMmxSetTexUvMasksAndVShift
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanMmxSetTexUvMasksAndVShift(int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanMmxSetTexUvMasksAndVShift(
+    int texVShift
+) {
     g_mmxVShiftCounts[0] = texVShift;
     g_mmxVShiftCounts[1] = 0;
     g_mmxVMask[0] = g_spanActiveTexVMask;
@@ -2402,11 +3325,19 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanMmxSetTexUvMasksAndVShift(int texVShift
 }
 
 // Reimplements 0x49ea80: zRndr::SpanCopy16FromTex16
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromTex16(int texU, int texV,
-                                                         int pixelCount,
-                                                         int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromTex16(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     if (((unsigned int)(g_spanCurrentDst16) & 3u) != 0) {
-        *g_spanCurrentDst16 = SpanTex16Sample(texU, texV, texVShift, g_spanActiveTexUMask);
+        *g_spanCurrentDst16 = SpanTex16Sample(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
         ++g_spanCurrentDst16;
         --pixelCount;
         if (pixelCount == 0) {
@@ -2425,16 +3356,28 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromTex16(int texU, int texV,
     g_mmxUStepDup2[0] = g_spanTexUAdvance * 2;
     g_mmxUStepDup2[1] = g_spanTexUAdvance * 2;
 
-    SpanCopy16FromTex16Forward(texU, texV, pixelCount, texVShift);
+    SpanCopy16FromTex16Forward(
+        texU,
+        texV,
+        pixelCount,
+        texVShift
+    );
 }
 
 // Reimplements 0x49ec20: zRndr::SpanCopy16FromTex16ExplicitVShift
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromTex16ExplicitVShift(int texU,
-                                                                       int texV,
-                                                                       int pixelCount,
-                                                                       int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromTex16ExplicitVShift(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     if (((unsigned int)(g_spanCurrentDst16) & 3u) != 0) {
-        *g_spanCurrentDst16 = SpanTex16Sample(texU, texV, texVShift, g_spanActiveTexUMask);
+        *g_spanCurrentDst16 = SpanTex16Sample(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
         ++g_spanCurrentDst16;
         --pixelCount;
         if (pixelCount == 0) {
@@ -2453,14 +3396,21 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromTex16ExplicitVShift(int texU,
     g_mmxUStepDup2[0] = g_spanTexUAdvance * 2;
     g_mmxUStepDup2[1] = g_spanTexUAdvance * 2;
 
-    SpanCopy16FromTex16Forward(texU, texV, pixelCount, texVShift);
+    SpanCopy16FromTex16Forward(
+        texU,
+        texV,
+        pixelCount,
+        texVShift
+    );
 }
 
 // Reimplements 0x49edc0: zRndr::SpanCopy16FromPal8SwitchVShift
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromPal8SwitchVShift(int texU,
-                                                                    int texV,
-                                                                    int pixelCount,
-                                                                    int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromPal8SwitchVShift(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     if (texVShift < 10 || texVShift > 17) {
         return;
     }
@@ -2468,24 +3418,36 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromPal8SwitchVShift(int texU,
     const int texUMask = (1 << (20 - texVShift)) - 1;
     for (int i = 0; i < pixelCount; ++i) {
         g_spanCurrentDst16[pixelCount - i - 1] =
-            SpanPal8SampleExpanded(texU, texV, texVShift, texUMask);
+            SpanPal8SampleExpanded(
+                texU,
+                texV,
+                texVShift,
+                texUMask
+            );
         texU += g_spanTexUAdvance;
         texV += g_spanTexVAdvance;
     }
 }
 
 // Reimplements 0x49bbf0: zRndr::SpanMasked16FromPal8SwitchVShift
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromPal8SwitchVShift(int texU,
-                                                                      int texV,
-                                                                      int pixelCount,
-                                                                      int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromPal8SwitchVShift(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     if (texVShift < 10 || texVShift > 17) {
         return;
     }
 
     const int texUMask = (1 << (20 - texVShift)) - 1;
     for (int i = 0; i < pixelCount; ++i) {
-        const int sourceIndex = SpanTex16SampleIndex(texU, texV, texVShift, texUMask);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            texUMask
+        );
         const unsigned char source = g_spanActiveTexels[sourceIndex];
         if (source != 0) {
             g_spanCurrentDst16[pixelCount - i - 1] = g_spanActiveTexPalette[source];
@@ -2496,22 +3458,28 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromPal8SwitchVShift(int texU,
 }
 
 // Reimplements 0x49f180: zRndr::SpanShade16FromPal8SwitchVShift
-RECOIL_NOINLINE void RECOIL_FASTCALL SpanShade16FromPal8SwitchVShift(int texU,
-                                                                     int texV,
-                                                                     int pixelCount,
-                                                                     int texVShift) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SpanShade16FromPal8SwitchVShift(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
     if (texVShift < 10 || texVShift > 17) {
         return;
     }
 
     const int texUMask = (1 << (20 - texVShift)) - 1;
     for (int i = 0; i < pixelCount; ++i) {
-        const int sourceIndex = SpanTex16SampleIndex(texU, texV, texVShift, texUMask);
+        const int sourceIndex = SpanTex16SampleIndex(
+            texU,
+            texV,
+            texVShift,
+            texUMask
+        );
         const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
         const int paletteIndex = g_spanActiveTexels[sourceIndex] + shadeBucket;
-        g_spanActiveShadeFixed16 =
-            (int)((unsigned int)(g_spanActiveShadeFixed16) +
-                                      (unsigned int)(g_spanActiveShadeStepFixed16));
+        g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
+                                         (unsigned int)(g_spanActiveShadeStepFixed16));
         g_spanCurrentDst16[pixelCount - i - 1] = g_spanActiveTexPalette[paletteIndex];
         texU += g_spanTexUAdvance;
         texV += g_spanTexVAdvance;
@@ -2519,7 +3487,9 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanShade16FromPal8SwitchVShift(int texU,
 }
 
 // Reimplements 0x49b1e0: zRndr::FogColor_SetRgb01Clamped
-RECOIL_NOINLINE void RECOIL_FASTCALL FogColor_SetRgb01Clamped(zColorRgb *color) {
+RECOIL_NOINLINE void RECOIL_FASTCALL FogColor_SetRgb01Clamped(
+    zColorRgb *color
+) {
     if (color->red > 1.0f) {
         color->red = 1.0f;
     } else if (!(color->red >= 0.0f)) {
@@ -2559,11 +3529,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FogColor_SetRgb01Clamped(zColorRgb *color) 
         &g_fogColorParams,
         (red << g_zVideo_PixelPack_RShift) & (int)(g_zVideo_PixelPack_RMask),
         (green << g_zVideo_PixelPack_GShift) & (int)(g_zVideo_PixelPack_GMask),
-        blue >> g_zVideo_PixelPack_BShiftTo8);
+        blue >> g_zVideo_PixelPack_BShiftTo8
+    );
 }
 
 // Reimplements 0x49b350: zRndr::SetFogTargetColorRgb01Clamped
-RECOIL_NOINLINE void RECOIL_FASTCALL SetFogTargetColorRgb01Clamped(zColorRgb *color) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetFogTargetColorRgb01Clamped(
+    zColorRgb *color
+) {
     if (color->red > 1.0f) {
         color->red = 1.0f;
     } else if (!(color->red >= 0.0f)) {
@@ -2603,7 +3576,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetFogTargetColorRgb01Clamped(zColorRgb *co
         &g_fogParamsActive,
         (red << g_zVideo_PixelPack_RShift) & (int)(g_zVideo_PixelPack_RMask),
         (green << g_zVideo_PixelPack_GShift) & (int)(g_zVideo_PixelPack_GMask),
-        blue >> g_zVideo_PixelPack_BShiftTo8);
+        blue >> g_zVideo_PixelPack_BShiftTo8
+    );
 }
 
 // Reimplements 0x49b4c0: zRndr::CommitDirectFogParamsIfChanged
@@ -2622,8 +3596,10 @@ RECOIL_NOINLINE void RECOIL_CDECL CommitStagedFogParamsIfChanged() {
 }
 
 // Reimplements 0x49b780: zRndr::BlendPackedColor565WithFogInPlace
-RECOIL_NOINLINE void RECOIL_FASTCALL BlendPackedColor565WithFogInPlace(int *ioPackedColor,
-                                                                       int blend255) {
+RECOIL_NOINLINE void RECOIL_FASTCALL BlendPackedColor565WithFogInPlace(
+    int *ioPackedColor,
+    int blend255
+) {
     const int packedColor = *ioPackedColor;
     const int redMask = (int)(g_pixelPackRedMask);
     const int greenMask = (int)(g_pixelPackGreenMask);
@@ -2645,7 +3621,11 @@ RECOIL_NOINLINE void RECOIL_CDECL LensFlare_ResetSampleQueue() {
 }
 
 namespace {
-unsigned short BlendPacked565(unsigned short from, unsigned short to, int alpha) {
+unsigned short BlendPacked565(
+    unsigned short from,
+    unsigned short to,
+    int alpha
+) {
     const int red =
         ((from >> 11) & 0x1f) + ((((to >> 11) & 0x1f) - ((from >> 11) & 0x1f)) * alpha >> 8);
     const int green =
@@ -2654,7 +3634,11 @@ unsigned short BlendPacked565(unsigned short from, unsigned short to, int alpha)
     return (unsigned short)(((red & 0x1f) << 11) | ((green & 0x3f) << 5) | (blue & 0x1f));
 }
 
-unsigned short BlendPacked555(unsigned short from, unsigned short to, int alpha) {
+unsigned short BlendPacked555(
+    unsigned short from,
+    unsigned short to,
+    int alpha
+) {
     const int red =
         ((from >> 10) & 0x1f) + ((((to >> 10) & 0x1f) - ((from >> 10) & 0x1f)) * alpha >> 8);
     const int green =
@@ -2663,7 +3647,11 @@ unsigned short BlendPacked555(unsigned short from, unsigned short to, int alpha)
     return (unsigned short)(((red & 0x1f) << 10) | ((green & 0x1f) << 5) | (blue & 0x1f));
 }
 
-unsigned short BlendLensFlarePixel(unsigned short from, unsigned short to, int alpha) {
+unsigned short BlendLensFlarePixel(
+    unsigned short from,
+    unsigned short to,
+    int alpha
+) {
     if (g_pixelPackGreenBits == 6) {
         if (alpha <= 3) {
             return from;
@@ -2671,7 +3659,11 @@ unsigned short BlendLensFlarePixel(unsigned short from, unsigned short to, int a
         if (alpha >= 0xfc) {
             return to;
         }
-        return BlendPacked565(from, to, alpha);
+        return BlendPacked565(
+            from,
+            to,
+            alpha
+        );
     }
 
     if (alpha <= 7) {
@@ -2680,19 +3672,26 @@ unsigned short BlendLensFlarePixel(unsigned short from, unsigned short to, int a
     if (alpha >= 0xfc) {
         return to;
     }
-    return BlendPacked555(from, to, alpha);
+    return BlendPacked555(
+        from,
+        to,
+        alpha
+    );
 }
 } // namespace
 
 // Reimplements 0x498cb0: zRndr::LensFlare_DrawQueuedSample16_ClippedFramebuffer
 RECOIL_NOINLINE void RECOIL_FASTCALL LensFlare_DrawQueuedSample16_ClippedFramebuffer(
-    LensFlareSamplePartial *sample, int yOffsetPixels, float screenScale) {
+    LensFlareSamplePartial *sample,
+    int yOffsetPixels,
+    float screenScale
+) {
     if (sample == 0 || g_frameBuffer == 0) {
         return;
     }
 
-    zRndr_LensFlareSource *lensFlareSource = (zRndr_LensFlareSource *)(
-        (unsigned int)(sample->lensFlareSource));
+    zRndr_LensFlareSource *lensFlareSource =
+        (zRndr_LensFlareSource *)((unsigned int)(sample->lensFlareSource));
     bool blendTowardFramebuffer = false;
     float reciprocalZ = 0.0f;
     if (lensFlareSource != 0 && lensFlareSource->depthFadeInvZMax != 0.0f) {
@@ -2717,13 +3716,15 @@ RECOIL_NOINLINE void RECOIL_FASTCALL LensFlare_DrawQueuedSample16_ClippedFramebu
     unsigned short packedColor = (unsigned short)(sample->packedColor16);
     unsigned char *frameBase = (unsigned char *)(g_frameBuffer);
     unsigned short *pixel =
-        (unsigned short *)(frameBase + (int)(y) * g_pitchBytes +
-                                          (int)(x) * sizeof(unsigned short));
+        (unsigned short *)(frameBase + (int)(y)*g_pitchBytes + (int)(x) * sizeof(unsigned short));
 
     if (g_overlayBlendEnabled != 0) {
         const int overlayAlpha = (int)(g_overlayBlendAlpha * 255.0);
         packedColor = BlendLensFlarePixel(
-            packedColor, (unsigned short)(g_overlayBlendPackedColor16), overlayAlpha);
+            packedColor,
+            (unsigned short)(g_overlayBlendPackedColor16),
+            overlayAlpha
+        );
     }
 
     if (!blendTowardFramebuffer) {
@@ -2731,8 +3732,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL LensFlare_DrawQueuedSample16_ClippedFramebu
         return;
     }
 
-    const int fadeAlpha = (int)(
-        (lensFlareSource->depthFadeInvZMax - reciprocalZ) * lensFlareSource->depthFadeScale);
+    const int fadeAlpha =
+        (int)((lensFlareSource->depthFadeInvZMax - reciprocalZ) * lensFlareSource->depthFadeScale);
     if (g_pixelPackGreenBits == 6 ? fadeAlpha <= 3 : fadeAlpha <= 7) {
         return;
     }
@@ -2742,72 +3743,136 @@ RECOIL_NOINLINE void RECOIL_FASTCALL LensFlare_DrawQueuedSample16_ClippedFramebu
         return;
     }
 
-    *pixel = BlendLensFlarePixel(*pixel, packedColor, fadeAlpha);
+    *pixel = BlendLensFlarePixel(
+        *pixel,
+        packedColor,
+        fadeAlpha
+    );
 }
 
 // Reimplements 0x49a8c0: zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer
 // (D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL
-LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(int yOffsetPixels,
-                                                       float screenScale) {
+RECOIL_NOINLINE void RECOIL_FASTCALL LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(
+    int yOffsetPixels,
+    float screenScale
+) {
     {
-    for (int sampleIndex = 0; sampleIndex < g_lensFlareSampleQueueCount; ++sampleIndex) {
-        LensFlare_DrawQueuedSample16_ClippedFramebuffer(&g_lensFlareSampleQueue[sampleIndex],
-                                                        yOffsetPixels, screenScale);
-    }
+        for (int sampleIndex = 0; sampleIndex < g_lensFlareSampleQueueCount; ++sampleIndex) {
+            LensFlare_DrawQueuedSample16_ClippedFramebuffer(
+                &g_lensFlareSampleQueue[sampleIndex],
+                yOffsetPixels,
+                screenScale
+            );
+        }
     }
 
     g_lensFlareSampleQueueCount = 0;
     g_overlayBlendEnabled = 0;
 }
 
-void SpanOcclusionInsertPendingSpanSorted(SpanNodePartial **spanList, int columnIndex,
-                                          int *spanCount) {
-    InsertPendingSpanSorted(spanList, columnIndex, spanCount);
+void SpanOcclusionInsertPendingSpanSorted(
+    SpanNodePartial **spanList,
+    int columnIndex,
+    int *spanCount
+) {
+    InsertPendingSpanSorted(
+        spanList,
+        columnIndex,
+        spanCount
+    );
 }
 
-void SpanOcclusionInsertPendingSpanWithDepthTest(SpanNodePartial **spanList, int columnIndex,
-                                                 int *spanCount) {
-    InsertPendingSpanWithDepthTest(spanList, columnIndex, spanCount);
+void SpanOcclusionInsertPendingSpanWithDepthTest(
+    SpanNodePartial **spanList,
+    int columnIndex,
+    int *spanCount
+) {
+    InsertPendingSpanWithDepthTest(
+        spanList,
+        columnIndex,
+        spanCount
+    );
 }
 
-void SpanOcclusionInsertPendingSpanNoDepthTest(SpanNodePartial **spanList, int columnIndex,
-                                               int *spanCount) {
-    InsertPendingSpanNoDepthTest(spanList, columnIndex, spanCount);
+void SpanOcclusionInsertPendingSpanNoDepthTest(
+    SpanNodePartial **spanList,
+    int columnIndex,
+    int *spanCount
+) {
+    InsertPendingSpanNoDepthTest(
+        spanList,
+        columnIndex,
+        spanCount
+    );
 }
 
-void SpanOcclusionBuildVisibleSpanListWithDepthTest(SpanNodePartial **spanList, int columnIndex,
-                                                    int *spanCount) {
-    BuildVisibleSpanListWithDepthTest(spanList, columnIndex, spanCount);
+void SpanOcclusionBuildVisibleSpanListWithDepthTest(
+    SpanNodePartial **spanList,
+    int columnIndex,
+    int *spanCount
+) {
+    BuildVisibleSpanListWithDepthTest(
+        spanList,
+        columnIndex,
+        spanCount
+    );
 }
 } // namespace zRndr
 
-static float zRndrSpanDepthAtXByPartsLocal(int sampleXMin, float invDepth, float depthSlope,
-                                           int x) {
+static float zRndrSpanDepthAtXByPartsLocal(
+    int sampleXMin,
+    float invDepth,
+    float depthSlope,
+    int x
+) {
     return invDepth + (float)(x - sampleXMin) * depthSlope;
 }
 
 // Reimplements 0x490ae0: zRndr_SpanOcclusion_InsertSpanNode_Local
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SpanOcclusion_InsertSpanNode_Local(
-    zRndr::SpanNodePartial **spanList, int columnIndex, int *spanCount) {
-    zRndr::SpanOcclusionInsertPendingSpanWithDepthTest(spanList, columnIndex, spanCount);
+    zRndr::SpanNodePartial **spanList,
+    int columnIndex,
+    int *spanCount
+) {
+    zRndr::SpanOcclusionInsertPendingSpanWithDepthTest(
+        spanList,
+        columnIndex,
+        spanCount
+    );
 }
 
 // Reimplements 0x4912a0: zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest(
-    zRndr::SpanNodePartial **spanList, int columnIndex, int *spanCount) {
-    zRndr::SpanOcclusionInsertPendingSpanNoDepthTest(spanList, columnIndex, spanCount);
+    zRndr::SpanNodePartial **spanList,
+    int columnIndex,
+    int *spanCount
+) {
+    zRndr::SpanOcclusionInsertPendingSpanNoDepthTest(
+        spanList,
+        columnIndex,
+        spanCount
+    );
 }
 
 // Reimplements 0x491840: zRndr_SpanOcclusion_BuildSpanList
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SpanOcclusion_BuildSpanList(
-    zRndr::SpanNodePartial **spanList, int columnIndex, int *spanCount) {
-    zRndr::SpanOcclusionBuildVisibleSpanListWithDepthTest(spanList, columnIndex, spanCount);
+    zRndr::SpanNodePartial **spanList,
+    int columnIndex,
+    int *spanCount
+) {
+    zRndr::SpanOcclusionBuildVisibleSpanListWithDepthTest(
+        spanList,
+        columnIndex,
+        spanCount
+    );
 }
 
 // Reimplements 0x491da0: zRndr_SpanOcclusion_BuildSpanListFast
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SpanOcclusion_BuildSpanListFast(
-    zRndr::SpanNodePartial **spanList, int, int *spanCount) {
+    zRndr::SpanNodePartial **spanList,
+    int,
+    int *spanCount
+) {
     zRndr::g_spanAllocCursor->next = 0;
     spanList[0] = zRndr::g_spanAllocCursor;
     *spanCount = 1;
@@ -2815,11 +3880,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SpanOcclusion_BuildSpanListFast(
 }
 
 // Reimplements 0x491dd0: zRndr_SpanOcclusion_TestColumnVisibility
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zRndr_SpanOcclusion_TestColumnVisibility(int columnIndex, int *isVisible) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SpanOcclusion_TestColumnVisibility(
+    int columnIndex,
+    int *isVisible
+) {
     *isVisible = 0;
-    if (zRndr::g_spanColumnHeadTable == 0 || zRndr::g_spanAllocCursor == 0 ||
-        columnIndex < 0 || columnIndex >= zRndr::g_spanColumnCountPadded) {
+    if (zRndr::g_spanColumnHeadTable == 0 || zRndr::g_spanAllocCursor == 0 || columnIndex < 0 ||
+        columnIndex >= zRndr::g_spanColumnCountPadded) {
         return;
     }
 
@@ -2843,7 +3910,10 @@ zRndr_SpanOcclusion_TestColumnVisibility(int columnIndex, int *isVisible) {
         }
 
         zRndr::SpanNodePartial occluder = *current;
-        if (zRndr_SpanOcclusion_TestSpanDepthOrderPair(&candidate, &occluder) != 0) {
+        if (zRndr_SpanOcclusion_TestSpanDepthOrderPair(
+            &candidate,
+            &occluder
+        ) != 0) {
             *isVisible = 1;
             return;
         }
@@ -2856,8 +3926,11 @@ zRndr_SpanOcclusion_TestColumnVisibility(int columnIndex, int *isVisible) {
             if (occluder.sampleXMax >= candidate.sampleXMin) {
                 candidate.sampleXMin = occluder.sampleXMax + 1;
                 candidate.invDepth = zRndrSpanDepthAtXByPartsLocal(
-                    zRndr::g_spanAllocCursor->sampleXMin, zRndr::g_spanAllocCursor->invDepth,
-                    zRndr::g_spanAllocCursor->depthSlope, candidate.sampleXMin);
+                    zRndr::g_spanAllocCursor->sampleXMin,
+                    zRndr::g_spanAllocCursor->invDepth,
+                    zRndr::g_spanAllocCursor->depthSlope,
+                    candidate.sampleXMin
+                );
             }
         } else if (occluder.sampleXMin <= candidate.sampleXMax) {
             *isVisible = 1;
@@ -2871,8 +3944,9 @@ zRndr_SpanOcclusion_TestColumnVisibility(int columnIndex, int *isVisible) {
 }
 
 // Reimplements 0x498c40: zRndr_SpanOcclusion_TestPointVisibility
-RECOIL_NOINLINE int RECOIL_FASTCALL
-zRndr_SpanOcclusion_TestPointVisibility(zVec3 *samplePoint) {
+RECOIL_NOINLINE int RECOIL_FASTCALL zRndr_SpanOcclusion_TestPointVisibility(
+    zVec3 *samplePoint
+) {
     if (samplePoint == 0 || zRndr::g_spanAllocCursor == 0) {
         return 0;
     }
@@ -2884,43 +3958,91 @@ zRndr_SpanOcclusion_TestPointVisibility(zVec3 *samplePoint) {
     zRndr::g_spanAllocCursor->sampleXMax = zRndr::g_spanAllocCursor->sampleXMin;
 
     int isVisible = 0;
-    zRndr_SpanOcclusion_TestColumnVisibility((int)(samplePoint->y), &isVisible);
+    zRndr_SpanOcclusion_TestColumnVisibility(
+        (int)(samplePoint->y),
+        &isVisible
+    );
     return isVisible > 0 ? 1 : 0;
 }
 
 // Reimplements 0x498f90: zRndr_SpanOcclusion_TestSample
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SpanOcclusion_TestSample(int x, int y,
-                                                                    int color16) {
-    zRndr::g_pfnPointOpActive(zRndr::g_frameBuffer, y, x, color16);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SpanOcclusion_TestSample(
+    int x,
+    int y,
+    int color16
+) {
+    zRndr::g_pfnPointOpActive(
+        zRndr::g_frameBuffer,
+        y,
+        x,
+        color16
+    );
 }
 
 // Reimplements 0x499020: zRndr_DrawCircleOctants16_Framebuffer
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zRndr_DrawCircleOctants16_Framebuffer(int y, int x, int packedColor) {
-    zRndr::g_pfnPointOpActive(zRndr::g_frameBuffer, g_zRndr_CircleCenterY + y,
-                              g_zRndr_CircleCenterX + x, packedColor);
-    zRndr::g_pfnPointOpActive(zRndr::g_frameBuffer, g_zRndr_CircleCenterY + y,
-                              g_zRndr_CircleCenterX - x, packedColor);
-    zRndr::g_pfnPointOpActive(zRndr::g_frameBuffer, g_zRndr_CircleCenterY - y,
-                              g_zRndr_CircleCenterX + x, packedColor);
-    zRndr::g_pfnPointOpActive(zRndr::g_frameBuffer, g_zRndr_CircleCenterY - y,
-                              g_zRndr_CircleCenterX - x, packedColor);
-    zRndr::g_pfnPointOpActive(zRndr::g_frameBuffer, g_zRndr_CircleCenterY + x,
-                              g_zRndr_CircleCenterX + y, packedColor);
-    zRndr::g_pfnPointOpActive(zRndr::g_frameBuffer, g_zRndr_CircleCenterY + x,
-                              g_zRndr_CircleCenterX - y, packedColor);
-    zRndr::g_pfnPointOpActive(zRndr::g_frameBuffer, g_zRndr_CircleCenterY - x,
-                              g_zRndr_CircleCenterX - y, packedColor);
-    zRndr::g_pfnPointOpActive(zRndr::g_frameBuffer, g_zRndr_CircleCenterY - x,
-                              g_zRndr_CircleCenterX + y, packedColor);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawCircleOctants16_Framebuffer(
+    int y,
+    int x,
+    int packedColor
+) {
+    zRndr::g_pfnPointOpActive(
+        zRndr::g_frameBuffer,
+        g_zRndr_CircleCenterY + y,
+        g_zRndr_CircleCenterX + x,
+        packedColor
+    );
+    zRndr::g_pfnPointOpActive(
+        zRndr::g_frameBuffer,
+        g_zRndr_CircleCenterY + y,
+        g_zRndr_CircleCenterX - x,
+        packedColor
+    );
+    zRndr::g_pfnPointOpActive(
+        zRndr::g_frameBuffer,
+        g_zRndr_CircleCenterY - y,
+        g_zRndr_CircleCenterX + x,
+        packedColor
+    );
+    zRndr::g_pfnPointOpActive(
+        zRndr::g_frameBuffer,
+        g_zRndr_CircleCenterY - y,
+        g_zRndr_CircleCenterX - x,
+        packedColor
+    );
+    zRndr::g_pfnPointOpActive(
+        zRndr::g_frameBuffer,
+        g_zRndr_CircleCenterY + x,
+        g_zRndr_CircleCenterX + y,
+        packedColor
+    );
+    zRndr::g_pfnPointOpActive(
+        zRndr::g_frameBuffer,
+        g_zRndr_CircleCenterY + x,
+        g_zRndr_CircleCenterX - y,
+        packedColor
+    );
+    zRndr::g_pfnPointOpActive(
+        zRndr::g_frameBuffer,
+        g_zRndr_CircleCenterY - x,
+        g_zRndr_CircleCenterX - y,
+        packedColor
+    );
+    zRndr::g_pfnPointOpActive(
+        zRndr::g_frameBuffer,
+        g_zRndr_CircleCenterY - x,
+        g_zRndr_CircleCenterX + y,
+        packedColor
+    );
 }
 
 // Reimplements 0x498fb0: zRndr_DrawCircleOutline16_Framebuffer
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawCircleOutline16_Framebuffer(int centerX,
-                                                                           int centerY,
-                                                                           int radius,
-                                                                           int packedColor,
-                                                                           int auxArg) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawCircleOutline16_Framebuffer(
+    int centerX,
+    int centerY,
+    int radius,
+    int packedColor,
+    int auxArg
+) {
     int x = radius;
     int y = 0;
     int decisionVar = 1 - x;
@@ -2932,7 +4054,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawCircleOutline16_Framebuffer(int c
     g_zRndr_CircleCenterY = centerY;
     g_zRndr_CircleDrawAuxArg = auxArg;
 
-    zRndr_DrawCircleOctants16_Framebuffer(0, x, packedColor);
+    zRndr_DrawCircleOctants16_Framebuffer(
+        0,
+        x,
+        packedColor
+    );
     do {
         if (decisionVar < 0) {
             decisionVar += (y << 1) + 3;
@@ -2942,21 +4068,34 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawCircleOutline16_Framebuffer(int c
         }
 
         ++y;
-        zRndr_DrawCircleOctants16_Framebuffer(y, x, packedColor);
+        zRndr_DrawCircleOctants16_Framebuffer(
+            y,
+            x,
+            packedColor
+        );
     } while (x > y);
 }
 
 // Reimplements 0x4992b0: zRndr_PlotPixel16
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_PlotPixel16(unsigned short *dstPixels, int y,
-                                                       int x, int color16) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_PlotPixel16(
+    unsigned short *dstPixels,
+    int y,
+    int x,
+    int color16
+) {
     const unsigned int pitchWords = (unsigned int)(zRndr::g_pitchBytes) >> 1;
     dstPixels[pitchWords * y + x] = (unsigned short)(color16);
 }
 
 // Reimplements 0x4992d0: zRndr_DrawLine16
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawLine16(unsigned short *dstPixels, int x0,
-                                                      int y0, int x1,
-                                                      int y1, int color16) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawLine16(
+    unsigned short *dstPixels,
+    int x0,
+    int y0,
+    int x1,
+    int y1,
+    int color16
+) {
     const unsigned int pitchWordsUnsigned = ((unsigned int)zRndr::g_pitchBytes) >> 1;
     int rowStep = (int)(pitchWordsUnsigned);
     int startIndex = (int)(pitchWordsUnsigned * y0 + x0);
@@ -3008,11 +4147,15 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawLine16(unsigned short *dstPixels,
 }
 
 // Reimplements 0x4993a0: zRndr_DrawLine16_Segmented
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawLine16_Segmented(unsigned short *dstPixels,
-                                                                int x0, int y0,
-                                                                int x1, int y1,
-                                                                int color16,
-                                                                int segmentCount) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawLine16_Segmented(
+    unsigned short *dstPixels,
+    int x0,
+    int y0,
+    int x1,
+    int y1,
+    int color16,
+    int segmentCount
+) {
     const unsigned int pitchWordsUnsigned = (unsigned int)(zRndr::g_pitchBytes) >> 1;
     int rowStep = (int)(pitchWordsUnsigned);
     int startIndex = (int)(pitchWordsUnsigned * y0 + x0);
@@ -3090,11 +4233,15 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawLine16_Segmented(unsigned short *
 }
 
 // Reimplements 0x499500: zRndr_DrawLine16_Clipped
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawLine16_Clipped(unsigned short *dstPixels,
-                                                              const zRndr_LineClipRect2I *clipRect,
-                                                              int x0, int y0,
-                                                              int x1, int y1,
-                                                              int color16) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawLine16_Clipped(
+    unsigned short *dstPixels,
+    const zRndr_LineClipRect2I *clipRect,
+    int x0,
+    int y0,
+    int x1,
+    int y1,
+    int color16
+) {
     int outcode0 = 0;
     if (x0 < clipRect->left) {
         outcode0 = 1;
@@ -3222,8 +4369,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawLine16_Clipped(unsigned short *ds
 }
 
 // Reimplements 0x4997d0: zRndr_FillSpan16Opaque
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FillSpan16Opaque(int packedColor16,
-                                                            int pixelCount) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FillSpan16Opaque(
+    int packedColor16,
+    int pixelCount
+) {
     unsigned short *cursor = zRndr::g_spanCurrentDst16 + pixelCount;
     const unsigned short color = (unsigned short)(packedColor16);
     while (pixelCount > 0) {
@@ -3234,9 +4383,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FillSpan16Opaque(int packedColor16,
 }
 
 // Reimplements 0x499810: zRndr_FillSpan555Solid
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FillSpan555Solid(int packedColor16,
-                                                            int blendAlpha,
-                                                            int pixelCount) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FillSpan555Solid(
+    int packedColor16,
+    int blendAlpha,
+    int pixelCount
+) {
     unsigned short *cursor = zRndr::g_spanCurrentDst16;
     do {
         if (blendAlpha > 7) {
@@ -3260,9 +4411,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FillSpan555Solid(int packedColor16,
 }
 
 // Reimplements 0x4998a0: zRndr_FillSpan565Solid
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FillSpan565Solid(int packedColor16,
-                                                            int blendAlpha,
-                                                            int pixelCount) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FillSpan565Solid(
+    int packedColor16,
+    int blendAlpha,
+    int pixelCount
+) {
     unsigned short *cursor = zRndr::g_spanCurrentDst16;
     do {
         if (blendAlpha > 3) {
@@ -3288,39 +4441,73 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FillSpan565Solid(int packedColor16,
 
 // Reimplements 0x4907c0: zRndr_SpanOcclusion_TestSpanDepthOrderPair
 RECOIL_NOINLINE int RECOIL_FASTCALL zRndr_SpanOcclusion_TestSpanDepthOrderPair(
-    zRndr::SpanNodePartial *lhs, zRndr::SpanNodePartial *rhs) {
+    zRndr::SpanNodePartial *lhs,
+    zRndr::SpanNodePartial *rhs
+) {
     if (lhs == 0 || rhs == 0) {
         return 0;
     }
 
     if (rhs->sampleXMin == rhs->sampleXMax) {
-        const float lhsDepth =
-            zRndrSpanDepthAtXByPartsLocal(lhs->sampleXMin, lhs->invDepth, lhs->depthSlope,
-                                rhs->sampleXMax);
+        const float lhsDepth = zRndrSpanDepthAtXByPartsLocal(
+            lhs->sampleXMin,
+            lhs->invDepth,
+            lhs->depthSlope,
+            rhs->sampleXMax
+        );
         return lhsDepth * zRndr::g_spanDepthBiasPlusOne >= rhs->invDepth ? 1 : 0;
     }
 
     if (lhs->sampleXMin == lhs->sampleXMax) {
-        const float rhsDepth =
-            zRndrSpanDepthAtXByPartsLocal(rhs->sampleXMin, rhs->invDepth, rhs->depthSlope,
-                                lhs->sampleXMax);
+        const float rhsDepth = zRndrSpanDepthAtXByPartsLocal(
+            rhs->sampleXMin,
+            rhs->invDepth,
+            rhs->depthSlope,
+            lhs->sampleXMax
+        );
         return lhs->invDepth >= rhsDepth * zRndr::g_spanDepthBiasPlusOneInv ? 1 : 0;
     }
 
-    const int overlapMin = MaxValue(lhs->sampleXMin, rhs->sampleXMin);
-    const int overlapMax = MinValue(lhs->sampleXMax, rhs->sampleXMax);
+    const int overlapMin = MaxValue(
+        lhs->sampleXMin,
+        rhs->sampleXMin
+    );
+    const int overlapMax = MinValue(
+        lhs->sampleXMax,
+        rhs->sampleXMax
+    );
     if (overlapMin > overlapMax) {
         return 0;
     }
 
     const float lhsStart =
-        zRndrSpanDepthAtXByPartsLocal(lhs->sampleXMin, lhs->invDepth, lhs->depthSlope, overlapMin);
+        zRndrSpanDepthAtXByPartsLocal(
+            lhs->sampleXMin,
+            lhs->invDepth,
+            lhs->depthSlope,
+            overlapMin
+        );
     const float lhsEnd =
-        zRndrSpanDepthAtXByPartsLocal(lhs->sampleXMin, lhs->invDepth, lhs->depthSlope, overlapMax);
+        zRndrSpanDepthAtXByPartsLocal(
+            lhs->sampleXMin,
+            lhs->invDepth,
+            lhs->depthSlope,
+            overlapMax
+        );
     const float rhsStart =
-        zRndrSpanDepthAtXByPartsLocal(rhs->sampleXMin, rhs->invDepth, rhs->depthSlope, overlapMin);
+        zRndrSpanDepthAtXByPartsLocal(
+            rhs->sampleXMin,
+            rhs->invDepth,
+            rhs->depthSlope,
+            overlapMin
+        );
     const float rhsEnd =
-        zRndrSpanDepthAtXByPartsLocal(rhs->sampleXMin, rhs->invDepth, rhs->depthSlope, overlapMax);
+        zRndrSpanDepthAtXByPartsLocal(
+            rhs->sampleXMin,
+            rhs->invDepth,
+            rhs->depthSlope,
+            overlapMax
+        );
     const float startDelta = lhsStart - rhsStart;
     const float endDelta = lhsEnd - rhsEnd;
 
@@ -3333,9 +4520,19 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zRndr_SpanOcclusion_TestSpanDepthOrderPair(
 
     const int midX = overlapMin + ((overlapMax - overlapMin) >> 1);
     const float lhsMid =
-        zRndrSpanDepthAtXByPartsLocal(lhs->sampleXMin, lhs->invDepth, lhs->depthSlope, midX);
+        zRndrSpanDepthAtXByPartsLocal(
+            lhs->sampleXMin,
+            lhs->invDepth,
+            lhs->depthSlope,
+            midX
+        );
     const float rhsMid =
-        zRndrSpanDepthAtXByPartsLocal(rhs->sampleXMin, rhs->invDepth, rhs->depthSlope, midX);
+        zRndrSpanDepthAtXByPartsLocal(
+            rhs->sampleXMin,
+            rhs->invDepth,
+            rhs->depthSlope,
+            midX
+        );
     return lhsMid >= rhsMid ? 1 : 0;
 }
 
@@ -3353,28 +4550,40 @@ struct TexturedPlanes {
     float originY;
 };
 
-int RoundToFixed20(float value) {
+int RoundToFixed20(
+    float value
+) {
     return (int)(value >= 0.0f ? value + 0.5f : value - 0.5f);
 }
 
-int Fixed16FromFloat(float value) {
+int Fixed16FromFloat(
+    float value
+) {
     const double scaled = (double)(value) * 65536.0;
     return (int)(scaled >= 0.0 ? scaled + 0.5 : scaled - 0.5);
 }
 
-int ScanlineStartFromY(float y) {
+int ScanlineStartFromY(
+    float y
+) {
     return (Fixed16FromFloat(y) + 0x7fff) >> 16;
 }
 
-int ScanlineEndFromY(float y) {
+int ScanlineEndFromY(
+    float y
+) {
     return (Fixed16FromFloat(y) - 0x8041) >> 16;
 }
 
-int SpanStartFromX(float x) {
+int SpanStartFromX(
+    float x
+) {
     return (Fixed16FromFloat(x) + 0x7fff) >> 16;
 }
 
-int SpanEndFromX(float x) {
+int SpanEndFromX(
+    float x
+) {
     return (Fixed16FromFloat(x) - 0x8001) >> 16;
 }
 
@@ -3385,7 +4594,10 @@ struct ScanConvertEdge {
     int reserved;
 };
 
-int WrapPolygonIndex(int index, int vertexCount) {
+int WrapPolygonIndex(
+    int index,
+    int vertexCount
+) {
     if (index < 0) {
         return index + vertexCount;
     }
@@ -3397,15 +4609,24 @@ int WrapPolygonIndex(int index, int vertexCount) {
     return index;
 }
 
-int BuildScanConvertEdges(const zVec3 *vertices, int vertexCount, int startIndex,
-                          int stopIndex, int step, ScanConvertEdge *edges) {
+int BuildScanConvertEdges(
+    const zVec3 *vertices,
+    int vertexCount,
+    int startIndex,
+    int stopIndex,
+    int step,
+    ScanConvertEdge *edges
+) {
     int edgeCount = 0;
     int vertexIndex = startIndex;
     int yStart = ScanlineStartFromY(vertices[vertexIndex].y);
     float sampleY = (float)(yStart) + 0.5f;
 
     while (vertexIndex != stopIndex && edgeCount < 0x40) {
-        const int nextIndex = WrapPolygonIndex(vertexIndex + step, vertexCount);
+        const int nextIndex = WrapPolygonIndex(
+            vertexIndex + step,
+            vertexCount
+        );
         const zVec3 &start = vertices[vertexIndex];
         const zVec3 &end = vertices[nextIndex];
 
@@ -3434,7 +4655,10 @@ int BuildScanConvertEdges(const zVec3 *vertices, int vertexCount, int startIndex
     return edgeCount;
 }
 
-Plane2f BuildPlaneFromTriangle(const zVec3 *triVerts, const float values[3]) {
+Plane2f BuildPlaneFromTriangle(
+    const zVec3 *triVerts,
+    const float values[3]
+) {
     const float dx10 = triVerts[0].x - triVerts[1].x;
     const float dx12 = triVerts[2].x - triVerts[1].x;
     const float dy10 = triVerts[0].y - triVerts[1].y;
@@ -3454,24 +4678,41 @@ Plane2f BuildPlaneFromTriangle(const zVec3 *triVerts, const float values[3]) {
     return plane;
 }
 
-Plane2f BuildScreenPlaneFromTriangle(const zVec3 *triVerts, const float values[3]) {
-    Plane2f plane = BuildPlaneFromTriangle(triVerts, values);
+Plane2f BuildScreenPlaneFromTriangle(
+    const zVec3 *triVerts,
+    const float values[3]
+) {
+    Plane2f plane = BuildPlaneFromTriangle(
+        triVerts,
+        values
+    );
     plane.base = values[0] - triVerts[0].x * plane.gradient.x - triVerts[0].y * plane.gradient.y;
     return plane;
 }
 
-TexturedPlanes BuildQueuedTexturePlanes(const zVec3 *clippedTriVerts, const zVec3 *triVerts,
-                                        const zVec2 *triUVs, float imageWidth, float imageHeight) {
+TexturedPlanes BuildQueuedTexturePlanes(
+    const zVec3 *clippedTriVerts,
+    const zVec3 *triVerts,
+    const zVec2 *triUVs,
+    float imageWidth,
+    float imageHeight
+) {
     TexturedPlanes planes = {0};
-    const bool useClippedNearPlane = clippedTriVerts != 0 &&
-                                     (clippedTriVerts[0].z < 10.0f ||
-                                      clippedTriVerts[1].z < 10.0f || clippedTriVerts[2].z < 10.0f);
+    const bool useClippedNearPlane =
+        clippedTriVerts != 0 && (clippedTriVerts[0].z < 10.0f || clippedTriVerts[1].z < 10.0f ||
+                                    clippedTriVerts[2].z < 10.0f);
 
     if (useClippedNearPlane) {
         zMath_BuildPerspectiveTextureInterpolants(
-            clippedTriVerts, triUVs, &planes.reciprocalZ.gradient, &planes.reciprocalZ.base,
-            &planes.uOverZ.gradient, &planes.uOverZ.base, &planes.vOverZ.gradient,
-            &planes.vOverZ.base);
+            clippedTriVerts,
+            triUVs,
+            &planes.reciprocalZ.gradient,
+            &planes.reciprocalZ.base,
+            &planes.uOverZ.gradient,
+            &planes.uOverZ.base,
+            &planes.vOverZ.gradient,
+            &planes.vOverZ.base
+        );
         planes.uOverZ.gradient.x *= imageWidth;
         planes.uOverZ.gradient.y *= imageWidth;
         planes.uOverZ.base *= imageWidth;
@@ -3490,9 +4731,18 @@ TexturedPlanes BuildQueuedTexturePlanes(const zVec3 *clippedTriVerts, const zVec
             vValues[i] = imageHeight * triVerts[i].z * triUVs[i].y;
         }
 
-        planes.reciprocalZ = BuildPlaneFromTriangle(triVerts, reciprocalValues);
-        planes.uOverZ = BuildPlaneFromTriangle(triVerts, uValues);
-        planes.vOverZ = BuildPlaneFromTriangle(triVerts, vValues);
+        planes.reciprocalZ = BuildPlaneFromTriangle(
+            triVerts,
+            reciprocalValues
+        );
+        planes.uOverZ = BuildPlaneFromTriangle(
+            triVerts,
+            uValues
+        );
+        planes.vOverZ = BuildPlaneFromTriangle(
+            triVerts,
+            vValues
+        );
         planes.originX = triVerts[0].x;
         planes.originY = triVerts[0].y;
     }
@@ -3506,67 +4756,135 @@ TexturedPlanes BuildQueuedTexturePlanes(const zVec3 *clippedTriVerts, const zVec
     return planes;
 }
 
-float EvalPlane(const Plane2f &plane, float x, float y) {
+float EvalPlane(
+    const Plane2f &plane,
+    float x,
+    float y
+) {
     return x * plane.gradient.x + y * plane.gradient.y + plane.base;
 }
 
-int SelectPerspectiveChunkPixels(float minPositiveReciprocalZ, float reciprocalZStepX) {
+int SelectPerspectiveChunkPixels(
+    float minPositiveReciprocalZ,
+    float reciprocalZStepX
+) {
     if (zRndr::g_perspectiveAdaptiveMinSpan == 0) {
-        return MaxValue(1, zRndr::g_perspectiveTextureDeltaXPow2);
+        return MaxValue(
+            1,
+            zRndr::g_perspectiveTextureDeltaXPow2
+        );
     }
 
     int chunkPixels = zRndr::g_perspectiveAdaptiveMaxSpan;
     if (reciprocalZStepX != 0.0f) {
         chunkPixels = (int)(fabs(
-            minPositiveReciprocalZ * zRndr::g_perspectiveAdaptiveSlope / reciprocalZStepX));
+            minPositiveReciprocalZ * zRndr::g_perspectiveAdaptiveSlope / reciprocalZStepX
+        ));
     }
 
-    chunkPixels = MinValue(chunkPixels, zRndr::g_perspectiveAdaptiveMaxSpan);
-    chunkPixels = MaxValue(chunkPixels, zRndr::g_perspectiveAdaptiveMinSpan);
-    return MaxValue(1, chunkPixels);
+    chunkPixels = MinValue(
+        chunkPixels,
+        zRndr::g_perspectiveAdaptiveMaxSpan
+    );
+    chunkPixels = MaxValue(
+        chunkPixels,
+        zRndr::g_perspectiveAdaptiveMinSpan
+    );
+    return MaxValue(
+        1,
+        chunkPixels
+    );
 }
 
-void DispatchTexturedSpanChunks(zRndr::TexturedQueuedSpanProc spanProc,
-                                const TexturedPlanes &planes, const Plane2f *shadePlane,
-                                zRndr::SpanNodePartial *span, int y,
-                                int chunkPixels, float textureScale,
-                                int texVShift) {
+void DispatchTexturedSpanChunks(
+    zRndr::TexturedQueuedSpanProc spanProc,
+    const TexturedPlanes &planes,
+    const Plane2f *shadePlane,
+    zRndr::SpanNodePartial *span,
+    int y,
+    int chunkPixels,
+    float textureScale,
+    int texVShift
+) {
     int remaining = span->sampleXMax - span->sampleXMin + 1;
     int x = span->sampleXMin;
     while (remaining > 0) {
-        const int count = MinValue(remaining, chunkPixels);
+        const int count = MinValue(
+            remaining,
+            chunkPixels
+        );
         const float startX = (float)(x);
         const float endX = (float)(x + count);
         const float sampleY = (float)(y);
-        const float startInvZ = EvalPlane(planes.reciprocalZ, startX, sampleY);
-        const float endInvZ = EvalPlane(planes.reciprocalZ, endX, sampleY);
+        const float startInvZ = EvalPlane(
+            planes.reciprocalZ,
+            startX,
+            sampleY
+        );
+        const float endInvZ = EvalPlane(
+            planes.reciprocalZ,
+            endX,
+            sampleY
+        );
         if (startInvZ == 0.0f || endInvZ == 0.0f) {
             x += count;
             remaining -= count;
             continue;
         }
 
-        const float startU = EvalPlane(planes.uOverZ, startX, sampleY) / startInvZ;
-        const float startV = EvalPlane(planes.vOverZ, startX, sampleY) / startInvZ;
-        const float endU = EvalPlane(planes.uOverZ, endX, sampleY) / endInvZ;
-        const float endV = EvalPlane(planes.vOverZ, endX, sampleY) / endInvZ;
+        const float startU = EvalPlane(
+            planes.uOverZ,
+            startX,
+            sampleY
+        ) / startInvZ;
+        const float startV = EvalPlane(
+            planes.vOverZ,
+            startX,
+            sampleY
+        ) / startInvZ;
+        const float endU = EvalPlane(
+            planes.uOverZ,
+            endX,
+            sampleY
+        ) / endInvZ;
+        const float endV = EvalPlane(
+            planes.vOverZ,
+            endX,
+            sampleY
+        ) / endInvZ;
 
-        zRndr::g_spanTexUAdvance =
-            RoundToFixed20((endU - startU) * textureScale / (float)(count));
-        zRndr::g_spanTexVAdvance =
-            RoundToFixed20((endV - startV) * textureScale / (float)(count));
+        zRndr::g_spanTexUAdvance = RoundToFixed20((endU - startU) * textureScale / (float)(count));
+        zRndr::g_spanTexVAdvance = RoundToFixed20((endV - startV) * textureScale / (float)(count));
         if (shadePlane != 0) {
             const float startShade =
-                MaxValue(0.0f, MinValue(255.0f, EvalPlane(*shadePlane, startX, sampleY)));
+                MaxValue(
+                    0.0f,
+                    MinValue(255.0f, EvalPlane(
+                        *shadePlane,
+                        startX,
+                        sampleY
+                    ))
+                );
             const float endShade =
-                MaxValue(0.0f, MinValue(255.0f, EvalPlane(*shadePlane, endX, sampleY)));
+                MaxValue(
+                    0.0f,
+                    MinValue(255.0f, EvalPlane(
+                        *shadePlane,
+                        endX,
+                        sampleY
+                    ))
+                );
             zRndr::g_spanActiveShadeFixed16 = RoundToFixed20(startShade * 65536.0f);
             zRndr::g_spanActiveShadeStepFixed16 =
                 RoundToFixed20((endShade - startShade) * 65536.0f / (float)(count));
         }
 
-        spanProc(RoundToFixed20(startU * textureScale), RoundToFixed20(startV * textureScale),
-                 count, texVShift);
+        spanProc(
+            RoundToFixed20(startU * textureScale),
+            RoundToFixed20(startV * textureScale),
+            count,
+            texVShift
+        );
 
         zRndr::g_spanCurrentDst16 += count;
         x += count;
@@ -3576,12 +4894,14 @@ void DispatchTexturedSpanChunks(zRndr::TexturedQueuedSpanProc spanProc,
 } // namespace
 
 // Reimplements 0x492000: zRndr_RasterizePolyWithSpanList
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_RasterizePolyWithSpanList(zVec3 *vertices,
-                                                                     zVec3 *planeVerts,
-                                                                     int vertCount,
-                                                                     int spanOpContext) {
-    if (vertices == 0 || planeVerts == 0 || vertCount <= 0 ||
-        zRndr::g_spanAllocCursor == 0 || zRndr::g_frameBuffer == 0) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_RasterizePolyWithSpanList(
+    zVec3 *vertices,
+    zVec3 *planeVerts,
+    int vertCount,
+    int spanOpContext
+) {
+    if (vertices == 0 || planeVerts == 0 || vertCount <= 0 || zRndr::g_spanAllocCursor == 0 ||
+        zRndr::g_frameBuffer == 0) {
         return;
     }
 
@@ -3614,10 +4934,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_RasterizePolyWithSpanList(zVec3 *vert
         }
     }
 
-    const int firstScanline =
-        (int)(floor(vertices[topVertexIndex].y + 0.5f));
-    const int lastScanline =
-        (int)(floor(vertices[bottomVertexIndex].y - 0.5f));
+    const int firstScanline = (int)(floor(vertices[topVertexIndex].y + 0.5f));
+    const int lastScanline = (int)(floor(vertices[bottomVertexIndex].y - 0.5f));
     if (firstScanline > lastScanline) {
         return;
     }
@@ -3640,8 +4958,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_RasterizePolyWithSpanList(zVec3 *vert
                 continue;
             }
 
-            const float minY = MinValue(a.y, b.y);
-            const float maxY = MaxValue(a.y, b.y);
+            const float minY = MinValue(
+                a.y,
+                b.y
+            );
+            const float maxY = MaxValue(
+                a.y,
+                b.y
+            );
             if (sampleY < minY || sampleY >= maxY) {
                 continue;
             }
@@ -3657,63 +4981,69 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_RasterizePolyWithSpanList(zVec3 *vert
             continue;
         }
 
-        sort(intersections, intersections + intersectionCount);
+        sort(
+            intersections,
+            intersections + intersectionCount
+        );
         const int pairCount = intersectionCount & ~1;
         unsigned char *scanlineBase = frameBase + y * zRndr::g_pitchBytes;
         for (int i_3517 = 0; i_3517 < pairCount; i_3517 += 2) {
-            const int xMin =
-                (int)(floor(intersections[i_3517] + 0.5f));
-            const int xMax =
-                (int)(ceil(intersections[i_3517 + 1] - 0.5f)) - 1;
+            const int xMin = (int)(floor(intersections[i_3517] + 0.5f));
+            const int xMax = (int)(ceil(intersections[i_3517 + 1] - 0.5f)) - 1;
             if (xMin > xMax) {
                 continue;
             }
 
-            const float rowDepthBase = (float)(y) * invDepthSlopeY + invDepthBiasBase;
+            const float rowDepthBase = (float)(y)*invDepthSlopeY + invDepthBiasBase;
             zRndr::g_spanAllocCursor->sampleXMin = xMin;
             zRndr::g_spanAllocCursor->sampleXMax = xMax;
             zRndr::g_spanAllocCursor->invDepth =
-                ((float)(xMin) * invDepthSlopeX + rowDepthBase) *
-                    zRndr::g_inverseDepthScale +
+                ((float)(xMin)*invDepthSlopeX + rowDepthBase) * zRndr::g_inverseDepthScale +
                 zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->invDepthStep =
-                ((float)(xMax) * invDepthSlopeX + rowDepthBase) *
-                    zRndr::g_inverseDepthScale +
+                ((float)(xMax)*invDepthSlopeX + rowDepthBase) * zRndr::g_inverseDepthScale +
                 zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->depthSlope = invDepthSlopeX;
 
             int spanCount = 0;
-            buildProc(visibleSpans, y, &spanCount);
+            buildProc(
+                visibleSpans,
+                y,
+                &spanCount
+            );
 
             {
-            for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
-                zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
-                const int pixelCount = span->sampleXMax - span->sampleXMin + 1;
-                if (pixelCount <= 0) {
-                    continue;
-                }
+                for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
+                    zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
+                    const int pixelCount = span->sampleXMax - span->sampleXMin + 1;
+                    if (pixelCount <= 0) {
+                        continue;
+                    }
 
-                const int byteOffset =
-                    (int)(span->sampleXMin) * zRndr::g_bytesPerPixel;
-                zRndr::g_spanCurrentDst16 =
-                    (unsigned short *)(scanlineBase + byteOffset);
-                if (zRndr::g_pfnSelectedSpanOp != 0) {
-                    zRndr::g_pfnSelectedSpanOp(spanOpContext, pixelCount);
+                    const int byteOffset = (int)(span->sampleXMin) * zRndr::g_bytesPerPixel;
+                    zRndr::g_spanCurrentDst16 = (unsigned short *)(scanlineBase + byteOffset);
+                    if (zRndr::g_pfnSelectedSpanOp != 0) {
+                        zRndr::g_pfnSelectedSpanOp(
+                            spanOpContext,
+                            pixelCount
+                        );
+                    }
                 }
-            }
             }
         }
     }
 }
 
 // Reimplements 0x492f00: zRndr_DrawFlatImmediate
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawFlatImmediate(zVec3 *vertices, zVec3 *planeVertices,
-                                                             int vertCount,
-                                                             int flatSpanOpEdxArg,
-                                                             int flatSpanOpEcxArg) {
-    if (vertices == 0 || planeVertices == 0 || vertCount <= 0 ||
-        zRndr::g_spanAllocCursor == 0 || zRndr::g_frameBuffer == 0 ||
-        zRndr::g_pfnFlatImmediateSpanOp == 0) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawFlatImmediate(
+    zVec3 *vertices,
+    zVec3 *planeVertices,
+    int vertCount,
+    int flatSpanOpEdxArg,
+    int flatSpanOpEcxArg
+) {
+    if (vertices == 0 || planeVertices == 0 || vertCount <= 0 || zRndr::g_spanAllocCursor == 0 ||
+        zRndr::g_frameBuffer == 0 || zRndr::g_pfnFlatImmediateSpanOp == 0) {
         return;
     }
 
@@ -3747,10 +5077,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawFlatImmediate(zVec3 *vertices, zV
         }
     }
 
-    const int firstScanline =
-        (int)(floor(vertices[topVertexIndex].y + 0.5f));
-    const int lastScanline =
-        (int)(floor(vertices[bottomVertexIndex].y - 0.5f));
+    const int firstScanline = (int)(floor(vertices[topVertexIndex].y + 0.5f));
+    const int lastScanline = (int)(floor(vertices[bottomVertexIndex].y - 0.5f));
     if (firstScanline > lastScanline) {
         return;
     }
@@ -3773,8 +5101,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawFlatImmediate(zVec3 *vertices, zV
                 continue;
             }
 
-            const float minY = MinValue(a.y, b.y);
-            const float maxY = MaxValue(a.y, b.y);
+            const float minY = MinValue(
+                a.y,
+                b.y
+            );
+            const float maxY = MaxValue(
+                a.y,
+                b.y
+            );
             if (sampleY < minY || sampleY >= maxY) {
                 continue;
             }
@@ -3790,55 +5124,65 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawFlatImmediate(zVec3 *vertices, zV
             continue;
         }
 
-        sort(intersections, intersections + intersectionCount);
+        sort(
+            intersections,
+            intersections + intersectionCount
+        );
         unsigned char *scanlineBase = frameBase + y * zRndr::g_pitchBytes;
         const int pairCount = intersectionCount & ~1;
         for (int i_3650 = 0; i_3650 < pairCount; i_3650 += 2) {
-            const int xMin =
-                (int)(floor(intersections[i_3650] + 0.5f));
-            const int xMax =
-                (int)(ceil(intersections[i_3650 + 1] - 0.5f)) - 1;
+            const int xMin = (int)(floor(intersections[i_3650] + 0.5f));
+            const int xMax = (int)(ceil(intersections[i_3650 + 1] - 0.5f)) - 1;
             if (xMin > xMax) {
                 continue;
             }
 
-            const float rowDepthBase = (float)(y) * invDepthSlopeY + invDepthBiasBase;
+            const float rowDepthBase = (float)(y)*invDepthSlopeY + invDepthBiasBase;
             zRndr::g_spanAllocCursor->sampleXMin = xMin;
             zRndr::g_spanAllocCursor->sampleXMax = xMax;
             zRndr::g_spanAllocCursor->invDepth =
-                ((float)(xMin) * invDepthSlopeX + rowDepthBase) *
-                    zRndr::g_inverseDepthScale +
+                ((float)(xMin)*invDepthSlopeX + rowDepthBase) * zRndr::g_inverseDepthScale +
                 zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->invDepthStep =
-                ((float)(xMax) * invDepthSlopeX + rowDepthBase) *
-                    zRndr::g_inverseDepthScale +
+                ((float)(xMax)*invDepthSlopeX + rowDepthBase) * zRndr::g_inverseDepthScale +
                 zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->depthSlope = invDepthSlopeX;
 
             int spanCount = 0;
-            buildProc(visibleSpans, y, &spanCount);
+            buildProc(
+                visibleSpans,
+                y,
+                &spanCount
+            );
 
             {
-            for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
-                zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
-                const int pixelCount = span->sampleXMax - span->sampleXMin + 1;
-                if (pixelCount <= 0) {
-                    continue;
-                }
+                for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
+                    zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
+                    const int pixelCount = span->sampleXMax - span->sampleXMin + 1;
+                    if (pixelCount <= 0) {
+                        continue;
+                    }
 
-                zRndr::g_spanCurrentDst16 = (unsigned short *)(
-                    scanlineBase +
-                    (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
-                zRndr::g_pfnFlatImmediateSpanOp(flatSpanOpEcxArg, flatSpanOpEdxArg, pixelCount);
-            }
+                    zRndr::g_spanCurrentDst16 =
+                        (unsigned short *)(scanlineBase +
+                                           (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
+                    zRndr::g_pfnFlatImmediateSpanOp(
+                        flatSpanOpEcxArg,
+                        flatSpanOpEdxArg,
+                        pixelCount
+                    );
+                }
             }
         }
     }
 }
 
 // Reimplements 0x4936d0: zRndr_RasterizePoly
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_RasterizePoly(zVec3 *vertices, int vertCount,
-                                                         int spanOpContext) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_RasterizePoly(
+    zVec3 *vertices,
+    int vertCount,
+    int spanOpContext
+) {
     if (vertices == 0 || vertCount <= 0 || zRndr::g_frameBuffer == 0 ||
         zRndr::g_pfnSelectedSpanOp == 0) {
         return;
@@ -3847,13 +5191,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_RasterizePoly(zVec3 *vertices, int ve
     zVec3 reducedVerts[0x40] = {0};
     int reducedCount = 1;
     reducedVerts[0] = vertices[0];
-    for (int i = 1; i < vertCount && reducedCount < 0x40; ++i) {
+    for (int reduceIndex = 1; reduceIndex < vertCount && reducedCount < 0x40; ++reduceIndex) {
         const zVec3 &previous = reducedVerts[reducedCount - 1];
-        if (vertices[i].x == previous.x && vertices[i].y == previous.y) {
+        if (vertices[reduceIndex].x == previous.x && vertices[reduceIndex].y == previous.y) {
             continue;
         }
 
-        reducedVerts[reducedCount++] = vertices[i];
+        reducedVerts[reducedCount++] = vertices[reduceIndex];
     }
 
     if (reducedCount > 1 && reducedVerts[reducedCount - 1].x == reducedVerts[0].x &&
@@ -3867,12 +5211,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_RasterizePoly(zVec3 *vertices, int ve
 
     int topVertexIndex = 0;
     int bottomVertexIndex = 0;
-    for (int i = 1; i < reducedCount; ++i) {
-        if (reducedVerts[i].y < reducedVerts[topVertexIndex].y) {
-            topVertexIndex = i;
+    for (int scanIndex = 1; scanIndex < reducedCount; ++scanIndex) {
+        if (reducedVerts[scanIndex].y < reducedVerts[topVertexIndex].y) {
+            topVertexIndex = scanIndex;
         }
-        if (reducedVerts[i].y >= reducedVerts[bottomVertexIndex].y) {
-            bottomVertexIndex = i;
+        if (reducedVerts[scanIndex].y >= reducedVerts[bottomVertexIndex].y) {
+            bottomVertexIndex = scanIndex;
         }
     }
 
@@ -3881,15 +5225,39 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_RasterizePoly(zVec3 *vertices, int ve
     int edgeCountA;
     int edgeCountB;
     if (zRndr::g_scanConvertMode != 0) {
-        edgeCountA = BuildScanConvertEdges(reducedVerts, reducedCount, topVertexIndex,
-                                           bottomVertexIndex, 1, edgeTableA);
-        edgeCountB = BuildScanConvertEdges(reducedVerts, reducedCount, topVertexIndex,
-                                           bottomVertexIndex, -1, edgeTableB);
+        edgeCountA = BuildScanConvertEdges(
+            reducedVerts,
+            reducedCount,
+            topVertexIndex,
+            bottomVertexIndex,
+            1,
+            edgeTableA
+        );
+        edgeCountB = BuildScanConvertEdges(
+            reducedVerts,
+            reducedCount,
+            topVertexIndex,
+            bottomVertexIndex,
+            -1,
+            edgeTableB
+        );
     } else {
-        edgeCountA = BuildScanConvertEdges(reducedVerts, reducedCount, topVertexIndex,
-                                           bottomVertexIndex, -1, edgeTableA);
-        edgeCountB = BuildScanConvertEdges(reducedVerts, reducedCount, topVertexIndex,
-                                           bottomVertexIndex, 1, edgeTableB);
+        edgeCountA = BuildScanConvertEdges(
+            reducedVerts,
+            reducedCount,
+            topVertexIndex,
+            bottomVertexIndex,
+            -1,
+            edgeTableA
+        );
+        edgeCountB = BuildScanConvertEdges(
+            reducedVerts,
+            reducedCount,
+            topVertexIndex,
+            bottomVertexIndex,
+            1,
+            edgeTableB
+        );
     }
 
     if (edgeCountA == 0 || edgeCountB == 0) {
@@ -3940,9 +5308,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_RasterizePoly(zVec3 *vertices, int ve
         if (xStart <= xEnd) {
             const int pixelCount = xEnd - xStart;
             if (pixelCount > 0) {
-                zRndr::g_spanCurrentDst16 = (unsigned short *)(
-                    scanlineBase + xStart * zRndr::g_bytesPerPixel);
-                zRndr::g_pfnSelectedSpanOp(spanOpContext, pixelCount);
+                zRndr::g_spanCurrentDst16 =
+                    (unsigned short *)(scanlineBase + xStart * zRndr::g_bytesPerPixel);
+                zRndr::g_pfnSelectedSpanOp(
+                    spanOpContext,
+                    pixelCount
+                );
             }
         }
 
@@ -3952,25 +5323,42 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_RasterizePoly(zVec3 *vertices, int ve
 
 // Reimplements 0x499a20: zRndr_SubmitPolyWithSpanList
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SubmitPolyWithSpanList(
-    zVec3 *entryVertices, zVec3 *entryPlaneVertices, int spanOpContext,
-    int alpha255, int vertCount, int queueOverwrite) {
+    zVec3 *entryVertices,
+    zVec3 *entryPlaneVertices,
+    int spanOpContext,
+    int alpha255,
+    int vertCount,
+    int queueOverwrite
+) {
     const int kMaxQueuedPolys = 0x15e;
     const char *kSourceFile = "D:\\Proj\\GameZRecoil\\zRender\\zrndr_draw.c";
 
     if (queueOverwrite != 0) {
         const int queueIndex = zRndr::g_overwriteQueueCount;
         if (queueIndex >= kMaxQueuedPolys) {
-            zError::ReportOld(0x400, kSourceFile, 0x9c,
-                              " Not enough MAX_OVERWRITE_POLYS: need %d\n", queueIndex);
+            zError::ReportOld(
+                0x400,
+                kSourceFile,
+                0x9c,
+                " Not enough MAX_OVERWRITE_POLYS: need %d\n",
+                queueIndex
+            );
             return;
         }
 
         ++zRndr::g_overwriteQueueCount;
         zRndr::OverwriteQueuedPolyDrawCmd &cmd = zRndr::g_overwriteQueue[queueIndex];
         cmd.hasClippedTriVerts = 0;
-        memcpy(cmd.polyVerts, entryVertices,
-                    (size_t)(vertCount) * sizeof(zVec3));
-        memcpy(cmd.triVerts, entryPlaneVertices, 3 * sizeof(zVec3));
+        memcpy(
+            cmd.polyVerts,
+            entryVertices,
+            (size_t)(vertCount) * sizeof(zVec3)
+        );
+        memcpy(
+            cmd.triVerts,
+            entryPlaneVertices,
+            3 * sizeof(zVec3)
+        );
         cmd.alphaOrShadeF = (float)(alpha255);
         cmd.materialRef = 0;
         cmd.vertexCount = vertCount;
@@ -3982,21 +5370,38 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SubmitPolyWithSpanList(
     }
 
     if (alpha255 >= 0xff) {
-        zRndr_RasterizePolyWithSpanList(entryVertices, entryPlaneVertices, vertCount,
-                                        spanOpContext);
+        zRndr_RasterizePolyWithSpanList(
+            entryVertices,
+            entryPlaneVertices,
+            vertCount,
+            spanOpContext
+        );
         return;
     }
 
     const int queueIndex = zRndr::g_transparentQueueCount;
     if (queueIndex >= kMaxQueuedPolys) {
-        zError::ReportOld(0x400, kSourceFile, 0xb9, " Not enough MAX_TRANSPARENT_POLYS: need %d\n",
-                          queueIndex);
+        zError::ReportOld(
+            0x400,
+            kSourceFile,
+            0xb9,
+            " Not enough MAX_TRANSPARENT_POLYS: need %d\n",
+            queueIndex
+        );
         return;
     }
 
     zRndr::TransparentQueuedPolyDrawCmd &cmd = zRndr::g_transparentQueue[queueIndex];
-    memcpy(cmd.polyVerts, entryVertices, (size_t)(vertCount) * sizeof(zVec3));
-    memcpy(cmd.triVerts, entryPlaneVertices, 3 * sizeof(zVec3));
+    memcpy(
+        cmd.polyVerts,
+        entryVertices,
+        (size_t)(vertCount) * sizeof(zVec3)
+    );
+    memcpy(
+        cmd.triVerts,
+        entryPlaneVertices,
+        3 * sizeof(zVec3)
+    );
     cmd.materialRef = 0;
     cmd.vertexCount = vertCount;
     cmd.shadeOrSpanMode = spanOpContext;
@@ -4009,17 +5414,28 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SubmitPolyWithSpanList(
 
 // Reimplements 0x499c40: zRndr_SubmitTexturedPolyUniformAlphaOrShade
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SubmitTexturedPolyUniformAlphaOrShade(
-    zVec3 *projectedPolyVerts, zVec3 *clippedTriVerts, zVec3 *triData9f, zVec2 *triUVs,
-    int vertexCount, zImage_TexDirEntryPartial *entry, float alphaOrShadeF,
-    int queueOverwrite) {
+    zVec3 *projectedPolyVerts,
+    zVec3 *clippedTriVerts,
+    zVec3 *triData9f,
+    zVec2 *triUVs,
+    int vertexCount,
+    zImage_TexDirEntryPartial *entry,
+    float alphaOrShadeF,
+    int queueOverwrite
+) {
     const int kMaxQueuedPolys = 0x15e;
     const char *kSourceFile = "D:\\Proj\\GameZRecoil\\zRender\\zrndr_draw.c";
 
     if (queueOverwrite != 0) {
         const int queueIndex = zRndr::g_overwriteQueueCount;
         if (queueIndex >= kMaxQueuedPolys) {
-            zError::ReportOld(0x400, kSourceFile, 0xfa,
-                              " Not enough MAX_OVERWRITE_POLYS: need %d\n", queueIndex);
+            zError::ReportOld(
+                0x400,
+                kSourceFile,
+                0xfa,
+                " Not enough MAX_OVERWRITE_POLYS: need %d\n",
+                queueIndex
+            );
             return;
         }
 
@@ -4033,12 +5449,27 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SubmitTexturedPolyUniformAlphaOrShade
         cmd.savedInvDepthScale = zRndr::g_inverseDepthScale;
         cmd.scanConvertMode = zRndr::g_scanConvertMode;
         cmd.alphaOrShadeF = alphaOrShadeF;
-        memcpy(raw + 0x004, projectedPolyVerts,
-                    (size_t)(vertexCount) * sizeof(zVec3));
-        memcpy(raw + 0x328, triData9f, 3 * sizeof(zVec3));
-        memcpy(raw + 0x358, triUVs, 3 * sizeof(zVec2));
+        memcpy(
+            raw + 0x004,
+            projectedPolyVerts,
+            (size_t)(vertexCount) * sizeof(zVec3)
+        );
+        memcpy(
+            raw + 0x328,
+            triData9f,
+            3 * sizeof(zVec3)
+        );
+        memcpy(
+            raw + 0x358,
+            triUVs,
+            3 * sizeof(zVec2)
+        );
         if (clippedTriVerts != 0) {
-            memcpy(raw + 0x304, clippedTriVerts, 3 * sizeof(zVec3));
+            memcpy(
+                raw + 0x304,
+                clippedTriVerts,
+                3 * sizeof(zVec3)
+            );
             *(int *)(raw + 0x47c) = 1;
         } else {
             *(int *)(raw + 0x47c) = 0;
@@ -4049,15 +5480,27 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SubmitTexturedPolyUniformAlphaOrShade
 
     zVidImagePartial *image = entry != 0 ? entry->image : 0;
     if ((image->formatFlagsPacked & 2) == 0 && alphaOrShadeF < 1.0f) {
-        zRndr_DrawTexturedQueuedAlpha(entry, projectedPolyVerts, clippedTriVerts, triData9f, triUVs,
-                                      vertexCount, g_zRndr_ActivePaletteRemapKey);
+        zRndr_DrawTexturedQueuedAlpha(
+            entry,
+            projectedPolyVerts,
+            clippedTriVerts,
+            triData9f,
+            triUVs,
+            vertexCount,
+            g_zRndr_ActivePaletteRemapKey
+        );
         return;
     }
 
     const int queueIndex = zRndr::g_transparentQueueCount;
     if (queueIndex >= kMaxQueuedPolys) {
-        zError::ReportOld(0x400, kSourceFile, 0x126, " Not enough MAX_TRANSPARENT_POLYS: need %d\n",
-                          queueIndex);
+        zError::ReportOld(
+            0x400,
+            kSourceFile,
+            0x126,
+            " Not enough MAX_TRANSPARENT_POLYS: need %d\n",
+            queueIndex
+        );
         return;
     }
 
@@ -4069,16 +5512,35 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SubmitTexturedPolyUniformAlphaOrShade
     cmd.savedInvDepthScale = zRndr::g_inverseDepthScale;
     cmd.scanConvertMode = zRndr::g_scanConvertMode;
     if ((image->formatFlagsPacked & 2) != 0) {
-        memcpy(&cmd.alphaOrShadeBits, &alphaOrShadeF, sizeof(float));
+        memcpy(
+            &cmd.alphaOrShadeBits,
+            &alphaOrShadeF,
+            sizeof(float)
+        );
     } else {
         cmd.alphaOrShadeBits = (int)(alphaOrShadeF * 255.0f);
     }
-    memcpy(raw + 0x008, projectedPolyVerts,
-                (size_t)(vertexCount) * sizeof(zVec3));
-    memcpy(raw + 0x32c, triData9f, 3 * sizeof(zVec3));
-    memcpy(raw + 0x350, triUVs, 3 * sizeof(zVec2));
+    memcpy(
+        raw + 0x008,
+        projectedPolyVerts,
+        (size_t)(vertexCount) * sizeof(zVec3)
+    );
+    memcpy(
+        raw + 0x32c,
+        triData9f,
+        3 * sizeof(zVec3)
+    );
+    memcpy(
+        raw + 0x350,
+        triUVs,
+        3 * sizeof(zVec2)
+    );
     if (clippedTriVerts != 0) {
-        memcpy(raw + 0x308, clippedTriVerts, 3 * sizeof(zVec3));
+        memcpy(
+            raw + 0x308,
+            clippedTriVerts,
+            3 * sizeof(zVec3)
+        );
         cmd.hasClippedTriVerts = 1;
     } else {
         cmd.hasClippedTriVerts = 0;
@@ -4089,10 +5551,17 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SubmitTexturedPolyUniformAlphaOrShade
 
 // Reimplements 0x499ec0: zRndr_SubmitTexturedPolyPerVertexAlphaOrShade
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
-    zVec3 *projectedPolyVerts, zVec3 *clippedTriVerts, zVec3 *triData9f, zVec2 *triUVs,
-    float *perVertexAlphaOrShadeF, int shadeOrSpanMode, int vertexCount,
-    zImage_TexDirEntryPartial *entry, int preservePaletteRemapKey,
-    int queueOverwrite) {
+    zVec3 *projectedPolyVerts,
+    zVec3 *clippedTriVerts,
+    zVec3 *triData9f,
+    zVec2 *triUVs,
+    float *perVertexAlphaOrShadeF,
+    int shadeOrSpanMode,
+    int vertexCount,
+    zImage_TexDirEntryPartial *entry,
+    int preservePaletteRemapKey,
+    int queueOverwrite
+) {
     const int kMaxQueuedPolys = 0x15e;
     const char *kSourceFile = "D:\\Proj\\GameZRecoil\\zRender\\zrndr_draw.c";
 
@@ -4103,10 +5572,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SubmitTexturedPolyPerVertexAlphaOrSha
     if (texKey == -1 && preservePaletteRemapKey == 0 && entry != 0 &&
         entry->image->paletteMetaPacked > 0) {
         texKey = zVid_PaletteRemap_FindRecipeIndexFromRgb(
-            (zColorRgb *)(zRndr::g_fogParamsActive.colorRgb01));
+            (zColorRgb *)(zRndr::g_fogParamsActive.colorRgb01)
+        );
         if (texKey >= 0) {
-            int shadeBucket =
-                (int)(perVertexAlphaOrShadeF[0] * 0.125f);
+            int shadeBucket = (int)(perVertexAlphaOrShadeF[0] * 0.125f);
             if (shadeBucket > 0x1f) {
                 shadeBucket = 0x1f;
             }
@@ -4120,8 +5589,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SubmitTexturedPolyPerVertexAlphaOrSha
     if (queueOverwrite != 0) {
         const int queueIndex = zRndr::g_overwriteQueueCount;
         if (queueIndex >= kMaxQueuedPolys) {
-            zError::ReportOld(0x400, kSourceFile, 0x19e,
-                              " Not enough MAX_OVERWRITE_POLYS: need %d\n", queueIndex);
+            zError::ReportOld(
+                0x400,
+                kSourceFile,
+                0x19e,
+                " Not enough MAX_OVERWRITE_POLYS: need %d\n",
+                queueIndex
+            );
             return;
         }
 
@@ -4135,16 +5609,34 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SubmitTexturedPolyPerVertexAlphaOrSha
         cmd.savedInvDepthScale = zRndr::g_inverseDepthScale;
         cmd.scanConvertMode = zRndr::g_scanConvertMode;
         cmd.alphaOrShadeF = (float)(shadeOrSpanMode);
-        memcpy(raw + 0x004, projectedPolyVerts,
-                    (size_t)(vertexCount) * sizeof(zVec3));
-        memcpy(raw + 0x328, triData9f, 3 * sizeof(zVec3));
-        memcpy(raw + 0x358, triUVs, 3 * sizeof(zVec2));
+        memcpy(
+            raw + 0x004,
+            projectedPolyVerts,
+            (size_t)(vertexCount) * sizeof(zVec3)
+        );
+        memcpy(
+            raw + 0x328,
+            triData9f,
+            3 * sizeof(zVec3)
+        );
+        memcpy(
+            raw + 0x358,
+            triUVs,
+            3 * sizeof(zVec2)
+        );
         if (usingDerivedPaletteKey == 0) {
-            memcpy(raw + 0x374, perVertexAlphaOrShadeF,
-                        (size_t)(vertexCount) * sizeof(float));
+            memcpy(
+                raw + 0x374,
+                perVertexAlphaOrShadeF,
+                (size_t)(vertexCount) * sizeof(float)
+            );
         }
         if (clippedTriVerts != 0) {
-            memcpy(raw + 0x304, clippedTriVerts, 3 * sizeof(zVec3));
+            memcpy(
+                raw + 0x304,
+                clippedTriVerts,
+                3 * sizeof(zVec3)
+            );
             *(int *)(raw + 0x47c) = 1;
         } else {
             *(int *)(raw + 0x47c) = 0;
@@ -4163,22 +5655,36 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SubmitTexturedPolyPerVertexAlphaOrSha
         fanVerts[0] = projectedPolyVerts[0];
         shadeTriplet.x = perVertexAlphaOrShadeF[0];
         {
-        for (int fanTriIndex = 0; fanTriIndex < vertexCount - 2; ++fanTriIndex) {
-            fanVerts[1] = projectedPolyVerts[fanTriIndex + 1];
-            fanVerts[2] = projectedPolyVerts[fanTriIndex + 2];
-            shadeTriplet.y = perVertexAlphaOrShadeF[fanTriIndex + 1];
-            shadeTriplet.z = perVertexAlphaOrShadeF[fanTriIndex + 2];
-            zRndr_DrawTexturedQueued(entry, fanVerts, clippedTriVerts, triData9f, triUVs,
-                                     &shadeTriplet, 3, fanTriIndex, texKey);
-        }
+            for (int fanTriIndex = 0; fanTriIndex < vertexCount - 2; ++fanTriIndex) {
+                fanVerts[1] = projectedPolyVerts[fanTriIndex + 1];
+                fanVerts[2] = projectedPolyVerts[fanTriIndex + 2];
+                shadeTriplet.y = perVertexAlphaOrShadeF[fanTriIndex + 1];
+                shadeTriplet.z = perVertexAlphaOrShadeF[fanTriIndex + 2];
+                zRndr_DrawTexturedQueued(
+                    entry,
+                    fanVerts,
+                    clippedTriVerts,
+                    triData9f,
+                    triUVs,
+                    &shadeTriplet,
+                    3,
+                    fanTriIndex,
+                    texKey
+                );
+            }
         }
         return;
     }
 
     const int queueIndex = zRndr::g_transparentQueueCount;
     if (queueIndex >= kMaxQueuedPolys) {
-        zError::ReportOld(0x400, kSourceFile, 0x1e1, " Not enough MAX_TRANSPARENT_POLYS: need %d\n",
-                          queueIndex);
+        zError::ReportOld(
+            0x400,
+            kSourceFile,
+            0x1e1,
+            " Not enough MAX_TRANSPARENT_POLYS: need %d\n",
+            queueIndex
+        );
         return;
     }
 
@@ -4190,19 +5696,32 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SubmitTexturedPolyPerVertexAlphaOrSha
     cmd.savedInvDepthScale = zRndr::g_inverseDepthScale;
     cmd.scanConvertMode = zRndr::g_scanConvertMode;
     cmd.alphaOrShadeBits = 0xff;
-    memcpy(raw + 0x008, projectedPolyVerts,
-                (size_t)(vertexCount) * sizeof(zVec3));
-    memcpy(raw + 0x32c, triData9f, 3 * sizeof(zVec3));
-    memcpy(raw + 0x350, triUVs, 3 * sizeof(zVec2));
+    memcpy(
+        raw + 0x008,
+        projectedPolyVerts,
+        (size_t)(vertexCount) * sizeof(zVec3)
+    );
+    memcpy(
+        raw + 0x32c,
+        triData9f,
+        3 * sizeof(zVec3)
+    );
+    memcpy(
+        raw + 0x350,
+        triUVs,
+        3 * sizeof(zVec2)
+    );
     cmd.texKey = texKey;
     ++zRndr::g_transparentQueueCount;
 }
 
 // Reimplements 0x48d6d0: zRndr_OverlayRect_Submit
 // (D:\Proj\GameZRecoil\zRndr\zRndr_Overlay.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_OverlayRect_Submit(unsigned int packedColor16,
-                                                              zVidRect32 *rectOrNull,
-                                                              double alpha) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_OverlayRect_Submit(
+    unsigned int packedColor16,
+    zVidRect32 *rectOrNull,
+    double alpha
+) {
     zVidRect32 rect;
     int xMax;
     if (rectOrNull != 0) {
@@ -4219,7 +5738,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_OverlayRect_Submit(unsigned int packe
 
     if (g_zVideo_ActiveRendererPath != 0) {
         rect.right = xMax + 1;
-        zVideo_dd3d::QueueSolidQuad(packedColor16 & 0xffffU, &rect, alpha);
+        zVideo_dd3d::QueueSolidQuad(
+            packedColor16 & 0xffffU,
+            &rect,
+            alpha
+        );
         return;
     }
 
@@ -4239,22 +5762,31 @@ RECOIL_NOINLINE void RECOIL_CDECL zRndr_OverlayRect_FlushSw() {
         return;
     }
 
-    const int graphicsFlags =
-        zRndr::g_graphicsFlags != 0 ? *zRndr::g_graphicsFlags : 0;
-    if (zRndr::g_pixelPackGreenBits == 5) {
-        zRndr::g_pfnOverlayBlendRow = zRndr::OverlayBlendRow555_Scalar;
+    const int graphicsFlags = zRndr::g_graphicsFlags != 0 ? *zRndr::g_graphicsFlags : 0;
+    if ((graphicsFlags & 4) != 0) {
+        if (zRndr::g_pixelPackGreenBits == 5) {
+            zRndr::g_pfnOverlayBlendRow = zRndr::OverlayBlendRow555_Mmx;
+        } else {
+            zRndr::g_pfnOverlayBlendRow = zRndr::OverlayBlendRow565_Mmx;
+        }
     } else {
-        zRndr::g_pfnOverlayBlendRow = zRndr::OverlayBlendRow565_Scalar;
+        if (zRndr::g_pixelPackGreenBits == 5) {
+            zRndr::g_pfnOverlayBlendRow = zRndr::OverlayBlendRow555_Scalar;
+        } else {
+            zRndr::g_pfnOverlayBlendRow = zRndr::OverlayBlendRow565_Scalar;
+        }
     }
-    (void)graphicsFlags;
 
     unsigned int redMask;
     unsigned int greenMask;
     unsigned int blueMask;
-    zVideo::PixelPack_GetRgbMasks(&redMask, &greenMask, &blueMask);
+    zVideo::PixelPack_GetRgbMasks(
+        &redMask,
+        &greenMask,
+        &blueMask
+    );
 
-    const int srcScale5 =
-        (int)(zRndr::g_overlayBlendAlpha * 32.0);
+    const int srcScale5 = (int)(zRndr::g_overlayBlendAlpha * 32.0);
     const unsigned int overlayColor16 = zRndr::g_overlayBlendPackedColor16;
     const unsigned int premulR = ((redMask & overlayColor16) * srcScale5) >> 5;
     const unsigned int premulG = ((greenMask & overlayColor16) * srcScale5) >> 5;
@@ -4263,12 +5795,10 @@ RECOIL_NOINLINE void RECOIL_CDECL zRndr_OverlayRect_FlushSw() {
     const unsigned int premulGPair = premulG | (premulG << 16);
     const unsigned int premulBPair = premulB | (premulB << 16);
     zRndr::g_swOverlayPremulPacked =
-        (((blueMask & premulBPair) | (redMask & premulRPair)) << 16) |
-        (greenMask & premulGPair);
+        (((blueMask & premulBPair) | (redMask & premulRPair)) << 16) | (greenMask & premulGPair);
     zRndr::g_swOverlayPremulPackedRot16 =
         (zRndr::g_swOverlayPremulPacked >> 16) | (zRndr::g_swOverlayPremulPacked << 16);
-    zRndr::g_swOverlayDstScale5 =
-        (int)((1.0 - zRndr::g_overlayBlendAlpha) * 32.0);
+    zRndr::g_swOverlayDstScale5 = (int)((1.0 - zRndr::g_overlayBlendAlpha) * 32.0);
 
     int rowY = zRndr::g_overlayBlendRectTop;
     const int rectLeft = zRndr::g_overlayBlendRectLeft;
@@ -4276,7 +5806,10 @@ RECOIL_NOINLINE void RECOIL_CDECL zRndr_OverlayRect_FlushSw() {
     unsigned short *rowPixels16 =
         g_zVideo_FxSurfacePixels16 + g_zVideo_FxSurfacePitchPixels16 * rowY + rectLeft;
     while (rowY < zRndr::g_overlayBlendRectBottom) {
-        zRndr::g_pfnOverlayBlendRow(rowPixels16, pixelCount);
+        zRndr::g_pfnOverlayBlendRow(
+            rowPixels16,
+            pixelCount
+        );
         ++rowY;
         rowPixels16 += g_zVideo_FxSurfacePitchPixels16;
     }
@@ -4285,64 +5818,92 @@ RECOIL_NOINLINE void RECOIL_CDECL zRndr_OverlayRect_FlushSw() {
 // Reimplements 0x49a2b0: zRndr_FlushTransparentQueue
 RECOIL_NOINLINE void RECOIL_CDECL zRndr_FlushTransparentQueue() {
     {
-    for (int i = 0; i < zRndr::g_transparentQueueCount; ++i) {
-        zRndr::g_transparentQueueSortIndices[i] = zRndr::g_transparentQueueCount - i - 1;
-    }
+        for (int i = 0; i < zRndr::g_transparentQueueCount; ++i) {
+            zRndr::g_transparentQueueSortIndices[i] = zRndr::g_transparentQueueCount - i - 1;
+        }
     }
 
     bool swapped = false;
     do {
         {
-        for (int i = 0; i < zRndr::g_transparentQueueCount - 1; ++i) {
-            const int lhsIndex = zRndr::g_transparentQueueSortIndices[i];
-            const int rhsIndex = zRndr::g_transparentQueueSortIndices[i + 1];
-            if (zRndr::g_transparentQueue[rhsIndex].triVerts[0].z <
-                zRndr::g_transparentQueue[lhsIndex].triVerts[0].z) {
-                zRndr::g_transparentQueueSortIndices[i] = rhsIndex;
-                zRndr::g_transparentQueueSortIndices[i + 1] = lhsIndex;
-                swapped = true;
+            for (int i = 0; i < zRndr::g_transparentQueueCount - 1; ++i) {
+                const int lhsIndex = zRndr::g_transparentQueueSortIndices[i];
+                const int rhsIndex = zRndr::g_transparentQueueSortIndices[i + 1];
+                if (zRndr::g_transparentQueue[rhsIndex].triVerts[0].z <
+                    zRndr::g_transparentQueue[lhsIndex].triVerts[0].z) {
+                    zRndr::g_transparentQueueSortIndices[i] = rhsIndex;
+                    zRndr::g_transparentQueueSortIndices[i + 1] = lhsIndex;
+                    swapped = true;
+                }
             }
-        }
         }
     } while (swapped);
 
     {
-    for (int i = 0; i < zRndr::g_transparentQueueCount; ++i) {
-        const int queueIndex = zRndr::g_transparentQueueSortIndices[i];
-        zRndr::TransparentQueuedPolyDrawCmd &cmd = zRndr::g_transparentQueue[queueIndex];
-        unsigned char *raw = (unsigned char *)(&cmd);
+        for (int i = 0; i < zRndr::g_transparentQueueCount; ++i) {
+            const int queueIndex = zRndr::g_transparentQueueSortIndices[i];
+            zRndr::TransparentQueuedPolyDrawCmd &cmd = zRndr::g_transparentQueue[queueIndex];
+            unsigned char *raw = (unsigned char *)(&cmd);
 
-        zRndr::g_inverseDepthBias = cmd.savedInvDepthBias;
-        zRndr::g_inverseDepthScale = cmd.savedInvDepthScale;
-        zRndr::g_scanConvertMode = cmd.scanConvertMode;
+            zRndr::g_inverseDepthBias = cmd.savedInvDepthBias;
+            zRndr::g_inverseDepthScale = cmd.savedInvDepthScale;
+            zRndr::g_scanConvertMode = cmd.scanConvertMode;
 
-        if (cmd.materialRef == 0) {
-            zRndr_DrawFlatImmediate((zVec3 *)(cmd.polyVerts),
-                                    (zVec3 *)(cmd.triVerts), cmd.vertexCount,
-                                    cmd.alphaOrShadeBits, cmd.shadeOrSpanMode);
-            continue;
-        }
-
-        zVec3 *clippedTriVerts =
-            cmd.hasClippedTriVerts != 0 ? (zVec3 *)(raw + 0x308) : 0;
-        zVec3 *polyVerts = (zVec3 *)(cmd.polyVerts);
-        zVec3 *triVerts = (zVec3 *)(cmd.triVerts);
-        zVec2 *triUVs = (zVec2 *)(cmd.triUVs);
-        if ((cmd.materialRef->image->formatFlagsPacked & 2) == 0) {
-            float alpha = 0.0f;
-            memcpy(&alpha, &cmd.alphaOrShadeBits, sizeof(float));
-            if (alpha < 1.0f) {
-                Renderer_DrawPolyTLV(cmd.materialRef, polyVerts, triVerts, triUVs, cmd.vertexCount,
-                                     alpha, cmd.texKey);
-            } else {
-                zRndr_DrawFlatQueued(cmd.materialRef, polyVerts, triVerts, triUVs, cmd.vertexCount,
-                                     cmd.texKey);
+            if (cmd.materialRef == 0) {
+                zRndr_DrawFlatImmediate(
+                    (zVec3 *)(cmd.polyVerts),
+                    (zVec3 *)(cmd.triVerts),
+                    cmd.vertexCount,
+                    cmd.alphaOrShadeBits,
+                    cmd.shadeOrSpanMode
+                );
+                continue;
             }
-        } else {
-            zRndr_DrawTexturedFanTri(cmd.materialRef, polyVerts, clippedTriVerts, triVerts, triUVs,
-                                     cmd.vertexCount, cmd.alphaOrShadeBits, cmd.texKey);
+
+            zVec3 *clippedTriVerts = cmd.hasClippedTriVerts != 0 ? (zVec3 *)(raw + 0x308) : 0;
+            zVec3 *polyVerts = (zVec3 *)(cmd.polyVerts);
+            zVec3 *triVerts = (zVec3 *)(cmd.triVerts);
+            zVec2 *triUVs = (zVec2 *)(cmd.triUVs);
+            if ((cmd.materialRef->image->formatFlagsPacked & 2) == 0) {
+                float alpha = 0.0f;
+                memcpy(
+                    &alpha,
+                    &cmd.alphaOrShadeBits,
+                    sizeof(float)
+                );
+                if (alpha < 1.0f) {
+                    Renderer_DrawPolyTLV(
+                        cmd.materialRef,
+                        polyVerts,
+                        triVerts,
+                        triUVs,
+                        cmd.vertexCount,
+                        alpha,
+                        cmd.texKey
+                    );
+                } else {
+                    zRndr_DrawFlatQueued(
+                        cmd.materialRef,
+                        polyVerts,
+                        triVerts,
+                        triUVs,
+                        cmd.vertexCount,
+                        cmd.texKey
+                    );
+                }
+            } else {
+                zRndr_DrawTexturedFanTri(
+                    cmd.materialRef,
+                    polyVerts,
+                    clippedTriVerts,
+                    triVerts,
+                    triUVs,
+                    cmd.vertexCount,
+                    cmd.alphaOrShadeBits,
+                    cmd.texKey
+                );
+            }
         }
-    }
     }
 
     zRndr::g_transparentQueueCount = 0;
@@ -4353,92 +5914,133 @@ RECOIL_NOINLINE void RECOIL_CDECL zRndr_FlushOverwriteQueue() {
     zRndr::g_pfnBuildSpanListSecondary = zRndr_SpanOcclusion_BuildSpanListFast;
 
     {
-    for (int queueIndex = 0; queueIndex < zRndr::g_overwriteQueueCount; ++queueIndex) {
-        zRndr::OverwriteQueuedPolyDrawCmd &cmd = zRndr::g_overwriteQueue[queueIndex];
-        unsigned char *raw = (unsigned char *)(&cmd);
-        const int commandTag = *(int *)(raw + 0x000);
-        zVec3 *polyVerts = (zVec3 *)(raw + 0x004);
-        zVec3 *clippedTriVerts = *(int *)(raw + 0x47c) != 0
-                                     ? (zVec3 *)(raw + 0x304)
-                                     : 0;
-        zVec3 *triVerts = (zVec3 *)(raw + 0x328);
-        zVec2 *triUVs = (zVec2 *)(raw + 0x358);
-        float *perVertexAlphaOrShadeF = (float *)(raw + 0x374);
-        const int texKey = *(int *)(raw + 0x488);
+        for (int queueIndex = 0; queueIndex < zRndr::g_overwriteQueueCount; ++queueIndex) {
+            zRndr::OverwriteQueuedPolyDrawCmd &cmd = zRndr::g_overwriteQueue[queueIndex];
+            unsigned char *raw = (unsigned char *)(&cmd);
+            const int commandTag = *(int *)(raw + 0x000);
+            zVec3 *polyVerts = (zVec3 *)(raw + 0x004);
+            zVec3 *clippedTriVerts = *(int *)(raw + 0x47c) != 0 ? (zVec3 *)(raw + 0x304) : 0;
+            zVec3 *triVerts = (zVec3 *)(raw + 0x328);
+            zVec2 *triUVs = (zVec2 *)(raw + 0x358);
+            float *perVertexAlphaOrShadeF = (float *)(raw + 0x374);
+            const int texKey = *(int *)(raw + 0x488);
 
-        zRndr::g_inverseDepthBias = cmd.savedInvDepthBias;
-        zRndr::g_inverseDepthScale = cmd.savedInvDepthScale;
-        zRndr::g_scanConvertMode = cmd.scanConvertMode;
+            zRndr::g_inverseDepthBias = cmd.savedInvDepthBias;
+            zRndr::g_inverseDepthScale = cmd.savedInvDepthScale;
+            zRndr::g_scanConvertMode = cmd.scanConvertMode;
 
-        zVidImagePartial *image = cmd.materialRef != 0 ? cmd.materialRef->image : 0;
-        bool useFallback = false;
+            zVidImagePartial *image = cmd.materialRef != 0 ? cmd.materialRef->image : 0;
+            bool useFallback = false;
 
-        if (commandTag == 0) {
-            if (cmd.alphaOrShadeF >= 255.0f) {
-                zRndr_RasterizePolyWithSpanList(polyVerts, triVerts, cmd.vertexCount,
-                                                cmd.shadeOrSpanMode);
-                continue;
-            }
-            useFallback = true;
-        } else if (commandTag == 1) {
-            if (image != 0 && (image->formatFlagsPacked & 2) == 0 &&
-                cmd.alphaOrShadeF >= 1.0f) {
-                zRndr_DrawTexturedQueuedAlpha(cmd.materialRef, polyVerts, clippedTriVerts, triVerts,
-                                              triUVs, cmd.vertexCount, texKey);
-                continue;
-            }
-
-            if (image != 0 && (image->formatFlagsPacked & 2) != 0) {
-                cmd.alphaOrShadeF *= 255.0f;
-            }
-            useFallback = true;
-        } else if (commandTag == 2) {
-            if (image != 0 && (image->formatFlagsPacked & 2) == 0) {
-                if (cmd.vertexCount - 2 > 0) {
-                    zVec3 fanVerts[3];
-                    zVec3 shadeTriplet;
-                    fanVerts[0] = polyVerts[0];
-                    shadeTriplet.x = perVertexAlphaOrShadeF[0];
-                    for (int fanTriIndex = 0; fanTriIndex < cmd.vertexCount - 2;
-                         ++fanTriIndex) {
-                        fanVerts[1] = polyVerts[fanTriIndex + 1];
-                        fanVerts[2] = polyVerts[fanTriIndex + 2];
-                        shadeTriplet.y = perVertexAlphaOrShadeF[fanTriIndex + 1];
-                        shadeTriplet.z = perVertexAlphaOrShadeF[fanTriIndex + 2];
-                        zRndr_DrawTexturedQueued(cmd.materialRef, fanVerts, clippedTriVerts,
-                                                 triVerts, triUVs, &shadeTriplet, 3, fanTriIndex,
-                                                 texKey);
-                    }
+            if (commandTag == 0) {
+                if (cmd.alphaOrShadeF >= 255.0f) {
+                    zRndr_RasterizePolyWithSpanList(
+                        polyVerts,
+                        triVerts,
+                        cmd.vertexCount,
+                        cmd.shadeOrSpanMode
+                    );
+                    continue;
                 }
+                useFallback = true;
+            } else if (commandTag == 1) {
+                if (image != 0 && (image->formatFlagsPacked & 2) == 0 &&
+                    cmd.alphaOrShadeF >= 1.0f) {
+                    zRndr_DrawTexturedQueuedAlpha(
+                        cmd.materialRef,
+                        polyVerts,
+                        clippedTriVerts,
+                        triVerts,
+                        triUVs,
+                        cmd.vertexCount,
+                        texKey
+                    );
+                    continue;
+                }
+
+                if (image != 0 && (image->formatFlagsPacked & 2) != 0) {
+                    cmd.alphaOrShadeF *= 255.0f;
+                }
+                useFallback = true;
+            } else if (commandTag == 2) {
+                if (image != 0 && (image->formatFlagsPacked & 2) == 0) {
+                    if (cmd.vertexCount - 2 > 0) {
+                        zVec3 fanVerts[3];
+                        zVec3 shadeTriplet;
+                        fanVerts[0] = polyVerts[0];
+                        shadeTriplet.x = perVertexAlphaOrShadeF[0];
+                        for (int fanTriIndex = 0; fanTriIndex < cmd.vertexCount - 2;
+                            ++fanTriIndex) {
+                            fanVerts[1] = polyVerts[fanTriIndex + 1];
+                            fanVerts[2] = polyVerts[fanTriIndex + 2];
+                            shadeTriplet.y = perVertexAlphaOrShadeF[fanTriIndex + 1];
+                            shadeTriplet.z = perVertexAlphaOrShadeF[fanTriIndex + 2];
+                            zRndr_DrawTexturedQueued(
+                                cmd.materialRef,
+                                fanVerts,
+                                clippedTriVerts,
+                                triVerts,
+                                triUVs,
+                                &shadeTriplet,
+                                3,
+                                fanTriIndex,
+                                texKey
+                            );
+                        }
+                    }
+                    continue;
+                }
+
+                cmd.alphaOrShadeF = 255.0f;
+                useFallback = true;
+            }
+
+            if (!useFallback) {
                 continue;
             }
 
-            cmd.alphaOrShadeF = 255.0f;
-            useFallback = true;
-        }
-
-        if (!useFallback) {
-            continue;
-        }
-
-        if (image == 0) {
-            zRndr_DrawFlatImmediate(polyVerts, triVerts, cmd.vertexCount,
-                                    (int)(cmd.alphaOrShadeF),
-                                    cmd.shadeOrSpanMode);
-        } else if ((image->formatFlagsPacked & 2) == 0) {
-            if (cmd.alphaOrShadeF < 1.0f) {
-                Renderer_DrawPolyTLV(cmd.materialRef, polyVerts, triVerts, triUVs, cmd.vertexCount,
-                                     cmd.alphaOrShadeF, texKey);
+            if (image == 0) {
+                zRndr_DrawFlatImmediate(
+                    polyVerts,
+                    triVerts,
+                    cmd.vertexCount,
+                    (int)(cmd.alphaOrShadeF),
+                    cmd.shadeOrSpanMode
+                );
+            } else if ((image->formatFlagsPacked & 2) == 0) {
+                if (cmd.alphaOrShadeF < 1.0f) {
+                    Renderer_DrawPolyTLV(
+                        cmd.materialRef,
+                        polyVerts,
+                        triVerts,
+                        triUVs,
+                        cmd.vertexCount,
+                        cmd.alphaOrShadeF,
+                        texKey
+                    );
+                } else {
+                    zRndr_DrawFlatQueued(
+                        cmd.materialRef,
+                        polyVerts,
+                        triVerts,
+                        triUVs,
+                        cmd.vertexCount,
+                        texKey
+                    );
+                }
             } else {
-                zRndr_DrawFlatQueued(cmd.materialRef, polyVerts, triVerts, triUVs, cmd.vertexCount,
-                                     texKey);
+                zRndr_DrawTexturedFanTri(
+                    cmd.materialRef,
+                    polyVerts,
+                    clippedTriVerts,
+                    triVerts,
+                    triUVs,
+                    cmd.vertexCount,
+                    (int)(cmd.alphaOrShadeF),
+                    texKey
+                );
             }
-        } else {
-            zRndr_DrawTexturedFanTri(cmd.materialRef, polyVerts, clippedTriVerts, triVerts, triUVs,
-                                     cmd.vertexCount, (int)(cmd.alphaOrShadeF),
-                                     texKey);
         }
-    }
     }
 
     zRndr::g_overwriteQueueCount = 0;
@@ -4448,9 +6050,14 @@ RECOIL_NOINLINE void RECOIL_CDECL zRndr_FlushOverwriteQueue() {
 
 // Reimplements 0x499130: zRndr_TextureMip_SelectVariantImage
 RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL zRndr_TextureMip_SelectVariantImage(
-    zImage_TexDirEntryPartial *entry, const zVec3 *triVerts, int vertCount,
-    const zVec2 *vertexUvPairs, const zVec2 *mipParamsA, const zVec2 *mipParamsB,
-    const zVec2 *mipParamsC) {
+    zImage_TexDirEntryPartial *entry,
+    const zVec3 *triVerts,
+    int vertCount,
+    const zVec2 *vertexUvPairs,
+    const zVec2 *mipParamsA,
+    const zVec2 *mipParamsB,
+    const zVec2 *mipParamsC
+) {
     if (zRndr::g_textureMipSelectionEnabled == 0) {
         return entry != 0 ? entry->image : 0;
     }
@@ -4492,13 +6099,16 @@ RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL zRndr_TextureMip_SelectVariant
 }
 
 // Reimplements 0x493df0: zRndr_DrawFlatQueued
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawFlatQueued(zImage_TexDirEntryPartial *entry,
-                                                          zVec3 *polyVerts, zVec3 *triVerts,
-                                                          zVec2 *triUVs, int vertCount,
-                                                          int paletteIndex) {
-    if (entry == 0 || entry->image == 0 || polyVerts == 0 ||
-        triVerts == 0 || triUVs == 0 || vertCount <= 0 ||
-        zRndr::g_spanAllocCursor == 0 || zRndr::g_frameBuffer == 0) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawFlatQueued(
+    zImage_TexDirEntryPartial *entry,
+    zVec3 *polyVerts,
+    zVec3 *triVerts,
+    zVec2 *triUVs,
+    int vertCount,
+    int paletteIndex
+) {
+    if (entry == 0 || entry->image == 0 || polyVerts == 0 || triVerts == 0 || triUVs == 0 ||
+        vertCount <= 0 || zRndr::g_spanAllocCursor == 0 || zRndr::g_frameBuffer == 0) {
         return;
     }
 
@@ -4512,13 +6122,24 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawFlatQueued(zImage_TexDirEntryPart
         vertexUvPairs[i].y = imageHeight * triVerts[i].z * triUVs[i].y;
     }
 
-    TexturedPlanes planes =
-        BuildQueuedTexturePlanes(0, triVerts, triUVs, imageWidth, imageHeight);
+    TexturedPlanes planes = BuildQueuedTexturePlanes(
+        0,
+        triVerts,
+        triUVs,
+        imageWidth,
+        imageHeight
+    );
 
     if (entry->nextVariant != 0) {
         selectedImage = zRndr_TextureMip_SelectVariantImage(
-            entry, triVerts, 3, vertexUvPairs, &planes.reciprocalZ.gradient,
-            &planes.uOverZ.gradient, &planes.vOverZ.gradient);
+            entry,
+            triVerts,
+            3,
+            vertexUvPairs,
+            &planes.reciprocalZ.gradient,
+            &planes.uOverZ.gradient,
+            &planes.vOverZ.gradient
+        );
         if (selectedImage == 0) {
             return;
         }
@@ -4535,10 +6156,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawFlatQueued(zImage_TexDirEntryPart
         }
     }
 
-    const int firstScanline =
-        (int)(floor(polyVerts[topVertexIndex].y + 0.5f));
-    const int lastScanline =
-        (int)(floor(polyVerts[bottomVertexIndex].y - 0.5f));
+    const int firstScanline = (int)(floor(polyVerts[topVertexIndex].y + 0.5f));
+    const int lastScanline = (int)(floor(polyVerts[bottomVertexIndex].y - 0.5f));
     if (firstScanline > lastScanline) {
         return;
     }
@@ -4579,10 +6198,9 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawFlatQueued(zImage_TexDirEntryPart
         zRndr::g_pfnBuildSpanListSecondary != 0
             ? zRndr::g_pfnBuildSpanListSecondary
             : (zRndr::g_pfnBuildSpanList != 0 ? zRndr::g_pfnBuildSpanList
-                                                    : zRndr_SpanOcclusion_InsertSpanNode_Local);
+                                              : zRndr_SpanOcclusion_InsertSpanNode_Local);
     unsigned char *frameBase = (unsigned char *)(zRndr::g_frameBuffer);
-    const int texVShift =
-        selectedImage->uShiftFrom20 != 0 ? selectedImage->uShiftFrom20 : 20;
+    const int texVShift = selectedImage->uShiftFrom20 != 0 ? selectedImage->uShiftFrom20 : 20;
 
     for (int y = firstScanline; y <= lastScanline; ++y) {
         float intersections[0x40] = {0};
@@ -4595,8 +6213,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawFlatQueued(zImage_TexDirEntryPart
                 continue;
             }
 
-            const float minY = MinValue(a.y, b.y);
-            const float maxY = MaxValue(a.y, b.y);
+            const float minY = MinValue(
+                a.y,
+                b.y
+            );
+            const float maxY = MaxValue(
+                a.y,
+                b.y
+            );
             if (sampleY < minY || sampleY >= maxY) {
                 continue;
             }
@@ -4612,48 +6236,60 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawFlatQueued(zImage_TexDirEntryPart
             continue;
         }
 
-        sort(intersections, intersections + intersectionCount);
+        sort(
+            intersections,
+            intersections + intersectionCount
+        );
         unsigned char *scanlineBase = frameBase + y * zRndr::g_pitchBytes;
         const int pairCount = intersectionCount & ~1;
         for (int i_4455 = 0; i_4455 < pairCount; i_4455 += 2) {
-            const int xMin =
-                (int)(floor(intersections[i_4455] + 0.5f));
-            const int xMax =
-                (int)(ceil(intersections[i_4455 + 1] - 0.5f)) - 1;
+            const int xMin = (int)(floor(intersections[i_4455] + 0.5f));
+            const int xMax = (int)(ceil(intersections[i_4455 + 1] - 0.5f)) - 1;
             if (xMin > xMax) {
                 continue;
             }
 
             const float rowReciprocalZ =
-                (float)(y) * planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
+                (float)(y)*planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
             zRndr::g_spanAllocCursor->sampleXMin = xMin;
             zRndr::g_spanAllocCursor->sampleXMax = xMax;
             zRndr::g_spanAllocCursor->invDepth =
-                ((float)(xMin) * planes.reciprocalZ.gradient.x + rowReciprocalZ) *
+                ((float)(xMin)*planes.reciprocalZ.gradient.x + rowReciprocalZ) *
                     zRndr::g_inverseDepthScale +
                 zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->invDepthStep =
-                ((float)(xMax) * planes.reciprocalZ.gradient.x + rowReciprocalZ) *
+                ((float)(xMax)*planes.reciprocalZ.gradient.x + rowReciprocalZ) *
                     zRndr::g_inverseDepthScale +
                 zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->depthSlope = planes.reciprocalZ.gradient.x;
 
             int spanCount = 0;
-            buildProc(visibleSpans, y, &spanCount);
+            buildProc(
+                visibleSpans,
+                y,
+                &spanCount
+            );
             {
-            for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
-                zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
-                if (span == 0 || span->sampleXMin > span->sampleXMax) {
-                    continue;
-                }
+                for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
+                    zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
+                    if (span == 0 || span->sampleXMin > span->sampleXMax) {
+                        continue;
+                    }
 
-                zRndr::g_spanCurrentDst16 = (unsigned short *)(
-                    scanlineBase +
-                    (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
-                DispatchTexturedSpanChunks(spanProc, planes, 0, span, y,
-                                           span->sampleXMax - span->sampleXMin + 1, 1048576.0f,
-                                           texVShift);
-            }
+                    zRndr::g_spanCurrentDst16 =
+                        (unsigned short *)(scanlineBase +
+                                           (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
+                    DispatchTexturedSpanChunks(
+                        spanProc,
+                        planes,
+                        0,
+                        span,
+                        y,
+                        span->sampleXMax - span->sampleXMin + 1,
+                        1048576.0f,
+                        texVShift
+                    );
+                }
             }
         }
     }
@@ -4661,12 +6297,19 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawFlatQueued(zImage_TexDirEntryPart
 
 // Reimplements 0x495850: zRndr_DrawTexturedQueued
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawTexturedQueued(
-    zImage_TexDirEntryPartial *entry, zVec3 *projectedVerts, zVec3 *clippedTriVerts,
-    zVec3 *triVerts, zVec2 *triUVs, zVec3 *shadeTriplet, int vertCount, int,
-    int texKey) {
-    if (entry == 0 || entry->image == 0 || projectedVerts == 0 ||
-        triVerts == 0 || triUVs == 0 || shadeTriplet == 0 || vertCount <= 0 ||
-        zRndr::g_spanAllocCursor == 0 || zRndr::g_frameBuffer == 0) {
+    zImage_TexDirEntryPartial *entry,
+    zVec3 *projectedVerts,
+    zVec3 *clippedTriVerts,
+    zVec3 *triVerts,
+    zVec2 *triUVs,
+    zVec3 *shadeTriplet,
+    int vertCount,
+    int,
+    int texKey
+) {
+    if (entry == 0 || entry->image == 0 || projectedVerts == 0 || triVerts == 0 || triUVs == 0 ||
+        shadeTriplet == 0 || vertCount <= 0 || zRndr::g_spanAllocCursor == 0 ||
+        zRndr::g_frameBuffer == 0) {
         return;
     }
 
@@ -4680,13 +6323,25 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawTexturedQueued(
     }
 
     TexturedPlanes planes =
-        BuildQueuedTexturePlanes(clippedTriVerts, triVerts, triUVs, imageWidth, imageHeight);
+        BuildQueuedTexturePlanes(
+            clippedTriVerts,
+            triVerts,
+            triUVs,
+            imageWidth,
+            imageHeight
+        );
 
     float textureScale = 1048576.0f;
     if (entry->nextVariant != 0) {
         selectedImage = zRndr_TextureMip_SelectVariantImage(
-            entry, triVerts, 3, vertexUvPairs, &planes.reciprocalZ.gradient,
-            &planes.uOverZ.gradient, &planes.vOverZ.gradient);
+            entry,
+            triVerts,
+            3,
+            vertexUvPairs,
+            &planes.reciprocalZ.gradient,
+            &planes.uOverZ.gradient,
+            &planes.vOverZ.gradient
+        );
         if (selectedImage == 0) {
             return;
         }
@@ -4699,14 +6354,21 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawTexturedQueued(
         shadeTriplet->y,
         shadeTriplet->z,
     };
-    Plane2f shadePlane = BuildScreenPlaneFromTriangle(projectedVerts, shadeValues);
+    Plane2f shadePlane = BuildScreenPlaneFromTriangle(
+        projectedVerts,
+        shadeValues
+    );
 
     int topVertexIndex = 0;
     int bottomVertexIndex = 0;
     float minPositiveReciprocalZ = 1000.0f;
     for (int i_4544 = 0; i_4544 < vertCount; ++i_4544) {
         const float reciprocalZ =
-            EvalPlane(planes.reciprocalZ, projectedVerts[i_4544].x, projectedVerts[i_4544].y);
+            EvalPlane(
+                planes.reciprocalZ,
+                projectedVerts[i_4544].x,
+                projectedVerts[i_4544].y
+            );
         if (reciprocalZ > 0.0f && reciprocalZ < minPositiveReciprocalZ) {
             minPositiveReciprocalZ = reciprocalZ;
         }
@@ -4718,10 +6380,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawTexturedQueued(
         }
     }
 
-    const int firstScanline =
-        (int)(floor(projectedVerts[topVertexIndex].y + 0.5f));
-    const int lastScanline =
-        (int)(floor(projectedVerts[bottomVertexIndex].y - 0.5f));
+    const int firstScanline = (int)(floor(projectedVerts[topVertexIndex].y + 0.5f));
+    const int lastScanline = (int)(floor(projectedVerts[bottomVertexIndex].y - 0.5f));
     if (firstScanline > lastScanline) {
         return;
     }
@@ -4742,7 +6402,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawTexturedQueued(
             int shadeRecipe = g_zRndr_ActivePaletteShadeRecipeIndex;
             if (shadeRecipe < 0) {
                 shadeRecipe = zVid_PaletteRemap_FindRecipeIndexFromRgb(
-                    (zColorRgb *)(zRndr::g_fogParamsActive.colorRgb01));
+                    (zColorRgb *)(zRndr::g_fogParamsActive.colorRgb01)
+                );
             }
 
             if (shadeRecipe >= 0) {
@@ -4767,9 +6428,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawTexturedQueued(
                                          : zRndr_SpanOcclusion_InsertSpanNode_Local;
     unsigned char *frameBase = (unsigned char *)(zRndr::g_frameBuffer);
     const int chunkPixels =
-        SelectPerspectiveChunkPixels(minPositiveReciprocalZ, planes.reciprocalZ.gradient.x);
-    const int texVShift =
-        selectedImage->uShiftFrom20 != 0 ? selectedImage->uShiftFrom20 : 20;
+        SelectPerspectiveChunkPixels(
+            minPositiveReciprocalZ,
+            planes.reciprocalZ.gradient.x
+        );
+    const int texVShift = selectedImage->uShiftFrom20 != 0 ? selectedImage->uShiftFrom20 : 20;
 
     for (int y = firstScanline; y <= lastScanline; ++y) {
         float intersections[0x40] = {0};
@@ -4781,8 +6444,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawTexturedQueued(
             if (a.y == b.y) {
                 continue;
             }
-            const float minY = MinValue(a.y, b.y);
-            const float maxY = MaxValue(a.y, b.y);
+            const float minY = MinValue(
+                a.y,
+                b.y
+            );
+            const float maxY = MaxValue(
+                a.y,
+                b.y
+            );
             if (sampleY < minY || sampleY >= maxY) {
                 continue;
             }
@@ -4797,60 +6466,77 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawTexturedQueued(
             continue;
         }
 
-        sort(intersections, intersections + intersectionCount);
+        sort(
+            intersections,
+            intersections + intersectionCount
+        );
         unsigned char *scanlineBase = frameBase + y * zRndr::g_pitchBytes;
         const int pairCount = intersectionCount & ~1;
         for (int i_4640 = 0; i_4640 < pairCount; i_4640 += 2) {
-            const int xMin =
-                (int)(floor(intersections[i_4640] + 0.5f));
-            const int xMax =
-                (int)(ceil(intersections[i_4640 + 1] - 0.5f)) - 1;
+            const int xMin = (int)(floor(intersections[i_4640] + 0.5f));
+            const int xMax = (int)(ceil(intersections[i_4640 + 1] - 0.5f)) - 1;
             if (xMin > xMax) {
                 continue;
             }
 
             const float rowReciprocalZ =
-                (float)(y) * planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
+                (float)(y)*planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
             zRndr::g_spanAllocCursor->sampleXMin = xMin;
             zRndr::g_spanAllocCursor->sampleXMax = xMax;
             zRndr::g_spanAllocCursor->invDepth =
-                ((float)(xMin) * planes.reciprocalZ.gradient.x + rowReciprocalZ) *
+                ((float)(xMin)*planes.reciprocalZ.gradient.x + rowReciprocalZ) *
                     zRndr::g_inverseDepthScale +
                 zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->invDepthStep =
-                ((float)(xMax) * planes.reciprocalZ.gradient.x + rowReciprocalZ) *
+                ((float)(xMax)*planes.reciprocalZ.gradient.x + rowReciprocalZ) *
                     zRndr::g_inverseDepthScale +
                 zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->depthSlope = planes.reciprocalZ.gradient.x;
 
             int spanCount = 0;
-            buildProc(visibleSpans, y, &spanCount);
+            buildProc(
+                visibleSpans,
+                y,
+                &spanCount
+            );
             {
-            for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
-                zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
-                if (span == 0 || span->sampleXMin > span->sampleXMax) {
-                    continue;
-                }
+                for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
+                    zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
+                    if (span == 0 || span->sampleXMin > span->sampleXMax) {
+                        continue;
+                    }
 
-                zRndr::g_spanCurrentDst16 = (unsigned short *)(
-                    scanlineBase +
-                    (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
-                DispatchTexturedSpanChunks(spanProc, planes, activeShadePlane, span, y, chunkPixels,
-                                           textureScale, texVShift);
-            }
+                    zRndr::g_spanCurrentDst16 =
+                        (unsigned short *)(scanlineBase +
+                                           (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
+                    DispatchTexturedSpanChunks(
+                        spanProc,
+                        planes,
+                        activeShadePlane,
+                        span,
+                        y,
+                        chunkPixels,
+                        textureScale,
+                        texVShift
+                    );
+                }
             }
         }
     }
 }
 
 // Reimplements 0x494af0: Renderer_DrawPolyTLV
-RECOIL_NOINLINE void RECOIL_FASTCALL Renderer_DrawPolyTLV(zImage_TexDirEntryPartial *entry,
-                                                          zVec3 *polyVerts, zVec3 *triVerts,
-                                                          zVec2 *triUVs, int vertexCount,
-                                                          float alpha, int texKey) {
-    if (entry == 0 || entry->image == 0 || polyVerts == 0 ||
-        triVerts == 0 || triUVs == 0 || vertexCount <= 0 ||
-        zRndr::g_spanAllocCursor == 0 || zRndr::g_frameBuffer == 0) {
+RECOIL_NOINLINE void RECOIL_FASTCALL Renderer_DrawPolyTLV(
+    zImage_TexDirEntryPartial *entry,
+    zVec3 *polyVerts,
+    zVec3 *triVerts,
+    zVec2 *triUVs,
+    int vertexCount,
+    float alpha,
+    int texKey
+) {
+    if (entry == 0 || entry->image == 0 || polyVerts == 0 || triVerts == 0 || triUVs == 0 ||
+        vertexCount <= 0 || zRndr::g_spanAllocCursor == 0 || zRndr::g_frameBuffer == 0) {
         return;
     }
 
@@ -4863,14 +6549,25 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Renderer_DrawPolyTLV(zImage_TexDirEntryPart
         vertexUvPairs[i].y = imageHeight * triVerts[i].z * triUVs[i].y;
     }
 
-    TexturedPlanes planes =
-        BuildQueuedTexturePlanes(0, triVerts, triUVs, imageWidth, imageHeight);
+    TexturedPlanes planes = BuildQueuedTexturePlanes(
+        0,
+        triVerts,
+        triUVs,
+        imageWidth,
+        imageHeight
+    );
 
     float textureScale = 1048576.0f;
     if (entry->nextVariant != 0) {
         selectedImage = zRndr_TextureMip_SelectVariantImage(
-            entry, triVerts, 3, vertexUvPairs, &planes.reciprocalZ.gradient,
-            &planes.uOverZ.gradient, &planes.vOverZ.gradient);
+            entry,
+            triVerts,
+            3,
+            vertexUvPairs,
+            &planes.reciprocalZ.gradient,
+            &planes.uOverZ.gradient,
+            &planes.vOverZ.gradient
+        );
         if (selectedImage == 0) {
             return;
         }
@@ -4904,7 +6601,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Renderer_DrawPolyTLV(zImage_TexDirEntryPart
     if (selectedImage->alphaMap != 0) {
         zRndr::g_spanActiveTexAlphaMap = selectedImage->alphaMap;
         int alphaBits = 0;
-        memcpy(&alphaBits, &alpha, sizeof(alphaBits));
+        memcpy(
+            &alphaBits,
+            &alpha,
+            sizeof(alphaBits)
+        );
         zRndr::g_spanActiveConstAlphaBits = alphaBits;
         spanProc = zRndr::g_pfnPolyTlvSpanOp_Mode0;
         paletteSpanProc = zRndr::g_pfnPolyTlvSpanOpAlt_Mode0;
@@ -4934,10 +6635,9 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Renderer_DrawPolyTLV(zImage_TexDirEntryPart
         zRndr::g_pfnBuildSpanListSecondary != 0
             ? zRndr::g_pfnBuildSpanListSecondary
             : (zRndr::g_pfnBuildSpanList != 0 ? zRndr::g_pfnBuildSpanList
-                                                    : zRndr_SpanOcclusion_InsertSpanNode_Local);
+                                              : zRndr_SpanOcclusion_InsertSpanNode_Local);
     unsigned char *frameBase = (unsigned char *)(zRndr::g_frameBuffer);
-    const int texVShift =
-        selectedImage->uShiftFrom20 != 0 ? selectedImage->uShiftFrom20 : 20;
+    const int texVShift = selectedImage->uShiftFrom20 != 0 ? selectedImage->uShiftFrom20 : 20;
 
     for (int y = firstScanline; y <= lastScanline; ++y) {
         float intersections[0x40] = {0};
@@ -4950,8 +6650,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Renderer_DrawPolyTLV(zImage_TexDirEntryPart
                 continue;
             }
 
-            const float minY = MinValue(a.y, b.y);
-            const float maxY = MaxValue(a.y, b.y);
+            const float minY = MinValue(
+                a.y,
+                b.y
+            );
+            const float maxY = MaxValue(
+                a.y,
+                b.y
+            );
             if (sampleY < minY || sampleY >= maxY) {
                 continue;
             }
@@ -4967,7 +6673,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Renderer_DrawPolyTLV(zImage_TexDirEntryPart
             continue;
         }
 
-        sort(intersections, intersections + intersectionCount);
+        sort(
+            intersections,
+            intersections + intersectionCount
+        );
         unsigned char *scanlineBase = frameBase + y * zRndr::g_pitchBytes;
         const int pairCount = intersectionCount & ~1;
         for (int i_4808 = 0; i_4808 < pairCount; i_4808 += 2) {
@@ -4978,35 +6687,46 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Renderer_DrawPolyTLV(zImage_TexDirEntryPart
             }
 
             const float rowReciprocalZ =
-                (float)(y) * planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
+                (float)(y)*planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
             zRndr::g_spanAllocCursor->sampleXMin = xMin;
             zRndr::g_spanAllocCursor->sampleXMax = xMax;
             zRndr::g_spanAllocCursor->invDepth =
-                ((float)(xMin) * planes.reciprocalZ.gradient.x + rowReciprocalZ) *
+                ((float)(xMin)*planes.reciprocalZ.gradient.x + rowReciprocalZ) *
                     zRndr::g_inverseDepthScale +
                 zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->invDepthStep =
-                ((float)(xMax) * planes.reciprocalZ.gradient.x + rowReciprocalZ) *
+                ((float)(xMax)*planes.reciprocalZ.gradient.x + rowReciprocalZ) *
                     zRndr::g_inverseDepthScale +
                 zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->depthSlope = planes.reciprocalZ.gradient.x;
 
             int spanCount = 0;
-            buildProc(visibleSpans, y, &spanCount);
+            buildProc(
+                visibleSpans,
+                y,
+                &spanCount
+            );
             {
-            for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
-                zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
-                if (span == 0 || span->sampleXMin > span->sampleXMax) {
-                    continue;
-                }
+                for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
+                    zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
+                    if (span == 0 || span->sampleXMin > span->sampleXMax) {
+                        continue;
+                    }
 
-                zRndr::g_spanCurrentDst16 = (unsigned short *)(
-                    scanlineBase +
-                    (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
-                DispatchTexturedSpanChunks(spanProc, planes, 0, span, y,
-                                           span->sampleXMax - span->sampleXMin + 1, textureScale,
-                                           texVShift);
-            }
+                    zRndr::g_spanCurrentDst16 =
+                        (unsigned short *)(scanlineBase +
+                                           (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
+                    DispatchTexturedSpanChunks(
+                        spanProc,
+                        planes,
+                        0,
+                        span,
+                        y,
+                        span->sampleXMax - span->sampleXMin + 1,
+                        textureScale,
+                        texVShift
+                    );
+                }
             }
         }
     }
@@ -5014,11 +6734,16 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Renderer_DrawPolyTLV(zImage_TexDirEntryPart
 
 // Reimplements 0x4969d0: zRndr_DrawTexturedQueuedAlpha
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawTexturedQueuedAlpha(
-    zImage_TexDirEntryPartial *entry, zVec3 *projectedVerts, zVec3 *clippedTriVerts,
-    zVec3 *triVerts, zVec2 *triUVs, int vertCount, int variantIndex) {
-    if (entry == 0 || entry->image == 0 || projectedVerts == 0 ||
-        triVerts == 0 || triUVs == 0 || vertCount <= 0 ||
-        zRndr::g_spanAllocCursor == 0 || zRndr::g_frameBuffer == 0) {
+    zImage_TexDirEntryPartial *entry,
+    zVec3 *projectedVerts,
+    zVec3 *clippedTriVerts,
+    zVec3 *triVerts,
+    zVec2 *triUVs,
+    int vertCount,
+    int variantIndex
+) {
+    if (entry == 0 || entry->image == 0 || projectedVerts == 0 || triVerts == 0 || triUVs == 0 ||
+        vertCount <= 0 || zRndr::g_spanAllocCursor == 0 || zRndr::g_frameBuffer == 0) {
         return;
     }
 
@@ -5033,13 +6758,25 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawTexturedQueuedAlpha(
     }
 
     TexturedPlanes planes =
-        BuildQueuedTexturePlanes(clippedTriVerts, triVerts, triUVs, imageWidth, imageHeight);
+        BuildQueuedTexturePlanes(
+            clippedTriVerts,
+            triVerts,
+            triUVs,
+            imageWidth,
+            imageHeight
+        );
 
     float textureScale = 1048576.0f;
     if (entry->nextVariant != 0) {
         selectedImage = zRndr_TextureMip_SelectVariantImage(
-            entry, triVerts, 3, vertexUvPairs, &planes.reciprocalZ.gradient,
-            &planes.uOverZ.gradient, &planes.vOverZ.gradient);
+            entry,
+            triVerts,
+            3,
+            vertexUvPairs,
+            &planes.reciprocalZ.gradient,
+            &planes.uOverZ.gradient,
+            &planes.vOverZ.gradient
+        );
         if (selectedImage == 0) {
             return;
         }
@@ -5054,7 +6791,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawTexturedQueuedAlpha(
     float minPositiveReciprocalZ = 1000.0f;
     for (int i_4890 = 0; i_4890 < vertCount; ++i_4890) {
         const float reciprocalZ =
-            EvalPlane(planes.reciprocalZ, projectedVerts[i_4890].x, projectedVerts[i_4890].y);
+            EvalPlane(
+                planes.reciprocalZ,
+                projectedVerts[i_4890].x,
+                projectedVerts[i_4890].y
+            );
         if (reciprocalZ > 0.0f && reciprocalZ < minPositiveReciprocalZ) {
             minPositiveReciprocalZ = reciprocalZ;
         }
@@ -5067,10 +6808,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawTexturedQueuedAlpha(
         }
     }
 
-    const int firstScanline =
-        (int)(floor(projectedVerts[topVertexIndex].y + 0.5f));
-    const int lastScanline =
-        (int)(floor(projectedVerts[bottomVertexIndex].y - 0.5f));
+    const int firstScanline = (int)(floor(projectedVerts[topVertexIndex].y + 0.5f));
+    const int lastScanline = (int)(floor(projectedVerts[bottomVertexIndex].y - 0.5f));
     if (firstScanline > lastScanline) {
         return;
     }
@@ -5100,9 +6839,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawTexturedQueuedAlpha(
                                          : zRndr_SpanOcclusion_InsertSpanNode_Local;
     unsigned char *frameBase = (unsigned char *)(zRndr::g_frameBuffer);
     const int chunkPixels =
-        SelectPerspectiveChunkPixels(minPositiveReciprocalZ, planes.reciprocalZ.gradient.x);
-    const int texVShift =
-        selectedImage->uShiftFrom20 != 0 ? selectedImage->uShiftFrom20 : 20;
+        SelectPerspectiveChunkPixels(
+            minPositiveReciprocalZ,
+            planes.reciprocalZ.gradient.x
+        );
+    const int texVShift = selectedImage->uShiftFrom20 != 0 ? selectedImage->uShiftFrom20 : 20;
 
     for (int y = firstScanline; y <= lastScanline; ++y) {
         float intersections[0x40] = {0};
@@ -5115,8 +6856,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawTexturedQueuedAlpha(
                 continue;
             }
 
-            const float minY = MinValue(a.y, b.y);
-            const float maxY = MaxValue(a.y, b.y);
+            const float minY = MinValue(
+                a.y,
+                b.y
+            );
+            const float maxY = MaxValue(
+                a.y,
+                b.y
+            );
             if (sampleY < minY || sampleY >= maxY) {
                 continue;
             }
@@ -5132,60 +6879,78 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawTexturedQueuedAlpha(
             continue;
         }
 
-        sort(intersections, intersections + intersectionCount);
+        sort(
+            intersections,
+            intersections + intersectionCount
+        );
         unsigned char *scanlineBase = frameBase + y * zRndr::g_pitchBytes;
         const int pairCount = intersectionCount & ~1;
         for (int i_4973 = 0; i_4973 < pairCount; i_4973 += 2) {
-            const int xMin =
-                (int)(floor(intersections[i_4973] + 0.5f));
-            const int xMax =
-                (int)(ceil(intersections[i_4973 + 1] - 0.5f)) - 1;
+            const int xMin = (int)(floor(intersections[i_4973] + 0.5f));
+            const int xMax = (int)(ceil(intersections[i_4973 + 1] - 0.5f)) - 1;
             if (xMin > xMax) {
                 continue;
             }
 
             const float rowReciprocalZ =
-                (float)(y) * planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
+                (float)(y)*planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
             zRndr::g_spanAllocCursor->sampleXMin = xMin;
             zRndr::g_spanAllocCursor->sampleXMax = xMax;
             zRndr::g_spanAllocCursor->invDepth =
-                ((float)(xMin) * planes.reciprocalZ.gradient.x + rowReciprocalZ) *
+                ((float)(xMin)*planes.reciprocalZ.gradient.x + rowReciprocalZ) *
                     zRndr::g_inverseDepthScale +
                 zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->invDepthStep =
-                ((float)(xMax) * planes.reciprocalZ.gradient.x + rowReciprocalZ) *
+                ((float)(xMax)*planes.reciprocalZ.gradient.x + rowReciprocalZ) *
                     zRndr::g_inverseDepthScale +
                 zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->depthSlope = planes.reciprocalZ.gradient.x;
 
             int spanCount = 0;
-            buildProc(visibleSpans, y, &spanCount);
+            buildProc(
+                visibleSpans,
+                y,
+                &spanCount
+            );
             {
-            for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
-                zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
-                if (span == 0 || span->sampleXMin > span->sampleXMax) {
-                    continue;
-                }
+                for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
+                    zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
+                    if (span == 0 || span->sampleXMin > span->sampleXMax) {
+                        continue;
+                    }
 
-                zRndr::g_spanCurrentDst16 = (unsigned short *)(
-                    scanlineBase +
-                    (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
-                DispatchTexturedSpanChunks(spanProc, planes, 0, span, y, chunkPixels,
-                                           textureScale, texVShift);
-            }
+                    zRndr::g_spanCurrentDst16 =
+                        (unsigned short *)(scanlineBase +
+                                           (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
+                    DispatchTexturedSpanChunks(
+                        spanProc,
+                        planes,
+                        0,
+                        span,
+                        y,
+                        chunkPixels,
+                        textureScale,
+                        texVShift
+                    );
+                }
             }
         }
     }
 }
 
 // Reimplements 0x497ac0: zRndr_DrawTexturedFanTri
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zRndr_DrawTexturedFanTri(zImage_TexDirEntryPartial *entry, zVec3 *projectedVerts,
-                         zVec3 *clippedTriVerts, zVec3 *triVerts, zVec2 *triUVs,
-                         int vertCount, int alpha255, int variantIndex) {
-    if (entry == 0 || entry->image == 0 || projectedVerts == 0 ||
-        triVerts == 0 || triUVs == 0 || vertCount <= 0 ||
-        zRndr::g_spanAllocCursor == 0 || zRndr::g_frameBuffer == 0) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawTexturedFanTri(
+    zImage_TexDirEntryPartial *entry,
+    zVec3 *projectedVerts,
+    zVec3 *clippedTriVerts,
+    zVec3 *triVerts,
+    zVec2 *triUVs,
+    int vertCount,
+    int alpha255,
+    int variantIndex
+) {
+    if (entry == 0 || entry->image == 0 || projectedVerts == 0 || triVerts == 0 || triUVs == 0 ||
+        vertCount <= 0 || zRndr::g_spanAllocCursor == 0 || zRndr::g_frameBuffer == 0) {
         return;
     }
 
@@ -5200,13 +6965,25 @@ zRndr_DrawTexturedFanTri(zImage_TexDirEntryPartial *entry, zVec3 *projectedVerts
     }
 
     TexturedPlanes planes =
-        BuildQueuedTexturePlanes(clippedTriVerts, triVerts, triUVs, imageWidth, imageHeight);
+        BuildQueuedTexturePlanes(
+            clippedTriVerts,
+            triVerts,
+            triUVs,
+            imageWidth,
+            imageHeight
+        );
 
     float textureScale = 1048576.0f;
     if (entry->nextVariant != 0) {
         selectedImage = zRndr_TextureMip_SelectVariantImage(
-            entry, triVerts, 3, vertexUvPairs, &planes.reciprocalZ.gradient,
-            &planes.uOverZ.gradient, &planes.vOverZ.gradient);
+            entry,
+            triVerts,
+            3,
+            vertexUvPairs,
+            &planes.reciprocalZ.gradient,
+            &planes.uOverZ.gradient,
+            &planes.vOverZ.gradient
+        );
         if (selectedImage == 0) {
             return;
         }
@@ -5221,7 +6998,11 @@ zRndr_DrawTexturedFanTri(zImage_TexDirEntryPartial *entry, zVec3 *projectedVerts
     float minPositiveReciprocalZ = 1000.0f;
     for (int i_5057 = 0; i_5057 < vertCount; ++i_5057) {
         const float reciprocalZ =
-            EvalPlane(planes.reciprocalZ, projectedVerts[i_5057].x, projectedVerts[i_5057].y);
+            EvalPlane(
+                planes.reciprocalZ,
+                projectedVerts[i_5057].x,
+                projectedVerts[i_5057].y
+            );
         if (reciprocalZ > 0.0f && reciprocalZ < minPositiveReciprocalZ) {
             minPositiveReciprocalZ = reciprocalZ;
         }
@@ -5234,10 +7015,8 @@ zRndr_DrawTexturedFanTri(zImage_TexDirEntryPartial *entry, zVec3 *projectedVerts
         }
     }
 
-    const int firstScanline =
-        (int)(floor(projectedVerts[topVertexIndex].y + 0.5f));
-    const int lastScanline =
-        (int)(floor(projectedVerts[bottomVertexIndex].y - 0.5f));
+    const int firstScanline = (int)(floor(projectedVerts[topVertexIndex].y + 0.5f));
+    const int lastScanline = (int)(floor(projectedVerts[bottomVertexIndex].y - 0.5f));
     if (firstScanline > lastScanline) {
         return;
     }
@@ -5267,12 +7046,14 @@ zRndr_DrawTexturedFanTri(zImage_TexDirEntryPartial *entry, zVec3 *projectedVerts
         zRndr::g_pfnBuildSpanListSecondary != 0
             ? zRndr::g_pfnBuildSpanListSecondary
             : (zRndr::g_pfnBuildSpanList != 0 ? zRndr::g_pfnBuildSpanList
-                                                    : zRndr_SpanOcclusion_InsertSpanNode_Local);
+                                              : zRndr_SpanOcclusion_InsertSpanNode_Local);
     unsigned char *frameBase = (unsigned char *)(zRndr::g_frameBuffer);
     const int chunkPixels =
-        SelectPerspectiveChunkPixels(minPositiveReciprocalZ, planes.reciprocalZ.gradient.x);
-    const int texVShift =
-        selectedImage->uShiftFrom20 != 0 ? selectedImage->uShiftFrom20 : 20;
+        SelectPerspectiveChunkPixels(
+            minPositiveReciprocalZ,
+            planes.reciprocalZ.gradient.x
+        );
+    const int texVShift = selectedImage->uShiftFrom20 != 0 ? selectedImage->uShiftFrom20 : 20;
 
     for (int y = firstScanline; y <= lastScanline; ++y) {
         float intersections[0x40] = {0};
@@ -5285,8 +7066,14 @@ zRndr_DrawTexturedFanTri(zImage_TexDirEntryPartial *entry, zVec3 *projectedVerts
                 continue;
             }
 
-            const float minY = MinValue(a.y, b.y);
-            const float maxY = MaxValue(a.y, b.y);
+            const float minY = MinValue(
+                a.y,
+                b.y
+            );
+            const float maxY = MaxValue(
+                a.y,
+                b.y
+            );
             if (sampleY < minY || sampleY >= maxY) {
                 continue;
             }
@@ -5302,81 +7089,126 @@ zRndr_DrawTexturedFanTri(zImage_TexDirEntryPartial *entry, zVec3 *projectedVerts
             continue;
         }
 
-        sort(intersections, intersections + intersectionCount);
+        sort(
+            intersections,
+            intersections + intersectionCount
+        );
         unsigned char *scanlineBase = frameBase + y * zRndr::g_pitchBytes;
         const int pairCount = intersectionCount & ~1;
         for (int i_5143 = 0; i_5143 < pairCount; i_5143 += 2) {
-            const int xMin =
-                (int)(floor(intersections[i_5143] + 0.5f));
-            const int xMax =
-                (int)(ceil(intersections[i_5143 + 1] - 0.5f)) - 1;
+            const int xMin = (int)(floor(intersections[i_5143] + 0.5f));
+            const int xMax = (int)(ceil(intersections[i_5143 + 1] - 0.5f)) - 1;
             if (xMin > xMax) {
                 continue;
             }
 
             const float rowReciprocalZ =
-                (float)(y) * planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
+                (float)(y)*planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
             zRndr::g_spanAllocCursor->sampleXMin = xMin;
             zRndr::g_spanAllocCursor->sampleXMax = xMax;
             zRndr::g_spanAllocCursor->invDepth =
-                ((float)(xMin) * planes.reciprocalZ.gradient.x + rowReciprocalZ) *
+                ((float)(xMin)*planes.reciprocalZ.gradient.x + rowReciprocalZ) *
                     zRndr::g_inverseDepthScale +
                 zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->invDepthStep =
-                ((float)(xMax) * planes.reciprocalZ.gradient.x + rowReciprocalZ) *
+                ((float)(xMax)*planes.reciprocalZ.gradient.x + rowReciprocalZ) *
                     zRndr::g_inverseDepthScale +
                 zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->depthSlope = planes.reciprocalZ.gradient.x;
 
             int spanCount = 0;
-            buildProc(visibleSpans, y, &spanCount);
+            buildProc(
+                visibleSpans,
+                y,
+                &spanCount
+            );
             {
-            for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
-                zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
-                if (span == 0 || span->sampleXMin > span->sampleXMax) {
-                    continue;
-                }
+                for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
+                    zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
+                    if (span == 0 || span->sampleXMin > span->sampleXMax) {
+                        continue;
+                    }
 
-                zRndr::g_spanCurrentDst16 = (unsigned short *)(
-                    scanlineBase +
-                    (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
-                DispatchTexturedSpanChunks(spanProc, planes, 0, span, y, chunkPixels,
-                                           textureScale, texVShift);
-            }
+                    zRndr::g_spanCurrentDst16 =
+                        (unsigned short *)(scanlineBase +
+                                           (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
+                    DispatchTexturedSpanChunks(
+                        spanProc,
+                        planes,
+                        0,
+                        span,
+                        y,
+                        chunkPixels,
+                        textureScale,
+                        texVShift
+                    );
+                }
             }
         }
     }
 }
 
 // Reimplements 0x498bd0: zRndr_DrawImmediateLine
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawImmediateLine(int x0, int y0,
-                                                             int x1, int y1,
-                                                             int color16) {
-    typedef void (RECOIL_FASTCALL *ImmediateRaster4Proc)(void *frameBuffer, int x0, int y0,
-                                int x1, int y1, int color16);
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawImmediateLine(
+    int x0,
+    int y0,
+    int x1,
+    int y1,
+    int color16
+) {
+    typedef void(RECOIL_FASTCALL * ImmediateRaster4Proc)(
+        void *frameBuffer,
+        int x0,
+        int y0,
+        int x1,
+        int y1,
+        int color16
+    );
 
-    ((ImmediateRaster4Proc)(zRndr::g_pfnImmediateRaster4))(zRndr::g_frameBuffer, x0,
-                                                                         y0, x1, y1, color16);
+    ((ImmediateRaster4Proc)(zRndr::g_pfnImmediateRaster4))(
+        zRndr::g_frameBuffer,
+        x0,
+        y0,
+        x1,
+        y1,
+        color16
+    );
 }
 
 // Reimplements 0x498c00: zRndr_DrawClippedImmediateLineStrip
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zRndr_DrawClippedImmediateLineStrip(const zRndr_LinePoint2I *points, int segmentCount,
-                                    const void *clipRect, int color16) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_DrawClippedImmediateLineStrip(
+    const zRndr_LinePoint2I *points,
+    int segmentCount,
+    const void *clipRect,
+    int color16
+) {
     if (segmentCount <= 0) {
         return;
     }
 
-    typedef void (RECOIL_FASTCALL *ImmediateRaster5Proc)(void *frameBuffer, const void *clipRect, int x0, int y0, int x1,
-        int y1, int color16);
+    typedef void(RECOIL_FASTCALL * ImmediateRaster5Proc)(
+        void *frameBuffer,
+        const void *clipRect,
+        int x0,
+        int y0,
+        int x1,
+        int y1,
+        int color16
+    );
 
-    ImmediateRaster5Proc const drawClipped =
-        (ImmediateRaster5Proc)(zRndr::g_pfnImmediateRaster5);
+    ImmediateRaster5Proc const drawClipped = (ImmediateRaster5Proc)(zRndr::g_pfnImmediateRaster5);
 
     const zRndr_LinePoint2I *point = points + 1;
     do {
-        drawClipped(zRndr::g_frameBuffer, clipRect, point[-1].x, point[-1].y, point[0].x,
-                    point[0].y, color16);
+        drawClipped(
+            zRndr::g_frameBuffer,
+            clipRect,
+            point[-1].x,
+            point[-1].y,
+            point[0].x,
+            point[0].y,
+            color16
+        );
         ++point;
         --segmentCount;
     } while (segmentCount != 0);
@@ -5384,7 +7216,10 @@ zRndr_DrawClippedImmediateLineStrip(const zRndr_LinePoint2I *points, int segment
 
 // Reimplements 0x49a830: zRndr_LensFlare_QueueProjectedSample
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_LensFlare_QueueProjectedSample(
-    zProjectedPoint *projectedPoint, int packedColor16, int lensFlareSource) {
+    zProjectedPoint *projectedPoint,
+    int packedColor16,
+    int lensFlareSource
+) {
     if (zRndr::g_lensFlareSampleQueueCount >= 0x28a) {
         return;
     }
@@ -5409,8 +7244,9 @@ RECOIL_NOINLINE int RECOIL_CDECL zRndr_LensFlare_GetQueuedSampleCount() {
 
 // Reimplements 0x49a920: zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList
 // (D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(int startIndex) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(
+    int startIndex
+) {
     if (startIndex >= zRndr::g_lensFlareSampleQueueCount) {
         return;
     }
@@ -5424,15 +7260,17 @@ zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(int startIndex) {
                 break;
             }
 
-            memcpy(sample, &zRndr::g_lensFlareSampleQueue[newCount], sizeof(*sample));
+            memcpy(
+                sample,
+                &zRndr::g_lensFlareSampleQueue[newCount],
+                sizeof(*sample)
+            );
             continue;
         }
 
-        zRndr_LensFlareSource *source =
-            (zRndr_LensFlareSource *)(sample->lensFlareSource);
+        zRndr_LensFlareSource *source = (zRndr_LensFlareSource *)(sample->lensFlareSource);
         if (source != 0 && source->lensFlareEnabled != 0 &&
-            sample < &zRndr::g_lensFlareSampleQueue[0x40] &&
-            sample->reciprocalZ != 0.0f) {
+            sample < &zRndr::g_lensFlareSampleQueue[0x40] && sample->reciprocalZ != 0.0f) {
             zRndr::g_lensFlareVisibleSampleDefs[zRndr::g_lensFlareVisibleSampleCount] =
                 (zRndr_LensFlareVisibleSampleDef *)(sample);
             ++zRndr::g_lensFlareVisibleSampleCount;
@@ -5445,8 +7283,9 @@ zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(int startIndex) {
 
 // Reimplements 0x49a9c0: zRndr_LensFlare::BuildVisibleSampleListFromQueue
 // (D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-zRndr_LensFlare_BuildVisibleSampleListFromQueue(int startIndex) {
+RECOIL_NOINLINE int RECOIL_FASTCALL zRndr_LensFlare_BuildVisibleSampleListFromQueue(
+    int startIndex
+) {
     int visibleSampleCount = 0;
     zRndr::g_lensFlareVisibleSampleCount = 0;
     if (startIndex >= zRndr::g_lensFlareSampleQueueCount) {
@@ -5455,11 +7294,9 @@ zRndr_LensFlare_BuildVisibleSampleListFromQueue(int startIndex) {
 
     zRndr::LensFlareSamplePartial *sample = &zRndr::g_lensFlareSampleQueue[startIndex];
     while (startIndex < zRndr::g_lensFlareSampleQueueCount) {
-        zRndr_LensFlareSource *source =
-            (zRndr_LensFlareSource *)(sample->lensFlareSource);
+        zRndr_LensFlareSource *source = (zRndr_LensFlareSource *)(sample->lensFlareSource);
         if (source != 0 && source->lensFlareEnabled != 0 &&
-            sample < &zRndr::g_lensFlareSampleQueue[0x40] &&
-            sample->reciprocalZ != 0.0f) {
+            sample < &zRndr::g_lensFlareSampleQueue[0x40] && sample->reciprocalZ != 0.0f) {
             zRndr::g_lensFlareVisibleSampleDefs[visibleSampleCount] =
                 (zRndr_LensFlareVisibleSampleDef *)(sample);
             visibleSampleCount = zRndr::g_lensFlareVisibleSampleCount + 1;
@@ -5475,7 +7312,9 @@ zRndr_LensFlare_BuildVisibleSampleListFromQueue(int startIndex) {
 
 // Reimplements 0x49aa40: zRndr_LensFlare_SetVisibleSampleStage
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_LensFlare_SetVisibleSampleStage(
-    int stageIndex, zImage_TexDirEntryPartial *stageTexDirEntry) {
+    int stageIndex,
+    zImage_TexDirEntryPartial *stageTexDirEntry
+) {
     if (stageIndex >= 0 && stageIndex < 4) {
         zRndr::g_lensFlareVisibleSampleStages[stageIndex] = stageTexDirEntry;
     }
@@ -5492,8 +7331,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_LensFlare_SetVisibleSampleStage(
 
 // Reimplements 0x49aa90: zRndr_LensFlare_DrawSampleStageClipped
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_LensFlare_DrawSampleStageClipped(
-    const zVec2 *sampleCenter, zImage_TexDirEntryPartial *stageTexDirEntry, float sampleRadius,
-    const zRndr_LineClipRect2I *clipRect) {
+    const zVec2 *sampleCenter,
+    zImage_TexDirEntryPartial *stageTexDirEntry,
+    float sampleRadius,
+    const zRndr_LineClipRect2I *clipRect
+) {
     if (sampleRadius < 1.0f) {
         return;
     }
@@ -5566,17 +7408,28 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_LensFlare_DrawSampleStageClipped(
     };
 
     if (g_zVideo_ActiveRendererPath != 0) {
-        typedef void (RECOIL_FASTCALL *SubmitPolyRenderClassProc)(zVideo_XyzVertex * vertices, zVideo_TexCoord * texCoords,
-                                    int vertexCount, zVideo_RenderClass *renderClass,
-                                    unsigned int renderParam, float alpha, int queueMode);
-        SubmitPolyRenderClassProc submitPoly = (SubmitPolyRenderClassProc)(
-            (unsigned int)(g_zVideo_pfnSubmitPolyRenderClass));
+        typedef void(RECOIL_FASTCALL * SubmitPolyRenderClassProc)(
+            zVideo_XyzVertex * vertices,
+            zVideo_TexCoord * texCoords,
+            int vertexCount,
+            zVideo_RenderClass *renderClass,
+            unsigned int renderParam,
+            float alpha,
+            int queueMode
+        );
+        SubmitPolyRenderClassProc submitPoly =
+            (SubmitPolyRenderClassProc)((unsigned int)(g_zVideo_pfnSubmitPolyRenderClass));
         zVideo_RenderClass *renderClass =
-            stageTexDirEntry != 0
-                ? (zVideo_RenderClass *)(stageTexDirEntry->texture)
-                : 0;
-        submitPoly((zVideo_XyzVertex *)(projectedVerts),
-                   (zVideo_TexCoord *)(triUVs), 4, renderClass, 0x10, 1.0f, 0);
+            stageTexDirEntry != 0 ? (zVideo_RenderClass *)(stageTexDirEntry->texture) : 0;
+        submitPoly(
+            (zVideo_XyzVertex *)(projectedVerts),
+            (zVideo_TexCoord *)(triUVs),
+            4,
+            renderClass,
+            0x10,
+            1.0f,
+            0
+        );
         return;
     }
 
@@ -5589,19 +7442,31 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_LensFlare_DrawSampleStageClipped(
     };
     {
         int vertexIndex1;
-        for (vertexIndex1 = 0; vertexIndex1 < (int)(sizeof(projectedVerts) / sizeof((projectedVerts)[0])); ++vertexIndex1) {
-            zVec3 & vertex = (projectedVerts)[vertexIndex1];
-        vertex.z = 10.0f;
-    }
+        for (vertexIndex1 = 0;
+            vertexIndex1 < (int)(sizeof(projectedVerts) / sizeof((projectedVerts)[0]));
+            ++vertexIndex1) {
+            zVec3 &vertex = (projectedVerts)[vertexIndex1];
+            vertex.z = 10.0f;
+        }
     }
 
-    zRndr_SubmitTexturedPolyUniformAlphaOrShade(projectedVerts, clippedTriVerts, projectedVerts,
-                                                triUVs, 4, stageTexDirEntry, 1.0f, 0);
+    zRndr_SubmitTexturedPolyUniformAlphaOrShade(
+        projectedVerts,
+        clippedTriVerts,
+        projectedVerts,
+        triUVs,
+        4,
+        stageTexDirEntry,
+        1.0f,
+        0
+    );
 }
 
 // Reimplements 0x49b020: zRndr_LensFlare_DrawVisibleSampleStages
 RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_LensFlare_DrawVisibleSampleStages(
-    zRndr_LensFlareVisibleSampleDef *visibleSampleDef, float visibilityAlpha) {
+    zRndr_LensFlareVisibleSampleDef *visibleSampleDef,
+    float visibilityAlpha
+) {
     const float activeWidth = (float)(zRndr::g_activeRegionWidth);
     const float activeHeight = (float)(zRndr::g_activeRegionHeight);
     const float baseRadius = visibilityAlpha * activeWidth * 0.03125f;
@@ -5614,27 +7479,45 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_LensFlare_DrawVisibleSampleStages(
         (const zRndr_LineClipRect2I *)(&zRndr::g_activeRegionRect);
 
     zVec2 sampleCenter = {visibleSampleDef->sampleCenterX, visibleSampleDef->sampleCenterY};
-    zRndr_LensFlare_DrawSampleStageClipped(&sampleCenter, zRndr::g_lensFlareVisibleSampleStages[0],
-                                           largeRadius, clipRect);
+    zRndr_LensFlare_DrawSampleStageClipped(
+        &sampleCenter,
+        zRndr::g_lensFlareVisibleSampleStages[0],
+        largeRadius,
+        clipRect
+    );
 
     sampleCenter.x = halfClipWidth + sampleOffsetX * 0.5f;
     sampleCenter.y = halfClipHeight + sampleOffsetY * 0.5f;
-    zRndr_LensFlare_DrawSampleStageClipped(&sampleCenter, zRndr::g_lensFlareVisibleSampleStages[1],
-                                           largeRadius, clipRect);
+    zRndr_LensFlare_DrawSampleStageClipped(
+        &sampleCenter,
+        zRndr::g_lensFlareVisibleSampleStages[1],
+        largeRadius,
+        clipRect
+    );
 
     sampleCenter.x = halfClipWidth + sampleOffsetX * 0.100000001f;
     sampleCenter.y = halfClipHeight + sampleOffsetY * 0.100000001f;
-    zRndr_LensFlare_DrawSampleStageClipped(&sampleCenter, zRndr::g_lensFlareVisibleSampleStages[2],
-                                           baseRadius, clipRect);
+    zRndr_LensFlare_DrawSampleStageClipped(
+        &sampleCenter,
+        zRndr::g_lensFlareVisibleSampleStages[2],
+        baseRadius,
+        clipRect
+    );
 
     sampleCenter.x = halfClipWidth - sampleOffsetX;
     sampleCenter.y = halfClipHeight - sampleOffsetY;
-    zRndr_LensFlare_DrawSampleStageClipped(&sampleCenter, zRndr::g_lensFlareVisibleSampleStages[3],
-                                           baseRadius * 3.0f, clipRect);
+    zRndr_LensFlare_DrawSampleStageClipped(
+        &sampleCenter,
+        zRndr::g_lensFlareVisibleSampleStages[3],
+        baseRadius * 3.0f,
+        clipRect
+    );
 }
 
 // Reimplements 0x49afb0: zRndr_LensFlare_DrawVisibleSample
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_LensFlare_DrawVisibleSample(int sampleIndex) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_LensFlare_DrawVisibleSample(
+    int sampleIndex
+) {
     zRndr_LensFlareVisibleSampleDef *visibleSampleDef =
         zRndr::g_lensFlareVisibleSampleDefs[sampleIndex];
     zRndr_LensFlareSource *lensFlareSource = visibleSampleDef->lensFlareSource;
@@ -5649,13 +7532,18 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_LensFlare_DrawVisibleSample(int sampl
     }
 
     if (visibility < lensFlareSource->fadeNear) {
-        zRndr_LensFlare_DrawVisibleSampleStages(visibleSampleDef, 1.0f);
+        zRndr_LensFlare_DrawVisibleSampleStages(
+            visibleSampleDef,
+            1.0f
+        );
         return;
     }
 
     zRndr_LensFlare_DrawVisibleSampleStages(
-        visibleSampleDef, (lensFlareSource->fadeFar - visibility) /
-                              (lensFlareSource->fadeFar - lensFlareSource->fadeNear));
+        visibleSampleDef,
+        (lensFlareSource->fadeFar - visibility) /
+            (lensFlareSource->fadeFar - lensFlareSource->fadeNear)
+    );
 }
 
 // Reimplements 0x49b1a0: zRndr_LensFlare_DrawVisibleSamples
@@ -5664,8 +7552,7 @@ RECOIL_NOINLINE void RECOIL_CDECL zRndr_LensFlare_DrawVisibleSamples() {
         return;
     }
 
-    for (int sampleIndex = 0; sampleIndex < zRndr::g_lensFlareVisibleSampleCount;
-         ++sampleIndex) {
+    for (int sampleIndex = 0; sampleIndex < zRndr::g_lensFlareVisibleSampleCount; ++sampleIndex) {
         zRndr_LensFlare_DrawVisibleSample(sampleIndex);
     }
 
@@ -5673,15 +7560,23 @@ RECOIL_NOINLINE void RECOIL_CDECL zRndr_LensFlare_DrawVisibleSamples() {
 }
 
 // Reimplements 0x49aa30: zRndr_SpanOcclusion_FilterSampleList
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zRndr_SpanOcclusion_FilterSampleList(int visibleSampleIndex, zVec3 *outPoint) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SpanOcclusion_FilterSampleList(
+    int visibleSampleIndex,
+    zVec3 *outPoint
+) {
     zRndr_LensFlareVisibleSampleDef *sample =
         zRndr::g_lensFlareVisibleSampleDefs[visibleSampleIndex];
-    zMath_UnprojectPointBatchZBuf((const zProjectedPoint *)(sample), outPoint, 1);
+    zMath_UnprojectPointBatchZBuf(
+        (const zProjectedPoint *)(sample),
+        outPoint,
+        1
+    );
 }
 
 // Reimplements 0x49b5a0: zRndr_FogTargetColorStaged_SetRgb01Clamped
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FogTargetColorStaged_SetRgb01Clamped(zColorRgb *color) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FogTargetColorStaged_SetRgb01Clamped(
+    zColorRgb *color
+) {
     if (color->red > 1.0f) {
         color->red = 1.0f;
     } else if (!(color->red >= 0.0f)) {
@@ -5722,12 +7617,15 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_FogTargetColorStaged_SetRgb01Clamped(
         staged,
         (red << g_zVideo_PixelPack_RShift) & (int)(g_zVideo_PixelPack_RMask),
         (green << g_zVideo_PixelPack_GShift) & (int)(g_zVideo_PixelPack_GMask),
-        blue >> g_zVideo_PixelPack_BShiftTo8);
+        blue >> g_zVideo_PixelPack_BShiftTo8
+    );
 }
 
 // Reimplements 0x499930: zRndr_SetPaletteRemapKey
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SetPaletteRemapKey(zVidPaletteRemapRecipe *recipe,
-                                                              float shadeLevel) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SetPaletteRemapKey(
+    zVidPaletteRemapRecipe *recipe,
+    float shadeLevel
+) {
     if (recipe == 0) {
         g_zRndr_ActivePaletteRemapKey = -1;
         return;
@@ -5745,8 +7643,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SetPaletteRemapKey(zVidPaletteRemapRe
 }
 
 // Reimplements 0x499990: zRndr_SetPaletteRemapKeyFromRgb01
-RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SetPaletteRemapKeyFromRgb01(zColorRgb *rgb01,
-                                                                       float shadeLevel) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SetPaletteRemapKeyFromRgb01(
+    zColorRgb *rgb01,
+    float shadeLevel
+) {
     if (rgb01 == 0) {
         g_zRndr_ActivePaletteRemapKey = -1;
         return;
@@ -5757,12 +7657,16 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SetPaletteRemapKeyFromRgb01(zColorRgb
     recipe.color1G = rgb01->green;
     recipe.color1B = rgb01->blue;
     recipe.color1Strength = 1.0f;
-    zRndr_SetPaletteRemapKey(&recipe, shadeLevel);
+    zRndr_SetPaletteRemapKey(
+        &recipe,
+        shadeLevel
+    );
 }
 
 // Reimplements 0x499a00: zRndr_SetPaletteShadeRecipeIndex
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zRndr_SetPaletteShadeRecipeIndex(zVidPaletteRemapRecipe *recipe) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zRndr_SetPaletteShadeRecipeIndex(
+    zVidPaletteRemapRecipe *recipe
+) {
     g_zRndr_ActivePaletteShadeRecipeIndex =
         recipe != 0 ? zVid_PaletteRemap_BuildPaletteVariant(recipe) : -1;
 }

@@ -30,8 +30,10 @@ enum zSndCdAudioOption {
 
 extern "C" int g_RecoilState_MainMenuSkipExitDelay;
 
-static RECOIL_FORCEINLINE void ApplyDeferredVideoMode(int targetMode,
-                                                      zVideoHalfResAdjustMode halfResMode) {
+static RECOIL_FORCEINLINE void ApplyDeferredVideoMode(
+    int targetMode,
+    zVideoHalfResAdjustMode halfResMode
+) {
     if (zVid::GetVideoModeIndexFromOptions() == targetMode) {
         return;
     }
@@ -69,16 +71,15 @@ void RECOIL_THISCALL RecoilStateMainMenuTransition::OnDeactivate() {
     if (m_mainMenuDialog != 0) {
         zVideo::RunPostprocessOnPrimaryBuffer();
 
-        HudUiMainMenuDialogVirtual *dialog =
-            (HudUiMainMenuDialogVirtual *)(unsigned int)m_mainMenuDialog;
+        HudUiMainMenuDialog *dialog = (HudUiMainMenuDialog *)(unsigned int)m_mainMenuDialog;
         dialog->SetEnabled(0);
 
         ((HudUiDialogController *)(unsigned int)m_mainMenuDialog)->BlitOwnedSurfaceToPrimary();
         zVideo::Dispatch_UnlockPrimarySurfaceState();
 
-        dialog = (HudUiMainMenuDialogVirtual *)(unsigned int)m_mainMenuDialog;
+        dialog = (HudUiMainMenuDialog *)(unsigned int)m_mainMenuDialog;
         if (dialog != 0) {
-            dialog->ScalarDeletingDestructor(1);
+            delete dialog;
         }
 
         m_mainMenuDialog = 0;
@@ -90,22 +91,40 @@ void RECOIL_THISCALL RecoilStateMainMenuTransition::OnDeactivate() {
 
     switch (m_deferredVideoModeIndex) {
     case 5:
-        ApplyDeferredVideoMode(5, ZVIDEO_HALFRES_ADJUST_ENABLED);
+        ApplyDeferredVideoMode(
+            5,
+            ZVIDEO_HALFRES_ADJUST_ENABLED
+        );
         break;
     case 3:
-        ApplyDeferredVideoMode(3, ZVIDEO_HALFRES_ADJUST_DISABLED);
+        ApplyDeferredVideoMode(
+            3,
+            ZVIDEO_HALFRES_ADJUST_DISABLED
+        );
         break;
     case 4:
-        ApplyDeferredVideoMode(4, ZVIDEO_HALFRES_ADJUST_ENABLED);
+        ApplyDeferredVideoMode(
+            4,
+            ZVIDEO_HALFRES_ADJUST_ENABLED
+        );
         break;
     case 2:
-        ApplyDeferredVideoMode(2, ZVIDEO_HALFRES_ADJUST_DISABLED);
+        ApplyDeferredVideoMode(
+            2,
+            ZVIDEO_HALFRES_ADJUST_DISABLED
+        );
         break;
     case 6:
-        ApplyDeferredVideoMode(6, ZVIDEO_HALFRES_ADJUST_ENABLED);
+        ApplyDeferredVideoMode(
+            6,
+            ZVIDEO_HALFRES_ADJUST_ENABLED
+        );
         break;
     case 7:
-        ApplyDeferredVideoMode(7, ZVIDEO_HALFRES_ADJUST_ENABLED);
+        ApplyDeferredVideoMode(
+            7,
+            ZVIDEO_HALFRES_ADJUST_ENABLED
+        );
         break;
     default:
         zVideo::SetHalfResAdjustMode(m_savedHalfResAdjustMode);

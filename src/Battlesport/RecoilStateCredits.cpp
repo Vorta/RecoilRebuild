@@ -18,8 +18,9 @@ namespace {
 struct HudUiCreditsPanelVirtual {
     virtual void RECOIL_THISCALL Update(float deltaSeconds) = 0;
     virtual void RECOIL_THISCALL SetEnabled(int enabled) = 0;
-    virtual HudUiCreditsPanelVirtual *RECOIL_THISCALL
-    ScalarDeletingDestructor(unsigned int flags) = 0;
+    virtual HudUiCreditsPanelVirtual *RECOIL_THISCALL ScalarDeletingDestructor(
+        unsigned int flags
+    ) = 0;
 };
 
 struct RecoilStateCredits_Vtbl {
@@ -32,8 +33,7 @@ RecoilStateCredits_Vtbl g_RecoilStateCredits_Vtbl = {0};
 struct RecoilStateCreditsBaseVtableGuard {
     RecoilStateCredits *self;
 
-    ~RecoilStateCreditsBaseVtableGuard()
-    {
+    ~RecoilStateCreditsBaseVtableGuard() {
         self->vftable = kRecoilStateBase_VtblAddress;
     }
 };
@@ -46,8 +46,7 @@ RecoilStateCredits g_RecoilStateCredits = {
 
 // Reimplements 0x409990: RecoilStateCredits::Constructor
 // (D:\Proj\Battlesport\RecoilStateCredits.cpp)
-RecoilStateCredits *RECOIL_THISCALL RecoilStateCredits::Constructor()
-{
+RecoilStateCredits *RECOIL_THISCALL RecoilStateCredits::Constructor() {
     vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateCredits_Vtbl;
     dialog = 0;
     return this;
@@ -55,16 +54,15 @@ RecoilStateCredits *RECOIL_THISCALL RecoilStateCredits::Constructor()
 
 // Reimplements 0x4099a0: RecoilStateCredits::OnWndActivate
 // (D:\Proj\Battlesport\RecoilStateCredits.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL
-RecoilStateCredits::OnWndActivate(int activateCode)
-{
+RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateCredits::OnWndActivate(
+    int activateCode
+) {
     if (activateCode == 0) {
         return;
     }
 
     RecoilStateCredits *const state = this;
-    HudUiCreditsPanel *const creditsPanel =
-        (HudUiCreditsPanel *)(unsigned int)state->dialog;
+    HudUiCreditsPanel *const creditsPanel = (HudUiCreditsPanel *)(unsigned int)state->dialog;
     if (creditsPanel != 0) {
         ((HudUiDialogController *)creditsPanel)->BlitOwnedSurfaceToPrimary();
         ((HudUiContainer *)(unsigned int)state->dialog)->InvalidateChildren();
@@ -73,10 +71,9 @@ RecoilStateCredits::OnWndActivate(int activateCode)
 
 // Reimplements 0x409a60: RecoilStateCredits::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\RecoilStateCredits.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateCredits::OnTryBecomeCurrent()
-{
+RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateCredits::OnTryBecomeCurrent() {
     HudUiCreditsPanel *creditsPanel =
-        (HudUiCreditsPanel *)::operator new(sizeof(HudUiCreditsPanel));
+        (HudUiCreditsPanel *) ::operator new(sizeof(HudUiCreditsPanel));
     if (creditsPanel != 0) {
         creditsPanel = creditsPanel->Constructor();
     }
@@ -88,10 +85,8 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateCredits::OnTryBecomeCurrent()
 
 // Reimplements 0x409ad0: RecoilStateCredits::OnDeactivate
 // (D:\Proj\Battlesport\RecoilStateCredits.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateCredits::OnDeactivate()
-{
-    HudUiCreditsPanelVirtual *dialogView =
-        (HudUiCreditsPanelVirtual *)dialog;
+RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateCredits::OnDeactivate() {
+    HudUiCreditsPanelVirtual *dialogView = (HudUiCreditsPanelVirtual *)dialog;
     if (dialogView == 0) {
         return;
     }
@@ -109,8 +104,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateCredits::OnDeactivate()
 
 // Reimplements 0x4099f0: RecoilStateCredits::Destructor
 // (D:\Proj\Battlesport\RecoilStateCredits.cpp)
-RECOIL_NOINLINE RecoilStateCredits::~RecoilStateCredits()
-{
+RECOIL_NOINLINE RecoilStateCredits::~RecoilStateCredits() {
     vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateCredits_Vtbl;
     RecoilStateCreditsBaseVtableGuard baseVtableOnExit = {this};
 
@@ -129,7 +123,9 @@ RECOIL_NOINLINE RecoilStateCredits::~RecoilStateCredits()
 
 // Reimplements 0x409b00: RecoilStateCredits::QueuePush
 // (D:\Proj\Battlesport\RecoilStateCredits.cpp)
-void RECOIL_CDECL RecoilStateCredits::QueuePush()
-{
-    g_RecoilApp.QueuePushState((RecoilApp_IState *)&g_RecoilStateCredits, 0);
+void RECOIL_CDECL RecoilStateCredits::QueuePush() {
+    g_RecoilApp.QueuePushState(
+        (RecoilApp_IState *)&g_RecoilStateCredits,
+        0
+    );
 }

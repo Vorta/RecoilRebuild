@@ -21,11 +21,12 @@ int RegistryCapacity() {
         return 0;
     }
 
-    return (int)(g_zSnd_SampleSetRegistry.capacityEnd -
-                                     g_zSnd_SampleSetRegistry.begin);
+    return (int)(g_zSnd_SampleSetRegistry.capacityEnd - g_zSnd_SampleSetRegistry.begin);
 }
 
-void RegistryAppend(zSndSampleSet *set) {
+void RegistryAppend(
+    zSndSampleSet *set
+) {
     const int size = RegistrySize();
     const int capacity = RegistryCapacity();
     if (capacity - size < 1) {
@@ -35,8 +36,8 @@ void RegistryAppend(zSndSampleSet *set) {
         }
 
         const int newCapacity = size + growBy;
-        zSndSampleSet **newBegin = (zSndSampleSet **)(
-            ::operator new((size_t)(newCapacity) * sizeof(zSndSampleSet *)));
+        zSndSampleSet **newBegin =
+            (zSndSampleSet **)(::operator new((size_t)(newCapacity) * sizeof(zSndSampleSet *)));
 
         for (int i = 0; i < size; ++i) {
             newBegin[i] = g_zSnd_SampleSetRegistry.begin[i];
@@ -52,20 +53,34 @@ void RegistryAppend(zSndSampleSet *set) {
     ++g_zSnd_SampleSetRegistry.end;
 }
 
-void UpdateSampleLoadedFlag(zSndSample *sample, int initResult) {
+void UpdateSampleLoadedFlag(
+    zSndSample *sample,
+    int initResult
+) {
     sample->replayFields.flags = (sample->replayFields.flags & ~0x08) | ((initResult & 1) << 3);
 }
 
-void ClearSampleLoadedFlag(zSndSample *sample) {
+void ClearSampleLoadedFlag(
+    zSndSample *sample
+) {
     sample->replayFields.flags &= ~0x08;
 }
 
-void LoadSampleFromWavePath(zSndSample *sample, const char *path) {
+void LoadSampleFromWavePath(
+    zSndSample *sample,
+    const char *path
+) {
     zSndWaveData *waveData = (zSndWaveData *)(::operator new(sizeof(zSndWaveData)));
-    waveData = waveData != 0 ? waveData->ConstructorFromPath(path, 1) : 0;
+    waveData = waveData != 0 ? waveData->ConstructorFromPath(
+        path,
+        1
+    ) : 0;
 
     if (waveData != 0 && waveData->parsedOk != 0) {
-        UpdateSampleLoadedFlag(sample, sample->InitFromWaveData(waveData));
+        UpdateSampleLoadedFlag(
+            sample,
+            sample->InitFromWaveData(waveData)
+        );
     } else {
         ClearSampleLoadedFlag(sample);
     }
@@ -78,7 +93,9 @@ void LoadSampleFromWavePath(zSndSample *sample, const char *path) {
 } // namespace
 
 // Reimplements 0x4a0810: zSnd_SetUseArchiveBanks
-extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_SetUseArchiveBanks(int enabled) {
+extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_SetUseArchiveBanks(
+    int enabled
+) {
     g_zSnd_SampleSetRegistry.useArchiveBanksFlag = enabled;
     g_zSnd_SampleSetRegistry.begin = 0;
     g_zSnd_SampleSetRegistry.end = 0;
@@ -99,8 +116,9 @@ extern "C" RECOIL_NOINLINE void RECOIL_CDECL zSndSampleSetRegistry_RegisterAtExi
 }
 
 // Reimplements 0x4a0800: zSnd_SetUseArchiveBanksAndRegisterAtExit
-extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL
-zSnd_SetUseArchiveBanksAndRegisterAtExit(int enabled) {
+extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_SetUseArchiveBanksAndRegisterAtExit(
+    int enabled
+) {
     zSnd_SetUseArchiveBanks(enabled);
     zSndSampleSetRegistry_RegisterAtExit();
 }
@@ -111,8 +129,9 @@ extern "C" RECOIL_NOINLINE int RECOIL_CDECL zSndSampleSetRegistry_GetCount() {
 }
 
 // Reimplements 0x4a08d0: zSndSampleSetRegistry_GetByIndex
-extern "C" RECOIL_NOINLINE zSndSampleSet *RECOIL_FASTCALL
-zSndSampleSetRegistry_GetByIndex(int index) {
+extern "C" RECOIL_NOINLINE zSndSampleSet *RECOIL_FASTCALL zSndSampleSetRegistry_GetByIndex(
+    int index
+) {
     if (index < 0) {
         return 0;
     }
@@ -126,11 +145,15 @@ zSndSampleSetRegistry_GetByIndex(int index) {
 }
 
 // Reimplements 0x4a0920: zSndSampleSetRegistry_FindByName
-extern "C" RECOIL_NOINLINE zSndSampleSet *RECOIL_FASTCALL
-zSndSampleSetRegistry_FindByName(const char *setName) {
+extern "C" RECOIL_NOINLINE zSndSampleSet *RECOIL_FASTCALL zSndSampleSetRegistry_FindByName(
+    const char *setName
+) {
     for (zSndSampleSet **it = g_zSnd_SampleSetRegistry.begin; it != g_zSnd_SampleSetRegistry.end;
-         ++it) {
-        if (strcmp((*it)->setName, setName) == 0) {
+        ++it) {
+        if (strcmp(
+            (*it)->setName,
+            setName
+        ) == 0) {
             return *it;
         }
     }
@@ -139,22 +162,28 @@ zSndSampleSetRegistry_FindByName(const char *setName) {
 }
 
 // Reimplements 0x4a0870: zSndSampleSet_DestroyByName
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zSndSampleSet_DestroyByName(const char *setName) {
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndSampleSet_DestroyByName(
+    const char *setName
+) {
     return zSndSampleSetRegistry_FindByName(setName)->Destroy();
 }
 
 // Reimplements 0x4a0860: zSndSampleSet_InitByName
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zSndSampleSet_InitByName(const char *setName) {
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndSampleSet_InitByName(
+    const char *setName
+) {
     return zSndSampleSetRegistry_FindByName(setName)->Init();
 }
 
 // Reimplements 0x4a09e0: zSndSampleSet::RegistryAddEntry
-RECOIL_NOINLINE zSndSampleSet *RECOIL_THISCALL zSndSampleSet::RegistryAddEntry(const char *name,
-                                                                               int count) {
-    samples =
-        (zSndSample *)(calloc((size_t)(count), sizeof(zSndSample)));
+RECOIL_NOINLINE zSndSampleSet *RECOIL_THISCALL zSndSampleSet::RegistryAddEntry(
+    const char *name,
+    int count
+) {
+    samples = (zSndSample *)(calloc(
+        (size_t)(count),
+        sizeof(zSndSample)
+    ));
     sampleCount = count;
     resourcesLoaded = 0;
 
@@ -167,7 +196,9 @@ RECOIL_NOINLINE zSndSampleSet *RECOIL_THISCALL zSndSampleSet::RegistryAddEntry(c
 }
 
 // Reimplements 0x4a0e90: zSndSampleSet::GetSampleAt
-RECOIL_NOINLINE zSndSample *RECOIL_THISCALL zSndSampleSet::GetSampleAt(int index) {
+RECOIL_NOINLINE zSndSample *RECOIL_THISCALL zSndSampleSet::GetSampleAt(
+    int index
+) {
     if (this != 0 && index < sampleCount) {
         return &samples[index];
     }
@@ -176,55 +207,60 @@ RECOIL_NOINLINE zSndSample *RECOIL_THISCALL zSndSampleSet::GetSampleAt(int index
 }
 
 // Reimplements 0x4a0ec0: zSndSampleSet::FindSampleByName
-RECOIL_NOINLINE zSndSample *RECOIL_THISCALL
-zSndSampleSet::FindSampleByName(const char *sampleName) {
+RECOIL_NOINLINE zSndSample *RECOIL_THISCALL zSndSampleSet::FindSampleByName(
+    const char *sampleName
+) {
     if (this == 0 || (g_zSnd_ActiveBackend != 0 && g_zSnd_ActiveBackend != 1)) {
         return 0;
     }
 
     {
-    for (int index = 0; index < sampleCount; ++index) {
-        zSndSample *const sample = &samples[index];
-        if (strcmp(sampleName, sample->replayFields.sampleId) == 0 &&
-            sample->primaryVoice.backendBuffer != 0) {
-            return sample;
+        for (int index = 0; index < sampleCount; ++index) {
+            zSndSample *const sample = &samples[index];
+            if (strcmp(sampleName, sample->replayFields.sampleId) == 0 &&
+                sample->primaryVoice.backendBuffer != 0) {
+                return sample;
+            }
         }
-    }
     }
 
     return 0;
 }
 
 // Reimplements 0x4a0fb0: zSndSampleSet::LoadSamplesFromIndexArchive
-RECOIL_NOINLINE int RECOIL_THISCALL
-zSndSampleSet::LoadSamplesFromIndexArchive(zIndexArchive *archive) {
+RECOIL_NOINLINE int RECOIL_THISCALL zSndSampleSet::LoadSamplesFromIndexArchive(
+    zIndexArchive *archive
+) {
     {
-    for (int index = 0; index < sampleCount; ++index) {
-        zSndSample *const sample = &samples[index];
-        if ((sample->replayFields.flags & 0x08) != 0) {
-            continue;
-        }
+        for (int index = 0; index < sampleCount; ++index) {
+            zSndSample *const sample = &samples[index];
+            if ((sample->replayFields.flags & 0x08) != 0) {
+                continue;
+            }
 
-        zSndWaveData *waveData = (zSndWaveData *)(::operator new(sizeof(zSndWaveData)));
-        waveData = waveData != 0
-                       ? waveData->ConstructorFromPath(sample->replayFields.resourceName, 0)
-                       : 0;
+            zSndWaveData *waveData = (zSndWaveData *)(::operator new(sizeof(zSndWaveData)));
+            waveData = waveData != 0
+                           ? waveData->ConstructorFromPath(sample->replayFields.resourceName, 0)
+                           : 0;
 
-        if (waveData != 0) {
-            waveData->LoadAndParseFromIndexArchiveIfNeeded(archive);
-        }
+            if (waveData != 0) {
+                waveData->LoadAndParseFromIndexArchiveIfNeeded(archive);
+            }
 
-        if (waveData != 0 && waveData->parsedOk != 0) {
-            UpdateSampleLoadedFlag(sample, sample->InitFromWaveData(waveData));
-        } else {
-            ClearSampleLoadedFlag(sample);
-        }
+            if (waveData != 0 && waveData->parsedOk != 0) {
+                UpdateSampleLoadedFlag(
+                    sample,
+                    sample->InitFromWaveData(waveData)
+                );
+            } else {
+                ClearSampleLoadedFlag(sample);
+            }
 
-        if (waveData != 0) {
-            waveData->Destructor();
-            ::operator delete(waveData);
+            if (waveData != 0) {
+                waveData->Destructor();
+                ::operator delete(waveData);
+            }
         }
-    }
     }
 
     return 1;
@@ -254,29 +290,32 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndSampleSet::Init() {
 
         int archiveInitialized = 0;
         {
-        for (int attempt = 0; attempt < 3 && archiveInitialized == 0; ++attempt) {
-            const char *archivePath = archiveNames[archiveBankIndex];
-            if (zReader::FileExists(archivePath) == 0) {
-                const char *resolvedPath =
-                    zUtil_ZRDR_ResolvePathInSearchPathList(g_zSnd_SearchPathList, archivePath);
-                if (resolvedPath != 0) {
-                    archivePath = resolvedPath;
-                } else {
-                    archivePath = 0;
+            for (int attempt = 0; attempt < 3 && archiveInitialized == 0; ++attempt) {
+                const char *archivePath = archiveNames[archiveBankIndex];
+                if (zReader::FileExists(archivePath) == 0) {
+                    const char *resolvedPath =
+                        zUtil_ZRDR_ResolvePathInSearchPathList(
+                            g_zSnd_SearchPathList,
+                            archivePath
+                        );
+                    if (resolvedPath != 0) {
+                        archivePath = resolvedPath;
+                    } else {
+                        archivePath = 0;
+                    }
+                }
+
+                if (archivePath != 0) {
+                    archiveInitialized = archive.Init(archivePath);
+                }
+
+                if (archiveInitialized == 0) {
+                    ++archiveBankIndex;
+                    if (archiveBankIndex >= 3) {
+                        archiveBankIndex = 0;
+                    }
                 }
             }
-
-            if (archivePath != 0) {
-                archiveInitialized = archive.Init(archivePath);
-            }
-
-            if (archiveInitialized == 0) {
-                ++archiveBankIndex;
-                if (archiveBankIndex >= 3) {
-                    archiveBankIndex = 0;
-                }
-            }
-        }
         }
 
         if (archiveInitialized != 0) {
@@ -286,18 +325,23 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndSampleSet::Init() {
     }
 
     {
-    for (int index = 0; index < sampleCount; ++index) {
-        zSndSample *const sample = &samples[index];
-        if ((sample->replayFields.flags & 0x08) != 0) {
-            continue;
-        }
+        for (int index = 0; index < sampleCount; ++index) {
+            zSndSample *const sample = &samples[index];
+            if ((sample->replayFields.flags & 0x08) != 0) {
+                continue;
+            }
 
-        const char *const path = zUtil_ZRDR_ResolvePathInSearchPathList(
-            g_zSnd_SearchPathList, sample->replayFields.resourceName);
-        if (path != 0) {
-            LoadSampleFromWavePath(sample, path);
+            const char *const path = zUtil_ZRDR_ResolvePathInSearchPathList(
+                g_zSnd_SearchPathList,
+                sample->replayFields.resourceName
+            );
+            if (path != 0) {
+                LoadSampleFromWavePath(
+                    sample,
+                    path
+                );
+            }
         }
-    }
     }
 
     resourcesLoaded = 1;
@@ -333,7 +377,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zSndSampleSet::DestroyOwnedData() {
 // Reimplements 0x4a0880: zSndSampleSetRegistry_DestroyAll
 extern "C" RECOIL_NOINLINE void RECOIL_CDECL zSndSampleSetRegistry_DestroyAll() {
     for (zSndSampleSet **it = g_zSnd_SampleSetRegistry.begin; it != g_zSnd_SampleSetRegistry.end;
-         ++it) {
+        ++it) {
         zSndSampleSet *set = *it;
         if (set != 0) {
             set->DestroyOwnedData();
@@ -346,13 +390,15 @@ extern "C" RECOIL_NOINLINE void RECOIL_CDECL zSndSampleSetRegistry_DestroyAll() 
 }
 
 // Reimplements 0x4a0990: zSnd::FindSampleByName
-RECOIL_NOINLINE zSndSample *RECOIL_FASTCALL zSnd::FindSampleByName(const char *sampleName) {
+RECOIL_NOINLINE zSndSample *RECOIL_FASTCALL zSnd::FindSampleByName(
+    const char *sampleName
+) {
     if (g_zSnd_IsInitialized == 0 || sampleName == 0) {
         return 0;
     }
 
     for (zSndSampleSet **it = g_zSnd_SampleSetRegistry.begin; it != g_zSnd_SampleSetRegistry.end;
-         ++it) {
+        ++it) {
         zSndSample *const sample = (*it)->FindSampleByName(sampleName);
         if (sample != 0) {
             return sample;

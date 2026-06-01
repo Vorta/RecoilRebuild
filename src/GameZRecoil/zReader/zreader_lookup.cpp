@@ -4,8 +4,11 @@
 #include <string.h>
 
 // Reimplements 0x48cec0: zReader_FindChildRecursive
-extern "C" RECOIL_NOINLINE zReader::Node *RECOIL_FASTCALL
-zReader_FindChildRecursive(zReader::Node *node, const char *searchName, int startIndex) {
+extern "C" RECOIL_NOINLINE zReader::Node *RECOIL_FASTCALL zReader_FindChildRecursive(
+    zReader::Node *node,
+    const char *searchName,
+    int startIndex
+) {
     if (node == 0 || node->type != zReader::ZRDR_NODE_ARRAY) {
         return 0;
     }
@@ -19,13 +22,19 @@ zReader_FindChildRecursive(zReader::Node *node, const char *searchName, int star
         zReader::Node *child = &arrayBase[startIndex];
         int childType = child->type;
         if (childType == zReader::ZRDR_NODE_ARRAY) {
-            zReader::Node *result = zReader_FindChildRecursive(child, searchName, 1);
+            zReader::Node *result = zReader_FindChildRecursive(
+                child,
+                searchName,
+                1
+            );
             if (result != 0) {
                 return result;
             }
-        }
-        else if (childType == zReader::ZRDR_NODE_STRING &&
-            strcmp(child->value.str, searchName) == 0) {
+        } else if (childType == zReader::ZRDR_NODE_STRING &&
+                   strcmp(
+                       child->value.str,
+                       searchName
+                   ) == 0) {
             return &child[1];
         }
 
@@ -36,15 +45,23 @@ zReader_FindChildRecursive(zReader::Node *node, const char *searchName, int star
 }
 
 // Reimplements 0x48cf70: zReader_GetNamedNode
-extern "C" RECOIL_NOINLINE zReader::Node *RECOIL_FASTCALL
-zReader_GetNamedNode(zReader::Node *parentNode, const char *name) {
-    return zReader_FindChildRecursive(parentNode, name, 1);
+extern "C" RECOIL_NOINLINE zReader::Node *RECOIL_FASTCALL zReader_GetNamedNode(
+    zReader::Node *parentNode,
+    const char *name
+) {
+    return zReader_FindChildRecursive(
+        parentNode,
+        name,
+        1
+    );
 }
 
 namespace zReader {
 // Reimplements 0x4804e0: zReader::FindGlobalStringPrefixIndex
 // (Battlesport/zUtil/zrdr_global.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL FindGlobalStringPrefixIndex(const char *text) {
+RECOIL_NOINLINE int RECOIL_FASTCALL FindGlobalStringPrefixIndex(
+    const char *text
+) {
     if (text == 0) {
         return -1;
     }
@@ -57,11 +74,18 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindGlobalStringPrefixIndex(const char *text
         }
 
         const unsigned char nextChar = (unsigned char)(text[prefixLength]);
-        if (nextChar != '\0' && _isctype(nextChar, 0x0008) == 0) {
+        if (nextChar != '\0' && _isctype(
+            nextChar,
+            0x0008
+        ) == 0) {
             continue;
         }
 
-        if (_strnicmp(text, prefix, prefixLength) == 0) {
+        if (_strnicmp(
+            text,
+            prefix,
+            prefixLength
+        ) == 0) {
             return index;
         }
     }
@@ -70,8 +94,14 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindGlobalStringPrefixIndex(const char *text
 }
 
 // Reimplements 0x48cf80: zReader::ReadNamedString
-RECOIL_NOINLINE const char *RECOIL_FASTCALL ReadNamedString(Node *parentNode, const char *name) {
-    Node *node = zReader_GetNamedNode(parentNode, name);
+RECOIL_NOINLINE const char *RECOIL_FASTCALL ReadNamedString(
+    Node *parentNode,
+    const char *name
+) {
+    Node *node = zReader_GetNamedNode(
+        parentNode,
+        name
+    );
     if (node == 0) {
         return 0;
     }
@@ -91,9 +121,15 @@ RECOIL_NOINLINE const char *RECOIL_FASTCALL ReadNamedString(Node *parentNode, co
 }
 
 // Reimplements 0x48cfb0: zReader::ReadNamedFloat
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadNamedFloat(Node *parentNode, const char *name,
-                                                            float *outValue) {
-    Node *node = zReader_GetNamedNode(parentNode, name);
+RECOIL_NOINLINE int RECOIL_FASTCALL ReadNamedFloat(
+    Node *parentNode,
+    const char *name,
+    float *outValue
+) {
+    Node *node = zReader_GetNamedNode(
+        parentNode,
+        name
+    );
     if (node == 0) {
         return 0;
     }
@@ -125,9 +161,15 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadNamedFloat(Node *parentNode, const char 
 }
 
 // Reimplements 0x48d030: zReader::ReadNamedInt
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadNamedInt(Node *parentNode, const char *name,
-                                                          int *outValue) {
-    Node *node = zReader_GetNamedNode(parentNode, name);
+RECOIL_NOINLINE int RECOIL_FASTCALL ReadNamedInt(
+    Node *parentNode,
+    const char *name,
+    int *outValue
+) {
+    Node *node = zReader_GetNamedNode(
+        parentNode,
+        name
+    );
     if (node == 0) {
         return 0;
     }

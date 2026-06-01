@@ -35,11 +35,20 @@ RECOIL_NOINLINE zImage_TexDirEntryPartial *RECOIL_CDECL GetDefaultImageRefPtr() 
 // (GameZRecoil/zImage/zimg_texture.cpp)
 RECOIL_NOINLINE int RECOIL_CDECL InitTextureDirectory() {
     g_zImage_TexDirEntryCount = 0;
-    memset(g_zImage_TexDirEntries, 0, sizeof(g_zImage_TexDirEntries));
+    memset(
+        g_zImage_TexDirEntries,
+        0,
+        sizeof(g_zImage_TexDirEntries)
+    );
 
     if (g_zVideo_ActiveRendererPath != 0) {
         g_zImage_DefaultTextureRecord = g_zVideo_pfnCreateTextureRecord(
-            g_zImage_DefaultTextureName, &zVid_Image::g_zImage_DefaultImage, 0, 0, 0);
+            g_zImage_DefaultTextureName,
+            &zVid_Image::g_zImage_DefaultImage,
+            0,
+            0,
+            0
+        );
     }
 
     return 1;
@@ -56,8 +65,9 @@ RECOIL_NOINLINE int RECOIL_CDECL Init() {
 } // namespace zImg
 
 // Reimplements 0x46e290: zImage_TexDirEntryPartial::GetVariantImageAtIndex
-RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL
-zImage_TexDirEntryPartial::GetVariantImageAtIndex(int variantIndex) {
+RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL zImage_TexDirEntryPartial::GetVariantImageAtIndex(
+    int variantIndex
+) {
     zImage_TexDirEntryPartial *entry = this;
     if (entry == 0) {
         return &zVid_Image::g_zImage_DefaultImage;
@@ -77,10 +87,16 @@ zImage_TexDirEntryPartial::GetVariantImageAtIndex(int variantIndex) {
 // (GameZRecoil/zImage/zimg_texture.cpp)
 RECOIL_NOINLINE RECOIL_NO_GS void RECOIL_FASTCALL zImage_TexDirEntryPartial::BuildMipChain() {
     char variantPath[0x40];
-    strcpy(variantPath, baseName);
+    strcpy(
+        variantPath,
+        baseName
+    );
 
     zImage_TexDirEntryPartial *const baseEntry = this;
-    char *const suffix = strstr(variantPath, "_1");
+    char *const suffix = strstr(
+        variantPath,
+        "_1"
+    );
     if (suffix == 0 || suffix[2] != '\0') {
         return;
     }
@@ -101,7 +117,10 @@ RECOIL_NOINLINE RECOIL_NO_GS void RECOIL_FASTCALL zImage_TexDirEntryPartial::Bui
             if (variantEntry == 0) {
                 const int entryIndex = g_zImage_TexDirEntryCount++;
                 variantEntry = &g_zImage_TexDirEntries[entryIndex];
-                zImage::TexDirSetBaseNameFromPath(variantPath, variantEntry->baseName);
+                zImage::TexDirSetBaseNameFromPath(
+                    variantPath,
+                    variantEntry->baseName
+                );
             }
 
             variantEntry->loadState = 1;
@@ -111,14 +130,17 @@ RECOIL_NOINLINE RECOIL_NO_GS void RECOIL_FASTCALL zImage_TexDirEntryPartial::Bui
 
         currentEntry->nextVariant = variantEntry;
         currentEntry = variantEntry;
-        variantImage->widthScale =
-            (float)(baseEntry->image->width / variantImage->width);
+        variantImage->widthScale = (float)(baseEntry->image->width / variantImage->width);
         variantEntry->nextVariant = 0;
     }
 }
 
 namespace {
-typedef void (RECOIL_FASTCALL *zVideo_TextureRecordFinalizeUploadProc)(zVideo_TextureRecordPartial *textureRecord, void *reserved, zVidImagePartial *image);
+typedef void(RECOIL_FASTCALL *zVideo_TextureRecordFinalizeUploadProc)(
+    zVideo_TextureRecordPartial *textureRecord,
+    void *reserved,
+    zVidImagePartial *image
+);
 }
 
 namespace zImage {
@@ -152,14 +174,22 @@ RECOIL_NOINLINE int RECOIL_CDECL TexDir_LoadPendingEntries() {
         } else if (entry->loadState == 3) {
             zVideo_TextureRecordFinalizeUploadProc finalizeUpload =
                 (zVideo_TextureRecordFinalizeUploadProc)(g_zVideo_pfnTextureRecordFinalizeUpload);
-            finalizeUpload(entry->texture, 0, entry->image);
+            finalizeUpload(
+                entry->texture,
+                0,
+                entry->image
+            );
         } else if (entry->texture == 0) {
             image = entry->image;
             const unsigned short textureAddressFlags =
                 (unsigned short)(image->textureAddressFlagsPacked);
             entry->texture = g_zVideo_pfnCreateTextureRecord(
-                entry->baseName, image, image->formatFlagsPacked & 2, textureAddressFlags & 1,
-                (textureAddressFlags >> 1) & 1);
+                entry->baseName,
+                image,
+                image->formatFlagsPacked & 2,
+                textureAddressFlags & 1,
+                (textureAddressFlags >> 1) & 1
+            );
             if (g_zVideo_ActiveRendererPath != 2) {
                 zVid_Image::ReleaseOwnedBuffers(image);
             }
@@ -174,20 +204,30 @@ RECOIL_NOINLINE int RECOIL_CDECL TexDir_LoadPendingEntries() {
 } // namespace zImage
 
 // Reimplements 0x46ebd0: zImage_InitMissionResources
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL
-zImage_InitMissionResources(const char *pathText) {
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zImage_InitMissionResources(
+    const char *pathText
+) {
     if (g_zImage_MissionResourcePaths == 0) {
         g_zImage_MissionResourcePaths = zUtil_ZRDR_CreateSearchPathList(pathText);
         return 0;
     }
 
-    zUtil::ZRDR_AddSearchPaths(g_zImage_MissionResourcePaths, pathText);
+    zUtil::ZRDR_AddSearchPaths(
+        g_zImage_MissionResourcePaths,
+        pathText
+    );
     return 0;
 }
 
 // Reimplements 0x46eb20: zImage_Init
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zImage_Init(const char *fontsPath) {
-    memset(g_zImage_FontTable, 0, sizeof(g_zImage_FontTable));
+extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zImage_Init(
+    const char *fontsPath
+) {
+    memset(
+        g_zImage_FontTable,
+        0,
+        sizeof(g_zImage_FontTable)
+    );
     g_zImage_FontTransparentColor = 2;
     g_zImage_Unknown5617f4 = 0;
 
@@ -207,8 +247,9 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zImage_Init(const char *fontsPath
 namespace zImage {
 // Reimplements 0x46d310: zImage::TexDirEntryToIndex
 // (D:\Proj\GameZRecoil\zImage\zimg_texture.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL
-TexDirEntryToIndex(zImage_TexDirEntryPartial *texDirEntry) {
+RECOIL_NOINLINE int RECOIL_FASTCALL TexDirEntryToIndex(
+    zImage_TexDirEntryPartial *texDirEntry
+) {
     if (texDirEntry == 0) {
         return -1;
     }
@@ -218,7 +259,9 @@ TexDirEntryToIndex(zImage_TexDirEntryPartial *texDirEntry) {
 
 // Reimplements 0x46d340: zImage::TexIndexToDirEntry
 // (D:\Proj\GameZRecoil\zImage\zimg_texture.cpp)
-RECOIL_NOINLINE zImage_TexDirEntryPartial *RECOIL_FASTCALL TexIndexToDirEntry(int index) {
+RECOIL_NOINLINE zImage_TexDirEntryPartial *RECOIL_FASTCALL TexIndexToDirEntry(
+    int index
+) {
     if (index == -1) {
         return 0;
     }
@@ -228,11 +271,15 @@ RECOIL_NOINLINE zImage_TexDirEntryPartial *RECOIL_FASTCALL TexIndexToDirEntry(in
 
 // Reimplements 0x46d4d0: zImage::FindTexDirEntryByName
 // (D:\Proj\Battlesport\zimage.cpp)
-RECOIL_NOINLINE zImage_TexDirEntryPartial *RECOIL_FASTCALL
-FindTexDirEntryByName(const char *baseName) {
+RECOIL_NOINLINE zImage_TexDirEntryPartial *RECOIL_FASTCALL FindTexDirEntryByName(
+    const char *baseName
+) {
     for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
         zImage_TexDirEntryPartial *const entry = &g_zImage_TexDirEntries[i];
-        if (entry->loadState != 0 && strcmp(entry->baseName, baseName) == 0) {
+        if (entry->loadState != 0 && strcmp(
+            entry->baseName,
+            baseName
+        ) == 0) {
             return entry;
         }
     }
@@ -242,8 +289,13 @@ FindTexDirEntryByName(const char *baseName) {
 
 // Reimplements 0x46d810: zImage::TexDir_FindOrAppendByPath
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE zImage_TexDirEntryPartial *RECOIL_FASTCALL TexDir_FindOrAppendByPath(char *path) {
-    char *const extension = strrchr(path, '.');
+RECOIL_NOINLINE zImage_TexDirEntryPartial *RECOIL_FASTCALL TexDir_FindOrAppendByPath(
+    char *path
+) {
+    char *const extension = strrchr(
+        path,
+        '.'
+    );
     if (extension != 0) {
         *extension = '\0';
     }
@@ -260,33 +312,50 @@ RECOIL_NOINLINE zImage_TexDirEntryPartial *RECOIL_FASTCALL TexDir_FindOrAppendBy
     const int entryIndex = g_zImage_TexDirEntryCount;
     ++g_zImage_TexDirEntryCount;
     entry = &g_zImage_TexDirEntries[entryIndex];
-    TexDirSetBaseNameFromPath(path, entry->baseName);
+    TexDirSetBaseNameFromPath(
+        path,
+        entry->baseName
+    );
     entry->loadState = 2;
     return entry;
 }
 
 // Reimplements 0x46d360: zImage::WriteTextureDirectory
 // (D:\Proj\GameZRecoil\zImage\zimg_texture.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL WriteTextureDirectory(void *stream) {
+RECOIL_NOINLINE int RECOIL_FASTCALL WriteTextureDirectory(
+    void *stream
+) {
     int count = g_zImage_TexDirEntryCount;
     if (count == 0) {
         return 0;
     }
 
-    const int byteCount =
-        count * (int)(sizeof(zImage_TexDirEntryPartial));
-    zImage_TexDirEntryPartial *serializedEntries =
-        (zImage_TexDirEntryPartial *)(malloc(byteCount));
-    memcpy(serializedEntries, g_zImage_TexDirEntries, byteCount);
+    const int byteCount = count * (int)(sizeof(zImage_TexDirEntryPartial));
+    zImage_TexDirEntryPartial *serializedEntries = (zImage_TexDirEntryPartial *)(malloc(byteCount));
+    memcpy(
+        serializedEntries,
+        g_zImage_TexDirEntries,
+        byteCount
+    );
 
     for (int i = 0; i < count; ++i) {
-        serializedEntries[i].nextVariant = (zImage_TexDirEntryPartial *)(
-            (int)(TexDirEntryToIndex(serializedEntries[i].nextVariant)));
+        serializedEntries[i].nextVariant = (zImage_TexDirEntryPartial *)((int)(TexDirEntryToIndex(
+            serializedEntries[i].nextVariant
+        )));
     }
 
-    if (fwrite(serializedEntries, byteCount, 1, (FILE *)(stream)) != 1) {
-        zError::ReportOld(0x200, "D:\\Proj\\GameZRecoil\\zImage\\zimg_texture.cpp", 0x100,
-                          "Error writing texture directory.");
+    if (fwrite(
+        serializedEntries,
+        byteCount,
+        1,
+        (FILE *)(stream)
+    ) != 1) {
+        zError::ReportOld(
+            0x200,
+            "D:\\Proj\\GameZRecoil\\zImage\\zimg_texture.cpp",
+            0x100,
+            "Error writing texture directory."
+        );
         count = 0;
     }
 
@@ -296,99 +365,166 @@ RECOIL_NOINLINE int RECOIL_FASTCALL WriteTextureDirectory(void *stream) {
 
 // Reimplements 0x46d420: zImage::ReadTextureDirectory
 // (D:\Proj\GameZRecoil\zImage\zimg_texture.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadTextureDirectory(int entryCount,
-                                                                  void *stream) {
+RECOIL_NOINLINE int RECOIL_FASTCALL ReadTextureDirectory(
+    int entryCount,
+    void *stream
+) {
     int count = entryCount;
     if (count == 0) {
         return 0;
     }
 
     if (count > 0x1000) {
-        zError::ReportOld(0x100, "D:\\Proj\\GameZRecoil\\zImage\\zimg_texture.cpp", 0x11c,
-                          "Too many textures for texture array size.");
+        zError::ReportOld(
+            0x100,
+            "D:\\Proj\\GameZRecoil\\zImage\\zimg_texture.cpp",
+            0x11c,
+            "Too many textures for texture array size."
+        );
         return -1;
     }
 
-    const int byteCount =
-        count * (int)(sizeof(zImage_TexDirEntryPartial));
-    if (fread(g_zImage_TexDirEntries, byteCount, 1, (FILE *)(stream)) != 1) {
-        zError::ReportOld(0x200, "D:\\Proj\\GameZRecoil\\zImage\\zimg_texture.cpp", 0x12a,
-                          "Error reading GameZ Texture directory data.");
+    const int byteCount = count * (int)(sizeof(zImage_TexDirEntryPartial));
+    if (fread(
+        g_zImage_TexDirEntries,
+        byteCount,
+        1,
+        (FILE *)(stream)
+    ) != 1) {
+        zError::ReportOld(
+            0x200,
+            "D:\\Proj\\GameZRecoil\\zImage\\zimg_texture.cpp",
+            0x12a,
+            "Error reading GameZ Texture directory data."
+        );
         return -1;
     }
 
     g_zImage_TexDirEntryCount = count;
     for (int i = 0; i < count; ++i) {
-        g_zImage_TexDirEntries[i].nextVariant = TexIndexToDirEntry((int)(
-            (int)(g_zImage_TexDirEntries[i].nextVariant)));
+        g_zImage_TexDirEntries[i].nextVariant =
+            TexIndexToDirEntry((int)((int)(g_zImage_TexDirEntries[i].nextVariant)));
     }
 
     return g_zImage_TexDirEntryCount;
 }
 
 // Reimplements 0x46e2c0: zImage::SetPathExtension
-RECOIL_NOINLINE void RECOIL_FASTCALL SetPathExtension(char *path, const char *extension) {
-    char *basePathStart = strchr(path, '\\');
+RECOIL_NOINLINE void RECOIL_FASTCALL SetPathExtension(
+    char *path,
+    const char *extension
+) {
+    char *basePathStart = strchr(
+        path,
+        '\\'
+    );
     if (basePathStart == 0) {
-        basePathStart = strchr(path, '/');
+        basePathStart = strchr(
+            path,
+            '/'
+        );
         if (basePathStart == 0) {
             basePathStart = path;
         }
     }
 
-    char *const dot = strchr(basePathStart, '.');
+    char *const dot = strchr(
+        basePathStart,
+        '.'
+    );
     if (dot != 0) {
         if (extension == 0) {
             *dot = '\0';
             return;
         }
 
-        strcpy(dot + 1, extension);
+        strcpy(
+            dot + 1,
+            extension
+        );
         return;
     }
 
     if (extension != 0) {
-        strcat(path, ".");
-        strcat(path, extension);
+        strcat(
+            path,
+            "."
+        );
+        strcat(
+            path,
+            extension
+        );
     }
 }
 
 // Reimplements 0x46e380: zImage::TexDirSetBaseNameFromPath
-RECOIL_NOINLINE void RECOIL_FASTCALL TexDirSetBaseNameFromPath(const char *sourcePath,
-                                                               char *destBaseName) {
-    const char *baseName = strrchr(sourcePath, '\\');
+RECOIL_NOINLINE void RECOIL_FASTCALL TexDirSetBaseNameFromPath(
+    const char *sourcePath,
+    char *destBaseName
+) {
+    const char *baseName = strrchr(
+        sourcePath,
+        '\\'
+    );
     if (baseName == 0) {
-        baseName = strrchr(sourcePath, '/');
+        baseName = strrchr(
+            sourcePath,
+            '/'
+        );
         if (baseName == 0) {
             baseName = sourcePath;
         }
     }
 
-    strcpy(destBaseName, baseName);
-    SetPathExtension(destBaseName, 0);
+    strcpy(
+        destBaseName,
+        baseName
+    );
+    SetPathExtension(
+        destBaseName,
+        0
+    );
 }
 
 // Reimplements 0x46efe0: zImage::FontsLoadFromPath
-RECOIL_NOINLINE int RECOIL_FASTCALL FontsLoadFromPath(const char *path) {
-    zReader::Node *tree = zReader::LoadNodeFromPath(path, 0, 0);
+RECOIL_NOINLINE int RECOIL_FASTCALL FontsLoadFromPath(
+    const char *path
+) {
+    zReader::Node *tree = zReader::LoadNodeFromPath(
+        path,
+        0,
+        0
+    );
     if (tree == 0) {
-        zError::ReportOld(0x200, "D:\\Proj\\GameZRecoil\\zImage\\zimg_fonts.cpp", 0x48,
-                          "Failed to read %s", path);
+        zError::ReportOld(
+            0x200,
+            "D:\\Proj\\GameZRecoil\\zImage\\zimg_fonts.cpp",
+            0x48,
+            "Failed to read %s",
+            path
+        );
         return -1;
     }
 
     zImage_InitMissionResources("..\\data\\common\\fonts");
-    zReader::Node *fontsNode = zReader_GetNamedNode(tree, "FONTS");
+    zReader::Node *fontsNode = zReader_GetNamedNode(
+        tree,
+        "FONTS"
+    );
     if (fontsNode == 0) {
-        zError::ReportOld(0x800, "D:\\Proj\\GameZRecoil\\zImage\\zimg_fonts.cpp", 0x52,
-                          "%s file empty", path);
+        zError::ReportOld(
+            0x800,
+            "D:\\Proj\\GameZRecoil\\zImage\\zimg_fonts.cpp",
+            0x52,
+            "%s file empty",
+            path
+        );
         return -1;
     }
 
     zReader::Node *fontArray = fontsNode->value.nodes;
     const int count = fontArray[0].value.i32;
-    zImage_Font *font = (zImage_Font *)(
-        malloc((size_t)(count - 1) * sizeof(zImage_Font)));
+    zImage_Font *font = (zImage_Font *)(malloc((size_t)(count - 1) * sizeof(zImage_Font)));
 
     for (int i = 1; i < count; ++i) {
         zImage_Font **slot = &g_zImage_FontTable[i - 1];
@@ -399,8 +535,14 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FontsLoadFromPath(const char *path) {
             font->image->formatFlagsPacked |= 0x02;
             const int glyphCount = font->BuildGlyphRects();
             if (glyphCount != 0x5f) {
-                zError::ReportOld(0x200, "D:\\Proj\\GameZRecoil\\zImage\\zimg_fonts.cpp", 0x68,
-                                  "Only found %d characters in font %s", glyphCount, path);
+                zError::ReportOld(
+                    0x200,
+                    "D:\\Proj\\GameZRecoil\\zImage\\zimg_fonts.cpp",
+                    0x68,
+                    "Only found %d characters in font %s",
+                    glyphCount,
+                    path
+                );
             }
             ++font;
         }
@@ -411,7 +553,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FontsLoadFromPath(const char *path) {
 }
 
 // Reimplements 0x46d900: zImage::TexDir_FindOrCreateByPath
-RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL TexDir_FindOrCreateByPath(const char *path) {
+RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL TexDir_FindOrCreateByPath(
+    const char *path
+) {
     zVidImagePartial *image = zVid_TexturePack_LoadBuiltinImageByName(path);
     if (image == 0) {
         image = zVid_TexturePack_LoadImageByName(path);
@@ -425,8 +569,9 @@ RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL TexDir_FindOrCreateByPath(cons
 }
 
 // Reimplements 0x46e250: zImage::InvalidateLoadedVariantChain
-RECOIL_NOINLINE void RECOIL_FASTCALL
-InvalidateLoadedVariantChain(zImage_TexDirEntryPartial *texDirHead) {
+RECOIL_NOINLINE void RECOIL_FASTCALL InvalidateLoadedVariantChain(
+    zImage_TexDirEntryPartial *texDirHead
+) {
     zImage_TexDirEntryPartial *entry = texDirHead;
     while (entry != 0 && entry->loadState == 1) {
         zVid_Image::ReleaseIfNotDefault(entry->image);
@@ -452,8 +597,9 @@ RECOIL_NOINLINE int RECOIL_CDECL ShutdownSubsystem() {
 } // namespace zImage
 
 // Reimplements 0x46efc0: zImage_Font::GetByIndexOrDefault
-RECOIL_NOINLINE zImage_Font *RECOIL_FASTCALL
-zImage_Font::GetByIndexOrDefault(int fontIndex) {
+RECOIL_NOINLINE zImage_Font *RECOIL_FASTCALL zImage_Font::GetByIndexOrDefault(
+    int fontIndex
+) {
     zImage_Font *const font = g_zImage_FontTable[fontIndex];
     if (font != 0) {
         return font;
@@ -463,10 +609,12 @@ zImage_Font::GetByIndexOrDefault(int fontIndex) {
 }
 
 // Reimplements 0x46f260: zImage_Font::MeasureString
-RECOIL_NOINLINE void RECOIL_FASTCALL zImage_Font::MeasureString(const char *text,
-                                                                int fontIndex,
-                                                                int *outWidthPx,
-                                                                int *outLineAdvance) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zImage_Font::MeasureString(
+    const char *text,
+    int fontIndex,
+    int *outWidthPx,
+    int *outLineAdvance
+) {
     zImage_Font *const font = GetByIndexOrDefault(fontIndex);
     if (font == 0) {
         return;
@@ -490,7 +638,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zImage_Font::MeasureString(const char *text
             currentLineWidth = 0;
             totalLineAdvance += lineAdvance;
         } else {
-            int glyphIndex = (int)(ch) - 0x21;
+            int glyphIndex = (int)(ch)-0x21;
             if (glyphIndex < 0 || glyphIndex >= 0x5f) {
                 glyphIndex = 0;
             }
@@ -510,9 +658,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zImage_Font::MeasureString(const char *text
 
 // Reimplements 0x4c7f00: zImage_Font::BlitStringToActiveTarget
 // (D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL
-zImage_Font::BlitStringToActiveTarget(const char *text, int dstX, int dstY,
-                                      int fontIndex) {
+RECOIL_NOINLINE void RECOIL_FASTCALL zImage_Font::BlitStringToActiveTarget(
+    const char *text,
+    int dstX,
+    int dstY,
+    int fontIndex
+) {
     int currentX = dstX;
     int currentY = dstY;
     zImage_Font *font = GetByIndexOrDefault(fontIndex);
@@ -537,22 +688,29 @@ zImage_Font::BlitStringToActiveTarget(const char *text, int dstX, int dstY,
             currentX = dstX;
             currentY += fontImage->height;
         } else {
-            int glyphIndex = (int)(ch) - 0x21;
+            int glyphIndex = (int)(ch)-0x21;
             if (glyphIndex < 0 || glyphIndex >= 0x5f) {
                 glyphIndex = 0;
             }
 
             RECT *glyph = &font->glyphRects[glyphIndex];
-            zVid_Image::BlitToActiveTarget(font->image, currentX, currentY, 0,
-                                           (zVidRect32 *)(glyph));
+            zVid_Image::BlitToActiveTarget(
+                font->image,
+                currentX,
+                currentY,
+                0,
+                (zVidRect32 *)(glyph)
+            );
             currentX += glyph->right - glyph->left;
         }
     }
 }
 
 // Reimplements 0x46f210: zImage_Font::IsImageColumnTransparent
-RECOIL_NOINLINE int RECOIL_FASTCALL
-zImage_Font::IsImageColumnTransparent(zVidImagePartial *image, int columnX) {
+RECOIL_NOINLINE int RECOIL_FASTCALL zImage_Font::IsImageColumnTransparent(
+    zVidImagePartial *image,
+    int columnX
+) {
     const int width = image->width;
     unsigned short *column = (unsigned short *)(image->pixels) + columnX;
     if (columnX >= width) {
@@ -586,22 +744,37 @@ RECOIL_NOINLINE int RECOIL_THISCALL zImage_Font::BuildGlyphRects() {
         glyph->top = 0;
         glyph->bottom = image->height - 1;
 
-        if (IsImageColumnTransparent(image, x) != 0) {
+        if (IsImageColumnTransparent(
+            image,
+            x
+        ) != 0) {
             do {
                 ++x;
-            } while (IsImageColumnTransparent(image, x) != 0);
+            } while (IsImageColumnTransparent(
+                image,
+                x
+            ) != 0);
         }
 
         const int left = x;
-        while (IsImageColumnTransparent(image, x) == 0) {
+        while (IsImageColumnTransparent(
+            image,
+            x
+        ) == 0) {
             ++x;
         }
 
         const int right = x;
-        if (IsImageColumnTransparent(image, x) != 0) {
+        if (IsImageColumnTransparent(
+            image,
+            x
+        ) != 0) {
             do {
                 ++x;
-            } while (IsImageColumnTransparent(image, x) != 0);
+            } while (IsImageColumnTransparent(
+                image,
+                x
+            ) != 0);
         }
 
         x -= (x - right) / 2;

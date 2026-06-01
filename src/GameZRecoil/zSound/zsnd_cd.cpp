@@ -12,11 +12,14 @@
 
 #if defined(_MSC_VER) && _MSC_VER <= 1200
 extern "C" FILE *__imp___iob;
-extern "C" int(__cdecl *__imp__fprintf)(FILE *, const char *, ...);
+extern "C" int(__cdecl *__imp__fprintf)(
+    FILE *,
+    const char *,
+    ...
+);
 #endif
 
-struct zSndCdTrackState
-{
+struct zSndCdTrackState {
     int track;
     int minute;
     int second;
@@ -60,18 +63,23 @@ const int ZSND_CD_FLAG_STEREO_AUX = 1;
 const int ZSND_CD_FLAG_READY = 2;
 const char kZSndCdSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp";
 
-zReader::Node *ArrayBase(zReader::Node *node) {
+zReader::Node *ArrayBase(
+    zReader::Node *node
+) {
     return node->value.nodes;
 }
 
-int ArrayCount(zReader::Node *node) {
+int ArrayCount(
+    zReader::Node *node
+) {
     return ArrayBase(node)[0].value.i32;
 }
 
-void AppendCdTrackEntry(zSndCdTrackEntry *entry) {
+void AppendCdTrackEntry(
+    zSndCdTrackEntry *entry
+) {
     if (g_zSndCd_TrackListHead == 0) {
-        g_zSndCd_TrackListHead =
-            (zSndCdTrackNode *)(::operator new(sizeof(zSndCdTrackNode)));
+        g_zSndCd_TrackListHead = (zSndCdTrackNode *)(::operator new(sizeof(zSndCdTrackNode)));
         g_zSndCd_TrackListHead->next = g_zSndCd_TrackListHead;
         g_zSndCd_TrackListHead->prev = g_zSndCd_TrackListHead;
         g_zSndCd_TrackListHead->entry = 0;
@@ -91,7 +99,9 @@ void AppendCdTrackEntry(zSndCdTrackEntry *entry) {
 
 namespace zSnd {
 // Reimplements 0x4a1290: zSnd::SetActiveBackendPreInit
-RECOIL_NOINLINE int RECOIL_FASTCALL SetActiveBackendPreInit(int backend) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SetActiveBackendPreInit(
+    int backend
+) {
     if (g_zSnd_IsInitialized != 0) {
         return 0;
     }
@@ -106,7 +116,9 @@ RECOIL_NOINLINE int RECOIL_CDECL GetActiveBackend() {
 }
 
 // Reimplements 0x4080a0: zSnd::SetAudioApiOption
-RECOIL_NOINLINE int RECOIL_FASTCALL SetAudioApiOption(int apiType) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SetAudioApiOption(
+    int apiType
+) {
     *ZOPT_AUDIO_API = apiType;
     return SetActiveBackendPreInit(apiType);
 }
@@ -117,7 +129,9 @@ RECOIL_NOINLINE int RECOIL_CDECL GetAudioApiOption() {
 }
 
 // Reimplements 0x408210: zSnd::SetCDAudioOption
-RECOIL_NOINLINE void RECOIL_FASTCALL SetCDAudioOption(int cdAudioOption) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetCDAudioOption(
+    int cdAudioOption
+) {
     *ZOPT_SOUND_CDAUDIO = cdAudioOption;
 }
 
@@ -127,27 +141,49 @@ RECOIL_NOINLINE int RECOIL_CDECL GetCDAudioOption() {
 }
 
 // Reimplements 0x4a07f0: zSnd::SetUseArchiveBanksFlag
-RECOIL_NOINLINE void RECOIL_FASTCALL SetUseArchiveBanksFlag(int useArchiveBanks) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetUseArchiveBanksFlag(
+    int useArchiveBanks
+) {
     g_zSnd_UseArchiveBanksFlag = useArchiveBanks;
 }
 
 // Reimplements 0x4a2e80: zSnd::SetSpeedOfSoundMps
-RECOIL_NOINLINE void RECOIL_FASTCALL SetSpeedOfSoundMps(float speedOfSoundMps) {
+RECOIL_NOINLINE void RECOIL_FASTCALL SetSpeedOfSoundMps(
+    float speedOfSoundMps
+) {
     g_zSndSpeedOfSoundMps = speedOfSoundMps;
     g_zSndInvSpeedOfSoundMps = 1.0f / speedOfSoundMps;
 }
 
 // Reimplements 0x4a3ea0: zSnd::ReportMciError
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL ReportMciError(unsigned int mciError,
-                                                                         const char *sourceFile,
-                                                                         int lineNumber) {
+RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL ReportMciError(
+    unsigned int mciError,
+    const char *sourceFile,
+    int lineNumber
+) {
     char errorText[0x100];
-    mciGetErrorStringA(mciError, errorText, sizeof(errorText));
+    mciGetErrorStringA(
+        mciError,
+        errorText,
+        sizeof(errorText)
+    );
 #if defined(_MSC_VER) && _MSC_VER <= 1200
     FILE *stream = __imp___iob + 2;
-    (*__imp__fprintf)(stream, "%s(%d): MCIError [%s]\n", sourceFile, lineNumber, errorText);
+    (*__imp__fprintf)(
+        stream,
+        "%s(%d) : MCIError [%s]\n",
+        sourceFile,
+        lineNumber,
+        errorText
+    );
 #else
-    fprintf(stderr, "%s(%d): MCIError [%s]\n", sourceFile, lineNumber, errorText);
+    fprintf(
+        stderr,
+        "%s(%d) : MCIError [%s]\n",
+        sourceFile,
+        lineNumber,
+        errorText
+    );
 #endif
     return 0;
 }
@@ -158,29 +194,45 @@ RECOIL_NOINLINE int RECOIL_CDECL ResetTrackState();
 RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
 
 // Reimplements 0x4a20d0: zSndCd::Init
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL Init(zReader::Node *cdTracksNode) {
+RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL Init(
+    zReader::Node *cdTracksNode
+) {
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) != 0) {
         return 1;
     }
 
     MCI_OPEN_PARMSA openParms = {0};
     openParms.lpstrDeviceType = "cdaudio";
-    DWORD mciError =
-        mciSendCommandA(0, MCI_OPEN, MCI_OPEN_TYPE, (DWORD_PTR)(&openParms));
+    DWORD mciError = mciSendCommandA(
+        0,
+        MCI_OPEN,
+        MCI_OPEN_TYPE,
+        (DWORD_PTR)(&openParms)
+    );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x43);
+        return zSnd::ReportMciError(
+            mciError,
+            kZSndCdSourceFile,
+            0x43
+        );
     }
 
-    g_zSndCdDeviceId =
-        (g_zSndCdDeviceId & 0xffff0000) | (unsigned short)(openParms.wDeviceID);
+    g_zSndCdDeviceId = (g_zSndCdDeviceId & 0xffff0000) | (unsigned short)(openParms.wDeviceID);
 
     MCI_STATUS_PARMS statusParms = {0};
     statusParms.dwItem = 5;
-    mciError =
-        mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId & 0xffff), MCI_STATUS,
-                        MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)(&statusParms));
+    mciError = mciSendCommandA(
+        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
+        MCI_STATUS,
+        MCI_WAIT | MCI_STATUS_ITEM,
+        (DWORD_PTR)(&statusParms)
+    );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x4d);
+        return zSnd::ReportMciError(
+            mciError,
+            kZSndCdSourceFile,
+            0x4d
+        );
     }
 
     if (statusParms.dwReturn == 0) {
@@ -190,30 +242,55 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL Init(zReader::Node *cdTracksNod
 
     MCI_SET_PARMS setParms = {0};
     setParms.dwTimeFormat = MCI_FORMAT_TMSF;
-    mciError =
-        mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId & 0xffff), MCI_SET,
-                        MCI_WAIT | MCI_SET_TIME_FORMAT, (DWORD_PTR)(&setParms));
+    mciError = mciSendCommandA(
+        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
+        MCI_SET,
+        MCI_WAIT | MCI_SET_TIME_FORMAT,
+        (DWORD_PTR)(&setParms)
+    );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x5d);
+        return zSnd::ReportMciError(
+            mciError,
+            kZSndCdSourceFile,
+            0x5d
+        );
     }
 
-    memset(&statusParms, 0, sizeof(statusParms));
+    memset(
+        &statusParms,
+        0,
+        sizeof(statusParms)
+    );
     statusParms.dwItem = 3;
-    mciError =
-        mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId & 0xffff), MCI_STATUS,
-                        MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)(&statusParms));
+    mciError = mciSendCommandA(
+        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
+        MCI_STATUS,
+        MCI_WAIT | MCI_STATUS_ITEM,
+        (DWORD_PTR)(&statusParms)
+    );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x66);
+        return zSnd::ReportMciError(
+            mciError,
+            kZSndCdSourceFile,
+            0x66
+        );
     }
 
     g_zSndCdTrackCountCached = (int)(statusParms.dwReturn);
     statusParms.dwItem = 1;
     statusParms.dwTrack = 0;
-    mciError =
-        mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId & 0xffff), MCI_STATUS,
-                        MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)(&statusParms));
+    mciError = mciSendCommandA(
+        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
+        MCI_STATUS,
+        MCI_WAIT | MCI_STATUS_ITEM,
+        (DWORD_PTR)(&statusParms)
+    );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x70);
+        return zSnd::ReportMciError(
+            mciError,
+            kZSndCdSourceFile,
+            0x70
+        );
     }
 
     const UINT auxCount = auxGetNumDevs();
@@ -231,7 +308,10 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL Init(zReader::Node *cdTracksNod
 
     if (g_zSndCdAuxDeviceId != -1) {
         DWORD volume = 0;
-        if (auxGetVolume((UINT)(g_zSndCdAuxDeviceId), &volume) == 0) {
+        if (auxGetVolume(
+            (UINT)(g_zSndCdAuxDeviceId),
+            &volume
+        ) == 0) {
             g_zSndCdAuxVolumeSecondary = (unsigned short)(volume & 0xffff);
             g_zSndCdAuxVolumePrimary = (unsigned short)((volume >> 16) & 0xffff);
         }
@@ -288,17 +368,26 @@ int RECOIL_CDECL IsStereoAuxEnabled() {
 }
 
 // Reimplements 0x4a27f0: zSndCd::GetVolume
-RECOIL_NOINLINE int RECOIL_FASTCALL GetVolume(unsigned short *primaryVolumeOut,
-                                                       unsigned short *secondaryVolumeOut) {
+RECOIL_NOINLINE int RECOIL_FASTCALL GetVolume(
+    unsigned short *primaryVolumeOut,
+    unsigned short *secondaryVolumeOut
+) {
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
     }
 
     const int stereoAuxEnabled = IsStereoAuxEnabled();
     DWORD volume = 0;
-    const DWORD mciError = auxGetVolume((UINT)(g_zSndCdAuxDeviceId), &volume);
+    const DWORD mciError = auxGetVolume(
+        (UINT)(g_zSndCdAuxDeviceId),
+        &volume
+    );
     if (mciError != 0) {
-        zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x194);
+        zSnd::ReportMciError(
+            mciError,
+            kZSndCdSourceFile,
+            0x194
+        );
         return 0;
     }
 
@@ -319,8 +408,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL GetVolume(unsigned short *primaryVolumeOut,
 }
 
 // Reimplements 0x4a2880: zSndCd::SetVolume
-RECOIL_NOINLINE int RECOIL_FASTCALL SetVolume(unsigned short primaryVolume,
-                                                       unsigned short secondaryVolume) {
+RECOIL_NOINLINE int RECOIL_FASTCALL SetVolume(
+    unsigned short primaryVolume,
+    unsigned short secondaryVolume
+) {
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
     }
@@ -332,9 +423,16 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetVolume(unsigned short primaryVolume,
         volume = ((DWORD)(secondaryVolume) << 16) | (DWORD)(primaryVolume);
     }
 
-    const DWORD mciError = auxSetVolume((UINT)(g_zSndCdAuxDeviceId), volume);
+    const DWORD mciError = auxSetVolume(
+        (UINT)(g_zSndCdAuxDeviceId),
+        volume
+    );
     if (mciError != 0) {
-        zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x1b2);
+        zSnd::ReportMciError(
+            mciError,
+            kZSndCdSourceFile,
+            0x1b2
+        );
         return 0;
     }
 
@@ -344,8 +442,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetVolume(unsigned short primaryVolume,
 }
 
 // Reimplements 0x4a2600: zSndCd::ApplyPlaybackMode
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL
-ApplyPlaybackMode(int playbackMode) {
+RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL ApplyPlaybackMode(
+    int playbackMode
+) {
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
     }
@@ -374,11 +473,18 @@ ApplyPlaybackMode(int playbackMode) {
         playFlags = 0x0d;
     }
 
-    const DWORD mciError =
-        mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId & 0xffff), 0x806, playFlags,
-                        (DWORD_PTR)(&playParms));
+    const DWORD mciError = mciSendCommandA(
+        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
+        0x806,
+        playFlags,
+        (DWORD_PTR)(&playParms)
+    );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0xf1);
+        return zSnd::ReportMciError(
+            mciError,
+            kZSndCdSourceFile,
+            0xf1
+        );
     }
 
     g_zSndCdLastPlayMode = playbackMode;
@@ -395,7 +501,9 @@ RECOIL_NOINLINE int RECOIL_CDECL GetTrackCount() {
 }
 
 // Reimplements 0x4a2750: zSndCd::PlayTrack
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL PlayTrack(int trackIndex) {
+RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL PlayTrack(
+    int trackIndex
+) {
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
     }
@@ -403,10 +511,18 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL PlayTrack(int trackIndex) {
     MCI_SEEK_PARMS seekParms;
     seekParms.dwTo = (DWORD)(trackIndex & 0xff);
 
-    const DWORD mciError = mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
-                                           0x807, 0x0a, (DWORD_PTR)(&seekParms));
+    const DWORD mciError = mciSendCommandA(
+        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
+        0x807,
+        0x0a,
+        (DWORD_PTR)(&seekParms)
+    );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x16e);
+        return zSnd::ReportMciError(
+            mciError,
+            kZSndCdSourceFile,
+            0x16e
+        );
     }
 
     ResetTrackState();
@@ -417,8 +533,10 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL PlayTrack(int trackIndex) {
 }
 
 // Reimplements 0x4a25e0: zSndCd::PlayTrackWithMode
-RECOIL_NOINLINE int RECOIL_FASTCALL PlayTrackWithMode(int trackIndex,
-                                                               int playbackMode) {
+RECOIL_NOINLINE int RECOIL_FASTCALL PlayTrackWithMode(
+    int trackIndex,
+    int playbackMode
+) {
     int result = 0;
     const int mode = playbackMode;
     if (PlayTrack(trackIndex) != 0) {
@@ -429,13 +547,19 @@ RECOIL_NOINLINE int RECOIL_FASTCALL PlayTrackWithMode(int trackIndex,
 }
 
 // Reimplements 0x4a26b0: zSndCd::OnMciNotify
-RECOIL_NOINLINE void RECOIL_FASTCALL OnMciNotify(unsigned int wParam, unsigned int lParam) {
+RECOIL_NOINLINE void RECOIL_FASTCALL OnMciNotify(
+    unsigned int wParam,
+    unsigned int lParam
+) {
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0 || g_zSndCdLastPlayMode != 5 ||
         lParam != (unsigned int)(g_zSndCdDeviceId & 0xffff) || wParam != 1) {
         return;
     }
 
-    PlayTrackWithMode(g_zSndCdCurrentTrack, 5);
+    PlayTrackWithMode(
+        g_zSndCdCurrentTrack,
+        5
+    );
 }
 
 // Reimplements 0x4a26f0: zSndCd::Stop
@@ -445,10 +569,18 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Stop() {
     }
 
     MCI_GENERIC_PARMS stopParms;
-    const DWORD mciError = mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
-                                           0x808, 0x02, (DWORD_PTR)(&stopParms));
+    const DWORD mciError = mciSendCommandA(
+        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
+        0x808,
+        0x02,
+        (DWORD_PTR)(&stopParms)
+    );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x10e);
+        return zSnd::ReportMciError(
+            mciError,
+            kZSndCdSourceFile,
+            0x10e
+        );
     }
 
     g_zSndCdLastPlayMode = 0;
@@ -462,8 +594,12 @@ RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
 
     if ((g_zSndCdDeviceId & 0xffff) != 0) {
         MCI_GENERIC_PARMS closeParms = {0};
-        mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId & 0xffff), MCI_CLOSE, MCI_WAIT,
-                        (DWORD_PTR)(&closeParms));
+        mciSendCommandA(
+            (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
+            MCI_CLOSE,
+            MCI_WAIT,
+            (DWORD_PTR)(&closeParms)
+        );
         g_zSndCdDeviceId &= 0xffff0000;
     }
 

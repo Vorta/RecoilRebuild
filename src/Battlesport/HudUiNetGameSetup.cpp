@@ -13,18 +13,26 @@
 #include <string.h>
 
 namespace {
-template <typename Method> unsigned int MethodAddress(Method method)
-{
+template <typename Method>
+unsigned int MethodAddress(
+    Method method
+) {
     RECOIL_STATIC_ASSERT(sizeof(method) <= sizeof(unsigned int));
     unsigned int address = 0;
-    memcpy(&address, &method, sizeof(method));
+    memcpy(
+        &address,
+        &method,
+        sizeof(method)
+    );
     return address;
 }
 
 RECOIL_NOINLINE void RECOIL_CDECL HudUiNetGameSetupPostLoadNoOp() {}
 
-template <typename FTable> FTable MakeHudUiNetGameSetupZrdFTable(unsigned int activateSlot)
-{
+template <typename FTable>
+FTable MakeHudUiNetGameSetupZrdFTable(
+    unsigned int activateSlot
+) {
     FTable table = {0};
     table.slots[0] = MethodAddress(&HudUiZrdWidget::ScalarDeletingDestructor);
     table.slots[1] = MethodAddress(&HudUiWidget::Draw);
@@ -46,8 +54,7 @@ template <typename FTable> FTable MakeHudUiNetGameSetupZrdFTable(unsigned int ac
     return table;
 }
 
-HudUiNetGameSetupPanel_FTable MakeHudUiNetGameSetupPanelFTable()
-{
+HudUiNetGameSetupPanel_FTable MakeHudUiNetGameSetupPanelFTable() {
     HudUiNetGameSetupPanel_FTable table = {0};
     table.slots[0] = MethodAddress(&HudUiBackground::Update);
     table.slots[1] = MethodAddress(&HudUiBackground::SetEnabled);
@@ -55,17 +62,17 @@ HudUiNetGameSetupPanel_FTable MakeHudUiNetGameSetupPanelFTable()
     return table;
 }
 
-HudUiZrdWidget_FTable MakeHudUiNetGameSetupPanelPlayButtonFTable()
-{
+HudUiZrdWidget_FTable MakeHudUiNetGameSetupPanelPlayButtonFTable() {
     return MakeHudUiNetGameSetupZrdFTable<HudUiZrdWidget_FTable>(
-        MethodAddress(&HudUiNetGameSetupPanel_LaunchButton::OnActivate));
+        MethodAddress(&HudUiNetGameSetupPanel_LaunchButton::OnActivate)
+    );
 }
 
-HudUiNumericTextInput_Base_FTable MakeHudUiNetGameSetupPanelGameNameInputFTable()
-{
+HudUiNumericTextInput_Base_FTable MakeHudUiNetGameSetupPanelGameNameInputFTable() {
     HudUiNumericTextInput_Base_FTable table =
         MakeHudUiNetGameSetupZrdFTable<HudUiNumericTextInput_Base_FTable>(
-            MethodAddress(&HudUiNetGameSetupTextInput::OnActivateFocusAndCursor));
+            MethodAddress(&HudUiNetGameSetupTextInput::OnActivateFocusAndCursor)
+        );
     table.slots[0] = MethodAddress(&HudUiNumericTextInput::ScalarDeletingDestructorThunk);
     table.slots[2] = MethodAddress(&HudUiNumericTextInput::UpdateCaptureUiAndClip);
     table.slots[34] = MethodAddress(&HudUiNumericTextInput::OnRawKeyboardChar);
@@ -73,11 +80,11 @@ HudUiNumericTextInput_Base_FTable MakeHudUiNetGameSetupPanelGameNameInputFTable(
     return table;
 }
 
-HudUiClampedIntTextInput_FTable MakeHudUiNetGameSetupPanelClampedInputFTable()
-{
+HudUiClampedIntTextInput_FTable MakeHudUiNetGameSetupPanelClampedInputFTable() {
     HudUiClampedIntTextInput_FTable table =
         MakeHudUiNetGameSetupZrdFTable<HudUiClampedIntTextInput_FTable>(
-            MethodAddress(&HudUiNetGameSetupTextInput::OnActivateFocusAndCursor));
+            MethodAddress(&HudUiNetGameSetupTextInput::OnActivateFocusAndCursor)
+        );
     table.slots[0] = MethodAddress(&HudUiNumericTextInput::ScalarDeletingDestructorThunk);
     table.slots[2] = MethodAddress(&HudUiNumericTextInput::UpdateCaptureUiAndClip);
     table.slots[33] = MethodAddress(&HudUiClampedIntTextInput::OnRawKeyboardDigitOnly);
@@ -86,97 +93,137 @@ HudUiClampedIntTextInput_FTable MakeHudUiNetGameSetupPanelClampedInputFTable()
     return table;
 }
 
-HudUiCycleSelectorWidget_FTable MakeHudUiNetGameSetupPanelWorldSelectorFTable()
-{
+HudUiCycleSelectorWidget_FTable MakeHudUiNetGameSetupPanelWorldSelectorFTable() {
     HudUiCycleSelectorWidget_FTable table =
         MakeHudUiNetGameSetupZrdFTable<HudUiCycleSelectorWidget_FTable>(
-            MethodAddress(&HudUiZrdWidget::OnActivate));
+            MethodAddress(&HudUiZrdWidget::OnActivate)
+        );
     table.slots[0] = MethodAddress(&HudUiCycleSelectorWidget::ScalarDeletingDestructor);
     table.slots[9] = MethodAddress(&HudUiCycleSelectorWidget::Update);
     table.slots[31] = MethodAddress(&HudUiCycleSelectorWidget::LoadFromZrd);
     return table;
 }
 
-HudUiCheckToggleWidget_FTable MakeHudUiNetGameSetupPanelCheckToggleFTable()
-{
+HudUiCheckToggleWidget_FTable MakeHudUiNetGameSetupPanelCheckToggleFTable() {
     HudUiCheckToggleWidget_FTable table =
         MakeHudUiNetGameSetupZrdFTable<HudUiCheckToggleWidget_FTable>(
-            MethodAddress(&HudUiCheckToggleWidget::OnActivate));
+            MethodAddress(&HudUiCheckToggleWidget::OnActivate)
+        );
     table.slots[0] = MethodAddress(&HudUiCheckToggleWidget::ScalarDeletingDestructor);
     table.slots[31] = MethodAddress(&HudUiCheckToggleWidget::LoadFromZrd);
     return table;
 }
 
-int ClampInt(int value, int minValue, int maxValue)
-{
-    if (value < minValue)
-    {
+int ClampInt(
+    int value,
+    int minValue,
+    int maxValue
+) {
+    if (value < minValue) {
         value = minValue;
     }
-    if (value > maxValue)
-    {
+    if (value > maxValue) {
         value = maxValue;
     }
     return value;
 }
 
-void SetZrdWidgetEnabled(HudUiZrdWidget *widget, int enabled)
-{
+void SetZrdWidgetEnabled(
+    HudUiZrdWidget *widget,
+    int enabled
+) {
     widget->modeOrEnabled = enabled;
     widget->RefreshState();
 }
 
-void InitClampedInput(HudUiClampedIntTextInput *input, int minValue, int maxValue, int value)
-{
+void InitClampedInput(
+    HudUiClampedIntTextInput *input,
+    int minValue,
+    int maxValue,
+    int value
+) {
     input->minValue = minValue;
     input->maxValue = maxValue;
 
     char valueText[20];
-    sprintf(valueText, "%d", ClampInt(value, minValue, maxValue));
+    sprintf(
+        valueText,
+        "%d",
+        ClampInt(value, minValue, maxValue)
+    );
     input->Update(valueText);
 }
 
-void ConfigureStepButton(HudUiClampedIntStepButton *button,
-                         HudUiClampedIntTextInput *targetInput, int stepDelta)
-{
+void ConfigureStepButton(
+    HudUiClampedIntStepButton *button,
+    HudUiClampedIntTextInput *targetInput,
+    int stepDelta
+) {
     button->targetInput = targetInput;
     button->stepDelta = stepDelta;
 }
 
-void SetWidgetVisible(HudUiWidget *widget, int visible)
-{
+void SetWidgetVisible(
+    HudUiWidget *widget,
+    int visible
+) {
     ((HudUiElement *)(widget))->SetVisible(visible);
 }
 
-void ApplyWorldSelectionSideEffects(HudUiNetGameSetupPanel *panel, int selectedIndex)
-{
+void ApplyWorldSelectionSideEffects(
+    HudUiNetGameSetupPanel *panel,
+    int selectedIndex
+) {
     panel->worldSelector.SetIndexClamped(selectedIndex);
 
-    if (panel->worldSelector.selectedIndex == 2)
-    {
-        SetWidgetVisible(&panel->killsSwitch, 0);
-        SetWidgetVisible(&panel->lapsSwitch, 1);
+    if (panel->worldSelector.selectedIndex == 2) {
+        SetWidgetVisible(
+            &panel->killsSwitch,
+            0
+        );
+        SetWidgetVisible(
+            &panel->lapsSwitch,
+            1
+        );
 
-        if (panel->killsInput.CommitAndGetValue() == 1)
-        {
+        if (panel->killsInput.CommitAndGetValue() == 1) {
             panel->killsInput.Update("2");
         }
         panel->killsInput.minValue = 2;
         panel->killsInput.maxValue = 99;
 
-        SetZrdWidgetEnabled(&panel->incTimeLimitButton.base, 0);
-        SetZrdWidgetEnabled(&panel->decTimeLimitButton.base, 0);
-    }
-    else
-    {
-        SetWidgetVisible(&panel->killsSwitch, 1);
-        SetWidgetVisible(&panel->lapsSwitch, 0);
+        SetZrdWidgetEnabled(
+            &panel->incTimeLimitButton.base,
+            0
+        );
+        SetZrdWidgetEnabled(
+            &panel->decTimeLimitButton.base,
+            0
+        );
+    } else {
+        SetWidgetVisible(
+            &panel->killsSwitch,
+            1
+        );
+        SetWidgetVisible(
+            &panel->lapsSwitch,
+            0
+        );
         panel->killsInput.minValue = 1;
         panel->killsInput.maxValue = 99;
 
-        SetZrdWidgetEnabled(&panel->timeLimitInput.base, 1);
-        SetZrdWidgetEnabled(&panel->incTimeLimitButton.base, 1);
-        SetZrdWidgetEnabled(&panel->decTimeLimitButton.base, 1);
+        SetZrdWidgetEnabled(
+            &panel->timeLimitInput.base,
+            1
+        );
+        SetZrdWidgetEnabled(
+            &panel->incTimeLimitButton.base,
+            1
+        );
+        SetZrdWidgetEnabled(
+            &panel->decTimeLimitButton.base,
+            1
+        );
     }
 
     panel->killsInput.base.Invalidate();
@@ -191,30 +238,34 @@ const HudUiZrdWidget_FTable g_HudUiNetGameSetupPanel_PlayButton_FTable =
     MakeHudUiNetGameSetupPanelPlayButtonFTable();
 const HudUiZrdWidget_FTable g_HudUiNetGameSetupPanel_CancelButton_FTable =
     MakeHudUiNetGameSetupZrdFTable<HudUiZrdWidget_FTable>(
-        MethodAddress(&HudUiNetGameSetupPanel_CancelButton::OnActivate));
+        MethodAddress(&HudUiNetGameSetupPanel_CancelButton::OnActivate)
+    );
 const HudUiNumericTextInput_Base_FTable g_HudUiNetGameSetupPanel_GameNameInput_FTable =
     MakeHudUiNetGameSetupPanelGameNameInputFTable();
 const HudUiCycleSelectorWidget_FTable g_HudUiNetGameSetupPanel_WorldSelector_FTable =
     MakeHudUiNetGameSetupPanelWorldSelectorFTable();
 const HudUiZrdWidget_FTable g_HudUiNetGameSetupPanel_NextWorldButton_FTable =
     MakeHudUiNetGameSetupZrdFTable<HudUiZrdWidget_FTable>(
-        MethodAddress(&HudUiNetGameSetupPanel_NextWorldButton::OnActivate));
+        MethodAddress(&HudUiNetGameSetupPanel_NextWorldButton::OnActivate)
+    );
 const HudUiZrdWidget_FTable g_HudUiNetGameSetupPanel_PrevWorldButton_FTable =
     MakeHudUiNetGameSetupZrdFTable<HudUiZrdWidget_FTable>(
-        MethodAddress(&HudUiNetGameSetupPanel_PrevWorldButton::OnActivate));
+        MethodAddress(&HudUiNetGameSetupPanel_PrevWorldButton::OnActivate)
+    );
 const HudUiClampedIntTextInput_FTable g_HudUiNetGameSetupPanel_ClampedInput_FTable =
     MakeHudUiNetGameSetupPanelClampedInputFTable();
 const HudUiZrdWidget_FTable g_HudUiNetGameSetupPanel_StepButton_FTable =
     MakeHudUiNetGameSetupZrdFTable<HudUiZrdWidget_FTable>(
-        MethodAddress(&HudUiClampedIntStepButton::OnActivate));
+        MethodAddress(&HudUiClampedIntStepButton::OnActivate)
+    );
 const HudUiCheckToggleWidget_FTable g_HudUiNetGameSetupPanel_CheckToggle_FTable =
     MakeHudUiNetGameSetupPanelCheckToggleFTable();
 
 // Reimplements 0x419aa0: HudUiNetGameSetupPanel::Constructor
 // (D:\Proj\Battlesport\HudUiNetGameSetup.cpp)
-HudUiNetGameSetupPanel *RECOIL_THISCALL
-HudUiNetGameSetupPanel::Constructor(int reconfigureExistingSessionValue)
-{
+HudUiNetGameSetupPanel *RECOIL_THISCALL HudUiNetGameSetupPanel::Constructor(
+    int reconfigureExistingSessionValue
+) {
     HudUiBackground::Constructor();
 
     playButton.Constructor();
@@ -289,75 +340,212 @@ HudUiNetGameSetupPanel::Constructor(int reconfigureExistingSessionValue)
     reconfigureExistingSession = reconfigureExistingSessionValue;
 
     zReader::Node *const loadedSection =
-        HudUiBackground::LoadFromZrd("dialog.zrd", "MP_NEW_GAME", 0);
-    if (loadedSection != 0)
-    {
-        HudUiBackground::BindPrimitiveNodeToElement(loadedSection, (HudUiElement *)(&killsSwitch),
-                                                    "KILLS_SWITCH");
-        HudUiBackground::BindPrimitiveNodeToElement(loadedSection, (HudUiElement *)(&lapsSwitch),
-                                                    "LAPS_SWITCH");
-        HudUiBackground::BindWidgetByName(loadedSection, &playButton.base, "PLAY");
-        HudUiBackground::BindWidgetByName(loadedSection, &cancelButton.base, "CANCEL");
-        HudUiBackground::BindWidgetByName(loadedSection, &gameNameInput.base.base, "GAME_NAME");
-        HudUiBackground::BindWidgetByName(loadedSection, &worldSelector.base.base, "WORLD");
-        HudUiBackground::BindWidgetByName(loadedSection, &nextWorldButton.base, "INC_WORLD");
-        HudUiBackground::BindWidgetByName(loadedSection, &prevWorldButton.base, "DEC_WORLD");
-        HudUiBackground::BindWidgetByName(loadedSection, &timeLimitInput.base.base, "TIME_LIMIT");
-        HudUiBackground::BindWidgetByName(loadedSection, &incTimeLimitButton.base.base,
-                                          "INC_TIME_LIMIT");
-        HudUiBackground::BindWidgetByName(loadedSection, &decTimeLimitButton.base.base,
-                                          "DEC_TIME_LIMIT");
-        HudUiBackground::BindWidgetByName(loadedSection, &killsInput.base.base, "KILLS");
-        HudUiBackground::BindWidgetByName(loadedSection, &incKillsButton.base.base, "INC_KILLS");
-        HudUiBackground::BindWidgetByName(loadedSection, &decKillsButton.base.base, "DEC_KILLS");
-        HudUiBackground::BindWidgetByName(loadedSection, &maxPlayersInput.base.base,
-                                          "MAX_PLAYERS");
-        HudUiBackground::BindWidgetByName(loadedSection, &incMaxPlayersButton.base.base,
-                                          "INC_MAX_PLAYERS");
-        HudUiBackground::BindWidgetByName(loadedSection, &decMaxPlayersButton.base.base,
-                                          "DEC_MAX_PLAYERS");
-        HudUiBackground::BindWidgetByName(loadedSection, &allowMapsToggle.base.base,
-                                          "ALLOW_MAPS");
-        HudUiBackground::BindWidgetByName(loadedSection, &nameTagsToggle.base.base,
-                                          "NAME_TAGS");
+        HudUiBackground::LoadFromZrd(
+            "dialog.zrd",
+            "MP_NEW_GAME",
+            0
+        );
+    if (loadedSection != 0) {
+        HudUiBackground::BindPrimitiveNodeToElement(
+            loadedSection,
+            (HudUiElement *)(&killsSwitch),
+            "KILLS_SWITCH"
+        );
+        HudUiBackground::BindPrimitiveNodeToElement(
+            loadedSection,
+            (HudUiElement *)(&lapsSwitch),
+            "LAPS_SWITCH"
+        );
+        HudUiBackground::BindWidgetByName(
+            loadedSection,
+            &playButton.base,
+            "PLAY"
+        );
+        HudUiBackground::BindWidgetByName(
+            loadedSection,
+            &cancelButton.base,
+            "CANCEL"
+        );
+        HudUiBackground::BindWidgetByName(
+            loadedSection,
+            &gameNameInput.base.base,
+            "GAME_NAME"
+        );
+        HudUiBackground::BindWidgetByName(
+            loadedSection,
+            &worldSelector.base.base,
+            "WORLD"
+        );
+        HudUiBackground::BindWidgetByName(
+            loadedSection,
+            &nextWorldButton.base,
+            "INC_WORLD"
+        );
+        HudUiBackground::BindWidgetByName(
+            loadedSection,
+            &prevWorldButton.base,
+            "DEC_WORLD"
+        );
+        HudUiBackground::BindWidgetByName(
+            loadedSection,
+            &timeLimitInput.base.base,
+            "TIME_LIMIT"
+        );
+        HudUiBackground::BindWidgetByName(
+            loadedSection,
+            &incTimeLimitButton.base.base,
+            "INC_TIME_LIMIT"
+        );
+        HudUiBackground::BindWidgetByName(
+            loadedSection,
+            &decTimeLimitButton.base.base,
+            "DEC_TIME_LIMIT"
+        );
+        HudUiBackground::BindWidgetByName(
+            loadedSection,
+            &killsInput.base.base,
+            "KILLS"
+        );
+        HudUiBackground::BindWidgetByName(
+            loadedSection,
+            &incKillsButton.base.base,
+            "INC_KILLS"
+        );
+        HudUiBackground::BindWidgetByName(
+            loadedSection,
+            &decKillsButton.base.base,
+            "DEC_KILLS"
+        );
+        HudUiBackground::BindWidgetByName(
+            loadedSection,
+            &maxPlayersInput.base.base,
+            "MAX_PLAYERS"
+        );
+        HudUiBackground::BindWidgetByName(
+            loadedSection,
+            &incMaxPlayersButton.base.base,
+            "INC_MAX_PLAYERS"
+        );
+        HudUiBackground::BindWidgetByName(
+            loadedSection,
+            &decMaxPlayersButton.base.base,
+            "DEC_MAX_PLAYERS"
+        );
+        HudUiBackground::BindWidgetByName(
+            loadedSection,
+            &allowMapsToggle.base.base,
+            "ALLOW_MAPS"
+        );
+        HudUiBackground::BindWidgetByName(
+            loadedSection,
+            &nameTagsToggle.base.base,
+            "NAME_TAGS"
+        );
         HudUiBackground::FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
     }
 
-    SetWidgetVisible(&killsSwitch, 1);
-    SetWidgetVisible(&lapsSwitch, 0);
+    SetWidgetVisible(
+        &killsSwitch,
+        1
+    );
+    SetWidgetVisible(
+        &lapsSwitch,
+        0
+    );
     worldSelector.SetIndexClamped(0);
     currentFocusWidget = 0;
 
     char playerNameText[24];
-    sprintf(playerNameText, "%.21s", zOpt_GetPlayerName());
+    sprintf(
+        playerNameText,
+        "%.21s",
+        zOpt_GetPlayerName()
+    );
     gameNameInput.Update(playerNameText);
     gameNameInput.AllocTextBuffer(22);
 
     const int enabledForNewSession = reconfigureExistingSession == 0 ? 1 : 0;
-    SetZrdWidgetEnabled(&gameNameInput.base, enabledForNewSession);
+    SetZrdWidgetEnabled(
+        &gameNameInput.base,
+        enabledForNewSession
+    );
 
-    InitClampedInput(&timeLimitInput, 5, 360, 15);
-    ConfigureStepButton(&incTimeLimitButton, &timeLimitInput, 1);
-    ConfigureStepButton(&decTimeLimitButton, &timeLimitInput, -1);
+    InitClampedInput(
+        &timeLimitInput,
+        5,
+        360,
+        15
+    );
+    ConfigureStepButton(
+        &incTimeLimitButton,
+        &timeLimitInput,
+        1
+    );
+    ConfigureStepButton(
+        &decTimeLimitButton,
+        &timeLimitInput,
+        -1
+    );
 
-    InitClampedInput(&killsInput, 1, 99, 10);
-    ConfigureStepButton(&incKillsButton, &killsInput, 1);
-    ConfigureStepButton(&decKillsButton, &killsInput, -1);
+    InitClampedInput(
+        &killsInput,
+        1,
+        99,
+        10
+    );
+    ConfigureStepButton(
+        &incKillsButton,
+        &killsInput,
+        1
+    );
+    ConfigureStepButton(
+        &decKillsButton,
+        &killsInput,
+        -1
+    );
 
-    if (zOpt::GetNetworkModemEnabled() != 0)
-    {
-        SetZrdWidgetEnabled(&maxPlayersInput.base, 0);
-        SetZrdWidgetEnabled(&incMaxPlayersButton.base, 0);
-        SetZrdWidgetEnabled(&decMaxPlayersButton.base, 0);
-    }
-    else
-    {
-        InitClampedInput(&maxPlayersInput, 2, 8, 8);
-        SetZrdWidgetEnabled(&maxPlayersInput.base, enabledForNewSession);
-        ConfigureStepButton(&incMaxPlayersButton, &maxPlayersInput, 1);
-        SetZrdWidgetEnabled(&incMaxPlayersButton.base, enabledForNewSession);
-        ConfigureStepButton(&decMaxPlayersButton, &maxPlayersInput, -1);
-        SetZrdWidgetEnabled(&decMaxPlayersButton.base, enabledForNewSession);
+    if (zOpt::GetNetworkModemEnabled() != 0) {
+        SetZrdWidgetEnabled(
+            &maxPlayersInput.base,
+            0
+        );
+        SetZrdWidgetEnabled(
+            &incMaxPlayersButton.base,
+            0
+        );
+        SetZrdWidgetEnabled(
+            &decMaxPlayersButton.base,
+            0
+        );
+    } else {
+        InitClampedInput(
+            &maxPlayersInput,
+            2,
+            8,
+            8
+        );
+        SetZrdWidgetEnabled(
+            &maxPlayersInput.base,
+            enabledForNewSession
+        );
+        ConfigureStepButton(
+            &incMaxPlayersButton,
+            &maxPlayersInput,
+            1
+        );
+        SetZrdWidgetEnabled(
+            &incMaxPlayersButton.base,
+            enabledForNewSession
+        );
+        ConfigureStepButton(
+            &decMaxPlayersButton,
+            &maxPlayersInput,
+            -1
+        );
+        SetZrdWidgetEnabled(
+            &decMaxPlayersButton.base,
+            enabledForNewSession
+        );
     }
 
     allowMapsToggle.SetChecked(1);
@@ -368,8 +556,7 @@ HudUiNetGameSetupPanel::Constructor(int reconfigureExistingSessionValue)
 
 // Reimplements 0x41a400: HudUiNetGameSetupPanel::Destructor
 // (D:\Proj\Battlesport\HudUiNetGameSetup.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiNetGameSetupPanel::Destructor()
-{
+RECOIL_NOINLINE void RECOIL_THISCALL HudUiNetGameSetupPanel::Destructor() {
     lapsSwitch.DestructorCore();
     killsSwitch.DestructorCore();
     nameTagsToggle.DestructorCore();
@@ -393,11 +580,11 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiNetGameSetupPanel::Destructor()
 }
 
 RECOIL_NOINLINE HudUiNetGameSetupPanel *RECOIL_THISCALL
-HudUiNetGameSetupPanel::ScalarDeletingDestructor(unsigned int flags)
-{
+HudUiNetGameSetupPanel::ScalarDeletingDestructor(
+    unsigned int flags
+) {
     Destructor();
-    if ((flags & 1u) != 0)
-    {
+    if ((flags & 1u) != 0) {
         ::operator delete(this);
     }
 
@@ -405,59 +592,61 @@ HudUiNetGameSetupPanel::ScalarDeletingDestructor(unsigned int flags)
 }
 
 // Reimplements 0x41a160: HudUiNetGameSetupPanel_CancelButton::OnActivate
-void RECOIL_THISCALL HudUiNetGameSetupPanel_CancelButton::OnActivate()
-{
+void RECOIL_THISCALL HudUiNetGameSetupPanel_CancelButton::OnActivate() {
     g_RecoilApp.QueueExitCurrentState(0);
-    g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_leaveNetworkState_1d0.base, 0);
+    g_RecoilApp.QueueSwitchCurrentState(
+        &g_RecoilApp.m_leaveNetworkState_1d0.base,
+        0
+    );
     HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x41a5b0: HudUiNetGameSetupPanel_LaunchButton::OnActivate
-void RECOIL_THISCALL HudUiNetGameSetupPanel_LaunchButton::OnActivate()
-{
+void RECOIL_THISCALL HudUiNetGameSetupPanel_LaunchButton::OnActivate() {
     HudUiNetGameSetupPanel *const ownerPanel = (HudUiNetGameSetupPanel *)(owner);
     int statusFlags = 0;
     HudUiZrdWidget::OnActivate();
 
-    if (ownerPanel->allowMapsToggle.checked != 0)
-    {
+    if (ownerPanel->allowMapsToggle.checked != 0) {
         statusFlags = 1;
     }
-    if (ownerPanel->nameTagsToggle.checked != 0)
-    {
+    if (ownerPanel->nameTagsToggle.checked != 0) {
         statusFlags |= 2;
     }
 
     HudUiClampedIntTextInput *const killsInput = &ownerPanel->killsInput;
-    if (zOpt::GetNetworkModemEnabled() == 0 &&
-        ownerPanel->reconfigureExistingSession == 0)
-    {
+    if (zOpt::GetNetworkModemEnabled() == 0 && ownerPanel->reconfigureExistingSession == 0) {
         zNetworkSessionDescStatusFields statusFields;
         statusFields.eventCode = ownerPanel->worldSelector.selectedIndex + 1;
         statusFields.statusFlags = statusFlags;
         statusFields.valueOrTime = ownerPanel->timeLimitInput.CommitAndGetValue();
         statusFields.auxParam = killsInput->CommitAndGetValue();
         statusFields.maxPlayers = ownerPanel->maxPlayersInput.CommitAndGetValue();
-        strcpy(statusFields.sessionNameBuf, ownerPanel->gameNameInput.GetBuffer());
+        strcpy(
+            statusFields.sessionNameBuf,
+            ownerPanel->gameNameInput.GetBuffer()
+        );
 
-        if (zNetwork_DPlay::CreateSessionFromStatusFields(&statusFields) != 0)
-        {
+        if (zNetwork_DPlay::CreateSessionFromStatusFields(&statusFields) != 0) {
             zOpt::SetNetworkEnabled(1);
             zNetwork_DPlay::CreateLocalPlayerRecordAndRegister(zOpt_GetPlayerName());
         }
-    }
-    else
-    {
+    } else {
         const int auxParam = killsInput->CommitAndGetValue();
         const int valueOrTime = ownerPanel->timeLimitInput.CommitAndGetValue();
         GameNet::SendPkt14_HudTimerAndFlagsSync(
-            ownerPanel->worldSelector.selectedIndex + 1, statusFlags, valueOrTime, auxParam);
-        if (zNetwork::IsHost() != 0)
-        {
+            ownerPanel->worldSelector.selectedIndex + 1,
+            statusFlags,
+            valueOrTime,
+            auxParam
+        );
+        if (zNetwork::IsHost() != 0) {
             GameNet::HostUpdateSessionDescStatusFields(
                 ownerPanel->worldSelector.selectedIndex + 1,
                 killsInput->CommitAndGetValue(),
-                ownerPanel->timeLimitInput.CommitAndGetValue(), statusFlags);
+                ownerPanel->timeLimitInput.CommitAndGetValue(),
+                statusFlags
+            );
         }
 
         GameNet::UnregisterGameplayPacketHandlers();
@@ -469,32 +658,39 @@ void RECOIL_THISCALL HudUiNetGameSetupPanel_LaunchButton::OnActivate()
 
     const int goalValue = killsInput->CommitAndGetValue();
     const int timeLimitMinutes = ownerPanel->timeLimitInput.CommitAndGetValue();
-    union TimerSecondsRaw
-    {
+    union TimerSecondsRaw {
         float seconds;
         int raw;
     } timerSeconds = {(float)(timeLimitMinutes) * 60.0f};
-    g_HudSensorTracker.SetRuntimeTimerSecAndGoalValue(timerSeconds.raw, goalValue);
+    g_HudSensorTracker.SetRuntimeTimerSecAndGoalValue(
+        timerSeconds.raw,
+        goalValue
+    );
 
-    CZRecoilFrame *const mainWnd =
-        (CZRecoilFrame *)((unsigned int)(g_RecoilApp.GetMainWnd()));
-    g_HudSensorTracker.InitMissionIdAndFlags(ownerPanel->worldSelector.selectedIndex + 7,
-                                             mainWnd->m_useArchiveBanks);
+    CZRecoilFrame *const mainWnd = (CZRecoilFrame *)((unsigned int)(g_RecoilApp.GetMainWnd()));
+    g_HudSensorTracker.InitMissionIdAndFlags(
+        ownerPanel->worldSelector.selectedIndex + 7,
+        mainWnd->m_useArchiveBanks
+    );
     g_RecoilApp.QueueExitCurrentState(0);
 }
 
 // Reimplements 0x41a820: HudUiNetGameSetupPanel_NextWorldButton::OnActivate
-void RECOIL_THISCALL HudUiNetGameSetupPanel_NextWorldButton::OnActivate()
-{
+void RECOIL_THISCALL HudUiNetGameSetupPanel_NextWorldButton::OnActivate() {
     HudUiNetGameSetupPanel *const ownerPanel = (HudUiNetGameSetupPanel *)(owner);
-    ApplyWorldSelectionSideEffects(ownerPanel, ownerPanel->worldSelector.selectedIndex + 1);
+    ApplyWorldSelectionSideEffects(
+        ownerPanel,
+        ownerPanel->worldSelector.selectedIndex + 1
+    );
     HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x41a9c0: HudUiNetGameSetupPanel_PrevWorldButton::OnActivate
-void RECOIL_THISCALL HudUiNetGameSetupPanel_PrevWorldButton::OnActivate()
-{
+void RECOIL_THISCALL HudUiNetGameSetupPanel_PrevWorldButton::OnActivate() {
     HudUiNetGameSetupPanel *const ownerPanel = (HudUiNetGameSetupPanel *)(owner);
-    ApplyWorldSelectionSideEffects(ownerPanel, ownerPanel->worldSelector.selectedIndex - 1);
+    ApplyWorldSelectionSideEffects(
+        ownerPanel,
+        ownerPanel->worldSelector.selectedIndex - 1
+    );
     HudUiZrdWidget::OnActivate();
 }

@@ -14,26 +14,38 @@
 namespace {
     const char *kSoundSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Sound.c";
 
-    float *SavedParentMatrix(zClass_SoundDataPartial *data) {
+    float *SavedParentMatrix(zClass_SoundDataPartial * data) {
         return (float *)((unsigned char *)data + 0x48);
     }
 
-    int CullNodeForRender(zClass_NodePartial *node, int siblingCountHint,
-                                   int *clipMask) {
+    int CullNodeForRender(
+        zClass_NodePartial * node,
+        int siblingCountHint,
+        int *clipMask
+    ){
         int result = 0;
         if ((*clipMask != 0 && siblingCountHint > 1) || (node->flags & 0x00080000) == 0) {
             if ((node->boundsFlags & 0x04) != 0 || g_zClass_RenderBoundsContextActive != 0 ||
                 (node->flags & 0x00080000) == 0) {
                 zBBoxCorners corners = {0};
-                zClass_Class::gwNodeGetViewBBoxCorners(node, &corners);
-                BBox::CornersToBoundingSphere(&corners, zClass_NodeViewSphereCenter(node),
-                                              zClass_NodeViewSphereRadius(node));
+                zClass_Class::gwNodeGetViewBBoxCorners(
+                    node,
+                    &corners
+                );
+                BBox::CornersToBoundingSphere(
+                    &corners,
+                    zClass_NodeViewSphereCenter(node),
+                    zClass_NodeViewSphereRadius(node)
+                );
                 if ((node->flags & 0x00080000) != 0) {
                     node->boundsFlags &= ~0x04;
                 }
             }
-            result = zVideo_FrustumTestSphereClipMask(zClass_NodeViewSphereCenter(node), clipMask,
-                                                      *zClass_NodeViewSphereRadius(node));
+            result = zVideo_FrustumTestSphereClipMask(
+                zClass_NodeViewSphereCenter(node),
+                clipMask,
+                *zClass_NodeViewSphereRadius(node)
+            );
             if ((node->flags & 0x80) != 0 && result == 0x20) {
                 result = 0;
                 *clipMask &= ~0x20;
@@ -42,7 +54,10 @@ namespace {
         return result;
     }
 
-    void RenderNodeAndChildren(zClass_NodePartial *node, int clipMask) {
+    void RenderNodeAndChildren(
+        zClass_NodePartial * node,
+        int clipMask
+    ){
         node->flags |= 0x80000000;
         zDiPartial *di = (zDiPartial *)(unsigned int)node->userDataOrDiRef;
         if (di != 0 && g_zClass_RenderRangeFadeActive != 0) {
@@ -50,13 +65,19 @@ namespace {
             di->blendScale = g_zClass_RenderRangeFadeScale;
         }
         if (gModel_RenderFn != 0) {
-            gModel_RenderFn(node, clipMask);
+            gModel_RenderFn(
+                node,
+                clipMask
+            );
         }
         if (node->listCountB > 0) {
             ++gModel_ClipMaskStackTop;
             *gModel_ClipMaskStackTop = clipMask;
             for (int i = 0; i < node->listCountB; ++i) {
-                zClass_Class::gwNodeRenderDispatch(node->listB[i], node->listCountB);
+                zClass_Class::gwNodeRenderDispatch(
+                    node->listB[i],
+                    node->listCountB
+                );
             }
             --gModel_ClipMaskStackTop;
         }
@@ -69,7 +90,12 @@ namespace zClass_Sound {
     RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwSoundNew() {
         zClass_NodePartial *const node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x76, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kSoundSourceFile,
+                0x76,
+                "Null node pointer."
+            );
             return 0;
         }
 
@@ -83,7 +109,10 @@ namespace zClass_Sound {
         node->classId = 10;
 
         zClass_SoundDataPartial *const soundData =
-            (zClass_SoundDataPartial *)(calloc(1, sizeof(zClass_SoundDataPartial)));
+            (zClass_SoundDataPartial *)(calloc(
+                1,
+                sizeof(zClass_SoundDataPartial)
+            ));
         node->classData = soundData;
         soundData->sample = 0;
         soundData->playHandle = 0;
@@ -94,10 +123,16 @@ namespace zClass_Sound {
         soundData->rangeMaxSq = 4096.0f;
         soundData->invRangeSpan = 0.03125f;
 
-        zClass_Class::gwNodeSetActive(node, 1);
+        zClass_Class::gwNodeSetActive(
+            node,
+            1
+        );
         soundData->attachedWorldCount = 0;
         soundData->attachedWorlds = 0;
-        zClass_TypeList::Insert(10, node);
+        zClass_TypeList::Insert(
+            10,
+            node
+        );
 
         return node;
     }
@@ -105,14 +140,23 @@ namespace zClass_Sound {
     // Reimplements 0x452ab0: zClass_Sound::DeleteNode
     RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNode(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0xc3, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kSoundSourceFile,
+                0xc3,
+                "Null node pointer."
+            );
             return 5;
         }
 
-        zClass_SoundDataPartial *soundData =
-            (zClass_SoundDataPartial *)(node->classData);
+        zClass_SoundDataPartial *soundData = (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0xc4, "Null class data pointer");
+            zError::ReportOld(
+                0x400,
+                kSoundSourceFile,
+                0xc4,
+                "Null class data pointer"
+            );
             return 5;
         }
 
@@ -127,9 +171,13 @@ namespace zClass_Sound {
         }
 
         if (soundData->attachedWorldCount > 0) {
-            sprintf(g_zError_DebugMsgBuffer,
-                         "%s: Line %d: ERROR deleting sound; Sound attached to %d world nodes.\n",
-                         kSoundSourceFile, 0xda, soundData->attachedWorldCount);
+            sprintf(
+                g_zError_DebugMsgBuffer,
+                "%s: Line %d: ERROR deleting sound; Sound attached to %d world nodes.\n",
+                kSoundSourceFile,
+                0xda,
+                soundData->attachedWorldCount
+            );
             zError::EmitDebugBuffer(1);
             return 1;
         }
@@ -143,41 +191,77 @@ namespace zClass_Sound {
     }
 
     // Reimplements 0x452b80: zClass_Sound::RemoveChild
-    RECOIL_NOINLINE int RECOIL_FASTCALL RemoveChild(zClass_NodePartial * parent,
-                                                             zClass_NodePartial * child) {
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    RemoveChild(
+        zClass_NodePartial * parent,
+        zClass_NodePartial * child
+    ){
         if (parent == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x100, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kSoundSourceFile,
+                0x100,
+                "Null node pointer."
+            );
             return 5;
         }
         if (child == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x101, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kSoundSourceFile,
+                0x101,
+                "Null node pointer."
+            );
             return 5;
         }
 
-        return zClass_Class::RemoveChildGeneric(parent, child);
+        return zClass_Class::RemoveChildGeneric(
+            parent,
+            child
+        );
     }
 
     // Reimplements 0x452bc0: zClass_Sound::SetSampleSetByName
     // (D:\Proj\GameZRecoil\zClass\Sound.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL SetSampleSetByName(zClass_NodePartial * node,
-                                                                    const char *name) {
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    SetSampleSetByName(
+        zClass_NodePartial * node,
+        const char *name
+    ){
         if (node == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x11e, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kSoundSourceFile,
+                0x11e,
+                "Null node pointer."
+            );
             return 5;
         }
 
-        zClass_SoundDataPartial *const soundData =
-            (zClass_SoundDataPartial *)(node->classData);
+        zClass_SoundDataPartial *const soundData = (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x11f, "Null class data pointer");
+            zError::ReportOld(
+                0x400,
+                kSoundSourceFile,
+                0x11f,
+                "Null class data pointer"
+            );
             return 5;
         }
 
         if (strlen(name) >= sizeof(soundData->sampleSetName)) {
-            strncpy(soundData->sampleSetName, name, 0x22);
+            strncpy(
+                soundData->sampleSetName,
+                name,
+                0x22
+            );
             soundData->sampleSetName[0x23] = '\0';
         } else {
-            sprintf(soundData->sampleSetName, "%s", name);
+            sprintf(
+                soundData->sampleSetName,
+                "%s",
+                name
+            );
         }
 
         soundData->sample = zSnd::FindSampleByName(soundData->sampleSetName);
@@ -188,17 +272,28 @@ namespace zClass_Sound {
     }
 
     // Reimplements 0x452c60: zClass_Sound::gwSoundSetActive
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwSoundSetActive(zClass_NodePartial * node,
-                                                                  int active) {
+    RECOIL_NOINLINE int RECOIL_FASTCALL gwSoundSetActive(
+        zClass_NodePartial * node,
+        int active
+    ){
         if (node == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x149, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kSoundSourceFile,
+                0x149,
+                "Null node pointer."
+            );
             return 5;
         }
 
-        zClass_SoundDataPartial *const soundData =
-            (zClass_SoundDataPartial *)(node->classData);
+        zClass_SoundDataPartial *const soundData = (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x14a, "Null class data pointer");
+            zError::ReportOld(
+                0x400,
+                kSoundSourceFile,
+                0x14a,
+                "Null class data pointer"
+            );
             return 5;
         }
 
@@ -223,17 +318,31 @@ namespace zClass_Sound {
 
     // Reimplements 0x452d00: zClass_Sound::gwSoundSetPosition
     // (D:\Proj\GameZRecoil\zClass\Sound.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwSoundSetPosition(zClass_NodePartial * node,
-                                                                    float x, float y, float z) {
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwSoundSetPosition(
+        zClass_NodePartial * node,
+        float x,
+        float y,
+        float z
+    ){
         if (node == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x17e, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kSoundSourceFile,
+                0x17e,
+                "Null node pointer."
+            );
             return 5;
         }
 
-        zClass_SoundDataPartial *const soundData =
-            (zClass_SoundDataPartial *)(node->classData);
+        zClass_SoundDataPartial *const soundData = (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x17f, "Null class data pointer");
+            zError::ReportOld(
+                0x400,
+                kSoundSourceFile,
+                0x17f,
+                "Null class data pointer"
+            );
             return 5;
         }
 
@@ -244,11 +353,52 @@ namespace zClass_Sound {
         return 0;
     }
 
+    // Reimplements 0x452d60: zClass_Sound::gwSoundGetPosition
+    // (D:\Proj\GameZRecoil\zClass\Sound.c)
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    gwSoundGetPosition(
+        zClass_NodePartial * node,
+        float *outX,
+        float *outY,
+        float *outZ
+    ){
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kSoundSourceFile,
+                0x1d0,
+                "Null node pointer."
+            );
+            return 5;
+        }
+
+        zClass_SoundDataPartial *const soundData = (zClass_SoundDataPartial *)(node->classData);
+        if (soundData == 0) {
+            zError::ReportOld(
+                0x400,
+                kSoundSourceFile,
+                0x1d1,
+                "Null class data pointer"
+            );
+            return 5;
+        }
+
+        *outX = soundData->localPosition.x;
+        *outY = soundData->localPosition.y;
+        *outZ = soundData->localPosition.z;
+        return 0;
+    }
+
     // Reimplements 0x452dc0: zClass_Sound::UpdatePlayback
     // (D:\Proj\GameZRecoil\zClass\Sound.c)
     RECOIL_NOINLINE int RECOIL_FASTCALL UpdatePlayback(zClass_NodePartial * node) {
         if (node == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x224, "Null node pointer.");
+            zError::ReportOld(
+                0x400,
+                kSoundSourceFile,
+                0x224,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -256,10 +406,14 @@ namespace zClass_Sound {
             return 0;
         }
 
-        zClass_SoundDataPartial *soundData =
-            (zClass_SoundDataPartial *)(node->classData);
+        zClass_SoundDataPartial *soundData = (zClass_SoundDataPartial *)(node->classData);
         if (soundData == 0) {
-            zError::ReportOld(0x400, kSoundSourceFile, 0x22a, "Null class data pointer");
+            zError::ReportOld(
+                0x400,
+                kSoundSourceFile,
+                0x22a,
+                "Null class data pointer"
+            );
             return 5;
         }
 
@@ -269,16 +423,26 @@ namespace zClass_Sound {
         }
 
         if ((soundData->runtimeFlags & 0x04) != 0) {
-            ComputeWorldTransform(node, soundData);
+            ComputeWorldTransform(
+                node,
+                soundData
+            );
             if (soundData->playHandle != 0) {
-                soundData->playHandle->Update3DDispatch(&soundData->worldPos, 0, 0);
+                soundData->playHandle->Update3DDispatch(
+                    &soundData->worldPos,
+                    0,
+                    0
+                );
                 soundData->runtimeFlags &= ~0x01;
                 return 0;
             }
 
             if (soundData->sample != 0) {
-                soundData->playHandle =
-                    soundData->sample->PlayA3D(&soundData->worldPos, 1.0f, 0);
+                soundData->playHandle = soundData->sample->PlayA3D(
+                    &soundData->worldPos,
+                    1.0f,
+                    0
+                );
                 if (zSndPlayHandle_TryEnableManaged(soundData->playHandle) != 0) {
                     soundData->runtimeFlags |= 0x08;
                 }
@@ -296,29 +460,31 @@ namespace zClass_Sound {
 
     // Reimplements 0x452ec0: zClass_Sound::ComputeWorldTransform
     // (D:\Proj\GameZRecoil\zClass\Sound.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL ComputeWorldTransform(
-        zClass_NodePartial * node, zClass_SoundDataPartial * soundData) {
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    ComputeWorldTransform(
+        zClass_NodePartial * node,
+        zClass_SoundDataPartial * soundData
+    ){
         zVec3 localPoint = {0.0f, 0.0f, 0.0f};
         zMat4x3 slotBuffer = {0};
 
         zMath::MatStackPushPtr((float *)(&slotBuffer));
         zMath::MatLoadIdentity();
-        gwNode::BuildNodeToAncestorMatrix(node, 1);
+        gwNode::BuildNodeToAncestorMatrix(
+            node,
+            1
+        );
 
         if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
             soundData->worldPos = localPoint;
         } else {
-            const zMat4x3 *matrix =
-                (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
-            soundData->worldPos.x =
-                localPoint.x * matrix->xx + localPoint.y * matrix->yx +
-                localPoint.z * matrix->zx + matrix->posX;
-            soundData->worldPos.z =
-                localPoint.x * matrix->xz + localPoint.y * matrix->yz +
-                localPoint.z * matrix->zz + matrix->posZ;
-            soundData->worldPos.y =
-                localPoint.x * matrix->xy + localPoint.y * matrix->yy +
-                localPoint.z * matrix->zy + matrix->posY;
+            const zMat4x3 *matrix = (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+            soundData->worldPos.x = localPoint.x * matrix->xx + localPoint.y * matrix->yx +
+                                    localPoint.z * matrix->zx + matrix->posX;
+            soundData->worldPos.z = localPoint.x * matrix->xz + localPoint.y * matrix->yz +
+                                    localPoint.z * matrix->zz + matrix->posZ;
+            soundData->worldPos.y = localPoint.x * matrix->xy + localPoint.y * matrix->yy +
+                                    localPoint.z * matrix->zy + matrix->posY;
         }
 
         zMath::MatStackPopPtr();
@@ -327,8 +493,11 @@ namespace zClass_Sound {
 
     // Reimplements 0x44af60: zClass_Sound::RenderTraverse
     // (D:\Proj\GameZRecoil\zClass\Sound.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL RenderTraverse(
-        zClass_NodePartial *node, int siblingCountHint) {
+    RECOIL_NOINLINE int RECOIL_FASTCALL
+    RenderTraverse(
+        zClass_NodePartial * node,
+        int siblingCountHint
+    ){
         const int flags = node->flags;
         int boundsContextPushed = 0;
         if ((flags & 0x04) == 0) {
@@ -338,7 +507,11 @@ namespace zClass_Sound {
         node->flags = flags & ~0x02000000;
         zClass_SoundDataPartial *data = (zClass_SoundDataPartial *)(node->classData);
         int clipMask = *gModel_ClipMaskStackTop;
-        const int result = CullNodeForRender(node, siblingCountHint, &clipMask);
+        const int result = CullNodeForRender(
+            node,
+            siblingCountHint,
+            &clipMask
+        );
         if (g_zClass_RenderBoundsContextActive == 0) {
             boundsContextPushed = 1;
             g_zClass_RenderBoundsContextActive = 1;
@@ -348,8 +521,15 @@ namespace zClass_Sound {
             const zVec3 angles = {0.0f, 0.0f, 0.0f};
             const zVec3 unitScale = {1.0f, 1.0f, 1.0f};
             zMath::MatStackPushAndCloneParent(SavedParentMatrix(data));
-            zMath::MatApplyLocalTRS(&angles, &data->localPosition, &unitScale);
-            RenderNodeAndChildren(node, clipMask);
+            zMath::MatApplyLocalTRS(
+                &angles,
+                &data->localPosition,
+                &unitScale
+            );
+            RenderNodeAndChildren(
+                node,
+                clipMask
+            );
             zMath::MatStackPopPtr();
         }
 

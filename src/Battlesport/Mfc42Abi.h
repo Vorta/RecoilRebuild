@@ -13,6 +13,65 @@
 #include <afx.h>
 #undef _AFX_ENABLE_INLINES
 #include <afxwin.h>
+
+// VC5SP3's common-control headers predate several declarations consumed by
+// the vendored MFC42 afxcmn.h. Supply only the missing SDK shapes for local
+// object-byte verification; modern builds already get these from Windows SDKs.
+#if defined(_MSC_VER) && _MSC_VER <= 1200
+typedef struct tagLVBKIMAGEA {
+    ULONG ulFlags;
+    HBITMAP hbm;
+    LPSTR pszImage;
+    UINT cchImageMax;
+    int xOffsetPercent;
+    int yOffsetPercent;
+} LVBKIMAGEA, *LPLVBKIMAGEA;
+typedef LVBKIMAGEA LVBKIMAGE;
+typedef LPLVBKIMAGEA LPLVBKIMAGE;
+
+#ifndef TBIF_IMAGE
+typedef struct tagTBBUTTONINFOA {
+    UINT cbSize;
+    DWORD dwMask;
+    int idCommand;
+    int iImage;
+    BYTE fsState;
+    BYTE fsStyle;
+    WORD cx;
+    DWORD lParam;
+    LPSTR pszText;
+    int cchText;
+} TBBUTTONINFOA, *LPTBBUTTONINFOA;
+typedef TBBUTTONINFOA TBBUTTONINFO;
+typedef LPTBBUTTONINFOA LPTBBUTTONINFO;
+#endif
+
+#ifndef TBIMHT_AFTER
+typedef struct tagTBINSERTMARK {
+    int iButton;
+    DWORD dwFlags;
+} TBINSERTMARK, *LPTBINSERTMARK;
+#endif
+
+#ifndef RBBS_GRIPPERALWAYS
+#define RBBS_GRIPPERALWAYS 0x00000080
+#endif
+
+typedef struct tagCOLORSCHEME {
+    DWORD dwSize;
+    COLORREF clrBtnHighlight;
+    COLORREF clrBtnShadow;
+} COLORSCHEME, *LPCOLORSCHEME;
+
+#ifndef RBHT_NOWHERE
+typedef struct tagRBHITTESTINFO {
+    POINT pt;
+    UINT flags;
+    int iBand;
+} RBHITTESTINFO, *LPRBHITTESTINFO;
+#endif
+#endif
+
 #include <afxcmn.h>
 #include <afxext.h>
 #if defined(RECOIL_MFC42_RESTORE_DEBUG)

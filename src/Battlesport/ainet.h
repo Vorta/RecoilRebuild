@@ -1,7 +1,7 @@
 #pragma once
 
-#include <stddef.h>
 #include "recoil/recoil_types.h"
+#include <stddef.h>
 
 #include "GameZRecoil/include/zClass.h"
 #include "recoil/recoil_callconv.h"
@@ -15,8 +15,11 @@ struct AINetPathProbeFan {
     float pathWidth;
     unsigned char unknown_38[0x04];
 
-    RECOIL_NOINLINE void RECOIL_THISCALL InitFromSegment(zVec3 fromPosition, zVec3 toPosition,
-                                                         float pathWidth);
+    RECOIL_NOINLINE void RECOIL_THISCALL InitFromSegment(
+        zVec3 fromPosition,
+        zVec3 toPosition,
+        float pathWidth
+    );
 };
 
 struct AINetNode {
@@ -73,12 +76,18 @@ struct AINet {
     RECOIL_NOINLINE static AINet *RECOIL_FASTCALL LoadFromZrd(int netId);
     RECOIL_NOINLINE static AINet *RECOIL_CDECL Alloc();
     RECOIL_NOINLINE static AINet *RECOIL_FASTCALL FindByNetId(int netId);
-    RECOIL_NOINLINE static AINetNode *RECOIL_FASTCALL FindNearestNode(const zVec3 *position,
-                                                                      AINetNode *nodeListHead);
-    RECOIL_NOINLINE static AINetNode *RECOIL_FASTCALL FindNodeByIndex(int nodeIndex,
-                                                                      AINetNode *nodeListHead);
-    RECOIL_NOINLINE static void RECOIL_FASTCALL
-    ResolveNeighborLinksAndBuildProbeFans(AINetNode *nodeListHead, float pathWidth);
+    RECOIL_NOINLINE static AINetNode *RECOIL_FASTCALL FindNearestNode(
+        const zVec3 *position,
+        AINetNode *nodeListHead
+    );
+    RECOIL_NOINLINE static AINetNode *RECOIL_FASTCALL FindNodeByIndex(
+        int nodeIndex,
+        AINetNode *nodeListHead
+    );
+    RECOIL_NOINLINE static void RECOIL_FASTCALL ResolveNeighborLinksAndBuildProbeFans(
+        AINetNode *nodeListHead,
+        float pathWidth
+    );
     RECOIL_NOINLINE void RECOIL_THISCALL Free();
     RECOIL_NOINLINE static void RECOIL_CDECL FreeAll();
 };
@@ -88,35 +97,180 @@ extern AINet *g_AINetListHead;
 extern AINet *g_AINetListTail;
 }
 
-RECOIL_STATIC_ASSERT(offsetof(AINetNode, position) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(AINetNode, neighborNodes) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(AINetNode, probeFans) == 0x18);
-RECOIL_STATIC_ASSERT(offsetof(AINetNode, costOrType) == 0x24);
-RECOIL_STATIC_ASSERT(offsetof(AINetNode, nodeIndex) == 0x28);
-RECOIL_STATIC_ASSERT(offsetof(AINetNode, next) == 0x2c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINetNode,
+        position
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINetNode,
+        neighborNodes
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINetNode,
+        probeFans
+    ) == 0x18
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINetNode,
+        costOrType
+    ) == 0x24
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINetNode,
+        nodeIndex
+    ) == 0x28
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINetNode,
+        next
+    ) == 0x2c
+);
 RECOIL_STATIC_ASSERT(sizeof(AINetNode) == 0x30);
-RECOIL_STATIC_ASSERT(offsetof(AINetPathProbeFan, clampedTravel) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(AINetPathProbeFan, perpendicular) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(AINetPathProbeFan, probeDirPlus45) == 0x1c);
-RECOIL_STATIC_ASSERT(offsetof(AINetPathProbeFan, probeDirMinus45) == 0x28);
-RECOIL_STATIC_ASSERT(offsetof(AINetPathProbeFan, pathWidth) == 0x34);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINetPathProbeFan,
+        clampedTravel
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINetPathProbeFan,
+        perpendicular
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINetPathProbeFan,
+        probeDirPlus45
+    ) == 0x1c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINetPathProbeFan,
+        probeDirMinus45
+    ) == 0x28
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINetPathProbeFan,
+        pathWidth
+    ) == 0x34
+);
 RECOIL_STATIC_ASSERT(sizeof(AINetPathProbeFan) == 0x3c);
-RECOIL_STATIC_ASSERT(offsetof(AINet, netId) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(AINet, name) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(AINet, aiType) == 0x18);
-RECOIL_STATIC_ASSERT(offsetof(AINet, pathWidth) == 0x1c);
-RECOIL_STATIC_ASSERT(offsetof(AINet, activateRadius) == 0x20);
-RECOIL_STATIC_ASSERT(offsetof(AINet, attackRadius) == 0x24);
-RECOIL_STATIC_ASSERT(offsetof(AINet, attackDwell) == 0x28);
-RECOIL_STATIC_ASSERT(offsetof(AINet, notPursuitDwell) == 0x2c);
-RECOIL_STATIC_ASSERT(offsetof(AINet, pursuitParam0) == 0x30);
-RECOIL_STATIC_ASSERT(offsetof(AINet, pursuitParam1) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(AINet, returnRange) == 0x38);
-RECOIL_STATIC_ASSERT(offsetof(AINet, hideTime0) == 0x3c);
-RECOIL_STATIC_ASSERT(offsetof(AINet, hideTime1) == 0x40);
-RECOIL_STATIC_ASSERT(offsetof(AINet, activateBuddyNetId) == 0x44);
-RECOIL_STATIC_ASSERT(offsetof(AINet, attackBuddyNetId) == 0x48);
-RECOIL_STATIC_ASSERT(offsetof(AINet, attackStrategy) == 0x4c);
-RECOIL_STATIC_ASSERT(offsetof(AINet, nodeListHead) == 0x50);
-RECOIL_STATIC_ASSERT(offsetof(AINet, next) == 0x54);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINet,
+        netId
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINet,
+        name
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINet,
+        aiType
+    ) == 0x18
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINet,
+        pathWidth
+    ) == 0x1c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINet,
+        activateRadius
+    ) == 0x20
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINet,
+        attackRadius
+    ) == 0x24
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINet,
+        attackDwell
+    ) == 0x28
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINet,
+        notPursuitDwell
+    ) == 0x2c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINet,
+        pursuitParam0
+    ) == 0x30
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINet,
+        pursuitParam1
+    ) == 0x34
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINet,
+        returnRange
+    ) == 0x38
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINet,
+        hideTime0
+    ) == 0x3c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINet,
+        hideTime1
+    ) == 0x40
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINet,
+        activateBuddyNetId
+    ) == 0x44
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINet,
+        attackBuddyNetId
+    ) == 0x48
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINet,
+        attackStrategy
+    ) == 0x4c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINet,
+        nodeListHead
+    ) == 0x50
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        AINet,
+        next
+    ) == 0x54
+);
 RECOIL_STATIC_ASSERT(sizeof(AINet) == 0x58);

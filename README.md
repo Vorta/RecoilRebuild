@@ -48,6 +48,20 @@ testing, or review practical without changing the recovered engine contract.
 
 ## Status
 
+<!-- RECOIL_PROGRESS:START -->
+Generated from `.agent/RECOIL_PLAN.md`.
+
+| Progress marker | Count | Percent |
+| --- | ---: | ---: |
+| Reconstructed entries | 2715/3917 | 69.3% |
+| Partially reconstructed entries | 1202/3917 | 30.7% |
+| Source-ready entries | 3721/3917 | 95.0% |
+| Reimplemented authored functions | 3380/3917 | 86.3% |
+| Functionally equivalent authored functions | 3207/3917 | 81.9% |
+| Binary-safe authored functions | 346/3917 | 8.8% |
+| Accepted provider boundaries | 341/3917 | 8.7% |
+<!-- RECOIL_PROGRESS:END -->
+
 Reconstruction is ongoing. Some subsystems have source-level implementations
 and focused tests, while others remain partial or documented as recovered facts.
 The project favors evidence-backed source recovery over broad rewrites, so code

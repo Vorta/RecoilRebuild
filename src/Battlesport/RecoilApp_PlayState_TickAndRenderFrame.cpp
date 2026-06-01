@@ -15,28 +15,33 @@
 #include "GameZRecoil/zVideo/zVideo.h"
 
 namespace {
-int HalfTruncTowardZero(int value)
-{
+int HalfTruncTowardZero(
+    int value
+) {
     return value / 2;
 }
 
-zOpt_ViewRectSection *ViewRectFromPtr(RecoilPtr32 ptr)
-{
+zOpt_ViewRectSection *ViewRectFromPtr(
+    RecoilPtr32 ptr
+) {
     return (zOpt_ViewRectSection *)((unsigned int)(ptr));
 }
 } // namespace
 
-// Reimplements 0x42f280: RecoilApp_PlayState::TickAndRenderFrame (D:\Proj\Battlesport\RecoilApp.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL
-RecoilApp_PlayState::TickAndRenderFrame(int shouldPresent)
-{
+// Reimplements 0x42f280: RecoilApp_PlayState::TickAndRenderFrame
+// (D:\Proj\Battlesport\RecoilApp.cpp)
+RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_PlayState::TickAndRenderFrame(
+    int shouldPresent
+) {
     Time::Tick();
 
-    if (g_Player_ActiveDebugScriptAsyncEntry != 0 &&
-        zInput::Keyboard_WaitForAnyKeyPress(0) != 0) {
+    if (g_Player_ActiveDebugScriptAsyncEntry != 0 && zInput::Keyboard_WaitForAnyKeyPress(0) != 0) {
         zEffectAnimEntry *const entry = g_Player_ActiveDebugScriptAsyncEntry;
         g_Player_ActiveDebugScriptAsyncEntry = 0;
-        zEffect_Anim::NodeActionCallback(entry, 0);
+        zEffect_Anim::NodeActionCallback(
+            entry,
+            0
+        );
     }
 
     zInput::PollActiveDevices(1);
@@ -57,9 +62,16 @@ RecoilApp_PlayState::TickAndRenderFrame(int shouldPresent)
 
     if (g_Player_HorizonNodeFollowCameraEnabled != 0 && g_Player_HorizonNode != 0) {
         zVec3 cameraPosition = {0};
-        gwNode::GetWorldPosition(g_MainCamera, &cameraPosition);
-        zClass_Object3D::gwObject3DSetPosition(g_Player_HorizonNode, cameraPosition.x,
-                                               cameraPosition.y, cameraPosition.z);
+        gwNode::GetWorldPosition(
+            g_MainCamera,
+            &cameraPosition
+        );
+        zClass_Object3D::gwObject3DSetPosition(
+            g_Player_HorizonNode,
+            cameraPosition.x,
+            cameraPosition.y,
+            cameraPosition.z
+        );
     }
 
     const int oldClearState = zVideo::GetClearScreenBufferEnabled();
@@ -69,8 +81,10 @@ RecoilApp_PlayState::TickAndRenderFrame(int shouldPresent)
     zOpt_ViewRectSection *const clearRect = layoutDelay != 0 ? windowSection : renderSection;
 
     if (zVid::GetAccelerationOption() != 0) {
-        zVideo::CallClearSwSurfaceAndZBuffer((zVidRect32 *)(clearRect),
-                                             (zVidRect32 *)(windowSection));
+        zVideo::CallClearSwSurfaceAndZBuffer(
+            (zVidRect32 *)(clearRect),
+            (zVidRect32 *)(windowSection)
+        );
     } else {
         zVideo::CallClearPrimarySurfaceAndZBuffer((zVidRect32 *)(clearRect));
     }
@@ -86,10 +100,17 @@ RecoilApp_PlayState::TickAndRenderFrame(int shouldPresent)
         pixels = zVideo::GetPrimarySurfacePixels();
     }
 
-    zRndr::SetFrameBufferRegion(pixels, renderSection, zOpt::GetDisplaySectionBitsPerPixel(),
-                                pitchBytes);
+    zRndr::SetFrameBufferRegion(
+        pixels,
+        renderSection,
+        zOpt::GetDisplaySectionBitsPerPixel(),
+        pitchBytes
+    );
     zClass_List::RenderActiveCameras();
-    zVideo::FxPass3_SetInputRectByIndex(0, (HudUiRect *)(renderSection));
+    zVideo::FxPass3_SetInputRectByIndex(
+        0,
+        (HudUiRect *)(renderSection)
+    );
 
     HudUiMgrSensor::GetFxRect(&g_HudUiMgrSensor_FxRectScratch);
     int fxTop = g_HudUiMgrSensor_FxRectScratch.top;
@@ -112,7 +133,10 @@ RecoilApp_PlayState::TickAndRenderFrame(int shouldPresent)
         }
         fxRectOrNull = &g_HudUiMgrSensor_FxRectScratch;
     }
-    zVideo::FxPass3_SetInputRectByIndex(1, fxRectOrNull);
+    zVideo::FxPass3_SetInputRectByIndex(
+        1,
+        fxRectOrNull
+    );
 
     const int quitTransition = zInput::Keyboard_GetKeyTransitionState(1) & 3;
 
@@ -140,20 +164,30 @@ RecoilApp_PlayState::TickAndRenderFrame(int shouldPresent)
         zVideo::Dispatch_UnlockSwSurfaceState();
 
         if (shouldPresent != 0) {
-            g_zVideo_pfnBltSwToPrimaryRectDirect((zVidRect32 *)(renderSection),
-                                                 (zVidRect32 *)(displaySection));
+            g_zVideo_pfnBltSwToPrimaryRectDirect(
+                (zVidRect32 *)(renderSection),
+                (zVidRect32 *)(displaySection)
+            );
         }
 
         zVideo::RunPostprocessOnPrimaryBuffer();
         if (quitTransition != 0) {
             zVideo::Dispatch_UnlockPrimarySurfaceState();
-            zVideo::AdjustSurfacesIfEnabled(0, 0, 0, 1);
+            zVideo::AdjustSurfacesIfEnabled(
+                0,
+                0,
+                0,
+                1
+            );
             return 1;
         }
 
         g_HudSensorTracker.UpdateObjectiveFlow();
         zRndr::SetActiveRegionSizeFromRect((HudUiRect *)(windowSection));
-        zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(0, 2.0f);
+        zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(
+            0,
+            2.0f
+        );
         HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag(&g_Variant_CurrentTag);
         HudUiMgr::UpdateFrame();
         if (zOpt::GetNetworkEnabled() != 0) {
@@ -166,13 +200,21 @@ RecoilApp_PlayState::TickAndRenderFrame(int shouldPresent)
 
         if (quitTransition != 0) {
             zVideo::Dispatch_UnlockPrimarySurfaceState();
-            zVideo::AdjustSurfacesIfEnabled(0, 0, 0, 1);
+            zVideo::AdjustSurfacesIfEnabled(
+                0,
+                0,
+                0,
+                1
+            );
             return 1;
         }
 
         g_HudSensorTracker.UpdateObjectiveFlow();
         zRndr::SetActiveRegionSizeFromRect((HudUiRect *)(windowSection));
-        zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(0, 1.0f);
+        zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(
+            0,
+            1.0f
+        );
         HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag(&g_Variant_CurrentTag);
         HudUiMgr::UpdateFrame();
         if (zOpt::GetNetworkEnabled() != 0) {
@@ -182,8 +224,12 @@ RecoilApp_PlayState::TickAndRenderFrame(int shouldPresent)
     }
 
     if (shouldPresent != 0) {
-        zVideo::AdjustSurfacesIfEnabled((zVidRect32 *)(windowSection),
-                                        (zVidRect32 *)(windowSection), 0, 0);
+        zVideo::AdjustSurfacesIfEnabled(
+            (zVidRect32 *)(windowSection),
+            (zVidRect32 *)(windowSection),
+            0,
+            0
+        );
     }
 
     return 0;

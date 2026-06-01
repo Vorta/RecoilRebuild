@@ -56,31 +56,137 @@ struct HudUiNetGameSetupPanel : HudUiBackground {
 
     HudUiNetGameSetupPanel *RECOIL_THISCALL Constructor(int reconfigureExistingSessionValue);
     RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE HudUiNetGameSetupPanel *RECOIL_THISCALL
-    ScalarDeletingDestructor(unsigned int flags);
+    RECOIL_NOINLINE HudUiNetGameSetupPanel *RECOIL_THISCALL ScalarDeletingDestructor(
+        unsigned int flags
+    );
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel) == 0xcaac);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, currentFocusWidget) == 0xa94c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, playButton) == 0xa950);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, cancelButton) == 0xaa9c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, gameNameInput) == 0xabe8);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, worldSelector) == 0xaf5c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, nextWorldButton) == 0xb164);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, prevWorldButton) == 0xb2b0);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, timeLimitInput) == 0xb3fc);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, incTimeLimitButton) == 0xb778);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, decTimeLimitButton) == 0xb8cc);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, killsInput) == 0xba20);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, incKillsButton) == 0xbd9c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, decKillsButton) == 0xbef0);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, maxPlayersInput) == 0xc044);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, incMaxPlayersButton) == 0xc3c0);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, decMaxPlayersButton) == 0xc514);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, allowMapsToggle) == 0xc668);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, nameTagsToggle) == 0xc7cc);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, killsSwitch) == 0xc930);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, lapsSwitch) == 0xc9ec);
-RECOIL_STATIC_ASSERT(offsetof(HudUiNetGameSetupPanel, reconfigureExistingSession) == 0xcaa8);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        currentFocusWidget
+    ) == 0xa94c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        playButton
+    ) == 0xa950
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        cancelButton
+    ) == 0xaa9c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        gameNameInput
+    ) == 0xabe8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        worldSelector
+    ) == 0xaf5c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        nextWorldButton
+    ) == 0xb164
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        prevWorldButton
+    ) == 0xb2b0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        timeLimitInput
+    ) == 0xb3fc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        incTimeLimitButton
+    ) == 0xb778
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        decTimeLimitButton
+    ) == 0xb8cc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        killsInput
+    ) == 0xba20
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        incKillsButton
+    ) == 0xbd9c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        decKillsButton
+    ) == 0xbef0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        maxPlayersInput
+    ) == 0xc044
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        incMaxPlayersButton
+    ) == 0xc3c0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        decMaxPlayersButton
+    ) == 0xc514
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        allowMapsToggle
+    ) == 0xc668
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        nameTagsToggle
+    ) == 0xc7cc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        killsSwitch
+    ) == 0xc930
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        lapsSwitch
+    ) == 0xc9ec
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupPanel,
+        reconfigureExistingSession
+    ) == 0xcaa8
+);
 
 extern const HudUiNetGameSetupPanel_FTable g_HudUiNetGameSetupPanel_FTable;
 extern const HudUiZrdWidget_FTable g_HudUiNetGameSetupPanel_PlayButton_FTable;
