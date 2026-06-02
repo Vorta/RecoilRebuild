@@ -1,7 +1,7 @@
 # Verified Patterns
 
 This ledger captures reusable source and verification shapes that have current
-binary-safe evidence. Binary Ninja, `.agent/RECOIL_PLAN.md`, and per-target VC
+tier `S` evidence. Binary Ninja, `.agent/RECOIL_PLAN.md`, and per-target VC
 artifacts remain authoritative for individual functions.
 
 ## Current Patterns
@@ -33,4 +33,3 @@ artifacts remain authoritative for individual functions.
   ABI note. Keep address examples compact.
 - Keep failed-byte functional lanes in their subsystem notes unless they become
   broadly reusable.
-

@@ -19,7 +19,7 @@ per-target VC verification evidence.
 
 ## Recovered Contract
 
-- First-pass binary-safe compiler evidence is VC5SP3 `cl` 11.00.7022 with
+- First-pass tier `S` compiler evidence is VC5SP3 `cl` 11.00.7022 with
   32-bit x86 code generation unless Binary Ninja/original bytes justify another
   profile.
 - VC6 `cl` 12.00.8168 profiles are fallbacks for functions whose original
@@ -43,11 +43,11 @@ per-target VC verification evidence.
 
 ## Verification Notes
 
-- Native CMake builds and CTest are smoke and guard checks, not binary-safe
+- Native CMake builds and CTest are smoke and guard checks, not tier `S`
   acceptance.
 - VC verification manifests should compile production source through
   `source_from`.
-- Passing binary-safe verification normally requires relocation-masked COFF
+- Passing tier `S` verification normally requires relocation-masked COFF
   object bytes to match Binary Ninja/original bytes. Legacy text comparison is
   acceptable only for explicitly accepted `compare_mode: text` targets with
   documented accepted differences.

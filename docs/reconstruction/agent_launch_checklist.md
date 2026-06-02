@@ -5,6 +5,11 @@ new agent. It does not replace `AGENTS.md`; Binary Ninja and
 `.agent/RECOIL_PLAN.md` remain authoritative for function evidence and plan
 state.
 
+`AGENTS.md` and `.agent/AGENTS.md` are intentionally local ignored instruction
+surfaces in this workspace. `tools/` and `tests/tools/` are also ignored, but
+they are required local verification infrastructure for doctor, CTest guards,
+and tool tests.
+
 ## Required preflight
 
 Run the process-health check from the workspace root:
@@ -54,15 +59,22 @@ python tools/recoil_handoff.py 0xNNNNNN --include-artifacts
 ```
 
 After finishing a function or class reimplementation step, create a focused
-local git commit. A coherent multi-function batch may use one commit. Do not
-push. Stage only the agent's own related changes, do not use `git add .`, and
-do not stage private inputs, generated artifacts, ignored runtime state, local
-tools, local tool tests, local verification manifests, or unrelated user
-changes. Never use `git add -f` to force ignored paths.
+local git commit only when the completed batch includes tracked production
+source changes under `src/`. A coherent multi-function batch may use one commit.
+Do not commit for `.agent/RECOIL_PLAN.md`-only changes, or for docs-only,
+tools-only, manifest-only, or test-only changes. Related plan-marker updates may
+be staged with a qualifying source commit, but the commit subject must describe
+the source work or evidence level, not plan bookkeeping. Do not push. Stage only
+the agent's own related changes, do not use `git add .`, and do not stage
+private inputs, generated artifacts, ignored runtime state, local tools, local
+tool tests, local verification manifests, or unrelated user changes. Never use
+`git add -f` to force ignored paths.
 
-Treat `.agent/IMPLEMENTATION_GROUPS.md` as temporary context only. If it
-disagrees with `.agent/RECOIL_PLAN.md`, Binary Ninja, or `recoil_status.py`,
-trust the current plan/Binary Ninja evidence and refresh or prune the group note.
+Treat `.agent/IMPLEMENTATION_GROUPS.md` as a tracked temporary context ledger.
+If it disagrees with `.agent/RECOIL_PLAN.md`, Binary Ninja, or
+`recoil_status.py`, trust the current plan/Binary Ninja evidence and refresh or
+prune the group note. Stage it only when an active group update belongs with a
+qualifying source checkpoint.
 
 ## Native build shell
 

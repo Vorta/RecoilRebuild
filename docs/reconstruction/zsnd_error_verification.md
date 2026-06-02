@@ -17,7 +17,7 @@ Ninja and the VC6 verifier artifacts remain authoritative.
   jump table and the existing COFF relocation mask, the active target fails
   with 199 mismatches, 476 relocation-masked bytes, and equal BN/VC byte sizes.
   The earlier instruction-only verifier profile failed with 414 mismatches.
-  This span support is verifier coverage progress, not binary-safe acceptance.
+  This span support is verifier coverage progress, not tier `S` acceptance.
 - Rewriting the early `a3dError == 0` path as a separate immediate return made
   VC5SP3 choose a short forward branch and worsened the normal verifier profile
   from 414 to 756 mismatches, so the original nested `if (a3dError != 0)` source

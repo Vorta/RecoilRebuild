@@ -963,6 +963,15 @@ zClass_Object3D_ModelRefLerpQueueState g_ModelRefLerpQueueState = {0};
 }
 
 namespace zClass_Object3D_ModelRefLerpQueue {
+    // Reimplements 0x437fe4: zClass_Object3D_ModelRefLerpQueue::ClearGlobalState
+    // (D:\Proj\GameZRecoil\zClass\Object3d.c)
+    RECOIL_NOINLINE void RECOIL_CDECL ClearGlobalState() {
+        g_ModelRefLerpQueueState.listAux = 0;
+        g_ModelRefLerpQueueState.tail = 0;
+        g_ModelRefLerpQueueState.head = 0;
+        g_ModelRefLerpQueueState.count = 0;
+    }
+
     // Reimplements 0x438020: zClass_Object3D_ModelRefLerpQueue::Add
     RECOIL_NOINLINE void RECOIL_FASTCALL Add(
         zClass_NodePartial * node,

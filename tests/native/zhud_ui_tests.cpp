@@ -1557,8 +1557,9 @@ std::int32_t g_testBlitFlags[8] = {};
 zVidRect32 g_testBlitRects[8] = {};
 std::int32_t g_testBlitHasRect[8] = {};
 
-void RECOIL_FASTCALL TestBltSourceToPrimary(void *self, std::int32_t dstX, std::int32_t dstY,
-                                            std::int32_t clipFlags, void *srcRect) {
+void RECOIL_FASTCALL TestBltSourceToPrimary(zVidImagePartial *self, std::int32_t dstX,
+                                            std::int32_t dstY, std::int32_t clipFlags,
+                                            zVidRect32 *srcRect) {
     const int index = g_testBlitCount;
     if (index < 8) {
         g_testBlitImages[index] = static_cast<zVidImagePartial *>(self);
@@ -17620,6 +17621,10 @@ int g_optionsDialogLoadCount;
 const char *g_optionsDialogLoadPath;
 const char *g_optionsDialogLoadSection;
 int g_optionsDialogLoadCapturePrimary;
+int g_optionsBackButtonQueueExitCount;
+int g_optionsBackButtonQueueExitParam;
+int g_optionsBackButtonBaseActivateCount;
+HudUiZrdWidget *g_optionsBackButtonBaseActivateThis;
 
 struct TestOptionsDialogBackgroundLoad {
     zReader::Node *RECOIL_THISCALL LoadFromZrd(const char *zrdPath,
@@ -17630,6 +17635,21 @@ struct TestOptionsDialogBackgroundLoad {
         g_optionsDialogLoadSection = sectionName;
         g_optionsDialogLoadCapturePrimary = capturePrimary;
         return nullptr;
+    }
+};
+
+struct TestOptionsDialogBackButtonPatchOps {
+    RecoilPtr32 RECOIL_THISCALL QueueExitCurrentState(
+        int stateParam
+    ) {
+        ++g_optionsBackButtonQueueExitCount;
+        g_optionsBackButtonQueueExitParam = stateParam;
+        return 0;
+    }
+
+    void RECOIL_THISCALL ZrdWidgetOnActivate() {
+        ++g_optionsBackButtonBaseActivateCount;
+        g_optionsBackButtonBaseActivateThis = (HudUiZrdWidget *)(this);
     }
 };
 } // namespace
@@ -17788,6 +17808,71 @@ extern "C" int zhud_options_dialog_scalar_deleting_destructor_smoke(void) {
     deletingDialog->ScalarDeletingDestructor(1);
 
     return noDeletePath ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_back_button_on_activate_smoke(void) {
+    int swHudType = ZOPT_HUD_TYPE_STANDARD;
+    int hwHudType = ZOPT_HUD_TYPE_STANDARD;
+    int *const oldSwHudType = ZOPT_HUD_TYPE_SW;
+    int *const oldHwHudType = ZOPT_HUD_TYPE_HW;
+    const int oldHwMode = g_zOpt_HwMode;
+
+    CodeFunctionPatch queueExitPatch{};
+    CodeFunctionPatch baseActivatePatch{};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(MethodAddress(&RecoilApp::QueueExitCurrentState)),
+            reinterpret_cast<void *>(
+                MethodAddress(&TestOptionsDialogBackButtonPatchOps::QueueExitCurrentState)
+            ),
+            queueExitPatch
+        )) {
+        return 1;
+    }
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(MethodAddress(&HudUiZrdWidget::OnActivate)),
+            reinterpret_cast<void *>(
+                MethodAddress(&TestOptionsDialogBackButtonPatchOps::ZrdWidgetOnActivate)
+            ),
+            baseActivatePatch
+        )) {
+        RestoreFunctionPatch(queueExitPatch);
+        return 2;
+    }
+
+    ZOPT_HUD_TYPE_SW = &swHudType;
+    ZOPT_HUD_TYPE_HW = &hwHudType;
+    g_zOpt_HwMode = 1;
+
+    HudOptionsDialog dialog{};
+    dialog.backButton.base.owner = &dialog;
+    g_optionsBackButtonQueueExitCount = 0;
+    g_optionsBackButtonQueueExitParam = -1;
+    g_optionsBackButtonBaseActivateCount = 0;
+    g_optionsBackButtonBaseActivateThis = 0;
+
+    dialog.fullHudToggle.base.checked = 0;
+    dialog.backButton.OnActivate();
+    const bool standardOk =
+        hwHudType == ZOPT_HUD_TYPE_STANDARD && swHudType == ZOPT_HUD_TYPE_STANDARD &&
+        g_optionsBackButtonQueueExitCount == 1 && g_optionsBackButtonQueueExitParam == 0 &&
+        g_optionsBackButtonBaseActivateCount == 1 &&
+        g_optionsBackButtonBaseActivateThis == &dialog.backButton.base;
+
+    dialog.fullHudToggle.base.checked = 7;
+    dialog.backButton.OnActivate();
+    const bool perspectiveOk =
+        hwHudType == ZOPT_HUD_TYPE_PERSPECTIVE && swHudType == ZOPT_HUD_TYPE_STANDARD &&
+        g_optionsBackButtonQueueExitCount == 2 && g_optionsBackButtonQueueExitParam == 0 &&
+        g_optionsBackButtonBaseActivateCount == 2 &&
+        g_optionsBackButtonBaseActivateThis == &dialog.backButton.base;
+
+    ZOPT_HUD_TYPE_SW = oldSwHudType;
+    ZOPT_HUD_TYPE_HW = oldHwHudType;
+    g_zOpt_HwMode = oldHwMode;
+    RestoreFunctionPatch(baseActivatePatch);
+    RestoreFunctionPatch(queueExitPatch);
+
+    return standardOk && perspectiveOk ? 0 : 3;
 }
 
 extern "C" int zhud_options_panel_lighting_init_from_options_smoke(void) {

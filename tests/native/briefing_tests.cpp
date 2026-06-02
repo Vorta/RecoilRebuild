@@ -82,8 +82,8 @@ int RECOIL_FASTCALL TestAdjustSurfacesStopBriefingThread(zVidRect32 *, zVidRect3
     return 0;
 }
 
-void RECOIL_FASTCALL TestBriefingBltSourceToPrimary(void *self, int dstX, int dstY,
-                                                    int clipFlags, void *srcRect) {
+void RECOIL_FASTCALL TestBriefingBltSourceToPrimary(zVidImagePartial *self, int dstX, int dstY,
+                                                    int clipFlags, zVidRect32 *srcRect) {
     ++g_briefingBlitCount;
     g_briefingBlitImage = static_cast<zVidImagePartial *>(self);
     g_briefingBlitX = dstX;

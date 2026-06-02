@@ -67,6 +67,10 @@ struct CZGameFrame : CFrameWnd {
         int cx,
         int cy
     );
+    RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL OnMove(
+        int x,
+        int y
+    );
     RECOIL_GAME_FRAME_NOINLINE int RECOIL_THISCALL OnAppIdleDispatchMessage(
         unsigned int wParam,
         unsigned int lParam

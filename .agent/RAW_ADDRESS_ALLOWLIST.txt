@@ -28,15 +28,12 @@ src/GameZRecoil/zFMV/fmv_script.cpp 0x4d25c8
 src/GameZRecoil/zFMV/fmv_script.cpp 0x4d25f8
 src/GameZRecoil/zHud/zhud_ui.cpp 0x004d3a88
 src/GameZRecoil/zHud/zhud_ui.cpp 0x004cca10
-src/GameZRecoil/zRndr/zRndr.cpp 0x0048f560
 src/GameZRecoil/zVideo/zVideo.cpp 0x004a7d40
 src/GameZRecoil/zVideo/zVideo.cpp 0x004a9890
 src/GameZRecoil/zVideo/zVideo.cpp 0x004a82f0
 src/GameZRecoil/zVideo/zVideo.cpp 0x004a8220
 src/GameZRecoil/zVideo/zVideo.cpp 0x004aab30
-src/GameZRecoil/zVideo/zVideo.cpp 0x004a7d90
 src/GameZRecoil/zVideo/zVideo.cpp 0x004a7e10
-src/GameZRecoil/zVideo/zVideo.cpp 0x004a9920
 src/GameZRecoil/zVideo/zVideo.cpp 0x004a8680
 src/GameZRecoil/zVideo/zVideo.cpp 0x004a86f0
 src/GameZRecoil/zVideo/zVideo.cpp 0x004aa8b0

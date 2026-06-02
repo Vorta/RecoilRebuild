@@ -24,7 +24,8 @@ int RegistryCapacity() {
     return (int)(g_zSnd_SampleSetRegistry.capacityEnd - g_zSnd_SampleSetRegistry.begin);
 }
 
-void RegistryAppend(
+// Restores likely inlined registry append helper observed in caller 0x4a09e0.
+inline void RegistryAppend(
     zSndSampleSet *set
 ) {
     const int size = RegistrySize();
@@ -96,7 +97,10 @@ void LoadSampleFromWavePath(
 extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_SetUseArchiveBanks(
     int enabled
 ) {
-    g_zSnd_SampleSetRegistry.useArchiveBanksFlag = enabled;
+    // Binary Ninja shows 0x4a0810 writes only the selector byte before clearing the vector.
+    unsigned char *const archiveBankFlag =
+        (unsigned char *)(&g_zSnd_SampleSetRegistry.useArchiveBanksFlag);
+    *archiveBankFlag = (unsigned char)(enabled);
     g_zSnd_SampleSetRegistry.begin = 0;
     g_zSnd_SampleSetRegistry.end = 0;
     g_zSnd_SampleSetRegistry.capacityEnd = 0;

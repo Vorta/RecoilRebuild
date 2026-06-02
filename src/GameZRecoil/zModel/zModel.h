@@ -327,6 +327,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RenderNodeHardware(
     zClass_NodePartial *node,
     int clipMask
 );
+RECOIL_NOINLINE void RECOIL_FASTCALL RenderNodeSoftware(
+    zClass_NodePartial *node,
+    int clipMask
+);
 RECOIL_NOINLINE void RECOIL_STDCALL SetBackfaceEliminationToleranceScalar(float scalar);
 RECOIL_NOINLINE float RECOIL_CDECL GetBackfaceEliminationToleranceScalar();
 RECOIL_NOINLINE void RECOIL_STDCALL UpdateSmallPolyRejectThresholds(float baseRejectArea);

@@ -25,7 +25,7 @@ Restored source form:
 Verification notes:
 - Native tests:
 - VC byte or source-cluster attempt:
-- Known binary-safe limits:
+- Known tier `S` limits:
 
 Open limits:
 - ...

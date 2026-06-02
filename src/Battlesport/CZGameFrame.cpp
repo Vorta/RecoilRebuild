@@ -306,6 +306,15 @@ RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnSize(
     zVid_UpdateCachedClientRectIfUpdateMaskEnabled();
 }
 
+// Reimplements 0x443a50: CZGameFrame::OnMove
+RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnMove(
+    int,
+    int
+) {
+    Default();
+    zVid_UpdateCachedClientRectIfUpdateMaskEnabled();
+}
+
 // Reimplements 0x443b50: CZGameFrame::OnAppIdleDispatchMessage
 RECOIL_GAME_FRAME_NOINLINE int RECOIL_THISCALL CZGameFrame::OnAppIdleDispatchMessage(
     unsigned int wParam,

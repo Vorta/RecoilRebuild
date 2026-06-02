@@ -8,6 +8,7 @@ if(MSVC)
 endif()
 
 option(RECOIL_BUILD_NATIVE_TESTS "Build native CTest smoke and behavior tests." ON)
+option(RECOIL_BUILD_ZBD_VIEWERS "Build standalone ZBD asset viewer executables." OFF)
 option(RECOIL_REQUIRE_32BIT "Fail configure unless the selected native compiler targets 32-bit." OFF)
 option(RECOIL_EMIT_ASM "Ask MSVC to emit assembly listings for binary-safety comparison." OFF)
 
@@ -63,4 +64,8 @@ add_subdirectory(src/native)
 if(RECOIL_BUILD_NATIVE_TESTS)
     enable_testing()
     add_subdirectory(tests/native)
+endif()
+
+if(RECOIL_BUILD_ZBD_VIEWERS)
+    add_subdirectory(tests/zbd_viewer)
 endif()

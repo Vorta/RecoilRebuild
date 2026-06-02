@@ -13081,11 +13081,9 @@ HudCmdDialog *RECOIL_THISCALL HudCmdDialog::ScalarDeletingDestructor(
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
 void RECOIL_THISCALL HudUiOptionsPanelBackButton::OnActivate() {
     HudOptionsDialog *const ownerDialog = (HudOptionsDialog *)(base.owner);
-    if (ownerDialog != 0) {
-        const int hudType = ownerDialog->fullHudToggle.base.checked != 0 ? ZOPT_HUD_TYPE_PERSPECTIVE
-                                                                         : ZOPT_HUD_TYPE_STANDARD;
-        zOpt::SetHudTypeForCurrentHwMode(hudType);
-    }
+    const int hudType = ownerDialog->fullHudToggle.base.checked != 0 ? ZOPT_HUD_TYPE_PERSPECTIVE
+                                                                     : ZOPT_HUD_TYPE_STANDARD;
+    zOpt::SetHudTypeForCurrentHwMode(hudType);
 
     g_RecoilApp.QueueExitCurrentState(0);
     base.OnActivate();

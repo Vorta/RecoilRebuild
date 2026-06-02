@@ -33,6 +33,7 @@ extern "C" int g_zSndCdTrackCountCached = 0;
 extern "C" zSndCdTrackState g_zSndCdPlayFrom = {1, 0, 0};
 extern "C" zSndCdTrackState g_zSndCdCurrent = {1, 0, 0};
 extern "C" zSndCdTrackState g_zSndCdPlayTo = {1, 0, 0};
+extern "C" unsigned char g_zSndCd_TrackListCtorGuard = 0;
 extern "C" zSndCdTrackNode *g_zSndCd_TrackListHead = 0;
 extern "C" int g_zSndCd_TrackCount = 0;
 extern "C" int g_zSndCdDiscLengthMinute = 0;
@@ -96,6 +97,46 @@ void AppendCdTrackEntry(
     ++g_zSndCd_TrackCount;
 }
 } // namespace
+
+namespace zSndCdTrackList {
+// Reimplements 0x4a2020: zSndCdTrackList::StaticConstructor
+RECOIL_NOINLINE void RECOIL_CDECL StaticConstructor() {
+    g_zSndCd_TrackListCtorGuard = 1;
+    g_zSndCd_TrackListHead = (zSndCdTrackNode *)(::operator new(sizeof(zSndCdTrackNode)));
+    g_zSndCd_TrackListHead->next = g_zSndCd_TrackListHead;
+    g_zSndCd_TrackListHead->prev = g_zSndCd_TrackListHead;
+    g_zSndCd_TrackCount = 0;
+}
+
+// Reimplements 0x4a2060: zSndCdTrackList::StaticDestructor
+RECOIL_NOINLINE void RECOIL_CDECL StaticDestructor() {
+    zSndCdTrackNode *const head = g_zSndCd_TrackListHead;
+    zSndCdTrackNode *node = head->next;
+    while (node != head) {
+        zSndCdTrackNode *const next = node->next;
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+        ::operator delete(node);
+        --g_zSndCd_TrackCount;
+        node = next;
+    }
+
+    ::operator delete(head);
+    g_zSndCd_TrackListHead = 0;
+    g_zSndCd_TrackCount = 0;
+}
+
+// Reimplements 0x4a2050: zSndCdTrackList::RegisterAtExitDestructor
+RECOIL_NOINLINE void RECOIL_CDECL RegisterAtExitDestructor() {
+    atexit(StaticDestructor);
+}
+
+// Reimplements 0x4a2010: zSndCdTrackList::StaticInit
+RECOIL_NOINLINE void RECOIL_CDECL StaticInit() {
+    StaticConstructor();
+    RegisterAtExitDestructor();
+}
+} // namespace zSndCdTrackList
 
 namespace zSnd {
 // Reimplements 0x4a1290: zSnd::SetActiveBackendPreInit

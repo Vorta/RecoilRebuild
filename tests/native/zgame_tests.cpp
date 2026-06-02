@@ -1416,6 +1416,190 @@ extern "C" int zmodel_matlbuffer_release_texture_surfaces_smoke() {
     return releaseOk ? 0 : 1;
 }
 
+extern "C" int zmodel_matlslot_release_smoke() {
+    zModel_MaterialSlot *const savedPool = g_zModel_MatlPool;
+    const int savedCapacity = g_zModel_MatlPoolCapacity;
+    const int savedInUse = g_zModel_MatlPoolInUseCount;
+    const int savedFreeHead = g_zModel_MatlFreeHeadIndex;
+    const int savedActiveHead = g_zModel_MatlActiveHeadIndex;
+
+    zModel_MaterialSlot slots[4] = {};
+    zModel_MaterialCyclePartial *const cycle =
+        static_cast<zModel_MaterialCyclePartial *>(std::malloc(sizeof(zModel_MaterialCyclePartial)));
+    zImage_TexDirEntryPartial **const frameTable = static_cast<zImage_TexDirEntryPartial **>(
+        std::malloc(2 * sizeof(zImage_TexDirEntryPartial *)));
+    if (cycle == nullptr || frameTable == nullptr) {
+        std::free(frameTable);
+        std::free(cycle);
+        return 1;
+    }
+
+    std::memset(cycle, 0, sizeof(*cycle));
+    cycle->frameTable = frameTable;
+    slots[0].material.flags = 0x0001;
+    slots[0].prevPoolIndex = -1;
+    slots[0].nextPoolIndex = 1;
+    slots[1].material.flags = 0x0400;
+    slots[1].material.packedColor = 0x1234;
+    slots[1].material.cycle = cycle;
+    slots[1].prevPoolIndex = 0;
+    slots[1].nextPoolIndex = 2;
+    slots[2].material.flags = 0x0002;
+    slots[2].prevPoolIndex = 1;
+    slots[2].nextPoolIndex = -1;
+    slots[3].prevPoolIndex = -1;
+    slots[3].nextPoolIndex = -1;
+
+    g_zModel_MatlPool = slots;
+    g_zModel_MatlPoolCapacity = 4;
+    g_zModel_MatlPoolInUseCount = 3;
+    g_zModel_MatlFreeHeadIndex = 3;
+    g_zModel_MatlActiveHeadIndex = 0;
+
+    zModel_MatlSlot::Release(nullptr);
+    if (g_zModel_MatlPoolInUseCount != 3 || g_zModel_MatlFreeHeadIndex != 3 ||
+        g_zModel_MatlActiveHeadIndex != 0) {
+        std::free(frameTable);
+        std::free(cycle);
+        g_zModel_MatlPool = savedPool;
+        g_zModel_MatlPoolCapacity = savedCapacity;
+        g_zModel_MatlPoolInUseCount = savedInUse;
+        g_zModel_MatlFreeHeadIndex = savedFreeHead;
+        g_zModel_MatlActiveHeadIndex = savedActiveHead;
+        return 2;
+    }
+
+    zModel_MatlSlot::Release(&slots[1]);
+    const bool middleReleaseOk =
+        slots[0].nextPoolIndex == 2 && slots[2].prevPoolIndex == 0 &&
+        slots[1].prevPoolIndex == -1 && slots[1].nextPoolIndex == 3 &&
+        slots[3].prevPoolIndex == 1 && g_zModel_MatlActiveHeadIndex == 0 &&
+        g_zModel_MatlFreeHeadIndex == 1 && g_zModel_MatlPoolInUseCount == 2 &&
+        slots[1].material.flags == 0 && slots[1].material.packedColor == 0 &&
+        slots[1].material.cycle == nullptr;
+
+    zModel_MatlSlot::Release(&slots[0]);
+    const bool headReleaseOk =
+        slots[2].prevPoolIndex == -1 && slots[0].prevPoolIndex == -1 &&
+        slots[0].nextPoolIndex == 1 && slots[1].prevPoolIndex == 0 &&
+        g_zModel_MatlActiveHeadIndex == 2 && g_zModel_MatlFreeHeadIndex == 0 &&
+        g_zModel_MatlPoolInUseCount == 1 && slots[0].material.flags == 0;
+
+    g_zModel_MatlPool = savedPool;
+    g_zModel_MatlPoolCapacity = savedCapacity;
+    g_zModel_MatlPoolInUseCount = savedInUse;
+    g_zModel_MatlFreeHeadIndex = savedFreeHead;
+    g_zModel_MatlActiveHeadIndex = savedActiveHead;
+
+    if (!middleReleaseOk) {
+        return 3;
+    }
+    return headReleaseOk ? 0 : 4;
+}
+
+extern "C" int zmodel_matlbuffer_release_all_active_smoke() {
+    zModel_MaterialSlot *const savedPool = g_zModel_MatlPool;
+    const int savedCapacity = g_zModel_MatlPoolCapacity;
+    const int savedInUse = g_zModel_MatlPoolInUseCount;
+    const int savedFreeHead = g_zModel_MatlFreeHeadIndex;
+    const int savedActiveHead = g_zModel_MatlActiveHeadIndex;
+    zModel_MaterialPartial *const savedReuseCache = g_zModel_MatlReuseCache;
+
+    zModel_MaterialSlot slots[4] = {};
+    slots[0].material.flags = 0x0001;
+    slots[0].prevPoolIndex = -1;
+    slots[0].nextPoolIndex = 2;
+    slots[1].material.flags = 0x0002;
+    slots[1].prevPoolIndex = 2;
+    slots[1].nextPoolIndex = -1;
+    slots[2].material.flags = 0x0004;
+    slots[2].prevPoolIndex = 0;
+    slots[2].nextPoolIndex = 1;
+    slots[3].prevPoolIndex = -1;
+    slots[3].nextPoolIndex = -1;
+
+    g_zModel_MatlPool = slots;
+    g_zModel_MatlPoolCapacity = 4;
+    g_zModel_MatlPoolInUseCount = 3;
+    g_zModel_MatlFreeHeadIndex = 3;
+    g_zModel_MatlActiveHeadIndex = 0;
+    g_zModel_MatlReuseCache = &slots[2].material;
+
+    const int result = zModel_MatlBuffer::ReleaseAllActive();
+    const bool releaseOk =
+        result == 0 && g_zModel_MatlActiveHeadIndex == -1 &&
+        g_zModel_MatlFreeHeadIndex == 1 && g_zModel_MatlPoolInUseCount == 0 &&
+        g_zModel_MatlReuseCache == nullptr && slots[1].nextPoolIndex == 2 &&
+        slots[2].prevPoolIndex == 1 && slots[2].nextPoolIndex == 0 &&
+        slots[0].prevPoolIndex == 2 && slots[0].nextPoolIndex == 3 &&
+        slots[3].prevPoolIndex == 0 && slots[0].material.flags == 0 &&
+        slots[1].material.flags == 0 && slots[2].material.flags == 0;
+
+    g_zModel_MatlPool = savedPool;
+    g_zModel_MatlPoolCapacity = savedCapacity;
+    g_zModel_MatlPoolInUseCount = savedInUse;
+    g_zModel_MatlFreeHeadIndex = savedFreeHead;
+    g_zModel_MatlActiveHeadIndex = savedActiveHead;
+    g_zModel_MatlReuseCache = savedReuseCache;
+
+    return releaseOk ? 0 : 1;
+}
+
+extern "C" int zrndr_global_string_table_release_dynamic_entries_smoke() {
+    char *savedTable[100] = {};
+    for (int index = 0; index < 100; ++index) {
+        savedTable[index] = g_zRndr_GlobalStringTable[index];
+    }
+    const int savedCount = g_zRndr_GlobalStringCount;
+
+    char *const dynamicA = static_cast<char *>(std::malloc(6));
+    char *const dynamicB = static_cast<char *>(std::malloc(6));
+    if (dynamicA == nullptr || dynamicB == nullptr) {
+        std::free(dynamicA);
+        std::free(dynamicB);
+        return 1;
+    }
+    std::memcpy(dynamicA, "dyn-a", 6);
+    std::memcpy(dynamicB, "dyn-b", 6);
+
+    g_zRndr_GlobalStringTable[0] = const_cast<char *>("BASE0");
+    g_zRndr_GlobalStringTable[1] = const_cast<char *>("BASE1");
+    g_zRndr_GlobalStringTable[2] = const_cast<char *>("BASE2");
+    g_zRndr_GlobalStringTable[3] = const_cast<char *>("BASE3");
+    g_zRndr_GlobalStringTable[4] = const_cast<char *>("BASE4");
+    g_zRndr_GlobalStringTable[5] = const_cast<char *>("BASE5");
+    g_zRndr_GlobalStringTable[6] = dynamicA;
+    g_zRndr_GlobalStringTable[7] = dynamicB;
+    g_zRndr_GlobalStringTable[8] = const_cast<char *>("OUTSIDE_COUNT");
+    g_zRndr_GlobalStringCount = 8;
+
+    zRndr::GlobalStringTable_ReleaseDynamicEntries();
+    const bool dynamicReleaseOk =
+        g_zRndr_GlobalStringCount == 6 && g_zRndr_GlobalStringTable[0] != nullptr &&
+        g_zRndr_GlobalStringTable[5] != nullptr && g_zRndr_GlobalStringTable[6] == nullptr &&
+        g_zRndr_GlobalStringTable[7] == nullptr &&
+        std::strcmp(g_zRndr_GlobalStringTable[0], "BASE0") == 0 &&
+        std::strcmp(g_zRndr_GlobalStringTable[5], "BASE5") == 0 &&
+        std::strcmp(g_zRndr_GlobalStringTable[8], "OUTSIDE_COUNT") == 0;
+
+    char *const preservedDynamic = const_cast<char *>("PRESERVED");
+    g_zRndr_GlobalStringTable[6] = preservedDynamic;
+    g_zRndr_GlobalStringCount = 4;
+    zRndr::GlobalStringTable_ReleaseDynamicEntries();
+    const bool lowCountOk =
+        g_zRndr_GlobalStringCount == 6 && g_zRndr_GlobalStringTable[6] == preservedDynamic;
+
+    for (int index = 0; index < 100; ++index) {
+        g_zRndr_GlobalStringTable[index] = savedTable[index];
+    }
+    g_zRndr_GlobalStringCount = savedCount;
+
+    if (!dynamicReleaseOk) {
+        return 2;
+    }
+    return lowCountOk ? 0 : 3;
+}
+
 extern "C" int zmodel_material_defaults_and_find_smoke() {
     zImage_TexDirEntryPartial texA{};
     zImage_TexDirEntryPartial texB{};
@@ -4673,6 +4857,7 @@ extern "C" int zmodel_init_smoke(void) {
     const bool softwareOk = softwareResult == 0 && defaultPool != nullptr &&
                             g_zModel_DiPoolCapacity == 1750 &&
                             g_zModel_SoftwarePathActive == 1 &&
+                            gModel_RenderFn == zModel::RenderNodeSoftware &&
                             defaultPool[1749].nextFreeIndex == -1;
     std::free(defaultPool);
 
@@ -4689,6 +4874,97 @@ extern "C" int zmodel_init_smoke(void) {
         return 1;
     }
     return softwareOk ? 0 : 2;
+}
+
+extern "C" int zmodel_render_node_software_flat_smoke(void) {
+    static std::int32_t matrixFlags[1] = {1};
+    static float *matrixSlots[1] = {};
+    zMat4x3 matrix{1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                   0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    zMath::g_zMath_CameraScratchA = matrix;
+    zMath::g_zMath_CameraScratchB = matrix;
+    matrixSlots[0] = reinterpret_cast<float *>(&matrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+
+    g_zModel_TransformedVerts = g_zModel_SharedVec3ScratchAStorage;
+    g_zVideo_ActiveRendererPath = 0;
+    g_zMath_ProjScaleX = 10.0f;
+    g_zMath_ProjScaleY = 10.0f;
+    g_zMath_ProjOffsetX = 0.0f;
+    g_zMath_ProjOffsetY = 0.0f;
+    g_zRndr_InverseZTolerance = 0.25f;
+    g_zModel_BFETolerance = 0.0f;
+    gModel_FogEnabled = 0;
+    gModel_HasActiveLights = 0;
+    gModel_RenderAlphaScaleCurrent = 1.0f;
+    gModel_RenderVertexAlphaEnabled = 0;
+    gAltClipPassEnabled = 0;
+    gModel_SmallPolyRejectArea2x = 0.0f;
+    zRndr::g_transparentQueueCount = 0;
+    zRndr::g_overwriteQueueCount = 0;
+    zRndr::g_transparentQueue[0] = {};
+    zRndr::g_perspectiveTextureEnabled = 0;
+
+    gClipRect_Primary.xMin = -100.0f;
+    gClipRect_Primary.yMin = -100.0f;
+    gClipRect_Primary.zMin = 1.0f;
+    gClipRect_Primary.xMax = 100.0f;
+    gClipRect_Primary.yMax = 100.0f;
+    gClipRect_Primary.zMax = 1000.0f;
+    gClipRect_Primary.xMaxAlt = 100.0f;
+    gClipRect_Primary.yMaxAlt = 100.0f;
+
+    zVec3 verts[3] = {
+        {-1.0f, 0.0f, 10.0f},
+        {0.0f, 1.0f, 10.0f},
+        {1.0f, 0.0f, 10.0f},
+    };
+    int indices[3] = {0, 2, 1};
+    zModel_MaterialPartial material{};
+    material.flags = 0x80;
+    material.packedColor = 0x3456;
+    zDiEntryPartial entry{};
+    entry.flagsAndIndexCount = 3;
+    entry.drawFlags = 2;
+    entry.vertexIndices = indices;
+    entry.material = &material;
+    zDiPartial di{};
+    di.entryCount = 1;
+    di.vertCount = 3;
+    di.entries = &entry;
+    di.verts = verts;
+    zClass_NodePartial node{};
+    node.userDataOrDiRef = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&di));
+
+    zModel::RenderNodeSoftware(&node, 0x3f);
+
+    if (zRndr::g_overwriteQueueCount != 0 || zRndr::g_transparentQueueCount != 1) {
+        return 1;
+    }
+    const zRndr::TransparentQueuedPolyDrawCmd &cmd = zRndr::g_transparentQueue[0];
+    if (cmd.vertexCount != 3) {
+        return 2;
+    }
+    if (cmd.alphaOrShadeBits != 128) {
+        return 3;
+    }
+    if (cmd.shadeOrSpanMode != 0x3456) {
+        return 4;
+    }
+    if (cmd.scanConvertMode != 1) {
+        return 5;
+    }
+    if (cmd.savedInvDepthBias != 0.0f) {
+        return 6;
+    }
+    if (cmd.savedInvDepthScale < 1.499f || cmd.savedInvDepthScale > 1.501f) {
+        return 7;
+    }
+    if (zRndr::g_perspectiveTextureEnabled != 0) {
+        return 8;
+    }
+    return 0;
 }
 
 extern "C" int zmodel_render_node_hardware_flat_smoke(void) {
@@ -4781,6 +5057,384 @@ extern "C" int zmodel_render_node_hardware_flat_smoke(void) {
         }
     }
 
+    return 0;
+}
+
+extern "C" int zmodel_render_node_hardware_point_smoke(void) {
+    static std::int32_t matrixFlags[1] = {1};
+    static float *matrixSlots[1] = {};
+    zMat4x3 matrix{1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                   0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    zMath::g_zMath_CameraScratchA = matrix;
+    zMath::g_zMath_CameraScratchB = matrix;
+    matrixSlots[0] = reinterpret_cast<float *>(&matrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+
+    g_zModel_TransformedVerts = g_zModel_SharedVec3ScratchAStorage;
+    g_zModel_TransformedNormals = g_zModel_SharedVec3ScratchBStorage;
+    g_zVideo_ActiveRendererPath = 1;
+    g_zVideo_pfnDrawPointColor16 = static_cast<std::uint32_t>(
+        reinterpret_cast<std::uintptr_t>(&zmodel_draw_point_color16_stub));
+    g_zMath_ProjScaleX = 1.0f;
+    g_zMath_ProjScaleY = 1.0f;
+    g_zMath_ProjOffsetX = 0.0f;
+    g_zMath_ProjOffsetY = 0.0f;
+    g_zMath_ProjSphereRadiusScale = 10.0f;
+    g_zRndr_InverseZTolerance = 0.5f;
+    zRndr::g_inverseDepthBias = 0.0f;
+    zRndr::g_inverseDepthScale = 1.0f;
+    zRndr::g_lensFlareSampleQueueCount = 0;
+    g_drawPointCallCount = 0;
+
+    gClipRect_Primary.xMin = -100.0f;
+    gClipRect_Primary.yMin = -100.0f;
+    gClipRect_Primary.zMin = 1.0f;
+    gClipRect_Primary.xMax = 100.0f;
+    gClipRect_Primary.yMax = 100.0f;
+    gClipRect_Primary.zMax = 1000.0f;
+    g_zVideo_ProjectClipLeft = 0.0f;
+    g_zVideo_ProjectClipTop = 0.0f;
+    g_zVideo_ProjectClipRight = 2.0f;
+    g_zVideo_ProjectClipBottom = 3.0f;
+
+    zVec3 pointCamList[1] = {{10.0f, 20.0f, 10.0f}};
+    zModel_PointEntryPartial pointEntry{};
+    pointEntry.pointCamCount = 1;
+    pointEntry.depthBiasWord = 2;
+    pointEntry.packedColor16 = 0x1ffff;
+    pointEntry.pointCamList = pointCamList;
+    zDiPartial di{};
+    di.flags = 8;
+    di.pointCount = 1;
+    di.pointEntries = &pointEntry;
+    zClass_NodePartial node{};
+    node.userDataOrDiRef = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&di));
+
+    zModel::RenderNodeHardware(&node, 0x3f);
+
+    g_zVideo_pfnDrawPointColor16 = 0;
+    g_zVideo_ActiveRendererPath = 0;
+    if (g_drawPointCallCount != 1 || g_drawPointLastColor != 0xffff ||
+        g_drawPointLastCount != 1) {
+        return 1;
+    }
+    if (g_drawPointLastPoint.reciprocalZ < 1.999f ||
+        g_drawPointLastPoint.reciprocalZ > 2.001f) {
+        return 2;
+    }
+    if (zRndr::g_lensFlareSampleQueueCount != 1 ||
+        zRndr::g_lensFlareSampleQueue[0].packedColor16 != 0xffff) {
+        return 3;
+    }
+
+    return 0;
+}
+
+extern "C" int zmodel_fog_set_distance_start_smoke(void) {
+    const float savedStart = gModel_FogDistanceStart;
+    const float savedEnd = gModel_FogDistanceEnd;
+    const float savedInvRange = gModel_FogDistanceInvRange;
+
+    gModel_FogDistanceEnd = 25.0f;
+    gModel_FogDistanceInvRange = -1.0f;
+    zModel_Fog_SetDistanceStart(5.0f);
+    if (gModel_FogDistanceStart != 5.0f || zModel_Fog_GetDistanceStart() != 5.0f ||
+        gModel_FogDistanceInvRange < 0.049f || gModel_FogDistanceInvRange > 0.051f) {
+        gModel_FogDistanceStart = savedStart;
+        gModel_FogDistanceEnd = savedEnd;
+        gModel_FogDistanceInvRange = savedInvRange;
+        return 1;
+    }
+
+    gModel_FogDistanceEnd = 11.0f;
+    gModel_FogDistanceInvRange = 123.0f;
+    zModel_Fog_SetDistanceStart(11.0f);
+    if (gModel_FogDistanceStart != 11.0f || zModel_Fog_GetDistanceStart() != 11.0f ||
+        gModel_FogDistanceInvRange != 123.0f) {
+        gModel_FogDistanceStart = savedStart;
+        gModel_FogDistanceEnd = savedEnd;
+        gModel_FogDistanceInvRange = savedInvRange;
+        return 2;
+    }
+
+    gModel_FogDistanceEnd = 5.0f;
+    gModel_FogDistanceInvRange = 0.0f;
+    zModel_Fog_SetDistanceStart(10.0f);
+    if (gModel_FogDistanceStart != 10.0f || gModel_FogDistanceInvRange < -0.201f ||
+        gModel_FogDistanceInvRange > -0.199f) {
+        gModel_FogDistanceStart = savedStart;
+        gModel_FogDistanceEnd = savedEnd;
+        gModel_FogDistanceInvRange = savedInvRange;
+        return 3;
+    }
+
+    gModel_FogDistanceStart = savedStart;
+    gModel_FogDistanceEnd = savedEnd;
+    gModel_FogDistanceInvRange = savedInvRange;
+    return 0;
+}
+
+extern "C" int zmodel_fog_set_distance_end_smoke(void) {
+    const float savedStart = gModel_FogDistanceStart;
+    const float savedEnd = gModel_FogDistanceEnd;
+    const float savedInvRange = gModel_FogDistanceInvRange;
+
+    gModel_FogDistanceStart = 5.0f;
+    gModel_FogDistanceInvRange = -1.0f;
+    zModel_Fog_SetDistanceEnd(25.0f);
+    if (gModel_FogDistanceEnd != 25.0f || gModel_FogDistanceInvRange < 0.049f ||
+        gModel_FogDistanceInvRange > 0.051f) {
+        gModel_FogDistanceStart = savedStart;
+        gModel_FogDistanceEnd = savedEnd;
+        gModel_FogDistanceInvRange = savedInvRange;
+        return 1;
+    }
+
+    gModel_FogDistanceStart = 11.0f;
+    gModel_FogDistanceInvRange = 123.0f;
+    zModel_Fog_SetDistanceEnd(11.0f);
+    if (gModel_FogDistanceEnd != 11.0f || gModel_FogDistanceInvRange != 123.0f) {
+        gModel_FogDistanceStart = savedStart;
+        gModel_FogDistanceEnd = savedEnd;
+        gModel_FogDistanceInvRange = savedInvRange;
+        return 2;
+    }
+
+    gModel_FogDistanceStart = 10.0f;
+    gModel_FogDistanceInvRange = 0.0f;
+    zModel_Fog_SetDistanceEnd(5.0f);
+    if (gModel_FogDistanceEnd != 5.0f || gModel_FogDistanceInvRange < -0.201f ||
+        gModel_FogDistanceInvRange > -0.199f) {
+        gModel_FogDistanceStart = savedStart;
+        gModel_FogDistanceEnd = savedEnd;
+        gModel_FogDistanceInvRange = savedInvRange;
+        return 3;
+    }
+
+    gModel_FogDistanceStart = savedStart;
+    gModel_FogDistanceEnd = savedEnd;
+    gModel_FogDistanceInvRange = savedInvRange;
+    return 0;
+}
+
+extern "C" int zmodel_fog_set_height_high_smoke(void) {
+    const float savedHigh = gModel_FogHeightHigh;
+    const float savedLow = gModel_FogHeightLow;
+    const float savedInvRange = gModel_FogHeightInvRange;
+
+    gModel_FogHeightLow = 5.0f;
+    gModel_FogHeightInvRange = -1.0f;
+    zModel_Fog_SetHeightHigh(25.0f);
+    if (gModel_FogHeightHigh != 25.0f || gModel_FogHeightInvRange < 0.049f ||
+        gModel_FogHeightInvRange > 0.051f) {
+        gModel_FogHeightHigh = savedHigh;
+        gModel_FogHeightLow = savedLow;
+        gModel_FogHeightInvRange = savedInvRange;
+        return 1;
+    }
+
+    gModel_FogHeightLow = 11.0f;
+    gModel_FogHeightInvRange = 123.0f;
+    zModel_Fog_SetHeightHigh(11.0f);
+    if (gModel_FogHeightHigh != 11.0f || gModel_FogHeightInvRange != 123.0f) {
+        gModel_FogHeightHigh = savedHigh;
+        gModel_FogHeightLow = savedLow;
+        gModel_FogHeightInvRange = savedInvRange;
+        return 2;
+    }
+
+    gModel_FogHeightLow = 10.0f;
+    gModel_FogHeightInvRange = 0.0f;
+    zModel_Fog_SetHeightHigh(5.0f);
+    if (gModel_FogHeightHigh != 5.0f || gModel_FogHeightInvRange < -0.201f ||
+        gModel_FogHeightInvRange > -0.199f) {
+        gModel_FogHeightHigh = savedHigh;
+        gModel_FogHeightLow = savedLow;
+        gModel_FogHeightInvRange = savedInvRange;
+        return 3;
+    }
+
+    gModel_FogHeightHigh = savedHigh;
+    gModel_FogHeightLow = savedLow;
+    gModel_FogHeightInvRange = savedInvRange;
+    return 0;
+}
+
+extern "C" int zmodel_fog_set_height_low_smoke(void) {
+    const float savedHigh = gModel_FogHeightHigh;
+    const float savedLow = gModel_FogHeightLow;
+    const float savedInvRange = gModel_FogHeightInvRange;
+
+    gModel_FogHeightHigh = 25.0f;
+    gModel_FogHeightInvRange = -1.0f;
+    zModel_Fog_SetHeightLow(5.0f);
+    if (gModel_FogHeightLow != 5.0f || gModel_FogHeightInvRange < 0.049f ||
+        gModel_FogHeightInvRange > 0.051f) {
+        gModel_FogHeightHigh = savedHigh;
+        gModel_FogHeightLow = savedLow;
+        gModel_FogHeightInvRange = savedInvRange;
+        return 1;
+    }
+
+    gModel_FogHeightHigh = 11.0f;
+    gModel_FogHeightInvRange = 123.0f;
+    zModel_Fog_SetHeightLow(11.0f);
+    if (gModel_FogHeightLow != 11.0f || gModel_FogHeightInvRange != 123.0f) {
+        gModel_FogHeightHigh = savedHigh;
+        gModel_FogHeightLow = savedLow;
+        gModel_FogHeightInvRange = savedInvRange;
+        return 2;
+    }
+
+    gModel_FogHeightHigh = 5.0f;
+    gModel_FogHeightInvRange = 0.0f;
+    zModel_Fog_SetHeightLow(10.0f);
+    if (gModel_FogHeightLow != 10.0f || gModel_FogHeightInvRange < -0.201f ||
+        gModel_FogHeightInvRange > -0.199f) {
+        gModel_FogHeightHigh = savedHigh;
+        gModel_FogHeightLow = savedLow;
+        gModel_FogHeightInvRange = savedInvRange;
+        return 3;
+    }
+
+    gModel_FogHeightHigh = savedHigh;
+    gModel_FogHeightLow = savedLow;
+    gModel_FogHeightInvRange = savedInvRange;
+    return 0;
+}
+
+extern "C" int zmodel_fog_set_density_smoke(void) {
+    const float savedDensity = gModel_FogDensity;
+
+    gModel_FogDensity = -1.0f;
+    zModel_Fog_SetDensity(0.375f);
+    if (gModel_FogDensity != 0.375f) {
+        gModel_FogDensity = savedDensity;
+        return 1;
+    }
+
+    zModel_Fog_SetDensity(-2.0f);
+    if (gModel_FogDensity != -2.0f) {
+        gModel_FogDensity = savedDensity;
+        return 2;
+    }
+
+    gModel_FogDensity = savedDensity;
+    return 0;
+}
+
+extern "C" int zmodel_fog_set_linear_mode_enabled_smoke(void) {
+    const int savedEnabled = gModel_FogLinearModeEnabled;
+
+    gModel_FogLinearModeEnabled = -1;
+    zModel_Fog_SetLinearModeEnabled(0);
+    if (gModel_FogLinearModeEnabled != 0) {
+        gModel_FogLinearModeEnabled = savedEnabled;
+        return 1;
+    }
+
+    zModel_Fog_SetLinearModeEnabled(1);
+    if (gModel_FogLinearModeEnabled != 1) {
+        gModel_FogLinearModeEnabled = savedEnabled;
+        return 2;
+    }
+
+    zModel_Fog_SetLinearModeEnabled(7);
+    if (gModel_FogLinearModeEnabled != 7) {
+        gModel_FogLinearModeEnabled = savedEnabled;
+        return 3;
+    }
+
+    gModel_FogLinearModeEnabled = savedEnabled;
+    return 0;
+}
+
+extern "C" int zmodel_fog_set_color_rgb01_smoke(void) {
+    const zColorRgb savedModelColor = gModel_FogColorRgb01;
+    const int savedRendererPath = g_zVideo_ActiveRendererPath;
+    const float savedPendingR = g_zVideo_FogColorPendingR255;
+    const float savedPendingG = g_zVideo_FogColorPendingG255;
+    const float savedPendingB = g_zVideo_FogColorPendingB255;
+
+    zColorRgb softwareColor = {0.2f, 0.4f, 0.6f};
+    g_zVideo_ActiveRendererPath = 0;
+    g_zVideo_FogColorPendingR255 = -1.0f;
+    g_zVideo_FogColorPendingG255 = -2.0f;
+    g_zVideo_FogColorPendingB255 = -3.0f;
+    zModel_Fog_SetColorRgb01(&softwareColor);
+    if (gModel_FogColorRgb01.red != 0.2f || gModel_FogColorRgb01.green != 0.4f ||
+        gModel_FogColorRgb01.blue != 0.6f || g_zVideo_FogColorPendingR255 != -1.0f ||
+        g_zVideo_FogColorPendingG255 != -2.0f || g_zVideo_FogColorPendingB255 != -3.0f) {
+        gModel_FogColorRgb01 = savedModelColor;
+        g_zVideo_ActiveRendererPath = savedRendererPath;
+        g_zVideo_FogColorPendingR255 = savedPendingR;
+        g_zVideo_FogColorPendingG255 = savedPendingG;
+        g_zVideo_FogColorPendingB255 = savedPendingB;
+        return 1;
+    }
+
+    zColorRgb hardwareColor = {0.25f, 0.5f, 1.0f};
+    g_zVideo_ActiveRendererPath = 1;
+    zModel_Fog_SetColorRgb01(&hardwareColor);
+    if (gModel_FogColorRgb01.red != 0.25f || gModel_FogColorRgb01.green != 0.5f ||
+        gModel_FogColorRgb01.blue != 1.0f || g_zVideo_FogColorPendingR255 != 63.75f ||
+        g_zVideo_FogColorPendingG255 != 127.5f || g_zVideo_FogColorPendingB255 != 255.0f) {
+        gModel_FogColorRgb01 = savedModelColor;
+        g_zVideo_ActiveRendererPath = savedRendererPath;
+        g_zVideo_FogColorPendingR255 = savedPendingR;
+        g_zVideo_FogColorPendingG255 = savedPendingG;
+        g_zVideo_FogColorPendingB255 = savedPendingB;
+        return 2;
+    }
+
+    gModel_FogColorRgb01 = savedModelColor;
+    g_zVideo_ActiveRendererPath = savedRendererPath;
+    g_zVideo_FogColorPendingR255 = savedPendingR;
+    g_zVideo_FogColorPendingG255 = savedPendingG;
+    g_zVideo_FogColorPendingB255 = savedPendingB;
+    return 0;
+}
+
+extern "C" int zmodel_fog_apply_current_color_smoke(void) {
+    const zColorRgb savedModelColor = gModel_FogColorRgb01;
+    const zRndr::FogParamsPartial savedFogParams = zRndr::g_fogColorParams;
+    const int savedRendererPath = g_zVideo_ActiveRendererPath;
+    const float savedPendingR = g_zVideo_FogColorPendingR255;
+    const float savedPendingG = g_zVideo_FogColorPendingG255;
+    const float savedPendingB = g_zVideo_FogColorPendingB255;
+
+    zRndr::g_fogColorParams = {};
+    gModel_FogColorRgb01 = {1.25f, -0.5f, 0.5f};
+    g_zVideo_ActiveRendererPath = 1;
+    g_zVideo_FogColorPendingR255 = 0.0f;
+    g_zVideo_FogColorPendingG255 = 0.0f;
+    g_zVideo_FogColorPendingB255 = 0.0f;
+
+    zModel_Fog_ApplyCurrentColor();
+    if (gModel_FogColorRgb01.red != 1.0f || gModel_FogColorRgb01.green != 0.0f ||
+        gModel_FogColorRgb01.blue != 0.5f ||
+        zRndr::g_fogColorParams.colorRgb01[0] != 1.0f ||
+        zRndr::g_fogColorParams.colorRgb01[1] != 0.0f ||
+        zRndr::g_fogColorParams.colorRgb01[2] != 0.5f ||
+        g_zVideo_FogColorPendingR255 != 255.0f ||
+        g_zVideo_FogColorPendingG255 != 0.0f ||
+        g_zVideo_FogColorPendingB255 != 127.5f) {
+        gModel_FogColorRgb01 = savedModelColor;
+        zRndr::g_fogColorParams = savedFogParams;
+        g_zVideo_ActiveRendererPath = savedRendererPath;
+        g_zVideo_FogColorPendingR255 = savedPendingR;
+        g_zVideo_FogColorPendingG255 = savedPendingG;
+        g_zVideo_FogColorPendingB255 = savedPendingB;
+        return 1;
+    }
+
+    gModel_FogColorRgb01 = savedModelColor;
+    zRndr::g_fogColorParams = savedFogParams;
+    g_zVideo_ActiveRendererPath = savedRendererPath;
+    g_zVideo_FogColorPendingR255 = savedPendingR;
+    g_zVideo_FogColorPendingG255 = savedPendingG;
+    g_zVideo_FogColorPendingB255 = savedPendingB;
     return 0;
 }
 
@@ -9293,6 +9947,26 @@ extern "C" int zclass_model_ref_lerp_queue_reset_smoke() {
 
     return g_ModelRefLerpQueueState.listAux == 0 && g_ModelRefLerpQueueState.head == nullptr &&
                    g_ModelRefLerpQueueState.tail == nullptr && g_ModelRefLerpQueueState.count == 0
+               ? 0
+               : 1;
+}
+
+extern "C" int zclass_model_ref_lerp_queue_clear_global_state_smoke() {
+    zClass_Object3D_ModelRefLerpTask first{};
+    zClass_Object3D_ModelRefLerpTask second{};
+    first.next = &second;
+    second.next = nullptr;
+
+    g_ModelRefLerpQueueState.listAux = 0x11;
+    g_ModelRefLerpQueueState.head = &first;
+    g_ModelRefLerpQueueState.tail = &second;
+    g_ModelRefLerpQueueState.count = 2;
+
+    zClass_Object3D_ModelRefLerpQueue::ClearGlobalState();
+
+    return g_ModelRefLerpQueueState.listAux == 0 && g_ModelRefLerpQueueState.head == nullptr &&
+                   g_ModelRefLerpQueueState.tail == nullptr && g_ModelRefLerpQueueState.count == 0 &&
+                   first.next == &second && second.next == nullptr
                ? 0
                : 1;
 }

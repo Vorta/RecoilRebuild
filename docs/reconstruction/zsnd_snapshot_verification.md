@@ -25,9 +25,9 @@ output.
 - Predicate probes in `build/experiments/4a0500/bool_shapes.cpp` show plausible
   `unsigned char` and `int` spellings either keep the extra byte `neg` or regress
   to `mov 1; sub`, so the current source keeps the 27-mismatch best profile.
-- Functional-equivalence evidence: `tools/functional_verify_targets/zsnd_snapshot_stop_all_if_playing.json`
+- Tier `B` evidence: `tools/functional_verify_targets/zsnd_snapshot_stop_all_if_playing.json`
   and native smoke `zsnd_snapshot_stop_all_if_playing_smoke` in `tests/native/zsnd_cd_tests.cpp`.
-  `python tools/recoil_functional_verify.py 0x4a0500` passes; `Binary-safe` stays `❌`.
+  `python tools/recoil_functional_verify.py 0x4a0500` passes; the entry remains below tier `S`.
 - VC5SP3 full-TU probe (`cl` 11.00.7022, `zsnd_snapshot_stop_all_if_playing_vc5`)
   now fails with **100** unmasked mismatches and **144-byte** object code, worse
   than the VC6 full-TU profile.
@@ -56,7 +56,7 @@ output.
   retail MSVC SEH/EH scaffolding (`push ebp`, `fs:` chain, `__ehhandler_…`, `[esp+0x40/0x48]` state)
   around stack `zFMV_ActionBlur` and `operator new` for `HudUiMainMenuDialog`; verify TU emits a
   plain `sub esp` frame instead.
-- Functional-equivalence: `tools/functional_verify_targets/recoil_state_main_menu_transition_on_try_become_current.json`
+- Tier `B`: `tools/functional_verify_targets/recoil_state_main_menu_transition_on_try_become_current.json`
   and smoke `recoil_state_main_menu_transition_on_try_become_current_smoke` (frontend route).
 
 ## 0x49fff0 CreateFromActiveSamples

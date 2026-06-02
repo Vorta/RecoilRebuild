@@ -55,8 +55,9 @@ void RECOIL_FASTCALL TextureRecordFinalizeUploadStub(zVideo_TextureRecordPartial
     g_lastFinalizedImage = image;
 }
 
-void RECOIL_FASTCALL FontBlitCapture(void *image, std::int32_t dstX, std::int32_t dstY,
-                                     std::int32_t clipFlags, void *srcRect) {
+void RECOIL_FASTCALL FontBlitCapture(zVidImagePartial *image, std::int32_t dstX,
+                                     std::int32_t dstY, std::int32_t clipFlags,
+                                     zVidRect32 *srcRect) {
     const int index = g_fontBlitCount;
     if (index < 8) {
         g_fontBlitImage[index] = image;

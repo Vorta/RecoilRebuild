@@ -71,7 +71,7 @@ installed MSVC toolchain.
   `tools/recoil_functional_verify.py` for smoke runs that need explicit
   arguments.
 - `debugger_set_variable` is for temporary diagnosis only. Do not use modified
-  debugger state as functional-equivalence, binary-safe, or plan-marker
+  debugger state as tier `B`, tier `S`, or plan-marker
   evidence.
 - Stop the debugger with `debugger_stop` before ending a session if the launched
   process is still running.

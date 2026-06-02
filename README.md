@@ -55,10 +55,10 @@ Generated from `.agent/RECOIL_PLAN.md`.
 | --- | ---: | ---: |
 | Reconstructed entries | 2715/3917 | 69.3% |
 | Partially reconstructed entries | 1202/3917 | 30.7% |
-| Source-ready entries | 3721/3917 | 95.0% |
-| Reimplemented authored functions | 3380/3917 | 86.3% |
-| Functionally equivalent authored functions | 3207/3917 | 81.9% |
-| Binary-safe authored functions | 346/3917 | 8.8% |
+| Source-ready entries | 3814/3917 | 97.4% |
+| Reimplemented authored functions | 3473/3917 | 88.7% |
+| Tier B+ authored functions | 3464/3917 | 88.4% |
+| Tier S authored functions | 392/3917 | 10.0% |
 | Accepted provider boundaries | 341/3917 | 8.7% |
 <!-- RECOIL_PROGRESS:END -->
 

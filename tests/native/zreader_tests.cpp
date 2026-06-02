@@ -697,6 +697,45 @@ extern "C" int zreader_prealloc_and_pop_front_smoke(void) {
     return popOk && removeOk ? 0 : 2;
 }
 
+extern "C" int zreader_zrdr_push_free_node_smoke(void) {
+    g_zUtil_ZRDR_FreePool = nullptr;
+    g_zUtil_ZRDR_FreeCount = 0;
+    g_zUtil_ZRDR_GrowCount = 0;
+
+    zArchiveListNode *const first =
+        static_cast<zArchiveListNode *>(std::malloc(sizeof(zArchiveListNode)));
+    zArchiveListNode *const second =
+        static_cast<zArchiveListNode *>(std::malloc(sizeof(zArchiveListNode)));
+    if (first == nullptr || second == nullptr) {
+        std::free(first);
+        std::free(second);
+        return 1;
+    }
+
+    first->payload = reinterpret_cast<void *>(0x1111);
+    first->next = nullptr;
+    first->prev = nullptr;
+    second->payload = reinterpret_cast<void *>(0x2222);
+    second->next = nullptr;
+    second->prev = nullptr;
+
+    zUtil_ZRDR_PushFreeNode(first);
+    const bool firstOk =
+        g_zUtil_ZRDR_FreePool != nullptr && g_zUtil_ZRDR_FreePool->head == first &&
+        first->next == first && first->prev == first && g_zUtil_ZRDR_FreePool->count == 1 &&
+        g_zUtil_ZRDR_FreeCount == 1;
+
+    zUtil_ZRDR_PushFreeNode(second);
+    const bool secondOk =
+        g_zUtil_ZRDR_FreePool->head == second && second->next == first &&
+        second->prev == first && first->next == second && first->prev == second &&
+        g_zUtil_ZRDR_FreePool->count == 2 && g_zUtil_ZRDR_FreeCount == 2 &&
+        g_zUtil_ZRDR_GrowCount == 0;
+
+    zUtil_ZRDR_FreeNodePool();
+    return firstOk && secondOk && g_zUtil_ZRDR_FreePool == nullptr ? 0 : 2;
+}
+
 extern "C" int zreader_zrdr_init_search_path_smoke(void) {
     if (g_zUtil_ZRDR_FreePool == nullptr) {
         g_zUtil_ZRDR_FreePool = zArchiveList_CreateEmpty();
@@ -1150,12 +1189,38 @@ extern "C" int zreader_free_loaded_tree_smoke(void) {
         return 2;
     }
 
+    zReader::Node arrayNode{};
+    zReader::Node *recursiveArray =
+        static_cast<zReader::Node *>(std::malloc(3 * sizeof(zReader::Node)));
+    if (recursiveArray == nullptr) {
+        return 3;
+    }
+
+    arrayNode.type = zReader::ZRDR_NODE_ARRAY;
+    arrayNode.value.nodes = recursiveArray;
+    recursiveArray[0].type = zReader::ZRDR_NODE_INT;
+    recursiveArray[0].value.i32 = 3;
+    recursiveArray[1].type = zReader::ZRDR_NODE_STRING;
+    recursiveArray[1].value.str = _strdup("nested");
+    recursiveArray[2].type = zReader::ZRDR_NODE_INT;
+    recursiveArray[2].value.i32 = 9;
+
+    if (recursiveArray[1].value.str == nullptr) {
+        std::free(recursiveArray);
+        return 4;
+    }
+
+    zReader_FreeNodeRecursive(&arrayNode);
+    if (arrayNode.value.nodes != nullptr) {
+        return 5;
+    }
+
     zReader::Node *root = static_cast<zReader::Node *>(std::malloc(sizeof(zReader::Node)));
     zReader::Node *arrayBase = static_cast<zReader::Node *>(std::malloc(3 * sizeof(zReader::Node)));
     if (root == nullptr || arrayBase == nullptr) {
         std::free(root);
         std::free(arrayBase);
-        return 3;
+        return 6;
     }
 
     root->type = zReader::ZRDR_NODE_ARRAY;
@@ -1170,7 +1235,7 @@ extern "C" int zreader_free_loaded_tree_smoke(void) {
     if (arrayBase[1].value.str == nullptr) {
         std::free(arrayBase);
         std::free(root);
-        return 4;
+        return 7;
     }
 
     return zReader::FreeLoadedTree(root);

@@ -864,6 +864,23 @@ extern "C" int znetwork_dplay_service_provider_refresh_smoke() {
     return callbackOk && refreshOk && wrapperOk ? 0 : 11;
 }
 
+extern "C" int znetwork_dplay_free_service_provider_info_buffers_smoke() {
+    zNetworkDPlayServiceProviderInfo provider = {};
+    provider.displayName = static_cast<char *>(std::malloc(8));
+    provider.connectionData = std::malloc(12);
+    provider.providerFlags = 0x33;
+
+    std::memcpy(provider.displayName, "Network", 8);
+    std::memset(provider.connectionData, 0x5a, 12);
+
+    zNetworkDPlay::FreeServiceProviderInfoBuffers(&provider);
+
+    return provider.displayName == nullptr && provider.connectionData == nullptr &&
+                   provider.providerFlags == 0x33
+               ? 0
+               : 1;
+}
+
 extern "C" int znetwork_dplay_close_release_smoke() {
     ResetNetwork();
 
@@ -1112,6 +1129,77 @@ extern "C" int znetwork_alloc_free_player_color_index_smoke() {
 
     g_zNetwork_CurrentSessionDescCache = nullptr;
     return firstOk && fullOk && emptyOk ? 0 : 1;
+}
+
+extern "C" int znetwork_apply_pkt01_player_color_assignments_smoke() {
+    ResetNetwork();
+
+    auto *playerList = AllocObject<zNetworkPlayerRecordList>();
+    auto *sentinel = AllocObject<zNetworkPlayerRecordListNode>();
+    auto *firstNode = AllocObject<zNetworkPlayerRecordListNode>();
+    auto *secondNode = AllocObject<zNetworkPlayerRecordListNode>();
+    auto *firstRecord = AllocObject<zNetwork_PlayerRecord>();
+    auto *secondRecord = AllocObject<zNetwork_PlayerRecord>();
+
+    firstRecord->playerKey = 0x11112222;
+    firstRecord->colorIndex = 0;
+    secondRecord->playerKey = 0x33334444;
+    secondRecord->colorIndex = 1;
+    sentinel->next = firstNode;
+    sentinel->prev = secondNode;
+    firstNode->next = secondNode;
+    firstNode->prev = sentinel;
+    firstNode->playerRecord = firstRecord;
+    secondNode->next = sentinel;
+    secondNode->prev = firstNode;
+    secondNode->playerRecord = secondRecord;
+    playerList->sentinelNode = sentinel;
+    playerList->count = 2;
+    g_zNetwork_PlayerRecordList = playerList;
+
+    struct PacketFixture {
+        zNetworkPacketHeader header;
+        int pairCount;
+        zNetworkPlayerColorPair pairs[3];
+    } packet{};
+    packet.pairCount = 3;
+    packet.pairs[0].playerKey = 0x11112222;
+    packet.pairs[0].colorIndex = 3;
+    packet.pairs[1].playerKey = 0x99999999;
+    packet.pairs[1].colorIndex = 4;
+    packet.pairs[2].playerKey = 0x33334444;
+    packet.pairs[2].colorIndex = 7;
+
+    const bool applyOk =
+        zNetwork_ApplyPkt01_PlayerColorAssignments(0, &packet.header) == 3 &&
+        firstRecord->colorIndex == 3 && secondRecord->colorIndex == 7 &&
+        g_zNetwork_PlayerColorInUseFlags[3] == 1 &&
+        g_zNetwork_PlayerColorInUseFlags[4] == 0 &&
+        g_zNetwork_PlayerColorInUseFlags[7] == 1;
+
+    packet.pairCount = 0;
+    firstRecord->colorIndex = 11;
+    g_zNetwork_PlayerColorInUseFlags[2] = 0;
+    packet.pairs[0].playerKey = 0x11112222;
+    packet.pairs[0].colorIndex = 2;
+    const bool zeroOk =
+        zNetwork_ApplyPkt01_PlayerColorAssignments(0, &packet.header) == 0 &&
+        firstRecord->colorIndex == 11 && g_zNetwork_PlayerColorInUseFlags[2] == 0;
+
+    packet.pairCount = -2;
+    packet.pairs[0].colorIndex = 6;
+    const bool negativeOk =
+        zNetwork_ApplyPkt01_PlayerColorAssignments(0, &packet.header) == -2 &&
+        firstRecord->colorIndex == 11 && g_zNetwork_PlayerColorInUseFlags[6] == 0;
+
+    ::operator delete(firstRecord);
+    ::operator delete(secondRecord);
+    ::operator delete(firstNode);
+    ::operator delete(secondNode);
+    ::operator delete(sentinel);
+    ::operator delete(playerList);
+    g_zNetwork_PlayerRecordList = nullptr;
+    return applyOk && zeroOk && negativeOk ? 0 : 1;
 }
 
 extern "C" int znetwork_host_send_player_color_assignments_packet_smoke() {

@@ -4,11 +4,11 @@ This ledger records the current compiler/linker assumptions used for source-fait
 
 ## Role Of Each Build
 
-- VC5SP3 `cl` 11.00.7022 is the first-pass binary-safety compiler for authored production source.
+- VC5SP3 `cl` 11.00.7022 is the first-pass tier `S` compiler for authored production source.
 - VC6 `cl` 12.00.8168 is a fallback for functions whose original bytes, imports, MFC/CRT behavior, or a reviewed VC5SP3 attempt indicate VS98-era code generation is more plausible.
 - Current executable provenance points strongly to VS97 SP3 first: VS97 SP3 `cvtres` produced 1 object, VS97 SP3 `link` 5.10.7303 linked 293 objects, and VS98-era tooling accounts for 10 objects.
-- Modern MSVC/CMake builds are smoke and guard builds only. They prove compile/link/test health, not binary-safe equivalence.
-- Binary-safe acceptance normally requires relocation-masked COFF byte comparison. Legacy listing/text comparison is acceptable only for explicitly accepted `compare_mode: text` targets with documented accepted differences.
+- Modern MSVC/CMake builds are smoke and guard builds only. They prove compile/link/test health, not tier `S` equivalence.
+- Tier `S` acceptance normally requires relocation-masked COFF byte comparison. Legacy listing/text comparison is acceptable only for explicitly accepted `compare_mode: text` targets with documented accepted differences.
 
 ## Final Candidate Build Assumptions
 

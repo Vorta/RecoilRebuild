@@ -30,8 +30,11 @@ extern "C" void *g_zSnd_BackendListenerHandle;
 extern "C" DSCAPS g_zSnd_BackendAuxHandleOrConfig;
 extern "C" LPDIRECTSOUND g_zSnd_CachedDirectSound;
 extern "C" LPCGUID g_zSnd_CachedDirectSoundGuid;
+extern "C" unsigned char g_zSndCd_TrackListCtorGuard;
 extern "C" zSndCdTrackNode *g_zSndCd_TrackListHead;
 extern "C" std::int32_t g_zSndCd_TrackCount;
+extern "C" std::int32_t g_zSndCdDiscLengthMinute;
+extern "C" std::int32_t g_zSndCdDiscLengthSecond;
 extern "C" unsigned short g_zSndCdAuxVolumePrimary;
 extern "C" unsigned short g_zSndCdAuxVolumeSecondary;
 extern "C" std::int32_t g_zSnd_UseArchiveBanksFlag;
@@ -96,12 +99,16 @@ using TestBackendLockFn = std::int32_t(__stdcall *)(void *self, std::uint32_t of
                                                     std::int32_t *outBytes2, std::uint32_t flags);
 using TestBackendUnlockFn = std::int32_t(__stdcall *)(void *self, void *ptr1, std::int32_t bytes1,
                                                       void *ptr2, std::int32_t bytes2);
+using TestDirectSoundDuplicateBufferFn = std::int32_t(__stdcall *)(void *self, zSndBuffer *source,
+                                                                   zSndBuffer **outBuffer);
 using TestBackendCreateBufferFn = std::int32_t(__stdcall *)(void *self, void *desc,
                                                             zSndBuffer **outBuffer,
                                                             void *outerUnknown);
 using TestDirectSoundGetCapsFn = HRESULT(__stdcall *)(void *self, DSCAPS *caps);
 using TestA3dCreateBufferFn = std::int32_t(__stdcall *)(void *self, std::int32_t bufferKind,
                                                         zSndBuffer **outBuffer);
+using TestA3dDuplicateBufferFn = std::int32_t(__stdcall *)(void *self, zSndBuffer *source,
+                                                           zSndBuffer **outBuffer);
 using TestA3dSetWaveFormatFn = std::int32_t(__stdcall *)(void *self, WAVEFORMATEX *format);
 using TestA3dSetRangeFn = std::int32_t(__stdcall *)(void *self, float rangeMin, float rangeMax,
                                                     std::int32_t enabled);
@@ -129,6 +136,15 @@ struct TestDirectSoundBuffer {
     TestDirectSoundBufferVTable *vtable;
 };
 
+struct TestDirectSoundDuplicateDeviceVTable {
+    void *slots00_10[5];
+    TestDirectSoundDuplicateBufferFn DuplicateSoundBuffer;
+};
+
+struct TestDirectSoundDuplicateDevice {
+    TestDirectSoundDuplicateDeviceVTable *vtable;
+};
+
 std::int32_t g_fakePlayTrackWithModeCount;
 std::int32_t g_fakePlayTrackWithModeTrack;
 std::int32_t g_fakePlayTrackWithModeMode;
@@ -136,6 +152,17 @@ std::int32_t g_fakeMciSendCommandCount;
 MCIDEVICEID g_fakeMciLastDevice;
 UINT g_fakeMciLastMessage;
 DWORD_PTR g_fakeMciLastFlags;
+MCIDEVICEID g_fakeMciDevices[16];
+UINT g_fakeMciMessages[16];
+DWORD_PTR g_fakeMciFlags[16];
+DWORD g_fakeMciStatusItems[16];
+DWORD g_fakeMciStatusTracks[16];
+DWORD g_fakeMciSetTimeFormats[16];
+const char *g_fakeMciOpenDeviceType;
+WORD g_fakeMciOpenDeviceId;
+DWORD_PTR g_fakeMciStatusReadyReturn;
+DWORD_PTR g_fakeMciStatusTrackCountReturn;
+DWORD_PTR g_fakeMciStatusDiscLengthReturn;
 MCI_PLAY_PARMS g_fakeMciLastPlayParams;
 MCI_SEEK_PARMS g_fakeMciLastSeekParams;
 MCIERROR g_fakeMciReturn;
@@ -143,10 +170,22 @@ std::int32_t g_fakeAuxGetVolumeCount;
 UINT g_fakeAuxGetVolumeDevice;
 DWORD g_fakeAuxVolume;
 MMRESULT g_fakeAuxReturn;
+std::int32_t g_fakeAuxGetNumDevsCount;
+UINT g_fakeAuxNumDevs;
+std::int32_t g_fakeAuxGetDevCapsCount;
+UINT_PTR g_fakeAuxGetDevCapsDevices[8];
 std::int32_t g_fakeAuxSetVolumeCount;
 UINT g_fakeAuxSetVolumeDevice;
 DWORD g_fakeAuxSetVolume;
 MMRESULT g_fakeAuxSetReturn;
+
+struct TestAuxCapsConfig {
+    MMRESULT result;
+    WORD technology;
+    DWORD support;
+};
+
+TestAuxCapsConfig g_fakeAuxCaps[8];
 
 std::int32_t RECOIL_FASTCALL FakePlayTrackWithMode(std::int32_t trackIndex,
                                                    std::int32_t playbackMode) {
@@ -158,16 +197,70 @@ std::int32_t RECOIL_FASTCALL FakePlayTrackWithMode(std::int32_t trackIndex,
 
 MCIERROR WINAPI FakeMciSendCommandA(MCIDEVICEID deviceId, UINT message, DWORD_PTR flags,
                                     DWORD_PTR params) {
-    ++g_fakeMciSendCommandCount;
+    const std::int32_t callIndex = g_fakeMciSendCommandCount++;
     g_fakeMciLastDevice = deviceId;
     g_fakeMciLastMessage = message;
     g_fakeMciLastFlags = flags;
-    if (message == 0x806 && params != 0) {
+    if (callIndex < 16) {
+        g_fakeMciDevices[callIndex] = deviceId;
+        g_fakeMciMessages[callIndex] = message;
+        g_fakeMciFlags[callIndex] = flags;
+    }
+
+    if (message == MCI_OPEN && params != 0) {
+        MCI_OPEN_PARMSA *openParms = reinterpret_cast<MCI_OPEN_PARMSA *>(params);
+        g_fakeMciOpenDeviceType = openParms->lpstrDeviceType;
+        openParms->wDeviceID = g_fakeMciOpenDeviceId;
+    } else if (message == MCI_STATUS && params != 0) {
+        MCI_STATUS_PARMS *statusParms = reinterpret_cast<MCI_STATUS_PARMS *>(params);
+        if (callIndex < 16) {
+            g_fakeMciStatusItems[callIndex] = statusParms->dwItem;
+            g_fakeMciStatusTracks[callIndex] = statusParms->dwTrack;
+        }
+        if (g_fakeMciReturn == 0) {
+            if (statusParms->dwItem == 5) {
+                statusParms->dwReturn = g_fakeMciStatusReadyReturn;
+            } else if (statusParms->dwItem == 3) {
+                statusParms->dwReturn = g_fakeMciStatusTrackCountReturn;
+            } else if (statusParms->dwItem == 1) {
+                statusParms->dwReturn = g_fakeMciStatusDiscLengthReturn;
+            }
+        }
+    } else if (message == MCI_SET && params != 0) {
+        MCI_SET_PARMS *setParms = reinterpret_cast<MCI_SET_PARMS *>(params);
+        if (callIndex < 16) {
+            g_fakeMciSetTimeFormats[callIndex] = setParms->dwTimeFormat;
+        }
+    } else if (message == 0x806 && params != 0) {
         g_fakeMciLastPlayParams = *reinterpret_cast<const MCI_PLAY_PARMS *>(params);
     } else if (message == 0x807 && params != 0) {
         g_fakeMciLastSeekParams = *reinterpret_cast<const MCI_SEEK_PARMS *>(params);
     }
     return g_fakeMciReturn;
+}
+
+UINT WINAPI FakeAuxGetNumDevs(void) {
+    ++g_fakeAuxGetNumDevsCount;
+    return g_fakeAuxNumDevs;
+}
+
+MMRESULT WINAPI FakeAuxGetDevCapsA(UINT_PTR deviceId, LPAUXCAPSA caps, UINT capsSize) {
+    const std::int32_t callIndex = g_fakeAuxGetDevCapsCount++;
+    if (callIndex < 8) {
+        g_fakeAuxGetDevCapsDevices[callIndex] = deviceId;
+    }
+
+    if (deviceId >= 8) {
+        return MMSYSERR_BADDEVICEID;
+    }
+
+    const TestAuxCapsConfig &config = g_fakeAuxCaps[deviceId];
+    if (caps != nullptr && capsSize >= sizeof(AUXCAPSA)) {
+        std::memset(caps, 0, sizeof(AUXCAPSA));
+        caps->wTechnology = config.technology;
+        caps->dwSupport = config.support;
+    }
+    return config.result;
 }
 
 MMRESULT WINAPI FakeAuxGetVolume(UINT deviceId, LPDWORD volumeOut) {
@@ -225,6 +318,29 @@ void RestoreFunctionPatch(CodeFunctionPatch &patch) {
     }
 
     patch.address = nullptr;
+}
+
+void ClearCdTrackListWithEntriesForTest() {
+    zSndCdTrackNode *const head = g_zSndCd_TrackListHead;
+    if (head == nullptr) {
+        g_zSndCd_TrackCount = 0;
+        return;
+    }
+
+    zSndCdTrackNode *node = head->next;
+    while (node != head) {
+        zSndCdTrackNode *const next = node->next;
+        if (node->entry != nullptr) {
+            std::free(node->entry->archiveName);
+            ::operator delete(node->entry);
+        }
+        ::operator delete(node);
+        node = next;
+    }
+
+    ::operator delete(head);
+    g_zSndCd_TrackListHead = nullptr;
+    g_zSndCd_TrackCount = 0;
 }
 
 struct TestCreateDirectSoundBufferVTable {
@@ -306,7 +422,7 @@ struct TestA3dDeviceVTable {
     TestBackendSimpleFn Tick;
     TestBackendSimpleFn CommitDeferredSettings;
     void *slots38_44[4];
-    void *DuplicateBufferA3D;
+    TestA3dDuplicateBufferFn DuplicateBufferA3D;
 };
 
 struct TestA3dDevice {
@@ -338,6 +454,8 @@ int g_testListenerSetPositionCount = 0;
 int g_testListenerSetOrientationCount = 0;
 int g_testListenerSetVelocityCount = 0;
 int g_testA3dCreateBufferCount = 0;
+int g_testA3dDuplicateBufferCount = 0;
+int g_testDirectSoundDuplicateBufferCount = 0;
 int g_testA3dSetWaveFormatCount = 0;
 int g_testA3dSetSampleDataSizeCount = 0;
 int g_testA3dCommitWriteCount = 0;
@@ -426,16 +544,27 @@ zVec3 g_testLastListenerForward{};
 zVec3 g_testLastListenerUp{};
 WAVEFORMATEX *g_testLastA3dWaveFormat = nullptr;
 zSndBuffer *g_testA3dCreateBufferResult = nullptr;
+zSndBuffer *g_testA3dDuplicateBufferResult = nullptr;
+zSndBuffer *g_testLastA3dDuplicateSource = nullptr;
+std::int32_t g_testA3dDuplicateBufferResultCode = 0;
+zSndBuffer *g_testDirectSoundDuplicateBufferResult = nullptr;
+zSndBuffer *g_testLastDirectSoundDuplicateSource = nullptr;
+std::int32_t g_testDirectSoundDuplicateBufferResultCode = 0;
 std::int32_t g_testLastPan = 0;
 std::int32_t g_testLastVolume = 0;
 std::int32_t g_testLastFrequency = 0;
 std::int32_t g_testLastCurrentPosition = 0;
+std::int32_t g_testDirectSoundSetPanResult = 0;
+std::int32_t g_testDirectSoundSetVolumeResult = 0;
+std::int32_t g_testDirectSoundSetCurrentPositionResult = 0;
+std::int32_t g_testDirectSoundPlayResult = 0;
 std::uint32_t g_testPlayCursorValue = 0;
 std::uint32_t g_testWriteCursorValue = 0;
 std::int32_t g_testGetCurrentPositionResult = 0;
 std::int32_t g_testLastMode = 0;
 std::int32_t g_testLastSpatializationEnabled = 0;
 std::uint32_t g_testLastPlayFlags = 0;
+std::int32_t g_testA3dPlayResult = 0;
 float g_testLastGain = -1.0f;
 float g_testLastPitchScale = -1.0f;
 float g_testLastDopplerScale = -1.0f;
@@ -466,6 +595,19 @@ std::int32_t __stdcall TestDirectSoundGetStatus(void *, std::int32_t *status) {
     return 0;
 }
 
+std::int32_t __stdcall TestDirectSoundDuplicateBuffer(
+    void *,
+    zSndBuffer *source,
+    zSndBuffer **outBuffer
+) {
+    ++g_testDirectSoundDuplicateBufferCount;
+    g_testLastDirectSoundDuplicateSource = source;
+    if (outBuffer != nullptr) {
+        *outBuffer = g_testDirectSoundDuplicateBufferResult;
+    }
+    return g_testDirectSoundDuplicateBufferResultCode;
+}
+
 std::int32_t __stdcall TestDirectSoundGetFrequency(void *, std::uint32_t *value) {
     *value = g_testFrequencyValue;
     return 0;
@@ -485,13 +627,13 @@ HRESULT __stdcall TestDirectSoundGetCaps(void *, DSCAPS *caps) {
 std::int32_t __stdcall TestDirectSoundSetPan(void *, std::int32_t value) {
     ++g_testSetPanCount;
     g_testLastPan = value;
-    return 0;
+    return g_testDirectSoundSetPanResult;
 }
 
 std::int32_t __stdcall TestDirectSoundSetVolume(void *, std::int32_t value) {
     ++g_testSetVolumeCount;
     g_testLastVolume = value;
-    return 0;
+    return g_testDirectSoundSetVolumeResult;
 }
 
 std::int32_t __stdcall TestDirectSoundSetFrequency(void *, std::int32_t value) {
@@ -503,7 +645,7 @@ std::int32_t __stdcall TestDirectSoundSetFrequency(void *, std::int32_t value) {
 std::int32_t __stdcall TestDirectSoundSetCurrentPosition(void *, std::int32_t value) {
     ++g_testSetCurrentPositionCount;
     g_testLastCurrentPosition = value;
-    return 0;
+    return g_testDirectSoundSetCurrentPositionResult;
 }
 
 std::int32_t __stdcall TestDirectSoundGetCurrentPosition(void *, std::uint32_t *playCursor,
@@ -524,7 +666,7 @@ std::int32_t __stdcall TestDirectSoundPlay(void *, std::uint32_t, std::uint32_t,
                                            std::uint32_t flags) {
     ++g_testPlayDirectSoundCount;
     g_testLastPlayFlags = flags;
-    return 0;
+    return g_testDirectSoundPlayResult;
 }
 
 std::int32_t __stdcall TestRestore(void *) {
@@ -561,6 +703,15 @@ std::int32_t __stdcall TestA3dCreateBufferByKind(void *, std::int32_t bufferKind
     g_testLastA3dBufferKind = bufferKind;
     *outBuffer = g_testA3dCreateBufferResult;
     return 0;
+}
+
+std::int32_t __stdcall TestA3dDuplicateBuffer(void *, zSndBuffer *source, zSndBuffer **outBuffer) {
+    ++g_testA3dDuplicateBufferCount;
+    g_testLastA3dDuplicateSource = source;
+    if (outBuffer != nullptr) {
+        *outBuffer = g_testA3dDuplicateBufferResult;
+    }
+    return g_testA3dDuplicateBufferResultCode;
 }
 
 std::int32_t __stdcall TestA3dSetWaveFormat(void *, WAVEFORMATEX *format) {
@@ -696,7 +847,7 @@ std::int32_t __stdcall TestA3dSetSpatializationEnabled(void *, std::int32_t valu
 std::int32_t __stdcall TestA3dPlay(void *, std::uint32_t flags) {
     ++g_testPlayA3dCount;
     g_testLastPlayFlags = flags;
-    return 0;
+    return g_testA3dPlayResult;
 }
 
 std::int32_t __stdcall TestCommitDeferredSettings(void *) {
@@ -740,6 +891,8 @@ void ResetStopBackendCounters() {
     g_testListenerSetOrientationCount = 0;
     g_testListenerSetVelocityCount = 0;
     g_testA3dCreateBufferCount = 0;
+    g_testA3dDuplicateBufferCount = 0;
+    g_testDirectSoundDuplicateBufferCount = 0;
     g_testA3dSetWaveFormatCount = 0;
     g_testA3dSetSampleDataSizeCount = 0;
     g_testA3dCommitWriteCount = 0;
@@ -760,16 +913,27 @@ void ResetStopBackendCounters() {
     g_testLastListenerUp = {};
     g_testLastA3dWaveFormat = nullptr;
     g_testA3dCreateBufferResult = nullptr;
+    g_testA3dDuplicateBufferResult = nullptr;
+    g_testLastA3dDuplicateSource = nullptr;
+    g_testA3dDuplicateBufferResultCode = 0;
+    g_testDirectSoundDuplicateBufferResult = nullptr;
+    g_testLastDirectSoundDuplicateSource = nullptr;
+    g_testDirectSoundDuplicateBufferResultCode = 0;
     g_testLastPan = 0;
     g_testLastVolume = 0;
     g_testLastFrequency = 0;
     g_testLastCurrentPosition = 0;
+    g_testDirectSoundSetPanResult = 0;
+    g_testDirectSoundSetVolumeResult = 0;
+    g_testDirectSoundSetCurrentPositionResult = 0;
+    g_testDirectSoundPlayResult = 0;
     g_testPlayCursorValue = 0;
     g_testWriteCursorValue = 0;
     g_testGetCurrentPositionResult = 0;
     g_testLastMode = 0;
     g_testLastSpatializationEnabled = 0;
     g_testLastPlayFlags = 0;
+    g_testA3dPlayResult = 0;
     g_testLastGain = -1.0f;
     g_testLastPitchScale = -1.0f;
     g_testLastDopplerScale = -1.0f;
@@ -830,18 +994,19 @@ extern "C" int zsnd_set_use_archive_banks_flag_smoke(void) {
 
 extern "C" int zsnd_sample_set_registry_init_shutdown_smoke(void) {
     zSndSampleSet *stackSlots[2] = {};
-    g_zSnd_SampleSetRegistry.useArchiveBanksFlag = 0;
+    g_zSnd_SampleSetRegistry.useArchiveBanksFlag = 0x12345600;
     g_zSnd_SampleSetRegistry.begin = stackSlots;
     g_zSnd_SampleSetRegistry.end = stackSlots + 1;
     g_zSnd_SampleSetRegistry.capacityEnd = stackSlots + 2;
 
-    zSnd_SetUseArchiveBanks(1);
-    if (g_zSnd_SampleSetRegistry.useArchiveBanksFlag != 1 ||
+    zSnd_SetUseArchiveBanks(0xab);
+    if (g_zSnd_SampleSetRegistry.useArchiveBanksFlag != 0x123456ab ||
         g_zSnd_SampleSetRegistry.begin != nullptr || g_zSnd_SampleSetRegistry.end != nullptr ||
         g_zSnd_SampleSetRegistry.capacityEnd != nullptr) {
         return 1;
     }
 
+    g_zSnd_SampleSetRegistry.useArchiveBanksFlag = 0;
     zSnd_SetUseArchiveBanksAndRegisterAtExit(0);
     if (g_zSnd_SampleSetRegistry.useArchiveBanksFlag != 0 ||
         g_zSnd_SampleSetRegistry.begin != nullptr || g_zSnd_SampleSetRegistry.end != nullptr ||
@@ -1354,6 +1519,175 @@ extern "C" int zsnd_cd_init_ready_guard_smoke(void) {
     return zSndCd::Init(nullptr) == 1 && g_zSndCdTrackCountCached == 77 ? 0 : 1;
 }
 
+extern "C" int zsnd_cd_init_success_with_tracks_smoke(void) {
+    CodeFunctionPatch mciPatch{};
+    CodeFunctionPatch auxNumPatch{};
+    CodeFunctionPatch auxCapsPatch{};
+    CodeFunctionPatch auxVolumePatch{};
+    zReader::Node trackANodes[3] = {};
+    zReader::Node trackBNodes[3] = {};
+    zReader::Node cdTrackNodes[4] = {};
+    zReader::Node cdTracksNode = {};
+    zSndCdTrackNode *head = nullptr;
+    zSndCdTrackNode *nodeA = nullptr;
+    zSndCdTrackNode *nodeB = nullptr;
+    zSndCdTrackEntry *entryA = nullptr;
+    zSndCdTrackEntry *entryB = nullptr;
+    bool mciSequenceOk = false;
+    bool auxOk = false;
+    bool globalsOk = false;
+    bool tracksOk = false;
+    int result = 1;
+
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&mciSendCommandA),
+                           reinterpret_cast<void *>(&FakeMciSendCommandA), mciPatch)) {
+        goto cleanup;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&auxGetNumDevs),
+                           reinterpret_cast<void *>(&FakeAuxGetNumDevs), auxNumPatch)) {
+        result = 2;
+        goto cleanup;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&auxGetDevCapsA),
+                           reinterpret_cast<void *>(&FakeAuxGetDevCapsA), auxCapsPatch)) {
+        result = 3;
+        goto cleanup;
+    }
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&auxGetVolume),
+                           reinterpret_cast<void *>(&FakeAuxGetVolume), auxVolumePatch)) {
+        result = 4;
+        goto cleanup;
+    }
+
+    std::memset(g_fakeMciDevices, 0, sizeof(g_fakeMciDevices));
+    std::memset(g_fakeMciMessages, 0, sizeof(g_fakeMciMessages));
+    std::memset(g_fakeMciFlags, 0, sizeof(g_fakeMciFlags));
+    std::memset(g_fakeMciStatusItems, 0, sizeof(g_fakeMciStatusItems));
+    std::memset(g_fakeMciStatusTracks, 0, sizeof(g_fakeMciStatusTracks));
+    std::memset(g_fakeMciSetTimeFormats, 0, sizeof(g_fakeMciSetTimeFormats));
+    std::memset(g_fakeAuxGetDevCapsDevices, 0, sizeof(g_fakeAuxGetDevCapsDevices));
+    std::memset(g_fakeAuxCaps, 0, sizeof(g_fakeAuxCaps));
+
+    g_fakeMciSendCommandCount = 0;
+    g_fakeMciReturn = 0;
+    g_fakeMciOpenDeviceId = 0x3456;
+    g_fakeMciOpenDeviceType = nullptr;
+    g_fakeMciStatusReadyReturn = 1;
+    g_fakeMciStatusTrackCountReturn = 12;
+    g_fakeMciStatusDiscLengthReturn = (19 << 8) | (34 << 16);
+    g_fakeAuxGetNumDevsCount = 0;
+    g_fakeAuxNumDevs = 3;
+    g_fakeAuxGetDevCapsCount = 0;
+    g_fakeAuxCaps[0].result = 0;
+    g_fakeAuxCaps[0].technology = AUXCAPS_CDAUDIO;
+    g_fakeAuxCaps[0].support = 0;
+    g_fakeAuxCaps[1].result = 0;
+    g_fakeAuxCaps[1].technology = 0;
+    g_fakeAuxCaps[1].support = AUXCAPS_VOLUME | AUXCAPS_LRVOLUME;
+    g_fakeAuxCaps[2].result = 0;
+    g_fakeAuxCaps[2].technology = AUXCAPS_CDAUDIO;
+    g_fakeAuxCaps[2].support = AUXCAPS_VOLUME | AUXCAPS_LRVOLUME;
+    g_fakeAuxGetVolumeCount = 0;
+    g_fakeAuxVolume = 0x13572468;
+    g_fakeAuxReturn = 0;
+
+    ClearCdTrackListWithEntriesForTest();
+    zSndCdTrackList::StaticConstructor();
+    g_zSndCdFlags = 0;
+    g_zSndCdDeviceId = 0x12340000;
+    g_zSndCdAuxDeviceId = -1;
+    g_zSndCdAuxVolumePrimary = 0;
+    g_zSndCdAuxVolumeSecondary = 0;
+    g_zSndCdTrackCountCached = 0;
+    g_zSndCdDiscLengthMinute = 0;
+    g_zSndCdDiscLengthSecond = 0;
+    g_zSndCdPlayFromTrack = 99;
+    g_zSndCdCurrentTrack = 99;
+    g_zSndCdPlayToTrack = 99;
+
+    trackANodes[0].type = zReader::ZRDR_NODE_INT;
+    trackANodes[0].value.i32 = 3;
+    trackANodes[1].type = zReader::ZRDR_NODE_STRING;
+    trackANodes[1].value.str = const_cast<char *>("archive_a.zbd");
+    trackANodes[2].type = zReader::ZRDR_NODE_INT;
+    trackANodes[2].value.i32 = 7;
+
+    trackBNodes[0].type = zReader::ZRDR_NODE_INT;
+    trackBNodes[0].value.i32 = 3;
+    trackBNodes[1].type = zReader::ZRDR_NODE_STRING;
+    trackBNodes[1].value.str = const_cast<char *>("archive_b.zbd");
+    trackBNodes[2].type = zReader::ZRDR_NODE_INT;
+    trackBNodes[2].value.i32 = 9;
+
+    cdTrackNodes[0].type = zReader::ZRDR_NODE_INT;
+    cdTrackNodes[0].value.i32 = 4;
+    cdTrackNodes[1].type = zReader::ZRDR_NODE_ARRAY;
+    cdTrackNodes[1].value.nodes = trackANodes;
+    cdTrackNodes[2].type = zReader::ZRDR_NODE_STRING;
+    cdTrackNodes[2].value.str = const_cast<char *>("ignored");
+    cdTrackNodes[3].type = zReader::ZRDR_NODE_ARRAY;
+    cdTrackNodes[3].value.nodes = trackBNodes;
+
+    cdTracksNode.type = zReader::ZRDR_NODE_ARRAY;
+    cdTracksNode.value.nodes = cdTrackNodes;
+
+    if (zSndCd::Init(&cdTracksNode) != 1) {
+        result = 5;
+        goto cleanup;
+    }
+
+    head = g_zSndCd_TrackListHead;
+    nodeA = head->next;
+    nodeB = nodeA->next;
+    entryA = nodeA->entry;
+    entryB = nodeB->entry;
+
+    mciSequenceOk =
+        g_fakeMciSendCommandCount == 5 && g_fakeMciMessages[0] == MCI_OPEN &&
+        g_fakeMciDevices[0] == 0 && g_fakeMciFlags[0] == MCI_OPEN_TYPE &&
+        g_fakeMciOpenDeviceType != nullptr && std::strcmp(g_fakeMciOpenDeviceType, "cdaudio") == 0 &&
+        g_fakeMciMessages[1] == MCI_STATUS && g_fakeMciDevices[1] == 0x3456 &&
+        g_fakeMciFlags[1] == (MCI_WAIT | MCI_STATUS_ITEM) &&
+        g_fakeMciStatusItems[1] == 5 && g_fakeMciMessages[2] == MCI_SET &&
+        g_fakeMciDevices[2] == 0x3456 &&
+        g_fakeMciFlags[2] == (MCI_WAIT | MCI_SET_TIME_FORMAT) &&
+        g_fakeMciSetTimeFormats[2] == MCI_FORMAT_TMSF &&
+        g_fakeMciMessages[3] == MCI_STATUS && g_fakeMciStatusItems[3] == 3 &&
+        g_fakeMciMessages[4] == MCI_STATUS && g_fakeMciStatusItems[4] == 1 &&
+        g_fakeMciStatusTracks[4] == 0;
+
+    auxOk = g_fakeAuxGetNumDevsCount == 1 && g_fakeAuxGetDevCapsCount == 3 &&
+            g_fakeAuxGetDevCapsDevices[0] == 0 && g_fakeAuxGetDevCapsDevices[1] == 1 &&
+            g_fakeAuxGetDevCapsDevices[2] == 2 && g_fakeAuxGetVolumeCount == 1 &&
+            g_fakeAuxGetVolumeDevice == 2;
+
+    globalsOk =
+        g_zSndCdDeviceId == 0x12343456 && g_zSndCdFlags == 3 && g_zSndCdAuxDeviceId == 2 &&
+        g_zSndCdAuxVolumePrimary == 0x1357 && g_zSndCdAuxVolumeSecondary == 0x2468 &&
+        g_zSndCdTrackCountCached == 12 && g_zSndCdDiscLengthMinute == 19 &&
+        g_zSndCdDiscLengthSecond == 34 && g_zSndCdPlayFromTrack == 1 &&
+        g_zSndCdCurrentTrack == 1 && g_zSndCdPlayToTrack == 1;
+
+    tracksOk =
+        head != nullptr && nodeA != head && nodeB != head && nodeB->next == head &&
+        head->prev == nodeB && g_zSndCd_TrackCount == 2 && entryA != nullptr &&
+        entryB != nullptr && entryA->trackNumber == 7 && entryB->trackNumber == 9 &&
+        std::strcmp(entryA->archiveName, "archive_a.zbd") == 0 &&
+        std::strcmp(entryB->archiveName, "archive_b.zbd") == 0 &&
+        entryA->archiveName != trackANodes[1].value.str &&
+        entryB->archiveName != trackBNodes[1].value.str;
+
+    result = mciSequenceOk && auxOk && globalsOk && tracksOk ? 0 : 6;
+
+cleanup:
+    ClearCdTrackListWithEntriesForTest();
+    RestoreFunctionPatch(auxVolumePatch);
+    RestoreFunctionPatch(auxCapsPatch);
+    RestoreFunctionPatch(auxNumPatch);
+    RestoreFunctionPatch(mciPatch);
+    return result;
+}
+
 extern "C" int zsnd_cd_get_track_count_ready_guard_smoke(void) {
     g_zSndCdTrackCountCached = 77;
     g_zSndCdFlags = 0;
@@ -1399,6 +1733,133 @@ extern "C" int zsnd_cd_shutdown_track_list_smoke(void) {
     ::operator delete(head);
     g_zSndCd_TrackListHead = nullptr;
     return ok ? 0 : 1;
+}
+
+extern "C" int zsnd_cd_track_list_static_constructor_smoke(void) {
+    g_zSndCd_TrackListCtorGuard = 0;
+    g_zSndCd_TrackListHead = nullptr;
+    g_zSndCd_TrackCount = 77;
+
+    zSndCdTrackList::StaticConstructor();
+
+    zSndCdTrackNode *const head = g_zSndCd_TrackListHead;
+    const bool ok = g_zSndCd_TrackListCtorGuard == 1 && head != nullptr && head->next == head &&
+                    head->prev == head && g_zSndCd_TrackCount == 0;
+
+    zSndCdTrackList::StaticDestructor();
+    return ok && g_zSndCd_TrackListHead == nullptr && g_zSndCd_TrackCount == 0 ? 0 : 1;
+}
+
+extern "C" int zsnd_cd_track_list_static_destructor_smoke(void) {
+    zSndCdTrackList::StaticConstructor();
+
+    zSndCdTrackNode *const head = g_zSndCd_TrackListHead;
+    zSndCdTrackNode *const nodeA =
+        static_cast<zSndCdTrackNode *>(::operator new(sizeof(zSndCdTrackNode)));
+    zSndCdTrackNode *const nodeB =
+        static_cast<zSndCdTrackNode *>(::operator new(sizeof(zSndCdTrackNode)));
+
+    head->next = nodeA;
+    head->prev = nodeB;
+    nodeA->next = nodeB;
+    nodeA->prev = head;
+    nodeB->next = head;
+    nodeB->prev = nodeA;
+    g_zSndCd_TrackCount = 2;
+
+    zSndCdTrackList::StaticDestructor();
+
+    return g_zSndCd_TrackListHead == nullptr && g_zSndCd_TrackCount == 0 ? 0 : 1;
+}
+
+extern "C" int zsnd_cd_track_list_static_init_atexit_child_smoke(void) {
+    char enabled[2] = {};
+    if (GetEnvironmentVariableA(
+            "RECOIL_ZSND_CD_TRACK_LIST_STATIC_INIT_CHILD",
+            enabled,
+            sizeof(enabled)
+        ) == 0 ||
+        enabled[0] != '1') {
+        return 0;
+    }
+
+    g_zSndCd_TrackListCtorGuard = 0;
+    g_zSndCd_TrackListHead = nullptr;
+    g_zSndCd_TrackCount = 99;
+    zSndCdTrackList::StaticInit();
+
+    return g_zSndCd_TrackListCtorGuard == 1 && g_zSndCd_TrackListHead != nullptr &&
+                   g_zSndCd_TrackListHead->next == g_zSndCd_TrackListHead &&
+                   g_zSndCd_TrackListHead->prev == g_zSndCd_TrackListHead &&
+                   g_zSndCd_TrackCount == 0
+               ? 0
+               : 1;
+}
+
+extern "C" int zsnd_cd_track_list_static_init_atexit_smoke(void) {
+    char exePath[MAX_PATH] = {};
+    if (GetModuleFileNameA(
+            nullptr,
+            exePath,
+            sizeof(exePath)
+        ) == 0) {
+        return 1;
+    }
+
+    char commandLine[MAX_PATH + 128] = {};
+    if (std::snprintf(
+            commandLine,
+            sizeof(commandLine),
+            "\"%s\" zsnd_cd_track_list_static_init_atexit_child_smoke",
+            exePath
+        ) <= 0) {
+        return 2;
+    }
+
+    STARTUPINFOA startupInfo = {};
+    PROCESS_INFORMATION processInfo = {};
+    startupInfo.cb = sizeof(startupInfo);
+    SetEnvironmentVariableA(
+        "RECOIL_ZSND_CD_TRACK_LIST_STATIC_INIT_CHILD",
+        "1"
+    );
+    const BOOL created = CreateProcessA(
+        nullptr,
+        commandLine,
+        nullptr,
+        nullptr,
+        FALSE,
+        0,
+        nullptr,
+        nullptr,
+        &startupInfo,
+        &processInfo
+    );
+    SetEnvironmentVariableA(
+        "RECOIL_ZSND_CD_TRACK_LIST_STATIC_INIT_CHILD",
+        nullptr
+    );
+    if (created == 0) {
+        return 3;
+    }
+
+    const DWORD waitResult = WaitForSingleObject(
+        processInfo.hProcess,
+        10000
+    );
+    DWORD exitCode = 0;
+    const BOOL gotExitCode = GetExitCodeProcess(
+        processInfo.hProcess,
+        &exitCode
+    );
+    CloseHandle(processInfo.hThread);
+    CloseHandle(processInfo.hProcess);
+
+    if (waitResult != WAIT_OBJECT_0 || gotExitCode == 0) {
+        return 4;
+    }
+
+    return exitCode == 0 ? 0 : 5;
 }
 
 extern "C" int zsnd_sample_set_get_sample_at_smoke(void) {
@@ -1614,6 +2075,63 @@ extern "C" int zsnd_sample_acquire_play_handle_smoke(void) {
         return 1;
     }
 
+    ResetStopBackendCounters();
+    zSndPlayHandle reusableDirectSoundVoice = {};
+    reusableDirectSoundVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+    zSndPlayHandle *directSoundDuplicateVoices[1] = {&reusableDirectSoundVoice};
+    directSoundSample.primaryVoice.isActive = 1;
+    directSoundSample.duplicateVoiceCount = 1;
+    directSoundSample.duplicateVoices = directSoundDuplicateVoices;
+    if (directSoundSample.AcquireVoice() != &reusableDirectSoundVoice ||
+        g_testGetStatusCount != 1) {
+        return 7;
+    }
+
+    ResetStopBackendCounters();
+    TestDirectSoundBuffer allocatedDirectSoundBuffer{&directSoundVTable};
+    TestDirectSoundDuplicateDeviceVTable directSoundDeviceVTable = {};
+    directSoundDeviceVTable.DuplicateSoundBuffer = &TestDirectSoundDuplicateBuffer;
+    TestDirectSoundDuplicateDevice directSoundDevice{&directSoundDeviceVTable};
+    g_zSnd_BackendDevice = &directSoundDevice;
+    g_testDirectSoundDuplicateBufferResult =
+        reinterpret_cast<zSndBuffer *>(&allocatedDirectSoundBuffer);
+    zSndSample allocatingDirectSoundSample = {};
+    allocatingDirectSoundSample.primaryVoice.isActive = 1;
+    allocatingDirectSoundSample.primaryVoice.backendBuffer =
+        reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+    zSndPlayHandle *const allocatedDirectSoundVoice = allocatingDirectSoundSample.AcquireVoice();
+    if (allocatedDirectSoundVoice == nullptr ||
+        allocatingDirectSoundSample.duplicateVoiceCount != 1 ||
+        allocatingDirectSoundSample.duplicateVoices == nullptr ||
+        allocatingDirectSoundSample.duplicateVoices[0] != allocatedDirectSoundVoice ||
+        allocatedDirectSoundVoice->backendBuffer !=
+            reinterpret_cast<zSndBuffer *>(&allocatedDirectSoundBuffer) ||
+        allocatedDirectSoundVoice->isActive != 0 ||
+        allocatedDirectSoundVoice->ownerSample != nullptr ||
+        g_testDirectSoundDuplicateBufferCount != 1 ||
+        g_testLastDirectSoundDuplicateSource !=
+            reinterpret_cast<zSndBuffer *>(&directSoundBuffer)) {
+        return 8;
+    }
+    std::free(allocatedDirectSoundVoice);
+    std::free(allocatingDirectSoundSample.duplicateVoices);
+
+    ResetStopBackendCounters();
+    g_zSnd_BackendDevice = &directSoundDevice;
+    g_testDirectSoundDuplicateBufferResultCode = 1;
+    zSndSample failingDirectSoundSample = {};
+    failingDirectSoundSample.primaryVoice.isActive = 1;
+    failingDirectSoundSample.primaryVoice.backendBuffer =
+        reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+    if (failingDirectSoundSample.AcquireVoice() != nullptr ||
+        failingDirectSoundSample.duplicateVoiceCount != 0 ||
+        failingDirectSoundSample.duplicateVoices != nullptr ||
+        g_testDirectSoundDuplicateBufferCount != 1 ||
+        g_testLastDirectSoundDuplicateSource !=
+            reinterpret_cast<zSndBuffer *>(&directSoundBuffer)) {
+        return 9;
+    }
+
     TestA3dSourceVTable a3dVTable = {};
     a3dVTable.GetStatus = &TestDirectSoundGetStatus;
     TestA3dSource a3dSource{&a3dVTable};
@@ -1625,6 +2143,54 @@ extern "C" int zsnd_sample_acquire_play_handle_smoke(void) {
         return 2;
     }
 
+    ResetStopBackendCounters();
+    zSndPlayHandle reusableA3dVoice = {};
+    reusableA3dVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&a3dSource);
+    zSndPlayHandle *duplicateVoices[1] = {&reusableA3dVoice};
+    a3dSample.primaryVoice.isActive = 1;
+    a3dSample.duplicateVoiceCount = 1;
+    a3dSample.duplicateVoices = duplicateVoices;
+    if (a3dSample.AcquireA3dVoice() != &reusableA3dVoice || g_testGetStatusCount != 1) {
+        return 4;
+    }
+
+    ResetStopBackendCounters();
+    TestA3dSource allocatedA3dSource{&a3dVTable};
+    TestA3dDeviceVTable a3dDeviceVTable = {};
+    a3dDeviceVTable.DuplicateBufferA3D = &TestA3dDuplicateBuffer;
+    TestA3dDevice a3dDevice{&a3dDeviceVTable};
+    g_zSnd_BackendDevice = &a3dDevice;
+    g_testA3dDuplicateBufferResult = reinterpret_cast<zSndBuffer *>(&allocatedA3dSource);
+    zSndSample allocatingA3dSample = {};
+    allocatingA3dSample.primaryVoice.isActive = 1;
+    allocatingA3dSample.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&a3dSource);
+    zSndPlayHandle *const allocatedVoice = allocatingA3dSample.AcquireA3dVoice();
+    if (allocatedVoice == nullptr || allocatingA3dSample.duplicateVoiceCount != 1 ||
+        allocatingA3dSample.duplicateVoices == nullptr ||
+        allocatingA3dSample.duplicateVoices[0] != allocatedVoice ||
+        allocatedVoice->backendBuffer != reinterpret_cast<zSndBuffer *>(&allocatedA3dSource) ||
+        allocatedVoice->isActive != 0 || allocatedVoice->ownerSample != nullptr ||
+        g_testA3dDuplicateBufferCount != 1 ||
+        g_testLastA3dDuplicateSource != reinterpret_cast<zSndBuffer *>(&a3dSource)) {
+        return 5;
+    }
+    std::free(allocatedVoice);
+    std::free(allocatingA3dSample.duplicateVoices);
+
+    ResetStopBackendCounters();
+    g_zSnd_BackendDevice = &a3dDevice;
+    g_testA3dDuplicateBufferResultCode = static_cast<std::int32_t>(0x80040001);
+    zSndSample failingA3dSample = {};
+    failingA3dSample.primaryVoice.isActive = 1;
+    failingA3dSample.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&a3dSource);
+    if (failingA3dSample.AcquireA3dVoice() != nullptr ||
+        failingA3dSample.duplicateVoiceCount != 0 || failingA3dSample.duplicateVoices != nullptr ||
+        g_testA3dDuplicateBufferCount != 1 ||
+        g_testLastA3dDuplicateSource != reinterpret_cast<zSndBuffer *>(&a3dSource)) {
+        return 6;
+    }
+
+    g_zSnd_BackendDevice = nullptr;
     g_zSnd_ActiveBackend = 2;
     return directSoundSample.AcquirePlayHandleDispatch() == nullptr ? 0 : 3;
 }
@@ -2255,6 +2821,145 @@ extern "C" int zsnd_stream_request_queue_smoke(void) {
     return simpleOk ? 0 : 8;
 }
 
+extern "C" int zsnd_stream_request_state_update_smoke(void) {
+    EnsureZrdrFreePool();
+
+    const zSndSampleSetRegistry oldRegistry = g_zSnd_SampleSetRegistry;
+    const int oldInitialized = g_zSnd_IsInitialized;
+    const int oldActiveBackend = g_zSnd_ActiveBackend;
+    const float oldFrameDelta = g_FrameDeltaTimeSec;
+
+    zSndSampleSet set{};
+    zSndSample samples[2]{};
+    samples[0].replayFields.sampleId = "stream_a";
+    samples[0].primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(0x1111);
+    samples[1].replayFields.sampleId = "stream_b";
+    samples[1].primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(0x2222);
+    set.sampleCount = 2;
+    set.samples = samples;
+
+    zSndSampleSet *slots[1] = {&set};
+    g_zSnd_SampleSetRegistry.begin = slots;
+    g_zSnd_SampleSetRegistry.end = slots + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = slots + 1;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_ActiveBackend = 0;
+
+    g_FrameDeltaTimeSec = 0.25f;
+
+    zSndGroupConfigBlock repeatEntry{};
+    repeatEntry.currentPlayCount = 0xffff;
+    repeatEntry.maxPlayCount = 0xffff;
+    repeatEntry.delayPlaySec = 0.0f;
+    repeatEntry.weight = 100.0f;
+    repeatEntry.streamName = "NULL";
+
+    zSndGroupConfigBlock playEntry{};
+    playEntry.currentPlayCount = 2;
+    playEntry.maxPlayCount = 2;
+    playEntry.delayPlaySec = 0.1f;
+    playEntry.weight = 100.0f;
+    playEntry.streamName = "stream_a";
+    playEntry.child = &repeatEntry;
+
+    zSndGroup group{};
+    group.repeatCount = 1;
+    group.delayRepeatSec = 0.5f;
+    group.delayTerminationSec = 0.75f;
+    group.configBlockCount = 1;
+    group.configBlocks = &playEntry;
+
+    zSndStreamRequest request{};
+    request.group = &group;
+    request.gain = 0.5f;
+    request.currentEntry = &playEntry;
+    request.streamState = 1;
+
+    zSndStreamMgr::UpdateActiveRequestPredicate(&request, nullptr);
+    const bool playedInitial =
+        request.elapsedSec == 0.0f && request.currentEntry == nullptr &&
+        request.streamState == 2 && request.playIndex == 1 && playEntry.currentPlayCount == 1 &&
+        repeatEntry.currentPlayCount == 0xffff && playEntry.cachedSample == &samples[0] &&
+        repeatEntry.cachedSample == nullptr;
+
+    zSndStreamMgr::UpdateActiveRequestPredicate(&request, nullptr);
+    const bool waitingRepeat =
+        request.streamState == 2 && request.elapsedSec == 0.25f && request.currentEntry == nullptr;
+
+    zSndStreamMgr::UpdateActiveRequestPredicate(&request, nullptr);
+    const bool beganRepeat =
+        request.streamState == 1 && request.elapsedSec == 0.0f && request.currentEntry == &playEntry;
+
+    request.currentEntry = nullptr;
+    zSndStreamMgr::UpdateActiveRequestPredicate(&request, nullptr);
+    const bool terminationDelay =
+        request.streamState == 3 && request.elapsedSec == 0.0f && request.playIndex == 1;
+
+    zSndStreamMgr::UpdateActiveRequestPredicate(&request, nullptr);
+    zSndStreamMgr::UpdateActiveRequestPredicate(&request, nullptr);
+    zSndStreamMgr::UpdateActiveRequestPredicate(&request, nullptr);
+    const bool finished =
+        request.streamState == 4 && request.elapsedSec == 0.0f &&
+        g_zSndStream_MatchedRequest == nullptr && g_zSndStream_MatchedRequestCount == 0;
+
+    g_zSnd_SampleSetRegistry = oldRegistry;
+    g_zSnd_IsInitialized = oldInitialized;
+    g_zSnd_ActiveBackend = oldActiveBackend;
+    g_FrameDeltaTimeSec = oldFrameDelta;
+
+    return playedInitial && waitingRepeat && beganRepeat && terminationDelay && finished ? 0 : 1;
+}
+
+extern "C" int zsnd_stream_mgr_recycle_finished_request_smoke(void) {
+    EnsureZrdrFreePool();
+    g_zSndStream_MatchedRequest = nullptr;
+    g_zSndStream_MatchedRequestCount = 0;
+    g_zSndStream_ActiveList = zArchiveList_CreateEmpty();
+    g_zSndStream_FreeList = zArchiveList_CreateEmpty();
+    if (g_zSndStream_ActiveList == nullptr || g_zSndStream_FreeList == nullptr) {
+        return 1;
+    }
+
+    zSndStreamRequest activeRequest{};
+    activeRequest.streamState = 99;
+    zSndStreamRequest finishedRequest{};
+    finishedRequest.streamState = 4;
+    zSndStreamRequest laterFinishedRequest{};
+    laterFinishedRequest.streamState = 4;
+
+    zArchiveList_PushFrontPayload(g_zSndStream_ActiveList, &laterFinishedRequest);
+    zArchiveList_PushFrontPayload(g_zSndStream_ActiveList, &finishedRequest);
+    zArchiveList_PushFrontPayload(g_zSndStream_ActiveList, &activeRequest);
+
+    zSndStreamMgr_RecycleFinishedRequest();
+    const bool firstRecycleOk =
+        g_zSndStream_ActiveList->count == 2 && g_zSndStream_FreeList->count == 1 &&
+        g_zSndStream_FreeList->head->payload == &finishedRequest &&
+        zArchiveList_FindNodeByPayload(g_zSndStream_ActiveList, &finishedRequest) == nullptr &&
+        zArchiveList_FindNodeByPayload(g_zSndStream_ActiveList, &laterFinishedRequest) != nullptr &&
+        g_zSndStream_MatchedRequest == nullptr && g_zSndStream_MatchedRequestCount == 1;
+
+    zSndStreamMgr_RecycleFinishedRequest();
+    const bool secondRecycleOk =
+        g_zSndStream_ActiveList->count == 1 && g_zSndStream_FreeList->count == 2 &&
+        g_zSndStream_FreeList->head->payload == &laterFinishedRequest &&
+        zArchiveList_FindNodeByPayload(g_zSndStream_ActiveList, &laterFinishedRequest) == nullptr &&
+        g_zSndStream_MatchedRequest == nullptr && g_zSndStream_MatchedRequestCount == 1;
+
+    activeRequest.streamState = 99;
+    zSndStreamMgr_RecycleFinishedRequest();
+    const bool noMatchOk =
+        g_zSndStream_ActiveList->count == 1 && g_zSndStream_FreeList->count == 2 &&
+        g_zSndStream_MatchedRequest == nullptr && g_zSndStream_MatchedRequestCount == 1;
+
+    zArchiveList_Destroy(g_zSndStream_ActiveList);
+    zArchiveList_Destroy(g_zSndStream_FreeList);
+    g_zSndStream_ActiveList = nullptr;
+    g_zSndStream_FreeList = nullptr;
+
+    return firstRecycleOk && secondRecycleOk && noMatchOk ? 0 : 2;
+}
+
 extern "C" int zsnd_stream_mgr_shutdown_lists_smoke(void) {
     g_zSndStream_RootNode = nullptr;
     g_zSndStream_MatchedRequest = reinterpret_cast<zSndStreamRequest *>(0x1234);
@@ -2710,8 +3415,47 @@ extern "C" int zsnd_play_handle_update3d_directsound_smoke(void) {
         return 5;
     }
 
+    zSndBuffer *const savedBackendBuffer = handle.backendBuffer;
+    handle.backendBuffer = nullptr;
+    if (handle.Update3D(&worldPos, nullptr, 0) != -1) {
+        return 6;
+    }
+
+    handle.backendBuffer = savedBackendBuffer;
+    sample.createGuard = 1;
+    if (handle.Update3D(&worldPos, nullptr, 0) != -1) {
+        return 7;
+    }
+
+    sample.createGuard = 0;
+    g_zSnd_ListenerStateValid = 0;
+    g_zSnd_MuteDepth = 1;
+    const int oldIsInitialized = g_zSnd_IsInitialized;
+    g_zSnd_IsInitialized = 1;
+    ResetStopBackendCounters();
+    if (handle.Update3D(nullptr, nullptr, 0) != 1 || g_testSetPanCount != 1 ||
+        g_testSetVolumeCount != 1 || g_testLastPan != 0 || g_testLastVolume != -10000) {
+        return 8;
+    }
+
+    g_zSnd_MuteDepth = 0;
+    ResetStopBackendCounters();
+    g_testDirectSoundSetPanResult = 7;
+    if (handle.Update3D(nullptr, nullptr, 0) != 0 || g_testSetPanCount != 1 ||
+        g_testSetVolumeCount != 0) {
+        return 9;
+    }
+
+    ResetStopBackendCounters();
+    g_testDirectSoundSetVolumeResult = 7;
+    if (handle.Update3D(nullptr, nullptr, 0) != 0 || g_testSetPanCount != 1 ||
+        g_testSetVolumeCount != 1) {
+        return 10;
+    }
+
+    g_zSnd_IsInitialized = oldIsInitialized;
     g_zSnd_ActiveBackend = 2;
-    return handle.Update3DDispatch(nullptr, nullptr, 0) == 0 ? 0 : 6;
+    return handle.Update3DDispatch(nullptr, nullptr, 0) == 0 ? 0 : 11;
 }
 
 extern "C" int zsnd_play_handle_set_freq_scaled_smoke(void) {
@@ -2843,6 +3587,260 @@ extern "C" int zsnd_play_handle_try_disable_managed_smoke(void) {
     }
 
     return 0;
+}
+
+// Reimplements 0x4a0380: zSndPlayHandle::PlayWithDelta_A3D provider dispatch behavior.
+extern "C" int zsnd_play_with_delta_a3d_smoke(void) {
+    ResetStopBackendCounters();
+
+    TestA3dSourceVTable a3dVTable = {};
+    a3dVTable.Play = &TestA3dPlay;
+    a3dVTable.SetGain = &TestA3dSetGain;
+    a3dVTable.slots3c_44[0] = reinterpret_cast<void *>(&TestA3dReset);
+    TestA3dSource a3dSource{&a3dVTable};
+
+    zSndSampleReplayFields replayFields = {};
+    replayFields.flags = 3;
+    zSndPlayHandle handle = {};
+    handle.backendBuffer = reinterpret_cast<zSndBuffer *>(&a3dSource);
+
+    float gain = 0.25f;
+    std::memcpy(&handle.gainScaled, &gain, sizeof(handle.gainScaled));
+    zSndPlayHandle::PlayWithDelta_A3D(
+        &replayFields,
+        &handle,
+        1,
+        0.5f
+    );
+    float updatedGain = 0.0f;
+    std::memcpy(&updatedGain, &handle.gainScaled, sizeof(updatedGain));
+    if (updatedGain != 0.75f || g_testSetGainCount != 1 || g_testLastGain != 0.75f ||
+        g_testA3dResetCount != 1 || g_testPlayA3dCount != 1 || g_testLastPlayFlags != 1) {
+        return 1;
+    }
+
+    ResetStopBackendCounters();
+    gain = 0.375f;
+    std::memcpy(&handle.gainScaled, &gain, sizeof(handle.gainScaled));
+    replayFields.flags = 0;
+    zSndPlayHandle::PlayWithDelta_A3D(
+        &replayFields,
+        &handle,
+        0,
+        0.0f
+    );
+    std::memcpy(&updatedGain, &handle.gainScaled, sizeof(updatedGain));
+    if (updatedGain != 0.375f || g_testSetGainCount != 0 || g_testA3dResetCount != 0 ||
+        g_testPlayA3dCount != 1 || g_testLastPlayFlags != 0) {
+        return 2;
+    }
+
+    ResetStopBackendCounters();
+    g_testA3dPlayResult = static_cast<std::int32_t>(0x80040001);
+    zSndPlayHandle::PlayWithDelta_A3D(
+        &replayFields,
+        &handle,
+        0,
+        -1.0f
+    );
+    return g_testSetGainCount == 0 && g_testA3dResetCount == 0 && g_testPlayA3dCount == 1 &&
+                   g_testLastPlayFlags == 0
+               ? 0
+               : 3;
+}
+
+// Reimplements 0x4a0400: zSndPlayHandle::PlayWithDelta_DirectSound provider dispatch behavior.
+extern "C" int zsnd_play_with_delta_directsound_smoke(void) {
+    ResetStopBackendCounters();
+
+    TestDirectSoundBufferVTable directSoundVTable = {};
+    directSoundVTable.SetVolume = &TestDirectSoundSetVolume;
+    directSoundVTable.SetCurrentPosition = &TestDirectSoundSetCurrentPosition;
+    directSoundVTable.Play = &TestDirectSoundPlay;
+    TestDirectSoundBuffer directSoundBuffer{&directSoundVTable};
+
+    zSndSampleReplayFields replayFields = {};
+    replayFields.flags = 3;
+    zSndPlayHandle handle = {};
+    handle.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+    handle.gainScaled = -500;
+
+    zSndPlayHandle::PlayWithDelta_DirectSound(
+        &replayFields,
+        &handle,
+        1,
+        125
+    );
+    if (handle.gainScaled != -375 || g_testSetVolumeCount != 1 ||
+        g_testLastVolume != -375 || g_testSetCurrentPositionCount != 1 ||
+        g_testLastCurrentPosition != 0 || g_testPlayDirectSoundCount != 1 ||
+        g_testLastPlayFlags != 1) {
+        return 1;
+    }
+
+    ResetStopBackendCounters();
+    replayFields.flags = 0;
+    handle.gainScaled = -250;
+    zSndPlayHandle::PlayWithDelta_DirectSound(
+        &replayFields,
+        &handle,
+        0,
+        0
+    );
+    if (handle.gainScaled != -250 || g_testSetVolumeCount != 0 ||
+        g_testSetCurrentPositionCount != 0 || g_testPlayDirectSoundCount != 1 ||
+        g_testLastPlayFlags != 0) {
+        return 2;
+    }
+
+    ResetStopBackendCounters();
+    g_testDirectSoundSetVolumeResult = 7;
+    zSndPlayHandle::PlayWithDelta_DirectSound(
+        &replayFields,
+        &handle,
+        1,
+        10
+    );
+    if (handle.gainScaled != -240 || g_testSetVolumeCount != 1 ||
+        g_testSetCurrentPositionCount != 1 || g_testPlayDirectSoundCount != 1) {
+        return 3;
+    }
+
+    ResetStopBackendCounters();
+    g_testDirectSoundSetCurrentPositionResult = 7;
+    zSndPlayHandle::PlayWithDelta_DirectSound(
+        &replayFields,
+        &handle,
+        1,
+        0
+    );
+    if (g_testSetVolumeCount != 0 || g_testSetCurrentPositionCount != 1 ||
+        g_testPlayDirectSoundCount != 1) {
+        return 4;
+    }
+
+    ResetStopBackendCounters();
+    g_testDirectSoundPlayResult = 7;
+    zSndPlayHandle::PlayWithDelta_DirectSound(
+        &replayFields,
+        &handle,
+        0,
+        0
+    );
+    return g_testSetVolumeCount == 0 && g_testSetCurrentPositionCount == 0 &&
+                   g_testPlayDirectSoundCount == 1
+               ? 0
+               : 5;
+}
+
+// Reimplements 0x4a0490: zSndPlayHandle::PlayWithDelta_BackendDispatch routing behavior.
+extern "C" int zsnd_play_with_delta_backend_dispatch_smoke(void) {
+    const int oldBackend = g_zSnd_ActiveBackend;
+    ResetStopBackendCounters();
+
+    TestDirectSoundBufferVTable directSoundVTable = {};
+    directSoundVTable.SetVolume = &TestDirectSoundSetVolume;
+    directSoundVTable.SetCurrentPosition = &TestDirectSoundSetCurrentPosition;
+    directSoundVTable.Play = &TestDirectSoundPlay;
+    TestDirectSoundBuffer directSoundBuffer{&directSoundVTable};
+
+    TestA3dSourceVTable a3dVTable = {};
+    a3dVTable.Play = &TestA3dPlay;
+    a3dVTable.SetGain = &TestA3dSetGain;
+    a3dVTable.slots3c_44[0] = reinterpret_cast<void *>(&TestA3dReset);
+    TestA3dSource a3dSource{&a3dVTable};
+
+    zSndSample sample = {};
+    sample.replayFields.flags = 3;
+
+    zSndPlayHandle handle = {};
+    handle.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+    handle.gainScaled = -1000;
+
+    g_zSnd_ActiveBackend = 0;
+    zSndPlayHandle::PlayWithDelta_BackendDispatch(
+        &sample,
+        &handle,
+        1,
+        0.125f
+    );
+    if (handle.gainScaled != 250 || g_testSetVolumeCount != 1 || g_testLastVolume != 250 ||
+        g_testSetCurrentPositionCount != 1 || g_testLastCurrentPosition != 0 ||
+        g_testPlayDirectSoundCount != 1 || g_testLastPlayFlags != 1 ||
+        g_testPlayA3dCount != 0) {
+        g_zSnd_ActiveBackend = oldBackend;
+        return 1;
+    }
+
+    ResetStopBackendCounters();
+    handle.backendBuffer = nullptr;
+    handle.gainScaled = -500;
+    zSndPlayHandle::PlayWithDelta_BackendDispatch(
+        &sample,
+        &handle,
+        1,
+        0.5f
+    );
+    if (handle.gainScaled != -500 || g_testSetVolumeCount != 0 ||
+        g_testSetCurrentPositionCount != 0 || g_testPlayDirectSoundCount != 0 ||
+        g_testPlayA3dCount != 0) {
+        g_zSnd_ActiveBackend = oldBackend;
+        return 2;
+    }
+
+    ResetStopBackendCounters();
+    handle.backendBuffer = reinterpret_cast<zSndBuffer *>(&a3dSource);
+    float gain = 0.25f;
+    std::memcpy(&handle.gainScaled, &gain, sizeof(handle.gainScaled));
+    g_zSnd_ActiveBackend = 1;
+    zSndPlayHandle::PlayWithDelta_BackendDispatch(
+        &sample,
+        &handle,
+        1,
+        0.5f
+    );
+    float updatedGain = 0.0f;
+    std::memcpy(&updatedGain, &handle.gainScaled, sizeof(updatedGain));
+    if (updatedGain != 0.75f || g_testSetGainCount != 1 || g_testLastGain != 0.75f ||
+        g_testA3dResetCount != 1 || g_testPlayA3dCount != 1 || g_testLastPlayFlags != 1 ||
+        g_testPlayDirectSoundCount != 0) {
+        g_zSnd_ActiveBackend = oldBackend;
+        return 3;
+    }
+
+    ResetStopBackendCounters();
+    gain = 0.0f;
+    std::memcpy(&handle.gainScaled, &gain, sizeof(handle.gainScaled));
+    zSndPlayHandle::PlayWithDelta_BackendDispatch(
+        &sample,
+        &handle,
+        1,
+        0.5f
+    );
+    std::memcpy(&updatedGain, &handle.gainScaled, sizeof(updatedGain));
+    if (updatedGain != 0.0f || g_testSetGainCount != 0 || g_testA3dResetCount != 0 ||
+        g_testPlayA3dCount != 0 || g_testPlayDirectSoundCount != 0) {
+        g_zSnd_ActiveBackend = oldBackend;
+        return 4;
+    }
+
+    ResetStopBackendCounters();
+    handle.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+    handle.gainScaled = -1000;
+    g_zSnd_ActiveBackend = 2;
+    zSndPlayHandle::PlayWithDelta_BackendDispatch(
+        &sample,
+        &handle,
+        1,
+        0.125f
+    );
+
+    g_zSnd_ActiveBackend = oldBackend;
+    return handle.gainScaled == -1000 && g_testSetVolumeCount == 0 &&
+                   g_testSetCurrentPositionCount == 0 && g_testPlayDirectSoundCount == 0 &&
+                   g_testSetGainCount == 0 && g_testPlayA3dCount == 0
+               ? 0
+               : 5;
 }
 
 extern "C" int zsnd_sample_play_a3d_simple_direct_smoke(void) {
@@ -3140,6 +4138,35 @@ extern "C" int zsnd_sample_destroy_smoke(void) {
     return 0;
 }
 
+// Reimplements 0x4a0c00: zSndSampleSet::DestroyOwnedData owned array/name cleanup.
+extern "C" int zsnd_sample_set_destroy_owned_data_smoke(void) {
+    zSndSampleSet set = {};
+    set.setName = _strdup("owned");
+    set.samples = static_cast<zSndSample *>(std::calloc(1, sizeof(zSndSample)));
+    if (set.setName == nullptr || set.samples == nullptr) {
+        std::free(set.setName);
+        std::free(set.samples);
+        return 1;
+    }
+
+    set.sampleCount = 1;
+    set.resourcesLoaded = 1;
+    set.samples[0].replayFields.flags = 0x08;
+
+    char *const originalName = set.setName;
+    zSndSample *const originalSamples = set.samples;
+    set.DestroyOwnedData();
+
+    if (set.resourcesLoaded != 0 || set.sampleCount != 0 || set.setName != originalName ||
+        set.samples != originalSamples) {
+        return 2;
+    }
+
+    set = {};
+    set.DestroyOwnedData();
+    return set.sampleCount == 0 ? 0 : 3;
+}
+
 void RECOIL_FASTCALL TestPlaybackEventHandler(int) {
 }
 
@@ -3259,6 +4286,140 @@ extern "C" int zsnd_fade_list_cursor_helpers_smoke(void) {
     g_zSndFadeActiveListCount = 1;
     ClearFadeTestLists();
     return ok ? 0 : 2;
+}
+
+extern "C" int zsnd_fade_lists_init_globals_shutdown_at_exit_smoke(void) {
+    ClearFadeTestLists();
+
+    zSndFadeLists::InitGlobals();
+    if (g_zSndFadeActiveListSentinel == nullptr ||
+        g_zSndFadeDispatchListSentinel == nullptr ||
+        g_zSndFadeActiveListSentinel->next != g_zSndFadeActiveListSentinel ||
+        g_zSndFadeDispatchListSentinel->next != g_zSndFadeDispatchListSentinel ||
+        g_zSndFadeActiveListCount != 0 || g_zSndFadeDispatchListCount != 0) {
+        ClearFadeTestLists();
+        return 1;
+    }
+
+    zSndFadeEntry activeEntry = {};
+    zSndFadeEntry dispatchEntry = {};
+    AppendFadeNode(
+        g_zSndFadeActiveListSentinel,
+        AllocateFadeNode(&activeEntry),
+        g_zSndFadeActiveListCount
+    );
+    AppendFadeNode(
+        g_zSndFadeDispatchListSentinel,
+        AllocateFadeNode(&dispatchEntry),
+        g_zSndFadeDispatchListCount
+    );
+
+    zSndFadeLists::ShutdownAtExit();
+    return g_zSndFadeActiveListSentinel == nullptr &&
+                   g_zSndFadeDispatchListSentinel == nullptr &&
+                   g_zSndFadeActiveListCount == 0 && g_zSndFadeDispatchListCount == 0
+               ? 0
+               : 2;
+}
+
+extern "C" int zsnd_fade_lists_init_atexit_child_smoke(void) {
+    char enabled[2] = {};
+    if (GetEnvironmentVariableA(
+            "RECOIL_ZSND_FADE_INIT_ATEXIT_CHILD",
+            enabled,
+            sizeof(enabled)
+        ) == 0 ||
+        enabled[0] != '1') {
+        return 0;
+    }
+
+    ClearFadeTestLists();
+    zSndFadeLists::Init();
+
+    zSndFadeEntry activeEntry = {};
+    zSndFadeEntry dispatchEntry = {};
+    AppendFadeNode(
+        g_zSndFadeActiveListSentinel,
+        AllocateFadeNode(&activeEntry),
+        g_zSndFadeActiveListCount
+    );
+    AppendFadeNode(
+        g_zSndFadeDispatchListSentinel,
+        AllocateFadeNode(&dispatchEntry),
+        g_zSndFadeDispatchListCount
+    );
+
+    return g_zSndFadeActiveListSentinel != nullptr &&
+                   g_zSndFadeDispatchListSentinel != nullptr &&
+                   g_zSndFadeActiveListCount == 1 && g_zSndFadeDispatchListCount == 1
+               ? 0
+               : 1;
+}
+
+extern "C" int zsnd_fade_lists_init_atexit_smoke(void) {
+    char exePath[MAX_PATH] = {};
+    if (GetModuleFileNameA(
+            nullptr,
+            exePath,
+            sizeof(exePath)
+        ) == 0) {
+        return 1;
+    }
+
+    char commandLine[MAX_PATH + 96] = {};
+    if (std::snprintf(
+            commandLine,
+            sizeof(commandLine),
+            "\"%s\" zsnd_fade_lists_init_atexit_child_smoke",
+            exePath
+        ) <= 0) {
+        return 2;
+    }
+
+    STARTUPINFOA startupInfo = {};
+    PROCESS_INFORMATION processInfo = {};
+    startupInfo.cb = sizeof(startupInfo);
+    SetEnvironmentVariableA(
+        "RECOIL_ZSND_FADE_INIT_ATEXIT_CHILD",
+        "1"
+    );
+    const BOOL created = CreateProcessA(
+        nullptr,
+        commandLine,
+        nullptr,
+        nullptr,
+        FALSE,
+        0,
+        nullptr,
+        nullptr,
+        &startupInfo,
+        &processInfo
+    );
+    SetEnvironmentVariableA(
+        "RECOIL_ZSND_FADE_INIT_ATEXIT_CHILD",
+        nullptr
+    );
+    if (created == 0) {
+        return 3;
+    }
+
+    const DWORD waitResult = WaitForSingleObject(
+        processInfo.hProcess,
+        10000
+    );
+    DWORD exitCode = 0;
+    const BOOL gotExitCode = GetExitCodeProcess(
+        processInfo.hProcess,
+        &exitCode
+    );
+    CloseHandle(processInfo.hThread);
+    CloseHandle(processInfo.hProcess);
+
+    if (waitResult != WAIT_OBJECT_0 || gotExitCode == 0) {
+        return 4;
+    }
+
+    return exitCode == 0 ? 0 : 5;
 }
 
 extern "C" int zsnd_fade_lists_stop_all_shutdown_smoke(void) {
@@ -4402,6 +5563,112 @@ extern "C" int zsnd_snapshot_create_from_active_samples_smoke(void) {
                    a3dStatusCount
                ? 0
                : 1;
+}
+
+// Reimplements 0x4a0300: zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle payload copy.
+extern "C" int zsnd_snapshot_payload_capture_smoke(void) {
+    const int oldActiveBackend = g_zSnd_ActiveBackend;
+    zSndSample sample = {};
+    zSndPlayHandle handle = {};
+    zSndPlayHandleSnapshotPayload payload = {};
+
+    std::memset(&payload, 0x5a, sizeof(payload));
+    handle.handleKind = ZSND_PLAYHANDLE_STREAM_REQUEST;
+    payload.CaptureFromPlayHandle(&handle);
+    unsigned char sentinel[sizeof(payload)];
+    std::memset(sentinel, 0x5a, sizeof(sentinel));
+    if (std::memcmp(&payload, sentinel, sizeof(payload)) != 0) {
+        g_zSnd_ActiveBackend = oldActiveBackend;
+        return 1;
+    }
+
+    handle = {};
+    sample = {};
+    sample.primaryVoice.gainScaled = 0x11223344;
+    InitSnapshotPlayHandle(
+        &sample,
+        &handle,
+        reinterpret_cast<zSndBuffer *>(0x12345678),
+        0x55667788,
+        12.0f
+    );
+
+    g_zSnd_ActiveBackend = 0;
+    payload.CaptureFromPlayHandle(&handle);
+    const bool directWithWorld =
+        payload.playHandle == &handle && payload.sourceSample == &sample &&
+        payload.volumeScaleRaw == 0x11223344 && (payload.flags & 1u) != 0 &&
+        payload.worldPos.x == 12.0f && payload.worldPos.y == 13.0f &&
+        payload.worldPos.z == 14.0f && payload.velocityOrDir.x == 15.0f &&
+        payload.velocityOrDir.y == 16.0f && payload.velocityOrDir.z == 17.0f;
+
+    std::memset(&payload, 0x5a, sizeof(payload));
+    handle.hasWorldPos = 0;
+    sample.primaryVoice.gainScaled = 0x22334455;
+    g_zSnd_ActiveBackend = 1;
+    payload.CaptureFromPlayHandle(&handle);
+    const bool a3dWithoutWorld =
+        payload.playHandle == &handle && payload.sourceSample == &sample &&
+        payload.volumeScaleRaw == 0x22334455 && payload.flags == 0 &&
+        payload.worldPos.x == 0.0f && payload.worldPos.y == 0.0f &&
+        payload.worldPos.z == 0.0f && payload.velocityOrDir.x == 0.0f &&
+        payload.velocityOrDir.y == 0.0f && payload.velocityOrDir.z == 0.0f;
+
+    std::memset(&payload, 0x5a, sizeof(payload));
+    handle.hasWorldPos = 0;
+    g_zSnd_ActiveBackend = 2;
+    payload.CaptureFromPlayHandle(&handle);
+    const bool unsupportedBackend =
+        payload.playHandle == &handle && payload.sourceSample == &sample &&
+        payload.volumeScaleRaw == 0 && payload.flags == 0;
+
+    g_zSnd_ActiveBackend = oldActiveBackend;
+    return directWithWorld && a3dWithoutWorld && unsupportedBackend ? 0 : 2;
+}
+
+// Reimplements 0x4a07c0: zSndPlayHandleSnapshot::NewNode allocation/link initialization.
+extern "C" int zsnd_snapshot_item_new_node_smoke(void) {
+    zSndPlayHandleSnapshot *const snapshot = reinterpret_cast<zSndPlayHandleSnapshot *>(1);
+    zSndPlayHandleSnapshotItem head = {};
+    zSndPlayHandleSnapshotItem prev = {};
+
+    zSndPlayHandleSnapshotItem *node = snapshot->NewNode(
+        &head,
+        &prev
+    );
+    const bool explicitLinks = node->next == &head && node->prev == &prev;
+    ::operator delete(node);
+    if (!explicitLinks) {
+        return 1;
+    }
+
+    node = snapshot->NewNode(
+        nullptr,
+        nullptr
+    );
+    const bool selfLinks = node->next == node && node->prev == node;
+    ::operator delete(node);
+    if (!selfLinks) {
+        return 2;
+    }
+
+    node = snapshot->NewNode(
+        &head,
+        nullptr
+    );
+    const bool explicitNext = node->next == &head && node->prev == node;
+    ::operator delete(node);
+    if (!explicitNext) {
+        return 3;
+    }
+
+    node = snapshot->NewNode(
+        nullptr,
+        &prev
+    );
+    const bool explicitPrev = node->next == node && node->prev == &prev;
+    ::operator delete(node);
+    return explicitPrev ? 0 : 4;
 }
 
 // Reimplements 0x4a0670: zSnd::ApplyMuteStateToActiveVoices active-voice rewrite behavior.

@@ -7,6 +7,7 @@
 #include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zWeapon/zWeapon.h"
 
 #include <cstdint>
 #include <cstdio>
@@ -494,6 +495,90 @@ extern "C" int zinterp_context_constructor_smoke()
                     context.ptrArrayCount == 0;
 
     context.Destructor();
+    return ok ? 0 : 1;
+}
+
+extern "C" int zinterp_global_context_constructor_smoke()
+{
+    zInterp_Context context = {};
+    zInterp_Context *const returned =
+        reinterpret_cast<zInterp_GlobalContext *>(&context)->Constructor();
+
+    const bool ok = returned == &context &&
+                    context.vftable == &g_zInterp_GlobalContext_VTable &&
+                    context.searchPathSpec != nullptr &&
+                    std::strcmp(context.searchPathSpec, ".;zbd") == 0 &&
+                    context.preparedIndexFileName != nullptr &&
+                    std::strcmp(context.preparedIndexFileName, "interp.zbd") == 0 &&
+                    context.searchPathLeadChar == '.' &&
+                    context.preparedEntryCount != nullptr &&
+                    *context.preparedEntryCount == 0 &&
+                    context.scrollAlwaysListHead != nullptr &&
+                    context.scrollAlwaysListHead->next == context.scrollAlwaysListHead &&
+                    context.scrollAlwaysListHead->prev == context.scrollAlwaysListHead;
+
+    context.Destructor();
+    return ok ? 0 : 1;
+}
+
+extern "C" int zinterp_global_context_hooks_smoke()
+{
+    zInterp_Context context = {};
+    reinterpret_cast<zInterp_GlobalContext *>(&context)->Constructor();
+
+    char commandToken[] = "WeaponSetMaxTetherAltitude";
+    char altitudeToken[] = "256.25";
+    char *tokens[] = {commandToken, altitudeToken};
+    SetCommandTokens(&context, tokens, 2);
+
+    const float oldAltitude = g_zWeapon_MaxTetherAltitude;
+    g_zWeapon_MaxTetherAltitude = 0.0f;
+    const int handled = g_zInterp_GlobalContext_VTable.preDispatch(&context, commandToken);
+    const bool handledOk = handled == 0 && g_zWeapon_MaxTetherAltitude == 256.25f &&
+                           context.tokenReadIndex == 2;
+
+    char otherToken[] = "World";
+    char *otherTokens[] = {otherToken};
+    SetCommandTokens(&context, otherTokens, 1);
+    const int passThrough = g_zInterp_GlobalContext_VTable.preDispatch(&context, otherToken);
+    const bool passThroughOk = passThrough == 1 && g_zWeapon_MaxTetherAltitude == 256.25f;
+
+    context.errorCount = 3;
+    const int reportResult = g_zInterp_GlobalContext_VTable.postDispatch(&context, otherToken);
+    const bool reportOk = reportResult == 1 && context.errorCount == 4;
+
+    const int deferredResult = g_zInterp_GlobalContext_VTable.deferredHook(&context, otherToken);
+    const bool deferredOk = deferredResult == 0 && context.errorCount == 4;
+
+    g_zWeapon_MaxTetherAltitude = oldAltitude;
+    context.Destructor();
+    return handledOk && passThroughOk && reportOk && deferredOk ? 0 : 1;
+}
+
+extern "C" int zinterp_global_context_static_init_smoke()
+{
+    zInterp_Context *const returned = zInterp_GlobalContext::StaticInit();
+    const bool initOk = returned == &g_zInterp_GlobalContext &&
+                        g_zInterp_GlobalContext.vftable == &g_zInterp_GlobalContext_VTable &&
+                        g_zInterp_GlobalContext.searchPathSpec != nullptr &&
+                        std::strcmp(g_zInterp_GlobalContext.searchPathSpec, ".;zbd") == 0 &&
+                        g_zInterp_GlobalContext.preparedIndexFileName != nullptr &&
+                        std::strcmp(g_zInterp_GlobalContext.preparedIndexFileName, "interp.zbd") == 0;
+
+    zInterp_GlobalContext::AtExitDestructor();
+    const bool destroyOk = g_zInterp_GlobalContext.vftable == &g_zInterp_Context_VTableMarker &&
+                           g_zInterp_GlobalContext.scrollAlwaysListHead == nullptr &&
+                           g_zInterp_GlobalContext.scrollAlwaysListCount == 0;
+    return initOk && destroyOk ? 0 : 1;
+}
+
+extern "C" int zinterp_global_context_static_init_register_smoke()
+{
+    const int result = zInterp_GlobalContext::StaticInitAndRegisterAtExit();
+    const bool ok = result == 0 &&
+                    g_zInterp_GlobalContext.vftable == &g_zInterp_GlobalContext_VTable &&
+                    g_zInterp_GlobalContext.searchPathSpec != nullptr &&
+                    std::strcmp(g_zInterp_GlobalContext.searchPathSpec, ".;zbd") == 0;
     return ok ? 0 : 1;
 }
 

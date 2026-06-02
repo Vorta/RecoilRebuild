@@ -12,7 +12,60 @@ namespace {
 bool Near(float actual, float expected) {
     return std::fabs(actual - expected) < 0.00001f;
 }
+
+bool NearDouble(double actual, double expected) {
+    return std::fabs(actual - expected) < 0.0000001;
+}
 } // namespace
+
+extern "C" int zmath_crt_matherr_handler_smoke(void) {
+    char asinName[] = "asin";
+    char ceilName[] = "ceil";
+    char floorName[] = "floor";
+    char otherName[] = "sqrt";
+
+    _exception except = {};
+    except.type = 1;
+    except.name = asinName;
+    except.arg1 = 2.0;
+    except.arg2 = 77.0;
+    except.retval = -99.0;
+    if (zMath::CrtMatherrHandler(&except) != 1 ||
+        !NearDouble(
+            except.retval,
+            1.5707963267948966
+        )) {
+        return 1;
+    }
+
+    except.name = asinName;
+    except.arg1 = -2.0;
+    except.retval = 99.0;
+    if (zMath::CrtMatherrHandler(&except) != 1 ||
+        !NearDouble(
+            except.retval,
+            -1.5707963267948966
+        )) {
+        return 2;
+    }
+
+    except.name = ceilName;
+    except.arg1 = 123.5;
+    except.retval = 99.0;
+    if (zMath::CrtMatherrHandler(&except) != 1 || except.retval != 0.0) {
+        return 3;
+    }
+
+    except.name = floorName;
+    except.retval = 99.0;
+    if (zMath::CrtMatherrHandler(&except) != 1 || except.retval != 0.0) {
+        return 4;
+    }
+
+    except.name = otherName;
+    except.retval = 99.0;
+    return zMath::CrtMatherrHandler(&except) == 0 && except.retval == 99.0 ? 0 : 5;
+}
 
 extern "C" int zmath_matrix_stack_and_direction_smoke(void) {
     std::int32_t flags[3] = {11, 22, 33};

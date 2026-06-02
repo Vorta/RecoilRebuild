@@ -1,8 +1,10 @@
 # Implementation Groups
 
-Use this file for temporary dependency-group notes during reconstruction. The
-plan remains address-based; this file lists only active multi-function,
-source-readiness, or coherent binary-safe groups currently being coordinated.
+Use this tracked file for temporary dependency-group notes during
+reconstruction. The plan remains address-based; this file lists only active
+multi-function, source-readiness, or coherent tier `S` groups currently being
+coordinated. Keep the header and template available even when no groups are
+active.
 
 ## Rules
 
@@ -15,9 +17,12 @@ source-readiness, or coherent binary-safe groups currently being coordinated.
 - Keep notes concise and temporary. Move durable facts into source comments,
   Binary Ninja comments, tests, `docs/reconstruction/`, or narrow subsystem docs before
   pruning.
+- Stage this file only when an active group update belongs with a qualifying
+  source checkpoint under the root `AGENTS.md` git rules. Do not commit stale or
+  group-only bookkeeping.
 - Verification-only queues that no longer carry source blockers should not live
   in this active working file unless they are coordinating a current coherent
-  binary-safe pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
+tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
   0xNNNNNN`, VC verification manifests, and
   `python tools/recoil_verification_backlog.py` for current verification state.
 - Recompute verification scope with `python tools/recoil_status.py 0xNNNNNN` or

@@ -6,7 +6,8 @@
 # and generated build output local.
 
 # Local/private original inputs and extracted assets
-support/
+/support/
+/playground/
 img/
 resources/raw/
 *.bndb
@@ -123,6 +124,9 @@ __pycache__/
 .ruff_cache/
 
 # AI/local assistant state
+# AGENTS.md files are intentionally local instruction surfaces in this
+# reconstruction workspace. Keep durable public project docs under docs/ or
+# README.md instead.
 .claude/
 .cursor/
 .agent/claims/

@@ -1016,7 +1016,7 @@ extern "C" int zrndr_init_globals_smoke(void) {
         zRndr::g_videoStrideMirror1 != 1 || zRndr::g_renderStateReadyWriteOnlyFlag != 1 ||
         zRndr::g_defaultGraphicsFlags != -1 ||
         zRndr::g_graphicsFlags != &zRndr::g_defaultGraphicsFlags ||
-        reinterpret_cast<std::uintptr_t>(g_zVideo_pfnBltSourceToPrimary) != 0x0048f560) {
+        g_zVideo_pfnBltSourceToPrimary != zVid_Image::BlitToFramebufferClipped) {
         return 2;
     }
 
@@ -4012,6 +4012,43 @@ extern "C" int zrndr_span_masked_tex16_to_565_smoke(void) {
     return dst[3] == 0x4444 ? 0 : 3;
 }
 
+extern "C" int zrndr_span_masked_16_from_pal8_to565_smoke(void) {
+    std::uint8_t texels[4] = {0, 7, 9, 5};
+    std::uint16_t palette[0x10000] = {};
+    std::uint16_t dst[4] = {0x1111, 0x2222, 0x3333, 0x001f};
+    palette[7] = 0xf800;
+    palette[9] = 0x07e0;
+    palette[0x001f] = 0xffff;
+
+    zRndr::g_spanActiveTexels = texels;
+    zRndr::g_spanActiveTexPalette = palette;
+    zRndr::g_spanTexUAdvance = 1 << 20;
+    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexVMask = 0;
+    zRndr::g_spanActiveTexUMask = 0x7f;
+    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanActiveConstAlphaBits = 0xff;
+
+    zRndr::SpanMasked16FromPal8To565(0, 0, 3, 0);
+    if (dst[0] != 0x1111 || dst[1] != 0xf800 || dst[2] != 0x07e0 ||
+        zRndr::g_spanCurrentDst16 != dst) {
+        return 1;
+    }
+
+    zRndr::g_spanCurrentDst16 = &dst[3];
+    zRndr::g_spanActiveConstAlphaBits = 0x80;
+    zRndr::SpanMasked16FromPal8To565(3 << 20, 0, 1, 0);
+    if (dst[3] != 0x7bff || zRndr::g_spanCurrentDst16 != &dst[3]) {
+        return 2;
+    }
+
+    dst[3] = 0x4444;
+    zRndr::g_spanCurrentDst16 = &dst[3];
+    zRndr::g_spanActiveConstAlphaBits = 3;
+    zRndr::SpanMasked16FromPal8To565(3 << 20, 0, 1, 0);
+    return dst[3] == 0x4444 && zRndr::g_spanCurrentDst16 == &dst[3] ? 0 : 3;
+}
+
 extern "C" int zrndr_span_alpha_blend_565_const_alpha_tex16_smoke(void) {
     std::uint16_t texels[4] = {0x0000, 0xf800, 0xffff, 0x001f};
     std::uint16_t dst[4] = {0x1111, 0x2222, 0x001f, 0x4444};
@@ -4510,7 +4547,14 @@ extern "C" int zrndr_span_alpha_blend_565_const_alpha_fast_pal8_smoke(void) {
     zRndr::g_spanCurrentDst16 = &dst[2];
     zRndr::g_spanActiveConstAlphaBits = 0x80;
     zRndr::SpanAlphaBlend565ConstAlphaFastFromPal8(2 << 20, 0, 1, 0);
-    return dst[2] == 0x7bff ? 0 : 2;
+    if (dst[2] != 0x7bff) {
+        return 2;
+    }
+
+    dst[2] = 0x5555;
+    zRndr::g_spanActiveConstAlphaBits = 3;
+    zRndr::SpanAlphaBlend565ConstAlphaFastFromPal8(2 << 20, 0, 1, 0);
+    return dst[2] == 0x5555 ? 0 : 3;
 }
 
 extern "C" int zrndr_span_alpha_blend_555_const_alpha_fast_pal8_smoke(void) {
@@ -4535,7 +4579,14 @@ extern "C" int zrndr_span_alpha_blend_555_const_alpha_fast_pal8_smoke(void) {
     zRndr::g_spanCurrentDst16 = &dst[2];
     zRndr::g_spanActiveConstAlphaBits = 0x80;
     zRndr::SpanAlphaBlend555ConstAlphaFastFromPal8(2 << 20, 0, 1, 0);
-    return dst[2] == 0x3dff ? 0 : 2;
+    if (dst[2] != 0x3dff) {
+        return 2;
+    }
+
+    dst[2] = 0x5555;
+    zRndr::g_spanActiveConstAlphaBits = 7;
+    zRndr::SpanAlphaBlend555ConstAlphaFastFromPal8(2 << 20, 0, 1, 0);
+    return dst[2] == 0x5555 ? 0 : 3;
 }
 
 extern "C" int zrndr_fog_blend_span_565_scalar_smoke(void) {
@@ -4687,12 +4738,15 @@ extern "C" int zrndr_span_copy_16_from_tex16_smoke(void) {
     zRndr::g_spanCurrentDst16 = dst;
     zRndr::g_spanTexUAdvance = 1 << 20;
     zRndr::g_spanTexVAdvance = 0;
-    zRndr::g_spanActiveTexVMask = 0;
+    zRndr::g_spanActiveTexVMask = 0x003f0000;
     zRndr::g_spanActiveTexUMask = 0x0f;
 
     zRndr::SpanMmxSetTexUvMasksAndVShift(12);
     if (zRndr::g_mmxVShiftCounts[0] != 12 || zRndr::g_mmxVShiftCounts[1] != 0 ||
-        zRndr::g_mmxVMask[0] != 0 || zRndr::g_mmxUMask[0] != 0x00f00000) {
+        zRndr::g_mmxVMask[0] != 0x003f0000 ||
+        zRndr::g_mmxVMask[1] != 0x003f0000 ||
+        zRndr::g_mmxUMask[0] != 0x00f00000 ||
+        zRndr::g_mmxUMask[1] != 0x00f00000) {
         return 1;
     }
 
@@ -4702,9 +4756,31 @@ extern "C" int zrndr_span_copy_16_from_tex16_smoke(void) {
         return 2;
     }
 
-    dst[0] = dst[1] = dst[2] = 0;
+    dst[0] = dst[1] = dst[2] = dst[3] = 0;
+    zRndr::g_spanCurrentDst16 = dst + 1;
+    zRndr::SpanCopy16FromTex16(1 << 20, 0, 1, 12);
+    if (dst[1] != 0x1001 || dst[0] != 0 || dst[2] != 0 ||
+        zRndr::g_spanCurrentDst16 != dst + 1) {
+        return 3;
+    }
+
+    dst[0] = dst[1] = dst[2] = dst[3] = 0;
+    zRndr::g_spanCurrentDst16 = dst;
     zRndr::SpanCopy16FromTex16ExplicitVShift(1 << 20, 0, 3, 12);
-    return dst[0] == 0x1001 && dst[1] == 0x1002 && dst[2] == 0x1003 ? 0 : 3;
+    if (dst[0] != 0x1001 || dst[1] != 0x1002 || dst[2] != 0x1003 ||
+        zRndr::g_spanCurrentDst16 != dst) {
+        return 4;
+    }
+
+    dst[0] = dst[1] = dst[2] = dst[3] = 0;
+    zRndr::g_spanCurrentDst16 = dst + 1;
+    zRndr::SpanCopy16FromTex16ExplicitVShift(2 << 20, 0, 1, 12);
+    if (dst[1] != 0x1002 || dst[0] != 0 || dst[2] != 0 ||
+        zRndr::g_spanCurrentDst16 != dst + 1) {
+        return 5;
+    }
+
+    return 0;
 }
 
 extern "C" int zrndr_span_copy_16_from_tex16_switch_vshift_smoke(void) {
@@ -4721,9 +4797,16 @@ extern "C" int zrndr_span_copy_16_from_tex16_switch_vshift_smoke(void) {
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x0f;
 
-    zRndr::SpanCopy16FromTex16SwitchVShift(0, 0, 4, 16);
-    if (dst[0] != 0x2003 || dst[1] != 0x2002 || dst[2] != 0x2001 || dst[3] != 0x2000) {
-        return 1;
+    for (int texVShift = 10; texVShift <= 17; ++texVShift) {
+        dst[0] = 0;
+        dst[1] = 0;
+        dst[2] = 0;
+        dst[3] = 0;
+        zRndr::SpanCopy16FromTex16SwitchVShift(0, 0, 4, texVShift);
+        if (dst[0] != 0x2003 || dst[1] != 0x2002 || dst[2] != 0x2001 ||
+            dst[3] != 0x2000) {
+            return texVShift;
+        }
     }
 
     dst[0] = 0x7777;
@@ -4773,12 +4856,19 @@ extern "C" int zrndr_span_copy_16_from_pal8_switch_vshift_smoke(void) {
     zRndr::g_spanCurrentDst16 = dst;
     zRndr::g_spanTexUAdvance = 1 << 20;
     zRndr::g_spanTexVAdvance = 0;
-    zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x0f;
 
-    zRndr::SpanCopy16FromPal8SwitchVShift(0, 0, 4, 16);
-    if (dst[0] != 0x3003 || dst[1] != 0x3002 || dst[2] != 0x3001 || dst[3] != 0x3000) {
-        return 1;
+    for (int texVShift = 10; texVShift <= 17; ++texVShift) {
+        dst[0] = 0;
+        dst[1] = 0;
+        dst[2] = 0;
+        dst[3] = 0;
+        zRndr::g_spanActiveTexVMask = 7 << texVShift;
+        zRndr::SpanCopy16FromPal8SwitchVShift(0, 1 << texVShift, 4, texVShift);
+        if (dst[0] != 0x3004 || dst[1] != 0x3003 || dst[2] != 0x3002 ||
+            dst[3] != 0x3001 || zRndr::g_spanCurrentDst16 != dst) {
+            return texVShift;
+        }
     }
 
     dst[0] = 0x7777;

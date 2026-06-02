@@ -842,6 +842,7 @@ extern "C" int zinput_bindmap_context_smoke(void) {
 
     if (context.GetPrimaryKeyboardKey(2) != 0x12 || context.GetSecondaryKeyboardKey(2) != 0x34 ||
         context.GetJoystickButtonSlot(2) != 5 || context.GetMouseButtonSlot(2) != 2 ||
+        context.GetCommandByAnyKeyboardKey(0x12) != 2 ||
         context.GetCommandByAnyKeyboardKey(0x34) != 2 || context.GetCommandByJoystickSlot(5) != 2 ||
         context.GetCommandByMouseSlot(2) != 2 ||
         zInput::BindMapCurrent_GetPrimaryKeyboardKey(2) != 0x12 ||
@@ -936,6 +937,13 @@ extern "C" int zinput_bindmap_context_smoke(void) {
         context.FreeNonOwnedBuffers();
         FreeOptionList();
         return 7;
+    }
+    zInput_BindMapContext_DispatchFromKeyboardEvent(0x77);
+    if (g_bindMapDispatchCallbackCount != 4) {
+        g_zInput_BindMap_Current = nullptr;
+        context.FreeNonOwnedBuffers();
+        FreeOptionList();
+        return 17;
     }
 
     zInput_BindMapContext copy = {};
@@ -1842,6 +1850,16 @@ extern "C" int zinput_joystick_init_device_smoke(void) {
     fakeCaps.dwFlags = 0x700;
     fakeCaps.dwAxes = 4;
 
+    createDeviceResult = -1;
+    if (zInput::DI_EnumDevicesCallback_SelectFirstJoystick(&enumDeviceInstance, nullptr) != 1 ||
+        createDeviceCalls != 1 || queryInterfaceCalls != 0 || releaseCalls != 0 ||
+        g_zInput_JoystickDevice != nullptr) {
+        return 6;
+    }
+
+    createDeviceResult = 0;
+    createDeviceCalls = 0;
+
     if (zInput::DI_InitJoystickDevice(reinterpret_cast<HWND>(2)) != 1) {
         return 1;
     }
@@ -1941,6 +1959,13 @@ extern "C" int zinput_joystick_ref_and_enable_smoke(void) {
     MouseDeviceFake joystick{};
     joystick.device.vtbl_00 = &kMouseVtable;
     g_zInput_JoystickDevice = &joystick.device;
+    if (zInput::DI_IsJoystickDeviceReady() != 0) {
+        return 7;
+    }
+    g_zInput_JoystickInitialized = 2;
+    if (zInput::DI_IsJoystickDeviceReady() != 0) {
+        return 8;
+    }
     g_zInput_JoystickInitialized = 1;
     g_zInputJoystickFlags = 0;
     g_zInputJoystickPollRefCount = 0;
@@ -1949,9 +1974,25 @@ extern "C" int zinput_joystick_ref_and_enable_smoke(void) {
     getPropertyCalls = 0;
 
     if (zInput::DI_IsJoystickDeviceReady() != 1 || zInput::DI_GetJoystickRefCount() != 0 ||
-        zInput::DI_AddJoystickRef() != 1 || zInput::DI_GetJoystickRefCount() != 1 ||
-        zInput::DI_ReleaseJoystickRef() != 0 || zInput::DI_ReleaseJoystickRef() != 0) {
+        zInput::DI_AddJoystickRef() != 0 || zInput::DI_GetJoystickRefCount() != 0 ||
+        zInput::DI_ReleaseJoystickRef() != 0) {
         return 1;
+    }
+
+    g_zInputJoystickFlags = 1;
+    g_zInput_JoystickCurrentState.rgbButtons[1] = 0xff;
+    g_zInput_JoystickPreviousState.rgbButtons[1] = 0xff;
+    g_zInput_JoystickCurrentState.rgdwPOV[0] = 0;
+    g_zInput_JoystickPreviousState.rgdwPOV[0] = 0;
+    if (zInput::DI_AddJoystickRef() != 1 ||
+        g_zInput_JoystickCurrentState.rgbButtons[1] != 0 ||
+        g_zInput_JoystickPreviousState.rgbButtons[1] != 0 ||
+        g_zInput_JoystickCurrentState.rgdwPOV[0] != 0xffff ||
+        g_zInput_JoystickPreviousState.rgdwPOV[0] != 0xffff ||
+        zInput::DI_AddJoystickRef() != 2 ||
+        zInput::DI_ReleaseJoystickRef() != 1 ||
+        zInput::DI_ReleaseJoystickRef() != 0) {
+        return 6;
     }
 
     if (zInput::DI_SetJoystickEnabled(1) != 1 || g_zInputJoystickPollRefCount != 1 ||
@@ -2086,6 +2127,48 @@ extern "C" int zinput_mouse_shutdown_device_smoke() {
         return 2;
     }
     return g_zInput_MouseActive == 0 ? 0 : 3;
+}
+
+extern "C" int zinput_joystick_shutdown_device_smoke() {
+    ResetMouseGlobals();
+    if (zInput::Joystick_ShutdownDevice() != 1 || unacquireCalls != 0 || releaseCalls != 0) {
+        return 1;
+    }
+
+    MouseDeviceFake joystick = {{&kMouseVtable}};
+    g_zInput_JoystickDevice = &joystick.device;
+    const int result = zInput::Joystick_ShutdownDevice();
+    if (result != 1 || unacquireCalls != 1 || releaseCalls != 1) {
+        return 2;
+    }
+
+    return g_zInput_JoystickDevice == nullptr ? 0 : 3;
+}
+
+extern "C" int zinput_keyboard_shutdown_device_smoke() {
+    ResetMouseGlobals();
+    g_zInput_KbdDevice = nullptr;
+    g_zInput_KbdEventBuffer = nullptr;
+    if (zInput::Keyboard_ShutdownDevice() != 0 || unacquireCalls != 0 || releaseCalls != 0) {
+        return 1;
+    }
+
+    MouseDeviceFake keyboard = {{&kMouseVtable}};
+    zInput::DIDeviceObjectData *events =
+        static_cast<zInput::DIDeviceObjectData *>(std::malloc(16));
+    if (events == nullptr) {
+        return 2;
+    }
+
+    g_zInput_KbdDevice = &keyboard.device;
+    g_zInput_KbdEventBuffer = events;
+    const int result = zInput::Keyboard_ShutdownDevice();
+    const bool ok = result == 0 && unacquireCalls == 1 && releaseCalls == 1 &&
+                    g_zInput_KbdDevice == &keyboard.device &&
+                    g_zInput_KbdEventBuffer == events;
+    g_zInput_KbdDevice = nullptr;
+    g_zInput_KbdEventBuffer = nullptr;
+    return ok ? 0 : 3;
 }
 
 extern "C" int zinput_shutdown_smoke() {

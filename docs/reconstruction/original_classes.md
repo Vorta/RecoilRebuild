@@ -128,7 +128,7 @@ smallest coherent class/source cluster:
 - constructor and destructor table/base behavior
 - direct methods and table-dispatched methods needed by the caller frontier
 - focused tests or functional verification for reachable behavior
-- VC byte/provider verification when doing a binary-safe class/table pass
+- VC byte/provider verification when doing a tier `S` class/table pass
 
 If clean original-era member or virtual spelling fails binary verification, keep
 the readable source shape when behavior is proven and document the mismatch. Use
