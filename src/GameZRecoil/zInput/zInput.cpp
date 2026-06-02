@@ -3173,11 +3173,13 @@ RECOIL_NOINLINE int RECOIL_CDECL Mouse_AddRef() {
 
 // Reimplements 0x471d50: zInput::DI_AddJoystickRef
 RECOIL_NOINLINE int RECOIL_CDECL DI_AddJoystickRef() {
-    if ((g_zInputJoystickFlags & 1) != 0 && g_zInputJoystickPollRefCount == 0) {
-        DI_ResetTransitionState();
+    if ((g_zInputJoystickFlags & 1) != 0) {
+        if (g_zInputJoystickPollRefCount == 0) {
+            DI_ResetTransitionState();
+        }
+        ++g_zInputJoystickPollRefCount;
     }
 
-    ++g_zInputJoystickPollRefCount;
     return g_zInputJoystickPollRefCount;
 }
 

@@ -11,6 +11,8 @@
 #include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zUtil/zutil.h"
 #include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zWeapon/zWeapon.h"
+#include "GameZRecoil/wwonline/upgrade_download.h"
 
 #include <ctype.h>
 #include <direct.h>
@@ -22,9 +24,28 @@
 #include <time.h>
 
 namespace {
+template <
+    typename Function,
+    typename Method>
+Function MethodFunction(
+    Method method
+) {
+    RECOIL_STATIC_ASSERT(sizeof(method) <= sizeof(Function));
+    Function function = 0;
+    memcpy(
+        &function,
+        &method,
+        sizeof(method)
+    );
+    return function;
+}
+
 const int kPreparedScriptMagic = 0x08971119;
 const int kPreparedScriptVersion = 7;
 const double kDegreesToRadians = 0.01745329251994;
+const char kGlobalContextSearchPath[] = ".;zbd";
+char g_zInterp_PreparedIndexFileNameText[] = "interp.zbd";
+const char kCommandNameWeaponSetMaxTetherAltitude[] = "WeaponSetMaxTetherAltitude";
 const char kTokenDelimiters[] = ", \t\n";
 char g_zInterp_MacroExpansionScratch[2048];
 } // namespace
@@ -37,33 +58,43 @@ char g_zInterp_AssignToken_Equal = '=';
 unsigned int g_zInterp_NodeUserDataScratch = 0;
 zDiPartial *g_zInterp_CurrentCycleTextureDi = 0;
 zInterp_Context g_zInterp_GlobalContext = {0};
+char *g_zInterp_PreparedIndexFileName = g_zInterp_PreparedIndexFileNameText;
+
+const zInterp_Context_VTable g_zInterp_GlobalContext_VTable = {
+    MethodFunction<zInterp_DispatchHook>(&zInterp_Command::WeaponSetMaxTetherAltitude),
+    MethodFunction<zInterp_DispatchHook>(&zInterp_Context::ReportParseError),
+    MethodFunction<zInterp_DispatchHook>(&WestwoodOnlineUpgradeDownloadEventSink::CallbackNoOp),
+};
 
 namespace {
-int RECOIL_CDECL DefaultPreDispatch(
-    zInterp_Context *,
+struct zInterp_DefaultDispatchHooks {
+    RECOIL_NOINLINE int RECOIL_THISCALL PreDispatch(char *commandToken);
+    RECOIL_NOINLINE int RECOIL_THISCALL PostDispatch(char *commandToken);
+    RECOIL_NOINLINE int RECOIL_THISCALL DeferredDispatch(char *commandToken);
+};
+
+RECOIL_NOINLINE int RECOIL_THISCALL zInterp_DefaultDispatchHooks::PreDispatch(
     char *
 ) {
     return 1;
 }
 
-int RECOIL_CDECL DefaultPostDispatch(
-    zInterp_Context *,
+RECOIL_NOINLINE int RECOIL_THISCALL zInterp_DefaultDispatchHooks::PostDispatch(
     char *
 ) {
     return 0;
 }
 
-int RECOIL_CDECL DefaultDeferredDispatch(
-    zInterp_Context *,
+RECOIL_NOINLINE int RECOIL_THISCALL zInterp_DefaultDispatchHooks::DeferredDispatch(
     char *
 ) {
     return 0;
 }
 
 const zInterp_Context_VTable g_zInterp_DefaultRuntimeVTable = {
-    DefaultPreDispatch,
-    DefaultPostDispatch,
-    DefaultDeferredDispatch,
+    MethodFunction<zInterp_DispatchHook>(&zInterp_DefaultDispatchHooks::PreDispatch),
+    MethodFunction<zInterp_DispatchHook>(&zInterp_DefaultDispatchHooks::PostDispatch),
+    MethodFunction<zInterp_DispatchHook>(&zInterp_DefaultDispatchHooks::DeferredDispatch),
 };
 
 const zInterp_Context_VTable *RuntimeVTable(
@@ -206,6 +237,15 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInterp_Context::IncErrorCount() {
     ++errorCount;
 }
 
+// Reimplements 0x4c2090: zInterp_Context::ReportParseError
+// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::ReportParseError(
+    char *
+) {
+    IncErrorCount();
+    return 1;
+}
+
 // Reimplements 0x4c15f0: zInterp_Context::FindMacroValue
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
 RECOIL_NOINLINE char *RECOIL_THISCALL zInterp_Context::FindMacroValue(
@@ -312,6 +352,25 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInterp_Context::ClearVarTable() {
     varCount = 0;
 }
 
+// Reimplements 0x414ad0: zInterp_Command::WeaponSetMaxTetherAltitude
+// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Command::WeaponSetMaxTetherAltitude(
+    char *commandToken
+) {
+    zInterp_Context *const context = (zInterp_Context *)(this);
+    if (commandToken[0] != 'W' ||
+        context->tokenCount == 0 ||
+        strcmp(
+            context->tokenList[0],
+            kCommandNameWeaponSetMaxTetherAltitude
+        ) != 0) {
+        return 1;
+    }
+
+    zWeapon::SetMaxTetherAltitude(context->ParseFloatToken());
+    return 0;
+}
+
 // Reimplements 0x4c0d20: zInterp_Context::Constructor
 // (D:\Proj\GameZRecoil\zInterp\interp_context.c)
 RECOIL_NOINLINE zInterp_Context *RECOIL_THISCALL zInterp_Context::Constructor(
@@ -368,6 +427,43 @@ RECOIL_NOINLINE zInterp_Context *RECOIL_THISCALL zInterp_Context::Constructor(
     ptrArrayCount = 0;
 
     return this;
+}
+
+// Reimplements 0x414ab0: zInterp_GlobalContext::Constructor
+// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+RECOIL_NOINLINE zInterp_Context *RECOIL_THISCALL zInterp_GlobalContext::Constructor() {
+    zInterp_Context *const context = (zInterp_Context *)(this);
+    context->Constructor(
+        kGlobalContextSearchPath,
+        g_zInterp_PreparedIndexFileName
+    );
+    context->vftable = &g_zInterp_GlobalContext_VTable;
+    return context;
+}
+
+// Reimplements 0x414a70: zInterp_GlobalContext::StaticInit
+// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+RECOIL_NOINLINE zInterp_Context *RECOIL_CDECL zInterp_GlobalContext::StaticInit() {
+    return ((zInterp_GlobalContext *)(&g_zInterp_GlobalContext))->Constructor();
+}
+
+// Reimplements 0x414a80: zInterp_GlobalContext::RegisterAtExit
+// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+RECOIL_NOINLINE int RECOIL_CDECL zInterp_GlobalContext::RegisterAtExit() {
+    return atexit(AtExitDestructor);
+}
+
+// Reimplements 0x414a90: zInterp_GlobalContext::AtExitDestructor
+// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL zInterp_GlobalContext::AtExitDestructor() {
+    g_zInterp_GlobalContext.Destructor();
+}
+
+// Reimplements 0x414a60: zInterp_GlobalContext::StaticInitAndRegisterAtExit
+// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+RECOIL_NOINLINE int RECOIL_CDECL zInterp_GlobalContext::StaticInitAndRegisterAtExit() {
+    StaticInit();
+    return RegisterAtExit();
 }
 
 // Reimplements 0x4c0f70: zInterp_Context::Destroy

@@ -1735,9 +1735,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zNetwork_ApplyPkt01_PlayerColorAs
         zNetwork_PlayerRecord *const playerRecord = zNetwork_FindPlayerRecordByKey(pair.playerKey);
         if (playerRecord != 0) {
             playerRecord->colorIndex = pair.colorIndex;
-            if (pair.colorIndex >= 0 && pair.colorIndex < 16) {
-                g_zNetwork_PlayerColorInUseFlags[pair.colorIndex] = 1;
-            }
+            g_zNetwork_PlayerColorInUseFlags[pair.colorIndex] = 1;
         }
     }
 
@@ -1815,6 +1813,18 @@ RECOIL_NOINLINE int RECOIL_FASTCALL CloseReleaseAndCoUninitialize(
 }
 } // namespace zNetwork_DPlay
 
+namespace zNetworkDPlay {
+// Reimplements 0x48bee0: zNetworkDPlay::FreeServiceProviderInfoBuffers
+RECOIL_NOINLINE void RECOIL_FASTCALL FreeServiceProviderInfoBuffers(
+    zNetworkDPlayServiceProviderInfo *providerInfo
+) {
+    free(providerInfo->displayName);
+    providerInfo->displayName = 0;
+    free(providerInfo->connectionData);
+    providerInfo->connectionData = 0;
+}
+} // namespace zNetworkDPlay
+
 namespace {
 void FreeServiceProviderInfo(
     zNetworkDPlayServiceProviderInfo *info
@@ -1823,10 +1833,7 @@ void FreeServiceProviderInfo(
         return;
     }
 
-    free(info->displayName);
-    info->displayName = 0;
-    free(info->connectionData);
-    info->connectionData = 0;
+    zNetworkDPlay::FreeServiceProviderInfoBuffers(info);
     ::operator delete(info);
 }
 

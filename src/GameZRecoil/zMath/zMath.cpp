@@ -1,10 +1,12 @@
 #include "GameZRecoil/zMath/zMath.h"
 
 #include "GameZRecoil/include/zClipRect.h"
+#include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 #include "zClass.h"
 
 #include <math.h>
+#include <stdio.h>
 #include <string.h>
 
 float g_zMath_ProjSphereRadiusScale = 0.0f;
@@ -30,6 +32,63 @@ float g_zMath_ProjDepth = 0.0f;
 float g_zMath_ApproxExpNegTable[256] = {0};
 float g_zMath_ApproxExpNegScale = 0.0f;
 int g_zMath_ApproxExpNegDirty = 1;
+
+// Reimplements 0x472d30: zMath::CrtMatherrHandler
+// (D:\Proj\GameZRecoil\zMath\zmth_main.c)
+RECOIL_NOINLINE int RECOIL_CDECL zMath::CrtMatherrHandler(
+    _exception *except
+) {
+    zError::ReportOld(
+        0x400,
+        "D:\\Proj\\GameZRecoil\\zMath\\zmth_main.c",
+        376,
+        "Math Exception: type=%d, [%s(%.8f, %.8f)]",
+        except->type,
+        except->name,
+        except->arg1,
+        except->arg2
+    );
+    fprintf(
+        stderr,
+        "Math Exception: type=%d, [%s(%.8f, %.8f)]\n",
+        except->type,
+        except->name,
+        except->arg1,
+        except->arg2
+    );
+
+    if (strcmp(
+        except->name,
+        "asin"
+    ) == 0) {
+        double arg = except->arg1;
+        if (arg > 1.0) {
+            arg = 1.0;
+        } else if (arg < -1.0 || arg != arg) {
+            arg = -1.0;
+        }
+        except->retval = asin(arg);
+        return 1;
+    }
+
+    if (strcmp(
+        except->name,
+        "ceil"
+    ) == 0) {
+        except->retval = 0.0;
+        return 1;
+    }
+
+    if (strcmp(
+        except->name,
+        "floor"
+    ) == 0) {
+        except->retval = 0.0;
+        return 1;
+    }
+
+    return 0;
+}
 
 namespace {
 int g_matrixIdentityFlagSlots[32] = {0};

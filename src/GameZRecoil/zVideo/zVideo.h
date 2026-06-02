@@ -72,6 +72,7 @@ typedef int(RECOIL_FASTCALL *zVideo_QueryMemoryBytesProc)(
     int *totalBytes,
     int *freeBytes
 );
+typedef int(RECOIL_FASTCALL *zVideo_GetHwApiDeviceFeatureFlagsProc)(int deviceIndex);
 typedef zVideo_TextureRecordPartial *(RECOIL_FASTCALL *zVideo_CreateTextureRecordProc)(
     const char *textureName,
     zVidImagePartial *image,
@@ -420,11 +421,18 @@ extern unsigned char g_zVideo_SurfaceLockVerifyFlags;
 extern zVideo_SurfaceStatePartial g_zVideo_SwSurfaceState;
 extern zVideo_SurfaceStatePartial g_zVideo_PrimarySurfaceState;
 extern zVideo_SurfaceStatePartial g_zVideo_DisplayModeSurfaceState;
+extern zVideo_SurfaceStatePartial g_zVideo_SurfaceStateSwapScratch;
 extern zVidRect32 g_zVideo_PrimarySurfaceRectScratch;
 extern int g_zVideo_DisplayModeBpp;
 extern int g_zVid_NoiseByteTableSize;
 extern unsigned char *g_zVid_NoiseByteTable;
 extern unsigned short *g_zVideo_FxPass3_ScratchPixels16;
+extern int g_zVideo_FxPass3_ScratchOffsetX;
+extern int g_zVideo_FxPass3_ScratchOffsetY;
+extern int g_zVideo_FxPass3_ClipMinX;
+extern int g_zVideo_FxPass3_ClipMinY;
+extern int g_zVideo_FxPass3_ClipMaxX;
+extern int g_zVideo_FxPass3_ClipMaxY;
 extern unsigned short *g_zVideo_FxSurfacePixels16;
 extern int g_zVideo_FxSurfaceWidth;
 extern int g_zVideo_FxSurfaceHeight;
@@ -432,6 +440,7 @@ extern int g_zVideo_FxSurfacePitchBytes;
 extern int g_zVideo_FxSurfacePitchPixels16;
 extern unsigned int g_zVideo_pfnImageUploadPixelsToSurface;
 extern unsigned int g_zVideo_pfnImageReleaseSurface;
+extern zVideo_GetHwApiDeviceFeatureFlagsProc g_zVideo_pfnGetHwApiDeviceFeatureFlags;
 extern IDirectDrawPalette *g_zVideo_pDDPalette;
 extern HWND g_zVideo_hWnd;
 extern RECT g_zVideo_CachedClientRectScreen;
@@ -625,6 +634,22 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Fx_SetSurfaceState(
     int height,
     int pitchBytes
 );
+RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_CopySurfacePixelToScratchClipped(
+    int dstDx,
+    int dstDy,
+    int srcDx,
+    int srcDy
+);
+RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_ApplyToCurrentSurface(
+    int centerX,
+    int centerY,
+    int currentRadius,
+    int maxRadius,
+    int extent,
+    float sinFreq,
+    float sinPhase,
+    zVidRect32 *clipRectOrNull
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionCombined(
     zVidRect32 *rectOrNull,
     int mode
@@ -750,6 +775,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BlitToActiveTarget(
     int clipFlags,
     zVidRect32 *srcRect
 );
+RECOIL_NOINLINE void RECOIL_FASTCALL BlitToFramebufferClipped(
+    zVidImagePartial *image,
+    int dstX,
+    int dstY,
+    int clipFlags,
+    zVidRect32 *srcRect
+);
 } // namespace zVid_Image
 
 namespace zVid_PaletteRemap {
@@ -858,6 +890,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltPrimaryToSwRectDirect(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect
 );
+RECOIL_NOINLINE int RECOIL_FASTCALL PresentDisplayModeSurface(
+    zVidRect32 *srcRect,
+    zVidRect32 *dstRect,
+    int waitForPresent,
+    int skipSurfaceStateSwap
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRect(
     zVidImagePartial *srcImage,
     int srcColorKeyEnable,
@@ -890,6 +928,7 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenSurfacesForRenderer();
 RECOIL_NOINLINE int RECOIL_CDECL CreateHalfResBackbufferSurfaces();
 RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenSoftwareSurfaces();
 RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenHardwareSurfaces();
+RECOIL_NOINLINE int RECOIL_FASTCALL GetHwApiDeviceFeatureFlags(int deviceIndex);
 RECOIL_NOINLINE int RECOIL_CDECL CreateDirectDraw2ForSelectedDevice();
 RECOIL_NOINLINE int RECOIL_FASTCALL EnumerateDirect3DDevicesForRecord(
     zVidHwApiDeviceRecordPartial *entry

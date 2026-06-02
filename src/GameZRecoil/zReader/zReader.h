@@ -1,4 +1,6 @@
 #pragma once
+#ifndef GAMEZRECOIL_ZREADER_ZREADER_H
+#define GAMEZRECOIL_ZREADER_ZREADER_H
 
 #include "recoil/recoil_callconv.h"
 
@@ -281,3 +283,5 @@ RECOIL_NOINLINE int RECOIL_FASTCALL MountIndexArchive(
     int setCurrent
 );
 }
+
+#endif

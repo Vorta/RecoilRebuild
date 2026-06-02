@@ -1191,7 +1191,7 @@ RECOIL_NOINLINE int RECOIL_CDECL InitGlobals() {
     g_initField00 = 0;
     g_initField04 = 0;
 
-    g_zVideo_pfnBltSourceToPrimary = (zVideo_BltSourceToPrimaryProc)(0x0048f560);
+    g_zVideo_pfnBltSourceToPrimary = zVid_Image::BlitToFramebufferClipped;
     g_defaultGraphicsFlags = -1;
     zOptionEntryPartial *option =
         zGame::Options_FindOption(g_zVideo_ActiveRendererPath != 0 ? "GfxFlags_HW" : "GfxFlags_SW");
@@ -3132,12 +3132,12 @@ unsigned short BlendPixel555ConstAlphaMap(
 }
 
 void SpanCopy16FromTex16Forward(
+    unsigned short *dst,
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
     for (int i = 0; i < pixelCount; ++i) {
         dst[i] = SpanTex16Sample(
             texU,
@@ -3316,12 +3316,15 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanMasked16FromTex16SwitchVShift(
 RECOIL_NOINLINE void RECOIL_FASTCALL SpanMmxSetTexUvMasksAndVShift(
     int texVShift
 ) {
-    g_mmxVShiftCounts[0] = texVShift;
+    const int texVMask = g_spanActiveTexVMask;
     g_mmxVShiftCounts[1] = 0;
-    g_mmxVMask[0] = g_spanActiveTexVMask;
-    g_mmxVMask[1] = g_spanActiveTexVMask;
-    g_mmxUMask[0] = g_spanActiveTexUMask << 20;
-    g_mmxUMask[1] = g_spanActiveTexUMask << 20;
+    g_mmxVMask[1] = texVMask;
+    g_mmxVMask[0] = texVMask;
+
+    const int texUMask = g_spanActiveTexUMask << 20;
+    g_mmxVShiftCounts[0] = texVShift;
+    g_mmxUMask[1] = texUMask;
+    g_mmxUMask[0] = texUMask;
 }
 
 // Reimplements 0x49ea80: zRndr::SpanCopy16FromTex16
@@ -3331,14 +3334,15 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromTex16(
     int pixelCount,
     int texVShift
 ) {
-    if (((unsigned int)(g_spanCurrentDst16) & 3u) != 0) {
-        *g_spanCurrentDst16 = SpanTex16Sample(
+    unsigned short *dst = g_spanCurrentDst16;
+    if (((unsigned int)(dst) & 3u) != 0) {
+        *dst = SpanTex16Sample(
             texU,
             texV,
             texVShift,
             g_spanActiveTexUMask
         );
-        ++g_spanCurrentDst16;
+        ++dst;
         --pixelCount;
         if (pixelCount == 0) {
             return;
@@ -3357,6 +3361,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromTex16(
     g_mmxUStepDup2[1] = g_spanTexUAdvance * 2;
 
     SpanCopy16FromTex16Forward(
+        dst,
         texU,
         texV,
         pixelCount,
@@ -3371,14 +3376,15 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromTex16ExplicitVShift(
     int pixelCount,
     int texVShift
 ) {
-    if (((unsigned int)(g_spanCurrentDst16) & 3u) != 0) {
-        *g_spanCurrentDst16 = SpanTex16Sample(
+    unsigned short *dst = g_spanCurrentDst16;
+    if (((unsigned int)(dst) & 3u) != 0) {
+        *dst = SpanTex16Sample(
             texU,
             texV,
             texVShift,
             g_spanActiveTexUMask
         );
-        ++g_spanCurrentDst16;
+        ++dst;
         --pixelCount;
         if (pixelCount == 0) {
             return;
@@ -3397,6 +3403,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SpanCopy16FromTex16ExplicitVShift(
     g_mmxUStepDup2[1] = g_spanTexUAdvance * 2;
 
     SpanCopy16FromTex16Forward(
+        dst,
         texU,
         texV,
         pixelCount,

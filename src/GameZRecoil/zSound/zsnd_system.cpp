@@ -22,6 +22,10 @@ zSndFadeList *ActiveFadeList() {
     return (zSndFadeList *)(&g_zSndFadeActiveListFlags);
 }
 
+zSndFadeList *DispatchFadeList() {
+    return (zSndFadeList *)(&g_zSndFadeDispatchListFlags);
+}
+
 void UnlinkAndDeleteFadeNode(
     zSndFadeListNode *node
 ) {
@@ -36,7 +40,6 @@ void InitializeSentinel(
     sentinel = (zSndFadeListNode *)(::operator new(sizeof(*sentinel)));
     sentinel->next = sentinel;
     sentinel->prev = sentinel;
-    sentinel->fadeEntry = 0;
 }
 
 zReader::Node *ArrayBase(
@@ -341,11 +344,54 @@ void LoadLegacySampleSet(
 } // namespace
 
 namespace zSndFadeLists {
+// Reimplements 0x4a3940: zSndFadeLists::InitGlobals
 RECOIL_NOINLINE void RECOIL_CDECL InitGlobals() {
     InitializeSentinel(g_zSndFadeActiveListSentinel);
     g_zSndFadeActiveListCount = 0;
     InitializeSentinel(g_zSndFadeDispatchListSentinel);
     g_zSndFadeDispatchListCount = 0;
+}
+
+// Reimplements 0x4a39b0: zSndFadeLists::ShutdownAtExit
+RECOIL_NOINLINE void RECOIL_CDECL ShutdownAtExit() {
+    zSndFadeListNode *dispatchSentinel = g_zSndFadeDispatchListSentinel;
+    zSndFadeListNode *node = dispatchSentinel->next;
+    while (node != dispatchSentinel) {
+        zSndFadeListNode *outCursor = 0;
+        DispatchFadeList()->DeleteNodeAndAdvanceCursor(
+            node,
+            &outCursor
+        );
+        node = outCursor;
+    }
+
+    ::operator delete(dispatchSentinel);
+    g_zSndFadeDispatchListSentinel = 0;
+    g_zSndFadeDispatchListCount = 0;
+
+    zSndFadeListNode *activeSentinel = g_zSndFadeActiveListSentinel;
+    node = activeSentinel->next;
+    while (node != activeSentinel) {
+        zSndFadeListNode *const next = node->next;
+        UnlinkAndDeleteFadeNode(node);
+        --g_zSndFadeActiveListCount;
+        node = next;
+    }
+
+    ::operator delete(activeSentinel);
+    g_zSndFadeActiveListSentinel = 0;
+    g_zSndFadeActiveListCount = 0;
+}
+
+// Reimplements 0x4a39a0: zSndFadeLists::RegisterShutdownAtExit
+RECOIL_NOINLINE void RECOIL_CDECL RegisterShutdownAtExit() {
+    atexit(ShutdownAtExit);
+}
+
+// Reimplements 0x4a3930: zSndFadeLists::Init
+RECOIL_NOINLINE void RECOIL_CDECL Init() {
+    InitGlobals();
+    RegisterShutdownAtExit();
 }
 } // namespace zSndFadeLists
 
@@ -362,7 +408,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL PushBack(
     node->prev = previous != 0 ? previous : node;
     sentinel->prev = node;
     node->prev->next = node;
-    node->fadeEntry = fadeEntry;
+    zSndFadeEntry **const payloadSlot = &node->fadeEntry;
+    if (payloadSlot != 0) {
+        *payloadSlot = fadeEntry;
+    }
     ++g_zSndFadeDispatchListCount;
 }
 } // namespace zSndFadeDispatchList
@@ -601,7 +650,7 @@ RECOIL_NOINLINE void RECOIL_CDECL StopAllAndShutdown() {
     while (cursor.node != activeSentinel) {
         zSndFadeListNode *outNode = 0;
         zSndFadeListNode *outCursor = 0;
-        ActiveFadeList()->DeleteNodeAndAdvanceCursor(
+        ((zSndFadeList *)(&g_zSndFadeActiveListFlags))->DeleteNodeAndAdvanceCursor(
             *cursor.PopFrontCursor(
                 &outNode,
                 0
@@ -622,7 +671,9 @@ RECOIL_NOINLINE void RECOIL_CDECL StopAllAndShutdown() {
     node = dispatchSentinel->next;
     while (node != dispatchSentinel) {
         zSndFadeListNode *const next = node->next;
-        UnlinkAndDeleteFadeNode(node);
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+        ::operator delete(node);
         --g_zSndFadeDispatchListCount;
         node = next;
     }

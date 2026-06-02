@@ -279,7 +279,7 @@ struct zSndGroupConfigBlock {
     float delayPlaySec;
     float weight;
     const char *streamName;
-    int unknown_10;
+    zSndSample *cachedSample;
     zSndGroupConfigBlock *child;
 };
 
@@ -339,6 +339,8 @@ struct zSndStreamRequest {
     zSndGroup *group;
 
     RECOIL_NOINLINE int RECOIL_THISCALL StateBeginGroup();
+    RECOIL_NOINLINE void RECOIL_THISCALL StatePlayCurrentEntry();
+    RECOIL_NOINLINE void RECOIL_THISCALL StateWaitRepeatDelay();
     void RECOIL_THISCALL StateWaitTerminationDelay();
 };
 
@@ -472,6 +474,12 @@ RECOIL_STATIC_ASSERT(
         zSndSampleSetRegistry,
         begin
     ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zSndGroupConfigBlock,
+        cachedSample
+    ) == 0x10
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -653,6 +661,7 @@ extern int g_zSndCdFlags;
 extern int g_zSndCdLastPlayMode;
 extern int g_zSndCdDeviceId;
 extern int g_zSndCdAuxDeviceId;
+extern unsigned char g_zSndCd_TrackListCtorGuard;
 extern zSndCdTrackNode *g_zSndCd_TrackListHead;
 extern int g_zSndCd_TrackCount;
 extern int g_zSndCdDiscLengthMinute;
@@ -682,7 +691,17 @@ RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
 namespace zSndBackend {
 RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
 }
+namespace zSndCdTrackList {
+RECOIL_NOINLINE void RECOIL_CDECL StaticInit();
+RECOIL_NOINLINE void RECOIL_CDECL StaticConstructor();
+RECOIL_NOINLINE void RECOIL_CDECL RegisterAtExitDestructor();
+RECOIL_NOINLINE void RECOIL_CDECL StaticDestructor();
+}
 namespace zSndStreamMgr {
+RECOIL_NOINLINE int RECOIL_FASTCALL UpdateActiveRequestPredicate(
+    void *payload,
+    void *userData
+);
 RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
 }
 extern "C" RECOIL_NOINLINE void RECOIL_CDECL zSndSampleSetRegistry_DestroyAll();
@@ -702,7 +721,10 @@ extern "C" RECOIL_NOINLINE zSndSampleSet *RECOIL_FASTCALL zSndSampleSetRegistry_
 extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndSampleSet_DestroyByName(const char *setName);
 extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndSampleSet_InitByName(const char *setName);
 namespace zSndFadeLists {
+RECOIL_NOINLINE void RECOIL_CDECL Init();
 RECOIL_NOINLINE void RECOIL_CDECL InitGlobals();
+RECOIL_NOINLINE void RECOIL_CDECL RegisterShutdownAtExit();
+RECOIL_NOINLINE void RECOIL_CDECL ShutdownAtExit();
 RECOIL_NOINLINE void RECOIL_CDECL StopAllAndShutdown();
 } // namespace zSndFadeLists
 namespace zSndFadeDispatchList {

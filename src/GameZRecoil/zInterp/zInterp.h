@@ -68,7 +68,7 @@ struct zInterp_LinkNode {
 
 struct zInterp_Context;
 
-typedef int(RECOIL_CDECL *zInterp_DispatchHook)(
+typedef int(RECOIL_THISCALL *zInterp_DispatchHook)(
     zInterp_Context *ctx,
     char *commandToken
 );
@@ -87,6 +87,8 @@ extern char g_zInterp_AssignToken_Equal;
 extern unsigned int g_zInterp_NodeUserDataScratch;
 extern zDiPartial *g_zInterp_CurrentCycleTextureDi;
 extern zInterp_Context g_zInterp_GlobalContext;
+extern char *g_zInterp_PreparedIndexFileName;
+extern const zInterp_Context_VTable g_zInterp_GlobalContext_VTable;
 
 typedef void(RECOIL_CDECL *zInterp_LogFn)(
     const char *fmt,
@@ -143,6 +145,7 @@ struct zInterp_Context {
         ...
     );
     RECOIL_NOINLINE void RECOIL_THISCALL IncErrorCount();
+    RECOIL_NOINLINE int RECOIL_THISCALL ReportParseError(char *commandToken);
     RECOIL_NOINLINE char *RECOIL_THISCALL FindMacroValue(
         const char *name,
         zInterp_MacroEntry **outEntry
@@ -213,6 +216,18 @@ struct zInterp_Context {
         int textureWorldAxis,
         int installDriverCallback
     );
+};
+
+struct zInterp_Command {
+    RECOIL_NOINLINE int RECOIL_THISCALL WeaponSetMaxTetherAltitude(char *commandToken);
+};
+
+struct zInterp_GlobalContext {
+    RECOIL_NOINLINE static int RECOIL_CDECL StaticInitAndRegisterAtExit();
+    RECOIL_NOINLINE static zInterp_Context *RECOIL_CDECL StaticInit();
+    RECOIL_NOINLINE static int RECOIL_CDECL RegisterAtExit();
+    RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
+    RECOIL_NOINLINE zInterp_Context *RECOIL_THISCALL Constructor();
 };
 
 namespace zInterp_Object3D {

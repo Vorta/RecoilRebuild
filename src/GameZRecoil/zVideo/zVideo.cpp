@@ -14,6 +14,7 @@
 #include "zClass.h"
 
 #include <math.h>
+#include <malloc.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,6 +27,74 @@ extern "C" void(__cdecl *__imp__free)(void *); // VC5 retail import-pointer call
 namespace {
 typedef void(RECOIL_CDECL *zVideo_FlushProc)();
 typedef void(RECOIL_FASTCALL *zVideo_ImageProc)(zVidImagePartial *image);
+
+template <typename Method>
+unsigned int zVideo_MethodAddress(
+    Method method
+) {
+    RECOIL_STATIC_ASSERT(sizeof(method) <= sizeof(unsigned int));
+    unsigned int address = 0;
+    memcpy(
+        &address,
+        &method,
+        sizeof(method)
+    );
+    return address;
+}
+
+unsigned short zVideo_BlendPixel565Alpha8(
+    unsigned short dstPixel,
+    unsigned short srcPixel,
+    int alpha
+) {
+    const int dstColor = (short)(dstPixel);
+    const int srcColor = srcPixel;
+    const int greenDelta = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
+    const int redDelta = (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
+    int blended = dstColor + (redDelta & 0xfffff800);
+    const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
+    blended += (greenDelta & 0xffffffe0) + blueDelta;
+    return (unsigned short)(blended);
+}
+
+unsigned short zVideo_BlendPixel555Alpha8(
+    unsigned short dstPixel,
+    unsigned short srcPixel,
+    int alpha
+) {
+    const int dstColor = (short)(dstPixel);
+    const int srcColor = srcPixel;
+    const int redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
+    int blended = dstColor + (redDelta & 0xfffffc00);
+    const int greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
+    const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
+    blended += (greenDelta & 0xffffffe0) + blueDelta;
+    return (unsigned short)(blended);
+}
+
+unsigned short zVideo_BlendFramebufferPixelAlpha8(
+    unsigned short dstPixel,
+    unsigned short srcPixel,
+    int alpha
+) {
+    if (zRndr::g_pixelPackGreenBits == 6) {
+        return zVideo_BlendPixel565Alpha8(
+            dstPixel,
+            srcPixel,
+            alpha
+        );
+    }
+
+    return zVideo_BlendPixel555Alpha8(
+        dstPixel,
+        srcPixel,
+        alpha
+    );
+}
+
+int zVideo_GetAlphaSkipThreshold() {
+    return zRndr::g_pixelPackGreenBits == 6 ? 3 : 7;
+}
 } // namespace
 
 extern "C" {
@@ -133,7 +202,7 @@ zVideo_QueryMemoryBytesProc g_zVideo_pfnQueryDeviceVideoMemoryBytes = 0;
 zVideo_BltRectDirectProc g_zVideo_pfnBltSwToPrimaryRectDirect = 0;
 zVideo_BltRectDirectProc g_zVideo_pfnBltPrimaryToSwRectDirect = 0;
 unsigned int g_zVideo_pfnBltSwToPrimaryRect = 0;
-unsigned int g_zVideo_pfnGetHwApiDeviceFeatureFlags = 0;
+zVideo_GetHwApiDeviceFeatureFlagsProc g_zVideo_pfnGetHwApiDeviceFeatureFlags = 0;
 unsigned int g_zVideo_pfnImageUploadPixelsToSurface = 0;
 unsigned int g_zVideo_pfnImageReleaseSurface = 0;
 zVideo_CreateTextureRecordProc g_zVideo_pfnCreateTextureRecord = 0;
@@ -199,23 +268,33 @@ unsigned char g_zVideo_SurfaceLockVerifyFlags = 0;
 zVideo_SurfaceStatePartial g_zVideo_SwSurfaceState = {0};
 zVideo_SurfaceStatePartial g_zVideo_PrimarySurfaceState = {0};
 zVideo_SurfaceStatePartial g_zVideo_DisplayModeSurfaceState = {0};
-struct zVideoFxPass3RootElement {
+zVideo_SurfaceStatePartial g_zVideo_SurfaceStateSwapScratch = {0};
+// Pass-3 HUD effect elements use the normal HudUiElement prefix, but offset
+// 0x08 is the owning pass-3 config and offset 0x34 is the active input clip
+// rectangle consumed by the element-specific slot at vtable +0x74.
+struct zVideoFxPass3Element {
     HudUiElement base;
-    unsigned char unknown_34[0x04];
+    HudUiRect *clipRectOrNull;
+
+    RECOIL_NOINLINE void RECOIL_THISCALL Draw();
+};
+
+struct zVideoFxPass3RootElement : zVideoFxPass3Element {
     unsigned short packedColor16;
     unsigned char unknown_3a[0x06];
     double alpha;
+
+    RECOIL_NOINLINE void RECOIL_THISCALL ApplyOverlayRect();
 };
 
-struct zVideoFxPass3Slot {
-    HudUiElement base;
-    unsigned char unknown_34[0x04];
-    float currentRadius;
-    float maxRadius;
-    float extent;
+struct zVideoFxPass3Slot : zVideoFxPass3Element {
+    int currentRadius;
+    int maxRadius;
+    int extent;
     float sinFreq;
     float sinPhase;
 
+    RECOIL_NOINLINE zVideoFxPass3Slot *RECOIL_THISCALL Constructor();
     RECOIL_NOINLINE void RECOIL_THISCALL SetRectAndPayload(
         int rectLeftPixels,
         int rectTopPixels,
@@ -225,10 +304,34 @@ struct zVideoFxPass3Slot {
         float sinFreqValue,
         float sinPhaseValue
     );
+    RECOIL_NOINLINE void RECOIL_THISCALL ApplyToCurrentSurface();
+};
+
+// Typed owner for g_zVideo_FxPass3Slot_Vtable at 0x4d3d78. Binary Ninja shows
+// the HudUi common table prefix plus the pass-3 slot callback at offset 0x74.
+struct zVideoFxPass3Slot_FTable {
+    HudUiCommon_FTable base;
+    unsigned int ApplyToCurrentSurface;
+};
+
+// Root pass-3 elements share the same custom HudUi table shape as slots, but
+// their callback submits the overlay rectangle instead of applying the radial
+// surface warp.
+struct zVideoFxPass3RootElement_FTable {
+    HudUiCommon_FTable base;
+    unsigned int ApplyOverlayRect;
+};
+
+// Custom two-slot container table installed by zVideoFxPass3Config::Constructor.
+// The first slot is the config update method; the second reuses the HudUiContainer
+// SetEnabled method.
+struct zVideoFxPass3Config_VTable {
+    unsigned int UpdateLocal;
+    unsigned int SetEnabled;
 };
 
 struct zVideoFxPass3Config {
-    void *vptr;
+    const zVideoFxPass3Config_VTable *vptr;
     int enabled;
     HudUiElement *childHead;
     HudUiElement *childTail;
@@ -241,6 +344,12 @@ struct zVideoFxPass3Config {
     zVideoFxPass3Slot slots[5];
     int slotWriteIndex;
 
+    RECOIL_NOINLINE zVideoFxPass3Config *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
+    static void RECOIL_CDECL CrtInitGlobalSingleton();
+    static zVideoFxPass3Config *RECOIL_CDECL ConstructGlobalSingleton();
+    static void RECOIL_CDECL RegisterDestroyAtExit();
+    static void RECOIL_CDECL DestroyGlobalSingleton();
     RECOIL_NOINLINE void RECOIL_THISCALL SetInputRectByIndex(
         int index,
         HudUiRect *rectOrNull
@@ -252,7 +361,15 @@ struct zVideoFxPass3Config {
         int pitchBytes
     );
 };
+
 #if defined(_M_IX86) || defined(__i386__)
+RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Element) == 0x38);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideoFxPass3Element,
+        clipRectOrNull
+    ) == 0x34
+);
 RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3RootElement) == 0x48);
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -285,6 +402,21 @@ RECOIL_STATIC_ASSERT(
     ) == 0x48
 );
 RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Slot) == 0x4c);
+RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Slot_FTable) == 0x78);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideoFxPass3Slot_FTable,
+        ApplyToCurrentSurface
+    ) == 0x74
+);
+RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3RootElement_FTable) == 0x78);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideoFxPass3RootElement_FTable,
+        ApplyOverlayRect
+    ) == 0x74
+);
+RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Config_VTable) == 0x08);
 RECOIL_STATIC_ASSERT(
     offsetof(
         zVideoFxPass3Config,
@@ -298,11 +430,71 @@ RECOIL_STATIC_ASSERT(
     ) == 0x1ec
 );
 #endif
+
+RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3InvalidateThunk(
+    HudUiElement *element
+) {
+    element->Invalidate();
+}
+
+void zVideoFxPass3FillElementTablePrefix(
+    HudUiCommon_FTable *table
+) {
+    table->slots[0] = zVideo_MethodAddress(&HudUiElement::ScalarDeletingDestructor);
+    table->slots[2] = zVideo_MethodAddress(&HudUiElement::DrawBase);
+    table->slots[3] = zVideo_MethodAddress(&HudUiElement::SetPos);
+    table->slots[4] = zVideo_MethodAddress(&HudUiElement::SetX);
+    table->slots[5] = zVideo_MethodAddress(&HudUiElement::SetY);
+    table->slots[6] = zVideo_MethodAddress(&HudUiElement::SetBltSourceAndClipRect);
+    table->slots[7] = zVideo_MethodAddress(&HudUiElement::SetClipRect);
+    table->slots[8] = (unsigned int)(&zVideoFxPass3InvalidateThunk);
+    table->slots[24] = zVideo_MethodAddress(&HudUiElement::SetVisible);
+    table->slots[25] = zVideo_MethodAddress(&HudUiElement::GetX);
+    table->slots[26] = zVideo_MethodAddress(&HudUiElement::GetY);
+}
+
+zVideoFxPass3Slot_FTable MakeZVideoFxPass3SlotFTable() {
+    zVideoFxPass3Slot_FTable table = {0};
+    zVideoFxPass3FillElementTablePrefix(&table.base);
+    table.base.slots[1] = zVideo_MethodAddress(&zVideoFxPass3Element::Draw);
+    table.ApplyToCurrentSurface =
+        zVideo_MethodAddress(&zVideoFxPass3Slot::ApplyToCurrentSurface);
+    return table;
+}
+
+zVideoFxPass3RootElement_FTable MakeZVideoFxPass3RootElementFTable() {
+    zVideoFxPass3RootElement_FTable table = {0};
+    zVideoFxPass3FillElementTablePrefix(&table.base);
+    table.base.slots[1] = zVideo_MethodAddress(&zVideoFxPass3Element::Draw);
+    table.ApplyOverlayRect = zVideo_MethodAddress(&zVideoFxPass3RootElement::ApplyOverlayRect);
+    return table;
+}
+
+zVideoFxPass3Config_VTable MakeZVideoFxPass3ConfigVTable() {
+    zVideoFxPass3Config_VTable table = {0};
+    table.UpdateLocal = zVideo_MethodAddress(&zVideo::zVideoFxPass3Config_UpdateLocal);
+    table.SetEnabled = zVideo_MethodAddress(&HudUiContainer::SetEnabled);
+    return table;
+}
+
+const zVideoFxPass3Slot_FTable g_zVideo_FxPass3Slot_Vtable =
+    MakeZVideoFxPass3SlotFTable();
+const zVideoFxPass3RootElement_FTable g_zVideo_FxPass3RootElement_Vtable =
+    MakeZVideoFxPass3RootElementFTable();
+const zVideoFxPass3Config_VTable g_zVideoFxPass3Config_Vtable =
+    MakeZVideoFxPass3ConfigVTable();
+
 zVideoFxPass3Config g_zVideo_FxPass3ConfigLocal = {0};
 zVidRect32 g_zVideo_PrimarySurfaceRectScratch = {0};
 int g_zVideo_DisplayModeBpp = 0;
 int g_zVid_NoiseByteTableSize = 0;
 unsigned char *g_zVid_NoiseByteTable = 0;
+int g_zVideo_FxPass3_ScratchOffsetX = 0;
+int g_zVideo_FxPass3_ScratchOffsetY = 0;
+int g_zVideo_FxPass3_ClipMinX = 0;
+int g_zVideo_FxPass3_ClipMinY = 0;
+int g_zVideo_FxPass3_ClipMaxX = 0;
+int g_zVideo_FxPass3_ClipMaxY = 0;
 unsigned short *g_zVideo_FxPass3_ScratchPixels16 = 0;
 unsigned short *g_zVideo_FxSurfacePixels16 = 0;
 int g_zVideo_FxSurfaceWidth = 0;
@@ -884,6 +1076,30 @@ RECOIL_STATIC_ASSERT(sizeof(zVidD3DDriverRecordPartial) == 0x190);
 RECOIL_STATIC_ASSERT(
     offsetof(
         zVidHwApiDeviceRecordPartial,
+        m_videoMemTotalBytes
+    ) == 0x94
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidHwApiDeviceRecordPartial,
+        m_videoMemFreeBytes
+    ) == 0x98
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidHwApiDeviceRecordPartial,
+        m_textureMemTotalBytes
+    ) == 0x9c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidHwApiDeviceRecordPartial,
+        m_textureMemFreeBytes
+    ) == 0xa0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidHwApiDeviceRecordPartial,
         m_deviceFeatureFlags
     ) == 0xa4
 );
@@ -991,6 +1207,7 @@ RECOIL_STATIC_ASSERT(
         surf
     ) == 0x1c
 );
+RECOIL_STATIC_ASSERT(sizeof(zVideo_SurfaceStatePartial) == 0x20);
 RECOIL_STATIC_ASSERT(sizeof(zVidTexturePackRecord) == 0x28);
 RECOIL_STATIC_ASSERT(sizeof(zVidTexturePackHeader) == 0x18);
 RECOIL_STATIC_ASSERT(
@@ -1378,6 +1595,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetVideoModeIndex(
     }
 }
 
+// Reimplements 0x4a9950: zVid::QueryDeviceVideoMemoryBytes
+// Queries live DirectDraw video memory for the selected device or cached table values by index.
 RECOIL_NOINLINE int RECOIL_FASTCALL QueryDeviceVideoMemoryBytes(
     int deviceIndexOrMinus1,
     int *totalBytes,
@@ -1390,8 +1609,18 @@ RECOIL_NOINLINE int RECOIL_FASTCALL QueryDeviceVideoMemoryBytes(
     }
 
     if (deviceIndexOrMinus1 == -1) {
-        *totalBytes = 0;
-        *freeBytes = 0;
+        DDSCAPS caps = {0};
+        caps.dwCaps = DDSCAPS_VIDEOMEMORY;
+        if (g_zVideo_pDirectDraw2->GetAvailableVidMem(
+                &caps,
+                (DWORD *)totalBytes,
+                (DWORD *)freeBytes
+            ) == DD_OK) {
+            *freeBytes -= g_zVideo_pSelectedHwApiDeviceRecord->m_textureMemTotalBytes;
+        } else {
+            *freeBytes = 0;
+            *totalBytes = 0;
+        }
         return 1;
     }
 
@@ -1406,6 +1635,8 @@ RECOIL_NOINLINE int RECOIL_FASTCALL QueryDeviceVideoMemoryBytes(
     return 1;
 }
 
+// Reimplements 0x4a9a30: zVid::QueryTextureMemoryBytes
+// Queries live DirectDraw texture memory or cached texture-memory fields by device index.
 RECOIL_NOINLINE int RECOIL_FASTCALL QueryTextureMemoryBytes(
     int deviceIndexOrMinus1,
     int *totalBytes,
@@ -1418,8 +1649,16 @@ RECOIL_NOINLINE int RECOIL_FASTCALL QueryTextureMemoryBytes(
     }
 
     if (deviceIndexOrMinus1 == -1) {
-        *totalBytes = 0;
-        *freeBytes = 0;
+        DDSCAPS caps = {0};
+        caps.dwCaps = DDSCAPS_TEXTURE;
+        if (g_zVideo_pDirectDraw2->GetAvailableVidMem(
+                &caps,
+                (DWORD *)totalBytes,
+                (DWORD *)freeBytes
+            ) != DD_OK) {
+            *freeBytes = 0;
+            *totalBytes = 0;
+        }
         return 1;
     }
 
@@ -1464,6 +1703,67 @@ RECOIL_NOINLINE char *RECOIL_FASTCALL GetHwApiDriverName(
 }
 } // namespace zVid
 
+// Reimplements 0x4bdb60: zVideoFxPass3Element::Draw
+// Draws the common HUD base, publishes the parent pass-3 source surface, then
+// dispatches the element-specific pass callback once for each configured input
+// rectangle.
+RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Element::Draw() {
+    typedef void(RECOIL_FASTCALL *zVideoFxPass3ElementDispatch)(zVideoFxPass3Element *element);
+
+    zVideoFxPass3Config *const parentConfig = (zVideoFxPass3Config *)(base.parent);
+    const unsigned int *const slots = base.ftable->slots;
+    ((zVideoFxPass3ElementDispatch)(slots[2]))(this);
+
+    if (parentConfig == 0) {
+        ((zVideoFxPass3ElementDispatch)(base.ftable->slots[0x74 / 4]))(this);
+        return;
+    }
+
+    if (parentConfig->surfacePixels != 0) {
+        zVideo::Fx_SetSurfaceState(
+            parentConfig->surfacePixels,
+            parentConfig->surfaceWidth,
+            parentConfig->surfaceHeight,
+            parentConfig->surfacePitchBytes
+        );
+    }
+
+    int index;
+    for (index = 0; index < 2; ++index) {
+        HudUiRect *const inputRect = parentConfig->inputRectsOrNull[index];
+        if (inputRect != 0) {
+            clipRectOrNull = inputRect;
+            ((zVideoFxPass3ElementDispatch)(base.ftable->slots[0x74 / 4]))(this);
+        }
+    }
+
+    clipRectOrNull = parentConfig->inputRectsOrNull[0];
+}
+
+// Reimplements 0x4bdbc0: zVideoFxPass3RootElement::ApplyOverlayRect
+// Root pass-3 callback submits the currently selected input rectangle as a
+// framebuffer overlay using the root element's recovered color and alpha.
+RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3RootElement::ApplyOverlayRect() {
+    zRndr_OverlayRect_Submit(
+        (unsigned int)(packedColor16),
+        (zVidRect32 *)(clipRectOrNull),
+        alpha
+    );
+}
+
+// Reimplements 0x4bdbe0: zVideoFxPass3Slot::Constructor
+// Installs the pass-3 slot table after the HudUiElement base constructor and
+// clears the input clip consumed by zVideoFxPass3Element::Draw.
+RECOIL_NOINLINE zVideoFxPass3Slot *RECOIL_THISCALL zVideoFxPass3Slot::Constructor() {
+    base.Constructor(
+        0,
+        0
+    );
+    clipRectOrNull = 0;
+    base.ftable = (const HudUiCommon_FTable *)(&g_zVideo_FxPass3Slot_Vtable);
+    return this;
+}
+
 // Reimplements 0x4bdc00: zVideoFxPass3Slot::SetRectAndPayload
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Slot::SetRectAndPayload(
@@ -1485,11 +1785,101 @@ RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Slot::SetRectAndPayload(
         base.y = rectTopPixels;
     }
 
-    currentRadius = (float)(currentRadiusPixels);
-    maxRadius = (float)(maxRadiusPixels);
-    extent = (float)(extentPixels);
+    currentRadius = currentRadiusPixels;
+    maxRadius = maxRadiusPixels;
+    extent = extentPixels;
     sinFreq = sinFreqValue;
     sinPhase = sinPhaseValue;
+}
+
+// Reimplements 0x4bdc40: zVideoFxPass3Slot::ApplyToCurrentSurface
+// Vtable callback at slot 0x74 forwards the slot position, integer radius
+// payload, sine parameters, and active input clip to the shared pass-3 radial
+// warp routine.
+RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Slot::ApplyToCurrentSurface() {
+    zVideo::FxPass3_ApplyToCurrentSurface(
+        base.x,
+        base.y,
+        currentRadius,
+        maxRadius,
+        extent,
+        sinFreq,
+        sinPhase,
+        (zVidRect32 *)(clipRectOrNull)
+    );
+}
+
+// Reimplements 0x4bef90: zVideoFxPass3Config::Constructor
+// Constructs the pass-3 singleton as a HudUiContainer, installs the config and
+// element tables, links the root plus five slot children, hides them, and enables
+// the container. The retail constructor leaves surfacePitchBytes untouched.
+RECOIL_NOINLINE zVideoFxPass3Config *RECOIL_THISCALL zVideoFxPass3Config::Constructor() {
+    ((HudUiContainer *)(this))->ConstructorDefault();
+
+    rootElement.base.Constructor(
+        0,
+        0
+    );
+    rootElement.clipRectOrNull = 0;
+    rootElement.base.ftable = (const HudUiCommon_FTable *)(&g_zVideo_FxPass3RootElement_Vtable);
+
+    int slotIndex;
+    for (slotIndex = 0; slotIndex < 5; ++slotIndex) {
+        slots[slotIndex].Constructor();
+    }
+
+    vptr = &g_zVideoFxPass3Config_Vtable;
+    inputRectsOrNull[0] = 0;
+    inputRectsOrNull[1] = 0;
+    surfacePixels = 0;
+    surfaceWidth = 0;
+    surfaceHeight = 0;
+
+    ((HudUiContainer *)(this))->AddChild((HudUiElement *)(&rootElement));
+    rootElement.base.SetVisible(0);
+
+    for (slotIndex = 0; slotIndex < 5; ++slotIndex) {
+        ((HudUiContainer *)(this))->AddChild((HudUiElement *)(&slots[slotIndex]));
+        slots[slotIndex].base.SetVisible(0);
+    }
+
+    slotWriteIndex = 0;
+    ((HudUiContainer *)(this))->SetEnabled(1);
+    return this;
+}
+
+// Reimplements 0x4bee80: zVideoFxPass3Config::Destructor
+// Destruction mirrors the MSVC array-destructor path: reset each slot back to
+// the common HudUi table, reset the root table, then tear down the container.
+RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Config::Destructor() {
+    int slotIndex;
+    for (slotIndex = 4; slotIndex >= 0; --slotIndex) {
+        slots[slotIndex].base.ResetCommonFTable();
+    }
+
+    rootElement.base.ResetCommonFTable();
+    ((HudUiContainer *)(this))->DestructorCore();
+}
+
+// Reimplements 0x4bee50: zVideoFxPass3Config::ConstructGlobalSingleton
+zVideoFxPass3Config *RECOIL_CDECL zVideoFxPass3Config::ConstructGlobalSingleton() {
+    return g_zVideo_FxPass3ConfigLocal.Constructor();
+}
+
+// Reimplements 0x4bee70: zVideoFxPass3Config::DestroyGlobalSingleton
+void RECOIL_CDECL zVideoFxPass3Config::DestroyGlobalSingleton() {
+    g_zVideo_FxPass3ConfigLocal.Destructor();
+}
+
+// Reimplements 0x4bee60: zVideoFxPass3Config::RegisterDestroyAtExit
+void RECOIL_CDECL zVideoFxPass3Config::RegisterDestroyAtExit() {
+    atexit(DestroyGlobalSingleton);
+}
+
+// Reimplements 0x4bee40: zVideoFxPass3Config::CrtInitGlobalSingleton
+void RECOIL_CDECL zVideoFxPass3Config::CrtInitGlobalSingleton() {
+    ConstructGlobalSingleton();
+    RegisterDestroyAtExit();
 }
 
 // Reimplements 0x4bee00: zVideoFxPass3Config::SetInputRectByIndex
@@ -2203,6 +2593,384 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Fx_SetSurfaceState(
     g_zVideo_FxSurfacePitchPixels16 = pitchBytes / 2;
 }
 
+// Reimplements 0x48da60: zVideo::FxPass3_CopySurfacePixelToScratchClipped
+// Pass-3 ring warp uses center-relative deltas; this helper applies the
+// current center bias and rejects copies unless both endpoints are in bounds.
+RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_CopySurfacePixelToScratchClipped(
+    int dstDx,
+    int dstDy,
+    int srcDx,
+    int srcDy
+) {
+    const int dstX = dstDx + g_zVideo_FxPass3_ScratchOffsetX;
+    const int dstY = dstDy + g_zVideo_FxPass3_ScratchOffsetY;
+    const int srcX = srcDx + g_zVideo_FxPass3_ScratchOffsetX;
+    const int srcY = srcDy + g_zVideo_FxPass3_ScratchOffsetY;
+
+    if (dstX < g_zVideo_FxPass3_ClipMinX || dstX >= g_zVideo_FxPass3_ClipMaxX) {
+        return;
+    }
+    if (dstY < g_zVideo_FxPass3_ClipMinY || dstY >= g_zVideo_FxPass3_ClipMaxY) {
+        return;
+    }
+    if (srcX < g_zVideo_FxPass3_ClipMinX || srcX >= g_zVideo_FxPass3_ClipMaxX) {
+        return;
+    }
+    if (srcY < g_zVideo_FxPass3_ClipMinY || srcY >= g_zVideo_FxPass3_ClipMaxY) {
+        return;
+    }
+
+    g_zVideo_FxPass3_ScratchPixels16[dstY * g_zVideo_FxSurfaceWidth + dstX] =
+        g_zVideo_FxSurfacePixels16[srcY * g_zVideo_FxSurfacePitchPixels16 + srcX];
+}
+
+static int RECOIL_FASTCALL zVideoFxPass3ClampCurrentRadius(
+    int currentRadius,
+    int maxRadius
+) {
+    int cappedMaxRadius = 0;
+    if (maxRadius > 0) {
+        cappedMaxRadius = maxRadius;
+    }
+    if (currentRadius > cappedMaxRadius) {
+        currentRadius = cappedMaxRadius;
+    }
+    if (currentRadius < 0) {
+        currentRadius = 0;
+    }
+    return currentRadius;
+}
+
+static int RECOIL_FASTCALL zVideoFxPass3ApproxRadiusIndex(
+    int distanceSquared,
+    int maxRadius
+) {
+    float distanceSquaredFloat = (float)(distanceSquared);
+    int bits = *((int *)(&distanceSquaredFloat));
+    bits = (bits >> 1) + 0x1fc00000;
+    const int radiusIndex = (int)(*((float *)(&bits)));
+    if (radiusIndex >= maxRadius) {
+        return maxRadius;
+    }
+    return radiusIndex;
+}
+
+static void RECOIL_FASTCALL zVideoFxPass3CopyDirect(
+    int centerX,
+    int centerY,
+    int dstDx,
+    int dstDy,
+    int srcDx,
+    int srcDy
+) {
+    g_zVideo_FxPass3_ScratchPixels16[
+        (centerY + dstDy) * g_zVideo_FxSurfaceWidth + centerX + dstDx
+    ] = g_zVideo_FxSurfacePixels16[
+        (centerY + srcDy) * g_zVideo_FxSurfacePitchPixels16 + centerX + srcDx
+    ];
+}
+
+static void RECOIL_FASTCALL zVideoFxPass3ScatterDirectSymmetric(
+    int centerX,
+    int centerY,
+    int x,
+    int y,
+    int srcX,
+    int srcY
+) {
+    zVideoFxPass3CopyDirect(
+        centerX,
+        centerY,
+        x,
+        y,
+        srcX,
+        srcY
+    );
+    zVideoFxPass3CopyDirect(
+        centerX,
+        centerY,
+        y,
+        x,
+        srcY,
+        srcX
+    );
+    zVideoFxPass3CopyDirect(
+        centerX,
+        centerY,
+        -x,
+        y,
+        -srcX,
+        srcY
+    );
+    zVideoFxPass3CopyDirect(
+        centerX,
+        centerY,
+        y,
+        -x,
+        srcY,
+        -srcX
+    );
+    zVideoFxPass3CopyDirect(
+        centerX,
+        centerY,
+        x,
+        -y,
+        srcX,
+        -srcY
+    );
+    zVideoFxPass3CopyDirect(
+        centerX,
+        centerY,
+        -y,
+        x,
+        -srcY,
+        srcX
+    );
+    zVideoFxPass3CopyDirect(
+        centerX,
+        centerY,
+        -x,
+        -y,
+        -srcX,
+        -srcY
+    );
+    zVideoFxPass3CopyDirect(
+        centerX,
+        centerY,
+        -y,
+        -x,
+        -srcY,
+        -srcX
+    );
+}
+
+static void RECOIL_FASTCALL zVideoFxPass3ScatterClippedSymmetric(
+    int x,
+    int y,
+    int srcX,
+    int srcY
+) {
+    FxPass3_CopySurfacePixelToScratchClipped(
+        x,
+        y,
+        srcX,
+        srcY
+    );
+    FxPass3_CopySurfacePixelToScratchClipped(
+        y,
+        x,
+        srcY,
+        srcX
+    );
+    FxPass3_CopySurfacePixelToScratchClipped(
+        -x,
+        y,
+        -srcX,
+        srcY
+    );
+    FxPass3_CopySurfacePixelToScratchClipped(
+        y,
+        -x,
+        srcY,
+        -srcX
+    );
+    FxPass3_CopySurfacePixelToScratchClipped(
+        x,
+        -y,
+        srcX,
+        -srcY
+    );
+    FxPass3_CopySurfacePixelToScratchClipped(
+        -y,
+        x,
+        -srcY,
+        srcX
+    );
+    FxPass3_CopySurfacePixelToScratchClipped(
+        -x,
+        -y,
+        -srcX,
+        -srcY
+    );
+    FxPass3_CopySurfacePixelToScratchClipped(
+        -y,
+        -x,
+        -srcY,
+        -srcX
+    );
+}
+
+static void RECOIL_FASTCALL zVideoFxPass3CopyScratchToSurface(
+    int minX,
+    int minY,
+    int maxX,
+    int maxY,
+    int currentRadius
+) {
+    int y;
+    for (y = minY; y < maxY; ++y) {
+        if (y > currentRadius || y < -currentRadius) {
+            unsigned short *src =
+                g_zVideo_FxPass3_ScratchPixels16 + y * g_zVideo_FxSurfaceWidth + minX;
+            unsigned short *dst =
+                g_zVideo_FxSurfacePixels16 + y * g_zVideo_FxSurfacePitchPixels16 + minX;
+            int x;
+            for (x = minX; x < maxX; ++x) {
+                if (x > currentRadius || x < -currentRadius) {
+                    *dst = *src;
+                }
+                ++dst;
+                ++src;
+            }
+        }
+    }
+}
+
+// Reimplements 0x48daf0: zVideo::FxPass3_ApplyToCurrentSurface
+// Animated radial ring warp for local pass-3 effects. The retail code keeps a
+// fast direct path when the whole ring fits the clip and falls back to the
+// clipped pixel helper when any endpoint can cross the active rectangle.
+RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_ApplyToCurrentSurface(
+    int centerX,
+    int centerY,
+    int currentRadius,
+    int maxRadius,
+    int extent,
+    float sinFreq,
+    float sinPhase,
+    zVidRect32 *clipRectOrNull
+) {
+    const int cappedMaxRadius = maxRadius > 0 ? maxRadius : 0;
+    currentRadius = zVideoFxPass3ClampCurrentRadius(
+        currentRadius,
+        maxRadius
+    );
+    if (currentRadius == cappedMaxRadius) {
+        return;
+    }
+
+    const int currentRadiusSquared = currentRadius * currentRadius;
+    const int maxRadiusSquared = cappedMaxRadius * cappedMaxRadius;
+    int clipMinX;
+    int clipMinY;
+    int clipMaxX;
+    int clipMaxY;
+    if (clipRectOrNull != 0) {
+        clipMinX = clipRectOrNull->left;
+        clipMinY = clipRectOrNull->top;
+        clipMaxX = clipRectOrNull->right;
+        clipMaxY = clipRectOrNull->bottom;
+    } else {
+        clipMinX = 0;
+        clipMinY = 0;
+        clipMaxX = g_zVideo_FxSurfaceWidth - 1;
+        clipMaxY = g_zVideo_FxSurfaceHeight - 1;
+    }
+
+    g_zVideo_FxPass3_ClipMinX = clipMinX;
+    g_zVideo_FxPass3_ClipMinY = clipMinY;
+    g_zVideo_FxPass3_ClipMaxX = clipMaxX;
+    g_zVideo_FxPass3_ClipMaxY = clipMaxY;
+
+    const int minOuterX = centerX - cappedMaxRadius - extent;
+    const int maxOuterX = centerX + cappedMaxRadius + extent;
+    const int minOuterY = centerY - cappedMaxRadius - extent;
+    const int maxOuterY = centerY + cappedMaxRadius + extent;
+    if (minOuterX > clipMaxX || maxOuterX < clipMinX || minOuterY > clipMaxY ||
+        maxOuterY < clipMinY) {
+        return;
+    }
+
+    float *sinAmpTable = (float *)(_alloca((cappedMaxRadius + 1) * sizeof(float)));
+    float *recipTable = (float *)(_alloca((cappedMaxRadius + 1) * sizeof(float)));
+    sinAmpTable[0] = (float)(sin(sinPhase) * (double)(extent));
+    recipTable[0] = 1.0f;
+
+    int tableIndex = currentRadius - 1;
+    if (tableIndex < 1) {
+        tableIndex = 1;
+    }
+    while (tableIndex <= cappedMaxRadius) {
+        const float radius = (float)(tableIndex);
+        sinAmpTable[tableIndex] = (float)(sin(radius / sinFreq + sinPhase) * (double)(extent));
+        recipTable[tableIndex] = 1.0f / radius;
+        ++tableIndex;
+    }
+
+    const int useClippedPath =
+        minOuterX < clipMinX || maxOuterX >= clipMaxX || minOuterY < clipMinY ||
+        maxOuterY >= clipMaxY;
+    if (useClippedPath) {
+        g_zVideo_FxPass3_ScratchOffsetX = centerX;
+        g_zVideo_FxPass3_ScratchOffsetY = centerY;
+    }
+
+    int y;
+    for (y = -cappedMaxRadius; y <= currentRadius; ++y) {
+        int x;
+        for (x = y; x <= currentRadius; ++x) {
+            const int distanceSquared = x * x + y * y;
+            int srcX = x;
+            int srcY = y;
+            if (distanceSquared < maxRadiusSquared &&
+                currentRadiusSquared < distanceSquared) {
+                const int radiusIndex = zVideoFxPass3ApproxRadiusIndex(
+                    distanceSquared,
+                    cappedMaxRadius
+                );
+                const float scale = sinAmpTable[radiusIndex] * recipTable[radiusIndex];
+                srcX = x + (int)((float)(x) * scale);
+                srcY = y + (int)((float)(y) * scale);
+            }
+
+            if (useClippedPath) {
+                zVideoFxPass3ScatterClippedSymmetric(
+                    x,
+                    y,
+                    srcX,
+                    srcY
+                );
+            } else {
+                zVideoFxPass3ScatterDirectSymmetric(
+                    centerX,
+                    centerY,
+                    x,
+                    y,
+                    srcX,
+                    srcY
+                );
+            }
+        }
+    }
+
+    int copyMinX = centerX - cappedMaxRadius;
+    int copyMinY = centerY - cappedMaxRadius;
+    int copyMaxX = centerX + cappedMaxRadius;
+    int copyMaxY = centerY + cappedMaxRadius;
+    if (useClippedPath) {
+        if (copyMinY < clipMinY) {
+            copyMinY = clipMinY;
+        }
+        if (copyMaxY > clipMaxY) {
+            copyMaxY = clipMaxY;
+        }
+        if (copyMinX < clipMinX) {
+            copyMinX = clipMinX;
+        }
+        if (copyMaxX > clipMaxX) {
+            copyMaxX = clipMaxX;
+        }
+    }
+
+    zVideoFxPass3CopyScratchToSurface(
+        copyMinX,
+        copyMinY,
+        copyMaxX,
+        copyMaxY,
+        currentRadius
+    );
+}
+
 static unsigned short RECOIL_FASTCALL zVideoBlendBlurPixel3(
     unsigned short before,
     unsigned short center,
@@ -2725,6 +3493,9 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindRendererDispatch(
     g_zVideo_pfnPaletteSetEntries = zVideo_dd::PaletteSetEntries;
     g_zVideo_pfnSetVideoMode = zVideo_dd::SetVideoMode;
     g_zVideo_pfnAdjustSurfaces = zVideo_dd3d::PresentDisplayModeSurface;
+    if (g_zVideo_RendererType != 1) {
+        g_zVideo_pfnAdjustSurfaces = zVideo_dd::PresentDisplayModeSurface;
+    }
     g_zVideo_pfnLockSurfaceState = zVideo_dd::LockSurfaceState;
     g_zVideo_pfnUnlockSurfaceState = zVideo_dd::UnlockSurfaceState;
     g_zVideo_pfnClearZBufferRect = zVideo_dd::ZBuffer_DepthFillRect;
@@ -2733,10 +3504,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindRendererDispatch(
     g_zVideo_pfnUpdateFogColor = (zVideo_UpdateFogColorProc)(0x004aab30);
     g_zVideo_pfnQueryTextureMemoryBytes = zVid::QueryTextureMemoryBytes;
     g_zVideo_pfnQueryDeviceVideoMemoryBytes = zVid::QueryDeviceVideoMemoryBytes;
-    g_zVideo_pfnBltSwToPrimaryRectDirect = (zVideo_BltRectDirectProc)(0x004a7d90);
+    g_zVideo_pfnBltSwToPrimaryRectDirect = zVideo_dd::BltSwToPrimaryRectDirect;
     g_zVideo_pfnBltPrimaryToSwRectDirect = zVideo_dd::BltPrimaryToSwRectDirect;
     g_zVideo_pfnBltSwToPrimaryRect = 0x004a7e10;
-    g_zVideo_pfnGetHwApiDeviceFeatureFlags = 0x004a9920;
+    g_zVideo_pfnGetHwApiDeviceFeatureFlags = zVideo_dd::GetHwApiDeviceFeatureFlags;
     g_zVideo_pfnImageUploadPixelsToSurface = 0x004a8680;
     g_zVideo_pfnImageReleaseSurface = 0x004a86f0;
     g_zVideo_pfnCreateTextureRecord = zVideo_dd3d::CreateTextureRecord;
@@ -3686,6 +4457,197 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BlitToActiveTarget(
     );
 }
 
+// Reimplements 0x48f560: zVid_Image::BlitToFramebufferClipped.
+// (D:\Proj\GameZRecoil\zImage\zvid_buff.c)
+// Software target callback: clips the source image to zRndr's active 16-bit framebuffer and
+// preserves the original 565/555 alpha-map and color-key branch contracts.
+RECOIL_NOINLINE void RECOIL_FASTCALL BlitToFramebufferClipped(
+    zVidImagePartial *image,
+    int dstX,
+    int dstY,
+    int clipFlags,
+    zVidRect32 *srcRect
+) {
+    int srcLeft = 0;
+    int srcTop = 0;
+    int srcRight = image->width;
+    int srcBottom = image->height;
+    if (srcRect != 0) {
+        srcLeft = srcRect->left;
+        srcTop = srcRect->top;
+        srcRight = srcRect->right;
+        srcBottom = srcRect->bottom;
+    }
+
+    const int srcWidth = srcRight - srcLeft;
+    const int srcHeight = srcBottom - srcTop;
+    if (srcWidth < 0 || srcWidth > 2048 || srcHeight < 0 || srcHeight > 2048) {
+        return;
+    }
+
+    if (srcWidth == 0 || srcHeight == 0 || zRndr::g_frameBuffer == 0 || image->pixels == 0) {
+        return;
+    }
+
+    const int activeWidth = zRndr::g_activeRegionWidth;
+    const int activeHeight = zRndr::g_activeRegionHeight;
+    const int dstRight = dstX + srcWidth - 1;
+    const int dstBottom = dstY + srcHeight - 1;
+    if (dstX >= activeWidth || dstRight < 0 || dstY >= activeHeight || dstBottom < 0) {
+        return;
+    }
+
+    int clippedDstX = dstX;
+    int clippedDstY = dstY;
+    int clippedRight = dstRight;
+    int clippedBottom = dstBottom;
+    if (clippedDstX < 0) {
+        clippedDstX = 0;
+    }
+    if (clippedDstY < 0) {
+        clippedDstY = 0;
+    }
+    if (clippedRight >= activeWidth) {
+        clippedRight = activeWidth - 1;
+    }
+    if (clippedBottom >= activeHeight) {
+        clippedBottom = activeHeight - 1;
+    }
+
+    const int clippedWidth = clippedRight - clippedDstX + 1;
+    const int clippedHeight = clippedBottom - clippedDstY + 1;
+    if (clippedWidth <= 0 || clippedHeight <= 0) {
+        return;
+    }
+
+    const int sourceStartX = srcLeft + clippedDstX - dstX;
+    const int sourceStartY = srcTop + clippedDstY - dstY;
+    const int sourcePitch = image->pitchWords;
+    const int framebufferPitch = (int)((unsigned int)(zRndr::g_pitchBytes) >> 1);
+    unsigned short *dstRow =
+        (unsigned short *)(zRndr::g_frameBuffer) + framebufferPitch * clippedDstY + clippedDstX;
+    const int alphaSkipThreshold = zVideo_GetAlphaSkipThreshold();
+
+    if (image->palette == 0) {
+        unsigned short *sourceRow =
+            (unsigned short *)(image->pixels) + sourcePitch * sourceStartY + sourceStartX;
+        unsigned char *alphaRow = (unsigned char *)(image->alphaMap);
+        if (alphaRow != 0) {
+            alphaRow += sourcePitch * sourceStartY + sourceStartX;
+            for (int row = 0; row < clippedHeight; ++row) {
+                for (int x = 0; x < clippedWidth; ++x) {
+                    const int alpha = alphaRow[x];
+                    if (alpha > alphaSkipThreshold) {
+                        const unsigned short sourcePixel = sourceRow[x];
+                        dstRow[x] = alpha >= 252
+                                        ? sourcePixel
+                                        : zVideo_BlendFramebufferPixelAlpha8(
+                                              dstRow[x],
+                                              sourcePixel,
+                                              alpha
+                                          );
+                    }
+                }
+
+                dstRow += framebufferPitch;
+                sourceRow += sourcePitch;
+                alphaRow += sourcePitch;
+            }
+            return;
+        }
+
+        if ((image->formatFlagsPacked & 0x02) != 0) {
+            const unsigned short transparentColor = (unsigned short)(clipFlags);
+            for (int row_1 = 0; row_1 < clippedHeight; ++row_1) {
+                for (int x_1 = 0; x_1 < clippedWidth; ++x_1) {
+                    const unsigned short sourcePixel = sourceRow[x_1];
+                    if (sourcePixel != transparentColor) {
+                        dstRow[x_1] = sourcePixel;
+                    }
+                }
+
+                dstRow += framebufferPitch;
+                sourceRow += sourcePitch;
+            }
+            return;
+        }
+
+        if (clippedDstX == 0 && clippedRight == activeWidth - 1 &&
+            framebufferPitch == sourcePitch) {
+            memcpy(
+                dstRow,
+                sourceRow,
+                (size_t)(clippedWidth * clippedHeight) * sizeof(unsigned short)
+            );
+            return;
+        }
+
+        for (int row_2 = 0; row_2 < clippedHeight; ++row_2) {
+            memcpy(
+                dstRow,
+                sourceRow,
+                (size_t)(clippedWidth) * sizeof(unsigned short)
+            );
+            dstRow += framebufferPitch;
+            sourceRow += sourcePitch;
+        }
+        return;
+    }
+
+    unsigned char *sourceRow8 =
+        (unsigned char *)(image->pixels) + sourcePitch * sourceStartY + sourceStartX;
+    unsigned short *palette = (unsigned short *)(image->palette);
+    unsigned char *alphaRow8 = (unsigned char *)(image->alphaMap);
+    if (alphaRow8 != 0) {
+        alphaRow8 += sourcePitch * sourceStartY + sourceStartX;
+        for (int row_3 = 0; row_3 < clippedHeight; ++row_3) {
+            for (int x_2 = 0; x_2 < clippedWidth; ++x_2) {
+                const int alpha = alphaRow8[x_2];
+                if (alpha > alphaSkipThreshold) {
+                    const unsigned short sourcePixel = palette[sourceRow8[x_2]];
+                    dstRow[x_2] = alpha >= 252
+                                      ? sourcePixel
+                                      : zVideo_BlendFramebufferPixelAlpha8(
+                                            dstRow[x_2],
+                                            sourcePixel,
+                                            alpha
+                                        );
+                }
+            }
+
+            dstRow += framebufferPitch;
+            sourceRow8 += sourcePitch;
+            alphaRow8 += sourcePitch;
+        }
+        return;
+    }
+
+    if ((image->formatFlagsPacked & 0x02) != 0) {
+        const unsigned short transparentIndex = (unsigned short)(clipFlags);
+        for (int row_4 = 0; row_4 < clippedHeight; ++row_4) {
+            for (int x_3 = 0; x_3 < clippedWidth; ++x_3) {
+                const unsigned int sourceIndex = sourceRow8[x_3];
+                if ((unsigned short)(sourceIndex) != transparentIndex) {
+                    dstRow[x_3] = palette[sourceIndex];
+                }
+            }
+
+            dstRow += framebufferPitch;
+            sourceRow8 += sourcePitch;
+        }
+        return;
+    }
+
+    for (int row_5 = 0; row_5 < clippedHeight; ++row_5) {
+        for (int x_4 = 0; x_4 < clippedWidth; ++x_4) {
+            dstRow[x_4] = palette[sourceRow8[x_4]];
+        }
+
+        dstRow += framebufferPitch;
+        sourceRow8 += sourcePitch;
+    }
+}
+
 // Reimplements 0x46ecf0: zVid_Image::ReleaseOwnedBuffers
 RECOIL_NOINLINE void RECOIL_FASTCALL ReleaseOwnedBuffers(
     zVidImagePartial *image
@@ -4036,7 +4998,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadData(
             &gBits,
             &bBits
         );
-        if (rBits == 5) {
+        if (gBits == 5) {
             unsigned short *colors = image->paletteMetaPacked == 0
                                          ? (unsigned short *)(image->pixels)
                                          : (unsigned short *)(image->palette);
@@ -5310,6 +6272,7 @@ RECOIL_NOINLINE zVideo_TextureRecordPartial *RECOIL_FASTCALL CreateTextureRecord
     IDirectDrawSurface *textureSurface = 0;
     IDirect3DTexture2 *uploadTexture = 0;
     IDirect3DTexture2 *texture = 0;
+    IDirectDrawPalette *ddPalette = 0;
 
     const D3DDEVICEDESC *selectedDeviceDesc =
         (const D3DDEVICEDESC *)(g_zVideo_pSelectedD3DDeviceInfo->m_hwDesc);
@@ -5449,6 +6412,28 @@ RECOIL_NOINLINE zVideo_TextureRecordPartial *RECOIL_FASTCALL CreateTextureRecord
         0
     );
     zVideo_TextureRecordPartial *result = 0;
+    if (hresult == DD_OK && image->palette != 0) {
+        PALETTEENTRY paletteEntries[256];
+        memset(
+            paletteEntries,
+            0,
+            sizeof(paletteEntries)
+        );
+        memcpy(
+            paletteEntries,
+            image->palette,
+            image->paletteMetaPacked
+        );
+        hresult = g_zVideo_pDirectDraw2->CreatePalette(
+            DDPCAPS_8BIT | DDPCAPS_ALLOW256,
+            (LPPALETTEENTRY)(image->palette),
+            &ddPalette,
+            0
+        );
+        if (hresult == DD_OK) {
+            hresult = uploadSurface->SetPalette(ddPalette);
+        }
+    }
     if (hresult == DD_OK) {
         UploadImageToSurface(
             uploadSurface,
@@ -5473,6 +6458,9 @@ RECOIL_NOINLINE zVideo_TextureRecordPartial *RECOIL_FASTCALL CreateTextureRecord
             &textureSurface,
             0
         );
+    }
+    if (hresult == DD_OK && ddPalette != 0) {
+        hresult = textureSurface->SetPalette(ddPalette);
     }
     if (hresult == DD_OK) {
         hresult = textureSurface->QueryInterface(
@@ -7658,6 +8646,11 @@ const size_t kD3DDescColorModelOffset = 0x08;
 const size_t kD3DDescZBufferBitDepthOffset = 0xa0;
 const size_t kD3DDescMaxTextureWidthOffset = 0xb4;
 const size_t kD3DDescMaxTextureHeightOffset = 0xb8;
+const int kPresentMissingSurfaceResult = 0x400;
+const int kPresentFailureResult = 0x5a56ffff;
+const int kPresentLinePageLock = 0x6c;
+const int kPresentLinePageUnlock = 0x91;
+const int kPresentLineBltOrRestore = 0xac;
 
 unsigned int D3DDescReadDword(
     const D3DDEVICEDESC *desc,
@@ -8148,7 +9141,7 @@ RECOIL_NOINLINE int RECOIL_CDECL PrepareWindowForMode() {
     SetWindowLongA(
         g_zVideo_hWnd,
         GWL_EXSTYLE,
-        0x00040000
+        WS_EX_APPWINDOW
     );
     SetWindowLongA(
         g_zVideo_hWnd,
@@ -8252,7 +9245,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL EnumerateDirect3DDevicesForRecord(
     (void)unusedStackZeroing;
 
     printf(
-        "  Direct3D drivers for %s\n",
+        "\nENUMERATE DRIVERS (%s)...\n",
         entry->m_driverName
     );
     fflush(stdout);
@@ -8279,7 +9272,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL EnumerateDirect3DDevicesForRecord(
     ReleaseComInterface(g_zVideo_pD3D2);
 
     if (entry->m_acceptedD3DDeviceCount == 0) {
-        printf("    No usable Direct3D drivers\n");
+        printf("No useable drivers\n");
         return 0;
     }
 
@@ -8293,6 +9286,7 @@ RECOIL_NOINLINE void RECOIL_CDECL StartupEnumerateAndDefaultSelect() {
     g_zVideo_pSelectedD3DDeviceInfo = 0;
 }
 
+// Reimplements 0x4a7d40: zVideo_dd::ShutdownVideoSystem
 RECOIL_NOINLINE int RECOIL_CDECL ShutdownVideoSystem() {
     if (g_zImage_DefaultTextureRecord != 0) {
         zVideo_dd3d::TextureRecord_Destroy(g_zImage_DefaultTextureRecord);
@@ -8621,14 +9615,14 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Image_PopulateSurfaceFromHeapPixels(
 RECOIL_NOINLINE IDirectDrawSurface3 *RECOIL_FASTCALL Image_LazyCreateVideoMemorySurface(
     zVidImagePartial *image
 ) {
-    const int featureFlags = g_zVideo_pSelectedHwApiDeviceRecord != 0
-                                 ? g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags
-                                 : 0;
+    // Original code assumes device selection is complete and reads the feature flags unconditionally.
+    const int featureFlags = g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags;
     if (g_zVideo_UseHalfResBackbuffer == 0 && featureFlags == 0) {
         return 0;
     }
 
-    const unsigned int caps = (featureFlags != 0 ? 0x20000000 : 0) + DDSCAPS_VIDEOMEMORY;
+    const unsigned int caps =
+        (featureFlags != 0 ? DDSCAPS_NONLOCALVIDMEM : 0) + DDSCAPS_VIDEOMEMORY;
     return Image_LazyCreateBackingSurface(
         image,
         caps
@@ -8659,10 +9653,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Image_UploadPixelsToSurface(
     }
 
     if (image->surface == 0) {
+        // Original upload path assumes device selection is complete before lazy creation.
         const unsigned int caps =
-            g_zVideo_pSelectedHwApiDeviceRecord != 0 &&
-                    g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags != 0
-                ? 0x20004000
+            g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags != 0
+                ? DDSCAPS_NONLOCALVIDMEM | DDSCAPS_VIDEOMEMORY
                 : DDSCAPS_SYSTEMMEMORY;
         if (Image_LazyCreateBackingSurface(
             image,
@@ -8746,6 +9740,108 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltPrimaryToSwRectDirect(
             kZVideoDirectDrawSourceFile,
             0xfc
         );
+    }
+}
+
+// Reimplements 0x4a7b60: zVideo_dd::PresentDisplayModeSurface
+// Presents the software/display-mode surface through DirectDraw, including the
+// original page-lock state swap used by fullscreen software adjustment.
+RECOIL_NOINLINE int RECOIL_FASTCALL PresentDisplayModeSurface(
+    zVidRect32 *srcRect,
+    zVidRect32 *dstRect,
+    int waitForPresent,
+    int skipSurfaceStateSwap
+) {
+    IDirectDrawSurface3 *const displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
+    IDirectDrawSurface3 *const primarySurface = g_zVideo_PrimarySurfaceState.surf;
+    if (displaySurface == 0 || primarySurface == 0) {
+        return kPresentMissingSurfaceResult;
+    }
+
+    const DWORD presentBltFlags =
+        DDBLT_WAIT | (waitForPresent != 0 ? 0 : DDBLT_ASYNC);
+    HRESULT hresult;
+
+    for (;;) {
+        if (g_zVideo_UseHalfResBackbuffer != 0 || g_zVideo_HalfResAdjustMode == 0) {
+            hresult = displaySurface->Blt(
+                (RECT *)(dstRect),
+                primarySurface,
+                (RECT *)(srcRect),
+                presentBltFlags,
+                0
+            );
+        } else {
+            hresult = primarySurface->PageLock(0);
+            if (hresult != DD_OK) {
+                ReportError(
+                    (int)(hresult),
+                    kZVideoDirectDrawSourceFile,
+                    kPresentLinePageLock
+                );
+                return 0;
+            }
+
+            hresult = displaySurface->Blt(
+                (RECT *)(dstRect),
+                primarySurface,
+                (RECT *)(srcRect),
+                DDBLT_ASYNC,
+                0
+            );
+            g_zVideo_PrimarySurfaceState.pageLockActive = 1;
+
+            if (skipSurfaceStateSwap == 0) {
+                memcpy(
+                    &g_zVideo_SurfaceStateSwapScratch,
+                    &g_zVideo_PrimarySurfaceState,
+                    sizeof(g_zVideo_SurfaceStateSwapScratch)
+                );
+                memcpy(
+                    &g_zVideo_PrimarySurfaceState,
+                    &g_zVideo_SwSurfaceState,
+                    sizeof(g_zVideo_PrimarySurfaceState)
+                );
+                memcpy(
+                    &g_zVideo_SwSurfaceState,
+                    &g_zVideo_SurfaceStateSwapScratch,
+                    sizeof(g_zVideo_SwSurfaceState)
+                );
+            }
+
+            if (g_zVideo_PrimarySurfaceState.pageLockActive != 0) {
+                const HRESULT pageUnlockResult =
+                    g_zVideo_PrimarySurfaceState.surf->PageUnlock(0);
+                if (pageUnlockResult != DD_OK) {
+                    ReportError(
+                        (int)(pageUnlockResult),
+                        kZVideoDirectDrawSourceFile,
+                        kPresentLinePageUnlock
+                    );
+                    return 0;
+                }
+
+                g_zVideo_PrimarySurfaceState.pageLockActive = 0;
+            }
+        }
+
+        if (hresult == DD_OK) {
+            return 0;
+        }
+
+        if (hresult == DDERR_SURFACELOST) {
+            hresult = displaySurface->Restore();
+            if (hresult == DD_OK) {
+                continue;
+            }
+        }
+
+        ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            kPresentLineBltOrRestore
+        );
+        return kPresentFailureResult;
     }
 }
 
@@ -9635,6 +10731,13 @@ RECOIL_NOINLINE int RECOIL_FASTCALL PaletteSetEntries(
         0x823
     );
     return 0x5a56ffff;
+}
+
+// Reimplements 0x4a9920: zVideo_dd::GetHwApiDeviceFeatureFlags
+RECOIL_NOINLINE int RECOIL_FASTCALL GetHwApiDeviceFeatureFlags(
+    int deviceIndex
+) {
+    return g_zVideo_HwApiDeviceTable[deviceIndex].m_deviceFeatureFlags;
 }
 
 // Reimplements 0x4ad6a0: zVideo_dd::ReportError

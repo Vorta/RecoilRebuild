@@ -52,11 +52,11 @@ RECOIL_STATIC_ASSERT(sizeof(zRndr_LineClipRect2I) == 0x10);
 
 extern "C" {
 typedef void(RECOIL_FASTCALL *zVideo_BltSourceToPrimaryProc)(
-    void *self,
+    zVidImagePartial *image,
     int dstX,
     int dstY,
     int clipFlags,
-    void *srcRect
+    zVidRect32 *srcRect
 );
 
 extern zVideo_BltSourceToPrimaryProc g_zVideo_pfnBltSourceToPrimary;
@@ -74,6 +74,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL LoadDynamicEntriesFromPath(char *path);
 } // namespace zRndr_GlobalStringTable
 
 namespace zRndr {
+RECOIL_NOINLINE void RECOIL_CDECL GlobalStringTable_ReleaseDynamicEntries();
+
 struct ActiveRegionRectPartial {
     int x;
     int y;

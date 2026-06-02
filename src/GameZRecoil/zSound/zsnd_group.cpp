@@ -25,64 +25,42 @@ int RECOIL_FASTCALL MatchStreamRequestPredicate(
     return payload != userData ? 1 : 0;
 }
 
-zArchiveListNode *FindNodeByPayload(
-    zArchiveList *list,
-    void *payload
-) {
-    if (list == 0 || list->count == 0) {
-        return 0;
-    }
+} // namespace
 
-    zArchiveListNode *node = list->head;
-    for (int i = 0; i < list->count; ++i) {
-        if (node->payload == payload) {
-            return node;
-        }
-        node = node->next;
-    }
-
-    return 0;
-}
-
-void *RemovePayloadFromList(
-    zArchiveList *list,
-    void *payload
-) {
-    zArchiveListNode *node = FindNodeByPayload(
-        list,
-        payload
-    );
-    if (node == 0) {
-        return 0;
-    }
-
-    if (list->count == 1) {
-        list->head = 0;
-    } else {
-        node->prev->next = node->next;
-        node->next->prev = node->prev;
-        if (list->head == node) {
-            list->head = node->next;
-        }
-    }
-
-    --list->count;
-    return zArchiveList_FreeNode(node);
-}
-
-int RECOIL_FASTCALL MatchFinishedRequestPredicate(
+namespace zSndStreamMgr {
+// Reimplements 0x4a4c40: zSndStreamMgr::UpdateActiveRequestPredicate
+RECOIL_NOINLINE int RECOIL_FASTCALL UpdateActiveRequestPredicate(
     void *payload,
     void *
 ) {
     zSndStreamRequest *request = (zSndStreamRequest *)(payload);
-    if (request->streamState == 4) {
+    switch (request->streamState) {
+    case 0:
+        request->StateBeginGroup();
+        break;
+    case 1:
+        request->StatePlayCurrentEntry();
+        break;
+    case 2:
+        request->StateWaitRepeatDelay();
+        break;
+    case 3:
+        request->StateWaitTerminationDelay();
+        break;
+    case 4:
         if (g_zSndStream_MatchedRequest == 0) {
             g_zSndStream_MatchedRequest = request;
         }
         ++g_zSndStream_MatchedRequestCount;
+        break;
+    default:
+        break;
     }
     return 1;
 }
+} // namespace zSndStreamMgr
+
+namespace {
 
 zReader::Node *ArrayBase(
     zReader::Node *node
@@ -313,6 +291,82 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndStreamRequest::StateBeginGroup() {
     return 1;
 }
 
+// Reimplements 0x4a4ea0: zSndStreamRequest::StatePlayCurrentEntry
+// Uses signed play-count decrement so 0xffff remains the original infinite-play sentinel.
+RECOIL_NOINLINE void RECOIL_THISCALL zSndStreamRequest::StatePlayCurrentEntry() {
+    elapsedSec = elapsedSec + g_FrameDeltaTimeSec;
+
+    while (currentEntry != 0) {
+        zSndGroupConfigBlock *entry = currentEntry;
+        if (elapsedSec < entry->delayPlaySec) {
+            break;
+        }
+
+        if (entry->currentPlayCount != 0) {
+            if (entry->cachedSample == 0) {
+                const char *sampleName = entry->streamName;
+                if (strcmp(
+                        sampleName,
+                        "NULL"
+                    ) != 0) {
+                    entry->cachedSample = zSnd::FindSampleByName(sampleName);
+                }
+            }
+
+            zSndSample *sample = entry->cachedSample;
+            if (sample != 0) {
+                if (hasWorldPos != 0) {
+                    sample->PlayA3D(
+                        &worldPos,
+                        gain,
+                        &velocity
+                    );
+                } else {
+                    sample->PlayA3DSimple(gain);
+                }
+            }
+
+            if ((short)(entry->currentPlayCount) > 0) {
+                --entry->currentPlayCount;
+            }
+        }
+
+        elapsedSec = 0.0f;
+        currentEntry = entry->child;
+    }
+
+    if (currentEntry != 0) {
+        return;
+    }
+
+    const unsigned short repeatCount = group->repeatCount;
+    if (playIndex == (int)((short)(repeatCount))) {
+        if (group->delayTerminationSec > 0.0f) {
+            elapsedSec = 0.0f;
+            streamState = 3;
+        } else {
+            streamState = 4;
+        }
+    } else {
+        if (repeatCount != 0xffff) {
+            ++playIndex;
+        }
+        streamState = 2;
+    }
+}
+
+// Reimplements 0x4a4fd0: zSndStreamRequest::StateWaitRepeatDelay
+RECOIL_NOINLINE void RECOIL_THISCALL zSndStreamRequest::StateWaitRepeatDelay() {
+    elapsedSec = elapsedSec + g_FrameDeltaTimeSec;
+    if (elapsedSec < group->delayRepeatSec) {
+        return;
+    }
+
+    elapsedSec = 0.0f;
+    currentEntry = group->SelectWeightedEntry();
+    streamState = currentEntry != 0 ? 1 : 4;
+}
+
 // Reimplements 0x4a5350: zSndStreamMgr_EnsureInit
 extern "C" RECOIL_NOINLINE int RECOIL_CDECL zSndStreamMgr_EnsureInit() {
     if (g_zSndStream_RootNode == 0) {
@@ -514,10 +568,11 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL zSndGroup::QueueStreamRequestWit
     );
 }
 
+// Reimplements 0x4a5050: zSndStreamMgr::RecycleFinishedRequest
 extern "C" RECOIL_NOINLINE void RECOIL_CDECL zSndStreamMgr_RecycleFinishedRequest() {
     zArchiveList_FindPayloadByPredicate(
         g_zSndStream_ActiveList,
-        &MatchFinishedRequestPredicate,
+        &zSndStreamMgr::UpdateActiveRequestPredicate,
         0
     );
 
@@ -525,7 +580,7 @@ extern "C" RECOIL_NOINLINE void RECOIL_CDECL zSndStreamMgr_RecycleFinishedReques
         return;
     }
 
-    RemovePayloadFromList(
+    zArchiveList_RemovePayload(
         g_zSndStream_ActiveList,
         g_zSndStream_MatchedRequest
     );
@@ -801,8 +856,8 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndGroup_QueuePendingLoadsFromCo
         }
     }
 
-    zReader::Node *nodeArray = ArrayBase(readerNode);
-    for (int i = 1; i < ArrayCount(readerNode); ++i) {
+    zReader::Node *nodeArray = readerNode->value.nodes;
+    for (int i = 1; i < nodeArray[0].value.i32; ++i) {
         zSndGroup *payload = zSndGroup_LoadFromConfigNode(&nodeArray[i]);
         if (payload != 0) {
             zArchiveList_PushFrontPayload(

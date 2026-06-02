@@ -3,6 +3,7 @@
 #include "recoil/recoil_callconv.h"
 
 #include "recoil/recoil_types.h"
+#include <math.h>
 #include <stddef.h>
 
 struct zVec3;
@@ -77,6 +78,31 @@ struct zProjectedSphere {
 
 RECOIL_STATIC_ASSERT(sizeof(zBBox3f) == 0x18);
 RECOIL_STATIC_ASSERT(sizeof(zBBoxCorners) == 0x60);
+RECOIL_STATIC_ASSERT(sizeof(_exception) == 0x20);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        _exception,
+        name
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        _exception,
+        arg1
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        _exception,
+        arg2
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        _exception,
+        retval
+    ) == 0x18
+);
 RECOIL_STATIC_ASSERT(sizeof(zVec2) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(zProjectedPoint) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zProjectedSphere) == 0x0c);
@@ -248,6 +274,7 @@ extern zVec3 g_zMath_Vec3DeltaScratch;
 extern int *g_currentMatrixIdentityFlagSlot;
 extern float **g_currentMatrixPtrSlot;
 
+RECOIL_NOINLINE int RECOIL_CDECL CrtMatherrHandler(_exception *except);
 RECOIL_NOINLINE void RECOIL_FASTCALL MatStackPushPtr(float *matrix);
 RECOIL_NOINLINE void RECOIL_FASTCALL MatStackPushAndCloneParent(float *newSlotBuffer);
 RECOIL_NOINLINE void RECOIL_CDECL MatStackPopPtr();

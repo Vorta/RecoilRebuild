@@ -2380,6 +2380,7 @@ extern zClass_Object3D_ModelRefLerpQueueState g_ModelRefLerpQueueState;
 typedef void(RECOIL_FASTCALL *zClass_Object3D_ModelRefLerpCallback)(void *callbackCtx);
 
 namespace zClass_Object3D_ModelRefLerpQueue {
+RECOIL_NOINLINE void RECOIL_CDECL ClearGlobalState();
 RECOIL_NOINLINE void RECOIL_FASTCALL Add(
     zClass_NodePartial *node,
     void *callbackCtx,

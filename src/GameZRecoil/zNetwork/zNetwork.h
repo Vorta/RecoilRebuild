@@ -560,6 +560,9 @@ RECOIL_NOINLINE int RECOIL_STDCALL EnumPlayerCallback_AddPlayerRecord(
     unsigned int flags,
     void *context
 );
+RECOIL_NOINLINE void RECOIL_FASTCALL FreeServiceProviderInfoBuffers(
+    zNetworkDPlayServiceProviderInfo *providerInfo
+);
 RECOIL_NOINLINE int RECOIL_FASTCALL InitializeConnectionFromProviderInfo(
     zNetworkDPlayServiceProviderInfo *providerInfo
 );

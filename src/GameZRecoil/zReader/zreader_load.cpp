@@ -728,8 +728,9 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_FreeSearchPathList(
 extern "C" RECOIL_NOINLINE void RECOIL_CDECL zUtil_ZRDR_FreeScratchSearchPathList() {
     if (g_zRdr_ScratchSearchPathList != 0) {
         zUtil_ZRDR_FreeSearchPathList(g_zRdr_ScratchSearchPathList);
-        g_zRdr_ScratchSearchPathList = 0;
     }
+
+    g_zRdr_ScratchSearchPathList = 0;
 }
 
 // Reimplements 0x4a6100: zUtil_ZRDR_ShutdownWildcardPath
@@ -1304,8 +1305,8 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zReader_ReadString(
     void *hFile,
     zReader::Value *outString
 ) {
-    DWORD bytesRead = 0;
-    unsigned int length = 0;
+    DWORD bytesRead;
+    unsigned int length;
     ReadFile(
         (HANDLE)(hFile),
         &length,
