@@ -1,3 +1,4 @@
+#include "Battlesport/Mfc42Abi.h"
 #include "player.h"
 
 #include "Battlesport/GameNet.h"
@@ -98,8 +99,8 @@ float g_Player_QuicksandSinkRate = 0.0f;
 float g_Player_LavaSinkRate = 0.0f;
 float g_Player_MaxSlope = 0.0f;
 float g_Player_CollisionContactResolveScale = 0.2f;
-Player_UnderwaterFxPass3Ui g_Player_UnderwaterFxPass3Ui = {0};
-Player_ProjectileCameraFxPass3Ui g_Player_State7FxPass3Ui = {0};
+Player_UnderwaterFxPass3Ui g_Player_UnderwaterFxPass3Ui;
+Player_ProjectileCameraFxPass3Ui g_Player_State7FxPass3Ui;
 OptCatalogEntryDef *g_Player_MakeHotOptEntry = 0;
 OptCatalogEntryDef *g_Player_MakeColdOptEntry = 0;
 zEffectAnimEntry *g_Player_BftSplashAnimEntry = 0;

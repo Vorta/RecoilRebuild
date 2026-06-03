@@ -93,12 +93,6 @@ const char *kZeffAnimRunSourceFile = "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_
 const char *kZeffInitSourceFile = "D:\\Proj\\GameZRecoil\\zEffect\\zeff_init.c";
 const char *kAnimationNodeNotFoundMessage =
     "Animation node not found.\n  Animation: %s; Node: %s\n";
-void *const kSaveActivationRecordsProc = (void *)(0x00460490);
-void *const kLoadActivationRecordsProc = (void *)(0x004606d0);
-void *const kSaveRunningAnimRecordsProc = (void *)(0x00460f80);
-void *const kLoadRunningAnimRecordsProc = (void *)(0x00461040);
-void *const kSaveAnimRecordsProc = (void *)(0x00461430);
-void *const kLoadAnimRecordsProc = (void *)(0x00461670);
 
 void FreeIfSet(
     void *ptr
@@ -5195,22 +5189,22 @@ RECOIL_NOINLINE int RECOIL_CDECL Init() {
     if (g_zEffectAnim_EnableZarRegistration != 0) {
         zUtil_ZAR::RegisterSectionHandler(
             g_zEffectAnim_ZarSectionName_AnimActivation,
-            kSaveActivationRecordsProc,
-            kLoadActivationRecordsProc,
+            (zZbdSectionCallback)(&SaveActivationRecords),
+            (zZbdSectionCallback)(&LoadActivationRecords),
             0x32,
             0
         );
         zUtil_ZAR::RegisterSectionHandler(
             g_zEffectAnim_ZarSectionName_RunningAnim,
-            kSaveRunningAnimRecordsProc,
-            kLoadRunningAnimRecordsProc,
+            (zZbdSectionCallback)(&SaveRunningAnimRecords),
+            (zZbdSectionCallback)(&LoadRunningAnimRecords),
             0x33,
             0
         );
         zUtil_ZAR::RegisterSectionHandler(
             g_zEffectAnim_ZarSectionName_Anim,
-            kSaveAnimRecordsProc,
-            kLoadAnimRecordsProc,
+            (zZbdSectionCallback)(&SaveAnimRecords),
+            (zZbdSectionCallback)(&LoadAnimRecords),
             0x34,
             0
         );

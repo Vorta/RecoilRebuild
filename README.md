@@ -53,13 +53,13 @@ Generated from `.agent/RECOIL_PLAN.md`.
 
 | Progress marker | Count | Percent |
 | --- | ---: | ---: |
-| Reconstructed entries | 2715/3917 | 69.3% |
-| Partially reconstructed entries | 1202/3917 | 30.7% |
-| Source-ready entries | 3814/3917 | 97.4% |
-| Reimplemented authored functions | 3473/3917 | 88.7% |
-| Tier B+ authored functions | 3464/3917 | 88.4% |
-| Tier S authored functions | 392/3917 | 10.0% |
-| Accepted provider boundaries | 341/3917 | 8.7% |
+| Reconstructed entries | 2745/3917 | 70.1% |
+| Partially reconstructed entries | 1172/3917 | 29.9% |
+| Source-ready entries | 3917/3917 | 100.0% |
+| Reimplemented authored functions | 3556/3556 | 100.0% |
+| Tier B+ authored functions | 3556/3556 | 100.0% |
+| Tier S authored functions | 424/3556 | 11.9% |
+| Accepted provider boundaries | 361/361 | 100.0% |
 <!-- RECOIL_PROGRESS:END -->
 
 Reconstruction is ongoing. Some subsystems have source-level implementations

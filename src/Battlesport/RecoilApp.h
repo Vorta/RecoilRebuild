@@ -3,25 +3,20 @@
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 
+#include "Battlesport/Mfc42Abi.h"
+#include "GameZRecoil/zFMV/fmv.h"
 #include "recoil/recoil_callconv.h"
 
-typedef unsigned int RecoilPtr32;
-typedef unsigned int RecoilFn32;
+typedef recoil::Ptr32 RecoilPtr32;
+typedef recoil::Fn32 RecoilFn32;
 
-const RecoilPtr32 kRecoilApp_VtblAddress = 0x004d09e0;
-const RecoilPtr32 kRecoilApp_MpExitDialogState_VtblAddress = 0x004d0aa0;
-const RecoilPtr32 kRecoilApp_LeaveNetworkState_VtblAddress = 0x004d0ac8;
-const RecoilPtr32 kRecoilApp_MainMenuPrepState_VtblAddress = 0x004d0af0;
-const RecoilPtr32 kRecoilApp_IntroFmvState_VtblAddress = 0x004d0b18;
-const RecoilPtr32 kRecoilApp_AttractFmvState_VtblAddress = 0x004d0b40;
-const RecoilPtr32 kRecoilApp_MissionFmvState_VtblAddress = 0x004d0b68;
-const RecoilPtr32 kRecoilApp_PlayState_VtblAddress = 0x004d0b90;
-const RecoilPtr32 kRecoilStateBase_VtblAddress = 0x004ccd50;
-const RecoilPtr32 kRecoilApp_MfcOleModule_VtblAddress = 0x004d2020;
+RECOIL_FORCEINLINE RecoilPtr32 RecoilSymbolPtr32(
+    const void *symbol
+) {
+    return (RecoilPtr32)((unsigned int)(symbol));
+}
 
-// Partial 32-bit mirror of the app-owned state framework recovered in Binary Ninja.
-// Pointers and vtable slots stay as 32-bit scalars so the original PE offsets remain
-// valid even though the rebuild currently targets x64.
+// App-owned state transition request queued by RecoilApp::Run.
 enum RecoilApp_StateQueueKind {
     RecoilApp_StateQueueKind_ExitCurrent = 1,
     RecoilApp_StateQueueKind_PushState = 2,
@@ -33,6 +28,8 @@ enum RecoilAppMissionShutdownMode {
     RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY = 1,
 };
 
+// Compatibility table for app-state wrappers that have not yet been promoted
+// to ordinary virtual classes. The RecoilApp owner no longer uses these tables.
 struct RecoilApp_IState_Vtbl {
     RecoilFn32 ScalarDeletingDtor;
     RecoilFn32 OnWndActivate;
@@ -46,55 +43,33 @@ struct RecoilApp_IState_Vtbl {
     RecoilFn32 OnIdleOrDispatch;
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_IState_Vtbl) == 0x28);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilApp_IState_Vtbl,
-        OnCanBecomeCurrent
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilApp_IState_Vtbl,
-        OnUpdateShouldQuit
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilApp_IState_Vtbl,
-        OnExit
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilApp_IState_Vtbl,
-        OnDeactivate
-    ) == 0x18
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilApp_IState_Vtbl,
-        OnSuspend
-    ) == 0x1c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilApp_IState_Vtbl,
-        OnResume
-    ) == 0x20
-);
 
+extern RecoilApp_IState_Vtbl g_RecoilStateBase_Vtbl;
+
+// Authored app-state interface. Retail evidence shows constructor-owned state
+// objects with a common vptr at offset zero and lifecycle calls through that
+// table; the source model is a VC-era virtual interface, not copied table data.
 struct RecoilApp_IState {
-    RecoilPtr32 vftable; // RecoilApp_IState_Vtbl*
-
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RecoilApp_IState *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+    RECOIL_NOINLINE virtual RECOIL_THISCALL ~RecoilApp_IState();
+    virtual void RECOIL_THISCALL OnWndActivate(int activateCode);
+    virtual void RECOIL_THISCALL OnEnter();
+    virtual int RECOIL_THISCALL OnTryBecomeCurrent();
+    virtual int RECOIL_THISCALL OnUpdateShouldQuit();
+    virtual void RECOIL_THISCALL OnExit();
+    virtual void RECOIL_THISCALL OnDeactivate();
+    virtual void RECOIL_THISCALL OnSuspend(int suspendParam);
+    virtual void RECOIL_THISCALL OnResume(int resumeParam);
+    virtual int RECOIL_THISCALL OnIdleOrDispatch(
+        unsigned int wParam,
+        unsigned int lParam
+    );
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_IState) == 0x04);
 
 struct RecoilApp_StateQueueItem {
     unsigned int m_type;
     RecoilApp_StateQueueKind m_kind;
-    RecoilPtr32 m_stateObj; // RecoilApp_IState*
+    RecoilApp_IState *m_stateObj;
     int m_param;
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_StateQueueItem) == 0x10);
@@ -117,30 +92,21 @@ RECOIL_STATIC_ASSERT(
     ) == 0x0c
 );
 
+// VC5 deque-shaped app-state queue recovered from the queueing functions.
+// Retail stores 0x1000-byte chunks and a centered chunk-base list; queued
+// items themselves are consumed and deleted by RecoilApp::Run.
 struct RecoilApp_StateQueueBlock {
-    RecoilPtr32 m_chunkBegin;   // RecoilApp_StateQueueItem**
-    RecoilPtr32 m_chunkEnd;     // RecoilApp_StateQueueItem**
-    RecoilPtr32 m_cursor;       // RecoilApp_StateQueueItem**
-    RecoilPtr32 m_chunkPtrSlot; // RecoilApp_StateQueueItem***
+    RecoilApp_StateQueueItem **m_chunkBegin;
+    RecoilApp_StateQueueItem **m_chunkEnd;
+    RecoilApp_StateQueueItem **m_cursor;
+    RecoilApp_StateQueueItem ***m_chunkBaseSlot;
 
-    RecoilApp_StateQueueBlock *RECOIL_THISCALL InitFromCursor(
-        RecoilPtr32 cursor,
-        RecoilPtr32 chunkPtrSlot
+    RECOIL_NOINLINE RecoilApp_StateQueueBlock *RECOIL_THISCALL InitFromCursor(
+        RecoilApp_StateQueueItem **cursor,
+        RecoilApp_StateQueueItem ***chunkBaseSlot
     );
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_StateQueueBlock) == 0x10);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilApp_StateQueueBlock,
-        m_chunkBegin
-    ) == 0x00
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilApp_StateQueueBlock,
-        m_chunkEnd
-    ) == 0x04
-);
 RECOIL_STATIC_ASSERT(
     offsetof(
         RecoilApp_StateQueueBlock,
@@ -150,19 +116,26 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         RecoilApp_StateQueueBlock,
-        m_chunkPtrSlot
+        m_chunkBaseSlot
     ) == 0x0c
 );
 
 struct RecoilApp_StateQueue {
-    int m_ctorTag_00;
+    int m_allocatorPad;
     RecoilApp_StateQueueBlock m_readBlock;
     RecoilApp_StateQueueBlock m_writeBlock;
-    RecoilPtr32 m_chunkPtrList; // RecoilApp_StateQueueItem***
-    int m_chunkPtrCapacity;
+    RecoilApp_StateQueueItem ***m_chunkBaseList;
+    int m_chunkBaseCapacity;
     int m_itemCount;
 
-    RecoilPtr32 RECOIL_THISCALL GrowAndCenterChunkBaseList(int newCapacity);
+    RECOIL_NOINLINE RecoilApp_StateQueueItem ***RECOIL_THISCALL
+    GrowAndCenterChunkBaseList(
+        int newCapacity
+    );
+    RECOIL_FORCEINLINE bool Empty() const;
+    RECOIL_FORCEINLINE RecoilApp_StateQueueItem *Front() const;
+    RECOIL_FORCEINLINE void PopFront();
+    RECOIL_FORCEINLINE void PushBack(RecoilApp_StateQueueItem *const &item);
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_StateQueue) == 0x30);
 RECOIL_STATIC_ASSERT(
@@ -180,14 +153,8 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         RecoilApp_StateQueue,
-        m_chunkPtrList
+        m_chunkBaseList
     ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilApp_StateQueue,
-        m_chunkPtrCapacity
-    ) == 0x28
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -196,66 +163,53 @@ RECOIL_STATIC_ASSERT(
     ) == 0x2c
 );
 
-struct zMfcMsgMapEntry {
-    int nMessage;
-    int nCode;
-    int nID;
-    int nLastID;
-    int nSig;
-    RecoilFn32 pfn;
-};
-RECOIL_STATIC_ASSERT(sizeof(zMfcMsgMapEntry) == 0x18);
-
-struct MfcMsgMap {
-    RecoilFn32 getBaseMap;
-    RecoilPtr32 entries; // zMfcMsgMapEntry*
-};
-RECOIL_STATIC_ASSERT(sizeof(MfcMsgMap) == 0x08);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        MfcMsgMap,
-        entries
-    ) == 0x04
-);
-
-struct RecoilApp_AttractFmvState {
-    RecoilApp_IState base;
-    int _pad_04[3];
-    int m_fmv_10[8]; // zFMV_Script pending mirror in src/GameZRecoil/zFMV.
-    int m_clientRect_30[4];
-
-    RECOIL_NOINLINE RecoilApp_AttractFmvState *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
-    RECOIL_NOINLINE int RECOIL_THISCALL OnUpdateShouldQuit();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
-    RecoilApp_AttractFmvState *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
-};
-RECOIL_STATIC_ASSERT(sizeof(RecoilApp_AttractFmvState) == 0x40);
-
-struct RecoilApp_FmvState {
+struct RecoilApp_FmvState : RecoilApp_IState {
     RECOIL_NOINLINE int RECOIL_THISCALL OnIdleOrDispatch(
         unsigned int wParam,
         unsigned int lParam
     );
 };
+RECOIL_STATIC_ASSERT(sizeof(RecoilApp_FmvState) == 0x04);
 
-struct RecoilApp_IntroFmvState {
-    RecoilApp_IState base;
-    int m_stateData04;
-    int m_fmv_08[8]; // zFMV_Script pending mirror in src/GameZRecoil/zFMV.
+// Embedded FMV script member used by RecoilApp states. Retail state
+// constructors initialize this subobject before installing the final state vptr.
+struct RecoilApp_FmvScript : zFMV_Script {
+    RecoilApp_FmvScript() {
+        Init(
+            0,
+            0,
+            0
+        );
+    }
+};
+RECOIL_STATIC_ASSERT(sizeof(RecoilApp_FmvScript) == 0x20);
 
-    RECOIL_NOINLINE RecoilApp_IntroFmvState *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
+struct RecoilApp_AttractFmvState : RecoilApp_FmvState {
+    int m_reservedForFmvScriptAlign[3];
+    RecoilApp_FmvScript m_fmv; // Embedded 0x20-byte FMV script subobject at retail offset 0x10.
+    int m_clientRect[4];
+
+    RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_AttractFmvState();
+    RECOIL_NOINLINE RECOIL_THISCALL ~RecoilApp_AttractFmvState();
     RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
     RECOIL_NOINLINE int RECOIL_THISCALL OnUpdateShouldQuit();
     RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
-    RecoilApp_IntroFmvState *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+};
+RECOIL_STATIC_ASSERT(sizeof(RecoilApp_AttractFmvState) == 0x40);
+
+struct RecoilApp_IntroFmvState : RecoilApp_FmvState {
+    int m_stateData04;
+    RecoilApp_FmvScript m_fmv; // Embedded 0x20-byte FMV script subobject at retail offset 0x08.
+
+    RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_IntroFmvState();
+    RECOIL_NOINLINE RECOIL_THISCALL ~RecoilApp_IntroFmvState();
+    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
+    RECOIL_NOINLINE int RECOIL_THISCALL OnUpdateShouldQuit();
+    RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_IntroFmvState) == 0x28);
 
-struct RecoilApp_MainMenuPrepState {
-    RecoilApp_IState base;
+struct RecoilApp_MainMenuPrepState : RecoilApp_IState {
     int m_stateData04;
 
     RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
@@ -263,39 +217,35 @@ struct RecoilApp_MainMenuPrepState {
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_MainMenuPrepState) == 0x08);
 
-struct RecoilApp_LeaveNetworkState {
-    RecoilApp_IState base;
+struct RecoilApp_LeaveNetworkState : RecoilApp_IState {
     int m_stateData04;
 
     RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_LeaveNetworkState) == 0x08);
 
-struct RecoilApp_MissionFmvState {
-    RecoilApp_IState base;
+struct RecoilApp_MissionFmvState : RecoilApp_FmvState {
     int m_missionId;
-    int m_fmv_08[8]; // zFMV_Script pending mirror in src/GameZRecoil/zFMV.
+    RecoilApp_FmvScript m_fmv; // Embedded 0x20-byte FMV script subobject at retail offset 0x08.
     int m_skipMissionFmv;
     int m_reserved2c;
 
-    RECOIL_NOINLINE RecoilApp_MissionFmvState *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
+    RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_MissionFmvState();
+    RECOIL_NOINLINE RECOIL_THISCALL ~RecoilApp_MissionFmvState();
     RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
     RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
     RECOIL_NOINLINE int RECOIL_THISCALL OnUpdateShouldQuit();
-    RecoilApp_MissionFmvState *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_MissionFmvState) == 0x30);
 
-struct RecoilApp_PlayState {
-    RecoilApp_IState base;
-    RecoilPtr32 pWindowSection; // zOpt_ViewRectSection*
-    RecoilPtr32 pDisplaySection;
-    RecoilPtr32 pRenderSection;
-    int m_transitionScratch_10;
-    RecoilPtr32 pPendingLoadGameStartPath; // char*
+struct RecoilApp_PlayState : RecoilApp_IState {
+    void *pWindowSection; // zOpt_ViewRectSection*
+    void *pDisplaySection;
+    void *pRenderSection;
+    int m_transitionScratch;
+    char *pPendingLoadGameStartPath;
 
-    RECOIL_NOINLINE RecoilApp_PlayState *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_PlayState();
     RECOIL_NOINLINE void RECOIL_THISCALL OnWndActivate(int bActivate);
     RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
     RECOIL_NOINLINE int RECOIL_THISCALL TickAndRenderFrame(int shouldPresent);
@@ -305,8 +255,7 @@ struct RecoilApp_PlayState {
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_PlayState) == 0x18);
 
-struct RecoilApp_MpExitDialogState {
-    RecoilApp_IState base;
+struct RecoilApp_MpExitDialogState : RecoilApp_IState {
     int m_stateData04;
 
     RECOIL_NOINLINE void RECOIL_THISCALL OnEnter();
@@ -319,56 +268,53 @@ RECOIL_STATIC_ASSERT(sizeof(RecoilApp_MpExitDialogState) == 0x08);
 struct CZRecoilFrame;
 struct tagMSG;
 
-struct RecoilApp {
-    RecoilPtr32 vftable; // RecoilApp_Vtbl*
-    int _pad_04[7];
-    RecoilPtr32 m_pMainWnd; // CZRecoilFrame*
-    int _pad_24[2];
-    RecoilPtr32 m_mainThreadHandle_2c;
-    int _pad_30;
-    int m_msg_34[7]; // tagMSG raw storage.
-    int _pad_50[7];
-    RecoilPtr32 m_hInstance_6c;
-    int _pad_70[21];
-    RecoilPtr32 m_pendingState_0c4; // RecoilApp_IState*
-    int m_currentStateIndex_0c8;
-    int _pad_0cc;
-    int m_skipWait_0d0;
+// Authored MFC app shell recovered from the message map, constructor,
+// destructor, and run-state host. MFC base behavior stays provider-owned.
+class RecoilApp : public CWinApp {
+  public:
+#if !defined(_AFXDLL)
+    int m_recoilPad;
+#endif
+    RecoilApp_IState *m_pendingState;
+    int m_currentStateIndex;
+    int m_stateHostReserved;
+    int m_skipWait;
     RecoilAppMissionShutdownMode m_missionShutdownMode;
-    RecoilPtr32 m_stateStack_0d8[16]; // RecoilApp_IState*
-    RecoilApp_StateQueue m_stateQueue_118;
+    RecoilApp_IState *m_stateStack[16];
+    RecoilApp_StateQueue m_stateQueue;
     int m_reserved148;
     int m_skipIntroFmv;
-    float m_transitionFadeTimer150;
-    int _pad_154[3];
-    RecoilApp_AttractFmvState m_attractFmvState_160;
-    RecoilApp_IntroFmvState m_introFmvState_1a0;
-    RecoilApp_MainMenuPrepState m_mainMenuPrepState_1c8;
-    RecoilApp_LeaveNetworkState m_leaveNetworkState_1d0;
-    RecoilApp_MissionFmvState m_missionFmvState_1d8;
-    RecoilApp_PlayState m_playState_208;
-    RecoilApp_MpExitDialogState m_mpExitDialogState_220;
+    float m_transitionFadeTimer;
+    int m_transitionReserved[3];
+    RecoilApp_AttractFmvState m_attractFmvState;
+    RecoilApp_IntroFmvState m_introFmvState;
+    RecoilApp_MainMenuPrepState m_mainMenuPrepState;
+    RecoilApp_LeaveNetworkState m_leaveNetworkState;
+    RecoilApp_MissionFmvState m_missionFmvState;
+    RecoilApp_PlayState m_playState;
+    RecoilApp_MpExitDialogState m_mpExitDialogState;
 
-    RECOIL_NOINLINE static void RECOIL_CDECL StaticInitAndRegisterAtExit();
-    RECOIL_NOINLINE static RecoilApp *RECOIL_CDECL StaticInit();
-    RECOIL_NOINLINE static void RECOIL_CDECL RegisterAtExit();
-    RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
+    RECOIL_NOINLINE RECOIL_THISCALL RecoilApp();
+    RECOIL_NOINLINE RECOIL_THISCALL ~RecoilApp();
     RECOIL_NOINLINE RECOIL_NO_GS static void RECOIL_FASTCALL InitStdLogFiles(const char *exePath);
     RECOIL_NOINLINE RECOIL_NO_GS static void RECOIL_FASTCALL FatalErrorAndExit(int errorCode);
 
-    RECOIL_NOINLINE RecoilApp *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE RecoilApp *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
     RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_THISCALL InitInstance();
     RECOIL_NOINLINE int RECOIL_THISCALL Run();
     RECOIL_NOINLINE int RECOIL_THISCALL ExitInstance();
-    RECOIL_NOINLINE CZRecoilFrame *RECOIL_THISCALL CreateMainWnd();
+    virtual void RECOIL_THISCALL OnAppActivate();
+    virtual void RECOIL_THISCALL OnAppDeactivate();
+    RECOIL_NOINLINE RECOIL_NO_GS virtual int RECOIL_THISCALL StartEngine(HWND hwnd);
+    RECOIL_NOINLINE virtual void RECOIL_THISCALL ShutdownEngine();
+    virtual int RECOIL_THISCALL OnIdleOrDispatch(
+        unsigned int wParam,
+        unsigned int lParam
+    );
+    RECOIL_NOINLINE virtual CZRecoilFrame *RECOIL_THISCALL CreateMainWnd();
     RECOIL_NOINLINE int RECOIL_THISCALL InitMainWindow();
-    RECOIL_NOINLINE int RECOIL_THISCALL EngineInit(RecoilPtr32 hwnd);
-    RECOIL_NOINLINE static int RECOIL_FASTCALL InitializeDisplay(RecoilPtr32 hwnd);
-    RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_THISCALL StartEngine(RecoilPtr32 hwnd);
+    RECOIL_NOINLINE int RECOIL_THISCALL EngineInit(HWND hwnd);
+    RECOIL_NOINLINE static int RECOIL_FASTCALL InitializeDisplay(HWND hwnd);
     RECOIL_NOINLINE int RECOIL_THISCALL ActivateExistingInstance();
-    RECOIL_NOINLINE void RECOIL_THISCALL ShutdownEngine();
     RECOIL_NOINLINE int RECOIL_THISCALL LoadZbdAndStartEngine();
     RECOIL_NOINLINE int RECOIL_THISCALL LoadZbdAndSetupSensorTracker(
         int missionId,
@@ -376,60 +322,49 @@ struct RecoilApp {
         int skipIntroFmvMode,
         int missionFlags
     );
-    RECOIL_NOINLINE static int RECOIL_CDECL ShutdownSubsystems();
-    RECOIL_NOINLINE RecoilApp *RECOIL_THISCALL MfcOleModuleConstructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL MfcOleModuleDestructor();
-    RecoilApp *RECOIL_THISCALL MfcOleModuleScalarDeletingDestructor(unsigned int flags);
-    RecoilPtr32 RECOIL_THISCALL QueuePushState(
+    RECOIL_NOINLINE void RECOIL_THISCALL ShutdownSubsystems();
+    RecoilApp_IState *RECOIL_THISCALL QueuePushState(
         RecoilApp_IState *state,
         int suspendParam
     );
-    RecoilPtr32 RECOIL_THISCALL QueueSwitchCurrentState(
+    RecoilApp_IState *RECOIL_THISCALL QueueSwitchCurrentState(
         RecoilApp_IState *state,
         int stateParam
     );
-    RecoilPtr32 RECOIL_THISCALL QueueExitCurrentState(int stateParam);
+    RecoilApp_IState *RECOIL_THISCALL QueueExitCurrentState(int stateParam);
     RECOIL_NOINLINE int RECOIL_THISCALL StartEngineAndQueueStartupState();
-    int RECOIL_THISCALL OnIdleOrDispatch(
-        unsigned int wParam,
-        unsigned int lParam
-    );
     RECOIL_NOINLINE int RECOIL_THISCALL PreTranslateMessage(tagMSG *msg);
-    const MfcMsgMap *RECOIL_THISCALL GetMessageMap() const;
-    RECOIL_NOINLINE RecoilPtr32 RECOIL_THISCALL GetMainWnd() const;
-    RecoilPtr32 RECOIL_THISCALL GetCurrentState() const;
+    static const AFX_MSGMAP *RECOIL_STDCALL GetBaseMessageMapForMfc();
+    const AFX_MSGMAP *RECOIL_THISCALL GetMessageMap() const;
+    RECOIL_NOINLINE CZRecoilFrame *RECOIL_THISCALL GetMainWnd() const;
+    RECOIL_NOINLINE RecoilApp_IState *RECOIL_THISCALL GetCurrentState() const;
     int RECOIL_THISCALL TakeSkipWaitMessage();
     int RECOIL_THISCALL MarkSkipWaitMessage();
 };
+#if defined(_MSC_VER) && _MSC_VER < 1300 && defined(_M_IX86)
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp) == 0x228);
 RECOIL_STATIC_ASSERT(
     offsetof(
         RecoilApp,
-        m_hInstance_6c
-    ) == 0x06c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilApp,
-        m_pendingState_0c4
+        m_pendingState
     ) == 0x0c4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         RecoilApp,
-        m_currentStateIndex_0c8
+        m_currentStateIndex
     ) == 0x0c8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         RecoilApp,
-        m_stateStack_0d8
+        m_stateStack
     ) == 0x0d8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         RecoilApp,
-        m_stateQueue_118
+        m_stateQueue
     ) == 0x118
 );
 RECOIL_STATIC_ASSERT(
@@ -441,22 +376,23 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         RecoilApp,
-        m_transitionFadeTimer150
+        m_transitionFadeTimer
     ) == 0x150
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         RecoilApp,
-        m_attractFmvState_160
+        m_attractFmvState
     ) == 0x160
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         RecoilApp,
-        m_mpExitDialogState_220
+        m_mpExitDialogState
     ) == 0x220
 );
+#endif
 
 extern RecoilApp g_RecoilApp;
-extern const zMfcMsgMapEntry g_RecoilApp_MessageEntries[1];
-extern const MfcMsgMap g_RecoilApp_MessageMap;
+extern const AFX_MSGMAP_ENTRY g_RecoilApp_MessageEntries[1];
+extern const AFX_MSGMAP g_RecoilApp_MessageMap;

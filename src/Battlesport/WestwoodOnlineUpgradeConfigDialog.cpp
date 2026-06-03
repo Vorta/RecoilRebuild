@@ -4,7 +4,6 @@
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zLoc/zLoc.h"
 
-#include <new>
 #include <string.h>
 
 // Access shim for imported MFC42 CDialog members; this does not reimplement
@@ -138,16 +137,17 @@ WestwoodOnlineUpgradeConfigDialog::Constructor(
     new (&m_reservedString) CString();
     new (&m_connectStringEditText) CString();
 
-    for (int index = 0; index < 2; ++index) {
+    int index;
+    for (index = 0; index < 2; ++index) {
         new (&m_savedPlayerNames[index]) CString();
     }
-    for (int index = 0; index < 2; ++index) {
+    for (index = 0; index < 2; ++index) {
         new (&m_savedConnectStrings[index]) CString();
     }
-    for (int index = 0; index < 2; ++index) {
+    for (index = 0; index < 2; ++index) {
         new (&m_profilePlayerNames[index]) CString();
     }
-    for (int index = 0; index < 2; ++index) {
+    for (index = 0; index < 2; ++index) {
         new (&m_profileConnectStrings[index]) CString();
     }
 
@@ -159,16 +159,17 @@ WestwoodOnlineUpgradeConfigDialog::Constructor(
 // Reimplements 0x4418b0: WestwoodOnlineUpgradeConfigDialog::Destructor
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiConfigDialog.cpp)
 RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL WestwoodOnlineUpgradeConfigDialog::Destructor() {
-    for (int index = 1; index >= 0; --index) {
+    int index;
+    for (index = 1; index >= 0; --index) {
         m_profileConnectStrings[index].CString::~CString();
     }
-    for (int index = 1; index >= 0; --index) {
+    for (index = 1; index >= 0; --index) {
         m_profilePlayerNames[index].CString::~CString();
     }
-    for (int index = 1; index >= 0; --index) {
+    for (index = 1; index >= 0; --index) {
         m_savedConnectStrings[index].CString::~CString();
     }
-    for (int index = 1; index >= 0; --index) {
+    for (index = 1; index >= 0; --index) {
         m_savedPlayerNames[index].CString::~CString();
     }
     m_connectStringEditText.CString::~CString();

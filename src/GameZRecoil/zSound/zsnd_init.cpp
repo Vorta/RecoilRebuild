@@ -12,7 +12,7 @@ extern "C" LPDIRECTSOUND g_zSnd_BackendDevice = 0;
 extern "C" LPDIRECTSOUNDBUFFER g_zSnd_BackendListenerHandle = 0;
 extern "C" DSCAPS g_zSnd_BackendAuxHandleOrConfig = {0};
 extern "C" LPDIRECTSOUND g_zSnd_CachedDirectSound = 0;
-extern "C" LPCGUID g_zSnd_CachedDirectSoundGuid = 0;
+extern "C" LPGUID g_zSnd_CachedDirectSoundGuid = 0;
 extern "C" int g_zSnd_PreInitialized = 0;
 extern "C" int g_zSnd_SoundLodDefault = 0;
 extern "C" void *g_zSnd_SoundLodValuePtr = 0;
@@ -606,7 +606,7 @@ RECOIL_NOINLINE int RECOIL_CDECL HasMmxMixerSupport() {
 
 // Reimplements 0x4b2f50: zSnd::AcquireCachedDirectSound
 RECOIL_NOINLINE LPDIRECTSOUND RECOIL_FASTCALL AcquireCachedDirectSound(
-    LPCGUID deviceGuid
+    LPGUID deviceGuid
 ) {
     LPDIRECTSOUND cached = g_zSnd_CachedDirectSound;
     if (cached != 0) {

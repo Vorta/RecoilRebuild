@@ -1897,13 +1897,22 @@ namespace zClass_Class {
 
     // Reimplements 0x447a70: zClass_Class::FreeNodeToFreeList
     RECOIL_NOINLINE int RECOIL_FASTCALL FreeNodeToFreeList(zClass_NodePartial * node) {
-        if (ReportNullNode(
-            0x28e,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x28e,
+                "Null node pointer."
+            );
             return 5;
         }
-        if (node->listCountB > 0 || node->listCountA > 0 || node->userDataOrDiRef != 0) {
+        if (node->listCountB > 0) {
+            return 1;
+        }
+        if (node->listCountA > 0) {
+            return 1;
+        }
+        if (node->userDataOrDiRef != 0) {
             return 1;
         }
 

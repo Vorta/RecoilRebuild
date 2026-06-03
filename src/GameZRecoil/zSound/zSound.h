@@ -587,7 +587,7 @@ RECOIL_NOINLINE float RECOIL_STDCALL MulGlobalVolumeScaleAndGetPrev(float scale)
 RECOIL_NOINLINE float RECOIL_STDCALL SetGlobalVolumeScale(float scale);
 RECOIL_NOINLINE void RECOIL_FASTCALL SetFlag10PlaybackEnabled(int enabled);
 RECOIL_NOINLINE int RECOIL_CDECL HasMmxMixerSupport();
-RECOIL_NOINLINE LPDIRECTSOUND RECOIL_FASTCALL AcquireCachedDirectSound(LPCGUID deviceGuid);
+RECOIL_NOINLINE LPDIRECTSOUND RECOIL_FASTCALL AcquireCachedDirectSound(LPGUID deviceGuid);
 RECOIL_NOINLINE void RECOIL_CDECL ReleaseCachedDirectSound();
 RECOIL_NOINLINE HRESULT RECOIL_FASTCALL CachedDirectSound_GetCaps(DSCAPS *caps);
 } // namespace zSnd

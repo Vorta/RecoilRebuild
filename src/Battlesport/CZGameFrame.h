@@ -15,28 +15,10 @@
 #define RECOIL_GAME_FRAME_NOINLINE
 #endif
 
-struct CZGameFrameApp;
-
-struct CZGameFrameAppVtable {
-    unsigned char reserved000[0xa4];
-    void(RECOIL_THISCALL *OnAppActivate)(CZGameFrameApp *self);
-    void(RECOIL_THISCALL *OnAppDeactivate)(CZGameFrameApp *self);
-    unsigned char reserved0ac[0x08];
-    int(RECOIL_THISCALL *OnIdleOrDispatch)(
-        CZGameFrameApp *self,
-        unsigned int wParam,
-        unsigned int lParam
-    );
-};
-
-struct CZGameFrameApp {
-    CZGameFrameAppVtable *vftable;
-};
-
 // Authored Recoil game frame reconstructed over imported MFC42 CFrameWnd and
 // GDI providers; MFC base behavior is not reimplemented here.
 struct CZGameFrame : CFrameWnd {
-    CZGameFrameApp *m_app;
+    RecoilApp *m_app;
     CBitmap m_gameBitmap;
 
     static CRuntimeClass classCZGameFrame;
@@ -83,24 +65,6 @@ RECOIL_STATIC_ASSERT(
         CGdiObject,
         m_hObject
     ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZGameFrameAppVtable,
-        OnAppActivate
-    ) == 0x0a4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZGameFrameAppVtable,
-        OnAppDeactivate
-    ) == 0x0a8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZGameFrameAppVtable,
-        OnIdleOrDispatch
-    ) == 0x0b4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(

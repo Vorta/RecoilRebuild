@@ -31,6 +31,34 @@ RECOIL_NOINLINE zImage_TexDirEntryPartial *RECOIL_CDECL GetDefaultImageRefPtr() 
     return (zImage_TexDirEntryPartial *)(&g_zImage_DefaultImagePtr);
 }
 
+// Hardware renderers need a real image for the default texture record; standalone
+// tools provide the same fallback callback path used by pending texture loads.
+RECOIL_NOINLINE zVideo_TextureRecordPartial *RECOIL_CDECL CreateDefaultTextureRecord() {
+    zVidImagePartial *image = &zVid_Image::g_zImage_DefaultImage;
+    int releaseImage = 0;
+    if (g_zImage_pfnCreateFallbackImage != 0) {
+        zVidImagePartial *fallbackImage = g_zImage_pfnCreateFallbackImage(
+            g_zImage_DefaultTextureName
+        );
+        if (fallbackImage != 0) {
+            image = fallbackImage;
+            releaseImage = 1;
+        }
+    }
+
+    g_zImage_DefaultTextureRecord = g_zVideo_pfnCreateTextureRecord(
+        g_zImage_DefaultTextureName,
+        image,
+        image->formatFlagsPacked & 2,
+        image->textureAddressFlagsPacked & 1,
+        (image->textureAddressFlagsPacked >> 1) & 1
+    );
+    if (releaseImage != 0) {
+        zVid_Image::Destroy(image);
+    }
+    return g_zImage_DefaultTextureRecord;
+}
+
 // Reimplements 0x46d550: zImage::InitTextureDirectory
 // (GameZRecoil/zImage/zimg_texture.cpp)
 RECOIL_NOINLINE int RECOIL_CDECL InitTextureDirectory() {
@@ -42,13 +70,7 @@ RECOIL_NOINLINE int RECOIL_CDECL InitTextureDirectory() {
     );
 
     if (g_zVideo_ActiveRendererPath != 0) {
-        g_zImage_DefaultTextureRecord = g_zVideo_pfnCreateTextureRecord(
-            g_zImage_DefaultTextureName,
-            &zVid_Image::g_zImage_DefaultImage,
-            0,
-            0,
-            0
-        );
+        CreateDefaultTextureRecord();
     }
 
     return 1;

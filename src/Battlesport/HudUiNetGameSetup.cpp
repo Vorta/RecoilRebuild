@@ -1,3 +1,4 @@
+#include "Battlesport/Mfc42Abi.h"
 #include "Battlesport/HudUiNetGameSetup.h"
 
 #include "Battlesport/CZRecoilFrame.h"
@@ -595,7 +596,7 @@ HudUiNetGameSetupPanel::ScalarDeletingDestructor(
 void RECOIL_THISCALL HudUiNetGameSetupPanel_CancelButton::OnActivate() {
     g_RecoilApp.QueueExitCurrentState(0);
     g_RecoilApp.QueueSwitchCurrentState(
-        &g_RecoilApp.m_leaveNetworkState_1d0.base,
+        &g_RecoilApp.m_leaveNetworkState,
         0
     );
     HudUiZrdWidget::OnActivate();

@@ -6,6 +6,9 @@ struct RecoilStateCredits {
     RecoilPtr32 dialog;
 
     RecoilStateCredits *RECOIL_THISCALL Constructor();
+    RECOIL_NOINLINE static void RECOIL_CDECL StaticInitAndRegisterAtExit();
+    RECOIL_NOINLINE static void RECOIL_CDECL StaticInit();
+    RECOIL_NOINLINE static void RECOIL_CDECL RegisterAtExit();
     RECOIL_NOINLINE void RECOIL_THISCALL OnWndActivate(int activateCode);
     RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
     RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
@@ -34,7 +37,7 @@ struct RecoilStateCreditsBaseVtableGuard {
     RecoilStateCredits *self;
 
     ~RecoilStateCreditsBaseVtableGuard() {
-        self->vftable = kRecoilStateBase_VtblAddress;
+        self->vftable = RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl);
     }
 };
 } // namespace
@@ -43,6 +46,25 @@ RecoilStateCredits g_RecoilStateCredits = {
     (RecoilPtr32)(unsigned int)&g_RecoilStateCredits_Vtbl,
     0,
 };
+
+// Reimplements 0x409950: RecoilStateCredits::StaticInitAndRegisterAtExit
+// (D:\Proj\Battlesport\RecoilStateCredits.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL RecoilStateCredits::StaticInitAndRegisterAtExit() {
+    g_RecoilStateCredits.Constructor();
+    StaticInit();
+}
+
+// Reimplements 0x409970: RecoilStateCredits::StaticInit
+// (D:\Proj\Battlesport\RecoilStateCredits.cpp)
+RECOIL_NOINLINE void RECOIL_CDECL RecoilStateCredits::StaticInit() {
+    atexit(RegisterAtExit);
+}
+
+// Reimplements 0x409980: RecoilStateCredits::RegisterAtExit
+// Retail name is the registered at-exit callback; it destroys the global credits state.
+RECOIL_NOINLINE void RECOIL_CDECL RecoilStateCredits::RegisterAtExit() {
+    g_RecoilStateCredits.~RecoilStateCredits();
+}
 
 // Reimplements 0x409990: RecoilStateCredits::Constructor
 // (D:\Proj\Battlesport\RecoilStateCredits.cpp)

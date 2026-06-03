@@ -45,21 +45,6 @@ CRuntimeClass *RECOIL_STDCALL GetCZGameFrameBaseRuntimeClass() {
     return (CRuntimeClass *)(&CFrameWnd::classCFrameWnd);
 }
 
-void CallStateWndActivate(
-    RecoilPtr32 stateValue,
-    unsigned int nState
-) {
-    RecoilApp_IState *const state = (RecoilApp_IState *)((unsigned int)(stateValue));
-    const RecoilApp_IState_Vtbl *const vtable =
-        (const RecoilApp_IState_Vtbl *)((unsigned int)(state->vftable));
-    RecoilStateWndActivateMethod const method =
-        (RecoilStateWndActivateMethod)((unsigned int)(vtable->OnWndActivate));
-    method(
-        state,
-        nState
-    );
-}
-
 void CallMfcCFrameWndDestructor(
     CFrameWnd *frame
 ) {
@@ -272,21 +257,17 @@ RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnActivate(
         bMinimized
     );
 
-    RecoilApp *const app = (RecoilApp *)(m_app);
-    const RecoilPtr32 currentState = app->GetCurrentState();
+    RecoilApp_IState *const currentState = m_app->GetCurrentState();
     if (currentState != 0) {
-        CallStateWndActivate(
-            currentState,
-            nState
-        );
+        currentState->OnWndActivate(nState);
     }
 
     if (nState == 0) {
-        m_app->vftable->OnAppDeactivate(m_app);
+        m_app->OnAppDeactivate();
         zInput::OnAppDeactivate();
         zGame::ReturnOnlyStub();
     } else {
-        m_app->vftable->OnAppActivate(m_app);
+        m_app->OnAppActivate();
         zInput::OnAppActivate();
         zVideo_RestoreIconicFullscreenWindowIfNeeded();
     }
@@ -320,8 +301,7 @@ RECOIL_GAME_FRAME_NOINLINE int RECOIL_THISCALL CZGameFrame::OnAppIdleDispatchMes
     unsigned int wParam,
     unsigned int lParam
 ) {
-    return m_app->vftable->OnIdleOrDispatch(
-        m_app,
+    return m_app->OnIdleOrDispatch(
         wParam,
         lParam
     );

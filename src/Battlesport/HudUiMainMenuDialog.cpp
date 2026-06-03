@@ -204,6 +204,8 @@ RECOIL_FORCEINLINE void BindButton(
     );
 }
 
+typedef void (HudUiZrdWidget::*HudUiMainMenuRefreshStateMethod)();
+
 void BindNewLoadQuit(
     HudUiMainMenuDialog *dialog,
     zReader::Node *loadedSection
@@ -495,6 +497,12 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(
 ) {
     InstallMainMenuDialogFTable(this);
 
+    // Preserves the VC5SP3 register lifetime observed in BN 0x414bc0 for the
+    // repeatedly bound save, load, and quit button subobjects.
+    HudUiMainMenuDialog_SaveButton *const saveButton = &saveGameButton;
+    HudUiMainMenuDialog_LoadButton *const loadButton = &loadGameButton;
+    HudUiMainMenuDialog_QuitButton *const quitButtonPtr = &quitButton;
+
     if (zOpt::GetNetworkEnabled() != 0) {
         zReader::Node *const loadedSection = LoadFromZrd(
             "dialog.zrd",
@@ -529,7 +537,7 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(
             BindButton(
                 this,
                 loadedSection,
-                &quitButton,
+                quitButtonPtr,
                 "QUIT"
             );
             FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
@@ -538,8 +546,9 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(
     }
 
     if (route != RECOIL_MAINMENU_ROUTE_FRONTEND) {
+        zInput_GameStateOrMapTablePartial *const gameState = g_GameStateOrMapTable;
         zUtil_PlayerStateStorage *const playerState =
-            (zUtil_PlayerStateStorage *)g_GameStateOrMapTable->playerState;
+            (zUtil_PlayerStateStorage *)gameState->playerState;
         if (playerState->lifecycleState == 4) {
             zReader::Node *const loadedSection = LoadFromZrd(
                 "dialog.zrd",
@@ -556,13 +565,13 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(
                 BindButton(
                     this,
                     loadedSection,
-                    &loadGameButton,
+                    loadButton,
                     "LOADGAME"
                 );
                 BindButton(
                     this,
                     loadedSection,
-                    &quitButton,
+                    quitButtonPtr,
                     "QUIT"
                 );
                 FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
@@ -583,13 +592,13 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(
                 BindButton(
                     this,
                     loadedSection,
-                    &saveGameButton,
+                    saveButton,
                     "SAVEGAME"
                 );
                 BindButton(
                     this,
                     loadedSection,
-                    &loadGameButton,
+                    loadButton,
                     "LOADGAME"
                 );
                 BindButton(
@@ -619,17 +628,17 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(
                 BindButton(
                     this,
                     loadedSection,
-                    &quitButton,
+                    quitButtonPtr,
                     "QUIT"
                 );
                 FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
             }
         }
 
-        saveGameButton.modeOrEnabled = CanSaveGame();
-        saveGameButton.RefreshState();
-        loadGameButton.modeOrEnabled = CanLoadGame();
-        loadGameButton.RefreshState();
+        saveButton->modeOrEnabled = CanSaveGame();
+        (saveButton->*((HudUiMainMenuRefreshStateMethod *)(&saveButton->base.ftable->slots[30]))[0])();
+        loadButton->modeOrEnabled = CanLoadGame();
+        (loadButton->*((HudUiMainMenuRefreshStateMethod *)(&loadButton->base.ftable->slots[30]))[0])();
         return;
     }
 
@@ -648,7 +657,7 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(
         BindButton(
             this,
             loadedSection,
-            &loadGameButton,
+            loadButton,
             "LOADGAME"
         );
         BindButton(
@@ -672,14 +681,14 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(
         BindButton(
             this,
             loadedSection,
-            &quitButton,
+            quitButtonPtr,
             "QUIT"
         );
         FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
     }
 
-    loadGameButton.modeOrEnabled = CanLoadGame();
-    loadGameButton.RefreshState();
+    loadButton->modeOrEnabled = CanLoadGame();
+    (loadButton->*((HudUiMainMenuRefreshStateMethod *)(&loadButton->base.ftable->slots[30]))[0])();
 }
 
 // Reimplements 0x415040: HudUiMainMenuDialog::~HudUiMainMenuDialog

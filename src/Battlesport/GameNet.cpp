@@ -2903,7 +2903,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt0C_HudTimerStatusBits(
         );
         g_HudTimerPanelNetState.timeWarningShown = 1;
         g_RecoilApp.QueueSwitchCurrentState(
-            &g_RecoilApp.m_mpExitDialogState_220.base,
+            &g_RecoilApp.m_mpExitDialogState,
             0
         );
     }
@@ -3011,7 +3011,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt0D_HudTimerPanelState(
     g_HudTimerPanelNetState.timeWarningShown = statusBits & 2;
     if (g_HudTimerPanelNetState.timeWarningShown != 0) {
         g_RecoilApp.QueueSwitchCurrentState(
-            &g_RecoilApp.m_mpExitDialogState_220.base,
+            &g_RecoilApp.m_mpExitDialogState,
             0
         );
     }
@@ -3426,9 +3426,9 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt14_HudTimerAndFlagsSync(
     );
     SetStatusBitsFromFlags(packet->statusFlags);
 
-    g_RecoilApp.m_missionFmvState_1d8.m_missionId = 0;
+    g_RecoilApp.m_missionFmvState.m_missionId = 0;
     g_RecoilApp.QueueSwitchCurrentState(
-        &g_RecoilApp.m_introFmvState_1a0.base,
+        &g_RecoilApp.m_introFmvState,
         0
     );
 

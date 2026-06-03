@@ -185,7 +185,7 @@ HudUiNetExitPanel *RECOIL_THISCALL HudUiNetExitPanel::ScalarDeletingDestructor(
 // Reimplements 0x41be70: HudUiNetExitPanel_ExitButton::OnActivate
 void RECOIL_THISCALL HudUiNetExitPanel_ExitButton::OnActivate() {
     g_RecoilApp.QueueSwitchCurrentState(
-        &g_RecoilApp.m_leaveNetworkState_1d0.base,
+        &g_RecoilApp.m_leaveNetworkState,
         0
     );
 }

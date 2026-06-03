@@ -473,6 +473,9 @@ struct HudWeatherFx : HudUiElement {
     zVideo_TextureRecordPartial *textureRecord;
 
     RECOIL_NOINLINE HudWeatherFx *RECOIL_THISCALL Constructor(int particleCount);
+    RECOIL_NOINLINE HudWeatherFx *RECOIL_THISCALL ScalarDeletingDestructor(
+        unsigned int flags
+    );
     RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
     RECOIL_NOINLINE void RECOIL_THISCALL ResetParticleSlot(
         int particleIndex,
@@ -506,6 +509,10 @@ struct HudWeatherFxSnow : HudWeatherFx {
     float emitDepth;
 
     RECOIL_NOINLINE HudWeatherFxSnow *RECOIL_THISCALL Constructor(int particleCount);
+    RECOIL_NOINLINE HudWeatherFxSnow *RECOIL_THISCALL ScalarDeletingDestructor(
+        unsigned int flags
+    );
+    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
     RECOIL_NOINLINE void RECOIL_THISCALL Update(float deltaSeconds);
 };
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxSnow) == 0x98);
@@ -522,6 +529,9 @@ struct HudWeatherFxRain : HudWeatherFx {
     float emitDepth;
 
     RECOIL_NOINLINE HudWeatherFxRain *RECOIL_THISCALL Constructor(int particleCount);
+    RECOIL_NOINLINE HudWeatherFxRain *RECOIL_THISCALL ScalarDeletingDestructor(
+        unsigned int flags
+    );
     RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
     RECOIL_NOINLINE void RECOIL_THISCALL Update(float deltaSeconds);
 };

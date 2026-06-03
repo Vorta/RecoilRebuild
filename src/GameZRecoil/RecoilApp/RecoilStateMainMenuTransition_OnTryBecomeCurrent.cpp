@@ -27,6 +27,13 @@ struct zFMV_ActionVirtual {
     void *reserved14;
 };
 
+// Models the HudUi dialog controller vtable prefix used by BN 0x415319 for
+// virtual SetEnabled dispatch after constructing the concrete main-menu dialog.
+struct HudUiMainMenuDialogVirtualDispatch {
+    virtual void RECOIL_THISCALL Update();
+    virtual void RECOIL_THISCALL SetEnabled(int enabled);
+};
+
 struct zFMV_ActionBlurStack : zFMV_ActionBlur {
     zFMV_ActionBlurStack(
         int framesRemaining,
@@ -93,16 +100,11 @@ RECOIL_NO_GS int RECOIL_THISCALL RecoilStateMainMenuTransition::OnTryBecomeCurre
 
     zSndSampleSet_InitByName("DIALOG");
 
-    HudUiMainMenuDialog *const storage =
-        (HudUiMainMenuDialog *) ::operator new(sizeof(HudUiMainMenuDialog));
-    HudUiMainMenuDialog *dialog = 0;
-    if (storage != 0) {
-        dialog = new (storage) HudUiMainMenuDialog(m_entryRoute);
-    }
+    HudUiMainMenuDialog *const dialog = new HudUiMainMenuDialog(m_entryRoute);
 
     m_mainMenuDialog = (RecoilPtr32)(unsigned int)dialog;
 
-    dialog->SetEnabled(1);
+    ((HudUiMainMenuDialogVirtualDispatch *)dialog)->SetEnabled(1);
 
     if (zSnd::GetCDAudioOption() != ZSND_CDAUDIO_DISABLED) {
         zSndCd::PlayTrackWithMode(

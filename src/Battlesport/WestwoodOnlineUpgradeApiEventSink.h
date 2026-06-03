@@ -7,6 +7,8 @@
 #include "recoil/recoil_callconv.h"
 #include "recoil/recoil_types.h"
 
+#include <unknwn.h>
+
 struct WestwoodOnlineUpgradeDownloadReadyEntry;
 struct WestwoodOnlineUpgradeBrowseRecord;
 struct WestwoodOnlineUpgradeSessionRequest;

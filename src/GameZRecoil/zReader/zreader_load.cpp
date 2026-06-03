@@ -483,6 +483,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ZRDR_GetFileSize(
 } // namespace zUtil
 
 // Reimplements 0x4a5e50: zUtil_ZRDR_ResolvePathInSearchPathList
+// Resolves a filename through the active or scratch ZRDR search-path list.
 extern "C" RECOIL_NOINLINE char *RECOIL_FASTCALL zUtil_ZRDR_ResolvePathInSearchPathList(
     zArchiveList *searchPathList,
     const char *filename
@@ -512,10 +513,16 @@ extern "C" RECOIL_NOINLINE char *RECOIL_FASTCALL zUtil_ZRDR_ResolvePathInSearchP
             zUtil_ZRDR_SearchPathContainsFilePredicate,
             g_zRdr_ResolvedPathBuf
         ));
-        if (matchedDir != 0) {
-            const size_t len = strlen(matchedDir);
-            if (len != 0 && matchedDir[len - 1] == '\\') {
-                matchedDir[len - 1] = '\0';
+        if (matchedDir == 0) {
+            zArchiveList *scratch = g_zRdr_ScratchSearchPathList;
+            if (scratch == 0 || list == scratch) {
+                return 0;
+            }
+
+            list = 0;
+        } else {
+            if (matchedDir[strlen(matchedDir) - 1] == '\\') {
+                matchedDir[strlen(matchedDir) - 1] = '\0';
             }
 
             sprintf(
@@ -527,13 +534,6 @@ extern "C" RECOIL_NOINLINE char *RECOIL_FASTCALL zUtil_ZRDR_ResolvePathInSearchP
             );
             return g_zRdr_ResolvedPathBuf;
         }
-
-        zArchiveList *scratch = g_zRdr_ScratchSearchPathList;
-        if (scratch == 0 || list == scratch) {
-            return 0;
-        }
-
-        list = 0;
     }
 }
 
@@ -926,35 +926,36 @@ RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::Init(
         0
     );
 
+    int initialized = file != INVALID_HANDLE_VALUE;
     hFile = file;
-    if (file != INVALID_HANDLE_VALUE) {
-        return LoadIndexFromTail();
+    if (initialized != 0) {
+        initialized = LoadIndexFromTail();
+    } else {
+        const DWORD lastError = GetLastError();
+        char *message;
+        FormatMessageA(
+            FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+            0,
+            lastError,
+            MAKELANGID(
+                LANG_NEUTRAL,
+                SUBLANG_DEFAULT
+            ),
+            (LPSTR)(&message),
+            0,
+            0
+        );
+        zError::ReportOld(
+            0x400,
+            "D:\\Proj\\GameZRecoil\\zUtil\\zutl_zar.cpp",
+            0x4c,
+            "GetLastError(0x%08x) : %s",
+            lastError,
+            message
+        );
+        LocalFree(message);
     }
-
-    const DWORD lastError = GetLastError();
-    char *message = 0;
-    FormatMessageA(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-        0,
-        lastError,
-        MAKELANGID(
-            LANG_NEUTRAL,
-            SUBLANG_DEFAULT
-        ),
-        (LPSTR)(&message),
-        0,
-        0
-    );
-    zError::ReportOld(
-        0x400,
-        "D:\\Proj\\GameZRecoil\\zUtil\\zutl_zar.cpp",
-        0x4c,
-        "GetLastError(0x%08x) : %s",
-        lastError,
-        message
-    );
-    LocalFree(message);
-    return 0;
+    return initialized;
 }
 
 // Reimplements 0x4a6270: zIndexArchive::OpenCreateWrite
@@ -1043,33 +1044,32 @@ RECOIL_NOINLINE void RECOIL_THISCALL zIndexArchive::FlushIndexToTail() {
 
 // Reimplements 0x4a63f0: zIndexArchive::LoadIndexFromTail
 RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::LoadIndexFromTail() {
-    HANDLE const file = (HANDLE)(hFile);
     if (GetFileSize(
-        file,
+        (HANDLE)(hFile),
         0
     ) < 8) {
         return 0;
     }
 
     SetFilePointer(
-        file,
+        (HANDLE)(hFile),
         -8,
         0,
         FILE_END
     );
 
-    DWORD numberOfBytesRead = 0;
-    unsigned int footerMagic = 0;
-    unsigned int recordCountFromTail = 0;
+    DWORD numberOfBytesRead;
+    unsigned int footerMagic;
+    unsigned int recordCountFromTail;
     ReadFile(
-        file,
+        (HANDLE)(hFile),
         &footerMagic,
         sizeof(footerMagic),
         &numberOfBytesRead,
         0
     );
     ReadFile(
-        file,
+        (HANDLE)(hFile),
         &recordCountFromTail,
         sizeof(recordCountFromTail),
         &numberOfBytesRead,
@@ -1083,20 +1083,20 @@ RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::LoadIndexFromTail() {
     EnsureCapacity(recordCountFromTail);
     const unsigned int bytesToRead = recordCountFromTail * sizeof(zZarFileRecord);
     SetFilePointer(
-        file,
+        (HANDLE)(hFile),
         -8 - (LONG)(bytesToRead),
         0,
         FILE_END
     );
     ReadFile(
-        file,
+        (HANDLE)(hFile),
         records,
         bytesToRead,
         &numberOfBytesRead,
         0
     );
     SetFilePointer(
-        file,
+        (HANDLE)(hFile),
         0,
         0,
         FILE_BEGIN
@@ -1196,7 +1196,7 @@ RECOIL_NOINLINE zZarFileRecord *RECOIL_THISCALL zIndexArchive::FindRecordByNameC
             filename,
             record->name
         ) == 0) {
-            return record;
+            return &records[i];
         }
     }
 
@@ -1239,7 +1239,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::ReadFileByName(
 
     const unsigned int availableBytes = *bufferSize;
     *bufferSize = record->fileSize;
-    if (record->fileSize > availableBytes) {
+    if (*bufferSize > availableBytes) {
         return 0x10002;
     }
 
@@ -1249,7 +1249,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::ReadFileByName(
         0,
         FILE_BEGIN
     );
-    DWORD bytesRead = 0;
+    DWORD bytesRead;
     ReadFile(
         (HANDLE)(hFile),
         buffer,
@@ -1462,13 +1462,15 @@ extern "C" RECOIL_NOINLINE void *RECOIL_FASTCALL zReader_OpenFileFromMountedArch
 
 namespace zReader {
 // Reimplements 0x4a5c20: zReader::FileExists
+// Uses the imported CRT `_access` provider and returns a 1/0 existence flag.
 RECOIL_NOINLINE int RECOIL_FASTCALL FileExists(
     const char *path
 ) {
-    return _access(
+    const int accessResult = _access(
         path,
         0
-    ) == 0 ? 1 : 0;
+    );
+    return accessResult == 0;
 }
 
 // Reimplements 0x48cd40: zReader::TryResolvePath
