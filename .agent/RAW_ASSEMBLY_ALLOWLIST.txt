@@ -9,3 +9,4 @@ src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b3550 __asm AP-485/BN 8086 FLAGS high-b
 src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b35a0 __asm AP-485/BN 80286 FLAGS high-bit probe; user-approved original-source raw assembly exception.
 src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b35f0 __asm AP-485/BN 80386 AC-flag probe; user-approved original-source raw assembly exception.
 src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b3640 __asm AP-485/BN inline CPUID vendor/family probe; extends user-approved zSys CPU raw assembly exception.
+src/native/recoil_build_anchor.cpp provider __asm User-approved VC6 x86 CPUID provider shim; required because VC6 predates the __cpuid intrinsic used by BN-backed zSys/zGame CPU probes.

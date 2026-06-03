@@ -8,9 +8,9 @@ per-target VC verification evidence.
 
 - `support/Recoil.exe` is the private immutable retail reference for PE,
   imports, resources, and final candidate comparison.
-- `support/sdk/DirectX_Aug2007` supplies repo-local DirectDraw, Direct3D
-  Immediate Mode, DirectSound, DirectInput, DirectPlay, and `dxguid` headers and
-  x86 libraries.
+- `support/sdk/DirectX6` supplies repo-local DirectDraw, Direct3D Immediate
+  Mode, DirectSound, DirectInput, DirectPlay, and `dxguid` headers and x86
+  libraries from the original-era DirectX 6 SDK.
 - `support/sdk/MFC42` supplies repo-local MFC42 headers, libraries, runtime DLL,
   and selected source evidence for MFC shell ABI work.
 - `tools/compiler_linker_profiles.json` records accepted compiler flag profiles;

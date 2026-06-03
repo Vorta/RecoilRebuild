@@ -8,7 +8,7 @@ extern "C" int recoil_state_base_scalar_deleting_destructor_smoke(void) {
         return 1;
     }
 
-    if (state.vftable != kRecoilStateBase_VtblAddress) {
+    if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl)) {
         return 2;
     }
 

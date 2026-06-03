@@ -1,3 +1,4 @@
+#include "Battlesport/Mfc42Abi.h"
 #include "GameZRecoil/wwonline/upgrade_download.h"
 
 #include "Battlesport/WestwoodOnlineUpgradeDialog.h"

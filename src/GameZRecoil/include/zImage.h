@@ -78,6 +78,7 @@ RECOIL_NOINLINE zImage_TexDirEntryPartial *RECOIL_FASTCALL FindTexDirEntryByName
     const char *baseName
 );
 RECOIL_NOINLINE zImage_TexDirEntryPartial *RECOIL_CDECL GetDefaultImageRefPtr();
+RECOIL_NOINLINE zVideo_TextureRecordPartial *RECOIL_CDECL CreateDefaultTextureRecord();
 RECOIL_NOINLINE int RECOIL_CDECL InitTextureDirectory();
 RECOIL_NOINLINE zImage_TexDirEntryPartial *RECOIL_FASTCALL TexDir_FindOrAppendByPath(char *path);
 RECOIL_NOINLINE int RECOIL_CDECL TexDir_LoadPendingEntries();

@@ -16,6 +16,10 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+extern "C" void(__cdecl *__imp__free)(void *); // VC5 retail import-pointer call shape.
+#endif
+
 extern "C" HWND g_RecoilApp_hWndMain = 0;
 
 extern "C" int g_zFMV_ActionImage_BlitRectX = 0;
@@ -37,10 +41,6 @@ typedef void(RECOIL_FASTCALL *zFMV_BltSwToPrimaryRectProc)(
     zVidRect32 *dstRect
 );
 typedef void(RECOIL_CDECL *zFMV_FlushProc)();
-const unsigned int k_zFMV_ActionImage_VtblAddress = 0x4d2598;
-const unsigned int k_zFMV_ActionFade_VtblAddress = 0x4d25b0;
-const unsigned int k_zFMV_ActionPlayAvi_VtblAddress = 0x4d25c8;
-const unsigned int k_zFMV_ActionPlayMci_VtblAddress = 0x4d25f8;
 const int k_zFMV_RendererBackendSoftware = 0;
 const int k_zFMV_RendererBackend3dfx = 2;
 const int k_zFMV_BlurModeHorizontal = 1;
@@ -103,6 +103,11 @@ T &FieldAt(
 }
 
 typedef void(RECOIL_THISCALL *zFMV_ImageEnsureSurfaceProc)(zVidImagePartial *image);
+
+struct zFMV_ActionScalarDeletingDestructorDispatch {
+    // Models slot-0 scalar-deleting destructor dispatch so VC emits ecx=this.
+    virtual zFMV_Action *ScalarDeletingDestructor(unsigned int flags);
+};
 
 char *DuplicateCString(
     const char *value
@@ -414,6 +419,214 @@ zFMV_Action_Vtbl MakePlaySoundActionVtable() {
     return vtable;
 }
 
+zFMV_Action_Vtbl MakeImageActionVtable() {
+    union DtorThunk {
+        zFMV_ActionImage *(RECOIL_THISCALL zFMV_ActionImage::*member)(unsigned int);
+        zFMV_Action *(RECOIL_THISCALL *function)(
+            zFMV_Action *,
+            unsigned int
+        );
+    };
+    union UpdateThunk {
+        int (RECOIL_THISCALL zFMV_ActionImage::*member)(double);
+        int(RECOIL_THISCALL *function)(
+            zFMV_Action *,
+            double
+        );
+    };
+    union BeginThunk {
+        void (RECOIL_THISCALL zFMV_ActionImage::*member)(double);
+        void(RECOIL_THISCALL *function)(
+            zFMV_Action *,
+            double
+        );
+    };
+    union EndThunk {
+        void (RECOIL_THISCALL zFMV_ActionImage::*member)();
+        void(RECOIL_THISCALL *function)(zFMV_Action *);
+    };
+    union RunBlockingThunk {
+        void (RECOIL_THISCALL zFMV_Action::*member)();
+        void(RECOIL_THISCALL *function)(zFMV_Action *);
+    };
+
+    DtorThunk dtor = {0};
+    dtor.member = &zFMV_ActionImage::ScalarDeletingDestructor;
+    UpdateThunk update = {0};
+    update.member = &zFMV_ActionImage::Update;
+    BeginThunk begin = {0};
+    begin.member = &zFMV_ActionImage::Begin;
+    EndThunk end = {0};
+    end.member = &zFMV_ActionImage::End;
+    RunBlockingThunk runBlocking = {0};
+    runBlocking.member = &zFMV_Action::RunBlockingTimed;
+    zFMV_Action_Vtbl vtable = {
+        dtor.function,
+        update.function,
+        begin.function,
+        end.function,
+        runBlocking.function,
+        0,
+    };
+    return vtable;
+}
+
+zFMV_Action_Vtbl MakeFadeActionVtable() {
+    union DtorThunk {
+        zFMV_Action *(RECOIL_THISCALL zFMV_Action::*member)(unsigned int);
+        zFMV_Action *(RECOIL_THISCALL *function)(
+            zFMV_Action *,
+            unsigned int
+        );
+    };
+    union UpdateThunk {
+        int (RECOIL_THISCALL zFMV_ActionFade::*member)(double);
+        int(RECOIL_THISCALL *function)(
+            zFMV_Action *,
+            double
+        );
+    };
+    union BeginThunk {
+        void (RECOIL_THISCALL zFMV_ActionFade::*member)(double);
+        void(RECOIL_THISCALL *function)(
+            zFMV_Action *,
+            double
+        );
+    };
+    union EndThunk {
+        void (RECOIL_THISCALL zFMV_ActionFade::*member)();
+        void(RECOIL_THISCALL *function)(zFMV_Action *);
+    };
+    union RunBlockingThunk {
+        void (RECOIL_THISCALL zFMV_Action::*member)();
+        void(RECOIL_THISCALL *function)(zFMV_Action *);
+    };
+
+    DtorThunk dtor = {0};
+    dtor.member = &zFMV_Action::DerivedScalarDeletingDestructor;
+    UpdateThunk update = {0};
+    update.member = &zFMV_ActionFade::Update;
+    BeginThunk begin = {0};
+    begin.member = &zFMV_ActionFade::Begin;
+    EndThunk end = {0};
+    end.member = &zFMV_ActionFade::End;
+    RunBlockingThunk runBlocking = {0};
+    runBlocking.member = &zFMV_Action::RunBlockingTimed;
+    zFMV_Action_Vtbl vtable = {
+        dtor.function,
+        update.function,
+        begin.function,
+        end.function,
+        runBlocking.function,
+        0,
+    };
+    return vtable;
+}
+
+zFMV_Action_Vtbl MakePlayAviActionVtable() {
+    union DtorThunk {
+        zFMV_ActionPlayAvi *(RECOIL_THISCALL zFMV_ActionPlayAvi::*member)(unsigned int);
+        zFMV_Action *(RECOIL_THISCALL *function)(
+            zFMV_Action *,
+            unsigned int
+        );
+    };
+    union UpdateThunk {
+        int (RECOIL_THISCALL zFMV_ActionPlayAvi::*member)(double);
+        int(RECOIL_THISCALL *function)(
+            zFMV_Action *,
+            double
+        );
+    };
+    union BeginThunk {
+        void (RECOIL_THISCALL zFMV_ActionPlayAvi::*member)(double);
+        void(RECOIL_THISCALL *function)(
+            zFMV_Action *,
+            double
+        );
+    };
+    union EndThunk {
+        void (RECOIL_THISCALL zFMV_ActionPlayAvi::*member)();
+        void(RECOIL_THISCALL *function)(zFMV_Action *);
+    };
+    union RunBlockingThunk {
+        void (RECOIL_THISCALL zFMV_Action::*member)();
+        void(RECOIL_THISCALL *function)(zFMV_Action *);
+    };
+
+    DtorThunk dtor = {0};
+    dtor.member = &zFMV_ActionPlayAvi::ScalarDeletingDestructor;
+    UpdateThunk update = {0};
+    update.member = &zFMV_ActionPlayAvi::Update;
+    BeginThunk begin = {0};
+    begin.member = &zFMV_ActionPlayAvi::Begin;
+    EndThunk end = {0};
+    end.member = &zFMV_ActionPlayAvi::End;
+    RunBlockingThunk runBlocking = {0};
+    runBlocking.member = &zFMV_Action::RunBlockingTimed;
+    zFMV_Action_Vtbl vtable = {
+        dtor.function,
+        update.function,
+        begin.function,
+        end.function,
+        runBlocking.function,
+        0,
+    };
+    return vtable;
+}
+
+zFMV_Action_Vtbl MakePlayMciActionVtable() {
+    union DtorThunk {
+        zFMV_ActionPlayMci *(RECOIL_THISCALL zFMV_ActionPlayMci::*member)(unsigned int);
+        zFMV_Action *(RECOIL_THISCALL *function)(
+            zFMV_Action *,
+            unsigned int
+        );
+    };
+    union UpdateThunk {
+        int (RECOIL_THISCALL zFMV_ActionPlayMci::*member)(double);
+        int(RECOIL_THISCALL *function)(
+            zFMV_Action *,
+            double
+        );
+    };
+    union BeginThunk {
+        void (RECOIL_THISCALL zFMV_ActionPlayMci::*member)(double);
+        void(RECOIL_THISCALL *function)(
+            zFMV_Action *,
+            double
+        );
+    };
+    union EndThunk {
+        void (RECOIL_THISCALL zFMV_ActionPlayMci::*member)();
+        void(RECOIL_THISCALL *function)(zFMV_Action *);
+    };
+    union RunBlockingThunk {
+        void (RECOIL_THISCALL zFMV_Action::*member)();
+        void(RECOIL_THISCALL *function)(zFMV_Action *);
+    };
+
+    DtorThunk dtor = {0};
+    dtor.member = &zFMV_ActionPlayMci::ScalarDeletingDestructor;
+    UpdateThunk update = {0};
+    update.member = &zFMV_ActionPlayMci::Update;
+    BeginThunk begin = {0};
+    begin.member = &zFMV_ActionPlayMci::Begin;
+    EndThunk end = {0};
+    end.member = &zFMV_ActionPlayMci::End;
+    RunBlockingThunk runBlocking = {0};
+    runBlocking.member = &zFMV_Action::RunBlockingTimed;
+    zFMV_Action_Vtbl vtable = {
+        dtor.function,
+        update.function,
+        begin.function,
+        end.function,
+        runBlocking.function,
+        0,
+    };
+    return vtable;
+}
+
 zReader::Node *ArrayBase(
     zReader::Node *node
 ) {
@@ -706,6 +919,10 @@ zFMV_Action_Vtbl g_zFMV_ActionPlaySound_Vtable = MakePlaySoundActionVtable();
 zFMV_Action_Vtbl g_zFMV_ActionBlur_Vtable = MakeBlurActionVtable();
 zFMV_Action_Vtbl g_zFMV_ActionBlurH_Vtable = MakeBlurHActionVtable();
 zFMV_Action_Vtbl g_zFMV_ActionBlurV_Vtable = MakeBlurVActionVtable();
+zFMV_Action_Vtbl g_zFMV_ActionImage_Vtable = MakeImageActionVtable();
+zFMV_Action_Vtbl g_zFMV_ActionFade_Vtable = MakeFadeActionVtable();
+zFMV_Action_Vtbl g_zFMV_ActionPlayAvi_Vtable = MakePlayAviActionVtable();
+zFMV_Action_Vtbl g_zFMV_ActionPlayMci_Vtable = MakePlayMciActionVtable();
 
 // Reimplements 0x415aa0: zFMV_Action::Destructor
 RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Action::Destructor() {
@@ -2101,7 +2318,11 @@ RECOIL_FMV_NOINLINE zFMV_Script *RECOIL_THISCALL zFMV_Script::Init(
 // Reimplements 0x462630: zFMV_Script::Cleanup
 void RECOIL_THISCALL zFMV_Script::Cleanup() {
     if (m_fmvPath != 0) {
+#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+        __imp__free(m_fmvPath);
+#else
         free(m_fmvPath);
+#endif
         m_fmvPath = 0;
     }
 
@@ -2116,10 +2337,11 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Script::Reset(
     if (destroyActions != 0) {
         while (action != 0) {
             zFMV_Action *const next = action->next;
-            action->vftable->ScalarDeletingDestructor(
-                action,
-                1
-            );
+            if (action != 0) {
+                ((zFMV_ActionScalarDeletingDestructorDispatch *)(action))->ScalarDeletingDestructor(
+                    1
+                );
+            }
             action = next;
         }
 
@@ -2333,7 +2555,7 @@ RECOIL_FMV_NOINLINE zFMV_ActionImage *RECOIL_THISCALL zFMV_ActionImage::Construc
 ) {
     next = 0;
     image = 0;
-    vftable = (zFMV_Action_Vtbl *)((unsigned int)(k_zFMV_ActionImage_VtblAddress));
+    vftable = &g_zFMV_ActionImage_Vtable;
     imagePath = DuplicateCString(path);
     doAdjustSurfaces = adjustSurfaces;
     g_zFMV_ActionImage_BlitRectY = blitY;
@@ -2352,7 +2574,7 @@ RECOIL_FMV_NOINLINE zFMV_ActionImage *RECOIL_THISCALL zFMV_ActionImage::Construc
     int adjustSurfaces
 ) {
     next = 0;
-    vftable = (zFMV_Action_Vtbl *)((unsigned int)(k_zFMV_ActionImage_VtblAddress));
+    vftable = &g_zFMV_ActionImage_Vtable;
     image = 0;
     imagePath = DuplicateCString(path);
     doAdjustSurfaces = adjustSurfaces;
@@ -2432,7 +2654,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionImage::End() {
 
 // Reimplements 0x4632a0: zFMV_ActionImage::Destructor
 RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionImage::Destructor() {
-    vftable = (zFMV_Action_Vtbl *)((unsigned int)(k_zFMV_ActionImage_VtblAddress));
+    vftable = &g_zFMV_ActionImage_Vtable;
     End();
     if (imagePath != 0) {
         free(imagePath);
@@ -2463,7 +2685,7 @@ RECOIL_FMV_NOINLINE zFMV_ActionFade *RECOIL_THISCALL zFMV_ActionFade::Constructo
     int alpha
 ) {
     next = 0;
-    vftable = (zFMV_Action_Vtbl *)((unsigned int)(k_zFMV_ActionFade_VtblAddress));
+    vftable = &g_zFMV_ActionFade_Vtable;
     fadeColorPacked16 = (unsigned short)(zVid_PackColorRGB(
         (unsigned char)(red),
         (unsigned char)(green),
@@ -2565,7 +2787,7 @@ RECOIL_FMV_NOINLINE zFMV_ActionPlayAvi *RECOIL_THISCALL zFMV_ActionPlayAvi::Cons
     int flags
 ) {
     next = 0;
-    vftable = (zFMV_Action_Vtbl *)((unsigned int)(k_zFMV_ActionPlayAvi_VtblAddress));
+    vftable = &g_zFMV_ActionPlayAvi_Vtable;
 
     const size_t rootLen = strlen(mediaRootPath);
     const size_t fileLen = strlen(mediaFileName);
@@ -2604,7 +2826,7 @@ RECOIL_FMV_NOINLINE zFMV_ActionPlayAvi *RECOIL_THISCALL zFMV_ActionPlayAvi::Cons
 
 // Reimplements 0x463670: zFMV_ActionPlayAvi::Destructor
 RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionPlayAvi::Destructor() {
-    vftable = (zFMV_Action_Vtbl *)((unsigned int)(k_zFMV_ActionPlayAvi_VtblAddress));
+    vftable = &g_zFMV_ActionPlayAvi_Vtable;
     if (mediaPath != 0) {
         free(mediaPath);
         mediaPath = 0;
@@ -2715,7 +2937,7 @@ RECOIL_FMV_NOINLINE zFMV_ActionPlayMci *RECOIL_THISCALL zFMV_ActionPlayMci::Cons
     HWND hwnd
 ) {
     next = 0;
-    vftable = (zFMV_Action_Vtbl *)((unsigned int)(k_zFMV_ActionPlayMci_VtblAddress));
+    vftable = &g_zFMV_ActionPlayMci_Vtable;
 
     const size_t rootLen = strlen(mediaRootPath);
     const size_t titleLen = strlen(playbackTitle);
@@ -2755,7 +2977,7 @@ RECOIL_FMV_NOINLINE zFMV_ActionPlayMci *RECOIL_THISCALL zFMV_ActionPlayMci::Cons
 
 // Reimplements 0x463c10: zFMV_ActionPlayMci::Destructor
 RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionPlayMci::Destructor() {
-    vftable = (zFMV_Action_Vtbl *)((unsigned int)(k_zFMV_ActionPlayMci_VtblAddress));
+    vftable = &g_zFMV_ActionPlayMci_Vtable;
     if (mediaPath != 0) {
         free(mediaPath);
         mediaPath = 0;

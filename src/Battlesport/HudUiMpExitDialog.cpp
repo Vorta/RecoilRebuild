@@ -1,6 +1,5 @@
-#include "Battlesport/HudUiMpExitDialog.h"
-
 #include "Battlesport/RecoilApp.h"
+#include "Battlesport/HudUiMpExitDialog.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zInput/zInput.h"
@@ -57,20 +56,19 @@ HudUiWidget_FTable MakeMpExitDialogButtonFTable(
     return table;
 }
 
-HudUiMpExitDialog_Vtbl MakeMpExitDialogVtable() {
-    HudUiMpExitDialog_Vtbl table = {0};
-    table.slots[0] = MpExitMethodAddress(&HudUiMpExitDialog::Update);
-    table.slots[1] = MpExitMethodAddress(&HudUiBackground::SetEnabled);
-    table.slots[2] = MpExitMethodAddress(&HudUiMpExitDialog::ScalarDeletingDestructorThunk);
-    return table;
-}
 } // namespace
 
 const HudUiWidget_FTable g_HudUiZrdWidget_MpExitDialog_NewGameButton_Vtbl =
     MakeMpExitDialogButtonFTable(MpExitMethodAddress(&HudUiMpExitDialog_NewGameButton::OnActivate));
 const HudUiWidget_FTable g_HudUiZrdWidget_MpExitDialog_ExitButton_Vtbl =
     MakeMpExitDialogButtonFTable(MpExitMethodAddress(&HudUiMpExitDialog_ExitButton::OnActivate));
-const HudUiMpExitDialog_Vtbl g_HudUiMpExitDialog_Vtbl = MakeMpExitDialogVtable();
+const HudUiMpExitDialog_Vtbl g_HudUiMpExitDialog_Vtbl = {
+    {
+        MpExitMethodAddress(&HudUiMpExitDialog::Update),
+        MpExitMethodAddress(&HudUiBackground::SetEnabled),
+        MpExitMethodAddress(&HudUiMpExitDialog::ScalarDeletingDestructorThunk),
+    },
+};
 HudUiMpExitDialog *g_HudUiMpExitDialog = 0;
 
 // Reimplements 0x419650: HudUiMpExitDialog::UnloadLayout
@@ -208,7 +206,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiMpExitDialog::LoadLayout() {
 // (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
 void RECOIL_THISCALL HudUiMpExitDialog_NewGameButton::OnActivate() {
     g_RecoilApp.QueueSwitchCurrentState(
-        &g_RecoilApp.m_introFmvState_1a0.base,
+        &g_RecoilApp.m_introFmvState,
         0
     );
     HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(1);
@@ -220,7 +218,7 @@ void RECOIL_THISCALL HudUiMpExitDialog_NewGameButton::OnActivate() {
 void RECOIL_THISCALL HudUiMpExitDialog_ExitButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
     g_RecoilApp.QueueSwitchCurrentState(
-        &g_RecoilApp.m_leaveNetworkState_1d0.base,
+        &g_RecoilApp.m_leaveNetworkState,
         0
     );
 }
@@ -275,14 +273,11 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_MpExitDialogState::OnTryBecomeCurr
     zVideo::SetHalfResAdjustMode(0);
     HudUi::SetInvalidateMode(0);
 
-    const int pitchBytes = zVideo::GetPrimarySurfacePitch();
-    const int bitsPerPixel = zOpt::GetDisplaySectionBitsPerPixel();
-    zOpt_ViewRectSection *const activeRegionRect = zOpt::GetWindowSection();
     zRndr::SetFrameBufferRegion(
         zVideo::GetPrimarySurfacePixels(),
-        activeRegionRect,
-        bitsPerPixel,
-        pitchBytes
+        zOpt::GetWindowSection(),
+        zOpt::GetDisplaySectionBitsPerPixel(),
+        zVideo::GetPrimarySurfacePitch()
     );
 
     zSndSampleSet_InitByName("DIALOG");
@@ -303,12 +298,12 @@ RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_MpExitDialogState::OnDeactivate()
 
     HudUiMpExitDialog *const dialog = g_HudUiMpExitDialog;
     if (dialog != 0) {
+        const HudUiMpExitDialog_Vtbl *const vtable =
+            (const HudUiMpExitDialog_Vtbl *)dialog->base.base.base.vptr;
         typedef HudUiMpExitDialog *(RECOIL_THISCALL * ScalarDeletingDtorFn)(
             HudUiMpExitDialog * self,
             unsigned int flags
         );
-        const HudUiMpExitDialog_Vtbl *const vtable =
-            (const HudUiMpExitDialog_Vtbl *)dialog->base.base.base.vptr;
         ((ScalarDeletingDtorFn)vtable->slots[2])(
             dialog,
             1
@@ -329,12 +324,12 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_MpExitDialogState::OnUpdateShouldQ
     Time::Tick();
 
     HudUiMpExitDialog *const dialog = g_HudUiMpExitDialog;
+    const HudUiMpExitDialog_Vtbl *const vtable =
+        (const HudUiMpExitDialog_Vtbl *)dialog->base.base.base.vptr;
     typedef void(RECOIL_THISCALL * UpdateFn)(
         HudUiMpExitDialog * self,
         float deltaSeconds
     );
-    const HudUiMpExitDialog_Vtbl *const vtable =
-        (const HudUiMpExitDialog_Vtbl *)dialog->base.base.base.vptr;
     ((UpdateFn)vtable->slots[0])(
         dialog,
         g_FrameDeltaTimeSec

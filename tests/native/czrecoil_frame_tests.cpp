@@ -1607,9 +1607,9 @@ void ResetMpMenuProbe() {
     g_mpMenuLoadSetupZbdPath = reinterpret_cast<const char *>(static_cast<std::uintptr_t>(1));
     g_mpMenuLoadSetupSkipIntro = -1;
     g_mpMenuLoadSetupMissionFlags = -1;
-    g_RecoilApp.m_pendingState_0c4 = 0;
+    g_RecoilApp.m_pendingState = 0;
     g_RecoilApp.m_skipIntroFmv = 0;
-    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv = 0;
+    g_RecoilApp.m_missionFmvState.m_skipMissionFmv = 0;
     g_zNetwork_FatalDisconnectCallback = nullptr;
 }
 
@@ -1881,7 +1881,7 @@ extern "C" int czrecoil_frame_open_multiplayer_session_browser_smoke(void) {
     } else if (g_zNetwork_FatalDisconnectCallback != &RecoilApp::FatalErrorAndExit) {
         result = 27;
     } else if (g_RecoilApp.m_skipIntroFmv != 1 ||
-               g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv != 1) {
+               g_RecoilApp.m_missionFmvState.m_skipMissionFmv != 1) {
         result = 28;
     }
 
@@ -1916,7 +1916,7 @@ extern "C" int czrecoil_frame_open_multiplayer_session_browser_smoke(void) {
     } expectedTimer = {120.0f};
     const RecoilPtr32 expectedPendingState =
         static_cast<RecoilPtr32>(
-            reinterpret_cast<std::uintptr_t>(&g_RecoilApp.m_mpExitDialogState_220.base)
+            reinterpret_cast<std::uintptr_t>(&g_RecoilApp.m_mpExitDialogState.base)
         );
     if (result == 0 &&
         (g_mpMenuOpenSessionCalls != 1 || g_mpMenuOpenSelectedSessionIndex != 4 ||
@@ -1925,7 +1925,7 @@ extern "C" int czrecoil_frame_open_multiplayer_session_browser_smoke(void) {
          std::strcmp(g_mpMenuCreateLocalPlayerName, "JoinPilot") != 0 ||
          g_mpMenuSetPlayerNameCalls != 2 ||
          std::strcmp(g_mpMenuLastPlayerName, "JoinPilot") != 0 ||
-         g_RecoilApp.m_pendingState_0c4 != expectedPendingState ||
+         g_RecoilApp.m_pendingState != expectedPendingState ||
          g_mpMenuRegisterPacketCalls != 1 || g_mpMenuRegisterPacketType != 20 ||
          g_mpMenuRegisterPacketMode != 2 ||
          g_mpMenuRegisterPacketHandler !=
@@ -1984,7 +1984,7 @@ extern "C" int czrecoil_frame_on_menu_westwood_online_upgrade_smoke(void) {
 
     const int oldChecked = g_CZRecoilFrame_WestwoodOnlineWinsockChecked;
     const int oldSkipIntro = g_RecoilApp.m_skipIntroFmv;
-    const int oldSkipMissionFmv = g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv;
+    const int oldSkipMissionFmv = g_RecoilApp.m_missionFmvState.m_skipMissionFmv;
     const int oldMissionFlags = g_HudSensorTracker.missionFlags;
 
     CZRecoilFrame frame{};
@@ -1993,7 +1993,7 @@ extern "C" int czrecoil_frame_on_menu_westwood_online_upgrade_smoke(void) {
     ResetWolMenuProbe();
     g_CZRecoilFrame_WestwoodOnlineWinsockChecked = 0;
     g_RecoilApp.m_skipIntroFmv = 7;
-    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv = 8;
+    g_RecoilApp.m_missionFmvState.m_skipMissionFmv = 8;
     g_wolMenuVerifyResult = 0;
     frame.OnMenuWestwoodOnlineUpgrade();
     if (g_CZRecoilFrame_WestwoodOnlineWinsockChecked != 1 || g_wolMenuZlocCalls != 2 ||
@@ -2001,27 +2001,27 @@ extern "C" int czrecoil_frame_on_menu_westwood_online_upgrade_smoke(void) {
         g_wolMenuVerifyCalls != 1 || !g_wolMenuVerifyArgsOk ||
         g_wolMenuModalCalls != 0 || g_wolMenuLoadCalls != 0 ||
         g_RecoilApp.m_skipIntroFmv != 7 ||
-        g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv != 8) {
+        g_RecoilApp.m_missionFmvState.m_skipMissionFmv != 8) {
         failure = 2;
     }
 
     ResetWolMenuProbe();
     g_CZRecoilFrame_WestwoodOnlineWinsockChecked = 1;
     g_RecoilApp.m_skipIntroFmv = 0;
-    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv = 0;
+    g_RecoilApp.m_missionFmvState.m_skipMissionFmv = 0;
     frame.OnMenuWestwoodOnlineUpgrade();
     if (failure == 0 &&
         (g_wolMenuZlocCalls != 0 || g_wolMenuVerifyCalls != 0 ||
          g_wolMenuModalCalls != 1 || g_wolMenuLoadCalls != 0 ||
          g_RecoilApp.m_skipIntroFmv != 1 ||
-         g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv != 1)) {
+         g_RecoilApp.m_missionFmvState.m_skipMissionFmv != 1)) {
         failure = 3;
     }
 
     ResetWolMenuProbe();
     g_CZRecoilFrame_WestwoodOnlineWinsockChecked = 0;
     g_RecoilApp.m_skipIntroFmv = 0;
-    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv = 0;
+    g_RecoilApp.m_missionFmvState.m_skipMissionFmv = 0;
     g_HudSensorTracker.missionFlags = 0x55;
     g_wolMenuVerifyResult = 1;
     g_wolMenuModalResult = 1;
@@ -2034,13 +2034,13 @@ extern "C" int czrecoil_frame_on_menu_westwood_online_upgrade_smoke(void) {
          g_wolMenuLoadApp != &g_RecoilApp || g_wolMenuLoadMissionId != 10 ||
          g_wolMenuLoadZbdPath != nullptr || g_wolMenuLoadSkipIntro != 1 ||
          g_wolMenuLoadMissionFlags != 0x55 || g_RecoilApp.m_skipIntroFmv != 1 ||
-         g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv != 1)) {
+         g_RecoilApp.m_missionFmvState.m_skipMissionFmv != 1)) {
         failure = 4;
     }
 
     g_CZRecoilFrame_WestwoodOnlineWinsockChecked = oldChecked;
     g_RecoilApp.m_skipIntroFmv = oldSkipIntro;
-    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv = oldSkipMissionFmv;
+    g_RecoilApp.m_missionFmvState.m_skipMissionFmv = oldSkipMissionFmv;
     g_HudSensorTracker.missionFlags = oldMissionFlags;
 
     RestoreFunctionPatch(loadPatch);
@@ -2232,8 +2232,8 @@ extern "C" int czgame_frame_on_activate_smoke(void) {
 
     RecoilApp app{};
     app.vftable = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&appVtable));
-    app.m_currentStateIndex_0c8 = 0;
-    app.m_stateStack_0d8[0] =
+    app.m_currentStateIndex = 0;
+    app.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&state));
 
     CZGameFrame frame{};

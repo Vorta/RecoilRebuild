@@ -1186,7 +1186,7 @@ extern "C" int zfmv_action_image_constructor_with_screen_rect_smoke(void) {
     zFMV_ActionImage *returned = action.ConstructorWithScreenRect("screen.raw", 7, 32, 48);
 
     const bool ok =
-        returned == &action && reinterpret_cast<std::uintptr_t>(action.vftable) == 0x4d2598 &&
+        returned == &action && action.vftable == &g_zFMV_ActionImage_Vtable &&
         action.next == nullptr && action.image == nullptr && action.imagePath != nullptr &&
         std::strcmp(action.imagePath, "screen.raw") == 0 && action.doAdjustSurfaces == 7 &&
         action.forcePrimaryPostprocess == 1 && g_zFMV_ActionImage_BlitRectX == 32 &&
@@ -1209,7 +1209,7 @@ extern "C" int zfmv_action_image_constructor_scaled_smoke(void) {
 
     zFMV_ActionImage *returned = action.ConstructorScaled("scaled.raw", 3);
     const bool ok =
-        returned == &action && reinterpret_cast<std::uintptr_t>(action.vftable) == 0x4d2598 &&
+        returned == &action && action.vftable == &g_zFMV_ActionImage_Vtable &&
         action.next == nullptr && action.image == nullptr && action.imagePath != nullptr &&
         std::strcmp(action.imagePath, "scaled.raw") == 0 && action.doAdjustSurfaces == 3 &&
         action.forcePrimaryPostprocess == 0 && action.blitRect[0] == 0 && action.blitRect[1] == 0 &&
@@ -1465,7 +1465,7 @@ extern "C" int zfmv_action_fade_constructor_smoke(void) {
 
     zFMV_ActionFade *returned = action.Constructor(0xff, 0x80, 0x20, 0x3fc00000, -1, 128);
 
-    return returned == &action && reinterpret_cast<std::uintptr_t>(action.vftable) == 0x4d25b0 &&
+    return returned == &action && action.vftable == &g_zFMV_ActionFade_Vtable &&
                    action.next == nullptr && action.fadeDirectionSign == -1 &&
                    action.fadeColorPacked16 == 0xfc04 && action.reserved0e == 0x7777 &&
                    action.durationSecRaw == 0x3fc00000 && action.startSec == 123.0 &&
@@ -2370,7 +2370,7 @@ extern "C" int zfmv_action_play_avi_constructor_existing_file_smoke(void) {
 
     zFMV_ActionPlayAvi *returned = action.Constructor(".", fileName, 5);
     const bool ok = returned == &action &&
-                    reinterpret_cast<std::uintptr_t>(action.vftable) == 0x4d25c8 &&
+                    action.vftable == &g_zFMV_ActionPlayAvi_Vtable &&
                     action.next == nullptr && action.mediaPath != nullptr &&
                     std::strcmp(action.mediaPath, ".\\recoil_playavi_ctor_smoke.tmp") == 0 &&
                     action.modeFlags == 5;
@@ -2401,7 +2401,7 @@ extern "C" int zfmv_action_play_avi_constructor_drive_fallback_smoke(void) {
         action.Constructor("missingroot", "__recoil_missing_playavi_ctor__.avi", 7);
 
     const bool ok =
-        returned == &action && reinterpret_cast<std::uintptr_t>(action.vftable) == 0x4d25c8 &&
+        returned == &action && action.vftable == &g_zFMV_ActionPlayAvi_Vtable &&
         action.next == nullptr && action.mediaPath != nullptr &&
         std::strcmp(action.mediaPath, resolvedPath) == 0 && action.modeFlags == 7 &&
         g_fakeFmvFindFileCount == 1 && g_fakeFmvFindFileDriveType == DRIVE_CDROM &&
@@ -2666,7 +2666,7 @@ extern "C" int zfmv_action_play_mci_constructor_smoke(void) {
         action.Constructor("movies", "intro.mci", reinterpret_cast<HWND>(0x2468ace0));
 
     const bool ok =
-        returned == &action && reinterpret_cast<std::uintptr_t>(action.vftable) == 0x4d25f8 &&
+        returned == &action && action.vftable == &g_zFMV_ActionPlayMci_Vtable &&
         action.next == nullptr && action.mediaPath != nullptr &&
         std::strcmp(action.mediaPath, "movies\\intro.mci") == 0 && action.playback != nullptr &&
         action.playback->mediaPathDup != nullptr &&
@@ -2700,13 +2700,13 @@ extern "C" int zfmv_action_no_op_update_smoke(void) {
 extern "C" int zfmv_action_play_mci_update_smoke(void) {
     zFMV_ActionPlayMci action{};
     action.next = reinterpret_cast<zFMV_Action *>(0x11111111);
-    action.vftable = reinterpret_cast<zFMV_Action_Vtbl *>(0x4d25f8);
+    action.vftable = &g_zFMV_ActionPlayMci_Vtable;
     action.mediaPath = reinterpret_cast<char *>(0x22222222);
     action.playback = reinterpret_cast<zFMV_Playback *>(0x33333333);
 
     const int result = action.Update(123.5);
     return result == 0 && action.next == reinterpret_cast<zFMV_Action *>(0x11111111) &&
-                   reinterpret_cast<std::uintptr_t>(action.vftable) == 0x4d25f8 &&
+                   action.vftable == &g_zFMV_ActionPlayMci_Vtable &&
                    action.mediaPath == reinterpret_cast<char *>(0x22222222) &&
                    action.playback == reinterpret_cast<zFMV_Playback *>(0x33333333)
                ? 0

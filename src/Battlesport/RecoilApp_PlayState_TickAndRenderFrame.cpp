@@ -22,9 +22,9 @@ int HalfTruncTowardZero(
 }
 
 zOpt_ViewRectSection *ViewRectFromPtr(
-    RecoilPtr32 ptr
+    void *ptr
 ) {
-    return (zOpt_ViewRectSection *)((unsigned int)(ptr));
+    return (zOpt_ViewRectSection *)ptr;
 }
 } // namespace
 
@@ -46,9 +46,9 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_PlayState::TickAndRenderFrame(
 
     zInput::PollActiveDevices(1);
 
-    pRenderSection = (RecoilPtr32)(zOpt::GetRenderSection());
-    pDisplaySection = (RecoilPtr32)(zOpt::GetDisplaySection());
-    pWindowSection = (RecoilPtr32)(zOpt::GetWindowSection());
+    pRenderSection = zOpt::GetRenderSection();
+    pDisplaySection = zOpt::GetDisplaySection();
+    pWindowSection = zOpt::GetWindowSection();
     zOpt_ViewRectSection *const renderSection = ViewRectFromPtr(pRenderSection);
     zOpt_ViewRectSection *const displaySection = ViewRectFromPtr(pDisplaySection);
     zOpt_ViewRectSection *const windowSection = ViewRectFromPtr(pWindowSection);

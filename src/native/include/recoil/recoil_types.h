@@ -26,22 +26,26 @@ RECOIL_STATIC_ASSERT(sizeof(recoil::Fn32) == 4);
 
 #if defined(__cplusplus) && (!defined(_MSC_VER) || _MSC_VER < 1300)
 #if defined(_MSC_VER)
-#define RECOIL_PLACEMENT_NEW_CDECL __cdecl
-#else
-#define RECOIL_PLACEMENT_NEW_CDECL
+#if !defined(__PLACEMENT_NEW_INLINE)
+#define __PLACEMENT_NEW_INLINE
+inline void *__cdecl operator new(
+    size_t,
+    void *place
+) {
+    return place;
+}
 #endif
-inline void *RECOIL_PLACEMENT_NEW_CDECL operator new(
+#else
+inline void *operator new(
     size_t,
     void *place
 ) {
     return place;
 }
 
-#if !defined(_MSC_VER)
-inline void RECOIL_PLACEMENT_NEW_CDECL operator delete(
+inline void operator delete(
     void *,
     void *
 ) {}
 #endif
-#undef RECOIL_PLACEMENT_NEW_CDECL
 #endif

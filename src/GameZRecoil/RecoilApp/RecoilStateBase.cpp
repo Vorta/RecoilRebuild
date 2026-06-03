@@ -4,7 +4,7 @@
 RecoilApp_IState *RECOIL_THISCALL RecoilStateBase::ScalarDeletingDestructor(
     unsigned int flags
 ) {
-    vftable = kRecoilStateBase_VtblAddress;
+    vftable = RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl);
 
     if ((flags & 1) != 0) {
         ::operator delete((void *)(this));

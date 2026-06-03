@@ -8832,7 +8832,7 @@ extern "C" int westwood_online_upgrade_dialog_show_modal_smoke(void)
     const int oldSelected = g_WestwoodOnlineUpgradeSelectedMissionIndex;
 
     g_RecoilApp.m_pMainWnd = 0x12345678;
-    g_RecoilApp.m_hInstance_6c = 0x2468ace0;
+    g_RecoilApp.m_hInstance = 0x2468ace0;
 
     ResetModalProbe();
     g_modalSelectedMissionIndex = 8;

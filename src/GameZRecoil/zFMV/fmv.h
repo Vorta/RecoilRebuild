@@ -3,9 +3,12 @@
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 
-#include <windows.h>
-
 #include "recoil/recoil_callconv.h"
+
+#ifndef _WINDEF_
+struct HWND__;
+typedef HWND__ *HWND;
+#endif
 
 #if defined(_MSC_VER) && _MSC_VER >= 1300
 #define RECOIL_FMV_NOINLINE __declspec(noinline)
@@ -262,6 +265,10 @@ struct zFMV_Stream {
 };
 
 extern zFMV_Action_Vtbl g_zFMV_ActionBase_Vtable;
+extern zFMV_Action_Vtbl g_zFMV_ActionImage_Vtable;
+extern zFMV_Action_Vtbl g_zFMV_ActionFade_Vtable;
+extern zFMV_Action_Vtbl g_zFMV_ActionPlayAvi_Vtable;
+extern zFMV_Action_Vtbl g_zFMV_ActionPlayMci_Vtable;
 extern zFMV_Action_Vtbl g_zFMV_ActionWait_Vtable;
 extern zFMV_Action_Vtbl g_zFMV_ActionPlaySound_Vtable;
 extern zFMV_Action_Vtbl g_zFMV_ActionBlur_Vtable;

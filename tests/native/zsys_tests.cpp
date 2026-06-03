@@ -130,3 +130,30 @@ extern "C" int zerror_emit_debug_buffer_smoke(void) {
     zError::EmitDebugBuffer(5);
     return g_zError_DebugMsgBuffer[0] == 'x' && g_zError_DebugMsgBuffer[1] == '\0' ? 0 : 1;
 }
+
+extern "C" int zerror_report_old_debug_output_smoke(void) {
+    g_RecoilError_OutputByteCount = 0;
+    g_zError_DebugMsgBuffer[0] = 'q';
+    g_zError_DebugMsgBuffer[1] = '\0';
+
+    zError::ReportOld(
+        0x1234,
+        "report.cpp",
+        77,
+        "value %d %s",
+        9,
+        "ok"
+    );
+    const std::int32_t firstByteCount = g_RecoilError_OutputByteCount;
+    zError::ReportOld(
+        0,
+        nullptr,
+        0,
+        nullptr
+    );
+
+    return firstByteCount > 0 && g_RecoilError_OutputByteCount > firstByteCount &&
+                   g_zError_DebugMsgBuffer[0] == 'q' && g_zError_DebugMsgBuffer[1] == '\0'
+               ? 0
+               : 1;
+}

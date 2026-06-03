@@ -29,7 +29,7 @@ extern "C" void *g_zSnd_BackendDevice;
 extern "C" void *g_zSnd_BackendListenerHandle;
 extern "C" DSCAPS g_zSnd_BackendAuxHandleOrConfig;
 extern "C" LPDIRECTSOUND g_zSnd_CachedDirectSound;
-extern "C" LPCGUID g_zSnd_CachedDirectSoundGuid;
+extern "C" LPGUID g_zSnd_CachedDirectSoundGuid;
 extern "C" unsigned char g_zSndCd_TrackListCtorGuard;
 extern "C" zSndCdTrackNode *g_zSndCd_TrackListHead;
 extern "C" std::int32_t g_zSndCd_TrackCount;
@@ -1214,8 +1214,8 @@ extern "C" int zsnd_options_cpu_and_cached_directsound_smoke(void) {
     TestCachedDirectSoundVTable vtable = {};
     vtable.slots00_0c[2] = reinterpret_cast<void *>(&TestRelease);
     TestCachedDirectSound device{&vtable};
-    const GUID fakeGuid = {0x12345678, 0x2222, 0x3333, {0x44, 0x55, 0x66, 0x77,
-                                                       0x88, 0x99, 0xaa, 0xbb}};
+    GUID fakeGuid = {0x12345678, 0x2222, 0x3333, {0x44, 0x55, 0x66, 0x77,
+                                                  0x88, 0x99, 0xaa, 0xbb}};
 
     g_zSnd_CachedDirectSound = reinterpret_cast<LPDIRECTSOUND>(&device);
     g_zSnd_CachedDirectSoundGuid = &fakeGuid;

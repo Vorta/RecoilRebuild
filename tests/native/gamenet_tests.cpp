@@ -7138,10 +7138,10 @@ extern "C" int gamenet_handle_pkt14_hud_timer_and_flags_sync_smoke(void) {
     CZRecoilFrame mainWnd{};
     mainWnd.m_useArchiveBanks = 77;
     g_RecoilApp.m_pMainWnd = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&mainWnd));
-    g_RecoilApp.m_currentStateIndex_0c8 = -1;
-    g_RecoilApp.m_introFmvState_1a0.base.vftable =
+    g_RecoilApp.m_currentStateIndex = -1;
+    g_RecoilApp.m_introFmvState.base.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_pkt14StateVtable));
-    g_RecoilApp.m_missionFmvState_1d8.m_missionId = 99;
+    g_RecoilApp.m_missionFmvState.m_missionId = 99;
 
     g_HudSensorTracker.runtimeGoalValue = 0;
     g_HudSensorTracker.runtimeTimerSecRaw = 0;
@@ -7183,7 +7183,7 @@ extern "C" int gamenet_handle_pkt14_hud_timer_and_flags_sync_smoke(void) {
         float seconds;
         int raw;
     } expectedTimer = {180.0f};
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     bool queuedIntro = false;
     if (queue.m_itemCount == 1) {
         const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
@@ -7194,7 +7194,7 @@ extern "C" int gamenet_handle_pkt14_hud_timer_and_flags_sync_smoke(void) {
         queuedIntro = item->m_kind == RecoilApp_StateQueueKind_SwitchCurrent &&
                       item->m_stateObj == static_cast<RecoilPtr32>(
                                              reinterpret_cast<std::uintptr_t>(
-                                                 &g_RecoilApp.m_introFmvState_1a0.base)) &&
+                                                 &g_RecoilApp.m_introFmvState.base)) &&
                       item->m_param == 0;
         CleanupSingleQueuedItem(queue);
     }
@@ -7211,7 +7211,7 @@ extern "C" int gamenet_handle_pkt14_hud_timer_and_flags_sync_smoke(void) {
         failure = 4;
     } else if (g_GameNetStatus_AllowMaps != 1 || g_GameNetStatus_NameTags != 1) {
         failure = 5;
-    } else if (g_RecoilApp.m_missionFmvState_1d8.m_missionId != 0 ||
+    } else if (g_RecoilApp.m_missionFmvState.m_missionId != 0 ||
                g_pkt14StateEnterCount != 1 || !queuedIntro) {
         failure = 6;
     } else if (g_setSessionDescCalls != 1 || session.desc.customEventCode != 4 ||

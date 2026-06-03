@@ -68,7 +68,7 @@ struct HudUiNetGameSetupOverlayOwnerBaseVtableGuard {
     HudUiNetGameSetupOverlayOwner *self;
 
     ~HudUiNetGameSetupOverlayOwnerBaseVtableGuard() {
-        self->vftable = kRecoilStateBase_VtblAddress;
+        self->vftable = RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl);
     }
 };
 
@@ -7962,7 +7962,7 @@ void RECOIL_THISCALL HudUiCreditsPanel::UpdateFadeAndExit(
         g_RecoilApp.QueueExitCurrentState(1);
         g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY;
         g_RecoilApp.QueueSwitchCurrentState(
-            &g_RecoilApp.m_leaveNetworkState_1d0.base,
+            &g_RecoilApp.m_leaveNetworkState,
             0
         );
         return;
@@ -13608,7 +13608,7 @@ struct HudCmdDialogStateBaseVtableGuard {
     HudCmdDialogState *self;
 
     ~HudCmdDialogStateBaseVtableGuard() {
-        self->vftable = kRecoilStateBase_VtblAddress;
+        self->vftable = RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl);
     }
 };
 

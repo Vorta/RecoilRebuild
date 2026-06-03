@@ -484,7 +484,7 @@ const zVideoFxPass3RootElement_FTable g_zVideo_FxPass3RootElement_Vtable =
 const zVideoFxPass3Config_VTable g_zVideoFxPass3Config_Vtable =
     MakeZVideoFxPass3ConfigVTable();
 
-zVideoFxPass3Config g_zVideo_FxPass3ConfigLocal = {0};
+zVideoFxPass3Config g_zVideo_FxPass3ConfigLocal;
 zVidRect32 g_zVideo_PrimarySurfaceRectScratch = {0};
 int g_zVideo_DisplayModeBpp = 0;
 int g_zVid_NoiseByteTableSize = 0;
@@ -2579,6 +2579,17 @@ RECOIL_NOINLINE int RECOIL_CDECL Dispatch_UnlockPrimarySurfaceState() {
     return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_PrimarySurfaceState);
 }
 
+// Restores the 0x42e330 call shape: retail passes present/adjust-style
+// arguments before forwarding primary-surface unlock through the provider.
+RECOIL_NOINLINE int RECOIL_FASTCALL PresentOrAdjustSurfacesIfEnabled(
+    zVidRect32 *srcRect,
+    zVidRect32 *dstRect,
+    int waitForPresent,
+    int blitPrimaryToSwFirst
+) {
+    return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_PrimarySurfaceState);
+}
+
 // Reimplements 0x48d420: zVideo::Fx_SetSurfaceState
 RECOIL_NOINLINE void RECOIL_FASTCALL Fx_SetSurfaceState(
     void *pixels,
@@ -3489,7 +3500,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindRendererDispatch(
     SetRendererTypeAndActivePath(rendererType);
     g_zVideo_FullscreenOption = fullscreenOption;
     g_zVideo_pfnOpenVideoMode = zVideo_dd::OpenVideoMode;
-    g_zVideo_pfnShutdownVideoSystem = (zVideo_ShutdownVideoSystemProc)(0x004a7d40);
+    g_zVideo_pfnShutdownVideoSystem =
+        (zVideo_ShutdownVideoSystemProc)(zVideo_dd::ShutdownVideoSystem);
     g_zVideo_pfnPaletteSetEntries = zVideo_dd::PaletteSetEntries;
     g_zVideo_pfnSetVideoMode = zVideo_dd::SetVideoMode;
     g_zVideo_pfnAdjustSurfaces = zVideo_dd3d::PresentDisplayModeSurface;
@@ -3499,40 +3511,47 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindRendererDispatch(
     g_zVideo_pfnLockSurfaceState = zVideo_dd::LockSurfaceState;
     g_zVideo_pfnUnlockSurfaceState = zVideo_dd::UnlockSurfaceState;
     g_zVideo_pfnClearZBufferRect = zVideo_dd::ZBuffer_DepthFillRect;
-    g_zVideo_pfnClearSwSurfaceAndZBuffer = (zVideo_ClearSwSurfaceAndZBufferProc)(0x004a82f0);
-    g_zVideo_pfnClearStateSurfaceAndZBuffer = (zVideo_ClearStateSurfaceAndZBufferProc)(0x004a8220);
-    g_zVideo_pfnUpdateFogColor = (zVideo_UpdateFogColorProc)(0x004aab30);
+    g_zVideo_pfnClearSwSurfaceAndZBuffer = zVideo_dd::ClearSwBackbufferAndZBufferRects;
+    g_zVideo_pfnClearStateSurfaceAndZBuffer = zVideo_dd::ClearScreenAndZBufferRect;
+    g_zVideo_pfnUpdateFogColor = zVideo_dd3d::UpdateFogColor;
     g_zVideo_pfnQueryTextureMemoryBytes = zVid::QueryTextureMemoryBytes;
     g_zVideo_pfnQueryDeviceVideoMemoryBytes = zVid::QueryDeviceVideoMemoryBytes;
     g_zVideo_pfnBltSwToPrimaryRectDirect = zVideo_dd::BltSwToPrimaryRectDirect;
     g_zVideo_pfnBltPrimaryToSwRectDirect = zVideo_dd::BltPrimaryToSwRectDirect;
-    g_zVideo_pfnBltSwToPrimaryRect = 0x004a7e10;
+    g_zVideo_pfnBltSwToPrimaryRect = (unsigned int)(&zVideo_dd::BltSwToPrimaryRect);
     g_zVideo_pfnGetHwApiDeviceFeatureFlags = zVideo_dd::GetHwApiDeviceFeatureFlags;
-    g_zVideo_pfnImageUploadPixelsToSurface = 0x004a8680;
-    g_zVideo_pfnImageReleaseSurface = 0x004a86f0;
+    g_zVideo_pfnImageUploadPixelsToSurface =
+        (unsigned int)(&zVideo_dd::Image_UploadPixelsToSurface);
+    g_zVideo_pfnImageReleaseSurface = (unsigned int)(&zVideo_dd::Image_ReleaseSurface);
     g_zVideo_pfnCreateTextureRecord = zVideo_dd3d::CreateTextureRecord;
-    g_zVideo_pfnTextureRecordLockUploadSurface = 0x004aa8b0;
-    g_zVideo_pfnTextureRecordUnlockUploadSurface = 0x004aa8f0;
-    g_zVideo_pfnTextureRecordReleaseUploadSurfaceRef = 0x004aa900;
-    g_zVideo_pfnTextureRecordFinalizeUpload = 0x004aa920;
-    g_zVideo_pfnTextureRecordDestroy = 0x004aa980;
-    g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces = 0x004076f0;
-    g_zVideo_pfnImageLazyCreateVideoMemorySurface = 0x004a84c0;
-    g_zVideo_pfnImageEnsureSurfaceForCurrentDevice = 0x004a8650;
-    g_zVideo_pfnSetFogEnable = 0x004aa9e0;
-    g_zVideo_pfnSetFogStart = 0x004aaa30;
-    g_zVideo_pfnSetFogEnd = 0x004aaa60;
-    g_zVideo_pfnApplyFogStateFromGlobals = 0x004aaa90;
-    g_zVideo_pfnSubmitPolyFlatColor16 = 0x004aab90;
-    g_zVideo_pfnSubmitPolyGouraudColor16 = 0x004aaef0;
-    g_zVideo_pfnSubmitPolyColorAttr = 0x004ab320;
-    g_zVideo_pfnSubmitPolyRenderClass = 0x004ab6d0;
-    g_zVideo_pfnSubmitPolygon = 0x004abb20;
-    g_zVideo_pfnSubmitPolygonLit = 0x004ac370;
-    g_zVideo_pfnDrawPointColor16 = 0x004acbd0;
-    g_zVideo_pfnFlushSortedPolys = 0x004ace30;
-    g_zVideo_pfnFlushOverwritePolys = 0x004ad250;
-    g_zVideo_pfnFlushQuadBatch = 0x004ad120;
+    g_zVideo_pfnTextureRecordLockUploadSurface =
+        (unsigned int)(&zVideo_dd3d::TextureRecord_LockUploadSurface);
+    g_zVideo_pfnTextureRecordUnlockUploadSurface =
+        (unsigned int)(&zVideo_dd3d::TextureRecord_UnlockUploadSurface);
+    g_zVideo_pfnTextureRecordReleaseUploadSurfaceRef =
+        (unsigned int)(&zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef);
+    g_zVideo_pfnTextureRecordFinalizeUpload =
+        (unsigned int)(&zVideo_dd3d::TextureRecord_FinalizeUpload);
+    g_zVideo_pfnTextureRecordDestroy = (unsigned int)(&zVideo_dd3d::TextureRecord_Destroy);
+    g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces = (unsigned int)(&zGame::ReturnOnlyStub);
+    g_zVideo_pfnImageLazyCreateVideoMemorySurface =
+        (unsigned int)(&zVideo_dd::Image_LazyCreateVideoMemorySurface);
+    g_zVideo_pfnImageEnsureSurfaceForCurrentDevice =
+        (unsigned int)(&zVideo_dd::Image_EnsureSurfaceForCurrentDevice);
+    g_zVideo_pfnSetFogEnable = (unsigned int)(&zVideo_dd3d::SetFogEnable);
+    g_zVideo_pfnSetFogStart = (unsigned int)(&zVideo_dd3d::SetFogStart);
+    g_zVideo_pfnSetFogEnd = (unsigned int)(&zVideo_dd3d::SetFogEnd);
+    g_zVideo_pfnApplyFogStateFromGlobals = (unsigned int)(&zVideo_dd3d::ApplyFogStateFromGlobals);
+    g_zVideo_pfnSubmitPolyFlatColor16 = (unsigned int)(&zVideo_dd3d::SubmitPolyFlatColor16);
+    g_zVideo_pfnSubmitPolyGouraudColor16 = (unsigned int)(&zVideo_dd3d::SubmitPolyGouraudColor16);
+    g_zVideo_pfnSubmitPolyColorAttr = (unsigned int)(&zVideo_dd3d::SubmitPolyColorAttr);
+    g_zVideo_pfnSubmitPolyRenderClass = (unsigned int)(&zVideo_dd3d::SubmitPolyRenderClass);
+    g_zVideo_pfnSubmitPolygon = (unsigned int)(&zVideo_dd3d::SubmitPolygon);
+    g_zVideo_pfnSubmitPolygonLit = (unsigned int)(&zVideo_dd3d::SubmitPolygonLit);
+    g_zVideo_pfnDrawPointColor16 = (unsigned int)(&zVideo_dd3d::DrawPointColor16);
+    g_zVideo_pfnFlushSortedPolys = (unsigned int)(&zVideo_dd3d::FlushSortedPolys);
+    g_zVideo_pfnFlushOverwritePolys = (unsigned int)(&zVideo_dd3d::FlushOverwritePolys);
+    g_zVideo_pfnFlushQuadBatch = (unsigned int)(&zVideo_dd3d::FlushQuadBatch);
 
     if (g_zVideo_pSelectedHwApiDeviceRecord != 0 &&
         g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags != 0) {
@@ -3661,14 +3680,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL InitVideoSystem(
     }
 
     if (g_zVideo_RendererType != 0) {
-        g_zImage_DefaultTextureRecord =
-            g_zVideo_pfnCreateTextureRecord(
-                0,
-                &zVid_Image::g_zImage_DefaultImage,
-                0,
-                0,
-                0
-            );
+        zImage::CreateDefaultTextureRecord();
         g_zVideo_QuadBatchCount = 0;
         {
             for (int itemIndex = 0; itemIndex < 16; ++itemIndex) {
@@ -6531,11 +6543,19 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDeviceState() {
         0
     );
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(
-            (int)(hresult),
-            kZVideoDirect3DSourceFile,
-            0xd3
+        zBufferDesc.ddsCaps.dwCaps = DDSCAPS_ZBUFFER | DDSCAPS_SYSTEMMEMORY;
+        hresult = g_zVideo_pDirectDraw2->CreateSurface(
+            &zBufferDesc,
+            (IDirectDrawSurface **)(&g_zVideo_pZBufferSurface),
+            0
         );
+        if (hresult != DD_OK) {
+            return zVideo_dd::ReportError(
+                (int)(hresult),
+                kZVideoDirect3DSourceFile,
+                0xd3
+            );
+        }
     }
 
     hresult = g_zVideo_pZBufferSurface->QueryInterface(
@@ -6554,11 +6574,14 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDeviceState() {
         (IDirectDrawSurface3 *)(g_zVideo_pZBufferAttachSurface)
     );
     if (hresult != DD_OK) {
-        return zVideo_dd::ReportError(
-            (int)(hresult),
-            kZVideoDirect3DSourceFile,
-            0xde
-        );
+        hresult = g_zVideo_SwSurfaceState.surf->AddAttachedSurface(g_zVideo_pZBufferSurface);
+        if (hresult != DD_OK) {
+            return zVideo_dd::ReportError(
+                (int)(hresult),
+                kZVideoDirect3DSourceFile,
+                0xde
+            );
+        }
     }
 
     hresult = g_zVideo_pDirectDraw2->QueryInterface(
@@ -6607,8 +6630,8 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDeviceState() {
         );
     }
 
-    const int width = g_zVideo_DisplayModeSurfaceState.width;
-    const int height = g_zVideo_DisplayModeSurfaceState.height;
+    const int width = g_zVideo_SwSurfaceState.width;
+    const int height = g_zVideo_SwSurfaceState.height;
     D3DVIEWPORT2 viewport2 = {0};
     viewport2.dwSize = sizeof(viewport2);
     viewport2.dwX = 0;
@@ -7252,6 +7275,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(
     float alpha,
     int queueMode
 ) {
+    if (renderClass == 0) {
+        renderClass = (zVideo_RenderClass *)(g_zImage_DefaultTextureRecord);
+        if (renderClass == 0) {
+            return;
+        }
+    }
     const bool opaquePath = renderClass->textureMapBlend != (D3DTEXTUREBLEND)(4) && alpha >= 1.0f;
 
     if (opaquePath) {
@@ -9181,7 +9210,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL OpenVideoMode(
         return 1;
     }
 
-    return CreateDirectDraw2ForSelectedDevice() != 0 ? 1 : 0;
+    if (CreateDirectDraw2ForSelectedDevice() != 0) {
+        return 1;
+    }
+    return 0;
 }
 
 // Reimplements 0x4a9390: zVideo_dd::RunDirectDrawDeviceEnumeration
@@ -10122,7 +10154,10 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetVideoMode(
         return 1;
     }
 
-    return VerifyFullscreenSurfaceLocks() != 0 ? 1 : 0;
+    if (VerifyFullscreenSurfaceLocks() != 0) {
+        return 1;
+    }
+    return 0;
 }
 
 // Reimplements 0x4a9060: zVideo_dd::VerifyFullscreenSurfaceLocks
@@ -10335,6 +10370,10 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateHalfResBackbufferSurfaces() {
                                      ? g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags
                                      : 0;
         desc.ddsCaps.dwCaps = (featureFlags != 0 ? 0x20003800 : 0) + 0x840;
+    }
+    if (g_zVideo_RendererType == 1) {
+        desc.ddsCaps.dwCaps &= ~DDSCAPS_SYSTEMMEMORY;
+        desc.ddsCaps.dwCaps |= DDSCAPS_3DDEVICE | DDSCAPS_VIDEOMEMORY;
     }
     desc.dwWidth = (DWORD)(g_zVideo_SwSurfaceState.width);
     desc.dwHeight = (DWORD)(g_zVideo_SwSurfaceState.height);

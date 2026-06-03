@@ -7,7 +7,6 @@
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zLoc/zLoc.h"
 
-#include <new>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -2000,7 +1999,7 @@ WestwoodOnlineUpgradeDialog::ShowModalAndGetSelectedMissionIndex(
         (WestwoodOnlineUpgradeProgressDialog *)progressDialogStorage;
 
     g_hWestwoodOnlineUpgradeModuleInstance =
-        (HINSTANCE)((unsigned int)(g_RecoilApp.m_hInstance_6c));
+        (HINSTANCE)((unsigned int)(g_RecoilApp.m_hInstance));
     dialog->Constructor(0);
     progressDialog->Constructor(0);
 

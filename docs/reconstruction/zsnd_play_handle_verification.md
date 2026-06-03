@@ -3,6 +3,38 @@
 These notes track verification facts for play-handle helpers. Binary Ninja and
 VC verifier artifacts remain authoritative.
 
+## Acquire Voice Helpers
+
+- `0x49f6f0` `zSndSample::AcquireA3dVoice` now inlines the A3D provider
+  `GetStatus` availability probes instead of calling `A3dHandleIsAvailable`.
+  VC5SP3 `cl` 11.00.7022 with `/MD /G5 /O2 /Ob1 /GX /Zp4 /FAcs` now fails
+  with 9 unmasked byte mismatches, 24 relocation-masked bytes, BN size 319, VC
+  object size 320, and 1 trimmed trailing NOP byte. The non-`/MD` source shape
+  failed at 126 mismatches after the helper inlining because it emitted direct
+  CRT allocation calls instead of the retail imported CRT call form.
+- `0x49f830` `zSndSample::AcquireVoice` now inlines the DirectSound
+  `GetStatus` availability probes instead of calling
+  `DirectSoundHandleIsAvailable`. VC5SP3 `cl` 11.00.7022 with
+  `/MD /G5 /O2 /Ob1 /GX /Zp4 /FAcs` now fails with 9 unmasked byte mismatches,
+  16 relocation-masked bytes, BN size 292, VC object size 304, and 12 trimmed
+  trailing NOP bytes. The non-`/MD` source shape failed at 122 mismatches after
+  the helper inlining because it emitted direct CRT allocation calls instead of
+  the retail imported CRT call form.
+- Both helpers carry one duplicate-candidate local through the scan and
+  duplicate-allocation paths, which better matches the Binary Ninja assembly's
+  single candidate register. Remaining tier `S` drift is the duplicate-scan
+  fall-through instruction order: retail clears the candidate register before
+  reloading `duplicateVoiceCount`, while VC5SP3 emits the reload first. A
+  source-level `while` spelling was neutral at the same 9-mismatch profile, so
+  both plan entries remain tier `B`.
+- Rewriting the DirectSound duplicate scan as explicit source labels and gotos
+  was also neutral at the same 9-mismatch profile, so the cleaner `for` loop
+  spelling remains.
+- Making the DirectSound duplicate candidate pointer volatile worsened the
+  target to 306 mismatches, 16 relocation-masked bytes, BN size 292, and VC
+  object size 336, so the non-volatile candidate remains the accepted source
+  shape.
+
 ## 0x49fda0 zSndPlayHandle::StopIfActive
 
 - Current source: `src/GameZRecoil/zSound/zsnd_play.cpp`.
@@ -39,5 +71,9 @@ VC verifier artifacts remain authoritative.
 - Rewriting the backend dispatch as an explicit `if (activeBackend != 0)` with
   the A3D path physically before the DirectSound path worsened the target from
   135 to 155 mismatches, so the source was restored.
+- Rewriting the current dispatch with an explicit `activeBackend -= 0`, a
+  `goto DirectSoundBackend`, and the A3D path physically before the DirectSound
+  label was neutral at the 135-mismatch profile, so the cleaner current
+  explicit DirectSound-first branch was restored.
 - Testing the `switch` shape with VC6 `cl` 12.00.8168 worsened the target to
   196 mismatches, so the target remains on the VC5SP3 profile.

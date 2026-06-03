@@ -2705,10 +2705,10 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::RunStartAnimsFromZrd(
 RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::QueueMissionFmvStateForMissionId(
     int missionId
 ) {
-    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv = 0;
-    g_RecoilApp.m_missionFmvState_1d8.m_missionId = missionId;
+    g_RecoilApp.m_missionFmvState.m_skipMissionFmv = 0;
+    g_RecoilApp.m_missionFmvState.m_missionId = missionId;
     g_RecoilApp.QueueSwitchCurrentState(
-        &g_RecoilApp.m_missionFmvState_1d8.base,
+        &g_RecoilApp.m_missionFmvState,
         0
     );
     return 1;

@@ -9,8 +9,6 @@
 #include "GameZRecoil/zSound/zSound.h"
 #include "recoil/recoil_callconv.h"
 
-const RecoilPtr32 kRecoilStateMainMenuTransition_VtblAddress = 0x004cee28;
-
 enum RecoilMainMenuEntryRoute {
     RECOIL_MAINMENU_ROUTE_FRONTEND = 0,
     RECOIL_MAINMENU_ROUTE_INGAME = 1,
@@ -84,6 +82,7 @@ RECOIL_STATIC_ASSERT(
 );
 
 extern RecoilStateMainMenuTransition g_RecoilState_MainMenuTransition;
+extern RecoilApp_IState_Vtbl g_RecoilStateMainMenuTransition_Vtbl;
 
 class HudUiMainMenuDialog;
 

@@ -14,6 +14,10 @@ Ninja and VC verifier artifacts remain authoritative.
 - Binary Ninja records the expected behavior as a linear scan from
   `g_zSnd_SampleSetRegistry.begin` to `.end` with MSVC's inline `strcmp`
   expansion and a distinct empty-registry return tail.
+- A temporary profile sweep did not find a better compiler profile. Completed
+  VC6-family comparisons remained at 94 mismatches with a 96-byte object, while
+  completed VC5SP3-family comparisons also reported 94 mismatches but grew the
+  object to 112 bytes.
 
 ## Rejected Probes
 
@@ -26,3 +30,12 @@ Ninja and VC verifier artifacts remain authoritative.
 - Hoisting only the `end` pointer into a local while keeping the compact
   `for` loop was also neutral at 94 mismatches, so the direct
   `g_zSnd_SampleSetRegistry.end` expression was restored.
+- Adding only an explicit early empty-registry return improved the first
+  instruction and reduced the comparison to 80 mismatches, but it grew the
+  object to 112 bytes and assigned `end` to `ebp` while keeping `setName` in
+  `ecx`, the opposite of the retail register contract.
+- Adding a named `setName` local on top of the early empty-registry return was
+  neutral with that probe at 80 mismatches and did not repair the register
+  assignment.
+- Rewriting the loop as saved `begin`/`end` locals plus `for (;;)` reproduced
+  the known bad explicit-loop result: 136 mismatches and a 160-byte object.

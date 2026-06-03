@@ -1,3 +1,4 @@
+#include "Battlesport/Mfc42Abi.h"
 #include "GameZRecoil/zUtil/zSaveGame.h"
 
 #include "Battlesport/GameNet.h"

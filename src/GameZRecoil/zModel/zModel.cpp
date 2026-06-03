@@ -311,27 +311,48 @@ int BuildPolyAttributes(
 
 int ComputeSurfaceNormalAndCull(
     int vertexCount,
-    zVec3 *outNormal
+    int showBackFace,
+    zVec3 *outNormal,
+    int *outScanConvertMode
 ) {
     if (vertexCount < 3) {
         return 0;
+    }
+    if (outScanConvertMode != 0) {
+        *outScanConvertMode = 1;
     }
 
     const zClipVert &v0 = g_Clip_PolyVertsScratch[0];
     const zClipVert &v1 = g_Clip_PolyVertsScratch[1];
     const zClipVert &v2 = g_Clip_PolyVertsScratch[2];
 
-    zVec3 edge0 = {v0.x - v1.x, v0.y - v1.y, v0.z - v1.z};
-    zVec3 edge2 = {v2.x - v1.x, v2.y - v1.y, v2.z - v1.z};
-    outNormal->x = edge0.z * edge2.y - edge0.y * edge2.z;
-    outNormal->y = edge0.x * edge2.z - edge0.z * edge2.x;
-    outNormal->z = edge0.y * edge2.x - edge0.x * edge2.y;
+    const float v2xMinusV1x = v2.x - v1.x;
+    const float v2yMinusV1y = v2.y - v1.y;
+    const float v2zMinusV1z = v2.z - v1.z;
+    const float v0xMinusV1x = v0.x - v1.x;
+    const float v0yMinusV1y = v0.y - v1.y;
+    const float v0zMinusV1z = v0.z - v1.z;
+
+    // Original 0x476cf0/0x477b30 display face test uses this exact
+    // compiler-era arithmetic, including the non-cross-product Z term.
+    outNormal->x = v0zMinusV1z * v2yMinusV1y - v0yMinusV1y * v2zMinusV1z;
+    outNormal->y = v0xMinusV1x * v2zMinusV1z - v0zMinusV1z * v2xMinusV1x;
+    outNormal->z = v0yMinusV1y * v2xMinusV1x - v0xMinusV1x * v2zMinusV1z;
 
     const float facing = outNormal->x * v0.x + outNormal->y * v0.y + outNormal->z * v0.z;
-    if (facing <= -g_zModel_BFETolerance) {
-        return 0;
+    if (facing < -g_zModel_BFETolerance) {
+        return 1;
     }
-    return 1;
+    if (showBackFace != 0 && facing > g_zModel_BFETolerance) {
+        outNormal->x = -outNormal->x;
+        outNormal->y = -outNormal->y;
+        outNormal->z = -outNormal->z;
+        if (outScanConvertMode != 0) {
+            *outScanConvertMode = 0;
+        }
+        return 1;
+    }
+    return 0;
 }
 
 void CopyEntryUvsToScratch(
@@ -452,6 +473,94 @@ int ClipAndProjectUv(
         clipRect,
         vertexCount
     );
+}
+
+void MultiplyUvsByProjectedReciprocalZ(
+    int vertexCount
+) {
+    for (int i = 0; i < vertexCount; ++i) {
+        g_Clip_PolyUvs[i].u *= g_Clip_PolyVerts[i].z;
+        g_Clip_PolyUvs[i].v *= g_Clip_PolyVerts[i].z;
+    }
+}
+
+void FillPerspectiveUvsForHardwareSubmit(
+    zClipUV *outUvs,
+    int vertexCount
+) {
+    for (int i = 0; i < vertexCount; ++i) {
+        if (g_Clip_PolyVerts[i].z != 0.0f) {
+            const float depth = 1.0f / g_Clip_PolyVerts[i].z;
+            outUvs[i].u = g_Clip_PolyUvs[i].u * depth;
+            outUvs[i].v = g_Clip_PolyUvs[i].v * depth;
+        } else {
+            outUvs[i].u = g_Clip_PolyUvs[i].u;
+            outUvs[i].v = g_Clip_PolyUvs[i].v;
+        }
+    }
+}
+
+void FillConstantAttrsForGeneratedClipVerts(
+    int previousCount,
+    int vertexCount
+) {
+    for (int i = previousCount; i < vertexCount; ++i) {
+        g_Clip_PolyAttr0[i] = g_Clip_PolyAttr0[0];
+        g_Clip_PolyAttr1[i] = g_Clip_PolyAttr1[0];
+        g_Clip_PolyAttr2[i] = g_Clip_PolyAttr2[0];
+    }
+}
+
+// Matches the DD3D path in 0x477b30: clip UVs as u*rhw, then submit u/rhw.
+int ClipAndProjectHardwareUv(
+    zClipRectPartial *clipRect,
+    int *vertexCount,
+    int hasAttributes
+) {
+    if ((clipRect->flags & 0x30) != 0) {
+        if (hasAttributes != 0) {
+            if (zClipRect::ClipPolyZRange_WithAttr012(
+                clipRect,
+                vertexCount
+            ) == 0) {
+                return 0;
+            }
+        } else if (zClipRect::ClipPolyNearZ(
+            clipRect,
+            vertexCount
+        ) == 0) {
+            return 0;
+        }
+    }
+
+    ProjectScratchToClipVerts(*vertexCount);
+    MultiplyUvsByProjectedReciprocalZ(*vertexCount);
+
+    if ((clipRect->flags & 0x0f) != 0) {
+        const int previousCount = *vertexCount;
+        if (hasAttributes != 0) {
+            if (zClipRect::ClipPoly_WithAttr012(
+                clipRect,
+                vertexCount
+            ) == 0) {
+                return 0;
+            }
+        } else if (zClipRect::ClipPoly(
+            clipRect,
+            vertexCount
+        ) == 0) {
+            return 0;
+        }
+
+        if (hasAttributes == 0 && previousCount < *vertexCount) {
+            FillConstantAttrsForGeneratedClipVerts(
+                previousCount,
+                *vertexCount
+            );
+        }
+    }
+
+    return 1;
 }
 
 int ClipAndProjectSoftwareTextured(
@@ -1857,23 +1966,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RenderNodeSoftware(
         zRndr_SetPaletteShadeRecipeIndex(0);
 
         zVec3 surfaceNormal = {0};
+        int scanConvertMode = 1;
         if (ComputeSurfaceNormalAndCull(
             vertexCount,
-            &surfaceNormal
+            (entry->flagsAndIndexCount & 0x0100) != 0,
+            &surfaceNormal,
+            &scanConvertMode
         ) == 0) {
             continue;
-        }
-        int scanConvertMode = 1;
-        if ((entry->flagsAndIndexCount & 0x0100) != 0) {
-            const float facing = surfaceNormal.x * g_Clip_PolyVertsScratch[0].x +
-                                 surfaceNormal.y * g_Clip_PolyVertsScratch[0].y +
-                                 surfaceNormal.z * g_Clip_PolyVertsScratch[0].z;
-            if (facing < g_zModel_BFETolerance) {
-                surfaceNormal.x = -surfaceNormal.x;
-                surfaceNormal.y = -surfaceNormal.y;
-                surfaceNormal.z = -surfaceNormal.z;
-                scanConvertMode = 0;
-            }
         }
 
         const int isTextured = (material->flags & 0x0100) != 0;
@@ -2183,19 +2283,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RenderNodeHardware(
         zVec3 surfaceNormal = {0};
         if (ComputeSurfaceNormalAndCull(
             vertexCount,
-            &surfaceNormal
+            (entry->flagsAndIndexCount & 0x0100) != 0,
+            &surfaceNormal,
+            0
         ) == 0) {
             continue;
-        }
-        if ((entry->flagsAndIndexCount & 0x0100) != 0) {
-            const float facing = surfaceNormal.x * g_Clip_PolyVertsScratch[0].x +
-                                 surfaceNormal.y * g_Clip_PolyVertsScratch[0].y +
-                                 surfaceNormal.z * g_Clip_PolyVertsScratch[0].z;
-            if (facing < g_zModel_BFETolerance) {
-                surfaceNormal.x = -surfaceNormal.x;
-                surfaceNormal.y = -surfaceNormal.y;
-                surfaceNormal.z = -surfaceNormal.z;
-            }
         }
 
         CopyEntryNormalsToCurrent(
@@ -2280,7 +2372,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RenderNodeHardware(
             vertexCount
         );
         int clippedCount = vertexCount;
-        if (ClipAndProjectUv(
+        if (ClipAndProjectHardwareUv(
             &gClipRect_Primary,
             &clippedCount,
             hasAttributes
@@ -2288,6 +2380,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RenderNodeHardware(
             continue;
         }
 
+        zClipUV perspectiveUvs[0x40] = {0};
+        FillPerspectiveUvsForHardwareSubmit(
+            perspectiveUvs,
+            clippedCount
+        );
         ApplyDepthBiasToProjectedVerts(
             entry->drawFlags,
             clippedCount
@@ -2298,7 +2395,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RenderNodeHardware(
                 (SubmitPolygonProc)((unsigned int)(g_zVideo_pfnSubmitPolygon));
             submit(
                 (zVideo_XyzVertex *)g_Clip_PolyVerts,
-                (zVideo_TexCoord *)g_Clip_PolyUvs,
+                (zVideo_TexCoord *)perspectiveUvs,
                 g_Clip_PolyAttr1,
                 g_Clip_PolyAttr0,
                 g_Clip_PolyAttr2,
@@ -2313,7 +2410,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RenderNodeHardware(
                 (SubmitPolyRenderClassProc)((unsigned int)(g_zVideo_pfnSubmitPolyRenderClass));
             submit(
                 (zVideo_XyzVertex *)g_Clip_PolyVerts,
-                (zVideo_TexCoord *)g_Clip_PolyUvs,
+                (zVideo_TexCoord *)perspectiveUvs,
                 clippedCount,
                 renderClass,
                 entry->drawFlags,

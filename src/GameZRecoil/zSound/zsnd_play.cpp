@@ -277,29 +277,49 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL zSndSample::AcquirePlayHandleDis
 }
 
 // Reimplements 0x49f830: zSndSample::AcquireVoice
+// Selects an idle primary or duplicate DirectSound play handle, or duplicates
+// the primary buffer when the original five-duplicate cap permits it.
 RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL zSndSample::AcquireVoice() {
-    if (this == 0 || createGuard != 0 || primaryVoice.backendBuffer == 0) {
-        return 0;
+    zSndPlayHandle *voice = 0;
+    if (this == 0) {
+        return voice;
     }
 
-    if (DirectSoundHandleIsAvailable(&primaryVoice)) {
-        return &primaryVoice;
+    if (createGuard != 0) {
+        return voice;
     }
 
-    zSndPlayHandle *result = 0;
-    int index = 0;
-    for (; index < duplicateVoiceCount; ++index) {
-        zSndPlayHandle *const voice = duplicateVoices[index];
-        if (voice != 0 && DirectSoundHandleIsAvailable(voice)) {
-            result = voice;
-            break;
+    if (primaryVoice.backendBuffer == 0) {
+        return voice;
+    }
+
+    int status;
+    unsigned char playingMask = 1;
+    if (primaryVoice.isActive == 0) {
+        LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer);
+        buffer->GetStatus((LPDWORD)&status);
+        if (((unsigned char)status & playingMask) == 0) {
+            return &primaryVoice;
         }
     }
 
-    if (result == 0 && index < 5) {
-        result = (zSndPlayHandle *)(malloc(sizeof(zSndPlayHandle)));
+    int index = 0;
+    for (; index < duplicateVoiceCount; ++index) {
+        voice = duplicateVoices[index];
+        if (voice != 0 && voice->isActive == 0) {
+            LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(voice->backendBuffer);
+            buffer->GetStatus((LPDWORD)&status);
+            if (((unsigned char)status & playingMask) == 0) {
+                break;
+            }
+        }
+        voice = 0;
+    }
+
+    if (voice == 0 && index < 5) {
+        voice = (zSndPlayHandle *)(malloc(sizeof(zSndPlayHandle)));
         memset(
-            result,
+            voice,
             0,
             sizeof(zSndPlayHandle)
         );
@@ -307,10 +327,10 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL zSndSample::AcquireVoice() {
         LPDIRECTSOUND const device = (LPDIRECTSOUND)(g_zSnd_BackendDevice);
         const int error = device->DuplicateSoundBuffer(
             (LPDIRECTSOUNDBUFFER)primaryVoice.backendBuffer,
-            (LPDIRECTSOUNDBUFFER *)&result->backendBuffer
+            (LPDIRECTSOUNDBUFFER *)&voice->backendBuffer
         );
         if (error != 0) {
-            free(result);
+            free(voice);
             return 0;
         }
 
@@ -319,37 +339,68 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL zSndSample::AcquireVoice() {
             (size_t)(duplicateVoiceCount + 1) * sizeof(zSndPlayHandle *)
         ));
         duplicateVoices = voices;
-        voices[duplicateVoiceCount] = result;
+        voices[duplicateVoiceCount] = voice;
         ++duplicateVoiceCount;
     }
 
-    return result;
+    return voice;
 }
 
 // Reimplements 0x49f6f0: zSndSample::AcquireA3dVoice
+// Selects an idle primary or duplicate A3D play handle, or duplicates the
+// primary provider source when the original five-duplicate cap permits it.
 RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL zSndSample::AcquireA3dVoice() {
-    if (this == 0 || createGuard != 0 || primaryVoice.backendBuffer == 0) {
-        return 0;
+    zSndPlayHandle *voice = 0;
+    if (this == 0) {
+        return voice;
     }
 
-    if (A3dHandleIsAvailable(&primaryVoice)) {
-        return &primaryVoice;
+    if (createGuard != 0) {
+        return voice;
     }
 
-    zSndPlayHandle *result = 0;
-    int index = 0;
-    for (; index < duplicateVoiceCount; ++index) {
-        zSndPlayHandle *const voice = duplicateVoices[index];
-        if (voice != 0 && A3dHandleIsAvailable(voice)) {
-            result = voice;
-            break;
+    if (primaryVoice.backendBuffer == 0) {
+        return voice;
+    }
+
+    int status;
+    unsigned char playingMask = 1;
+    if (primaryVoice.isActive == 0) {
+        zA3dProviderSource *const source = (zA3dProviderSource *)(primaryVoice.backendBuffer);
+        source->vtable->GetStatus(
+            source,
+            &status
+        );
+        if (((unsigned char)status & playingMask) == 0) {
+            return &primaryVoice;
         }
     }
 
-    if (result == 0 && index < 5) {
-        result = (zSndPlayHandle *)(malloc(sizeof(zSndPlayHandle)));
+    /*
+     * The retail function inlines the availability test here instead of
+     * calling A3dHandleIsAvailable, preserving the provider vtable call shape
+     * visible at BN 0x49f6f0.
+     */
+    int index = 0;
+    for (; index < duplicateVoiceCount; ++index) {
+        voice = duplicateVoices[index];
+        if (voice != 0 && voice->isActive == 0) {
+            zA3dProviderSource *const source = (zA3dProviderSource *)(voice->backendBuffer);
+            source->vtable->GetStatus(
+                source,
+                &status
+            );
+            if (((unsigned char)status & playingMask) == 0) {
+                break;
+            }
+        }
+        voice = 0;
+    }
+
+    if (voice == 0 && index < 5) {
+        voice = (zSndPlayHandle *)(malloc(sizeof(zSndPlayHandle)));
         memset(
-            result,
+            voice,
             0,
             sizeof(zSndPlayHandle)
         );
@@ -358,7 +409,7 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL zSndSample::AcquireA3dVoice() {
         const int error = device->vtable->DuplicateBufferA3D(
             device,
             primaryVoice.backendBuffer,
-            &result->backendBuffer
+            &voice->backendBuffer
         );
         if (error < 0) {
             zSnd::ReportA3DError(
@@ -366,7 +417,7 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL zSndSample::AcquireA3dVoice() {
                 kZSndPlaySourceFile,
                 0xb2
             );
-            free(result);
+            free(voice);
             return 0;
         }
 
@@ -375,11 +426,11 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL zSndSample::AcquireA3dVoice() {
             (size_t)(duplicateVoiceCount + 1) * sizeof(zSndPlayHandle *)
         ));
         duplicateVoices = voices;
-        voices[duplicateVoiceCount] = result;
+        voices[duplicateVoiceCount] = voice;
         ++duplicateVoiceCount;
     }
 
-    return result;
+    return voice;
 }
 
 // Reimplements 0x49f9a0: zSnd::GainScaleToDirectSoundAttenuation

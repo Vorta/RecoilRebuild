@@ -48,11 +48,11 @@
 // reimplement CWinApp behavior.
 class RecoilMfcWinAppAccess : public CWinApp {
   public:
-    BOOL CallEnable3dControls();
+    static const AFX_MSGMAP *RECOIL_STDCALL GetMessageMapForRecoilApp();
 };
 
-BOOL RecoilMfcWinAppAccess::CallEnable3dControls() {
-    return Enable3dControls();
+const AFX_MSGMAP *RECOIL_STDCALL RecoilMfcWinAppAccess::GetMessageMapForRecoilApp() {
+    return &CWinApp::messageMap;
 }
 
 struct RecoilStateCredits {
@@ -124,7 +124,7 @@ struct RecoilStateSaveLoadDialogVirtual {
 struct RecoilStateSaveLoadTransition_Vtbl {
     RecoilFn32 slots[10];
 };
-RECOIL_STATIC_ASSERT(sizeof(RecoilStateSaveLoadTransition_Vtbl) == sizeof(RecoilApp_IState_Vtbl));
+RECOIL_STATIC_ASSERT(sizeof(RecoilStateSaveLoadTransition_Vtbl) == 0x28);
 
 enum zVideoRendererBackend {
     ZVID_RENDERER_BACKEND_SOFTWARE = 0,
@@ -144,9 +144,9 @@ const char k_SaveGameNameAllowedChars[] =
 RECOIL_STATIC_ASSERT(sizeof(k_SaveGameNameAllowedChars) == 0x48);
 
 zOpt_ViewRectSection *ViewRectFromPtr(
-    RecoilPtr32 ptr
+    void *ptr
 ) {
-    return (zOpt_ViewRectSection *)((unsigned int)(ptr));
+    return (zOpt_ViewRectSection *)ptr;
 }
 
 LPCSTR IntResource(
@@ -158,12 +158,12 @@ LPCSTR IntResource(
 RECOIL_FORCEINLINE void ExtendPlayStateTransitionTimer(
     float seconds
 ) {
-    if (g_RecoilApp.m_transitionFadeTimer150 > 0.0) {
-        g_RecoilApp.m_transitionFadeTimer150 += seconds;
+    if (g_RecoilApp.m_transitionFadeTimer > 0.0) {
+        g_RecoilApp.m_transitionFadeTimer += seconds;
         return;
     }
 
-    g_RecoilApp.m_transitionFadeTimer150 = seconds;
+    g_RecoilApp.m_transitionFadeTimer = seconds;
     zOpt::SetMuteSoundOption(1);
 }
 
@@ -193,14 +193,6 @@ void RunGrandPrizeBlurAction() {
 }
 
 RecoilStateSaveLoadTransition_Vtbl g_RecoilStateSaveLoadTransition_Vtbl = {0};
-
-struct RecoilStateSaveLoadTransitionBaseVtableGuard {
-    RecoilStateSaveLoadTransition *self;
-
-    ~RecoilStateSaveLoadTransitionBaseVtableGuard() {
-        self->vftable = kRecoilStateBase_VtblAddress;
-    }
-};
 
 void AppendSaveLoadEntry(
     HudUiSaveLoadEntries *entries,
@@ -294,6 +286,7 @@ HudUiSaveLoadDialogVtable MakeHudUiSaveLoadDialogVtable() {
 } // namespace
 
 RecoilApp g_RecoilApp;
+RecoilApp_IState_Vtbl g_RecoilStateBase_Vtbl = {0};
 RecoilStateSaveLoadTransition g_RecoilStateSaveLoadTransition;
 const HudUiSaveLoadListItemVtable g_HudUiSaveLoadListItem_Vtbl = MakeHudUiSaveLoadListItemVtable();
 const HudUiWidget_FTable g_HudUiSaveLoad_DeleteButton_Vtbl =
@@ -353,7 +346,6 @@ RECOIL_NOINLINE void RECOIL_CDECL RecoilStateSaveLoadTransition::AtExitDestructo
 // Reimplements 0x435c80: RecoilStateSaveLoadTransition::Constructor
 // (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
 RecoilStateSaveLoadTransition *RECOIL_THISCALL RecoilStateSaveLoadTransition::Constructor() {
-    vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateSaveLoadTransition_Vtbl;
     m_dialogKind = RECOIL_SAVELOAD_DIALOG_SAVE;
     m_dialog = 0;
     return this;
@@ -377,9 +369,6 @@ RecoilStateSaveLoadTransition::ScalarDeletingDestructor(
 // Reimplements 0x435cc0: RecoilStateSaveLoadTransition::Destructor
 // (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
 RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateSaveLoadTransition::Destructor() {
-    vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateSaveLoadTransition_Vtbl;
-    RecoilStateSaveLoadTransitionBaseVtableGuard baseVtableOnExit = {this};
-
     RecoilStateSaveLoadDialogVirtual *dialog = (RecoilStateSaveLoadDialogVirtual *)m_dialog;
     if (dialog != 0) {
         dialog->ScalarDeletingDestructor(1);
@@ -1014,12 +1003,11 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiSaveLoadDialog::ProcessDialogResult() 
     switch (g_RecoilStateSaveLoadTransition.m_transitionMode) {
     case RECOIL_SAVELOAD_MODE_STANDARD:
         if (saveGamePath[0] != '\0') {
-            g_RecoilApp.m_playState_208.pPendingLoadGameStartPath =
-                (RecoilPtr32)((unsigned int)(_strdup(saveGamePath)));
-            g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv = 1;
+            g_RecoilApp.m_playState.pPendingLoadGameStartPath = _strdup(saveGamePath);
+            g_RecoilApp.m_missionFmvState.m_skipMissionFmv = 1;
             g_RecoilApp.QueueExitCurrentState(1);
             g_RecoilApp.QueueSwitchCurrentState(
-                &g_RecoilApp.m_missionFmvState_1d8.base,
+                &g_RecoilApp.m_missionFmvState,
                 0
             );
         } else {
@@ -1638,14 +1626,14 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_THISCALL RecoilApp::InitInstance() {
     wndClass.lpfnWndProc = DefWindowProcA;
     wndClass.hInstance = AfxGetModuleState()->m_hCurrentInstanceHandle;
     wndClass.hIcon =
-        LoadIconA(
+        ::LoadIconA(
             AfxFindResourceHandle(
                 IntResource(0x97),
                 IntResource(0x0e)
             ),
             IntResource(0x97)
         );
-    wndClass.hCursor = LoadCursorA(
+    wndClass.hCursor = ::LoadCursorA(
         AfxFindResourceHandle(
             IntResource(0x7f00),
             IntResource(0x0c)
@@ -1663,7 +1651,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_THISCALL RecoilApp::InitInstance() {
     g_RecoilApp_WindowClassRegistered = 1;
     InitMainWindow();
     m_reserved148 = 0;
-    m_pendingState_0c4 = (RecoilPtr32)((unsigned int)(&m_introFmvState_1a0));
+    m_pendingState = &m_introFmvState;
 
     char errorTextBuffer[0x400];
     char messageCaptionBuffer[0x100];
@@ -1826,38 +1814,17 @@ RECOIL_NOINLINE CZRecoilFrame *RECOIL_THISCALL RecoilApp::CreateMainWnd() {
 
 // Reimplements 0x4429d0: RecoilApp::InitMainWindow
 RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::InitMainWindow() {
-    ((RecoilMfcWinAppAccess *)(this))->CallEnable3dControls();
+    Enable3dControls();
 
-    typedef CZRecoilFrame *(RECOIL_THISCALL * CreateMainWndMethod)(RecoilApp *);
-    const CreateMainWndMethod *const createMainWnd =
-        (const CreateMainWndMethod *)((unsigned int)(vftable + 0xb8));
-    m_pMainWnd = (RecoilPtr32)((unsigned int)((*createMainWnd)(this)));
-    CZRecoilFrame *const mainWnd = (CZRecoilFrame *)((unsigned int)(GetMainWnd()));
-    mainWnd->m_app = (RecoilPtr32)((unsigned int)(this));
-    ((CWnd *)((unsigned int)(m_pMainWnd)))->ShowWindow(SW_SHOW);
-    UpdateWindow(((CWnd *)((unsigned int)(m_pMainWnd)))->m_hWnd);
+    m_pMainWnd = (CWnd *)CreateMainWnd();
+    CZRecoilFrame *const mainWnd = GetMainWnd();
+    mainWnd->m_app = this;
+    m_pMainWnd->ShowWindow(SW_SHOW);
+    UpdateWindow(m_pMainWnd->m_hWnd);
     return 1;
 }
 
 namespace {
-typedef void(RECOIL_THISCALL *RecoilStateMethod)(RecoilApp_IState *);
-typedef int(RECOIL_THISCALL *RecoilStateIntMethod)(RecoilApp_IState *);
-typedef void(RECOIL_THISCALL *RecoilStateParamMethod)(
-    RecoilApp_IState *,
-    int
-);
-typedef int(RECOIL_THISCALL *RecoilStateIdleMethod)(
-    RecoilApp_IState *,
-    unsigned int,
-    unsigned int
-);
-typedef int(RECOIL_THISCALL *RecoilAppNoArgIntMethod)(RecoilApp *);
-typedef void(RECOIL_THISCALL *RecoilAppNoArgVoidMethod)(RecoilApp *);
-typedef int(RECOIL_THISCALL *RecoilAppStartEngineMethod)(
-    RecoilApp *,
-    RecoilPtr32
-);
-
 const char kEngineInitFailed[] = "FAILED";
 const char kEngineInitPassed[] = "PASSED";
 
@@ -1881,54 +1848,11 @@ inline void PrintEngineInitNonzeroStatus(
     );
 }
 
-void CallRecoilStateMethod(
-    RecoilPtr32 stateValue,
-    size_t vtableOffset
-) {
-    RecoilApp_IState *const state = (RecoilApp_IState *)((unsigned int)(stateValue));
-    const RecoilPtr32 methodValue =
-        *(const RecoilPtr32 *)((unsigned int)(state->vftable + vtableOffset));
-    RecoilStateMethod const method = (RecoilStateMethod)((unsigned int)(methodValue));
-    method(state);
-}
-
-int CallRecoilStateIntMethod(
-    RecoilPtr32 stateValue,
-    size_t vtableOffset
-) {
-    RecoilApp_IState *const state = (RecoilApp_IState *)((unsigned int)(stateValue));
-    const RecoilPtr32 methodValue =
-        *(const RecoilPtr32 *)((unsigned int)(state->vftable + vtableOffset));
-    RecoilStateIntMethod const method = (RecoilStateIntMethod)((unsigned int)(methodValue));
-    return method(state);
-}
-
-void CallRecoilStateParamMethod(
-    RecoilPtr32 stateValue,
-    size_t vtableOffset,
-    int param
-) {
-    RecoilApp_IState *const state = (RecoilApp_IState *)((unsigned int)(stateValue));
-    const RecoilPtr32 methodValue =
-        *(const RecoilPtr32 *)((unsigned int)(state->vftable + vtableOffset));
-    RecoilStateParamMethod const method = (RecoilStateParamMethod)((unsigned int)(methodValue));
-    method(
-        state,
-        param
-    );
-}
-
-RecoilFn32 ReadRecoilVtableSlot(
-    RecoilPtr32 vftable,
-    size_t offset
-) {
-    return *(const RecoilFn32 *)((unsigned int)(vftable + offset));
-}
 } // namespace
 
 // Reimplements 0x442a50: RecoilApp::EngineInit
 RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::EngineInit(
-    RecoilPtr32 hwnd
+    HWND hwnd
 ) {
     zUtil::ZRDR_PreallocNodePool(0);
     zUtil::ZRDR_Init(0);
@@ -1951,7 +1875,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::EngineInit(
     );
     PrintEngineInitNonzeroStatus(
         "zSndInit:  %s\n",
-        zSnd_PreInitializeRuntimeState(hwnd)
+        zSnd_PreInitializeRuntimeState((RecoilPtr32)((unsigned int)hwnd))
     );
     PrintEngineInitZeroStatus(
         "zUtlInit:  %s\n",
@@ -1972,7 +1896,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::EngineInit(
 
     PrintEngineInitZeroStatus(
         "zInInit:  %s\n",
-        zInput::Init((HWND)((unsigned int)(hwnd)), (HINSTANCE)((unsigned int)(m_hInstance_6c)))
+        zInput::Init((HWND)((unsigned int)(hwnd)), (HINSTANCE)((unsigned int)(m_hInstance)))
     );
     Time::Reset();
     zVid::SetCachedClientRectUpdateMask(1);
@@ -1981,15 +1905,13 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::EngineInit(
 
 // Reimplements 0x42e330: RecoilApp::InitializeDisplay
 RECOIL_NOINLINE int RECOIL_FASTCALL RecoilApp::InitializeDisplay(
-    RecoilPtr32 hwnd
+    HWND hwnd
 ) {
-    const int modeIndex = zVid::GetVideoModeIndexFromOptions();
-    const int fullscreen = zOpt::GetFullscreenOption();
     if (zVideo::InitVideoSystem(
-            (HWND)((unsigned int)(hwnd)),
+            hwnd,
             zVid::GetHwApiOption(),
-            fullscreen,
-            modeIndex
+            zOpt::GetFullscreenOption(),
+            zVid::GetVideoModeIndexFromOptions()
         ) != 0) {
         printf("Error opening video... ABORTING RUN\n");
         fflush(stdout);
@@ -2003,15 +1925,11 @@ RECOIL_NOINLINE int RECOIL_FASTCALL RecoilApp::InitializeDisplay(
         return 0;
     }
 
-    const int pitchBytes = zVideo::GetPrimarySurfacePitch();
-    const int bitsPerPixel = zOpt::GetDisplaySectionBitsPerPixel();
-    zOpt_ViewRectSection *const activeRegionRect = zOpt::GetDisplaySection();
-    void *const primaryPixels = zVideo::GetPrimarySurfacePixels();
     zRndr::SetFrameBufferRegion(
-        primaryPixels,
-        activeRegionRect,
-        bitsPerPixel,
-        pitchBytes
+        zVideo::GetPrimarySurfacePixels(),
+        zOpt::GetDisplaySection(),
+        zOpt::GetDisplaySectionBitsPerPixel(),
+        zVideo::GetPrimarySurfacePitch()
     );
     zRndr::SetVideoStrideMirrors(zOpt::GetVideoStrideValue());
     zVid::InitFrameScratchBuffers();
@@ -2022,14 +1940,14 @@ RECOIL_NOINLINE int RECOIL_FASTCALL RecoilApp::InitializeDisplay(
         0
     );
     zVideo::CallClearPrimarySurfaceAndZBuffer(0);
-    zVideo::AdjustSurfacesIfEnabled(
+    zVideo::PresentOrAdjustSurfacesIfEnabled(
         0,
         0,
         1,
         1
     );
     zVideo::CallClearPrimarySurfaceAndZBuffer(0);
-    zVideo::AdjustSurfacesIfEnabled(
+    zVideo::PresentOrAdjustSurfacesIfEnabled(
         0,
         0,
         1,
@@ -2041,7 +1959,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL RecoilApp::InitializeDisplay(
 
 // Reimplements 0x42e220: RecoilApp::StartEngine
 RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_THISCALL RecoilApp::StartEngine(
-    RecoilPtr32 hwnd
+    HWND hwnd
 ) {
     EngineInit(hwnd);
     PrintEngineInitZeroStatus(
@@ -2050,7 +1968,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_THISCALL RecoilApp::StartEngine(
     );
 
     zSndSystem_Init(
-        hwnd,
+        (RecoilPtr32)((unsigned int)hwnd),
         "sounds.zrd"
     );
     zSnd::SetAudioApiOption(zSnd::GetActiveBackend());
@@ -2062,7 +1980,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_THISCALL RecoilApp::StartEngine(
             zLoc::GetMessageString(0x901)
         );
         MessageBoxExA(
-            (HWND)((unsigned int)(hwnd)),
+            hwnd,
             zLoc::GetMessageString(0x1f),
             caption,
             MB_ICONHAND,
@@ -2072,7 +1990,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_THISCALL RecoilApp::StartEngine(
     }
 
     zInput::Init(
-        (HWND)((unsigned int)(hwnd)),
+        hwnd,
         g_RecoilApp_hInstance
     );
     const int height = zOpt_DisplaySection_GetHeight();
@@ -2096,17 +2014,17 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::ActivateExistingInstance() {
         g_RecoilApp_WndClassNamePtr,
         0
     ));
-    if (existingWindow == 0) {
-        return 1;
+    if (existingWindow != 0) {
+        CWnd *const popup = CWnd::FromHandle(GetLastActivePopup(existingWindow->m_hWnd));
+        if (IsIconic(existingWindow->m_hWnd) != 0) {
+            existingWindow->ShowWindow(SW_RESTORE);
+        }
+
+        SetForegroundWindow(popup->m_hWnd);
+        return 0;
     }
 
-    CWnd *const popup = CWnd::FromHandle(GetLastActivePopup(existingWindow->m_hWnd));
-    if (IsIconic(existingWindow->m_hWnd) != 0) {
-        existingWindow->ShowWindow(SW_RESTORE);
-    }
-
-    SetForegroundWindow(popup->m_hWnd);
-    return 0;
+    return 1;
 }
 
 // Reimplements 0x42e9f0: RecoilApp::PreTranslateMessage
@@ -2135,7 +2053,7 @@ RECOIL_NOINLINE int RECOIL_CDECL ShutdownGlobals();
 }
 
 // Reimplements 0x442bc0: RecoilApp::ShutdownSubsystems
-RECOIL_NOINLINE int RECOIL_CDECL RecoilApp::ShutdownSubsystems() {
+RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp::ShutdownSubsystems() {
     zInput::Shutdown();
     zImage::ShutdownSubsystem();
     zUtil_ZRDR_ShutdownWildcardPath();
@@ -2147,7 +2065,6 @@ RECOIL_NOINLINE int RECOIL_CDECL RecoilApp::ShutdownSubsystems() {
     zSndSystem::Shutdown();
     zUtil_ZRDR_Shutdown();
     zUtil_ZRDR_FreeNodePool();
-    return 0;
 }
 
 // Reimplements 0x42e430: RecoilApp::ShutdownEngine
@@ -2210,33 +2127,18 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::LoadZbdAndSetupSensorTracker(
     return 1;
 }
 
-extern const zMfcMsgMapEntry g_RecoilApp_MessageEntries[1] = {0};
-
-extern const MfcMsgMap g_RecoilApp_MessageMap = {
-    0x004428a0,
-    0x004d0998,
+extern const AFX_MSGMAP_ENTRY g_RecoilApp_MessageEntries[1] = {
+    {0, 0, 0, 0, 0, 0},
 };
 
-// Reimplements 0x42de20: RecoilApp::StaticInitAndRegisterAtExit
-RECOIL_NOINLINE void RECOIL_CDECL RecoilApp::StaticInitAndRegisterAtExit() {
-    StaticInit();
-    RegisterAtExit();
-}
-
-// Reimplements 0x42de30: RecoilApp::StaticInit
-RECOIL_NOINLINE RecoilApp *RECOIL_CDECL RecoilApp::StaticInit() {
-    return g_RecoilApp.Constructor();
-}
-
-// Reimplements 0x42de40: RecoilApp::RegisterAtExit
-RECOIL_NOINLINE void RECOIL_CDECL RecoilApp::RegisterAtExit() {
-    atexit(AtExitDestructor);
-}
-
-// Reimplements 0x42de50: RecoilApp::AtExitDestructor
-RECOIL_NOINLINE void RECOIL_CDECL RecoilApp::AtExitDestructor() {
-    g_RecoilApp.Destructor();
-}
+extern const AFX_MSGMAP g_RecoilApp_MessageMap = {
+#if defined(_AFXDLL)
+    &RecoilApp::GetBaseMessageMapForMfc,
+#else
+    RecoilMfcWinAppAccess::GetMessageMapForRecoilApp(),
+#endif
+    &g_RecoilApp_MessageEntries[0],
+};
 
 // Reimplements 0x4a5780: RecoilApp::InitStdLogFiles
 RECOIL_NOINLINE RECOIL_NO_GS void RECOIL_FASTCALL RecoilApp::InitStdLogFiles(
@@ -2319,388 +2221,249 @@ RECOIL_NOINLINE RECOIL_NO_GS void RECOIL_FASTCALL RecoilApp::InitStdLogFiles(
     }
 }
 
-// Reimplements 0x42dfa0: RecoilApp::Constructor
-RECOIL_NOINLINE RecoilApp *RECOIL_THISCALL RecoilApp::Constructor() {
-    MfcOleModuleConstructor();
-    m_attractFmvState_160.Constructor();
-
-    m_introFmvState_1a0.base.vftable = kRecoilStateBase_VtblAddress;
-    ((zFMV_Script *)(m_introFmvState_1a0.m_fmv_08))->Init(
-        0,
-        0,
-        0
-    );
-    m_introFmvState_1a0.base.vftable = kRecoilApp_IntroFmvState_VtblAddress;
-
-    m_mainMenuPrepState_1c8.base.vftable = kRecoilApp_MainMenuPrepState_VtblAddress;
-    m_leaveNetworkState_1d0.base.vftable = kRecoilApp_LeaveNetworkState_VtblAddress;
-
-    m_missionFmvState_1d8.Constructor();
-    m_playState_208.Constructor();
-    *(volatile RecoilPtr32 *)(&m_mpExitDialogState_220.base.vftable) =
-        kRecoilApp_MpExitDialogState_VtblAddress;
-    *(volatile RecoilPtr32 *)(&vftable) = kRecoilApp_VtblAddress;
-    *(volatile unsigned int *)(&m_transitionFadeTimer150) = 0;
-    return this;
-}
-
-// Reimplements 0x42de60: RecoilApp::Destructor
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp::Destructor() {
-    m_mpExitDialogState_220.base.vftable = kRecoilStateBase_VtblAddress;
-    m_playState_208.base.vftable = kRecoilStateBase_VtblAddress;
-
-    ((zFMV_Script *)(m_missionFmvState_1d8.m_fmv_08))->Cleanup();
-    m_missionFmvState_1d8.base.vftable = kRecoilStateBase_VtblAddress;
-    m_leaveNetworkState_1d0.base.vftable = kRecoilStateBase_VtblAddress;
-    m_mainMenuPrepState_1c8.base.vftable = kRecoilStateBase_VtblAddress;
-
-    ((zFMV_Script *)(m_introFmvState_1a0.m_fmv_08))->Cleanup();
-    m_introFmvState_1a0.base.vftable = kRecoilStateBase_VtblAddress;
-
-    ((zFMV_Script *)(m_attractFmvState_160.m_fmv_10))->Cleanup();
-    m_attractFmvState_160.base.vftable = kRecoilStateBase_VtblAddress;
-
-    MfcOleModuleDestructor();
-}
-
-// Reimplements 0x42e0b0: RecoilApp::ScalarDeletingDestructor
-RECOIL_NOINLINE RecoilApp *RECOIL_THISCALL RecoilApp::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-    if ((flags & 1) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
 // Reimplements 0x443700: RecoilApp_StateQueueBlock::InitFromCursor
-RecoilApp_StateQueueBlock *RECOIL_THISCALL RecoilApp_StateQueueBlock::InitFromCursor(
-    RecoilPtr32 cursor,
-    RecoilPtr32 chunkPtrSlot
+// Initializes one chunk cursor descriptor from a slot in the queue chunk map.
+RECOIL_NOINLINE RecoilApp_StateQueueBlock *RECOIL_THISCALL
+RecoilApp_StateQueueBlock::InitFromCursor(
+    RecoilApp_StateQueueItem **cursor,
+    RecoilApp_StateQueueItem ***chunkBaseSlot
 ) {
-    // Original 0x443700 reloads through the chunk-slot pointer when deriving
-    // m_chunkEnd; keep the volatile read so VC does not collapse the two loads.
-    volatile RecoilApp_StateQueueBlock *const block = this;
-    volatile RecoilPtr32 *const chunkSlot = (volatile RecoilPtr32 *)chunkPtrSlot;
-    block->m_chunkBegin = *chunkSlot;
-    const RecoilPtr32 chunkEnd = *chunkSlot + 0x1000;
-    block->m_chunkPtrSlot = chunkPtrSlot;
-    block->m_chunkEnd = chunkEnd;
-    block->m_cursor = cursor;
+    m_chunkBegin = *chunkBaseSlot;
+    RecoilApp_StateQueueItem **const chunkEnd = *chunkBaseSlot + 1024;
+    m_chunkBaseSlot = chunkBaseSlot;
+    m_chunkEnd = chunkEnd;
+    m_cursor = cursor;
     return this;
 }
 
 // Reimplements 0x443690: RecoilApp_StateQueue::GrowAndCenterChunkBaseList
-RecoilPtr32 RECOIL_THISCALL RecoilApp_StateQueue::GrowAndCenterChunkBaseList(
+// Grows the chunk-map and recenters the active chunk-slot range in the new map.
+RECOIL_NOINLINE RecoilApp_StateQueueItem ***RECOIL_THISCALL
+RecoilApp_StateQueue::GrowAndCenterChunkBaseList(
     int newCapacity
 ) {
-    int byteCount = (int)((unsigned int)(newCapacity) << 2);
+    int byteCount = newCapacity * (int)(sizeof(RecoilApp_StateQueueItem **));
     if (byteCount < 0) {
         byteCount = 0;
     }
 
-    RecoilPtr32 *const newList = (RecoilPtr32 *)(::operator new((size_t)(byteCount)));
-    RecoilPtr32 *const centerSlot = newList + ((unsigned int)(newCapacity) >> 2);
+    RecoilApp_StateQueueItem ***const newList =
+        (RecoilApp_StateQueueItem ***)::operator new(byteCount);
+    RecoilApp_StateQueueItem ***const centeredSlot =
+        newList + (((unsigned int)newCapacity) >> 2);
+    RecoilApp_StateQueueItem ***readSlot = m_readBlock.m_chunkBaseSlot;
+    RecoilApp_StateQueueItem ***const stopSlot = m_writeBlock.m_chunkBaseSlot + 1;
+    RecoilApp_StateQueueItem ***writeSlot = centeredSlot;
 
-    const RecoilPtr32 *srcSlot = (const RecoilPtr32 *)((unsigned int)(m_readBlock.m_chunkPtrSlot));
-    const RecoilPtr32 *const srcEnd =
-        (const RecoilPtr32 *)((unsigned int)(m_writeBlock.m_chunkPtrSlot + 4));
-    RecoilPtr32 *dstSlot = centerSlot;
-    while (srcSlot != srcEnd) {
-        *dstSlot = *srcSlot;
-        ++srcSlot;
-        ++dstSlot;
+    while (readSlot != stopSlot) {
+        *writeSlot = *readSlot;
+        ++readSlot;
+        ++writeSlot;
     }
 
-    ::operator delete((void *)((unsigned int)(m_chunkPtrList)));
-    m_chunkPtrList = (RecoilPtr32)((unsigned int)(newList));
-    m_chunkPtrCapacity = newCapacity;
-    return (RecoilPtr32)((unsigned int)(centerSlot));
+    ::operator delete(m_chunkBaseList);
+    m_chunkBaseList = newList;
+    m_chunkBaseCapacity = newCapacity;
+    return centeredSlot;
+}
+
+RECOIL_FORCEINLINE bool RecoilApp_StateQueue::Empty() const {
+    return m_itemCount == 0;
+}
+
+RECOIL_FORCEINLINE RecoilApp_StateQueueItem *RecoilApp_StateQueue::Front() const {
+    return *m_readBlock.m_cursor;
+}
+
+RECOIL_FORCEINLINE void RecoilAppQueueBlockAssignFromCursor(
+    RecoilApp_StateQueueBlock *block,
+    RecoilApp_StateQueueItem **cursor,
+    RecoilApp_StateQueueItem ***chunkBaseSlot
+) {
+    block->m_chunkBegin = *chunkBaseSlot;
+    block->m_chunkEnd = *chunkBaseSlot + 1024;
+    block->m_cursor = cursor;
+    block->m_chunkBaseSlot = chunkBaseSlot;
+}
+
+RECOIL_FORCEINLINE void RecoilApp_StateQueue::PopFront() {
+    ++m_readBlock.m_cursor;
+    --m_itemCount;
+
+    if (m_itemCount != 0 && m_readBlock.m_cursor == m_readBlock.m_chunkEnd) {
+        ++m_readBlock.m_chunkBaseSlot;
+        m_readBlock.InitFromCursor(
+            *m_readBlock.m_chunkBaseSlot,
+            m_readBlock.m_chunkBaseSlot
+        );
+    }
+}
+
+RECOIL_FORCEINLINE void RecoilApp_StateQueue::PushBack(
+    RecoilApp_StateQueueItem *const &item
+) {
+    if (Empty() || m_writeBlock.m_cursor == m_writeBlock.m_chunkEnd) {
+        RecoilApp_StateQueueItem **chunk =
+            (RecoilApp_StateQueueItem **)::operator new(4096);
+
+        if (Empty()) {
+            m_chunkBaseCapacity = 2;
+            m_chunkBaseList = (RecoilApp_StateQueueItem ***)::operator new(
+                2 * (int)(sizeof(RecoilApp_StateQueueItem **))
+            );
+            m_chunkBaseList[1] = chunk;
+
+            RecoilApp_StateQueueItem ***const chunkBaseSlot = m_chunkBaseList + 1;
+            RecoilApp_StateQueueItem **const cursor = chunk + 512;
+            RecoilAppQueueBlockAssignFromCursor(
+                &m_readBlock,
+                cursor,
+                chunkBaseSlot
+            );
+            RecoilAppQueueBlockAssignFromCursor(
+                &m_writeBlock,
+                cursor,
+                chunkBaseSlot
+            );
+        } else if (m_writeBlock.m_chunkBaseSlot <
+                   m_chunkBaseList + m_chunkBaseCapacity - 1) {
+            ++m_writeBlock.m_chunkBaseSlot;
+            *m_writeBlock.m_chunkBaseSlot = chunk;
+            RecoilAppQueueBlockAssignFromCursor(
+                &m_writeBlock,
+                chunk,
+                m_writeBlock.m_chunkBaseSlot
+            );
+        } else {
+            const int activeChunkCount =
+                (int)(m_writeBlock.m_chunkBaseSlot - m_readBlock.m_chunkBaseSlot) + 1;
+            RecoilApp_StateQueueItem **const oldReadCursor = m_readBlock.m_cursor;
+            RecoilApp_StateQueueItem ***const centeredSlot =
+                GrowAndCenterChunkBaseList(activeChunkCount * 2);
+            RecoilApp_StateQueueItem ***const newWriteSlot =
+                centeredSlot + activeChunkCount;
+            *newWriteSlot = chunk;
+            RecoilAppQueueBlockAssignFromCursor(
+                &m_readBlock,
+                oldReadCursor,
+                centeredSlot
+            );
+            RecoilApp_StateQueueBlock writeBlock;
+            writeBlock.InitFromCursor(
+                chunk,
+                newWriteSlot
+            );
+            m_writeBlock = writeBlock;
+        }
+    }
+
+    RecoilApp_StateQueueItem **const slot = m_writeBlock.m_cursor;
+    m_writeBlock.m_cursor = slot + 1;
+    if (slot != 0) {
+        *slot = item;
+    }
+    ++m_itemCount;
+}
+
+// Reimplements 0x42dfa0: RecoilApp::RecoilApp
+RECOIL_NOINLINE RECOIL_THISCALL RecoilApp::RecoilApp()
+    : CWinApp(0),
+#if !defined(_AFXDLL)
+      m_recoilPad(0),
+#endif
+      m_currentStateIndex(-1),
+      m_transitionFadeTimer(0.0f) {
+}
+
+// Reimplements 0x42de60: RecoilApp::~RecoilApp
+RECOIL_NOINLINE RECOIL_THISCALL RecoilApp::~RecoilApp() {
+}
+
+const AFX_MSGMAP *RECOIL_STDCALL RecoilApp::GetBaseMessageMapForMfc() {
+    return RecoilMfcWinAppAccess::GetMessageMapForRecoilApp();
 }
 
 // Reimplements 0x42de10: RecoilApp::GetMessageMap
-const MfcMsgMap *RECOIL_THISCALL RecoilApp::GetMessageMap() const {
+const AFX_MSGMAP *RECOIL_THISCALL RecoilApp::GetMessageMap() const {
     return &g_RecoilApp_MessageMap;
 }
 
 // Reimplements 0x442c00: RecoilApp::GetMainWnd
-RECOIL_NOINLINE RecoilPtr32 RECOIL_THISCALL RecoilApp::GetMainWnd() const {
-    return m_pMainWnd;
+RECOIL_NOINLINE CZRecoilFrame *RECOIL_THISCALL RecoilApp::GetMainWnd() const {
+    return (CZRecoilFrame *)m_pMainWnd;
 }
 
 // Reimplements 0x443140: RecoilApp::GetCurrentState
-RecoilPtr32 RECOIL_THISCALL RecoilApp::GetCurrentState() const {
-    if (m_currentStateIndex_0c8 < 0) {
+RECOIL_NOINLINE RecoilApp_IState *RECOIL_THISCALL RecoilApp::GetCurrentState() const {
+    if (m_currentStateIndex < 0) {
         return 0;
     }
 
-    if (m_currentStateIndex_0c8 >= (int)(sizeof(m_stateStack_0d8) / sizeof(m_stateStack_0d8[0]))) {
+    if (m_currentStateIndex >= (int)(sizeof(m_stateStack) / sizeof(m_stateStack[0]))) {
         return 0;
     }
 
-    return m_stateStack_0d8[m_currentStateIndex_0c8];
+    return m_stateStack[m_currentStateIndex];
 }
 
 // Reimplements 0x443160: RecoilApp::QueueSwitchCurrentState
-RecoilPtr32 RECOIL_THISCALL RecoilApp::QueueSwitchCurrentState(
+RecoilApp_IState *RECOIL_THISCALL RecoilApp::QueueSwitchCurrentState(
     RecoilApp_IState *state,
     int stateParam
 ) {
-    const RecoilPtr32 currentState = GetCurrentState();
-    const RecoilPtr32 newState = (RecoilPtr32)((unsigned int)(state));
-
-    RecoilApp_StateQueueItem *const item =
-        (RecoilApp_StateQueueItem *)(::operator new(sizeof(RecoilApp_StateQueueItem)));
-    RecoilPtr32 itemValue = 0;
+    RecoilApp_IState *const currentState = GetCurrentState();
+    RecoilApp_StateQueueItem *item = new RecoilApp_StateQueueItem;
     if (item != 0) {
         item->m_type = 0;
         item->m_kind = RecoilApp_StateQueueKind_SwitchCurrent;
-        item->m_stateObj = newState;
+        item->m_stateObj = state;
         item->m_param = stateParam;
-        itemValue = (RecoilPtr32)((unsigned int)(item));
     }
-
-    RecoilApp_StateQueue &queue = m_stateQueue_118;
-    if (queue.m_itemCount == 0 || queue.m_writeBlock.m_cursor == queue.m_writeBlock.m_chunkEnd) {
-        const RecoilPtr32 chunk = (RecoilPtr32)((unsigned int)(::operator new(0x1000)));
-
-        if (queue.m_itemCount == 0) {
-            queue.m_chunkPtrCapacity = 2;
-            RecoilPtr32 *const chunkList = (RecoilPtr32 *)(::operator new(2 * sizeof(RecoilPtr32)));
-            queue.m_chunkPtrList = (RecoilPtr32)((unsigned int)(chunkList));
-            chunkList[1] = chunk;
-
-            const RecoilPtr32 chunkSlot = (RecoilPtr32)((unsigned int)(&chunkList[1]));
-            const RecoilPtr32 centeredCursor = chunk + 0x800;
-            queue.m_readBlock.InitFromCursor(
-                centeredCursor,
-                chunkSlot
-            );
-            queue.m_writeBlock.InitFromCursor(
-                centeredCursor,
-                chunkSlot
-            );
-        } else {
-            RecoilPtr32 chunkSlot = queue.m_writeBlock.m_chunkPtrSlot;
-            const RecoilPtr32 lastChunkSlot =
-                queue.m_chunkPtrList + (RecoilPtr32)(queue.m_chunkPtrCapacity * 4 - 4);
-
-            if (chunkSlot < lastChunkSlot) {
-                chunkSlot += 4;
-                *(RecoilPtr32 *)((unsigned int)(chunkSlot)) = chunk;
-                queue.m_writeBlock.InitFromCursor(
-                    chunk,
-                    chunkSlot
-                );
-            } else {
-                const int activeChunkCount =
-                    (int)((queue.m_writeBlock.m_chunkPtrSlot - queue.m_readBlock.m_chunkPtrSlot) /
-                          4) +
-                    1;
-                const RecoilPtr32 newList = queue.GrowAndCenterChunkBaseList(activeChunkCount * 2);
-                chunkSlot = newList + (RecoilPtr32)(activeChunkCount * 4);
-                *(RecoilPtr32 *)((unsigned int)(chunkSlot)) = chunk;
-                queue.m_readBlock.InitFromCursor(
-                    queue.m_readBlock.m_cursor,
-                    newList
-                );
-                queue.m_writeBlock.InitFromCursor(
-                    chunk,
-                    chunkSlot
-                );
-            }
-        }
-    }
-
-    const RecoilPtr32 writeCursor = queue.m_writeBlock.m_cursor;
-    queue.m_writeBlock.m_cursor = writeCursor + 4;
-    if (writeCursor != 0) {
-        *(RecoilPtr32 *)((unsigned int)(writeCursor)) = itemValue;
-    }
-    ++queue.m_itemCount;
+    m_stateQueue.PushBack(item);
 
     if (currentState != 0) {
-        CallRecoilStateMethod(
-            currentState,
-            offsetof(RecoilApp_IState_Vtbl, OnExit)
-        );
+        currentState->OnExit();
     }
-    CallRecoilStateMethod(
-        newState,
-        offsetof(RecoilApp_IState_Vtbl, OnEnter)
-    );
+    state->OnEnter();
 
     return currentState;
 }
 
 // Reimplements 0x443310: RecoilApp::QueuePushState
-RecoilPtr32 RECOIL_THISCALL RecoilApp::QueuePushState(
+RecoilApp_IState *RECOIL_THISCALL RecoilApp::QueuePushState(
     RecoilApp_IState *state,
     int suspendParam
 ) {
-    const RecoilPtr32 currentState = GetCurrentState();
-    const RecoilPtr32 newState = (RecoilPtr32)((unsigned int)(state));
-
-    RecoilApp_StateQueueItem *const item =
-        (RecoilApp_StateQueueItem *)(::operator new(sizeof(RecoilApp_StateQueueItem)));
-    RecoilPtr32 itemValue = 0;
+    RecoilApp_IState *const currentState = GetCurrentState();
+    RecoilApp_StateQueueItem *item = new RecoilApp_StateQueueItem;
     if (item != 0) {
         item->m_type = 0;
         item->m_kind = RecoilApp_StateQueueKind_PushState;
-        item->m_stateObj = newState;
+        item->m_stateObj = state;
         item->m_param = suspendParam;
-        itemValue = (RecoilPtr32)((unsigned int)(item));
     }
+    m_stateQueue.PushBack(item);
 
-    RecoilApp_StateQueue &queue = m_stateQueue_118;
-    if (queue.m_itemCount == 0 || queue.m_writeBlock.m_cursor == queue.m_writeBlock.m_chunkEnd) {
-        const RecoilPtr32 chunk = (RecoilPtr32)((unsigned int)(::operator new(0x1000)));
-
-        if (queue.m_itemCount == 0) {
-            queue.m_chunkPtrCapacity = 2;
-            RecoilPtr32 *const chunkList = (RecoilPtr32 *)(::operator new(2 * sizeof(RecoilPtr32)));
-            queue.m_chunkPtrList = (RecoilPtr32)((unsigned int)(chunkList));
-            chunkList[1] = chunk;
-
-            const RecoilPtr32 chunkSlot = (RecoilPtr32)((unsigned int)(&chunkList[1]));
-            const RecoilPtr32 centeredCursor = chunk + 0x800;
-            queue.m_readBlock.InitFromCursor(
-                centeredCursor,
-                chunkSlot
-            );
-            queue.m_writeBlock.InitFromCursor(
-                centeredCursor,
-                chunkSlot
-            );
-        } else {
-            RecoilPtr32 chunkSlot = queue.m_writeBlock.m_chunkPtrSlot;
-            const RecoilPtr32 lastChunkSlot =
-                queue.m_chunkPtrList + (RecoilPtr32)(queue.m_chunkPtrCapacity * 4 - 4);
-
-            if (chunkSlot < lastChunkSlot) {
-                chunkSlot += 4;
-                *(RecoilPtr32 *)((unsigned int)(chunkSlot)) = chunk;
-                queue.m_writeBlock.InitFromCursor(
-                    chunk,
-                    chunkSlot
-                );
-            } else {
-                const int activeChunkCount =
-                    (int)((queue.m_writeBlock.m_chunkPtrSlot - queue.m_readBlock.m_chunkPtrSlot) /
-                          4) +
-                    1;
-                const RecoilPtr32 newList = queue.GrowAndCenterChunkBaseList(activeChunkCount * 2);
-                chunkSlot = newList + (RecoilPtr32)(activeChunkCount * 4);
-                *(RecoilPtr32 *)((unsigned int)(chunkSlot)) = chunk;
-                queue.m_readBlock.InitFromCursor(
-                    queue.m_readBlock.m_cursor,
-                    newList
-                );
-                queue.m_writeBlock.InitFromCursor(
-                    chunk,
-                    chunkSlot
-                );
-            }
-        }
-    }
-
-    const RecoilPtr32 writeCursor = queue.m_writeBlock.m_cursor;
-    queue.m_writeBlock.m_cursor = writeCursor + 4;
-    if (writeCursor != 0) {
-        *(RecoilPtr32 *)((unsigned int)(writeCursor)) = itemValue;
-    }
-    ++queue.m_itemCount;
-
-    CallRecoilStateMethod(
-        newState,
-        offsetof(RecoilApp_IState_Vtbl, OnEnter)
-    );
+    state->OnEnter();
     return currentState;
 }
 
 // Reimplements 0x4434b0: RecoilApp::QueueExitCurrentState
-RecoilPtr32 RECOIL_THISCALL RecoilApp::QueueExitCurrentState(
+RecoilApp_IState *RECOIL_THISCALL RecoilApp::QueueExitCurrentState(
     int stateParam
 ) {
-    const RecoilPtr32 currentState = GetCurrentState();
-
-    RecoilApp_StateQueueItem *const item =
-        (RecoilApp_StateQueueItem *)(::operator new(sizeof(RecoilApp_StateQueueItem)));
-    RecoilPtr32 itemValue = 0;
+    RecoilApp_IState *const currentState = GetCurrentState();
+    RecoilApp_StateQueueItem *item = new RecoilApp_StateQueueItem;
     if (item != 0) {
         item->m_type = 0;
         item->m_kind = RecoilApp_StateQueueKind_ExitCurrent;
         item->m_stateObj = 0;
         item->m_param = stateParam;
-        itemValue = (RecoilPtr32)((unsigned int)(item));
     }
-
-    RecoilApp_StateQueue &queue = m_stateQueue_118;
-    if (queue.m_itemCount == 0 || queue.m_writeBlock.m_cursor == queue.m_writeBlock.m_chunkEnd) {
-        const RecoilPtr32 chunk = (RecoilPtr32)((unsigned int)(::operator new(0x1000)));
-
-        if (queue.m_itemCount == 0) {
-            queue.m_chunkPtrCapacity = 2;
-            RecoilPtr32 *const chunkList = (RecoilPtr32 *)(::operator new(2 * sizeof(RecoilPtr32)));
-            queue.m_chunkPtrList = (RecoilPtr32)((unsigned int)(chunkList));
-            chunkList[1] = chunk;
-
-            const RecoilPtr32 chunkSlot = (RecoilPtr32)((unsigned int)(&chunkList[1]));
-            const RecoilPtr32 centeredCursor = chunk + 0x800;
-            queue.m_readBlock.InitFromCursor(
-                centeredCursor,
-                chunkSlot
-            );
-            queue.m_writeBlock.InitFromCursor(
-                centeredCursor,
-                chunkSlot
-            );
-        } else {
-            RecoilPtr32 chunkSlot = queue.m_writeBlock.m_chunkPtrSlot;
-            const RecoilPtr32 lastChunkSlot =
-                queue.m_chunkPtrList + (RecoilPtr32)(queue.m_chunkPtrCapacity * 4 - 4);
-
-            if (chunkSlot < lastChunkSlot) {
-                chunkSlot += 4;
-                *(RecoilPtr32 *)((unsigned int)(chunkSlot)) = chunk;
-                queue.m_writeBlock.InitFromCursor(
-                    chunk,
-                    chunkSlot
-                );
-            } else {
-                const int activeChunkCount =
-                    (int)((queue.m_writeBlock.m_chunkPtrSlot - queue.m_readBlock.m_chunkPtrSlot) /
-                          4) +
-                    1;
-                const RecoilPtr32 newList = queue.GrowAndCenterChunkBaseList(activeChunkCount * 2);
-                chunkSlot = newList + (RecoilPtr32)(activeChunkCount * 4);
-                *(RecoilPtr32 *)((unsigned int)(chunkSlot)) = chunk;
-                queue.m_readBlock.InitFromCursor(
-                    queue.m_readBlock.m_cursor,
-                    newList
-                );
-                queue.m_writeBlock.InitFromCursor(
-                    chunk,
-                    chunkSlot
-                );
-            }
-        }
-    }
-
-    const RecoilPtr32 writeCursor = queue.m_writeBlock.m_cursor;
-    queue.m_writeBlock.m_cursor = writeCursor + 4;
-    if (writeCursor != 0) {
-        *(RecoilPtr32 *)((unsigned int)(writeCursor)) = itemValue;
-    }
-    ++queue.m_itemCount;
+    m_stateQueue.PushBack(item);
 
     if (currentState != 0) {
-        CallRecoilStateMethod(
-            currentState,
-            offsetof(RecoilApp_IState_Vtbl, OnExit)
-        );
+        currentState->OnExit();
     }
 
     return currentState;
@@ -2708,39 +2471,17 @@ RecoilPtr32 RECOIL_THISCALL RecoilApp::QueueExitCurrentState(
 
 // Reimplements 0x442c10: RecoilApp::StartEngineAndQueueStartupState
 RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::StartEngineAndQueueStartupState() {
-    const RecoilPtr32 appVtable = vftable;
-    const RecoilPtr32 mainWnd = GetMainWnd();
-    const RecoilPtr32 hwnd = *(const RecoilPtr32 *)((unsigned int)(mainWnd + 0x20));
+    CZRecoilFrame *const mainWnd = GetMainWnd();
 
-    RecoilAppStartEngineMethod const startEngine =
-        (RecoilAppStartEngineMethod)((unsigned int)(ReadRecoilVtableSlot(
-            appVtable,
-            0xac
-        )));
-    if (startEngine(
-        this,
-        hwnd
-    ) == 0) {
-        RecoilAppNoArgVoidMethod const shutdownEngine =
-            (RecoilAppNoArgVoidMethod)((unsigned int)(ReadRecoilVtableSlot(
-                vftable,
-                0xb0
-            )));
-        shutdownEngine(this);
-
-        RecoilAppNoArgIntMethod const exitInstance =
-            (RecoilAppNoArgIntMethod)((unsigned int)(ReadRecoilVtableSlot(
-                vftable,
-                0x70
-            )));
-        return exitInstance(this);
+    if (StartEngine(mainWnd->m_hWnd) == 0) {
+        ShutdownEngine();
+        return ExitInstance();
     }
 
-    RecoilApp_IState *const startupState = (RecoilApp_IState *)((unsigned int)(m_pendingState_0c4));
-    m_skipWait_0d0 = 1;
+    m_skipWait = 1;
     m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_ON_EXIT;
     QueueSwitchCurrentState(
-        startupState,
+        m_pendingState,
         0
     );
     return 1;
@@ -2751,7 +2492,7 @@ int RECOIL_THISCALL RecoilApp::OnIdleOrDispatch(
     unsigned int wParam,
     unsigned int lParam
 ) {
-    const RecoilPtr32 currentState = GetCurrentState();
+    RecoilApp_IState *const currentState = GetCurrentState();
     zSndCd::OnMciNotify(
         wParam,
         lParam
@@ -2760,13 +2501,7 @@ int RECOIL_THISCALL RecoilApp::OnIdleOrDispatch(
         return 0;
     }
 
-    const RecoilFn32 methodValue = ReadRecoilVtableSlot(
-        *(const RecoilPtr32 *)((unsigned int)(currentState)),
-        offsetof(RecoilApp_IState_Vtbl, OnIdleOrDispatch)
-    );
-    RecoilStateIdleMethod const method = (RecoilStateIdleMethod)((unsigned int)(methodValue));
-    return method(
-        (RecoilApp_IState *)((unsigned int)(currentState)),
+    return currentState->OnIdleOrDispatch(
         wParam,
         lParam
     );
@@ -2774,134 +2509,50 @@ int RECOIL_THISCALL RecoilApp::OnIdleOrDispatch(
 
 // Reimplements 0x442a10: RecoilApp::TakeSkipWaitMessage
 int RECOIL_THISCALL RecoilApp::TakeSkipWaitMessage() {
-    const int wasSkipped = m_skipWait_0d0;
-    m_skipWait_0d0 = 0;
+    const int wasSkipped = m_skipWait;
+    m_skipWait = 0;
     return wasSkipped;
 }
 
 // Reimplements 0x442a30: RecoilApp::MarkSkipWaitMessage
 int RECOIL_THISCALL RecoilApp::MarkSkipWaitMessage() {
-    const int wasSkipped = m_skipWait_0d0;
-    m_skipWait_0d0 = 1;
+    const int wasSkipped = m_skipWait;
+    m_skipWait = 1;
     return wasSkipped;
 }
 
-// Reimplements 0x442c70: RecoilApp::MfcOleModuleConstructor
-RECOIL_NOINLINE RecoilApp *RECOIL_THISCALL RecoilApp::MfcOleModuleConstructor() {
-    new (this) CWinApp(0);
-
-    const unsigned int selfValue = (unsigned int)(this);
-    unsigned char *const ctorTagBytes = (unsigned char *)(&m_stateQueue_118.m_ctorTag_00);
-    ctorTagBytes[0] = (unsigned char)((selfValue >> 24) & 0xff);
-
-    memset(
-        &m_stateQueue_118.m_readBlock,
-        0,
-        0x2c
-    );
-    m_skipWait_0d0 = 0;
-    m_pendingState_0c4 = 0;
-    vftable = kRecoilApp_MfcOleModule_VtblAddress;
-    m_currentStateIndex_0c8 = -1;
-    memset(
-        m_stateStack_0d8,
-        0,
-        sizeof(m_stateStack_0d8)
-    );
-    return this;
+void RECOIL_THISCALL RecoilApp::OnAppActivate() {
+    MarkSkipWaitMessage();
 }
 
-// Reimplements 0x4428b0: RecoilApp::MfcOleModuleDestructor
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp::MfcOleModuleDestructor() {
-    vftable = kRecoilApp_MfcOleModule_VtblAddress;
-
-    while (m_stateQueue_118.m_itemCount != 0) {
-        m_stateQueue_118.m_readBlock.m_cursor += 4;
-        --m_stateQueue_118.m_itemCount;
-
-        if (m_stateQueue_118.m_itemCount == 0 ||
-            m_stateQueue_118.m_readBlock.m_cursor == m_stateQueue_118.m_readBlock.m_chunkEnd) {
-            const RecoilPtr32 oldChunkSlot = m_stateQueue_118.m_readBlock.m_chunkPtrSlot;
-            m_stateQueue_118.m_readBlock.m_chunkPtrSlot = oldChunkSlot + 4;
-
-            const RecoilPtr32 chunk = *(RecoilPtr32 *)((unsigned int)(oldChunkSlot));
-            ::operator delete((void *)((unsigned int)(chunk)));
-
-            if (m_stateQueue_118.m_itemCount == 0) {
-                memset(
-                    &m_stateQueue_118.m_readBlock,
-                    0,
-                    sizeof(m_stateQueue_118.m_readBlock)
-                );
-                memset(
-                    &m_stateQueue_118.m_writeBlock,
-                    0,
-                    sizeof(m_stateQueue_118.m_writeBlock)
-                );
-                ::operator delete((void *)((unsigned int)(m_stateQueue_118.m_chunkPtrList)));
-            } else {
-                const RecoilPtr32 chunkSlot = m_stateQueue_118.m_readBlock.m_chunkPtrSlot;
-                const RecoilPtr32 nextChunk = *(RecoilPtr32 *)((unsigned int)(chunkSlot));
-                m_stateQueue_118.m_readBlock.m_chunkBegin = nextChunk;
-                m_stateQueue_118.m_readBlock.m_chunkEnd = nextChunk + 0x1000;
-                m_stateQueue_118.m_readBlock.m_cursor = nextChunk;
-                m_stateQueue_118.m_readBlock.m_chunkPtrSlot = chunkSlot;
-            }
-        }
-    }
-
-    ((CWinApp *)(this))->CWinApp::~CWinApp();
-}
-
-// Reimplements 0x4429b0: RecoilApp::MfcOleModuleScalarDeletingDestructor
-RecoilApp *RECOIL_THISCALL RecoilApp::MfcOleModuleScalarDeletingDestructor(
-    unsigned int flags
-) {
-    MfcOleModuleDestructor();
-    if ((flags & 1) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
+void RECOIL_THISCALL RecoilApp::OnAppDeactivate() {
+    TakeSkipWaitMessage();
 }
 
 // Reimplements 0x442d00: RecoilApp::Run
 // (D:\Proj\Battlesport\RecoilApp.cpp)
 RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::Run() {
-    SetThreadPriority(
-        (HANDLE)((unsigned int)(m_mainThreadHandle_2c)),
-        THREAD_PRIORITY_HIGHEST
-    );
+    CWinThread::SetThreadPriority(THREAD_PRIORITY_HIGHEST);
 
     for (;;) {
         while (PeekMessageA(
-            (MSG *)(m_msg_34),
+            &m_msgCur,
             0,
             0,
             0,
             PM_NOREMOVE
         ) != 0) {
-            RecoilAppNoArgIntMethod const pumpMessage =
-                (RecoilAppNoArgIntMethod)((unsigned int)(ReadRecoilVtableSlot(
-                    vftable,
-                    0x64
-                )));
-            if (pumpMessage(this) == 0) {
-                RecoilAppNoArgIntMethod const exitInstance =
-                    (RecoilAppNoArgIntMethod)((unsigned int)(ReadRecoilVtableSlot(
-                        vftable,
-                        0x70
-                    )));
-                return exitInstance(this);
+            if (PumpMessage() == 0) {
+                return ExitInstance();
             }
         }
 
         zNetworkDPlay::ReceivePendingMessages(-1);
 
-        const RecoilPtr32 currentState = GetCurrentState();
-        if (m_skipWait_0d0 == 0) {
+        RecoilApp_IState *const currentState = GetCurrentState();
+        if (m_skipWait == 0) {
             if (PeekMessageA(
-                (MSG *)(m_msg_34),
+                &m_msgCur,
                 0,
                 0,
                 0,
@@ -2912,139 +2563,75 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::Run() {
             continue;
         }
 
-        RecoilApp_StateQueue &queue = m_stateQueue_118;
-        if (queue.m_itemCount != 0) {
-            RecoilPtr32 *const queueSlot =
-                (RecoilPtr32 *)((unsigned int)(queue.m_readBlock.m_cursor));
-            RecoilApp_StateQueueItem *const item =
-                (RecoilApp_StateQueueItem *)((unsigned int)(*queueSlot));
+        if (!m_stateQueue.Empty()) {
+            RecoilApp_StateQueueItem *const item = m_stateQueue.Front();
+            m_stateQueue.PopFront();
 
             if (item->m_kind == RecoilApp_StateQueueKind_ExitCurrent) {
                 if (currentState != 0) {
-                    CallRecoilStateMethod(
-                        currentState,
-                        offsetof(RecoilApp_IState_Vtbl, OnDeactivate)
-                    );
+                    currentState->OnDeactivate();
                 }
 
-                m_stateStack_0d8[m_currentStateIndex_0c8] = 0;
-                --m_currentStateIndex_0c8;
-                if (m_currentStateIndex_0c8 < 0) {
-                    m_currentStateIndex_0c8 = 0;
+                m_stateStack[m_currentStateIndex] = 0;
+                --m_currentStateIndex;
+                if (m_currentStateIndex < 0) {
+                    m_currentStateIndex = 0;
                 }
 
-                CallRecoilStateParamMethod(
-                    m_stateStack_0d8[m_currentStateIndex_0c8],
-                    offsetof(RecoilApp_IState_Vtbl, OnResume),
-                    item->m_param
-                );
+                if (m_stateStack[m_currentStateIndex] != 0) {
+                    m_stateStack[m_currentStateIndex]->OnResume(item->m_param);
+                }
             } else if (item->m_kind == RecoilApp_StateQueueKind_PushState) {
                 if (item->m_stateObj != 0) {
-                    CallRecoilStateParamMethod(
-                        m_stateStack_0d8[m_currentStateIndex_0c8],
-                        offsetof(RecoilApp_IState_Vtbl, OnSuspend),
-                        item->m_param
-                    );
+                    if (m_stateStack[m_currentStateIndex] != 0) {
+                        m_stateStack[m_currentStateIndex]->OnSuspend(item->m_param);
+                    }
 
-                    if (CallRecoilStateIntMethod(
-                            item->m_stateObj,
-                            offsetof(RecoilApp_IState_Vtbl, OnCanBecomeCurrent)
-                        ) != 0) {
-                        ++m_currentStateIndex_0c8;
-                        if (m_currentStateIndex_0c8 >= 16) {
-                            m_currentStateIndex_0c8 = 15;
+                    if (item->m_stateObj->OnTryBecomeCurrent() != 0) {
+                        ++m_currentStateIndex;
+                        if (m_currentStateIndex >= 16) {
+                            m_currentStateIndex = 15;
                         }
 
-                        m_stateStack_0d8[m_currentStateIndex_0c8] = item->m_stateObj;
+                        m_stateStack[m_currentStateIndex] = item->m_stateObj;
                     }
                 }
             } else if (item->m_kind == RecoilApp_StateQueueKind_SwitchCurrent) {
                 if (item->m_stateObj != 0) {
                     if (currentState != 0) {
-                        CallRecoilStateMethod(
-                            currentState,
-                            offsetof(RecoilApp_IState_Vtbl, OnDeactivate)
-                        );
+                        currentState->OnDeactivate();
                     }
 
-                    if (m_currentStateIndex_0c8 < 0) {
-                        m_currentStateIndex_0c8 = 0;
+                    if (m_currentStateIndex < 0) {
+                        m_currentStateIndex = 0;
                     }
-                    if (m_currentStateIndex_0c8 >= 16) {
-                        m_currentStateIndex_0c8 = 15;
+                    if (m_currentStateIndex >= 16) {
+                        m_currentStateIndex = 15;
                     }
 
-                    if (CallRecoilStateIntMethod(
-                            item->m_stateObj,
-                            offsetof(RecoilApp_IState_Vtbl, OnCanBecomeCurrent)
-                        ) != 0) {
-                        m_stateStack_0d8[m_currentStateIndex_0c8] = item->m_stateObj;
+                    if (item->m_stateObj->OnTryBecomeCurrent() != 0) {
+                        m_stateStack[m_currentStateIndex] = item->m_stateObj;
                     } else if (currentState != 0) {
-                        CallRecoilStateIntMethod(
-                            currentState,
-                            offsetof(RecoilApp_IState_Vtbl, OnCanBecomeCurrent)
-                        );
+                        currentState->OnTryBecomeCurrent();
                     }
                 }
             }
 
-            queue.m_readBlock.m_cursor += 4;
-            --queue.m_itemCount;
-            if (queue.m_itemCount == 0 ||
-                queue.m_readBlock.m_cursor == queue.m_readBlock.m_chunkEnd) {
-                const RecoilPtr32 oldChunkSlot = queue.m_readBlock.m_chunkPtrSlot;
-                queue.m_readBlock.m_chunkPtrSlot = oldChunkSlot + 4;
-
-                const RecoilPtr32 oldChunk = *(RecoilPtr32 *)((unsigned int)(oldChunkSlot));
-                ::operator delete((void *)((unsigned int)(oldChunk)));
-
-                if (queue.m_itemCount == 0) {
-                    memset(
-                        &queue.m_readBlock,
-                        0,
-                        sizeof(queue.m_readBlock)
-                    );
-                    memset(
-                        &queue.m_writeBlock,
-                        0,
-                        sizeof(queue.m_writeBlock)
-                    );
-                    ::operator delete((void *)((unsigned int)(queue.m_chunkPtrList)));
-                } else {
-                    const RecoilPtr32 chunkSlot = queue.m_readBlock.m_chunkPtrSlot;
-                    const RecoilPtr32 nextChunk = *(RecoilPtr32 *)((unsigned int)(chunkSlot));
-                    queue.m_readBlock.m_chunkBegin = nextChunk;
-                    queue.m_readBlock.m_chunkEnd = nextChunk + 0x1000;
-                    queue.m_readBlock.m_cursor = nextChunk;
-                    queue.m_readBlock.m_chunkPtrSlot = chunkSlot;
-                }
-            }
-
-            ::operator delete(item);
+            delete item;
             continue;
         }
 
-        if (currentState != 0 && CallRecoilStateIntMethod(
-                                     currentState,
-                                     offsetof(RecoilApp_IState_Vtbl, OnUpdateShouldQuit)
-                                 ) != 0) {
-            RecoilAppNoArgVoidMethod const onAppDeactivate =
-                (RecoilAppNoArgVoidMethod)((unsigned int)(ReadRecoilVtableSlot(
-                    vftable,
-                    0xa8
-                )));
-            onAppDeactivate(this);
+        if (currentState != 0 && currentState->OnUpdateShouldQuit() != 0) {
+            OnAppDeactivate();
             PostQuitMessage(0);
         }
     }
 }
 
-// Reimplements 0x42eea0: RecoilApp_PlayState::Constructor
-RECOIL_NOINLINE RecoilApp_PlayState *RECOIL_THISCALL RecoilApp_PlayState::Constructor() {
-    base.vftable = kRecoilApp_PlayState_VtblAddress;
-    m_transitionScratch_10 = 0;
+// Reimplements 0x42eea0: RecoilApp_PlayState::RecoilApp_PlayState
+RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_PlayState::RecoilApp_PlayState() {
+    m_transitionScratch = 0;
     pPendingLoadGameStartPath = 0;
-    return this;
 }
 
 // Reimplements 0x42eec0: RecoilApp_PlayState::OnWndActivate
@@ -3134,7 +2721,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_PlayState::OnTryBecomeCurrent() {
     if (pPendingLoadGameStartPath != 0) {
         ExtendPlayStateTransitionTimer(5.0f);
 
-        char *const pendingLoadPath = (char *)((unsigned int)(pPendingLoadGameStartPath));
+        char *const pendingLoadPath = pPendingLoadGameStartPath;
         zUtil::ZAR_LoadFileGlobal(pendingLoadPath);
         free(pendingLoadPath);
         pPendingLoadGameStartPath = 0;
@@ -3148,9 +2735,9 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_PlayState::OnTryBecomeCurrent() {
         startAnimNodeName
     );
 
-    pRenderSection = (RecoilPtr32)(zOpt::GetRenderSection());
-    pDisplaySection = (RecoilPtr32)(zOpt::GetDisplaySection());
-    pWindowSection = (RecoilPtr32)(zOpt::GetWindowSection());
+    pRenderSection = zOpt::GetRenderSection();
+    pDisplaySection = zOpt::GetDisplaySection();
+    pWindowSection = zOpt::GetWindowSection();
 
     zInput::Keyboard_ResetTransitionState();
     zInput::Mouse_RecenterCursor();
@@ -3210,12 +2797,12 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_PlayState::OnTryBecomeCurrent() {
 // Reimplements 0x42f5e0: RecoilApp_PlayState::OnUpdateShouldQuit
 // (D:\Proj\Battlesport\RecoilApp.cpp)
 RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_PlayState::OnUpdateShouldQuit() {
-    if (g_RecoilApp.m_transitionFadeTimer150 > 0.0f) {
+    if (g_RecoilApp.m_transitionFadeTimer > 0.0f) {
         g_zVideo_SoftwareModeHotkeyEnabled = ZVIDEO_SOFTWARE_MODE_HOTKEY_DISABLED;
         TickAndRenderFrame(0);
 
         zOpt_ViewRectSection *const windowSection = ViewRectFromPtr(pWindowSection);
-        if (g_RecoilApp.m_transitionFadeTimer150 >= 1.0f) {
+        if (g_RecoilApp.m_transitionFadeTimer >= 1.0f) {
             const int previousClearState =
                 zVideo::ExchangeClearScreenBufferEnabled(ZVIDEO_CLEAR_SCREEN_BUFFER_ENABLED);
             ((zUtil_SaveGameState *)g_GameStateOrMapTable)
@@ -3230,8 +2817,8 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_PlayState::OnUpdateShouldQuit() {
             }
             zVideo::ExchangeClearScreenBufferEnabled(previousClearState);
         } else {
-            const double overlayAlpha = g_RecoilApp.m_transitionFadeTimer150 > 0.0f
-                                            ? (double)(g_RecoilApp.m_transitionFadeTimer150)
+            const double overlayAlpha = g_RecoilApp.m_transitionFadeTimer > 0.0f
+                                            ? (double)(g_RecoilApp.m_transitionFadeTimer)
                                             : 0.0;
             zRndr_OverlayRect_Submit(
                 0,
@@ -3246,9 +2833,9 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_PlayState::OnUpdateShouldQuit() {
             0,
             0
         );
-        g_RecoilApp.m_transitionFadeTimer150 -= g_FrameDeltaTimeSec;
+        g_RecoilApp.m_transitionFadeTimer -= g_FrameDeltaTimeSec;
 
-        if (g_RecoilApp.m_transitionFadeTimer150 <= 0.0f) {
+        if (g_RecoilApp.m_transitionFadeTimer <= 0.0f) {
             zOpt::SetMuteSoundOption(0);
             HudUiMgr::TriggerCurrentLayoutOnActivated();
             ((zUtil_SaveGameState *)g_GameStateOrMapTable)
@@ -3370,27 +2957,12 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_LeaveNetworkState::OnTryBecomeCurr
 }
 
 // Reimplements 0x42eb70: RecoilApp_AttractFmvState::Constructor
-RECOIL_NOINLINE RecoilApp_AttractFmvState *RECOIL_THISCALL
-RecoilApp_AttractFmvState::Constructor() {
-    base.vftable = kRecoilStateBase_VtblAddress;
-    ((zFMV_Script *)(m_fmv_10))->Init(
-        0,
-        0,
-        0
-    );
-    base.vftable = kRecoilApp_AttractFmvState_VtblAddress;
-    return this;
+// Actual C++ construction lets VC emit the one-state IState cleanup funclet.
+RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_AttractFmvState::RecoilApp_AttractFmvState() {
 }
 
-RECOIL_NOINLINE RecoilApp_IntroFmvState *RECOIL_THISCALL RecoilApp_IntroFmvState::Constructor() {
-    base.vftable = kRecoilStateBase_VtblAddress;
-    ((zFMV_Script *)(m_fmv_08))->Init(
-        0,
-        0,
-        0
-    );
-    base.vftable = kRecoilApp_IntroFmvState_VtblAddress;
-    return this;
+RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_IntroFmvState::RecoilApp_IntroFmvState() {
+    m_stateData04 = 0;
 }
 
 // Reimplements 0x42ea20: RecoilApp_IntroFmvState::OnTryBecomeCurrent
@@ -3418,7 +2990,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_IntroFmvState::OnTryBecomeCurrent(
     zVid::SetCachedClientRectUpdateMask(1);
 
     if (g_RecoilApp.m_skipIntroFmv == 0) {
-        zFMV_Script *const script = (zFMV_Script *)(m_fmv_08);
+        zFMV_Script *const script = &m_fmv;
         if (g_RecoilApp_hWndMain != 0) {
             script->m_hWnd = g_RecoilApp_hWndMain;
         }
@@ -3438,17 +3010,17 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_IntroFmvState::OnTryBecomeCurrent(
 RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_IntroFmvState::OnUpdateShouldQuit() {
     if (g_RecoilApp.m_skipIntroFmv != 0) {
         g_RecoilApp.QueueSwitchCurrentState(
-            &g_RecoilApp.m_missionFmvState_1d8.base,
+            &g_RecoilApp.m_missionFmvState,
             0
         );
         return 0;
     }
 
-    zFMV_Script *const script = (zFMV_Script *)(m_fmv_08);
+    zFMV_Script *const script = &m_fmv;
     const int stateParam = script->UpdateAtTime();
     if (stateParam == 0) {
         g_RecoilApp.QueueSwitchCurrentState(
-            &g_RecoilApp.m_mainMenuPrepState_1c8.base,
+            &g_RecoilApp.m_mainMenuPrepState,
             stateParam
         );
     }
@@ -3466,7 +3038,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_FmvState::OnIdleOrDispatch(
 
 // Reimplements 0x42eb10: RecoilApp_IntroFmvState::OnDeactivate
 RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_IntroFmvState::OnDeactivate() {
-    ((zFMV_Script *)(m_fmv_08))->BeginNow(1);
+    m_fmv.BeginNow(1);
 }
 
 // Reimplements 0x42eb20: RecoilApp_MainMenuPrepState::OnTryBecomeCurrent
@@ -3504,10 +3076,10 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_AttractFmvState::OnTryBecomeCurren
 
     GetClientRect(
         g_RecoilApp_hWndMain,
-        (RECT *)(m_clientRect_30)
+        (RECT *)(m_clientRect)
     );
 
-    zFMV_Script *const script = (zFMV_Script *)(m_fmv_10);
+    zFMV_Script *const script = &m_fmv;
     if (g_RecoilApp_AttractFmvReloadMode != 0) {
         script->LoadActionsFromZrd(
             "fmv.zrd",
@@ -3532,11 +3104,11 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_AttractFmvState::OnTryBecomeCurren
 
 // Reimplements 0x42ec80: RecoilApp_AttractFmvState::OnUpdateShouldQuit
 RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_AttractFmvState::OnUpdateShouldQuit() {
-    zFMV_Script *const script = (zFMV_Script *)(m_fmv_10);
+    zFMV_Script *const script = &m_fmv;
     const int stateParam = script->UpdateAtTime();
     if (stateParam == 0) {
         g_RecoilApp.QueueSwitchCurrentState(
-            &g_RecoilApp.m_mainMenuPrepState_1c8.base,
+            &g_RecoilApp.m_mainMenuPrepState,
             stateParam
         );
     }
@@ -3546,22 +3118,14 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_AttractFmvState::OnUpdateShouldQui
 
 // Reimplements 0x42eca0: RecoilApp_AttractFmvState::OnDeactivate
 RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_AttractFmvState::OnDeactivate() {
-    ((zFMV_Script *)(m_fmv_10))->BeginNow(0);
+    m_fmv.BeginNow(0);
 }
 
 // Reimplements 0x42ed30: RecoilApp_MissionFmvState::Constructor
-RECOIL_NOINLINE RecoilApp_MissionFmvState *RECOIL_THISCALL
-RecoilApp_MissionFmvState::Constructor() {
-    base.vftable = kRecoilStateBase_VtblAddress;
-    ((zFMV_Script *)(m_fmv_08))->Init(
-        0,
-        0,
-        0
-    );
-    base.vftable = kRecoilApp_MissionFmvState_VtblAddress;
+// Actual C++ construction lets VC emit the one-state IState cleanup funclet.
+RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_MissionFmvState::RecoilApp_MissionFmvState() {
     m_missionId = 0;
     m_skipMissionFmv = 0;
-    return this;
 }
 
 // Reimplements 0x42edb0: RecoilApp_MissionFmvState::OnTryBecomeCurrent
@@ -3581,7 +3145,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_MissionFmvState::OnTryBecomeCurren
     missionFmvTag[2] = '\0';
 
     if (m_skipMissionFmv == 0) {
-        zFMV_Script *const script = (zFMV_Script *)(m_fmv_08);
+        zFMV_Script *const script = &m_fmv;
         if (g_RecoilApp_hWndMain != 0) {
             script->m_hWnd = g_RecoilApp_hWndMain;
         }
@@ -3603,16 +3167,16 @@ RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_MissionFmvState::OnDeactivate() {
     const int skipMissionFmv = m_skipMissionFmv;
     m_missionId = 0;
     if (skipMissionFmv == 0) {
-        ((zFMV_Script *)(m_fmv_08))->BeginNow(1);
+        m_fmv.BeginNow(1);
     }
 }
 
 // Reimplements 0x42ee70: RecoilApp_MissionFmvState::OnUpdateShouldQuit
 // (D:\Proj\GameZRecoil\recoilapp.cpp)
 RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_MissionFmvState::OnUpdateShouldQuit() {
-    if (m_skipMissionFmv != 0 || ((zFMV_Script *)(m_fmv_08))->UpdateAtTime() == 0) {
+    if (m_skipMissionFmv != 0 || m_fmv.UpdateAtTime() == 0) {
         g_RecoilApp.QueueSwitchCurrentState(
-            &g_RecoilApp.m_playState_208.base,
+            &g_RecoilApp.m_playState,
             0
         );
     }
@@ -3620,73 +3184,53 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_MissionFmvState::OnUpdateShouldQui
     return 0;
 }
 
-// Reimplements 0x42df90: RecoilApp_IState::Destructor
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_IState::Destructor() {
-    vftable = kRecoilStateBase_VtblAddress;
+RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_IState::~RecoilApp_IState() {
 }
 
-// Reimplements 0x42e0f0: RecoilApp_IState::ScalarDeletingDestructor
-RecoilApp_IState *RECOIL_THISCALL RecoilApp_IState::ScalarDeletingDestructor(
-    unsigned int flags
+void RECOIL_THISCALL RecoilApp_IState::OnWndActivate(
+    int
+) {}
+
+void RECOIL_THISCALL RecoilApp_IState::OnEnter() {}
+
+int RECOIL_THISCALL RecoilApp_IState::OnTryBecomeCurrent() {
+    return 1;
+}
+
+int RECOIL_THISCALL RecoilApp_IState::OnUpdateShouldQuit() {
+    return 0;
+}
+
+void RECOIL_THISCALL RecoilApp_IState::OnExit() {}
+
+void RECOIL_THISCALL RecoilApp_IState::OnDeactivate() {}
+
+void RECOIL_THISCALL RecoilApp_IState::OnSuspend(
+    int
+) {}
+
+void RECOIL_THISCALL RecoilApp_IState::OnResume(
+    int
+) {}
+
+int RECOIL_THISCALL RecoilApp_IState::OnIdleOrDispatch(
+    unsigned int,
+    unsigned int
 ) {
-    Destructor();
-    if ((flags & 1) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
+    return 1;
 }
 
-// Reimplements 0x42df10: RecoilApp_AttractFmvState::Destructor
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_AttractFmvState::Destructor() {
-    ((zFMV_Script *)(m_fmv_10))->Cleanup();
-    base.vftable = kRecoilStateBase_VtblAddress;
+// Reimplements 0x42df10: RecoilApp_AttractFmvState::~RecoilApp_AttractFmvState
+RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_AttractFmvState::~RecoilApp_AttractFmvState() {
+    m_fmv.Cleanup();
 }
 
-// Reimplements 0x42df50: RecoilApp_IntroFmvState::Destructor
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_IntroFmvState::Destructor() {
-    ((zFMV_Script *)(m_fmv_08))->Cleanup();
-    base.vftable = kRecoilStateBase_VtblAddress;
+// Reimplements 0x42df50: RecoilApp_IntroFmvState::~RecoilApp_IntroFmvState
+RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_IntroFmvState::~RecoilApp_IntroFmvState() {
+    m_fmv.Cleanup();
 }
 
-// Reimplements 0x42ebd0: RecoilApp_AttractFmvState::ScalarDeletingDestructor
-RecoilApp_AttractFmvState *RECOIL_THISCALL RecoilApp_AttractFmvState::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-    if ((flags & 1) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
-// Reimplements 0x42e0d0: RecoilApp_IntroFmvState::ScalarDeletingDestructor
-RecoilApp_IntroFmvState *RECOIL_THISCALL RecoilApp_IntroFmvState::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-    if ((flags & 1) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
-// Reimplements 0x42e070: RecoilApp_MissionFmvState::Destructor
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_MissionFmvState::Destructor() {
-    ((zFMV_Script *)(m_fmv_08))->Cleanup();
-    base.vftable = kRecoilStateBase_VtblAddress;
-}
-
-// Reimplements 0x42ed90: RecoilApp_MissionFmvState::ScalarDeletingDestructor
-RecoilApp_MissionFmvState *RECOIL_THISCALL RecoilApp_MissionFmvState::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-    if ((flags & 1) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
+// Reimplements 0x42e070: RecoilApp_MissionFmvState::~RecoilApp_MissionFmvState
+RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_MissionFmvState::~RecoilApp_MissionFmvState() {
+    m_fmv.Cleanup();
 }

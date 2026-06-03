@@ -504,23 +504,24 @@ namespace zClass_TypeList {
         }
 
         zClass_TypeListLink *link = g_zClass_TypeList_FreeLinkHead;
-        if (link == 0) {
-            return (zClass_TypeListLink *)(calloc(
-                1,
-                sizeof(zClass_TypeListLink)
-            ));
+        if (link != 0) {
+            zClass_TypeListLink **nextSlot = &link->next;
+            zClass_TypeListLink *next = *nextSlot;
+            g_zClass_TypeList_FreeLinkHead = next;
+            if (next != 0) {
+                next->prev = 0;
+            }
+
+            *nextSlot = 0;
+            link->prev = 0;
+            link->pendingRemove = 0;
+            return link;
         }
 
-        zClass_TypeListLink *next = link->next;
-        g_zClass_TypeList_FreeLinkHead = next;
-        if (next != 0) {
-            next->prev = 0;
-        }
-
-        link->next = 0;
-        link->prev = 0;
-        link->pendingRemove = 0;
-        return link;
+        return (zClass_TypeListLink *)(calloc(
+            1,
+            sizeof(zClass_TypeListLink)
+        ));
     }
 
     // Reimplements 0x44e690: zClass_TypeList::FreeLink
@@ -665,14 +666,15 @@ namespace zClass_TypeList {
         zClass_TypeListLink *link = AllocLink();
         link->node = node;
 
-        zClass_TypeListLink *head = zClass_TypeList::Head(bucket);
+        zClass_TypeListLink **headSlot = g_zClass_TypeList_HeadSlotPtrs[bucket];
+        zClass_TypeListLink *head = *headSlot;
         if (head == 0) {
-            zClass_TypeList::Tail(bucket) = link;
+            *g_zClass_TypeList_TailSlotPtrs[bucket] = link;
         } else {
             link->next = head;
             head->prev = link;
         }
-        zClass_TypeList::Head(bucket) = link;
+        *g_zClass_TypeList_HeadSlotPtrs[bucket] = link;
 
         if (bucket == kQueuedTreeBucket) {
             node->flags |= kTypeListInsertedFlag;
@@ -699,14 +701,16 @@ namespace zClass_TypeList {
         zClass_TypeListLink *link = AllocLink();
         link->node = node;
 
-        if (zClass_TypeList::Head(bucket) == 0) {
-            zClass_TypeList::Head(bucket) = link;
-            zClass_TypeList::Tail(bucket) = link;
+        zClass_TypeListLink **tailSlot = g_zClass_TypeList_TailSlotPtrs[bucket];
+        zClass_TypeListLink *tail = *tailSlot;
+        zClass_TypeListLink **headSlot = g_zClass_TypeList_HeadSlotPtrs[bucket];
+        if (*headSlot == 0) {
+            *headSlot = link;
+            *g_zClass_TypeList_TailSlotPtrs[bucket] = link;
         } else {
-            zClass_TypeListLink *tail = zClass_TypeList::Tail(bucket);
             link->prev = tail;
             tail->next = link;
-            zClass_TypeList::Tail(bucket) = link;
+            *g_zClass_TypeList_TailSlotPtrs[bucket] = link;
         }
 
         if (bucket == kQueuedTreeBucket) {

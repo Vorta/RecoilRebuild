@@ -62,7 +62,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x415220:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: RecoilStateMainMenuTransition::OnTryBecomeCurrent; File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnTryBecomeCurrent.cpp; Target: recoil_state_main_menu_transition_on_try_become_current)
+  - [✅] Reimplemented [S] (Name: RecoilStateMainMenuTransition::OnTryBecomeCurrent; File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnTryBecomeCurrent.cpp; Target: recoil_state_main_menu_transition_on_try_become_current)
 - 0x415370:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::OnResume)
   - [✅] Source dependencies satisfied
@@ -101,20 +101,16 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
   - [✅] Reimplemented [S] (Name: RecoilApp::GetMessageMap; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_get_message_map)
 - 0x42de20:
   - [✅] Reconstructed (Name: RecoilApp::StaticInitAndRegisterAtExit)
-  - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [S] (Name: RecoilApp::StaticInitAndRegisterAtExit; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_register_at_exit)
+  - [✅] Provider-boundary (Kind: compiler-generated global object initialization glue; Name: RecoilApp global init/atexit thunk; Origin: VC5SP3 compiler startup for global RecoilApp object; File: external; Target: recoil_app_register_at_exit)
 - 0x42de30:
   - [✅] Reconstructed (Name: RecoilApp::StaticInit)
-  - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [S] (Name: RecoilApp::StaticInit; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_register_at_exit)
+  - [✅] Provider-boundary (Kind: compiler-generated global object initialization glue; Name: RecoilApp global constructor thunk; Origin: VC5SP3 compiler startup for global RecoilApp object; File: external; Target: recoil_app_register_at_exit)
 - 0x42de40:
   - [✅] Reconstructed (Name: RecoilApp::RegisterAtExit)
-  - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [S] (Name: RecoilApp::RegisterAtExit; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_register_at_exit)
+  - [✅] Provider-boundary (Kind: compiler-generated atexit registration glue; Name: RecoilApp atexit registration thunk; Origin: VC5SP3 compiler startup for global RecoilApp object; File: external; Target: recoil_app_register_at_exit)
 - 0x42de50:
   - [✅] Reconstructed (Name: RecoilApp::AtExitDestructor)
-  - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [S] (Name: RecoilApp::AtExitDestructor; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_register_at_exit)
+  - [✅] Provider-boundary (Kind: compiler-generated atexit destructor glue; Name: RecoilApp atexit destructor thunk; Origin: VC5SP3 compiler startup for global RecoilApp object; File: external; Target: recoil_app_register_at_exit)
 - 0x42de60:
   - [✅] Reconstructed (Name: RecoilApp::Destructor)
   - [✅] Source dependencies satisfied
@@ -142,15 +138,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x42e220:
   - [✅] Reconstructed (Name: RecoilApp::StartEngine)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: RecoilApp::StartEngine; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_start_engine)
+  - [✅] Reimplemented [S] (Name: RecoilApp::StartEngine; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_start_engine)
 - 0x42e330:
   - [✅] Reconstructed (Name: RecoilApp::InitializeDisplay)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: RecoilApp::InitializeDisplay; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_initialize_display)
+  - [✅] Reimplemented [S] (Name: RecoilApp::InitializeDisplay; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_initialize_display)
 - 0x42e430:
   - [✅] Reconstructed (Name: RecoilApp::ShutdownEngine)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: RecoilApp::ShutdownEngine; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_shutdown_engine)
+  - [✅] Reimplemented [S] (Name: RecoilApp::ShutdownEngine; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_start_engine)
 - 0x42e490:
   - [✅] Reconstructed (Name: RecoilApp::LoadZbdAndStartEngine)
   - [✅] Source dependencies satisfied
@@ -182,15 +178,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x42eac0:
   - [✅] Reconstructed (Name: RecoilApp_IntroFmvState::OnUpdateShouldQuit)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: RecoilApp_IntroFmvState::OnUpdateShouldQuit; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_intro_fmv_on_update_should_quit)
+  - [✅] Reimplemented [S] (Name: RecoilApp_IntroFmvState::OnUpdateShouldQuit; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_intro_fmv_on_update_should_quit)
 - 0x42eb00:
   - [✅] Reconstructed (Name: RecoilApp_FmvState::OnIdleOrDispatch)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: RecoilApp_FmvState::OnIdleOrDispatch; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_fmv_state_on_idle_or_dispatch)
+  - [✅] Reimplemented [S] (Name: RecoilApp_FmvState::OnIdleOrDispatch; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_fmv_state_constructors)
 - 0x42eb10:
   - [✅] Reconstructed (Name: RecoilApp_IntroFmvState::OnDeactivate)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: RecoilApp_IntroFmvState::OnDeactivate; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_intro_fmv_on_deactivate)
+  - [✅] Reimplemented [S] (Name: RecoilApp_IntroFmvState::OnDeactivate; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_intro_fmv_on_deactivate)
 - 0x42eb20:
   - [✅] Reconstructed (Name: RecoilApp_MainMenuPrepState::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
@@ -198,11 +194,11 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x42eb60:
   - [✅] Reconstructed (Name: RecoilApp_MainMenuPrepState::OnUpdateShouldQuit)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: RecoilApp_MainMenuPrepState::OnUpdateShouldQuit; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_main_menu_prep_on_update_should_quit)
+  - [✅] Reimplemented [S] (Name: RecoilApp_MainMenuPrepState::OnUpdateShouldQuit; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_main_menu_prep_on_update_should_quit)
 - 0x42eb70:
   - [✅] Reconstructed (Name: RecoilApp_AttractFmvState::Constructor)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: RecoilApp_AttractFmvState::Constructor; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_attract_fmv_state_constructor)
+  - [✅] Reimplemented [S] (Name: RecoilApp_AttractFmvState::Constructor; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_fmv_state_constructors)
 - 0x42ebf0:
   - [✅] Reconstructed (Name: RecoilApp_AttractFmvState::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
@@ -218,7 +214,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x42eea0:
   - [✅] Reconstructed (Name: RecoilApp_PlayState::Constructor)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [S] (Name: RecoilApp_PlayState::Constructor; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_play_state_constructor)
+  - [✅] Reimplemented [S] (Name: RecoilApp_PlayState::Constructor; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_register_at_exit)
 - 0x42eec0:
   - [✅] Reconstructed (Name: RecoilApp_PlayState::OnWndActivate)
   - [✅] Source dependencies satisfied
@@ -530,7 +526,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x4428b0:
   - [✅] Reconstructed (Name: RecoilApp_MfcOleModule::Destructor)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: RecoilApp::MfcOleModuleDestructor; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_mfc_ole_module_destructor)
+  - [✅] Reimplemented [S] (Name: RecoilApp::MfcOleModuleDestructor; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_mfc_ole_module_destructor)
 - 0x4429b0:
   - [✅] Reconstructed (Name: RecoilApp_MfcOleModule::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
@@ -538,7 +534,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x4429d0:
   - [✅] Reconstructed (Name: RecoilApp::InitMainWindow)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: RecoilApp::InitMainWindow; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_init_main_window)
+  - [✅] Reimplemented [S] (Name: RecoilApp::InitMainWindow; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_create_main_wnd)
 - 0x442a10:
   - [✅] Reconstructed (Name: RecoilApp::TakeSkipWaitMessage)
   - [✅] Source dependencies satisfied
@@ -554,7 +550,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x442bc0:
   - [✅] Reconstructed (Name: RecoilApp::ShutdownSubsystems)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: RecoilApp::ShutdownSubsystems; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_shutdown_subsystems)
+  - [✅] Reimplemented [S] (Name: RecoilApp::ShutdownSubsystems; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_shutdown_subsystems)
 - 0x442c00:
   - [✅] Reconstructed (Name: RecoilApp::GetMainWnd)
   - [✅] Source dependencies satisfied
@@ -566,7 +562,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x442c70:
   - [✅] Reconstructed (Name: RecoilApp::MfcOleModule::Constructor)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: RecoilApp::MfcOleModuleConstructor; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_mfc_ole_module_constructor)
+  - [✅] Reimplemented [S] (Name: RecoilApp_MfcOleModuleOwner::RecoilApp_MfcOleModuleOwner; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_mfc_ole_module_constructor_s)
 - 0x442d00:
   - [✅] Reconstructed (Name: RecoilApp::Run)
   - [✅] Source dependencies satisfied
@@ -734,7 +730,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x4a5780:
   - [✅] Reconstructed (Name: RecoilApp::InitStdLogFiles)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: RecoilApp::InitStdLogFiles; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_init_std_log_files)
+  - [✅] Reimplemented [S] (Name: RecoilApp::InitStdLogFiles; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_init_std_log_files)
 - 0x4a5ad0:
   - [✅] Reconstructed (Name: zLoc::LoadMessagesDll)
   - [✅] Source dependencies satisfied
@@ -1621,7 +1617,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x414bc0:
   - [✅] Reconstructed (Name: HudUiMainMenuDialog::Constructor)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: HudUiMainMenuDialog::HudUiMainMenuDialog; File: src/Battlesport/HudUiMainMenuDialog.cpp; Target: hud_ui_main_menu_dialog_constructor)
+  - [✅] Reimplemented [S] (Name: HudUiMainMenuDialog::HudUiMainMenuDialog; File: src/Battlesport/HudUiMainMenuDialog.cpp; Target: hud_ui_main_menu_dialog_constructor)
 - 0x414f40:
   - [✅] Reconstructed (Name: HudUiMainMenuDialog_CreditsButton::OnActivate)
   - [✅] Source dependencies satisfied
@@ -3605,7 +3601,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x4198d0:
   - [✅] Reconstructed (Name: RecoilApp_MpExitDialogState::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: RecoilApp_MpExitDialogState::OnTryBecomeCurrent; File: src/Battlesport/HudUiMpExitDialog.cpp; Target: recoil_app_mp_exit_dialog_state_on_try_become_current)
+  - [✅] Reimplemented [S] (Name: RecoilApp_MpExitDialogState::OnTryBecomeCurrent; File: src/Battlesport/HudUiMpExitDialog.cpp; Target: recoil_app_mp_exit_dialog_state_on_try_become_current)
 - 0x419940:
   - [✅] Reconstructed (Name: RecoilApp_MpExitDialogState::OnDeactivate)
   - [✅] Source dependencies satisfied
@@ -4776,7 +4772,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x42ed30:
   - [✅] Reconstructed (Name: RecoilApp_MissionFmvState::Constructor)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: RecoilApp_MissionFmvState::Constructor; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_mission_fmv_state_constructor)
+  - [✅] Reimplemented [S] (Name: RecoilApp_MissionFmvState::Constructor; File: src/Battlesport/RecoilApp.cpp; Target: recoil_app_fmv_state_constructors)
 - 0x42edb0:
   - [☑️] Reconstructed (Name: RecoilApp_MissionFmvState::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
@@ -6774,7 +6770,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x44e690:
   - [✅] Reconstructed (Name: zClass_TypeList::FreeLink)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zClass_TypeList::FreeLink; File: src/GameZRecoil/zClass/List.c; Target: zclass_typelist_free_link)
+  - [✅] Reimplemented [S] (Name: zClass_TypeList::FreeLink; File: src/GameZRecoil/zClass/List.c; Target: zclass_typelist_free_link)
 - 0x44e6d0:
   - [✅] Reconstructed (Name: zClass_TypeList::FreeAll)
   - [✅] Source dependencies satisfied
@@ -6838,15 +6834,15 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x44ed60:
   - [✅] Reconstructed (Name: zClass_NodeList::Insert)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zClass_NodeList::Insert; File: src/GameZRecoil/zClass/List.c; Target: zclass_node_list_insert)
+  - [✅] Reimplemented [S] (Name: zClass_NodeList::Insert; File: src/GameZRecoil/zClass/List.c; Target: zclass_node_list_insert)
 - 0x44ed90:
   - [✅] Reconstructed (Name: zClass_TypeList::Insert)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zClass_TypeList::Insert; File: src/GameZRecoil/zClass/List.c; Target: zclass_typelist_insert)
+  - [✅] Reimplemented [S] (Name: zClass_TypeList::Insert; File: src/GameZRecoil/zClass/List.c; Target: zclass_typelist_insert)
 - 0x44ee10:
   - [✅] Reconstructed (Name: zClass_TypeList::InsertChildNodes)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zClass_TypeList::InsertChildNodes; File: src/GameZRecoil/zClass/List.c; Target: zclass_typelist_insert_child_nodes)
+  - [✅] Reimplemented [S] (Name: zClass_TypeList::InsertChildNodes; File: src/GameZRecoil/zClass/List.c; Target: zclass_typelist_insert_child_nodes)
 - 0x44eea0:
   - [✅] Reconstructed (Name: zClass_NodeList::ProcessPendingFrees)
   - [✅] Source dependencies satisfied
@@ -8655,11 +8651,11 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x4625e0:
   - [✅] Reconstructed (Name: zFMV_Script::Init)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zFMV_Script::Init; File: src/GameZRecoil/zFMV/fmv_script.cpp; Target: zfmv_script_init)
+  - [✅] Reimplemented [S] (Name: zFMV_Script::Init; File: src/GameZRecoil/zFMV/fmv_script.cpp; Target: zfmv_script_init)
 - 0x462630:
   - [✅] Reconstructed (Name: zFMV_Script::Cleanup)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zFMV_Script::Cleanup; File: src/GameZRecoil/zFMV/fmv_script.cpp; Target: zfmv_script_cleanup)
+  - [✅] Reimplemented [S] (Name: zFMV_Script::Cleanup; File: src/GameZRecoil/zFMV/fmv_script.cpp; Target: zfmv_script_cleanup)
 - 0x463ef0:
   - [✅] Reconstructed (Name: zFMV_Stream::Constructor)
   - [✅] Source dependencies satisfied
@@ -8846,7 +8842,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x462660:
   - [✅] Reconstructed (Name: zFMV_Script::Reset)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zFMV_Script::Reset; File: src/GameZRecoil/zFMV/fmv_script.cpp; Target: zfmv_script_reset)
+  - [✅] Reimplemented [S] (Name: zFMV_Script::Reset; File: src/GameZRecoil/zFMV/fmv_script.cpp; Target: zfmv_script_reset)
 - 0x4626b0:
   - [☑️] Reconstructed (Name: zFMV_Script::LoadActionsFromZrd)
   - [✅] Source dependencies satisfied
@@ -11396,7 +11392,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x4a5c20:
   - [✅] Reconstructed (Name: zReader::FileExists)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zReader::FileExists; File: src/GameZRecoil/zReader/zreader_load.cpp; Target: zreader_file_exists)
+  - [✅] Reimplemented [S] (Name: zReader::FileExists; File: src/GameZRecoil/zReader/zreader_load.cpp; Target: zreader_file_exists)
 - 0x4a5c40:
   - [✅] Reconstructed (Name: zReader::FileExistsWrapper)
   - [✅] Source dependencies satisfied
@@ -11902,7 +11898,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x4a0860:
   - [✅] Reconstructed (Name: zSndSampleSet::InitByName)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zSndSampleSet_InitByName; File: src/GameZRecoil/zSound/zsnd_sample_set.cpp; Target: zsnd_sample_set_init_by_name)
+  - [✅] Reimplemented [S] (Name: zSndSampleSet_InitByName; File: src/GameZRecoil/zSound/zsnd_sample_set.cpp; Target: zsnd_sample_set_init_by_name)
 - 0x4a0870:
   - [✅] Reconstructed (Name: zSndSampleSet::DestroyByName)
   - [✅] Source dependencies satisfied
@@ -12097,7 +12093,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x4a0500:
   - [✅] Reconstructed (Name: zSndPlayHandleSnapshot::StopAllIfPlaying)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zSndPlayHandleSnapshot::StopAllIfPlaying; File: src/GameZRecoil/zSound/zsnd_play.cpp; Target: zsnd_snapshot_stop_all_if_playing)
+  - [✅] Reimplemented [S] (Name: zSndPlayHandleSnapshot::StopAllIfPlaying; File: src/GameZRecoil/zSound/zsnd_play.cpp; Target: zsnd_snapshot_stop_all_if_playing)
 - 0x4a0590:
   - [✅] Reconstructed (Name: zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta)
   - [✅] Source dependencies satisfied
@@ -12185,11 +12181,11 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x4a2ea0:
   - [✅] Reconstructed (Name: zSndSample::InitFromWaveData)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zSndSample::InitFromWaveData; File: src/GameZRecoil/zSound/zsnd_create.cpp; Target: zsnd_sample_init_from_wave_data_dispatch)
+  - [✅] Reimplemented [S] (Name: zSndSample::InitFromWaveData; File: src/GameZRecoil/zSound/zsnd_create.cpp; Target: zsnd_sample_init_from_wave_data_dispatch)
 - 0x4a2ec0:
   - [☑️] Reconstructed (Name: zSndSample::InitFromWaveData_A3D)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zSndSample::InitFromWaveData_A3D; File: src/GameZRecoil/zSound/zsnd_create.cpp; Target: zsnd_sample_init_from_wave_data_a3d)
+  - [✅] Reimplemented [S] (Name: zSndSample::InitFromWaveData_A3D; File: src/GameZRecoil/zSound/zsnd_create.cpp; Target: zsnd_sample_init_from_wave_data_a3d)
 - 0x4a3620:
   - [☑️] Reconstructed (Name: zSndSample::GetPlayCursorBytes)
   - [✅] Source dependencies satisfied
@@ -12329,19 +12325,19 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x4a53f0:
   - [✅] Reconstructed (Name: zSndWaveData::ConstructorFromPath)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zSndWaveData::ConstructorFromPath; File: src/GameZRecoil/zSound/zsnd_create.cpp; Target: zsnd_wave_data_constructor_from_path)
+  - [✅] Reimplemented [S] (Name: zSndWaveData::ConstructorFromPath; File: src/GameZRecoil/zSound/zsnd_create.cpp; Target: zsnd_wave_data_constructor_from_path)
 - 0x4a5440:
   - [✅] Reconstructed (Name: zSndWaveData::Destructor)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zSndWaveData::Destructor; File: src/GameZRecoil/zSound/zsnd_create.cpp; Target: zsnd_wave_data_destructor)
+  - [✅] Reimplemented [S] (Name: zSndWaveData::Destructor; File: src/GameZRecoil/zSound/zsnd_create.cpp; Target: zsnd_wave_data_destructor)
 - 0x4a5460:
-  - [☑️] Reconstructed (Name: zSndWaveData::ParseLoadedWaveFile)
+  - [✅] Reconstructed (Name: zSndWaveData::ParseLoadedWaveFile)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zSndWaveData::ParseLoadedWaveFile; File: src/GameZRecoil/zSound/zsnd_create.cpp; Target: zsnd_wave_data_parse_loaded_wave_file)
+  - [✅] Reimplemented [S] (Name: zSndWaveData::ParseLoadedWaveFile; File: src/GameZRecoil/zSound/zsnd_create.cpp; Target: zsnd_wave_data_parse_loaded_wave_file)
 - 0x4a5540:
   - [✅] Reconstructed (Name: zSndWaveData::LoadAndParseIfNeeded)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zSndWaveData::LoadAndParseIfNeeded; File: src/GameZRecoil/zSound/zsnd_create.cpp; Target: zsnd_wave_data_load_and_parse_if_needed)
+  - [✅] Reimplemented [S] (Name: zSndWaveData::LoadAndParseIfNeeded; File: src/GameZRecoil/zSound/zsnd_create.cpp; Target: zsnd_wave_data_load_and_parse_if_needed)
 - 0x4a55c0:
   - [✅] Reconstructed (Name: zSndWaveData::Reset)
   - [✅] Source dependencies satisfied
@@ -12349,7 +12345,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x4a5600:
   - [☑️] Reconstructed (Name: zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded; File: src/GameZRecoil/zSound/zsnd_create.cpp; Target: zsnd_wave_data_load_and_parse_from_index_archive_if_needed)
+  - [✅] Reimplemented [S] (Name: zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded; File: src/GameZRecoil/zSound/zsnd_create.cpp; Target: zsnd_wave_data_load_and_parse_from_index_archive_if_needed)
 - 0x4a5670:
   - [☑️] Reconstructed (Name: Time::Reset)
   - [✅] Source dependencies satisfied
@@ -12875,7 +12871,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x4a5c50:
   - [✅] Reconstructed (Name: zUtil::ZRDR_GetFileSize)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zUtil::ZRDR_GetFileSize; File: src/GameZRecoil/zReader/zreader_load.cpp; Target: zreader_zrdr_get_file_size)
+  - [✅] Reimplemented [S] (Name: zUtil::ZRDR_GetFileSize; File: src/GameZRecoil/zReader/zreader_load.cpp; Target: zreader_zrdr_get_file_size)
 - 0x4a5ca0:
   - [✅] Reconstructed (Name: zUtil_ZRDR::CreateSearchPathList)
   - [✅] Source dependencies satisfied
@@ -12903,11 +12899,11 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x4a5e50:
   - [✅] Reconstructed (Name: zUtil::ZRDR_ResolvePathInSearchPathList)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zUtil_ZRDR_ResolvePathInSearchPathList; File: src/GameZRecoil/zReader/zreader_load.cpp; Target: zutil_zrdr_resolve_path_in_search_path_list)
+  - [✅] Reimplemented [S] (Name: zUtil_ZRDR_ResolvePathInSearchPathList; File: src/GameZRecoil/zReader/zreader_load.cpp; Target: zutil_zrdr_resolve_path_in_search_path_list)
 - 0x4a5f20:
-  - [☑️] Reconstructed (Name: zUtil::ZRDR_SearchPathContainsFilePredicate)
+  - [✅] Reconstructed (Name: zUtil::ZRDR_SearchPathContainsFilePredicate)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zUtil_ZRDR_SearchPathContainsFilePredicate; File: src/GameZRecoil/zReader/zreader_load.cpp; Target: zutil_zrdr_search_path_contains_file_predicate)
+  - [✅] Reimplemented [S] (Name: zUtil_ZRDR_SearchPathContainsFilePredicate; File: src/GameZRecoil/zReader/zreader_load.cpp; Target: zutil_zrdr_search_path_contains_file_predicate)
 - 0x4a5f50:
   - [✅] Reconstructed (Name: zUtil_ZRDR::OpenFileResolved)
   - [✅] Source dependencies satisfied
@@ -12935,7 +12931,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x4a61d0:
   - [✅] Reconstructed (Name: zIndexArchive::Init)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zIndexArchive::Init; File: src/GameZRecoil/zReader/zreader_load.cpp; Target: zindex_archive_init)
+  - [✅] Reimplemented [S] (Name: zIndexArchive::Init; File: src/GameZRecoil/zReader/zreader_load.cpp; Target: zindex_archive_init)
 - 0x4a6270:
   - [✅] Reconstructed (Name: zIndexArchive::OpenCreateWrite)
   - [✅] Source dependencies satisfied
@@ -12959,7 +12955,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x4a63f0:
   - [✅] Reconstructed (Name: zIndexArchive::LoadIndexFromTail)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zIndexArchive::LoadIndexFromTail; File: src/GameZRecoil/zReader/zreader_load.cpp; Target: zindex_archive_load_index_from_tail)
+  - [✅] Reimplemented [S] (Name: zIndexArchive::LoadIndexFromTail; File: src/GameZRecoil/zReader/zreader_load.cpp; Target: zindex_archive_load_index_from_tail)
 - 0x4a64d0:
   - [✅] Reconstructed (Name: zIndexArchive::AddFileRecord)
   - [✅] Source dependencies satisfied
@@ -12967,7 +12963,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x4a65d0:
   - [✅] Reconstructed (Name: zIndexArchive::FindRecordByNameCI)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zIndexArchive::FindRecordByNameCI; File: src/GameZRecoil/zReader/zreader_load.cpp; Target: zindex_archive_find_record_by_name_ci)
+  - [✅] Reimplemented [S] (Name: zIndexArchive::FindRecordByNameCI; File: src/GameZRecoil/zReader/zreader_load.cpp; Target: zindex_archive_find_record_by_name_ci)
 - 0x4a6630:
   - [✅] Reconstructed (Name: zIndexArchive::OpenFileByName)
   - [✅] Source dependencies satisfied
@@ -12975,7 +12971,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x4a6670:
   - [☑️] Reconstructed (Name: zIndexArchive::ReadFileByName)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [B] (Name: zIndexArchive::ReadFileByName; File: src/GameZRecoil/zReader/zreader_load.cpp; Target: zindex_archive_read_file_by_name)
+  - [✅] Reimplemented [S] (Name: zIndexArchive::ReadFileByName; File: src/GameZRecoil/zReader/zreader_load.cpp; Target: zindex_archive_read_file_by_name)
 - 0x4b2960:
   - [☑️] Reconstructed (Name: zGame::Options_LoadFromRegistry)
   - [✅] Source dependencies satisfied
@@ -13928,20 +13924,20 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
   - [✅] Reimplemented [B] (Name: zVideo_dd3d::ConvertImagePixelsForTexture; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_convert_image_pixels_for_texture)
 - 0x4aa8b0:
   - [✅] Reconstructed (Name: zVideo_dd3d::TextureRecord_LockUploadSurface)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: zVideo_dd3d::TextureRecord_LockUploadSurface; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_texture_record_lock_upload_surface)
 - 0x4aa8f0:
-  - [☑️] Reconstructed (Name: zVideo_dd3d::TextureRecord_UnlockUploadSurface)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Reconstructed (Name: zVideo_dd3d::TextureRecord_UnlockUploadSurface)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: zVideo_dd3d::TextureRecord_UnlockUploadSurface; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_texture_record_unlock_upload_surface)
 - 0x4aa900:
   - [✅] Reconstructed (Name: zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_texture_record_release_upload_surface_ref)
 - 0x4aa920:
-  - [☑️] Reconstructed (Name: zVideo_dd3d::TextureRecord_FinalizeUpload)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Reconstructed (Name: zVideo_dd3d::TextureRecord_FinalizeUpload)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: zVideo_dd3d::TextureRecord_FinalizeUpload; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_texture_record_finalize_upload)
 - 0x4aa980:
   - [✅] Reconstructed (Name: zVideo_dd3d::TextureRecord_Destroy)
   - [✅] Source dependencies satisfied
@@ -13955,49 +13951,49 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented [B] (Name: zVideo_dd3d::SetFogEnable; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_set_fog_enable)
 - 0x4aaa30:
-  - [☑️] Reconstructed (Name: zVideo_dd3d::SetFogStart)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Reconstructed (Name: zVideo_dd3d::SetFogStart)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: zVideo_dd3d::SetFogStart; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_set_fog_start)
 - 0x4aaa60:
-  - [☑️] Reconstructed (Name: zVideo_dd3d::SetFogEnd)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Reconstructed (Name: zVideo_dd3d::SetFogEnd)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: zVideo_dd3d::SetFogEnd; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_set_fog_end)
 - 0x4aaa90:
-  - [☑️] Reconstructed (Name: zVideo_dd3d::ApplyFogStateFromGlobals)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Reconstructed (Name: zVideo_dd3d::ApplyFogStateFromGlobals)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: zVideo_dd3d::ApplyFogStateFromGlobals; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_apply_fog_state_from_globals)
 - 0x4aab30:
-  - [☑️] Reconstructed (Name: zVideo_dd3d::UpdateFogColor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Reconstructed (Name: zVideo_dd3d::UpdateFogColor)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: zVideo_dd3d::UpdateFogColor; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_update_fog_color)
 - 0x4aab90:
-  - [☑️] Reconstructed (Name: zVideo_dd3d::SubmitPolyFlatColor16)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Reconstructed (Name: zVideo_dd3d::SubmitPolyFlatColor16)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: zVideo_dd3d::SubmitPolyFlatColor16; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_submit_poly_flat_color16)
 - 0x4aaef0:
-  - [☑️] Reconstructed (Name: zVideo_dd3d::SubmitPolyGouraudColor16)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Reconstructed (Name: zVideo_dd3d::SubmitPolyGouraudColor16)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: zVideo_dd3d::SubmitPolyGouraudColor16; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_submit_poly_gouraud_color16)
 - 0x4ab320:
-  - [☑️] Reconstructed (Name: zVideo_dd3d::SubmitPolyColorAttr)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Reconstructed (Name: zVideo_dd3d::SubmitPolyColorAttr)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: zVideo_dd3d::SubmitPolyColorAttr; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_submit_poly_color_attr)
 - 0x4ab6d0:
-  - [☑️] Reconstructed (Name: zVideo_dd3d::SubmitPolyRenderClass)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Reconstructed (Name: zVideo_dd3d::SubmitPolyRenderClass)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: zVideo_dd3d::SubmitPolyRenderClass; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_submit_poly_render_class)
 - 0x4abb20:
-  - [☑️] Reconstructed (Name: zVideo_dd3d::SubmitPolygon)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Reconstructed (Name: zVideo_dd3d::SubmitPolygon)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: zVideo_dd3d::SubmitPolygon; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_submit_polygon)
 - 0x4ac370:
-  - [☑️] Reconstructed (Name: zVideo_dd3d::SubmitPolygonLit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Reconstructed (Name: zVideo_dd3d::SubmitPolygonLit)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: zVideo_dd3d::SubmitPolygonLit; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_submit_polygon_lit)
 - 0x4acbd0:
   - [✅] Reconstructed (Name: zVideo_dd3d::DrawPointColor16)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: zVideo_dd3d::DrawPointColor16; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_draw_point_color16)
 - 0x4accc0:
   - [☑️] Reconstructed (Name: zVideo_dd3d::SetQuadBatchDepthAndRhw)
   - [✅] Source dependencies satisfied
@@ -14008,16 +14004,16 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
   - [✅] Reimplemented [B] (Name: zVideo_dd3d::QueueSolidQuad; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_queue_solid_quad)
 - 0x4ace30:
   - [☑️] Reconstructed (Name: zVideo_dd3d::FlushSortedPolys)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: zVideo_dd3d::FlushSortedPolys; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_flush_sorted_polys)
 - 0x4ad120:
   - [✅] Reconstructed (Name: zVideo_dd3d::FlushQuadBatch)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: zVideo_dd3d::FlushQuadBatch; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_flush_quad_batch)
 - 0x4ad250:
-  - [☑️] Reconstructed (Name: zVideo_dd3d::FlushOverwritePolys)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Reconstructed (Name: zVideo_dd3d::FlushOverwritePolys)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: zVideo_dd3d::FlushOverwritePolys; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_dd3d_flush_overwrite_polys)
 - 0x4ad680:
   - [✅] Reconstructed (Name: zVideo_dd3d::FloorPowerOfTwo)
   - [✅] Source dependencies satisfied
@@ -14036,7 +14032,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x48d3e0:
   - [✅] Reconstructed (Name: zVid::Noise_ShutdownBuffers)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [F] (Name: zVid::Noise_ShutdownBuffers; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: pending)
+  - [✅] Reimplemented [B] (Name: zVid::Noise_ShutdownBuffers; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvid_noise_shutdown_buffers)
 - 0x48d910:
   - [☑️] Reconstructed (Name: zVid::DrawNoiseRect)
   - [✅] Source dependencies satisfied
@@ -14148,7 +14144,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x4bef40:
   - [✅] Reconstructed (Name: zVideo::FxPass3_SetInputRectByIndex)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [F] (Name: zVideo::FxPass3_SetInputRectByIndex; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: pending)
+  - [✅] Reimplemented [B] (Name: zVideo::FxPass3_SetInputRectByIndex; File: src/GameZRecoil/zVideo/zVideo.cpp; Target: zvideo_fxpass3_set_input_rect_by_index)
 - 0x4bef50:
   - [✅] Reconstructed (Name: zVideo::FxPass3_QueuePrimitive)
   - [✅] Source dependencies satisfied
@@ -14404,20 +14400,20 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: padding_before_HudUiTextLabel_ConstructorWithPosAndFlags; Origin: compiler-generated; File: external; Target: pending)
 - 0x4bde20:
   - [✅] Reconstructed (Name: HudWeatherFx::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: HudWeatherFx::ScalarDeletingDestructor; File: src/Battlesport/hud.cpp; Target: hud_weather_fx_scalar_deleting_destructor)
 - 0x4be2c0:
   - [✅] Reconstructed (Name: HudWeatherFxSnow::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: HudWeatherFxSnow::ScalarDeletingDestructor; File: src/Battlesport/hud.cpp; Target: hud_weather_fx_snow_scalar_deleting_destructor)
 - 0x4be2e0:
   - [✅] Reconstructed (Name: HudWeatherFxSnow::Destructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: HudWeatherFxSnow::Destructor; File: src/Battlesport/hud.cpp; Target: hud_weather_fx_snow_destructor)
 - 0x4be850:
   - [✅] Reconstructed (Name: HudWeatherFxRain::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: HudWeatherFxRain::ScalarDeletingDestructor; File: src/Battlesport/hud.cpp; Target: hud_weather_fx_rain_scalar_deleting_destructor)
 - 0x4bfa00:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::ScalarDeletingDestructor)
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudUiBackgroundCursorWidget::ScalarDeletingDestructor; Origin: compiler-generated; File: external; Target: pending)
@@ -14426,65 +14422,56 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudUiBackgroundVideoWidget::ScalarDeletingDestructor; Origin: compiler-generated; File: external; Target: pending)
 - 0x409950:
   - [✅] Reconstructed (Name: RecoilStateCredits::StaticInitAndRegisterAtExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: RecoilStateCredits::StaticInitAndRegisterAtExit; File: src/Battlesport/RecoilStateCredits.cpp; Target: recoil_state_credits_static_init_and_register_at_exit)
 - 0x409960:
   - [✅] Reconstructed (Name: RecoilStateCredits::StaticConstructGlobal)
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: RecoilStateCredits::StaticConstructGlobal; Origin: compiler-generated; File: external; Target: pending)
 - 0x409970:
   - [✅] Reconstructed (Name: RecoilStateCredits::StaticInit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: RecoilStateCredits::StaticInit; File: src/Battlesport/RecoilStateCredits.cpp; Target: recoil_state_credits_static_init)
 - 0x409980:
   - [✅] Reconstructed (Name: RecoilStateCredits::RegisterAtExit)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Source dependencies satisfied
+  - [✅] Reimplemented [B] (Name: RecoilStateCredits::RegisterAtExit; File: src/Battlesport/RecoilStateCredits.cpp; Target: recoil_state_credits_register_at_exit)
 - 0x4099d0:
   - [✅] Reconstructed (Name: RecoilStateCredits::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: RecoilStateCredits::ScalarDeletingDestructor; Origin: VC++ scalar deleting destructor; BN disassembly calls RecoilStateCredits::Destructor, conditionally calls imported operator delete when flags & 1, returns self, and retn 4 from a vtable data reference; File: external; Target: pending)
 - 0x4a7470:
   - [✅] Reconstructed (Name: zVid::GetAcceptedHardwareRendererCountThunk)
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: zVid::GetAcceptedHardwareRendererCountThunk; Origin: compiler-generated; File: external; Target: zvid_accepted_hardware_renderer_count_thunk)
 - 0x403d70:
   - [✅] Reconstructed (Name: HudUiWidget::SharedScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudUiWidget::SharedScalarDeletingDestructor; Origin: VC++ scalar deleting destructor shared by HudUiWidget-derived vtables; calls HudUiWidget::DestructorCoreEhThunk, conditionally calls imported operator delete when flags & 1, returns self, and retn 4; File: external; Target: pending)
 - 0x403d90:
   - [✅] Reconstructed (Name: HudUiBriefingRuntime::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudUiBriefingRuntime::ScalarDeletingDestructor; Origin: VC++ scalar deleting destructor; calls HudUiBriefingRuntime::Destructor, conditionally calls imported operator delete when flags & 1, returns self, and retn 4; File: external; Target: pending)
 - 0x403db0:
   - [✅] Reconstructed (Name: zZbdSectionHandlerList::Destructor)
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: zZbdSectionHandlerList::Destructor; Origin: compiler-generated; File: external; Target: pending)
 - 0x403eb0:
   - [✅] Reconstructed (Name: HudUiFillBitmap::SharedScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudUiFillBitmap::SharedScalarDeletingDestructor; Origin: VC++ scalar deleting destructor shared by HudUiFillBitmap-derived vtables; calls HudUiFillBitmap::DestructorCoreThunk, conditionally calls imported operator delete when flags & 1, returns self, and retn 4; File: external; Target: pending)
 - 0x40b0a0:
   - [✅] Reconstructed (Name: HudCmdCommandList::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Reimplemented [S] (Name: HudCmdCommandList::ScalarDeletingDestructor; File: src/GameZRecoil/zHud/zhud_ui.cpp; Target: hud_cmd_command_list_scalar_deleting_destructor)
 - 0x40b0c0:
   - [✅] Reconstructed (Name: HudCmdKeyAButton::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudCmdKeyAButton::ScalarDeletingDestructor; Origin: VC++ scalar deleting destructor; calls HudCmdKeyAButton::Destructor, conditionally calls imported operator delete when flags & 1, returns self, and retn 4; File: external; Target: pending)
 - 0x40b0e0:
   - [✅] Reconstructed (Name: HudCmdKeyBButton::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudCmdKeyBButton::ScalarDeletingDestructor; Origin: VC++ scalar deleting destructor; calls HudCmdKeyBButton::Destructor, conditionally calls imported operator delete when flags & 1, returns self, and retn 4; File: external; Target: pending)
 - 0x40b100:
   - [✅] Reconstructed (Name: HudCmdJoyButton::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudCmdJoyButton::ScalarDeletingDestructor; Origin: VC++ scalar deleting destructor; calls HudCmdJoyButton::Destructor, conditionally calls imported operator delete when flags & 1, returns self, and retn 4; File: external; Target: pending)
 - 0x40b120:
   - [✅] Reconstructed (Name: HudCmdMouseButton::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudCmdMouseButton::ScalarDeletingDestructor; Origin: VC++ scalar deleting destructor; calls HudCmdMouseButton::Destructor, conditionally calls imported operator delete when flags & 1, returns self, and retn 4; File: external; Target: pending)
 - 0x40c260:
   - [✅] Reconstructed (Name: HudCmdBindButtonBase::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudCmdBindButtonBase::ScalarDeletingDestructor; Origin: VC++ scalar deleting destructor; calls HudCmdBindButtonBase::DestructorCore, conditionally calls imported operator delete when flags & 1, returns self, and retn 4; File: external; Target: pending)
 - 0x40d0e0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::DestructorCore)
   - [✅] Source dependencies satisfied
@@ -14500,8 +14487,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: g_HudUiTripletWndClassName_Dtor; Origin: compiler-generated; File: external; Target: pending)
 - 0x40d260:
   - [✅] Reconstructed (Name: HudLayoutSW::CrtInitGlobalSingleton)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudLayoutSW::CrtInitGlobalSingleton; Origin: CRT dynamic initializer; calls HudLayoutSW::GlobalInit, tail-jumps to HudLayoutSW::GlobalConstructor, and is referenced from the initializer table; File: external; Target: pending)
 - 0x415020:
   - [✅] Reconstructed (Name: HudUiMainMenuDialog::ScalarDeletingDestructor)
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudUiMainMenuDialog_ScalarDeletingDtor; Origin: compiler-generated; File: external; Target: pending)
@@ -14515,8 +14501,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
   - [✅] Reimplemented [B] (Name: HudUiMpExitDialog::ScalarDeletingDestructorThunk; File: src/Battlesport/HudUiMpExitDialog.cpp; Target: hud_ui_mp_exit_dialog_table_cluster)
 - 0x41a3d0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupPanel_ScalarDeletingDtor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudUiNetGameSetupPanel::ScalarDeletingDestructor; Origin: MSVC scalar deleting destructor; calls HudUiNetGameSetupPanel::Destructor, conditionally calls imported operator delete when flags & 1, returns self, and retn 4; File: external; Target: pending)
 - 0x41abc0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
@@ -14533,7 +14518,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
 - 0x41be90:
   - [✅] Reconstructed (Name: HudUiNetExitPanel::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
-  - [✅] Reimplemented [F] (Name: HudUiNetExitPanel::ScalarDeletingDestructor; File: src/Battlesport/HudUiNetExitPanel.cpp; Target: pending)
+  - [✅] Reimplemented [B] (Name: HudUiNetExitPanel::ScalarDeletingDestructor; File: src/Battlesport/HudUiNetExitPanel.cpp; Target: hud_ui_net_exit_panel_scalar_deleting_destructor)
 - 0x41c3e0:
   - [✅] Reconstructed (Name: HudUiNewGamePanel::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
@@ -14544,8 +14529,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
   - [✅] Reimplemented [B] (Name: HudUiNewGamePanelOverlayOwner::ScalarDeletingDestructor; File: src/Battlesport/hud.cpp; Target: hud_ui_new_game_panel_overlay_owner_lifecycle)
 - 0x41c7d0:
   - [✅] Reconstructed (Name: NetSessionConfigDialog::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: NetSessionConfigDialog::ScalarDeletingDestructor; Origin: VC++ scalar deleting destructor; BN disassembly calls NetSessionConfigDialog::Destructor, conditionally calls imported operator delete when flags & 1, returns self, and retn 4 from a vtable data reference; File: external; Target: pending)
 - 0x41cbf0:
   - [✅] Reconstructed (Name: CSpinButtonCtrl::ScalarDeletingDestructor)
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: CSpinButtonCtrl::ScalarDeletingDestructor; Origin: compiler-generated; File: external; Target: pending)
@@ -14563,8 +14547,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: CMenu::ScalarDeletingDestructor; Origin: compiler-generated; File: external; Target: pending)
 - 0x434b70:
   - [✅] Reconstructed (Name: HudUiSaveLoadDialog::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudUiSaveLoadDialog::ScalarDeletingDestructor; Origin: VC++ scalar deleting destructor; BN disassembly calls HudUiSaveLoadDialog::Destructor, conditionally calls imported operator delete when flags & 1, returns self, and retn 4 from a vtable data reference; File: external; Target: pending)
 - 0x4353e0:
   - [✅] Reconstructed (Name: HudUiSaveGameDialog::SaveSelectedGameAndExitThunk)
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudUiSaveGameDialog::SaveSelectedGameAndExitThunk; Origin: compiler-generated; File: external; Target: pending)
@@ -14576,20 +14559,16 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: MsvcEh_CMemoryException_FatalOomHandler; Origin: compiler-generated; File: external; Target: pending)
 - 0x443029:
   - [✅] Reconstructed (Name: MsvcEh_CMemoryException_FuncletReturn4430f3)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: compiler-generated EH glue; Name: MsvcEh_CMemoryException_FuncletReturn4430f3; Origin: MSVC exception funclet return trampoline for catch(CMemoryException); BN assembly pops the exception object argument, returns shared EH cleanup target 0x4430f3, and has no authored source body; File: external; Target: pending)
 - 0x4430c3:
   - [✅] Reconstructed (Name: MsvcEh_CFileException_FuncletReturn4430f3)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: compiler-generated EH glue; Name: MsvcEh_CFileException_FuncletReturn4430f3; Origin: MSVC exception funclet return trampoline for catch(CFileException); BN assembly pops the exception object argument, returns shared EH cleanup target 0x4430f3, and has no authored source body; File: external; Target: pending)
 - 0x4430ea:
   - [✅] Reconstructed (Name: MsvcEh_CException_FuncletReturn4430f3)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: compiler-generated EH glue; Name: MsvcEh_CException_FuncletReturn4430f3; Origin: MSVC exception funclet return trampoline for catch(CException); BN assembly pops the exception object argument, returns shared EH cleanup target 0x4430f3, and has no authored source body; File: external; Target: pending)
 - 0x441890:
   - [✅] Reconstructed (Name: WestwoodOnlineUpgradeConfigDialog::ScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: WestwoodOnlineUpgradeConfigDialog::ScalarDeletingDestructor; Origin: VC++ scalar deleting destructor; BN disassembly calls WestwoodOnlineUpgradeConfigDialog::Destructor, conditionally calls imported operator delete when flags & 1, returns self, and retn 4 from a vtable data reference; File: external; Target: pending)
 - 0x443810:
   - [✅] Reconstructed (Name: CZGameFrame::ScalarDeletingDtor)
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: CZGameFrame::ScalarDeletingDtor; Origin: compiler-generated; File: external; Target: pending)
@@ -14607,8 +14586,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudUiListSelectorItem::VectorDeletingDestructor; Origin: compiler-generated; File: external; Target: pending)
 - 0x4b9710:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::MemberScalarDeletingDestructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudUiBackgroundCursorWidget::MemberScalarDeletingDestructor; Origin: MSVC scalar deleting destructor for HudUiBackgroundCursorWidget member vtable; BN disassembly calls pure tailcall destructor-core thunk 0x4b9730 to tier-B HudUiBackgroundCursorWidget::DestructorCore, conditionally calls imported operator delete when flags & 1, returns self, and retn 4 from a vtable data reference; File: external; Target: pending)
 - 0x4b9740:
   - [✅] Reconstructed (Name: HudUiBackground::ScalarDeletingDestructor)
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudUiBackground::ScalarDeletingDestructor; Origin: compiler-generated; File: external; Target: pending)
@@ -15379,8 +15357,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
   - [✅] Provider-boundary (Kind: CRT/MFC/framework; Name: CString_CtorDefault; Origin: CRT/MFC provider; File: external; Target: mfc_cstring_default_ctor_provider)
 - 0x4c6140:
   - [✅] Reconstructed (Name: _start)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: CRT startup/runtime boundary; Name: _start; Origin: MSVC 5.0 CRT GUI entry point from crtexe.c; retail PE entry point 0x4c6140 sets up SEH/CRT state, runs _initterm constructor ranges, parses command line/startup info, calls tier-S WinMain, then imported exit; File: external; Target: pending)
 - 0x4c6350:
   - [✅] Reconstructed (Name: CRT::SetDefaultPrecision)
   - [✅] Provider-boundary (Kind: CRT/MFC/framework; Name: CRT_SetDefaultPrecision; Origin: CRT/MFC provider; File: external; Target: pending)
@@ -15401,8 +15378,7 @@ Authored functions track `Reconstructed`, `Source dependencies satisfied`, and t
   - [✅] Provider-boundary (Kind: CRT/MFC/framework; Name: MSVC_EH_HudUiBriefingRuntime_Ctor_Unwind_DestroyActionQueue; Origin: CRT/MFC provider; File: external; Target: pending)
 - 0x4c8246:
   - [✅] Reconstructed (Name: MSVC_EH_HudUiBriefingRuntime_Ctor_Unwind_DestroyTransportProgress)
-  - [❌] Source dependencies satisfied
-  - [❌] Reimplemented [X] (Name: pending; File: pending; Target: pending)
+  - [✅] Provider-boundary (Kind: compiler-generated EH unwind glue; Name: MSVC_EH_HudUiBriefingRuntime_Ctor_Unwind_DestroyTransportProgress; Origin: MSVC EH unwind funclet for HudUiBriefingRuntime::Constructor; recovers constructor this from EBP, adds transportProgress offset 0xa960, and tail-jumps to tier-B HudUiFillBitmap::DestructorCoreThunk; File: external; Target: pending)
 
 ### Import, jump, and dispatch thunks
 

@@ -1997,8 +1997,8 @@ namespace zClass_Camera {
             node->flags |= 0x80000000;
             zMath::MatStackPushAndCloneParent(data->worldTransform);
             zMath::MatApplyLocalTRS(
-                &data->targetOrEuler,
                 &data->posOffset,
+                &data->targetOrEuler,
                 &unitScale
             );
             if (g_zClass_RenderBoundsContextActive == 0) {

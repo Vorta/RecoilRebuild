@@ -1,3 +1,4 @@
+#include "Battlesport/Mfc42Abi.h"
 #include "GameZRecoil/zTurret/zTurret.h"
 
 #include "Battlesport/GameNet.h"

@@ -51,7 +51,7 @@ const int kHudTimerAndFlagsSyncPacketType = 20;
 const int kDispatchModeSession = 2;
 const float kSecondsPerMinute = 60.0f;
 const unsigned int kVidMem800x600Threshold = 0x2bf200;
-const unsigned int kVidMem1024x768Threshold = 0x480000;
+const unsigned int kVidMem1024x768Threshold = 4718592;
 const unsigned int kFullscreenMenuCommandId = 0x9c4e;
 const DWORD kMainWindowStyle = 0x82ca0000;
 const char *kRecoilWndClassName = "RecoilClass";
@@ -270,7 +270,7 @@ RECOIL_FRAME_NOINLINE CZRecoilFrame *RECOIL_THISCALL CZRecoilFrame::Constructor(
         MF_BYCOMMAND
     );
 
-    g_RecoilApp_hInstance = (HINSTANCE)((unsigned int)(g_RecoilApp.m_hInstance_6c));
+    g_RecoilApp_hInstance = (HINSTANCE)((unsigned int)(g_RecoilApp.m_hInstance));
     g_RecoilApp_hWndMain = m_hWnd;
 
     unsigned long formattedTitleStorage
@@ -382,7 +382,7 @@ RECOIL_FRAME_NOINLINE CString *RECOIL_THISCALL CZRecoilFrame::BuildWindowTitle(
 // Reimplements 0x430740: CZRecoilFrame::OnMenuStartSinglePlayer
 RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnMenuStartSinglePlayer() {
     g_RecoilApp.m_skipIntroFmv = 0;
-    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv = 0;
+    g_RecoilApp.m_missionFmvState.m_skipMissionFmv = 0;
     g_RecoilApp.LoadZbdAndStartEngine();
 }
 
@@ -697,7 +697,7 @@ RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnMenuOpenMultiplayerS
         zNetwork::InitSessionRuntime(g_zNetwork_RecoilAppGuid);
         zNetwork::SetFatalDisconnectCallback(&RecoilApp::FatalErrorAndExit);
         g_RecoilApp.m_skipIntroFmv = kFmvSkipEnabled;
-        g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv = kFmvSkipEnabled;
+        g_RecoilApp.m_missionFmvState.m_skipMissionFmv = kFmvSkipEnabled;
 
         if (((CDialog *)browserDialog)->CDialog::DoModal() == IDOK) {
             zOpt::SetPlayerName((const char *)(browserDialog->m_playerName));
@@ -719,8 +719,7 @@ RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnMenuOpenMultiplayerS
                     zOpt::SetPlayerName((const char *)(browserDialog->m_playerName));
 
                     if ((unsigned int)(statusFields.eventCode) > kMaxDirectMultiplayerEventCode) {
-                        g_RecoilApp.m_pendingState_0c4 = (RecoilPtr32)((unsigned int)(&g_RecoilApp
-                                .m_mpExitDialogState_220.base));
+                        g_RecoilApp.m_pendingState = &g_RecoilApp.m_mpExitDialogState;
                         statusFields.eventCode = kDefaultMultiplayerEventCode;
                         zNetwork::RegisterPacketHandler(
                             kHudTimerAndFlagsSyncPacketType,
@@ -852,7 +851,7 @@ CZRecoilFrame::OnMenuWestwoodOnlineUpgrade() {
     }
 
     g_RecoilApp.m_skipIntroFmv = 1;
-    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv = 1;
+    g_RecoilApp.m_missionFmvState.m_skipMissionFmv = 1;
 
     int selectedMissionIndex;
     if (WestwoodOnlineUpgradeDialog::ShowModalAndGetSelectedMissionIndex(&selectedMissionIndex) !=
@@ -1118,7 +1117,7 @@ RECOIL_FRAME_NOINLINE void RECOIL_THISCALL CZRecoilFrame::OnSize(
     );
 
     if (nType == 4 || nType == 1) {
-        ((CZGameFrame *)(this))->m_app->vftable->OnAppDeactivate(((CZGameFrame *)(this))->m_app);
+        ((CZGameFrame *)(this))->m_app->OnAppDeactivate();
     }
 }
 

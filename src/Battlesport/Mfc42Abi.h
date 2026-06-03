@@ -18,6 +18,7 @@
 // the vendored MFC42 afxcmn.h. Supply only the missing SDK shapes for local
 // object-byte verification; modern builds already get these from Windows SDKs.
 #if defined(_MSC_VER) && _MSC_VER <= 1200
+#ifndef LVBKIF_SOURCE_NONE
 typedef struct tagLVBKIMAGEA {
     ULONG ulFlags;
     HBITMAP hbm;
@@ -28,6 +29,7 @@ typedef struct tagLVBKIMAGEA {
 } LVBKIMAGEA, *LPLVBKIMAGEA;
 typedef LVBKIMAGEA LVBKIMAGE;
 typedef LPLVBKIMAGEA LPLVBKIMAGE;
+#endif
 
 #ifndef TBIF_IMAGE
 typedef struct tagTBBUTTONINFOA {
@@ -57,11 +59,13 @@ typedef struct tagTBINSERTMARK {
 #define RBBS_GRIPPERALWAYS 0x00000080
 #endif
 
+#ifndef CCM_SETCOLORSCHEME
 typedef struct tagCOLORSCHEME {
     DWORD dwSize;
     COLORREF clrBtnHighlight;
     COLORREF clrBtnShadow;
 } COLORSCHEME, *LPCOLORSCHEME;
+#endif
 
 #ifndef RBHT_NOWHERE
 typedef struct tagRBHITTESTINFO {

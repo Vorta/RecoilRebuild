@@ -88,8 +88,6 @@ int g_zRndr_GlobalStringCount = 6;
 char *g_zRndr_GlobalStringTable[100] = {0};
 
 namespace {
-const unsigned int kSpanOcclusionTestSphereVisible = 0x00476cf0;
-
 int TruncateToInt(
     float value
 ) {
@@ -342,7 +340,7 @@ RECOIL_NOINLINE int RECOIL_CDECL zModel_Display_Init() {
     g_zModel_DisplayInitFlagC = 1;
 
     g_zModel_DisplayClipMode = 2;
-    g_zModel_SpanOcclusionProc = (void *)(kSpanOcclusionTestSphereVisible);
+    g_zModel_SpanOcclusionProc = (void *)(&zModel::RenderNodeSoftware);
     g_zModel_DisplayScratchCount = 0;
     g_zModel_DisplayScratchPtr = &g_zModel_ViewScaleX;
     g_zModel_DisplayClipX = 0;

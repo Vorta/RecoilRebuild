@@ -1782,7 +1782,7 @@ extern "C" int hud_ui_net_exit_exit_button_on_activate_smoke(void) {
     RestoreFunctionPatch(patch);
     return installed && g_testNetExitQueueSwitchCount == 1 &&
                    g_testNetExitQueueSwitchState ==
-                       &g_RecoilApp.m_leaveNetworkState_1d0.base &&
+                       &g_RecoilApp.m_leaveNetworkState.base &&
                    g_testNetExitQueueSwitchParam == 0
                ? 0
                : 1;
@@ -1814,6 +1814,49 @@ extern "C" int hud_ui_net_exit_destructor_smoke(void) {
     }
 
     return installed && g_testNetExitDestructorStep == 3 &&
+                   g_testNetExitDestroyedWidgets[0] == &panel.exitWidget.base &&
+                   g_testNetExitDestroyedWidgets[1] == &panel.resumeWidget.base &&
+                   g_testNetExitDestroyedBackground == &panel.base
+               ? 0
+               : 1;
+}
+
+extern "C" int hud_ui_net_exit_scalar_deleting_destructor_smoke(void) {
+    CodeFunctionPatch patches[2] = {};
+    const bool installed = PatchFunctionJump(
+                               reinterpret_cast<void *>(
+                                   MethodAddress(&HudUiZrdWidget::DestructorCore)
+                               ),
+                               reinterpret_cast<void *>(
+                                   MethodAddress(&TestNetExitPatchOps::ZrdWidgetDestructorCore)
+                               ),
+                               patches[0]
+                           ) &&
+                           PatchFunctionJump(
+                               reinterpret_cast<void *>(
+                                   MethodAddress(&HudUiBackground::Destructor)
+                               ),
+                               reinterpret_cast<void *>(
+                                   MethodAddress(&TestNetExitPatchOps::BackgroundDestructor)
+                               ),
+                               patches[1]
+                           );
+
+    HudUiNetExitPanel panel{};
+    g_testNetExitDestructorStep = 0;
+    g_testNetExitDestroyedWidgets[0] = nullptr;
+    g_testNetExitDestroyedWidgets[1] = nullptr;
+    g_testNetExitDestroyedBackground = nullptr;
+    HudUiNetExitPanel *result = nullptr;
+    if (installed) {
+        result = panel.ScalarDeletingDestructor(0);
+    }
+
+    for (int index = 1; index >= 0; --index) {
+        RestoreFunctionPatch(patches[index]);
+    }
+
+    return installed && result == &panel && g_testNetExitDestructorStep == 3 &&
                    g_testNetExitDestroyedWidgets[0] == &panel.exitWidget.base &&
                    g_testNetExitDestroyedWidgets[1] == &panel.resumeWidget.base &&
                    g_testNetExitDestroyedBackground == &panel.base
@@ -2792,7 +2835,7 @@ extern "C" int hud_ui_net_game_setup_overlay_owner_lifecycle_smoke(void) {
     ResetNetGameSetupOverlayOwnerProbe();
     state.Destructor();
     const bool destructorOk =
-        state.vftable == kRecoilStateBase_VtblAddress && state.m_panel == 0 &&
+        state.vftable == RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) && state.m_panel == 0 &&
         state.m_reconfigureExistingSession == 4 &&
         g_netGameSetupOverlaySetEnabledCalls == 1 &&
         g_netGameSetupOverlaySetEnabledValue == 0 &&
@@ -2805,7 +2848,7 @@ extern "C" int hud_ui_net_game_setup_overlay_owner_lifecycle_smoke(void) {
     ResetNetGameSetupOverlayOwnerProbe();
     HudUiNetGameSetupOverlayOwner::AtExitDestructor();
     const bool atExitOk =
-        g_HudUiNetGameSetupOverlayOwner.vftable == kRecoilStateBase_VtblAddress &&
+        g_HudUiNetGameSetupOverlayOwner.vftable == RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) &&
         g_HudUiNetGameSetupOverlayOwner.m_panel == 0 &&
         g_netGameSetupOverlaySetEnabledCalls == 1 &&
         g_netGameSetupOverlayScalarCalls == 1;
@@ -2817,7 +2860,7 @@ extern "C" int hud_ui_net_game_setup_overlay_owner_lifecycle_smoke(void) {
         scalarState.ScalarDeletingDestructor(0);
     const bool scalarOk =
         scalarReturned == &scalarState &&
-        scalarState.vftable == kRecoilStateBase_VtblAddress &&
+        scalarState.vftable == RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) &&
         scalarState.m_panel == 0;
 
     HudUiNetGameSetupOverlayOwner *const deletingState =
@@ -3568,7 +3611,7 @@ extern "C" int hud_ui_net_game_setup_cancel_button_smoke(void) {
     const bool ok =
         installed && g_netSetupQueueExitCalls == 1 && g_netSetupQueueExitParam == 0 &&
         g_netSetupQueueSwitchCalls == 1 &&
-        g_netSetupQueueSwitchState == &g_RecoilApp.m_leaveNetworkState_1d0.base &&
+        g_netSetupQueueSwitchState == &g_RecoilApp.m_leaveNetworkState.base &&
         g_netSetupQueueSwitchParam == 0 && g_netSetupZrdActivateCalls == 1;
 
     while (patchCount > 0) {
@@ -4432,13 +4475,13 @@ extern "C" int hud_ui_mp_exit_dialog_table_cluster_smoke(void) {
     }
     const bool activateOk =
         installed && g_mpExitClusterQueueSwitchCount == 2 &&
-        g_mpExitClusterSwitchStates[0] == &g_RecoilApp.m_introFmvState_1a0.base &&
+        g_mpExitClusterSwitchStates[0] == &g_RecoilApp.m_introFmvState.base &&
         g_mpExitClusterSwitchParams[0] == 0 &&
         g_mpExitClusterQueueEnterCount == 1 && g_mpExitClusterQueueEnterFlag == 1 &&
         g_mpExitClusterActivateCount == 2 &&
         g_mpExitClusterActivateThis[0] == &newGameButton &&
         g_mpExitClusterActivateThis[1] == &exitButton &&
-        g_mpExitClusterSwitchStates[1] == &g_RecoilApp.m_leaveNetworkState_1d0.base &&
+        g_mpExitClusterSwitchStates[1] == &g_RecoilApp.m_leaveNetworkState.base &&
         g_mpExitClusterSwitchParams[1] == 0;
 
     for (int i = 2; i >= 0; --i) {
@@ -7210,7 +7253,7 @@ extern "C" int zhud_credits_panel_update_fade_and_exit_smoke(void) {
     const int oldQuitAfterCredits = g_RecoilApp_QuitAfterCredits;
 
     std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
-    g_RecoilApp.m_currentStateIndex_0c8 = -1;
+    g_RecoilApp.m_currentStateIndex = -1;
     g_RecoilApp_QuitAfterCredits = 0;
 
     HudUiCreditsPanel belowPanel{};
@@ -7218,38 +7261,38 @@ extern "C" int zhud_credits_panel_update_fade_and_exit_smoke(void) {
     belowPanel.UpdateFadeAndExit(0.5f);
     const bool belowThreshold =
         HudFloatNear(belowPanel.fadeProgress, 0.5f) &&
-        g_RecoilApp.m_stateQueue_118.m_itemCount == 0;
+        g_RecoilApp.m_stateQueue.m_itemCount == 0;
 
     HudUiCreditsPanel normalPanel{};
     InitCreditsPanelUpdateForTest(&normalPanel, 1.0f, 0.0f);
     normalPanel.UpdateFadeAndExit(0.25f);
-    RecoilApp_StateQueueItem *item = StateQueueItemAtForTest(&g_RecoilApp.m_stateQueue_118, 0);
+    RecoilApp_StateQueueItem *item = StateQueueItemAtForTest(&g_RecoilApp.m_stateQueue, 0);
     const bool normalExit =
-        g_RecoilApp.m_stateQueue_118.m_itemCount == 1 &&
+        g_RecoilApp.m_stateQueue.m_itemCount == 1 &&
         item->m_kind == RecoilApp_StateQueueKind_ExitCurrent && item->m_stateObj == 0 &&
         item->m_param == 0;
 
-    std::memset(&g_RecoilApp.m_stateQueue_118, 0, sizeof(g_RecoilApp.m_stateQueue_118));
+    std::memset(&g_RecoilApp.m_stateQueue, 0, sizeof(g_RecoilApp.m_stateQueue));
 
     g_RecoilApp_QuitAfterCredits = 1;
     RecoilApp_IState_Vtbl leaveNetworkVtable{};
     leaveNetworkVtable.OnEnter = MethodAddress(&TestCreditsLeaveNetworkState::OnEnter);
-    g_RecoilApp.m_leaveNetworkState_1d0.base.vftable =
+    g_RecoilApp.m_leaveNetworkState.base.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&leaveNetworkVtable));
     HudUiCreditsPanel quitPanel{};
     InitCreditsPanelUpdateForTest(&quitPanel, 1.0f, 0.0f);
     quitPanel.UpdateFadeAndExit(0.25f);
     RecoilApp_StateQueueItem *exitItem =
-        StateQueueItemAtForTest(&g_RecoilApp.m_stateQueue_118, 0);
+        StateQueueItemAtForTest(&g_RecoilApp.m_stateQueue, 0);
     RecoilApp_StateQueueItem *switchItem =
-        StateQueueItemAtForTest(&g_RecoilApp.m_stateQueue_118, 1);
+        StateQueueItemAtForTest(&g_RecoilApp.m_stateQueue, 1);
     const bool quitExit =
-        g_RecoilApp.m_stateQueue_118.m_itemCount == 2 &&
+        g_RecoilApp.m_stateQueue.m_itemCount == 2 &&
         exitItem->m_kind == RecoilApp_StateQueueKind_ExitCurrent && exitItem->m_param == 1 &&
         switchItem->m_kind == RecoilApp_StateQueueKind_SwitchCurrent &&
         switchItem->m_stateObj ==
             static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
-                &g_RecoilApp.m_leaveNetworkState_1d0.base)) &&
+                &g_RecoilApp.m_leaveNetworkState.base)) &&
         switchItem->m_param == 0 &&
         g_RecoilApp.m_missionShutdownMode == RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY;
 
@@ -18835,7 +18878,7 @@ extern "C" int zhud_cmd_dialog_state_lifecycle_smoke(void) {
     }
 
     state.DestructorCore();
-    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_dialog != 0) {
+    if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) || state.m_dialog != 0) {
         return 2;
     }
 
@@ -18846,7 +18889,7 @@ extern "C" int zhud_cmd_dialog_state_lifecycle_smoke(void) {
     state.Constructor();
     state.m_dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
     state.DestructorCore();
-    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_dialog != 0 ||
+    if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) || state.m_dialog != 0 ||
         g_hudCmdDialogStateDeleteCount != 1 || g_hudCmdDialogStateDeleteFlags != 1) {
         return 3;
     }
@@ -18855,7 +18898,7 @@ extern "C" int zhud_cmd_dialog_state_lifecycle_smoke(void) {
     scalarState.vftable = 0x33333333;
     HudCmdDialogState *const scalarReturned = scalarState.ScalarDeletingDestructor(0);
     if (scalarReturned != &scalarState ||
-        scalarState.vftable != kRecoilStateBase_VtblAddress ||
+        scalarState.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
         scalarState.m_dialog != 0) {
         return 4;
     }
@@ -18879,7 +18922,7 @@ extern "C" int zhud_cmd_dialog_state_lifecycle_smoke(void) {
     }
 
     HudCmdDialogState::AtExitDestructor();
-    if (g_HudCmdDialogState.vftable != kRecoilStateBase_VtblAddress ||
+    if (g_HudCmdDialogState.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
         g_HudCmdDialogState.m_dialog != 0) {
         return 7;
     }
@@ -18902,14 +18945,14 @@ extern "C" int zhud_cmd_dialog_state_queue_enter_smoke(void) {
     RecoilApp_IState_Vtbl vtable{};
     vtable.OnEnter = MethodAddress(&HudCmdDialogStateQueueEnterTestState::OnEnter);
     std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
-    g_RecoilApp.m_currentStateIndex_0c8 = -1;
+    g_RecoilApp.m_currentStateIndex = -1;
     g_HudCmdDialogState.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&vtable));
     g_hudCmdDialogStateQueueEnterOnEnterCount = 0;
 
     HudCmdDialogState::QueueEnter();
 
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     RecoilApp_StateQueueItem *const item = StateQueueItemAtForTest(&queue, 0);
     const bool queued =
         queue.m_itemCount == 1 && g_hudCmdDialogStateQueueEnterOnEnterCount == 1 &&
@@ -24883,6 +24926,11 @@ extern "C" int hud_weather_fx_constructor_smoke(void) {
         weather.basisVector.z == 0.0f && weather.gravity == 1.0f &&
         weather.windDirection == 0.0f && weather.windVelocity == 1.0f;
 
+    const bool ftableOk =
+        g_HudWeatherFx_Vtable.slots[0] ==
+            MethodAddress(&HudWeatherFx::ScalarDeletingDestructor) &&
+        g_HudWeatherFx_Vtable.slots[9] == MethodAddress(&HudUiElement::Update);
+
     const bool imageOk =
         weather.textureName != nullptr && std::strcmp(weather.textureName, "SnowFX") == 0 &&
         weather.softwareImage != nullptr && weather.softwareImage->formatFlagsPacked == 0x2b &&
@@ -24907,7 +24955,7 @@ extern "C" int hud_weather_fx_constructor_smoke(void) {
     g_zVideo_ActiveRendererPath = oldRendererPath;
     g_zVideo_pfnCreateTextureRecord = oldCreateTextureRecord;
 
-    return initialized && quadsInvalid && particlesCopied && imageOk ? 0 : 1;
+    return initialized && ftableOk && quadsInvalid && particlesCopied && imageOk ? 0 : 1;
 }
 
 extern "C" int hud_weather_fx_destructor_smoke(void) {
@@ -24960,6 +25008,65 @@ extern "C" int hud_weather_fx_destructor_smoke(void) {
     g_zVideo_pfnTextureRecordDestroy = oldDestroyTextureRecord;
 
     return hardwareDestroyed && softwareSkipped ? 0 : 1;
+}
+
+extern "C" int hud_weather_fx_scalar_deleting_destructors_smoke(void) {
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    g_zVideo_ActiveRendererPath = 0;
+
+    std::srand(8);
+    HudWeatherFx stackBase = {};
+    stackBase.Constructor(1);
+    const bool baseNoDeleteOk =
+        stackBase.ScalarDeletingDestructor(0) == &stackBase &&
+        stackBase.ftable == &g_HudUiCommon_FTable;
+
+    HudWeatherFx *heapBase =
+        (HudWeatherFx *)(::operator new(sizeof(HudWeatherFx)));
+    std::memset(heapBase, 0, sizeof(HudWeatherFx));
+    std::srand(9);
+    heapBase->Constructor(1);
+    HudWeatherFx *const heapBaseSelf = heapBase;
+    const bool baseDeleteOk =
+        heapBase->ScalarDeletingDestructor(1) == heapBaseSelf;
+
+    std::srand(10);
+    HudWeatherFxSnow stackSnow = {};
+    stackSnow.Constructor(1);
+    const bool snowNoDeleteOk =
+        stackSnow.ScalarDeletingDestructor(0) == &stackSnow &&
+        stackSnow.ftable == &g_HudUiCommon_FTable;
+
+    HudWeatherFxSnow *heapSnow =
+        (HudWeatherFxSnow *)(::operator new(sizeof(HudWeatherFxSnow)));
+    std::memset(heapSnow, 0, sizeof(HudWeatherFxSnow));
+    std::srand(11);
+    heapSnow->Constructor(1);
+    HudWeatherFxSnow *const heapSnowSelf = heapSnow;
+    const bool snowDeleteOk =
+        heapSnow->ScalarDeletingDestructor(1) == heapSnowSelf;
+
+    std::srand(12);
+    HudWeatherFxRain stackRain = {};
+    stackRain.Constructor(1);
+    const bool rainNoDeleteOk =
+        stackRain.ScalarDeletingDestructor(0) == &stackRain &&
+        stackRain.ftable == &g_HudUiCommon_FTable;
+
+    HudWeatherFxRain *heapRain =
+        (HudWeatherFxRain *)(::operator new(sizeof(HudWeatherFxRain)));
+    std::memset(heapRain, 0, sizeof(HudWeatherFxRain));
+    std::srand(13);
+    heapRain->Constructor(1);
+    HudWeatherFxRain *const heapRainSelf = heapRain;
+    const bool rainDeleteOk =
+        heapRain->ScalarDeletingDestructor(1) == heapRainSelf;
+
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    return baseNoDeleteOk && baseDeleteOk && snowNoDeleteOk && snowDeleteOk &&
+                   rainNoDeleteOk && rainDeleteOk
+               ? 0
+               : 1;
 }
 
 extern "C" int hud_weather_fx_are_point_batch_inside_rect_smoke(void) {
@@ -25161,6 +25268,31 @@ extern "C" int hud_weather_fx_derived_constructors_smoke(void) {
         rain.softwareImage == nullptr && rain.textureRecord == nullptr &&
         rain.particlePositions[0][0].y == rain.particlePositions[1][0].y;
 
+    const bool ftableOk =
+        g_HudWeatherFxSnow_Vtable.slots[0] ==
+            MethodAddress(&HudWeatherFxSnow::ScalarDeletingDestructor) &&
+        g_HudWeatherFxSnow_Vtable.slots[9] ==
+            MethodAddress(&HudWeatherFxSnow::Update) &&
+        g_HudWeatherFxRain_Vtable.slots[0] ==
+            MethodAddress(&HudWeatherFxRain::ScalarDeletingDestructor) &&
+        g_HudWeatherFxRain_Vtable.slots[9] ==
+            MethodAddress(&HudWeatherFxRain::Update);
+
+    std::srand(14);
+    HudWeatherFxSnow destructSnow = {};
+    destructSnow.Constructor(1);
+    const bool snowDestructorAllocated =
+        destructSnow.ftable == &g_HudWeatherFxSnow_Vtable &&
+        destructSnow.particleQuads != nullptr &&
+        destructSnow.particlePositions[0] != nullptr &&
+        destructSnow.particlePositions[1] != nullptr;
+    destructSnow.Destructor();
+    const bool snowDestructorOk =
+        snowDestructorAllocated &&
+        destructSnow.ftable == &g_HudUiCommon_FTable &&
+        destructSnow.softwareImage == nullptr &&
+        destructSnow.textureRecord == nullptr;
+
     ::operator delete(snow.particleQuads);
     ::operator delete(snow.particlePositions[0]);
     ::operator delete(snow.particlePositions[1]);
@@ -25169,7 +25301,7 @@ extern "C" int hud_weather_fx_derived_constructors_smoke(void) {
     ::operator delete(rain.particlePositions[1]);
 
     g_zVideo_ActiveRendererPath = oldRendererPath;
-    return snowOk && rainOk ? 0 : 1;
+    return snowOk && rainOk && ftableOk && snowDestructorOk ? 0 : 1;
 }
 
 extern "C" int hud_weather_fx_rain_destructor_smoke(void) {

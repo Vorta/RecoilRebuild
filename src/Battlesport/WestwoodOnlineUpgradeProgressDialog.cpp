@@ -3,7 +3,6 @@
 #include "GameZRecoil/wwonline/upgrade_download.h"
 #include "GameZRecoil/zLoc/zLoc.h"
 
-#include <new>
 #include <stdarg.h>
 #include <stdio.h>
 

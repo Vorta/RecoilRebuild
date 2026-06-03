@@ -737,6 +737,7 @@ extern "C" int hud_ui_net_exit_destroy_global_smoke(void);
 extern "C" int hud_ui_net_exit_show_tick_smoke(void);
 extern "C" int hud_ui_net_exit_exit_button_on_activate_smoke(void);
 extern "C" int hud_ui_net_exit_destructor_smoke(void);
+extern "C" int hud_ui_net_exit_scalar_deleting_destructor_smoke(void);
 extern "C" int hud_ui_net_exit_resume_widget_on_activate_smoke(void);
 extern "C" int hud_ui_net_exit_resume_widget_on_show_preview_smoke(void);
 extern "C" int hud_ui_net_exit_resume_widget_on_hide_preview_smoke(void);
@@ -945,6 +946,7 @@ extern "C" int hud_sensor_map_node_draw_projected_path_smoke(void);
 extern "C" int hud_sensor_map_node_draw_on_tracker_smoke(void);
 extern "C" int hud_weather_fx_constructor_smoke(void);
 extern "C" int hud_weather_fx_destructor_smoke(void);
+extern "C" int hud_weather_fx_scalar_deleting_destructors_smoke(void);
 extern "C" int hud_weather_fx_are_point_batch_inside_rect_smoke(void);
 extern "C" int hud_weather_fx_draw_particles_smoke(void);
 extern "C" int hud_weather_fx_derived_constructors_smoke(void);
@@ -1423,6 +1425,7 @@ extern "C" int recoil_app_scalar_deleting_destructor_smoke(void);
 extern "C" int recoil_state_base_scalar_deleting_destructor_smoke(void);
 extern "C" int recoil_state_credits_destructor_smoke(void);
 extern "C" int recoil_state_credits_constructor_smoke(void);
+extern "C" int recoil_state_credits_static_init_smoke(void);
 extern "C" int recoil_state_credits_on_wnd_activate_smoke(void);
 extern "C" int recoil_state_credits_on_try_become_current_smoke(void);
 extern "C" int recoil_state_credits_on_deactivate_smoke(void);
@@ -1820,6 +1823,10 @@ extern "C" int zvideo_set_renderer_type_smoke(void);
 extern "C" int zvideo_pending_dither_enable_smoke(void);
 extern "C" int zvideo_pending_wireframe_state_smoke(void);
 extern "C" int zvideo_dd3d_set_fog_enable_smoke(void);
+extern "C" int zvideo_dd3d_set_fog_start_smoke(void);
+extern "C" int zvideo_dd3d_set_fog_end_smoke(void);
+extern "C" int zvideo_dd3d_apply_fog_state_from_globals_smoke(void);
+extern "C" int zvideo_dd3d_update_fog_color_smoke(void);
 extern "C" int zvideo_dd3d_begin_scene_flush_pending_smoke(void);
 extern "C" int zvideo_dd3d_create_device_state_smoke(void);
 extern "C" int zvideo_sw_render_frame_smoke(void);
@@ -1831,6 +1838,7 @@ extern "C" int zvideo_primary_surface_rect_scratch_smoke(void);
 extern "C" int zvideo_run_postprocess_on_sw_buffer_smoke(void);
 extern "C" int zvideo_run_postprocess_on_primary_buffer_smoke(void);
 extern "C" int zvideo_frame_scratch_buffers_smoke(void);
+extern "C" int zvideo_noise_shutdown_buffers_smoke(void);
 extern "C" int zvideo_fxpass3_copy_surface_pixel_clipped_smoke(void);
 extern "C" int zvideo_fxpass3_apply_to_current_surface_smoke(void);
 extern "C" int zvideo_fxpass3_element_draw_smoke(void);
@@ -1922,17 +1930,32 @@ extern "C" int zvideo_set_active_view_context_smoke(void);
 extern "C" int zvideo_frustum_test_sphere_clip_mask_smoke(void);
 extern "C" int zvideo_queue_solid_quad_smoke(void);
 extern "C" int zvideo_flush_quad_batch_empty_smoke(void);
+extern "C" int zvideo_flush_quad_batch_smoke(void);
+extern "C" int zvideo_flush_overwrite_polys_empty_smoke(void);
+extern "C" int zvideo_flush_overwrite_polys_smoke(void);
 extern "C" int zvideo_flush_sorted_polys_empty_smoke(void);
+extern "C" int zvideo_flush_sorted_polys_smoke(void);
 extern "C" int zvideo_submit_poly_flat_color16_queue_smoke(void);
+extern "C" int zvideo_submit_poly_flat_color16_immediate_smoke(void);
 extern "C" int zvideo_submit_poly_gouraud_color16_queue_smoke(void);
+extern "C" int zvideo_submit_poly_gouraud_color16_immediate_smoke(void);
 extern "C" int zvideo_submit_poly_color_attr_smoke(void);
+extern "C" int zvideo_submit_poly_color_attr_immediate_smoke(void);
 extern "C" int zvideo_submit_poly_render_class_queue_smoke(void);
+extern "C" int zvideo_submit_poly_render_class_immediate_smoke(void);
 extern "C" int zvideo_submit_polygon_queue_smoke(void);
+extern "C" int zvideo_submit_polygon_immediate_smoke(void);
 extern "C" int zvideo_submit_polygon_lit_queue_smoke(void);
+extern "C" int zvideo_submit_polygon_lit_immediate_smoke(void);
+extern "C" int zvideo_draw_point_color16_smoke(void);
 extern "C" int zvideo_present_display_mode_surface_null_smoke(void);
 extern "C" int zvideo_dd3d_present_display_mode_surface_smoke(void);
 extern "C" int zvideo_texture_record_release_upload_null_smoke(void);
+extern "C" int zvideo_texture_record_release_upload_surface_smoke(void);
+extern "C" int zvideo_texture_record_finalize_upload_smoke(void);
 extern "C" int zvideo_texture_record_create_and_power_smoke(void);
+extern "C" int zvideo_texture_record_lock_upload_surface_smoke(void);
+extern "C" int zvideo_texture_record_unlock_upload_surface_smoke(void);
 extern "C" int zvideo_texture_record_destroy_smoke(void);
 extern "C" int zvideo_dd_shutdown_video_system_smoke(void);
 extern "C" int zvideo_convert_image_pixels_for_texture_smoke(void);
@@ -2075,6 +2098,7 @@ extern "C" int zsys_exit_process_with_cleanup_child_smoke(void);
 extern "C" int zsys_exit_process_with_cleanup_smoke(void);
 extern "C" int zerror_init_output_context_smoke(void);
 extern "C" int zerror_emit_debug_buffer_smoke(void);
+extern "C" int zerror_report_old_debug_output_smoke(void);
 extern "C" int zcom_query_interface_from_interface_map_smoke(void);
 extern "C" int zcom_connection_point_container_advise_smoke(void);
 extern "C" int zcom_connection_point_container_unadvise_smoke(void);
@@ -3323,6 +3347,8 @@ int main(int argc, char **argv) {
         {"hud_ui_net_exit_exit_button_on_activate_smoke",
          hud_ui_net_exit_exit_button_on_activate_smoke},
         {"hud_ui_net_exit_destructor_smoke", hud_ui_net_exit_destructor_smoke},
+        {"hud_ui_net_exit_scalar_deleting_destructor_smoke",
+         hud_ui_net_exit_scalar_deleting_destructor_smoke},
         {"hud_ui_net_exit_resume_widget_on_activate_smoke",
          hud_ui_net_exit_resume_widget_on_activate_smoke},
         {"hud_ui_net_exit_resume_widget_on_show_preview_smoke",
@@ -3638,6 +3664,8 @@ int main(int argc, char **argv) {
          hud_sensor_map_node_draw_on_tracker_smoke},
         {"hud_weather_fx_constructor_smoke", hud_weather_fx_constructor_smoke},
         {"hud_weather_fx_destructor_smoke", hud_weather_fx_destructor_smoke},
+        {"hud_weather_fx_scalar_deleting_destructors_smoke",
+         hud_weather_fx_scalar_deleting_destructors_smoke},
         {"hud_weather_fx_are_point_batch_inside_rect_smoke",
          hud_weather_fx_are_point_batch_inside_rect_smoke},
         {"hud_weather_fx_draw_particles_smoke", hud_weather_fx_draw_particles_smoke},
@@ -4287,6 +4315,7 @@ int main(int argc, char **argv) {
          recoil_state_base_scalar_deleting_destructor_smoke},
         {"recoil_state_credits_destructor_smoke", recoil_state_credits_destructor_smoke},
         {"recoil_state_credits_constructor_smoke", recoil_state_credits_constructor_smoke},
+        {"recoil_state_credits_static_init_smoke", recoil_state_credits_static_init_smoke},
         {"recoil_state_credits_on_wnd_activate_smoke",
          recoil_state_credits_on_wnd_activate_smoke},
         {"recoil_state_credits_on_try_become_current_smoke",
@@ -4850,6 +4879,11 @@ int main(int argc, char **argv) {
         {"zvideo_pending_dither_enable_smoke", zvideo_pending_dither_enable_smoke},
         {"zvideo_pending_wireframe_state_smoke", zvideo_pending_wireframe_state_smoke},
         {"zvideo_dd3d_set_fog_enable_smoke", zvideo_dd3d_set_fog_enable_smoke},
+        {"zvideo_dd3d_set_fog_start_smoke", zvideo_dd3d_set_fog_start_smoke},
+        {"zvideo_dd3d_set_fog_end_smoke", zvideo_dd3d_set_fog_end_smoke},
+        {"zvideo_dd3d_apply_fog_state_from_globals_smoke",
+         zvideo_dd3d_apply_fog_state_from_globals_smoke},
+        {"zvideo_dd3d_update_fog_color_smoke", zvideo_dd3d_update_fog_color_smoke},
         {"zvideo_dd3d_begin_scene_flush_pending_smoke",
          zvideo_dd3d_begin_scene_flush_pending_smoke},
         {"zvideo_dd3d_create_device_state_smoke",
@@ -4865,6 +4899,7 @@ int main(int argc, char **argv) {
         {"zvideo_run_postprocess_on_primary_buffer_smoke",
          zvideo_run_postprocess_on_primary_buffer_smoke},
         {"zvideo_frame_scratch_buffers_smoke", zvideo_frame_scratch_buffers_smoke},
+        {"zvideo_noise_shutdown_buffers_smoke", zvideo_noise_shutdown_buffers_smoke},
         {"zvideo_fxpass3_copy_surface_pixel_clipped_smoke",
          zvideo_fxpass3_copy_surface_pixel_clipped_smoke},
         {"zvideo_fxpass3_apply_to_current_surface_smoke",
@@ -5010,24 +5045,49 @@ int main(int argc, char **argv) {
          zvideo_frustum_test_sphere_clip_mask_smoke},
         {"zvideo_queue_solid_quad_smoke", zvideo_queue_solid_quad_smoke},
         {"zvideo_flush_quad_batch_empty_smoke", zvideo_flush_quad_batch_empty_smoke},
+        {"zvideo_flush_quad_batch_smoke", zvideo_flush_quad_batch_smoke},
+        {"zvideo_flush_overwrite_polys_empty_smoke",
+         zvideo_flush_overwrite_polys_empty_smoke},
+        {"zvideo_flush_overwrite_polys_smoke", zvideo_flush_overwrite_polys_smoke},
         {"zvideo_flush_sorted_polys_empty_smoke", zvideo_flush_sorted_polys_empty_smoke},
+        {"zvideo_flush_sorted_polys_smoke", zvideo_flush_sorted_polys_smoke},
         {"zvideo_submit_poly_flat_color16_queue_smoke",
          zvideo_submit_poly_flat_color16_queue_smoke},
+        {"zvideo_submit_poly_flat_color16_immediate_smoke",
+         zvideo_submit_poly_flat_color16_immediate_smoke},
         {"zvideo_submit_poly_gouraud_color16_queue_smoke",
          zvideo_submit_poly_gouraud_color16_queue_smoke},
+        {"zvideo_submit_poly_gouraud_color16_immediate_smoke",
+         zvideo_submit_poly_gouraud_color16_immediate_smoke},
         {"zvideo_submit_poly_color_attr_smoke", zvideo_submit_poly_color_attr_smoke},
+        {"zvideo_submit_poly_color_attr_immediate_smoke",
+         zvideo_submit_poly_color_attr_immediate_smoke},
         {"zvideo_submit_poly_render_class_queue_smoke",
          zvideo_submit_poly_render_class_queue_smoke},
+        {"zvideo_submit_poly_render_class_immediate_smoke",
+         zvideo_submit_poly_render_class_immediate_smoke},
         {"zvideo_submit_polygon_queue_smoke", zvideo_submit_polygon_queue_smoke},
+        {"zvideo_submit_polygon_immediate_smoke", zvideo_submit_polygon_immediate_smoke},
         {"zvideo_submit_polygon_lit_queue_smoke", zvideo_submit_polygon_lit_queue_smoke},
+        {"zvideo_submit_polygon_lit_immediate_smoke",
+         zvideo_submit_polygon_lit_immediate_smoke},
+        {"zvideo_draw_point_color16_smoke", zvideo_draw_point_color16_smoke},
         {"zvideo_present_display_mode_surface_null_smoke",
          zvideo_present_display_mode_surface_null_smoke},
         {"zvideo_dd3d_present_display_mode_surface_smoke",
          zvideo_dd3d_present_display_mode_surface_smoke},
         {"zvideo_texture_record_release_upload_null_smoke",
          zvideo_texture_record_release_upload_null_smoke},
+        {"zvideo_texture_record_release_upload_surface_smoke",
+         zvideo_texture_record_release_upload_surface_smoke},
+        {"zvideo_texture_record_finalize_upload_smoke",
+         zvideo_texture_record_finalize_upload_smoke},
         {"zvideo_texture_record_create_and_power_smoke",
          zvideo_texture_record_create_and_power_smoke},
+        {"zvideo_texture_record_lock_upload_surface_smoke",
+         zvideo_texture_record_lock_upload_surface_smoke},
+        {"zvideo_texture_record_unlock_upload_surface_smoke",
+         zvideo_texture_record_unlock_upload_surface_smoke},
         {"zvideo_texture_record_destroy_smoke", zvideo_texture_record_destroy_smoke},
         {"zvideo_dd_shutdown_video_system_smoke", zvideo_dd_shutdown_video_system_smoke},
         {"zvideo_convert_image_pixels_for_texture_smoke",
@@ -5233,6 +5293,7 @@ int main(int argc, char **argv) {
         {"zsys_exit_process_with_cleanup_smoke", zsys_exit_process_with_cleanup_smoke},
         {"zerror_init_output_context_smoke", zerror_init_output_context_smoke},
         {"zerror_emit_debug_buffer_smoke", zerror_emit_debug_buffer_smoke},
+        {"zerror_report_old_debug_output_smoke", zerror_report_old_debug_output_smoke},
         {"zcom_query_interface_from_interface_map_smoke",
          zcom_query_interface_from_interface_map_smoke},
         {"zcom_connection_point_container_advise_smoke",

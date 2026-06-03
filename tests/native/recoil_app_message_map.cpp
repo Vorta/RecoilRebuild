@@ -44,6 +44,9 @@ struct RecoilStateCredits {
     RecoilPtr32 dialog;
 
     RecoilStateCredits *RECOIL_THISCALL Constructor();
+    static void RECOIL_CDECL StaticInitAndRegisterAtExit();
+    static void RECOIL_CDECL StaticInit();
+    static void RECOIL_CDECL RegisterAtExit();
     void RECOIL_THISCALL OnWndActivate(int activateCode);
     int RECOIL_THISCALL OnTryBecomeCurrent();
     void RECOIL_THISCALL OnDeactivate();
@@ -1538,15 +1541,18 @@ RecoilFn32 AppIntMethodToFn(std::int32_t (RECOIL_THISCALL TestRecoilApp::*method
     return thunk.fn;
 }
 
-RecoilFn32 g_testRecoilAppVtable[0x30];
+RecoilApp_Vtbl g_testRecoilAppVtable;
 
 void InitTestRecoilAppVtable() {
-    g_testRecoilAppVtable[0x64 / 4] = AppIntMethodToFn(&TestRecoilApp::PumpMessage);
-    g_testRecoilAppVtable[0x70 / 4] = AppIntMethodToFn(&TestRecoilApp::ExitInstance);
-    g_testRecoilAppVtable[0xa8 / 4] = AppVoidMethodToFn(&TestRecoilApp::OnAppDeactivate);
-    g_testRecoilAppVtable[0xac / 4] = AppStartMethodToFn(&TestRecoilApp::StartEngine);
-    g_testRecoilAppVtable[0xb0 / 4] = AppVoidMethodToFn(&TestRecoilApp::ShutdownEngine);
-    g_testRecoilAppVtable[0xb8 / 4] = AppFrameMethodToFn(&TestRecoilApp::CreateMainWnd);
+    g_testRecoilAppVtable = RecoilApp_Vtbl{};
+    g_testRecoilAppVtable.PumpMessage = AppIntMethodToFn(&TestRecoilApp::PumpMessage);
+    g_testRecoilAppVtable.ExitInstance = AppIntMethodToFn(&TestRecoilApp::ExitInstance);
+    g_testRecoilAppVtable.OnAppDeactivate =
+        AppVoidMethodToFn(&TestRecoilApp::OnAppDeactivate);
+    g_testRecoilAppVtable.StartEngine = AppStartMethodToFn(&TestRecoilApp::StartEngine);
+    g_testRecoilAppVtable.ShutdownEngine =
+        AppVoidMethodToFn(&TestRecoilApp::ShutdownEngine);
+    g_testRecoilAppVtable.CreateMainWnd = AppFrameMethodToFn(&TestRecoilApp::CreateMainWnd);
 }
 
 void CleanupSingleQueuedItem(RecoilApp_StateQueue &queue) {
@@ -1669,11 +1675,11 @@ int RunOpenCampaignDialogHarness(bool throughMenuHandler) {
 
     std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
     g_RecoilApp.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testRecoilAppVtable));
     g_RecoilApp.m_pMainWnd = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(frameWords));
-    g_RecoilApp.m_pendingState_0c4 =
+    g_RecoilApp.m_pendingState =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&startupState));
-    g_RecoilApp.m_currentStateIndex_0c8 = -1;
+    g_RecoilApp.m_currentStateIndex = -1;
     g_RecoilApp.m_skipIntroFmv = throughMenuHandler ? 0 : 7;
     g_startEngineResult = 1;
 
@@ -1693,11 +1699,11 @@ int RunOpenCampaignDialogHarness(bool throughMenuHandler) {
                     g_RecoilApp.m_skipIntroFmv == 1 && g_startEngineCount == 1 &&
                     g_lastStartEngineHwnd ==
                         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(hwnd)) &&
-                    g_stateEnterCount == 1 && g_RecoilApp.m_stateQueue_118.m_itemCount == 1 &&
+                    g_stateEnterCount == 1 && g_RecoilApp.m_stateQueue.m_itemCount == 1 &&
                     manager.sectionHandlerCount == 2;
 
-    if (g_RecoilApp.m_stateQueue_118.m_itemCount != 0) {
-        CleanupSingleQueuedItem(g_RecoilApp.m_stateQueue_118);
+    if (g_RecoilApp.m_stateQueue.m_itemCount != 0) {
+        CleanupSingleQueuedItem(g_RecoilApp.m_stateQueue);
     }
     ClearTestRegisteredHandlers(sentinel);
     g_HudSensorTracker.zbdPath.Empty();
@@ -1776,61 +1782,71 @@ extern "C" int crt_atexit_import_provider_smoke(void) {
 }
 
 extern "C" int recoil_app_get_message_map_smoke(void) {
-    const MfcMsgMap *messageMap = g_RecoilApp.GetMessageMap();
+    const AFX_MSGMAP *messageMap = g_RecoilApp.GetMessageMap();
     if (messageMap != &g_RecoilApp_MessageMap) {
         return 1;
     }
 
-    if (messageMap->getBaseMap != 0x004428a0 || messageMap->entries != 0x004d0998) {
+#ifdef _AFXDLL
+    if (messageMap->pfnGetBaseMap != &RecoilApp::GetBaseMessageMapForMfc) {
         return 2;
     }
+#else
+    if (messageMap->pBaseMap != RecoilApp::GetBaseMessageMapForMfc()) {
+        return 2;
+    }
+#endif
 
-    const zMfcMsgMapEntry &sentinel = g_RecoilApp_MessageEntries[0];
+    if (messageMap->lpEntries != &g_RecoilApp_MessageEntries[0]) {
+        return 3;
+    }
+
+    const AFX_MSGMAP_ENTRY &sentinel = g_RecoilApp_MessageEntries[0];
     return sentinel.nMessage == 0 && sentinel.nCode == 0 && sentinel.nID == 0 &&
                    sentinel.nLastID == 0 && sentinel.nSig == 0 && sentinel.pfn == 0
                ? 0
-               : 3;
+               : 4;
 }
 
 extern "C" int recoil_app_mfc_ole_module_constructor_smoke(void) {
     RecoilApp app{};
-    app.m_stateQueue_118.m_ctorTag_00 = 0x11223344;
-    app.m_pendingState_0c4 = 0x12345678;
-    app.m_currentStateIndex_0c8 = 7;
-    app.m_skipWait_0d0 = 9;
-    for (RecoilPtr32 &state : app.m_stateStack_0d8) {
+    app.m_stateQueue.m_ctorTag = 0x11223344;
+    app.m_pendingState = 0x12345678;
+    app.m_currentStateIndex = 7;
+    app.m_skipWait = 9;
+    for (RecoilPtr32 &state : app.m_stateStack) {
         state = 0x87654321;
     }
 
     RecoilApp *returned = app.MfcOleModuleConstructor();
     int result = 0;
-    if (returned != &app || app.vftable != kRecoilApp_MfcOleModule_VtblAddress) {
+    if (returned != &app) {
         result = 1;
     }
 
-    if (result == 0 && (app.m_pendingState_0c4 != 0 || app.m_currentStateIndex_0c8 != -1 ||
-                        app.m_skipWait_0d0 != 0)) {
+    if (result == 0 && (app.m_pendingState != 0 || app.m_currentStateIndex != -1 ||
+                        app.m_skipWait != 0)) {
         result = 2;
     }
 
     const unsigned char expectedCtorByte =
         static_cast<unsigned char>((reinterpret_cast<std::uintptr_t>(&app) >> 24) & 0xff);
     const auto *const ctorTagBytes =
-        reinterpret_cast<const unsigned char *>(&app.m_stateQueue_118.m_ctorTag_00);
+        reinterpret_cast<const unsigned char *>(&app.m_stateQueue.m_ctorTag);
     if (result == 0 && (ctorTagBytes[0] != expectedCtorByte || ctorTagBytes[1] != 0x33 ||
                         ctorTagBytes[2] != 0x22 || ctorTagBytes[3] != 0x11)) {
         result = 3;
     }
 
     const auto *const queueTail =
-        reinterpret_cast<const unsigned char *>(&app.m_stateQueue_118.m_readBlock);
+        reinterpret_cast<const unsigned char *>(&app.m_stateQueue.m_readBlock);
     for (std::size_t i = 0; result == 0 && i < 0x2c; ++i) {
         if (queueTail[i] != 0) {
             result = 4;
         }
     }
 
-    for (RecoilPtr32 state : app.m_stateStack_0d8) {
+    for (RecoilPtr32 state : app.m_stateStack) {
         if (result == 0 && state != 0) {
             result = 5;
         }
@@ -1847,16 +1863,16 @@ extern "C" int recoil_app_accessor_and_skip_wait_smoke(void) {
         return 1;
     }
 
-    app.m_skipWait_0d0 = 7;
-    if (app.TakeSkipWaitMessage() != 7 || app.m_skipWait_0d0 != 0) {
+    app.m_skipWait = 7;
+    if (app.TakeSkipWaitMessage() != 7 || app.m_skipWait != 0) {
         return 2;
     }
 
-    if (app.MarkSkipWaitMessage() != 0 || app.m_skipWait_0d0 != 1) {
+    if (app.MarkSkipWaitMessage() != 0 || app.m_skipWait != 1) {
         return 3;
     }
 
-    return app.MarkSkipWaitMessage() == 1 && app.m_skipWait_0d0 == 1 ? 0 : 4;
+    return app.MarkSkipWaitMessage() == 1 && app.m_skipWait == 1 ? 0 : 4;
 }
 
 extern "C" int recoil_app_activate_existing_instance_absent_smoke(void) {
@@ -1943,25 +1959,25 @@ extern "C" int recoil_app_init_std_log_files_smoke(void) {
 
 extern "C" int recoil_app_get_current_state_smoke(void) {
     RecoilApp app{};
-    app.m_stateStack_0d8[0] = 0x11111111;
-    app.m_stateStack_0d8[15] = 0x22222222;
+    app.m_stateStack[0] = 0x11111111;
+    app.m_stateStack[15] = 0x22222222;
 
-    app.m_currentStateIndex_0c8 = -1;
+    app.m_currentStateIndex = -1;
     if (app.GetCurrentState() != 0) {
         return 1;
     }
 
-    app.m_currentStateIndex_0c8 = 0;
+    app.m_currentStateIndex = 0;
     if (app.GetCurrentState() != 0x11111111) {
         return 2;
     }
 
-    app.m_currentStateIndex_0c8 = 15;
+    app.m_currentStateIndex = 15;
     if (app.GetCurrentState() != 0x22222222) {
         return 3;
     }
 
-    app.m_currentStateIndex_0c8 = 16;
+    app.m_currentStateIndex = 16;
     return app.GetCurrentState() == 0 ? 0 : 4;
 }
 
@@ -2021,15 +2037,15 @@ extern "C" int recoil_app_queue_switch_current_state_smoke(void) {
     oldState.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
     newState.vftable = oldState.vftable;
-    app.m_currentStateIndex_0c8 = 0;
-    app.m_stateStack_0d8[0] = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+    app.m_currentStateIndex = 0;
+    app.m_stateStack[0] = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
 
     const RecoilPtr32 returned = app.QueueSwitchCurrentState(&newState, 42);
-    if (returned != app.m_stateStack_0d8[0] || g_stateExitCount != 1 || g_stateEnterCount != 1) {
+    if (returned != app.m_stateStack[0] || g_stateExitCount != 1 || g_stateEnterCount != 1) {
         return 1;
     }
 
-    RecoilApp_StateQueue &queue = app.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = app.m_stateQueue;
     if (queue.m_itemCount != 1 || queue.m_chunkPtrCapacity != 2) {
         return 2;
     }
@@ -2064,19 +2080,19 @@ extern "C" int hud_sensor_queue_mission_fmv_state_for_mission_id_smoke(void) {
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
 
     std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
-    g_RecoilApp.m_missionFmvState_1d8.base.vftable = oldState.vftable;
-    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv = 7;
+    g_RecoilApp.m_missionFmvState.base.vftable = oldState.vftable;
+    g_RecoilApp.m_missionFmvState.m_skipMissionFmv = 7;
 
     HudSensorTracker tracker{};
     const int returned = tracker.QueueMissionFmvStateForMissionId(14);
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
 
     int result = 0;
-    if (returned != 1 || g_RecoilApp.m_missionFmvState_1d8.m_missionId != 14 ||
-        g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv != 0 ||
+    if (returned != 1 || g_RecoilApp.m_missionFmvState.m_missionId != 14 ||
+        g_RecoilApp.m_missionFmvState.m_skipMissionFmv != 0 ||
         g_stateExitCount != 1 || g_stateEnterCount != 1) {
         result = 1;
     } else if (queue.m_itemCount != 1 || queue.m_chunkPtrCapacity != 2) {
@@ -2089,7 +2105,7 @@ extern "C" int hud_sensor_queue_mission_fmv_state_for_mission_id_smoke(void) {
             static_cast<std::uintptr_t>(*slot));
         if (item->m_type != 0 || item->m_kind != RecoilApp_StateQueueKind_SwitchCurrent ||
             item->m_stateObj != static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
-                                    &g_RecoilApp.m_missionFmvState_1d8.base)) ||
+                                    &g_RecoilApp.m_missionFmvState.base)) ||
             item->m_param != 0) {
             result = 3;
         }
@@ -2122,10 +2138,10 @@ extern "C" int hud_sensor_save_and_queue_mission_state_smoke(void) {
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
 
     std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
-    g_RecoilApp.m_missionFmvState_1d8.base.vftable = oldState.vftable;
+    g_RecoilApp.m_missionFmvState.base.vftable = oldState.vftable;
 
     zUtil_SaveGameState saveState{};
     zUtil_PlayerStateStorage playerState{};
@@ -2177,15 +2193,15 @@ extern "C" int hud_sensor_save_and_queue_mission_state_smoke(void) {
     tracker.missionId = 5;
     tracker.SaveAndQueueMissionState();
 
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     bool normalOk = tracker.hasPendingPlayerSave == 1 &&
                     tracker.pendingPlayerSave.savedNanitePanelLevel == 77 &&
                     tracker.pendingPlayerSave.playerSaveData.size ==
                         sizeof(PlayerMissionSaveData) &&
                     tracker.pendingPlayerSave.playerSaveData.altWeaponBankIndex == 2 &&
                     tracker.pendingPlayerSave.playerSaveData.primaryWeaponSideIndex == 1 &&
-                    g_RecoilApp.m_missionFmvState_1d8.m_missionId == 6 &&
-                    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv == 0 &&
+                    g_RecoilApp.m_missionFmvState.m_missionId == 6 &&
+                    g_RecoilApp.m_missionFmvState.m_skipMissionFmv == 0 &&
                     queue.m_itemCount == 1;
     if (normalOk) {
         const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
@@ -2195,7 +2211,7 @@ extern "C" int hud_sensor_save_and_queue_mission_state_smoke(void) {
             static_cast<std::uintptr_t>(*slot));
         normalOk = item->m_kind == RecoilApp_StateQueueKind_SwitchCurrent &&
                    item->m_stateObj == static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
-                                           &g_RecoilApp.m_missionFmvState_1d8.base)) &&
+                                           &g_RecoilApp.m_missionFmvState.base)) &&
                    item->m_param == 0;
     }
 
@@ -2221,15 +2237,15 @@ extern "C" int recoil_app_queue_push_state_smoke(void) {
     oldState.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
     newState.vftable = oldState.vftable;
-    app.m_currentStateIndex_0c8 = 0;
-    app.m_stateStack_0d8[0] = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+    app.m_currentStateIndex = 0;
+    app.m_stateStack[0] = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
 
     const RecoilPtr32 returned = app.QueuePushState(&newState, 23);
-    if (returned != app.m_stateStack_0d8[0] || g_stateExitCount != 0 || g_stateEnterCount != 1) {
+    if (returned != app.m_stateStack[0] || g_stateExitCount != 0 || g_stateEnterCount != 1) {
         return 1;
     }
 
-    RecoilApp_StateQueue &queue = app.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = app.m_stateQueue;
     if (queue.m_itemCount != 1 || queue.m_chunkPtrCapacity != 2) {
         return 2;
     }
@@ -2258,7 +2274,7 @@ extern "C" int hud_ui_callback_queue_cheat_code_state_smoke(void) {
     g_stateExitCount = 0;
 
     const int returned = HudUiCallback::QueueCheatCodeState();
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     int result = 0;
     if (returned != 1 || g_stateEnterCount != 1 || g_stateExitCount != 0) {
         result = 1;
@@ -2297,7 +2313,7 @@ extern "C" int recoil_state_controls_queue_enter_smoke(void) {
     g_stateExitCount = 0;
 
     RecoilStateControls::QueueEnter();
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     int result = 0;
     if (g_stateEnterCount != 1 || g_stateExitCount != 0) {
         result = 1;
@@ -2340,7 +2356,7 @@ extern "C" int recoil_state_controls_lifecycle_smoke(void) {
     state.vftable = 0x33333333;
     state.m_dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
     state.~RecoilStateControls();
-    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_dialog != 0 ||
+    if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) || state.m_dialog != 0 ||
         dialog.scalarDeletingCount != 1 || dialog.lastScalarDeletingFlags != 1) {
         return 2;
     }
@@ -2562,7 +2578,7 @@ extern "C" int recoil_state_confirm_quit_queue_enter_smoke(void) {
     g_stateExitCount = 0;
 
     RecoilStateConfirmQuit::QueueEnter();
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     int result = 0;
     if (g_stateEnterCount != 1 || g_stateExitCount != 0) {
         result = 1;
@@ -2598,8 +2614,8 @@ extern "C" int hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke(void
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
 
     g_RecoilApp = RecoilApp{};
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
     g_stateEnterCount = 0;
     g_stateExitCount = 0;
@@ -2608,7 +2624,7 @@ extern "C" int hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke(void
     widget.Constructor();
     widget.OnActivateQueueExitCurrentState();
 
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     int result = 0;
     if (g_stateExitCount != 1 || g_stateEnterCount != 0) {
         result = 1;
@@ -2630,10 +2646,10 @@ extern "C" int hud_ui_credits_quit_button_on_activate_smoke(void) {
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
 
     g_RecoilApp = RecoilApp{};
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
-    g_RecoilApp.m_leaveNetworkState_1d0.base.vftable =
+    g_RecoilApp.m_leaveNetworkState.base.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
     g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_ON_EXIT;
     g_stateEnterCount = 0;
@@ -2643,7 +2659,7 @@ extern "C" int hud_ui_credits_quit_button_on_activate_smoke(void) {
     widget.Constructor();
     widget.OnActivate();
 
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     RecoilApp_StateQueueItem *const exitItem = QueueItemAt(queue, 0);
     RecoilApp_StateQueueItem *const switchItem = QueueItemAt(queue, 1);
 
@@ -2659,7 +2675,7 @@ extern "C" int hud_ui_credits_quit_button_on_activate_smoke(void) {
                switchItem->m_kind != RecoilApp_StateQueueKind_SwitchCurrent ||
                switchItem->m_stateObj !=
                    static_cast<RecoilPtr32>(
-                       reinterpret_cast<std::uintptr_t>(&g_RecoilApp.m_leaveNetworkState_1d0)) ||
+                       reinterpret_cast<std::uintptr_t>(&g_RecoilApp.m_leaveNetworkState)) ||
                switchItem->m_param != 0) {
         result = 3;
     }
@@ -2678,8 +2694,8 @@ extern "C" int hud_ui_cheat_text_input_on_activate_smoke(void) {
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
 
     g_RecoilApp = RecoilApp{};
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
     g_stateEnterCount = 0;
     g_stateExitCount = 0;
@@ -2688,7 +2704,7 @@ extern "C" int hud_ui_cheat_text_input_on_activate_smoke(void) {
     widget.BaseConstructor();
     widget.OnActivate();
 
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     int result = 0;
     if (g_stateExitCount != 1 || g_stateEnterCount != 0 ||
         widget.sliderBorder.inputActive != 1) {
@@ -2711,15 +2727,15 @@ extern "C" int hud_ui_callback_queue_exit_current_state_smoke(void) {
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
 
     g_RecoilApp = RecoilApp{};
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
     g_stateEnterCount = 0;
     g_stateExitCount = 0;
 
     HudUiCallback::QueueExitCurrentState();
 
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     int result = 0;
     if (g_stateExitCount != 1 || g_stateEnterCount != 0) {
         result = 1;
@@ -2858,7 +2874,7 @@ extern "C" int recoil_state_confirm_quit_static_init_smoke(void) {
     g_RecoilState_ConfirmQuit.m_dialog =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
     RecoilStateConfirmQuit::AtExitDestructor();
-    if (g_RecoilState_ConfirmQuit.vftable != kRecoilStateBase_VtblAddress ||
+    if (g_RecoilState_ConfirmQuit.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
         g_RecoilState_ConfirmQuit.m_dialog != 0 ||
         dialog.setEnabledCount != 1 || dialog.lastEnabled != 0 ||
         dialog.scalarDeletingCount != 1 || dialog.lastScalarDeletingFlags != 1) {
@@ -2904,7 +2920,7 @@ extern "C" int recoil_state_cheat_code_destructor_smoke(void) {
     state.m_audioSnapshot = 0x33333333;
 
     state.~RecoilStateCheatCode();
-    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_dialog != 0 ||
+    if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) || state.m_dialog != 0 ||
         dialog.setEnabledCount != 0 || dialog.scalarDeletingCount != 1 ||
         dialog.lastScalarDeletingFlags != 1 ||
         state.m_prevHalfResAdjustMode != ZVIDEO_HALFRES_ADJUST_ENABLED ||
@@ -2925,7 +2941,7 @@ extern "C" int recoil_state_cheat_code_scalar_deleting_destructor_smoke(void) {
     RecoilStateCheatCode *const scalarReturned =
         scalarState.ScalarDeletingDestructor(0);
     if (scalarReturned != &scalarState ||
-        scalarState.vftable != kRecoilStateBase_VtblAddress ||
+        scalarState.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
         scalarState.m_dialog != 0 ||
         scalarState.m_prevHalfResAdjustMode != ZVIDEO_HALFRES_ADJUST_ENABLED ||
         scalarState.m_audioSnapshot != 0x33333333) {
@@ -2965,7 +2981,7 @@ extern "C" int recoil_state_cheat_code_static_init_thunks_smoke(void) {
     g_RecoilStateCheatCode.m_dialog =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
     RecoilStateCheatCode::AtExitDestructor();
-    if (g_RecoilStateCheatCode.vftable != kRecoilStateBase_VtblAddress ||
+    if (g_RecoilStateCheatCode.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
         g_RecoilStateCheatCode.m_dialog != 0 ||
         dialog.setEnabledCount != 0 || dialog.scalarDeletingCount != 1 ||
         dialog.lastScalarDeletingFlags != 1) {
@@ -3230,7 +3246,7 @@ extern "C" int hud_ui_options_panel_overlay_owner_queue_enter_smoke(void) {
     g_stateExitCount = 0;
 
     HudUiOptionsPanelOverlayOwner::QueueEnter();
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     int result = 0;
     if (g_stateEnterCount != 1 || g_stateExitCount != 0) {
         result = 1;
@@ -3269,7 +3285,7 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_queue_enter_smoke(void) {
     g_stateExitCount = 0;
 
     HudUiNewGamePanelOverlayOwner::QueueEnter();
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     int result = 0;
     if (g_stateEnterCount != 1 || g_stateExitCount != 0) {
         result = 1;
@@ -3323,10 +3339,10 @@ extern "C" int hud_ui_new_game_panel_start_activation_smoke(void) {
     g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
 
     std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
-    g_RecoilApp.m_missionFmvState_1d8.base.vftable = oldState.vftable;
+    g_RecoilApp.m_missionFmvState.base.vftable = oldState.vftable;
     g_stateEnterCount = 0;
     g_stateExitCount = 0;
 
@@ -3338,20 +3354,20 @@ extern "C" int hud_ui_new_game_panel_start_activation_smoke(void) {
 
     panel.StartGameFromFields();
 
-    RecoilApp_StateQueue &directQueue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &directQueue = g_RecoilApp.m_stateQueue;
     RecoilApp_StateQueueItem *const directExit0 = QueueItemAt(directQueue, 0);
     RecoilApp_StateQueueItem *const directExit1 = QueueItemAt(directQueue, 1);
     RecoilApp_StateQueueItem *const directSwitch = QueueItemAt(directQueue, 2);
     const bool directOk =
         std::strcmp(storedName, "Pilot") == 0 && difficulty == 3 &&
-        playerState.nanitePanelLevel == 0 && g_RecoilApp.m_missionFmvState_1d8.m_missionId == 1 &&
+        playerState.nanitePanelLevel == 0 && g_RecoilApp.m_missionFmvState.m_missionId == 1 &&
         g_stateExitCount == 3 && g_stateEnterCount == 1 && directQueue.m_itemCount == 3 &&
         directExit0 != nullptr && directExit0->m_kind == RecoilApp_StateQueueKind_ExitCurrent &&
         directExit0->m_param == 1 && directExit1 != nullptr &&
         directExit1->m_kind == RecoilApp_StateQueueKind_ExitCurrent && directExit1->m_param == 1 &&
         directSwitch != nullptr && directSwitch->m_kind == RecoilApp_StateQueueKind_SwitchCurrent &&
         directSwitch->m_stateObj == static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
-                                      &g_RecoilApp.m_missionFmvState_1d8.base)) &&
+                                      &g_RecoilApp.m_missionFmvState.base)) &&
         directSwitch->m_param == 0;
     CleanupQueuedItems(directQueue);
 
@@ -3359,10 +3375,10 @@ extern "C" int hud_ui_new_game_panel_start_activation_smoke(void) {
     difficulty = 0;
     std::strcpy(inputName, "Scout");
     std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
-    g_RecoilApp.m_missionFmvState_1d8.base.vftable = oldState.vftable;
+    g_RecoilApp.m_missionFmvState.base.vftable = oldState.vftable;
     g_stateEnterCount = 0;
     g_stateExitCount = 0;
     playerState.nanitePanelLevel = 123456789;
@@ -3374,20 +3390,20 @@ extern "C" int hud_ui_new_game_panel_start_activation_smoke(void) {
     startButton.owner = &panel;
     startButton.OnActivate();
 
-    RecoilApp_StateQueue &buttonQueue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &buttonQueue = g_RecoilApp.m_stateQueue;
     RecoilApp_StateQueueItem *const buttonExit0 = QueueItemAt(buttonQueue, 0);
     RecoilApp_StateQueueItem *const buttonExit1 = QueueItemAt(buttonQueue, 1);
     RecoilApp_StateQueueItem *const buttonSwitch = QueueItemAt(buttonQueue, 2);
     const bool buttonOk =
         std::strcmp(storedName, "Scout") == 0 && difficulty == 2 &&
-        playerState.nanitePanelLevel == 0 && g_RecoilApp.m_missionFmvState_1d8.m_missionId == 1 &&
+        playerState.nanitePanelLevel == 0 && g_RecoilApp.m_missionFmvState.m_missionId == 1 &&
         g_stateExitCount == 3 && g_stateEnterCount == 1 && buttonQueue.m_itemCount == 3 &&
         buttonExit0 != nullptr && buttonExit0->m_kind == RecoilApp_StateQueueKind_ExitCurrent &&
         buttonExit0->m_param == 1 && buttonExit1 != nullptr &&
         buttonExit1->m_kind == RecoilApp_StateQueueKind_ExitCurrent && buttonExit1->m_param == 1 &&
         buttonSwitch != nullptr && buttonSwitch->m_kind == RecoilApp_StateQueueKind_SwitchCurrent &&
         buttonSwitch->m_stateObj == static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
-                                      &g_RecoilApp.m_missionFmvState_1d8.base)) &&
+                                      &g_RecoilApp.m_missionFmvState.base)) &&
         buttonSwitch->m_param == 0;
     CleanupQueuedItems(buttonQueue);
 
@@ -3717,7 +3733,7 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_lifecycle_smoke(void) {
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(atExitPanel));
     HudUiNewGamePanelOverlayOwner::AtExitDestructor();
     const bool atExitOk =
-        g_HudUiNewGamePanelOverlayOwner.vftable == kRecoilStateBase_VtblAddress &&
+        g_HudUiNewGamePanelOverlayOwner.vftable == RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) &&
         g_HudUiNewGamePanelOverlayOwner.m_panel == 0;
 
     HudUiNewGamePanel *const destructorPanel =
@@ -3729,7 +3745,7 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_lifecycle_smoke(void) {
     state.m_panel = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(destructorPanel));
     state.Destructor();
     const bool destructorOk =
-        state.vftable == kRecoilStateBase_VtblAddress && state.m_panel == 0;
+        state.vftable == RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) && state.m_panel == 0;
 
     HudUiNewGamePanel *const scalarPanel =
         static_cast<HudUiNewGamePanel *>(::operator new(sizeof(HudUiNewGamePanel)));
@@ -3741,7 +3757,7 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_lifecycle_smoke(void) {
         scalarState.ScalarDeletingDestructor(0);
     const bool scalarOk =
         scalarReturned == &scalarState &&
-        scalarState.vftable == kRecoilStateBase_VtblAddress && scalarState.m_panel == 0;
+        scalarState.vftable == RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) && scalarState.m_panel == 0;
 
     HudUiNewGamePanelOverlayOwner *const deletingState =
         static_cast<HudUiNewGamePanelOverlayOwner *>(
@@ -3805,7 +3821,7 @@ extern "C" int hud_ui_options_panel_overlay_owner_destructor_core_smoke(void) {
     state.m_panel = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
 
     state.DestructorCore();
-    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_panel != 0 ||
+    if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) || state.m_panel != 0 ||
         panel.setEnabledCount != 1 || panel.lastEnabled != 0 ||
         panel.scalarDeletingCount != 1 || panel.lastScalarDeletingFlags != 1) {
         return 1;
@@ -3814,7 +3830,7 @@ extern "C" int hud_ui_options_panel_overlay_owner_destructor_core_smoke(void) {
     state.vftable = 0x22222222;
     state.m_panel = 0;
     state.DestructorCore();
-    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_panel != 0) {
+    if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) || state.m_panel != 0) {
         return 2;
     }
 
@@ -3830,7 +3846,7 @@ extern "C" int hud_ui_options_panel_overlay_owner_scalar_deleting_destructor_smo
 
     HudUiOptionsPanelOverlayOwner *const returned =
         state.ScalarDeletingDestructor(0);
-    if (returned != &state || state.vftable != kRecoilStateBase_VtblAddress ||
+    if (returned != &state || state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
         state.m_panel != 0 || panel.setEnabledCount != 1 || panel.lastEnabled != 0 ||
         panel.scalarDeletingCount != 1 || panel.lastScalarDeletingFlags != 1) {
         return 1;
@@ -3865,7 +3881,7 @@ extern "C" int hud_ui_options_panel_overlay_owner_static_init_thunks_smoke(void)
     g_HudUiOptionsPanelOverlayOwner.m_panel =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
     HudUiOptionsPanelOverlayOwner::AtExitDestructor();
-    if (g_HudUiOptionsPanelOverlayOwner.vftable != kRecoilStateBase_VtblAddress ||
+    if (g_HudUiOptionsPanelOverlayOwner.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
         g_HudUiOptionsPanelOverlayOwner.m_panel != 0 ||
         panel.setEnabledCount != 1 || panel.lastEnabled != 0 ||
         panel.scalarDeletingCount != 1 || panel.lastScalarDeletingFlags != 1) {
@@ -3924,10 +3940,10 @@ extern "C" int hud_ui_confirm_quit_ok_button_on_activate_smoke(void) {
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
 
     g_RecoilApp = RecoilApp{};
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&currentState));
-    g_RecoilApp.m_leaveNetworkState_1d0.base.vftable = currentState.vftable;
+    g_RecoilApp.m_leaveNetworkState.base.vftable = currentState.vftable;
     g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_ON_EXIT;
     g_RecoilState_MainMenuSkipExitDelay = 0;
     g_stateEnterCount = 0;
@@ -3936,7 +3952,7 @@ extern "C" int hud_ui_confirm_quit_ok_button_on_activate_smoke(void) {
     HudUiConfirmQuitOkButton button{};
     button.OnActivate();
 
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     int result = 0;
     if (g_RecoilState_MainMenuSkipExitDelay != 1 ||
         g_RecoilApp.m_missionShutdownMode != RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY ||
@@ -3960,7 +3976,7 @@ extern "C" int hud_ui_confirm_quit_ok_button_on_activate_smoke(void) {
 
         const RecoilPtr32 leaveNetworkState =
             static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
-                &g_RecoilApp.m_leaveNetworkState_1d0.base));
+                &g_RecoilApp.m_leaveNetworkState.base));
         if (firstItem->m_type != 0 ||
             firstItem->m_kind != RecoilApp_StateQueueKind_ExitCurrent ||
             firstItem->m_stateObj != 0 || firstItem->m_param != 1 ||
@@ -3988,15 +4004,15 @@ extern "C" int recoil_app_queue_exit_current_state_smoke(void) {
     TestAppState oldState{};
     oldState.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
-    app.m_currentStateIndex_0c8 = 0;
-    app.m_stateStack_0d8[0] = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
+    app.m_currentStateIndex = 0;
+    app.m_stateStack[0] = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
 
     const RecoilPtr32 returned = app.QueueExitCurrentState(17);
-    if (returned != app.m_stateStack_0d8[0] || g_stateExitCount != 1 || g_stateEnterCount != 0) {
+    if (returned != app.m_stateStack[0] || g_stateExitCount != 1 || g_stateEnterCount != 0) {
         return 1;
     }
 
-    RecoilApp_StateQueue &queue = app.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = app.m_stateQueue;
     if (queue.m_itemCount != 1 || queue.m_chunkPtrCapacity != 2) {
         return 2;
     }
@@ -4076,10 +4092,10 @@ extern "C" int recoil_app_run_current_state_quit_smoke(void) {
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
 
     TestRecoilApp app{};
-    app.vftable = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
-    app.m_currentStateIndex_0c8 = 0;
-    app.m_skipWait_0d0 = 1;
-    app.m_stateStack_0d8[0] =
+    app.vftable = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testRecoilAppVtable));
+    app.m_currentStateIndex = 0;
+    app.m_skipWait = 1;
+    app.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&state));
 
     const int result = app.Run();
@@ -4120,10 +4136,10 @@ extern "C" int recoil_app_run_queue_transitions_smoke(void) {
 
     TestRecoilApp switchApp{};
     switchApp.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
-    switchApp.m_currentStateIndex_0c8 = 0;
-    switchApp.m_skipWait_0d0 = 1;
-    switchApp.m_stateStack_0d8[0] =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testRecoilAppVtable));
+    switchApp.m_currentStateIndex = 0;
+    switchApp.m_skipWait = 1;
+    switchApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&switchOldState));
     switchApp.QueueSwitchCurrentState(&switchNewState, 42);
 
@@ -4139,12 +4155,12 @@ extern "C" int recoil_app_run_queue_transitions_smoke(void) {
         result = 12;
     } else if (g_stateSuspendCount != 0 || g_stateResumeCount != 0) {
         result = 13;
-    } else if (switchApp.m_currentStateIndex_0c8 != 0) {
+    } else if (switchApp.m_currentStateIndex != 0) {
         result = 14;
-    } else if (switchApp.m_stateStack_0d8[0] !=
+    } else if (switchApp.m_stateStack[0] !=
                static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&switchNewState))) {
         result = 15;
-    } else if (switchApp.m_stateQueue_118.m_itemCount != 0) {
+    } else if (switchApp.m_stateQueue.m_itemCount != 0) {
         result = 16;
     } else if (g_runPumpMessageCount != 1 || g_exitInstanceCount != 1) {
         result = 17;
@@ -4161,10 +4177,10 @@ extern "C" int recoil_app_run_queue_transitions_smoke(void) {
 
         TestRecoilApp pushApp{};
         pushApp.vftable =
-            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
-        pushApp.m_currentStateIndex_0c8 = 0;
-        pushApp.m_skipWait_0d0 = 1;
-        pushApp.m_stateStack_0d8[0] =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testRecoilAppVtable));
+        pushApp.m_currentStateIndex = 0;
+        pushApp.m_skipWait = 1;
+        pushApp.m_stateStack[0] =
             static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&pushOldState));
         pushApp.QueuePushState(&pushNewState, 23);
 
@@ -4174,10 +4190,10 @@ extern "C" int recoil_app_run_queue_transitions_smoke(void) {
         const int pushRunResult = pushApp.Run();
         if (pushRunResult != 77 || g_stateSuspendCount != 1 || g_stateSuspendParam != 23 ||
             g_stateTryBecomeCurrentCount != 1 || g_stateDeactivateCount != 0 ||
-            g_stateResumeCount != 0 || pushApp.m_currentStateIndex_0c8 != 1 ||
-            pushApp.m_stateStack_0d8[1] !=
+            g_stateResumeCount != 0 || pushApp.m_currentStateIndex != 1 ||
+            pushApp.m_stateStack[1] !=
                 static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&pushNewState)) ||
-            pushApp.m_stateQueue_118.m_itemCount != 0 || g_runPumpMessageCount != 1 ||
+            pushApp.m_stateQueue.m_itemCount != 0 || g_runPumpMessageCount != 1 ||
             g_exitInstanceCount != 1 || g_runWaitMessageCount != 0) {
             result = 20;
         }
@@ -4192,12 +4208,12 @@ extern "C" int recoil_app_run_queue_transitions_smoke(void) {
 
         TestRecoilApp exitApp{};
         exitApp.vftable =
-            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
-        exitApp.m_currentStateIndex_0c8 = 1;
-        exitApp.m_skipWait_0d0 = 1;
-        exitApp.m_stateStack_0d8[0] =
+            static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testRecoilAppVtable));
+        exitApp.m_currentStateIndex = 1;
+        exitApp.m_skipWait = 1;
+        exitApp.m_stateStack[0] =
             static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&resumeState));
-        exitApp.m_stateStack_0d8[1] =
+        exitApp.m_stateStack[1] =
             static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&exitState));
         exitApp.QueueExitCurrentState(17);
 
@@ -4206,10 +4222,10 @@ extern "C" int recoil_app_run_queue_transitions_smoke(void) {
         const int exitRunResult = exitApp.Run();
         if (exitRunResult != 77 || g_stateDeactivateCount != 1 || g_stateResumeCount != 1 ||
             g_stateResumeParam != 17 || g_stateTryBecomeCurrentCount != 0 ||
-            g_stateSuspendCount != 0 || exitApp.m_currentStateIndex_0c8 != 0 ||
-            exitApp.m_stateStack_0d8[0] !=
+            g_stateSuspendCount != 0 || exitApp.m_currentStateIndex != 0 ||
+            exitApp.m_stateStack[0] !=
                 static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&resumeState)) ||
-            exitApp.m_stateStack_0d8[1] != 0 || exitApp.m_stateQueue_118.m_itemCount != 0 ||
+            exitApp.m_stateStack[1] != 0 || exitApp.m_stateQueue.m_itemCount != 0 ||
             g_runPumpMessageCount != 1 || g_exitInstanceCount != 1 ||
             g_runWaitMessageCount != 0) {
             result = 30;
@@ -4236,12 +4252,12 @@ extern "C" int recoil_app_start_engine_and_queue_startup_state_smoke(void) {
     TestAppState startupState{};
     startupState.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
-    app.vftable = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
+    app.vftable = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testRecoilAppVtable));
     app.m_pMainWnd = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(frameWords));
-    app.m_pendingState_0c4 =
+    app.m_pendingState =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&startupState));
-    app.m_currentStateIndex_0c8 = -1;
-    app.m_skipWait_0d0 = 0;
+    app.m_currentStateIndex = -1;
+    app.m_skipWait = 0;
     app.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY;
     g_startEngineResult = 1;
 
@@ -4251,12 +4267,12 @@ extern "C" int recoil_app_start_engine_and_queue_startup_state_smoke(void) {
         return 1;
     }
 
-    if (app.m_skipWait_0d0 != 1 ||
+    if (app.m_skipWait != 1 ||
         app.m_missionShutdownMode != RECOILAPP_MISSION_SHUTDOWN_ON_EXIT ||
-        app.m_stateQueue_118.m_itemCount != 1) {
+        app.m_stateQueue.m_itemCount != 1) {
         return 2;
     }
-    CleanupSingleQueuedItem(app.m_stateQueue_118);
+    CleanupSingleQueuedItem(app.m_stateQueue);
 
     TestRecoilApp failApp{};
     failApp.vftable = app.vftable;
@@ -4267,7 +4283,7 @@ extern "C" int recoil_app_start_engine_and_queue_startup_state_smoke(void) {
         return 3;
     }
 
-    return failApp.m_stateQueue_118.m_itemCount == 0 ? 0 : 4;
+    return failApp.m_stateQueue.m_itemCount == 0 ? 0 : 4;
 }
 
 extern "C" int recoil_app_init_main_window_smoke(void) {
@@ -4290,7 +4306,7 @@ extern "C" int recoil_app_init_main_window_smoke(void) {
     g_createMainWndResult = &frame;
 
     TestRecoilApp app{};
-    app.vftable = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
+    app.vftable = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testRecoilAppVtable));
     const int result = app.InitMainWindow();
     const bool ok = result == 1 && app.m_pMainWnd == reinterpret_cast<std::uintptr_t>(&frame) &&
                     frame.m_app == reinterpret_cast<std::uintptr_t>(&app) &&
@@ -4324,24 +4340,24 @@ extern "C" int recoil_app_load_zbd_and_start_engine_smoke(void) {
     TestAppState startupState{};
     startupState.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
-    app.vftable = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
+    app.vftable = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testRecoilAppVtable));
     app.m_pMainWnd = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(frameWords));
-    app.m_pendingState_0c4 =
+    app.m_pendingState =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&startupState));
-    app.m_currentStateIndex_0c8 = -1;
+    app.m_currentStateIndex = -1;
     g_startEngineResult = 1;
 
     const int result = app.LoadZbdAndStartEngine();
     const bool ok = result == 1 && g_startEngineCount == 1 &&
                     g_lastStartEngineHwnd == 0x13572468 && g_stateEnterCount == 1 &&
-                    app.m_skipWait_0d0 == 1 &&
+                    app.m_skipWait == 1 &&
                     app.m_missionShutdownMode == RECOILAPP_MISSION_SHUTDOWN_ON_EXIT &&
-                    app.m_stateQueue_118.m_itemCount == 1 &&
+                    app.m_stateQueue.m_itemCount == 1 &&
                     manager.sectionHandlerCount == 2 &&
                     std::strcmp(sentinel.next->sectionHandler.sectionName, "Mission") == 0 &&
                     std::strcmp(sentinel.prev->sectionHandler.sectionName, "MissionLate") == 0;
 
-    CleanupSingleQueuedItem(app.m_stateQueue_118);
+    CleanupSingleQueuedItem(app.m_stateQueue);
     ClearTestRegisteredHandlers(sentinel);
     g_zUtil_ZbdManager = nullptr;
     g_HudSensorTracker.missionFlags = oldMissionFlags;
@@ -4375,25 +4391,25 @@ extern "C" int czrecoil_frame_on_menu_start_single_player_smoke(void) {
 
     std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
     g_RecoilApp.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testRecoilAppVtable));
     g_RecoilApp.m_pMainWnd = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(frameWords));
-    g_RecoilApp.m_pendingState_0c4 =
+    g_RecoilApp.m_pendingState =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&startupState));
-    g_RecoilApp.m_currentStateIndex_0c8 = -1;
+    g_RecoilApp.m_currentStateIndex = -1;
     g_RecoilApp.m_skipIntroFmv = 7;
-    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv = 9;
+    g_RecoilApp.m_missionFmvState.m_skipMissionFmv = 9;
     g_startEngineResult = 1;
 
     CZRecoilFrame frame{};
     frame.OnMenuStartSinglePlayer();
 
     const bool ok = g_RecoilApp.m_skipIntroFmv == 0 &&
-                    g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv == 0 &&
+                    g_RecoilApp.m_missionFmvState.m_skipMissionFmv == 0 &&
                     g_startEngineCount == 1 && g_lastStartEngineHwnd == 0x22446688 &&
-                    g_stateEnterCount == 1 && g_RecoilApp.m_stateQueue_118.m_itemCount == 1 &&
+                    g_stateEnterCount == 1 && g_RecoilApp.m_stateQueue.m_itemCount == 1 &&
                     manager.sectionHandlerCount == 2;
 
-    CleanupSingleQueuedItem(g_RecoilApp.m_stateQueue_118);
+    CleanupSingleQueuedItem(g_RecoilApp.m_stateQueue);
     ClearTestRegisteredHandlers(sentinel);
     g_RecoilApp = oldApp;
     g_HudSensorTracker.missionFlags = oldMissionFlags;
@@ -5438,11 +5454,11 @@ extern "C" int hud_ui_save_game_primary_action_button_on_activate_smoke(void) {
     button.Constructor();
     button.owner = &dialog;
     button.OnActivate();
-    const bool ownerOk = g_RecoilApp.m_stateQueue_118.m_itemCount == 0;
+    const bool ownerOk = g_RecoilApp.m_stateQueue.m_itemCount == 0;
 
     button.owner = nullptr;
     button.OnActivate();
-    const bool nullOwnerOk = g_RecoilApp.m_stateQueue_118.m_itemCount == 0;
+    const bool nullOwnerOk = g_RecoilApp.m_stateQueue.m_itemCount == 0;
 
     g_RecoilApp = oldApp;
     return ownerOk && nullOwnerOk ? 0 : 1;
@@ -5459,7 +5475,7 @@ extern "C" int hud_ui_load_game_dialog_on_primary_action_smoke(void) {
     dialog.gameNameInput.textInput.capacity = sizeof(gameNameBuffer);
 
     dialog.OnPrimaryAction();
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     const bool emptyNameQueuedExit = IsSingleExitCurrentQueueItem(queue, 0);
     CleanupQueuedItems(queue);
 
@@ -5478,7 +5494,7 @@ extern "C" int hud_ui_load_game_dialog_on_primary_action_thunk_smoke(void) {
     dialog.gameNameInput.textInput.capacity = sizeof(gameNameBuffer);
 
     dialog.OnPrimaryActionThunk();
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     const bool emptyNameQueuedExit = IsSingleExitCurrentQueueItem(queue, 0);
     CleanupQueuedItems(queue);
 
@@ -5497,7 +5513,7 @@ extern "C" int hud_ui_load_game_dialog_process_dialog_result_smoke(void) {
     dialog.gameNameInput.textInput.capacity = sizeof(gameNameBuffer);
 
     dialog.ProcessDialogResult();
-    const bool emptyNameReturned = g_RecoilApp.m_stateQueue_118.m_itemCount == 0;
+    const bool emptyNameReturned = g_RecoilApp.m_stateQueue.m_itemCount == 0;
 
     g_RecoilApp = oldApp;
     return emptyNameReturned ? 0 : 1;
@@ -5517,13 +5533,13 @@ extern "C" int hud_ui_load_game_primary_action_button_on_activate_smoke(void) {
     button.Constructor();
     button.owner = &dialog;
     button.OnActivate();
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     const bool ownerOk = IsSingleExitCurrentQueueItem(queue, 0);
     CleanupQueuedItems(queue);
 
     button.owner = nullptr;
     button.OnActivate();
-    const bool nullOwnerOk = g_RecoilApp.m_stateQueue_118.m_itemCount == 0;
+    const bool nullOwnerOk = g_RecoilApp.m_stateQueue.m_itemCount == 0;
 
     g_RecoilApp = oldApp;
     return ownerOk && nullOwnerOk ? 0 : 1;
@@ -5586,23 +5602,23 @@ extern "C" int hud_ui_save_load_process_dialog_result_smoke(void) {
     g_stateEnterCount = 0;
     g_stateExitCount = 0;
     std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
-    g_RecoilApp.m_missionFmvState_1d8.base.vftable = oldState.vftable;
+    g_RecoilApp.m_missionFmvState.base.vftable = oldState.vftable;
     g_RecoilStateSaveLoadTransition = RecoilStateSaveLoadTransition{};
     g_RecoilStateSaveLoadTransition.m_transitionMode = RECOIL_SAVELOAD_MODE_STANDARD;
     g_RecoilState_MainMenuTransition = RecoilStateMainMenuTransition{};
 
     dialog.ProcessDialogResult();
 
-    RecoilApp_StateQueue &standardQueue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &standardQueue = g_RecoilApp.m_stateQueue;
     char *const pendingPath = reinterpret_cast<char *>(
-        static_cast<std::uintptr_t>(g_RecoilApp.m_playState_208.pPendingLoadGameStartPath));
+        static_cast<std::uintptr_t>(g_RecoilApp.m_playState.pPendingLoadGameStartPath));
     bool standardOk =
         pendingPath != nullptr &&
         std::strcmp(pendingPath, "SavedGames\\recoil_process_smoke.sav") == 0 &&
-        g_RecoilApp.m_missionFmvState_1d8.m_skipMissionFmv == 1 &&
+        g_RecoilApp.m_missionFmvState.m_skipMissionFmv == 1 &&
         g_stateExitCount == 2 && g_stateEnterCount == 1 && standardQueue.m_itemCount == 2;
     if (standardOk) {
         const RecoilPtr32 firstSlotValue = standardQueue.m_writeBlock.m_cursor - 8;
@@ -5618,7 +5634,7 @@ extern "C" int hud_ui_save_load_process_dialog_result_smoke(void) {
             exitItem->m_kind == RecoilApp_StateQueueKind_ExitCurrent && exitItem->m_param == 1 &&
             switchItem->m_kind == RecoilApp_StateQueueKind_SwitchCurrent &&
             switchItem->m_stateObj == static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
-                                          &g_RecoilApp.m_missionFmvState_1d8.base)) &&
+                                          &g_RecoilApp.m_missionFmvState.base)) &&
             switchItem->m_param == 0;
     }
 
@@ -5631,18 +5647,18 @@ extern "C" int hud_ui_save_load_process_dialog_result_smoke(void) {
     g_stateEnterCount = 0;
     g_stateExitCount = 0;
     std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
-    g_RecoilApp.m_transitionFadeTimer150 = 0.0f;
+    g_RecoilApp.m_transitionFadeTimer = 0.0f;
     g_RecoilStateSaveLoadTransition = RecoilStateSaveLoadTransition{};
     g_RecoilStateSaveLoadTransition.m_transitionMode = RECOIL_SAVELOAD_MODE_FADE;
     muteOption = 0;
 
     dialog.ProcessDialogResult();
 
-    RecoilApp_StateQueue &fadeQueue = g_RecoilApp.m_stateQueue_118;
-    bool fadeOk = g_RecoilApp.m_transitionFadeTimer150 == 5.0f &&
+    RecoilApp_StateQueue &fadeQueue = g_RecoilApp.m_stateQueue;
+    bool fadeOk = g_RecoilApp.m_transitionFadeTimer == 5.0f &&
                   zOpt::GetMuteSoundOption() == 1 && g_stateExitCount == 2 &&
                   g_stateEnterCount == 0 && fadeQueue.m_itemCount == 2;
     if (fadeOk) {
@@ -6227,7 +6243,7 @@ extern "C" int recoil_state_save_load_transition_lifecycle_smoke(void) {
     state.m_dialog =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
     state.Destructor();
-    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_dialog != 0 ||
+    if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) || state.m_dialog != 0 ||
         dialog.scalarDeletingCount != 1 || dialog.lastScalarDeletingFlags != 1) {
         return 2;
     }
@@ -6235,7 +6251,7 @@ extern "C" int recoil_state_save_load_transition_lifecycle_smoke(void) {
     state.vftable = 0x44444444;
     state.m_dialog = 0;
     state.Destructor();
-    if (state.vftable != kRecoilStateBase_VtblAddress) {
+    if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl)) {
         return 3;
     }
 
@@ -6243,7 +6259,7 @@ extern "C" int recoil_state_save_load_transition_lifecycle_smoke(void) {
     RecoilStateSaveLoadTransition *const scalarReturned =
         scalarState.ScalarDeletingDestructor(0);
     if (scalarReturned != &scalarState ||
-        scalarState.vftable != kRecoilStateBase_VtblAddress) {
+        scalarState.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl)) {
         return 4;
     }
 
@@ -6270,7 +6286,7 @@ extern "C" int recoil_state_save_load_transition_lifecycle_smoke(void) {
     g_RecoilStateSaveLoadTransition.m_dialog =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&globalDialog));
     RecoilStateSaveLoadTransition::AtExitDestructor();
-    if (g_RecoilStateSaveLoadTransition.vftable != kRecoilStateBase_VtblAddress ||
+    if (g_RecoilStateSaveLoadTransition.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
         g_RecoilStateSaveLoadTransition.m_dialog != 0 ||
         globalDialog.scalarDeletingCount != 1 ||
         globalDialog.lastScalarDeletingFlags != 1) {
@@ -6331,11 +6347,11 @@ extern "C" int recoil_state_save_load_transition_queue_dialogs_smoke(void) {
             &g_RecoilStateSaveLoadTransition));
 
     auto resetHarness = [&]() {
-        if (g_RecoilApp.m_stateQueue_118.m_itemCount != 0) {
-            CleanupQueuedItems(g_RecoilApp.m_stateQueue_118);
+        if (g_RecoilApp.m_stateQueue.m_itemCount != 0) {
+            CleanupQueuedItems(g_RecoilApp.m_stateQueue);
         }
         g_RecoilApp = RecoilApp{};
-        g_RecoilApp.m_currentStateIndex_0c8 = -1;
+        g_RecoilApp.m_currentStateIndex = -1;
         g_RecoilStateSaveLoadTransition = RecoilStateSaveLoadTransition{};
         g_RecoilStateSaveLoadTransition.vftable =
             static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
@@ -6351,7 +6367,7 @@ extern "C" int recoil_state_save_load_transition_queue_dialogs_smoke(void) {
         g_RecoilStateSaveLoadTransition.m_capturePresentationMode ==
             RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED &&
         g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_SAVE &&
-        IsSinglePushStateQueueItem(g_RecoilApp.m_stateQueue_118, transitionState, 0);
+        IsSinglePushStateQueueItem(g_RecoilApp.m_stateQueue, transitionState, 0);
 
     resetHarness();
     g_RecoilStateSaveLoadTransition.m_capturePresentationMode =
@@ -6361,7 +6377,7 @@ extern "C" int recoil_state_save_load_transition_queue_dialogs_smoke(void) {
     RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
         RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED);
     const bool saveBlockedOk =
-        g_stateEnterCount == 0 && g_RecoilApp.m_stateQueue_118.m_itemCount == 0 &&
+        g_stateEnterCount == 0 && g_RecoilApp.m_stateQueue.m_itemCount == 0 &&
         g_RecoilStateSaveLoadTransition.m_capturePresentationMode ==
             RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED &&
         g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_LOAD;
@@ -6376,7 +6392,7 @@ extern "C" int recoil_state_save_load_transition_queue_dialogs_smoke(void) {
         g_RecoilStateSaveLoadTransition.m_capturePresentationMode ==
             RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED &&
         g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_LOAD &&
-        IsSinglePushStateQueueItem(g_RecoilApp.m_stateQueue_118, transitionState, 0);
+        IsSinglePushStateQueueItem(g_RecoilApp.m_stateQueue, transitionState, 0);
 
     resetHarness();
     RecoilStateSaveLoadTransition::QueueOpenLoadDialog(RECOIL_SAVELOAD_MODE_QUICKLOAD);
@@ -6386,7 +6402,7 @@ extern "C" int recoil_state_save_load_transition_queue_dialogs_smoke(void) {
         g_RecoilStateSaveLoadTransition.m_capturePresentationMode ==
             RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED &&
         g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_LOAD &&
-        IsSinglePushStateQueueItem(g_RecoilApp.m_stateQueue_118, transitionState, 0);
+        IsSinglePushStateQueueItem(g_RecoilApp.m_stateQueue, transitionState, 0);
 
     resetHarness();
     g_RecoilStateSaveLoadTransition.m_transitionMode = RECOIL_SAVELOAD_MODE_FADE;
@@ -6394,12 +6410,12 @@ extern "C" int recoil_state_save_load_transition_queue_dialogs_smoke(void) {
     playerState.environmentAttachmentActive = 1;
     RecoilStateSaveLoadTransition::QueueOpenLoadDialog(RECOIL_SAVELOAD_MODE_QUICKLOAD);
     const bool loadBlockedOk =
-        g_stateEnterCount == 0 && g_RecoilApp.m_stateQueue_118.m_itemCount == 0 &&
+        g_stateEnterCount == 0 && g_RecoilApp.m_stateQueue.m_itemCount == 0 &&
         g_RecoilStateSaveLoadTransition.m_transitionMode == RECOIL_SAVELOAD_MODE_FADE &&
         g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_SAVE;
 
-    if (g_RecoilApp.m_stateQueue_118.m_itemCount != 0) {
-        CleanupQueuedItems(g_RecoilApp.m_stateQueue_118);
+    if (g_RecoilApp.m_stateQueue.m_itemCount != 0) {
+        CleanupQueuedItems(g_RecoilApp.m_stateQueue);
     }
     g_RecoilApp = oldApp;
     g_RecoilStateSaveLoadTransition = oldTransition;
@@ -6432,17 +6448,17 @@ extern "C" int recoil_app_load_zbd_and_setup_sensor_tracker_smoke(void) {
     TestAppState startupState{};
     startupState.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
-    app.vftable = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
+    app.vftable = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testRecoilAppVtable));
     app.m_pMainWnd = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(frameWords));
-    app.m_pendingState_0c4 =
+    app.m_pendingState =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&startupState));
-    app.m_currentStateIndex_0c8 = -1;
+    app.m_currentStateIndex = -1;
     g_startEngineResult = 1;
 
     const bool zbdPathOk =
         app.LoadZbdAndSetupSensorTracker(0, "custom.zbd", 3, 0x44) == 1 &&
         app.m_skipIntroFmv == 3 && CStringEquals(g_HudSensorTracker.zbdPath, "custom.zbd");
-    CleanupSingleQueuedItem(app.m_stateQueue_118);
+    CleanupSingleQueuedItem(app.m_stateQueue);
     const bool zbdRegisterOk = manager.sectionHandlerCount == 2;
     ClearTestRegisteredHandlers(sentinel);
     manager.sectionHandlerCount = 0;
@@ -6453,17 +6469,17 @@ extern "C" int recoil_app_load_zbd_and_setup_sensor_tracker_smoke(void) {
     missionStartupState.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
     missionApp.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(g_testRecoilAppVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testRecoilAppVtable));
     missionApp.m_pMainWnd = app.m_pMainWnd;
-    missionApp.m_pendingState_0c4 =
+    missionApp.m_pendingState =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&missionStartupState));
-    missionApp.m_currentStateIndex_0c8 = -1;
+    missionApp.m_currentStateIndex = -1;
 
     const bool missionOk =
         missionApp.LoadZbdAndSetupSensorTracker(9, nullptr, 4, 0x66) == 1 &&
         missionApp.m_skipIntroFmv == 4 && g_HudSensorTracker.missionId == 9 &&
         g_HudSensorTracker.missionFlags == 0x66 && CStringIsEmpty(g_HudSensorTracker.zbdPath);
-    CleanupSingleQueuedItem(missionApp.m_stateQueue_118);
+    CleanupSingleQueuedItem(missionApp.m_stateQueue);
     const bool missionRegisterOk = manager.sectionHandlerCount == 2;
 
     ClearTestRegisteredHandlers(sentinel);
@@ -6520,7 +6536,7 @@ extern "C" int recoil_app_on_idle_or_dispatch_smoke(void) {
     g_stateIdleLParam = 0;
 
     RecoilApp app{};
-    app.m_currentStateIndex_0c8 = -1;
+    app.m_currentStateIndex = -1;
     if (app.OnIdleOrDispatch(0x11, 0x22) != 0 || g_stateIdleCount != 0) {
         return 1;
     }
@@ -6528,8 +6544,8 @@ extern "C" int recoil_app_on_idle_or_dispatch_smoke(void) {
     TestAppState state{};
     state.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
-    app.m_currentStateIndex_0c8 = 0;
-    app.m_stateStack_0d8[0] = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&state));
+    app.m_currentStateIndex = 0;
+    app.m_stateStack[0] = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&state));
 
     if (app.OnIdleOrDispatch(0x33, 0x44) != 123) {
         return 2;
@@ -6549,27 +6565,27 @@ extern "C" int recoil_app_mfc_ole_module_destructor_smoke(void) {
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(chunk));
     const RecoilPtr32 chunkListValue =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(chunkList));
-    app.m_stateQueue_118.m_readBlock.m_chunkBegin = chunkValue;
-    app.m_stateQueue_118.m_readBlock.m_chunkEnd = chunkValue + 0x1000;
-    app.m_stateQueue_118.m_readBlock.m_cursor = chunkValue;
-    app.m_stateQueue_118.m_readBlock.m_chunkPtrSlot = chunkListValue;
-    app.m_stateQueue_118.m_writeBlock.m_chunkBegin = 0x22222222;
-    app.m_stateQueue_118.m_writeBlock.m_chunkEnd = 0x33333333;
-    app.m_stateQueue_118.m_writeBlock.m_cursor = 0x44444444;
-    app.m_stateQueue_118.m_writeBlock.m_chunkPtrSlot = 0x55555555;
-    app.m_stateQueue_118.m_chunkPtrList = chunkListValue;
-    app.m_stateQueue_118.m_itemCount = 1;
+    app.m_stateQueue.m_readBlock.m_chunkBegin = chunkValue;
+    app.m_stateQueue.m_readBlock.m_chunkEnd = chunkValue + 0x1000;
+    app.m_stateQueue.m_readBlock.m_cursor = chunkValue;
+    app.m_stateQueue.m_readBlock.m_chunkPtrSlot = chunkListValue;
+    app.m_stateQueue.m_writeBlock.m_chunkBegin = 0x22222222;
+    app.m_stateQueue.m_writeBlock.m_chunkEnd = 0x33333333;
+    app.m_stateQueue.m_writeBlock.m_cursor = 0x44444444;
+    app.m_stateQueue.m_writeBlock.m_chunkPtrSlot = 0x55555555;
+    app.m_stateQueue.m_chunkPtrList = chunkListValue;
+    app.m_stateQueue.m_itemCount = 1;
 
     app.MfcOleModuleDestructor();
-    if (app.m_stateQueue_118.m_itemCount != 0) {
+    if (app.m_stateQueue.m_itemCount != 0) {
         return 1;
     }
 
     const auto *const readBytes =
-        reinterpret_cast<const unsigned char *>(&app.m_stateQueue_118.m_readBlock);
+        reinterpret_cast<const unsigned char *>(&app.m_stateQueue.m_readBlock);
     const auto *const writeBytes =
-        reinterpret_cast<const unsigned char *>(&app.m_stateQueue_118.m_writeBlock);
-    for (std::size_t i = 0; i < sizeof(app.m_stateQueue_118.m_readBlock); ++i) {
+        reinterpret_cast<const unsigned char *>(&app.m_stateQueue.m_writeBlock);
+    for (std::size_t i = 0; i < sizeof(app.m_stateQueue.m_readBlock); ++i) {
         if (readBytes[i] != 0 || writeBytes[i] != 0) {
             return 2;
         }
@@ -6598,7 +6614,7 @@ extern "C" int recoil_app_play_state_constructor_smoke(void) {
     playState.pWindowSection = 0x22222222;
     playState.pDisplaySection = 0x33333333;
     playState.pRenderSection = 0x44444444;
-    playState.m_transitionScratch_10 = 0x55555555;
+    playState.m_transitionScratch = 0x55555555;
     playState.pPendingLoadGameStartPath = 0x66666666;
 
     RecoilApp_PlayState *returned = playState.Constructor();
@@ -6606,8 +6622,8 @@ extern "C" int recoil_app_play_state_constructor_smoke(void) {
         return 1;
     }
 
-    if (playState.base.vftable != kRecoilApp_PlayState_VtblAddress ||
-        playState.m_transitionScratch_10 != 0 || playState.pPendingLoadGameStartPath != 0) {
+    if (playState.base.vftable != RecoilSymbolPtr32(&g_RecoilApp_PlayState_Vtbl) ||
+        playState.m_transitionScratch != 0 || playState.pPendingLoadGameStartPath != 0) {
         return 2;
     }
 
@@ -6763,7 +6779,7 @@ extern "C" int recoil_app_play_state_on_update_should_quit_transition_smoke(void
     g_zOpt_WindowSectionOption = &windowPtr;
     g_Player_ActiveDebugScriptAsyncEntry = nullptr;
     g_RecoilApp_QuitAfterCredits = 1;
-    g_RecoilApp.m_transitionFadeTimer150 = 0.05f;
+    g_RecoilApp.m_transitionFadeTimer = 0.05f;
     g_zInput_DeviceRegistry = 0;
     g_zInputMouseFlags = 0;
     g_zInputJoystickFlags = 0;
@@ -6789,7 +6805,7 @@ extern "C" int recoil_app_play_state_on_update_should_quit_transition_smoke(void
     const bool ok =
         result == 0 && g_zVideo_SoftwareModeHotkeyEnabled == 0 && muteOption == 0 &&
         g_playStateLayoutActivatedCount == 1 && playerState.transitionDamageSuppressed == 0 &&
-        g_RecoilApp.m_transitionFadeTimer150 <= 0.0f &&
+        g_RecoilApp.m_transitionFadeTimer <= 0.0f &&
         playState.pWindowSection ==
             static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&windowSection)) &&
         zRndr::g_overlayBlendEnabled == 1 && zRndr::g_overlayBlendPackedColor16 == 0 &&
@@ -6895,26 +6911,26 @@ extern "C" int recoil_app_play_state_on_deactivate_skip_gameplay_smoke(void) {
 extern "C" int recoil_app_fmv_state_constructor_smoke(void) {
     RecoilApp_AttractFmvState attract{};
     auto *returnedAttract = attract.Constructor();
-    auto *attractScript = reinterpret_cast<zFMV_Script *>(attract.m_fmv_10);
+    auto *attractScript = &attract.m_fmv;
     if (returnedAttract != &attract ||
-        attract.base.vftable != kRecoilApp_AttractFmvState_VtblAddress ||
+        attract.base.vftable != RecoilSymbolPtr32(&g_RecoilApp_AttractFmvState_Vtbl) ||
         attractScript->m_abortOnKey != 1 || attractScript->m_head != nullptr) {
         return 1;
     }
 
     RecoilApp_IntroFmvState intro{};
     auto *returnedIntro = intro.Constructor();
-    auto *introScript = reinterpret_cast<zFMV_Script *>(intro.m_fmv_08);
-    if (returnedIntro != &intro || intro.base.vftable != kRecoilApp_IntroFmvState_VtblAddress ||
+    auto *introScript = &intro.m_fmv;
+    if (returnedIntro != &intro || intro.base.vftable != RecoilSymbolPtr32(&g_RecoilApp_IntroFmvState_Vtbl) ||
         introScript->m_abortOnKey != 1 || introScript->m_tail != nullptr) {
         return 2;
     }
 
     RecoilApp_MissionFmvState mission{};
     auto *returnedMission = mission.Constructor();
-    auto *missionScript = reinterpret_cast<zFMV_Script *>(mission.m_fmv_08);
+    auto *missionScript = &mission.m_fmv;
     if (returnedMission != &mission ||
-        mission.base.vftable != kRecoilApp_MissionFmvState_VtblAddress ||
+        mission.base.vftable != RecoilSymbolPtr32(&g_RecoilApp_MissionFmvState_Vtbl) ||
         mission.m_missionId != 0 || mission.m_skipMissionFmv != 0 ||
         missionScript->m_abortOnKey != 1 || missionScript->m_cur != nullptr) {
         return 3;
@@ -6997,48 +7013,48 @@ extern "C" int recoil_app_intro_fmv_on_update_should_quit_smoke(void) {
     RecoilApp oldApp = g_RecoilApp;
 
     std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
-    g_RecoilApp.m_currentStateIndex_0c8 = -1;
+    g_RecoilApp.m_currentStateIndex = -1;
     g_RecoilApp.m_skipIntroFmv = 1;
-    g_RecoilApp.m_missionFmvState_1d8.base.vftable =
+    g_RecoilApp.m_missionFmvState.base.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
-    g_RecoilApp.m_mainMenuPrepState_1c8.base.vftable =
+    g_RecoilApp.m_mainMenuPrepState.base.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
 
     RecoilApp_IntroFmvState intro{};
-    if (intro.OnUpdateShouldQuit() != 0 || g_RecoilApp.m_stateQueue_118.m_itemCount != 1) {
+    if (intro.OnUpdateShouldQuit() != 0 || g_RecoilApp.m_stateQueue.m_itemCount != 1) {
         g_RecoilApp = oldApp;
         return 1;
     }
 
     RecoilApp_StateQueueItem *item = reinterpret_cast<RecoilApp_StateQueueItem *>(
         static_cast<std::uintptr_t>(*reinterpret_cast<RecoilPtr32 *>(
-            static_cast<std::uintptr_t>(g_RecoilApp.m_stateQueue_118.m_writeBlock.m_cursor - 4))));
+            static_cast<std::uintptr_t>(g_RecoilApp.m_stateQueue.m_writeBlock.m_cursor - 4))));
     const bool skipOk =
         item->m_kind == RecoilApp_StateQueueKind_SwitchCurrent && item->m_param == 0 &&
         item->m_stateObj ==
             static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
-                &g_RecoilApp.m_missionFmvState_1d8.base));
-    CleanupSingleQueuedItem(g_RecoilApp.m_stateQueue_118);
+                &g_RecoilApp.m_missionFmvState.base));
+    CleanupSingleQueuedItem(g_RecoilApp.m_stateQueue);
 
-    std::memset(&g_RecoilApp.m_stateQueue_118, 0, sizeof(g_RecoilApp.m_stateQueue_118));
+    std::memset(&g_RecoilApp.m_stateQueue, 0, sizeof(g_RecoilApp.m_stateQueue));
     g_RecoilApp.m_skipIntroFmv = 0;
-    auto *script = reinterpret_cast<zFMV_Script *>(intro.m_fmv_08);
+    auto *script = &intro.m_fmv;
     script->m_cur = nullptr;
 
-    if (intro.OnUpdateShouldQuit() != 0 || g_RecoilApp.m_stateQueue_118.m_itemCount != 1) {
+    if (intro.OnUpdateShouldQuit() != 0 || g_RecoilApp.m_stateQueue.m_itemCount != 1) {
         g_RecoilApp = oldApp;
         return 2;
     }
 
     item = reinterpret_cast<RecoilApp_StateQueueItem *>(
         static_cast<std::uintptr_t>(*reinterpret_cast<RecoilPtr32 *>(
-            static_cast<std::uintptr_t>(g_RecoilApp.m_stateQueue_118.m_writeBlock.m_cursor - 4))));
+            static_cast<std::uintptr_t>(g_RecoilApp.m_stateQueue.m_writeBlock.m_cursor - 4))));
     const bool finishedOk =
         item->m_kind == RecoilApp_StateQueueKind_SwitchCurrent && item->m_param == 0 &&
         item->m_stateObj ==
             static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
-                &g_RecoilApp.m_mainMenuPrepState_1c8.base));
-    CleanupSingleQueuedItem(g_RecoilApp.m_stateQueue_118);
+                &g_RecoilApp.m_mainMenuPrepState.base));
+    CleanupSingleQueuedItem(g_RecoilApp.m_stateQueue);
     g_RecoilApp = oldApp;
 
     return skipOk && finishedOk ? 0 : 3;
@@ -7046,7 +7062,7 @@ extern "C" int recoil_app_intro_fmv_on_update_should_quit_smoke(void) {
 
 extern "C" int recoil_app_intro_fmv_on_deactivate_smoke(void) {
     RecoilApp_IntroFmvState intro{};
-    auto *script = reinterpret_cast<zFMV_Script *>(intro.m_fmv_08);
+    auto *script = &intro.m_fmv;
     auto *action = new zFMV_Action{};
     action->vftable = &g_zFMV_ActionBase_Vtable;
     action->next = nullptr;
@@ -7088,7 +7104,7 @@ extern "C" int recoil_app_main_menu_prep_on_update_should_quit_smoke(void) {
     RecoilStateMainMenuTransition oldTransition = g_RecoilState_MainMenuTransition;
 
     std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
-    g_RecoilApp.m_currentStateIndex_0c8 = -1;
+    g_RecoilApp.m_currentStateIndex = -1;
     g_stateEnterCount = 0;
     g_RecoilState_MainMenuTransition.m_entryRoute = static_cast<RecoilMainMenuEntryRoute>(7);
     g_RecoilState_MainMenuTransition.vftable =
@@ -7097,7 +7113,7 @@ extern "C" int recoil_app_main_menu_prep_on_update_should_quit_smoke(void) {
     RecoilApp_MainMenuPrepState state{};
     const int result = state.OnUpdateShouldQuit();
 
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     bool itemOk = false;
     if (queue.m_itemCount == 1) {
         RecoilApp_StateQueueItem *const item =
@@ -7146,17 +7162,17 @@ extern "C" int recoil_app_attract_fmv_on_try_become_current_smoke(void) {
 
     RecoilApp_AttractFmvState state{};
     state.Constructor();
-    state.m_clientRect_30[0] = -1;
-    state.m_clientRect_30[1] = -1;
-    state.m_clientRect_30[2] = -1;
-    state.m_clientRect_30[3] = -1;
+    state.m_clientRect[0] = -1;
+    state.m_clientRect[1] = -1;
+    state.m_clientRect[2] = -1;
+    state.m_clientRect[3] = -1;
 
     const int result = state.OnTryBecomeCurrent();
-    auto *const script = reinterpret_cast<zFMV_Script *>(state.m_fmv_10);
+    auto *const script = &state.m_fmv;
     const bool ok =
         result == 1 && g_RecoilApp_AttractFmvReloadMode == 0 && script->m_hWnd == hwnd &&
-        state.m_clientRect_30[0] == 0 && state.m_clientRect_30[1] == 0 &&
-        state.m_clientRect_30[2] > 0 && state.m_clientRect_30[3] > 0 &&
+        state.m_clientRect[0] == 0 && state.m_clientRect[1] == 0 &&
+        state.m_clientRect[2] > 0 && state.m_clientRect[3] > 0 &&
         g_zVideo_FxSurfacePixels16 == pixels && g_zVideo_FxSurfaceWidth == 320 &&
         g_zVideo_FxSurfaceHeight == 200 && g_zVideo_FxSurfacePitchBytes == 640 &&
         g_zVideo_FxSurfacePitchPixels16 == 320;
@@ -7172,17 +7188,17 @@ extern "C" int recoil_app_attract_fmv_on_update_should_quit_smoke(void) {
     RecoilApp oldApp = g_RecoilApp;
 
     std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
-    g_RecoilApp.m_currentStateIndex_0c8 = -1;
-    g_RecoilApp.m_mainMenuPrepState_1c8.base.vftable =
+    g_RecoilApp.m_currentStateIndex = -1;
+    g_RecoilApp.m_mainMenuPrepState.base.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
     g_stateEnterCount = 0;
 
     RecoilApp_AttractFmvState state{};
-    auto *const script = reinterpret_cast<zFMV_Script *>(state.m_fmv_10);
+    auto *const script = &state.m_fmv;
     script->m_cur = nullptr;
 
     const int result = state.OnUpdateShouldQuit();
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     bool itemOk = false;
     if (queue.m_itemCount == 1) {
         auto *const item =
@@ -7191,7 +7207,7 @@ extern "C" int recoil_app_attract_fmv_on_update_should_quit_smoke(void) {
                     static_cast<std::uintptr_t>(queue.m_writeBlock.m_cursor - 4))));
         itemOk = item->m_kind == RecoilApp_StateQueueKind_SwitchCurrent && item->m_param == 0 &&
                  item->m_stateObj == static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
-                                         &g_RecoilApp.m_mainMenuPrepState_1c8.base));
+                                         &g_RecoilApp.m_mainMenuPrepState.base));
         CleanupSingleQueuedItem(queue);
     }
 
@@ -7202,7 +7218,7 @@ extern "C" int recoil_app_attract_fmv_on_update_should_quit_smoke(void) {
 
 extern "C" int recoil_app_attract_fmv_on_deactivate_smoke(void) {
     RecoilApp_AttractFmvState state{};
-    auto *const script = reinterpret_cast<zFMV_Script *>(state.m_fmv_10);
+    auto *const script = &state.m_fmv;
     zFMV_Action action1{};
     zFMV_Action action2{};
 
@@ -7239,7 +7255,7 @@ extern "C" int recoil_app_mission_fmv_on_try_become_current_skip_smoke(void) {
     RecoilApp_MissionFmvState adoptedState{};
     adoptedState.m_missionId = 0;
     adoptedState.m_skipMissionFmv = 1;
-    zFMV_Script *const adoptedScript = reinterpret_cast<zFMV_Script *>(adoptedState.m_fmv_08);
+    zFMV_Script *const adoptedScript = &adoptedState.m_fmv;
     adoptedScript->m_hWnd = nullptr;
 
     const int adoptedResult = adoptedState.OnTryBecomeCurrent();
@@ -7252,7 +7268,7 @@ extern "C" int recoil_app_mission_fmv_on_try_become_current_skip_smoke(void) {
     RecoilApp_MissionFmvState explicitState{};
     explicitState.m_missionId = 4;
     explicitState.m_skipMissionFmv = 1;
-    zFMV_Script *const explicitScript = reinterpret_cast<zFMV_Script *>(explicitState.m_fmv_08);
+    zFMV_Script *const explicitScript = &explicitState.m_fmv;
     explicitScript->m_hWnd = nullptr;
 
     const int explicitResult = explicitState.OnTryBecomeCurrent();
@@ -7287,7 +7303,7 @@ extern "C" int recoil_app_mission_fmv_on_deactivate_smoke(void) {
     RecoilApp_MissionFmvState skippedState{};
     skippedState.m_missionId = 9;
     skippedState.m_skipMissionFmv = 1;
-    zFMV_Script *const skippedScript = reinterpret_cast<zFMV_Script *>(skippedState.m_fmv_08);
+    zFMV_Script *const skippedScript = &skippedState.m_fmv;
     skippedScript->m_head = nullptr;
     skippedScript->m_tail = reinterpret_cast<zFMV_Action *>(0x11111111);
     skippedScript->m_cur = reinterpret_cast<zFMV_Action *>(0x22222222);
@@ -7302,7 +7318,7 @@ extern "C" int recoil_app_mission_fmv_on_deactivate_smoke(void) {
     RecoilApp_MissionFmvState activeState{};
     activeState.m_missionId = 7;
     activeState.m_skipMissionFmv = 0;
-    zFMV_Script *const activeScript = reinterpret_cast<zFMV_Script *>(activeState.m_fmv_08);
+    zFMV_Script *const activeScript = &activeState.m_fmv;
     activeScript->m_head = nullptr;
     activeScript->m_tail = reinterpret_cast<zFMV_Action *>(0x33333333);
     activeScript->m_cur = reinterpret_cast<zFMV_Action *>(0x44444444);
@@ -7319,24 +7335,24 @@ extern "C" int recoil_app_mission_fmv_on_update_should_quit_smoke(void) {
     RecoilApp oldApp = g_RecoilApp;
 
     std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
-    g_RecoilApp.m_currentStateIndex_0c8 = -1;
-    g_RecoilApp.m_playState_208.base.vftable =
+    g_RecoilApp.m_currentStateIndex = -1;
+    g_RecoilApp.m_playState.base.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
 
     RecoilApp_MissionFmvState skippedState{};
     skippedState.m_skipMissionFmv = 1;
-    zFMV_Script *const skippedScript = reinterpret_cast<zFMV_Script *>(skippedState.m_fmv_08);
+    zFMV_Script *const skippedScript = &skippedState.m_fmv;
     skippedScript->m_cur = reinterpret_cast<zFMV_Action *>(0x12345678);
 
     int result = skippedState.OnUpdateShouldQuit();
-    RecoilApp_StateQueueItem *item = QueueItemAt(g_RecoilApp.m_stateQueue_118, 0);
+    RecoilApp_StateQueueItem *item = QueueItemAt(g_RecoilApp.m_stateQueue, 0);
     const bool skippedOk =
         result == 0 && item != nullptr &&
         item->m_kind == RecoilApp_StateQueueKind_SwitchCurrent && item->m_param == 0 &&
         item->m_stateObj == static_cast<RecoilPtr32>(
-                               reinterpret_cast<std::uintptr_t>(&g_RecoilApp.m_playState_208.base));
-    if (g_RecoilApp.m_stateQueue_118.m_itemCount == 1) {
-        CleanupSingleQueuedItem(g_RecoilApp.m_stateQueue_118);
+                               reinterpret_cast<std::uintptr_t>(&g_RecoilApp.m_playState.base));
+    if (g_RecoilApp.m_stateQueue.m_itemCount == 1) {
+        CleanupSingleQueuedItem(g_RecoilApp.m_stateQueue);
     }
     if (!skippedOk) {
         g_RecoilApp = oldApp;
@@ -7344,8 +7360,8 @@ extern "C" int recoil_app_mission_fmv_on_update_should_quit_smoke(void) {
     }
 
     std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
-    g_RecoilApp.m_currentStateIndex_0c8 = -1;
-    g_RecoilApp.m_playState_208.base.vftable =
+    g_RecoilApp.m_currentStateIndex = -1;
+    g_RecoilApp.m_playState.base.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
 
     RecoilApp_MissionFmvState activeState{};
@@ -7354,14 +7370,14 @@ extern "C" int recoil_app_mission_fmv_on_update_should_quit_smoke(void) {
     waitAction.next = nullptr;
     waitAction.durationSec = 1000000000.0f;
     waitAction.startSec = 0.0f;
-    zFMV_Script *const activeScript = reinterpret_cast<zFMV_Script *>(activeState.m_fmv_08);
+    zFMV_Script *const activeScript = &activeState.m_fmv;
     activeScript->m_head = &waitAction;
     activeScript->m_tail = &waitAction;
     activeScript->m_cur = &waitAction;
 
     result = activeState.OnUpdateShouldQuit();
     const bool activeOk =
-        result == 0 && g_RecoilApp.m_stateQueue_118.m_itemCount == 0 &&
+        result == 0 && g_RecoilApp.m_stateQueue.m_itemCount == 0 &&
         activeScript->m_head == &waitAction && activeScript->m_tail == &waitAction &&
         activeScript->m_cur == &waitAction;
     if (!activeOk) {
@@ -7370,24 +7386,24 @@ extern "C" int recoil_app_mission_fmv_on_update_should_quit_smoke(void) {
     }
 
     std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
-    g_RecoilApp.m_currentStateIndex_0c8 = -1;
-    g_RecoilApp.m_playState_208.base.vftable =
+    g_RecoilApp.m_currentStateIndex = -1;
+    g_RecoilApp.m_playState.base.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
 
     RecoilApp_MissionFmvState finishedState{};
     zFMV_Script *const finishedScript =
-        reinterpret_cast<zFMV_Script *>(finishedState.m_fmv_08);
+        &finishedState.m_fmv;
     finishedScript->m_cur = nullptr;
 
     result = finishedState.OnUpdateShouldQuit();
-    item = QueueItemAt(g_RecoilApp.m_stateQueue_118, 0);
+    item = QueueItemAt(g_RecoilApp.m_stateQueue, 0);
     const bool finishedOk =
         result == 0 && item != nullptr &&
         item->m_kind == RecoilApp_StateQueueKind_SwitchCurrent && item->m_param == 0 &&
         item->m_stateObj == static_cast<RecoilPtr32>(
-                               reinterpret_cast<std::uintptr_t>(&g_RecoilApp.m_playState_208.base));
-    if (g_RecoilApp.m_stateQueue_118.m_itemCount == 1) {
-        CleanupSingleQueuedItem(g_RecoilApp.m_stateQueue_118);
+                               reinterpret_cast<std::uintptr_t>(&g_RecoilApp.m_playState.base));
+    if (g_RecoilApp.m_stateQueue.m_itemCount == 1) {
+        CleanupSingleQueuedItem(g_RecoilApp.m_stateQueue);
     }
 
     g_RecoilApp = oldApp;
@@ -7397,26 +7413,26 @@ extern "C" int recoil_app_mission_fmv_on_update_should_quit_smoke(void) {
 extern "C" int recoil_app_constructor_destructor_smoke(void) {
     RecoilApp app{};
     RecoilApp *returned = app.Constructor();
-    if (returned != &app || app.vftable != kRecoilApp_VtblAddress ||
-        app.m_attractFmvState_160.base.vftable != kRecoilApp_AttractFmvState_VtblAddress ||
-        app.m_introFmvState_1a0.base.vftable != kRecoilApp_IntroFmvState_VtblAddress ||
-        app.m_mainMenuPrepState_1c8.base.vftable != kRecoilApp_MainMenuPrepState_VtblAddress ||
-        app.m_leaveNetworkState_1d0.base.vftable != kRecoilApp_LeaveNetworkState_VtblAddress ||
-        app.m_missionFmvState_1d8.base.vftable != kRecoilApp_MissionFmvState_VtblAddress ||
-        app.m_playState_208.base.vftable != kRecoilApp_PlayState_VtblAddress ||
-        app.m_mpExitDialogState_220.base.vftable != kRecoilApp_MpExitDialogState_VtblAddress ||
-        app.m_transitionFadeTimer150 != 0.0f) {
+    if (returned != &app || app.vftable != RecoilSymbolPtr32(&g_RecoilApp_Vtbl) ||
+        app.m_attractFmvState.base.vftable != RecoilSymbolPtr32(&g_RecoilApp_AttractFmvState_Vtbl) ||
+        app.m_introFmvState.base.vftable != RecoilSymbolPtr32(&g_RecoilApp_IntroFmvState_Vtbl) ||
+        app.m_mainMenuPrepState.base.vftable != RecoilSymbolPtr32(&g_RecoilApp_MainMenuPrepState_Vtbl) ||
+        app.m_leaveNetworkState.base.vftable != RecoilSymbolPtr32(&g_RecoilApp_LeaveNetworkState_Vtbl) ||
+        app.m_missionFmvState.base.vftable != RecoilSymbolPtr32(&g_RecoilApp_MissionFmvState_Vtbl) ||
+        app.m_playState.base.vftable != RecoilSymbolPtr32(&g_RecoilApp_PlayState_Vtbl) ||
+        app.m_mpExitDialogState.base.vftable != RecoilSymbolPtr32(&g_RecoilApp_MpExitDialogState_Vtbl) ||
+        app.m_transitionFadeTimer != 0.0f) {
         return 1;
     }
 
     app.Destructor();
-    if (app.m_attractFmvState_160.base.vftable != kRecoilStateBase_VtblAddress ||
-        app.m_introFmvState_1a0.base.vftable != kRecoilStateBase_VtblAddress ||
-        app.m_mainMenuPrepState_1c8.base.vftable != kRecoilStateBase_VtblAddress ||
-        app.m_leaveNetworkState_1d0.base.vftable != kRecoilStateBase_VtblAddress ||
-        app.m_missionFmvState_1d8.base.vftable != kRecoilStateBase_VtblAddress ||
-        app.m_playState_208.base.vftable != kRecoilStateBase_VtblAddress ||
-        app.m_mpExitDialogState_220.base.vftable != kRecoilStateBase_VtblAddress) {
+    if (app.m_attractFmvState.base.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
+        app.m_introFmvState.base.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
+        app.m_mainMenuPrepState.base.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
+        app.m_leaveNetworkState.base.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
+        app.m_missionFmvState.base.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
+        app.m_playState.base.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
+        app.m_mpExitDialogState.base.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl)) {
         return 2;
     }
 
@@ -7427,34 +7443,34 @@ extern "C" int recoil_app_istate_destructor_smoke(void) {
     RecoilApp_IState state{0x12345678};
     state.Destructor();
 
-    return state.vftable == kRecoilStateBase_VtblAddress ? 0 : 1;
+    return state.vftable == RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ? 0 : 1;
 }
 
 extern "C" int recoil_app_fmv_state_destructor_smoke(void) {
     RecoilApp_AttractFmvState attract{};
     attract.base.vftable = 0x11111111;
-    auto *attractScript = reinterpret_cast<zFMV_Script *>(attract.m_fmv_10);
+    auto *attractScript = &attract.m_fmv;
     attractScript->m_fmvPath = static_cast<char *>(std::malloc(4));
     if (attractScript->m_fmvPath == nullptr) {
         return 1;
     }
 
     attract.Destructor();
-    if (attract.base.vftable != kRecoilStateBase_VtblAddress ||
+    if (attract.base.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
         attractScript->m_fmvPath != nullptr) {
         return 2;
     }
 
     RecoilApp_IntroFmvState intro{};
     intro.base.vftable = 0x22222222;
-    auto *introScript = reinterpret_cast<zFMV_Script *>(intro.m_fmv_08);
+    auto *introScript = &intro.m_fmv;
     introScript->m_fmvPath = static_cast<char *>(std::malloc(4));
     if (introScript->m_fmvPath == nullptr) {
         return 3;
     }
 
     intro.Destructor();
-    return intro.base.vftable == kRecoilStateBase_VtblAddress && introScript->m_fmvPath == nullptr
+    return intro.base.vftable == RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) && introScript->m_fmvPath == nullptr
                ? 0
                : 4;
 }
@@ -7468,7 +7484,7 @@ extern "C" int recoil_state_credits_destructor_smoke(void) {
 
     state.~RecoilStateCredits();
 
-    if (state.vftable != kRecoilStateBase_VtblAddress || state.dialog != 0) {
+    if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) || state.dialog != 0) {
         return 1;
     }
     if (panel.setEnabledCount != 1 || panel.lastEnabled != 0) {
@@ -7482,7 +7498,7 @@ extern "C" int recoil_state_credits_destructor_smoke(void) {
     state.dialog = 0;
     state.~RecoilStateCredits();
 
-    return state.vftable == kRecoilStateBase_VtblAddress ? 0 : 4;
+    return state.vftable == RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ? 0 : 4;
 }
 
 extern "C" int recoil_state_credits_constructor_smoke(void) {
@@ -7496,6 +7512,41 @@ extern "C" int recoil_state_credits_constructor_smoke(void) {
                    state.dialog == 0
                ? 0
                : 1;
+}
+
+extern "C" int recoil_state_credits_static_init_smoke(void) {
+    TestCreditsPanel panel{};
+
+    g_RecoilStateCredits.vftable = 0x11111111;
+    g_RecoilStateCredits.dialog =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
+
+    RecoilStateCredits::StaticInitAndRegisterAtExit();
+    const bool staticInitAndRegisterOk =
+        g_RecoilStateCredits.vftable != 0 &&
+        g_RecoilStateCredits.vftable != 0x11111111 &&
+        g_RecoilStateCredits.dialog == 0;
+
+    RecoilStateCredits::StaticInit();
+
+    g_RecoilStateCredits.vftable = 0x22222222;
+    g_RecoilStateCredits.dialog =
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
+    panel.setEnabledCount = 0;
+    panel.scalarDeletingCount = 0;
+    panel.lastScalarDeletingFlags = 0;
+    RecoilStateCredits::RegisterAtExit();
+    const bool registerAtExitOk =
+        g_RecoilStateCredits.vftable == RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) &&
+        g_RecoilStateCredits.dialog == 0 &&
+        panel.setEnabledCount == 1 &&
+        panel.lastEnabled == 0 &&
+        panel.scalarDeletingCount == 1 &&
+        panel.lastScalarDeletingFlags == 1;
+
+    g_RecoilStateCredits.vftable = 0;
+    g_RecoilStateCredits.dialog = 0;
+    return staticInitAndRegisterOk && registerAtExitOk ? 0 : 1;
 }
 
 extern "C" int recoil_state_credits_on_wnd_activate_smoke(void) {
@@ -7707,13 +7758,13 @@ extern "C" int recoil_state_credits_queue_push_smoke(void) {
     g_stateEnterCount = 0;
 
     g_RecoilApp = {};
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
 
     RecoilStateCredits::QueuePush();
 
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     bool itemOk = false;
     if (queue.m_itemCount == 1) {
         const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
@@ -7753,7 +7804,7 @@ extern "C" int recoil_state_confirm_quit_destructor_smoke(void) {
 
     state.~RecoilStateConfirmQuit();
 
-    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_dialog != 0) {
+    if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) || state.m_dialog != 0) {
         return 1;
     }
     if (dialog.setEnabledCount != 1 || dialog.lastEnabled != 0) {
@@ -7767,13 +7818,13 @@ extern "C" int recoil_state_confirm_quit_destructor_smoke(void) {
     state.m_dialog = 0;
     state.~RecoilStateConfirmQuit();
 
-    if (state.vftable != kRecoilStateBase_VtblAddress) {
+    if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl)) {
         return 4;
     }
 
     RecoilStateConfirmQuit scalarState{};
     RecoilStateConfirmQuit *const returned = scalarState.ScalarDeletingDestructor(0);
-    if (returned != &scalarState || scalarState.vftable != kRecoilStateBase_VtblAddress) {
+    if (returned != &scalarState || scalarState.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl)) {
         return 5;
     }
 
@@ -7867,14 +7918,14 @@ extern "C" int recoil_state_confirm_quit_destructor_smoke(void) {
 extern "C" int recoil_app_mission_fmv_state_destructor_smoke(void) {
     RecoilApp_MissionFmvState mission{};
     mission.base.vftable = 0x33333333;
-    auto *missionScript = reinterpret_cast<zFMV_Script *>(mission.m_fmv_08);
+    auto *missionScript = &mission.m_fmv;
     missionScript->m_fmvPath = static_cast<char *>(std::malloc(4));
     if (missionScript->m_fmvPath == nullptr) {
         return 1;
     }
 
     mission.Destructor();
-    if (mission.base.vftable != kRecoilStateBase_VtblAddress ||
+    if (mission.base.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
         missionScript->m_fmvPath != nullptr) {
         return 2;
     }
@@ -7890,13 +7941,13 @@ extern "C" int recoil_app_scalar_deleting_destructor_smoke(void) {
     RecoilApp app{};
     app.Constructor();
     RecoilApp *returnedApp = app.ScalarDeletingDestructor(0);
-    if (returnedApp != &app || app.m_attractFmvState_160.base.vftable != kRecoilStateBase_VtblAddress ||
-        app.m_introFmvState_1a0.base.vftable != kRecoilStateBase_VtblAddress ||
-        app.m_mainMenuPrepState_1c8.base.vftable != kRecoilStateBase_VtblAddress ||
-        app.m_leaveNetworkState_1d0.base.vftable != kRecoilStateBase_VtblAddress ||
-        app.m_missionFmvState_1d8.base.vftable != kRecoilStateBase_VtblAddress ||
-        app.m_playState_208.base.vftable != kRecoilStateBase_VtblAddress ||
-        app.m_mpExitDialogState_220.base.vftable != kRecoilStateBase_VtblAddress) {
+    if (returnedApp != &app || app.m_attractFmvState.base.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
+        app.m_introFmvState.base.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
+        app.m_mainMenuPrepState.base.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
+        app.m_leaveNetworkState.base.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
+        app.m_missionFmvState.base.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
+        app.m_playState.base.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
+        app.m_mpExitDialogState.base.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl)) {
         return 1;
     }
 

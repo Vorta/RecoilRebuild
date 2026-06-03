@@ -10,15 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(_MSC_VER) && _MSC_VER <= 1200
-extern "C" FILE *__imp___iob;
-extern "C" int(__cdecl *__imp__fprintf)(
-    FILE *,
-    const char *,
-    ...
-);
-#endif
-
 struct zSndCdTrackState {
     int track;
     int minute;
@@ -208,16 +199,6 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL ReportMciError(
         errorText,
         sizeof(errorText)
     );
-#if defined(_MSC_VER) && _MSC_VER <= 1200
-    FILE *stream = __imp___iob + 2;
-    (*__imp__fprintf)(
-        stream,
-        "%s(%d) : MCIError [%s]\n",
-        sourceFile,
-        lineNumber,
-        errorText
-    );
-#else
     fprintf(
         stderr,
         "%s(%d) : MCIError [%s]\n",
@@ -225,7 +206,6 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL ReportMciError(
         lineNumber,
         errorText
     );
-#endif
     return 0;
 }
 } // namespace zSnd

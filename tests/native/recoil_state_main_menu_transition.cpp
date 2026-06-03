@@ -69,7 +69,7 @@ int RECOIL_FASTCALL TestVideoSurfaceStateNoOp(zVideo_SurfaceStatePartial *surfac
 }
 
 void CleanupGlobalAppQueue() {
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
     auto *const slot = reinterpret_cast<RecoilPtr32 *>(static_cast<std::uintptr_t>(slotValue));
     auto *const item =
@@ -106,7 +106,7 @@ extern "C" int recoil_state_main_menu_transition_constructor_smoke(void) {
         return 1;
     }
 
-    if (state.vftable != kRecoilStateMainMenuTransition_VtblAddress) {
+    if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateMainMenuTransition_Vtbl)) {
         return 2;
     }
 
@@ -135,7 +135,7 @@ extern "C" int recoil_state_main_menu_transition_static_init_smoke(void) {
     RecoilStateMainMenuTransition *const staticInitReturned =
         RecoilStateMainMenuTransition::StaticInit();
     if (staticInitReturned != &g_RecoilState_MainMenuTransition ||
-        g_RecoilState_MainMenuTransition.vftable != kRecoilStateMainMenuTransition_VtblAddress ||
+        g_RecoilState_MainMenuTransition.vftable != RecoilSymbolPtr32(&g_RecoilStateMainMenuTransition_Vtbl) ||
         g_RecoilState_MainMenuTransition.m_mainMenuDialog != 0 ||
         g_RecoilState_MainMenuTransition.m_entryRoute != RECOIL_MAINMENU_ROUTE_FRONTEND ||
         g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex !=
@@ -147,7 +147,7 @@ extern "C" int recoil_state_main_menu_transition_static_init_smoke(void) {
     g_RecoilState_MainMenuTransition.vftable = 0x44444444;
     g_RecoilState_MainMenuTransition.m_mainMenuDialog = 0;
     RecoilStateMainMenuTransition::AtExitDestructor();
-    if (g_RecoilState_MainMenuTransition.vftable != kRecoilStateBase_VtblAddress ||
+    if (g_RecoilState_MainMenuTransition.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
         g_RecoilState_MainMenuTransition.m_mainMenuDialog != 0) {
         return 2;
     }
@@ -155,7 +155,7 @@ extern "C" int recoil_state_main_menu_transition_static_init_smoke(void) {
     g_RecoilState_MainMenuTransition.vftable = 0x55555555;
     g_RecoilState_MainMenuTransition.m_mainMenuDialog = 0;
     RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit();
-    if (g_RecoilState_MainMenuTransition.vftable != kRecoilStateMainMenuTransition_VtblAddress ||
+    if (g_RecoilState_MainMenuTransition.vftable != RecoilSymbolPtr32(&g_RecoilStateMainMenuTransition_Vtbl) ||
         g_RecoilState_MainMenuTransition.m_mainMenuDialog != 0 ||
         g_RecoilState_MainMenuTransition.m_entryRoute != RECOIL_MAINMENU_ROUTE_FRONTEND ||
         g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex !=
@@ -184,8 +184,8 @@ extern "C" int recoil_state_main_menu_transition_clear_paused_audio_snapshot_smo
 
 extern "C" int recoil_state_main_menu_transition_queue_enter_smoke(void) {
     g_queueEnterOnEnterCalls = 0;
-    g_RecoilApp.m_stateQueue_118 = {};
-    g_RecoilApp.m_currentStateIndex_0c8 = -1;
+    g_RecoilApp.m_stateQueue = {};
+    g_RecoilApp.m_currentStateIndex = -1;
     g_RecoilState_MainMenuTransition.m_entryRoute = RECOIL_MAINMENU_ROUTE_FRONTEND;
     g_RecoilState_MainMenuTransition.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
@@ -196,7 +196,7 @@ extern "C" int recoil_state_main_menu_transition_queue_enter_smoke(void) {
         return 1;
     }
 
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     if (queue.m_itemCount != 1 || g_queueEnterOnEnterCalls != 1) {
         return 2;
     }
@@ -401,8 +401,8 @@ extern "C" int hud_ui_main_menu_credits_button_on_activate_smoke(void) {
     g_queueEnterOnEnterCalls = 0;
 
     g_RecoilApp = {};
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
 
     void *const dialogStorage = ::operator new(sizeof(HudUiMainMenuDialog));
@@ -415,7 +415,7 @@ extern "C" int hud_ui_main_menu_credits_button_on_activate_smoke(void) {
     typedef void(RECOIL_THISCALL *ActivateFn)(HudUiZrdWidget * self);
     ((ActivateFn)(dialog.creditsButton.base.ftable->slots[12]))(&dialog.creditsButton);
 
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     bool itemOk = false;
     if (queue.m_itemCount == 1) {
         const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
@@ -485,8 +485,8 @@ extern "C" int hud_ui_main_menu_save_button_on_activate_smoke(void) {
     oldState.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
     g_RecoilApp = {};
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
 
     void *const dialogStorage = ::operator new(sizeof(HudUiMainMenuDialog));
@@ -499,7 +499,7 @@ extern "C" int hud_ui_main_menu_save_button_on_activate_smoke(void) {
     typedef void(RECOIL_THISCALL *ActivateFn)(HudUiZrdWidget * self);
     ((ActivateFn)(dialog.saveGameButton.base.ftable->slots[12]))(&dialog.saveGameButton);
 
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     bool itemOk = false;
     if (queue.m_itemCount == 1) {
         const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
@@ -581,8 +581,8 @@ extern "C" int hud_ui_main_menu_load_button_on_activate_smoke(void) {
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
     g_queueEnterOnEnterCalls = 0;
     g_RecoilApp = {};
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
     g_RecoilState_MainMenuTransition.m_entryRoute = RECOIL_MAINMENU_ROUTE_FRONTEND;
 
@@ -592,8 +592,8 @@ extern "C" int hud_ui_main_menu_load_button_on_activate_smoke(void) {
     activate(&dialog.loadGameButton);
 
     bool frontendOk = false;
-    if (g_RecoilApp.m_stateQueue_118.m_itemCount == 1) {
-        const RecoilPtr32 slotValue = g_RecoilApp.m_stateQueue_118.m_writeBlock.m_cursor - 4;
+    if (g_RecoilApp.m_stateQueue.m_itemCount == 1) {
+        const RecoilPtr32 slotValue = g_RecoilApp.m_stateQueue.m_writeBlock.m_cursor - 4;
         auto *const slot =
             reinterpret_cast<RecoilPtr32 *>(static_cast<std::uintptr_t>(slotValue));
         auto *const item =
@@ -615,8 +615,8 @@ extern "C" int hud_ui_main_menu_load_button_on_activate_smoke(void) {
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
     g_queueEnterOnEnterCalls = 0;
     g_RecoilApp = {};
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
     g_RecoilState_MainMenuTransition.m_entryRoute = RECOIL_MAINMENU_ROUTE_INGAME;
 
@@ -626,8 +626,8 @@ extern "C" int hud_ui_main_menu_load_button_on_activate_smoke(void) {
     activate(&dialog.loadGameButton);
 
     bool ingameOk = false;
-    if (g_RecoilApp.m_stateQueue_118.m_itemCount == 1) {
-        const RecoilPtr32 slotValue = g_RecoilApp.m_stateQueue_118.m_writeBlock.m_cursor - 4;
+    if (g_RecoilApp.m_stateQueue.m_itemCount == 1) {
+        const RecoilPtr32 slotValue = g_RecoilApp.m_stateQueue.m_writeBlock.m_cursor - 4;
         auto *const slot =
             reinterpret_cast<RecoilPtr32 *>(static_cast<std::uintptr_t>(slotValue));
         auto *const item =
@@ -692,8 +692,8 @@ extern "C" int hud_ui_main_menu_new_game_button_on_activate_smoke(void) {
     oldState.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
     g_RecoilApp = {};
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
 
     void *const dialogStorage = ::operator new(sizeof(HudUiMainMenuDialog));
@@ -706,7 +706,7 @@ extern "C" int hud_ui_main_menu_new_game_button_on_activate_smoke(void) {
     typedef void(RECOIL_THISCALL *ActivateFn)(HudUiZrdWidget * self);
     ((ActivateFn)(dialog.newGameButton.base.ftable->slots[12]))(&dialog.newGameButton);
 
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     bool itemOk = false;
     if (queue.m_itemCount == 1) {
         const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
@@ -769,8 +769,8 @@ extern "C" int hud_ui_menu_back_button_on_activate_smoke(void) {
     g_queueEnterOnEnterCalls = 0;
     g_queueEnterOnExitCalls = 0;
     g_RecoilApp = {};
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
 
     HudLayoutBase_FTable layoutTable{};
@@ -790,7 +790,7 @@ extern "C" int hud_ui_menu_back_button_on_activate_smoke(void) {
     typedef void(RECOIL_THISCALL *ActivateFn)(HudUiZrdWidget * self);
     ((ActivateFn)(dialog.backButton.base.ftable->slots[12]))(&dialog.backButton);
 
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     bool itemOk = false;
     if (queue.m_itemCount == 1) {
         const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
@@ -854,8 +854,8 @@ extern "C" int hud_ui_main_menu_options_button_on_activate_smoke(void) {
     oldState.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
     g_RecoilApp = {};
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
 
     void *const dialogStorage = ::operator new(sizeof(HudUiMainMenuDialog));
@@ -868,7 +868,7 @@ extern "C" int hud_ui_main_menu_options_button_on_activate_smoke(void) {
     typedef void(RECOIL_THISCALL *ActivateFn)(HudUiZrdWidget * self);
     ((ActivateFn)(dialog.optionsButton.base.ftable->slots[12]))(&dialog.optionsButton);
 
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     bool itemOk = false;
     if (queue.m_itemCount == 1) {
         const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
@@ -934,8 +934,8 @@ extern "C" int hud_ui_main_menu_quit_button_on_activate_smoke(void) {
     oldState.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
     g_RecoilApp = {};
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
 
     void *const dialogStorage = ::operator new(sizeof(HudUiMainMenuDialog));
@@ -948,7 +948,7 @@ extern "C" int hud_ui_main_menu_quit_button_on_activate_smoke(void) {
     typedef void(RECOIL_THISCALL *ActivateFn)(HudUiZrdWidget * self);
     ((ActivateFn)(dialog.quitButton.base.ftable->slots[12]))(&dialog.quitButton);
 
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     bool itemOk = false;
     if (queue.m_itemCount == 1) {
         const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
@@ -1014,8 +1014,8 @@ extern "C" int hud_ui_main_menu_controls_button_on_activate_smoke(void) {
     oldState.vftable =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
     g_RecoilApp = {};
-    g_RecoilApp.m_currentStateIndex_0c8 = 0;
-    g_RecoilApp.m_stateStack_0d8[0] =
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] =
         static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
 
     void *const dialogStorage = ::operator new(sizeof(HudUiMainMenuDialog));
@@ -1028,7 +1028,7 @@ extern "C" int hud_ui_main_menu_controls_button_on_activate_smoke(void) {
     typedef void(RECOIL_THISCALL *ActivateFn)(HudUiZrdWidget * self);
     ((ActivateFn)(dialog.controlsButton.base.ftable->slots[12]))(&dialog.controlsButton);
 
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue_118;
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
     bool itemOk = false;
     if (queue.m_itemCount == 1) {
         const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
@@ -1141,7 +1141,7 @@ extern "C" int recoil_state_main_menu_transition_destructor_smoke(void) {
 
     state.~RecoilStateMainMenuTransition();
 
-    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_mainMenuDialog != 0) {
+    if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) || state.m_mainMenuDialog != 0) {
         return 1;
     }
 
@@ -1150,7 +1150,7 @@ extern "C" int recoil_state_main_menu_transition_destructor_smoke(void) {
 
 extern "C" int recoil_state_main_menu_transition_scalar_deleting_destructor_smoke(void) {
     RecoilStateMainMenuTransition state{};
-    state.vftable = kRecoilStateMainMenuTransition_VtblAddress;
+    state.vftable = RecoilSymbolPtr32(&g_RecoilStateMainMenuTransition_Vtbl);
     state.m_mainMenuDialog = 0;
 
     RecoilStateMainMenuTransition *const returned = state.ScalarDeletingDestructor(0);
@@ -1158,12 +1158,12 @@ extern "C" int recoil_state_main_menu_transition_scalar_deleting_destructor_smok
         return 1;
     }
 
-    if (state.vftable != kRecoilStateBase_VtblAddress || state.m_mainMenuDialog != 0) {
+    if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) || state.m_mainMenuDialog != 0) {
         return 2;
     }
 
     auto *const deletingState = new RecoilStateMainMenuTransition{};
-    deletingState->vftable = kRecoilStateMainMenuTransition_VtblAddress;
+    deletingState->vftable = RecoilSymbolPtr32(&g_RecoilStateMainMenuTransition_Vtbl);
     deletingState->m_mainMenuDialog = 0;
 
     RecoilStateMainMenuTransition *const deletingReturned =

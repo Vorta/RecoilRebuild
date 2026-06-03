@@ -18,6 +18,8 @@ namespace MfcCmdUI {
 RECOIL_FRAME_NOINLINE void RECOIL_STDCALL EnableAlways(CCmdUI *cmdUi);
 }
 
+class RecoilApp;
+
 // Authored Recoil frame reconstructed over imported MFC42 frame/window
 // providers; MFC base behavior is not reimplemented here.
 struct CZRecoilFrame {
@@ -25,7 +27,7 @@ struct CZRecoilFrame {
     unsigned char reserved004[0x1c];
     HWND m_hWnd;
     unsigned char reserved024[0x9c];
-    unsigned int m_app;
+    RecoilApp *m_app;
     unsigned char reserved0c4[0x08];
     char m_openZbdFilePath[0x104];
     CMenu m_mainMenu;

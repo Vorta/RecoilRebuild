@@ -628,6 +628,12 @@ RECOIL_NOINLINE int RECOIL_CDECL Dispatch_LockDisplayModeSurfaceState();
 RECOIL_NOINLINE int RECOIL_CDECL Dispatch_UnlockDisplayModeSurfaceState();
 RECOIL_NOINLINE int RECOIL_CDECL Dispatch_UnlockSwSurfaceState();
 RECOIL_NOINLINE int RECOIL_CDECL Dispatch_UnlockPrimarySurfaceState();
+RECOIL_NOINLINE int RECOIL_FASTCALL PresentOrAdjustSurfacesIfEnabled(
+    zVidRect32 *srcRect,
+    zVidRect32 *dstRect,
+    int waitForPresent,
+    int blitPrimaryToSwFirst
+);
 RECOIL_NOINLINE void RECOIL_FASTCALL Fx_SetSurfaceState(
     void *pixels,
     int width,

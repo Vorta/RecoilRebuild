@@ -982,10 +982,14 @@ namespace zClass_World {
             }
         }
 
-        float clampedZ = data->originZ - 0.1f;
-        if (worldZ > clampedZ) {
-            clampedZ = data->worldMaxZ + 0.1f;
-            if (worldZ > clampedZ) {
+        const float minZ = data->originZ < data->worldMaxZ ? data->originZ : data->worldMaxZ;
+        const float maxZ = data->originZ < data->worldMaxZ ? data->worldMaxZ : data->originZ;
+        float clampedZ;
+        if (worldZ < minZ - 0.1f) {
+            clampedZ = minZ - 0.1f;
+        } else {
+            clampedZ = maxZ + 0.1f;
+            if (worldZ < clampedZ) {
                 clampedZ = worldZ;
             }
         }

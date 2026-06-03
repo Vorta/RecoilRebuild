@@ -1,3 +1,4 @@
+#include "Battlesport/Mfc42Abi.h"
 #include "pickup.h"
 
 #include "Battlesport/HudSensorTracker.h"
