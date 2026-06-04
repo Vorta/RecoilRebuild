@@ -278,107 +278,107 @@ RECOIL_STATIC_ASSERT(
     ) == 0x30
 );
 
-RECOIL_NOINLINE int RECOIL_FASTCALL zModel_Instance_UpdateScrollingTexturesIfNeeded(
+int __fastcall zModel_Instance_UpdateScrollingTexturesIfNeeded(
     zModel_InstancePartial *instance
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL zModel_Instance_UpdateScrollingTextures(
+void __fastcall zModel_Instance_UpdateScrollingTextures(
     const zModel_TextureScrollInfoPartial *textureInfo,
     zModel_Uv *uvs,
     const float *scrollRates,
     int uvCount
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL zModel_RenderPointQueueEntry(
+void __fastcall zModel_RenderPointQueueEntry(
     const zVec3 *pointPos,
     int packedColor16,
     zModel_PointEntryPartial *pointEntry
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL zModel_Light_BuildLightWeights(
+int __fastcall zModel_Light_BuildLightWeights(
     zVec3 *surfaceNormal,
     int vertexCount,
     int *outPackedFogColor,
     float fogBlendScale
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL zModel_Light_PointInPolygonInitXZ(
+void __fastcall zModel_Light_PointInPolygonInitXZ(
     zClass_LightDataPartial **lightDataList,
     zModel_LightStatePartial **lightNodeStates,
     int lightCount
 );
 
 namespace zModel {
-RECOIL_NOINLINE int RECOIL_CDECL Init();
-RECOIL_NOINLINE void RECOIL_FASTCALL SetVertexShadingEnabled(int enabled);
-RECOIL_NOINLINE void RECOIL_FASTCALL SetDisplayInstancePoolCapacity(int capacity);
-RECOIL_NOINLINE void RECOIL_FASTCALL SetSoftwarePathActive(int active);
-RECOIL_NOINLINE void RECOIL_STDCALL SetTextureWorldPerMeter(
+int Init();
+void __fastcall SetVertexShadingEnabled(int enabled);
+void __fastcall SetDisplayInstancePoolCapacity(int capacity);
+void __fastcall SetSoftwarePathActive(int active);
+void __stdcall SetTextureWorldPerMeter(
     float worldPerMeterU,
     float worldPerMeterV
 );
-RECOIL_NOINLINE void RECOIL_STDCALL SetTextureWorldBase(
+void __stdcall SetTextureWorldBase(
     float worldBaseU,
     float worldBaseV
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetDiTextureWorldPerMeter(
+int __fastcall SetDiTextureWorldPerMeter(
     zDiPartial *di,
     int worldSpaceEnabled,
     float textureWorldPerMeter,
     int textureWorldAxis
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RenderNodeHardware(
+void __fastcall RenderNodeHardware(
     zClass_NodePartial *node,
     int clipMask
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RenderNodeSoftware(
+void __fastcall RenderNodeSoftware(
     zClass_NodePartial *node,
     int clipMask
 );
-RECOIL_NOINLINE void RECOIL_STDCALL SetBackfaceEliminationToleranceScalar(float scalar);
-RECOIL_NOINLINE float RECOIL_CDECL GetBackfaceEliminationToleranceScalar();
-RECOIL_NOINLINE void RECOIL_STDCALL UpdateSmallPolyRejectThresholds(float baseRejectArea);
+void __stdcall SetBackfaceEliminationToleranceScalar(float scalar);
+float GetBackfaceEliminationToleranceScalar();
+void __stdcall UpdateSmallPolyRejectThresholds(float baseRejectArea);
 } // namespace zModel
 
-RECOIL_NOINLINE int RECOIL_CDECL zModel_Display_Init();
-RECOIL_NOINLINE void RECOIL_STDCALL OptCatalog_SetDamageMaskUv(
+int zModel_Display_Init();
+void __stdcall OptCatalog_SetDamageMaskUv(
     float u,
     float v
 );
-RECOIL_NOINLINE int RECOIL_CDECL OptCatalog_IsDamageMaskEnabled();
-RECOIL_NOINLINE void RECOIL_FASTCALL OptCatalog_SetDamageMaskEnabled(int enabled);
-RECOIL_NOINLINE int RECOIL_FASTCALL OptCatalog_IsDamageMaskSlotPtrRegistered(void *slotPtr);
-RECOIL_NOINLINE void RECOIL_FASTCALL zModel_Fog_SetEnabled(int enabled);
-RECOIL_NOINLINE int RECOIL_CDECL zModel_Fog_IsEnabled();
-RECOIL_NOINLINE void RECOIL_STDCALL zModel_Fog_SetDistanceStart(float distanceStart);
-RECOIL_NOINLINE float RECOIL_CDECL zModel_Fog_GetDistanceStart();
-RECOIL_NOINLINE void RECOIL_STDCALL zModel_Fog_SetDistanceEnd(float distanceEnd);
-RECOIL_NOINLINE void RECOIL_STDCALL zModel_Fog_SetHeightHigh(float heightHigh);
-RECOIL_NOINLINE void RECOIL_STDCALL zModel_Fog_SetHeightLow(float heightLow);
-RECOIL_NOINLINE void RECOIL_STDCALL zModel_Fog_SetDensity(float density);
-RECOIL_NOINLINE void RECOIL_FASTCALL zModel_Fog_SetLinearModeEnabled(int enabled);
-RECOIL_NOINLINE void RECOIL_FASTCALL zModel_Fog_SetColorRgb01(zColorRgb *rgb01);
-RECOIL_NOINLINE void RECOIL_CDECL zModel_Fog_ApplyCurrentColor();
+int OptCatalog_IsDamageMaskEnabled();
+void __fastcall OptCatalog_SetDamageMaskEnabled(int enabled);
+int __fastcall OptCatalog_IsDamageMaskSlotPtrRegistered(void *slotPtr);
+void __fastcall zModel_Fog_SetEnabled(int enabled);
+int zModel_Fog_IsEnabled();
+void __stdcall zModel_Fog_SetDistanceStart(float distanceStart);
+float zModel_Fog_GetDistanceStart();
+void __stdcall zModel_Fog_SetDistanceEnd(float distanceEnd);
+void __stdcall zModel_Fog_SetHeightHigh(float heightHigh);
+void __stdcall zModel_Fog_SetHeightLow(float heightLow);
+void __stdcall zModel_Fog_SetDensity(float density);
+void __fastcall zModel_Fog_SetLinearModeEnabled(int enabled);
+void __fastcall zModel_Fog_SetColorRgb01(zColorRgb *rgb01);
+void zModel_Fog_ApplyCurrentColor();
 
 namespace zModel_Light {
-RECOIL_NOINLINE float RECOIL_FASTCALL EvalDistanceWeight(
+float __fastcall EvalDistanceWeight(
     const zClass_LightDataPartial *light,
     float distance
 );
-RECOIL_NOINLINE float RECOIL_FASTCALL EvalSphereFogFade(
+float __fastcall EvalSphereFogFade(
     const zVec3 *point,
     float radius
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildAttr0DepthFade(
+int __fastcall BuildAttr0DepthFade(
     int vertexCount,
     int *outHasVariation
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildAttr1Falloff(
+int __fastcall BuildAttr1Falloff(
     int vertexCount,
     int *pLightingFlags
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL EvalBatchSphereFade(float *outFade);
-RECOIL_NOINLINE int RECOIL_FASTCALL PointInPolygonTestRadiusXZ(
+int __fastcall EvalBatchSphereFade(float *outFade);
+int __fastcall PointInPolygonTestRadiusXZ(
     const zVec3 *sphereCenter,
     float radius
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetActiveLights(
+int __fastcall SetActiveLights(
     zVec3 *surfaceNormal,
     int vertexCount,
     int *lightFlags,
@@ -388,67 +388,67 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetActiveLights(
 } // namespace zModel_Light
 
 namespace zModel_DiPool {
-RECOIL_NOINLINE int RECOIL_FASTCALL WriteToStream(void *stream);
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadHeaderFromStream(
+int __fastcall WriteToStream(void *stream);
+int __fastcall ReadHeaderFromStream(
     void *stream,
     int *outCapacity,
     int *outInUseCount,
     int *outFreeHeadIndex
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadEntryDynamicDataFromStream(
+int __fastcall ReadEntryDynamicDataFromStream(
     void *stream,
     zDiPartial *entry
 );
-RECOIL_NOINLINE RECOIL_NO_GS zDiPartial *RECOIL_FASTCALL ReadEntryByIndexFromStream(
+RECOIL_NO_GS zDiPartial *__fastcall ReadEntryByIndexFromStream(
     void *stream,
     int index
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadFromStream(void *stream);
-RECOIL_NOINLINE zDiPartial *RECOIL_CDECL AllocFromFreeList();
-RECOIL_NOINLINE int RECOIL_FASTCALL FreeIfUnreferenced(zDiPartial *di);
+int __fastcall ReadFromStream(void *stream);
+zDiPartial *AllocFromFreeList();
+int __fastcall FreeIfUnreferenced(zDiPartial *di);
 } // namespace zModel_DiPool
 
 namespace zModel_Const {
-RECOIL_NOINLINE float RECOIL_CDECL GetVertexMergeEpsilon();
-RECOIL_NOINLINE void RECOIL_STDCALL SetVertexMergeEpsilon(float epsilon);
-RECOIL_NOINLINE void RECOIL_STDCALL SetCoplanarTolerance(float tolerance);
-RECOIL_NOINLINE void RECOIL_STDCALL SetColinearTolerance(float tolerance);
-RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL SetNormalizedCrossFromVertexTriplet(
+float GetVertexMergeEpsilon();
+void __stdcall SetVertexMergeEpsilon(float epsilon);
+void __stdcall SetCoplanarTolerance(float tolerance);
+void __stdcall SetColinearTolerance(float tolerance);
+zVec3 *__fastcall SetNormalizedCrossFromVertexTriplet(
     zVec3 *vertex0,
     zVec3 *vertex1,
     zVec3 *outNormal,
     zVec3 *vertex2
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL RemoveColinearVerticesInPlace(
+int __fastcall RemoveColinearVerticesInPlace(
     int *vertexCount,
     zVec3 *points,
     zClipUV *uvPairsA,
     zVec3 *normalsB,
     zClipUV *uvPairsB
 );
-RECOIL_NOINLINE zGeometry_PlaneEquationPartial *RECOIL_FASTCALL ComputePolygonPlaneEquation(
+zGeometry_PlaneEquationPartial *__fastcall ComputePolygonPlaneEquation(
     int vertexCount,
     zVec3 *vertices,
     zGeometry_PlaneEquationPartial *outPlane
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL IsPolygonCoplanar(
+int __fastcall IsPolygonCoplanar(
     int vertexCount,
     zVec3 *vertices
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AddOrMergeVertex(
+int __fastcall AddOrMergeVertex(
     zDiPartial *self,
     zVec3 *point
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AddOrMergeVertexAndNormal(
+int __fastcall AddOrMergeVertexAndNormal(
     zDiPartial *self,
     zVec3 *point,
     zVec3 *normal
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FindOrAppendNormalIndex(
+int __fastcall FindOrAppendNormalIndex(
     zDiPartial *self,
     zVec3 *normal
 );
-RECOIL_NOINLINE zClipUV RECOIL_STDCALL SolveTriScalarGradient2D(
+zClipUV __stdcall SolveTriScalarGradient2D(
     float vertex0A,
     float vertex0B,
     float vertex1A,
@@ -459,11 +459,11 @@ RECOIL_NOINLINE zClipUV RECOIL_STDCALL SolveTriScalarGradient2D(
     float value1,
     float value2
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL QuantizeAndNormalizeUvPairs(
+void __fastcall QuantizeAndNormalizeUvPairs(
     int vertexCount,
     zClipUV *uvPairs
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SplitPolygonChunkedByVertexLimit(
+void __fastcall SplitPolygonChunkedByVertexLimit(
     zDiPartial *self,
     int totalVertexCount,
     zVec3 *points,
@@ -480,57 +480,57 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SplitPolygonChunkedByVertexLimit(
 } // namespace zModel_Const
 
 namespace zModel_MatlBuffer {
-RECOIL_NOINLINE void RECOIL_FASTCALL SetArraySize(int count);
-RECOIL_NOINLINE zModel_MaterialPartial *RECOIL_FASTCALL CloneToActiveSlot(
+void __fastcall SetArraySize(int count);
+zModel_MaterialPartial *__fastcall CloneToActiveSlot(
     zModel_MaterialPartial *material
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL WriteGameZ(void *stream);
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadGameZ(void *stream);
-RECOIL_NOINLINE int RECOIL_CDECL ReleaseAllActive();
-RECOIL_NOINLINE void RECOIL_CDECL ReleaseTextureSurfaces();
-RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
+int __fastcall WriteGameZ(void *stream);
+int __fastcall ReadGameZ(void *stream);
+int ReleaseAllActive();
+void ReleaseTextureSurfaces();
+int Shutdown();
 } // namespace zModel_MatlBuffer
 
 namespace zModel_Matl {
-RECOIL_NOINLINE int RECOIL_CDECL InitGlobals();
-RECOIL_NOINLINE zModel_MaterialSlot *RECOIL_FASTCALL GetPoolEntry(int index);
+int InitGlobals();
+zModel_MaterialSlot *__fastcall GetPoolEntry(int index);
 } // namespace zModel_Matl
 
 namespace zModel_MatlSlot {
-RECOIL_NOINLINE void RECOIL_FASTCALL Release(zModel_MaterialSlot *slot);
-RECOIL_NOINLINE int RECOIL_FASTCALL IndexFromPtrOrMinus1(zModel_MaterialSlot *slot);
+void __fastcall Release(zModel_MaterialSlot *slot);
+int __fastcall IndexFromPtrOrMinus1(zModel_MaterialSlot *slot);
 } // namespace zModel_MatlSlot
 
 namespace zModel_Display {
-RECOIL_NOINLINE int RECOIL_CDECL Reset();
-RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
-RECOIL_NOINLINE int RECOIL_CDECL ShutdownThunk();
+int Reset();
+int Shutdown();
+int ShutdownThunk();
 } // namespace zModel_Display
 
 namespace zScene {
-RECOIL_NOINLINE int RECOIL_FASTCALL TestProjectedSphereVisible(
+int __fastcall TestProjectedSphereVisible(
     zVec3 *center,
     float radius
 );
 }
 
-RECOIL_NOINLINE void RECOIL_FASTCALL zModel_FogTargetColorOverride_SetCurrent(
+void __fastcall zModel_FogTargetColorOverride_SetCurrent(
     zColorRgb *colorRgb01,
     float weight
 );
-RECOIL_NOINLINE void RECOIL_STDCALL zModel_RenderAlphaScale_SetCurrent(float scale);
-RECOIL_NOINLINE void RECOIL_FASTCALL zModel_RenderVertexAlphaEnabled_SetCurrent(int enabled);
+void __stdcall zModel_RenderAlphaScale_SetCurrent(float scale);
+void __fastcall zModel_RenderVertexAlphaEnabled_SetCurrent(int enabled);
 
 namespace VariantTag {
-RECOIL_NOINLINE int RECOIL_FASTCALL TagsOverlap(
+int __fastcall TagsOverlap(
     const zTag4Partial *tagA,
     const zTag4Partial *tagB
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL CurrentAllowsId(int variantId);
+int __fastcall CurrentAllowsId(int variantId);
 } // namespace VariantTag
 
 namespace zDi {
-RECOIL_NOINLINE void RECOIL_FASTCALL EvalBoundingSphereLightingFlags(
+void __fastcall EvalBoundingSphereLightingFlags(
     zDiPartial *self,
     int *outDepthFade,
     int *outActiveLightState,

@@ -38,14 +38,14 @@
 // CDialog behavior.
 class NetSessionBrowserCDialogMessageMapAccessor : public CDialog {
   public:
-    static const AFX_MSGMAP *RECOIL_STDCALL GetMessageMap();
+    static const AFX_MSGMAP *__stdcall GetMessageMap();
 };
 
 // Access shim for imported MFC42 CDialog metadata; this does not reimplement
 // CDialog behavior.
 class NetSessionConfigCDialogMessageMapAccessor : public CDialog {
   public:
-    static const AFX_MSGMAP *RECOIL_STDCALL GetMessageMap();
+    static const AFX_MSGMAP *__stdcall GetMessageMap();
 };
 
 // Access shim for imported MFC42 protected window/dialog members; this does
@@ -63,32 +63,32 @@ class GameNetMfcDialogAccess : public CDialog {
     void CallOnOK();
 };
 
-void RECOIL_STDCALL DDX_Control(
+void __stdcall DDX_Control(
     CDataExchange *dataExchange,
     int controlId,
     CWnd &control
 );
-void RECOIL_STDCALL DDX_Text(
+void __stdcall DDX_Text(
     CDataExchange *dataExchange,
     int controlId,
     CString &value
 );
-void RECOIL_STDCALL DDX_Text(
+void __stdcall DDX_Text(
     CDataExchange *dataExchange,
     int controlId,
     unsigned int &value
 );
-void RECOIL_STDCALL DDX_Check(
+void __stdcall DDX_Check(
     CDataExchange *dataExchange,
     int controlId,
     int &value
 );
-void RECOIL_STDCALL DDV_MaxChars(
+void __stdcall DDV_MaxChars(
     CDataExchange *dataExchange,
     const CString &value,
     int maxChars
 );
-void RECOIL_STDCALL DDV_MinMaxUInt(
+void __stdcall DDV_MinMaxUInt(
     CDataExchange *dataExchange,
     unsigned int value,
     unsigned int minValue,
@@ -365,7 +365,7 @@ void GameNetSetRemoteHudVisible(
     HudUiPanel *panel,
     int visible
 ) {
-    typedef void(RECOIL_THISCALL * SetVisibleFn)(
+    typedef void( * SetVisibleFn)(
         HudUiPanel * self,
         int visible
     );
@@ -381,7 +381,7 @@ void GameNetSetRemoteHudPos(
     int x,
     int y
 ) {
-    typedef void(RECOIL_THISCALL * SetPosFn)(
+    typedef void( * SetPosFn)(
         HudUiPanel * self,
         int x,
         int y
@@ -440,11 +440,11 @@ PlayerGunFireController *GameNetPkt06DecodeWeaponController(
 }
 } // namespace
 
-const AFX_MSGMAP *RECOIL_STDCALL NetSessionBrowserCDialogMessageMapAccessor::GetMessageMap() {
+const AFX_MSGMAP *__stdcall NetSessionBrowserCDialogMessageMapAccessor::GetMessageMap() {
     return &CDialog::messageMap;
 }
 
-const AFX_MSGMAP *RECOIL_STDCALL NetSessionBrowserDialog::GetBaseMessageMapForMfc() {
+const AFX_MSGMAP *__stdcall NetSessionBrowserDialog::GetBaseMessageMapForMfc() {
     return NetSessionBrowserCDialogMessageMapAccessor::GetMessageMap();
 }
 
@@ -477,7 +477,7 @@ const AFX_MSGMAP NetSessionBrowserDialog::messageMap = {
     &NetSessionBrowserDialog::messageEntries[0],
 };
 
-const AFX_MSGMAP *RECOIL_STDCALL NetSessionConfigCDialogMessageMapAccessor::GetMessageMap() {
+const AFX_MSGMAP *__stdcall NetSessionConfigCDialogMessageMapAccessor::GetMessageMap() {
     return &CDialog::messageMap;
 }
 
@@ -493,7 +493,7 @@ void GameNetMfcDialogAccess::CallOnOK() {
     CDialog::OnOK();
 }
 
-const AFX_MSGMAP *RECOIL_STDCALL NetSessionConfigDialog::GetBaseMessageMapForMfc() {
+const AFX_MSGMAP *__stdcall NetSessionConfigDialog::GetBaseMessageMapForMfc() {
     return NetSessionConfigCDialogMessageMapAccessor::GetMessageMap();
 }
 
@@ -515,13 +515,13 @@ const AFX_MSGMAP NetSessionConfigDialog::messageMap = {
 
 // Reimplements 0x41afd0: NetSessionBrowserDialog::GetMessageMap
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE const AFX_MSGMAP *RECOIL_THISCALL NetSessionBrowserDialog::GetMessageMap() const {
+const AFX_MSGMAP * NetSessionBrowserDialog::GetMessageMap() const {
     return &NetSessionBrowserDialog::messageMap;
 }
 
 // Reimplements 0x41afe0: NetSessionBrowserDialog::OnInitDialog
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE BOOL RECOIL_THISCALL NetSessionBrowserDialog::OnInitDialog() {
+BOOL NetSessionBrowserDialog::OnInitDialog() {
     ((CDialog *)this)->CDialog::OnInitDialog();
     m_playerName = zOpt_GetPlayerName();
     m_shouldEnterHostSetup = FALSE;
@@ -585,7 +585,7 @@ RECOIL_NOINLINE BOOL RECOIL_THISCALL NetSessionBrowserDialog::OnInitDialog() {
 }
 
 // Reimplements 0x433a50: GameNetPlayerRow::ApplyPlayerColorTint
-void RECOIL_THISCALL GameNetPlayerRow::ApplyPlayerColorTint() {
+void GameNetPlayerRow::ApplyPlayerColorTint() {
     PlayerModalState *primaryModalState = saveState->primaryModalState;
     const unsigned int packedColor = g_GameNetPlayerRowStyleColors_00RRGGBB[playerColorIndex];
     zColorRgb color = {
@@ -606,12 +606,12 @@ void RECOIL_THISCALL GameNetPlayerRow::ApplyPlayerColorTint() {
 }
 
 // Reimplements 0x434650: GameNetPlayerRow::DestroyEmbeddedPanel
-void RECOIL_THISCALL GameNetPlayerRow::DestroyEmbeddedPanel() {
+void GameNetPlayerRow::DestroyEmbeddedPanel() {
     hudWidget.Destructor();
 }
 
 // Reimplements 0x433a40: HudTimerPanelNetState::ClearTailFlagsLocal
-void RECOIL_THISCALL HudTimerPanelNetState::ClearTailFlagsLocal() {
+void HudTimerPanelNetState::ClearTailFlagsLocal() {
     {
         for (int index = 0; index < 8; ++index) {
             tailFlags[index] = 0;
@@ -621,7 +621,7 @@ void RECOIL_THISCALL HudTimerPanelNetState::ClearTailFlagsLocal() {
 
 namespace Net {
 // Reimplements 0x431dd0: Net::InitFromZrd
-RECOIL_NOINLINE void RECOIL_CDECL InitFromZrd() {
+void InitFromZrd() {
     zUtil_SaveGameState *saveState = g_PlayerSaveStateListHead;
     while (saveState != 0) {
         zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -784,7 +784,7 @@ RECOIL_NOINLINE void RECOIL_CDECL InitFromZrd() {
 
 // Reimplements 0x43cf40: Net::FormatIpv4Address
 // (D:\Proj\Battlesport\Net.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL FormatIpv4Address(
+void __fastcall FormatIpv4Address(
     char *outText,
     unsigned int ipAddress
 ) {
@@ -808,7 +808,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FormatIpv4Address(
 
 // Reimplements 0x41ada0: NetSessionBrowserDialog::Constructor
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE NetSessionBrowserDialog *RECOIL_THISCALL NetSessionBrowserDialog::Constructor(
+NetSessionBrowserDialog * NetSessionBrowserDialog::Constructor(
     CWnd *parentWnd
 ) {
     new ((CDialog *)this) CDialog(
@@ -830,8 +830,7 @@ RECOIL_NOINLINE NetSessionBrowserDialog *RECOIL_THISCALL NetSessionBrowserDialog
 
 // Reimplements 0x41ae90: NetSessionBrowserDialog::ScalarDeletingDtor
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE NetSessionBrowserDialog *RECOIL_THISCALL
-NetSessionBrowserDialog::ScalarDeletingDestructor(
+NetSessionBrowserDialog * NetSessionBrowserDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -843,7 +842,7 @@ NetSessionBrowserDialog::ScalarDeletingDestructor(
 
 // Reimplements 0x41aeb0: NetSessionBrowserDialog::Destructor
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL NetSessionBrowserDialog::Destructor() {
+void NetSessionBrowserDialog::Destructor() {
     m_playerName.~CString();
     ((CComboBox *)&m_providerCombo)->CComboBox::~CComboBox();
     ((CListBox *)&m_sessionList)->CListBox::~CListBox();
@@ -855,7 +854,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL NetSessionBrowserDialog::Destructor() {
 
 // Reimplements 0x41af50: NetSessionBrowserDialog::DoDataExchange
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL NetSessionBrowserDialog::DoDataExchange(
+void NetSessionBrowserDialog::DoDataExchange(
     CDataExchange *dataExchange
 ) {
     DDX_Control(
@@ -896,7 +895,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL NetSessionBrowserDialog::DoDataExchange(
 }
 
 // Reimplements 0x41b150: NetSessionBrowserDialog::RefreshSessionList
-RECOIL_NOINLINE int RECOIL_THISCALL NetSessionBrowserDialog::RefreshSessionList() {
+int NetSessionBrowserDialog::RefreshSessionList() {
     CString selectedSessionText;
     m_sessionCount = zNetwork_DPlay::EnumSessions();
 
@@ -987,7 +986,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL NetSessionBrowserDialog::RefreshSessionList(
 
 // Reimplements 0x41b2f0: NetSessionBrowserDialog::ConnectSelectedProvider
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL NetSessionBrowserDialog::ConnectSelectedProvider() {
+void NetSessionBrowserDialog::ConnectSelectedProvider() {
     ::KillTimer(
         m_hWnd,
         2
@@ -1091,7 +1090,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL NetSessionBrowserDialog::ConnectSelectedPro
 
 // Reimplements 0x41b660: NetSessionBrowserDialog::OnTimer
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL NetSessionBrowserDialog::OnTimer(
+void NetSessionBrowserDialog::OnTimer(
     UINT_PTR
 ) {
     RefreshSessionList();
@@ -1100,7 +1099,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL NetSessionBrowserDialog::OnTimer(
 
 // Reimplements 0x41b6a0: NetSessionBrowserDialog::ValidatePlayerName
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL NetSessionBrowserDialog::ValidatePlayerName() {
+int NetSessionBrowserDialog::ValidatePlayerName() {
     ((CWnd *)this)->UpdateData(TRUE);
     m_playerName.TrimLeft();
     m_playerName.TrimRight();
@@ -1133,7 +1132,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL NetSessionBrowserDialog::ValidatePlayerName(
 
 // Reimplements 0x41b510: NetSessionBrowserDialog::OnOK
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL NetSessionBrowserDialog::OnOK() {
+void NetSessionBrowserDialog::OnOK() {
     int canCloseDialog = FALSE;
     if (ValidatePlayerName() == 0) {
         return;
@@ -1178,7 +1177,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL NetSessionBrowserDialog::OnOK() {
 
 // Reimplements 0x41b5a0: NetSessionBrowserDialog::OnCreateSession
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL NetSessionBrowserDialog::OnCreateSession() {
+void NetSessionBrowserDialog::OnCreateSession() {
     if (ValidatePlayerName() == 0) {
         return;
     }
@@ -1216,7 +1215,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL NetSessionBrowserDialog::OnCreateSession() 
 
 // Reimplements 0x41b680: NetSessionBrowserDialog::OnDestroy
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL NetSessionBrowserDialog::OnDestroy() {
+void NetSessionBrowserDialog::OnDestroy() {
     ((GameNetMfcWndAccess *)this)->CallOnDestroy();
     ::KillTimer(
         m_hWnd,
@@ -1226,7 +1225,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL NetSessionBrowserDialog::OnDestroy() {
 
 // Reimplements 0x41b780: NetSessionBrowserDialog::OnHelpDocs
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL NetSessionBrowserDialog::OnHelpDocs() {
+void NetSessionBrowserDialog::OnHelpDocs() {
     char caption[128];
     strcpy(
         caption,
@@ -1295,7 +1294,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL NetSessionBrowserDialog::OnHelpDocs() {
 
 // Reimplements 0x41c6e0: NetSessionConfigDialog::Constructor
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE NetSessionConfigDialog *RECOIL_THISCALL NetSessionConfigDialog::Constructor(
+NetSessionConfigDialog * NetSessionConfigDialog::Constructor(
     CWnd *parentWnd
 ) {
     new ((CDialog *)this) CDialog(
@@ -1319,7 +1318,7 @@ RECOIL_NOINLINE NetSessionConfigDialog *RECOIL_THISCALL NetSessionConfigDialog::
 
 // Reimplements 0x41c7f0: NetSessionConfigDialog::Destructor
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL NetSessionConfigDialog::Destructor() {
+void NetSessionConfigDialog::Destructor() {
     m_sessionName.~CString();
     ((CComboBox *)&m_mapCombo)->CComboBox::~CComboBox();
     ((CSpinButtonCtrl *)&m_timeLimitSpin)->CSpinButtonCtrl::~CSpinButtonCtrl();
@@ -1330,7 +1329,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL NetSessionConfigDialog::Destructor() {
 
 // Reimplements 0x41c880: NetSessionConfigDialog::DoDataExchange
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL NetSessionConfigDialog::DoDataExchange(
+void NetSessionConfigDialog::DoDataExchange(
     CDataExchange *dataExchange
 ) {
     DDX_Control(
@@ -1405,13 +1404,13 @@ RECOIL_NOINLINE void RECOIL_THISCALL NetSessionConfigDialog::DoDataExchange(
 
 // Reimplements 0x41c970: NetSessionConfigDialog::GetMessageMap
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE const AFX_MSGMAP *RECOIL_THISCALL NetSessionConfigDialog::GetMessageMap() const {
+const AFX_MSGMAP * NetSessionConfigDialog::GetMessageMap() const {
     return &NetSessionConfigDialog::messageMap;
 }
 
 // Reimplements 0x41ca30: NetSessionConfigDialog::OnInitDialog
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE BOOL RECOIL_THISCALL NetSessionConfigDialog::OnInitDialog() {
+BOOL NetSessionConfigDialog::OnInitDialog() {
     ((CDialog *)this)->CDialog::OnInitDialog();
 
     m_sessionName.Format(
@@ -1487,7 +1486,7 @@ RECOIL_NOINLINE BOOL RECOIL_THISCALL NetSessionConfigDialog::OnInitDialog() {
 
 // Reimplements 0x41cb50: NetSessionConfigDialog::OnDestroy
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL NetSessionConfigDialog::OnDestroy() {
+void NetSessionConfigDialog::OnDestroy() {
     ((GameNetMfcWndAccess *)this)->CallOnDestroy();
     const LRESULT selectedMapComboIndex = ::SendMessageA(
         m_mapCombo.m_hWnd,
@@ -1506,7 +1505,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL NetSessionConfigDialog::OnDestroy() {
 
 // Reimplements 0x41cb90: NetSessionConfigDialog::OnMapChanged
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL NetSessionConfigDialog::OnMapChanged() {
+void NetSessionConfigDialog::OnMapChanged() {
     const LRESULT selectedMapComboIndex = ::SendMessageA(
         m_mapCombo.m_hWnd,
         CB_GETCURSEL,
@@ -1536,7 +1535,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL NetSessionConfigDialog::OnMapChanged() {
 namespace Mission {
 // Reimplements 0x41c980: Mission::RegisterMultiplayerMaps
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RegisterMultiplayerMaps() {
+void RegisterMultiplayerMaps() {
     NetSessionConfigDialog::InitMapNameStrings();
     NetSessionConfigDialog::RegisterMapNameCleanup();
 }
@@ -1544,7 +1543,7 @@ RECOIL_NOINLINE void RECOIL_CDECL RegisterMultiplayerMaps() {
 
 // Reimplements 0x41c990: NetSessionConfigDialog::InitMapNameStrings
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL NetSessionConfigDialog::InitMapNameStrings() {
+void NetSessionConfigDialog::InitMapNameStrings() {
     new (&g_NetSessionConfigDialog_MapNameStrings[0]) CString("RiverWorks");
     new (&g_NetSessionConfigDialog_MapNameStrings[1]) CString("Crater Chaos");
     new (&g_NetSessionConfigDialog_MapNameStrings[2]) CString("Beach Rally");
@@ -1556,13 +1555,13 @@ RECOIL_NOINLINE void RECOIL_CDECL NetSessionConfigDialog::InitMapNameStrings() {
 
 // Reimplements 0x41ca00: NetSessionConfigDialog::RegisterMapNameCleanup
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL NetSessionConfigDialog::RegisterMapNameCleanup() {
+void NetSessionConfigDialog::RegisterMapNameCleanup() {
     atexit(&NetSessionConfigDialog::CleanupMapNameStringsOnExit);
 }
 
 // Reimplements 0x41ca10: NetSessionConfigDialog::CleanupMapNameStringsOnExit
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL NetSessionConfigDialog::CleanupMapNameStringsOnExit() {
+void NetSessionConfigDialog::CleanupMapNameStringsOnExit() {
     for (int index = kNetSessionConfigMapNameCount - 1; index >= 0; --index) {
         g_NetSessionConfigDialog_MapNameStrings[index].~CString();
     }
@@ -1570,7 +1569,7 @@ RECOIL_NOINLINE void RECOIL_CDECL NetSessionConfigDialog::CleanupMapNameStringsO
 
 namespace GameNet {
 // Reimplements 0x414550: GameNet::ChatComposeKeyCallback (D:\Proj\Battlesport\ai_net.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ChatComposeKeyCallback(
+void __fastcall ChatComposeKeyCallback(
     int dikCodeWithMods
 ) {
     const int key = zInput::Keyboard_TranslateDikToAscii(dikCodeWithMods);
@@ -1580,7 +1579,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ChatComposeKeyCallback(
 
     g_HudUiMgrObjectiveChatComposeTextInput.DispatchKeyAction(key);
 
-    typedef void(RECOIL_CDECL * SetTextFmtFn)(
+    typedef void(* SetTextFmtFn)(
         HudUiPanel * self,
         const char *format,
         ...
@@ -1594,7 +1593,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ChatComposeKeyCallback(
 }
 
 // Reimplements 0x4143d0: GameNet::BeginChatCompose (D:\Proj\Battlesport\ai_net.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL BeginChatCompose() {
+void BeginChatCompose() {
     if (zOpt::GetNetworkEnabled() == 0) {
         return;
     }
@@ -1630,7 +1629,7 @@ RECOIL_NOINLINE void RECOIL_CDECL BeginChatCompose() {
 }
 
 // Reimplements 0x414590: GameNet::EndChatComposeAndSend (D:\Proj\Battlesport\ai_net.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL EndChatComposeAndSend() {
+void EndChatComposeAndSend() {
     zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
     GameNetPlayerRow *const playerRow = saveState->netPlayerRow;
     char chatLine[0x51];
@@ -1668,12 +1667,12 @@ RECOIL_NOINLINE void RECOIL_CDECL EndChatComposeAndSend() {
 
 // Reimplements 0x414660: GameNet::EndChatComposeAndSendThunk
 // Pure forwarding callback thunk referenced by the chat-compose text input ftable.
-RECOIL_NOINLINE void RECOIL_CDECL EndChatComposeAndSendThunk() {
+void EndChatComposeAndSendThunk() {
     EndChatComposeAndSend();
 }
 
 // Reimplements 0x432830: GameNet::FindPlayerRowByKey (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE GameNetPlayerRow *RECOIL_FASTCALL FindPlayerRowByKey(
+GameNetPlayerRow *__fastcall FindPlayerRowByKey(
     int playerKey
 ) {
     GameNetPlayerRow *row = g_GameNetPlayerRowHead;
@@ -1690,7 +1689,7 @@ RECOIL_NOINLINE GameNetPlayerRow *RECOIL_FASTCALL FindPlayerRowByKey(
 
 // Reimplements 0x4336f0: GameNet::GetLocalPlayerColorIndexOrZero
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL GetLocalPlayerColorIndexOrZero() {
+int GetLocalPlayerColorIndexOrZero() {
     zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
     if (saveState == 0) {
         return 0;
@@ -1706,7 +1705,7 @@ RECOIL_NOINLINE int RECOIL_CDECL GetLocalPlayerColorIndexOrZero() {
 
 // Reimplements 0x4339d0: GameNet::GetNearestOtherPlayerDistanceToSpawnPoint
 // (D:\Proj\Battlesport\net.cpp)
-RECOIL_NOINLINE float RECOIL_FASTCALL GetNearestOtherPlayerDistanceToSpawnPoint(
+float __fastcall GetNearestOtherPlayerDistanceToSpawnPoint(
     GameNetSpawnPoint *spawnPoint,
     GameNetPlayerSaveState **outSaveState
 ) {
@@ -1734,7 +1733,7 @@ RECOIL_NOINLINE float RECOIL_FASTCALL GetNearestOtherPlayerDistanceToSpawnPoint(
 
 // Reimplements 0x433200: GameNet::AreAllPlayersAtLapTarget
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL AreAllPlayersAtLapTarget() {
+int AreAllPlayersAtLapTarget() {
     if (g_GameNetAllPlayersLapTargetCheckStarted == 0) {
         g_GameNetAllPlayersLapTargetCheckStarted = 1;
     }
@@ -1753,7 +1752,7 @@ RECOIL_NOINLINE int RECOIL_CDECL AreAllPlayersAtLapTarget() {
 
 // Reimplements 0x433840: GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RespawnPlayerAndDropWeaponPickupIfAllowed(
+void __fastcall RespawnPlayerAndDropWeaponPickupIfAllowed(
     zUtil_SaveGameState *saveState,
     int useColorIndexedSpawn
 ) {
@@ -1830,7 +1829,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RespawnPlayerAndDropWeaponPickupIfAllowed(
 
 // Reimplements 0x432300: GameNet::TickLocalPlayerPkt06ReplicationAndHudTimer
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL TickLocalPlayerPkt06ReplicationAndHudTimer(
+int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -1995,7 +1994,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL TickLocalPlayerPkt06ReplicationAndHudTimer(
 
 // Reimplements 0x432ae0: GameNet::ApplyPkt06_PlayerStateSnapshotToRow
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ApplyPkt06_PlayerStateSnapshotToRow(
+int __fastcall ApplyPkt06_PlayerStateSnapshotToRow(
     GameNetPlayerRow *row,
     NetPkt06_PlayerStateSnapshot *packet
 ) {
@@ -2086,7 +2085,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ApplyPkt06_PlayerStateSnapshotToRow(
 
 // Reimplements 0x432860: GameNet::SpawnRemotePlayerFromPkt06_PlayerStateSnapshot
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
+int __fastcall SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
     int senderPlayerId,
     NetPkt06_PlayerStateSnapshot *packet
 ) {
@@ -2242,7 +2241,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SpawnRemotePlayerFromPkt06_PlayerStateSnapsh
 
 // Reimplements 0x4327e0: GameNet::HandlePkt06_PlayerStateSnapshot
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt06_PlayerStateSnapshot(
+int __fastcall HandlePkt06_PlayerStateSnapshot(
     int senderPlayerId,
     NetPkt06_PlayerStateSnapshot *packet
 ) {
@@ -2275,7 +2274,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt06_PlayerStateSnapshot(
 
 // Reimplements 0x434190: GameNet::HandlePkt07_AltGunDispatch
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt07_AltGunDispatch(
+int __fastcall HandlePkt07_AltGunDispatch(
     int,
     NetPkt07_AltGunDispatch *packet
 ) {
@@ -2315,7 +2314,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt07_AltGunDispatch(
 
 // Reimplements 0x434130: GameNet::SendPkt07_AltGunDispatch
 // (D:\Proj\Battlesport\ai_net.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt07_AltGunDispatch(
+void __fastcall SendPkt07_AltGunDispatch(
     short weaponId,
     unsigned int dispatchFlags
 ) {
@@ -2331,7 +2330,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt07_AltGunDispatch(
 
 // Reimplements 0x434230: GameNet::AltGunDispatchNoOpCallback
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL AltGunDispatchNoOpCallback(
+int __fastcall AltGunDispatchNoOpCallback(
     OptCatalogEntryDef *,
     void **
 ) {
@@ -2340,7 +2339,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AltGunDispatchNoOpCallback(
 
 // Reimplements 0x433ca0: GameNet::SendPkt10_QSandEvent
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL SendPkt10_QSandEvent(
+int __fastcall SendPkt10_QSandEvent(
     zDEClient_QSandEventTemplate *eventTemplate
 ) {
     if (eventTemplate->radius <= 0.0f) {
@@ -2372,7 +2371,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SendPkt10_QSandEvent(
 
 // Reimplements 0x433de0: GameNet::HostSendPkt10_QSandFeature
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HostSendPkt10_QSandFeature(
+int __fastcall HostSendPkt10_QSandFeature(
     zDEClient_QSandEventTemplate *eventTemplate
 ) {
     if (zNetwork::IsHost() == 0) {
@@ -2389,7 +2388,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HostSendPkt10_QSandFeature(
 
 // Reimplements 0x433c30: GameNet::HostSendPkt0F_CraterFeature
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HostSendPkt0F_CraterFeature(
+int __fastcall HostSendPkt0F_CraterFeature(
     zDEClient_CraterEventTemplate *eventTemplate
 ) {
     if (zNetwork::IsHost() == 0) {
@@ -2408,7 +2407,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HostSendPkt0F_CraterFeature(
 
 // Reimplements 0x4321b0: GameNet::UnregisterGameplayPacketHandlers
 // (D:\Proj\Battlesport\gamenet.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL UnregisterGameplayPacketHandlers() {
+void UnregisterGameplayPacketHandlers() {
     zNetwork::UnregisterPacketHandler(
         6,
         (zNetworkPacketHandler)&HandlePkt06_PlayerStateSnapshot
@@ -2474,7 +2473,7 @@ RECOIL_NOINLINE void RECOIL_CDECL UnregisterGameplayPacketHandlers() {
 
 // Reimplements 0x431c50: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RegisterGameplayHandlersAndOptCatalogCallbacks() {
+void RegisterGameplayHandlersAndOptCatalogCallbacks() {
     if (g_GameNet_HandlersRegistered == 0) {
         zNetwork::RegisterPacketHandler(
             6,
@@ -2577,7 +2576,7 @@ RECOIL_NOINLINE void RECOIL_CDECL RegisterGameplayHandlersAndOptCatalogCallbacks
 
 // Reimplements 0x4320f0: GameNet::ResetRemotePlayersAndSpawnLists
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL ResetRemotePlayersAndSpawnLists() {
+void ResetRemotePlayersAndSpawnLists() {
     GameNetPlayerRow *row = g_GameNetPlayerRowHead;
     while (row != 0) {
         HudUi::RemoveScoreboardEntryRow(row);
@@ -2612,7 +2611,7 @@ RECOIL_NOINLINE void RECOIL_CDECL ResetRemotePlayersAndSpawnLists() {
 }
 
 // Reimplements 0x4320b0: GameNet::WaitForLocalPlayerColorIndex
-RECOIL_NOINLINE int RECOIL_FASTCALL WaitForLocalPlayerColorIndex(
+int __fastcall WaitForLocalPlayerColorIndex(
     int maxWaitSeconds
 ) {
     int waitedSeconds = 0;
@@ -2632,7 +2631,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL WaitForLocalPlayerColorIndex(
 }
 
 // Reimplements 0x4322a0: GameNet::ResetHudTimerPanelNetStateLongCountdown
-RECOIL_NOINLINE void RECOIL_CDECL ResetHudTimerPanelNetStateLongCountdown() {
+void ResetHudTimerPanelNetStateLongCountdown() {
     g_HudTimerPanelNetState.timerSeconds = 36000.0f;
     HudUiTimerPanel::SetSeconds(
         36000.0f,
@@ -2650,7 +2649,7 @@ RECOIL_NOINLINE void RECOIL_CDECL ResetHudTimerPanelNetStateLongCountdown() {
 }
 
 // Reimplements 0x433710: GameNet::SetStatusBitsFromFlags (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetStatusBitsFromFlags(
+void __fastcall SetStatusBitsFromFlags(
     unsigned int statusFlags
 ) {
     g_GameNetStatus_AllowMaps = statusFlags & 1u;
@@ -2658,18 +2657,18 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetStatusBitsFromFlags(
 }
 
 // Reimplements 0x433730: GameNet::GetStatusBitAllowMaps (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL GetStatusBitAllowMaps() {
+int GetStatusBitAllowMaps() {
     return g_GameNetStatus_AllowMaps;
 }
 
 // Reimplements 0x433740: GameNet::GetStatusBitNameTags (src/Battlesport/gamenet.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL GetStatusBitNameTags() {
+int GetStatusBitNameTags() {
     return g_GameNetStatus_NameTags;
 }
 
 // Reimplements 0x432d60: GameNet::UpdateRemotePlayerHudWidgetScreenPos
 // (src/Battlesport/gamenet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL UpdateRemotePlayerHudWidgetScreenPos(
+int __fastcall UpdateRemotePlayerHudWidgetScreenPos(
     zUtil_SaveGameState *saveState
 ) {
     if (GetStatusBitNameTags() == 0) {
@@ -2728,7 +2727,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL UpdateRemotePlayerHudWidgetScreenPos(
 }
 
 // Reimplements 0x414330: GameNet::ShowPlayerKillMessage (D:\Proj\Battlesport\HudUi.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ShowPlayerKillMessage(
+void __fastcall ShowPlayerKillMessage(
     GameNetPlayerRow *victimRow,
     OptCatalogEntryDef *killEntry,
     GameNetPlayerRow *killerRow
@@ -2756,7 +2755,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ShowPlayerKillMessage(
 
 // Reimplements 0x432e70: GameNet::ReassignPlayerColorsAndRefreshRows
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL ReassignPlayerColorsAndRefreshRows(
+int ReassignPlayerColorsAndRefreshRows(
     int,
     zNetworkPacketHeader *
 ) {
@@ -2782,7 +2781,7 @@ RECOIL_NOINLINE int RECOIL_CDECL ReassignPlayerColorsAndRefreshRows(
 
 // Reimplements 0x432ed0: GameNet::HandlePkt03_RemoveRemotePlayer
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt03_RemoveRemotePlayer(
+int __fastcall HandlePkt03_RemoveRemotePlayer(
     int senderPlayerId,
     zNetworkPacketHeader *
 ) {
@@ -2853,7 +2852,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt03_RemoveRemotePlayer(
 }
 
 // Reimplements 0x414390: GameNet::RefreshPlayerListMenu (D:\Proj\Battlesport\ai_net.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RefreshPlayerListMenu(
+void __fastcall RefreshPlayerListMenu(
     GameNetPlayerRow *playerRow
 ) {
     g_HudUiMgrStatsList->triplet->AddEntry(playerRow);
@@ -2861,7 +2860,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RefreshPlayerListMenu(
 
 // Reimplements 0x433410: GameNet::HandlePkt0C_HudTimerStatusBits
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt0C_HudTimerStatusBits(
+int __fastcall HandlePkt0C_HudTimerStatusBits(
     int,
     NetPkt0C_HudTimerStatusBits *packet
 ) {
@@ -2913,7 +2912,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt0C_HudTimerStatusBits(
 
 // Reimplements 0x4337e0: GameNet::HandlePkt0B_ChatMessage
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt0B_ChatMessage(
+int __fastcall HandlePkt0B_ChatMessage(
     int,
     NetPkt0B_ChatMessage *packet
 ) {
@@ -2941,7 +2940,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt0B_ChatMessage(
 
 // Reimplements 0x433750: GameNet::SendPkt0B_ChatMessage
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt0B_ChatMessage(
+void __fastcall SendPkt0B_ChatMessage(
     const char *message
 ) {
     const int messageLength = (int)(strlen(message));
@@ -2971,7 +2970,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt0B_ChatMessage(
 
 // Reimplements 0x433250: GameNet::HandlePkt0D_HudTimerPanelState
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt0D_HudTimerPanelState(
+int __fastcall HandlePkt0D_HudTimerPanelState(
     int,
     NetPkt0D_HudTimerPanelState *packet
 ) {
@@ -3020,7 +3019,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt0D_HudTimerPanelState(
 }
 
 // Reimplements 0x433060: GameNet::HandlePkt08_PlayerKillEvent (D:\Proj\Battlesport\ai_net.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt08_PlayerKillEvent(
+int __fastcall HandlePkt08_PlayerKillEvent(
     int localPlayerKey,
     NetPkt08_PlayerKillEvent *packet
 ) {
@@ -3060,7 +3059,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt08_PlayerKillEvent(
 }
 
 // Reimplements 0x433000: GameNet::SendPkt08_PlayerKillEvent (D:\Proj\Battlesport\ai_net.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt08_PlayerKillEvent(
+void __fastcall SendPkt08_PlayerKillEvent(
     zUtil_SaveGameState *saveState,
     short killMethodOrOptCatalogEntryId
 ) {
@@ -3085,7 +3084,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt08_PlayerKillEvent(
 
 // Reimplements 0x4330f0: GameNet::SendPkt0E_PlayerLapProgress
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt0E_PlayerLapProgress(
+void __fastcall SendPkt0E_PlayerLapProgress(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -3112,7 +3111,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt0E_PlayerLapProgress(
 
 // Reimplements 0x4334f0: GameNet::SendPkt09_PlayerScoreboardSnapshot
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL SendPkt09_PlayerScoreboardSnapshot() {
+void SendPkt09_PlayerScoreboardSnapshot() {
     if (zNetwork::IsHost() == 0) {
         return;
     }
@@ -3156,7 +3155,7 @@ RECOIL_NOINLINE void RECOIL_CDECL SendPkt09_PlayerScoreboardSnapshot() {
 
 // Reimplements 0x4335b0: GameNet::HandlePkt09_PlayerScoreboardSnapshot
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt09_PlayerScoreboardSnapshot(
+int __fastcall HandlePkt09_PlayerScoreboardSnapshot(
     int,
     NetPkt09_PlayerScoreboardSnapshot *packet
 ) {
@@ -3221,7 +3220,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt09_PlayerScoreboardSnapshot(
 
 // Reimplements 0x433310: GameNet::SendPkt0D_HudTimerPanelState
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt0D_HudTimerPanelState(
+void __fastcall SendPkt0D_HudTimerPanelState(
     HudTimerPanelNetState *timerState
 ) {
     if (zNetwork::IsHost() == 0) {
@@ -3258,7 +3257,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt0D_HudTimerPanelState(
 
 // Reimplements 0x433170: GameNet::HandlePkt0E_PlayerLapProgress
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt0E_PlayerLapProgress(
+int __fastcall HandlePkt0E_PlayerLapProgress(
     int senderPlayerId,
     NetPkt0E_PlayerLapProgress *packet
 ) {
@@ -3291,7 +3290,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt0E_PlayerLapProgress(
 
 // Reimplements 0x434370: GameNet::SendPkt13_EffectAnimActivationRecord
 // (D:\Proj\GameZRecoil\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt13_EffectAnimActivationRecord(
+void __fastcall SendPkt13_EffectAnimActivationRecord(
     zEffectAnimActivationRecord *record
 ) {
     if (g_GameNetSuppressPkt13ActivationEcho != 0) {
@@ -3322,7 +3321,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt13_EffectAnimActivationRecord(
 
 // Reimplements 0x434430: GameNet::SendAllPkt13_EffectAnimActivationRecords
 // (D:\Proj\GameZRecoil\GameNet.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL SendAllPkt13_EffectAnimActivationRecords() {
+void SendAllPkt13_EffectAnimActivationRecords() {
     if (zNetwork::IsHost() == 0) {
         return;
     }
@@ -3335,7 +3334,7 @@ RECOIL_NOINLINE void RECOIL_CDECL SendAllPkt13_EffectAnimActivationRecords() {
 
 // Reimplements 0x4343f0: GameNet::HandlePkt13_EffectAnimActivationRecord
 // (D:\Proj\GameZRecoil\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt13_EffectAnimActivationRecord(
+int __fastcall HandlePkt13_EffectAnimActivationRecord(
     int,
     zNetworkPacketHeader *packet
 ) {
@@ -3352,7 +3351,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt13_EffectAnimActivationRecord(
 
 // Reimplements 0x433390: GameNet::SendPkt0C_HudTimerStatusBits
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL SendPkt0C_HudTimerStatusBits(
+int __fastcall SendPkt0C_HudTimerStatusBits(
     HudTimerPanelNetState *timerState
 ) {
     const int result = zNetwork::IsHost();
@@ -3385,7 +3384,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SendPkt0C_HudTimerStatusBits(
 
 // Reimplements 0x434460: GameNet::SendPkt14_HudTimerAndFlagsSync
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL SendPkt14_HudTimerAndFlagsSync(
+int __fastcall SendPkt14_HudTimerAndFlagsSync(
     int eventCode,
     unsigned int statusFlags,
     int valueOrTime,
@@ -3401,7 +3400,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SendPkt14_HudTimerAndFlagsSync(
 
 // Reimplements 0x4344b0: GameNet::HandlePkt14_HudTimerAndFlagsSync
 // (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt14_HudTimerAndFlagsSync(
+int __fastcall HandlePkt14_HudTimerAndFlagsSync(
     int senderPlayerId,
     NetPkt14_HudTimerAndFlagsSync *packet
 ) {
@@ -3446,7 +3445,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt14_HudTimerAndFlagsSync(
 
 // Reimplements 0x434550: GameNet::HostUpdateSessionDescStatusFields
 // (D:\Proj\Battlesport\GameNet.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HostUpdateSessionDescStatusFields(
+int __fastcall HostUpdateSessionDescStatusFields(
     int eventCode,
     int auxParam,
     int valueOrTime,
@@ -3471,7 +3470,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HostUpdateSessionDescStatusFields(
 
 namespace GameNetSpawnPointList {
 // Reimplements 0x431bf0: GameNetSpawnPointList::InitGlobals
-void RECOIL_CDECL InitGlobals() {
+void InitGlobals() {
     g_GameNetSpawnPointList = 0;
     g_GameNetSpawnPointTail = 0;
     g_GameNetSpawnPointHead = 0;
@@ -3481,7 +3480,7 @@ void RECOIL_CDECL InitGlobals() {
 
 namespace GameNetPlayerRowList {
 // Reimplements 0x431c20: GameNetPlayerRowList::Reset
-void RECOIL_CDECL Reset() {
+void Reset() {
     g_GameNetPlayerRowList = 0;
     g_GameNetPlayerRowTail = 0;
     g_GameNetPlayerRowHead = 0;
@@ -3489,7 +3488,7 @@ void RECOIL_CDECL Reset() {
 }
 
 // Reimplements 0x4345a0: GameNetPlayerRowList::AppendNewRow
-RECOIL_NOINLINE GameNetPlayerRow *RECOIL_FASTCALL AppendNewRow(
+GameNetPlayerRow *__fastcall AppendNewRow(
     GameNetPlayerRowListState *self,
     int zeroInitializeRow
 ) {

@@ -3,7 +3,7 @@
 #include "GameZRecoil/zGame/zGame.h"
 
 // Reimplements 0x415370: RecoilStateMainMenuTransition::OnResume
-void RECOIL_THISCALL RecoilStateMainMenuTransition::OnResume(
+void RecoilStateMainMenuTransition::OnResume(
     int param
 ) {
     if (m_mainMenuDialog == 0 || param != 0) {

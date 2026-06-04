@@ -11,15 +11,15 @@ struct HudUiNetExitPanel_ExitButton;
 struct HudUiNetExitPanel_ResumeWidget;
 
 struct HudUiNetExitPanel_FTable {
-    void(RECOIL_THISCALL *updateAll)(
+    void( *updateAll)(
         HudUiNetExitPanel *self,
         float deltaSeconds
     );
-    int(RECOIL_THISCALL *setEnabled)(
+    int( *setEnabled)(
         HudUiNetExitPanel *self,
         int enabled
     );
-    HudUiNetExitPanel *(RECOIL_THISCALL *scalarDeletingDtor)(
+    HudUiNetExitPanel *( *scalarDeletingDtor)(
         HudUiNetExitPanel *self,
         unsigned int flags
     );
@@ -30,7 +30,7 @@ struct HudUiNetExitPanel_ExitButton {
     HudUiZrdWidget base;
     int previewInputCaptureActive;
 
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetExitPanel_ExitButton) == 0x150);
 RECOIL_STATIC_ASSERT(
@@ -44,9 +44,9 @@ struct HudUiNetExitPanel_ResumeWidget {
     HudUiZrdWidget base;
     int previewInputCaptureActive;
 
-    void RECOIL_THISCALL OnActivate();
-    void RECOIL_THISCALL OnShowPreview();
-    void RECOIL_THISCALL OnHidePreview();
+    void OnActivate();
+    void OnShowPreview();
+    void OnHidePreview();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetExitPanel_ResumeWidget) == 0x150);
 RECOIL_STATIC_ASSERT(
@@ -61,15 +61,15 @@ struct HudUiNetExitPanel {
     HudUiNetExitPanel_ResumeWidget resumeWidget;
     HudUiNetExitPanel_ExitButton exitWidget;
 
-    HudUiNetExitPanel *RECOIL_THISCALL Constructor();
-    void RECOIL_THISCALL Destructor();
-    void RECOIL_THISCALL Update(float deltaSeconds);
-    int RECOIL_THISCALL SetEnabled(int enabled);
-    HudUiNetExitPanel *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
-    RECOIL_NOINLINE static HudUiNetExitPanel *RECOIL_CDECL CreateGlobal();
-    RECOIL_NOINLINE static void RECOIL_CDECL Show();
-    RECOIL_NOINLINE static int RECOIL_CDECL Tick();
-    RECOIL_NOINLINE static void RECOIL_CDECL DestroyGlobal();
+    HudUiNetExitPanel * Constructor();
+    void Destructor();
+    void Update(float deltaSeconds);
+    int SetEnabled(int enabled);
+    HudUiNetExitPanel * ScalarDeletingDestructor(unsigned int flags);
+    static HudUiNetExitPanel *CreateGlobal();
+    static void Show();
+    static int Tick();
+    static void DestroyGlobal();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetExitPanel) == 0xabec);
 RECOIL_STATIC_ASSERT(

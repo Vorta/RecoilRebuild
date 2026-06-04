@@ -83,12 +83,12 @@ bool ProjectedPointInClipBounds(
            !(point.x > g_zVideo_ProjectClipRight) && !(point.y > g_zVideo_ProjectClipBottom);
 }
 
-typedef void(RECOIL_FASTCALL *DrawPointColor16Proc)(
+typedef void(__fastcall *DrawPointColor16Proc)(
     zProjectedPoint *point,
     unsigned int packedColor16,
     int pointCount
 );
-typedef void(RECOIL_FASTCALL *SubmitPolyFlatColor16Proc)(
+typedef void(__fastcall *SubmitPolyFlatColor16Proc)(
     zVideo_XyzVertex *vertices,
     unsigned int packedColor16,
     int alpha,
@@ -96,7 +96,7 @@ typedef void(RECOIL_FASTCALL *SubmitPolyFlatColor16Proc)(
     int vertexCount,
     int queueMode
 );
-typedef void(RECOIL_FASTCALL *SubmitPolyColorAttrProc)(
+typedef void(__fastcall *SubmitPolyColorAttrProc)(
     zVideo_XyzVertex *vertices,
     unsigned int packedColor16,
     zVideo_ColorRgbFloat *baseColor,
@@ -108,7 +108,7 @@ typedef void(RECOIL_FASTCALL *SubmitPolyColorAttrProc)(
     unsigned int renderParam,
     int queueMode
 );
-typedef void(RECOIL_FASTCALL *SubmitPolyRenderClassProc)(
+typedef void(__fastcall *SubmitPolyRenderClassProc)(
     zVideo_XyzVertex *vertices,
     zVideo_TexCoord *texCoords,
     int vertexCount,
@@ -117,7 +117,7 @@ typedef void(RECOIL_FASTCALL *SubmitPolyRenderClassProc)(
     float alpha,
     int queueMode
 );
-typedef void(RECOIL_FASTCALL *SubmitPolygonProc)(
+typedef void(__fastcall *SubmitPolygonProc)(
     zVideo_XyzVertex *vertices,
     zVideo_TexCoord *uvPairs,
     float *attr1,
@@ -129,7 +129,7 @@ typedef void(RECOIL_FASTCALL *SubmitPolygonProc)(
     float alpha,
     int queueMode
 );
-typedef void(RECOIL_FASTCALL *SubmitPolygonLitProc)(
+typedef void(__fastcall *SubmitPolygonLitProc)(
     zVideo_XyzVertex *vertices,
     zVideo_TexCoord *uvPairs,
     float *attr1,
@@ -721,7 +721,7 @@ void NormalizeUvTileOrigin(
 namespace zDi {
 // Reimplements 0x483650: zDi::AddPolygonEx
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL AddPolygonEx(
+int __fastcall AddPolygonEx(
     zDiPartial *self,
     int vertexCount,
     zVec3 *points,
@@ -918,7 +918,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AddPolygonEx(
 
 // Reimplements 0x483610: zDi::AddPolygon
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL AddPolygon(
+int __fastcall AddPolygon(
     zDiPartial *self,
     int pointCount,
     zVec3 *points,
@@ -949,7 +949,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AddPolygon(
 
 // Reimplements 0x483240: zDi::AddPolygonSplitByVertexLimit
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL AddPolygonSplitByVertexLimit(
+void __fastcall AddPolygonSplitByVertexLimit(
     zDiPartial *self,
     int totalVertexCount,
     zVec3 *points,
@@ -1052,7 +1052,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL AddPolygonSplitByVertexLimit(
 
 // Reimplements 0x4843b0: zDi::RebuildGeneratedUvPairsForEntry
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RebuildGeneratedUvPairsForEntry(
+void __fastcall RebuildGeneratedUvPairsForEntry(
     zDiPartial *self,
     int entryIndex
 ) {
@@ -1158,7 +1158,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RebuildGeneratedUvPairsForEntry(
 namespace zModel_Const {
 // Reimplements 0x482c60: zModel_Const::SetNormalizedCrossFromVertexTriplet
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL SetNormalizedCrossFromVertexTriplet(
+zVec3 *__fastcall SetNormalizedCrossFromVertexTriplet(
     zVec3 *vertex0,
     zVec3 *vertex1,
     zVec3 *outNormal,
@@ -1194,7 +1194,7 @@ RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL SetNormalizedCrossFromVertexTriplet(
 
 // Reimplements 0x482b40: zModel_Const::RemoveColinearVerticesInPlace
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL RemoveColinearVerticesInPlace(
+int __fastcall RemoveColinearVerticesInPlace(
     int *vertexCount,
     zVec3 *points,
     zClipUV *,
@@ -1254,7 +1254,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL RemoveColinearVerticesInPlace(
 
 // Reimplements 0x482e30: zModel_Const::ComputePolygonPlaneEquation
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE zGeometry_PlaneEquationPartial *RECOIL_FASTCALL ComputePolygonPlaneEquation(
+zGeometry_PlaneEquationPartial *__fastcall ComputePolygonPlaneEquation(
     int vertexCount,
     zVec3 *vertices,
     zGeometry_PlaneEquationPartial *outPlane
@@ -1299,7 +1299,7 @@ RECOIL_NOINLINE zGeometry_PlaneEquationPartial *RECOIL_FASTCALL ComputePolygonPl
 
 // Reimplements 0x482db0: zModel_Const::IsPolygonCoplanar
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL IsPolygonCoplanar(
+int __fastcall IsPolygonCoplanar(
     int vertexCount,
     zVec3 *vertices
 ) {
@@ -1328,7 +1328,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL IsPolygonCoplanar(
 
 // Reimplements 0x482720: zModel_Const::AddOrMergeVertex
 // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL AddOrMergeVertex(
+int __fastcall AddOrMergeVertex(
     zDiPartial *self,
     zVec3 *point
 ) {
@@ -1371,7 +1371,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AddOrMergeVertex(
 
 // Reimplements 0x482860: zModel_Const::AddOrMergeVertexAndNormal
 // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL AddOrMergeVertexAndNormal(
+int __fastcall AddOrMergeVertexAndNormal(
     zDiPartial *self,
     zVec3 *point,
     zVec3 *normal
@@ -1430,7 +1430,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AddOrMergeVertexAndNormal(
 
 // Reimplements 0x482a10: zModel_Const::FindOrAppendNormalIndex
 // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL FindOrAppendNormalIndex(
+int __fastcall FindOrAppendNormalIndex(
     zDiPartial *self,
     zVec3 *normal
 ) {
@@ -1473,7 +1473,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindOrAppendNormalIndex(
 
 // Reimplements 0x484860: zModel_Const::SolveTriScalarGradient2D
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE zClipUV RECOIL_STDCALL SolveTriScalarGradient2D(
+zClipUV __stdcall SolveTriScalarGradient2D(
     float vertex0A,
     float vertex0B,
     float vertex1A,
@@ -1505,7 +1505,7 @@ RECOIL_NOINLINE zClipUV RECOIL_STDCALL SolveTriScalarGradient2D(
 
 // Reimplements 0x483510: zModel_Const::QuantizeAndNormalizeUvPairs
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL QuantizeAndNormalizeUvPairs(
+void __fastcall QuantizeAndNormalizeUvPairs(
     int vertexCount,
     zClipUV *uvPairs
 ) {
@@ -1541,7 +1541,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL QuantizeAndNormalizeUvPairs(
 
 // Reimplements 0x482fe0: zModel_Const::SplitPolygonChunkedByVertexLimit
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SplitPolygonChunkedByVertexLimit(
+void __fastcall SplitPolygonChunkedByVertexLimit(
     zDiPartial *self,
     int totalVertexCount,
     zVec3 *points,
@@ -1619,7 +1619,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SplitPolygonChunkedByVertexLimit(
 } // namespace zModel_Const
 
 // Reimplements 0x4791c0: zModel_Instance_UpdateScrollingTextures
-RECOIL_NOINLINE void RECOIL_FASTCALL zModel_Instance_UpdateScrollingTextures(
+void __fastcall zModel_Instance_UpdateScrollingTextures(
     const zModel_TextureScrollInfoPartial *textureInfo,
     zModel_Uv *uvs,
     const float *scrollRates,
@@ -1696,7 +1696,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zModel_Instance_UpdateScrollingTextures(
 }
 
 // Reimplements 0x478fc0: zModel_Instance_UpdateScrollingTexturesIfNeeded
-RECOIL_NOINLINE int RECOIL_FASTCALL zModel_Instance_UpdateScrollingTexturesIfNeeded(
+int __fastcall zModel_Instance_UpdateScrollingTexturesIfNeeded(
     zModel_InstancePartial *instance
 ) {
     if (instance == 0) {
@@ -1729,7 +1729,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zModel_Instance_UpdateScrollingTexturesIfNee
 namespace zModel {
 // Reimplements 0x475e70: zModel::Init
 // (D:\Proj\GameZRecoil\zModel\gmod_init.c)
-RECOIL_NOINLINE int RECOIL_CDECL Init() {
+int Init() {
     zModel_Matl::InitGlobals();
 
     if (g_zVideo_ActiveRendererPath != 0) {
@@ -1772,7 +1772,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Init() {
 
 // Reimplements 0x476030: zModel::SetVertexShadingEnabled
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetVertexShadingEnabled(
+void __fastcall SetVertexShadingEnabled(
     int enabled
 ) {
     g_zModel_VertexShadingEnabled = enabled;
@@ -1780,7 +1780,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetVertexShadingEnabled(
 
 // Reimplements 0x475ff0: zModel::SetDisplayInstancePoolCapacity
 // (D:\Proj\GameZRecoil\zModel\gmod_init.c)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetDisplayInstancePoolCapacity(
+void __fastcall SetDisplayInstancePoolCapacity(
     int capacity
 ) {
     if (g_zModel_DiPoolCapacity != 0) {
@@ -1799,7 +1799,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetDisplayInstancePoolCapacity(
 
 // Reimplements 0x476020: zModel::SetSoftwarePathActive
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetSoftwarePathActive(
+void __fastcall SetSoftwarePathActive(
     int active
 ) {
     if (g_zVideo_ActiveRendererPath == 0) {
@@ -1809,7 +1809,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetSoftwarePathActive(
 
 // Reimplements 0x476090: zModel::SetTextureWorldPerMeter
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE void RECOIL_STDCALL SetTextureWorldPerMeter(
+void __stdcall SetTextureWorldPerMeter(
     float worldPerMeterU,
     float worldPerMeterV
 ) {
@@ -1819,7 +1819,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL SetTextureWorldPerMeter(
 
 // Reimplements 0x4760b0: zModel::SetTextureWorldBase
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE void RECOIL_STDCALL SetTextureWorldBase(
+void __stdcall SetTextureWorldBase(
     float worldBaseU,
     float worldBaseV
 ) {
@@ -1829,7 +1829,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL SetTextureWorldBase(
 
 // Reimplements 0x4760d0: zModel::SetDiTextureWorldPerMeter
 // (D:\Proj\GameZRecoil\zModel\gmod_init.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL SetDiTextureWorldPerMeter(
+int __fastcall SetDiTextureWorldPerMeter(
     zDiPartial *di,
     int worldSpaceEnabled,
     float textureWorldPerMeter,
@@ -1853,7 +1853,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetDiTextureWorldPerMeter(
 
 // Reimplements 0x476cf0: zModel::RenderNodeSoftware
 // (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RenderNodeSoftware(
+void __fastcall RenderNodeSoftware(
     zClass_NodePartial *node,
     int clipMask
 ) {
@@ -2229,7 +2229,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RenderNodeSoftware(
 
 // Reimplements 0x477b30: zModel::RenderNodeHardware
 // (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RenderNodeHardware(
+void __fastcall RenderNodeHardware(
     zClass_NodePartial *node,
     int clipMask
 ) {
@@ -2447,7 +2447,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RenderNodeHardware(
 } // namespace zModel
 
 // Reimplements 0x479020: zModel_RenderPointQueueEntry
-RECOIL_NOINLINE void RECOIL_FASTCALL zModel_RenderPointQueueEntry(
+void __fastcall zModel_RenderPointQueueEntry(
     const zVec3 *pointPos,
     int packedColor16,
     zModel_PointEntryPartial *pointEntry
@@ -2512,7 +2512,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zModel_RenderPointQueueEntry(
 namespace zDi {
 // Reimplements 0x484140: zDi::SetEntryValueForAllEntries
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetEntryValueForAllEntries(
+void __fastcall SetEntryValueForAllEntries(
     zDiPartial *self,
     unsigned int entryValue
 ) {
@@ -2527,7 +2527,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetEntryValueForAllEntries(
 
 // Reimplements 0x484170: zDi::SetShowBackFaceForAllEntries
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetShowBackFaceForAllEntries(
+void __fastcall SetShowBackFaceForAllEntries(
     zDiPartial *self,
     int enabled
 ) {
@@ -2540,7 +2540,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetShowBackFaceForAllEntries(
 
 // Reimplements 0x484230: zDi::ResetCurrentVariant
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ResetCurrentVariant(
+void __fastcall ResetCurrentVariant(
     zDiPartial *self
 ) {
     zModel_MaterialPartial *const material = self->entries->material;
@@ -2553,7 +2553,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ResetCurrentVariant(
 
 // Reimplements 0x484250: zDi::SetCurrentVariantCycleTextureCount
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL SetCurrentVariantCycleTextureCount(
+int __fastcall SetCurrentVariantCycleTextureCount(
     zDiPartial *self,
     int textureCount
 ) {
@@ -2588,7 +2588,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetCurrentVariantCycleTextureCount(
 
 // Reimplements 0x4842b0: zDi::SetCurrentVariant
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetCurrentVariant(
+void __fastcall SetCurrentVariant(
     zDiPartial *self,
     int variantIndex
 ) {
@@ -2611,7 +2611,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetCurrentVariant(
 
 // Reimplements 0x484310: zDi::SetCurrentVariantCycleTextureSpeed
 // (D:\Proj\GameZRecoil\zDi\zdi.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL SetCurrentVariantCycleTextureSpeed(
+int __fastcall SetCurrentVariantCycleTextureSpeed(
     zDiPartial *self,
     float cycleSpeed
 ) {
@@ -2627,7 +2627,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetCurrentVariantCycleTextureSpeed(
 
 // Reimplements 0x483f80: zDi::BuildBlendVertsFromConnectivity
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL BuildBlendVertsFromConnectivity(
+void __fastcall BuildBlendVertsFromConnectivity(
     zDiPartial *self,
     int *excludedVertexIndices,
     float blendY,
@@ -2701,7 +2701,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BuildBlendVertsFromConnectivity(
 
 // Reimplements 0x484350: zDi::SetObject3DColorModeForMaterials
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetObject3DColorModeForMaterials(
+void __fastcall SetObject3DColorModeForMaterials(
     zDiPartial *self,
     int colorMode
 ) {
@@ -2725,7 +2725,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetObject3DColorModeForMaterials(
 namespace zModel_Instance {
 // Reimplements 0x4842f0: zModel_Instance::SetCycleTextureLoop
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL SetCycleTextureLoop(
+int __fastcall SetCycleTextureLoop(
     zDiPartial *instance,
     int loopEnabled
 ) {
@@ -2741,7 +2741,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetCycleTextureLoop(
 
 // Reimplements 0x484330: zModel_Instance::AddCycleTexture
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL AddCycleTexture(
+int __fastcall AddCycleTexture(
     zDiPartial *instance,
     zImage_TexDirEntryPartial *textureDirectoryEntry
 ) {
@@ -2759,7 +2759,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AddCycleTexture(
 namespace zDi {
 
 // Reimplements 0x476a50: zDi::EvalBoundingSphereLightingFlags
-RECOIL_NOINLINE void RECOIL_FASTCALL EvalBoundingSphereLightingFlags(
+void __fastcall EvalBoundingSphereLightingFlags(
     zDiPartial *self,
     int *outDepthFade,
     int *outActiveLightState,

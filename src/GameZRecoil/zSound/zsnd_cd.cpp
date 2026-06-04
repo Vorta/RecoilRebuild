@@ -91,7 +91,7 @@ void AppendCdTrackEntry(
 
 namespace zSndCdTrackList {
 // Reimplements 0x4a2020: zSndCdTrackList::StaticConstructor
-RECOIL_NOINLINE void RECOIL_CDECL StaticConstructor() {
+void StaticConstructor() {
     g_zSndCd_TrackListCtorGuard = 1;
     g_zSndCd_TrackListHead = (zSndCdTrackNode *)(::operator new(sizeof(zSndCdTrackNode)));
     g_zSndCd_TrackListHead->next = g_zSndCd_TrackListHead;
@@ -100,7 +100,7 @@ RECOIL_NOINLINE void RECOIL_CDECL StaticConstructor() {
 }
 
 // Reimplements 0x4a2060: zSndCdTrackList::StaticDestructor
-RECOIL_NOINLINE void RECOIL_CDECL StaticDestructor() {
+void StaticDestructor() {
     zSndCdTrackNode *const head = g_zSndCd_TrackListHead;
     zSndCdTrackNode *node = head->next;
     while (node != head) {
@@ -118,12 +118,12 @@ RECOIL_NOINLINE void RECOIL_CDECL StaticDestructor() {
 }
 
 // Reimplements 0x4a2050: zSndCdTrackList::RegisterAtExitDestructor
-RECOIL_NOINLINE void RECOIL_CDECL RegisterAtExitDestructor() {
+void RegisterAtExitDestructor() {
     atexit(StaticDestructor);
 }
 
 // Reimplements 0x4a2010: zSndCdTrackList::StaticInit
-RECOIL_NOINLINE void RECOIL_CDECL StaticInit() {
+void StaticInit() {
     StaticConstructor();
     RegisterAtExitDestructor();
 }
@@ -131,7 +131,7 @@ RECOIL_NOINLINE void RECOIL_CDECL StaticInit() {
 
 namespace zSnd {
 // Reimplements 0x4a1290: zSnd::SetActiveBackendPreInit
-RECOIL_NOINLINE int RECOIL_FASTCALL SetActiveBackendPreInit(
+int __fastcall SetActiveBackendPreInit(
     int backend
 ) {
     if (g_zSnd_IsInitialized != 0) {
@@ -143,12 +143,12 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetActiveBackendPreInit(
 }
 
 // Reimplements 0x4a12b0: zSnd::GetActiveBackend
-RECOIL_NOINLINE int RECOIL_CDECL GetActiveBackend() {
+int GetActiveBackend() {
     return g_zSnd_ActiveBackend;
 }
 
 // Reimplements 0x4080a0: zSnd::SetAudioApiOption
-RECOIL_NOINLINE int RECOIL_FASTCALL SetAudioApiOption(
+int __fastcall SetAudioApiOption(
     int apiType
 ) {
     *ZOPT_AUDIO_API = apiType;
@@ -156,31 +156,31 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetAudioApiOption(
 }
 
 // Reimplements 0x4080b0: zSnd::GetAudioApiOption
-RECOIL_NOINLINE int RECOIL_CDECL GetAudioApiOption() {
+int GetAudioApiOption() {
     return *ZOPT_AUDIO_API;
 }
 
 // Reimplements 0x408210: zSnd::SetCDAudioOption
-RECOIL_NOINLINE void RECOIL_FASTCALL SetCDAudioOption(
+void __fastcall SetCDAudioOption(
     int cdAudioOption
 ) {
     *ZOPT_SOUND_CDAUDIO = cdAudioOption;
 }
 
 // Reimplements 0x408220: zSnd::GetCDAudioOption
-RECOIL_NOINLINE int RECOIL_CDECL GetCDAudioOption() {
+int GetCDAudioOption() {
     return *ZOPT_SOUND_CDAUDIO;
 }
 
 // Reimplements 0x4a07f0: zSnd::SetUseArchiveBanksFlag
-RECOIL_NOINLINE void RECOIL_FASTCALL SetUseArchiveBanksFlag(
+void __fastcall SetUseArchiveBanksFlag(
     int useArchiveBanks
 ) {
     g_zSnd_UseArchiveBanksFlag = useArchiveBanks;
 }
 
 // Reimplements 0x4a2e80: zSnd::SetSpeedOfSoundMps
-RECOIL_NOINLINE void RECOIL_FASTCALL SetSpeedOfSoundMps(
+void __fastcall SetSpeedOfSoundMps(
     float speedOfSoundMps
 ) {
     g_zSndSpeedOfSoundMps = speedOfSoundMps;
@@ -188,7 +188,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetSpeedOfSoundMps(
 }
 
 // Reimplements 0x4a3ea0: zSnd::ReportMciError
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL ReportMciError(
+RECOIL_NO_GS int __fastcall ReportMciError(
     unsigned int mciError,
     const char *sourceFile,
     int lineNumber
@@ -211,11 +211,11 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL ReportMciError(
 } // namespace zSnd
 
 namespace zSndCd {
-RECOIL_NOINLINE int RECOIL_CDECL ResetTrackState();
-RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
+int ResetTrackState();
+int Shutdown();
 
 // Reimplements 0x4a20d0: zSndCd::Init
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL Init(
+RECOIL_NO_GS int __fastcall Init(
     zReader::Node *cdTracksNode
 ) {
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) != 0) {
@@ -367,7 +367,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL Init(
 }
 
 // Reimplements 0x4a2490: zSndCd::ResetTrackState
-RECOIL_NOINLINE int RECOIL_CDECL ResetTrackState() {
+int ResetTrackState() {
     zSndCdTrackState state = {1, 0, 0};
     g_zSndCdPlayFrom = state;
     g_zSndCdCurrent = state;
@@ -376,7 +376,7 @@ RECOIL_NOINLINE int RECOIL_CDECL ResetTrackState() {
 }
 
 // Reimplements 0x4a27d0: zSndCd::IsStereoAuxEnabled
-int RECOIL_CDECL IsStereoAuxEnabled() {
+int IsStereoAuxEnabled() {
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
     }
@@ -389,7 +389,7 @@ int RECOIL_CDECL IsStereoAuxEnabled() {
 }
 
 // Reimplements 0x4a27f0: zSndCd::GetVolume
-RECOIL_NOINLINE int RECOIL_FASTCALL GetVolume(
+int __fastcall GetVolume(
     unsigned short *primaryVolumeOut,
     unsigned short *secondaryVolumeOut
 ) {
@@ -429,7 +429,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL GetVolume(
 }
 
 // Reimplements 0x4a2880: zSndCd::SetVolume
-RECOIL_NOINLINE int RECOIL_FASTCALL SetVolume(
+int __fastcall SetVolume(
     unsigned short primaryVolume,
     unsigned short secondaryVolume
 ) {
@@ -463,7 +463,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetVolume(
 }
 
 // Reimplements 0x4a2600: zSndCd::ApplyPlaybackMode
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL ApplyPlaybackMode(
+RECOIL_NO_GS int __fastcall ApplyPlaybackMode(
     int playbackMode
 ) {
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
@@ -513,7 +513,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL ApplyPlaybackMode(
 }
 
 // Reimplements 0x4a2930: zSndCd::GetTrackCount
-RECOIL_NOINLINE int RECOIL_CDECL GetTrackCount() {
+int GetTrackCount() {
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
     }
@@ -522,7 +522,7 @@ RECOIL_NOINLINE int RECOIL_CDECL GetTrackCount() {
 }
 
 // Reimplements 0x4a2750: zSndCd::PlayTrack
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL PlayTrack(
+RECOIL_NO_GS int __fastcall PlayTrack(
     int trackIndex
 ) {
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
@@ -554,7 +554,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL PlayTrack(
 }
 
 // Reimplements 0x4a25e0: zSndCd::PlayTrackWithMode
-RECOIL_NOINLINE int RECOIL_FASTCALL PlayTrackWithMode(
+int __fastcall PlayTrackWithMode(
     int trackIndex,
     int playbackMode
 ) {
@@ -568,7 +568,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL PlayTrackWithMode(
 }
 
 // Reimplements 0x4a26b0: zSndCd::OnMciNotify
-RECOIL_NOINLINE void RECOIL_FASTCALL OnMciNotify(
+void __fastcall OnMciNotify(
     unsigned int wParam,
     unsigned int lParam
 ) {
@@ -584,7 +584,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL OnMciNotify(
 }
 
 // Reimplements 0x4a26f0: zSndCd::Stop
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Stop() {
+RECOIL_NO_GS int Stop() {
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
     }
@@ -610,7 +610,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Stop() {
 }
 
 // Reimplements 0x4a24d0: zSndCd::Shutdown
-RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
+int Shutdown() {
     Stop();
 
     if ((g_zSndCdDeviceId & 0xffff) != 0) {

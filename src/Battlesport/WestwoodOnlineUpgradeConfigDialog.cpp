@@ -10,7 +10,7 @@
 // provider behavior.
 class CDialogProviderAccessor : public CDialog {
   public:
-    static const AFX_MSGMAP *RECOIL_STDCALL GetMessageMap();
+    static const AFX_MSGMAP *__stdcall GetMessageMap();
     void CallOnOK();
 };
 
@@ -56,17 +56,17 @@ RECOIL_STATIC_ASSERT(
     ) == 0x94
 );
 
-void RECOIL_STDCALL DDX_Control(
+void __stdcall DDX_Control(
     CDataExchange *dataExchange,
     int controlId,
     CWnd &control
 );
-void RECOIL_STDCALL DDX_Text(
+void __stdcall DDX_Text(
     CDataExchange *dataExchange,
     int controlId,
     CString &value
 );
-void RECOIL_STDCALL DDX_Check(
+void __stdcall DDX_Check(
     CDataExchange *dataExchange,
     int controlId,
     int &value
@@ -86,14 +86,14 @@ const int kSelectedProfileTextBufferLength = 32;
 const int kDialogOkResult = 1;
 const unsigned int kStackStorageUnitSize = sizeof(unsigned int);
 
-void RECOIL_CDECL DestructConfigDialog(
+void DestructConfigDialog(
     WestwoodOnlineUpgradeConfigDialog *dialog
 ) {
     dialog->Destructor();
 }
 } // namespace
 
-const AFX_MSGMAP *RECOIL_STDCALL CDialogProviderAccessor::GetMessageMap() {
+const AFX_MSGMAP *__stdcall CDialogProviderAccessor::GetMessageMap() {
     return &CDialog::messageMap;
 }
 
@@ -101,7 +101,7 @@ void CDialogProviderAccessor::CallOnOK() {
     CDialog::OnOK();
 }
 
-const AFX_MSGMAP *RECOIL_STDCALL WestwoodOnlineUpgradeConfigDialog::GetBaseMessageMapForMfc() {
+const AFX_MSGMAP *__stdcall WestwoodOnlineUpgradeConfigDialog::GetBaseMessageMapForMfc() {
     return CDialogProviderAccessor::GetMessageMap();
 }
 
@@ -116,15 +116,13 @@ const AFX_MSGMAP WestwoodOnlineUpgradeConfigDialog::messageMap = {
 
 // Reimplements 0x441a10: WestwoodOnlineUpgradeConfigDialog::GetMessageMap
 // (WestwoodOnlineUpgradeConfigDialog.cpp)
-RECOIL_WOL_CONFIG_NOINLINE const AFX_MSGMAP *RECOIL_THISCALL
-WestwoodOnlineUpgradeConfigDialog::GetMessageMap() const {
+const AFX_MSGMAP * WestwoodOnlineUpgradeConfigDialog::GetMessageMap() const {
     return &WestwoodOnlineUpgradeConfigDialog::messageMap;
 }
 
 // Reimplements 0x441750: WestwoodOnlineUpgradeConfigDialog::Constructor
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeConfigDialog.cpp)
-RECOIL_WOL_CONFIG_NOINLINE WestwoodOnlineUpgradeConfigDialog *RECOIL_THISCALL
-WestwoodOnlineUpgradeConfigDialog::Constructor(
+WestwoodOnlineUpgradeConfigDialog * WestwoodOnlineUpgradeConfigDialog::Constructor(
     CWnd *parentWnd
 ) {
     new ((CDialog *)this) CDialog(
@@ -158,7 +156,7 @@ WestwoodOnlineUpgradeConfigDialog::Constructor(
 
 // Reimplements 0x4418b0: WestwoodOnlineUpgradeConfigDialog::Destructor
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiConfigDialog.cpp)
-RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL WestwoodOnlineUpgradeConfigDialog::Destructor() {
+void WestwoodOnlineUpgradeConfigDialog::Destructor() {
     int index;
     for (index = 1; index >= 0; --index) {
         m_profileConnectStrings[index].CString::~CString();
@@ -181,7 +179,7 @@ RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL WestwoodOnlineUpgradeConfigDialo
 
 // Reimplements 0x4419a0: WestwoodOnlineUpgradeConfigDialog::DoDataExchange
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiConfigDialog.cpp)
-RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL WestwoodOnlineUpgradeConfigDialog::DoDataExchange(
+void WestwoodOnlineUpgradeConfigDialog::DoDataExchange(
     CDataExchange *dataExchange
 ) {
     DDX_Control(
@@ -208,8 +206,7 @@ RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL WestwoodOnlineUpgradeConfigDialo
 
 // Reimplements 0x441a20: WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditSetFocusClear
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiConfigDialog.cpp)
-RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL
-WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditSetFocusClear() {
+void WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditSetFocusClear() {
     ::SendMessageA(
         m_connectStringEdit.m_hWnd,
         EM_SETSEL,
@@ -220,8 +217,7 @@ WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditSetFocusClear() {
 
 // Reimplements 0x442100: WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditKillFocus
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiConfigDialog.cpp)
-RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL
-WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditKillFocus() {
+void WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditKillFocus() {
     const int selectedIndex = m_selectedProfileIndex;
     ((CWnd *)&m_connectStringEdit)->GetWindowTextA(m_profileConnectStrings[selectedIndex]);
 
@@ -235,7 +231,7 @@ WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditKillFocus() {
 
 // Reimplements 0x441a40: WestwoodOnlineUpgradeConfigDialog::OnInitDialog
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiConfigDialog.cpp)
-RECOIL_WOL_CONFIG_NOINLINE BOOL RECOIL_THISCALL WestwoodOnlineUpgradeConfigDialog::OnInitDialog() {
+BOOL WestwoodOnlineUpgradeConfigDialog::OnInitDialog() {
     ((CDialog *)this)->CDialog::OnInitDialog();
 
     WestwoodOnlineUpgradeApiConfigProfileProvider *const api =
@@ -316,7 +312,7 @@ RECOIL_WOL_CONFIG_NOINLINE BOOL RECOIL_THISCALL WestwoodOnlineUpgradeConfigDialo
 
 // Reimplements 0x441f40: WestwoodOnlineUpgradeConfigDialog::OnOK
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiConfigDialog.cpp)
-RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL WestwoodOnlineUpgradeConfigDialog::OnOK() {
+void WestwoodOnlineUpgradeConfigDialog::OnOK() {
     WestwoodOnlineUpgradeApiConfigProfileProvider *const api =
         (WestwoodOnlineUpgradeApiConfigProfileProvider *)g_pWestwoodOnlineUpgradeApi;
 
@@ -358,8 +354,7 @@ RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL WestwoodOnlineUpgradeConfigDialo
 
 // Reimplements 0x442010: WestwoodOnlineUpgradeConfigDialog::OnProfileComboKillFocus
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiConfigDialog.cpp)
-RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL
-WestwoodOnlineUpgradeConfigDialog::OnProfileComboKillFocus() {
+void WestwoodOnlineUpgradeConfigDialog::OnProfileComboKillFocus() {
     if (m_profileComboEditDirty == 0) {
         return;
     }
@@ -382,8 +377,7 @@ WestwoodOnlineUpgradeConfigDialog::OnProfileComboKillFocus() {
 
 // Reimplements 0x442080: WestwoodOnlineUpgradeConfigDialog::OnProfileComboSelChange
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiConfigDialog.cpp)
-RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL
-WestwoodOnlineUpgradeConfigDialog::OnProfileComboSelChange() {
+void WestwoodOnlineUpgradeConfigDialog::OnProfileComboSelChange() {
     m_selectedProfileIndex = (int) ::SendMessageA(
         m_profileCombo.m_hWnd,
         CB_GETCURSEL,
@@ -396,29 +390,25 @@ WestwoodOnlineUpgradeConfigDialog::OnProfileComboSelChange() {
 
 // Reimplements 0x4420c0: WestwoodOnlineUpgradeConfigDialog::OnProfileComboEditChange
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiConfigDialog.cpp)
-RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL
-WestwoodOnlineUpgradeConfigDialog::OnProfileComboEditChange() {
+void WestwoodOnlineUpgradeConfigDialog::OnProfileComboEditChange() {
     m_profileComboEditDirty = 1;
 }
 
 // Reimplements 0x4420d0: WestwoodOnlineUpgradeConfigDialog::OnProfileComboDropdown
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiConfigDialog.cpp)
-RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL
-WestwoodOnlineUpgradeConfigDialog::OnProfileComboDropdown() {
+void WestwoodOnlineUpgradeConfigDialog::OnProfileComboDropdown() {
     OnProfileComboKillFocus();
 }
 
 // Reimplements 0x4420e0: WestwoodOnlineUpgradeConfigDialog::OnConnectStringModeClicked
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiConfigDialog.cpp)
-RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL
-WestwoodOnlineUpgradeConfigDialog::OnConnectStringModeClicked() {
+void WestwoodOnlineUpgradeConfigDialog::OnConnectStringModeClicked() {
     m_wolPasswordFlag = m_wolPasswordFlag == 0;
 }
 
 // Reimplements 0x441c60: WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeConfigDialog.cpp)
-RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL
-WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(
+void WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(
     char **playerNameOut,
     char **connectStringOut,
     int *connectStringModeOut
@@ -433,8 +423,7 @@ WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(
 
 // Reimplements 0x441cb0: WestwoodOnlineUpgradeConfigDialog::ShowModalAndApplySelectedProfileValues
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeConfigDialog.cpp)
-RECOIL_WOL_CONFIG_NOINLINE int RECOIL_CDECL
-WestwoodOnlineUpgradeConfigDialog::ShowModalAndApplySelectedProfileValues() {
+int WestwoodOnlineUpgradeConfigDialog::ShowModalAndApplySelectedProfileValues() {
     unsigned int dialogStorage
         [(sizeof(WestwoodOnlineUpgradeConfigDialog) + kStackStorageUnitSize - 1) /
             kStackStorageUnitSize];

@@ -66,7 +66,7 @@ struct PlayerPendingContact {
     int segmentTag;
     PlayerPendingContact *next;
 
-    RECOIL_NOINLINE PlayerPendingContact *RECOIL_FASTCALL SelectPreferred(
+    PlayerPendingContact *__fastcall SelectPreferred(
         PlayerPendingContact *rhs
     );
 };
@@ -87,9 +87,9 @@ struct PlayerTimedHitStatus {
     float nextUpdateTime;
     zClass_NodePartial *lightParentNode;
 
-    RECOIL_NOINLINE void RECOIL_THISCALL ResetFields();
-    RECOIL_NOINLINE void RECOIL_THISCALL ClearLightAndReset();
-    RECOIL_NOINLINE int RECOIL_THISCALL TickAndUpdateLight(float hitStatus);
+    void ResetFields();
+    void ClearLightAndReset();
+    int TickAndUpdateLight(float hitStatus);
 };
 
 struct zUtil_PlayerStateStorage {
@@ -454,23 +454,23 @@ struct zUtil_SaveGameState {
     };
     unsigned char unknown_28[0x9c];
 
-    RECOIL_NOINLINE void RECOIL_THISCALL FreeOwnedResources();
-    RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL StartMasterTypeLoopSfxHandle(
+    void FreeOwnedResources();
+    zSndPlayHandle * StartMasterTypeLoopSfxHandle(
         int modeIndex,
         float sfxVolume
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL EnsureMasterTypeLoopSfxHandle(
+    void EnsureMasterTypeLoopSfxHandle(
         int modeIndex,
         float sfxVolume
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL StartModalLoopSfxHandle(
+    void StartModalLoopSfxHandle(
         int modalSfxIndex,
         float sfxVolume
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL StopMasterTypeLoopSfxHandle(int modeIndex);
-    RECOIL_NOINLINE void RECOIL_THISCALL StopModalLoopSfxHandle(int modalSfxIndex);
-    RECOIL_NOINLINE void RECOIL_THISCALL UpdateModalLoopSfx(int enabled);
-    RECOIL_NOINLINE int RECOIL_THISCALL SelectModalStateByMasterType(int masterType);
+    void StopMasterTypeLoopSfxHandle(int modeIndex);
+    void StopModalLoopSfxHandle(int modalSfxIndex);
+    void UpdateModalLoopSfx(int enabled);
+    int SelectModalStateByMasterType(int masterType);
 };
 
 RECOIL_STATIC_ASSERT(sizeof(PlayerGunFireController) == 0x54);
@@ -2036,9 +2036,9 @@ RECOIL_STATIC_ASSERT(
     ) == 0x24
 );
 
-RECOIL_NOINLINE zUtil_SaveGameState *RECOIL_FASTCALL zUtil_SaveGameStateList_Init(
+zUtil_SaveGameState *__fastcall zUtil_SaveGameStateList_Init(
     zUtil_SaveGameState *self
 );
-RECOIL_NOINLINE zUtil_SaveGameState *RECOIL_FASTCALL zUtil_SaveGameStateList_AllocAppend(
+zUtil_SaveGameState *__fastcall zUtil_SaveGameStateList_AllocAppend(
     zUtil_SaveGameState *self
 );

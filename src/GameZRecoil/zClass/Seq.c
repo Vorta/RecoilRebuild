@@ -48,7 +48,7 @@ namespace {
 namespace zClass_Sequence {
     // Reimplements 0x453ee0: zClass_Sequence::gwSequenceNew
     // (GameZRecoil/zClass/Seq.c)
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwSequenceNew() {
+    zClass_NodePartial *gwSequenceNew() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
             zError::ReportOld(
@@ -77,7 +77,7 @@ namespace zClass_Sequence {
 
     // Reimplements 0x453f40: zClass_Sequence::gwSequenceAddChild
     // (GameZRecoil/zClass/Seq.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwSequenceAddChild(
+    int __fastcall gwSequenceAddChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child,
         int insertIndex,
@@ -144,7 +144,7 @@ namespace zClass_Sequence {
 
     // Reimplements 0x4540c0: zClass_Sequence::SetActive
     // (GameZRecoil/zClass/Seq.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL SetActive(
+    int __fastcall SetActive(
         zClass_NodePartial * node,
         int active
     ){
@@ -180,7 +180,7 @@ namespace zClass_Sequence {
 
     // Reimplements 0x454100: zClass_Sequence::SetRepeat
     // (GameZRecoil/zClass/Seq.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL SetRepeat(
+    int __fastcall SetRepeat(
         zClass_NodePartial * node,
         int repeat
     ){
@@ -216,7 +216,7 @@ namespace zClass_Sequence {
 
     // Reimplements 0x454140: zClass_Sequence::SetLoop
     // (GameZRecoil/zClass/Seq.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL SetLoop(
+    int __fastcall SetLoop(
         zClass_NodePartial * node,
         int loop
     ){
@@ -252,7 +252,7 @@ namespace zClass_Sequence {
 
     // Reimplements 0x454180: zClass_Sequence::SetPause
     // (GameZRecoil/zClass/Seq.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL SetPause(
+    int __fastcall SetPause(
         zClass_NodePartial * node,
         int paused
     ){
@@ -287,7 +287,7 @@ namespace zClass_Sequence {
     }
 
     // Reimplements 0x454000: zClass_Sequence::RemoveChild
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -352,7 +352,7 @@ namespace zClass_Sequence {
     }
 
     // Reimplements 0x4541c0: zClass_Sequence::Update (GameZRecoil/zClass/Seq.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL Update(zClass_NodePartial * node) {
+    int __fastcall Update(zClass_NodePartial * node) {
         zClass_SequenceDataPartial *data;
 
         if (node == 0) {
@@ -426,7 +426,7 @@ namespace zClass_Sequence {
 
     // Reimplements 0x44bea0: zClass_Sequence::RenderTraverse
     // (GameZRecoil/zClass/Seq.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint

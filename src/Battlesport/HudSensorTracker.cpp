@@ -88,7 +88,7 @@ void HudUiElementSetVisibleVirtual(
     HudUiElement *element,
     int visible
 ) {
-    typedef void(RECOIL_THISCALL * SetVisibleFn)(
+    typedef void( * SetVisibleFn)(
         HudUiElement * self,
         int visible
     );
@@ -102,7 +102,7 @@ void HudUiElementSetVisibleVirtual(
 void HudUiElementDeleteVirtual(
     HudUiElement *element
 ) {
-    typedef HudUiElement *(RECOIL_THISCALL * ScalarDeletingDestructorFn)(
+    typedef HudUiElement *( * ScalarDeletingDestructorFn)(
         HudUiElement * self,
         unsigned int flags
     );
@@ -212,7 +212,7 @@ zClass_NodePartial *ResolveObjectiveNodePath(
 
 // Reimplements 0x416390: HudGeom2D::ClassifyPointAgainstSegment
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HudGeom2D::ClassifyPointAgainstSegment(
+int __fastcall HudGeom2D::ClassifyPointAgainstSegment(
     const zVec3 *segmentStart,
     const zVec3 *segmentEnd,
     const zVec3 *point
@@ -243,7 +243,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HudGeom2D::ClassifyPointAgainstSegment(
 
 // Reimplements 0x4bd9c0: HudLineClip::ClipEndpointToX
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL HudLineClip::ClipEndpointToX(
+void __fastcall HudLineClip::ClipEndpointToX(
     zVec3 *endpoint,
     const zVec3 *otherEndpoint,
     float clipX
@@ -255,7 +255,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HudLineClip::ClipEndpointToX(
 
 // Reimplements 0x4bdb30: HudLineClip::ClipEndpointToY
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL HudLineClip::ClipEndpointToY(
+void __fastcall HudLineClip::ClipEndpointToY(
     zVec3 *endpoint,
     const zVec3 *otherEndpoint,
     float clipY
@@ -267,7 +267,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HudLineClip::ClipEndpointToY(
 
 // Reimplements 0x4bd6f0: HudLineClip::SetCurrentBoundsFromRectI
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL HudLineClip::SetCurrentBoundsFromRectI(
+void __fastcall HudLineClip::SetCurrentBoundsFromRectI(
     const HudRectI *rect
 ) {
     g_HudLineClip_CurrentLeft = (float)(rect->left);
@@ -278,7 +278,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HudLineClip::SetCurrentBoundsFromRectI(
 
 // Reimplements 0x4bd880: HudLineClip::ClipSegmentToCurrentXBounds
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HudLineClip::ClipSegmentToCurrentXBounds(
+int __fastcall HudLineClip::ClipSegmentToCurrentXBounds(
     zVec3 *point0,
     zVec3 *point1,
     int *point0Clipped,
@@ -332,7 +332,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HudLineClip::ClipSegmentToCurrentXBounds(
 
 // Reimplements 0x4bd9f0: HudLineClip::ClipSegmentToCurrentYBounds
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HudLineClip::ClipSegmentToCurrentYBounds(
+int __fastcall HudLineClip::ClipSegmentToCurrentYBounds(
     zVec3 *point0,
     zVec3 *point1,
     int *point0Clipped,
@@ -386,7 +386,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HudLineClip::ClipSegmentToCurrentYBounds(
 
 // Reimplements 0x4bd840: HudLineClip::ClipSegmentToCurrentBounds
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HudLineClip::ClipSegmentToCurrentBounds(
+int __fastcall HudLineClip::ClipSegmentToCurrentBounds(
     zVec3 *point0,
     zVec3 *point1,
     int *point0Clipped,
@@ -412,7 +412,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HudLineClip::ClipSegmentToCurrentBounds(
 
 // Reimplements 0x416240: HudRectI::CalcOutcode
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudRectI::CalcOutcode(
+int HudRectI::CalcOutcode(
     const zVec3 *point
 ) {
     int outcode = 0;
@@ -433,7 +433,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudRectI::CalcOutcode(
 
 // Reimplements 0x416290: HudRectI::IsCornerOutcode
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HudRectI::IsCornerOutcode(
+int __fastcall HudRectI::IsCornerOutcode(
     int outcode
 ) {
     return outcode == 9 || outcode == 10 || outcode == 5 || outcode == 6 ? 1 : 0;
@@ -441,7 +441,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HudRectI::IsCornerOutcode(
 
 // Reimplements 0x4162b0: HudRectI::SegmentIntersectsEdge
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudRectI::SegmentIntersectsEdge(
+int HudRectI::SegmentIntersectsEdge(
     int edgeCode,
     const zVec3 *segmentStart,
     const zVec3 *segmentEnd
@@ -512,7 +512,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudRectI::SegmentIntersectsEdge(
 
 // Reimplements 0x415fb0: HudRectI::ClipOrSplitSegment
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudRectI::ClipOrSplitSegment(
+int HudRectI::ClipOrSplitSegment(
     zVec3 *segmentStart,
     zVec3 *segmentEnd
 ) {
@@ -679,20 +679,20 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudRectI::ClipOrSplitSegment(
 }
 
 // Reimplements 0x415ab0: HudSensorMapNode::Init (HudSensorMapNode.cpp)
-RECOIL_NOINLINE HudSensorMapNode *RECOIL_THISCALL HudSensorMapNode::Init() {
+HudSensorMapNode * HudSensorMapNode::Init() {
     InitDefaults();
     return this;
 }
 
 // Reimplements 0x415ac0: HudSensorMapNode::FreePointArray (HudSensorMapNode.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorMapNode::FreePointArray() {
+void HudSensorMapNode::FreePointArray() {
     if (points != 0) {
         free(points);
     }
 }
 
 // Reimplements 0x415ae0: HudSensorMapNode::SetEnabled (HudSensorMapNode.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorMapNode::SetEnabled(
+int HudSensorMapNode::SetEnabled(
     int enabled
 ) {
     if (isEnabled == enabled) {
@@ -706,7 +706,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorMapNode::SetEnabled(
 }
 
 // Reimplements 0x415b10: HudSensorMapNode::SelectPoint (HudSensorMapNode.cpp)
-RECOIL_NOINLINE HudSensorMapPoint *RECOIL_THISCALL HudSensorMapNode::SelectPoint(
+HudSensorMapPoint * HudSensorMapNode::SelectPoint(
     int pointIndex
 ) {
     if (pointIndex >= 0 && pointIndex < pointCount) {
@@ -719,7 +719,7 @@ RECOIL_NOINLINE HudSensorMapPoint *RECOIL_THISCALL HudSensorMapNode::SelectPoint
 }
 
 // Reimplements 0x415b40: HudSensorMapNode::InitDefaults (HudSensorMapNode.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorMapNode::InitDefaults() {
+int HudSensorMapNode::InitDefaults() {
     colorRgb[0] = (char)(0xff);
     colorRgb[1] = (char)(0xff);
     colorRgb[2] = (char)(0xff);
@@ -735,7 +735,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorMapNode::InitDefaults() {
 }
 
 // Reimplements 0x415b70: HudSensorMapNode::SetColorRgb (HudSensorMapNode.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorMapNode::SetColorRgb(
+int HudSensorMapNode::SetColorRgb(
     const unsigned char *rgbOrNull
 ) {
     if (rgbOrNull != 0) {
@@ -762,7 +762,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorMapNode::SetColorRgb(
 }
 
 // Reimplements 0x415bd0: HudSensorMapNode::LoadFromStream (HudSensorMapNode.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorMapNode::LoadFromStream(
+int HudSensorMapNode::LoadFromStream(
     FILE *stream
 ) {
     if (stream == 0) {
@@ -810,7 +810,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorMapNode::LoadFromStream(
 }
 
 // Reimplements 0x415c90: HudSensorMapNode::UpdateCachedBounds (HudSensorMapNode.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorMapNode::UpdateCachedBounds(
+int HudSensorMapNode::UpdateCachedBounds(
     HudSensorMapBounds *outBoundsOrNull
 ) {
     if (outBoundsOrNull != 0) {
@@ -850,7 +850,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorMapNode::UpdateCachedBounds(
 }
 
 // Reimplements 0x416660: HudSensorTracker::Init (D:\Proj\Battlesport\HudSensorTracker.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::Init(
+void HudSensorTracker::Init(
     const HudUiRect *outerRectOrNull
 ) {
     mapFileVersion = 5;
@@ -881,14 +881,14 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::Init(
 
 // Reimplements 0x416650: HudSensorTracker::InitNoBounds
 // (D:\Proj\Battlesport\HudSensorTracker.cpp)
-RECOIL_NOINLINE HudSensorTracker *RECOIL_THISCALL HudSensorTracker::InitNoBounds() {
+HudSensorTracker * HudSensorTracker::InitNoBounds() {
     Init(0);
     return this;
 }
 
 // Reimplements 0x417390: HudSensorTracker::Constructor
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE HudSensorTracker *RECOIL_THISCALL HudSensorTracker::Constructor() {
+HudSensorTracker * HudSensorTracker::Constructor() {
     InitNoBounds();
     missionDataPath.Empty();
     zbdPath.Empty();
@@ -904,24 +904,24 @@ RECOIL_NOINLINE HudSensorTracker *RECOIL_THISCALL HudSensorTracker::Constructor(
 
 // Reimplements 0x417360: HudSensorTracker::ConstructGlobal
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE HudSensorTracker *RECOIL_CDECL HudSensorTracker::ConstructGlobal() {
+HudSensorTracker *HudSensorTracker::ConstructGlobal() {
     return g_HudSensorTracker.Constructor();
 }
 
 // Reimplements 0x417370: HudSensorTracker::RegisterGlobalOnExit
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL HudSensorTracker::RegisterGlobalOnExit() {
+void HudSensorTracker::RegisterGlobalOnExit() {
     atexit(&HudSensorTracker::ShutdownGlobal);
 }
 
 // Reimplements 0x417380: HudSensorTracker::ShutdownGlobal
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL HudSensorTracker::ShutdownGlobal() {
+void HudSensorTracker::ShutdownGlobal() {
     g_HudSensorTracker.Shutdown();
 }
 
 // Reimplements 0x4166e0: HudSensorTracker::SetBounds (D:\Proj\Battlesport\HudSensorTracker.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::SetBounds(
+void HudSensorTracker::SetBounds(
     const HudUiRect *outerRectIn,
     const HudUiRect *innerRectOrNull
 ) {
@@ -949,7 +949,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::SetBounds(
 
 // Reimplements 0x416ef0: HudSensorTracker::SetSaveStateMarkerMaxDistance
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::SetSaveStateMarkerMaxDistance(
+int HudSensorTracker::SetSaveStateMarkerMaxDistance(
     float maxDist
 ) {
     saveStateMarkerMaxDistSq = maxDist * maxDist;
@@ -957,7 +957,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::SetSaveStateMarkerMaxDista
 }
 
 // Reimplements 0x417220: HudSensorTracker::SetTrackedSaveState (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::SetTrackedSaveState(
+int HudSensorTracker::SetTrackedSaveState(
     zUtil_SaveGameState *saveState
 ) {
     zVec3 *trackedForwardVec = 0;
@@ -967,8 +967,8 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::SetTrackedSaveState(
     } else {
         zUtil_PlayerStateStorage *const playerState = saveState->playerState;
         trackedSaveStateSelection = saveState;
-        trackedWorldOriginPtr = (zVec3 *)(playerState->bytes + 0x3ec);
-        trackedForwardVec = (zVec3 *)(playerState->bytes + 0x580);
+        trackedWorldOriginPtr = &playerState->worldPos;
+        trackedForwardVec = &playerState->cameraBasisCache;
     }
 
     trackedForwardVecPtr = trackedForwardVec;
@@ -977,7 +977,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::SetTrackedSaveState(
 }
 
 // Reimplements 0x416ad0: HudSensorTracker::MapOverlayEndShow (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::MapOverlayEndShow() {
+void HudSensorTracker::MapOverlayEndShow() {
     if (mapScaleLerpActive == 0) {
         return;
     }
@@ -997,7 +997,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::MapOverlayEndShow() {
 }
 
 // Reimplements 0x416a30: HudSensorTracker::MapOverlayBeginShow (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::MapOverlayBeginShow() {
+int HudSensorTracker::MapOverlayBeginShow() {
     if (mapScaleLerpActive != 0) {
         return 0;
     }
@@ -1022,7 +1022,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::MapOverlayBeginShow() {
 }
 
 // Reimplements 0x416b30: HudSensorTracker::MapOverlayRefToggle (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::MapOverlayRefToggle(
+int HudSensorTracker::MapOverlayRefToggle(
     int enable
 ) {
     if (enable != 0) {
@@ -1042,7 +1042,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::MapOverlayRefToggle(
 }
 
 // Reimplements 0x416b80: HudSensorTracker::MapZoomIn (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::MapZoomIn() {
+void HudSensorTracker::MapZoomIn() {
     if (mapScaleLerpActive != 0) {
         mapZoom *= 1.10000002f;
         mapSndClick->PlayA3DSimple(1.0f);
@@ -1050,7 +1050,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::MapZoomIn() {
 }
 
 // Reimplements 0x416bb0: HudSensorTracker::MapZoomOut (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::MapZoomOut() {
+void HudSensorTracker::MapZoomOut() {
     if (mapScaleLerpActive != 0) {
         mapZoom *= 0.899999976f;
         mapSndClick->PlayA3DSimple(1.0f);
@@ -1059,7 +1059,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::MapZoomOut() {
 
 // Reimplements 0x416be0: HudSensorTracker::UpdateMapScaleLerp
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::UpdateMapScaleLerp() {
+int HudSensorTracker::UpdateMapScaleLerp() {
     if (mapScaleLerpRunning != 0) {
         mapScaleLerpT += mapScaleLerpStep;
         if (mapScaleLerpT >= 1.0f) {
@@ -1078,7 +1078,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::UpdateMapScaleLerp() {
 
 // Reimplements 0x416c90: HudSensorTracker::ProjectWorldPointsToOverlay
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::ProjectWorldPointsToOverlay(
+int HudSensorTracker::ProjectWorldPointsToOverlay(
     const zVec3 *inputWorldPoints,
     zVec3 *projectedOverlayPoints,
     int pointCount
@@ -1106,7 +1106,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::ProjectWorldPointsToOverla
 
 // Reimplements 0x416e50: HudSensorTracker::GetSaveStateRelativeVectorLen
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE float RECOIL_THISCALL HudSensorTracker::GetSaveStateRelativeVectorLen(
+float HudSensorTracker::GetSaveStateRelativeVectorLen(
     zUtil_SaveGameState *saveState,
     zVec3 *relativeDelta,
     int takeSqrt
@@ -1131,7 +1131,7 @@ RECOIL_NOINLINE float RECOIL_THISCALL HudSensorTracker::GetSaveStateRelativeVect
 
 // Reimplements 0x416dd0: HudSensorTracker::DrawMarkerCross
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL HudSensorTracker::DrawMarkerCross(
+void __fastcall HudSensorTracker::DrawMarkerCross(
     int centerX,
     int centerY,
     int armHalfWidth,
@@ -1167,7 +1167,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HudSensorTracker::DrawMarkerCross(
 
 // Reimplements 0x415f40: HudSensorTracker::DrawDiamondMarker
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL HudSensorTracker::DrawDiamondMarker(
+void __fastcall HudSensorTracker::DrawDiamondMarker(
     int centerX,
     int centerY,
     int halfWidth,
@@ -1198,7 +1198,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HudSensorTracker::DrawDiamondMarker(
 
 // Reimplements 0x416480: HudSensorMapNode::DrawProjectedPath
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorMapNode::DrawProjectedPath(
+int HudSensorMapNode::DrawProjectedPath(
     HudSensorTracker *tracker
 ) {
     if (pointCount == 0) {
@@ -1271,7 +1271,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorMapNode::DrawProjectedPath(
 
 // Reimplements 0x415d30: HudSensorMapNode::DrawOnTracker
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorMapNode::DrawOnTracker(
+int HudSensorMapNode::DrawOnTracker(
     HudSensorTracker *tracker,
     const zVec3 *drawPathWorldPos
 ) {
@@ -1363,7 +1363,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorMapNode::DrawOnTracker(
 
 // Reimplements 0x416d50: HudSensorTracker::DrawTrackedSaveStateMarker
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::DrawTrackedSaveStateMarker() {
+int HudSensorTracker::DrawTrackedSaveStateMarker() {
     unsigned short markerColor;
     if (zOpt::GetNetworkEnabled() != 0) {
         zUtil_SaveGameState *const gameState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
@@ -1396,7 +1396,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::DrawTrackedSaveStateMarker
 
 // Reimplements 0x416f10: HudSensorTracker::DrawSaveStateMarker
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::DrawSaveStateMarker(
+int HudSensorTracker::DrawSaveStateMarker(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -1486,7 +1486,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::DrawSaveStateMarker(
 
 // Reimplements 0x417130: HudSensorTracker::Update
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::Update() {
+void HudSensorTracker::Update() {
     mapScaleLerpStep = 0.150000006f;
     if (mapScaleLerpActive == 0 && mapScaleLerpRunning == 0) {
         return;
@@ -1530,7 +1530,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::Update() {
 }
 
 // Reimplements 0x4167e0: HudSensorTracker::MapRemoveNode (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::MapRemoveNode(
+int HudSensorTracker::MapRemoveNode(
     HudSensorMapNode *mapNode
 ) {
     HudSensorMapNode *head = mapNodeListHead;
@@ -1565,7 +1565,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::MapRemoveNode(
 
 // Reimplements 0x416840: HudSensorTracker::MapInsertNodeAndGrowBounds
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::MapInsertNodeAndGrowBounds(
+int HudSensorTracker::MapInsertNodeAndGrowBounds(
     HudSensorMapNode *mapNode
 ) {
     if (mapNode == 0) {
@@ -1596,7 +1596,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::MapInsertNodeAndGrowBounds
 
 // Reimplements 0x4168d0: HudSensorTracker::LoadMapFromStream
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::LoadMapFromStream(
+int HudSensorTracker::LoadMapFromStream(
     FILE *stream
 ) {
     if (stream == 0) {
@@ -1654,7 +1654,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::LoadMapFromStream(
 
 // Reimplements 0x4169d0: HudSensorTracker::LoadMapFromPath
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::LoadMapFromPath(
+int HudSensorTracker::LoadMapFromPath(
     const char *path
 ) {
     if (path == 0) {
@@ -1677,7 +1677,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::LoadMapFromPath(
 
 // Reimplements 0x417260: HudSensorTracker::LoadMissionMapAndSfx
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::LoadMissionMapAndSfx(
+int HudSensorTracker::LoadMissionMapAndSfx(
     int missionIdValue
 ) {
     char mapPath[0x40];
@@ -1696,12 +1696,12 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::LoadMissionMapAndSfx(
 
 // Reimplements 0x416790: HudSensorTracker::MapShutdownAndResetThunk
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::MapShutdownAndResetThunk() {
+int HudSensorTracker::MapShutdownAndResetThunk() {
     return MapShutdownAndReset();
 }
 
 // Reimplements 0x4167a0: HudSensorTracker::MapShutdownAndReset (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::MapShutdownAndReset() {
+int HudSensorTracker::MapShutdownAndReset() {
     MapOverlayEndShow();
     while (mapNodeListHead != 0) {
         MapRemoveNode(mapNodeListHead);
@@ -1717,7 +1717,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::MapShutdownAndReset() {
 
 // Reimplements 0x419490: HudSensorTracker::Shutdown
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::Shutdown() {
+void HudSensorTracker::Shutdown() {
     missionGsPath.Empty();
     zbdPath.Empty();
     missionDataPath.Empty();
@@ -1725,7 +1725,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::Shutdown() {
 }
 
 // Reimplements 0x4176f0: HudSensorTracker::ResetMissionState (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::ResetMissionState() {
+int HudSensorTracker::ResetMissionState() {
     missionLoaded = 0;
     missionId = 0;
     missionDataPath.Empty();
@@ -1753,7 +1753,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::ResetMissionState() {
 }
 
 // Reimplements 0x417f60: HudSensorObjectiveSlot::Reset
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorObjectiveSlot::Reset() {
+void HudSensorObjectiveSlot::Reset() {
     zVidImagePartial *const image = objectiveImage;
     objectiveTitle[0] = '\0';
     objectiveDesc[0] = '\0';
@@ -1766,7 +1766,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorObjectiveSlot::Reset() {
 }
 
 // Reimplements 0x417430: HudSensorTracker::WriteMissionDataSection
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::WriteMissionDataSection(
+int HudSensorTracker::WriteMissionDataSection(
     zZbdSectionCallbackCtx *writer
 ) {
     HudSensorTrackerMissionData missionData = {0};
@@ -1800,7 +1800,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::WriteMissionDataSection(
 
 // Reimplements 0x4174f0: HudSensorTracker::ApplyMissionDataAndReload
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::ApplyMissionDataAndReload(
+int HudSensorTracker::ApplyMissionDataAndReload(
     void *,
     const char *,
     const void *missionDataBlob,
@@ -1872,7 +1872,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::ApplyMissionDataAndReload(
 }
 
 // Reimplements 0x417640: HudSensorTracker::RegisterMissionSectionHandlers
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::RegisterMissionSectionHandlers() {
+void HudSensorTracker::RegisterMissionSectionHandlers() {
     zUtil_ZAR::RegisterSectionHandler(
         "Mission",
         ZbdCallbackPtr(&HudSensorTracker::ZarMission_SaveCallback),
@@ -1890,7 +1890,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::RegisterMissionSectionHan
 }
 
 // Reimplements 0x417770: HudSensorTracker::InitMissionIdAndFlags
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::InitMissionIdAndFlags(
+int HudSensorTracker::InitMissionIdAndFlags(
     int newMissionId,
     int flags
 ) {
@@ -1904,7 +1904,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::InitMissionIdAndFlags(
 }
 
 // Reimplements 0x4177d0: HudSensorTracker::SetZbdPath
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::SetZbdPath(
+int HudSensorTracker::SetZbdPath(
     const char *path
 ) {
     if (path != 0) {
@@ -1917,7 +1917,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::SetZbdPath(
 }
 
 // Reimplements 0x4177a0: HudSensorTracker::SetMissionId
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::SetMissionId(
+int HudSensorTracker::SetMissionId(
     int newMissionId
 ) {
     missionId = newMissionId;
@@ -1929,13 +1929,13 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::SetMissionId(
 }
 
 // Reimplements 0x417800: HudSensorTracker::GetMissionId
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::GetMissionId() {
+int HudSensorTracker::GetMissionId() {
     return missionId;
 }
 
 // Reimplements 0x417810: HudSensorTracker::LoadMissionCoreResources
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::LoadMissionCoreResources() {
+int HudSensorTracker::LoadMissionCoreResources() {
     CString scriptPath;
     zImg::Init();
 
@@ -2011,7 +2011,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::LoadMissionCoreResources()
 
 // Reimplements 0x417a00: HudSensorTracker::InitMissionGameplaySystems
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::InitMissionGameplaySystems() {
+int HudSensorTracker::InitMissionGameplaySystems() {
     missionStat0 = 0;
     missionStat1 = 0;
     primaryGunDispatchCount = 0;
@@ -2131,7 +2131,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::InitMissionGameplaySystems
 
 // Reimplements 0x417d40: HudSensorTracker::ShutdownMissionGameplaySystems
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::ShutdownMissionGameplaySystems() {
+int HudSensorTracker::ShutdownMissionGameplaySystems() {
     if (missionLoaded == 0) {
         return 1;
     }
@@ -2216,7 +2216,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::ShutdownMissionGameplaySys
 
 // Reimplements 0x419050: HudSensorTracker::LoadMissionWeatherFx
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::LoadMissionWeatherFx(
+void HudSensorTracker::LoadMissionWeatherFx(
     const char *zrdPath
 ) {
     zReader::Node *rootNode = zReader::LoadNodeFromPath(
@@ -2336,7 +2336,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::LoadMissionWeatherFx(
 }
 
 // Reimplements 0x417ee0: HudSensorTracker::UnloadObjectives
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::UnloadObjectives() {
+int HudSensorTracker::UnloadObjectives() {
     if (zOpt::GetNetworkEnabled() == 0) {
         {
             for (int index = 0; index < objectiveCount; ++index) {
@@ -2359,7 +2359,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::UnloadObjectives() {
 
 // Reimplements 0x417f90: HudSensorTracker::LoadObjectivesFromPath
 // (D:\Proj\Battlesport\mission.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::LoadObjectivesFromPath(
+int HudSensorTracker::LoadObjectivesFromPath(
     const char *path
 ) {
     zReader::Node *rootNode = zReader::LoadNodeFromPath(
@@ -2511,7 +2511,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::LoadObjectivesFromPath(
 
 // Reimplements 0x418230: HudSensorTracker::LoadObjectivesFromZrd
 // (D:\Proj\Battlesport\mission.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::LoadObjectivesFromZrd(
+int HudSensorTracker::LoadObjectivesFromZrd(
     const char *
 ) {
     zReader::Node *reviewSoundNode = zReader_GetNamedNode(
@@ -2615,7 +2615,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::LoadObjectivesFromZrd(
 
 // Reimplements 0x4193c0: HudSensorTracker::LoadRaceCheckpointMeta
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::LoadRaceCheckpointMeta() {
+int HudSensorTracker::LoadRaceCheckpointMeta() {
     CString raceZrdrSearchPath;
     raceZrdrSearchPath.Format(
         "..\\data\\m%d\\zrdr",
@@ -2647,7 +2647,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::LoadRaceCheckpointMeta() {
 
 // Reimplements 0x4192d0: HudSensorTracker::RunStartAnimsFromZrd
 // (D:\Proj\Battlesport\mission.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::RunStartAnimsFromZrd(
+void HudSensorTracker::RunStartAnimsFromZrd(
     const char *zrdPath,
     const char *namedNodeName
 ) {
@@ -2702,7 +2702,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::RunStartAnimsFromZrd(
 
 // Reimplements 0x419010: HudSensorTracker::QueueMissionFmvStateForMissionId
 // (D:\Proj\GameZRecoil\recoilapp.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::QueueMissionFmvStateForMissionId(
+int HudSensorTracker::QueueMissionFmvStateForMissionId(
     int missionId
 ) {
     g_RecoilApp.m_missionFmvState.m_skipMissionFmv = 0;
@@ -2716,7 +2716,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::QueueMissionFmvStateForMis
 
 // Reimplements 0x418fb0: HudSensorTracker::SaveAndQueueMissionState
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::SaveAndQueueMissionState() {
+void HudSensorTracker::SaveAndQueueMissionState() {
     if (finalMissionFlag != 0) {
         g_RecoilApp_QuitAfterCredits = 1;
         return;
@@ -2731,7 +2731,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::SaveAndQueueMissionState(
 
 // Reimplements 0x4186f0: HudSensorTracker::GetObjectiveBriefingStringsAndImageRef
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::GetObjectiveBriefingStringsAndImageRef(
+int HudSensorTracker::GetObjectiveBriefingStringsAndImageRef(
     int objectiveIndex,
     char **outSummary,
     char **outDesc,
@@ -2746,7 +2746,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::GetObjectiveBriefingString
 
 // Reimplements 0x4172c0: HudSensorTracker::SetObjectiveMarkerEnabledAndColor
 // (HudSensorTracker.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::SetObjectiveMarkerEnabledAndColor(
+int HudSensorTracker::SetObjectiveMarkerEnabledAndColor(
     int objectiveIndex,
     int enabled,
     const unsigned char *colorRgb24
@@ -2766,7 +2766,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::SetObjectiveMarkerEnabledA
 
 // Reimplements 0x417300: HudSensorTracker::SetObjectiveMarkerColorBlink
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::SetObjectiveMarkerColorBlink(
+int HudSensorTracker::SetObjectiveMarkerColorBlink(
     int objectiveIndex,
     const unsigned char *colorRgb24
 ) {
@@ -2787,7 +2787,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::SetObjectiveMarkerColorBli
 
 // Reimplements 0x418c30: HudSensorTracker::FindAndHighlightFirstIncompleteObjective
 // (HudSensorTracker.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::FindAndHighlightFirstIncompleteObjective() {
+int HudSensorTracker::FindAndHighlightFirstIncompleteObjective() {
     int objectiveIndex = 0;
     while (objectiveIndex < objectiveCount && objectiveSlots[objectiveIndex].completedFlag != 0) {
         ++objectiveIndex;
@@ -2806,7 +2806,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::FindAndHighlightFirstIncom
 
 // Reimplements 0x419470: HudSensorTracker::SetRuntimeTimerSecAndGoalValue
 // (D:\Proj\Battlesport\HudSensor.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::SetRuntimeTimerSecAndGoalValue(
+void HudSensorTracker::SetRuntimeTimerSecAndGoalValue(
     int timerSecRaw,
     int goalValue
 ) {
@@ -2816,7 +2816,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::SetRuntimeTimerSecAndGoal
 
 // Reimplements 0x418620: HudSensorTracker::SetObjectiveReviewVisible
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::SetObjectiveReviewVisible(
+int HudSensorTracker::SetObjectiveReviewVisible(
     int visible
 ) {
     objectiveFlowState = 0x65;
@@ -2852,7 +2852,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::SetObjectiveReviewVisible(
 
 // Reimplements 0x419380: HudSensorTracker::OnObjectiveReadSoundEvent
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL HudSensorTracker::OnObjectiveReadSoundEvent(
+void __fastcall HudSensorTracker::OnObjectiveReadSoundEvent(
     int eventCode
 ) {
     if (eventCode == 0) {
@@ -2867,7 +2867,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HudSensorTracker::OnObjectiveReadSoundEvent
 
 // Reimplements 0x4184e0: HudSensorTracker::AdvanceObjectiveState
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::AdvanceObjectiveState() {
+void HudSensorTracker::AdvanceObjectiveState() {
     const int flowState = objectiveFlowState;
     if (flowState != 0x6b && flowState != 0x67 && flowState != 0x64) {
         if (objectiveUiMode != 1) {
@@ -2914,7 +2914,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::AdvanceObjectiveState() {
 
 // Reimplements 0x417ca0: HudSensorTracker::OnObjectiveCommand
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL HudSensorTracker::OnObjectiveCommand(
+void __fastcall HudSensorTracker::OnObjectiveCommand(
     int commandId
 ) {
     switch (commandId) {
@@ -2959,7 +2959,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HudSensorTracker::OnObjectiveCommand(
 
 // Reimplements 0x418c70: HudSensorTracker::ResetHudForMissionStart
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::ResetHudForMissionStart() {
+void HudSensorTracker::ResetHudForMissionStart() {
     objectiveMeterSeconds = 0.0f;
     HudUiMgrObjective::SetVisibleAndResetMeterFill(0);
 
@@ -3004,14 +3004,14 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::ResetHudForMissionStart()
 
 // Reimplements 0x418730: HudSensorTracker::Command_ToggleObjectivePanel
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::Command_ToggleObjectivePanel() {
+void HudSensorTracker::Command_ToggleObjectivePanel() {
     objectiveReviewSfx->PlayA3DSimple(1.0f);
     SetObjectivePanelVisible(objectiveUiMode != 2 ? 1 : 0);
 }
 
 // Reimplements 0x418760: HudSensorTracker::SetObjectivePanelVisible
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::SetObjectivePanelVisible(
+void HudSensorTracker::SetObjectivePanelVisible(
     int visible
 ) {
     if (visible == 0) {
@@ -3095,7 +3095,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::SetObjectivePanelVisible(
 
 // Reimplements 0x4188f0: HudSensorTracker::Command_ShowObjectivePickupInfo
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::Command_ShowObjectivePickupInfo() {
+void HudSensorTracker::Command_ShowObjectivePickupInfo() {
     objectiveReviewSfx->PlayA3DSimple(1.0f);
 
     const int visible = (objectiveUiMode == 3 || objectiveUiMode == 4) ? 0 : 1;
@@ -3110,7 +3110,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::Command_ShowObjectivePick
 
 // Reimplements 0x418940: HudSensorTracker::ShowObjectivePickupInfo
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::ShowObjectivePickupInfo(
+void HudSensorTracker::ShowObjectivePickupInfo(
     int visible,
     int startAutoAdvance,
     OptCatalogEntryDef *optEntry
@@ -3224,7 +3224,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudSensorTracker::ShowObjectivePickupInfo(
 
 // Reimplements 0x418d40: HudSensorTracker::UpdateObjectiveFlow
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::UpdateObjectiveFlow() {
+int HudSensorTracker::UpdateObjectiveFlow() {
     objectiveMeterSeconds = HudUiTimerPanel::GetSeconds();
 
     if (zOpt::GetNetworkEnabled() == 0) {
@@ -3335,7 +3335,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudSensorTracker::UpdateObjectiveFlow() {
 }
 
 // Reimplements 0x417680: HudSensorTracker::ZarMission_SaveCallback
-RECOIL_NOINLINE int RECOIL_FASTCALL HudSensorTracker::ZarMission_SaveCallback(
+int __fastcall HudSensorTracker::ZarMission_SaveCallback(
     zZbdSectionCallbackCtx *writer,
     HudSensorTracker *self
 ) {
@@ -3344,7 +3344,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HudSensorTracker::ZarMission_SaveCallback(
 
 // Reimplements 0x417690: HudSensorTracker::ZarMission_RestoreCallback
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HudSensorTracker::ZarMission_RestoreCallback(
+int __fastcall HudSensorTracker::ZarMission_RestoreCallback(
     void *reader,
     const char *token,
     const void *missionData,
@@ -3361,7 +3361,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HudSensorTracker::ZarMission_RestoreCallback
 }
 
 // Reimplements 0x4176b0: HudSensorTracker::ZarMissionLate_SaveCallback
-RECOIL_NOINLINE void RECOIL_FASTCALL HudSensorTracker::ZarMissionLate_SaveCallback(
+void __fastcall HudSensorTracker::ZarMissionLate_SaveCallback(
     zZbdSectionCallbackCtx *writer,
     HudSensorTracker *
 ) {
@@ -3376,7 +3376,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HudSensorTracker::ZarMissionLate_SaveCallba
 
 // Reimplements 0x4176d0: HudSensorTracker::ZarMissionLate_RestoreCallback
 // (D:\Proj\Battlesport\map.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL HudSensorTracker::ZarMissionLate_RestoreCallback(
+void __fastcall HudSensorTracker::ZarMissionLate_RestoreCallback(
     void *,
     const char *,
     const void *,

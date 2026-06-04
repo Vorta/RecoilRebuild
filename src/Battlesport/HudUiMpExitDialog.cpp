@@ -30,7 +30,7 @@ unsigned int MpExitMethodAddress(
     return address;
 }
 
-RECOIL_NOINLINE void RECOIL_CDECL HudUiMpExitDialogPostLoadNoOp() {}
+void HudUiMpExitDialogPostLoadNoOp() {}
 
 HudUiWidget_FTable MakeMpExitDialogButtonFTable(
     unsigned int activateCallback
@@ -73,7 +73,7 @@ HudUiMpExitDialog *g_HudUiMpExitDialog = 0;
 
 // Reimplements 0x419650: HudUiMpExitDialog::UnloadLayout
 // (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiMpExitDialog::UnloadLayout() {
+void HudUiMpExitDialog::UnloadLayout() {
     base.SetEnabled(0);
     Update(0.0f);
     HudScoreboard::SetScaleAndRebuild(0.0f);
@@ -88,7 +88,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiMpExitDialog::UnloadLayout() {
 
 // Reimplements 0x419690: HudUiMpExitDialog::Update
 // (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiMpExitDialog::Update(
+void HudUiMpExitDialog::Update(
     float deltaSeconds
 ) {
     if (m_mpNewGameButtonMode >= 0) {
@@ -126,7 +126,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiMpExitDialog::Update(
 
 // Reimplements 0x419500: HudUiMpExitDialog::LoadLayout
 // (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiMpExitDialog::LoadLayout() {
+void HudUiMpExitDialog::LoadLayout() {
     m_mpNewGameButtonMode = HudUiMgr::IsLocalPlayerFirstInStatsList();
 
     zVidImagePartial *const image = zVideo_buff_CaptureSurfaceToImage(1);
@@ -204,7 +204,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiMpExitDialog::LoadLayout() {
 
 // Reimplements 0x419800: HudUiMpExitDialog_MpNewGameButton::OnActivate
 // (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
-void RECOIL_THISCALL HudUiMpExitDialog_NewGameButton::OnActivate() {
+void HudUiMpExitDialog_NewGameButton::OnActivate() {
     g_RecoilApp.QueueSwitchCurrentState(
         &g_RecoilApp.m_introFmvState,
         0
@@ -215,7 +215,7 @@ void RECOIL_THISCALL HudUiMpExitDialog_NewGameButton::OnActivate() {
 
 // Reimplements 0x419830: HudUiMpExitDialog_MpExitButton::OnActivate
 // (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
-void RECOIL_THISCALL HudUiMpExitDialog_ExitButton::OnActivate() {
+void HudUiMpExitDialog_ExitButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
     g_RecoilApp.QueueSwitchCurrentState(
         &g_RecoilApp.m_leaveNetworkState,
@@ -225,7 +225,7 @@ void RECOIL_THISCALL HudUiMpExitDialog_ExitButton::OnActivate() {
 
 // Reimplements 0x419870: HudUiMpExitDialog::Destructor
 // (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiMpExitDialog::Destructor() {
+void HudUiMpExitDialog::Destructor() {
     m_mpExitButton.DestructorCore();
     m_mpNewGameButton.DestructorCore();
     base.Destructor();
@@ -233,7 +233,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiMpExitDialog::Destructor() {
 
 // Reimplements 0x419850: HudUiMpExitDialog::ScalarDeletingDestructorThunk
 // (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
-HudUiMpExitDialog *RECOIL_THISCALL HudUiMpExitDialog::ScalarDeletingDestructorThunk(
+HudUiMpExitDialog * HudUiMpExitDialog::ScalarDeletingDestructorThunk(
     unsigned int flags
 ) {
     Destructor();
@@ -246,7 +246,7 @@ HudUiMpExitDialog *RECOIL_THISCALL HudUiMpExitDialog::ScalarDeletingDestructorTh
 
 // Reimplements 0x419740: RecoilApp_MpExitDialogState::OnEnter
 // (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_MpExitDialogState::OnEnter() {
+void RecoilApp_MpExitDialogState::OnEnter() {
     if (g_HudUiMpExitDialog == 0) {
         HudUiMpExitDialog *dialog = (HudUiMpExitDialog *) ::operator new(sizeof(HudUiMpExitDialog));
         if (dialog != 0) {
@@ -269,7 +269,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_MpExitDialogState::OnEnter() {
 
 // Reimplements 0x4198d0: RecoilApp_MpExitDialogState::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_MpExitDialogState::OnTryBecomeCurrent() {
+int RecoilApp_MpExitDialogState::OnTryBecomeCurrent() {
     zVideo::SetHalfResAdjustMode(0);
     HudUi::SetInvalidateMode(0);
 
@@ -293,14 +293,14 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_MpExitDialogState::OnTryBecomeCurr
 
 // Reimplements 0x419940: RecoilApp_MpExitDialogState::OnDeactivate
 // (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_MpExitDialogState::OnDeactivate() {
+void RecoilApp_MpExitDialogState::OnDeactivate() {
     g_HudUiMpExitDialog->UnloadLayout();
 
     HudUiMpExitDialog *const dialog = g_HudUiMpExitDialog;
     if (dialog != 0) {
         const HudUiMpExitDialog_Vtbl *const vtable =
             (const HudUiMpExitDialog_Vtbl *)dialog->base.base.base.vptr;
-        typedef HudUiMpExitDialog *(RECOIL_THISCALL * ScalarDeletingDtorFn)(
+        typedef HudUiMpExitDialog *( * ScalarDeletingDtorFn)(
             HudUiMpExitDialog * self,
             unsigned int flags
         );
@@ -319,14 +319,14 @@ RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_MpExitDialogState::OnDeactivate()
 
 // Reimplements 0x419990: RecoilApp_MpExitDialogState::OnUpdateShouldQuit
 // (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_MpExitDialogState::OnUpdateShouldQuit() {
+int RecoilApp_MpExitDialogState::OnUpdateShouldQuit() {
     zInput::PollActiveDevices(0);
     Time::Tick();
 
     HudUiMpExitDialog *const dialog = g_HudUiMpExitDialog;
     const HudUiMpExitDialog_Vtbl *const vtable =
         (const HudUiMpExitDialog_Vtbl *)dialog->base.base.base.vptr;
-    typedef void(RECOIL_THISCALL * UpdateFn)(
+    typedef void( * UpdateFn)(
         HudUiMpExitDialog * self,
         float deltaSeconds
     );

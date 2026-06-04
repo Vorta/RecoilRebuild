@@ -71,7 +71,7 @@ struct WestwoodOnlineUpgradeApiInitState {
     CRITICAL_SECTION criticalSection1;
     CRITICAL_SECTION criticalSection2;
 
-    RECOIL_NOINLINE static HRESULT RECOIL_STDCALL Init(
+    static HRESULT __stdcall Init(
         WestwoodOnlineUpgradeApiInitState *self,
         HANDLE bootstrapServerListEvent,
         HINSTANCE moduleHandle
@@ -79,14 +79,14 @@ struct WestwoodOnlineUpgradeApiInitState {
 };
 
 struct WestwoodOnlineUpgradeApi {
-    RECOIL_NOINLINE static int RECOIL_CDECL Init();
-    RECOIL_NOINLINE int RECOIL_THISCALL CreateInstanceAndLoadConfig(
+    static int Init();
+    int CreateInstanceAndLoadConfig(
         HANDLE bootstrapServerListEvent
     );
-    RECOIL_NOINLINE static void RECOIL_CDECL Shutdown();
+    static void Shutdown();
 };
 
-void RECOIL_CDECL AfxEnableControlContainer(COccManager *manager);
+void AfxEnableControlContainer(COccManager *manager);
 
 extern "C" WestwoodOnlineUpgradeApiInitState g_WestwoodOnlineUpgradeApiInitState;
 extern "C" IUnknown *g_pWestwoodOnlineUpgradeApi;

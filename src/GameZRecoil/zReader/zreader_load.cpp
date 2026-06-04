@@ -35,7 +35,7 @@ extern "C" char *g_zUtil_ZRDR_WildcardStarPtrs[5] = {0};
 extern "C" zClass_NodePartial *g_Mover_LastLoadedNode = 0;
 
 // Reimplements 0x48c9a0: zArchiveList_LinkNodeBetween
-extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zArchiveList_LinkNodeBetween(
+extern "C" void __fastcall zArchiveList_LinkNodeBetween(
     zArchiveListNode *after,
     zArchiveListNode *newNode,
     zArchiveListNode *before
@@ -47,7 +47,7 @@ extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zArchiveList_LinkNodeBetween(
 }
 
 // Reimplements 0x48c950: zArchiveList_CreateEmpty
-extern "C" RECOIL_NOINLINE zArchiveList *RECOIL_CDECL zArchiveList_CreateEmpty() {
+extern "C" zArchiveList *zArchiveList_CreateEmpty() {
     zArchiveList *result = (zArchiveList *)(malloc(sizeof(zArchiveList)));
     memset(
         result,
@@ -58,7 +58,7 @@ extern "C" RECOIL_NOINLINE zArchiveList *RECOIL_CDECL zArchiveList_CreateEmpty()
 }
 
 // Reimplements 0x48c970: zArchiveList_Destroy
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zArchiveList_Destroy(
+extern "C" int __fastcall zArchiveList_Destroy(
     zArchiveList *list
 ) {
     if (list != 0) {
@@ -72,7 +72,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zArchiveList_Destroy(
 }
 
 // Reimplements 0x48c820: zUtil_ZRDR_PushFreeNode
-extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zUtil_ZRDR_PushFreeNode(
+extern "C" void __fastcall zUtil_ZRDR_PushFreeNode(
     zArchiveListNode *node
 ) {
     if (g_zUtil_ZRDR_FreePool == 0) {
@@ -98,7 +98,7 @@ extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zUtil_ZRDR_PushFreeNode(
 }
 
 // Reimplements 0x48c800: zUtil_ZRDR_GrowFreePool
-extern "C" RECOIL_NOINLINE void RECOIL_CDECL zUtil_ZRDR_GrowFreePool() {
+extern "C" void zUtil_ZRDR_GrowFreePool() {
     zArchiveListNode *node = (zArchiveListNode *)(malloc(sizeof(zArchiveListNode)));
     zUtil_ZRDR_PushFreeNode(node);
     ++g_zUtil_ZRDR_TotalAllocated;
@@ -106,7 +106,7 @@ extern "C" RECOIL_NOINLINE void RECOIL_CDECL zUtil_ZRDR_GrowFreePool() {
 
 namespace zUtil {
 // Reimplements 0x48c7d0: zUtil::ZRDR_PreallocNodePool
-RECOIL_NOINLINE void RECOIL_FASTCALL ZRDR_PreallocNodePool(
+void __fastcall ZRDR_PreallocNodePool(
     int count
 ) {
     if (g_zUtil_ZRDR_FreePool != 0) {
@@ -122,7 +122,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ZRDR_PreallocNodePool(
 } // namespace zUtil
 
 // Reimplements 0x48c8e0: zUtil_ZRDR_PopFreeNode
-extern "C" RECOIL_NOINLINE zArchiveListNode *RECOIL_FASTCALL zUtil_ZRDR_PopFreeNode(
+extern "C" zArchiveListNode *__fastcall zUtil_ZRDR_PopFreeNode(
     int allowGrow
 ) {
     zArchiveList *pool = g_zUtil_ZRDR_FreePool;
@@ -153,7 +153,7 @@ extern "C" RECOIL_NOINLINE zArchiveListNode *RECOIL_FASTCALL zUtil_ZRDR_PopFreeN
 }
 
 // Reimplements 0x48ca10: zUtil_ZRDR_AllocNodeWithPayload
-extern "C" RECOIL_NOINLINE zArchiveListNode *RECOIL_FASTCALL zUtil_ZRDR_AllocNodeWithPayload(
+extern "C" zArchiveListNode *__fastcall zUtil_ZRDR_AllocNodeWithPayload(
     void *payload
 ) {
     zArchiveListNode *result = zUtil_ZRDR_PopFreeNode(1);
@@ -162,7 +162,7 @@ extern "C" RECOIL_NOINLINE zArchiveListNode *RECOIL_FASTCALL zUtil_ZRDR_AllocNod
 }
 
 // Reimplements 0x48c9c0: zArchiveList_PushFrontPayload
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zArchiveList_PushFrontPayload(
+extern "C" int __fastcall zArchiveList_PushFrontPayload(
     zArchiveList *list,
     void *payload
 ) {
@@ -190,7 +190,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zArchiveList_PushFrontPayload(
 }
 
 // Reimplements 0x48ca30: zArchiveList_PushBackPayload
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zArchiveList_PushBackPayload(
+extern "C" int __fastcall zArchiveList_PushBackPayload(
     zArchiveList *list,
     void *payload
 ) {
@@ -218,7 +218,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zArchiveList_PushBackPayload(
 
 // Reimplements 0x48ca70: zArchiveList_RemovePayload
 // (GameZRecoil/zUtil/zutl_zar.cpp)
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zArchiveList_RemovePayload(
+extern "C" int __fastcall zArchiveList_RemovePayload(
     zArchiveList *list,
     void *payload
 ) {
@@ -253,7 +253,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zArchiveList_RemovePayload(
 }
 
 // Reimplements 0x48cae0: zArchiveList_FreeNode
-extern "C" RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_FreeNode(
+extern "C" void *__fastcall zArchiveList_FreeNode(
     zArchiveListNode *node
 ) {
     if (node == 0) {
@@ -267,7 +267,7 @@ extern "C" RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_FreeNode(
 
 // Reimplements 0x48cb00: zArchiveList_FindNodeByPayload
 // (GameZRecoil/zUtil/zutl_zar.cpp)
-extern "C" RECOIL_NOINLINE zArchiveListNode *RECOIL_FASTCALL zArchiveList_FindNodeByPayload(
+extern "C" zArchiveListNode *__fastcall zArchiveList_FindNodeByPayload(
     zArchiveList *list,
     void *payload
 ) {
@@ -294,7 +294,7 @@ extern "C" RECOIL_NOINLINE zArchiveListNode *RECOIL_FASTCALL zArchiveList_FindNo
 }
 
 // Reimplements 0x48cb70: zArchiveList_PopFrontPayload
-extern "C" RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_PopFrontPayload(
+extern "C" void *__fastcall zArchiveList_PopFrontPayload(
     zArchiveList *list
 ) {
     if (list == 0 || list->count == 0) {
@@ -316,7 +316,7 @@ extern "C" RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_PopFrontPayload(
 }
 
 // Reimplements 0x48cc60: zArchiveList_GetCount
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zArchiveList_GetCount(
+extern "C" int __fastcall zArchiveList_GetCount(
     zArchiveList *list
 ) {
     if (list == 0) {
@@ -327,7 +327,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zArchiveList_GetCount(
 }
 
 // Reimplements 0x48cb30: zArchiveList_GetAt
-extern "C" RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_GetAt(
+extern "C" void *__fastcall zArchiveList_GetAt(
     zArchiveList *list,
     int index
 ) {
@@ -351,7 +351,7 @@ extern "C" RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_GetAt(
 }
 
 // Reimplements 0x48cbd0: zArchiveList_FindPayloadByPredicate
-extern "C" RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_FindPayloadByPredicate(
+extern "C" void *__fastcall zArchiveList_FindPayloadByPredicate(
     zArchiveList *list,
     zArchiveListPredicate predicate,
     void *userData
@@ -388,7 +388,7 @@ found:
 
 // Reimplements 0x48cc20: zArchiveList_FindPayloadByValue
 // (GameZRecoil/zUtil/zutl_zar.cpp)
-extern "C" RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_FindPayloadByValue(
+extern "C" void *__fastcall zArchiveList_FindPayloadByValue(
     zArchiveList *list,
     unsigned int value
 ) {
@@ -415,7 +415,7 @@ extern "C" RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_FindPayloadByValue
 }
 
 // Reimplements 0x48cc50: zArchiveList_FindPayloadByPredicate_Thunk
-extern "C" RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_FindPayloadByPredicate_Thunk(
+extern "C" void *__fastcall zArchiveList_FindPayloadByPredicate_Thunk(
     zArchiveList *list,
     zArchiveListPredicate predicate,
     void *userData
@@ -428,7 +428,7 @@ extern "C" RECOIL_NOINLINE void *RECOIL_FASTCALL zArchiveList_FindPayloadByPredi
 }
 
 // Reimplements 0x4a5da0: zUtil_ZRDR_StrCmpPredicate
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_StrCmpPredicate(
+extern "C" int __fastcall zUtil_ZRDR_StrCmpPredicate(
     void *str1,
     void *str2
 ) {
@@ -443,7 +443,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_StrCmpPredicate(
 }
 
 // Reimplements 0x4a5f20: zUtil_ZRDR_SearchPathContainsFilePredicate
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_SearchPathContainsFilePredicate(
+extern "C" int __fastcall zUtil_ZRDR_SearchPathContainsFilePredicate(
     void *searchDir,
     void *filename
 ) {
@@ -459,7 +459,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_SearchPathContainsFile
 namespace zUtil {
 // Reimplements 0x4a5c50: zUtil::ZRDR_GetFileSize
 // (D:\Proj\GameZRecoil\zUtil\zutl_zrdr.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ZRDR_GetFileSize(
+int __fastcall ZRDR_GetFileSize(
     FILE *fileHandle
 ) {
     if (fileHandle == 0) {
@@ -484,7 +484,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ZRDR_GetFileSize(
 
 // Reimplements 0x4a5e50: zUtil_ZRDR_ResolvePathInSearchPathList
 // Resolves a filename through the active or scratch ZRDR search-path list.
-extern "C" RECOIL_NOINLINE char *RECOIL_FASTCALL zUtil_ZRDR_ResolvePathInSearchPathList(
+extern "C" char *__fastcall zUtil_ZRDR_ResolvePathInSearchPathList(
     zArchiveList *searchPathList,
     const char *filename
 ) {
@@ -538,7 +538,7 @@ extern "C" RECOIL_NOINLINE char *RECOIL_FASTCALL zUtil_ZRDR_ResolvePathInSearchP
 }
 
 // Reimplements 0x4a5f50: zUtil_ZRDR_OpenFileResolved
-extern "C" RECOIL_NOINLINE FILE *RECOIL_FASTCALL zUtil_ZRDR_OpenFileResolved(
+extern "C" FILE *__fastcall zUtil_ZRDR_OpenFileResolved(
     zArchiveList *searchPathList,
     const char *filename,
     const char *mode
@@ -569,7 +569,7 @@ void zUtil_ZRDR_WriteWildcardDigits() {
 
 // Reimplements 0x4a5f90: zUtil_ZRDR::InitWildcardPath
 // (D:\Proj\GameZRecoil\zUtil\zutl_zrdr.cpp)
-extern "C" RECOIL_NOINLINE char *RECOIL_FASTCALL zUtil_ZRDR_InitWildcardPath(
+extern "C" char *__fastcall zUtil_ZRDR_InitWildcardPath(
     char *pattern
 ) {
     if (pattern == 0) {
@@ -605,7 +605,7 @@ extern "C" RECOIL_NOINLINE char *RECOIL_FASTCALL zUtil_ZRDR_InitWildcardPath(
 
 // Reimplements 0x4a6070: zUtil_ZRDR::NextWildcardPath
 // (D:\Proj\GameZRecoil\zUtil\zutl_zrdr.cpp)
-extern "C" RECOIL_NOINLINE char *RECOIL_CDECL zUtil_ZRDR_NextWildcardPath() {
+extern "C" char *zUtil_ZRDR_NextWildcardPath() {
     int carryOut = 0;
     int digitIndex = 0;
     if (g_zUtil_ZRDR_WildcardStarCount > 0) {
@@ -632,7 +632,7 @@ extern "C" RECOIL_NOINLINE char *RECOIL_CDECL zUtil_ZRDR_NextWildcardPath() {
 
 namespace zUtil {
 // Reimplements 0x4a5ce0: zUtil::ZRDR_AddSearchPaths
-RECOIL_NOINLINE void RECOIL_FASTCALL ZRDR_AddSearchPaths(
+void __fastcall ZRDR_AddSearchPaths(
     zArchiveList *list,
     const char *pathText
 ) {
@@ -686,7 +686,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ZRDR_AddSearchPaths(
 } // namespace zUtil
 
 // Reimplements 0x4a5ca0: zUtil_ZRDR_CreateSearchPathList
-extern "C" RECOIL_NOINLINE zArchiveList *RECOIL_FASTCALL zUtil_ZRDR_CreateSearchPathList(
+extern "C" zArchiveList *__fastcall zUtil_ZRDR_CreateSearchPathList(
     const char *pathText
 ) {
     zArchiveList *list = zArchiveList_CreateEmpty();
@@ -698,7 +698,7 @@ extern "C" RECOIL_NOINLINE zArchiveList *RECOIL_FASTCALL zUtil_ZRDR_CreateSearch
 }
 
 // Reimplements 0x4a5e10: zUtil_ZRDR_FreePathList
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_FreePathList(
+extern "C" int __fastcall zUtil_ZRDR_FreePathList(
     zArchiveList *list
 ) {
     zArchiveList *target = list;
@@ -716,7 +716,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_FreePathList(
 }
 
 // Reimplements 0x4a5cc0: zUtil_ZRDR_FreeSearchPathList
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_FreeSearchPathList(
+extern "C" int __fastcall zUtil_ZRDR_FreeSearchPathList(
     zArchiveList *list
 ) {
     zUtil_ZRDR_FreePathList(list);
@@ -725,7 +725,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_FreeSearchPathList(
 }
 
 // Reimplements 0x4a5df0: zUtil_ZRDR_FreeScratchSearchPathList
-extern "C" RECOIL_NOINLINE void RECOIL_CDECL zUtil_ZRDR_FreeScratchSearchPathList() {
+extern "C" void zUtil_ZRDR_FreeScratchSearchPathList() {
     if (g_zRdr_ScratchSearchPathList != 0) {
         zUtil_ZRDR_FreeSearchPathList(g_zRdr_ScratchSearchPathList);
     }
@@ -734,7 +734,7 @@ extern "C" RECOIL_NOINLINE void RECOIL_CDECL zUtil_ZRDR_FreeScratchSearchPathLis
 }
 
 // Reimplements 0x4a6100: zUtil_ZRDR_ShutdownWildcardPath
-extern "C" RECOIL_NOINLINE int RECOIL_CDECL zUtil_ZRDR_ShutdownWildcardPath() {
+extern "C" int zUtil_ZRDR_ShutdownWildcardPath() {
     zUtil_ZRDR_FreeScratchSearchPathList();
     return 0;
 }
@@ -754,7 +754,7 @@ void DestroyMountedArchive(
 } // namespace
 
 // Reimplements 0x48d2c0: zUtil_ZRDR_UnloadMountedArchives
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_UnloadMountedArchives(
+extern "C" int __fastcall zUtil_ZRDR_UnloadMountedArchives(
     int destroyCurrentToo
 ) {
     zIndexArchive *archive =
@@ -783,7 +783,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_UnloadMountedArchives(
 }
 
 // Reimplements 0x48cd10: zUtil_ZRDR_Shutdown
-extern "C" RECOIL_NOINLINE int RECOIL_CDECL zUtil_ZRDR_Shutdown() {
+extern "C" int zUtil_ZRDR_Shutdown() {
     zUtil_ZRDR_FreeSearchPathList(g_zRdr_SearchPathList);
     zUtil_ZRDR_UnloadMountedArchives(1);
     zArchiveList_Destroy(g_zArchive_MountedList);
@@ -793,7 +793,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_CDECL zUtil_ZRDR_Shutdown() {
 }
 
 // Reimplements 0x48c890: zUtil_ZRDR_FreeNodePool
-extern "C" RECOIL_NOINLINE void RECOIL_CDECL zUtil_ZRDR_FreeNodePool() {
+extern "C" void zUtil_ZRDR_FreeNodePool() {
     if (g_zUtil_ZRDR_FreePool == 0) {
         return;
     }
@@ -809,7 +809,7 @@ extern "C" RECOIL_NOINLINE void RECOIL_CDECL zUtil_ZRDR_FreeNodePool() {
 }
 
 // Reimplements 0x48cca0: zUtil_ZRDR_SetSearchPath
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_SetSearchPath(
+extern "C" int __fastcall zUtil_ZRDR_SetSearchPath(
     const char *pathText
 ) {
     if (g_zRdr_SearchPathList == 0) {
@@ -826,7 +826,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_SetSearchPath(
 }
 
 // Reimplements 0x48cce0: zUtil_ZRDR_AppendSearchPath
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_AppendSearchPath(
+extern "C" int __fastcall zUtil_ZRDR_AppendSearchPath(
     const char *pathText
 ) {
     if (g_zRdr_SearchPathList == 0) {
@@ -843,7 +843,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zUtil_ZRDR_AppendSearchPath(
 
 namespace zUtil {
 // Reimplements 0x48cc70: zUtil::ZRDR_Init
-RECOIL_NOINLINE int RECOIL_FASTCALL ZRDR_Init(
+int __fastcall ZRDR_Init(
     const char *pathText
 ) {
     if (g_zArchive_MountedList == 0) {
@@ -857,7 +857,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ZRDR_Init(
 
 // Reimplements 0x42ecb0: zUtil::SetMissionZrdrPathsAndMountZbd
 // (D:\Proj\GameZRecoil\zUtil\zUtil.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL SetMissionZrdrPathsAndMountZbd(
+int __fastcall SetMissionZrdrPathsAndMountZbd(
     int missionId
 ) {
     char pathText[256];
@@ -894,7 +894,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetMissionZrdrPathsAndMountZbd(
 } // namespace zUtil
 
 // Reimplements 0x4a6190: zIndexArchive::Reset
-RECOIL_NOINLINE zIndexArchive *RECOIL_THISCALL zIndexArchive::Reset() {
+zIndexArchive * zIndexArchive::Reset() {
     reservedFree = 0;
     hFile = INVALID_HANDLE_VALUE;
     recordCapacity = 0;
@@ -905,7 +905,7 @@ RECOIL_NOINLINE zIndexArchive *RECOIL_THISCALL zIndexArchive::Reset() {
 }
 
 // Reimplements 0x4a61b0: zIndexArchive::Destroy
-RECOIL_NOINLINE void RECOIL_THISCALL zIndexArchive::Destroy() {
+void zIndexArchive::Destroy() {
     CloseAndFreeRecords();
     if (reservedFree != 0) {
         free(reservedFree);
@@ -913,7 +913,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zIndexArchive::Destroy() {
 }
 
 // Reimplements 0x4a61d0: zIndexArchive::Init
-RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::Init(
+int zIndexArchive::Init(
     const char *filepath
 ) {
     HANDLE file = CreateFileA(
@@ -960,7 +960,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::Init(
 
 // Reimplements 0x4a6270: zIndexArchive::OpenCreateWrite
 // (D:\Proj\GameZRecoil\zUtil\zutl_zar.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::OpenCreateWrite(
+int zIndexArchive::OpenCreateWrite(
     const char *filepath
 ) {
     HANDLE file = CreateFileA(
@@ -978,7 +978,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::OpenCreateWrite(
 }
 
 // Reimplements 0x4a62b0: zIndexArchive::CloseAndFreeRecords
-RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::CloseAndFreeRecords() {
+int zIndexArchive::CloseAndFreeRecords() {
     if (dirty != 0) {
         FlushIndexToTail();
     }
@@ -994,7 +994,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::CloseAndFreeRecords() {
 }
 
 // Reimplements 0x4a6330: zIndexArchive::FreeRecordsAndReset
-RECOIL_NOINLINE void RECOIL_THISCALL zIndexArchive::FreeRecordsAndReset() {
+void zIndexArchive::FreeRecordsAndReset() {
     if (records == 0) {
         return;
     }
@@ -1009,7 +1009,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zIndexArchive::FreeRecordsAndReset() {
 }
 
 // Reimplements 0x4a6360: zIndexArchive::FlushIndexToTail
-RECOIL_NOINLINE void RECOIL_THISCALL zIndexArchive::FlushIndexToTail() {
+void zIndexArchive::FlushIndexToTail() {
     DWORD numberOfBytesWritten = 0;
     const unsigned int footerMagic = 1;
     SetFilePointer(
@@ -1043,7 +1043,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zIndexArchive::FlushIndexToTail() {
 }
 
 // Reimplements 0x4a63f0: zIndexArchive::LoadIndexFromTail
-RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::LoadIndexFromTail() {
+int zIndexArchive::LoadIndexFromTail() {
     if (GetFileSize(
         (HANDLE)(hFile),
         0
@@ -1106,7 +1106,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::LoadIndexFromTail() {
 }
 
 // Reimplements 0x4a62f0: zIndexArchive::EnsureCapacity
-RECOIL_NOINLINE void RECOIL_THISCALL zIndexArchive::EnsureCapacity(
+void zIndexArchive::EnsureCapacity(
     unsigned int requiredCount
 ) {
     if (requiredCount < recordCapacity) {
@@ -1127,7 +1127,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zIndexArchive::EnsureCapacity(
 }
 
 // Reimplements 0x4a64d0: zIndexArchive::AddFileRecord
-RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::AddFileRecord(
+int zIndexArchive::AddFileRecord(
     const char *name,
     const void *data,
     unsigned int dataSize,
@@ -1187,7 +1187,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::AddFileRecord(
 }
 
 // Reimplements 0x4a65d0: zIndexArchive::FindRecordByNameCI
-RECOIL_NOINLINE zZarFileRecord *RECOIL_THISCALL zIndexArchive::FindRecordByNameCI(
+zZarFileRecord * zIndexArchive::FindRecordByNameCI(
     const char *filename
 ) {
     for (unsigned int i = 0; i < recordCount; ++i) {
@@ -1204,7 +1204,7 @@ RECOIL_NOINLINE zZarFileRecord *RECOIL_THISCALL zIndexArchive::FindRecordByNameC
 }
 
 // Reimplements 0x4a6630: zIndexArchive::OpenFileByName
-RECOIL_NOINLINE void *RECOIL_THISCALL zIndexArchive::OpenFileByName(
+void * zIndexArchive::OpenFileByName(
     const char *filename,
     unsigned int *outSize
 ) {
@@ -1227,7 +1227,7 @@ RECOIL_NOINLINE void *RECOIL_THISCALL zIndexArchive::OpenFileByName(
 }
 
 // Reimplements 0x4a6670: zIndexArchive::ReadFileByName
-RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::ReadFileByName(
+int zIndexArchive::ReadFileByName(
     const char *filename,
     void *buffer,
     unsigned int *bufferSize
@@ -1262,7 +1262,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zIndexArchive::ReadFileByName(
 
 namespace zArchive {
 // Reimplements 0x48d210: zArchive::MountIndexArchive
-RECOIL_NOINLINE int RECOIL_FASTCALL MountIndexArchive(
+int __fastcall MountIndexArchive(
     const char *path,
     int setCurrent
 ) {
@@ -1291,7 +1291,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL MountIndexArchive(
 } // namespace zArchive
 
 // Reimplements 0x48cda0: zReader_AllocateNode
-extern "C" RECOIL_NOINLINE zReader::Node *RECOIL_FASTCALL zReader_AllocateNode(
+extern "C" zReader::Node *__fastcall zReader_AllocateNode(
     int headerWord,
     int fieldCount
 ) {
@@ -1301,7 +1301,7 @@ extern "C" RECOIL_NOINLINE zReader::Node *RECOIL_FASTCALL zReader_AllocateNode(
 }
 
 // Reimplements 0x4a6110: zReader_ReadString
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zReader_ReadString(
+extern "C" int __fastcall zReader_ReadString(
     void *hFile,
     zReader::Value *outString
 ) {
@@ -1339,7 +1339,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zReader_ReadString(
 }
 
 // Reimplements 0x48d080: zReader_ReadNode
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zReader_ReadNode(
+extern "C" int __fastcall zReader_ReadNode(
     void *hFile,
     zReader::Node *outNode
 ) {
@@ -1410,7 +1410,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zReader_ReadNode(
 }
 
 // Reimplements 0x48ce60: zReader_FreeNodeRecursive
-extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zReader_FreeNodeRecursive(
+extern "C" void __fastcall zReader_FreeNodeRecursive(
     zReader::Node *node
 ) {
     if (node->type == zReader::ZRDR_NODE_STRING) {
@@ -1432,7 +1432,7 @@ extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zReader_FreeNodeRecursive(
 }
 
 // Reimplements 0x48d1c0: zReader_OpenFileFromMountedArchives
-extern "C" RECOIL_NOINLINE void *RECOIL_FASTCALL zReader_OpenFileFromMountedArchives(
+extern "C" void *__fastcall zReader_OpenFileFromMountedArchives(
     const char *path
 ) {
     if (g_zArchive_MountedList == 0) {
@@ -1463,7 +1463,7 @@ extern "C" RECOIL_NOINLINE void *RECOIL_FASTCALL zReader_OpenFileFromMountedArch
 namespace zReader {
 // Reimplements 0x4a5c20: zReader::FileExists
 // Uses the imported CRT `_access` provider and returns a 1/0 existence flag.
-RECOIL_NOINLINE int RECOIL_FASTCALL FileExists(
+int __fastcall FileExists(
     const char *path
 ) {
     const int accessResult = _access(
@@ -1474,7 +1474,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FileExists(
 }
 
 // Reimplements 0x48cd40: zReader::TryResolvePath
-RECOIL_NOINLINE const char *RECOIL_FASTCALL TryResolvePath(
+const char *__fastcall TryResolvePath(
     const char *filename,
     const char *extraSearchPath
 ) {
@@ -1505,7 +1505,7 @@ RECOIL_NOINLINE const char *RECOIL_FASTCALL TryResolvePath(
 }
 
 // Reimplements 0x421e20: zReader::BuildResolvedParentDir
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildResolvedParentDir(
+int __fastcall BuildResolvedParentDir(
     const char *filename,
     char *outParentDir
 ) {
@@ -1540,7 +1540,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL BuildResolvedParentDir(
 }
 
 // Reimplements 0x48cdc0: zReader::LoadNodeFromPath
-RECOIL_NOINLINE Node *RECOIL_FASTCALL LoadNodeFromPath(
+Node *__fastcall LoadNodeFromPath(
     const char *path,
     const char *,
     int
@@ -1574,7 +1574,7 @@ RECOIL_NOINLINE Node *RECOIL_FASTCALL LoadNodeFromPath(
 }
 
 // Reimplements 0x48ce40: zReader::FreeLoadedTree
-RECOIL_NOINLINE int RECOIL_FASTCALL FreeLoadedTree(
+int __fastcall FreeLoadedTree(
     Node *loaded
 ) {
     if (loaded != 0) {
@@ -1586,7 +1586,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FreeLoadedTree(
 }
 
 // Reimplements 0x420be0: zReader::LoadMoversFromZrd
-RECOIL_NOINLINE void RECOIL_CDECL LoadMoversFromZrd() {
+void LoadMoversFromZrd() {
     Node *const treeRoot = LoadNodeFromPath(
         "movers.zrd",
         0,
@@ -1623,7 +1623,7 @@ RECOIL_NOINLINE void RECOIL_CDECL LoadMoversFromZrd() {
 } // namespace zReader
 
 // Reimplements 0x4a5c40: zReader_FileExists_Wrapper
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zReader_FileExists_Wrapper(
+extern "C" int __fastcall zReader_FileExists_Wrapper(
     const char *path
 ) {
     return zReader::FileExists(path);

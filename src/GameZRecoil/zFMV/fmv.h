@@ -3,19 +3,14 @@
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 
+#include "GameZRecoil/zVideo/zVideo.h"
 #include "recoil/recoil_callconv.h"
+
+#include <vfw.h>
 
 #ifndef _WINDEF_
 struct HWND__;
 typedef HWND__ *HWND;
-#endif
-
-#if defined(_MSC_VER) && _MSC_VER >= 1300
-#define RECOIL_FMV_NOINLINE __declspec(noinline)
-#elif defined(__GNUC__) || defined(__clang__)
-#define RECOIL_FMV_NOINLINE __attribute__((noinline))
-#else
-#define RECOIL_FMV_NOINLINE
 #endif
 
 struct zFMV_Action;
@@ -39,36 +34,36 @@ struct zFMV_Playback {
     zFMV_Rect destinationRect;
     char *mediaPathDup;
 
-    RECOIL_FMV_NOINLINE zFMV_Playback *RECOIL_THISCALL Init(
+    zFMV_Playback * Init(
         const char *mediaPath,
         HWND notifyHwnd
     );
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL OpenAndPlay(
+    void Destructor();
+    void OpenAndPlay(
         unsigned int startMs,
         int endMs,
         int notifyFlag
     );
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL StopAndClose();
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL ReportMciError(unsigned int mciError);
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL SetDestRect(const zFMV_Rect *rect);
+    void StopAndClose();
+    int ReportMciError(unsigned int mciError);
+    int SetDestRect(const zFMV_Rect *rect);
 };
 
 struct zFMV_Action_Vtbl {
-    zFMV_Action *(RECOIL_THISCALL *ScalarDeletingDestructor)(
+    zFMV_Action *( *ScalarDeletingDestructor)(
         zFMV_Action *self,
         unsigned int flags
     );
-    int(RECOIL_THISCALL *Update)(
+    int( *Update)(
         zFMV_Action *self,
         double timeSec
     );
-    void(RECOIL_THISCALL *Begin)(
+    void( *Begin)(
         zFMV_Action *self,
         double timeSec
     );
-    void(RECOIL_THISCALL *End)(zFMV_Action *self);
-    void(RECOIL_THISCALL *RunBlocking)(zFMV_Action *self);
+    void( *End)(zFMV_Action *self);
+    void( *RunBlocking)(zFMV_Action *self);
     void *reserved14;
 };
 
@@ -76,17 +71,17 @@ struct zFMV_Action {
     zFMV_Action_Vtbl *vftable;
     zFMV_Action *next;
 
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_FMV_NOINLINE zFMV_Action *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
-    RECOIL_FMV_NOINLINE zFMV_Action *RECOIL_THISCALL DerivedScalarDeletingDestructor(
+    void Destructor();
+    zFMV_Action * ScalarDeletingDestructor(unsigned int flags);
+    zFMV_Action * DerivedScalarDeletingDestructor(
         unsigned int flags
     );
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL NoOpBegin(double timeSec);
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL NoOpEnd();
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL NoOpUpdate(double timeSec);
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL FlipSurfaces();
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL RunBlockingImmediate();
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL RunBlockingTimed();
+    void NoOpBegin(double timeSec);
+    void NoOpEnd();
+    int NoOpUpdate(double timeSec);
+    void FlipSurfaces();
+    void RunBlockingImmediate();
+    void RunBlockingTimed();
 };
 
 struct zFMV_ActionImage : zFMV_Action {
@@ -96,21 +91,21 @@ struct zFMV_ActionImage : zFMV_Action {
     int forcePrimaryPostprocess;
     int blitRect[4];
 
-    RECOIL_FMV_NOINLINE zFMV_ActionImage *RECOIL_THISCALL ConstructorWithScreenRect(
+    zFMV_ActionImage * ConstructorWithScreenRect(
         const char *imagePath,
         int doAdjustSurfaces,
         int blitX,
         int blitY
     );
-    RECOIL_FMV_NOINLINE zFMV_ActionImage *RECOIL_THISCALL ConstructorScaled(
+    zFMV_ActionImage * ConstructorScaled(
         const char *imagePath,
         int doAdjustSurfaces
     );
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL Begin(double timeSec);
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL Update(double timeSec);
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL End();
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_FMV_NOINLINE zFMV_ActionImage *RECOIL_THISCALL ScalarDeletingDestructor(
+    void Begin(double timeSec);
+    int Update(double timeSec);
+    void End();
+    void Destructor();
+    zFMV_ActionImage * ScalarDeletingDestructor(
         unsigned int flags
     );
 };
@@ -125,7 +120,7 @@ struct zFMV_ActionFade : zFMV_Action {
     void *capturedFrame;
     int maxAlpha;
 
-    RECOIL_FMV_NOINLINE zFMV_ActionFade *RECOIL_THISCALL Constructor(
+    zFMV_ActionFade * Constructor(
         int red,
         int green,
         int blue,
@@ -133,9 +128,9 @@ struct zFMV_ActionFade : zFMV_Action {
         int fadeDirectionSign,
         int maxAlpha
     );
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL Begin(double timeSec);
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL Update(double timeSec);
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL End();
+    void Begin(double timeSec);
+    int Update(double timeSec);
+    void End();
 };
 
 struct zFMV_ActionPlayAvi : zFMV_Action {
@@ -148,34 +143,34 @@ struct zFMV_ActionPlayAvi : zFMV_Action {
     zFMV_Rect destRect;
     int reserved34;
 
-    RECOIL_FMV_NOINLINE zFMV_ActionPlayAvi *RECOIL_THISCALL Constructor(
+    zFMV_ActionPlayAvi * Constructor(
         const char *mediaRootPath,
         const char *mediaFileName,
         int modeFlags
     );
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_FMV_NOINLINE zFMV_ActionPlayAvi *RECOIL_THISCALL ScalarDeletingDestructor(
+    void Destructor();
+    zFMV_ActionPlayAvi * ScalarDeletingDestructor(
         unsigned int flags
     );
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL Update(double timeSec);
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL Begin(double timeSec);
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL End();
+    int Update(double timeSec);
+    void Begin(double timeSec);
+    void End();
 };
 
 struct zFMV_ActionPlayMci : zFMV_Action {
     char *mediaPath;
     zFMV_Playback *playback;
 
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL Begin(double timeSec);
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL Update(double timeSec);
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL End();
-    RECOIL_FMV_NOINLINE zFMV_ActionPlayMci *RECOIL_THISCALL Constructor(
+    void Begin(double timeSec);
+    int Update(double timeSec);
+    void End();
+    zFMV_ActionPlayMci * Constructor(
         const char *mediaRootPath,
         const char *playbackTitle,
         HWND notifyHwnd
     );
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_FMV_NOINLINE zFMV_ActionPlayMci *RECOIL_THISCALL ScalarDeletingDestructor(
+    void Destructor();
+    zFMV_ActionPlayMci * ScalarDeletingDestructor(
         unsigned int flags
     );
 };
@@ -184,8 +179,8 @@ struct zFMV_ActionWait : zFMV_Action {
     float durationSec;
     float startSec;
 
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL Begin(double timeSec);
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL Update(double timeSec);
+    void Begin(double timeSec);
+    int Update(double timeSec);
 };
 
 struct zFMV_ActionBlur : zFMV_Action {
@@ -194,21 +189,21 @@ struct zFMV_ActionBlur : zFMV_Action {
     zFMV_Rect swSurfaceRect;
     zFMV_Rect primarySurfaceRect;
 
-    RECOIL_FMV_NOINLINE zFMV_ActionBlur *RECOIL_THISCALL Constructor(
+    zFMV_ActionBlur * Constructor(
         int framesRemaining,
         int blurPassCount
     );
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL Begin(double timeSec);
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL End();
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL Update(double timeSec);
+    void Begin(double timeSec);
+    void End();
+    int Update(double timeSec);
 };
 
 struct zFMV_ActionBlurH : zFMV_ActionBlur {
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL Update(double timeSec);
+    int Update(double timeSec);
 };
 
 struct zFMV_ActionBlurV : zFMV_ActionBlur {
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL Update(double timeSec);
+    int Update(double timeSec);
 };
 
 struct zFMV_ActionPlaySound : zFMV_Action {
@@ -217,7 +212,7 @@ struct zFMV_ActionPlaySound : zFMV_Action {
     char sampleName[0x32];
     unsigned char reserved42[2];
 
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL Begin(double timeSec);
+    void Begin(double timeSec);
 };
 
 struct zFMV_Script {
@@ -229,39 +224,71 @@ struct zFMV_Script {
     zFMV_Action *m_tail;
     zFMV_Action *m_cur;
 
-    RECOIL_FMV_NOINLINE zFMV_Script *RECOIL_THISCALL Init(
+    zFMV_Script * Init(
         const char *zrdPath,
         const char *tagPrefix,
         HWND hWnd
     );
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL LoadActionsFromZrd(
+    int LoadActionsFromZrd(
         const char *zrdPath,
         const char *tagPrefix
     );
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL AppendAction(zFMV_Action *action);
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL BeginCurrentAction(double startTimeSec);
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL BeginAtTime();
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL Update(double timeSec);
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL UpdateAtTime();
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL RunBlocking(int abortOnKey);
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL BeginNow(int destroyActions);
-    void RECOIL_THISCALL Cleanup();
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL Reset(int destroyActions);
+    int AppendAction(zFMV_Action *action);
+    int BeginCurrentAction(double startTimeSec);
+    int BeginAtTime();
+    int Update(double timeSec);
+    int UpdateAtTime();
+    int RunBlocking(int abortOnKey);
+    void BeginNow(int destroyActions);
+    void Cleanup();
+    void Reset(int destroyActions);
 };
 
-struct zFMV_Stream {
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL Constructor();
-    RECOIL_FMV_NOINLINE zFMV_Stream *RECOIL_THISCALL Init(
+struct zFMV_Stream : zVidImagePartial {
+    char *mediaPath;
+    int hasVideoStream;
+    PAVISTREAM videoStream;
+    void *srcFormat;
+    void *dstFormat;
+    int videoFrameCount;
+    AVISTREAMINFOA videoStreamInfo;
+    int compressedFrameBufferBytes;
+    HIC videoDecompressor;
+    void *compressedFrameBuffer;
+    int decodedFrameStrideBytes;
+    unsigned int videoFramesPerSecond;
+    unsigned int msPerFrame;
+    int reservedF4;
+    int reservedF8;
+    int frameWidth;
+    int frameHeight;
+    unsigned int currentFrameIndex;
+    CRITICAL_SECTION criticalSection;
+    unsigned char reserved120[0x10];
+    int hasAudioStream;
+    PAVISTREAM audioStream;
+    AVISTREAMINFOA audioStreamInfo;
+    void *audioFormat;
+    unsigned int audioSegmentBytes;
+    void *audioBuffer;
+    zSndSample *audioSample;
+    int readStreamingAudio;
+    unsigned int audioReadSampleIndex;
+    int audioRefillSecondHalfNext;
+    int modeFlags;
+
+    void Constructor();
+    zFMV_Stream * Init(
         const char *mediaPath,
         int modeFlags
     );
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL OpenAudio();
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL ReadAndDecodeFrame(unsigned int frameIndex);
-    RECOIL_FMV_NOINLINE int RECOIL_THISCALL FillAudioBuffer(
+    void OpenAudio();
+    int ReadAndDecodeFrame(unsigned int frameIndex);
+    int FillAudioBuffer(
         unsigned int offset,
         unsigned int bytes
     );
-    RECOIL_FMV_NOINLINE void RECOIL_THISCALL Destructor();
+    void Destructor();
 };
 
 extern zFMV_Action_Vtbl g_zFMV_ActionBase_Vtable;
@@ -524,5 +551,174 @@ RECOIL_STATIC_ASSERT(
         zFMV_Script,
         m_cur
     ) == 0x1c
+);
+RECOIL_STATIC_ASSERT(sizeof(zFMV_Stream) == 0x1e4);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        mediaPath
+    ) == 0x38
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        hasVideoStream
+    ) == 0x3c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        videoStream
+    ) == 0x40
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        srcFormat
+    ) == 0x44
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        dstFormat
+    ) == 0x48
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        videoFrameCount
+    ) == 0x4c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        videoStreamInfo
+    ) == 0x50
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        compressedFrameBufferBytes
+    ) == 0xdc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        videoDecompressor
+    ) == 0xe0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        compressedFrameBuffer
+    ) == 0xe4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        decodedFrameStrideBytes
+    ) == 0xe8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        videoFramesPerSecond
+    ) == 0xec
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        msPerFrame
+    ) == 0xf0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        frameWidth
+    ) == 0xfc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        frameHeight
+    ) == 0x100
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        currentFrameIndex
+    ) == 0x104
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        criticalSection
+    ) == 0x108
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        hasAudioStream
+    ) == 0x130
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        audioStream
+    ) == 0x134
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        audioStreamInfo
+    ) == 0x138
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        audioFormat
+    ) == 0x1c4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        audioSegmentBytes
+    ) == 0x1c8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        audioBuffer
+    ) == 0x1cc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        audioSample
+    ) == 0x1d0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        readStreamingAudio
+    ) == 0x1d4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        audioReadSampleIndex
+    ) == 0x1d8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        audioRefillSecondHalfNext
+    ) == 0x1dc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zFMV_Stream,
+        modeFlags
+    ) == 0x1e0
 );
 #endif

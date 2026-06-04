@@ -792,7 +792,7 @@ bool ArePointsStrictlyNegativeToAdjacentEdgePair(
 namespace zGeometry_Segment {
 // Reimplements 0x46be20: zGeometry_Segment::IntersectsSegmentXY
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL IntersectsSegmentXY(
+int __fastcall IntersectsSegmentXY(
     zVec3 *segmentAPoint0,
     zVec3 *segmentAPoint1,
     zVec3 *segmentBPoint0,
@@ -828,7 +828,7 @@ namespace zGeometry_Model {
 // Reimplements 0x46b650:
 // zGeometry_Model::GetLinearBufferOfPolygonVertices
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL GetLinearBufferOfPolygonVertices(
+zVec3 *__fastcall GetLinearBufferOfPolygonVertices(
     zModel_DrawBatchBasePartial *model,
     zModel_PolygonPartial *polygon,
     zVec3 *points
@@ -851,7 +851,7 @@ RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL GetLinearBufferOfPolygonVertices(
 namespace zGeometry_Vec3 {
 // Reimplements 0x469ca0: zGeometry_Vec3::IsBetweenEndpointsXY
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL IsBetweenEndpointsXY(
+int __fastcall IsBetweenEndpointsXY(
     zVec3 *testPoint,
     zVec3 *startPoint,
     zVec3 *endPoint
@@ -876,7 +876,7 @@ namespace zGeometry_Vec3Array {
 // Reimplements 0x46a080:
 // zGeometry_Vec3Array::RemoveAdjacentDuplicatePointsXY
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL RemoveAdjacentDuplicatePointsXY(
+int __fastcall RemoveAdjacentDuplicatePointsXY(
     zVec3 *vertices,
     int count
 ) {
@@ -923,7 +923,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL RemoveAdjacentDuplicatePointsXY(
 
 // Reimplements 0x46a600: zGeometry_Vec3Array::RotatePos90AroundX
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RotatePos90AroundX(
+void __fastcall RotatePos90AroundX(
     int pointCount,
     zVec3 *points
 ) {
@@ -940,7 +940,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RotatePos90AroundX(
 
 // Reimplements 0x46a9c0: zGeometry_Vec3Array::ComputeBoundsXY
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ComputeBoundsXY(
+void __fastcall ComputeBoundsXY(
     zGeometry_BoundsXY *outBounds,
     zVec3 *points,
     int pointCount
@@ -974,7 +974,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ComputeBoundsXY(
 namespace zGeometry_WeilerBuffer {
 // Reimplements 0x467600: zGeometry_WeilerBuffer::Init
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL Init(
+void __fastcall Init(
     zGeometry_WeilerBufferPartial *self,
     int initialCapacity,
     int elementSize
@@ -992,7 +992,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Init(
 
 // Reimplements 0x467660: zGeometry_WeilerBuffer::GetAppendSpace
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void *RECOIL_FASTCALL GetAppendSpace(
+void *__fastcall GetAppendSpace(
     zGeometry_WeilerBufferPartial *self,
     int appendCount,
     void **outBase
@@ -1020,7 +1020,7 @@ RECOIL_NOINLINE void *RECOIL_FASTCALL GetAppendSpace(
 
 // Reimplements 0x469ae0: zGeometry_WeilerBuffer::SetCountAndAppendPtr
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetCountAndAppendPtr(
+void __fastcall SetCountAndAppendPtr(
     zGeometry_WeilerBufferPartial *self,
     int count
 ) {
@@ -1030,7 +1030,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetCountAndAppendPtr(
 
 // Reimplements 0x467630: zGeometry_WeilerBuffer::Destroy
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL Destroy(
+void __fastcall Destroy(
     zGeometry_WeilerBufferPartial *self
 ) {
     if (self->base != 0) {
@@ -1048,7 +1048,7 @@ namespace zGeometry_WeilerContourSegment {
 // Reimplements 0x468410:
 // zGeometry_WeilerContourSegment::UpdateBounds
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateBounds(
+void __fastcall UpdateBounds(
     zGeometry_WeilerContourSegmentPartial *segment
 ) {
     zVec3 *const start = segment->startPoint;
@@ -1078,7 +1078,7 @@ namespace zGeometry_WeilerContourSegmentArray {
 // Reimplements 0x4693a0:
 // zGeometry_WeilerContourSegmentArray::UpdateBounds
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateBounds(
+void __fastcall UpdateBounds(
     zGeometry_WeilerContourSegmentPartial *segments,
     int segmentCount
 ) {
@@ -1090,7 +1090,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateBounds(
 // Reimplements 0x4693c0:
 // zGeometry_WeilerContourSegmentArray::InitFromPointList
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL InitFromPointList(
+void __fastcall InitFromPointList(
     zGeometry_WeilerContourSegmentPartial *segments,
     zVec3 *points,
     int pointCount,
@@ -1120,7 +1120,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL InitFromPointList(
 namespace zGeometry_Weiler {
 // Reimplements 0x464670: zGeometry_Weiler::GetInputContourAPointList
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL GetInputContourAPointList(
+int __fastcall GetInputContourAPointList(
     zGeometry_WeilerStatePartial *self,
     zVec3 **outPoints
 ) {
@@ -1134,7 +1134,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL GetInputContourAPointList(
 
 // Reimplements 0x464680: zGeometry_Weiler::Init
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE zGeometry_WeilerStatePartial *RECOIL_FASTCALL Init(
+zGeometry_WeilerStatePartial *__fastcall Init(
     zVec3 *points,
     int pointCount,
     int contourSource
@@ -1219,7 +1219,7 @@ RECOIL_NOINLINE zGeometry_WeilerStatePartial *RECOIL_FASTCALL Init(
 
 // Reimplements 0x464b90: zGeometry_Weiler::InitInputContourPair
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL InitInputContourPair(
+int __fastcall InitInputContourPair(
     zGeometry_WeilerStatePartial *self,
     zVec3 *points,
     int pointCount,
@@ -1292,7 +1292,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL InitInputContourPair(
 
 // Reimplements 0x464810: zGeometry_Weiler::ClipPointList
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPointList(
+int __fastcall ClipPointList(
     zGeometry_WeilerStatePartial *self,
     int clipMode,
     zVec3 *points,
@@ -1543,7 +1543,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipPointList(
 
 // Reimplements 0x4676c0: zGeometry_Weiler::EnsureContourOutput
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL EnsureContourOutput(
+int __fastcall EnsureContourOutput(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerContourSegmentPartial *segment
 ) {
@@ -1576,7 +1576,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL EnsureContourOutput(
 
 // Reimplements 0x467710: zGeometry_Weiler::MergeContours
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL MergeContours(
+int __fastcall MergeContours(
     zGeometry_WeilerStatePartial *self
 ) {
     zGeometry_WeilerXingPartial *const xingBase =
@@ -2019,7 +2019,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL MergeContours(
 // Reimplements 0x468580:
 // zGeometry_Weiler::DivideContourSegmentAtPoint
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL DivideContourSegmentAtPoint(
+int __fastcall DivideContourSegmentAtPoint(
     zGeometry_WeilerStatePartial *self,
     zVec3 *xing,
     zGeometry_WeilerContourSegmentPartial *segment,
@@ -2081,7 +2081,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DivideContourSegmentAtPoint(
 // Reimplements 0x468650:
 // zGeometry_Weiler::CreateForwardSegmentPairAtPoint
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL CreateForwardSegmentPairAtPoint(
+int __fastcall CreateForwardSegmentPairAtPoint(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerContourSegmentPartial *firstSegment,
     zGeometry_WeilerContourSegmentPartial *secondSegment,
@@ -2133,7 +2133,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL CreateForwardSegmentPairAtPoint(
 // Reimplements 0x469430:
 // zGeometry_Weiler::GetNextContourSegmentForTraversal
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE zGeometry_WeilerContourSegmentPartial *RECOIL_FASTCALL
+zGeometry_WeilerContourSegmentPartial *__fastcall
 GetNextContourSegmentForTraversal(
     zGeometry_WeilerContourSegmentPartial *segment
 ) {
@@ -2154,7 +2154,7 @@ GetNextContourSegmentForTraversal(
 
 // Reimplements 0x4680b0: zGeometry_Weiler::NewContour
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL NewContour(
+void __fastcall NewContour(
     zGeometry_WeilerStatePartial *self
 ) {
     int contourCount = self->contourBuffer.count;
@@ -2225,7 +2225,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL NewContour(
 // Reimplements 0x468a10:
 // zGeometry_Weiler::ClassifyPointInContourPointListXY
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyPointInContourPointListXY(
+int __fastcall ClassifyPointInContourPointListXY(
     zVec3 *point,
     int contourPointCount,
     zVec3 *contourPoints
@@ -2307,7 +2307,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyPointInContourPointListXY(
 // Reimplements 0x464ea0:
 // zGeometry_Weiler::OutputPreclassifiedContourPairResult
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL OutputPreclassifiedContourPairResult(
+int __fastcall OutputPreclassifiedContourPairResult(
     int contourAPointCount,
     zVec3 *contourAPoints,
     int contourBPointCount,
@@ -2366,7 +2366,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL OutputPreclassifiedContourPairResult(
 // Reimplements 0x464c90:
 // zGeometry_Weiler::ClassifyInputContourPairBounds
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyInputContourPairBounds(
+int __fastcall ClassifyInputContourPairBounds(
     zGeometry_WeilerStatePartial *self
 ) {
     const int inputPointCountA = self->inputContourABuffer.count;
@@ -2420,7 +2420,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyInputContourPairBounds(
 // Reimplements 0x468700:
 // zGeometry_Weiler::OutputSelectedInputContourToPolygonSetA
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL OutputSelectedInputContourToPolygonSetA(
+int __fastcall OutputSelectedInputContourToPolygonSetA(
     zGeometry_WeilerStatePartial *self,
     int mode
 ) {
@@ -2463,7 +2463,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL OutputSelectedInputContourToPolygonSetA(
 
 // Reimplements 0x4682c0: zGeometry_Weiler::OutputContourToPolygonSet
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL OutputContourToPolygonSet(
+int __fastcall OutputContourToPolygonSet(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerContourOutputPartial *contour,
     zGeometry_WeilerBufferPartial *polygonBuffer,
@@ -2517,7 +2517,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL OutputContourToPolygonSet(
 
 // Reimplements 0x4681a0: zGeometry_Weiler::OutputContoursForClipMode
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL OutputContoursForClipMode(
+int __fastcall OutputContoursForClipMode(
     zGeometry_WeilerStatePartial *self
 ) {
     int contourCount = self->contourBuffer.count;
@@ -2595,7 +2595,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL OutputContoursForClipMode(
 // Reimplements 0x469d60:
 // zGeometry_Weiler::SelectForwardStartPointInContourA
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SelectForwardStartPointInContourA(
+void __fastcall SelectForwardStartPointInContourA(
     zVec3 *point,
     zVec3 **selectedPoint,
     zGeometry_WeilerStatePartial *self
@@ -2645,7 +2645,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SelectForwardStartPointInContourA(
 
 // Reimplements 0x4687b0: zGeometry_Weiler::GenerateOutsideResults
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL GenerateOutsideResults(
+int __fastcall GenerateOutsideResults(
     zGeometry_WeilerStatePartial *self
 ) {
     const int contourAPointCount = self->inputContourABuffer.count;
@@ -2763,7 +2763,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL GenerateOutsideResults(
 // Reimplements 0x469a30:
 // zGeometry_Weiler::PreclassifyInputContourAAdjacentEdgePairs
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL PreclassifyInputContourAAdjacentEdgePairs(
+void __fastcall PreclassifyInputContourAAdjacentEdgePairs(
     zGeometry_WeilerStatePartial *self
 ) {
     const int pointCount = self->inputContourABuffer.count;
@@ -2833,7 +2833,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL PreclassifyInputContourAAdjacentEdgePairs(
 // Reimplements 0x468470:
 // zGeometry_Weiler::BuildPointSideTablesForContourPair
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL BuildPointSideTablesForContourPair(
+void __fastcall BuildPointSideTablesForContourPair(
     zGeometry_WeilerStatePartial *self
 ) {
     BuildPointSideTable(
@@ -2856,7 +2856,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BuildPointSideTablesForContourPair(
 // Reimplements 0x464f70:
 // zGeometry_Weiler::PreclassifyInputContourPair
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL PreclassifyInputContourPair(
+int __fastcall PreclassifyInputContourPair(
     zGeometry_WeilerStatePartial *self
 ) {
     WeilerPreclassifyContourPacket *const contourPacket =
@@ -3229,7 +3229,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL PreclassifyInputContourPair(
 // Reimplements 0x465ac0:
 // zGeometry_Weiler::ClassifyContainedContour
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyContainedContour(
+int __fastcall ClassifyContainedContour(
     zGeometry_WeilerStatePartial *self
 ) {
     WeilerPreclassifyContourPacket *const contourPacket =
@@ -3322,7 +3322,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyContainedContour(
 
 // Reimplements 0x468fa0: zGeometry_Weiler::ClassifyIntersect2d
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyIntersect2d(
+int __fastcall ClassifyIntersect2d(
     zVec3 *edge0Start,
     zVec3 *edge0End,
     zVec3 *edge1Start,
@@ -3420,7 +3420,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyIntersect2d(
 
 // Reimplements 0x468c40: zGeometry_Weiler::Intersect2d
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL Intersect2d(
+int __fastcall Intersect2d(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerXingPartial **outXing,
     zVec3 edge0Start,
@@ -3549,7 +3549,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Intersect2d(
 // Reimplements 0x469450:
 // zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyAdjacentEdgePairAgainstContourSegment(
+int __fastcall ClassifyAdjacentEdgePairAgainstContourSegment(
     zGeometry_WeilerContourSegmentPartial *firstSegment,
     zGeometry_WeilerContourSegmentPartial *secondSegment,
     zGeometry_WeilerContourSegmentPartial *contourSegment
@@ -3588,7 +3588,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyAdjacentEdgePairAgainstContourSegmen
 // Reimplements 0x469560:
 // zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
+int __fastcall ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
     zGeometry_WeilerContourSegmentPartial *pairAFirstSegment,
     zGeometry_WeilerContourSegmentPartial *pairASecondSegment,
     zGeometry_WeilerContourSegmentPartial *pairBFirstSegment,
@@ -3638,7 +3638,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyAdjacentEdgePairAgainstAdjacentEdgeP
 
 // Reimplements 0x46a1f0: zGeometry_Weiler::ValidateXings
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ValidateXings(
+int __fastcall ValidateXings(
     int xingCount,
     zGeometry_WeilerXingPartial *xingArray,
     int *failedXingIndex
@@ -3686,7 +3686,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ValidateXings(
 // Reimplements 0x4683a0:
 // zGeometry_Weiler::TogglePointAxesForContourSource
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL TogglePointAxesForContourSource(
+void __fastcall TogglePointAxesForContourSource(
     zGeometry_WeilerStatePartial *self
 ) {
     if (self->inputContourBBuffer.base != 0) {
@@ -3706,7 +3706,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TogglePointAxesForContourSource(
 // Reimplements 0x469960:
 // zGeometry_Weiler::RecenterPointSetsIfOutOfRange
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RecenterPointSetsIfOutOfRange(
+void __fastcall RecenterPointSetsIfOutOfRange(
     zGeometry_WeilerStatePartial *self
 ) {
     if (self->inputContourBBuffer.base != 0) {
@@ -3743,7 +3743,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RecenterPointSetsIfOutOfRange(
 
 // Reimplements 0x469af0: zGeometry_Weiler::RestorePointTranslation
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RestorePointTranslation(
+void __fastcall RestorePointTranslation(
     zGeometry_WeilerStatePartial *self
 ) {
     const float translationX = self->pointTranslationX;
@@ -3768,7 +3768,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RestorePointTranslation(
 // Reimplements 0x469b60:
 // zGeometry_Weiler::RestoreOutputZFromInputPlane
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RestoreOutputZFromInputPlane(
+void __fastcall RestoreOutputZFromInputPlane(
     zGeometry_WeilerStatePartial *self
 ) {
     zVec3 *const inputPoints = (zVec3 *)(self->inputContourBBuffer.base);
@@ -3809,7 +3809,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RestoreOutputZFromInputPlane(
 
 // Reimplements 0x4647d0: zGeometry_Weiler::DestroyState
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL DestroyState(
+void __fastcall DestroyState(
     zGeometry_WeilerStatePartial *self
 ) {
     if (self == 0) {
@@ -3827,7 +3827,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DestroyState(
 namespace zGeometry_WeilerClipOutput {
 // Reimplements 0x464b30: zGeometry_WeilerClipOutput::Destroy
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL Destroy(
+void __fastcall Destroy(
     zGeometry_WeilerClipOutputPartial *self
 ) {
     if (self == 0) {
@@ -3859,7 +3859,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Destroy(
 namespace zGeometry_ClipPolygon {
 // Reimplements 0x46ab40: zGeometry_ClipPolygon::FindPointIndexXY
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL FindPointIndexXY(
+int __fastcall FindPointIndexXY(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zVec3 *point
 ) {
@@ -3879,7 +3879,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindPointIndexXY(
 // Reimplements 0x46ac80:
 // zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL FindPointInsertionEdgeXYIndex(
+int __fastcall FindPointInsertionEdgeXYIndex(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zVec3 *point
 ) {
@@ -3924,7 +3924,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindPointInsertionEdgeXYIndex(
 
 // Reimplements 0x46ab90: zGeometry_ClipPolygon::UpsertPointListXY
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL UpsertPointListXY(
+int __fastcall UpsertPointListXY(
     zGeometry_ClipPolygonPartial *clipPolygon,
     int pointCount,
     zVec3 *points
@@ -3981,7 +3981,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL UpsertPointListXY(
 // Reimplements 0x464790:
 // zGeometry_ClipPolygon::ResetWeilerStateFromContourPoints
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ResetWeilerStateFromContourPoints(
+int __fastcall ResetWeilerStateFromContourPoints(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zVec3 *points,
     int pointCount
@@ -4004,7 +4004,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ResetWeilerStateFromContourPoints(
 
 // Reimplements 0x46ab10: zGeometry_ClipPolygon::FinalizeAndDestroy
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL FinalizeAndDestroy(
+void __fastcall FinalizeAndDestroy(
     zGeometry_ClipPolygonPartial *clipPolygon
 ) {
     if (clipPolygon->points != 0) {

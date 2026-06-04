@@ -197,19 +197,19 @@ namespace {
     }
 
     zBBox3f *SecondaryBBox(zClass_NodePartial * node) {
-        return (zBBox3f *)((unsigned char *)(node) + 0xa4);
+        return &zClass_NodeSlotFromNode(node)->secondaryBounds;
     }
 
     zBBox3f *PrimaryBBox(zClass_NodePartial * node) {
-        return (zBBox3f *)((unsigned char *)(node) + 0x8c);
+        return &zClass_NodeSlotFromNode(node)->primaryBounds;
     }
 
     const zBBox3f *PrimaryBBox(const zClass_NodePartial *node) {
-        return (const zBBox3f *)((const unsigned char *)(node) + 0x8c);
+        return &zClass_NodeSlotFromNode(node)->primaryBounds;
     }
 
     const zBBox3f *SecondaryBBox(const zClass_NodePartial *node) {
-        return (const zBBox3f *)((const unsigned char *)(node) + 0xa4);
+        return &zClass_NodeSlotFromNode(node)->secondaryBounds;
     }
 
     void CopyBBoxToCorners(
@@ -357,7 +357,7 @@ namespace {
 
 namespace zClass_Class {
     // Reimplements 0x4478c0: zClass_Class::AllocNodeFromFreeList
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL AllocNodeFromFreeList() {
+    zClass_NodePartial *AllocNodeFromFreeList() {
         const int index = g_zClass_NodeFreeHeadIndex;
         if (index == -1) {
             zError::ReportOld(
@@ -398,7 +398,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x448cc0: zClass_Class::gwNodeUpdate
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeUpdate(zClass_NodePartial * node) {
+    int __fastcall gwNodeUpdate(zClass_NodePartial * node) {
         int result = 0;
         bool needsBBoxRecalc = false;
         const zVec3 unitScale = UnitScale();
@@ -503,7 +503,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x449420: zClass_Class::gwNodeUpdateDisplayInstance
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeUpdateDisplayInstance(zClass_NodePartial * node) {
+    int __fastcall gwNodeUpdateDisplayInstance(zClass_NodePartial * node) {
         if (ReportNullNode(
             0xb31,
             node
@@ -515,7 +515,7 @@ namespace zClass_Class {
         if (di != 0) {
             zDi::RebuildBounds(
                 di,
-                (zBoundsMinMaxPartial *)((unsigned char *)(node) + 0x8c)
+                (zBoundsMinMaxPartial *)(PrimaryBBox(node))
             );
             node->flags |= 0x200;
         } else {
@@ -527,7 +527,7 @@ namespace zClass_Class {
 
     // Reimplements 0x448760: zClass_Class::gwNodeGetBBox
     // (D:\Proj\GameZRecoil\zClass\Class.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwNodeGetBBox(
         zClass_NodePartial * node,
         zBBox3f * outBBox
@@ -560,7 +560,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x4487c0: zClass_Class::gwNodeGetWorldBBoxCorners
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwNodeGetWorldBBoxCorners(
         zClass_NodePartial * node,
         zBBoxCorners * outCorners
@@ -627,7 +627,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x448920: zClass_Class::gwNodeGetViewBBoxCorners
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwNodeGetViewBBoxCorners(
         zClass_NodePartial * node,
         zBBoxCorners * outCorners
@@ -745,7 +745,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x4491b0: zClass_Class::gwNodeComputeChildBBox
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeComputeChildBBox(zClass_NodePartial * node) {
+    int __fastcall gwNodeComputeChildBBox(zClass_NodePartial * node) {
         if (ReportNullNode(
             0xaa3,
             node
@@ -820,7 +820,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x448e90: zClass_Class::gwNodeRecalcBBox
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeRecalcBBox(zClass_NodePartial * node) {
+    int __fastcall gwNodeRecalcBBox(zClass_NodePartial * node) {
         if (ReportNullNode(
             0x9d0,
             node
@@ -928,7 +928,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x447c60: zClass_Class::gwNodeSetActive
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetActive(
+    int __fastcall gwNodeSetActive(
         zClass_NodePartial * node,
         int active
     ){
@@ -971,7 +971,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x447d20: zClass_Class::gwNodeSetFlag16
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetFlag16(
+    int __fastcall gwNodeSetFlag16(
         zClass_NodePartial * node,
         int value
     ){
@@ -992,7 +992,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x447d70: zClass_Class::gwNodeSetFlag17
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetFlag17(
+    int __fastcall gwNodeSetFlag17(
         zClass_NodePartial * node,
         int value
     ){
@@ -1013,7 +1013,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x447e60: zClass_Class::gwNodeSetDisplayInstance
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwNodeSetDisplayInstance(
         zClass_NodePartial * node,
         zDiPartial * displayInstance
@@ -1057,7 +1057,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x447dc0: zClass_Class::gwNodeSetName
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetName(
+    int __fastcall gwNodeSetName(
         zClass_NodePartial * node,
         const char *name
     ){
@@ -1087,7 +1087,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x447e30: zClass_Class::gwNodeGetName
-    RECOIL_NOINLINE char *RECOIL_FASTCALL gwNodeGetName(zClass_NodePartial * node) {
+    char *__fastcall gwNodeGetName(zClass_NodePartial * node) {
         if (ReportNullNode(
             0x40d,
             node
@@ -1099,7 +1099,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x447f00: zClass_Class::gwNodeGetUserData
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwNodeGetUserData(
         zClass_NodePartial * node,
         unsigned int *outData
@@ -1116,7 +1116,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x447f30: zClass_Class::gwNodeSetActionCallback
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwNodeSetActionCallback(
         zClass_NodePartial * node,
         void *actionCallback
@@ -1131,7 +1131,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x447fe0: zClass_Class::gwNodeSetActionCallbackTail
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwNodeSetActionCallbackTail(
         zClass_NodePartial * node,
         void *actionCallback
@@ -1146,7 +1146,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x448090: zClass_Class::gwNodeSetPriority
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetPriority(
+    int __fastcall gwNodeSetPriority(
         zClass_NodePartial * node,
         int priority
     ){
@@ -1177,7 +1177,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x448100: zClass_Class::gwNodeSetCellPickable
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwNodeSetCellPickable(
         zClass_NodePartial * node,
         int value
@@ -1199,7 +1199,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x448140: zClass_Class::gwNodeGetCellPickable
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwNodeGetCellPickable(
         zClass_NodePartial * node,
         int *outValue
@@ -1216,7 +1216,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x448180: zClass_Class::gwNodeGetNodeType
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwNodeGetNodeType(
         zClass_NodePartial * node,
         int *outValue
@@ -1233,7 +1233,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x4481b0: zClass_Class::gwNodeSetRaycastable
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetRaycastable(
+    int __fastcall gwNodeSetRaycastable(
         zClass_NodePartial * node,
         int value
     ){
@@ -1254,7 +1254,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x4481f0: zClass_Class::gwNodeGetRaycastable
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwNodeGetRaycastable(
         zClass_NodePartial * node,
         int *outValue
@@ -1271,7 +1271,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x448230: zClass_Class::gwNodeSetPickable
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetPickable(
+    int __fastcall gwNodeSetPickable(
         zClass_NodePartial * node,
         int value
     ){
@@ -1292,7 +1292,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x448270: zClass_Class::gwNodeGetPickable
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwNodeGetPickable(
         zClass_NodePartial * node,
         int *outValue
@@ -1309,7 +1309,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x4482b0: zClass_Class::gwNodeSetHasHitCallback
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwNodeSetHasHitCallback(
         zClass_NodePartial * node,
         int value
@@ -1331,7 +1331,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x4482f0: zClass_Class::gwNodeSetBypassFarClip
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwNodeSetBypassFarClip(
         zClass_NodePartial * node,
         int value
@@ -1353,7 +1353,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x448330: zClass_Class::gwNodeSetNodeType
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetNodeType(
+    int __fastcall gwNodeSetNodeType(
         zClass_NodePartial * node,
         int nodeType
     ){
@@ -1372,7 +1372,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x448360: zClass_Class::gwNodeClearVariantGate
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwNodeClearVariantGate(
         zClass_NodePartial * node,
         int value
@@ -1392,7 +1392,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x4483a0: zClass_Class::gwNodeSetVertexAlphaOverride
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwNodeSetVertexAlphaOverride(
         zClass_NodePartial * node,
         int value
@@ -1414,7 +1414,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x449ab0: zClass_Class::gwNodeGetRoot
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL gwNodeGetRoot(zClass_NodePartial * node) {
+    zClass_NodePartial *__fastcall gwNodeGetRoot(zClass_NodePartial * node) {
         zClass_NodePartial *current = node;
         if (current == 0) {
             return 0;
@@ -1442,7 +1442,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x452770: zClass_Class::FindSubNodeByName
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL
+    zClass_NodePartial *__fastcall
     FindSubNodeByName(
         zClass_NodePartial * root,
         const char *name
@@ -1472,7 +1472,7 @@ namespace zClass_Class {
 
     // Reimplements 0x447bc0: zClass_Class::FindNodeRecursiveByName
     // (D:\Proj\GameZRecoil\zClass\Class.c)
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL
+    zClass_NodePartial *__fastcall
     FindNodeRecursiveByName(
         zClass_NodePartial * root,
         const char *name
@@ -1505,7 +1505,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x449af0: zClass_Class::gwNodeGetWorldChild
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL gwNodeGetWorldChild(
+    zClass_NodePartial *__fastcall gwNodeGetWorldChild(
         zClass_NodePartial * node
     ) {
         zClass_NodePartial *current = node;
@@ -1535,7 +1535,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x449b40: zClass_Class::SetSingleParentFlagRecursive
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     SetSingleParentFlagRecursive(
         zClass_NodePartial * node,
         int setFlag
@@ -1564,7 +1564,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x452920: zClass_Class::AddChildValidated
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     AddChildValidated(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -1586,7 +1586,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x452970: zClass_Class::RemoveChildValidated
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RemoveChildValidated(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -1609,7 +1609,7 @@ namespace zClass_Class {
 
     // Reimplements 0x4483f0: zClass_Class::AddChild
     // (GameZRecoil/zClass/Class.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     AddChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -1697,7 +1697,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x448570: zClass_Class::RemoveChild
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -1791,7 +1791,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x4484d0: zClass_Class::AddChildGeneric
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     AddChildGeneric(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -1832,7 +1832,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x448660: zClass_Class::RemoveChildGeneric
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RemoveChildGeneric(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -1896,7 +1896,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x447a70: zClass_Class::FreeNodeToFreeList
-    RECOIL_NOINLINE int RECOIL_FASTCALL FreeNodeToFreeList(zClass_NodePartial * node) {
+    int __fastcall FreeNodeToFreeList(zClass_NodePartial * node) {
         if (node == 0) {
             zError::ReportOld(
                 0x400,
@@ -1941,7 +1941,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x447b60: zClass_Class::TryFreeNode
-    RECOIL_NOINLINE int RECOIL_FASTCALL TryFreeNode(zClass_NodePartial * node) {
+    int __fastcall TryFreeNode(zClass_NodePartial * node) {
         if (ReportNullNode(
             0x2f0,
             node
@@ -1963,7 +1963,7 @@ namespace zClass_Class {
 
 namespace zClass_Class {
     // Reimplements 0x447980: zClass_Class::DeleteNodeByType
-    RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNodeByType(zClass_NodePartial * node) {
+    int __fastcall DeleteNodeByType(zClass_NodePartial * node) {
         if (ReportNullNode(
             0x231,
             node
@@ -2010,7 +2010,7 @@ namespace zClass_Class {
 
 namespace gwNode {
     // Reimplements 0x449480: gwNode::BuildNodeToAncestorMatrix
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     BuildNodeToAncestorMatrix(
         zClass_NodePartial * node,
         int matMode
@@ -2142,14 +2142,11 @@ namespace gwNode {
                 break;
             }
             case 8: {
-                void *animateData = ancestor->classData;
-                if ((ancestorFlags & 0x04) != 0 &&
-                    (*(unsigned char *)((unsigned char *)(animateData) + 0x04) & 0x04) != 0) {
+                zClass_AnimateDataPartial *animateData =
+                    (zClass_AnimateDataPartial *)(ancestor->classData);
+                if ((ancestorFlags & 0x04) != 0 && (animateData->statusFlags & 0x04) != 0) {
                     zMath::MatMultiply(
-                        MatrixAt(
-                            animateData,
-                            0x08
-                        ),
+                        (const zMat4x3 *)(animateData->animatedTransform),
                         matMode
                     );
                 }
@@ -2199,7 +2196,7 @@ namespace gwNode {
 
     // Reimplements 0x4497b0: gwNode::GetWorldPosition
     // (D:\Proj\GameZRecoil\zClass\Class.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     GetWorldPosition(
         zClass_NodePartial * node,
         zVec3 * outPosition
@@ -2239,7 +2236,7 @@ namespace gwNode {
 
     // Reimplements 0x449850: gwNode::TransformPoint
     // (D:\Proj\GameZRecoil\zClass\Class.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL TransformPoint(
+    int __fastcall TransformPoint(
         zClass_NodePartial * node,
         zVec3 * point
     ){
@@ -2272,7 +2269,7 @@ namespace gwNode {
 
     // Reimplements 0x4498e0: gwNode::GetWorldPosAndOrientation
     // (D:\Proj\GameZRecoil\zClass\Class.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL GetWorldPosAndOrientation(
+    int __fastcall GetWorldPosAndOrientation(
         zClass_NodePartial * node,
         zVec3 * inOutPosition,
         zVec3 * outOrientation
@@ -2340,7 +2337,7 @@ namespace gwNode {
 namespace zClass_Class {
     // Reimplements 0x44c0e0: zClass_Class::gwNodeRenderDispatch
     // (D:\Proj\GameZRecoil\zClass\Class.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwNodeRenderDispatch(
         zClass_NodePartial * node,
         int siblingCountHint
@@ -2412,7 +2409,7 @@ namespace zClass_Node {
 
     // Reimplements 0x421d60: zClass_Node::MaskExtraFlagsRecursive
     // (GameZRecoil/zClass/Class.c)
-    RECOIL_NOINLINE void RECOIL_FASTCALL
+    void __fastcall
     MaskExtraFlagsRecursive(
         zClass_NodePartial * self,
         int mask
@@ -2428,7 +2425,7 @@ namespace zClass_Node {
     }
 
     // Reimplements 0x421da0: zClass_Node::PropagateExtraFlagsRecursive
-    RECOIL_NOINLINE void RECOIL_FASTCALL
+    void __fastcall
     PropagateExtraFlagsRecursive(
         zClass_NodePartial * self,
         int flags
@@ -2445,7 +2442,7 @@ namespace zClass_Node {
 
     // Reimplements 0x421de0: zClass_Node::PropagateFlagsRecursive
     // (GameZRecoil/zClass/Class.c)
-    RECOIL_NOINLINE void RECOIL_FASTCALL
+    void __fastcall
     PropagateFlagsRecursive(
         zClass_NodePartial * self,
         int flags
@@ -2461,7 +2458,7 @@ namespace zClass_Node {
     }
 
     // Reimplements 0x437e60: zClass_Node::SetContextRecursive
-    RECOIL_NOINLINE void RECOIL_FASTCALL
+    void __fastcall
     SetContextRecursive(
         zClass_NodePartial * self,
         zClass_NodePartial * context,
@@ -2481,7 +2478,7 @@ namespace zClass_Node {
 
     // Reimplements 0x437ea0: zClass_Node::SetDiFlagBit0Recursive
     // (GameZRecoil/zClass/Class.c)
-    RECOIL_NOINLINE void RECOIL_FASTCALL
+    void __fastcall
     SetDiFlagBit0Recursive(
         zClass_NodePartial * node,
         int enabled
@@ -2508,7 +2505,7 @@ namespace zClass_Node {
     }
 
     // Reimplements 0x452860: zClass_Node::SetMaterialFlagBit9ForFlagBit0EntriesRecursive
-    RECOIL_NOINLINE void RECOIL_FASTCALL
+    void __fastcall
     SetMaterialFlagBit9ForFlagBit0EntriesRecursive(
         zClass_NodePartial * node,
         int enabled
@@ -2530,7 +2527,7 @@ namespace zClass_Node {
     }
 
     // Reimplements 0x4528b0: zClass_Node::InvalidateFlagBit8MaterialImagesRecursive
-    RECOIL_NOINLINE void RECOIL_FASTCALL InvalidateFlagBit8MaterialImagesRecursive(
+    void __fastcall InvalidateFlagBit8MaterialImagesRecursive(
         zClass_NodePartial * node
     ) {
         zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
@@ -2544,7 +2541,7 @@ namespace zClass_Node {
     }
 
     // Reimplements 0x4528a0: zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack
-    RECOIL_NOINLINE void RECOIL_FASTCALL LoadFlagBit8MaterialImagesAndTexturePack(
+    void __fastcall LoadFlagBit8MaterialImagesAndTexturePack(
         zClass_NodePartial * node
     ) {
         if (node == 0) {
@@ -2556,7 +2553,7 @@ namespace zClass_Node {
     }
 
     // Reimplements 0x4528e0: zClass_Node::AssignInt32ToDiRecursive
-    RECOIL_NOINLINE void RECOIL_FASTCALL
+    void __fastcall
     AssignInt32ToDiRecursive(
         zClass_NodePartial * node,
         int value
@@ -2578,7 +2575,7 @@ namespace zClass_Node {
     }
 
     // Reimplements 0x4b25f0: zClass_Node::AssignDamageHandlerRecursiveIfMissing
-    RECOIL_NOINLINE void RECOIL_FASTCALL AssignDamageHandlerRecursiveIfMissing(
+    void __fastcall AssignDamageHandlerRecursiveIfMissing(
         zClass_NodePartial * node,
         OptCatalogDamageHandlerPartial * handler
     ) {
@@ -2597,7 +2594,7 @@ namespace zClass_Node {
     }
 
     // Reimplements 0x4b2670: zClass_Node::ClearDamageHandlerRecursive
-    RECOIL_NOINLINE void RECOIL_FASTCALL ClearDamageHandlerRecursive(
+    void __fastcall ClearDamageHandlerRecursive(
         zClass_NodePartial * node,
         OptCatalogDamageHandlerPartial * handler
     ) {
@@ -2614,7 +2611,7 @@ namespace zClass_Node {
     }
 
     // Reimplements 0x4b25a0: zClass_Node::SetDamageHitCallback
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     SetDamageHitCallback(
         void *callback,
         zClass_NodePartial *node,
@@ -2644,7 +2641,7 @@ namespace zClass_Node {
     }
 
     // Reimplements 0x4b2630: zClass_Node::ClearDamageHandler
-    RECOIL_NOINLINE int RECOIL_FASTCALL ClearDamageHandler(zClass_NodePartial * node) {
+    int __fastcall ClearDamageHandler(zClass_NodePartial * node) {
         if (node == 0) {
             return 0;
         }
@@ -2668,7 +2665,7 @@ namespace zClass_Node {
     }
 
     // Reimplements 0x4b26b0: zClass_Node::SetDamageTimerCallback
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     SetDamageTimerCallback(
         void *callback,
         zClass_NodePartial *node,

@@ -7,14 +7,6 @@
 #include "recoil/recoil_callconv.h"
 #include "recoil/recoil_types.h"
 
-#if defined(_MSC_VER) && _MSC_VER >= 1300
-#define RECOIL_WOL_CONFIG_NOINLINE __declspec(noinline)
-#elif defined(__GNUC__) || defined(__clang__)
-#define RECOIL_WOL_CONFIG_NOINLINE __attribute__((noinline))
-#else
-#define RECOIL_WOL_CONFIG_NOINLINE
-#endif
-
 // Authored Recoil dialog reconstructed over imported MFC42 CDialog and
 // control classes. MFC control behavior is provided by MFC42, not reimplemented
 // in this source tree.
@@ -36,28 +28,28 @@ struct WestwoodOnlineUpgradeConfigDialog : CDialog {
     static const AFX_MSGMAP messageMap;
     static const AFX_MSGMAP_ENTRY messageEntries[];
 
-    static const AFX_MSGMAP *RECOIL_STDCALL GetBaseMessageMapForMfc();
-    RECOIL_WOL_CONFIG_NOINLINE const AFX_MSGMAP *RECOIL_THISCALL GetMessageMap() const;
-    RECOIL_WOL_CONFIG_NOINLINE WestwoodOnlineUpgradeConfigDialog *RECOIL_THISCALL Constructor(
+    static const AFX_MSGMAP *__stdcall GetBaseMessageMapForMfc();
+    const AFX_MSGMAP * GetMessageMap() const;
+    WestwoodOnlineUpgradeConfigDialog * Constructor(
         CWnd *parentWnd
     );
-    RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL DoDataExchange(CDataExchange *dataExchange);
-    RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL OnConnectStringEditSetFocusClear();
-    RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL OnConnectStringEditKillFocus();
-    RECOIL_WOL_CONFIG_NOINLINE BOOL RECOIL_THISCALL OnInitDialog();
-    RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL OnOK();
-    RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL OnProfileComboKillFocus();
-    RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL OnProfileComboSelChange();
-    RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL OnProfileComboEditChange();
-    RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL OnProfileComboDropdown();
-    RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL OnConnectStringModeClicked();
-    RECOIL_WOL_CONFIG_NOINLINE void RECOIL_THISCALL GetSelectedProfileValues(
+    void Destructor();
+    void DoDataExchange(CDataExchange *dataExchange);
+    void OnConnectStringEditSetFocusClear();
+    void OnConnectStringEditKillFocus();
+    BOOL OnInitDialog();
+    void OnOK();
+    void OnProfileComboKillFocus();
+    void OnProfileComboSelChange();
+    void OnProfileComboEditChange();
+    void OnProfileComboDropdown();
+    void OnConnectStringModeClicked();
+    void GetSelectedProfileValues(
         char **playerNameOut,
         char **connectStringOut,
         int *connectStringModeOut
     );
-    RECOIL_WOL_CONFIG_NOINLINE static int RECOIL_CDECL ShowModalAndApplySelectedProfileValues();
+    static int ShowModalAndApplySelectedProfileValues();
 };
 
 extern const RecoilNamedVtable kWestwoodOnlineUpgradeConfigDialog_Vtable;

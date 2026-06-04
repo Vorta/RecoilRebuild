@@ -4,7 +4,7 @@
 
 namespace Mission {
 // Reimplements 0x417350: Mission::InitObjectives (D:\Proj\GameZRecoil\mission.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL InitObjectives() {
+void InitObjectives() {
     HudSensorTracker::ConstructGlobal();
     HudSensorTracker::RegisterGlobalOnExit();
 }

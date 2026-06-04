@@ -16,25 +16,14 @@ const char kAiPropertyDlgLabelMaxPursuitRange[] = "Max Pursuit Rng";
 // CDialog behavior.
 class AiPropertyDlgCDialogMessageMapAccessor : public CDialog {
   public:
-    static const AFX_MSGMAP *RECOIL_STDCALL GetMessageMap();
+    static const AFX_MSGMAP *__stdcall GetMessageMap();
 };
 
-// Access shim for imported MFC42 protected window members; this does not
-// reimplement provider behavior.
-class AiPropertyDlgMfcWndAccess : public CWnd {
-  public:
-    void CallOnDestroy();
-};
-
-const AFX_MSGMAP *RECOIL_STDCALL AiPropertyDlgCDialogMessageMapAccessor::GetMessageMap() {
+const AFX_MSGMAP *__stdcall AiPropertyDlgCDialogMessageMapAccessor::GetMessageMap() {
     return &CDialog::messageMap;
 }
 
-void AiPropertyDlgMfcWndAccess::CallOnDestroy() {
-    CWnd::OnDestroy();
-}
-
-const AFX_MSGMAP *RECOIL_STDCALL AiPropertyDlg::GetBaseMessageMapForMfc() {
+const AFX_MSGMAP *__stdcall AiPropertyDlg::GetBaseMessageMapForMfc() {
     return AiPropertyDlgCDialogMessageMapAccessor::GetMessageMap();
 }
 
@@ -54,14 +43,14 @@ const AFX_MSGMAP AiPropertyDlg::messageMap = {
     &AiPropertyDlg::messageEntries[0],
 };
 
-RECOIL_NOINLINE const AFX_MSGMAP *RECOIL_THISCALL AiPropertyDlg::GetMessageMap() const {
+const AFX_MSGMAP * AiPropertyDlg::GetMessageMap() const {
     return &AiPropertyDlg::messageMap;
 }
 
 // Reimplements 0x41c0c0: AiPropertyDlg::OnDestroy
 // (D:\Proj\Recoil\AiPropertyDlg.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL AiPropertyDlg::OnDestroy() {
-    ((AiPropertyDlgMfcWndAccess *)this)->CallOnDestroy();
+void AiPropertyDlg::OnDestroy() {
+    CWnd::OnDestroy();
 
     const LRESULT selectedPropertyComboIndex =
         ::SendMessageA(
@@ -98,7 +87,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL AiPropertyDlg::OnDestroy() {
 
 // Reimplements 0x41c130: AiPropertyDlg::OnSelChange
 // (D:\Proj\Recoil\AiPropertyDlg.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL AiPropertyDlg::OnSelChange() {
+void AiPropertyDlg::OnSelChange() {
     const LRESULT selectedBehaviorComboIndex =
         ::SendMessageA(
             m_behaviorCombo.m_hWnd,
@@ -118,7 +107,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL AiPropertyDlg::OnSelChange() {
 
 // Reimplements 0x41c170: AiPropertyDlg::UpdatePropertyLabels
 // (D:\Proj\Recoil\AiPropertyDlg.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL AiPropertyDlg::UpdatePropertyLabels() {
+void AiPropertyDlg::UpdatePropertyLabels() {
     CString firstLabel;
     CString secondLabel;
 

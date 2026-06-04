@@ -40,7 +40,7 @@ namespace {
 namespace zClass_Switch {
     // Reimplements 0x44bfb0: zClass_Switch::RenderTraverse
     // (D:\Proj\GameZRecoil\zClass\Switch.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint

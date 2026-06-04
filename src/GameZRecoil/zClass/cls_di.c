@@ -1071,7 +1071,7 @@ namespace {
 namespace BBox {
     // Reimplements 0x446ed0: BBox::ExpandToCorners
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE void RECOIL_FASTCALL
+    void __fastcall
     ExpandToCorners(
         const zBBox3f *bbox,
         zBBoxCorners *outCorners
@@ -1106,18 +1106,18 @@ namespace BBox {
 
 namespace zClass_cls_di {
     // Reimplements 0x443c50: zClass_cls_di::SetBreakOnFirstCandidate (GameZRecoil/zClass/cls_di.c)
-    void RECOIL_FASTCALL SetBreakOnFirstCandidate(int enabled) {
+    void __fastcall SetBreakOnFirstCandidate(int enabled) {
         g_cls_di_BreakOnFirstCandidate = enabled;
     }
 
     // Reimplements 0x443c60: zClass_cls_di::SetStopAfterFirstHit (GameZRecoil/zClass/cls_di.c)
-    void RECOIL_FASTCALL SetStopAfterFirstHit(int flag) {
+    void __fastcall SetStopAfterFirstHit(int flag) {
         g_cls_di_StopAfterFirstHit = flag;
     }
 
     // Reimplements 0x443c70: zClass_cls_di::FindBestPickCandidateBelowPoint
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE void RECOIL_FASTCALL FindBestPickCandidateBelowPoint(
+    void __fastcall FindBestPickCandidateBelowPoint(
         zClass_NodePartial * world,
         const zVec3 *position,
         PlayerProbeSampleCandidateBuffer *outResults
@@ -1153,7 +1153,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x443d20: zClass_cls_di::BuildPickCandidateListBelowPoint
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidateListBelowPoint(
+    int __fastcall BuildPickCandidateListBelowPoint(
         zClass_NodePartial * world,
         PlayerProbeSampleCandidateBuffer * outResults,
         float x,
@@ -1250,7 +1250,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x42ba50: zClass_cls_di::SnapProbePointYToBestCandidate
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL SnapProbePointYToBestCandidate(zVec3 * point) {
+    int __fastcall SnapProbePointYToBestCandidate(zVec3 * point) {
         PlayerProbeSampleCandidateBuffer candidateBuffer;
         const int result = BuildPickCandidateListBelowPoint(
             g_Player_RuntimeDiScene,
@@ -1276,7 +1276,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x444890: zClass_cls_di::BuildPickCandidatesForPoints
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     BuildPickCandidatesForPoints(
         zClass_NodePartial * node,
         int depth,
@@ -1503,7 +1503,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x444c50: zClass_cls_di::BuildPickCandidatesForPointsRecursive
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     BuildPickCandidatesForPointsRecursive(
         zClass_NodePartial * node,
         int depth,
@@ -1566,7 +1566,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x444d10: zClass_cls_di::BuildPickCandidatesForPointsForLight
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     BuildPickCandidatesForPointsForLight(
         zClass_NodePartial * node,
         int depth,
@@ -1626,7 +1626,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x4444b0: zClass_cls_di::BuildPickCandidatesForPointBatch
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForPointBatch(
+    int __fastcall BuildPickCandidatesForPointBatch(
         zClass_NodePartial * world,
         zVec3 * pointArray,
         int pointCount,
@@ -1772,7 +1772,7 @@ namespace zClass_cls_di {
     }
 
     // Reimplements 0x443f80: zClass_cls_di::BuildPickCandidateList (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     BuildPickCandidateList(
         zClass_NodePartial * node,
         int cullCount
@@ -1939,7 +1939,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x444310: zClass_cls_di::BuildPickCandidatesRecursive
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     BuildPickCandidatesRecursive(
         zClass_NodePartial * node,
         int cullCount
@@ -1982,7 +1982,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x4443e0: zClass_cls_di::BuildPickCandidatesForLight
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     BuildPickCandidatesForLight(
         zClass_NodePartial * node,
         int cullCount
@@ -2018,7 +2018,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x4472c0: zClass_cls_di::IsPickQueryPointOutsideViewBBoxXZ
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL IsPickQueryPointOutsideViewBBoxXZ(
+    int __fastcall IsPickQueryPointOutsideViewBBoxXZ(
         zClass_NodePartial * node
     ) {
         if ((node->flags & 0x100) == 0) {
@@ -2055,7 +2055,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x4473e0: zClass_cls_di::PickTestBBox2D
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL PickTestBBox2D(
+    int __fastcall PickTestBBox2D(
         zClass_NodePartial * node,
         int *hitFlags
     ){
@@ -2101,7 +2101,7 @@ namespace zClass_cls_di {
     }
 
     // Reimplements 0x447540: zClass_cls_di::FilterPointsBBox (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     FilterPointsBBox(zClass_NodePartial * node, void * /*pointData*/) {
         if ((node->flags & 0x100) == 0) {
             return 1;
@@ -2148,7 +2148,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x4476f0: zClass_cls_di::FrustumTestAndPick
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     FrustumTestAndPick(
         zClass_NodePartial * node,
         int *activeMask
@@ -2217,7 +2217,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x485380: zClass_cls_di::BuildPickCandidatesForSegmentVsBBoxFaces
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentVsBBoxFaces(
+    int __fastcall BuildPickCandidatesForSegmentVsBBoxFaces(
         const zBBoxCorners *bboxCorners,
         zClassDiPickCandidateEntry *candidate,
         const zVec3 *segmentStart,
@@ -2284,7 +2284,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x487540: zClass_cls_di::FilterRegionsAgainstPolygonWithDamageMaskUv
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegionsAgainstPolygonWithDamageMaskUv(
+    int __fastcall FilterRegionsAgainstPolygonWithDamageMaskUv(
         zClass_NodePartial * candidateOwner,
         PlayerProbeSampleCandidateBuffer * outCandidateBuffersBySegment,
         zClass_DiSegmentEndpoints * segmentEndpointsByBatch,
@@ -2397,7 +2397,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x487350: zClass_cls_di::FilterRegionsAgainstPolygon
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE void RECOIL_FASTCALL FilterRegionsAgainstPolygon(
+    void __fastcall FilterRegionsAgainstPolygon(
         zClass_NodePartial * candidateOwner,
         zModel_PickFaceData * faceData,
         zClass_DiSegmentEndpoints * segmentEndpointsByBatch,
@@ -2465,7 +2465,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x486290: zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygon
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentBatchVsPolygon(
+    int __fastcall BuildPickCandidatesForSegmentBatchVsPolygon(
         zClass_NodePartial * candidateOwner,
         PlayerProbeSampleCandidateBuffer * outCandidateBuffersBySegment,
         zClass_DiSegmentEndpoints * segmentEndpointsByBatch,
@@ -2551,7 +2551,7 @@ namespace zClass_cls_di {
     // Reimplements 0x4869a0:
     // zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
+    int __fastcall BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
         zClass_NodePartial * candidateOwner,
         PlayerProbeSampleCandidateBuffer * outCandidateBuffersBySegment,
         zClass_DiSegmentEndpoints * segmentEndpointsByBatch,
@@ -2665,7 +2665,7 @@ namespace zClass_cls_di {
     }
 
     // Reimplements 0x4856d0: zClass_cls_di::TryGetPolygonHitAtQueryXZ (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL TryGetPolygonHitAtQueryXZ(
+    int __fastcall TryGetPolygonHitAtQueryXZ(
         zClassDiPickCandidateEntry * candidate,
         const zVec3 *polygonVertices,
         float queryX,
@@ -2706,7 +2706,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x4857f0: zClass_cls_di::BuildPickCandidateForSegmentVsPolygon
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidateForSegmentVsPolygon(
+    int __fastcall BuildPickCandidateForSegmentVsPolygon(
         zClassDiPickCandidateEntry * candidate,
         const zVec3 *segmentStart,
         const zVec3 *segmentEnd,
@@ -2729,7 +2729,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x485d10: zClass_cls_di::BuildPickCandidateForSegmentVsPolygonWithUv
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidateForSegmentVsPolygonWithUv(
+    int __fastcall BuildPickCandidateForSegmentVsPolygonWithUv(
         zClassDiPickCandidateEntry * candidate,
         const zVec3 *segmentStart,
         const zVec3 *segmentEnd,
@@ -2768,7 +2768,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x484fc0: zClass_cls_di::AppendPickCandidatesForFace
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL AppendPickCandidatesForFace(
+    int __fastcall AppendPickCandidatesForFace(
         const zModel_PickFaceData *faceData,
         zClassDiPickCandidateEntry *candidate,
         const zVec3 *segmentStart,
@@ -2858,7 +2858,7 @@ namespace zClass_cls_di {
 
 namespace zDi {
     // Reimplements 0x484960: zDi::BuildPickCandidateForQueryPoint (GameZRecoil/zModel/zmodel.cpp)
-    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidateForQueryPoint(
+    int __fastcall BuildPickCandidateForQueryPoint(
         zDiPartial * self,
         zClassDiPickCandidateEntry * outCandidate,
         const zVec3 *queryPoint
@@ -2921,7 +2921,7 @@ namespace zDi {
 namespace zModelConst {
     // Reimplements 0x484b70: zModelConst::AddFaceToPlayerProbeSampleBuckets
     // (GameZRecoil/zModel/zmodel.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL AddFaceToPlayerProbeSampleBuckets(
+    void __fastcall AddFaceToPlayerProbeSampleBuckets(
         zClass_NodePartial * node,
         PlayerProbeSampleCandidateBuffer * outputBuckets,
         const zVec3 *samplePoints,
@@ -3002,7 +3002,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x484e00: zClass_cls_di::PickTestMeshAtQueryXZ
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE void RECOIL_FASTCALL PickTestMeshAtQueryXZ(
+    void __fastcall PickTestMeshAtQueryXZ(
         zClass_NodePartial * node,
         zModel_PickFaceData * faceData,
         const zVec3 *samplePoints,
@@ -3056,7 +3056,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x487900: zClass_cls_di::FilterRegionsAgainstMeshFaces
     // (D:\Proj\GameZRecoil\zClass\cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     FilterRegionsAgainstMeshFaces(
         zVec3 * meshVertices,
         int faceCount
@@ -3087,7 +3087,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x4879c0: zClass_cls_di::FilterRegionsAgainstHexahedronFaces
     // (D:\Proj\GameZRecoil\zClass\cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     FilterRegionsAgainstHexahedronFaces(
         zVec3 * center,
         float radius
@@ -3111,7 +3111,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x446f60: zClass_cls_di::FilterRegions_TryAppendNode
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegions_TryAppendNode(zClass_NodePartial * node) {
+    int __fastcall FilterRegions_TryAppendNode(zClass_NodePartial * node) {
         if (g_zClass_cls_di_FilterRegions_OutHitList->hitCount >= kMaxPickCandidates) {
             zError::ReportOld(
                 0x200,
@@ -3208,7 +3208,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x446a80: zClass_cls_di::FilterRegionsAgainstSphere
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegionsAgainstSphere(
+    int __fastcall FilterRegionsAgainstSphere(
         zClass_NodePartial * world,
         zVec3 * center,
         const char *nodeNamePrefix,
@@ -3295,7 +3295,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x4455f0: zClass_cls_di::BuildPickCandidatesForSegment
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegment(zClass_NodePartial * self) {
+    int __fastcall BuildPickCandidatesForSegment(zClass_NodePartial * self) {
         int result = self->listCountB;
         {
             for (int childIndex = 0; childIndex < result; ++childIndex) {
@@ -3323,7 +3323,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x444de0: zClass_cls_di::RaycastSelectClosestHitBetweenPoints
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL RaycastSelectClosestHitBetweenPoints(
+    int __fastcall RaycastSelectClosestHitBetweenPoints(
         zClass_NodePartial * world,
         const zVec3 *startPoint,
         const zVec3 *endPoint,
@@ -3382,7 +3382,7 @@ namespace zClass_cls_di {
     }
 
     // Reimplements 0x444e90: zClass_cls_di::RaycastFindClosest (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL RaycastFindClosest(
+    int __fastcall RaycastFindClosest(
         zClass_NodePartial * world,
         PlayerProbeSampleCandidateBuffer * rayData,
         float startX,
@@ -3583,7 +3583,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x445a00: zClass_cls_di::BuildPickCandidatesForSegmentRecursive
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     BuildPickCandidatesForSegmentRecursive(
         zClass_NodePartial * node,
         int depth
@@ -3631,7 +3631,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x445b20: zClass_cls_di::BuildPickCandidatesForSegmentForCamera
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     BuildPickCandidatesForSegmentForCamera(zClass_NodePartial * node, int /*depth*/) {
         zVec3 unitScale = {1.0f, 1.0f, 1.0f};
         zClass_CameraDataPartial *cameraData = (zClass_CameraDataPartial *)(node->classData);
@@ -3664,7 +3664,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x445c20: zClass_cls_di::BuildPickCandidatesForSegmentForLight
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     BuildPickCandidatesForSegmentForLight(
         zClass_NodePartial * node,
         int depth
@@ -3710,7 +3710,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x446880: zClass_cls_di::BuildPickCandidatesForSegmentsForAnimate
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentsForAnimate(
+    int __fastcall BuildPickCandidatesForSegmentsForAnimate(
         zClass_NodePartial * node,
         int nodeCountHint,
         int *activeMask
@@ -3765,7 +3765,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x446970: zClass_cls_di::BuildPickCandidatesForSegmentsForLight
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentsForLight(
+    int __fastcall BuildPickCandidatesForSegmentsForLight(
         zClass_NodePartial * node,
         int nodeCountHint,
         int *activeMask
@@ -3818,7 +3818,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x445d40: zClass_cls_di::BuildProbeHitBatchesForSegments
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE void RECOIL_FASTCALL BuildProbeHitBatchesForSegments(
+    void __fastcall BuildProbeHitBatchesForSegments(
         zClass_NodePartial * world,
         zClass_DiSegmentEndpoints * segmentEndpoints,
         int endpointCount,
@@ -3902,7 +3902,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x445f60: zClass_cls_di::BuildPickCandidatesForSegmentsInGridWindow
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE void RECOIL_FASTCALL
+    void __fastcall
     BuildPickCandidatesForSegmentsInGridWindow(
         zClass_NodePartial * world,
         int *activeMask
@@ -4034,7 +4034,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x446440: zClass_cls_di::BuildPickCandidatesForSegmentsRecursive
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentsRecursive(
+    int __fastcall BuildPickCandidatesForSegmentsRecursive(
         zClass_NodePartial * node,
         int nodeCountHint,
         int *activeMask
@@ -4245,7 +4245,7 @@ namespace zClass_cls_di {
 
     // Reimplements 0x445650: zClass_cls_di::BuildPickCandidatesForSegmentChildFallback
     // (GameZRecoil/zClass/cls_di.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     BuildPickCandidatesForSegmentChildFallback(
         zClass_NodePartial * node,
         int nodeCountHint

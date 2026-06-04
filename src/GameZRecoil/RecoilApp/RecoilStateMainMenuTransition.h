@@ -32,22 +32,22 @@ struct RecoilStateMainMenuTransition {
     zVidModeIndex m_deferredVideoModeIndex;
     RecoilPtr32 m_pausedAudioSnapshot; // zSndPlayHandleSnapshot*
 
-    RecoilStateMainMenuTransition *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE RecoilStateMainMenuTransition *RECOIL_THISCALL ScalarDeletingDestructor(
+    RecoilStateMainMenuTransition * Constructor();
+    RecoilStateMainMenuTransition * ScalarDeletingDestructor(
         unsigned int flags
     );
-    RECOIL_NOINLINE RECOIL_NO_GS ~RecoilStateMainMenuTransition();
-    RECOIL_NO_GS int RECOIL_THISCALL OnTryBecomeCurrent();
-    void RECOIL_THISCALL OnResume(int param);
-    void RECOIL_THISCALL OnDeactivate();
+    RECOIL_NO_GS ~RecoilStateMainMenuTransition();
+    RECOIL_NO_GS int OnTryBecomeCurrent();
+    void OnResume(int param);
+    void OnDeactivate();
 
-    static void RECOIL_CDECL StaticInitAndRegisterAtExit();
-    static RecoilStateMainMenuTransition *RECOIL_CDECL StaticInit();
-    static void RECOIL_CDECL RegisterAtExit();
-    static void RECOIL_CDECL AtExitDestructor();
-    static void RECOIL_CDECL ClearPausedAudioSnapshot();
-    static void RECOIL_FASTCALL QueueEnter(RecoilMainMenuEntryRoute entryRoute);
-    static void RECOIL_FASTCALL SetDeferredVideoModeIndex(zVidModeIndex modeIndex);
+    static void StaticInitAndRegisterAtExit();
+    static RecoilStateMainMenuTransition *StaticInit();
+    static void RegisterAtExit();
+    static void AtExitDestructor();
+    static void ClearPausedAudioSnapshot();
+    static void __fastcall QueueEnter(RecoilMainMenuEntryRoute entryRoute);
+    static void __fastcall SetDeferredVideoModeIndex(zVidModeIndex modeIndex);
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateMainMenuTransition) == 0x18);
 RECOIL_STATIC_ASSERT(
@@ -95,49 +95,49 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiMainMenuDialogBackground) == sizeof(HudUiBackgr
 struct HudUiMainMenuDialog_CreditsButton : HudUiZrdWidget {
     HudUiMainMenuDialog_CreditsButton();
     ~HudUiMainMenuDialog_CreditsButton();
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 
 struct HudUiMenuBackButton : HudUiZrdWidget {
     HudUiMenuBackButton();
     ~HudUiMenuBackButton();
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 
 struct HudUiMainMenuDialog_SaveButton : HudUiZrdWidget {
     HudUiMainMenuDialog_SaveButton();
     ~HudUiMainMenuDialog_SaveButton();
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 
 struct HudUiMainMenuDialog_LoadButton : HudUiZrdWidget {
     HudUiMainMenuDialog_LoadButton();
     ~HudUiMainMenuDialog_LoadButton();
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 
 struct HudUiMainMenuDialog_NewGameButton : HudUiZrdWidget {
     HudUiMainMenuDialog_NewGameButton();
     ~HudUiMainMenuDialog_NewGameButton();
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 
 struct HudUiMainMenuDialog_OptionsButton : HudUiZrdWidget {
     HudUiMainMenuDialog_OptionsButton();
     ~HudUiMainMenuDialog_OptionsButton();
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 
 struct HudUiMainMenuDialog_QuitButton : HudUiZrdWidget {
     HudUiMainMenuDialog_QuitButton();
     ~HudUiMainMenuDialog_QuitButton();
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 
 struct HudUiMainMenuDialog_ControlsButton : HudUiZrdWidget {
     HudUiMainMenuDialog_ControlsButton();
     ~HudUiMainMenuDialog_ControlsButton();
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 
 class HudUiMainMenuDialog : public HudUiMainMenuDialogBackground {
@@ -154,8 +154,8 @@ class HudUiMainMenuDialog : public HudUiMainMenuDialogBackground {
     HudUiMainMenuDialog(RecoilMainMenuEntryRoute route);
     ~HudUiMainMenuDialog();
 
-    RECOIL_NOINLINE static int RECOIL_CDECL CanLoadGame();
-    RECOIL_NOINLINE static int RECOIL_CDECL CanSaveGame();
+    static int CanLoadGame();
+    static int CanSaveGame();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiMainMenuDialog) == 0xb3ac);
 RECOIL_STATIC_ASSERT(

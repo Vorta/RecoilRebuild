@@ -34,7 +34,7 @@ int FloatToBits(
 
 // Reimplements 0x4a10e0: zSndPlayHandle::SetFreqScaled
 // (D:\Proj\GameZRecoil\zSound\zsnd_parm.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandle::SetFreqScaled(
+int zSndPlayHandle::SetFreqScaled(
     float scale
 ) {
     if (handleKind != ZSND_PLAYHANDLE_BACKEND) {
@@ -84,7 +84,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndPlayHandle::SetFreqScaled(
 
 // Reimplements 0x4a11d0: zSndPlayHandle::SetEnableScale
 // (D:\Proj\GameZRecoil\zSound\zsnd_parm.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zSndPlayHandle::SetEnableScale(
+void zSndPlayHandle::SetEnableScale(
     float scale
 ) {
     if (handleKind != ZSND_PLAYHANDLE_BACKEND) {
@@ -112,8 +112,8 @@ RECOIL_NOINLINE void RECOIL_THISCALL zSndPlayHandle::SetEnableScale(
 
 // Reimplements 0x4a1240: zSndSample::SetPlaybackEventHandler
 // (D:\Proj\GameZRecoil\zSound\zsnd_parm.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL zSndSample::SetPlaybackEventHandler(
-    void(RECOIL_FASTCALL *callback)(int eventCode)
+void __fastcall zSndSample::SetPlaybackEventHandler(
+    void(__fastcall *callback)(int eventCode)
 ) {
     if (createGuard == 0) {
         playbackEventHandler = callback;
@@ -122,7 +122,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zSndSample::SetPlaybackEventHandler(
 
 // Reimplements 0x4a1250: zSndPlayHandle_TryEnableManaged
 // (D:\Proj\GameZRecoil\zSound\zsnd_parm.cpp)
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndPlayHandle_TryEnableManaged(
+extern "C" int __fastcall zSndPlayHandle_TryEnableManaged(
     zSndPlayHandle *handle
 ) {
     if (handle == 0 || handle->isActive != 0) {
@@ -134,7 +134,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndPlayHandle_TryEnableManaged(
 }
 
 // Reimplements 0x4a1270: zSndPlayHandle_TryDisableManaged
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndPlayHandle_TryDisableManaged(
+extern "C" int __fastcall zSndPlayHandle_TryDisableManaged(
     zSndPlayHandle *handle
 ) {
     if (handle == 0 || handle->isActive == 0) {

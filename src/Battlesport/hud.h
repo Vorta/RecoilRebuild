@@ -49,7 +49,7 @@ struct HudWeatherFxPointBatch {
     float y;
     float z;
 
-    RECOIL_NOINLINE int RECOIL_THISCALL ArePointBatchInsideRect(
+    int ArePointBatchInsideRect(
         int pointCount,
         const HudUiRect *viewportRect
     );
@@ -57,7 +57,7 @@ struct HudWeatherFxPointBatch {
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxPointBatch) == 0x0c);
 
 struct HudUiSaveLoadEntry : WIN32_FIND_DATAA {
-    RECOIL_NOINLINE int RECOIL_FASTCALL IsNewerThan(const HudUiSaveLoadEntry *other) const;
+    int __fastcall IsNewerThan(const HudUiSaveLoadEntry *other) const;
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiSaveLoadEntry) == 0x140);
 RECOIL_STATIC_ASSERT(
@@ -95,19 +95,19 @@ RECOIL_STATIC_ASSERT(
 
 struct HudUiSaveLoadDialog;
 struct HudUiSaveLoadListItem;
-typedef void(RECOIL_THISCALL *HudUiSaveLoadDrawFn)(HudUiSaveLoadListItem *self);
-typedef void(RECOIL_THISCALL *HudUiSaveLoadInvalidateFn)(HudUiSaveLoadListItem *self);
-typedef void(RECOIL_THISCALL *HudUiSaveLoadOnActivateFn)(HudUiSaveLoadListItem *self);
-typedef void(RECOIL_THISCALL *HudUiSaveLoadSetVisibleFn)(
+typedef void( *HudUiSaveLoadDrawFn)(HudUiSaveLoadListItem *self);
+typedef void( *HudUiSaveLoadInvalidateFn)(HudUiSaveLoadListItem *self);
+typedef void( *HudUiSaveLoadOnActivateFn)(HudUiSaveLoadListItem *self);
+typedef void( *HudUiSaveLoadSetVisibleFn)(
     HudUiSaveLoadListItem *self,
     int visible
 );
-typedef void(RECOIL_CDECL *HudUiSaveLoadSetTextFmtFn)(
+typedef void(*HudUiSaveLoadSetTextFmtFn)(
     HudUiSaveLoadListItem *self,
     const char *format,
     const char *text
 );
-typedef void(RECOIL_THISCALL *HudUiSaveLoadUpdateTextBoundsFn)(HudUiSaveLoadListItem *self);
+typedef void( *HudUiSaveLoadUpdateTextBoundsFn)(HudUiSaveLoadListItem *self);
 
 struct HudUiSaveLoadListItemVtable {
     void *reserved00;
@@ -167,9 +167,9 @@ struct HudUiSaveLoadListItem {
     int layoutX;
     int layoutY;
 
-    RECOIL_NOINLINE HudUiSaveLoadListItem *RECOIL_THISCALL Constructor();
-    void RECOIL_THISCALL Draw();
-    void RECOIL_THISCALL OnActivate();
+    HudUiSaveLoadListItem * Constructor();
+    void Draw();
+    void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiSaveLoadListItem) == 0x2ac);
 RECOIL_STATIC_ASSERT(
@@ -194,40 +194,40 @@ RECOIL_STATIC_ASSERT(
 extern const HudUiSaveLoadListItemVtable g_HudUiSaveLoadListItem_Vtbl;
 
 struct HudUiSaveLoadDeleteButton : HudUiZrdWidget {
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 
 struct HudUiSaveLoadNextButton : HudUiZrdWidget {
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 
 struct HudUiSaveLoadPrevButton : HudUiZrdWidget {
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 
 struct HudUiSaveGamePrimaryActionButton : HudUiZrdWidget {
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 
 struct HudUiLoadGamePrimaryActionButton : HudUiZrdWidget {
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 
 struct HudUiConfirmQuitOkButton : HudUiZrdWidget {
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 
 struct HudUiCreditsQuitButton : HudUiZrdWidget {
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 
 struct HudUiBackgroundConfirmQuit : HudUiBackground {
     HudUiConfirmQuitOkButton okButton;
     HudUiZrdWidget cancelButton;
 
-    HudUiBackgroundConfirmQuit *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE HudUiBackgroundConfirmQuit *RECOIL_THISCALL ScalarDeletingDestructor(
+    HudUiBackgroundConfirmQuit * Constructor();
+    void Destructor();
+    HudUiBackgroundConfirmQuit * ScalarDeletingDestructor(
         unsigned int flags
     );
 };
@@ -246,8 +246,8 @@ RECOIL_STATIC_ASSERT(
 );
 
 struct HudUiSaveLoadGameNameInput : HudUiNumericTextInput {
-    void RECOIL_THISCALL OnActivate();
-    int RECOIL_THISCALL OnRawKeyboardEvent(int key);
+    void OnActivate();
+    int OnRawKeyboardEvent(int key);
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiSaveLoadGameNameInput) == 0x374);
 
@@ -262,23 +262,23 @@ struct HudUiSaveLoadDialog {
     HudUiSaveLoadEntries fileEntries;
     int selectedEntryIndex;
 
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL InitializeFileEntries();
-    RECOIL_NOINLINE void RECOIL_THISCALL DeleteSaveFile(int confirmDelete);
-    RECOIL_NOINLINE void RECOIL_THISCALL RefreshSaveFileList();
-    RECOIL_NOINLINE void RECOIL_THISCALL SetSelectedEntryIndex(int selectedEntryIndex);
-    RECOIL_NOINLINE void RECOIL_THISCALL ProcessDialogResult();
+    void Destructor();
+    void InitializeFileEntries();
+    void DeleteSaveFile(int confirmDelete);
+    void RefreshSaveFileList();
+    void SetSelectedEntryIndex(int selectedEntryIndex);
+    void ProcessDialogResult();
 
-    static RECOIL_NOINLINE void RECOIL_FASTCALL InsertEntryIntoSortedPrefix(
+    static void __fastcall InsertEntryIntoSortedPrefix(
         HudUiSaveLoadEntry *entryPosition,
         HudUiSaveLoadEntry entry
     );
-    static RECOIL_NOINLINE HudUiSaveLoadEntry *RECOIL_FASTCALL PartitionEntriesByPivot(
+    static HudUiSaveLoadEntry *__fastcall PartitionEntriesByPivot(
         HudUiSaveLoadEntry *begin,
         HudUiSaveLoadEntry *end,
         HudUiSaveLoadEntry pivot
     );
-    static RECOIL_NOINLINE void RECOIL_FASTCALL SortEntryRange(
+    static void __fastcall SortEntryRange(
         HudUiSaveLoadEntry *begin,
         HudUiSaveLoadEntry *end,
         int unused
@@ -387,9 +387,9 @@ RECOIL_STATIC_ASSERT(
 struct HudUiSaveGameDialog : HudUiSaveLoadDialog {
     HudUiSaveGamePrimaryActionButton primaryActionButton;
 
-    RECOIL_NOINLINE HudUiSaveGameDialog *RECOIL_THISCALL InitLayout();
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE HudUiSaveGameDialog *RECOIL_THISCALL ScalarDeletingDestructor(
+    HudUiSaveGameDialog * InitLayout();
+    void Destructor();
+    HudUiSaveGameDialog * ScalarDeletingDestructor(
         unsigned int flags
     );
 };
@@ -403,14 +403,14 @@ RECOIL_STATIC_ASSERT(
 struct HudUiLoadGameDialog : HudUiSaveLoadDialog {
     HudUiLoadGamePrimaryActionButton primaryActionButton;
 
-    RECOIL_NOINLINE HudUiLoadGameDialog *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE HudUiLoadGameDialog *RECOIL_THISCALL ScalarDeletingDestructor(
+    HudUiLoadGameDialog * Constructor();
+    void Destructor();
+    HudUiLoadGameDialog * ScalarDeletingDestructor(
         unsigned int flags
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL ProcessDialogResult();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnPrimaryActionThunk();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnPrimaryAction();
+    void ProcessDialogResult();
+    void OnPrimaryActionThunk();
+    void OnPrimaryAction();
 };
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -472,16 +472,16 @@ struct HudWeatherFx : HudUiElement {
     zVidImagePartial *softwareImage;
     zVideo_TextureRecordPartial *textureRecord;
 
-    RECOIL_NOINLINE HudWeatherFx *RECOIL_THISCALL Constructor(int particleCount);
-    RECOIL_NOINLINE HudWeatherFx *RECOIL_THISCALL ScalarDeletingDestructor(
+    HudWeatherFx * Constructor(int particleCount);
+    HudWeatherFx * ScalarDeletingDestructor(
         unsigned int flags
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL ResetParticleSlot(
+    void Destructor();
+    void ResetParticleSlot(
         int particleIndex,
         int unusedStack
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL DrawParticles();
+    void DrawParticles();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFx) == 0x8c);
 RECOIL_STATIC_ASSERT(
@@ -508,12 +508,12 @@ struct HudWeatherFxSnow : HudWeatherFx {
     float emitRadius;
     float emitDepth;
 
-    RECOIL_NOINLINE HudWeatherFxSnow *RECOIL_THISCALL Constructor(int particleCount);
-    RECOIL_NOINLINE HudWeatherFxSnow *RECOIL_THISCALL ScalarDeletingDestructor(
+    HudWeatherFxSnow * Constructor(int particleCount);
+    HudWeatherFxSnow * ScalarDeletingDestructor(
         unsigned int flags
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL Update(float deltaSeconds);
+    void Destructor();
+    void Update(float deltaSeconds);
 };
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxSnow) == 0x98);
 RECOIL_STATIC_ASSERT(
@@ -528,12 +528,12 @@ struct HudWeatherFxRain : HudWeatherFx {
     float emitRadius;
     float emitDepth;
 
-    RECOIL_NOINLINE HudWeatherFxRain *RECOIL_THISCALL Constructor(int particleCount);
-    RECOIL_NOINLINE HudWeatherFxRain *RECOIL_THISCALL ScalarDeletingDestructor(
+    HudWeatherFxRain * Constructor(int particleCount);
+    HudWeatherFxRain * ScalarDeletingDestructor(
         unsigned int flags
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL Update(float deltaSeconds);
+    void Destructor();
+    void Update(float deltaSeconds);
 };
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxRain) == 0x98);
 RECOIL_STATIC_ASSERT(
@@ -551,22 +551,22 @@ struct RecoilStateSaveLoadTransition : RecoilApp_IState {
     RecoilSaveLoadTransitionMode m_transitionMode;
     RecoilPtr32 m_pausedAudioSnapshot; // zSndPlayHandleSnapshot*
 
-    RECOIL_NOINLINE static void RECOIL_CDECL StaticInitAndRegisterAtExit();
-    RECOIL_NOINLINE static RecoilStateSaveLoadTransition *RECOIL_CDECL StaticInit();
-    RECOIL_NOINLINE static void RECOIL_CDECL RegisterAtExit();
-    RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
-    RecoilStateSaveLoadTransition *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE RecoilStateSaveLoadTransition *RECOIL_THISCALL ScalarDeletingDestructor(
+    static void StaticInitAndRegisterAtExit();
+    static RecoilStateSaveLoadTransition *StaticInit();
+    static void RegisterAtExit();
+    static void AtExitDestructor();
+    RecoilStateSaveLoadTransition * Constructor();
+    void Destructor();
+    RecoilStateSaveLoadTransition * ScalarDeletingDestructor(
         unsigned int flags
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
-    RECOIL_NOINLINE int RECOIL_THISCALL OnUpdateShouldQuit();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
-    static void RECOIL_FASTCALL QueueOpenSaveDialog(
+    int OnTryBecomeCurrent();
+    int OnUpdateShouldQuit();
+    void OnDeactivate();
+    static void __fastcall QueueOpenSaveDialog(
         RecoilSaveLoadPresentationCaptureMode capturePresentationMode
     );
-    static void RECOIL_FASTCALL QueueOpenLoadDialog(RecoilSaveLoadTransitionMode transitionMode);
+    static void __fastcall QueueOpenLoadDialog(RecoilSaveLoadTransitionMode transitionMode);
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateSaveLoadTransition) == 0x1c);
 RECOIL_STATIC_ASSERT(
@@ -591,12 +591,12 @@ RECOIL_STATIC_ASSERT(
 extern RecoilStateSaveLoadTransition g_RecoilStateSaveLoadTransition;
 
 struct HudUiNewGamePanel_StartButton : HudUiZrdWidget {
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel_StartButton) == 0x14c);
 
 struct HudUiNewGamePanel_NameInput : HudUiNumericTextInput {
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel_NameInput) == 0x374);
 
@@ -606,11 +606,11 @@ struct HudUiNewGamePanel : HudUiBackground {
     HudUiNewGamePanel_NameInput nameInput;
     HudUiZrdWidgetEx17C intensity;
 
-    HudUiNewGamePanel *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE HudUiNewGamePanel *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
-    void RECOIL_THISCALL SyncIntensityFromDifficulty();
-    void RECOIL_THISCALL StartGameFromFields();
+    HudUiNewGamePanel * Constructor();
+    void Destructor();
+    HudUiNewGamePanel * ScalarDeletingDestructor(unsigned int flags);
+    void SyncIntensityFromDifficulty();
+    void StartGameFromFields();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel) == 0xb0d4);
 RECOIL_STATIC_ASSERT(
@@ -662,70 +662,70 @@ extern const HudUiNumericTextInput_Base_FTable g_HudUiNewGamePanel_NameInput_Vtb
 struct HudUiNewGamePanelOverlayOwner : RecoilApp_IState {
     RecoilPtr32 m_panel; // HudUiNewGamePanel*
 
-    RECOIL_NOINLINE static void RECOIL_CDECL StaticInitAndRegisterAtExit();
-    RECOIL_NOINLINE static HudUiNewGamePanelOverlayOwner *RECOIL_CDECL StaticInit();
-    RECOIL_NOINLINE static void RECOIL_CDECL RegisterAtExit();
-    RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE HudUiNewGamePanelOverlayOwner *RECOIL_THISCALL ScalarDeletingDestructor(
+    static void StaticInitAndRegisterAtExit();
+    static HudUiNewGamePanelOverlayOwner *StaticInit();
+    static void RegisterAtExit();
+    static void AtExitDestructor();
+    void Destructor();
+    HudUiNewGamePanelOverlayOwner * ScalarDeletingDestructor(
         unsigned int flags
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
-    static void RECOIL_CDECL QueueEnter();
+    int OnTryBecomeCurrent();
+    static void QueueEnter();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanelOverlayOwner) == 0x08);
 
 struct HudUiOptionsPanelOverlayOwner : RecoilApp_IState {
     RecoilPtr32 m_panel; // HudUiOptionsPanel*
 
-    RECOIL_NOINLINE static void RECOIL_CDECL StaticInitAndRegisterAtExit();
-    RECOIL_NOINLINE static HudUiOptionsPanelOverlayOwner *RECOIL_CDECL StaticInit();
-    RECOIL_NOINLINE static void RECOIL_CDECL RegisterAtExit();
-    RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
-    HudUiOptionsPanelOverlayOwner *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL DestructorCore();
-    RECOIL_NOINLINE HudUiOptionsPanelOverlayOwner *RECOIL_THISCALL ScalarDeletingDestructor(
+    static void StaticInitAndRegisterAtExit();
+    static HudUiOptionsPanelOverlayOwner *StaticInit();
+    static void RegisterAtExit();
+    static void AtExitDestructor();
+    HudUiOptionsPanelOverlayOwner * Constructor();
+    void DestructorCore();
+    HudUiOptionsPanelOverlayOwner * ScalarDeletingDestructor(
         unsigned int flags
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
-    static void RECOIL_CDECL QueueEnter();
+    int OnTryBecomeCurrent();
+    static void QueueEnter();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiOptionsPanelOverlayOwner) == 0x08);
 
 struct RecoilStateConfirmQuit : RecoilApp_IState {
     RecoilPtr32 m_dialog; // HudUiBackgroundConfirmQuit*
 
-    RECOIL_NOINLINE static void RECOIL_CDECL StaticInitAndRegisterAtExit();
-    RECOIL_NOINLINE static RecoilStateConfirmQuit *RECOIL_CDECL StaticInit();
-    RECOIL_NOINLINE static void RECOIL_CDECL RegisterAtExit();
-    RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
-    RecoilStateConfirmQuit *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
-    RECOIL_NOINLINE ~RecoilStateConfirmQuit();
-    RECOIL_NOINLINE RecoilStateConfirmQuit *RECOIL_THISCALL ScalarDeletingDestructor(
+    static void StaticInitAndRegisterAtExit();
+    static RecoilStateConfirmQuit *StaticInit();
+    static void RegisterAtExit();
+    static void AtExitDestructor();
+    RecoilStateConfirmQuit * Constructor();
+    int OnTryBecomeCurrent();
+    void OnDeactivate();
+    ~RecoilStateConfirmQuit();
+    RecoilStateConfirmQuit * ScalarDeletingDestructor(
         unsigned int flags
     );
-    static void RECOIL_CDECL QueueEnter();
+    static void QueueEnter();
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateConfirmQuit) == 0x08);
 
 struct RecoilStateControls : RecoilApp_IState {
     RecoilPtr32 m_dialog; // HudUiControlsDialog*
 
-    RECOIL_NOINLINE static void RECOIL_CDECL StaticInitAndRegisterAtExit();
-    RECOIL_NOINLINE static RecoilStateControls *RECOIL_CDECL StaticInit();
-    RECOIL_NOINLINE static void RECOIL_CDECL RegisterAtExit();
-    RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
-    RecoilStateControls *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE RecoilStateControls *RECOIL_THISCALL ScalarDeletingDestructor(
+    static void StaticInitAndRegisterAtExit();
+    static RecoilStateControls *StaticInit();
+    static void RegisterAtExit();
+    static void AtExitDestructor();
+    RecoilStateControls * Constructor();
+    RecoilStateControls * ScalarDeletingDestructor(
         unsigned int flags
     );
-    RECOIL_NOINLINE ~RecoilStateControls();
-    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnResume(int activateCode);
-    static void RECOIL_CDECL QueueEnter();
+    ~RecoilStateControls();
+    int OnTryBecomeCurrent();
+    void OnDeactivate();
+    void OnResume(int activateCode);
+    static void QueueEnter();
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateControls) == 0x08);
 
@@ -733,7 +733,7 @@ struct HudUiControlsDialog_ResumeWidget : HudUiZrdWidget {};
 RECOIL_STATIC_ASSERT(sizeof(HudUiControlsDialog_ResumeWidget) == 0x14c);
 
 struct HudUiControlsDialog_CommandsWidget : HudUiZrdWidget {
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiControlsDialog_CommandsWidget) == 0x14c);
 
@@ -754,9 +754,9 @@ struct HudUiControlsDialog : HudUiBackground {
     HudUiControlsDialog_OptionSelector cursorModeSelector;
     HudUiControlsDialog_OptionSelector cameraModeSelector;
 
-    HudUiControlsDialog *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE HudUiControlsDialog *RECOIL_THISCALL ScalarDeletingDestructor(
+    HudUiControlsDialog * Constructor();
+    void Destructor();
+    HudUiControlsDialog * ScalarDeletingDestructor(
         unsigned int flags
     );
 };
@@ -816,7 +816,7 @@ struct HudUiCheatCodeTitleWidget : HudUiZrdWidget {};
 RECOIL_STATIC_ASSERT(sizeof(HudUiCheatCodeTitleWidget) == 0x14c);
 
 struct HudUiCheatTextInputWidget : HudUiNumericTextInput {
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiCheatTextInputWidget) == 0x374);
 
@@ -824,9 +824,9 @@ struct HudUiCheatCodeDialog : HudUiBackground {
     HudUiCheatCodeTitleWidget titleWidget;
     HudUiCheatTextInputWidget cheatInputWidget;
 
-    HudUiCheatCodeDialog *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE HudUiCheatCodeDialog *RECOIL_THISCALL ScalarDeletingDestructor(
+    HudUiCheatCodeDialog * Constructor();
+    void Destructor();
+    HudUiCheatCodeDialog * ScalarDeletingDestructor(
         unsigned int flags
     );
 };
@@ -860,15 +860,15 @@ struct RecoilStateCheatCode : RecoilApp_IState {
     zVideoHalfResAdjustMode m_prevHalfResAdjustMode;
     RecoilPtr32 m_audioSnapshot; // zSndPlayHandleSnapshot*
 
-    RECOIL_NOINLINE static void RECOIL_CDECL StaticInitAndRegisterAtExit();
-    RECOIL_NOINLINE static RecoilStateCheatCode *RECOIL_CDECL ConstructGlobal();
-    RECOIL_NOINLINE static void RECOIL_CDECL StaticInit();
-    RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
-    RecoilStateCheatCode *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
-    RECOIL_NOINLINE ~RecoilStateCheatCode();
-    RECOIL_NOINLINE RecoilStateCheatCode *RECOIL_THISCALL ScalarDeletingDestructor(
+    static void StaticInitAndRegisterAtExit();
+    static RecoilStateCheatCode *ConstructGlobal();
+    static void StaticInit();
+    static void AtExitDestructor();
+    RecoilStateCheatCode * Constructor();
+    int OnTryBecomeCurrent();
+    void OnDeactivate();
+    ~RecoilStateCheatCode();
+    RecoilStateCheatCode * ScalarDeletingDestructor(
         unsigned int flags
     );
 };
@@ -913,16 +913,16 @@ extern const HudUiZrdWidget_FTable g_HudUiCheatCodeTitleWidget_FTable;
 extern const HudUiNumericTextInput_Base_FTable g_HudUiCheatCodeInputWidget_FTable;
 
 namespace HudUiCallback {
-void RECOIL_CDECL QueueExitCurrentState();
-int RECOIL_CDECL QueueCheatCodeState();
+void QueueExitCurrentState();
+int QueueCheatCodeState();
 } // namespace HudUiCallback
 
 namespace HudCheat {
-RECOIL_NOINLINE int RECOIL_FASTCALL ExecuteCommandString(CString *commandString);
-RECOIL_NOINLINE void RECOIL_CDECL ClearNanitePanelCheatSentinel();
+int __fastcall ExecuteCommandString(CString *commandString);
+void ClearNanitePanelCheatSentinel();
 } // namespace HudCheat
 
 namespace HudLowMeterLoopSound {
-RECOIL_NOINLINE void RECOIL_FASTCALL SetLoopActive(int enabled);
-RECOIL_NOINLINE void RECOIL_CDECL Disable();
+void __fastcall SetLoopActive(int enabled);
+void Disable();
 } // namespace HudLowMeterLoopSound

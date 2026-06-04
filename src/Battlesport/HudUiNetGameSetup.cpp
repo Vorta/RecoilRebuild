@@ -28,7 +28,7 @@ unsigned int MethodAddress(
     return address;
 }
 
-RECOIL_NOINLINE void RECOIL_CDECL HudUiNetGameSetupPostLoadNoOp() {}
+void HudUiNetGameSetupPostLoadNoOp() {}
 
 template <typename FTable>
 FTable MakeHudUiNetGameSetupZrdFTable(
@@ -264,7 +264,7 @@ const HudUiCheckToggleWidget_FTable g_HudUiNetGameSetupPanel_CheckToggle_FTable 
 
 // Reimplements 0x419aa0: HudUiNetGameSetupPanel::Constructor
 // (D:\Proj\Battlesport\HudUiNetGameSetup.cpp)
-HudUiNetGameSetupPanel *RECOIL_THISCALL HudUiNetGameSetupPanel::Constructor(
+HudUiNetGameSetupPanel * HudUiNetGameSetupPanel::Constructor(
     int reconfigureExistingSessionValue
 ) {
     HudUiBackground::Constructor();
@@ -557,7 +557,7 @@ HudUiNetGameSetupPanel *RECOIL_THISCALL HudUiNetGameSetupPanel::Constructor(
 
 // Reimplements 0x41a400: HudUiNetGameSetupPanel::Destructor
 // (D:\Proj\Battlesport\HudUiNetGameSetup.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiNetGameSetupPanel::Destructor() {
+void HudUiNetGameSetupPanel::Destructor() {
     lapsSwitch.DestructorCore();
     killsSwitch.DestructorCore();
     nameTagsToggle.DestructorCore();
@@ -580,8 +580,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiNetGameSetupPanel::Destructor() {
     HudUiBackground::Destructor();
 }
 
-RECOIL_NOINLINE HudUiNetGameSetupPanel *RECOIL_THISCALL
-HudUiNetGameSetupPanel::ScalarDeletingDestructor(
+HudUiNetGameSetupPanel * HudUiNetGameSetupPanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -593,7 +592,7 @@ HudUiNetGameSetupPanel::ScalarDeletingDestructor(
 }
 
 // Reimplements 0x41a160: HudUiNetGameSetupPanel_CancelButton::OnActivate
-void RECOIL_THISCALL HudUiNetGameSetupPanel_CancelButton::OnActivate() {
+void HudUiNetGameSetupPanel_CancelButton::OnActivate() {
     g_RecoilApp.QueueExitCurrentState(0);
     g_RecoilApp.QueueSwitchCurrentState(
         &g_RecoilApp.m_leaveNetworkState,
@@ -603,7 +602,7 @@ void RECOIL_THISCALL HudUiNetGameSetupPanel_CancelButton::OnActivate() {
 }
 
 // Reimplements 0x41a5b0: HudUiNetGameSetupPanel_LaunchButton::OnActivate
-void RECOIL_THISCALL HudUiNetGameSetupPanel_LaunchButton::OnActivate() {
+void HudUiNetGameSetupPanel_LaunchButton::OnActivate() {
     HudUiNetGameSetupPanel *const ownerPanel = (HudUiNetGameSetupPanel *)(owner);
     int statusFlags = 0;
     HudUiZrdWidget::OnActivate();
@@ -677,7 +676,7 @@ void RECOIL_THISCALL HudUiNetGameSetupPanel_LaunchButton::OnActivate() {
 }
 
 // Reimplements 0x41a820: HudUiNetGameSetupPanel_NextWorldButton::OnActivate
-void RECOIL_THISCALL HudUiNetGameSetupPanel_NextWorldButton::OnActivate() {
+void HudUiNetGameSetupPanel_NextWorldButton::OnActivate() {
     HudUiNetGameSetupPanel *const ownerPanel = (HudUiNetGameSetupPanel *)(owner);
     ApplyWorldSelectionSideEffects(
         ownerPanel,
@@ -687,7 +686,7 @@ void RECOIL_THISCALL HudUiNetGameSetupPanel_NextWorldButton::OnActivate() {
 }
 
 // Reimplements 0x41a9c0: HudUiNetGameSetupPanel_PrevWorldButton::OnActivate
-void RECOIL_THISCALL HudUiNetGameSetupPanel_PrevWorldButton::OnActivate() {
+void HudUiNetGameSetupPanel_PrevWorldButton::OnActivate() {
     HudUiNetGameSetupPanel *const ownerPanel = (HudUiNetGameSetupPanel *)(owner);
     ApplyWorldSelectionSideEffects(
         ownerPanel,

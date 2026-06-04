@@ -29,7 +29,7 @@ zZbdSectionCallback ZbdCallbackPtr(
 } // namespace
 
 // Reimplements 0x4b1090: zWepInit
-extern "C" RECOIL_NOINLINE int RECOIL_CDECL zWepInit() {
+extern "C" int zWepInit() {
     g_OptCatalog_FallbackImpactProbeEnabled = 1;
     g_OptCatalog_CaptureHitSnapshotEnabled = 1;
 
@@ -70,7 +70,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_CDECL zWepInit() {
 namespace zWeapon {
 // Reimplements 0x4b1140: zWeapon::OnWeaponsSectionPreLoad
 // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL OnWeaponsSectionPreLoad(
+int __fastcall OnWeaponsSectionPreLoad(
     zZbdSectionCallbackCtx *callbackCtx,
     void *
 ) {
@@ -85,7 +85,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL OnWeaponsSectionPreLoad(
 
 // Reimplements 0x4b1160: zWeapon::OnWeaponsSectionDataReady
 // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL OnWeaponsSectionDataReady(
+void __fastcall OnWeaponsSectionDataReady(
     zZbdSectionCallbackCtx *,
     const char *,
     void *weaponData,
@@ -98,7 +98,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL OnWeaponsSectionDataReady(
 
 // Reimplements 0x4b1d80: zWeapon::SetMaxTetherAltitude
 // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-RECOIL_NOINLINE void RECOIL_STDCALL SetMaxTetherAltitude(
+void __stdcall SetMaxTetherAltitude(
     float altitude
 ) {
     g_zWeapon_MaxTetherAltitude = altitude;
@@ -107,7 +107,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL SetMaxTetherAltitude(
 
 // Reimplements 0x4b21c0: PlayerTimedHitStatus::ResetFields
 // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL PlayerTimedHitStatus::ResetFields() {
+void PlayerTimedHitStatus::ResetFields() {
     runtimeFlags &= ~3u;
     lightNode = 0;
     currentLevel = 0.0f;
@@ -117,7 +117,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL PlayerTimedHitStatus::ResetFields() {
 
 // Reimplements 0x4b22d0: PlayerTimedHitStatus::ClearLightAndReset
 // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL PlayerTimedHitStatus::ClearLightAndReset() {
+void PlayerTimedHitStatus::ClearLightAndReset() {
     if (lightNode != 0) {
         zClass_Class::RemoveChild(
             lightParentNode,
@@ -130,7 +130,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL PlayerTimedHitStatus::ClearLightAndReset() 
 
 // Reimplements 0x4b2300: PlayerTimedHitStatus::TickAndUpdateLight
 // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL PlayerTimedHitStatus::TickAndUpdateLight(
+int PlayerTimedHitStatus::TickAndUpdateLight(
     float hitStatus
 ) {
     OptCatalogEntryDef *const source = hitSource;
@@ -204,7 +204,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL PlayerTimedHitStatus::TickAndUpdateLight(
 namespace HitSource {
 // Reimplements 0x4b2210: HitSource::UpdateTimedStatus
 // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL UpdateTimedStatus(
+int __fastcall UpdateTimedStatus(
     OptCatalogEntryDef *self,
     PlayerTimedHitStatus *status,
     float amount

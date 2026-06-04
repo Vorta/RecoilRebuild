@@ -168,15 +168,15 @@ unsigned short BlendDamageMaskPixel555(
     return (unsigned short)(dst + red + green + blue);
 }
 
-typedef int(RECOIL_FASTCALL *TextureRecordLockUploadSurfaceProc)(
+typedef int(__fastcall *TextureRecordLockUploadSurfaceProc)(
     zVideo_TextureRecordPartial *textureRecord,
     void **outPixels,
     int *outPitchBytes
 );
-typedef void(RECOIL_FASTCALL *TextureRecordUnlockUploadSurfaceProc)(
+typedef void(__fastcall *TextureRecordUnlockUploadSurfaceProc)(
     zVideo_TextureRecordPartial *textureRecord
 );
-typedef void(RECOIL_FASTCALL *TextureRecordFinalizeUploadProc)(
+typedef void(__fastcall *TextureRecordFinalizeUploadProc)(
     zVideo_TextureRecordPartial *textureRecord,
     void *rectOrOffset,
     void *reserved
@@ -186,7 +186,7 @@ typedef void(RECOIL_FASTCALL *TextureRecordFinalizeUploadProc)(
 namespace zModel {
 // Reimplements 0x476460: zModel::SetBackfaceEliminationToleranceScalar
 // (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
-RECOIL_NOINLINE void RECOIL_STDCALL SetBackfaceEliminationToleranceScalar(
+void __stdcall SetBackfaceEliminationToleranceScalar(
     float scalar
 ) {
     g_zModel_BFETolerance = scalar;
@@ -194,7 +194,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL SetBackfaceEliminationToleranceScalar(
 
 // Reimplements 0x476470: zModel::GetBackfaceEliminationToleranceScalar
 // (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
-RECOIL_NOINLINE float RECOIL_CDECL GetBackfaceEliminationToleranceScalar() {
+float GetBackfaceEliminationToleranceScalar() {
     return g_zModel_BFETolerance;
 }
 } // namespace zModel
@@ -202,7 +202,7 @@ RECOIL_NOINLINE float RECOIL_CDECL GetBackfaceEliminationToleranceScalar() {
 namespace zRndr {
 // Reimplements 0x476300: zRndr::SetInverseZTolerance
 // (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
-RECOIL_NOINLINE void RECOIL_STDCALL SetInverseZTolerance(
+void __stdcall SetInverseZTolerance(
     float inverseZTolerance
 ) {
     g_zRndr_InverseZTolerance = inverseZTolerance;
@@ -215,7 +215,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL SetInverseZTolerance(
 namespace zScene {
 // Reimplements 0x476700: zScene::TestProjectedSphereVisible
 // (GameZRecoil/zModel/gmod_scene.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL TestProjectedSphereVisible(
+int __fastcall TestProjectedSphereVisible(
     zVec3 *center,
     float radius
 ) {
@@ -334,7 +334,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL TestProjectedSphereVisible(
 } // namespace zScene
 
 // Reimplements 0x475c40: zModel_Display_Init
-RECOIL_NOINLINE int RECOIL_CDECL zModel_Display_Init() {
+int zModel_Display_Init() {
     g_zModel_DisplayInitFlagA = 1;
     g_zModel_DisplayInitFlagB = 1;
     g_zModel_DisplayInitFlagC = 1;
@@ -412,7 +412,7 @@ RECOIL_NOINLINE int RECOIL_CDECL zModel_Display_Init() {
 }
 
 // Reimplements 0x479c90: OptCatalog_SetDamageMaskUv (GameZRecoil/zModel/zModel_Display.cpp)
-RECOIL_NOINLINE void RECOIL_STDCALL OptCatalog_SetDamageMaskUv(
+void __stdcall OptCatalog_SetDamageMaskUv(
     float u,
     float v
 ) {
@@ -422,14 +422,14 @@ RECOIL_NOINLINE void RECOIL_STDCALL OptCatalog_SetDamageMaskUv(
 
 // Reimplements 0x479c80: OptCatalog_IsDamageMaskEnabled
 // (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL OptCatalog_IsDamageMaskEnabled() {
+int OptCatalog_IsDamageMaskEnabled() {
     return g_OptCatalogDamageMaskEnabled;
 }
 
 namespace OptCatalog {
 // Reimplements 0x479c50: OptCatalog::SetDamageMaskSlotIndex
 // (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetDamageMaskSlotIndex(
+void __fastcall SetDamageMaskSlotIndex(
     int slotIndex
 ) {
     g_OptCatalogDamageMaskSlotIndex = slotIndex;
@@ -437,7 +437,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetDamageMaskSlotIndex(
 
 // Reimplements 0x479c60: OptCatalog::RegisterDamageMaskSlotPtr
 // (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RegisterDamageMaskSlotPtr(
+void __fastcall RegisterDamageMaskSlotPtr(
     void *slotPtr
 ) {
     g_OptCatalogDamageMaskEnabled = 1;
@@ -446,7 +446,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RegisterDamageMaskSlotPtr(
 
 // Reimplements 0x479660: OptCatalog::ApplyDamageMaskStampOnHit
 // (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyDamageMaskStampOnHit(
+void __fastcall ApplyDamageMaskStampOnHit(
     OptCatalogHitEventPartial *hitEvent
 ) {
     if (OptCatalog_IsDamageMaskEnabled() == 0) {
@@ -591,7 +591,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyDamageMaskStampOnHit(
 
 // Reimplements 0x479cb0: OptCatalog_SetDamageMaskEnabled
 // (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL OptCatalog_SetDamageMaskEnabled(
+void __fastcall OptCatalog_SetDamageMaskEnabled(
     int enabled
 ) {
     g_OptCatalogDamageMaskEnabled = enabled;
@@ -599,7 +599,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL OptCatalog_SetDamageMaskEnabled(
 
 // Reimplements 0x479cc0: OptCatalog_IsDamageMaskSlotPtrRegistered
 // (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL OptCatalog_IsDamageMaskSlotPtrRegistered(
+int __fastcall OptCatalog_IsDamageMaskSlotPtrRegistered(
     void *slotPtr
 ) {
     for (int i = 0; i < 3; ++i) {
@@ -614,7 +614,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL OptCatalog_IsDamageMaskSlotPtrRegistered(
 namespace zRndr {
 // Reimplements 0x480ec0: zRndr::GlobalStringTable_ReleaseDynamicEntries
 // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
-RECOIL_NOINLINE void RECOIL_CDECL GlobalStringTable_ReleaseDynamicEntries() {
+void GlobalStringTable_ReleaseDynamicEntries() {
     for (int i = 6; i < g_zRndr_GlobalStringCount; ++i) {
         free(g_zRndr_GlobalStringTable[i]);
         g_zRndr_GlobalStringTable[i] = 0;
@@ -627,7 +627,7 @@ RECOIL_NOINLINE void RECOIL_CDECL GlobalStringTable_ReleaseDynamicEntries() {
 namespace zRndr_GlobalStringTable {
 // Reimplements 0x481460: zRndr_GlobalStringTable::LoadDynamicEntriesFromPath
 // (D:\Proj\GameZRecoil\zRndr\zRndr_GlobalStringTable.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL LoadDynamicEntriesFromPath(
+void __fastcall LoadDynamicEntriesFromPath(
     char *path
 ) {
     if (path == 0) {
@@ -679,7 +679,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL LoadDynamicEntriesFromPath(
 namespace zDi {
 // Reimplements 0x481570: zDi::PtrToIndexOrMinus1
 // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL PtrToIndexOrMinus1(
+int __fastcall PtrToIndexOrMinus1(
     zDiPartial *self
 ) {
     if (self == 0) {
@@ -691,7 +691,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL PtrToIndexOrMinus1(
 
 // Reimplements 0x4815a0: zDi::IndexToPtrOrNull
 // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
-RECOIL_NOINLINE zDiPartial *RECOIL_FASTCALL IndexToPtrOrNull(
+zDiPartial *__fastcall IndexToPtrOrNull(
     int index
 ) {
     if (index < 0) {
@@ -705,7 +705,7 @@ RECOIL_NOINLINE zDiPartial *RECOIL_FASTCALL IndexToPtrOrNull(
 namespace zModel_DiPool {
 // Reimplements 0x482080: zModel_DiPool::AllocFromFreeList
 // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
-RECOIL_NOINLINE zDiPartial *RECOIL_CDECL AllocFromFreeList() {
+zDiPartial *AllocFromFreeList() {
     const int slotIndex = g_zModel_DiPoolFreeHeadIndex;
     if (slotIndex < 0) {
         zError::ReportOld(
@@ -731,7 +731,7 @@ RECOIL_NOINLINE zDiPartial *RECOIL_CDECL AllocFromFreeList() {
 
 // Reimplements 0x4820f0: zModel_DiPool::FreeIfUnreferenced
 // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL FreeIfUnreferenced(
+int __fastcall FreeIfUnreferenced(
     zDiPartial *di
 ) {
     if (di == 0) {
@@ -760,7 +760,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FreeIfUnreferenced(
 namespace zModel_MatlSlot {
 // Reimplements 0x480dc0: zModel_MatlSlot::Release
 // (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL Release(
+void __fastcall Release(
     zModel_MaterialSlot *slot
 ) {
     if (slot == 0) {
@@ -816,7 +816,7 @@ enum {
 
 // Reimplements 0x480d80: zModel_MatlBuffer::ReleaseAllActive
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL ReleaseAllActive() {
+int ReleaseAllActive() {
     while (g_zModel_MatlActiveHeadIndex >= 0) {
         if (g_zModel_MatlPool == 0 || g_zModel_MatlActiveHeadIndex >= g_zModel_MatlPoolCapacity) {
             g_zModel_MatlActiveHeadIndex = -1;
@@ -831,7 +831,7 @@ RECOIL_NOINLINE int RECOIL_CDECL ReleaseAllActive() {
 
 // Reimplements 0x480fd0: zModel_MatlBuffer::ReleaseTextureSurfaces
 // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL ReleaseTextureSurfaces() {
+void ReleaseTextureSurfaces() {
     int slotIndex = g_zModel_MatlActiveHeadIndex;
     while (slotIndex >= 0) {
         zModel_MaterialSlot *const slot = &g_zModel_MatlPool[slotIndex];
@@ -860,7 +860,7 @@ RECOIL_NOINLINE void RECOIL_CDECL ReleaseTextureSurfaces() {
 // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
 // Reimplements 0x475fa0: zModel_Display::Shutdown
 // (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
+int Shutdown() {
     ReleaseAllActive();
     if (g_zModel_MatlPool != 0) {
         free(g_zModel_MatlPool);
@@ -880,7 +880,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
 namespace zModel_Matl {
 // Reimplements 0x480ae0: zModel_Matl::InitGlobals
 // (GameZRecoil/zModel/zModel_Matl.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL InitGlobals() {
+int InitGlobals() {
     if (g_zModel_MatlPoolCapacity == 0) {
         g_zModel_MatlPoolCapacity = 2500;
     }
@@ -909,7 +909,7 @@ RECOIL_NOINLINE int RECOIL_CDECL InitGlobals() {
 }
 
 // Reimplements 0x4805e0: zModel_Matl::GetPoolEntry
-RECOIL_NOINLINE zModel_MaterialSlot *RECOIL_FASTCALL GetPoolEntry(
+zModel_MaterialSlot *__fastcall GetPoolEntry(
     int index
 ) {
     if (index < 0) {
@@ -922,7 +922,7 @@ RECOIL_NOINLINE zModel_MaterialSlot *RECOIL_FASTCALL GetPoolEntry(
 
 namespace zModel_Display {
 // Reimplements 0x475f60: zModel_Display::Reset
-RECOIL_NOINLINE int RECOIL_CDECL Reset() {
+int Reset() {
     if (g_zModel_DiPoolCapacity > 0) {
         for (int i = 0; i < g_zModel_DiPoolInUseCount; ++i) {
             zModel_DiPool::FreeIfUnreferenced(&g_zModel_DiPoolBase[i]);
@@ -932,7 +932,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Reset() {
     return 0;
 }
 
-RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
+int Shutdown() {
     zModel_MatlBuffer::Shutdown();
     if (g_zModel_DiPoolCapacity > 0) {
         Reset();
@@ -948,7 +948,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
 
 // Reimplements 0x475e60: zModel_Display::ShutdownThunk
 // (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL ShutdownThunk() {
+int ShutdownThunk() {
     Shutdown();
     return 0;
 }
@@ -956,7 +956,7 @@ RECOIL_NOINLINE int RECOIL_CDECL ShutdownThunk() {
 
 namespace zTag4 {
 // Reimplements 0x476320: zTag4::Clear
-RECOIL_NOINLINE void RECOIL_FASTCALL Clear(
+void __fastcall Clear(
     zTag4Partial *tag
 ) {
     if (tag == 0) {
@@ -973,7 +973,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Clear(
 namespace VariantTag {
 // Reimplements 0x476370: VariantTag::TagsOverlap
 // (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL TagsOverlap(
+int __fastcall TagsOverlap(
     const zTag4Partial *tagA,
     const zTag4Partial *tagB
 ) {
@@ -1009,7 +1009,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL TagsOverlap(
 
 // Reimplements 0x476400: VariantTag::CurrentAllowsId
 // (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL CurrentAllowsId(
+int __fastcall CurrentAllowsId(
     int variantId
 ) {
     if (g_Variant_FilterEnabled == 0) {

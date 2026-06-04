@@ -142,19 +142,19 @@ namespace {
 }
 
 // Reimplements 0x476170: zModel_Fog_SetEnabled
-RECOIL_NOINLINE void RECOIL_FASTCALL zModel_Fog_SetEnabled(
+void __fastcall zModel_Fog_SetEnabled(
     int enabled
 ) {
     gModel_FogEnabled = enabled;
 }
 
 // Reimplements 0x476180: zModel_Fog_IsEnabled (GameZRecoil/zModel/zmodel.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL zModel_Fog_IsEnabled() {
+int zModel_Fog_IsEnabled() {
     return gModel_FogEnabled;
 }
 
 // Reimplements 0x476190: zModel_Fog_SetDistanceStart
-RECOIL_NOINLINE void RECOIL_STDCALL zModel_Fog_SetDistanceStart(
+void __stdcall zModel_Fog_SetDistanceStart(
     float distanceStart
 ) {
     const float range = gModel_FogDistanceEnd - distanceStart;
@@ -164,12 +164,12 @@ RECOIL_NOINLINE void RECOIL_STDCALL zModel_Fog_SetDistanceStart(
 
 // Reimplements 0x4761d0: zModel_Fog_GetDistanceStart
 // (GameZRecoil/zModel/zModel_Display.cpp)
-RECOIL_NOINLINE float RECOIL_CDECL zModel_Fog_GetDistanceStart() {
+float zModel_Fog_GetDistanceStart() {
     return gModel_FogDistanceStart;
 }
 
 // Reimplements 0x4761e0: zModel_Fog_SetDistanceEnd
-RECOIL_NOINLINE void RECOIL_STDCALL zModel_Fog_SetDistanceEnd(
+void __stdcall zModel_Fog_SetDistanceEnd(
     float distanceEnd
 ) {
     const float range = distanceEnd - gModel_FogDistanceStart;
@@ -178,7 +178,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL zModel_Fog_SetDistanceEnd(
 }
 
 // Reimplements 0x476220: zModel_Fog_SetHeightHigh
-RECOIL_NOINLINE void RECOIL_STDCALL zModel_Fog_SetHeightHigh(
+void __stdcall zModel_Fog_SetHeightHigh(
     float heightHigh
 ) {
     const float range = heightHigh - gModel_FogHeightLow;
@@ -187,7 +187,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL zModel_Fog_SetHeightHigh(
 }
 
 // Reimplements 0x476260: zModel_Fog_SetHeightLow
-RECOIL_NOINLINE void RECOIL_STDCALL zModel_Fog_SetHeightLow(
+void __stdcall zModel_Fog_SetHeightLow(
     float heightLow
 ) {
     const float range = gModel_FogHeightHigh - heightLow;
@@ -196,21 +196,21 @@ RECOIL_NOINLINE void RECOIL_STDCALL zModel_Fog_SetHeightLow(
 }
 
 // Reimplements 0x4762a0: zModel_Fog_SetDensity
-RECOIL_NOINLINE void RECOIL_STDCALL zModel_Fog_SetDensity(
+void __stdcall zModel_Fog_SetDensity(
     float density
 ) {
     gModel_FogDensity = density;
 }
 
 // Reimplements 0x4762b0: zModel_Fog_SetLinearModeEnabled
-RECOIL_NOINLINE void RECOIL_FASTCALL zModel_Fog_SetLinearModeEnabled(
+void __fastcall zModel_Fog_SetLinearModeEnabled(
     int enabled
 ) {
     gModel_FogLinearModeEnabled = enabled;
 }
 
 // Reimplements 0x4762c0: zModel_Fog_SetColorRgb01
-RECOIL_NOINLINE void RECOIL_FASTCALL zModel_Fog_SetColorRgb01(
+void __fastcall zModel_Fog_SetColorRgb01(
     zColorRgb *rgb01
 ) {
     memcpy(
@@ -224,12 +224,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zModel_Fog_SetColorRgb01(
 }
 
 // Reimplements 0x4762f0: zModel_Fog_ApplyCurrentColor
-RECOIL_NOINLINE void RECOIL_CDECL zModel_Fog_ApplyCurrentColor() {
+void zModel_Fog_ApplyCurrentColor() {
     zRndr::FogColor_SetRgb01Clamped(&gModel_FogColorRgb01);
 }
 
 // Reimplements 0x476040: zModel_FogTargetColorOverride_SetCurrent
-RECOIL_NOINLINE void RECOIL_FASTCALL zModel_FogTargetColorOverride_SetCurrent(
+void __fastcall zModel_FogTargetColorOverride_SetCurrent(
     zColorRgb *colorRgb01,
     float weight
 ) {
@@ -240,14 +240,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zModel_FogTargetColorOverride_SetCurrent(
 }
 
 // Reimplements 0x476070: zModel_RenderAlphaScale_SetCurrent
-RECOIL_NOINLINE void RECOIL_STDCALL zModel_RenderAlphaScale_SetCurrent(
+void __stdcall zModel_RenderAlphaScale_SetCurrent(
     float scale
 ) {
     gModel_RenderAlphaScaleCurrent = scale;
 }
 
 // Reimplements 0x476080: zModel_RenderVertexAlphaEnabled_SetCurrent
-RECOIL_NOINLINE void RECOIL_FASTCALL zModel_RenderVertexAlphaEnabled_SetCurrent(
+void __fastcall zModel_RenderVertexAlphaEnabled_SetCurrent(
     int enabled
 ) {
     gModel_RenderVertexAlphaEnabled = enabled;
@@ -255,7 +255,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zModel_RenderVertexAlphaEnabled_SetCurrent(
 
 namespace zModel_Light {
     // Reimplements 0x4894f0: zModel_Light::EvalDistanceWeight
-    RECOIL_NOINLINE float RECOIL_FASTCALL
+    float __fastcall
     EvalDistanceWeight(
         const zClass_LightDataPartial *light,
         float distance
@@ -272,7 +272,7 @@ namespace zModel_Light {
     }
 
     // Reimplements 0x489540: zModel_Light::EvalSphereFogFade
-    RECOIL_NOINLINE float RECOIL_FASTCALL EvalSphereFogFade(
+    float __fastcall EvalSphereFogFade(
         const zVec3 *point,
         float radius
     ){
@@ -307,7 +307,7 @@ namespace zModel_Light {
     }
 
     // Reimplements 0x4896d0: zModel_Light::BuildAttr0DepthFade
-    RECOIL_NOINLINE int RECOIL_FASTCALL BuildAttr0DepthFade(
+    int __fastcall BuildAttr0DepthFade(
         int vertexCount,
         int *outHasVariation
     ){
@@ -390,7 +390,7 @@ namespace zModel_Light {
     }
 
     // Reimplements 0x489a90: zModel_Light::BuildAttr1Falloff
-    RECOIL_NOINLINE int RECOIL_FASTCALL BuildAttr1Falloff(
+    int __fastcall BuildAttr1Falloff(
         int vertexCount,
         int *pLightingFlags
     ){
@@ -468,7 +468,7 @@ namespace zModel_Light {
     }
 
     // Reimplements 0x489920: zModel_Light::EvalBatchSphereFade
-    RECOIL_NOINLINE int RECOIL_FASTCALL EvalBatchSphereFade(float *outFade) {
+    int __fastcall EvalBatchSphereFade(float *outFade) {
         const zClipVert &vert = g_Clip_PolyVertsScratch[0];
         const float distance = ApproximateSqrtFromBits(vert.x * vert.x + vert.z * vert.z);
         if (distance <= gModel_FogDistanceStart) {
@@ -505,7 +505,7 @@ namespace zModel_Light {
 }
 
 // Reimplements 0x488d60: zModel_Light::BuildLightWeights
-RECOIL_NOINLINE int RECOIL_FASTCALL zModel_Light_BuildLightWeights(
+int __fastcall zModel_Light_BuildLightWeights(
     zVec3 *surfaceNormal,
     int vertexCount,
     int *outPackedFogColor,
@@ -697,7 +697,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zModel_Light_BuildLightWeights(
 }
 
 // Reimplements 0x487a30: zModel_Light_PointInPolygonInitXZ
-RECOIL_NOINLINE void RECOIL_FASTCALL zModel_Light_PointInPolygonInitXZ(
+void __fastcall zModel_Light_PointInPolygonInitXZ(
     zClass_LightDataPartial **lightDataList,
     zModel_LightStatePartial **lightNodeStates,
     int lightCount
@@ -772,7 +772,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zModel_Light_PointInPolygonInitXZ(
 namespace zModel_Light {
     // Reimplements 0x487f10: zModel_Light::SetActiveLights
     // (D:\Proj\GameZRecoil\zModel\gmod_light.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL SetActiveLights(
+    int __fastcall SetActiveLights(
         zVec3 * surfaceNormal,
         int vertexCount,
         int *lightFlags,
@@ -1134,7 +1134,7 @@ namespace zModel_Light {
     }
 
     // Reimplements 0x487c50: zModel_Light::PointInPolygonTestRadiusXZ
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     PointInPolygonTestRadiusXZ(
         const zVec3 *sphereCenter,
         float radius

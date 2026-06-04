@@ -14,10 +14,6 @@
 namespace {
     const char *kSoundSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Sound.c";
 
-    float *SavedParentMatrix(zClass_SoundDataPartial * data) {
-        return (float *)((unsigned char *)data + 0x48);
-    }
-
     int CullNodeForRender(
         zClass_NodePartial * node,
         int siblingCountHint,
@@ -87,7 +83,7 @@ namespace {
 namespace zClass_Sound {
     // Reimplements 0x4529c0: zClass_Sound::gwSoundNew
     // (D:\Proj\GameZRecoil\zClass\Sound.c)
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwSoundNew() {
+    zClass_NodePartial *gwSoundNew() {
         zClass_NodePartial *const node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
             zError::ReportOld(
@@ -138,7 +134,7 @@ namespace zClass_Sound {
     }
 
     // Reimplements 0x452ab0: zClass_Sound::DeleteNode
-    RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNode(zClass_NodePartial * node) {
+    int __fastcall DeleteNode(zClass_NodePartial * node) {
         if (node == 0) {
             zError::ReportOld(
                 0x400,
@@ -191,7 +187,7 @@ namespace zClass_Sound {
     }
 
     // Reimplements 0x452b80: zClass_Sound::RemoveChild
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -223,7 +219,7 @@ namespace zClass_Sound {
 
     // Reimplements 0x452bc0: zClass_Sound::SetSampleSetByName
     // (D:\Proj\GameZRecoil\zClass\Sound.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     SetSampleSetByName(
         zClass_NodePartial * node,
         const char *name
@@ -272,7 +268,7 @@ namespace zClass_Sound {
     }
 
     // Reimplements 0x452c60: zClass_Sound::gwSoundSetActive
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwSoundSetActive(
+    int __fastcall gwSoundSetActive(
         zClass_NodePartial * node,
         int active
     ){
@@ -318,7 +314,7 @@ namespace zClass_Sound {
 
     // Reimplements 0x452d00: zClass_Sound::gwSoundSetPosition
     // (D:\Proj\GameZRecoil\zClass\Sound.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwSoundSetPosition(
         zClass_NodePartial * node,
         float x,
@@ -355,7 +351,7 @@ namespace zClass_Sound {
 
     // Reimplements 0x452d60: zClass_Sound::gwSoundGetPosition
     // (D:\Proj\GameZRecoil\zClass\Sound.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwSoundGetPosition(
         zClass_NodePartial * node,
         float *outX,
@@ -391,7 +387,7 @@ namespace zClass_Sound {
 
     // Reimplements 0x452dc0: zClass_Sound::UpdatePlayback
     // (D:\Proj\GameZRecoil\zClass\Sound.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL UpdatePlayback(zClass_NodePartial * node) {
+    int __fastcall UpdatePlayback(zClass_NodePartial * node) {
         if (node == 0) {
             zError::ReportOld(
                 0x400,
@@ -460,7 +456,7 @@ namespace zClass_Sound {
 
     // Reimplements 0x452ec0: zClass_Sound::ComputeWorldTransform
     // (D:\Proj\GameZRecoil\zClass\Sound.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     ComputeWorldTransform(
         zClass_NodePartial * node,
         zClass_SoundDataPartial * soundData
@@ -493,7 +489,7 @@ namespace zClass_Sound {
 
     // Reimplements 0x44af60: zClass_Sound::RenderTraverse
     // (D:\Proj\GameZRecoil\zClass\Sound.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint
@@ -520,7 +516,7 @@ namespace zClass_Sound {
         if (result == 0) {
             const zVec3 angles = {0.0f, 0.0f, 0.0f};
             const zVec3 unitScale = {1.0f, 1.0f, 1.0f};
-            zMath::MatStackPushAndCloneParent(SavedParentMatrix(data));
+            zMath::MatStackPushAndCloneParent(data->savedParentMatrix);
             zMath::MatApplyLocalTRS(
                 &angles,
                 &data->localPosition,

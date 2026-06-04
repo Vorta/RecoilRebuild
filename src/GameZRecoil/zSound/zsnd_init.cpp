@@ -106,7 +106,7 @@ typedef ULONG(__stdcall *UnknownReleaseProc)(void *);
 
 namespace zSnd {
 // Reimplements 0x4a3ef0: zSnd::ReportA3DError
-RECOIL_NOINLINE int RECOIL_FASTCALL ReportA3DError(
+int __fastcall ReportA3DError(
     int a3dError,
     const char *sourceFile,
     int sourceLine
@@ -484,7 +484,7 @@ reportA3D:
 }
 
 // Reimplements 0x4a4330: zSnd::ReportDirectSoundError
-RECOIL_NOINLINE int RECOIL_FASTCALL ReportDirectSoundError(
+int __fastcall ReportDirectSoundError(
     int directSoundError,
     const char *sourceFile,
     int sourceLine
@@ -596,7 +596,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReportDirectSoundError(
 }
 
 // Reimplements 0x4b31f0: zSnd::HasMmxMixerSupport
-RECOIL_NOINLINE int RECOIL_CDECL HasMmxMixerSupport() {
+int HasMmxMixerSupport() {
     if (zSys::HasCpuidSupportRuntimeOptions() == 0) {
         return 0;
     }
@@ -605,7 +605,7 @@ RECOIL_NOINLINE int RECOIL_CDECL HasMmxMixerSupport() {
 }
 
 // Reimplements 0x4b2f50: zSnd::AcquireCachedDirectSound
-RECOIL_NOINLINE LPDIRECTSOUND RECOIL_FASTCALL AcquireCachedDirectSound(
+LPDIRECTSOUND __fastcall AcquireCachedDirectSound(
     LPGUID deviceGuid
 ) {
     LPDIRECTSOUND cached = g_zSnd_CachedDirectSound;
@@ -631,7 +631,7 @@ RECOIL_NOINLINE LPDIRECTSOUND RECOIL_FASTCALL AcquireCachedDirectSound(
 }
 
 // Reimplements 0x4b2fa0: zSnd::ReleaseCachedDirectSound
-RECOIL_NOINLINE void RECOIL_CDECL ReleaseCachedDirectSound() {
+void ReleaseCachedDirectSound() {
     LPDIRECTSOUND cached = g_zSnd_CachedDirectSound;
     if (cached != 0) {
         cached->Release();
@@ -640,7 +640,7 @@ RECOIL_NOINLINE void RECOIL_CDECL ReleaseCachedDirectSound() {
 }
 
 // Reimplements 0x4b2fc0: zSnd::CachedDirectSound_GetCaps
-RECOIL_NOINLINE HRESULT RECOIL_FASTCALL CachedDirectSound_GetCaps(
+HRESULT __fastcall CachedDirectSound_GetCaps(
     DSCAPS *caps
 ) {
     caps->dwSize = sizeof(DSCAPS);
@@ -649,7 +649,7 @@ RECOIL_NOINLINE HRESULT RECOIL_FASTCALL CachedDirectSound_GetCaps(
 } // namespace zSnd
 
 // Reimplements 0x4a12c0: zSnd_PreInitializeRuntimeState
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSnd_PreInitializeRuntimeState(
+extern "C" int __fastcall zSnd_PreInitializeRuntimeState(
     unsigned int hwnd
 ) {
     if (g_zSnd_PreInitialized != 0) {
@@ -705,7 +705,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSnd_PreInitializeRuntimeState(
 }
 
 // Reimplements 0x4a1420: zSndSystem_Init
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndSystem_Init(
+extern "C" int __fastcall zSndSystem_Init(
     unsigned int hwnd,
     const char *zrdPath
 ) {
@@ -767,7 +767,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndSystem_Init(
 }
 
 // Reimplements 0x4a1e50: zSndBackend_InitDirectSound
-extern "C" RECOIL_NOINLINE int RECOIL_CDECL zSndBackend_InitDirectSound() {
+extern "C" int zSndBackend_InitDirectSound() {
     HRESULT directSoundError = DirectSoundCreate(
         0,
         &g_zSnd_BackendDevice,
@@ -825,7 +825,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_CDECL zSndBackend_InitDirectSound() {
 }
 
 // Reimplements 0x4a1d10: zSndBackend_InitA3D
-extern "C" RECOIL_NOINLINE int RECOIL_CDECL zSndBackend_InitA3D() {
+extern "C" int zSndBackend_InitA3D() {
     if (CoInitialize(0) < 0) {
         return 0;
     }
@@ -935,7 +935,7 @@ void ReleaseUnknown(
 } // namespace
 
 // Reimplements 0x4a1f40: zSndBackend::Shutdown
-RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
+int Shutdown() {
     if (g_zSnd_IsInitialized == 0 || g_zSnd_PreInitialized == 0) {
         return 0;
     }

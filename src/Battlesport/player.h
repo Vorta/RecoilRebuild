@@ -89,8 +89,8 @@ extern zEffectAnimEntry *g_PlayerRecentHitFxAnimEntry;
 struct Player_UnderwaterFxPass3Ui : HudUiElement {
     zVidRect32 *overlayRectOrNull;
 
-    RECOIL_NOINLINE Player_UnderwaterFxPass3Ui *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL ApplyBlueTint();
+    Player_UnderwaterFxPass3Ui * Constructor();
+    void ApplyBlueTint();
 };
 RECOIL_STATIC_ASSERT(sizeof(Player_UnderwaterFxPass3Ui) == 0x38);
 RECOIL_STATIC_ASSERT(
@@ -104,8 +104,8 @@ extern const HudUiCommon_FTable g_Player_UnderwaterFxPass3Ui_Vtbl;
 struct Player_ProjectileCameraFxPass3Ui : HudUiElement {
     zVidRect32 *overlayRectOrNull;
 
-    RECOIL_NOINLINE Player_ProjectileCameraFxPass3Ui *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL ApplyGreenMask();
+    Player_ProjectileCameraFxPass3Ui * Constructor();
+    void ApplyGreenMask();
 };
 RECOIL_STATIC_ASSERT(sizeof(Player_ProjectileCameraFxPass3Ui) == 0x38);
 RECOIL_STATIC_ASSERT(
@@ -391,585 +391,585 @@ extern float g_Player_CameraHeadingLerpBaseWhenFlagSet;
 }
 
 namespace Checkpoint {
-RECOIL_NOINLINE void RECOIL_CDECL InstantiateNamedObjects();
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdatePlayerLapProgressAndNotifyNet(
+void InstantiateNamedObjects();
+void __fastcall UpdatePlayerLapProgressAndNotifyNet(
     zUtil_SaveGameState *saveState,
     int checkpointIndex
 );
 } // namespace Checkpoint
 
 namespace PlayerPickupContact {
-RECOIL_NOINLINE int RECOIL_FASTCALL PassesCollectionTest(
+int __fastcall PassesCollectionTest(
     zUtil_SaveGameState *saveState,
     PlayerPendingContact *contact
 );
 } // namespace PlayerPickupContact
 
 namespace zVehicle {
-RECOIL_NOINLINE const char *RECOIL_FASTCALL SelectZrdByDifficulty(const char *extraSearchPath);
+const char *__fastcall SelectZrdByDifficulty(const char *extraSearchPath);
 } // namespace zVehicle
 
 namespace Player_TopMsgPanel1 {
-RECOIL_NOINLINE void RECOIL_CDECL Constructor();
-RECOIL_NOINLINE void RECOIL_CDECL Destructor();
+void Constructor();
+void Destructor();
 } // namespace Player_TopMsgPanel1
 
 namespace Player_TopMsgPanel2 {
-RECOIL_NOINLINE void RECOIL_CDECL Constructor();
-RECOIL_NOINLINE void RECOIL_CDECL Destructor();
+void Constructor();
+void Destructor();
 } // namespace Player_TopMsgPanel2
 
 namespace PlayerNodeFlagRestore {
-RECOIL_NOINLINE void RECOIL_CDECL InitGlobals();
-RECOIL_NOINLINE void RECOIL_CDECL InitInstance();
-RECOIL_NOINLINE void RECOIL_CDECL RegisterAtExit();
-RECOIL_NOINLINE void RECOIL_CDECL ShutdownInstance();
+void InitGlobals();
+void InitInstance();
+void RegisterAtExit();
+void ShutdownInstance();
 } // namespace PlayerNodeFlagRestore
 
 namespace Player {
-RECOIL_NOINLINE void RECOIL_CDECL InitMasterCommonDataList();
-RECOIL_NOINLINE void RECOIL_CDECL InitMasterModalDataList();
-RECOIL_NOINLINE void RECOIL_CDECL InitAndRegisterUnderwaterFxPass3UiSingleton();
-RECOIL_NOINLINE void RECOIL_CDECL InitUnderwaterFxPass3UiSingleton();
-RECOIL_NOINLINE void RECOIL_CDECL RegisterUnderwaterFxPass3UiOnExit();
-RECOIL_NOINLINE void RECOIL_CDECL ResetUnderwaterFxPass3UiSingleton();
-RECOIL_NOINLINE void RECOIL_CDECL InitAndRegisterProjectileCameraFxPass3UiSingleton();
-RECOIL_NOINLINE void RECOIL_CDECL InitProjectileCameraFxPass3UiSingleton();
-RECOIL_NOINLINE void RECOIL_CDECL RegisterProjectileCameraFxPass3UiCleanup();
-RECOIL_NOINLINE void RECOIL_CDECL ResetProjectileCameraFxPass3UiSingleton();
-RECOIL_NOINLINE void RECOIL_CDECL InitSaveStateList();
-RECOIL_NOINLINE void RECOIL_CDECL InitAndRegisterTopMsgPanel1();
-RECOIL_NOINLINE void RECOIL_CDECL RegisterTopMsgPanel1OnExit();
-RECOIL_NOINLINE void RECOIL_CDECL InitAndRegisterTopMsgPanel2();
-RECOIL_NOINLINE void RECOIL_CDECL RegisterTopMsgPanel2Cleanup();
-RECOIL_NOINLINE const char *RECOIL_CDECL GetAivZrdPath();
-RECOIL_NOINLINE void RECOIL_FASTCALL ExtractVehicleNameFromAivName(
+void InitMasterCommonDataList();
+void InitMasterModalDataList();
+void InitAndRegisterUnderwaterFxPass3UiSingleton();
+void InitUnderwaterFxPass3UiSingleton();
+void RegisterUnderwaterFxPass3UiOnExit();
+void ResetUnderwaterFxPass3UiSingleton();
+void InitAndRegisterProjectileCameraFxPass3UiSingleton();
+void InitProjectileCameraFxPass3UiSingleton();
+void RegisterProjectileCameraFxPass3UiCleanup();
+void ResetProjectileCameraFxPass3UiSingleton();
+void InitSaveStateList();
+void InitAndRegisterTopMsgPanel1();
+void RegisterTopMsgPanel1OnExit();
+void InitAndRegisterTopMsgPanel2();
+void RegisterTopMsgPanel2Cleanup();
+const char *GetAivZrdPath();
+void __fastcall ExtractVehicleNameFromAivName(
     const char *aivName,
     char *outVehicleName
 );
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CloneType6NodeFromTemplateAndRename(
+zClass_NodePartial *__fastcall CloneType6NodeFromTemplateAndRename(
     const char *templateName,
     const char *newName
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL CreateFromNamesAtPose(
+int __fastcall CreateFromNamesAtPose(
     const zVec3 *spawnPos,
     int aiNetId,
     float yawDeg,
     const char *templateName,
     const char *objectName
 );
-RECOIL_NOINLINE zUtil_SaveGameState *RECOIL_FASTCALL CreateFromNamesAtPoseGetState(
+zUtil_SaveGameState *__fastcall CreateFromNamesAtPoseGetState(
     const zVec3 *spawnPos,
     const char *templateName,
     float yawDeg,
     const char *objectName
 );
-RECOIL_NOINLINE zUtil_SaveGameState *RECOIL_CDECL GetSaveStateListHead();
-RECOIL_NOINLINE void RECOIL_CDECL UnbindCurrentSaveStateIfSinglePlayer();
-RECOIL_NOINLINE void RECOIL_CDECL BindActiveGameStateAsCurrentSaveState();
-RECOIL_NOINLINE void RECOIL_CDECL SyncLocalPoseFromRootNode();
-RECOIL_NOINLINE void RECOIL_FASTCALL CaptureCurrentObjectPoseAsRestartAnchor(
+zUtil_SaveGameState *GetSaveStateListHead();
+void UnbindCurrentSaveStateIfSinglePlayer();
+void BindActiveGameStateAsCurrentSaveState();
+void SyncLocalPoseFromRootNode();
+void __fastcall CaptureCurrentObjectPoseAsRestartAnchor(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL CacheGunHardpointsAndDetachDisplays(
+void __fastcall CacheGunHardpointsAndDetachDisplays(
     zUtil_SaveGameState *saveState,
     int detachDisplays
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL InitStateFromNameAndMasterCommonData(
+void __fastcall InitStateFromNameAndMasterCommonData(
     zUtil_SaveGameState *saveState,
     const char *objectName,
     const char *masterCommonDataName
 );
-RECOIL_NOINLINE void RECOIL_CDECL BuildAiPeerRingsByAiNetId();
-RECOIL_NOINLINE void RECOIL_FASTCALL AddScaledHudCounterValue(float value);
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateGunDispatchRequestsFromTriggerLatches(
+void BuildAiPeerRingsByAiNetId();
+void __fastcall AddScaledHudCounterValue(float value);
+void __fastcall UpdateGunDispatchRequestsFromTriggerLatches(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL AiDiscardNegativeBranchPathNodes(
+void __fastcall AiDiscardNegativeBranchPathNodes(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AiMode2ForwardProbeRequiresAutoTurn(
+int __fastcall AiMode2ForwardProbeRequiresAutoTurn(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AiChooseNextPathBranchIndex(
+int __fastcall AiChooseNextPathBranchIndex(
     zUtil_SaveGameState *saveState,
     AINetNode **currentNodeInOut,
     int *outBranchIndex,
     int excludedBranchIndex
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL AiAdvancePathCursorAndComputeTargetVec(
+void __fastcall AiAdvancePathCursorAndComputeTargetVec(
     zUtil_SaveGameState *saveState,
     AINetNode **currentNodeInOut,
     AINetPathProbeFan **outProbeFan,
     zVec3 *outTargetVec
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2TopLevel(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2PathFollow(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL AiEnterMode2SteeringPursuit(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL AiAlertAttackBuddies(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE int RECOIL_FASTCALL AiTryEnterMode2AttackPursuitIfLineOfSight(
+void __fastcall TickAiMode2TopLevel(zUtil_SaveGameState *saveState);
+void __fastcall TickAiMode2PathFollow(zUtil_SaveGameState *saveState);
+void __fastcall AiEnterMode2SteeringPursuit(zUtil_SaveGameState *saveState);
+void __fastcall AiAlertAttackBuddies(zUtil_SaveGameState *saveState);
+int __fastcall AiTryEnterMode2AttackPursuitIfLineOfSight(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL AiRebuildSyntheticPathToNodeIfFar(
+void __fastcall AiRebuildSyntheticPathToNodeIfFar(
     zUtil_SaveGameState *saveState,
     AINetNode *targetNode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2SteeringSubstate(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2MoveAndTurnTowardTarget(
+void __fastcall TickAiMode2SteeringSubstate(zUtil_SaveGameState *saveState);
+void __fastcall UpdateAiMode2MoveAndTurnTowardTarget(
     zUtil_SaveGameState *saveState,
     float forwardDot,
     float lateralDot,
     float targetDistance
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2TurnTowardPlayerNoThrottle(
+void __fastcall UpdateAiMode2TurnTowardPlayerNoThrottle(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2TurnInPlaceTowardPlayer(
+void __fastcall UpdateAiMode2TurnInPlaceTowardPlayer(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2AltGunAttackWindow(
+void __fastcall TickAiMode2AltGunAttackWindow(
     zUtil_SaveGameState *saveState,
     float targetDistance,
     float forwardDot
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SolveAltGunLeadTargetPoint(
+void __fastcall SolveAltGunLeadTargetPoint(
     zUtil_SaveGameState *saveState,
     zUtil_SaveGameState *targetSaveState,
     zVec3 *outTargetPos
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2MoveAndTurnTowardOffsetTarget(
+void __fastcall UpdateAiMode2MoveAndTurnTowardOffsetTarget(
     zUtil_SaveGameState *saveState,
     zUtil_SaveGameState *targetState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
+void __fastcall UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
     zUtil_SaveGameState *saveState,
     zUtil_SaveGameState *targetState,
     float targetDistance
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2OffsetTargetSteering(
+void __fastcall TickAiMode2OffsetTargetSteering(
     zUtil_SaveGameState *saveState,
     float unusedForwardDot,
     float unusedLateralDot,
     float unusedTargetDistance
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2DynamicOffsetTargetSteering(
+void __fastcall TickAiMode2DynamicOffsetTargetSteering(
     zUtil_SaveGameState *saveState,
     float unusedForwardDot,
     float unusedLateralDot,
     float targetDistance
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL AiRestoreSavedTopLevelState(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL AiSteerTowardPathNodeForward(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL AiSteerTowardPathNodeReverse(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2TimedPathSteering(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_CDECL AiFinalizeMode2State1ForAllPlayers();
-RECOIL_NOINLINE void RECOIL_FASTCALL SetWorldPoseAndRestartAnchor(
+void __fastcall AiRestoreSavedTopLevelState(zUtil_SaveGameState *saveState);
+void __fastcall AiSteerTowardPathNodeForward(zUtil_SaveGameState *saveState);
+void __fastcall AiSteerTowardPathNodeReverse(zUtil_SaveGameState *saveState);
+void __fastcall TickAiMode2TimedPathSteering(zUtil_SaveGameState *saveState);
+void AiFinalizeMode2State1ForAllPlayers();
+void __fastcall SetWorldPoseAndRestartAnchor(
     zUtil_SaveGameState *saveState,
     const zVec3 *position,
     float yawRad
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ResetMouseControlStateAndRecenterCursor(
+void __fastcall ResetMouseControlStateAndRecenterCursor(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_CDECL TickAllPlayers();
-RECOIL_NOINLINE void RECOIL_FASTCALL AsyncCommandCallback(
+void TickAllPlayers();
+void __fastcall AsyncCommandCallback(
     zEffectAnimEntry *animEntry,
     void *callbackContext,
     int eventCode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL TickLocalPlayerControls(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_CDECL RegisterGameplayCommandCallbacksAndCreateFfEffects();
-RECOIL_NOINLINE void RECOIL_FASTCALL TickActiveCameraState(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateChaseCameraFromInput(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateTopDownCameraState(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateFirstPersonCameraFromInput(
+void __fastcall TickLocalPlayerControls(zUtil_SaveGameState *saveState);
+void RegisterGameplayCommandCallbacksAndCreateFfEffects();
+void __fastcall TickActiveCameraState(zUtil_SaveGameState *saveState);
+void __fastcall UpdateChaseCameraFromInput(zUtil_SaveGameState *saveState);
+void __fastcall UpdateTopDownCameraState(zUtil_SaveGameState *saveState);
+void __fastcall UpdateFirstPersonCameraFromInput(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCameraFromStoredTargetTowardPlayer(
+void __fastcall UpdateCameraFromStoredTargetTowardPlayer(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RestoreThirdPersonCameraFromObstructionState(
+void __fastcall RestoreThirdPersonCameraFromObstructionState(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_CDECL UpdateCameraWeatherFxEmitterVisibility();
-RECOIL_NOINLINE void RECOIL_CDECL ToggleSteeringModeAndResetMouseLook();
-RECOIL_NOINLINE void RECOIL_FASTCALL ResetMotionTransientState(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateBankVelocityFromSteerInput(
+void UpdateCameraWeatherFxEmitterVisibility();
+void ToggleSteeringModeAndResetMouseLook();
+void __fastcall ResetMotionTransientState(zUtil_SaveGameState *saveState);
+void __fastcall UpdateBankVelocityFromSteerInput(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAutoTurnAndSteerFromTarget(
+void __fastcall UpdateAutoTurnAndSteerFromTarget(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL IntegrateYawAndWrapFromYawVelocity(
+void __fastcall IntegrateYawAndWrapFromYawVelocity(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RebuildSteerBasisFromMotionBasis(
+void __fastcall RebuildSteerBasisFromMotionBasis(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RebuildSteerBasisRawFromRef(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL RebuildMotionBasisFromSteerBasis(
+void __fastcall RebuildSteerBasisRawFromRef(zUtil_SaveGameState *saveState);
+void __fastcall RebuildMotionBasisFromSteerBasis(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RebuildSteerBasisFromMotionAxes(
+void __fastcall RebuildSteerBasisFromMotionAxes(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ClearPendingContactQueues(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL FilterCameraProbeBlockingHits(
+void __fastcall ClearPendingContactQueues(zUtil_SaveGameState *saveState);
+void __fastcall FilterCameraProbeBlockingHits(
     PlayerProbeSampleCandidateBuffer *batches,
     int batchCount
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FindNearestThirdPersonCameraProbePoint(
+int __fastcall FindNearestThirdPersonCameraProbePoint(
     PlayerProbeSampleCandidateBuffer *batches,
     int batchCount,
     const zVec3 *referencePos,
     zVec3 *outHitPos
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AdjustSubCameraFocusForObstruction(
+int __fastcall AdjustSubCameraFocusForObstruction(
     zUtil_SaveGameState *saveState,
     zVec3 *focusPos
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AdjustThirdPersonCameraByOffsetProbes(
+int __fastcall AdjustThirdPersonCameraByOffsetProbes(
     zUtil_SaveGameState *saveState,
     zVec3 *cameraPos,
     const zVec3 *sideDir
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AdjustThirdPersonCameraBySideProbes(
+int __fastcall AdjustThirdPersonCameraBySideProbes(
     zUtil_SaveGameState *saveState,
     zVec3 *cameraPos,
     const zVec3 *focusPos,
     zVec3 *cameraDirNext
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCameraVariantFromAnchor(
+void __fastcall UpdateCameraVariantFromAnchor(
     PlayerProbeSampleCandidateBuffer *candidates,
     zVec3 *cameraPos,
     int selectedCandidateIndex
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCameraVariantFromCameraPos(
+void __fastcall UpdateCameraVariantFromCameraPos(
     zUtil_SaveGameState *saveState,
     zVec3 *cameraPos
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ClassifyPendingContactsForSegment(
+void __fastcall ClassifyPendingContactsForSegment(
     zUtil_SaveGameState *saveState,
     PlayerProbeSampleCandidateBuffer *sceneResults,
     const zVec3 *segmentStart,
     const zVec3 *segmentEnd,
     int segmentTag
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL CollectPendingContactsForSegments(
+int __fastcall CollectPendingContactsForSegments(
     zUtil_SaveGameState *saveState,
     zClass_DiSegmentEndpoints *segmentPairs,
     int endpointCount,
     int *segmentTags
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL CollectPendingCollisionContactsForQuadProbe(
+int __fastcall CollectPendingCollisionContactsForQuadProbe(
     zUtil_SaveGameState *saveState,
     float expandRadius
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL BuildPendingContactQueues(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL ProcessPendingPickupContacts(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyPendingCollisionProbeVelocity(
+void __fastcall BuildPendingContactQueues(zUtil_SaveGameState *saveState);
+void __fastcall ProcessPendingPickupContacts(zUtil_SaveGameState *saveState);
+void __fastcall ApplyPendingCollisionProbeVelocity(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL TryResolvePendingCollisionProbeSweep(
+int __fastcall TryResolvePendingCollisionProbeSweep(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL PreparePendingWorldCollisionResponse(
+void __fastcall PreparePendingWorldCollisionResponse(
     zUtil_SaveGameState *saveState,
     PlayerPendingContact *worldContacts
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ResolvePendingWorldCollisionContact(
+void __fastcall ResolvePendingWorldCollisionContact(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ResolvePendingCollisionContact(
+void __fastcall ResolvePendingCollisionContact(
     zUtil_SaveGameState *saveState,
     PlayerPendingContact *contact
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ResolvePendingPlayerCollisionContact(
+void __fastcall ResolvePendingPlayerCollisionContact(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ProcessTransferContactQueue(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL ProcessPendingContactQueues(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL SelectAndResolvePreferredPendingCollisionContact(
+void __fastcall ProcessTransferContactQueue(zUtil_SaveGameState *saveState);
+void __fastcall ProcessPendingContactQueues(zUtil_SaveGameState *saveState);
+void __fastcall SelectAndResolvePreferredPendingCollisionContact(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyPitchRollVelocityImpulseFromDirection(
+void __fastcall ApplyPitchRollVelocityImpulseFromDirection(
     zUtil_SaveGameState *saveState,
     const zVec3 *direction,
     float angleScale,
     float velocityScale
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RecordRecentHitFeedback(
+void __fastcall RecordRecentHitFeedback(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *hitSource,
     float damage
 );
-RECOIL_NOINLINE float RECOIL_FASTCALL UpdateTimedHitStatusFromHitSource(
+float __fastcall UpdateTimedHitStatusFromHitSource(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *hitSource,
     float damage
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HitCallback_RecordNetContextAndTimedStatus(
+int __fastcall HitCallback_RecordNetContextAndTimedStatus(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *hitSource,
     void *hitRenderPointEntry,
     float damage
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ClearDestroyedRespawnEffectHandleCallback(
+void __fastcall ClearDestroyedRespawnEffectHandleCallback(
     zEffectAnimEntry *entry,
     zUtil_SaveGameState *saveState,
     int value
 );
-RECOIL_NOINLINE void RECOIL_CDECL DestroyedStateResetLocalFinalize();
-RECOIL_NOINLINE void RECOIL_FASTCALL DestroyedStateResetFinalizeCallback(
+void DestroyedStateResetLocalFinalize();
+void __fastcall DestroyedStateResetFinalizeCallback(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL DestroyedStateResetCallback(
+void __fastcall DestroyedStateResetCallback(
     zEffectAnimEntry *entry,
     zUtil_SaveGameState *saveState,
     int value
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL EnterLocalInactiveDestroyedLifecycle(
+void __fastcall EnterLocalInactiveDestroyedLifecycle(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ClearRespawnTransitionFlagCallback(
+void __fastcall ClearRespawnTransitionFlagCallback(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL DestroyedStateRespawnCallback(
+void __fastcall DestroyedStateRespawnCallback(
     zEffectAnimEntry *entry,
     zUtil_SaveGameState *saveState,
     int value
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL EnterDestroyedState(
+int __fastcall EnterDestroyedState(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *hitSource,
     OptCatalogHitEventPartial *hitRenderPoint,
     float damage
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ApplyDamageLocal(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL TickRemoteNetworkPlayer(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE int RECOIL_FASTCALL HitCallback_RecordContextAndTimedStatus(
+int __fastcall ApplyDamageLocal(zUtil_SaveGameState *saveState);
+void __fastcall TickRemoteNetworkPlayer(zUtil_SaveGameState *saveState);
+int __fastcall HitCallback_RecordContextAndTimedStatus(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *hitSource,
     void *hitRenderPointEntry,
     float damage
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RecordNodeFlagsForRestore(zClass_NodePartial *node);
-RECOIL_NOINLINE void RECOIL_FASTCALL BuildMissionSaveData(PlayerMissionSaveData *outData);
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyMissionSaveData(PlayerMissionSaveData *saveData);
-RECOIL_NOINLINE void RECOIL_CDECL RestoreRecordedNodeFlags();
-RECOIL_NOINLINE void RECOIL_FASTCALL ZAR_ReadMissionSaveDataSection(
+void __fastcall RecordNodeFlagsForRestore(zClass_NodePartial *node);
+void __fastcall BuildMissionSaveData(PlayerMissionSaveData *outData);
+void __fastcall ApplyMissionSaveData(PlayerMissionSaveData *saveData);
+void RestoreRecordedNodeFlags();
+void __fastcall ZAR_ReadMissionSaveDataSection(
     zZbdSectionCallbackCtx *reader,
     const char *sectionToken,
     PlayerMissionSaveData *saveData,
     unsigned int byteCount,
     void *userData
 );
-RECOIL_NOINLINE void RECOIL_CDECL ZAR_RegisterSections();
-RECOIL_NOINLINE int RECOIL_FASTCALL ZAR_WriteMissionSaveDataSection(
+void ZAR_RegisterSections();
+int __fastcall ZAR_WriteMissionSaveDataSection(
     zZbdSectionCallbackCtx *writer,
     void *userData
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ZAR_ReadVehicleListSection(
+void __fastcall ZAR_ReadVehicleListSection(
     zZbdSectionCallbackCtx *reader,
     const char *sectionToken,
     PlayerVehicleListSaveEntry *saveData,
     unsigned int byteCount,
     void *userData
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ZAR_WriteVehicleListSection(
+int __fastcall ZAR_WriteVehicleListSection(
     zZbdSectionCallbackCtx *writer,
     void *userData
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL Mines_ZAR_ReadEntryOrReset(
+void __fastcall Mines_ZAR_ReadEntryOrReset(
     zZbdSectionCallbackCtx *reader,
     const char *sectionToken,
     PlayerMineSaveEntry *mineData,
     unsigned int byteCount,
     void *userData
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL WriteMinesZarSection(
+int __fastcall WriteMinesZarSection(
     zZbdSectionCallbackCtx *writer,
     void *userData
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateDebugOverlayHud(
+void __fastcall UpdateDebugOverlayHud(
     zUtil_SaveGameState *saveState,
     int unusedActiveMode2Count,
     int unusedTotalMode2Count
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RefreshHudFromState(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyStatusMeterChange(
+void __fastcall RefreshHudFromState(zUtil_SaveGameState *saveState);
+void __fastcall ApplyStatusMeterChange(
     zUtil_SaveGameState *saveState,
     int mode,
     float delta
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL UpdateStatusMeter(
+int __fastcall UpdateStatusMeter(
     zUtil_SaveGameState *saveState,
     int mode,
     float delta
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL IsMissionProbeType1EnabledById(int missionId);
-RECOIL_NOINLINE void RECOIL_FASTCALL InitMissionRuntimeFromWorldAndCamera(
+int __fastcall IsMissionProbeType1EnabledById(int missionId);
+void __fastcall InitMissionRuntimeFromWorldAndCamera(
     zClass_NodePartial *worldNode,
     zClass_NodePartial *cameraNode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL LoadMasterCommonDataFromNode(
+void __fastcall LoadMasterCommonDataFromNode(
     PlayerMasterCommonData *commonData,
     zReader::Node *vehicleNode,
     const char *vehicleName
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL LoadMasterModalDataFromNode(
+void __fastcall LoadMasterModalDataFromNode(
     PlayerMasterModalData *modalData,
     zReader::Node *modalNode,
     const char *modalName
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildCollisionPointsFromModel(
+int __fastcall BuildCollisionPointsFromModel(
     zUtil_SaveGameState *saveState,
     zClass_NodePartial *modelNode
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildSupportPointsFromModel(
+int __fastcall BuildSupportPointsFromModel(
     zUtil_SaveGameState *saveState,
     zClass_NodePartial *modelNode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL BindModalStateFromMasterModalData(
+void __fastcall BindModalStateFromMasterModalData(
     zUtil_SaveGameState *saveState,
     PlayerModalState *modalState,
     const char *modalName,
     const char *objectName
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL InitSpawnStateFromPrimaryModalData(
+void __fastcall InitSpawnStateFromPrimaryModalData(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SampleGroundAndAlignRootToSurface(
+void __fastcall SampleGroundAndAlignRootToSurface(
     zUtil_SaveGameState *saveState,
     int updateRotation
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL FreeAltWeaponTrailRuntimeStates(
+void __fastcall FreeAltWeaponTrailRuntimeStates(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL LoadWeaponBanksAndSelectDefaults(
+void __fastcall LoadWeaponBanksAndSelectDefaults(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL CheckMissionWeaponAvailability(
+void __fastcall CheckMissionWeaponAvailability(
     zUtil_SaveGameState *saveState,
     int missionThreshold,
     int packedWeaponSlotId,
     int *availableOut
 );
-RECOIL_NOINLINE int RECOIL_STDCALL FloatSign(float value);
-RECOIL_NOINLINE void RECOIL_FASTCALL StartSlipSfx(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL StopSlipSfx(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_CDECL CacheDisableCopterSndNodesAndStopSample();
-RECOIL_NOINLINE void RECOIL_CDECL ReactivateCopterSndNodesIfHealthy();
-RECOIL_NOINLINE void RECOIL_FASTCALL StopBftBubbleFxHandle(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeFly(
+int __stdcall FloatSign(float value);
+void __fastcall StartSlipSfx(zUtil_SaveGameState *saveState);
+void __fastcall StopSlipSfx(zUtil_SaveGameState *saveState);
+void CacheDisableCopterSndNodesAndStopSample();
+void ReactivateCopterSndNodesIfHealthy();
+void __fastcall StopBftBubbleFxHandle(zUtil_SaveGameState *saveState);
+int __fastcall TransitionToMasterTypeFly(
     zUtil_SaveGameState *saveState,
     int flags
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeTrack(
+int __fastcall TransitionToMasterTypeTrack(
     zUtil_SaveGameState *saveState,
     int flags
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeAmphib(
+int __fastcall TransitionToMasterTypeAmphib(
     zUtil_SaveGameState *saveState,
     int transitionFlags,
     int extraFlags
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeSub(
+int __fastcall TransitionToMasterTypeSub(
     zUtil_SaveGameState *saveState,
     int flags
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeHover(
+int __fastcall TransitionToMasterTypeHover(
     zUtil_SaveGameState *saveState,
     int flags
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ApplyMasterTypeTransition(
+int __fastcall ApplyMasterTypeTransition(
     zUtil_SaveGameState *saveState,
     int masterType,
     int flags
 );
-RECOIL_NOINLINE float RECOIL_FASTCALL UpdateBankAndTurnDynamics(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE int RECOIL_FASTCALL Vec3_FastNormalize(zVec3 *vec);
-RECOIL_NOINLINE void RECOIL_FASTCALL ConstrainToUnitDistanceFrom(
+float __fastcall UpdateBankAndTurnDynamics(zUtil_SaveGameState *saveState);
+int __fastcall Vec3_FastNormalize(zVec3 *vec);
+void __fastcall ConstrainToUnitDistanceFrom(
     zVec3 *pos,
     const zVec3 *center
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ComputeTurnSlipDelta(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateSubModeWaterProbeState(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateSubVerticalDamping(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateYawVelocityFromSteerInput(
+void __fastcall ComputeTurnSlipDelta(zUtil_SaveGameState *saveState);
+void __fastcall UpdateSubModeWaterProbeState(zUtil_SaveGameState *saveState);
+void __fastcall UpdateSubVerticalDamping(zUtil_SaveGameState *saveState);
+void __fastcall UpdateYawVelocityFromSteerInput(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyAmphibSpeedOscillation(
+void __fastcall ApplyAmphibSpeedOscillation(
     zUtil_SaveGameState *saveState,
     zVec3 *inOutUpVector,
     int includeYawCoupling
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL TickMasterTypeAndForceFeedback(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeSub(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeTrack(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE PlayerGunFireController *RECOIL_FASTCALL FindAltGunFireControllerForWeaponId(
+void __fastcall TickMasterTypeAndForceFeedback(zUtil_SaveGameState *saveState);
+void __fastcall UpdateMasterTypeSub(zUtil_SaveGameState *saveState);
+void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState *saveState);
+PlayerGunFireController *__fastcall FindAltGunFireControllerForWeaponId(
     zUtil_SaveGameState *saveState,
     int weaponId
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL IsAltWeaponAllowedInCurrentMasterMode(
+int __fastcall IsAltWeaponAllowedInCurrentMasterMode(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *entry
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL AutoSwitchToNextUsableAltWeapon(
+void __fastcall AutoSwitchToNextUsableAltWeapon(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL TestScenePathBetweenCameraTargetAndPoint(
+int __fastcall TestScenePathBetweenCameraTargetAndPoint(
     zClass_NodePartial *node,
     const zVec3 *point,
     int directionMode
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HasLineOfSightFromLocalPlayerFxOffset(
+int __fastcall HasLineOfSightFromLocalPlayerFxOffset(
     zClass_NodePartial *node,
     const zVec3 *point,
     int directionMode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAltGunAimDirection(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateGunAndTurretAimNodes(
+void __fastcall UpdateAltGunAimDirection(zUtil_SaveGameState *saveState);
+void __fastcall UpdateGunAndTurretAimNodes(
     const zVec3 *aimDirection,
     zClass_NodePartial *gunNode,
     zClass_NodePartial *turretNode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyAimPitchToDirection(
+void __fastcall ApplyAimPitchToDirection(
     zVec3 *direction,
     float pitchY
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyPrimaryWeaponSwitch(
+void __fastcall ApplyPrimaryWeaponSwitch(
     zUtil_SaveGameState *saveState,
     PlayerGunFireController *previousController,
     PlayerGunFireController *newController
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyAltWeaponSwitch(
+void __fastcall ApplyAltWeaponSwitch(
     zUtil_SaveGameState *saveState,
     PlayerGunFireController *previousController,
     PlayerGunFireController *newController
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL HandleAltWeaponBankSelectInput(int inputCode);
-RECOIL_NOINLINE void RECOIL_FASTCALL HandlePrimaryWeaponVariantToggleInput(int keyCode);
-RECOIL_NOINLINE void RECOIL_FASTCALL ResetDamageStateAndTimedHitStatus(
+void __fastcall HandleAltWeaponBankSelectInput(int inputCode);
+void __fastcall HandlePrimaryWeaponVariantToggleInput(int keyCode);
+void __fastcall ResetDamageStateAndTimedHitStatus(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ResetDamageVisualsAndTimedStatus(
+void __fastcall ResetDamageVisualsAndTimedStatus(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ResetAltGunDoorAnimationState(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL ResetAltGunRuntimeState(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL RemoveAllDeployedMines(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL StartDestroyedStateVehicleEffect(
+void __fastcall ResetAltGunDoorAnimationState(zUtil_SaveGameState *saveState);
+void __fastcall ResetAltGunRuntimeState(zUtil_SaveGameState *saveState);
+void __fastcall RemoveAllDeployedMines(zUtil_SaveGameState *saveState);
+void __fastcall StartDestroyedStateVehicleEffect(
     zUtil_SaveGameState *saveState,
     void *respawnCallback
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateThirdPersonCamera(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyCameraState(int newState);
-RECOIL_NOINLINE void RECOIL_FASTCALL SetAutoTurnTargetDirFromWorldPoint(
+void __fastcall UpdateThirdPersonCamera(zUtil_SaveGameState *saveState);
+void __fastcall ApplyCameraState(int newState);
+void __fastcall SetAutoTurnTargetDirFromWorldPoint(
     zUtil_SaveGameState *saveState,
     const zVec3 *worldPoint
 );
-RECOIL_NOINLINE float RECOIL_FASTCALL SelectProbeSampleHeightFromCandidates(
+float __fastcall SelectProbeSampleHeightFromCandidates(
     PlayerProbeSampleCandidateBuffer *candidateBuffer,
     int *outBestCandidateIndex,
     float sampleHeight,
@@ -978,7 +978,7 @@ RECOIL_NOINLINE float RECOIL_FASTCALL SelectProbeSampleHeightFromCandidates(
     int *outSelectedImpactSlot,
     float *outTaggedHeight
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ProbeModalSampleHeights(
+void __fastcall ProbeModalSampleHeights(
     zUtil_SaveGameState *saveState,
     float *outSampleHeightByPoint,
     float *outBestHeight,
@@ -987,126 +987,126 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ProbeModalSampleHeights(
     int *outAttachmentCandidateCount,
     zClass_NodePartial **outAttachmentNode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL BuildEnvironmentProbeResult(
+void __fastcall BuildEnvironmentProbeResult(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *outProbe
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ApplyEnvironmentProbeResult(
+int __fastcall ApplyEnvironmentProbeResult(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *envProbe
 );
-RECOIL_NOINLINE float RECOIL_FASTCALL SolveHeightOnSurface(
+float __fastcall SolveHeightOnSurface(
     zUtil_SaveGameState *saveState,
     float supportPlaneDot
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ResetTerrainContactImpulsesAndPlayImpactSfx(
+void __fastcall ResetTerrainContactImpulsesAndPlayImpactSfx(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyTerrainTilt(
+void __fastcall ApplyTerrainTilt(
     zUtil_SaveGameState *saveState,
     const zVec3 *tiltVector,
     float tiltScale
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ComputeTriangleNormal(
+void __fastcall ComputeTriangleNormal(
     zUtil_SaveGameState *saveState,
     const zVec3 *pointA,
     const zVec3 *pointB,
     const zVec3 *pointC
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ComputeSurfaceFrom1Probe(
+void __fastcall ComputeSurfaceFrom1Probe(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ComputeSurfaceFrom2Probes(
+void __fastcall ComputeSurfaceFrom2Probes(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL CheckProbeSampleMaskOverlap(
+int __fastcall CheckProbeSampleMaskOverlap(
     int sampleIndexA,
     int sampleIndexB,
     int sampleIndexC
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RebuildAboveGroundIndices();
-RECOIL_NOINLINE void RECOIL_FASTCALL SelectBestProbesByDotProduct(
+void __fastcall RebuildAboveGroundIndices();
+void __fastcall SelectBestProbesByDotProduct(
     const zVec3 *referenceNormal,
     PlayerEnvProbeResult *probeResult
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ComputeSurfaceFrom3Probes(
+void __fastcall ComputeSurfaceFrom3Probes(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdatePostMoveEnvironment(
+void __fastcall UpdatePostMoveEnvironment(
     zUtil_SaveGameState *saveState,
     int probeSampleCount
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ProcessEnvProbeResults(
+void __fastcall ProcessEnvProbeResults(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RebuildOrientationFromNormal(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL FindThirdProbeAndComputeNormal(
+void __fastcall RebuildOrientationFromNormal(zUtil_SaveGameState *saveState);
+void __fastcall FindThirdProbeAndComputeNormal(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL AccumulateSlopeForces(
+void __fastcall AccumulateSlopeForces(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateVerticalVelocityAndTransform(
+void __fastcall UpdateVerticalVelocityAndTransform(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeBasicOrTrack_FromModalProbe(
+void __fastcall UpdateMasterTypeBasicOrTrack_FromModalProbe(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeHover_FromModalProbe(
+void __fastcall UpdateMasterTypeHover_FromModalProbe(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeHover(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeAmphib_FromModalProbe(
+void __fastcall UpdateMasterTypeHover(zUtil_SaveGameState *saveState);
+void __fastcall UpdateMasterTypeAmphib_FromModalProbe(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeAmphib(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeBasic(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL BuildGunFireTransform(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAltGunAimBasisOrigin(
+void __fastcall UpdateMasterTypeAmphib(zUtil_SaveGameState *saveState);
+void __fastcall UpdateMasterTypeBasic(zUtil_SaveGameState *saveState);
+void __fastcall BuildGunFireTransform(zUtil_SaveGameState *saveState);
+void __fastcall UpdateAltGunAimBasisOrigin(
     zUtil_SaveGameState *saveState,
     zVec3 *outBasisOrigin
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ComposeAimBasisWorldMatrix(
+void __fastcall ComposeAimBasisWorldMatrix(
     zUtil_SaveGameState *saveState,
     zMat4x3 *outMatrix34
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL DecayAndApplyAltFireSlotOffsetToNode(
+void __fastcall DecayAndApplyAltFireSlotOffsetToNode(
     PlayerGunFireSlot *slot,
     zClass_NodePartial *slotNode,
     float slotAimY,
     int applyMatrix
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyGunFireSlotOffsetToNode(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL SelectAltGunFirePointAndSlot(
+void __fastcall ApplyGunFireSlotOffsetToNode(zUtil_SaveGameState *saveState);
+void __fastcall SelectAltGunFirePointAndSlot(
     zUtil_SaveGameState *saveState,
     PlayerGunFireSlot **outActiveFireSlotPtr
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SelectPrimaryGunFirePointAndSlot(
+void __fastcall SelectPrimaryGunFirePointAndSlot(
     zUtil_SaveGameState *saveState,
     PlayerGunFireSlot **outActiveFireSlotPtr
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateContinuousAltGunFireController(
+void __fastcall UpdateContinuousAltGunFireController(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL EnsureGunAuxEffectActive(
+int __fastcall EnsureGunAuxEffectActive(
     zUtil_SaveGameState *saveState,
     PlayerGunFireController *gunController,
     zVec3 *effectPos
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AltGunLaunchProjectile(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE int RECOIL_FASTCALL AltGunFireSimpleProjectile(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL ProcessAltGunDispatchRequest(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL ProcessPrimaryGunDispatchTick(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL TickAltGunRuntimeState(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_FASTCALL DestroySaveGameState(zUtil_SaveGameState *saveState);
-RECOIL_NOINLINE void RECOIL_CDECL ShutdownMissionRuntime();
+int __fastcall AltGunLaunchProjectile(zUtil_SaveGameState *saveState);
+int __fastcall AltGunFireSimpleProjectile(zUtil_SaveGameState *saveState);
+void __fastcall ProcessAltGunDispatchRequest(zUtil_SaveGameState *saveState);
+void __fastcall ProcessPrimaryGunDispatchTick(zUtil_SaveGameState *saveState);
+void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState *saveState);
+void __fastcall DestroySaveGameState(zUtil_SaveGameState *saveState);
+void ShutdownMissionRuntime();
 } // namespace Player
 
 RECOIL_STATIC_ASSERT(

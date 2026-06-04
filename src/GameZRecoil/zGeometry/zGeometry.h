@@ -562,33 +562,33 @@ RECOIL_STATIC_ASSERT(
 );
 
 namespace zGeometry_Vec3Array {
-RECOIL_NOINLINE int RECOIL_FASTCALL RemoveAdjacentDuplicatePointsXY(
+int __fastcall RemoveAdjacentDuplicatePointsXY(
     zVec3 *vertices,
     int count
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RotateNeg90AroundX(
+void __fastcall RotateNeg90AroundX(
     int pointCount,
     zVec3 *points
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RotatePos90AroundX(
+void __fastcall RotatePos90AroundX(
     int pointCount,
     zVec3 *points
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ComputeBoundsXY(
+void __fastcall ComputeBoundsXY(
     zGeometry_BoundsXY *outBounds,
     zVec3 *points,
     int pointCount
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ReversePoints(
+void __fastcall ReversePoints(
     int pointCount,
     zVec3 *points
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL EnsurePositiveCrossZ(
+int __fastcall EnsurePositiveCrossZ(
     int pointCount,
     zVec3 *points,
     int allowReverse
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ComputeNewellPlane(
+void __fastcall ComputeNewellPlane(
     int pointCount,
     zVec3 *points,
     zGeometry_PlaneEquationPartial *outPlane
@@ -596,7 +596,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ComputeNewellPlane(
 } // namespace zGeometry_Vec3Array
 
 namespace zGeometry_Segment {
-RECOIL_NOINLINE int RECOIL_FASTCALL IntersectsSegmentXY(
+int __fastcall IntersectsSegmentXY(
     zVec3 *segmentAPoint0,
     zVec3 *segmentAPoint1,
     zVec3 *segmentBPoint0,
@@ -605,42 +605,42 @@ RECOIL_NOINLINE int RECOIL_FASTCALL IntersectsSegmentXY(
 }
 
 namespace zGeometry_TriangulateHole {
-RECOIL_NOINLINE int RECOIL_FASTCALL TryAppendBridgeEdge(
+int __fastcall TryAppendBridgeEdge(
     zGeometry_TriangulateHole_EdgeState *edgeState,
     int edgeCount,
     zGeometry_TriangulateHole_EdgeState *edgeStates
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL CollectActiveEdgeIndicesForVertex(
+int __fastcall CollectActiveEdgeIndicesForVertex(
     int vertexIndex,
     int edgeCount,
     zGeometry_TriangulateHole_EdgeState *edgeStates,
     int *outEdgeIndices
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL TryEmitTriangleFromEdgePair(
+void __fastcall TryEmitTriangleFromEdgePair(
     int edgeIndex0,
     int edgeIndex1,
     int vertexIndex,
     int edgeCount,
     zGeometry_TriangulateHole_EdgeState *edgeStates
 );
-RECOIL_NOINLINE zGeometry_TriangulateHole_EdgeState *RECOIL_FASTCALL FindActiveEdgeState(
+zGeometry_TriangulateHole_EdgeState *__fastcall FindActiveEdgeState(
     int vertexIndex0,
     int vertexIndex1,
     int edgeCount,
     zGeometry_TriangulateHole_EdgeState *edgeStates
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL CacheCombinedPlane(
+void __fastcall CacheCombinedPlane(
     int pointCount,
     zVec3 *points
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ProjectInnerRingOntoCachedPlane(
+void __fastcall ProjectInnerRingOntoCachedPlane(
     int pointCount,
     zVec3 *points
 );
 } // namespace zGeometry_TriangulateHole
 
 namespace zGeometry {
-RECOIL_NOINLINE zGeometry_TriangleSoup *RECOIL_FASTCALL TriangulatePolygonWithHole(
+zGeometry_TriangleSoup *__fastcall TriangulatePolygonWithHole(
     int outerPointCount,
     zVec3 *outerPoints,
     int innerPointCount,
@@ -649,25 +649,25 @@ RECOIL_NOINLINE zGeometry_TriangleSoup *RECOIL_FASTCALL TriangulatePolygonWithHo
 }
 
 namespace zGeometry_Bounds2D {
-RECOIL_NOINLINE int RECOIL_FASTCALL OverlapsWithUnitMargin(
+int __fastcall OverlapsWithUnitMargin(
     zGeometry_BoundsXY *boundsA,
     zGeometry_BoundsXY *boundsB
 );
 }
 
 namespace zGeometry_Vec3 {
-RECOIL_NOINLINE int RECOIL_FASTCALL IsNearEqualXY(
+int __fastcall IsNearEqualXY(
     zVec3 *vecA,
     zVec3 *vecB,
     float tolerance
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SnapPointToSegmentXYIfNear(
+int __fastcall SnapPointToSegmentXYIfNear(
     zVec3 *lineStart,
     zVec3 *lineEnd,
     zVec3 *testPoint,
     float tolerance
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL IsBetweenEndpointsXY(
+int __fastcall IsBetweenEndpointsXY(
     zVec3 *testPoint,
     zVec3 *startPoint,
     zVec3 *endPoint
@@ -675,7 +675,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL IsBetweenEndpointsXY(
 } // namespace zGeometry_Vec3
 
 namespace zGeometry_Polygon {
-RECOIL_NOINLINE void RECOIL_FASTCALL SolveUvAxisCoefficientsXZ(
+void __fastcall SolveUvAxisCoefficientsXZ(
     zVec3 *point0,
     zVec3 *point1,
     zVec3 *point2,
@@ -684,26 +684,26 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SolveUvAxisCoefficientsXZ(
     float value2,
     zVec2 *outCoefficients
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL TrySplitPointDwordOffsetsAtBestDiagonal(
+int __fastcall TrySplitPointDwordOffsetsAtBestDiagonal(
     int pointCount,
     float *pointDwords,
     int *pointDwordOffsets,
     zGeometry_PolygonSplitDwordOffsetListPair *outSplitPointLists,
     int pointDwordStride
 );
-RECOIL_NOINLINE zGeometry_TriangleDwordOffsetList *RECOIL_FASTCALL
+zGeometry_TriangleDwordOffsetList *__fastcall
 TriangulatePointDwordOffsetsRecursive(
     int pointCount,
     float *pointDwords,
     int *pointDwordOffsets,
     int pointDwordStrideMode
 );
-RECOIL_NOINLINE zGeometry_ConvexPolygonSetPartial *RECOIL_FASTCALL Convexify(
+zGeometry_ConvexPolygonSetPartial *__fastcall Convexify(
     zGeometry_PolygonSpanArrayPartial *polygonSet,
     int inputPointCount,
     zVec3 *points
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SnapPointsXYIfNear(
+int __fastcall SnapPointsXYIfNear(
     zVec3 *polygon,
     int polyCount,
     zVec3 *targetVerts,
@@ -714,51 +714,51 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SnapPointsXYIfNear(
 } // namespace zGeometry_Polygon
 
 namespace zGeometry_ConvexPolygonSet {
-RECOIL_NOINLINE void RECOIL_FASTCALL Destroy(zGeometry_ConvexPolygonSetPartial *self);
+void __fastcall Destroy(zGeometry_ConvexPolygonSetPartial *self);
 }
 
 namespace zGeometry_Model {
-RECOIL_NOINLINE zModel_MaterialPartial *RECOIL_CDECL FindOrCreateRandomDebugMaterial();
-RECOIL_NOINLINE int RECOIL_FASTCALL AddPolygonToDi(
+zModel_MaterialPartial *FindOrCreateRandomDebugMaterial();
+int __fastcall AddPolygonToDi(
     zDiPartial *di,
     int pointCount,
     zVec3 *points,
     zModel_MaterialPartial *material,
     zClipUV *uvPairs
 );
-RECOIL_NOINLINE zClipUV *RECOIL_FASTCALL BuildPolygonUvList(
+zClipUV *__fastcall BuildPolygonUvList(
     int pointCount,
     zVec3 *points,
     zModel_DrawBatchBasePartial *model,
     zModel_PolygonPartial *polygon
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AddPointListPolygonToDi(
+int __fastcall AddPointListPolygonToDi(
     zDiPartial *di,
     int pointCount,
     zVec3 *points,
     zModel_DrawBatchBasePartial *model,
     zModel_PolygonPartial *polygon
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AddIndexedPolygonToDi(
+int __fastcall AddIndexedPolygonToDi(
     zDiPartial *di,
     zModel_DrawBatchBasePartial *model,
     zModel_PolygonPartial *polygon
 );
-RECOIL_NOINLINE zVec3 *RECOIL_FASTCALL GetLinearBufferOfPolygonVertices(
+zVec3 *__fastcall GetLinearBufferOfPolygonVertices(
     zModel_DrawBatchBasePartial *model,
     zModel_PolygonPartial *polygon,
     zVec3 *points
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL IsFullyInsideClipPolygonXY(
+int __fastcall IsFullyInsideClipPolygonXY(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zModel_DrawBatchBasePartial *model
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ProcessClipPatchNode(
+int __fastcall ProcessClipPatchNode(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zModel_DrawBatchBasePartial *model,
     zDiPartial **outDi
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPatch(
+int __fastcall ClipPatch(
     int pointCount,
     zVec3 *points,
     zDEClient_FeatureGridCell *featureGridCell,
@@ -767,58 +767,58 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipPatch(
 } // namespace zGeometry_Model
 
 namespace zGeometry_WeilerBuffer {
-RECOIL_NOINLINE void RECOIL_FASTCALL Init(
+void __fastcall Init(
     zGeometry_WeilerBufferPartial *self,
     int initialCapacity,
     int elementSize
 );
-RECOIL_NOINLINE void *RECOIL_FASTCALL GetAppendSpace(
+void *__fastcall GetAppendSpace(
     zGeometry_WeilerBufferPartial *self,
     int appendCount,
     void **outBase
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SetCountAndAppendPtr(
+void __fastcall SetCountAndAppendPtr(
     zGeometry_WeilerBufferPartial *self,
     int count
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL Destroy(zGeometry_WeilerBufferPartial *self);
+void __fastcall Destroy(zGeometry_WeilerBufferPartial *self);
 } // namespace zGeometry_WeilerBuffer
 
 namespace zGeometry_Weiler {
-RECOIL_NOINLINE int RECOIL_FASTCALL GetInputContourAPointList(
+int __fastcall GetInputContourAPointList(
     zGeometry_WeilerStatePartial *self,
     zVec3 **outPoints
 );
-RECOIL_NOINLINE zGeometry_WeilerStatePartial *RECOIL_FASTCALL Init(
+zGeometry_WeilerStatePartial *__fastcall Init(
     zVec3 *points,
     int pointCount,
     int contourSource
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL InitInputContourPair(
+int __fastcall InitInputContourPair(
     zGeometry_WeilerStatePartial *self,
     zVec3 *points,
     int pointCount,
     int contourType
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPointList(
+int __fastcall ClipPointList(
     zGeometry_WeilerStatePartial *self,
     int clipMode,
     zVec3 *points,
     int pointCount,
     zGeometry_WeilerClipOutputPartial *outClip
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL EnsureContourOutput(
+int __fastcall EnsureContourOutput(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerContourSegmentPartial *segment
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL MergeContours(zGeometry_WeilerStatePartial *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL DivideContourSegmentAtPoint(
+int __fastcall MergeContours(zGeometry_WeilerStatePartial *self);
+int __fastcall DivideContourSegmentAtPoint(
     zGeometry_WeilerStatePartial *self,
     zVec3 *xing,
     zGeometry_WeilerContourSegmentPartial *segment,
     int updateSplitLinks
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL CreateForwardSegmentPairAtPoint(
+int __fastcall CreateForwardSegmentPairAtPoint(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerContourSegmentPartial *firstSegment,
     zGeometry_WeilerContourSegmentPartial *secondSegment,
@@ -826,52 +826,52 @@ RECOIL_NOINLINE int RECOIL_FASTCALL CreateForwardSegmentPairAtPoint(
     int firstContourTypeMask,
     int secondContourTypeMask
 );
-RECOIL_NOINLINE zGeometry_WeilerContourSegmentPartial *RECOIL_FASTCALL
+zGeometry_WeilerContourSegmentPartial *__fastcall
 GetNextContourSegmentForTraversal(zGeometry_WeilerContourSegmentPartial *segment);
-RECOIL_NOINLINE void RECOIL_FASTCALL NewContour(zGeometry_WeilerStatePartial *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL OutputContourToPolygonSet(
+void __fastcall NewContour(zGeometry_WeilerStatePartial *self);
+int __fastcall OutputContourToPolygonSet(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerContourOutputPartial *contour,
     zGeometry_WeilerBufferPartial *polygonBuffer,
     zGeometry_PolygonSpanArrayPartial *polygonSet
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL OutputContoursForClipMode(zGeometry_WeilerStatePartial *self);
-RECOIL_NOINLINE void RECOIL_FASTCALL SelectForwardStartPointInContourA(
+int __fastcall OutputContoursForClipMode(zGeometry_WeilerStatePartial *self);
+void __fastcall SelectForwardStartPointInContourA(
     zVec3 *point,
     zVec3 **selectedPoint,
     zGeometry_WeilerStatePartial *self
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL GenerateOutsideResults(zGeometry_WeilerStatePartial *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyInputContourPairBounds(
+int __fastcall GenerateOutsideResults(zGeometry_WeilerStatePartial *self);
+int __fastcall ClassifyInputContourPairBounds(
     zGeometry_WeilerStatePartial *self
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL OutputPreclassifiedContourPairResult(
+int __fastcall OutputPreclassifiedContourPairResult(
     int contourAPointCount,
     zVec3 *contourAPoints,
     int contourBPointCount,
     zVec3 *contourBPoints,
     int resultCode
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL OutputSelectedInputContourToPolygonSetA(
+int __fastcall OutputSelectedInputContourToPolygonSetA(
     zGeometry_WeilerStatePartial *self,
     int mode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL PreclassifyInputContourAAdjacentEdgePairs(
+void __fastcall PreclassifyInputContourAAdjacentEdgePairs(
     zGeometry_WeilerStatePartial *self
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL BuildPointSideTablesForContourPair(
+void __fastcall BuildPointSideTablesForContourPair(
     zGeometry_WeilerStatePartial *self
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL PreclassifyInputContourPair(zGeometry_WeilerStatePartial *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyContainedContour(zGeometry_WeilerStatePartial *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyIntersect2d(
+int __fastcall PreclassifyInputContourPair(zGeometry_WeilerStatePartial *self);
+int __fastcall ClassifyContainedContour(zGeometry_WeilerStatePartial *self);
+int __fastcall ClassifyIntersect2d(
     zVec3 *edge0Start,
     zVec3 *edge0End,
     zVec3 *edge1Start,
     zVec3 *edge1End,
     zGeometry_WeilerStatePartial *self
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL Intersect2d(
+int __fastcall Intersect2d(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerXingPartial **outXing,
     zVec3 edge0Start,
@@ -879,55 +879,55 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Intersect2d(
     zVec3 edge1Start,
     zVec3 edge1End
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyAdjacentEdgePairAgainstContourSegment(
+int __fastcall ClassifyAdjacentEdgePairAgainstContourSegment(
     zGeometry_WeilerContourSegmentPartial *firstSegment,
     zGeometry_WeilerContourSegmentPartial *secondSegment,
     zGeometry_WeilerContourSegmentPartial *contourSegment
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
+int __fastcall ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
     zGeometry_WeilerContourSegmentPartial *pairAFirstSegment,
     zGeometry_WeilerContourSegmentPartial *pairASecondSegment,
     zGeometry_WeilerContourSegmentPartial *pairBFirstSegment,
     zGeometry_WeilerContourSegmentPartial *pairBSecondSegment,
     zGeometry_WeilerStatePartial *self
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ValidateXings(
+int __fastcall ValidateXings(
     int xingCount,
     zGeometry_WeilerXingPartial *xingArray,
     int *failedXingIndex
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyPointInContourPointListXY(
+int __fastcall ClassifyPointInContourPointListXY(
     zVec3 *point,
     int contourPointCount,
     zVec3 *contourPoints
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL TogglePointAxesForContourSource(
+void __fastcall TogglePointAxesForContourSource(
     zGeometry_WeilerStatePartial *self
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RecenterPointSetsIfOutOfRange(
+void __fastcall RecenterPointSetsIfOutOfRange(
     zGeometry_WeilerStatePartial *self
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RestorePointTranslation(zGeometry_WeilerStatePartial *self);
-RECOIL_NOINLINE void RECOIL_FASTCALL RestoreOutputZFromInputPlane(
+void __fastcall RestorePointTranslation(zGeometry_WeilerStatePartial *self);
+void __fastcall RestoreOutputZFromInputPlane(
     zGeometry_WeilerStatePartial *self
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL DestroyState(zGeometry_WeilerStatePartial *self);
+void __fastcall DestroyState(zGeometry_WeilerStatePartial *self);
 } // namespace zGeometry_Weiler
 
 namespace zGeometry_WeilerClipOutput {
-RECOIL_NOINLINE void RECOIL_FASTCALL Destroy(zGeometry_WeilerClipOutputPartial *self);
+void __fastcall Destroy(zGeometry_WeilerClipOutputPartial *self);
 }
 
 namespace zGeometry_WeilerContourSegment {
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateBounds(zGeometry_WeilerContourSegmentPartial *segment);
+void __fastcall UpdateBounds(zGeometry_WeilerContourSegmentPartial *segment);
 }
 
 namespace zGeometry_WeilerContourSegmentArray {
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateBounds(
+void __fastcall UpdateBounds(
     zGeometry_WeilerContourSegmentPartial *segments,
     int segmentCount
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL InitFromPointList(
+void __fastcall InitFromPointList(
     zGeometry_WeilerContourSegmentPartial *segments,
     zVec3 *points,
     int pointCount,
@@ -936,47 +936,47 @@ RECOIL_NOINLINE void RECOIL_FASTCALL InitFromPointList(
 } // namespace zGeometry_WeilerContourSegmentArray
 
 namespace zGeometry_ClipPolygon {
-RECOIL_NOINLINE int RECOIL_FASTCALL FindPointIndexXY(
+int __fastcall FindPointIndexXY(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zVec3 *point
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FindPointInsertionEdgeXYIndex(
+int __fastcall FindPointInsertionEdgeXYIndex(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zVec3 *point
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL UpsertPointListXY(
+int __fastcall UpsertPointListXY(
     zGeometry_ClipPolygonPartial *clipPolygon,
     int pointCount,
     zVec3 *points
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ResetWeilerStateFromContourPoints(
+int __fastcall ResetWeilerStateFromContourPoints(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zVec3 *points,
     int pointCount
 );
-RECOIL_NOINLINE zGeometry_ClipPolygonPartial *RECOIL_FASTCALL CreateFromPointList(
+zGeometry_ClipPolygonPartial *__fastcall CreateFromPointList(
     int pointCount,
     zVec3 *points
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SnapPointsNearNodeModelXY(
+int __fastcall SnapPointsNearNodeModelXY(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zGeometry_ClipPatchNodeView *node
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ProcessNodePolygonSetXY(
+int __fastcall ProcessNodePolygonSetXY(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zGeometry_ClipPatchNodeView *node,
     zDiPartial **outDi
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL CopyPointsOutRotatedBack(
+int __fastcall CopyPointsOutRotatedBack(
     zGeometry_ClipPolygonPartial *clipPolygon,
     int *outPointCount,
     zVec3 **outPoints
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL FinalizeAndDestroy(zGeometry_ClipPolygonPartial *clipPolygon);
+void __fastcall FinalizeAndDestroy(zGeometry_ClipPolygonPartial *clipPolygon);
 } // namespace zGeometry_ClipPolygon
 
 namespace zGeometry_ClipPatchOutput {
-RECOIL_NOINLINE zGeometry_ClipPatchOutputPartial *RECOIL_CDECL Create();
-RECOIL_NOINLINE void RECOIL_FASTCALL Destroy(zGeometry_ClipPatchOutputPartial *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL ApplyNodeDiPairs(zGeometry_ClipPatchOutputPartial *self);
+zGeometry_ClipPatchOutputPartial *Create();
+void __fastcall Destroy(zGeometry_ClipPatchOutputPartial *self);
+int __fastcall ApplyNodeDiPairs(zGeometry_ClipPatchOutputPartial *self);
 } // namespace zGeometry_ClipPatchOutput

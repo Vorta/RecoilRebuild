@@ -143,7 +143,7 @@ unsigned int PlayerMethodAddress(
     return address;
 }
 
-RECOIL_NOINLINE void RECOIL_FASTCALL PlayerHudUiCommonInvalidateThunk(
+void __fastcall PlayerHudUiCommonInvalidateThunk(
     HudUiElement *element
 ) {
     element->Invalidate();
@@ -591,7 +591,7 @@ void SetHudUiElementVisible(
     HudUiElement *element,
     int visible
 ) {
-    typedef void(RECOIL_THISCALL * SetVisibleFn)(
+    typedef void( * SetVisibleFn)(
         HudUiElement * self,
         int visible
     );
@@ -1735,7 +1735,7 @@ const HudUiCommon_FTable g_Player_State7FxPass3Ui_FTable =
 
 // Reimplements 0x4385a0: Player::StartMasterTypeLoopSfxHandle
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL zUtil_SaveGameState::StartMasterTypeLoopSfxHandle(
+zSndPlayHandle * zUtil_SaveGameState::StartMasterTypeLoopSfxHandle(
     int modeIndex,
     float sfxVolume
 ) {
@@ -1754,7 +1754,7 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL zUtil_SaveGameState::StartMaster
 
 // Reimplements 0x438630: Player::EnsureMasterTypeLoopSfxHandle
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zUtil_SaveGameState::EnsureMasterTypeLoopSfxHandle(
+void zUtil_SaveGameState::EnsureMasterTypeLoopSfxHandle(
     int modeIndex,
     float sfxVolume
 ) {
@@ -1771,7 +1771,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zUtil_SaveGameState::EnsureMasterTypeLoopSf
 
 // Reimplements 0x4385f0: Player::StartModalLoopSfxHandle
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zUtil_SaveGameState::StartModalLoopSfxHandle(
+void zUtil_SaveGameState::StartModalLoopSfxHandle(
     int modalSfxIndex,
     float sfxVolume
 ) {
@@ -1788,7 +1788,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zUtil_SaveGameState::StartModalLoopSfxHandl
 
 // Reimplements 0x438690: Player::StopModalLoopSfxHandle
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zUtil_SaveGameState::StopModalLoopSfxHandle(
+void zUtil_SaveGameState::StopModalLoopSfxHandle(
     int modalSfxIndex
 ) {
     zUtil_SaveGameState *const saveState = this;
@@ -1801,7 +1801,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zUtil_SaveGameState::StopModalLoopSfxHandle
 
 // Reimplements 0x438540: Player::SelectModalStateByMasterType
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zUtil_SaveGameState::SelectModalStateByMasterType(
+int zUtil_SaveGameState::SelectModalStateByMasterType(
     int masterType
 ) {
     zUtil_SaveGameState *const saveState = this;
@@ -1826,7 +1826,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zUtil_SaveGameState::SelectModalStateByMaste
 
 // Reimplements 0x438660: Player::StopMasterTypeLoopSfxHandle
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zUtil_SaveGameState::StopMasterTypeLoopSfxHandle(
+void zUtil_SaveGameState::StopMasterTypeLoopSfxHandle(
     int modeIndex
 ) {
     zUtil_SaveGameState *const saveState = this;
@@ -1839,7 +1839,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zUtil_SaveGameState::StopMasterTypeLoopSfxH
 
 // Reimplements 0x4386c0: Player::UpdateModalLoopSfx
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zUtil_SaveGameState::UpdateModalLoopSfx(
+void zUtil_SaveGameState::UpdateModalLoopSfx(
     int enabled
 ) {
     zUtil_SaveGameState *const saveState = this;
@@ -1936,8 +1936,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zUtil_SaveGameState::UpdateModalLoopSfx(
 
 // Reimplements 0x41eb30: Player_UnderwaterFxPass3Ui::Constructor
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE Player_UnderwaterFxPass3Ui *RECOIL_THISCALL
-Player_UnderwaterFxPass3Ui::Constructor() {
+Player_UnderwaterFxPass3Ui * Player_UnderwaterFxPass3Ui::Constructor() {
     HudUiElement::Constructor(
         0,
         0
@@ -1949,8 +1948,7 @@ Player_UnderwaterFxPass3Ui::Constructor() {
 
 // Reimplements 0x41eb90: Player_ProjectileCameraFxPass3Ui::Constructor
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE Player_ProjectileCameraFxPass3Ui *RECOIL_THISCALL
-Player_ProjectileCameraFxPass3Ui::Constructor() {
+Player_ProjectileCameraFxPass3Ui * Player_ProjectileCameraFxPass3Ui::Constructor() {
     HudUiElement::Constructor(
         0,
         0
@@ -1961,13 +1959,13 @@ Player_ProjectileCameraFxPass3Ui::Constructor() {
 }
 
 // Reimplements 0x423440: Player_UnderwaterFxPass3Ui::ApplyBlueTint
-RECOIL_NOINLINE void RECOIL_THISCALL Player_UnderwaterFxPass3Ui::ApplyBlueTint() {
+void Player_UnderwaterFxPass3Ui::ApplyBlueTint() {
     zVideo_FxSurface::ApplyBlueTintRect(overlayRectOrNull);
 }
 
 // Reimplements 0x423450: Player_ProjectileCameraFxPass3Ui::ApplyGreenMask
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL Player_ProjectileCameraFxPass3Ui::ApplyGreenMask() {
+void Player_ProjectileCameraFxPass3Ui::ApplyGreenMask() {
     zVideo_FxSurface::ApplyGreenMaskRect(overlayRectOrNull);
 }
 
@@ -1975,7 +1973,7 @@ namespace zVehicle {
 
 // Reimplements 0x41fe50: zVehicle::SelectZrdByDifficulty
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE const char *RECOIL_FASTCALL SelectZrdByDifficulty(
+const char *__fastcall SelectZrdByDifficulty(
     const char *extraSearchPath
 ) {
     const char *filename = kVehicleDefaultZrd;
@@ -2002,7 +2000,7 @@ namespace Player_TopMsgPanel1 {
 
 // Reimplements 0x41ec40: Player_TopMsgPanel1::Constructor
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL Constructor() {
+void Constructor() {
     g_Player_TopMsgPanel1.ConstructorDefault(
         0,
         0,
@@ -2012,7 +2010,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Constructor() {
 
 // Reimplements 0x41ec70: Player_TopMsgPanel1::Destructor
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL Destructor() {
+void Destructor() {
     g_Player_TopMsgPanel1.Destructor();
 }
 
@@ -2022,7 +2020,7 @@ namespace Player_TopMsgPanel2 {
 
 // Reimplements 0x41ec90: Player_TopMsgPanel2::Constructor
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL Constructor() {
+void Constructor() {
     g_Player_TopMsgPanel2.ConstructorDefault(
         0,
         0,
@@ -2032,7 +2030,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Constructor() {
 
 // Reimplements 0x41ecc0: Player_TopMsgPanel2::Destructor
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL Destructor() {
+void Destructor() {
     g_Player_TopMsgPanel2.Destructor();
 }
 
@@ -2042,14 +2040,14 @@ namespace PlayerNodeFlagRestore {
 
 // Reimplements 0x41ef30: PlayerNodeFlagRestore::InitGlobals
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL InitGlobals() {
+void InitGlobals() {
     InitInstance();
     RegisterAtExit();
 }
 
 // Reimplements 0x41ef40: PlayerNodeFlagRestore::InitInstance
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL InitInstance() {
+void InitInstance() {
     g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0;
     g_PlayerNodeFlagRestoreEntriesBegin = 0;
     g_PlayerNodeFlagRestoreEntriesEnd = 0;
@@ -2058,13 +2056,13 @@ RECOIL_NOINLINE void RECOIL_CDECL InitInstance() {
 
 // Reimplements 0x41ef60: PlayerNodeFlagRestore::RegisterAtExit
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RegisterAtExit() {
+void RegisterAtExit() {
     atexit(ShutdownInstance);
 }
 
 // Reimplements 0x41ef70: PlayerNodeFlagRestore::ShutdownInstance
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL ShutdownInstance() {
+void ShutdownInstance() {
     ::operator delete(g_PlayerNodeFlagRestoreEntriesBegin);
     g_PlayerNodeFlagRestoreEntriesBegin = 0;
     g_PlayerNodeFlagRestoreEntriesEnd = 0;
@@ -2076,7 +2074,7 @@ RECOIL_NOINLINE void RECOIL_CDECL ShutdownInstance() {
 namespace Player {
 // Reimplements 0x41ea90: Player::InitMasterCommonDataList
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL InitMasterCommonDataList() {
+void InitMasterCommonDataList() {
     g_PlayerMasterCommonDataListAux = 0;
     g_PlayerMasterCommonDataTail = 0;
     g_PlayerMasterCommonDataHead = 0;
@@ -2085,7 +2083,7 @@ RECOIL_NOINLINE void RECOIL_CDECL InitMasterCommonDataList() {
 
 // Reimplements 0x41eac0: Player::InitMasterModalDataList
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL InitMasterModalDataList() {
+void InitMasterModalDataList() {
     g_PlayerMasterModalDataListAux = 0;
     g_PlayerMasterModalDataTail = 0;
     g_PlayerMasterModalDataHead = 0;
@@ -2094,57 +2092,57 @@ RECOIL_NOINLINE void RECOIL_CDECL InitMasterModalDataList() {
 
 // Reimplements 0x41eaf0: Player::InitAndRegisterUnderwaterFxPass3UiSingleton
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL InitAndRegisterUnderwaterFxPass3UiSingleton() {
+void InitAndRegisterUnderwaterFxPass3UiSingleton() {
     InitUnderwaterFxPass3UiSingleton();
     RegisterUnderwaterFxPass3UiOnExit();
 }
 
 // Reimplements 0x41eb00: Player::InitUnderwaterFxPass3UiSingleton
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL InitUnderwaterFxPass3UiSingleton() {
+void InitUnderwaterFxPass3UiSingleton() {
     g_Player_UnderwaterFxPass3Ui.Constructor();
 }
 
 // Reimplements 0x41eb10: Player::RegisterUnderwaterFxPass3UiOnExit
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RegisterUnderwaterFxPass3UiOnExit() {
+void RegisterUnderwaterFxPass3UiOnExit() {
     atexit(ResetUnderwaterFxPass3UiSingleton);
 }
 
 // Reimplements 0x41eb20: Player::ResetUnderwaterFxPass3UiSingleton
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL ResetUnderwaterFxPass3UiSingleton() {
+void ResetUnderwaterFxPass3UiSingleton() {
     g_Player_UnderwaterFxPass3Ui.ResetCommonFTable();
 }
 
 // Reimplements 0x41eb50: Player::InitAndRegisterProjectileCameraFxPass3UiSingleton
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL InitAndRegisterProjectileCameraFxPass3UiSingleton() {
+void InitAndRegisterProjectileCameraFxPass3UiSingleton() {
     InitProjectileCameraFxPass3UiSingleton();
     RegisterProjectileCameraFxPass3UiCleanup();
 }
 
 // Reimplements 0x41eb60: Player::InitProjectileCameraFxPass3UiSingleton
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL InitProjectileCameraFxPass3UiSingleton() {
+void InitProjectileCameraFxPass3UiSingleton() {
     g_Player_State7FxPass3Ui.Constructor();
 }
 
 // Reimplements 0x41eb70: Player::RegisterProjectileCameraFxPass3UiCleanup
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RegisterProjectileCameraFxPass3UiCleanup() {
+void RegisterProjectileCameraFxPass3UiCleanup() {
     atexit(ResetProjectileCameraFxPass3UiSingleton);
 }
 
 // Reimplements 0x41eb80: Player::ResetProjectileCameraFxPass3UiSingleton
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL ResetProjectileCameraFxPass3UiSingleton() {
+void ResetProjectileCameraFxPass3UiSingleton() {
     g_Player_State7FxPass3Ui.ResetCommonFTable();
 }
 
 // Reimplements 0x41ec00: Player::InitSaveStateList
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL InitSaveStateList() {
+void InitSaveStateList() {
     g_PlayerSaveStateListAux = 0;
     g_PlayerSaveStateListTail = 0;
     g_PlayerSaveStateListHead = 0;
@@ -2153,39 +2151,39 @@ RECOIL_NOINLINE void RECOIL_CDECL InitSaveStateList() {
 
 // Reimplements 0x41ec30: Player::InitAndRegisterTopMsgPanel1
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL InitAndRegisterTopMsgPanel1() {
+void InitAndRegisterTopMsgPanel1() {
     Player_TopMsgPanel1::Constructor();
     RegisterTopMsgPanel1OnExit();
 }
 
 // Reimplements 0x41ec60: Player::RegisterTopMsgPanel1OnExit
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RegisterTopMsgPanel1OnExit() {
+void RegisterTopMsgPanel1OnExit() {
     atexit(Player_TopMsgPanel1::Destructor);
 }
 
 // Reimplements 0x41ec80: Player::InitAndRegisterTopMsgPanel2
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL InitAndRegisterTopMsgPanel2() {
+void InitAndRegisterTopMsgPanel2() {
     Player_TopMsgPanel2::Constructor();
     RegisterTopMsgPanel2Cleanup();
 }
 
 // Reimplements 0x41ecb0: Player::RegisterTopMsgPanel2Cleanup
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RegisterTopMsgPanel2Cleanup() {
+void RegisterTopMsgPanel2Cleanup() {
     atexit(Player_TopMsgPanel2::Destructor);
 }
 
 // Reimplements 0x41fe40: Player::GetAivZrdPath
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE const char *RECOIL_CDECL GetAivZrdPath() {
+const char *GetAivZrdPath() {
     return kPlayerAivZrd;
 }
 
 // Reimplements 0x423150: Player::ExtractVehicleNameFromAivName
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ExtractVehicleNameFromAivName(
+void __fastcall ExtractVehicleNameFromAivName(
     const char *aivName,
     char *outVehicleName
 ) {
@@ -2210,7 +2208,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ExtractVehicleNameFromAivName(
 
 // Reimplements 0x421a40: Player::CloneType6NodeFromTemplateAndRename
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CloneType6NodeFromTemplateAndRename(
+zClass_NodePartial *__fastcall CloneType6NodeFromTemplateAndRename(
     const char *templateName,
     const char *newName
 ) {
@@ -2256,7 +2254,7 @@ RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CloneType6NodeFromTemplateAn
 
 // Reimplements 0x421ab0: Player::CreateFromNamesAtPose
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL CreateFromNamesAtPose(
+int __fastcall CreateFromNamesAtPose(
     const zVec3 *spawnPos,
     int aiNetId,
     float yawDeg,
@@ -2408,7 +2406,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL CreateFromNamesAtPose(
 }
 
 // Reimplements 0x421ea0: Player::CreateFromNamesAtPoseGetState
-RECOIL_NOINLINE zUtil_SaveGameState *RECOIL_FASTCALL CreateFromNamesAtPoseGetState(
+zUtil_SaveGameState *__fastcall CreateFromNamesAtPoseGetState(
     const zVec3 *spawnPos,
     const char *templateName,
     float yawDeg,
@@ -2429,7 +2427,7 @@ RECOIL_NOINLINE zUtil_SaveGameState *RECOIL_FASTCALL CreateFromNamesAtPoseGetSta
 
 // Reimplements 0x41fe90: Player::InitMissionRuntimeFromWorldAndCamera
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL InitMissionRuntimeFromWorldAndCamera(
+void __fastcall InitMissionRuntimeFromWorldAndCamera(
     zClass_NodePartial *worldNode,
     zClass_NodePartial *cameraNode
 ) {
@@ -2802,13 +2800,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL InitMissionRuntimeFromWorldAndCamera(
 
 // Reimplements 0x42aa40: Player::GetSaveStateListHead
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE zUtil_SaveGameState *RECOIL_CDECL GetSaveStateListHead() {
+zUtil_SaveGameState *GetSaveStateListHead() {
     return g_PlayerSaveStateListHead;
 }
 
 // Reimplements 0x406430: Player::UnbindCurrentSaveStateIfSinglePlayer
 // (D:\Proj\GameZRecoil\Player\player_camera.c)
-RECOIL_NOINLINE void RECOIL_CDECL UnbindCurrentSaveStateIfSinglePlayer() {
+void UnbindCurrentSaveStateIfSinglePlayer() {
     if (zOpt::GetNetworkEnabled() == 0) {
         g_CurrentPlayerSaveState->playerState->currentSaveStateBound = 0;
         g_CurrentPlayerSaveState = 0;
@@ -2817,7 +2815,7 @@ RECOIL_NOINLINE void RECOIL_CDECL UnbindCurrentSaveStateIfSinglePlayer() {
 
 // Reimplements 0x406450: Player::BindActiveGameStateAsCurrentSaveState
 // (D:\Proj\GameZRecoil\Player\player_camera.c)
-RECOIL_NOINLINE void RECOIL_CDECL BindActiveGameStateAsCurrentSaveState() {
+void BindActiveGameStateAsCurrentSaveState() {
     zUtil_SaveGameState *const activeSaveState = (zUtil_SaveGameState *)g_GameStateOrMapTable;
     activeSaveState->playerState->currentSaveStateBound = 1;
     g_CurrentPlayerSaveState = activeSaveState;
@@ -2825,7 +2823,7 @@ RECOIL_NOINLINE void RECOIL_CDECL BindActiveGameStateAsCurrentSaveState() {
 
 // Reimplements 0x42b810: Player::SyncLocalPoseFromRootNode
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL SyncLocalPoseFromRootNode() {
+void SyncLocalPoseFromRootNode() {
     zUtil_PlayerStateStorage *const playerState =
         ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState;
 
@@ -2856,7 +2854,7 @@ RECOIL_NOINLINE void RECOIL_CDECL SyncLocalPoseFromRootNode() {
 
 // Reimplements 0x4390d0: Player::CacheGunHardpointsAndDetachDisplays
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL CacheGunHardpointsAndDetachDisplays(
+void __fastcall CacheGunHardpointsAndDetachDisplays(
     zUtil_SaveGameState *saveState,
     int detachDisplays
 ) {
@@ -2899,7 +2897,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL CacheGunHardpointsAndDetachDisplays(
 
 // Reimplements 0x420d10: Player::InitStateFromNameAndMasterCommonData
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL InitStateFromNameAndMasterCommonData(
+void __fastcall InitStateFromNameAndMasterCommonData(
     zUtil_SaveGameState *saveState,
     const char *objectName,
     const char *masterCommonDataName
@@ -3195,7 +3193,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL InitStateFromNameAndMasterCommonData(
 
 // Reimplements 0x403750: Player::BuildAiPeerRingsByAiNetId
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL BuildAiPeerRingsByAiNetId() {
+void BuildAiPeerRingsByAiNetId() {
     zUtil_SaveGameState *saveState = g_PlayerSaveStateListHead;
     while (saveState != 0) {
         const int aiNetId = saveState->playerState->aiNetId;
@@ -3216,7 +3214,7 @@ RECOIL_NOINLINE void RECOIL_CDECL BuildAiPeerRingsByAiNetId() {
 
 // Reimplements 0x421470: Player::BindModalStateFromMasterModalData
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL BindModalStateFromMasterModalData(
+void __fastcall BindModalStateFromMasterModalData(
     zUtil_SaveGameState *saveState,
     PlayerModalState *modalState,
     const char *modalName,
@@ -3346,7 +3344,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindModalStateFromMasterModalData(
 
 // Reimplements 0x421790: Player::InitSpawnStateFromPrimaryModalData
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL InitSpawnStateFromPrimaryModalData(
+void __fastcall InitSpawnStateFromPrimaryModalData(
     zUtil_SaveGameState *saveState
 ) {
     GetSaveStateListHead();
@@ -3378,7 +3376,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL InitSpawnStateFromPrimaryModalData(
 
 // Reimplements 0x421830: Player::SampleGroundAndAlignRootToSurface
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SampleGroundAndAlignRootToSurface(
+void __fastcall SampleGroundAndAlignRootToSurface(
     zUtil_SaveGameState *saveState,
     int updateRotation
 ) {
@@ -3477,7 +3475,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SampleGroundAndAlignRootToSurface(
 
 // Reimplements 0x421ed0: Player::BuildCollisionPointsFromModel
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildCollisionPointsFromModel(
+int __fastcall BuildCollisionPointsFromModel(
     zUtil_SaveGameState *saveState,
     zClass_NodePartial *modelNode
 ) {
@@ -3530,7 +3528,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL BuildCollisionPointsFromModel(
 
 // Reimplements 0x4220f0: Player::BuildSupportPointsFromModel
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildSupportPointsFromModel(
+int __fastcall BuildSupportPointsFromModel(
     zUtil_SaveGameState *saveState,
     zClass_NodePartial *modelNode
 ) {
@@ -3570,7 +3568,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL BuildSupportPointsFromModel(
 
 // Reimplements 0x422170: Player::LoadMasterCommonDataFromNode
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL LoadMasterCommonDataFromNode(
+void __fastcall LoadMasterCommonDataFromNode(
     PlayerMasterCommonData *commonData,
     zReader::Node *vehicleNode,
     const char *vehicleName
@@ -3859,7 +3857,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL LoadMasterCommonDataFromNode(
 
 // Reimplements 0x4226d0: Player::LoadMasterModalDataFromNode
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL LoadMasterModalDataFromNode(
+void __fastcall LoadMasterModalDataFromNode(
     PlayerMasterModalData *modalData,
     zReader::Node *modalNode,
     const char *modalName
@@ -4322,7 +4320,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL LoadMasterModalDataFromNode(
 
 // Reimplements 0x42b630: Player::CacheDisableCopterSndNodesAndStopSample
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL CacheDisableCopterSndNodesAndStopSample() {
+void CacheDisableCopterSndNodesAndStopSample() {
     if (g_Player_CopterSndNode1 == 0) {
         zClass_NodePartial *const copterRoot = zClass::FindByTypeAndName(
             6,
@@ -4375,7 +4373,7 @@ RECOIL_NOINLINE void RECOIL_CDECL CacheDisableCopterSndNodesAndStopSample() {
 
 // Reimplements 0x42b5a0: Player::ReactivateCopterSndNodesIfHealthy
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL ReactivateCopterSndNodesIfHealthy() {
+void ReactivateCopterSndNodesIfHealthy() {
     zClass_NodePartial *const healthyNode1 = g_Player_CopterHealthyNode1;
     if (healthyNode1 != 0 && (healthyNode1->flags & 0x04) != 0) {
         zClass_NodePartial *const sndNode1 = g_Player_CopterSndNode1;
@@ -4429,7 +4427,7 @@ RECOIL_NOINLINE void RECOIL_CDECL ReactivateCopterSndNodesIfHealthy() {
 
 // Reimplements 0x42b4a0: Player::StopBftBubbleFxHandle
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL StopBftBubbleFxHandle(
+void __fastcall StopBftBubbleFxHandle(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -4442,7 +4440,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL StopBftBubbleFxHandle(
 
 // Reimplements 0x42b4c0: Player::TransitionToMasterTypeFly
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeFly(
+int __fastcall TransitionToMasterTypeFly(
     zUtil_SaveGameState *saveState,
     int flags
 ) {
@@ -4467,7 +4465,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeFly(
 
 // Reimplements 0x42ac90: Player::TransitionToMasterTypeTrack
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeTrack(
+int __fastcall TransitionToMasterTypeTrack(
     zUtil_SaveGameState *saveState,
     int flags
 ) {
@@ -4592,7 +4590,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeTrack(
 
 // Reimplements 0x42aeb0: Player::TransitionToMasterTypeAmphib
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeAmphib(
+int __fastcall TransitionToMasterTypeAmphib(
     zUtil_SaveGameState *saveState,
     int transitionFlags,
     int extraFlags
@@ -4712,7 +4710,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeAmphib(
 
 // Reimplements 0x42b2a0: Player::TransitionToMasterTypeSub
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeSub(
+int __fastcall TransitionToMasterTypeSub(
     zUtil_SaveGameState *saveState,
     int flags
 ) {
@@ -4828,7 +4826,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeSub(
 
 // Reimplements 0x42b0f0: Player::TransitionToMasterTypeHover
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeHover(
+int __fastcall TransitionToMasterTypeHover(
     zUtil_SaveGameState *saveState,
     int flags
 ) {
@@ -4920,7 +4918,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL TransitionToMasterTypeHover(
 
 // Reimplements 0x42b520: Player::ApplyMasterTypeTransition
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ApplyMasterTypeTransition(
+int __fastcall ApplyMasterTypeTransition(
     zUtil_SaveGameState *saveState,
     int masterType,
     int flags
@@ -4963,7 +4961,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ApplyMasterTypeTransition(
 
 // Reimplements 0x425060: HudSensorTracker::ParseCheckpointNumberFromNode
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HudSensorTracker::ParseCheckpointNumberFromNode(
+int __fastcall HudSensorTracker::ParseCheckpointNumberFromNode(
     zClass_NodePartial *node
 ) {
     if ((node->flags & 0x200000) == 0) {
@@ -5037,7 +5035,7 @@ RECOIL_STATIC_ASSERT(
 namespace Checkpoint {
 // Reimplements 0x420c60: Checkpoint::InstantiateNamedObjects
 // (D:\Proj\GameZRecoil\checkpoint.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL InstantiateNamedObjects() {
+void InstantiateNamedObjects() {
     CString searchName;
     const int checkpointCount = g_HudSensorTracker.checkpointCount;
 
@@ -5071,7 +5069,7 @@ RECOIL_NOINLINE void RECOIL_CDECL InstantiateNamedObjects() {
 
 // Reimplements 0x425150: Checkpoint::UpdatePlayerLapProgressAndNotifyNet
 // (D:\Proj\GameZRecoil\checkpoint.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdatePlayerLapProgressAndNotifyNet(
+void __fastcall UpdatePlayerLapProgressAndNotifyNet(
     zUtil_SaveGameState *saveState,
     int checkpointIndex
 ) {
@@ -5111,7 +5109,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdatePlayerLapProgressAndNotifyNet(
 
 // Reimplements 0x424010: PlayerPendingContact::SelectPreferred
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE PlayerPendingContact *RECOIL_FASTCALL PlayerPendingContact::SelectPreferred(
+PlayerPendingContact *__fastcall PlayerPendingContact::SelectPreferred(
     PlayerPendingContact *rhs
 ) {
     const float selfApproachDot = (sweepEnd.x - hit.hitPos.x) * hit.surfaceNormal.x +
@@ -5165,7 +5163,7 @@ struct PlayerContactSurfacePayload {
 void SetState7FxPass3Visible(
     int visible
 ) {
-    typedef void(RECOIL_THISCALL * SetVisibleFn)(
+    typedef void( * SetVisibleFn)(
         HudUiElement * self,
         int visible
     );
@@ -5362,7 +5360,7 @@ zVec3 Vec3Cross(
 
 // Reimplements 0x42a9f0: Player::AddScaledHudCounterValue
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL AddScaledHudCounterValue(
+void __fastcall AddScaledHudCounterValue(
     float value
 ) {
     float scale = 1.0f;
@@ -5376,7 +5374,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL AddScaledHudCounterValue(
 
 // Reimplements 0x41bab0: Player::UpdateGunDispatchRequestsFromTriggerLatches
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateGunDispatchRequestsFromTriggerLatches(
+void __fastcall UpdateGunDispatchRequestsFromTriggerLatches(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -5404,7 +5402,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateGunDispatchRequestsFromTriggerLatches
 }
 
 // Reimplements 0x403830: Player::AiDiscardNegativeBranchPathNodes (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL AiDiscardNegativeBranchPathNodes(
+void __fastcall AiDiscardNegativeBranchPathNodes(
     zUtil_SaveGameState *saveState
 ) {
     AINetNode *aiCurrentPathNode = saveState->playerState->aiCurrentPathNode;
@@ -5421,7 +5419,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL AiDiscardNegativeBranchPathNodes(
 
 // Reimplements 0x401420: Player::AiMode2ForwardProbeRequiresAutoTurn
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL AiMode2ForwardProbeRequiresAutoTurn(
+int __fastcall AiMode2ForwardProbeRequiresAutoTurn(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -5466,7 +5464,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AiMode2ForwardProbeRequiresAutoTurn(
 
 // Reimplements 0x4016a0: Player::AiChooseNextPathBranchIndex
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL AiChooseNextPathBranchIndex(
+int __fastcall AiChooseNextPathBranchIndex(
     zUtil_SaveGameState *saveState,
     AINetNode **currentNodeInOut,
     int *outBranchIndex,
@@ -5502,7 +5500,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AiChooseNextPathBranchIndex(
 
 // Reimplements 0x401580: Player::AiAdvancePathCursorAndComputeTargetVec
 // (GameZRecoil/Player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL AiAdvancePathCursorAndComputeTargetVec(
+void __fastcall AiAdvancePathCursorAndComputeTargetVec(
     zUtil_SaveGameState *saveState,
     AINetNode **currentNodeInOut,
     AINetPathProbeFan **outProbeFan,
@@ -5565,7 +5563,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL AiAdvancePathCursorAndComputeTargetVec(
 
 // Reimplements 0x401060: Player::TickAiMode2TopLevel
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2TopLevel(
+void __fastcall TickAiMode2TopLevel(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -5639,7 +5637,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2TopLevel(
 
 // Reimplements 0x401180: Player::TickAiMode2PathFollow
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2PathFollow(
+void __fastcall TickAiMode2PathFollow(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -5739,7 +5737,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2PathFollow(
 
 // Reimplements 0x401c60: Player::AiEnterMode2SteeringPursuit
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL AiEnterMode2SteeringPursuit(
+void __fastcall AiEnterMode2SteeringPursuit(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const aiState = saveState->playerState;
@@ -5773,7 +5771,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL AiEnterMode2SteeringPursuit(
 
 // Reimplements 0x401c00: Player::AiAlertAttackBuddies
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL AiAlertAttackBuddies(
+void __fastcall AiAlertAttackBuddies(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_SaveGameState *buddySaveState = saveState->aiPeerRingNext;
@@ -5794,7 +5792,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL AiAlertAttackBuddies(
 
 // Reimplements 0x401b20: Player::AiTryEnterMode2AttackPursuitIfLineOfSight
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL AiTryEnterMode2AttackPursuitIfLineOfSight(
+int __fastcall AiTryEnterMode2AttackPursuitIfLineOfSight(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const aiState = saveState->playerState;
@@ -5839,7 +5837,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AiTryEnterMode2AttackPursuitIfLineOfSight(
 
 // Reimplements 0x401f60: Player::AiRebuildSyntheticPathToNodeIfFar
 // (GameZRecoil/Player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL AiRebuildSyntheticPathToNodeIfFar(
+void __fastcall AiRebuildSyntheticPathToNodeIfFar(
     zUtil_SaveGameState *saveState,
     AINetNode *targetNode
 ) {
@@ -5882,7 +5880,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL AiRebuildSyntheticPathToNodeIfFar(
 
 // Reimplements 0x401710: Player::TickAiMode2SteeringSubstate
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2SteeringSubstate(
+void __fastcall TickAiMode2SteeringSubstate(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -5997,7 +5995,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2SteeringSubstate(
 
 // Reimplements 0x401970: Player::UpdateAiMode2MoveAndTurnTowardTarget
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2MoveAndTurnTowardTarget(
+void __fastcall UpdateAiMode2MoveAndTurnTowardTarget(
     zUtil_SaveGameState *saveState,
     float forwardDot,
     float lateralDot,
@@ -6026,7 +6024,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2MoveAndTurnTowardTarget(
 
 // Reimplements 0x402090: Player::UpdateAiMode2TurnTowardPlayerNoThrottle
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2TurnTowardPlayerNoThrottle(
+void __fastcall UpdateAiMode2TurnTowardPlayerNoThrottle(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -6058,7 +6056,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2TurnTowardPlayerNoThrottle(
 
 // Reimplements 0x402170: Player::UpdateAiMode2TurnInPlaceTowardPlayer
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2TurnInPlaceTowardPlayer(
+void __fastcall UpdateAiMode2TurnInPlaceTowardPlayer(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -6090,7 +6088,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2TurnInPlaceTowardPlayer(
 
 // Reimplements 0x402250: Player::TickAiMode2AltGunAttackWindow
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2AltGunAttackWindow(
+void __fastcall TickAiMode2AltGunAttackWindow(
     zUtil_SaveGameState *saveState,
     float targetDistance,
     float forwardDot
@@ -6182,7 +6180,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2AltGunAttackWindow(
 
 // Reimplements 0x4024a0: Player::SolveAltGunLeadTargetPoint
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SolveAltGunLeadTargetPoint(
+void __fastcall SolveAltGunLeadTargetPoint(
     zUtil_SaveGameState *saveState,
     zUtil_SaveGameState *targetSaveState,
     zVec3 *outTargetPos
@@ -6237,7 +6235,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SolveAltGunLeadTargetPoint(
 
 // Reimplements 0x4026d0: Player::UpdateAiMode2MoveAndTurnTowardOffsetTarget
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2MoveAndTurnTowardOffsetTarget(
+void __fastcall UpdateAiMode2MoveAndTurnTowardOffsetTarget(
     zUtil_SaveGameState *saveState,
     zUtil_SaveGameState *targetState
 ) {
@@ -6299,7 +6297,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2MoveAndTurnTowardOffsetTarget(
 
 // Reimplements 0x4028c0: Player::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
+void __fastcall UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
     zUtil_SaveGameState *saveState,
     zUtil_SaveGameState *targetState,
     float targetDistance
@@ -6379,7 +6377,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAiMode2MoveAndTurnTowardDynamicOffset
 
 // Reimplements 0x401a40: Player::TickAiMode2OffsetTargetSteering
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2OffsetTargetSteering(
+void __fastcall TickAiMode2OffsetTargetSteering(
     zUtil_SaveGameState *saveState,
     float unusedForwardDot,
     float unusedLateralDot,
@@ -6415,7 +6413,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2OffsetTargetSteering(
 
 // Reimplements 0x401ab0: Player::TickAiMode2DynamicOffsetTargetSteering
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2DynamicOffsetTargetSteering(
+void __fastcall TickAiMode2DynamicOffsetTargetSteering(
     zUtil_SaveGameState *saveState,
     float unusedForwardDot,
     float unusedLateralDot,
@@ -6451,7 +6449,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2DynamicOffsetTargetSteering(
 
 // Reimplements 0x402080: Player::AiRestoreSavedTopLevelState
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL AiRestoreSavedTopLevelState(
+void __fastcall AiRestoreSavedTopLevelState(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -6460,7 +6458,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL AiRestoreSavedTopLevelState(
 
 // Reimplements 0x402be0: Player::AiSteerTowardPathNodeForward
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL AiSteerTowardPathNodeForward(
+void __fastcall AiSteerTowardPathNodeForward(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -6509,7 +6507,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL AiSteerTowardPathNodeForward(
 
 // Reimplements 0x402d60: Player::AiSteerTowardPathNodeReverse
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL AiSteerTowardPathNodeReverse(
+void __fastcall AiSteerTowardPathNodeReverse(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -6562,7 +6560,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL AiSteerTowardPathNodeReverse(
 
 // Reimplements 0x402b70: Player::TickAiMode2TimedPathSteering
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2TimedPathSteering(
+void __fastcall TickAiMode2TimedPathSteering(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -6586,7 +6584,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickAiMode2TimedPathSteering(
 
 // Reimplements 0x423530: Player::ClearPendingContactQueues
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ClearPendingContactQueues(
+void __fastcall ClearPendingContactQueues(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -6600,7 +6598,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ClearPendingContactQueues(
 
 // Reimplements 0x406730: Player::FilterCameraProbeBlockingHits
 // (D:\Proj\GameZRecoil\Player\player_camera.c)
-RECOIL_NOINLINE void RECOIL_FASTCALL FilterCameraProbeBlockingHits(
+void __fastcall FilterCameraProbeBlockingHits(
     PlayerProbeSampleCandidateBuffer *batches,
     int batchCount
 ) {
@@ -6641,7 +6639,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FilterCameraProbeBlockingHits(
 
 // Reimplements 0x42b6e0: Player::FindNearestThirdPersonCameraProbePoint
 // (D:\Proj\GameZRecoil\Player\player_camera.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL FindNearestThirdPersonCameraProbePoint(
+int __fastcall FindNearestThirdPersonCameraProbePoint(
     PlayerProbeSampleCandidateBuffer *batches,
     int batchCount,
     const zVec3 *referencePos,
@@ -6697,7 +6695,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindNearestThirdPersonCameraProbePoint(
 
 // Reimplements 0x4067a0: Player::AdjustSubCameraFocusForObstruction
 // (D:\Proj\GameZRecoil\Player\player_camera.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL AdjustSubCameraFocusForObstruction(
+int __fastcall AdjustSubCameraFocusForObstruction(
     zUtil_SaveGameState *saveState,
     zVec3 *focusPos
 ) {
@@ -6746,7 +6744,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AdjustSubCameraFocusForObstruction(
 
 // Reimplements 0x405ee0: Player::AdjustThirdPersonCameraByOffsetProbes
 // (D:\Proj\GameZRecoil\Player\player_camera.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL AdjustThirdPersonCameraByOffsetProbes(
+int __fastcall AdjustThirdPersonCameraByOffsetProbes(
     zUtil_SaveGameState *saveState,
     zVec3 *cameraPos,
     const zVec3 *sideDir
@@ -6852,7 +6850,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AdjustThirdPersonCameraByOffsetProbes(
 
 // Reimplements 0x406510: Player::UpdateCameraVariantFromAnchor
 // (D:\Proj\GameZRecoil\Player\player_camera.c)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCameraVariantFromAnchor(
+void __fastcall UpdateCameraVariantFromAnchor(
     PlayerProbeSampleCandidateBuffer *candidates,
     zVec3 *cameraPos,
     int selectedCandidateIndex
@@ -6908,7 +6906,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCameraVariantFromAnchor(
 
 // Reimplements 0x406470: Player::UpdateCameraVariantFromCameraPos
 // (D:\Proj\GameZRecoil\Player\player_camera.c)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCameraVariantFromCameraPos(
+void __fastcall UpdateCameraVariantFromCameraPos(
     zUtil_SaveGameState *saveState,
     zVec3 *cameraPos
 ) {
@@ -6956,7 +6954,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCameraVariantFromCameraPos(
 
 // Reimplements 0x406110: Player::AdjustThirdPersonCameraBySideProbes
 // (D:\Proj\GameZRecoil\Player\player_camera.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL AdjustThirdPersonCameraBySideProbes(
+int __fastcall AdjustThirdPersonCameraBySideProbes(
     zUtil_SaveGameState *saveState,
     zVec3 *cameraPos,
     const zVec3 *focusPos,
@@ -7102,7 +7100,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AdjustThirdPersonCameraBySideProbes(
 
 // Reimplements 0x423c20: Player::ClassifyPendingContactsForSegment
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ClassifyPendingContactsForSegment(
+void __fastcall ClassifyPendingContactsForSegment(
     zUtil_SaveGameState *saveState,
     PlayerProbeSampleCandidateBuffer *sceneResults,
     const zVec3 *segmentStart,
@@ -7180,7 +7178,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ClassifyPendingContactsForSegment(
 
 // Reimplements 0x423b10: Player::CollectPendingContactsForSegments
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL CollectPendingContactsForSegments(
+int __fastcall CollectPendingContactsForSegments(
     zUtil_SaveGameState *saveState,
     zClass_DiSegmentEndpoints *segmentPairs,
     int endpointCount,
@@ -7230,7 +7228,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL CollectPendingContactsForSegments(
 
 // Reimplements 0x424210: Player::ProcessPendingPickupContacts
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ProcessPendingPickupContacts(
+void __fastcall ProcessPendingPickupContacts(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -7264,7 +7262,7 @@ namespace PlayerPickupContact {
 
 // Reimplements 0x424150: PlayerPickupContact::PassesCollectionTest
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL PassesCollectionTest(
+int __fastcall PassesCollectionTest(
     zUtil_SaveGameState *saveState,
     PlayerPendingContact *contact
 ) {
@@ -7319,7 +7317,7 @@ namespace Player {
 
 // Reimplements 0x4251f0: Player::CollectPendingCollisionContactsForQuadProbe
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL CollectPendingCollisionContactsForQuadProbe(
+int __fastcall CollectPendingCollisionContactsForQuadProbe(
     zUtil_SaveGameState *saveState,
     float expandRadius
 ) {
@@ -7374,7 +7372,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL CollectPendingCollisionContactsForQuadProbe(
 
 // Reimplements 0x424ed0: Player::TryResolvePendingCollisionProbeSweep
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL TryResolvePendingCollisionProbeSweep(
+int __fastcall TryResolvePendingCollisionProbeSweep(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -7410,7 +7408,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL TryResolvePendingCollisionProbeSweep(
 
 // Reimplements 0x423fc0: Player::SelectAndResolvePreferredPendingCollisionContact
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SelectAndResolvePreferredPendingCollisionContact(
+void __fastcall SelectAndResolvePreferredPendingCollisionContact(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -7430,7 +7428,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SelectAndResolvePreferredPendingCollisionCo
 
 // Reimplements 0x4248e0: Player::PreparePendingWorldCollisionResponse
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL PreparePendingWorldCollisionResponse(
+void __fastcall PreparePendingWorldCollisionResponse(
     zUtil_SaveGameState *saveState,
     PlayerPendingContact *worldContacts
 ) {
@@ -7488,7 +7486,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL PreparePendingWorldCollisionResponse(
 
 // Reimplements 0x424110: Player::ResolvePendingWorldCollisionContact
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ResolvePendingWorldCollisionContact(
+void __fastcall ResolvePendingWorldCollisionContact(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -7511,7 +7509,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ResolvePendingWorldCollisionContact(
 
 // Reimplements 0x429430: Player::ApplyPitchRollVelocityImpulseFromDirection
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyPitchRollVelocityImpulseFromDirection(
+void __fastcall ApplyPitchRollVelocityImpulseFromDirection(
     zUtil_SaveGameState *saveState,
     const zVec3 *direction,
     float angleScale,
@@ -7539,7 +7537,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyPitchRollVelocityImpulseFromDirection(
 
 // Reimplements 0x424270: Player::ResolvePendingCollisionContact
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ResolvePendingCollisionContact(
+void __fastcall ResolvePendingCollisionContact(
     zUtil_SaveGameState *saveState,
     PlayerPendingContact *contact
 ) {
@@ -7708,7 +7706,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ResolvePendingCollisionContact(
 
 // Reimplements 0x424ac0: Player::ResolvePendingPlayerCollisionContact
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ResolvePendingPlayerCollisionContact(
+void __fastcall ResolvePendingPlayerCollisionContact(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -7763,7 +7761,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ResolvePendingPlayerCollisionContact(
 
 // Reimplements 0x424d00: Player::ProcessTransferContactQueue
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ProcessTransferContactQueue(
+void __fastcall ProcessTransferContactQueue(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -7816,7 +7814,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ProcessTransferContactQueue(
 
 // Reimplements 0x43b730: Player::RecordRecentHitFeedback
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RecordRecentHitFeedback(
+void __fastcall RecordRecentHitFeedback(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *hitSource,
     float damage
@@ -7844,7 +7842,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RecordRecentHitFeedback(
 
 // Reimplements 0x43b800: Player::ClearDestroyedRespawnEffectHandleCallback
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ClearDestroyedRespawnEffectHandleCallback(
+void __fastcall ClearDestroyedRespawnEffectHandleCallback(
     zEffectAnimEntry *,
     zUtil_SaveGameState *saveState,
     int
@@ -7854,7 +7852,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ClearDestroyedRespawnEffectHandleCallback(
 
 // Reimplements 0x41bd20: Player::DestroyedStateResetLocalFinalize
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL DestroyedStateResetLocalFinalize() {
+void DestroyedStateResetLocalFinalize() {
     zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)g_GameStateOrMapTable;
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     if (playerState->lifecycleState == kPlayerLifecycleInactive) {
@@ -7874,7 +7872,7 @@ RECOIL_NOINLINE void RECOIL_CDECL DestroyedStateResetLocalFinalize() {
 
 // Reimplements 0x41bca0: Player::DestroyedStateResetFinalizeCallback
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL DestroyedStateResetFinalizeCallback(
+void __fastcall DestroyedStateResetFinalizeCallback(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_SaveGameState *nearestSaveState = saveState;
@@ -7901,7 +7899,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DestroyedStateResetFinalizeCallback(
 
 // Reimplements 0x41bbf0: Player::DestroyedStateResetCallback
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL DestroyedStateResetCallback(
+void __fastcall DestroyedStateResetCallback(
     zEffectAnimEntry *,
     zUtil_SaveGameState *saveState,
     int
@@ -7951,7 +7949,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DestroyedStateResetCallback(
 
 // Reimplements 0x41bd10: Player::ClearRespawnTransitionFlagCallback
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ClearRespawnTransitionFlagCallback(
+void __fastcall ClearRespawnTransitionFlagCallback(
     zUtil_SaveGameState *saveState
 ) {
     saveState->playerState->cameraTransitionTimer = 0;
@@ -7959,7 +7957,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ClearRespawnTransitionFlagCallback(
 
 // Reimplements 0x41bb30: Player::DestroyedStateRespawnCallback
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL DestroyedStateRespawnCallback(
+void __fastcall DestroyedStateRespawnCallback(
     zEffectAnimEntry *,
     zUtil_SaveGameState *saveState,
     int
@@ -8017,7 +8015,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DestroyedStateRespawnCallback(
 
 // Reimplements 0x43bc40: Player::EnterLocalInactiveDestroyedLifecycle
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL EnterLocalInactiveDestroyedLifecycle(
+void __fastcall EnterLocalInactiveDestroyedLifecycle(
     zUtil_SaveGameState *saveState
 ) {
     if (saveState != (zUtil_SaveGameState *)g_GameStateOrMapTable) {
@@ -8051,7 +8049,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL EnterLocalInactiveDestroyedLifecycle(
 
 // Reimplements 0x43bcc0: Player::EnterDestroyedState
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL EnterDestroyedState(
+int __fastcall EnterDestroyedState(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *hitSource,
     OptCatalogHitEventPartial *hitRenderPoint,
@@ -8224,7 +8222,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL EnterDestroyedState(
 
 // Reimplements 0x43b790: Player::UpdateTimedHitStatusFromHitSource
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE float RECOIL_FASTCALL UpdateTimedHitStatusFromHitSource(
+float __fastcall UpdateTimedHitStatusFromHitSource(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *hitSource,
     float damage
@@ -8253,7 +8251,7 @@ RECOIL_NOINLINE float RECOIL_FASTCALL UpdateTimedHitStatusFromHitSource(
 
 // Reimplements 0x43b810: Player::HitCallback_RecordNetContextAndTimedStatus
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HitCallback_RecordNetContextAndTimedStatus(
+int __fastcall HitCallback_RecordNetContextAndTimedStatus(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *hitSource,
     void *,
@@ -8286,7 +8284,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HitCallback_RecordNetContextAndTimedStatus(
 
 // Reimplements 0x43c010: Player::ApplyDamageLocal
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ApplyDamageLocal(
+int __fastcall ApplyDamageLocal(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -8332,7 +8330,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ApplyDamageLocal(
 
 // Reimplements 0x41b950: Player::TickRemoteNetworkPlayer
 // (GameZRecoil/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL TickRemoteNetworkPlayer(
+void __fastcall TickRemoteNetworkPlayer(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -8394,7 +8392,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickRemoteNetworkPlayer(
 
 // Reimplements 0x43b870: Player::HitCallback_RecordContextAndTimedStatus
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HitCallback_RecordContextAndTimedStatus(
+int __fastcall HitCallback_RecordContextAndTimedStatus(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *hitSource,
     void *hitRenderPointEntry,
@@ -8568,7 +8566,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HitCallback_RecordContextAndTimedStatus(
 
 // Reimplements 0x423380: Player::IsMissionProbeType1EnabledById
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL IsMissionProbeType1EnabledById(
+int __fastcall IsMissionProbeType1EnabledById(
     int missionId
 ) {
     return missionId == 9 || missionId == 11 || missionId == 12 || missionId == 13;
@@ -8576,7 +8574,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL IsMissionProbeType1EnabledById(
 
 // Reimplements 0x43c0c0: Player::StartDestroyedStateVehicleEffect
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL StartDestroyedStateVehicleEffect(
+void __fastcall StartDestroyedStateVehicleEffect(
     zUtil_SaveGameState *saveState,
     void *respawnCallback
 ) {
@@ -8634,7 +8632,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL StartDestroyedStateVehicleEffect(
 
 // Reimplements 0x4236b0: Player::BuildPendingContactQueues
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL BuildPendingContactQueues(
+void __fastcall BuildPendingContactQueues(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -8859,7 +8857,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BuildPendingContactQueues(
 
 // Reimplements 0x423460: Player::ProcessPendingContactQueues
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ProcessPendingContactQueues(
+void __fastcall ProcessPendingContactQueues(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -8912,7 +8910,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ProcessPendingContactQueues(
 
 // Reimplements 0x425770: Player::ApplyPendingCollisionProbeVelocity
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyPendingCollisionProbeVelocity(
+void __fastcall ApplyPendingCollisionProbeVelocity(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -8967,7 +8965,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyPendingCollisionProbeVelocity(
 
 // Reimplements 0x425920: Player::RegisterGameplayCommandCallbacksAndCreateFfEffects
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RegisterGameplayCommandCallbacksAndCreateFfEffects() {
+void RegisterGameplayCommandCallbacksAndCreateFfEffects() {
     // zInput's keyboard bridge tail-jumps to these handlers with commandId in ECX.
     zInputCommandCallbackFn hudHotkeyCallback =
         (zInputCommandCallbackFn)(HudUi::HandleHotkeyCommand);
@@ -9026,7 +9024,7 @@ RECOIL_NOINLINE void RECOIL_CDECL RegisterGameplayCommandCallbacksAndCreateFfEff
 
 // Reimplements 0x42bb30: Player::AsyncCommandCallback
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL AsyncCommandCallback(
+void __fastcall AsyncCommandCallback(
     zEffectAnimEntry *animEntry,
     void *,
     int eventCode
@@ -9193,7 +9191,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL AsyncCommandCallback(
 
 // Reimplements 0x402f10: Player::AiFinalizeMode2State1ForAllPlayers
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL AiFinalizeMode2State1ForAllPlayers() {
+void AiFinalizeMode2State1ForAllPlayers() {
     zUtil_SaveGameState *saveState = g_PlayerSaveStateListHead;
     while (saveState != 0) {
         zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -9209,7 +9207,7 @@ RECOIL_NOINLINE void RECOIL_CDECL AiFinalizeMode2State1ForAllPlayers() {
 
 // Reimplements 0x42be00: Player::SetWorldPoseAndRestartAnchor
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetWorldPoseAndRestartAnchor(
+void __fastcall SetWorldPoseAndRestartAnchor(
     zUtil_SaveGameState *saveState,
     const zVec3 *position,
     float yawRad
@@ -9233,7 +9231,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetWorldPoseAndRestartAnchor(
 
 // Reimplements 0x42be70: Player::CaptureCurrentObjectPoseAsRestartAnchor
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL CaptureCurrentObjectPoseAsRestartAnchor(
+void __fastcall CaptureCurrentObjectPoseAsRestartAnchor(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = g_LocalPlayerSaveState->playerState;
@@ -9265,7 +9263,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL CaptureCurrentObjectPoseAsRestartAnchor(
 
 // Reimplements 0x426330: Player::ResetMouseControlStateAndRecenterCursor
 // (D:\Proj\GameZRecoil\zGame\Player\Player_Camera.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ResetMouseControlStateAndRecenterCursor(
+void __fastcall ResetMouseControlStateAndRecenterCursor(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -9276,7 +9274,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ResetMouseControlStateAndRecenterCursor(
 
 // Reimplements 0x426390: PlayerMgr::TickAllPlayers
 // (GameZRecoil/player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL TickAllPlayers() {
+void TickAllPlayers() {
     g_Player_DeltaTime = g_FrameDeltaTimeSec >= kPlayerMinFrameDeltaSec ? g_FrameDeltaTimeSec
                                                                         : kPlayerMinFrameDeltaSec;
     g_Player_InvDeltaTime = 1.0f / g_Player_DeltaTime;
@@ -9454,7 +9452,7 @@ RECOIL_NOINLINE void RECOIL_CDECL TickAllPlayers() {
 
 // Reimplements 0x404e90: Player::TickActiveCameraState
 // (D:\Proj\GameZRecoil\Player\player_camera.c)
-RECOIL_NOINLINE void RECOIL_FASTCALL TickActiveCameraState(
+void __fastcall TickActiveCameraState(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -9529,7 +9527,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickActiveCameraState(
 
 // Reimplements 0x405040: Player::UpdateChaseCameraFromInput
 // (D:\Proj\GameZRecoil\Player\player_camera.c)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateChaseCameraFromInput(
+void __fastcall UpdateChaseCameraFromInput(
     zUtil_SaveGameState *saveState
 ) {
     const float kVerticalSpeedCameraInputCutoff = 11.0f;
@@ -9732,7 +9730,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateChaseCameraFromInput(
 
 // Reimplements 0x4057d0: Player::UpdateTopDownCameraState
 // (D:\Proj\GameZRecoil\Player\player_camera.c)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateTopDownCameraState(
+void __fastcall UpdateTopDownCameraState(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -9759,7 +9757,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateTopDownCameraState(
 
 // Reimplements 0x4059a0: Player::UpdateFirstPersonCameraFromInput
 // (D:\Proj\GameZRecoil\Player\player_camera.c)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateFirstPersonCameraFromInput(
+void __fastcall UpdateFirstPersonCameraFromInput(
     zUtil_SaveGameState *saveState
 ) {
     const float kForwardSpeedClampThreshold = 10.0f;
@@ -9844,7 +9842,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateFirstPersonCameraFromInput(
 
 // Reimplements 0x405870: Player::UpdateCameraFromStoredTargetTowardPlayer
 // (D:\Proj\GameZRecoil\Player\player_camera.c)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCameraFromStoredTargetTowardPlayer(
+void __fastcall UpdateCameraFromStoredTargetTowardPlayer(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -9887,7 +9885,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCameraFromStoredTargetTowardPlayer(
 
 // Reimplements 0x4063f0: Player::RestoreThirdPersonCameraFromObstructionState
 // (D:\Proj\GameZRecoil\Player\player_camera.c)
-RECOIL_NOINLINE void RECOIL_FASTCALL RestoreThirdPersonCameraFromObstructionState(
+void __fastcall RestoreThirdPersonCameraFromObstructionState(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -9900,7 +9898,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RestoreThirdPersonCameraFromObstructionStat
 
 // Reimplements 0x406610: Player::UpdateCameraWeatherFxEmitterVisibility
 // (D:\Proj\GameZRecoil\Player\player_camera.c)
-RECOIL_NOINLINE void RECOIL_CDECL UpdateCameraWeatherFxEmitterVisibility() {
+void UpdateCameraWeatherFxEmitterVisibility() {
     HudUiElement *const fxElement = g_HudSensorTracker.fxPass3Obj;
     if (fxElement == 0) {
         return;
@@ -9977,7 +9975,7 @@ RECOIL_NOINLINE void RECOIL_CDECL UpdateCameraWeatherFxEmitterVisibility() {
 
 // Reimplements 0x425a20: Player::TickLocalPlayerControls
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL TickLocalPlayerControls(
+void __fastcall TickLocalPlayerControls(
     zUtil_SaveGameState *saveState
 ) {
     if (g_Player_LocalControlEnabled == 0) {
@@ -10227,14 +10225,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickLocalPlayerControls(
 
 // Reimplements 0x405ec0: Player::ToggleSteeringModeAndResetMouseLook
 // (D:\Proj\GameZRecoil\Player\player_camera.c)
-RECOIL_NOINLINE void RECOIL_CDECL ToggleSteeringModeAndResetMouseLook() {
+void ToggleSteeringModeAndResetMouseLook() {
     ResetMouseControlStateAndRecenterCursor((zUtil_SaveGameState *)g_GameStateOrMapTable);
     zOpt::SetSteeringMode(zOpt::GetSteeringMode() == 0 ? 1 : 0);
 }
 
 // Reimplements 0x42bed0: Player::ResetMotionTransientState
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ResetMotionTransientState(
+void __fastcall ResetMotionTransientState(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -10260,7 +10258,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ResetMotionTransientState(
 
 // Reimplements 0x4283f0: Player::UpdateBankVelocityFromSteerInput
 // (D:\Proj\GameZRecoil\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateBankVelocityFromSteerInput(
+void __fastcall UpdateBankVelocityFromSteerInput(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -10283,7 +10281,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateBankVelocityFromSteerInput(
 
 // Reimplements 0x429750: Player::UpdateAutoTurnAndSteerFromTarget
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAutoTurnAndSteerFromTarget(
+void __fastcall UpdateAutoTurnAndSteerFromTarget(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -10324,7 +10322,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAutoTurnAndSteerFromTarget(
 
 // Reimplements 0x428490: Player::IntegrateYawAndWrapFromYawVelocity
 // (D:\Proj\GameZRecoil\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL IntegrateYawAndWrapFromYawVelocity(
+void __fastcall IntegrateYawAndWrapFromYawVelocity(
     zUtil_SaveGameState *saveState
 ) {
     const float kTwoPi = 6.28318548f;
@@ -10354,7 +10352,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL IntegrateYawAndWrapFromYawVelocity(
 
 // Reimplements 0x4294d0: Player::RebuildSteerBasisFromMotionBasis
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RebuildSteerBasisFromMotionBasis(
+void __fastcall RebuildSteerBasisFromMotionBasis(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -10377,7 +10375,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RebuildSteerBasisFromMotionBasis(
 
 // Reimplements 0x42b8c0: Player::RebuildSteerBasisRawFromRef
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RebuildSteerBasisRawFromRef(
+void __fastcall RebuildSteerBasisRawFromRef(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -10397,7 +10395,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RebuildSteerBasisRawFromRef(
 
 // Reimplements 0x429240: Player::ApplyAmphibSpeedOscillation
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyAmphibSpeedOscillation(
+void __fastcall ApplyAmphibSpeedOscillation(
     zUtil_SaveGameState *saveState,
     zVec3 *inOutUpVector,
     int includeYawCoupling
@@ -10449,7 +10447,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyAmphibSpeedOscillation(
 
 // Reimplements 0x42b970: Player::RebuildMotionBasisFromSteerBasis
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RebuildMotionBasisFromSteerBasis(
+void __fastcall RebuildMotionBasisFromSteerBasis(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -10481,7 +10479,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RebuildMotionBasisFromSteerBasis(
 
 // Reimplements 0x429560: Player::RebuildSteerBasisFromMotionAxes
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RebuildSteerBasisFromMotionAxes(
+void __fastcall RebuildSteerBasisFromMotionAxes(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -10568,7 +10566,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RebuildSteerBasisFromMotionAxes(
 
 // Reimplements 0x42bab0: Player::SetAutoTurnTargetDirFromWorldPoint
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetAutoTurnTargetDirFromWorldPoint(
+void __fastcall SetAutoTurnTargetDirFromWorldPoint(
     zUtil_SaveGameState *saveState,
     const zVec3 *worldPoint
 ) {
@@ -10591,7 +10589,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetAutoTurnTargetDirFromWorldPoint(
 
 // Reimplements 0x41f010: Player::BuildMissionSaveData
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL BuildMissionSaveData(
+void __fastcall BuildMissionSaveData(
     PlayerMissionSaveData *outData
 ) {
     zUtil_SaveGameState *const localSaveState = g_LocalPlayerSaveState;
@@ -10663,7 +10661,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BuildMissionSaveData(
 
 // Reimplements 0x41f1d0: Player::ApplyMissionSaveData
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyMissionSaveData(
+void __fastcall ApplyMissionSaveData(
     PlayerMissionSaveData *saveData
 ) {
     if (saveData->size != sizeof(PlayerMissionSaveData) &&
@@ -10821,7 +10819,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyMissionSaveData(
 
 // Reimplements 0x41ecd0: Player::RecordNodeFlagsForRestore
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RecordNodeFlagsForRestore(
+void __fastcall RecordNodeFlagsForRestore(
     zClass_NodePartial *node
 ) {
     PlayerNodeFlagRestoreEntry value;
@@ -10869,7 +10867,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RecordNodeFlagsForRestore(
 
 // Reimplements 0x41efa0: Player::RestoreRecordedNodeFlags
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RestoreRecordedNodeFlags() {
+void RestoreRecordedNodeFlags() {
     PlayerNodeFlagRestoreEntry *entry = g_PlayerNodeFlagRestoreEntriesBegin;
     while (entry != g_PlayerNodeFlagRestoreEntriesEnd) {
         zClass_NodePartial *const node = entry->node;
@@ -10897,7 +10895,7 @@ RECOIL_NOINLINE void RECOIL_CDECL RestoreRecordedNodeFlags() {
 
 // Reimplements 0x41f640: Player::ZAR_ReadMissionSaveDataSection
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ZAR_ReadMissionSaveDataSection(
+void __fastcall ZAR_ReadMissionSaveDataSection(
     zZbdSectionCallbackCtx *,
     const char *,
     PlayerMissionSaveData *saveData,
@@ -10923,7 +10921,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ZAR_ReadMissionSaveDataSection(
 
 // Reimplements 0x41f5b0: Player::ZAR_RegisterSections
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL ZAR_RegisterSections() {
+void ZAR_RegisterSections() {
     g_Player_RuntimeInputFlags = 0;
     zUtil_ZAR::RegisterSectionHandler(
         "VehicleList",
@@ -10943,7 +10941,7 @@ RECOIL_NOINLINE void RECOIL_CDECL ZAR_RegisterSections() {
 
 // Reimplements 0x41f5f0: Player::ZAR_WriteMissionSaveDataSection
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ZAR_WriteMissionSaveDataSection(
+int __fastcall ZAR_WriteMissionSaveDataSection(
     zZbdSectionCallbackCtx *writer,
     void *
 ) {
@@ -10962,7 +10960,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ZAR_WriteMissionSaveDataSection(
 
 // Reimplements 0x41f850: Player::ZAR_ReadVehicleListSection
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ZAR_ReadVehicleListSection(
+void __fastcall ZAR_ReadVehicleListSection(
     zZbdSectionCallbackCtx *,
     const char *sectionToken,
     PlayerVehicleListSaveEntry *saveData,
@@ -11112,7 +11110,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ZAR_ReadVehicleListSection(
 
 // Reimplements 0x41f6a0: Player::ZAR_WriteVehicleListSection
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ZAR_WriteVehicleListSection(
+int __fastcall ZAR_WriteVehicleListSection(
     zZbdSectionCallbackCtx *writer,
     void *
 ) {
@@ -11163,7 +11161,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ZAR_WriteVehicleListSection(
 
 // Reimplements 0x43cdf0: Player::Mines_ZAR_ReadEntryOrReset
 // (D:\Proj\GameZRecoil\Player\player_weapon.c)
-RECOIL_NOINLINE void RECOIL_FASTCALL Mines_ZAR_ReadEntryOrReset(
+void __fastcall Mines_ZAR_ReadEntryOrReset(
     zZbdSectionCallbackCtx *,
     const char *,
     PlayerMineSaveEntry *mineData,
@@ -11209,7 +11207,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Mines_ZAR_ReadEntryOrReset(
 
 // Reimplements 0x43cc70: Player::WriteMinesZarSection
 // (D:\Proj\GameZRecoil\Player\player_weapon.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL WriteMinesZarSection(
+int __fastcall WriteMinesZarSection(
     zZbdSectionCallbackCtx *writer,
     void *userData
 ) {
@@ -11286,7 +11284,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL WriteMinesZarSection(
 
 // Reimplements 0x42aa50: Player::UpdateDebugOverlayHud
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateDebugOverlayHud(
+void __fastcall UpdateDebugOverlayHud(
     zUtil_SaveGameState *saveState,
     int unusedActiveMode2Count,
     int unusedTotalMode2Count
@@ -11395,7 +11393,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateDebugOverlayHud(
 
 // Reimplements 0x4231b0: Player::RefreshHudFromState
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RefreshHudFromState(
+void __fastcall RefreshHudFromState(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -11512,7 +11510,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RefreshHudFromState(
 
 // Reimplements 0x43b5d0: Player::ApplyStatusMeterChange
 // (D:\Proj\GameZRecoil\Player\player_status.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyStatusMeterChange(
+void __fastcall ApplyStatusMeterChange(
     zUtil_SaveGameState *saveState,
     int mode,
     float delta
@@ -11538,7 +11536,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyStatusMeterChange(
 
 // Reimplements 0x43b660: Player::UpdateStatusMeter
 // (D:\Proj\GameZRecoil\Player\player_status.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL UpdateStatusMeter(
+int __fastcall UpdateStatusMeter(
     zUtil_SaveGameState *saveState,
     int mode,
     float delta
@@ -11593,7 +11591,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL UpdateStatusMeter(
 }
 
 // Reimplements 0x438b60: Player::FreeAltWeaponTrailRuntimeStates (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL FreeAltWeaponTrailRuntimeStates(
+void __fastcall FreeAltWeaponTrailRuntimeStates(
     zUtil_SaveGameState *saveState
 ) {
     PlayerAltWeaponBank *bank = &saveState->playerState->altWeaponBanks[1];
@@ -11612,7 +11610,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FreeAltWeaponTrailRuntimeStates(
 
 // Reimplements 0x438ba0: Player::LoadWeaponBanksAndSelectDefaults
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL LoadWeaponBanksAndSelectDefaults(
+void __fastcall LoadWeaponBanksAndSelectDefaults(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -11824,7 +11822,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL LoadWeaponBanksAndSelectDefaults(
 
 // Reimplements 0x43ca90: Player::CheckMissionWeaponAvailability
 // (D:\Proj\GameZRecoil\Player\player_weapon.c)
-RECOIL_NOINLINE void RECOIL_FASTCALL CheckMissionWeaponAvailability(
+void __fastcall CheckMissionWeaponAvailability(
     zUtil_SaveGameState *saveState,
     int missionThreshold,
     int packedWeaponSlotId,
@@ -11870,7 +11868,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL CheckMissionWeaponAvailability(
 
 // Reimplements 0x426350: Player::FloatSign
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL FloatSign(
+int __stdcall FloatSign(
     float value
 ) {
     if (value == 0.0f) {
@@ -11886,7 +11884,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL FloatSign(
 
 // Reimplements 0x429ed0: Player::StartSlipSfx
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL StartSlipSfx(
+void __fastcall StartSlipSfx(
     zUtil_SaveGameState *saveState
 ) {
     saveState->playerState->slipSfxActive = 1;
@@ -11898,7 +11896,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL StartSlipSfx(
 
 // Reimplements 0x429ef0: Player::StopSlipSfx
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL StopSlipSfx(
+void __fastcall StopSlipSfx(
     zUtil_SaveGameState *saveState
 ) {
     saveState->playerState->slipSfxActive = 0;
@@ -11907,7 +11905,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL StopSlipSfx(
 
 // Reimplements 0x429b40: Player::UpdateBankAndTurnDynamics
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE float RECOIL_FASTCALL UpdateBankAndTurnDynamics(
+float __fastcall UpdateBankAndTurnDynamics(
     zUtil_SaveGameState *saveState
 ) {
     if (g_Player_DeltaTime < 0.0000001) {
@@ -11955,7 +11953,7 @@ RECOIL_NOINLINE float RECOIL_FASTCALL UpdateBankAndTurnDynamics(
 
 // Reimplements 0x424bf0: Player::Vec3_FastNormalize
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL Vec3_FastNormalize(
+int __fastcall Vec3_FastNormalize(
     zVec3 *vec
 ) {
     const float lengthSq = vec->x * vec->x + vec->y * vec->y + vec->z * vec->z;
@@ -11987,7 +11985,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Vec3_FastNormalize(
 
 // Reimplements 0x424c90: Player::ConstrainToUnitDistanceFrom
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ConstrainToUnitDistanceFrom(
+void __fastcall ConstrainToUnitDistanceFrom(
     zVec3 *pos,
     const zVec3 *center
 ) {
@@ -12003,7 +12001,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ConstrainToUnitDistanceFrom(
 
 // Reimplements 0x429d30: Player::ComputeTurnSlipDelta
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ComputeTurnSlipDelta(
+void __fastcall ComputeTurnSlipDelta(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -12050,7 +12048,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ComputeTurnSlipDelta(
 
 // Reimplements 0x4289f0: Player::UpdateSubModeWaterProbeState
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateSubModeWaterProbeState(
+void __fastcall UpdateSubModeWaterProbeState(
     zUtil_SaveGameState *saveState
 ) {
     PlayerModalState *const primaryModalState = saveState->primaryModalState;
@@ -12156,7 +12154,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateSubModeWaterProbeState(
 
 // Reimplements 0x428c20: Player::UpdateSubVerticalDamping
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateSubVerticalDamping(
+void __fastcall UpdateSubVerticalDamping(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -12200,7 +12198,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateSubVerticalDamping(
 
 // Reimplements 0x429870: Player::UpdateYawVelocityFromSteerInput
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateYawVelocityFromSteerInput(
+void __fastcall UpdateYawVelocityFromSteerInput(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -12300,7 +12298,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateYawVelocityFromSteerInput(
 
 // Reimplements 0x428520: Player::UpdateMasterTypeSub
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeSub(
+void __fastcall UpdateMasterTypeSub(
     zUtil_SaveGameState *saveState
 ) {
     PlayerModalState *const primaryModalState = saveState->primaryModalState;
@@ -12433,7 +12431,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeSub(
 
 // Reimplements 0x4266b0: Player::TickMasterTypeAndForceFeedback
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL TickMasterTypeAndForceFeedback(
+void __fastcall TickMasterTypeAndForceFeedback(
     zUtil_SaveGameState *saveState
 ) {
     if (saveState == 0) {
@@ -12483,7 +12481,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TickMasterTypeAndForceFeedback(
 
 // Reimplements 0x426770: Player::UpdateMasterTypeTrack
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeTrack(
+void __fastcall UpdateMasterTypeTrack(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -12762,7 +12760,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeTrack(
 
 // Reimplements 0x43c9c0: Player::FindAltGunFireControllerForWeaponId
 // (D:\Proj\GameZRecoil\Player\player_weapon.c)
-RECOIL_NOINLINE PlayerGunFireController *RECOIL_FASTCALL FindAltGunFireControllerForWeaponId(
+PlayerGunFireController *__fastcall FindAltGunFireControllerForWeaponId(
     zUtil_SaveGameState *saveState,
     int weaponId
 ) {
@@ -12785,7 +12783,7 @@ RECOIL_NOINLINE PlayerGunFireController *RECOIL_FASTCALL FindAltGunFireControlle
 
 // Reimplements 0x43c630: Player::IsAltWeaponAllowedInCurrentMasterMode
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL IsAltWeaponAllowedInCurrentMasterMode(
+int __fastcall IsAltWeaponAllowedInCurrentMasterMode(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *entry
 ) {
@@ -12814,7 +12812,7 @@ static int IsUsableAltWeaponController(
 
 // Reimplements 0x43c660: Player::AutoSwitchToNextUsableAltWeapon
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL AutoSwitchToNextUsableAltWeapon(
+void __fastcall AutoSwitchToNextUsableAltWeapon(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -12862,7 +12860,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL AutoSwitchToNextUsableAltWeapon(
 
 // Reimplements 0x439600: Player::ApplyPrimaryWeaponSwitch
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyPrimaryWeaponSwitch(
+void __fastcall ApplyPrimaryWeaponSwitch(
     zUtil_SaveGameState *saveState,
     PlayerGunFireController *previousController,
     PlayerGunFireController *newController
@@ -12903,7 +12901,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyPrimaryWeaponSwitch(
 
 // Reimplements 0x439540: Player::ApplyAltWeaponSwitch
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyAltWeaponSwitch(
+void __fastcall ApplyAltWeaponSwitch(
     zUtil_SaveGameState *saveState,
     PlayerGunFireController *previousController,
     PlayerGunFireController *newController
@@ -12945,7 +12943,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyAltWeaponSwitch(
 
 // Reimplements 0x43c800: Player::ResetAltGunDoorAnimationState
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ResetAltGunDoorAnimationState(
+void __fastcall ResetAltGunDoorAnimationState(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -13000,7 +12998,7 @@ void ResetAltGunAttachNode(
 
 // Reimplements 0x43c850: Player::ResetAltGunRuntimeState
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ResetAltGunRuntimeState(
+void __fastcall ResetAltGunRuntimeState(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -13040,7 +13038,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ResetAltGunRuntimeState(
 
 // Reimplements 0x43c950: Player::RemoveAllDeployedMines
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RemoveAllDeployedMines(
+void __fastcall RemoveAllDeployedMines(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -13085,7 +13083,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RemoveAllDeployedMines(
 
 // Reimplements 0x439260: Player::HandleAltWeaponBankSelectInput
 // (D:\Proj\Battlesport\zWeapon.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL HandleAltWeaponBankSelectInput(
+void __fastcall HandleAltWeaponBankSelectInput(
     int inputCode
 ) {
     zUtil_SaveGameState *const saveState = g_LocalPlayerSaveState;
@@ -13194,7 +13192,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HandleAltWeaponBankSelectInput(
 
 // Reimplements 0x439460: Player::HandlePrimaryWeaponVariantToggleInput
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL HandlePrimaryWeaponVariantToggleInput(
+void __fastcall HandlePrimaryWeaponVariantToggleInput(
     int keyCode
 ) {
     (void)keyCode;
@@ -13261,7 +13259,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HandlePrimaryWeaponVariantToggleInput(
 
 // Reimplements 0x439990: Player::ResetDamageStateAndTimedHitStatus
 // (D:\Proj\GameZRecoil\zGame\Player\Player_Damage.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ResetDamageStateAndTimedHitStatus(
+void __fastcall ResetDamageStateAndTimedHitStatus(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -13274,7 +13272,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ResetDamageStateAndTimedHitStatus(
 
 // Reimplements 0x4399c0: Player::ResetDamageVisualsAndTimedStatus
 // (D:\Proj\GameZRecoil\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ResetDamageVisualsAndTimedStatus(
+void __fastcall ResetDamageVisualsAndTimedStatus(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -13351,7 +13349,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ResetDamageVisualsAndTimedStatus(
 
 // Reimplements 0x401e50: Player::TestScenePathBetweenCameraTargetAndPoint
 // (GameZRecoil/Player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL TestScenePathBetweenCameraTargetAndPoint(
+int __fastcall TestScenePathBetweenCameraTargetAndPoint(
     zClass_NodePartial *node,
     const zVec3 *point,
     int directionMode
@@ -13416,7 +13414,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL TestScenePathBetweenCameraTargetAndPoint(
 
 // Reimplements 0x401d50: Player::HasLineOfSightFromLocalPlayerFxOffset
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HasLineOfSightFromLocalPlayerFxOffset(
+int __fastcall HasLineOfSightFromLocalPlayerFxOffset(
     zClass_NodePartial *node,
     const zVec3 *point,
     int directionMode
@@ -13473,7 +13471,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HasLineOfSightFromLocalPlayerFxOffset(
 
 // Reimplements 0x43b500: Player::ApplyAimPitchToDirection
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyAimPitchToDirection(
+void __fastcall ApplyAimPitchToDirection(
     zVec3 *direction,
     float pitchY
 ) {
@@ -13501,7 +13499,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyAimPitchToDirection(
 
 // Reimplements 0x405650: Player::UpdateThirdPersonCamera
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateThirdPersonCamera(
+void __fastcall UpdateThirdPersonCamera(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -13564,7 +13562,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateThirdPersonCamera(
 
 // Reimplements 0x405c90: Player::ApplyCameraState
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyCameraState(
+void __fastcall ApplyCameraState(
     int newState
 ) {
     zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
@@ -13698,7 +13696,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyCameraState(
 
 // Reimplements 0x4290f0: Player::SelectProbeSampleHeightFromCandidates
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE float RECOIL_FASTCALL SelectProbeSampleHeightFromCandidates(
+float __fastcall SelectProbeSampleHeightFromCandidates(
     PlayerProbeSampleCandidateBuffer *candidateBuffer,
     int *outBestCandidateIndex,
     float sampleHeight,
@@ -13764,7 +13762,7 @@ RECOIL_NOINLINE float RECOIL_FASTCALL SelectProbeSampleHeightFromCandidates(
 
 // Reimplements 0x428d60: Player::ProbeModalSampleHeights
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ProbeModalSampleHeights(
+void __fastcall ProbeModalSampleHeights(
     zUtil_SaveGameState *saveState,
     float *outSampleHeightByPoint,
     float *outBestHeight,
@@ -13916,7 +13914,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ProbeModalSampleHeights(
 
 // Reimplements 0x42cf90: Player::BuildEnvironmentProbeResult
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL BuildEnvironmentProbeResult(
+void __fastcall BuildEnvironmentProbeResult(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *outProbe
 ) {
@@ -14051,7 +14049,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BuildEnvironmentProbeResult(
 
 // Reimplements 0x42d5c0: Player::ApplyEnvironmentProbeResult
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ApplyEnvironmentProbeResult(
+int __fastcall ApplyEnvironmentProbeResult(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *envProbe
 ) {
@@ -14235,7 +14233,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ApplyEnvironmentProbeResult(
 
 // Reimplements 0x42cde0: Player::SolveHeightOnSurface
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE float RECOIL_FASTCALL SolveHeightOnSurface(
+float __fastcall SolveHeightOnSurface(
     zUtil_SaveGameState *saveState,
     float supportPlaneDot
 ) {
@@ -14252,7 +14250,7 @@ RECOIL_NOINLINE float RECOIL_FASTCALL SolveHeightOnSurface(
 
 // Reimplements 0x42cb50: Player::ResetTerrainContactImpulsesAndPlayImpactSfx
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ResetTerrainContactImpulsesAndPlayImpactSfx(
+void __fastcall ResetTerrainContactImpulsesAndPlayImpactSfx(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -14277,7 +14275,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ResetTerrainContactImpulsesAndPlayImpactSfx
 
 // Reimplements 0x42c8d0: Player::ApplyTerrainTilt
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyTerrainTilt(
+void __fastcall ApplyTerrainTilt(
     zUtil_SaveGameState *saveState,
     const zVec3 *tiltVector,
     float tiltScale
@@ -14325,7 +14323,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyTerrainTilt(
 
 // Reimplements 0x42ce50: Player::ComputeTriangleNormal
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ComputeTriangleNormal(
+void __fastcall ComputeTriangleNormal(
     zUtil_SaveGameState *saveState,
     const zVec3 *pointA,
     const zVec3 *pointB,
@@ -14358,7 +14356,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ComputeTriangleNormal(
 
 // Reimplements 0x42c520: Player::ComputeSurfaceFrom1Probe
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ComputeSurfaceFrom1Probe(
+void __fastcall ComputeSurfaceFrom1Probe(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
 ) {
@@ -14397,7 +14395,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ComputeSurfaceFrom1Probe(
 
 // Reimplements 0x42c640: Player::ComputeSurfaceFrom2Probes
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ComputeSurfaceFrom2Probes(
+void __fastcall ComputeSurfaceFrom2Probes(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
 ) {
@@ -14472,7 +14470,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ComputeSurfaceFrom2Probes(
 
 // Reimplements 0x42cbd0: Player::CheckProbeSampleMaskOverlap
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL CheckProbeSampleMaskOverlap(
+int __fastcall CheckProbeSampleMaskOverlap(
     int sampleIndexA,
     int sampleIndexB,
     int sampleIndexC
@@ -14484,7 +14482,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL CheckProbeSampleMaskOverlap(
 
 // Reimplements 0x42cf60: Player::RebuildAboveGroundIndices
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RebuildAboveGroundIndices() {
+void __fastcall RebuildAboveGroundIndices() {
     int *aboveGroundIndexCursor = g_PlayerEnvProbe_AboveGroundIndices;
     for (int sampleIndex = 0; sampleIndex < g_PlayerEnvProbeSampleCount; ++sampleIndex) {
         if (g_PlayerEnvProbe_AboveGroundFlags[sampleIndex] != 0) {
@@ -14496,7 +14494,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RebuildAboveGroundIndices() {
 
 // Reimplements 0x42cc00: Player::SelectBestProbesByDotProduct
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SelectBestProbesByDotProduct(
+void __fastcall SelectBestProbesByDotProduct(
     const zVec3 *referenceNormal,
     PlayerEnvProbeResult *probeResult
 ) {
@@ -14575,7 +14573,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SelectBestProbesByDotProduct(
 
 // Reimplements 0x42ca40: Player::ComputeSurfaceFrom3Probes
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ComputeSurfaceFrom3Probes(
+void __fastcall ComputeSurfaceFrom3Probes(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
 ) {
@@ -14613,7 +14611,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ComputeSurfaceFrom3Probes(
 
 // Reimplements 0x42bf90: Player::UpdatePostMoveEnvironment
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdatePostMoveEnvironment(
+void __fastcall UpdatePostMoveEnvironment(
     zUtil_SaveGameState *saveState,
     int probeSampleCount
 ) {
@@ -14683,7 +14681,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdatePostMoveEnvironment(
 
 // Reimplements 0x42c0d0: Player::ProcessEnvProbeResults
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ProcessEnvProbeResults(
+void __fastcall ProcessEnvProbeResults(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
 ) {
@@ -14776,7 +14774,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ProcessEnvProbeResults(
 
 // Reimplements 0x42da40: Player::RebuildOrientationFromNormal
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RebuildOrientationFromNormal(
+void __fastcall RebuildOrientationFromNormal(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -14812,7 +14810,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RebuildOrientationFromNormal(
 
 // Reimplements 0x42d320: Player::FindThirdProbeAndComputeNormal
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL FindThirdProbeAndComputeNormal(
+void __fastcall FindThirdProbeAndComputeNormal(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
 ) {
@@ -14882,7 +14880,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FindThirdProbeAndComputeNormal(
 
 // Reimplements 0x42c420: Player::AccumulateSlopeForces
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL AccumulateSlopeForces(
+void __fastcall AccumulateSlopeForces(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
 ) {
@@ -14908,7 +14906,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL AccumulateSlopeForces(
 
 // Reimplements 0x42c2e0: Player::UpdateVerticalVelocityAndTransform
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateVerticalVelocityAndTransform(
+void __fastcall UpdateVerticalVelocityAndTransform(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
 ) {
@@ -14954,7 +14952,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateVerticalVelocityAndTransform(
 
 // Reimplements 0x428350: Player::UpdateMasterTypeBasicOrTrack_FromModalProbe
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeBasicOrTrack_FromModalProbe(
+void __fastcall UpdateMasterTypeBasicOrTrack_FromModalProbe(
     zUtil_SaveGameState *saveState
 ) {
     PlayerModalState *const primaryModalState = saveState->primaryModalState;
@@ -14996,7 +14994,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeBasicOrTrack_FromModalProbe
 
 // Reimplements 0x427440: Player::UpdateMasterTypeHover_FromModalProbe
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeHover_FromModalProbe(
+void __fastcall UpdateMasterTypeHover_FromModalProbe(
     zUtil_SaveGameState *saveState
 ) {
     PlayerModalState *const primaryModalState = saveState->primaryModalState;
@@ -15170,7 +15168,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeHover_FromModalProbe(
 
 // Reimplements 0x427ec0: Player::UpdateMasterTypeAmphib_FromModalProbe
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeAmphib_FromModalProbe(
+void __fastcall UpdateMasterTypeAmphib_FromModalProbe(
     zUtil_SaveGameState *saveState
 ) {
     PlayerModalState *const primaryModalState = saveState->primaryModalState;
@@ -15266,7 +15264,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeAmphib_FromModalProbe(
 
 // Reimplements 0x4279f0: Player::UpdateMasterTypeAmphib
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeAmphib(
+void __fastcall UpdateMasterTypeAmphib(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -15416,7 +15414,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeAmphib(
 
 // Reimplements 0x427140: Player::UpdateMasterTypeHover
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeHover(
+void __fastcall UpdateMasterTypeHover(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -15513,7 +15511,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeHover(
 
 // Reimplements 0x428120: Player::UpdateMasterTypeBasic
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeBasic(
+void __fastcall UpdateMasterTypeBasic(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -15594,7 +15592,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMasterTypeBasic(
 
 // Reimplements 0x43b1b0: Player::BuildGunFireTransform
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL BuildGunFireTransform(
+void __fastcall BuildGunFireTransform(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -15657,7 +15655,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BuildGunFireTransform(
 
 // Reimplements 0x43b3e0: Player::UpdateAltGunAimBasisOrigin
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAltGunAimBasisOrigin(
+void __fastcall UpdateAltGunAimBasisOrigin(
     zUtil_SaveGameState *saveState,
     zVec3 *outBasisOrigin
 ) {
@@ -15698,7 +15696,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAltGunAimBasisOrigin(
 
 // Reimplements 0x43a4f0: Player::UpdateGunAndTurretAimNodes
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateGunAndTurretAimNodes(
+void __fastcall UpdateGunAndTurretAimNodes(
     const zVec3 *aimDirection,
     zClass_NodePartial *gunNode,
     zClass_NodePartial *turretNode
@@ -15752,7 +15750,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateGunAndTurretAimNodes(
 
 // Reimplements 0x43a600: Player::UpdateAltGunAimDirection
 // (src/Battlesport/player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAltGunAimDirection(
+void __fastcall UpdateAltGunAimDirection(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -15852,7 +15850,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateAltGunAimDirection(
 }
 
 // Reimplements 0x43afd0: Player::ComposeAimBasisWorldMatrix (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ComposeAimBasisWorldMatrix(
+void __fastcall ComposeAimBasisWorldMatrix(
     zUtil_SaveGameState *saveState,
     zMat4x3 *outMatrix34
 ) {
@@ -15905,7 +15903,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ComposeAimBasisWorldMatrix(
 
 // Reimplements 0x43a900: Player::DecayAndApplyAltFireSlotOffsetToNode
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL DecayAndApplyAltFireSlotOffsetToNode(
+void __fastcall DecayAndApplyAltFireSlotOffsetToNode(
     PlayerGunFireSlot *slot,
     zClass_NodePartial *slotNode,
     float slotAimY,
@@ -15930,7 +15928,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DecayAndApplyAltFireSlotOffsetToNode(
 
 // Reimplements 0x43a980: Player::ApplyGunFireSlotOffsetToNode
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyGunFireSlotOffsetToNode(
+void __fastcall ApplyGunFireSlotOffsetToNode(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -15968,7 +15966,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyGunFireSlotOffsetToNode(
 }
 
 // Reimplements 0x43aa30: Player::SelectAltGunFirePointAndSlot (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SelectAltGunFirePointAndSlot(
+void __fastcall SelectAltGunFirePointAndSlot(
     zUtil_SaveGameState *saveState,
     PlayerGunFireSlot **outActiveFireSlotPtr
 ) {
@@ -16036,7 +16034,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SelectAltGunFirePointAndSlot(
 
 // Reimplements 0x43acf0: Player::SelectPrimaryGunFirePointAndSlot
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SelectPrimaryGunFirePointAndSlot(
+void __fastcall SelectPrimaryGunFirePointAndSlot(
     zUtil_SaveGameState *saveState,
     PlayerGunFireSlot **outActiveFireSlotPtr
 ) {
@@ -16113,7 +16111,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SelectPrimaryGunFirePointAndSlot(
 
 // Reimplements 0x43c2d0: Player::UpdateContinuousAltGunFireController
 // (D:\Proj\GameZRecoil\zWeapon.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateContinuousAltGunFireController(
+void __fastcall UpdateContinuousAltGunFireController(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -16140,7 +16138,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateContinuousAltGunFireController(
 
 // Reimplements 0x43c330: Player::EnsureGunAuxEffectActive
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL EnsureGunAuxEffectActive(
+int __fastcall EnsureGunAuxEffectActive(
     zUtil_SaveGameState *saveState,
     PlayerGunFireController *gunController,
     zVec3 *effectPos
@@ -16187,7 +16185,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL EnsureGunAuxEffectActive(
 
 // Reimplements 0x43c430: Player::AltGunLaunchProjectile
 // (D:\Proj\GameZRecoil\zWeapon.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL AltGunLaunchProjectile(
+int __fastcall AltGunLaunchProjectile(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -16255,7 +16253,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AltGunLaunchProjectile(
 
 // Reimplements 0x43c550: Player::AltGunFireSimpleProjectile
 // (D:\Proj\GameZRecoil\zWeapon.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL AltGunFireSimpleProjectile(
+int __fastcall AltGunFireSimpleProjectile(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -16292,7 +16290,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AltGunFireSimpleProjectile(
 
 // Reimplements 0x43c190: Player::ProcessAltGunDispatchRequest
 // (D:\Proj\GameZRecoil\zWeapon.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ProcessAltGunDispatchRequest(
+void __fastcall ProcessAltGunDispatchRequest(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -16367,7 +16365,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ProcessAltGunDispatchRequest(
 
 // Reimplements 0x43a400: Player::ProcessPrimaryGunDispatchTick
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ProcessPrimaryGunDispatchTick(
+void __fastcall ProcessPrimaryGunDispatchTick(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -16428,7 +16426,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ProcessPrimaryGunDispatchTick(
 
 // Reimplements 0x439ba0: Player::TickAltGunRuntimeState
 // (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL TickAltGunRuntimeState(
+void __fastcall TickAltGunRuntimeState(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -16537,7 +16535,7 @@ static void UnlinkSaveState(
 }
 
 // Reimplements 0x41fd20: Player::DestroySaveGameState (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL DestroySaveGameState(
+void __fastcall DestroySaveGameState(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -16590,7 +16588,7 @@ static void DeleteWeaponSpecs(
 }
 
 // Reimplements 0x41fb80: Player::ShutdownMissionRuntime (D:\Proj\Battlesport\player.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL ShutdownMissionRuntime() {
+void ShutdownMissionRuntime() {
     while (g_PlayerSaveStateListHead != 0) {
         DestroySaveGameState(g_PlayerSaveStateListHead);
     }

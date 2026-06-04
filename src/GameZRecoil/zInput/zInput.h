@@ -7,7 +7,7 @@
 
 #include "recoil/recoil_callconv.h"
 
-typedef void(RECOIL_CDECL *zInputCommandCallbackFn)();
+typedef void(*zInputCommandCallbackFn)();
 
 struct zVec3;
 
@@ -22,40 +22,40 @@ struct zInput_BindMapContext {
     int m_joystickToCommand[0x10];
     int m_mouseToCommand[4];
 
-    RECOIL_NOINLINE zInput_BindMapContext *RECOIL_THISCALL InitFromTemplate(
+    zInput_BindMapContext * InitFromTemplate(
         const zInput_BindMapContext *tmpl
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL FreeAllBuffers();
-    RECOIL_NOINLINE void RECOIL_THISCALL RebuildLookupIndices();
-    RECOIL_NOINLINE void RECOIL_THISCALL InitCommandMap(int commandCount);
-    RECOIL_NOINLINE void RECOIL_THISCALL FreeNonOwnedBuffers();
-    RECOIL_NOINLINE void RECOIL_THISCALL ResetAllBindings();
-    RECOIL_NOINLINE int RECOIL_THISCALL GetPrimaryKeyboardKey(int commandIndex);
-    RECOIL_NOINLINE int RECOIL_THISCALL GetSecondaryKeyboardKey(int commandIndex);
-    RECOIL_NOINLINE int RECOIL_THISCALL GetJoystickButtonSlot(int commandIndex);
-    RECOIL_NOINLINE int RECOIL_THISCALL GetMouseButtonSlot(int commandIndex);
-    RECOIL_NOINLINE int RECOIL_THISCALL GetCommandByPrimaryKey(int keyboardKey);
-    RECOIL_NOINLINE int RECOIL_THISCALL GetCommandBySecondaryKey(int keyboardKey);
-    RECOIL_NOINLINE int RECOIL_THISCALL GetCommandByAnyKeyboardKey(int keyboardKey);
-    RECOIL_NOINLINE int RECOIL_THISCALL GetCommandByJoystickSlot(int joystickSlot);
-    RECOIL_NOINLINE int RECOIL_THISCALL GetCommandByMouseSlot(int mouseSlot);
-    RECOIL_NOINLINE void RECOIL_THISCALL SetPrimaryKeyBinding(
+    void FreeAllBuffers();
+    void RebuildLookupIndices();
+    void InitCommandMap(int commandCount);
+    void FreeNonOwnedBuffers();
+    void ResetAllBindings();
+    int GetPrimaryKeyboardKey(int commandIndex);
+    int GetSecondaryKeyboardKey(int commandIndex);
+    int GetJoystickButtonSlot(int commandIndex);
+    int GetMouseButtonSlot(int commandIndex);
+    int GetCommandByPrimaryKey(int keyboardKey);
+    int GetCommandBySecondaryKey(int keyboardKey);
+    int GetCommandByAnyKeyboardKey(int keyboardKey);
+    int GetCommandByJoystickSlot(int joystickSlot);
+    int GetCommandByMouseSlot(int mouseSlot);
+    void SetPrimaryKeyBinding(
         int keyCode,
         int commandId
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL SetSecondaryKeyBinding(
+    void SetSecondaryKeyBinding(
         int keyCode,
         int commandId
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL SetJoystickBinding(
+    void SetJoystickBinding(
         int joystickSlot,
         int commandId
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL SetMouseBinding(
+    void SetMouseBinding(
         int mouseSlot,
         int commandId
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL SetBindingRecord(
+    void SetBindingRecord(
         int commandId,
         const char *labelSrc,
         int primaryKey,
@@ -63,14 +63,14 @@ struct zInput_BindMapContext {
         int joystickSlot,
         int mouseSlot
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL DispatchMouseButtonCallbacks();
-    RECOIL_NOINLINE void RECOIL_THISCALL DispatchJoystickButtonCallbacks();
-    RECOIL_NOINLINE int RECOIL_THISCALL SetCommandCallback(
+    void DispatchMouseButtonCallbacks();
+    void DispatchJoystickButtonCallbacks();
+    int SetCommandCallback(
         int commandId,
         zInputCommandCallbackFn callback
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL ReadCommandInputState(int commandIndex);
-    RECOIL_NOINLINE char *RECOIL_THISCALL CopyCommandLabel(
+    int ReadCommandInputState(int commandIndex);
+    char * CopyCommandLabel(
         int commandId,
         char *destBuf,
         int maxBytes
@@ -187,7 +187,7 @@ struct zInput_BindGroupInfoVec {
     zInput_BindGroupInfo **end;
     zInput_BindGroupInfo **capacity;
 
-    RECOIL_NOINLINE int RECOIL_THISCALL Count();
+    int Count();
 };
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -211,17 +211,17 @@ struct zInput_DiEffectVtable {
     void *unknown_0c;
     void *unknown_10;
     void *unknown_14;
-    int(RECOIL_STDCALL *SetParameters_18)(
+    int(__stdcall *SetParameters_18)(
         zInput_DiEffect *self,
         const void *effect,
         unsigned int flags
     );
-    int(RECOIL_STDCALL *Start_1c)(
+    int(__stdcall *Start_1c)(
         zInput_DiEffect *self,
         unsigned int iterations,
         unsigned int flags
     );
-    int(RECOIL_STDCALL *Stop_20)(zInput_DiEffect *self);
+    int(__stdcall *Stop_20)(zInput_DiEffect *self);
 };
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -255,11 +255,11 @@ struct zInput_FFEffectSet {
     zInput_DiEffect *SteerForce;
     zInput_DiEffect *PitchForce;
 
-    RECOIL_NOINLINE void RECOIL_THISCALL PlayCollisionImpactEffect(
+    void PlayCollisionImpactEffect(
         const zVec3 *impactWorldPosXZ,
         float gain
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL PlayDamageHitEffect(
+    void PlayDamageHitEffect(
         const zVec3 *damageSourceWorldPosXZ,
         float gain
     );
@@ -369,48 +369,48 @@ struct DIDeviceInstance;
 struct DIDeviceObjectData;
 
 struct DIDeviceVtable {
-    int(RECOIL_STDCALL *QueryInterface_00)(
+    int(__stdcall *QueryInterface_00)(
         DIDevice *self,
         const GUID *iid,
         DIDevice **outDevice
     );
     void *AddRef_04;
-    int(RECOIL_STDCALL *Release_08)(DIDevice *self);
-    int(RECOIL_STDCALL *GetCapabilities_0c)(
+    int(__stdcall *Release_08)(DIDevice *self);
+    int(__stdcall *GetCapabilities_0c)(
         DIDevice *self,
         void *capabilities
     );
     void *EnumObjects_10;
-    int(RECOIL_STDCALL *GetProperty_14)(
+    int(__stdcall *GetProperty_14)(
         DIDevice *self,
         unsigned int property,
         void *propHeader
     );
-    int(RECOIL_STDCALL *SetProperty_18)(
+    int(__stdcall *SetProperty_18)(
         DIDevice *self,
         unsigned int property,
         void *propHeader
     );
-    int(RECOIL_STDCALL *Acquire_1c)(DIDevice *self);
-    int(RECOIL_STDCALL *Unacquire_20)(DIDevice *self);
-    int(RECOIL_STDCALL *GetDeviceState_24)(
+    int(__stdcall *Acquire_1c)(DIDevice *self);
+    int(__stdcall *Unacquire_20)(DIDevice *self);
+    int(__stdcall *GetDeviceState_24)(
         DIDevice *self,
         unsigned int cbData,
         void *outState
     );
-    int(RECOIL_STDCALL *GetDeviceData_28)(
+    int(__stdcall *GetDeviceData_28)(
         DIDevice *self,
         unsigned int cbObjectData,
         DIDeviceObjectData *rgdod,
         unsigned int *pdwInOut,
         unsigned int flags
     );
-    int(RECOIL_STDCALL *SetDataFormat_2c)(
+    int(__stdcall *SetDataFormat_2c)(
         DIDevice *self,
         const void *dataFormat
     );
     void *SetEventNotification_30;
-    int(RECOIL_STDCALL *SetCooperativeLevel_34)(
+    int(__stdcall *SetCooperativeLevel_34)(
         DIDevice *self,
         HWND hwnd,
         unsigned int flags
@@ -419,7 +419,7 @@ struct DIDeviceVtable {
     void *unknown_3c;
     void *unknown_40;
     void *unknown_44;
-    int(RECOIL_STDCALL *CreateEffect_48)(
+    int(__stdcall *CreateEffect_48)(
         DIDevice *self,
         const GUID *rguid,
         const void *effect,
@@ -432,7 +432,7 @@ struct DIDeviceVtable {
     void *unknown_58;
     void *unknown_5c;
     void *unknown_60;
-    int(RECOIL_STDCALL *Poll_64)(DIDevice *self);
+    int(__stdcall *Poll_64)(DIDevice *self);
 };
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -457,7 +457,7 @@ struct DIDevice {
     const DIDeviceVtable *vtbl_00;
 };
 
-typedef int(RECOIL_STDCALL *DIEnumDevicesCallback)(
+typedef int(__stdcall *DIEnumDevicesCallback)(
     const DIDeviceInstance *instance,
     void *ref
 );
@@ -465,14 +465,14 @@ typedef int(RECOIL_STDCALL *DIEnumDevicesCallback)(
 struct DIDirectInputVtable {
     void *QueryInterface_00;
     void *AddRef_04;
-    int(RECOIL_STDCALL *Release_08)(DIDirectInput *self);
-    int(RECOIL_STDCALL *CreateDevice_0c)(
+    int(__stdcall *Release_08)(DIDirectInput *self);
+    int(__stdcall *CreateDevice_0c)(
         DIDirectInput *self,
         const GUID *guid,
         DIDevice **outDevice,
         void *outer
     );
-    int(RECOIL_STDCALL *EnumDevices_10)(
+    int(__stdcall *EnumDevices_10)(
         DIDirectInput *self,
         unsigned int deviceType,
         DIEnumDevicesCallback callback,
@@ -661,135 +661,135 @@ struct MouseStateSnapshot {
     int button3Transition;
 };
 
-void RECOIL_CDECL Mouse_UpdateAcquireState();
-int RECOIL_CDECL Mouse_ShutdownDevice();
-void RECOIL_CDECL Mouse_ApplyClientCursorPosToOS();
-void RECOIL_CDECL Mouse_UpdateClientRectAndCenter();
-void RECOIL_CDECL Mouse_RecenterCursor();
-void RECOIL_CDECL Mouse_RecenterCursorX();
-void RECOIL_STDCALL Mouse_SetNormalizedCursorPos(
+void Mouse_UpdateAcquireState();
+int Mouse_ShutdownDevice();
+void Mouse_ApplyClientCursorPosToOS();
+void Mouse_UpdateClientRectAndCenter();
+void Mouse_RecenterCursor();
+void Mouse_RecenterCursorX();
+void __stdcall Mouse_SetNormalizedCursorPos(
     float normX,
     float normY
 );
-int RECOIL_CDECL Mouse_IsInitialized();
-int RECOIL_CDECL Mouse_InitDevice();
-void RECOIL_FASTCALL Mouse_PollAndStoreState(int dispatchCallbacks);
-int RECOIL_FASTCALL Mouse_PollState(int dispatchCallbacks);
-int RECOIL_CDECL Mouse_AddRef();
-int RECOIL_FASTCALL Mouse_GetButtonTransitionState(int buttonNumber);
-int RECOIL_FASTCALL Mouse_WaitForButtonPress(int pollUntilFound);
-MouseStateSnapshot *RECOIL_CDECL Mouse_GetStateSnapshotPtr();
-int RECOIL_FASTCALL Mouse_GetStateSnapshot(MouseStateSnapshot *outState);
-int RECOIL_CDECL Keyboard_ShutdownDevice();
-int RECOIL_CDECL Joystick_ShutdownDevice();
-int RECOIL_CDECL Shutdown();
-void RECOIL_CDECL Mouse_ApplyAccumulatedDelta();
-void RECOIL_CDECL Mouse_ResetTransitionState();
-int RECOIL_CDECL Mouse_IsUnsuspended();
-int RECOIL_CDECL Joystick_IsUnsuspended();
-int RECOIL_CDECL Keyboard_IsUnsuspended();
-void RECOIL_CDECL Mouse_Suspend();
-void RECOIL_CDECL Joystick_Suspend();
-void RECOIL_CDECL Keyboard_Suspend();
-void RECOIL_CDECL Mouse_ResumeFromSuspend();
-void RECOIL_CDECL Keyboard_ResetTransitionState();
-void RECOIL_CDECL Keyboard_ResumeFromSuspend();
-void RECOIL_CDECL Keyboard_ClearKeyCallbackTable();
-void RECOIL_FASTCALL Keyboard_PollState(int dispatchCallbacks);
-int RECOIL_FASTCALL Keyboard_WaitForAnyKeyPress(int keepWaiting);
-void RECOIL_CDECL Keyboard_InitDikToAsciiTable();
-int RECOIL_FASTCALL Keyboard_TranslateDikToAscii(int comboIdx);
-void RECOIL_FASTCALL Keyboard_SetRawEventCallback(
+int Mouse_IsInitialized();
+int Mouse_InitDevice();
+void __fastcall Mouse_PollAndStoreState(int dispatchCallbacks);
+int __fastcall Mouse_PollState(int dispatchCallbacks);
+int Mouse_AddRef();
+int __fastcall Mouse_GetButtonTransitionState(int buttonNumber);
+int __fastcall Mouse_WaitForButtonPress(int pollUntilFound);
+MouseStateSnapshot *Mouse_GetStateSnapshotPtr();
+int __fastcall Mouse_GetStateSnapshot(MouseStateSnapshot *outState);
+int Keyboard_ShutdownDevice();
+int Joystick_ShutdownDevice();
+int Shutdown();
+void Mouse_ApplyAccumulatedDelta();
+void Mouse_ResetTransitionState();
+int Mouse_IsUnsuspended();
+int Joystick_IsUnsuspended();
+int Keyboard_IsUnsuspended();
+void Mouse_Suspend();
+void Joystick_Suspend();
+void Keyboard_Suspend();
+void Mouse_ResumeFromSuspend();
+void Keyboard_ResetTransitionState();
+void Keyboard_ResumeFromSuspend();
+void Keyboard_ClearKeyCallbackTable();
+void __fastcall Keyboard_PollState(int dispatchCallbacks);
+int __fastcall Keyboard_WaitForAnyKeyPress(int keepWaiting);
+void Keyboard_InitDikToAsciiTable();
+int __fastcall Keyboard_TranslateDikToAscii(int comboIdx);
+void __fastcall Keyboard_SetRawEventCallback(
     void *callback,
     void *context
 );
-int RECOIL_FASTCALL Keyboard_GetKeyTransitionState(int keyIndex);
-int RECOIL_FASTCALL Keyboard_RegisterKeyCallback(
+int __fastcall Keyboard_GetKeyTransitionState(int keyIndex);
+int __fastcall Keyboard_RegisterKeyCallback(
     int comboIdx,
     void *callback,
     const char *unusedLabel
 );
-void RECOIL_FASTCALL Keyboard_UnregisterKeyCallback(int comboIdx);
-void RECOIL_CDECL ResetAllTransitionState();
-int RECOIL_CDECL Keyboard_InitDevice();
-int RECOIL_CDECL Keyboard_AddRef();
-void RECOIL_CDECL DI_ResetTransitionState();
-void RECOIL_CDECL Joystick_ResumeFromSuspend();
-int RECOIL_FASTCALL Init(
+void __fastcall Keyboard_UnregisterKeyCallback(int comboIdx);
+void ResetAllTransitionState();
+int Keyboard_InitDevice();
+int Keyboard_AddRef();
+void DI_ResetTransitionState();
+void Joystick_ResumeFromSuspend();
+int __fastcall Init(
     HWND hWnd,
     HINSTANCE hInstance
 );
-void RECOIL_CDECL BindMap_InitDikKeyNameTable();
-void RECOIL_CDECL BindMap_InitJoystickButtonNameTable();
-void RECOIL_CDECL BindMap_InitMouseButtonNameTable();
-int RECOIL_CDECL DI_AddJoystickRef();
-int RECOIL_CDECL DI_ReleaseJoystickRef();
-int RECOIL_CDECL DI_GetJoystickRefCount();
-int RECOIL_FASTCALL DI_GetButtonTransitionState(int buttonIndex);
-int RECOIL_STDCALL DI_EnumDevicesCallback_SelectFirstJoystick(
+void BindMap_InitDikKeyNameTable();
+void BindMap_InitJoystickButtonNameTable();
+void BindMap_InitMouseButtonNameTable();
+int DI_AddJoystickRef();
+int DI_ReleaseJoystickRef();
+int DI_GetJoystickRefCount();
+int __fastcall DI_GetButtonTransitionState(int buttonIndex);
+int __stdcall DI_EnumDevicesCallback_SelectFirstJoystick(
     const DIDeviceInstance *instance,
     void *ref
 );
-int RECOIL_CDECL DI_AcquireJoystickDevice();
-int RECOIL_FASTCALL DI_InitJoystickDevice(HWND hwnd);
-int RECOIL_FASTCALL DI_ApplyAxisConfig(JoystickAxisConfig *axisCfg);
-int RECOIL_FASTCALL DI_SetAxisDeadzone(
+int DI_AcquireJoystickDevice();
+int __fastcall DI_InitJoystickDevice(HWND hwnd);
+int __fastcall DI_ApplyAxisConfig(JoystickAxisConfig *axisCfg);
+int __fastcall DI_SetAxisDeadzone(
     int axisOffset,
     int deadzone
 );
-int RECOIL_FASTCALL DI_SetAxisRange(
+int __fastcall DI_SetAxisRange(
     int axisOffset,
     int rangeMin,
     int rangeMax
 );
-int RECOIL_FASTCALL DI_GetAxisRange(
+int __fastcall DI_GetAxisRange(
     int axisOffset,
     int *pOutMin,
     int *pOutMax
 );
-int RECOIL_CDECL DI_IsJoystickDeviceReady();
-JoystickStatePartial *RECOIL_CDECL DI_GetCurrentState();
-JoystickStatePartial *RECOIL_FASTCALL DI_PollJoystickState(int dispatchCallbacks);
-int RECOIL_FASTCALL DI_SetJoystickEnabled(int enable);
-int RECOIL_FASTCALL DI_WaitForButtonPress(int loopUntilPressed);
-int RECOIL_FASTCALL DI_ReportError(
+int DI_IsJoystickDeviceReady();
+JoystickStatePartial *DI_GetCurrentState();
+JoystickStatePartial *__fastcall DI_PollJoystickState(int dispatchCallbacks);
+int __fastcall DI_SetJoystickEnabled(int enable);
+int __fastcall DI_WaitForButtonPress(int loopUntilPressed);
+int __fastcall DI_ReportError(
     int hresult,
     const char *sourceFile,
     int sourceLine
 );
-int RECOIL_FASTCALL BindMap_PackBindingCode(
+int __fastcall BindMap_PackBindingCode(
     int primary,
     int secondary,
     int joy,
     int mouse
 );
-void *RECOIL_FASTCALL GlobalStateConstructor(void *self);
-void RECOIL_FASTCALL GlobalStateDestructor(void *self);
-void *RECOIL_CDECL GlobalStateStaticInit();
-int RECOIL_CDECL GlobalStateRegisterAtExit();
-void RECOIL_CDECL GlobalStateAtExitDestructor();
-int RECOIL_CDECL GlobalStateStaticInitAndRegisterAtExit();
-void RECOIL_CDECL BindGroupListStaticInit();
-int RECOIL_CDECL BindGroupListRegisterAtExit();
-void RECOIL_CDECL BindGroupListAtExitDestructor();
-int RECOIL_CDECL BindGroupList_StaticInitAndRegisterAtExit();
-int RECOIL_CDECL BindGroupList_GetCount();
-char *RECOIL_FASTCALL BindGroupList_GetGroupTitle(int groupIndex);
-int RECOIL_FASTCALL BindGroupList_GetGroupCommandCount(int groupIndex);
-int RECOIL_FASTCALL BindGroupList_GetGroupCommandId(
+void *__fastcall GlobalStateConstructor(void *self);
+void __fastcall GlobalStateDestructor(void *self);
+void *GlobalStateStaticInit();
+int GlobalStateRegisterAtExit();
+void GlobalStateAtExitDestructor();
+int GlobalStateStaticInitAndRegisterAtExit();
+void BindGroupListStaticInit();
+int BindGroupListRegisterAtExit();
+void BindGroupListAtExitDestructor();
+int BindGroupList_StaticInitAndRegisterAtExit();
+int BindGroupList_GetCount();
+char *__fastcall BindGroupList_GetGroupTitle(int groupIndex);
+int __fastcall BindGroupList_GetGroupCommandCount(int groupIndex);
+int __fastcall BindGroupList_GetGroupCommandId(
     int groupIndex,
     int commandIndex
 );
-void RECOIL_FASTCALL BindGroupInfo_Destroy(zInput_BindGroupInfo *group);
-void RECOIL_CDECL BindGroupList_Clear();
-int RECOIL_FASTCALL BindGroupList_AddGroup(const char *title);
-void RECOIL_FASTCALL BindGroupList_AddCommandToGroup(
+void __fastcall BindGroupInfo_Destroy(zInput_BindGroupInfo *group);
+void BindGroupList_Clear();
+int __fastcall BindGroupList_AddGroup(const char *title);
+void __fastcall BindGroupList_AddCommandToGroup(
     int groupIndex,
     int commandId
 );
-char *RECOIL_FASTCALL BindMap_GetCommandLabel(int commandId);
-char *RECOIL_FASTCALL BindMap_GetCommandHint(int commandId);
-void RECOIL_FASTCALL BindMap_AddDefaultBinding(
+char *__fastcall BindMap_GetCommandLabel(int commandId);
+char *__fastcall BindMap_GetCommandHint(int commandId);
+void __fastcall BindMap_AddDefaultBinding(
     int commandId,
     int messageId,
     int primaryKey,
@@ -797,38 +797,38 @@ void RECOIL_FASTCALL BindMap_AddDefaultBinding(
     int joystickSlot,
     int mouseSlot
 );
-int RECOIL_CDECL BindMap_InitDefaultBindings();
-void RECOIL_FASTCALL BindMapSystem_Init(int commandCount);
-void RECOIL_CDECL BindMapSystem_Shutdown();
-void RECOIL_FASTCALL BindMapContext_Push(zInput_BindMapContext *bindMapOrNull);
-void RECOIL_CDECL BindMapContext_Pop();
-void RECOIL_CDECL BindMap_Current_RebuildLookupIndices();
-void RECOIL_CDECL BindMapCurrent_ResetAllBindings();
-int RECOIL_FASTCALL BindMapCurrent_GetPrimaryKeyboardKey(int commandIndex);
-int RECOIL_FASTCALL BindMapCurrent_GetSecondaryKeyboardKey(int commandIndex);
-int RECOIL_FASTCALL BindMapCurrent_GetJoystickButtonSlot(int commandIndex);
-int RECOIL_FASTCALL BindMapCurrent_GetMouseButtonSlot(int commandIndex);
-int RECOIL_FASTCALL BindMapCurrent_GetCommandByPrimaryKey(int keyboardKey);
-int RECOIL_FASTCALL BindMapCurrent_GetCommandBySecondaryKey(int keyboardKey);
-int RECOIL_FASTCALL BindMapCurrent_GetCommandByJoystickSlot(int joystickSlot);
-int RECOIL_FASTCALL BindMapCurrent_GetCommandByMouseSlot(int mouseSlot);
-void RECOIL_FASTCALL BindMapCurrent_SetPrimaryKeyBinding(
+int BindMap_InitDefaultBindings();
+void __fastcall BindMapSystem_Init(int commandCount);
+void BindMapSystem_Shutdown();
+void __fastcall BindMapContext_Push(zInput_BindMapContext *bindMapOrNull);
+void BindMapContext_Pop();
+void BindMap_Current_RebuildLookupIndices();
+void BindMapCurrent_ResetAllBindings();
+int __fastcall BindMapCurrent_GetPrimaryKeyboardKey(int commandIndex);
+int __fastcall BindMapCurrent_GetSecondaryKeyboardKey(int commandIndex);
+int __fastcall BindMapCurrent_GetJoystickButtonSlot(int commandIndex);
+int __fastcall BindMapCurrent_GetMouseButtonSlot(int commandIndex);
+int __fastcall BindMapCurrent_GetCommandByPrimaryKey(int keyboardKey);
+int __fastcall BindMapCurrent_GetCommandBySecondaryKey(int keyboardKey);
+int __fastcall BindMapCurrent_GetCommandByJoystickSlot(int joystickSlot);
+int __fastcall BindMapCurrent_GetCommandByMouseSlot(int mouseSlot);
+void __fastcall BindMapCurrent_SetPrimaryKeyBinding(
     int keyCode,
     int commandId
 );
-void RECOIL_FASTCALL BindMapCurrent_SetSecondaryKeyBinding(
+void __fastcall BindMapCurrent_SetSecondaryKeyBinding(
     int keyCode,
     int commandId
 );
-void RECOIL_FASTCALL BindMapCurrent_SetJoystickBinding(
+void __fastcall BindMapCurrent_SetJoystickBinding(
     int joystickSlot,
     int commandId
 );
-void RECOIL_FASTCALL BindMapCurrent_SetMouseBinding(
+void __fastcall BindMapCurrent_SetMouseBinding(
     int mouseSlot,
     int commandId
 );
-int RECOIL_FASTCALL BindMap_Current_SetBindingRecord(
+int __fastcall BindMap_Current_SetBindingRecord(
     int commandId,
     const char *labelSrc,
     int primaryKey,
@@ -836,61 +836,61 @@ int RECOIL_FASTCALL BindMap_Current_SetBindingRecord(
     int joystickSlot,
     int mouseSlot
 );
-int RECOIL_FASTCALL BindMap_Current_SetCommandCallback(
+int __fastcall BindMap_Current_SetCommandCallback(
     int commandId,
     zInputCommandCallbackFn callback
 );
-int RECOIL_FASTCALL BindMap_Current_ReadCommandInputState(int commandIndex);
-char *RECOIL_FASTCALL BindMapCurrent_CopyCommandLabel(
+int __fastcall BindMap_Current_ReadCommandInputState(int commandIndex);
+char *__fastcall BindMapCurrent_CopyCommandLabel(
     int commandId,
     char *destBuf,
     int maxBytes
 );
-char *RECOIL_STDCALL BindMap_FormatKeyComboName(
+char *__stdcall BindMap_FormatKeyComboName(
     int packedKey,
     char *destBuf,
     int maxBytes
 );
-char *RECOIL_STDCALL BindMap_CopyJoystickButtonName(
+char *__stdcall BindMap_CopyJoystickButtonName(
     int joystickSlot,
     char *outBuf,
     int bufSize
 );
-char *RECOIL_STDCALL BindMap_CopyMouseButtonName(
+char *__stdcall BindMap_CopyMouseButtonName(
     int mouseSlot,
     char *outBuf,
     int bufSize
 );
-char *RECOIL_FASTCALL BindMapCurrent_FormatKeyComboName(
+char *__fastcall BindMapCurrent_FormatKeyComboName(
     int packedKey,
     char *destBuf,
     int maxBytes
 );
-char *RECOIL_FASTCALL BindMapCurrent_CopyJoystickButtonName(
+char *__fastcall BindMapCurrent_CopyJoystickButtonName(
     int joystickSlot,
     char *outBuf,
     int bufSize
 );
-char *RECOIL_FASTCALL BindMapCurrent_CopyMouseButtonName(
+char *__fastcall BindMapCurrent_CopyMouseButtonName(
     int mouseSlot,
     char *outBuf,
     int bufSize
 );
-int RECOIL_FASTCALL Mouse_SetCooperativeLevelFlags(int flags);
-void RECOIL_FASTCALL Mouse_SetClientSizeAndCenter(
+int __fastcall Mouse_SetCooperativeLevelFlags(int flags);
+void __fastcall Mouse_SetClientSizeAndCenter(
     int width,
     int height
 );
-void RECOIL_FASTCALL PollActiveDevices(int dispatchCallbacks);
-void RECOIL_CDECL OnAppActivate();
-void RECOIL_CDECL OnAppDeactivate();
+void __fastcall PollActiveDevices(int dispatchCallbacks);
+void OnAppActivate();
+void OnAppDeactivate();
 } // namespace zInput
 
 namespace zInp {
-RECOIL_NOINLINE void RECOIL_FASTCALL SetJoystickOption(int enabled);
-RECOIL_NOINLINE void RECOIL_FASTCALL SetJoystickAxesCountOption(int axisCount);
-RECOIL_NOINLINE void RECOIL_FASTCALL SetJoystickButtonCountOption(int buttonCount);
-RECOIL_NOINLINE int RECOIL_CDECL GetJoystickOption();
+void __fastcall SetJoystickOption(int enabled);
+void __fastcall SetJoystickAxesCountOption(int axisCount);
+void __fastcall SetJoystickButtonCountOption(int buttonCount);
+int GetJoystickOption();
 } // namespace zInp
 
 extern "C" {
@@ -964,35 +964,35 @@ extern int *ZOPT_INPUT_JOYSTICK;
 extern int *ZOPT_JOYSTICK_NUM_AXES;
 extern int *ZOPT_JOYSTICK_NUM_BUTTONS;
 
-int RECOIL_CDECL zInput_Keyboard_IsUnsuspended();
-int RECOIL_FASTCALL zInput_WaitForAnyKeyPressWithTimeoutMs(int timeoutMs);
-int RECOIL_CDECL zInput_DI_HasForceFeedback();
-int RECOIL_CDECL zInput_DI_IsForceFeedbackEnabled();
-zInput_DiEffect *RECOIL_FASTCALL zInput_DI_CreateForceFeedbackEffect(
+int zInput_Keyboard_IsUnsuspended();
+int __fastcall zInput_WaitForAnyKeyPressWithTimeoutMs(int timeoutMs);
+int zInput_DI_HasForceFeedback();
+int zInput_DI_IsForceFeedbackEnabled();
+zInput_DiEffect *__fastcall zInput_DI_CreateForceFeedbackEffect(
     const GUID *rguidEffect,
     const void *effect
 );
-zInput_DiEffect *RECOIL_STDCALL zInput_DI_CreateConstantForceEffectScaled(float gain);
-zInput_DiEffect *RECOIL_FASTCALL zInput_DI_CreateConstantForceEffectWithDirection(int direction);
-zInput_DiEffect *RECOIL_STDCALL zInput_DI_CreateSineEffectScaled(float gain);
-void RECOIL_FASTCALL zInput_BindMapContext_DispatchFromKeyboardEvent(int dikCode);
-void RECOIL_FASTCALL zInput_DI_RestartPrimaryFireEffect(zInput_FFEffectSet *effectSet);
-void RECOIL_FASTCALL zInput_DI_PlayAltFireEffect(
+zInput_DiEffect *__stdcall zInput_DI_CreateConstantForceEffectScaled(float gain);
+zInput_DiEffect *__fastcall zInput_DI_CreateConstantForceEffectWithDirection(int direction);
+zInput_DiEffect *__stdcall zInput_DI_CreateSineEffectScaled(float gain);
+void __fastcall zInput_BindMapContext_DispatchFromKeyboardEvent(int dikCode);
+void __fastcall zInput_DI_RestartPrimaryFireEffect(zInput_FFEffectSet *effectSet);
+void __fastcall zInput_DI_PlayAltFireEffect(
     zInput_FFEffectSet *effectSet,
     float gain
 );
-zInput_FFEffectSet *RECOIL_FASTCALL zInput_DI_InitForceFeedbackEffectSet(
+zInput_FFEffectSet *__fastcall zInput_DI_InitForceFeedbackEffectSet(
     zInput_FFEffectSet *effectSet
 );
-void RECOIL_CDECL zInput_DI_PlayCollisionImpactEffect(
+void zInput_DI_PlayCollisionImpactEffect(
     zInput_FFEffectSet *effectSet,
     const zVec3 *impactWorldPosXZ,
     float gain
 );
-void RECOIL_CDECL zInput_DI_PlayDamageHitEffect(
+void zInput_DI_PlayDamageHitEffect(
     zInput_FFEffectSet *effectSet,
     const zVec3 *damageSourceWorldPosXZ,
     float gain
 );
-void RECOIL_FASTCALL zInput_DI_UpdateSteerAndPitchForceEffects(zInput_FFEffectSet *effectSet);
+void __fastcall zInput_DI_UpdateSteerAndPitchForceEffects(zInput_FFEffectSet *effectSet);
 }

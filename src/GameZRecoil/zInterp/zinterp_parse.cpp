@@ -68,24 +68,24 @@ const zInterp_Context_VTable g_zInterp_GlobalContext_VTable = {
 
 namespace {
 struct zInterp_DefaultDispatchHooks {
-    RECOIL_NOINLINE int RECOIL_THISCALL PreDispatch(char *commandToken);
-    RECOIL_NOINLINE int RECOIL_THISCALL PostDispatch(char *commandToken);
-    RECOIL_NOINLINE int RECOIL_THISCALL DeferredDispatch(char *commandToken);
+    int PreDispatch(char *commandToken);
+    int PostDispatch(char *commandToken);
+    int DeferredDispatch(char *commandToken);
 };
 
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_DefaultDispatchHooks::PreDispatch(
+int zInterp_DefaultDispatchHooks::PreDispatch(
     char *
 ) {
     return 1;
 }
 
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_DefaultDispatchHooks::PostDispatch(
+int zInterp_DefaultDispatchHooks::PostDispatch(
     char *
 ) {
     return 0;
 }
 
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_DefaultDispatchHooks::DeferredDispatch(
+int zInterp_DefaultDispatchHooks::DeferredDispatch(
     char *
 ) {
     return 0;
@@ -142,7 +142,7 @@ int CommandHasPrefix(
 
 // Reimplements 0x4c58c0: zInterp_Context::DefaultDispatchHook
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL zInterp_Context::DefaultDispatchHook(
+int __stdcall zInterp_Context::DefaultDispatchHook(
     zClass_NodePartial *node
 ) {
     if (node != 0) {
@@ -158,7 +158,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL zInterp_Context::DefaultDispatchHook(
 namespace zInterp_Object3D {
 // Reimplements 0x4c59e0: zInterp_Object3D::DefaultRenderAction
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL DefaultRenderAction(
+int __fastcall DefaultRenderAction(
     zClass_NodePartial *node
 ) {
     unsigned int userData = 0;
@@ -171,7 +171,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DefaultRenderAction(
 
 // Reimplements 0x4c5a00: zInterp_Object3D::ScrollAlwaysTickAction
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ScrollAlwaysTickAction(
+void __fastcall ScrollAlwaysTickAction(
     zClass_NodePartial *wrapperNode
 ) {
     if (wrapperNode == 0) {
@@ -190,7 +190,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ScrollAlwaysTickAction(
 
 // Reimplements 0x4c1b30: zInterp_Context::Logf
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL zInterp_Context::Logf(
+void zInterp_Context::Logf(
     zInterp_Context *ctx,
     const char *fmt,
     ...
@@ -211,7 +211,7 @@ RECOIL_NOINLINE void RECOIL_CDECL zInterp_Context::Logf(
 
 // Reimplements 0x4c5520: zInterp_Context::ReportErrorf
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL zInterp_Context::ReportErrorf(
+void zInterp_Context::ReportErrorf(
     zInterp_Context *ctx,
     const char *fmt,
     ...
@@ -233,13 +233,13 @@ RECOIL_NOINLINE void RECOIL_CDECL zInterp_Context::ReportErrorf(
 
 // Reimplements 0x4c1b20: zInterp_Context::IncErrorCount
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zInterp_Context::IncErrorCount() {
+void zInterp_Context::IncErrorCount() {
     ++errorCount;
 }
 
 // Reimplements 0x4c2090: zInterp_Context::ReportParseError
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::ReportParseError(
+int zInterp_Context::ReportParseError(
     char *
 ) {
     IncErrorCount();
@@ -248,7 +248,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::ReportParseError(
 
 // Reimplements 0x4c15f0: zInterp_Context::FindMacroValue
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE char *RECOIL_THISCALL zInterp_Context::FindMacroValue(
+char * zInterp_Context::FindMacroValue(
     const char *name,
     zInterp_MacroEntry **outEntry
 ) {
@@ -270,7 +270,7 @@ RECOIL_NOINLINE char *RECOIL_THISCALL zInterp_Context::FindMacroValue(
 
 // Reimplements 0x4c1710: zInterp_Context::IsMacroTrue
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::IsMacroTrue(
+int zInterp_Context::IsMacroTrue(
     const char *name
 ) {
     const char *const value = FindMacroValue(
@@ -285,7 +285,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::IsMacroTrue(
 
 // Reimplements 0x4c1780: zInterp_Context::SetMacro
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::SetMacro(
+int zInterp_Context::SetMacro(
     const char *name,
     const char *value
 ) {
@@ -325,7 +325,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::SetMacro(
 
 // Reimplements 0x4c1670: zInterp_Context::ClearMacroTable
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zInterp_Context::ClearMacroTable() {
+void zInterp_Context::ClearMacroTable() {
     for (unsigned int macroIndex = 0; macroIndex < macroCount; ++macroIndex) {
         free(macroTable[macroIndex].name);
         free(macroTable[macroIndex].value);
@@ -340,7 +340,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInterp_Context::ClearMacroTable() {
 
 // Reimplements 0x4c16c0: zInterp_Context::ClearVarTable
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zInterp_Context::ClearVarTable() {
+void zInterp_Context::ClearVarTable() {
     for (unsigned int varIndex = 0; varIndex < varCount; ++varIndex) {
         free(varTable[varIndex].name);
     }
@@ -354,7 +354,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInterp_Context::ClearVarTable() {
 
 // Reimplements 0x414ad0: zInterp_Command::WeaponSetMaxTetherAltitude
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Command::WeaponSetMaxTetherAltitude(
+int zInterp_Command::WeaponSetMaxTetherAltitude(
     char *commandToken
 ) {
     zInterp_Context *const context = (zInterp_Context *)(this);
@@ -373,7 +373,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Command::WeaponSetMaxTetherAltitude(
 
 // Reimplements 0x4c0d20: zInterp_Context::Constructor
 // (D:\Proj\GameZRecoil\zInterp\interp_context.c)
-RECOIL_NOINLINE zInterp_Context *RECOIL_THISCALL zInterp_Context::Constructor(
+zInterp_Context * zInterp_Context::Constructor(
     const char *searchPathText,
     const char *preparedIndexPath
 ) {
@@ -431,7 +431,7 @@ RECOIL_NOINLINE zInterp_Context *RECOIL_THISCALL zInterp_Context::Constructor(
 
 // Reimplements 0x414ab0: zInterp_GlobalContext::Constructor
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE zInterp_Context *RECOIL_THISCALL zInterp_GlobalContext::Constructor() {
+zInterp_Context * zInterp_GlobalContext::Constructor() {
     zInterp_Context *const context = (zInterp_Context *)(this);
     context->Constructor(
         kGlobalContextSearchPath,
@@ -443,32 +443,32 @@ RECOIL_NOINLINE zInterp_Context *RECOIL_THISCALL zInterp_GlobalContext::Construc
 
 // Reimplements 0x414a70: zInterp_GlobalContext::StaticInit
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE zInterp_Context *RECOIL_CDECL zInterp_GlobalContext::StaticInit() {
+zInterp_Context *zInterp_GlobalContext::StaticInit() {
     return ((zInterp_GlobalContext *)(&g_zInterp_GlobalContext))->Constructor();
 }
 
 // Reimplements 0x414a80: zInterp_GlobalContext::RegisterAtExit
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL zInterp_GlobalContext::RegisterAtExit() {
+int zInterp_GlobalContext::RegisterAtExit() {
     return atexit(AtExitDestructor);
 }
 
 // Reimplements 0x414a90: zInterp_GlobalContext::AtExitDestructor
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL zInterp_GlobalContext::AtExitDestructor() {
+void zInterp_GlobalContext::AtExitDestructor() {
     g_zInterp_GlobalContext.Destructor();
 }
 
 // Reimplements 0x414a60: zInterp_GlobalContext::StaticInitAndRegisterAtExit
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL zInterp_GlobalContext::StaticInitAndRegisterAtExit() {
+int zInterp_GlobalContext::StaticInitAndRegisterAtExit() {
     StaticInit();
     return RegisterAtExit();
 }
 
 // Reimplements 0x4c0f70: zInterp_Context::Destroy
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zInterp_Context::Destroy() {
+void zInterp_Context::Destroy() {
     ClearMacroTable();
     ClearVarTable();
     ClearFileFrameStack();
@@ -501,7 +501,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInterp_Context::Destroy() {
 
 // Reimplements 0x4c0e50: zInterp_Context::Destructor
 // (D:\Proj\GameZRecoil\zInterp\interp_context.c)
-RECOIL_NOINLINE void RECOIL_THISCALL zInterp_Context::Destructor() {
+void zInterp_Context::Destructor() {
     vftable = &g_zInterp_Context_VTableMarker;
 
     Destroy();
@@ -543,7 +543,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInterp_Context::Destructor() {
 
 // Reimplements 0x4c58e0: zInterp_Context::RegisterScrollAlwaysNode
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::RegisterScrollAlwaysNode(
+int zInterp_Context::RegisterScrollAlwaysNode(
     zClass_NodePartial *node,
     float textureWorldPerMeter,
     int textureWorldAxis,
@@ -605,7 +605,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::RegisterScrollAlwaysNode(
 
 // Reimplements 0x4c1b50: zInterp_Context::EvalConditionExpr
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::EvalConditionExpr() {
+int zInterp_Context::EvalConditionExpr() {
     if (tokenCount == 1) {
         return 0;
     }
@@ -655,7 +655,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::EvalConditionExpr() {
 
 // Reimplements 0x4c1250: zInterp_Context::ExpandMacroRefs
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE char *RECOIL_THISCALL zInterp_Context::ExpandMacroRefs(
+char * zInterp_Context::ExpandMacroRefs(
     char *lineBuf
 ) {
     if (lineBuf == 0) {
@@ -730,7 +730,7 @@ RECOIL_NOINLINE char *RECOIL_THISCALL zInterp_Context::ExpandMacroRefs(
 
 // Reimplements 0x4c1990: zInterp_Context::NextToken
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE char *RECOIL_THISCALL zInterp_Context::NextToken() {
+char * zInterp_Context::NextToken() {
     const unsigned int tokenIndex = (unsigned int)(tokenReadIndex);
     tokenReadIndex = (int)(tokenIndex + 1);
 
@@ -748,7 +748,7 @@ RECOIL_NOINLINE char *RECOIL_THISCALL zInterp_Context::NextToken() {
 
 // Reimplements 0x4c19c0: zInterp_Context::ParseBoolToken
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::ParseBoolToken() {
+int zInterp_Context::ParseBoolToken() {
     char *const token = NextToken();
     if (token == 0) {
         return 0;
@@ -765,7 +765,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::ParseBoolToken() {
 
 // Reimplements 0x4c1a00: zInterp_Context::ParseFloatToken
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE float RECOIL_THISCALL zInterp_Context::ParseFloatToken() {
+float zInterp_Context::ParseFloatToken() {
     char *const token = NextToken();
     if (token == 0) {
         return 0.0f;
@@ -776,7 +776,7 @@ RECOIL_NOINLINE float RECOIL_THISCALL zInterp_Context::ParseFloatToken() {
 
 // Reimplements 0x4c1a20: zInterp_Context::ParseIntToken
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::ParseIntToken() {
+int zInterp_Context::ParseIntToken() {
     char *const token = NextToken();
     if (token == 0) {
         return 0;
@@ -787,7 +787,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::ParseIntToken() {
 
 // Reimplements 0x4c1a40: zInterp_Context::FindVarEntry
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE zInterp_VarEntry *RECOIL_THISCALL zInterp_Context::FindVarEntry(
+zInterp_VarEntry * zInterp_Context::FindVarEntry(
     const char *name
 ) {
     for (unsigned int varIndex = 0; varIndex < varCount; ++varIndex) {
@@ -805,7 +805,7 @@ RECOIL_NOINLINE zInterp_VarEntry *RECOIL_THISCALL zInterp_Context::FindVarEntry(
 
 // Reimplements 0x4c1ab0: zInterp_Context::DumpVarEntry
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zInterp_Context::DumpVarEntry(
+void zInterp_Context::DumpVarEntry(
     zInterp_VarEntry *entry
 ) {
     if (entry == 0) {
@@ -846,7 +846,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInterp_Context::DumpVarEntry(
 
 // Reimplements 0x4c5480: zInterp_Context::CommandEqualsPrefix
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::CommandEqualsPrefix(
+int zInterp_Context::CommandEqualsPrefix(
     const char *prefix,
     unsigned int prefixLen
 ) {
@@ -864,7 +864,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::CommandEqualsPrefix(
 
 // Reimplements 0x4c54b0: zInterp_Context::CommandEquals
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::CommandEquals(
+int zInterp_Context::CommandEquals(
     const char *other
 ) {
     char *command = 0;
@@ -880,7 +880,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::CommandEquals(
 
 // Reimplements 0x4c5510: zInterp_Context::GetCurrentCommand
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE char *RECOIL_THISCALL zInterp_Context::GetCurrentCommand() {
+char * zInterp_Context::GetCurrentCommand() {
     if (tokenCount <= 0) {
         return 0;
     }
@@ -890,7 +890,7 @@ RECOIL_NOINLINE char *RECOIL_THISCALL zInterp_Context::GetCurrentCommand() {
 
 // Reimplements 0x4c5820: zInterp_Context::ValidateArgsAndNodeType
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::ValidateArgsAndNodeType(
+int zInterp_Context::ValidateArgsAndNodeType(
     int expectedArgCount,
     int expectedClassType,
     zClass_NodePartial *node
@@ -936,7 +936,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::ValidateArgsAndNodeType(
 
 // Reimplements 0x4c5550: zInterp_Context::LoadPreparedScriptIndex
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::LoadPreparedScriptIndex(
+int zInterp_Context::LoadPreparedScriptIndex(
     const char *zrdrPath
 ) {
     int preparedMagic = 0;
@@ -1039,7 +1039,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::LoadPreparedScriptIndex(
 
 // Reimplements 0x4c5740: zInterp_Context::OpenPreparedScriptStream
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE FILE *RECOIL_THISCALL zInterp_Context::OpenPreparedScriptStream(
+FILE * zInterp_Context::OpenPreparedScriptStream(
     const char *commandName
 ) {
     if (preparedIndexStream == 0) {
@@ -1090,7 +1090,7 @@ RECOIL_NOINLINE FILE *RECOIL_THISCALL zInterp_Context::OpenPreparedScriptStream(
 
 // Reimplements 0x4c1500: zInterp_Context::RunScriptFile
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::RunScriptFile(
+int zInterp_Context::RunScriptFile(
     const char *filePath
 ) {
     FILE *scriptFile = 0;
@@ -1150,7 +1150,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::RunScriptFile(
 
 // Reimplements 0x4c1020: zInterp_Context::RunString
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::RunString(
+int zInterp_Context::RunString(
     FILE *scriptFile,
     int preparedInput
 ) {
@@ -1182,7 +1182,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::RunString(
 
 // Reimplements 0x4c1090: zInterp_Context::RunStream
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::RunStream(
+int zInterp_Context::RunStream(
     char *lineBuffer
 ) {
     if (lineBuffer == 0) {
@@ -1242,7 +1242,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::RunStream(
 
 // Reimplements 0x4c13c0: zInterp_Context::TokenizeLine
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::TokenizeLine(
+int zInterp_Context::TokenizeLine(
     const char *line
 ) {
     if (hasPreparedInput != 0) {
@@ -1309,7 +1309,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::TokenizeLine(
 
 // Reimplements 0x4c1870: zInterp_Context::EchoTokens
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::EchoTokens() {
+int zInterp_Context::EchoTokens() {
     for (unsigned int tokenIndex = 0; tokenIndex < tokenCount; ++tokenIndex) {
         printf(
             "%s ",
@@ -1322,7 +1322,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::EchoTokens() {
 
 // Reimplements 0x4c1160: zInterp_Context::ReadLineOrPreparedTokens
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::ReadLineOrPreparedTokens(
+int zInterp_Context::ReadLineOrPreparedTokens(
     FILE *scriptFile,
     char *lineBuffer
 ) {
@@ -1385,7 +1385,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::ReadLineOrPreparedTokens(
 
 // Reimplements 0x4c1960: zInterp_Context::ClearFileFrameStack
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zInterp_Context::ClearFileFrameStack() {
+void zInterp_Context::ClearFileFrameStack() {
     if (fileFrameStack != 0) {
         free(fileFrameStack);
         fileFrameStack = 0;
@@ -1395,7 +1395,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInterp_Context::ClearFileFrameStack() {
 
 // Reimplements 0x4c1940: zInterp_Context::PopFileFrame
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE zInterp_FileFrame *RECOIL_THISCALL zInterp_Context::PopFileFrame() {
+zInterp_FileFrame * zInterp_Context::PopFileFrame() {
     int count = fileFrameCount;
     if (count == 0) {
         return 0;
@@ -1408,7 +1408,7 @@ RECOIL_NOINLINE zInterp_FileFrame *RECOIL_THISCALL zInterp_Context::PopFileFrame
 
 // Reimplements 0x4c18c0: zInterp_Context::PushFileFrame
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::PushFileFrame(
+int zInterp_Context::PushFileFrame(
     FILE *file,
     long filePos,
     int hasPreparedInput
@@ -1429,7 +1429,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::PushFileFrame(
 
 // Reimplements 0x4c1c50: zInterp_Context::HandleBuiltinCommand
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::HandleBuiltinCommand(
+int zInterp_Context::HandleBuiltinCommand(
     char *commandToken
 ) {
     if (strncmp(
@@ -1611,7 +1611,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::HandleBuiltinCommand(
 
 // Reimplements 0x4c20a0: zInterp_Context::DispatchCoreCommand
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::DispatchCoreCommand(
+int zInterp_Context::DispatchCoreCommand(
     char *commandToken
 ) {
     if (CommandIs(
@@ -3835,7 +3835,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInterp_Context::DispatchCoreCommand(
 
 // Reimplements 0x4c2030: zInterp_Context::PrintNodeTree
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zInterp_Context::PrintNodeTree(
+void zInterp_Context::PrintNodeTree(
     zClass_NodePartial *node,
     int indent
 ) {

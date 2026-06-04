@@ -30,7 +30,7 @@ zOpt_ViewRectSection *ViewRectFromPtr(
 
 // Reimplements 0x42f280: RecoilApp_PlayState::TickAndRenderFrame
 // (D:\Proj\Battlesport\RecoilApp.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_PlayState::TickAndRenderFrame(
+int RecoilApp_PlayState::TickAndRenderFrame(
     int shouldPresent
 ) {
     Time::Tick();

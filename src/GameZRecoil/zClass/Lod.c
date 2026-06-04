@@ -86,7 +86,7 @@ namespace {
 namespace zClass_Lod {
     // Reimplements 0x44b8c0: zClass_Lod::RenderTraverse
     // (D:\Proj\GameZRecoil\zClass\Lod.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint
@@ -262,7 +262,7 @@ namespace zClass_Lod {
     }
 
     // Reimplements 0x4542a0: zClass_Lod::gwLodNew
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwLodNew() {
+    zClass_NodePartial *gwLodNew() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         node->classId = kZClassNodeLod;
 
@@ -280,7 +280,7 @@ namespace zClass_Lod {
     }
 
     // Reimplements 0x454310: zClass_Lod::gwLodAddChild
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwLodAddChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -292,7 +292,7 @@ namespace zClass_Lod {
     }
 
     // Reimplements 0x454320: zClass_Lod::RemoveChild
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -305,7 +305,7 @@ namespace zClass_Lod {
     }
 
     // Reimplements 0x454330: zClass_Lod::SetComputeOwnDistance
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     SetComputeOwnDistance(
         zClass_NodePartial * node,
         int enabled
@@ -315,7 +315,7 @@ namespace zClass_Lod {
     }
 
     // Reimplements 0x454340: zClass_Lod::SetTargetNodeAndRange
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     SetTargetNodeAndRange(
         zClass_NodePartial * node,
         zClass_NodePartial * target,

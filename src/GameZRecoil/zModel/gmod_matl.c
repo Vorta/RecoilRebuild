@@ -20,7 +20,7 @@ namespace {
 
 namespace zDi {
     // Reimplements 0x476340: zDi::SetVariantTagIfUnset
-    RECOIL_NOINLINE void RECOIL_FASTCALL SetVariantTagIfUnset(
+    void __fastcall SetVariantTagIfUnset(
         zDiPartial * self,
         int variantTag
     ){
@@ -41,7 +41,7 @@ namespace zDi {
 namespace zModel_MatlSlot {
     // Reimplements 0x4805b0: zModel_MatlSlot::IndexFromPtrOrMinus1
     // (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp)
-    RECOIL_NOINLINE int RECOIL_FASTCALL IndexFromPtrOrMinus1(zModel_MaterialSlot * slot) {
+    int __fastcall IndexFromPtrOrMinus1(zModel_MaterialSlot * slot) {
         if (slot == 0) {
             return -1;
         }
@@ -53,7 +53,7 @@ namespace zModel_MatlSlot {
 namespace zModel_MatlBuffer {
     // Reimplements 0x480bf0: zModel_MatlBuffer::SetArraySize
     // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
-    RECOIL_NOINLINE void RECOIL_FASTCALL SetArraySize(int count) {
+    void __fastcall SetArraySize(int count) {
         if (g_zModel_MatlPoolCapacity != 0) {
             zError::ReportOld(
                 0x200,
@@ -81,7 +81,7 @@ namespace zModel_MatlBuffer {
 
     // Reimplements 0x480600: zModel_MatlBuffer::WriteGameZ
     // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL WriteGameZ(void *stream) {
+    int __fastcall WriteGameZ(void *stream) {
         zImage_TexDirEntryPartial **frameBuffer = 0;
         FILE *const file = (FILE *)(stream);
 
@@ -243,7 +243,7 @@ namespace zModel_MatlBuffer {
 
     // Reimplements 0x4808c0: zModel_MatlBuffer::ReadGameZ
     // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL ReadGameZ(void *stream) {
+    int __fastcall ReadGameZ(void *stream) {
         FILE *const file = (FILE *)(stream);
         const int oldCapacity = g_zModel_MatlPoolCapacity;
         const char *errorMessage = kMatlReadError;

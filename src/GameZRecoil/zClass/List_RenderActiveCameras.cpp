@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 namespace zClass_Camera {
-RECOIL_NOINLINE int RECOIL_FASTCALL RenderScene(
+int __fastcall RenderScene(
     zClass_NodePartial *camera,
     int updateFxPass3Local
 );
@@ -14,7 +14,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL RenderScene(
 namespace zClass_List {
 
 // Reimplements 0x44f630: zClass_List::RenderActiveCameras (GameZRecoil/zClass/List.c)
-RECOIL_NOINLINE int RECOIL_CDECL RenderActiveCameras() {
+int RenderActiveCameras() {
     zClass_TypeListLink *link = zClass_TypeList::GetBucketHead(8);
     if (link == 0) {
         fprintf(

@@ -94,7 +94,7 @@ void LoadSampleFromWavePath(
 } // namespace
 
 // Reimplements 0x4a0810: zSnd_SetUseArchiveBanks
-extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_SetUseArchiveBanks(
+extern "C" void __fastcall zSnd_SetUseArchiveBanks(
     int enabled
 ) {
     // Binary Ninja shows 0x4a0810 writes only the selector byte before clearing the vector.
@@ -107,7 +107,7 @@ extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_SetUseArchiveBanks(
 }
 
 // Reimplements 0x4a0840: zSndSampleSetRegistry_Shutdown
-extern "C" RECOIL_NOINLINE void RECOIL_CDECL zSndSampleSetRegistry_Shutdown() {
+extern "C" void zSndSampleSetRegistry_Shutdown() {
     ::operator delete(g_zSnd_SampleSetRegistry.begin);
     g_zSnd_SampleSetRegistry.begin = 0;
     g_zSnd_SampleSetRegistry.end = 0;
@@ -115,12 +115,12 @@ extern "C" RECOIL_NOINLINE void RECOIL_CDECL zSndSampleSetRegistry_Shutdown() {
 }
 
 // Reimplements 0x4a0830: zSndSampleSetRegistry_RegisterAtExit
-extern "C" RECOIL_NOINLINE void RECOIL_CDECL zSndSampleSetRegistry_RegisterAtExit() {
+extern "C" void zSndSampleSetRegistry_RegisterAtExit() {
     atexit(zSndSampleSetRegistry_Shutdown);
 }
 
 // Reimplements 0x4a0800: zSnd_SetUseArchiveBanksAndRegisterAtExit
-extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_SetUseArchiveBanksAndRegisterAtExit(
+extern "C" void __fastcall zSnd_SetUseArchiveBanksAndRegisterAtExit(
     int enabled
 ) {
     zSnd_SetUseArchiveBanks(enabled);
@@ -128,12 +128,12 @@ extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_SetUseArchiveBanksAndRegist
 }
 
 // Reimplements 0x4a0900: zSndSampleSetRegistry_GetCount
-extern "C" RECOIL_NOINLINE int RECOIL_CDECL zSndSampleSetRegistry_GetCount() {
+extern "C" int zSndSampleSetRegistry_GetCount() {
     return RegistrySize();
 }
 
 // Reimplements 0x4a08d0: zSndSampleSetRegistry_GetByIndex
-extern "C" RECOIL_NOINLINE zSndSampleSet *RECOIL_FASTCALL zSndSampleSetRegistry_GetByIndex(
+extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistry_GetByIndex(
     int index
 ) {
     if (index < 0) {
@@ -149,7 +149,7 @@ extern "C" RECOIL_NOINLINE zSndSampleSet *RECOIL_FASTCALL zSndSampleSetRegistry_
 }
 
 // Reimplements 0x4a0920: zSndSampleSetRegistry_FindByName
-extern "C" RECOIL_NOINLINE zSndSampleSet *RECOIL_FASTCALL zSndSampleSetRegistry_FindByName(
+extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistry_FindByName(
     const char *setName
 ) {
     for (zSndSampleSet **it = g_zSnd_SampleSetRegistry.begin; it != g_zSnd_SampleSetRegistry.end;
@@ -166,21 +166,21 @@ extern "C" RECOIL_NOINLINE zSndSampleSet *RECOIL_FASTCALL zSndSampleSetRegistry_
 }
 
 // Reimplements 0x4a0870: zSndSampleSet_DestroyByName
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndSampleSet_DestroyByName(
+extern "C" int __fastcall zSndSampleSet_DestroyByName(
     const char *setName
 ) {
     return zSndSampleSetRegistry_FindByName(setName)->Destroy();
 }
 
 // Reimplements 0x4a0860: zSndSampleSet_InitByName
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndSampleSet_InitByName(
+extern "C" int __fastcall zSndSampleSet_InitByName(
     const char *setName
 ) {
     return zSndSampleSetRegistry_FindByName(setName)->Init();
 }
 
 // Reimplements 0x4a09e0: zSndSampleSet::RegistryAddEntry
-RECOIL_NOINLINE zSndSampleSet *RECOIL_THISCALL zSndSampleSet::RegistryAddEntry(
+zSndSampleSet * zSndSampleSet::RegistryAddEntry(
     const char *name,
     int count
 ) {
@@ -200,7 +200,7 @@ RECOIL_NOINLINE zSndSampleSet *RECOIL_THISCALL zSndSampleSet::RegistryAddEntry(
 }
 
 // Reimplements 0x4a0e90: zSndSampleSet::GetSampleAt
-RECOIL_NOINLINE zSndSample *RECOIL_THISCALL zSndSampleSet::GetSampleAt(
+zSndSample * zSndSampleSet::GetSampleAt(
     int index
 ) {
     if (this != 0 && index < sampleCount) {
@@ -211,7 +211,7 @@ RECOIL_NOINLINE zSndSample *RECOIL_THISCALL zSndSampleSet::GetSampleAt(
 }
 
 // Reimplements 0x4a0ec0: zSndSampleSet::FindSampleByName
-RECOIL_NOINLINE zSndSample *RECOIL_THISCALL zSndSampleSet::FindSampleByName(
+zSndSample * zSndSampleSet::FindSampleByName(
     const char *sampleName
 ) {
     if (this == 0 || (g_zSnd_ActiveBackend != 0 && g_zSnd_ActiveBackend != 1)) {
@@ -232,7 +232,7 @@ RECOIL_NOINLINE zSndSample *RECOIL_THISCALL zSndSampleSet::FindSampleByName(
 }
 
 // Reimplements 0x4a0fb0: zSndSampleSet::LoadSamplesFromIndexArchive
-RECOIL_NOINLINE int RECOIL_THISCALL zSndSampleSet::LoadSamplesFromIndexArchive(
+int zSndSampleSet::LoadSamplesFromIndexArchive(
     zIndexArchive *archive
 ) {
     {
@@ -271,7 +271,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndSampleSet::LoadSamplesFromIndexArchive(
 }
 
 // Reimplements 0x4a0c40: zSndSampleSet::Init
-RECOIL_NOINLINE int RECOIL_THISCALL zSndSampleSet::Init() {
+int zSndSampleSet::Init() {
     zIndexArchive archive;
     archive.Reset();
 
@@ -354,7 +354,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndSampleSet::Init() {
 }
 
 // Reimplements 0x4a0e40: zSndSampleSet::Destroy
-RECOIL_NOINLINE int RECOIL_THISCALL zSndSampleSet::Destroy() {
+int zSndSampleSet::Destroy() {
     if (this == 0 || resourcesLoaded == 0) {
         return 0;
     }
@@ -367,7 +367,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndSampleSet::Destroy() {
 }
 
 // Reimplements 0x4a0c00: zSndSampleSet::DestroyOwnedData
-RECOIL_NOINLINE void RECOIL_THISCALL zSndSampleSet::DestroyOwnedData() {
+void zSndSampleSet::DestroyOwnedData() {
     Destroy();
     if (samples != 0) {
         free(samples);
@@ -379,7 +379,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zSndSampleSet::DestroyOwnedData() {
 }
 
 // Reimplements 0x4a0880: zSndSampleSetRegistry_DestroyAll
-extern "C" RECOIL_NOINLINE void RECOIL_CDECL zSndSampleSetRegistry_DestroyAll() {
+extern "C" void zSndSampleSetRegistry_DestroyAll() {
     for (zSndSampleSet **it = g_zSnd_SampleSetRegistry.begin; it != g_zSnd_SampleSetRegistry.end;
         ++it) {
         zSndSampleSet *set = *it;
@@ -394,7 +394,7 @@ extern "C" RECOIL_NOINLINE void RECOIL_CDECL zSndSampleSetRegistry_DestroyAll() 
 }
 
 // Reimplements 0x4a0990: zSnd::FindSampleByName
-RECOIL_NOINLINE zSndSample *RECOIL_FASTCALL zSnd::FindSampleByName(
+zSndSample *__fastcall zSnd::FindSampleByName(
     const char *sampleName
 ) {
     if (g_zSnd_IsInitialized == 0 || sampleName == 0) {

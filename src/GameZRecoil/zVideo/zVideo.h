@@ -17,8 +17,8 @@ struct zTag4Partial;
 struct zVec3;
 
 extern "C" {
-typedef void(RECOIL_CDECL *zVideo_ShutdownVideoSystemProc)();
-typedef int(RECOIL_FASTCALL *zVideo_StatusProc)(int modeIndex);
+typedef void(*zVideo_ShutdownVideoSystemProc)();
+typedef int(__fastcall *zVideo_StatusProc)(int modeIndex);
 struct zVidRect32 {
     int left;
     int top;
@@ -42,59 +42,59 @@ struct zVideoFxColoredLineRecord {
 };
 RECOIL_STATIC_ASSERT(sizeof(zVideoFxColoredLineRecord) == 0x20);
 
-typedef void(RECOIL_FASTCALL *zVideo_BltRectDirectProc)(
+typedef void(__fastcall *zVideo_BltRectDirectProc)(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect
 );
-typedef void(RECOIL_FASTCALL *zVideo_ClearZBufferRectProc)(zVidRect32 *rect);
-typedef void(RECOIL_FASTCALL *zVideo_ClearSwSurfaceAndZBufferProc)(
+typedef void(__fastcall *zVideo_ClearZBufferRectProc)(zVidRect32 *rect);
+typedef void(__fastcall *zVideo_ClearSwSurfaceAndZBufferProc)(
     zVidRect32 *surfaceRect,
     zVidRect32 *zRect
 );
-typedef void(RECOIL_FASTCALL *zVideo_ClearStateSurfaceAndZBufferProc)(
+typedef void(__fastcall *zVideo_ClearStateSurfaceAndZBufferProc)(
     zVidRect32 *rect,
     zVideo_SurfaceStatePartial *surfaceState
 );
-typedef int(RECOIL_FASTCALL *zVideo_PaletteSetEntriesProc)(
+typedef int(__fastcall *zVideo_PaletteSetEntriesProc)(
     unsigned short firstEntry,
     unsigned short entryCount,
     PALETTEENTRY *entries
 );
-typedef int(RECOIL_FASTCALL *zVideo_AdjustSurfacesProc)(
+typedef int(__fastcall *zVideo_AdjustSurfacesProc)(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect,
     int waitForPresent,
     int blitPrimaryToSwFirst
 );
-typedef int(RECOIL_FASTCALL *zVideo_SurfaceStateProc)(zVideo_SurfaceStatePartial *surfaceState);
-typedef int(RECOIL_FASTCALL *zVideo_QueryMemoryBytesProc)(
+typedef int(__fastcall *zVideo_SurfaceStateProc)(zVideo_SurfaceStatePartial *surfaceState);
+typedef int(__fastcall *zVideo_QueryMemoryBytesProc)(
     int flags,
     int *totalBytes,
     int *freeBytes
 );
-typedef int(RECOIL_FASTCALL *zVideo_GetHwApiDeviceFeatureFlagsProc)(int deviceIndex);
-typedef zVideo_TextureRecordPartial *(RECOIL_FASTCALL *zVideo_CreateTextureRecordProc)(
+typedef int(__fastcall *zVideo_GetHwApiDeviceFeatureFlagsProc)(int deviceIndex);
+typedef zVideo_TextureRecordPartial *(__fastcall *zVideo_CreateTextureRecordProc)(
     const char *textureName,
     zVidImagePartial *image,
     int useAlpha,
     int clampU,
     int clampV
 );
-typedef void(RECOIL_FASTCALL *zVideo_DestroyTextureRecordProc)(
+typedef void(__fastcall *zVideo_DestroyTextureRecordProc)(
     zVideo_TextureRecordPartial *texture
 );
-typedef void(RECOIL_FASTCALL *zVideo_TextureRecordReleaseUploadSurfaceRefProc)(
+typedef void(__fastcall *zVideo_TextureRecordReleaseUploadSurfaceRefProc)(
     zVideo_TextureRecordPartial *texture
 );
-typedef void(RECOIL_CDECL *zVideo_ReleaseAllTextureUploadSurfacesProc)();
-typedef void(RECOIL_CDECL *zVideo_UpdateFogColorProc)();
+typedef void(*zVideo_ReleaseAllTextureUploadSurfacesProc)();
+typedef void(*zVideo_UpdateFogColorProc)();
 
 struct zVidD3DDriverRecordPartial {
     char m_deviceName[0x20];
     char m_deviceDescription[0x60];
     GUID *pD3DDeviceGuid;
     GUID m_d3dDeviceGuidStorage;
-    unsigned char m_hwDesc[0xfc];
+    D3DDEVICEDESC m_hwDesc;
 };
 
 struct zVideo_TextureRecordPartial {
@@ -199,15 +199,15 @@ struct zVidPaletteRemapRecipe {
 };
 
 struct zVideo_SurfaceLockVerifierVtbl {
-    unsigned int(RECOIL_STDCALL *QueryInterface)(
+    unsigned int(__stdcall *QueryInterface)(
         zVideo_SurfaceLockVerifier *self,
         REFIID riid,
         void **object
     );
-    unsigned int(RECOIL_STDCALL *AddRef)(zVideo_SurfaceLockVerifier *self);
-    unsigned int(RECOIL_STDCALL *Release)(zVideo_SurfaceLockVerifier *self);
-    unsigned int(RECOIL_STDCALL *unknown_0c)(zVideo_SurfaceLockVerifier *self);
-    int(RECOIL_STDCALL *VerifySurfaceState)(
+    unsigned int(__stdcall *AddRef)(zVideo_SurfaceLockVerifier *self);
+    unsigned int(__stdcall *Release)(zVideo_SurfaceLockVerifier *self);
+    unsigned int(__stdcall *unknown_0c)(zVideo_SurfaceLockVerifier *self);
+    int(__stdcall *VerifySurfaceState)(
         zVideo_SurfaceLockVerifier *self,
         zVideo_SurfaceLockVerifyArgs *args
     );
@@ -445,78 +445,78 @@ extern IDirectDrawPalette *g_zVideo_pDDPalette;
 extern HWND g_zVideo_hWnd;
 extern RECT g_zVideo_CachedClientRectScreen;
 
-RECOIL_NOINLINE unsigned int RECOIL_FASTCALL zVid_PackColorRGB(
+unsigned int __fastcall zVid_PackColorRGB(
     unsigned char red,
     unsigned char green,
     unsigned char blue
 );
-RECOIL_NOINLINE unsigned int RECOIL_FASTCALL zVid_PackColor00RRGGBB(unsigned int color00RRGGBB);
-RECOIL_NOINLINE unsigned short RECOIL_FASTCALL zVid_PackColorRgbFloats(zVideo_ColorRgbFloat *color);
-RECOIL_NOINLINE void RECOIL_FASTCALL zVideo_SetClearColorPacked16(unsigned int packedColor16);
-RECOIL_NOINLINE void RECOIL_FASTCALL zVideo_SetPendingFogTargetColorFromRgb01(
+unsigned int __fastcall zVid_PackColor00RRGGBB(unsigned int color00RRGGBB);
+unsigned short __fastcall zVid_PackColorRgbFloats(zVideo_ColorRgbFloat *color);
+void __fastcall zVideo_SetClearColorPacked16(unsigned int packedColor16);
+void __fastcall zVideo_SetPendingFogTargetColorFromRgb01(
     zVideo_ColorRgbFloat *color
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL zVideo_SetActiveViewContext(
+void __fastcall zVideo_SetActiveViewContext(
     zClass_CameraDataPartial *viewContext
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL zVideo_sw_RenderFrame(
+int __fastcall zVideo_sw_RenderFrame(
     zClass_NodePartial *camera,
     int updateFxPass3Local
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL zVideo_UpdateProjectionStateFromCameraData(
+void __fastcall zVideo_UpdateProjectionStateFromCameraData(
     zClass_CameraDataPartial *cameraData
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL zVideo_FrustumTestSphereClipMask(
+int __fastcall zVideo_FrustumTestSphereClipMask(
     zVec3 *sphereCenter,
     int *clipMaskInOut,
     float radius
 );
-RECOIL_NOINLINE int RECOIL_CDECL zVid_QueryCachedClientRectUpdateMaskIf3dfx();
-RECOIL_NOINLINE void RECOIL_CDECL zVid_UpdateCachedClientRectIfUpdateMaskEnabled();
-RECOIL_NOINLINE void RECOIL_CDECL zVideo_RestoreIconicFullscreenWindowIfNeeded();
+int zVid_QueryCachedClientRectUpdateMaskIf3dfx();
+void zVid_UpdateCachedClientRectIfUpdateMaskEnabled();
+void zVideo_RestoreIconicFullscreenWindowIfNeeded();
 }
 
 namespace zVid {
-RECOIL_NOINLINE void RECOIL_FASTCALL SetAccelerationOption(int accelerationOption);
-RECOIL_NOINLINE void RECOIL_FASTCALL SetHwApiOption(int hwApiOption);
-RECOIL_NOINLINE int RECOIL_CDECL GetAccelerationOption();
-RECOIL_NOINLINE int RECOIL_CDECL GetHwApiOption();
-RECOIL_NOINLINE int RECOIL_CDECL GetAcceptedDirectDrawDeviceCount();
-RECOIL_NOINLINE int RECOIL_CDECL GetAcceptedHardwareRendererCount_Cached();
-RECOIL_NOINLINE int RECOIL_CDECL HasAcceptedHardwareRenderer();
-RECOIL_NOINLINE int RECOIL_CDECL GetTexturePackLoadState();
-RECOIL_NOINLINE void RECOIL_FASTCALL SetTexturePackLoadState(int texturePackLoadState);
-RECOIL_NOINLINE int RECOIL_CDECL GetVideoModeIndexFromOptions();
-RECOIL_NOINLINE void RECOIL_FASTCALL SetVideoModeIndex(int modeIndex);
-RECOIL_NOINLINE int RECOIL_FASTCALL QueryDeviceVideoMemoryBytes(
+void __fastcall SetAccelerationOption(int accelerationOption);
+void __fastcall SetHwApiOption(int hwApiOption);
+int GetAccelerationOption();
+int GetHwApiOption();
+int GetAcceptedDirectDrawDeviceCount();
+int GetAcceptedHardwareRendererCount_Cached();
+int HasAcceptedHardwareRenderer();
+int GetTexturePackLoadState();
+void __fastcall SetTexturePackLoadState(int texturePackLoadState);
+int GetVideoModeIndexFromOptions();
+void __fastcall SetVideoModeIndex(int modeIndex);
+int __fastcall QueryDeviceVideoMemoryBytes(
     int deviceIndexOrMinus1,
     int *totalBytes,
     int *freeBytes
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL QueryTextureMemoryBytes(
+int __fastcall QueryTextureMemoryBytes(
     int deviceIndexOrMinus1,
     int *totalBytes,
     int *freeBytes
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SetCachedClientRectUpdateMask(int mask);
-RECOIL_NOINLINE char *RECOIL_CDECL GetSelectedHwApiDescriptionOrDefault();
-RECOIL_NOINLINE char *RECOIL_CDECL GetSelectedD3DDeviceNameOrDefault();
-RECOIL_NOINLINE char *RECOIL_FASTCALL GetHwApiDescription(int index);
-RECOIL_NOINLINE char *RECOIL_FASTCALL GetHwApiDriverName(int index);
-RECOIL_NOINLINE void RECOIL_CDECL Noise_InitBuffers();
-RECOIL_NOINLINE void RECOIL_CDECL Noise_ShutdownBuffers();
-RECOIL_NOINLINE void RECOIL_FASTCALL DrawNoiseRect(
+void __fastcall SetCachedClientRectUpdateMask(int mask);
+char *GetSelectedHwApiDescriptionOrDefault();
+char *GetSelectedD3DDeviceNameOrDefault();
+char *__fastcall GetHwApiDescription(int index);
+char *__fastcall GetHwApiDriverName(int index);
+void Noise_InitBuffers();
+void Noise_ShutdownBuffers();
+void __fastcall DrawNoiseRect(
     zVidRect32 *rectOrNull,
     double intensity
 );
-RECOIL_NOINLINE int RECOIL_CDECL InitFrameScratchBuffers();
-RECOIL_NOINLINE int RECOIL_CDECL ShutdownFrameScratchBuffers();
+int InitFrameScratchBuffers();
+int ShutdownFrameScratchBuffers();
 } // namespace zVid
 
 namespace zVideo_FxSurface {
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyBlueTintRect(zVidRect32 *rectOrNull);
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyGreenMaskRect(zVidRect32 *rectOrNull);
-RECOIL_NOINLINE void RECOIL_FASTCALL DrawAlphaBlendedLine(
+void __fastcall ApplyBlueTintRect(zVidRect32 *rectOrNull);
+void __fastcall ApplyGreenMaskRect(zVidRect32 *rectOrNull);
+void __fastcall DrawAlphaBlendedLine(
     zVidRect32 *clipRect,
     int x1,
     int y1,
@@ -527,7 +527,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DrawAlphaBlendedLine(
     float alphaStart,
     int clipInset
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL DrawColoredLinesBatch(
+void __fastcall DrawColoredLinesBatch(
     zVideoFxColoredLineRecord *lines,
     int count,
     zVidRect32 *clipRectOrNull
@@ -535,17 +535,17 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DrawColoredLinesBatch(
 } // namespace zVideo_FxSurface
 
 namespace zVideo_buff {
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipCoordToRange(
+int __fastcall ClipCoordToRange(
     int *coordPtr,
     int minCoord,
     int maxCoord
 );
-RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL CopySurfaceRectToImage(
+zVidImagePartial *__fastcall CopySurfaceRectToImage(
     int sourceSelector,
     zVidRect32 *rect,
     zVidImagePartial *imageOrNull
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL BltSourceToPrimaryClipped(
+void __fastcall BltSourceToPrimaryClipped(
     zVidImagePartial *srcImage,
     int dstX,
     int dstY,
@@ -555,11 +555,11 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltSourceToPrimaryClipped(
 } // namespace zVideo_buff
 
 namespace zVideo {
-RECOIL_NOINLINE void RECOIL_FASTCALL SetFogColorFromRgb01(zVideo_ColorRgbFloat *color);
-RECOIL_NOINLINE void RECOIL_FASTCALL SetFogTargetColorFromRgb01(zVideo_ColorRgbFloat *color);
-RECOIL_NOINLINE void RECOIL_CDECL CommitFogColorIfChanged();
-RECOIL_NOINLINE void RECOIL_CDECL CommitFogTargetColorIfChanged();
-RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_SetupFromMasks(
+void __fastcall SetFogColorFromRgb01(zVideo_ColorRgbFloat *color);
+void __fastcall SetFogTargetColorFromRgb01(zVideo_ColorRgbFloat *color);
+void CommitFogColorIfChanged();
+void CommitFogTargetColorIfChanged();
+void __fastcall PixelPack_SetupFromMasks(
     int redBits,
     int greenBits,
     int blueBits,
@@ -567,7 +567,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_SetupFromMasks(
     unsigned int greenMask,
     unsigned int blueMask
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL TexturePixelPack_SetupFromMasks(
+void __fastcall TexturePixelPack_SetupFromMasks(
     int redBits,
     int greenBits,
     int blueBits,
@@ -577,76 +577,76 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TexturePixelPack_SetupFromMasks(
     unsigned int blueMask,
     unsigned int alphaMask
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_GetRgbBits(
+void __fastcall PixelPack_GetRgbBits(
     int *outRBits,
     int *outGBits,
     int *outBBits
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_GetRgbMasks(
+void __fastcall PixelPack_GetRgbMasks(
     unsigned int *outRMask,
     unsigned int *outGMask,
     unsigned int *outBMask
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_GetPackingParams(
+void __fastcall PixelPack_GetPackingParams(
     int *outPackedBase,
     int *outSumMinus8,
     int *outBShiftTo8
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetRendererTypeAndActivePath(int rendererType);
-RECOIL_NOINLINE int RECOIL_FASTCALL SetHalfResAdjustMode(int mode);
-RECOIL_NOINLINE void RECOIL_FASTCALL HandleSoftwareModeHotkeyCommand(int commandId);
-RECOIL_NOINLINE zVidRect32 *RECOIL_CDECL GetPrimarySurfaceRectScratch();
-RECOIL_NOINLINE void *RECOIL_CDECL GetSwSurfacePixels();
-RECOIL_NOINLINE int RECOIL_CDECL GetSwSurfaceWidth();
-RECOIL_NOINLINE int RECOIL_CDECL GetSwSurfaceHeight();
-RECOIL_NOINLINE int RECOIL_CDECL GetSwSurfacePitch();
-RECOIL_NOINLINE int RECOIL_CDECL GetSwSurfaceLockedFlag();
-RECOIL_NOINLINE void *RECOIL_CDECL GetPrimarySurfacePixels();
-RECOIL_NOINLINE int RECOIL_CDECL GetPrimarySurfaceWidth();
-RECOIL_NOINLINE int RECOIL_CDECL GetPrimarySurfaceHeight();
-RECOIL_NOINLINE int RECOIL_CDECL GetPrimarySurfacePitch();
-RECOIL_NOINLINE int RECOIL_CDECL GetDisplayModeBpp();
-RECOIL_NOINLINE int RECOIL_FASTCALL LoadPaletteFileAndApplyBrightness(const char *palettePath);
-RECOIL_NOINLINE int RECOIL_FASTCALL ApplyBrightnessToPaletteEntries(PALETTEENTRY *paletteEntries);
-RECOIL_NOINLINE int RECOIL_FASTCALL Init_ApplyModeIndex(int modeIndex);
-RECOIL_NOINLINE void RECOIL_FASTCALL Init_SetSurfaceGeometryFromModeIndex(int modeIndex);
-RECOIL_NOINLINE int RECOIL_FASTCALL SetVideoMode(int modeIndex);
-RECOIL_NOINLINE int RECOIL_FASTCALL InitVideoSystem(
+int __fastcall SetRendererTypeAndActivePath(int rendererType);
+int __fastcall SetHalfResAdjustMode(int mode);
+void __fastcall HandleSoftwareModeHotkeyCommand(int commandId);
+zVidRect32 *GetPrimarySurfaceRectScratch();
+void *GetSwSurfacePixels();
+int GetSwSurfaceWidth();
+int GetSwSurfaceHeight();
+int GetSwSurfacePitch();
+int GetSwSurfaceLockedFlag();
+void *GetPrimarySurfacePixels();
+int GetPrimarySurfaceWidth();
+int GetPrimarySurfaceHeight();
+int GetPrimarySurfacePitch();
+int GetDisplayModeBpp();
+int __fastcall LoadPaletteFileAndApplyBrightness(const char *palettePath);
+int __fastcall ApplyBrightnessToPaletteEntries(PALETTEENTRY *paletteEntries);
+int __fastcall Init_ApplyModeIndex(int modeIndex);
+void __fastcall Init_SetSurfaceGeometryFromModeIndex(int modeIndex);
+int __fastcall SetVideoMode(int modeIndex);
+int __fastcall InitVideoSystem(
     HWND hWnd,
     int rendererBackend,
     int fullscreen,
     int modeIndex
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL CallClearSwSurfaceAndZBuffer(
+void __fastcall CallClearSwSurfaceAndZBuffer(
     zVidRect32 *surfaceRect,
     zVidRect32 *zRect
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL CallClearPrimarySurfaceAndZBuffer(zVidRect32 *rect);
-RECOIL_NOINLINE int RECOIL_FASTCALL ExchangeClearScreenBufferEnabled(int enable);
-RECOIL_NOINLINE int RECOIL_CDECL GetClearScreenBufferEnabled();
-RECOIL_NOINLINE int RECOIL_CDECL Dispatch_LockDisplayModeSurfaceState();
-RECOIL_NOINLINE int RECOIL_CDECL Dispatch_UnlockDisplayModeSurfaceState();
-RECOIL_NOINLINE int RECOIL_CDECL Dispatch_UnlockSwSurfaceState();
-RECOIL_NOINLINE int RECOIL_CDECL Dispatch_UnlockPrimarySurfaceState();
-RECOIL_NOINLINE int RECOIL_FASTCALL PresentOrAdjustSurfacesIfEnabled(
+void __fastcall CallClearPrimarySurfaceAndZBuffer(zVidRect32 *rect);
+int __fastcall ExchangeClearScreenBufferEnabled(int enable);
+int GetClearScreenBufferEnabled();
+int Dispatch_LockDisplayModeSurfaceState();
+int Dispatch_UnlockDisplayModeSurfaceState();
+int Dispatch_UnlockSwSurfaceState();
+int Dispatch_UnlockPrimarySurfaceState();
+int __fastcall PresentOrAdjustSurfacesIfEnabled(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect,
     int waitForPresent,
     int blitPrimaryToSwFirst
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL Fx_SetSurfaceState(
+void __fastcall Fx_SetSurfaceState(
     void *pixels,
     int width,
     int height,
     int pitchBytes
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_CopySurfacePixelToScratchClipped(
+void __fastcall FxPass3_CopySurfacePixelToScratchClipped(
     int dstDx,
     int dstDy,
     int srcDx,
     int srcDy
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_ApplyToCurrentSurface(
+void __fastcall FxPass3_ApplyToCurrentSurface(
     int centerX,
     int centerY,
     int currentRadius,
@@ -656,36 +656,36 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_ApplyToCurrentSurface(
     float sinPhase,
     zVidRect32 *clipRectOrNull
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionCombined(
+void __fastcall buff_BlurRegionCombined(
     zVidRect32 *rectOrNull,
     int mode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionVertical(
+void __fastcall buff_BlurRegionVertical(
     zVidRect32 *rectOrNull,
     int mode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionHorizontal(
+void __fastcall buff_BlurRegionHorizontal(
     zVidRect32 *rectOrNull,
     int mode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionByMode(
+void __fastcall buff_BlurRegionByMode(
     zVidRect32 *rectOrNull,
     int mode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_UpdateLocal(
+void __fastcall zVideoFxPass3Config_UpdateLocal(
     zVideoFxPass3Config *config,
     float deltaTime
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_SetPrimaryElementParamsLocal(
+void __fastcall zVideoFxPass3Config_SetPrimaryElementParamsLocal(
     zVideoFxPass3Config *config,
     unsigned int packedColor,
     double primaryAlpha
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_SetPrimaryElementParamsLocal(
+void __fastcall FxPass3_SetPrimaryElementParamsLocal(
     unsigned int packedColor,
     double primaryAlpha
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_QueueElementLocal(
+void __fastcall zVideoFxPass3Config_QueueElementLocal(
     zVideoFxPass3Config *config,
     int rectLeftPixels,
     int rectTopPixels,
@@ -695,7 +695,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_QueueElementLocal(
     float sinFreq,
     float sinPhase
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_QueueElementLocal(
+void __fastcall FxPass3_QueueElementLocal(
     int rectLeftPixels,
     int rectTopPixels,
     int currentRadiusPixels,
@@ -704,84 +704,84 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_QueueElementLocal(
     float sinFreq,
     float sinPhase
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_QueuePrimitive(
+void __fastcall FxPass3_QueuePrimitive(
     void *primitive,
     int width,
     int height,
     int pitchBytes
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_SetInputRectByIndex(
+void __fastcall FxPass3_SetInputRectByIndex(
     int index,
     HudUiRect *rectOrNull
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_UpdateLocal(float deltaTime);
-RECOIL_NOINLINE void RECOIL_CDECL RunPostprocessOnSwBuffer();
-RECOIL_NOINLINE int RECOIL_CDECL RunPostprocessOnPrimaryBuffer();
-RECOIL_NOINLINE int RECOIL_FASTCALL AdjustSurfacesIfEnabled(
+void __fastcall FxPass3_UpdateLocal(float deltaTime);
+void RunPostprocessOnSwBuffer();
+int RunPostprocessOnPrimaryBuffer();
+int __fastcall AdjustSurfacesIfEnabled(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect,
     int waitForPresent,
     int blitPrimaryToSwFirst
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL BindRendererDispatch(
+void __fastcall BindRendererDispatch(
     int rendererType,
     int fullscreenOption
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL CommitHwApiDeviceSelection(int hwApiIndex);
-RECOIL_NOINLINE int RECOIL_FASTCALL SelectHwApiDeviceOrFallback(int hwApiIndex);
-RECOIL_NOINLINE int RECOIL_CDECL ReturnSuccessStub();
-RECOIL_NOINLINE int RECOIL_CDECL ModuleInit();
-RECOIL_NOINLINE int RECOIL_CDECL ShutdownVideoSystem();
-RECOIL_NOINLINE int RECOIL_CDECL UpdateCachedClientRectScreenCoords();
-RECOIL_NOINLINE void RECOIL_CDECL AtExitReleaseAllInterfacesAndSurfaces();
+void __fastcall CommitHwApiDeviceSelection(int hwApiIndex);
+int __fastcall SelectHwApiDeviceOrFallback(int hwApiIndex);
+int ReturnSuccessStub();
+int ModuleInit();
+int ShutdownVideoSystem();
+int UpdateCachedClientRectScreenCoords();
+void AtExitReleaseAllInterfacesAndSurfaces();
 } // namespace zVideo
 
 namespace zVid_Image {
 extern zVidImagePartial g_zImage_DefaultImage;
 
-RECOIL_NOINLINE zVidImagePartial *RECOIL_CDECL Create();
-RECOIL_NOINLINE int RECOIL_FASTCALL Destroy(zVidImagePartial *image);
-RECOIL_NOINLINE int RECOIL_FASTCALL ReleaseIfNotDefault(zVidImagePartial *image);
-RECOIL_NOINLINE void RECOIL_FASTCALL ReleaseOwnedBuffers(zVidImagePartial *image);
-RECOIL_NOINLINE void RECOIL_FASTCALL CalcPow2ScratchFields(zVidImagePartial *image);
-RECOIL_NOINLINE int RECOIL_FASTCALL QueryBytesPerPixel(zVidImagePartial *image);
-RECOIL_NOINLINE void RECOIL_FASTCALL ClearZeroAlphaPixelsInPlace(zVidImagePartial *image);
-RECOIL_NOINLINE int RECOIL_FASTCALL SetHeaderFlagsByte(
+zVidImagePartial *Create();
+int __fastcall Destroy(zVidImagePartial *image);
+int __fastcall ReleaseIfNotDefault(zVidImagePartial *image);
+void __fastcall ReleaseOwnedBuffers(zVidImagePartial *image);
+void __fastcall CalcPow2ScratchFields(zVidImagePartial *image);
+int __fastcall QueryBytesPerPixel(zVidImagePartial *image);
+void __fastcall ClearZeroAlphaPixelsInPlace(zVidImagePartial *image);
+int __fastcall SetHeaderFlagsByte(
     zVidImagePartial *image,
     unsigned char flags
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetFormatCode(
+int __fastcall SetFormatCode(
     zVidImagePartial *image,
     unsigned char formatCode
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetSize(
+int __fastcall SetSize(
     zVidImagePartial *image,
     short width,
     short height
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL QueryPixelDataBytes(zVidImagePartial *image);
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadHeader(
+int __fastcall QueryPixelDataBytes(zVidImagePartial *image);
+int __fastcall ReadHeader(
     FILE *file,
     zVidImagePartial *image
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadData(
+int __fastcall ReadData(
     FILE *file,
     zVidImagePartial *image,
     int bytesPerPixel = 0
 );
-RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL ReadFromFile(FILE *file);
-RECOIL_NOINLINE void RECOIL_FASTCALL ResampleSquare(
+zVidImagePartial *__fastcall ReadFromFile(FILE *file);
+void __fastcall ResampleSquare(
     zVidImagePartial *image,
     int sideLength
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL BlitToActiveTarget(
+void __fastcall BlitToActiveTarget(
     zVidImagePartial *image,
     int dstX,
     int dstY,
     int clipFlags,
     zVidRect32 *srcRect
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL BlitToFramebufferClipped(
+void __fastcall BlitToFramebufferClipped(
     zVidImagePartial *image,
     int dstX,
     int dstY,
@@ -791,8 +791,8 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BlitToFramebufferClipped(
 } // namespace zVid_Image
 
 namespace zVid_PaletteRemap {
-RECOIL_NOINLINE int RECOIL_FASTCALL FindRecipeIndex(zVidPaletteRemapRecipe *recipe);
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyRecipeToPaletteVariant(
+int __fastcall FindRecipeIndex(zVidPaletteRemapRecipe *recipe);
+void __fastcall ApplyRecipeToPaletteVariant(
     zVidPaletteRemapRecipe *recipe,
     unsigned short *sourceColors,
     int colorCount,
@@ -801,45 +801,44 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyRecipeToPaletteVariant(
 );
 } // namespace zVid_PaletteRemap
 
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zVid_Image_SetPixels(
+extern "C" int __fastcall zVid_Image_SetPixels(
     zVidImagePartial *image,
     void *pixels,
     char *alphaMap
 );
 
-extern "C" RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL zVideo_buff_CaptureSurfaceToImage(
+extern "C" zVidImagePartial *__fastcall zVideo_buff_CaptureSurfaceToImage(
     int sourceSelector
 );
-extern "C" RECOIL_NOINLINE unsigned short *RECOIL_FASTCALL
+extern "C" unsigned short *__fastcall
 zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
     unsigned short *palette,
     int colorCount
 );
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zVid_PaletteRemap_BuildPaletteVariant(
+extern "C" int __fastcall zVid_PaletteRemap_BuildPaletteVariant(
     zVidPaletteRemapRecipe *recipe
 );
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zVid_PaletteRemap_FindRecipeIndexFromRgb(
+extern "C" int __fastcall zVid_PaletteRemap_FindRecipeIndexFromRgb(
     zColorRgb *rgb
 );
-extern "C" RECOIL_NOINLINE FILE *RECOIL_FASTCALL zVid_TexturePackEntry_LoadFromFile(
+extern "C" FILE *__fastcall zVid_TexturePackEntry_LoadFromFile(
     zVidTexturePackEntry *entry
 );
-extern "C" RECOIL_NOINLINE void RECOIL_CDECL zVid_TexturePack_EnsureDefaultImagePackLoaded();
-extern "C" RECOIL_NOINLINE RECOIL_NO_GS void RECOIL_CDECL
-zVid_TexturePack_EnsureBuiltinTexturePacksLoaded();
-extern "C" RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL zVid_TexturePack_LoadImageByName(
+extern "C" void zVid_TexturePack_EnsureDefaultImagePackLoaded();
+extern "C" RECOIL_NO_GS void zVid_TexturePack_EnsureBuiltinTexturePacksLoaded();
+extern "C" zVidImagePartial *__fastcall zVid_TexturePack_LoadImageByName(
     const char *imageName
 );
-extern "C" RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL
+extern "C" zVidImagePartial *__fastcall
 zVid_TexturePack_LoadBuiltinImageByName(const char *imageName);
 
 namespace zVid_TexturePack {
-RECOIL_NOINLINE void RECOIL_CDECL ShutdownBuiltinPacks();
-RECOIL_NOINLINE void RECOIL_CDECL Shutdown();
+void ShutdownBuiltinPacks();
+void Shutdown();
 } // namespace zVid_TexturePack
 
 namespace zVideo_dd {
-RECOIL_NOINLINE int RECOIL_CDECL GetAcceptedDirectDrawDeviceCountCached();
+int GetAcceptedDirectDrawDeviceCountCached();
 BOOL CALLBACK EnumDirectDrawDeviceCallback(
     GUID *guid,
     LPSTR driverDescription,
@@ -854,100 +853,100 @@ HRESULT CALLBACK EnumDirect3DDeviceCallback(
     D3DDEVICEDESC *helDesc,
     LPVOID context
 );
-RECOIL_NOINLINE int RECOIL_CDECL PrepareWindowForMode();
-RECOIL_NOINLINE int RECOIL_FASTCALL OpenVideoMode(int modeIndex);
-RECOIL_NOINLINE int RECOIL_CDECL RunDirectDrawDeviceEnumeration();
-RECOIL_NOINLINE void RECOIL_CDECL StartupEnumerateAndDefaultSelect();
-RECOIL_NOINLINE int RECOIL_CDECL ShutdownVideoSystem();
-RECOIL_NOINLINE int RECOIL_FASTCALL LockDirectDrawSurface(
+int PrepareWindowForMode();
+int __fastcall OpenVideoMode(int modeIndex);
+int RunDirectDrawDeviceEnumeration();
+void StartupEnumerateAndDefaultSelect();
+int ShutdownVideoSystem();
+int __fastcall LockDirectDrawSurface(
     IDirectDrawSurface3 *surface,
     DDSURFACEDESC *outLockedSurfaceDesc
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL UnlockDirectDrawSurface(IDirectDrawSurface3 *surface);
-RECOIL_NOINLINE int RECOIL_FASTCALL LockSurface_WaitRestore(
+int __fastcall UnlockDirectDrawSurface(IDirectDrawSurface3 *surface);
+int __fastcall LockSurface_WaitRestore(
     IDirectDrawSurface3 *surface,
     DDSURFACEDESC *lockedDescOut
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL UnlockSurface_WaitRestore(IDirectDrawSurface3 *surface);
-RECOIL_NOINLINE int RECOIL_FASTCALL LockSurfaceState(zVideo_SurfaceStatePartial *surfaceState);
-RECOIL_NOINLINE int RECOIL_FASTCALL UnlockSurfaceState(zVideo_SurfaceStatePartial *surfaceState);
-RECOIL_NOINLINE IDirectDrawSurface3 *RECOIL_FASTCALL Image_LazyCreateBackingSurface(
+int __fastcall UnlockSurface_WaitRestore(IDirectDrawSurface3 *surface);
+int __fastcall LockSurfaceState(zVideo_SurfaceStatePartial *surfaceState);
+int __fastcall UnlockSurfaceState(zVideo_SurfaceStatePartial *surfaceState);
+IDirectDrawSurface3 *__fastcall Image_LazyCreateBackingSurface(
     zVidImagePartial *image,
     unsigned int ddsCapsFlags
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL Image_PopulateSurfaceFromHeapPixels(zVidImagePartial *image);
-RECOIL_NOINLINE IDirectDrawSurface3 *RECOIL_FASTCALL Image_LazyCreateVideoMemorySurface(
+int __fastcall Image_PopulateSurfaceFromHeapPixels(zVidImagePartial *image);
+IDirectDrawSurface3 *__fastcall Image_LazyCreateVideoMemorySurface(
     zVidImagePartial *image
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL Image_EnsureSurfaceForCurrentDevice(zVidImagePartial *image);
-RECOIL_NOINLINE int RECOIL_FASTCALL Image_UploadPixelsToSurface(
+void __fastcall Image_EnsureSurfaceForCurrentDevice(zVidImagePartial *image);
+int __fastcall Image_UploadPixelsToSurface(
     zVidImagePartial *image,
     HDC *outHdc
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL Image_ReleaseSurface(
+int __fastcall Image_ReleaseSurface(
     zVidImagePartial *image,
     HDC hdc
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRectDirect(
+void __fastcall BltSwToPrimaryRectDirect(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL BltPrimaryToSwRectDirect(
+void __fastcall BltPrimaryToSwRectDirect(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL PresentDisplayModeSurface(
+int __fastcall PresentDisplayModeSurface(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect,
     int waitForPresent,
     int skipSurfaceStateSwap
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRect(
+void __fastcall BltSwToPrimaryRect(
     zVidImagePartial *srcImage,
     int srcColorKeyEnable,
     zVidRect32 *srcRect,
     zVidRect32 *dstRect
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ZBuffer_DepthFillRect(zVidRect32 *dstRect);
-RECOIL_NOINLINE void RECOIL_FASTCALL ClearScreenAndZBufferRect(
+void __fastcall ZBuffer_DepthFillRect(zVidRect32 *dstRect);
+void __fastcall ClearScreenAndZBufferRect(
     zVidRect32 *dstRect,
     zVideo_SurfaceStatePartial *colorSurfaceState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ClearSwBackbufferAndZBufferRects(
+void __fastcall ClearSwBackbufferAndZBufferRects(
     zVidRect32 *colorRect,
     zVidRect32 *zRect
 );
-RECOIL_NOINLINE void RECOIL_CDECL FlipToGDIIfAttached();
-RECOIL_NOINLINE int RECOIL_CDECL SetDisplayMode();
-RECOIL_NOINLINE int RECOIL_FASTCALL SetVideoMode(int modeIndex);
-RECOIL_NOINLINE int RECOIL_CDECL VerifyFullscreenSurfaceLocks();
-RECOIL_NOINLINE int RECOIL_CDECL RestoreDisplaySurfaces();
-RECOIL_NOINLINE int RECOIL_FASTCALL InitFullscreenSoftwarePixelPack(
+void FlipToGDIIfAttached();
+int SetDisplayMode();
+int __fastcall SetVideoMode(int modeIndex);
+int VerifyFullscreenSurfaceLocks();
+int RestoreDisplaySurfaces();
+int __fastcall InitFullscreenSoftwarePixelPack(
     IDirectDrawSurface3 *displaySurface
 );
-RECOIL_NOINLINE HRESULT RECOIL_FASTCALL CreateSurface3FromDesc(
+HRESULT __fastcall CreateSurface3FromDesc(
     IDirectDraw2 *directDraw,
     DDSURFACEDESC *desc,
     IDirectDrawSurface3 **outSurface
 );
-RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenSurfacesForRenderer();
-RECOIL_NOINLINE int RECOIL_CDECL CreateHalfResBackbufferSurfaces();
-RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenSoftwareSurfaces();
-RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenHardwareSurfaces();
-RECOIL_NOINLINE int RECOIL_FASTCALL GetHwApiDeviceFeatureFlags(int deviceIndex);
-RECOIL_NOINLINE int RECOIL_CDECL CreateDirectDraw2ForSelectedDevice();
-RECOIL_NOINLINE int RECOIL_FASTCALL EnumerateDirect3DDevicesForRecord(
+int CreateFullscreenSurfacesForRenderer();
+int CreateHalfResBackbufferSurfaces();
+int CreateFullscreenSoftwareSurfaces();
+int CreateFullscreenHardwareSurfaces();
+int __fastcall GetHwApiDeviceFeatureFlags(int deviceIndex);
+int CreateDirectDraw2ForSelectedDevice();
+int __fastcall EnumerateDirect3DDevicesForRecord(
     zVidHwApiDeviceRecordPartial *entry
 );
-RECOIL_NOINLINE int RECOIL_CDECL ReleaseAllInterfacesAndSurfaces();
-RECOIL_NOINLINE void RECOIL_FASTCALL VerifySurfaceStateLocking(int callerContext);
-RECOIL_NOINLINE void RECOIL_CDECL TeardownVideoSubsystem();
-RECOIL_NOINLINE int RECOIL_FASTCALL ReportError(
+int ReleaseAllInterfacesAndSurfaces();
+void __fastcall VerifySurfaceStateLocking(int callerContext);
+void TeardownVideoSubsystem();
+int __fastcall ReportError(
     int hresult,
     const char *sourceFile,
     int sourceLine
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL PaletteSetEntries(
+int __fastcall PaletteSetEntries(
     unsigned short firstEntry,
     unsigned short entryCount,
     PALETTEENTRY *entries
@@ -955,36 +954,36 @@ RECOIL_NOINLINE int RECOIL_FASTCALL PaletteSetEntries(
 } // namespace zVideo_dd
 
 namespace zVideo_dd3d {
-RECOIL_NOINLINE void RECOIL_FASTCALL CallClearZBufferRect(zVidRect32 *rect);
-RECOIL_NOINLINE void RECOIL_FASTCALL SetPendingWireframeState(int pendingWireframeState);
-RECOIL_NOINLINE void RECOIL_FASTCALL SetPendingDitherEnable(int enabled);
-RECOIL_NOINLINE int RECOIL_CDECL BeginSceneAndFlushPendingRenderStates();
-RECOIL_NOINLINE int RECOIL_CDECL EndScene();
-RECOIL_NOINLINE int RECOIL_FASTCALL PresentDisplayModeSurface(
+void __fastcall CallClearZBufferRect(zVidRect32 *rect);
+void __fastcall SetPendingWireframeState(int pendingWireframeState);
+void __fastcall SetPendingDitherEnable(int enabled);
+int BeginSceneAndFlushPendingRenderStates();
+int EndScene();
+int __fastcall PresentDisplayModeSurface(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect,
     int waitForPresent,
     int blitPrimaryToSwFirst
 );
-RECOIL_NOINLINE zVideo_TextureRecordPartial *RECOIL_FASTCALL CreateTextureRecord(
+zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
     const char *textureName,
     zVidImagePartial *image,
     int useAlpha,
     int clampU,
     int clampV
 );
-RECOIL_NOINLINE int RECOIL_CDECL CreateDeviceState();
-RECOIL_NOINLINE void RECOIL_FASTCALL SetFogEnable(int enable);
-RECOIL_NOINLINE void RECOIL_STDCALL SetFogStart(float fogStart);
-RECOIL_NOINLINE void RECOIL_STDCALL SetFogEnd(float fogEnd);
-RECOIL_NOINLINE void RECOIL_STDCALL ApplyFogStateFromGlobals(
+int CreateDeviceState();
+void __fastcall SetFogEnable(int enable);
+void __stdcall SetFogStart(float fogStart);
+void __stdcall SetFogEnd(float fogEnd);
+void __stdcall ApplyFogStateFromGlobals(
     float fogStart,
     float fogEnd,
     float unused
 );
-RECOIL_NOINLINE void RECOIL_CDECL UpdateFogColor();
-RECOIL_NOINLINE void RECOIL_STDCALL SetQuadBatchDepthAndRhw(float depthAndRhw);
-RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyFlatColor16(
+void UpdateFogColor();
+void __stdcall SetQuadBatchDepthAndRhw(float depthAndRhw);
+void __fastcall SubmitPolyFlatColor16(
     zVideo_XyzVertex *vertices,
     unsigned int packedColor16,
     int alpha,
@@ -992,7 +991,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyFlatColor16(
     int vertexCount,
     int queueMode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyGouraudColor16(
+void __fastcall SubmitPolyGouraudColor16(
     zVideo_XyzVertex *vertices,
     unsigned int *packedColors16,
     int alpha,
@@ -1000,7 +999,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyGouraudColor16(
     int vertexCount,
     int queueMode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyColorAttr(
+void __fastcall SubmitPolyColorAttr(
     zVideo_XyzVertex *vertices,
     unsigned int packedColor16,
     zVideo_ColorRgbFloat *baseColor,
@@ -1012,7 +1011,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyColorAttr(
     unsigned int renderParam,
     int queueMode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(
+void __fastcall SubmitPolyRenderClass(
     zVideo_XyzVertex *vertices,
     zVideo_TexCoord *texCoords,
     int vertexCount,
@@ -1021,7 +1020,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(
     float alpha,
     int queueMode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolygon(
+void __fastcall SubmitPolygon(
     zVideo_XyzVertex *vertices,
     zVideo_TexCoord *uvPairs,
     float *attr1,
@@ -1033,7 +1032,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolygon(
     float alpha,
     int queueMode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolygonLit(
+void __fastcall SubmitPolygonLit(
     zVideo_XyzVertex *vertices,
     zVideo_TexCoord *uvPairs,
     float *attr1,
@@ -1045,53 +1044,53 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolygonLit(
     float alpha,
     int queueMode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL DrawPointColor16(
+void __fastcall DrawPointColor16(
     zVideo_XyzVertex *pointPos,
     unsigned int packedColor16,
     int pointCount
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL QueueSolidQuad(
+void __fastcall QueueSolidQuad(
     unsigned int packedColor16,
     zVidRect32 *clipRect,
     double alpha
 );
-RECOIL_NOINLINE void RECOIL_CDECL FlushSortedPolys();
-RECOIL_NOINLINE void RECOIL_CDECL FlushQuadBatch();
-RECOIL_NOINLINE void RECOIL_CDECL FlushOverwritePolys();
-RECOIL_NOINLINE int RECOIL_FASTCALL FloorPowerOfTwo(int value);
-RECOIL_NOINLINE zVideo_TextureRecordPartial *RECOIL_CDECL TextureRecord_Create();
-RECOIL_NOINLINE int RECOIL_FASTCALL TextureRecord_LockUploadSurface(
+void FlushSortedPolys();
+void FlushQuadBatch();
+void FlushOverwritePolys();
+int __fastcall FloorPowerOfTwo(int value);
+zVideo_TextureRecordPartial *TextureRecord_Create();
+int __fastcall TextureRecord_LockUploadSurface(
     zVideo_TextureRecordPartial *textureRecord,
     void **outPixels,
     int *outPitchBytes
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ConvertImagePixelsForTexture(
+void __fastcall ConvertImagePixelsForTexture(
     unsigned short *dstPixels,
     zVidImagePartial *image,
     int pitchBytes,
     int useAlpha
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL UploadImageToSurface(
+int __fastcall UploadImageToSurface(
     IDirectDrawSurface *uploadSurface,
     zVidImagePartial *image,
     int useAlpha
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL TextureRecord_UnlockUploadSurface(
+int __fastcall TextureRecord_UnlockUploadSurface(
     zVideo_TextureRecordPartial *textureRecord
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL TextureRecord_ReleaseUploadSurfaceRef(
+void __fastcall TextureRecord_ReleaseUploadSurfaceRef(
     zVideo_TextureRecordPartial *textureRecord
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL TextureRecord_FinalizeUpload(
+void __fastcall TextureRecord_FinalizeUpload(
     zVideo_TextureRecordPartial *textureRecord,
     zVidImagePartial *image
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL TextureRecord_Destroy(
+void __fastcall TextureRecord_Destroy(
     zVideo_TextureRecordPartial *textureRecord
 );
 } // namespace zVideo_dd3d
 
 namespace zVideoD3D {
-RECOIL_NOINLINE int RECOIL_CDECL SceneEnter();
-RECOIL_NOINLINE int RECOIL_CDECL SceneLeave();
+int SceneEnter();
+int SceneLeave();
 } // namespace zVideoD3D

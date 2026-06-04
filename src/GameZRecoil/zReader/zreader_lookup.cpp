@@ -4,7 +4,7 @@
 #include <string.h>
 
 // Reimplements 0x48cec0: zReader_FindChildRecursive
-extern "C" RECOIL_NOINLINE zReader::Node *RECOIL_FASTCALL zReader_FindChildRecursive(
+extern "C" zReader::Node *__fastcall zReader_FindChildRecursive(
     zReader::Node *node,
     const char *searchName,
     int startIndex
@@ -45,7 +45,7 @@ extern "C" RECOIL_NOINLINE zReader::Node *RECOIL_FASTCALL zReader_FindChildRecur
 }
 
 // Reimplements 0x48cf70: zReader_GetNamedNode
-extern "C" RECOIL_NOINLINE zReader::Node *RECOIL_FASTCALL zReader_GetNamedNode(
+extern "C" zReader::Node *__fastcall zReader_GetNamedNode(
     zReader::Node *parentNode,
     const char *name
 ) {
@@ -59,7 +59,7 @@ extern "C" RECOIL_NOINLINE zReader::Node *RECOIL_FASTCALL zReader_GetNamedNode(
 namespace zReader {
 // Reimplements 0x4804e0: zReader::FindGlobalStringPrefixIndex
 // (Battlesport/zUtil/zrdr_global.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL FindGlobalStringPrefixIndex(
+int __fastcall FindGlobalStringPrefixIndex(
     const char *text
 ) {
     if (text == 0) {
@@ -94,7 +94,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindGlobalStringPrefixIndex(
 }
 
 // Reimplements 0x48cf80: zReader::ReadNamedString
-RECOIL_NOINLINE const char *RECOIL_FASTCALL ReadNamedString(
+const char *__fastcall ReadNamedString(
     Node *parentNode,
     const char *name
 ) {
@@ -121,7 +121,7 @@ RECOIL_NOINLINE const char *RECOIL_FASTCALL ReadNamedString(
 }
 
 // Reimplements 0x48cfb0: zReader::ReadNamedFloat
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadNamedFloat(
+int __fastcall ReadNamedFloat(
     Node *parentNode,
     const char *name,
     float *outValue
@@ -161,7 +161,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadNamedFloat(
 }
 
 // Reimplements 0x48d030: zReader::ReadNamedInt
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadNamedInt(
+int __fastcall ReadNamedInt(
     Node *parentNode,
     const char *name,
     int *outValue

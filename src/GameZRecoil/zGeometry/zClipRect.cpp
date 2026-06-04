@@ -1262,7 +1262,7 @@ int ClipPolyAttr012UvCore(
 
 namespace zClipRect {
 // Reimplements 0x47aa80: zClipRect::ClipPolyNearZ
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPolyNearZ(
+int __fastcall ClipPolyNearZ(
     zClipRectPartial *clipRect,
     int *vertexCount
 ) {
@@ -1368,7 +1368,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipPolyNearZ(
 }
 
 // Reimplements 0x47af60: zClipRect::ClipPolyNearZ_WithAttr0
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPolyNearZ_WithAttr0(
+int __fastcall ClipPolyNearZ_WithAttr0(
     zClipRectPartial *clipRect,
     int *vertexCount
 ) {
@@ -1491,7 +1491,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipPolyNearZ_WithAttr0(
 }
 
 // Reimplements 0x47a200: zClipRect::ClipPolyZRange_NoUV
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPolyZRange_NoUV(
+int __fastcall ClipPolyZRange_NoUV(
     zClipRectPartial *clipRect,
     int *vertexCount
 ) {
@@ -1579,7 +1579,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipPolyZRange_NoUV(
 }
 
 // Reimplements 0x47a4e0: zClipRect::ClipPolyZRange_NoUV_WithAttribs
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPolyZRange_NoUV_WithAttribs(
+int __fastcall ClipPolyZRange_NoUV_WithAttribs(
     zClipRectPartial *clipRect,
     int *vertexCount
 ) {
@@ -1719,7 +1719,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipPolyZRange_NoUV_WithAttribs(
 }
 
 // Reimplements 0x47e900: zClipRect::ClipPolyZRange_WithAttr012
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPolyZRange_WithAttr012(
+int __fastcall ClipPolyZRange_WithAttr012(
     zClipRectPartial *clipRect,
     int *vertexCount
 ) {
@@ -1876,7 +1876,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipPolyZRange_WithAttr012(
 }
 
 // Reimplements 0x47b540: zClipRect::ClipPoly_NoUV_Alt
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPoly_NoUV_Alt(
+int __fastcall ClipPoly_NoUV_Alt(
     zClipRectPartial *clipRect,
     int *vertexCount
 ) {
@@ -1887,7 +1887,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipPoly_NoUV_Alt(
 }
 
 // Reimplements 0x47cdc0: zClipRect::ClipPoly_NoUV
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPoly_NoUV(
+int __fastcall ClipPoly_NoUV(
     zClipRectPartial *clipRect,
     int *vertexCount
 ) {
@@ -1898,7 +1898,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipPoly_NoUV(
 }
 
 // Reimplements 0x47d3f0: zClipRect::ClipPoly
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPoly(
+int __fastcall ClipPoly(
     zClipRectPartial *clipRect,
     int *vertexCount
 ) {
@@ -1909,7 +1909,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipPoly(
 }
 
 // Reimplements 0x47efd0: zClipRect::ClipPoly_WithAttr012
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPoly_WithAttr012(
+int __fastcall ClipPoly_WithAttr012(
     zClipRectPartial *clipRect,
     int *vertexCount
 ) {
@@ -1920,7 +1920,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipPoly_WithAttr012(
 }
 
 // Reimplements 0x47dfb0: zClipRect::ClipPoly_NoUV_WithAttr0_Alt
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPoly_NoUV_WithAttr0_Alt(
+int __fastcall ClipPoly_NoUV_WithAttr0_Alt(
     zClipRectPartial *clipRect,
     int *vertexCount
 ) {
@@ -1931,7 +1931,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipPoly_NoUV_WithAttr0_Alt(
 }
 
 // Reimplements 0x47bd30: zClipRect::ClipPoly_NoUV_WithAttr012_Alt
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPoly_NoUV_WithAttr012_Alt(
+int __fastcall ClipPoly_NoUV_WithAttr012_Alt(
     zClipRectPartial *clipRect,
     int *vertexCount
 ) {
@@ -1942,7 +1942,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipPoly_NoUV_WithAttr012_Alt(
 }
 
 // Reimplements 0x4803b0: zClipRect::TrivialRejectPolyXY
-RECOIL_NOINLINE int RECOIL_FASTCALL TrivialRejectPolyXY(
+int __fastcall TrivialRejectPolyXY(
     zClipRectPartial *clipRect,
     int vertexCount
 ) {

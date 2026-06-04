@@ -93,7 +93,7 @@ int g_zInput_CurrentBindGroupIndex = 0;
 int g_zInput_CommandLocIdTable[0x100] = {0};
 
 // Reimplements 0x471c80: zInput_Keyboard_IsUnsuspended
-RECOIL_NOINLINE int RECOIL_CDECL zInput_Keyboard_IsUnsuspended() {
+int zInput_Keyboard_IsUnsuspended() {
     return (~g_zInput_KeyboardSuspendFlags & 2U) >> 1;
 }
 }
@@ -122,7 +122,7 @@ inline void CopyCommandSlots(
     );
 }
 
-zInput_BindMapOverlayStackNode *RECOIL_FASTCALL BindMapOverlay_DetachHead(
+zInput_BindMapOverlayStackNode *__fastcall BindMapOverlay_DetachHead(
     zInput_BindMapOverlayStackNode **head
 ) {
     zInput_BindMapOverlayStackNode *node = *head;
@@ -140,7 +140,7 @@ zInput_BindMapOverlayStackNode *RECOIL_FASTCALL BindMapOverlay_DetachHead(
     return node;
 }
 
-void RECOIL_FASTCALL BindMapOverlay_DeleteNodeList(
+void __fastcall BindMapOverlay_DeleteNodeList(
     zInput_BindMapOverlayStackNode **head
 ) {
     zInput_BindMapOverlayStackNode *node = BindMapOverlay_DetachHead(head);
@@ -153,7 +153,7 @@ void RECOIL_FASTCALL BindMapOverlay_DeleteNodeList(
 } // namespace
 
 // Reimplements 0x470e80: zInput_BindMapContext_DispatchFromKeyboardEvent
-extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zInput_BindMapContext_DispatchFromKeyboardEvent(
+extern "C" void __fastcall zInput_BindMapContext_DispatchFromKeyboardEvent(
     int dikCode
 ) {
     const int commandId = g_zInput_BindMap_Current->GetCommandByAnyKeyboardKey(dikCode);
@@ -164,7 +164,7 @@ extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zInput_BindMapContext_DispatchFr
 }
 
 // Reimplements 0x4706c0: zInput_BindMapContext::InitFromTemplate
-RECOIL_NOINLINE zInput_BindMapContext *RECOIL_THISCALL zInput_BindMapContext::InitFromTemplate(
+zInput_BindMapContext * zInput_BindMapContext::InitFromTemplate(
     const zInput_BindMapContext *tmpl
 ) {
     m_isOverlay = 0;
@@ -215,7 +215,7 @@ RECOIL_NOINLINE zInput_BindMapContext *RECOIL_THISCALL zInput_BindMapContext::In
 }
 
 // Reimplements 0x4707a0: zInput_BindMapContext::FreeAllBuffers
-RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::FreeAllBuffers() {
+void zInput_BindMapContext::FreeAllBuffers() {
     if (m_commandCallbacks != 0) {
         free(m_commandCallbacks);
     }
@@ -239,7 +239,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::FreeAllBuffers() {
 }
 
 // Reimplements 0x470820: zInput_BindMapContext::RebuildLookupIndices
-RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::RebuildLookupIndices() {
+void zInput_BindMapContext::RebuildLookupIndices() {
     for (int i = 0; i < 0x7de; ++i) {
         m_primaryKeyToCommand[i] = 0;
         m_secondaryKeyToCommand[i] = 0;
@@ -272,7 +272,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::RebuildLookupIndices
 }
 
 // Reimplements 0x4708f0: zInput_BindMapContext::InitCommandMap
-RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::InitCommandMap(
+void zInput_BindMapContext::InitCommandMap(
     int commandCount
 ) {
     m_commandCount = commandCount;
@@ -304,7 +304,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::InitCommandMap(
 }
 
 // Reimplements 0x470960: zInput_BindMapContext::FreeNonOwnedBuffers
-RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::FreeNonOwnedBuffers() {
+void zInput_BindMapContext::FreeNonOwnedBuffers() {
     if (m_commandCallbacks != 0) {
         free(m_commandCallbacks);
     }
@@ -324,7 +324,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::FreeNonOwnedBuffers(
 }
 
 // Reimplements 0x4709d0: zInput_BindMapContext::ResetAllBindings
-RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::ResetAllBindings() {
+void zInput_BindMapContext::ResetAllBindings() {
     for (int i = 0; i < m_commandCount; ++i) {
         m_packedBindings[i] = zInput::BindMap_PackBindingCode(
             0,
@@ -339,49 +339,49 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::ResetAllBindings() {
 }
 
 // Reimplements 0x470a40: zInput_BindMapContext::GetPrimaryKeyboardKey
-RECOIL_NOINLINE int RECOIL_THISCALL zInput_BindMapContext::GetPrimaryKeyboardKey(
+int zInput_BindMapContext::GetPrimaryKeyboardKey(
     int commandIndex
 ) {
     return m_packedBindings[commandIndex] & 0x7ff;
 }
 
 // Reimplements 0x470a60: zInput_BindMapContext::GetSecondaryKeyboardKey
-RECOIL_NOINLINE int RECOIL_THISCALL zInput_BindMapContext::GetSecondaryKeyboardKey(
+int zInput_BindMapContext::GetSecondaryKeyboardKey(
     int commandIndex
 ) {
     return ((unsigned int)(m_packedBindings[commandIndex]) >> 0x0b) & 0x7ff;
 }
 
 // Reimplements 0x470a80: zInput_BindMapContext::GetJoystickButtonSlot
-RECOIL_NOINLINE int RECOIL_THISCALL zInput_BindMapContext::GetJoystickButtonSlot(
+int zInput_BindMapContext::GetJoystickButtonSlot(
     int commandIndex
 ) {
     return ((unsigned int)(m_packedBindings[commandIndex]) >> 0x16) & 0x0f;
 }
 
 // Reimplements 0x470aa0: zInput_BindMapContext::GetMouseButtonSlot
-RECOIL_NOINLINE int RECOIL_THISCALL zInput_BindMapContext::GetMouseButtonSlot(
+int zInput_BindMapContext::GetMouseButtonSlot(
     int commandIndex
 ) {
     return ((unsigned int)(m_packedBindings[commandIndex]) >> 0x1a) & 0x03;
 }
 
 // Reimplements 0x470ac0: zInput_BindMapContext::GetCommandByPrimaryKey
-RECOIL_NOINLINE int RECOIL_THISCALL zInput_BindMapContext::GetCommandByPrimaryKey(
+int zInput_BindMapContext::GetCommandByPrimaryKey(
     int keyboardKey
 ) {
     return m_primaryKeyToCommand[keyboardKey];
 }
 
 // Reimplements 0x470ad0: zInput_BindMapContext::GetCommandBySecondaryKey
-RECOIL_NOINLINE int RECOIL_THISCALL zInput_BindMapContext::GetCommandBySecondaryKey(
+int zInput_BindMapContext::GetCommandBySecondaryKey(
     int keyboardKey
 ) {
     return m_secondaryKeyToCommand[keyboardKey];
 }
 
 // Reimplements 0x470ae0: zInput_BindMapContext::GetCommandByAnyKeyboardKey
-RECOIL_NOINLINE int RECOIL_THISCALL zInput_BindMapContext::GetCommandByAnyKeyboardKey(
+int zInput_BindMapContext::GetCommandByAnyKeyboardKey(
     int keyboardKey
 ) {
     const int primary = GetCommandByPrimaryKey(keyboardKey);
@@ -393,21 +393,21 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInput_BindMapContext::GetCommandByAnyKeyboa
 }
 
 // Reimplements 0x470b00: zInput_BindMapContext::GetCommandByJoystickSlot
-RECOIL_NOINLINE int RECOIL_THISCALL zInput_BindMapContext::GetCommandByJoystickSlot(
+int zInput_BindMapContext::GetCommandByJoystickSlot(
     int joystickSlot
 ) {
     return m_joystickToCommand[joystickSlot];
 }
 
 // Reimplements 0x470b10: zInput_BindMapContext::GetCommandByMouseSlot
-RECOIL_NOINLINE int RECOIL_THISCALL zInput_BindMapContext::GetCommandByMouseSlot(
+int zInput_BindMapContext::GetCommandByMouseSlot(
     int mouseSlot
 ) {
     return m_mouseToCommand[mouseSlot];
 }
 
 // Reimplements 0x470b20: zInput_BindMapContext::SetPrimaryKeyBinding
-RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::SetPrimaryKeyBinding(
+void zInput_BindMapContext::SetPrimaryKeyBinding(
     int keyCode,
     int commandId
 ) {
@@ -425,7 +425,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::SetPrimaryKeyBinding
 }
 
 // Reimplements 0x470b80: zInput_BindMapContext::SetSecondaryKeyBinding
-RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::SetSecondaryKeyBinding(
+void zInput_BindMapContext::SetSecondaryKeyBinding(
     int keyCode,
     int commandId
 ) {
@@ -443,7 +443,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::SetSecondaryKeyBindi
 }
 
 // Reimplements 0x470bf0: zInput_BindMapContext::SetJoystickBinding
-RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::SetJoystickBinding(
+void zInput_BindMapContext::SetJoystickBinding(
     int joystickSlot,
     int commandId
 ) {
@@ -461,7 +461,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::SetJoystickBinding(
 }
 
 // Reimplements 0x470c60: zInput_BindMapContext::SetMouseBinding
-RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::SetMouseBinding(
+void zInput_BindMapContext::SetMouseBinding(
     int mouseSlot,
     int commandId
 ) {
@@ -479,7 +479,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::SetMouseBinding(
 }
 
 // Reimplements 0x470cd0: zInput_BindMapContext::SetBindingRecord
-RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::SetBindingRecord(
+void zInput_BindMapContext::SetBindingRecord(
     int commandId,
     const char *labelSrc,
     int primaryKey,
@@ -514,7 +514,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::SetBindingRecord(
 }
 
 // Reimplements 0x470d40: zInput_BindMapContext::DispatchMouseButtonCallbacks
-RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::DispatchMouseButtonCallbacks() {
+void zInput_BindMapContext::DispatchMouseButtonCallbacks() {
     zInput::MouseStateSnapshot *const state = zInput::Mouse_GetStateSnapshotPtr();
     if (state->button1Transition == 1) {
         const int commandId = GetCommandByMouseSlot(1);
@@ -540,7 +540,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::DispatchMouseButtonC
 }
 
 // Reimplements 0x470db0: zInput_BindMapContext::DispatchJoystickButtonCallbacks
-RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::DispatchJoystickButtonCallbacks() {
+void zInput_BindMapContext::DispatchJoystickButtonCallbacks() {
     {
         for (int slot = 1; slot < 0x0b; ++slot) {
             if (zInput::DI_GetButtonTransitionState(slot) == 1) {
@@ -555,7 +555,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInput_BindMapContext::DispatchJoystickButt
 }
 
 // Reimplements 0x470df0: zInput_BindMapContext::SetCommandCallback
-RECOIL_NOINLINE int RECOIL_THISCALL zInput_BindMapContext::SetCommandCallback(
+int zInput_BindMapContext::SetCommandCallback(
     int commandId,
     zInputCommandCallbackFn callback
 ) {
@@ -585,7 +585,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInput_BindMapContext::SetCommandCallback(
 }
 
 // Reimplements 0x470eb0: zInput_BindMapContext::ReadCommandInputState
-RECOIL_NOINLINE int RECOIL_THISCALL zInput_BindMapContext::ReadCommandInputState(
+int zInput_BindMapContext::ReadCommandInputState(
     int commandIndex
 ) {
     int result = 0;
@@ -618,7 +618,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInput_BindMapContext::ReadCommandInputState
 }
 
 // Reimplements 0x470f50: zInput_BindMapContext::CopyCommandLabel
-RECOIL_NOINLINE char *RECOIL_THISCALL zInput_BindMapContext::CopyCommandLabel(
+char * zInput_BindMapContext::CopyCommandLabel(
     int commandId,
     char *destBuf,
     int maxBytes
@@ -636,7 +636,7 @@ RECOIL_NOINLINE char *RECOIL_THISCALL zInput_BindMapContext::CopyCommandLabel(
 }
 
 // Reimplements 0x42a9d0: zInput_BindGroupInfoVec::Count
-RECOIL_NOINLINE int RECOIL_THISCALL zInput_BindGroupInfoVec::Count() {
+int zInput_BindGroupInfoVec::Count() {
     zInput_BindGroupInfo **const begin = this->begin;
     if (begin == 0) {
         return 0;
@@ -647,7 +647,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zInput_BindGroupInfoVec::Count() {
 
 namespace zInput {
 // Reimplements 0x429f20: zInput::BindGroupListStaticInit
-RECOIL_NOINLINE void RECOIL_CDECL BindGroupListStaticInit() {
+void BindGroupListStaticInit() {
     g_zInput_BindGroupInfoList.allocatorByte = 0;
     g_zInput_BindGroupInfoList.begin = 0;
     g_zInput_BindGroupInfoList.end = 0;
@@ -655,7 +655,7 @@ RECOIL_NOINLINE void RECOIL_CDECL BindGroupListStaticInit() {
 }
 
 // Reimplements 0x429f50: zInput::BindGroupListAtExitDestructor
-RECOIL_NOINLINE void RECOIL_CDECL BindGroupListAtExitDestructor() {
+void BindGroupListAtExitDestructor() {
     ::operator delete(g_zInput_BindGroupInfoList.begin);
     g_zInput_BindGroupInfoList.begin = 0;
     g_zInput_BindGroupInfoList.end = 0;
@@ -663,12 +663,12 @@ RECOIL_NOINLINE void RECOIL_CDECL BindGroupListAtExitDestructor() {
 }
 
 // Reimplements 0x429f40: zInput::BindGroupListRegisterAtExit
-RECOIL_NOINLINE int RECOIL_CDECL BindGroupListRegisterAtExit() {
+int BindGroupListRegisterAtExit() {
     return atexit(BindGroupListAtExitDestructor);
 }
 
 // Reimplements 0x429f10: zInput::BindGroupList_StaticInitAndRegisterAtExit
-RECOIL_NOINLINE int RECOIL_CDECL BindGroupList_StaticInitAndRegisterAtExit() {
+int BindGroupList_StaticInitAndRegisterAtExit() {
     BindGroupListStaticInit();
     return BindGroupListRegisterAtExit();
 }
@@ -676,7 +676,7 @@ RECOIL_NOINLINE int RECOIL_CDECL BindGroupList_StaticInitAndRegisterAtExit() {
 
 namespace zInp {
 // Reimplements 0x408390: zInp::SetJoystickOption
-RECOIL_NOINLINE void RECOIL_FASTCALL SetJoystickOption(
+void __fastcall SetJoystickOption(
     int enabled
 ) {
     if (ZOPT_INPUT_JOYSTICK != 0) {
@@ -685,33 +685,33 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetJoystickOption(
 }
 
 // Reimplements 0x4083a0: zInp::SetJoystickAxesCountOption
-RECOIL_NOINLINE void RECOIL_FASTCALL SetJoystickAxesCountOption(
+void __fastcall SetJoystickAxesCountOption(
     int axisCount
 ) {
     *ZOPT_JOYSTICK_NUM_AXES = axisCount;
 }
 
 // Reimplements 0x4083b0: zInp::SetJoystickButtonCountOption
-RECOIL_NOINLINE void RECOIL_FASTCALL SetJoystickButtonCountOption(
+void __fastcall SetJoystickButtonCountOption(
     int buttonCount
 ) {
     *ZOPT_JOYSTICK_NUM_BUTTONS = buttonCount;
 }
 
 // Reimplements 0x4083c0: zInp::GetJoystickOption
-RECOIL_NOINLINE int RECOIL_CDECL GetJoystickOption() {
+int GetJoystickOption() {
     return *ZOPT_INPUT_JOYSTICK;
 }
 } // namespace zInp
 
 extern "C" {
 // Reimplements 0x472480: zInput_DI_HasForceFeedback
-RECOIL_NOINLINE int RECOIL_CDECL zInput_DI_HasForceFeedback() {
+int zInput_DI_HasForceFeedback() {
     return g_zInput_JoystickCaps_ForceFeedback;
 }
 
 // Reimplements 0x42fa80: zInput_DI_IsForceFeedbackEnabled
-RECOIL_NOINLINE int RECOIL_CDECL zInput_DI_IsForceFeedbackEnabled() {
+int zInput_DI_IsForceFeedbackEnabled() {
     if (zInp::GetJoystickOption() != 0 && zInput_DI_HasForceFeedback() != 0) {
         return 1;
     }
@@ -720,7 +720,7 @@ RECOIL_NOINLINE int RECOIL_CDECL zInput_DI_IsForceFeedbackEnabled() {
 }
 
 // Reimplements 0x472450: zInput_DI_CreateForceFeedbackEffect
-RECOIL_NOINLINE zInput_DiEffect *RECOIL_FASTCALL zInput_DI_CreateForceFeedbackEffect(
+zInput_DiEffect *__fastcall zInput_DI_CreateForceFeedbackEffect(
     const GUID *rguidEffect,
     const void *effect
 ) {
@@ -853,7 +853,7 @@ static float FastPitchLowpassFactor(
 }
 
 // Reimplements 0x42ffa0: zInput_DI_CreateConstantForceEffectScaled
-RECOIL_NOINLINE zInput_DiEffect *RECOIL_STDCALL zInput_DI_CreateConstantForceEffectScaled(
+zInput_DiEffect *__stdcall zInput_DI_CreateConstantForceEffectScaled(
     float gain
 ) {
     DWORD axes[2] = {0, 4};
@@ -877,7 +877,7 @@ RECOIL_NOINLINE zInput_DiEffect *RECOIL_STDCALL zInput_DI_CreateConstantForceEff
 }
 
 // Reimplements 0x430070: zInput_DI_CreateConstantForceEffectWithDirection
-RECOIL_NOINLINE zInput_DiEffect *RECOIL_FASTCALL zInput_DI_CreateConstantForceEffectWithDirection(
+zInput_DiEffect *__fastcall zInput_DI_CreateConstantForceEffectWithDirection(
     int directionValue
 ) {
     DWORD axes[2] = {0, 4};
@@ -900,7 +900,7 @@ RECOIL_NOINLINE zInput_DiEffect *RECOIL_FASTCALL zInput_DI_CreateConstantForceEf
 }
 
 // Reimplements 0x430100: zInput_DI_CreateSineEffectScaled
-RECOIL_NOINLINE zInput_DiEffect *RECOIL_STDCALL zInput_DI_CreateSineEffectScaled(
+zInput_DiEffect *__stdcall zInput_DI_CreateSineEffectScaled(
     float gain
 ) {
     DWORD axes[2] = {0, 4};
@@ -927,7 +927,7 @@ RECOIL_NOINLINE zInput_DiEffect *RECOIL_STDCALL zInput_DI_CreateSineEffectScaled
 }
 
 // Reimplements 0x42faa0: zInput_DI_RestartPrimaryFireEffect
-RECOIL_NOINLINE void RECOIL_FASTCALL zInput_DI_RestartPrimaryFireEffect(
+void __fastcall zInput_DI_RestartPrimaryFireEffect(
     zInput_FFEffectSet *effectSet
 ) {
     zInput_DiEffect *const effect = effectSet->PrimaryFire;
@@ -944,7 +944,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zInput_DI_RestartPrimaryFireEffect(
 }
 
 // Reimplements 0x42fac0: zInput_DI_PlayAltFireEffect
-RECOIL_NOINLINE void RECOIL_FASTCALL zInput_DI_PlayAltFireEffect(
+void __fastcall zInput_DI_PlayAltFireEffect(
     zInput_FFEffectSet *effectSet,
     float gain
 ) {
@@ -986,7 +986,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zInput_DI_PlayAltFireEffect(
 }
 
 // Reimplements 0x42f9f0: zInput_DI_InitForceFeedbackEffectSet
-RECOIL_NOINLINE zInput_FFEffectSet *RECOIL_FASTCALL zInput_DI_InitForceFeedbackEffectSet(
+zInput_FFEffectSet *__fastcall zInput_DI_InitForceFeedbackEffectSet(
     zInput_FFEffectSet *effectSet
 ) {
     effectSet->PrimaryFire = zInput_DI_CreateConstantForceEffectScaled(0.25f);
@@ -1017,7 +1017,7 @@ RECOIL_NOINLINE zInput_FFEffectSet *RECOIL_FASTCALL zInput_DI_InitForceFeedbackE
 
 // Reimplements 0x42fb50: zInputDI::PlayCollisionImpactEffect
 // (src/zin_ff.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zInput_FFEffectSet::PlayCollisionImpactEffect(
+void zInput_FFEffectSet::PlayCollisionImpactEffect(
     const zVec3 *impactWorldPosXZ,
     float gain
 ) {
@@ -1045,7 +1045,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInput_FFEffectSet::PlayCollisionImpactEffe
 
 // Reimplements 0x42fc90: zInputDI::PlayDamageHitEffect
 // (src/zin_ff.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zInput_FFEffectSet::PlayDamageHitEffect(
+void zInput_FFEffectSet::PlayDamageHitEffect(
     const zVec3 *damageSourceWorldPosXZ,
     float gain
 ) {
@@ -1071,7 +1071,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zInput_FFEffectSet::PlayDamageHitEffect(
     );
 }
 
-RECOIL_NOINLINE void RECOIL_CDECL zInput_DI_PlayCollisionImpactEffect(
+void zInput_DI_PlayCollisionImpactEffect(
     zInput_FFEffectSet *effectSet,
     const zVec3 *impactWorldPosXZ,
     float gain
@@ -1082,7 +1082,7 @@ RECOIL_NOINLINE void RECOIL_CDECL zInput_DI_PlayCollisionImpactEffect(
     );
 }
 
-RECOIL_NOINLINE void RECOIL_CDECL zInput_DI_PlayDamageHitEffect(
+void zInput_DI_PlayDamageHitEffect(
     zInput_FFEffectSet *effectSet,
     const zVec3 *damageSourceWorldPosXZ,
     float gain
@@ -1094,7 +1094,7 @@ RECOIL_NOINLINE void RECOIL_CDECL zInput_DI_PlayDamageHitEffect(
 }
 
 // Reimplements 0x42fdc0: zInput_DI_UpdateSteerAndPitchForceEffects
-RECOIL_NOINLINE void RECOIL_FASTCALL zInput_DI_UpdateSteerAndPitchForceEffects(
+void __fastcall zInput_DI_UpdateSteerAndPitchForceEffects(
     zInput_FFEffectSet *effectSet
 ) {
     zInput_PlayerStatePartial *const playerState = g_GameStateOrMapTable->playerState;
@@ -1415,11 +1415,11 @@ void ApplyKeyboardKeyEvent(
     }
 }
 
-typedef int(RECOIL_FASTCALL *KeyboardRawEventCallbackFn)(
+typedef int(__fastcall *KeyboardRawEventCallbackFn)(
     int ascii,
     void *context
 );
-typedef void(RECOIL_FASTCALL *KeyboardComboCallbackFn)(int comboIdx);
+typedef void(__fastcall *KeyboardComboCallbackFn)(int comboIdx);
 
 int ApplyKeyboardWaitEvent(
     DIDeviceObjectData &event
@@ -1553,7 +1553,7 @@ int KeyboardEventDispatchIndex(
 } // namespace
 
 // Reimplements 0x472490: zInput::DI_ReportError
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL DI_ReportError(
+RECOIL_NO_GS int __fastcall DI_ReportError(
     int hresult,
     const char *sourceFile,
     int sourceLine
@@ -1578,7 +1578,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL DI_ReportError(
 }
 
 // Reimplements 0x471120: zInput::BindMap_InitDikKeyNameTable
-RECOIL_NOINLINE void RECOIL_CDECL BindMap_InitDikKeyNameTable() {
+void BindMap_InitDikKeyNameTable() {
     g_zInput_DikKeyNames[1] = "ESCAPE";
     g_zInput_DikKeyNames[2] = "1";
     g_zInput_DikKeyNames[3] = "2";
@@ -1702,7 +1702,7 @@ RECOIL_NOINLINE void RECOIL_CDECL BindMap_InitDikKeyNameTable() {
 }
 
 // Reimplements 0x4715e0: zInput::BindMap_InitJoystickButtonNameTable
-RECOIL_NOINLINE void RECOIL_CDECL BindMap_InitJoystickButtonNameTable() {
+void BindMap_InitJoystickButtonNameTable() {
     g_zInput_JoystickButtonNames[1] = "Button 1";
     g_zInput_JoystickButtonNames[2] = "Button 2";
     g_zInput_JoystickButtonNames[3] = "Button 3";
@@ -1714,14 +1714,14 @@ RECOIL_NOINLINE void RECOIL_CDECL BindMap_InitJoystickButtonNameTable() {
 }
 
 // Reimplements 0x471640: zInput::BindMap_InitMouseButtonNameTable
-RECOIL_NOINLINE void RECOIL_CDECL BindMap_InitMouseButtonNameTable() {
+void BindMap_InitMouseButtonNameTable() {
     g_zInput_MouseButtonNames[1] = "Left";
     g_zInput_MouseButtonNames[2] = "Right";
     g_zInput_MouseButtonNames[3] = "Middle";
 }
 
 // Reimplements 0x470a10: zInput::BindMap_PackBindingCode
-RECOIL_NOINLINE int RECOIL_FASTCALL BindMap_PackBindingCode(
+int __fastcall BindMap_PackBindingCode(
     int primary,
     int secondary,
     int joy,
@@ -1732,7 +1732,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL BindMap_PackBindingCode(
 }
 
 // Reimplements 0x42a480: zInput::BindGroupList_GetCount
-RECOIL_NOINLINE int RECOIL_CDECL BindGroupList_GetCount() {
+int BindGroupList_GetCount() {
     zInput_BindGroupInfo **const begin = g_zInput_BindGroupInfoList.begin;
     if (begin == 0) {
         return 0;
@@ -1742,14 +1742,14 @@ RECOIL_NOINLINE int RECOIL_CDECL BindGroupList_GetCount() {
 }
 
 // Reimplements 0x42a4a0: zInput::BindGroupList_GetGroupTitle
-RECOIL_NOINLINE char *RECOIL_FASTCALL BindGroupList_GetGroupTitle(
+char *__fastcall BindGroupList_GetGroupTitle(
     int groupIndex
 ) {
     return g_zInput_BindGroupInfoList.begin[groupIndex]->title;
 }
 
 // Reimplements 0x42a4b0: zInput::BindGroupList_GetGroupCommandCount
-RECOIL_NOINLINE int RECOIL_FASTCALL BindGroupList_GetGroupCommandCount(
+int __fastcall BindGroupList_GetGroupCommandCount(
     int groupIndex
 ) {
     zInput_BindGroupInfo *const group = g_zInput_BindGroupInfoList.begin[groupIndex];
@@ -1762,7 +1762,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL BindGroupList_GetGroupCommandCount(
 }
 
 // Reimplements 0x42a4d0: zInput::BindGroupList_GetGroupCommandId
-RECOIL_NOINLINE int RECOIL_FASTCALL BindGroupList_GetGroupCommandId(
+int __fastcall BindGroupList_GetGroupCommandId(
     int groupIndex,
     int commandIndex
 ) {
@@ -1770,7 +1770,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL BindGroupList_GetGroupCommandId(
 }
 
 // Reimplements 0x42a000: zInput_BindGroupInfo::Destroy
-RECOIL_NOINLINE void RECOIL_FASTCALL BindGroupInfo_Destroy(
+void __fastcall BindGroupInfo_Destroy(
     zInput_BindGroupInfo *group
 ) {
     free(group->title);
@@ -1782,7 +1782,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindGroupInfo_Destroy(
 }
 
 // Reimplements 0x429f80: zInput::BindGroupList_Clear
-RECOIL_NOINLINE void RECOIL_CDECL BindGroupList_Clear() {
+void BindGroupList_Clear() {
     zInput_BindGroupInfo **cursor = g_zInput_BindGroupInfoList.begin;
     zInput_BindGroupInfo **const end = g_zInput_BindGroupInfoList.end;
     while (cursor != end) {
@@ -1799,7 +1799,7 @@ RECOIL_NOINLINE void RECOIL_CDECL BindGroupList_Clear() {
 }
 
 // Reimplements 0x42a070: zInput::BindGroupList_AddGroup
-RECOIL_NOINLINE int RECOIL_FASTCALL BindGroupList_AddGroup(
+int __fastcall BindGroupList_AddGroup(
     const char *title
 ) {
     const int groupIndex = BindGroupList_GetCount();
@@ -1841,7 +1841,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL BindGroupList_AddGroup(
 }
 
 // Reimplements 0x42a2c0: zInput::BindGroupList_AddCommandToGroup
-RECOIL_NOINLINE void RECOIL_FASTCALL BindGroupList_AddCommandToGroup(
+void __fastcall BindGroupList_AddCommandToGroup(
     int groupIndex,
     int commandId
 ) {
@@ -1873,21 +1873,21 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindGroupList_AddCommandToGroup(
 }
 
 // Reimplements 0x42a4e0: zInput::BindMap_GetCommandLabel
-RECOIL_NOINLINE char *RECOIL_FASTCALL BindMap_GetCommandLabel(
+char *__fastcall BindMap_GetCommandLabel(
     int commandId
 ) {
     return zLoc::GetMessageString(g_zInput_CommandLocIdTable[commandId]);
 }
 
 // Reimplements 0x42a4f0: zInput::BindMap_GetCommandHint
-RECOIL_NOINLINE char *RECOIL_FASTCALL BindMap_GetCommandHint(
+char *__fastcall BindMap_GetCommandHint(
     int commandId
 ) {
     return zLoc::GetMessageString(g_zInput_CommandLocIdTable[commandId] + 1);
 }
 
 // Reimplements 0x42a500: zInput::BindMap_AddDefaultBinding
-RECOIL_NOINLINE void RECOIL_FASTCALL BindMap_AddDefaultBinding(
+void __fastcall BindMap_AddDefaultBinding(
     int commandId,
     int messageId,
     int primaryKey,
@@ -1911,7 +1911,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindMap_AddDefaultBinding(
 }
 
 // Reimplements 0x42a550: zInput::BindMap_InitDefaultBindings
-RECOIL_NOINLINE int RECOIL_CDECL BindMap_InitDefaultBindings() {
+int BindMap_InitDefaultBindings() {
     static const BindMapDefaultBindingSpec kGroup0[] = {
         {0x04, 0x806, 0x0c8, 0, 0, 0},
         {0x01, 0x800, 0x0d0, 0, 0, 0},
@@ -2018,7 +2018,7 @@ RECOIL_NOINLINE int RECOIL_CDECL BindMap_InitDefaultBindings() {
 }
 
 // Reimplements 0x4710a0: zInput::BindMapSystem_Init
-RECOIL_NOINLINE void RECOIL_FASTCALL BindMapSystem_Init(
+void __fastcall BindMapSystem_Init(
     int commandCount
 ) {
     zInput_BindMapContext *context = new zInput_BindMapContext;
@@ -2034,7 +2034,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindMapSystem_Init(
 }
 
 // Reimplements 0x471860: zInput::BindMapContext_Push
-RECOIL_NOINLINE void RECOIL_FASTCALL BindMapContext_Push(
+void __fastcall BindMapContext_Push(
     zInput_BindMapContext *bindMapOrNull
 ) {
     zInput_BindMapContext *bindMap = bindMapOrNull;
@@ -2077,7 +2077,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindMapContext_Push(
 }
 
 // Reimplements 0x471950: zInput::BindMapContext_Pop
-RECOIL_NOINLINE void RECOIL_CDECL BindMapContext_Pop() {
+void BindMapContext_Pop() {
     zInput_BindMapContext *current = g_zInput_BindMap_Current;
     if (current->m_isOverlay != 0 && current != 0) {
         current->FreeAllBuffers();
@@ -2119,7 +2119,7 @@ RECOIL_NOINLINE void RECOIL_CDECL BindMapContext_Pop() {
 }
 
 // Reimplements 0x471660: zInput::BindMapSystem_Shutdown
-RECOIL_NOINLINE void RECOIL_CDECL BindMapSystem_Shutdown() {
+void BindMapSystem_Shutdown() {
     zInput_BindMapContext *current = g_zInput_BindMap_Current;
     while (current->m_isOverlay != 0) {
         BindMapContext_Pop();
@@ -2139,73 +2139,73 @@ RECOIL_NOINLINE void RECOIL_CDECL BindMapSystem_Shutdown() {
 }
 
 // Reimplements 0x4716b0: zInput::BindMap_Current_RebuildLookupIndices
-RECOIL_NOINLINE void RECOIL_CDECL BindMap_Current_RebuildLookupIndices() {
+void BindMap_Current_RebuildLookupIndices() {
     g_zInput_BindMap_Current->RebuildLookupIndices();
 }
 
 // Reimplements 0x4716c0: zInput::BindMapCurrent_ResetAllBindings
-RECOIL_NOINLINE void RECOIL_CDECL BindMapCurrent_ResetAllBindings() {
+void BindMapCurrent_ResetAllBindings() {
     g_zInput_BindMap_Current->ResetAllBindings();
 }
 
 // Reimplements 0x4716d0: zInput::BindMapCurrent_GetPrimaryKeyboardKey
-RECOIL_NOINLINE int RECOIL_FASTCALL BindMapCurrent_GetPrimaryKeyboardKey(
+int __fastcall BindMapCurrent_GetPrimaryKeyboardKey(
     int commandIndex
 ) {
     return g_zInput_BindMap_Current->GetPrimaryKeyboardKey(commandIndex);
 }
 
 // Reimplements 0x4716e0: zInput::BindMapCurrent_GetSecondaryKeyboardKey
-RECOIL_NOINLINE int RECOIL_FASTCALL BindMapCurrent_GetSecondaryKeyboardKey(
+int __fastcall BindMapCurrent_GetSecondaryKeyboardKey(
     int commandIndex
 ) {
     return g_zInput_BindMap_Current->GetSecondaryKeyboardKey(commandIndex);
 }
 
 // Reimplements 0x4716f0: zInput::BindMapCurrent_GetJoystickButtonSlot
-RECOIL_NOINLINE int RECOIL_FASTCALL BindMapCurrent_GetJoystickButtonSlot(
+int __fastcall BindMapCurrent_GetJoystickButtonSlot(
     int commandIndex
 ) {
     return g_zInput_BindMap_Current->GetJoystickButtonSlot(commandIndex);
 }
 
 // Reimplements 0x471700: zInput::BindMapCurrent_GetMouseButtonSlot
-RECOIL_NOINLINE int RECOIL_FASTCALL BindMapCurrent_GetMouseButtonSlot(
+int __fastcall BindMapCurrent_GetMouseButtonSlot(
     int commandIndex
 ) {
     return g_zInput_BindMap_Current->GetMouseButtonSlot(commandIndex);
 }
 
 // Reimplements 0x471710: zInput::BindMapCurrent_GetCommandByPrimaryKey
-RECOIL_NOINLINE int RECOIL_FASTCALL BindMapCurrent_GetCommandByPrimaryKey(
+int __fastcall BindMapCurrent_GetCommandByPrimaryKey(
     int keyboardKey
 ) {
     return g_zInput_BindMap_Current->GetCommandByPrimaryKey(keyboardKey);
 }
 
 // Reimplements 0x471720: zInput::BindMapCurrent_GetCommandBySecondaryKey
-RECOIL_NOINLINE int RECOIL_FASTCALL BindMapCurrent_GetCommandBySecondaryKey(
+int __fastcall BindMapCurrent_GetCommandBySecondaryKey(
     int keyboardKey
 ) {
     return g_zInput_BindMap_Current->GetCommandBySecondaryKey(keyboardKey);
 }
 
 // Reimplements 0x471730: zInput::BindMapCurrent_GetCommandByJoystickSlot
-RECOIL_NOINLINE int RECOIL_FASTCALL BindMapCurrent_GetCommandByJoystickSlot(
+int __fastcall BindMapCurrent_GetCommandByJoystickSlot(
     int joystickSlot
 ) {
     return g_zInput_BindMap_Current->GetCommandByJoystickSlot(joystickSlot);
 }
 
 // Reimplements 0x471740: zInput::BindMapCurrent_GetCommandByMouseSlot
-RECOIL_NOINLINE int RECOIL_FASTCALL BindMapCurrent_GetCommandByMouseSlot(
+int __fastcall BindMapCurrent_GetCommandByMouseSlot(
     int mouseSlot
 ) {
     return g_zInput_BindMap_Current->GetCommandByMouseSlot(mouseSlot);
 }
 
 // Reimplements 0x471750: zInput::BindMapCurrent_SetPrimaryKeyBinding
-RECOIL_NOINLINE void RECOIL_FASTCALL BindMapCurrent_SetPrimaryKeyBinding(
+void __fastcall BindMapCurrent_SetPrimaryKeyBinding(
     int keyCode,
     int commandId
 ) {
@@ -2216,7 +2216,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindMapCurrent_SetPrimaryKeyBinding(
 }
 
 // Reimplements 0x471760: zInput::BindMapCurrent_SetSecondaryKeyBinding
-RECOIL_NOINLINE void RECOIL_FASTCALL BindMapCurrent_SetSecondaryKeyBinding(
+void __fastcall BindMapCurrent_SetSecondaryKeyBinding(
     int keyCode,
     int commandId
 ) {
@@ -2227,7 +2227,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindMapCurrent_SetSecondaryKeyBinding(
 }
 
 // Reimplements 0x471770: zInput::BindMapCurrent_SetJoystickBinding
-RECOIL_NOINLINE void RECOIL_FASTCALL BindMapCurrent_SetJoystickBinding(
+void __fastcall BindMapCurrent_SetJoystickBinding(
     int joystickSlot,
     int commandId
 ) {
@@ -2238,7 +2238,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindMapCurrent_SetJoystickBinding(
 }
 
 // Reimplements 0x471780: zInput::BindMapCurrent_SetMouseBinding
-RECOIL_NOINLINE void RECOIL_FASTCALL BindMapCurrent_SetMouseBinding(
+void __fastcall BindMapCurrent_SetMouseBinding(
     int mouseSlot,
     int commandId
 ) {
@@ -2249,7 +2249,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindMapCurrent_SetMouseBinding(
 }
 
 // Reimplements 0x471790: zInput::BindMap_Current_SetBindingRecord
-RECOIL_NOINLINE int RECOIL_FASTCALL BindMap_Current_SetBindingRecord(
+int __fastcall BindMap_Current_SetBindingRecord(
     int commandId,
     const char *labelSrc,
     int primaryKey,
@@ -2270,7 +2270,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL BindMap_Current_SetBindingRecord(
 }
 
 // Reimplements 0x4717c0: zInput::BindMap_Current_SetCommandCallback
-RECOIL_NOINLINE int RECOIL_FASTCALL BindMap_Current_SetCommandCallback(
+int __fastcall BindMap_Current_SetCommandCallback(
     int commandId,
     zInputCommandCallbackFn callback
 ) {
@@ -2281,14 +2281,14 @@ RECOIL_NOINLINE int RECOIL_FASTCALL BindMap_Current_SetCommandCallback(
 }
 
 // Reimplements 0x4717d0: zInput::BindMap_Current_ReadCommandInputState
-RECOIL_NOINLINE int RECOIL_FASTCALL BindMap_Current_ReadCommandInputState(
+int __fastcall BindMap_Current_ReadCommandInputState(
     int commandIndex
 ) {
     return g_zInput_BindMap_Current->ReadCommandInputState(commandIndex);
 }
 
 // Reimplements 0x4717e0: zInput::BindMapCurrent_CopyCommandLabel
-RECOIL_NOINLINE char *RECOIL_FASTCALL BindMapCurrent_CopyCommandLabel(
+char *__fastcall BindMapCurrent_CopyCommandLabel(
     int commandId,
     char *destBuf,
     int maxBytes
@@ -2301,7 +2301,7 @@ RECOIL_NOINLINE char *RECOIL_FASTCALL BindMapCurrent_CopyCommandLabel(
 }
 
 // Reimplements 0x470f80: zInput::BindMap_FormatKeyComboName
-RECOIL_NOINLINE char *RECOIL_STDCALL BindMap_FormatKeyComboName(
+char *__stdcall BindMap_FormatKeyComboName(
     int packedKey,
     char *destBuf,
     int maxBytes
@@ -2346,7 +2346,7 @@ RECOIL_NOINLINE char *RECOIL_STDCALL BindMap_FormatKeyComboName(
 }
 
 // Reimplements 0x471040: zInput::BindMap_CopyJoystickButtonName
-RECOIL_NOINLINE char *RECOIL_STDCALL BindMap_CopyJoystickButtonName(
+char *__stdcall BindMap_CopyJoystickButtonName(
     int joystickSlot,
     char *outBuf,
     int bufSize
@@ -2364,7 +2364,7 @@ RECOIL_NOINLINE char *RECOIL_STDCALL BindMap_CopyJoystickButtonName(
 }
 
 // Reimplements 0x471070: zInput::BindMap_CopyMouseButtonName
-RECOIL_NOINLINE char *RECOIL_STDCALL BindMap_CopyMouseButtonName(
+char *__stdcall BindMap_CopyMouseButtonName(
     int mouseSlot,
     char *outBuf,
     int bufSize
@@ -2382,7 +2382,7 @@ RECOIL_NOINLINE char *RECOIL_STDCALL BindMap_CopyMouseButtonName(
 }
 
 // Reimplements 0x471800: zInput::BindMapCurrent_FormatKeyComboName
-RECOIL_NOINLINE char *RECOIL_FASTCALL BindMapCurrent_FormatKeyComboName(
+char *__fastcall BindMapCurrent_FormatKeyComboName(
     int packedKey,
     char *destBuf,
     int maxBytes
@@ -2395,7 +2395,7 @@ RECOIL_NOINLINE char *RECOIL_FASTCALL BindMapCurrent_FormatKeyComboName(
 }
 
 // Reimplements 0x471820: zInput::BindMapCurrent_CopyJoystickButtonName
-RECOIL_NOINLINE char *RECOIL_FASTCALL BindMapCurrent_CopyJoystickButtonName(
+char *__fastcall BindMapCurrent_CopyJoystickButtonName(
     int joystickSlot,
     char *outBuf,
     int bufSize
@@ -2408,7 +2408,7 @@ RECOIL_NOINLINE char *RECOIL_FASTCALL BindMapCurrent_CopyJoystickButtonName(
 }
 
 // Reimplements 0x471840: zInput::BindMapCurrent_CopyMouseButtonName
-RECOIL_NOINLINE char *RECOIL_FASTCALL BindMapCurrent_CopyMouseButtonName(
+char *__fastcall BindMapCurrent_CopyMouseButtonName(
     int mouseSlot,
     char *outBuf,
     int bufSize
@@ -2423,7 +2423,7 @@ RECOIL_NOINLINE char *RECOIL_FASTCALL BindMapCurrent_CopyMouseButtonName(
 // Original storage uses offsets 0x41f4..0x4208 from g_zInput_GlobalState;
 // the rebuilt source keeps those fields as named globals instead of a duplicate mirror.
 // Reimplements 0x471ab0: zInput_GlobalState::Constructor
-RECOIL_NOINLINE void *RECOIL_FASTCALL GlobalStateConstructor(
+void *__fastcall GlobalStateConstructor(
     void *self
 ) {
     g_zInput_BindMapOverlayNodeBlockList = 0;
@@ -2436,7 +2436,7 @@ RECOIL_NOINLINE void *RECOIL_FASTCALL GlobalStateConstructor(
 }
 
 // Reimplements 0x471a20: zInput_GlobalState::Destructor
-RECOIL_NOINLINE void RECOIL_FASTCALL GlobalStateDestructor(
+void __fastcall GlobalStateDestructor(
     void *self
 ) {
     (void)self;
@@ -2450,28 +2450,28 @@ RECOIL_NOINLINE void RECOIL_FASTCALL GlobalStateDestructor(
 }
 
 // Reimplements 0x4719f0: zInput::GlobalStateStaticInit
-RECOIL_NOINLINE void *RECOIL_CDECL GlobalStateStaticInit() {
+void *GlobalStateStaticInit() {
     return GlobalStateConstructor(&g_zInput_GlobalState);
 }
 
 // Reimplements 0x471a10: zInput::GlobalStateAtExitDestructor
-RECOIL_NOINLINE void RECOIL_CDECL GlobalStateAtExitDestructor() {
+void GlobalStateAtExitDestructor() {
     GlobalStateDestructor(&g_zInput_GlobalState);
 }
 
 // Reimplements 0x471a00: zInput::GlobalStateRegisterAtExit
-RECOIL_NOINLINE int RECOIL_CDECL GlobalStateRegisterAtExit() {
+int GlobalStateRegisterAtExit() {
     return atexit(GlobalStateAtExitDestructor);
 }
 
 // Reimplements 0x4719e0: zInput::GlobalStateStaticInitAndRegisterAtExit
-RECOIL_NOINLINE int RECOIL_CDECL GlobalStateStaticInitAndRegisterAtExit() {
+int GlobalStateStaticInitAndRegisterAtExit() {
     GlobalStateStaticInit();
     return GlobalStateRegisterAtExit();
 }
 
 // Reimplements 0x471b50: zInput::Init
-RECOIL_NOINLINE int RECOIL_FASTCALL Init(
+int __fastcall Init(
     HWND hWnd,
     HINSTANCE hInstance
 ) {
@@ -2512,7 +2512,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Init(
 }
 
 // Reimplements 0x472280: zInput::Joystick_ShutdownDevice
-RECOIL_NOINLINE int RECOIL_CDECL Joystick_ShutdownDevice() {
+int Joystick_ShutdownDevice() {
     DIDevice *const joystick = g_zInput_JoystickDevice;
     if (joystick != 0) {
         joystick->vtbl_00->Unacquire_20(joystick);
@@ -2524,7 +2524,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Joystick_ShutdownDevice() {
 }
 
 // Reimplements 0x46f420: zInput::Keyboard_ShutdownDevice
-RECOIL_NOINLINE int RECOIL_CDECL Keyboard_ShutdownDevice() {
+int Keyboard_ShutdownDevice() {
     DIDevice *const keyboard = g_zInput_KbdDevice;
     if (keyboard != 0) {
         keyboard->vtbl_00->Unacquire_20(keyboard);
@@ -2539,7 +2539,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Keyboard_ShutdownDevice() {
 }
 
 // Reimplements 0x471c10: zInput::Shutdown
-RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
+int Shutdown() {
     if (g_zInput_hWnd == 0) {
         return 1;
     }
@@ -2557,7 +2557,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
 }
 
 // Reimplements 0x470670: zInput::Mouse_SetCooperativeLevelFlags
-RECOIL_NOINLINE int RECOIL_FASTCALL Mouse_SetCooperativeLevelFlags(
+int __fastcall Mouse_SetCooperativeLevelFlags(
     int flags
 ) {
     const int previousFlags = g_zInput_MouseCoopLevelFlags;
@@ -2566,7 +2566,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Mouse_SetCooperativeLevelFlags(
 }
 
 // Reimplements 0x4702e0: zInput::Mouse_GetButtonTransitionState
-RECOIL_NOINLINE int RECOIL_FASTCALL Mouse_GetButtonTransitionState(
+int __fastcall Mouse_GetButtonTransitionState(
     int buttonNumber
 ) {
     const unsigned char *currentButtons =
@@ -2584,7 +2584,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Mouse_GetButtonTransitionState(
 }
 
 // Reimplements 0x470020: zInput::Mouse_ApplyClientCursorPosToOS
-RECOIL_NOINLINE void RECOIL_CDECL Mouse_ApplyClientCursorPosToOS() {
+void Mouse_ApplyClientCursorPosToOS() {
     POINT point;
     point.x = g_zInput_MouseStateSnapshot.cursorClientX;
     point.y = g_zInput_MouseStateSnapshot.cursorClientY;
@@ -2599,7 +2599,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Mouse_ApplyClientCursorPosToOS() {
 }
 
 // Reimplements 0x470060: zInput::Mouse_UpdateClientRectAndCenter
-RECOIL_NOINLINE void RECOIL_CDECL Mouse_UpdateClientRectAndCenter() {
+void Mouse_UpdateClientRectAndCenter() {
     RECT rect;
     GetClientRect(
         g_zInput_hWnd,
@@ -2614,7 +2614,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Mouse_UpdateClientRectAndCenter() {
 }
 
 // Reimplements 0x470150: zInput::Mouse_RecenterCursor
-RECOIL_NOINLINE void RECOIL_CDECL Mouse_RecenterCursor() {
+void Mouse_RecenterCursor() {
     g_zInput_MouseStateSnapshot.cursorClientX = g_zInput_MouseClientCenterX;
     g_zInput_MouseStateSnapshot.cursorClientY = g_zInput_MouseClientCenterY;
     g_zInput_MouseStateSnapshot.cursorNormX = 0.0f;
@@ -2623,13 +2623,13 @@ RECOIL_NOINLINE void RECOIL_CDECL Mouse_RecenterCursor() {
 }
 
 // Reimplements 0x470180: zInput::Mouse_RecenterCursorX
-RECOIL_NOINLINE void RECOIL_CDECL Mouse_RecenterCursorX() {
+void Mouse_RecenterCursorX() {
     g_zInput_MouseStateSnapshot.cursorClientX = g_zInput_MouseClientCenterX;
     Mouse_ApplyClientCursorPosToOS();
 }
 
 // Reimplements 0x4700a0: zInput::Mouse_SetNormalizedCursorPos
-RECOIL_NOINLINE void RECOIL_STDCALL Mouse_SetNormalizedCursorPos(
+void __stdcall Mouse_SetNormalizedCursorPos(
     float normX,
     float normY
 ) {
@@ -2656,12 +2656,12 @@ RECOIL_NOINLINE void RECOIL_STDCALL Mouse_SetNormalizedCursorPos(
 }
 
 // Reimplements 0x470190: zInput::Mouse_IsInitialized
-RECOIL_NOINLINE int RECOIL_CDECL Mouse_IsInitialized() {
+int Mouse_IsInitialized() {
     return g_zInput_MouseInitialized;
 }
 
 // Reimplements 0x4701a0: zInput::Mouse_SetClientSizeAndCenter
-RECOIL_NOINLINE void RECOIL_FASTCALL Mouse_SetClientSizeAndCenter(
+void __fastcall Mouse_SetClientSizeAndCenter(
     int width,
     int height
 ) {
@@ -2674,12 +2674,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Mouse_SetClientSizeAndCenter(
 }
 
 // Reimplements 0x4703a0: zInput::Mouse_GetStateSnapshotPtr
-RECOIL_NOINLINE MouseStateSnapshot *RECOIL_CDECL Mouse_GetStateSnapshotPtr() {
+MouseStateSnapshot *Mouse_GetStateSnapshotPtr() {
     return &g_zInput_MouseStateSnapshot;
 }
 
 // Reimplements 0x4705f0: zInput::Mouse_GetStateSnapshot
-RECOIL_NOINLINE int RECOIL_FASTCALL Mouse_GetStateSnapshot(
+int __fastcall Mouse_GetStateSnapshot(
     MouseStateSnapshot *outState
 ) {
     if (outState != 0) {
@@ -2694,7 +2694,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Mouse_GetStateSnapshot(
 }
 
 // Reimplements 0x4701f0: zInput::Mouse_InitDevice
-RECOIL_NOINLINE int RECOIL_CDECL Mouse_InitDevice() {
+int Mouse_InitDevice() {
     DIDevice *baseDevice = 0;
     g_zInput_GlobalState->vtbl_00
         ->CreateDevice_0c(
@@ -2743,7 +2743,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Mouse_InitDevice() {
 }
 
 // Reimplements 0x46f300: zInput::Keyboard_InitDevice
-RECOIL_NOINLINE int RECOIL_CDECL Keyboard_InitDevice() {
+int Keyboard_InitDevice() {
     DipropDwordInit bufferSizeProp = {0x14, 0x10, 0, 0, 0x80};
     g_zInput_KbdSystemReady = 0;
     g_zInput_KbdDevice = 0;
@@ -2831,7 +2831,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Keyboard_InitDevice() {
 }
 
 // Reimplements 0x46f9f0: zInput::Keyboard_ClearKeyCallbackTable
-RECOIL_NOINLINE void RECOIL_CDECL Keyboard_ClearKeyCallbackTable() {
+void Keyboard_ClearKeyCallbackTable() {
     int entryIndex3;
     for (entryIndex3 = 0; entryIndex3 < (int)(sizeof(g_zInputKbdKeyDispatchTable) /
                                               sizeof(g_zInputKbdKeyDispatchTable[0]));
@@ -2842,7 +2842,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Keyboard_ClearKeyCallbackTable() {
 }
 
 // Reimplements 0x46fd20: zInput::Keyboard_InitDikToAsciiTable
-RECOIL_NOINLINE void RECOIL_CDECL Keyboard_InitDikToAsciiTable() {
+void Keyboard_InitDikToAsciiTable() {
     memset(
         g_zInput_KbdDikToAsciiTable,
         0,
@@ -2928,7 +2928,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Keyboard_InitDikToAsciiTable() {
 }
 
 // Reimplements 0x46fba0: zInput::Keyboard_TranslateDikToAscii
-RECOIL_NOINLINE int RECOIL_FASTCALL Keyboard_TranslateDikToAscii(
+int __fastcall Keyboard_TranslateDikToAscii(
     int comboIdx
 ) {
     if (g_zInput_KbdDikToAsciiTableReady == 0) {
@@ -2994,7 +2994,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Keyboard_TranslateDikToAscii(
 }
 
 // Reimplements 0x46f980: zInput::Keyboard_GetKeyTransitionState
-RECOIL_NOINLINE int RECOIL_FASTCALL Keyboard_GetKeyTransitionState(
+int __fastcall Keyboard_GetKeyTransitionState(
     int keyIndex
 ) {
     const int state = g_zInputKbdKeyDispatchTable[keyIndex].state;
@@ -3010,7 +3010,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Keyboard_GetKeyTransitionState(
 }
 
 // Reimplements 0x46f9b0: zInput::Keyboard_RegisterKeyCallback
-RECOIL_NOINLINE int RECOIL_FASTCALL Keyboard_RegisterKeyCallback(
+int __fastcall Keyboard_RegisterKeyCallback(
     int comboIdx,
     void *callback,
     const char * /*unusedLabel*/
@@ -3024,7 +3024,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Keyboard_RegisterKeyCallback(
 }
 
 // Reimplements 0x46f9d0: zInput::Keyboard_UnregisterKeyCallback
-RECOIL_NOINLINE void RECOIL_FASTCALL Keyboard_UnregisterKeyCallback(
+void __fastcall Keyboard_UnregisterKeyCallback(
     int comboIdx
 ) {
     if (g_zInputKbdKeyDispatchTable[comboIdx].callback != 0) {
@@ -3033,7 +3033,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Keyboard_UnregisterKeyCallback(
 }
 
 // Reimplements 0x46f970: zInput::Keyboard_SetRawEventCallback
-RECOIL_NOINLINE void RECOIL_FASTCALL Keyboard_SetRawEventCallback(
+void __fastcall Keyboard_SetRawEventCallback(
     void *callback,
     void *context
 ) {
@@ -3042,7 +3042,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Keyboard_SetRawEventCallback(
 }
 
 // Reimplements 0x471d20: zInput::Keyboard_AddRef
-RECOIL_NOINLINE int RECOIL_CDECL Keyboard_AddRef() {
+int Keyboard_AddRef() {
     if ((g_zInput_DeviceRegistry & 1) != 0) {
         if (g_zInputKeyboardPollRefCount == 0) {
             Keyboard_ResetTransitionState();
@@ -3054,7 +3054,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Keyboard_AddRef() {
 }
 
 // Reimplements 0x46f690: zInput::Keyboard_PollState
-RECOIL_NOINLINE void RECOIL_FASTCALL Keyboard_PollState(
+void __fastcall Keyboard_PollState(
     int dispatchCallbacks
 ) {
     unsigned int inOutCount = 0x80;
@@ -3101,7 +3101,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Keyboard_PollState(
 }
 
 // Reimplements 0x46fa10: zInput::Keyboard_WaitForAnyKeyPress
-RECOIL_NOINLINE int RECOIL_FASTCALL Keyboard_WaitForAnyKeyPress(
+int __fastcall Keyboard_WaitForAnyKeyPress(
     int keepWaiting
 ) {
     int result = 0;
@@ -3139,7 +3139,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Keyboard_WaitForAnyKeyPress(
 }
 
 // Reimplements 0x404140: zInput_WaitForAnyKeyPressWithTimeoutMs
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zInput_WaitForAnyKeyPressWithTimeoutMs(
+extern "C" int __fastcall zInput_WaitForAnyKeyPressWithTimeoutMs(
     int timeoutMs
 ) {
     if (timeoutMs <= 0) {
@@ -3160,7 +3160,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zInput_WaitForAnyKeyPressWithTime
 }
 
 // Reimplements 0x471da0: zInput::Mouse_AddRef
-RECOIL_NOINLINE int RECOIL_CDECL Mouse_AddRef() {
+int Mouse_AddRef() {
     if ((g_zInputMouseFlags & 1) != 0) {
         if (g_zInputMousePollRefCount == 0) {
             Mouse_ResetTransitionState();
@@ -3172,7 +3172,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Mouse_AddRef() {
 }
 
 // Reimplements 0x471d50: zInput::DI_AddJoystickRef
-RECOIL_NOINLINE int RECOIL_CDECL DI_AddJoystickRef() {
+int DI_AddJoystickRef() {
     if ((g_zInputJoystickFlags & 1) != 0) {
         if (g_zInputJoystickPollRefCount == 0) {
             DI_ResetTransitionState();
@@ -3184,7 +3184,7 @@ RECOIL_NOINLINE int RECOIL_CDECL DI_AddJoystickRef() {
 }
 
 // Reimplements 0x471d80: zInput::DI_ReleaseJoystickRef
-RECOIL_NOINLINE int RECOIL_CDECL DI_ReleaseJoystickRef() {
+int DI_ReleaseJoystickRef() {
     short refCount = g_zInputJoystickPollRefCount;
     if ((unsigned short)(refCount) > 0) {
         --refCount;
@@ -3195,12 +3195,12 @@ RECOIL_NOINLINE int RECOIL_CDECL DI_ReleaseJoystickRef() {
 }
 
 // Reimplements 0x471dd0: zInput::DI_GetJoystickRefCount
-RECOIL_NOINLINE int RECOIL_CDECL DI_GetJoystickRefCount() {
+int DI_GetJoystickRefCount() {
     return g_zInputJoystickPollRefCount;
 }
 
 // Reimplements 0x471f60: zInput::DI_EnumDevicesCallback_SelectFirstJoystick
-RECOIL_NOINLINE int RECOIL_STDCALL DI_EnumDevicesCallback_SelectFirstJoystick(
+int __stdcall DI_EnumDevicesCallback_SelectFirstJoystick(
     const DIDeviceInstance *instance,
     void *
 ) {
@@ -3228,7 +3228,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL DI_EnumDevicesCallback_SelectFirstJoystick(
 }
 
 // Reimplements 0x471fb0: zInput::DI_AcquireJoystickDevice
-RECOIL_NOINLINE int RECOIL_CDECL DI_AcquireJoystickDevice() {
+int DI_AcquireJoystickDevice() {
     if (g_zInput_JoystickDevice == 0) {
         return 0;
     }
@@ -3237,7 +3237,7 @@ RECOIL_NOINLINE int RECOIL_CDECL DI_AcquireJoystickDevice() {
 }
 
 // Reimplements 0x471e40: zInput::DI_InitJoystickDevice
-RECOIL_NOINLINE int RECOIL_FASTCALL DI_InitJoystickDevice(
+int __fastcall DI_InitJoystickDevice(
     HWND hwnd
 ) {
     if (g_zInput_GlobalState == 0) {
@@ -3307,7 +3307,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DI_InitJoystickDevice(
 }
 
 // Reimplements 0x4721a0: zInput::DI_SetAxisDeadzone
-RECOIL_NOINLINE int RECOIL_FASTCALL DI_SetAxisDeadzone(
+int __fastcall DI_SetAxisDeadzone(
     int axisOffset,
     int deadzone
 ) {
@@ -3332,7 +3332,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DI_SetAxisDeadzone(
 }
 
 // Reimplements 0x4721e0: zInput::DI_SetAxisRange
-RECOIL_NOINLINE int RECOIL_FASTCALL DI_SetAxisRange(
+int __fastcall DI_SetAxisRange(
     int axisOffset,
     int rangeMin,
     int rangeMax
@@ -3360,7 +3360,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DI_SetAxisRange(
 }
 
 // Reimplements 0x472230: zInput::DI_GetAxisRange
-RECOIL_NOINLINE int RECOIL_FASTCALL DI_GetAxisRange(
+int __fastcall DI_GetAxisRange(
     int axisOffset,
     int *pOutMin,
     int *pOutMax
@@ -3419,7 +3419,7 @@ void ApplyAxisConfigEntry(
 } // namespace
 
 // Reimplements 0x471fd0: zInput::DI_ApplyAxisConfig
-RECOIL_NOINLINE int RECOIL_FASTCALL DI_ApplyAxisConfig(
+int __fastcall DI_ApplyAxisConfig(
     JoystickAxisConfig *axisCfg
 ) {
     if (axisCfg == 0) {
@@ -3461,17 +3461,17 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DI_ApplyAxisConfig(
 }
 
 // Reimplements 0x4722b0: zInput::DI_IsJoystickDeviceReady
-RECOIL_NOINLINE int RECOIL_CDECL DI_IsJoystickDeviceReady() {
+int DI_IsJoystickDeviceReady() {
     return g_zInput_JoystickInitialized == 1 ? 1 : 0;
 }
 
 // Reimplements 0x472390: zInput::DI_GetCurrentState
-RECOIL_NOINLINE JoystickStatePartial *RECOIL_CDECL DI_GetCurrentState() {
+JoystickStatePartial *DI_GetCurrentState() {
     return &g_zInput_JoystickCurrentState;
 }
 
 // Reimplements 0x4722c0: zInput::DI_PollJoystickState
-RECOIL_NOINLINE JoystickStatePartial *RECOIL_FASTCALL DI_PollJoystickState(
+JoystickStatePartial *__fastcall DI_PollJoystickState(
     int dispatchCallbacks
 ) {
     if (g_zInput_JoystickInitialized == 0) {
@@ -3517,7 +3517,7 @@ RECOIL_NOINLINE JoystickStatePartial *RECOIL_FASTCALL DI_PollJoystickState(
 }
 
 // Reimplements 0x4723a0: zInput::DI_GetButtonTransitionState
-RECOIL_NOINLINE int RECOIL_FASTCALL DI_GetButtonTransitionState(
+int __fastcall DI_GetButtonTransitionState(
     int buttonIndex
 ) {
     const unsigned char current = g_zInput_JoystickCurrentState.rgbButtons[buttonIndex - 1];
@@ -3530,7 +3530,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DI_GetButtonTransitionState(
 }
 
 // Reimplements 0x4723d0: zInput::DI_WaitForButtonPress
-RECOIL_NOINLINE int RECOIL_FASTCALL DI_WaitForButtonPress(
+int __fastcall DI_WaitForButtonPress(
     int loopUntilPressed
 ) {
     int result = 0;
@@ -3552,7 +3552,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DI_WaitForButtonPress(
 }
 
 // Reimplements 0x42e170: zInput::DI_SetJoystickEnabled
-RECOIL_NOINLINE int RECOIL_FASTCALL DI_SetJoystickEnabled(
+int __fastcall DI_SetJoystickEnabled(
     int enable
 ) {
     if (enable != 0 && DI_IsJoystickDeviceReady() != 0) {
@@ -3584,7 +3584,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL DI_SetJoystickEnabled(
 }
 
 // Reimplements 0x470310: zInput::Mouse_UpdateAcquireState
-RECOIL_NOINLINE void RECOIL_CDECL Mouse_UpdateAcquireState() {
+void Mouse_UpdateAcquireState() {
     DIDevice *device = g_zInput_MouseDevice;
 
     if (g_zInput_MouseActive != 0) {
@@ -3605,7 +3605,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Mouse_UpdateAcquireState() {
 }
 
 // Reimplements 0x470360: zInput::Mouse_ShutdownDevice
-RECOIL_NOINLINE int RECOIL_CDECL Mouse_ShutdownDevice() {
+int Mouse_ShutdownDevice() {
     g_zInput_MouseActive = 0;
     Mouse_UpdateAcquireState();
 
@@ -3620,14 +3620,14 @@ RECOIL_NOINLINE int RECOIL_CDECL Mouse_ShutdownDevice() {
 }
 
 // Reimplements 0x4703b0: zInput::Mouse_PollAndStoreState
-RECOIL_NOINLINE void RECOIL_FASTCALL Mouse_PollAndStoreState(
+void __fastcall Mouse_PollAndStoreState(
     int dispatchCallbacks
 ) {
     g_zInputMouseLastPollResult = Mouse_PollState(dispatchCallbacks);
 }
 
 // Reimplements 0x471de0: zInput::PollActiveDevices
-RECOIL_NOINLINE void RECOIL_FASTCALL PollActiveDevices(
+void __fastcall PollActiveDevices(
     int dispatchCallbacks
 ) {
     const int savedDispatchCallbacks = dispatchCallbacks;
@@ -3645,7 +3645,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL PollActiveDevices(
 }
 
 // Reimplements 0x4703c0: zInput::Mouse_PollState
-RECOIL_NOINLINE int RECOIL_FASTCALL Mouse_PollState(
+int __fastcall Mouse_PollState(
     int dispatchCallbacks
 ) {
     g_zInput_MouseStateSnapshot.deltaX = 0;
@@ -3691,7 +3691,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Mouse_PollState(
 }
 
 // Reimplements 0x470680: zInput::Mouse_WaitForButtonPress
-RECOIL_NOINLINE int RECOIL_FASTCALL Mouse_WaitForButtonPress(
+int __fastcall Mouse_WaitForButtonPress(
     int pollUntilFound
 ) {
     int result = 0;
@@ -3713,7 +3713,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Mouse_WaitForButtonPress(
 }
 
 // Reimplements 0x4704f0: zInput::Mouse_ApplyAccumulatedDelta
-RECOIL_NOINLINE void RECOIL_CDECL Mouse_ApplyAccumulatedDelta() {
+void Mouse_ApplyAccumulatedDelta() {
     g_zInput_MouseStateSnapshot.deltaX =
         (int)((double)(g_zInput_MouseStateSnapshot.deltaX) * g_zInput_MouseSensitivityX);
     g_zInput_MouseStateSnapshot.deltaY =
@@ -3754,7 +3754,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Mouse_ApplyAccumulatedDelta() {
 }
 
 // Reimplements 0x470610: zInput::Mouse_ResetTransitionState
-RECOIL_NOINLINE void RECOIL_CDECL Mouse_ResetTransitionState() {
+void Mouse_ResetTransitionState() {
     if (g_zInput_MouseInitialized != 1) {
         return;
     }
@@ -3772,36 +3772,36 @@ RECOIL_NOINLINE void RECOIL_CDECL Mouse_ResetTransitionState() {
 }
 
 // Reimplements 0x471c60: zInput::Mouse_IsUnsuspended
-RECOIL_NOINLINE int RECOIL_CDECL Mouse_IsUnsuspended() {
+int Mouse_IsUnsuspended() {
     return IsUnsuspended(g_zInput_MouseSuspendFlags);
 }
 
 // Reimplements 0x471c70: zInput::Joystick_IsUnsuspended
-RECOIL_NOINLINE int RECOIL_CDECL Joystick_IsUnsuspended() {
+int Joystick_IsUnsuspended() {
     return IsUnsuspended(g_zInput_JoystickSuspendFlags);
 }
 
-RECOIL_NOINLINE int RECOIL_CDECL Keyboard_IsUnsuspended() {
+int Keyboard_IsUnsuspended() {
     return zInput_Keyboard_IsUnsuspended();
 }
 
 // Reimplements 0x471cf0: zInput::Mouse_Suspend
-RECOIL_NOINLINE void RECOIL_CDECL Mouse_Suspend() {
+void Mouse_Suspend() {
     g_zInput_MouseSuspendFlags |= kSuspendFlag;
 }
 
 // Reimplements 0x471d00: zInput::Joystick_Suspend
-RECOIL_NOINLINE void RECOIL_CDECL Joystick_Suspend() {
+void Joystick_Suspend() {
     g_zInput_JoystickSuspendFlags |= kSuspendFlag;
 }
 
 // Reimplements 0x471d10: zInput::Keyboard_Suspend
-RECOIL_NOINLINE void RECOIL_CDECL Keyboard_Suspend() {
+void Keyboard_Suspend() {
     g_zInput_KeyboardSuspendFlags |= kSuspendFlag;
 }
 
 // Reimplements 0x471c90: zInput::Mouse_ResumeFromSuspend
-RECOIL_NOINLINE void RECOIL_CDECL Mouse_ResumeFromSuspend() {
+void Mouse_ResumeFromSuspend() {
     if ((g_zInput_MouseSuspendFlags & kSuspendFlag) != 0) {
         Mouse_ResetTransitionState();
     }
@@ -3810,7 +3810,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Mouse_ResumeFromSuspend() {
 }
 
 // Reimplements 0x46f450: zInput::Keyboard_ResetTransitionState
-RECOIL_NOINLINE void RECOIL_CDECL Keyboard_ResetTransitionState() {
+void Keyboard_ResetTransitionState() {
     if (g_zInput_KbdSystemReady == 0) {
         return;
     }
@@ -3901,7 +3901,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Keyboard_ResetTransitionState() {
 }
 
 // Reimplements 0x471cd0: zInput::Keyboard_ResumeFromSuspend
-RECOIL_NOINLINE void RECOIL_CDECL Keyboard_ResumeFromSuspend() {
+void Keyboard_ResumeFromSuspend() {
     if ((g_zInput_KeyboardSuspendFlags & kSuspendFlag) != 0) {
         Keyboard_ResetTransitionState();
     }
@@ -3910,7 +3910,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Keyboard_ResumeFromSuspend() {
 }
 
 // Reimplements 0x472410: zInput::DI_ResetTransitionState
-RECOIL_NOINLINE void RECOIL_CDECL DI_ResetTransitionState() {
+void DI_ResetTransitionState() {
     if (g_zInput_JoystickInitialized == 0) {
         return;
     }
@@ -3927,14 +3927,14 @@ RECOIL_NOINLINE void RECOIL_CDECL DI_ResetTransitionState() {
 }
 
 // Reimplements 0x471c50: zInput::ResetAllTransitionState
-RECOIL_NOINLINE void RECOIL_CDECL ResetAllTransitionState() {
+void ResetAllTransitionState() {
     Keyboard_ResetTransitionState();
     DI_ResetTransitionState();
     Mouse_ResetTransitionState();
 }
 
 // Reimplements 0x471cb0: zInput::Joystick_ResumeFromSuspend
-RECOIL_NOINLINE void RECOIL_CDECL Joystick_ResumeFromSuspend() {
+void Joystick_ResumeFromSuspend() {
     if ((g_zInput_JoystickSuspendFlags & kSuspendFlag) != 0) {
         DI_ResetTransitionState();
     }
@@ -3943,7 +3943,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Joystick_ResumeFromSuspend() {
 }
 
 // Reimplements 0x471b20: zInput::OnAppActivate
-RECOIL_NOINLINE void RECOIL_CDECL OnAppActivate() {
+void OnAppActivate() {
     if (g_zInput_hWnd == 0) {
         return;
     }
@@ -3956,7 +3956,7 @@ RECOIL_NOINLINE void RECOIL_CDECL OnAppActivate() {
 }
 
 // Reimplements 0x471ae0: zInput::OnAppDeactivate
-RECOIL_NOINLINE void RECOIL_CDECL OnAppDeactivate() {
+void OnAppDeactivate() {
     if (Joystick_IsUnsuspended() != 0) {
         Joystick_Suspend();
     }

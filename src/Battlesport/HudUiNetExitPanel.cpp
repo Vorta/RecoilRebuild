@@ -42,7 +42,7 @@ Function MethodFunction(
     return function;
 }
 
-RECOIL_NOINLINE void RECOIL_CDECL HudUiWidgetPostLoadNoOp() {}
+void HudUiWidgetPostLoadNoOp() {}
 
 HudUiWidget_FTable MakeHudUiNetExitPanelExitWidgetFTable() {
     HudUiWidget_FTable table = {0};
@@ -80,20 +80,20 @@ const HudUiWidget_FTable g_HudUiNetExitPanel_ResumeWidget_FTable =
 
 HudUiNetExitPanel_FTable MakeHudUiNetExitPanelFTable() {
     HudUiNetExitPanel_FTable table = {0};
-    table.updateAll = MethodFunction<void(RECOIL_THISCALL *)(
+    table.updateAll = MethodFunction<void( *)(
         HudUiNetExitPanel *,
         float
     )>(
         &HudUiNetExitPanel::Update
     );
-    table.setEnabled = MethodFunction<int(RECOIL_THISCALL *)(
+    table.setEnabled = MethodFunction<int( *)(
         HudUiNetExitPanel *,
         int
     )>(
         &HudUiNetExitPanel::SetEnabled
     );
     table.scalarDeletingDtor =
-        MethodFunction<HudUiNetExitPanel *(RECOIL_THISCALL *)(
+        MethodFunction<HudUiNetExitPanel *( *)(
             HudUiNetExitPanel *,
             unsigned int
         )>(
@@ -107,7 +107,7 @@ const HudUiNetExitPanel_FTable g_HudUiNetExitPanel_FTable = MakeHudUiNetExitPane
 
 // Reimplements 0x41bd80: HudUiNetExitPanel::Constructor
 // (D:\Proj\Battlesport\HudUi_NetExit.cpp)
-HudUiNetExitPanel *RECOIL_THISCALL HudUiNetExitPanel::Constructor() {
+HudUiNetExitPanel * HudUiNetExitPanel::Constructor() {
     base.Constructor();
 
     resumeWidget.base.Constructor();
@@ -151,19 +151,19 @@ HudUiNetExitPanel *RECOIL_THISCALL HudUiNetExitPanel::Constructor() {
 
 // Reimplements 0x41beb0: HudUiNetExitPanel::Destructor
 // (D:\Proj\Battlesport\HudUi_NetExit.cpp)
-void RECOIL_THISCALL HudUiNetExitPanel::Destructor() {
+void HudUiNetExitPanel::Destructor() {
     exitWidget.base.DestructorCore();
     resumeWidget.base.DestructorCore();
     base.Destructor();
 }
 
-void RECOIL_THISCALL HudUiNetExitPanel::Update(
+void HudUiNetExitPanel::Update(
     float deltaSeconds
 ) {
     base.Update(deltaSeconds);
 }
 
-int RECOIL_THISCALL HudUiNetExitPanel::SetEnabled(
+int HudUiNetExitPanel::SetEnabled(
     int enabled
 ) {
     base.SetEnabled(enabled);
@@ -171,7 +171,7 @@ int RECOIL_THISCALL HudUiNetExitPanel::SetEnabled(
 }
 
 // Reimplements 0x41be90: HudUiNetExitPanel_ScalarDeletingDtor
-HudUiNetExitPanel *RECOIL_THISCALL HudUiNetExitPanel::ScalarDeletingDestructor(
+HudUiNetExitPanel * HudUiNetExitPanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -183,7 +183,7 @@ HudUiNetExitPanel *RECOIL_THISCALL HudUiNetExitPanel::ScalarDeletingDestructor(
 }
 
 // Reimplements 0x41be70: HudUiNetExitPanel_ExitButton::OnActivate
-void RECOIL_THISCALL HudUiNetExitPanel_ExitButton::OnActivate() {
+void HudUiNetExitPanel_ExitButton::OnActivate() {
     g_RecoilApp.QueueSwitchCurrentState(
         &g_RecoilApp.m_leaveNetworkState,
         0
@@ -191,8 +191,8 @@ void RECOIL_THISCALL HudUiNetExitPanel_ExitButton::OnActivate() {
 }
 
 // Reimplements 0x41bf10: HudUiNetExitPanel_ResumeWidget::OnActivate
-void RECOIL_THISCALL HudUiNetExitPanel_ResumeWidget::OnActivate() {
-    typedef void(RECOIL_THISCALL * HidePreviewFn)(HudUiNetExitPanel_ResumeWidget * self);
+void HudUiNetExitPanel_ResumeWidget::OnActivate() {
+    typedef void( * HidePreviewFn)(HudUiNetExitPanel_ResumeWidget * self);
     ((HidePreviewFn)(base.base.ftable->slots[0x40 / 4]))(this);
 
     const HudUiNetExitPanel_FTable *const panelFtable =
@@ -206,7 +206,7 @@ void RECOIL_THISCALL HudUiNetExitPanel_ResumeWidget::OnActivate() {
 }
 
 // Reimplements 0x41bf40: HudUiNetExitPanel_ResumeWidget::OnShowPreview
-void RECOIL_THISCALL HudUiNetExitPanel_ResumeWidget::OnShowPreview() {
+void HudUiNetExitPanel_ResumeWidget::OnShowPreview() {
     if (previewInputCaptureActive == 0) {
         zInput::BindMapContext_Push(0);
         zInput::BindMapCurrent_SetMouseBinding(
@@ -235,7 +235,7 @@ void RECOIL_THISCALL HudUiNetExitPanel_ResumeWidget::OnShowPreview() {
 }
 
 // Reimplements 0x41bfa0: HudUiNetExitPanel_ResumeWidget::OnHidePreview
-void RECOIL_THISCALL HudUiNetExitPanel_ResumeWidget::OnHidePreview() {
+void HudUiNetExitPanel_ResumeWidget::OnHidePreview() {
     if (previewInputCaptureActive != 0) {
         zInput::BindMapContext_Pop();
 
@@ -259,7 +259,7 @@ void RECOIL_THISCALL HudUiNetExitPanel_ResumeWidget::OnHidePreview() {
 
 // Reimplements 0x41c000: HudUiNetExitPanel::CreateGlobal
 // (D:\Proj\Battlesport\HudUi_NetExit.cpp)
-RECOIL_NOINLINE HudUiNetExitPanel *RECOIL_CDECL HudUiNetExitPanel::CreateGlobal() {
+HudUiNetExitPanel *HudUiNetExitPanel::CreateGlobal() {
     HudUiNetExitPanel *const panel =
         (HudUiNetExitPanel *)(::operator new(sizeof(HudUiNetExitPanel)));
     if (panel == 0) {
@@ -272,7 +272,7 @@ RECOIL_NOINLINE HudUiNetExitPanel *RECOIL_CDECL HudUiNetExitPanel::CreateGlobal(
 }
 
 // Reimplements 0x41c070: HudUiNetExitPanel::Show
-RECOIL_NOINLINE void RECOIL_CDECL HudUiNetExitPanel::Show() {
+void HudUiNetExitPanel::Show() {
     const HudUiNetExitPanel_FTable *const ftable =
         (const HudUiNetExitPanel_FTable *)(g_HudUiNetExitPanel->base.base.base.vptr);
     ftable->setEnabled(
@@ -282,11 +282,11 @@ RECOIL_NOINLINE void RECOIL_CDECL HudUiNetExitPanel::Show() {
 }
 
 // Reimplements 0x41c080: HudUiNetExitPanel::Tick
-RECOIL_NOINLINE int RECOIL_CDECL HudUiNetExitPanel::Tick() {
+int HudUiNetExitPanel::Tick() {
     const HudUiNetExitPanel_FTable *const ftable =
         (const HudUiNetExitPanel_FTable *)(g_HudUiNetExitPanel->base.base.base.vptr);
     const unsigned int deltaBits = *(const unsigned int *)(&g_FrameDeltaTimeSec);
-    typedef void(RECOIL_THISCALL * UpdateAllBitsFn)(
+    typedef void( * UpdateAllBitsFn)(
         HudUiNetExitPanel * self,
         unsigned int deltaBits
     );
@@ -298,7 +298,7 @@ RECOIL_NOINLINE int RECOIL_CDECL HudUiNetExitPanel::Tick() {
 }
 
 // Reimplements 0x41c0a0: HudUiNetExitPanel::DestroyGlobal
-RECOIL_NOINLINE void RECOIL_CDECL HudUiNetExitPanel::DestroyGlobal() {
+void HudUiNetExitPanel::DestroyGlobal() {
     HudUiNetExitPanel *const panel = g_HudUiNetExitPanel;
     if (panel != 0) {
         const HudUiNetExitPanel_FTable *const ftable =

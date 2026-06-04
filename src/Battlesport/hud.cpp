@@ -47,12 +47,12 @@ unsigned int HudMethodAddress(
     return address;
 }
 
-typedef void(RECOIL_FASTCALL *HudWeatherFxTextureUploadProc)(
+typedef void(__fastcall *HudWeatherFxTextureUploadProc)(
     zVideo_TextureRecordPartial *textureRecord,
     void *reserved,
     zVidImagePartial *image
 );
-typedef void(RECOIL_FASTCALL *HudWeatherFxSubmitPolyProc)(
+typedef void(__fastcall *HudWeatherFxSubmitPolyProc)(
     zVideo_XyzVertex *vertices,
     zVideo_TexCoord *texCoords,
     int vertexCount,
@@ -61,7 +61,7 @@ typedef void(RECOIL_FASTCALL *HudWeatherFxSubmitPolyProc)(
     float alpha,
     int queueMode
 );
-typedef void(RECOIL_CDECL *HudWeatherFxFlushProc)();
+typedef void(*HudWeatherFxFlushProc)();
 
 HudUiCommon_FTable MakeHudWeatherFxFTable(
     unsigned int scalarDeletingDestructor,
@@ -96,7 +96,7 @@ const float kHudWeatherFxProbeScale = 0.100000001f;
 const float kHudWeatherFxProbeVelocityMinSq = 0.0100000007f;
 const float kHudWeatherFxVelocityMaxSq = 1.0f;
 const float kHudWeatherFxSnowSlantScale = 3.5f;
-const int kHudWeatherFxRainSlantOffset = 1;
+const int kHudWeatherFxRainSlantDelta = 1;
 
 float HudWeatherFxVec3LengthSq(
     const zVec3 *value
@@ -128,9 +128,9 @@ enum zVideoRendererBackend {
 };
 
 struct HudUiBackgroundConfirmQuitVirtual {
-    virtual void RECOIL_THISCALL Update(float deltaSeconds) = 0;
-    virtual void RECOIL_THISCALL SetEnabled(int enabled) = 0;
-    virtual HudUiBackgroundConfirmQuitVirtual *RECOIL_THISCALL ScalarDeletingDestructor(
+    virtual void Update(float deltaSeconds) = 0;
+    virtual void SetEnabled(int enabled) = 0;
+    virtual HudUiBackgroundConfirmQuitVirtual * ScalarDeletingDestructor(
         unsigned int flags
     ) = 0;
 };
@@ -144,22 +144,22 @@ struct HudUiCheatCodeDialog_FTable {
 };
 
 struct HudUiCheatCodeDialogVirtual {
-    virtual void RECOIL_THISCALL Update(float deltaSeconds) = 0;
-    virtual void RECOIL_THISCALL SetEnabled(int enabled) = 0;
-    virtual HudUiCheatCodeDialogVirtual *RECOIL_THISCALL ScalarDeletingDestructor(
+    virtual void Update(float deltaSeconds) = 0;
+    virtual void SetEnabled(int enabled) = 0;
+    virtual HudUiCheatCodeDialogVirtual * ScalarDeletingDestructor(
         unsigned int flags
     ) = 0;
 };
 
 struct HudUiControlsDialogVirtual {
-    virtual void RECOIL_THISCALL Update(float deltaSeconds) = 0;
-    virtual void RECOIL_THISCALL SetEnabled(int enabled) = 0;
-    virtual HudUiControlsDialogVirtual *RECOIL_THISCALL ScalarDeletingDestructor(
+    virtual void Update(float deltaSeconds) = 0;
+    virtual void SetEnabled(int enabled) = 0;
+    virtual HudUiControlsDialogVirtual * ScalarDeletingDestructor(
         unsigned int flags
     ) = 0;
 };
 
-RECOIL_NOINLINE void RECOIL_CDECL HudUiConfirmQuitPostLoadNoOp() {}
+void HudUiConfirmQuitPostLoadNoOp() {}
 
 HudUiWidget_FTable MakeConfirmQuitButtonFTable(
     unsigned int activateCallback
@@ -389,17 +389,17 @@ RecoilApp_IState_Vtbl g_RecoilStateControls_Vtbl = {0};
 RecoilApp_IState_Vtbl g_RecoilStateCheatCode_Vtbl = {0};
 
 struct HudUiOptionsPanelOverlayVirtual {
-    virtual void RECOIL_THISCALL Update(float deltaSeconds) = 0;
-    virtual void RECOIL_THISCALL SetEnabled(int enabled) = 0;
-    virtual HudUiOptionsPanelOverlayVirtual *RECOIL_THISCALL ScalarDeletingDestructor(
+    virtual void Update(float deltaSeconds) = 0;
+    virtual void SetEnabled(int enabled) = 0;
+    virtual HudUiOptionsPanelOverlayVirtual * ScalarDeletingDestructor(
         unsigned int flags
     ) = 0;
 };
 
 struct HudUiNewGamePanelOverlayVirtual {
-    virtual void RECOIL_THISCALL Update(float deltaSeconds) = 0;
-    virtual void RECOIL_THISCALL SetEnabled(int enabled) = 0;
-    virtual HudUiNewGamePanelOverlayVirtual *RECOIL_THISCALL ScalarDeletingDestructor(
+    virtual void Update(float deltaSeconds) = 0;
+    virtual void SetEnabled(int enabled) = 0;
+    virtual HudUiNewGamePanelOverlayVirtual * ScalarDeletingDestructor(
         unsigned int flags
     ) = 0;
 };
@@ -460,7 +460,7 @@ extern const HudUiWidget_FTable g_HudUiControlsDialog_ResumeWidget_Vtbl =
 
 // Reimplements 0x4bdc70: HudWeatherFx::Constructor
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE HudWeatherFx *RECOIL_THISCALL HudWeatherFx::Constructor(
+HudWeatherFx * HudWeatherFx::Constructor(
     int newParticleCount
 ) {
     HudUiElement::Constructor(
@@ -545,7 +545,7 @@ RECOIL_NOINLINE HudWeatherFx *RECOIL_THISCALL HudWeatherFx::Constructor(
 
 // Reimplements 0x4bde20: HudWeatherFx::ScalarDeletingDestructor
 // Compiler-generated deleting destructor wrapper; slot 0 of g_HudWeatherFx_Vtable.
-RECOIL_NOINLINE HudWeatherFx *RECOIL_THISCALL HudWeatherFx::ScalarDeletingDestructor(
+HudWeatherFx * HudWeatherFx::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     HudWeatherFx *self = this;
@@ -558,7 +558,7 @@ RECOIL_NOINLINE HudWeatherFx *RECOIL_THISCALL HudWeatherFx::ScalarDeletingDestru
 
 // Reimplements 0x4bde40: HudWeatherFx::Destructor
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudWeatherFx::Destructor() {
+void HudWeatherFx::Destructor() {
     ftable = &g_HudWeatherFx_Vtable;
 
     if (particleQuads != 0) {
@@ -586,7 +586,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudWeatherFx::Destructor() {
 
 // Reimplements 0x4be210: HudWeatherFx::ArePointBatchInsideRect
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudWeatherFxPointBatch::ArePointBatchInsideRect(
+int HudWeatherFxPointBatch::ArePointBatchInsideRect(
     int pointCount,
     const HudUiRect *viewportRect
 ) {
@@ -614,7 +614,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudWeatherFxPointBatch::ArePointBatchInsideR
 
 // Reimplements 0x4bdee0: HudWeatherFx::ResetParticleSlot
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudWeatherFx::ResetParticleSlot(
+void HudWeatherFx::ResetParticleSlot(
     int particleIndex,
     int
 ) {
@@ -640,7 +640,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudWeatherFx::ResetParticleSlot(
 
 // Reimplements 0x4bdfd0: HudWeatherFx::DrawParticles
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudWeatherFx::DrawParticles() {
+void HudWeatherFx::DrawParticles() {
     if (g_zVideo_ActiveRendererPath == ZVID_RENDERER_BACKEND_SOFTWARE) {
         zVideo_FxSurface::DrawColoredLinesBatch(
             (zVideoFxColoredLineRecord *)(particleQuads),
@@ -735,7 +735,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudWeatherFx::DrawParticles() {
 
 // Reimplements 0x4be280: HudWeatherFxSnow::Constructor
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE HudWeatherFxSnow *RECOIL_THISCALL HudWeatherFxSnow::Constructor(
+HudWeatherFxSnow * HudWeatherFxSnow::Constructor(
     int particleCount
 ) {
     HudWeatherFx::Constructor(particleCount);
@@ -748,7 +748,7 @@ RECOIL_NOINLINE HudWeatherFxSnow *RECOIL_THISCALL HudWeatherFxSnow::Constructor(
 
 // Reimplements 0x4be2c0: HudWeatherFxSnow::ScalarDeletingDestructor
 // Compiler-generated deleting destructor wrapper; slot 0 of g_HudWeatherFxSnow_Vtable.
-RECOIL_NOINLINE HudWeatherFxSnow *RECOIL_THISCALL HudWeatherFxSnow::ScalarDeletingDestructor(
+HudWeatherFxSnow * HudWeatherFxSnow::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     HudWeatherFxSnow *self = this;
@@ -761,13 +761,13 @@ RECOIL_NOINLINE HudWeatherFxSnow *RECOIL_THISCALL HudWeatherFxSnow::ScalarDeleti
 
 // Reimplements 0x4be2e0: HudWeatherFxSnow::Destructor
 // Snow has no additional teardown; the retail body tail-calls the shared base destructor.
-RECOIL_NOINLINE void RECOIL_THISCALL HudWeatherFxSnow::Destructor() {
+void HudWeatherFxSnow::Destructor() {
     HudWeatherFx::Destructor();
 }
 
 // Reimplements 0x4be2f0: HudWeatherFxSnow::Update
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudWeatherFxSnow::Update(
+void HudWeatherFxSnow::Update(
     float deltaSeconds
 ) {
     if ((flags & 0x10) != 0) {
@@ -925,7 +925,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudWeatherFxSnow::Update(
 
 // Reimplements 0x4be810: HudWeatherFxRain::Constructor
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE HudWeatherFxRain *RECOIL_THISCALL HudWeatherFxRain::Constructor(
+HudWeatherFxRain * HudWeatherFxRain::Constructor(
     int particleCount
 ) {
     HudWeatherFx::Constructor(particleCount);
@@ -938,7 +938,7 @@ RECOIL_NOINLINE HudWeatherFxRain *RECOIL_THISCALL HudWeatherFxRain::Constructor(
 
 // Reimplements 0x4be850: HudWeatherFxRain::ScalarDeletingDestructor
 // Compiler-generated deleting destructor wrapper; slot 0 of g_HudWeatherFxRain_Vtable.
-RECOIL_NOINLINE HudWeatherFxRain *RECOIL_THISCALL HudWeatherFxRain::ScalarDeletingDestructor(
+HudWeatherFxRain * HudWeatherFxRain::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     HudWeatherFxRain *self = this;
@@ -951,14 +951,14 @@ RECOIL_NOINLINE HudWeatherFxRain *RECOIL_THISCALL HudWeatherFxRain::ScalarDeleti
 
 // Reimplements 0x4be870: HudWeatherFxRain::Destructor
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudWeatherFxRain::Destructor() {
+void HudWeatherFxRain::Destructor() {
     ftable = &g_HudWeatherFxRain_Vtable;
     HudWeatherFx::Destructor();
 }
 
 // Reimplements 0x4be880: HudWeatherFxRain::Update
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudWeatherFxRain::Update(
+void HudWeatherFxRain::Update(
     float deltaSeconds
 ) {
     if ((flags & 0x10) != 0) {
@@ -1096,7 +1096,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudWeatherFxRain::Update(
         particleQuad->color16 = packedColor16;
         particleQuad->texCoordUStart = probeDepthFactor * alphaStartScale;
         particleQuad->texCoordUEnd = sourceDepthFactor * alphaEndScale;
-        particleQuad->slantOffset = kHudWeatherFxRainSlantOffset;
+        particleQuad->slantOffset = kHudWeatherFxRainSlantDelta;
 
         ResetParticleSlot(
             particleIndex,
@@ -1113,7 +1113,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudWeatherFxRain::Update(
 
 // Reimplements 0x41c6c0: HudUiNewGamePanelOverlayOwner::QueueEnter
 // (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_CDECL HudUiNewGamePanelOverlayOwner::QueueEnter() {
+void HudUiNewGamePanelOverlayOwner::QueueEnter() {
     g_RecoilApp.QueuePushState(
         &g_HudUiNewGamePanelOverlayOwner,
         0
@@ -1122,34 +1122,33 @@ void RECOIL_CDECL HudUiNewGamePanelOverlayOwner::QueueEnter() {
 
 // Reimplements 0x41c5e0: HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit() {
+void HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
 
 // Reimplements 0x41c5f0: HudUiNewGamePanelOverlayOwner::StaticInit
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
-RECOIL_NOINLINE HudUiNewGamePanelOverlayOwner *RECOIL_CDECL
-HudUiNewGamePanelOverlayOwner::StaticInit() {
+HudUiNewGamePanelOverlayOwner *HudUiNewGamePanelOverlayOwner::StaticInit() {
     g_HudUiNewGamePanelOverlayOwner.m_panel = 0;
     return &g_HudUiNewGamePanelOverlayOwner;
 }
 
 // Reimplements 0x41c6a0: HudUiNewGamePanelOverlayOwner::RegisterAtExit
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL HudUiNewGamePanelOverlayOwner::RegisterAtExit() {
+void HudUiNewGamePanelOverlayOwner::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
 // Reimplements 0x41c6b0: HudUiNewGamePanelOverlayOwner::AtExitDestructor
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL HudUiNewGamePanelOverlayOwner::AtExitDestructor() {
+void HudUiNewGamePanelOverlayOwner::AtExitDestructor() {
     g_HudUiNewGamePanelOverlayOwner.Destructor();
 }
 
 // Reimplements 0x41c630: HudUiNewGamePanelOverlayOwner::Destructor
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiNewGamePanelOverlayOwner::Destructor() {
+void HudUiNewGamePanelOverlayOwner::Destructor() {
     HudUiNewGamePanelOverlayVirtual *panel =
         (HudUiNewGamePanelOverlayVirtual *)(unsigned int)m_panel;
     if (panel != 0) {
@@ -1166,8 +1165,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiNewGamePanelOverlayOwner::Destructor()
 
 // Reimplements 0x41c610: HudUiNewGamePanelOverlayOwner::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
-RECOIL_NOINLINE HudUiNewGamePanelOverlayOwner *RECOIL_THISCALL
-HudUiNewGamePanelOverlayOwner::ScalarDeletingDestructor(
+HudUiNewGamePanelOverlayOwner * HudUiNewGamePanelOverlayOwner::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -1180,7 +1178,7 @@ HudUiNewGamePanelOverlayOwner::ScalarDeletingDestructor(
 
 // Reimplements 0x41c560: HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent() {
+int HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent() {
     HudUiNewGamePanel *panel = (HudUiNewGamePanel *) ::operator new(sizeof(HudUiNewGamePanel));
     if (panel != 0) {
         panel = panel->Constructor();
@@ -1195,7 +1193,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiNewGamePanelOverlayOwner::OnTryBecomeCu
 
 // Reimplements 0x41c290: HudUiNewGamePanel::Constructor
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
-HudUiNewGamePanel *RECOIL_THISCALL HudUiNewGamePanel::Constructor() {
+HudUiNewGamePanel * HudUiNewGamePanel::Constructor() {
     HudUiBackground::Constructor();
 
     backWidget.Constructor();
@@ -1246,7 +1244,7 @@ HudUiNewGamePanel *RECOIL_THISCALL HudUiNewGamePanel::Constructor() {
 
 // Reimplements 0x41c3b0: HudUiNewGamePanel_NameInput::OnActivate
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
-void RECOIL_THISCALL HudUiNewGamePanel_NameInput::OnActivate() {
+void HudUiNewGamePanel_NameInput::OnActivate() {
     HudUiNumericTextInput::AllocTextBuffer(21);
     HudUiNumericTextInput::Update(zOpt_GetPlayerName());
     HudUiNumericTextInput::OnActivate();
@@ -1255,7 +1253,7 @@ void RECOIL_THISCALL HudUiNewGamePanel_NameInput::OnActivate() {
 
 // Reimplements 0x41c400: HudUiNewGamePanel::Destructor
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiNewGamePanel::Destructor() {
+void HudUiNewGamePanel::Destructor() {
     intensity.DestructorCore();
     nameInput.Destructor();
     startWidget.DestructorCore();
@@ -1265,7 +1263,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiNewGamePanel::Destructor() {
 
 // Reimplements 0x41c3e0: HudUiNewGamePanel::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
-RECOIL_NOINLINE HudUiNewGamePanel *RECOIL_THISCALL HudUiNewGamePanel::ScalarDeletingDestructor(
+HudUiNewGamePanel * HudUiNewGamePanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -1278,13 +1276,13 @@ RECOIL_NOINLINE HudUiNewGamePanel *RECOIL_THISCALL HudUiNewGamePanel::ScalarDele
 
 // Reimplements 0x41c4e0: HudUiNewGamePanel::SyncIntensityFromDifficulty
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
-void RECOIL_THISCALL HudUiNewGamePanel::SyncIntensityFromDifficulty() {
+void HudUiNewGamePanel::SyncIntensityFromDifficulty() {
     intensity.SetSelectedIndex(zOpt::GetGameDifficultyMode());
 }
 
 // Reimplements 0x41c500: HudUiNewGamePanel::StartGameFromFields
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
-void RECOIL_THISCALL HudUiNewGamePanel::StartGameFromFields() {
+void HudUiNewGamePanel::StartGameFromFields() {
     HudCheat::ClearNanitePanelCheatSentinel();
     zOpt::SetPlayerName(nameInput.GetBuffer());
     zOpt::SetGameDifficultyMode(intensity.selectedIndex);
@@ -1299,7 +1297,7 @@ void RECOIL_THISCALL HudUiNewGamePanel::StartGameFromFields() {
 
 // Reimplements 0x41c270: HudUiNewGamePanel_StartButton::OnActivate
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
-void RECOIL_THISCALL HudUiNewGamePanel_StartButton::OnActivate() {
+void HudUiNewGamePanel_StartButton::OnActivate() {
     HudUiNewGamePanel *const panel = (HudUiNewGamePanel *)(owner);
     if (panel != 0) {
         panel->StartGameFromFields();
@@ -1310,7 +1308,7 @@ void RECOIL_THISCALL HudUiNewGamePanel_StartButton::OnActivate() {
 
 // Reimplements 0x40d1c0: HudUiOptionsPanelOverlayOwner::QueueEnter
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
-void RECOIL_CDECL HudUiOptionsPanelOverlayOwner::QueueEnter() {
+void HudUiOptionsPanelOverlayOwner::QueueEnter() {
     g_RecoilApp.QueuePushState(
         &g_HudUiOptionsPanelOverlayOwner,
         0
@@ -1319,40 +1317,39 @@ void RECOIL_CDECL HudUiOptionsPanelOverlayOwner::QueueEnter() {
 
 // Reimplements 0x40d070: HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit() {
+void HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
 
 // Reimplements 0x40d080: HudUiOptionsPanelOverlayOwner::StaticInit
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
-RECOIL_NOINLINE HudUiOptionsPanelOverlayOwner *RECOIL_CDECL
-HudUiOptionsPanelOverlayOwner::StaticInit() {
+HudUiOptionsPanelOverlayOwner *HudUiOptionsPanelOverlayOwner::StaticInit() {
     return g_HudUiOptionsPanelOverlayOwner.Constructor();
 }
 
 // Reimplements 0x40d090: HudUiOptionsPanelOverlayOwner::RegisterAtExit
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL HudUiOptionsPanelOverlayOwner::RegisterAtExit() {
+void HudUiOptionsPanelOverlayOwner::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
 // Reimplements 0x40d0a0: HudUiOptionsPanelOverlayOwner::AtExitDestructor
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL HudUiOptionsPanelOverlayOwner::AtExitDestructor() {
+void HudUiOptionsPanelOverlayOwner::AtExitDestructor() {
     g_HudUiOptionsPanelOverlayOwner.DestructorCore();
 }
 
 // Reimplements 0x40d0b0: HudUiOptionsPanelOverlayOwner::Constructor
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
-HudUiOptionsPanelOverlayOwner *RECOIL_THISCALL HudUiOptionsPanelOverlayOwner::Constructor() {
+HudUiOptionsPanelOverlayOwner * HudUiOptionsPanelOverlayOwner::Constructor() {
     m_panel = 0;
     return this;
 }
 
 // Reimplements 0x40d0e0: HudUiOptionsPanelOverlayOwner::DestructorCore
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiOptionsPanelOverlayOwner::DestructorCore() {
+void HudUiOptionsPanelOverlayOwner::DestructorCore() {
     HudUiOptionsPanelOverlayVirtual *panel = (HudUiOptionsPanelOverlayVirtual *)m_panel;
     if (panel != 0) {
         panel->SetEnabled(0);
@@ -1368,8 +1365,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiOptionsPanelOverlayOwner::DestructorCo
 
 // Reimplements 0x40d0c0: HudUiOptionsPanelOverlayOwner::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
-RECOIL_NOINLINE HudUiOptionsPanelOverlayOwner *RECOIL_THISCALL
-HudUiOptionsPanelOverlayOwner::ScalarDeletingDestructor(
+HudUiOptionsPanelOverlayOwner * HudUiOptionsPanelOverlayOwner::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -1382,7 +1378,7 @@ HudUiOptionsPanelOverlayOwner::ScalarDeletingDestructor(
 
 // Reimplements 0x40d150: HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent() {
+int HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent() {
     HudOptionsDialog *panel = (HudOptionsDialog *) ::operator new(sizeof(HudOptionsDialog));
     if (panel != 0) {
         panel = panel->Constructor();
@@ -1397,7 +1393,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiOptionsPanelOverlayOwner::OnTryBecomeCu
 
 // Reimplements 0x4159b0: RecoilStateConfirmQuit::QueueEnter
 // (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
-void RECOIL_CDECL RecoilStateConfirmQuit::QueueEnter() {
+void RecoilStateConfirmQuit::QueueEnter() {
     g_RecoilApp.QueuePushState(
         &g_RecoilState_ConfirmQuit,
         0
@@ -1406,14 +1402,14 @@ void RECOIL_CDECL RecoilStateConfirmQuit::QueueEnter() {
 
 // Reimplements 0x409160: HudUiZrdWidget::OnActivateQueueExitCurrentState
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
-void RECOIL_THISCALL HudUiZrdWidget::OnActivateQueueExitCurrentState() {
+void HudUiZrdWidget::OnActivateQueueExitCurrentState() {
     g_RecoilApp.QueueExitCurrentState(0);
     OnActivate();
 }
 
 // Reimplements 0x409180: HudUiCreditsQuitButton::OnActivate
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
-void RECOIL_THISCALL HudUiCreditsQuitButton::OnActivate() {
+void HudUiCreditsQuitButton::OnActivate() {
     g_RecoilApp.QueueExitCurrentState(1);
     g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY;
     g_RecoilApp.QueueSwitchCurrentState(
@@ -1425,32 +1421,32 @@ void RECOIL_THISCALL HudUiCreditsQuitButton::OnActivate() {
 
 // Reimplements 0x415810: RecoilStateConfirmQuit::StaticInitAndRegisterAtExit
 // (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RecoilStateConfirmQuit::StaticInitAndRegisterAtExit() {
+void RecoilStateConfirmQuit::StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
 
 // Reimplements 0x415820: RecoilStateConfirmQuit::StaticInit
 // (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
-RECOIL_NOINLINE RecoilStateConfirmQuit *RECOIL_CDECL RecoilStateConfirmQuit::StaticInit() {
+RecoilStateConfirmQuit *RecoilStateConfirmQuit::StaticInit() {
     return g_RecoilState_ConfirmQuit.Constructor();
 }
 
 // Reimplements 0x415830: RecoilStateConfirmQuit::RegisterAtExit
 // (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RecoilStateConfirmQuit::RegisterAtExit() {
+void RecoilStateConfirmQuit::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
 // Reimplements 0x415840: RecoilStateConfirmQuit::AtExitDestructor
 // (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RecoilStateConfirmQuit::AtExitDestructor() {
+void RecoilStateConfirmQuit::AtExitDestructor() {
     g_RecoilState_ConfirmQuit.~RecoilStateConfirmQuit();
 }
 
 // Reimplements 0x415740: HudUiConfirmQuitOkButton::OnActivate
 // (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
-void RECOIL_THISCALL HudUiConfirmQuitOkButton::OnActivate() {
+void HudUiConfirmQuitOkButton::OnActivate() {
     g_RecoilState_MainMenuSkipExitDelay = 1;
     g_RecoilApp.QueueExitCurrentState(1);
     g_RecoilApp.QueueExitCurrentState(0);
@@ -1464,7 +1460,7 @@ void RECOIL_THISCALL HudUiConfirmQuitOkButton::OnActivate() {
 
 // Reimplements 0x415680: HudUiBackgroundConfirmQuit::Constructor
 // (D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp)
-HudUiBackgroundConfirmQuit *RECOIL_THISCALL HudUiBackgroundConfirmQuit::Constructor() {
+HudUiBackgroundConfirmQuit * HudUiBackgroundConfirmQuit::Constructor() {
     HudUiBackground::Constructor();
     okButton.Constructor();
     okButton.base.ftable = &g_HudUiConfirmQuitOkButton_FTable;
@@ -1496,7 +1492,7 @@ HudUiBackgroundConfirmQuit *RECOIL_THISCALL HudUiBackgroundConfirmQuit::Construc
 
 // Reimplements 0x4157b0: HudUiBackgroundConfirmQuit::Destructor
 // (D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiBackgroundConfirmQuit::Destructor() {
+void HudUiBackgroundConfirmQuit::Destructor() {
     cancelButton.DestructorCore();
     okButton.DestructorCore();
     HudUiBackground::Destructor();
@@ -1504,8 +1500,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiBackgroundConfirmQuit::Destructor() {
 
 // Reimplements 0x415790: HudUiBackgroundConfirmQuit::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp)
-RECOIL_NOINLINE HudUiBackgroundConfirmQuit *RECOIL_THISCALL
-HudUiBackgroundConfirmQuit::ScalarDeletingDestructor(
+HudUiBackgroundConfirmQuit * HudUiBackgroundConfirmQuit::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -1519,14 +1514,14 @@ HudUiBackgroundConfirmQuit::ScalarDeletingDestructor(
 
 // Reimplements 0x4070e0: HudUiCheatTextInputWidget::OnActivate
 // (D:\Proj\Battlesport\HudUiCheatCode.cpp)
-void RECOIL_THISCALL HudUiCheatTextInputWidget::OnActivate() {
+void HudUiCheatTextInputWidget::OnActivate() {
     g_RecoilApp.QueueExitCurrentState(0);
     base.OnActivate();
 }
 
 // Reimplements 0x406d20: HudUiCheatCodeDialog::Constructor
 // (D:\Proj\Battlesport\HudUiCheatCode.cpp)
-HudUiCheatCodeDialog *RECOIL_THISCALL HudUiCheatCodeDialog::Constructor() {
+HudUiCheatCodeDialog * HudUiCheatCodeDialog::Constructor() {
     HudUiBackground::Constructor();
 
     titleWidget.Constructor();
@@ -1567,7 +1562,7 @@ HudUiCheatCodeDialog *RECOIL_THISCALL HudUiCheatCodeDialog::Constructor() {
 
 // Reimplements 0x406e30: HudUiCheatCodeDialog::Destructor
 // (D:\Proj\Battlesport\HudUiCheatCode.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiCheatCodeDialog::Destructor() {
+void HudUiCheatCodeDialog::Destructor() {
     cheatInputWidget.Destructor();
     titleWidget.DestructorCore();
     HudUiBackground::Destructor();
@@ -1575,8 +1570,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiCheatCodeDialog::Destructor() {
 
 // Reimplements 0x406e10: HudUiCheatCodeDialog::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\HudUiCheatCode.cpp)
-RECOIL_NOINLINE HudUiCheatCodeDialog *RECOIL_THISCALL
-HudUiCheatCodeDialog::ScalarDeletingDestructor(
+HudUiCheatCodeDialog * HudUiCheatCodeDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -1590,39 +1584,39 @@ HudUiCheatCodeDialog::ScalarDeletingDestructor(
 
 // Reimplements 0x406e90: RecoilStateCheatCode::StaticInitAndRegisterAtExit
 // (D:\Proj\Battlesport\HudUiCheatCode.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RecoilStateCheatCode::StaticInitAndRegisterAtExit() {
+void RecoilStateCheatCode::StaticInitAndRegisterAtExit() {
     ConstructGlobal();
     StaticInit();
 }
 
 // Reimplements 0x406ea0: RecoilStateCheatCode::ConstructGlobal
 // (D:\Proj\Battlesport\HudUiCheatCode.cpp)
-RECOIL_NOINLINE RecoilStateCheatCode *RECOIL_CDECL RecoilStateCheatCode::ConstructGlobal() {
+RecoilStateCheatCode *RecoilStateCheatCode::ConstructGlobal() {
     return g_RecoilStateCheatCode.Constructor();
 }
 
 // Reimplements 0x406eb0: RecoilStateCheatCode::StaticInit
 // (D:\Proj\Battlesport\HudUiCheatCode.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RecoilStateCheatCode::StaticInit() {
+void RecoilStateCheatCode::StaticInit() {
     atexit(AtExitDestructor);
 }
 
 // Reimplements 0x406ec0: RecoilStateCheatCode::AtExitDestructor
 // (D:\Proj\Battlesport\HudUiCheatCode.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RecoilStateCheatCode::AtExitDestructor() {
+void RecoilStateCheatCode::AtExitDestructor() {
     g_RecoilStateCheatCode.~RecoilStateCheatCode();
 }
 
 // Reimplements 0x406ed0: RecoilStateCheatCode::Constructor
 // (D:\Proj\Battlesport\HudUiCheatCode.cpp)
-RecoilStateCheatCode *RECOIL_THISCALL RecoilStateCheatCode::Constructor() {
+RecoilStateCheatCode * RecoilStateCheatCode::Constructor() {
     m_dialog = 0;
     return this;
 }
 
 // Reimplements 0x406f60: RecoilStateCheatCode::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\RecoilStateCheatCode.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateCheatCode::OnTryBecomeCurrent() {
+int RecoilStateCheatCode::OnTryBecomeCurrent() {
     if (g_zVideo_ActiveRendererPath != ZVID_RENDERER_BACKEND_SOFTWARE) {
         g_zVideo_pfnBltSwToPrimaryRectDirect(
             0,
@@ -1654,7 +1648,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateCheatCode::OnTryBecomeCurrent() {
 
 // Reimplements 0x407010: RecoilStateCheatCode::OnDeactivate
 // (D:\Proj\Battlesport\RecoilStateCheatCode.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateCheatCode::OnDeactivate() {
+void RecoilStateCheatCode::OnDeactivate() {
     CString commandString;
 
     HudUiCheatCodeDialog *dialog = (HudUiCheatCodeDialog *)(unsigned int)m_dialog;
@@ -1694,7 +1688,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateCheatCode::OnDeactivate() {
 
 // Reimplements 0x406f00: RecoilStateCheatCode::Destructor
 // (D:\Proj\Battlesport\HudUiCheatCode.cpp)
-RECOIL_NOINLINE RecoilStateCheatCode::~RecoilStateCheatCode() {
+RecoilStateCheatCode::~RecoilStateCheatCode() {
     HudUiCheatCodeDialogVirtual *dialogView = (HudUiCheatCodeDialogVirtual *)m_dialog;
     if (dialogView != 0) {
         dialogView->ScalarDeletingDestructor(1);
@@ -1705,8 +1699,7 @@ RECOIL_NOINLINE RecoilStateCheatCode::~RecoilStateCheatCode() {
 
 // Reimplements 0x406ee0: RecoilStateCheatCode::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\HudUiCheatCode.cpp)
-RECOIL_NOINLINE RecoilStateCheatCode *RECOIL_THISCALL
-RecoilStateCheatCode::ScalarDeletingDestructor(
+RecoilStateCheatCode * RecoilStateCheatCode::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     this->~RecoilStateCheatCode();
@@ -1720,14 +1713,14 @@ RecoilStateCheatCode::ScalarDeletingDestructor(
 
 // Reimplements 0x415850: RecoilStateConfirmQuit::Constructor
 // (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
-RecoilStateConfirmQuit *RECOIL_THISCALL RecoilStateConfirmQuit::Constructor() {
+RecoilStateConfirmQuit * RecoilStateConfirmQuit::Constructor() {
     m_dialog = 0;
     return this;
 }
 
 // Reimplements 0x4158f0: RecoilStateConfirmQuit::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateConfirmQuit::OnTryBecomeCurrent() {
+int RecoilStateConfirmQuit::OnTryBecomeCurrent() {
     HudUiBackgroundConfirmQuit *dialog =
         (HudUiBackgroundConfirmQuit *) ::operator new(sizeof(HudUiBackgroundConfirmQuit));
     if (dialog != 0) {
@@ -1743,7 +1736,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateConfirmQuit::OnTryBecomeCurrent()
 
 // Reimplements 0x415960: RecoilStateConfirmQuit::OnDeactivate
 // (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateConfirmQuit::OnDeactivate() {
+void RecoilStateConfirmQuit::OnDeactivate() {
     if (m_dialog == 0) {
         return;
     }
@@ -1767,7 +1760,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateConfirmQuit::OnDeactivate() {
 
 // Reimplements 0x415880: RecoilStateConfirmQuit::~RecoilStateConfirmQuit
 // (D:\Proj\Battlesport\RecoilStateConfirmQuit.cpp)
-RECOIL_NOINLINE RecoilStateConfirmQuit::~RecoilStateConfirmQuit() {
+RecoilStateConfirmQuit::~RecoilStateConfirmQuit() {
     HudUiBackgroundConfirmQuitVirtual *dialogView = (HudUiBackgroundConfirmQuitVirtual *)m_dialog;
     if (dialogView != 0) {
         dialogView->SetEnabled(0);
@@ -1783,8 +1776,7 @@ RECOIL_NOINLINE RecoilStateConfirmQuit::~RecoilStateConfirmQuit() {
 
 // Reimplements 0x415860: RecoilStateConfirmQuit::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\RecoilStateConfirmQuit.cpp)
-RECOIL_NOINLINE RecoilStateConfirmQuit *RECOIL_THISCALL
-RecoilStateConfirmQuit::ScalarDeletingDestructor(
+RecoilStateConfirmQuit * RecoilStateConfirmQuit::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     this->~RecoilStateConfirmQuit();
@@ -1798,40 +1790,39 @@ RecoilStateConfirmQuit::ScalarDeletingDestructor(
 
 // Reimplements 0x408d20: RecoilStateControls::StaticInitAndRegisterAtExit
 // (D:\Proj\Battlesport\recoil_state.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RecoilStateControls::StaticInitAndRegisterAtExit() {
+void RecoilStateControls::StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
 
 // Reimplements 0x408d30: RecoilStateControls::StaticInit
 // (D:\Proj\Battlesport\recoil_state.cpp)
-RECOIL_NOINLINE RecoilStateControls *RECOIL_CDECL RecoilStateControls::StaticInit() {
+RecoilStateControls *RecoilStateControls::StaticInit() {
     return g_RecoilStateControls.Constructor();
 }
 
 // Reimplements 0x408d40: RecoilStateControls::RegisterAtExit
 // (D:\Proj\Battlesport\recoil_state.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RecoilStateControls::RegisterAtExit() {
+void RecoilStateControls::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
 // Reimplements 0x408d50: RecoilStateControls::AtExitDestructor
 // (D:\Proj\Battlesport\recoil_state.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RecoilStateControls::AtExitDestructor() {
+void RecoilStateControls::AtExitDestructor() {
     g_RecoilStateControls.~RecoilStateControls();
 }
 
 // Reimplements 0x408d60: RecoilStateControls::Constructor
 // (D:\Proj\Battlesport\recoil_state.cpp)
-RecoilStateControls *RECOIL_THISCALL RecoilStateControls::Constructor() {
+RecoilStateControls * RecoilStateControls::Constructor() {
     m_dialog = 0;
     return this;
 }
 
 // Reimplements 0x408d70: RecoilStateControls::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\recoil_state.cpp)
-RECOIL_NOINLINE RecoilStateControls *RECOIL_THISCALL
-RecoilStateControls::ScalarDeletingDestructor(
+RecoilStateControls * RecoilStateControls::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     this->~RecoilStateControls();
@@ -1845,7 +1836,7 @@ RecoilStateControls::ScalarDeletingDestructor(
 
 // Reimplements 0x408d90: RecoilStateControls::Destructor
 // (D:\Proj\Battlesport\recoil_state.cpp)
-RECOIL_NOINLINE RecoilStateControls::~RecoilStateControls() {
+RecoilStateControls::~RecoilStateControls() {
     HudUiControlsDialogVirtual *dialogView = (HudUiControlsDialogVirtual *)m_dialog;
     if (dialogView != 0) {
         dialogView->ScalarDeletingDestructor(1);
@@ -1856,7 +1847,7 @@ RECOIL_NOINLINE RecoilStateControls::~RecoilStateControls() {
 
 // Reimplements 0x408df0: RecoilStateControls::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\recoil_state.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateControls::OnTryBecomeCurrent() {
+int RecoilStateControls::OnTryBecomeCurrent() {
     if (m_dialog == 0) {
         HudUiControlsDialog *dialog =
             (HudUiControlsDialog *) ::operator new(sizeof(HudUiControlsDialog));
@@ -1884,7 +1875,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateControls::OnTryBecomeCurrent() {
 
 // Reimplements 0x408ec0: RecoilStateControls::OnDeactivate
 // (D:\Proj\Battlesport\recoil_state.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateControls::OnDeactivate() {
+void RecoilStateControls::OnDeactivate() {
     if (m_dialog == 0) {
         return;
     }
@@ -1918,7 +1909,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateControls::OnDeactivate() {
 
 // Reimplements 0x408fa0: RecoilStateControls::OnResume
 // (D:\Proj\Battlesport\recoil_state.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateControls::OnResume(
+void RecoilStateControls::OnResume(
     int activateCode
 ) {
     (void)activateCode;
@@ -1948,7 +1939,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateControls::OnResume(
 
 // Reimplements 0x408ff0: RecoilStateControls::QueueEnter
 // (D:\Proj\Battlesport\recoil_state.cpp)
-void RECOIL_CDECL RecoilStateControls::QueueEnter() {
+void RecoilStateControls::QueueEnter() {
     g_RecoilApp.QueuePushState(
         &g_RecoilStateControls,
         0
@@ -1957,14 +1948,14 @@ void RECOIL_CDECL RecoilStateControls::QueueEnter() {
 
 // Reimplements 0x408c20: HudUiControlsDialog_CommandsWidget::OnActivate
 // (D:\Proj\Battlesport\hud_ui_dialogs.cpp)
-void RECOIL_THISCALL HudUiControlsDialog_CommandsWidget::OnActivate() {
+void HudUiControlsDialog_CommandsWidget::OnActivate() {
     HudCmdDialogState::QueueEnter();
     HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x408a30: HudUiControlsDialog::Constructor
 // (D:\Proj\Battlesport\hud_ui_dialogs.cpp)
-HudUiControlsDialog *RECOIL_THISCALL HudUiControlsDialog::Constructor() {
+HudUiControlsDialog * HudUiControlsDialog::Constructor() {
     HudUiBackground::Constructor();
 
     resumeWidget.Constructor();
@@ -2042,7 +2033,7 @@ HudUiControlsDialog *RECOIL_THISCALL HudUiControlsDialog::Constructor() {
 
 // Reimplements 0x408c70: HudUiControlsDialog::Destructor
 // (D:\Proj\Battlesport\hud_ui_dialogs.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiControlsDialog::Destructor() {
+void HudUiControlsDialog::Destructor() {
     cameraModeSelector.DestructorCore();
     cursorModeSelector.DestructorCore();
     steeringModeSelector.DestructorCore();
@@ -2055,8 +2046,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiControlsDialog::Destructor() {
 
 // Reimplements 0x408c40: HudUiControlsDialog::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\hud_ui_dialogs.cpp)
-RECOIL_NOINLINE HudUiControlsDialog *RECOIL_THISCALL
-HudUiControlsDialog::ScalarDeletingDestructor(
+HudUiControlsDialog * HudUiControlsDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -2069,13 +2059,13 @@ HudUiControlsDialog::ScalarDeletingDestructor(
 
 // Reimplements 0x407100: HudUiCallback::QueueExitCurrentState
 // (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_CDECL HudUiCallback::QueueExitCurrentState() {
+void HudUiCallback::QueueExitCurrentState() {
     g_RecoilApp.QueueExitCurrentState(0);
 }
 
 // Reimplements 0x407110: HudUiCallback::QueueCheatCodeState
 // (D:\Proj\Battlesport\hud.cpp)
-int RECOIL_CDECL HudUiCallback::QueueCheatCodeState() {
+int HudUiCallback::QueueCheatCodeState() {
     g_RecoilApp.QueuePushState(
         &g_RecoilStateCheatCode,
         0
@@ -2105,7 +2095,7 @@ const int kHudCheatAltGunTransitionReset = 16;
 
 // Reimplements 0x406af0: HudCheat::ExecuteCommandString
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ExecuteCommandString(
+int __fastcall ExecuteCommandString(
     CString *commandString
 ) {
     if (commandString->IsEmpty()) {
@@ -2226,7 +2216,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ExecuteCommandString(
 
 // Reimplements 0x406cf0: HudCheat::ClearNanitePanelCheatSentinel
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL ClearNanitePanelCheatSentinel() {
+void ClearNanitePanelCheatSentinel() {
     if (g_GameStateOrMapTable == 0) {
         return;
     }
@@ -2244,7 +2234,7 @@ namespace zOpt {
 
 // Reimplements 0x413600: zOpt::ToggleHudTypeForCurrentHwMode
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL ToggleHudTypeForCurrentHwMode() {
+int ToggleHudTypeForCurrentHwMode() {
     const int currentHudType = GetHudTypeForCurrentHwMode();
     if (currentHudType == ZOPT_HUD_TYPE_STANDARD) {
         return SetHudTypeForCurrentHwMode(ZOPT_HUD_TYPE_PERSPECTIVE);
@@ -2261,7 +2251,7 @@ namespace HudLowMeterLoopSound {
 
 // Reimplements 0x439b20: HudLowMeterLoopSound::SetLoopActive
 // (D:\Proj\Battlesport\Hud.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetLoopActive(
+void __fastcall SetLoopActive(
     int enabled
 ) {
     const int wasActive = g_Hud_LowMeterLoopActive;
@@ -2281,7 +2271,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetLoopActive(
 
 // Reimplements 0x439b70: HudLowMeterLoopSound::Disable
 // (D:\Proj\Battlesport\Hud.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL Disable() {
+void Disable() {
     g_Hud_LowMeterBeepSample->StopActiveVoicesIfPlaying();
     g_Hud_LowMeterLoopSample->StopActiveVoicesIfPlaying();
     g_Hud_LowMeterLoopActive = 0;

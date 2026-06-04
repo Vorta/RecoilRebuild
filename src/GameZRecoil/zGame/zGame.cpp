@@ -18,7 +18,7 @@
 #include <string.h>
 
 namespace Player {
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyCameraState(int newState);
+void __fastcall ApplyCameraState(int newState);
 }
 
 extern "C" {
@@ -168,8 +168,7 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(sizeof(zGame_OptionsRuntimeConfig) == 0x30);
 
 // Reimplements 0x4b3090: zGame_OptionsRuntimeConfig::CopyDefault
-RECOIL_NOINLINE zGame_OptionsRuntimeConfig *RECOIL_THISCALL
-zGame_OptionsRuntimeConfig::CopyDefault() {
+zGame_OptionsRuntimeConfig * zGame_OptionsRuntimeConfig::CopyDefault() {
     if (this == 0) {
         return &g_zGame_Options_RuntimeConfigDefaults;
     }
@@ -183,8 +182,7 @@ zGame_OptionsRuntimeConfig::CopyDefault() {
 }
 
 // Reimplements 0x4b3160: zGame_OptionsRuntimeConfig::LoadCpuVendorString
-RECOIL_NOINLINE RECOIL_NO_GS void RECOIL_THISCALL
-zGame_OptionsRuntimeConfig::LoadCpuVendorString() {
+RECOIL_NO_GS void zGame_OptionsRuntimeConfig::LoadCpuVendorString() {
     if (zSys::HasCpuidSupportRuntimeOptions() == 0) {
         return;
     }
@@ -219,7 +217,7 @@ zGame_OptionsRuntimeConfig::LoadCpuVendorString() {
 }
 
 // Reimplements 0x4b30b0: zGame_OptionsRuntimeConfig::InitFromSystem
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_THISCALL zGame_OptionsRuntimeConfig::InitFromSystem() {
+RECOIL_NO_GS int zGame_OptionsRuntimeConfig::InitFromSystem() {
     LoadCpuVendorString();
     cpuClass = zSys::GetCpuClass();
     cpuMhz = zSys::GetCpuMhz();
@@ -371,10 +369,10 @@ void ResetOptionPointers() {
 } // namespace
 
 // Reimplements 0x4076f0: zGame::ReturnOnlyStub
-RECOIL_NOINLINE void RECOIL_CDECL ReturnOnlyStub() {}
+void ReturnOnlyStub() {}
 
 // Reimplements 0x4b3380: zGame::Options_FindOption
-RECOIL_NOINLINE zOptionEntryPartial *RECOIL_FASTCALL Options_FindOption(
+zOptionEntryPartial *__fastcall Options_FindOption(
     const char *name
 ) {
     for (zOptionEntryPartial *entry = g_zGame_Options_OptionListHead; entry != 0;
@@ -391,7 +389,7 @@ RECOIL_NOINLINE zOptionEntryPartial *RECOIL_FASTCALL Options_FindOption(
 }
 
 // Reimplements 0x4b2e80: zGame::Options_GetOrCreateOption
-RECOIL_NOINLINE zOptionEntryPartial *RECOIL_FASTCALL Options_GetOrCreateOption(
+zOptionEntryPartial *__fastcall Options_GetOrCreateOption(
     const char *name,
     int storageType,
     int dataSize,
@@ -446,7 +444,7 @@ RECOIL_NOINLINE zOptionEntryPartial *RECOIL_FASTCALL Options_GetOrCreateOption(
 }
 
 // Reimplements 0x4b3260: zGame::Options_InitRegistryContext
-RECOIL_NOINLINE void RECOIL_FASTCALL Options_InitRegistryContext(
+void __fastcall Options_InitRegistryContext(
     const char *regKeyRoot,
     const char *regKeyCurrentUser,
     const char *regKeyGame
@@ -460,7 +458,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Options_InitRegistryContext(
 }
 
 // Reimplements 0x4b2960: zGame::Options_LoadFromRegistry
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Options_LoadFromRegistry() {
+RECOIL_NO_GS int Options_LoadFromRegistry() {
     const size_t subKeyLength = strlen("SOFTWARE\\") + strlen(g_zGame_Options_RegKeyRoot) + 1 +
                                 strlen(g_zGame_Options_RegKeyCurrentUser) + 1 +
                                 strlen(g_zGame_Options_RegKeyGame) + 1;
@@ -574,7 +572,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Options_LoadFromRegistry() {
 }
 
 // Reimplements 0x4b2bf0: zGame::Options_SaveToRegistry
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Options_SaveToRegistry() {
+RECOIL_NO_GS int Options_SaveToRegistry() {
     const size_t subKeyLength = strlen("SOFTWARE\\") + strlen(g_zGame_Options_RegKeyRoot) + 1 +
                                 strlen(g_zGame_Options_RegKeyCurrentUser) + 1 +
                                 strlen(g_zGame_Options_RegKeyGame) + 1;
@@ -671,7 +669,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Options_SaveToRegistry() {
 }
 
 // Reimplements 0x407e00: zGame::Options_SaveGameOptions
-RECOIL_NOINLINE int RECOIL_CDECL Options_SaveGameOptions() {
+int Options_SaveGameOptions() {
     zInput::BindGroupList_Clear();
     zOpt::SetNetworkEnabled(0);
     zOpt::SetNetworkModemEnabled(0);
@@ -679,7 +677,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Options_SaveGameOptions() {
 }
 
 // Reimplements 0x4b32c0: zGame::Options_ShutdownRegistryContext
-RECOIL_NOINLINE void RECOIL_CDECL Options_ShutdownRegistryContext() {
+void Options_ShutdownRegistryContext() {
     if (g_zGame_Options_RegContextInitialized == 0) {
         return;
     }
@@ -724,7 +722,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Options_ShutdownRegistryContext() {
 }
 
 // Reimplements 0x407700: zGame::Options_LoadGameOptions
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL Options_LoadGameOptions() {
+RECOIL_NO_GS int Options_LoadGameOptions() {
     ResetOptionPointers();
 
     zReader::Node *const detailRoot = zReader::LoadNodeFromPath(
@@ -1211,7 +1209,7 @@ int WrappedAbsDifference(
 
 // Reimplements 0x407190: zOpt::LookupNamedValueAsInt
 // (D:\Proj\GameZRecoil\zGame\zopt.c)
-RECOIL_NOINLINE int RECOIL_FASTCALL LookupNamedValueAsInt(
+int __fastcall LookupNamedValueAsInt(
     const char *key
 ) {
     unsigned int pairIndex;
@@ -1230,7 +1228,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LookupNamedValueAsInt(
 }
 
 // Reimplements 0x4071f0: zOpt::ReadScalarValueAsInt
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadScalarValueAsInt(
+int __fastcall ReadScalarValueAsInt(
     zReader::Node *scalarValueNode
 ) {
     if (scalarValueNode->type == zReader::ZRDR_NODE_INT) {
@@ -1247,7 +1245,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadScalarValueAsInt(
 }
 
 // Reimplements 0x407470: zOpt::EvaluateProfileMetricCondition
-RECOIL_NOINLINE int RECOIL_FASTCALL EvaluateProfileMetricCondition(
+int __fastcall EvaluateProfileMetricCondition(
     zReader::Node *metricConditionNode
 ) {
     if (metricConditionNode->type == zReader::ZRDR_NODE_STRING) {
@@ -1308,7 +1306,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL EvaluateProfileMetricCondition(
 }
 
 // Reimplements 0x407680: zOpt::SelectProfileValueForSystem
-RECOIL_NOINLINE int RECOIL_FASTCALL SelectProfileValueForSystem(
+int __fastcall SelectProfileValueForSystem(
     zReader::Node *parentNode,
     const char *profileName,
     int defaultValue
@@ -1340,7 +1338,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SelectProfileValueForSystem(
 }
 
 // Reimplements 0x407220: zOpt::EvalIntCompareOp
-RECOIL_NOINLINE int RECOIL_FASTCALL EvalIntCompareOp(
+int __fastcall EvalIntCompareOp(
     const char *opString,
     int lhs,
     int rhs
@@ -1395,14 +1393,14 @@ RECOIL_NOINLINE int RECOIL_FASTCALL EvalIntCompareOp(
 }
 
 // Reimplements 0x407e20: zOpt::SetGameControlOptions
-RECOIL_NOINLINE void RECOIL_FASTCALL SetGameControlOptions(
+void __fastcall SetGameControlOptions(
     int value
 ) {
     *ZOPT_GAME_CONTROL_OPTIONS = value;
 }
 
 // Reimplements 0x407e30: zOpt::SetThrottleMode
-RECOIL_NOINLINE void RECOIL_FASTCALL SetThrottleMode(
+void __fastcall SetThrottleMode(
     int enable
 ) {
     if (enable != 0) {
@@ -1413,12 +1411,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetThrottleMode(
 }
 
 // Reimplements 0x407e50: zOpt::GetThrottleMode
-RECOIL_NOINLINE int RECOIL_CDECL GetThrottleMode() {
+int GetThrottleMode() {
     return *ZOPT_GAME_CONTROL_OPTIONS & ZOPT_GAME_CONTROL_THROTTLE;
 }
 
 // Reimplements 0x407e60: zOpt::SetSteeringMode
-RECOIL_NOINLINE void RECOIL_FASTCALL SetSteeringMode(
+void __fastcall SetSteeringMode(
     int enable
 ) {
     if (enable != 0) {
@@ -1429,12 +1427,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetSteeringMode(
 }
 
 // Reimplements 0x407e80: zOpt::GetSteeringMode
-RECOIL_NOINLINE int RECOIL_CDECL GetSteeringMode() {
+int GetSteeringMode() {
     return (*ZOPT_GAME_CONTROL_OPTIONS >> 1) & 1;
 }
 
 // Reimplements 0x407e90: zOpt::SetCursorMode
-RECOIL_NOINLINE void RECOIL_FASTCALL SetCursorMode(
+void __fastcall SetCursorMode(
     int enable
 ) {
     if (enable != 0) {
@@ -1445,12 +1443,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetCursorMode(
 }
 
 // Reimplements 0x407eb0: zOpt::GetCursorMode
-RECOIL_NOINLINE int RECOIL_CDECL GetCursorMode() {
+int GetCursorMode() {
     return (*ZOPT_GAME_CONTROL_OPTIONS >> 2) & 1;
 }
 
 // Reimplements 0x407ec0: zOpt::SetCameraMode
-RECOIL_NOINLINE void RECOIL_FASTCALL SetCameraMode(
+void __fastcall SetCameraMode(
     int enableThirdPerson
 ) {
     if (enableThirdPerson != 0) {
@@ -1463,24 +1461,24 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetCameraMode(
 }
 
 // Reimplements 0x407ef0: zOpt::GetCameraModePlayerState
-RECOIL_NOINLINE int RECOIL_CDECL GetCameraModePlayerState() {
+int GetCameraModePlayerState() {
     return ((~*ZOPT_GAME_CONTROL_OPTIONS & ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON) | 4) >> 2;
 }
 
 // Reimplements 0x407f10: zOpt::SetGameDifficultyMode
-RECOIL_NOINLINE void RECOIL_FASTCALL SetGameDifficultyMode(
+void __fastcall SetGameDifficultyMode(
     int value
 ) {
     *g_zOpt_GameDifficultyOption = value;
 }
 
 // Reimplements 0x407f20: zOpt::GetGameDifficultyMode
-RECOIL_NOINLINE int RECOIL_CDECL GetGameDifficultyMode() {
+int GetGameDifficultyMode() {
     return *g_zOpt_GameDifficultyOption;
 }
 
 // Reimplements 0x407f30: zOpt::SetEffectsLevelForCurrentHwMode
-RECOIL_NOINLINE void RECOIL_FASTCALL SetEffectsLevelForCurrentHwMode(
+void __fastcall SetEffectsLevelForCurrentHwMode(
     int level
 ) {
     *(g_zOpt_HwMode != 0 ? ZOPT_EFFECTS_LEVEL_HW : ZOPT_EFFECTS_LEVEL_SW) = level;
@@ -1495,12 +1493,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetEffectsLevelForCurrentHwMode(
 }
 
 // Reimplements 0x407f80: zOpt::GetEffectsLevelForCurrentHwMode
-RECOIL_NOINLINE int RECOIL_CDECL GetEffectsLevelForCurrentHwMode() {
+int GetEffectsLevelForCurrentHwMode() {
     return *(g_zOpt_HwMode != 0 ? ZOPT_EFFECTS_LEVEL_HW : ZOPT_EFFECTS_LEVEL_SW);
 }
 
 // Reimplements 0x407fa0: zOpt::SetObjectLODForCurrentHwMode
-RECOIL_NOINLINE void RECOIL_FASTCALL SetObjectLODForCurrentHwMode(
+void __fastcall SetObjectLODForCurrentHwMode(
     int level
 ) {
     zClass_NodePartial *const camera = zOpt_CameraSection_GetActiveCamera();
@@ -1524,17 +1522,17 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetObjectLODForCurrentHwMode(
 }
 
 // Reimplements 0x408030: zOpt::GetObjectLODForCurrentHwMode
-RECOIL_NOINLINE int RECOIL_CDECL GetObjectLODForCurrentHwMode() {
+int GetObjectLODForCurrentHwMode() {
     return *(g_zOpt_HwMode != 0 ? ZOPT_OBJECT_LOD_HW : ZOPT_OBJECT_LOD_SW);
 }
 
 // Reimplements 0x408060: zOpt::GetMuteSoundOption
-RECOIL_NOINLINE int RECOIL_CDECL GetMuteSoundOption() {
+int GetMuteSoundOption() {
     return *ZOPT_MUTE_SOUND;
 }
 
 // Reimplements 0x408050: zOpt::SetMuteSoundOption
-RECOIL_NOINLINE void RECOIL_FASTCALL SetMuteSoundOption(
+void __fastcall SetMuteSoundOption(
     int value
 ) {
     *ZOPT_MUTE_SOUND = value;
@@ -1542,7 +1540,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetMuteSoundOption(
 }
 
 // Reimplements 0x408070: zOpt::SetSoundVolumeOption
-RECOIL_NOINLINE void RECOIL_FASTCALL SetSoundVolumeOption(
+void __fastcall SetSoundVolumeOption(
     float volume
 ) {
     *ZOPT_SOUND_VOLUME = volume;
@@ -1550,36 +1548,36 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetSoundVolumeOption(
 }
 
 // Reimplements 0x408090: zOpt::GetSoundVolumeOption
-RECOIL_NOINLINE float RECOIL_CDECL GetSoundVolumeOption() {
+float GetSoundVolumeOption() {
     return *ZOPT_SOUND_VOLUME;
 }
 
 // Reimplements 0x4080c0: zOpt::SetSoundLODOption
-RECOIL_NOINLINE void RECOIL_FASTCALL SetSoundLODOption(
+void __fastcall SetSoundLODOption(
     int value
 ) {
     *ZOPT_SOUND_LOD = value;
 }
 
 // Reimplements 0x4080d0: zOpt::GetSoundLODOption
-RECOIL_NOINLINE int RECOIL_CDECL GetSoundLODOption() {
+int GetSoundLODOption() {
     return *ZOPT_SOUND_LOD;
 }
 
 // Reimplements 0x4080e0: zOpt::SetTextureMemoryForCurrentHwMode
-RECOIL_NOINLINE void RECOIL_FASTCALL SetTextureMemoryForCurrentHwMode(
+void __fastcall SetTextureMemoryForCurrentHwMode(
     int value
 ) {
     *(g_zOpt_HwMode != 0 ? ZOPT_TEXTURE_MEMORY_HW : ZOPT_TEXTURE_MEMORY_SW) = value;
 }
 
 // Reimplements 0x408100: zOpt::GetTextureMemoryForCurrentHwMode
-RECOIL_NOINLINE int RECOIL_CDECL GetTextureMemoryForCurrentHwMode() {
+int GetTextureMemoryForCurrentHwMode() {
     return *(g_zOpt_HwMode != 0 ? ZOPT_TEXTURE_MEMORY_HW : ZOPT_TEXTURE_MEMORY_SW);
 }
 
 // Reimplements 0x408120: zOpt::SetPlayerName
-RECOIL_NOINLINE void RECOIL_FASTCALL SetPlayerName(
+void __fastcall SetPlayerName(
     const char *name
 ) {
     char *const buffer = (char *)(ZOPT_PLAYER_NAME->payloadOrBuffer);
@@ -1603,12 +1601,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetPlayerName(
 }
 
 // Reimplements 0x4081f0: zOpt::GetGraphicsFlagsForCurrentHwMode
-RECOIL_NOINLINE int RECOIL_CDECL GetGraphicsFlagsForCurrentHwMode() {
+int GetGraphicsFlagsForCurrentHwMode() {
     return *(g_zOpt_HwMode != 0 ? ZOPT_GFX_FLAGS_HW : ZOPT_GFX_FLAGS_SW);
 }
 
 // Reimplements 0x4081a0: zOpt::SetGraphicsFlagsForCurrentHwMode
-RECOIL_NOINLINE void RECOIL_FASTCALL SetGraphicsFlagsForCurrentHwMode(
+void __fastcall SetGraphicsFlagsForCurrentHwMode(
     int flags
 ) {
     *(g_zOpt_HwMode != 0 ? ZOPT_GFX_FLAGS_HW : ZOPT_GFX_FLAGS_SW) = flags;
@@ -1626,7 +1624,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetGraphicsFlagsForCurrentHwMode(
 }
 
 // Reimplements 0x4082d0: zOpt::SetHudTypeForCurrentHwMode
-RECOIL_NOINLINE int RECOIL_FASTCALL SetHudTypeForCurrentHwMode(
+int __fastcall SetHudTypeForCurrentHwMode(
     int hudType
 ) {
     const int previous = HudUiMgr::ApplyHudModeSwitch(hudType);
@@ -1641,111 +1639,111 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetHudTypeForCurrentHwMode(
 }
 
 // Reimplements 0x408230: zOpt::SetNetworkEnabled
-RECOIL_NOINLINE void RECOIL_FASTCALL SetNetworkEnabled(
+void __fastcall SetNetworkEnabled(
     int value
 ) {
     *ZOPT_NETWORK_ENABLED = value;
 }
 
 // Reimplements 0x408240: zOpt::SetNetworkModemEnabled
-RECOIL_NOINLINE void RECOIL_FASTCALL SetNetworkModemEnabled(
+void __fastcall SetNetworkModemEnabled(
     int value
 ) {
     *g_zOpt_NetworkModemOption = value;
 }
 
 // Reimplements 0x408250: zOpt::SetNetworkListenEnabled
-RECOIL_NOINLINE void RECOIL_FASTCALL SetNetworkListenEnabled(
+void __fastcall SetNetworkListenEnabled(
     int value
 ) {
     *g_zOpt_NetworkListenOption = value;
 }
 
 // Reimplements 0x408270: zOpt::GetNetworkModemEnabled
-RECOIL_NOINLINE int RECOIL_CDECL GetNetworkModemEnabled() {
+int GetNetworkModemEnabled() {
     return *g_zOpt_NetworkModemOption;
 }
 
 // Reimplements 0x408a10: zOpt::SetWolPasswordFlag
-RECOIL_NOINLINE void RECOIL_FASTCALL SetWolPasswordFlag(
+void __fastcall SetWolPasswordFlag(
     int value
 ) {
     *g_zOpt_WolPasswordFlagOption = value;
 }
 
 // Reimplements 0x408650: zOpt::GetDisplaySection
-RECOIL_NOINLINE zOpt_ViewRectSection *RECOIL_CDECL GetDisplaySection() {
+zOpt_ViewRectSection *GetDisplaySection() {
     return *g_zOpt_DisplaySectionOption;
 }
 
 // Reimplements 0x408690: zOpt::GetDisplaySectionBitsPerPixel
-RECOIL_NOINLINE int RECOIL_CDECL GetDisplaySectionBitsPerPixel() {
+int GetDisplaySectionBitsPerPixel() {
     return (*g_zOpt_DisplaySectionOption)->bitsPerPixel;
 }
 
 // Reimplements 0x4086a0: zOpt::GetVideoStrideValue
-RECOIL_NOINLINE int RECOIL_CDECL GetVideoStrideValue() {
+int GetVideoStrideValue() {
     return *ZOPT_VIDEO_STRIDE;
 }
 
 // Reimplements 0x4086c0: zOpt::GetWindowSection
-RECOIL_NOINLINE zOpt_ViewRectSection *RECOIL_CDECL GetWindowSection() {
+zOpt_ViewRectSection *GetWindowSection() {
     return *g_zOpt_WindowSectionOption;
 }
 
 // Reimplements 0x4086d0: zOpt::GetWindowSectionHeight
-RECOIL_NOINLINE int RECOIL_CDECL GetWindowSectionHeight() {
+int GetWindowSectionHeight() {
     return (*g_zOpt_WindowSectionOption)->height;
 }
 
 // Reimplements 0x4082a0: zOpt::SetFullscreenOption
-RECOIL_NOINLINE void RECOIL_FASTCALL SetFullscreenOption(
+void __fastcall SetFullscreenOption(
     int fullscreenOption
 ) {
     *ZOPT_VIDEO_FULLSCREEN = fullscreenOption;
 }
 
 // Reimplements 0x408330: zOpt::GetFullscreenOption
-RECOIL_NOINLINE int RECOIL_CDECL GetFullscreenOption() {
+int GetFullscreenOption() {
     return *ZOPT_VIDEO_FULLSCREEN;
 }
 
 // Reimplements 0x4082b0: zOpt::SetHudVisibilityOption
-RECOIL_NOINLINE void RECOIL_FASTCALL SetHudVisibilityOption(
+void __fastcall SetHudVisibilityOption(
     int hudVisibility
 ) {
     *(g_zOpt_HwMode != 0 ? ZOPT_HUD_HW : ZOPT_HUD_SW) = hudVisibility;
 }
 
 // Reimplements 0x408340: zOpt::GetHudVisibilityOption
-RECOIL_NOINLINE int RECOIL_CDECL GetHudVisibilityOption() {
+int GetHudVisibilityOption() {
     return *(g_zOpt_HwMode != 0 ? ZOPT_HUD_HW : ZOPT_HUD_SW);
 }
 
 // Reimplements 0x408360: zOpt::GetHudTypeForCurrentHwMode
-RECOIL_NOINLINE int RECOIL_CDECL GetHudTypeForCurrentHwMode() {
+int GetHudTypeForCurrentHwMode() {
     return *(g_zOpt_HwMode != 0 ? ZOPT_HUD_TYPE_HW : ZOPT_HUD_TYPE_SW);
 }
 
 // Reimplements 0x408300: zOpt::SetReplicateMode
-RECOIL_NOINLINE void RECOIL_FASTCALL SetReplicateMode(
+void __fastcall SetReplicateMode(
     int replicateMode
 ) {
     *ZOPT_REPLICATE = replicateMode;
 }
 
 // Reimplements 0x408380: zOpt::GetReplicateMode
-RECOIL_NOINLINE int RECOIL_CDECL GetReplicateMode() {
+int GetReplicateMode() {
     return *ZOPT_REPLICATE;
 }
 
 // Reimplements 0x408260: zOpt::GetNetworkEnabled
-RECOIL_NOINLINE int RECOIL_CDECL GetNetworkEnabled() {
+int GetNetworkEnabled() {
     return *ZOPT_NETWORK_ENABLED;
 }
 
 // Reimplements 0x4083d0: zOpt_ViewRectSection::SetPosition
-RECOIL_NOINLINE void RECOIL_FASTCALL ViewRectSection_SetPosition(
+void __fastcall ViewRectSection_SetPosition(
     zOpt_ViewRectSection *section,
     int x,
     int y
@@ -1759,7 +1757,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ViewRectSection_SetPosition(
 }
 
 // Reimplements 0x408400: zOpt_ViewRectSection::SetSize
-RECOIL_NOINLINE void RECOIL_FASTCALL ViewRectSection_SetSize(
+void __fastcall ViewRectSection_SetSize(
     zOpt_ViewRectSection *section,
     int width,
     int height
@@ -1773,7 +1771,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ViewRectSection_SetSize(
 }
 
 // Reimplements 0x408430: zOpt::ViewRectSection_ClampPointToInclusiveBounds
-RECOIL_NOINLINE void RECOIL_FASTCALL ViewRectSection_ClampPointToInclusiveBounds(
+void __fastcall ViewRectSection_ClampPointToInclusiveBounds(
     zOpt_ViewRectSection *section,
     float *pointXY
 ) {
@@ -1791,7 +1789,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ViewRectSection_ClampPointToInclusiveBounds
 }
 
 // Reimplements 0x408530: zOpt::RenderSection_SetPosition
-RECOIL_NOINLINE void RECOIL_FASTCALL RenderSection_SetPosition(
+void __fastcall RenderSection_SetPosition(
     int x,
     int y
 ) {
@@ -1816,7 +1814,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RenderSection_SetPosition(
 }
 
 // Reimplements 0x408500: zOpt::RenderSection_SetSize
-RECOIL_NOINLINE void RECOIL_FASTCALL RenderSection_SetSize(
+void __fastcall RenderSection_SetSize(
     int width,
     int height
 ) {
@@ -1836,7 +1834,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RenderSection_SetSize(
 }
 
 // Reimplements 0x408570: zOpt::RenderSection_SetTargetWindow
-RECOIL_NOINLINE void RECOIL_FASTCALL RenderSection_SetTargetWindow(
+void __fastcall RenderSection_SetTargetWindow(
     zClass_NodePartial *windowNode
 ) {
     zOpt_ViewRectSection *section = *g_zOpt_RenderSectionOption;
@@ -1856,12 +1854,12 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RenderSection_SetTargetWindow(
 }
 
 // Reimplements 0x4085a0: zOpt::GetRenderSection
-RECOIL_NOINLINE zOpt_ViewRectSection *RECOIL_CDECL GetRenderSection() {
+zOpt_ViewRectSection *GetRenderSection() {
     return *g_zOpt_RenderSectionOption;
 }
 
 // Reimplements 0x4085e0: zOpt::DisplaySection_SetPosition
-RECOIL_NOINLINE void RECOIL_FASTCALL DisplaySection_SetPosition(
+void __fastcall DisplaySection_SetPosition(
     int x,
     int y
 ) {
@@ -1886,7 +1884,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DisplaySection_SetPosition(
 }
 
 // Reimplements 0x408620: zOpt::DisplaySection_SetSize
-RECOIL_NOINLINE void RECOIL_FASTCALL DisplaySection_SetSize(
+void __fastcall DisplaySection_SetSize(
     int width,
     int height
 ) {
@@ -1906,7 +1904,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DisplaySection_SetSize(
 }
 
 // Reimplements 0x4085b0: zOpt::DisplaySection_SetTargetDisplay
-RECOIL_NOINLINE void RECOIL_FASTCALL DisplaySection_SetTargetDisplay(
+void __fastcall DisplaySection_SetTargetDisplay(
     zClass_NodePartial *displayNode
 ) {
     zOpt_ViewRectSection *section = *g_zOpt_DisplaySectionOption;
@@ -1926,14 +1924,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DisplaySection_SetTargetDisplay(
 }
 
 // Reimplements 0x408680: zOpt::DisplaySection_SetBitsPerPixel
-RECOIL_NOINLINE void RECOIL_FASTCALL DisplaySection_SetBitsPerPixel(
+void __fastcall DisplaySection_SetBitsPerPixel(
     int bitsPerPixel
 ) {
     (*g_zOpt_DisplaySectionOption)->bitsPerPixel = bitsPerPixel;
 }
 
 // Reimplements 0x408700: zOpt::WindowSection_SetPosition
-RECOIL_NOINLINE void RECOIL_FASTCALL WindowSection_SetPosition(
+void __fastcall WindowSection_SetPosition(
     int x,
     int y
 ) {
@@ -1945,7 +1943,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL WindowSection_SetPosition(
 }
 
 // Reimplements 0x4086e0: zOpt::WindowSection_SetSize
-RECOIL_NOINLINE void RECOIL_FASTCALL WindowSection_SetSize(
+void __fastcall WindowSection_SetSize(
     int width,
     int height
 ) {
@@ -1957,7 +1955,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL WindowSection_SetSize(
 }
 
 // Reimplements 0x408480: zOpt::CameraSection_SetActiveCamera
-RECOIL_NOINLINE void RECOIL_FASTCALL CameraSection_SetActiveCamera(
+void __fastcall CameraSection_SetActiveCamera(
     zClass_NodePartial *camera
 ) {
     zOpt_CameraSection *const cameraSection = *g_zOpt_CameraSectionOption;
@@ -1986,7 +1984,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL CameraSection_SetActiveCamera(
 } // namespace zOpt
 
 // Reimplements 0x4084e0: zOpt_CameraSection_GetActiveCamera
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL zOpt_CameraSection_GetActiveCamera() {
+zClass_NodePartial *zOpt_CameraSection_GetActiveCamera() {
     if (g_zOpt_CameraSectionOption == 0 || *g_zOpt_CameraSectionOption == 0) {
         return 0;
     }
@@ -1995,21 +1993,21 @@ RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL zOpt_CameraSection_GetActiveCam
 }
 
 // Reimplements 0x408190: zOpt_GetPlayerName
-RECOIL_NOINLINE char *RECOIL_CDECL zOpt_GetPlayerName() {
+char *zOpt_GetPlayerName() {
     return (char *)(ZOPT_PLAYER_NAME->payloadOrBuffer);
 }
 
 // Reimplements 0x408a20: zOpt_GetWolPasswordFlagValue
-RECOIL_NOINLINE int RECOIL_CDECL zOpt_GetWolPasswordFlagValue() {
+int zOpt_GetWolPasswordFlagValue() {
     return *g_zOpt_WolPasswordFlagOption;
 }
 
 // Reimplements 0x408660: zOpt_DisplaySection_GetWidth
-RECOIL_NOINLINE int RECOIL_CDECL zOpt_DisplaySection_GetWidth() {
+int zOpt_DisplaySection_GetWidth() {
     return (*g_zOpt_DisplaySectionOption)->width;
 }
 
 // Reimplements 0x408670: zOpt_DisplaySection_GetHeight
-RECOIL_NOINLINE int RECOIL_CDECL zOpt_DisplaySection_GetHeight() {
+int zOpt_DisplaySection_GetHeight() {
     return (*g_zOpt_DisplaySectionOption)->height;
 }

@@ -5,13 +5,13 @@
 #include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
-HINSTANCE RECOIL_STDCALL AfxFindResourceHandle(
+HINSTANCE __stdcall AfxFindResourceHandle(
     LPCSTR resourceName,
     LPCSTR resourceType
 );
 
 namespace zSndCd {
-int RECOIL_CDECL Stop();
+int Stop();
 }
 
 RECOIL_STATIC_ASSERT(
@@ -29,11 +29,11 @@ RECOIL_STATIC_ASSERT(
 
 namespace {
 const RecoilNamedVtable kCZGameFrame_Vtable = {"CZGameFrame vtable"};
-typedef void(RECOIL_THISCALL *RecoilStateWndActivateMethod)(
+typedef void( *RecoilStateWndActivateMethod)(
     RecoilApp_IState *,
     unsigned int
 );
-typedef void(RECOIL_THISCALL *CFrameWndDestructorProc)(CFrameWnd *);
+typedef void( *CFrameWndDestructorProc)(CFrameWnd *);
 
 RecoilPtr32 Ptr32FromSymbol(
     const void *symbol
@@ -41,7 +41,7 @@ RecoilPtr32 Ptr32FromSymbol(
     return (RecoilPtr32)((unsigned int)(symbol));
 }
 
-CRuntimeClass *RECOIL_STDCALL GetCZGameFrameBaseRuntimeClass() {
+CRuntimeClass *__stdcall GetCZGameFrameBaseRuntimeClass() {
     return (CRuntimeClass *)(&CFrameWnd::classCFrameWnd);
 }
 
@@ -85,16 +85,16 @@ CRuntimeClass CZGameFrame::classCZGameFrame = {
 };
 
 // Reimplements 0x443790: CZGameFrame::GetBaseRuntimeClass
-RECOIL_GAME_FRAME_NOINLINE RecoilPtr32 RECOIL_CDECL CZGameFrame::GetBaseRuntimeClass() {
+RecoilPtr32 CZGameFrame::GetBaseRuntimeClass() {
     return Ptr32FromSymbol(&CFrameWnd::classCFrameWnd);
 }
 
-const AFX_MSGMAP *RECOIL_STDCALL CZGameFrame::GetBaseMessageMapForMfc() {
+const AFX_MSGMAP *__stdcall CZGameFrame::GetBaseMessageMapForMfc() {
     return &CFrameWnd::messageMap;
 }
 
 // Reimplements 0x443730: CZGameFrame::CreateObject
-RECOIL_GAME_FRAME_NOINLINE CZGameFrame *RECOIL_CDECL CZGameFrame::CreateObject() {
+CZGameFrame *CZGameFrame::CreateObject() {
     CZGameFrame *const frame = (CZGameFrame *)(::operator new(sizeof(CZGameFrame)));
     if (frame == 0) {
         return 0;
@@ -109,22 +109,22 @@ RECOIL_GAME_FRAME_NOINLINE CZGameFrame *RECOIL_CDECL CZGameFrame::CreateObject()
 }
 
 // Reimplements 0x4437a0: CZGameFrame::GetRuntimeClass
-RECOIL_GAME_FRAME_NOINLINE RecoilPtr32 RECOIL_CDECL CZGameFrame::GetRuntimeClass() {
+RecoilPtr32 CZGameFrame::GetRuntimeClass() {
     return Ptr32FromSymbol(&CZGameFrame::classCZGameFrame);
 }
 
 // Reimplements 0x4437b0: CZGameFrame::GetBaseMessageMap
-RECOIL_GAME_FRAME_NOINLINE RecoilPtr32 RECOIL_CDECL CZGameFrame::GetBaseMessageMap() {
+RecoilPtr32 CZGameFrame::GetBaseMessageMap() {
     return Ptr32FromSymbol(&CFrameWnd::messageMap);
 }
 
 // Reimplements 0x4437c0: CZGameFrame::GetMessageMap
-RECOIL_GAME_FRAME_NOINLINE RecoilPtr32 RECOIL_CDECL CZGameFrame::GetMessageMap() {
+RecoilPtr32 CZGameFrame::GetMessageMap() {
     return Ptr32FromSymbol(&CZGameFrame::messageMap);
 }
 
 // Reimplements 0x4438a0: CZGameFrame::IsWindowValid
-RECOIL_GAME_FRAME_NOINLINE int RECOIL_STDCALL CZGameFrame::IsWindowValid(
+int __stdcall CZGameFrame::IsWindowValid(
     CWnd *pWnd
 ) {
     if (pWnd == 0) {
@@ -135,7 +135,7 @@ RECOIL_GAME_FRAME_NOINLINE int RECOIL_STDCALL CZGameFrame::IsWindowValid(
 }
 
 // Reimplements 0x4437d0: CZGameFrame::Constructor
-RECOIL_GAME_FRAME_NOINLINE CZGameFrame *RECOIL_THISCALL CZGameFrame::Constructor(
+CZGameFrame * CZGameFrame::Constructor(
     const char *appId
 ) {
     new ((CFrameWnd *)(this)) CFrameWnd();
@@ -147,7 +147,7 @@ RECOIL_GAME_FRAME_NOINLINE CZGameFrame *RECOIL_THISCALL CZGameFrame::Constructor
 }
 
 // Reimplements 0x443830: CZGameFrame::Destructor
-RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::Destructor() {
+void CZGameFrame::Destructor() {
     *(RecoilPtr32 *)(this) = Ptr32FromSymbol(&kCZGameFrame_Vtable);
     zVideo::ReturnSuccessStub();
     m_gameBitmap.DeleteObject();
@@ -156,7 +156,7 @@ RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::Destructor() {
 }
 
 // Reimplements 0x4438c0: CZGameFrame::BuildWindowTitle
-RECOIL_GAME_FRAME_NOINLINE CString *RECOIL_THISCALL CZGameFrame::BuildWindowTitle(
+CString * CZGameFrame::BuildWindowTitle(
     CString *outTitle
 ) {
     new (outTitle) CString("Zipper Interactive");
@@ -164,7 +164,7 @@ RECOIL_GAME_FRAME_NOINLINE CString *RECOIL_THISCALL CZGameFrame::BuildWindowTitl
 }
 
 // Reimplements 0x443a60: CZGameFrame::OnCreate
-RECOIL_GAME_FRAME_NOINLINE int RECOIL_THISCALL CZGameFrame::OnCreate(
+int CZGameFrame::OnCreate(
     CREATESTRUCTA *createStruct
 ) {
     const int result = CFrameWnd::OnCreate(createStruct);
@@ -183,12 +183,12 @@ RECOIL_GAME_FRAME_NOINLINE int RECOIL_THISCALL CZGameFrame::OnCreate(
 }
 
 // Reimplements 0x4438f0: CZGameFrame::OnClose
-RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnClose() {
+void CZGameFrame::OnClose() {
     CFrameWnd::OnClose();
 }
 
 // Reimplements 0x443900: CZGameFrame::OnPaint
-RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnPaint() {
+void CZGameFrame::OnPaint() {
     CPaintDC paintDc((CWnd *)(void *)this);
     if (zVid_QueryCachedClientRectUpdateMaskIf3dfx() != 0) {
         return;
@@ -237,7 +237,7 @@ RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnPaint() {
 }
 
 // Reimplements 0x443ab0: CZGameFrame::OnDestroy
-RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnDestroy() {
+void CZGameFrame::OnDestroy() {
     zNetwork_DPlay_DestroyCachedLocalPlayer();
     zVideo::ShutdownVideoSystem();
     zSndCd::Stop();
@@ -246,7 +246,7 @@ RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnDestroy() {
 }
 
 // Reimplements 0x443ae0: CZGameFrame::OnActivate
-RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnActivate(
+void CZGameFrame::OnActivate(
     unsigned int nState,
     CWnd *pWndOther,
     BOOL bMinimized
@@ -274,7 +274,7 @@ RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnActivate(
 }
 
 // Reimplements 0x443a20: CZGameFrame::OnSize
-RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnSize(
+void CZGameFrame::OnSize(
     unsigned int nType,
     int cx,
     int cy
@@ -288,7 +288,7 @@ RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnSize(
 }
 
 // Reimplements 0x443a50: CZGameFrame::OnMove
-RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnMove(
+void CZGameFrame::OnMove(
     int,
     int
 ) {
@@ -297,7 +297,7 @@ RECOIL_GAME_FRAME_NOINLINE void RECOIL_THISCALL CZGameFrame::OnMove(
 }
 
 // Reimplements 0x443b50: CZGameFrame::OnAppIdleDispatchMessage
-RECOIL_GAME_FRAME_NOINLINE int RECOIL_THISCALL CZGameFrame::OnAppIdleDispatchMessage(
+int CZGameFrame::OnAppIdleDispatchMessage(
     unsigned int wParam,
     unsigned int lParam
 ) {

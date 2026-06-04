@@ -35,7 +35,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
-LPCSTR RECOIL_STDCALL AfxRegisterWndClass(
+LPCSTR __stdcall AfxRegisterWndClass(
     UINT classStyle,
     HCURSOR cursor,
     HBRUSH background,
@@ -73,9 +73,9 @@ struct HudUiNetGameSetupOverlayOwnerBaseVtableGuard {
 };
 
 struct HudUiNetGameSetupPanelOverlayVirtual {
-    virtual void RECOIL_THISCALL Update(float deltaSeconds);
-    virtual void RECOIL_THISCALL SetEnabled(int enabled);
-    virtual HudUiNetGameSetupPanel *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+    virtual void Update(float deltaSeconds);
+    virtual void SetEnabled(int enabled);
+    virtual HudUiNetGameSetupPanel * ScalarDeletingDestructor(unsigned int flags);
 };
 
 template <
@@ -93,13 +93,13 @@ void AssignMethodSlot(
     );
 }
 
-RECOIL_NOINLINE void RECOIL_FASTCALL HudUiCommonInvalidateThunk(
+void __fastcall HudUiCommonInvalidateThunk(
     HudUiElement *element
 ) {
     element->Invalidate();
 }
 
-RECOIL_NOINLINE void RECOIL_FASTCALL HudUiNoOpMethodStub(
+void __fastcall HudUiNoOpMethodStub(
     void *
 ) {}
 
@@ -680,9 +680,9 @@ struct zTimedTask {
     int rasterVertexCount;
     int rasterDrawParam;
 
-    RECOIL_NOINLINE void RECOIL_THISCALL RemoveFromActiveList();
-    RECOIL_NOINLINE void RECOIL_THISCALL RunImmediateAction();
-    RECOIL_NOINLINE static void RECOIL_CDECL TickActiveList();
+    void RemoveFromActiveList();
+    void RunImmediateAction();
+    static void TickActiveList();
 };
 
 RECOIL_STATIC_ASSERT(
@@ -1053,18 +1053,18 @@ int g_HudUi_AuxOverlayEnabled = 0;
 CString g_HudUiTripletWndClassName("");
 
 // Reimplements 0x40ec90: HudLayoutBase::Shutdown_Stub
-void RECOIL_CDECL HudLayoutBase::Shutdown_Stub() {
+void HudLayoutBase::Shutdown_Stub() {
     HudUiNoOpMethodStub(&g_HudUiMgrShieldMessageWidget->widget);
 }
 
 // Reimplements 0x40d3b0: HudLayoutBase::Destructor
-void RECOIL_THISCALL HudLayoutBase::Destructor() {
-    ((HudUiWidget *)((unsigned char *)(this) + 0x30))->DestructorCore();
+void HudLayoutBase::Destructor() {
+    widget0.DestructorCore();
     ((HudUiContainer *)(this))->DestructorCore();
 }
 
 // Reimplements 0x412bd0: HudLayoutBase::SetActiveNoOp
-int RECOIL_THISCALL HudLayoutBase::SetActiveNoOp(
+int HudLayoutBase::SetActiveNoOp(
     int
 ) {
     return 1;
@@ -1072,7 +1072,7 @@ int RECOIL_THISCALL HudLayoutBase::SetActiveNoOp(
 
 // Reimplements 0x412b60: HudLayoutSW::Constructor
 // (D:\Proj\Battlesport\hud.cpp)
-HudLayoutSW *RECOIL_THISCALL HudLayoutSW::Constructor() {
+HudLayoutSW * HudLayoutSW::Constructor() {
     ((HudUiContainer *)(this))->ConstructorDefault();
     HudUiWidget *const childWidget = (HudUiWidget *)(&widget0);
     childWidget->Constructor(0);
@@ -1083,30 +1083,30 @@ HudLayoutSW *RECOIL_THISCALL HudLayoutSW::Constructor() {
 }
 
 // Reimplements 0x40d270: HudLayoutSW::GlobalInit
-HudLayoutSW *RECOIL_CDECL HudLayoutSW::GlobalInit() {
+HudLayoutSW *HudLayoutSW::GlobalInit() {
     return g_HudLayoutSW.Constructor();
 }
 
 // Reimplements 0x40d280: HudLayoutSW::RegisterAtExit
-void RECOIL_CDECL HudLayoutSW::RegisterAtExit() {
+void HudLayoutSW::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
 // Reimplements 0x40d290: HudLayoutSW::AtExitDestructor
-void RECOIL_CDECL HudLayoutSW::AtExitDestructor() {
+void HudLayoutSW::AtExitDestructor() {
     g_HudLayoutSW.GlobalDestructor();
 }
 
 // Reimplements 0x40d2a0: HudLayoutSW::GlobalDestructor
 // (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_THISCALL HudLayoutSW::GlobalDestructor() {
+void HudLayoutSW::GlobalDestructor() {
     ((HudUiWidget *)(&widget0))->DestructorCore();
     ((HudUiContainer *)(this))->DestructorCore();
 }
 
 // Reimplements 0x412ea0: HudLayoutHW::Constructor
 // (D:\Proj\Battlesport\hud.cpp)
-HudLayoutHW *RECOIL_THISCALL HudLayoutHW::Constructor() {
+HudLayoutHW * HudLayoutHW::Constructor() {
     ((HudUiContainer *)(this))->ConstructorDefault();
     HudUiWidget *const baseWidget = (HudUiWidget *)(&base.widget0);
     baseWidget->Constructor(0);
@@ -1128,23 +1128,23 @@ HudLayoutHW *RECOIL_THISCALL HudLayoutHW::Constructor() {
 }
 
 // Reimplements 0x40d300: HudLayoutHW::GlobalInit
-HudLayoutHW *RECOIL_CDECL HudLayoutHW::GlobalInit() {
+HudLayoutHW *HudLayoutHW::GlobalInit() {
     return g_HudLayoutHW.Constructor();
 }
 
 // Reimplements 0x40d310: HudLayoutHW::RegisterAtExit
-void RECOIL_CDECL HudLayoutHW::RegisterAtExit() {
+void HudLayoutHW::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
 // Reimplements 0x40d320: HudLayoutHW::AtExitDestructor
-void RECOIL_CDECL HudLayoutHW::AtExitDestructor() {
+void HudLayoutHW::AtExitDestructor() {
     g_HudLayoutHW.GlobalDestructor();
 }
 
 // Reimplements 0x40d330: HudLayoutHW::GlobalDestructor
 // (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_THISCALL HudLayoutHW::GlobalDestructor() {
+void HudLayoutHW::GlobalDestructor() {
     ((HudUiWidget *)(&widget3))->DestructorCore();
     ((HudUiWidget *)(&widget2))->DestructorCore();
     ((HudUiWidget *)(&widget1))->DestructorCore();
@@ -1153,21 +1153,21 @@ void RECOIL_THISCALL HudLayoutHW::GlobalDestructor() {
 }
 
 // Reimplements 0x40d2f0: HudLayoutHW::CrtInitGlobalSingleton
-void RECOIL_CDECL HudLayoutHW::CrtInitGlobalSingleton() {
+void HudLayoutHW::CrtInitGlobalSingleton() {
     GlobalInit();
     RegisterAtExit();
 }
 
 // Reimplements 0x412be0: HudLayoutBase::UpdateAll
-void RECOIL_THISCALL HudLayoutBase::UpdateAll(
+void HudLayoutBase::UpdateAll(
     float deltaSeconds
 ) {
     ((HudUiContainer *)(this))->UpdateAll(deltaSeconds);
 }
 
 // Reimplements 0x412bf0: HudLayoutBase::Enable
-void RECOIL_THISCALL HudLayoutBase::Enable() {
-    typedef int (RECOIL_THISCALL HudLayoutBase::*SetActiveMethod)(int active);
+void HudLayoutBase::Enable() {
+    typedef int ( HudLayoutBase::*SetActiveMethod)(int active);
     union {
         unsigned int slot;
         SetActiveMethod method;
@@ -1176,8 +1176,8 @@ void RECOIL_THISCALL HudLayoutBase::Enable() {
 }
 
 // Reimplements 0x412c00: HudLayoutBase::Disable
-void RECOIL_THISCALL HudLayoutBase::Disable() {
-    typedef int (RECOIL_THISCALL HudLayoutBase::*SetActiveMethod)(int active);
+void HudLayoutBase::Disable() {
+    typedef int ( HudLayoutBase::*SetActiveMethod)(int active);
     union {
         unsigned int slot;
         SetActiveMethod method;
@@ -1187,7 +1187,7 @@ void RECOIL_THISCALL HudLayoutBase::Disable() {
 
 // Reimplements 0x413500: HudLayoutHW::UpdateAll
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudLayoutHW::UpdateAll(
+void HudLayoutHW::UpdateAll(
     float deltaSeconds
 ) {
     if (g_HudUiMgr.enabled != 0 && zOpt::GetReplicateMode() != 0 && g_HudUiMgrObjectivePhase == 0) {
@@ -1202,7 +1202,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudLayoutHW::UpdateAll(
 
 // Reimplements 0x412c60: HudLayoutSW::SetActive
 // (D:\Proj\Battlesport\hud.cpp)
-int RECOIL_THISCALL HudLayoutSW::SetActive(
+int HudLayoutSW::SetActive(
     int active
 ) {
     if (zVid::GetAccelerationOption() == ZVID_HW_MODE_SOFTWARE) {
@@ -1267,7 +1267,7 @@ int RECOIL_THISCALL HudLayoutSW::SetActive(
 
 // Reimplements 0x412c10: HudLayoutSW::LoadTypeIFromZarRoot
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudLayoutBase::LoadTypeIFromZarRoot(
+void HudLayoutBase::LoadTypeIFromZarRoot(
     zReader::Node *parentNode
 ) {
     zReader::Node *const typeINode = zReader_GetNamedNode(
@@ -1291,7 +1291,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudLayoutBase::LoadTypeIFromZarRoot(
 namespace HudLayout {
 // Reimplements 0x412db0: HudLayout::ApplyViewportRect
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ApplyViewportRect(
+int __fastcall ApplyViewportRect(
     HudUiRect *activeRect
 ) {
     const int replicateMode = zOpt::GetReplicateMode();
@@ -1362,7 +1362,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ApplyViewportRect(
 } // namespace HudLayout
 
 // Reimplements 0x413080: HudLayoutHW::ReleaseImages
-void RECOIL_THISCALL HudLayoutHW::ReleaseImages() {
+void HudLayoutHW::ReleaseImages() {
     zVid_Image::ReleaseIfNotDefault(widget1Image320);
     zVid_Image::ReleaseIfNotDefault(widget1Image400);
     zVid_Image::ReleaseIfNotDefault(widget2Image320);
@@ -1376,14 +1376,13 @@ void RECOIL_THISCALL HudLayoutHW::ReleaseImages() {
 
 // Reimplements 0x413340: HudLayoutHW::OnActivated
 // (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_THISCALL HudLayoutHW::OnActivated() {
+void HudLayoutHW::OnActivated() {
     HudUi::SetInvalidateMode(zOpt::GetReplicateMode() == 0 ? 1 : 0);
 
     g_HudUiMgr.SetChildFlags(0x0e);
     ((HudUiContainer *)(this))->SetChildFlags(0x0e);
 
-    unsigned char *const bytes = (unsigned char *)(this);
-    *(unsigned int *)(bytes + 0x288) = (unsigned int)(bytes[0x288] & 0x10u);
+    widget2.flags = (unsigned int)((unsigned char)(widget2.flags) & 0x10u);
 
     g_HudUiMgrObjectiveWidget.flags =
         (unsigned int)((unsigned char)(g_HudUiMgrObjectiveWidget.flags) & 0x10u);
@@ -1424,9 +1423,6 @@ void RECOIL_THISCALL HudLayoutHW::OnActivated() {
         innerRect
     );
 
-    HudUiWidget *const widget1 = (HudUiWidget *)(bytes + 0xec);
-    HudUiWidget *const widget2 = (HudUiWidget *)(bytes + 0x1b4);
-
     zVidImagePartial *widget1Image = widget1ImageDefault;
     zVidImagePartial *widget2Image = widget2ImageDefault;
     if (layout->activeRect.right == 0x320) {
@@ -1437,21 +1433,21 @@ void RECOIL_THISCALL HudLayoutHW::OnActivated() {
         widget2Image = widget2Image400;
     }
 
-    widget2->SetImageBorrowedAndInvalidate(widget2Image);
-    widget1->SetImageBorrowedAndInvalidate(widget1Image);
+    widget2.SetImageBorrowedAndInvalidate(widget2Image);
+    widget1.SetImageBorrowedAndInvalidate(widget1Image);
 
     if (g_HudUiMgrHudLayoutsInitialized != 0) {
-        widget2->InvalidateRect(&g_HudUiMgrViewRect);
+        widget2.InvalidateRect(&g_HudUiMgrViewRect);
     }
 }
 
 // Reimplements 0x4132b0: HudLayoutHW::UpdateObjectiveDirtyRect
 // (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_THISCALL HudLayoutHW::UpdateObjectiveDirtyRect() {
+void HudLayoutHW::UpdateObjectiveDirtyRect() {
     zVidImagePartial *const image = g_HudUiMgrObjectiveWidget.image;
     const int width = image != 0 ? image->width : 0;
 
-    typedef int(RECOIL_THISCALL * GetCoordFn)(HudUiWidget * self);
+    typedef int( * GetCoordFn)(HudUiWidget * self);
     const int centerX =
         ((GetCoordFn)(g_HudUiMgrObjectiveWidget.ftable->slots[25]))(&g_HudUiMgrObjectiveWidget);
     const int centerY =
@@ -1464,15 +1460,14 @@ void RECOIL_THISCALL HudLayoutHW::UpdateObjectiveDirtyRect() {
     dirtyRect.right = g_HudUiMgrObjectiveWidgetRightX;
     dirtyRect.bottom = centerY + height;
 
-    HudUiWidget *const widget2 = (HudUiWidget *)((unsigned char *)(this) + 0x1b4);
-    widget2->InvalidateRect(&dirtyRect);
+    widget2.InvalidateRect(&dirtyRect);
     ((HudUiElement *)(&g_HudUiMgrNanitePanel))->Invalidate();
     ((HudUiTripletPanel *)(&g_HudUiMgrNanitePanel))->Draw();
 }
 
 // Reimplements 0x4130d0: HudLayoutHW::SetActive
 // (D:\Proj\Battlesport\hud.cpp)
-int RECOIL_THISCALL HudLayoutHW::SetActive(
+int HudLayoutHW::SetActive(
     int active
 ) {
     if (zVid::GetAccelerationOption() == 0) {
@@ -1483,10 +1478,6 @@ int RECOIL_THISCALL HudLayoutHW::SetActive(
     layout->activeRect.right = zVideo::GetPrimarySurfaceWidth();
     layout->activeRect.bottom = layout->layoutRect.bottom + g_HudUiMgrHudOriginY;
     HudLayout::ApplyViewportRect(&layout->activeRect);
-
-    unsigned char *const bytes = (unsigned char *)(this);
-    HudUiWidget *const widget1 = (HudUiWidget *)(bytes + 0xec);
-    HudUiWidget *const widget2 = (HudUiWidget *)(bytes + 0x1b4);
 
     if (active == 0) {
         ((HudUiElement *)(g_HudUiMgrObjectiveCounterTextPanel))->SetBltSourceAndClipRect(
@@ -1524,8 +1515,8 @@ int RECOIL_THISCALL HudLayoutHW::SetActive(
 
     layout->ftable->OnActivated(layout);
 
-    zVidImagePartial *const widget1Image = widget1->image;
-    zVidImagePartial *const widget2Image = widget2->image;
+    zVidImagePartial *const widget1Image = widget1.image;
+    zVidImagePartial *const widget2Image = widget2.image;
     ((HudUiElement *)(g_HudUiMgrObjectiveCounterTextPanel))
         ->SetBltSourceAndClipRect(
             widget1Image,
@@ -1582,7 +1573,7 @@ int RECOIL_THISCALL HudLayoutHW::SetActive(
 
 // Reimplements 0x412f70: HudLayoutHW::LoadTypeIIFromZarRoot
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudLayoutHW::LoadTypeIIFromZarRoot(
+int HudLayoutHW::LoadTypeIIFromZarRoot(
     zReader::Node *parentNode
 ) {
     zReader::Node *const typeIINode = zReader_GetNamedNode(
@@ -1594,11 +1585,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudLayoutHW::LoadTypeIIFromZarRoot(
     }
 
     zReader::Node *const typeIIPayload = typeIINode->value.nodes;
-    unsigned char *const bytes = (unsigned char *)(this);
     HudLayoutBase *const layout = (HudLayoutBase *)(this);
-    HudUiWidget *const widget1 = (HudUiWidget *)(bytes + 0xec);
-    HudUiWidget *const widget2 = (HudUiWidget *)(bytes + 0x1b4);
-    HudUiWidget *const widget3 = (HudUiWidget *)(bytes + 0x27c);
 
     HudUiLayoutNode::ReadRectOffsetAndSize(
         &typeIIPayload[1],
@@ -1611,7 +1598,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudLayoutHW::LoadTypeIIFromZarRoot(
 
     HudUiLayoutNode::ApplyImageWidget(
         &typeIIPayload[2],
-        widget1,
+        &widget1,
         0,
         0,
         0,
@@ -1620,7 +1607,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudLayoutHW::LoadTypeIIFromZarRoot(
     );
     HudUiLayoutNode::ApplyImageWidget(
         &typeIIPayload[3],
-        widget3,
+        &widget3,
         0,
         g_HudUiMgrHudOriginY,
         0,
@@ -1629,7 +1616,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudLayoutHW::LoadTypeIIFromZarRoot(
     );
     HudUiLayoutNode::ApplyImageWidget(
         &typeIIPayload[4],
-        widget2,
+        &widget2,
         0,
         g_HudUiMgrHudOriginY,
         0,
@@ -1638,10 +1625,10 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudLayoutHW::LoadTypeIIFromZarRoot(
     );
 
     zReader::Node *const imageNames = typeIIPayload[5].value.nodes;
-    widget1ImageDefault = widget1->image;
+    widget1ImageDefault = widget1.image;
     widget1Image320 = zImage::TexDir_FindOrCreateByPath(imageNames[1].value.str);
     widget1Image400 = zImage::TexDir_FindOrCreateByPath(imageNames[2].value.str);
-    widget2ImageDefault = widget2->image;
+    widget2ImageDefault = widget2.image;
     widget2Image320 = zImage::TexDir_FindOrCreateByPath(imageNames[3].value.str);
     widget2Image400 = zImage::TexDir_FindOrCreateByPath(imageNames[4].value.str);
 
@@ -1650,12 +1637,11 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudLayoutHW::LoadTypeIIFromZarRoot(
 
 // Reimplements 0x413540: HudLayoutHW::Enable
 // (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_THISCALL HudLayoutHW::Enable() {
+void HudLayoutHW::Enable() {
     g_HudUiMgr.SetChildFlags(0x0e);
     ((HudUiContainer *)(this))->SetChildFlags(0x0e);
 
-    unsigned char *const bytes = (unsigned char *)(this);
-    *(unsigned int *)(bytes + 0x288) = (unsigned int)(bytes[0x288] & 0x10u);
+    widget2.flags = (unsigned int)((unsigned char)(widget2.flags) & 0x10u);
 
     g_HudUiMgrObjectiveWidget.flags =
         (unsigned int)((unsigned char)(g_HudUiMgrObjectiveWidget.flags) & 0x10u);
@@ -1678,7 +1664,7 @@ void RECOIL_THISCALL HudLayoutHW::Enable() {
         }
     }
 
-    typedef void(RECOIL_THISCALL * SetEnabledFn)(
+    typedef void( * SetEnabledFn)(
         HudLayoutHW * self,
         int enabled
     );
@@ -1690,8 +1676,8 @@ void RECOIL_THISCALL HudLayoutHW::Enable() {
 
 // Reimplements 0x4135f0: HudLayoutHW::Disable
 // (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_THISCALL HudLayoutHW::Disable() {
-    typedef void(RECOIL_THISCALL * SetEnabledFn)(
+void HudLayoutHW::Disable() {
+    typedef void( * SetEnabledFn)(
         HudLayoutHW * self,
         int enabled
     );
@@ -1712,7 +1698,7 @@ const char kClampedIntTextInputAcceptedRawKeyChars[] = "0123456789\x1b\r\x08\x7f
 #if defined(_MSC_VER) && _MSC_VER < 1200
 // VC5 misparses explicit function-template calls such as FieldAt<unsigned int>(...).
 // Keep the same call-site spelling for first-pass VC5 verification without changing
-// VC6 or modern compiler codegen.
+// modern compiler codegen.
 template <typename T> class FieldAt {
   public:
     FieldAt(
@@ -1833,7 +1819,7 @@ namespace HudUiListMenuEntry {
 
 // Reimplements 0x40d220: HudUiListMenuEntry::CompareSortKey
 // (D:\Proj\Battlesport\HudUiListMenu.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL CompareSortKey(
+int __fastcall CompareSortKey(
     const HudUiScoreboardEntry *entryA,
     const HudUiScoreboardEntry *entryB
 ) {
@@ -1858,7 +1844,7 @@ bool EntryComesBefore(
 
 // Reimplements 0x414930: HudUiListMenuEntry::InsertPivotIntoSortedPrefix
 // (D:\Proj\Battlesport\HudUiListMenu.cpp)
-RECOIL_NOINLINE void InsertPivotIntoSortedPrefix(
+void InsertPivotIntoSortedPrefix(
     HudUiScoreboardEntry *slot,
     const HudUiScoreboardEntry &pivot
 ) {
@@ -1878,7 +1864,7 @@ RECOIL_NOINLINE void InsertPivotIntoSortedPrefix(
 
 // Reimplements 0x414980: HudUiListMenuEntry::InsertionSortRange
 // (D:\Proj\Battlesport\HudUiListMenu.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL InsertionSortRange(
+void __fastcall InsertionSortRange(
     HudUiScoreboardEntry *begin,
     HudUiScoreboardEntry *end,
     int
@@ -1949,7 +1935,7 @@ HudUiScoreboardEntry *MedianOfThree(
 
 // Reimplements 0x414710: HudUiListMenuEntry::SortRange
 // (D:\Proj\Battlesport\HudUiListMenu.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SortRange(
+void __fastcall SortRange(
     HudUiScoreboardEntry *begin,
     HudUiScoreboardEntry *end,
     int unusedFlags
@@ -2097,7 +2083,7 @@ HudUiPanel *TextStackLineAt(
 void HudUiVirtualSetTextFmtEmpty(
     HudUiPanel *panel
 ) {
-    typedef void(RECOIL_CDECL * SetTextFmtFn)(
+    typedef void(* SetTextFmtFn)(
         HudUiPanel * self,
         const char *format,
         ...
@@ -2114,7 +2100,7 @@ void HudUiPanelVirtualSetTextFmtRequired(
     HudUiPanel *panel,
     const char *text
 ) {
-    typedef void(RECOIL_CDECL * SetTextFmtFn)(
+    typedef void(* SetTextFmtFn)(
         HudUiPanel * self,
         const char *format,
         ...
@@ -2143,7 +2129,7 @@ void HudUiVirtualSetVisibleRequired(
     void *element,
     int visible
 ) {
-    typedef void(RECOIL_THISCALL * SetVisibleFn)(
+    typedef void( * SetVisibleFn)(
         void *self,
         int visible
     );
@@ -2160,7 +2146,7 @@ void HudUiVirtualSetPosRequired(
     int x,
     int y
 ) {
-    typedef void(RECOIL_THISCALL * SetPosFn)(
+    typedef void( * SetPosFn)(
         void *self,
         int x,
         int y
@@ -2178,7 +2164,7 @@ void HudUiVirtualSetVisible(
     void *element,
     int visible
 ) {
-    typedef void(RECOIL_THISCALL * SetVisibleFn)(
+    typedef void( * SetVisibleFn)(
         void *self,
         int visible
     );
@@ -2205,7 +2191,7 @@ void HudUiVirtualSetVisible(
 void HudUiVirtualInvalidate(
     void *element
 ) {
-    typedef void(RECOIL_THISCALL * InvalidateFn)(void *self);
+    typedef void( * InvalidateFn)(void *self);
 
     const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
     if (ftable != 0 && ftable->slots[8] != 0) {
@@ -2219,7 +2205,7 @@ void HudUiVirtualInvalidate(
 void HudUiVirtualInvalidateRequired(
     void *element
 ) {
-    typedef void(RECOIL_THISCALL * InvalidateFn)(void *self);
+    typedef void( * InvalidateFn)(void *self);
 
     const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
     ((InvalidateFn)(ftable->slots[8]))(element);
@@ -2228,7 +2214,7 @@ void HudUiVirtualInvalidateRequired(
 void HudUiVirtualDrawRequired(
     void *element
 ) {
-    typedef void(RECOIL_THISCALL * DrawFn)(void *self);
+    typedef void( * DrawFn)(void *self);
 
     const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
     ((DrawFn)(ftable->slots[2]))(element);
@@ -2238,7 +2224,7 @@ static void HudUiPanelVirtualSetTextFmtStringRequired(
     void *panel,
     const char *text
 ) {
-    typedef void(RECOIL_CDECL * SetTextFmtFn)(
+    typedef void(* SetTextFmtFn)(
         void *self,
         const char *format,
         ...
@@ -2255,7 +2241,7 @@ static void HudUiPanelVirtualSetTextFmtStringRequired(
 static void HudUiPanelVirtualSetTextFmtEmptyRequired(
     void *panel
 ) {
-    typedef void(RECOIL_CDECL * SetTextFmtFn)(
+    typedef void(* SetTextFmtFn)(
         void *self,
         const char *format,
         ...
@@ -2272,7 +2258,7 @@ void HudUiVirtualSetClipRect(
     void *element,
     const HudUiRect *rect
 ) {
-    typedef void(RECOIL_THISCALL * SetClipRectFn)(
+    typedef void( * SetClipRectFn)(
         void *self,
         const HudUiRect *rect
     );
@@ -2292,7 +2278,7 @@ void HudUiVirtualSetClipRect(
 int HudUiVirtualGetX(
     void *element
 ) {
-    typedef int(RECOIL_THISCALL * GetCoordFn)(void *self);
+    typedef int( * GetCoordFn)(void *self);
 
     const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
     if (ftable != 0 && ftable->slots[25] != 0) {
@@ -2305,7 +2291,7 @@ int HudUiVirtualGetX(
 int HudUiVirtualGetXRequired(
     void *element
 ) {
-    typedef int(RECOIL_THISCALL * GetCoordFn)(void *self);
+    typedef int( * GetCoordFn)(void *self);
 
     const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
     return ((GetCoordFn)(ftable->slots[25]))(element);
@@ -2314,7 +2300,7 @@ int HudUiVirtualGetXRequired(
 int HudUiVirtualGetY(
     void *element
 ) {
-    typedef int(RECOIL_THISCALL * GetCoordFn)(void *self);
+    typedef int( * GetCoordFn)(void *self);
 
     const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
     if (ftable != 0 && ftable->slots[26] != 0) {
@@ -2327,7 +2313,7 @@ int HudUiVirtualGetY(
 int HudUiVirtualGetYRequired(
     void *element
 ) {
-    typedef int(RECOIL_THISCALL * GetCoordFn)(void *self);
+    typedef int( * GetCoordFn)(void *self);
 
     const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
     return ((GetCoordFn)(ftable->slots[26]))(element);
@@ -2337,7 +2323,7 @@ void HudUiVirtualSetText(
     void *panel,
     const char *text
 ) {
-    typedef void(RECOIL_THISCALL * SetTextFn)(
+    typedef void( * SetTextFn)(
         void *self,
         const char *text
     );
@@ -2367,7 +2353,7 @@ void HudUiVirtualSetTextRequired(
     void *panel,
     const char *text
 ) {
-    typedef void(RECOIL_THISCALL * SetTextFn)(
+    typedef void( * SetTextFn)(
         void *self,
         const char *text
     );
@@ -2382,7 +2368,7 @@ void HudUiVirtualSetTextRequired(
 void HudUiPanelVirtualRebuildTextRect(
     HudUiPanel *panel
 ) {
-    typedef void(RECOIL_THISCALL * RebuildFn)(HudUiPanel * self);
+    typedef void( * RebuildFn)(HudUiPanel * self);
 
     const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(panel);
     if (ftable != 0 && ftable->slots[36] != 0) {
@@ -2396,7 +2382,7 @@ void HudUiPanelVirtualRebuildTextRect(
 void HudUiPanelVirtualRebuildTextRectRequired(
     HudUiPanel *panel
 ) {
-    typedef void(RECOIL_THISCALL * RebuildFn)(HudUiPanel * self);
+    typedef void( * RebuildFn)(HudUiPanel * self);
 
     const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(panel);
     ((RebuildFn)(ftable->slots[36]))(panel);
@@ -2412,7 +2398,7 @@ void HudUiPanelVirtualSetFontRequired(
     int charSet,
     int pitchAndFamily
 ) {
-    typedef void(RECOIL_THISCALL * SetFontFn)(
+    typedef void( * SetFontFn)(
         HudUiPanel * self,
         const char *faceName,
         int height,
@@ -2440,7 +2426,7 @@ void HudUiPanelVirtualSetFontRequired(
 void HudUiPanelVirtualDrawBase(
     HudUiPanel *panel
 ) {
-    typedef void(RECOIL_THISCALL * DrawFn)(HudUiPanel * self);
+    typedef void( * DrawFn)(HudUiPanel * self);
 
     const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(panel);
     if (ftable != 0 && ftable->slots[2] != 0) {
@@ -2549,7 +2535,7 @@ float ZrdArrayFloat(
 } // namespace
 
 // Reimplements 0x414670: HudUiTripletEntries::GetCount
-RECOIL_NOINLINE int RECOIL_THISCALL HudUiTripletEntries::GetCount() {
+int HudUiTripletEntries::GetCount() {
     if (begin == 0) {
         return 0;
     }
@@ -2558,7 +2544,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiTripletEntries::GetCount() {
 }
 
 // Reimplements 0x4146a0: HudUiTripletEntries::CopyRange
-RECOIL_NOINLINE HudUiScoreboardEntry *RECOIL_STDCALL HudUiTripletEntries::CopyRange(
+HudUiScoreboardEntry *__stdcall HudUiTripletEntries::CopyRange(
     HudUiScoreboardEntry *sourceBegin,
     HudUiScoreboardEntry *sourceEnd,
     HudUiScoreboardEntry *dest
@@ -2576,7 +2562,7 @@ RECOIL_NOINLINE HudUiScoreboardEntry *RECOIL_STDCALL HudUiTripletEntries::CopyRa
 }
 
 // Reimplements 0x4146e0: HudUiTripletEntries::FillN
-RECOIL_NOINLINE void RECOIL_STDCALL HudUiTripletEntries::FillN(
+void __stdcall HudUiTripletEntries::FillN(
     HudUiScoreboardEntry *dest,
     unsigned int count,
     const HudUiScoreboardEntry *sourceValue
@@ -2594,7 +2580,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL HudUiTripletEntries::FillN(
 namespace HudUiLayoutNode {
 // Reimplements 0x413aa0: HudUiLayoutNode::ReadRect
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadRect(
+int __fastcall ReadRect(
     zReader::Node *node,
     HudUiRect *outRect
 ) {
@@ -2612,7 +2598,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadRect(
 
 // Reimplements 0x413ad0: HudUiLayoutNode::ReadInt3
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadInt3(
+int __fastcall ReadInt3(
     zReader::Node *node,
     int *out0,
     int *out1,
@@ -2640,7 +2626,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadInt3(
 
 // Reimplements 0x413b10: HudUiLayoutNode::ApplyCornerTextQuad
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ApplyCornerTextQuad(
+int __fastcall ApplyCornerTextQuad(
     zReader::Node *node,
     HudUiBar *target,
     const int *offsetXY,
@@ -2700,7 +2686,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ApplyCornerTextQuad(
 
 // Reimplements 0x413c10: HudUiLayoutNode::ApplyMeterQuad
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ApplyMeterQuad(
+int __fastcall ApplyMeterQuad(
     zReader::Node *node,
     HudUiMeter *target,
     int xBase,
@@ -2767,7 +2753,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ApplyMeterQuad(
 
 // Reimplements 0x413a10: HudUiLayoutNode::ReadRectOffsetAndSize
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadRectOffsetAndSize(
+int __fastcall ReadRectOffsetAndSize(
     zReader::Node *node,
     HudUiRect *outRect,
     const int *offsetXY,
@@ -2804,7 +2790,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadRectOffsetAndSize(
 
 // Reimplements 0x413990: HudUiLayoutNode::ApplyTextLabel
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ApplyTextLabel(
+int __fastcall ApplyTextLabel(
     zReader::Node *layoutNode,
     HudUiPanel *target,
     int baseX,
@@ -2825,12 +2811,12 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ApplyTextLabel(
     }
 
     const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(target);
-    typedef void(RECOIL_THISCALL * SetPosFn)(
+    typedef void( * SetPosFn)(
         HudUiPanel * self,
         int x,
         int y
     );
-    typedef void(RECOIL_CDECL * SetTextFmtFn)(
+    typedef void(* SetTextFmtFn)(
         HudUiPanel * self,
         const char *format,
         ...
@@ -2849,7 +2835,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ApplyTextLabel(
 
 // Reimplements 0x413d30: HudUiLayoutNode::ApplyImageWidget
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL ApplyImageWidget(
+zVidImagePartial *__fastcall ApplyImageWidget(
     zReader::Node *layoutNode,
     HudUiWidget *widget,
     int baseX,
@@ -2901,12 +2887,12 @@ RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL ApplyImageWidget(
         y -= (int)(image->height) / 2;
     }
 
-    typedef void(RECOIL_THISCALL * SetPosFn)(
+    typedef void( * SetPosFn)(
         HudUiWidget * self,
         int x,
         int y
     );
-    typedef void(RECOIL_THISCALL * InvalidateFn)(HudUiWidget * self);
+    typedef void( * InvalidateFn)(HudUiWidget * self);
     ((SetPosFn)(widget->ftable->slots[3]))(
         widget,
         x,
@@ -3340,7 +3326,7 @@ void HudUiVirtualUpdateSlider(
     HudUiSliderBorder *slider,
     float deltaSeconds
 ) {
-    typedef void(RECOIL_THISCALL * UpdateFn)(
+    typedef void( * UpdateFn)(
         HudUiSliderBorder * self,
         float deltaSeconds
     );
@@ -3361,7 +3347,7 @@ void HudUiVirtualUpdateSliderRequired(
     HudUiSliderBorder *slider,
     float deltaSeconds
 ) {
-    typedef void(RECOIL_THISCALL * UpdateFn)(
+    typedef void( * UpdateFn)(
         HudUiSliderBorder * self,
         float deltaSeconds
     );
@@ -3427,7 +3413,7 @@ void DestroyTextStackLines(
 namespace HudUiMgrSensor {
 // Reimplements 0x41ebd0: HudUiMgrSensor::TrackList_Reset
 // (D:\Proj\Battlesport\HudUiMgrSensor.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL TrackList_Reset() {
+void TrackList_Reset() {
     memset(
         &g_HudUiMgrSensor_TrackList,
         0,
@@ -3437,7 +3423,7 @@ RECOIL_NOINLINE void RECOIL_CDECL TrackList_Reset() {
 
 // Reimplements 0x438920: HudUiMgrSensor::TrackList_Add
 // (D:\Proj\Battlesport\HudUiMgrSensor.cpp)
-RECOIL_NOINLINE HudUiMgrSensorTrackNode *RECOIL_FASTCALL TrackList_Add(
+HudUiMgrSensorTrackNode *__fastcall TrackList_Add(
     int trackKind,
     void *payload
 ) {
@@ -3467,7 +3453,7 @@ RECOIL_NOINLINE HudUiMgrSensorTrackNode *RECOIL_FASTCALL TrackList_Add(
 
 // Reimplements 0x412070: HudUiMgrSensor::PlaceTrackCounterWidget
 // (D:\Proj\Battlesport\HudUiMgrSensor.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL PlaceTrackCounterWidget(
+int __fastcall PlaceTrackCounterWidget(
     HudUiMgrSensorTrackNode *trackNode,
     const zVec3 *worldPoint
 ) {
@@ -3604,7 +3590,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL PlaceTrackCounterWidget(
 
 // Reimplements 0x4122c0: HudUiMgrSensor::PlaceTrackMarker
 // (D:\Proj\Battlesport\HudUiMgrSensor.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL PlaceTrackMarker(
+int __fastcall PlaceTrackMarker(
     int markerMode,
     PlayerProgressTargetSlotRuntime *outputSlots
 ) {
@@ -3698,7 +3684,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL PlaceTrackMarker(
 
 // Reimplements 0x439690: HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag
 // (D:\Proj\Battlesport\HudUiMgrSensor.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMarkersAndProgressFromVariantTag(
+void __fastcall UpdateMarkersAndProgressFromVariantTag(
     const zTag4Partial *requiredVariantTag
 ) {
     HudUiMgrSensorTrackNode *trackNode = g_HudUiMgrSensor_TrackList.head;
@@ -3841,10 +3827,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateMarkersAndProgressFromVariantTag(
 
 // Reimplements 0x411f10: HudUiMgrSensor::SetShieldMessageRatio
 // (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_FASTCALL SetShieldMessageRatio(
+void __fastcall SetShieldMessageRatio(
     float ratio
 ) {
-    typedef void(RECOIL_CDECL * SetTextFmtFn)(
+    typedef void(* SetTextFmtFn)(
         void *self,
         const char *format,
         ...
@@ -3884,7 +3870,7 @@ void RECOIL_FASTCALL SetShieldMessageRatio(
 }
 
 // Reimplements 0x410d10: HudUiMgrSensor::SetViewportRect
-void RECOIL_FASTCALL SetViewportRect(
+void __fastcall SetViewportRect(
     int x,
     int y,
     int width,
@@ -3932,7 +3918,7 @@ void RECOIL_FASTCALL SetViewportRect(
 }
 
 // Reimplements 0x414300: HudUiMgrSensor::GetFxRect (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL GetFxRect(
+void __fastcall GetFxRect(
     HudUiRect *outRect
 ) {
     *outRect = g_HudUiMgrSensorFxRect;
@@ -3942,7 +3928,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL GetFxRect(
 namespace HudUiMgrTarget {
 // Reimplements 0x4124b0: HudUiMgrTarget::UpdateSelectedProgressMeter
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateSelectedProgressMeter(
+void __fastcall UpdateSelectedProgressMeter(
     int clearSelectedTrack
 ) {
     HudUiSlot *trackedProgressSlot = 0;
@@ -4013,7 +3999,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateSelectedProgressMeter(
 namespace HudUiMgrObjective {
 // Reimplements 0x412050: HudUiMgrObjective::RefreshCounterText
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RefreshCounterText(
+void __fastcall RefreshCounterText(
     int counterValue
 ) {
     HudUiPanel *const panel = (HudUiPanel *)(g_HudUiMgrObjectiveCounterTextPanel);
@@ -4026,7 +4012,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL RefreshCounterText(
 
 // Reimplements 0x411760: HudUiMgrObjective::SetVisibleAndResetMeterFill
 // (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_FASTCALL SetVisibleAndResetMeterFill(
+void __fastcall SetVisibleAndResetMeterFill(
     int visible
 ) {
     if (visible == 0) {
@@ -4059,8 +4045,8 @@ void RECOIL_FASTCALL SetVisibleAndResetMeterFill(
 
 // Reimplements 0x4118b0: HudUiMgrObjective::UpdateMeterXPoints
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL UpdateMeterXPoints() {
-    typedef int(RECOIL_THISCALL * GetCenterXFn)(HudUiWidget * self);
+void UpdateMeterXPoints() {
+    typedef int( * GetCenterXFn)(HudUiWidget * self);
 
     const HudUiWidget_FTable *const ftable = g_HudUiMgrObjectiveWidget.ftable;
     const float left =
@@ -4074,7 +4060,7 @@ RECOIL_NOINLINE void RECOIL_CDECL UpdateMeterXPoints() {
 
 // Reimplements 0x4117f0: HudUiMgrObjective::TickMeterFillAnimation
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL TickMeterFillAnimation() {
+void TickMeterFillAnimation() {
     g_HudUiMgrObjectiveMeterFillAnimTimerSec += g_Time_UnscaledDeltaTimeSec;
 
     int fillPixels;
@@ -4143,7 +4129,7 @@ static void HudUiMgrObjective_DrawSensorNoise(
 
 // Reimplements 0x411900: HudUiMgrObjective::Show
 // (D:\Proj\Battlesport\hud.cpp)
-int RECOIL_FASTCALL Show(
+int __fastcall Show(
     zVidImagePartial *objectiveImage,
     const char *summaryFormat,
     const char *descText,
@@ -4198,7 +4184,7 @@ int RECOIL_FASTCALL Show(
 }
 
 // Reimplements 0x411a20: HudUiMgrObjective::Begin
-void RECOIL_CDECL Begin() {
+void Begin() {
     if (g_HudUiMgrObjectiveChatComposeActive != 0) {
         return;
     }
@@ -4235,7 +4221,7 @@ void RECOIL_CDECL Begin() {
 
 // Reimplements 0x411ac0: HudUiMgrObjective::StartHide
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL StartHide() {
+void StartHide() {
     g_HudUiMgrObjectivePhaseTimerSec += g_Time_UnscaledDeltaTimeSec;
 
     if (g_HudUiMgrObjectivePhase == 1) {
@@ -4321,7 +4307,7 @@ RECOIL_NOINLINE void RECOIL_CDECL StartHide() {
 }
 
 // Reimplements 0x411eb0: HudUiMgrObjective::Update
-void RECOIL_CDECL Update() {
+void Update() {
     HudUiVirtualSetVisibleRequired(
         &g_HudUiMgrObjectiveWidget,
         1
@@ -4352,7 +4338,7 @@ void RECOIL_CDECL Update() {
 
 namespace HudUiLoadingCheckpoint {
 // Reimplements 0x414180: HudUiLoadingCheckpoint::AdvanceAndLog
-void RECOIL_FASTCALL AdvanceAndLog(
+void __fastcall AdvanceAndLog(
     const char *messageOrNull
 ) {
     const unsigned int currentIndex = g_HudUiLoadingCheckpointCurrentIndex;
@@ -4383,7 +4369,7 @@ void RECOIL_FASTCALL AdvanceAndLog(
 }
 
 // Reimplements 0x414210: HudUiLoadingCheckpoint::InitTable
-void RECOIL_CDECL InitTable() {
+void InitTable() {
     static const float kRawProgress[] = {
         0.00100000005f,
         0.136999995f,
@@ -4420,7 +4406,7 @@ void RECOIL_CDECL InitTable() {
 
 namespace HudUiAuxOverlay {
 // Reimplements 0x4137f0: HudUiAuxOverlay::UpdateTextLine
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateTextLine(
+void __fastcall UpdateTextLine(
     int op,
     int index,
     const char *format
@@ -4467,7 +4453,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL UpdateTextLine(
 }
 
 // Reimplements 0x4137c0: HudUiAuxOverlay::ClearTextLines
-RECOIL_NOINLINE void RECOIL_CDECL ClearTextLines() {
+void ClearTextLines() {
     {
         for (int index = 0; index < 23; ++index) {
             UpdateTextLine(
@@ -4589,7 +4575,7 @@ void HudUiSetPanelClipWithSource(
     void *source,
     const HudUiRect *clipRect
 ) {
-    typedef void(RECOIL_THISCALL * SetClipFn)(
+    typedef void( * SetClipFn)(
         void *self,
         void *source,
         const HudUiRect *clipRect
@@ -4625,7 +4611,7 @@ namespace HudUiMgr {
 // The retail binary stores these members in one contiguous HudUiMgr object. The
 // current source model exposes the same subobjects as recovered globals; this
 // constructor preserves the observed construction order and table installs.
-HudUiContainer *RECOIL_FASTCALL Constructor(
+HudUiContainer *__fastcall Constructor(
     HudUiContainer *self
 ) {
     HudUiContainer *const manager = self;
@@ -4692,23 +4678,23 @@ HudUiContainer *RECOIL_FASTCALL Constructor(
 
 // Reimplements 0x40d400: HudUiMgr::StaticInitAndRegisterAtExit
 // (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_CDECL StaticInitAndRegisterAtExit() {
+void StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
 
 // Reimplements 0x40d410: HudUiMgr::StaticInit (D:\Proj\Battlesport\hud.cpp)
-HudUiContainer *RECOIL_CDECL StaticInit() {
+HudUiContainer *StaticInit() {
     return Constructor(&g_HudUiMgr);
 }
 
 // Reimplements 0x40d420: HudUiMgr::RegisterAtExit (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_CDECL RegisterAtExit() {
+void RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
 // Reimplements 0x40d430: HudUiMgr::AtExitDestructor (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_CDECL AtExitDestructor() {
+void AtExitDestructor() {
     StaticDestructor(&g_HudUiMgr);
 }
 
@@ -4717,7 +4703,7 @@ void RECOIL_CDECL AtExitDestructor() {
 // The original object is contiguous; the current source model keeps the same
 // embedded HUD manager subobjects as recovered globals. Keep the destruction
 // order aligned with the retail static destructor.
-void RECOIL_FASTCALL StaticDestructor(
+void __fastcall StaticDestructor(
     HudUiContainer *self
 ) {
     g_HudUiMgrTailBar.ftable = (const HudUiBar_FTable *)(&g_HudUiCommon_FTable);
@@ -4759,7 +4745,7 @@ void RECOIL_FASTCALL StaticDestructor(
 
 // Reimplements 0x411170: HudUiMgr::ProjectPointToNormalizedClamped
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ProjectPointToNormalizedClamped(
+int __fastcall ProjectPointToNormalizedClamped(
     const zVec3 *srcPoint,
     zVec3 *projectedPoint
 ) {
@@ -4797,14 +4783,14 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ProjectPointToNormalizedClamped(
 }
 
 // Reimplements 0x413630: HudUiMgr::TriggerCurrentLayoutOnActivated
-void RECOIL_CDECL TriggerCurrentLayoutOnActivated() {
+void TriggerCurrentLayoutOnActivated() {
     if (g_HudUiMgrCurrentLayout != 0) {
         g_HudUiMgrCurrentLayout->ftable->OnActivated(g_HudUiMgrCurrentLayout);
     }
 }
 
 // Reimplements 0x410140: HudUiMgr::TickLayoutDelay
-int RECOIL_CDECL TickLayoutDelay() {
+int TickLayoutDelay() {
     if (g_HudUiMgrLayoutDelayFrames == 0) {
         return 0;
     }
@@ -4815,13 +4801,13 @@ int RECOIL_CDECL TickLayoutDelay() {
 
 // Reimplements 0x4143a0: HudUiMgr::IsLocalPlayerFirstInStatsList
 // (D:\Proj\Battlesport\HudUi.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL IsLocalPlayerFirstInStatsList() {
+int IsLocalPlayerFirstInStatsList() {
     return g_HudUiMgrStatsList->triplet->IsLocalPlayerFirstEntry();
 }
 
 // Reimplements 0x410160: HudUiMgr::EnsureHudLoaded
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL EnsureHudLoaded(
+int __fastcall EnsureHudLoaded(
     const char *entryPath
 ) {
     if (g_HudUiMgrHudLoaded != 0) {
@@ -5423,14 +5409,14 @@ RECOIL_NOINLINE int RECOIL_FASTCALL EnsureHudLoaded(
 }
 
 // Reimplements 0x411750: HudUiMgr::SetNanitePanelCount
-void RECOIL_FASTCALL SetNanitePanelCount(
+void __fastcall SetNanitePanelCount(
     int count
 ) {
     g_HudUiMgrNanitePanel.SetVisibleCount(count);
 }
 
 // Reimplements 0x40f1a0: HudUiMgr::SetModeCounterState
-void RECOIL_FASTCALL SetModeCounterState(
+void __fastcall SetModeCounterState(
     int counterIndex,
     int state
 ) {
@@ -5453,10 +5439,10 @@ void RECOIL_FASTCALL SetModeCounterState(
 }
 
 // Reimplements 0x411710: HudUiMgr::ReticleStaticAtexitStub
-void RECOIL_CDECL ReticleStaticAtexitStub() {}
+void ReticleStaticAtexitStub() {}
 
 // Reimplements 0x411720: HudUiMgr::CopyReticleProjection
-void RECOIL_FASTCALL CopyReticleProjection(
+void __fastcall CopyReticleProjection(
     float *outProjection
 ) {
     unsigned int *const outBits = (unsigned int *)(outProjection);
@@ -5467,14 +5453,14 @@ void RECOIL_FASTCALL CopyReticleProjection(
 }
 
 // Reimplements 0x411740: HudUiMgr::SetReticleMode
-void RECOIL_FASTCALL SetReticleMode(
+void __fastcall SetReticleMode(
     int mode
 ) {
     g_HudUiMgrReticleMode = mode;
 }
 
 // Reimplements 0x411270: HudUiMgr::UpdateTargetReticleFromCursor (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL UpdateTargetReticleFromCursor(
+int __fastcall UpdateTargetReticleFromCursor(
     int reticleMode,
     zVec3 *worldHitPoint,
     float normalizedX,
@@ -5663,7 +5649,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL UpdateTargetReticleFromCursor(
 }
 
 // Reimplements 0x413730: HudUiMgr::DestroySensorWindow
-RECOIL_NOINLINE void RECOIL_CDECL DestroySensorWindow() {
+void DestroySensorWindow() {
     zFMV_Playback *playback = g_HudUiSensorWindowPlayback;
     if (playback == 0) {
         return;
@@ -5683,11 +5669,11 @@ RECOIL_NOINLINE void RECOIL_CDECL DestroySensorWindow() {
 
 // Reimplements 0x410e90: HudUiMgr::EnableHud
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL EnableHud() {
+int EnableHud() {
     const int previouslyEnabled = g_HudUiMgr.enabled;
     g_HudUiMgr.SetEnabled(1);
 
-    typedef void(RECOIL_THISCALL * LayoutEnableFn)(HudLayoutBase * self);
+    typedef void( * LayoutEnableFn)(HudLayoutBase * self);
     ((LayoutEnableFn)(g_HudUiMgrCurrentLayout->ftable->slots[4]))(g_HudUiMgrCurrentLayout);
 
     HudUiMgrObjective::Update();
@@ -5697,7 +5683,7 @@ RECOIL_NOINLINE int RECOIL_CDECL EnableHud() {
 }
 
 // Reimplements 0x410ed0: HudUiMgr::DisableHud
-RECOIL_NOINLINE int RECOIL_CDECL DisableHud() {
+int DisableHud() {
     const int previouslyEnabled = g_HudUiMgr.enabled;
     DestroySensorWindow();
 
@@ -5725,7 +5711,7 @@ RECOIL_NOINLINE int RECOIL_CDECL DisableHud() {
         0
     );
 
-    typedef void(RECOIL_THISCALL * LayoutDisableFn)(HudLayoutBase * self);
+    typedef void( * LayoutDisableFn)(HudLayoutBase * self);
     ((LayoutDisableFn)(g_HudUiMgrCurrentLayout->ftable->slots[5]))(g_HudUiMgrCurrentLayout);
 
     HudUiVirtualSetVisibleRequired(
@@ -5776,7 +5762,7 @@ RECOIL_NOINLINE int RECOIL_CDECL DisableHud() {
 
 // Reimplements 0x413640: HudUiMgr::ToggleHud
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL ToggleHud() {
+int ToggleHud() {
     if (g_HudUiMgr.enabled != 0) {
         DisableHud();
     } else {
@@ -5786,13 +5772,13 @@ RECOIL_NOINLINE int RECOIL_CDECL ToggleHud() {
 }
 
 // Reimplements 0x410fe0: HudUiMgr::UpdateFrame (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL UpdateFrame() {
-    typedef void(RECOIL_THISCALL * NoArgFn)(void *self);
-    typedef void(RECOIL_THISCALL * UpdateFn)(
+void UpdateFrame() {
+    typedef void( * NoArgFn)(void *self);
+    typedef void( * UpdateFn)(
         void *self,
         float deltaSeconds
     );
-    typedef void(RECOIL_THISCALL * SetVisibleFn)(
+    typedef void( * SetVisibleFn)(
         void *self,
         int visible
     );
@@ -5901,7 +5887,7 @@ RECOIL_NOINLINE void RECOIL_CDECL UpdateFrame() {
 
 // Reimplements 0x413660: HudUiMgr::SwitchActiveDialog
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SwitchActiveDialog(
+void __fastcall SwitchActiveDialog(
     HudLayoutBase *newDialog
 ) {
     const int enabled = g_HudUiMgr.enabled;
@@ -5911,7 +5897,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SwitchActiveDialog(
         g_HudUiMgrLayoutDelayFrames = 2;
     }
 
-    typedef int(RECOIL_THISCALL * LayoutSetActiveFn)(
+    typedef int( * LayoutSetActiveFn)(
         HudLayoutBase * self,
         int active
     );
@@ -5936,7 +5922,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SwitchActiveDialog(
 
 // Reimplements 0x413770: HudUiMgr::SetFloatTimerVisible
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetFloatTimerVisible(
+void __fastcall SetFloatTimerVisible(
     int visible
 ) {
     HudUiVirtualSetVisibleRequired(
@@ -5951,7 +5937,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetFloatTimerVisible(
 
 // Reimplements 0x412620: HudUiMgr::HideTrackedProgressMeterIfOwnerMatches
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL HideTrackedProgressMeterIfOwnerMatches(
+void __fastcall HideTrackedProgressMeterIfOwnerMatches(
     void *ownerPayload
 ) {
     HudUiSlot *const trackedProgressSlot = g_HudUiMgrSensorTrackedProgressSlot;
@@ -5971,7 +5957,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HideTrackedProgressMeterIfOwnerMatches(
 
 // Reimplements 0x4137a0: HudUiMgr::SetAuxOverlayVisible
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetAuxOverlayVisible(
+void __fastcall SetAuxOverlayVisible(
     int visible
 ) {
     HudUiVirtualSetContainerEnabled(
@@ -5982,7 +5968,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetAuxOverlayVisible(
 
 // Reimplements 0x4136b0: HudUiMgr::ApplyHudModeSwitch
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ApplyHudModeSwitch(
+int __fastcall ApplyHudModeSwitch(
     int hudType
 ) {
     const int currentType = zOpt::GetHudTypeForCurrentHwMode();
@@ -5998,7 +5984,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ApplyHudModeSwitch(
 }
 
 // Reimplements 0x4089c0: HudUiMgr::ScreenToWorld
-void RECOIL_FASTCALL ScreenToWorld(
+void __fastcall ScreenToWorld(
     float *pointXY
 ) {
     zOpt_ViewRectSection *const renderSection = *g_zOpt_RenderSectionOption;
@@ -6017,7 +6003,7 @@ void RECOIL_FASTCALL ScreenToWorld(
 }
 
 // Reimplements 0x40ff80: HudUiMgr::OnViewportChanged
-void RECOIL_FASTCALL OnViewportChanged(
+void __fastcall OnViewportChanged(
     const HudUiRect *hudRectOrNull,
     const HudUiRect *viewRectOrNull
 ) {
@@ -6081,7 +6067,7 @@ void RECOIL_FASTCALL OnViewportChanged(
 }
 
 // Reimplements 0x40ff50: HudUiMgr::ActivateHud
-void RECOIL_FASTCALL ActivateHud(
+void __fastcall ActivateHud(
     const HudUiRect *hudRectOrNull,
     const HudUiRect *viewRectOrNull
 ) {
@@ -6095,7 +6081,7 @@ void RECOIL_FASTCALL ActivateHud(
 }
 
 // Reimplements 0x413910: HudUiMgr::EnableTopAndChatStacks
-void RECOIL_CDECL EnableTopAndChatStacks() {
+void EnableTopAndChatStacks() {
     g_HudUiTopMessageStack->Clear();
     HudUiVirtualSetContainerEnabled(
         &g_HudUiTopMessageStack->base,
@@ -6109,7 +6095,7 @@ void RECOIL_CDECL EnableTopAndChatStacks() {
 }
 
 // Reimplements 0x413950: HudUiMgr::DisableTopAndChatStacks
-void RECOIL_CDECL DisableTopAndChatStacks() {
+void DisableTopAndChatStacks() {
     g_HudUiTopMessageStack->Clear();
     HudUiVirtualSetContainerEnabled(
         &g_HudUiTopMessageStack->base,
@@ -6123,7 +6109,7 @@ void RECOIL_CDECL DisableTopAndChatStacks() {
 }
 
 // Reimplements 0x40f4c0: HudUiMgr::InitHudLayouts
-int RECOIL_FASTCALL InitHudLayouts(
+int __fastcall InitHudLayouts(
     const HudUiRect *displaySection,
     const HudUiRect *windowSection
 ) {
@@ -6262,7 +6248,7 @@ int RECOIL_FASTCALL InitHudLayouts(
 }
 
 // Reimplements 0x40fbd0: HudUiMgr::ShutdownResources
-void RECOIL_CDECL ShutdownResources() {
+void ShutdownResources() {
     zVid_Image::ReleaseIfNotDefault(g_HudUiMgrReticleImages[0]);
     zVid_Image::ReleaseIfNotDefault(g_HudUiMgrReticleImages[1]);
     zVid_Image::ReleaseIfNotDefault(g_HudUiMgrReticleImages[2]);
@@ -6358,7 +6344,7 @@ void RECOIL_CDECL ShutdownResources() {
 } // namespace HudUiMgr
 
 // Reimplements 0x4b4070: HudUiElement::Constructor
-HudUiElement *RECOIL_THISCALL HudUiElement::Constructor(
+HudUiElement * HudUiElement::Constructor(
     int initX,
     int initY
 ) {
@@ -6368,7 +6354,7 @@ HudUiElement *RECOIL_THISCALL HudUiElement::Constructor(
     next = 0;
     timer = 0.0f;
 
-    typedef void(RECOIL_FASTCALL * InvalidateFn)(HudUiElement *);
+    typedef void(__fastcall * InvalidateFn)(HudUiElement *);
     x = initX;
     ((InvalidateFn)(((const unsigned int *)ftable)[8]))(this);
 
@@ -6382,7 +6368,7 @@ HudUiElement *RECOIL_THISCALL HudUiElement::Constructor(
 }
 
 // Reimplements 0x4b40c0: HudUiElement::CopyConstructor
-RECOIL_NOINLINE HudUiElement *RECOIL_THISCALL HudUiElement::CopyConstructor(
+HudUiElement * HudUiElement::CopyConstructor(
     const HudUiElement *source
 ) {
     ftable = &g_HudUiCommon_FTable;
@@ -6399,7 +6385,7 @@ RECOIL_NOINLINE HudUiElement *RECOIL_THISCALL HudUiElement::CopyConstructor(
 }
 
 // Reimplements 0x4b4120: HudUiElement::CopyFrom
-RECOIL_NOINLINE HudUiElement *RECOIL_THISCALL HudUiElement::CopyFrom(
+HudUiElement * HudUiElement::CopyFrom(
     const HudUiElement *source
 ) {
     next = 0;
@@ -6421,7 +6407,7 @@ RECOIL_NOINLINE HudUiElement *RECOIL_THISCALL HudUiElement::CopyFrom(
 }
 
 // Reimplements 0x404d70: HudUiElement::ScalarDeletingDestructor
-HudUiElement *RECOIL_THISCALL HudUiElement::ScalarDeletingDestructor(
+HudUiElement * HudUiElement::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     ftable = &g_HudUiCommon_FTable;
@@ -6433,13 +6419,13 @@ HudUiElement *RECOIL_THISCALL HudUiElement::ScalarDeletingDestructor(
 }
 
 // Reimplements 0x404ca0: HudUiElement::Draw
-void RECOIL_THISCALL HudUiElement::Draw() {
-    typedef void(RECOIL_FASTCALL * DrawBaseFn)(HudUiElement * self);
+void HudUiElement::Draw() {
+    typedef void(__fastcall * DrawBaseFn)(HudUiElement * self);
     ((DrawBaseFn)(ftable->slots[2]))(this);
 }
 
 // Reimplements 0x404cb0: HudUiElement::DrawBase
-void RECOIL_THISCALL HudUiElement::DrawBase() {
+void HudUiElement::DrawBase() {
     if (bltSource != 0) {
         zVid_Image::BlitToActiveTarget(
             (zVidImagePartial *)(bltSource),
@@ -6452,16 +6438,16 @@ void RECOIL_THISCALL HudUiElement::DrawBase() {
 }
 
 // Reimplements 0x4b4180: HudUiElement::Invalidate
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiElement::Invalidate() {
+void HudUiElement::Invalidate() {
     flags |= g_HudUi_InvalidateMask;
 }
 
 // Reimplements 0x404cd0: HudUiElement::SetPos
-void RECOIL_THISCALL HudUiElement::SetPos(
+void HudUiElement::SetPos(
     int newX,
     int newY
 ) {
-    typedef void(RECOIL_FASTCALL * InvalidateFn)(HudUiElement * self);
+    typedef void(__fastcall * InvalidateFn)(HudUiElement * self);
 
     x = newX;
     y = newY;
@@ -6469,20 +6455,20 @@ void RECOIL_THISCALL HudUiElement::SetPos(
 }
 
 // Reimplements 0x404cf0: HudUiElement::SetX
-void RECOIL_THISCALL HudUiElement::SetX(
+void HudUiElement::SetX(
     int newX
 ) {
-    typedef void(RECOIL_FASTCALL * InvalidateFn)(HudUiElement * self);
+    typedef void(__fastcall * InvalidateFn)(HudUiElement * self);
 
     x = newX;
     ((InvalidateFn)(ftable->slots[8]))(this);
 }
 
 // Reimplements 0x404d00: HudUiElement::SetY
-void RECOIL_THISCALL HudUiElement::SetY(
+void HudUiElement::SetY(
     int newY
 ) {
-    typedef void(RECOIL_FASTCALL * InvalidateFn)(HudUiElement * self);
+    typedef void(__fastcall * InvalidateFn)(HudUiElement * self);
 
     y = newY;
     ((InvalidateFn)(ftable->slots[8]))(this);
@@ -6490,10 +6476,10 @@ void RECOIL_THISCALL HudUiElement::SetY(
 
 // Reimplements 0x404d20: HudUiElement::SetVisible
 // BN patches only the low flag byte, then indirect-calls Invalidate through ftable slot 8.
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiElement::SetVisible(
+void HudUiElement::SetVisible(
     int visible
 ) {
-    typedef void(RECOIL_FASTCALL * InvalidateFn)(HudUiElement * self);
+    typedef void(__fastcall * InvalidateFn)(HudUiElement * self);
 
     if (visible != 0) {
         flags &= 0xffffffefu;
@@ -6506,17 +6492,17 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiElement::SetVisible(
 }
 
 // Reimplements 0x4b47a0: HudUiElement::ResetCommonFTable
-void RECOIL_THISCALL HudUiElement::ResetCommonFTable() {
+void HudUiElement::ResetCommonFTable() {
     ftable = &g_HudUiCommon_FTable;
 }
 
 // Reimplements 0x4b41e0: HudUiElement::Update
-void RECOIL_THISCALL HudUiElement::Update(
+void HudUiElement::Update(
     float deltaSeconds
 ) {
     unsigned int currentFlags = flags;
-    typedef void(RECOIL_FASTCALL * DispatchFn)(HudUiElement * self);
-    typedef void(RECOIL_THISCALL * SetVisibleFn)(
+    typedef void(__fastcall * DispatchFn)(HudUiElement * self);
+    typedef void( * SetVisibleFn)(
         HudUiElement * self,
         int visible
     );
@@ -6555,7 +6541,7 @@ void RECOIL_THISCALL HudUiElement::Update(
 }
 
 // Reimplements 0x4b4280: HudUiElement::SetTimer
-void RECOIL_THISCALL HudUiElement::SetTimer(
+void HudUiElement::SetTimer(
     float duration
 ) {
     unsigned int durationBits = 0;
@@ -6577,7 +6563,7 @@ void RECOIL_THISCALL HudUiElement::SetTimer(
 }
 
 // Reimplements 0x4b4190: HudUiElement::SetBltSourceAndClipRect
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiElement::SetBltSourceAndClipRect(
+void HudUiElement::SetBltSourceAndClipRect(
     void *bltSourceOrNull,
     const HudUiRect *rectOrNull
 ) {
@@ -6592,7 +6578,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiElement::SetBltSourceAndClipRect(
 }
 
 // Reimplements 0x4b41b0: HudUiElement::SetClipRect
-void RECOIL_THISCALL HudUiElement::SetClipRect(
+void HudUiElement::SetClipRect(
     const HudUiRect *rect
 ) {
     if (rect == 0) {
@@ -6603,7 +6589,7 @@ void RECOIL_THISCALL HudUiElement::SetClipRect(
 }
 
 // Reimplements 0x4bcd40: HudUiPanel::SetClip
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiPanel::SetClip(
+void HudUiPanel::SetClip(
     void *bltSourceOrNull,
     const HudUiRect *rectOrNull
 ) {
@@ -6613,16 +6599,16 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiPanel::SetClip(
         element->clipRect = *rectOrNull;
     }
 
-    typedef void(RECOIL_FASTCALL * InvalidateFn)(void *self);
+    typedef void(__fastcall * InvalidateFn)(void *self);
     const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(this);
     ((InvalidateFn)(ftable->slots[8]))(this);
 }
 
 // Reimplements 0x4b42c0: HudUiElement::GetRect
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiElement::GetRect(
+void HudUiElement::GetRect(
     HudUiRect *outRect
 ) {
-    typedef int(RECOIL_THISCALL * GetCoordFn)(HudUiElement * self);
+    typedef int( * GetCoordFn)(HudUiElement * self);
 
     const int rectX = ((GetCoordFn)(ftable->slots[25]))(this);
     outRect->left = rectX;
@@ -6635,7 +6621,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiElement::GetRect(
 
 // Reimplements 0x404d10: HudUiElement::HitTestTrue (D:\Proj\Battlesport\hud.cpp)
 // BN returns via AL only (`mov al, 1`); ignore hit-test coordinates.
-unsigned char RECOIL_THISCALL HudUiElement::HitTestTrue(
+unsigned char HudUiElement::HitTestTrue(
     int px,
     int py
 ) {
@@ -6645,23 +6631,23 @@ unsigned char RECOIL_THISCALL HudUiElement::HitTestTrue(
 }
 
 // Reimplements 0x404d50: HudUiElement::GetX
-int RECOIL_THISCALL HudUiElement::GetX() {
+int HudUiElement::GetX() {
     return x;
 }
 
 // Reimplements 0x404d60: HudUiElement::GetY
-int RECOIL_THISCALL HudUiElement::GetY() {
+int HudUiElement::GetY() {
     return y;
 }
 
 // Reimplements 0x4bffb0: HudUiPrimitiveBindTarget::SetSegmentEndpoints (HudUiBackground.cpp)
-void RECOIL_THISCALL HudUiPrimitiveBindTarget::SetSegmentEndpoints(
+void HudUiPrimitiveBindTarget::SetSegmentEndpoints(
     int startX,
     int startY,
     int newEndX,
     int newEndY
 ) {
-    typedef void(RECOIL_THISCALL * SetPosFn)(
+    typedef void( * SetPosFn)(
         HudUiPrimitiveBindTarget * self,
         int x,
         int y
@@ -6677,7 +6663,7 @@ void RECOIL_THISCALL HudUiPrimitiveBindTarget::SetSegmentEndpoints(
 }
 
 // Reimplements 0x4bc480: HudUiCircle::Constructor
-HudUiCircle *RECOIL_THISCALL HudUiCircle::Constructor(
+HudUiCircle * HudUiCircle::Constructor(
     int x,
     int y,
     int circleRadius,
@@ -6696,7 +6682,7 @@ HudUiCircle *RECOIL_THISCALL HudUiCircle::Constructor(
 }
 
 // Reimplements 0x4bc4c0: HudUiCircle::DrawDirty
-void RECOIL_THISCALL HudUiCircle::DrawDirty() {
+void HudUiCircle::DrawDirty() {
     struct DrawBaseFTable {
         unsigned int slots[2];
         void (HudUiCircle::*DrawBase)();
@@ -6714,12 +6700,12 @@ void RECOIL_THISCALL HudUiCircle::DrawDirty() {
 }
 
 // Reimplements 0x403c80: HudUiCircle::DrawDirtyForwarder
-void RECOIL_THISCALL HudUiCircle::DrawDirtyForwarder() {
+void HudUiCircle::DrawDirtyForwarder() {
     DrawDirty();
 }
 
 // Reimplements 0x404e60: HudUiCircle::HitTest
-int RECOIL_THISCALL HudUiCircle::HitTest(
+int HudUiCircle::HitTest(
     int px,
     int py
 ) {
@@ -6730,7 +6716,7 @@ int RECOIL_THISCALL HudUiCircle::HitTest(
 }
 
 // Reimplements 0x4bc4e0: HudUiCircle::HitTestCore
-RECOIL_NOINLINE unsigned char RECOIL_THISCALL HudUiCircle::HitTestCore(
+unsigned char HudUiCircle::HitTestCore(
     int px,
     int py
 ) {
@@ -6741,8 +6727,8 @@ RECOIL_NOINLINE unsigned char RECOIL_THISCALL HudUiCircle::HitTestCore(
 }
 
 // Reimplements 0x4bbfa0: HudUiCompositePanelVector::Clear
-void RECOIL_THISCALL HudUiCompositePanelVector::Clear() {
-    typedef HudUiCompositePanelEntry *(RECOIL_THISCALL * ScalarDeletingDestructorFn)(
+void HudUiCompositePanelVector::Clear() {
+    typedef HudUiCompositePanelEntry *( * ScalarDeletingDestructorFn)(
         HudUiCompositePanelEntry * self,
         unsigned int flags
     );
@@ -6768,7 +6754,7 @@ size_t HudUiCompositePanelVectorCount(
 }
 
 // Reimplements 0x4bbff0: HudUiCompositePanelVector::InsertCopies
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanelVector::InsertCopies(
+void HudUiCompositePanelVector::InsertCopies(
     HudUiCompositePanelEntry *insertPos,
     unsigned int insertCount,
     const HudUiCompositePanelEntry *templateEntry
@@ -6843,7 +6829,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanelVector::InsertCopies(
         dest->ConstructorCopy(&begin[suffixIndex]);
     }
 
-    typedef HudUiCompositePanelEntry *(RECOIL_THISCALL * ScalarDeletingDestructorFn)(
+    typedef HudUiCompositePanelEntry *( * ScalarDeletingDestructorFn)(
         HudUiCompositePanelEntry * self,
         unsigned int flags
     );
@@ -6862,7 +6848,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanelVector::InsertCopies(
 }
 
 // Reimplements 0x4bb790: HudUiCompositePanel::ConstructorWithEntryCount
-RECOIL_NOINLINE HudUiCompositePanel *RECOIL_THISCALL HudUiCompositePanel::ConstructorWithEntryCount(
+HudUiCompositePanel * HudUiCompositePanel::ConstructorWithEntryCount(
     int entryCount
 ) {
     HudUiPanel *const panel = (HudUiPanel *)(this);
@@ -6902,8 +6888,8 @@ RECOIL_NOINLINE HudUiCompositePanel *RECOIL_THISCALL HudUiCompositePanel::Constr
 }
 
 // Reimplements 0x403e20: HudUiCompositePanel::Destructor
-void RECOIL_THISCALL HudUiCompositePanel::Destructor() {
-    typedef HudUiCompositePanelEntry *(RECOIL_THISCALL * ScalarDeletingDestructorFn)(
+void HudUiCompositePanel::Destructor() {
+    typedef HudUiCompositePanelEntry *( * ScalarDeletingDestructorFn)(
         HudUiCompositePanelEntry * self,
         unsigned int flags
     );
@@ -6925,7 +6911,7 @@ void RECOIL_THISCALL HudUiCompositePanel::Destructor() {
 }
 
 // Reimplements 0x4bb960: HudUiCompositePanel::ScalarDeletingDestructor
-HudUiCompositePanel *RECOIL_THISCALL HudUiCompositePanel::ScalarDeletingDestructor(
+HudUiCompositePanel * HudUiCompositePanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -6937,7 +6923,7 @@ HudUiCompositePanel *RECOIL_THISCALL HudUiCompositePanel::ScalarDeletingDestruct
 }
 
 // Reimplements 0x4bb980: HudUiCompositePanel::Update
-void RECOIL_THISCALL HudUiCompositePanel::Update(
+void HudUiCompositePanel::Update(
     float deltaSeconds
 ) {
     if ((FieldAt<unsigned int>(
@@ -6951,7 +6937,7 @@ void RECOIL_THISCALL HudUiCompositePanel::Update(
         index < (unsigned int)(HudUiCompositePanelVectorCount(entryVector));
         ++index) {
         HudUiCompositePanelEntry *const entry = &entryVector.begin[index];
-        typedef void(RECOIL_THISCALL * UpdateFn)(
+        typedef void( * UpdateFn)(
             HudUiCompositePanelEntry * self,
             float deltaSeconds
         );
@@ -6964,11 +6950,11 @@ void RECOIL_THISCALL HudUiCompositePanel::Update(
 }
 
 // Reimplements 0x4bb9f0: HudUiCompositePanel::LayoutEntries
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::LayoutEntries(
+void HudUiCompositePanel::LayoutEntries(
     int x,
     int y
 ) {
-    typedef void(RECOIL_THISCALL * SetPosFn)(
+    typedef void( * SetPosFn)(
         HudUiCompositePanelEntry * self,
         int x,
         int y
@@ -6994,7 +6980,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::LayoutEntries(
 }
 
 // Reimplements 0x4bbe90: HudUiCompositePanel::ReapplyEntryCount
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::ReapplyEntryCount() {
+void HudUiCompositePanel::ReapplyEntryCount() {
     ResizeEntryCount(
         0,
         (int)(HudUiCompositePanelVectorCount(entryVector))
@@ -7002,11 +6988,11 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::ReapplyEntryCount() {
 }
 
 // Reimplements 0x4bbed0: HudUiCompositePanel::ResizeEntryCount
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::ResizeEntryCount(
+void HudUiCompositePanel::ResizeEntryCount(
     int oldCount,
     int entryCount
 ) {
-    typedef void(RECOIL_CDECL * SetTextFmtFn)(
+    typedef void(* SetTextFmtFn)(
         HudUiCompositePanelEntry * self,
         const char *format,
         ...
@@ -7053,7 +7039,7 @@ void HudUiCompositePanel::SetTextFmt(
         args,
         format
     );
-    typedef void(RECOIL_THISCALL * SetTextFmtVFn)(
+    typedef void( * SetTextFmtVFn)(
         HudUiCompositePanel * self,
         const char *format,
         va_list args
@@ -7069,12 +7055,12 @@ void HudUiCompositePanel::SetTextFmt(
 }
 
 // Reimplements 0x4bbac0: HudUiCompositePanel::SetTextFmtV
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::SetTextFmtV(
+void HudUiCompositePanel::SetTextFmtV(
     const char *format,
     va_list args
 ) {
     HudUiCompositePanelEntry *const entry = &entryVector.begin[activeEntryCount];
-    typedef void(RECOIL_THISCALL * SetTextFmtVFn)(
+    typedef void( * SetTextFmtVFn)(
         HudUiCompositePanelEntry * self,
         const char *format,
         va_list args
@@ -7090,14 +7076,14 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::SetTextFmtV(
         1
     );
 
-    typedef void(RECOIL_THISCALL * ScrollHistoryFn)(HudUiCompositePanel * self);
+    typedef void( * ScrollHistoryFn)(HudUiCompositePanel * self);
     const HudUiCompositePanel_FTable *const ftable =
         *(const HudUiCompositePanel_FTable *const *)(this);
     ((ScrollHistoryFn)(ftable->slots[37]))(this);
 }
 
 // Reimplements 0x4bbb20: HudUiCompositePanel::ScrollHistory
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::ScrollHistory() {
+void HudUiCompositePanel::ScrollHistory() {
     ++activeEntryCount;
 
     if ((unsigned int)(activeEntryCount) >=
@@ -7108,7 +7094,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::ScrollHistory() {
                 ++index) {
                 HudUiCompositePanelEntry *const current = &entryVector.begin[index];
                 HudUiCompositePanelEntry *const next = &entryVector.begin[index + 1];
-                typedef void(RECOIL_THISCALL * SetTextFn)(
+                typedef void( * SetTextFn)(
                     HudUiCompositePanelEntry * self,
                     const char *text
                 );
@@ -7127,7 +7113,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::ScrollHistory() {
 }
 
 // Reimplements 0x4bbbe0: HudUiCompositePanel::SetFont
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::SetFont(
+void HudUiCompositePanel::SetFont(
     const char *faceName,
     int height,
     int weight,
@@ -7140,7 +7126,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::SetFont(
         index < (unsigned int)(HudUiCompositePanelVectorCount(entryVector));
         ++index) {
         HudUiCompositePanelEntry *const entry = &entryVector.begin[index];
-        typedef void(RECOIL_THISCALL * SetFontFn)(
+        typedef void( * SetFontFn)(
             HudUiCompositePanelEntry * self,
             const char *faceName,
             int height,
@@ -7182,7 +7168,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::SetFont(
 }
 
 // Reimplements 0x4bbca0: HudUiCompositePanel::ResizeEntryVectorAndRelayout
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::ResizeEntryVectorAndRelayout(
+void HudUiCompositePanel::ResizeEntryVectorAndRelayout(
     int entryCount
 ) {
     const int oldCount = (int)(HudUiCompositePanelVectorCount(entryVector));
@@ -7199,7 +7185,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::ResizeEntryVectorAndRe
             );
         } else {
             HudUiCompositePanelEntry *const newEnd = entryVector.begin + entryCount;
-            typedef HudUiCompositePanelEntry *(RECOIL_THISCALL * ScalarDeletingDestructorFn)(
+            typedef HudUiCompositePanelEntry *( * ScalarDeletingDestructorFn)(
                 HudUiCompositePanelEntry * self,
                 unsigned int flags
             );
@@ -7231,7 +7217,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiCompositePanel::ResizeEntryVectorAndRe
 }
 
 // Reimplements 0x4bc3a0: HudUiCompositePanelEntry::AssignCopy
-HudUiCompositePanelEntry *RECOIL_THISCALL HudUiCompositePanelEntry::AssignCopy(
+HudUiCompositePanelEntry * HudUiCompositePanelEntry::AssignCopy(
     const HudUiCompositePanelEntry *source
 ) {
     ((HudUiPanel *)(this))->ConstructorCopy((const HudUiPanel *)(source));
@@ -7288,7 +7274,7 @@ HudUiCompositePanelEntry *RECOIL_THISCALL HudUiCompositePanelEntry::AssignCopy(
 }
 
 // Reimplements 0x4bc410: HudUiCompositePanelEntry::ConstructorCopy
-HudUiCompositePanelEntry *RECOIL_THISCALL HudUiCompositePanelEntry::ConstructorCopy(
+HudUiCompositePanelEntry * HudUiCompositePanelEntry::ConstructorCopy(
     const HudUiCompositePanelEntry *source
 ) {
     ((HudUiPanel *)(this))->CopyConstructCore((const HudUiPanel *)(source));
@@ -7349,7 +7335,7 @@ HudUiCompositePanelEntry *RECOIL_THISCALL HudUiCompositePanelEntry::ConstructorC
 }
 
 // Reimplements 0x4bc320: HudUiCompositePanelEntry::ConstructorCopyRange
-HudUiCompositePanelEntry *RECOIL_FASTCALL HudUiCompositePanelEntry::ConstructorCopyRange(
+HudUiCompositePanelEntry *__fastcall HudUiCompositePanelEntry::ConstructorCopyRange(
     const HudUiCompositePanelEntry *sourceBegin,
     const HudUiCompositePanelEntry *sourceEnd,
     HudUiCompositePanelEntry *destBegin
@@ -7413,7 +7399,7 @@ HudUiCompositePanelEntry *RECOIL_FASTCALL HudUiCompositePanelEntry::ConstructorC
 }
 
 // Reimplements 0x4bb0c0: HudUiFlashPanel::ComputeFlashBlendColor
-unsigned int RECOIL_FASTCALL HudUiFlashPanel::ComputeFlashBlendColor(
+unsigned int __fastcall HudUiFlashPanel::ComputeFlashBlendColor(
     unsigned int color0,
     unsigned int color1,
     float blend
@@ -7440,7 +7426,7 @@ unsigned int RECOIL_FASTCALL HudUiFlashPanel::ComputeFlashBlendColor(
 }
 
 // Reimplements 0x4bc780: HudUiContainer::ConstructorDefault
-RECOIL_NOINLINE HudUiContainer *RECOIL_THISCALL HudUiContainer::ConstructorDefault() {
+HudUiContainer * HudUiContainer::ConstructorDefault() {
     vptr = &g_HudUiContainer_FTable;
     (this->*(vptr->setEnabled))(0);
     childHead = 0;
@@ -7449,19 +7435,19 @@ RECOIL_NOINLINE HudUiContainer *RECOIL_THISCALL HudUiContainer::ConstructorDefau
 }
 
 // Reimplements 0x4bc7b0: HudUiContainer::DestructorCore
-void RECOIL_THISCALL HudUiContainer::DestructorCore() {
+void HudUiContainer::DestructorCore() {
     vptr = &g_HudUiContainer_FTable;
 }
 
 // Reimplements 0x40d9d0: HudUiContainer::SetEnabled
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiContainer::SetEnabled(
+void HudUiContainer::SetEnabled(
     int enabledValue
 ) {
     enabled = enabledValue;
 }
 
 // Reimplements 0x4bc7c0: HudUiContainer::AddChild
-RECOIL_NOINLINE int RECOIL_THISCALL HudUiContainer::AddChild(
+int HudUiContainer::AddChild(
     HudUiElement *child
 ) {
     if (childHead != 0 && childTail != 0) {
@@ -7478,7 +7464,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiContainer::AddChild(
 }
 
 // Reimplements 0x4bc810: HudUiContainer::FindChildWithPrev
-RECOIL_NOINLINE int RECOIL_THISCALL HudUiContainer::FindChildWithPrev(
+int HudUiContainer::FindChildWithPrev(
     HudUiElement *child,
     HudUiElement **previousOut
 ) {
@@ -7509,7 +7495,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiContainer::FindChildWithPrev(
 }
 
 // Reimplements 0x4bc860: HudUiContainer::RemoveChild
-int RECOIL_THISCALL HudUiContainer::RemoveChild(
+int HudUiContainer::RemoveChild(
     HudUiElement *child
 ) {
     HudUiElement *previous = child;
@@ -7538,7 +7524,7 @@ int RECOIL_THISCALL HudUiContainer::RemoveChild(
 }
 
 // Reimplements 0x4bc8d0: HudUiContainer::SetChildFlags
-void RECOIL_THISCALL HudUiContainer::SetChildFlags(
+void HudUiContainer::SetChildFlags(
     unsigned int childFlags
 ) {
     for (HudUiElement *child = childHead; child != 0; child = child->next) {
@@ -7547,7 +7533,7 @@ void RECOIL_THISCALL HudUiContainer::SetChildFlags(
 }
 
 // Reimplements 0x4bc900: HudUiContainer::UpdateAll
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiContainer::UpdateAll(
+void HudUiContainer::UpdateAll(
     float deltaSeconds
 ) {
     if (enabled == 0) {
@@ -7555,7 +7541,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiContainer::UpdateAll(
     }
 
     for (HudUiElement *child = childHead; child != 0; child = child->next) {
-        typedef void(RECOIL_THISCALL * UpdateFn)(
+        typedef void( * UpdateFn)(
             HudUiElement *,
             float
         );
@@ -7579,14 +7565,14 @@ struct HudUiElementInvalidateDispatch {
 };
 
 // Reimplements 0x4ba3a0: HudUiContainer::InvalidateChildren
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiContainer::InvalidateChildren() {
+void HudUiContainer::InvalidateChildren() {
     for (HudUiElement *child = childHead; child != 0; child = child->next) {
         ((HudUiElementInvalidateDispatch *)child)->Invalidate();
     }
 }
 
 // Reimplements 0x42ee40: HudUiBackgroundContainer::SetEnabled
-void RECOIL_THISCALL HudUiBackgroundContainer::SetEnabled(
+void HudUiBackgroundContainer::SetEnabled(
     int enabled
 ) {
     base.enabled = enabled;
@@ -7594,7 +7580,7 @@ void RECOIL_THISCALL HudUiBackgroundContainer::SetEnabled(
 
 // Reimplements 0x409040: HudUiCreditsPanel::Constructor
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
-HudUiCreditsPanel *RECOIL_THISCALL HudUiCreditsPanel::Constructor() {
+HudUiCreditsPanel * HudUiCreditsPanel::Constructor() {
     base.Constructor();
 
     backButton.Constructor();
@@ -7653,15 +7639,14 @@ HudUiCreditsPanel *RECOIL_THISCALL HudUiCreditsPanel::Constructor() {
 }
 
 // Reimplements 0x409550: HudUiZrdScrollingText::OnActivateResetOwnerFade
-// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp) owner is HudUiCreditsPanel*; fadeProgress at +0xad58.
-void RECOIL_THISCALL HudUiZrdScrollingText::OnActivateResetOwnerFade() {
-    float *const ownerFadeProgress = (float *)((unsigned char *)(base.owner) + 0xad58u);
-    *ownerFadeProgress = 0.0f;
+// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+void HudUiZrdScrollingText::OnActivateResetOwnerFade() {
+    ((HudUiCreditsPanel *)(base.owner))->fadeProgress = 0.0f;
 }
 
 // Reimplements 0x409570: HudUiZrdScrollingText::LoadFromZrd
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
-int RECOIL_THISCALL HudUiZrdScrollingText::LoadFromZrd(
+int HudUiZrdScrollingText::LoadFromZrd(
     zReader::Node *zrdSection,
     void *ownerDialog
 ) {
@@ -7833,7 +7818,7 @@ int RECOIL_THISCALL HudUiZrdScrollingText::LoadFromZrd(
 
 // Reimplements 0x409410: HudUiZrdScrollingText::Update
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
-void RECOIL_THISCALL HudUiZrdScrollingText::Update(
+void HudUiZrdScrollingText::Update(
     float deltaSeconds
 ) {
     ((HudUiElement *)(this))->Update(deltaSeconds);
@@ -7842,7 +7827,7 @@ void RECOIL_THISCALL HudUiZrdScrollingText::Update(
     while (row != rows.end) {
         HudUiPanelLayoutEntry *entry = row->begin;
         while (entry != row->end) {
-            typedef void(RECOIL_THISCALL * UpdateFn)(
+            typedef void( * UpdateFn)(
                 HudUiPanel * self,
                 float deltaSeconds
             );
@@ -7861,7 +7846,7 @@ void RECOIL_THISCALL HudUiZrdScrollingText::Update(
 
 // Reimplements 0x409470: HudUiZrdScrollingText::UpdateScrollPositions
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
-void RECOIL_THISCALL HudUiZrdScrollingText::UpdateScrollPositions(
+void HudUiZrdScrollingText::UpdateScrollPositions(
     float scrollProgress
 ) {
     const int left = rect.left;
@@ -7899,7 +7884,7 @@ void RECOIL_THISCALL HudUiZrdScrollingText::UpdateScrollPositions(
 
 // Reimplements 0x409ef0: HudUiPanel::DestructorCallback
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
-void RECOIL_STDCALL HudUiPanel::DestructorCallback(
+void __stdcall HudUiPanel::DestructorCallback(
     HudUiPanel *panel
 ) {
     panel->DestructorThunk();
@@ -7907,7 +7892,7 @@ void RECOIL_STDCALL HudUiPanel::DestructorCallback(
 
 // Reimplements 0x4091e0: HudUiZrdScrollingText::Destructor
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
-void RECOIL_THISCALL HudUiZrdScrollingText::Destructor() {
+void HudUiZrdScrollingText::Destructor() {
     HudUiPanelSpan *row = rows.begin;
     while (row != rows.end) {
         HudUiPanelLayoutEntry *entry = row->begin;
@@ -7933,7 +7918,7 @@ void RECOIL_THISCALL HudUiZrdScrollingText::Destructor() {
 
 // Reimplements 0x409360: HudUiZrdScrollingText::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
-HudUiZrdScrollingText *RECOIL_THISCALL HudUiZrdScrollingText::ScalarDeletingDestructor(
+HudUiZrdScrollingText * HudUiZrdScrollingText::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     HudUiZrdScrollingText *self = this;
@@ -7947,7 +7932,7 @@ HudUiZrdScrollingText *RECOIL_THISCALL HudUiZrdScrollingText::ScalarDeletingDest
 
 // Reimplements 0x409380: HudUiCreditsPanel::UpdateFadeAndExit
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
-void RECOIL_THISCALL HudUiCreditsPanel::UpdateFadeAndExit(
+void HudUiCreditsPanel::UpdateFadeAndExit(
     float deltaSeconds
 ) {
     creditsScreen.UpdateScrollPositions(fadeProgress);
@@ -7973,7 +7958,7 @@ void RECOIL_THISCALL HudUiCreditsPanel::UpdateFadeAndExit(
 
 // Reimplements 0x4092a0: HudUiCreditsPanel::Destructor
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
-void RECOIL_THISCALL HudUiCreditsPanel::Destructor() {
+void HudUiCreditsPanel::Destructor() {
     HudUiPanelSpan *row = creditsScreen.rows.begin;
     while (row != creditsScreen.rows.end) {
         row->DestroyAndFree();
@@ -7993,7 +7978,7 @@ void RECOIL_THISCALL HudUiCreditsPanel::Destructor() {
 
 // Reimplements 0x4091c0: HudUiCreditsPanel::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
-HudUiCreditsPanel *RECOIL_THISCALL HudUiCreditsPanel::ScalarDeletingDestructor(
+HudUiCreditsPanel * HudUiCreditsPanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     HudUiCreditsPanel *self = this;
@@ -8007,7 +7992,7 @@ HudUiCreditsPanel *RECOIL_THISCALL HudUiCreditsPanel::ScalarDeletingDestructor(
 
 // Reimplements 0x40a210: HudUiPanelLayoutEntry::CopyConstruct
 // (D:\Proj\Battlesport\HudUiPanel.cpp)
-HudUiPanelLayoutEntry *RECOIL_THISCALL HudUiPanelLayoutEntry::CopyConstruct(
+HudUiPanelLayoutEntry * HudUiPanelLayoutEntry::CopyConstruct(
     const HudUiPanelLayoutEntry *source
 ) {
     panel.CopyConstructCore(&source->panel);
@@ -8018,7 +8003,7 @@ HudUiPanelLayoutEntry *RECOIL_THISCALL HudUiPanelLayoutEntry::CopyConstruct(
 
 // Reimplements 0x40a1e0: HudUiPanelLayoutEntry::CopyAssign
 // (D:\Proj\Battlesport\HudUiPanel.cpp)
-HudUiPanelLayoutEntry *RECOIL_THISCALL HudUiPanelLayoutEntry::CopyAssign(
+HudUiPanelLayoutEntry * HudUiPanelLayoutEntry::CopyAssign(
     const HudUiPanelLayoutEntry *source
 ) {
     panel.ConstructorCopy(&source->panel);
@@ -8029,7 +8014,7 @@ HudUiPanelLayoutEntry *RECOIL_THISCALL HudUiPanelLayoutEntry::CopyAssign(
 
 // Reimplements 0x40a170: HudUiPanelLayoutEntry::CopyAssignRange
 // (D:\Proj\Battlesport\HudUiPanel.cpp)
-HudUiPanelLayoutEntry *RECOIL_FASTCALL HudUiPanelLayoutEntry::CopyAssignRange(
+HudUiPanelLayoutEntry *__fastcall HudUiPanelLayoutEntry::CopyAssignRange(
     const HudUiPanelLayoutEntry *sourceStart,
     const HudUiPanelLayoutEntry *sourceEnd,
     HudUiPanelLayoutEntry *dest
@@ -8049,7 +8034,7 @@ HudUiPanelLayoutEntry *RECOIL_FASTCALL HudUiPanelLayoutEntry::CopyAssignRange(
 
 // Reimplements 0x409b60: HudUiPanelLayoutEntry::DestroyRange
 // (D:\Proj\Battlesport\HudUiPanel.cpp)
-void RECOIL_STDCALL HudUiPanelLayoutEntry::DestroyRange(
+void __stdcall HudUiPanelLayoutEntry::DestroyRange(
     HudUiPanelLayoutEntry *start,
     HudUiPanelLayoutEntry *end
 ) {
@@ -8062,7 +8047,7 @@ void RECOIL_STDCALL HudUiPanelLayoutEntry::DestroyRange(
 
 // Reimplements 0x409910: HudUiPanelSpan::Clear
 // (D:\Proj\Battlesport\HudUiPanel.cpp)
-void RECOIL_THISCALL HudUiPanelSpan::Clear() {
+void HudUiPanelSpan::Clear() {
     HudUiPanelLayoutEntry *entry = begin;
     while (entry != end) {
         entry->panel.Destructor();
@@ -8077,7 +8062,7 @@ void RECOIL_THISCALL HudUiPanelSpan::Clear() {
 
 // Reimplements 0x40a240: HudUiPanelSpan::CopyInit
 // (D:\Proj\Battlesport\HudUiPanel.cpp)
-HudUiPanelSpan *RECOIL_THISCALL HudUiPanelSpan::CopyInit(
+HudUiPanelSpan * HudUiPanelSpan::CopyInit(
     const HudUiPanelSpan *source
 ) {
     allocatorProxy = (allocatorProxy & 0xffffff00) | (source->allocatorProxy & 0xff);
@@ -8104,7 +8089,7 @@ HudUiPanelSpan *RECOIL_THISCALL HudUiPanelSpan::CopyInit(
 
 // Reimplements 0x40a300: HudUiPanelSpan::CopyFrom
 // (D:\Proj\Battlesport\HudUiPanel.cpp)
-HudUiPanelSpan *RECOIL_THISCALL HudUiPanelSpan::CopyFrom(
+HudUiPanelSpan * HudUiPanelSpan::CopyFrom(
     const HudUiPanelSpan *source
 ) {
     if (this == source) {
@@ -8179,7 +8164,7 @@ HudUiPanelSpan *RECOIL_THISCALL HudUiPanelSpan::CopyFrom(
 
 // Reimplements 0x409b90: HudUiPanelSpan::InsertN
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
-void RECOIL_THISCALL HudUiPanelSpan::InsertN(
+void HudUiPanelSpan::InsertN(
     HudUiPanelLayoutEntry *insertPos,
     unsigned int count,
     const HudUiPanelLayoutEntry *templatePanel
@@ -8267,7 +8252,7 @@ void RECOIL_THISCALL HudUiPanelSpan::InsertN(
 
 // Reimplements 0x409f00: HudUiPanelSpanVec::InsertN
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
-void RECOIL_THISCALL HudUiPanelSpanVec::InsertN(
+void HudUiPanelSpanVec::InsertN(
     HudUiPanelSpan *insertPos,
     unsigned int count,
     const HudUiPanelSpan *templateSpan
@@ -8354,7 +8339,7 @@ void RECOIL_THISCALL HudUiPanelSpanVec::InsertN(
 
 // Reimplements 0x409b20: HudUiPanelSpan::DestroyAndFree
 // (D:\Proj\Battlesport\HudUiPanel.cpp)
-void RECOIL_THISCALL HudUiPanelSpan::DestroyAndFree() {
+void HudUiPanelSpan::DestroyAndFree() {
     HudUiPanelLayoutEntry *entry = begin;
     while (entry != end) {
         entry->panel.DestructorThunk();
@@ -8368,7 +8353,7 @@ void RECOIL_THISCALL HudUiPanelSpan::DestroyAndFree() {
 }
 
 // Reimplements 0x4bc510: HudUiBackgroundContainer::Constructor
-HudUiBackgroundContainer *RECOIL_THISCALL HudUiBackgroundContainer::Constructor(
+HudUiBackgroundContainer * HudUiBackgroundContainer::Constructor(
     int initFlag
 ) {
     base.ConstructorDefault();
@@ -8379,26 +8364,26 @@ HudUiBackgroundContainer *RECOIL_THISCALL HudUiBackgroundContainer::Constructor(
 }
 
 // Reimplements 0x4bc540: HudUiBackgroundContainer::Destructor
-void RECOIL_THISCALL HudUiBackgroundContainer::Destructor() {
+void HudUiBackgroundContainer::Destructor() {
     base.vptr = (const HudUiContainer_FTable *)(&g_HudUiBackgroundContainer_FTable);
     base.DestructorCore();
 }
 
 // Reimplements 0x4bc550: HudUiBackgroundContainer::SetInputFocus
-void RECOIL_THISCALL HudUiBackgroundContainer::SetInputFocus(
+void HudUiBackgroundContainer::SetInputFocus(
     HudUiElement *element
 ) {
     inputFocusElement = element;
 }
 
 // Reimplements 0x4bc560: HudUiBackgroundContainer::GetInputFocus
-HudUiElement *RECOIL_THISCALL HudUiBackgroundContainer::GetInputFocus() {
+HudUiElement * HudUiBackgroundContainer::GetInputFocus() {
     return inputFocusElement;
 }
 
 // Reimplements 0x4b9540: HudUiBackground::Constructor
 // (D:\Proj\Battlesport\hudui_background.cpp)
-HudUiBackground *RECOIL_THISCALL HudUiBackground::Constructor() {
+HudUiBackground * HudUiBackground::Constructor() {
     base.Constructor(1);
 
     cursorWidget.MemberConstructorLocal(
@@ -8474,7 +8459,7 @@ HudUiBackground *RECOIL_THISCALL HudUiBackground::Constructor() {
 
 // Reimplements 0x4b9760: HudUiBackground::Destructor
 // (D:\Proj\Battlesport\hudui_background.cpp)
-void RECOIL_THISCALL HudUiBackground::Destructor() {
+void HudUiBackground::Destructor() {
     base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiBackground_FTable);
 
     if (primaryClipImage != 0) {
@@ -8516,7 +8501,7 @@ void RECOIL_THISCALL HudUiBackground::Destructor() {
 }
 
 // Reimplements 0x4ba380: HudUiDialogController::BlitOwnedSurfaceToPrimary
-void RECOIL_THISCALL HudUiDialogController::BlitOwnedSurfaceToPrimary() {
+void HudUiDialogController::BlitOwnedSurfaceToPrimary() {
     if (capturedImage != 0) {
         zVid_Image::BlitToActiveTarget(
             capturedImage,
@@ -8560,7 +8545,7 @@ unsigned int HudUiReadPackedColor(
 
 // Reimplements 0x4b98d0: HudUiBackground::LoadFromZrd
 // (D:\Proj\Battlesport\hudui_background.cpp)
-zReader::Node *RECOIL_THISCALL HudUiBackground::LoadFromZrd(
+zReader::Node * HudUiBackground::LoadFromZrd(
     const char *zrdPath,
     const char *sectionName,
     int capturePrimary
@@ -8580,7 +8565,7 @@ zReader::Node *RECOIL_THISCALL HudUiBackground::LoadFromZrd(
 
 // Reimplements 0x4b9900: HudUiBackground::LoadZrdAndSection
 // (D:\Proj\Battlesport\hudui_background.cpp)
-zReader::Node *RECOIL_THISCALL HudUiBackground::LoadZrdAndSection(
+zReader::Node * HudUiBackground::LoadZrdAndSection(
     zReader::Node *loadedRootNode,
     const char *sectionName,
     int capturePrimary
@@ -8975,7 +8960,7 @@ zReader::Node *RECOIL_THISCALL HudUiBackground::LoadZrdAndSection(
 }
 
 // Reimplements 0x4b9850: HudUiBackground::SetEnabled
-void RECOIL_THISCALL HudUiBackground::SetEnabled(
+void HudUiBackground::SetEnabled(
     int enabled
 ) {
     if (enabled == 0) {
@@ -9012,7 +8997,7 @@ void RECOIL_THISCALL HudUiBackground::SetEnabled(
 }
 
 // Reimplements 0x4ba070: HudUiBackground::BindButtonsNodeToWidgetByName
-RECOIL_NOINLINE unsigned char RECOIL_FASTCALL HudUiBackground::BindButtonsNodeToWidgetByName(
+unsigned char __fastcall HudUiBackground::BindButtonsNodeToWidgetByName(
     zReader::Node *parentNode,
     HudUiWidget *widget,
     const char *name
@@ -9045,7 +9030,7 @@ RECOIL_NOINLINE unsigned char RECOIL_FASTCALL HudUiBackground::BindButtonsNodeTo
 }
 
 // Reimplements 0x4ba0c0: HudUiBackground::BindWidgetByName
-RECOIL_NOINLINE int RECOIL_THISCALL HudUiBackground::BindWidgetByName(
+int HudUiBackground::BindWidgetByName(
     zReader::Node *,
     HudUiWidget *widget,
     const char *name
@@ -9058,21 +9043,21 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiBackground::BindWidgetByName(
 }
 
 // Reimplements 0x4ba0e0: HudUiBackground::BindPrimitiveNodeToElement
-RECOIL_NOINLINE int RECOIL_THISCALL HudUiBackground::BindPrimitiveNodeToElement(
+int HudUiBackground::BindPrimitiveNodeToElement(
     zReader::Node *,
     HudUiElement *element,
     const char *name
 ) {
-    typedef void(RECOIL_THISCALL * SetPosFn)(
+    typedef void( * SetPosFn)(
         HudUiElement * self,
         int x,
         int y
     );
-    typedef void(RECOIL_THISCALL * EnableWordWrapFn)(
+    typedef void( * EnableWordWrapFn)(
         HudUiElement * self,
         const HudUiRect *rect
     );
-    typedef void(RECOIL_THISCALL * SetFontFn)(
+    typedef void( * SetFontFn)(
         HudUiElement * self,
         const char *faceName,
         int height,
@@ -9082,12 +9067,12 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiBackground::BindPrimitiveNodeToElement(
         int charSet,
         int pitchAndFamily
     );
-    typedef void(RECOIL_THISCALL * SetClipFn)(
+    typedef void( * SetClipFn)(
         HudUiElement * self,
         void *bltSource,
         const HudUiRect *rect
     );
-    typedef int(RECOIL_THISCALL * GetCoordFn)(HudUiElement * self);
+    typedef int( * GetCoordFn)(HudUiElement * self);
 
     zReader::Node *const cfgRoot = FieldAt<zReader::Node *>(
         this,
@@ -9324,7 +9309,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiBackground::BindPrimitiveNodeToElement(
 }
 
 // Reimplements 0x4ba350: HudUiBackground::FreeLoadedTreeRoots (HudUiBackground.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiBackground::FreeLoadedTreeRoots(
+void HudUiBackground::FreeLoadedTreeRoots(
     int
 ) {
     zReader::Node *const root = loadedRoot;
@@ -9337,35 +9322,35 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiBackground::FreeLoadedTreeRoots(
 }
 
 // Reimplements 0x4bc570: HudUiBackground::Update (D:\Proj\Battlesport\HudUi_Background.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiBackground::Update(
+void HudUiBackground::Update(
     float deltaSeconds
 ) {
-    typedef void(RECOIL_THISCALL * NoArgFn)(HudUiElement * self);
-    typedef void(RECOIL_THISCALL * SetPosFn)(
+    typedef void( * NoArgFn)(HudUiElement * self);
+    typedef void( * SetPosFn)(
         HudUiElement * self,
         int x,
         int y
     );
-    typedef void(RECOIL_THISCALL * UpdateFn)(
+    typedef void( * UpdateFn)(
         HudUiElement * self,
         float deltaSeconds
     );
-    typedef void(RECOIL_THISCALL * PointerFn)(
+    typedef void( * PointerFn)(
         HudUiElement * self,
         int x,
         int y
     );
-    typedef int(RECOIL_THISCALL * HitTestFn)(
+    typedef int( * HitTestFn)(
         HudUiElement * self,
         int x,
         int y
     );
-    typedef int(RECOIL_THISCALL * ShouldHandleInputFn)(
+    typedef int( * ShouldHandleInputFn)(
         HudUiElement * self,
         HudUiBackground * background,
         int hovered
     );
-    typedef void(RECOIL_THISCALL * AfterInputUpdateFn)(
+    typedef void( * AfterInputUpdateFn)(
         HudUiElement * self,
         HudUiBackground * background,
         int hovered
@@ -9494,7 +9479,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiBackground::Update(
 }
 
 // Reimplements 0x4ba4a0: HudFontStyle::Constructor
-HudFontStyle *RECOIL_THISCALL HudFontStyle::Constructor() {
+HudFontStyle * HudFontStyle::Constructor() {
     validMarker = 0;
     fontName = 0;
     fontSize = 0;
@@ -9506,12 +9491,12 @@ HudFontStyle *RECOIL_THISCALL HudFontStyle::Constructor() {
 }
 
 // Reimplements 0x4ba4c0: HudFontStyle::Destructor
-void RECOIL_THISCALL HudFontStyle::Destructor() {
+void HudFontStyle::Destructor() {
     validMarker = 0;
 }
 
 // Reimplements 0x4b3d00: HudUiWidget::Constructor
-HudUiWidget *RECOIL_THISCALL HudUiWidget::Constructor(
+HudUiWidget * HudUiWidget::Constructor(
     unsigned int initAlignFlags
 ) {
     ((HudUiElement *)(this))->Constructor(
@@ -9523,7 +9508,7 @@ HudUiWidget *RECOIL_THISCALL HudUiWidget::Constructor(
     image = 0;
     ownsImage = 0;
     bltClipRectOrNull = 0;
-    *(unsigned short *)((unsigned char *)(this) + 0x40) = 0;
+    state = 0;
     dirtyRectCount = 0;
 
     {
@@ -9538,7 +9523,7 @@ HudUiWidget *RECOIL_THISCALL HudUiWidget::Constructor(
 
 // Reimplements 0x4b3e90: HudUiWidget::InvalidateRect
 // (D:\Proj\Battlesport\hudui.cpp)
-void RECOIL_THISCALL HudUiWidget::InvalidateRect(
+void HudUiWidget::InvalidateRect(
     const HudUiRect *dirtyRect
 ) {
     if (image == 0) {
@@ -9591,8 +9576,8 @@ void RECOIL_THISCALL HudUiWidget::InvalidateRect(
     slot->drawX = slot->srcLeft;
     slot->drawY = slot->srcTop;
 
-    typedef int(RECOIL_THISCALL * GetCoordFn)(HudUiWidget * self);
-    typedef void(RECOIL_THISCALL * InvalidateFn)(HudUiWidget * self);
+    typedef int( * GetCoordFn)(HudUiWidget * self);
+    typedef void( * InvalidateFn)(HudUiWidget * self);
     slot->srcLeft -= ((GetCoordFn)(ftable->slots[25]))(this);
     slot->srcRight -= ((GetCoordFn)(ftable->slots[25]))(this);
     slot->srcTop -= ((GetCoordFn)(ftable->slots[26]))(this);
@@ -9602,7 +9587,7 @@ void RECOIL_THISCALL HudUiWidget::InvalidateRect(
 
 // Reimplements 0x4bf980: HudUiBackgroundCursorWidget::MemberConstructorLocal
 // (D:\Proj\Battlesport\hudui_background.cpp)
-HudUiBackgroundCursorWidget *RECOIL_THISCALL HudUiBackgroundCursorWidget::MemberConstructorLocal(
+HudUiBackgroundCursorWidget * HudUiBackgroundCursorWidget::MemberConstructorLocal(
     const char *imagePath,
     int initCaptureEnabled
 ) {
@@ -9622,7 +9607,7 @@ HudUiBackgroundCursorWidget *RECOIL_THISCALL HudUiBackgroundCursorWidget::Member
 
 // Reimplements 0x4bfa20: HudUiBackgroundCursorWidget::DestructorCore
 // (D:\Proj\Battlesport\hudui_background.cpp)
-void RECOIL_THISCALL HudUiBackgroundCursorWidget::DestructorCore() {
+void HudUiBackgroundCursorWidget::DestructorCore() {
     base.ftable = (const HudUiWidget_FTable *)(&g_HudUiBackgroundCursorWidget_FTable);
     if (capturedImage != 0) {
         zVid_Image::Destroy(capturedImage);
@@ -9633,7 +9618,7 @@ void RECOIL_THISCALL HudUiBackgroundCursorWidget::DestructorCore() {
 
 // Reimplements 0x4bfa50: HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh
 // (D:\Proj\Battlesport\hudui_background.cpp)
-void RECOIL_THISCALL HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh(
+void HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh(
     const char *imagePath
 ) {
     if (base.SetImageByPathOwned(imagePath) != 0) {
@@ -9643,7 +9628,7 @@ void RECOIL_THISCALL HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh(
 
 // Reimplements 0x4bfa70: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged
 // (D:\Proj\Battlesport\hudui_background.cpp)
-void RECOIL_THISCALL HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged(
+void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged(
     zVidImagePartial *image
 ) {
     if (base.SetImageBorrowedAndInvalidate(image) != 0) {
@@ -9653,10 +9638,10 @@ void RECOIL_THISCALL HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfCh
 
 // Reimplements 0x4bfa90: HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh
 // (D:\Proj\Battlesport\hudui_background.cpp)
-void RECOIL_THISCALL HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh(
+void HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh(
     int newCaptureEnabled
 ) {
-    typedef void(RECOIL_THISCALL * SetBltSourceFn)(
+    typedef void( * SetBltSourceFn)(
         HudUiBackgroundCursorWidget * self,
         zVidImagePartial * image,
         const HudUiRect *clipRect
@@ -9681,7 +9666,7 @@ void RECOIL_THISCALL HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh(
 
 // Reimplements 0x4bfae0: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh
 // (D:\Proj\Battlesport\hudui_background.cpp)
-void RECOIL_THISCALL HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh() {
+void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh() {
     if (captureEnabled == 0 || base.image == 0) {
         return;
     }
@@ -9708,7 +9693,7 @@ void RECOIL_THISCALL HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh() {
     );
     capturedImage->formatFlagsPacked = (unsigned char)(capturedImage->formatFlagsPacked | 0x20u);
 
-    typedef int(RECOIL_THISCALL * GetCoordFn)(HudUiBackgroundCursorWidget * self);
+    typedef int( * GetCoordFn)(HudUiBackgroundCursorWidget * self);
     const int y = ((GetCoordFn)(base.ftable->slots[26]))(this);
     const int x = ((GetCoordFn)(base.ftable->slots[25]))(this);
     RebuildCapturedImage(
@@ -9719,7 +9704,7 @@ void RECOIL_THISCALL HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh() {
 
 // Reimplements 0x4bfb70: HudUiBackgroundCursorWidget::SetPos
 // (D:\Proj\Battlesport\hudui_background.cpp)
-void RECOIL_THISCALL HudUiBackgroundCursorWidget::SetPos(
+void HudUiBackgroundCursorWidget::SetPos(
     int newX,
     int newY
 ) {
@@ -9735,11 +9720,11 @@ void RECOIL_THISCALL HudUiBackgroundCursorWidget::SetPos(
 
 // Reimplements 0x4bfba0: HudUiBackgroundCursorWidget::RebuildCapturedImage
 // (D:\Proj\Battlesport\hudui_background.cpp)
-void RECOIL_THISCALL HudUiBackgroundCursorWidget::RebuildCapturedImage(
+void HudUiBackgroundCursorWidget::RebuildCapturedImage(
     int originX,
     int originY
 ) {
-    typedef void(RECOIL_THISCALL * SetBltSourceFn)(
+    typedef void( * SetBltSourceFn)(
         HudUiBackgroundCursorWidget * self,
         zVidImagePartial * image,
         const HudUiRect *clipRect
@@ -9778,13 +9763,13 @@ void RECOIL_THISCALL HudUiBackgroundCursorWidget::RebuildCapturedImage(
 
 // Reimplements 0x4bfc50: HudUiBackgroundCursorWidget::Draw
 // (D:\Proj\Battlesport\hudui_background.cpp)
-void RECOIL_THISCALL HudUiBackgroundCursorWidget::Draw() {
+void HudUiBackgroundCursorWidget::Draw() {
     base.Draw();
 }
 
 // Reimplements 0x4bfc60: HudUiBackgroundCursorWidget::DrawBase
 // (D:\Proj\Battlesport\hudui_background.cpp)
-void RECOIL_THISCALL HudUiBackgroundCursorWidget::DrawBase() {
+void HudUiBackgroundCursorWidget::DrawBase() {
     if (base.bltSource != 0) {
         zVid_Image::BlitToActiveTarget(
             (zVidImagePartial *)(base.bltSource),
@@ -9798,7 +9783,7 @@ void RECOIL_THISCALL HudUiBackgroundCursorWidget::DrawBase() {
 
 // Reimplements 0x4bfc80: HudUiBackgroundVideoWidget::Constructor
 // (D:\Proj\Battlesport\hudui_background.cpp)
-HudUiBackgroundVideoWidget *RECOIL_THISCALL HudUiBackgroundVideoWidget::Constructor() {
+HudUiBackgroundVideoWidget * HudUiBackgroundVideoWidget::Constructor() {
     base.Constructor(
         0,
         0
@@ -9812,7 +9797,7 @@ HudUiBackgroundVideoWidget *RECOIL_THISCALL HudUiBackgroundVideoWidget::Construc
 
 // Reimplements 0x4bfcd0: HudUiBackgroundVideoWidget::Destructor
 // (D:\Proj\Battlesport\hudui_background.cpp)
-void RECOIL_THISCALL HudUiBackgroundVideoWidget::Destructor() {
+void HudUiBackgroundVideoWidget::Destructor() {
     base.ftable = (const HudUiCommon_FTable *)(&g_HudUiBackgroundVideoWidget_FTable);
     zFMV_Stream *const oldStream = stream;
     if (oldStream != 0) {
@@ -9826,7 +9811,7 @@ void RECOIL_THISCALL HudUiBackgroundVideoWidget::Destructor() {
 
 // Reimplements 0x4bfd40: HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh
 // (D:\Proj\Battlesport\hudui_background.cpp)
-void RECOIL_THISCALL HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh(
+void HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh(
     const char *path
 ) {
     strncpy(
@@ -9862,13 +9847,13 @@ void RECOIL_THISCALL HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh(
         return;
     }
 
-    zFMV_Stream *const newStream = (zFMV_Stream *)(::operator new(0x1e4));
+    zFMV_Stream *const newStream = (zFMV_Stream *)(::operator new(sizeof(zFMV_Stream)));
     stream = newStream != 0 ? newStream->Init(
         mediaPath,
         0
     ) : 0;
 
-    typedef void(RECOIL_THISCALL * RebuildBltRectFn)(HudUiBackgroundVideoWidget * self);
+    typedef void( * RebuildBltRectFn)(HudUiBackgroundVideoWidget * self);
     const HudUiBackgroundVideoWidget_FTable *const ftable =
         (const HudUiBackgroundVideoWidget_FTable *)(base.ftable);
     ((RebuildBltRectFn)(ftable->slots[0x74 / 4]))(this);
@@ -9876,14 +9861,11 @@ void RECOIL_THISCALL HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh(
 
 // Reimplements 0x4bfe20: HudUiBackgroundVideoWidget::SetColorKey565
 // (D:\Proj\Battlesport\hudui_background.cpp)
-void RECOIL_THISCALL HudUiBackgroundVideoWidget::SetColorKey565(
+void HudUiBackgroundVideoWidget::SetColorKey565(
     unsigned short colorKey
 ) {
     if (stream != 0) {
-        FieldAt<unsigned char>(
-            stream,
-            0x09
-        ) |= 0x02;
+        stream->formatFlagsPacked |= 0x02;
     }
 
     colorKey565 = colorKey;
@@ -9891,7 +9873,7 @@ void RECOIL_THISCALL HudUiBackgroundVideoWidget::SetColorKey565(
 
 // Reimplements 0x4bfe40: HudUiBackgroundVideoWidget::Update
 // (D:\Proj\Battlesport\hudui_background.cpp)
-void RECOIL_THISCALL HudUiBackgroundVideoWidget::Update(
+void HudUiBackgroundVideoWidget::Update(
     float deltaSeconds
 ) {
     if ((base.flags & 0x10u) != 0) {
@@ -9899,14 +9881,8 @@ void RECOIL_THISCALL HudUiBackgroundVideoWidget::Update(
     }
 
     if (stream != 0) {
-        const int frameTick = (int)((float)(FieldAt<int>(
-            stream,
-            0xec
-        )) * elapsedTimeSec);
-        stream->ReadAndDecodeFrame((unsigned int)(frameTick % FieldAt<int>(
-            stream,
-            0x4c
-        )));
+        const int frameTick = (int)((float)(stream->videoFramesPerSecond) * elapsedTimeSec);
+        stream->ReadAndDecodeFrame((unsigned int)(frameTick % stream->videoFrameCount));
     }
 
     base.Update(deltaSeconds);
@@ -9915,8 +9891,8 @@ void RECOIL_THISCALL HudUiBackgroundVideoWidget::Update(
 
 // Reimplements 0x4bfe90: HudUiBackgroundVideoWidget::Draw
 // (D:\Proj\Battlesport\hudui_background.cpp)
-void RECOIL_THISCALL HudUiBackgroundVideoWidget::Draw() {
-    typedef void(RECOIL_THISCALL * DrawBaseFn)(HudUiBackgroundVideoWidget * self);
+void HudUiBackgroundVideoWidget::Draw() {
+    typedef void( * DrawBaseFn)(HudUiBackgroundVideoWidget * self);
     const HudUiBackgroundVideoWidget_FTable *const ftable =
         (const HudUiBackgroundVideoWidget_FTable *)(base.ftable);
     ((DrawBaseFn)(ftable->slots[2]))(this);
@@ -9934,7 +9910,7 @@ void RECOIL_THISCALL HudUiBackgroundVideoWidget::Draw() {
 
 // Reimplements 0x4bfec0: HudUiBackgroundVideoWidget::DrawBase
 // (D:\Proj\Battlesport\hudui_background.cpp)
-void RECOIL_THISCALL HudUiBackgroundVideoWidget::DrawBase() {
+void HudUiBackgroundVideoWidget::DrawBase() {
     zVidImagePartial *const bltSource = (zVidImagePartial *)(base.bltSource);
     if (bltSource != 0) {
         const int dstX = base.x > 0 ? base.x : 0;
@@ -9951,7 +9927,7 @@ void RECOIL_THISCALL HudUiBackgroundVideoWidget::DrawBase() {
 
 // Reimplements 0x4bff00: HudUiBackgroundVideoWidget::RebuildBltRect
 // (D:\Proj\Battlesport\hudui_background.cpp)
-void RECOIL_THISCALL HudUiBackgroundVideoWidget::RebuildBltRect() {
+void HudUiBackgroundVideoWidget::RebuildBltRect() {
     HudUiRect rect;
     rect.left = HudUiVirtualGetXRequired(&base) > 0 ? HudUiVirtualGetXRequired(&base) : 0;
     rect.top = HudUiVirtualGetYRequired(&base) > 0 ? HudUiVirtualGetYRequired(&base) : 0;
@@ -9960,14 +9936,8 @@ void RECOIL_THISCALL HudUiBackgroundVideoWidget::RebuildBltRect() {
         return;
     }
 
-    const int streamRight = rect.left + FieldAt<short>(
-        stream,
-        0x04
-    );
-    const int streamBottom = rect.top + FieldAt<short>(
-        stream,
-        0x06
-    );
+    const int streamRight = rect.left + stream->width;
+    const int streamBottom = rect.top + stream->height;
 
     zVidImagePartial *const bltSource = (zVidImagePartial *)(base.bltSource);
     if (bltSource != 0) {
@@ -9978,7 +9948,7 @@ void RECOIL_THISCALL HudUiBackgroundVideoWidget::RebuildBltRect() {
         rect.bottom = streamBottom;
     }
 
-    typedef void(RECOIL_THISCALL * SetClipRectFn)(
+    typedef void( * SetClipRectFn)(
         HudUiBackgroundVideoWidget * self,
         const HudUiRect *rect
     );
@@ -9991,7 +9961,7 @@ void RECOIL_THISCALL HudUiBackgroundVideoWidget::RebuildBltRect() {
 }
 
 // Reimplements 0x4b4ee0: HudUiZrdWidget::Constructor
-HudUiZrdWidget *RECOIL_THISCALL HudUiZrdWidget::Constructor() {
+HudUiZrdWidget * HudUiZrdWidget::Constructor() {
     base.Constructor(0);
     // VC5 copies an uninitialized STL allocator proxy byte into each vector.
 #if defined(_MSC_VER) && _MSC_VER < 1200
@@ -10075,14 +10045,14 @@ HudUiZrdWidget *RECOIL_THISCALL HudUiZrdWidget::Constructor() {
     activateLabelPanels.end = activateDest;
 
     *((unsigned short *)(&base.imageStateWord)) = 1;
-    typedef void(RECOIL_THISCALL * InvalidateFn)(HudUiZrdWidget * self);
+    typedef void( * InvalidateFn)(HudUiZrdWidget * self);
     ((InvalidateFn)(base.ftable->slots[8]))(this);
     base.flags = ((unsigned char)(base.flags) & 0x10u) | 0x02u;
     return this;
 }
 
 // Reimplements 0x4b59f0: HudUiZrdWidget::LoadFromZrd
-int RECOIL_THISCALL HudUiZrdWidget::LoadFromZrd(
+int HudUiZrdWidget::LoadFromZrd(
     zReader::Node *zrdSection,
     void *ownerDialog
 ) {
@@ -10253,7 +10223,7 @@ int RECOIL_THISCALL HudUiZrdWidget::LoadFromZrd(
 }
 
 // Reimplements 0x4ba4d0: HudUiPanelPtrVector::EraseRange
-HudUiPanel **RECOIL_THISCALL HudUiPanelPtrVector::EraseRange(
+HudUiPanel ** HudUiPanelPtrVector::EraseRange(
     HudUiPanel **first,
     HudUiPanel **last
 ) {
@@ -10271,7 +10241,7 @@ HudUiPanel **RECOIL_THISCALL HudUiPanelPtrVector::EraseRange(
 }
 
 // Reimplements 0x4ba510: HudUiPanelPtrVector::InsertN
-void RECOIL_THISCALL HudUiPanelPtrVector::InsertN(
+void HudUiPanelPtrVector::InsertN(
     HudUiPanel **position,
     unsigned int count,
     HudUiPanel **valueSource
@@ -10331,13 +10301,13 @@ struct HudUiScalarDeletingDestructorDispatch {
 };
 
 struct HudCmdDialogVirtual {
-    virtual void RECOIL_THISCALL Update(float deltaSeconds);
-    virtual void RECOIL_THISCALL SetEnabled(int enabled);
-    virtual HudCmdDialog *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+    virtual void Update(float deltaSeconds);
+    virtual void SetEnabled(int enabled);
+    virtual HudCmdDialog * ScalarDeletingDestructor(unsigned int flags);
 };
 
 // Reimplements 0x4b52f0: HudUiZrdWidget::DeleteChildIfPresent
-void *RECOIL_STDCALL HudUiZrdWidget::DeleteChildIfPresent(
+void *__stdcall HudUiZrdWidget::DeleteChildIfPresent(
     void *childWidgetOrNull
 ) {
     if (childWidgetOrNull != 0) {
@@ -10353,7 +10323,7 @@ void HudUiZrdWidget_DeletePanelVectorChildren(
     for (HudUiPanel **it = vector.begin; it != vector.end; ++it) {
         if (*it != 0) {
             const HudUiWidget_FTable *const ftable = *(const HudUiWidget_FTable *const *)(*it);
-            typedef void *(RECOIL_THISCALL * ScalarDeletingDtorFn)(
+            typedef void *( * ScalarDeletingDtorFn)(
                 void *self,
                 unsigned int flags
             );
@@ -10368,7 +10338,7 @@ void HudUiZrdWidget_DeletePanelVectorChildren(
 }
 
 // Reimplements 0x4b50c0: HudUiZrdWidget::DestructorCore
-void RECOIL_THISCALL HudUiZrdWidget::DestructorCore() {
+void HudUiZrdWidget::DestructorCore() {
     base.ftable = (const HudUiWidget_FTable *)(&g_HudUiZrdWidget_FTable);
 
     for (HudUiPanel **it = labelPanels.begin; it != labelPanels.end; ++it) {
@@ -10439,7 +10409,7 @@ void RECOIL_THISCALL HudUiZrdWidget::DestructorCore() {
 }
 
 // Reimplements 0x4b50a0: HudUiZrdWidget::ScalarDeletingDestructor
-HudUiZrdWidget *RECOIL_THISCALL HudUiZrdWidget::ScalarDeletingDestructor(
+HudUiZrdWidget * HudUiZrdWidget::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -10451,7 +10421,7 @@ HudUiZrdWidget *RECOIL_THISCALL HudUiZrdWidget::ScalarDeletingDestructor(
 }
 
 // Reimplements 0x41c480: HudUiZrdWidget::ScalarDeletingDestructorThunk
-HudUiZrdWidget *RECOIL_THISCALL HudUiZrdWidget::ScalarDeletingDestructorThunk(
+HudUiZrdWidget * HudUiZrdWidget::ScalarDeletingDestructorThunk(
     unsigned int flags
 ) {
     DestructorCore();
@@ -10463,8 +10433,8 @@ HudUiZrdWidget *RECOIL_THISCALL HudUiZrdWidget::ScalarDeletingDestructorThunk(
 }
 
 // Reimplements 0x4b5310: HudUiZrdWidget::Invalidate
-void RECOIL_THISCALL HudUiZrdWidget::Invalidate() {
-    typedef void(RECOIL_THISCALL * InvalidateFn)(HudUiPanel * self);
+void HudUiZrdWidget::Invalidate() {
+    typedef void( * InvalidateFn)(HudUiPanel * self);
 
     ((HudUiElement *)(&base))->Invalidate();
 
@@ -10482,7 +10452,7 @@ void RECOIL_THISCALL HudUiZrdWidget::Invalidate() {
 }
 
 // Reimplements 0x4b5350: HudUiZrdWidget::GetBoundsRectOrNull
-HudUiRect *RECOIL_THISCALL HudUiZrdWidget::GetBoundsRectOrNull() {
+HudUiRect * HudUiZrdWidget::GetBoundsRectOrNull() {
     if (modeOrEnabled == 0) {
         return 0;
     }
@@ -10551,12 +10521,12 @@ HudUiRect *RECOIL_THISCALL HudUiZrdWidget::GetBoundsRectOrNull() {
 }
 
 // Reimplements 0x4b5740: HudUiZrdWidget::RefreshState
-void RECOIL_THISCALL HudUiZrdWidget::RefreshState() {
-    typedef void(RECOIL_THISCALL * SetVisibleFn)(
+void HudUiZrdWidget::RefreshState() {
+    typedef void( * SetVisibleFn)(
         HudUiPanel * self,
         int visible
     );
-    typedef void(RECOIL_THISCALL * InvalidateFn)(HudUiZrdWidget * self);
+    typedef void( * InvalidateFn)(HudUiZrdWidget * self);
 
     for (HudUiPanel **rolloverIt = rolloverLabelPanels.begin; rolloverIt != rolloverLabelPanels.end;
         ++rolloverIt) {
@@ -10629,7 +10599,7 @@ void RECOIL_THISCALL HudUiZrdWidget::RefreshState() {
 }
 
 // Reimplements 0x4b5630: HudUiZrdWidget::ShowPreview
-void RECOIL_THISCALL HudUiZrdWidget::ShowPreview() {
+void HudUiZrdWidget::ShowPreview() {
     if (rolloverImage != 0) {
         if (defaultImage == 0) {
             defaultImage = base.image;
@@ -10669,7 +10639,7 @@ void RECOIL_THISCALL HudUiZrdWidget::ShowPreview() {
 }
 
 // Reimplements 0x4b5900: HudUiZrdWidget::OnActivate
-void RECOIL_THISCALL HudUiZrdWidget::OnActivate() {
+void HudUiZrdWidget::OnActivate() {
     zInput::ResetAllTransitionState();
 
     if (activateImage != 0) {
@@ -10709,8 +10679,8 @@ void RECOIL_THISCALL HudUiZrdWidget::OnActivate() {
 }
 
 // Reimplements 0x4b5860: HudUiZrdWidget::HidePreview
-void RECOIL_THISCALL HudUiZrdWidget::HidePreview() {
-    typedef void(RECOIL_THISCALL * SetVisibleFn)(
+void HudUiZrdWidget::HidePreview() {
+    typedef void( * SetVisibleFn)(
         HudUiPanel * self,
         int visible
     );
@@ -10754,7 +10724,7 @@ void RECOIL_THISCALL HudUiZrdWidget::HidePreview() {
 }
 
 // Reimplements 0x4b6fc0: HudUiCheckToggleWidget::Constructor
-RECOIL_NOINLINE HudUiCheckToggleWidget *RECOIL_THISCALL HudUiCheckToggleWidget::Constructor() {
+HudUiCheckToggleWidget * HudUiCheckToggleWidget::Constructor() {
     base.Constructor();
     base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiCheckToggleWidget_FTable);
     checked = 0;
@@ -10767,7 +10737,7 @@ RECOIL_NOINLINE HudUiCheckToggleWidget *RECOIL_THISCALL HudUiCheckToggleWidget::
 }
 
 // Reimplements 0x4b7020: HudUiCheckToggleWidget::DestructorCore
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiCheckToggleWidget::DestructorCore() {
+void HudUiCheckToggleWidget::DestructorCore() {
     base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiCheckToggleWidget_FTable);
     base.base.SetImageBorrowedAndInvalidate(uncheckedImage);
 
@@ -10785,12 +10755,12 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiCheckToggleWidget::DestructorCore() {
 }
 
 // Reimplements 0x40cf30: HudUiCheckToggleWidget::DestructorCoreThunk
-void RECOIL_THISCALL HudUiCheckToggleWidget::DestructorCoreThunk() {
+void HudUiCheckToggleWidget::DestructorCoreThunk() {
     DestructorCore();
 }
 
 // Reimplements 0x4b7000: HudUiCheckToggleWidget::ScalarDeletingDestructor
-HudUiCheckToggleWidget *RECOIL_THISCALL HudUiCheckToggleWidget::ScalarDeletingDestructor(
+HudUiCheckToggleWidget * HudUiCheckToggleWidget::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -10802,7 +10772,7 @@ HudUiCheckToggleWidget *RECOIL_THISCALL HudUiCheckToggleWidget::ScalarDeletingDe
 }
 
 // Reimplements 0x41a590: HudUiCheckToggleWidget::ScalarDeletingDestructorThunk
-HudUiCheckToggleWidget *RECOIL_THISCALL HudUiCheckToggleWidget::ScalarDeletingDestructorThunk(
+HudUiCheckToggleWidget * HudUiCheckToggleWidget::ScalarDeletingDestructorThunk(
     unsigned int flags
 ) {
     DestructorCoreThunk();
@@ -10814,12 +10784,12 @@ HudUiCheckToggleWidget *RECOIL_THISCALL HudUiCheckToggleWidget::ScalarDeletingDe
 }
 
 // Reimplements 0x4b70b0: HudUiCheckToggleWidget::GetBoundsRectOrNull
-HudUiRect *RECOIL_THISCALL HudUiCheckToggleWidget::GetBoundsRectOrNull() {
+HudUiRect * HudUiCheckToggleWidget::GetBoundsRectOrNull() {
     return &base.boundsRect;
 }
 
 // Reimplements 0x4b70c0: HudUiCheckToggleWidget::RefreshState
-void RECOIL_THISCALL HudUiCheckToggleWidget::RefreshState() {
+void HudUiCheckToggleWidget::RefreshState() {
     HudUiSetPanelVectorVisible(
         base.rolloverLabelPanels,
         0
@@ -10873,7 +10843,7 @@ void RECOIL_THISCALL HudUiCheckToggleWidget::RefreshState() {
 }
 
 // Reimplements 0x4b7210: HudUiCheckToggleWidget::ShowPreview
-void RECOIL_THISCALL HudUiCheckToggleWidget::ShowPreview() {
+void HudUiCheckToggleWidget::ShowPreview() {
     if (base.modeOrEnabled == 0 || checked != 0) {
         return;
     }
@@ -10886,7 +10856,7 @@ void RECOIL_THISCALL HudUiCheckToggleWidget::ShowPreview() {
 }
 
 // Reimplements 0x4b7250: HudUiCheckToggleWidget::HidePreview
-void RECOIL_THISCALL HudUiCheckToggleWidget::HidePreview() {
+void HudUiCheckToggleWidget::HidePreview() {
     if (base.modeOrEnabled == 0 || checked != 0) {
         return;
     }
@@ -10900,7 +10870,7 @@ void RECOIL_THISCALL HudUiCheckToggleWidget::HidePreview() {
 }
 
 // Reimplements 0x4b7290: HudUiCheckToggleWidget::OnActivate
-void RECOIL_THISCALL HudUiCheckToggleWidget::OnActivate() {
+void HudUiCheckToggleWidget::OnActivate() {
     if (base.modeOrEnabled == 0) {
         return;
     }
@@ -10910,12 +10880,12 @@ void RECOIL_THISCALL HudUiCheckToggleWidget::OnActivate() {
 }
 
 // Reimplements 0x40caa0: HudUiCheckToggleWidget::OnActivateThunk
-void RECOIL_THISCALL HudUiCheckToggleWidget::OnActivateThunk() {
+void HudUiCheckToggleWidget::OnActivateThunk() {
     OnActivate();
 }
 
 // Reimplements 0x4b7340: HudUiCheckToggleWidget::LoadFromZrd
-int RECOIL_THISCALL HudUiCheckToggleWidget::LoadFromZrd(
+int HudUiCheckToggleWidget::LoadFromZrd(
     zReader::Node *zrdSection,
     void *ownerDialog
 ) {
@@ -11031,7 +11001,7 @@ int RECOIL_THISCALL HudUiCheckToggleWidget::LoadFromZrd(
 }
 
 // Reimplements 0x4b72c0: HudUiCheckToggleWidget::SetChecked
-RECOIL_NOINLINE int RECOIL_THISCALL HudUiCheckToggleWidget::SetChecked(
+int HudUiCheckToggleWidget::SetChecked(
     int newChecked
 ) {
     const int previousChecked = checked;
@@ -11068,7 +11038,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiCheckToggleWidget::SetChecked(
 }
 
 // Reimplements 0x4b7d60: HudUiCycleSelectorWidget::Constructor
-HudUiCycleSelectorWidget *RECOIL_THISCALL HudUiCycleSelectorWidget::Constructor() {
+HudUiCycleSelectorWidget * HudUiCycleSelectorWidget::Constructor() {
     base.Constructor();
     base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiCycleSelectorWidget_FTable);
     selectedIndex = 0;
@@ -11087,7 +11057,7 @@ HudUiCycleSelectorWidget *RECOIL_THISCALL HudUiCycleSelectorWidget::Constructor(
 }
 
 // Reimplements 0x4b7de0: HudUiCycleSelectorWidget::DestructorCore
-void RECOIL_THISCALL HudUiCycleSelectorWidget::DestructorCore() {
+void HudUiCycleSelectorWidget::DestructorCore() {
     base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiCycleSelectorWidget_FTable);
 
     for (int i = 0; i < 20; ++i) {
@@ -11106,12 +11076,12 @@ void RECOIL_THISCALL HudUiCycleSelectorWidget::DestructorCore() {
 }
 
 // Reimplements 0x40cf40: HudUiCycleSelectorWidget::DestructorCoreThunk
-void RECOIL_THISCALL HudUiCycleSelectorWidget::DestructorCoreThunk() {
+void HudUiCycleSelectorWidget::DestructorCoreThunk() {
     DestructorCore();
 }
 
 // Reimplements 0x4b7dc0: HudUiCycleSelectorWidget::ScalarDeletingDestructor
-HudUiCycleSelectorWidget *RECOIL_THISCALL HudUiCycleSelectorWidget::ScalarDeletingDestructor(
+HudUiCycleSelectorWidget * HudUiCycleSelectorWidget::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -11123,7 +11093,7 @@ HudUiCycleSelectorWidget *RECOIL_THISCALL HudUiCycleSelectorWidget::ScalarDeleti
 }
 
 // Reimplements 0x41a570: HudUiCycleSelectorWidget::ScalarDeletingDestructorThunk
-HudUiCycleSelectorWidget *RECOIL_THISCALL HudUiCycleSelectorWidget::ScalarDeletingDestructorThunk(
+HudUiCycleSelectorWidget * HudUiCycleSelectorWidget::ScalarDeletingDestructorThunk(
     unsigned int flags
 ) {
     DestructorCoreThunk();
@@ -11135,7 +11105,7 @@ HudUiCycleSelectorWidget *RECOIL_THISCALL HudUiCycleSelectorWidget::ScalarDeleti
 }
 
 // Reimplements 0x4b7ee0: HudUiCycleSelectorWidget::AdvanceSelectionAndActivate
-void RECOIL_THISCALL HudUiCycleSelectorWidget::AdvanceSelectionAndActivate() {
+void HudUiCycleSelectorWidget::AdvanceSelectionAndActivate() {
     const int nextIndex = selectedIndex + 1;
     selectedIndex = nextIndex;
 
@@ -11152,7 +11122,7 @@ void RECOIL_THISCALL HudUiCycleSelectorWidget::AdvanceSelectionAndActivate() {
 }
 
 // Reimplements 0x4b7f20: HudUiCycleSelectorWidget::SetIndexClamped
-void RECOIL_THISCALL HudUiCycleSelectorWidget::SetIndexClamped(
+void HudUiCycleSelectorWidget::SetIndexClamped(
     int index
 ) {
     if (index < firstIndex) {
@@ -11174,7 +11144,7 @@ void RECOIL_THISCALL HudUiCycleSelectorWidget::SetIndexClamped(
 }
 
 // Reimplements 0x4b7f80: HudUiCycleSelectorWidget::SetVisibleRange
-void RECOIL_THISCALL HudUiCycleSelectorWidget::SetVisibleRange(
+void HudUiCycleSelectorWidget::SetVisibleRange(
     int first,
     int last
 ) {
@@ -11196,7 +11166,7 @@ void RECOIL_THISCALL HudUiCycleSelectorWidget::SetVisibleRange(
 }
 
 // Reimplements 0x4b7e60: HudUiCycleSelectorWidget::Update
-void RECOIL_THISCALL HudUiCycleSelectorWidget::Update(
+void HudUiCycleSelectorWidget::Update(
     float deltaSeconds
 ) {
     for (int i = 0; i < itemCount; ++i) {
@@ -11221,7 +11191,7 @@ void RECOIL_THISCALL HudUiCycleSelectorWidget::Update(
 }
 
 // Reimplements 0x4b7fd0: HudUiCycleSelectorWidget::AddTextEntry
-void RECOIL_THISCALL HudUiCycleSelectorWidget::AddTextEntry(
+void HudUiCycleSelectorWidget::AddTextEntry(
     int index,
     const char *text,
     int posX,
@@ -11279,7 +11249,7 @@ void RECOIL_THISCALL HudUiCycleSelectorWidget::AddTextEntry(
 }
 
 // Reimplements 0x4ba020: HudUiTransitionTextPanel::Constructor
-HudUiTransitionTextPanel *RECOIL_THISCALL HudUiTransitionTextPanel::Constructor() {
+HudUiTransitionTextPanel * HudUiTransitionTextPanel::Constructor() {
     HudUiPanel *const panel = (HudUiPanel *)(this);
     panel->ConstructorDefault(
         0,
@@ -11297,7 +11267,7 @@ HudUiTransitionTextPanel *RECOIL_THISCALL HudUiTransitionTextPanel::Constructor(
 }
 
 // Reimplements 0x4bc9f0: HudUiTransitionTextPanel::TickFlash
-void RECOIL_THISCALL HudUiTransitionTextPanel::TickFlash(
+void HudUiTransitionTextPanel::TickFlash(
     float deltaSeconds
 ) {
     HudUiElement *const element = (HudUiElement *)(this);
@@ -11382,7 +11352,7 @@ void RECOIL_THISCALL HudUiTransitionTextPanel::TickFlash(
 }
 
 // Reimplements 0x4bc930: HudUiTransitionTextPanel::ResetFlashState
-void RECOIL_THISCALL HudUiTransitionTextPanel::ResetFlashState(
+void HudUiTransitionTextPanel::ResetFlashState(
     float flashRate
 ) {
     flashEnabled = 1;
@@ -11399,7 +11369,7 @@ void RECOIL_THISCALL HudUiTransitionTextPanel::ResetFlashState(
 }
 
 // Reimplements 0x4bc980: HudUiTransitionTextPanel::SetFlashRate
-void RECOIL_THISCALL HudUiTransitionTextPanel::SetFlashRate(
+void HudUiTransitionTextPanel::SetFlashRate(
     float flashRate
 ) {
     if (flashMode == 1) {
@@ -11411,7 +11381,7 @@ void RECOIL_THISCALL HudUiTransitionTextPanel::SetFlashRate(
 }
 
 // Reimplements 0x4bc9b0: HudUiTransitionTextPanel::SetFlashColorAndRate
-void RECOIL_THISCALL HudUiTransitionTextPanel::SetFlashColorAndRate(
+void HudUiTransitionTextPanel::SetFlashColorAndRate(
     unsigned int flashColor,
     float flashRate
 ) {
@@ -11426,7 +11396,7 @@ void RECOIL_THISCALL HudUiTransitionTextPanel::SetFlashColorAndRate(
 }
 
 // Reimplements 0x4b8100: HudUiCycleSelectorWidget::ApplyFontStyleForEntry
-void RECOIL_THISCALL HudUiCycleSelectorWidget::ApplyFontStyleForEntry(
+void HudUiCycleSelectorWidget::ApplyFontStyleForEntry(
     int index,
     int styleIndex
 ) {
@@ -11504,7 +11474,7 @@ void RECOIL_THISCALL HudUiCycleSelectorWidget::ApplyFontStyleForEntry(
 }
 
 // Reimplements 0x4b8200: HudUiCycleSelectorWidget::AddBitmapEntry
-void RECOIL_THISCALL HudUiCycleSelectorWidget::AddBitmapEntry(
+void HudUiCycleSelectorWidget::AddBitmapEntry(
     int index,
     const char *imagePath,
     int posX,
@@ -11543,7 +11513,7 @@ void RECOIL_THISCALL HudUiCycleSelectorWidget::AddBitmapEntry(
 }
 
 // Reimplements 0x4b82e0: HudUiCycleSelectorWidget::LoadFromZrd
-int RECOIL_THISCALL HudUiCycleSelectorWidget::LoadFromZrd(
+int HudUiCycleSelectorWidget::LoadFromZrd(
     zReader::Node *zrdSection,
     void *ownerDialog
 ) {
@@ -11669,7 +11639,7 @@ int RECOIL_THISCALL HudUiCycleSelectorWidget::LoadFromZrd(
 }
 
 // Reimplements 0x4b8450: HudUiFillBitmap::Constructor
-HudUiFillBitmap *RECOIL_THISCALL HudUiFillBitmap::Constructor() {
+HudUiFillBitmap * HudUiFillBitmap::Constructor() {
     base.Constructor();
     base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiFillBitmap_FTable);
     normalizedValue = 0.0f;
@@ -11687,7 +11657,7 @@ HudUiFillBitmap *RECOIL_THISCALL HudUiFillBitmap::Constructor() {
 }
 
 // Reimplements 0x4b84d0: HudUiFillBitmap::DestructorCore
-void RECOIL_THISCALL HudUiFillBitmap::DestructorCore() {
+void HudUiFillBitmap::DestructorCore() {
     base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiFillBitmap_FTable);
 
     if (previewImage != 0 && previewImage != base.base.image) {
@@ -11704,12 +11674,12 @@ void RECOIL_THISCALL HudUiFillBitmap::DestructorCore() {
 }
 
 // Reimplements 0x40cf50: HudUiFillBitmap::DestructorCoreThunk
-void RECOIL_THISCALL HudUiFillBitmap::DestructorCoreThunk() {
+void HudUiFillBitmap::DestructorCoreThunk() {
     DestructorCore();
 }
 
 // Reimplements 0x4b84b0: HudUiFillBitmap::ScalarDeletingDestructor
-HudUiFillBitmap *RECOIL_THISCALL HudUiFillBitmap::ScalarDeletingDestructor(
+HudUiFillBitmap * HudUiFillBitmap::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -11721,7 +11691,7 @@ HudUiFillBitmap *RECOIL_THISCALL HudUiFillBitmap::ScalarDeletingDestructor(
 }
 
 // Reimplements 0x4b8520: HudUiFillBitmap::Draw
-void RECOIL_THISCALL HudUiFillBitmap::Draw() {
+void HudUiFillBitmap::Draw() {
     if (previewImage == 0 || fillImage == 0) {
         return;
     }
@@ -11750,7 +11720,7 @@ void RECOIL_THISCALL HudUiFillBitmap::Draw() {
 }
 
 // Reimplements 0x4b85c0: HudUiFillBitmap::LoadFromZrd
-int RECOIL_THISCALL HudUiFillBitmap::LoadFromZrd(
+int HudUiFillBitmap::LoadFromZrd(
     zReader::Node *zrdSection,
     void *ownerDialog
 ) {
@@ -11799,7 +11769,7 @@ int RECOIL_THISCALL HudUiFillBitmap::LoadFromZrd(
 }
 
 // Reimplements 0x4b8650: HudUiFillBitmap::UpdateNormalizedFromCursor
-void RECOIL_THISCALL HudUiFillBitmap::UpdateNormalizedFromCursor() {
+void HudUiFillBitmap::UpdateNormalizedFromCursor() {
     const int cursorX = OwnerField<int>(
         base.owner,
         0x14
@@ -11811,7 +11781,7 @@ void RECOIL_THISCALL HudUiFillBitmap::UpdateNormalizedFromCursor() {
 }
 
 // Reimplements 0x4ba3c0: HudUiFillBitmap::SetNormalizedValue
-void RECOIL_THISCALL HudUiFillBitmap::SetNormalizedValue(
+void HudUiFillBitmap::SetNormalizedValue(
     float value
 ) {
     unsigned int valueBits = 0;
@@ -11824,13 +11794,13 @@ void RECOIL_THISCALL HudUiFillBitmap::SetNormalizedValue(
         this,
         0x14c
     ) = valueBits;
-    typedef void(RECOIL_THISCALL * InvalidateFn)(HudUiElement * self);
+    typedef void( * InvalidateFn)(HudUiElement * self);
     HudUiElement *const element = (HudUiElement *)(this);
     ((InvalidateFn)(element->ftable->slots[8]))(element);
 }
 
 // Reimplements 0x4b86b0: HudUiFillBitmap::SetNormalizedValueAndRebuild
-void RECOIL_THISCALL HudUiFillBitmap::SetNormalizedValueAndRebuild(
+void HudUiFillBitmap::SetNormalizedValueAndRebuild(
     float value
 ) {
     if (fillImage == 0) {
@@ -11864,7 +11834,7 @@ void RECOIL_THISCALL HudUiFillBitmap::SetNormalizedValueAndRebuild(
 }
 
 // Reimplements 0x4b8760: HudUiZrdWidgetEx17C_Item::Constructor
-HudUiZrdWidgetEx17C_Item *RECOIL_THISCALL HudUiZrdWidgetEx17C_Item::Constructor() {
+HudUiZrdWidgetEx17C_Item * HudUiZrdWidgetEx17C_Item::Constructor() {
     base.Constructor();
     base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiZrdWidgetEx17C_Item_FTable);
     selected = 0;
@@ -11876,13 +11846,13 @@ HudUiZrdWidgetEx17C_Item *RECOIL_THISCALL HudUiZrdWidgetEx17C_Item::Constructor(
 }
 
 // Reimplements 0x4b87c0: HudUiZrdWidgetEx17C_Item::DestructorCore
-void RECOIL_THISCALL HudUiZrdWidgetEx17C_Item::DestructorCore() {
+void HudUiZrdWidgetEx17C_Item::DestructorCore() {
     base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiZrdWidgetEx17C_Item_FTable);
     base.DestructorCore();
 }
 
 // Reimplements 0x4b87a0: HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor
-HudUiZrdWidgetEx17C_Item *RECOIL_THISCALL HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor(
+HudUiZrdWidgetEx17C_Item * HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -11894,23 +11864,23 @@ HudUiZrdWidgetEx17C_Item *RECOIL_THISCALL HudUiZrdWidgetEx17C_Item::ScalarDeleti
 }
 
 // Reimplements 0x4b87d0: HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected
-void RECOIL_THISCALL HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected() {
+void HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected() {
     if (selected == 0) {
         base.ShowPreview();
     }
 }
 
 // Reimplements 0x4b87e0: HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected
-void RECOIL_THISCALL HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected() {
+void HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected() {
     if (selected == 0) {
         base.HidePreview();
     }
 }
 
 // Reimplements 0x4b87f0: HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf
-void RECOIL_THISCALL HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf() {
-    typedef void(RECOIL_THISCALL * ActivateFn)(HudUiZrdWidgetEx17C * self);
-    typedef void(RECOIL_THISCALL * HidePreviewFn)(HudUiZrdWidgetEx17C_Item * self);
+void HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf() {
+    typedef void( * ActivateFn)(HudUiZrdWidgetEx17C * self);
+    typedef void( * HidePreviewFn)(HudUiZrdWidgetEx17C_Item * self);
 
     ownerSelector->SetSelectedIndex(itemIndex);
     ((ActivateFn)(ownerSelector->base.base.ftable->slots[12]))(ownerSelector);
@@ -11925,7 +11895,7 @@ void RECOIL_THISCALL HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf() {
 }
 
 // Reimplements 0x4b8850: HudUiZrdWidgetEx17C_Item::LoadFromZrd
-int RECOIL_THISCALL HudUiZrdWidgetEx17C_Item::LoadFromZrd(
+int HudUiZrdWidgetEx17C_Item::LoadFromZrd(
     zReader::Node *zrdSection,
     void *ownerDialog
 ) {
@@ -12012,7 +11982,7 @@ int RECOIL_THISCALL HudUiZrdWidgetEx17C_Item::LoadFromZrd(
 }
 
 // Reimplements 0x4b8a90: HudUiZrdWidgetEx17C_Item::SetSelected
-void RECOIL_THISCALL HudUiZrdWidgetEx17C_Item::SetSelected(
+void HudUiZrdWidgetEx17C_Item::SetSelected(
     int selectedValue
 ) {
     selected = selectedValue;
@@ -12032,12 +12002,12 @@ void RECOIL_THISCALL HudUiZrdWidgetEx17C_Item::SetSelected(
 }
 
 // Reimplements 0x4b8af0: HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds
-HudUiRect *RECOIL_THISCALL HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds() {
+HudUiRect * HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds() {
     return mouseRectValid != 0 ? &mouseRect : base.GetBoundsRectOrNull();
 }
 
 // Reimplements 0x4b8b10: HudUiZrdWidgetEx17C::Constructor
-HudUiZrdWidgetEx17C *RECOIL_THISCALL HudUiZrdWidgetEx17C::Constructor() {
+HudUiZrdWidgetEx17C * HudUiZrdWidgetEx17C::Constructor() {
     base.Constructor();
     base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiZrdWidgetEx17C_FTable);
     optionCount = 0;
@@ -12053,8 +12023,8 @@ HudUiZrdWidgetEx17C *RECOIL_THISCALL HudUiZrdWidgetEx17C::Constructor() {
 }
 
 // Reimplements 0x4b8b60: HudUiZrdWidgetEx17C::DestructorCore
-void RECOIL_THISCALL HudUiZrdWidgetEx17C::DestructorCore() {
-    typedef HudUiZrdWidgetEx17C_Item *(RECOIL_THISCALL * ScalarDeleteFn)(
+void HudUiZrdWidgetEx17C::DestructorCore() {
+    typedef HudUiZrdWidgetEx17C_Item *( * ScalarDeleteFn)(
         HudUiZrdWidgetEx17C_Item * self,
         unsigned int flags
     );
@@ -12079,7 +12049,7 @@ void RECOIL_THISCALL HudUiZrdWidgetEx17C::DestructorCore() {
 }
 
 // Reimplements 0x4b8b40: HudUiZrdWidgetEx17C::ScalarDeletingDestructor
-HudUiZrdWidgetEx17C *RECOIL_THISCALL HudUiZrdWidgetEx17C::ScalarDeletingDestructor(
+HudUiZrdWidgetEx17C * HudUiZrdWidgetEx17C::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -12091,7 +12061,7 @@ HudUiZrdWidgetEx17C *RECOIL_THISCALL HudUiZrdWidgetEx17C::ScalarDeletingDestruct
 }
 
 // Reimplements 0x41c4c0: HudUiZrdWidgetEx17C::ScalarDeletingDestructorThunk
-HudUiZrdWidgetEx17C *RECOIL_THISCALL HudUiZrdWidgetEx17C::ScalarDeletingDestructorThunk(
+HudUiZrdWidgetEx17C * HudUiZrdWidgetEx17C::ScalarDeletingDestructorThunk(
     unsigned int flags
 ) {
     DestructorCore();
@@ -12103,11 +12073,11 @@ HudUiZrdWidgetEx17C *RECOIL_THISCALL HudUiZrdWidgetEx17C::ScalarDeletingDestruct
 }
 
 // Reimplements 0x4b8be0: HudUiZrdWidgetEx17C::LoadFromZrd
-int RECOIL_THISCALL HudUiZrdWidgetEx17C::LoadFromZrd(
+int HudUiZrdWidgetEx17C::LoadFromZrd(
     zReader::Node *zrdSection,
     void *ownerDialog
 ) {
-    typedef int(RECOIL_THISCALL * LoadFromZrdFn)(
+    typedef int( * LoadFromZrdFn)(
         HudUiZrdWidgetEx17C_Item * self,
         zReader::Node * zrdSection,
         void *ownerDialog
@@ -12149,10 +12119,10 @@ int RECOIL_THISCALL HudUiZrdWidgetEx17C::LoadFromZrd(
 }
 
 // Reimplements 0x409010: HudUiZrdWidgetEx17C::EnableChildAtIndex
-void RECOIL_THISCALL HudUiZrdWidgetEx17C::EnableChildAtIndex(
+void HudUiZrdWidgetEx17C::EnableChildAtIndex(
     int childIndex
 ) {
-    typedef void(RECOIL_THISCALL * RefreshStateFn)(HudUiZrdWidgetEx17C_Item * self);
+    typedef void( * RefreshStateFn)(HudUiZrdWidgetEx17C_Item * self);
 
     if (childIndex >= optionCount) {
         return;
@@ -12164,7 +12134,7 @@ void RECOIL_THISCALL HudUiZrdWidgetEx17C::EnableChildAtIndex(
 }
 
 // Reimplements 0x4b8cf0: HudUiZrdWidgetEx17C::SetSelectedIndex
-int RECOIL_THISCALL HudUiZrdWidgetEx17C::SetSelectedIndex(
+int HudUiZrdWidgetEx17C::SetSelectedIndex(
     int index
 ) {
     selectedIndex = index;
@@ -12181,7 +12151,7 @@ int RECOIL_THISCALL HudUiZrdWidgetEx17C::SetSelectedIndex(
 }
 
 // Reimplements 0x4b92a0: HudUiListSelectorItem::Constructor
-HudUiListSelectorItem *RECOIL_THISCALL HudUiListSelectorItem::Constructor() {
+HudUiListSelectorItem * HudUiListSelectorItem::Constructor() {
     ((HudUiPanel *)(this))->ConstructorDefault(
         0,
         0,
@@ -12192,8 +12162,8 @@ HudUiListSelectorItem *RECOIL_THISCALL HudUiListSelectorItem::Constructor() {
 }
 
 // Reimplements 0x4b9520: HudUiListSelectorItem::OnActivate
-void RECOIL_THISCALL HudUiListSelectorItem::OnActivate() {
-    typedef void(RECOIL_THISCALL * OnSelectedIndexChangedFn)(
+void HudUiListSelectorItem::OnActivate() {
+    typedef void( * OnSelectedIndexChangedFn)(
         void *self,
         int selectedIndex
     );
@@ -12214,7 +12184,7 @@ void RECOIL_THISCALL HudUiListSelectorItem::OnActivate() {
 }
 
 // Reimplements 0x4ba410: HudUiListSelectorItem::Draw
-void RECOIL_THISCALL HudUiListSelectorItem::Draw() {
+void HudUiListSelectorItem::Draw() {
     HudUiPanel *const panel = (HudUiPanel *)(this);
     panel->Draw();
 
@@ -12248,7 +12218,7 @@ void RECOIL_THISCALL HudUiListSelectorItem::Draw() {
 }
 
 // Reimplements 0x4b8d30: HudCmdBindButtonBase::Constructor
-HudCmdBindButtonBase *RECOIL_THISCALL HudCmdBindButtonBase::Constructor() {
+HudCmdBindButtonBase * HudCmdBindButtonBase::Constructor() {
     base.Constructor();
     bindPanel.Constructor();
 
@@ -12268,7 +12238,7 @@ HudCmdBindButtonBase *RECOIL_THISCALL HudCmdBindButtonBase::Constructor() {
 }
 
 // Reimplements 0x40bdf0: StdPtrVector::ClearNoOpDestroy
-void RECOIL_THISCALL StdPtrVector::ClearNoOpDestroy(
+void StdPtrVector::ClearNoOpDestroy(
     int *begin,
     int *end
 ) {
@@ -12278,7 +12248,7 @@ void RECOIL_THISCALL StdPtrVector::ClearNoOpDestroy(
 
 // Reimplements 0x40be60: HudCmdBindingEntry::CopyRange
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
-HudCmdBindingEntry **RECOIL_FASTCALL HudCmdBindingEntry::CopyRange(
+HudCmdBindingEntry **__fastcall HudCmdBindingEntry::CopyRange(
     HudCmdBindingEntry **sourceBegin,
     HudCmdBindingEntry **sourceEnd,
     HudCmdBindingEntry **dest
@@ -12296,7 +12266,7 @@ HudCmdBindingEntry **RECOIL_FASTCALL HudCmdBindingEntry::CopyRange(
 
 // Reimplements 0x40bf50: HudCmdBindingEntry::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
-HudCmdBindingEntry *RECOIL_THISCALL HudCmdBindingEntry::ScalarDeletingDestructor(
+HudCmdBindingEntry * HudCmdBindingEntry::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     if (displayText != 0) {
@@ -12313,7 +12283,7 @@ HudCmdBindingEntry *RECOIL_THISCALL HudCmdBindingEntry::ScalarDeletingDestructor
 
 // Reimplements 0x40bf20: HudCmdBindingEntry::DeleteAndReturnNull
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
-HudCmdBindingEntry *RECOIL_STDCALL HudCmdBindingEntry::DeleteAndReturnNull(
+HudCmdBindingEntry *__stdcall HudCmdBindingEntry::DeleteAndReturnNull(
     HudCmdBindingEntry *entry
 ) {
     if (entry != 0) {
@@ -12330,7 +12300,7 @@ HudCmdBindingEntry *RECOIL_STDCALL HudCmdBindingEntry::DeleteAndReturnNull(
 
 // Reimplements 0x40bf80: HudCmdBindButtonBase::AddBindingEntry
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
-int RECOIL_THISCALL HudCmdBindButtonBase::AddBindingEntry(
+int HudCmdBindButtonBase::AddBindingEntry(
     const char *displayText,
     int commandId
 ) {
@@ -12373,7 +12343,7 @@ int RECOIL_THISCALL HudCmdBindButtonBase::AddBindingEntry(
 
 // Reimplements 0x4b9320: HudCmdBindButtonBase::OnSelectedIndexChanged
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
-void RECOIL_THISCALL HudCmdBindButtonBase::OnSelectedIndexChanged(
+void HudCmdBindButtonBase::OnSelectedIndexChanged(
     int selectedIndex
 ) {
     SetSelectedEntry(selectedIndex);
@@ -12381,7 +12351,7 @@ void RECOIL_THISCALL HudCmdBindButtonBase::OnSelectedIndexChanged(
 
 // Reimplements 0x4b9330: HudCmdBindButtonBase::SetSelectedEntry
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
-void RECOIL_THISCALL HudCmdBindButtonBase::SetSelectedEntry(
+void HudCmdBindButtonBase::SetSelectedEntry(
     int selectedIndex
 ) {
     HudCmdBindingEntry **const entries = (HudCmdBindingEntry **)(bindingVec.begin);
@@ -12459,7 +12429,7 @@ void RECOIL_THISCALL HudCmdBindButtonBase::SetSelectedEntry(
 
 // Reimplements 0x40be00: HudCmdBinding::DestroyRange
 // (HudCmdDialog.cpp)
-HudCmdBinding **RECOIL_FASTCALL HudCmdBinding::DestroyRange(
+HudCmdBinding **__fastcall HudCmdBinding::DestroyRange(
     HudCmdBinding **first,
     HudCmdBinding **last,
     HudCmdBinding **dest,
@@ -12487,7 +12457,7 @@ HudCmdBinding **RECOIL_FASTCALL HudCmdBinding::DestroyRange(
 }
 
 // Reimplements 0x40bdc0: zUtil_StdPtrVector_Clear
-RECOIL_NOINLINE void **RECOIL_FASTCALL zUtil_StdPtrVector_Clear(
+void **__fastcall zUtil_StdPtrVector_Clear(
     HudCmdBindingVector *self
 ) {
     void **const oldEnd = (void **)(self->end);
@@ -12496,7 +12466,7 @@ RECOIL_NOINLINE void **RECOIL_FASTCALL zUtil_StdPtrVector_Clear(
 }
 
 // Reimplements 0x4ba470: zUtil_StdPtrVector_FreeBufferAndReset
-RECOIL_NOINLINE void RECOIL_FASTCALL zUtil_StdPtrVector_FreeBufferAndReset(
+void __fastcall zUtil_StdPtrVector_FreeBufferAndReset(
     HudCmdBindingVector *self
 ) {
     ::operator delete(self->begin);
@@ -12506,7 +12476,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zUtil_StdPtrVector_FreeBufferAndReset(
 }
 
 // Reimplements 0x40c1d0: HudCmdBindButtonBase::ClearBindingEntries
-void RECOIL_THISCALL HudCmdBindButtonBase::ClearBindingEntries() {
+void HudCmdBindButtonBase::ClearBindingEntries() {
     HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(bindingVec.begin);
     HudCmdBindingEntry **const end = (HudCmdBindingEntry **)(bindingVec.end);
 
@@ -12530,7 +12500,7 @@ void RECOIL_THISCALL HudCmdBindButtonBase::ClearBindingEntries() {
 
 // Reimplements 0x40c280: HudCmdBindButtonBase::DestructorCore
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
-void RECOIL_THISCALL HudCmdBindButtonBase::DestructorCore() {
+void HudCmdBindButtonBase::DestructorCore() {
     base.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdBindButtonBase_FTable);
 
     HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(bindingVec.begin);
@@ -12572,7 +12542,7 @@ void RECOIL_THISCALL HudCmdBindButtonBase::DestructorCore() {
 
 // Reimplements 0x40a940: HudCmdCommandList::Destructor
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
-void RECOIL_THISCALL HudCmdCommandList::Destructor() {
+void HudCmdCommandList::Destructor() {
     base.base.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdBindButtonBase_FTable);
 
     HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(base.bindingVec.begin);
@@ -12614,7 +12584,7 @@ void RECOIL_THISCALL HudCmdCommandList::Destructor() {
 }
 
 // Reimplements 0x40b0a0: HudCmdCommandList::ScalarDeletingDestructor
-HudCmdCommandList *RECOIL_THISCALL HudCmdCommandList::ScalarDeletingDestructor(
+HudCmdCommandList * HudCmdCommandList::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -12627,7 +12597,7 @@ HudCmdCommandList *RECOIL_THISCALL HudCmdCommandList::ScalarDeletingDestructor(
 
 // Reimplements 0x40aa30: HudCmdKeyAButton::Destructor
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
-void RECOIL_THISCALL HudCmdKeyAButton::Destructor() {
+void HudCmdKeyAButton::Destructor() {
     base.base.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdBindButtonBase_FTable);
 
     HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(base.bindingVec.begin);
@@ -12669,7 +12639,7 @@ void RECOIL_THISCALL HudCmdKeyAButton::Destructor() {
 }
 
 // Reimplements 0x40b0c0: HudCmdKeyAButton::ScalarDeletingDestructor
-HudCmdKeyAButton *RECOIL_THISCALL HudCmdKeyAButton::ScalarDeletingDestructor(
+HudCmdKeyAButton * HudCmdKeyAButton::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -12682,7 +12652,7 @@ HudCmdKeyAButton *RECOIL_THISCALL HudCmdKeyAButton::ScalarDeletingDestructor(
 
 // Reimplements 0x40ab20: HudCmdKeyBButton::Destructor
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
-void RECOIL_THISCALL HudCmdKeyBButton::Destructor() {
+void HudCmdKeyBButton::Destructor() {
     base.base.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdBindButtonBase_FTable);
 
     HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(base.bindingVec.begin);
@@ -12724,7 +12694,7 @@ void RECOIL_THISCALL HudCmdKeyBButton::Destructor() {
 }
 
 // Reimplements 0x40b0e0: HudCmdKeyBButton::ScalarDeletingDestructor
-HudCmdKeyBButton *RECOIL_THISCALL HudCmdKeyBButton::ScalarDeletingDestructor(
+HudCmdKeyBButton * HudCmdKeyBButton::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -12737,7 +12707,7 @@ HudCmdKeyBButton *RECOIL_THISCALL HudCmdKeyBButton::ScalarDeletingDestructor(
 
 // Reimplements 0x40ac10: HudCmdJoyButton::Destructor
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
-void RECOIL_THISCALL HudCmdJoyButton::Destructor() {
+void HudCmdJoyButton::Destructor() {
     base.base.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdBindButtonBase_FTable);
 
     HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(base.bindingVec.begin);
@@ -12779,7 +12749,7 @@ void RECOIL_THISCALL HudCmdJoyButton::Destructor() {
 }
 
 // Reimplements 0x40b100: HudCmdJoyButton::ScalarDeletingDestructor
-HudCmdJoyButton *RECOIL_THISCALL HudCmdJoyButton::ScalarDeletingDestructor(
+HudCmdJoyButton * HudCmdJoyButton::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -12792,7 +12762,7 @@ HudCmdJoyButton *RECOIL_THISCALL HudCmdJoyButton::ScalarDeletingDestructor(
 
 // Reimplements 0x40ad00: HudCmdMouseButton::Destructor
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
-void RECOIL_THISCALL HudCmdMouseButton::Destructor() {
+void HudCmdMouseButton::Destructor() {
     base.base.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdBindButtonBase_FTable);
 
     HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(base.bindingVec.begin);
@@ -12834,7 +12804,7 @@ void RECOIL_THISCALL HudCmdMouseButton::Destructor() {
 }
 
 // Reimplements 0x40b120: HudCmdMouseButton::ScalarDeletingDestructor
-HudCmdMouseButton *RECOIL_THISCALL HudCmdMouseButton::ScalarDeletingDestructor(
+HudCmdMouseButton * HudCmdMouseButton::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -12889,7 +12859,7 @@ static void HudCmdDialog_ClearBindButtonEntries(
 
 // Reimplements 0x40a5b0: HudCmdDialog::Constructor
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-HudCmdDialog *RECOIL_THISCALL HudCmdDialog::Constructor() {
+HudCmdDialog * HudCmdDialog::Constructor() {
     base.Constructor();
 
     resumeButton.base.Constructor();
@@ -13043,7 +13013,7 @@ HudCmdDialog *RECOIL_THISCALL HudCmdDialog::Constructor() {
 
 // Reimplements 0x40adf0: HudCmdDialog::Destructor
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdDialog::Destructor() {
+void HudCmdDialog::Destructor() {
     descriptionPanel.base.Destructor();
     ((HudUiPanel *)(&promptPanel))->Destructor();
     prevCommandButton.base.DestructorCore();
@@ -13065,7 +13035,7 @@ void RECOIL_THISCALL HudCmdDialog::Destructor() {
 
 // Reimplements 0x40a920: HudCmdDialog::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-HudCmdDialog *RECOIL_THISCALL HudCmdDialog::ScalarDeletingDestructor(
+HudCmdDialog * HudCmdDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -13079,7 +13049,7 @@ HudCmdDialog *RECOIL_THISCALL HudCmdDialog::ScalarDeletingDestructor(
 
 // Reimplements 0x40c6e0: HudUiOptionsPanelBackButton::OnActivate
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
-void RECOIL_THISCALL HudUiOptionsPanelBackButton::OnActivate() {
+void HudUiOptionsPanelBackButton::OnActivate() {
     HudOptionsDialog *const ownerDialog = (HudOptionsDialog *)(base.owner);
     const int hudType = ownerDialog->fullHudToggle.base.checked != 0 ? ZOPT_HUD_TYPE_PERSPECTIVE
                                                                      : ZOPT_HUD_TYPE_STANDARD;
@@ -13090,12 +13060,12 @@ void RECOIL_THISCALL HudUiOptionsPanelBackButton::OnActivate() {
 }
 
 // Reimplements 0x40c9c0: HudUiOptionsPanel_Lighting::InitFromOptions
-void RECOIL_THISCALL HudUiOptionsPanel_Lighting::InitFromOptions() {
+void HudUiOptionsPanel_Lighting::InitFromOptions() {
     base.SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_GLOBAL_LIGHT);
 }
 
 // Reimplements 0x40c9e0: HudUiOptionsPanel_Lighting::SyncFromOptions
-void RECOIL_THISCALL HudUiOptionsPanel_Lighting::SyncFromOptions() {
+void HudUiOptionsPanel_Lighting::SyncFromOptions() {
     const int flags = zOpt::GetGraphicsFlagsForCurrentHwMode();
     base.OnActivate();
     zOpt::SetGraphicsFlagsForCurrentHwMode(
@@ -13105,12 +13075,12 @@ void RECOIL_THISCALL HudUiOptionsPanel_Lighting::SyncFromOptions() {
 }
 
 // Reimplements 0x40ca20: HudUiOptionsPanel_Perspective::InitFromOptions
-void RECOIL_THISCALL HudUiOptionsPanel_Perspective::InitFromOptions() {
+void HudUiOptionsPanel_Perspective::InitFromOptions() {
     base.SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_PERSPECTIVE);
 }
 
 // Reimplements 0x40ca40: HudUiOptionsPanel_Perspective::SyncFromOptions
-void RECOIL_THISCALL HudUiOptionsPanel_Perspective::SyncFromOptions() {
+void HudUiOptionsPanel_Perspective::SyncFromOptions() {
     const int flags = zOpt::GetGraphicsFlagsForCurrentHwMode();
     base.OnActivate();
     zOpt::SetGraphicsFlagsForCurrentHwMode(
@@ -13121,34 +13091,34 @@ void RECOIL_THISCALL HudUiOptionsPanel_Perspective::SyncFromOptions() {
 }
 
 // Reimplements 0x40ca80: HudUiOptionsPanel_FullHud::InitFromOptions
-void RECOIL_THISCALL HudUiOptionsPanel_FullHud::InitFromOptions() {
+void HudUiOptionsPanel_FullHud::InitFromOptions() {
     base.SetChecked(zOpt::GetHudTypeForCurrentHwMode() == ZOPT_HUD_TYPE_PERSPECTIVE);
 }
 
 // Reimplements 0x40cab0: HudUiOptionsPanel_ObjectDetail::InitFromOptions
-void RECOIL_THISCALL HudUiOptionsPanel_ObjectDetail::InitFromOptions() {
+void HudUiOptionsPanel_ObjectDetail::InitFromOptions() {
     base.SetIndexClamped(zOpt::GetObjectLODForCurrentHwMode());
 }
 
 // Reimplements 0x40cad0: HudUiOptionsPanel_ObjectDetail::SyncFromOptions
-void RECOIL_THISCALL HudUiOptionsPanel_ObjectDetail::SyncFromOptions() {
+void HudUiOptionsPanel_ObjectDetail::SyncFromOptions() {
     base.AdvanceSelectionAndActivate();
     zOpt::SetObjectLODForCurrentHwMode(base.selectedIndex);
 }
 
 // Reimplements 0x40caf0: HudUiOptionsPanel_TextureMemory::InitFromOptions
-void RECOIL_THISCALL HudUiOptionsPanel_TextureMemory::InitFromOptions() {
+void HudUiOptionsPanel_TextureMemory::InitFromOptions() {
     base.SetIndexClamped(zOpt::GetTextureMemoryForCurrentHwMode());
 }
 
 // Reimplements 0x40cb10: HudUiOptionsPanel_TextureMemory::SyncFromOptions
-void RECOIL_THISCALL HudUiOptionsPanel_TextureMemory::SyncFromOptions() {
+void HudUiOptionsPanel_TextureMemory::SyncFromOptions() {
     base.AdvanceSelectionAndActivate();
     zOpt::SetTextureMemoryForCurrentHwMode(base.selectedIndex);
 }
 
 // Reimplements 0x40cb30: HudUiOptionsPanel_Effects::InitFromOptions
-void RECOIL_THISCALL HudUiOptionsPanel_Effects::InitFromOptions() {
+void HudUiOptionsPanel_Effects::InitFromOptions() {
     int level = zOpt::GetEffectsLevelForCurrentHwMode();
     if (zVid::GetAccelerationOption() == ZVID_HW_MODE_SOFTWARE) {
         if (level == 0) {
@@ -13164,52 +13134,52 @@ void RECOIL_THISCALL HudUiOptionsPanel_Effects::InitFromOptions() {
 }
 
 // Reimplements 0x40cb70: HudUiOptionsPanel_Effects::SyncFromOptions
-void RECOIL_THISCALL HudUiOptionsPanel_Effects::SyncFromOptions() {
+void HudUiOptionsPanel_Effects::SyncFromOptions() {
     base.AdvanceSelectionAndActivate();
     zOpt::SetEffectsLevelForCurrentHwMode(base.selectedIndex);
 }
 
 // Reimplements 0x40cb90: HudUiOptionsPanel_SoundActive::InitFromOptions
-void RECOIL_THISCALL HudUiOptionsPanel_SoundActive::InitFromOptions() {
+void HudUiOptionsPanel_SoundActive::InitFromOptions() {
     base.SetChecked(zOpt::GetMuteSoundOption() == 0);
 }
 
 // Reimplements 0x40cbb0: HudUiOptionsPanel_SoundActive::SyncFromOptions
-void RECOIL_THISCALL HudUiOptionsPanel_SoundActive::SyncFromOptions() {
+void HudUiOptionsPanel_SoundActive::SyncFromOptions() {
     base.OnActivate();
     zOpt::SetMuteSoundOption(base.checked == 0);
 }
 
 // Reimplements 0x40cbd0: HudUiOptionsPanel_SoundQuality::InitFromOptions
-void RECOIL_THISCALL HudUiOptionsPanel_SoundQuality::InitFromOptions() {
+void HudUiOptionsPanel_SoundQuality::InitFromOptions() {
     base.SetIndexClamped(zOpt::GetSoundLODOption());
 }
 
 // Reimplements 0x40cbf0: HudUiOptionsPanel_SoundQuality::SyncFromOptions
-void RECOIL_THISCALL HudUiOptionsPanel_SoundQuality::SyncFromOptions() {
+void HudUiOptionsPanel_SoundQuality::SyncFromOptions() {
     base.AdvanceSelectionAndActivate();
     zOpt::SetSoundLODOption(base.selectedIndex);
 }
 
 // Reimplements 0x40cc10: HudUiOptionsPanel_SoundVolume::SyncFromOptions
-void RECOIL_THISCALL HudUiOptionsPanel_SoundVolume::SyncFromOptions() {
+void HudUiOptionsPanel_SoundVolume::SyncFromOptions() {
     base.SetNormalizedValue(zOpt::GetSoundVolumeOption());
 }
 
 // Reimplements 0x40cc30: HudUiOptionsPanel_SoundVolume::OnActivate
-void RECOIL_THISCALL HudUiOptionsPanel_SoundVolume::OnActivate() {
+void HudUiOptionsPanel_SoundVolume::OnActivate() {
     base.UpdateNormalizedFromCursor();
     zOpt::SetSoundVolumeOption(base.normalizedValue);
     base.SetNormalizedValue(zOpt::GetSoundVolumeOption());
 }
 
 // Reimplements 0x40cc60: HudUiOptionsPanel_MusicEnable::SyncFromOptions
-void RECOIL_THISCALL HudUiOptionsPanel_MusicEnable::SyncFromOptions() {
+void HudUiOptionsPanel_MusicEnable::SyncFromOptions() {
     base.SetChecked(zSnd::GetCDAudioOption());
 }
 
 // Reimplements 0x40cc80: HudUiOptionsPanel_MusicEnable::OnActivate
-void RECOIL_THISCALL HudUiOptionsPanel_MusicEnable::OnActivate() {
+void HudUiOptionsPanel_MusicEnable::OnActivate() {
     base.OnActivate();
     if (base.checked == 0) {
         zSnd::SetCDAudioOption(0);
@@ -13224,7 +13194,7 @@ void RECOIL_THISCALL HudUiOptionsPanel_MusicEnable::OnActivate() {
 }
 
 // Reimplements 0x40ccc0: HudUiOptionsPanel_MusicVolume::SyncFromOptions
-void RECOIL_THISCALL HudUiOptionsPanel_MusicVolume::SyncFromOptions() {
+void HudUiOptionsPanel_MusicVolume::SyncFromOptions() {
     unsigned short primaryVolume = 0;
     unsigned short secondaryVolume = 0;
     zSndCd::GetVolume(
@@ -13235,7 +13205,7 @@ void RECOIL_THISCALL HudUiOptionsPanel_MusicVolume::SyncFromOptions() {
 }
 
 // Reimplements 0x40cd00: HudUiOptionsPanel_MusicVolume::OnActivate
-void RECOIL_THISCALL HudUiOptionsPanel_MusicVolume::OnActivate() {
+void HudUiOptionsPanel_MusicVolume::OnActivate() {
     base.UpdateNormalizedFromCursor();
     const unsigned short volume =
         (unsigned short)(base.normalizedValue * ZSND_CD_NORMALIZED_TO_VOLUME);
@@ -13246,7 +13216,7 @@ void RECOIL_THISCALL HudUiOptionsPanel_MusicVolume::OnActivate() {
 }
 
 // Reimplements 0x40cd30: HudUiOptionsPanel_Resolution::SyncFromOptions
-void RECOIL_THISCALL HudUiOptionsPanel_Resolution::SyncFromOptions() {
+void HudUiOptionsPanel_Resolution::SyncFromOptions() {
     const int modeCase = zVid::GetVideoModeIndexFromOptions() - 2;
     if ((unsigned int)(modeCase) > 5u) {
         return;
@@ -13346,7 +13316,7 @@ void RECOIL_THISCALL HudUiOptionsPanel_Resolution::SyncFromOptions() {
 }
 
 // Reimplements 0x40ce80: HudUiOptionsPanel_Resolution::OnActivate
-void RECOIL_THISCALL HudUiOptionsPanel_Resolution::OnActivate() {
+void HudUiOptionsPanel_Resolution::OnActivate() {
     base.AdvanceSelectionAndActivate();
     switch (base.selectedIndex) {
     case 0:
@@ -13372,7 +13342,7 @@ void RECOIL_THISCALL HudUiOptionsPanel_Resolution::OnActivate() {
 
 // Reimplements 0x40c720: HudOptionsDialog::Constructor
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
-HudOptionsDialog *RECOIL_THISCALL HudOptionsDialog::Constructor() {
+HudOptionsDialog * HudOptionsDialog::Constructor() {
     base.Constructor();
 
     backButton.base.Constructor();
@@ -13496,7 +13466,7 @@ HudOptionsDialog *RECOIL_THISCALL HudOptionsDialog::Constructor() {
 
 // Reimplements 0x40cf60: HudOptionsDialog::DestructorCore
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
-void RECOIL_THISCALL HudOptionsDialog::DestructorCore() {
+void HudOptionsDialog::DestructorCore() {
     resolutionSelector.base.DestructorCore();
     musicVolumeWidget.base.DestructorCore();
     musicEnableToggle.base.DestructorCore();
@@ -13515,7 +13485,7 @@ void RECOIL_THISCALL HudOptionsDialog::DestructorCore() {
 
 // Reimplements 0x40cf00: HudOptionsDialog::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
-HudOptionsDialog *RECOIL_THISCALL HudOptionsDialog::ScalarDeletingDestructor(
+HudOptionsDialog * HudOptionsDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -13528,32 +13498,32 @@ HudOptionsDialog *RECOIL_THISCALL HudOptionsDialog::ScalarDeletingDestructor(
 
 // Reimplements 0x40bc20: HudCmdDialogState::StaticInitAndRegisterAtExit
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_CDECL HudCmdDialogState::StaticInitAndRegisterAtExit() {
+void HudCmdDialogState::StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
 
 // Reimplements 0x40bc30: HudCmdDialogState::StaticInit
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-HudCmdDialogState *RECOIL_CDECL HudCmdDialogState::StaticInit() {
+HudCmdDialogState *HudCmdDialogState::StaticInit() {
     return g_HudCmdDialogState.Constructor();
 }
 
 // Reimplements 0x40bc40: HudCmdDialogState::RegisterAtExit
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_CDECL HudCmdDialogState::RegisterAtExit() {
+void HudCmdDialogState::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
 // Reimplements 0x40bc50: HudCmdDialogState::AtExitDestructor
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_CDECL HudCmdDialogState::AtExitDestructor() {
+void HudCmdDialogState::AtExitDestructor() {
     g_HudCmdDialogState.DestructorCore();
 }
 
 // Reimplements 0x40bda0: HudCmdDialogState::QueueEnter
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_CDECL HudCmdDialogState::QueueEnter() {
+void HudCmdDialogState::QueueEnter() {
     g_RecoilApp.QueuePushState(
         (RecoilApp_IState *)&g_HudCmdDialogState,
         0
@@ -13562,7 +13532,7 @@ void RECOIL_CDECL HudCmdDialogState::QueueEnter() {
 
 // Reimplements 0x40bc60: HudCmdDialogState::Constructor
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-HudCmdDialogState *RECOIL_THISCALL HudCmdDialogState::Constructor() {
+HudCmdDialogState * HudCmdDialogState::Constructor() {
     vftable = (RecoilPtr32)(unsigned int)&g_HudCmdDialogState_Vtbl;
     m_dialog = 0;
     return this;
@@ -13570,7 +13540,7 @@ HudCmdDialogState *RECOIL_THISCALL HudCmdDialogState::Constructor() {
 
 // Reimplements 0x40bcf0: HudCmdDialogState::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-int RECOIL_THISCALL HudCmdDialogState::OnTryBecomeCurrent() {
+int HudCmdDialogState::OnTryBecomeCurrent() {
     HudCmdDialog *dialog = (HudCmdDialog *) ::operator new(sizeof(HudCmdDialog));
     if (dialog != 0) {
         dialog = dialog->Constructor();
@@ -13584,7 +13554,7 @@ int RECOIL_THISCALL HudCmdDialogState::OnTryBecomeCurrent() {
 
 // Reimplements 0x40bd60: HudCmdDialogState::OnDeactivate
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdDialogState::OnDeactivate() {
+void HudCmdDialogState::OnDeactivate() {
     zInput::Keyboard_ResumeFromSuspend();
 
     HudCmdDialogVirtual *dialogView = (HudCmdDialogVirtual *)(unsigned int)m_dialog;
@@ -13614,7 +13584,7 @@ struct HudCmdDialogStateBaseVtableGuard {
 
 // Reimplements 0x40bc90: HudCmdDialogState::DestructorCore
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdDialogState::DestructorCore() {
+void HudCmdDialogState::DestructorCore() {
     vftable = (RecoilPtr32)(unsigned int)&g_HudCmdDialogState_Vtbl;
     HudCmdDialogStateBaseVtableGuard baseVtableOnExit = {this};
 
@@ -13627,7 +13597,7 @@ void RECOIL_THISCALL HudCmdDialogState::DestructorCore() {
 
 // Reimplements 0x40bc70: HudCmdDialogState::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-HudCmdDialogState *RECOIL_THISCALL HudCmdDialogState::ScalarDeletingDestructor(
+HudCmdDialogState * HudCmdDialogState::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -13641,7 +13611,7 @@ HudCmdDialogState *RECOIL_THISCALL HudCmdDialogState::ScalarDeletingDestructor(
 
 // Reimplements 0x40b5e0: HudCmdDialog::SelectGroupRelative
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-int RECOIL_THISCALL HudCmdDialog::SelectGroupRelative(
+int HudCmdDialog::SelectGroupRelative(
     int delta
 ) {
     int groupIndex = setList.base.selectedIndex + delta;
@@ -13659,7 +13629,7 @@ int RECOIL_THISCALL HudCmdDialog::SelectGroupRelative(
 
 // Reimplements 0x40b630: HudCmdDialog::SelectCommandRelative
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-int RECOIL_THISCALL HudCmdDialog::SelectCommandRelative(
+int HudCmdDialog::SelectCommandRelative(
     int delta
 ) {
     int selectedIndex = delta;
@@ -13685,7 +13655,7 @@ int RECOIL_THISCALL HudCmdDialog::SelectCommandRelative(
 
 // Reimplements 0x40b930: HudCmdResetButton::OnActivate
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdResetButton::OnActivate() {
+void HudCmdResetButton::OnActivate() {
     HudCmdDialog *const dialog = (HudCmdDialog *)(base.owner);
     zInput::BindMap_InitDefaultBindings();
     zInput::BindMap_Current_RebuildLookupIndices();
@@ -13695,14 +13665,14 @@ void RECOIL_THISCALL HudCmdResetButton::OnActivate() {
 
 // Reimplements 0x40b960: HudCmdSetListWidget::OnActivate
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdSetListWidget::OnActivate() {
+void HudCmdSetListWidget::OnActivate() {
     base.AdvanceSelectionAndActivate();
     ((HudCmdDialog *)(base.base.owner))->RebuildCommandBindingListsForGroup(base.selectedIndex);
 }
 
 // Reimplements 0x40ba30: HudCmdKeyAButton::OnBeginCapture
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdKeyAButton::OnBeginCapture() {
+void HudCmdKeyAButton::OnBeginCapture() {
     ((HudCmdDialog *)(base.base.base.owner))->descriptionPanel.captureState = 1;
     zInput::ResetAllTransitionState();
     base.base.OnActivate();
@@ -13710,7 +13680,7 @@ void RECOIL_THISCALL HudCmdKeyAButton::OnBeginCapture() {
 
 // Reimplements 0x40ba60: HudCmdKeyAButton::OnClearBinding
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdKeyAButton::OnClearBinding() {
+void HudCmdKeyAButton::OnClearBinding() {
     const int selectedIndex = base.selectedBindingIndex;
     ((HudCmdDialog *)(base.base.base.owner))->ApplyPrimaryKeyRebind(
         0,
@@ -13721,7 +13691,7 @@ void RECOIL_THISCALL HudCmdKeyAButton::OnClearBinding() {
 
 // Reimplements 0x40ba90: HudCmdBindButtonBase::OnSelectionChangedRefresh
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdBindButtonBase::OnSelectionChangedRefresh(
+void HudCmdBindButtonBase::OnSelectionChangedRefresh(
     int selectedIndex
 ) {
     ((HudCmdDialog *)(base.base.owner))->OnCommandSelectionChanged(selectedIndex);
@@ -13729,7 +13699,7 @@ void RECOIL_THISCALL HudCmdBindButtonBase::OnSelectionChangedRefresh(
 
 // Reimplements 0x40bab0: HudCmdKeyBButton::OnBeginCapture
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdKeyBButton::OnBeginCapture() {
+void HudCmdKeyBButton::OnBeginCapture() {
     ((HudCmdDialog *)(base.base.base.owner))->descriptionPanel.captureState = 2;
     zInput::ResetAllTransitionState();
     base.base.OnActivate();
@@ -13737,7 +13707,7 @@ void RECOIL_THISCALL HudCmdKeyBButton::OnBeginCapture() {
 
 // Reimplements 0x40bae0: HudCmdKeyBButton::OnClearBinding
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdKeyBButton::OnClearBinding() {
+void HudCmdKeyBButton::OnClearBinding() {
     ((HudCmdDialog *)(base.base.base.owner))->ApplySecondaryKeyRebind(
         0,
         base.selectedBindingIndex
@@ -13746,7 +13716,7 @@ void RECOIL_THISCALL HudCmdKeyBButton::OnClearBinding() {
 
 // Reimplements 0x40bb00: HudCmdJoyButton::OnBeginCapture
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdJoyButton::OnBeginCapture() {
+void HudCmdJoyButton::OnBeginCapture() {
     ((HudCmdDialog *)(base.base.base.owner))->descriptionPanel.captureState = 3;
     zInput::ResetAllTransitionState();
     base.base.OnActivate();
@@ -13754,7 +13724,7 @@ void RECOIL_THISCALL HudCmdJoyButton::OnBeginCapture() {
 
 // Reimplements 0x40bb30: HudCmdJoyButton::OnClearBinding
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdJoyButton::OnClearBinding() {
+void HudCmdJoyButton::OnClearBinding() {
     ((HudCmdDialog *)(base.base.base.owner))
         ->ApplyJoystickButtonRebind(
             0,
@@ -13764,7 +13734,7 @@ void RECOIL_THISCALL HudCmdJoyButton::OnClearBinding() {
 
 // Reimplements 0x40bb50: HudCmdMouseButton::OnBeginCapture
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdMouseButton::OnBeginCapture() {
+void HudCmdMouseButton::OnBeginCapture() {
     if (g_HudCmdMouseDebounceFrames > 0) {
         return;
     }
@@ -13776,7 +13746,7 @@ void RECOIL_THISCALL HudCmdMouseButton::OnBeginCapture() {
 
 // Reimplements 0x40bb80: HudCmdMouseButton::OnClearBinding
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdMouseButton::OnClearBinding() {
+void HudCmdMouseButton::OnClearBinding() {
     if (g_HudCmdMouseDebounceFrames > 0) {
         return;
     }
@@ -13789,35 +13759,35 @@ void RECOIL_THISCALL HudCmdMouseButton::OnClearBinding() {
 
 // Reimplements 0x40bba0: HudCmdDialogCallback::NextSet
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdDialogCallback::NextSet() {
+void HudCmdDialogCallback::NextSet() {
     ((HudCmdDialog *)(base.owner))->SelectGroupRelative(1);
     base.OnActivate();
 }
 
 // Reimplements 0x40bbc0: HudCmdDialogCallback::PrevSet
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdDialogCallback::PrevSet() {
+void HudCmdDialogCallback::PrevSet() {
     ((HudCmdDialog *)(base.owner))->SelectGroupRelative(-1);
     base.OnActivate();
 }
 
 // Reimplements 0x40bbe0: HudCmdDialogCallback::NextCommand
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdDialogCallback::NextCommand() {
+void HudCmdDialogCallback::NextCommand() {
     ((HudCmdDialog *)(base.owner))->SelectCommandRelative(1);
     base.OnActivate();
 }
 
 // Reimplements 0x40bc00: HudCmdDialogCallback::PrevCommand
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdDialogCallback::PrevCommand() {
+void HudCmdDialogCallback::PrevCommand() {
     ((HudCmdDialog *)(base.owner))->SelectCommandRelative(-1);
     base.OnActivate();
 }
 
 // Reimplements 0x40b680: HudCmdDialog::RebuildCommandBindingListsForGroup
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdDialog::RebuildCommandBindingListsForGroup(
+void HudCmdDialog::RebuildCommandBindingListsForGroup(
     int groupIndex
 ) {
     HudCmdDialog_ClearBindButtonEntries(&commandList.base);
@@ -13884,7 +13854,7 @@ void RECOIL_THISCALL HudCmdDialog::RebuildCommandBindingListsForGroup(
 
 // Reimplements 0x40b980: HudCmdDialog::OnCommandSelectionChanged
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdDialog::OnCommandSelectionChanged(
+void HudCmdDialog::OnCommandSelectionChanged(
     int commandIndex
 ) {
     descriptionPanel.captureState = 0;
@@ -13910,7 +13880,7 @@ void RECOIL_THISCALL HudCmdDialog::OnCommandSelectionChanged(
 
 // Reimplements 0x40b140: HudCmdDialog::UpdateCaptureState
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void RECOIL_THISCALL HudCmdDialog::UpdateCaptureState(
+void HudCmdDialog::UpdateCaptureState(
     float deltaTime
 ) {
     base.Update(deltaTime);
@@ -14042,7 +14012,7 @@ void RECOIL_THISCALL HudCmdDialog::UpdateCaptureState(
 
 // Reimplements 0x40b3e0: HudCmdDialog::ApplyPrimaryKeyRebind
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-int RECOIL_THISCALL HudCmdDialog::ApplyPrimaryKeyRebind(
+int HudCmdDialog::ApplyPrimaryKeyRebind(
     int keyCode,
     int commandIndex
 ) {
@@ -14075,7 +14045,7 @@ int RECOIL_THISCALL HudCmdDialog::ApplyPrimaryKeyRebind(
 
 // Reimplements 0x40b460: HudCmdDialog::ApplySecondaryKeyRebind
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-int RECOIL_THISCALL HudCmdDialog::ApplySecondaryKeyRebind(
+int HudCmdDialog::ApplySecondaryKeyRebind(
     int keyCode,
     int commandIndex
 ) {
@@ -14108,7 +14078,7 @@ int RECOIL_THISCALL HudCmdDialog::ApplySecondaryKeyRebind(
 
 // Reimplements 0x40b4e0: HudCmdDialog::ApplyJoystickButtonRebind
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-int RECOIL_THISCALL HudCmdDialog::ApplyJoystickButtonRebind(
+int HudCmdDialog::ApplyJoystickButtonRebind(
     int buttonCode,
     int commandIndex
 ) {
@@ -14138,7 +14108,7 @@ int RECOIL_THISCALL HudCmdDialog::ApplyJoystickButtonRebind(
 
 // Reimplements 0x40b560: HudCmdDialog::ApplyMouseButtonRebind
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-int RECOIL_THISCALL HudCmdDialog::ApplyMouseButtonRebind(
+int HudCmdDialog::ApplyMouseButtonRebind(
     int buttonCode,
     int commandIndex
 ) {
@@ -14167,7 +14137,7 @@ int RECOIL_THISCALL HudCmdDialog::ApplyMouseButtonRebind(
 }
 
 // Reimplements 0x4b90e0: HudCmdBindButtonBase::RebuildBindingSlotWidgets
-void RECOIL_THISCALL HudCmdBindButtonBase::RebuildBindingSlotWidgets(
+void HudCmdBindButtonBase::RebuildBindingSlotWidgets(
     int totalCount,
     int visibleCount
 ) {
@@ -14228,7 +14198,7 @@ void RECOIL_THISCALL HudCmdBindButtonBase::RebuildBindingSlotWidgets(
 }
 
 // Reimplements 0x4b8de0: HudCmdBindButtonBase::LoadFromZrd
-int RECOIL_THISCALL HudCmdBindButtonBase::LoadFromZrd(
+int HudCmdBindButtonBase::LoadFromZrd(
     zReader::Node *zrdSection,
     void *ownerDialog
 ) {
@@ -14415,7 +14385,7 @@ zVidImagePartial *HudUiMessageBoxCreateSolidImage(
 }
 
 // Reimplements 0x4bf060: HudUiMessageBoxDialog::Constructor
-HudUiMessageBoxDialog *RECOIL_THISCALL HudUiMessageBoxDialog::Constructor(
+HudUiMessageBoxDialog * HudUiMessageBoxDialog::Constructor(
     const char *zrdPath,
     const char *sectionName
 ) {
@@ -14579,7 +14549,7 @@ HudUiMessageBoxDialog *RECOIL_THISCALL HudUiMessageBoxDialog::Constructor(
 }
 
 // Reimplements 0x4bf540: HudUiMessageBoxDialog::ScalarDeletingDestructor
-HudUiMessageBoxDialog *RECOIL_THISCALL HudUiMessageBoxDialog::ScalarDeletingDestructor(
+HudUiMessageBoxDialog * HudUiMessageBoxDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -14591,7 +14561,7 @@ HudUiMessageBoxDialog *RECOIL_THISCALL HudUiMessageBoxDialog::ScalarDeletingDest
 }
 
 // Reimplements 0x4bf560: HudUiMessageBoxDialog::Destructor
-void RECOIL_THISCALL HudUiMessageBoxDialog::Destructor() {
+void HudUiMessageBoxDialog::Destructor() {
     base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiMessageBoxDialog_FTable);
 
     if (backgroundImage != 0) {
@@ -14613,7 +14583,7 @@ void RECOIL_THISCALL HudUiMessageBoxDialog::Destructor() {
 }
 
 // Reimplements 0x4bf630: HudUiMessageBoxDialog::RunModal
-int RECOIL_THISCALL HudUiMessageBoxDialog::RunModal(
+int HudUiMessageBoxDialog::RunModal(
     const char *messageText,
     const char *titleText,
     void *modalContext,
@@ -14663,11 +14633,11 @@ int RECOIL_THISCALL HudUiMessageBoxDialog::RunModal(
     );
 
     const unsigned int *const dialogDispatch = (const unsigned int *)(base.base.vptr);
-    typedef void(RECOIL_THISCALL * DialogSetEnabledFn)(
+    typedef void( * DialogSetEnabledFn)(
         HudUiMessageBoxDialog * self,
         int enabled
     );
-    typedef void(RECOIL_THISCALL * DialogUpdateFn)(
+    typedef void( * DialogUpdateFn)(
         HudUiMessageBoxDialog * self,
         float deltaSeconds
     );
@@ -14720,46 +14690,46 @@ int RECOIL_THISCALL HudUiMessageBoxDialog::RunModal(
 }
 
 // Reimplements 0x4bf7c0: HudUiMessageBoxDialog::OnOk
-void RECOIL_THISCALL HudUiMessageBoxDialog::OnOk() {
+void HudUiMessageBoxDialog::OnOk() {
     modalResult = 1;
     modalFrameCountdown = 0;
 }
 
 // Reimplements 0x4bf7e0: HudUiMessageBoxDialog::OnCancel
-void RECOIL_THISCALL HudUiMessageBoxDialog::OnCancel() {
+void HudUiMessageBoxDialog::OnCancel() {
     modalResult = 2;
     modalFrameCountdown = 0;
 }
 
 // Reimplements 0x4bf800: HudUiMessageBoxOkButton::OnActivate
-void RECOIL_THISCALL HudUiMessageBoxOkButton::OnActivate() {
+void HudUiMessageBoxOkButton::OnActivate() {
     HudUiMessageBoxDialog *const dialog = (HudUiMessageBoxDialog *)(base.owner);
     const HudUiMessageBoxDialog_FTable *const ftable =
         *(const HudUiMessageBoxDialog_FTable *const *)(dialog);
-    typedef void(RECOIL_THISCALL * OnOkFn)(HudUiMessageBoxDialog *);
+    typedef void( * OnOkFn)(HudUiMessageBoxDialog *);
     ((OnOkFn)(ftable->slots[3]))(dialog);
 
     base.OnActivate();
 }
 
 // Reimplements 0x4bf820: HudUiMessageBoxCancelButton::OnActivate
-void RECOIL_THISCALL HudUiMessageBoxCancelButton::OnActivate() {
+void HudUiMessageBoxCancelButton::OnActivate() {
     HudUiMessageBoxDialog *const dialog = (HudUiMessageBoxDialog *)(base.owner);
     const HudUiMessageBoxDialog_FTable *const ftable =
         *(const HudUiMessageBoxDialog_FTable *const *)(dialog);
-    typedef void(RECOIL_THISCALL * OnCancelFn)(HudUiMessageBoxDialog *);
+    typedef void( * OnCancelFn)(HudUiMessageBoxDialog *);
     ((OnCancelFn)(ftable->slots[4]))(dialog);
 
     base.OnActivate();
 }
 
 // Reimplements 0x40f2d0: HudUiWidget::CtorDefaultThunk
-HudUiWidget *RECOIL_THISCALL HudUiWidget::CtorDefaultThunk() {
+HudUiWidget * HudUiWidget::CtorDefaultThunk() {
     return Constructor(0);
 }
 
 // Reimplements 0x404d90: HudUiWidget::GetCenterX
-int RECOIL_THISCALL HudUiWidget::GetCenterX() {
+int HudUiWidget::GetCenterX() {
     if (alignFlags != 0) {
         const int width = image != 0 ? image->width : 0;
         return x + (width / 2);
@@ -14769,7 +14739,7 @@ int RECOIL_THISCALL HudUiWidget::GetCenterX() {
 }
 
 // Reimplements 0x404dd0: HudUiWidget::GetCenterY
-int RECOIL_THISCALL HudUiWidget::GetCenterY() {
+int HudUiWidget::GetCenterY() {
     if (alignFlags != 0) {
         const int height = image != 0 ? image->height : 0;
         return y + (height / 2);
@@ -14779,11 +14749,11 @@ int RECOIL_THISCALL HudUiWidget::GetCenterY() {
 }
 
 // Reimplements 0x4b4030: HudUiWidget::HitTest
-int RECOIL_THISCALL HudUiWidget::HitTest(
+int HudUiWidget::HitTest(
     int px,
     int py
 ) {
-    typedef HudUiRect *(RECOIL_THISCALL * GetBoundsRectFn)(HudUiWidget * self);
+    typedef HudUiRect *( * GetBoundsRectFn)(HudUiWidget * self);
 
     if ((flags & 0x10) != 0) {
         return 0;
@@ -14800,7 +14770,7 @@ int RECOIL_THISCALL HudUiWidget::HitTest(
 }
 
 // Reimplements 0x404e10: HudUiWidget::RebuildBltRectFromImage
-RECOIL_NO_GS void RECOIL_THISCALL HudUiWidget::RebuildBltRectFromImage() {
+RECOIL_NO_GS void HudUiWidget::RebuildBltRectFromImage() {
     struct SetClipRectFTable {
         unsigned int slots[7];
         void (HudUiWidget::*SetClipRect)(const HudUiRect *rect);
@@ -14823,7 +14793,7 @@ RECOIL_NO_GS void RECOIL_THISCALL HudUiWidget::RebuildBltRectFromImage() {
 }
 
 // Reimplements 0x4b3fb0: HudUiWidget::Draw
-void RECOIL_THISCALL HudUiWidget::Draw() {
+void HudUiWidget::Draw() {
     if (image == 0) {
         return;
     }
@@ -14856,7 +14826,7 @@ void RECOIL_THISCALL HudUiWidget::Draw() {
         return;
     }
 
-    typedef void(RECOIL_THISCALL * DrawBaseFn)(HudUiWidget * self);
+    typedef void( * DrawBaseFn)(HudUiWidget * self);
     ((DrawBaseFn)(ftable->slots[2]))(this);
 
     zVid_Image::BlitToActiveTarget(
@@ -14869,7 +14839,7 @@ void RECOIL_THISCALL HudUiWidget::Draw() {
 }
 
 // Reimplements 0x4b3da0: HudUiWidget::ReleaseImageIfOwned
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiWidget::ReleaseImageIfOwned() {
+void HudUiWidget::ReleaseImageIfOwned() {
     if (image != 0 && ownsImage != 0) {
         zVid_Image::ReleaseIfNotDefault(image);
         image = 0;
@@ -14879,10 +14849,10 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiWidget::ReleaseImageIfOwned() {
 }
 
 // Reimplements 0x4b3e70: HudUiWidget::SetImageBorrowedAndInvalidate
-RECOIL_NOINLINE zVidImagePartial *RECOIL_THISCALL HudUiWidget::SetImageBorrowedAndInvalidate(
+zVidImagePartial * HudUiWidget::SetImageBorrowedAndInvalidate(
     zVidImagePartial *newImage
 ) {
-    typedef void(RECOIL_THISCALL * InvalidateFn)(HudUiWidget * self);
+    typedef void( * InvalidateFn)(HudUiWidget * self);
 
     ownsImage = 0;
     image = newImage;
@@ -14891,10 +14861,10 @@ RECOIL_NOINLINE zVidImagePartial *RECOIL_THISCALL HudUiWidget::SetImageBorrowedA
 }
 
 // Reimplements 0x4b3e30: HudUiWidget::SetImageByPathOwned
-RECOIL_NOINLINE zVidImagePartial *RECOIL_THISCALL HudUiWidget::SetImageByPathOwned(
+zVidImagePartial * HudUiWidget::SetImageByPathOwned(
     const char *imagePath
 ) {
-    typedef void(RECOIL_THISCALL * InvalidateFn)(HudUiWidget * self);
+    typedef void( * InvalidateFn)(HudUiWidget * self);
 
     if (imagePath == 0) {
         return 0;
@@ -14911,13 +14881,13 @@ RECOIL_NOINLINE zVidImagePartial *RECOIL_THISCALL HudUiWidget::SetImageByPathOwn
 }
 
 // Reimplements 0x4b3d50: HudUiWidget::DestructorCore
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiWidget::DestructorCore() {
+void HudUiWidget::DestructorCore() {
     ReleaseImageIfOwned();
     ftable = (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable);
 }
 
 // Reimplements 0x4b3ce0: HudUiWidget::ScalarDeletingDestructor
-HudUiWidget *RECOIL_THISCALL HudUiWidget::ScalarDeletingDestructor(
+HudUiWidget * HudUiWidget::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -14929,11 +14899,11 @@ HudUiWidget *RECOIL_THISCALL HudUiWidget::ScalarDeletingDestructor(
 }
 
 // Reimplements 0x4b3dd0: HudUiWidget::SetPos
-void RECOIL_THISCALL HudUiWidget::SetPos(
+void HudUiWidget::SetPos(
     int newX,
     int newY
 ) {
-    typedef void(RECOIL_THISCALL * InvalidateFn)(HudUiWidget * self);
+    typedef void( * InvalidateFn)(HudUiWidget * self);
 
     if (alignFlags != 0 && image != 0) {
         x = newX - (image->width / 2);
@@ -14947,7 +14917,7 @@ void RECOIL_THISCALL HudUiWidget::SetPos(
 }
 
 // Reimplements 0x40f200: HudUiTripletPanel::Constructor
-HudUiTripletPanel *RECOIL_THISCALL HudUiTripletPanel::Constructor() {
+HudUiTripletPanel * HudUiTripletPanel::Constructor() {
     base.Constructor(
         0,
         0
@@ -14969,7 +14939,7 @@ HudUiTripletPanel *RECOIL_THISCALL HudUiTripletPanel::Constructor() {
 }
 
 // Reimplements 0x40f2b0: HudUiTripletPanel::ScalarDeletingDestructor
-HudUiTripletPanel *RECOIL_THISCALL HudUiTripletPanel::ScalarDeletingDestructor(
+HudUiTripletPanel * HudUiTripletPanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -14982,9 +14952,9 @@ HudUiTripletPanel *RECOIL_THISCALL HudUiTripletPanel::ScalarDeletingDestructor(
 
 // Reimplements 0x40f400: HudUiTripletPanel::Draw
 // (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_THISCALL HudUiTripletPanel::Draw() {
-    typedef void(RECOIL_THISCALL * DrawBaseFn)(HudUiTripletPanel * self);
-    typedef void(RECOIL_THISCALL * DrawFn)(HudUiWidget * self);
+void HudUiTripletPanel::Draw() {
+    typedef void( * DrawBaseFn)(HudUiTripletPanel * self);
+    typedef void( * DrawFn)(HudUiWidget * self);
 
     ((DrawBaseFn)(base.ftable->slots[2]))(this);
 
@@ -14999,14 +14969,14 @@ void RECOIL_THISCALL HudUiTripletPanel::Draw() {
 }
 
 // Reimplements 0x40f460: HudUiTripletPanel::SetVisibleCount
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiTripletPanel::SetVisibleCount(
+void HudUiTripletPanel::SetVisibleCount(
     int count
 ) {
-    typedef void(RECOIL_THISCALL * SetVisibleFn)(
+    typedef void( * SetVisibleFn)(
         HudUiElement * self,
         int visible
     );
-    typedef void(RECOIL_THISCALL * InvalidateFn)(HudUiElement * self);
+    typedef void( * InvalidateFn)(HudUiElement * self);
 
     if (visibleCount == count) {
         return;
@@ -15035,22 +15005,22 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiTripletPanel::SetVisibleCount(
 
 // Reimplements 0x40f2e0: HudUiNanitePanel::InitLayout
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiNanitePanel::InitLayout(
+void HudUiNanitePanel::InitLayout(
     zReader::Node *layoutRoot
 ) {
-    typedef int(RECOIL_THISCALL * GetCenterFn)(HudUiWidget * self);
-    typedef void(RECOIL_THISCALL * SetPosFn)(
+    typedef int( * GetCenterFn)(HudUiWidget * self);
+    typedef void( * SetPosFn)(
         HudUiNanitePanel * self,
         int x,
         int y
     );
-    typedef void(RECOIL_THISCALL * SetBltSourceAndClipRectFn)(
+    typedef void( * SetBltSourceAndClipRectFn)(
         HudUiNanitePanel * self,
         void *bltSourceOrNull,
         const HudUiRect *clipRect
     );
 
-    HudUiWidget *const layoutWidget2 = (HudUiWidget *)((unsigned char *)(&g_HudLayoutHW) + 0x1b4);
+    HudUiWidget *const layoutWidget2 = &g_HudLayoutHW.widget2;
     const int baseX = g_HudUiMgrHudOriginX / 2;
     const HudUiWidget_FTable *const layoutWidget2FTable = layoutWidget2->ftable;
     int anchor[2];
@@ -15116,19 +15086,19 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiNanitePanel::InitLayout(
 }
 
 // Reimplements 0x40f3e0: HudUiTripletPanel::ShutdownItems_Stub
-void RECOIL_THISCALL HudUiTripletPanel::ShutdownItems_Stub() {
+void HudUiTripletPanel::ShutdownItems_Stub() {
     HudUiNoOpMethodStub(&g_HudUiMgrNanitePanel.items[0]);
     HudUiNoOpMethodStub(&g_HudUiMgrNanitePanel.items[1]);
     HudUiNoOpMethodStub(&g_HudUiMgrNanitePanel.items[2]);
 }
 
 // Reimplements 0x40d600: HudUiTripletPanel::UnwindDestructFirstItem
-void RECOIL_THISCALL HudUiTripletPanel::UnwindDestructFirstItem() {
+void HudUiTripletPanel::UnwindDestructFirstItem() {
     items[0].DestructorCore();
 }
 
 // Reimplements 0x40d610: HudUiTripletPanel::DestructorCore
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiTripletPanel::DestructorCore() {
+void HudUiTripletPanel::DestructorCore() {
     {
         for (int index = 2; index >= 0; --index) {
             items[index].DestructorCore();
@@ -15140,7 +15110,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiTripletPanel::DestructorCore() {
 
 // Reimplements 0x40e910: HudUiTriplet::InterpolateLayout
 // (D:\Proj\Battlesport\HudUiTriplet.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiTriplet::InterpolateLayout(
+void HudUiTriplet::InterpolateLayout(
     float t
 ) {
     baseX = (int)((float)(baseXEnd - baseXStart) * t + baseXStart);
@@ -15155,19 +15125,19 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiTriplet::InterpolateLayout(
 }
 
 // Reimplements 0x4b4370: HudUiTextInput::DestructorCore
-void RECOIL_THISCALL HudUiTextInput::DestructorCore() {
+void HudUiTextInput::DestructorCore() {
     char *const ownedBuffer = buffer;
     ftable = &g_HudUiTextInput_FTable;
     ::operator delete(ownedBuffer);
 }
 
 // Reimplements 0x4b4ab0: HudUiTextInput::DestructorCoreThunk
-void RECOIL_THISCALL HudUiTextInput::DestructorCoreThunk() {
+void HudUiTextInput::DestructorCoreThunk() {
     DestructorCore();
 }
 
 // Reimplements 0x4b4390: HudUiTextInput::AllocTextBuffer
-void RECOIL_THISCALL HudUiTextInput::AllocTextBuffer(
+void HudUiTextInput::AllocTextBuffer(
     unsigned int bufferSize
 ) {
     char *const newBuffer = (char *)(::operator new(bufferSize));
@@ -15190,7 +15160,7 @@ void RECOIL_THISCALL HudUiTextInput::AllocTextBuffer(
 }
 
 // Reimplements 0x4b42f0: HudUiTextInput::Constructor
-HudUiTextInput *RECOIL_THISCALL HudUiTextInput::Constructor(
+HudUiTextInput * HudUiTextInput::Constructor(
     unsigned int bufferSize
 ) {
     ftable = &g_HudUiTextInput_FTable;
@@ -15217,7 +15187,7 @@ HudUiTextInput *RECOIL_THISCALL HudUiTextInput::Constructor(
 }
 
 // Reimplements 0x4b4420: HudUiTextInput::SetCursorPosition
-void RECOIL_THISCALL HudUiTextInput::SetCursorPosition(
+void HudUiTextInput::SetCursorPosition(
     int position
 ) {
     const int textLength = (int)(strlen(buffer));
@@ -15225,7 +15195,7 @@ void RECOIL_THISCALL HudUiTextInput::SetCursorPosition(
 }
 
 // Reimplements 0x4b43d0: HudUiTextInput::SetContents
-void RECOIL_THISCALL HudUiTextInput::SetContents(
+void HudUiTextInput::SetContents(
     const char *source
 ) {
     strncpy(
@@ -15238,12 +15208,12 @@ void RECOIL_THISCALL HudUiTextInput::SetContents(
 }
 
 // Reimplements 0x4b4410: HudUiTextInput::GetBuffer
-RECOIL_NOINLINE char *RECOIL_THISCALL HudUiTextInput::GetBuffer() {
+char * HudUiTextInput::GetBuffer() {
     return buffer;
 }
 
 // Reimplements 0x4b4590: HudUiTextInput::ShiftTextRight
-int RECOIL_THISCALL HudUiTextInput::ShiftTextRight(
+int HudUiTextInput::ShiftTextRight(
     int count,
     int startPos
 ) {
@@ -15261,7 +15231,7 @@ int RECOIL_THISCALL HudUiTextInput::ShiftTextRight(
 }
 
 // Reimplements 0x4b45e0: HudUiTextInput::ShiftTextLeft
-int RECOIL_THISCALL HudUiTextInput::ShiftTextLeft(
+int HudUiTextInput::ShiftTextLeft(
     int count,
     int startPos
 ) {
@@ -15276,7 +15246,7 @@ int RECOIL_THISCALL HudUiTextInput::ShiftTextLeft(
 }
 
 // Reimplements 0x4b4550: HudUiTextInput::DeleteCharForward
-void RECOIL_THISCALL HudUiTextInput::DeleteCharForward() {
+void HudUiTextInput::DeleteCharForward() {
     ShiftTextLeft(
         1,
         (int)(cursor)
@@ -15284,14 +15254,14 @@ void RECOIL_THISCALL HudUiTextInput::DeleteCharForward() {
 }
 
 // Reimplements 0x4b4560: HudUiTextInput::MoveCursorLeft
-void RECOIL_THISCALL HudUiTextInput::MoveCursorLeft() {
+void HudUiTextInput::MoveCursorLeft() {
     if ((int)(cursor) > 0) {
         --cursor;
     }
 }
 
 // Reimplements 0x4b4570: HudUiTextInput::MoveCursorRight
-void RECOIL_THISCALL HudUiTextInput::MoveCursorRight() {
+void HudUiTextInput::MoveCursorRight() {
     const int textLength = (int)(strlen(buffer));
     if ((int)(cursor) < textLength) {
         ++cursor;
@@ -15299,7 +15269,7 @@ void RECOIL_THISCALL HudUiTextInput::MoveCursorRight() {
 }
 
 // Reimplements 0x4b4530: HudUiTextInput::BackspaceDeleteChar
-void RECOIL_THISCALL HudUiTextInput::BackspaceDeleteChar() {
+void HudUiTextInput::BackspaceDeleteChar() {
     if ((int)(cursor) > 0) {
         --cursor;
         ShiftTextLeft(
@@ -15310,12 +15280,12 @@ void RECOIL_THISCALL HudUiTextInput::BackspaceDeleteChar() {
 }
 
 // Reimplements 0x4b44e0: HudUiTextInput::InsertCharAtCursor
-void RECOIL_THISCALL HudUiTextInput::InsertCharAtCursor(
+void HudUiTextInput::InsertCharAtCursor(
     int ch
 ) {
     const int textLength = (int)(strlen(buffer));
     if (textLength >= (int)(capacity)-1) {
-        typedef void(RECOIL_THISCALL * NoArgFn)(HudUiTextInput * self);
+        typedef void( * NoArgFn)(HudUiTextInput * self);
         ((NoArgFn)(ftable->slots[8]))(this);
         return;
     }
@@ -15329,17 +15299,17 @@ void RECOIL_THISCALL HudUiTextInput::InsertCharAtCursor(
 }
 
 // Reimplements 0x4b4460: HudUiTextInput::DispatchKeyAction
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiTextInput::DispatchKeyAction(
+void HudUiTextInput::DispatchKeyAction(
     int key
 ) {
     const int keyIndex = (signed char)(key);
     const int action = (signed char)(keyActionMap[keyIndex]);
 
-    typedef void(RECOIL_THISCALL * KeyFn)(
+    typedef void( * KeyFn)(
         HudUiTextInput * self,
         int key
     );
-    typedef void(RECOIL_THISCALL * NoArgFn)(HudUiTextInput * self);
+    typedef void( * NoArgFn)(HudUiTextInput * self);
 
     switch (action) {
     case 0:
@@ -15378,8 +15348,8 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiTextInput::DispatchKeyAction(
 }
 
 // Reimplements 0x4ba3e0: HudUiOwnedTextInput::OnAcceptNotifyOwner
-void RECOIL_THISCALL HudUiOwnedTextInput::OnAcceptNotifyOwner() {
-    typedef void(RECOIL_THISCALL * AcceptFn)(void *self);
+void HudUiOwnedTextInput::OnAcceptNotifyOwner() {
+    typedef void( * AcceptFn)(void *self);
     struct OwnerFTable {
         unsigned int slots[34];
         AcceptFn OnAccept;
@@ -15392,7 +15362,7 @@ void RECOIL_THISCALL HudUiOwnedTextInput::OnAcceptNotifyOwner() {
 }
 
 // Reimplements 0x40d660: HudUiMgrObjectiveBlock::Destructor
-void RECOIL_THISCALL HudUiMgrObjectiveBlock::Destructor() {
+void HudUiMgrObjectiveBlock::Destructor() {
     chatComposeTextInput.DestructorCore();
     objectiveBar.ftable = (const HudUiBar_FTable *)(&g_HudUiCommon_FTable);
     objectiveMeter.ftable = (const HudUiMeter_FTable *)(&g_HudUiCommon_FTable);
@@ -15405,21 +15375,21 @@ void RECOIL_THISCALL HudUiMgrObjectiveBlock::Destructor() {
 // sensorPanel, sensorOverlay, and sensorMeter by offsets from this block. The
 // current source keeps those recovered subobjects as globals in the HUD manager
 // cluster, so this method applies the same teardown to the named objects.
-void RECOIL_THISCALL HudUiMgrSensorBlock::Destructor() {
+void HudUiMgrSensorBlock::Destructor() {
     g_HudUiMgrSensorMeter.ftable = (const HudUiMeter_FTable *)(&g_HudUiCommon_FTable);
     g_HudUiMgrSensorOverlay.DestructorCore();
     g_HudUiMgrSensorPanel.DestructorCore();
 }
 
 // Reimplements 0x40d780: HudUiSlot::Destructor
-void RECOIL_THISCALL HudUiSlot::Destructor() {
+void HudUiSlot::Destructor() {
     trackMarkerWidget.DestructorCore();
     slotWidget.DestructorCore();
     ftable = (const HudUiSlot_FTable *)(&g_HudUiCommon_FTable);
 }
 
 // Reimplements 0x40db20: HudUiSlot::Constructor
-HudUiSlot *RECOIL_THISCALL HudUiSlot::Constructor() {
+HudUiSlot * HudUiSlot::Constructor() {
     ((HudUiElement *)(this))->Constructor(
         0,
         0
@@ -15431,8 +15401,8 @@ HudUiSlot *RECOIL_THISCALL HudUiSlot::Constructor() {
 }
 
 // Reimplements 0x40db90: HudUiSlot::Draw
-void RECOIL_THISCALL HudUiSlot::Draw() {
-    typedef void(RECOIL_FASTCALL * DispatchFn)(HudUiWidget * self);
+void HudUiSlot::Draw() {
+    typedef void(__fastcall * DispatchFn)(HudUiWidget * self);
 
     if ((slotWidget.flags & 0x10) == 0) {
         ((DispatchFn)(slotWidget.ftable->slots[1]))(&slotWidget);
@@ -15444,7 +15414,7 @@ void RECOIL_THISCALL HudUiSlot::Draw() {
 }
 
 // Reimplements 0x40dbd0: HudUiSlot::ScalarDeletingDestructor
-HudUiSlot *RECOIL_THISCALL HudUiSlot::ScalarDeletingDestructor(
+HudUiSlot * HudUiSlot::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -15456,14 +15426,14 @@ HudUiSlot *RECOIL_THISCALL HudUiSlot::ScalarDeletingDestructor(
 }
 
 // Reimplements 0x40fa10: HudUiStatsListElement::Update
-void RECOIL_THISCALL HudUiStatsListElement::Update(
+void HudUiStatsListElement::Update(
     float deltaSeconds
 ) {
     (triplet->base.*(triplet->base.vptr->updateAll))(deltaSeconds);
 }
 
 // Reimplements 0x40fa40: HudUiStatsListElement::DestructorCore
-void RECOIL_THISCALL HudUiStatsListElement::DestructorCore() {
+void HudUiStatsListElement::DestructorCore() {
     base.ftable = (const HudUiCommon_FTable *)(&g_HudUiStatsListElement_FTable);
 
     HudUiTriplet *const ownedTriplet = triplet;
@@ -15477,7 +15447,7 @@ void RECOIL_THISCALL HudUiStatsListElement::DestructorCore() {
 }
 
 // Reimplements 0x40fa20: HudUiStatsListElement::ScalarDeletingDestructor
-HudUiStatsListElement *RECOIL_THISCALL HudUiStatsListElement::ScalarDeletingDestructor(
+HudUiStatsListElement * HudUiStatsListElement::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -15489,7 +15459,7 @@ HudUiStatsListElement *RECOIL_THISCALL HudUiStatsListElement::ScalarDeletingDest
 }
 
 // Reimplements 0x40fdd0: HudUiStringMenu::DestructorCore
-void RECOIL_THISCALL HudUiStringMenu::DestructorCore() {
+void HudUiStringMenu::DestructorCore() {
     {
         int itemIndex;
         for (itemIndex = 0; itemIndex < 23; ++itemIndex) {
@@ -15501,7 +15471,7 @@ void RECOIL_THISCALL HudUiStringMenu::DestructorCore() {
 }
 
 // Reimplements 0x40dac0: HudUiCounter::Constructor
-HudUiCounter *RECOIL_THISCALL HudUiCounter::Constructor() {
+HudUiCounter * HudUiCounter::Constructor() {
     base.Constructor(0);
     base.ftable = (const HudUiWidget_FTable *)(&g_HudUiCounter_FTable);
     stateImages[2] = 0;
@@ -15511,7 +15481,7 @@ HudUiCounter *RECOIL_THISCALL HudUiCounter::Constructor() {
 }
 
 // Reimplements 0x40f0f0: HudUiCounter::ReleaseStateImages
-void RECOIL_THISCALL HudUiCounter::ReleaseStateImages() {
+void HudUiCounter::ReleaseStateImages() {
     zVid_Image::ReleaseIfNotDefault(stateImages[0]);
     zVid_Image::ReleaseIfNotDefault(stateImages[1]);
     zVid_Image::ReleaseIfNotDefault(stateImages[2]);
@@ -15523,7 +15493,7 @@ void RECOIL_THISCALL HudUiCounter::ReleaseStateImages() {
 
 // Reimplements 0x40f070: HudUiCounter::ApplyFromLayoutNode
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudUiCounter::ApplyFromLayoutNode(
+int HudUiCounter::ApplyFromLayoutNode(
     zReader::Node *layoutNode
 ) {
     if (layoutNode->type != zReader::ZRDR_NODE_ARRAY) {
@@ -15544,8 +15514,8 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiCounter::ApplyFromLayoutNode(
 }
 
 // Reimplements 0x40f130: HudUiCounter::UpdateLayoutPosition
-void RECOIL_THISCALL HudUiCounter::UpdateLayoutPosition() {
-    typedef void(RECOIL_THISCALL * SetPosFn)(
+void HudUiCounter::UpdateLayoutPosition() {
+    typedef void( * SetPosFn)(
         HudUiCounter * self,
         int x,
         int y
@@ -15569,8 +15539,8 @@ void RECOIL_THISCALL HudUiCounter::UpdateLayoutPosition() {
 
 // Reimplements 0x4134e0: HudUiMessage::Draw
 // (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_THISCALL HudUiMessage::Draw() {
-    typedef void(RECOIL_THISCALL * DrawPanelFn)(HudUiPanel * self);
+void HudUiMessage::Draw() {
+    typedef void( * DrawPanelFn)(HudUiPanel * self);
 
     base.Draw();
 
@@ -15581,20 +15551,20 @@ void RECOIL_THISCALL HudUiMessage::Draw() {
 
 // Reimplements 0x414070: HudUiMessage::RebuildWeaponLayout
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiMessage::RebuildWeaponLayout() {
-    typedef int(RECOIL_THISCALL * GetCoordFn)(void *self);
-    typedef void(RECOIL_THISCALL * SetPosFn)(
+void HudUiMessage::RebuildWeaponLayout() {
+    typedef int( * GetCoordFn)(void *self);
+    typedef void( * SetPosFn)(
         void *self,
         int x,
         int y
     );
-    typedef void(RECOIL_THISCALL * SetClipFn)(
+    typedef void( * SetClipFn)(
         void *self,
         void *bltSourceOrNull,
         const HudUiRect *rect
     );
 
-    HudUiWidget *const layoutWidget2 = (HudUiWidget *)((unsigned char *)(&g_HudLayoutHW) + 0x1b4);
+    HudUiWidget *const layoutWidget2 = &g_HudLayoutHW.widget2;
     const HudUiWidget_FTable *const layoutWidget2FTable = layoutWidget2->ftable;
     const int anchorX = ((GetCoordFn)(layoutWidget2FTable->slots[0x64 / 4]))(layoutWidget2);
     const int anchorY = ((GetCoordFn)(layoutWidget2FTable->slots[0x68 / 4]))(layoutWidget2);
@@ -15651,7 +15621,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiMessage::RebuildWeaponLayout() {
 
 // Reimplements 0x413ec0: HudUiMessage::LoadWeaponLayoutFromNode
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudUiMessage::LoadWeaponLayoutFromNode(
+int HudUiMessage::LoadWeaponLayoutFromNode(
     zReader::Node *layoutNode,
     const HudUiPanelFontParams *fontParams
 ) {
@@ -15672,7 +15642,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiMessage::LoadWeaponLayoutFromNode(
 
     RebuildWeaponLayout();
 
-    typedef void(RECOIL_THISCALL * InvalidateFn)(HudUiMessage * self);
+    typedef void( * InvalidateFn)(HudUiMessage * self);
     const HudUiWidget_FTable *const baseFTable = base.ftable;
     base.imageStateWord = (base.imageStateWord & 0xffff0000u) | 1u;
     ((InvalidateFn)(baseFTable->slots[0x20 / 4]))(this);
@@ -15708,7 +15678,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiMessage::LoadWeaponLayoutFromNode(
     ) = 1;
 
     const HudUiPanel_FTable *const panelFTable = *(const HudUiPanel_FTable *const *)(textPanel);
-    typedef void(RECOIL_THISCALL * SetFontFn)(
+    typedef void( * SetFontFn)(
         HudUiPanel * self,
         const char *faceName,
         int height,
@@ -15718,7 +15688,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiMessage::LoadWeaponLayoutFromNode(
         int charSet,
         int pitchAndFamily
     );
-    typedef void(RECOIL_CDECL * SetTextFmtFn)(
+    typedef void(* SetTextFmtFn)(
         HudUiPanel * self,
         const char *format,
         ...
@@ -15744,7 +15714,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiMessage::LoadWeaponLayoutFromNode(
 }
 
 // Reimplements 0x413ff0: HudUiMessage::ReleaseImages
-void RECOIL_THISCALL HudUiMessage::ReleaseImages() {
+void HudUiMessage::ReleaseImages() {
     zVid_Image::ReleaseIfNotDefault(variantImages[0]);
     zVid_Image::ReleaseIfNotDefault(variantImages[1]);
     zVid_Image::ReleaseIfNotDefault(variantImages[2]);
@@ -15763,7 +15733,7 @@ void RECOIL_THISCALL HudUiMessage::ReleaseImages() {
 }
 
 // Reimplements 0x4126e0: HudUiMessage::SelectVariantDisplay
-void RECOIL_FASTCALL HudUiMessage::SelectVariantDisplay(
+void __fastcall HudUiMessage::SelectVariantDisplay(
     int messageIndex,
     int variantIndex
 ) {
@@ -15824,7 +15794,7 @@ void RECOIL_FASTCALL HudUiMessage::SelectVariantDisplay(
 }
 
 // Reimplements 0x412790: HudUiMessage::ApplySideImageSwap
-void RECOIL_FASTCALL HudUiMessage::ApplySideImageSwap(
+void __fastcall HudUiMessage::ApplySideImageSwap(
     int messageIndex,
     int sideIndex
 ) {
@@ -15842,7 +15812,7 @@ void RECOIL_FASTCALL HudUiMessage::ApplySideImageSwap(
 }
 
 // Reimplements 0x4127d0: HudUiMessage::ClearDisplay
-void RECOIL_FASTCALL HudUiMessage::ClearDisplay(
+void __fastcall HudUiMessage::ClearDisplay(
     int messageIndex
 ) {
     HudUiMessage &message = g_HudUiMgrMessages[messageIndex];
@@ -15855,7 +15825,7 @@ void RECOIL_FASTCALL HudUiMessage::ClearDisplay(
 
 // Reimplements 0x412650: HudUiMessage::SetValueIfOwnerMatches
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL HudUiMessage::SetValueIfOwnerMatches(
+void __fastcall HudUiMessage::SetValueIfOwnerMatches(
     int messageIndex,
     int ownerSideIndex,
     float valueOrClearToken
@@ -15883,7 +15853,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HudUiMessage::SetValueIfOwnerMatches(
 
 // Reimplements 0x412820: HudUiMessage::UpdateSelectedWeaponDisplay
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL HudUiMessage::UpdateSelectedWeaponDisplay(
+void __fastcall HudUiMessage::UpdateSelectedWeaponDisplay(
     int weaponBankIndex,
     int weaponSideIndex,
     float valueOrClearToken
@@ -15936,7 +15906,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HudUiMessage::UpdateSelectedWeaponDisplay(
 }
 
 // Reimplements 0x40da00: HudUiMessage::Constructor
-HudUiMessage *RECOIL_THISCALL HudUiMessage::Constructor() {
+HudUiMessage * HudUiMessage::Constructor() {
     base.Constructor(0);
     ((HudUiPanel *)(&panel))->ConstructorDefault(
         0,
@@ -15959,14 +15929,14 @@ HudUiMessage *RECOIL_THISCALL HudUiMessage::Constructor() {
 }
 
 // Reimplements 0x40d590: HudUiMessage::Destructor
-void RECOIL_THISCALL HudUiMessage::Destructor() {
+void HudUiMessage::Destructor() {
     widget.DestructorCore();
     ((HudUiPanel *)(&panel))->Destructor();
     base.DestructorCore();
 }
 
 // Reimplements 0x40daa0: HudUiMessage::ScalarDeletingDestructor
-HudUiMessage *RECOIL_THISCALL HudUiMessage::ScalarDeletingDestructor(
+HudUiMessage * HudUiMessage::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -15979,21 +15949,21 @@ HudUiMessage *RECOIL_THISCALL HudUiMessage::ScalarDeletingDestructor(
 
 // Reimplements 0x40eb00: HudUiShieldMessageWidget::ApplyLayout
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL HudUiShieldMessageWidget::ApplyLayout(
+int __stdcall HudUiShieldMessageWidget::ApplyLayout(
     zReader::Node *layoutRoot
 ) {
-    typedef int(RECOIL_THISCALL * GetCoordFn)(void *self);
-    typedef void(RECOIL_THISCALL * SetClipFn)(
+    typedef int( * GetCoordFn)(void *self);
+    typedef void( * SetClipFn)(
         void *self,
         void *bltSourceOrNull,
         const HudUiRect *rect
     );
-    typedef void(RECOIL_CDECL * SetTextFmtFn)(
+    typedef void(* SetTextFmtFn)(
         void *self,
         const char *format,
         ...
     );
-    typedef void(RECOIL_THISCALL * UpdateBoundsFn)(void *self);
+    typedef void( * UpdateBoundsFn)(void *self);
 
     HudUiShieldMessageWidget *const shieldMessageWidget = g_HudUiMgrShieldMessageWidget;
     zReader::Node *const layoutPayload = layoutRoot->value.nodes;
@@ -16062,14 +16032,14 @@ RECOIL_NOINLINE int RECOIL_STDCALL HudUiShieldMessageWidget::ApplyLayout(
 }
 
 // Reimplements 0x40fe30: HudUiShieldMessageWidget::Destructor
-void RECOIL_THISCALL HudUiShieldMessageWidget::Destructor() {
+void HudUiShieldMessageWidget::Destructor() {
     meter.ftable = (const HudUiMeter_FTable *)(&g_HudUiCommon_FTable);
     ((HudUiPanel *)(&percentTextPanel))->Destructor();
     widget.DestructorCore();
 }
 
 // Reimplements 0x4bcf20: HudUiBar::Constructor
-HudUiBar *RECOIL_THISCALL HudUiBar::Constructor() {
+HudUiBar * HudUiBar::Constructor() {
     ((HudUiElement *)(this))->Constructor(
         0,
         0
@@ -16086,8 +16056,8 @@ HudUiBar *RECOIL_THISCALL HudUiBar::Constructor() {
 }
 
 // Reimplements 0x4bcff0: HudUiBar::Draw
-void RECOIL_THISCALL HudUiBar::Draw() {
-    typedef void(RECOIL_THISCALL * DrawBaseFn)(HudUiBar * self);
+void HudUiBar::Draw() {
+    typedef void( * DrawBaseFn)(HudUiBar * self);
 
     ((DrawBaseFn)(ftable->slots[2]))(this);
     if (drawVertexCount != 0) {
@@ -16101,7 +16071,7 @@ void RECOIL_THISCALL HudUiBar::Draw() {
 
 // Reimplements 0x4bcf80: HudUiBar::SetPointXY
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiBar::SetPointXY(
+void HudUiBar::SetPointXY(
     int pointIndex,
     float x,
     float y
@@ -16115,7 +16085,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiBar::SetPointXY(
         }
 
         if (pointIndex == 0) {
-            typedef void(RECOIL_THISCALL * SetPosFn)(
+            typedef void( * SetPosFn)(
                 HudUiBar * self,
                 int x,
                 int y
@@ -16129,12 +16099,12 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiBar::SetPointXY(
         }
     }
 
-    typedef void(RECOIL_THISCALL * InvalidateFn)(HudUiBar * self);
+    typedef void( * InvalidateFn)(HudUiBar * self);
     ((InvalidateFn)(ftable->slots[8]))(this);
 }
 
 // Reimplements 0x4bf840: HudUiPolyline::Constructor
-RECOIL_NOINLINE HudUiPolyline *RECOIL_THISCALL HudUiPolyline::Constructor() {
+HudUiPolyline * HudUiPolyline::Constructor() {
     base.Constructor(
         0,
         0
@@ -16152,8 +16122,8 @@ RECOIL_NOINLINE HudUiPolyline *RECOIL_THISCALL HudUiPolyline::Constructor() {
 }
 
 // Reimplements 0x4bf900: HudUiPolyline::Draw
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiPolyline::Draw() {
-    typedef void(RECOIL_FASTCALL * DrawBaseFn)(HudUiPolyline * self);
+void HudUiPolyline::Draw() {
+    typedef void(__fastcall * DrawBaseFn)(HudUiPolyline * self);
     ((DrawBaseFn)(base.ftable->slots[2]))(this);
 
     const int currentPointCount = pointCount;
@@ -16187,17 +16157,17 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiPolyline::Draw() {
 }
 
 // Reimplements 0x4bf8b0: HudUiPolyline::SetPoint
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiPolyline::SetPoint(
+void HudUiPolyline::SetPoint(
     int index,
     int pointX,
     int pointY
 ) {
-    typedef void(RECOIL_THISCALL * SetPosFn)(
+    typedef void( * SetPosFn)(
         HudUiPolyline * self,
         int x,
         int y
     );
-    typedef void(RECOIL_THISCALL * InvalidateFn)(HudUiPolyline * self);
+    typedef void( * InvalidateFn)(HudUiPolyline * self);
 
     points[index].x = pointX;
     points[index].y = pointY;
@@ -16218,7 +16188,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiPolyline::SetPoint(
 }
 
 // Reimplements 0x4b4620: HudUiSliderBorder::Constructor
-HudUiSliderBorder *RECOIL_THISCALL HudUiSliderBorder::Constructor() {
+HudUiSliderBorder * HudUiSliderBorder::Constructor() {
     base.Constructor();
     base.base.ftable = (const HudUiCommon_FTable *)(&g_HudUiSliderBorder_FTable);
     originX = 0;
@@ -16299,7 +16269,7 @@ HudUiSliderBorder *RECOIL_THISCALL HudUiSliderBorder::Constructor() {
 }
 
 // Reimplements 0x4b47b0: HudUiSliderBorder::Update
-void RECOIL_THISCALL HudUiSliderBorder::Update(
+void HudUiSliderBorder::Update(
     float deltaSeconds
 ) {
     if ((base.base.flags & 0x10) != 0) {
@@ -16321,7 +16291,7 @@ void RECOIL_THISCALL HudUiSliderBorder::Update(
 }
 
 // Reimplements 0x4b4810: HudUiSliderBorder::SetBounds
-void RECOIL_THISCALL HudUiSliderBorder::SetBounds(
+void HudUiSliderBorder::SetBounds(
     int newOriginX,
     int newOriginY,
     int newHalfWidth,
@@ -16400,7 +16370,7 @@ void RECOIL_THISCALL HudUiSliderBorder::SetBounds(
 }
 
 // Reimplements 0x4b49e0: HudUiNumericTextInput::BaseConstructor
-HudUiNumericTextInput *RECOIL_THISCALL HudUiNumericTextInput::BaseConstructor() {
+HudUiNumericTextInput * HudUiNumericTextInput::BaseConstructor() {
     base.Constructor();
     textInput.Constructor(0x100);
     owner = 0;
@@ -16420,7 +16390,7 @@ HudUiNumericTextInput *RECOIL_THISCALL HudUiNumericTextInput::BaseConstructor() 
 }
 
 // Reimplements 0x41a190: HudUiNumericTextInput::Constructor
-HudUiNumericTextInput *RECOIL_THISCALL HudUiNumericTextInput::Constructor(
+HudUiNumericTextInput * HudUiNumericTextInput::Constructor(
     unsigned int maxDigits
 ) {
     BaseConstructor();
@@ -16432,7 +16402,7 @@ HudUiNumericTextInput *RECOIL_THISCALL HudUiNumericTextInput::Constructor(
 }
 
 // Reimplements 0x41a200: HudUiClampedIntTextInput::Constructor
-HudUiClampedIntTextInput *RECOIL_THISCALL HudUiClampedIntTextInput::Constructor(
+HudUiClampedIntTextInput * HudUiClampedIntTextInput::Constructor(
     unsigned int maxDigits
 ) {
     BaseConstructor();
@@ -16447,19 +16417,19 @@ HudUiClampedIntTextInput *RECOIL_THISCALL HudUiClampedIntTextInput::Constructor(
 }
 
 // Reimplements 0x4b4e40: HudUiNumericTextInput::AllocTextBuffer
-void RECOIL_THISCALL HudUiNumericTextInput::AllocTextBuffer(
+void HudUiNumericTextInput::AllocTextBuffer(
     unsigned int bufferSize
 ) {
     textInput.AllocTextBuffer(bufferSize);
 }
 
 // Reimplements 0x4b4ed0: HudUiNumericTextInput::GetBuffer
-char *RECOIL_THISCALL HudUiNumericTextInput::GetBuffer() {
+char * HudUiNumericTextInput::GetBuffer() {
     return textInput.GetBuffer();
 }
 
 // Reimplements 0x4b4e60: HudUiNumericTextInput::Update
-void RECOIL_THISCALL HudUiNumericTextInput::Update(
+void HudUiNumericTextInput::Update(
     const char *text
 ) {
     textInput.SetContents(text);
@@ -16468,7 +16438,7 @@ void RECOIL_THISCALL HudUiNumericTextInput::Update(
 
     if (base.labelPanels.begin != 0 && base.labelPanels.end != base.labelPanels.begin) {
         void *const firstPanel = base.labelPanels.begin[0];
-        typedef void(RECOIL_THISCALL * SetTextFn)(
+        typedef void( * SetTextFn)(
             void *panel,
             const char *text
         );
@@ -16483,7 +16453,7 @@ void RECOIL_THISCALL HudUiNumericTextInput::Update(
 }
 
 // Reimplements 0x4b4ca0: HudUiNumericTextInput::UpdateCaptureUiAndClip
-RECOIL_NO_GS void RECOIL_THISCALL HudUiNumericTextInput::UpdateCaptureUiAndClip(
+RECOIL_NO_GS void HudUiNumericTextInput::UpdateCaptureUiAndClip(
     float deltaSeconds
 ) {
     HudUiPanel *const firstPanel = base.labelPanels.begin[0];
@@ -16571,7 +16541,7 @@ RECOIL_NO_GS void RECOIL_THISCALL HudUiNumericTextInput::UpdateCaptureUiAndClip(
 }
 
 // Reimplements 0x4b4c50: HudUiNumericTextInput::SetRawKeyboardCapture
-void RECOIL_THISCALL HudUiNumericTextInput::SetRawKeyboardCapture(
+void HudUiNumericTextInput::SetRawKeyboardCapture(
     int enable
 ) {
     const char enableByte = (char)(enable);
@@ -16594,13 +16564,13 @@ void RECOIL_THISCALL HudUiNumericTextInput::SetRawKeyboardCapture(
 }
 
 // Reimplements 0x4b4c90: HudUiNumericTextInput::OnActivate
-void RECOIL_THISCALL HudUiNumericTextInput::OnActivate() {
+void HudUiNumericTextInput::OnActivate() {
     sliderBorder.inputActive = 1;
     base.OnActivate();
 }
 
 // Reimplements 0x4b4ac0: HudUiNumericTextInput::Destructor
-void RECOIL_THISCALL HudUiNumericTextInput::Destructor() {
+void HudUiNumericTextInput::Destructor() {
     base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiNumericTextInput_Base_FTable);
     SetRawKeyboardCapture(0);
     sliderBorder.base.base.ftable = &g_HudUiCommon_FTable;
@@ -16609,12 +16579,12 @@ void RECOIL_THISCALL HudUiNumericTextInput::Destructor() {
 }
 
 // Reimplements 0x41a3f0: HudUiNumericTextInput::DestructorThunk
-void RECOIL_THISCALL HudUiNumericTextInput::DestructorThunk() {
+void HudUiNumericTextInput::DestructorThunk() {
     Destructor();
 }
 
 // Reimplements 0x4b4a90: HudUiNumericTextInput::ScalarDeletingDestructor
-HudUiNumericTextInput *RECOIL_THISCALL HudUiNumericTextInput::ScalarDeletingDestructor(
+HudUiNumericTextInput * HudUiNumericTextInput::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -16626,7 +16596,7 @@ HudUiNumericTextInput *RECOIL_THISCALL HudUiNumericTextInput::ScalarDeletingDest
 }
 
 // Reimplements 0x41c4a0: HudUiNumericTextInput::ScalarDeletingDestructorThunk
-HudUiNumericTextInput *RECOIL_THISCALL HudUiNumericTextInput::ScalarDeletingDestructorThunk(
+HudUiNumericTextInput * HudUiNumericTextInput::ScalarDeletingDestructorThunk(
     unsigned int flags
 ) {
     DestructorThunk();
@@ -16638,7 +16608,7 @@ HudUiNumericTextInput *RECOIL_THISCALL HudUiNumericTextInput::ScalarDeletingDest
 }
 
 // Reimplements 0x4b4b30: HudUiNumericTextInput::RawKeyboardCallback
-int RECOIL_FASTCALL HudUiNumericTextInput::RawKeyboardCallback(
+int __fastcall HudUiNumericTextInput::RawKeyboardCallback(
     int key,
     HudUiNumericTextInput *callbackCtx
 ) {
@@ -16646,7 +16616,7 @@ int RECOIL_FASTCALL HudUiNumericTextInput::RawKeyboardCallback(
         return 0;
     }
 
-    typedef int(RECOIL_THISCALL * RawKeyboardFn)(
+    typedef int( * RawKeyboardFn)(
         HudUiNumericTextInput * self,
         int key
     );
@@ -16657,7 +16627,7 @@ int RECOIL_FASTCALL HudUiNumericTextInput::RawKeyboardCallback(
 }
 
 // Reimplements 0x4b4ba0: HudUiNumericTextInput::SetInputActive
-int RECOIL_THISCALL HudUiNumericTextInput::SetInputActive(
+int HudUiNumericTextInput::SetInputActive(
     int active
 ) {
     const int previousActive = sliderBorder.inputActive;
@@ -16704,7 +16674,7 @@ int RECOIL_THISCALL HudUiNumericTextInput::SetInputActive(
 }
 
 // Reimplements 0x4b4b50: HudUiNumericTextInput::OnRawKeyboardChar
-int RECOIL_THISCALL HudUiNumericTextInput::OnRawKeyboardChar(
+int HudUiNumericTextInput::OnRawKeyboardChar(
     int key
 ) {
     if (sliderBorder.rawKeyFilterEnabled == 0 ||
@@ -16719,15 +16689,15 @@ int RECOIL_THISCALL HudUiNumericTextInput::OnRawKeyboardChar(
 }
 
 // Reimplements 0x41a290: HudUiNumericTextInput::OnAcceptForwardToCommit
-int RECOIL_THISCALL HudUiNumericTextInput::OnAcceptForwardToCommit() {
-    typedef int(RECOIL_THISCALL * CommitFn)(HudUiNumericTextInput * self);
+int HudUiNumericTextInput::OnAcceptForwardToCommit() {
+    typedef int( * CommitFn)(HudUiNumericTextInput * self);
     const HudUiNumericTextInput_Base_FTable *const ftable =
         (const HudUiNumericTextInput_Base_FTable *)(base.base.ftable);
     return ((CommitFn)(ftable->slots[35]))(this);
 }
 
 // Reimplements 0x41a2a0: HudUiClampedIntTextInput::OnRawKeyboardDigitOnly
-int RECOIL_THISCALL HudUiClampedIntTextInput::OnRawKeyboardDigitOnly(
+int HudUiClampedIntTextInput::OnRawKeyboardDigitOnly(
     int key
 ) {
     if (strchr(
@@ -16741,7 +16711,7 @@ int RECOIL_THISCALL HudUiClampedIntTextInput::OnRawKeyboardDigitOnly(
 }
 
 // Reimplements 0x41a2d0: HudUiClampedIntTextInput::CommitAndGetValue
-int RECOIL_THISCALL HudUiClampedIntTextInput::CommitAndGetValue() {
+int HudUiClampedIntTextInput::CommitAndGetValue() {
     char *const text = GetBuffer();
     int value;
 
@@ -16779,10 +16749,10 @@ int RECOIL_THISCALL HudUiClampedIntTextInput::CommitAndGetValue() {
 }
 
 // Reimplements 0x41a350: HudUiClampedIntStepButton::OnActivate
-void RECOIL_THISCALL HudUiClampedIntStepButton::OnActivate() {
+void HudUiClampedIntStepButton::OnActivate() {
     if (targetInput != 0) {
-        typedef int (RECOIL_THISCALL HudUiClampedIntTextInput::*CommitFn)();
-        typedef void (RECOIL_THISCALL HudUiClampedIntTextInput::*InvalidateFn)();
+        typedef int ( HudUiClampedIntTextInput::*CommitFn)();
+        typedef void ( HudUiClampedIntTextInput::*InvalidateFn)();
 
         HudUiClampedIntTextInput *input = targetInput;
         const HudUiClampedIntTextInput_FTable *const inputFTable =
@@ -16821,13 +16791,13 @@ static HudUiNumericTextInput **HudUiNetGameSetupFocusTextInputSlot(
 }
 
 // Reimplements 0x41a7b0: HudUiNetGameSetupTextInput::OnActivateFocusAndCursor
-void RECOIL_THISCALL HudUiNetGameSetupTextInput::OnActivateFocusAndCursor() {
+void HudUiNetGameSetupTextInput::OnActivateFocusAndCursor() {
     HudUiNumericTextInput **const focusTextInputSlot =
         HudUiNetGameSetupFocusTextInputSlot(base.owner);
     HudUiNumericTextInput *const previousFocusTextInput = *focusTextInputSlot;
 
     if (previousFocusTextInput != 0) {
-        typedef int(RECOIL_THISCALL * FocusLostFn)(HudUiNumericTextInput * self);
+        typedef int( * FocusLostFn)(HudUiNumericTextInput * self);
         const HudUiNumericTextInput_Base_FTable *const ftable =
             (const HudUiNumericTextInput_Base_FTable *)(previousFocusTextInput->base.base.ftable);
         ((FocusLostFn)(ftable->slots[35]))(previousFocusTextInput);
@@ -16843,32 +16813,32 @@ void RECOIL_THISCALL HudUiNetGameSetupTextInput::OnActivateFocusAndCursor() {
 
 // Reimplements 0x41ab60: HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit
 // (D:\Proj\Battlesport\HudUi.cpp)
-void RECOIL_CDECL HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit() {
+void HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
 
 // Reimplements 0x41ab70: HudUiNetGameSetupOverlayOwner::StaticInit
 // (D:\Proj\Battlesport\HudUi.cpp)
-HudUiNetGameSetupOverlayOwner *RECOIL_CDECL HudUiNetGameSetupOverlayOwner::StaticInit() {
+HudUiNetGameSetupOverlayOwner *HudUiNetGameSetupOverlayOwner::StaticInit() {
     return g_HudUiNetGameSetupOverlayOwner.Constructor();
 }
 
 // Reimplements 0x41ab80: HudUiNetGameSetupOverlayOwner::RegisterAtExit
 // (D:\Proj\Battlesport\HudUi.cpp)
-void RECOIL_CDECL HudUiNetGameSetupOverlayOwner::RegisterAtExit() {
+void HudUiNetGameSetupOverlayOwner::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
 // Reimplements 0x41ab90: HudUiNetGameSetupOverlayOwner::AtExitDestructor
 // (D:\Proj\Battlesport\HudUi.cpp)
-void RECOIL_CDECL HudUiNetGameSetupOverlayOwner::AtExitDestructor() {
+void HudUiNetGameSetupOverlayOwner::AtExitDestructor() {
     g_HudUiNetGameSetupOverlayOwner.Destructor();
 }
 
 // Reimplements 0x41aba0: HudUiNetGameSetupOverlayOwner::Constructor
 // (D:\Proj\Battlesport\HudUi.cpp)
-HudUiNetGameSetupOverlayOwner *RECOIL_THISCALL HudUiNetGameSetupOverlayOwner::Constructor() {
+HudUiNetGameSetupOverlayOwner * HudUiNetGameSetupOverlayOwner::Constructor() {
     vftable = (unsigned int)&g_HudUiNetGameSetupOverlayOwner_Vtbl;
     m_panel = 0;
     m_reconfigureExistingSession = 0;
@@ -16877,7 +16847,7 @@ HudUiNetGameSetupOverlayOwner *RECOIL_THISCALL HudUiNetGameSetupOverlayOwner::Co
 
 // Reimplements 0x41abe0: HudUiNetGameSetupOverlayOwner::Destructor
 // (D:\Proj\Battlesport\HudUi.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiNetGameSetupOverlayOwner::Destructor() {
+void HudUiNetGameSetupOverlayOwner::Destructor() {
     vftable = (unsigned int)&g_HudUiNetGameSetupOverlayOwner_Vtbl;
     HudUiNetGameSetupOverlayOwnerBaseVtableGuard baseVtableOnExit = {this};
 
@@ -16896,8 +16866,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiNetGameSetupOverlayOwner::Destructor()
 
 // Reimplements 0x41abc0: HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\HudUi.cpp)
-RECOIL_NOINLINE HudUiNetGameSetupOverlayOwner *RECOIL_THISCALL
-HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor(
+HudUiNetGameSetupOverlayOwner * HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -16910,7 +16879,7 @@ HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor(
 
 // Reimplements 0x41ac50: HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\HudUi.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent() {
+int HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent() {
     zVideo::SetHalfResAdjustMode(ZVIDEO_HALFRES_ADJUST_DISABLED);
     HudUi::SetInvalidateMode(0);
 
@@ -16947,7 +16916,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiNetGameSetupOverlayOwner::OnTryBecomeCu
 
 // Reimplements 0x41ad20: HudUiNetGameSetupOverlayOwner::OnDeactivate
 // (D:\Proj\Battlesport\HudUi.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiNetGameSetupOverlayOwner::OnDeactivate() {
+void HudUiNetGameSetupOverlayOwner::OnDeactivate() {
     Sleep(1000);
     zSndSampleSet_DestroyByName("DIALOG");
 
@@ -16974,7 +16943,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiNetGameSetupOverlayOwner::OnDeactivate
 
 // Reimplements 0x41ad80: HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag
 // (D:\Proj\GameZRecoil\zHud\HudUiNetGameSetup.cpp)
-void RECOIL_CDECL HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(
+void HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(
     int reconfigureExistingSession
 ) {
     g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession = reconfigureExistingSession;
@@ -16985,7 +16954,7 @@ void RECOIL_CDECL HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(
 }
 
 // Reimplements 0x40fb70: HudUiMeter::Constructor
-HudUiMeter *RECOIL_THISCALL HudUiMeter::Constructor() {
+HudUiMeter * HudUiMeter::Constructor() {
     ((HudUiBar *)(this))->Constructor();
     ftable = &g_HudUiMeter_FTable;
     fillPixelsMax = 0;
@@ -16994,7 +16963,7 @@ HudUiMeter *RECOIL_THISCALL HudUiMeter::Constructor() {
 }
 
 // Reimplements 0x40d9e0: HudUiMeter::ConstructorEx
-HudUiMeter *RECOIL_THISCALL HudUiMeter::ConstructorEx() {
+HudUiMeter * HudUiMeter::ConstructorEx() {
     ((HudUiBar *)(this))->Constructor();
     ftable = &g_HudUiMeterEx_FTable;
     fillPixelsMax = 0;
@@ -17003,7 +16972,7 @@ HudUiMeter *RECOIL_THISCALL HudUiMeter::ConstructorEx() {
 }
 
 // Reimplements 0x4bcb50: HudUiTextLabel::ConstructorWithPosAndFlags
-RECOIL_NOINLINE HudUiTextLabel *RECOIL_THISCALL HudUiTextLabel::ConstructorWithPosAndFlags(
+HudUiTextLabel * HudUiTextLabel::ConstructorWithPosAndFlags(
     const char *text,
     int initX,
     int initY,
@@ -17026,7 +16995,7 @@ RECOIL_NOINLINE HudUiTextLabel *RECOIL_THISCALL HudUiTextLabel::ConstructorWithP
 }
 
 // Reimplements 0x4bcbe0: HudUiTextLabel::CopyConstructor
-HudUiTextLabel *RECOIL_THISCALL HudUiTextLabel::CopyConstructor(
+HudUiTextLabel * HudUiTextLabel::CopyConstructor(
     const HudUiTextLabel *source
 ) {
     base.CopyConstructor(&source->base);
@@ -17045,7 +17014,7 @@ HudUiTextLabel *RECOIL_THISCALL HudUiTextLabel::CopyConstructor(
 }
 
 // Reimplements 0x4bcc80: HudUiTextLabel::Constructor
-HudUiTextLabel *RECOIL_THISCALL HudUiTextLabel::Constructor(
+HudUiTextLabel * HudUiTextLabel::Constructor(
     const HudUiTextLabel *source
 ) {
     base.CopyFrom(&source->base);
@@ -17096,7 +17065,7 @@ void HudUiTextLabel::SetTextFmt(
 }
 
 // Reimplements 0x4bcd80: HudUiTextLabel::RebuildTextBounds
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiTextLabel::RebuildTextBounds() {
+void HudUiTextLabel::RebuildTextBounds() {
     int widthPx = 0;
     int lineAdvance = 0;
     zImage_Font::MeasureString(
@@ -17110,7 +17079,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiTextLabel::RebuildTextBounds() {
 }
 
 // Reimplements 0x4bcdc0: HudUiTextLabel::MeasureTextWidth
-RECOIL_NOINLINE int RECOIL_THISCALL HudUiTextLabel::MeasureTextWidth() {
+int HudUiTextLabel::MeasureTextWidth() {
     int widthPx = 0;
     int lineAdvance = 0;
     zImage_Font::MeasureString(
@@ -17123,8 +17092,8 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiTextLabel::MeasureTextWidth() {
 }
 
 // Reimplements 0x4bce30: HudUiTextLabel::OnDraw
-void RECOIL_THISCALL HudUiTextLabel::OnDraw() {
-    typedef void(RECOIL_THISCALL * DrawBaseFn)(HudUiTextLabel * self);
+void HudUiTextLabel::OnDraw() {
+    typedef void( * DrawBaseFn)(HudUiTextLabel * self);
 
     const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(this);
     ((DrawBaseFn)(ftable->slots[2]))(this);
@@ -17159,7 +17128,7 @@ void RECOIL_THISCALL HudUiTextLabel::OnDraw() {
 }
 
 // Reimplements 0x4bcea0: HudUiTextLabel::HitTest
-int RECOIL_THISCALL HudUiTextLabel::HitTest(
+int HudUiTextLabel::HitTest(
     int px,
     int py
 ) {
@@ -17184,7 +17153,7 @@ int RECOIL_THISCALL HudUiTextLabel::HitTest(
 }
 
 // Reimplements 0x4bcdf0: HudUiTextLabel::UpdateTextExtents
-void RECOIL_THISCALL HudUiTextLabel::UpdateTextExtents() {
+void HudUiTextLabel::UpdateTextExtents() {
     const int widthPx = MeasureTextWidth();
     base.x = centerBoundsLeft + (centerBoundsRight - widthPx - centerBoundsLeft) / 2;
 
@@ -17196,7 +17165,7 @@ void RECOIL_THISCALL HudUiTextLabel::UpdateTextExtents() {
 }
 
 // Reimplements 0x4ba740: HudUiPanel::ConstructorDefault
-HudUiPanel *RECOIL_THISCALL HudUiPanel::ConstructorDefault(
+HudUiPanel * HudUiPanel::ConstructorDefault(
     const char *text,
     int initX,
     int initY
@@ -17295,7 +17264,7 @@ HudUiPanel *RECOIL_THISCALL HudUiPanel::ConstructorDefault(
 }
 
 // Reimplements 0x4bd100: HudUiPanel::ConstructorDefaultThunk
-HudUiPanel *RECOIL_THISCALL HudUiPanel::ConstructorDefaultThunk() {
+HudUiPanel * HudUiPanel::ConstructorDefaultThunk() {
     return ConstructorDefault(
         0,
         0,
@@ -17304,7 +17273,7 @@ HudUiPanel *RECOIL_THISCALL HudUiPanel::ConstructorDefaultThunk() {
 }
 
 // Reimplements 0x4ba850: HudUiPanel::CopyConstructCore
-RECOIL_NOINLINE HudUiPanel *RECOIL_THISCALL HudUiPanel::CopyConstructCore(
+HudUiPanel * HudUiPanel::CopyConstructCore(
     const HudUiPanel *source
 ) {
     ((HudUiTextLabel *)(this))->CopyConstructor((const HudUiTextLabel *)(source));
@@ -17449,7 +17418,7 @@ RECOIL_NOINLINE HudUiPanel *RECOIL_THISCALL HudUiPanel::CopyConstructCore(
 }
 
 // Reimplements 0x4ba9e0: HudUiPanel::ConstructorCopy
-RECOIL_NOINLINE HudUiPanel *RECOIL_THISCALL HudUiPanel::ConstructorCopy(
+HudUiPanel * HudUiPanel::ConstructorCopy(
     const HudUiPanel *source
 ) {
     ((HudUiTextLabel *)(this))->Constructor((const HudUiTextLabel *)(source));
@@ -17590,7 +17559,7 @@ RECOIL_NOINLINE HudUiPanel *RECOIL_THISCALL HudUiPanel::ConstructorCopy(
 }
 
 // Reimplements 0x4bab40: HudUiPanel::Destructor
-void RECOIL_THISCALL HudUiPanel::Destructor() {
+void HudUiPanel::Destructor() {
     vtbl = &g_HudUiPanel_FTable;
 
     if (textPick != 0) {
@@ -17604,17 +17573,17 @@ void RECOIL_THISCALL HudUiPanel::Destructor() {
 
 // Reimplements 0x40bef0: HudUiPanel::DestructorThunk
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiPanel::DestructorThunk() {
+void HudUiPanel::DestructorThunk() {
     Destructor();
 }
 
 // Reimplements 0x4bb460: HudUiPanel::Draw
-void RECOIL_THISCALL HudUiPanel::Draw() {
+void HudUiPanel::Draw() {
     if (FieldAt<unsigned int>(
         this,
         0x270
     ) != 0) {
-        typedef void(RECOIL_THISCALL * RebuildFn)(HudUiPanel * self);
+        typedef void( * RebuildFn)(HudUiPanel * self);
         const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(this);
         ((RebuildFn)(ftable->slots[36]))(this);
     }
@@ -17657,7 +17626,7 @@ void RECOIL_THISCALL HudUiPanel::Draw() {
         this,
         0x270
     ) != 0) {
-        typedef void(RECOIL_THISCALL * RebuildFn)(HudUiPanel * self);
+        typedef void( * RebuildFn)(HudUiPanel * self);
         const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(this);
         ((RebuildFn)(ftable->slots[36]))(this);
     }
@@ -17709,12 +17678,12 @@ void RECOIL_THISCALL HudUiPanel::Draw() {
 }
 
 // Reimplements 0x4ba400: HudUiPanel::GetWrapRect
-HudUiRect *RECOIL_THISCALL HudUiPanel::GetWrapRect() {
+HudUiRect * HudUiPanel::GetWrapRect() {
     return &wrapRect;
 }
 
 // Reimplements 0x4bb3d0: HudUiPanel::HitTest
-int RECOIL_THISCALL HudUiPanel::HitTest(
+int HudUiPanel::HitTest(
     int px,
     int py
 ) {
@@ -17730,7 +17699,7 @@ int RECOIL_THISCALL HudUiPanel::HitTest(
         this,
         0x270
     ) != 0) {
-        typedef void(RECOIL_THISCALL * RebuildFn)(HudUiPanel * self);
+        typedef void( * RebuildFn)(HudUiPanel * self);
         const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(this);
         ((RebuildFn)(ftable->slots[36]))(this);
     }
@@ -17749,12 +17718,12 @@ int RECOIL_THISCALL HudUiPanel::HitTest(
 }
 
 // Reimplements 0x4bb440: HudUiPanel::GetLastTextPtr
-char *RECOIL_THISCALL HudUiPanel::GetLastTextPtr() {
+char * HudUiPanel::GetLastTextPtr() {
     if (FieldAt<unsigned int>(
         this,
         0x270
     ) != 0) {
-        typedef void(RECOIL_THISCALL * RebuildFn)(HudUiPanel * self);
+        typedef void( * RebuildFn)(HudUiPanel * self);
         const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(this);
         ((RebuildFn)(ftable->slots[36]))(this);
     }
@@ -17766,7 +17735,7 @@ char *RECOIL_THISCALL HudUiPanel::GetLastTextPtr() {
 }
 
 // Reimplements 0x4bb740: HudUiPanel::GetTextRect
-void RECOIL_THISCALL HudUiPanel::GetTextRect(
+void HudUiPanel::GetTextRect(
     HudUiRect *outRect
 ) {
     ((HudUiElement *)(this))->GetRect(outRect);
@@ -17775,7 +17744,7 @@ void RECOIL_THISCALL HudUiPanel::GetTextRect(
         this,
         0x270
     ) != 0) {
-        typedef void(RECOIL_THISCALL * RebuildFn)(HudUiPanel * self);
+        typedef void( * RebuildFn)(HudUiPanel * self);
         const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(this);
         ((RebuildFn)(ftable->slots[36]))(this);
     }
@@ -17788,25 +17757,25 @@ void RECOIL_THISCALL HudUiPanel::GetTextRect(
 }
 
 // Reimplements 0x40be90: HudUiPanel::Invalidate
-void RECOIL_THISCALL HudUiPanel::Invalidate() {
+void HudUiPanel::Invalidate() {
     textDirty = 1;
     ((HudUiElement *)(this))->Invalidate();
 }
 
 // Reimplements 0x40bea0: HudUiPanel::GetFont
-HGDIOBJ RECOIL_THISCALL HudUiPanel::GetFont() {
+HGDIOBJ HudUiPanel::GetFont() {
     return hFont;
 }
 
 // Reimplements 0x40beb0: HudUiPanel::SetFontHandle
-void RECOIL_THISCALL HudUiPanel::SetFontHandle(
+void HudUiPanel::SetFontHandle(
     HGDIOBJ fontHandle
 ) {
     hFont = fontHandle;
 }
 
 // Reimplements 0x40bec0: HudUiPanel::EnableWordWrapWithRect
-void RECOIL_THISCALL HudUiPanel::EnableWordWrapWithRect(
+void HudUiPanel::EnableWordWrapWithRect(
     const HudUiRect *rect
 ) {
     wordWrapEnabled = 1;
@@ -17814,7 +17783,7 @@ void RECOIL_THISCALL HudUiPanel::EnableWordWrapWithRect(
 }
 
 // Reimplements 0x40bf00: HudUtil::FreeFieldPtr
-void RECOIL_THISCALL HudUtil::FreeFieldPtr() {
+void HudUtil::FreeFieldPtr() {
     if (fieldPtr != 0) {
         free(fieldPtr);
         fieldPtr = 0;
@@ -17822,7 +17791,7 @@ void RECOIL_THISCALL HudUtil::FreeFieldPtr() {
 }
 
 // Reimplements 0x40a590: HudUiPanel::ScalarDeletingDestructor
-HudUiPanel *RECOIL_THISCALL HudUiPanel::ScalarDeletingDestructor(
+HudUiPanel * HudUiPanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -17834,7 +17803,7 @@ HudUiPanel *RECOIL_THISCALL HudUiPanel::ScalarDeletingDestructor(
 }
 
 // Reimplements 0x40f9e0: HudUiPanel::SetTextColor
-unsigned int RECOIL_THISCALL HudUiPanel::SetTextColor(
+unsigned int HudUiPanel::SetTextColor(
     unsigned int color
 ) {
     const unsigned int previous = FieldAt<unsigned int>(
@@ -17857,7 +17826,7 @@ unsigned int RECOIL_THISCALL HudUiPanel::SetTextColor(
 }
 
 // Reimplements 0x40e010: HudUiPanel::SetTextColorsAndMarkDirty
-void RECOIL_THISCALL HudUiPanel::SetTextColorsAndMarkDirty(
+void HudUiPanel::SetTextColorsAndMarkDirty(
     unsigned int color0,
     unsigned int color1
 ) {
@@ -17876,7 +17845,7 @@ void RECOIL_THISCALL HudUiPanel::SetTextColorsAndMarkDirty(
 }
 
 // Reimplements 0x40e040: HudUiPanel::SetShadow
-unsigned int RECOIL_THISCALL HudUiPanel::SetShadow(
+unsigned int HudUiPanel::SetShadow(
     unsigned int shadowEnabled,
     int shadowOffsetX,
     int shadowOffsetY
@@ -17901,7 +17870,7 @@ unsigned int RECOIL_THISCALL HudUiPanel::SetShadow(
 }
 
 // Reimplements 0x4babb0: HudUiPanel::SetFont
-void RECOIL_THISCALL HudUiPanel::SetFont(
+void HudUiPanel::SetFont(
     const char *faceName,
     int height,
     int weight,
@@ -17951,7 +17920,7 @@ void HudUiPanel::SetTextFmt(
 }
 
 // Reimplements 0x4bb5e0: HudUiPanel::SetTextFmtV
-void RECOIL_THISCALL HudUiPanel::SetTextFmtV(
+void HudUiPanel::SetTextFmtV(
     const char *format,
     va_list args
 ) {
@@ -18012,7 +17981,7 @@ void RECOIL_THISCALL HudUiPanel::SetTextFmtV(
 }
 
 // Reimplements 0x4bb680: HudUiPanel::SetText
-void RECOIL_THISCALL HudUiPanel::SetText(
+void HudUiPanel::SetText(
     const char *text
 ) {
     char *const textBuffer = &FieldAt<char>(
@@ -18070,7 +18039,7 @@ void RECOIL_THISCALL HudUiPanel::SetText(
 }
 
 // Reimplements 0x4bac10: HudUiPanel::RebuildTextRect
-void RECOIL_THISCALL HudUiPanel::RebuildTextRect() {
+void HudUiPanel::RebuildTextRect() {
     char *const textBuffer = &FieldAt<char>(
         this,
         0x34
@@ -18208,11 +18177,11 @@ void RECOIL_THISCALL HudUiPanel::RebuildTextRect() {
                 clearBytes
             );
 
-            typedef int(RECOIL_FASTCALL * UploadPixelsFn)(
+            typedef int(__fastcall * UploadPixelsFn)(
                 zVidImagePartial * image,
                 HDC * outDc
             );
-            typedef void(RECOIL_FASTCALL * ReleaseSurfaceFn)(
+            typedef void(__fastcall * ReleaseSurfaceFn)(
                 zVidImagePartial * image,
                 HDC dc
             );
@@ -18410,7 +18379,7 @@ void RECOIL_THISCALL HudUiPanel::RebuildTextRect() {
 }
 
 // Reimplements 0x4bb2a0: HudUiPanel::UpdateTextBoundsFromContent
-void RECOIL_THISCALL HudUiPanel::UpdateTextBoundsFromContent() {
+void HudUiPanel::UpdateTextBoundsFromContent() {
     HudUiElement *const element = (HudUiElement *)(this);
     char *const textBuffer = &FieldAt<char>(
         this,
@@ -18461,7 +18430,7 @@ void RECOIL_THISCALL HudUiPanel::UpdateTextBoundsFromContent() {
                 this,
                 0x270
             ) != 0) {
-                typedef void(RECOIL_THISCALL * RebuildFn)(HudUiPanel * self);
+                typedef void( * RebuildFn)(HudUiPanel * self);
                 const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(this);
                 ((RebuildFn)(ftable->slots[36]))(this);
             }
@@ -18479,7 +18448,7 @@ void RECOIL_THISCALL HudUiPanel::UpdateTextBoundsFromContent() {
                 this,
                 0x270
             ) != 0) {
-                typedef void(RECOIL_THISCALL * RebuildFn)(HudUiPanel * self);
+                typedef void( * RebuildFn)(HudUiPanel * self);
                 const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(this);
                 ((RebuildFn)(ftable->slots[36]))(this);
             }
@@ -18513,7 +18482,7 @@ void RECOIL_THISCALL HudUiPanel::UpdateTextBoundsFromContent() {
 }
 
 // Reimplements 0x4bb1c0: HudUiPanel::MeasureTextPrefixRect
-RECOIL_NOINLINE int RECOIL_THISCALL HudUiPanel::MeasureTextPrefixRect(
+int HudUiPanel::MeasureTextPrefixRect(
     int maxChars,
     RECT *outRect
 ) {
@@ -18566,12 +18535,12 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiPanel::MeasureTextPrefixRect(
 }
 
 // Reimplements 0x4bb710: HudUiPanel::QueryTextHeight
-RECOIL_NOINLINE int RECOIL_THISCALL HudUiPanel::QueryTextHeight() {
+int HudUiPanel::QueryTextHeight() {
     if (FieldAt<unsigned int>(
         this,
         0x270
     ) != 0) {
-        typedef void(RECOIL_THISCALL * RebuildFn)(HudUiPanel * self);
+        typedef void( * RebuildFn)(HudUiPanel * self);
         const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(this);
         ((RebuildFn)(ftable->slots[36]))(this);
     }
@@ -18586,7 +18555,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL HudUiPanel::QueryTextHeight() {
 }
 
 // Reimplements 0x40fac0: HudUiPanelSimple::Constructor
-HudUiPanelSimple *RECOIL_THISCALL HudUiPanelSimple::Constructor(
+HudUiPanelSimple * HudUiPanelSimple::Constructor(
     const char *text,
     int initX,
     int initY
@@ -18638,7 +18607,7 @@ HudUiPanelSimple *RECOIL_THISCALL HudUiPanelSimple::Constructor(
 }
 
 // Reimplements 0x40fab0: HudUiPanelSimple::ConstructorDefaultThunk
-HudUiPanelSimple *RECOIL_THISCALL HudUiPanelSimple::ConstructorDefaultThunk() {
+HudUiPanelSimple * HudUiPanelSimple::ConstructorDefaultThunk() {
     return Constructor(
         0,
         0,
@@ -18647,7 +18616,7 @@ HudUiPanelSimple *RECOIL_THISCALL HudUiPanelSimple::ConstructorDefaultThunk() {
 }
 
 // Reimplements 0x40ef00: HudUiTimerPanel::SetTimeSeconds
-void RECOIL_THISCALL HudUiTimerPanel::SetTimeSeconds(
+void HudUiTimerPanel::SetTimeSeconds(
     int hours,
     int minutes,
     int seconds
@@ -18668,7 +18637,7 @@ void RECOIL_THISCALL HudUiTimerPanel::SetTimeSeconds(
 }
 
 // Reimplements 0x40ee60: HudUiTimerPanel::UpdateHMSFromSeconds
-void RECOIL_THISCALL HudUiTimerPanel::UpdateHMSFromSeconds(
+void HudUiTimerPanel::UpdateHMSFromSeconds(
     float seconds
 ) {
     FieldAt<float>(
@@ -18689,7 +18658,7 @@ void RECOIL_THISCALL HudUiTimerPanel::UpdateHMSFromSeconds(
 }
 
 // Reimplements 0x40eca0: HudUiTimerPanel::SetRunning
-void RECOIL_FASTCALL HudUiTimerPanel::SetRunning(
+void __fastcall HudUiTimerPanel::SetRunning(
     int running
 ) {
     FieldAt<int>(
@@ -18699,7 +18668,7 @@ void RECOIL_FASTCALL HudUiTimerPanel::SetRunning(
 }
 
 // Reimplements 0x40ecc0: HudUiTimerPanel::SetElapsedSeconds
-void RECOIL_STDCALL HudUiTimerPanel::SetElapsedSeconds(
+void __stdcall HudUiTimerPanel::SetElapsedSeconds(
     float seconds
 ) {
     FieldAt<float>(
@@ -18709,7 +18678,7 @@ void RECOIL_STDCALL HudUiTimerPanel::SetElapsedSeconds(
 }
 
 // Reimplements 0x40ece0: HudUiTimerPanel::SetSeconds
-void RECOIL_STDCALL HudUiTimerPanel::SetSeconds(
+void __stdcall HudUiTimerPanel::SetSeconds(
     float elapsedSeconds,
     float secondsStep
 ) {
@@ -18721,7 +18690,7 @@ void RECOIL_STDCALL HudUiTimerPanel::SetSeconds(
 }
 
 // Reimplements 0x40ed10: HudUiTimerPanel::GetSeconds
-float RECOIL_CDECL HudUiTimerPanel::GetSeconds() {
+float HudUiTimerPanel::GetSeconds() {
     return FieldAt<float>(
         g_HudUiMgrTimerPanel,
         0x2a4
@@ -18729,7 +18698,7 @@ float RECOIL_CDECL HudUiTimerPanel::GetSeconds() {
 }
 
 // Reimplements 0x40ed20: HudUiTimerPanel::Update
-void RECOIL_THISCALL HudUiTimerPanel::Update(
+void HudUiTimerPanel::Update(
     float deltaSeconds
 ) {
     if (FieldAt<int>(
@@ -18757,7 +18726,7 @@ void RECOIL_THISCALL HudUiTimerPanel::Update(
 }
 
 // Reimplements 0x40fbb0: HudUiTimerPanel::ZarReadTimerData
-void RECOIL_STDCALL HudUiTimerPanel::ZarReadTimerData(
+void __stdcall HudUiTimerPanel::ZarReadTimerData(
     const float *buffer,
     int byteCount,
     HudUiTimerPanel *userData
@@ -18769,7 +18738,7 @@ void RECOIL_STDCALL HudUiTimerPanel::ZarReadTimerData(
 }
 
 // Reimplements 0x40fb90: HudUiTimerPanel::ZarWriteTimerDataCallback
-void RECOIL_FASTCALL HudUiTimerPanel::ZarWriteTimerDataCallback(
+void __fastcall HudUiTimerPanel::ZarWriteTimerDataCallback(
     zZbdSectionCallbackCtx *sectionCtx,
     HudUiTimerPanel *userData
 ) {
@@ -18786,7 +18755,7 @@ void RECOIL_FASTCALL HudUiTimerPanel::ZarWriteTimerDataCallback(
 }
 
 // Reimplements 0x40ed80: HudUiTimerPanel::ConstructorDefault
-HudUiTimerPanel *RECOIL_THISCALL HudUiTimerPanel::ConstructorDefault() {
+HudUiTimerPanel * HudUiTimerPanel::ConstructorDefault() {
     HudUiPanel *const panel = (HudUiPanel *)(this);
     HudUiElement *const element = (HudUiElement *)(this);
 
@@ -18860,7 +18829,7 @@ HudUiTimerPanel *RECOIL_THISCALL HudUiTimerPanel::ConstructorDefault() {
 }
 
 // Reimplements 0x40dbf0: HudUiCounterTextPanel::Constructor
-HudUiCounterTextPanel *RECOIL_THISCALL HudUiCounterTextPanel::Constructor() {
+HudUiCounterTextPanel * HudUiCounterTextPanel::Constructor() {
     HudUiPanel *const panel = (HudUiPanel *)(this);
     HudUiElement *const element = (HudUiElement *)(this);
 
@@ -18922,7 +18891,7 @@ HudUiCounterTextPanel *RECOIL_THISCALL HudUiCounterTextPanel::Constructor() {
 }
 
 // Reimplements 0x40dcd0: HudUiTriplet::Constructor
-HudUiTriplet *RECOIL_THISCALL HudUiTriplet::Constructor() {
+HudUiTriplet * HudUiTriplet::Constructor() {
     base.ConstructorDefault();
     entries.rowInitFlag = 0;
     entries.begin = 0;
@@ -18992,7 +18961,7 @@ HudUiTriplet *RECOIL_THISCALL HudUiTriplet::Constructor() {
 }
 
 // Reimplements 0x40e070: HudUiTriplet::DestructorCore
-void RECOIL_THISCALL HudUiTriplet::DestructorCore() {
+void HudUiTriplet::DestructorCore() {
     base.vptr = (const HudUiContainer_FTable *)(&g_HudUiTriplet_FTable);
 
     {
@@ -19028,7 +18997,7 @@ void RECOIL_THISCALL HudUiTriplet::DestructorCore() {
 }
 
 // Reimplements 0x40e140: HudUiTriplet::RebuildDisplay (D:\Proj\Battlesport\HudUiTriplet.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiTriplet::RebuildDisplay() {
+void HudUiTriplet::RebuildDisplay() {
     HudUiTripletInsertionSort(
         entries.begin,
         entries.end
@@ -19189,7 +19158,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiTriplet::RebuildDisplay() {
 }
 
 // Reimplements 0x40e590: HudUiTriplet::AddEntry (D:\Proj\Battlesport\HudUiTriplet.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiTriplet::AddEntry(
+void HudUiTriplet::AddEntry(
     GameNetPlayerRow *entryData
 ) {
     HudUiScoreboardEntry sourceValue = {0};
@@ -19218,7 +19187,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiTriplet::AddEntry(
 }
 
 // Reimplements 0x40e800: HudUiTriplet::UpdateEntryData (D:\Proj\Battlesport\HudUiTriplet.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiTriplet::UpdateEntryData(
+void HudUiTriplet::UpdateEntryData(
     GameNetPlayerRow *entryData
 ) {
     HudUiScoreboardEntry *entry = entries.begin;
@@ -19237,7 +19206,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiTriplet::UpdateEntryData(
 }
 
 // Reimplements 0x40e880: HudUiTriplet::RemoveEntry (D:\Proj\Battlesport\HudUiTriplet.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiTriplet::RemoveEntry(
+void HudUiTriplet::RemoveEntry(
     GameNetPlayerRow *entryKey
 ) {
     HudUiScoreboardEntry *entry = entries.begin;
@@ -19264,7 +19233,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiTriplet::RemoveEntry(
 
 // Reimplements 0x40ea60: HudUiTriplet::IsLocalPlayerFirstEntry
 // (D:\Proj\Battlesport\HudUiTriplet.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL HudUiTriplet::IsLocalPlayerFirstEntry() {
+int HudUiTriplet::IsLocalPlayerFirstEntry() {
     HudUiScoreboardEntry *const begin = entries.begin;
     int count = 0;
     if (begin != 0) {
@@ -19282,7 +19251,7 @@ namespace HudScoreboard {
 
 // Reimplements 0x40eab0: HudScoreboard::SetScaleAndRebuild
 // (D:\Proj\Battlesport\HudScoreboard.cpp)
-RECOIL_NOINLINE void RECOIL_STDCALL SetScaleAndRebuild(
+void __stdcall SetScaleAndRebuild(
     float scale
 ) {
     g_HudUiMgrStatsList->triplet->InterpolateLayout(scale);
@@ -19291,10 +19260,10 @@ RECOIL_NOINLINE void RECOIL_STDCALL SetScaleAndRebuild(
 
 // Reimplements 0x40eae0: HudScoreboard::DispatchSetScale
 // (D:\Proj\Battlesport\HudScoreboard.cpp)
-RECOIL_NOINLINE void RECOIL_STDCALL DispatchSetScale(
+void __stdcall DispatchSetScale(
     float deltaTime
 ) {
-    typedef void(RECOIL_THISCALL * UpdateFn)(
+    typedef void( * UpdateFn)(
         HudUiStatsListElement * self,
         float deltaTime
     );
@@ -19309,7 +19278,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL DispatchSetScale(
 } // namespace HudScoreboard
 
 // Reimplements 0x4bd160: HudUiTextStack4::PushLine (D:\Proj\Battlesport\HudUiTextStack4.cpp)
-HudUiPanel *RECOIL_THISCALL HudUiTextStack4::PushLine(
+HudUiPanel * HudUiTextStack4::PushLine(
     const char *message,
     float duration
 ) {
@@ -19392,7 +19361,7 @@ HudUiPanel *RECOIL_THISCALL HudUiTextStack4::PushLine(
 }
 
 // Reimplements 0x4bd470: zTimedTask::RemoveFromActiveList (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zTimedTask::RemoveFromActiveList() {
+void zTimedTask::RemoveFromActiveList() {
     zTimedTask *node = g_zTimedTask_ActiveHead;
     zTimedTask *previous = 0;
     if (node == 0) {
@@ -19422,7 +19391,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zTimedTask::RemoveFromActiveList() {
 }
 
 // Reimplements 0x4bd4d0: zTimedTask::RunImmediateAction (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zTimedTask::RunImmediateAction() {
+void zTimedTask::RunImmediateAction() {
     switch (kind) {
     case 1:
         if (actionArg2 != 0) {
@@ -19530,7 +19499,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zTimedTask::RunImmediateAction() {
 }
 
 // Reimplements 0x4bd660: zTimedTask::TickActiveList (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL zTimedTask::TickActiveList() {
+void zTimedTask::TickActiveList() {
     zTimedTask *task = g_zTimedTask_ActiveHead;
     while (task != 0) {
         if ((task->flags & 0x02) == 0) {
@@ -19557,14 +19526,14 @@ RECOIL_NOINLINE void RECOIL_CDECL zTimedTask::TickActiveList() {
 
 namespace HudUi {
 // Reimplements 0x4bc760: HudUi::SetInvalidateMode (D:\Proj\Battlesport\hudui.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SetInvalidateMode(
+void __fastcall SetInvalidateMode(
     int mode
 ) {
     g_HudUi_InvalidateMask = mode != 0 ? 0x0c : 0x04;
 }
 
 // Reimplements 0x438350: HudUi::ShowMessageBox (D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ShowMessageBox(
+int __fastcall ShowMessageBox(
     const char *messageText,
     const char *titleText,
     void *modalContext
@@ -19585,7 +19554,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ShowMessageBox(
 }
 
 // Reimplements 0x426150: HudUi::HandleHotkeyCommand (D:\Proj\Battlesport\hudui.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL HandleHotkeyCommand(
+void __fastcall HandleHotkeyCommand(
     int commandId
 ) {
     switch (commandId) {
@@ -19686,7 +19655,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HandleHotkeyCommand(
 
 // Reimplements 0x42bf40: HudUi::PlayPowerupSfx
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL PlayPowerupSfx(
+void __fastcall PlayPowerupSfx(
     int shouldPlay
 ) {
     zSndSample *powerupSample = g_HudUi_PowerupSample;
@@ -19705,7 +19674,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL PlayPowerupSfx(
 }
 
 // Reimplements 0x4138d0: HudUi::ShowTopMessageLine (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_FASTCALL ShowTopMessageLine(
+void __fastcall ShowTopMessageLine(
     const char *message,
     float duration
 ) {
@@ -19719,7 +19688,7 @@ void RECOIL_FASTCALL ShowTopMessageLine(
 }
 
 // Reimplements 0x4138f0: HudUi::ShowChatLine (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_FASTCALL ShowChatLine(
+void __fastcall ShowChatLine(
     const char *message,
     float duration
 ) {
@@ -19733,21 +19702,21 @@ void RECOIL_FASTCALL ShowChatLine(
 }
 
 // Reimplements 0x4143b0: HudUi::RefreshScoreboardEntryRow (D:\Proj\Battlesport\HudUi.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RefreshScoreboardEntryRow(
+void __fastcall RefreshScoreboardEntryRow(
     GameNetPlayerRow *entryData
 ) {
     g_HudUiMgrStatsList->triplet->UpdateEntryData(entryData);
 }
 
 // Reimplements 0x4143c0: HudUi::RemoveScoreboardEntryRow (D:\Proj\Battlesport\HudUi.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RemoveScoreboardEntryRow(
+void __fastcall RemoveScoreboardEntryRow(
     GameNetPlayerRow *entryKey
 ) {
     g_HudUiMgrStatsList->triplet->RemoveEntry(entryKey);
 }
 
 // Reimplements 0x4bd280: HudUi::PushTopMessageLine (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_FASTCALL PushTopMessageLine(
+void __fastcall PushTopMessageLine(
     const char *message,
     float duration
 ) {
@@ -19759,7 +19728,7 @@ void RECOIL_FASTCALL PushTopMessageLine(
 } // namespace HudUi
 
 // Reimplements 0x4bd3d0: HudUiTextStack4::SetTextColors
-void RECOIL_THISCALL HudUiTextStack4::SetTextColors(
+void HudUiTextStack4::SetTextColors(
     unsigned int color0,
     unsigned int color1
 ) {
@@ -19786,32 +19755,31 @@ void RECOIL_THISCALL HudUiTextStack4::SetTextColors(
 }
 
 // Reimplements 0x4bd2a0: HudUiTextStack4::Clear
-void RECOIL_THISCALL HudUiTextStack4::Clear() {
-    HudUiPanel *panel = TextStackLineAt(
-        this,
-        0
-    );
+void HudUiTextStack4::Clear() {
     {
-        for (int count = 4; count != 0; --count) {
+        for (int index = 0; index < 4; ++index) {
+            HudUiPanel *const panel = TextStackLineAt(
+                this,
+                index
+            );
             HudUiVirtualSetTextFmtEmpty(panel);
             HudUiVirtualSetVisibleRequired(
                 panel,
                 0
             );
-            panel = (HudUiPanel *)((unsigned char *)(panel) + 0x2a4);
         }
     }
 }
 
 // Reimplements 0x4bd110: HudUiTextStack4::SetFontAll
 // (D:\Proj\Battlesport\HudUiTextStack4.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiTextStack4::SetFontAll(
+void HudUiTextStack4::SetFontAll(
     const char *faceName,
     int height,
     int weight,
     int width
 ) {
-    typedef void(RECOIL_THISCALL * SetFontFn)(
+    typedef void( * SetFontFn)(
         HudUiPanel * self,
         const char *faceName,
         int height,
@@ -19844,10 +19812,10 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiTextStack4::SetFontAll(
 }
 
 // Reimplements 0x4bd410: HudUiTextStack4::SetXAll
-void RECOIL_THISCALL HudUiTextStack4::SetXAll(
+void HudUiTextStack4::SetXAll(
     int newX
 ) {
-    typedef void(RECOIL_THISCALL * SetXFn)(
+    typedef void( * SetXFn)(
         HudUiPanel * self,
         int x
     );
@@ -19868,10 +19836,10 @@ void RECOIL_THISCALL HudUiTextStack4::SetXAll(
 }
 
 // Reimplements 0x4bd440: HudUiTextStack4::SetYDescending
-void RECOIL_THISCALL HudUiTextStack4::SetYDescending(
+void HudUiTextStack4::SetYDescending(
     int yStart
 ) {
-    typedef void(RECOIL_THISCALL * SetYFn)(
+    typedef void( * SetYFn)(
         HudUiPanel * self,
         int y
     );
@@ -19894,7 +19862,7 @@ void RECOIL_THISCALL HudUiTextStack4::SetYDescending(
 }
 
 // Reimplements 0x4bd020: HudUiTopMessageStack::Constructor
-HudUiTopMessageStack *RECOIL_THISCALL HudUiTopMessageStack::Constructor() {
+HudUiTopMessageStack * HudUiTopMessageStack::Constructor() {
     base.ConstructorDefault();
 
     {
@@ -19934,12 +19902,12 @@ HudUiTopMessageStack *RECOIL_THISCALL HudUiTopMessageStack::Constructor() {
 }
 
 // Reimplements 0x40fe90: HudUiTopMessageStack::DestructorCore
-void RECOIL_THISCALL HudUiTopMessageStack::DestructorCore() {
+void HudUiTopMessageStack::DestructorCore() {
     DestroyTextStackLines(this);
 }
 
 // Reimplements 0x4bd2d0: HudUiChatMessageStack::Constructor
-HudUiChatMessageStack *RECOIL_THISCALL HudUiChatMessageStack::Constructor() {
+HudUiChatMessageStack * HudUiChatMessageStack::Constructor() {
     base.ConstructorDefault();
 
     {
@@ -19992,14 +19960,14 @@ HudUiChatMessageStack *RECOIL_THISCALL HudUiChatMessageStack::Constructor() {
 }
 
 // Reimplements 0x40fef0: HudUiChatMessageStack::DestructorCore
-void RECOIL_THISCALL HudUiChatMessageStack::DestructorCore() {
+void HudUiChatMessageStack::DestructorCore() {
     DestroyTextStackLines(this);
 }
 
 // Reimplements 0x40f040: HudUiTimerPanelFloat::Draw
-void RECOIL_THISCALL HudUiTimerPanelFloat::Draw() {
-    typedef void(RECOIL_FASTCALL * InvalidateFn)(void *self);
-    typedef void(RECOIL_CDECL * SetTextFmtFn)(
+void HudUiTimerPanelFloat::Draw() {
+    typedef void(__fastcall * InvalidateFn)(void *self);
+    typedef void(* SetTextFmtFn)(
         void *self,
         const char *format,
         ...
@@ -20020,7 +19988,7 @@ void RECOIL_THISCALL HudUiTimerPanelFloat::Draw() {
 }
 
 // Reimplements 0x40ef60: HudUiTimerPanelFloat::ConstructorDefault
-HudUiTimerPanelFloat *RECOIL_THISCALL HudUiTimerPanelFloat::ConstructorDefault() {
+HudUiTimerPanelFloat * HudUiTimerPanelFloat::ConstructorDefault() {
     HudUiPanel *const panel = (HudUiPanel *)(this);
     HudUiElement *const element = (HudUiElement *)(this);
 

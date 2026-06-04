@@ -16,7 +16,7 @@ struct RecoilStateDialogHost {
     int stateValue_08;
     RecoilPtr32 statePtr_0C;
 
-    void RECOIL_THISCALL OnWndActivate(int activateCode);
+    void OnWndActivate(int activateCode);
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateDialogHost) == 0x10);
 RECOIL_STATIC_ASSERT(
@@ -31,7 +31,7 @@ struct HudUiDialogController {
     unsigned char _padding_04[0x110];
     RecoilPtr32 capturedImage_114; // zVid_Image*
 
-    void RECOIL_THISCALL BlitOwnedSurfaceToPrimary();
+    void BlitOwnedSurfaceToPrimary();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiDialogController) == 0x118);
 RECOIL_STATIC_ASSERT(
@@ -48,15 +48,15 @@ struct HudUiDialogController_Vtbl {
 RECOIL_STATIC_ASSERT(sizeof(HudUiDialogController_Vtbl) == 0x08);
 
 struct HudUiDialogControllerVirtual {
-    virtual void RECOIL_THISCALL Update();
-    virtual void RECOIL_THISCALL SetEnabled(int enabled);
+    virtual void Update();
+    virtual void SetEnabled(int enabled);
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiDialogControllerVirtual) == 0x04);
 
 namespace zVideo {
-int RECOIL_CDECL RunPostprocessOnPrimaryBuffer();
-int RECOIL_CDECL Dispatch_UnlockPrimarySurfaceState();
-int RECOIL_FASTCALL AdjustSurfacesIfEnabled(
+int RunPostprocessOnPrimaryBuffer();
+int Dispatch_UnlockPrimarySurfaceState();
+int __fastcall AdjustSurfacesIfEnabled(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect,
     int waitForPresent,
@@ -65,5 +65,5 @@ int RECOIL_FASTCALL AdjustSurfacesIfEnabled(
 } // namespace zVideo
 
 namespace zOpt {
-zOpt_ViewRectSection *RECOIL_CDECL GetWindowSection();
+zOpt_ViewRectSection *GetWindowSection();
 }

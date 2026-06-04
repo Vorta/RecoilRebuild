@@ -113,7 +113,7 @@ namespace {
 
     OptCatalogQueuedImpactRecord g_OptCatalogQueuedImpacts[kMaxQueuedImpacts] = {0};
 
-    typedef void(RECOIL_THISCALL * OptCatalogRuntimeUpdateCallback)(
+    typedef void( * OptCatalogRuntimeUpdateCallback)(
         OptCatalogRuntimeInstanceStorage * runtimeInstance
     );
 
@@ -528,7 +528,7 @@ namespace {
 namespace zWeapon_OptCatalog {
     // Reimplements 0x43ca20: zWeapon_OptCatalog::LoadKillVerbString
     // (D:\Proj\GameZRecoil\zWeapon\zwep_init.c)
-    RECOIL_NOINLINE void RECOIL_FASTCALL
+    void __fastcall
     LoadKillVerbString(
         zReader::Node * entryNode,
         OptCatalogEntryDef * entry
@@ -564,7 +564,7 @@ namespace zWeapon_OptCatalog {
 namespace zWeapon {
     // Reimplements 0x4b1190: zWeapon::LoadOptCatalogFromPath
     // (D:\Proj\GameZRecoil\zWeapon\zwep_init.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL LoadOptCatalogFromPath(
+    int __fastcall LoadOptCatalogFromPath(
         zClass_NodePartial * worldNode,
         const char *path,
         int networkState,
@@ -1103,7 +1103,7 @@ namespace zWeapon {
 namespace OptCatalog {
     // Reimplements 0x4ae380: OptCatalog::BlendDirectionTowardTarget
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL BlendDirectionTowardTarget(
+    void __fastcall BlendDirectionTowardTarget(
         zVec3 * direction,
         const zVec3 *targetDirection,
         float xWeight,
@@ -1118,7 +1118,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4ae3c0: OptCatalog::FindEntryByName
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE OptCatalogEntryDef *RECOIL_FASTCALL FindEntryByName(const char *name) {
+    OptCatalogEntryDef *__fastcall FindEntryByName(const char *name) {
         for (int i = 0; i < g_OptCatalog_EntryCount; ++i) {
             OptCatalogEntryDef &entry = g_OptCatalog_EntryTable[i];
             if (entry.keyName != 0 && strcmp(
@@ -1133,7 +1133,7 @@ namespace OptCatalog {
     }
 
     // Reimplements 0x4ae450: OptCatalog::FindEntryById (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE OptCatalogEntryDef *RECOIL_FASTCALL FindEntryById(int entryId) {
+    OptCatalogEntryDef *__fastcall FindEntryById(int entryId) {
         for (int i = 0; i < g_OptCatalog_EntryCount; ++i) {
             OptCatalogEntryDef &entry = g_OptCatalog_EntryTable[i];
             if (entry.keyName != 0 && entry.ordinalIndex == entryId) {
@@ -1146,7 +1146,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4b2130: OptCatalog::CreateTrailSegmentNodeFromTemplate
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CreateTrailSegmentNodeFromTemplate(
+    zClass_NodePartial *__fastcall CreateTrailSegmentNodeFromTemplate(
         zClass_NodePartial * templateNode
     ) {
         zClass_NodePartial *const parent = zClass_Object3D::gwObject3DInit();
@@ -1166,7 +1166,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4b1ec0: OptCatalog::CreateTrailRuntimeState
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE OptCatalogTrailRuntimeState *RECOIL_FASTCALL CreateTrailRuntimeState(
+    OptCatalogTrailRuntimeState *__fastcall CreateTrailRuntimeState(
         OptCatalogEntryDef * entry,
         zClass_NodePartial * projectileNode,
         zTag4Partial * variantTagPtr,
@@ -1232,7 +1232,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4b2930: OptCatalog_MineIterator::Begin
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE OptCatalogRuntimeInstanceStorage *RECOIL_FASTCALL MineIterator_Begin(
+    OptCatalogRuntimeInstanceStorage *__fastcall MineIterator_Begin(
         OptCatalogEntryDef * entry
     ) {
         g_OptCatalog_MineIteratorCursor = entry->activeRuntimeListHead;
@@ -1241,7 +1241,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4b2940: OptCatalog_MineIterator::Next
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE OptCatalogRuntimeInstanceStorage *RECOIL_CDECL MineIterator_Next() {
+    OptCatalogRuntimeInstanceStorage *MineIterator_Next() {
         OptCatalogRuntimeInstanceStorage *result = g_OptCatalog_MineIteratorCursor;
         if (result != 0) {
             result = result->next;
@@ -1253,7 +1253,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4ae4a0: OptCatalog::SetPendingSpawnTargetOverrides
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL SetPendingSpawnTargetOverrides(
+    void __fastcall SetPendingSpawnTargetOverrides(
         void *pendingSpawnTargetCountPtr,
         void *pendingSpawnTargetListPtr
     ) {
@@ -1263,7 +1263,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4340c0: OptCatalog::AltGunDispatchAllocRuntimeGateCallback
     // (D:\Proj\Battlesport\ai_net.cpp)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     AltGunDispatchAllocRuntimeGateCallback(
         OptCatalogEntryDef * self,
         void **saveStateSlot
@@ -1300,7 +1300,7 @@ namespace OptCatalog {
 
     // Reimplements 0x434240: OptCatalog::SendPkt0A_RemoveRuntimeRelay
     // (D:\Proj\GameZRecoil\GameNet.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt0A_RemoveRuntimeRelay(
+    void __fastcall SendPkt0A_RemoveRuntimeRelay(
         OptCatalogEntryDef * self,
         zVec3 * pointOrVec3,
         zClass_NodePartial * ownerNode
@@ -1332,7 +1332,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4342d0: OptCatalog::HandlePkt0A_RemoveRuntimeRelay
     // (D:\Proj\GameZRecoil\GameNet.cpp)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     HandlePkt0A_RemoveRuntimeRelay(
         int,
         NetPkt0A_RemoveRuntimeRelay *packet
@@ -1368,7 +1368,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4b1fa0: OptCatalog::LoadFxSpecFromReaderNode
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL LoadFxSpecFromReaderNode(
+    void __fastcall LoadFxSpecFromReaderNode(
         zReader::Node * parentNode,
         OptCatalogFxSpec * spec,
         const char *childName
@@ -1492,7 +1492,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4ae4b0: OptCatalog::AllocOrReuseAttachNodeChildClone
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL AllocOrReuseAttachNodeChildClone(
+    zClass_NodePartial *__fastcall AllocOrReuseAttachNodeChildClone(
         OptCatalogEntryDef * self
     ) {
         zClass_NodePartial *const clone = self->attachCloneChildFreeList;
@@ -1511,7 +1511,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4ae520: OptCatalog::ClearRuntimeInstanceAsyncFxHandleCallback
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL ClearRuntimeInstanceAsyncFxHandleCallback(
+    void __fastcall ClearRuntimeInstanceAsyncFxHandleCallback(
         void *,
         OptCatalogRuntimeInstanceStorage *runtimeInstance,
         void *
@@ -1521,7 +1521,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4ae4e0: OptCatalog::RecycleAttachNodeClone
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL RecycleAttachNodeClone(
+    void __fastcall RecycleAttachNodeClone(
         OptCatalogEntryDef * self,
         OptCatalogRuntimeInstanceStorage * runtimeInstance
     ) {
@@ -1544,7 +1544,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4ae530: OptCatalog::AllocOrReuseAttachNodeClone
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE OptCatalogRuntimeInstanceStorage *RECOIL_FASTCALL AllocOrReuseAttachNodeClone(
+    OptCatalogRuntimeInstanceStorage *__fastcall AllocOrReuseAttachNodeClone(
         OptCatalogEntryDef * self
     ) {
         OptCatalogRuntimeInstanceStorage *const runtimeInstance =
@@ -1577,7 +1577,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4ae660: OptCatalog::AllocRuntimeInstance
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE OptCatalogRuntimeInstanceStorage *RECOIL_FASTCALL AllocRuntimeInstance(
+    OptCatalogRuntimeInstanceStorage *__fastcall AllocRuntimeInstance(
         OptCatalogEntryDef * self,
         zClass_NodePartial * ownerNode,
         zTag4Partial * variantTagOrNull,
@@ -1794,7 +1794,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4aeaa0: OptCatalog::SpawnRuntimeInstanceAt
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE OptCatalogRuntimeInstanceStorage *RECOIL_FASTCALL SpawnRuntimeInstanceAt(
+    OptCatalogRuntimeInstanceStorage *__fastcall SpawnRuntimeInstanceAt(
         OptCatalogEntryDef * self,
         zVec3 * spawnPos,
         zClass_NodePartial * ownerNode
@@ -1833,7 +1833,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4aeb50: OptCatalog::RecycleRuntimeInstance
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL RecycleRuntimeInstance(
+    void __fastcall RecycleRuntimeInstance(
         OptCatalogEntryDef * self,
         OptCatalogRuntimeInstanceStorage * runtimeInstance
     ) {
@@ -1876,7 +1876,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4aebc0: OptCatalog::ClearRuntimeInstances
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL ClearRuntimeInstances(OptCatalogEntryDef * self) {
+    void __fastcall ClearRuntimeInstances(OptCatalogEntryDef * self) {
         OptCatalogRuntimeInstanceStorage *runtimeInstance = self->activeRuntimeListHead;
         self->activeRuntimeListHead = 0;
         while (runtimeInstance != 0) {
@@ -1891,7 +1891,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4aebf0: OptCatalog::RemoveRuntimeInstance
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE int RECOIL_FASTCALL RemoveRuntimeInstance(
+    int __fastcall RemoveRuntimeInstance(
         OptCatalogEntryDef * self,
         zVec3 * pointOrVec3,
         zClass_NodePartial * ownerNode
@@ -1945,7 +1945,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4ae590: OptCatalog::RecycleRuntimeInstanceStorage
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL RecycleRuntimeInstanceStorage(
+    void __fastcall RecycleRuntimeInstanceStorage(
         OptCatalogEntryDef * self,
         OptCatalogRuntimeInstanceStorage * runtimeInstance
     ) {
@@ -2008,7 +2008,7 @@ namespace OptCatalog {
     }
 
     // Reimplements 0x4b1d90: OptCatalog::ShutdownCore
-    RECOIL_NOINLINE int RECOIL_CDECL ShutdownCore() {
+    int ShutdownCore() {
         for (int i = 0; i < g_OptCatalog_EntryCount; ++i) {
             OptCatalogEntryDef &entry = g_OptCatalog_EntryTable[i];
             if (entry.impactFxTable != 0) {
@@ -2066,19 +2066,19 @@ namespace OptCatalog {
     }
 
     // Reimplements 0x4b1180: OptCatalog::Shutdown (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
+    int Shutdown() {
         ShutdownCore();
         return 0;
     }
 
     // Reimplements 0x4b1f90: OptCatalog::FreeTrailRuntimeStateStorage
-    RECOIL_NOINLINE void RECOIL_FASTCALL FreeTrailRuntimeStateStorage(void *trailRuntimeState) {
+    void __fastcall FreeTrailRuntimeStateStorage(void *trailRuntimeState) {
         free(trailRuntimeState);
     }
 
     // Reimplements 0x4aefb0: OptCatalog::DeactivateTrailRuntimeState
     // (D:\Proj\Battlesport\OptCatalog.cpp)
-    RECOIL_NOINLINE int RECOIL_FASTCALL DeactivateTrailRuntimeState(
+    int __fastcall DeactivateTrailRuntimeState(
         OptCatalogTrailRuntimeState * trailRuntimeState
     ) {
         zSndPlayHandle *const stopSoundHandle = trailRuntimeState->stopSoundHandle;
@@ -2136,7 +2136,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4aee40: OptCatalog::ActivateTrailRuntimeState
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL
+    void __fastcall
     ActivateTrailRuntimeState(
         OptCatalogTrailRuntimeState * trailRuntimeState,
         int playerOrdinal
@@ -2222,7 +2222,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4b0530: OptCatalog::ComputeAimPitchForTarget
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE float RECOIL_FASTCALL ComputeAimPitchForTarget(
+    float __fastcall ComputeAimPitchForTarget(
         OptCatalogEntryDef * self,
         const zVec3 *origin,
         const zVec3 *unusedDirection,
@@ -2271,24 +2271,24 @@ namespace OptCatalog {
 
     // Reimplements 0x4b0600: OptCatalog::PlayTriggerInactiveWarning
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_CDECL PlayTriggerInactiveWarning() {
+    void PlayTriggerInactiveWarning() {
         g_OptCatalogSndTriggerInactive->PlayA3DSimple(1.0f);
     }
 
     // Reimplements 0x4b0620: OptCatalog::PlayWeaponInactiveWarning
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_CDECL PlayWeaponInactiveWarning() {
+    void PlayWeaponInactiveWarning() {
         g_OptCatalogSndWeaponInactive->PlayA3DSimple(1.0f);
     }
 
     // Reimplements 0x4b0640: OptCatalog::PlayNoAmmoWarning (D:\Proj\Battlesport\OptCatalog.cpp)
-    RECOIL_NOINLINE void RECOIL_CDECL PlayNoAmmoWarning() {
+    void PlayNoAmmoWarning() {
         g_OptCatalogSndNoAmmoWarning->PlayA3DSimple(1.0f);
     }
 
     // Reimplements 0x4b26f0: OptCatalog::InvokeDamageFeedbackAndHitCallback
     // (D:\Proj\GameZRecoil\zWeapon\OptCatalog.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL InvokeDamageFeedbackAndHitCallback(
+    int __fastcall InvokeDamageFeedbackAndHitCallback(
         OptCatalogEntryDef * self,
         zClass_NodePartial * damageOwnerNode,
         zVec3 * sourcePos,
@@ -2369,7 +2369,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4b28e0: OptCatalog::SetDamageContext
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL
+    void __fastcall
     SetDamageContext(
         int contextKind,
         OptCatalogHitEventPartial *contextHitEvent
@@ -2382,7 +2382,7 @@ namespace OptCatalog {
     }
 
     // Reimplements 0x4b2880: OptCatalog::CaptureHitSnapshotAndInvokeDamageTimerCallback
-    RECOIL_NOINLINE float RECOIL_FASTCALL CaptureHitSnapshotAndInvokeDamageTimerCallback(
+    float __fastcall CaptureHitSnapshotAndInvokeDamageTimerCallback(
         zVec3 * sourcePos,
         OptCatalogHitEventPartial * hitEvent,
         float damageAmount
@@ -2404,13 +2404,13 @@ namespace OptCatalog {
 
     // Reimplements 0x4b2910: OptCatalog::GetCapturedHitSourcePtr
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE zVec3 *RECOIL_CDECL GetCapturedHitSourcePtr() {
+    zVec3 *GetCapturedHitSourcePtr() {
         return &g_OptCatalog_CapturedDamageSourcePos;
     }
 
     // Reimplements 0x4b0710: OptCatalog::EmitCraterImpactEvent
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE int RECOIL_FASTCALL EmitCraterImpactEvent(
+    int __fastcall EmitCraterImpactEvent(
         OptCatalogEntryDef * self,
         OptCatalogHitEventPartial * hitEvent,
         zClass_NodePartial * unusedOwnerNode,
@@ -2445,7 +2445,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4b0660: OptCatalog::EmitQSandImpactEvent
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL EmitQSandImpactEvent(
+    void __fastcall EmitQSandImpactEvent(
         OptCatalogEntryDef * self,
         OptCatalogHitEventPartial * hitEvent,
         zClass_NodePartial * unusedOwnerNode,
@@ -2479,7 +2479,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4b0fd0: OptCatalog::PlayImpactSound
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL PlayImpactSound(
+    void __fastcall PlayImpactSound(
         OptCatalogEntryDef * self,
         OptCatalogHitEventPartial * hitEvent,
         int impactSlot,
@@ -2502,7 +2502,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4b1030: OptCatalog::PlayBounceSound
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL PlayBounceSound(
+    void __fastcall PlayBounceSound(
         OptCatalogEntryDef * self,
         OptCatalogRaycastHitEntry * hitEvent,
         int impactSlot,
@@ -2525,7 +2525,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4b07d0: OptCatalog::HandleImpactEvent
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL HandleImpactEvent(
+    void __fastcall HandleImpactEvent(
         OptCatalogEntryDef * self,
         OptCatalogHitEventPartial * hitEvent,
         OptCatalogRuntimeInstanceStorage * runtimeInstance
@@ -2636,7 +2636,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4b0980: OptCatalog::HandleImpactEventFromRuntimeState
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL HandleImpactEventFromRuntimeState(
+    void __fastcall HandleImpactEventFromRuntimeState(
         OptCatalogEntryDef * self,
         OptCatalogRuntimeInstanceStorage * runtimeInstance
     ) {
@@ -2658,7 +2658,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4b09d0: OptCatalog::BuildImpactHitList
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE int RECOIL_FASTCALL BuildImpactHitList(
+    int __fastcall BuildImpactHitList(
         OptCatalogEntryDef * self,
         OptCatalogRuntimeInstanceStorage * runtimeInstance,
         int allowOwnerOnlyHit,
@@ -2701,7 +2701,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4b0a50: OptCatalog::HandleImpactFromRuntimeProbe
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE int RECOIL_FASTCALL HandleImpactFromRuntimeProbe(
+    int __fastcall HandleImpactFromRuntimeProbe(
         OptCatalogEntryDef * self,
         OptCatalogRuntimeInstanceStorage * runtimeInstance,
         OptCatalogRaycastHitList * hitList,
@@ -2750,7 +2750,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4aed00: OptCatalog::ProcessRuntimeInstance
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE int RECOIL_FASTCALL ProcessRuntimeInstance(
+    int __fastcall ProcessRuntimeInstance(
         OptCatalogEntryDef * self,
         OptCatalogRuntimeInstanceStorage * runtimeInstance
     ) {
@@ -2817,7 +2817,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4af060: OptCatalog::ProcessRuntimeInstances
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_CDECL ProcessRuntimeInstances() {
+    void ProcessRuntimeInstances() {
         const unsigned int savedPackedVariantTag = PackVariantTag(&g_Variant_CurrentTag);
         float nearestLockOnDistance = (float)(_HUGE);
 
@@ -3062,7 +3062,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4b0ba0: OptCatalog::CanSpawnThroughRay
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE int RECOIL_FASTCALL CanSpawnThroughRay(
+    int __fastcall CanSpawnThroughRay(
         OptCatalogEntryDef * self,
         OptCatalogRaycastHitEntry * hit,
         const zVec3 *rayStart,
@@ -3112,7 +3112,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4b0ca0: OptCatalog::ReflectAndSortImpactTraceList
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL ReflectAndSortImpactTraceList(
+    void __fastcall ReflectAndSortImpactTraceList(
         OptCatalogTrailRuntimeState * runtime,
         float *targetProjectionScratch,
         zVec3 *directionOut
@@ -3173,7 +3173,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4b0e20: OptCatalog::ComputeTrailImpactResponse
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE int RECOIL_FASTCALL ComputeTrailImpactResponse(
+    int __fastcall ComputeTrailImpactResponse(
         OptCatalogEntryDef * self,
         OptCatalogTrailRuntimeState * trailRuntime,
         OptCatalogTrailNodeSlot * segment,
@@ -3251,7 +3251,7 @@ namespace OptCatalog {
 
     // Reimplements 0x4b0f70: OptCatalog::UpdateTrailSegmentVisual
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL UpdateTrailSegmentVisual(
+    void __fastcall UpdateTrailSegmentVisual(
         OptCatalogTrailNodeSlot * segment
     ) {
         zClass_Class::gwNodeSetActive(
@@ -3288,7 +3288,7 @@ namespace OptCatalog {
 namespace DamageFeedback {
     // Reimplements 0x4b2900: DamageFeedback::SetIntensityScalar
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void RECOIL_STDCALL SetIntensityScalar(float scalar) {
+    void __stdcall SetIntensityScalar(float scalar) {
         g_OptCatalogDamageFeedbackIntensityScalar = scalar;
     }
 }
@@ -3296,7 +3296,7 @@ namespace DamageFeedback {
 namespace HitContext {
     // Reimplements 0x4b2920: HitContext::GetCurrentOwnerOrCtx
     // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    RECOIL_NOINLINE void *RECOIL_CDECL GetCurrentOwnerOrCtx() {
+    void *GetCurrentOwnerOrCtx() {
         return g_OptCatalog_CurrentDamageOwnerOrCtx;
     }
 }

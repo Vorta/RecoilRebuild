@@ -21,171 +21,171 @@ struct WestwoodOnlineUpgradeApiEventSink {
     WestwoodOnlineUpgradeApiEventSinkVtable *m_vftable;
     WestwoodOnlineUpgradeRefCountAndLock m_refCountAndLock;
 
-    RECOIL_NOINLINE static HRESULT RECOIL_STDCALL CreateInstance(
+    static HRESULT __stdcall CreateInstance(
         WestwoodOnlineUpgradeApiEventSink **outSink
     );
-    RECOIL_NOINLINE static HRESULT RECOIL_STDCALL QueryInterface(
+    static HRESULT __stdcall QueryInterface(
         WestwoodOnlineUpgradeApiEventSink *self,
         REFIID iid,
         void **outInterface
     );
-    RECOIL_NOINLINE static ULONG RECOIL_STDCALL Release(WestwoodOnlineUpgradeApiEventSink *self);
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE static int RECOIL_STDCALL OnDownloadReadyResult(
+    static ULONG __stdcall Release(WestwoodOnlineUpgradeApiEventSink *self);
+    void Destructor();
+    static int __stdcall OnDownloadReadyResult(
         void *callbackContext,
         int resultCode,
         WestwoodOnlineUpgradeDownloadReadyEntry *downloadReadyList
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL OnPendingSessionRequestRemoved(
+    static int __stdcall OnPendingSessionRequestRemoved(
         void *callbackContext,
         int status,
         WestwoodOnlineUpgradeSessionRequest *sessionRequest
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL OnServerError(
+    static int __stdcall OnServerError(
         void *callbackContext,
         int status,
         const char *errorText
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL OnApiStatus(
+    static int __stdcall OnApiStatus(
         void *callbackContext,
         int statusCode,
         const char *statusText
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL OnStatusTextReceived(
+    static int __stdcall OnStatusTextReceived(
         void *callbackContext,
         int status,
         const char *statusText
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL OnBrowseRecordAdded(
+    static int __stdcall OnBrowseRecordAdded(
         void *callbackContext,
         int status,
         WestwoodOnlineUpgradeBrowseRecord *browseRecord
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL OnBrowseRecordAndSessionResolved(
+    static int __stdcall OnBrowseRecordAndSessionResolved(
         void *callbackContext,
         int status,
         WestwoodOnlineUpgradeBrowseRecord *browseRecord,
         WestwoodOnlineUpgradeSessionRequest *sessionRequest
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL OnSessionQueryFinished(
+    static int __stdcall OnSessionQueryFinished(
         void *callbackContext,
         int status,
         WestwoodOnlineUpgradeBrowseRecord *browseRecord,
         WestwoodOnlineUpgradeSessionRequest *sessionRequest
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL OnSessionLaunchResult(
+    static int __stdcall OnSessionLaunchResult(
         void *callbackContext,
         int status,
         WestwoodOnlineUpgradeBrowseRecord *browseRecord,
         WestwoodOnlineUpgradeSessionRequest *sessionNode,
         WestwoodOnlineUpgradeSessionRequest *sessionRequest
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL OnSessionListEnumerated(
+    static int __stdcall OnSessionListEnumerated(
         void *callbackContext,
         int status,
         WestwoodOnlineUpgradeBrowseRecord *browseRecord,
         WestwoodOnlineUpgradeSessionRequest *sessionList
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL LaunchSelectedSession(
+    static int __stdcall LaunchSelectedSession(
         void *callbackContext,
         int status,
         int reserved,
         WestwoodOnlineUpgradeSessionRequest *selectedSessionList,
         int reserved2
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL ApplyEncodedQueryString0(
+    static int __stdcall ApplyEncodedQueryString0(
         void *callbackContext,
         int status,
         int reserved,
         char *encodedQuery
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL ApplyEncodedQueryString1(
+    static int __stdcall ApplyEncodedQueryString1(
         void *callbackContext,
         int status,
         int reserved,
         int reserved2,
         char *encodedQuery
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL AppendSessionRequestStatus301B(
+    static int __stdcall AppendSessionRequestStatus301B(
         void *callbackContext,
         int status,
         int reserved,
         WestwoodOnlineUpgradeSessionRequest *sessionRequest,
         const char *statusText
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL AppendSessionRequestStatus301C(
+    static int __stdcall AppendSessionRequestStatus301C(
         void *callbackContext,
         int status,
         WestwoodOnlineUpgradeSessionRequest *sessionRequest,
         const char *statusText
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL AppendSessionRequestStatus301C_Alt0(
+    static int __stdcall AppendSessionRequestStatus301C_Alt0(
         void *callbackContext,
         int status,
         WestwoodOnlineUpgradeSessionRequest *sessionRequest,
         int value
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL AppendSessionRequestStatus301C_Alt1(
+    static int __stdcall AppendSessionRequestStatus301C_Alt1(
         void *callbackContext,
         int status,
         int reserved,
         WestwoodOnlineUpgradeSessionRequest *sessionRequest,
         int value
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL CallbackNoOp0(
+    static int __stdcall CallbackNoOp0(
         void *callbackContext,
         int reserved0,
         int reserved1,
         int reserved2
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL CallbackNoOp1(
+    static int __stdcall CallbackNoOp1(
         void *callbackContext,
         int reserved0,
         int reserved1
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL AppendTimeStatus302A(
+    static int __stdcall AppendTimeStatus302A(
         void *callbackContext,
         int status,
         long unixTime
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL AppendValueStatus302B_302C(
+    static int __stdcall AppendValueStatus302B_302C(
         void *callbackContext,
         int reserved,
         int value,
         int usePrimaryMessage
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL UpdateSessionResultItemFlags(
+    static int __stdcall UpdateSessionResultItemFlags(
         void *callbackContext,
         int status,
         const char *sessionName,
         int flags,
         int reserved
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL AppendSessionRequestStatus301D(
+    static int __stdcall AppendSessionRequestStatus301D(
         void *callbackContext,
         int status,
         WestwoodOnlineUpgradeSessionRequest *sessionRequest,
         const char *statusText
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL AppendConnectStatus301E_3021(
+    static int __stdcall AppendConnectStatus301E_3021(
         void *callbackContext,
         int connectionStatusCode
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL AppendBrowseRecordStatus3022_3025(
+    static int __stdcall AppendBrowseRecordStatus3022_3025(
         void *callbackContext,
         int status,
         WestwoodOnlineUpgradeBrowseRecord *browseRecord
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL AppendValueStatus3026(
+    static int __stdcall AppendValueStatus3026(
         void *callbackContext,
         int status,
         int value
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL OnNetworkStatusChanged(
+    static int __stdcall OnNetworkStatusChanged(
         void *callbackContext,
         int connectionStatusCode
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL OnBrowseRecordListReceived(
+    static int __stdcall OnBrowseRecordListReceived(
         void *callbackContext,
         int status,
         WestwoodOnlineUpgradeBrowseRecord *browseRecordList

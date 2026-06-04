@@ -81,7 +81,7 @@ namespace {
 namespace GameZ {
     // Reimplements 0x454a50: GameZ::WriteZBDFile
     // (D:\Proj\GameZRecoil\zClass\cls_zbd.c)
-    RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL WriteZBDFile(const char *filename) {
+    RECOIL_NO_GS int __fastcall WriteZBDFile(const char *filename) {
         const size_t filenameLength = strlen(filename);
         if (filenameLength == 0) {
             return -1;
@@ -161,7 +161,7 @@ namespace GameZ {
 
     // Reimplements 0x455520: GameZ::ReadZBDFile
     // (D:\Proj\GameZRecoil\zClass\cls_zbd.c)
-    RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL ReadZBDFile(const char *filename) {
+    RECOIL_NO_GS int __fastcall ReadZBDFile(const char *filename) {
         const size_t filenameLength = strlen(filename);
         if (filenameLength == 0) {
             return -1;
@@ -263,7 +263,7 @@ namespace GameZ {
 
     // Reimplements 0x4556a0: GameZ::OpenAndReadZBDHeader
     // (D:\Proj\GameZRecoil\zClass\cls_zbd.c)
-    RECOIL_NOINLINE FILE *RECOIL_FASTCALL
+    FILE *__fastcall
     OpenAndReadZBDHeader(
         const char *filename,
         zClass_ZbdHeader *outHeader
@@ -309,7 +309,7 @@ namespace GameZ {
 
 namespace zClass {
     // Reimplements 0x4543a0: zClass::NodePtrToValidatedIndex
-    RECOIL_NOINLINE int RECOIL_FASTCALL NodePtrToValidatedIndex(zClass_NodePartial * node) {
+    int __fastcall NodePtrToValidatedIndex(zClass_NodePartial * node) {
         const int index = GameZ_ZBD::NodePtrToIndex(node);
         if (index >= 0 && (g_zClass_NodeArray[index].freeTag & 0x01000000u) != 0) {
             return index;
@@ -321,7 +321,7 @@ namespace zClass {
 
 namespace GameZ_ZBD {
     // Reimplements 0x454370: GameZ_ZBD::NodePtrToIndex
-    RECOIL_NOINLINE int RECOIL_FASTCALL NodePtrToIndex(zClass_NodePartial * node) {
+    int __fastcall NodePtrToIndex(zClass_NodePartial * node) {
         if (node == 0) {
             return -1;
         }
@@ -330,7 +330,7 @@ namespace GameZ_ZBD {
     }
 
     // Reimplements 0x4543d0: GameZ_ZBD::NodeIndexToPtr
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL NodeIndexToPtr(int index) {
+    zClass_NodePartial *__fastcall NodeIndexToPtr(int index) {
         if (index < 0) {
             return 0;
         }
@@ -339,7 +339,7 @@ namespace GameZ_ZBD {
     }
 
     // Reimplements 0x4543f0: GameZ_ZBD::WriteNodeRefListIndices
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     WriteNodeRefListIndices(
         zClass_NodePartial * *nodeRefList,
         int entryCount,
@@ -389,7 +389,7 @@ namespace GameZ_ZBD {
 
     // Reimplements 0x4544b0: GameZ_ZBD::WriteSingleNodeClassData
     // (D:\Proj\GameZRecoil\zClass\cls_zbd.c)
-    RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL
+    RECOIL_NO_GS int __fastcall
     WriteSingleNodeClassData(
         zClass_NodePartial * node,
         void *stream
@@ -641,7 +641,7 @@ namespace GameZ_ZBD {
 
     // Reimplements 0x454890: GameZ_ZBD::WriteNodeTable
     // (D:\Proj\GameZRecoil\zClass\cls_zbd.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL WriteNodeTable(void *stream) {
+    int __fastcall WriteNodeTable(void *stream) {
         int result = g_zClass_NodeArraySize;
         if (result == 0) {
             return result;
@@ -733,7 +733,7 @@ namespace GameZ_ZBD {
     }
 
     // Reimplements 0x454bf0: GameZ_ZBD::ReadNodeRefListIndices
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     ReadNodeRefListIndices(
         zClass_NodePartial * *nodeRefList,
         int entryCount,
@@ -769,7 +769,7 @@ namespace GameZ_ZBD {
 
     // Reimplements 0x454c60: GameZ_ZBD::ReadSingleNodeClassData
     // (D:\Proj\GameZRecoil\zClass\cls_zbd.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     ReadSingleNodeClassData(
         zClass_NodePartial * node,
         void *stream
@@ -1184,7 +1184,7 @@ namespace GameZ_ZBD {
 
     // Reimplements 0x455350: GameZ_ZBD::ReadNodeTable
     // (D:\Proj\GameZRecoil\zClass\cls_zbd.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL ReadNodeTable(
+    int __fastcall ReadNodeTable(
         int nodeCount,
         void *stream
     ){
@@ -1270,7 +1270,7 @@ namespace GameZ_ZBD {
     // Reimplements 0x455730:
     // GameZ_ZBD::ReloadDisplayInstancesFromCurrentPath_Local
     // (D:\Proj\GameZRecoil\zClass\cls_zbd.c)
-    RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL
+    RECOIL_NO_GS int __fastcall
     ReloadDisplayInstancesFromCurrentPath_Local(
         zClass_NodePartial * node,
         int recurseChildren
@@ -1302,7 +1302,7 @@ namespace GameZ_ZBD {
     // Reimplements 0x4557a0:
     // GameZ_ZBD::ReloadDisplayInstancesRecursive_Local
     // (D:\Proj\GameZRecoil\zClass\cls_zbd.c)
-    RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL ReloadDisplayInstancesRecursive_Local(
+    RECOIL_NO_GS int __fastcall ReloadDisplayInstancesRecursive_Local(
         void *stream,
         zClass_ZbdHeader *zbdHeader,
         zClass_NodePartial *node,

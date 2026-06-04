@@ -170,7 +170,7 @@ struct zModel_PickFaceData {
 };
 
 namespace zDi {
-RECOIL_NOINLINE int RECOIL_FASTCALL AddPolygonEx(
+int __fastcall AddPolygonEx(
     zDiPartial *self,
     int vertexCount,
     zVec3 *points,
@@ -184,7 +184,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AddPolygonEx(
     int flagBit8,
     const int *userTag
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AddPolygon(
+int __fastcall AddPolygon(
     zDiPartial *self,
     int pointCount,
     zVec3 *points,
@@ -197,7 +197,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AddPolygon(
     int flagBit8,
     const int *userTag
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL AddPolygonSplitByVertexLimit(
+void __fastcall AddPolygonSplitByVertexLimit(
     zDiPartial *self,
     int totalVertexCount,
     zVec3 *points,
@@ -212,79 +212,79 @@ RECOIL_NOINLINE void RECOIL_FASTCALL AddPolygonSplitByVertexLimit(
     const int *userTag,
     int maxChunkVertexCount
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SetFlagBit0(
+void __fastcall SetFlagBit0(
     zDiPartial *self,
     int enabled
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SetClonedFlag(
+void __fastcall SetClonedFlag(
     zDiPartial *self,
     int isCloned
 );
-RECOIL_NOINLINE zDiPartial *RECOIL_FASTCALL CloneToInstance(
+zDiPartial *__fastcall CloneToInstance(
     zDiPartial *self,
     int cloneMaterials,
     int cloneAuxOnly
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HasSpecialFlagsOrAuxMaterialData(zDiPartial *self);
-RECOIL_NOINLINE void RECOIL_FASTCALL SetVariantTagIfUnset(
+int __fastcall HasSpecialFlagsOrAuxMaterialData(zDiPartial *self);
+void __fastcall SetVariantTagIfUnset(
     zDiPartial *self,
     int variantTag
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL BuildAabb(
+void __fastcall BuildAabb(
     zDiPartial *self,
     zBoundsMinMaxPartial *outBoundsMinMax
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL BuildOriginSymmetricAabb(
+void __fastcall BuildOriginSymmetricAabb(
     zDiPartial *self,
     zBoundsMinMaxPartial *outBoundsMinMax
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RebuildBounds(
+void __fastcall RebuildBounds(
     zDiPartial *self,
     zBoundsMinMaxPartial *outBoundsMinMax
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FreeContents(zDiPartial *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL AddRef(zDiPartial *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL Release(zDiPartial *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL GetRefCount(zDiPartial *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL PtrToIndexOrMinus1(zDiPartial *self);
-RECOIL_NOINLINE zDiPartial *RECOIL_FASTCALL IndexToPtrOrNull(int index);
-RECOIL_NOINLINE void RECOIL_FASTCALL ResetCurrentVariant(zDiPartial *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL SetCurrentVariantCycleTextureCount(
+int __fastcall FreeContents(zDiPartial *self);
+int __fastcall AddRef(zDiPartial *self);
+int __fastcall Release(zDiPartial *self);
+int __fastcall GetRefCount(zDiPartial *self);
+int __fastcall PtrToIndexOrMinus1(zDiPartial *self);
+zDiPartial *__fastcall IndexToPtrOrNull(int index);
+void __fastcall ResetCurrentVariant(zDiPartial *self);
+int __fastcall SetCurrentVariantCycleTextureCount(
     zDiPartial *self,
     int textureCount
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SetCurrentVariant(
+void __fastcall SetCurrentVariant(
     zDiPartial *self,
     int variantIndex
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetCurrentVariantCycleTextureSpeed(
+int __fastcall SetCurrentVariantCycleTextureSpeed(
     zDiPartial *self,
     float cycleSpeed
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RebuildGeneratedUvPairsForEntry(
+void __fastcall RebuildGeneratedUvPairsForEntry(
     zDiPartial *self,
     int entryIndex
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL BuildBlendVertsFromConnectivity(
+void __fastcall BuildBlendVertsFromConnectivity(
     zDiPartial *self,
     int *excludedVertexIndices,
     float blendY,
     int excludedVertexCount,
     int minSharedVertexCount
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SetEntryValueForAllEntries(
+void __fastcall SetEntryValueForAllEntries(
     zDiPartial *self,
     unsigned int entryValue
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SetShowBackFaceForAllEntries(
+void __fastcall SetShowBackFaceForAllEntries(
     zDiPartial *self,
     int enabled
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SetObject3DColorModeForMaterials(
+void __fastcall SetObject3DColorModeForMaterials(
     zDiPartial *self,
     int colorMode
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidateForQueryPoint(
+int __fastcall BuildPickCandidateForQueryPoint(
     zDiPartial *self,
     zClassDiPickCandidateEntry *outCandidate,
     const zVec3 *queryPoint
@@ -292,11 +292,11 @@ RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidateForQueryPoint(
 } // namespace zDi
 
 namespace zModel_Instance {
-RECOIL_NOINLINE int RECOIL_FASTCALL SetCycleTextureLoop(
+int __fastcall SetCycleTextureLoop(
     zDiPartial *instance,
     int loopEnabled
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AddCycleTexture(
+int __fastcall AddCycleTexture(
     zDiPartial *instance,
     zImage_TexDirEntryPartial *textureDirectoryEntry
 );
@@ -327,72 +327,72 @@ extern zClass_NodePartial *g_zClass_cls_di_FilterRegions_LineOfSightWorld;
 extern OptCatalogRaycastHitList *g_zClass_cls_di_FilterRegions_OutHitList;
 
 namespace zClass_cls_di {
-void RECOIL_FASTCALL SetBreakOnFirstCandidate(int enabled);
-void RECOIL_FASTCALL SetStopAfterFirstHit(int flag);
-RECOIL_NOINLINE void RECOIL_FASTCALL FindBestPickCandidateBelowPoint(
+void __fastcall SetBreakOnFirstCandidate(int enabled);
+void __fastcall SetStopAfterFirstHit(int flag);
+void __fastcall FindBestPickCandidateBelowPoint(
     zClass_NodePartial *world,
     const zVec3 *position,
     PlayerProbeSampleCandidateBuffer *outResults
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidateListBelowPoint(
+int __fastcall BuildPickCandidateListBelowPoint(
     zClass_NodePartial *world,
     PlayerProbeSampleCandidateBuffer *outResults,
     float x,
     float maxY,
     float z
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SnapProbePointYToBestCandidate(zVec3 *point);
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidateList(
+int __fastcall SnapProbePointYToBestCandidate(zVec3 *point);
+int __fastcall BuildPickCandidateList(
     zClass_NodePartial *node,
     int cullCount
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForPoints(
+int __fastcall BuildPickCandidatesForPoints(
     zClass_NodePartial *node,
     int depth,
     int *hitFlags
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForPointsRecursive(
+int __fastcall BuildPickCandidatesForPointsRecursive(
     zClass_NodePartial *node,
     int depth,
     int *hitFlags
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForPointsForLight(
+int __fastcall BuildPickCandidatesForPointsForLight(
     zClass_NodePartial *node,
     int depth,
     int *hitFlags
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForPointBatch(
+int __fastcall BuildPickCandidatesForPointBatch(
     zClass_NodePartial *world,
     zVec3 *pointArray,
     int pointCount,
     float queryMaxY,
     PlayerProbeSampleCandidateBuffer *outCandidateBuffersByPoint
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesRecursive(
+int __fastcall BuildPickCandidatesRecursive(
     zClass_NodePartial *node,
     int cullCount
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForLight(
+int __fastcall BuildPickCandidatesForLight(
     zClass_NodePartial *node,
     int cullCount
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL IsPickQueryPointOutsideViewBBoxXZ(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL PickTestBBox2D(
+int __fastcall IsPickQueryPointOutsideViewBBoxXZ(zClass_NodePartial *node);
+int __fastcall PickTestBBox2D(
     zClass_NodePartial *node,
     int *hitFlags
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FrustumTestAndPick(
+int __fastcall FrustumTestAndPick(
     zClass_NodePartial *node,
     int *activeMask
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL TryGetPolygonHitAtQueryXZ(
+int __fastcall TryGetPolygonHitAtQueryXZ(
     zClassDiPickCandidateEntry *candidate,
     const zVec3 *polygonVertices,
     float queryX,
     float queryZ,
     int vertexCount
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL PickTestMeshAtQueryXZ(
+void __fastcall PickTestMeshAtQueryXZ(
     zClass_NodePartial *node,
     zModel_PickFaceData *faceData,
     const zVec3 *samplePoints,
@@ -401,14 +401,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL PickTestMeshAtQueryXZ(
     float maxProjectedY,
     PlayerProbeSampleCandidateBuffer *outputBuckets
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegment(zClass_NodePartial *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL RaycastSelectClosestHitBetweenPoints(
+int __fastcall BuildPickCandidatesForSegment(zClass_NodePartial *self);
+int __fastcall RaycastSelectClosestHitBetweenPoints(
     zClass_NodePartial *world,
     const zVec3 *startPoint,
     const zVec3 *endPoint,
     PlayerProbeSampleCandidateBuffer *rayData
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL RaycastFindClosest(
+int __fastcall RaycastFindClosest(
     zClass_NodePartial *world,
     PlayerProbeSampleCandidateBuffer *rayData,
     float startX,
@@ -418,56 +418,56 @@ RECOIL_NOINLINE int RECOIL_FASTCALL RaycastFindClosest(
     float endY,
     float endZ
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentChildFallback(
+int __fastcall BuildPickCandidatesForSegmentChildFallback(
     zClass_NodePartial *node,
     int nodeCountHint
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentRecursive(
+int __fastcall BuildPickCandidatesForSegmentRecursive(
     zClass_NodePartial *node,
     int depth
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentForCamera(
+int __fastcall BuildPickCandidatesForSegmentForCamera(
     zClass_NodePartial *node,
     int depth
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentForLight(
+int __fastcall BuildPickCandidatesForSegmentForLight(
     zClass_NodePartial *node,
     int depth
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentsRecursive(
+int __fastcall BuildPickCandidatesForSegmentsRecursive(
     zClass_NodePartial *node,
     int nodeCountHint,
     int *activeMask
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentsForAnimate(
+int __fastcall BuildPickCandidatesForSegmentsForAnimate(
     zClass_NodePartial *node,
     int nodeCountHint,
     int *activeMask
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentsForLight(
+int __fastcall BuildPickCandidatesForSegmentsForLight(
     zClass_NodePartial *node,
     int nodeCountHint,
     int *activeMask
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL BuildProbeHitBatchesForSegments(
+void __fastcall BuildProbeHitBatchesForSegments(
     zClass_NodePartial *world,
     zClass_DiSegmentEndpoints *segmentEndpoints,
     int endpointCount,
     PlayerProbeSampleCandidateBuffer *hitBatches
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL BuildPickCandidatesForSegmentsInGridWindow(
+void __fastcall BuildPickCandidatesForSegmentsInGridWindow(
     zClass_NodePartial *world,
     int *activeMask
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegionsAgainstMeshFaces(
+int __fastcall FilterRegionsAgainstMeshFaces(
     zVec3 *meshVertices,
     int faceCount
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegionsAgainstHexahedronFaces(
+int __fastcall FilterRegionsAgainstHexahedronFaces(
     zVec3 *center,
     float radius
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegionsAgainstSphere(
+int __fastcall FilterRegionsAgainstSphere(
     zClass_NodePartial *world,
     zVec3 *center,
     const char *nodeNamePrefix,
@@ -476,12 +476,12 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegionsAgainstSphere(
     int requireLineOfSight,
     OptCatalogRaycastHitList *outHitList
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegions_TryAppendNode(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL FilterPointsBBox(
+int __fastcall FilterRegions_TryAppendNode(zClass_NodePartial *node);
+int __fastcall FilterPointsBBox(
     zClass_NodePartial *node,
     void *pointData
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegionsAgainstPolygonWithDamageMaskUv(
+int __fastcall FilterRegionsAgainstPolygonWithDamageMaskUv(
     zClass_NodePartial *candidateOwner,
     PlayerProbeSampleCandidateBuffer *outCandidateBuffersBySegment,
     zClass_DiSegmentEndpoints *segmentEndpointsByBatch,
@@ -489,7 +489,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FilterRegionsAgainstPolygonWithDamageMaskUv(
     int segmentCount,
     const zBBoxCorners *bboxCorners
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL FilterRegionsAgainstPolygon(
+void __fastcall FilterRegionsAgainstPolygon(
     zClass_NodePartial *candidateOwner,
     zModel_PickFaceData *faceData,
     zClass_DiSegmentEndpoints *segmentEndpointsByBatch,
@@ -497,13 +497,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FilterRegionsAgainstPolygon(
     int segmentCount,
     PlayerProbeSampleCandidateBuffer *outCandidateBuffersBySegment
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentVsBBoxFaces(
+int __fastcall BuildPickCandidatesForSegmentVsBBoxFaces(
     const zBBoxCorners *bboxCorners,
     zClassDiPickCandidateEntry *candidate,
     const zVec3 *segmentStart,
     const zVec3 *segmentEnd
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentBatchVsPolygon(
+int __fastcall BuildPickCandidatesForSegmentBatchVsPolygon(
     zClass_NodePartial *candidateOwner,
     PlayerProbeSampleCandidateBuffer *outCandidateBuffersBySegment,
     zClass_DiSegmentEndpoints *segmentEndpointsByBatch,
@@ -512,7 +512,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentBatchVsPolygon(
     zVec3 *polygonVertices,
     zModel_PickFaceEntry *faceEntry
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
+int __fastcall BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
     zClass_NodePartial *candidateOwner,
     PlayerProbeSampleCandidateBuffer *outCandidateBuffersBySegment,
     zClass_DiSegmentEndpoints *segmentEndpointsByBatch,
@@ -523,7 +523,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidatesForSegmentBatchVsPolygonW
     zVec2 *scratchUv,
     zModel_PickFaceEntry *faceEntry
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidateForSegmentVsPolygon(
+int __fastcall BuildPickCandidateForSegmentVsPolygon(
     zClassDiPickCandidateEntry *candidate,
     const zVec3 *segmentStart,
     const zVec3 *segmentEnd,
@@ -531,7 +531,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidateForSegmentVsPolygon(
     int vertexCount,
     int cullBackface
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidateForSegmentVsPolygonWithUv(
+int __fastcall BuildPickCandidateForSegmentVsPolygonWithUv(
     zClassDiPickCandidateEntry *candidate,
     const zVec3 *segmentStart,
     const zVec3 *segmentEnd,
@@ -541,7 +541,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL BuildPickCandidateForSegmentVsPolygonWithUv(
     int vertexCount,
     int cullBackface
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AppendPickCandidatesForFace(
+int __fastcall AppendPickCandidatesForFace(
     const zModel_PickFaceData *faceData,
     zClassDiPickCandidateEntry *candidate,
     const zVec3 *segmentStart,
@@ -550,7 +550,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AppendPickCandidatesForFace(
 } // namespace zClass_cls_di
 
 namespace zModelConst {
-RECOIL_NOINLINE void RECOIL_FASTCALL AddFaceToPlayerProbeSampleBuckets(
+void __fastcall AddFaceToPlayerProbeSampleBuckets(
     zClass_NodePartial *node,
     PlayerProbeSampleCandidateBuffer *outputBuckets,
     const zVec3 *samplePoints,
@@ -562,53 +562,53 @@ RECOIL_NOINLINE void RECOIL_FASTCALL AddFaceToPlayerProbeSampleBuckets(
 );
 } // namespace zModelConst
 
-RECOIL_NOINLINE int RECOIL_FASTCALL zModel_Material_SetFlagBit9(
+int __fastcall zModel_Material_SetFlagBit9(
     zModel_MaterialPartial *material,
     int enabled
 );
 namespace zModel_Material {
-RECOIL_NOINLINE void RECOIL_FASTCALL ResetDefaults(zModel_MaterialPartial *material);
-RECOIL_NOINLINE int RECOIL_FASTCALL HasAuxData(zModel_MaterialPartial *material);
-RECOIL_NOINLINE int RECOIL_FASTCALL CompareForReuse(
+void __fastcall ResetDefaults(zModel_MaterialPartial *material);
+int __fastcall HasAuxData(zModel_MaterialPartial *material);
+int __fastcall CompareForReuse(
     zModel_MaterialPartial *lhs,
     zModel_MaterialPartial *rhs
 );
-RECOIL_NOINLINE zModel_MaterialPartial *RECOIL_FASTCALL FindByTexDirEntry(
+zModel_MaterialPartial *__fastcall FindByTexDirEntry(
     zImage_TexDirEntryPartial *texDirEntry
 );
-RECOIL_NOINLINE zModel_MaterialPartial *RECOIL_FASTCALL FindOrClone(
+zModel_MaterialPartial *__fastcall FindOrClone(
     zModel_MaterialPartial *material
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetUserTag(
+int __fastcall SetUserTag(
     zModel_MaterialPartial *material,
     int userTag
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetCycleTextureCount(
+int __fastcall SetCycleTextureCount(
     zModel_MaterialPartial *material,
     int textureCount
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AddCycleTexture(
+int __fastcall AddCycleTexture(
     zModel_MaterialPartial *material,
     zImage_TexDirEntryPartial *textureDirectoryEntry
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetCycleTextureLoop(
+int __fastcall SetCycleTextureLoop(
     zModel_MaterialPartial *material,
     int loopEnabled
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetCycleTextureSpeed(
+int __fastcall SetCycleTextureSpeed(
     zModel_MaterialPartial *material,
     float cycleSpeed
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCycleIfNeeded(zModel_MaterialPartial *material);
-RECOIL_NOINLINE zModel_MaterialPartial *RECOIL_FASTCALL Clone(zModel_MaterialPartial *material);
-RECOIL_NOINLINE void RECOIL_FASTCALL InvalidateImagesIfEligible(zModel_MaterialPartial *material);
+void __fastcall UpdateCycleIfNeeded(zModel_MaterialPartial *material);
+zModel_MaterialPartial *__fastcall Clone(zModel_MaterialPartial *material);
+void __fastcall InvalidateImagesIfEligible(zModel_MaterialPartial *material);
 } // namespace zModel_Material
-RECOIL_NOINLINE void RECOIL_FASTCALL zDi_SetMaterialFlagBit9ForFlagBit0Entries(
+void __fastcall zDi_SetMaterialFlagBit9ForFlagBit0Entries(
     zDiPartial *self,
     int enabled
 );
 namespace zDi {
-RECOIL_NOINLINE void RECOIL_FASTCALL InvalidateImagesForFlagBit8Materials(zDiPartial *self);
+void __fastcall InvalidateImagesForFlagBit8Materials(zDiPartial *self);
 }
 
 RECOIL_STATIC_ASSERT(

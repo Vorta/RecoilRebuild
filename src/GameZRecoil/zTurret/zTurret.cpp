@@ -230,7 +230,7 @@ const zVec3 *zTurret_FindNearestTarget(
 
 // Reimplements 0x436630: zTurret_Runtime::InitDefaults
 // (D:\Proj\Battlesport\turret.cpp)
-RECOIL_NOINLINE zTurret_Runtime *RECOIL_THISCALL zTurret_Runtime::InitDefaults() {
+zTurret_Runtime * zTurret_Runtime::InitDefaults() {
     flags = 0;
     scenePathVisible = 0;
     healthyNode = 0;
@@ -308,7 +308,7 @@ RECOIL_NOINLINE zTurret_Runtime *RECOIL_THISCALL zTurret_Runtime::InitDefaults()
 
 // Reimplements 0x4367a0: zTurret_Runtime::InitFromReaderNode
 // (D:\Proj\Battlesport\turret.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zTurret_Runtime::InitFromReaderNode(
+void zTurret_Runtime::InitFromReaderNode(
     zClass_NodePartial *worldNode,
     zClass_NodePartial *turretWorldNode,
     zEffectAnimEntry *defaultDestroyAnim,
@@ -801,7 +801,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zTurret_Runtime::InitFromReaderNode(
 
 // Reimplements 0x437430: zTurret_Runtime::UpdateFirePositionFromParts
 // (D:\Proj\Battlesport\turret.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zTurret_Runtime::UpdateFirePositionFromParts() {
+void zTurret_Runtime::UpdateFirePositionFromParts() {
     firePos = worldPos;
 
     if (partBaseNode != 0) {
@@ -824,7 +824,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zTurret_Runtime::UpdateFirePositionFromPart
 
 // Reimplements 0x4374a0: zTurret_Runtime::UpdateAimAndPartMatrices
 // (D:\Proj\Battlesport\turret.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zTurret_Runtime::UpdateAimAndPartMatrices(
+void zTurret_Runtime::UpdateAimAndPartMatrices(
     const zVec3 *targetPos
 ) {
     zVec3 localAimDir = {partBarrelMatrix->posX, partBarrelMatrix->posY, partBarrelMatrix->posZ};
@@ -917,7 +917,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zTurret_Runtime::UpdateAimAndPartMatrices(
 
 // Reimplements 0x437730: zTurret_Runtime::SelectFirePointAndAimAtTarget
 // (D:\Proj\Battlesport\turret.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zTurret_Runtime::SelectFirePointAndAimAtTarget(
+void zTurret_Runtime::SelectFirePointAndAimAtTarget(
     const zVec3 *targetPos
 ) {
     if (firePointCount > 1) {
@@ -951,7 +951,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zTurret_Runtime::SelectFirePointAndAimAtTar
 
 // Reimplements 0x437820: zTurret_Runtime::FireWeapon
 // (D:\Proj\Battlesport\turret.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zTurret_Runtime::FireWeapon() {
+void zTurret_Runtime::FireWeapon() {
     if (trailRuntimeState != 0) {
         if (runtimeInstanceActive == 0) {
             runtimeInstanceActive = 1;
@@ -1030,7 +1030,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zTurret_Runtime::FireWeapon() {
 
 // Reimplements 0x437990: zTurret_Runtime::UpdateFireBurstTimer
 // (D:\Proj\Battlesport\turret.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zTurret_Runtime::UpdateFireBurstTimer(
+void zTurret_Runtime::UpdateFireBurstTimer(
     float deltaTime
 ) {
     if (fireBurstDuration == 0.0f) {
@@ -1047,7 +1047,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zTurret_Runtime::UpdateFireBurstTimer(
 
 // Reimplements 0x436e40: zTurret_Runtime::Tick
 // (D:\Proj\Battlesport\turret.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zTurret_Runtime::Tick(
+void zTurret_Runtime::Tick(
     const zVec3 *playerFxOffsetWorld
 ) {
     if (!zTurret_NodeIsActive(healthyNode) || !zTurret_NodeIsActive(turretNode) ||
@@ -1203,7 +1203,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zTurret_Runtime::Tick(
 
 // Reimplements 0x437e50: zTurret_Runtime::FireWeaponCallback
 // (D:\Proj\Battlesport\turret.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL zTurret_Runtime::FireWeaponCallback(
+void __fastcall zTurret_Runtime::FireWeaponCallback(
     zEffectAnimEntry *entry,
     zTurret_Runtime *self,
     int eventCode
@@ -1215,7 +1215,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zTurret_Runtime::FireWeaponCallback(
 
 // Reimplements 0x4379f0: zTurret_Runtime::ApplyDamageAndHandleDestruction
 // (D:\Proj\Battlesport\turret.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zTurret_Runtime::ApplyDamageAndHandleDestruction(
+int zTurret_Runtime::ApplyDamageAndHandleDestruction(
     float damageAmount,
     OptCatalogEntryDef *entry,
     OptCatalogHitEventPartial *hitEvent
@@ -1257,7 +1257,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zTurret_Runtime::ApplyDamageAndHandleDestruc
 
 // Reimplements 0x437d60: zTurret_Runtime::OnDamage
 // (D:\Proj\Battlesport\turret.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL zTurret_Runtime::OnDamage(
+int __fastcall zTurret_Runtime::OnDamage(
     zTurret_Runtime *self,
     OptCatalogEntryDef *entry,
     OptCatalogHitEventPartial *hitEvent,
@@ -1281,7 +1281,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zTurret_Runtime::OnDamage(
 }
 
 // Reimplements 0x436e00: zTurret_Runtime::Shutdown
-RECOIL_NOINLINE int RECOIL_THISCALL zTurret_Runtime::Shutdown() {
+int zTurret_Runtime::Shutdown() {
     if (trailRuntimeState != 0) {
         OptCatalog::FreeTrailRuntimeStateStorage(trailRuntimeState);
     }
@@ -1291,7 +1291,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zTurret_Runtime::Shutdown() {
 
 // Reimplements 0x436e20: zTurret_Runtime::HasActiveNode
 // (D:\Proj\Battlesport\turret.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL zTurret_Runtime::HasActiveNode() {
+int zTurret_Runtime::HasActiveNode() {
     if (flags != 0 && (turretNode->flags & 0x04) != 0) {
         return 1;
     }
@@ -1301,7 +1301,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zTurret_Runtime::HasActiveNode() {
 
 namespace zTurret_System {
 // Reimplements 0x437aa0: zTurret_System::ResetIterationState
-RECOIL_NOINLINE int RECOIL_CDECL ResetIterationState() {
+int ResetIterationState() {
     g_zTurret_RuntimeCount = 0;
     g_zTurret_CallbackStartIndex = 0;
     return 0;
@@ -1309,7 +1309,7 @@ RECOIL_NOINLINE int RECOIL_CDECL ResetIterationState() {
 
 // Reimplements 0x437ac0: zTurret_System::LoadDefinitionsFromPath
 // (D:\Proj\Battlesport\turret.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL LoadDefinitionsFromPath(
+int __fastcall LoadDefinitionsFromPath(
     zClass_NodePartial *worldNode,
     const char *path
 ) {
@@ -1409,7 +1409,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadDefinitionsFromPath(
 
 // Reimplements 0x437ca0: zTurret_System::TickAllRuntimesRoundRobin
 // (D:\Proj\Battlesport\turret.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL TickAllRuntimesRoundRobin() {
+void TickAllRuntimesRoundRobin() {
     zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)g_GameStateOrMapTable;
     if (saveState->primaryModalState->masterModalData->masterType == kPlayerMasterTypeSub) {
         return;
@@ -1448,7 +1448,7 @@ RECOIL_NOINLINE void RECOIL_CDECL TickAllRuntimesRoundRobin() {
 
 // Reimplements 0x437d40: zTurret_System::DisableTickCallback
 // (D:\Proj\Battlesport\turret.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL DisableTickCallback() {
+int DisableTickCallback() {
     return zClass_Class::gwNodeSetActionCallback(
         g_zTurret_CallbackNode,
         0
@@ -1457,7 +1457,7 @@ RECOIL_NOINLINE int RECOIL_CDECL DisableTickCallback() {
 
 // Reimplements 0x437d50: zTurret_System::EnableTickCallback
 // (D:\Proj\Battlesport\turret.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL EnableTickCallback() {
+int EnableTickCallback() {
     return zClass_Class::gwNodeSetActionCallback(
         g_zTurret_CallbackNode,
         (void *)zTurret_System::TickAllRuntimesRoundRobin
@@ -1465,7 +1465,7 @@ RECOIL_NOINLINE int RECOIL_CDECL EnableTickCallback() {
 }
 
 // Reimplements 0x437dc0: zTurret_System::FreeAllRuntimes
-RECOIL_NOINLINE int RECOIL_CDECL FreeAllRuntimes() {
+int FreeAllRuntimes() {
     for (int i = 0; i < g_zTurret_RuntimeCount; ++i) {
         zTurret_Runtime *const runtime = g_zTurret_RuntimeList[i];
         runtime->Shutdown();
@@ -1492,7 +1492,7 @@ RECOIL_NOINLINE int RECOIL_CDECL FreeAllRuntimes() {
 }
 
 // Reimplements 0x437ab0: zTurret_System::Shutdown
-RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
+int Shutdown() {
     FreeAllRuntimes();
     return 0;
 }

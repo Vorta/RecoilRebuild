@@ -24,7 +24,7 @@ int gAltClipPassEnabled = 0;
 
 // Reimplements 0x47a1d0: zClipAlt_BuildFrustumPlanes
 // (GameZRecoil/zModel/zmodel.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL zClipAlt_BuildFrustumPlanes(
+void __fastcall zClipAlt_BuildFrustumPlanes(
     zClass_CameraDataPartial *cameraData
 ) {
     zMath::MatStackPushPtr(cameraData->worldTransform);
@@ -38,7 +38,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zClipAlt_BuildFrustumPlanes(
 
 namespace zClipAlt {
 // Reimplements 0x476120: zClipAlt::SetSourceRect
-void RECOIL_FASTCALL SetSourceRect(
+void __fastcall SetSourceRect(
     const zClipAltFloatRect *rect
 ) {
     g_zClipAlt_SourceLeft = rect->left;
@@ -51,7 +51,7 @@ void RECOIL_FASTCALL SetSourceRect(
 }
 
 // Reimplements 0x479f90: zClipAlt::SetTargetRect (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
-void RECOIL_FASTCALL SetTargetRect(
+void __fastcall SetTargetRect(
     const zClipAltFloatRect *rect,
     int replicate
 ) {
@@ -86,7 +86,7 @@ void RECOIL_FASTCALL SetTargetRect(
 
 // Reimplements 0x4766a0: zClipAlt::RemapPointXYInPlace
 // (D:\Proj\Battlesport\zClip.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL RemapPointXYInPlace(
+int __fastcall RemapPointXYInPlace(
     float *point
 ) {
     g_Clip_PolyVerts[0].x = point[0];

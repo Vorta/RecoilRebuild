@@ -1,11 +1,36 @@
 #pragma once
 
 #include "recoil/recoil_types.h"
+#include <time.h>
+
+#if defined(_MSC_VER) && _MSC_VER < 1300
+#ifndef _TIME_T_DEFINED
+typedef long time_t;
+#define _TIME_T_DEFINED
+#endif
+#ifndef _TM_DEFINED
+struct tm {
+    int tm_sec;
+    int tm_min;
+    int tm_hour;
+    int tm_mday;
+    int tm_mon;
+    int tm_year;
+    int tm_wday;
+    int tm_yday;
+    int tm_isdst;
+};
+#define _TM_DEFINED
+#endif
+#endif
 
 // Provider boundary for MFC42. These declarations come from the vendored MFC42
 // SDK and are not Recoil-authored class reimplementations.
 // The retail game links against release MFC42.DLL; keep the provider headers in
 // that shape even when the modern smoke target is a debug build.
+#ifndef _AFXDLL
+#define _AFXDLL
+#endif
 #if defined(_DEBUG)
 #define RECOIL_MFC42_RESTORE_DEBUG
 #undef _DEBUG
@@ -78,6 +103,14 @@ typedef struct tagRBHITTESTINFO {
 
 #include <afxcmn.h>
 #include <afxext.h>
+
+#if defined(_MSC_VER) && _MSC_VER < 1300
+#ifndef RECOIL_MFC42_UINT_PTR_DEFINED
+#define RECOIL_MFC42_UINT_PTR_DEFINED
+typedef unsigned int UINT_PTR;
+#endif
+#endif
+
 #if defined(RECOIL_MFC42_RESTORE_DEBUG)
 #define _DEBUG
 #undef RECOIL_MFC42_RESTORE_DEBUG

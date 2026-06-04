@@ -35,29 +35,29 @@ RecoilStateMainMenuTransition g_RecoilState_MainMenuTransition;
 RecoilApp_IState_Vtbl g_RecoilStateMainMenuTransition_Vtbl = MakeMainMenuTransitionVtable();
 
 // Reimplements 0x415100: RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit
-void RECOIL_CDECL RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit() {
+void RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
 
 // Reimplements 0x415110: RecoilStateMainMenuTransition::StaticInit
-RecoilStateMainMenuTransition *RECOIL_CDECL RecoilStateMainMenuTransition::StaticInit() {
+RecoilStateMainMenuTransition *RecoilStateMainMenuTransition::StaticInit() {
     return g_RecoilState_MainMenuTransition.Constructor();
 }
 
 // Reimplements 0x415120: RecoilStateMainMenuTransition::RegisterAtExit
-void RECOIL_CDECL RecoilStateMainMenuTransition::RegisterAtExit() {
+void RecoilStateMainMenuTransition::RegisterAtExit() {
     atexit(RecoilStateMainMenuTransition::AtExitDestructor);
 }
 
 // Reimplements 0x415130: RecoilStateMainMenuTransition::AtExitDestructor
-void RECOIL_CDECL RecoilStateMainMenuTransition::AtExitDestructor() {
+void RecoilStateMainMenuTransition::AtExitDestructor() {
     g_RecoilState_MainMenuTransition.~RecoilStateMainMenuTransition();
 }
 
 // Reimplements 0x415170: RecoilStateMainMenuTransition::Constructor
-RecoilStateMainMenuTransition *RECOIL_THISCALL RecoilStateMainMenuTransition::Constructor() {
-    vftable = RecoilSymbolPtr32(&g_RecoilStateMainMenuTransition_Vtbl);
+RecoilStateMainMenuTransition * RecoilStateMainMenuTransition::Constructor() {
+    vftable = (RecoilPtr32)(&g_RecoilStateMainMenuTransition_Vtbl);
     m_mainMenuDialog = 0;
     m_entryRoute = RECOIL_MAINMENU_ROUTE_FRONTEND;
     m_deferredVideoModeIndex = ZVID_MODE_INVALID_COMPLEMENT;
@@ -76,7 +76,7 @@ struct RecoilStateMainMenuTransitionBaseVtableGuard {
 } // namespace
 
 // Reimplements 0x4151b0: RecoilStateMainMenuTransition::~RecoilStateMainMenuTransition
-RECOIL_NOINLINE RECOIL_NO_GS RecoilStateMainMenuTransition::~RecoilStateMainMenuTransition() {
+RECOIL_NO_GS RecoilStateMainMenuTransition::~RecoilStateMainMenuTransition() {
     vftable = RecoilSymbolPtr32(&g_RecoilStateMainMenuTransition_Vtbl);
     RecoilStateMainMenuTransitionBaseVtableGuard baseVtableOnExit = {this};
 
@@ -95,8 +95,7 @@ RECOIL_NOINLINE RECOIL_NO_GS RecoilStateMainMenuTransition::~RecoilStateMainMenu
 
 // Reimplements 0x415190: RecoilStateMainMenuTransition::ScalarDeletingDestructor
 // (D:\Proj\GameZRecoil\RecoilApp\RecoilStateMainMenuTransition.cpp)
-RECOIL_NOINLINE RecoilStateMainMenuTransition *RECOIL_THISCALL
-RecoilStateMainMenuTransition::ScalarDeletingDestructor(
+RecoilStateMainMenuTransition * RecoilStateMainMenuTransition::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     this->~RecoilStateMainMenuTransition();
