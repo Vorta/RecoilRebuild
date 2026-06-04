@@ -33,15 +33,15 @@ extern int gAltClipSourceRectValid;
 extern int gAltClipPassEnabled;
 }
 
-RECOIL_NOINLINE void RECOIL_FASTCALL zClipAlt_BuildFrustumPlanes(
+void __fastcall zClipAlt_BuildFrustumPlanes(
     zClass_CameraDataPartial *cameraData
 );
 
 namespace zClipAlt {
-void RECOIL_FASTCALL SetSourceRect(const zClipAltFloatRect *rect);
-void RECOIL_FASTCALL SetTargetRect(
+void __fastcall SetSourceRect(const zClipAltFloatRect *rect);
+void __fastcall SetTargetRect(
     const zClipAltFloatRect *rect,
     int replicate
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL RemapPointXYInPlace(float *point);
+int __fastcall RemapPointXYInPlace(float *point);
 } // namespace zClipAlt

@@ -39,17 +39,17 @@ struct HudRectI {
     int right;
     int bottom;
 
-    RECOIL_NOINLINE int RECOIL_THISCALL CalcOutcode(const zVec3 *point);
-    RECOIL_NOINLINE int RECOIL_THISCALL SegmentIntersectsEdge(
+    int CalcOutcode(const zVec3 *point);
+    int SegmentIntersectsEdge(
         int edgeCode,
         const zVec3 *segmentStart,
         const zVec3 *segmentEnd
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL ClipOrSplitSegment(
+    int ClipOrSplitSegment(
         zVec3 *segmentStart,
         zVec3 *segmentEnd
     );
-    RECOIL_NOINLINE static int RECOIL_FASTCALL IsCornerOutcode(int outcode);
+    static int __fastcall IsCornerOutcode(int outcode);
 };
 
 struct HudSensorMapNode {
@@ -64,19 +64,19 @@ struct HudSensorMapNode {
     int packedColor565Pair;
     HudSensorMapBounds cachedBounds;
 
-    RECOIL_NOINLINE HudSensorMapNode *RECOIL_THISCALL Init();
-    RECOIL_NOINLINE void RECOIL_THISCALL FreePointArray();
-    RECOIL_NOINLINE int RECOIL_THISCALL SetEnabled(int enabled);
-    RECOIL_NOINLINE HudSensorMapPoint *RECOIL_THISCALL SelectPoint(int pointIndex);
-    RECOIL_NOINLINE int RECOIL_THISCALL InitDefaults();
-    RECOIL_NOINLINE int RECOIL_THISCALL SetColorRgb(const unsigned char *rgbOrNull);
-    RECOIL_NOINLINE int RECOIL_THISCALL LoadFromStream(FILE *stream);
-    RECOIL_NOINLINE int RECOIL_THISCALL UpdateCachedBounds(HudSensorMapBounds *outBoundsOrNull);
-    RECOIL_NOINLINE int RECOIL_THISCALL DrawOnTracker(
+    HudSensorMapNode * Init();
+    void FreePointArray();
+    int SetEnabled(int enabled);
+    HudSensorMapPoint * SelectPoint(int pointIndex);
+    int InitDefaults();
+    int SetColorRgb(const unsigned char *rgbOrNull);
+    int LoadFromStream(FILE *stream);
+    int UpdateCachedBounds(HudSensorMapBounds *outBoundsOrNull);
+    int DrawOnTracker(
         HudSensorTracker *tracker,
         const zVec3 *drawPathWorldPos
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL DrawProjectedPath(HudSensorTracker *tracker);
+    int DrawProjectedPath(HudSensorTracker *tracker);
 };
 
 struct HudSensorObjectiveSlot {
@@ -91,7 +91,7 @@ struct HudSensorObjectiveSlot {
     int objectiveReadFlag;
     zSndSample *readSoundSample;
 
-    RECOIL_NOINLINE void RECOIL_THISCALL Reset();
+    void Reset();
 };
 
 struct HudSensorPendingPlayerSave {
@@ -183,133 +183,133 @@ struct HudSensorTracker {
     int hasPendingPlayerSave;
     HudSensorPendingPlayerSave pendingPlayerSave;
 
-    RECOIL_NOINLINE void RECOIL_THISCALL Init(const HudUiRect *outerRectOrNull);
-    RECOIL_NOINLINE HudSensorTracker *RECOIL_THISCALL InitNoBounds();
-    RECOIL_NOINLINE HudSensorTracker *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL Shutdown();
-    RECOIL_NOINLINE void RECOIL_THISCALL SetBounds(
+    void Init(const HudUiRect *outerRectOrNull);
+    HudSensorTracker * InitNoBounds();
+    HudSensorTracker * Constructor();
+    void Shutdown();
+    void SetBounds(
         const HudUiRect *outerRect,
         const HudUiRect *innerRectOrNull
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL SetTrackedSaveState(zUtil_SaveGameState *saveState);
-    RECOIL_NOINLINE int RECOIL_THISCALL SetSaveStateMarkerMaxDistance(float maxDist);
-    RECOIL_NOINLINE void RECOIL_THISCALL MapOverlayEndShow();
-    RECOIL_NOINLINE int RECOIL_THISCALL MapOverlayBeginShow();
-    RECOIL_NOINLINE int RECOIL_THISCALL MapOverlayRefToggle(int enable);
-    RECOIL_NOINLINE void RECOIL_THISCALL MapZoomIn();
-    RECOIL_NOINLINE void RECOIL_THISCALL MapZoomOut();
-    RECOIL_NOINLINE int RECOIL_THISCALL UpdateMapScaleLerp();
-    RECOIL_NOINLINE void RECOIL_THISCALL Update();
-    RECOIL_NOINLINE int RECOIL_THISCALL ProjectWorldPointsToOverlay(
+    int SetTrackedSaveState(zUtil_SaveGameState *saveState);
+    int SetSaveStateMarkerMaxDistance(float maxDist);
+    void MapOverlayEndShow();
+    int MapOverlayBeginShow();
+    int MapOverlayRefToggle(int enable);
+    void MapZoomIn();
+    void MapZoomOut();
+    int UpdateMapScaleLerp();
+    void Update();
+    int ProjectWorldPointsToOverlay(
         const zVec3 *inputWorldPoints,
         zVec3 *projectedOverlayPoints,
         int pointCount
     );
-    RECOIL_NOINLINE float RECOIL_THISCALL GetSaveStateRelativeVectorLen(
+    float GetSaveStateRelativeVectorLen(
         zUtil_SaveGameState *saveState,
         zVec3 *relativeDelta,
         int takeSqrt
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL DrawTrackedSaveStateMarker();
-    RECOIL_NOINLINE int RECOIL_THISCALL DrawSaveStateMarker(zUtil_SaveGameState *saveState);
-    RECOIL_NOINLINE int RECOIL_THISCALL MapRemoveNode(HudSensorMapNode *mapNode);
-    RECOIL_NOINLINE int RECOIL_THISCALL MapInsertNodeAndGrowBounds(HudSensorMapNode *mapNode);
-    RECOIL_NOINLINE int RECOIL_THISCALL MapShutdownAndResetThunk();
-    RECOIL_NOINLINE int RECOIL_THISCALL MapShutdownAndReset();
-    RECOIL_NOINLINE int RECOIL_THISCALL LoadMapFromStream(FILE *stream);
-    RECOIL_NOINLINE int RECOIL_THISCALL LoadMapFromPath(const char *path);
-    RECOIL_NOINLINE int RECOIL_THISCALL LoadMissionMapAndSfx(int missionId);
-    RECOIL_NOINLINE int RECOIL_THISCALL ResetMissionState();
-    RECOIL_NOINLINE void RECOIL_THISCALL RegisterMissionSectionHandlers();
-    RECOIL_NOINLINE int RECOIL_THISCALL WriteMissionDataSection(zZbdSectionCallbackCtx *writer);
-    RECOIL_NOINLINE int RECOIL_THISCALL ApplyMissionDataAndReload(
+    int DrawTrackedSaveStateMarker();
+    int DrawSaveStateMarker(zUtil_SaveGameState *saveState);
+    int MapRemoveNode(HudSensorMapNode *mapNode);
+    int MapInsertNodeAndGrowBounds(HudSensorMapNode *mapNode);
+    int MapShutdownAndResetThunk();
+    int MapShutdownAndReset();
+    int LoadMapFromStream(FILE *stream);
+    int LoadMapFromPath(const char *path);
+    int LoadMissionMapAndSfx(int missionId);
+    int ResetMissionState();
+    void RegisterMissionSectionHandlers();
+    int WriteMissionDataSection(zZbdSectionCallbackCtx *writer);
+    int ApplyMissionDataAndReload(
         void *reader,
         const char *token,
         const void *missionData,
         unsigned int dataSize
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL InitMissionIdAndFlags(
+    int InitMissionIdAndFlags(
         int missionId,
         int flags
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL SetZbdPath(const char *path);
-    RECOIL_NOINLINE int RECOIL_THISCALL SetMissionId(int missionId);
-    RECOIL_NOINLINE int RECOIL_THISCALL GetMissionId();
-    RECOIL_NOINLINE int RECOIL_THISCALL LoadMissionCoreResources();
-    RECOIL_NOINLINE int RECOIL_THISCALL InitMissionGameplaySystems();
-    RECOIL_NOINLINE int RECOIL_THISCALL ShutdownMissionGameplaySystems();
-    RECOIL_NOINLINE void RECOIL_THISCALL LoadMissionWeatherFx(const char *zrdPath);
-    RECOIL_NOINLINE int RECOIL_THISCALL UnloadObjectives();
-    RECOIL_NOINLINE int RECOIL_THISCALL LoadObjectivesFromPath(const char *path);
-    RECOIL_NOINLINE int RECOIL_THISCALL LoadObjectivesFromZrd(const char *zrdPath = 0);
-    RECOIL_NOINLINE int RECOIL_THISCALL LoadRaceCheckpointMeta();
-    RECOIL_NOINLINE void RECOIL_THISCALL RunStartAnimsFromZrd(
+    int SetZbdPath(const char *path);
+    int SetMissionId(int missionId);
+    int GetMissionId();
+    int LoadMissionCoreResources();
+    int InitMissionGameplaySystems();
+    int ShutdownMissionGameplaySystems();
+    void LoadMissionWeatherFx(const char *zrdPath);
+    int UnloadObjectives();
+    int LoadObjectivesFromPath(const char *path);
+    int LoadObjectivesFromZrd(const char *zrdPath = 0);
+    int LoadRaceCheckpointMeta();
+    void RunStartAnimsFromZrd(
         const char *zrdPath,
         const char *namedNodeName
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL QueueMissionFmvStateForMissionId(int missionId);
-    RECOIL_NOINLINE void RECOIL_THISCALL SaveAndQueueMissionState();
-    RECOIL_NOINLINE int RECOIL_THISCALL GetObjectiveBriefingStringsAndImageRef(
+    int QueueMissionFmvStateForMissionId(int missionId);
+    void SaveAndQueueMissionState();
+    int GetObjectiveBriefingStringsAndImageRef(
         int objectiveIndex,
         char **outSummary,
         char **outDesc,
         zVidImagePartial **outImageRef
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL SetObjectiveMarkerEnabledAndColor(
+    int SetObjectiveMarkerEnabledAndColor(
         int objectiveIndex,
         int enabled,
         const unsigned char *colorRgb24
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL SetObjectiveMarkerColorBlink(
+    int SetObjectiveMarkerColorBlink(
         int objectiveIndex,
         const unsigned char *colorRgb24
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL FindAndHighlightFirstIncompleteObjective();
-    RECOIL_NOINLINE void RECOIL_THISCALL SetRuntimeTimerSecAndGoalValue(
+    int FindAndHighlightFirstIncompleteObjective();
+    void SetRuntimeTimerSecAndGoalValue(
         int timerSecRaw,
         int goalValue
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL SetObjectiveReviewVisible(int visible);
-    RECOIL_NOINLINE void RECOIL_THISCALL AdvanceObjectiveState();
-    RECOIL_NOINLINE void RECOIL_THISCALL ResetHudForMissionStart();
-    RECOIL_NOINLINE void RECOIL_THISCALL Command_ToggleObjectivePanel();
-    RECOIL_NOINLINE void RECOIL_THISCALL SetObjectivePanelVisible(int visible);
-    RECOIL_NOINLINE void RECOIL_THISCALL Command_ShowObjectivePickupInfo();
-    RECOIL_NOINLINE void RECOIL_THISCALL ShowObjectivePickupInfo(
+    int SetObjectiveReviewVisible(int visible);
+    void AdvanceObjectiveState();
+    void ResetHudForMissionStart();
+    void Command_ToggleObjectivePanel();
+    void SetObjectivePanelVisible(int visible);
+    void Command_ShowObjectivePickupInfo();
+    void ShowObjectivePickupInfo(
         int visible,
         int startAutoAdvance,
         OptCatalogEntryDef *optEntry
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL UpdateObjectiveFlow();
+    int UpdateObjectiveFlow();
 
-    RECOIL_NOINLINE static int RECOIL_FASTCALL ZarMission_SaveCallback(
+    static int __fastcall ZarMission_SaveCallback(
         zZbdSectionCallbackCtx *writer,
         HudSensorTracker *self
     );
-    RECOIL_NOINLINE static int RECOIL_FASTCALL ZarMission_RestoreCallback(
+    static int __fastcall ZarMission_RestoreCallback(
         void *reader,
         const char *token,
         const void *missionData,
         unsigned int dataSize,
         HudSensorTracker *self
     );
-    RECOIL_NOINLINE static void RECOIL_FASTCALL ZarMissionLate_SaveCallback(
+    static void __fastcall ZarMissionLate_SaveCallback(
         zZbdSectionCallbackCtx *writer,
         HudSensorTracker *self
     );
-    RECOIL_NOINLINE static void RECOIL_FASTCALL ZarMissionLate_RestoreCallback(
+    static void __fastcall ZarMissionLate_RestoreCallback(
         void *reader,
         const char *token,
         const void *lateMissionData,
         unsigned int dataSize,
         HudSensorTracker *self
     );
-    RECOIL_NOINLINE static void RECOIL_FASTCALL OnObjectiveReadSoundEvent(int eventCode);
-    RECOIL_NOINLINE static void RECOIL_FASTCALL OnObjectiveCommand(int commandId);
-    RECOIL_NOINLINE static HudSensorTracker *RECOIL_CDECL ConstructGlobal();
-    RECOIL_NOINLINE static void RECOIL_CDECL RegisterGlobalOnExit();
-    RECOIL_NOINLINE static void RECOIL_CDECL ShutdownGlobal();
-    RECOIL_NOINLINE static void RECOIL_FASTCALL DrawMarkerCross(
+    static void __fastcall OnObjectiveReadSoundEvent(int eventCode);
+    static void __fastcall OnObjectiveCommand(int commandId);
+    static HudSensorTracker *ConstructGlobal();
+    static void RegisterGlobalOnExit();
+    static void ShutdownGlobal();
+    static void __fastcall DrawMarkerCross(
         int centerX,
         int centerY,
         int armHalfWidth,
@@ -317,7 +317,7 @@ struct HudSensorTracker {
         int markerColor,
         HudSensorTracker *tracker
     );
-    RECOIL_NOINLINE static void RECOIL_FASTCALL DrawDiamondMarker(
+    static void __fastcall DrawDiamondMarker(
         int centerX,
         int centerY,
         int halfWidth,
@@ -325,7 +325,7 @@ struct HudSensorTracker {
         int markerColor,
         HudSensorTracker *tracker
     );
-    RECOIL_NOINLINE static int RECOIL_FASTCALL ParseCheckpointNumberFromNode(
+    static int __fastcall ParseCheckpointNumberFromNode(
         zClass_NodePartial *node
     );
 };
@@ -612,7 +612,7 @@ extern int g_RecoilApp_QuitAfterCredits;
 }
 
 namespace HudGeom2D {
-RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyPointAgainstSegment(
+int __fastcall ClassifyPointAgainstSegment(
     const zVec3 *segmentStart,
     const zVec3 *segmentEnd,
     const zVec3 *point
@@ -620,31 +620,31 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClassifyPointAgainstSegment(
 }
 
 namespace HudLineClip {
-RECOIL_NOINLINE void RECOIL_FASTCALL SetCurrentBoundsFromRectI(const HudRectI *rect);
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipSegmentToCurrentBounds(
+void __fastcall SetCurrentBoundsFromRectI(const HudRectI *rect);
+int __fastcall ClipSegmentToCurrentBounds(
     zVec3 *point0,
     zVec3 *point1,
     int *point0Clipped,
     int *point1Clipped
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipSegmentToCurrentXBounds(
+int __fastcall ClipSegmentToCurrentXBounds(
     zVec3 *point0,
     zVec3 *point1,
     int *point0Clipped,
     int *point1Clipped
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipSegmentToCurrentYBounds(
+int __fastcall ClipSegmentToCurrentYBounds(
     zVec3 *point0,
     zVec3 *point1,
     int *point0Clipped,
     int *point1Clipped
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ClipEndpointToX(
+void __fastcall ClipEndpointToX(
     zVec3 *endpoint,
     const zVec3 *otherEndpoint,
     float clipX
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ClipEndpointToY(
+void __fastcall ClipEndpointToY(
     zVec3 *endpoint,
     const zVec3 *otherEndpoint,
     float clipY

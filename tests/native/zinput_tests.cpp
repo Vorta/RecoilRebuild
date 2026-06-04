@@ -8,7 +8,7 @@
 #include <new>
 
 namespace {
-void RECOIL_CDECL BindMapContextDummyCallback() {}
+void BindMapContextDummyCallback() {}
 
 bool CursorCanRoundTripTo(const POINT &target, const POINT &restore) {
     if (SetCursorPos(target.x, target.y) == 0) {
@@ -32,16 +32,16 @@ int g_keyboardRawCallbackCount = 0;
 int g_keyboardLastRawAscii = 0;
 void *g_keyboardLastRawContext = nullptr;
 
-void RECOIL_CDECL BindMapContextCountingCallback() {
+void BindMapContextCountingCallback() {
     ++g_bindMapDispatchCallbackCount;
 }
 
-void RECOIL_FASTCALL KeyboardComboCountingCallback(std::int32_t comboIdx) {
+void __fastcall KeyboardComboCountingCallback(std::int32_t comboIdx) {
     ++g_keyboardComboCallbackCount;
     g_keyboardLastCombo = comboIdx;
 }
 
-std::int32_t RECOIL_FASTCALL KeyboardRawCountingCallback(std::int32_t ascii, void *context) {
+std::int32_t __fastcall KeyboardRawCountingCallback(std::int32_t ascii, void *context) {
     ++g_keyboardRawCallbackCount;
     g_keyboardLastRawAscii = ascii;
     g_keyboardLastRawContext = context;
@@ -59,7 +59,7 @@ std::uint32_t g_ffLastEffectFlags = 0;
 std::uint32_t g_ffLastAxisCount = 0;
 std::int32_t g_ffLastDirection[2] = {};
 
-std::int32_t RECOIL_STDCALL TestEffectSetParameters(zInput_DiEffect *, const void *effect,
+std::int32_t __stdcall TestEffectSetParameters(zInput_DiEffect *, const void *effect,
                                                     std::uint32_t flags) {
     ++g_ffSetParametersCount;
     g_ffLastSetFlags = flags;
@@ -92,7 +92,7 @@ std::int32_t RECOIL_STDCALL TestEffectSetParameters(zInput_DiEffect *, const voi
     return 0;
 }
 
-std::int32_t RECOIL_STDCALL TestEffectStart(zInput_DiEffect *, std::uint32_t iterations,
+std::int32_t __stdcall TestEffectStart(zInput_DiEffect *, std::uint32_t iterations,
                                             std::uint32_t flags) {
     ++g_ffStartCount;
     g_ffLastIterations = iterations;
@@ -100,7 +100,7 @@ std::int32_t RECOIL_STDCALL TestEffectStart(zInput_DiEffect *, std::uint32_t ite
     return 0;
 }
 
-std::int32_t RECOIL_STDCALL TestEffectStop(zInput_DiEffect *) {
+std::int32_t __stdcall TestEffectStop(zInput_DiEffect *) {
     ++g_ffStopCount;
     return 0;
 }
@@ -1117,40 +1117,40 @@ zInput::DIDeviceCaps fakeCaps;
 zInput::DIDeviceObjectData keyboardEvents[4];
 zInput::DIDeviceInstance enumDeviceInstance;
 
-std::int32_t RECOIL_STDCALL QueryInterfaceFake(zInput::DIDevice *, const GUID *,
+std::int32_t __stdcall QueryInterfaceFake(zInput::DIDevice *, const GUID *,
                                                zInput::DIDevice **outDevice) {
     ++queryInterfaceCalls;
     *outDevice = queryInterfaceOut;
     return 0;
 }
 
-std::int32_t RECOIL_STDCALL ReleaseFake(zInput::DIDevice *) {
+std::int32_t __stdcall ReleaseFake(zInput::DIDevice *) {
     ++releaseCalls;
     return 1;
 }
 
-std::int32_t RECOIL_STDCALL ReleaseDirectInputFake(zInput::DIDirectInput *) {
+std::int32_t __stdcall ReleaseDirectInputFake(zInput::DIDirectInput *) {
     ++directInputReleaseCalls;
     return 1;
 }
 
-std::int32_t RECOIL_STDCALL AcquireFake(zInput::DIDevice *) {
+std::int32_t __stdcall AcquireFake(zInput::DIDevice *) {
     ++acquireCalls;
     return acquireResult;
 }
 
-std::int32_t RECOIL_STDCALL UnacquireFake(zInput::DIDevice *) {
+std::int32_t __stdcall UnacquireFake(zInput::DIDevice *) {
     ++unacquireCalls;
     return unacquireResult;
 }
 
-std::int32_t RECOIL_STDCALL GetCapabilitiesFake(zInput::DIDevice *, void *capabilities) {
+std::int32_t __stdcall GetCapabilitiesFake(zInput::DIDevice *, void *capabilities) {
     ++getCapabilitiesCalls;
     *static_cast<zInput::DIDeviceCaps *>(capabilities) = fakeCaps;
     return 0;
 }
 
-std::int32_t RECOIL_STDCALL GetDeviceStateFake(zInput::DIDevice *, std::uint32_t cbData,
+std::int32_t __stdcall GetDeviceStateFake(zInput::DIDevice *, std::uint32_t cbData,
                                                void *outState) {
     ++getDeviceStateCalls;
     if (cbData != sizeof(zInput::MouseDeviceState)) {
@@ -1166,7 +1166,7 @@ std::int32_t RECOIL_STDCALL GetDeviceStateFake(zInput::DIDevice *, std::uint32_t
     return getDeviceStateResult;
 }
 
-std::int32_t RECOIL_STDCALL GetDeviceDataFake(zInput::DIDevice *, std::uint32_t cbObjectData,
+std::int32_t __stdcall GetDeviceDataFake(zInput::DIDevice *, std::uint32_t cbObjectData,
                                               zInput::DIDeviceObjectData *rgdod,
                                               std::uint32_t *pdwInOut, std::uint32_t flags) {
     ++getDeviceDataCalls;
@@ -1183,12 +1183,12 @@ std::int32_t RECOIL_STDCALL GetDeviceDataFake(zInput::DIDevice *, std::uint32_t 
     return getDeviceDataResult;
 }
 
-std::int32_t RECOIL_STDCALL PollFake(zInput::DIDevice *) {
+std::int32_t __stdcall PollFake(zInput::DIDevice *) {
     ++pollCalls;
     return 0;
 }
 
-std::int32_t RECOIL_STDCALL CreateEffectFake(zInput::DIDevice *, const GUID *rguid,
+std::int32_t __stdcall CreateEffectFake(zInput::DIDevice *, const GUID *rguid,
                                              const void *effect, zInput_DiEffect **outEffect,
                                              void *) {
     ++createEffectCalls;
@@ -1230,18 +1230,18 @@ std::int32_t RECOIL_STDCALL CreateEffectFake(zInput::DIDevice *, const GUID *rgu
     return createEffectResult;
 }
 
-std::int32_t RECOIL_STDCALL SetDataFormatFake(zInput::DIDevice *, const void *) {
+std::int32_t __stdcall SetDataFormatFake(zInput::DIDevice *, const void *) {
     ++setDataFormatCalls;
     return setDataFormatResult;
 }
 
-std::int32_t RECOIL_STDCALL SetCooperativeLevelFake(zInput::DIDevice *, HWND, std::uint32_t flags) {
+std::int32_t __stdcall SetCooperativeLevelFake(zInput::DIDevice *, HWND, std::uint32_t flags) {
     ++setCooperativeLevelCalls;
     lastCooperativeLevelFlags = flags;
     return setCooperativeLevelResult;
 }
 
-std::int32_t RECOIL_STDCALL SetPropertyFake(zInput::DIDevice *, std::uint32_t propertyId,
+std::int32_t __stdcall SetPropertyFake(zInput::DIDevice *, std::uint32_t propertyId,
                                             void *propHeader) {
     ++setPropertyCalls;
     struct PropDword {
@@ -1274,14 +1274,14 @@ std::int32_t RECOIL_STDCALL SetPropertyFake(zInput::DIDevice *, std::uint32_t pr
     return 0;
 }
 
-std::int32_t RECOIL_STDCALL CreateDeviceFake(zInput::DIDirectInput *, const GUID *,
+std::int32_t __stdcall CreateDeviceFake(zInput::DIDirectInput *, const GUID *,
                                              zInput::DIDevice **outDevice, void *) {
     ++createDeviceCalls;
     *outDevice = createDeviceOut;
     return createDeviceResult;
 }
 
-std::int32_t RECOIL_STDCALL EnumDevicesFake(zInput::DIDirectInput *, std::uint32_t deviceType,
+std::int32_t __stdcall EnumDevicesFake(zInput::DIDirectInput *, std::uint32_t deviceType,
                                             zInput::DIEnumDevicesCallback callback, void *ref,
                                             std::uint32_t flags) {
     ++enumDevicesCalls;
@@ -1291,7 +1291,7 @@ std::int32_t RECOIL_STDCALL EnumDevicesFake(zInput::DIDirectInput *, std::uint32
     return callback(&enumDeviceInstance, ref);
 }
 
-std::int32_t RECOIL_STDCALL GetPropertyFake(zInput::DIDevice *, std::uint32_t propertyId,
+std::int32_t __stdcall GetPropertyFake(zInput::DIDevice *, std::uint32_t propertyId,
                                             void *propHeader) {
     ++getPropertyCalls;
     struct RangeProp {

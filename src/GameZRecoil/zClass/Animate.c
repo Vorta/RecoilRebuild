@@ -97,7 +97,7 @@ namespace {
 namespace zClass_Animate {
     // Reimplements 0x453c90: zClass_Animate::AdvanceTime
     // (GameZRecoil/zClass/Animate.c)
-    RECOIL_NOINLINE short RECOIL_FASTCALL
+    short __fastcall
     AdvanceTime(
         zClass_AnimateRuntimePartial * runtime,
         float deltaTime
@@ -128,7 +128,7 @@ namespace zClass_Animate {
 
     // Reimplements 0x453d20: zClass_Animate::SampleTransform
     // (GameZRecoil/zClass/Animate.c)
-    RECOIL_NOINLINE short RECOIL_FASTCALL SampleTransform(zClass_AnimateRuntimePartial * runtime) {
+    short __fastcall SampleTransform(zClass_AnimateRuntimePartial * runtime) {
         if (runtime->state == kAnimateStateStopped) {
             return kAnimateStateStopped;
         }
@@ -167,7 +167,7 @@ namespace zClass_Animate {
 
     // Reimplements 0x453bd0: zClass_Animate::UpdateNode
     // (GameZRecoil/zClass/Animate.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL UpdateNode(zClass_NodePartial * node) {
+    int __fastcall UpdateNode(zClass_NodePartial * node) {
         const char *message;
         int line;
         zClass_AnimateDataPartial *data;
@@ -221,7 +221,7 @@ namespace zClass_Animate {
 
     // Reimplements 0x453b40: zClass_Animate::AddChild
     // (GameZRecoil/zClass/Animate.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     AddChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -252,7 +252,7 @@ namespace zClass_Animate {
     }
 
     // Reimplements 0x453b10: zClass_Animate::DeleteNode
-    RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNode(zClass_NodePartial * node) {
+    int __fastcall DeleteNode(zClass_NodePartial * node) {
         if (node == 0) {
             zError::ReportOld(
                 0x400,
@@ -267,7 +267,7 @@ namespace zClass_Animate {
     }
 
     // Reimplements 0x453b80: zClass_Animate::RemoveChild
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -308,7 +308,7 @@ namespace zClass_Animate {
 
     // Reimplements 0x44b710: zClass_Animate::RenderTraverse
     // (GameZRecoil/zClass/Animate.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint

@@ -83,7 +83,7 @@ inline void InitWaveMarkers(
 } // namespace
 
 // Reimplements 0x4a3180: zSndSample::InitFromWaveData_DirectSound
-RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::InitFromWaveData_DirectSound(
+int __fastcall zSndSample::InitFromWaveData_DirectSound(
     zSndWaveData *waveData
 ) {
     zSndWaveData *const loadedWaveData = waveData;
@@ -272,7 +272,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::InitFromWaveData_DirectSound(
 }
 
 // Reimplements 0x4a2ec0: zSndSample::InitFromWaveData_A3D
-RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::InitFromWaveData_A3D(
+int __fastcall zSndSample::InitFromWaveData_A3D(
     zSndWaveData *waveData
 ) {
     zSndWaveData *const loadedWaveData = waveData;
@@ -432,7 +432,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::InitFromWaveData_A3D(
 }
 
 // Reimplements 0x4a34e0: zSndSample::LockBackendBuffers
-RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::LockBackendBuffers(
+int __fastcall zSndSample::LockBackendBuffers(
     unsigned int offset,
     unsigned int bytes,
     void **buffer1,
@@ -493,7 +493,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::LockBackendBuffers(
 }
 
 // Reimplements 0x4a3590: zSndSample::UnlockBackendBuffers
-RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::UnlockBackendBuffers(
+int __fastcall zSndSample::UnlockBackendBuffers(
     void *buffer1,
     int buffer1Bytes,
     void *buffer2,
@@ -541,7 +541,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::UnlockBackendBuffers(
 }
 
 // Reimplements 0x4a2ea0: zSndSample::InitFromWaveData
-RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::InitFromWaveData(
+int __fastcall zSndSample::InitFromWaveData(
     zSndWaveData *waveData
 ) {
     int initResult = 0;
@@ -558,7 +558,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zSndSample::InitFromWaveData(
 }
 
 // Reimplements 0x4a3850: zSndSample_CreateQueuedStreamingSample
-extern "C" RECOIL_NOINLINE zSndSample *RECOIL_FASTCALL zSndSample_CreateQueuedStreamingSample(
+extern "C" zSndSample *__fastcall zSndSample_CreateQueuedStreamingSample(
     WAVEFORMATEX *audioFormat,
     void *audioBuffer,
     int bufferBytes
@@ -594,7 +594,7 @@ extern "C" RECOIL_NOINLINE zSndSample *RECOIL_FASTCALL zSndSample_CreateQueuedSt
 }
 
 // Reimplements 0x4a53f0: zSndWaveData::ConstructorFromPath
-RECOIL_NOINLINE zSndWaveData *RECOIL_THISCALL zSndWaveData::ConstructorFromPath(
+zSndWaveData * zSndWaveData::ConstructorFromPath(
     const char *path,
     int loadNow
 ) {
@@ -616,7 +616,7 @@ RECOIL_NOINLINE zSndWaveData *RECOIL_THISCALL zSndWaveData::ConstructorFromPath(
 }
 
 // Reimplements 0x4a5440: zSndWaveData::Destructor
-RECOIL_NOINLINE void RECOIL_THISCALL zSndWaveData::Destructor() {
+void zSndWaveData::Destructor() {
     Reset();
     if (nameOrPath != 0) {
         free(nameOrPath);
@@ -624,7 +624,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zSndWaveData::Destructor() {
 }
 
 // Reimplements 0x4a5460: zSndWaveData::ParseLoadedWaveFile
-RECOIL_NOINLINE int RECOIL_THISCALL zSndWaveData::ParseLoadedWaveFile() {
+int zSndWaveData::ParseLoadedWaveFile() {
     unsigned char *chunk = (unsigned char *)(fileData);
     if (chunk == 0) {
         return 0;
@@ -683,7 +683,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndWaveData::ParseLoadedWaveFile() {
 }
 
 // Reimplements 0x4a5540: zSndWaveData::LoadAndParseIfNeeded
-RECOIL_NOINLINE int RECOIL_THISCALL zSndWaveData::LoadAndParseIfNeeded() {
+int zSndWaveData::LoadAndParseIfNeeded() {
     if (parsedOk != 0) {
         return 1;
     }
@@ -718,7 +718,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndWaveData::LoadAndParseIfNeeded() {
 }
 
 // Reimplements 0x4a5600: zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded
-RECOIL_NOINLINE int RECOIL_THISCALL zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded(
+int zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded(
     zIndexArchive *archive
 ) {
     if (parsedOk != 0) {
@@ -750,7 +750,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndWaveData::LoadAndParseFromIndexArchiveIf
 }
 
 // Reimplements 0x4a55c0: zSndWaveData::Reset
-RECOIL_NOINLINE int RECOIL_THISCALL zSndWaveData::Reset() {
+int zSndWaveData::Reset() {
     if (parsedOk != 0) {
         if (fileData != 0) {
             free(fileData);

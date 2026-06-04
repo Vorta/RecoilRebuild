@@ -7,9 +7,9 @@ backend cluster. Binary Ninja and VC verifier artifacts remain authoritative.
 
 - Current source: `src/GameZRecoil/zSound/zsnd_create.cpp`.
 - Current VC target:
-  `tools/vc6_verify_targets/zsnd_sample_init_from_wave_data_a3d.json`.
+  `tools/vc5_verify_targets/zsnd_sample_init_from_wave_data_a3d.json`.
 - Current tier S verification result:
-  `python tools/recoil_vc6_verify.py 0x4a2ec0` with VC5SP3
+  `python tools/recoil_vc5_verify.py 0x4a2ec0` with VC5SP3
   `cl` 11.00.7022, `/MD /G5 /O2 /Ob0 /Zp4 /FAcs`, passes with zero unmasked
   byte mismatches after 48 relocation-masked bytes. BN body size is 691 bytes,
   VC object size is 704 bytes, and 13 trailing VC NOP bytes are trimmed.
@@ -18,15 +18,15 @@ backend cluster. Binary Ninja and VC verifier artifacts remain authoritative.
   allocation import pointer into `edi` for marker-array allocation, matching
   VC5SP3 `/MD`.
 - Current evidence command:
-  `python tools/recoil_vc6_verify.py 0x4a2ec0 --build-root build/vc6-verify-final-4a2ec0-tier-s`.
+  `python tools/recoil_vc5_verify.py 0x4a2ec0 --build-root build/vc5-verify-final-4a2ec0-tier-s`.
 
 ## 0x4a3180 zSndSample::InitFromWaveData_DirectSound
 
 - Current source: `src/GameZRecoil/zSound/zsnd_create.cpp`.
 - Current VC target:
-  `tools/vc6_verify_targets/zsnd_sample_init_from_wave_data_directsound.json`.
+  `tools/vc5_verify_targets/zsnd_sample_init_from_wave_data_directsound.json`.
 - Current verification result:
-  `python tools/recoil_vc6_verify.py 0x4a3180` with VC6 `cl` 12.00.8168,
+  `python tools/recoil_vc5_verify.py 0x4a3180` with VC5SP3 `cl` 11.00.7022,
   `/G5 /O2 /Ob0 /Zp4 /FAcs`, fails with 543 unmasked byte mismatches after
   76 relocation-masked bytes. BN body size is 852 bytes, VC object size is
   848 bytes, and 2 trailing VC NOP bytes are trimmed.
@@ -43,7 +43,7 @@ backend cluster. Binary Ninja and VC verifier artifacts remain authoritative.
   `vc5_o2_ob0_facs`, `vc5_o2_ob1_gx_facs`, and `vc5_o2_ob2_gx_facs` tied at
   298 mismatches, 56 relocation-masked bytes, BN size 691, VC object size 688,
   and 4 trailing VC NOPs trimmed.
-- `vc6_o2_ob0_facs` and `vc6_o2_ob1_gx_facs` both worsened 0x4a2ec0 to 586
+- `vc5_o2_ob0_facs` and `vc5_o2_ob1_gx_facs` both worsened 0x4a2ec0 to 586
   mismatches, 56 relocation-masked bytes, BN size 691, VC object size 704, and
   7 trailing VC NOPs trimmed.
 - Retesting the current source with the closest VC5SP3 `/MD` profiles proved
@@ -51,8 +51,8 @@ backend cluster. Binary Ninja and VC verifier artifacts remain authoritative.
   zero unmasked byte mismatches after 48 relocation-masked bytes. The manifest
   now uses the simpler non-EH `vc5_o2_ob0_md_facs` profile.
 - A focused 0x4a3180 profile sweep against the current source confirmed the
-  existing VC6 family profile is still the best choice. `vc6_o2_ob0_facs`,
-  `vc6_o2_ob1_gx_facs`, `vc6_o2_ob2_gx_facs`, and `vc6_o2_oy_ob0_facs` all
+  existing VC5SP3 family profile is still the best choice. `vc5_o2_ob0_facs`,
+  `vc5_o2_ob1_gx_facs`, `vc5_o2_ob2_gx_facs`, and `vc5_o2_oy_ob0_facs` all
   tied at 543 mismatches, 76 relocation-masked bytes, BN size 852, VC object
   size 848, and 2 trailing VC NOPs trimmed. VC5SP3 static-CRT profiles
   `vc5_o2_ob0_facs`, `vc5_o2_ob1_facs`, `vc5_o2_ob1_gx_facs`,
@@ -88,11 +88,11 @@ backend cluster. Binary Ninja and VC verifier artifacts remain authoritative.
   source probe was reverted; the accepted solution is the `/MD` verification
   profile, not a production source change.
 - Reusing a single `error` local for 0x4a3180 `CreateSoundBuffer` and later
-  DirectSound calls was neutral at 691 mismatches. VC6 still kept the create
+  DirectSound calls was neutral at 691 mismatches. VC5SP3 still kept the create
   error in `ebp` instead of matching BN's stack-stored result, so the existing
   `createError` source shape was restored.
 - Introducing an `initResult = 0` local for the 0x4a3180 early `createGuard`
-  return was neutral at 691 mismatches. VC6 still delayed `xor eax, eax` until
+  return was neutral at 691 mismatches. VC5SP3 still delayed `xor eax, eax` until
   after the first saved-register pops, so the direct `return 0` source shape
   was restored.
 - Moving the 0x4a3180 `fmt` local initialization down from the descriptor

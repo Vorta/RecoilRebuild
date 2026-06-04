@@ -94,7 +94,7 @@ zModel_MaterialPartial *g_zGeometry_Model_LastRandomDebugMaterial = 0;
 namespace zGeometry_Bounds2D {
 // Reimplements 0x46a620: zGeometry_Bounds2D::OverlapsWithUnitMargin
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL OverlapsWithUnitMargin(
+int __fastcall OverlapsWithUnitMargin(
     zGeometry_BoundsXY *boundsA,
     zGeometry_BoundsXY *boundsB
 ) {
@@ -122,7 +122,7 @@ namespace zGeometry_Model {
 
 // Reimplements 0x46b6d0: zGeometry_Model::ProcessClipPatchNode
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ProcessClipPatchNode(
+int __fastcall ProcessClipPatchNode(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zModel_DrawBatchBasePartial *model,
     zDiPartial **outDi
@@ -374,7 +374,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ProcessClipPatchNode(
 
 // Reimplements 0x46b1f0: zGeometry_Model::ClipPatch
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPatch(
+int __fastcall ClipPatch(
     int pointCount,
     zVec3 *points,
     zDEClient_FeatureGridCell *featureGridCell,
@@ -577,7 +577,7 @@ namespace zGeometry_ClipPolygon {
 // Reimplements 0x46b550:
 // zGeometry_ClipPolygon::ProcessNodePolygonSetXY
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ProcessNodePolygonSetXY(
+int __fastcall ProcessNodePolygonSetXY(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zGeometry_ClipPatchNodeView *node,
     zDiPartial **outDi
@@ -622,7 +622,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ProcessNodePolygonSetXY(
 namespace zGeometry_Vec3 {
 // Reimplements 0x469e50: zGeometry_Vec3::IsNearEqualXY
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL IsNearEqualXY(
+int __fastcall IsNearEqualXY(
     zVec3 *vecA,
     zVec3 *vecB,
     float tolerance
@@ -636,7 +636,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL IsNearEqualXY(
 
 // Reimplements 0x469e90: zGeometry_Vec3::SnapPointToSegmentXYIfNear
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL SnapPointToSegmentXYIfNear(
+int __fastcall SnapPointToSegmentXYIfNear(
     zVec3 *lineStart,
     zVec3 *lineEnd,
     zVec3 *testPoint,
@@ -687,7 +687,7 @@ namespace zGeometry_Polygon {
 // Reimplements 0x46a8e0:
 // zGeometry_Polygon::SolveUvAxisCoefficientsXZ
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL SolveUvAxisCoefficientsXZ(
+void __fastcall SolveUvAxisCoefficientsXZ(
     zVec3 *point0,
     zVec3 *point1,
     zVec3 *point2,
@@ -717,7 +717,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SolveUvAxisCoefficientsXZ(
 
 // Reimplements 0x46a130: zGeometry_Polygon::SnapPointsXYIfNear
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL SnapPointsXYIfNear(
+int __fastcall SnapPointsXYIfNear(
     zVec3 *polygon,
     int polyCount,
     zVec3 *targetVerts,
@@ -767,7 +767,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SnapPointsXYIfNear(
 namespace zGeometry_Vec3Array {
 // Reimplements 0x46a5e0: zGeometry_Vec3Array::RotateNeg90AroundX
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL RotateNeg90AroundX(
+void __fastcall RotateNeg90AroundX(
     int pointCount,
     zVec3 *points
 ) {
@@ -787,7 +787,7 @@ namespace zGeometry_ClipPolygon {
 // Reimplements 0x46b030:
 // zGeometry_ClipPolygon::SnapPointsNearNodeModelXY
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL SnapPointsNearNodeModelXY(
+int __fastcall SnapPointsNearNodeModelXY(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zGeometry_ClipPatchNodeView *node
 ) {
@@ -892,7 +892,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SnapPointsNearNodeModelXY(
 
 // Reimplements 0x46aa40: zGeometry_ClipPolygon::CreateFromPointList
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE zGeometry_ClipPolygonPartial *RECOIL_FASTCALL CreateFromPointList(
+zGeometry_ClipPolygonPartial *__fastcall CreateFromPointList(
     int pointCount,
     zVec3 *points
 ) {
@@ -929,7 +929,7 @@ RECOIL_NOINLINE zGeometry_ClipPolygonPartial *RECOIL_FASTCALL CreateFromPointLis
 // Reimplements 0x46aab0:
 // zGeometry_ClipPolygon::CopyPointsOutRotatedBack
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL CopyPointsOutRotatedBack(
+int __fastcall CopyPointsOutRotatedBack(
     zGeometry_ClipPolygonPartial *clipPolygon,
     int *outPointCount,
     zVec3 **outPoints
@@ -959,7 +959,7 @@ namespace zGeometry_Model {
 // Reimplements 0x46a690:
 // zGeometry_Model::FindOrCreateRandomDebugMaterial
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE zModel_MaterialPartial *RECOIL_CDECL FindOrCreateRandomDebugMaterial() {
+zModel_MaterialPartial *FindOrCreateRandomDebugMaterial() {
     zModel_MaterialPartial material;
     zModel_Material::ResetDefaults(&material);
 
@@ -979,7 +979,7 @@ RECOIL_NOINLINE zModel_MaterialPartial *RECOIL_CDECL FindOrCreateRandomDebugMate
 
 // Reimplements 0x46a770: zGeometry_Model::AddPolygonToDi
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL AddPolygonToDi(
+int __fastcall AddPolygonToDi(
     zDiPartial *di,
     int pointCount,
     zVec3 *points,
@@ -1021,7 +1021,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AddPolygonToDi(
 
 // Reimplements 0x46a7f0: zGeometry_Model::BuildPolygonUvList
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE zClipUV *RECOIL_FASTCALL BuildPolygonUvList(
+zClipUV *__fastcall BuildPolygonUvList(
     int pointCount,
     zVec3 *points,
     zModel_DrawBatchBasePartial *model,
@@ -1069,7 +1069,7 @@ RECOIL_NOINLINE zClipUV *RECOIL_FASTCALL BuildPolygonUvList(
 
 // Reimplements 0x46ba90: zGeometry_Model::AddPointListPolygonToDi
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL AddPointListPolygonToDi(
+int __fastcall AddPointListPolygonToDi(
     zDiPartial *di,
     int pointCount,
     zVec3 *points,
@@ -1124,7 +1124,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AddPointListPolygonToDi(
 
 // Reimplements 0x46bb30: zGeometry_Model::AddIndexedPolygonToDi
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL AddIndexedPolygonToDi(
+int __fastcall AddIndexedPolygonToDi(
     zDiPartial *di,
     zModel_DrawBatchBasePartial *model,
     zModel_PolygonPartial *polygon
@@ -1159,7 +1159,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AddIndexedPolygonToDi(
 // Reimplements 0x46bb90:
 // zGeometry_Model::IsFullyInsideClipPolygonXY
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL IsFullyInsideClipPolygonXY(
+int __fastcall IsFullyInsideClipPolygonXY(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zModel_DrawBatchBasePartial *model
 ) {

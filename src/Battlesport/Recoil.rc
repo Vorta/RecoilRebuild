@@ -1,7 +1,7 @@
 #include "Resource.h"
 
 // Generated from support/Recoil.exe by tools/recoil_resource_extract.py.
-// Reconstructed from the original PE resource table into normal VC6 .rc source.
+// Reconstructed from the original PE resource table into normal Visual C resource source.
 
 LANGUAGE 9, 1
 
@@ -400,4 +400,3 @@ BEGIN
         VALUE "Translation", 0x409, 1200
     END
 END
-

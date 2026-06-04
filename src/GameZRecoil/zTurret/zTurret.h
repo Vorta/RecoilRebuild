@@ -73,37 +73,37 @@ struct zTurret_Runtime {
     int intersectBvolEnabled;
     unsigned char unknown_174[0x0c];
 
-    RECOIL_NOINLINE zTurret_Runtime *RECOIL_THISCALL InitDefaults();
-    RECOIL_NOINLINE void RECOIL_THISCALL InitFromReaderNode(
+    zTurret_Runtime * InitDefaults();
+    void InitFromReaderNode(
         zClass_NodePartial *worldNode,
         zClass_NodePartial *turretWorldNode,
         zEffectAnimEntry *defaultDestroyAnim,
         zReader::Node *readerNode
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL UpdateFirePositionFromParts();
-    RECOIL_NOINLINE void RECOIL_THISCALL UpdateAimAndPartMatrices(const zVec3 *targetPos);
-    RECOIL_NOINLINE void RECOIL_THISCALL SelectFirePointAndAimAtTarget(const zVec3 *targetPos);
-    RECOIL_NOINLINE void RECOIL_THISCALL FireWeapon();
-    RECOIL_NOINLINE void RECOIL_THISCALL UpdateFireBurstTimer(float deltaTime);
-    RECOIL_NOINLINE void RECOIL_THISCALL Tick(const zVec3 *playerFxOffsetWorld);
-    RECOIL_NOINLINE int RECOIL_THISCALL ApplyDamageAndHandleDestruction(
+    void UpdateFirePositionFromParts();
+    void UpdateAimAndPartMatrices(const zVec3 *targetPos);
+    void SelectFirePointAndAimAtTarget(const zVec3 *targetPos);
+    void FireWeapon();
+    void UpdateFireBurstTimer(float deltaTime);
+    void Tick(const zVec3 *playerFxOffsetWorld);
+    int ApplyDamageAndHandleDestruction(
         float damageAmount,
         OptCatalogEntryDef *entry,
         OptCatalogHitEventPartial *hitEvent
     );
-    static RECOIL_NOINLINE int RECOIL_FASTCALL OnDamage(
+    static int __fastcall OnDamage(
         zTurret_Runtime *self,
         OptCatalogEntryDef *entry,
         OptCatalogHitEventPartial *hitEvent,
         float damageAmount
     );
-    static RECOIL_NOINLINE void RECOIL_FASTCALL FireWeaponCallback(
+    static void __fastcall FireWeaponCallback(
         zEffectAnimEntry *entry,
         zTurret_Runtime *self,
         int eventCode
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL Shutdown();
-    RECOIL_NOINLINE int RECOIL_THISCALL HasActiveNode();
+    int Shutdown();
+    int HasActiveNode();
 };
 
 namespace zTurret_LayoutAssertions {
@@ -428,14 +428,14 @@ extern zTurret_Runtime *g_zTurret_RuntimeList[64];
 }
 
 namespace zTurret_System {
-RECOIL_NOINLINE int RECOIL_CDECL ResetIterationState();
-RECOIL_NOINLINE int RECOIL_FASTCALL LoadDefinitionsFromPath(
+int ResetIterationState();
+int __fastcall LoadDefinitionsFromPath(
     zClass_NodePartial *worldNode,
     const char *path
 );
-RECOIL_NOINLINE void RECOIL_CDECL TickAllRuntimesRoundRobin();
-RECOIL_NOINLINE int RECOIL_CDECL DisableTickCallback();
-RECOIL_NOINLINE int RECOIL_CDECL EnableTickCallback();
-RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
-RECOIL_NOINLINE int RECOIL_CDECL FreeAllRuntimes();
+void TickAllRuntimesRoundRobin();
+int DisableTickCallback();
+int EnableTickCallback();
+int Shutdown();
+int FreeAllRuntimes();
 } // namespace zTurret_System

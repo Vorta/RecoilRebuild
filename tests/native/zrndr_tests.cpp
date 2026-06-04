@@ -41,7 +41,7 @@ int g_texturedQueuedLastPixelCount = 0;
 int g_texturedQueuedLastVShift = 0;
 int g_testFogColorUpdateCount = 0;
 
-void RECOIL_FASTCALL TestImmediateRaster4(void *frameBuffer, int x0, int y0, int x1, int y1,
+void __fastcall TestImmediateRaster4(void *frameBuffer, int x0, int y0, int x1, int y1,
                                           int color16) {
     ++g_line4Count;
     g_lineFrameBuffer = frameBuffer;
@@ -52,11 +52,11 @@ void RECOIL_FASTCALL TestImmediateRaster4(void *frameBuffer, int x0, int y0, int
     g_lineArgs[4] = color16;
 }
 
-void RECOIL_CDECL TestUpdateFogColor(void) {
+void TestUpdateFogColor(void) {
     ++g_testFogColorUpdateCount;
 }
 
-void RECOIL_FASTCALL TestImmediateRaster5(void *frameBuffer, const void *clipRect, int x0, int y0,
+void __fastcall TestImmediateRaster5(void *frameBuffer, const void *clipRect, int x0, int y0,
                                           int x1, int y1, int color16) {
     ++g_line5Count;
     g_lineFrameBuffer = frameBuffer;
@@ -68,7 +68,7 @@ void RECOIL_FASTCALL TestImmediateRaster5(void *frameBuffer, const void *clipRec
     g_lineArgs[4] = color16;
 }
 
-void RECOIL_FASTCALL TestPointOp(void *frameBuffer, std::int32_t y, std::int32_t x,
+void __fastcall TestPointOp(void *frameBuffer, std::int32_t y, std::int32_t x,
                                  std::int32_t color16) {
     ++g_pointOpCount;
     g_pointOpFrameBuffer = frameBuffer;
@@ -271,7 +271,7 @@ void ReplicateMmxTargetBits(std::uint16_t red, std::uint16_t green, std::uint16_
     }
 }
 
-void RECOIL_FASTCALL TestRasterBuildSpanList(zRndr::SpanNodePartial **spanList,
+void __fastcall TestRasterBuildSpanList(zRndr::SpanNodePartial **spanList,
                                              std::int32_t columnIndex, std::int32_t *spanCount) {
     ++g_rasterSpanBuildCount;
     g_rasterLastColumn = columnIndex;
@@ -281,7 +281,7 @@ void RECOIL_FASTCALL TestRasterBuildSpanList(zRndr::SpanNodePartial **spanList,
     ++zRndr::g_spanAllocCursor;
 }
 
-void RECOIL_FASTCALL TestRasterSelectedSpanOp(std::int32_t spanOpContext, std::int32_t pixelCount) {
+void __fastcall TestRasterSelectedSpanOp(std::int32_t spanOpContext, std::int32_t pixelCount) {
     ++g_rasterSpanOpCount;
     g_rasterLastContext = spanOpContext;
     g_rasterLastPixelCount = pixelCount;
@@ -294,7 +294,7 @@ void RECOIL_FASTCALL TestRasterSelectedSpanOp(std::int32_t spanOpContext, std::i
     }
 }
 
-void RECOIL_FASTCALL TestTexturedQueuedSpanOp(std::int32_t texU, std::int32_t texV,
+void __fastcall TestTexturedQueuedSpanOp(std::int32_t texU, std::int32_t texV,
                                               std::int32_t pixelCount, std::int32_t texVShift) {
     ++g_texturedQueuedSpanCount;
     g_texturedQueuedLastTexU = texU;
@@ -304,7 +304,7 @@ void RECOIL_FASTCALL TestTexturedQueuedSpanOp(std::int32_t texU, std::int32_t te
     g_rasterLastDst = zRndr::g_spanCurrentDst16;
 }
 
-void RECOIL_FASTCALL TestFlatImmediateSpanOp(std::int32_t flatSpanOpEcxArg,
+void __fastcall TestFlatImmediateSpanOp(std::int32_t flatSpanOpEcxArg,
                                              std::int32_t flatSpanOpEdxArg,
                                              std::int32_t pixelCount) {
     ++g_flatImmediateSpanOpCount;

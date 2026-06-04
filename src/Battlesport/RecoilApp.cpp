@@ -48,10 +48,10 @@
 // reimplement CWinApp behavior.
 class RecoilMfcWinAppAccess : public CWinApp {
   public:
-    static const AFX_MSGMAP *RECOIL_STDCALL GetMessageMapForRecoilApp();
+    static const AFX_MSGMAP *__stdcall GetMessageMapForRecoilApp();
 };
 
-const AFX_MSGMAP *RECOIL_STDCALL RecoilMfcWinAppAccess::GetMessageMapForRecoilApp() {
+const AFX_MSGMAP *__stdcall RecoilMfcWinAppAccess::GetMessageMapForRecoilApp() {
     return &CWinApp::messageMap;
 }
 
@@ -59,13 +59,13 @@ struct RecoilStateCredits {
     RecoilPtr32 vftable;
     RecoilPtr32 dialog;
 
-    RecoilStateCredits *RECOIL_THISCALL Constructor();
-    static void RECOIL_CDECL QueuePush();
+    RecoilStateCredits * Constructor();
+    static void QueuePush();
 };
 
-AFX_MODULE_STATE *RECOIL_STDCALL AfxGetModuleState();
-BOOL RECOIL_STDCALL AfxRegisterClass(WNDCLASSA *wndClass);
-HINSTANCE RECOIL_STDCALL AfxFindResourceHandle(
+AFX_MODULE_STATE *__stdcall AfxGetModuleState();
+BOOL __stdcall AfxRegisterClass(WNDCLASSA *wndClass);
+HINSTANCE __stdcall AfxFindResourceHandle(
     LPCSTR resourceName,
     LPCSTR resourceType
 );
@@ -102,7 +102,7 @@ unsigned int RecoilMethodAddress(
 }
 
 struct HudUiSaveLoadBackButton : HudUiZrdWidget {
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 
 struct HudUiSaveLoadDialogVtable {
@@ -110,13 +110,13 @@ struct HudUiSaveLoadDialogVtable {
 };
 
 struct HudUiSaveLoadDialogUpdateDispatch {
-    virtual void RECOIL_THISCALL Update(float deltaSeconds) = 0;
+    virtual void Update(float deltaSeconds) = 0;
 };
 
 struct RecoilStateSaveLoadDialogVirtual {
-    virtual void RECOIL_THISCALL Update(float deltaSeconds) = 0;
-    virtual void RECOIL_THISCALL SetEnabled(int enabled) = 0;
-    virtual RecoilStateSaveLoadDialogVirtual *RECOIL_THISCALL ScalarDeletingDestructor(
+    virtual void Update(float deltaSeconds) = 0;
+    virtual void SetEnabled(int enabled) = 0;
+    virtual RecoilStateSaveLoadDialogVirtual * ScalarDeletingDestructor(
         unsigned int flags
     ) = 0;
 };
@@ -243,7 +243,7 @@ HudUiSaveLoadListItemVtable MakeHudUiSaveLoadListItemVtable() {
     return table;
 }
 
-RECOIL_NOINLINE void RECOIL_CDECL HudUiSaveLoadWidgetPostLoadNoOp() {}
+void HudUiSaveLoadWidgetPostLoadNoOp() {}
 
 HudUiWidget_FTable MakeHudUiSaveLoadButtonFTable(
     unsigned int activateCallback
@@ -319,33 +319,32 @@ int g_RecoilApp_AttractFmvReloadMode = 1;
 
 // Reimplements 0x435a30: RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit
 // (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit() {
+void RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
 
 // Reimplements 0x435a40: RecoilStateSaveLoadTransition::StaticInit
 // (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
-RECOIL_NOINLINE RecoilStateSaveLoadTransition *RECOIL_CDECL
-RecoilStateSaveLoadTransition::StaticInit() {
+RecoilStateSaveLoadTransition *RecoilStateSaveLoadTransition::StaticInit() {
     return g_RecoilStateSaveLoadTransition.Constructor();
 }
 
 // Reimplements 0x435a50: RecoilStateSaveLoadTransition::RegisterAtExit
 // (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RecoilStateSaveLoadTransition::RegisterAtExit() {
+void RecoilStateSaveLoadTransition::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
 // Reimplements 0x435a60: RecoilStateSaveLoadTransition::AtExitDestructor
 // (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RecoilStateSaveLoadTransition::AtExitDestructor() {
+void RecoilStateSaveLoadTransition::AtExitDestructor() {
     g_RecoilStateSaveLoadTransition.Destructor();
 }
 
 // Reimplements 0x435c80: RecoilStateSaveLoadTransition::Constructor
 // (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
-RecoilStateSaveLoadTransition *RECOIL_THISCALL RecoilStateSaveLoadTransition::Constructor() {
+RecoilStateSaveLoadTransition * RecoilStateSaveLoadTransition::Constructor() {
     m_dialogKind = RECOIL_SAVELOAD_DIALOG_SAVE;
     m_dialog = 0;
     return this;
@@ -353,8 +352,7 @@ RecoilStateSaveLoadTransition *RECOIL_THISCALL RecoilStateSaveLoadTransition::Co
 
 // Reimplements 0x435ca0: RecoilStateSaveLoadTransition::ScalarDeletingDestructor
 // (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
-RECOIL_NOINLINE RecoilStateSaveLoadTransition *RECOIL_THISCALL
-RecoilStateSaveLoadTransition::ScalarDeletingDestructor(
+RecoilStateSaveLoadTransition * RecoilStateSaveLoadTransition::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -368,7 +366,7 @@ RecoilStateSaveLoadTransition::ScalarDeletingDestructor(
 
 // Reimplements 0x435cc0: RecoilStateSaveLoadTransition::Destructor
 // (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateSaveLoadTransition::Destructor() {
+void RecoilStateSaveLoadTransition::Destructor() {
     RecoilStateSaveLoadDialogVirtual *dialog = (RecoilStateSaveLoadDialogVirtual *)m_dialog;
     if (dialog != 0) {
         dialog->ScalarDeletingDestructor(1);
@@ -378,7 +376,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateSaveLoadTransition::Destructor()
 
 // Reimplements 0x434660: HudUiSaveLoadEntry::IsNewerThan
 // (D:\Proj\Battlesport\RecoilApp.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL HudUiSaveLoadEntry::IsNewerThan(
+int __fastcall HudUiSaveLoadEntry::IsNewerThan(
     const HudUiSaveLoadEntry *other
 ) const {
     return CompareFileTime(
@@ -389,7 +387,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL HudUiSaveLoadEntry::IsNewerThan(
 
 // Reimplements 0x434920: HudUiSaveLoadListItem::Constructor
 // (D:\Proj\Battlesport\hudui_saveload.cpp)
-RECOIL_NOINLINE HudUiSaveLoadListItem *RECOIL_THISCALL HudUiSaveLoadListItem::Constructor() {
+HudUiSaveLoadListItem * HudUiSaveLoadListItem::Constructor() {
     ((HudUiPanel *)(this))->ConstructorDefault(
         0,
         0,
@@ -403,15 +401,15 @@ RECOIL_NOINLINE HudUiSaveLoadListItem *RECOIL_THISCALL HudUiSaveLoadListItem::Co
 
 // Reimplements 0x434950: HudUiSaveLoadListItem::Draw
 // (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_THISCALL HudUiSaveLoadListItem::Draw() {
+void HudUiSaveLoadListItem::Draw() {
     ((HudUiPanel *)(this))->Draw();
-    typedef void (RECOIL_THISCALL HudUiSaveLoadListItem::*UpdateTextBoundsFn)();
+    typedef void ( HudUiSaveLoadListItem::*UpdateTextBoundsFn)();
     (this->*((UpdateTextBoundsFn *)(&vftable->UpdateTextBoundsFromContent))[0])();
 }
 
 // Reimplements 0x435a10: HudUiSaveLoadListItem::OnActivate
 // (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
-void RECOIL_THISCALL HudUiSaveLoadListItem::OnActivate() {
+void HudUiSaveLoadListItem::OnActivate() {
     if (parent != 0) {
         parent->SetSelectedEntryIndex(layoutX);
     }
@@ -419,7 +417,7 @@ void RECOIL_THISCALL HudUiSaveLoadListItem::OnActivate() {
 
 // Reimplements 0x434fb0: HudUiSaveLoadDialog::DeleteSaveFile
 // (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiSaveLoadDialog::DeleteSaveFile(
+void HudUiSaveLoadDialog::DeleteSaveFile(
     int confirmDelete
 ) {
     char *const gameName = gameNameInput.GetBuffer();
@@ -477,7 +475,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiSaveLoadDialog::DeleteSaveFile(
 
 // Reimplements 0x4348b0: HudUiSaveLoadGameNameInput::OnActivate
 // (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_THISCALL HudUiSaveLoadGameNameInput::OnActivate() {
+void HudUiSaveLoadGameNameInput::OnActivate() {
     Update(GetBuffer());
     textInput.SetCursorPosition((int)(strlen(GetBuffer())));
     HudUiNumericTextInput::OnActivate();
@@ -485,7 +483,7 @@ void RECOIL_THISCALL HudUiSaveLoadGameNameInput::OnActivate() {
 
 // Reimplements 0x4348f0: HudUiSaveLoadGameNameInput::OnRawKeyboardEvent
 // (D:\Proj\Battlesport\hud.cpp)
-int RECOIL_THISCALL HudUiSaveLoadGameNameInput::OnRawKeyboardEvent(
+int HudUiSaveLoadGameNameInput::OnRawKeyboardEvent(
     int key
 ) {
     if (strchr(
@@ -500,7 +498,7 @@ int RECOIL_THISCALL HudUiSaveLoadGameNameInput::OnRawKeyboardEvent(
 
 // Reimplements 0x435140: HudUiSaveLoadDeleteButton::OnActivate
 // (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
-void RECOIL_THISCALL HudUiSaveLoadDeleteButton::OnActivate() {
+void HudUiSaveLoadDeleteButton::OnActivate() {
     HudUiSaveLoadDialog *const dialog = (HudUiSaveLoadDialog *)(owner);
     HudUiZrdWidget::OnActivate();
     dialog->DeleteSaveFile(1);
@@ -508,7 +506,7 @@ void RECOIL_THISCALL HudUiSaveLoadDeleteButton::OnActivate() {
 
 // Restores shared back-button behavior used by save/load layouts; the retail standalone
 // body is HudUiMenuBackButton::OnActivate at 0x414fa0.
-void RECOIL_THISCALL HudUiSaveLoadBackButton::OnActivate() {
+void HudUiSaveLoadBackButton::OnActivate() {
     g_RecoilApp.QueueExitCurrentState(0);
     HudUiZrdWidget::OnActivate();
     HudUiMgr::TriggerCurrentLayoutOnActivated();
@@ -516,7 +514,7 @@ void RECOIL_THISCALL HudUiSaveLoadBackButton::OnActivate() {
 
 // Reimplements 0x435160: HudUiSaveLoadNextButton::OnActivate
 // (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
-void RECOIL_THISCALL HudUiSaveLoadNextButton::OnActivate() {
+void HudUiSaveLoadNextButton::OnActivate() {
     HudUiSaveLoadDialog *const dialog = (HudUiSaveLoadDialog *)(owner);
     HudUiZrdWidget::OnActivate();
 
@@ -528,7 +526,7 @@ void RECOIL_THISCALL HudUiSaveLoadNextButton::OnActivate() {
 
 // Reimplements 0x4351b0: HudUiSaveLoadPrevButton::OnActivate
 // (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
-void RECOIL_THISCALL HudUiSaveLoadPrevButton::OnActivate() {
+void HudUiSaveLoadPrevButton::OnActivate() {
     HudUiSaveLoadDialog *const dialog = (HudUiSaveLoadDialog *)(owner);
     HudUiZrdWidget::OnActivate();
 
@@ -540,7 +538,7 @@ void RECOIL_THISCALL HudUiSaveLoadPrevButton::OnActivate() {
 
 // Reimplements 0x435220: HudUiSaveGamePrimaryActionButton::OnActivate
 // (D:\Proj\Battlesport\hud.cpp)
-void RECOIL_THISCALL HudUiSaveGamePrimaryActionButton::OnActivate() {
+void HudUiSaveGamePrimaryActionButton::OnActivate() {
     HudUiSaveLoadDialog *const dialog = (HudUiSaveLoadDialog *)(owner);
     if (dialog != 0) {
         dialog->ProcessDialogResult();
@@ -551,7 +549,7 @@ void RECOIL_THISCALL HudUiSaveGamePrimaryActionButton::OnActivate() {
 
 // Reimplements 0x435200: HudUiLoadGamePrimaryActionButton::OnActivate
 // (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
-void RECOIL_THISCALL HudUiLoadGamePrimaryActionButton::OnActivate() {
+void HudUiLoadGamePrimaryActionButton::OnActivate() {
     HudUiLoadGameDialog *const dialog = (HudUiLoadGameDialog *)(owner);
     if (dialog != 0) {
         dialog->OnPrimaryAction();
@@ -562,7 +560,7 @@ void RECOIL_THISCALL HudUiLoadGamePrimaryActionButton::OnActivate() {
 
 // Reimplements 0x436530: HudUiSaveLoadDialog::InsertEntryIntoSortedPrefix
 // (D:\Proj\Battlesport\hudui_saveload.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL HudUiSaveLoadDialog::InsertEntryIntoSortedPrefix(
+void __fastcall HudUiSaveLoadDialog::InsertEntryIntoSortedPrefix(
     HudUiSaveLoadEntry *entryPosition,
     HudUiSaveLoadEntry entry
 ) {
@@ -580,7 +578,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HudUiSaveLoadDialog::InsertEntryIntoSortedP
 
 // Reimplements 0x436580: HudUiSaveLoadDialog::PartitionEntriesByPivot
 // (D:\Proj\Battlesport\hudui_saveload.cpp)
-RECOIL_NOINLINE HudUiSaveLoadEntry *RECOIL_FASTCALL HudUiSaveLoadDialog::PartitionEntriesByPivot(
+HudUiSaveLoadEntry *__fastcall HudUiSaveLoadDialog::PartitionEntriesByPivot(
     HudUiSaveLoadEntry *begin,
     HudUiSaveLoadEntry *end,
     HudUiSaveLoadEntry pivot
@@ -613,7 +611,7 @@ RECOIL_NOINLINE HudUiSaveLoadEntry *RECOIL_FASTCALL HudUiSaveLoadDialog::Partiti
 
 // Reimplements 0x4362f0: HudUiSaveLoadDialog::SortEntryRange
 // (D:\Proj\Battlesport\hudui_saveload.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL HudUiSaveLoadDialog::SortEntryRange(
+void __fastcall HudUiSaveLoadDialog::SortEntryRange(
     HudUiSaveLoadEntry *begin,
     HudUiSaveLoadEntry *end,
     int unused
@@ -703,7 +701,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HudUiSaveLoadDialog::SortEntryRange(
 
 // Reimplements 0x4355e0: HudUiSaveLoadDialog::RefreshSaveFileList
 // (D:\Proj\Battlesport\hudui_saveload.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiSaveLoadDialog::RefreshSaveFileList() {
+void HudUiSaveLoadDialog::RefreshSaveFileList() {
     HudUiSaveLoadEntries *entries = &fileEntries;
     entries->end = entries->begin;
 
@@ -870,7 +868,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiSaveLoadDialog::RefreshSaveFileList() 
 
 // Reimplements 0x434ee0: HudUiSaveLoadDialog::InitializeFileEntries
 // (D:\Proj\Battlesport\hudui_saveload.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiSaveLoadDialog::InitializeFileEntries() {
+void HudUiSaveLoadDialog::InitializeFileEntries() {
     entryWidgets[0].layoutY = 9830;
     entryWidgets[1].layoutY = 16383;
     entryWidgets[2].layoutY = 32767;
@@ -905,7 +903,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiSaveLoadDialog::InitializeFileEntries(
 
 // Reimplements 0x4353f0: HudUiSaveLoadDialog::SetSelectedEntryIndex
 // (D:\Proj\Battlesport\hudui_saveload.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiSaveLoadDialog::SetSelectedEntryIndex(
+void HudUiSaveLoadDialog::SetSelectedEntryIndex(
     int selectedEntryIndexValue
 ) {
     selectedEntryIndex = selectedEntryIndexValue;
@@ -964,7 +962,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiSaveLoadDialog::SetSelectedEntryIndex(
 
 // Reimplements 0x435a70: HudUiSaveLoadDialog::ProcessDialogResult
 // (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiSaveLoadDialog::ProcessDialogResult() {
+void HudUiSaveLoadDialog::ProcessDialogResult() {
     char *const gameName = gameNameInput.GetBuffer();
     char saveGamePath[MAX_PATH];
     saveGamePath[0] = '\0';
@@ -1030,19 +1028,19 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiSaveLoadDialog::ProcessDialogResult() 
 
 // Reimplements 0x434dc0: HudUiLoadGameDialog::ProcessDialogResult
 // (D:\Proj\Battlesport\HudUiLoadGameDialog.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiLoadGameDialog::ProcessDialogResult() {
+void HudUiLoadGameDialog::ProcessDialogResult() {
     HudUiSaveLoadDialog::ProcessDialogResult();
 }
 
 // Reimplements 0x434970: HudUiLoadGameDialog::OnPrimaryActionThunk
 // (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiLoadGameDialog::OnPrimaryActionThunk() {
+void HudUiLoadGameDialog::OnPrimaryActionThunk() {
     OnPrimaryAction();
 }
 
 // Reimplements 0x435240: HudUiLoadGameDialog::OnPrimaryAction
 // (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiLoadGameDialog::OnPrimaryAction() {
+void HudUiLoadGameDialog::OnPrimaryAction() {
     char *const gameName = gameNameInput.GetBuffer();
     if (gameName == 0 || gameName[0] == '\0') {
         g_RecoilApp.QueueExitCurrentState(0);
@@ -1104,7 +1102,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiLoadGameDialog::OnPrimaryAction() {
 
 // Reimplements 0x434680: HudUiSaveGameDialog::InitLayout
 // (D:\Proj\Battlesport\hudui_saveload.cpp)
-RECOIL_NOINLINE HudUiSaveGameDialog *RECOIL_THISCALL HudUiSaveGameDialog::InitLayout() {
+HudUiSaveGameDialog * HudUiSaveGameDialog::InitLayout() {
     base.Constructor();
 
     deleteButton.Constructor();
@@ -1199,7 +1197,7 @@ RECOIL_NOINLINE HudUiSaveGameDialog *RECOIL_THISCALL HudUiSaveGameDialog::InitLa
 
 // Reimplements 0x434a80: HudUiSaveGameDialog::Destructor
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiSaveGameDialog::Destructor() {
+void HudUiSaveGameDialog::Destructor() {
     primaryActionButton.DestructorCore();
 
     ::operator delete(fileEntries.begin);
@@ -1221,7 +1219,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiSaveGameDialog::Destructor() {
 
 // Reimplements 0x434980: HudUiSaveGameDialog::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE HudUiSaveGameDialog *RECOIL_THISCALL HudUiSaveGameDialog::ScalarDeletingDestructor(
+HudUiSaveGameDialog * HudUiSaveGameDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -1234,7 +1232,7 @@ RECOIL_NOINLINE HudUiSaveGameDialog *RECOIL_THISCALL HudUiSaveGameDialog::Scalar
 
 // Reimplements 0x434b90: HudUiLoadGameDialog::Constructor
 // (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
-RECOIL_NOINLINE HudUiLoadGameDialog *RECOIL_THISCALL HudUiLoadGameDialog::Constructor() {
+HudUiLoadGameDialog * HudUiLoadGameDialog::Constructor() {
     base.Constructor();
 
     deleteButton.Constructor();
@@ -1330,7 +1328,7 @@ RECOIL_NOINLINE HudUiLoadGameDialog *RECOIL_THISCALL HudUiLoadGameDialog::Constr
 
 // Reimplements 0x4349a0: HudUiSaveLoadDialog::Destructor
 // (D:\Proj\Battlesport\hud.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiSaveLoadDialog::Destructor() {
+void HudUiSaveLoadDialog::Destructor() {
     ::operator delete(fileEntries.begin);
     fileEntries.begin = 0;
     fileEntries.end = 0;
@@ -1350,7 +1348,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiSaveLoadDialog::Destructor() {
 
 // Reimplements 0x434df0: HudUiLoadGameDialog::Destructor
 // (D:\Proj\Battlesport\HudUiLoadGameDialog.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiLoadGameDialog::Destructor() {
+void HudUiLoadGameDialog::Destructor() {
     primaryActionButton.DestructorCore();
 
     ::operator delete(fileEntries.begin);
@@ -1372,7 +1370,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiLoadGameDialog::Destructor() {
 
 // Reimplements 0x434dd0: HudUiLoadGameDialog::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\HudUiLoadGameDialog.cpp)
-RECOIL_NOINLINE HudUiLoadGameDialog *RECOIL_THISCALL HudUiLoadGameDialog::ScalarDeletingDestructor(
+HudUiLoadGameDialog * HudUiLoadGameDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -1385,7 +1383,7 @@ RECOIL_NOINLINE HudUiLoadGameDialog *RECOIL_THISCALL HudUiLoadGameDialog::Scalar
 
 // Reimplements 0x435d20: RecoilStateSaveLoadTransition::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\RecoilApp.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateSaveLoadTransition::OnTryBecomeCurrent() {
+int RecoilStateSaveLoadTransition::OnTryBecomeCurrent() {
     if (m_capturePresentationMode != RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED) {
         if (g_zVideo_ActiveRendererPath != 0) {
             g_zVideo_pfnBltSwToPrimaryRectDirect(
@@ -1446,7 +1444,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateSaveLoadTransition::OnTryBecomeCu
 
 // Reimplements 0x435e80: RecoilStateSaveLoadTransition::OnUpdateShouldQuit
 // (D:\Proj\Battlesport\RecoilApp.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateSaveLoadTransition::OnUpdateShouldQuit() {
+int RecoilStateSaveLoadTransition::OnUpdateShouldQuit() {
     zInput::PollActiveDevices(0);
 
     if (m_dialog != 0) {
@@ -1473,7 +1471,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateSaveLoadTransition::OnUpdateShoul
 
 // Reimplements 0x435ed0: RecoilStateSaveLoadTransition::OnDeactivate
 // (D:\Proj\Battlesport\RecoilApp.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateSaveLoadTransition::OnDeactivate() {
+void RecoilStateSaveLoadTransition::OnDeactivate() {
     if (m_dialog != 0) {
         zVideo::RunPostprocessOnPrimaryBuffer();
 
@@ -1512,7 +1510,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateSaveLoadTransition::OnDeactivate
 
 // Reimplements 0x435f50: RecoilStateSaveLoadTransition::QueueOpenSaveDialog
 // (D:\Proj\Battlesport\RecoilApp.cpp)
-void RECOIL_FASTCALL RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
+void __fastcall RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
     RecoilSaveLoadPresentationCaptureMode capturePresentationMode
 ) {
     if (HudUiMainMenuDialog::CanSaveGame() == 0) {
@@ -1529,7 +1527,7 @@ void RECOIL_FASTCALL RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
 
 // Reimplements 0x435f80: RecoilStateSaveLoadTransition::QueueOpenLoadDialog
 // (D:\Proj\Battlesport\RecoilApp.cpp)
-void RECOIL_FASTCALL RecoilStateSaveLoadTransition::QueueOpenLoadDialog(
+void __fastcall RecoilStateSaveLoadTransition::QueueOpenLoadDialog(
     RecoilSaveLoadTransitionMode transitionMode
 ) {
     if (HudUiMainMenuDialog::CanLoadGame() == 0) {
@@ -1554,7 +1552,7 @@ void RECOIL_FASTCALL RecoilStateSaveLoadTransition::QueueOpenLoadDialog(
 }
 
 // Reimplements 0x430c90: RecoilApp::FatalErrorAndExit (D:\Proj\Battlesport\RecoilApp.cpp)
-RECOIL_NOINLINE RECOIL_NO_GS void RECOIL_FASTCALL RecoilApp::FatalErrorAndExit(
+RECOIL_NO_GS void __fastcall RecoilApp::FatalErrorAndExit(
     int errorCode
 ) {
     if (errorCode != -1) {
@@ -1594,11 +1592,12 @@ RECOIL_NOINLINE RECOIL_NO_GS void RECOIL_FASTCALL RecoilApp::FatalErrorAndExit(
 }
 
 // Reimplements 0x42e930: RecoilApp::ExitInstance
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::ExitInstance() {
+int RecoilApp::ExitInstance() {
     if (g_RecoilApp_WindowClassRegistered != 0) {
+        HINSTANCE instanceHandle = AfxGetModuleState()->m_hCurrentInstanceHandle;
         UnregisterClassA(
             g_RecoilApp_WndClassNamePtr,
-            AfxGetModuleState()->m_hCurrentInstanceHandle
+            instanceHandle
         );
         zGame::Options_SaveGameOptions();
         zGame::ReturnOnlyStub();
@@ -1616,7 +1615,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::ExitInstance() {
 }
 
 // Reimplements 0x42e520: RecoilApp::InitInstance
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_THISCALL RecoilApp::InitInstance() {
+RECOIL_NO_GS int RecoilApp::InitInstance() {
     if (ActivateExistingInstance() == 0) {
         return 0;
     }
@@ -1803,7 +1802,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_THISCALL RecoilApp::InitInstance() {
 }
 
 // Reimplements 0x42e110: RecoilApp::CreateMainWnd
-RECOIL_NOINLINE CZRecoilFrame *RECOIL_THISCALL RecoilApp::CreateMainWnd() {
+CZRecoilFrame * RecoilApp::CreateMainWnd() {
     CZRecoilFrame *frame = new CZRecoilFrame;
     if (frame == 0) {
         return 0;
@@ -1813,7 +1812,7 @@ RECOIL_NOINLINE CZRecoilFrame *RECOIL_THISCALL RecoilApp::CreateMainWnd() {
 }
 
 // Reimplements 0x4429d0: RecoilApp::InitMainWindow
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::InitMainWindow() {
+int RecoilApp::InitMainWindow() {
     Enable3dControls();
 
     m_pMainWnd = (CWnd *)CreateMainWnd();
@@ -1851,7 +1850,7 @@ inline void PrintEngineInitNonzeroStatus(
 } // namespace
 
 // Reimplements 0x442a50: RecoilApp::EngineInit
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::EngineInit(
+int RecoilApp::EngineInit(
     HWND hwnd
 ) {
     zUtil::ZRDR_PreallocNodePool(0);
@@ -1904,7 +1903,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::EngineInit(
 }
 
 // Reimplements 0x42e330: RecoilApp::InitializeDisplay
-RECOIL_NOINLINE int RECOIL_FASTCALL RecoilApp::InitializeDisplay(
+int __fastcall RecoilApp::InitializeDisplay(
     HWND hwnd
 ) {
     if (zVideo::InitVideoSystem(
@@ -1958,7 +1957,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL RecoilApp::InitializeDisplay(
 }
 
 // Reimplements 0x42e220: RecoilApp::StartEngine
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_THISCALL RecoilApp::StartEngine(
+RECOIL_NO_GS int RecoilApp::StartEngine(
     HWND hwnd
 ) {
     EngineInit(hwnd);
@@ -2009,7 +2008,7 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_THISCALL RecoilApp::StartEngine(
 }
 
 // Reimplements 0x42e990: RecoilApp::ActivateExistingInstance
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::ActivateExistingInstance() {
+int RecoilApp::ActivateExistingInstance() {
     CWnd *const existingWindow = CWnd::FromHandle(FindWindowA(
         g_RecoilApp_WndClassNamePtr,
         0
@@ -2028,32 +2027,33 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::ActivateExistingInstance() {
 }
 
 // Reimplements 0x42e9f0: RecoilApp::PreTranslateMessage
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::PreTranslateMessage(
+int RecoilApp::PreTranslateMessage(
     tagMSG *msg
 ) {
+    int handled = 0;
     if (zVid::GetAccelerationOption() != 0) {
         const UINT message = msg->message;
         if (message >= WM_SYSKEYDOWN && message <= WM_SYSKEYUP) {
-            return 1;
+            handled = 1;
         }
     }
 
-    return 0;
+    return handled;
 }
 
 namespace zSndCd {
-void RECOIL_FASTCALL OnMciNotify(
+void __fastcall OnMciNotify(
     unsigned int wParam,
     unsigned int lParam
 );
 }
 
 namespace zDEClient {
-RECOIL_NOINLINE int RECOIL_CDECL ShutdownGlobals();
+int ShutdownGlobals();
 }
 
 // Reimplements 0x442bc0: RecoilApp::ShutdownSubsystems
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp::ShutdownSubsystems() {
+void RecoilApp::ShutdownSubsystems() {
     zInput::Shutdown();
     zImage::ShutdownSubsystem();
     zUtil_ZRDR_ShutdownWildcardPath();
@@ -2068,7 +2068,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp::ShutdownSubsystems() {
 }
 
 // Reimplements 0x42e430: RecoilApp::ShutdownEngine
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp::ShutdownEngine() {
+void RecoilApp::ShutdownEngine() {
     if (zSnd::GetCDAudioOption() != 0) {
         zSndCd::Stop();
     }
@@ -2093,7 +2093,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp::ShutdownEngine() {
 }
 
 // Reimplements 0x42e490: RecoilApp::LoadZbdAndStartEngine
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::LoadZbdAndStartEngine() {
+int RecoilApp::LoadZbdAndStartEngine() {
     if (g_HudSensorTracker.missionFlags != 0) {
         zArchive::MountIndexArchive(
             "zbd\\zrdr.zbd",
@@ -2107,7 +2107,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::LoadZbdAndStartEngine() {
 }
 
 // Reimplements 0x42e4d0: RecoilApp::LoadZbdAndSetupSensorTracker
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::LoadZbdAndSetupSensorTracker(
+int RecoilApp::LoadZbdAndSetupSensorTracker(
     int missionId,
     const char *zbdPath,
     int skipIntroFmvMode,
@@ -2141,7 +2141,7 @@ extern const AFX_MSGMAP g_RecoilApp_MessageMap = {
 };
 
 // Reimplements 0x4a5780: RecoilApp::InitStdLogFiles
-RECOIL_NOINLINE RECOIL_NO_GS void RECOIL_FASTCALL RecoilApp::InitStdLogFiles(
+RECOIL_NO_GS void __fastcall RecoilApp::InitStdLogFiles(
     const char *exePath
 ) {
     g_RecoilApp_hWndMain = 0;
@@ -2223,8 +2223,7 @@ RECOIL_NOINLINE RECOIL_NO_GS void RECOIL_FASTCALL RecoilApp::InitStdLogFiles(
 
 // Reimplements 0x443700: RecoilApp_StateQueueBlock::InitFromCursor
 // Initializes one chunk cursor descriptor from a slot in the queue chunk map.
-RECOIL_NOINLINE RecoilApp_StateQueueBlock *RECOIL_THISCALL
-RecoilApp_StateQueueBlock::InitFromCursor(
+RecoilApp_StateQueueBlock * RecoilApp_StateQueueBlock::InitFromCursor(
     RecoilApp_StateQueueItem **cursor,
     RecoilApp_StateQueueItem ***chunkBaseSlot
 ) {
@@ -2238,8 +2237,7 @@ RecoilApp_StateQueueBlock::InitFromCursor(
 
 // Reimplements 0x443690: RecoilApp_StateQueue::GrowAndCenterChunkBaseList
 // Grows the chunk-map and recenters the active chunk-slot range in the new map.
-RECOIL_NOINLINE RecoilApp_StateQueueItem ***RECOIL_THISCALL
-RecoilApp_StateQueue::GrowAndCenterChunkBaseList(
+RecoilApp_StateQueueItem *** RecoilApp_StateQueue::GrowAndCenterChunkBaseList(
     int newCapacity
 ) {
     int byteCount = newCapacity * (int)(sizeof(RecoilApp_StateQueueItem **));
@@ -2366,7 +2364,7 @@ RECOIL_FORCEINLINE void RecoilApp_StateQueue::PushBack(
 }
 
 // Reimplements 0x42dfa0: RecoilApp::RecoilApp
-RECOIL_NOINLINE RECOIL_THISCALL RecoilApp::RecoilApp()
+RecoilApp::RecoilApp()
     : CWinApp(0),
 #if !defined(_AFXDLL)
       m_recoilPad(0),
@@ -2376,25 +2374,25 @@ RECOIL_NOINLINE RECOIL_THISCALL RecoilApp::RecoilApp()
 }
 
 // Reimplements 0x42de60: RecoilApp::~RecoilApp
-RECOIL_NOINLINE RECOIL_THISCALL RecoilApp::~RecoilApp() {
+RecoilApp::~RecoilApp() {
 }
 
-const AFX_MSGMAP *RECOIL_STDCALL RecoilApp::GetBaseMessageMapForMfc() {
+const AFX_MSGMAP *__stdcall RecoilApp::GetBaseMessageMapForMfc() {
     return RecoilMfcWinAppAccess::GetMessageMapForRecoilApp();
 }
 
 // Reimplements 0x42de10: RecoilApp::GetMessageMap
-const AFX_MSGMAP *RECOIL_THISCALL RecoilApp::GetMessageMap() const {
+const AFX_MSGMAP * RecoilApp::GetMessageMap() const {
     return &g_RecoilApp_MessageMap;
 }
 
 // Reimplements 0x442c00: RecoilApp::GetMainWnd
-RECOIL_NOINLINE CZRecoilFrame *RECOIL_THISCALL RecoilApp::GetMainWnd() const {
+CZRecoilFrame * RecoilApp::GetMainWnd() const {
     return (CZRecoilFrame *)m_pMainWnd;
 }
 
 // Reimplements 0x443140: RecoilApp::GetCurrentState
-RECOIL_NOINLINE RecoilApp_IState *RECOIL_THISCALL RecoilApp::GetCurrentState() const {
+RecoilApp_IState * RecoilApp::GetCurrentState() const {
     if (m_currentStateIndex < 0) {
         return 0;
     }
@@ -2407,7 +2405,7 @@ RECOIL_NOINLINE RecoilApp_IState *RECOIL_THISCALL RecoilApp::GetCurrentState() c
 }
 
 // Reimplements 0x443160: RecoilApp::QueueSwitchCurrentState
-RecoilApp_IState *RECOIL_THISCALL RecoilApp::QueueSwitchCurrentState(
+RecoilApp_IState * RecoilApp::QueueSwitchCurrentState(
     RecoilApp_IState *state,
     int stateParam
 ) {
@@ -2430,7 +2428,7 @@ RecoilApp_IState *RECOIL_THISCALL RecoilApp::QueueSwitchCurrentState(
 }
 
 // Reimplements 0x443310: RecoilApp::QueuePushState
-RecoilApp_IState *RECOIL_THISCALL RecoilApp::QueuePushState(
+RecoilApp_IState * RecoilApp::QueuePushState(
     RecoilApp_IState *state,
     int suspendParam
 ) {
@@ -2449,7 +2447,7 @@ RecoilApp_IState *RECOIL_THISCALL RecoilApp::QueuePushState(
 }
 
 // Reimplements 0x4434b0: RecoilApp::QueueExitCurrentState
-RecoilApp_IState *RECOIL_THISCALL RecoilApp::QueueExitCurrentState(
+RecoilApp_IState * RecoilApp::QueueExitCurrentState(
     int stateParam
 ) {
     RecoilApp_IState *const currentState = GetCurrentState();
@@ -2470,7 +2468,7 @@ RecoilApp_IState *RECOIL_THISCALL RecoilApp::QueueExitCurrentState(
 }
 
 // Reimplements 0x442c10: RecoilApp::StartEngineAndQueueStartupState
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::StartEngineAndQueueStartupState() {
+int RecoilApp::StartEngineAndQueueStartupState() {
     CZRecoilFrame *const mainWnd = GetMainWnd();
 
     if (StartEngine(mainWnd->m_hWnd) == 0) {
@@ -2488,7 +2486,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::StartEngineAndQueueStartupState()
 }
 
 // Reimplements 0x443650: RecoilApp::OnIdleOrDispatch
-int RECOIL_THISCALL RecoilApp::OnIdleOrDispatch(
+int RecoilApp::OnIdleOrDispatch(
     unsigned int wParam,
     unsigned int lParam
 ) {
@@ -2508,30 +2506,30 @@ int RECOIL_THISCALL RecoilApp::OnIdleOrDispatch(
 }
 
 // Reimplements 0x442a10: RecoilApp::TakeSkipWaitMessage
-int RECOIL_THISCALL RecoilApp::TakeSkipWaitMessage() {
+int RecoilApp::TakeSkipWaitMessage() {
     const int wasSkipped = m_skipWait;
     m_skipWait = 0;
     return wasSkipped;
 }
 
 // Reimplements 0x442a30: RecoilApp::MarkSkipWaitMessage
-int RECOIL_THISCALL RecoilApp::MarkSkipWaitMessage() {
+int RecoilApp::MarkSkipWaitMessage() {
     const int wasSkipped = m_skipWait;
     m_skipWait = 1;
     return wasSkipped;
 }
 
-void RECOIL_THISCALL RecoilApp::OnAppActivate() {
+void RecoilApp::OnAppActivate() {
     MarkSkipWaitMessage();
 }
 
-void RECOIL_THISCALL RecoilApp::OnAppDeactivate() {
+void RecoilApp::OnAppDeactivate() {
     TakeSkipWaitMessage();
 }
 
 // Reimplements 0x442d00: RecoilApp::Run
 // (D:\Proj\Battlesport\RecoilApp.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::Run() {
+int RecoilApp::Run() {
     CWinThread::SetThreadPriority(THREAD_PRIORITY_HIGHEST);
 
     for (;;) {
@@ -2629,13 +2627,13 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp::Run() {
 }
 
 // Reimplements 0x42eea0: RecoilApp_PlayState::RecoilApp_PlayState
-RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_PlayState::RecoilApp_PlayState() {
+RecoilApp_PlayState::RecoilApp_PlayState() {
     m_transitionScratch = 0;
     pPendingLoadGameStartPath = 0;
 }
 
 // Reimplements 0x42eec0: RecoilApp_PlayState::OnWndActivate
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_PlayState::OnWndActivate(
+void RecoilApp_PlayState::OnWndActivate(
     int bActivate
 ) {
     if (bActivate != 0) {
@@ -2645,7 +2643,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_PlayState::OnWndActivate(
 
 // Reimplements 0x42eed0: RecoilApp_PlayState::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\RecoilApp.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_PlayState::OnTryBecomeCurrent() {
+int RecoilApp_PlayState::OnTryBecomeCurrent() {
     const int completedObjectiveCount = g_HudSensorTracker.completedObjectiveCount;
 
     if (zVid::GetAccelerationOption() != 0) {
@@ -2796,7 +2794,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_PlayState::OnTryBecomeCurrent() {
 
 // Reimplements 0x42f5e0: RecoilApp_PlayState::OnUpdateShouldQuit
 // (D:\Proj\Battlesport\RecoilApp.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_PlayState::OnUpdateShouldQuit() {
+int RecoilApp_PlayState::OnUpdateShouldQuit() {
     if (g_RecoilApp.m_transitionFadeTimer > 0.0f) {
         g_zVideo_SoftwareModeHotkeyEnabled = ZVIDEO_SOFTWARE_MODE_HOTKEY_DISABLED;
         TickAndRenderFrame(0);
@@ -2890,7 +2888,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_PlayState::OnUpdateShouldQuit() {
 }
 
 // Reimplements 0x42f8a0: RecoilApp_PlayState::OnResume
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_PlayState::OnResume(
+void RecoilApp_PlayState::OnResume(
     int
 ) {
     if (zSnd::GetCDAudioOption() != 0) {
@@ -2905,7 +2903,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_PlayState::OnResume(
 
 // Reimplements 0x42f8e0: RecoilApp_PlayState::OnDeactivate
 // (D:\Proj\Battlesport\RecoilApp.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_PlayState::OnDeactivate() {
+void RecoilApp_PlayState::OnDeactivate() {
     HudUiLoadingCheckpoint::AdvanceAndLog("Leaving Play State");
 
     if (zVid::GetAccelerationOption() != 0) {
@@ -2949,7 +2947,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_PlayState::OnDeactivate() {
 }
 
 // Reimplements 0x42f9d0: RecoilApp_LeaveNetworkState::OnTryBecomeCurrent
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_LeaveNetworkState::OnTryBecomeCurrent() {
+int RecoilApp_LeaveNetworkState::OnTryBecomeCurrent() {
     zNetwork_DPlay_DestroyCachedLocalPlayer();
     g_RecoilApp.ShutdownEngine();
     zSndBackend::Shutdown();
@@ -2958,34 +2956,28 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_LeaveNetworkState::OnTryBecomeCurr
 
 // Reimplements 0x42eb70: RecoilApp_AttractFmvState::Constructor
 // Actual C++ construction lets VC emit the one-state IState cleanup funclet.
-RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_AttractFmvState::RecoilApp_AttractFmvState() {
+RecoilApp_AttractFmvState::RecoilApp_AttractFmvState() {
 }
 
-RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_IntroFmvState::RecoilApp_IntroFmvState() {
+RecoilApp_IntroFmvState::RecoilApp_IntroFmvState() {
     m_stateData04 = 0;
 }
 
 // Reimplements 0x42ea20: RecoilApp_IntroFmvState::OnTryBecomeCurrent
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_IntroFmvState::OnTryBecomeCurrent() {
-    const int pitchBytes = zVideo::GetPrimarySurfacePitch();
-    const int bitsPerPixel = zOpt::GetDisplaySectionBitsPerPixel();
-    zOpt_ViewRectSection *const windowSection = zOpt::GetWindowSection();
+int RecoilApp_IntroFmvState::OnTryBecomeCurrent() {
     zRndr::SetFrameBufferRegion(
         zVideo::GetPrimarySurfacePixels(),
-        windowSection,
-        bitsPerPixel,
-        pitchBytes
+        zOpt::GetWindowSection(),
+        zOpt::GetDisplaySectionBitsPerPixel(),
+        zVideo::GetPrimarySurfacePitch()
     );
     zRndr::SetVideoStrideMirrors(zOpt::GetVideoStrideValue());
 
-    const int fxPitchBytes = zVideo::GetPrimarySurfacePitch();
-    const int surfaceHeight = zVideo::GetPrimarySurfaceHeight();
-    const int surfaceWidth = zVideo::GetPrimarySurfaceWidth();
     zVideo::Fx_SetSurfaceState(
         zVideo::GetPrimarySurfacePixels(),
-        surfaceWidth,
-        surfaceHeight,
-        fxPitchBytes
+        zVideo::GetPrimarySurfaceWidth(),
+        zVideo::GetPrimarySurfaceHeight(),
+        zVideo::GetPrimarySurfacePitch()
     );
     zVid::SetCachedClientRectUpdateMask(1);
 
@@ -3007,7 +2999,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_IntroFmvState::OnTryBecomeCurrent(
 }
 
 // Reimplements 0x42eac0: RecoilApp_IntroFmvState::OnUpdateShouldQuit
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_IntroFmvState::OnUpdateShouldQuit() {
+int RecoilApp_IntroFmvState::OnUpdateShouldQuit() {
     if (g_RecoilApp.m_skipIntroFmv != 0) {
         g_RecoilApp.QueueSwitchCurrentState(
             &g_RecoilApp.m_missionFmvState,
@@ -3029,7 +3021,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_IntroFmvState::OnUpdateShouldQuit(
 }
 
 // Reimplements 0x42eb00: RecoilApp_FmvState::OnIdleOrDispatch
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_FmvState::OnIdleOrDispatch(
+int RecoilApp_FmvState::OnIdleOrDispatch(
     unsigned int,
     unsigned int
 ) {
@@ -3037,41 +3029,35 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_FmvState::OnIdleOrDispatch(
 }
 
 // Reimplements 0x42eb10: RecoilApp_IntroFmvState::OnDeactivate
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_IntroFmvState::OnDeactivate() {
+void RecoilApp_IntroFmvState::OnDeactivate() {
     m_fmv.BeginNow(1);
 }
 
 // Reimplements 0x42eb20: RecoilApp_MainMenuPrepState::OnTryBecomeCurrent
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_MainMenuPrepState::OnTryBecomeCurrent() {
-    const int pitchBytes = zVideo::GetPrimarySurfacePitch();
-    const int height = zVideo::GetPrimarySurfaceHeight();
-    const int width = zVideo::GetPrimarySurfaceWidth();
+int RecoilApp_MainMenuPrepState::OnTryBecomeCurrent() {
     zVideo::Fx_SetSurfaceState(
         zVideo::GetPrimarySurfacePixels(),
-        width,
-        height,
-        pitchBytes
+        zVideo::GetPrimarySurfaceWidth(),
+        zVideo::GetPrimarySurfaceHeight(),
+        zVideo::GetPrimarySurfacePitch()
     );
     m_stateData04 = 0;
     return 1;
 }
 
 // Reimplements 0x42eb60: RecoilApp_MainMenuPrepState::OnUpdateShouldQuit
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_MainMenuPrepState::OnUpdateShouldQuit() {
+int RecoilApp_MainMenuPrepState::OnUpdateShouldQuit() {
     RecoilStateMainMenuTransition::QueueEnter(RECOIL_MAINMENU_ROUTE_FRONTEND);
     return 0;
 }
 
 // Reimplements 0x42ebf0: RecoilApp_AttractFmvState::OnTryBecomeCurrent
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_AttractFmvState::OnTryBecomeCurrent() {
-    const int pitchBytes = zVideo::GetPrimarySurfacePitch();
-    const int height = zVideo::GetPrimarySurfaceHeight();
-    const int width = zVideo::GetPrimarySurfaceWidth();
+int RecoilApp_AttractFmvState::OnTryBecomeCurrent() {
     zVideo::Fx_SetSurfaceState(
         zVideo::GetPrimarySurfacePixels(),
-        width,
-        height,
-        pitchBytes
+        zVideo::GetPrimarySurfaceWidth(),
+        zVideo::GetPrimarySurfaceHeight(),
+        zVideo::GetPrimarySurfacePitch()
     );
 
     GetClientRect(
@@ -3079,15 +3065,15 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_AttractFmvState::OnTryBecomeCurren
         (RECT *)(m_clientRect)
     );
 
-    zFMV_Script *const script = &m_fmv;
     if (g_RecoilApp_AttractFmvReloadMode != 0) {
-        script->LoadActionsFromZrd(
+        m_fmv.LoadActionsFromZrd(
             "fmv.zrd",
             "ATTRACT"
         );
         g_RecoilApp_AttractFmvReloadMode = 0;
     }
 
+    zFMV_Script *const script = &m_fmv;
     if (g_RecoilApp_hWndMain != 0) {
         script->m_hWnd = g_RecoilApp_hWndMain;
     }
@@ -3103,7 +3089,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_AttractFmvState::OnTryBecomeCurren
 }
 
 // Reimplements 0x42ec80: RecoilApp_AttractFmvState::OnUpdateShouldQuit
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_AttractFmvState::OnUpdateShouldQuit() {
+int RecoilApp_AttractFmvState::OnUpdateShouldQuit() {
     zFMV_Script *const script = &m_fmv;
     const int stateParam = script->UpdateAtTime();
     if (stateParam == 0) {
@@ -3117,20 +3103,20 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_AttractFmvState::OnUpdateShouldQui
 }
 
 // Reimplements 0x42eca0: RecoilApp_AttractFmvState::OnDeactivate
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_AttractFmvState::OnDeactivate() {
+void RecoilApp_AttractFmvState::OnDeactivate() {
     m_fmv.BeginNow(0);
 }
 
 // Reimplements 0x42ed30: RecoilApp_MissionFmvState::Constructor
 // Actual C++ construction lets VC emit the one-state IState cleanup funclet.
-RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_MissionFmvState::RecoilApp_MissionFmvState() {
+RecoilApp_MissionFmvState::RecoilApp_MissionFmvState() {
     m_missionId = 0;
     m_skipMissionFmv = 0;
 }
 
 // Reimplements 0x42edb0: RecoilApp_MissionFmvState::OnTryBecomeCurrent
 // (D:\Proj\GameZRecoil\recoilapp.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_MissionFmvState::OnTryBecomeCurrent() {
+int RecoilApp_MissionFmvState::OnTryBecomeCurrent() {
     if (m_missionId == 0) {
         m_missionId = g_HudSensorTracker.GetMissionId();
     } else {
@@ -3163,7 +3149,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_MissionFmvState::OnTryBecomeCurren
 
 // Reimplements 0x42ee50: RecoilApp_MissionFmvState::OnDeactivate
 // (D:\Proj\GameZRecoil\recoilapp.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_MissionFmvState::OnDeactivate() {
+void RecoilApp_MissionFmvState::OnDeactivate() {
     const int skipMissionFmv = m_skipMissionFmv;
     m_missionId = 0;
     if (skipMissionFmv == 0) {
@@ -3173,7 +3159,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL RecoilApp_MissionFmvState::OnDeactivate() {
 
 // Reimplements 0x42ee70: RecoilApp_MissionFmvState::OnUpdateShouldQuit
 // (D:\Proj\GameZRecoil\recoilapp.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_MissionFmvState::OnUpdateShouldQuit() {
+int RecoilApp_MissionFmvState::OnUpdateShouldQuit() {
     if (m_skipMissionFmv != 0 || m_fmv.UpdateAtTime() == 0) {
         g_RecoilApp.QueueSwitchCurrentState(
             &g_RecoilApp.m_playState,
@@ -3184,36 +3170,36 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilApp_MissionFmvState::OnUpdateShouldQui
     return 0;
 }
 
-RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_IState::~RecoilApp_IState() {
+RecoilApp_IState::~RecoilApp_IState() {
 }
 
-void RECOIL_THISCALL RecoilApp_IState::OnWndActivate(
+void RecoilApp_IState::OnWndActivate(
     int
 ) {}
 
-void RECOIL_THISCALL RecoilApp_IState::OnEnter() {}
+void RecoilApp_IState::OnEnter() {}
 
-int RECOIL_THISCALL RecoilApp_IState::OnTryBecomeCurrent() {
+int RecoilApp_IState::OnTryBecomeCurrent() {
     return 1;
 }
 
-int RECOIL_THISCALL RecoilApp_IState::OnUpdateShouldQuit() {
+int RecoilApp_IState::OnUpdateShouldQuit() {
     return 0;
 }
 
-void RECOIL_THISCALL RecoilApp_IState::OnExit() {}
+void RecoilApp_IState::OnExit() {}
 
-void RECOIL_THISCALL RecoilApp_IState::OnDeactivate() {}
+void RecoilApp_IState::OnDeactivate() {}
 
-void RECOIL_THISCALL RecoilApp_IState::OnSuspend(
+void RecoilApp_IState::OnSuspend(
     int
 ) {}
 
-void RECOIL_THISCALL RecoilApp_IState::OnResume(
+void RecoilApp_IState::OnResume(
     int
 ) {}
 
-int RECOIL_THISCALL RecoilApp_IState::OnIdleOrDispatch(
+int RecoilApp_IState::OnIdleOrDispatch(
     unsigned int,
     unsigned int
 ) {
@@ -3221,16 +3207,16 @@ int RECOIL_THISCALL RecoilApp_IState::OnIdleOrDispatch(
 }
 
 // Reimplements 0x42df10: RecoilApp_AttractFmvState::~RecoilApp_AttractFmvState
-RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_AttractFmvState::~RecoilApp_AttractFmvState() {
+RecoilApp_AttractFmvState::~RecoilApp_AttractFmvState() {
     m_fmv.Cleanup();
 }
 
 // Reimplements 0x42df50: RecoilApp_IntroFmvState::~RecoilApp_IntroFmvState
-RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_IntroFmvState::~RecoilApp_IntroFmvState() {
+RecoilApp_IntroFmvState::~RecoilApp_IntroFmvState() {
     m_fmv.Cleanup();
 }
 
 // Reimplements 0x42e070: RecoilApp_MissionFmvState::~RecoilApp_MissionFmvState
-RECOIL_NOINLINE RECOIL_THISCALL RecoilApp_MissionFmvState::~RecoilApp_MissionFmvState() {
+RecoilApp_MissionFmvState::~RecoilApp_MissionFmvState() {
     m_fmv.Cleanup();
 }

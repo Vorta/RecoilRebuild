@@ -6,16 +6,8 @@
 #include "Battlesport/Mfc42Abi.h"
 #include "recoil/recoil_callconv.h"
 
-#if defined(_MSC_VER) && _MSC_VER >= 1300
-#define RECOIL_FRAME_NOINLINE __declspec(noinline)
-#elif defined(__GNUC__) || defined(__clang__)
-#define RECOIL_FRAME_NOINLINE __attribute__((noinline))
-#else
-#define RECOIL_FRAME_NOINLINE
-#endif
-
 namespace MfcCmdUI {
-RECOIL_FRAME_NOINLINE void RECOIL_STDCALL EnableAlways(CCmdUI *cmdUi);
+void __stdcall EnableAlways(CCmdUI *cmdUi);
 }
 
 class RecoilApp;
@@ -47,77 +39,77 @@ struct CZRecoilFrame {
     static const AFX_MSGMAP messageMap;
     static const AFX_MSGMAP_ENTRY messageEntries[];
 
-    RECOIL_FRAME_NOINLINE static unsigned int RECOIL_CDECL GetBaseRuntimeClass();
-    RECOIL_FRAME_NOINLINE static CZRecoilFrame *RECOIL_CDECL CreateObject();
-    RECOIL_FRAME_NOINLINE static unsigned int RECOIL_CDECL GetRuntimeClass();
-    RECOIL_FRAME_NOINLINE static unsigned int RECOIL_CDECL GetBaseMessageMap();
-    RECOIL_FRAME_NOINLINE static unsigned int RECOIL_CDECL GetMessageMap();
-    RECOIL_FRAME_NOINLINE CZRecoilFrame *RECOIL_THISCALL Constructor();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL SetMenuBarVisibility(int visible);
-    RECOIL_FRAME_NOINLINE CString *RECOIL_THISCALL BuildWindowTitle(CString *outTitle);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuStartSinglePlayer();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuOpenCampaign();
-    RECOIL_FRAME_NOINLINE RECOIL_NO_GS void RECOIL_THISCALL OnOpenFileDialog();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL ConfigureModeFeatureFlags();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuSetVideoMode2();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuSetVideoMode3();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuSetVideoMode4();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuSetVideoMode5();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuSetVideoMode6();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuSetVideoMode7();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuExitGame();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuToggleHud();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateHudCmdUI(CCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuToggleFullscreen();
-    RECOIL_FRAME_NOINLINE RECOIL_NO_GS void RECOIL_THISCALL OnMenuOpenHelpDocs();
-    RECOIL_FRAME_NOINLINE RECOIL_NO_GS void RECOIL_THISCALL OnMenuAbout();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuOpenMultiplayerSessionBrowser();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuStartMultiplayer();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuStartCampaignMode();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuStartCampaignMode2();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuStartCampaignMode3();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuStartCampaignMode4();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuStartCampaignMode5();
-    RECOIL_FRAME_NOINLINE RECOIL_NO_GS void RECOIL_THISCALL OnMenuWestwoodOnlineUpgrade();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuToggleArchiveBanks();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuToggleTexturePacks();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateVideoMode2CmdUI(CCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateVideoMode3CmdUI(CCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateVideoMode4CmdUI(CCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateVideoMode5CmdUI(CCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateVideoMode6CmdUI(CCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateVideoMode7CmdUI(CCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuSelectHwApi0();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuSelectHwApi1();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuSelectHwApi2();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuSelectHwApi3();
-    RECOIL_FRAME_NOINLINE RECOIL_NO_GS void RECOIL_THISCALL UpdateHwApiMenuItem(
+    static unsigned int GetBaseRuntimeClass();
+    static CZRecoilFrame *CreateObject();
+    static unsigned int GetRuntimeClass();
+    static unsigned int GetBaseMessageMap();
+    static unsigned int GetMessageMap();
+    CZRecoilFrame * Constructor();
+    void Destructor();
+    void SetMenuBarVisibility(int visible);
+    CString * BuildWindowTitle(CString *outTitle);
+    void OnMenuStartSinglePlayer();
+    void OnMenuOpenCampaign();
+    RECOIL_NO_GS void OnOpenFileDialog();
+    void ConfigureModeFeatureFlags();
+    void OnMenuSetVideoMode2();
+    void OnMenuSetVideoMode3();
+    void OnMenuSetVideoMode4();
+    void OnMenuSetVideoMode5();
+    void OnMenuSetVideoMode6();
+    void OnMenuSetVideoMode7();
+    void OnMenuExitGame();
+    void OnMenuToggleHud();
+    void OnUpdateHudCmdUI(CCmdUI *cmdUi);
+    void OnMenuToggleFullscreen();
+    RECOIL_NO_GS void OnMenuOpenHelpDocs();
+    RECOIL_NO_GS void OnMenuAbout();
+    void OnMenuOpenMultiplayerSessionBrowser();
+    void OnMenuStartMultiplayer();
+    void OnMenuStartCampaignMode();
+    void OnMenuStartCampaignMode2();
+    void OnMenuStartCampaignMode3();
+    void OnMenuStartCampaignMode4();
+    void OnMenuStartCampaignMode5();
+    RECOIL_NO_GS void OnMenuWestwoodOnlineUpgrade();
+    void OnMenuToggleArchiveBanks();
+    void OnMenuToggleTexturePacks();
+    void OnUpdateVideoMode2CmdUI(CCmdUI *cmdUi);
+    void OnUpdateVideoMode3CmdUI(CCmdUI *cmdUi);
+    void OnUpdateVideoMode4CmdUI(CCmdUI *cmdUi);
+    void OnUpdateVideoMode5CmdUI(CCmdUI *cmdUi);
+    void OnUpdateVideoMode6CmdUI(CCmdUI *cmdUi);
+    void OnUpdateVideoMode7CmdUI(CCmdUI *cmdUi);
+    void OnMenuSelectHwApi0();
+    void OnMenuSelectHwApi1();
+    void OnMenuSelectHwApi2();
+    void OnMenuSelectHwApi3();
+    RECOIL_NO_GS void UpdateHwApiMenuItem(
         CCmdUI *cmdUi,
         int apiIndex
     );
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateHwApi0CmdUI(CCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateHwApi1CmdUI(CCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateHwApi2CmdUI(CCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateHwApi3CmdUI(CCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateFullscreenCmdUI(CCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuToggleCDAudio();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateCDAudioCmdUI(CCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuToggleJoystick();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateJoystickCmdUI(CCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuSelectDirectSound();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateDirectSoundCmdUI(CCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnMenuSelectA3D();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnUpdateA3DCmdUI(CCmdUI *cmdUi);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL OnSize(
+    void OnUpdateHwApi0CmdUI(CCmdUI *cmdUi);
+    void OnUpdateHwApi1CmdUI(CCmdUI *cmdUi);
+    void OnUpdateHwApi2CmdUI(CCmdUI *cmdUi);
+    void OnUpdateHwApi3CmdUI(CCmdUI *cmdUi);
+    void OnUpdateFullscreenCmdUI(CCmdUI *cmdUi);
+    void OnMenuToggleCDAudio();
+    void OnUpdateCDAudioCmdUI(CCmdUI *cmdUi);
+    void OnMenuToggleJoystick();
+    void OnUpdateJoystickCmdUI(CCmdUI *cmdUi);
+    void OnMenuSelectDirectSound();
+    void OnUpdateDirectSoundCmdUI(CCmdUI *cmdUi);
+    void OnMenuSelectA3D();
+    void OnUpdateA3DCmdUI(CCmdUI *cmdUi);
+    void OnSize(
         unsigned int nType,
         int cx,
         int cy
     );
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL SetHwApiAndInitMode(int hwApiIndex);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL InitFallbackMode();
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL EnsureHwApiInitialized(int hwApiSelector);
-    RECOIL_FRAME_NOINLINE void RECOIL_THISCALL InitStartupHwApiFromOptions();
+    void SetHwApiAndInitMode(int hwApiIndex);
+    void InitFallbackMode();
+    void EnsureHwApiInitialized(int hwApiSelector);
+    void InitStartupHwApiFromOptions();
 };
 RECOIL_STATIC_ASSERT(
     offsetof(

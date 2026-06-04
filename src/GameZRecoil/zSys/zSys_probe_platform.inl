@@ -1,5 +1,5 @@
 // Reimplements 0x40c370: zSys::ProbePlatformAndVideoCaps
-RECOIL_NO_GS void RECOIL_FASTCALL zSys::ProbePlatformAndVideoCaps(
+RECOIL_NO_GS void __fastcall zSys::ProbePlatformAndVideoCaps(
     zSysVideoCapsLevel *outVideoCaps,
     zSysPlatformCapsLevel *outPlatformCaps
 ) {

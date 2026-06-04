@@ -106,7 +106,7 @@ namespace {
 
 namespace zClass_Display {
     // Reimplements 0x44fdd0: zClass_Display::gwDisplayInit
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwDisplayInit() {
+    zClass_NodePartial *gwDisplayInit() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
             zError::ReportOld(
@@ -143,7 +143,7 @@ namespace zClass_Display {
     }
 
     // Reimplements 0x44fe50: zClass_Display::RemoveChild
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -176,7 +176,7 @@ namespace zClass_Display {
     }
 
     // Reimplements 0x44fe90: zClass_Display::gwDisplaySetSize
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwDisplaySetSize(
         zClass_NodePartial * node,
         int width,
@@ -198,7 +198,7 @@ namespace zClass_Display {
     }
 
     // Reimplements 0x44ff10: zClass_Display::gwDisplaySetPosition
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwDisplaySetPosition(
         zClass_NodePartial * node,
         int x,
@@ -220,7 +220,7 @@ namespace zClass_Display {
     }
 
     // Reimplements 0x44ff90: zClass_Display::gwDisplaySetBackgroundColor
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwDisplaySetBackgroundColor(
         zClass_NodePartial * node,
         float red,

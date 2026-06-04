@@ -18,9 +18,9 @@
 
 extern "C" int g_CZRecoilFrame_HasWolApi;
 extern "C" int g_CZRecoilFrame_WestwoodOnlineWinsockChecked;
-BOOL RECOIL_STDCALL AfxWinInit(HINSTANCE instance, HINSTANCE previousInstance, LPSTR commandLine,
+BOOL __stdcall AfxWinInit(HINSTANCE instance, HINSTANCE previousInstance, LPSTR commandLine,
                                int showCommand);
-HINSTANCE RECOIL_STDCALL AfxFindResourceHandle(LPCSTR resourceName, LPCSTR resourceType);
+HINSTANCE __stdcall AfxFindResourceHandle(LPCSTR resourceName, LPCSTR resourceType);
 
 namespace {
 struct CodeFunctionPatch {
@@ -33,10 +33,10 @@ int HandleFrameConstructorException(EXCEPTION_POINTERS *exceptionInfo) {
     return EXCEPTION_EXECUTE_HANDLER;
 }
 
-BOOL RECOIL_FASTCALL FakeCWndCreateEx(CWnd *, void *, DWORD, LPCSTR, LPCSTR, DWORD, int, int,
+BOOL __fastcall FakeCWndCreateEx(CWnd *, void *, DWORD, LPCSTR, LPCSTR, DWORD, int, int,
                                       int, int, HWND, HMENU, LPVOID);
-void RECOIL_FASTCALL FakeCWndSetWindowTextA(CWnd *, void *, LPCSTR);
-void RECOIL_FASTCALL FakeCWndCenterWindow(CWnd *, void *, CWnd *);
+void __fastcall FakeCWndSetWindowTextA(CWnd *, void *, LPCSTR);
+void __fastcall FakeCWndCenterWindow(CWnd *, void *, CWnd *);
 void *CWndCreateExProc();
 void *CWndSetWindowTextAProc();
 void *CWndCenterWindowProc();
@@ -198,7 +198,7 @@ extern "C" int czrecoil_frame_video_mode_menu_handlers_smoke(void) {
     CZRecoilFrame frame{};
     frame.m_vidMemFreeBytes = 0x800000;
 
-    typedef void (RECOIL_THISCALL CZRecoilFrame::*Handler)();
+    typedef void ( CZRecoilFrame::*Handler)();
     const Handler handlers[] = {
         &CZRecoilFrame::OnMenuSetVideoMode2,
         &CZRecoilFrame::OnMenuSetVideoMode3,
@@ -1027,7 +1027,7 @@ struct ImportFunctionPatch {
 };
 
 struct FakeGameFrameApp : CZGameFrameApp {
-    void RECOIL_THISCALL OnActivate() {
+    void OnActivate() {
         ++g_appActivateCalls;
         if (g_onActivateCallCount < 5) {
             g_onActivateCallOrder[g_onActivateCallCount] = 6;
@@ -1035,13 +1035,13 @@ struct FakeGameFrameApp : CZGameFrameApp {
         ++g_onActivateCallCount;
     }
 
-    std::int32_t RECOIL_THISCALL OnIdleOrDispatch(std::uint32_t wParam, std::uint32_t lParam) {
+    std::int32_t OnIdleOrDispatch(std::uint32_t wParam, std::uint32_t lParam) {
         g_lastIdleWParam = wParam;
         g_lastIdleLParam = lParam;
         return 0x1234;
     }
 
-    void RECOIL_THISCALL OnDeactivate() {
+    void OnDeactivate() {
         ++g_appDeactivateCalls;
         if (g_onActivateCallCount < 5) {
             g_onActivateCallOrder[g_onActivateCallCount] = 3;
@@ -1051,7 +1051,7 @@ struct FakeGameFrameApp : CZGameFrameApp {
 };
 
 struct FakeActivateState : RecoilApp_IState {
-    void RECOIL_THISCALL OnWndActivate(std::uint32_t nState) {
+    void OnWndActivate(std::uint32_t nState) {
         ++g_stateWndActivateCalls;
         g_lastStateWndActivateValue = static_cast<std::int32_t>(nState);
         if (g_onActivateCallCount < 5) {
@@ -1111,51 +1111,51 @@ void RecordOnActivateCall(std::int32_t callId) {
     ++g_onActivateCallCount;
 }
 
-int RECOIL_CDECL FakeDestroyCachedLocalPlayer() {
+int FakeDestroyCachedLocalPlayer() {
     RecordOnDestroyCall(1);
     return 1;
 }
 
-void RECOIL_CDECL FakeZInputOnAppActivate() {
+void FakeZInputOnAppActivate() {
     ++g_zInputOnAppActivateCalls;
     RecordOnActivateCall(7);
 }
 
-void RECOIL_CDECL FakeZInputOnAppDeactivate() {
+void FakeZInputOnAppDeactivate() {
     ++g_zInputOnAppDeactivateCalls;
     RecordOnActivateCall(4);
 }
 
-void RECOIL_CDECL FakeZGameReturnOnlyStub() {
+void FakeZGameReturnOnlyStub() {
     ++g_zGameReturnOnlyStubCalls;
     RecordOnActivateCall(5);
 }
 
-void RECOIL_CDECL FakeZVideoRestoreIconicFullscreenWindowIfNeeded() {
+void FakeZVideoRestoreIconicFullscreenWindowIfNeeded() {
     ++g_zVideoRestoreIconicCalls;
     RecordOnActivateCall(8);
 }
 
-int RECOIL_CDECL FakeShutdownVideoSystem() {
+int FakeShutdownVideoSystem() {
     RecordOnDestroyCall(2);
     return 1;
 }
 
-int RECOIL_CDECL FakeZsndCdStop() {
+int FakeZsndCdStop() {
     RecordOnDestroyCall(3);
     return 1;
 }
 
-int RECOIL_FASTCALL FakeCFrameWndOnCreate(CFrameWnd *, void *, CREATESTRUCTA *) {
+int __fastcall FakeCFrameWndOnCreate(CFrameWnd *, void *, CREATESTRUCTA *) {
     ++g_cFrameWndOnCreateCalls;
     return g_cFrameWndOnCreateResult;
 }
 
-void RECOIL_FASTCALL FakeCFrameWndOnClose(CFrameWnd *, void *) {
+void __fastcall FakeCFrameWndOnClose(CFrameWnd *, void *) {
     ++g_cFrameWndOnCloseCalls;
 }
 
-void RECOIL_FASTCALL FakeCFrameWndOnActivate(CFrameWnd *, void *, unsigned int nState,
+void __fastcall FakeCFrameWndOnActivate(CFrameWnd *, void *, unsigned int nState,
                                              CWnd *pWndOther, BOOL bMinimized) {
     ++g_cFrameWndOnActivateCalls;
     g_cFrameWndOnActivateArgsOk =
@@ -1164,18 +1164,18 @@ void RECOIL_FASTCALL FakeCFrameWndOnActivate(CFrameWnd *, void *, unsigned int n
     RecordOnActivateCall(1);
 }
 
-void RECOIL_FASTCALL FakeCFrameWndOnDestroy(CFrameWnd *, void *) {
+void __fastcall FakeCFrameWndOnDestroy(CFrameWnd *, void *) {
     ++g_cFrameWndOnDestroyCalls;
     RecordOnDestroyCall(4);
 }
 
-BOOL RECOIL_FASTCALL FakeCGdiObjectDeleteObject(CGdiObject *, void *) {
+BOOL __fastcall FakeCGdiObjectDeleteObject(CGdiObject *, void *) {
     ++g_gdiDeleteObjectCalls;
     RecordOnDestroyCall(5);
     return TRUE;
 }
 
-HINSTANCE RECOIL_STDCALL FakeAfxFindResourceHandle(LPCSTR resourceName, LPCSTR resourceType) {
+HINSTANCE __stdcall FakeAfxFindResourceHandle(LPCSTR resourceName, LPCSTR resourceType) {
     ++g_findResourceHandleCalls;
     g_lastResourceName = resourceName;
     g_lastResourceType = resourceType;
@@ -1233,13 +1233,13 @@ BOOL WINAPI FakeDeleteDC(HDC hdc) {
     return TRUE;
 }
 
-void RECOIL_FASTCALL FakeCFrameWndOnSize(CFrameWnd *, void *, unsigned int nType, int cx, int cy) {
+void __fastcall FakeCFrameWndOnSize(CFrameWnd *, void *, unsigned int nType, int cx, int cy) {
     ++g_cFrameWndOnSizeCalls;
     g_cFrameWndOnSizeArgsOk = nType == 0 || nType == 1 || nType == 4;
     g_cFrameWndOnSizeArgsOk = g_cFrameWndOnSizeArgsOk && cx == 640 && cy == 480;
 }
 
-BOOL RECOIL_FASTCALL FakeCWndCreateEx(CWnd *self, void *, DWORD exStyle, LPCSTR className,
+BOOL __fastcall FakeCWndCreateEx(CWnd *self, void *, DWORD exStyle, LPCSTR className,
                                       LPCSTR windowName, DWORD style, int x, int y, int width,
                                       int height, HWND parent, HMENU menu, LPVOID param) {
     ++g_cWndCreateExCalls;
@@ -1249,18 +1249,18 @@ BOOL RECOIL_FASTCALL FakeCWndCreateEx(CWnd *self, void *, DWORD exStyle, LPCSTR 
     return hwnd != nullptr ? TRUE : FALSE;
 }
 
-void RECOIL_FASTCALL FakeCWndSetWindowTextA(CWnd *self, void *, LPCSTR text) {
+void __fastcall FakeCWndSetWindowTextA(CWnd *self, void *, LPCSTR text) {
     ++g_cWndSetWindowTextCalls;
     if (self->m_hWnd != nullptr) {
         SetWindowTextA(self->m_hWnd, text);
     }
 }
 
-void RECOIL_FASTCALL FakeCWndCenterWindow(CWnd *, void *, CWnd *) {
+void __fastcall FakeCWndCenterWindow(CWnd *, void *, CWnd *) {
     ++g_cWndCenterWindowCalls;
 }
 
-char *RECOIL_FASTCALL FakeWolMenuGetMessageString(unsigned int messageId) {
+char *__fastcall FakeWolMenuGetMessageString(unsigned int messageId) {
     static char caption[] = "Network Caption";
     static char messageFormat[] = "Need Winsock";
 
@@ -1271,7 +1271,7 @@ char *RECOIL_FASTCALL FakeWolMenuGetMessageString(unsigned int messageId) {
     return messageId == 18 ? caption : messageFormat;
 }
 
-int RECOIL_FASTCALL FakeWolMenuVerifyWinsock(const char *caption, const char *messageFormat) {
+int __fastcall FakeWolMenuVerifyWinsock(const char *caption, const char *messageFormat) {
     ++g_wolMenuVerifyCalls;
     g_wolMenuVerifyArgsOk =
         std::strcmp(caption, "Network Caption") == 0 &&
@@ -1279,7 +1279,7 @@ int RECOIL_FASTCALL FakeWolMenuVerifyWinsock(const char *caption, const char *me
     return g_wolMenuVerifyResult;
 }
 
-int RECOIL_FASTCALL FakeWolMenuShowModal(int *selectedMissionIndexOut) {
+int __fastcall FakeWolMenuShowModal(int *selectedMissionIndexOut) {
     ++g_wolMenuModalCalls;
     if (g_wolMenuModalResult != 0) {
         *selectedMissionIndexOut = g_wolMenuModalSelectedMissionIndex;
@@ -1287,7 +1287,7 @@ int RECOIL_FASTCALL FakeWolMenuShowModal(int *selectedMissionIndexOut) {
     return g_wolMenuModalResult;
 }
 
-int RECOIL_FASTCALL FakeWolMenuLoadZbdAndSetupSensorTracker(RecoilApp *self, void *,
+int __fastcall FakeWolMenuLoadZbdAndSetupSensorTracker(RecoilApp *self, void *,
                                                             int missionId,
                                                             const char *zbdPath,
                                                             int skipIntroFmvMode,
@@ -1301,23 +1301,23 @@ int RECOIL_FASTCALL FakeWolMenuLoadZbdAndSetupSensorTracker(RecoilApp *self, voi
     return 1;
 }
 
-HRESULT RECOIL_STDCALL FakeMpMenuCoInitialize(LPVOID) {
+HRESULT __stdcall FakeMpMenuCoInitialize(LPVOID) {
     ++g_mpMenuCoInitializeCalls;
     return g_mpMenuCoInitializeResult;
 }
 
-int RECOIL_FASTCALL FakeMpMenuInitSessionRuntime(unsigned char *appGuid) {
+int __fastcall FakeMpMenuInitSessionRuntime(unsigned char *appGuid) {
     ++g_mpMenuInitRuntimeCalls;
     g_mpMenuInitRuntimeGuid = appGuid;
     return 0;
 }
 
-int RECOIL_CDECL FakeMpMenuShutdownSessionRuntime() {
+int FakeMpMenuShutdownSessionRuntime() {
     ++g_mpMenuShutdownRuntimeCalls;
     return 0;
 }
 
-int RECOIL_FASTCALL FakeMpMenuDoModal(CDialog *self, void *) {
+int __fastcall FakeMpMenuDoModal(CDialog *self, void *) {
     ++g_mpMenuDoModalCalls;
     NetSessionBrowserDialog *const dialog = (NetSessionBrowserDialog *)self;
     dialog->m_shouldEnterHostSetup = g_mpMenuDialogShouldEnterHostSetup;
@@ -1326,28 +1326,28 @@ int RECOIL_FASTCALL FakeMpMenuDoModal(CDialog *self, void *) {
     return g_mpMenuDoModalResult;
 }
 
-void RECOIL_FASTCALL FakeMpMenuSetPlayerName(const char *name) {
+void __fastcall FakeMpMenuSetPlayerName(const char *name) {
     ++g_mpMenuSetPlayerNameCalls;
     g_mpMenuLastPlayerName = name;
 }
 
-void RECOIL_FASTCALL FakeMpMenuSetNetworkEnabled(int enabled) {
+void __fastcall FakeMpMenuSetNetworkEnabled(int enabled) {
     ++g_mpMenuSetNetworkEnabledCalls;
     g_mpMenuLastNetworkEnabled = enabled;
 }
 
-int RECOIL_FASTCALL FakeMpMenuLoadZbdAndStartEngine(RecoilApp *self, void *) {
+int __fastcall FakeMpMenuLoadZbdAndStartEngine(RecoilApp *self, void *) {
     ++g_mpMenuLoadStartCalls;
     g_mpMenuLoadStartApp = self;
     return 1;
 }
 
-void RECOIL_CDECL FakeMpMenuQueueEnterWithReconfigureFlag(int flag) {
+void FakeMpMenuQueueEnterWithReconfigureFlag(int flag) {
     ++g_mpMenuQueueEnterCalls;
     g_mpMenuQueueEnterFlag = flag;
 }
 
-int RECOIL_FASTCALL
+int __fastcall
 FakeMpMenuOpenSelectedSessionAndReadStatusFields(
     zNetworkSessionDescStatusFields *statusFields
 ) {
@@ -1360,13 +1360,13 @@ FakeMpMenuOpenSelectedSessionAndReadStatusFields(
     return g_mpMenuOpenSessionResult;
 }
 
-int RECOIL_FASTCALL FakeMpMenuCreateLocalPlayerRecordAndRegister(char *playerName) {
+int __fastcall FakeMpMenuCreateLocalPlayerRecordAndRegister(char *playerName) {
     ++g_mpMenuCreateLocalPlayerCalls;
     g_mpMenuCreateLocalPlayerName = playerName;
     return 1;
 }
 
-zNetworkDispatchHandlerRecord *RECOIL_FASTCALL FakeMpMenuRegisterPacketHandler(
+zNetworkDispatchHandlerRecord *__fastcall FakeMpMenuRegisterPacketHandler(
     int packetType,
     zNetworkPacketHandler handlerProc,
     int mode
@@ -1378,12 +1378,12 @@ zNetworkDispatchHandlerRecord *RECOIL_FASTCALL FakeMpMenuRegisterPacketHandler(
     return 0;
 }
 
-void RECOIL_FASTCALL FakeMpMenuSetStatusBitsFromFlags(unsigned int statusFlags) {
+void __fastcall FakeMpMenuSetStatusBitsFromFlags(unsigned int statusFlags) {
     ++g_mpMenuSetStatusCalls;
     g_mpMenuStatusFlags = statusFlags;
 }
 
-void RECOIL_FASTCALL FakeMpMenuSetRuntimeTimer(
+void __fastcall FakeMpMenuSetRuntimeTimer(
     HudSensorTracker *self,
     void *,
     int timerSecRaw,
@@ -1395,7 +1395,7 @@ void RECOIL_FASTCALL FakeMpMenuSetRuntimeTimer(
     g_mpMenuGoalValue = goalValue;
 }
 
-int RECOIL_FASTCALL FakeMpMenuLoadZbdAndSetupSensorTracker(
+int __fastcall FakeMpMenuLoadZbdAndSetupSensorTracker(
     RecoilApp *self,
     void *,
     int missionId,
@@ -1414,7 +1414,7 @@ int RECOIL_FASTCALL FakeMpMenuLoadZbdAndSetupSensorTracker(
 
 void *CFrameWndOnCloseProc() {
     union MemberToFunction {
-        void (RECOIL_THISCALL CFrameWndOnCloseAccess::*member)();
+        void ( CFrameWndOnCloseAccess::*member)();
         void *function;
     };
 
@@ -1425,7 +1425,7 @@ void *CFrameWndOnCloseProc() {
 
 void *CFrameWndOnActivateProc() {
     union MemberToFunction {
-        void (RECOIL_THISCALL CFrameWndOnActivateAccess::*member)(unsigned int, CWnd *, BOOL);
+        void ( CFrameWndOnActivateAccess::*member)(unsigned int, CWnd *, BOOL);
         void *function;
     };
 
@@ -1436,7 +1436,7 @@ void *CFrameWndOnActivateProc() {
 
 void *CFrameWndOnCreateProc() {
     union MemberToFunction {
-        int (RECOIL_THISCALL CFrameWndOnCreateAccess::*member)(CREATESTRUCTA *);
+        int ( CFrameWndOnCreateAccess::*member)(CREATESTRUCTA *);
         void *function;
     };
 
@@ -1447,7 +1447,7 @@ void *CFrameWndOnCreateProc() {
 
 void *CFrameWndOnDestroyProc() {
     union MemberToFunction {
-        void (RECOIL_THISCALL CFrameWndOnDestroyAccess::*member)();
+        void ( CFrameWndOnDestroyAccess::*member)();
         void *function;
     };
 
@@ -1458,7 +1458,7 @@ void *CFrameWndOnDestroyProc() {
 
 void *CGdiObjectDeleteObjectProc() {
     union MemberToFunction {
-        BOOL (RECOIL_THISCALL CGdiObject::*member)();
+        BOOL ( CGdiObject::*member)();
         void *function;
     };
 
@@ -1469,7 +1469,7 @@ void *CGdiObjectDeleteObjectProc() {
 
 void *CFrameWndOnSizeProc() {
     union MemberToFunction {
-        void (RECOIL_THISCALL CFrameWndOnSizeAccess::*member)(unsigned int, int, int);
+        void ( CFrameWndOnSizeAccess::*member)(unsigned int, int, int);
         void *function;
     };
 
@@ -1480,7 +1480,7 @@ void *CFrameWndOnSizeProc() {
 
 void *CWndCreateExProc() {
     union MemberToFunction {
-        BOOL (RECOIL_THISCALL CWndCreateExAccess::*member)(DWORD, LPCSTR, LPCSTR, DWORD, int,
+        BOOL ( CWndCreateExAccess::*member)(DWORD, LPCSTR, LPCSTR, DWORD, int,
                                                            int, int, int, HWND, HMENU, LPVOID);
         void *function;
     };
@@ -1492,7 +1492,7 @@ void *CWndCreateExProc() {
 
 void *CWndSetWindowTextAProc() {
     union MemberToFunction {
-        void (RECOIL_THISCALL CWndSetWindowTextAccess::*member)(LPCSTR);
+        void ( CWndSetWindowTextAccess::*member)(LPCSTR);
         void *function;
     };
 
@@ -1503,7 +1503,7 @@ void *CWndSetWindowTextAProc() {
 
 void *CWndCenterWindowProc() {
     union MemberToFunction {
-        void (RECOIL_THISCALL CWndCenterWindowAccess::*member)(CWnd *);
+        void ( CWndCenterWindowAccess::*member)(CWnd *);
         void *function;
     };
 
@@ -1514,7 +1514,7 @@ void *CWndCenterWindowProc() {
 
 void *RecoilAppLoadZbdAndStartEngineProc() {
     union MemberToFunction {
-        int (RECOIL_THISCALL RecoilApp::*member)();
+        int ( RecoilApp::*member)();
         void *function;
     };
 
@@ -1525,7 +1525,7 @@ void *RecoilAppLoadZbdAndStartEngineProc() {
 
 void *RecoilAppLoadZbdAndSetupSensorTrackerProc() {
     union MemberToFunction {
-        int (RECOIL_THISCALL RecoilApp::*member)(int, const char *, int, int);
+        int ( RecoilApp::*member)(int, const char *, int, int);
         void *function;
     };
 
@@ -1536,7 +1536,7 @@ void *RecoilAppLoadZbdAndSetupSensorTrackerProc() {
 
 void *HudSensorTrackerSetRuntimeTimerProc() {
     union MemberToFunction {
-        void (RECOIL_THISCALL HudSensorTrackerSetRuntimeTimerAccess::*member)(int, int);
+        void ( HudSensorTrackerSetRuntimeTimerAccess::*member)(int, int);
         void *function;
     };
 
@@ -2052,8 +2052,8 @@ extern "C" int czrecoil_frame_on_menu_westwood_online_upgrade_smoke(void) {
 
 extern "C" int czgame_frame_on_app_idle_dispatch_message_smoke(void) {
     union MemberToFunction {
-        std::int32_t (RECOIL_THISCALL FakeGameFrameApp::*member)(std::uint32_t, std::uint32_t);
-        std::int32_t(RECOIL_THISCALL *function)(CZGameFrameApp *, std::uint32_t, std::uint32_t);
+        std::int32_t ( FakeGameFrameApp::*member)(std::uint32_t, std::uint32_t);
+        std::int32_t( *function)(CZGameFrameApp *, std::uint32_t, std::uint32_t);
     };
 
     MemberToFunction thunk{};
@@ -2205,12 +2205,12 @@ extern "C" int czgame_frame_on_destroy_smoke(void) {
 
 extern "C" int czgame_frame_on_activate_smoke(void) {
     union ActivateMemberToFunction {
-        void (RECOIL_THISCALL FakeGameFrameApp::*member)();
-        void(RECOIL_THISCALL *function)(CZGameFrameApp *);
+        void ( FakeGameFrameApp::*member)();
+        void( *function)(CZGameFrameApp *);
     };
 
     union StateWndActivateMemberToFn {
-        void (RECOIL_THISCALL FakeActivateState::*member)(std::uint32_t);
+        void ( FakeActivateState::*member)(std::uint32_t);
         RecoilFn32 fn;
     };
 
@@ -2503,8 +2503,8 @@ extern "C" int czgame_frame_on_paint_smoke(void) {
 
 extern "C" int czrecoil_frame_on_size_smoke(void) {
     union DeactivateMemberToFunction {
-        void (RECOIL_THISCALL FakeGameFrameApp::*member)();
-        void(RECOIL_THISCALL *function)(CZGameFrameApp *);
+        void ( FakeGameFrameApp::*member)();
+        void( *function)(CZGameFrameApp *);
     };
 
     DeactivateMemberToFunction deactivateThunk{};

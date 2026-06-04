@@ -7,10 +7,10 @@
 #include <stddef.h>
 #include <stdio.h>
 
+#include "GameZRecoil/zMath/zMath.h"
 #include "recoil/recoil_callconv.h"
 
 struct zBBoxCorners;
-struct zBBox3f;
 struct zDiPartial;
 struct zClass_LightDataPartial;
 struct zClass_SoundDataPartial;
@@ -54,12 +54,13 @@ struct zClass_TypeListBucket {
     int pendingRemovalDirty;
 };
 
-typedef int(RECOIL_FASTCALL *zClass_NodePredicate)(zClass_NodePartial *node);
-typedef int(RECOIL_FASTCALL *zClass_NodeActionCallback)(zClass_NodePartial *node);
+typedef int(__fastcall *zClass_NodePredicate)(zClass_NodePartial *node);
+typedef int(__fastcall *zClass_NodeActionCallback)(zClass_NodePartial *node);
 
 struct zClass_NodeFreeListSlot {
     zClass_NodePartial node;
-    unsigned char unknown_8c[0x30];
+    zBBox3f primaryBounds;
+    zBBox3f secondaryBounds;
     void *damageHandler;
     unsigned int freeTag;
 };
@@ -197,7 +198,7 @@ struct zClass_SoundDataPartial {
     int runtimeFlags;
     zVec3 localPosition;
     zVec3 worldPos;
-    unsigned char unknown_48[0x30];
+    float savedParentMatrix[12];
     int falloffMode;
     float rangeMin;
     float rangeMax;
@@ -395,7 +396,7 @@ struct zClass_LodDistanceState {
     float distanceSq;
 };
 
-typedef void(RECOIL_FASTCALL *zClass_RenderFn)(
+typedef void(__fastcall *zClass_RenderFn)(
     zClass_NodePartial *node,
     int clipMask
 );
@@ -529,6 +530,18 @@ RECOIL_STATIC_ASSERT(
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(sizeof(zClass_TypeListBucket) == 0x0c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_NodeFreeListSlot,
+        primaryBounds
+    ) == 0x8c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_NodeFreeListSlot,
+        secondaryBounds
+    ) == 0xa4
+);
 RECOIL_STATIC_ASSERT(
     offsetof(
         zClass_NodeFreeListSlot,
@@ -1273,6 +1286,12 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         zClass_SoundDataPartial,
+        savedParentMatrix
+    ) == 0x48
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_SoundDataPartial,
         falloffMode
     ) == 0x78
 );
@@ -1940,41 +1959,53 @@ extern int g_zClass_LodDistanceStateStackTop;
 extern zClass_LodDistanceState g_zClass_LodDistanceStateStack[0x20];
 }
 
+RECOIL_FORCEINLINE zClass_NodeFreeListSlot *zClass_NodeSlotFromNode(
+    zClass_NodePartial *node
+) {
+    return (zClass_NodeFreeListSlot *)node;
+}
+
+RECOIL_FORCEINLINE const zClass_NodeFreeListSlot *zClass_NodeSlotFromNode(
+    const zClass_NodePartial *node
+) {
+    return (const zClass_NodeFreeListSlot *)node;
+}
+
 RECOIL_FORCEINLINE zVec3 *zClass_NodeViewSphereCenter(
     zClass_NodePartial *node
 ) {
-    return (zVec3 *)((unsigned char *)node + 0x8c);
+    return (zVec3 *)(&zClass_NodeSlotFromNode(node)->primaryBounds.minX);
 }
 
 RECOIL_FORCEINLINE const zVec3 *zClass_NodeViewSphereCenter(
     const zClass_NodePartial *node
 ) {
-    return (const zVec3 *)((const unsigned char *)node + 0x8c);
+    return (const zVec3 *)(&zClass_NodeSlotFromNode(node)->primaryBounds.minX);
 }
 
 RECOIL_FORCEINLINE float *zClass_NodeViewSphereRadius(
     zClass_NodePartial *node
 ) {
-    return (float *)((unsigned char *)node + 0x98);
+    return &zClass_NodeSlotFromNode(node)->primaryBounds.maxX;
 }
 
 RECOIL_FORCEINLINE const float *zClass_NodeViewSphereRadius(
     const zClass_NodePartial *node
 ) {
-    return (const float *)((const unsigned char *)node + 0x98);
+    return &zClass_NodeSlotFromNode(node)->primaryBounds.maxX;
 }
 
 namespace BBox {
-RECOIL_NOINLINE void RECOIL_FASTCALL ExpandToCorners(
+void __fastcall ExpandToCorners(
     const zBBox3f *bbox,
     zBBoxCorners *outCorners
 );
-RECOIL_NOINLINE float *RECOIL_FASTCALL MinMaxToBoundingSphere(
+float *__fastcall MinMaxToBoundingSphere(
     const zBBox3f *bbox,
     zVec3 *outCenter,
     float *outRadius
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL CornersToBoundingSphere(
+void __fastcall CornersToBoundingSphere(
     zBBoxCorners *corners,
     zVec3 *outCenter,
     float *outRadius
@@ -1982,63 +2013,63 @@ RECOIL_NOINLINE void RECOIL_FASTCALL CornersToBoundingSphere(
 } // namespace BBox
 
 namespace zTag4 {
-RECOIL_NOINLINE void RECOIL_FASTCALL Clear(zTag4Partial *tag);
+void __fastcall Clear(zTag4Partial *tag);
 }
 
 namespace zClass_Window {
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwWindowNew();
-RECOIL_NOINLINE int RECOIL_FASTCALL gwWindowSetResolution(
+zClass_NodePartial *gwWindowNew();
+int __fastcall gwWindowSetResolution(
     zClass_NodePartial *node,
     int width,
     int height
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwWindowGetResolution(
+int __fastcall gwWindowGetResolution(
     zClass_NodePartial *node,
     int *outWidth,
     int *outHeight
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwWindowSetSize(
+int __fastcall gwWindowSetSize(
     zClass_NodePartial *node,
     int width,
     int height
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwWindowGetSize(
+int __fastcall gwWindowGetSize(
     zClass_NodePartial *node,
     int *outWidth,
     int *outHeight
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwWindowSetBuffer(
+int __fastcall gwWindowSetBuffer(
     zClass_NodePartial *node,
     int bufferIndex
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwWindowSetClearPolygon(
+int __fastcall gwWindowSetClearPolygon(
     zClass_NodePartial *node,
     int enabled
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwWindowAddClearPolygonVertex(
+int __fastcall gwWindowAddClearPolygonVertex(
     zClass_NodePartial *node,
     const zVec3 *point
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwWindowCloseClearPolygon(zClass_NodePartial *node);
+int __fastcall gwWindowCloseClearPolygon(zClass_NodePartial *node);
 } // namespace zClass_Window
 
 namespace zClass_Display {
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwDisplayInit();
-RECOIL_NOINLINE int RECOIL_FASTCALL RemoveChild(
+zClass_NodePartial *gwDisplayInit();
+int __fastcall RemoveChild(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwDisplaySetSize(
+int __fastcall gwDisplaySetSize(
     zClass_NodePartial *node,
     int width,
     int height
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwDisplaySetPosition(
+int __fastcall gwDisplaySetPosition(
     zClass_NodePartial *node,
     int x,
     int y
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwDisplaySetBackgroundColor(
+int __fastcall gwDisplaySetBackgroundColor(
     zClass_NodePartial *node,
     float red,
     float green,
@@ -2047,108 +2078,108 @@ RECOIL_NOINLINE int RECOIL_FASTCALL gwDisplaySetBackgroundColor(
 } // namespace zClass_Display
 
 namespace zClass_World {
-RECOIL_NOINLINE int RECOIL_FASTCALL WriteSettingsSection(
+int __fastcall WriteSettingsSection(
     zZbdSectionCallbackCtx *callbackCtx,
     void *userData
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ReadSettingsSection(
+void __fastcall ReadSettingsSection(
     zZbdSectionCallbackCtx *callbackCtx,
     const char *worldName,
     zClass_WorldSettingsSectionRecord *settings,
     unsigned int size,
     void *userData
 );
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwWorldNew();
-RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNode(zClass_NodePartial *world);
-RECOIL_NOINLINE int RECOIL_FASTCALL FreeVirtualAreaPartitions(zClass_NodePartial *world);
-RECOIL_NOINLINE int RECOIL_FASTCALL QueueAreaUpdate(
+zClass_NodePartial *gwWorldNew();
+int __fastcall DeleteNode(zClass_NodePartial *world);
+int __fastcall FreeVirtualAreaPartitions(zClass_NodePartial *world);
+int __fastcall QueueAreaUpdate(
     zClass_NodePartial *world,
     zClass_WorldDataPartial *worldData,
     zWorldAreaPartial *area
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL RebuildAreaBounds(
+int __fastcall RebuildAreaBounds(
     zClass_WorldDataPartial *worldData,
     zWorldAreaPartial *area
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ApplyPendingFogSettings(zClass_NodePartial *world);
-RECOIL_NOINLINE int RECOIL_FASTCALL SetPendingFogState(
+int __fastcall ApplyPendingFogSettings(zClass_NodePartial *world);
+int __fastcall SetPendingFogState(
     zClass_NodePartial *world,
     int fogState
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetPendingFogColorRgb01(
+int __fastcall SetPendingFogColorRgb01(
     zClass_NodePartial *world,
     float red,
     float green,
     float blue
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetPendingFogAltitudeRange(
+int __fastcall SetPendingFogAltitudeRange(
     zClass_NodePartial *world,
     float minAlt,
     float maxAlt
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetPendingFogRange(
+int __fastcall SetPendingFogRange(
     zClass_NodePartial *world,
     float nearRange,
     float farRange
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL GetPendingFogDensity(
+int __fastcall GetPendingFogDensity(
     zClass_NodePartial *world,
     float *outDensity
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL GetPendingFogState(
+int __fastcall GetPendingFogState(
     zClass_NodePartial *world,
     int *outState
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL GetPendingFogColorRgb01(
+int __fastcall GetPendingFogColorRgb01(
     zClass_NodePartial *world,
     float *outRed,
     float *outGreen,
     float *outBlue
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL GetPendingFogRange(
+int __fastcall GetPendingFogRange(
     zClass_NodePartial *world,
     float *outNearRange,
     float *outFarRange
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL GetPendingFogAltitudeRange(
+int __fastcall GetPendingFogAltitudeRange(
     zClass_NodePartial *world,
     float *outMinAlt,
     float *outMaxAlt
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetPendingFogDensity(
+int __fastcall SetPendingFogDensity(
     zClass_NodePartial *world,
     float density
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetOrigin(
+int __fastcall gwWorldSetOrigin(
     zClass_NodePartial *world,
     float originX,
     float originZ
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetSize(
+int __fastcall gwWorldSetSize(
     zClass_NodePartial *world,
     float sizeX,
     float sizeZ
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetPartitionInclusionTolerance(
+int __fastcall gwWorldSetPartitionInclusionTolerance(
     zClass_NodePartial *world,
     float toleranceX,
     float toleranceZ
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetMaxDecFeatures(
+int __fastcall gwWorldSetMaxDecFeatures(
     zClass_NodePartial *world,
     int maxFeatures
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwWorldSetVirtualAreaPartition(
+int __fastcall gwWorldSetVirtualAreaPartition(
     zClass_NodePartial *world,
     float cellSizeX,
     float cellSizeZ
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL InitVirtualAreaPartitions(zClass_NodePartial *world);
-RECOIL_NOINLINE int RECOIL_FASTCALL SetVirtualPartition(
+int __fastcall InitVirtualAreaPartitions(zClass_NodePartial *world);
+int __fastcall SetVirtualPartition(
     zClass_NodePartial *world,
     int enabled
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL WorldRectToGridIndex(
+int __fastcall WorldRectToGridIndex(
     zClass_NodePartial *world,
     int *outGridCol,
     float minX,
@@ -2157,7 +2188,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL WorldRectToGridIndex(
     float maxZ,
     int *outGridRow
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL WorldToGridCoordsClampedEx(
+int __fastcall WorldToGridCoordsClampedEx(
     zClass_NodePartial *world,
     int *outGridCol,
     float worldX,
@@ -2167,148 +2198,148 @@ RECOIL_NOINLINE int RECOIL_FASTCALL WorldToGridCoordsClampedEx(
     int *clampedGridRowOut,
     int *insideBoundsOut
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL WorldToGridCoordsClamped(
+int __fastcall WorldToGridCoordsClamped(
     zClass_NodePartial *world,
     int *outGridCol,
     float worldX,
     float worldZ,
     int *outGridRow
 );
-RECOIL_NOINLINE zWorldAreaPartial *RECOIL_FASTCALL GetAreaPartitionAtGrid(
+zWorldAreaPartial *__fastcall GetAreaPartitionAtGrid(
     zClass_NodePartial *world,
     int gridCol,
     int gridRow
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AddChildAtGrid(
+int __fastcall AddChildAtGrid(
     zClass_NodePartial *world,
     zClass_NodePartial *child
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL EnsureGridCellDisplayPosition(
+int __fastcall EnsureGridCellDisplayPosition(
     zClass_NodePartial *world,
     int gridCol,
     int gridRow
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AddChildToGridCell(
+int __fastcall AddChildToGridCell(
     zClass_NodePartial *world,
     zClass_NodePartial *child,
     int gridCol,
     int gridRow
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL RemoveChildAtGrid(
+int __fastcall RemoveChildAtGrid(
     zClass_NodePartial *world,
     zClass_NodePartial *child
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AddLight(
+int __fastcall AddLight(
     zClass_NodePartial *world,
     zClass_NodePartial *light
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL RemoveLight(
+int __fastcall RemoveLight(
     zClass_NodePartial *world,
     zClass_NodePartial *light
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL InitLightPointInPolygonXZ(zClass_NodePartial *world);
-RECOIL_NOINLINE int RECOIL_FASTCALL UpdateAllLights(zClass_NodePartial *world);
-RECOIL_NOINLINE int RECOIL_FASTCALL AddSound(
+int __fastcall InitLightPointInPolygonXZ(zClass_NodePartial *world);
+int __fastcall UpdateAllLights(zClass_NodePartial *world);
+int __fastcall AddSound(
     zClass_NodePartial *world,
     zClass_NodePartial *sound
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL RemoveSound(
+int __fastcall RemoveSound(
     zClass_NodePartial *world,
     zClass_NodePartial *sound
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL UpdateAllSounds(zClass_NodePartial *world);
+int __fastcall UpdateAllSounds(zClass_NodePartial *world);
 } // namespace zClass_World
 
 namespace zClass_Object3D {
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwObject3DInit();
-RECOIL_NOINLINE int RECOIL_FASTCALL RenderTraverse(
+zClass_NodePartial *gwObject3DInit();
+int __fastcall RenderTraverse(
     zClass_NodePartial *node,
     int siblingCountHint
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL PropagateTransformDirty(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DSetVisibleFlag(
+int __fastcall PropagateTransformDirty(zClass_NodePartial *node);
+int __fastcall gwObject3DSetVisibleFlag(
     zClass_NodePartial *node,
     int visible
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DSetColorAlpha(
+int __fastcall gwObject3DSetColorAlpha(
     zClass_NodePartial *node,
     zColorRgb *color,
     float alpha
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DSetAlphaScale(
+int __fastcall gwObject3DSetAlphaScale(
     zClass_NodePartial *node,
     float alphaScale
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DGetAlphaScale(
+int __fastcall gwObject3DGetAlphaScale(
     zClass_NodePartial *node,
     float *outAlphaScale
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DSetLitFlag(
+int __fastcall gwObject3DSetLitFlag(
     zClass_NodePartial *node,
     int lit
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DSetScale(
+int __fastcall gwObject3DSetScale(
     zClass_NodePartial *node,
     float x,
     float y,
     float z
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DGetScale(
+int __fastcall gwObject3DGetScale(
     zClass_NodePartial *node,
     float *outX,
     float *outY,
     float *outZ
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DGetRotation(
+int __fastcall gwObject3DGetRotation(
     zClass_NodePartial *node,
     float *outX,
     float *outY,
     float *outZ
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DSetRotation(
+int __fastcall gwObject3DSetRotation(
     zClass_NodePartial *node,
     float x,
     float y,
     float z
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DTranslateRotation(
+int __fastcall gwObject3DTranslateRotation(
     zClass_NodePartial *node,
     float dx,
     float dy,
     float dz
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DGetPosition(
+int __fastcall gwObject3DGetPosition(
     zClass_NodePartial *node,
     float *outX,
     float *outY,
     float *outZ
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DSetPosition(
+int __fastcall gwObject3DSetPosition(
     zClass_NodePartial *node,
     float x,
     float y,
     float z
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DTranslatePosition(
+int __fastcall gwObject3DTranslatePosition(
     zClass_NodePartial *node,
     float dx,
     float dy,
     float dz
 );
-RECOIL_NOINLINE float *RECOIL_FASTCALL gwObject3DGetMatrixPtr(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DSetMatrix(
+float *__fastcall gwObject3DGetMatrixPtr(zClass_NodePartial *node);
+int __fastcall gwObject3DSetMatrix(
     zClass_NodePartial *node,
     float *matrix
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DAddChild(
+int __fastcall gwObject3DAddChild(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL RemoveChild(
+int __fastcall RemoveChild(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNode(zClass_NodePartial *node);
+int __fastcall DeleteNode(zClass_NodePartial *node);
 } // namespace zClass_Object3D
 
 struct zClass_Object3D_ModelRefLerpTask {
@@ -2377,11 +2408,11 @@ extern "C" {
 extern zClass_Object3D_ModelRefLerpQueueState g_ModelRefLerpQueueState;
 }
 
-typedef void(RECOIL_FASTCALL *zClass_Object3D_ModelRefLerpCallback)(void *callbackCtx);
+typedef void(__fastcall *zClass_Object3D_ModelRefLerpCallback)(void *callbackCtx);
 
 namespace zClass_Object3D_ModelRefLerpQueue {
-RECOIL_NOINLINE void RECOIL_CDECL ClearGlobalState();
-RECOIL_NOINLINE void RECOIL_FASTCALL Add(
+void ClearGlobalState();
+void __fastcall Add(
     zClass_NodePartial *node,
     void *callbackCtx,
     void *onComplete,
@@ -2389,29 +2420,29 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Add(
     float targetModelRef,
     float durationSec
 );
-RECOIL_NOINLINE void RECOIL_CDECL Update();
-RECOIL_NOINLINE void RECOIL_CDECL Reset();
+void Update();
+void Reset();
 } // namespace zClass_Object3D_ModelRefLerpQueue
 
 namespace zClass_Lod {
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwLodNew();
-RECOIL_NOINLINE int RECOIL_FASTCALL RenderTraverse(
+zClass_NodePartial *gwLodNew();
+int __fastcall RenderTraverse(
     zClass_NodePartial *node,
     int siblingCountHint
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwLodAddChild(
+int __fastcall gwLodAddChild(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL RemoveChild(
+int __fastcall RemoveChild(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetComputeOwnDistance(
+int __fastcall SetComputeOwnDistance(
     zClass_NodePartial *node,
     int enabled
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetTargetNodeAndRange(
+int __fastcall SetTargetNodeAndRange(
     zClass_NodePartial *node,
     zClass_NodePartial *target,
     float range
@@ -2419,68 +2450,68 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetTargetNodeAndRange(
 } // namespace zClass_Lod
 
 namespace zClass_Light {
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwLightNew();
-RECOIL_NOINLINE int RECOIL_FASTCALL RenderTraverse(
+zClass_NodePartial *gwLightNew();
+int __fastcall RenderTraverse(
     zClass_NodePartial *node,
     int siblingCountHint
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNode(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL RemoveChild(
+int __fastcall DeleteNode(zClass_NodePartial *node);
+int __fastcall RemoveChild(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetIntensity(
+int __fastcall gwLightSetIntensity(
     zClass_NodePartial *node,
     float intensity
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetFalloff(
+int __fastcall gwLightSetFalloff(
     zClass_NodePartial *node,
     float falloff
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetConeAngle(
+int __fastcall gwLightSetConeAngle(
     zClass_NodePartial *node,
     unsigned int coneAngleBits
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetPointMode(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetDirectionalMode(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetParam(
+int __fastcall gwLightSetPointMode(zClass_NodePartial *node);
+int __fastcall gwLightSetDirectionalMode(zClass_NodePartial *node);
+int __fastcall gwLightSetParam(
     zClass_NodePartial *node,
     int param
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetRange(
+int __fastcall gwLightSetRange(
     zClass_NodePartial *node,
     float rangeA,
     float rangeB
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwLightGetRange(
+int __fastcall gwLightGetRange(
     zClass_NodePartial *node,
     float *outRange1,
     float *outRange2
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetPosition(
+int __fastcall gwLightSetPosition(
     zClass_NodePartial *node,
     float x,
     float y,
     float z
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetRotation(
+int __fastcall gwLightSetRotation(
     zClass_NodePartial *node,
     float x,
     float y,
     float z
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ComputeWorldTransform(
+int __fastcall ComputeWorldTransform(
     zClass_NodePartial *node,
     zClass_LightDataPartial *data
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwLightUpdate(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL gwLightGetSpecularColor(
+int __fastcall gwLightUpdate(zClass_NodePartial *node);
+int __fastcall gwLightGetSpecularColor(
     zClass_NodePartial *node,
     float *outRed,
     float *outGreen,
     float *outBlue
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetSpecularColor(
+int __fastcall gwLightSetSpecularColor(
     zClass_NodePartial *node,
     float red,
     float green,
@@ -2489,230 +2520,230 @@ RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetSpecularColor(
 } // namespace zClass_Light
 
 namespace zClass_Camera {
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwCameraNew();
-RECOIL_NOINLINE int RECOIL_FASTCALL RenderTraverse(
+zClass_NodePartial *gwCameraNew();
+int __fastcall RenderTraverse(
     zClass_NodePartial *node,
     int siblingCountHint
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraAddChild(
+int __fastcall gwCameraAddChild(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraRemoveChild(
+int __fastcall gwCameraRemoveChild(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraSetFlagBit0(
+int __fastcall gwCameraSetFlagBit0(
     zClass_NodePartial *node,
     int enabled
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetTargetNode(zClass_NodePartial *target);
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL SetActiveCamera(zClass_NodePartial *camera);
-RECOIL_NOINLINE int RECOIL_FASTCALL SetObjectHseTestEnabled(int enabled);
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraSetWorld(
+int __fastcall SetTargetNode(zClass_NodePartial *target);
+zClass_NodePartial *__fastcall SetActiveCamera(zClass_NodePartial *camera);
+int __fastcall SetObjectHseTestEnabled(int enabled);
+int __fastcall gwCameraSetWorld(
     zClass_NodePartial *camera,
     zClass_NodePartial *world
 );
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL gwCameraGetWorld(zClass_NodePartial *camera);
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraSetWindow(
+zClass_NodePartial *__fastcall gwCameraGetWorld(zClass_NodePartial *camera);
+int __fastcall gwCameraSetWindow(
     zClass_NodePartial *camera,
     zClass_NodePartial *window
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ActivateChildren(
+int __fastcall ActivateChildren(
     zClass_NodePartial *camera,
     zClass_CameraDataPartial *data
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraSetPosition(
+int __fastcall gwCameraSetPosition(
     zClass_NodePartial *camera,
     float x,
     float y,
     float z
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraTranslate(
+int __fastcall gwCameraTranslate(
     zClass_NodePartial *camera,
     float dx,
     float dy,
     float dz
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraGetPosition(
+int __fastcall gwCameraGetPosition(
     zClass_NodePartial *camera,
     float *outX,
     float *outY,
     float *outZ
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraSetTarget(
+int __fastcall gwCameraSetTarget(
     zClass_NodePartial *camera,
     float x,
     float y,
     float z
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraTranslateTarget(
+int __fastcall gwCameraTranslateTarget(
     zClass_NodePartial *camera,
     float dx,
     float dy,
     float dz
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraGetTarget(
+int __fastcall gwCameraGetTarget(
     zClass_NodePartial *camera,
     float *outX,
     float *outY,
     float *outZ
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraSetNearFarClip(
+int __fastcall gwCameraSetNearFarClip(
     zClass_NodePartial *camera,
     float nearClip,
     float farClip
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraGetNearFarClip(
+int __fastcall gwCameraGetNearFarClip(
     zClass_NodePartial *camera,
     float *outNear,
     float *outFar
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraSetViewport(
+int __fastcall gwCameraSetViewport(
     zClass_NodePartial *camera,
     float viewportWidth,
     float viewportHeight
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraGetViewport(
+int __fastcall gwCameraGetViewport(
     zClass_NodePartial *camera,
     float *outWidth,
     float *outHeight
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraGetFOV(
+int __fastcall gwCameraGetFOV(
     zClass_NodePartial *camera,
     float *outFovX,
     float *outFovY
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraSetFOV(
+int __fastcall gwCameraSetFOV(
     zClass_NodePartial *camera,
     float fovX,
     float fovY
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraGetClipDistance(
+int __fastcall gwCameraGetClipDistance(
     zClass_NodePartial *camera,
     float *outClipDistance
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraSetClipDistance(
+int __fastcall gwCameraSetClipDistance(
     zClass_NodePartial *camera,
     float clipDistance
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraSetHorizon(
+int __fastcall gwCameraSetHorizon(
     zClass_NodePartial *camera,
     zClass_NodePartial *horizonNode
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraSetHorizonXZ(
+int __fastcall gwCameraSetHorizonXZ(
     zClass_NodePartial *camera,
     zClass_NodePartial *horizonXZNode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SetViewDistance(
+void __fastcall SetViewDistance(
     int enableAutoClip,
     float distance
 );
-RECOIL_NOINLINE float RECOIL_FASTCALL FastAngleXZ(
+float __fastcall FastAngleXZ(
     zVec3 *point1,
     zVec3 *point2
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FindConvexHullXZ(
+int __fastcall FindConvexHullXZ(
     zVec3 *points,
     int count
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildFrustumGridTiles(
+int __fastcall BuildFrustumGridTiles(
     zClass_NodePartial *world,
     zClass_WorldDataPartial *worldData,
     zClass_CameraDataPartial *cameraData
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildFrustumGridTilesFromParams(
+int __fastcall BuildFrustumGridTilesFromParams(
     zClass_NodePartial *world,
     zClass_WorldDataPartial *worldData,
     zClass_CameraDataPartial *cameraData
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL RenderFrustumGridTiles(
+int __fastcall RenderFrustumGridTiles(
     zClass_NodePartial *world,
     zClass_NodePartial *camera,
     zClass_CameraDataPartial *cameraData
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RenderOverlayNodes(zClass_NodePartial *world);
-RECOIL_NOINLINE void RECOIL_FASTCALL RenderWorld(
+void __fastcall RenderOverlayNodes(zClass_NodePartial *world);
+void __fastcall RenderWorld(
     zClass_NodePartial *world,
     zClass_NodePartial *camera,
     zClass_CameraDataPartial *cameraData
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraSetVariantTagOverride(
+int __fastcall gwCameraSetVariantTagOverride(
     zClass_NodePartial *camera,
     zTag4Partial *variantTag
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL RenderScene(
+int __fastcall RenderScene(
     zClass_NodePartial *camera,
     int updateFxPass3Local
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildWorldTransform(
+int __fastcall BuildWorldTransform(
     zClass_NodePartial *camera,
     zClass_CameraDataPartial *data,
     zVec3 *posOffset
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL UpdateImpl(
+int __fastcall UpdateImpl(
     zClass_NodePartial *camera,
     zVec3 *posOffset
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraUpdate(zClass_NodePartial *camera);
-RECOIL_NOINLINE void RECOIL_CDECL SyncViewContextPositions();
+int __fastcall gwCameraUpdate(zClass_NodePartial *camera);
+void SyncViewContextPositions();
 } // namespace zClass_Camera
 
 namespace zClass_Node {
-RECOIL_NOINLINE int RECOIL_FASTCALL ClearPickupFlagsRecursive(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL SetPickupFlagsRecursive(zClass_NodePartial *node);
-RECOIL_NOINLINE void RECOIL_FASTCALL PropagateTransformDirtyRecursive(zClass_NodePartial *self);
-RECOIL_NOINLINE void RECOIL_FASTCALL MaskExtraFlagsRecursive(
+int __fastcall ClearPickupFlagsRecursive(zClass_NodePartial *node);
+int __fastcall SetPickupFlagsRecursive(zClass_NodePartial *node);
+void __fastcall PropagateTransformDirtyRecursive(zClass_NodePartial *self);
+void __fastcall MaskExtraFlagsRecursive(
     zClass_NodePartial *self,
     int mask
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL PropagateExtraFlagsRecursive(
+void __fastcall PropagateExtraFlagsRecursive(
     zClass_NodePartial *self,
     int flags
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL PropagateFlagsRecursive(
+void __fastcall PropagateFlagsRecursive(
     zClass_NodePartial *self,
     int flags
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SetContextRecursive(
+void __fastcall SetContextRecursive(
     zClass_NodePartial *self,
     zClass_NodePartial *context,
     int flagMask
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SetDiFlagBit0Recursive(
+void __fastcall SetDiFlagBit0Recursive(
     zClass_NodePartial *node,
     int enabled
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HasRenderableDiPredicate(zClass_NodePartial *node);
-RECOIL_NOINLINE void RECOIL_FASTCALL SetMaterialFlagBit9ForFlagBit0EntriesRecursive(
+int __fastcall HasRenderableDiPredicate(zClass_NodePartial *node);
+void __fastcall SetMaterialFlagBit9ForFlagBit0EntriesRecursive(
     zClass_NodePartial *node,
     int enabled
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL InvalidateFlagBit8MaterialImagesRecursive(
+void __fastcall InvalidateFlagBit8MaterialImagesRecursive(
     zClass_NodePartial *node
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL LoadFlagBit8MaterialImagesAndTexturePack(
+void __fastcall LoadFlagBit8MaterialImagesAndTexturePack(
     zClass_NodePartial *node
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL AssignInt32ToDiRecursive(
+void __fastcall AssignInt32ToDiRecursive(
     zClass_NodePartial *node,
     int value
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL AssignDamageHandlerRecursiveIfMissing(
+void __fastcall AssignDamageHandlerRecursiveIfMissing(
     zClass_NodePartial *node,
     OptCatalogDamageHandlerPartial *handler
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ClearDamageHandlerRecursive(
+void __fastcall ClearDamageHandlerRecursive(
     zClass_NodePartial *node,
     OptCatalogDamageHandlerPartial *handler
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetDamageHitCallback(
+int __fastcall SetDamageHitCallback(
     void *callback,
     zClass_NodePartial *node,
     void *context
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ClearDamageHandler(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL SetDamageTimerCallback(
+int __fastcall ClearDamageHandler(zClass_NodePartial *node);
+int __fastcall SetDamageTimerCallback(
     void *callback,
     zClass_NodePartial *node,
     void *context
@@ -2720,65 +2751,65 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetDamageTimerCallback(
 } // namespace zClass_Node
 
 namespace zClass_TypeList {
-RECOIL_NOINLINE zClass_TypeListLink *RECOIL_CDECL AllocLink();
-RECOIL_NOINLINE void RECOIL_FASTCALL FreeLink(zClass_TypeListLink *link);
-RECOIL_NOINLINE void RECOIL_CDECL FreeAll();
-RECOIL_NOINLINE void RECOIL_FASTCALL ProcessPendingRemovals(int bucket);
-RECOIL_NOINLINE int RECOIL_FASTCALL CountNodes(int bucket);
-RECOIL_NOINLINE void RECOIL_FASTCALL PrintBucket(int bucket);
-RECOIL_NOINLINE zClass_TypeListLink *RECOIL_FASTCALL GetBucketHead(int bucket);
-RECOIL_NOINLINE int RECOIL_FASTCALL MarkPendingRemoval(
+zClass_TypeListLink *AllocLink();
+void __fastcall FreeLink(zClass_TypeListLink *link);
+void FreeAll();
+void __fastcall ProcessPendingRemovals(int bucket);
+int __fastcall CountNodes(int bucket);
+void __fastcall PrintBucket(int bucket);
+zClass_TypeListLink *__fastcall GetBucketHead(int bucket);
+int __fastcall MarkPendingRemoval(
     int bucket,
     zClass_NodePartial *node
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL Insert(
+int __fastcall Insert(
     int bucket,
     zClass_NodePartial *node
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL InsertChildNodes(
+int __fastcall InsertChildNodes(
     int bucket,
     zClass_NodePartial *node
 );
-RECOIL_NOINLINE void RECOIL_CDECL UpdateAllBuckets();
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateBucket(zClass_TypeListLink *bucket);
-RECOIL_NOINLINE int RECOIL_CDECL UpdateQueuedTrees();
-RECOIL_NOINLINE int RECOIL_CDECL UpdateSequences();
-RECOIL_NOINLINE int RECOIL_CDECL UpdateAnimations();
+void UpdateAllBuckets();
+void __fastcall UpdateBucket(zClass_TypeListLink *bucket);
+int UpdateQueuedTrees();
+int UpdateSequences();
+int UpdateAnimations();
 } // namespace zClass_TypeList
 
 namespace gwNode {
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildNodeToAncestorMatrix(
+int __fastcall BuildNodeToAncestorMatrix(
     zClass_NodePartial *node,
     int matMode
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL GetWorldPosition(
+int __fastcall GetWorldPosition(
     zClass_NodePartial *node,
     zVec3 *outPosition
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL TransformPoint(
+int __fastcall TransformPoint(
     zClass_NodePartial *node,
     zVec3 *point
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL GetWorldPosAndOrientation(
+int __fastcall GetWorldPosAndOrientation(
     zClass_NodePartial *node,
     zVec3 *inOutPosition,
     zVec3 *outOrientation
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL UpdateSubtree(zClass_NodePartial *node);
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateTree(zClass_NodePartial *node);
+int __fastcall UpdateSubtree(zClass_NodePartial *node);
+void __fastcall UpdateTree(zClass_NodePartial *node);
 } // namespace gwNode
 
 namespace zClass_NodeList {
-RECOIL_NOINLINE int RECOIL_FASTCALL Insert(zClass_NodePartial *node);
-RECOIL_NOINLINE void RECOIL_CDECL ProcessPendingFrees();
+int __fastcall Insert(zClass_NodePartial *node);
+void ProcessPendingFrees();
 } // namespace zClass_NodeList
 
 namespace zClass_List {
-RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNodeFromLists(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL gwListDeleteANode(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL DeleteAllOfType(int bucket);
-RECOIL_NOINLINE int RECOIL_CDECL RenderActiveCameras();
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL IterateBucketFiltered(
+int __fastcall DeleteNodeFromLists(zClass_NodePartial *node);
+int __fastcall gwListDeleteANode(zClass_NodePartial *node);
+int __fastcall DeleteAllOfType(int bucket);
+int RenderActiveCameras();
+zClass_NodePartial *__fastcall IterateBucketFiltered(
     const char *filterText,
     int bucket,
     zClass_NodePredicate predicate
@@ -2786,253 +2817,253 @@ RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL IterateBucketFiltered(
 } // namespace zClass_List
 
 namespace zClass {
-RECOIL_NOINLINE void RECOIL_FASTCALL SetNodeArraySize(int size);
-RECOIL_NOINLINE int RECOIL_CDECL IsInitialized();
-RECOIL_NOINLINE int RECOIL_CDECL Init();
-RECOIL_NOINLINE int RECOIL_CDECL ResetCurrentZbdPath();
-RECOIL_NOINLINE int RECOIL_CDECL ShutdownCore();
-RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
-RECOIL_NOINLINE int RECOIL_CDECL ProcessDeferredWork();
-RECOIL_NOINLINE int RECOIL_FASTCALL NodePtrToValidatedIndex(zClass_NodePartial *node);
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL FindByTypeAndName(
+void __fastcall SetNodeArraySize(int size);
+int IsInitialized();
+int Init();
+int ResetCurrentZbdPath();
+int ShutdownCore();
+int Shutdown();
+int ProcessDeferredWork();
+int __fastcall NodePtrToValidatedIndex(zClass_NodePartial *node);
+zClass_NodePartial *__fastcall FindByTypeAndName(
     int bucket,
     const char *name
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FindNextByTypePrefix_Predicate(zClass_NodePartial *node);
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL FindNextByTypePrefix(
+int __fastcall FindNextByTypePrefix_Predicate(zClass_NodePartial *node);
+zClass_NodePartial *__fastcall FindNextByTypePrefix(
     const char *prefixText,
     int bucket
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AnyNodeMatchesPredicateRecursive(
+int __fastcall AnyNodeMatchesPredicateRecursive(
     zClass_NodePartial *root,
     zClass_NodePredicate predicate
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL RemoveChildChecked(
+int __fastcall RemoveChildChecked(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
 );
 } // namespace zClass
 
 namespace zClass_Class {
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL AllocNodeFromFreeList();
-RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNodeByType(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeUpdate(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_CDECL gwNodeUpdateAll();
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeUpdateDisplayInstance(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeGetBBox(
+zClass_NodePartial *AllocNodeFromFreeList();
+int __fastcall DeleteNodeByType(zClass_NodePartial *node);
+int __fastcall gwNodeUpdate(zClass_NodePartial *node);
+int gwNodeUpdateAll();
+int __fastcall gwNodeUpdateDisplayInstance(zClass_NodePartial *node);
+int __fastcall gwNodeGetBBox(
     zClass_NodePartial *node,
     zBBox3f *outBBox
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeGetWorldBBoxCorners(
+int __fastcall gwNodeGetWorldBBoxCorners(
     zClass_NodePartial *node,
     zBBoxCorners *outCorners
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeGetViewBBoxCorners(
+int __fastcall gwNodeGetViewBBoxCorners(
     zClass_NodePartial *node,
     zBBoxCorners *outCorners
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeComputeChildBBox(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeRecalcBBox(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetActive(
+int __fastcall gwNodeComputeChildBBox(zClass_NodePartial *node);
+int __fastcall gwNodeRecalcBBox(zClass_NodePartial *node);
+int __fastcall gwNodeSetActive(
     zClass_NodePartial *node,
     int active
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetFlag16(
+int __fastcall gwNodeSetFlag16(
     zClass_NodePartial *node,
     int value
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetFlag17(
+int __fastcall gwNodeSetFlag17(
     zClass_NodePartial *node,
     int value
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetDisplayInstance(
+int __fastcall gwNodeSetDisplayInstance(
     zClass_NodePartial *node,
     zDiPartial *displayInstance
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetName(
+int __fastcall gwNodeSetName(
     zClass_NodePartial *node,
     const char *name
 );
-RECOIL_NOINLINE char *RECOIL_FASTCALL gwNodeGetName(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeGetUserData(
+char *__fastcall gwNodeGetName(zClass_NodePartial *node);
+int __fastcall gwNodeGetUserData(
     zClass_NodePartial *node,
     unsigned int *outData
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetActionCallback(
+int __fastcall gwNodeSetActionCallback(
     zClass_NodePartial *node,
     void *actionCallback
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetActionCallbackTail(
+int __fastcall gwNodeSetActionCallbackTail(
     zClass_NodePartial *node,
     void *actionCallback
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetPriority(
+int __fastcall gwNodeSetPriority(
     zClass_NodePartial *node,
     int priority
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetCellPickable(
+int __fastcall gwNodeSetCellPickable(
     zClass_NodePartial *node,
     int value
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeGetCellPickable(
+int __fastcall gwNodeGetCellPickable(
     zClass_NodePartial *node,
     int *outValue
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeGetNodeType(
+int __fastcall gwNodeGetNodeType(
     zClass_NodePartial *node,
     int *outValue
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetRaycastable(
+int __fastcall gwNodeSetRaycastable(
     zClass_NodePartial *node,
     int value
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeGetRaycastable(
+int __fastcall gwNodeGetRaycastable(
     zClass_NodePartial *node,
     int *outValue
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetPickable(
+int __fastcall gwNodeSetPickable(
     zClass_NodePartial *node,
     int value
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeGetPickable(
+int __fastcall gwNodeGetPickable(
     zClass_NodePartial *node,
     int *outValue
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetHasHitCallback(
+int __fastcall gwNodeSetHasHitCallback(
     zClass_NodePartial *node,
     int value
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetBypassFarClip(
+int __fastcall gwNodeSetBypassFarClip(
     zClass_NodePartial *node,
     int value
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetNodeType(
+int __fastcall gwNodeSetNodeType(
     zClass_NodePartial *node,
     int nodeType
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeClearVariantGate(
+int __fastcall gwNodeClearVariantGate(
     zClass_NodePartial *node,
     int value
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeSetVertexAlphaOverride(
+int __fastcall gwNodeSetVertexAlphaOverride(
     zClass_NodePartial *node,
     int value
 );
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL gwNodeGetRoot(zClass_NodePartial *node);
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL gwNodeGetWorldChild(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeFindNextByName_Predicate(zClass_NodePartial *node);
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL gwNodeFindNextByName(
+zClass_NodePartial *__fastcall gwNodeGetRoot(zClass_NodePartial *node);
+zClass_NodePartial *__fastcall gwNodeGetWorldChild(zClass_NodePartial *node);
+int __fastcall gwNodeFindNextByName_Predicate(zClass_NodePartial *node);
+zClass_NodePartial *__fastcall gwNodeFindNextByName(
     const char *name,
     int bucket
 );
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL FindSubNodeByName(
+zClass_NodePartial *__fastcall FindSubNodeByName(
     zClass_NodePartial *root,
     const char *name
 );
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL FindNodeRecursiveByName(
+zClass_NodePartial *__fastcall FindNodeRecursiveByName(
     zClass_NodePartial *root,
     const char *name
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetSingleParentFlagRecursive(
+int __fastcall SetSingleParentFlagRecursive(
     zClass_NodePartial *node,
     int setFlag
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AddChildValidated(
+int __fastcall AddChildValidated(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL RemoveChildValidated(
+int __fastcall RemoveChildValidated(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AddChild(
+int __fastcall AddChild(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AddChildGeneric(
+int __fastcall AddChildGeneric(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL RemoveChild(
+int __fastcall RemoveChild(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL RemoveChildGeneric(
+int __fastcall RemoveChildGeneric(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FreeNodeToFreeList(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL TryFreeNode(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeRenderDispatch(
+int __fastcall FreeNodeToFreeList(zClass_NodePartial *node);
+int __fastcall TryFreeNode(zClass_NodePartial *node);
+int __fastcall gwNodeRenderDispatch(
     zClass_NodePartial *node,
     int siblingCountHint
 );
 } // namespace zClass_Class
 
 namespace zClass_Sound {
-RECOIL_NOINLINE int RECOIL_FASTCALL RenderTraverse(
+int __fastcall RenderTraverse(
     zClass_NodePartial *node,
     int siblingCountHint
 );
 }
 
 namespace zClass_Animate {
-RECOIL_NOINLINE int RECOIL_FASTCALL RenderTraverse(
+int __fastcall RenderTraverse(
     zClass_NodePartial *node,
     int siblingCountHint
 );
 }
 
 namespace zClass_Sequence {
-RECOIL_NOINLINE int RECOIL_FASTCALL RenderTraverse(
+int __fastcall RenderTraverse(
     zClass_NodePartial *node,
     int siblingCountHint
 );
 }
 
 namespace zClass_Switch {
-RECOIL_NOINLINE int RECOIL_FASTCALL RenderTraverse(
+int __fastcall RenderTraverse(
     zClass_NodePartial *node,
     int siblingCountHint
 );
 }
 
 namespace zClass_Util {
-RECOIL_NOINLINE int RECOIL_FASTCALL DestroyNodeRecursive(zClass_NodePartial *node);
+int __fastcall DestroyNodeRecursive(zClass_NodePartial *node);
 }
 
 namespace zClass_cls_util {
-RECOIL_NOINLINE int RECOIL_FASTCALL CopyNodeDisplayInstance(
+int __fastcall CopyNodeDisplayInstance(
     zClass_NodePartial *source,
     zClass_NodePartial *dest
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL CopyNodeBaseData(
+int __fastcall CopyNodeBaseData(
     zClass_NodePartial *source,
     zClass_NodePartial *dest
 );
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopyLightNode_Unimplemented(
+zClass_NodePartial *__fastcall CopyLightNode_Unimplemented(
     zClass_NodePartial *source
 );
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopySoundNode_Unimplemented(
+zClass_NodePartial *__fastcall CopySoundNode_Unimplemented(
     zClass_NodePartial *source
 );
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopyCameraNode(zClass_NodePartial *source);
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopyObject3DNode(zClass_NodePartial *source);
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopyAnimateNode_Unimplemented(
+zClass_NodePartial *__fastcall CopyCameraNode(zClass_NodePartial *source);
+zClass_NodePartial *__fastcall CopyObject3DNode(zClass_NodePartial *source);
+zClass_NodePartial *__fastcall CopyAnimateNode_Unimplemented(
     zClass_NodePartial *source
 );
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopyLodNode(zClass_NodePartial *source);
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopySequenceNode_Unimplemented(
+zClass_NodePartial *__fastcall CopyLodNode(zClass_NodePartial *source);
+zClass_NodePartial *__fastcall CopySequenceNode_Unimplemented(
     zClass_NodePartial *source
 );
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopySwitchNode_Stub(zClass_NodePartial *source);
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopyNodeDispatch(zClass_NodePartial *source);
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopyNodeWithCloneOptions(
+zClass_NodePartial *__fastcall CopySwitchNode_Stub(zClass_NodePartial *source);
+zClass_NodePartial *__fastcall CopyNodeDispatch(zClass_NodePartial *source);
+zClass_NodePartial *__fastcall CopyNodeWithCloneOptions(
     zClass_NodePartial *source,
     int cloneDiMode,
     int diArg0
 );
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopyNode(
+zClass_NodePartial *__fastcall CopyNode(
     zClass_NodePartial *source,
     int cloneDiMode,
     int diArg0,
@@ -3041,137 +3072,137 @@ RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopyNode(
 } // namespace zClass_cls_util
 
 namespace zClass_Sound {
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwSoundNew();
-RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNode(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL RemoveChild(
+zClass_NodePartial *gwSoundNew();
+int __fastcall DeleteNode(zClass_NodePartial *node);
+int __fastcall RemoveChild(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetSampleSetByName(
+int __fastcall SetSampleSetByName(
     zClass_NodePartial *node,
     const char *name
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwSoundSetActive(
+int __fastcall gwSoundSetActive(
     zClass_NodePartial *node,
     int active
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwSoundSetPosition(
+int __fastcall gwSoundSetPosition(
     zClass_NodePartial *node,
     float x,
     float y,
     float z
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL gwSoundGetPosition(
+int __fastcall gwSoundGetPosition(
     zClass_NodePartial *node,
     float *outX,
     float *outY,
     float *outZ
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL UpdatePlayback(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL ComputeWorldTransform(
+int __fastcall UpdatePlayback(zClass_NodePartial *node);
+int __fastcall ComputeWorldTransform(
     zClass_NodePartial *node,
     zClass_SoundDataPartial *soundData
 );
 } // namespace zClass_Sound
 
 namespace zClass_Animate {
-RECOIL_NOINLINE short RECOIL_FASTCALL AdvanceTime(
+short __fastcall AdvanceTime(
     zClass_AnimateRuntimePartial *runtime,
     float deltaTime
 );
-RECOIL_NOINLINE short RECOIL_FASTCALL SampleTransform(zClass_AnimateRuntimePartial *runtime);
-RECOIL_NOINLINE int RECOIL_FASTCALL UpdateNode(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL AddChild(
+short __fastcall SampleTransform(zClass_AnimateRuntimePartial *runtime);
+int __fastcall UpdateNode(zClass_NodePartial *node);
+int __fastcall AddChild(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNode(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL RemoveChild(
+int __fastcall DeleteNode(zClass_NodePartial *node);
+int __fastcall RemoveChild(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
 );
 } // namespace zClass_Animate
 
 namespace zClass_Sequence {
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwSequenceNew();
-RECOIL_NOINLINE int RECOIL_FASTCALL gwSequenceAddChild(
+zClass_NodePartial *gwSequenceNew();
+int __fastcall gwSequenceAddChild(
     zClass_NodePartial *parent,
     zClass_NodePartial *child,
     int insertIndex,
     float delay
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetActive(
+int __fastcall SetActive(
     zClass_NodePartial *node,
     int active
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetRepeat(
+int __fastcall SetRepeat(
     zClass_NodePartial *node,
     int repeat
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetLoop(
+int __fastcall SetLoop(
     zClass_NodePartial *node,
     int loop
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetPause(
+int __fastcall SetPause(
     zClass_NodePartial *node,
     int paused
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL RemoveChild(
+int __fastcall RemoveChild(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL Update(zClass_NodePartial *node);
+int __fastcall Update(zClass_NodePartial *node);
 } // namespace zClass_Sequence
 
 namespace Light {
-RECOIL_NOINLINE int RECOIL_CDECL InitThermalGlowPool();
-RECOIL_NOINLINE int RECOIL_CDECL DestroyThermalGlowPool();
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL AllocFromFreeListAndAttach(
+int InitThermalGlowPool();
+int DestroyThermalGlowPool();
+zClass_NodePartial *__fastcall AllocFromFreeListAndAttach(
     zColorRgb *specularColor
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ReturnToFreeList(zClass_NodePartial *lightNode);
+void __fastcall ReturnToFreeList(zClass_NodePartial *lightNode);
 } // namespace Light
 
 namespace GameZ {
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL WriteZBDFile(const char *filename);
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL ReadZBDFile(const char *filename);
-RECOIL_NOINLINE FILE *RECOIL_FASTCALL OpenAndReadZBDHeader(
+RECOIL_NO_GS int __fastcall WriteZBDFile(const char *filename);
+RECOIL_NO_GS int __fastcall ReadZBDFile(const char *filename);
+FILE *__fastcall OpenAndReadZBDHeader(
     const char *filename,
     zClass_ZbdHeader *outHeader
 );
 } // namespace GameZ
 
 namespace GameZ_ZBD {
-RECOIL_NOINLINE int RECOIL_FASTCALL NodePtrToIndex(zClass_NodePartial *node);
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL NodeIndexToPtr(int index);
-RECOIL_NOINLINE int RECOIL_FASTCALL WriteNodeRefListIndices(
+int __fastcall NodePtrToIndex(zClass_NodePartial *node);
+zClass_NodePartial *__fastcall NodeIndexToPtr(int index);
+int __fastcall WriteNodeRefListIndices(
     zClass_NodePartial **nodeRefList,
     int entryCount,
     void *stream
 );
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL WriteSingleNodeClassData(
+RECOIL_NO_GS int __fastcall WriteSingleNodeClassData(
     zClass_NodePartial *node,
     void *stream
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL WriteNodeTable(void *stream);
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadNodeRefListIndices(
+int __fastcall WriteNodeTable(void *stream);
+int __fastcall ReadNodeRefListIndices(
     zClass_NodePartial **nodeRefList,
     int entryCount,
     void *stream
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadSingleNodeClassData(
+int __fastcall ReadSingleNodeClassData(
     zClass_NodePartial *node,
     void *stream
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadNodeTable(
+int __fastcall ReadNodeTable(
     int nodeCount,
     void *stream
 );
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL ReloadDisplayInstancesFromCurrentPath_Local(
+RECOIL_NO_GS int __fastcall ReloadDisplayInstancesFromCurrentPath_Local(
     zClass_NodePartial *node,
     int recurseChildren
 );
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL ReloadDisplayInstancesRecursive_Local(
+RECOIL_NO_GS int __fastcall ReloadDisplayInstancesRecursive_Local(
     void *stream,
     zClass_ZbdHeader *zbdHeader,
     zClass_NodePartial *node,

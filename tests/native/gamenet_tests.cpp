@@ -255,7 +255,7 @@ int g_netSessionBrowserOnInitUpdateDataCalls;
 BOOL g_netSessionBrowserOnInitUpdateDataSave;
 char g_netSessionBrowserOnInitPlayerName[] = "Pilot";
 int g_netSessionConfigAtexitCalls;
-void(RECOIL_CDECL *g_netSessionConfigAtexitCallback)(void);
+void(*g_netSessionConfigAtexitCallback)(void);
 int g_netSessionConfigAtexitResult;
 
 struct ImportFunctionPatch {
@@ -404,7 +404,7 @@ template <typename Method> unsigned int MethodAddress(Method method) {
 }
 
 struct TestPkt14AppState : RecoilApp_IState {
-    void RECOIL_THISCALL OnEnter() {
+    void OnEnter() {
         ++g_pkt14StateEnterCount;
     }
 };
@@ -692,13 +692,13 @@ void DeleteTopMessageStackFonts(HudUiTopMessageStack &stack) {
     }
 }
 
-std::int32_t RECOIL_STDCALL SetSessionDescFake(zNetwork_DPlay4 *, zNetworkDPlaySessionDesc *,
+std::int32_t __stdcall SetSessionDescFake(zNetwork_DPlay4 *, zNetworkDPlaySessionDesc *,
                                                std::uint32_t) {
     ++g_setSessionDescCalls;
     return g_setSessionDescResult;
 }
 
-std::int32_t RECOIL_STDCALL SendFake(zNetwork_DPlay4 *, std::uint32_t, std::uint32_t,
+std::int32_t __stdcall SendFake(zNetwork_DPlay4 *, std::uint32_t, std::uint32_t,
                                      std::uint32_t flags, void *packet,
                                      std::uint32_t packetSizeBytes) {
     ++g_sendCalls;
@@ -712,14 +712,14 @@ std::int32_t RECOIL_STDCALL SendFake(zNetwork_DPlay4 *, std::uint32_t, std::uint
     return 0;
 }
 
-void RECOIL_CDECL ChatComposeSetTextFmtFake(HudUiPanel *self, const char *format, ...) {
+void ChatComposeSetTextFmtFake(HudUiPanel *self, const char *format, ...) {
     ++g_chatComposeSetTextFmtCalls;
     g_chatComposeSetTextFmtThis = self;
     std::strncpy(g_chatComposeSetTextFmtText, format != nullptr ? format : "", sizeof(g_chatComposeSetTextFmtText));
     g_chatComposeSetTextFmtText[sizeof(g_chatComposeSetTextFmtText) - 1] = '\0';
 }
 
-int RECOIL_FASTCALL QSandRelayCallbackFake(void *) {
+int __fastcall QSandRelayCallbackFake(void *) {
     ++g_qsandRelayCallbackCount;
     return g_qsandRelayCallbackResult;
 }
@@ -733,35 +733,35 @@ void RecordNetSessionBrowserDtor(void *self, int stepId) {
     ++g_netSessionBrowserDtorStep;
 }
 
-void RECOIL_FASTCALL FakeNetSessionBrowserCStringDtor(void *self) {
+void __fastcall FakeNetSessionBrowserCStringDtor(void *self) {
     RecordNetSessionBrowserDtor(self, 1);
 }
 
-void RECOIL_FASTCALL FakeNetSessionBrowserComboDtor(void *self) {
+void __fastcall FakeNetSessionBrowserComboDtor(void *self) {
     RecordNetSessionBrowserDtor(self, 2);
 }
 
-void RECOIL_FASTCALL FakeNetSessionConfigSpinDtor(void *self) {
+void __fastcall FakeNetSessionConfigSpinDtor(void *self) {
     RecordNetSessionBrowserDtor(self, 3);
 }
 
-void RECOIL_FASTCALL FakeNetSessionBrowserListDtor(void *self) {
+void __fastcall FakeNetSessionBrowserListDtor(void *self) {
     RecordNetSessionBrowserDtor(self, 3);
 }
 
-void RECOIL_FASTCALL FakeNetSessionBrowserCreateButtonDtor(void *self) {
+void __fastcall FakeNetSessionBrowserCreateButtonDtor(void *self) {
     RecordNetSessionBrowserDtor(self, 4);
 }
 
-void RECOIL_FASTCALL FakeNetSessionBrowserEditDtor(void *self) {
+void __fastcall FakeNetSessionBrowserEditDtor(void *self) {
     RecordNetSessionBrowserDtor(self, 6);
 }
 
-void RECOIL_FASTCALL FakeNetSessionBrowserDialogDtor(void *self) {
+void __fastcall FakeNetSessionBrowserDialogDtor(void *self) {
     RecordNetSessionBrowserDtor(self, 7);
 }
 
-void RECOIL_FASTCALL FakeNetSessionBrowserDestructor(NetSessionBrowserDialog *self) {
+void __fastcall FakeNetSessionBrowserDestructor(NetSessionBrowserDialog *self) {
     const int index = g_netSessionBrowserScalarDtorCalls;
     if (index < 2) {
         g_netSessionBrowserScalarDtorThis[index] = self;
@@ -769,26 +769,26 @@ void RECOIL_FASTCALL FakeNetSessionBrowserDestructor(NetSessionBrowserDialog *se
     ++g_netSessionBrowserScalarDtorCalls;
 }
 
-int RECOIL_CDECL FakeNetSessionConfigAtexit(void(RECOIL_CDECL *callback)(void)) {
+int FakeNetSessionConfigAtexit(void(*callback)(void)) {
     ++g_netSessionConfigAtexitCalls;
     g_netSessionConfigAtexitCallback = callback;
     return g_netSessionConfigAtexitResult;
 }
 
-BOOL RECOIL_FASTCALL FakeNetSessionConfigOnInitBase(void *self) {
+BOOL __fastcall FakeNetSessionConfigOnInitBase(void *self) {
     ++g_netSessionConfigOnInitBaseCalls;
     g_netSessionConfigOnInitBaseThis = self;
     return TRUE;
 }
 
-int RECOIL_FASTCALL FakeNetSessionConfigUpdateData(void *, void *,
+int __fastcall FakeNetSessionConfigUpdateData(void *, void *,
                                                   BOOL saveAndValidate) {
     ++g_netSessionConfigUpdateDataCalls;
     g_netSessionConfigUpdateDataSave = saveAndValidate;
     return 1;
 }
 
-int RECOIL_CDECL FakeNetSessionConfigGetNetworkModemEnabled() {
+int FakeNetSessionConfigGetNetworkModemEnabled() {
     ++g_netSessionConfigGetNetworkModemEnabledCalls;
     return g_netSessionConfigGetNetworkModemEnabledResult;
 }
@@ -807,31 +807,31 @@ void RecordNetSessionBrowserDdx(CDataExchange *dataExchange, int kind,
     ++g_netSessionBrowserDdxStep;
 }
 
-void RECOIL_STDCALL FakeNetSessionBrowserDDXControl(CDataExchange *dataExchange,
+void __stdcall FakeNetSessionBrowserDDXControl(CDataExchange *dataExchange,
                                                    int controlId,
                                                    void *control) {
     RecordNetSessionBrowserDdx(dataExchange, 1, controlId, control);
 }
 
-void RECOIL_STDCALL FakeNetSessionBrowserDDXText(CDataExchange *dataExchange,
+void __stdcall FakeNetSessionBrowserDDXText(CDataExchange *dataExchange,
                                                 int controlId,
                                                 CString *value) {
     RecordNetSessionBrowserDdx(dataExchange, 2, controlId, value);
 }
 
-void RECOIL_STDCALL FakeNetSessionBrowserDDVMaxChars(CDataExchange *dataExchange,
+void __stdcall FakeNetSessionBrowserDDVMaxChars(CDataExchange *dataExchange,
                                                     CString *value,
                                                     int maxChars) {
     RecordNetSessionBrowserDdx(dataExchange, 3, maxChars, value);
 }
 
-void RECOIL_STDCALL FakeNetSessionConfigDDXTextUInt(CDataExchange *dataExchange,
+void __stdcall FakeNetSessionConfigDDXTextUInt(CDataExchange *dataExchange,
                                                    int controlId,
                                                    unsigned int *value) {
     RecordNetSessionBrowserDdx(dataExchange, 4, controlId, value);
 }
 
-void RECOIL_STDCALL FakeNetSessionConfigDDVMinMaxUInt(
+void __stdcall FakeNetSessionConfigDDVMinMaxUInt(
     CDataExchange *dataExchange,
     unsigned int value,
     unsigned int minValue,
@@ -844,13 +844,13 @@ void RECOIL_STDCALL FakeNetSessionConfigDDVMinMaxUInt(
     }
 }
 
-void RECOIL_STDCALL FakeNetSessionConfigDDXCheck(CDataExchange *dataExchange,
+void __stdcall FakeNetSessionConfigDDXCheck(CDataExchange *dataExchange,
                                                 int controlId,
                                                 int *value) {
     RecordNetSessionBrowserDdx(dataExchange, 6, controlId, value);
 }
 
-void RECOIL_FASTCALL FakeNetSessionBrowserCWndOnDestroy(void *self, void *) {
+void __fastcall FakeNetSessionBrowserCWndOnDestroy(void *self, void *) {
     ++g_netSessionBrowserOnDestroyStep;
     g_netSessionBrowserOnDestroyThis = self;
 }
@@ -914,7 +914,7 @@ void ResetNetSessionConfigOnInitLog(int modemEnabled) {
     g_netSessionConfigSetDlgItemTextValue = nullptr;
 }
 
-char *RECOIL_FASTCALL FakeNetSessionBrowserHelpGetMessageString(unsigned int messageId) {
+char *__fastcall FakeNetSessionBrowserHelpGetMessageString(unsigned int messageId) {
     switch (messageId) {
     case 25:
         return const_cast<char *>("Help");
@@ -953,7 +953,7 @@ char *RECOIL_FASTCALL FakeNetSessionBrowserHelpGetMessageString(unsigned int mes
     }
 }
 
-void RECOIL_FASTCALL FakeNetSessionConfigSetDlgItemTextA(
+void __fastcall FakeNetSessionConfigSetDlgItemTextA(
     void *self,
     void *,
     int controlId,
@@ -993,7 +993,7 @@ HINSTANCE WINAPI FakeNetSessionBrowserHelpShellExecuteA(HWND hwnd,
     return reinterpret_cast<HINSTANCE>(33);
 }
 
-int RECOIL_FASTCALL FakeNetSessionBrowserHelpMessageBoxA(void *self, void *,
+int __fastcall FakeNetSessionBrowserHelpMessageBoxA(void *self, void *,
                                                         LPCSTR text,
                                                         LPCSTR caption,
                                                         UINT type) {
@@ -1006,7 +1006,7 @@ int RECOIL_FASTCALL FakeNetSessionBrowserHelpMessageBoxA(void *self, void *,
     return IDOK;
 }
 
-int RECOIL_CDECL FakeNetSessionBrowserRefreshEnumSessions() {
+int FakeNetSessionBrowserRefreshEnumSessions() {
     ++g_netSessionBrowserRefreshEnumSessionsCalls;
     return g_netSessionBrowserRefreshEnumSessionsResult;
 }
@@ -1054,7 +1054,7 @@ LRESULT WINAPI FakeNetSessionBrowserRefreshSendMessageA(HWND hwnd, UINT message,
     return 0;
 }
 
-unsigned int RECOIL_CDECL FakeNetSessionBrowserRefreshFormatMessage(
+unsigned int FakeNetSessionBrowserRefreshFormatMessage(
     char *outBuffer, int maxChars, unsigned int messageId, ...) {
     const int index = g_netSessionBrowserRefreshFormatCalls++;
     if (index < 4) {
@@ -1074,19 +1074,19 @@ unsigned int RECOIL_CDECL FakeNetSessionBrowserRefreshFormatMessage(
     return static_cast<unsigned int>(std::strlen(outBuffer));
 }
 
-int RECOIL_FASTCALL FakeNetSessionBrowserRefreshSessionList(void *self) {
+int __fastcall FakeNetSessionBrowserRefreshSessionList(void *self) {
     ++g_netSessionBrowserOnTimerRefreshCalls;
     g_netSessionBrowserOnTimerRefreshThis = self;
     return 3;
 }
 
-long RECOIL_FASTCALL FakeNetSessionBrowserCWndDefault(void *self) {
+long __fastcall FakeNetSessionBrowserCWndDefault(void *self) {
     ++g_netSessionBrowserOnTimerDefaultCalls;
     g_netSessionBrowserOnTimerDefaultThis = self;
     return 77;
 }
 
-int RECOIL_FASTCALL FakeNetSessionBrowserValidateUpdateData(void *self, void *,
+int __fastcall FakeNetSessionBrowserValidateUpdateData(void *self, void *,
                                                            BOOL saveAndValidate) {
     const int index = g_netSessionBrowserValidateUpdateDataCalls;
     if (index < 4) {
@@ -1097,7 +1097,7 @@ int RECOIL_FASTCALL FakeNetSessionBrowserValidateUpdateData(void *self, void *,
     return 1;
 }
 
-int RECOIL_FASTCALL FakeNetSessionBrowserValidateMessageBoxA(void *self, void *,
+int __fastcall FakeNetSessionBrowserValidateMessageBoxA(void *self, void *,
                                                             LPCSTR text,
                                                             LPCSTR caption,
                                                             UINT type) {
@@ -1110,7 +1110,7 @@ int RECOIL_FASTCALL FakeNetSessionBrowserValidateMessageBoxA(void *self, void *,
     return IDOK;
 }
 
-void *RECOIL_FASTCALL FakeNetSessionBrowserValidateSetFocus(void *self) {
+void *__fastcall FakeNetSessionBrowserValidateSetFocus(void *self) {
     ++g_netSessionBrowserValidateSetFocusCalls;
     g_netSessionBrowserValidateSetFocusThis = self;
     return self;
@@ -1129,7 +1129,7 @@ void ResetNetSessionBrowserValidateLog() {
     }
 }
 
-int RECOIL_FASTCALL FakeNetSessionBrowserOnCreateValidate(void *self) {
+int __fastcall FakeNetSessionBrowserOnCreateValidate(void *self) {
     ++g_netSessionBrowserOnCreateValidateCalls;
     g_netSessionBrowserOnCreateValidateThis = self;
     return g_netSessionBrowserOnCreateValidateResult;
@@ -1142,7 +1142,7 @@ BOOL WINAPI FakeNetSessionBrowserOnCreateKillTimer(HWND hwnd, UINT_PTR timerId) 
     return TRUE;
 }
 
-int RECOIL_FASTCALL
+int __fastcall
 FakeNetSessionBrowserOnCreateCreateSession(zNetworkSessionDescStatusFields *statusFields) {
     ++g_netSessionBrowserOnCreateCreateSessionCalls;
     if (statusFields != nullptr) {
@@ -1151,29 +1151,29 @@ FakeNetSessionBrowserOnCreateCreateSession(zNetworkSessionDescStatusFields *stat
     return g_netSessionBrowserOnCreateCreateSessionResult;
 }
 
-void RECOIL_FASTCALL FakeNetSessionBrowserOnCreateSetNetworkEnabled(int value) {
+void __fastcall FakeNetSessionBrowserOnCreateSetNetworkEnabled(int value) {
     ++g_netSessionBrowserOnCreateSetNetworkCalls;
     g_netSessionBrowserOnCreateSetNetworkValue = value;
 }
 
-void RECOIL_FASTCALL FakeNetSessionBrowserOnCreateSetModemEnabled(int value) {
+void __fastcall FakeNetSessionBrowserOnCreateSetModemEnabled(int value) {
     ++g_netSessionBrowserOnCreateSetModemCalls;
     g_netSessionBrowserOnCreateSetModemValue = value;
 }
 
-char *RECOIL_CDECL FakeNetSessionBrowserOnCreateGetPlayerName() {
+char *FakeNetSessionBrowserOnCreateGetPlayerName() {
     static char playerName[] = "Pilot";
     ++g_netSessionBrowserOnCreateGetPlayerNameCalls;
     return playerName;
 }
 
-int RECOIL_FASTCALL FakeNetSessionBrowserOnCreateCreateLocalPlayer(char *playerName) {
+int __fastcall FakeNetSessionBrowserOnCreateCreateLocalPlayer(char *playerName) {
     ++g_netSessionBrowserOnCreateCreateLocalPlayerCalls;
     g_netSessionBrowserOnCreateCreateLocalPlayerName = playerName;
     return 77;
 }
 
-void RECOIL_FASTCALL FakeNetSessionBrowserOnCreateOnOK(void *self) {
+void __fastcall FakeNetSessionBrowserOnCreateOnOK(void *self) {
     ++g_netSessionBrowserOnCreateOnOkCalls;
     g_netSessionBrowserOnCreateOnOkThis = self;
 }
@@ -1197,13 +1197,13 @@ void ResetNetSessionBrowserOnCreateLog() {
     g_netSessionBrowserOnCreateOnOkThis = nullptr;
 }
 
-int RECOIL_FASTCALL FakeNetSessionBrowserOnOkValidate(void *self) {
+int __fastcall FakeNetSessionBrowserOnOkValidate(void *self) {
     ++g_netSessionBrowserOnOkValidateCalls;
     g_netSessionBrowserOnOkValidateThis = self;
     return g_netSessionBrowserOnOkValidateResult;
 }
 
-void RECOIL_FASTCALL FakeNetSessionBrowserOnOkSetModemEnabled(int value) {
+void __fastcall FakeNetSessionBrowserOnOkSetModemEnabled(int value) {
     ++g_netSessionBrowserOnOkSetModemCalls;
     g_netSessionBrowserOnOkSetModemValue = value;
 }
@@ -1228,13 +1228,13 @@ LRESULT WINAPI FakeNetSessionBrowserOnOkSendMessageA(HWND, UINT message,
     return 0;
 }
 
-int RECOIL_FASTCALL FakeNetSessionBrowserOnOkRefreshSessionList(void *self) {
+int __fastcall FakeNetSessionBrowserOnOkRefreshSessionList(void *self) {
     ++g_netSessionBrowserOnOkRefreshCalls;
     g_netSessionBrowserOnOkRefreshThis = self;
     return g_netSessionBrowserOnOkRefreshResult;
 }
 
-void RECOIL_FASTCALL FakeNetSessionBrowserOnOkOnOK(void *self) {
+void __fastcall FakeNetSessionBrowserOnOkOnOK(void *self) {
     ++g_netSessionBrowserOnOkOnOkCalls;
     g_netSessionBrowserOnOkOnOkThis = self;
 }
@@ -1330,7 +1330,7 @@ HRESULT WINAPI FakeDPlayCreateCoCreateInstance(REFCLSID rclsid, LPUNKNOWN outer,
     return g_dplayCreateCoCreateResult;
 }
 
-int RECOIL_FASTCALL FakeDPlayCreateReportError(int hresult, const char *,
+int __fastcall FakeDPlayCreateReportError(int hresult, const char *,
                                                int sourceLine) {
     ++g_dplayCreateReportErrorCalls;
     g_dplayCreateReportErrorHresult = hresult;
@@ -1338,7 +1338,7 @@ int RECOIL_FASTCALL FakeDPlayCreateReportError(int hresult, const char *,
     return hresult == 0 ? 1 : 0;
 }
 
-void RECOIL_CDECL FakeDPlayCreateReportOld(int flags, const char *, int sourceLine,
+void FakeDPlayCreateReportOld(int flags, const char *, int sourceLine,
                                            const char *format, ...) {
     ++g_dplayCreateReportOldCalls;
     g_dplayCreateReportOldFlags = flags;
@@ -1362,13 +1362,13 @@ void ResetDPlayCreateInterfaceLog() {
     g_dplayCreateReportOldMessage[0] = '\0';
 }
 
-int RECOIL_FASTCALL FakeDPlaySelectClose(zNetwork_DPlay4 *directPlay4) {
+int __fastcall FakeDPlaySelectClose(zNetwork_DPlay4 *directPlay4) {
     ++g_dplaySelectCloseCalls;
     g_dplaySelectCloseArg = directPlay4;
     return 0;
 }
 
-int RECOIL_FASTCALL FakeDPlaySelectCreate(zNetwork_DPlay4 **outDirectPlay4) {
+int __fastcall FakeDPlaySelectCreate(zNetwork_DPlay4 **outDirectPlay4) {
     ++g_dplaySelectCreateCalls;
     g_dplaySelectCreateOutPtr = outDirectPlay4;
     if (outDirectPlay4 != nullptr) {
@@ -1377,14 +1377,14 @@ int RECOIL_FASTCALL FakeDPlaySelectCreate(zNetwork_DPlay4 **outDirectPlay4) {
     return g_dplaySelectCreateResult;
 }
 
-int RECOIL_FASTCALL
+int __fastcall
 FakeDPlaySelectInitialize(zNetworkDPlayServiceProviderInfo *providerInfo) {
     ++g_dplaySelectInitializeCalls;
     g_dplaySelectInitializeProvider = providerInfo;
     return g_dplaySelectInitializeResult;
 }
 
-int RECOIL_FASTCALL FakeDPlaySelectReportError(int hresult, const char *, int sourceLine) {
+int __fastcall FakeDPlaySelectReportError(int hresult, const char *, int sourceLine) {
     ++g_dplaySelectReportErrorCalls;
     g_dplaySelectReportErrorHresult = hresult;
     g_dplaySelectReportErrorLine = sourceLine;
@@ -1441,7 +1441,7 @@ LRESULT WINAPI FakeNetSessionBrowserConnectSendMessageA(HWND hwnd, UINT msg,
     return (LRESULT)hwnd;
 }
 
-BOOL RECOIL_FASTCALL FakeNetSessionBrowserConnectEnableWindow(void *self, void *,
+BOOL __fastcall FakeNetSessionBrowserConnectEnableWindow(void *self, void *,
                                                               BOOL enable) {
     const int index = g_netSessionBrowserConnectEnableCalls++;
     if (index < 8) {
@@ -1451,7 +1451,7 @@ BOOL RECOIL_FASTCALL FakeNetSessionBrowserConnectEnableWindow(void *self, void *
     return TRUE;
 }
 
-void RECOIL_FASTCALL FakeNetSessionBrowserConnectSetWindowTextA(void *self, void *,
+void __fastcall FakeNetSessionBrowserConnectSetWindowTextA(void *self, void *,
                                                                 LPCSTR text) {
     const int index = g_netSessionBrowserConnectSetTextCalls++;
     if (index < 8) {
@@ -1464,7 +1464,7 @@ void RECOIL_FASTCALL FakeNetSessionBrowserConnectSetWindowTextA(void *self, void
     }
 }
 
-int RECOIL_FASTCALL FakeNetSessionBrowserConnectVerify(const char *caption,
+int __fastcall FakeNetSessionBrowserConnectVerify(const char *caption,
                                                        const char *messageFormat) {
     ++g_netSessionBrowserConnectVerifyCalls;
     std::strncpy(g_netSessionBrowserConnectVerifyCaption,
@@ -1480,14 +1480,14 @@ int RECOIL_FASTCALL FakeNetSessionBrowserConnectVerify(const char *caption,
     return g_netSessionBrowserConnectVerifyResult;
 }
 
-int RECOIL_FASTCALL
+int __fastcall
 FakeNetSessionBrowserConnectSelectProvider(zNetworkDPlayServiceProviderInfo *provider) {
     ++g_netSessionBrowserConnectSelectCalls;
     g_netSessionBrowserConnectSelectProvider = provider;
     return 0;
 }
 
-int RECOIL_FASTCALL FakeNetSessionBrowserConnectRefresh(void *self) {
+int __fastcall FakeNetSessionBrowserConnectRefresh(void *self) {
     ++g_netSessionBrowserConnectRefreshCalls;
     g_netSessionBrowserConnectRefreshThis = self;
     return g_netSessionBrowserConnectRefreshResult;
@@ -1524,17 +1524,17 @@ void ResetNetSessionBrowserConnectLog() {
     g_netSessionBrowserConnectRefreshThis = nullptr;
 }
 
-BOOL RECOIL_FASTCALL FakeNetSessionBrowserOnInitBase(void *self) {
+BOOL __fastcall FakeNetSessionBrowserOnInitBase(void *self) {
     ++g_netSessionBrowserOnInitBaseCalls;
     g_netSessionBrowserOnInitBaseThis = self;
     return TRUE;
 }
 
-char *RECOIL_CDECL FakeNetSessionBrowserOnInitGetPlayerName() {
+char *FakeNetSessionBrowserOnInitGetPlayerName() {
     return g_netSessionBrowserOnInitPlayerName;
 }
 
-zNetworkServiceProviderListVec *RECOIL_CDECL FakeNetSessionBrowserOnInitRefreshProviders() {
+zNetworkServiceProviderListVec *FakeNetSessionBrowserOnInitRefreshProviders() {
     ++g_netSessionBrowserOnInitRefreshCalls;
     return g_netSessionBrowserOnInitProviderList;
 }
@@ -1569,7 +1569,7 @@ LRESULT WINAPI FakeNetSessionBrowserOnInitSendMessageA(HWND, UINT msg, WPARAM wP
     return 0;
 }
 
-void RECOIL_FASTCALL FakeNetSessionBrowserOnInitSetWindowTextA(void *, void *,
+void __fastcall FakeNetSessionBrowserOnInitSetWindowTextA(void *, void *,
                                                               LPCSTR text) {
     ++g_netSessionBrowserOnInitSetTextCalls;
     std::strncpy(g_netSessionBrowserOnInitSetTextValue, text != nullptr ? text : "",
@@ -1578,7 +1578,7 @@ void RECOIL_FASTCALL FakeNetSessionBrowserOnInitSetWindowTextA(void *, void *,
         [sizeof(g_netSessionBrowserOnInitSetTextValue) - 1] = '\0';
 }
 
-int RECOIL_FASTCALL FakeNetSessionBrowserOnInitUpdateData(void *, void *,
+int __fastcall FakeNetSessionBrowserOnInitUpdateData(void *, void *,
                                                          BOOL saveAndValidate) {
     ++g_netSessionBrowserOnInitUpdateDataCalls;
     g_netSessionBrowserOnInitUpdateDataSave = saveAndValidate;
@@ -3824,21 +3824,21 @@ extern "C" int net_session_browser_dialog_do_data_exchange_smoke(void) {
 }
 
 struct TestRemoteHudPanelOps {
-    void RECOIL_THISCALL SetPos(int x, int y) {
+    void SetPos(int x, int y) {
         ++g_remoteHudSetPosCount;
         g_remoteHudSetPosThis = reinterpret_cast<HudUiPanel *>(this);
         g_remoteHudLastX = x;
         g_remoteHudLastY = y;
     }
 
-    void RECOIL_THISCALL SetVisible(int visible) {
+    void SetVisible(int visible) {
         ++g_remoteHudSetVisibleCount;
         g_remoteHudLastVisible = visible;
     }
 };
 
 struct TestSpawnRemoteHudPanelOps {
-    void RECOIL_THISCALL SetVisible(int visible) {
+    void SetVisible(int visible) {
         ++g_spawnRemoteSetVisibleCount;
         g_spawnRemoteLastVisible = visible;
     }
@@ -3971,7 +3971,7 @@ extern "C" int gamenet_register_gameplay_handlers_and_callbacks_smoke(void) {
         g_OptCatalog_AltGunDispatchNoOpCallback;
     OptCatalogRemoveRuntimeRelayCallback const oldRemoveRelay =
         g_OptCatalog_RemoveRuntimeRelayCallback;
-    void(RECOIL_FASTCALL *oldEffectDispatch)(zEffectAnimActivationRecord *) =
+    void(__fastcall *oldEffectDispatch)(zEffectAnimActivationRecord *) =
         g_zEffectAnim_ActivationDispatchCallback;
     const unsigned int oldEffectDispatchTag = g_zEffectAnim_ActivationDispatchTagHigh;
 

@@ -8,6 +8,6 @@
 struct RecoilStateBase {
     RecoilPtr32 vftable; // RecoilStateBase_Vtbl*
 
-    RecoilApp_IState *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
+    RecoilApp_IState * ScalarDeletingDestructor(unsigned int flags);
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateBase) == 0x04);

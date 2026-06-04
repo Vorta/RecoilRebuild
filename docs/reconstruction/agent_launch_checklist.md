@@ -39,7 +39,8 @@ documentation-only or tooling-inspection cleanup, because it selects an address.
 Choose the next address from current plan state, not from stale working notes:
 
 ```powershell
-python tools/recoil_plan_cli.py next
+python tools/recoil_plan_cli.py next --lane binary
+python tools/recoil_plan_cli.py group app.recoil_app --lane binary
 python tools/recoil_status.py 0xNNNNNN
 ```
 
@@ -50,7 +51,11 @@ manifests, or group notes.
 Treat the selected address as an anchor, not necessarily the implementation
 unit. If the frontier exposes a class, table owner, provider boundary,
 source-file cluster, or strongly connected dependency group, plan and verify that
-owning boundary before marking individual functions complete.
+owning boundary before marking individual functions complete. If current
+evidence proves an authored class, interface, custom table object, or method
+cluster, recreating that owner is required before setting
+`Model: source-faithful`; behavior-correct flattened functions remain
+source-shape debt.
 
 Generate a handoff report before ending a multi-step reconstruction session:
 
@@ -85,20 +90,26 @@ disrupting a user solution. Use it for solution navigation, builds, Error List
 triage, output panes, symbol outlines, open-buffer checks, and focused
 debugging. See `docs/reconstruction/visual_studio_mcp_workflow.md`.
 
-Before running the native build presets from a new shell, verify that shell:
+From normal PowerShell, use the checked-in one-shot Ninja build wrapper:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File cmake\recoil_native_x86_build.ps1 -Preset ninja-x86-debug
+```
+
+The wrapper loads `vcvarsall x86`, verifies the x86 MSVC/Windows SDK environment
+with `python tools/recoil_env_check.py --native-x86`, then configures and builds
+the selected preset. A missing `kernel32.lib` report means the shell lacks
+Windows SDK `LIB` paths; do not treat it as source evidence.
+
+For a manually prepared x86 MSVC shell, verify the shell before running CMake
+directly:
 
 ```powershell
 python tools/recoil_env_check.py --native-x86
 ```
 
-From normal PowerShell, run native commands through the checked-in helper:
-
-```powershell
-python tools/recoil_msvc_x86_run.py -- cmake --preset ninja-x86-debug
-```
-
-Use this helper for Ninja presets, CMake configure commands, direct `ctest`,
-native smoke runs with command-line arguments, and other command-line work that
+Use `tools/recoil_msvc_x86_run.py -- ...` for direct `ctest`, native smoke runs
+with command-line arguments, and other arbitrary x86 MSVC command-line work that
 MCP cannot express. Do not call Visual Studio batch files under `Program Files`
 directly.
 
@@ -133,7 +144,8 @@ classes, inheritance, vtables, function tables, records, provider boundaries, or
 namespace/module boundaries. Use its class/table gate and boundary ledger, then
 confirm against current Binary Ninja facts. For table dispatch, model the owner
 first; do not add copied ftable/vtable arrays or raw slots as the source
-substitute for an authored class or typed custom table object.
+substitute for an authored class or typed custom table object. Do not claim
+`Model: source-faithful` when a proven class/table owner has been flattened away.
 
 ## Source literals
 

@@ -19,21 +19,19 @@ per-target VC verification evidence.
 
 ## Recovered Contract
 
-- First-pass tier `S` compiler evidence is VC5SP3 `cl` 11.00.7022 with
-  32-bit x86 code generation unless Binary Ninja/original bytes justify another
-  profile.
-- VC6 `cl` 12.00.8168 profiles are fallbacks for functions whose original
-  bytes, imports, MFC/CRT behavior, or a reviewed VC5SP3 attempt indicate
-  VS98-era code generation is more plausible.
-- VC5SP3 `cl` 11.00.7022 rejects an explicit `__thiscall` keyword as C4234, so
-  `RECOIL_THISCALL` intentionally remains empty for `_MSC_VER < 1300`. For VC5
-  function-pointer vtable slots, such as `0x462660 zFMV_Script::Reset`, a raw
-  free-function pointer can still compile as cdecl while Binary Ninja shows
-  member-call dispatch (`ecx = self`, pushed user arguments only). Do not
-  broaden the shared macro to force `__thiscall`; solve these as local ABI
-  modeling or manifest/toolchain issues.
+- Tier `S` compiler evidence is VC5SP3 `cl` 11.00.7022 with 32-bit x86 code
+  generation. Verification may vary VC5SP3 flags and provider libraries, but
+  non-VC5 compiler profiles are retired and do not establish new tier `S`
+  evidence.
+- VC5SP3 `cl` 11.00.7022 rejects an explicit `__thiscall` keyword as C4234.
+  Production reconstruction must not use forced thiscall wrappers or explicit
+  `__thiscall`; member ABI must come from real C++ member syntax, virtual
+  declarations, typed custom tables, or documented provider boundaries. If a
+  free-function pointer with `self` in `ecx` is the only current model, keep the
+  affected entry below tier `B` as `Model: abi-forced-scaffold` until the owning
+  source model is recovered.
 - Current executable provenance indicates VS97 SP3 `cvtres` for 1 object,
-  VS97 SP3 `link` 5.10.7303 for 293 objects, and VS98-era tooling for 10
+  VS97 SP3 `link` 5.10.7303 for 293 objects, and VS97-era tooling for 10
   objects.
 - MFC42, DirectX, CRT, Win32, and imported runtime behavior should be modeled as
   providers, not fake production stand-ins.
@@ -47,11 +45,10 @@ per-target VC verification evidence.
   acceptance.
 - VC verification manifests should compile production source through
   `source_from`.
-- Passing tier `S` verification normally requires relocation-masked COFF
-  object bytes to match Binary Ninja/original bytes. Legacy text comparison is
-  acceptable only for explicitly accepted `compare_mode: text` targets with
-  documented accepted differences.
-- Final executable comparison uses `tools/recoil_vc6_build.py` and
+- Passing tier `S` verification requires relocation-masked COFF object bytes to
+  match Binary Ninja/original bytes, or an accepted provider ABI boundary when
+  no authored compiler comparison applies.
+- Final executable comparison uses `tools/recoil_vc5_build.py` and
   `tools/recoil_pe_reference.py`, but whole-binary acceptance is expected to
   become useful only when the reconstructed source is substantially complete.
 

@@ -63,7 +63,7 @@ struct zEffectAnimSurfaceRuntime {
 
 struct zEffectAnimEntry;
 
-typedef void(RECOIL_FASTCALL *zEffectAnimEventCallback)(
+typedef void(__fastcall *zEffectAnimEventCallback)(
     zEffectAnimEntry *self,
     void *context,
     int value
@@ -549,7 +549,7 @@ struct zEffectAnimEntry {
     zEffectAnimRuntimeRef *runtimeRefList;
     zEffectAnimEntry *runtimeSibling;
 
-    static RECOIL_NOINLINE void RECOIL_FASTCALL SetOnStateDoneCallback(
+    static void __fastcall SetOnStateDoneCallback(
         zEffectAnimEntry *self,
         void *callback,
         void *user
@@ -1863,7 +1863,7 @@ extern zClass_NodePartial *g_zEffect_ResourceNode;
 extern zEffectAnimActivationRecord *g_zEffectAnim_ActivationRecordTable;
 extern int g_zEffectAnim_ActivationRecordCapacity;
 extern int g_zEffectAnim_ActivationRecordCount;
-extern void(RECOIL_FASTCALL *g_zEffectAnim_ActivationDispatchCallback)(
+extern void(__fastcall *g_zEffectAnim_ActivationDispatchCallback)(
     zEffectAnimActivationRecord *record
 );
 extern unsigned int g_zEffectAnim_ActivationDispatchTagHigh;
@@ -1876,157 +1876,157 @@ extern char g_zEffectAnim_ZarSectionName_AnimActivation[15];
 }
 
 namespace zEffect_Anim {
-RECOIL_NOINLINE int RECOIL_CDECL Init();
-RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
-RECOIL_NOINLINE int RECOIL_CDECL ShutdownIfLoaded();
-RECOIL_NOINLINE void RECOIL_CDECL ClearActivationRecords();
-RECOIL_NOINLINE int RECOIL_FASTCALL HasActivationRecord(zEffectAnimActivationRecord *record);
-RECOIL_NOINLINE zEffectAnimActivationRecord *RECOIL_CDECL AllocActivationRecord();
-RECOIL_NOINLINE int RECOIL_CDECL GetActivationRecordCount();
-RECOIL_NOINLINE zEffectAnimActivationRecord *RECOIL_FASTCALL GetActivationRecordAt(int index);
-RECOIL_NOINLINE int RECOIL_FASTCALL SaveActivationRecords(zZbdSectionCallbackCtx *callbackCtx);
-RECOIL_NOINLINE void RECOIL_FASTCALL LoadActivationRecords(
+int Init();
+int Shutdown();
+int ShutdownIfLoaded();
+void ClearActivationRecords();
+int __fastcall HasActivationRecord(zEffectAnimActivationRecord *record);
+zEffectAnimActivationRecord *AllocActivationRecord();
+int GetActivationRecordCount();
+zEffectAnimActivationRecord *__fastcall GetActivationRecordAt(int index);
+int __fastcall SaveActivationRecords(zZbdSectionCallbackCtx *callbackCtx);
+void __fastcall LoadActivationRecords(
     void *unused,
     const char *sectionToken,
     void *data,
     int dataSize,
     void *extraCtx
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SaveRunningAnimRecord(
+int __fastcall SaveRunningAnimRecord(
     zZbdSectionCallbackCtx *callbackCtx,
     zEffectAnimEntry *entry,
     int runningIndex,
     int includePrimaryEntry
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SaveRunningAnimRecords(zZbdSectionCallbackCtx *callbackCtx);
-RECOIL_NOINLINE void RECOIL_FASTCALL LoadRunningAnimRecords(
+int __fastcall SaveRunningAnimRecords(zZbdSectionCallbackCtx *callbackCtx);
+void __fastcall LoadRunningAnimRecords(
     void *unused,
     const char *sectionToken,
     void *data,
     int dataSize,
     void *extraCtx
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SaveAnimRecords(zZbdSectionCallbackCtx *callbackCtx);
-RECOIL_NOINLINE void RECOIL_FASTCALL LoadAnimRecords(
+int __fastcall SaveAnimRecords(zZbdSectionCallbackCtx *callbackCtx);
+void __fastcall LoadAnimRecords(
     void *unused,
     const char *sectionToken,
     void *data,
     int dataSize,
     void *extraCtx
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ResetFromActivationRecord(zEffectAnimActivationRecord *record);
-RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL ProcessActivationRecord(
+void __fastcall ResetFromActivationRecord(zEffectAnimActivationRecord *record);
+zEffectAnimEntry *__fastcall ProcessActivationRecord(
     zEffectAnimActivationRecord *record
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL CaptureNodeStates(zEffectAnimEntry *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL RestoreNodeStates(zEffectAnimEntry *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL AdvanceKeyframeSample(
+int __fastcall CaptureNodeStates(zEffectAnimEntry *self);
+int __fastcall RestoreNodeStates(zEffectAnimEntry *self);
+int __fastcall AdvanceKeyframeSample(
     zEffectAnimSurfaceRuntime *sequenceRuntime,
     zEffectKeyframeEvent *keyframeEvent,
     zEffectKeyframeSampleHeader *sampleHeader
 );
-RECOIL_NOINLINE float RECOIL_FASTCALL AnimateKeyframeSample(
+float __fastcall AnimateKeyframeSample(
     zEffectAnimSurfaceRuntime *sequenceRuntime,
     zEffectKeyframeEvent *keyframeEvent,
     zClass_NodePartial *targetNode,
     zEffectKeyframeSampleHeader *sampleHeader,
     float *deltaTime
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AdvanceKeyframe(
+int __fastcall AdvanceKeyframe(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *sequenceRuntime,
     zEffectKeyframeEvent *keyframeEvent
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL EvaluateKeyframe(
+int __fastcall EvaluateKeyframe(
     zEffectAnimEntry *self,
     zEffectEvaluateKeyframeEvent *keyframeEvent
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL RunKeyframes(
+int __fastcall RunKeyframes(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *sequenceRuntime,
     zEffectRunKeyframeEvent *keyframeEvent
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL RunSequenceEvents(
+int __fastcall RunSequenceEvents(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *sequenceRuntime
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL RunSequence(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL NodeActionCallback(
+int __fastcall RunSequence(zClass_NodePartial *node);
+int __fastcall NodeActionCallback(
     zEffectAnimEntry *self,
     zClass_NodePartial *rootNode
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL GetActivationRecordPackedSize(
+int __fastcall GetActivationRecordPackedSize(
     zEffectAnimActivationRecord *record
 );
-RECOIL_NOINLINE void RECOIL_CDECL DiscardLastActivationRecord();
-RECOIL_NOINLINE void RECOIL_FASTCALL SetZbdFilename(const char *filename);
-RECOIL_NOINLINE int RECOIL_CDECL LoadZbd();
-RECOIL_NOINLINE int RECOIL_CDECL LoadAndInstantiate();
-RECOIL_NOINLINE void RECOIL_FASTCALL SetActivationDispatchContext(
-    void(RECOIL_FASTCALL *callback)(zEffectAnimActivationRecord *record),
+void DiscardLastActivationRecord();
+void __fastcall SetZbdFilename(const char *filename);
+int LoadZbd();
+int LoadAndInstantiate();
+void __fastcall SetActivationDispatchContext(
+    void(__fastcall *callback)(zEffectAnimActivationRecord *record),
     int context
 );
 } // namespace zEffect_Anim
 
 namespace zEffectAnim {
-RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL FindEntryByName(const char *name);
-RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL FindNextAsyncEntry(
+zEffectAnimEntry *__fastcall FindEntryByName(const char *name);
+zEffectAnimEntry *__fastcall FindNextAsyncEntry(
     zEffectAnimEntry *currentEntry
 );
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL FindNodeRecursiveByName(
+zClass_NodePartial *__fastcall FindNodeRecursiveByName(
     zClass_NodePartial *rootNode,
     const char *name
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FindSoundRefIndexByName(
+int __fastcall FindSoundRefIndexByName(
     zEffectAnimEntry *self,
     const char *name
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FindLightRefIndexByName(
+int __fastcall FindLightRefIndexByName(
     zEffectAnimEntry *self,
     const char *name
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FindOrCreateSoundRef(
+int __fastcall FindOrCreateSoundRef(
     zEffectAnimEntry *self,
     const char *name
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FindOrCreateLightRef(
+int __fastcall FindOrCreateLightRef(
     zEffectAnimEntry *self,
     const char *name
 );
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL ResolveNodeByName(
+zClass_NodePartial *__fastcall ResolveNodeByName(
     zEffectAnimEntry *self,
     const char *name
 );
-RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL RebindEntryToNode(
+zEffectAnimEntry *__fastcall RebindEntryToNode(
     zEffectAnimEntry *self,
     zClass_NodePartial *node
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL EnsureCopiedRootTree(
+int __fastcall EnsureCopiedRootTree(
     zEffectAnimEntry *self,
     zClass_NodePartial *sourceRoot
 );
-RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL CloneEntryForNode(
+zEffectAnimEntry *__fastcall CloneEntryForNode(
     zEffectAnimEntry *self,
     zClass_NodePartial *node
 );
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL GetRootNodeOrNull(zEffectAnimEntry *self);
-RECOIL_NOINLINE void RECOIL_FASTCALL ResetActivationPrereqCount(zEffectAnimEntry *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL CheckActivationPrereqs(zEffectAnimEntry *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL ResetForNode(zEffectAnimEntry *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL Stop(zEffectAnimEntry *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL FinalizeStop(zEffectAnimEntry *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL RunStopDelayCallback(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL RunStopSequenceCallback(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL StopAndCleanup(
+zClass_NodePartial *__fastcall GetRootNodeOrNull(zEffectAnimEntry *self);
+void __fastcall ResetActivationPrereqCount(zEffectAnimEntry *self);
+int __fastcall CheckActivationPrereqs(zEffectAnimEntry *self);
+int __fastcall ResetForNode(zEffectAnimEntry *self);
+int __fastcall Stop(zEffectAnimEntry *self);
+int __fastcall FinalizeStop(zEffectAnimEntry *self);
+int __fastcall RunStopDelayCallback(zClass_NodePartial *node);
+int __fastcall RunStopSequenceCallback(zClass_NodePartial *node);
+int __fastcall StopAndCleanup(
     zEffectAnimEntry *self,
     zClass_NodePartial *targetNode,
     int immediateCleanup
 );
-RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL ActivateRuntime(
+zEffectAnimEntry *__fastcall ActivateRuntime(
     zEffectAnimEntry *self,
     zClass_NodePartial *targetNode
 );
-RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL SetTransformRotAndVelocity(
+zEffectAnimEntry *__fastcall SetTransformRotAndVelocity(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     float posX,
@@ -2039,7 +2039,7 @@ RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL SetTransformRotAndVelocity(
     float velocityY,
     float velocityZ
 );
-RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL SetTransformRotAndVelocity_Thunk(
+zEffectAnimEntry *__fastcall SetTransformRotAndVelocity_Thunk(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     float posX,
@@ -2052,35 +2052,35 @@ RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL SetTransformRotAndVelocity_Thu
     float velocityY,
     float velocityZ
 );
-RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL SetVelocity(
+zEffectAnimEntry *__fastcall SetVelocity(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     float velocityX,
     float velocityY,
     float velocityZ
 );
-RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL SetVelocity_Thunk(
+zEffectAnimEntry *__fastcall SetVelocity_Thunk(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     float velocityX,
     float velocityY,
     float velocityZ
 );
-RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL SetPositionRefAndVelocity(
+zEffectAnimEntry *__fastcall SetPositionRefAndVelocity(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     zClass_NodePartial *refNode,
     const zVec3 *refVec,
     const zVec3 *velocityVec
 );
-RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL SetPositionRefAndVelocity_Thunk(
+zEffectAnimEntry *__fastcall SetPositionRefAndVelocity_Thunk(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     zClass_NodePartial *refNode,
     const zVec3 *refVec,
     const zVec3 *velocityVec
 );
-RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL SetTransformRefs(
+zEffectAnimEntry *__fastcall SetTransformRefs(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     zClass_NodePartial *refNodeA,
@@ -2088,7 +2088,7 @@ RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL SetTransformRefs(
     zClass_NodePartial *refNodeB,
     const zVec3 *refVecB
 );
-RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL SetTransformRefs_Thunk(
+zEffectAnimEntry *__fastcall SetTransformRefs_Thunk(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     zClass_NodePartial *refNodeA,
@@ -2096,7 +2096,7 @@ RECOIL_NOINLINE zEffectAnimEntry *RECOIL_FASTCALL SetTransformRefs_Thunk(
     zClass_NodePartial *refNodeB,
     const zVec3 *refVecB
 );
-RECOIL_NOINLINE zEffectAnimActivationRecord *RECOIL_FASTCALL QueueCmdType1TransformRotVelocity(
+zEffectAnimActivationRecord *__fastcall QueueCmdType1TransformRotVelocity(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     float posX,
@@ -2109,21 +2109,21 @@ RECOIL_NOINLINE zEffectAnimActivationRecord *RECOIL_FASTCALL QueueCmdType1Transf
     float velocityY,
     float velocityZ
 );
-RECOIL_NOINLINE zEffectAnimActivationRecord *RECOIL_FASTCALL QueueCmdType2Velocity(
+zEffectAnimActivationRecord *__fastcall QueueCmdType2Velocity(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     float velocityX,
     float velocityY,
     float velocityZ
 );
-RECOIL_NOINLINE zEffectAnimActivationRecord *RECOIL_FASTCALL QueueCmdType3PositionRefAndVelocity(
+zEffectAnimActivationRecord *__fastcall QueueCmdType3PositionRefAndVelocity(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     zClass_NodePartial *refNode,
     const zVec3 *refVec,
     const zVec3 *velocityVec
 );
-RECOIL_NOINLINE zEffectAnimActivationRecord *RECOIL_FASTCALL QueueCmdType4TransformRefs(
+zEffectAnimActivationRecord *__fastcall QueueCmdType4TransformRefs(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
     zClass_NodePartial *refNodeA,
@@ -2131,223 +2131,223 @@ RECOIL_NOINLINE zEffectAnimActivationRecord *RECOIL_FASTCALL QueueCmdType4Transf
     zClass_NodePartial *refNodeB,
     const zVec3 *refVecB
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ShutdownEntry(zEffectAnimEntry *self);
+int __fastcall ShutdownEntry(zEffectAnimEntry *self);
 } // namespace zEffectAnim
 
 namespace zEffect {
-RECOIL_NOINLINE int RECOIL_CDECL Init();
-RECOIL_NOINLINE int RECOIL_FASTCALL InitFromPath(
+int Init();
+int __fastcall InitFromPath(
     zClass_NodePartial *worldNode,
     zClass_NodePartial *cameraNode,
     const char *path
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SetWorldNode(zClass_NodePartial *worldNode);
-RECOIL_NOINLINE void RECOIL_FASTCALL SetResourceNode(zClass_NodePartial *resourceNode);
-RECOIL_NOINLINE float RECOIL_FASTCALL TickResetDelayOnTimer(
+void __fastcall SetWorldNode(zClass_NodePartial *worldNode);
+void __fastcall SetResourceNode(zClass_NodePartial *resourceNode);
+float __fastcall TickResetDelayOnTimer(
     zEffectAnimEntry *self,
     float deltaSec
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL TickResetDelayOnHit(
+int __fastcall TickResetDelayOnHit(
     zEffectAnimEntry *self,
     zClass_NodePartial *hitNode,
     int unused,
     float damageAmount
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SetConditionalRefPos(const zVec3 *position);
-RECOIL_NOINLINE void RECOIL_FASTCALL SetConditionalEffectLevel(int level);
-RECOIL_NOINLINE void RECOIL_FASTCALL SetVariantOverridePackedIdsIfComplete(
+void __fastcall SetConditionalRefPos(const zVec3 *position);
+void __fastcall SetConditionalEffectLevel(int level);
+void __fastcall SetVariantOverridePackedIdsIfComplete(
     const zTag4Partial *packedIds
 );
-RECOIL_NOINLINE int RECOIL_CDECL SetAnimDebugFrameTag();
-RECOIL_NOINLINE float RECOIL_FASTCALL GetConditionalRefPosDistanceSq(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL TraceUpwardHitFromNodeOrPos(
+int SetAnimDebugFrameTag();
+float __fastcall GetConditionalRefPosDistanceSq(zClass_NodePartial *node);
+int __fastcall TraceUpwardHitFromNodeOrPos(
     zClass_NodePartial *nodeOrNull,
     const zVec3 *positionOrNull,
     const float *rayHeight,
     int *outHit
 );
-RECOIL_NOINLINE void *RECOIL_FASTCALL FindNodeUserDataRecursive(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL SpawnRuntimeInstanceAt(
+void *__fastcall FindNodeUserDataRecursive(zClass_NodePartial *node);
+int __fastcall SpawnRuntimeInstanceAt(
     int effectIndex,
     const zVec3 *worldPos
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ActivateRuntimeEntryAtPosition(
+int __fastcall ActivateRuntimeEntryAtPosition(
     zEffect_RuntimeEntry *runtimeEntry,
     const zVec3 *worldPos
 );
-RECOIL_NOINLINE float RECOIL_FASTCALL ComputeDistanceSqToListener(const zVec3 *worldPos);
-RECOIL_NOINLINE zEffect_RuntimeEntry *RECOIL_FASTCALL AcquireRuntimeEntryByIndex(int effectIndex);
-RECOIL_NOINLINE zEffect_RuntimeEntry *RECOIL_FASTCALL CloneRuntimeEntryFromTemplate(
+float __fastcall ComputeDistanceSqToListener(const zVec3 *worldPos);
+zEffect_RuntimeEntry *__fastcall AcquireRuntimeEntryByIndex(int effectIndex);
+zEffect_RuntimeEntry *__fastcall CloneRuntimeEntryFromTemplate(
     int effectIndex
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FindTemplateIndexByName(const char *name);
-RECOIL_NOINLINE int RECOIL_FASTCALL RuntimeNodeActionCallback(zClass_NodePartial *node);
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleEffectTemplateOffsetEvent(
+int __fastcall FindTemplateIndexByName(const char *name);
+int __fastcall RuntimeNodeActionCallback(zClass_NodePartial *node);
+int __fastcall HandleEffectTemplateOffsetEvent(
     zEffectAnimEntry *self,
     zEffectAnimRefOffsetEvent *event
 );
-RECOIL_NOINLINE float RECOIL_FASTCALL UpdateBeamNodeBetweenPoints(
+float __fastcall UpdateBeamNodeBetweenPoints(
     zClass_NodePartial *obj3d,
     const zVec3 *srcPos,
     const zVec3 *destPos
 );
-RECOIL_NOINLINE float RECOIL_FASTCALL UpdateBeamNodeBetweenFractions(
+float __fastcall UpdateBeamNodeBetweenFractions(
     zClass_NodePartial *obj3d,
     const zVec3 *srcPos,
     float t0,
     const zVec3 *destPos,
     float t1
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleSampleRefOffsetEvent(
+int __fastcall HandleSampleRefOffsetEvent(
     zEffectAnimEntry *self,
     zEffectAnimRefOffsetEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleSoundEvent(
+int __fastcall HandleSoundEvent(
     zEffectAnimEntry *self,
     zEffectAnimSoundEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleLightEvent(
+int __fastcall HandleLightEvent(
     zEffectAnimEntry *self,
     zEffectAnimLightEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleLightAnimEvent(
+int __fastcall HandleLightAnimEvent(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *sequenceRuntime,
     zEffectLightRangeSpecularAnimEvent *animEvent
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleFogEvent(
+int __fastcall HandleFogEvent(
     zEffectAnimEntry *self,
     zEffectFogEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleCameraParamsEvent(
+int __fastcall HandleCameraParamsEvent(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *sequenceRuntime,
     zEffectCameraEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AnimateCameraParamsOverTime(
+int __fastcall AnimateCameraParamsOverTime(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *sequenceRuntime,
     zEffectCameraAnimEvent *animEvent
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FindNearestPickCandidateBelowPoint(
+int __fastcall FindNearestPickCandidateBelowPoint(
     const zVec3 *point,
     zClassDiPickCandidateEntry *outCandidate
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleNodeAnimEvent(
+int __fastcall HandleNodeAnimEvent(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *sequenceRuntime,
     zEffectNodeAnimEvent *nodeAnimEvent
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AnimateNodeOverTime(
+int __fastcall AnimateNodeOverTime(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *sequenceRuntime,
     zEffectNodeAnimEvent *nodeAnimEvent
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleActivateEvent(
+int __fastcall HandleActivateEvent(
     zEffectAnimEntry *self,
     zEffectActivateEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandlePositionEvent(
+int __fastcall HandlePositionEvent(
     zEffectAnimEntry *self,
     zEffectTransformEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleNodeScaleEvent(
+int __fastcall HandleNodeScaleEvent(
     zEffectAnimEntry *self,
     zEffectNodeScaleEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleRotationEvent(
+int __fastcall HandleRotationEvent(
     zEffectAnimEntry *self,
     zEffectTransformEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleAddChildEvent(
+int __fastcall HandleAddChildEvent(
     zEffectAnimEntry *self,
     zEffectParentChildEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleRemoveChildEvent(
+int __fastcall HandleRemoveChildEvent(
     zEffectAnimEntry *self,
     zEffectParentChildEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleAttachEvent(
+int __fastcall HandleAttachEvent(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *sequenceRuntime,
     zEffectAttachEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleSurfaceStopEvent(
+int __fastcall HandleSurfaceStopEvent(
     zEffectAnimEntry *self,
     zEffectSurfaceControlEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleSurfacePlayEvent(
+int __fastcall HandleSurfacePlayEvent(
     zEffectAnimEntry *self,
     zEffectSurfaceControlEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleSurfaceRefEvent(
+int __fastcall HandleSurfaceRefEvent(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *runtime,
     zEffectSurfaceRefEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleDetachEvent(
+int __fastcall HandleDetachEvent(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *runtime,
     zEffectBeamDetachEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleScreenColorFxEvent(
+int __fastcall HandleScreenColorFxEvent(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *sequenceRuntime,
     zEffectScreenColorFxEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleScreenOverlayFxEvent(
+int __fastcall HandleScreenOverlayFxEvent(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *sequenceRuntime,
     zEffectScreenOverlayFxEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleTransformRefsEvent(
+int __fastcall HandleTransformRefsEvent(
     zEffectAnimEntry *self,
     zEffectTransformRefsEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleNamedAnimStopEvent(
+int __fastcall HandleNamedAnimStopEvent(
     zEffectAnimEntry *self,
     zEffectAnimEmitterEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleEmitterPlayEvent(
+int __fastcall HandleEmitterPlayEvent(
     zEffectAnimEntry *self,
     zEffectAnimEmitterEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleConditionalChainEvent(
+int __fastcall HandleConditionalChainEvent(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *runtime,
     zEffectConditionalEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleEmitterResetEvent(zEffectAnimSurfaceRuntime *runtime);
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleEmitterLoopEvent(
+int __fastcall HandleEmitterResetEvent(zEffectAnimSurfaceRuntime *runtime);
+int __fastcall HandleEmitterLoopEvent(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *runtime,
     zEffectAnimLoopEvent *loopEvent
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleEmitterStopEvent(
+int __fastcall HandleEmitterStopEvent(
     zEffectAnimEntry *self,
     zEffectAnimEmitterEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SkipConditionalChainToEnd(
+int __fastcall SkipConditionalChainToEnd(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *runtime,
     void *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleNoOpMarkerEvent(
+int __fastcall HandleNoOpMarkerEvent(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *runtime,
     void *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleCallbackEvent(
+int __fastcall HandleCallbackEvent(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *runtime,
     zEffectAnimCallbackEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleTopMessageEvent(
+int __fastcall HandleTopMessageEvent(
     zEffectAnimEntry *self,
     zEffectTopMessageEvent *event
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL CleanupLightRefs(zEffectAnimEntry *self);
-RECOIL_NOINLINE int RECOIL_FASTCALL CleanupSoundRefs(zEffectAnimEntry *self);
-RECOIL_NOINLINE int RECOIL_CDECL Reset();
-RECOIL_NOINLINE int RECOIL_CDECL ShutdownAll();
+int __fastcall CleanupLightRefs(zEffectAnimEntry *self);
+int __fastcall CleanupSoundRefs(zEffectAnimEntry *self);
+int Reset();
+int ShutdownAll();
 } // namespace zEffect

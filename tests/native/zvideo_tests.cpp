@@ -20,7 +20,7 @@ struct zVideoFxPass3Element {
     HudUiElement base;
     HudUiRect *clipRectOrNull;
 
-    void RECOIL_THISCALL Draw();
+    void Draw();
 };
 
 struct zVideoFxPass3RootElement : zVideoFxPass3Element {
@@ -28,7 +28,7 @@ struct zVideoFxPass3RootElement : zVideoFxPass3Element {
     unsigned char unknown_3a[0x06];
     double alpha;
 
-    void RECOIL_THISCALL ApplyOverlayRect();
+    void ApplyOverlayRect();
 };
 
 struct zVideoFxPass3Slot : zVideoFxPass3Element {
@@ -38,8 +38,8 @@ struct zVideoFxPass3Slot : zVideoFxPass3Element {
     float sinFreq;
     float sinPhase;
 
-    zVideoFxPass3Slot *RECOIL_THISCALL Constructor();
-    void RECOIL_THISCALL ApplyToCurrentSurface();
+    zVideoFxPass3Slot * Constructor();
+    void ApplyToCurrentSurface();
 };
 
 struct zVideoFxPass3Config {
@@ -56,11 +56,11 @@ struct zVideoFxPass3Config {
     zVideoFxPass3Slot slots[5];
     int slotWriteIndex;
 
-    zVideoFxPass3Config *RECOIL_THISCALL Constructor();
-    void RECOIL_THISCALL Destructor();
-    static void RECOIL_CDECL CrtInitGlobalSingleton();
-    static zVideoFxPass3Config *RECOIL_CDECL ConstructGlobalSingleton();
-    static void RECOIL_CDECL DestroyGlobalSingleton();
+    zVideoFxPass3Config * Constructor();
+    void Destructor();
+    static void CrtInitGlobalSingleton();
+    static zVideoFxPass3Config *ConstructGlobalSingleton();
+    static void DestroyGlobalSingleton();
 };
 
 namespace {
@@ -111,7 +111,7 @@ zVidRect32 g_zVideoRenderFrameClearRects[4];
     int g_zVideoTestUnlockSurfaceCount;
     zVideo_SurfaceStatePartial *g_zVideoTestUnlockSurfaceState;
 
-int RECOIL_FASTCALL CapturePaletteSetEntries(unsigned short firstEntry,
+int __fastcall CapturePaletteSetEntries(unsigned short firstEntry,
                                              unsigned short entryCount,
                                              PALETTEENTRY *entries) {
     ++g_zVideoPaletteCaptureCallCount;
@@ -129,11 +129,11 @@ void ResetFxPass3DrawCapture() {
     }
 }
 
-void RECOIL_FASTCALL CaptureFxPass3DrawBase(zVideoFxPass3Element *) {
+void __fastcall CaptureFxPass3DrawBase(zVideoFxPass3Element *) {
     ++g_fxPass3DrawBaseCount;
 }
 
-void RECOIL_FASTCALL CaptureFxPass3ApplyCurrentInput(zVideoFxPass3Element *element) {
+void __fastcall CaptureFxPass3ApplyCurrentInput(zVideoFxPass3Element *element) {
     if (g_fxPass3ApplyCount < 4) {
         g_fxPass3ApplyRects[g_fxPass3ApplyCount] = element->clipRectOrNull;
     }
@@ -663,31 +663,31 @@ void RestoreFunctionPatch(CodeFunctionPatch &patch) {
     patch.active = 0;
 }
 
-int RECOIL_CDECL FakeCreateFullscreenHalfResSurfaces() {
+int FakeCreateFullscreenHalfResSurfaces() {
     ++gFakeCreateFullscreenHalfResCalls;
     return 11;
 }
 
-int RECOIL_CDECL FakeCreateFullscreenSoftwareSurfaces() {
+int FakeCreateFullscreenSoftwareSurfaces() {
     ++gFakeCreateFullscreenSoftwareCalls;
     return 22;
 }
 
-int RECOIL_CDECL FakeCreateFullscreenHardwareSurfaces() {
+int FakeCreateFullscreenHardwareSurfaces() {
     ++gFakeCreateFullscreenHardwareCalls;
     return 33;
 }
 
-void RECOIL_CDECL FakeTeardownVideoSubsystem() {
+void FakeTeardownVideoSubsystem() {
     ++gFakeTeardownVideoSubsystemCalls;
 }
 
-int RECOIL_CDECL FakeCreateDirectDraw2ForSelectedDevice() {
+int FakeCreateDirectDraw2ForSelectedDevice() {
     ++gFakeCreateDirectDraw2ForSelectedDeviceCalls;
     return 0;
 }
 
-int RECOIL_FASTCALL FakeEnumerateDirect3DDevicesForRecord(
+int __fastcall FakeEnumerateDirect3DDevicesForRecord(
     zVidHwApiDeviceRecordPartial *entry
 ) {
     ++gFakeEnumerateDirect3DDevicesForRecordCalls;
@@ -702,12 +702,12 @@ void RecordSetVideoModeStep(int step) {
     ++gFakeSetVideoModeStepCount;
 }
 
-int RECOIL_CDECL FakeSetVideoMode_SetDisplayMode() {
+int FakeSetVideoMode_SetDisplayMode() {
     RecordSetVideoModeStep(1);
     return gFakeSetVideoModeSetDisplayModeResult;
 }
 
-int RECOIL_CDECL FakeSetVideoMode_RestoreDisplaySurfaces() {
+int FakeSetVideoMode_RestoreDisplaySurfaces() {
     RecordSetVideoModeStep(2);
     int index = gFakeSetVideoModeRestoreCalls;
     if (index > 1) {
@@ -717,27 +717,27 @@ int RECOIL_CDECL FakeSetVideoMode_RestoreDisplaySurfaces() {
     return gFakeSetVideoModeRestoreResults[index];
 }
 
-int RECOIL_CDECL FakeSetVideoMode_ReleaseAllInterfacesAndSurfaces() {
+int FakeSetVideoMode_ReleaseAllInterfacesAndSurfaces() {
     RecordSetVideoModeStep(3);
     return gFakeSetVideoModeReleaseResult;
 }
 
-int RECOIL_CDECL FakeSetVideoMode_CreateFullscreenSurfacesForRenderer() {
+int FakeSetVideoMode_CreateFullscreenSurfacesForRenderer() {
     RecordSetVideoModeStep(4);
     return gFakeSetVideoModeCreateSurfacesResult;
 }
 
-int RECOIL_CDECL FakeSetVideoMode_CreateDeviceState() {
+int FakeSetVideoMode_CreateDeviceState() {
     RecordSetVideoModeStep(5);
     return gFakeSetVideoModeCreateDeviceResult;
 }
 
-int RECOIL_CDECL FakeSetVideoMode_VerifyFullscreenSurfaceLocks() {
+int FakeSetVideoMode_VerifyFullscreenSurfaceLocks() {
     RecordSetVideoModeStep(6);
     return gFakeSetVideoModeVerifyLocksResult;
 }
 
-int RECOIL_FASTCALL FakeUploadImageToSurface(
+int __fastcall FakeUploadImageToSurface(
     IDirectDrawSurface *uploadSurface,
     zVidImagePartial *image,
     int useAlpha
@@ -783,7 +783,7 @@ ULONG __stdcall FakeCom_Release(void *self) {
     return 1;
 }
 
-int RECOIL_STDCALL FakeSurfaceLockVerifier_VerifySurfaceState(
+int __stdcall FakeSurfaceLockVerifier_VerifySurfaceState(
     zVideo_SurfaceLockVerifier *,
     zVideo_SurfaceLockVerifyArgs *args
 ) {
@@ -792,7 +792,7 @@ int RECOIL_STDCALL FakeSurfaceLockVerifier_VerifySurfaceState(
     return gFakeSurfaceLockVerifierVerifyResult;
 }
 
-unsigned int RECOIL_STDCALL FakeSurfaceLockVerifier_Release(
+unsigned int __stdcall FakeSurfaceLockVerifier_Release(
     zVideo_SurfaceLockVerifier *
 ) {
     ++gFakeSurfaceLockVerifierReleaseCalls;
@@ -2063,19 +2063,19 @@ void ConfigureFakeDirectDrawSurface3FlipResults(
     gFakeDirectDrawSurface3FlipResultCount = 2;
 }
 
-void RECOIL_CDECL CaptureFlushSortedPolys() {
+void CaptureFlushSortedPolys() {
     ++g_zVideoRenderFrameFlushSortedCount;
 }
 
-void RECOIL_CDECL CaptureFlushOverwritePolys() {
+void CaptureFlushOverwritePolys() {
     ++g_zVideoRenderFrameFlushOverwriteCount;
 }
 
-void RECOIL_CDECL CaptureFlushQuadBatch() {
+void CaptureFlushQuadBatch() {
     ++g_zVideoRenderFrameFlushQuadCount;
 }
 
-void RECOIL_FASTCALL CaptureClearZBufferRect(zVidRect32 *rect) {
+void __fastcall CaptureClearZBufferRect(zVidRect32 *rect) {
     const int index = g_zVideoRenderFrameClearRectCount;
     if (index < 4) {
         g_zVideoRenderFrameClearRects[index] = *rect;
@@ -2083,14 +2083,14 @@ void RECOIL_FASTCALL CaptureClearZBufferRect(zVidRect32 *rect) {
     ++g_zVideoRenderFrameClearRectCount;
 }
 
-int RECOIL_FASTCALL CaptureLockSurfaceState(zVideo_SurfaceStatePartial *surfaceState) {
+int __fastcall CaptureLockSurfaceState(zVideo_SurfaceStatePartial *surfaceState) {
     ++g_zVideoTestLockSurfaceCount;
     g_zVideoTestLockSurfaceState = surfaceState;
     surfaceState->locked = 1;
     return 1;
 }
 
-int RECOIL_FASTCALL CaptureUnlockSurfaceState(zVideo_SurfaceStatePartial *surfaceState) {
+int __fastcall CaptureUnlockSurfaceState(zVideo_SurfaceStatePartial *surfaceState) {
     ++g_zVideoTestUnlockSurfaceCount;
     g_zVideoTestUnlockSurfaceState = surfaceState;
     surfaceState->locked = 0;
@@ -2121,7 +2121,7 @@ int FloatBits(float value) {
 struct TestFxPass3UpdateElement {
     HudUiElement base;
 
-    void RECOIL_THISCALL Update(float deltaSeconds) {
+    void Update(float deltaSeconds) {
         const int index = g_fxPass3UpdateCount;
         if (index < 4) {
             g_fxPass3UpdateDelta[index] = deltaSeconds;
@@ -4635,19 +4635,19 @@ zVidRect32 *g_lastClearSwZRect;
 zVidRect32 *g_lastClearPrimaryRect;
 zVideo_SurfaceStatePartial *g_lastClearPrimaryState;
 
-void RECOIL_FASTCALL ClearSwFake(zVidRect32 *surfaceRect, zVidRect32 *zRect) {
+void __fastcall ClearSwFake(zVidRect32 *surfaceRect, zVidRect32 *zRect) {
     ++g_clearSwCalls;
     g_lastClearSwSurfaceRect = surfaceRect;
     g_lastClearSwZRect = zRect;
 }
 
-void RECOIL_FASTCALL ClearStateFake(zVidRect32 *rect, zVideo_SurfaceStatePartial *surfaceState) {
+void __fastcall ClearStateFake(zVidRect32 *rect, zVideo_SurfaceStatePartial *surfaceState) {
     ++g_clearPrimaryCalls;
     g_lastClearPrimaryRect = rect;
     g_lastClearPrimaryState = surfaceState;
 }
 
-std::int32_t RECOIL_FASTCALL SetVideoModeFake(std::int32_t) {
+std::int32_t __fastcall SetVideoModeFake(std::int32_t) {
     ++g_setVideoModeCalls;
     return g_setVideoModeResult;
 }
@@ -5039,13 +5039,13 @@ std::int32_t g_lastAdjustBlitPrimaryToSwFirst;
 std::int32_t g_lastTextureMemoryQueryFlags;
 std::int32_t g_lastDeviceMemoryQueryFlags;
 
-void RECOIL_FASTCALL BltPrimaryToSwDirectFake(zVidRect32 *srcRect, zVidRect32 *dstRect) {
+void __fastcall BltPrimaryToSwDirectFake(zVidRect32 *srcRect, zVidRect32 *dstRect) {
     if (srcRect == nullptr && dstRect == nullptr) {
         ++g_bltPrimaryToSwDirectCalls;
     }
 }
 
-std::int32_t RECOIL_FASTCALL AdjustSurfacesFake(zVidRect32 *, zVidRect32 *,
+std::int32_t __fastcall AdjustSurfacesFake(zVidRect32 *, zVidRect32 *,
                                                 std::int32_t waitForPresent,
                                                 std::int32_t blitPrimaryToSwFirst) {
     ++g_adjustSurfaceCalls;
@@ -5054,7 +5054,7 @@ std::int32_t RECOIL_FASTCALL AdjustSurfacesFake(zVidRect32 *, zVidRect32 *,
     return 0x123;
 }
 
-std::int32_t RECOIL_FASTCALL TextureMemoryQueryFake(std::int32_t flags, std::int32_t *totalBytes,
+std::int32_t __fastcall TextureMemoryQueryFake(std::int32_t flags, std::int32_t *totalBytes,
                                                     std::int32_t *freeBytes) {
     ++g_textureMemoryQueryCalls;
     g_lastTextureMemoryQueryFlags = flags;
@@ -5063,7 +5063,7 @@ std::int32_t RECOIL_FASTCALL TextureMemoryQueryFake(std::int32_t flags, std::int
     return 1;
 }
 
-std::int32_t RECOIL_FASTCALL DeviceMemoryQueryFake(std::int32_t flags, std::int32_t *totalBytes,
+std::int32_t __fastcall DeviceMemoryQueryFake(std::int32_t flags, std::int32_t *totalBytes,
                                                    std::int32_t *freeBytes) {
     ++g_deviceMemoryQueryCalls;
     g_lastDeviceMemoryQueryFlags = flags;
@@ -5433,8 +5433,7 @@ extern "C" int zvideo_dd_enum_direct3d_device_callback_smoke(void) {
             0,
             &entry
         ) == 1;
-    D3DDEVICEDESC *storedDesc0 =
-        reinterpret_cast<D3DDEVICEDESC *>(entry.m_d3dDrivers[0].m_hwDesc);
+    D3DDEVICEDESC *storedDesc0 = &entry.m_d3dDrivers[0].m_hwDesc;
     const bool acceptWithGuidOk =
         acceptWithGuidResult &&
         entry.m_acceptedD3DDeviceCount == 1 &&
@@ -5466,8 +5465,7 @@ extern "C" int zvideo_dd_enum_direct3d_device_callback_smoke(void) {
             0,
             &entry
         ) == 1;
-    D3DDEVICEDESC *storedDesc1 =
-        reinterpret_cast<D3DDEVICEDESC *>(entry.m_d3dDrivers[1].m_hwDesc);
+    D3DDEVICEDESC *storedDesc1 = &entry.m_d3dDrivers[1].m_hwDesc;
     const bool acceptNullGuidOk =
         acceptNullGuidResult &&
         entry.m_acceptedD3DDeviceCount == 2 &&
@@ -12374,7 +12372,7 @@ extern "C" int zvid_image_destroy_smoke(void) {
 
 extern "C" int zvideo_create_texture_record_guards_smoke(void) {
     zVidD3DDriverRecordPartial selectedD3DDevice{};
-    D3DDEVICEDESC *selectedDesc = reinterpret_cast<D3DDEVICEDESC *>(selectedD3DDevice.m_hwDesc);
+    D3DDEVICEDESC *selectedDesc = &selectedD3DDevice.m_hwDesc;
     selectedDesc->dwMaxTextureWidth = 64;
     selectedDesc->dwMaxTextureHeight = 64;
     g_zVideo_pSelectedD3DDeviceInfo = &selectedD3DDevice;
@@ -12455,8 +12453,7 @@ extern "C" int zvideo_dd3d_create_texture_record_smoke(void) {
         g_zVideo_TexturePixelPack_NonRgbMaskShifted;
 
     zVidD3DDriverRecordPartial selectedD3DDevice{};
-    D3DDEVICEDESC *selectedDesc =
-        reinterpret_cast<D3DDEVICEDESC *>(selectedD3DDevice.m_hwDesc);
+    D3DDEVICEDESC *selectedDesc = &selectedD3DDevice.m_hwDesc;
     selectedDesc->dwMaxTextureWidth = 64;
     selectedDesc->dwMaxTextureHeight = 64;
     g_zVideo_pSelectedD3DDeviceInfo = &selectedD3DDevice;
@@ -13198,7 +13195,7 @@ extern "C" int zvideo_restore_iconic_fullscreen_window_smoke(void) {
 namespace {
 int g_videoShutdownCalls;
 
-void RECOIL_CDECL VideoShutdownFake() {
+void VideoShutdownFake() {
     ++g_videoShutdownCalls;
 }
 } // namespace

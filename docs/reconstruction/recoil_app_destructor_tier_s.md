@@ -4,7 +4,7 @@
 
 - Current source: `src/Battlesport/RecoilApp.cpp`.
 - Current functional target: `tools/functional_verify_targets/recoil_app_destructor.json`.
-- Current VC target: `tools/vc6_verify_targets/recoil_app_register_at_exit.json`.
+- Current VC target: `tools/vc5_verify_targets/recoil_app_register_at_exit.json`.
 - Binary Ninja evidence: the retail body at `0x42de60` installs an MSVC C++
   EH registration frame, pushes `MsvcEh::RecoilApp_Dtor_EhFrameHandlerThunk`
   at `0x4c9d78`, tracks cleanup state values `5`, `-1`, `6`, and `7`, then
@@ -17,15 +17,15 @@
 
 - Current source: `src/Battlesport/RecoilApp.cpp`.
 - Current functional target: `tools/functional_verify_targets/recoil_app_constructor.json`.
-- Current VC target: `tools/vc6_verify_targets/recoil_app_register_at_exit.json`.
+- Current VC target: `tools/vc5_verify_targets/recoil_app_register_at_exit.json`.
 - Binary Ninja evidence: the retail body at `0x42dfa0` installs the paired
   MSVC C++ EH registration frame, pushes
   `MsvcEh::RecoilApp_Ctor_EhFrameHandlerThunk` at `0x4c9e26`, constructs the
   MFC/OLE base, attract FMV state, intro FMV script, mission FMV state, play
   state, MP exit state vtable, RecoilApp vtable, and transition timer.
 - Current byte evidence:
-  `python tools/recoil_vc6_verify.py 0x42dfa0 --build-root
-  build/vc6-verify-smoke-42dfa0-owner-call` fails under
+  `python tools/recoil_vc5_verify.py 0x42dfa0 --build-root
+  build/vc5-verify-smoke-42dfa0-owner-call` fails under
   `vc5_o2_ob1_facs` with 164 unmasked mismatches after 20 relocation-masked
   bytes. BN body size is 194 bytes and the VC object symbol is 128 bytes.
 - The former constructor owner dependency, 0x442c70
@@ -41,7 +41,7 @@
 ## EH Unwind Evidence
 
 - Binary Ninja types the destructor EH record at `0x4d5e68` as
-  `g_RecoilApp_Dtor_EhFuncInfo`. Its VC6 FuncInfo header has magic
+  `g_RecoilApp_Dtor_EhFuncInfo`. Its VC5SP3 FuncInfo header has magic
   `0x19930520`, `maxState == 8`, and unwind map pointer `0x4d5e88`.
 - Local evidence command:
   `python tools/recoil_msvc_eh_dump.py 0x4d5e68 0x4d5f18`.
@@ -108,7 +108,7 @@
 
 ## Current Byte Evidence
 
-- `python tools/recoil_vc6_verify.py 0x42de60` resolves to
+- `python tools/recoil_vc5_verify.py 0x42de60` resolves to
   `recoil_app_register_at_exit` and fails under the manifest's
   `vc5_o2_ob0_facs` profile with 146 unmasked mismatches after 16
   relocation-masked bytes. BN body size is 168 bytes, the VC object symbol is
@@ -116,15 +116,15 @@
 - A focused profile sweep over `vc5_o2_ob0_facs`, `vc5_o2_ob1_gx_facs`,
   `vc5_o2_ob1_md_gx_facs`, and `vc5_o2_ob2_gx_facs` produced the same
   146-mismatch, 96-byte non-EH object body. `Mfc42Abi.h` now guards the
-  `LVBKIMAGEA` and `COLORSCHEME` provider declarations against VC6 SDK header
-  definitions; VC6 profiles compile the MFC/OLE constructor path but do not
+  `LVBKIMAGEA` and `COLORSCHEME` provider declarations against VC5SP3 SDK header
+  definitions; VC5SP3 profiles compile the MFC/OLE constructor path but do not
   improve the 0x442c70 baseline shape.
 - The byte drift starts at function entry: the retail function begins with the
   EH registration prologue (`push -1`, frame-handler thunk, `fs:[0]` chain),
   while the authored object starts with the plain manual destructor prologue
   (`push esi`, `mov esi, ecx`, `push edi`).
-- `python tools/recoil_vc6_verify.py recoil_app_fmv_state_constructors
-  --build-root build/vc6-verify-final-recoil-app-fmv-state-constructors`
+- `python tools/recoil_vc5_verify.py recoil_app_fmv_state_constructors
+  --build-root build/vc5-verify-final-recoil-app-fmv-state-constructors`
   passes with zero unmasked byte mismatches for 0x42eb70
   `RecoilApp_AttractFmvState::Constructor`, 0x42ed30
   `RecoilApp_MissionFmvState::Constructor`, and 0x42eb00
@@ -138,13 +138,13 @@
   binary blockers: `operator delete` is an import/provider thunk and
   `CWinApp::~CWinApp` is the MFC provider chain.
 - Current tier S evidence:
-  `python tools/recoil_vc6_verify.py 0x4428b0 --build-root
-  build/vc6-verify-final-4428b0-tier-s` resolves to the local
+  `python tools/recoil_vc5_verify.py 0x4428b0 --build-root
+  build/vc5-verify-final-4428b0-tier-s` resolves to the local
   `recoil_app_mfc_ole_module_destructor` VC target and passes under
   `vc5_o2_ob1_facs` with zero unmasked byte mismatches after 12
   relocation-masked bytes. BN body size and VC object body size are both
   256 bytes.
-- The tier S source shape uses the VC5SP3 STL `std::deque<RecoilPtr32>`
+- The verification layout used for the tier S byte match uses the VC5SP3 STL `std::deque<RecoilPtr32>`
   destructor only under the 32-bit VC5 verification guard, with a static size
   check against `RecoilApp_StateQueue`. Native builds keep the recovered manual
   queue teardown because host STL deque layout is not ABI-compatible with the
@@ -165,13 +165,13 @@
 
 - `0x442c70 RecoilApp_MfcOleModuleOwner::RecoilApp_MfcOleModuleOwner` is
   tier S. Current tier S evidence:
-  `python tools/recoil_vc6_verify.py
+  `python tools/recoil_vc5_verify.py
   recoil_app_mfc_ole_module_constructor_s --build-root
-  build/vc6-verify-final-recoil-app-mfc-ole-module-constructor-s` passes
+  build/vc5-verify-final-recoil-app-mfc-ole-module-constructor-s` passes
   under `vc5_o2_ob1_facs` with zero unmasked byte mismatches after 4
   relocation-masked bytes. BN body size is 138 bytes, VC object size is
   144 bytes, and 6 trailing VC NOP bytes are trimmed.
-- The tier S source shape uses a VC5-only `RecoilApp_MfcOleModuleOwner` with a
+- The verification layout used for the tier S byte match uses a VC5-only `RecoilApp_MfcOleModuleOwner` with a
   real `CWinApp` provider subobject at offset zero, an explicit pad through
   offset `0x0c0`, the recovered Recoil-owned fields beginning at offset
   `0x0c4`, and a VC5SP3 `std::deque<RecoilPtr32>` member at offset `0x118`.
@@ -182,7 +182,7 @@
 
 ## Source-Model Blocker
 
-The current authored implementation is behavior-correct tier B but models the
+The current authored implementation is behavior-correct tier C but models the
 owner teardown as a hand-written `RecoilApp::Destructor()` body over raw
 embedded-state storage. The retail body has the shape of an MSVC-generated C++
 destructor cleanup chain for embedded member/base destruction. Tier S likely

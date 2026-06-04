@@ -9,7 +9,7 @@ namespace NetUi {
 
 // Reimplements 0x43ce80: NetUi::VerifyWinsock2OrPromptContinue
 // (D:\Proj\Battlesport\Net\NetUi.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL VerifyWinsock2OrPromptContinue(
+int __fastcall VerifyWinsock2OrPromptContinue(
     const char *caption,
     const char *messageFormat
 ) {

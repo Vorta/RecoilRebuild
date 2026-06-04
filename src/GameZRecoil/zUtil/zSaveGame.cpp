@@ -8,7 +8,7 @@
 #include <string.h>
 
 // Reimplements 0x4383e0: zUtil_SaveGameStateList_Init
-RECOIL_NOINLINE zUtil_SaveGameState *RECOIL_FASTCALL zUtil_SaveGameStateList_Init(
+zUtil_SaveGameState *__fastcall zUtil_SaveGameStateList_Init(
     zUtil_SaveGameState *self
 ) {
     self->unknown_10 = 0;
@@ -32,7 +32,7 @@ RECOIL_NOINLINE zUtil_SaveGameState *RECOIL_FASTCALL zUtil_SaveGameStateList_Ini
 }
 
 // Reimplements 0x4384e0: zUtil_SaveGameStateList_AllocAppend
-RECOIL_NOINLINE zUtil_SaveGameState *RECOIL_FASTCALL zUtil_SaveGameStateList_AllocAppend(
+zUtil_SaveGameState *__fastcall zUtil_SaveGameStateList_AllocAppend(
     zUtil_SaveGameState *self
 ) {
     zUtil_SaveGameState *const saveState =
@@ -65,7 +65,7 @@ RECOIL_NOINLINE zUtil_SaveGameState *RECOIL_FASTCALL zUtil_SaveGameStateList_All
 
 // Reimplements 0x438430: zUtil_SaveGameState::FreeOwnedResources
 // (D:\Proj\GameZRecoil\zUtil\zUtil.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zUtil_SaveGameState::FreeOwnedResources() {
+void zUtil_SaveGameState::FreeOwnedResources() {
     if (playerState->lifecycleState == 2) {
         Player::AiDiscardNegativeBranchPathNodes(this);
     }

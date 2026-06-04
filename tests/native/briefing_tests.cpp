@@ -53,11 +53,11 @@ void *g_briefingTickNoArgThis[16];
 void *g_briefingTickPanelSetTextThis;
 char g_briefingTickPanelSetText[0x100];
 
-int RECOIL_FASTCALL TestVideoSurfaceDispatch(zVideo_SurfaceStatePartial *) {
+int __fastcall TestVideoSurfaceDispatch(zVideo_SurfaceStatePartial *) {
     return 0;
 }
 
-int RECOIL_FASTCALL TestVideoSurfaceDispatchDisableBriefingRuntime(
+int __fastcall TestVideoSurfaceDispatchDisableBriefingRuntime(
     zVideo_SurfaceStatePartial *) {
     if (g_Briefing_Runtime != nullptr) {
         *reinterpret_cast<int *>(reinterpret_cast<unsigned char *>(g_Briefing_Runtime) + 4) =
@@ -67,11 +67,11 @@ int RECOIL_FASTCALL TestVideoSurfaceDispatchDisableBriefingRuntime(
     return 0;
 }
 
-int RECOIL_FASTCALL TestAdjustSurfaces(zVidRect32 *, zVidRect32 *, int, int) {
+int __fastcall TestAdjustSurfaces(zVidRect32 *, zVidRect32 *, int, int) {
     return 0;
 }
 
-int RECOIL_FASTCALL TestAdjustSurfacesStopBriefingThread(zVidRect32 *, zVidRect32 *, int,
+int __fastcall TestAdjustSurfacesStopBriefingThread(zVidRect32 *, zVidRect32 *, int,
                                                          int) {
     ++g_briefingAdjustSurfaceCalls;
     if (g_briefingStopRequested != 0 ||
@@ -82,7 +82,7 @@ int RECOIL_FASTCALL TestAdjustSurfacesStopBriefingThread(zVidRect32 *, zVidRect3
     return 0;
 }
 
-void RECOIL_FASTCALL TestBriefingBltSourceToPrimary(zVidImagePartial *self, int dstX, int dstY,
+void __fastcall TestBriefingBltSourceToPrimary(zVidImagePartial *self, int dstX, int dstY,
                                                     int clipFlags, zVidRect32 *srcRect) {
     ++g_briefingBlitCount;
     g_briefingBlitImage = static_cast<zVidImagePartial *>(self);
@@ -96,7 +96,7 @@ void RECOIL_FASTCALL TestBriefingBltSourceToPrimary(zVidImagePartial *self, int 
 }
 
 struct TestBriefingTickTarget {
-    void RECOIL_THISCALL DrawBase() {
+    void DrawBase() {
         if (g_briefingTickDrawBaseCount < 16) {
             g_briefingTickNoArgThis[g_briefingTickDrawBaseCount] = this;
         }
@@ -104,7 +104,7 @@ struct TestBriefingTickTarget {
         ++g_briefingTickDrawBaseCount;
     }
 
-    void RECOIL_THISCALL Invalidate() {
+    void Invalidate() {
         if (g_briefingTickInvalidateCount < 16) {
             g_briefingTickNoArgThis[g_briefingTickInvalidateCount] = this;
         }
@@ -112,17 +112,17 @@ struct TestBriefingTickTarget {
         ++g_briefingTickInvalidateCount;
     }
 
-    void RECOIL_THISCALL Rebuild() {
+    void Rebuild() {
         ++g_briefingTickRebuildCount;
         g_briefingTickNoArgThis[0] = this;
     }
 
-    void RECOIL_THISCALL UpdateBounds() {
+    void UpdateBounds() {
         ++g_briefingTickUpdateBoundsCount;
         g_briefingTickNoArgThis[1] = this;
     }
 
-    void RECOIL_THISCALL SetVisible(int visible) {
+    void SetVisible(int visible) {
         if (g_briefingTickSetVisibleCount < 8) {
             g_briefingTickSetVisibleThis[g_briefingTickSetVisibleCount] = this;
             g_briefingTickSetVisibleValue[g_briefingTickSetVisibleCount] = visible;
@@ -132,7 +132,7 @@ struct TestBriefingTickTarget {
     }
 };
 
-void RECOIL_CDECL TestBriefingTickPanelSetText(void *self, const char *format, ...) {
+void TestBriefingTickPanelSetText(void *self, const char *format, ...) {
     g_briefingTickPanelSetTextThis = self;
     std::strncpy(g_briefingTickPanelSetText, format, sizeof(g_briefingTickPanelSetText) - 1);
     g_briefingTickPanelSetText[sizeof(g_briefingTickPanelSetText) - 1] = '\0';
@@ -140,7 +140,7 @@ void RECOIL_CDECL TestBriefingTickPanelSetText(void *self, const char *format, .
 
 unsigned int MakeBriefingTickDrawBaseThunk() {
     union MemberToFunction {
-        void (RECOIL_THISCALL TestBriefingTickTarget::*member)();
+        void ( TestBriefingTickTarget::*member)();
         unsigned int fn;
     };
 
@@ -151,7 +151,7 @@ unsigned int MakeBriefingTickDrawBaseThunk() {
 
 unsigned int MakeBriefingTickInvalidateThunk() {
     union MemberToFunction {
-        void (RECOIL_THISCALL TestBriefingTickTarget::*member)();
+        void ( TestBriefingTickTarget::*member)();
         unsigned int fn;
     };
 
@@ -162,7 +162,7 @@ unsigned int MakeBriefingTickInvalidateThunk() {
 
 unsigned int MakeBriefingTickRebuildThunk() {
     union MemberToFunction {
-        void (RECOIL_THISCALL TestBriefingTickTarget::*member)();
+        void ( TestBriefingTickTarget::*member)();
         unsigned int fn;
     };
 
@@ -173,7 +173,7 @@ unsigned int MakeBriefingTickRebuildThunk() {
 
 unsigned int MakeBriefingTickUpdateBoundsThunk() {
     union MemberToFunction {
-        void (RECOIL_THISCALL TestBriefingTickTarget::*member)();
+        void ( TestBriefingTickTarget::*member)();
         unsigned int fn;
     };
 
@@ -184,7 +184,7 @@ unsigned int MakeBriefingTickUpdateBoundsThunk() {
 
 unsigned int MakeBriefingTickSetVisibleThunk() {
     union MemberToFunction {
-        void (RECOIL_THISCALL TestBriefingTickTarget::*member)(int);
+        void ( TestBriefingTickTarget::*member)(int);
         unsigned int fn;
     };
 
@@ -207,13 +207,13 @@ void ResetBriefingTickDispatchLog() {
 }
 
 int CallBriefingActionTick(void *action, float deltaSec) {
-    typedef int(RECOIL_THISCALL *TickFn)(void *self, float deltaSec);
+    typedef int( *TickFn)(void *self, float deltaSec);
     const unsigned int *const vtable = *reinterpret_cast<unsigned int *const *>(action);
     return ((TickFn)(vtable[0]))(action, deltaSec);
 }
 
 struct TestBriefingTransportProgress : HudUiBriefingTransportProgress {
-    void RECOIL_THISCALL SetNormalizedValue(float value) {
+    void SetNormalizedValue(float value) {
         ++g_setProgressCount;
         g_setProgressValue = value;
         g_setProgressThis = this;
@@ -223,7 +223,7 @@ struct TestBriefingTransportProgress : HudUiBriefingTransportProgress {
 struct TestBriefingInvalidatedElement {
     unsigned int *vptr;
 
-    void RECOIL_THISCALL Invalidate() {
+    void Invalidate() {
         if (g_invalidateCount < 8) {
             g_invalidateThis[g_invalidateCount] = this;
         }
@@ -235,7 +235,7 @@ struct TestBriefingInvalidatedElement {
 struct TestBriefingVisibleElement {
     unsigned int *vptr;
 
-    void RECOIL_THISCALL SetVisible(int visible) {
+    void SetVisible(int visible) {
         if (g_briefingSetVisibleCount < 16) {
             g_briefingSetVisibleThis[g_briefingSetVisibleCount] = this;
             g_briefingSetVisibleValue[g_briefingSetVisibleCount] = visible;
@@ -246,7 +246,7 @@ struct TestBriefingVisibleElement {
 };
 
 struct TestBriefingCompositePanelEntry : HudUiCompositePanelEntry {
-    HudUiCompositePanelEntry *RECOIL_THISCALL ScalarDeletingDtor(unsigned int flags) {
+    HudUiCompositePanelEntry * ScalarDeletingDtor(unsigned int flags) {
         if (g_briefingMessageEntryDtorCount < 4) {
             g_briefingMessageEntryDtorThis[g_briefingMessageEntryDtorCount] = this;
             g_briefingMessageEntryDtorFlags[g_briefingMessageEntryDtorCount] = flags;
@@ -258,7 +258,7 @@ struct TestBriefingCompositePanelEntry : HudUiCompositePanelEntry {
 };
 
 struct TestBriefingRuntime : HudUiBriefingRuntime {
-    HudUiBriefingRuntime *RECOIL_THISCALL ScalarDeletingDtor(std::uint32_t flags) {
+    HudUiBriefingRuntime * ScalarDeletingDtor(std::uint32_t flags) {
         ++g_deleteCount;
         g_deleteFlags = flags;
         g_deletedRuntime = this;
@@ -268,7 +268,7 @@ struct TestBriefingRuntime : HudUiBriefingRuntime {
 
 HudUiBriefingRuntimeScalarDeletingDestructor MakeScalarDeletingDtorThunk() {
     union MemberToFunction {
-        HudUiBriefingRuntime *(RECOIL_THISCALL TestBriefingRuntime::*member)(std::uint32_t);
+        HudUiBriefingRuntime *( TestBriefingRuntime::*member)(std::uint32_t);
         HudUiBriefingRuntimeScalarDeletingDestructor fn;
     };
 
@@ -279,7 +279,7 @@ HudUiBriefingRuntimeScalarDeletingDestructor MakeScalarDeletingDtorThunk() {
 
 unsigned int MakeSetNormalizedValueThunk() {
     union MemberToFunction {
-        void (RECOIL_THISCALL TestBriefingTransportProgress::*member)(float);
+        void ( TestBriefingTransportProgress::*member)(float);
         unsigned int fn;
     };
 
@@ -290,7 +290,7 @@ unsigned int MakeSetNormalizedValueThunk() {
 
 unsigned int MakeBriefingInvalidateThunk() {
     union MemberToFunction {
-        void (RECOIL_THISCALL TestBriefingInvalidatedElement::*member)();
+        void ( TestBriefingInvalidatedElement::*member)();
         unsigned int fn;
     };
 
@@ -301,7 +301,7 @@ unsigned int MakeBriefingInvalidateThunk() {
 
 unsigned int MakeBriefingSetVisibleThunk() {
     union MemberToFunction {
-        void (RECOIL_THISCALL TestBriefingVisibleElement::*member)(int);
+        void ( TestBriefingVisibleElement::*member)(int);
         unsigned int fn;
     };
 
@@ -312,7 +312,7 @@ unsigned int MakeBriefingSetVisibleThunk() {
 
 unsigned int MakeBriefingCompositeEntryDtorThunk() {
     union MemberToFunction {
-        HudUiCompositePanelEntry *(RECOIL_THISCALL TestBriefingCompositePanelEntry::*member)(
+        HudUiCompositePanelEntry *( TestBriefingCompositePanelEntry::*member)(
             unsigned int);
         unsigned int fn;
     };
@@ -756,7 +756,7 @@ extern "C" int briefing_locator_panel_blit_dirty_rect_smoke(void) {
     runtime->Constructor(3);
 
     auto *const locator = reinterpret_cast<HudUiCircle *>(storage + kLocatorPanelsOffset);
-    typedef void (RECOIL_THISCALL *DrawBaseFn)(HudUiCircle * self);
+    typedef void ( *DrawBaseFn)(HudUiCircle * self);
     DrawBaseFn const drawBase = reinterpret_cast<DrawBaseFn>(locator->base.ftable->slots[2]);
 
     g_zVideo_pfnBltSourceToPrimary = TestBriefingBltSourceToPrimary;
@@ -800,7 +800,7 @@ extern "C" int briefing_locator_panel_update_smoke(void) {
     runtime->Constructor(3);
 
     auto *const locator = reinterpret_cast<HudUiCircle *>(storage + kLocatorPanelsOffset);
-    typedef void (RECOIL_THISCALL *UpdateFn)(HudUiCircle * self, float deltaSec);
+    typedef void ( *UpdateFn)(HudUiCircle * self, float deltaSec);
     UpdateFn const update = reinterpret_cast<UpdateFn>(locator->base.ftable->slots[9]);
 
     const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
@@ -1040,7 +1040,7 @@ extern "C" int briefing_objective_picture_draw_noise_overlay_smoke(void) {
         reinterpret_cast<HudUiWidget *>(storage + kObjectivePictureOffset);
     float *const noiseAlpha =
         reinterpret_cast<float *>(storage + kObjectivePictureNoiseAlphaOffset);
-    typedef void (RECOIL_THISCALL *DrawFn)(HudUiWidget * self);
+    typedef void ( *DrawFn)(HudUiWidget * self);
     DrawFn const draw = reinterpret_cast<DrawFn>(picture->ftable->slots[1]);
 
     zVidImagePartial image{};

@@ -49,13 +49,13 @@ float g_zModel_UvQuantizeInvScale = 0.00390625f;
 namespace zModel_Const {
     // Reimplements 0x481530: zModel_Const::GetVertexMergeEpsilon
     // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
-    RECOIL_NOINLINE float RECOIL_CDECL GetVertexMergeEpsilon() {
+    float GetVertexMergeEpsilon() {
         return g_zModel_ConstVertexMergeEpsilon;
     }
 
     // Reimplements 0x481540: zModel_Const::SetVertexMergeEpsilon
     // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
-    RECOIL_NOINLINE void RECOIL_STDCALL SetVertexMergeEpsilon(float epsilon) {
+    void __stdcall SetVertexMergeEpsilon(float epsilon) {
         unsigned int bits;
         memcpy(
             &bits,
@@ -71,13 +71,13 @@ namespace zModel_Const {
 
     // Reimplements 0x481550: zModel_Const::SetCoplanarTolerance
     // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
-    RECOIL_NOINLINE void RECOIL_STDCALL SetCoplanarTolerance(float tolerance) {
+    void __stdcall SetCoplanarTolerance(float tolerance) {
         g_zModel_CoplanarTolerance = tolerance;
     }
 
     // Reimplements 0x481560: zModel_Const::SetColinearTolerance
     // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
-    RECOIL_NOINLINE void RECOIL_STDCALL SetColinearTolerance(float tolerance) {
+    void __stdcall SetColinearTolerance(float tolerance) {
         g_zModel_ColinearTolerance = tolerance;
     }
 }
@@ -85,7 +85,7 @@ namespace zModel_Const {
 namespace zModel_DiPool {
     // Reimplements 0x4815c0: zModel_DiPool::WriteToStream
     // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL WriteToStream(void *stream) {
+    int __fastcall WriteToStream(void *stream) {
         FILE *const file = (FILE *)(stream);
 
         if (fwrite(
@@ -319,7 +319,7 @@ namespace zModel_DiPool {
 
     // Reimplements 0x481bc0: zModel_DiPool::ReadHeaderFromStream
     // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL ReadHeaderFromStream(
+    int __fastcall ReadHeaderFromStream(
         void *stream,
         int *outCapacity,
         int *outInUseCount,
@@ -369,7 +369,7 @@ namespace zModel_DiPool {
 
     // Reimplements 0x481c50: zModel_DiPool::ReadEntryDynamicDataFromStream
     // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     ReadEntryDynamicDataFromStream(
         void *stream,
         zDiPartial *entry
@@ -563,7 +563,7 @@ namespace zModel_DiPool {
 
     // Reimplements 0x481aa0: zModel_DiPool::ReadEntryByIndexFromStream
     // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
-    RECOIL_NOINLINE RECOIL_NO_GS zDiPartial *RECOIL_FASTCALL
+    RECOIL_NO_GS zDiPartial *__fastcall
     ReadEntryByIndexFromStream(
         void *stream,
         int index
@@ -642,7 +642,7 @@ namespace zModel_DiPool {
 
     // Reimplements 0x481fa0: zModel_DiPool::ReadFromStream
     // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL ReadFromStream(void *stream) {
+    int __fastcall ReadFromStream(void *stream) {
         FILE *const file = (FILE *)(stream);
         const int oldCapacity = g_zModel_DiPoolCapacity;
 

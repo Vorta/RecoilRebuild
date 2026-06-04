@@ -82,14 +82,14 @@ bool TestFloatNear(float actual, float expected) {
     return delta < 0.0001f;
 }
 
-float RECOIL_FASTCALL TestDamageTimerCallback(void *context, float damageAmount) {
+float __fastcall TestDamageTimerCallback(void *context, float damageAmount) {
     ++g_TestDamageTimerCalls;
     g_TestDamageTimerContext = context;
     g_TestDamageTimerDamage = damageAmount;
     return damageAmount + *static_cast<float *>(context);
 }
 
-int RECOIL_FASTCALL TestOptCatalogHitCallback(void *context, OptCatalogEntryDef *entry,
+int __fastcall TestOptCatalogHitCallback(void *context, OptCatalogEntryDef *entry,
                                               OptCatalogHitEventPartial *hitEvent,
                                               float damageAmount) {
     ++g_TestHitCallbackCalls;
@@ -100,7 +100,7 @@ int RECOIL_FASTCALL TestOptCatalogHitCallback(void *context, OptCatalogEntryDef 
     return 77;
 }
 
-void RECOIL_FASTCALL TestOptCatalogFeedbackCallback(OptCatalogDamageHandlerPartial *handler,
+void __fastcall TestOptCatalogFeedbackCallback(OptCatalogDamageHandlerPartial *handler,
                                                     zClass_NodePartial *hitNode,
                                                     float damageAmount) {
     ++g_TestFeedbackCallbackCalls;
@@ -110,7 +110,7 @@ void RECOIL_FASTCALL TestOptCatalogFeedbackCallback(OptCatalogDamageHandlerParti
     g_OptCatalogDamageFeedbackIntensityScalar = 0.5f;
 }
 
-void RECOIL_FASTCALL TestOptCatalogImpactCallback(
+void __fastcall TestOptCatalogImpactCallback(
     OptCatalogEntryDef *entry, OptCatalogHitEventPartial *hitEvent,
     OptCatalogRuntimeInstanceStorage *runtimeInstance) {
     ++g_TestImpactCallbackCalls;
@@ -124,17 +124,17 @@ void RECOIL_FASTCALL TestOptCatalogImpactCallback(
                                          : -1;
 }
 
-int RECOIL_FASTCALL TestOptCatalogCraterRelayCallback(void *) {
+int __fastcall TestOptCatalogCraterRelayCallback(void *) {
     ++g_TestCraterRelayCalls;
     return g_TestCraterRelayResult;
 }
 
-int RECOIL_FASTCALL TestOptCatalogQSandRelayCallback(void *) {
+int __fastcall TestOptCatalogQSandRelayCallback(void *) {
     ++g_TestQSandRelayCalls;
     return g_TestQSandRelayResult;
 }
 
-void RECOIL_FASTCALL TestOptCatalogRemoveRuntimeRelayCallback(OptCatalogEntryDef *entry,
+void __fastcall TestOptCatalogRemoveRuntimeRelayCallback(OptCatalogEntryDef *entry,
                                                               zVec3 *pointOrVec3,
                                                               zClass_NodePartial *ownerNode) {
     ++g_TestRemoveRelayCalls;
@@ -143,20 +143,20 @@ void RECOIL_FASTCALL TestOptCatalogRemoveRuntimeRelayCallback(OptCatalogEntryDef
     g_TestRemoveRelayOwner = ownerNode;
 }
 
-void RECOIL_FASTCALL
+void __fastcall
 TestOptCatalogRuntimeUpdateCallback(OptCatalogRuntimeInstanceStorage *runtimeInstance) {
     ++g_TestRuntimeUpdateCalls;
     g_TestRuntimeUpdateLast = runtimeInstance;
 }
 
-int RECOIL_FASTCALL TestOptCatalogAllocRuntimeGateCallback(OptCatalogEntryDef *,
+int __fastcall TestOptCatalogAllocRuntimeGateCallback(OptCatalogEntryDef *,
                                                            void **saveStateSlot) {
     ++g_TestAllocRuntimeGateCalls;
     g_TestAllocRuntimeGateSaveStateSlot = saveStateSlot;
     return 0;
 }
 
-void RECOIL_FASTCALL TestLoadOptCatalogEntryCallback(zReader::Node *entryNode,
+void __fastcall TestLoadOptCatalogEntryCallback(zReader::Node *entryNode,
                                                      OptCatalogEntryDef *entry) {
     ++g_TestLoadOptCatalogCallbackCalls;
     g_TestLoadOptCatalogCallbackNode = entryNode;

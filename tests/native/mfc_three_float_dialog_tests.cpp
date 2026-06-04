@@ -142,7 +142,7 @@ void RestoreFunctionPatch(CodeFunctionPatch &patch)
     patch.address = 0;
 }
 
-int RECOIL_FASTCALL FakeThreeFloatUpdateData(MfcThreeFloatDialog *dialog, void *,
+int __fastcall FakeThreeFloatUpdateData(MfcThreeFloatDialog *dialog, void *,
                                              BOOL saveAndValidate)
 {
     if (g_threeFloatUpdateDataCount < 8) {
@@ -163,12 +163,12 @@ int RECOIL_FASTCALL FakeThreeFloatUpdateData(MfcThreeFloatDialog *dialog, void *
     return 1;
 }
 
-void RECOIL_FASTCALL FakeThreeFloatOnOK(MfcThreeFloatDialog *, void *)
+void __fastcall FakeThreeFloatOnOK(MfcThreeFloatDialog *, void *)
 {
     ++g_threeFloatOnOkCount;
 }
 
-long RECOIL_FASTCALL FakeThreeFloatDefault(MfcThreeFloatDialog *, void *)
+long __fastcall FakeThreeFloatDefault(MfcThreeFloatDialog *, void *)
 {
     ++g_threeFloatDefaultCount;
     return g_threeFloatDefaultReturn;

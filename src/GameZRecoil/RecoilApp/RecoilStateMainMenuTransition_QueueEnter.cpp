@@ -1,7 +1,7 @@
 #include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
 
 // Reimplements 0x415650: RecoilStateMainMenuTransition::QueueEnter
-void RECOIL_FASTCALL RecoilStateMainMenuTransition::QueueEnter(
+void __fastcall RecoilStateMainMenuTransition::QueueEnter(
     RecoilMainMenuEntryRoute entryRoute
 ) {
     g_RecoilState_MainMenuTransition.m_entryRoute = entryRoute;

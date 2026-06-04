@@ -316,7 +316,7 @@ bool FloatNear(float lhs, float rhs) {
 }
 
 struct HudSensorTestElement : HudUiElement {
-    HudSensorTestElement *RECOIL_THISCALL ScalarDeletingDestructor(std::uint32_t flags) {
+    HudSensorTestElement * ScalarDeletingDestructor(std::uint32_t flags) {
         ++g_hudSensorDeleteCallCount;
         g_hudSensorDeleteFlags = flags;
         if ((flags & 1u) != 0) {
@@ -326,7 +326,7 @@ struct HudSensorTestElement : HudUiElement {
         return this;
     }
 
-    void RECOIL_THISCALL SetVisible(std::int32_t visible) {
+    void SetVisible(std::int32_t visible) {
         ++g_hudSensorVisibleCallCount;
         g_hudSensorLastVisible = visible;
     }
@@ -414,12 +414,12 @@ void WriteEffectTestZrdFloat(HANDLE file, float value) {
     WriteEffectTestBytes(file, &value, sizeof(value));
 }
 
-void RECOIL_FASTCALL EffectAnimDispatchCallback(zEffectAnimActivationRecord *record) {
+void __fastcall EffectAnimDispatchCallback(zEffectAnimActivationRecord *record) {
     ++g_effectAnimDispatchCallCount;
     g_effectAnimDispatchRecord = record;
 }
 
-void RECOIL_FASTCALL EffectAnimEventCallback(zEffectAnimEntry *self, void *context,
+void __fastcall EffectAnimEventCallback(zEffectAnimEntry *self, void *context,
                                              std::int32_t value) {
     ++g_effectAnimEventCallbackCallCount;
     g_effectAnimEventCallbackSelf = self;
@@ -497,7 +497,7 @@ void StoreFloatBits(std::uint32_t &target, float value) {
     std::memcpy(&target, &value, sizeof(value));
 }
 
-void RECOIL_FASTCALL TestZbdDataReadyCallback(zZbdSectionCallbackCtx *callbackCtx,
+void __fastcall TestZbdDataReadyCallback(zZbdSectionCallbackCtx *callbackCtx,
                                               const char *sectionToken, void *buffer,
                                               unsigned int size, void *userData) {
     ++g_zbdDataReadyCallCount;
@@ -520,7 +520,7 @@ void ResetZbdPreLoadCalls() {
     std::memset(g_zbdPreLoadCalls, 0, sizeof(g_zbdPreLoadCalls));
 }
 
-int RECOIL_FASTCALL TestZbdPreLoadCallback(zZbdSectionCallbackCtx *callbackCtx,
+int __fastcall TestZbdPreLoadCallback(zZbdSectionCallbackCtx *callbackCtx,
                                            void *userData) {
     g_zbdPreLoadCtx = callbackCtx;
     g_zbdPreLoadUserData = userData;
@@ -558,7 +558,7 @@ int RECOIL_FASTCALL TestZbdPreLoadCallback(zZbdSectionCallbackCtx *callbackCtx,
     return control->result;
 }
 
-void RECOIL_FASTCALL TestZbdLoadDataReadyCallback(zZbdSectionCallbackCtx *callbackCtx,
+void __fastcall TestZbdLoadDataReadyCallback(zZbdSectionCallbackCtx *callbackCtx,
                                                   const char *sectionToken, void *buffer,
                                                   unsigned int size, void *userData) {
     const int index = g_zbdLoadCallCount++;
@@ -959,8 +959,8 @@ extern "C" int hud_sensor_map_bounds_and_save_state_smoke(void) {
     saveState.playerState = &playerState;
     if (tracker.SetTrackedSaveState(&saveState) != 1 ||
         tracker.trackedSaveStateSelection != &saveState ||
-        tracker.trackedWorldOriginPtr != reinterpret_cast<zVec3 *>(playerState.bytes + 0x3ec) ||
-        tracker.trackedForwardVecPtr != reinterpret_cast<zVec3 *>(playerState.bytes + 0x580) ||
+        tracker.trackedWorldOriginPtr != &playerState.worldPos ||
+        tracker.trackedForwardVecPtr != &playerState.cameraBasisCache ||
         tracker.mapZoom != 1.0f) {
         return 2;
     }

@@ -5,23 +5,23 @@ struct RecoilStateCredits {
     RecoilPtr32 vftable;
     RecoilPtr32 dialog;
 
-    RecoilStateCredits *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE static void RECOIL_CDECL StaticInitAndRegisterAtExit();
-    RECOIL_NOINLINE static void RECOIL_CDECL StaticInit();
-    RECOIL_NOINLINE static void RECOIL_CDECL RegisterAtExit();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnWndActivate(int activateCode);
-    RECOIL_NOINLINE int RECOIL_THISCALL OnTryBecomeCurrent();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnDeactivate();
-    RECOIL_NOINLINE ~RecoilStateCredits();
-    static void RECOIL_CDECL QueuePush();
+    RecoilStateCredits * Constructor();
+    static void StaticInitAndRegisterAtExit();
+    static void StaticInit();
+    static void RegisterAtExit();
+    void OnWndActivate(int activateCode);
+    int OnTryBecomeCurrent();
+    void OnDeactivate();
+    ~RecoilStateCredits();
+    static void QueuePush();
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateCredits) == 0x08);
 
 namespace {
 struct HudUiCreditsPanelVirtual {
-    virtual void RECOIL_THISCALL Update(float deltaSeconds) = 0;
-    virtual void RECOIL_THISCALL SetEnabled(int enabled) = 0;
-    virtual HudUiCreditsPanelVirtual *RECOIL_THISCALL ScalarDeletingDestructor(
+    virtual void Update(float deltaSeconds) = 0;
+    virtual void SetEnabled(int enabled) = 0;
+    virtual HudUiCreditsPanelVirtual * ScalarDeletingDestructor(
         unsigned int flags
     ) = 0;
 };
@@ -49,26 +49,26 @@ RecoilStateCredits g_RecoilStateCredits = {
 
 // Reimplements 0x409950: RecoilStateCredits::StaticInitAndRegisterAtExit
 // (D:\Proj\Battlesport\RecoilStateCredits.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RecoilStateCredits::StaticInitAndRegisterAtExit() {
+void RecoilStateCredits::StaticInitAndRegisterAtExit() {
     g_RecoilStateCredits.Constructor();
     StaticInit();
 }
 
 // Reimplements 0x409970: RecoilStateCredits::StaticInit
 // (D:\Proj\Battlesport\RecoilStateCredits.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RecoilStateCredits::StaticInit() {
+void RecoilStateCredits::StaticInit() {
     atexit(RegisterAtExit);
 }
 
 // Reimplements 0x409980: RecoilStateCredits::RegisterAtExit
 // Retail name is the registered at-exit callback; it destroys the global credits state.
-RECOIL_NOINLINE void RECOIL_CDECL RecoilStateCredits::RegisterAtExit() {
+void RecoilStateCredits::RegisterAtExit() {
     g_RecoilStateCredits.~RecoilStateCredits();
 }
 
 // Reimplements 0x409990: RecoilStateCredits::Constructor
 // (D:\Proj\Battlesport\RecoilStateCredits.cpp)
-RecoilStateCredits *RECOIL_THISCALL RecoilStateCredits::Constructor() {
+RecoilStateCredits * RecoilStateCredits::Constructor() {
     vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateCredits_Vtbl;
     dialog = 0;
     return this;
@@ -76,7 +76,7 @@ RecoilStateCredits *RECOIL_THISCALL RecoilStateCredits::Constructor() {
 
 // Reimplements 0x4099a0: RecoilStateCredits::OnWndActivate
 // (D:\Proj\Battlesport\RecoilStateCredits.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateCredits::OnWndActivate(
+void RecoilStateCredits::OnWndActivate(
     int activateCode
 ) {
     if (activateCode == 0) {
@@ -93,7 +93,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateCredits::OnWndActivate(
 
 // Reimplements 0x409a60: RecoilStateCredits::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\RecoilStateCredits.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateCredits::OnTryBecomeCurrent() {
+int RecoilStateCredits::OnTryBecomeCurrent() {
     HudUiCreditsPanel *creditsPanel =
         (HudUiCreditsPanel *) ::operator new(sizeof(HudUiCreditsPanel));
     if (creditsPanel != 0) {
@@ -107,7 +107,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL RecoilStateCredits::OnTryBecomeCurrent() {
 
 // Reimplements 0x409ad0: RecoilStateCredits::OnDeactivate
 // (D:\Proj\Battlesport\RecoilStateCredits.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateCredits::OnDeactivate() {
+void RecoilStateCredits::OnDeactivate() {
     HudUiCreditsPanelVirtual *dialogView = (HudUiCreditsPanelVirtual *)dialog;
     if (dialogView == 0) {
         return;
@@ -126,7 +126,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL RecoilStateCredits::OnDeactivate() {
 
 // Reimplements 0x4099f0: RecoilStateCredits::Destructor
 // (D:\Proj\Battlesport\RecoilStateCredits.cpp)
-RECOIL_NOINLINE RecoilStateCredits::~RecoilStateCredits() {
+RecoilStateCredits::~RecoilStateCredits() {
     vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateCredits_Vtbl;
     RecoilStateCreditsBaseVtableGuard baseVtableOnExit = {this};
 
@@ -145,7 +145,7 @@ RECOIL_NOINLINE RecoilStateCredits::~RecoilStateCredits() {
 
 // Reimplements 0x409b00: RecoilStateCredits::QueuePush
 // (D:\Proj\Battlesport\RecoilStateCredits.cpp)
-void RECOIL_CDECL RecoilStateCredits::QueuePush() {
+void RecoilStateCredits::QueuePush() {
     g_RecoilApp.QueuePushState(
         (RecoilApp_IState *)&g_RecoilStateCredits,
         0

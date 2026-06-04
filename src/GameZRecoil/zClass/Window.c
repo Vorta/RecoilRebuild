@@ -107,7 +107,7 @@ namespace {
 
 namespace zClass_Window {
     // Reimplements 0x44f7a0: zClass_Window::gwWindowNew
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwWindowNew() {
+    zClass_NodePartial *gwWindowNew() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
             zError::ReportOld(
@@ -160,7 +160,7 @@ namespace zClass_Window {
     }
 
     // Reimplements 0x44f8b0: zClass_Window::gwWindowSetResolution
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwWindowSetResolution(
         zClass_NodePartial * node,
         int width,
@@ -182,7 +182,7 @@ namespace zClass_Window {
     }
 
     // Reimplements 0x44f930: zClass_Window::gwWindowGetResolution
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwWindowGetResolution(
         zClass_NodePartial * node,
         int *outWidth,
@@ -206,7 +206,7 @@ namespace zClass_Window {
     }
 
     // Reimplements 0x44f9c0: zClass_Window::gwWindowSetSize
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwWindowSetSize(
         zClass_NodePartial * node,
         int width,
@@ -228,7 +228,7 @@ namespace zClass_Window {
     }
 
     // Reimplements 0x44fa40: zClass_Window::gwWindowGetSize
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwWindowGetSize(
         zClass_NodePartial * node,
         int *outWidth,
@@ -253,7 +253,7 @@ namespace zClass_Window {
     }
 
     // Reimplements 0x44fad0: zClass_Window::gwWindowSetBuffer
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwWindowSetBuffer(
         zClass_NodePartial * node,
         int bufferIndex
@@ -276,7 +276,7 @@ namespace zClass_Window {
     }
 
     // Reimplements 0x44fb40: zClass_Window::gwWindowSetClearPolygon
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwWindowSetClearPolygon(
         zClass_NodePartial * node,
         int enabled
@@ -304,7 +304,7 @@ namespace zClass_Window {
     }
 
     // Reimplements 0x44fbd0: zClass_Window::gwWindowAddClearPolygonVertex
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwWindowAddClearPolygonVertex(
         zClass_NodePartial * node,
         const zVec3 *point
@@ -357,7 +357,7 @@ namespace zClass_Window {
     }
 
     // Reimplements 0x44fcf0: zClass_Window::gwWindowCloseClearPolygon
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwWindowCloseClearPolygon(zClass_NodePartial * node) {
+    int __fastcall gwWindowCloseClearPolygon(zClass_NodePartial * node) {
         int result = 0;
         zClass_WindowDataPartial *data =
             GetWindowDataOldMessages(

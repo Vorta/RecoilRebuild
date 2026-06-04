@@ -10,7 +10,7 @@
 #include "recoil/recoil_callconv.h"
 
 struct zArchiveList;
-typedef zVidImagePartial *(RECOIL_FASTCALL *zImage_CreateFallbackImageProc)(char *path);
+typedef zVidImagePartial *(__fastcall *zImage_CreateFallbackImageProc)(char *path);
 
 struct zImage_TexDirEntryPartial {
     zVidImagePartial *image;
@@ -19,8 +19,8 @@ struct zImage_TexDirEntryPartial {
     int loadState;
     zImage_TexDirEntryPartial *nextVariant;
 
-    RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL GetVariantImageAtIndex(int variantIndex);
-    RECOIL_NOINLINE RECOIL_NO_GS void RECOIL_FASTCALL BuildMipChain();
+    zVidImagePartial *__fastcall GetVariantImageAtIndex(int variantIndex);
+    RECOIL_NO_GS void __fastcall BuildMipChain();
 };
 
 struct zImage_Font {
@@ -28,21 +28,21 @@ struct zImage_Font {
     int spaceWidth;
     RECT glyphRects[95];
 
-    RECOIL_NOINLINE static zImage_Font *RECOIL_FASTCALL GetByIndexOrDefault(int fontIndex);
-    RECOIL_NOINLINE static void RECOIL_FASTCALL MeasureString(
+    static zImage_Font *__fastcall GetByIndexOrDefault(int fontIndex);
+    static void __fastcall MeasureString(
         const char *text,
         int fontIndex,
         int *outWidthPx,
         int *outLineAdvance
     );
-    RECOIL_NOINLINE static void RECOIL_FASTCALL BlitStringToActiveTarget(
+    static void __fastcall BlitStringToActiveTarget(
         const char *text,
         int dstX,
         int dstY,
         int fontIndex
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL BuildGlyphRects();
-    RECOIL_NOINLINE static int RECOIL_FASTCALL IsImageColumnTransparent(
+    int BuildGlyphRects();
+    static int __fastcall IsImageColumnTransparent(
         zVidImagePartial *image,
         int columnX
     );
@@ -62,51 +62,51 @@ extern zImage_CreateFallbackImageProc g_zImage_pfnCreateFallbackImage;
 }
 
 namespace zImage {
-RECOIL_NOINLINE void RECOIL_FASTCALL SetPathExtension(
+void __fastcall SetPathExtension(
     char *path,
     const char *extension
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL TexDirSetBaseNameFromPath(
+void __fastcall TexDirSetBaseNameFromPath(
     const char *sourcePath,
     char *destBaseName
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL FontsLoadFromPath(const char *path);
-RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL TexDir_FindOrCreateByPath(const char *path);
-RECOIL_NOINLINE int RECOIL_FASTCALL TexDirEntryToIndex(zImage_TexDirEntryPartial *texDirEntry);
-RECOIL_NOINLINE zImage_TexDirEntryPartial *RECOIL_FASTCALL TexIndexToDirEntry(int index);
-RECOIL_NOINLINE zImage_TexDirEntryPartial *RECOIL_FASTCALL FindTexDirEntryByName(
+int __fastcall FontsLoadFromPath(const char *path);
+zVidImagePartial *__fastcall TexDir_FindOrCreateByPath(const char *path);
+int __fastcall TexDirEntryToIndex(zImage_TexDirEntryPartial *texDirEntry);
+zImage_TexDirEntryPartial *__fastcall TexIndexToDirEntry(int index);
+zImage_TexDirEntryPartial *__fastcall FindTexDirEntryByName(
     const char *baseName
 );
-RECOIL_NOINLINE zImage_TexDirEntryPartial *RECOIL_CDECL GetDefaultImageRefPtr();
-RECOIL_NOINLINE zVideo_TextureRecordPartial *RECOIL_CDECL CreateDefaultTextureRecord();
-RECOIL_NOINLINE int RECOIL_CDECL InitTextureDirectory();
-RECOIL_NOINLINE zImage_TexDirEntryPartial *RECOIL_FASTCALL TexDir_FindOrAppendByPath(char *path);
-RECOIL_NOINLINE int RECOIL_CDECL TexDir_LoadPendingEntries();
-RECOIL_NOINLINE int RECOIL_FASTCALL WriteTextureDirectory(void *stream);
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadTextureDirectory(
+zImage_TexDirEntryPartial *GetDefaultImageRefPtr();
+zVideo_TextureRecordPartial *CreateDefaultTextureRecord();
+int InitTextureDirectory();
+zImage_TexDirEntryPartial *__fastcall TexDir_FindOrAppendByPath(char *path);
+int TexDir_LoadPendingEntries();
+int __fastcall WriteTextureDirectory(void *stream);
+int __fastcall ReadTextureDirectory(
     int entryCount,
     void *stream
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL InvalidateLoadedVariantChain(
+void __fastcall InvalidateLoadedVariantChain(
     zImage_TexDirEntryPartial *texDirHead
 );
-RECOIL_NOINLINE int RECOIL_CDECL ShutdownTextureDirectoryRuntime();
-RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
-RECOIL_NOINLINE int RECOIL_CDECL ShutdownSubsystem();
+int ShutdownTextureDirectoryRuntime();
+int Shutdown();
+int ShutdownSubsystem();
 } // namespace zImage
 
 namespace zVid_TexDir {
-RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
+int Shutdown();
 }
 
 namespace zImg {
-RECOIL_NOINLINE int RECOIL_CDECL Init();
+int Init();
 }
 
 extern "C" {
 extern char g_zImage_DefaultTextureName[0x10];
-RECOIL_NOINLINE int RECOIL_FASTCALL zImage_InitMissionResources(const char *pathText);
-RECOIL_NOINLINE int RECOIL_FASTCALL zImage_Init(const char *fontsPath);
+int __fastcall zImage_InitMissionResources(const char *pathText);
+int __fastcall zImage_Init(const char *fontsPath);
 }
 
 RECOIL_STATIC_ASSERT(

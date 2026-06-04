@@ -68,7 +68,7 @@ struct zInterp_LinkNode {
 
 struct zInterp_Context;
 
-typedef int(RECOIL_THISCALL *zInterp_DispatchHook)(
+typedef int( *zInterp_DispatchHook)(
     zInterp_Context *ctx,
     char *commandToken
 );
@@ -90,7 +90,7 @@ extern zInterp_Context g_zInterp_GlobalContext;
 extern char *g_zInterp_PreparedIndexFileName;
 extern const zInterp_Context_VTable g_zInterp_GlobalContext_VTable;
 
-typedef void(RECOIL_CDECL *zInterp_LogFn)(
+typedef void(*zInterp_LogFn)(
     const char *fmt,
     char *args
 );
@@ -134,83 +134,83 @@ struct zInterp_Context {
     int conditionalDepth;
     void *currentNode;
 
-    RECOIL_NOINLINE static void RECOIL_CDECL Logf(
+    static void Logf(
         zInterp_Context *ctx,
         const char *fmt,
         ...
     );
-    RECOIL_NOINLINE static void RECOIL_CDECL ReportErrorf(
+    static void ReportErrorf(
         zInterp_Context *ctx,
         const char *fmt,
         ...
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL IncErrorCount();
-    RECOIL_NOINLINE int RECOIL_THISCALL ReportParseError(char *commandToken);
-    RECOIL_NOINLINE char *RECOIL_THISCALL FindMacroValue(
+    void IncErrorCount();
+    int ReportParseError(char *commandToken);
+    char * FindMacroValue(
         const char *name,
         zInterp_MacroEntry **outEntry
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL IsMacroTrue(const char *name);
-    RECOIL_NOINLINE int RECOIL_THISCALL SetMacro(
+    int IsMacroTrue(const char *name);
+    int SetMacro(
         const char *name,
         const char *value
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL ClearMacroTable();
-    RECOIL_NOINLINE void RECOIL_THISCALL ClearVarTable();
-    RECOIL_NOINLINE zInterp_Context *RECOIL_THISCALL Constructor(
+    void ClearMacroTable();
+    void ClearVarTable();
+    zInterp_Context * Constructor(
         const char *searchPathText,
         const char *preparedIndexPath
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL Destroy();
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE int RECOIL_THISCALL EvalConditionExpr();
-    RECOIL_NOINLINE char *RECOIL_THISCALL ExpandMacroRefs(char *lineBuf);
-    RECOIL_NOINLINE char *RECOIL_THISCALL NextToken();
-    RECOIL_NOINLINE int RECOIL_THISCALL ParseBoolToken();
-    RECOIL_NOINLINE float RECOIL_THISCALL ParseFloatToken();
-    RECOIL_NOINLINE int RECOIL_THISCALL ParseIntToken();
-    RECOIL_NOINLINE zInterp_VarEntry *RECOIL_THISCALL FindVarEntry(const char *name);
-    RECOIL_NOINLINE void RECOIL_THISCALL DumpVarEntry(zInterp_VarEntry *entry);
-    RECOIL_NOINLINE int RECOIL_THISCALL CommandEqualsPrefix(
+    void Destroy();
+    void Destructor();
+    int EvalConditionExpr();
+    char * ExpandMacroRefs(char *lineBuf);
+    char * NextToken();
+    int ParseBoolToken();
+    float ParseFloatToken();
+    int ParseIntToken();
+    zInterp_VarEntry * FindVarEntry(const char *name);
+    void DumpVarEntry(zInterp_VarEntry *entry);
+    int CommandEqualsPrefix(
         const char *prefix,
         unsigned int prefixLen
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL CommandEquals(const char *other);
-    RECOIL_NOINLINE char *RECOIL_THISCALL GetCurrentCommand();
-    RECOIL_NOINLINE int RECOIL_THISCALL ValidateArgsAndNodeType(
+    int CommandEquals(const char *other);
+    char * GetCurrentCommand();
+    int ValidateArgsAndNodeType(
         int expectedArgCount,
         int expectedClassType,
         zClass_NodePartial *node
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL LoadPreparedScriptIndex(const char *zrdrPath);
-    RECOIL_NOINLINE FILE *RECOIL_THISCALL OpenPreparedScriptStream(const char *commandName);
-    RECOIL_NOINLINE int RECOIL_THISCALL RunScriptFile(const char *filePath);
-    RECOIL_NOINLINE int RECOIL_THISCALL RunString(
+    int LoadPreparedScriptIndex(const char *zrdrPath);
+    FILE * OpenPreparedScriptStream(const char *commandName);
+    int RunScriptFile(const char *filePath);
+    int RunString(
         FILE *scriptFile,
         int hasPreparedInput
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL RunStream(char *lineBuffer);
-    RECOIL_NOINLINE int RECOIL_THISCALL ReadLineOrPreparedTokens(
+    int RunStream(char *lineBuffer);
+    int ReadLineOrPreparedTokens(
         FILE *scriptFile,
         char *lineBuffer
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL TokenizeLine(const char *line);
-    RECOIL_NOINLINE int RECOIL_THISCALL HandleBuiltinCommand(char *commandToken);
-    RECOIL_NOINLINE int RECOIL_THISCALL DispatchCoreCommand(char *commandToken);
-    RECOIL_NOINLINE int RECOIL_THISCALL EchoTokens();
-    RECOIL_NOINLINE void RECOIL_THISCALL ClearFileFrameStack();
-    RECOIL_NOINLINE zInterp_FileFrame *RECOIL_THISCALL PopFileFrame();
-    RECOIL_NOINLINE int RECOIL_THISCALL PushFileFrame(
+    int TokenizeLine(const char *line);
+    int HandleBuiltinCommand(char *commandToken);
+    int DispatchCoreCommand(char *commandToken);
+    int EchoTokens();
+    void ClearFileFrameStack();
+    zInterp_FileFrame * PopFileFrame();
+    int PushFileFrame(
         FILE *file,
         long filePos,
         int hasPreparedInput
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL PrintNodeTree(
+    void PrintNodeTree(
         zClass_NodePartial *node,
         int indent
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL DefaultDispatchHook(zClass_NodePartial *node);
-    RECOIL_NOINLINE int RECOIL_THISCALL RegisterScrollAlwaysNode(
+    static int __stdcall DefaultDispatchHook(zClass_NodePartial *node);
+    int RegisterScrollAlwaysNode(
         zClass_NodePartial *node,
         float textureWorldPerMeter,
         int textureWorldAxis,
@@ -219,20 +219,20 @@ struct zInterp_Context {
 };
 
 struct zInterp_Command {
-    RECOIL_NOINLINE int RECOIL_THISCALL WeaponSetMaxTetherAltitude(char *commandToken);
+    int WeaponSetMaxTetherAltitude(char *commandToken);
 };
 
 struct zInterp_GlobalContext {
-    RECOIL_NOINLINE static int RECOIL_CDECL StaticInitAndRegisterAtExit();
-    RECOIL_NOINLINE static zInterp_Context *RECOIL_CDECL StaticInit();
-    RECOIL_NOINLINE static int RECOIL_CDECL RegisterAtExit();
-    RECOIL_NOINLINE static void RECOIL_CDECL AtExitDestructor();
-    RECOIL_NOINLINE zInterp_Context *RECOIL_THISCALL Constructor();
+    static int StaticInitAndRegisterAtExit();
+    static zInterp_Context *StaticInit();
+    static int RegisterAtExit();
+    static void AtExitDestructor();
+    zInterp_Context * Constructor();
 };
 
 namespace zInterp_Object3D {
-RECOIL_NOINLINE int RECOIL_FASTCALL DefaultRenderAction(zClass_NodePartial *node);
-RECOIL_NOINLINE void RECOIL_FASTCALL ScrollAlwaysTickAction(zClass_NodePartial *wrapperNode);
+int __fastcall DefaultRenderAction(zClass_NodePartial *node);
+void __fastcall ScrollAlwaysTickAction(zClass_NodePartial *wrapperNode);
 } // namespace zInterp_Object3D
 
 RECOIL_STATIC_ASSERT(sizeof(zInterp_FileFrame) == 0x0c);

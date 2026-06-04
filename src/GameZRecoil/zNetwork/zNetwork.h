@@ -14,25 +14,25 @@ struct zNetworkDPlayCaps;
 struct zNetworkDPlaySessionDesc;
 struct zNetworkPacketHeader;
 
-typedef int(RECOIL_FASTCALL *zNetworkPacketHandler)(
+typedef int(__fastcall *zNetworkPacketHandler)(
     int senderPlayerId,
     zNetworkPacketHeader *packet
 );
-typedef void(RECOIL_FASTCALL *zNetworkFatalDisconnectCallback)(int reason);
-typedef int(RECOIL_STDCALL *zNetworkDPlayEnumPlayersCallback)(
+typedef void(__fastcall *zNetworkFatalDisconnectCallback)(int reason);
+typedef int(__stdcall *zNetworkDPlayEnumPlayersCallback)(
     unsigned int playerId,
     unsigned int playerType,
     zNetworkDPlayName *playerNameInfo,
     unsigned int flags,
     void *context
 );
-typedef int(RECOIL_STDCALL *zNetworkDPlayEnumSessionsCallback)(
+typedef int(__stdcall *zNetworkDPlayEnumSessionsCallback)(
     zNetworkDPlaySessionDesc *sessionDesc,
     unsigned int *timeoutMs,
     unsigned int flags,
     void *context
 );
-typedef int(RECOIL_STDCALL *zNetworkDPlayEnumConnectionsCallback)(
+typedef int(__stdcall *zNetworkDPlayEnumConnectionsCallback)(
     unsigned char *serviceProviderGuid,
     void *connectionData,
     unsigned int connectionDataSize,
@@ -50,11 +50,11 @@ struct zNetworkDPlayName {
 
 struct zNetwork_DPlay4Vtable {
     void *reserved_00[2];
-    int(RECOIL_STDCALL *Release_08)(zNetwork_DPlay4 *self);
+    int(__stdcall *Release_08)(zNetwork_DPlay4 *self);
     void *reserved_0c;
-    int(RECOIL_STDCALL *Close_10)(zNetwork_DPlay4 *self);
+    int(__stdcall *Close_10)(zNetwork_DPlay4 *self);
     void *reserved_14;
-    int(RECOIL_STDCALL *CreatePlayer_18)(
+    int(__stdcall *CreatePlayer_18)(
         zNetwork_DPlay4 *self,
         unsigned int *playerId,
         zNetworkDPlayName *playerNameInfo,
@@ -64,19 +64,19 @@ struct zNetwork_DPlay4Vtable {
         unsigned int flags
     );
     void *reserved_1c[2];
-    int(RECOIL_STDCALL *DestroyPlayer_24)(
+    int(__stdcall *DestroyPlayer_24)(
         zNetwork_DPlay4 *self,
         unsigned int playerKey
     );
     void *reserved_28[2];
-    int(RECOIL_STDCALL *EnumPlayers_30)(
+    int(__stdcall *EnumPlayers_30)(
         zNetwork_DPlay4 *self,
         void *sessionGuid,
         zNetworkDPlayEnumPlayersCallback callback,
         void *context,
         unsigned int flags
     );
-    int(RECOIL_STDCALL *EnumSessions_34)(
+    int(__stdcall *EnumSessions_34)(
         zNetwork_DPlay4 *self,
         zNetworkDPlaySessionDesc *sessionDesc,
         unsigned int timeoutMs,
@@ -84,13 +84,13 @@ struct zNetwork_DPlay4Vtable {
         void *context,
         unsigned int flags
     );
-    int(RECOIL_STDCALL *GetCaps_38)(
+    int(__stdcall *GetCaps_38)(
         zNetwork_DPlay4 *self,
         zNetworkDPlayCaps *caps,
         unsigned int flags
     );
     void *reserved_3c[4];
-    int(RECOIL_STDCALL *GetPlayerCaps_4c)(
+    int(__stdcall *GetPlayerCaps_4c)(
         zNetwork_DPlay4 *self,
         unsigned int playerId,
         zNetworkDPlayCaps *caps,
@@ -98,12 +98,12 @@ struct zNetwork_DPlay4Vtable {
     );
     void *reserved_50[3];
     void *reserved_5c;
-    int(RECOIL_STDCALL *Open_60)(
+    int(__stdcall *Open_60)(
         zNetwork_DPlay4 *self,
         zNetworkDPlaySessionDesc *sessionDesc,
         unsigned int flags
     );
-    int(RECOIL_STDCALL *Receive_64)(
+    int(__stdcall *Receive_64)(
         zNetwork_DPlay4 *self,
         unsigned int *fromPlayer,
         unsigned int *toPlayer,
@@ -111,7 +111,7 @@ struct zNetwork_DPlay4Vtable {
         void *packet,
         unsigned int *packetSizeBytes
     );
-    int(RECOIL_STDCALL *Send_68)(
+    int(__stdcall *Send_68)(
         zNetwork_DPlay4 *self,
         unsigned int fromPlayer,
         unsigned int toPlayer,
@@ -120,13 +120,13 @@ struct zNetwork_DPlay4Vtable {
         unsigned int packetSizeBytes
     );
     void *reserved_6c[4];
-    int(RECOIL_STDCALL *SetSessionDesc_7c)(
+    int(__stdcall *SetSessionDesc_7c)(
         zNetwork_DPlay4 *self,
         zNetworkDPlaySessionDesc *sessionDesc,
         unsigned int flags
     );
     void *reserved_80[3];
-    int(RECOIL_STDCALL *EnumConnections_8c)(
+    int(__stdcall *EnumConnections_8c)(
         zNetwork_DPlay4 *self,
         unsigned char *applicationGuid,
         zNetworkDPlayEnumConnectionsCallback callback,
@@ -134,13 +134,13 @@ struct zNetwork_DPlay4Vtable {
         unsigned int flags
     );
     void *reserved_90[2];
-    int(RECOIL_STDCALL *InitializeConnection_98)(
+    int(__stdcall *InitializeConnection_98)(
         zNetwork_DPlay4 *self,
         void *connectionData,
         unsigned int flags
     );
     void *reserved_9c[10];
-    int(RECOIL_STDCALL *SendEx_c4)(
+    int(__stdcall *SendEx_c4)(
         zNetwork_DPlay4 *self,
         unsigned int fromPlayer,
         unsigned int toPlayer,
@@ -153,7 +153,7 @@ struct zNetwork_DPlay4Vtable {
         unsigned int *asyncHandle
     );
     void *reserved_c8[1];
-    int(RECOIL_STDCALL *CancelMessage_cc)(
+    int(__stdcall *CancelMessage_cc)(
         zNetwork_DPlay4 *self,
         unsigned int asyncHandle,
         unsigned int flags
@@ -466,73 +466,73 @@ extern zNetworkDispatchHandlerListNode *g_zNetwork_DispatchHandlerListSentinel;
 extern int g_zNetwork_DispatchHandlerListCount;
 extern unsigned char g_zNetwork_DispatchHandlerListFlags;
 
-int RECOIL_CDECL zNetwork_DPlay_DestroyCachedLocalPlayer();
-int RECOIL_CDECL zNetwork_GetLocalPlayerKey();
-int RECOIL_CDECL zNetwork_GetLocalPlayerColorIndex();
-void RECOIL_CDECL zNetwork_InitMessageHandlers();
-void RECOIL_CDECL zNetwork_CreateEmptyDispatchHandlerList();
-void RECOIL_CDECL zNetwork_RegisterDispatchHandlerListShutdown();
-void RECOIL_CDECL zNetwork_DestroyDispatchHandlerList();
-int RECOIL_FASTCALL zNetwork_DPlay_SendUnreliable(
+int zNetwork_DPlay_DestroyCachedLocalPlayer();
+int zNetwork_GetLocalPlayerKey();
+int zNetwork_GetLocalPlayerColorIndex();
+void zNetwork_InitMessageHandlers();
+void zNetwork_CreateEmptyDispatchHandlerList();
+void zNetwork_RegisterDispatchHandlerListShutdown();
+void zNetwork_DestroyDispatchHandlerList();
+int __fastcall zNetwork_DPlay_SendUnreliable(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes
 );
-int RECOIL_FASTCALL zNetwork_DPlay_SendReliable(
+int __fastcall zNetwork_DPlay_SendReliable(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes
 );
-int RECOIL_FASTCALL zNetwork_DPlay_SendExUnreliableTracked(
+int __fastcall zNetwork_DPlay_SendExUnreliableTracked(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes
 );
-int RECOIL_FASTCALL zNetwork_DPlay_SendExReliable(
+int __fastcall zNetwork_DPlay_SendExReliable(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes
 );
-int RECOIL_FASTCALL zNetwork_SendPacketUnreliable(zNetworkPacketHeader *packet);
-int RECOIL_FASTCALL zNetwork_SendPacketReliable(zNetworkPacketHeader *packet);
-int RECOIL_FASTCALL zNetwork_DPlay_ReportError(
+int __fastcall zNetwork_SendPacketUnreliable(zNetworkPacketHeader *packet);
+int __fastcall zNetwork_SendPacketReliable(zNetworkPacketHeader *packet);
+int __fastcall zNetwork_DPlay_ReportError(
     int hresult,
     const char *sourceFile,
     int sourceLine
 );
-int RECOIL_FASTCALL zNetwork_ApplyPkt01_PlayerColorAssignments(
+int __fastcall zNetwork_ApplyPkt01_PlayerColorAssignments(
     int senderPlayerId,
     zNetworkPacketHeader *packet
 );
-zNetwork_PlayerRecord *RECOIL_FASTCALL zNetwork_FindPlayerRecordByKey(int playerKey);
-int RECOIL_FASTCALL zNetwork_GetPlayerColorIndexByKey(int playerKey);
-int RECOIL_CDECL zNetwork_GetPlayerRecordCount();
-int RECOIL_FASTCALL zNetwork_ExtractStatusFieldsFromSessionDesc(
+zNetwork_PlayerRecord *__fastcall zNetwork_FindPlayerRecordByKey(int playerKey);
+int __fastcall zNetwork_GetPlayerColorIndexByKey(int playerKey);
+int zNetwork_GetPlayerRecordCount();
+int __fastcall zNetwork_ExtractStatusFieldsFromSessionDesc(
     zNetworkSessionDescStatusFields *outFields
 );
-int RECOIL_FASTCALL zNetwork_ApplyStatusFieldsToSessionDesc(
+int __fastcall zNetwork_ApplyStatusFieldsToSessionDesc(
     zNetworkSessionDescStatusFields *statusFields
 );
 }
 
 namespace zNetwork_DPlay {
-RECOIL_NOINLINE int RECOIL_CDECL RefreshServiceProviderList();
-RECOIL_NOINLINE int RECOIL_CDECL EnumSessions();
-RECOIL_NOINLINE int RECOIL_CDECL EnumPlayers();
-RECOIL_NOINLINE int RECOIL_FASTCALL CreateLocalPlayerRecordAndRegister(char *playerName);
-RECOIL_NOINLINE int RECOIL_FASTCALL CreateSessionFromStatusFields(
+int RefreshServiceProviderList();
+int EnumSessions();
+int EnumPlayers();
+int __fastcall CreateLocalPlayerRecordAndRegister(char *playerName);
+int __fastcall CreateSessionFromStatusFields(
     zNetworkSessionDescStatusFields *statusFields
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL CreateInterfaceAndCoInitialize(
+int __fastcall CreateInterfaceAndCoInitialize(
     zNetwork_DPlay4 **outDirectPlay4
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL CloseReleaseAndCoUninitialize(zNetwork_DPlay4 *directPlay4);
-RECOIL_NOINLINE void RECOIL_FASTCALL DispatchPacketToHandlers(
+int __fastcall CloseReleaseAndCoUninitialize(zNetwork_DPlay4 *directPlay4);
+void __fastcall DispatchPacketToHandlers(
     int senderPlayerId,
     zNetworkPacketHeader *packet
 );
 } // namespace zNetwork_DPlay
 
 namespace zNetworkDPlay {
-RECOIL_NOINLINE int RECOIL_FASTCALL CreateLobby3AInterface(IDirectPlayLobby3A **outLobby3A);
-RECOIL_NOINLINE zNetworkServiceProviderListVec *RECOIL_CDECL RefreshAndGetServiceProviderList();
-RECOIL_NOINLINE int RECOIL_STDCALL EnumConnectionsCallback_AddServiceProviderInfo(
+int __fastcall CreateLobby3AInterface(IDirectPlayLobby3A **outLobby3A);
+zNetworkServiceProviderListVec *RefreshAndGetServiceProviderList();
+int __stdcall EnumConnectionsCallback_AddServiceProviderInfo(
     unsigned char *serviceProviderGuid,
     void *connectionData,
     unsigned int connectionDataSize,
@@ -540,75 +540,75 @@ RECOIL_NOINLINE int RECOIL_STDCALL EnumConnectionsCallback_AddServiceProviderInf
     unsigned int providerFlags,
     void *context
 );
-RECOIL_NOINLINE char *RECOIL_FASTCALL GetEnumeratedSessionNameByIndex(int entryIndex);
-RECOIL_NOINLINE void RECOIL_FASTCALL GetEnumeratedSessionPlayerCountsByIndex(
+char *__fastcall GetEnumeratedSessionNameByIndex(int entryIndex);
+void __fastcall GetEnumeratedSessionPlayerCountsByIndex(
     int entryIndex,
     int *currentPlayersOut,
     int *maxPlayersOut
 );
-RECOIL_NOINLINE int RECOIL_CDECL QueryCapsAndConfigureSendMode();
-RECOIL_NOINLINE int RECOIL_STDCALL EnumSessionCallback_AddSessionDescCache(
+int QueryCapsAndConfigureSendMode();
+int __stdcall EnumSessionCallback_AddSessionDescCache(
     zNetworkDPlaySessionDesc *sessionDesc,
     unsigned int *timeoutMs,
     unsigned int flags,
     void *context
 );
-RECOIL_NOINLINE int RECOIL_STDCALL EnumPlayerCallback_AddPlayerRecord(
+int __stdcall EnumPlayerCallback_AddPlayerRecord(
     unsigned int playerId,
     unsigned int playerType,
     zNetworkDPlayName *playerNameInfo,
     unsigned int flags,
     void *context
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL FreeServiceProviderInfoBuffers(
+void __fastcall FreeServiceProviderInfoBuffers(
     zNetworkDPlayServiceProviderInfo *providerInfo
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL InitializeConnectionFromProviderInfo(
+int __fastcall InitializeConnectionFromProviderInfo(
     zNetworkDPlayServiceProviderInfo *providerInfo
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SelectServiceProviderAndInitConnection(
+int __fastcall SelectServiceProviderAndInitConnection(
     zNetworkDPlayServiceProviderInfo *providerInfo
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SelectTcpIpProviderAndEnumSessions(
+int __fastcall SelectTcpIpProviderAndEnumSessions(
     char *addressString,
     int skipSessionEnumeration
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL OpenSelectedSessionAndReadStatusFields(
+int __fastcall OpenSelectedSessionAndReadStatusFields(
     zNetworkSessionDescStatusFields *statusFields
 );
-RECOIL_NOINLINE int RECOIL_CDECL EnumSessionsForCurrentApp();
-RECOIL_NOINLINE int RECOIL_FASTCALL PumpIncomingMessages(zNetworkDPlaySystemMessage *systemMessage);
-RECOIL_NOINLINE int RECOIL_FASTCALL ReceivePendingMessages(int messageBudget);
+int EnumSessionsForCurrentApp();
+int __fastcall PumpIncomingMessages(zNetworkDPlaySystemMessage *systemMessage);
+int __fastcall ReceivePendingMessages(int messageBudget);
 } // namespace zNetworkDPlay
 
 namespace zNetwork {
-RECOIL_NOINLINE int RECOIL_CDECL IsHost();
-RECOIL_NOINLINE int RECOIL_CDECL AllocFreePlayerColorIndex();
-RECOIL_NOINLINE void RECOIL_FASTCALL HostSendPlayerColorAssignmentsPacket(int joiningPlayerKey);
-RECOIL_NOINLINE int RECOIL_FASTCALL GetPlayerNameByKey(
+int IsHost();
+int AllocFreePlayerColorIndex();
+void __fastcall HostSendPlayerColorAssignmentsPacket(int joiningPlayerKey);
+int __fastcall GetPlayerNameByKey(
     int playerKey,
     char *destination,
     unsigned int maxCount
 );
-RECOIL_NOINLINE void RECOIL_CDECL DeleteAllDispatchHandlers();
-RECOIL_NOINLINE zNetworkDispatchHandlerRecord *RECOIL_FASTCALL RegisterPacketHandler(
+void DeleteAllDispatchHandlers();
+zNetworkDispatchHandlerRecord *__fastcall RegisterPacketHandler(
     int packetType,
     zNetworkPacketHandler handlerProc,
     int mode
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL UnregisterPacketHandler(
+int __fastcall UnregisterPacketHandler(
     int packetType,
     zNetworkPacketHandler handlerProc
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RemovePlayerRecordByKey(int playerKey);
-RECOIL_NOINLINE void RECOIL_CDECL ClearEnumeratedSessionList();
-RECOIL_NOINLINE void RECOIL_CDECL ClearServiceProviderList();
-RECOIL_NOINLINE void RECOIL_CDECL ClearPlayerRecordList();
-RECOIL_NOINLINE void RECOIL_FASTCALL SetFatalDisconnectCallback(
+void __fastcall RemovePlayerRecordByKey(int playerKey);
+void ClearEnumeratedSessionList();
+void ClearServiceProviderList();
+void ClearPlayerRecordList();
+void __fastcall SetFatalDisconnectCallback(
     zNetworkFatalDisconnectCallback callback
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL InitSessionRuntime(unsigned char *appGuid);
-RECOIL_NOINLINE int RECOIL_CDECL ShutdownSessionRuntime();
+int __fastcall InitSessionRuntime(unsigned char *appGuid);
+int ShutdownSessionRuntime();
 } // namespace zNetwork
 
 #if defined(_M_IX86) || defined(__i386__)

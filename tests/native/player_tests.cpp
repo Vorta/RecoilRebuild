@@ -146,7 +146,7 @@ int g_playerTestFfStartCount = 0;
 std::uint32_t g_playerTestFfLastIterations = 0;
 std::uint32_t g_playerTestFfLastStartFlags = 0;
 
-std::int32_t RECOIL_STDCALL PlayerTestEffectStart(zInput_DiEffect *,
+std::int32_t __stdcall PlayerTestEffectStart(zInput_DiEffect *,
                                                   std::uint32_t iterations,
                                                   std::uint32_t flags) {
     ++g_playerTestFfStartCount;
@@ -155,7 +155,7 @@ std::int32_t RECOIL_STDCALL PlayerTestEffectStart(zInput_DiEffect *,
     return 0;
 }
 
-std::int32_t RECOIL_STDCALL PlayerTestEffectStop(zInput_DiEffect *) {
+std::int32_t __stdcall PlayerTestEffectStop(zInput_DiEffect *) {
     ++g_playerTestFfStopCount;
     return 0;
 }
@@ -366,7 +366,7 @@ int PlayerTestDebugAuxIndex(void *self) {
     return -1;
 }
 
-void RECOIL_CDECL PlayerTestDebugAuxSetTextFmt(HudUiPanel *self, const char *format, ...) {
+void PlayerTestDebugAuxSetTextFmt(HudUiPanel *self, const char *format, ...) {
     const int index = PlayerTestDebugAuxIndex(self);
     if (index < 0) {
         return;
@@ -381,7 +381,7 @@ void RECOIL_CDECL PlayerTestDebugAuxSetTextFmt(HudUiPanel *self, const char *for
 }
 
 struct PlayerTestDebugAuxPanel {
-    void RECOIL_THISCALL SetVisible(int visible) {
+    void SetVisible(int visible) {
         const int index = PlayerTestDebugAuxIndex(this);
         if (index >= 0) {
             g_PlayerTestDebugAuxVisible[index] = visible;
@@ -390,7 +390,7 @@ struct PlayerTestDebugAuxPanel {
     }
 };
 
-float RECOIL_FASTCALL PlayerTransferDamageTimerCallback(void *context, float damageAmount) {
+float __fastcall PlayerTransferDamageTimerCallback(void *context, float damageAmount) {
     const int index = g_PlayerTestTransferDamageCalls;
     if (index < 4) {
         g_PlayerTestTransferDamageArgs[index] = damageAmount;
@@ -400,7 +400,7 @@ float RECOIL_FASTCALL PlayerTransferDamageTimerCallback(void *context, float dam
 }
 
 struct TestPlayerHudVisibleReceiver {
-    void RECOIL_THISCALL SetVisible(int visible) {
+    void SetVisible(int visible) {
         const int index = g_PlayerTestHudVisibleCount;
         if (index < 8) {
             g_PlayerTestHudVisibleThis[index] = this;
@@ -416,7 +416,7 @@ struct TestPlayerWeatherFxEmitter {
     zClass_NodePartial *cameraNode;
     int particleAgeTick;
 
-    void RECOIL_THISCALL SetVisible(int visible) {
+    void SetVisible(int visible) {
         const int index = g_PlayerTestHudVisibleCount;
         if (index < 8) {
             g_PlayerTestHudVisibleThis[index] = this;
@@ -435,7 +435,7 @@ static_assert(offsetof(TestPlayerWeatherFxEmitter, cameraNode) == 0x50,
 static_assert(offsetof(TestPlayerWeatherFxEmitter, particleAgeTick) == 0x54,
               "weather FX particle tick offset");
 
-std::int32_t RECOIL_STDCALL PlayerCheckpointSendFake(zNetwork_DPlay4 *, std::uint32_t,
+std::int32_t __stdcall PlayerCheckpointSendFake(zNetwork_DPlay4 *, std::uint32_t,
                                                      std::uint32_t, std::uint32_t flags,
                                                      void *packet,
                                                      std::uint32_t packetSizeBytes) {
@@ -13050,7 +13050,7 @@ extern "C" int player_record_recent_hit_feedback_smoke(void) {
     return stateOk && oldHandleStopped && effectOk ? 0 : 1;
 }
 
-void RECOIL_FASTCALL PlayerDestroyedEffectDoneCallback(zEffectAnimEntry *, void *, int) {
+void __fastcall PlayerDestroyedEffectDoneCallback(zEffectAnimEntry *, void *, int) {
 }
 
 void InitDestroyedEffectEntry(zEffectAnimEntry *entry, zClass_NodePartial *boundNode,

@@ -3,7 +3,7 @@
 #include <cstring>
 
 namespace {
-std::uint32_t RECOIL_CDECL TestGetMessageIdProc(const char *key) {
+std::uint32_t TestGetMessageIdProc(const char *key) {
     return std::strcmp(key, "known") == 0 ? 77u : 0u;
 }
 } // namespace

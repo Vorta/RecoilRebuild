@@ -1,7 +1,7 @@
 #include "GameZRecoil/RecoilApp/RecoilStateDialogHost.h"
 
 // Reimplements 0x408f50: RecoilStateDialogHost::OnWndActivate
-void RECOIL_THISCALL RecoilStateDialogHost::OnWndActivate(
+void RecoilStateDialogHost::OnWndActivate(
     int activateCode
 ) {
     (void)activateCode;

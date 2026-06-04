@@ -12,7 +12,7 @@ namespace zReader {
 struct Node;
 }
 
-typedef void(RECOIL_FASTCALL *zWeaponOptCatalogEntryCallback)(
+typedef void(__fastcall *zWeaponOptCatalogEntryCallback)(
     zReader::Node *entryNode,
     OptCatalogEntryDef *entry
 );
@@ -22,32 +22,32 @@ extern int g_zWeapon_ZarHandlerRegistered;
 extern char g_zWeapon_ArchiveName[8];
 extern float g_zWeapon_MaxTetherAltitude;
 
-RECOIL_NOINLINE int RECOIL_CDECL zWepInit();
+int zWepInit();
 }
 
 namespace zWeapon {
-RECOIL_NOINLINE int RECOIL_FASTCALL LoadOptCatalogFromPath(
+int __fastcall LoadOptCatalogFromPath(
     zClass_NodePartial *worldNode,
     const char *path,
     int networkState,
     zWeaponOptCatalogEntryCallback entryCallback
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL OnWeaponsSectionPreLoad(
+int __fastcall OnWeaponsSectionPreLoad(
     zZbdSectionCallbackCtx *callbackCtx,
     void *userData
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL OnWeaponsSectionDataReady(
+void __fastcall OnWeaponsSectionDataReady(
     zZbdSectionCallbackCtx *callbackCtx,
     const char *sectionToken,
     void *weaponData,
     unsigned int dataSize,
     void *userData
 );
-RECOIL_NOINLINE void RECOIL_STDCALL SetMaxTetherAltitude(float altitude);
+void __stdcall SetMaxTetherAltitude(float altitude);
 } // namespace zWeapon
 
 namespace zWeapon_OptCatalog {
-RECOIL_NOINLINE void RECOIL_FASTCALL LoadKillVerbString(
+void __fastcall LoadKillVerbString(
     zReader::Node *entryNode,
     OptCatalogEntryDef *entry
 );

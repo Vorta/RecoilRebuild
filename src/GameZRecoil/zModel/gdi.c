@@ -114,24 +114,24 @@ namespace {
 
 namespace zDi {
     // Reimplements 0x4826f0: zDi::AddRef (GameZRecoil/zDi/zdi.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL AddRef(zDiPartial * self) {
+    int __fastcall AddRef(zDiPartial * self) {
         ++self->refCount;
         return 0;
     }
 
     // Reimplements 0x482700: zDi::Release (GameZRecoil/zDi/zdi.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL Release(zDiPartial * self) {
+    int __fastcall Release(zDiPartial * self) {
         --self->refCount;
         return 0;
     }
 
     // Reimplements 0x482710: zDi::GetRefCount (GameZRecoil/zModel/gdi.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL GetRefCount(zDiPartial * self) {
+    int __fastcall GetRefCount(zDiPartial * self) {
         return self->refCount;
     }
 
     // Reimplements 0x482160: zDi::FreeContents (GameZRecoil/zModel/gdi.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL FreeContents(zDiPartial * self) {
+    int __fastcall FreeContents(zDiPartial * self) {
         if (self == 0) {
             return 5;
         }
@@ -185,7 +185,7 @@ namespace zDi {
     }
 
     // Reimplements 0x4826d0: zDi::SetFlagBit0
-    RECOIL_NOINLINE void RECOIL_FASTCALL SetFlagBit0(
+    void __fastcall SetFlagBit0(
         zDiPartial * self,
         int enabled
     ){
@@ -195,7 +195,7 @@ namespace zDi {
     }
 
     // Reimplements 0x4826b0: zDi::SetClonedFlag (GameZRecoil/zModel/gdi.c)
-    RECOIL_NOINLINE void RECOIL_FASTCALL SetClonedFlag(
+    void __fastcall SetClonedFlag(
         zDiPartial * self,
         int isCloned
     ){
@@ -205,7 +205,7 @@ namespace zDi {
     }
 
     // Reimplements 0x482270: zDi::CloneToInstance (GameZRecoil/zModel/gdi.c)
-    RECOIL_NOINLINE zDiPartial *RECOIL_FASTCALL
+    zDiPartial *__fastcall
     CloneToInstance(
         zDiPartial * self,
         int cloneMaterials,
@@ -364,7 +364,7 @@ namespace zDi {
 
     // Reimplements 0x483a60: zDi::HasSpecialFlagsOrAuxMaterialData
     // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-    RECOIL_NOINLINE int RECOIL_FASTCALL HasSpecialFlagsOrAuxMaterialData(zDiPartial * self) {
+    int __fastcall HasSpecialFlagsOrAuxMaterialData(zDiPartial * self) {
         if (self == 0) {
             return 0;
         }
@@ -383,7 +383,7 @@ namespace zDi {
     }
 
     // Reimplements 0x483b80: zDi::BuildAabb
-    RECOIL_NOINLINE void RECOIL_FASTCALL
+    void __fastcall
     BuildAabb(
         zDiPartial * self,
         zBoundsMinMaxPartial * outBoundsMinMax
@@ -446,7 +446,7 @@ namespace zDi {
     }
 
     // Reimplements 0x483e60: zDi::BuildOriginSymmetricAabb
-    RECOIL_NOINLINE void RECOIL_FASTCALL
+    void __fastcall
     BuildOriginSymmetricAabb(
         zDiPartial * self,
         zBoundsMinMaxPartial * outBoundsMinMax
@@ -501,7 +501,7 @@ namespace zDi {
     }
 
     // Reimplements 0x483ad0: zDi::RebuildBounds
-    RECOIL_NOINLINE void RECOIL_FASTCALL
+    void __fastcall
     RebuildBounds(
         zDiPartial * self,
         zBoundsMinMaxPartial * outBoundsMinMax
@@ -535,7 +535,7 @@ namespace zDi {
 namespace zModel_Material {
     // Reimplements 0x480c40: zModel_Material::ResetDefaults
     // (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp)
-    RECOIL_NOINLINE void RECOIL_FASTCALL ResetDefaults(zModel_MaterialPartial * material) {
+    void __fastcall ResetDefaults(zModel_MaterialPartial * material) {
         material->cycle = 0;
         material->currentTextureDirectoryEntry = 0;
         material->flags = (unsigned short)((material->flags & 0xf800u) | 0x00ffu);
@@ -551,7 +551,7 @@ namespace zModel_Material {
 
     // Reimplements 0x480c80: zModel_Material::HasAuxData
     // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL HasAuxData(zModel_MaterialPartial * material) {
+    int __fastcall HasAuxData(zModel_MaterialPartial * material) {
         return (material->flags & 0x0200) != 0 || (material->flags & 0x0400) != 0 ||
                        material->cycle != 0
                    ? 1
@@ -560,7 +560,7 @@ namespace zModel_Material {
 
     // Reimplements 0x480d20: zModel_Material::CompareForReuse
     // (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     CompareForReuse(
         zModel_MaterialPartial * lhs,
         zModel_MaterialPartial * rhs
@@ -597,7 +597,7 @@ namespace zModel_Material {
 
     // Reimplements 0x481420: zModel_Material::FindByTexDirEntry
     // (D:\Proj\GameZRecoil\zModel\zmat.cpp)
-    RECOIL_NOINLINE zModel_MaterialPartial *RECOIL_FASTCALL FindByTexDirEntry(
+    zModel_MaterialPartial *__fastcall FindByTexDirEntry(
         zImage_TexDirEntryPartial * texDirEntry
     ) {
         if (texDirEntry == 0) {
@@ -619,7 +619,7 @@ namespace zModel_Material {
 
     // Reimplements 0x480ca0: zModel_Material::FindOrClone
     // (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp)
-    RECOIL_NOINLINE zModel_MaterialPartial *RECOIL_FASTCALL FindOrClone(
+    zModel_MaterialPartial *__fastcall FindOrClone(
         zModel_MaterialPartial * material
     ) {
         zModel_MaterialPartial *reuseCache = g_zModel_MatlReuseCache;
@@ -649,7 +649,7 @@ namespace zModel_Material {
 
     // Reimplements 0x481040: zModel_Material::SetUserTag
     // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL SetUserTag(
+    int __fastcall SetUserTag(
         zModel_MaterialPartial * material,
         int userTag
     ){
@@ -663,7 +663,7 @@ namespace zModel_Material {
 
     // Reimplements 0x481050: zModel_Material::SetCycleTextureCount
     // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     SetCycleTextureCount(
         zModel_MaterialPartial * material,
         int textureCount
@@ -704,7 +704,7 @@ namespace zModel_Material {
 
     // Reimplements 0x481100: zModel_Material::AddCycleTexture
     // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-    RECOIL_NOINLINE int RECOIL_FASTCALL AddCycleTexture(
+    int __fastcall AddCycleTexture(
         zModel_MaterialPartial * material,
         zImage_TexDirEntryPartial * textureDirectoryEntry
     ) {
@@ -731,7 +731,7 @@ namespace zModel_Material {
 
     // Reimplements 0x481140: zModel_Material::UpdateCycleIfNeeded
     // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
-    RECOIL_NOINLINE void RECOIL_FASTCALL UpdateCycleIfNeeded(zModel_MaterialPartial * material) {
+    void __fastcall UpdateCycleIfNeeded(zModel_MaterialPartial * material) {
         zModel_MaterialCyclePartial *cycle = material->cycle;
         if (cycle == 0) {
             zError::ReportOld(
@@ -767,7 +767,7 @@ namespace zModel_Material {
 
     // Reimplements 0x481220: zModel_Material::SetCycleTextureLoop
     // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     SetCycleTextureLoop(
         zModel_MaterialPartial * material,
         int loopEnabled
@@ -794,7 +794,7 @@ namespace zModel_Material {
 
     // Reimplements 0x481260: zModel_Material::SetCycleTextureSpeed
     // (D:\Proj\GameZRecoil\zModel\zmodel_mat.cpp)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     SetCycleTextureSpeed(
         zModel_MaterialPartial * material,
         float cycleSpeed
@@ -827,7 +827,7 @@ namespace zModel_Material {
 namespace zModel_MatlBuffer {
     // Reimplements 0x4812c0: zModel_MatlBuffer::CloneToActiveSlot
     // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
-    RECOIL_NOINLINE zModel_MaterialPartial *RECOIL_FASTCALL CloneToActiveSlot(
+    zModel_MaterialPartial *__fastcall CloneToActiveSlot(
         zModel_MaterialPartial * material
     ) {
         if (material == 0) {
@@ -898,7 +898,7 @@ namespace zModel_MatlBuffer {
 namespace zModel_Material {
     // Reimplements 0x4812b0: zModel_Material::Clone
     // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
-    RECOIL_NOINLINE zModel_MaterialPartial *RECOIL_FASTCALL Clone(
+    zModel_MaterialPartial *__fastcall Clone(
         zModel_MaterialPartial * material
     ) {
         return zModel_MatlBuffer::CloneToActiveSlot(material);
@@ -906,7 +906,7 @@ namespace zModel_Material {
 }
 
 // Reimplements 0x480f60: zModel_Material_SetFlagBit9
-RECOIL_NOINLINE int RECOIL_FASTCALL zModel_Material_SetFlagBit9(
+int __fastcall zModel_Material_SetFlagBit9(
     zModel_MaterialPartial *material,
     int enabled
 ) {
@@ -920,7 +920,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zModel_Material_SetFlagBit9(
 
 namespace zModel_Material {
     // Reimplements 0x480f80: zModel_Material::InvalidateImagesIfEligible
-    RECOIL_NOINLINE void RECOIL_FASTCALL InvalidateImagesIfEligible(
+    void __fastcall InvalidateImagesIfEligible(
         zModel_MaterialPartial * material
     ) {
         if (material == 0 || (material->flags & 0x0300) != 0x0300) {
@@ -940,7 +940,7 @@ namespace zModel_Material {
 }
 
 // Reimplements 0x4841b0: zDi_SetMaterialFlagBit9ForFlagBit0Entries
-RECOIL_NOINLINE void RECOIL_FASTCALL zDi_SetMaterialFlagBit9ForFlagBit0Entries(
+void __fastcall zDi_SetMaterialFlagBit9ForFlagBit0Entries(
     zDiPartial *self,
     int enabled
 ) {
@@ -957,7 +957,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zDi_SetMaterialFlagBit9ForFlagBit0Entries(
 
 namespace zDi {
     // Reimplements 0x4841f0: zDi::InvalidateImagesForFlagBit8Materials
-    RECOIL_NOINLINE void RECOIL_FASTCALL InvalidateImagesForFlagBit8Materials(zDiPartial * self) {
+    void __fastcall InvalidateImagesForFlagBit8Materials(zDiPartial * self) {
         for (int i = 0; i < self->entryCount; ++i) {
             zModel_MaterialPartial *material = self->entries[i].material;
             if ((material->flags & 0x0100) != 0) {

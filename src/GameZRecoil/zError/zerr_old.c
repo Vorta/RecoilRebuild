@@ -16,7 +16,7 @@ namespace zError {
     const char kReportOldNullMessage[] = "(null message)";
 
     // Reimplements 0x462310: RecoilError::InitOutputContext
-    RECOIL_NOINLINE int RECOIL_FASTCALL InitOutputContext(
+    int __fastcall InitOutputContext(
         HWND hWnd,
         int maxBytes,
         const char *
@@ -28,7 +28,7 @@ namespace zError {
     }
 
     // Reimplements 0x404e80: zError::ReportOld (GameZRecoil/zError/zerr_old.c)
-    RECOIL_NOINLINE void RECOIL_CDECL ReportOld(
+    void ReportOld(
         int flags,
         const char *sourceFile,
         int sourceLine,
@@ -77,7 +77,7 @@ namespace zError {
     }
 
     // Reimplements 0x4622f0: zError::EmitDebugBuffer
-    RECOIL_NOINLINE void RECOIL_FASTCALL EmitDebugBuffer(int severity) {
+    void __fastcall EmitDebugBuffer(int severity) {
         ReportOld(
             severity,
             "D:\\Proj\\GameZRecoil\\zError\\zerr_old.c",

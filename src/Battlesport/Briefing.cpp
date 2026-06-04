@@ -19,27 +19,17 @@
 #include <string.h>
 
 namespace {
-typedef void(RECOIL_THISCALL *BriefingSetNormalizedValue)(
+typedef void( *BriefingSetNormalizedValue)(
     void *self,
     float value
 );
 
-const size_t kBriefingActionQueueOffset = 0xa94c;
-const size_t kBriefingMissionNameOffset = 0xaae8;
-const size_t kBriefingObjectiveSummaryOffset = 0xad8c;
-const size_t kBriefingObjectiveDescOffset = 0xb030;
-const size_t kBriefingObjectivePictureOffset = 0xb2d4;
-const size_t kBriefingTransmissionHaltedOffset = 0xb394;
-const size_t kBriefingLocatorPanelsOffset = 0xb8f0;
-const size_t kBriefingLocatorPanelStride = 0x40;
-const size_t kBriefingObjectivePictureNoiseAlphaOffset = 0xbc;
-
-typedef void(RECOIL_THISCALL *HudVirtualNoArg)(void *self);
-typedef void(RECOIL_THISCALL *HudVirtualSetVisible)(
+typedef void( *HudVirtualNoArg)(void *self);
+typedef void( *HudVirtualSetVisible)(
     void *self,
     int visible
 );
-typedef void(RECOIL_CDECL *HudPanelSetTextFmt)(
+typedef void(*HudPanelSetTextFmt)(
     void *self,
     const char *format,
     ...
@@ -59,13 +49,13 @@ unsigned int MethodAddress(
     return address;
 }
 
-void RECOIL_FASTCALL BriefingHudUiCommonInvalidateThunk(
+void __fastcall BriefingHudUiCommonInvalidateThunk(
     HudUiElement *element
 ) {
     element->Invalidate();
 }
 
-void RECOIL_FASTCALL BriefingHudUiNoOpMethodStub(
+void __fastcall BriefingHudUiNoOpMethodStub(
     void *
 ) {}
 
@@ -117,23 +107,23 @@ template <typename FTable> FTable MakeBriefingHudUiFTableWithCommonSlots() {
 struct HudUiBriefingLocatorPanel {
     HudUiCircle base;
 
-    RECOIL_NOINLINE HudUiBriefingLocatorPanel *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL BlitDirtyRect();
-    RECOIL_NOINLINE void RECOIL_THISCALL Update(float deltaSec);
+    HudUiBriefingLocatorPanel * Constructor();
+    void BlitDirtyRect();
+    void Update(float deltaSec);
 };
 
 struct HudUiBriefingObjectivePicture {
     HudUiWidget base;
     float noiseAlpha;
 
-    RECOIL_NOINLINE void RECOIL_THISCALL DrawWithNoiseOverlay();
+    void DrawWithNoiseOverlay();
 };
 
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiBriefingObjectivePicture,
         noiseAlpha
-    ) == kBriefingObjectivePictureNoiseAlphaOffset
+    ) == 0xbc
 );
 
 HudUiCommon_FTable MakeBriefingLocatorPanelFTable() {
@@ -177,7 +167,7 @@ const HudUiFillBitmap_FTable g_HudUiBriefingTransportProgress_FTable =
 const HudUiBriefingRuntimeVtable g_HudUiBriefingRuntime_FTable = MakeBriefingRuntimeFTable();
 
 struct BriefingAction {
-    virtual int RECOIL_THISCALL Tick(float deltaSec) = 0;
+    virtual int Tick(float deltaSec) = 0;
 };
 
 struct BriefingActionNode {
@@ -194,24 +184,24 @@ struct Briefing_ActionQueue {
     int sequenceActive;
 
     int InsertAction(BriefingAction *action);
-    RECOIL_NOINLINE int RECOIL_THISCALL AddHideElement(void *element);
-    RECOIL_NOINLINE int RECOIL_THISCALL AddShowElement(void *element);
-    RECOIL_NOINLINE int RECOIL_THISCALL AddFadeInElement(void *element);
-    RECOIL_NOINLINE int RECOIL_THISCALL AddSetPanelText(
+    int AddHideElement(void *element);
+    int AddShowElement(void *element);
+    int AddFadeInElement(void *element);
+    int AddSetPanelText(
         const char *text,
         void *panel
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL AddSetWidgetImageTimed(
+    int AddSetWidgetImageTimed(
         zVidImagePartial *imageRef,
         HudUiWidget *widget
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL AddPlaySampleByName(
+    int AddPlaySampleByName(
         const char *sampleName,
         float gain,
         int useVariant,
         int progressId
     );
-    RECOIL_NOINLINE int RECOIL_THISCALL AddDelayUntilProgress(int progressId);
+    int AddDelayUntilProgress(int progressId);
 };
 
 RECOIL_STATIC_ASSERT(sizeof(BriefingActionNode) == 0x0c);
@@ -262,7 +252,7 @@ RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiBriefingRuntimeLayout,
         actionQueue
-    ) == kBriefingActionQueueOffset
+    ) == 0xa94c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -274,31 +264,31 @@ RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiBriefingRuntimeLayout,
         missionName
-    ) == kBriefingMissionNameOffset
+    ) == 0xaae8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiBriefingRuntimeLayout,
         objectiveSummary
-    ) == kBriefingObjectiveSummaryOffset
+    ) == 0xad8c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiBriefingRuntimeLayout,
         objectiveDesc
-    ) == kBriefingObjectiveDescOffset
+    ) == 0xb030
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiBriefingRuntimeLayout,
         objectivePicture
-    ) == kBriefingObjectivePictureOffset
+    ) == 0xb2d4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiBriefingRuntimeLayout,
         transmissionHalted
-    ) == kBriefingTransmissionHaltedOffset
+    ) == 0xb394
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -310,7 +300,7 @@ RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiBriefingRuntimeLayout,
         locatorPanels
-    ) == kBriefingLocatorPanelsOffset
+    ) == 0xb8f0
 );
 RECOIL_STATIC_ASSERT(sizeof(HudUiBriefingRuntimeLayout) == 0xba70);
 
@@ -319,24 +309,24 @@ struct BriefingActionElementTarget : BriefingAction {
 };
 
 struct BriefingActionHideElement : BriefingActionElementTarget {
-    int RECOIL_THISCALL Tick(float deltaSec);
+    int Tick(float deltaSec);
 };
 
 struct BriefingActionShowElement : BriefingActionElementTarget {
-    int RECOIL_THISCALL Tick(float deltaSec);
+    int Tick(float deltaSec);
 };
 
 struct BriefingActionFadeInElement : BriefingActionElementTarget {
     float alpha;
 
-    int RECOIL_THISCALL Tick(float deltaSec);
+    int Tick(float deltaSec);
 };
 
 struct BriefingActionSetPanelText : BriefingAction {
     char text[0x100];
     void *target;
 
-    int RECOIL_THISCALL Tick(float deltaSec);
+    int Tick(float deltaSec);
 };
 
 struct BriefingActionSetWidgetImageTimed : BriefingAction {
@@ -344,7 +334,7 @@ struct BriefingActionSetWidgetImageTimed : BriefingAction {
     HudUiWidget *target;
     float timer;
 
-    int RECOIL_THISCALL Tick(float deltaSec);
+    int Tick(float deltaSec);
 };
 
 struct BriefingActionPlaySample : BriefingAction {
@@ -353,13 +343,13 @@ struct BriefingActionPlaySample : BriefingAction {
     int useVariant;
     int variantIndex;
 
-    int RECOIL_THISCALL Tick(float deltaSec);
+    int Tick(float deltaSec);
 };
 
 struct BriefingActionDelayUntilProgress : BriefingAction {
     float requiredProgress;
 
-    int RECOIL_THISCALL Tick(float deltaSec);
+    int Tick(float deltaSec);
 };
 
 RECOIL_STATIC_ASSERT(
@@ -417,14 +407,6 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(sizeof(BriefingActionDelayUntilProgress) == 0x08);
 
-template <typename T>
-T *BriefingField(
-    HudUiBriefingRuntime *runtime,
-    size_t offset
-) {
-    return (T *)((unsigned char *)(runtime) + offset);
-}
-
 HudUiBriefingRuntimeLayout *BriefingLayout(
     HudUiBriefingRuntime *runtime
 ) {
@@ -440,65 +422,44 @@ HudUiPanel *BriefingPanel(
 Briefing_ActionQueue *BriefingActionQueue(
     HudUiBriefingRuntime *runtime
 ) {
-    return BriefingField<Briefing_ActionQueue>(
-        runtime,
-        kBriefingActionQueueOffset
-    );
+    return &BriefingLayout(runtime)->actionQueue;
 }
 
 void *BriefingMissionNamePanel(
     HudUiBriefingRuntime *runtime
 ) {
-    return BriefingField<void>(
-        runtime,
-        kBriefingMissionNameOffset
-    );
+    return BriefingPanel(&BriefingLayout(runtime)->missionName);
 }
 
 void *BriefingObjectiveSummaryPanel(
     HudUiBriefingRuntime *runtime
 ) {
-    return BriefingField<void>(
-        runtime,
-        kBriefingObjectiveSummaryOffset
-    );
+    return BriefingPanel(&BriefingLayout(runtime)->objectiveSummary);
 }
 
 void *BriefingObjectiveDescPanel(
     HudUiBriefingRuntime *runtime
 ) {
-    return BriefingField<void>(
-        runtime,
-        kBriefingObjectiveDescOffset
-    );
+    return BriefingPanel(&BriefingLayout(runtime)->objectiveDesc);
 }
 
 HudUiWidget *BriefingObjectivePicture(
     HudUiBriefingRuntime *runtime
 ) {
-    return BriefingField<HudUiWidget>(
-        runtime,
-        kBriefingObjectivePictureOffset
-    );
+    return &BriefingLayout(runtime)->objectivePicture.base;
 }
 
 void *BriefingTransmissionHaltedPanel(
     HudUiBriefingRuntime *runtime
 ) {
-    return BriefingField<void>(
-        runtime,
-        kBriefingTransmissionHaltedOffset
-    );
+    return BriefingPanel(&BriefingLayout(runtime)->transmissionHalted);
 }
 
 void *BriefingLocatorPanel(
     HudUiBriefingRuntime *runtime,
     int objectiveIndex
 ) {
-    return BriefingField<void>(
-        runtime,
-        kBriefingLocatorPanelsOffset + (size_t)(objectiveIndex)*kBriefingLocatorPanelStride
-    );
+    return &BriefingLayout(runtime)->locatorPanels[objectiveIndex];
 }
 
 const unsigned int *HudVtable(
@@ -541,7 +502,7 @@ void BriefingObjectivePictureSetNoiseAlpha(
     HudUiWidget *widget,
     float alpha
 ) {
-    *(float *)((unsigned char *)(widget) + kBriefingObjectivePictureNoiseAlphaOffset) = alpha;
+    ((HudUiBriefingObjectivePicture *)(widget))->noiseAlpha = alpha;
 }
 
 } // namespace
@@ -559,7 +520,7 @@ int g_Briefing_ProgressEventCode = 0;
 }
 
 // Reimplements 0x403930: HudUiBriefingRuntime::Constructor (D:\Proj\Battlesport\Briefing.cpp)
-RECOIL_NOINLINE HudUiBriefingRuntime *RECOIL_THISCALL HudUiBriefingRuntime::Constructor(
+HudUiBriefingRuntime * HudUiBriefingRuntime::Constructor(
     int missionId
 ) {
     HudUiBriefingRuntimeLayout *const layout = BriefingLayout(this);
@@ -718,7 +679,7 @@ RECOIL_NOINLINE HudUiBriefingRuntime *RECOIL_THISCALL HudUiBriefingRuntime::Cons
 }
 
 // Reimplements 0x403d90: HudUiBriefingRuntime::ScalarDeletingDestructor
-HudUiBriefingRuntime *RECOIL_THISCALL HudUiBriefingRuntime::ScalarDeletingDestructor(
+HudUiBriefingRuntime * HudUiBriefingRuntime::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -730,7 +691,7 @@ HudUiBriefingRuntime *RECOIL_THISCALL HudUiBriefingRuntime::ScalarDeletingDestru
 }
 
 // Reimplements 0x403ed0: HudUiBriefingRuntime::Destructor (D:\Proj\Battlesport\Briefing.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiBriefingRuntime::Destructor() {
+void HudUiBriefingRuntime::Destructor() {
     HudUiBriefingRuntimeLayout *const layout = BriefingLayout(this);
     layout->base.base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiBriefingRuntime_FTable);
 
@@ -741,7 +702,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiBriefingRuntime::Destructor() {
 
     HudUiCompositePanelEntry *entry = layout->messagesPanel.entryVector.begin;
     while (entry != layout->messagesPanel.entryVector.end) {
-        typedef HudUiCompositePanelEntry *(RECOIL_THISCALL * ScalarDeletingDestructorFn)(
+        typedef HudUiCompositePanelEntry *( * ScalarDeletingDestructorFn)(
             HudUiCompositePanelEntry * self,
             unsigned int flags
         );
@@ -783,7 +744,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiBriefingRuntime::Destructor() {
 }
 
 // Reimplements 0x4038a0: HudUiBriefingObjectivePicture::DrawWithNoiseOverlay
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiBriefingObjectivePicture::DrawWithNoiseOverlay() {
+void HudUiBriefingObjectivePicture::DrawWithNoiseOverlay() {
     base.Draw();
     if (noiseAlpha <= 0.0) {
         return;
@@ -802,8 +763,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiBriefingObjectivePicture::DrawWithNois
 }
 
 // Reimplements 0x403c10: HudUiBriefingLocatorPanel::Constructor
-RECOIL_NOINLINE HudUiBriefingLocatorPanel *RECOIL_THISCALL
-HudUiBriefingLocatorPanel::Constructor() {
+HudUiBriefingLocatorPanel * HudUiBriefingLocatorPanel::Constructor() {
     const unsigned short color = (unsigned short)(zVid_PackColorRGB(
         0xff,
         0,
@@ -821,7 +781,7 @@ HudUiBriefingLocatorPanel::Constructor() {
 }
 
 // Reimplements 0x403c90: HudUiBriefingLocatorPanel::BlitDirtyRect
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiBriefingLocatorPanel::BlitDirtyRect() {
+void HudUiBriefingLocatorPanel::BlitDirtyRect() {
     if (base.base.bltSource != 0) {
         zVid_Image::BlitToActiveTarget(
             (zVidImagePartial *)(base.base.bltSource),
@@ -834,7 +794,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiBriefingLocatorPanel::BlitDirtyRect() 
 }
 
 // Reimplements 0x403cb0: HudUiBriefingLocatorPanel::Update
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiBriefingLocatorPanel::Update(
+void HudUiBriefingLocatorPanel::Update(
     float deltaSec
 ) {
     if ((base.base.flags & 0x10) == 0) {
@@ -882,7 +842,7 @@ int Briefing_ActionQueue::InsertAction(
 }
 
 // Reimplements 0x404620: BriefingAction_HideElement::Tick
-int RECOIL_THISCALL BriefingActionHideElement::Tick(
+int BriefingActionHideElement::Tick(
     float
 ) {
     HudCallSetVisible(
@@ -893,7 +853,7 @@ int RECOIL_THISCALL BriefingActionHideElement::Tick(
 }
 
 // Reimplements 0x4046b0: BriefingAction_ShowElement::Tick
-int RECOIL_THISCALL BriefingActionShowElement::Tick(
+int BriefingActionShowElement::Tick(
     float
 ) {
     HudCallSetVisible(
@@ -908,7 +868,7 @@ int RECOIL_THISCALL BriefingActionShowElement::Tick(
 }
 
 // Reimplements 0x404740: BriefingAction_FadeInElement::Tick
-int RECOIL_THISCALL BriefingActionFadeInElement::Tick(
+int BriefingActionFadeInElement::Tick(
     float
 ) {
     alpha += 0.5f;
@@ -927,7 +887,7 @@ int RECOIL_THISCALL BriefingActionFadeInElement::Tick(
 }
 
 // Reimplements 0x404850: BriefingAction_SetPanelText::Tick
-int RECOIL_THISCALL BriefingActionSetPanelText::Tick(
+int BriefingActionSetPanelText::Tick(
     float
 ) {
     HudCallPanelSetText(
@@ -950,7 +910,7 @@ int RECOIL_THISCALL BriefingActionSetPanelText::Tick(
 }
 
 // Reimplements 0x404960: BriefingAction_SetWidgetImageTimed::Tick
-int RECOIL_THISCALL BriefingActionSetWidgetImageTimed::Tick(
+int BriefingActionSetWidgetImageTimed::Tick(
     float
 ) {
     HudCallNoArg(
@@ -980,7 +940,7 @@ int RECOIL_THISCALL BriefingActionSetWidgetImageTimed::Tick(
 }
 
 // Reimplements 0x404aa0: BriefingAction_PlaySample::Tick
-int RECOIL_THISCALL BriefingActionPlaySample::Tick(
+int BriefingActionPlaySample::Tick(
     float
 ) {
     if (g_Briefing_CurrentSndHandle != 0) {
@@ -1011,14 +971,14 @@ int RECOIL_THISCALL BriefingActionPlaySample::Tick(
 }
 
 // Reimplements 0x404bb0: BriefingAction_DelayUntilProgress::Tick
-int RECOIL_THISCALL BriefingActionDelayUntilProgress::Tick(
+int BriefingActionDelayUntilProgress::Tick(
     float
 ) {
     return (float)(g_Briefing_ProgressEventCode) >= requiredProgress ? 1 : 0;
 }
 
 // Reimplements 0x4045b0: Briefing_ActionQueue::AddHideElement
-RECOIL_NOINLINE int RECOIL_THISCALL Briefing_ActionQueue::AddHideElement(
+int Briefing_ActionQueue::AddHideElement(
     void *element
 ) {
     BriefingActionHideElement *const action = new BriefingActionHideElement;
@@ -1030,7 +990,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL Briefing_ActionQueue::AddHideElement(
 }
 
 // Reimplements 0x404640: Briefing_ActionQueue::AddShowElement
-RECOIL_NOINLINE int RECOIL_THISCALL Briefing_ActionQueue::AddShowElement(
+int Briefing_ActionQueue::AddShowElement(
     void *element
 ) {
     BriefingActionShowElement *const action = new BriefingActionShowElement;
@@ -1042,7 +1002,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL Briefing_ActionQueue::AddShowElement(
 }
 
 // Reimplements 0x4046d0: Briefing_ActionQueue::AddFadeInElement
-RECOIL_NOINLINE int RECOIL_THISCALL Briefing_ActionQueue::AddFadeInElement(
+int Briefing_ActionQueue::AddFadeInElement(
     void *element
 ) {
     BriefingActionFadeInElement *const action = new BriefingActionFadeInElement;
@@ -1055,7 +1015,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL Briefing_ActionQueue::AddFadeInElement(
 }
 
 // Reimplements 0x404780: Briefing_ActionQueue::AddSetPanelText
-RECOIL_NOINLINE int RECOIL_THISCALL Briefing_ActionQueue::AddSetPanelText(
+int Briefing_ActionQueue::AddSetPanelText(
     const char *text,
     void *panel
 ) {
@@ -1077,7 +1037,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL Briefing_ActionQueue::AddSetPanelText(
 }
 
 // Reimplements 0x4048a0: Briefing_ActionQueue::AddSetWidgetImageTimed
-RECOIL_NOINLINE int RECOIL_THISCALL Briefing_ActionQueue::AddSetWidgetImageTimed(
+int Briefing_ActionQueue::AddSetWidgetImageTimed(
     zVidImagePartial *imageRef,
     HudUiWidget *widget
 ) {
@@ -1096,7 +1056,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL Briefing_ActionQueue::AddSetWidgetImageTimed
 }
 
 // Reimplements 0x4049d0: Briefing_ActionQueue::AddPlaySampleByName
-RECOIL_NOINLINE int RECOIL_THISCALL Briefing_ActionQueue::AddPlaySampleByName(
+int Briefing_ActionQueue::AddPlaySampleByName(
     const char *sampleName,
     float gain,
     int useVariant,
@@ -1118,7 +1078,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL Briefing_ActionQueue::AddPlaySampleByName(
 }
 
 // Reimplements 0x404b40: Briefing_ActionQueue::AddDelayUntilProgress
-RECOIL_NOINLINE int RECOIL_THISCALL Briefing_ActionQueue::AddDelayUntilProgress(
+int Briefing_ActionQueue::AddDelayUntilProgress(
     int progressId
 ) {
     BriefingActionDelayUntilProgress *const action = new BriefingActionDelayUntilProgress;
@@ -1131,14 +1091,14 @@ RECOIL_NOINLINE int RECOIL_THISCALL Briefing_ActionQueue::AddDelayUntilProgress(
 
 namespace Briefing {
 // Reimplements 0x404b30: Briefing::SampleEventCallback
-RECOIL_NOINLINE void RECOIL_FASTCALL SampleEventCallback(
+void __fastcall SampleEventCallback(
     int progressEventCode
 ) {
     g_Briefing_ProgressEventCode = progressEventCode;
 }
 
 // Reimplements 0x404c80: Briefing::BuildObjectiveActionsGlobal
-RECOIL_NOINLINE void RECOIL_FASTCALL BuildObjectiveActionsGlobal(
+void __fastcall BuildObjectiveActionsGlobal(
     int objectiveIndex
 ) {
     if (g_Briefing_Runtime != 0) {
@@ -1147,7 +1107,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BuildObjectiveActionsGlobal(
 }
 
 // Reimplements 0x404180: Briefing::StartForMission (D:\Proj\Battlesport\Briefing.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL StartForMission(
+int __fastcall StartForMission(
     int missionId
 ) {
     g_Briefing_SystemActiveFlag = 1;
@@ -1190,7 +1150,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL StartForMission(
 }
 
 // Reimplements 0x404280: Briefing::ThreadMain (D:\Proj\Battlesport\Briefing.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL ThreadMain(
+void ThreadMain(
     void *
 ) {
     g_Briefing_ThreadRunFlag = 1;
@@ -1268,7 +1228,7 @@ RECOIL_NOINLINE void RECOIL_CDECL ThreadMain(
 }
 
 // Reimplements 0x404bd0: Briefing::StopAndShutdownThread (D:\Proj\Battlesport\Briefing.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL StopAndShutdownThread(
+void __fastcall StopAndShutdownThread(
     int waitForInput
 ) {
     if (waitForInput != 0 && g_Briefing_SequenceActiveFlag != 0) {
@@ -1304,7 +1264,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL StopAndShutdownThread(
 }
 
 // Reimplements 0x404c50: Briefing::SetProgressAndSleep
-RECOIL_NOINLINE void RECOIL_STDCALL SetProgressAndSleep(
+void __stdcall SetProgressAndSleep(
     float progressValue
 ) {
     if (g_Briefing_Runtime != 0) {
@@ -1324,7 +1284,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL SetProgressAndSleep(
 } // namespace Briefing
 
 // Reimplements 0x404070: HudUiBriefingRuntime::Update (D:\Proj\Battlesport\Briefing.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL HudUiBriefingRuntime::Update(
+void HudUiBriefingRuntime::Update(
     float deltaSec
 ) {
     Briefing_ActionQueue *const actionQueue = BriefingActionQueue(this);
@@ -1370,7 +1330,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL HudUiBriefingRuntime::Update(
 }
 
 // Reimplements 0x404400: Briefing::BuildObjectiveActionsFromIndex
-RECOIL_NOINLINE int RECOIL_THISCALL HudUiBriefingRuntime::BuildObjectiveActionsFromIndex(
+int HudUiBriefingRuntime::BuildObjectiveActionsFromIndex(
     int objectiveIndex
 ) {
     if (zOpt::GetNetworkEnabled() != 0) {

@@ -19,19 +19,19 @@ enum zSndCdAudioOption {
 extern "C" int g_RecoilState_MainMenuSkipExitDelay;
 
 struct zFMV_ActionVirtual {
-    virtual zFMV_Action *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
-    virtual int RECOIL_THISCALL Update(double timeSec);
-    virtual void RECOIL_THISCALL Begin(double timeSec);
-    virtual void RECOIL_THISCALL End();
-    virtual void RECOIL_THISCALL RunBlocking();
+    virtual zFMV_Action * ScalarDeletingDestructor(unsigned int flags);
+    virtual int Update(double timeSec);
+    virtual void Begin(double timeSec);
+    virtual void End();
+    virtual void RunBlocking();
     void *reserved14;
 };
 
 // Models the HudUi dialog controller vtable prefix used by BN 0x415319 for
 // virtual SetEnabled dispatch after constructing the concrete main-menu dialog.
 struct HudUiMainMenuDialogVirtualDispatch {
-    virtual void RECOIL_THISCALL Update();
-    virtual void RECOIL_THISCALL SetEnabled(int enabled);
+    virtual void Update();
+    virtual void SetEnabled(int enabled);
 };
 
 struct zFMV_ActionBlurStack : zFMV_ActionBlur {
@@ -52,26 +52,26 @@ struct zFMV_ActionBlurStack : zFMV_ActionBlur {
 } // namespace
 
 namespace zVideo {
-int RECOIL_FASTCALL SetHalfResAdjustMode(int mode);
+int __fastcall SetHalfResAdjustMode(int mode);
 }
 
 namespace HudUi {
-void RECOIL_FASTCALL SetInvalidateMode(int mode);
+void __fastcall SetInvalidateMode(int mode);
 }
 
 namespace zSnd {
-int RECOIL_CDECL GetCDAudioOption();
+int GetCDAudioOption();
 }
 
 namespace zSndCd {
-int RECOIL_FASTCALL PlayTrackWithMode(
+int __fastcall PlayTrackWithMode(
     int track,
     int mode
 );
 }
 
 // Reimplements 0x415220: RecoilStateMainMenuTransition::OnTryBecomeCurrent
-RECOIL_NO_GS int RECOIL_THISCALL RecoilStateMainMenuTransition::OnTryBecomeCurrent() {
+RECOIL_NO_GS int RecoilStateMainMenuTransition::OnTryBecomeCurrent() {
     if (g_zVideo_ActiveRendererPath != ZVID_RENDERER_BACKEND_SOFTWARE) {
         g_zVideo_pfnBltSwToPrimaryRectDirect(
             0,

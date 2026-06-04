@@ -1387,9 +1387,9 @@ extern "C" int pickup_init_smoke(void) {
                     g_PickupTypes[7].templateNode == &templateNode &&
                     g_PickupTypes[7].pickupSound == &samples[1] &&
                     g_PickupTypes[7].nameSuffixMax == 0 &&
-                    *(int *)(templateNode.name + 0x18) == 0 &&
-                    *(int *)(templateNode.name + 0x1c) == 7 &&
-                    *(int *)(templateNode.name + 0x20) == 12 && registered;
+                    PickupNodeFields(&templateNode)->pickupId == 0 &&
+                    PickupNodeFields(&templateNode)->pickupTypeIndex == 7 &&
+                    PickupNodeFields(&templateNode)->amount == 12 && registered;
 
     if (handlerNode != &sentinel) {
         handlerNode->prev->next = handlerNode->next;
@@ -1700,7 +1700,8 @@ extern "C" int pickup_leaf_helpers_smoke(void) {
     g_PickupTypes[12] = {};
     g_PickupTypes[12].nameSuffixMax = 20;
     if (Pickup::AssignBvolGroupAndId(&pickupObj) != 1 ||
-        *(int *)(pickupObj.name + 0x1c) != 12 || *(int *)(pickupObj.name + 0x18) != 77 ||
+        PickupNodeFields(&pickupObj)->pickupTypeIndex != 12 ||
+        PickupNodeFields(&pickupObj)->pickupId != 77 ||
         g_NextPickupId != 78 || g_PickupTypes[12].nameSuffixMax != 35 ||
         (pickupObj.flags & 0x28) != 0x20 || (bvolNode.flags & 0x04) != 0 ||
         (pickupDi.flags & 1) != 0 || (bvolDi.flags & 1) != 0) {
@@ -1736,9 +1737,9 @@ extern "C" int pickup_leaf_helpers_smoke(void) {
     zClass_NodePartial *const createdPickup = Pickup::CreateObjectInstance(12, 0);
     const bool createdOk =
         createdPickup != nullptr && std::strcmp(createdPickup->name, "pu01234") == 0 &&
-        *(int *)(createdPickup->name + 0x1c) == 12 &&
-        *(int *)(createdPickup->name + 0x18) == 200 &&
-        *(int *)(createdPickup->name + 0x20) == 6 && g_NextPickupId == 201 &&
+        PickupNodeFields(createdPickup)->pickupTypeIndex == 12 &&
+        PickupNodeFields(createdPickup)->pickupId == 200 &&
+        PickupNodeFields(createdPickup)->amount == 6 && g_NextPickupId == 201 &&
         g_PickupTypes[12].nameSuffixMax == 35 && createdPickup->listCountB == 1 &&
         std::strcmp(createdPickup->listB[0]->name, "bvol") == 0 &&
         (createdPickup->listB[0]->flags & 0x04) == 0;
@@ -1858,9 +1859,9 @@ extern "C" int pickup_leaf_helpers_smoke(void) {
     spawnPickup.classId = 5;
     spawnPickup.listCountB = 1;
     spawnPickup.listB = spawnPickupChildren;
-    TestFieldAt<int>(spawnPickup.name, 0x18) = 301;
-    TestFieldAt<int>(spawnPickup.name, 0x1c) = 321;
-    TestFieldAt<int>(spawnPickup.name, 0x20) = 7;
+    PickupNodeFields(&spawnPickup)->pickupId = 301;
+    PickupNodeFields(&spawnPickup)->pickupTypeIndex = 321;
+    PickupNodeFields(&spawnPickup)->amount = 7;
     g_PickupTypes[5] = {};
     g_PickupTypes[5].typeIndex = 321;
     g_Pickup_SceneNode = &spawnParent;

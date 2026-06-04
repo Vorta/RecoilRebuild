@@ -294,17 +294,17 @@ void __cdecl FakeFmvOperatorDelete(void *ptr) {
     g_fakeFmvOperatorDeletePtr = ptr;
 }
 
-int RECOIL_CDECL FakeFmvDispatchLockDisplayModeSurfaceState() {
+int FakeFmvDispatchLockDisplayModeSurfaceState() {
     ++g_fakeFmvDisplayLockCount;
     return 1;
 }
 
-int RECOIL_CDECL FakeFmvDispatchUnlockDisplayModeSurfaceState() {
+int FakeFmvDispatchUnlockDisplayModeSurfaceState() {
     ++g_fakeFmvDisplayUnlockCount;
     return 1;
 }
 
-int RECOIL_FASTCALL FakeFmvAdjustSurfacesIfEnabled(
+int __fastcall FakeFmvAdjustSurfacesIfEnabled(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect,
     int waitForPresent,
@@ -318,22 +318,22 @@ int RECOIL_FASTCALL FakeFmvAdjustSurfacesIfEnabled(
     return 0x1234;
 }
 
-zVidImagePartial *RECOIL_FASTCALL FakeFmvTexDirFindOrCreateByPath(const char *path) {
+zVidImagePartial *__fastcall FakeFmvTexDirFindOrCreateByPath(const char *path) {
     ++g_fakeFmvTexDirFindCount;
     g_fakeFmvTexDirFindPath = path;
     return g_fakeFmvTexDirFindResult;
 }
 
-int RECOIL_CDECL FakeFmvRunPostprocessOnPrimaryBuffer() {
+int FakeFmvRunPostprocessOnPrimaryBuffer() {
     ++g_fakeFmvPostprocessCount;
     return 1;
 }
 
-void RECOIL_CDECL FakeFmvRunPostprocessOnSwBuffer() {
+void FakeFmvRunPostprocessOnSwBuffer() {
     ++g_fakeFmvSwPostprocessCount;
 }
 
-void RECOIL_FASTCALL FakeFmvBlitToActiveTarget(
+void __fastcall FakeFmvBlitToActiveTarget(
     zVidImagePartial *image,
     int dstX,
     int dstY,
@@ -348,17 +348,17 @@ void RECOIL_FASTCALL FakeFmvBlitToActiveTarget(
     g_fakeFmvBlitToActiveTargetSrcRect = srcRect;
 }
 
-int RECOIL_CDECL FakeFmvDispatchUnlockPrimarySurfaceState() {
+int FakeFmvDispatchUnlockPrimarySurfaceState() {
     ++g_fakeFmvUnlockPrimaryCount;
     return 1;
 }
 
-int RECOIL_CDECL FakeFmvDispatchUnlockSwSurfaceState() {
+int FakeFmvDispatchUnlockSwSurfaceState() {
     ++g_fakeFmvUnlockSwCount;
     return 1;
 }
 
-void RECOIL_FASTCALL FakeFmvOverlayRectSubmit(
+void __fastcall FakeFmvOverlayRectSubmit(
     unsigned int packedColor16,
     zVidRect32 *rectOrNull,
     double alpha
@@ -369,25 +369,25 @@ void RECOIL_FASTCALL FakeFmvOverlayRectSubmit(
     g_fakeFmvOverlaySubmitAlpha = alpha;
 }
 
-void RECOIL_CDECL FakeFmvOverlayRectFlushSw() {
+void FakeFmvOverlayRectFlushSw() {
     ++g_fakeFmvOverlayFlushSwCount;
 }
 
-int RECOIL_CDECL FakeFmvSceneEnter() {
+int FakeFmvSceneEnter() {
     ++g_fakeFmvSceneEnterCount;
     return 1;
 }
 
-int RECOIL_CDECL FakeFmvSceneLeave() {
+int FakeFmvSceneLeave() {
     ++g_fakeFmvSceneLeaveCount;
     return 1;
 }
 
-void RECOIL_CDECL FakeFmvFlushQuadBatch() {
+void FakeFmvFlushQuadBatch() {
     ++g_fakeFmvFlushQuadBatchCount;
 }
 
-void RECOIL_FASTCALL FakeFmvBltSwToPrimaryRect(
+void __fastcall FakeFmvBltSwToPrimaryRect(
     zVidImagePartial *srcImage,
     int srcColorKeyEnable,
     zVidRect32 *srcRect,
@@ -400,7 +400,7 @@ void RECOIL_FASTCALL FakeFmvBltSwToPrimaryRect(
     g_fakeFmvSwBltDstRect = dstRect;
 }
 
-void RECOIL_FASTCALL FakeFmvBltSwToPrimaryRectDirect(
+void __fastcall FakeFmvBltSwToPrimaryRectDirect(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect
 ) {
@@ -409,7 +409,7 @@ void RECOIL_FASTCALL FakeFmvBltSwToPrimaryRectDirect(
     g_fakeFmvSwToPrimaryDirectDstRect = dstRect;
 }
 
-void RECOIL_FASTCALL FakeFmvBltPrimaryToSwRectDirect(
+void __fastcall FakeFmvBltPrimaryToSwRectDirect(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect
 ) {
@@ -418,7 +418,7 @@ void RECOIL_FASTCALL FakeFmvBltPrimaryToSwRectDirect(
     g_fakeFmvPrimaryToSwDirectDstRect = dstRect;
 }
 
-void RECOIL_FASTCALL FakeFmvBlurRegionByMode(
+void __fastcall FakeFmvBlurRegionByMode(
     zVidRect32 *rect,
     int mode
 ) {
@@ -430,7 +430,7 @@ void RECOIL_FASTCALL FakeFmvBlurRegionByMode(
     g_fakeFmvBlurByModeRect = rect;
 }
 
-zVidImagePartial *RECOIL_FASTCALL FakeFmvCaptureSurfaceToImage(int selector) {
+zVidImagePartial *__fastcall FakeFmvCaptureSurfaceToImage(int selector) {
     ++g_fakeFmvCaptureSurfaceCount;
     g_fakeFmvCaptureSurfaceSelector = selector;
     return g_fakeFmvCaptureSurfaceResult;
@@ -446,13 +446,13 @@ unsigned int FmvFloatBits(float value) {
     return bits;
 }
 
-int RECOIL_FASTCALL FakeFmvReleaseImageIfNotDefault(zVidImagePartial *image) {
+int __fastcall FakeFmvReleaseImageIfNotDefault(zVidImagePartial *image) {
     ++g_fakeFmvReleaseImageCount;
     g_fakeFmvReleaseImage = image;
     return 1;
 }
 
-char *RECOIL_FASTCALL FakeFmvFindFileOnDriveType(
+char *__fastcall FakeFmvFindFileOnDriveType(
     int driveType,
     const char *relativePath,
     int unused
@@ -581,38 +581,38 @@ void RestoreFunctionPatch(CodeFunctionPatch &patch) {
 }
 
 struct TestAction : zFMV_Action {
-    zFMV_Action *RECOIL_THISCALL Delete(std::uint32_t flags) {
+    zFMV_Action * Delete(std::uint32_t flags) {
         ++g_deletedCount;
         g_lastDeleteFlags = flags;
         return this;
     }
 
-    void RECOIL_THISCALL Begin(double timeSec) {
+    void Begin(double timeSec) {
         ++g_beginCallCount;
         g_lastBeginTimeSec = timeSec;
     }
 
-    int RECOIL_THISCALL Update(double timeSec) {
+    int Update(double timeSec) {
         ++g_updateCallCount;
         g_lastUpdateTimeSec = timeSec;
         return g_nextUpdateResult;
     }
 
-    void RECOIL_THISCALL End() {
+    void End() {
         ++g_endCallCount;
     }
 };
 
 struct FakeFmvPlaybackThunk {
-    void RECOIL_THISCALL OpenAndPlay(
+    void OpenAndPlay(
         unsigned int startMs,
         int endMs,
         int notifyFlag
     );
-    void RECOIL_THISCALL StopAndClose();
+    void StopAndClose();
 };
 
-void RECOIL_THISCALL FakeFmvPlaybackThunk::OpenAndPlay(
+void FakeFmvPlaybackThunk::OpenAndPlay(
     unsigned int startMs,
     int endMs,
     int notifyFlag
@@ -624,14 +624,14 @@ void RECOIL_THISCALL FakeFmvPlaybackThunk::OpenAndPlay(
     g_fakeFmvPlaybackOpenAndPlayNotifyFlag = notifyFlag;
 }
 
-void RECOIL_THISCALL FakeFmvPlaybackThunk::StopAndClose() {
+void FakeFmvPlaybackThunk::StopAndClose() {
     ++g_fakeFmvPlaybackStopAndCloseCount;
     g_fakeFmvPlaybackStopAndCloseSelf = (zFMV_Playback *)(this);
 }
 
 void *zFMV_Playback_OpenAndPlayProc() {
     union MemberToFunction {
-        void (RECOIL_THISCALL zFMV_Playback::*member)(unsigned int, int, int);
+        void ( zFMV_Playback::*member)(unsigned int, int, int);
         void *function;
     };
 
@@ -642,7 +642,7 @@ void *zFMV_Playback_OpenAndPlayProc() {
 
 void *FakeFmvPlaybackOpenAndPlayProc() {
     union MemberToFunction {
-        void (RECOIL_THISCALL FakeFmvPlaybackThunk::*member)(unsigned int, int, int);
+        void ( FakeFmvPlaybackThunk::*member)(unsigned int, int, int);
         void *function;
     };
 
@@ -653,7 +653,7 @@ void *FakeFmvPlaybackOpenAndPlayProc() {
 
 void *zFMV_Playback_StopAndCloseProc() {
     union MemberToFunction {
-        void (RECOIL_THISCALL zFMV_Playback::*member)();
+        void ( zFMV_Playback::*member)();
         void *function;
     };
 
@@ -664,7 +664,7 @@ void *zFMV_Playback_StopAndCloseProc() {
 
 void *FakeFmvPlaybackStopAndCloseProc() {
     union MemberToFunction {
-        void (RECOIL_THISCALL FakeFmvPlaybackThunk::*member)();
+        void ( FakeFmvPlaybackThunk::*member)();
         void *function;
     };
 
@@ -675,23 +675,23 @@ void *FakeFmvPlaybackStopAndCloseProc() {
 
 zFMV_Action_Vtbl MakeTestActionVtable() {
     union DeleteMemberToFunction {
-        zFMV_Action *(RECOIL_THISCALL TestAction::*member)(std::uint32_t);
-        zFMV_Action *(RECOIL_THISCALL *function)(zFMV_Action *, std::uint32_t);
+        zFMV_Action *( TestAction::*member)(std::uint32_t);
+        zFMV_Action *( *function)(zFMV_Action *, std::uint32_t);
     };
 
     union BeginMemberToFunction {
-        void (RECOIL_THISCALL TestAction::*member)(double);
-        void (RECOIL_THISCALL *function)(zFMV_Action *, double);
+        void ( TestAction::*member)(double);
+        void ( *function)(zFMV_Action *, double);
     };
 
     union UpdateMemberToFunction {
-        int (RECOIL_THISCALL TestAction::*member)(double);
-        int (RECOIL_THISCALL *function)(zFMV_Action *, double);
+        int ( TestAction::*member)(double);
+        int ( *function)(zFMV_Action *, double);
     };
 
     union EndMemberToFunction {
-        void (RECOIL_THISCALL TestAction::*member)();
-        void (RECOIL_THISCALL *function)(zFMV_Action *);
+        void ( TestAction::*member)();
+        void ( *function)(zFMV_Action *);
     };
 
     DeleteMemberToFunction deleteThunk{};

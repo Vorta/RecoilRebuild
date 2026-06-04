@@ -126,7 +126,7 @@ namespace {
 
 namespace Light {
     // Reimplements 0x4b2160: Light::InitThermalGlowPool (D:\Proj\GameZRecoil\zClass\Light.c)
-    RECOIL_NOINLINE int RECOIL_CDECL InitThermalGlowPool() {
+    int InitThermalGlowPool() {
         for (int i = 0; i < 8; ++i) {
             zClass_NodePartial *const light = zClass_Light::gwLightNew();
             zClass_Class::gwNodeSetName(
@@ -152,7 +152,7 @@ namespace Light {
     }
 
     // Reimplements 0x4b21e0: Light::DestroyThermalGlowPool (D:\Proj\GameZRecoil\zClass\Light.c)
-    RECOIL_NOINLINE int RECOIL_CDECL DestroyThermalGlowPool() {
+    int DestroyThermalGlowPool() {
         zClass_NodePartial *node = g_OptCatalogThermalGlowFreeList;
         while (node != 0) {
             zClass_NodePartial *next = node->callbackContext;
@@ -166,7 +166,7 @@ namespace Light {
     }
 
     // Reimplements 0x4b2520: Light::AllocFromFreeListAndAttach (D:\Proj\GameZRecoil\zClass\Light.c)
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL AllocFromFreeListAndAttach(
+    zClass_NodePartial *__fastcall AllocFromFreeListAndAttach(
         zColorRgb * specularColor
     ) {
         zClass_NodePartial *const light = g_OptCatalogThermalGlowFreeList;
@@ -194,7 +194,7 @@ namespace Light {
     }
 
     // Reimplements 0x4b2570: Light::ReturnToFreeList (D:\Proj\GameZRecoil\zClass\Light.c)
-    RECOIL_NOINLINE void RECOIL_FASTCALL ReturnToFreeList(zClass_NodePartial * lightNode) {
+    void __fastcall ReturnToFreeList(zClass_NodePartial * lightNode) {
         zClass_Light::gwLightSetRange(
             lightNode,
             0.1f,
@@ -211,7 +211,7 @@ namespace Light {
 
 namespace zClass_Light {
     // Reimplements 0x452fd0: zClass_Light::gwLightNew
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwLightNew() {
+    zClass_NodePartial *gwLightNew() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
             zError::ReportOld(
@@ -277,7 +277,7 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x453110: zClass_Light::DeleteNode
-    RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNode(zClass_NodePartial * node) {
+    int __fastcall DeleteNode(zClass_NodePartial * node) {
         if (node == 0) {
             zError::ReportOld(
                 0x400,
@@ -320,7 +320,7 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x4531c0: zClass_Light::RemoveChild
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -352,7 +352,7 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x453200: zClass_Light::gwLightSetIntensity
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwLightSetIntensity(
         zClass_NodePartial * node,
         float intensity
@@ -372,7 +372,7 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x453250: zClass_Light::gwLightSetFalloff
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwLightSetFalloff(
         zClass_NodePartial * node,
         float falloff
@@ -392,7 +392,7 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x4532a0: zClass_Light::gwLightSetConeAngle
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwLightSetConeAngle(
         zClass_NodePartial * node,
         unsigned int coneAngleBits
@@ -416,7 +416,7 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x4532f0: zClass_Light::gwLightSetPointMode
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetPointMode(zClass_NodePartial * node) {
+    int __fastcall gwLightSetPointMode(zClass_NodePartial * node) {
         zClass_LightDataPartial *data = GetLightData(
             node,
             0x1b5,
@@ -433,7 +433,7 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x453350: zClass_Light::gwLightSetDirectionalMode
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetDirectionalMode(zClass_NodePartial * node) {
+    int __fastcall gwLightSetDirectionalMode(zClass_NodePartial * node) {
         zClass_LightDataPartial *data = GetLightData(
             node,
             0x1d5,
@@ -450,7 +450,7 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x4533b0: zClass_Light::gwLightSetParam
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwLightSetParam(
+    int __fastcall gwLightSetParam(
         zClass_NodePartial * node,
         int param
     ){
@@ -469,7 +469,7 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x453400: zClass_Light::gwLightSetRange
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwLightSetRange(
         zClass_NodePartial * node,
         float rangeA,
@@ -504,7 +504,7 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x453500: zClass_Light::gwLightGetRange
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwLightGetRange(
         zClass_NodePartial * node,
         float *outRange1,
@@ -525,7 +525,7 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x453560: zClass_Light::gwLightSetPosition
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwLightSetPosition(
         zClass_NodePartial * node,
         float x,
@@ -551,7 +551,7 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x4535c0: zClass_Light::gwLightSetRotation
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwLightSetRotation(
         zClass_NodePartial * node,
         float x,
@@ -577,7 +577,7 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x453620: zClass_Light::ComputeWorldTransform
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     ComputeWorldTransform(
         zClass_NodePartial * node,
         zClass_LightDataPartial * data
@@ -620,7 +620,7 @@ namespace zClass_Light {
 
     // Reimplements 0x453880: zClass_Light::gwLightUpdate
     // (D:\Proj\GameZRecoil\zClass\Light.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwLightUpdate(zClass_NodePartial * node) {
+    int __fastcall gwLightUpdate(zClass_NodePartial * node) {
         if (node == 0) {
             zError::ReportOld(
                 0x400,
@@ -676,7 +676,7 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x453a40: zClass_Light::gwLightGetSpecularColor
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwLightGetSpecularColor(
+    int __fastcall gwLightGetSpecularColor(
         zClass_NodePartial * node,
         float *outRed,
         float *outGreen,
@@ -698,7 +698,7 @@ namespace zClass_Light {
     }
 
     // Reimplements 0x453aa0: zClass_Light::gwLightSetSpecularColor
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwLightSetSpecularColor(
         zClass_NodePartial * node,
         float red,
@@ -724,7 +724,7 @@ namespace zClass_Light {
 
     // Reimplements 0x44b140: zClass_Light::RenderTraverse
     // (D:\Proj\GameZRecoil\zClass\Light.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint

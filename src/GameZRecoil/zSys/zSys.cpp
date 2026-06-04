@@ -28,7 +28,7 @@ typedef HRESULT(WINAPI *zDirectDrawCreateFn)(
     LPDIRECTDRAW *,
     IUnknown *
 );
-typedef HMODULE(RECOIL_STDCALL *zLoadLibraryAFn)(const char *);
+typedef HMODULE(__stdcall *zLoadLibraryAFn)(const char *);
 
 const char kDdrawDll[] = "DDRAW.DLL";
 const char kDinputDll[] = "DINPUT.DLL";
@@ -43,25 +43,28 @@ const char kCouldNotLoadDinput[] = "Couldn't LoadLibrary DInput\r\n";
 const char kCouldNotQiDDraw2[] = "Couldn't QI DDraw2\r\n";
 const char kCouldNotSetCoopLevel[] = "Couldn't Set coop level\r\n";
 
-const unsigned int kCpuBenchmarkDurationTable[0x0c] =
-    {0, 0, 0, 0x73, 0x2f, 0x2b, 0x26, 0x26, 0x26, 0x26, 0x26, 0x26};
+const unsigned int g_zSys_CpuBenchmarkDurationTable[12] =
+    {0, 0, 0, 115, 47, 43, 38, 38, 38, 38, 38, 38};
+
+const char g_zSys_CpuVendorExpectedIntel[0x0d] = "GenuineIntel";
+const char g_zSys_CpuVendorScratchPadInit[0x0d] = "------------";
 
 char g_zSys_DriveTypeSearchPathBuffer[MAX_PATH];
 
 struct CpuBenchmarkResolver {
-    RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL ResolveCpuBenchmarkPacket(
+    zSys::CpuBenchmarkResult * ResolveCpuBenchmarkPacket(
         zSys::CpuBenchmarkResult *outBuffer
     );
 
-    RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL MeasureMhzViaBsfLoop_Qpc(
+    zSys::CpuBenchmarkResult * MeasureMhzViaBsfLoop_Qpc(
         zSys::CpuBenchmarkResult *outBuffer
     );
 
-    RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL MeasureCpuMhz_RdtscQpc(
+    zSys::CpuBenchmarkResult * MeasureCpuMhz_RdtscQpc(
         zSys::CpuBenchmarkResult *outBuffer
     );
 
-    RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL MeasureCpuMhz_CmosRtc(
+    zSys::CpuBenchmarkResult * MeasureCpuMhz_CmosRtc(
         zSys::CpuBenchmarkResult *outBuffer
     );
 };
@@ -126,43 +129,74 @@ extern "C" unsigned int g_zSys_CpuVendorNonIntelMarker = 0;
 #include "GameZRecoil/zSys/zSys_probe_platform.inl"
 
 // Reimplements 0x4a59e0: zSys::FindFileOnDriveType
-RECOIL_NOINLINE RECOIL_NO_GS char *RECOIL_FASTCALL zSys::FindFileOnDriveType(
+RECOIL_NO_GS char *__fastcall zSys::FindFileOnDriveType(
     int driveType,
     const char *relativePath,
     int
 ) {
-    char driveStrings[0x100];
+    enum {
+        kLogicalDriveStringsReadLimit = 256,
+        kLogicalDriveStringsBufferSize = 300
+    };
+    char driveStrings[kLogicalDriveStringsBufferSize];
+    const char *searchPath;
+    struct _stat statBuffer;
+    searchPath = relativePath;
     GetLogicalDriveStringsA(
-        sizeof(driveStrings),
+        kLogicalDriveStringsReadLimit,
         driveStrings
     );
 
-    for (const char *drive = driveStrings; *drive != '\0'; drive += strlen(drive) + 1) {
+    int driveListOffset = 0;
+    int found = 0;
+    while (1) {
+        const char *drive = &driveStrings[driveListOffset];
         sprintf(
             g_zSys_DriveTypeSearchPathBuffer,
             "%s%s",
             drive,
-            relativePath
+            searchPath
         );
-        const UINT currentType = GetDriveTypeA(drive);
-        if (currentType != (UINT)(driveType)) {
-            continue;
+        switch (GetDriveTypeA(drive)) {
+        case DRIVE_FIXED:
+            if (driveType == DRIVE_FIXED) {
+                if (_stat(
+                    g_zSys_DriveTypeSearchPathBuffer,
+                    &statBuffer
+                ) == 0) {
+                    found = 1;
+                }
+            }
+            break;
+
+        case DRIVE_CDROM:
+            if (driveType == DRIVE_CDROM) {
+                if (_stat(
+                    g_zSys_DriveTypeSearchPathBuffer,
+                    &statBuffer
+                ) == 0) {
+                    found = 1;
+                }
+            }
+            break;
         }
 
-        struct stat statBuffer;
-        if (stat(
-            g_zSys_DriveTypeSearchPathBuffer,
-            &statBuffer
-        ) == 0) {
+        if (found != 0) {
             return g_zSys_DriveTypeSearchPathBuffer;
         }
+
+        if (strlen(drive) == 0) {
+            break;
+        }
+
+        driveListOffset += (int)(strlen(drive) + 1);
     }
 
     return 0;
 }
 
 // Reimplements 0x4b3050: zSys::CheckCpuSignatureMask
-RECOIL_NOINLINE int RECOIL_CDECL zSys::CheckCpuSignatureMask() {
+int zSys::CheckCpuSignatureMask() {
     int cpuInfo[4] = {0};
     __cpuid(
         cpuInfo,
@@ -171,29 +205,33 @@ RECOIL_NOINLINE int RECOIL_CDECL zSys::CheckCpuSignatureMask() {
     return (cpuInfo[0] & 0x630) == 0x630 ? 1 : 0;
 }
 
+#if !(defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM))
 // Reimplements 0x4b2fe0: zSys::HasCpuidSupportRuntimeOptions
 // Retail has a second CPUID-support probe for zGame/zSound runtime option setup.
-RECOIL_NOINLINE int RECOIL_CDECL zSys::HasCpuidSupportRuntimeOptions() {
+int zSys::HasCpuidSupportRuntimeOptions() {
     return HasCpuidSupport() != 0 ? 1 : 0;
 }
 
-#if !(defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM))
 // Reimplements 0x4b33f0: zSys::HasCpuidSupport
 // (D:\Proj\GameZRecoil\zSys\zsys_cpu.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL zSys::HasCpuidSupport() {
+unsigned short zSys::HasCpuidSupport() {
     return 1;
 }
 
 // Reimplements 0x4b3640: zSys::ReadCpuidVendorAndFamily
 // (D:\Proj\GameZRecoil\zSys\zsys_cpu.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL zSys::ReadCpuidVendorAndFamily() {
+int zSys::ReadCpuidVendorAndFamily() {
     int cpuInfo[4];
     __cpuid(
         cpuInfo,
         0
     );
-    const char genuineIntel[0x0c] = {'G', 'e', 'n', 'u', 'i', 'n', 'e', 'I', 'n', 't', 'e', 'l'};
     char vendor[0x0c];
+    memcpy(
+        vendor,
+        g_zSys_CpuVendorScratchPadInit,
+        sizeof(vendor)
+    );
     memcpy(
         &vendor[0],
         &cpuInfo[1],
@@ -211,7 +249,7 @@ RECOIL_NOINLINE int RECOIL_CDECL zSys::ReadCpuidVendorAndFamily() {
     );
     g_zSys_CpuVendorNonIntelMarker = memcmp(
         vendor,
-        genuineIntel,
+        g_zSys_CpuVendorExpectedIntel,
         sizeof(vendor)
     ) == 0 ? 0u : 1u;
 
@@ -230,7 +268,7 @@ RECOIL_NOINLINE int RECOIL_CDECL zSys::ReadCpuidVendorAndFamily() {
 #endif
 
 // Reimplements 0x4b3480: zSys::ReadCpuidFeatureFlags
-RECOIL_NOINLINE unsigned int RECOIL_CDECL zSys::ReadCpuidFeatureFlags() {
+unsigned int zSys::ReadCpuidFeatureFlags() {
     if (HasCpuidSupport() == 0) {
         return 0;
     }
@@ -241,8 +279,12 @@ RECOIL_NOINLINE unsigned int RECOIL_CDECL zSys::ReadCpuidFeatureFlags() {
         0
     );
 
-    const char genuineIntel[0x0c] = {'G', 'e', 'n', 'u', 'i', 'n', 'e', 'I', 'n', 't', 'e', 'l'};
     char vendor[0x0c];
+    memcpy(
+        vendor,
+        g_zSys_CpuVendorScratchPadInit,
+        sizeof(vendor)
+    );
     memcpy(
         &vendor[0],
         &cpuInfo[1],
@@ -260,7 +302,7 @@ RECOIL_NOINLINE unsigned int RECOIL_CDECL zSys::ReadCpuidFeatureFlags() {
     );
     if (memcmp(
         vendor,
-        genuineIntel,
+        g_zSys_CpuVendorExpectedIntel,
         sizeof(vendor)
     ) != 0) {
         g_zSys_CpuVendorNonIntelMarker = 1;
@@ -274,14 +316,14 @@ RECOIL_NOINLINE unsigned int RECOIL_CDECL zSys::ReadCpuidFeatureFlags() {
 }
 
 // Reimplements 0x4b3b00: zSys::ReadCmosRtcSecondsBcd
-RECOIL_NOINLINE unsigned int RECOIL_CDECL zSys::ReadCmosRtcSecondsBcd() {
+unsigned int zSys::ReadCmosRtcSecondsBcd() {
     SYSTEMTIME localTime;
     GetLocalTime(&localTime);
     return (unsigned int)(((localTime.wSecond / 10) << 4) | (localTime.wSecond % 10));
 }
 
 // Reimplements 0x4b3b20: zSys::ReadTsc64
-RECOIL_NOINLINE void RECOIL_FASTCALL zSys::ReadTsc64(
+void __fastcall zSys::ReadTsc64(
     unsigned int *outHigh,
     unsigned int *outLow
 ) {
@@ -295,7 +337,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zSys::ReadTsc64(
 }
 
 // Reimplements 0x4b3ca0: zSys::Sub64
-RECOIL_NOINLINE void RECOIL_FASTCALL zSys::Sub64(
+void __fastcall zSys::Sub64(
     unsigned int subHigh,
     unsigned int subLow,
     unsigned int minuendHigh,
@@ -303,15 +345,10 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zSys::Sub64(
     unsigned int *outHigh,
     unsigned int *outLow
 ) {
-    const unsigned __int64 subtrahend = ((unsigned __int64)(subHigh) << 32) | subLow;
-    const unsigned __int64 minuend = ((unsigned __int64)(minuendHigh) << 32) | minuendLow;
-    const unsigned __int64 result = minuend - subtrahend;
-    if (outHigh != 0) {
-        *outHigh = (unsigned int)(result >> 32);
-    }
-    if (outLow != 0) {
-        *outLow = (unsigned int)(result);
-    }
+    const unsigned int resultLow = minuendLow - subLow;
+    const unsigned int resultHigh = minuendHigh - subHigh - (minuendLow < subLow ? 1u : 0u);
+    *outLow = resultLow;
+    *outHigh = resultHigh;
 }
 
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
@@ -320,25 +357,25 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zSys::Sub64(
 namespace zSys {
 // Reimplements 0x4b3510: zSys::ProbeDivZeroFlagBehavior
 // (D:\Proj\GameZRecoil\zSys\zsys_cpu.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL ProbeDivZeroFlagBehavior() {
+int ProbeDivZeroFlagBehavior() {
     return 0;
 }
 
 // Reimplements 0x4b3550: zSys::DetectIs8086ByEflagsHiBits
 // (D:\Proj\GameZRecoil\zSys\zsys_cpu.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL DetectIs8086ByEflagsHiBits() {
+int DetectIs8086ByEflagsHiBits() {
     return 0xffff;
 }
 
 // Reimplements 0x4b35a0: zSys::DetectIs80286ByEflagsHiBits
 // (D:\Proj\GameZRecoil\zSys\zsys_cpu.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL DetectIs80286ByEflagsHiBits() {
+int DetectIs80286ByEflagsHiBits() {
     return 0xffff;
 }
 
 // Reimplements 0x4b35f0: zSys::DetectIs80386ByAcFlag
 // (D:\Proj\GameZRecoil\zSys\zsys_cpu.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL DetectIs80386ByAcFlag() {
+int DetectIs80386ByAcFlag() {
     return 0xffff;
 }
 } // namespace zSys
@@ -347,8 +384,7 @@ RECOIL_NOINLINE int RECOIL_CDECL DetectIs80386ByAcFlag() {
 #include "GameZRecoil/zSys/zSys_cpu_detect.inl"
 
 // Reimplements 0x4b37f0: CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc
-RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL
-CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc(
+zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc(
     zSys::CpuBenchmarkResult *outBuffer
 ) {
     LARGE_INTEGER frequency;
@@ -396,8 +432,7 @@ CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc(
 }
 
 // Reimplements 0x4b38e0: CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc
-RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL
-CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc(
+zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc(
     zSys::CpuBenchmarkResult *outBuffer
 ) {
     HANDLE thread = GetCurrentThread();
@@ -502,8 +537,7 @@ CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc(
 }
 
 // Reimplements 0x4b3b50: CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc
-RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL
-CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc(
+zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc(
     zSys::CpuBenchmarkResult *outBuffer
 ) {
     HANDLE thread = GetCurrentThread();
@@ -573,8 +607,7 @@ CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc(
 }
 
 // Reimplements 0x4b36f0: CpuBenchmarkResolver::ResolveCpuBenchmarkPacket
-RECOIL_NOINLINE zSys::CpuBenchmarkResult *RECOIL_THISCALL
-CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(
+zSys::CpuBenchmarkResult * CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(
     zSys::CpuBenchmarkResult *outBuffer
 ) {
     const int cpuClass = zSys::DetectCpuClassAndFeatures();
@@ -589,10 +622,10 @@ CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(
     unsigned int expectedCycles;
     bool forcedLowHint = false;
     if (cpuClassHint <= 0) {
-        expectedCycles = kCpuBenchmarkDurationTable[cpuClass & 0xffff] * 0x0fa0u;
+        expectedCycles = g_zSys_CpuBenchmarkDurationTable[cpuClass & 0xffff] * 4000u;
     } else if (cpuClassHint <= 0x96) {
         forcedLowHint = true;
-        expectedCycles = (unsigned int)(cpuClassHint) * 0x0fa0u;
+        expectedCycles = (unsigned int)(cpuClassHint) * 4000u;
     } else {
         expectedCycles = (unsigned int)((unsigned int)(outBuffer));
     }
@@ -621,7 +654,7 @@ CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(
 }
 
 // Reimplements 0x4b3020: zCpu::HasMmxSupport
-RECOIL_NOINLINE int RECOIL_CDECL zCpu::HasMmxSupport() {
+int zCpu::HasMmxSupport() {
     int cpuInfo[4] = {0};
     __cpuid(
         cpuInfo,
@@ -633,11 +666,11 @@ RECOIL_NOINLINE int RECOIL_CDECL zCpu::HasMmxSupport() {
 #include "GameZRecoil/zSys/zSys_cpu_get_class.inl"
 
 // Reimplements 0x4b31c0: zSys::GetCpuMhz
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL zSys::GetCpuMhz() {
+RECOIL_NO_GS int zSys::GetCpuMhz() {
     volatile CpuBenchmarkResult copied;
     CpuBenchmarkResult benchmark;
-    const CpuBenchmarkResult *measured =
-        CpuBenchmarkResolverFromValue(0)->ResolveCpuBenchmarkPacket(&benchmark);
+    const volatile CpuBenchmarkResult *measured =
+        ((CpuBenchmarkResolver *)0)->ResolveCpuBenchmarkPacket(&benchmark);
     copied.totalCycles = measured->totalCycles;
     copied.totalMicroseconds = measured->totalMicroseconds;
     copied.cpuMhzRaw = measured->cpuMhzRaw;
@@ -645,12 +678,12 @@ RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL zSys::GetCpuMhz() {
 }
 
 // Reimplements 0x4b3210: zSys::ReturnZeroStub
-RECOIL_NOINLINE int RECOIL_CDECL zSys::ReturnZeroStub() {
+int zSys::ReturnZeroStub() {
     return 0;
 }
 
 // Reimplements 0x4b3230: zSys::GetTotalPhysKb
-RECOIL_NOINLINE RECOIL_NO_GS unsigned int RECOIL_CDECL zSys::GetTotalPhysKb() {
+RECOIL_NO_GS unsigned int zSys::GetTotalPhysKb() {
     MEMORYSTATUS status;
     status.dwLength = sizeof(status);
     GlobalMemoryStatus(&status);
@@ -658,7 +691,7 @@ RECOIL_NOINLINE RECOIL_NO_GS unsigned int RECOIL_CDECL zSys::GetTotalPhysKb() {
 }
 
 // Reimplements 0x4a5980: zSys::ExitProcessWithCleanup
-RECOIL_NOINLINE void RECOIL_FASTCALL zSys::ExitProcessWithCleanup(
+void __fastcall zSys::ExitProcessWithCleanup(
     int exitCode
 ) {
     zGame::ReturnOnlyStub();

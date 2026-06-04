@@ -16,7 +16,7 @@ for function identity, types, markers, and acceptance state.
   verification limits.
 - `original_classes.md` - compact policy and ledger for class, record,
   vtable/function-table, provider, and namespace-style subsystem boundaries.
-- `provider_abi_notes.md` - repo-local provider assumptions for VC5SP3/VC6, MFC42,
+- `provider_abi_notes.md` - repo-local provider assumptions for VC5SP3, MFC42,
   legacy DirectX, imports, and runtime verification.
 - `source_file_map.md` - generated original-source placement map from
   `Reimplements` provenance comments in `src/`.

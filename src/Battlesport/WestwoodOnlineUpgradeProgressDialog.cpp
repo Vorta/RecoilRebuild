@@ -13,7 +13,7 @@ RECOIL_STATIC_ASSERT(sizeof(CDialog) == 0x60);
 // CDialog behavior.
 class WestwoodOnlineUpgradeProgressCDialogMessageMapAccessor : public CDialog {
   public:
-    static const AFX_MSGMAP *RECOIL_STDCALL GetMessageMap();
+    static const AFX_MSGMAP *__stdcall GetMessageMap();
 };
 
 const RecoilNamedVtable kWestwoodOnlineUpgradeProgressDialog_Vtable = {
@@ -37,12 +37,12 @@ extern "C" HINSTANCE g_RecoilApp_hInstance;
 extern "C" HWND g_RecoilApp_hWndMain;
 extern "C" char g_WestwoodOnlineUpgradeProgressStatusTextBuffer[1024] = "";
 
-const AFX_MSGMAP *RECOIL_STDCALL
+const AFX_MSGMAP *__stdcall
 WestwoodOnlineUpgradeProgressCDialogMessageMapAccessor::GetMessageMap() {
     return &CDialog::messageMap;
 }
 
-const AFX_MSGMAP *RECOIL_STDCALL WestwoodOnlineUpgradeProgressDialog::GetBaseMessageMapForMfc() {
+const AFX_MSGMAP *__stdcall WestwoodOnlineUpgradeProgressDialog::GetBaseMessageMapForMfc() {
     return WestwoodOnlineUpgradeProgressCDialogMessageMapAccessor::GetMessageMap();
 }
 
@@ -57,14 +57,13 @@ const AFX_MSGMAP WestwoodOnlineUpgradeProgressDialog::messageMap = {
 
 // Reimplements 0x442260: WestwoodOnlineUpgradeProgressDialog::GetMessageMap
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiProgressDialog.cpp)
-RECOIL_NOINLINE const AFX_MSGMAP *RECOIL_THISCALL
-WestwoodOnlineUpgradeProgressDialog::GetMessageMap() const {
+const AFX_MSGMAP * WestwoodOnlineUpgradeProgressDialog::GetMessageMap() const {
     return &WestwoodOnlineUpgradeProgressDialog::messageMap;
 }
 
 // Reimplements 0x442270: WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiProgressDialog.cpp)
-RECOIL_NOINLINE BOOL RECOIL_CDECL WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt(
+BOOL WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt(
     const char *format,
     ...
 ) {
@@ -89,8 +88,7 @@ RECOIL_NOINLINE BOOL RECOIL_CDECL WestwoodOnlineUpgradeProgressDialog::SetStatus
 
 // Reimplements 0x442220: WestwoodOnlineUpgradeProgressDialog::Constructor
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeProgressDialog.cpp)
-RECOIL_NOINLINE WestwoodOnlineUpgradeProgressDialog *RECOIL_THISCALL
-WestwoodOnlineUpgradeProgressDialog::Constructor(
+WestwoodOnlineUpgradeProgressDialog * WestwoodOnlineUpgradeProgressDialog::Constructor(
     CWnd *parentWnd
 ) {
     new ((CDialog *)this) CDialog(
@@ -102,14 +100,13 @@ WestwoodOnlineUpgradeProgressDialog::Constructor(
 
 // Reimplements 0x43f440: WestwoodOnlineUpgradeProgressDialog::Destructor
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeDialog.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL WestwoodOnlineUpgradeProgressDialog::Destructor() {
+void WestwoodOnlineUpgradeProgressDialog::Destructor() {
     ((CDialog *)this)->CDialog::~CDialog();
 }
 
 // Reimplements 0x442240: WestwoodOnlineUpgradeProgressDialog::ScalarDeletingDestructor
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiProgressDialog.cpp)
-RECOIL_NOINLINE WestwoodOnlineUpgradeProgressDialog *RECOIL_THISCALL
-WestwoodOnlineUpgradeProgressDialog::ScalarDeletingDestructor(
+WestwoodOnlineUpgradeProgressDialog * WestwoodOnlineUpgradeProgressDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     WestwoodOnlineUpgradeProgressDialog *const self = this;
@@ -122,7 +119,7 @@ WestwoodOnlineUpgradeProgressDialog::ScalarDeletingDestructor(
 
 // Reimplements 0x442320: WestwoodOnlineUpgradeProgressDialog::DlgProc
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeProgressDialog.cpp)
-RECOIL_NOINLINE BOOL CALLBACK WestwoodOnlineUpgradeProgressDialog::DlgProc(
+BOOL CALLBACK WestwoodOnlineUpgradeProgressDialog::DlgProc(
     HWND hWnd,
     UINT uMsg,
     WPARAM wParam,
@@ -232,7 +229,7 @@ RECOIL_NOINLINE BOOL CALLBACK WestwoodOnlineUpgradeProgressDialog::DlgProc(
 
 // Reimplements 0x442530: WestwoodOnlineUpgradeDialog::ShowDownloadReadyList
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeProgressDialog.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL WestwoodOnlineUpgradeDialog::ShowDownloadReadyList(
+int __fastcall WestwoodOnlineUpgradeDialog::ShowDownloadReadyList(
     WestwoodOnlineUpgradeDownloadReadyEntry *readyListHead
 ) {
     WestwoodOnlineUpgradeDownloadReadyEntry *currentEntry = readyListHead;

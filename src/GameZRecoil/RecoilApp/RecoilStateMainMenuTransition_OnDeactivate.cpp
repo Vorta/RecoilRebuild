@@ -5,17 +5,17 @@
 #include <windows.h>
 
 namespace zVideo {
-int RECOIL_FASTCALL SetHalfResAdjustMode(int mode);
-int RECOIL_FASTCALL Init_ApplyModeIndex(int modeIndex);
+int __fastcall SetHalfResAdjustMode(int mode);
+int __fastcall Init_ApplyModeIndex(int modeIndex);
 } // namespace zVideo
 
 namespace HudUi {
-void RECOIL_FASTCALL SetInvalidateMode(int mode);
+void __fastcall SetInvalidateMode(int mode);
 }
 
 namespace zVid {
-int RECOIL_CDECL GetVideoModeIndexFromOptions();
-void RECOIL_FASTCALL SetVideoModeIndex(int modeIndex);
+int GetVideoModeIndexFromOptions();
+void __fastcall SetVideoModeIndex(int modeIndex);
 } // namespace zVid
 
 namespace {
@@ -49,23 +49,23 @@ static RECOIL_FORCEINLINE void ApplyDeferredVideoMode(
 } // namespace
 
 namespace zOpt {
-int RECOIL_FASTCALL SetHudTypeForCurrentHwMode(int hudType);
+int __fastcall SetHudTypeForCurrentHwMode(int hudType);
 }
 
 namespace HudUiMgr {
-void RECOIL_CDECL TriggerCurrentLayoutOnActivated();
+void TriggerCurrentLayoutOnActivated();
 }
 
 namespace zInput {
-void RECOIL_CDECL Keyboard_ResetTransitionState();
+void Keyboard_ResetTransitionState();
 }
 
 namespace zSnd {
-int RECOIL_CDECL GetCDAudioOption();
+int GetCDAudioOption();
 }
 
 // Reimplements 0x4153d0: RecoilStateMainMenuTransition::OnDeactivate
-void RECOIL_THISCALL RecoilStateMainMenuTransition::OnDeactivate() {
+void RecoilStateMainMenuTransition::OnDeactivate() {
     int previousHudType;
 
     if (m_mainMenuDialog != 0) {

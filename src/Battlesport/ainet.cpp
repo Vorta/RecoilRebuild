@@ -54,14 +54,14 @@ void AINetCopyAndUpper(
 } // namespace
 
 // Reimplements 0x402fd0: AINet::LoadAllFromZrd (D:\Proj\Battlesport\ai_net.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL AINet::LoadAllFromZrd() {
+void AINet::LoadAllFromZrd() {
     for (int netId = 1; netId < 100; ++netId) {
         AINet::LoadFromZrd(netId);
     }
 }
 
 // Reimplements 0x403040: AINet::LoadFromZrd (D:\Proj\Battlesport\ai_net.cpp)
-RECOIL_NOINLINE AINet *RECOIL_FASTCALL AINet::LoadFromZrd(
+AINet *__fastcall AINet::LoadFromZrd(
     int netId
 ) {
     char baseName[0x10];
@@ -346,7 +346,7 @@ RECOIL_NOINLINE AINet *RECOIL_FASTCALL AINet::LoadFromZrd(
 }
 
 // Reimplements 0x402ff0: AINet::Alloc (D:\Proj\Battlesport\ai_net.cpp)
-RECOIL_NOINLINE AINet *RECOIL_CDECL AINet::Alloc() {
+AINet *AINet::Alloc() {
     AINet *const aiNet = (AINet *)(malloc(sizeof(AINet)));
     memset(
         aiNet,
@@ -366,7 +366,7 @@ RECOIL_NOINLINE AINet *RECOIL_CDECL AINet::Alloc() {
 }
 
 // Reimplements 0x403510: AINet::FindByNetId (D:\Proj\Battlesport\ai_net.cpp)
-RECOIL_NOINLINE AINet *RECOIL_FASTCALL AINet::FindByNetId(
+AINet *__fastcall AINet::FindByNetId(
     int netId
 ) {
     AINet *aiNet = g_AINetListHead;
@@ -381,14 +381,14 @@ RECOIL_NOINLINE AINet *RECOIL_FASTCALL AINet::FindByNetId(
 }
 
 // Reimplements 0x4036f0: AINet::FindNearestNode (D:\Proj\Battlesport\ainet.cpp)
-RECOIL_NOINLINE AINetNode *RECOIL_FASTCALL AINet::FindNearestNode(
+AINetNode *__fastcall AINet::FindNearestNode(
     const zVec3 *position,
     AINetNode *nodeListHead
 ) {
+    AINetNode *node = nodeListHead;
     AINetNode *nearest = 0;
     float bestDistanceSq = -1.0f;
 
-    AINetNode *node = nodeListHead;
     while (node != 0) {
         const float distanceSq = zMath::Vec3DeltaLengthSq(
             position,
@@ -405,7 +405,7 @@ RECOIL_NOINLINE AINetNode *RECOIL_FASTCALL AINet::FindNearestNode(
 }
 
 // Reimplements 0x403530: AINet::FindNodeByIndex (D:\Proj\Battlesport\ai_net.cpp)
-RECOIL_NOINLINE AINetNode *RECOIL_FASTCALL AINet::FindNodeByIndex(
+AINetNode *__fastcall AINet::FindNodeByIndex(
     int nodeIndex,
     AINetNode *nodeListHead
 ) {
@@ -422,7 +422,7 @@ RECOIL_NOINLINE AINetNode *RECOIL_FASTCALL AINet::FindNodeByIndex(
 
 // Reimplements 0x403620: AINetPathProbeFan::InitFromSegment
 // (D:\Proj\Battlesport\ai_net.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL AINetPathProbeFan::InitFromSegment(
+void AINetPathProbeFan::InitFromSegment(
     zVec3 fromPosition,
     zVec3 toPosition,
     float pathWidth
@@ -459,7 +459,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL AINetPathProbeFan::InitFromSegment(
 
 // Reimplements 0x403550: AINet::ResolveNeighborLinksAndBuildProbeFans
 // (D:\Proj\Battlesport\ai_net.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL AINet::ResolveNeighborLinksAndBuildProbeFans(
+void __fastcall AINet::ResolveNeighborLinksAndBuildProbeFans(
     AINetNode *nodeListHead,
     float pathWidth
 ) {
@@ -498,7 +498,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL AINet::ResolveNeighborLinksAndBuildProbeFan
 }
 
 // Reimplements 0x4037c0: AINetNode::Free (src/Battlesport/ainet.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL AINetNode::Free() {
+void AINetNode::Free() {
     if (this == 0) {
         return;
     }
@@ -516,23 +516,23 @@ RECOIL_NOINLINE void RECOIL_THISCALL AINetNode::Free() {
 }
 
 // Reimplements 0x403800: AINet::Free (src/Battlesport/ainet.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL AINet::Free() {
+void AINet::Free() {
     if (this == 0) {
         return;
     }
 
     AINetNode *node = nodeListHead;
     while (node != 0) {
-        AINetNode *const next = node->next;
-        node->Free();
-        node = next;
+        AINetNode *const current = node;
+        node = node->next;
+        current->Free();
     }
 
     free(this);
 }
 
 // Reimplements 0x403870: AINet::FreeAll (src/Battlesport/ainet.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL AINet::FreeAll() {
+void AINet::FreeAll() {
     AINet *aiNet = g_AINetListHead;
     while (aiNet != 0) {
         g_AINetListHead = aiNet->next;

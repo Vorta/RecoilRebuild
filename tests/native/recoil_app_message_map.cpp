@@ -36,22 +36,22 @@ extern "C" HINSTANCE g_RecoilApp_hInstance;
 extern "C" const char *g_RecoilApp_WndClassNamePtr;
 extern "C" int g_RecoilApp_AttractFmvReloadMode;
 extern "C" unsigned int g_HudUi_InvalidateMask;
-BOOL RECOIL_STDCALL AfxWinInit(HINSTANCE instance, HINSTANCE previousInstance, LPSTR commandLine,
+BOOL __stdcall AfxWinInit(HINSTANCE instance, HINSTANCE previousInstance, LPSTR commandLine,
                                int showCommand);
 
 struct RecoilStateCredits {
     RecoilPtr32 vftable;
     RecoilPtr32 dialog;
 
-    RecoilStateCredits *RECOIL_THISCALL Constructor();
-    static void RECOIL_CDECL StaticInitAndRegisterAtExit();
-    static void RECOIL_CDECL StaticInit();
-    static void RECOIL_CDECL RegisterAtExit();
-    void RECOIL_THISCALL OnWndActivate(int activateCode);
-    int RECOIL_THISCALL OnTryBecomeCurrent();
-    void RECOIL_THISCALL OnDeactivate();
+    RecoilStateCredits * Constructor();
+    static void StaticInitAndRegisterAtExit();
+    static void StaticInit();
+    static void RegisterAtExit();
+    void OnWndActivate(int activateCode);
+    int OnTryBecomeCurrent();
+    void OnDeactivate();
     ~RecoilStateCredits();
-    static void RECOIL_CDECL QueuePush();
+    static void QueuePush();
 };
 
 extern RecoilStateCredits g_RecoilStateCredits;
@@ -140,14 +140,14 @@ int g_cheatCodeBltDirectCalls;
 
 extern "C" int g_RecoilState_MainMenuSkipExitDelay;
 
-void RECOIL_FASTCALL TestCheatCodeBltSwToPrimaryRectDirect(zVidRect32 *srcRect,
+void __fastcall TestCheatCodeBltSwToPrimaryRectDirect(zVidRect32 *srcRect,
                                                            zVidRect32 *dstRect) {
     if (srcRect == nullptr && dstRect == nullptr) {
         ++g_cheatCodeBltDirectCalls;
     }
 }
 
-int RECOIL_FASTCALL TestCheatCodeVideoSurfaceStateNoOp(
+int __fastcall TestCheatCodeVideoSurfaceStateNoOp(
     zVideo_SurfaceStatePartial *surfaceState) {
     return surfaceState != nullptr ? 1 : 0;
 }
@@ -159,12 +159,12 @@ template <typename Method> std::uintptr_t TestCheatCodeMethodAddress(Method meth
 }
 
 struct TestCreditsPanel {
-    virtual void RECOIL_THISCALL Update(float) {}
-    virtual void RECOIL_THISCALL SetEnabled(int enabled) {
+    virtual void Update(float) {}
+    virtual void SetEnabled(int enabled) {
         ++setEnabledCount;
         lastEnabled = enabled;
     }
-    virtual TestCreditsPanel *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags) {
+    virtual TestCreditsPanel * ScalarDeletingDestructor(unsigned int flags) {
         ++scalarDeletingCount;
         lastScalarDeletingFlags = flags;
         return this;
@@ -177,12 +177,12 @@ struct TestCreditsPanel {
 };
 
 struct TestConfirmQuitDialog {
-    virtual void RECOIL_THISCALL Update(float) {}
-    virtual void RECOIL_THISCALL SetEnabled(int enabled) {
+    virtual void Update(float) {}
+    virtual void SetEnabled(int enabled) {
         ++setEnabledCount;
         lastEnabled = enabled;
     }
-    virtual TestConfirmQuitDialog *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags) {
+    virtual TestConfirmQuitDialog * ScalarDeletingDestructor(unsigned int flags) {
         ++scalarDeletingCount;
         lastScalarDeletingFlags = flags;
         return this;
@@ -195,27 +195,26 @@ struct TestConfirmQuitDialog {
 };
 
 struct TestControlsResumeDialog {
-    virtual void RECOIL_THISCALL Update(float deltaSeconds) {
+    virtual void Update(float deltaSeconds) {
         ++g_controlsResumeUpdateCalls;
         g_controlsResumeLastDelta = deltaSeconds;
     }
-    virtual void RECOIL_THISCALL SetEnabled(int enabled) {
+    virtual void SetEnabled(int enabled) {
         ++g_controlsResumeSetEnabledCalls;
         g_controlsResumeLastEnabled = enabled;
     }
-    virtual TestControlsResumeDialog *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int) {
+    virtual TestControlsResumeDialog * ScalarDeletingDestructor(unsigned int) {
         return this;
     }
 };
 
 struct TestSaveLoadTransitionDialog {
-    virtual void RECOIL_THISCALL Update(float) {}
-    virtual void RECOIL_THISCALL SetEnabled(int enabled) {
+    virtual void Update(float) {}
+    virtual void SetEnabled(int enabled) {
         ++setEnabledCount;
         lastEnabled = enabled;
     }
-    virtual TestSaveLoadTransitionDialog *RECOIL_THISCALL
-    ScalarDeletingDestructor(unsigned int flags) {
+    virtual TestSaveLoadTransitionDialog * ScalarDeletingDestructor(unsigned int flags) {
         ++scalarDeletingCount;
         lastScalarDeletingFlags = flags;
         return this;
@@ -284,33 +283,33 @@ BOOL WINAPI FakeRunSetThreadPriority(HANDLE, int priority) {
     return TRUE;
 }
 
-int RECOIL_FASTCALL FakeRunReceivePendingMessages(int messageBudget) {
+int __fastcall FakeRunReceivePendingMessages(int messageBudget) {
     ++g_runReceivePendingMessagesCount;
     g_runReceivePendingMessagesBudget = messageBudget;
     return 0;
 }
 
-void RECOIL_FASTCALL FakeSaveLoadUpdatePollActiveDevices(int dispatchCallbacks) {
+void __fastcall FakeSaveLoadUpdatePollActiveDevices(int dispatchCallbacks) {
     ++g_saveLoadUpdatePollCalls;
     g_saveLoadUpdatePollDispatch = dispatchCallbacks;
 }
 
-void RECOIL_CDECL FakeSaveLoadUpdateTimeTick() {
+void FakeSaveLoadUpdateTimeTick() {
     ++g_saveLoadUpdateTimeCalls;
     g_FrameDeltaTimeSec = 0.25f;
 }
 
-int RECOIL_CDECL FakeSaveLoadUpdateRunPostprocessOnPrimaryBuffer() {
+int FakeSaveLoadUpdateRunPostprocessOnPrimaryBuffer() {
     ++g_saveLoadUpdatePostprocessCalls;
     return 0;
 }
 
-int RECOIL_CDECL FakeSaveLoadUpdateUnlockPrimarySurfaceState() {
+int FakeSaveLoadUpdateUnlockPrimarySurfaceState() {
     ++g_saveLoadUpdateUnlockCalls;
     return 0;
 }
 
-int RECOIL_FASTCALL FakeSaveLoadUpdateAdjustSurfaces(zVidRect32 *srcRect, zVidRect32 *dstRect,
+int __fastcall FakeSaveLoadUpdateAdjustSurfaces(zVidRect32 *srcRect, zVidRect32 *dstRect,
                                                      int waitForPresent,
                                                      int blitPrimaryToSwFirst) {
     ++g_saveLoadUpdateAdjustCalls;
@@ -321,57 +320,57 @@ int RECOIL_FASTCALL FakeSaveLoadUpdateAdjustSurfaces(zVidRect32 *srcRect, zVidRe
     return 0;
 }
 
-int RECOIL_FASTCALL FakeSaveLoadDeactivateDestroySampleSetByName(const char *setName) {
+int __fastcall FakeSaveLoadDeactivateDestroySampleSetByName(const char *setName) {
     ++g_saveLoadDeactivateDestroyCalls;
     g_saveLoadDeactivateDestroyNameOk =
         setName != nullptr && std::strcmp(setName, "DIALOG") == 0;
     return 1;
 }
 
-int RECOIL_FASTCALL FakeSaveLoadDeactivateApplyMuteStateToActiveVoices(int enableMute) {
+int __fastcall FakeSaveLoadDeactivateApplyMuteStateToActiveVoices(int enableMute) {
     ++g_saveLoadDeactivateMuteCalls;
     g_saveLoadDeactivateMuteState = enableMute;
     return 1;
 }
 
-int RECOIL_CDECL FakeConfirmQuitRunPostprocessOnPrimaryBuffer() {
+int FakeConfirmQuitRunPostprocessOnPrimaryBuffer() {
     ++g_confirmQuitPostprocessCalls;
     return 0;
 }
 
-int RECOIL_CDECL FakeConfirmQuitUnlockPrimarySurfaceState() {
+int FakeConfirmQuitUnlockPrimarySurfaceState() {
     ++g_confirmQuitUnlockCalls;
     return 0;
 }
 
 struct FakeConfirmQuitBlitThunk {
-    void RECOIL_THISCALL BlitOwnedSurfaceToPrimary();
+    void BlitOwnedSurfaceToPrimary();
 };
 
-void RECOIL_THISCALL FakeConfirmQuitBlitThunk::BlitOwnedSurfaceToPrimary() {
+void FakeConfirmQuitBlitThunk::BlitOwnedSurfaceToPrimary() {
     ++g_confirmQuitBlitCalls;
 }
 
 struct FakeCreditsOnWndActivateThunk {
-    void RECOIL_THISCALL BlitOwnedSurfaceToPrimary();
-    void RECOIL_THISCALL InvalidateChildren();
+    void BlitOwnedSurfaceToPrimary();
+    void InvalidateChildren();
 };
 
-void RECOIL_THISCALL FakeCreditsOnWndActivateThunk::BlitOwnedSurfaceToPrimary() {
+void FakeCreditsOnWndActivateThunk::BlitOwnedSurfaceToPrimary() {
     ++g_creditsOnWndActivateBlitCalls;
     g_creditsOnWndActivateBlitOrder = ++g_creditsOnWndActivateCallOrder;
 }
 
-void RECOIL_THISCALL FakeCreditsOnWndActivateThunk::InvalidateChildren() {
+void FakeCreditsOnWndActivateThunk::InvalidateChildren() {
     ++g_creditsOnWndActivateInvalidateCalls;
     g_creditsOnWndActivateInvalidateOrder = ++g_creditsOnWndActivateCallOrder;
 }
 
 struct FakeCreditsTryBecomeCurrentSetEnabledThunk {
-    void RECOIL_THISCALL SetEnabled(int enabled);
+    void SetEnabled(int enabled);
 };
 
-void RECOIL_THISCALL FakeCreditsTryBecomeCurrentSetEnabledThunk::SetEnabled(int enabled) {
+void FakeCreditsTryBecomeCurrentSetEnabledThunk::SetEnabled(int enabled) {
     ++g_creditsTryBecomeCurrentSetEnabledCalls;
     g_creditsTryBecomeCurrentLastEnabled = enabled;
     g_creditsTryBecomeCurrentSetEnabledThis = this;
@@ -729,7 +728,7 @@ constexpr WORD kMfc42CDialogResourceCtorOrdinal = 324;
 constexpr WORD kMfc42CDialogDtorOrdinal = 641;
 constexpr WORD kMfc42CDialogDoModalOrdinal = 2514;
 
-char *RECOIL_FASTCALL FakeHelpDocsGetMessageString(unsigned int messageId) {
+char *__fastcall FakeHelpDocsGetMessageString(unsigned int messageId) {
     switch (messageId) {
     case 0x12:
         ++g_fatalLocCaptionCalls;
@@ -792,21 +791,21 @@ void ResetAboutDialogProbe() {
     g_aboutDialogThis = nullptr;
 }
 
-void RECOIL_FASTCALL FakeAboutCDialogCtor(CDialog *self, void *, UINT resourceId,
+void __fastcall FakeAboutCDialogCtor(CDialog *self, void *, UINT resourceId,
                                           CWnd *parentWnd) {
     ++g_aboutDialogCtorCalls;
     g_aboutDialogThis = self;
     g_aboutDialogCtorArgsOk = resourceId == 0x67 && parentWnd == nullptr;
 }
 
-int RECOIL_FASTCALL FakeAboutCDialogDoModal(CDialog *self, void *) {
+int __fastcall FakeAboutCDialogDoModal(CDialog *self, void *) {
     ++g_aboutDialogDoModalCalls;
     g_aboutDialogFlowOk = g_aboutDialogFlowOk && g_aboutDialogCtorCalls == 1 &&
                           g_aboutDialogDtorCalls == 0 && self == g_aboutDialogThis;
     return IDOK;
 }
 
-void RECOIL_FASTCALL FakeAboutCDialogDtor(CDialog *self, void *) {
+void __fastcall FakeAboutCDialogDtor(CDialog *self, void *) {
     ++g_aboutDialogDtorCalls;
     g_aboutDialogFlowOk = g_aboutDialogFlowOk && g_aboutDialogCtorCalls == 1 &&
                           g_aboutDialogDoModalCalls == 1 && self == g_aboutDialogThis;
@@ -834,30 +833,30 @@ void ExpectFatalStep(int expected) {
     g_fatalOrderOk = g_fatalOrderOk && g_fatalSequence == expected;
 }
 
-void RECOIL_FASTCALL FakeFatalBriefingStop(int waitForInput) {
+void __fastcall FakeFatalBriefingStop(int waitForInput) {
     ++g_fatalBriefingCalls;
     ExpectFatalStep(1);
     g_fatalArgsOk = g_fatalArgsOk && waitForInput == 0;
 }
 
-void RECOIL_CDECL FakeFatalFlipToGDI() {
+void FakeFatalFlipToGDI() {
     ++g_fatalFlipCalls;
     ExpectFatalStep(2);
 }
 
-int RECOIL_CDECL FakeFatalSndShutdown() {
+int FakeFatalSndShutdown() {
     ++g_fatalSndCalls;
     ExpectFatalStep(3);
     return 1;
 }
 
-int RECOIL_CDECL FakeFatalNetworkShutdown() {
+int FakeFatalNetworkShutdown() {
     ++g_fatalNetworkCalls;
     ExpectFatalStep(4);
     return 1;
 }
 
-int RECOIL_CDECL FakeFatalVideoShutdown() {
+int FakeFatalVideoShutdown() {
     ++g_fatalVideoCalls;
     ExpectFatalStep(5);
     return 1;
@@ -885,13 +884,13 @@ int WINAPI FakeFatalMessageBoxA(HWND hwnd, LPCSTR text, LPCSTR caption, UINT typ
     return IDOK;
 }
 
-void RECOIL_FASTCALL FakeFatalExitProcessWithCleanup(int exitCode) {
+void __fastcall FakeFatalExitProcessWithCleanup(int exitCode) {
     ++g_fatalExitCalls;
     ExpectFatalStep(9);
     g_fatalArgsOk = g_fatalArgsOk && exitCode == 0;
 }
 
-int RECOIL_FASTCALL FakeStartModeLoadZbdAndSetup(RecoilApp *self, void *, int missionId,
+int __fastcall FakeStartModeLoadZbdAndSetup(RecoilApp *self, void *, int missionId,
                                                  const char *zbdPath, int skipIntroFmvMode,
                                                  int missionFlags) {
     ++g_startModeSetupCalls;
@@ -904,7 +903,7 @@ int RECOIL_FASTCALL FakeStartModeLoadZbdAndSetup(RecoilApp *self, void *, int mi
 
 void *RecoilAppLoadSetupProc() {
     union MemberToFunction {
-        int(RECOIL_THISCALL RecoilApp::*member)(int, const char *, int, int);
+        int( RecoilApp::*member)(int, const char *, int, int);
         void *function;
     };
 
@@ -913,7 +912,7 @@ void *RecoilAppLoadSetupProc() {
     return thunk.function;
 }
 
-bool RunStartModeScenario(void (RECOIL_THISCALL CZRecoilFrame::*handler)(), int missionId,
+bool RunStartModeScenario(void ( CZRecoilFrame::*handler)(), int missionId,
                           int missionFlags) {
     g_startModeSetupCalls = 0;
     g_startModeSetupArgsOk = false;
@@ -929,7 +928,7 @@ bool RunStartModeScenario(void (RECOIL_THISCALL CZRecoilFrame::*handler)(), int 
            g_startModeSetupThis == &g_RecoilApp;
 }
 
-void RECOIL_FASTCALL FakeMenuSelectEnsureHwApiInitialized(CZRecoilFrame *self, void *,
+void __fastcall FakeMenuSelectEnsureHwApiInitialized(CZRecoilFrame *self, void *,
                                                           int selector) {
     ++g_hwApiSelectEnsureCalls;
     g_hwApiSelectEnsureArgsOk =
@@ -938,7 +937,7 @@ void RECOIL_FASTCALL FakeMenuSelectEnsureHwApiInitialized(CZRecoilFrame *self, v
 
 void *EnsureHwApiInitializedProc() {
     union MemberToFunction {
-        void (RECOIL_THISCALL CZRecoilFrame::*member)(int);
+        void ( CZRecoilFrame::*member)(int);
         void *function;
     };
 
@@ -947,7 +946,7 @@ void *EnsureHwApiInitializedProc() {
     return thunk.function;
 }
 
-bool RunHwApiSelectScenario(void (RECOIL_THISCALL CZRecoilFrame::*handler)(), int selector) {
+bool RunHwApiSelectScenario(void ( CZRecoilFrame::*handler)(), int selector) {
     CZRecoilFrame frame{};
     g_hwApiSelectExpectedFrame = &frame;
     g_hwApiSelectExpectedSelector = selector;
@@ -960,27 +959,27 @@ bool RunHwApiSelectScenario(void (RECOIL_THISCALL CZRecoilFrame::*handler)(), in
 }
 
 struct FakeSaveGameInitLoadThunk {
-    zReader::Node *RECOIL_THISCALL LoadFromZrd(const char *zrdPath, const char *sectionName,
+    zReader::Node * LoadFromZrd(const char *zrdPath, const char *sectionName,
                                                int capturePrimary);
 };
 
 struct FakeConfirmQuitBackgroundThunk {
-    zReader::Node *RECOIL_THISCALL LoadFromZrd(const char *zrdPath,
+    zReader::Node * LoadFromZrd(const char *zrdPath,
                                                const char *sectionName,
                                                int capturePrimary);
-    int RECOIL_THISCALL BindWidgetByName(zReader::Node *loadedSectionNode,
+    int BindWidgetByName(zReader::Node *loadedSectionNode,
                                          HudUiWidget *widget,
                                          const char *name);
-    void RECOIL_THISCALL FreeLoadedTreeRoots(int loadedRoot);
+    void FreeLoadedTreeRoots(int loadedRoot);
 };
 
 struct FakeOptionsPanelBackgroundThunk {
-    zReader::Node *RECOIL_THISCALL LoadFromZrd(const char *zrdPath,
+    zReader::Node * LoadFromZrd(const char *zrdPath,
                                                const char *sectionName,
                                                int capturePrimary);
 };
 
-zReader::Node *RECOIL_THISCALL FakeSaveGameInitLoadThunk::LoadFromZrd(
+zReader::Node * FakeSaveGameInitLoadThunk::LoadFromZrd(
     const char *zrdPath, const char *sectionName, int capturePrimary) {
     ++g_saveGameInitLoadCalls;
     g_saveGameInitLoadArgsOk =
@@ -994,7 +993,7 @@ zReader::Node *RECOIL_THISCALL FakeSaveGameInitLoadThunk::LoadFromZrd(
 
 zReader::Node g_confirmQuitBackgroundFakeNode;
 
-zReader::Node *RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::LoadFromZrd(
+zReader::Node * FakeConfirmQuitBackgroundThunk::LoadFromZrd(
     const char *zrdPath, const char *sectionName, int capturePrimary) {
     ++g_confirmQuitBackgroundLoadCalls;
     g_confirmQuitBackgroundLoadArgsOk =
@@ -1004,7 +1003,7 @@ zReader::Node *RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::LoadFromZrd(
     return &g_confirmQuitBackgroundFakeNode;
 }
 
-zReader::Node *RECOIL_THISCALL FakeOptionsPanelBackgroundThunk::LoadFromZrd(
+zReader::Node * FakeOptionsPanelBackgroundThunk::LoadFromZrd(
     const char *zrdPath, const char *sectionName, int capturePrimary) {
     ++g_optionsPanelBackgroundLoadCalls;
     g_optionsPanelBackgroundLoadArgsOk =
@@ -1014,7 +1013,7 @@ zReader::Node *RECOIL_THISCALL FakeOptionsPanelBackgroundThunk::LoadFromZrd(
     return nullptr;
 }
 
-int RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::BindWidgetByName(
+int FakeConfirmQuitBackgroundThunk::BindWidgetByName(
     zReader::Node *loadedSectionNode, HudUiWidget *widget, const char *name) {
     ++g_confirmQuitBackgroundBindCalls;
 
@@ -1032,7 +1031,7 @@ int RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::BindWidgetByName(
     return 0;
 }
 
-void RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::FreeLoadedTreeRoots(int loadedRoot) {
+void FakeConfirmQuitBackgroundThunk::FreeLoadedTreeRoots(int loadedRoot) {
     ++g_confirmQuitBackgroundFreeCalls;
     g_confirmQuitBackgroundFreeArgsOk =
         loadedRoot == static_cast<int>(reinterpret_cast<std::uintptr_t>(
@@ -1041,7 +1040,7 @@ void RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::FreeLoadedTreeRoots(int loa
 
 void *FakeSaveGameInitLoadFromZrdProc() {
     union MemberToFunction {
-        zReader::Node *(RECOIL_THISCALL FakeSaveGameInitLoadThunk::*member)(const char *,
+        zReader::Node *( FakeSaveGameInitLoadThunk::*member)(const char *,
                                                                             const char *, int);
         void *function;
     };
@@ -1053,7 +1052,7 @@ void *FakeSaveGameInitLoadFromZrdProc() {
 
 void *HudUiBackgroundLoadFromZrdProc() {
     union MemberToFunction {
-        zReader::Node *(RECOIL_THISCALL HudUiBackground::*member)(const char *, const char *,
+        zReader::Node *( HudUiBackground::*member)(const char *, const char *,
                                                                   int);
         void *function;
     };
@@ -1065,7 +1064,7 @@ void *HudUiBackgroundLoadFromZrdProc() {
 
 void *FakeConfirmQuitBackgroundLoadFromZrdProc() {
     union MemberToFunction {
-        zReader::Node *(RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::*member)(
+        zReader::Node *( FakeConfirmQuitBackgroundThunk::*member)(
             const char *, const char *, int);
         void *function;
     };
@@ -1077,7 +1076,7 @@ void *FakeConfirmQuitBackgroundLoadFromZrdProc() {
 
 void *FakeOptionsPanelBackgroundLoadFromZrdProc() {
     union MemberToFunction {
-        zReader::Node *(RECOIL_THISCALL FakeOptionsPanelBackgroundThunk::*member)(
+        zReader::Node *( FakeOptionsPanelBackgroundThunk::*member)(
             const char *, const char *, int);
         void *function;
     };
@@ -1089,7 +1088,7 @@ void *FakeOptionsPanelBackgroundLoadFromZrdProc() {
 
 void *HudUiBackgroundBindWidgetByNameProc() {
     union MemberToFunction {
-        int (RECOIL_THISCALL HudUiBackground::*member)(zReader::Node *, HudUiWidget *,
+        int ( HudUiBackground::*member)(zReader::Node *, HudUiWidget *,
                                                        const char *);
         void *function;
     };
@@ -1101,7 +1100,7 @@ void *HudUiBackgroundBindWidgetByNameProc() {
 
 void *FakeConfirmQuitBackgroundBindWidgetByNameProc() {
     union MemberToFunction {
-        int (RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::*member)(zReader::Node *,
+        int ( FakeConfirmQuitBackgroundThunk::*member)(zReader::Node *,
                                                                       HudUiWidget *,
                                                                       const char *);
         void *function;
@@ -1114,7 +1113,7 @@ void *FakeConfirmQuitBackgroundBindWidgetByNameProc() {
 
 void *HudUiBackgroundFreeLoadedTreeRootsProc() {
     union MemberToFunction {
-        void (RECOIL_THISCALL HudUiBackground::*member)(int);
+        void ( HudUiBackground::*member)(int);
         void *function;
     };
 
@@ -1125,7 +1124,7 @@ void *HudUiBackgroundFreeLoadedTreeRootsProc() {
 
 void *FakeConfirmQuitBackgroundFreeLoadedTreeRootsProc() {
     union MemberToFunction {
-        void (RECOIL_THISCALL FakeConfirmQuitBackgroundThunk::*member)(int);
+        void ( FakeConfirmQuitBackgroundThunk::*member)(int);
         void *function;
     };
 
@@ -1243,7 +1242,7 @@ void ResetSaveLoadInitListItemCapture(HudUiSaveLoadDialog *dialog) {
     std::memset(g_saveLoadInitInvalidateIndices, 0, sizeof(g_saveLoadInitInvalidateIndices));
 }
 
-void RECOIL_CDECL FakeSaveLoadListItemSetTextFmt(HudUiSaveLoadListItem *self,
+void FakeSaveLoadListItemSetTextFmt(HudUiSaveLoadListItem *self,
                                                  const char *format,
                                                  const char *text) {
     const int index = SaveLoadInitListItemIndex(self);
@@ -1261,10 +1260,10 @@ void RECOIL_CDECL FakeSaveLoadListItemSetTextFmt(HudUiSaveLoadListItem *self,
 }
 
 struct FakeSaveLoadListItemVisibleThunk {
-    void RECOIL_THISCALL SetVisible(int visible);
+    void SetVisible(int visible);
 };
 
-void RECOIL_THISCALL FakeSaveLoadListItemVisibleThunk::SetVisible(int visible) {
+void FakeSaveLoadListItemVisibleThunk::SetVisible(int visible) {
     HudUiSaveLoadListItem *self = (HudUiSaveLoadListItem *)(this);
     const int index = SaveLoadInitListItemIndex(self);
     if (g_saveLoadInitVisibleCount >= 9 || index < 0 || index >= 9) {
@@ -1279,7 +1278,7 @@ void RECOIL_THISCALL FakeSaveLoadListItemVisibleThunk::SetVisible(int visible) {
 
 HudUiSaveLoadSetVisibleFn SaveLoadListItemSetVisibleThunk() {
     union MemberToFunction {
-        void (RECOIL_THISCALL FakeSaveLoadListItemVisibleThunk::*member)(int);
+        void ( FakeSaveLoadListItemVisibleThunk::*member)(int);
         HudUiSaveLoadSetVisibleFn function;
     };
 
@@ -1289,10 +1288,10 @@ HudUiSaveLoadSetVisibleFn SaveLoadListItemSetVisibleThunk() {
 }
 
 struct FakeSaveLoadListItemInvalidateThunk {
-    void RECOIL_THISCALL Invalidate();
+    void Invalidate();
 };
 
-void RECOIL_THISCALL FakeSaveLoadListItemInvalidateThunk::Invalidate() {
+void FakeSaveLoadListItemInvalidateThunk::Invalidate() {
     HudUiSaveLoadListItem *self = (HudUiSaveLoadListItem *)(this);
     const int index = SaveLoadInitListItemIndex(self);
     if (g_saveLoadInitInvalidateCount >= 9 || index < 0 || index >= 9) {
@@ -1306,7 +1305,7 @@ void RECOIL_THISCALL FakeSaveLoadListItemInvalidateThunk::Invalidate() {
 
 HudUiSaveLoadInvalidateFn SaveLoadListItemInvalidateThunk() {
     union MemberToFunction {
-        void (RECOIL_THISCALL FakeSaveLoadListItemInvalidateThunk::*member)();
+        void ( FakeSaveLoadListItemInvalidateThunk::*member)();
         HudUiSaveLoadInvalidateFn function;
     };
 
@@ -1323,37 +1322,37 @@ void ResetSaveLoadListItemDrawCapture() {
 }
 
 struct FakeSaveLoadListItemPanelDrawThunk {
-    void RECOIL_THISCALL Draw();
+    void Draw();
 };
 
-void RECOIL_THISCALL FakeSaveLoadListItemPanelDrawThunk::Draw() {
+void FakeSaveLoadListItemPanelDrawThunk::Draw() {
     ++g_saveLoadListItemPanelDrawCount;
     g_saveLoadListItemPanelDrawThis = (HudUiPanel *)(this);
 }
 
 void *SaveLoadListItemPanelDrawProc() {
-    void (RECOIL_THISCALL HudUiPanel::*member)() = &HudUiPanel::Draw;
+    void ( HudUiPanel::*member)() = &HudUiPanel::Draw;
     return reinterpret_cast<void *>(TestCheatCodeMethodAddress(member));
 }
 
 void *FakeSaveLoadListItemPanelDrawProc() {
-    void (RECOIL_THISCALL FakeSaveLoadListItemPanelDrawThunk::*member)() =
+    void ( FakeSaveLoadListItemPanelDrawThunk::*member)() =
         &FakeSaveLoadListItemPanelDrawThunk::Draw;
     return reinterpret_cast<void *>(TestCheatCodeMethodAddress(member));
 }
 
 struct FakeSaveLoadListItemUpdateBoundsThunk {
-    void RECOIL_THISCALL UpdateTextBoundsFromContent();
+    void UpdateTextBoundsFromContent();
 };
 
-void RECOIL_THISCALL FakeSaveLoadListItemUpdateBoundsThunk::UpdateTextBoundsFromContent() {
+void FakeSaveLoadListItemUpdateBoundsThunk::UpdateTextBoundsFromContent() {
     ++g_saveLoadListItemUpdateBoundsCount;
     g_saveLoadListItemUpdateBoundsThis = (HudUiSaveLoadListItem *)(this);
 }
 
 HudUiSaveLoadUpdateTextBoundsFn SaveLoadListItemUpdateBoundsThunk() {
     union MemberToFunction {
-        void (RECOIL_THISCALL FakeSaveLoadListItemUpdateBoundsThunk::*member)();
+        void ( FakeSaveLoadListItemUpdateBoundsThunk::*member)();
         HudUiSaveLoadUpdateTextBoundsFn function;
     };
 
@@ -1363,39 +1362,39 @@ HudUiSaveLoadUpdateTextBoundsFn SaveLoadListItemUpdateBoundsThunk() {
 }
 
 struct TestAppState : RecoilApp_IState {
-    void RECOIL_THISCALL OnEnter() {
+    void OnEnter() {
         ++g_stateEnterCount;
     }
 
-    void RECOIL_THISCALL OnExit() {
+    void OnExit() {
         ++g_stateExitCount;
     }
 
-    std::int32_t RECOIL_THISCALL OnTryBecomeCurrent() {
+    std::int32_t OnTryBecomeCurrent() {
         ++g_stateTryBecomeCurrentCount;
         return g_stateTryBecomeCurrentResult;
     }
 
-    std::int32_t RECOIL_THISCALL OnUpdateShouldQuit() {
+    std::int32_t OnUpdateShouldQuit() {
         ++g_stateUpdateShouldQuitCount;
         return g_stateUpdateShouldQuitResult;
     }
 
-    void RECOIL_THISCALL OnDeactivate() {
+    void OnDeactivate() {
         ++g_stateDeactivateCount;
     }
 
-    void RECOIL_THISCALL OnSuspend(int param) {
+    void OnSuspend(int param) {
         ++g_stateSuspendCount;
         g_stateSuspendParam = param;
     }
 
-    void RECOIL_THISCALL OnResume(int param) {
+    void OnResume(int param) {
         ++g_stateResumeCount;
         g_stateResumeParam = param;
     }
 
-    std::int32_t RECOIL_THISCALL OnIdleOrDispatch(std::uint32_t wParam, std::uint32_t lParam) {
+    std::int32_t OnIdleOrDispatch(std::uint32_t wParam, std::uint32_t lParam) {
         ++g_stateIdleCount;
         g_stateIdleWParam = wParam;
         g_stateIdleLParam = lParam;
@@ -1403,9 +1402,9 @@ struct TestAppState : RecoilApp_IState {
     }
 };
 
-RecoilFn32 StateMethodToFn(void (RECOIL_THISCALL TestAppState::*method)()) {
+RecoilFn32 StateMethodToFn(void ( TestAppState::*method)()) {
     union MemberToFunction {
-        void (RECOIL_THISCALL TestAppState::*member)();
+        void ( TestAppState::*member)();
         RecoilFn32 fn;
     };
 
@@ -1414,9 +1413,9 @@ RecoilFn32 StateMethodToFn(void (RECOIL_THISCALL TestAppState::*method)()) {
     return thunk.fn;
 }
 
-RecoilFn32 StateIntMethodToFn(std::int32_t (RECOIL_THISCALL TestAppState::*method)()) {
+RecoilFn32 StateIntMethodToFn(std::int32_t ( TestAppState::*method)()) {
     union MemberToFunction {
-        std::int32_t (RECOIL_THISCALL TestAppState::*member)();
+        std::int32_t ( TestAppState::*member)();
         RecoilFn32 fn;
     };
 
@@ -1425,9 +1424,9 @@ RecoilFn32 StateIntMethodToFn(std::int32_t (RECOIL_THISCALL TestAppState::*metho
     return thunk.fn;
 }
 
-RecoilFn32 StateParamMethodToFn(void (RECOIL_THISCALL TestAppState::*method)(int)) {
+RecoilFn32 StateParamMethodToFn(void ( TestAppState::*method)(int)) {
     union MemberToFunction {
-        void (RECOIL_THISCALL TestAppState::*member)(int);
+        void ( TestAppState::*member)(int);
         RecoilFn32 fn;
     };
 
@@ -1437,9 +1436,9 @@ RecoilFn32 StateParamMethodToFn(void (RECOIL_THISCALL TestAppState::*method)(int
 }
 
 RecoilFn32 StateIdleMethodToFn(
-    std::int32_t (RECOIL_THISCALL TestAppState::*method)(std::uint32_t, std::uint32_t)) {
+    std::int32_t ( TestAppState::*method)(std::uint32_t, std::uint32_t)) {
     union MemberToFunction {
-        std::int32_t (RECOIL_THISCALL TestAppState::*member)(std::uint32_t, std::uint32_t);
+        std::int32_t ( TestAppState::*member)(std::uint32_t, std::uint32_t);
         RecoilFn32 fn;
     };
 
@@ -1463,43 +1462,43 @@ RecoilApp_IState_Vtbl MakeTestAppStateVtable() {
 
 RecoilApp_IState_Vtbl g_testAppStateVtable = MakeTestAppStateVtable();
 
-void RECOIL_FASTCALL TestPlayStateLayoutOnActivated(HudLayoutBase *) {
+void __fastcall TestPlayStateLayoutOnActivated(HudLayoutBase *) {
     ++g_playStateLayoutActivatedCount;
 }
 
 struct TestRecoilApp : RecoilApp {
-    CZRecoilFrame *RECOIL_THISCALL CreateMainWnd() {
+    CZRecoilFrame * CreateMainWnd() {
         return g_createMainWndResult;
     }
 
-    std::int32_t RECOIL_THISCALL StartEngine(RecoilPtr32 hwnd) {
+    std::int32_t StartEngine(RecoilPtr32 hwnd) {
         ++g_startEngineCount;
         g_lastStartEngineHwnd = hwnd;
         return g_startEngineResult;
     }
 
-    std::int32_t RECOIL_THISCALL PumpMessage() {
+    std::int32_t PumpMessage() {
         ++g_runPumpMessageCount;
         return g_runPumpMessageResult;
     }
 
-    void RECOIL_THISCALL ShutdownEngine() {
+    void ShutdownEngine() {
         ++g_shutdownEngineCount;
     }
 
-    void RECOIL_THISCALL OnAppDeactivate() {
+    void OnAppDeactivate() {
         ++g_runOnAppDeactivateCount;
     }
 
-    std::int32_t RECOIL_THISCALL ExitInstance() {
+    std::int32_t ExitInstance() {
         ++g_exitInstanceCount;
         return 77;
     }
 };
 
-RecoilFn32 AppStartMethodToFn(std::int32_t (RECOIL_THISCALL TestRecoilApp::*method)(RecoilPtr32)) {
+RecoilFn32 AppStartMethodToFn(std::int32_t ( TestRecoilApp::*method)(RecoilPtr32)) {
     union MemberToFunction {
-        std::int32_t (RECOIL_THISCALL TestRecoilApp::*member)(RecoilPtr32);
+        std::int32_t ( TestRecoilApp::*member)(RecoilPtr32);
         RecoilFn32 fn;
     };
 
@@ -1508,9 +1507,9 @@ RecoilFn32 AppStartMethodToFn(std::int32_t (RECOIL_THISCALL TestRecoilApp::*meth
     return thunk.fn;
 }
 
-RecoilFn32 AppFrameMethodToFn(CZRecoilFrame *(RECOIL_THISCALL TestRecoilApp::*method)()) {
+RecoilFn32 AppFrameMethodToFn(CZRecoilFrame *( TestRecoilApp::*method)()) {
     union MemberToFunction {
-        CZRecoilFrame *(RECOIL_THISCALL TestRecoilApp::*member)();
+        CZRecoilFrame *( TestRecoilApp::*member)();
         RecoilFn32 fn;
     };
 
@@ -1519,9 +1518,9 @@ RecoilFn32 AppFrameMethodToFn(CZRecoilFrame *(RECOIL_THISCALL TestRecoilApp::*me
     return thunk.fn;
 }
 
-RecoilFn32 AppVoidMethodToFn(void (RECOIL_THISCALL TestRecoilApp::*method)()) {
+RecoilFn32 AppVoidMethodToFn(void ( TestRecoilApp::*method)()) {
     union MemberToFunction {
-        void (RECOIL_THISCALL TestRecoilApp::*member)();
+        void ( TestRecoilApp::*member)();
         RecoilFn32 fn;
     };
 
@@ -1530,9 +1529,9 @@ RecoilFn32 AppVoidMethodToFn(void (RECOIL_THISCALL TestRecoilApp::*method)()) {
     return thunk.fn;
 }
 
-RecoilFn32 AppIntMethodToFn(std::int32_t (RECOIL_THISCALL TestRecoilApp::*method)()) {
+RecoilFn32 AppIntMethodToFn(std::int32_t ( TestRecoilApp::*method)()) {
     union MemberToFunction {
-        std::int32_t (RECOIL_THISCALL TestRecoilApp::*member)();
+        std::int32_t ( TestRecoilApp::*member)();
         RecoilFn32 fn;
     };
 
@@ -2379,9 +2378,9 @@ extern "C" int recoil_state_controls_activation_smoke(void) {
     zVideo_SurfaceStateProc const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
 
     CodeFunctionPatch blitPatch{};
-    void (RECOIL_THISCALL HudUiDialogController::*blitMember)() =
+    void ( HudUiDialogController::*blitMember)() =
         &HudUiDialogController::BlitOwnedSurfaceToPrimary;
-    void (RECOIL_THISCALL FakeConfirmQuitBlitThunk::*fakeBlitMember)() =
+    void ( FakeConfirmQuitBlitThunk::*fakeBlitMember)() =
         &FakeConfirmQuitBlitThunk::BlitOwnedSurfaceToPrimary;
     if (!PatchFunctionJump(reinterpret_cast<void *>(TestCheatCodeMethodAddress(blitMember)),
                            reinterpret_cast<void *>(TestCheatCodeMethodAddress(fakeBlitMember)),
@@ -2465,9 +2464,9 @@ extern "C" int recoil_state_controls_on_resume_smoke(void) {
                            postprocessPatch)) {
         return 1;
     }
-    void (RECOIL_THISCALL HudUiContainer::*invalidateMember)() =
+    void ( HudUiContainer::*invalidateMember)() =
         &HudUiContainer::InvalidateChildren;
-    void (RECOIL_THISCALL FakeCreditsOnWndActivateThunk::*fakeInvalidateMember)() =
+    void ( FakeCreditsOnWndActivateThunk::*fakeInvalidateMember)() =
         &FakeCreditsOnWndActivateThunk::InvalidateChildren;
     if (!PatchFunctionJump(
             reinterpret_cast<void *>(TestCheatCodeMethodAddress(invalidateMember)),
@@ -3107,9 +3106,9 @@ extern "C" int recoil_state_cheat_code_on_deactivate_smoke(void) {
         return 1;
     }
 
-    void (RECOIL_THISCALL HudUiDialogController::*blitMember)() =
+    void ( HudUiDialogController::*blitMember)() =
         &HudUiDialogController::BlitOwnedSurfaceToPrimary;
-    void (RECOIL_THISCALL FakeConfirmQuitBlitThunk::*fakeBlitMember)() =
+    void ( FakeConfirmQuitBlitThunk::*fakeBlitMember)() =
         &FakeConfirmQuitBlitThunk::BlitOwnedSurfaceToPrimary;
     if (!PatchFunctionJump(reinterpret_cast<void *>(TestCheatCodeMethodAddress(blitMember)),
                            reinterpret_cast<void *>(TestCheatCodeMethodAddress(fakeBlitMember)),
@@ -5952,7 +5951,7 @@ struct TestSaveLoadUpdateDialog {
     int updateCalls;
     float lastDeltaSeconds;
 
-    void RECOIL_THISCALL Update(float deltaSeconds) {
+    void Update(float deltaSeconds) {
         ++updateCalls;
         lastDeltaSeconds = deltaSeconds;
     }
@@ -6087,9 +6086,9 @@ extern "C" int recoil_state_save_load_transition_on_deactivate_smoke(void) {
         return 1;
     }
 
-    void (RECOIL_THISCALL HudUiDialogController::*blitMember)() =
+    void ( HudUiDialogController::*blitMember)() =
         &HudUiDialogController::BlitOwnedSurfaceToPrimary;
-    void (RECOIL_THISCALL FakeConfirmQuitBlitThunk::*fakeBlitMember)() =
+    void ( FakeConfirmQuitBlitThunk::*fakeBlitMember)() =
         &FakeConfirmQuitBlitThunk::BlitOwnedSurfaceToPrimary;
     if (!PatchFunctionJump(reinterpret_cast<void *>(TestSaveLoadMethodAddress(blitMember)),
                            reinterpret_cast<void *>(TestSaveLoadMethodAddress(fakeBlitMember)),
@@ -7553,9 +7552,9 @@ extern "C" int recoil_state_credits_on_wnd_activate_smoke(void) {
     CodeFunctionPatch blitPatch{};
     CodeFunctionPatch invalidatePatch{};
 
-    void (RECOIL_THISCALL HudUiDialogController::*blitMember)() =
+    void ( HudUiDialogController::*blitMember)() =
         &HudUiDialogController::BlitOwnedSurfaceToPrimary;
-    void (RECOIL_THISCALL FakeCreditsOnWndActivateThunk::*fakeBlitMember)() =
+    void ( FakeCreditsOnWndActivateThunk::*fakeBlitMember)() =
         &FakeCreditsOnWndActivateThunk::BlitOwnedSurfaceToPrimary;
     if (!PatchFunctionJump(reinterpret_cast<void *>(TestCheatCodeMethodAddress(blitMember)),
                            reinterpret_cast<void *>(TestCheatCodeMethodAddress(fakeBlitMember)),
@@ -7563,9 +7562,9 @@ extern "C" int recoil_state_credits_on_wnd_activate_smoke(void) {
         return 1;
     }
 
-    void (RECOIL_THISCALL HudUiContainer::*invalidateMember)() =
+    void ( HudUiContainer::*invalidateMember)() =
         &HudUiContainer::InvalidateChildren;
-    void (RECOIL_THISCALL FakeCreditsOnWndActivateThunk::*fakeInvalidateMember)() =
+    void ( FakeCreditsOnWndActivateThunk::*fakeInvalidateMember)() =
         &FakeCreditsOnWndActivateThunk::InvalidateChildren;
     if (!PatchFunctionJump(
             reinterpret_cast<void *>(TestCheatCodeMethodAddress(invalidateMember)),
@@ -7657,9 +7656,9 @@ extern "C" int recoil_state_credits_on_try_become_current_smoke(void) {
     g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
 
     CodeFunctionPatch setEnabledPatch{};
-    void (RECOIL_THISCALL HudUiBackground::*setEnabledMember)(int) =
+    void ( HudUiBackground::*setEnabledMember)(int) =
         &HudUiBackground::SetEnabled;
-    void (RECOIL_THISCALL FakeCreditsTryBecomeCurrentSetEnabledThunk::*
+    void ( FakeCreditsTryBecomeCurrentSetEnabledThunk::*
               fakeSetEnabledMember)(int) =
         &FakeCreditsTryBecomeCurrentSetEnabledThunk::SetEnabled;
     if (!PatchFunctionJump(reinterpret_cast<void *>(TestCheatCodeMethodAddress(setEnabledMember)),
@@ -7715,9 +7714,9 @@ extern "C" int recoil_state_credits_on_try_become_current_smoke(void) {
 extern "C" int recoil_state_credits_on_deactivate_smoke(void) {
     CodeFunctionPatch blitPatch{};
 
-    void (RECOIL_THISCALL HudUiDialogController::*blitMember)() =
+    void ( HudUiDialogController::*blitMember)() =
         &HudUiDialogController::BlitOwnedSurfaceToPrimary;
-    void (RECOIL_THISCALL FakeCreditsOnWndActivateThunk::*fakeBlitMember)() =
+    void ( FakeCreditsOnWndActivateThunk::*fakeBlitMember)() =
         &FakeCreditsOnWndActivateThunk::BlitOwnedSurfaceToPrimary;
     if (!PatchFunctionJump(reinterpret_cast<void *>(TestCheatCodeMethodAddress(blitMember)),
                            reinterpret_cast<void *>(TestCheatCodeMethodAddress(fakeBlitMember)),
@@ -7847,9 +7846,9 @@ extern "C" int recoil_state_confirm_quit_destructor_smoke(void) {
         return 8;
     }
 
-    void (RECOIL_THISCALL HudUiDialogController::*blitMember)() =
+    void ( HudUiDialogController::*blitMember)() =
         &HudUiDialogController::BlitOwnedSurfaceToPrimary;
-    void (RECOIL_THISCALL FakeConfirmQuitBlitThunk::*fakeBlitMember)() =
+    void ( FakeConfirmQuitBlitThunk::*fakeBlitMember)() =
         &FakeConfirmQuitBlitThunk::BlitOwnedSurfaceToPrimary;
     if (!PatchFunctionJump(reinterpret_cast<void *>(TestSaveLoadMethodAddress(blitMember)),
                            reinterpret_cast<void *>(TestSaveLoadMethodAddress(fakeBlitMember)),

@@ -187,7 +187,7 @@ struct InitFakeApiObject
 struct InitFakeProgressVtable
 {
     void *reserved000[24];
-    int(RECOIL_FASTCALL *DestroyWindow)(CWnd *self, void *edx);
+    int(__fastcall *DestroyWindow)(CWnd *self, void *edx);
 };
 
 int g_modalSelectedMissionIndex;
@@ -1038,7 +1038,7 @@ BOOL WINAPI FakeDownloadDlgEndDialog(HWND hWnd, INT_PTR result)
     return TRUE;
 }
 
-unsigned int RECOIL_CDECL FakeDownloadReadyFormatMessage(char *outBuffer,
+unsigned int FakeDownloadReadyFormatMessage(char *outBuffer,
                                                          int maxChars,
                                                          unsigned int messageId,
                                                          int ordinal,
@@ -1080,7 +1080,7 @@ INT_PTR WINAPI FakeDownloadReadyDialogBoxParamA(HINSTANCE instance,
     return 1;
 }
 
-int RECOIL_FASTCALL FakeDownloadReadyCallbackMessageBoxA(CWnd *self,
+int __fastcall FakeDownloadReadyCallbackMessageBoxA(CWnd *self,
                                                          void *,
                                                          LPCSTR text,
                                                          LPCSTR caption,
@@ -1110,7 +1110,7 @@ BOOL WINAPI FakeDownloadReadyCallbackSetEvent(HANDLE eventHandle)
     return TRUE;
 }
 
-int RECOIL_FASTCALL FakeDownloadReadyCallbackShowList(
+int __fastcall FakeDownloadReadyCallbackShowList(
     WestwoodOnlineUpgradeDownloadReadyEntry *downloadReadyList)
 {
     ++g_downloadReadyCallbackShowListCalls;
@@ -1141,7 +1141,7 @@ void ResetPendingSessionRemovedFakes(void)
     }
 }
 
-unsigned int RECOIL_CDECL FakePendingSessionRemovedFormatMessage(
+unsigned int FakePendingSessionRemovedFormatMessage(
     char *outBuffer,
     int maxChars,
     unsigned int messageId,
@@ -1156,7 +1156,7 @@ unsigned int RECOIL_CDECL FakePendingSessionRemovedFormatMessage(
     return lstrlenA(outBuffer);
 }
 
-int RECOIL_CDECL FakePendingSessionRemovedAppendStatusTextFmt(
+int FakePendingSessionRemovedAppendStatusTextFmt(
     WestwoodOnlineUpgradeDialog *self,
     const char *format,
     ...)
@@ -1167,7 +1167,7 @@ int RECOIL_CDECL FakePendingSessionRemovedAppendStatusTextFmt(
     return 1;
 }
 
-LRESULT RECOIL_FASTCALL FakePendingSessionRemovedSendDlgItemMessageA(
+LRESULT __fastcall FakePendingSessionRemovedSendDlgItemMessageA(
     CWnd *self,
     void *,
     int controlId,
@@ -1200,7 +1200,7 @@ LRESULT RECOIL_FASTCALL FakePendingSessionRemovedSendDlgItemMessageA(
     return LB_ERR;
 }
 
-int RECOIL_FASTCALL FakeServerErrorMessageBoxA(CWnd *self,
+int __fastcall FakeServerErrorMessageBoxA(CWnd *self,
                                                void *,
                                                LPCSTR text,
                                                LPCSTR caption,
@@ -1372,12 +1372,12 @@ void ResetLaunchSelectedSessionFakes(void)
     g_initDisconnectCalls = 0;
 }
 
-void RECOIL_CDECL FakeApiStatusTimeReset(void)
+void FakeApiStatusTimeReset(void)
 {
     ++g_apiStatusTimeResetCalls;
 }
 
-int RECOIL_CDECL FakeApiStatusAppendStatusTextFmt(
+int FakeApiStatusAppendStatusTextFmt(
     WestwoodOnlineUpgradeDialog *self,
     const char *format,
     ...)
@@ -1392,7 +1392,7 @@ int RECOIL_CDECL FakeApiStatusAppendStatusTextFmt(
     return 1;
 }
 
-unsigned int RECOIL_CDECL FakeApiStatusFormatMessage(
+unsigned int FakeApiStatusFormatMessage(
     char *outBuffer,
     int maxChars,
     unsigned int messageId,
@@ -1407,7 +1407,7 @@ unsigned int RECOIL_CDECL FakeApiStatusFormatMessage(
     return lstrlenA(outBuffer);
 }
 
-unsigned int RECOIL_CDECL FakeBrowseRecordAddedFormatMessage(
+unsigned int FakeBrowseRecordAddedFormatMessage(
     char *outBuffer,
     int maxChars,
     unsigned int messageId,
@@ -1422,7 +1422,7 @@ unsigned int RECOIL_CDECL FakeBrowseRecordAddedFormatMessage(
     return lstrlenA(outBuffer);
 }
 
-void RECOIL_FASTCALL FakeBrowseRecordAddedEnableQueryControls(
+void __fastcall FakeBrowseRecordAddedEnableQueryControls(
     WestwoodOnlineUpgradeDialog *self,
     void *,
     int enable)
@@ -1436,7 +1436,7 @@ void RECOIL_FASTCALL FakeBrowseRecordAddedEnableQueryControls(
     ++g_browseRecordAddedEnableCalls;
 }
 
-int RECOIL_CDECL FakeBrowseResolvedAppendStatusTextFmt(
+int FakeBrowseResolvedAppendStatusTextFmt(
     WestwoodOnlineUpgradeDialog *self,
     const char *format,
     ...)
@@ -1459,7 +1459,7 @@ int RECOIL_CDECL FakeBrowseResolvedAppendStatusTextFmt(
     return 1;
 }
 
-unsigned int RECOIL_CDECL FakeBrowseResolvedFormatMessage(
+unsigned int FakeBrowseResolvedFormatMessage(
     char *outBuffer,
     int maxChars,
     unsigned int messageId,
@@ -1477,7 +1477,7 @@ unsigned int RECOIL_CDECL FakeBrowseResolvedFormatMessage(
     return lstrlenA(outBuffer);
 }
 
-unsigned int RECOIL_CDECL FakeSessionLaunchFormatMessage(
+unsigned int FakeSessionLaunchFormatMessage(
     char *outBuffer,
     int maxChars,
     unsigned int messageId,
@@ -1515,7 +1515,7 @@ unsigned int RECOIL_CDECL FakeSessionLaunchFormatMessage(
     return lstrlenA(outBuffer);
 }
 
-void RECOIL_FASTCALL FakeBrowseResolvedUpdateSessionListQueryFromControls(
+void __fastcall FakeBrowseResolvedUpdateSessionListQueryFromControls(
     WestwoodOnlineUpgradeDialog *self,
     void *)
 {
@@ -1523,7 +1523,7 @@ void RECOIL_FASTCALL FakeBrowseResolvedUpdateSessionListQueryFromControls(
     g_browseResolvedUpdateThis = self;
 }
 
-void RECOIL_FASTCALL FakeBrowseResolvedEnableConnectButton(
+void __fastcall FakeBrowseResolvedEnableConnectButton(
     WestwoodOnlineUpgradeDialog *self,
     void *,
     int enable)
@@ -1552,7 +1552,7 @@ void STDMETHODCALLTYPE FakeSessionFinishedCancelPendingSessionFlow(IUnknown *sel
     g_sessionFinishedCancelSelf = self;
 }
 
-void RECOIL_FASTCALL FakeSessionFinishedAppendConnectStatusAndRefreshList(
+void __fastcall FakeSessionFinishedAppendConnectStatusAndRefreshList(
     WestwoodOnlineUpgradeDialog *self,
     void *,
     const char *sessionName)
@@ -1562,14 +1562,14 @@ void RECOIL_FASTCALL FakeSessionFinishedAppendConnectStatusAndRefreshList(
     g_sessionFinishedAppendConnectSessionName = sessionName;
 }
 
-int RECOIL_FASTCALL FakeLaunchInitSessionRuntime(unsigned char *appGuid)
+int __fastcall FakeLaunchInitSessionRuntime(unsigned char *appGuid)
 {
     ++g_launchInitSessionCalls;
     g_launchInitSessionGuid = appGuid;
     return 0;
 }
 
-void RECOIL_FASTCALL FakeLaunchFormatIpv4Address(char *outText,
+void __fastcall FakeLaunchFormatIpv4Address(char *outText,
                                                  unsigned int ipAddress)
 {
     ++g_launchFormatIpv4Calls;
@@ -1577,7 +1577,7 @@ void RECOIL_FASTCALL FakeLaunchFormatIpv4Address(char *outText,
     strcpy(outText, g_launchFormattedHost);
 }
 
-int RECOIL_FASTCALL FakeLaunchSelectTcpIpProviderAndEnumSessions(
+int __fastcall FakeLaunchSelectTcpIpProviderAndEnumSessions(
     char *addressString,
     int skipSessionEnumeration)
 {
@@ -1587,7 +1587,7 @@ int RECOIL_FASTCALL FakeLaunchSelectTcpIpProviderAndEnumSessions(
     return g_launchSelectTcpResult;
 }
 
-int RECOIL_FASTCALL FakeLaunchCreateSessionFromStatusFields(
+int __fastcall FakeLaunchCreateSessionFromStatusFields(
     zNetworkSessionDescStatusFields *statusFields)
 {
     ++g_launchCreateSessionCalls;
@@ -1595,7 +1595,7 @@ int RECOIL_FASTCALL FakeLaunchCreateSessionFromStatusFields(
     return g_launchCreateSessionResult;
 }
 
-void RECOIL_FASTCALL FakeLaunchSetNetworkEnabled(int value)
+void __fastcall FakeLaunchSetNetworkEnabled(int value)
 {
     ++g_launchSetNetworkEnabledCalls;
     g_launchSetNetworkEnabledValue = value;
@@ -1604,7 +1604,7 @@ void RECOIL_FASTCALL FakeLaunchSetNetworkEnabled(int value)
 class LaunchDialogPatchOps
 {
   public:
-    CString *RECOIL_THISCALL GetSelectedProfilePlayerName(CString *outName)
+    CString * GetSelectedProfilePlayerName(CString *outName)
     {
         const int index = g_launchGetPlayerNameCalls;
         if (index < 4)
@@ -1618,7 +1618,7 @@ class LaunchDialogPatchOps
     }
 };
 
-int RECOIL_FASTCALL FakeLaunchCreateLocalPlayerRecordAndRegister(
+int __fastcall FakeLaunchCreateLocalPlayerRecordAndRegister(
     char *playerName)
 {
     const int index = g_launchCreateLocalPlayerCalls;
@@ -1630,7 +1630,7 @@ int RECOIL_FASTCALL FakeLaunchCreateLocalPlayerRecordAndRegister(
     return 1;
 }
 
-int RECOIL_FASTCALL FakeLaunchOpenSelectedSessionAndReadStatusFields(
+int __fastcall FakeLaunchOpenSelectedSessionAndReadStatusFields(
     zNetworkSessionDescStatusFields *statusFields)
 {
     ++g_launchOpenSelectedCalls;
@@ -1642,13 +1642,13 @@ int RECOIL_FASTCALL FakeLaunchOpenSelectedSessionAndReadStatusFields(
     return g_launchOpenSelectedResult;
 }
 
-void RECOIL_FASTCALL FakeLaunchSetPlayerName(const char *name)
+void __fastcall FakeLaunchSetPlayerName(const char *name)
 {
     ++g_launchSetPlayerNameCalls;
     strcpy(g_launchSetPlayerName, name);
 }
 
-void RECOIL_FASTCALL FakeLaunchSetStatusBitsFromFlags(unsigned int statusFlags)
+void __fastcall FakeLaunchSetStatusBitsFromFlags(unsigned int statusFlags)
 {
     ++g_launchSetStatusBitsCalls;
     g_launchStatusBits = statusFlags;
@@ -1657,7 +1657,7 @@ void RECOIL_FASTCALL FakeLaunchSetStatusBitsFromFlags(unsigned int statusFlags)
 class LaunchHudSensorTrackerPatchOps
 {
   public:
-    void RECOIL_THISCALL SetRuntimeTimerSecAndGoalValue(int timerSecRaw,
+    void SetRuntimeTimerSecAndGoalValue(int timerSecRaw,
                                                         int goalValue)
     {
         ++g_launchTimerCalls;
@@ -1694,13 +1694,13 @@ void STDMETHODCALLTYPE FakeApiStatusGetQueryResultCount(IUnknown *self,
     *outCount = g_apiStatusQueryResultCount;
 }
 
-int RECOIL_CDECL FakeApiCreateShowModalAndApplySelectedProfileValues()
+int FakeApiCreateShowModalAndApplySelectedProfileValues()
 {
     ++g_apiCreateShowModalCalls;
     return g_apiCreateShowModalResult;
 }
 
-int RECOIL_FASTCALL FakeInitCreateInstanceAndLoadConfig(
+int __fastcall FakeInitCreateInstanceAndLoadConfig(
     WestwoodOnlineUpgradeApi *,
     void *,
     HANDLE bootstrapServerListEvent)
@@ -1722,7 +1722,7 @@ HANDLE WINAPI FakeInitCreateEventA(LPSECURITY_ATTRIBUTES, BOOL, BOOL, LPCSTR)
     return result;
 }
 
-BOOL RECOIL_FASTCALL FakeInitCreateProgress(CDialog *, void *, LPCSTR resourceName,
+BOOL __fastcall FakeInitCreateProgress(CDialog *, void *, LPCSTR resourceName,
                                             CWnd *parentWnd)
 {
     ++g_initCreateProgressCalls;
@@ -1731,7 +1731,7 @@ BOOL RECOIL_FASTCALL FakeInitCreateProgress(CDialog *, void *, LPCSTR resourceNa
     return TRUE;
 }
 
-void RECOIL_FASTCALL FakeInitSetDlgItemTextA(CWnd *self, void *, int controlId,
+void __fastcall FakeInitSetDlgItemTextA(CWnd *self, void *, int controlId,
                                              LPCSTR text)
 {
     if (g_initSetDlgItemTextCalls < 4)
@@ -1743,7 +1743,7 @@ void RECOIL_FASTCALL FakeInitSetDlgItemTextA(CWnd *self, void *, int controlId,
     ++g_initSetDlgItemTextCalls;
 }
 
-char *RECOIL_FASTCALL FakeInitGetMessageString(unsigned int messageId)
+char *__fastcall FakeInitGetMessageString(unsigned int messageId)
 {
     static char messages[16][32];
     if (g_initMessageIdCalls < 16)
@@ -1756,20 +1756,20 @@ char *RECOIL_FASTCALL FakeInitGetMessageString(unsigned int messageId)
     return (char *)"msg-overflow";
 }
 
-int RECOIL_FASTCALL FakeInitDialogBaseOnInitDialog(CDialog *self, void *)
+int __fastcall FakeInitDialogBaseOnInitDialog(CDialog *self, void *)
 {
     ++g_initDialogBaseOnInitCalls;
     g_initDialogBaseOnInitThis = self;
     return 1;
 }
 
-int RECOIL_CDECL FakeInitDialogApiInit()
+int FakeInitDialogApiInit()
 {
     ++g_initDialogApiInitCalls;
     return g_initDialogApiInitResult;
 }
 
-void RECOIL_FASTCALL FakeInitDialogOnDestroy(
+void __fastcall FakeInitDialogOnDestroy(
     WestwoodOnlineUpgradeDialog *self,
     void *)
 {
@@ -1777,7 +1777,7 @@ void RECOIL_FASTCALL FakeInitDialogOnDestroy(
     g_initDialogOnDestroyThis = self;
 }
 
-void RECOIL_FASTCALL FakeInitDialogSetAbortAndClose(
+void __fastcall FakeInitDialogSetAbortAndClose(
     WestwoodOnlineUpgradeDialog *self,
     void *)
 {
@@ -1874,7 +1874,7 @@ void STDMETHODCALLTYPE FakeInitDisconnect(IUnknown *)
     ++g_initDisconnectCalls;
 }
 
-int RECOIL_FASTCALL FakeBeginConnectGetWindowTextA(CWnd *self, void *,
+int __fastcall FakeBeginConnectGetWindowTextA(CWnd *self, void *,
                                                    char *buffer, int maxCount)
 {
     ++g_beginConnectGetWindowTextCalls;
@@ -1913,7 +1913,7 @@ int STDMETHODCALLTYPE FakeCheckAndApplyUpgradeResult(
     return g_checkAndApplyUpgradeResult;
 }
 
-int RECOIL_FASTCALL FakeQueryStatusGetWindowTextA(CWnd *self, void *,
+int __fastcall FakeQueryStatusGetWindowTextA(CWnd *self, void *,
                                                   char *buffer, int maxCount)
 {
     int const index = g_queryStatusGetWindowTextCalls;
@@ -1936,7 +1936,7 @@ int RECOIL_FASTCALL FakeQueryStatusGetWindowTextA(CWnd *self, void *,
     return (int)strlen(buffer);
 }
 
-int RECOIL_FASTCALL FakeWestwoodUpdateData(CWnd *, void *, BOOL saveAndValidate)
+int __fastcall FakeWestwoodUpdateData(CWnd *, void *, BOOL saveAndValidate)
 {
     if (g_threeFloatUpdateDataCount < 8)
     {
@@ -1947,13 +1947,13 @@ int RECOIL_FASTCALL FakeWestwoodUpdateData(CWnd *, void *, BOOL saveAndValidate)
     return 1;
 }
 
-long RECOIL_FASTCALL FakeWestwoodDefault(CWnd *, void *)
+long __fastcall FakeWestwoodDefault(CWnd *, void *)
 {
     ++g_threeFloatDefaultCount;
     return g_threeFloatDefaultReturn;
 }
 
-void RECOIL_FASTCALL FakeQueryStatusSetWindowTextA(CWnd *self, void *,
+void __fastcall FakeQueryStatusSetWindowTextA(CWnd *self, void *,
                                                    const char *text)
 {
     int const index = g_queryStatusSetWindowTextCalls;
@@ -1976,7 +1976,7 @@ int STDMETHODCALLTYPE FakeQueryStatusWithTokenAndServer(
     return g_queryStatusProviderResult;
 }
 
-int RECOIL_FASTCALL FakeQueryStatusMessageBoxA(CWnd *self, void *,
+int __fastcall FakeQueryStatusMessageBoxA(CWnd *self, void *,
                                                const char *text,
                                                const char *caption,
                                                unsigned int type)
@@ -1989,7 +1989,7 @@ int RECOIL_FASTCALL FakeQueryStatusMessageBoxA(CWnd *self, void *,
     return g_queryStatusMessageBoxResult;
 }
 
-void RECOIL_FASTCALL FakeRefreshCurrentQueryGetWindowTextA(CWnd *self, void *,
+void __fastcall FakeRefreshCurrentQueryGetWindowTextA(CWnd *self, void *,
                                                            CString *text)
 {
     ++g_refreshCurrentQueryGetWindowTextCalls;
@@ -2032,7 +2032,7 @@ void STDMETHODCALLTYPE FakeSubmitPendingSessionList(
     }
 }
 
-void RECOIL_FASTCALL FakeSubmitVisibleGetWindowTextA(CWnd *self, void *,
+void __fastcall FakeSubmitVisibleGetWindowTextA(CWnd *self, void *,
                                                      CString *text)
 {
     ++g_submitVisibleGetWindowTextCalls;
@@ -2068,7 +2068,7 @@ void STDMETHODCALLTYPE FakeSubmitVisibleSubmitSessionRequestListAndStatusText(
     }
 }
 
-unsigned int RECOIL_CDECL FakeSubmitVisibleFormatMessage(
+unsigned int FakeSubmitVisibleFormatMessage(
     char *outBuffer,
     int maxChars,
     unsigned int messageId,
@@ -2085,7 +2085,7 @@ unsigned int RECOIL_CDECL FakeSubmitVisibleFormatMessage(
     return 24;
 }
 
-int RECOIL_CDECL FakeSubmitVisibleAppendStatusTextFmt(
+int FakeSubmitVisibleAppendStatusTextFmt(
     WestwoodOnlineUpgradeDialog *self,
     const char *format,
     ...)
@@ -2120,7 +2120,7 @@ void ResetAppendSessionRequestStatus301BFakes(void)
     g_appendStatus301BAppendText[0] = '\0';
 }
 
-unsigned int RECOIL_CDECL FakeAppendSessionRequestStatus301BFormatMessage(
+unsigned int FakeAppendSessionRequestStatus301BFormatMessage(
     char *outBuffer,
     int maxChars,
     unsigned int messageId,
@@ -2137,7 +2137,7 @@ unsigned int RECOIL_CDECL FakeAppendSessionRequestStatus301BFormatMessage(
     return lstrlenA(outBuffer);
 }
 
-int RECOIL_CDECL FakeAppendSessionRequestStatus301BAppendStatusTextFmt(
+int FakeAppendSessionRequestStatus301BAppendStatusTextFmt(
     WestwoodOnlineUpgradeDialog *self,
     const char *text)
 {
@@ -2160,7 +2160,7 @@ void ResetAppendSessionRequestStatus301CFakes(void)
     g_appendStatus301CAppendText[0] = '\0';
 }
 
-unsigned int RECOIL_CDECL FakeAppendSessionRequestStatus301CFormatMessage(
+unsigned int FakeAppendSessionRequestStatus301CFormatMessage(
     char *outBuffer,
     int maxChars,
     unsigned int messageId,
@@ -2177,7 +2177,7 @@ unsigned int RECOIL_CDECL FakeAppendSessionRequestStatus301CFormatMessage(
     return lstrlenA(outBuffer);
 }
 
-int RECOIL_CDECL FakeAppendSessionRequestStatus301CAppendStatusTextFmt(
+int FakeAppendSessionRequestStatus301CAppendStatusTextFmt(
     WestwoodOnlineUpgradeDialog *self,
     const char *text)
 {
@@ -2197,7 +2197,7 @@ void ResetAppendSessionRequestStatus301CAltFakes(void)
     g_appendStatus301CAltAppendValue = 0;
 }
 
-int RECOIL_CDECL FakeAppendSessionRequestStatus301CAltAppendStatusTextFmt(
+int FakeAppendSessionRequestStatus301CAltAppendStatusTextFmt(
     WestwoodOnlineUpgradeDialog *self,
     const char *format,
     ...)
@@ -2227,7 +2227,7 @@ void ResetAppendSessionRequestStatus301DFakes(void)
     g_appendStatus301DAppendText[0] = '\0';
 }
 
-unsigned int RECOIL_CDECL FakeAppendSessionRequestStatus301DFormatMessage(
+unsigned int FakeAppendSessionRequestStatus301DFormatMessage(
     char *outBuffer,
     int maxChars,
     unsigned int messageId,
@@ -2244,7 +2244,7 @@ unsigned int RECOIL_CDECL FakeAppendSessionRequestStatus301DFormatMessage(
     return lstrlenA(outBuffer);
 }
 
-int RECOIL_CDECL FakeAppendSessionRequestStatus301DAppendStatusTextFmt(
+int FakeAppendSessionRequestStatus301DAppendStatusTextFmt(
     WestwoodOnlineUpgradeDialog *self,
     const char *text)
 {
@@ -2265,7 +2265,7 @@ void ResetAppendConnectStatusFakes(void)
     }
 }
 
-int RECOIL_CDECL FakeAppendConnectStatusTextFmt(
+int FakeAppendConnectStatusTextFmt(
     WestwoodOnlineUpgradeDialog *self,
     const char *text)
 {
@@ -2289,7 +2289,7 @@ void ResetAppendBrowseRecordStatusFakes(void)
     g_appendBrowseRecordStatusFormatSessionName = 0;
 }
 
-unsigned int RECOIL_CDECL FakeAppendBrowseRecordStatusFormatMessage(
+unsigned int FakeAppendBrowseRecordStatusFormatMessage(
     char *outBuffer,
     int maxChars,
     unsigned int messageId,
@@ -2314,7 +2314,7 @@ void ResetAppendValueStatusFakes(void)
     g_appendValueStatusFormatValue = 0;
 }
 
-unsigned int RECOIL_CDECL FakeAppendValueStatusFormatMessage(
+unsigned int FakeAppendValueStatusFormatMessage(
     char *outBuffer,
     int maxChars,
     unsigned int messageId,
@@ -2339,7 +2339,7 @@ void ResetAppendTimeStatusFakes(void)
     g_appendTimeStatusFormatTimeText[0] = '\0';
 }
 
-unsigned int RECOIL_CDECL FakeAppendTimeStatusFormatMessage(
+unsigned int FakeAppendTimeStatusFormatMessage(
     char *outBuffer,
     int maxChars,
     unsigned int messageId,
@@ -2370,7 +2370,7 @@ void ResetBrowseRecordListFakes(void)
     }
 }
 
-unsigned int RECOIL_CDECL FakeBrowseRecordListFormatMessage(
+unsigned int FakeBrowseRecordListFormatMessage(
     char *outBuffer,
     int maxChars,
     unsigned int messageId,
@@ -2424,7 +2424,7 @@ unsigned int RECOIL_CDECL FakeBrowseRecordListFormatMessage(
     return lstrlenA(outBuffer);
 }
 
-void RECOIL_CDECL FakeNetworkStatusReturnOnlyStub(void)
+void FakeNetworkStatusReturnOnlyStub(void)
 {
     ++g_networkStatusReturnOnlyCalls;
 }
@@ -2483,21 +2483,21 @@ void STDMETHODCALLTYPE FakeDestroyProcessCallbacks(IUnknown *)
     }
 }
 
-int RECOIL_FASTCALL FakeInitDestroyProgress(CWnd *self, void *)
+int __fastcall FakeInitDestroyProgress(CWnd *self, void *)
 {
     ++g_initDestroyProgressCalls;
     g_initDestroyedProgress = self;
     return 1;
 }
 
-void RECOIL_FASTCALL FakeDestroyBeginDisconnect(WestwoodOnlineUpgradeDialog *self,
+void __fastcall FakeDestroyBeginDisconnect(WestwoodOnlineUpgradeDialog *self,
                                                 void *)
 {
     ++g_destroyBeginDisconnectCalls;
     g_destroyBeginDisconnectThis = self;
 }
 
-void RECOIL_CDECL FakeDestroyApiShutdown()
+void FakeDestroyApiShutdown()
 {
     ++g_destroyShutdownCalls;
 }
@@ -2564,7 +2564,7 @@ LANGID WINAPI FakeInitGetSystemDefaultLangID()
     return MAKELANGID(LANG_GERMAN, SUBLANG_DEFAULT);
 }
 
-int RECOIL_FASTCALL FakeWolEnableWindow(CWnd *self, void *, int enable)
+int __fastcall FakeWolEnableWindow(CWnd *self, void *, int enable)
 {
     if (g_enableWindowCalls < 12)
     {
@@ -2585,7 +2585,7 @@ LRESULT WINAPI FakeResetSendMessageA(HWND hwnd, UINT msg, WPARAM wParam, LPARAM 
     return 0;
 }
 
-unsigned int RECOIL_CDECL FakeAppendConnectFormatMessage(char *outBuffer, int maxChars,
+unsigned int FakeAppendConnectFormatMessage(char *outBuffer, int maxChars,
                                                          unsigned int messageId,
                                                          const char *sessionName)
 {
@@ -2598,7 +2598,7 @@ unsigned int RECOIL_CDECL FakeAppendConnectFormatMessage(char *outBuffer, int ma
     return 24;
 }
 
-int RECOIL_CDECL FakeAppendConnectAppendStatusTextFmt(WestwoodOnlineUpgradeDialog *self,
+int FakeAppendConnectAppendStatusTextFmt(WestwoodOnlineUpgradeDialog *self,
                                                       const char *text)
 {
     ++g_appendConnectAppendCalls;
@@ -2607,7 +2607,7 @@ int RECOIL_CDECL FakeAppendConnectAppendStatusTextFmt(WestwoodOnlineUpgradeDialo
     return 1;
 }
 
-void RECOIL_FASTCALL FakeAppendConnectResetSelectedBrowseRecord(
+void __fastcall FakeAppendConnectResetSelectedBrowseRecord(
     WestwoodOnlineUpgradeDialog *self,
     void *)
 {
@@ -2615,7 +2615,7 @@ void RECOIL_FASTCALL FakeAppendConnectResetSelectedBrowseRecord(
     g_appendConnectResetThis = self;
 }
 
-void RECOIL_FASTCALL FakeAbortOnCancel(CDialog *self, void *)
+void __fastcall FakeAbortOnCancel(CDialog *self, void *)
 {
     ++g_abortOnCancelCalls;
     g_abortOnCancelThis = self;
@@ -2893,7 +2893,7 @@ void RecordModalDdx(CDataExchange *dataExchange, int kind, int controlId,
     ++g_modalDdxStep;
 }
 
-void RECOIL_FASTCALL FakeModalSetMenuBarVisibility(CZRecoilFrame *self, void *, int visible)
+void __fastcall FakeModalSetMenuBarVisibility(CZRecoilFrame *self, void *, int visible)
 {
     if (g_modalMenuStep < 2) {
         g_modalMenuThis[g_modalMenuStep] = self;
@@ -2902,7 +2902,7 @@ void RECOIL_FASTCALL FakeModalSetMenuBarVisibility(CZRecoilFrame *self, void *, 
     ++g_modalMenuStep;
 }
 
-int RECOIL_FASTCALL FakeModalDoModal(void *self, void *)
+int __fastcall FakeModalDoModal(void *self, void *)
 {
     ++g_modalDoModalCalls;
     g_modalArgsOk =
@@ -2916,7 +2916,7 @@ int RECOIL_FASTCALL FakeModalDoModal(void *self, void *)
     return 1;
 }
 
-int RECOIL_FASTCALL FakeConfigDoModal(void *self, void *)
+int __fastcall FakeConfigDoModal(void *self, void *)
 {
     ++g_configDoModalCalls;
     g_configDoModalThis = (WestwoodOnlineUpgradeConfigDialog *)self;
@@ -2927,61 +2927,61 @@ int RECOIL_FASTCALL FakeConfigDoModal(void *self, void *)
     return g_configDoModalResult;
 }
 
-void RECOIL_FASTCALL FakeModalDialogDtor(void *, void *)
+void __fastcall FakeModalDialogDtor(void *, void *)
 {
     ++g_modalDialogDtorCalls;
     RecordModalDtorSequence('D');
 }
 
-void RECOIL_FASTCALL FakeModalCStringDtor(void *, void *)
+void __fastcall FakeModalCStringDtor(void *, void *)
 {
     ++g_modalCStringDtorCalls;
     RecordModalDtorSequence('S');
 }
 
-void RECOIL_FASTCALL FakeModalListDtor(void *, void *)
+void __fastcall FakeModalListDtor(void *, void *)
 {
     ++g_modalListDtorCalls;
     RecordModalDtorSequence('L');
 }
 
-void RECOIL_FASTCALL FakeModalEditDtor(void *, void *)
+void __fastcall FakeModalEditDtor(void *, void *)
 {
     ++g_modalEditDtorCalls;
     RecordModalDtorSequence('E');
 }
 
-void RECOIL_FASTCALL FakeModalComboDtor(void *, void *)
+void __fastcall FakeModalComboDtor(void *, void *)
 {
     ++g_modalComboDtorCalls;
     RecordModalDtorSequence('C');
 }
 
-void RECOIL_FASTCALL FakeModalButtonDtor(void *, void *)
+void __fastcall FakeModalButtonDtor(void *, void *)
 {
     ++g_modalButtonDtorCalls;
     RecordModalDtorSequence('B');
 }
 
-void RECOIL_STDCALL FakeModalDDXControl(CDataExchange *dataExchange,
+void __stdcall FakeModalDDXControl(CDataExchange *dataExchange,
                                         int controlId, void *control)
 {
     RecordModalDdx(dataExchange, 1, controlId, control);
 }
 
-void RECOIL_STDCALL FakeModalDDXTextUInt(CDataExchange *dataExchange,
+void __stdcall FakeModalDDXTextUInt(CDataExchange *dataExchange,
                                          int controlId, unsigned int *value)
 {
     RecordModalDdx(dataExchange, 2, controlId, value);
 }
 
-void RECOIL_STDCALL FakeModalDDXTextCString(CDataExchange *dataExchange,
+void __stdcall FakeModalDDXTextCString(CDataExchange *dataExchange,
                                             int controlId, CString *value)
 {
     RecordModalDdx(dataExchange, 2, controlId, value);
 }
 
-void RECOIL_STDCALL FakeModalDDXCheck(CDataExchange *dataExchange,
+void __stdcall FakeModalDDXCheck(CDataExchange *dataExchange,
                                       int controlId, int *value)
 {
     RecordModalDdx(dataExchange, 3, controlId, value);
@@ -3043,7 +3043,7 @@ void DestructConfigDialogStrings(WestwoodOnlineUpgradeConfigDialog &dialog)
     dialog.m_reservedString.CString::~CString();
 }
 
-void RECOIL_FASTCALL FakeConfigInitSetWindowTextA(
+void __fastcall FakeConfigInitSetWindowTextA(
     CWnd *self,
     void *,
     const char *text)
@@ -3072,13 +3072,13 @@ int STDMETHODCALLTYPE FakeConfigOnOkSaveConnectProfileStrings(
     return 0;
 }
 
-void RECOIL_FASTCALL FakeConfigOnOkBaseOnOK(CDialog *self, void *)
+void __fastcall FakeConfigOnOkBaseOnOK(CDialog *self, void *)
 {
     ++g_configOnOkBaseOnOkCalls;
     g_configOnOkBaseOnOkThis = self;
 }
 
-void RECOIL_FASTCALL FakeConfigComboKillFocusGetWindowTextA(
+void __fastcall FakeConfigComboKillFocusGetWindowTextA(
     CWnd *self,
     void *,
     CString *text)
@@ -3102,7 +3102,7 @@ LRESULT WINAPI FakeConfigSelChangeSendMessageA(
     return g_configSelChangeSendMessageResult;
 }
 
-void RECOIL_CDECL FakeModalTimeTick()
+void FakeModalTimeTick()
 {
     ++g_modalTimeTickCalls;
 }

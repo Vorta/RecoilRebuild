@@ -19,10 +19,10 @@ artifacts remain authoritative for individual functions.
   `HudUiElement::GetX` and nearby small HUD helpers. Prefer named fields and
   static layout checks over offset math once Binary Ninja types are stable.
 - zSound snapshot and playback helpers: see the focused `zsnd_*_verification.md`
-  notes for current matched call shapes, known byte-diff limits, and VC5SP3 vs
-  VC6 profile evidence.
+  notes for current matched call shapes, known byte-diff limits, and VC5SP3
+  profile evidence.
 - zSys CPU probes: the CPU feature-detection group is a documented raw-assembly
-  exception through `vc6_zsys_cpu_raw_asm`; do not generalize that exception to
+  exception through `vc5_zsys_cpu_raw_asm`; do not generalize that exception to
   new production functions without explicit approval.
 
 ## Use

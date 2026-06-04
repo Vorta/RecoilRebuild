@@ -54,7 +54,7 @@ namespace {
 namespace BBox {
     // Reimplements 0x452650: BBox::CornersToBoundingSphere
     // (GameZRecoil/zClass/cls_util.c)
-    RECOIL_NOINLINE void RECOIL_FASTCALL
+    void __fastcall
     CornersToBoundingSphere(
         zBBoxCorners * corners,
         zVec3 * outCenter,
@@ -98,7 +98,7 @@ namespace BBox {
 
 namespace zClass {
     // Reimplements 0x4518b0: zClass::SetNodeArraySize
-    RECOIL_NOINLINE void RECOIL_FASTCALL SetNodeArraySize(int size) {
+    void __fastcall SetNodeArraySize(int size) {
         if (g_zClass_NodeArraySize != 0) {
             zError::ReportOld(
                 0x200,
@@ -114,13 +114,13 @@ namespace zClass {
     }
 
     // Reimplements 0x4518f0: zClass::IsInitialized
-    RECOIL_NOINLINE int RECOIL_CDECL IsInitialized() {
+    int IsInitialized() {
         return g_zClass_IsInitialized;
     }
 
     // Reimplements 0x451900: zClass::Init
     // (GameZRecoil/zClass/cls_util.c)
-    RECOIL_NOINLINE int RECOIL_CDECL Init() {
+    int Init() {
         if (g_zClass_NodeArraySize == 0) {
             g_zClass_NodeArraySize = kDefaultNodeArraySize;
         }
@@ -161,13 +161,13 @@ namespace zClass {
     }
 
     // Reimplements 0x454360: zClass::ResetCurrentZbdPath
-    RECOIL_NOINLINE int RECOIL_CDECL ResetCurrentZbdPath() {
+    int ResetCurrentZbdPath() {
         g_zClass_CurrentZbdPath[0] = 0;
         return 0;
     }
 
     // Reimplements 0x451a00: zClass::ShutdownCore
-    RECOIL_NOINLINE int RECOIL_CDECL ShutdownCore() {
+    int ShutdownCore() {
         zClass_List::DeleteAllOfType(6);
         zClass_TypeList::FreeAll();
 
@@ -188,7 +188,7 @@ namespace zClass {
     }
 
     // Reimplements 0x4518e0: zClass::Shutdown (GameZRecoil/zClass/cls_util.c)
-    RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
+    int Shutdown() {
         ShutdownCore();
         return 0;
     }
@@ -196,7 +196,7 @@ namespace zClass {
 
 namespace zClass_Util {
     // Reimplements 0x451a60: zClass_Util::DestroyNodeRecursive
-    RECOIL_NOINLINE int RECOIL_FASTCALL DestroyNodeRecursive(zClass_NodePartial * node) {
+    int __fastcall DestroyNodeRecursive(zClass_NodePartial * node) {
         if (node == 0) {
             zError::ReportOld(
                 0x400,
@@ -253,7 +253,7 @@ namespace zClass_Util {
 namespace zClass_cls_util {
     // Reimplements 0x451b20: zClass_cls_util::CopyNodeDisplayInstance
     // (D:\Proj\GameZRecoil\zClass\cls_util.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     CopyNodeDisplayInstance(
         zClass_NodePartial * source,
         zClass_NodePartial * dest
@@ -321,7 +321,7 @@ namespace zClass_cls_util {
 
     // Reimplements 0x451bd0: zClass_cls_util::CopyNodeBaseData
     // (D:\Proj\GameZRecoil\zClass\cls_util.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     CopyNodeBaseData(
         zClass_NodePartial * source,
         zClass_NodePartial * dest
@@ -598,7 +598,7 @@ namespace zClass_cls_util {
 
     // Reimplements 0x451f70: zClass_cls_util::CopyCameraNode
     // (D:\Proj\GameZRecoil\zClass\cls_util.c)
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopyCameraNode(
+    zClass_NodePartial *__fastcall CopyCameraNode(
         zClass_NodePartial * source
     ) {
         zClass_NodePartial *const camera = zClass_Camera::gwCameraNew();
@@ -687,7 +687,7 @@ namespace zClass_cls_util {
 
     // Reimplements 0x452100: zClass_cls_util::CopyObject3DNode
     // (D:\Proj\GameZRecoil\zClass\cls_util.c)
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopyObject3DNode(
+    zClass_NodePartial *__fastcall CopyObject3DNode(
         zClass_NodePartial * source
     ) {
         zClass_NodePartial *const parent = zClass_Object3D::gwObject3DInit();
@@ -776,7 +776,7 @@ namespace zClass_cls_util {
 
     // Reimplements 0x4520c0: zClass_cls_util::CopyLightNode_Unimplemented
     // (D:\Proj\GameZRecoil\zClass\cls_util.c)
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopyLightNode_Unimplemented(
+    zClass_NodePartial *__fastcall CopyLightNode_Unimplemented(
         zClass_NodePartial *
     ) {
         zError::ReportOld(
@@ -790,7 +790,7 @@ namespace zClass_cls_util {
 
     // Reimplements 0x4520e0: zClass_cls_util::CopySoundNode_Unimplemented
     // (D:\Proj\GameZRecoil\zClass\cls_util.c)
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopySoundNode_Unimplemented(
+    zClass_NodePartial *__fastcall CopySoundNode_Unimplemented(
         zClass_NodePartial *
     ) {
         zError::ReportOld(
@@ -804,7 +804,7 @@ namespace zClass_cls_util {
 
     // Reimplements 0x452230: zClass_cls_util::CopyAnimateNode_Unimplemented
     // (D:\Proj\GameZRecoil\zClass\cls_util.c)
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopyAnimateNode_Unimplemented(
+    zClass_NodePartial *__fastcall CopyAnimateNode_Unimplemented(
         zClass_NodePartial *
     ) {
         zError::ReportOld(
@@ -818,7 +818,7 @@ namespace zClass_cls_util {
 
     // Reimplements 0x452250: zClass_cls_util::CopyLodNode
     // (D:\Proj\GameZRecoil\zClass\cls_util.c)
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopyLodNode(zClass_NodePartial * source) {
+    zClass_NodePartial *__fastcall CopyLodNode(zClass_NodePartial * source) {
         zClass_NodePartial *const parent = zClass_Lod::gwLodNew();
         if (parent == 0) {
             return parent;
@@ -884,7 +884,7 @@ namespace zClass_cls_util {
 
     // Reimplements 0x4523c0: zClass_cls_util::CopySequenceNode_Unimplemented
     // (D:\Proj\GameZRecoil\zClass\cls_util.c)
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopySequenceNode_Unimplemented(
+    zClass_NodePartial *__fastcall CopySequenceNode_Unimplemented(
         zClass_NodePartial *
     ) {
         zError::ReportOld(
@@ -898,7 +898,7 @@ namespace zClass_cls_util {
 
     // Reimplements 0x4523e0: zClass_cls_util::CopySwitchNode_Stub
     // (D:\Proj\GameZRecoil\zClass\cls_util.c)
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopySwitchNode_Stub(zClass_NodePartial *) {
+    zClass_NodePartial *__fastcall CopySwitchNode_Stub(zClass_NodePartial *) {
         zError::ReportOld(
             0x100,
             kClsUtilSourceFile,
@@ -910,7 +910,7 @@ namespace zClass_cls_util {
 
     // Reimplements 0x452400: zClass_cls_util::CopyNodeDispatch
     // (D:\Proj\GameZRecoil\zClass\cls_util.c)
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CopyNodeDispatch(
+    zClass_NodePartial *__fastcall CopyNodeDispatch(
         zClass_NodePartial * source
     ) {
         if (source == 0) {
@@ -971,7 +971,7 @@ namespace zClass_cls_util {
 
     // Reimplements 0x452500: zClass_cls_util::CopyNodeWithCloneOptions
     // (D:\Proj\GameZRecoil\zClass\cls_util.c)
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL
+    zClass_NodePartial *__fastcall
     CopyNodeWithCloneOptions(
         zClass_NodePartial * source,
         int cloneDiMode,
@@ -1000,7 +1000,7 @@ namespace zClass_cls_util {
 
     // Reimplements 0x452560: zClass_cls_util::CopyNode
     // (D:\Proj\GameZRecoil\zClass\cls_util.c)
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL
+    zClass_NodePartial *__fastcall
     CopyNode(
         zClass_NodePartial * source,
         int cloneDiMode,
@@ -1035,7 +1035,7 @@ namespace zClass_cls_util {
 namespace BBox {
     // Reimplements 0x4525d0: BBox::MinMaxToBoundingSphere
     // (GameZRecoil/zClass/cls_util.c)
-    RECOIL_NOINLINE float *RECOIL_FASTCALL
+    float *__fastcall
     MinMaxToBoundingSphere(
         const zBBox3f *bbox,
         zVec3 *outCenter,

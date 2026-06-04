@@ -18,7 +18,7 @@ float g_Time_UnscaledAccumulatedTimeSec = 0.0f;
 
 namespace Time {
 // Reimplements 0x4a5670: Time::Reset
-RECOIL_NOINLINE void RECOIL_CDECL Reset() {
+void Reset() {
     g_Time_NewTimeSec = 0.0f;
     g_Time_UnscaledAccumulatedTimeSec = 0.0f;
     g_Time_UnscaledDeltaTimeSec = 0.0f;
@@ -30,7 +30,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Reset() {
 }
 
 // Reimplements 0x4a56d0: Time::Tick (Time.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL Tick() {
+void Tick() {
     const __int64 tickCountMillis = GetTickCount();
     const float newTimeSec = (float)(tickCountMillis) * 0.00100000005f;
     const float unscaledDeltaTimeSec = newTimeSec - g_Time_CurrentTimeSec;

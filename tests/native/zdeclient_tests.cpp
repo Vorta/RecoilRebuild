@@ -81,7 +81,7 @@ int g_dispatchQSandCallCount = 0;
 float g_dispatchCraterRadius[2] = {};
 float g_dispatchQSandRadius = 0.0f;
 
-int RECOIL_FASTCALL DispatchCraterCallback(zDEClient_CraterEventTemplate *eventTemplate) {
+int __fastcall DispatchCraterCallback(zDEClient_CraterEventTemplate *eventTemplate) {
     if (g_dispatchCraterCallCount < 2) {
         g_dispatchCraterRadius[g_dispatchCraterCallCount] = eventTemplate->radius;
     }
@@ -90,7 +90,7 @@ int RECOIL_FASTCALL DispatchCraterCallback(zDEClient_CraterEventTemplate *eventT
     return 123;
 }
 
-int RECOIL_FASTCALL DispatchQSandCallback(zDEClient_QSandEventTemplate *eventTemplate) {
+int __fastcall DispatchQSandCallback(zDEClient_QSandEventTemplate *eventTemplate) {
     g_dispatchQSandRadius = eventTemplate->radius;
     ++g_dispatchQSandCallCount;
     eventTemplate->radius = -200.0f;
@@ -214,17 +214,17 @@ std::uint32_t g_craterNetRelaySendFlags = 0;
 void *g_craterNetRelaySendPacket = nullptr;
 std::uint32_t g_craterNetRelaySendPacketSize = 0;
 
-int RECOIL_FASTCALL TestQSandRelayCallback(void *) {
+int __fastcall TestQSandRelayCallback(void *) {
     ++g_qsandRelayCallCount;
     return g_qsandRelayResult;
 }
 
-int RECOIL_FASTCALL TestCraterRelayCallback(void *) {
+int __fastcall TestCraterRelayCallback(void *) {
     ++g_craterRelayCallCount;
     return g_craterRelayResult;
 }
 
-std::int32_t RECOIL_STDCALL CraterNetRelaySendFake(zNetwork_DPlay4 *, std::uint32_t,
+std::int32_t __stdcall CraterNetRelaySendFake(zNetwork_DPlay4 *, std::uint32_t,
                                                    std::uint32_t, std::uint32_t flags,
                                                    void *packet,
                                                    std::uint32_t packetSizeBytes) {

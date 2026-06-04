@@ -4,11 +4,11 @@
 #include "GameZRecoil/zVideo/zVideo.h"
 
 struct HudUiMpExitDialog_NewGameButton : HudUiZrdWidget {
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 
 struct HudUiMpExitDialog_ExitButton : HudUiZrdWidget {
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 
 struct HudUiMpExitDialog_Vtbl {
@@ -24,11 +24,11 @@ struct HudUiMpExitDialog {
     float m_fadeElapsedSeconds;
     int m_mpNewGameButtonMode;
 
-    RECOIL_NOINLINE void RECOIL_THISCALL UnloadLayout();
-    RECOIL_NOINLINE void RECOIL_THISCALL Update(float deltaSeconds);
-    RECOIL_NOINLINE void RECOIL_THISCALL LoadLayout();
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    HudUiMpExitDialog *RECOIL_THISCALL ScalarDeletingDestructorThunk(unsigned int flags);
+    void UnloadLayout();
+    void Update(float deltaSeconds);
+    void LoadLayout();
+    void Destructor();
+    HudUiMpExitDialog * ScalarDeletingDestructorThunk(unsigned int flags);
 };
 
 extern const HudUiWidget_FTable g_HudUiZrdWidget_MpExitDialog_NewGameButton_Vtbl;

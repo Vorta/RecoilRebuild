@@ -11,9 +11,12 @@ installed MSVC toolchain.
   `recoil_native`, `recoil_native_smoke`, `ALL_BUILD`, and `RUN_TESTS`.
 - Use MCP for solution-aware navigation, build diagnostics, Error List triage,
   output panes, symbols, open editor state, and focused debugger sessions.
-- Use `tools/recoil_msvc_x86_run.py -- ...` for Ninja presets, CMake configure
-  commands, direct `ctest`, native smoke runs with command-line arguments, and
-  any command-line work that MCP cannot express.
+- Use `cmake/recoil_native_x86_build.ps1` for Ninja configure/build from normal
+  PowerShell. It loads `vcvarsall x86` and verifies the Windows SDK `LIB` path,
+  including `kernel32.lib`, before CMake runs.
+- Use `tools/recoil_msvc_x86_run.py -- ...` for direct `ctest`, native smoke
+  runs with command-line arguments, and arbitrary x86 MSVC command-line work
+  that MCP cannot express.
 - Do not hand-write `cmd /c` commands that call Visual Studio batch files under
   `Program Files`.
 

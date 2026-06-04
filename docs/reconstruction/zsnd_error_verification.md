@@ -1,14 +1,14 @@
 # zSnd Error Verification Notes
 
 These notes track verification facts for zSound error-report helpers. Binary
-Ninja and the VC6 verifier artifacts remain authoritative.
+Ninja and the VC5SP3 verifier artifacts remain authoritative.
 
 ## 0x4a3ef0 zSnd::ReportA3DError
 
 - Binary Ninja records the most likely original file as
   `GameZRecoil/zSound/zsnd_create.cpp`; the current implementation and manifest
   still compile the helper from `src/GameZRecoil/zSound/zsnd_init.cpp`.
-- The active target `python tools/recoil_vc6_verify.py 0x4a3ef0` compiles with
+- The active target `python tools/recoil_vc5_verify.py 0x4a3ef0` compiles with
   VC5SP3 `cl` 11.00.7022, `/G5 /O2 /Ob1 /GX /Zp4 /FAcs`. Its manifest sets
   `bn_byte_length: 1088` because the VC object symbol includes the switch jump
   table in the COMDAT byte span while Binary Ninja's function-instruction byte

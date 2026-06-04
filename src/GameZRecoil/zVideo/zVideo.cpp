@@ -25,8 +25,22 @@ extern "C" void(__cdecl *__imp__free)(void *); // VC5 retail import-pointer call
 #endif
 
 namespace {
-typedef void(RECOIL_CDECL *zVideo_FlushProc)();
-typedef void(RECOIL_FASTCALL *zVideo_ImageProc)(zVidImagePartial *image);
+typedef void(*zVideo_FlushProc)();
+typedef void(__fastcall *zVideo_ImageProc)(zVidImagePartial *image);
+
+const int kZVidPaletteColorCount = 256;
+const int kZVidPaletteRemapVariantCount = 32;
+const int kZVidPaletteRemapColorsPerRecipe =
+    kZVidPaletteColorCount * kZVidPaletteRemapVariantCount;
+
+size_t zVidPaletteRemapTableBytesForRecipeCount(
+    int recipeCount
+) {
+    return (size_t)(
+        (recipeCount * kZVidPaletteRemapColorsPerRecipe) +
+        kZVidPaletteColorCount
+    ) * sizeof(unsigned short);
+}
 
 template <typename Method>
 unsigned int zVideo_MethodAddress(
@@ -276,7 +290,7 @@ struct zVideoFxPass3Element {
     HudUiElement base;
     HudUiRect *clipRectOrNull;
 
-    RECOIL_NOINLINE void RECOIL_THISCALL Draw();
+    void Draw();
 };
 
 struct zVideoFxPass3RootElement : zVideoFxPass3Element {
@@ -284,7 +298,7 @@ struct zVideoFxPass3RootElement : zVideoFxPass3Element {
     unsigned char unknown_3a[0x06];
     double alpha;
 
-    RECOIL_NOINLINE void RECOIL_THISCALL ApplyOverlayRect();
+    void ApplyOverlayRect();
 };
 
 struct zVideoFxPass3Slot : zVideoFxPass3Element {
@@ -294,8 +308,8 @@ struct zVideoFxPass3Slot : zVideoFxPass3Element {
     float sinFreq;
     float sinPhase;
 
-    RECOIL_NOINLINE zVideoFxPass3Slot *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL SetRectAndPayload(
+    zVideoFxPass3Slot * Constructor();
+    void SetRectAndPayload(
         int rectLeftPixels,
         int rectTopPixels,
         int currentRadiusPixels,
@@ -304,7 +318,7 @@ struct zVideoFxPass3Slot : zVideoFxPass3Element {
         float sinFreqValue,
         float sinPhaseValue
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL ApplyToCurrentSurface();
+    void ApplyToCurrentSurface();
 };
 
 // Typed owner for g_zVideo_FxPass3Slot_Vtable at 0x4d3d78. Binary Ninja shows
@@ -344,17 +358,17 @@ struct zVideoFxPass3Config {
     zVideoFxPass3Slot slots[5];
     int slotWriteIndex;
 
-    RECOIL_NOINLINE zVideoFxPass3Config *RECOIL_THISCALL Constructor();
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    static void RECOIL_CDECL CrtInitGlobalSingleton();
-    static zVideoFxPass3Config *RECOIL_CDECL ConstructGlobalSingleton();
-    static void RECOIL_CDECL RegisterDestroyAtExit();
-    static void RECOIL_CDECL DestroyGlobalSingleton();
-    RECOIL_NOINLINE void RECOIL_THISCALL SetInputRectByIndex(
+    zVideoFxPass3Config * Constructor();
+    void Destructor();
+    static void CrtInitGlobalSingleton();
+    static zVideoFxPass3Config *ConstructGlobalSingleton();
+    static void RegisterDestroyAtExit();
+    static void DestroyGlobalSingleton();
+    void SetInputRectByIndex(
         int index,
         HudUiRect *rectOrNull
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL QueuePrimitiveRaw(
+    void QueuePrimitiveRaw(
         void *primitive,
         int width,
         int height,
@@ -431,7 +445,7 @@ RECOIL_STATIC_ASSERT(
 );
 #endif
 
-RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3InvalidateThunk(
+void __fastcall zVideoFxPass3InvalidateThunk(
     HudUiElement *element
 ) {
     element->Invalidate();
@@ -506,7 +520,7 @@ HWND g_zVideo_hWnd = 0;
 RECT g_zVideo_CachedClientRectScreen = {0};
 
 // Reimplements 0x4a6cf0: zVid_PackColorRGB
-RECOIL_NOINLINE unsigned int RECOIL_FASTCALL zVid_PackColorRGB(
+unsigned int __fastcall zVid_PackColorRGB(
     unsigned char red,
     unsigned char green,
     unsigned char blue
@@ -517,7 +531,7 @@ RECOIL_NOINLINE unsigned int RECOIL_FASTCALL zVid_PackColorRGB(
 }
 
 // Reimplements 0x4a6ca0: zVid_PackColor00RRGGBB
-RECOIL_NOINLINE unsigned int RECOIL_FASTCALL zVid_PackColor00RRGGBB(
+unsigned int __fastcall zVid_PackColor00RRGGBB(
     unsigned int color00RRGGBB
 ) {
     const unsigned char red = (unsigned char)(color00RRGGBB);
@@ -530,7 +544,7 @@ RECOIL_NOINLINE unsigned int RECOIL_FASTCALL zVid_PackColor00RRGGBB(
 }
 
 // Reimplements 0x4a6d40: zVid_PackColorRgbFloats
-RECOIL_NOINLINE unsigned short RECOIL_FASTCALL zVid_PackColorRgbFloats(
+unsigned short __fastcall zVid_PackColorRgbFloats(
     zVideo_ColorRgbFloat *color
 ) {
     const int red = (int)(color->r + 0.5f);
@@ -544,14 +558,14 @@ RECOIL_NOINLINE unsigned short RECOIL_FASTCALL zVid_PackColorRgbFloats(
 }
 
 // Reimplements 0x4a6b80: zVideo_SetClearColorPacked16
-RECOIL_NOINLINE void RECOIL_FASTCALL zVideo_SetClearColorPacked16(
+void __fastcall zVideo_SetClearColorPacked16(
     unsigned int packedColor16
 ) {
     g_zVideo_ClearColorPacked16 = packedColor16;
 }
 
 // Reimplements 0x4a7250: zVideo_SetPendingFogTargetColorFromRgb01
-RECOIL_NOINLINE void RECOIL_FASTCALL zVideo_SetPendingFogTargetColorFromRgb01(
+void __fastcall zVideo_SetPendingFogTargetColorFromRgb01(
     zVideo_ColorRgbFloat *color
 ) {
     g_zVideo_D3DColorAttrBiasR = color->r * 255.0f;
@@ -578,7 +592,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zVideo_SetPendingFogTargetColorFromRgb01(
 
 // Reimplements 0x479ce0: zVideo_SetActiveViewContext
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL zVideo_SetActiveViewContext(
+void __fastcall zVideo_SetActiveViewContext(
     zClass_CameraDataPartial *viewContext
 ) {
     g_zVideo_pActiveViewContext = viewContext;
@@ -692,7 +706,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zVideo_SetActiveViewContext(
 
 // Reimplements 0x44d600: zVideo_sw::RenderFrame
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL zVideo_sw_RenderFrame(
+int __fastcall zVideo_sw_RenderFrame(
     zClass_NodePartial *camera,
     int updateFxPass3Local
 ) {
@@ -855,7 +869,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zVideo_sw_RenderFrame(
 
 // Reimplements 0x47a0c0: zVideo_UpdateProjectionStateFromCameraData
 // (GameZRecoil/zVideo/zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL zVideo_UpdateProjectionStateFromCameraData(
+void __fastcall zVideo_UpdateProjectionStateFromCameraData(
     zClass_CameraDataPartial *cameraData
 ) {
     zMat4x3 slotBuffer = {0};
@@ -942,7 +956,7 @@ static int zVideo_TestSpherePlane(
 
 // Reimplements 0x478c70: zVideo_FrustumTestSphereClipMask
 // (GameZRecoil/zModel/zModel_Display.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL zVideo_FrustumTestSphereClipMask(
+int __fastcall zVideo_FrustumTestSphereClipMask(
     zVec3 *sphereCenter,
     int *clipMaskInOut,
     float radius
@@ -1051,19 +1065,19 @@ RECOIL_NOINLINE int RECOIL_FASTCALL zVideo_FrustumTestSphereClipMask(
 }
 
 // Reimplements 0x4a59b0: zVid_QueryCachedClientRectUpdateMaskIf3dfx
-RECOIL_NOINLINE int RECOIL_CDECL zVid_QueryCachedClientRectUpdateMaskIf3dfx() {
+int zVid_QueryCachedClientRectUpdateMaskIf3dfx() {
     return g_zVideo_ActiveRendererPath == 2 ? g_zVid_CachedClientRectUpdateMask : 0;
 }
 
 // Reimplements 0x443a40: zVid_UpdateCachedClientRectIfUpdateMaskEnabled
-RECOIL_NOINLINE void RECOIL_CDECL zVid_UpdateCachedClientRectIfUpdateMaskEnabled() {
+void zVid_UpdateCachedClientRectIfUpdateMaskEnabled() {
     if (zVid_QueryCachedClientRectUpdateMaskIf3dfx() != 0) {
         zVideo::UpdateCachedClientRectScreenCoords();
     }
 }
 
 // Reimplements 0x4a7770: zVideo_RestoreIconicFullscreenWindowIfNeeded
-RECOIL_NOINLINE void RECOIL_CDECL zVideo_RestoreIconicFullscreenWindowIfNeeded() {
+void zVideo_RestoreIconicFullscreenWindowIfNeeded() {
     if (g_zVideo_IsInitialized != 0 && g_zVideo_FullscreenOption != 0 &&
         IsIconic(g_zVideo_hWnd) != 0) {
         OpenIcon(g_zVideo_hWnd);
@@ -1348,7 +1362,7 @@ RECOIL_STATIC_ASSERT(sizeof(zVidRect32) == sizeof(RECT));
 
 namespace zVid {
 // Reimplements 0x408280: zVid::SetAccelerationOption
-RECOIL_NOINLINE void RECOIL_FASTCALL SetAccelerationOption(
+void __fastcall SetAccelerationOption(
     int accelerationOption
 ) {
     *ZOPT_VIDEO_ACCELERATION = accelerationOption;
@@ -1356,56 +1370,56 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetAccelerationOption(
 }
 
 // Reimplements 0x408290: zVid::SetHwApiOption
-RECOIL_NOINLINE void RECOIL_FASTCALL SetHwApiOption(
+void __fastcall SetHwApiOption(
     int hwApiOption
 ) {
     *ZOPT_HW_API = hwApiOption;
 }
 
 // Reimplements 0x408310: zVid::GetAccelerationOption
-RECOIL_NOINLINE int RECOIL_CDECL GetAccelerationOption() {
+int GetAccelerationOption() {
     return *ZOPT_VIDEO_ACCELERATION;
 }
 
 // Reimplements 0x408320: zVid::GetHwApiOption
-RECOIL_NOINLINE int RECOIL_CDECL GetHwApiOption() {
+int GetHwApiOption() {
     return *ZOPT_HW_API;
 }
 
 // Reimplements 0x4a7480: zVid::GetAcceptedDirectDrawDeviceCount
-RECOIL_NOINLINE int RECOIL_CDECL GetAcceptedDirectDrawDeviceCount() {
+int GetAcceptedDirectDrawDeviceCount() {
     return zVideo_dd::GetAcceptedDirectDrawDeviceCountCached();
 }
 
 // Reimplements 0x4a9910: zVid::GetAcceptedHardwareRendererCount_Cached
-RECOIL_NOINLINE int RECOIL_CDECL GetAcceptedHardwareRendererCount_Cached() {
+int GetAcceptedHardwareRendererCount_Cached() {
     return g_zVid_AcceptedHardwareRendererCount;
 }
 
 // Reimplements 0x4b3220: zVid::HasAcceptedHardwareRenderer
-RECOIL_NOINLINE int RECOIL_CDECL HasAcceptedHardwareRenderer() {
+int HasAcceptedHardwareRenderer() {
     return GetAcceptedHardwareRendererCount_Cached() > 0 ? 1 : 0;
 }
 
 // Reimplements 0x46d5c0: zVid::GetTexturePackLoadState
-RECOIL_NOINLINE int RECOIL_CDECL GetTexturePackLoadState() {
+int GetTexturePackLoadState() {
     return g_zVid_TexturePackLoadState;
 }
 
 // Reimplements 0x46d5b0: zVid::SetTexturePackLoadState
-RECOIL_NOINLINE void RECOIL_FASTCALL SetTexturePackLoadState(
+void __fastcall SetTexturePackLoadState(
     int texturePackLoadState
 ) {
     g_zVid_TexturePackLoadState = texturePackLoadState;
 }
 
 // Reimplements 0x4086b0: zVid::GetVideoModeIndexFromOptions
-RECOIL_NOINLINE int RECOIL_CDECL GetVideoModeIndexFromOptions() {
+int GetVideoModeIndexFromOptions() {
     return *ZOPT_VIDEO_MODE;
 }
 
 // Reimplements 0x408720: zVid::SetVideoModeIndex
-RECOIL_NOINLINE void RECOIL_FASTCALL SetVideoModeIndex(
+void __fastcall SetVideoModeIndex(
     int modeIndex
 ) {
     switch (modeIndex) {
@@ -1597,7 +1611,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetVideoModeIndex(
 
 // Reimplements 0x4a9950: zVid::QueryDeviceVideoMemoryBytes
 // Queries live DirectDraw video memory for the selected device or cached table values by index.
-RECOIL_NOINLINE int RECOIL_FASTCALL QueryDeviceVideoMemoryBytes(
+int __fastcall QueryDeviceVideoMemoryBytes(
     int deviceIndexOrMinus1,
     int *totalBytes,
     int *freeBytes
@@ -1637,7 +1651,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL QueryDeviceVideoMemoryBytes(
 
 // Reimplements 0x4a9a30: zVid::QueryTextureMemoryBytes
 // Queries live DirectDraw texture memory or cached texture-memory fields by device index.
-RECOIL_NOINLINE int RECOIL_FASTCALL QueryTextureMemoryBytes(
+int __fastcall QueryTextureMemoryBytes(
     int deviceIndexOrMinus1,
     int *totalBytes,
     int *freeBytes
@@ -1669,34 +1683,34 @@ RECOIL_NOINLINE int RECOIL_FASTCALL QueryTextureMemoryBytes(
 }
 
 // Reimplements 0x4a59a0: zVid::SetCachedClientRectUpdateMask
-RECOIL_NOINLINE void RECOIL_FASTCALL SetCachedClientRectUpdateMask(
+void __fastcall SetCachedClientRectUpdateMask(
     int mask
 ) {
     g_zVid_CachedClientRectUpdateMask = mask;
 }
 
 // Reimplements 0x4a7410: zVid::GetSelectedHwApiDescriptionOrDefault
-RECOIL_NOINLINE char *RECOIL_CDECL GetSelectedHwApiDescriptionOrDefault() {
+char *GetSelectedHwApiDescriptionOrDefault() {
     return g_zVideo_pSelectedHwApiDeviceRecord != 0
                ? g_zVideo_pSelectedHwApiDeviceRecord->m_driverDescription
                : (char *)("Default");
 }
 
 // Reimplements 0x4a9940: zVid::GetSelectedD3DDeviceNameOrDefault
-RECOIL_NOINLINE char *RECOIL_CDECL GetSelectedD3DDeviceNameOrDefault() {
+char *GetSelectedD3DDeviceNameOrDefault() {
     return g_zVideo_pSelectedD3DDeviceInfo != 0 ? g_zVideo_pSelectedD3DDeviceInfo->m_deviceName
                                                 : (char *)("GameZ");
 }
 
 // Reimplements 0x4a7430: zVid::GetHwApiDescription
-RECOIL_NOINLINE char *RECOIL_FASTCALL GetHwApiDescription(
+char *__fastcall GetHwApiDescription(
     int index
 ) {
     return g_zVideo_HwApiDeviceTable[index].m_driverDescription;
 }
 
 // Reimplements 0x4a7450: zVid::GetHwApiDriverName
-RECOIL_NOINLINE char *RECOIL_FASTCALL GetHwApiDriverName(
+char *__fastcall GetHwApiDriverName(
     int index
 ) {
     return g_zVideo_HwApiDeviceTable[index].m_driverName;
@@ -1707,8 +1721,8 @@ RECOIL_NOINLINE char *RECOIL_FASTCALL GetHwApiDriverName(
 // Draws the common HUD base, publishes the parent pass-3 source surface, then
 // dispatches the element-specific pass callback once for each configured input
 // rectangle.
-RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Element::Draw() {
-    typedef void(RECOIL_FASTCALL *zVideoFxPass3ElementDispatch)(zVideoFxPass3Element *element);
+void zVideoFxPass3Element::Draw() {
+    typedef void(__fastcall *zVideoFxPass3ElementDispatch)(zVideoFxPass3Element *element);
 
     zVideoFxPass3Config *const parentConfig = (zVideoFxPass3Config *)(base.parent);
     const unsigned int *const slots = base.ftable->slots;
@@ -1743,7 +1757,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Element::Draw() {
 // Reimplements 0x4bdbc0: zVideoFxPass3RootElement::ApplyOverlayRect
 // Root pass-3 callback submits the currently selected input rectangle as a
 // framebuffer overlay using the root element's recovered color and alpha.
-RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3RootElement::ApplyOverlayRect() {
+void zVideoFxPass3RootElement::ApplyOverlayRect() {
     zRndr_OverlayRect_Submit(
         (unsigned int)(packedColor16),
         (zVidRect32 *)(clipRectOrNull),
@@ -1754,7 +1768,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3RootElement::ApplyOverlayRect(
 // Reimplements 0x4bdbe0: zVideoFxPass3Slot::Constructor
 // Installs the pass-3 slot table after the HudUiElement base constructor and
 // clears the input clip consumed by zVideoFxPass3Element::Draw.
-RECOIL_NOINLINE zVideoFxPass3Slot *RECOIL_THISCALL zVideoFxPass3Slot::Constructor() {
+zVideoFxPass3Slot * zVideoFxPass3Slot::Constructor() {
     base.Constructor(
         0,
         0
@@ -1766,7 +1780,7 @@ RECOIL_NOINLINE zVideoFxPass3Slot *RECOIL_THISCALL zVideoFxPass3Slot::Constructo
 
 // Reimplements 0x4bdc00: zVideoFxPass3Slot::SetRectAndPayload
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Slot::SetRectAndPayload(
+void zVideoFxPass3Slot::SetRectAndPayload(
     int rectLeftPixels,
     int rectTopPixels,
     int currentRadiusPixels,
@@ -1796,7 +1810,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Slot::SetRectAndPayload(
 // Vtable callback at slot 0x74 forwards the slot position, integer radius
 // payload, sine parameters, and active input clip to the shared pass-3 radial
 // warp routine.
-RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Slot::ApplyToCurrentSurface() {
+void zVideoFxPass3Slot::ApplyToCurrentSurface() {
     zVideo::FxPass3_ApplyToCurrentSurface(
         base.x,
         base.y,
@@ -1813,7 +1827,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Slot::ApplyToCurrentSurface() 
 // Constructs the pass-3 singleton as a HudUiContainer, installs the config and
 // element tables, links the root plus five slot children, hides them, and enables
 // the container. The retail constructor leaves surfacePitchBytes untouched.
-RECOIL_NOINLINE zVideoFxPass3Config *RECOIL_THISCALL zVideoFxPass3Config::Constructor() {
+zVideoFxPass3Config * zVideoFxPass3Config::Constructor() {
     ((HudUiContainer *)(this))->ConstructorDefault();
 
     rootElement.base.Constructor(
@@ -1851,7 +1865,7 @@ RECOIL_NOINLINE zVideoFxPass3Config *RECOIL_THISCALL zVideoFxPass3Config::Constr
 // Reimplements 0x4bee80: zVideoFxPass3Config::Destructor
 // Destruction mirrors the MSVC array-destructor path: reset each slot back to
 // the common HudUi table, reset the root table, then tear down the container.
-RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Config::Destructor() {
+void zVideoFxPass3Config::Destructor() {
     int slotIndex;
     for (slotIndex = 4; slotIndex >= 0; --slotIndex) {
         slots[slotIndex].base.ResetCommonFTable();
@@ -1862,29 +1876,29 @@ RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Config::Destructor() {
 }
 
 // Reimplements 0x4bee50: zVideoFxPass3Config::ConstructGlobalSingleton
-zVideoFxPass3Config *RECOIL_CDECL zVideoFxPass3Config::ConstructGlobalSingleton() {
+zVideoFxPass3Config *zVideoFxPass3Config::ConstructGlobalSingleton() {
     return g_zVideo_FxPass3ConfigLocal.Constructor();
 }
 
 // Reimplements 0x4bee70: zVideoFxPass3Config::DestroyGlobalSingleton
-void RECOIL_CDECL zVideoFxPass3Config::DestroyGlobalSingleton() {
+void zVideoFxPass3Config::DestroyGlobalSingleton() {
     g_zVideo_FxPass3ConfigLocal.Destructor();
 }
 
 // Reimplements 0x4bee60: zVideoFxPass3Config::RegisterDestroyAtExit
-void RECOIL_CDECL zVideoFxPass3Config::RegisterDestroyAtExit() {
+void zVideoFxPass3Config::RegisterDestroyAtExit() {
     atexit(DestroyGlobalSingleton);
 }
 
 // Reimplements 0x4bee40: zVideoFxPass3Config::CrtInitGlobalSingleton
-void RECOIL_CDECL zVideoFxPass3Config::CrtInitGlobalSingleton() {
+void zVideoFxPass3Config::CrtInitGlobalSingleton() {
     ConstructGlobalSingleton();
     RegisterDestroyAtExit();
 }
 
 // Reimplements 0x4bee00: zVideoFxPass3Config::SetInputRectByIndex
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Config::SetInputRectByIndex(
+void zVideoFxPass3Config::SetInputRectByIndex(
     int index,
     HudUiRect *rectOrNull
 ) {
@@ -1895,7 +1909,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Config::SetInputRectByIndex(
 
 namespace zVideo_buff {
 // Reimplements 0x4a69c0: zVideo_buff::ClipCoordToRange
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipCoordToRange(
+int __fastcall ClipCoordToRange(
     int *coordPtr,
     int minCoord,
     int maxCoord
@@ -1915,7 +1929,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ClipCoordToRange(
 
 // Reimplements 0x4a6fe0: zVideo_buff::CopySurfaceRectToImage
 // (GameZRecoil/zImage/zvid_buff.c)
-RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL CopySurfaceRectToImage(
+zVidImagePartial *__fastcall CopySurfaceRectToImage(
     int sourceSelector,
     zVidRect32 *rect,
     zVidImagePartial *imageOrNull
@@ -2025,7 +2039,7 @@ RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL CopySurfaceRectToImage(
 }
 
 // Reimplements 0x4a69e0: zVideo_buff::BltSourceToPrimaryClipped
-RECOIL_NOINLINE void RECOIL_FASTCALL BltSourceToPrimaryClipped(
+void __fastcall BltSourceToPrimaryClipped(
     zVidImagePartial *srcImage,
     int dstX,
     int dstY,
@@ -2155,7 +2169,7 @@ int MakeShiftedMask(
 } // namespace
 
 // Reimplements 0x4a6bf0: zVideo::PixelPack_SetupFromMasks
-RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_SetupFromMasks(
+void __fastcall PixelPack_SetupFromMasks(
     int redBits,
     int greenBits,
     int blueBits,
@@ -2179,7 +2193,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_SetupFromMasks(
 }
 
 // Reimplements 0x4a6db0: zVideo::TexturePixelPack_SetupFromMasks
-RECOIL_NOINLINE void RECOIL_FASTCALL TexturePixelPack_SetupFromMasks(
+void __fastcall TexturePixelPack_SetupFromMasks(
     int redBits,
     int greenBits,
     int blueBits,
@@ -2213,7 +2227,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TexturePixelPack_SetupFromMasks(
 }
 
 // Reimplements 0x4a6b40: zVideo::SetRendererTypeAndActivePath
-RECOIL_NOINLINE int RECOIL_FASTCALL SetRendererTypeAndActivePath(
+int __fastcall SetRendererTypeAndActivePath(
     int rendererType
 ) {
     const int previousRendererType = g_zVideo_RendererType;
@@ -2223,7 +2237,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetRendererTypeAndActivePath(
 }
 
 // Reimplements 0x4a71c0: zVideo::SetHalfResAdjustMode
-RECOIL_NOINLINE int RECOIL_FASTCALL SetHalfResAdjustMode(
+int __fastcall SetHalfResAdjustMode(
     int mode
 ) {
     int previousMode;
@@ -2250,7 +2264,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetHalfResAdjustMode(
 
 // Reimplements 0x437ef0: zVideo::HandleSoftwareModeHotkeyCommand
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL HandleSoftwareModeHotkeyCommand(
+void __fastcall HandleSoftwareModeHotkeyCommand(
     int
 ) {
     if (g_zVideo_SoftwareModeHotkeyEnabled == 0) {
@@ -2293,65 +2307,65 @@ RECOIL_NOINLINE void RECOIL_FASTCALL HandleSoftwareModeHotkeyCommand(
 }
 
 // Reimplements 0x4a7200: zVideo::GetPrimarySurfaceRectScratch
-RECOIL_NOINLINE zVidRect32 *RECOIL_CDECL GetPrimarySurfaceRectScratch() {
+zVidRect32 *GetPrimarySurfaceRectScratch() {
     g_zVideo_PrimarySurfaceRectScratch.right = g_zVideo_PrimarySurfaceState.width;
     g_zVideo_PrimarySurfaceRectScratch.bottom = g_zVideo_PrimarySurfaceState.height;
     return &g_zVideo_PrimarySurfaceRectScratch;
 }
 
 // Reimplements 0x4a6710: zVideo::GetSwSurfacePixels
-RECOIL_NOINLINE void *RECOIL_CDECL GetSwSurfacePixels() {
+void *GetSwSurfacePixels() {
     return g_zVideo_SwSurfaceState.pixels;
 }
 
 // Reimplements 0x4a6720: zVideo::GetSwSurfaceWidth
-RECOIL_NOINLINE int RECOIL_CDECL GetSwSurfaceWidth() {
+int GetSwSurfaceWidth() {
     return g_zVideo_SwSurfaceState.width;
 }
 
 // Reimplements 0x4a6730: zVideo::GetSwSurfaceHeight
-RECOIL_NOINLINE int RECOIL_CDECL GetSwSurfaceHeight() {
+int GetSwSurfaceHeight() {
     return g_zVideo_SwSurfaceState.height;
 }
 
 // Reimplements 0x4a6740: zVideo::GetSwSurfacePitch
-RECOIL_NOINLINE int RECOIL_CDECL GetSwSurfacePitch() {
+int GetSwSurfacePitch() {
     return g_zVideo_SwSurfaceState.pitch;
 }
 
 // Reimplements 0x4a67e0: zVideo::GetSwSurfaceLockedFlag
-RECOIL_NOINLINE int RECOIL_CDECL GetSwSurfaceLockedFlag() {
+int GetSwSurfaceLockedFlag() {
     return g_zVideo_SwSurfaceState.locked;
 }
 
 // Reimplements 0x4a67f0: zVideo::GetPrimarySurfacePixels
-RECOIL_NOINLINE void *RECOIL_CDECL GetPrimarySurfacePixels() {
+void *GetPrimarySurfacePixels() {
     return g_zVideo_PrimarySurfaceState.pixels;
 }
 
 // Reimplements 0x4a6800: zVideo::GetPrimarySurfaceWidth
-RECOIL_NOINLINE int RECOIL_CDECL GetPrimarySurfaceWidth() {
+int GetPrimarySurfaceWidth() {
     return g_zVideo_PrimarySurfaceState.width;
 }
 
 // Reimplements 0x4a6810: zVideo::GetPrimarySurfaceHeight
-RECOIL_NOINLINE int RECOIL_CDECL GetPrimarySurfaceHeight() {
+int GetPrimarySurfaceHeight() {
     return g_zVideo_PrimarySurfaceState.height;
 }
 
 // Reimplements 0x4a6820: zVideo::GetPrimarySurfacePitch
-RECOIL_NOINLINE int RECOIL_CDECL GetPrimarySurfacePitch() {
+int GetPrimarySurfacePitch() {
     return g_zVideo_PrimarySurfaceState.pitch;
 }
 
 // Reimplements 0x4a66e0: zVideo::GetDisplayModeBpp
-RECOIL_NOINLINE int RECOIL_CDECL GetDisplayModeBpp() {
+int GetDisplayModeBpp() {
     return g_zVideo_DisplayModeBpp;
 }
 
 // Reimplements 0x4c7fd0: zVideo::LoadPaletteFileAndApplyBrightness
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL LoadPaletteFileAndApplyBrightness(
+int __fastcall LoadPaletteFileAndApplyBrightness(
     const char *palettePath
 ) {
     if (palettePath != 0) {
@@ -2386,7 +2400,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadPaletteFileAndApplyBrightness(
 
 // Reimplements 0x4c8070: zVideo::ApplyBrightnessToPaletteEntries
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ApplyBrightnessToPaletteEntries(
+int __fastcall ApplyBrightnessToPaletteEntries(
     PALETTEENTRY *paletteEntries
 ) {
     if (g_zVideo_IsInitialized == 0) {
@@ -2437,7 +2451,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ApplyBrightnessToPaletteEntries(
 }
 
 // Reimplements 0x4a7990: zVideo::Init_SetSurfaceGeometryFromModeIndex
-RECOIL_NOINLINE void RECOIL_FASTCALL Init_SetSurfaceGeometryFromModeIndex(
+void __fastcall Init_SetSurfaceGeometryFromModeIndex(
     int modeIndex
 ) {
     switch (modeIndex) {
@@ -2504,7 +2518,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Init_SetSurfaceGeometryFromModeIndex(
 }
 
 // Reimplements 0x4a66f0: zVideo::Init_ApplyModeIndex
-RECOIL_NOINLINE int RECOIL_FASTCALL Init_ApplyModeIndex(
+int __fastcall Init_ApplyModeIndex(
     int modeIndex
 ) {
     Init_SetSurfaceGeometryFromModeIndex(modeIndex);
@@ -2512,7 +2526,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Init_ApplyModeIndex(
 }
 
 // Reimplements 0x4a7af0: zVideo::SetVideoMode
-RECOIL_NOINLINE int RECOIL_FASTCALL SetVideoMode(
+int __fastcall SetVideoMode(
     int modeIndex
 ) {
     if (g_zVideo_IsInitialized == 0) {
@@ -2524,7 +2538,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetVideoMode(
 }
 
 // Reimplements 0x4a6760: zVideo::CallClearSwSurfaceAndZBuffer
-RECOIL_NOINLINE void RECOIL_FASTCALL CallClearSwSurfaceAndZBuffer(
+void __fastcall CallClearSwSurfaceAndZBuffer(
     zVidRect32 *surfaceRect,
     zVidRect32 *zRect
 ) {
@@ -2535,7 +2549,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL CallClearSwSurfaceAndZBuffer(
 }
 
 // Reimplements 0x4a6830: zVideo::CallClearPrimarySurfaceAndZBuffer
-RECOIL_NOINLINE void RECOIL_FASTCALL CallClearPrimarySurfaceAndZBuffer(
+void __fastcall CallClearPrimarySurfaceAndZBuffer(
     zVidRect32 *rect
 ) {
     g_zVideo_pfnClearStateSurfaceAndZBuffer(
@@ -2545,7 +2559,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL CallClearPrimarySurfaceAndZBuffer(
 }
 
 // Reimplements 0x4a7b20: zVideo::ExchangeClearScreenBufferEnabled
-RECOIL_NOINLINE int RECOIL_FASTCALL ExchangeClearScreenBufferEnabled(
+int __fastcall ExchangeClearScreenBufferEnabled(
     int enable
 ) {
     const int previous = g_zVideo_ClearScreenBufferEnabled;
@@ -2554,34 +2568,34 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ExchangeClearScreenBufferEnabled(
 }
 
 // Reimplements 0x4a7b30: zVideo::GetClearScreenBufferEnabled
-RECOIL_NOINLINE int RECOIL_CDECL GetClearScreenBufferEnabled() {
+int GetClearScreenBufferEnabled() {
     return g_zVideo_ClearScreenBufferEnabled;
 }
 
 // Reimplements 0x4a68e0: zVideo::Dispatch_LockDisplayModeSurfaceState
-RECOIL_NOINLINE int RECOIL_CDECL Dispatch_LockDisplayModeSurfaceState() {
+int Dispatch_LockDisplayModeSurfaceState() {
     return g_zVideo_pfnLockSurfaceState(&g_zVideo_DisplayModeSurfaceState);
 }
 
 // Reimplements 0x4a68f0: zVideo::Dispatch_UnlockDisplayModeSurfaceState
-RECOIL_NOINLINE int RECOIL_CDECL Dispatch_UnlockDisplayModeSurfaceState() {
+int Dispatch_UnlockDisplayModeSurfaceState() {
     return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_DisplayModeSurfaceState);
 }
 
 // Reimplements 0x4a67d0: zVideo::Dispatch_UnlockSwSurfaceState
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL Dispatch_UnlockSwSurfaceState() {
+int Dispatch_UnlockSwSurfaceState() {
     return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_SwSurfaceState);
 }
 
 // Reimplements 0x4a68d0: zVideo::Dispatch_UnlockPrimarySurfaceState
-RECOIL_NOINLINE int RECOIL_CDECL Dispatch_UnlockPrimarySurfaceState() {
+int Dispatch_UnlockPrimarySurfaceState() {
     return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_PrimarySurfaceState);
 }
 
 // Restores the 0x42e330 call shape: retail passes present/adjust-style
 // arguments before forwarding primary-surface unlock through the provider.
-RECOIL_NOINLINE int RECOIL_FASTCALL PresentOrAdjustSurfacesIfEnabled(
+int __fastcall PresentOrAdjustSurfacesIfEnabled(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect,
     int waitForPresent,
@@ -2591,7 +2605,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL PresentOrAdjustSurfacesIfEnabled(
 }
 
 // Reimplements 0x48d420: zVideo::Fx_SetSurfaceState
-RECOIL_NOINLINE void RECOIL_FASTCALL Fx_SetSurfaceState(
+void __fastcall Fx_SetSurfaceState(
     void *pixels,
     int width,
     int height,
@@ -2607,7 +2621,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Fx_SetSurfaceState(
 // Reimplements 0x48da60: zVideo::FxPass3_CopySurfacePixelToScratchClipped
 // Pass-3 ring warp uses center-relative deltas; this helper applies the
 // current center bias and rejects copies unless both endpoints are in bounds.
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_CopySurfacePixelToScratchClipped(
+void __fastcall FxPass3_CopySurfacePixelToScratchClipped(
     int dstDx,
     int dstDy,
     int srcDx,
@@ -2635,7 +2649,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_CopySurfacePixelToScratchClipped(
         g_zVideo_FxSurfacePixels16[srcY * g_zVideo_FxSurfacePitchPixels16 + srcX];
 }
 
-static int RECOIL_FASTCALL zVideoFxPass3ClampCurrentRadius(
+static int __fastcall zVideoFxPass3ClampCurrentRadius(
     int currentRadius,
     int maxRadius
 ) {
@@ -2652,7 +2666,7 @@ static int RECOIL_FASTCALL zVideoFxPass3ClampCurrentRadius(
     return currentRadius;
 }
 
-static int RECOIL_FASTCALL zVideoFxPass3ApproxRadiusIndex(
+static int __fastcall zVideoFxPass3ApproxRadiusIndex(
     int distanceSquared,
     int maxRadius
 ) {
@@ -2666,7 +2680,7 @@ static int RECOIL_FASTCALL zVideoFxPass3ApproxRadiusIndex(
     return radiusIndex;
 }
 
-static void RECOIL_FASTCALL zVideoFxPass3CopyDirect(
+static void __fastcall zVideoFxPass3CopyDirect(
     int centerX,
     int centerY,
     int dstDx,
@@ -2681,7 +2695,7 @@ static void RECOIL_FASTCALL zVideoFxPass3CopyDirect(
     ];
 }
 
-static void RECOIL_FASTCALL zVideoFxPass3ScatterDirectSymmetric(
+static void __fastcall zVideoFxPass3ScatterDirectSymmetric(
     int centerX,
     int centerY,
     int x,
@@ -2755,7 +2769,7 @@ static void RECOIL_FASTCALL zVideoFxPass3ScatterDirectSymmetric(
     );
 }
 
-static void RECOIL_FASTCALL zVideoFxPass3ScatterClippedSymmetric(
+static void __fastcall zVideoFxPass3ScatterClippedSymmetric(
     int x,
     int y,
     int srcX,
@@ -2811,7 +2825,7 @@ static void RECOIL_FASTCALL zVideoFxPass3ScatterClippedSymmetric(
     );
 }
 
-static void RECOIL_FASTCALL zVideoFxPass3CopyScratchToSurface(
+static void __fastcall zVideoFxPass3CopyScratchToSurface(
     int minX,
     int minY,
     int maxX,
@@ -2841,7 +2855,7 @@ static void RECOIL_FASTCALL zVideoFxPass3CopyScratchToSurface(
 // Animated radial ring warp for local pass-3 effects. The retail code keeps a
 // fast direct path when the whole ring fits the clip and falls back to the
 // clipped pixel helper when any endpoint can cross the active rectangle.
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_ApplyToCurrentSurface(
+void __fastcall FxPass3_ApplyToCurrentSurface(
     int centerX,
     int centerY,
     int currentRadius,
@@ -2982,7 +2996,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_ApplyToCurrentSurface(
     );
 }
 
-static unsigned short RECOIL_FASTCALL zVideoBlendBlurPixel3(
+static unsigned short __fastcall zVideoBlendBlurPixel3(
     unsigned short before,
     unsigned short center,
     unsigned short after,
@@ -2997,7 +3011,7 @@ static unsigned short RECOIL_FASTCALL zVideoBlendBlurPixel3(
 
 // Reimplements 0x48e380: zVideo::buff_BlurRegionCombined
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionCombined(
+void __fastcall buff_BlurRegionCombined(
     zVidRect32 *rectOrNull,
     int
 ) {
@@ -3106,7 +3120,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionCombined(
 
 // Reimplements 0x48e670: zVideo::buff_BlurRegionVertical
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionVertical(
+void __fastcall buff_BlurRegionVertical(
     zVidRect32 *rectOrNull,
     int
 ) {
@@ -3179,7 +3193,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionVertical(
 
 // Reimplements 0x48e870: zVideo::buff_BlurRegionHorizontal
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionHorizontal(
+void __fastcall buff_BlurRegionHorizontal(
     zVidRect32 *rectOrNull,
     int
 ) {
@@ -3246,7 +3260,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionHorizontal(
 
 // Reimplements 0x48ea00: zVideo::buff_BlurRegionByMode
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionByMode(
+void __fastcall buff_BlurRegionByMode(
     zVidRect32 *rectOrNull,
     int mode
 ) {
@@ -3271,7 +3285,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL buff_BlurRegionByMode(
 } // namespace zVideo
 
 // Reimplements 0x4bee20: zVideoFxPass3Config::QueuePrimitiveRaw
-RECOIL_NOINLINE void RECOIL_THISCALL zVideoFxPass3Config::QueuePrimitiveRaw(
+void zVideoFxPass3Config::QueuePrimitiveRaw(
     void *primitive,
     int width,
     int height,
@@ -3287,7 +3301,7 @@ namespace zVideo {
 
 // Reimplements 0x4bed30: zVideoFxPass3Config::UpdateLocal
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_UpdateLocal(
+void __fastcall zVideoFxPass3Config_UpdateLocal(
     zVideoFxPass3Config *config,
     float deltaTime
 ) {
@@ -3296,7 +3310,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_UpdateLocal(
 }
 
 // Reimplements 0x4bed50: zVideoFxPass3Config::SetPrimaryElementParamsLocal
-RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_SetPrimaryElementParamsLocal(
+void __fastcall zVideoFxPass3Config_SetPrimaryElementParamsLocal(
     zVideoFxPass3Config *config,
     unsigned int packedColor,
     double primaryAlpha
@@ -3311,7 +3325,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_SetPrimaryElementParams
 }
 
 // Reimplements 0x4beee0: zVideo::FxPass3_SetPrimaryElementParamsLocal
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_SetPrimaryElementParamsLocal(
+void __fastcall FxPass3_SetPrimaryElementParamsLocal(
     unsigned int packedColor,
     double primaryAlpha
 ) {
@@ -3323,7 +3337,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_SetPrimaryElementParamsLocal(
 }
 
 // Reimplements 0x4bed90: zVideoFxPass3Config::QueueElementLocal
-RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_QueueElementLocal(
+void __fastcall zVideoFxPass3Config_QueueElementLocal(
     zVideoFxPass3Config *config,
     int rectLeftPixels,
     int rectTopPixels,
@@ -3356,7 +3370,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL zVideoFxPass3Config_QueueElementLocal(
 }
 
 // Reimplements 0x4bef10: zVideo::FxPass3_QueueElementLocal
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_QueueElementLocal(
+void __fastcall FxPass3_QueueElementLocal(
     int rectLeftPixels,
     int rectTopPixels,
     int currentRadiusPixels,
@@ -3378,7 +3392,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_QueueElementLocal(
 }
 
 // Reimplements 0x4bef50: zVideo::FxPass3_QueuePrimitive
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_QueuePrimitive(
+void __fastcall FxPass3_QueuePrimitive(
     void *primitive,
     int width,
     int height,
@@ -3394,7 +3408,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_QueuePrimitive(
 
 // Reimplements 0x4bef40: zVideo::FxPass3_SetInputRectByIndex
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_SetInputRectByIndex(
+void __fastcall FxPass3_SetInputRectByIndex(
     int index,
     HudUiRect *rectOrNull
 ) {
@@ -3406,7 +3420,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_SetInputRectByIndex(
 
 // Reimplements 0x4bef70: zVideo::FxPass3_UpdateLocal
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_UpdateLocal(
+void __fastcall FxPass3_UpdateLocal(
     float deltaTime
 ) {
     zVideoFxPass3Config_UpdateLocal(
@@ -3417,7 +3431,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL FxPass3_UpdateLocal(
 
 // Reimplements 0x4a6770: zVideo::RunPostprocessOnSwBuffer
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_CDECL RunPostprocessOnSwBuffer() {
+void RunPostprocessOnSwBuffer() {
     g_zVideo_pfnLockSurfaceState(&g_zVideo_SwSurfaceState);
     zRndr::SetFrameBufferRegion(
         g_zVideo_SwSurfaceState.pixels,
@@ -3440,7 +3454,7 @@ RECOIL_NOINLINE void RECOIL_CDECL RunPostprocessOnSwBuffer() {
 }
 
 // Reimplements 0x4a6840: zVideo::RunPostprocessOnPrimaryBuffer
-RECOIL_NOINLINE int RECOIL_CDECL RunPostprocessOnPrimaryBuffer() {
+int RunPostprocessOnPrimaryBuffer() {
     if (g_zVideo_RendererType != 0 || g_zVideo_UseHalfResBackbuffer != 0) {
         g_zVideo_pfnLockSurfaceState(&g_zVideo_PrimarySurfaceState);
     }
@@ -3472,7 +3486,7 @@ RECOIL_NOINLINE int RECOIL_CDECL RunPostprocessOnPrimaryBuffer() {
 }
 
 // Reimplements 0x4a6900: zVideo::AdjustSurfacesIfEnabled
-RECOIL_NOINLINE int RECOIL_FASTCALL AdjustSurfacesIfEnabled(
+int __fastcall AdjustSurfacesIfEnabled(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect,
     int waitForPresent,
@@ -3493,7 +3507,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL AdjustSurfacesIfEnabled(
 }
 
 // Reimplements 0x4a77a0: zVideo::BindRendererDispatch
-RECOIL_NOINLINE void RECOIL_FASTCALL BindRendererDispatch(
+void __fastcall BindRendererDispatch(
     int rendererType,
     int fullscreenOption
 ) {
@@ -3560,7 +3574,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BindRendererDispatch(
 }
 
 // Reimplements 0x4a8870: zVideo::CommitHwApiDeviceSelection
-RECOIL_NOINLINE void RECOIL_FASTCALL CommitHwApiDeviceSelection(
+void __fastcall CommitHwApiDeviceSelection(
     int hwApiIndex
 ) {
     BindRendererDispatch(
@@ -3573,7 +3587,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL CommitHwApiDeviceSelection(
 }
 
 // Reimplements 0x4a7490: zVideo::SelectHwApiDeviceOrFallback
-RECOIL_NOINLINE int RECOIL_FASTCALL SelectHwApiDeviceOrFallback(
+int __fastcall SelectHwApiDeviceOrFallback(
     int hwApiIndex
 ) {
     if (hwApiIndex != -1) {
@@ -3591,12 +3605,12 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SelectHwApiDeviceOrFallback(
 }
 
 // Reimplements 0x4a75e0: zVideo::ReturnSuccessStub
-RECOIL_NOINLINE int RECOIL_CDECL ReturnSuccessStub() {
+int ReturnSuccessStub() {
     return 0;
 }
 
 // Reimplements 0x4a7530: zVideo::ModuleInit
-RECOIL_NOINLINE int RECOIL_CDECL ModuleInit() {
+int ModuleInit() {
     g_zVideo_RendererType = 0;
     g_zVideo_ActiveRendererPath = 0;
     g_zVideo_FrameTick = 0;
@@ -3637,7 +3651,7 @@ RECOIL_NOINLINE int RECOIL_CDECL ModuleInit() {
 }
 
 // Reimplements 0x4a75f0: zVideo::InitVideoSystem
-RECOIL_NOINLINE int RECOIL_FASTCALL InitVideoSystem(
+int __fastcall InitVideoSystem(
     HWND hWnd,
     int rendererBackend,
     int fullscreen,
@@ -3698,7 +3712,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL InitVideoSystem(
 }
 
 // Reimplements 0x4a7740: zVideo::ShutdownVideoSystem
-RECOIL_NOINLINE int RECOIL_CDECL ShutdownVideoSystem() {
+int ShutdownVideoSystem() {
     if (g_zVideo_IsInitialized == 0) {
         return 0x5a560000;
     }
@@ -3710,7 +3724,7 @@ RECOIL_NOINLINE int RECOIL_CDECL ShutdownVideoSystem() {
 }
 
 // Reimplements 0x4a7700: zVideo::UpdateCachedClientRectScreenCoords
-RECOIL_NOINLINE int RECOIL_CDECL UpdateCachedClientRectScreenCoords() {
+int UpdateCachedClientRectScreenCoords() {
     GetClientRect(
         g_zVideo_hWnd,
         &g_zVideo_CachedClientRectScreen
@@ -3727,14 +3741,14 @@ RECOIL_NOINLINE int RECOIL_CDECL UpdateCachedClientRectScreenCoords() {
 }
 
 // Reimplements 0x4a7520: zVideo::AtExitReleaseAllInterfacesAndSurfaces
-RECOIL_NOINLINE void RECOIL_CDECL AtExitReleaseAllInterfacesAndSurfaces() {
+void AtExitReleaseAllInterfacesAndSurfaces() {
     zVideo_dd::ReleaseAllInterfacesAndSurfaces();
 }
 } // namespace zVideo
 
 namespace zVideo {
 // Reimplements 0x4a7220: zVideo::SetFogColorFromRgb01
-RECOIL_NOINLINE void RECOIL_FASTCALL SetFogColorFromRgb01(
+void __fastcall SetFogColorFromRgb01(
     zVideo_ColorRgbFloat *color
 ) {
     g_zVideo_FogColorPendingR255 = color->r * 255.0f;
@@ -3743,7 +3757,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetFogColorFromRgb01(
 }
 
 // Reimplements 0x4a7300: zVideo::SetFogTargetColorFromRgb01
-RECOIL_NOINLINE void RECOIL_FASTCALL SetFogTargetColorFromRgb01(
+void __fastcall SetFogTargetColorFromRgb01(
     zVideo_ColorRgbFloat *color
 ) {
     g_zVideo_FogTargetColorR255 = color->r * 255.0f;
@@ -3752,7 +3766,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetFogTargetColorFromRgb01(
 }
 
 // Reimplements 0x4a7330: zVideo::CommitFogColorIfChanged
-RECOIL_NOINLINE void RECOIL_CDECL CommitFogColorIfChanged() {
+void CommitFogColorIfChanged() {
     if (g_zVideo_FogColorAppliedR255 == g_zVideo_FogColorPendingR255 &&
         g_zVideo_FogColorAppliedG255 == g_zVideo_FogColorPendingG255 &&
         g_zVideo_FogColorAppliedB255 == g_zVideo_FogColorPendingB255) {
@@ -3766,7 +3780,7 @@ RECOIL_NOINLINE void RECOIL_CDECL CommitFogColorIfChanged() {
 }
 
 // Reimplements 0x4a73a0: zVideo::CommitFogTargetColorIfChanged
-RECOIL_NOINLINE void RECOIL_CDECL CommitFogTargetColorIfChanged() {
+void CommitFogTargetColorIfChanged() {
     if (g_zVideo_FogColorAppliedR255 == g_zVideo_FogTargetColorR255 &&
         g_zVideo_FogColorAppliedG255 == g_zVideo_FogTargetColorG255 &&
         g_zVideo_FogColorAppliedB255 == g_zVideo_FogTargetColorB255) {
@@ -3780,7 +3794,7 @@ RECOIL_NOINLINE void RECOIL_CDECL CommitFogTargetColorIfChanged() {
 }
 
 // Reimplements 0x4a6b90: zVideo::PixelPack_GetRgbBits
-RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_GetRgbBits(
+void __fastcall PixelPack_GetRgbBits(
     int *outRBits,
     int *outGBits,
     int *outBBits
@@ -3791,7 +3805,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_GetRgbBits(
 }
 
 // Reimplements 0x4a6bb0: zVideo::PixelPack_GetRgbMasks
-RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_GetRgbMasks(
+void __fastcall PixelPack_GetRgbMasks(
     unsigned int *outRMask,
     unsigned int *outGMask,
     unsigned int *outBMask
@@ -3802,7 +3816,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_GetRgbMasks(
 }
 
 // Reimplements 0x4a6bd0: zVideo::PixelPack_GetPackingParams
-RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_GetPackingParams(
+void __fastcall PixelPack_GetPackingParams(
     int *outPackedBase,
     int *outSumMinus8,
     int *outBShiftTo8
@@ -3815,7 +3829,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL PixelPack_GetPackingParams(
 
 namespace zVid {
 // Reimplements 0x48d340: zVid::Noise_InitBuffers
-RECOIL_NOINLINE void RECOIL_CDECL Noise_InitBuffers() {
+void Noise_InitBuffers() {
     const int width = zVideo::GetPrimarySurfaceWidth();
     const int height = zVideo::GetPrimarySurfaceHeight();
 
@@ -3836,7 +3850,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Noise_InitBuffers() {
 }
 
 // Reimplements 0x48d3e0: zVid::Noise_ShutdownBuffers
-RECOIL_NOINLINE void RECOIL_CDECL Noise_ShutdownBuffers() {
+void Noise_ShutdownBuffers() {
     if (g_zVid_NoiseByteTable != 0) {
         free(g_zVid_NoiseByteTable);
         g_zVid_NoiseByteTable = 0;
@@ -3849,7 +3863,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Noise_ShutdownBuffers() {
 }
 
 // Reimplements 0x48d910: zVid::DrawNoiseRect (GameZRecoil/zImage/zvid_buff.c)
-RECOIL_NOINLINE void RECOIL_FASTCALL DrawNoiseRect(
+void __fastcall DrawNoiseRect(
     zVidRect32 *rectOrNull,
     double intensity
 ) {
@@ -3902,14 +3916,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DrawNoiseRect(
 }
 
 // Reimplements 0x48ff70: zVid::InitFrameScratchBuffers
-RECOIL_NOINLINE int RECOIL_CDECL InitFrameScratchBuffers() {
+int InitFrameScratchBuffers() {
     Noise_InitBuffers();
     zRndr::SelectSpanRoutines();
     return 0;
 }
 
 // Reimplements 0x48ff60: zVid::ShutdownFrameScratchBuffers
-RECOIL_NOINLINE int RECOIL_CDECL ShutdownFrameScratchBuffers() {
+int ShutdownFrameScratchBuffers() {
     Noise_ShutdownBuffers();
     return 0;
 }
@@ -4010,7 +4024,7 @@ static void DrawFxSurfaceSpanPixel(
 
 // Reimplements 0x48ea20: zVideo_FxSurface::ApplyBlueTintRect
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyBlueTintRect(
+void __fastcall ApplyBlueTintRect(
     zVidRect32 *rectOrNull
 ) {
     zVidRect32 clipRect;
@@ -4074,7 +4088,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyBlueTintRect(
 
 // Reimplements 0x48eb80: zVideo_FxSurface::ApplyGreenMaskRect
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyGreenMaskRect(
+void __fastcall ApplyGreenMaskRect(
     zVidRect32 *rectOrNull
 ) {
     zVidRect32 clipRect;
@@ -4132,7 +4146,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyGreenMaskRect(
 
 // Reimplements 0x48ed60: zVideo_FxSurface::DrawAlphaBlendedLine
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL DrawAlphaBlendedLine(
+void __fastcall DrawAlphaBlendedLine(
     zVidRect32 *clipRect,
     int x1,
     int y1,
@@ -4346,7 +4360,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DrawAlphaBlendedLine(
 
 // Reimplements 0x48ec90: zVideo_FxSurface::DrawColoredLinesBatch
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL DrawColoredLinesBatch(
+void __fastcall DrawColoredLinesBatch(
     zVideoFxColoredLineRecord *lines,
     int count,
     zVidRect32 *clipRectOrNull
@@ -4398,7 +4412,7 @@ namespace zVid_Image {
 zVidImagePartial g_zImage_DefaultImage = {0};
 
 // Reimplements 0x46ec00: zVid_Image::Create
-RECOIL_NOINLINE zVidImagePartial *RECOIL_CDECL Create() {
+zVidImagePartial *Create() {
     zVidImagePartial *image = (zVidImagePartial *)(malloc(sizeof(zVidImagePartial)));
     if (image != 0) {
         memset(
@@ -4411,7 +4425,7 @@ RECOIL_NOINLINE zVidImagePartial *RECOIL_CDECL Create() {
 }
 
 // Reimplements 0x46ecc0: zVid_Image::Destroy
-RECOIL_NOINLINE int RECOIL_FASTCALL Destroy(
+int __fastcall Destroy(
     zVidImagePartial *image
 ) {
     if (image != 0) {
@@ -4431,7 +4445,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Destroy(
 }
 
 // Reimplements 0x46d5a0: zVid_Image::ReleaseIfNotDefault
-RECOIL_NOINLINE int RECOIL_FASTCALL ReleaseIfNotDefault(
+int __fastcall ReleaseIfNotDefault(
     zVidImagePartial *image
 ) {
     if (image != &g_zImage_DefaultImage) {
@@ -4442,7 +4456,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReleaseIfNotDefault(
 }
 
 // Reimplements 0x48f500: zVid_Image::BlitToActiveTarget
-RECOIL_NOINLINE void RECOIL_FASTCALL BlitToActiveTarget(
+void __fastcall BlitToActiveTarget(
     zVidImagePartial *image,
     int dstX,
     int dstY,
@@ -4473,7 +4487,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BlitToActiveTarget(
 // (D:\Proj\GameZRecoil\zImage\zvid_buff.c)
 // Software target callback: clips the source image to zRndr's active 16-bit framebuffer and
 // preserves the original 565/555 alpha-map and color-key branch contracts.
-RECOIL_NOINLINE void RECOIL_FASTCALL BlitToFramebufferClipped(
+void __fastcall BlitToFramebufferClipped(
     zVidImagePartial *image,
     int dstX,
     int dstY,
@@ -4661,7 +4675,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BlitToFramebufferClipped(
 }
 
 // Reimplements 0x46ecf0: zVid_Image::ReleaseOwnedBuffers
-RECOIL_NOINLINE void RECOIL_FASTCALL ReleaseOwnedBuffers(
+void __fastcall ReleaseOwnedBuffers(
     zVidImagePartial *image
 ) {
 #if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
@@ -4691,14 +4705,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ReleaseOwnedBuffers(
 }
 
 // Reimplements 0x46ec20: zVid_Image::QueryBytesPerPixel
-RECOIL_NOINLINE int RECOIL_FASTCALL QueryBytesPerPixel(
+int __fastcall QueryBytesPerPixel(
     zVidImagePartial *image
 ) {
     return (image->formatFlagsPacked & 1) != 0 ? 2 : 1;
 }
 
 // Reimplements 0x46ec30: zVid_Image::SetHeaderFlagsByte
-RECOIL_NOINLINE int RECOIL_FASTCALL SetHeaderFlagsByte(
+int __fastcall SetHeaderFlagsByte(
     zVidImagePartial *image,
     unsigned char flags
 ) {
@@ -4707,7 +4721,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetHeaderFlagsByte(
 }
 
 // Reimplements 0x46ec60: zVid_Image::SetFormatCode
-RECOIL_NOINLINE int RECOIL_FASTCALL SetFormatCode(
+int __fastcall SetFormatCode(
     zVidImagePartial *image,
     unsigned char formatCode
 ) {
@@ -4716,7 +4730,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetFormatCode(
 }
 
 // Reimplements 0x46ec90: zVid_Image::SetSize
-RECOIL_NOINLINE int RECOIL_FASTCALL SetSize(
+int __fastcall SetSize(
     zVidImagePartial *image,
     short width,
     short height
@@ -4734,7 +4748,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetSize(
 
 // Reimplements 0x4902b0: zVid_Image::CalcPow2ScratchFields
 // (GameZRecoil/zImage/zimg_texture.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL CalcPow2ScratchFields(
+void __fastcall CalcPow2ScratchFields(
     zVidImagePartial *image
 ) {
     image->vPow2Shift = 0;
@@ -4760,7 +4774,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL CalcPow2ScratchFields(
 }
 
 // Reimplements 0x46ec70: zVid_Image_SetPixels
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zVid_Image_SetPixels(
+extern "C" int __fastcall zVid_Image_SetPixels(
     zVidImagePartial *image,
     void *pixels,
     char *alphaMap
@@ -4775,7 +4789,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zVid_Image_SetPixels(
 }
 
 // Reimplements 0x4a6e80: zVideo_buff_CaptureSurfaceToImage
-extern "C" RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL zVideo_buff_CaptureSurfaceToImage(
+extern "C" zVidImagePartial *__fastcall zVideo_buff_CaptureSurfaceToImage(
     int sourceSelector
 ) {
     zVideo::Dispatch_LockDisplayModeSurfaceState();
@@ -4842,7 +4856,7 @@ extern "C" RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL zVideo_buff_Capture
 }
 
 // Reimplements 0x46ec40: zVid_Image::QueryPixelDataBytes
-RECOIL_NOINLINE int RECOIL_FASTCALL QueryPixelDataBytes(
+int __fastcall QueryPixelDataBytes(
     zVidImagePartial *image
 ) {
     if (image->paletteMetaPacked != 0) {
@@ -4853,7 +4867,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL QueryPixelDataBytes(
 }
 
 // Reimplements 0x46d870: zVid_Image::ClearZeroAlphaPixelsInPlace
-RECOIL_NOINLINE void RECOIL_FASTCALL ClearZeroAlphaPixelsInPlace(
+void __fastcall ClearZeroAlphaPixelsInPlace(
     zVidImagePartial *image
 ) {
     if (image->paletteMetaPacked != 0) {
@@ -4912,7 +4926,7 @@ RECOIL_STATIC_ASSERT(sizeof(zVidImageFileHeader) == 0x10);
 } // namespace
 
 // Reimplements 0x46ed70: zVid_Image::ReadHeader
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadHeader(
+int __fastcall ReadHeader(
     FILE *file,
     zVidImagePartial *image
 ) {
@@ -4946,7 +4960,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadHeader(
 }
 
 // Reimplements 0x46ede0: zVid_Image::ReadData
-RECOIL_NOINLINE int RECOIL_FASTCALL ReadData(
+int __fastcall ReadData(
     FILE *file,
     zVidImagePartial *image,
     int bytesPerPixel
@@ -5036,7 +5050,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL ReadData(
 }
 
 // Reimplements 0x46ef70: zVid_Image::ReadFromFile
-RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL ReadFromFile(
+zVidImagePartial *__fastcall ReadFromFile(
     FILE *file
 ) {
     zVidImagePartial *image = Create();
@@ -5058,7 +5072,7 @@ RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL ReadFromFile(
 }
 
 // Reimplements 0x46e9b0: zVid_Image::ResampleSquare
-RECOIL_NOINLINE void RECOIL_FASTCALL ResampleSquare(
+void __fastcall ResampleSquare(
     zVidImagePartial *image,
     int sideLength
 ) {
@@ -5109,7 +5123,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ResampleSquare(
 
 namespace zVid_PaletteRemap {
 // Reimplements 0x46e680: zVid_PaletteRemap::FindRecipeIndex
-RECOIL_NOINLINE int RECOIL_FASTCALL FindRecipeIndex(
+int __fastcall FindRecipeIndex(
     zVidPaletteRemapRecipe *recipe
 ) {
     for (int i = 0; i < g_zVid_PaletteRemapRecipeCount; ++i) {
@@ -5127,7 +5141,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FindRecipeIndex(
 }
 
 // Reimplements 0x46e4e0: zVid_PaletteRemap::ApplyRecipeToPaletteVariant
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyRecipeToPaletteVariant(
+void __fastcall ApplyRecipeToPaletteVariant(
     zVidPaletteRemapRecipe *recipe,
     unsigned short *sourceColors,
     int colorCount,
@@ -5177,7 +5191,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ApplyRecipeToPaletteVariant(
 } // namespace zVid_PaletteRemap
 
 // Reimplements 0x46e720: zVid_PaletteRemap_BuildPaletteVariant
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zVid_PaletteRemap_BuildPaletteVariant(
+extern "C" int __fastcall zVid_PaletteRemap_BuildPaletteVariant(
     zVidPaletteRemapRecipe *recipe
 ) {
     const int existingIndex = zVid_PaletteRemap::FindRecipeIndex(recipe);
@@ -5192,7 +5206,8 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zVid_PaletteRemap_BuildPaletteVar
     ));
     g_zVid_PaletteRemapRecipes[g_zVid_PaletteRemapRecipeCount - 1] = *recipe;
 
-    const size_t expandedPaletteBytes = ((size_t)(g_zVid_PaletteRemapRecipeCount) << 14) + 0x200;
+    const size_t expandedPaletteBytes =
+        zVidPaletteRemapTableBytesForRecipeCount(g_zVid_PaletteRemapRecipeCount);
     for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
         zVidImagePartial *image = g_zImage_TexDirEntries[i].image;
         if (image == 0 || image->paletteMetaPacked == 0 || (image->formatFlagsPacked & 0x10) != 0) {
@@ -5205,13 +5220,18 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zVid_PaletteRemap_BuildPaletteVar
         );
         unsigned short *palette = (unsigned short *)(image->palette);
         {
-            for (int variant = 0; variant < 32; ++variant) {
+            for (int variant = 0; variant < kZVidPaletteRemapVariantCount; ++variant) {
                 zVid_PaletteRemap::ApplyRecipeToPaletteVariant(
                     recipe,
                     palette,
                     image->paletteMetaPacked,
                     variant,
-                    &palette[((g_zVid_PaletteRemapRecipeCount << 5) + variant - 0x1f) * 0x100]
+                    &palette[(
+                        ((g_zVid_PaletteRemapRecipeCount - 1) *
+                            kZVidPaletteRemapVariantCount) +
+                        variant +
+                        1
+                    ) * kZVidPaletteColorCount]
                 );
             }
         }
@@ -5227,13 +5247,18 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zVid_PaletteRemap_BuildPaletteVar
         unsigned short *table = g_zVid_PaletteRemapVariantTables[tableIndex];
 
         {
-            for (int variant = 0; variant < 32; ++variant) {
+            for (int variant = 0; variant < kZVidPaletteRemapVariantCount; ++variant) {
                 zVid_PaletteRemap::ApplyRecipeToPaletteVariant(
                     recipe,
                     table,
-                    0x100,
+                    kZVidPaletteColorCount,
                     variant,
-                    &table[((g_zVid_PaletteRemapRecipeCount << 5) + variant - 0x1f) * 0x100]
+                    &table[(
+                        ((g_zVid_PaletteRemapRecipeCount - 1) *
+                            kZVidPaletteRemapVariantCount) +
+                        variant +
+                        1
+                    ) * kZVidPaletteColorCount]
                 );
             }
         }
@@ -5250,7 +5275,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zVid_PaletteRemap_BuildPaletteVar
 }
 
 // Reimplements 0x46e8d0: zVid_PaletteRemap_BuildAllRecipeVariantsForPalette
-extern "C" RECOIL_NOINLINE unsigned short *RECOIL_FASTCALL
+extern "C" unsigned short *__fastcall
 zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
     unsigned short *palette,
     int colorCount
@@ -5261,15 +5286,15 @@ zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
 
     unsigned short *result = (unsigned short *)(realloc(
         palette,
-        ((size_t)(g_zVid_PaletteRemapRecipeCount) << 14) + 0x200
+        zVidPaletteRemapTableBytesForRecipeCount(g_zVid_PaletteRemapRecipeCount)
     ));
 
     for (int recipeIndex = 0; recipeIndex < g_zVid_PaletteRemapRecipeCount; ++recipeIndex) {
         unsigned short *dest =
-            (unsigned short *)((unsigned char *)(result) + 0x200 + recipeIndex * 0x4000);
+            &result[kZVidPaletteColorCount + recipeIndex * kZVidPaletteRemapColorsPerRecipe];
         zVidPaletteRemapRecipe *recipe = &g_zVid_PaletteRemapRecipes[recipeIndex];
         {
-            for (int variant = 0; variant < 32; ++variant) {
+            for (int variant = 0; variant < kZVidPaletteRemapVariantCount; ++variant) {
                 zVid_PaletteRemap::ApplyRecipeToPaletteVariant(
                     recipe,
                     result,
@@ -5277,7 +5302,7 @@ zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
                     variant,
                     dest
                 );
-                dest = (unsigned short *)((unsigned char *)(dest) + 0x200);
+                dest += kZVidPaletteColorCount;
             }
         }
     }
@@ -5286,7 +5311,7 @@ zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
 }
 
 // Reimplements 0x46e960: zVid_PaletteRemap_FindRecipeIndexFromRgb
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zVid_PaletteRemap_FindRecipeIndexFromRgb(
+extern "C" int __fastcall zVid_PaletteRemap_FindRecipeIndexFromRgb(
     zColorRgb *rgb
 ) {
     zVidPaletteRemapRecipe recipe = {0};
@@ -5298,7 +5323,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zVid_PaletteRemap_FindRecipeIndex
 }
 
 // Reimplements 0x46dae0: zVid_TexturePackEntry_LoadFromFile
-extern "C" RECOIL_NOINLINE FILE *RECOIL_FASTCALL zVid_TexturePackEntry_LoadFromFile(
+extern "C" FILE *__fastcall zVid_TexturePackEntry_LoadFromFile(
     zVidTexturePackEntry *entry
 ) {
     if (g_zVid_TexturePackLoadState == 0) {
@@ -5359,14 +5384,15 @@ extern "C" RECOIL_NOINLINE FILE *RECOIL_FASTCALL zVid_TexturePackEntry_LoadFromF
     );
 
     while (tableIndex < g_zVid_PaletteRemapVariantTableCount) {
-        unsigned short *table = (unsigned short *)(malloc(0x200));
+        unsigned short *table =
+            (unsigned short *)(malloc((size_t)kZVidPaletteColorCount * sizeof(unsigned short)));
         g_zVid_PaletteRemapVariantTables[tableIndex] = table;
         if (fread(
             table,
-            2,
-            0x100,
+            sizeof(unsigned short),
+            kZVidPaletteColorCount,
             entry->fileHandle
-        ) != 0x100) {
+        ) != (size_t)kZVidPaletteColorCount) {
             fclose(entry->fileHandle);
             entry->fileHandle = 0;
             free(entry->records);
@@ -5376,9 +5402,8 @@ extern "C" RECOIL_NOINLINE FILE *RECOIL_FASTCALL zVid_TexturePackEntry_LoadFromF
 
         if (gBits == 5) {
             {
-                for (int byteOffset = 0; byteOffset < 0x200; byteOffset += 2) {
-                    unsigned short *color =
-                        (unsigned short *)((unsigned char *)(table) + byteOffset);
+                for (int colorIndex = 0; colorIndex < kZVidPaletteColorCount; ++colorIndex) {
+                    unsigned short *color = &table[colorIndex];
                     const unsigned short value = *color;
                     const unsigned short shifted = (unsigned short)(value >> 1);
                     const unsigned short lowXor =
@@ -5391,7 +5416,7 @@ extern "C" RECOIL_NOINLINE FILE *RECOIL_FASTCALL zVid_TexturePackEntry_LoadFromF
         g_zVid_PaletteRemapVariantTables[tableIndex] =
             zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
                 table,
-                0x100
+                kZVidPaletteColorCount
             );
         ++tableIndex;
     }
@@ -5400,7 +5425,7 @@ extern "C" RECOIL_NOINLINE FILE *RECOIL_FASTCALL zVid_TexturePackEntry_LoadFromF
 }
 
 // Reimplements 0x46da40: zVid_TexturePack_EnsureDefaultImagePackLoaded
-extern "C" RECOIL_NOINLINE void RECOIL_CDECL zVid_TexturePack_EnsureDefaultImagePackLoaded() {
+extern "C" void zVid_TexturePack_EnsureDefaultImagePackLoaded() {
     if (g_zVid_TexturePackCount > 0) {
         return;
     }
@@ -5436,8 +5461,7 @@ extern "C" RECOIL_NOINLINE void RECOIL_CDECL zVid_TexturePack_EnsureDefaultImage
 
 // Reimplements 0x46df50: zVid_TexturePack_EnsureBuiltinTexturePacksLoaded
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
-extern "C" RECOIL_NOINLINE RECOIL_NO_GS void RECOIL_CDECL
-zVid_TexturePack_EnsureBuiltinTexturePacksLoaded() {
+extern "C" RECOIL_NO_GS void zVid_TexturePack_EnsureBuiltinTexturePacksLoaded() {
     if (g_zVid_BuiltinTexturePackCount > 0) {
         for (int i = 0; i < g_zVid_BuiltinTexturePackCount; ++i) {
             zVidTexturePackEntry *const entry = &g_zVid_BuiltinTexturePacks[i];
@@ -5635,7 +5659,7 @@ zVidImagePartial *LoadTexturePackImageByName(
 } // namespace
 
 // Reimplements 0x46d940: zVid_TexturePack_LoadImageByName
-extern "C" RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL zVid_TexturePack_LoadImageByName(
+extern "C" zVidImagePartial *__fastcall zVid_TexturePack_LoadImageByName(
     const char *imageName
 ) {
     if (g_zVid_TexturePackCount == 0) {
@@ -5651,7 +5675,7 @@ extern "C" RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL zVid_TexturePack_Lo
 }
 
 // Reimplements 0x46dd30: zVid_TexturePack_LoadBuiltinImageByName
-extern "C" RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL
+extern "C" zVidImagePartial *__fastcall
 zVid_TexturePack_LoadBuiltinImageByName(
     const char *imageName
 ) {
@@ -5690,7 +5714,7 @@ void FreePackEntryRecords(
 
 namespace zImage {
 // Reimplements 0x46d730: zImage::ShutdownTextureDirectoryRuntime
-RECOIL_NOINLINE int RECOIL_CDECL ShutdownTextureDirectoryRuntime() {
+int ShutdownTextureDirectoryRuntime() {
     int count = g_zVid_BuiltinTexturePackCount;
     for (int i = 0; i < count; ++i) {
         zVidTexturePackEntry &entry = g_zVid_BuiltinTexturePacks[i];
@@ -5707,7 +5731,7 @@ RECOIL_NOINLINE int RECOIL_CDECL ShutdownTextureDirectoryRuntime() {
 
 namespace zVid_TexturePack {
 // Reimplements 0x46d6b0: zVid_TexturePack::ShutdownBuiltinPacks
-RECOIL_NOINLINE void RECOIL_CDECL ShutdownBuiltinPacks() {
+void ShutdownBuiltinPacks() {
     zImage::ShutdownTextureDirectoryRuntime();
 
     for (int i = 0; i < g_zVid_BuiltinTexturePackCount; ++i) {
@@ -5722,7 +5746,7 @@ RECOIL_NOINLINE void RECOIL_CDECL ShutdownBuiltinPacks() {
     g_zVid_BuiltinTexturePackCount = 0;
 }
 
-RECOIL_NOINLINE void RECOIL_CDECL Shutdown() {
+void Shutdown() {
     for (int i = 0; i < g_zVid_TexturePackCount; ++i) {
         ClosePackEntry(g_zVid_TexturePacks[i]);
     }
@@ -5738,7 +5762,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Shutdown() {
 
 namespace zVid_TexDir {
 // Reimplements 0x46d5d0: zVid_TexDir::Shutdown
-RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
+int Shutdown() {
     for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
         zImage_TexDirEntryPartial &entry = g_zImage_TexDirEntries[i];
         if (entry.loadState == 1) {
@@ -5791,28 +5815,28 @@ RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
 
 namespace zVideo_dd3d {
 // Reimplements 0x4a6750: zVideo_dd3d::CallClearZBufferRect
-RECOIL_NOINLINE void RECOIL_FASTCALL CallClearZBufferRect(
+void __fastcall CallClearZBufferRect(
     zVidRect32 *rect
 ) {
     g_zVideo_pfnClearZBufferRect(rect);
 }
 
 // Reimplements 0x4a6b60: zVideo_dd3d::SetPendingWireframeState
-RECOIL_NOINLINE void RECOIL_FASTCALL SetPendingWireframeState(
+void __fastcall SetPendingWireframeState(
     int pendingWireframeState
 ) {
     g_zVideo_PendingWireframeState = pendingWireframeState;
 }
 
 // Reimplements 0x4a6b70: zVideo_dd3d::SetPendingDitherEnable
-RECOIL_NOINLINE void RECOIL_FASTCALL SetPendingDitherEnable(
+void __fastcall SetPendingDitherEnable(
     int enabled
 ) {
     g_zVideo_PendingDitherEnable = enabled;
 }
 
 // Reimplements 0x4a9ac0: zVideo_dd3d::BeginSceneAndFlushPendingRenderStates
-RECOIL_NOINLINE int RECOIL_CDECL BeginSceneAndFlushPendingRenderStates() {
+int BeginSceneAndFlushPendingRenderStates() {
     const HRESULT hresult = g_zVideo_pD3DDevice->BeginScene();
     if (hresult != DD_OK) {
         return zVideo_dd::ReportError(
@@ -5850,7 +5874,7 @@ RECOIL_NOINLINE int RECOIL_CDECL BeginSceneAndFlushPendingRenderStates() {
 }
 
 // Reimplements 0x4a9b40: zVideo_dd3d::EndScene
-RECOIL_NOINLINE int RECOIL_CDECL EndScene() {
+int EndScene() {
     const HRESULT hresult = g_zVideo_pD3DDevice->EndScene();
     if (hresult != DD_OK) {
         return zVideo_dd::ReportError(
@@ -6220,7 +6244,7 @@ void AppendFanCloseVertexIfNeeded(
 } // namespace
 
 // Reimplements 0x4a9b70: zVideo_dd3d::PresentDisplayModeSurface
-RECOIL_NOINLINE int RECOIL_FASTCALL PresentDisplayModeSurface(
+int __fastcall PresentDisplayModeSurface(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect,
     int waitForPresent,
@@ -6273,7 +6297,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL PresentDisplayModeSurface(
 }
 
 // Reimplements 0x4aa0f0: zVideo_dd3d::CreateTextureRecord
-RECOIL_NOINLINE zVideo_TextureRecordPartial *RECOIL_FASTCALL CreateTextureRecord(
+zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
     const char *textureName,
     zVidImagePartial *image,
     int useAlpha,
@@ -6287,7 +6311,7 @@ RECOIL_NOINLINE zVideo_TextureRecordPartial *RECOIL_FASTCALL CreateTextureRecord
     IDirectDrawPalette *ddPalette = 0;
 
     const D3DDEVICEDESC *selectedDeviceDesc =
-        (const D3DDEVICEDESC *)(g_zVideo_pSelectedD3DDeviceInfo->m_hwDesc);
+        &g_zVideo_pSelectedD3DDeviceInfo->m_hwDesc;
     int width = image->width;
     int height = image->height;
     if ((DWORD)(width) > selectedDeviceDesc->dwMaxTextureWidth ||
@@ -6527,7 +6551,7 @@ RECOIL_NOINLINE zVideo_TextureRecordPartial *RECOIL_FASTCALL CreateTextureRecord
 }
 
 // Reimplements 0x4a9c20: zVideo_dd3d::CreateDeviceState
-RECOIL_NOINLINE int RECOIL_CDECL CreateDeviceState() {
+int CreateDeviceState() {
     DDSURFACEDESC zBufferDesc = {0};
     zBufferDesc.dwWidth = (DWORD)(g_zVideo_SwSurfaceState.width);
     zBufferDesc.dwHeight = (DWORD)(g_zVideo_SwSurfaceState.height);
@@ -6777,7 +6801,7 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDeviceState() {
 }
 
 // Reimplements 0x4aa9e0: zVideo_dd3d::SetFogEnable
-RECOIL_NOINLINE void RECOIL_FASTCALL SetFogEnable(
+void __fastcall SetFogEnable(
     int enable
 ) {
     if (g_zVideo_CachedFogEnableRenderState != enable) {
@@ -6798,7 +6822,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SetFogEnable(
 }
 
 // Reimplements 0x4aaa30: zVideo_dd3d::SetFogStart
-RECOIL_NOINLINE void RECOIL_STDCALL SetFogStart(
+void __stdcall SetFogStart(
     float fogStart
 ) {
     if (g_zVideo_CachedFogStartLightStateValue != fogStart) {
@@ -6811,7 +6835,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL SetFogStart(
 }
 
 // Reimplements 0x4aaa60: zVideo_dd3d::SetFogEnd
-RECOIL_NOINLINE void RECOIL_STDCALL SetFogEnd(
+void __stdcall SetFogEnd(
     float fogEnd
 ) {
     if (g_zVideo_CachedFogEndLightStateValue != fogEnd) {
@@ -6824,7 +6848,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL SetFogEnd(
 }
 
 // Reimplements 0x4aaa90: zVideo_dd3d::ApplyFogStateFromGlobals
-RECOIL_NOINLINE void RECOIL_STDCALL ApplyFogStateFromGlobals(
+void __stdcall ApplyFogStateFromGlobals(
     float fogStart,
     float fogEnd,
     float unused
@@ -6859,7 +6883,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL ApplyFogStateFromGlobals(
 }
 
 // Reimplements 0x4aab30: zVideo_dd3d::UpdateFogColor
-RECOIL_NOINLINE void RECOIL_CDECL UpdateFogColor() {
+void UpdateFogColor() {
     g_zVideo_pD3DDevice->SetRenderState(
         D3DRENDERSTATE_FOGCOLOR,
         PackFogColorFrom255Floats(
@@ -6871,7 +6895,7 @@ RECOIL_NOINLINE void RECOIL_CDECL UpdateFogColor() {
 }
 
 // Reimplements 0x4accc0: zVideo_dd3d::SetQuadBatchDepthAndRhw
-RECOIL_NOINLINE void RECOIL_STDCALL SetQuadBatchDepthAndRhw(
+void __stdcall SetQuadBatchDepthAndRhw(
     float depthAndRhw
 ) {
     {
@@ -6888,7 +6912,7 @@ RECOIL_NOINLINE void RECOIL_STDCALL SetQuadBatchDepthAndRhw(
 }
 
 // Reimplements 0x4aab90: zVideo_dd3d::SubmitPolyFlatColor16
-RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyFlatColor16(
+void __fastcall SubmitPolyFlatColor16(
     zVideo_XyzVertex *vertices,
     unsigned int packedColor16,
     int alpha,
@@ -7028,7 +7052,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyFlatColor16(
 }
 
 // Reimplements 0x4aaef0: zVideo_dd3d::SubmitPolyGouraudColor16
-RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyGouraudColor16(
+void __fastcall SubmitPolyGouraudColor16(
     zVideo_XyzVertex *vertices,
     unsigned int *packedColors16,
     int alpha,
@@ -7166,7 +7190,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyGouraudColor16(
 }
 
 // Reimplements 0x4ab320: zVideo_dd3d::SubmitPolyColorAttr
-RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyColorAttr(
+void __fastcall SubmitPolyColorAttr(
     zVideo_XyzVertex *vertices,
     unsigned int packedColor16,
     zVideo_ColorRgbFloat *baseColor,
@@ -7266,7 +7290,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyColorAttr(
 }
 
 // Reimplements 0x4ab6d0: zVideo_dd3d::SubmitPolyRenderClass
-RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(
+void __fastcall SubmitPolyRenderClass(
     zVideo_XyzVertex *vertices,
     zVideo_TexCoord *texCoords,
     int vertexCount,
@@ -7435,7 +7459,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolyRenderClass(
 }
 
 // Reimplements 0x4abb20: zVideo_dd3d::SubmitPolygon
-RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolygon(
+void __fastcall SubmitPolygon(
     zVideo_XyzVertex *vertices,
     zVideo_TexCoord *uvPairs,
     float *attr1,
@@ -7629,7 +7653,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolygon(
 }
 
 // Reimplements 0x4ac370: zVideo_dd3d::SubmitPolygonLit
-RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolygonLit(
+void __fastcall SubmitPolygonLit(
     zVideo_XyzVertex *vertices,
     zVideo_TexCoord *uvPairs,
     float *attr1,
@@ -7821,7 +7845,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL SubmitPolygonLit(
 }
 
 // Reimplements 0x4acbd0: zVideo_dd3d::DrawPointColor16
-RECOIL_NOINLINE void RECOIL_FASTCALL DrawPointColor16(
+void __fastcall DrawPointColor16(
     zVideo_XyzVertex *pointPos,
     unsigned int packedColor16,
     int pointCount
@@ -7871,7 +7895,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL DrawPointColor16(
 }
 
 // Reimplements 0x4acd00: zVideo_dd3d::QueueSolidQuad
-RECOIL_NOINLINE void RECOIL_FASTCALL QueueSolidQuad(
+void __fastcall QueueSolidQuad(
     unsigned int packedColor16,
     zVidRect32 *clipRect,
     double alpha
@@ -7921,7 +7945,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL QueueSolidQuad(
 }
 
 // Reimplements 0x4ace30: zVideo_dd3d::FlushSortedPolys
-RECOIL_NOINLINE void RECOIL_CDECL FlushSortedPolys() {
+void FlushSortedPolys() {
     int queueCount = g_zVideo_SortedPolyQueueCount;
     if (queueCount == 0) {
         return;
@@ -8064,7 +8088,7 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushSortedPolys() {
 }
 
 // Reimplements 0x4ad120: zVideo_dd3d::FlushQuadBatch
-RECOIL_NOINLINE void RECOIL_CDECL FlushQuadBatch() {
+void FlushQuadBatch() {
     if (g_zVideo_QuadBatchCount == 0) {
         return;
     }
@@ -8136,7 +8160,7 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushQuadBatch() {
 }
 
 // Reimplements 0x4ad250: zVideo_dd3d::FlushOverwritePolys
-RECOIL_NOINLINE void RECOIL_CDECL FlushOverwritePolys() {
+void FlushOverwritePolys() {
     g_zVideo_pD3DDevice->SetRenderState(
         D3DRENDERSTATE_ZFUNC,
         D3DCMP_ALWAYS
@@ -8393,7 +8417,7 @@ RECOIL_NOINLINE void RECOIL_CDECL FlushOverwritePolys() {
 }
 
 // Reimplements 0x4ad680: zVideo_dd3d::FloorPowerOfTwo
-RECOIL_NOINLINE int RECOIL_FASTCALL FloorPowerOfTwo(
+int __fastcall FloorPowerOfTwo(
     int value
 ) {
     int powerOfTwo = 1;
@@ -8409,7 +8433,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL FloorPowerOfTwo(
 }
 
 // Reimplements 0x4aa9d0: zVideo_dd3d::TextureRecord_Create
-RECOIL_NOINLINE zVideo_TextureRecordPartial *RECOIL_CDECL TextureRecord_Create() {
+zVideo_TextureRecordPartial *TextureRecord_Create() {
     return (zVideo_TextureRecordPartial *)(calloc(
         1,
         sizeof(zVideo_TextureRecordPartial)
@@ -8417,7 +8441,7 @@ RECOIL_NOINLINE zVideo_TextureRecordPartial *RECOIL_CDECL TextureRecord_Create()
 }
 
 // Reimplements 0x4aa8b0: zVideo_dd3d::TextureRecord_LockUploadSurface
-RECOIL_NOINLINE int RECOIL_FASTCALL TextureRecord_LockUploadSurface(
+int __fastcall TextureRecord_LockUploadSurface(
     zVideo_TextureRecordPartial *textureRecord,
     void **outPixels,
     int *outPitchBytes
@@ -8436,7 +8460,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL TextureRecord_LockUploadSurface(
 }
 
 // Reimplements 0x4aa6f0: zVideo_dd3d::ConvertImagePixelsForTexture
-RECOIL_NOINLINE void RECOIL_FASTCALL ConvertImagePixelsForTexture(
+void __fastcall ConvertImagePixelsForTexture(
     unsigned short *dstPixels,
     zVidImagePartial *image,
     int pitchBytes,
@@ -8505,7 +8529,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ConvertImagePixelsForTexture(
 }
 
 // Reimplements 0x4aa600: zVideo_dd3d::UploadImageToSurface
-RECOIL_NOINLINE int RECOIL_FASTCALL UploadImageToSurface(
+int __fastcall UploadImageToSurface(
     IDirectDrawSurface *uploadSurface,
     zVidImagePartial *image,
     int useAlpha
@@ -8556,7 +8580,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL UploadImageToSurface(
 }
 
 // Reimplements 0x4aa8f0: zVideo_dd3d::TextureRecord_UnlockUploadSurface
-RECOIL_NOINLINE int RECOIL_FASTCALL TextureRecord_UnlockUploadSurface(
+int __fastcall TextureRecord_UnlockUploadSurface(
     zVideo_TextureRecordPartial *textureRecord
 ) {
     return zVideo_dd::UnlockSurface_WaitRestore(
@@ -8567,7 +8591,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL TextureRecord_UnlockUploadSurface(
 }
 
 // Reimplements 0x4aa900: zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef
-RECOIL_NOINLINE void RECOIL_FASTCALL TextureRecord_ReleaseUploadSurfaceRef(
+void __fastcall TextureRecord_ReleaseUploadSurfaceRef(
     zVideo_TextureRecordPartial *textureRecord
 ) {
     if (textureRecord->m_uploadSurface != 0) {
@@ -8577,7 +8601,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TextureRecord_ReleaseUploadSurfaceRef(
 }
 
 // Reimplements 0x4aa920: zVideo_dd3d::TextureRecord_FinalizeUpload
-RECOIL_NOINLINE void RECOIL_FASTCALL TextureRecord_FinalizeUpload(
+void __fastcall TextureRecord_FinalizeUpload(
     zVideo_TextureRecordPartial *textureRecord,
     zVidImagePartial *image
 ) {
@@ -8612,7 +8636,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TextureRecord_FinalizeUpload(
 }
 
 // Reimplements 0x4aa980: zVideo_dd3d::TextureRecord_Destroy
-RECOIL_NOINLINE void RECOIL_FASTCALL TextureRecord_Destroy(
+void __fastcall TextureRecord_Destroy(
     zVideo_TextureRecordPartial *textureRecord
 ) {
     if (textureRecord == g_zImage_DefaultTextureRecord) {
@@ -8636,7 +8660,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TextureRecord_Destroy(
 namespace zVideoD3D {
 
 // Reimplements 0x4a74d0: zVideoD3D::SceneEnter
-RECOIL_NOINLINE int RECOIL_CDECL SceneEnter() {
+int SceneEnter() {
     if (g_zVideo_D3DSceneDepth <= 0) {
         zVideo_dd3d::BeginSceneAndFlushPendingRenderStates();
         ++g_zVideo_D3DSceneDepth;
@@ -8646,7 +8670,7 @@ RECOIL_NOINLINE int RECOIL_CDECL SceneEnter() {
 }
 
 // Reimplements 0x4a74f0: zVideoD3D::SceneLeave
-RECOIL_NOINLINE int RECOIL_CDECL SceneLeave() {
+int SceneLeave() {
     int depth = g_zVideo_D3DSceneDepth;
     if (depth > 0) {
         if (depth <= 1) {
@@ -8663,38 +8687,17 @@ RECOIL_NOINLINE int RECOIL_CDECL SceneLeave() {
 
 namespace zVideo_dd {
 // Reimplements 0x4a9900: zVideo_dd::GetAcceptedDirectDrawDeviceCountCached
-RECOIL_NOINLINE int RECOIL_CDECL GetAcceptedDirectDrawDeviceCountCached() {
+int GetAcceptedDirectDrawDeviceCountCached() {
     return g_zVideo_NumAcceptedDirectDrawDevices;
 }
 
 namespace {
 const char *kZVideoDirectDrawSourceFile = "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c";
-const size_t kD3DDescCopyBytes = 0xfc;
-const size_t kD3DDescFlagsOffset = 0x04;
-const size_t kD3DDescColorModelOffset = 0x08;
-const size_t kD3DDescZBufferBitDepthOffset = 0xa0;
-const size_t kD3DDescMaxTextureWidthOffset = 0xb4;
-const size_t kD3DDescMaxTextureHeightOffset = 0xb8;
 const int kPresentMissingSurfaceResult = 0x400;
 const int kPresentFailureResult = 0x5a56ffff;
 const int kPresentLinePageLock = 0x6c;
 const int kPresentLinePageUnlock = 0x91;
 const int kPresentLineBltOrRestore = 0xac;
-
-unsigned int D3DDescReadDword(
-    const D3DDEVICEDESC *desc,
-    size_t offset
-) {
-    return *(const unsigned int *)((const unsigned char *)(desc) + offset);
-}
-
-void D3DDriverDescWriteDword(
-    zVidD3DDriverRecordPartial &driver,
-    size_t offset,
-    unsigned int value
-) {
-    *(unsigned int *)(&driver.m_hwDesc[offset]) = value;
-}
 
 template <typename InterfaceT>
 void ReleaseComInterface(
@@ -9071,30 +9074,20 @@ HRESULT CALLBACK EnumDirect3DDeviceCallback(
     );
     fflush(stdout);
 
-    const unsigned int descFlags = D3DDescReadDword(
-        hwDesc,
-        kD3DDescFlagsOffset
-    );
+    const unsigned int descFlags = hwDesc->dwFlags;
     if (descFlags == 0) {
         printf("-----SKIPPED - Does not interface with hardware\n");
         fflush(stdout);
         return 1;
     }
 
-    if ((descFlags & D3DDD_COLORMODEL) != 0 &&
-        D3DDescReadDword(
-            hwDesc,
-            kD3DDescColorModelOffset
-        ) != D3DCOLOR_RGB) {
+    if ((descFlags & D3DDD_COLORMODEL) != 0 && hwDesc->dcmColorModel != D3DCOLOR_RGB) {
         printf("-----SKIPPED - Does not support RGB color\n");
         fflush(stdout);
         return 1;
     }
 
-    if ((D3DDescReadDword(
-        hwDesc,
-        kD3DDescZBufferBitDepthOffset
-    ) & DDBD_16) == 0) {
+    if ((hwDesc->dwDeviceZBufferBitDepth & DDBD_16) == 0) {
         printf("-----SKIPPED - Does not support 16-bit Z buffer\n");
         fflush(stdout);
         return 1;
@@ -9119,29 +9112,15 @@ HRESULT CALLBACK EnumDirect3DDeviceCallback(
     }
 
     memcpy(
-        driver.m_hwDesc,
+        &driver.m_hwDesc,
         hwDesc,
-        kD3DDescCopyBytes
+        sizeof(driver.m_hwDesc)
     );
-    if (D3DDescReadDword(
-        (D3DDEVICEDESC *)(driver.m_hwDesc),
-        kD3DDescMaxTextureWidthOffset
-    ) == 0) {
-        D3DDriverDescWriteDword(
-            driver,
-            kD3DDescMaxTextureWidthOffset,
-            0x100
-        );
+    if (driver.m_hwDesc.dwMaxTextureWidth == 0) {
+        driver.m_hwDesc.dwMaxTextureWidth = 0x100;
     }
-    if (D3DDescReadDword(
-        (D3DDEVICEDESC *)(driver.m_hwDesc),
-        kD3DDescMaxTextureHeightOffset
-    ) == 0) {
-        D3DDriverDescWriteDword(
-            driver,
-            kD3DDescMaxTextureHeightOffset,
-            0x100
-        );
+    if (driver.m_hwDesc.dwMaxTextureHeight == 0) {
+        driver.m_hwDesc.dwMaxTextureHeight = 0x100;
     }
 
     strncpy(
@@ -9162,7 +9141,7 @@ HRESULT CALLBACK EnumDirect3DDeviceCallback(
 }
 
 // Reimplements 0x4a6930: zVideo_dd::PrepareWindowForMode
-RECOIL_NOINLINE int RECOIL_CDECL PrepareWindowForMode() {
+int PrepareWindowForMode() {
     SetMenu(
         g_zVideo_hWnd,
         0
@@ -9203,7 +9182,7 @@ RECOIL_NOINLINE int RECOIL_CDECL PrepareWindowForMode() {
 }
 
 // Reimplements 0x4a7d20: zVideo_dd::OpenVideoMode
-RECOIL_NOINLINE int RECOIL_FASTCALL OpenVideoMode(
+int __fastcall OpenVideoMode(
     int
 ) {
     if (PrepareWindowForMode() != 0) {
@@ -9217,7 +9196,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL OpenVideoMode(
 }
 
 // Reimplements 0x4a9390: zVideo_dd::RunDirectDrawDeviceEnumeration
-RECOIL_NOINLINE int RECOIL_CDECL RunDirectDrawDeviceEnumeration() {
+int RunDirectDrawDeviceEnumeration() {
     printf("\nENUMERATE GRAPHICS DEVICES...\n");
     const HRESULT hresult = DirectDrawEnumerateA(
         EnumDirectDrawDeviceCallback,
@@ -9236,7 +9215,7 @@ RECOIL_NOINLINE int RECOIL_CDECL RunDirectDrawDeviceEnumeration() {
 }
 
 // Reimplements 0x4a8800: zVideo_dd::CreateDirectDraw2ForSelectedDevice
-RECOIL_NOINLINE int RECOIL_CDECL CreateDirectDraw2ForSelectedDevice() {
+int CreateDirectDraw2ForSelectedDevice() {
     IDirectDraw *directDraw1 = 0;
     const HRESULT createResult =
         DirectDrawCreate(
@@ -9270,7 +9249,7 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateDirectDraw2ForSelectedDevice() {
 }
 
 // Reimplements 0x4a95e0: zVideo_dd::EnumerateDirect3DDevicesForRecord
-RECOIL_NOINLINE int RECOIL_FASTCALL EnumerateDirect3DDevicesForRecord(
+int __fastcall EnumerateDirect3DDevicesForRecord(
     zVidHwApiDeviceRecordPartial *entry
 ) {
     unsigned char unusedStackZeroing[0x68] = {0};
@@ -9312,14 +9291,14 @@ RECOIL_NOINLINE int RECOIL_FASTCALL EnumerateDirect3DDevicesForRecord(
 }
 
 // Reimplements 0x4a7b40: zVideo_dd::StartupEnumerateAndDefaultSelect
-RECOIL_NOINLINE void RECOIL_CDECL StartupEnumerateAndDefaultSelect() {
+void StartupEnumerateAndDefaultSelect() {
     RunDirectDrawDeviceEnumeration();
     g_zVideo_pSelectedHwApiDeviceRecord = &g_zVideo_HwApiDeviceTable[0];
     g_zVideo_pSelectedD3DDeviceInfo = 0;
 }
 
 // Reimplements 0x4a7d40: zVideo_dd::ShutdownVideoSystem
-RECOIL_NOINLINE int RECOIL_CDECL ShutdownVideoSystem() {
+int ShutdownVideoSystem() {
     if (g_zImage_DefaultTextureRecord != 0) {
         zVideo_dd3d::TextureRecord_Destroy(g_zImage_DefaultTextureRecord);
         g_zImage_DefaultTextureRecord = 0;
@@ -9330,7 +9309,7 @@ RECOIL_NOINLINE int RECOIL_CDECL ShutdownVideoSystem() {
 }
 
 // Reimplements 0x4a8060: zVideo_dd::LockDirectDrawSurface
-RECOIL_NOINLINE int RECOIL_FASTCALL LockDirectDrawSurface(
+int __fastcall LockDirectDrawSurface(
     IDirectDrawSurface3 *surface,
     DDSURFACEDESC *outLockedSurfaceDesc
 ) {
@@ -9369,7 +9348,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LockDirectDrawSurface(
 }
 
 // Reimplements 0x4a80c0: zVideo_dd::UnlockDirectDrawSurface
-RECOIL_NOINLINE int RECOIL_FASTCALL UnlockDirectDrawSurface(
+int __fastcall UnlockDirectDrawSurface(
     IDirectDrawSurface3 *surface
 ) {
     for (;;) {
@@ -9395,7 +9374,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL UnlockDirectDrawSurface(
 }
 
 // Reimplements 0x4a8100: zVideo_dd::LockSurface_WaitRestore
-RECOIL_NOINLINE int RECOIL_FASTCALL LockSurface_WaitRestore(
+int __fastcall LockSurface_WaitRestore(
     IDirectDrawSurface3 *surface,
     DDSURFACEDESC *lockedDescOut
 ) {
@@ -9434,7 +9413,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LockSurface_WaitRestore(
 }
 
 // Reimplements 0x4a8160: zVideo_dd::UnlockSurface_WaitRestore
-RECOIL_NOINLINE int RECOIL_FASTCALL UnlockSurface_WaitRestore(
+int __fastcall UnlockSurface_WaitRestore(
     IDirectDrawSurface3 *surface
 ) {
     for (;;) {
@@ -9460,7 +9439,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL UnlockSurface_WaitRestore(
 }
 
 // Reimplements 0x4a7fc0: zVideo_dd::LockSurfaceState
-RECOIL_NOINLINE int RECOIL_FASTCALL LockSurfaceState(
+int __fastcall LockSurfaceState(
     zVideo_SurfaceStatePartial *surfaceState
 ) {
     if (g_zVideo_FullscreenOption != 0) {
@@ -9495,7 +9474,7 @@ CheckLocked:
 }
 
 // Reimplements 0x4a8030: zVideo_dd::UnlockSurfaceState
-RECOIL_NOINLINE int RECOIL_FASTCALL UnlockSurfaceState(
+int __fastcall UnlockSurfaceState(
     zVideo_SurfaceStatePartial *surfaceState
 ) {
     if (g_zVideo_FullscreenOption != 0) {
@@ -9516,7 +9495,7 @@ CheckLocked:
 }
 
 // Reimplements 0x4a83d0: zVideo_dd::Image_LazyCreateBackingSurface
-RECOIL_NOINLINE IDirectDrawSurface3 *RECOIL_FASTCALL Image_LazyCreateBackingSurface(
+IDirectDrawSurface3 *__fastcall Image_LazyCreateBackingSurface(
     zVidImagePartial *image,
     unsigned int ddsCapsFlags
 ) {
@@ -9560,7 +9539,7 @@ RECOIL_NOINLINE IDirectDrawSurface3 *RECOIL_FASTCALL Image_LazyCreateBackingSurf
 }
 
 // Reimplements 0x4a8500: zVideo_dd::Image_PopulateSurfaceFromHeapPixels
-RECOIL_NOINLINE int RECOIL_FASTCALL Image_PopulateSurfaceFromHeapPixels(
+int __fastcall Image_PopulateSurfaceFromHeapPixels(
     zVidImagePartial *image
 ) {
     DDSURFACEDESC lockedSurfaceDesc = {0};
@@ -9644,7 +9623,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Image_PopulateSurfaceFromHeapPixels(
 }
 
 // Reimplements 0x4a84c0: zVideo_dd::Image_LazyCreateVideoMemorySurface
-RECOIL_NOINLINE IDirectDrawSurface3 *RECOIL_FASTCALL Image_LazyCreateVideoMemorySurface(
+IDirectDrawSurface3 *__fastcall Image_LazyCreateVideoMemorySurface(
     zVidImagePartial *image
 ) {
     // Original code assumes device selection is complete and reads the feature flags unconditionally.
@@ -9662,7 +9641,7 @@ RECOIL_NOINLINE IDirectDrawSurface3 *RECOIL_FASTCALL Image_LazyCreateVideoMemory
 }
 
 // Reimplements 0x4a8650: zVideo_dd::Image_EnsureSurfaceForCurrentDevice
-RECOIL_NOINLINE void RECOIL_FASTCALL Image_EnsureSurfaceForCurrentDevice(
+void __fastcall Image_EnsureSurfaceForCurrentDevice(
     zVidImagePartial *image
 ) {
     if (g_zVideo_IsInitialized != 0 && image->surface != 0) {
@@ -9676,7 +9655,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Image_EnsureSurfaceForCurrentDevice(
 }
 
 // Reimplements 0x4a8680: zVideo_dd::Image_UploadPixelsToSurface
-RECOIL_NOINLINE int RECOIL_FASTCALL Image_UploadPixelsToSurface(
+int __fastcall Image_UploadPixelsToSurface(
     zVidImagePartial *image,
     HDC *outHdc
 ) {
@@ -9712,7 +9691,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Image_UploadPixelsToSurface(
 }
 
 // Reimplements 0x4a86f0: zVideo_dd::Image_ReleaseSurface
-RECOIL_NOINLINE int RECOIL_FASTCALL Image_ReleaseSurface(
+int __fastcall Image_ReleaseSurface(
     zVidImagePartial *image,
     HDC hdc
 ) {
@@ -9734,7 +9713,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL Image_ReleaseSurface(
 }
 
 // Reimplements 0x4a7d90: zVideo_dd::BltSwToPrimaryRectDirect
-RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRectDirect(
+void __fastcall BltSwToPrimaryRectDirect(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect
 ) {
@@ -9755,7 +9734,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRectDirect(
 }
 
 // Reimplements 0x4a7dd0: zVideo_dd::BltPrimaryToSwRectDirect
-RECOIL_NOINLINE void RECOIL_FASTCALL BltPrimaryToSwRectDirect(
+void __fastcall BltPrimaryToSwRectDirect(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect
 ) {
@@ -9778,7 +9757,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltPrimaryToSwRectDirect(
 // Reimplements 0x4a7b60: zVideo_dd::PresentDisplayModeSurface
 // Presents the software/display-mode surface through DirectDraw, including the
 // original page-lock state swap used by fullscreen software adjustment.
-RECOIL_NOINLINE int RECOIL_FASTCALL PresentDisplayModeSurface(
+int __fastcall PresentDisplayModeSurface(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect,
     int waitForPresent,
@@ -9878,7 +9857,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL PresentDisplayModeSurface(
 }
 
 // Reimplements 0x4a7e10: zVideo_dd::BltSwToPrimaryRect
-RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRect(
+void __fastcall BltSwToPrimaryRect(
     zVidImagePartial *srcImage,
     int srcColorKeyEnable,
     zVidRect32 *srcRect,
@@ -9997,7 +9976,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL BltSwToPrimaryRect(
 }
 
 // Reimplements 0x4a81a0: zVideo_dd::ZBuffer_DepthFillRect
-RECOIL_NOINLINE void RECOIL_FASTCALL ZBuffer_DepthFillRect(
+void __fastcall ZBuffer_DepthFillRect(
     zVidRect32 *dstRect
 ) {
     if (g_zVideo_pZBufferSurface == 0) {
@@ -10017,7 +9996,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ZBuffer_DepthFillRect(
 }
 
 // Reimplements 0x4a8220: zVideo_dd::ClearScreenAndZBufferRect
-RECOIL_NOINLINE void RECOIL_FASTCALL ClearScreenAndZBufferRect(
+void __fastcall ClearScreenAndZBufferRect(
     zVidRect32 *dstRect,
     zVideo_SurfaceStatePartial *colorSurfaceState
 ) {
@@ -10052,7 +10031,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ClearScreenAndZBufferRect(
 }
 
 // Reimplements 0x4a82f0: zVideo_dd::ClearSwBackbufferAndZBufferRects
-RECOIL_NOINLINE void RECOIL_FASTCALL ClearSwBackbufferAndZBufferRects(
+void __fastcall ClearSwBackbufferAndZBufferRects(
     zVidRect32 *colorRect,
     zVidRect32 *zRect
 ) {
@@ -10087,14 +10066,14 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ClearSwBackbufferAndZBufferRects(
 }
 
 // Reimplements 0x4a7d70: zVideo_dd::FlipToGDIIfAttached
-RECOIL_NOINLINE void RECOIL_CDECL FlipToGDIIfAttached() {
+void FlipToGDIIfAttached() {
     if (g_zVideo_pDirectDraw2 != 0 && g_zVideo_PrimaryHasAttachedBackbuffer != 0) {
         g_zVideo_pDirectDraw2->FlipToGDISurface();
     }
 }
 
 // Reimplements 0x4a8720: zVideo_dd::SetDisplayMode
-RECOIL_NOINLINE int RECOIL_CDECL SetDisplayMode() {
+int SetDisplayMode() {
     HRESULT hresult = g_zVideo_pDirectDraw2->SetCooperativeLevel(
         g_zVideo_hWnd,
         0x13
@@ -10127,7 +10106,7 @@ RECOIL_NOINLINE int RECOIL_CDECL SetDisplayMode() {
     return 0;
 }
 
-RECOIL_NOINLINE int RECOIL_FASTCALL SetVideoMode(
+int __fastcall SetVideoMode(
     int
 ) {
     if (SetDisplayMode() == 0) {
@@ -10161,7 +10140,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL SetVideoMode(
 }
 
 // Reimplements 0x4a9060: zVideo_dd::VerifyFullscreenSurfaceLocks
-RECOIL_NOINLINE int RECOIL_CDECL VerifyFullscreenSurfaceLocks() {
+int VerifyFullscreenSurfaceLocks() {
     if (LockSurfaceState(&g_zVideo_SwSurfaceState) != 0) {
         return 1;
     }
@@ -10182,7 +10161,7 @@ RECOIL_NOINLINE int RECOIL_CDECL VerifyFullscreenSurfaceLocks() {
 }
 
 // Reimplements 0x4a90e0: zVideo_dd::RestoreDisplaySurfaces
-RECOIL_NOINLINE int RECOIL_CDECL RestoreDisplaySurfaces() {
+int RestoreDisplaySurfaces() {
     if (g_zVideo_DisplayModeSurfaceState.surf != 0) {
         const HRESULT hresult = g_zVideo_DisplayModeSurfaceState.surf->Restore();
         if (hresult != DD_OK) {
@@ -10220,7 +10199,7 @@ RECOIL_NOINLINE int RECOIL_CDECL RestoreDisplaySurfaces() {
 }
 
 // Reimplements 0x4a8f80: zVideo_dd::InitFullscreenSoftwarePixelPack
-RECOIL_NOINLINE int RECOIL_FASTCALL InitFullscreenSoftwarePixelPack(
+int __fastcall InitFullscreenSoftwarePixelPack(
     IDirectDrawSurface3 *displaySurface
 ) {
     DDPIXELFORMAT pixelFormat = {0};
@@ -10282,7 +10261,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL InitFullscreenSoftwarePixelPack(
 }
 
 // Reimplements 0x4a88b0: zVideo_dd::CreateSurface3FromDesc
-RECOIL_NOINLINE HRESULT RECOIL_FASTCALL CreateSurface3FromDesc(
+HRESULT __fastcall CreateSurface3FromDesc(
     IDirectDraw2 *directDraw,
     DDSURFACEDESC *desc,
     IDirectDrawSurface3 **outSurface
@@ -10307,7 +10286,7 @@ RECOIL_NOINLINE HRESULT RECOIL_FASTCALL CreateSurface3FromDesc(
 }
 
 // Reimplements 0x4a88f0: zVideo_dd::CreateFullscreenSurfacesForRenderer
-RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenSurfacesForRenderer() {
+int CreateFullscreenSurfacesForRenderer() {
     if (g_zVideo_UseHalfResBackbuffer != 0) {
         return CreateHalfResBackbufferSurfaces();
     }
@@ -10320,7 +10299,7 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenSurfacesForRenderer() {
 }
 
 // Reimplements 0x4a8920: zVideo_dd::CreateHalfResBackbufferSurfaces
-RECOIL_NOINLINE int RECOIL_CDECL CreateHalfResBackbufferSurfaces() {
+int CreateHalfResBackbufferSurfaces() {
     zOptionEntryPartial defaultGfxFlags = {0};
     zOptionEntryPartial *gfxFlagsOption =
         zGame::Options_FindOption(g_zVideo_ActiveRendererPath != 0 ? "GfxFlags_HW" : "GfxFlags_SW");
@@ -10433,7 +10412,7 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateHalfResBackbufferSurfaces() {
 }
 
 // Reimplements 0x4a8b20: zVideo_dd::CreateFullscreenSoftwareSurfaces
-RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenSoftwareSurfaces() {
+int CreateFullscreenSoftwareSurfaces() {
     zOptionEntryPartial defaultGfxFlags = {0};
     zOptionEntryPartial *gfxFlagsOption =
         zGame::Options_FindOption(g_zVideo_ActiveRendererPath != 0 ? "GfxFlags_HW" : "GfxFlags_SW");
@@ -10568,7 +10547,7 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenSoftwareSurfaces() {
 }
 
 // Reimplements 0x4a8dc0: zVideo_dd::CreateFullscreenHardwareSurfaces
-RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenHardwareSurfaces() {
+int CreateFullscreenHardwareSurfaces() {
     DDSURFACEDESC desc = {0};
     desc.dwSize = sizeof(desc);
     desc.dwBackBufferCount = 1;
@@ -10665,7 +10644,7 @@ RECOIL_NOINLINE int RECOIL_CDECL CreateFullscreenHardwareSurfaces() {
 }
 
 // Reimplements 0x4a91b0: zVideo_dd::ReleaseAllInterfacesAndSurfaces
-RECOIL_NOINLINE int RECOIL_CDECL ReleaseAllInterfacesAndSurfaces() {
+int ReleaseAllInterfacesAndSurfaces() {
     ReleaseComInterface(g_zVideo_pD3DMaterial2);
     ReleaseComInterface(g_zVideo_pD3DViewport2);
     ReleaseComInterface(g_zVideo_pD3DDevice);
@@ -10695,7 +10674,7 @@ RECOIL_NOINLINE int RECOIL_CDECL ReleaseAllInterfacesAndSurfaces() {
 }
 
 // Reimplements 0x4a9160: zVideo_dd::VerifySurfaceStateLocking
-RECOIL_NOINLINE void RECOIL_FASTCALL VerifySurfaceStateLocking(
+void __fastcall VerifySurfaceStateLocking(
     int callerContext
 ) {
     if ((g_zVideo_SurfaceLockVerifyFlags & 0x20) == 0) {
@@ -10719,7 +10698,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL VerifySurfaceStateLocking(
 }
 
 // Reimplements 0x4a9300: zVideo_dd::TeardownVideoSubsystem
-RECOIL_NOINLINE void RECOIL_CDECL TeardownVideoSubsystem() {
+void TeardownVideoSubsystem() {
     ReleaseAllInterfacesAndSurfaces();
 
     if (g_zVideo_pPageUnlockSurface != 0) {
@@ -10745,7 +10724,7 @@ RECOIL_NOINLINE void RECOIL_CDECL TeardownVideoSubsystem() {
 }
 
 // Reimplements 0x4a9890: zVideo_dd::PaletteSetEntries
-RECOIL_NOINLINE int RECOIL_FASTCALL PaletteSetEntries(
+int __fastcall PaletteSetEntries(
     unsigned short firstEntry,
     unsigned short entryCount,
     PALETTEENTRY *entries
@@ -10773,14 +10752,14 @@ RECOIL_NOINLINE int RECOIL_FASTCALL PaletteSetEntries(
 }
 
 // Reimplements 0x4a9920: zVideo_dd::GetHwApiDeviceFeatureFlags
-RECOIL_NOINLINE int RECOIL_FASTCALL GetHwApiDeviceFeatureFlags(
+int __fastcall GetHwApiDeviceFeatureFlags(
     int deviceIndex
 ) {
     return g_zVideo_HwApiDeviceTable[deviceIndex].m_deviceFeatureFlags;
 }
 
 // Reimplements 0x4ad6a0: zVideo_dd::ReportError
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_FASTCALL ReportError(
+RECOIL_NO_GS int __fastcall ReportError(
     int hresult,
     const char *sourceFile,
     int sourceLine

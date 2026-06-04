@@ -34,13 +34,13 @@ extern "C" zFMV_Rect g_zFMV_ActionPlayMci_DestRect = {0};
 extern "C" unsigned int g_zVideo_pfnBltSwToPrimaryRect;
 
 namespace {
-typedef void(RECOIL_FASTCALL *zFMV_BltSwToPrimaryRectProc)(
+typedef void(__fastcall *zFMV_BltSwToPrimaryRectProc)(
     zVidImagePartial *srcImage,
     int srcColorKeyEnable,
     zVidRect32 *srcRect,
     zVidRect32 *dstRect
 );
-typedef void(RECOIL_CDECL *zFMV_FlushProc)();
+typedef void(*zFMV_FlushProc)();
 const int k_zFMV_RendererBackendSoftware = 0;
 const int k_zFMV_RendererBackend3dfx = 2;
 const int k_zFMV_BlurModeHorizontal = 1;
@@ -94,15 +94,7 @@ struct zFMV_MciPlayParams {
     DWORD to;
 };
 
-template <typename T>
-T &FieldAt(
-    void *base,
-    size_t offset
-) {
-    return *(T *)((unsigned char *)(base) + offset);
-}
-
-typedef void(RECOIL_THISCALL *zFMV_ImageEnsureSurfaceProc)(zVidImagePartial *image);
+typedef void( *zFMV_ImageEnsureSurfaceProc)(zVidImagePartial *image);
 
 struct zFMV_ActionScalarDeletingDestructorDispatch {
     // Models slot-0 scalar-deleting destructor dispatch so VC emits ecx=this.
@@ -121,29 +113,29 @@ char *DuplicateCString(
 
 zFMV_Action_Vtbl MakeBaseActionVtable() {
     union DtorThunk {
-        zFMV_Action *(RECOIL_THISCALL zFMV_Action::*member)(unsigned int);
-        zFMV_Action *(RECOIL_THISCALL *function)(
+        zFMV_Action *( zFMV_Action::*member)(unsigned int);
+        zFMV_Action *( *function)(
             zFMV_Action *,
             unsigned int
         );
     };
     union UpdateThunk {
-        int (RECOIL_THISCALL zFMV_Action::*member)(double);
-        int(RECOIL_THISCALL *function)(
+        int ( zFMV_Action::*member)(double);
+        int( *function)(
             zFMV_Action *,
             double
         );
     };
     union BeginThunk {
-        void (RECOIL_THISCALL zFMV_Action::*member)(double);
-        void(RECOIL_THISCALL *function)(
+        void ( zFMV_Action::*member)(double);
+        void( *function)(
             zFMV_Action *,
             double
         );
     };
     union EndThunk {
-        void (RECOIL_THISCALL zFMV_Action::*member)();
-        void(RECOIL_THISCALL *function)(zFMV_Action *);
+        void ( zFMV_Action::*member)();
+        void( *function)(zFMV_Action *);
     };
 
     DtorThunk dtor = {0};
@@ -169,33 +161,33 @@ zFMV_Action_Vtbl MakeBaseActionVtable() {
 
 zFMV_Action_Vtbl MakeBlurActionVtable() {
     union DtorThunk {
-        zFMV_Action *(RECOIL_THISCALL zFMV_Action::*member)(unsigned int);
-        zFMV_Action *(RECOIL_THISCALL *function)(
+        zFMV_Action *( zFMV_Action::*member)(unsigned int);
+        zFMV_Action *( *function)(
             zFMV_Action *,
             unsigned int
         );
     };
     union UpdateThunk {
-        int (RECOIL_THISCALL zFMV_ActionBlur::*member)(double);
-        int(RECOIL_THISCALL *function)(
+        int ( zFMV_ActionBlur::*member)(double);
+        int( *function)(
             zFMV_Action *,
             double
         );
     };
     union BeginThunk {
-        void (RECOIL_THISCALL zFMV_ActionBlur::*member)(double);
-        void(RECOIL_THISCALL *function)(
+        void ( zFMV_ActionBlur::*member)(double);
+        void( *function)(
             zFMV_Action *,
             double
         );
     };
     union EndThunk {
-        void (RECOIL_THISCALL zFMV_ActionBlur::*member)();
-        void(RECOIL_THISCALL *function)(zFMV_Action *);
+        void ( zFMV_ActionBlur::*member)();
+        void( *function)(zFMV_Action *);
     };
     union RunBlockingThunk {
-        void (RECOIL_THISCALL zFMV_Action::*member)();
-        void(RECOIL_THISCALL *function)(zFMV_Action *);
+        void ( zFMV_Action::*member)();
+        void( *function)(zFMV_Action *);
     };
 
     DtorThunk dtor = {0};
@@ -221,33 +213,33 @@ zFMV_Action_Vtbl MakeBlurActionVtable() {
 
 zFMV_Action_Vtbl MakeBlurHActionVtable() {
     union DtorThunk {
-        zFMV_Action *(RECOIL_THISCALL zFMV_Action::*member)(unsigned int);
-        zFMV_Action *(RECOIL_THISCALL *function)(
+        zFMV_Action *( zFMV_Action::*member)(unsigned int);
+        zFMV_Action *( *function)(
             zFMV_Action *,
             unsigned int
         );
     };
     union UpdateThunk {
-        int (RECOIL_THISCALL zFMV_ActionBlurH::*member)(double);
-        int(RECOIL_THISCALL *function)(
+        int ( zFMV_ActionBlurH::*member)(double);
+        int( *function)(
             zFMV_Action *,
             double
         );
     };
     union BeginThunk {
-        void (RECOIL_THISCALL zFMV_ActionBlur::*member)(double);
-        void(RECOIL_THISCALL *function)(
+        void ( zFMV_ActionBlur::*member)(double);
+        void( *function)(
             zFMV_Action *,
             double
         );
     };
     union EndThunk {
-        void (RECOIL_THISCALL zFMV_ActionBlur::*member)();
-        void(RECOIL_THISCALL *function)(zFMV_Action *);
+        void ( zFMV_ActionBlur::*member)();
+        void( *function)(zFMV_Action *);
     };
     union RunBlockingThunk {
-        void (RECOIL_THISCALL zFMV_Action::*member)();
-        void(RECOIL_THISCALL *function)(zFMV_Action *);
+        void ( zFMV_Action::*member)();
+        void( *function)(zFMV_Action *);
     };
 
     DtorThunk dtor = {0};
@@ -273,33 +265,33 @@ zFMV_Action_Vtbl MakeBlurHActionVtable() {
 
 zFMV_Action_Vtbl MakeBlurVActionVtable() {
     union DtorThunk {
-        zFMV_Action *(RECOIL_THISCALL zFMV_Action::*member)(unsigned int);
-        zFMV_Action *(RECOIL_THISCALL *function)(
+        zFMV_Action *( zFMV_Action::*member)(unsigned int);
+        zFMV_Action *( *function)(
             zFMV_Action *,
             unsigned int
         );
     };
     union UpdateThunk {
-        int (RECOIL_THISCALL zFMV_ActionBlurV::*member)(double);
-        int(RECOIL_THISCALL *function)(
+        int ( zFMV_ActionBlurV::*member)(double);
+        int( *function)(
             zFMV_Action *,
             double
         );
     };
     union BeginThunk {
-        void (RECOIL_THISCALL zFMV_ActionBlur::*member)(double);
-        void(RECOIL_THISCALL *function)(
+        void ( zFMV_ActionBlur::*member)(double);
+        void( *function)(
             zFMV_Action *,
             double
         );
     };
     union EndThunk {
-        void (RECOIL_THISCALL zFMV_ActionBlur::*member)();
-        void(RECOIL_THISCALL *function)(zFMV_Action *);
+        void ( zFMV_ActionBlur::*member)();
+        void( *function)(zFMV_Action *);
     };
     union RunBlockingThunk {
-        void (RECOIL_THISCALL zFMV_Action::*member)();
-        void(RECOIL_THISCALL *function)(zFMV_Action *);
+        void ( zFMV_Action::*member)();
+        void( *function)(zFMV_Action *);
     };
 
     DtorThunk dtor = {0};
@@ -325,29 +317,29 @@ zFMV_Action_Vtbl MakeBlurVActionVtable() {
 
 zFMV_Action_Vtbl MakeWaitActionVtable() {
     union DtorThunk {
-        zFMV_Action *(RECOIL_THISCALL zFMV_Action::*member)(unsigned int);
-        zFMV_Action *(RECOIL_THISCALL *function)(
+        zFMV_Action *( zFMV_Action::*member)(unsigned int);
+        zFMV_Action *( *function)(
             zFMV_Action *,
             unsigned int
         );
     };
     union UpdateThunk {
-        int (RECOIL_THISCALL zFMV_ActionWait::*member)(double);
-        int(RECOIL_THISCALL *function)(
+        int ( zFMV_ActionWait::*member)(double);
+        int( *function)(
             zFMV_Action *,
             double
         );
     };
     union BeginThunk {
-        void (RECOIL_THISCALL zFMV_ActionWait::*member)(double);
-        void(RECOIL_THISCALL *function)(
+        void ( zFMV_ActionWait::*member)(double);
+        void( *function)(
             zFMV_Action *,
             double
         );
     };
     union EndThunk {
-        void (RECOIL_THISCALL zFMV_Action::*member)();
-        void(RECOIL_THISCALL *function)(zFMV_Action *);
+        void ( zFMV_Action::*member)();
+        void( *function)(zFMV_Action *);
     };
 
     DtorThunk dtor = {0};
@@ -373,29 +365,29 @@ zFMV_Action_Vtbl MakeWaitActionVtable() {
 
 zFMV_Action_Vtbl MakePlaySoundActionVtable() {
     union DtorThunk {
-        zFMV_Action *(RECOIL_THISCALL zFMV_Action::*member)(unsigned int);
-        zFMV_Action *(RECOIL_THISCALL *function)(
+        zFMV_Action *( zFMV_Action::*member)(unsigned int);
+        zFMV_Action *( *function)(
             zFMV_Action *,
             unsigned int
         );
     };
     union UpdateThunk {
-        int (RECOIL_THISCALL zFMV_Action::*member)(double);
-        int(RECOIL_THISCALL *function)(
+        int ( zFMV_Action::*member)(double);
+        int( *function)(
             zFMV_Action *,
             double
         );
     };
     union BeginThunk {
-        void (RECOIL_THISCALL zFMV_ActionPlaySound::*member)(double);
-        void(RECOIL_THISCALL *function)(
+        void ( zFMV_ActionPlaySound::*member)(double);
+        void( *function)(
             zFMV_Action *,
             double
         );
     };
     union EndThunk {
-        void (RECOIL_THISCALL zFMV_Action::*member)();
-        void(RECOIL_THISCALL *function)(zFMV_Action *);
+        void ( zFMV_Action::*member)();
+        void( *function)(zFMV_Action *);
     };
 
     DtorThunk dtor = {0};
@@ -421,33 +413,33 @@ zFMV_Action_Vtbl MakePlaySoundActionVtable() {
 
 zFMV_Action_Vtbl MakeImageActionVtable() {
     union DtorThunk {
-        zFMV_ActionImage *(RECOIL_THISCALL zFMV_ActionImage::*member)(unsigned int);
-        zFMV_Action *(RECOIL_THISCALL *function)(
+        zFMV_ActionImage *( zFMV_ActionImage::*member)(unsigned int);
+        zFMV_Action *( *function)(
             zFMV_Action *,
             unsigned int
         );
     };
     union UpdateThunk {
-        int (RECOIL_THISCALL zFMV_ActionImage::*member)(double);
-        int(RECOIL_THISCALL *function)(
+        int ( zFMV_ActionImage::*member)(double);
+        int( *function)(
             zFMV_Action *,
             double
         );
     };
     union BeginThunk {
-        void (RECOIL_THISCALL zFMV_ActionImage::*member)(double);
-        void(RECOIL_THISCALL *function)(
+        void ( zFMV_ActionImage::*member)(double);
+        void( *function)(
             zFMV_Action *,
             double
         );
     };
     union EndThunk {
-        void (RECOIL_THISCALL zFMV_ActionImage::*member)();
-        void(RECOIL_THISCALL *function)(zFMV_Action *);
+        void ( zFMV_ActionImage::*member)();
+        void( *function)(zFMV_Action *);
     };
     union RunBlockingThunk {
-        void (RECOIL_THISCALL zFMV_Action::*member)();
-        void(RECOIL_THISCALL *function)(zFMV_Action *);
+        void ( zFMV_Action::*member)();
+        void( *function)(zFMV_Action *);
     };
 
     DtorThunk dtor = {0};
@@ -473,33 +465,33 @@ zFMV_Action_Vtbl MakeImageActionVtable() {
 
 zFMV_Action_Vtbl MakeFadeActionVtable() {
     union DtorThunk {
-        zFMV_Action *(RECOIL_THISCALL zFMV_Action::*member)(unsigned int);
-        zFMV_Action *(RECOIL_THISCALL *function)(
+        zFMV_Action *( zFMV_Action::*member)(unsigned int);
+        zFMV_Action *( *function)(
             zFMV_Action *,
             unsigned int
         );
     };
     union UpdateThunk {
-        int (RECOIL_THISCALL zFMV_ActionFade::*member)(double);
-        int(RECOIL_THISCALL *function)(
+        int ( zFMV_ActionFade::*member)(double);
+        int( *function)(
             zFMV_Action *,
             double
         );
     };
     union BeginThunk {
-        void (RECOIL_THISCALL zFMV_ActionFade::*member)(double);
-        void(RECOIL_THISCALL *function)(
+        void ( zFMV_ActionFade::*member)(double);
+        void( *function)(
             zFMV_Action *,
             double
         );
     };
     union EndThunk {
-        void (RECOIL_THISCALL zFMV_ActionFade::*member)();
-        void(RECOIL_THISCALL *function)(zFMV_Action *);
+        void ( zFMV_ActionFade::*member)();
+        void( *function)(zFMV_Action *);
     };
     union RunBlockingThunk {
-        void (RECOIL_THISCALL zFMV_Action::*member)();
-        void(RECOIL_THISCALL *function)(zFMV_Action *);
+        void ( zFMV_Action::*member)();
+        void( *function)(zFMV_Action *);
     };
 
     DtorThunk dtor = {0};
@@ -525,33 +517,33 @@ zFMV_Action_Vtbl MakeFadeActionVtable() {
 
 zFMV_Action_Vtbl MakePlayAviActionVtable() {
     union DtorThunk {
-        zFMV_ActionPlayAvi *(RECOIL_THISCALL zFMV_ActionPlayAvi::*member)(unsigned int);
-        zFMV_Action *(RECOIL_THISCALL *function)(
+        zFMV_ActionPlayAvi *( zFMV_ActionPlayAvi::*member)(unsigned int);
+        zFMV_Action *( *function)(
             zFMV_Action *,
             unsigned int
         );
     };
     union UpdateThunk {
-        int (RECOIL_THISCALL zFMV_ActionPlayAvi::*member)(double);
-        int(RECOIL_THISCALL *function)(
+        int ( zFMV_ActionPlayAvi::*member)(double);
+        int( *function)(
             zFMV_Action *,
             double
         );
     };
     union BeginThunk {
-        void (RECOIL_THISCALL zFMV_ActionPlayAvi::*member)(double);
-        void(RECOIL_THISCALL *function)(
+        void ( zFMV_ActionPlayAvi::*member)(double);
+        void( *function)(
             zFMV_Action *,
             double
         );
     };
     union EndThunk {
-        void (RECOIL_THISCALL zFMV_ActionPlayAvi::*member)();
-        void(RECOIL_THISCALL *function)(zFMV_Action *);
+        void ( zFMV_ActionPlayAvi::*member)();
+        void( *function)(zFMV_Action *);
     };
     union RunBlockingThunk {
-        void (RECOIL_THISCALL zFMV_Action::*member)();
-        void(RECOIL_THISCALL *function)(zFMV_Action *);
+        void ( zFMV_Action::*member)();
+        void( *function)(zFMV_Action *);
     };
 
     DtorThunk dtor = {0};
@@ -577,33 +569,33 @@ zFMV_Action_Vtbl MakePlayAviActionVtable() {
 
 zFMV_Action_Vtbl MakePlayMciActionVtable() {
     union DtorThunk {
-        zFMV_ActionPlayMci *(RECOIL_THISCALL zFMV_ActionPlayMci::*member)(unsigned int);
-        zFMV_Action *(RECOIL_THISCALL *function)(
+        zFMV_ActionPlayMci *( zFMV_ActionPlayMci::*member)(unsigned int);
+        zFMV_Action *( *function)(
             zFMV_Action *,
             unsigned int
         );
     };
     union UpdateThunk {
-        int (RECOIL_THISCALL zFMV_ActionPlayMci::*member)(double);
-        int(RECOIL_THISCALL *function)(
+        int ( zFMV_ActionPlayMci::*member)(double);
+        int( *function)(
             zFMV_Action *,
             double
         );
     };
     union BeginThunk {
-        void (RECOIL_THISCALL zFMV_ActionPlayMci::*member)(double);
-        void(RECOIL_THISCALL *function)(
+        void ( zFMV_ActionPlayMci::*member)(double);
+        void( *function)(
             zFMV_Action *,
             double
         );
     };
     union EndThunk {
-        void (RECOIL_THISCALL zFMV_ActionPlayMci::*member)();
-        void(RECOIL_THISCALL *function)(zFMV_Action *);
+        void ( zFMV_ActionPlayMci::*member)();
+        void( *function)(zFMV_Action *);
     };
     union RunBlockingThunk {
-        void (RECOIL_THISCALL zFMV_Action::*member)();
-        void(RECOIL_THISCALL *function)(zFMV_Action *);
+        void ( zFMV_Action::*member)();
+        void( *function)(zFMV_Action *);
     };
 
     DtorThunk dtor = {0};
@@ -925,12 +917,12 @@ zFMV_Action_Vtbl g_zFMV_ActionPlayAvi_Vtable = MakePlayAviActionVtable();
 zFMV_Action_Vtbl g_zFMV_ActionPlayMci_Vtable = MakePlayMciActionVtable();
 
 // Reimplements 0x415aa0: zFMV_Action::Destructor
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Action::Destructor() {
+void zFMV_Action::Destructor() {
     vftable = &g_zFMV_ActionBase_Vtable;
 }
 
 // Reimplements 0x415a80: zFMV_Action::ScalarDeletingDestructor
-RECOIL_FMV_NOINLINE zFMV_Action *RECOIL_THISCALL zFMV_Action::ScalarDeletingDestructor(
+zFMV_Action * zFMV_Action::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     zFMV_Action *const self = this;
@@ -942,7 +934,7 @@ RECOIL_FMV_NOINLINE zFMV_Action *RECOIL_THISCALL zFMV_Action::ScalarDeletingDest
 }
 
 // Reimplements 0x462e70: zFMV_Action::DerivedScalarDeletingDestructor
-RECOIL_FMV_NOINLINE zFMV_Action *RECOIL_THISCALL zFMV_Action::DerivedScalarDeletingDestructor(
+zFMV_Action * zFMV_Action::DerivedScalarDeletingDestructor(
     unsigned int flags
 ) {
     zFMV_Action *const self = this;
@@ -953,21 +945,21 @@ RECOIL_FMV_NOINLINE zFMV_Action *RECOIL_THISCALL zFMV_Action::DerivedScalarDelet
     return self;
 }
 
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Action::NoOpBegin(
+void zFMV_Action::NoOpBegin(
     double
 ) {}
 
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Action::NoOpEnd() {}
+void zFMV_Action::NoOpEnd() {}
 
 // Reimplements 0x4159d0: zFMV_Action::NoOpUpdate
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Action::NoOpUpdate(
+int zFMV_Action::NoOpUpdate(
     double
 ) {
     return 0;
 }
 
 // Reimplements 0x462f00: zFMV_Action::FlipSurfaces
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Action::FlipSurfaces() {
+void zFMV_Action::FlipSurfaces() {
     zVideo::AdjustSurfacesIfEnabled(
         0,
         0,
@@ -977,7 +969,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Action::FlipSurfaces() {
 }
 
 // Reimplements 0x462e30: zFMV_Action::RunBlockingImmediate
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Action::RunBlockingImmediate() {
+void zFMV_Action::RunBlockingImmediate() {
     vftable->Begin(
         this,
         0.0
@@ -991,7 +983,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Action::RunBlockingImmediate() {
 }
 
 // Reimplements 0x4159e0: zFMV_Action::RunBlockingTimed
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Action::RunBlockingTimed() {
+void zFMV_Action::RunBlockingTimed() {
     const double startSec = (double)(GetTickCount()) * 0.00100000005;
     vftable->Begin(
         this,
@@ -1010,21 +1002,21 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Action::RunBlockingTimed() {
 }
 
 // Reimplements 0x462ed0: zFMV_ActionWait::Begin
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionWait::Begin(
+void zFMV_ActionWait::Begin(
     double timeSec
 ) {
     startSec = (float)(timeSec);
 }
 
 // Reimplements 0x462ee0: zFMV_ActionWait::Update
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_ActionWait::Update(
+int zFMV_ActionWait::Update(
     double timeSec
 ) {
     return timeSec < (double)(startSec + durationSec) ? 1 : 0;
 }
 
 // Reimplements 0x462e90: zFMV_ActionPlaySound::Begin
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionPlaySound::Begin(
+void zFMV_ActionPlaySound::Begin(
     double
 ) {
     sample = zSnd::FindSampleByName(sampleName);
@@ -1037,14 +1029,14 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionPlaySound::Begin(
 }
 
 // Reimplements 0x463c90: zFMV_ActionPlayMci::Update
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_ActionPlayMci::Update(
+int zFMV_ActionPlayMci::Update(
     double
 ) {
     return 0;
 }
 
 // Reimplements 0x463ca0: zFMV_ActionPlayMci::Begin
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionPlayMci::Begin(
+void zFMV_ActionPlayMci::Begin(
     double
 ) {
     if (playback != 0) {
@@ -1057,7 +1049,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionPlayMci::Begin(
 }
 
 // Reimplements 0x463cc0: zFMV_ActionPlayMci::End
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionPlayMci::End() {
+void zFMV_ActionPlayMci::End() {
     zVideo::Dispatch_LockDisplayModeSurfaceState();
     zVidImagePartial *capturedImage = zVideo_buff_CaptureSurfaceToImage(2);
     zVideo::Dispatch_UnlockDisplayModeSurfaceState();
@@ -1105,7 +1097,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionPlayMci::End() {
 }
 
 // Reimplements 0x462330: zFMV_Playback::Init
-RECOIL_FMV_NOINLINE zFMV_Playback *RECOIL_THISCALL zFMV_Playback::Init(
+zFMV_Playback * zFMV_Playback::Init(
     const char *mediaPath,
     HWND hwnd
 ) {
@@ -1116,12 +1108,12 @@ RECOIL_FMV_NOINLINE zFMV_Playback *RECOIL_THISCALL zFMV_Playback::Init(
 }
 
 // Reimplements 0x462360: zFMV_Playback::Destructor
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Playback::Destructor() {
+void zFMV_Playback::Destructor() {
     free(mediaPathDup);
 }
 
 // Reimplements 0x462570: zFMV_Playback::ReportMciError
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Playback::ReportMciError(
+int zFMV_Playback::ReportMciError(
     unsigned int mciError
 ) {
     char errorText[0x80];
@@ -1146,7 +1138,7 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Playback::ReportMciError(
 }
 
 // Reimplements 0x462370: zFMV_Playback::OpenAndPlay
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Playback::OpenAndPlay(
+void zFMV_Playback::OpenAndPlay(
     unsigned int startMs,
     int endMs,
     int notifyFlag
@@ -1255,7 +1247,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Playback::OpenAndPlay(
 }
 
 // Reimplements 0x4624f0: zFMV_Playback::StopAndClose
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Playback::StopAndClose() {
+void zFMV_Playback::StopAndClose() {
     DWORD mciError = mciSendCommandA(
         mciDeviceId,
         0x808,
@@ -1278,7 +1270,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Playback::StopAndClose() {
 }
 
 // Reimplements 0x462540: zFMV_Playback::SetDestRect
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Playback::SetDestRect(
+int zFMV_Playback::SetDestRect(
     const zFMV_Rect *rect
 ) {
     destinationRect.left = rect->left;
@@ -1291,45 +1283,12 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Playback::SetDestRect(
 }
 
 // Reimplements 0x463ef0: zFMV_Stream::Constructor
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Stream::Constructor() {
-    const size_t kMediaPathOffset = 0x38;
-    const size_t kHasVideoStreamOffset = 0x3c;
-    const size_t kVideoStreamOffset = 0x40;
-    const size_t kSrcFormatOffset = 0x44;
-    const size_t kDstFormatOffset = 0x48;
-    const size_t kVideoFrameCountOffset = 0x4c;
-    const size_t kVideoStreamInfoOffset = 0x50;
-    const size_t kStreamInfoFccHandlerOffset = 0x54;
-    const size_t kStreamInfoDwScaleOffset = 0x64;
-    const size_t kStreamInfoDwRateOffset = 0x68;
-    const size_t kStreamInfoSuggestedBufferSizeOffset = 0x78;
-    const size_t kVideoDecompressorOffset = 0xe0;
-    const size_t kCompressedFrameBufferOffset = 0xe4;
-    const size_t kDecodedFrameStrideBytesOffset = 0xe8;
-    const size_t kVideoFramesPerSecondOffset = 0xec;
-    const size_t kMsPerFrameOffset = 0xf0;
-    const size_t kReservedF4Offset = 0xf4;
-    const size_t kReservedF8Offset = 0xf8;
-    const size_t kFrameWidthOffset = 0xfc;
-    const size_t kFrameHeightOffset = 0x100;
-    const size_t kCurrentFrameIndexOffset = 0x104;
-    const size_t kCompressedFrameBufferBytesOffset = 0xdc;
+void zFMV_Stream::Constructor() {
+    currentFrameIndex = 0;
 
-    FieldAt<int>(
-        this,
-        kCurrentFrameIndexOffset
-    ) = 0;
-
-    PAVISTREAM &videoStream = FieldAt<PAVISTREAM>(
-        this,
-        kVideoStreamOffset
-    );
     const HRESULT openResult = AVIStreamOpenFromFileA(
         &videoStream,
-        FieldAt<char *>(
-            this,
-            kMediaPathOffset
-        ),
+        mediaPath,
         streamtypeVIDEO,
         0,
         0x10,
@@ -1363,14 +1322,6 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Stream::Constructor() {
         return;
     }
 
-    void *&srcFormat = FieldAt<void *>(
-        this,
-        kSrcFormatOffset
-    );
-    void *&dstFormat = FieldAt<void *>(
-        this,
-        kDstFormatOffset
-    );
     srcFormat = calloc(
         formatBytes,
         1
@@ -1398,17 +1349,11 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Stream::Constructor() {
         return;
     }
 
-    FieldAt<int>(
-        this,
-        kVideoFrameCountOffset
-    ) = AVIStreamLength(videoStream);
+    videoFrameCount = AVIStreamLength(videoStream);
     if (AVIStreamInfoA(
             videoStream,
-            (AVISTREAMINFOA *)(&FieldAt<unsigned char>(
-                this,
-                kVideoStreamInfoOffset
-            )),
-            0x8c
+            &videoStreamInfo,
+            sizeof(videoStreamInfo)
         ) != 0) {
         zError::ReportOld(
             0x400,
@@ -1446,196 +1391,73 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Stream::Constructor() {
 
     int compressedFrameBytes =
         (srcHeader->biBitCount >> 3) * srcHeader->biWidth * srcHeader->biHeight;
-    const int suggestedBufferSize = FieldAt<int>(
-        this,
-        kStreamInfoSuggestedBufferSizeOffset
-    );
+    const int suggestedBufferSize = (int)(videoStreamInfo.dwSuggestedBufferSize);
     if (suggestedBufferSize != 0) {
         compressedFrameBytes = suggestedBufferSize;
     }
-    FieldAt<int>(
-        this,
-        kCompressedFrameBufferBytesOffset
-    ) = compressedFrameBytes;
+    compressedFrameBufferBytes = compressedFrameBytes;
 
-    FieldAt<HIC>(
-        this,
-        kVideoDecompressorOffset
-    ) = ICLocate(
+    videoDecompressor = ICLocate(
         ICTYPE_VIDEO,
-        FieldAt<DWORD>(
-            this,
-            kStreamInfoFccHandlerOffset
-        ),
+        videoStreamInfo.fccHandler,
         (LPBITMAPINFOHEADER)(srcFormat),
         (LPBITMAPINFOHEADER)(dstFormat),
         ICMODE_DECOMPRESS
     );
-    FieldAt<void *>(
-        this,
-        kCompressedFrameBufferOffset
-    ) = calloc(
+    compressedFrameBuffer = calloc(
         compressedFrameBytes,
         1
     );
 
-    FieldAt<int>(
-        this,
-        kDecodedFrameStrideBytesOffset
-    ) =
-        (dstHeader->bV4BitCount >> 3) * dstHeader->bV4Width;
+    decodedFrameStrideBytes = (dstHeader->bV4BitCount >> 3) * dstHeader->bV4Width;
     ICSendMessage(
-        FieldAt<HIC>(
-            this,
-            kVideoDecompressorOffset
-        ),
+        videoDecompressor,
         ICM_DECOMPRESS_BEGIN,
         (DWORD_PTR)(srcFormat),
         (DWORD_PTR)(dstFormat)
     );
 
-    const unsigned int rate = FieldAt<unsigned int>(
-        this,
-        kStreamInfoDwRateOffset
-    );
-    const unsigned int scale = FieldAt<unsigned int>(
-        this,
-        kStreamInfoDwScaleOffset
-    );
-    FieldAt<unsigned int>(
-        this,
-        kVideoFramesPerSecondOffset
-    ) = rate / scale;
-    FieldAt<int>(
-        this,
-        kReservedF4Offset
-    ) = 0;
-    FieldAt<int>(
-        this,
-        kReservedF8Offset
-    ) = 0;
-    FieldAt<unsigned int>(
-        this,
-        kMsPerFrameOffset
-    ) = ((rate >> 1) + (scale * 1000)) / rate;
+    const unsigned int rate = videoStreamInfo.dwRate;
+    const unsigned int scale = videoStreamInfo.dwScale;
+    videoFramesPerSecond = rate / scale;
+    reservedF4 = 0;
+    reservedF8 = 0;
+    msPerFrame = ((rate >> 1) + (scale * 1000)) / rate;
 
-    FieldAt<int>(
-        this,
-        kFrameWidthOffset
-    ) = dstHeader->bV4Width;
-    FieldAt<int>(
-        this,
-        kFrameHeightOffset
-    ) = dstHeader->bV4Height;
+    frameWidth = dstHeader->bV4Width;
+    frameHeight = dstHeader->bV4Height;
 
-    FieldAt<void *>(
-        this,
-        0x10
-    ) = calloc(
+    pixels = calloc(
         dstHeader->bV4SizeImage,
         1
     );
-    FieldAt<int>(
-        this,
-        0x00
-    ) = (int)(dstHeader->bV4SizeImage);
-    FieldAt<short>(
-        this,
-        0x04
-    ) = (short)(dstHeader->bV4Width);
-    FieldAt<short>(
-        this,
-        0x06
-    ) = (short)(dstHeader->bV4Height);
-    FieldAt<unsigned char>(
-        this,
-        0x08
-    ) = 0;
-    FieldAt<unsigned char>(
-        this,
-        0x09
-    ) = 0;
-    FieldAt<unsigned char>(
-        this,
-        0x0a
-    ) = 0;
-    FieldAt<unsigned char>(
-        this,
-        0x0b
-    ) = 0;
-    FieldAt<void *>(
-        this,
-        0x14
-    ) = 0;
-    FieldAt<void *>(
-        this,
-        0x1c
-    ) = 0;
-    FieldAt<void *>(
-        this,
-        0x20
-    ) = 0;
-    FieldAt<void *>(
-        this,
-        0x24
-    ) = 0;
-    FieldAt<void *>(
-        this,
-        0x28
-    ) = 0;
-    FieldAt<void *>(
-        this,
-        0x2c
-    ) = 0;
-    FieldAt<void *>(
-        this,
-        0x30
-    ) = 0;
-    FieldAt<void *>(
-        this,
-        0x18
-    ) = 0;
-    FieldAt<int>(
-        this,
-        0x34
-    ) = (short)(dstHeader->bV4Width);
+    pixelCount = (int)(dstHeader->bV4SizeImage);
+    width = (short)(dstHeader->bV4Width);
+    height = (short)(dstHeader->bV4Height);
+    headerFlagsByte = 0;
+    formatFlagsPacked = 0;
+    uPow2Shift = 0;
+    vPow2Shift = 0;
+    alphaMap = 0;
+    widthScale = 0.0f;
+    queuedAlphaMap = 0;
+    uShiftFrom20 = 0;
+    uMask = 0;
+    vMaskFixed20 = 0;
+    surface = 0;
+    palette = 0;
+    pitchWords = (short)(dstHeader->bV4Width);
 
     dstHeader->bV4Height = -dstHeader->bV4Height;
-    FieldAt<int>(
-        this,
-        kHasVideoStreamOffset
-    ) = 1;
+    hasVideoStream = 1;
 }
 
 // Reimplements 0x4641a0: zFMV_Stream::OpenAudio
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Stream::OpenAudio() {
-    const size_t kMediaPathOffset = 0x38;
-    const size_t kHasAudioStreamOffset = 0x130;
-    const size_t kAudioStreamOffset = 0x134;
-    const size_t kAudioStreamInfoOffset = 0x138;
-    const size_t kAudioStreamInfoDwLengthOffset = 0x158;
-    const size_t kAudioStreamInfoSuggestedBufferSizeOffset = 0x160;
-    const size_t kAudioStreamInfoSampleSizeOffset = 0x168;
-    const size_t kAudioFormatOffset = 0x1c4;
-    const size_t kAudioSegmentBytesOffset = 0x1c8;
-    const size_t kAudioBufferOffset = 0x1cc;
-    const size_t kAudioSampleOffset = 0x1d0;
-    const size_t kReadStreamingAudioOffset = 0x1d4;
-    const size_t kAudioReadSampleIndexOffset = 0x1d8;
-    const size_t kAudioRefillSecondHalfNextOffset = 0x1dc;
-    const size_t kModeFlagsOffset = 0x1e0;
-
-    PAVISTREAM &audioStream = FieldAt<PAVISTREAM>(
-        this,
-        kAudioStreamOffset
-    );
+void zFMV_Stream::OpenAudio() {
     audioStream = 0;
     if (AVIStreamOpenFromFileA(
             &audioStream,
-            FieldAt<char *>(
-                this,
-                kMediaPathOffset
-            ),
+            mediaPath,
             streamtypeAUDIO,
             0,
             0,
@@ -1660,10 +1482,6 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Stream::OpenAudio() {
         return;
     }
 
-    void *&audioFormat = FieldAt<void *>(
-        this,
-        kAudioFormatOffset
-    );
     audioFormat = calloc(
         audioFormatBytes,
         1
@@ -1685,11 +1503,8 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Stream::OpenAudio() {
 
     if (AVIStreamInfoA(
             audioStream,
-            (AVISTREAMINFOA *)(&FieldAt<unsigned char>(
-                this,
-                kAudioStreamInfoOffset
-            )),
-            0x8c
+            &audioStreamInfo,
+            sizeof(audioStreamInfo)
         ) != 0) {
         zError::ReportOld(
             0x400,
@@ -1700,31 +1515,14 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Stream::OpenAudio() {
         return;
     }
 
-    const unsigned int sampleSize = FieldAt<unsigned int>(
-        this,
-        kAudioStreamInfoSampleSizeOffset
-    );
-    if (FieldAt<int>(
-        this,
-        kModeFlagsOffset
-    ) != 0) {
-        const unsigned int segmentBytes =
-            FieldAt<unsigned int>(
-                this,
-                kAudioStreamInfoSuggestedBufferSizeOffset
-            );
-        FieldAt<unsigned int>(
-            this,
-            kAudioSegmentBytesOffset
-        ) = segmentBytes;
-        void *const audioBuffer = calloc(
+    const unsigned int sampleSize = audioStreamInfo.dwSampleSize;
+    if (modeFlags != 0) {
+        const unsigned int segmentBytes = audioStreamInfo.dwSuggestedBufferSize;
+        audioSegmentBytes = segmentBytes;
+        audioBuffer = calloc(
             segmentBytes * 2,
             1
         );
-        FieldAt<void *>(
-            this,
-            kAudioBufferOffset
-        ) = audioBuffer;
 
         if (AVIStreamRead(
                 audioStream,
@@ -1744,50 +1542,28 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Stream::OpenAudio() {
             return;
         }
 
-        FieldAt<zSndSample *>(
-            this,
-            kAudioSampleOffset
-        ) = zSndSample_CreateQueuedStreamingSample(
+        audioSample = zSndSample_CreateQueuedStreamingSample(
             (WAVEFORMATEX *)(audioFormat),
             audioBuffer,
             segmentBytes * 2
         );
-        FieldAt<int>(
-            this,
-            kAudioRefillSecondHalfNextOffset
-        ) = 1;
-        FieldAt<int>(
-            this,
-            kHasAudioStreamOffset
-        ) = 1;
-        FieldAt<unsigned int>(
-            this,
-            kAudioReadSampleIndexOffset
-        ) = segmentBytes / sampleSize;
+        audioRefillSecondHalfNext = 1;
+        hasAudioStream = 1;
+        audioReadSampleIndex = segmentBytes / sampleSize;
         return;
     }
 
     const unsigned int audioBytes = AVIStreamLength(audioStream) * sampleSize;
-    FieldAt<unsigned int>(
-        this,
-        kAudioSegmentBytesOffset
-    ) = audioBytes;
-    void *const audioBuffer = calloc(
+    audioSegmentBytes = audioBytes;
+    audioBuffer = calloc(
         audioBytes,
         1
     );
-    FieldAt<void *>(
-        this,
-        kAudioBufferOffset
-    ) = audioBuffer;
 
     if (AVIStreamRead(
             audioStream,
             0,
-            FieldAt<unsigned int>(
-                this,
-                kAudioStreamInfoDwLengthOffset
-            ),
+            audioStreamInfo.dwLength,
             audioBuffer,
             audioBytes,
             0,
@@ -1802,70 +1578,31 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Stream::OpenAudio() {
         return;
     }
 
-    FieldAt<zSndSample *>(
-        this,
-        kAudioSampleOffset
-    ) = zSndSample_CreateQueuedStreamingSample(
+    audioSample = zSndSample_CreateQueuedStreamingSample(
         (WAVEFORMATEX *)(audioFormat),
         audioBuffer,
         audioBytes
     );
-    FieldAt<int>(
-        this,
-        kHasAudioStreamOffset
-    ) = 1;
+    hasAudioStream = 1;
 }
 
 // Reimplements 0x4643a0: zFMV_Stream::ReadAndDecodeFrame
 // (D:\Proj\GameZRecoil\zFMV\fmv_stream.cpp)
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Stream::ReadAndDecodeFrame(
+int zFMV_Stream::ReadAndDecodeFrame(
     unsigned int frameIndex
 ) {
-    const size_t kPixelsOffset = 0x10;
-    const size_t kVideoStreamOffset = 0x40;
-    const size_t kSrcFormatOffset = 0x44;
-    const size_t kDstFormatOffset = 0x48;
-    const size_t kVideoFrameCountOffset = 0x4c;
-    const size_t kCompressedFrameBufferBytesOffset = 0xdc;
-    const size_t kCodecOffset = 0xe0;
-    const size_t kCompressedFrameBufferOffset = 0xe4;
-    const size_t kCurrentFrameIndexOffset = 0x104;
-    const size_t kCriticalSectionOffset = 0x108;
-    const size_t kHasAudioStreamOffset = 0x130;
-    const size_t kAudioSegmentBytesOffset = 0x1c8;
-    const size_t kAudioSampleOffset = 0x1d0;
-    const size_t kReadStreamingAudioOffset = 0x1d4;
-    const size_t kAudioRefillSecondHalfNextOffset = 0x1dc;
-    const size_t kModeFlagsOffset = 0x1e0;
-
-    unsigned int &currentFrameIndex = FieldAt<unsigned int>(
-        this,
-        kCurrentFrameIndexOffset
-    );
     if (frameIndex != 0xffffffffu) {
         currentFrameIndex = frameIndex;
     }
 
-    const unsigned int frameCount = FieldAt<unsigned int>(
-        this,
-        kVideoFrameCountOffset
-    );
+    const unsigned int frameCount = videoFrameCount;
     if ((int)(currentFrameIndex) < (int)(frameCount)) {
         if (AVIStreamRead(
-                FieldAt<PAVISTREAM>(
-                    this,
-                    kVideoStreamOffset
-                ),
+                videoStream,
                 currentFrameIndex,
                 1,
-                FieldAt<void *>(
-                    this,
-                    kCompressedFrameBufferOffset
-                ),
-                FieldAt<int>(
-                    this,
-                    kCompressedFrameBufferBytesOffset
-                ),
+                compressedFrameBuffer,
+                compressedFrameBufferBytes,
                 0,
                 0
             ) != 0) {
@@ -1878,30 +1615,14 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Stream::ReadAndDecodeFrame(
             return 0;
         }
 
-        CRITICAL_SECTION &lock = FieldAt<CRITICAL_SECTION>(
-            this,
-            kCriticalSectionOffset
-        );
-        EnterCriticalSection(&lock);
+        EnterCriticalSection(&criticalSection);
         if (ICDecompress(
-                (HIC)(FieldAt<void *>(
-                    this,
-                    kCodecOffset
-                )),
+                videoDecompressor,
                 0,
-                (LPBITMAPINFOHEADER)(FieldAt<void *>(
-                    this,
-                    kSrcFormatOffset
-                )),
-                FieldAt<void *>(
-                    this,
-                    kCompressedFrameBufferOffset
-                ),
-                (LPBITMAPINFOHEADER)(FieldAt<void *>(
-                    this,
-                    kDstFormatOffset
-                )),
-                FieldAt<void *>(this, kPixelsOffset)
+                (LPBITMAPINFOHEADER)(srcFormat),
+                compressedFrameBuffer,
+                (LPBITMAPINFOHEADER)(dstFormat),
+                pixels
             ) != 0) {
             zError::ReportOld(
                 0x400,
@@ -1911,7 +1632,7 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Stream::ReadAndDecodeFrame(
             );
             return 0;
         }
-        LeaveCriticalSection(&lock);
+        LeaveCriticalSection(&criticalSection);
     }
 
     ++currentFrameIndex;
@@ -1919,52 +1640,24 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Stream::ReadAndDecodeFrame(
         currentFrameIndex = 0;
     }
 
-    if (FieldAt<int>(
-        this,
-        kHasAudioStreamOffset
-    ) != 0) {
-        if (FieldAt<int>(
-            this,
-            kReadStreamingAudioOffset
-        ) != 0) {
-            FieldAt<int>(
-                this,
-                kReadStreamingAudioOffset
-            ) = 0;
-            FieldAt<zSndSample *>(
-                this,
-                kAudioSampleOffset
-            )->PlayA3DSimple(1.0f);
+    if (hasAudioStream != 0) {
+        if (readStreamingAudio != 0) {
+            readStreamingAudio = 0;
+            audioSample->PlayA3DSimple(1.0f);
             return currentFrameIndex;
         }
 
-        if (FieldAt<int>(
-            this,
-            kModeFlagsOffset
-        ) != 0) {
-            const unsigned int segmentBytes = FieldAt<unsigned int>(
-                this,
-                kAudioSegmentBytesOffset
-            );
-            const unsigned int playCursor =
-                FieldAt<zSndSample *>(
-                    this,
-                    kAudioSampleOffset
-                )->GetPlayCursorBytes();
+        if (modeFlags != 0) {
+            const unsigned int segmentBytes = audioSegmentBytes;
+            const unsigned int playCursor = audioSample->GetPlayCursorBytes();
 
-            if (FieldAt<int>(
-                this,
-                kAudioRefillSecondHalfNextOffset
-            ) != 0) {
+            if (audioRefillSecondHalfNext != 0) {
                 if (playCursor > 0 && playCursor < segmentBytes) {
                     FillAudioBuffer(
                         segmentBytes,
                         segmentBytes
                     );
-                    FieldAt<int>(
-                        this,
-                        kAudioRefillSecondHalfNextOffset
-                    ) = 0;
+                    audioRefillSecondHalfNext = 0;
                     return currentFrameIndex;
                 }
             } else if (playCursor > segmentBytes) {
@@ -1972,10 +1665,7 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Stream::ReadAndDecodeFrame(
                     0,
                     segmentBytes
                 );
-                FieldAt<int>(
-                    this,
-                    kAudioRefillSecondHalfNextOffset
-                ) = 1;
+                audioRefillSecondHalfNext = 1;
             }
         }
     }
@@ -1985,24 +1675,15 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Stream::ReadAndDecodeFrame(
 
 // Reimplements 0x464540: zFMV_Stream::FillAudioBuffer
 // (D:\Proj\GameZRecoil\zFMV\fmv_stream.cpp)
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Stream::FillAudioBuffer(
+int zFMV_Stream::FillAudioBuffer(
     unsigned int offset,
     unsigned int bytes
 ) {
-    const size_t kAudioStreamOffset = 0x134;
-    const size_t kAudioStreamInfoSampleSizeOffset = 0x168;
-    const size_t kAudioSampleOffset = 0x1d0;
-    const size_t kAudioReadSampleIndexOffset = 0x1d8;
-
     void *buffer1Data = 0;
     void *buffer2Data = 0;
     int buffer1Bytes = 0;
     int buffer2Bytes = 0;
 
-    zSndSample *const audioSample = FieldAt<zSndSample *>(
-        this,
-        kAudioSampleOffset
-    );
     const int result = audioSample->LockBackendBuffers(
         offset,
         bytes,
@@ -2015,18 +1696,8 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Stream::FillAudioBuffer(
         return result;
     }
 
-    const unsigned int sampleSize = FieldAt<unsigned int>(
-        this,
-        kAudioStreamInfoSampleSizeOffset
-    );
-    PAVISTREAM const audioStream = FieldAt<PAVISTREAM>(
-        this,
-        kAudioStreamOffset
-    );
-    unsigned int &readSampleIndex = FieldAt<unsigned int>(
-        this,
-        kAudioReadSampleIndexOffset
-    );
+    const unsigned int sampleSize = audioStreamInfo.dwSampleSize;
+    unsigned int &readSampleIndex = audioReadSampleIndex;
 
     if (buffer1Bytes != 0) {
         if (AVIStreamRead(
@@ -2079,87 +1750,26 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Stream::FillAudioBuffer(
 }
 
 // Reimplements 0x463d50: zFMV_Stream::Init
-RECOIL_FMV_NOINLINE zFMV_Stream *RECOIL_THISCALL zFMV_Stream::Init(
+zFMV_Stream * zFMV_Stream::Init(
     const char *mediaPath,
     int modeFlags
 ) {
-    const size_t kMediaPathOffset = 0x38;
-    const size_t kSrcFormatOffset = 0x44;
-    const size_t kDstFormatOffset = 0x48;
-    const size_t kCompressedFrameBufferOffset = 0xe4;
-    const size_t kSurfaceOffset = 0x30;
-    const size_t kPixelsOffset = 0x10;
-    const size_t kAlphaMapOffset = 0x14;
-    const size_t kPaletteOffset = 0x18;
-    const size_t kAudioSampleOffset = 0x1d0;
-    const size_t kAudioFormatOffset = 0x1c4;
-    const size_t kHasAudioStreamOffset = 0x130;
-    const size_t kHasVideoStreamOffset = 0x3c;
-    const size_t kReadStreamingAudioOffset = 0x1d4;
-    const size_t kModeFlagsOffset = 0x1e0;
-    const size_t kCriticalSectionOffset = 0x108;
+    this->mediaPath = DuplicateCString(mediaPath);
+    srcFormat = 0;
+    dstFormat = 0;
+    compressedFrameBuffer = 0;
+    surface = 0;
+    pixels = 0;
+    alphaMap = 0;
+    palette = 0;
+    audioSample = 0;
+    audioFormat = 0;
+    hasAudioStream = 0;
+    hasVideoStream = 0;
+    readStreamingAudio = 1;
+    this->modeFlags = modeFlags;
 
-    FieldAt<char *>(
-        this,
-        kMediaPathOffset
-    ) = DuplicateCString(mediaPath);
-    FieldAt<void *>(
-        this,
-        kSrcFormatOffset
-    ) = 0;
-    FieldAt<void *>(
-        this,
-        kDstFormatOffset
-    ) = 0;
-    FieldAt<void *>(
-        this,
-        kCompressedFrameBufferOffset
-    ) = 0;
-    FieldAt<void *>(
-        this,
-        kSurfaceOffset
-    ) = 0;
-    FieldAt<void *>(
-        this,
-        kPixelsOffset
-    ) = 0;
-    FieldAt<void *>(
-        this,
-        kAlphaMapOffset
-    ) = 0;
-    FieldAt<void *>(
-        this,
-        kPaletteOffset
-    ) = 0;
-    FieldAt<zSndSample *>(
-        this,
-        kAudioSampleOffset
-    ) = 0;
-    FieldAt<void *>(
-        this,
-        kAudioFormatOffset
-    ) = 0;
-    FieldAt<int>(
-        this,
-        kHasAudioStreamOffset
-    ) = 0;
-    FieldAt<int>(
-        this,
-        kHasVideoStreamOffset
-    ) = 0;
-    FieldAt<int>(
-        this,
-        kReadStreamingAudioOffset
-    ) = 1;
-    FieldAt<int>(
-        this,
-        kModeFlagsOffset
-    ) = modeFlags;
-
-    InitializeCriticalSection(&FieldAt<CRITICAL_SECTION>(
-        this,
-        kCriticalSectionOffset
-    ));
+    InitializeCriticalSection(&criticalSection);
     AVIFileInit();
     OpenAudio();
     Constructor();
@@ -2167,133 +1777,60 @@ RECOIL_FMV_NOINLINE zFMV_Stream *RECOIL_THISCALL zFMV_Stream::Init(
 }
 
 // Reimplements 0x463dd0: zFMV_Stream::Destructor
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Stream::Destructor() {
-    const size_t kPixelsOffset = 0x10;
-    const size_t kAlphaMapOffset = 0x14;
-    const size_t kPaletteOffset = 0x18;
-    const size_t kSurfaceOffset = 0x30;
-    const size_t kMediaPathOffset = 0x38;
-    const size_t kHasVideoStreamOffset = 0x3c;
-    const size_t kVideoStreamOffset = 0x40;
-    const size_t kStreamInfoOffset = 0x44;
-    const size_t kBitmapInfoOffset = 0x48;
-    const size_t kCodecOffset = 0xe0;
-    const size_t kDecompressBufferOffset = 0xe4;
-    const size_t kCriticalSectionOffset = 0x108;
-    const size_t kHasAudioStreamOffset = 0x130;
-    const size_t kAudioStreamOffset = 0x134;
-    const size_t kAudioFormatOffset = 0x1c4;
-    const size_t kAudioBufferOffset = 0x1cc;
-    const size_t kAudioSampleOffset = 0x1d0;
-
-    if (FieldAt<void *>(
-        this,
-        kHasAudioStreamOffset
-    ) != 0) {
-        void *&audioBuffer = FieldAt<void *>(
-            this,
-            kAudioBufferOffset
-        );
+void zFMV_Stream::Destructor() {
+    if (hasAudioStream != 0) {
         if (audioBuffer != 0) {
             free(audioBuffer);
             audioBuffer = 0;
         }
 
-        zSndSample *const sample = FieldAt<zSndSample *>(
-            this,
-            kAudioSampleOffset
-        );
-        if (sample != 0) {
-            sample->Destroy();
+        if (audioSample != 0) {
+            audioSample->Destroy();
         }
 
-        void *&audioFormat = FieldAt<void *>(
-            this,
-            kAudioFormatOffset
-        );
         if (audioFormat != 0) {
             free(audioFormat);
             audioFormat = 0;
         }
 
-        AVIStreamRelease((PAVISTREAM)(FieldAt<void *>(
-            this,
-            kAudioStreamOffset
-        )));
+        AVIStreamRelease(audioStream);
     }
 
-    if (FieldAt<void *>(
-        this,
-        kHasVideoStreamOffset
-    ) != 0) {
-        HIC const codec = (HIC)(FieldAt<void *>(
-            this,
-            kCodecOffset
-        ));
-        if (codec != 0) {
+    if (hasVideoStream != 0) {
+        if (videoDecompressor != 0) {
             ICSendMessage(
-                codec,
+                videoDecompressor,
                 ICM_DECOMPRESS_END,
                 0,
                 0
             );
-            ICClose(codec);
+            ICClose(videoDecompressor);
         }
 
-        free(FieldAt<void *>(
-            this,
-            kStreamInfoOffset
-        ));
-        free(FieldAt<void *>(
-            this,
-            kBitmapInfoOffset
-        ));
-        free(FieldAt<void *>(
-            this,
-            kDecompressBufferOffset
-        ));
+        free(srcFormat);
+        free(dstFormat);
+        free(compressedFrameBuffer);
 
-        if (FieldAt<void *>(
-            this,
-            kSurfaceOffset
-        ) != 0) {
+        if (surface != 0) {
             ((zFMV_ImageEnsureSurfaceProc)(g_zVideo_pfnImageEnsureSurfaceForCurrentDevice))(
                 (zVidImagePartial *)(this)
             );
         }
 
-        free(FieldAt<void *>(
-            this,
-            kPixelsOffset
-        ));
-        free(FieldAt<void *>(
-            this,
-            kAlphaMapOffset
-        ));
-        free(FieldAt<void *>(
-            this,
-            kPaletteOffset
-        ));
+        free(pixels);
+        free(alphaMap);
+        free(palette);
 
-        AVIStreamRelease((PAVISTREAM)(FieldAt<void *>(
-            this,
-            kVideoStreamOffset
-        )));
+        AVIStreamRelease(videoStream);
         AVIFileExit();
     }
 
-    DeleteCriticalSection(&FieldAt<CRITICAL_SECTION>(
-        this,
-        kCriticalSectionOffset
-    ));
-    free(FieldAt<void *>(
-        this,
-        kMediaPathOffset
-    ));
+    DeleteCriticalSection(&criticalSection);
+    free(mediaPath);
 }
 
 // Reimplements 0x4625e0: zFMV_Script::Init
-RECOIL_FMV_NOINLINE zFMV_Script *RECOIL_THISCALL zFMV_Script::Init(
+zFMV_Script * zFMV_Script::Init(
     const char *zrdPath,
     const char *tagPrefix,
     HWND hWnd
@@ -2316,7 +1853,7 @@ RECOIL_FMV_NOINLINE zFMV_Script *RECOIL_THISCALL zFMV_Script::Init(
 }
 
 // Reimplements 0x462630: zFMV_Script::Cleanup
-void RECOIL_THISCALL zFMV_Script::Cleanup() {
+void zFMV_Script::Cleanup() {
     if (m_fmvPath != 0) {
 #if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
         __imp__free(m_fmvPath);
@@ -2330,7 +1867,7 @@ void RECOIL_THISCALL zFMV_Script::Cleanup() {
 }
 
 // Reimplements 0x462660: zFMV_Script::Reset
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Script::Reset(
+void zFMV_Script::Reset(
     int destroyActions
 ) {
     zFMV_Action *action = m_head;
@@ -2358,7 +1895,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Script::Reset(
 }
 
 // Reimplements 0x4626b0: zFMV_Script::LoadActionsFromZrd
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Script::LoadActionsFromZrd(
+int zFMV_Script::LoadActionsFromZrd(
     const char *zrdPath,
     const char *tagPrefix
 ) {
@@ -2429,7 +1966,7 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Script::LoadActionsFromZrd(
 }
 
 // Reimplements 0x462f10: zFMV_Script::AppendAction
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Script::AppendAction(
+int zFMV_Script::AppendAction(
     zFMV_Action *action
 ) {
     if (action == 0) {
@@ -2450,7 +1987,7 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Script::AppendAction(
 }
 
 // Reimplements 0x462f90: zFMV_Script::BeginCurrentAction
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Script::BeginCurrentAction(
+int zFMV_Script::BeginCurrentAction(
     double startTimeSec
 ) {
     if (m_cur == 0) {
@@ -2477,12 +2014,12 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Script::BeginCurrentAction(
 }
 
 // Reimplements 0x4630a0: zFMV_Script::BeginAtTime
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Script::BeginAtTime() {
+int zFMV_Script::BeginAtTime() {
     return BeginCurrentAction((double)(timeGetTime()) * (double)(0.00100000005f));
 }
 
 // Reimplements 0x463000: zFMV_Script::Update
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Script::Update(
+int zFMV_Script::Update(
     double timeSec
 ) {
     if (m_cur == 0) {
@@ -2520,12 +2057,12 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Script::Update(
 }
 
 // Reimplements 0x4630e0: zFMV_Script::UpdateAtTime
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Script::UpdateAtTime() {
+int zFMV_Script::UpdateAtTime() {
     return Update((double)(timeGetTime()) * (double)(0.00100000005f));
 }
 
 // Reimplements 0x462f50: zFMV_Script::RunBlocking
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Script::RunBlocking(
+int zFMV_Script::RunBlocking(
     int abortOnKey
 ) {
     m_abortOnKey = abortOnKey;
@@ -2540,14 +2077,14 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_Script::RunBlocking(
 }
 
 // Reimplements 0x463120: zFMV_Script::BeginNow
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_Script::BeginNow(
+void zFMV_Script::BeginNow(
     int destroyActions
 ) {
     Reset(destroyActions);
 }
 
 // Reimplements 0x463130: zFMV_ActionImage::ConstructorWithScreenRect
-RECOIL_FMV_NOINLINE zFMV_ActionImage *RECOIL_THISCALL zFMV_ActionImage::ConstructorWithScreenRect(
+zFMV_ActionImage * zFMV_ActionImage::ConstructorWithScreenRect(
     const char *path,
     int adjustSurfaces,
     int blitX,
@@ -2569,7 +2106,7 @@ RECOIL_FMV_NOINLINE zFMV_ActionImage *RECOIL_THISCALL zFMV_ActionImage::Construc
 }
 
 // Reimplements 0x4631f0: zFMV_ActionImage::ConstructorScaled
-RECOIL_FMV_NOINLINE zFMV_ActionImage *RECOIL_THISCALL zFMV_ActionImage::ConstructorScaled(
+zFMV_ActionImage * zFMV_ActionImage::ConstructorScaled(
     const char *path,
     int adjustSurfaces
 ) {
@@ -2598,12 +2135,12 @@ RECOIL_FMV_NOINLINE zFMV_ActionImage *RECOIL_THISCALL zFMV_ActionImage::Construc
 }
 
 // Reimplements 0x463300: zFMV_ActionImage::Begin
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionImage::Begin(double) {
+void zFMV_ActionImage::Begin(double) {
     image = zImage::TexDir_FindOrCreateByPath(imagePath);
 }
 
 // Reimplements 0x463320: zFMV_ActionImage::Update
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_ActionImage::Update(double) {
+int zFMV_ActionImage::Update(double) {
     int iterations =
         g_zVideo_ActiveRendererPath != k_zFMV_RendererBackendSoftware ? 2 : 1;
 
@@ -2645,7 +2182,7 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_ActionImage::Update(double) {
 }
 
 // Reimplements 0x4633a0: zFMV_ActionImage::End
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionImage::End() {
+void zFMV_ActionImage::End() {
     if (image != 0) {
         zVid_Image::ReleaseIfNotDefault((zVidImagePartial *)(image));
         image = 0;
@@ -2653,7 +2190,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionImage::End() {
 }
 
 // Reimplements 0x4632a0: zFMV_ActionImage::Destructor
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionImage::Destructor() {
+void zFMV_ActionImage::Destructor() {
     vftable = &g_zFMV_ActionImage_Vtable;
     End();
     if (imagePath != 0) {
@@ -2664,7 +2201,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionImage::Destructor() {
 }
 
 // Reimplements 0x4631d0: zFMV_ActionImage::ScalarDeletingDestructor
-RECOIL_FMV_NOINLINE zFMV_ActionImage *RECOIL_THISCALL zFMV_ActionImage::ScalarDeletingDestructor(
+zFMV_ActionImage * zFMV_ActionImage::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     zFMV_ActionImage *const self = this;
@@ -2676,7 +2213,7 @@ RECOIL_FMV_NOINLINE zFMV_ActionImage *RECOIL_THISCALL zFMV_ActionImage::ScalarDe
 }
 
 // Reimplements 0x4633c0: zFMV_ActionFade::Constructor
-RECOIL_FMV_NOINLINE zFMV_ActionFade *RECOIL_THISCALL zFMV_ActionFade::Constructor(
+zFMV_ActionFade * zFMV_ActionFade::Constructor(
     int red,
     int green,
     int blue,
@@ -2698,13 +2235,13 @@ RECOIL_FMV_NOINLINE zFMV_ActionFade *RECOIL_THISCALL zFMV_ActionFade::Constructo
 }
 
 // Reimplements 0x463410: zFMV_ActionFade::Begin
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionFade::Begin(double timeSec) {
+void zFMV_ActionFade::Begin(double timeSec) {
     capturedFrame = zVideo_buff_CaptureSurfaceToImage(1);
     startSec = timeSec;
 }
 
 // Reimplements 0x463440: zFMV_ActionFade::Update
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_ActionFade::Update(double timeSec) {
+int zFMV_ActionFade::Update(double timeSec) {
     if (capturedFrame == 0) {
         return 0;
     }
@@ -2773,7 +2310,7 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_ActionFade::Update(double timeSec) 
 }
 
 // Reimplements 0x463550: zFMV_ActionFade::End
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionFade::End() {
+void zFMV_ActionFade::End() {
     if (capturedFrame != 0) {
         zVid_Image::ReleaseIfNotDefault((zVidImagePartial *)(capturedFrame));
         capturedFrame = 0;
@@ -2781,7 +2318,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionFade::End() {
 }
 
 // Reimplements 0x463570: zFMV_ActionPlayAvi::Constructor
-RECOIL_FMV_NOINLINE zFMV_ActionPlayAvi *RECOIL_THISCALL zFMV_ActionPlayAvi::Constructor(
+zFMV_ActionPlayAvi * zFMV_ActionPlayAvi::Constructor(
     const char *mediaRootPath,
     const char *mediaFileName,
     int flags
@@ -2825,7 +2362,7 @@ RECOIL_FMV_NOINLINE zFMV_ActionPlayAvi *RECOIL_THISCALL zFMV_ActionPlayAvi::Cons
 }
 
 // Reimplements 0x463670: zFMV_ActionPlayAvi::Destructor
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionPlayAvi::Destructor() {
+void zFMV_ActionPlayAvi::Destructor() {
     vftable = &g_zFMV_ActionPlayAvi_Vtable;
     if (mediaPath != 0) {
         free(mediaPath);
@@ -2835,7 +2372,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionPlayAvi::Destructor() {
 }
 
 // Reimplements 0x463650: zFMV_ActionPlayAvi::ScalarDeletingDestructor
-RECOIL_FMV_NOINLINE zFMV_ActionPlayAvi *RECOIL_THISCALL zFMV_ActionPlayAvi::ScalarDeletingDestructor(
+zFMV_ActionPlayAvi * zFMV_ActionPlayAvi::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     zFMV_ActionPlayAvi *const self = this;
@@ -2847,7 +2384,7 @@ RECOIL_FMV_NOINLINE zFMV_ActionPlayAvi *RECOIL_THISCALL zFMV_ActionPlayAvi::Scal
 }
 
 // Reimplements 0x4636d0: zFMV_ActionPlayAvi::Update
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_ActionPlayAvi::Update(
+int zFMV_ActionPlayAvi::Update(
     double timeSec
 ) {
     int result = 1;
@@ -2858,7 +2395,7 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_ActionPlayAvi::Update(
 
     zFMV_Stream *const playbackStream = stream;
     const int frameIndex =
-        (int)((timeSec - startTimeSec) * (double)(FieldAt<int>(playbackStream, 0xec)));
+        (int)((timeSec - startTimeSec) * (double)(playbackStream->videoFramesPerSecond));
     if (frameIndex != previousFrameIndex) {
         int blitPrimaryToSwFirst = 0;
         if (g_zVideo_ActiveRendererPath != k_zFMV_RendererBackend3dfx) {
@@ -2895,10 +2432,10 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_ActionPlayAvi::Update(
 }
 
 // Reimplements 0x463790: zFMV_ActionPlayAvi::Begin
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionPlayAvi::Begin(
+void zFMV_ActionPlayAvi::Begin(
     double
 ) {
-    zFMV_Stream *const streamStorage = (zFMV_Stream *)(::operator new(0x1e4));
+    zFMV_Stream *const streamStorage = (zFMV_Stream *)(::operator new(sizeof(zFMV_Stream)));
     zFMV_Stream *initializedStream = 0;
     if (streamStorage != 0) {
         initializedStream = streamStorage->Init(
@@ -2921,7 +2458,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionPlayAvi::Begin(
 }
 
 // Reimplements 0x463820: zFMV_ActionPlayAvi::End
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionPlayAvi::End() {
+void zFMV_ActionPlayAvi::End() {
     zFMV_Stream *const playbackStream = stream;
     if (playbackStream != 0) {
         playbackStream->Destructor();
@@ -2931,7 +2468,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionPlayAvi::End() {
 }
 
 // Reimplements 0x463b00: zFMV_ActionPlayMci::Constructor
-RECOIL_FMV_NOINLINE zFMV_ActionPlayMci *RECOIL_THISCALL zFMV_ActionPlayMci::Constructor(
+zFMV_ActionPlayMci * zFMV_ActionPlayMci::Constructor(
     const char *mediaRootPath,
     const char *playbackTitle,
     HWND hwnd
@@ -2976,7 +2513,7 @@ RECOIL_FMV_NOINLINE zFMV_ActionPlayMci *RECOIL_THISCALL zFMV_ActionPlayMci::Cons
 }
 
 // Reimplements 0x463c10: zFMV_ActionPlayMci::Destructor
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionPlayMci::Destructor() {
+void zFMV_ActionPlayMci::Destructor() {
     vftable = &g_zFMV_ActionPlayMci_Vtable;
     if (mediaPath != 0) {
         free(mediaPath);
@@ -2993,7 +2530,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionPlayMci::Destructor() {
 }
 
 // Reimplements 0x463bf0: zFMV_ActionPlayMci::ScalarDeletingDestructor
-RECOIL_FMV_NOINLINE zFMV_ActionPlayMci *RECOIL_THISCALL zFMV_ActionPlayMci::ScalarDeletingDestructor(
+zFMV_ActionPlayMci * zFMV_ActionPlayMci::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     zFMV_ActionPlayMci *const self = this;
@@ -3005,7 +2542,7 @@ RECOIL_FMV_NOINLINE zFMV_ActionPlayMci *RECOIL_THISCALL zFMV_ActionPlayMci::Scal
 }
 
 // Reimplements 0x463850: zFMV_ActionBlur::Constructor
-RECOIL_FMV_NOINLINE zFMV_ActionBlur *RECOIL_THISCALL zFMV_ActionBlur::Constructor(
+zFMV_ActionBlur * zFMV_ActionBlur::Constructor(
     int framesRemainingParam,
     int blurPassCountParam
 ) {
@@ -3017,7 +2554,7 @@ RECOIL_FMV_NOINLINE zFMV_ActionBlur *RECOIL_THISCALL zFMV_ActionBlur::Constructo
 }
 
 // Reimplements 0x463870: zFMV_ActionBlur::Begin
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionBlur::Begin(
+void zFMV_ActionBlur::Begin(
     double
 ) {
     primarySurfaceRect.top = 0;
@@ -3055,7 +2592,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionBlur::Begin(
 }
 
 // Reimplements 0x463920: zFMV_ActionBlur::End
-RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionBlur::End() {
+void zFMV_ActionBlur::End() {
     zVideo::Fx_SetSurfaceState(
         zVideo::GetPrimarySurfacePixels(),
         zVideo::GetPrimarySurfaceWidth(),
@@ -3065,7 +2602,7 @@ RECOIL_FMV_NOINLINE void RECOIL_THISCALL zFMV_ActionBlur::End() {
 }
 
 // Reimplements 0x463950: zFMV_ActionBlur::Update
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_ActionBlur::Update(
+int zFMV_ActionBlur::Update(
     double
 ) {
     --framesRemaining;
@@ -3111,7 +2648,7 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_ActionBlur::Update(
 }
 
 // Reimplements 0x4639e0: zFMV_ActionBlurH::Update
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_ActionBlurH::Update(
+int zFMV_ActionBlurH::Update(
     double
 ) {
     --framesRemaining;
@@ -3157,7 +2694,7 @@ RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_ActionBlurH::Update(
 }
 
 // Reimplements 0x463a70: zFMV_ActionBlurV::Update
-RECOIL_FMV_NOINLINE int RECOIL_THISCALL zFMV_ActionBlurV::Update(
+int zFMV_ActionBlurV::Update(
     double
 ) {
     --framesRemaining;

@@ -19,17 +19,17 @@ struct PickupAirdropSpawnRef {
     zClass_NodePartial *dropAttachNode;
     zVec3 worldPos;
 
-    RECOIL_NOINLINE PickupAirdropSpawnRef *RECOIL_THISCALL InitNodesFromCarrierNodeName(
+    PickupAirdropSpawnRef * InitNodesFromCarrierNodeName(
         const char *carrierNodeName
     );
-    RECOIL_NOINLINE zVec3 *RECOIL_THISCALL GetWorldPos();
-    RECOIL_NOINLINE int RECOIL_THISCALL CanSpawnWithClearance(float clearanceRadius);
-    RECOIL_NOINLINE int RECOIL_THISCALL SpawnPickupTypeAndRelay(int pickupTypeIndex);
-    RECOIL_NOINLINE static void RECOIL_FASTCALL InitGlobalFromCarrierNodeName(
+    zVec3 * GetWorldPos();
+    int CanSpawnWithClearance(float clearanceRadius);
+    int SpawnPickupTypeAndRelay(int pickupTypeIndex);
+    static void __fastcall InitGlobalFromCarrierNodeName(
         const char *carrierNodeName
     );
-    RECOIL_NOINLINE static void RECOIL_CDECL ShutdownGlobal();
-    RECOIL_NOINLINE static int RECOIL_CDECL TrySpawnRandomPickupFromGlobal();
+    static void ShutdownGlobal();
+    static int TrySpawnRandomPickupFromGlobal();
 };
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -43,6 +43,25 @@ struct PickupBvolHitCallbackContext {
     unsigned char unknown_00[0x24];
     zClass_NodePartial *ownerNode;
 };
+
+struct PickupNodeRuntimeFields {
+    char visibleName[0x18];
+    int pickupId;
+    int pickupTypeIndex;
+    int amount;
+};
+
+inline PickupNodeRuntimeFields *PickupNodeFields(
+    zClass_NodePartial *node
+) {
+    return (PickupNodeRuntimeFields *)(node->name);
+}
+
+inline const PickupNodeRuntimeFields *PickupNodeFields(
+    const zClass_NodePartial *node
+) {
+    return (const PickupNodeRuntimeFields *)(node->name);
+}
 
 struct PickupSpawnDef {
     int pickupId;
@@ -209,13 +228,13 @@ struct PickupSpawnList {
     PickupSpawnDef *tail;
     int count;
 
-    RECOIL_NOINLINE static void RECOIL_CDECL Primary_Init();
-    RECOIL_NOINLINE static void RECOIL_CDECL NetCopy_Init();
-    RECOIL_NOINLINE static void RECOIL_FASTCALL RemoveAndFreeNode(
+    static void Primary_Init();
+    static void NetCopy_Init();
+    static void __fastcall RemoveAndFreeNode(
         PickupSpawnDef *node,
         PickupSpawnList *list
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL Clear();
+    void Clear();
 };
 
 struct PickupRespawnEntry {
@@ -230,9 +249,9 @@ struct PickupRespawnQueue {
     PickupRespawnEntry *tail;
     int count;
 
-    RECOIL_NOINLINE static void RECOIL_CDECL Init();
-    RECOIL_NOINLINE static void RECOIL_CDECL Update();
-    RECOIL_NOINLINE void RECOIL_THISCALL ClearAndFree();
+    static void Init();
+    static void Update();
+    void ClearAndFree();
 };
 
 struct PickupType {
@@ -249,9 +268,9 @@ struct PickupType {
     OptCatalogEntryDef *optEntry;
     int weaponPresenceCount;
 
-    RECOIL_NOINLINE static PickupType *RECOIL_FASTCALL GetByIndex_Pure(int pickupTypeIndex);
-    RECOIL_NOINLINE static PickupType *RECOIL_FASTCALL GetByIndex(int pickupTypeIndex);
-    RECOIL_NOINLINE static int RECOIL_FASTCALL FindByLogicalName(
+    static PickupType *__fastcall GetByIndex_Pure(int pickupTypeIndex);
+    static PickupType *__fastcall GetByIndex(int pickupTypeIndex);
+    static int __fastcall FindByLogicalName(
         const char *logicalName,
         int *outTypeIndex
     );
@@ -272,15 +291,15 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(sizeof(PickupType) == 0x30);
 
 namespace PickupTypeKeyTable {
-RECOIL_NOINLINE int RECOIL_FASTCALL FindIndex(const char *logicalName);
+int __fastcall FindIndex(const char *logicalName);
 }
 
 namespace PickupTypeMeta {
-RECOIL_NOINLINE PickupType *RECOIL_FASTCALL FindByName(const char *typeName);
+PickupType *__fastcall FindByName(const char *typeName);
 }
 
 namespace Net {
-RECOIL_NOINLINE int RECOIL_FASTCALL IsOptEntryActiveInAnySlot(OptCatalogEntryDef *optEntry);
+int __fastcall IsOptEntryActiveInAnySlot(OptCatalogEntryDef *optEntry);
 }
 
 extern PickupType g_PickupTypes[40];
@@ -296,123 +315,123 @@ extern PickupAirdropSpawnRef *g_Pickup_GlobalAirdropSpawnRef;
 }
 
 namespace Pickup {
-RECOIL_NOINLINE int RECOIL_FASTCALL Init(
+int __fastcall Init(
     zClass_NodePartial *sceneNode,
     const char *pickupsCfgPath
 );
-RECOIL_NOINLINE int RECOIL_CDECL InitAndLoadPuppySpawns();
-RECOIL_NOINLINE void RECOIL_CDECL Shutdown();
-RECOIL_NOINLINE int RECOIL_FASTCALL ArchiveWriteAll(
+int InitAndLoadPuppySpawns();
+void Shutdown();
+int __fastcall ArchiveWriteAll(
     zZbdSectionCallbackCtx *callbackCtx,
     void *userData
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ArchiveReadRecord(
+void __fastcall ArchiveReadRecord(
     zZbdSectionCallbackCtx *callbackCtx,
     const char *sectionToken,
     void *buffer,
     unsigned int size,
     void *userData
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ResolveOwnerFromBvolHit(zClass_NodePartial **nodeInOut);
-RECOIL_NOINLINE PickupSpawnDef *RECOIL_FASTCALL FindSpawnByPickupId(
+int __fastcall ResolveOwnerFromBvolHit(zClass_NodePartial **nodeInOut);
+PickupSpawnDef *__fastcall FindSpawnByPickupId(
     int pickupId,
     PickupSpawnList *list
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SpawnListContainsPickupId(
+int __fastcall SpawnListContainsPickupId(
     PickupSpawnDef *spawn,
     PickupSpawnList *list
 );
-RECOIL_NOINLINE void RECOIL_CDECL ReconcilePrimaryAndNetworkCopySpawnLists();
-RECOIL_NOINLINE PickupSpawnDef *RECOIL_FASTCALL GetSpawnDefFromNode(zClass_NodePartial *pickupNode);
-RECOIL_NOINLINE zVidImagePartial *RECOIL_FASTCALL FindOptMetaImageByOptEntry(
+void ReconcilePrimaryAndNetworkCopySpawnLists();
+PickupSpawnDef *__fastcall GetSpawnDefFromNode(zClass_NodePartial *pickupNode);
+zVidImagePartial *__fastcall FindOptMetaImageByOptEntry(
     OptCatalogEntryDef *optEntry
 );
-RECOIL_NOINLINE PickupType *RECOIL_FASTCALL FindDroppableTypeForPlayerCurrentWeapon(
+PickupType *__fastcall FindDroppableTypeForPlayerCurrentWeapon(
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RemoveOtherSpawnsWithSameOptEntry(
+void __fastcall RemoveOtherSpawnsWithSameOptEntry(
     OptCatalogEntryDef *optEntry,
     zClass_NodePartial *keepPickupObj
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SendPkt11_Flag2Delta(PickupSpawnDef *spawn);
-RECOIL_NOINLINE int RECOIL_FASTCALL SendPkt11_Flag8Delta(PickupSpawnDef *spawn);
-RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt11_CreateDelta(PickupSpawnDef *spawn);
-RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt11_SpawnDelta(
+int __fastcall SendPkt11_Flag2Delta(PickupSpawnDef *spawn);
+int __fastcall SendPkt11_Flag8Delta(PickupSpawnDef *spawn);
+void __fastcall SendPkt11_CreateDelta(PickupSpawnDef *spawn);
+int __fastcall HandlePkt11_SpawnDelta(
     int senderPlayerId,
     PickupPkt11CreateDelta *packet
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt12_AirdropSpawnChuteRelay(
+int __fastcall HandlePkt12_AirdropSpawnChuteRelay(
     int senderPlayerId,
     PickupPkt12AirdropSpawnChuteRelay *packet
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt12_AirdropSpawnChuteRelay(
+void __fastcall SendPkt12_AirdropSpawnChuteRelay(
     int pickupTypeIndex,
     zVec3 *spawnPos,
     int nextPickupId
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AssignBvolGroupAndId(zClass_NodePartial *pickupObj);
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CreateObjectInstance(
+int __fastcall AssignBvolGroupAndId(zClass_NodePartial *pickupObj);
+zClass_NodePartial *__fastcall CreateObjectInstance(
     int typeIndex,
     int overrideAmount
 );
-RECOIL_NOINLINE PickupSpawnDef *RECOIL_FASTCALL SpawnAt(
+PickupSpawnDef *__fastcall SpawnAt(
     int typeIndex,
     int amount,
     zVec3 *position,
     zVec3 *rotation,
     int spawnParam
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SpawnAtCarrierNodeByName(
+void __fastcall SpawnAtCarrierNodeByName(
     const char *carrierNodeName,
     int typeIndex,
     int amount
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SpawnWithAirdropChute(
+int __fastcall SpawnWithAirdropChute(
     int typeIndex,
     zVec3 *position
 );
-RECOIL_NOINLINE PickupSpawnDef *RECOIL_FASTCALL SpawnFromParsedZrdEntry(
+PickupSpawnDef *__fastcall SpawnFromParsedZrdEntry(
     PickupParsedZrdEntry *entry
 );
-RECOIL_NOINLINE PickupSpawnDef *RECOIL_FASTCALL CreateSpawnDefAndLink(
+PickupSpawnDef *__fastcall CreateSpawnDefAndLink(
     zClass_NodePartial *pickupObj,
     zVec3 *position,
     zVec3 *rotation,
     int spawnParam,
     int linkToScene
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RegisterExistingObject(
+void __fastcall RegisterExistingObject(
     int unused,
     zClass_NodePartial *pickupObj,
     int eventValue
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SetVariantFromTerrain(
+void __fastcall SetVariantFromTerrain(
     zClass_NodePartial *pickupObj,
     zVec3 *position
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RespawnSpawnDef(PickupSpawnDef *spawn);
-RECOIL_NOINLINE int RECOIL_FASTCALL MapVTOLDropGroupVariantToTypeIndex(
+void __fastcall RespawnSpawnDef(PickupSpawnDef *spawn);
+int __fastcall MapVTOLDropGroupVariantToTypeIndex(
     int dropGroupIndex,
     int dropVariantIndex
 );
-RECOIL_NOINLINE int RECOIL_CDECL SelectNextVTOLSpawnTypeIndex();
-RECOIL_NOINLINE const char *RECOIL_FASTCALL SelectPuppiesZrdByDifficulty(
+int SelectNextVTOLSpawnTypeIndex();
+const char *__fastcall SelectPuppiesZrdByDifficulty(
     const char *extraSearchPath
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SpawnListHasEntryNearXZ(
+int __fastcall SpawnListHasEntryNearXZ(
     zVec3 *position,
     float clearanceRadius
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RemoveObject(
+void __fastcall RemoveObject(
     zEffectAnimEntry *animEntry,
     zClass_NodePartial *pickupObj,
     int eventValue
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL OnCollected(
+int __fastcall OnCollected(
     zClass_NodePartial *hitNode,
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL GrantAmmoOrWeapon(
+int __fastcall GrantAmmoOrWeapon(
     PickupType *pickupType,
     char *messageBuffer,
     zUtil_SaveGameState *saveState,
@@ -421,17 +440,17 @@ RECOIL_NOINLINE int RECOIL_FASTCALL GrantAmmoOrWeapon(
     int pairedWeaponSideIndex,
     int overrideAmount
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ApplyEffect(
+int __fastcall ApplyEffect(
     int pickupTypeId,
     int overrideAmount,
     zUtil_SaveGameState *saveState
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL SetNextPickupId(int nextPickupId);
-RECOIL_NOINLINE int RECOIL_CDECL GetNextPickupId();
+int __fastcall SetNextPickupId(int nextPickupId);
+int GetNextPickupId();
 } // namespace Pickup
 
 namespace PickupTypeTable {
-RECOIL_NOINLINE void RECOIL_CDECL FreeOptMeta();
+void FreeOptMeta();
 }
 
 RECOIL_STATIC_ASSERT(
@@ -441,6 +460,27 @@ RECOIL_STATIC_ASSERT(
     ) == 0x24
 );
 RECOIL_STATIC_ASSERT(sizeof(PickupBvolHitCallbackContext) == 0x28);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PickupNodeRuntimeFields,
+        pickupId
+    ) == 0x18
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PickupNodeRuntimeFields,
+        pickupTypeIndex
+    ) == 0x1c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PickupNodeRuntimeFields,
+        amount
+    ) == 0x20
+);
+RECOIL_STATIC_ASSERT(
+    sizeof(PickupNodeRuntimeFields) == sizeof(((zClass_NodePartial *)0)->name)
+);
 RECOIL_STATIC_ASSERT(
     offsetof(
         PickupSpawnDef,

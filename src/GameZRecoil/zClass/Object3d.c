@@ -313,7 +313,7 @@ namespace {
 namespace zClass_Object3D {
     // Reimplements 0x44b300: zClass_Object3D::RenderTraverse
     // (D:\Proj\GameZRecoil\zClass\Object3d.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint
@@ -407,7 +407,7 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44daa0: zClass_Object3D::gwObject3DInit
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwObject3DInit() {
+    zClass_NodePartial *gwObject3DInit() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
             zError::ReportOld(
@@ -428,7 +428,7 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44db10: zClass_Object3D::gwObject3DAddChild
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwObject3DAddChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -468,7 +468,7 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44db60: zClass_Object3D::RemoveChild
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -508,12 +508,12 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44db00: zClass_Object3D::DeleteNode
-    RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNode(zClass_NodePartial * node) {
+    int __fastcall DeleteNode(zClass_NodePartial * node) {
         return zClass_Class::TryFreeNode(node);
     }
 
     // Reimplements 0x44d9e0: zClass_Object3D::PropagateTransformDirty
-    RECOIL_NOINLINE int RECOIL_FASTCALL PropagateTransformDirty(zClass_NodePartial * node) {
+    int __fastcall PropagateTransformDirty(zClass_NodePartial * node) {
         zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
             node,
             0xe8,
@@ -551,7 +551,7 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44dbb0: zClass_Object3D::gwObject3DSetVisibleFlag
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwObject3DSetVisibleFlag(
         zClass_NodePartial * node,
         int visible
@@ -575,7 +575,7 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44dc30: zClass_Object3D::gwObject3DSetColorAlpha
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwObject3DSetColorAlpha(
         zClass_NodePartial * node,
         zColorRgb * color,
@@ -602,7 +602,7 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44dd90: zClass_Object3D::gwObject3DSetAlphaScale
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwObject3DSetAlphaScale(
         zClass_NodePartial * node,
         float alphaScale
@@ -622,7 +622,7 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44de10: zClass_Object3D::gwObject3DGetAlphaScale
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwObject3DGetAlphaScale(
         zClass_NodePartial * node,
         float *outAlphaScale
@@ -642,7 +642,7 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44de80: zClass_Object3D::gwObject3DSetLitFlag
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwObject3DSetLitFlag(
+    int __fastcall gwObject3DSetLitFlag(
         zClass_NodePartial * node,
         int lit
     ){
@@ -665,7 +665,7 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44dfd0: zClass_Object3D::gwObject3DGetScale
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwObject3DGetScale(
         zClass_NodePartial * node,
         float *outX,
@@ -688,7 +688,7 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44df00: zClass_Object3D::gwObject3DSetScale
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwObject3DSetScale(
         zClass_NodePartial * node,
         float x,
@@ -720,7 +720,7 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44e110: zClass_Object3D::gwObject3DGetRotation
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwObject3DGetRotation(
         zClass_NodePartial * node,
         float *outX,
@@ -743,7 +743,7 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44e030: zClass_Object3D::gwObject3DSetRotation
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwObject3DSetRotation(
         zClass_NodePartial * node,
         float x,
@@ -778,7 +778,7 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44e170: zClass_Object3D::gwObject3DTranslateRotation
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwObject3DTranslateRotation(
         zClass_NodePartial * node,
         float dx,
@@ -813,7 +813,7 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44e270: zClass_Object3D::gwObject3DGetPosition
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwObject3DGetPosition(
         zClass_NodePartial * node,
         float *outX,
@@ -837,7 +837,7 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44e300: zClass_Object3D::gwObject3DSetPosition
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwObject3DSetPosition(
         zClass_NodePartial * node,
         float x,
@@ -871,7 +871,7 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44e3d0: zClass_Object3D::gwObject3DTranslatePosition
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwObject3DTranslatePosition(
         zClass_NodePartial * node,
         float dx,
@@ -906,7 +906,7 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44e5b0: zClass_Object3D::gwObject3DGetMatrixPtr
-    RECOIL_NOINLINE float *RECOIL_FASTCALL gwObject3DGetMatrixPtr(zClass_NodePartial * node) {
+    float *__fastcall gwObject3DGetMatrixPtr(zClass_NodePartial * node) {
         zClass_Object3DDataPartial *data = GetObject3DData(
             node,
             0x4fe,
@@ -921,7 +921,7 @@ namespace zClass_Object3D {
     }
 
     // Reimplements 0x44e4f0: zClass_Object3D::gwObject3DSetMatrix
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwObject3DSetMatrix(
         zClass_NodePartial * node,
         float *matrix
@@ -965,7 +965,7 @@ zClass_Object3D_ModelRefLerpQueueState g_ModelRefLerpQueueState = {0};
 namespace zClass_Object3D_ModelRefLerpQueue {
     // Reimplements 0x437fe4: zClass_Object3D_ModelRefLerpQueue::ClearGlobalState
     // (D:\Proj\GameZRecoil\zClass\Object3d.c)
-    RECOIL_NOINLINE void RECOIL_CDECL ClearGlobalState() {
+    void ClearGlobalState() {
         g_ModelRefLerpQueueState.listAux = 0;
         g_ModelRefLerpQueueState.tail = 0;
         g_ModelRefLerpQueueState.head = 0;
@@ -973,7 +973,7 @@ namespace zClass_Object3D_ModelRefLerpQueue {
     }
 
     // Reimplements 0x438020: zClass_Object3D_ModelRefLerpQueue::Add
-    RECOIL_NOINLINE void RECOIL_FASTCALL Add(
+    void __fastcall Add(
         zClass_NodePartial * node,
         void *callbackCtx,
         void *onComplete,
@@ -1029,7 +1029,7 @@ namespace zClass_Object3D_ModelRefLerpQueue {
 
     // Reimplements 0x4381d0: zClass_Object3D_ModelRefLerpQueue::Update
     // (D:\Proj\GameZRecoil\zClass\Object3d.c)
-    RECOIL_NOINLINE void RECOIL_CDECL Update() {
+    void Update() {
         if (g_ModelRefLerpQueueState.count == 0) {
             return;
         }
@@ -1109,7 +1109,7 @@ namespace zClass_Object3D_ModelRefLerpQueue {
     }
 
     // Reimplements 0x438180: zClass_Object3D_ModelRefLerpQueue::Reset
-    RECOIL_NOINLINE void RECOIL_CDECL Reset() {
+    void Reset() {
         zClass_Object3D_ModelRefLerpTask *task = g_ModelRefLerpQueueState.head;
         while (task != 0) {
             zClass_Object3D_ModelRefLerpTask *const next = task->next;
@@ -1134,7 +1134,7 @@ namespace zClass_Node {
     }
 
     // Reimplements 0x4527f0: zClass_Node::HasRenderableDiPredicate
-    RECOIL_NOINLINE int RECOIL_FASTCALL HasRenderableDiPredicate(zClass_NodePartial * node) {
+    int __fastcall HasRenderableDiPredicate(zClass_NodePartial * node) {
         zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
         if (di != 0 && di->mode == 1 && (di->flags & 0x10) == 0) {
             return 1;
@@ -1144,7 +1144,7 @@ namespace zClass_Node {
     }
 
     // Reimplements 0x44d990: zClass_Node::PropagateTransformDirtyRecursive
-    RECOIL_NOINLINE void RECOIL_FASTCALL PropagateTransformDirtyRecursive(
+    void __fastcall PropagateTransformDirtyRecursive(
         zClass_NodePartial * self
     ) {
         if (self->classId == kZClassNodeObject3D) {

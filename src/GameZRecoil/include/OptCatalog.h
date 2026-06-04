@@ -129,7 +129,7 @@ struct OptCatalogHitEventPartial {
     zClass_NodePartial *hitNode;
 };
 
-typedef void(RECOIL_FASTCALL *OptCatalogImpactCallback)(
+typedef void(__fastcall *OptCatalogImpactCallback)(
     OptCatalogEntryDef *entry,
     OptCatalogHitEventPartial *hitEvent,
     OptCatalogRuntimeInstanceStorage *runtimeInstance
@@ -221,41 +221,41 @@ struct OptCatalogEntryDef {
     char *killVerbString;
 };
 
-typedef float(RECOIL_FASTCALL *OptCatalogDamageTimerCallback)(
+typedef float(__fastcall *OptCatalogDamageTimerCallback)(
     void *context,
     float damageAmount
 );
-typedef int(RECOIL_FASTCALL *OptCatalogHitCallback)(
+typedef int(__fastcall *OptCatalogHitCallback)(
     void *context,
     OptCatalogEntryDef *entry,
     OptCatalogHitEventPartial *hitEvent,
     float damageAmount
 );
-typedef void(RECOIL_FASTCALL *OptCatalogDamageFeedbackCallback)(
+typedef void(__fastcall *OptCatalogDamageFeedbackCallback)(
     OptCatalogDamageHandlerPartial *handler,
     zClass_NodePartial *hitNode,
     float damageAmount
 );
-typedef void(RECOIL_FASTCALL *OptCatalogRemoveRuntimeRelayCallback)(
+typedef void(__fastcall *OptCatalogRemoveRuntimeRelayCallback)(
     OptCatalogEntryDef *entry,
     zVec3 *pointOrVec3,
     zClass_NodePartial *ownerNode
 );
 
 namespace OptCatalog {
-RECOIL_NOINLINE void RECOIL_FASTCALL BlendDirectionTowardTarget(
+void __fastcall BlendDirectionTowardTarget(
     zVec3 *direction,
     const zVec3 *targetDirection,
     float xWeight,
     float yWeight,
     float zWeight
 );
-RECOIL_NOINLINE OptCatalogEntryDef *RECOIL_FASTCALL FindEntryByName(const char *name);
-RECOIL_NOINLINE OptCatalogEntryDef *RECOIL_FASTCALL FindEntryById(int entryId);
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL CreateTrailSegmentNodeFromTemplate(
+OptCatalogEntryDef *__fastcall FindEntryByName(const char *name);
+OptCatalogEntryDef *__fastcall FindEntryById(int entryId);
+zClass_NodePartial *__fastcall CreateTrailSegmentNodeFromTemplate(
     zClass_NodePartial *templateNode
 );
-RECOIL_NOINLINE OptCatalogTrailRuntimeState *RECOIL_FASTCALL CreateTrailRuntimeState(
+OptCatalogTrailRuntimeState *__fastcall CreateTrailRuntimeState(
     OptCatalogEntryDef *entry,
     zClass_NodePartial *projectileNode,
     zTag4Partial *variantTagPtr,
@@ -264,48 +264,48 @@ RECOIL_NOINLINE OptCatalogTrailRuntimeState *RECOIL_FASTCALL CreateTrailRuntimeS
     zVec3 *spawnDir,
     int segmentCount
 );
-RECOIL_NOINLINE OptCatalogRuntimeInstanceStorage *RECOIL_FASTCALL MineIterator_Begin(
+OptCatalogRuntimeInstanceStorage *__fastcall MineIterator_Begin(
     OptCatalogEntryDef *entry
 );
-RECOIL_NOINLINE OptCatalogRuntimeInstanceStorage *RECOIL_CDECL MineIterator_Next();
-RECOIL_NOINLINE void RECOIL_FASTCALL SetPendingSpawnTargetOverrides(
+OptCatalogRuntimeInstanceStorage *MineIterator_Next();
+void __fastcall SetPendingSpawnTargetOverrides(
     void *pendingSpawnTargetCountPtr,
     void *pendingSpawnTargetListPtr
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL AltGunDispatchAllocRuntimeGateCallback(
+int __fastcall AltGunDispatchAllocRuntimeGateCallback(
     OptCatalogEntryDef *self,
     void **saveStateSlot
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SendPkt0A_RemoveRuntimeRelay(
+void __fastcall SendPkt0A_RemoveRuntimeRelay(
     OptCatalogEntryDef *self,
     zVec3 *pointOrVec3,
     zClass_NodePartial *ownerNode
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandlePkt0A_RemoveRuntimeRelay(
+int __fastcall HandlePkt0A_RemoveRuntimeRelay(
     int senderPlayerId,
     NetPkt0A_RemoveRuntimeRelay *packet
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL LoadFxSpecFromReaderNode(
+void __fastcall LoadFxSpecFromReaderNode(
     zReader::Node *parentNode,
     OptCatalogFxSpec *spec,
     const char *childName
 );
-RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL AllocOrReuseAttachNodeChildClone(
+zClass_NodePartial *__fastcall AllocOrReuseAttachNodeChildClone(
     OptCatalogEntryDef *self
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ClearRuntimeInstanceAsyncFxHandleCallback(
+void __fastcall ClearRuntimeInstanceAsyncFxHandleCallback(
     void *unused,
     OptCatalogRuntimeInstanceStorage *runtimeInstance,
     void *unusedStackArg
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RecycleAttachNodeClone(
+void __fastcall RecycleAttachNodeClone(
     OptCatalogEntryDef *self,
     OptCatalogRuntimeInstanceStorage *runtimeInstance
 );
-RECOIL_NOINLINE OptCatalogRuntimeInstanceStorage *RECOIL_FASTCALL AllocOrReuseAttachNodeClone(
+OptCatalogRuntimeInstanceStorage *__fastcall AllocOrReuseAttachNodeClone(
     OptCatalogEntryDef *self
 );
-RECOIL_NOINLINE OptCatalogRuntimeInstanceStorage *RECOIL_FASTCALL AllocRuntimeInstance(
+OptCatalogRuntimeInstanceStorage *__fastcall AllocRuntimeInstance(
     OptCatalogEntryDef *self,
     zClass_NodePartial *ownerNode,
     zTag4Partial *variantTagOrNull,
@@ -315,110 +315,110 @@ RECOIL_NOINLINE OptCatalogRuntimeInstanceStorage *RECOIL_FASTCALL AllocRuntimeIn
     void *saveState,
     OptCatalogRuntimeInstanceStorage *runtimeInstanceOrNull
 );
-RECOIL_NOINLINE OptCatalogRuntimeInstanceStorage *RECOIL_FASTCALL SpawnRuntimeInstanceAt(
+OptCatalogRuntimeInstanceStorage *__fastcall SpawnRuntimeInstanceAt(
     OptCatalogEntryDef *self,
     zVec3 *spawnPos,
     zClass_NodePartial *ownerNode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL RecycleRuntimeInstance(
+void __fastcall RecycleRuntimeInstance(
     OptCatalogEntryDef *self,
     OptCatalogRuntimeInstanceStorage *runtimeInstance
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ClearRuntimeInstances(OptCatalogEntryDef *self);
-RECOIL_NOINLINE void RECOIL_FASTCALL RecycleRuntimeInstanceStorage(
+void __fastcall ClearRuntimeInstances(OptCatalogEntryDef *self);
+void __fastcall RecycleRuntimeInstanceStorage(
     OptCatalogEntryDef *self,
     OptCatalogRuntimeInstanceStorage *runtimeInstance
 );
-RECOIL_NOINLINE int RECOIL_CDECL Shutdown();
-RECOIL_NOINLINE int RECOIL_CDECL ShutdownCore();
-RECOIL_NOINLINE void RECOIL_FASTCALL FreeTrailRuntimeStateStorage(void *trailRuntimeState);
-RECOIL_NOINLINE int RECOIL_FASTCALL DeactivateTrailRuntimeState(
+int Shutdown();
+int ShutdownCore();
+void __fastcall FreeTrailRuntimeStateStorage(void *trailRuntimeState);
+int __fastcall DeactivateTrailRuntimeState(
     OptCatalogTrailRuntimeState *trailRuntimeState
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ActivateTrailRuntimeState(
+void __fastcall ActivateTrailRuntimeState(
     OptCatalogTrailRuntimeState *trailRuntimeState,
     int playerOrdinal
 );
-RECOIL_NOINLINE void RECOIL_CDECL PlayTriggerInactiveWarning();
-RECOIL_NOINLINE void RECOIL_CDECL PlayWeaponInactiveWarning();
-RECOIL_NOINLINE void RECOIL_CDECL PlayNoAmmoWarning();
-RECOIL_NOINLINE float RECOIL_FASTCALL ComputeAimPitchForTarget(
+void PlayTriggerInactiveWarning();
+void PlayWeaponInactiveWarning();
+void PlayNoAmmoWarning();
+float __fastcall ComputeAimPitchForTarget(
     OptCatalogEntryDef *self,
     const zVec3 *origin,
     const zVec3 *unusedDirection,
     const zVec3 *target,
     float *distanceApproxOut
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL InvokeDamageFeedbackAndHitCallback(
+int __fastcall InvokeDamageFeedbackAndHitCallback(
     OptCatalogEntryDef *self,
     zClass_NodePartial *damageOwnerNode,
     zVec3 *sourcePos,
     OptCatalogHitEventPartial *hitEvent,
     float damageAmount
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SetDamageContext(
+void __fastcall SetDamageContext(
     int contextKind,
     OptCatalogHitEventPartial *contextHitEvent
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL SetDamageMaskSlotIndex(int slotIndex);
-RECOIL_NOINLINE void RECOIL_FASTCALL RegisterDamageMaskSlotPtr(void *slotPtr);
-RECOIL_NOINLINE void RECOIL_FASTCALL ApplyDamageMaskStampOnHit(OptCatalogHitEventPartial *hitEvent);
-RECOIL_NOINLINE float RECOIL_FASTCALL CaptureHitSnapshotAndInvokeDamageTimerCallback(
+void __fastcall SetDamageMaskSlotIndex(int slotIndex);
+void __fastcall RegisterDamageMaskSlotPtr(void *slotPtr);
+void __fastcall ApplyDamageMaskStampOnHit(OptCatalogHitEventPartial *hitEvent);
+float __fastcall CaptureHitSnapshotAndInvokeDamageTimerCallback(
     zVec3 *sourcePos,
     OptCatalogHitEventPartial *hitEvent,
     float damageAmount
 );
-RECOIL_NOINLINE zVec3 *RECOIL_CDECL GetCapturedHitSourcePtr();
-RECOIL_NOINLINE int RECOIL_FASTCALL EmitCraterImpactEvent(
+zVec3 *GetCapturedHitSourcePtr();
+int __fastcall EmitCraterImpactEvent(
     OptCatalogEntryDef *self,
     OptCatalogHitEventPartial *hitEvent,
     zClass_NodePartial *unusedOwnerNode,
     zClass_NodePartial *damageOwnerNode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL EmitQSandImpactEvent(
+void __fastcall EmitQSandImpactEvent(
     OptCatalogEntryDef *self,
     OptCatalogHitEventPartial *hitEvent,
     zClass_NodePartial *unusedOwnerNode,
     zClass_NodePartial *damageOwnerNode
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL PlayImpactSound(
+void __fastcall PlayImpactSound(
     OptCatalogEntryDef *self,
     OptCatalogHitEventPartial *hitEvent,
     int impactSlot,
     float gainScale
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL HandleImpactEvent(
+void __fastcall HandleImpactEvent(
     OptCatalogEntryDef *self,
     OptCatalogHitEventPartial *hitEvent,
     OptCatalogRuntimeInstanceStorage *runtimeInstance
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL HandleImpactEventFromRuntimeState(
+void __fastcall HandleImpactEventFromRuntimeState(
     OptCatalogEntryDef *self,
     OptCatalogRuntimeInstanceStorage *runtimeInstance
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL BuildImpactHitList(
+int __fastcall BuildImpactHitList(
     OptCatalogEntryDef *self,
     OptCatalogRuntimeInstanceStorage *runtimeInstance,
     int allowOwnerOnlyHit,
     OptCatalogRaycastHitList *outHitList
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL HandleImpactFromRuntimeProbe(
+int __fastcall HandleImpactFromRuntimeProbe(
     OptCatalogEntryDef *self,
     OptCatalogRuntimeInstanceStorage *runtimeInstance,
     OptCatalogRaycastHitList *hitList,
     void *excludedDamageHandler
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ProcessRuntimeInstance(
+int __fastcall ProcessRuntimeInstance(
     OptCatalogEntryDef *self,
     OptCatalogRuntimeInstanceStorage *runtimeInstance
 );
-RECOIL_NOINLINE void RECOIL_CDECL ProcessRuntimeInstances();
-RECOIL_NOINLINE int RECOIL_FASTCALL RemoveRuntimeInstance(
+void ProcessRuntimeInstances();
+int __fastcall RemoveRuntimeInstance(
     OptCatalogEntryDef *self,
     zVec3 *pointOrVec3,
     zClass_NodePartial *ownerNode
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL CanSpawnThroughRay(
+int __fastcall CanSpawnThroughRay(
     OptCatalogEntryDef *self,
     OptCatalogRaycastHitEntry *hit,
     const zVec3 *rayStart,
@@ -427,32 +427,32 @@ RECOIL_NOINLINE int RECOIL_FASTCALL CanSpawnThroughRay(
     float *reflectedLengthOut,
     zVec3 *reflectedDirOut
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL PlayBounceSound(
+void __fastcall PlayBounceSound(
     OptCatalogEntryDef *self,
     OptCatalogRaycastHitEntry *hitEvent,
     int impactSlot,
     float gainScale
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL ReflectAndSortImpactTraceList(
+void __fastcall ReflectAndSortImpactTraceList(
     OptCatalogTrailRuntimeState *runtime,
     float *targetProjectionScratch,
     zVec3 *directionOut
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ComputeTrailImpactResponse(
+int __fastcall ComputeTrailImpactResponse(
     OptCatalogEntryDef *self,
     OptCatalogTrailRuntimeState *trailRuntime,
     OptCatalogTrailNodeSlot *segment,
     const zVec3 *targetPos
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL UpdateTrailSegmentVisual(OptCatalogTrailNodeSlot *segment);
+void __fastcall UpdateTrailSegmentVisual(OptCatalogTrailNodeSlot *segment);
 } // namespace OptCatalog
 
 namespace DamageFeedback {
-RECOIL_NOINLINE void RECOIL_STDCALL SetIntensityScalar(float scalar);
+void __stdcall SetIntensityScalar(float scalar);
 } // namespace DamageFeedback
 
 namespace HitSource {
-RECOIL_NOINLINE int RECOIL_FASTCALL UpdateTimedStatus(
+int __fastcall UpdateTimedStatus(
     OptCatalogEntryDef *self,
     PlayerTimedHitStatus *status,
     float amount
@@ -460,7 +460,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL UpdateTimedStatus(
 } // namespace HitSource
 
 namespace HitContext {
-RECOIL_NOINLINE void *RECOIL_CDECL GetCurrentOwnerOrCtx();
+void *GetCurrentOwnerOrCtx();
 } // namespace HitContext
 
 extern "C" {
@@ -497,7 +497,7 @@ extern zSndSample *g_OptCatalogSndWeaponInactive;
 extern zSndSample *g_OptCatalogSndNoAmmoWarning;
 extern zSndSample *g_OptCatalogSndLockOnWarning;
 extern OptCatalogRemoveRuntimeRelayCallback g_OptCatalog_RemoveRuntimeRelayCallback;
-typedef int(RECOIL_FASTCALL *OptCatalogAllocRuntimeGateCallback)(
+typedef int(__fastcall *OptCatalogAllocRuntimeGateCallback)(
     OptCatalogEntryDef *entry,
     void **saveStateSlot
 );

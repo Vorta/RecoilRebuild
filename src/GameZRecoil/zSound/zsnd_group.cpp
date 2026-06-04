@@ -18,7 +18,7 @@ namespace {
 const char *kZSndGroupSourceFile = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_grp.cpp";
 
 // Reimplements 0x4a51e0: MatchStreamRequestPredicate
-int RECOIL_FASTCALL MatchStreamRequestPredicate(
+int __fastcall MatchStreamRequestPredicate(
     void *payload,
     void *userData
 ) {
@@ -29,7 +29,7 @@ int RECOIL_FASTCALL MatchStreamRequestPredicate(
 
 namespace zSndStreamMgr {
 // Reimplements 0x4a4c40: zSndStreamMgr::UpdateActiveRequestPredicate
-RECOIL_NOINLINE int RECOIL_FASTCALL UpdateActiveRequestPredicate(
+int __fastcall UpdateActiveRequestPredicate(
     void *payload,
     void *
 ) {
@@ -155,7 +155,7 @@ void NormalizeDefaultWeights(
 } // namespace
 
 // Reimplements 0x4a51f0: zSndStreamRequest_StopIfActive
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndStreamRequest_StopIfActive(
+extern "C" int __fastcall zSndStreamRequest_StopIfActive(
     zSndPlayHandle *request
 ) {
     void *const found = zArchiveList_FindPayloadByPredicate(
@@ -172,7 +172,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndStreamRequest_StopIfActive(
 }
 
 // Reimplements 0x4a5220: zSndStreamRequest_MatchGroupPredicate
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndStreamRequest_MatchGroupPredicate(
+extern "C" int __fastcall zSndStreamRequest_MatchGroupPredicate(
     void *payload,
     void *group
 ) {
@@ -180,7 +180,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndStreamRequest_MatchGroupPredi
 }
 
 // Reimplements 0x4a44e0: zSndPendingList_MatchNamePredicate
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndPendingList_MatchNamePredicate(
+extern "C" int __fastcall zSndPendingList_MatchNamePredicate(
     void *payload,
     void *sampleName
 ) {
@@ -191,7 +191,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndPendingList_MatchNamePredicat
 }
 
 // Reimplements 0x4a44c0: zSndPendingList_FindByName
-extern "C" RECOIL_NOINLINE zSndSample *RECOIL_FASTCALL zSndPendingList_FindByName(
+extern "C" zSndSample *__fastcall zSndPendingList_FindByName(
     const char *sampleName
 ) {
     if (g_zSndStream_PendingList == 0) {
@@ -206,7 +206,7 @@ extern "C" RECOIL_NOINLINE zSndSample *RECOIL_FASTCALL zSndPendingList_FindByNam
 }
 
 // Reimplements 0x4a4d10: zSndGroup::SelectWeightedEntry
-RECOIL_NOINLINE zSndGroupConfigBlock *RECOIL_THISCALL zSndGroup::SelectWeightedEntry() {
+zSndGroupConfigBlock * zSndGroup::SelectWeightedEntry() {
     if (configBlockCount == 1) {
         return configBlocks[0].maxPlayCount != 0 ? configBlocks : 0;
     }
@@ -264,7 +264,7 @@ RECOIL_NOINLINE zSndGroupConfigBlock *RECOIL_THISCALL zSndGroup::SelectWeightedE
 
 // Reimplements 0x4a5020: zSndStreamRequest::StateWaitTerminationDelay
 // (D:\Proj\GameZRecoil\zSound\zsnd_grp.cpp) x87 elapsed timer vs group delayTerminationSec.
-void RECOIL_THISCALL zSndStreamRequest::StateWaitTerminationDelay() {
+void zSndStreamRequest::StateWaitTerminationDelay() {
     elapsedSec = elapsedSec + g_FrameDeltaTimeSec;
     if (elapsedSec < group->delayTerminationSec) {
         return;
@@ -275,7 +275,7 @@ void RECOIL_THISCALL zSndStreamRequest::StateWaitTerminationDelay() {
 }
 
 // Reimplements 0x4a4cb0: zSndStreamRequest::StateBeginGroup
-RECOIL_NOINLINE int RECOIL_THISCALL zSndStreamRequest::StateBeginGroup() {
+int zSndStreamRequest::StateBeginGroup() {
     elapsedSec = 0.0f;
     playIndex = 0;
     currentEntry = 0;
@@ -293,7 +293,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndStreamRequest::StateBeginGroup() {
 
 // Reimplements 0x4a4ea0: zSndStreamRequest::StatePlayCurrentEntry
 // Uses signed play-count decrement so 0xffff remains the original infinite-play sentinel.
-RECOIL_NOINLINE void RECOIL_THISCALL zSndStreamRequest::StatePlayCurrentEntry() {
+void zSndStreamRequest::StatePlayCurrentEntry() {
     elapsedSec = elapsedSec + g_FrameDeltaTimeSec;
 
     while (currentEntry != 0) {
@@ -356,7 +356,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zSndStreamRequest::StatePlayCurrentEntry() 
 }
 
 // Reimplements 0x4a4fd0: zSndStreamRequest::StateWaitRepeatDelay
-RECOIL_NOINLINE void RECOIL_THISCALL zSndStreamRequest::StateWaitRepeatDelay() {
+void zSndStreamRequest::StateWaitRepeatDelay() {
     elapsedSec = elapsedSec + g_FrameDeltaTimeSec;
     if (elapsedSec < group->delayRepeatSec) {
         return;
@@ -368,7 +368,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zSndStreamRequest::StateWaitRepeatDelay() {
 }
 
 // Reimplements 0x4a5350: zSndStreamMgr_EnsureInit
-extern "C" RECOIL_NOINLINE int RECOIL_CDECL zSndStreamMgr_EnsureInit() {
+extern "C" int zSndStreamMgr_EnsureInit() {
     if (g_zSndStream_RootNode == 0) {
         g_zSndStream_RootNode = zClass_Object3D::gwObject3DInit();
         if (g_zSndStream_RootNode == 0) {
@@ -462,7 +462,7 @@ void FreePendingList(
 } // namespace
 
 // Reimplements 0x4a50a0: zSndStreamMgr::Shutdown
-RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
+int Shutdown() {
     if (g_zSndStream_RootNode != 0 && zClass::IsInitialized() != 0) {
         zClass_Class::gwNodeSetActionCallback(
             g_zSndStream_RootNode,
@@ -482,7 +482,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
 } // namespace zSndStreamMgr
 
 // Reimplements 0x4a5250: zSndGroup::QueueStreamRequest
-RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL zSndGroup::QueueStreamRequest(
+zSndPlayHandle *__fastcall zSndGroup::QueueStreamRequest(
     int hasWorldPos,
     float gain,
     zVec3 *worldPos,
@@ -543,7 +543,7 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL zSndGroup::QueueStreamRequest(
 }
 
 // Reimplements 0x4a5230: zSndGroup::QueueStreamRequestSimple
-RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL zSndGroup::QueueStreamRequestSimple(
+zSndPlayHandle * zSndGroup::QueueStreamRequestSimple(
     float gain
 ) {
     return QueueStreamRequest(
@@ -555,7 +555,7 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_THISCALL zSndGroup::QueueStreamRequestSim
 }
 
 // Reimplements 0x4a53d0: zSndGroup::QueueStreamRequestWithWorldPos
-RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL zSndGroup::QueueStreamRequestWithWorldPos(
+zSndPlayHandle *__fastcall zSndGroup::QueueStreamRequestWithWorldPos(
     zVec3 *worldPos,
     float gain,
     zVec3 *velocity
@@ -569,7 +569,7 @@ RECOIL_NOINLINE zSndPlayHandle *RECOIL_FASTCALL zSndGroup::QueueStreamRequestWit
 }
 
 // Reimplements 0x4a5050: zSndStreamMgr::RecycleFinishedRequest
-extern "C" RECOIL_NOINLINE void RECOIL_CDECL zSndStreamMgr_RecycleFinishedRequest() {
+extern "C" void zSndStreamMgr_RecycleFinishedRequest() {
     zArchiveList_FindPayloadByPredicate(
         g_zSndStream_ActiveList,
         &zSndStreamMgr::UpdateActiveRequestPredicate,
@@ -593,7 +593,7 @@ extern "C" RECOIL_NOINLINE void RECOIL_CDECL zSndStreamMgr_RecycleFinishedReques
 }
 
 // Reimplements 0x4a49b0: zSndGroup_LoadConfigBlock
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndGroup_LoadConfigBlock(
+extern "C" int __fastcall zSndGroup_LoadConfigBlock(
     zReader::Node *readerNode,
     zSndGroupRuntimeFields *groupFields,
     zSndGroupConfigBlock *outConfigBlock
@@ -710,7 +710,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndGroup_LoadConfigBlock(
 }
 
 // Reimplements 0x4a4590: zSndGroup_LoadFromConfigNode
-extern "C" RECOIL_NOINLINE zSndGroup *RECOIL_FASTCALL zSndGroup_LoadFromConfigNode(
+extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
     zReader::Node *readerNode
 ) {
     if (readerNode->type != zReader::ZRDR_NODE_ARRAY) {
@@ -842,7 +842,7 @@ extern "C" RECOIL_NOINLINE zSndGroup *RECOIL_FASTCALL zSndGroup_LoadFromConfigNo
 }
 
 // Reimplements 0x4a4530: zSndGroup_QueuePendingLoadsFromConfigNode
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndGroup_QueuePendingLoadsFromConfigNode(
+extern "C" int __fastcall zSndGroup_QueuePendingLoadsFromConfigNode(
     zReader::Node *readerNode
 ) {
     if (readerNode->type != zReader::ZRDR_NODE_ARRAY) {

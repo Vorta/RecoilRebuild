@@ -19,7 +19,7 @@ extern "C" void __cdecl __cpuid(
     int ebxOut;
     int ecxOut;
     int edxOut;
-    // Narrow x86 provider shim for VC6, which predates the __cpuid intrinsic.
+    // Narrow x86 provider shim for VC5SP3, which predates the __cpuid intrinsic.
     __asm {
         mov eax, dword ptr [functionId]
         cpuid

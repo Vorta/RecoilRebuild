@@ -167,21 +167,21 @@ void RestoreFunctionPatch(CodeFunctionPatch &patch) {
     patch.active = false;
 }
 
-std::int32_t RECOIL_STDCALL CloseFake(zNetwork_DPlay4 *) {
+std::int32_t __stdcall CloseFake(zNetwork_DPlay4 *) {
     ++g_closeCalls;
     return 0;
 }
 
-std::int32_t RECOIL_STDCALL ReleaseFake(zNetwork_DPlay4 *) {
+std::int32_t __stdcall ReleaseFake(zNetwork_DPlay4 *) {
     ++g_releaseCalls;
     return 7;
 }
 
-int RECOIL_FASTCALL PacketHandlerFake(int, zNetworkPacketHeader *) {
+int __fastcall PacketHandlerFake(int, zNetworkPacketHeader *) {
     return 0;
 }
 
-int RECOIL_FASTCALL PacketHandlerDispatchA(int senderPlayerId, zNetworkPacketHeader *packet) {
+int __fastcall PacketHandlerDispatchA(int senderPlayerId, zNetworkPacketHeader *packet) {
     ++g_dispatchCallsA;
     g_dispatchSenderA = senderPlayerId;
     g_dispatchPacketA = packet;
@@ -190,7 +190,7 @@ int RECOIL_FASTCALL PacketHandlerDispatchA(int senderPlayerId, zNetworkPacketHea
     return 0;
 }
 
-int RECOIL_FASTCALL PacketHandlerDispatchB(int senderPlayerId, zNetworkPacketHeader *packet) {
+int __fastcall PacketHandlerDispatchB(int senderPlayerId, zNetworkPacketHeader *packet) {
     ++g_dispatchCallsB;
     g_dispatchSenderB = senderPlayerId;
     g_dispatchPacketB = packet;
@@ -199,12 +199,12 @@ int RECOIL_FASTCALL PacketHandlerDispatchB(int senderPlayerId, zNetworkPacketHea
     return 0;
 }
 
-void RECOIL_FASTCALL FatalDisconnectFake(int reason) {
+void __fastcall FatalDisconnectFake(int reason) {
     ++g_fatalDisconnectCalls;
     g_fatalDisconnectReason = reason;
 }
 
-int RECOIL_FASTCALL FakeCreateInterfaceAndCoInitialize(zNetwork_DPlay4 **outDirectPlay4) {
+int __fastcall FakeCreateInterfaceAndCoInitialize(zNetwork_DPlay4 **outDirectPlay4) {
     ++g_createInterfaceCalls;
     g_createInterfaceOut = outDirectPlay4;
     if (outDirectPlay4 != nullptr) {
@@ -232,7 +232,7 @@ HRESULT WINAPI FakeDirectPlayLobbyCreateA(
     return g_lobbyCreateResult;
 }
 
-HRESULT RECOIL_STDCALL FakeLobbyQueryInterface(
+HRESULT __stdcall FakeLobbyQueryInterface(
     IDirectPlayLobby *,
     REFIID riid,
     LPVOID *outInterface)
@@ -246,12 +246,12 @@ HRESULT RECOIL_STDCALL FakeLobbyQueryInterface(
     return g_lobbyQueryResult;
 }
 
-ULONG RECOIL_STDCALL FakeLobbyRelease(IDirectPlayLobby *) {
+ULONG __stdcall FakeLobbyRelease(IDirectPlayLobby *) {
     ++g_lobbyReleaseCalls;
     return 0;
 }
 
-HRESULT RECOIL_STDCALL FakeLobbyCreateCompoundAddress(
+HRESULT __stdcall FakeLobbyCreateCompoundAddress(
     IDirectPlayLobby3A *,
     LPCDPCOMPOUNDADDRESSELEMENT elements,
     DWORD elementCount,
@@ -343,13 +343,13 @@ void CleanupInitSessionRuntimeState() {
     g_zNetwork_ReceiveBuffer = nullptr;
 }
 
-std::int32_t RECOIL_STDCALL DestroyPlayerFake(zNetwork_DPlay4 *, std::uint32_t playerKey) {
+std::int32_t __stdcall DestroyPlayerFake(zNetwork_DPlay4 *, std::uint32_t playerKey) {
     ++g_destroyPlayerCalls;
     g_destroyedPlayerKey = playerKey;
     return g_destroyPlayerResult;
 }
 
-std::int32_t RECOIL_STDCALL EnumPlayersFake(zNetwork_DPlay4 *, void *,
+std::int32_t __stdcall EnumPlayersFake(zNetwork_DPlay4 *, void *,
                                             zNetworkDPlayEnumPlayersCallback callback, void *,
                                             std::uint32_t) {
     ++g_enumPlayersCalls;
@@ -367,7 +367,7 @@ std::int32_t RECOIL_STDCALL EnumPlayersFake(zNetwork_DPlay4 *, void *,
     return g_enumPlayersResult;
 }
 
-std::int32_t RECOIL_STDCALL EnumConnectionsFake(
+std::int32_t __stdcall EnumConnectionsFake(
     zNetwork_DPlay4 *, unsigned char *applicationGuid,
     zNetworkDPlayEnumConnectionsCallback callback, void *context, std::uint32_t flags) {
     ++g_enumConnectionsCalls;
@@ -393,7 +393,7 @@ std::int32_t RECOIL_STDCALL EnumConnectionsFake(
     return g_enumConnectionsResult;
 }
 
-std::int32_t RECOIL_STDCALL EnumSessionsFake(zNetwork_DPlay4 *,
+std::int32_t __stdcall EnumSessionsFake(zNetwork_DPlay4 *,
                                              zNetworkDPlaySessionDesc *sessionDesc,
                                              std::uint32_t timeoutMs,
                                              zNetworkDPlayEnumSessionsCallback callback,
@@ -423,7 +423,7 @@ std::int32_t RECOIL_STDCALL EnumSessionsFake(zNetwork_DPlay4 *,
     return g_enumSessionsResult;
 }
 
-std::int32_t RECOIL_STDCALL CreatePlayerFake(zNetwork_DPlay4 *, std::uint32_t *playerId,
+std::int32_t __stdcall CreatePlayerFake(zNetwork_DPlay4 *, std::uint32_t *playerId,
                                              zNetworkDPlayName *playerNameInfo,
                                              void *eventHandle, void *data,
                                              std::uint32_t dataSize, std::uint32_t flags) {
@@ -440,7 +440,7 @@ std::int32_t RECOIL_STDCALL CreatePlayerFake(zNetwork_DPlay4 *, std::uint32_t *p
     return g_createPlayerResult;
 }
 
-std::int32_t RECOIL_STDCALL GetCapsFake(zNetwork_DPlay4 *, zNetworkDPlayCaps *caps,
+std::int32_t __stdcall GetCapsFake(zNetwork_DPlay4 *, zNetworkDPlayCaps *caps,
                                         std::uint32_t flags) {
     ++g_getCapsCalls;
     g_getCapsFlags = flags;
@@ -450,7 +450,7 @@ std::int32_t RECOIL_STDCALL GetCapsFake(zNetwork_DPlay4 *, zNetworkDPlayCaps *ca
     return g_getCapsResult;
 }
 
-std::int32_t RECOIL_STDCALL GetPlayerCapsFake(zNetwork_DPlay4 *, std::uint32_t playerId,
+std::int32_t __stdcall GetPlayerCapsFake(zNetwork_DPlay4 *, std::uint32_t playerId,
                                               zNetworkDPlayCaps *caps, std::uint32_t flags) {
     ++g_getPlayerCapsCalls;
     g_getPlayerCapsPlayerId = playerId;
@@ -461,7 +461,7 @@ std::int32_t RECOIL_STDCALL GetPlayerCapsFake(zNetwork_DPlay4 *, std::uint32_t p
     return g_getPlayerCapsResult;
 }
 
-std::int32_t RECOIL_STDCALL ReceiveFake(zNetwork_DPlay4 *, std::uint32_t *fromPlayer,
+std::int32_t __stdcall ReceiveFake(zNetwork_DPlay4 *, std::uint32_t *fromPlayer,
                                         std::uint32_t *toPlayer, std::uint32_t, void *packet,
                                         std::uint32_t *packetSizeBytes) {
     const int index = g_receiveCalls++;
@@ -480,7 +480,7 @@ std::int32_t RECOIL_STDCALL ReceiveFake(zNetwork_DPlay4 *, std::uint32_t *fromPl
     return g_receiveResults[index];
 }
 
-std::int32_t RECOIL_STDCALL SendFake(zNetwork_DPlay4 *, std::uint32_t fromPlayer, std::uint32_t,
+std::int32_t __stdcall SendFake(zNetwork_DPlay4 *, std::uint32_t fromPlayer, std::uint32_t,
                                      std::uint32_t flags, void *packet,
                                      std::uint32_t packetSizeBytes) {
     ++g_sendCalls;
@@ -494,7 +494,7 @@ std::int32_t RECOIL_STDCALL SendFake(zNetwork_DPlay4 *, std::uint32_t fromPlayer
     return g_sendResult;
 }
 
-std::int32_t RECOIL_STDCALL SetSessionDescFake(zNetwork_DPlay4 *,
+std::int32_t __stdcall SetSessionDescFake(zNetwork_DPlay4 *,
                                                zNetworkDPlaySessionDesc *sessionDesc,
                                                std::uint32_t flags) {
     ++g_setSessionDescCalls;
@@ -503,7 +503,7 @@ std::int32_t RECOIL_STDCALL SetSessionDescFake(zNetwork_DPlay4 *,
     return g_setSessionDescResult;
 }
 
-std::int32_t RECOIL_STDCALL OpenFake(zNetwork_DPlay4 *, zNetworkDPlaySessionDesc *sessionDesc,
+std::int32_t __stdcall OpenFake(zNetwork_DPlay4 *, zNetworkDPlaySessionDesc *sessionDesc,
                                      std::uint32_t flags) {
     ++g_openCalls;
     g_openDescPtr = sessionDesc;
@@ -511,7 +511,7 @@ std::int32_t RECOIL_STDCALL OpenFake(zNetwork_DPlay4 *, zNetworkDPlaySessionDesc
     return g_openResult;
 }
 
-std::int32_t RECOIL_STDCALL InitializeConnectionFake(zNetwork_DPlay4 *, void *connectionData,
+std::int32_t __stdcall InitializeConnectionFake(zNetwork_DPlay4 *, void *connectionData,
                                                      std::uint32_t flags) {
     ++g_initializeConnectionCalls;
     g_initializeConnectionData = connectionData;
@@ -523,7 +523,7 @@ std::int32_t RECOIL_STDCALL InitializeConnectionFake(zNetwork_DPlay4 *, void *co
     return g_initializeConnectionResult;
 }
 
-std::int32_t RECOIL_STDCALL SendExFake(zNetwork_DPlay4 *, std::uint32_t fromPlayer, std::uint32_t,
+std::int32_t __stdcall SendExFake(zNetwork_DPlay4 *, std::uint32_t fromPlayer, std::uint32_t,
                                        std::uint32_t flags, void *packet,
                                        std::uint32_t packetSizeBytes, std::uint32_t, std::uint32_t,
                                        void *, std::uint32_t *asyncHandle) {
@@ -542,7 +542,7 @@ std::int32_t RECOIL_STDCALL SendExFake(zNetwork_DPlay4 *, std::uint32_t fromPlay
     return g_sendResult;
 }
 
-std::int32_t RECOIL_STDCALL CancelMessageFake(zNetwork_DPlay4 *, std::uint32_t asyncHandle,
+std::int32_t __stdcall CancelMessageFake(zNetwork_DPlay4 *, std::uint32_t asyncHandle,
                                               std::uint32_t flags) {
     ++g_cancelCalls;
     g_cancelHandle = asyncHandle;

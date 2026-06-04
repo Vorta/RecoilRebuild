@@ -26,15 +26,15 @@ std::int32_t g_fontBlitY[8] = {};
 std::int32_t g_fontBlitFlags[8] = {};
 zVidRect32 g_fontBlitRect[8] = {};
 
-void RECOIL_FASTCALL TextureRecordDestroyStub(zVideo_TextureRecordPartial *) {
+void __fastcall TextureRecordDestroyStub(zVideo_TextureRecordPartial *) {
     ++g_textureDestroyCount;
 }
 
-void RECOIL_CDECL TextureRecordReleaseAllUploadSurfacesStub() {
+void TextureRecordReleaseAllUploadSurfacesStub() {
     ++g_uploadSurfaceReleaseCount;
 }
 
-zVideo_TextureRecordPartial *RECOIL_FASTCALL CreateTextureRecordStub(const char *textureName,
+zVideo_TextureRecordPartial *__fastcall CreateTextureRecordStub(const char *textureName,
                                                                      zVidImagePartial *image,
                                                                      int useAlpha,
                                                                      int clampU,
@@ -48,14 +48,14 @@ zVideo_TextureRecordPartial *RECOIL_FASTCALL CreateTextureRecordStub(const char 
     return &g_createdTextureRecord;
 }
 
-void RECOIL_FASTCALL TextureRecordFinalizeUploadStub(zVideo_TextureRecordPartial *,
+void __fastcall TextureRecordFinalizeUploadStub(zVideo_TextureRecordPartial *,
                                                      void *,
                                                      zVidImagePartial *image) {
     ++g_textureFinalizeUploadCount;
     g_lastFinalizedImage = image;
 }
 
-void RECOIL_FASTCALL FontBlitCapture(zVidImagePartial *image, std::int32_t dstX,
+void __fastcall FontBlitCapture(zVidImagePartial *image, std::int32_t dstX,
                                      std::int32_t dstY, std::int32_t clipFlags,
                                      zVidRect32 *srcRect) {
     const int index = g_fontBlitCount;
@@ -70,7 +70,7 @@ void RECOIL_FASTCALL FontBlitCapture(zVidImagePartial *image, std::int32_t dstX,
     ++g_fontBlitCount;
 }
 
-std::int32_t RECOIL_FASTCALL QueryTextureMemoryBytesStub(std::int32_t, std::int32_t *totalBytes,
+std::int32_t __fastcall QueryTextureMemoryBytesStub(std::int32_t, std::int32_t *totalBytes,
                                                          std::int32_t *freeBytes) {
     *totalBytes = 6 << 20;
     *freeBytes = 4 << 20;
@@ -79,7 +79,7 @@ std::int32_t RECOIL_FASTCALL QueryTextureMemoryBytesStub(std::int32_t, std::int3
 
 zVidImagePartial g_fallbackImage = {};
 
-zVidImagePartial *RECOIL_FASTCALL FallbackImageStub(char *) {
+zVidImagePartial *__fastcall FallbackImageStub(char *) {
     return &g_fallbackImage;
 }
 

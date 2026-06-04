@@ -39,7 +39,7 @@ VC verifier artifacts remain authoritative.
 
 - Current source: `src/GameZRecoil/zSound/zsnd_play.cpp`.
 - Current VC target:
-  `tools/vc6_verify_targets/zsnd_play_handle_stop_if_active.json`.
+  `tools/vc5_verify_targets/zsnd_play_handle_stop_if_active.json`.
 - The active target compiles with VC5SP3 `cl` 11.00.7022,
   `/G5 /O2 /Ob1 /GX /Zp4 /FAcs`, and currently fails with 135 unmasked byte
   mismatches, 60 relocation-masked bytes, BN size 275, and VC object symbol
@@ -65,8 +65,8 @@ VC verifier artifacts remain authoritative.
   the best current profile.
 - Temporarily compiling the current source across
   `vc5_o2_ob0_facs`, `vc5_o2_ob1_gx_facs`, `vc5_o2_ob1_md_gx_facs`,
-  `vc5_o2_ob2_facs`, `vc5_o2_ob2_gx_facs`, `vc6_o2_ob1_gx_facs`, and
-  `vc6_o2_oy_ob0_facs` was neutral: every profile produced the same 135
+  `vc5_o2_ob2_facs`, `vc5_o2_ob2_gx_facs`, `vc5_o2_ob1_gx_facs`, and
+  `vc5_o2_oy_ob0_facs` was neutral: every profile produced the same 135
   mismatches, 60 relocation-masked bytes, BN size 275, and object size 288.
 - Rewriting the backend dispatch as an explicit `if (activeBackend != 0)` with
   the A3D path physically before the DirectSound path worsened the target from
@@ -75,5 +75,5 @@ VC verifier artifacts remain authoritative.
   `goto DirectSoundBackend`, and the A3D path physically before the DirectSound
   label was neutral at the 135-mismatch profile, so the cleaner current
   explicit DirectSound-first branch was restored.
-- Testing the `switch` shape with VC6 `cl` 12.00.8168 worsened the target to
-  196 mismatches, so the target remains on the VC5SP3 profile.
+- Testing the `switch` shape in a historical compiler run worsened the target
+  to 196 mismatches, so the target remains on the VC5SP3 profile.

@@ -7,11 +7,11 @@
 #include <string.h>
 
 namespace zDi {
-    RECOIL_NOINLINE int RECOIL_FASTCALL GetRefCount(zDiPartial * self);
+    int __fastcall GetRefCount(zDiPartial * self);
 }
 
 namespace zModel_DiPool {
-    RECOIL_NOINLINE int RECOIL_FASTCALL FreeIfUnreferenced(zDiPartial * di);
+    int __fastcall FreeIfUnreferenced(zDiPartial * di);
 }
 
 extern "C" {
@@ -77,7 +77,7 @@ namespace {
     const int kTypeListInsertedFlag = 0x01;
     const char *kListSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\List.c";
 
-    typedef int(RECOIL_FASTCALL * RemoveChildProc)(
+    typedef int(__fastcall * RemoveChildProc)(
         zClass_NodePartial *,
         zClass_NodePartial *
     );
@@ -110,7 +110,7 @@ namespace {
 
 namespace zClass_List {
     // Reimplements 0x44f000: zClass_List::DeleteNodeFromLists
-    RECOIL_NOINLINE int RECOIL_FASTCALL DeleteNodeFromLists(zClass_NodePartial * node) {
+    int __fastcall DeleteNodeFromLists(zClass_NodePartial * node) {
         switch (node->classId) {
         case 1:
             zClass_TypeList::MarkPendingRemoval(
@@ -195,7 +195,7 @@ namespace zClass_List {
     }
 
     // Reimplements 0x44f690: zClass_List::IterateBucketFiltered
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL
+    zClass_NodePartial *__fastcall
     IterateBucketFiltered(
         const char *filterText,
         int bucket,
@@ -221,7 +221,7 @@ namespace zClass_List {
     }
 
     // Reimplements 0x44f1d0: zClass_List::gwListDeleteANode (GameZRecoil/zClass/List.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwListDeleteANode(zClass_NodePartial * node) {
+    int __fastcall gwListDeleteANode(zClass_NodePartial * node) {
         unsigned int displayInstanceWord = 0;
         int result = zClass_Class::gwNodeGetUserData(
             node,
@@ -445,7 +445,7 @@ namespace zClass_List {
     }
 
     // Reimplements 0x44f120: zClass_List::DeleteAllOfType
-    RECOIL_NOINLINE int RECOIL_FASTCALL DeleteAllOfType(int bucket) {
+    int __fastcall DeleteAllOfType(int bucket) {
         zClass::ProcessDeferredWork();
 
         zClass_TypeListLink *link = zClass_TypeList::Head(bucket);
@@ -496,7 +496,7 @@ namespace zClass_List {
 
 namespace zClass_TypeList {
     // Reimplements 0x44e630: zClass_TypeList::AllocLink
-    RECOIL_NOINLINE zClass_TypeListLink *RECOIL_CDECL AllocLink() {
+    zClass_TypeListLink *AllocLink() {
         const int liveCount = g_zClass_TypeList_LiveLinkCount + 1;
         g_zClass_TypeList_LiveLinkCount = liveCount;
         if (liveCount > g_zClass_TypeList_PeakLiveLinkCount) {
@@ -525,7 +525,7 @@ namespace zClass_TypeList {
     }
 
     // Reimplements 0x44e690: zClass_TypeList::FreeLink
-    RECOIL_NOINLINE void RECOIL_FASTCALL FreeLink(zClass_TypeListLink * link) {
+    void __fastcall FreeLink(zClass_TypeListLink * link) {
         --g_zClass_TypeList_LiveLinkCount;
 
         zClass_TypeListLink *head = g_zClass_TypeList_FreeLinkHead;
@@ -543,7 +543,7 @@ namespace zClass_TypeList {
     }
 
     // Reimplements 0x44e6d0: zClass_TypeList::FreeAll
-    RECOIL_NOINLINE void RECOIL_CDECL FreeAll() {
+    void FreeAll() {
         zClass_TypeListLink *link = g_zClass_TypeList_FreeLinkHead;
         while (link != 0) {
             g_zClass_TypeList_FreeLinkHead = link->next;
@@ -553,7 +553,7 @@ namespace zClass_TypeList {
     }
 
     // Reimplements 0x44e700: zClass_TypeList::ProcessPendingRemovals
-    RECOIL_NOINLINE void RECOIL_FASTCALL ProcessPendingRemovals(int bucket) {
+    void __fastcall ProcessPendingRemovals(int bucket) {
         if (g_zClass_DeferredProcessingEnabled == 0) {
             return;
         }
@@ -603,7 +603,7 @@ namespace zClass_TypeList {
     }
 
     // Reimplements 0x44ec90: zClass_TypeList::CountNodes
-    RECOIL_NOINLINE int RECOIL_FASTCALL CountNodes(int bucket) {
+    int __fastcall CountNodes(int bucket) {
         int count = 0;
         for (zClass_TypeListLink *link = zClass_TypeList::Head(bucket); link != 0;
             link = link->next) {
@@ -613,7 +613,7 @@ namespace zClass_TypeList {
     }
 
     // Reimplements 0x44ecb0: zClass_TypeList::PrintBucket
-    RECOIL_NOINLINE void RECOIL_FASTCALL PrintBucket(int bucket) {
+    void __fastcall PrintBucket(int bucket) {
         int index = 0;
         for (zClass_TypeListLink *link = zClass_TypeList::Head(bucket); link != 0;
             link = link->next) {
@@ -627,12 +627,12 @@ namespace zClass_TypeList {
     }
 
     // Reimplements 0x44ed50: zClass_TypeList::GetBucketHead
-    RECOIL_NOINLINE zClass_TypeListLink *RECOIL_FASTCALL GetBucketHead(int bucket) {
+    zClass_TypeListLink *__fastcall GetBucketHead(int bucket) {
         return zClass_TypeList::Head(bucket);
     }
 
     // Reimplements 0x44eed0: zClass_TypeList::MarkPendingRemoval
-    RECOIL_NOINLINE int RECOIL_FASTCALL MarkPendingRemoval(
+    int __fastcall MarkPendingRemoval(
         int bucket,
         zClass_NodePartial *node
     ){
@@ -659,7 +659,7 @@ namespace zClass_TypeList {
     }
 
     // Reimplements 0x44ed90: zClass_TypeList::Insert
-    RECOIL_NOINLINE int RECOIL_FASTCALL Insert(
+    int __fastcall Insert(
         int bucket,
         zClass_NodePartial *node
     ){
@@ -694,7 +694,7 @@ namespace zClass_TypeList {
     }
 
     // Reimplements 0x44ee10: zClass_TypeList::InsertChildNodes
-    RECOIL_NOINLINE int RECOIL_FASTCALL InsertChildNodes(
+    int __fastcall InsertChildNodes(
         int bucket,
         zClass_NodePartial *node
     ){
@@ -731,7 +731,7 @@ namespace zClass_TypeList {
     }
 
     // Reimplements 0x44ea70: zClass_TypeList::UpdateAllBuckets
-    RECOIL_NOINLINE void RECOIL_CDECL UpdateAllBuckets() {
+    void UpdateAllBuckets() {
         for (int i = 0; i < 6; ++i) {
             zClass_TypeListLink *bucket = *g_zClassCallbackPriorityHeadSlotPtrs[i];
             if (bucket != 0) {
@@ -742,7 +742,7 @@ namespace zClass_TypeList {
     }
 
     // Reimplements 0x44eaa0: zClass_TypeList::UpdateBucket
-    RECOIL_NOINLINE void RECOIL_FASTCALL UpdateBucket(zClass_TypeListLink * bucket) {
+    void __fastcall UpdateBucket(zClass_TypeListLink * bucket) {
         const int wasDeferredEnabled = g_zClass_DeferredProcessingEnabled;
         g_zClass_DeferredProcessingEnabled = 0;
 
@@ -761,7 +761,7 @@ namespace zClass_TypeList {
     }
 
     // Reimplements 0x44eba0: zClass_TypeList::UpdateQueuedTrees
-    RECOIL_NOINLINE int RECOIL_CDECL UpdateQueuedTrees() {
+    int UpdateQueuedTrees() {
         zClass_TypeListLink *link = zClass_TypeList::Head(kQueuedTreeBucket);
         while (link != 0) {
             while (link != 0 && link->pendingRemove != 0) {
@@ -779,7 +779,7 @@ namespace zClass_TypeList {
     }
 
     // Reimplements 0x44ebe0: zClass_TypeList::UpdateSequences
-    RECOIL_NOINLINE int RECOIL_CDECL UpdateSequences() {
+    int UpdateSequences() {
         zClass_TypeListLink *link = zClass_TypeList::Head(11);
         if (link == 0) {
             return 0;
@@ -801,7 +801,7 @@ namespace zClass_TypeList {
     }
 
     // Reimplements 0x44ec30: zClass_TypeList::UpdateAnimations
-    RECOIL_NOINLINE int RECOIL_CDECL UpdateAnimations() {
+    int UpdateAnimations() {
         zClass_TypeListLink *link = zClass_TypeList::Head(12);
         if (link == 0) {
             return 0;
@@ -825,7 +825,7 @@ namespace zClass_TypeList {
 
 namespace gwNode {
     // Reimplements 0x44eb00: gwNode::UpdateSubtree
-    RECOIL_NOINLINE int RECOIL_FASTCALL UpdateSubtree(zClass_NodePartial * node) {
+    int __fastcall UpdateSubtree(zClass_NodePartial * node) {
         for (int i = 0; i < node->listCountB; ++i) {
             zClass_NodePartial *child = node->listB[i];
             if ((child->flags & 0x01) != 0) {
@@ -842,7 +842,7 @@ namespace gwNode {
     }
 
     // Reimplements 0x44eb50: gwNode::UpdateTree
-    RECOIL_NOINLINE void RECOIL_FASTCALL UpdateTree(zClass_NodePartial * node) {
+    void __fastcall UpdateTree(zClass_NodePartial * node) {
         UpdateSubtree(node);
         for (int i = 0; i < node->listCountA; ++i) {
             zClass_NodePartial *parent = node->listA[i];
@@ -859,7 +859,7 @@ namespace gwNode {
 
 namespace zClass_NodeList {
     // Reimplements 0x44ed60: zClass_NodeList::Insert
-    RECOIL_NOINLINE int RECOIL_FASTCALL Insert(zClass_NodePartial * node) {
+    int __fastcall Insert(zClass_NodePartial * node) {
         zClass_TypeListLink *link = zClass_TypeList::AllocLink();
         link->node = node;
 
@@ -873,7 +873,7 @@ namespace zClass_NodeList {
     }
 
     // Reimplements 0x44eea0: zClass_NodeList::ProcessPendingFrees
-    RECOIL_NOINLINE void RECOIL_CDECL ProcessPendingFrees() {
+    void ProcessPendingFrees() {
         zClass_TypeListLink *link = g_zClass_NodeList_PendingFreeHead;
         while (link != 0) {
             g_zClass_NodeList_PendingFreeHead = link->next;
@@ -886,7 +886,7 @@ namespace zClass_NodeList {
 
 namespace zClass {
     // Reimplements 0x44e920: zClass::ProcessDeferredWork
-    RECOIL_NOINLINE int RECOIL_CDECL ProcessDeferredWork() {
+    int ProcessDeferredWork() {
         if (g_zClass_DeferredProcessingEnabled == 0) {
             return 1;
         }
@@ -923,7 +923,7 @@ namespace zClass {
     }
 
     // Reimplements 0x44ecf0: zClass::FindByTypeAndName
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL
+    zClass_NodePartial *__fastcall
     FindByTypeAndName(
         int bucket,
         const char *name
@@ -942,7 +942,7 @@ namespace zClass {
     }
 
     // Reimplements 0x44f720: zClass::FindNextByTypePrefix_Predicate
-    RECOIL_NOINLINE int RECOIL_FASTCALL FindNextByTypePrefix_Predicate(zClass_NodePartial * node) {
+    int __fastcall FindNextByTypePrefix_Predicate(zClass_NodePartial * node) {
         return strncmp(
                    node->name,
                    g_zClass_FilterIterText,
@@ -951,7 +951,7 @@ namespace zClass {
     }
 
     // Reimplements 0x44f6f0: zClass::FindNextByTypePrefix
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL
+    zClass_NodePartial *__fastcall
     FindNextByTypePrefix(
         const char *prefixText,
         int bucket
@@ -968,7 +968,7 @@ namespace zClass {
     }
 
     // Reimplements 0x452810: zClass::AnyNodeMatchesPredicateRecursive
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     AnyNodeMatchesPredicateRecursive(
         zClass_NodePartial * root,
         zClass_NodePredicate predicate
@@ -990,7 +990,7 @@ namespace zClass {
     }
 
     // Reimplements 0x44f870: zClass::RemoveChildChecked
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RemoveChildChecked(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -1023,14 +1023,14 @@ namespace zClass {
 
 namespace zClass_Class {
     // Reimplements 0x44ec80: zClass_Class::gwNodeUpdateAll
-    RECOIL_NOINLINE int RECOIL_CDECL gwNodeUpdateAll() {
+    int gwNodeUpdateAll() {
         zClass_TypeList::UpdateSequences();
         zClass_TypeList::UpdateAnimations();
         return zClass_TypeList::UpdateQueuedTrees();
     }
 
     // Reimplements 0x44f750: zClass_Class::gwNodeFindNextByName_Predicate
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwNodeFindNextByName_Predicate(zClass_NodePartial * node) {
+    int __fastcall gwNodeFindNextByName_Predicate(zClass_NodePartial * node) {
         return strcmp(
             node->name,
             g_zClass_FilterIterText
@@ -1038,7 +1038,7 @@ namespace zClass_Class {
     }
 
     // Reimplements 0x44f740: zClass_Class::gwNodeFindNextByName
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL
+    zClass_NodePartial *__fastcall
     gwNodeFindNextByName(
         const char *name,
         int bucket

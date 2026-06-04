@@ -7,17 +7,16 @@ Ninja and VC verifier artifacts remain authoritative.
 
 - Current source: `src/GameZRecoil/zSound/zsnd_sample_set.cpp`.
 - Current VC target:
-  `tools/vc6_verify_targets/zsnd_sample_set_registry_find_by_name.json`.
-- The active target compiles with VC6 `cl` 12.00.8168,
+  `tools/vc5_verify_targets/zsnd_sample_set_registry_find_by_name.json`.
+- The active target compiles with VC5SP3 `cl` 11.00.7022,
   `/G5 /O2 /Ob0 /Zp4 /FAcs`, and fails with 94 unmasked byte mismatches,
   8 relocation-masked bytes, BN size 102, and VC object symbol size 96.
 - Binary Ninja records the expected behavior as a linear scan from
   `g_zSnd_SampleSetRegistry.begin` to `.end` with MSVC's inline `strcmp`
   expansion and a distinct empty-registry return tail.
-- A temporary profile sweep did not find a better compiler profile. Completed
-  VC6-family comparisons remained at 94 mismatches with a 96-byte object, while
-  completed VC5SP3-family comparisons also reported 94 mismatches but grew the
-  object to 112 bytes.
+- A temporary VC5SP3 profile sweep did not find a better flag profile. The
+  active profile remained at 94 mismatches with a 96-byte object; alternate
+  VC5SP3 profiles also reported 94 mismatches but grew the object to 112 bytes.
 
 ## Rejected Probes
 

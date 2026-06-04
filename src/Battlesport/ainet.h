@@ -15,7 +15,7 @@ struct AINetPathProbeFan {
     float pathWidth;
     unsigned char unknown_38[0x04];
 
-    RECOIL_NOINLINE void RECOIL_THISCALL InitFromSegment(
+    void InitFromSegment(
         zVec3 fromPosition,
         zVec3 toPosition,
         float pathWidth
@@ -33,7 +33,7 @@ struct AINetNode {
     int nodeIndex;
     AINetNode *next;
 
-    RECOIL_NOINLINE void RECOIL_THISCALL Free();
+    void Free();
 };
 
 enum AINetType {
@@ -72,24 +72,24 @@ struct AINet {
     AINetNode *nodeListHead;
     AINet *next;
 
-    RECOIL_NOINLINE static void RECOIL_CDECL LoadAllFromZrd();
-    RECOIL_NOINLINE static AINet *RECOIL_FASTCALL LoadFromZrd(int netId);
-    RECOIL_NOINLINE static AINet *RECOIL_CDECL Alloc();
-    RECOIL_NOINLINE static AINet *RECOIL_FASTCALL FindByNetId(int netId);
-    RECOIL_NOINLINE static AINetNode *RECOIL_FASTCALL FindNearestNode(
+    static void LoadAllFromZrd();
+    static AINet *__fastcall LoadFromZrd(int netId);
+    static AINet *Alloc();
+    static AINet *__fastcall FindByNetId(int netId);
+    static AINetNode *__fastcall FindNearestNode(
         const zVec3 *position,
         AINetNode *nodeListHead
     );
-    RECOIL_NOINLINE static AINetNode *RECOIL_FASTCALL FindNodeByIndex(
+    static AINetNode *__fastcall FindNodeByIndex(
         int nodeIndex,
         AINetNode *nodeListHead
     );
-    RECOIL_NOINLINE static void RECOIL_FASTCALL ResolveNeighborLinksAndBuildProbeFans(
+    static void __fastcall ResolveNeighborLinksAndBuildProbeFans(
         AINetNode *nodeListHead,
         float pathWidth
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL Free();
-    RECOIL_NOINLINE static void RECOIL_CDECL FreeAll();
+    void Free();
+    static void FreeAll();
 };
 
 extern "C" {

@@ -12,22 +12,22 @@ struct HudUiNetGameSetupPanel_FTable {
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_FTable) == 0x0c);
 
 struct HudUiNetGameSetupPanel_LaunchButton : HudUiZrdWidget {
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_LaunchButton) == 0x14c);
 
 struct HudUiNetGameSetupPanel_CancelButton : HudUiZrdWidget {
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_CancelButton) == 0x14c);
 
 struct HudUiNetGameSetupPanel_NextWorldButton : HudUiZrdWidget {
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_NextWorldButton) == 0x14c);
 
 struct HudUiNetGameSetupPanel_PrevWorldButton : HudUiZrdWidget {
-    void RECOIL_THISCALL OnActivate();
+    void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_PrevWorldButton) == 0x14c);
 
@@ -54,9 +54,9 @@ struct HudUiNetGameSetupPanel : HudUiBackground {
     HudUiWidget lapsSwitch;
     int reconfigureExistingSession;
 
-    HudUiNetGameSetupPanel *RECOIL_THISCALL Constructor(int reconfigureExistingSessionValue);
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE HudUiNetGameSetupPanel *RECOIL_THISCALL ScalarDeletingDestructor(
+    HudUiNetGameSetupPanel * Constructor(int reconfigureExistingSessionValue);
+    void Destructor();
+    HudUiNetGameSetupPanel * ScalarDeletingDestructor(
         unsigned int flags
     );
 };

@@ -15,20 +15,20 @@ struct WestwoodOnlineUpgradeProgressDialog : CDialog {
     static const AFX_MSGMAP messageMap;
     static const AFX_MSGMAP_ENTRY messageEntries[];
 
-    static const AFX_MSGMAP *RECOIL_STDCALL GetBaseMessageMapForMfc();
-    RECOIL_NOINLINE const AFX_MSGMAP *RECOIL_THISCALL GetMessageMap() const;
-    RECOIL_NOINLINE static BOOL RECOIL_CDECL SetStatusTextFmt(
+    static const AFX_MSGMAP *__stdcall GetBaseMessageMapForMfc();
+    const AFX_MSGMAP * GetMessageMap() const;
+    static BOOL SetStatusTextFmt(
         const char *format,
         ...
     );
-    RECOIL_NOINLINE WestwoodOnlineUpgradeProgressDialog *RECOIL_THISCALL Constructor(
+    WestwoodOnlineUpgradeProgressDialog * Constructor(
         CWnd *parentWnd
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE WestwoodOnlineUpgradeProgressDialog *RECOIL_THISCALL ScalarDeletingDestructor(
+    void Destructor();
+    WestwoodOnlineUpgradeProgressDialog * ScalarDeletingDestructor(
         unsigned int flags
     );
-    RECOIL_NOINLINE static BOOL CALLBACK DlgProc(
+    static BOOL CALLBACK DlgProc(
         HWND hWnd,
         UINT uMsg,
         WPARAM wParam,
@@ -72,61 +72,61 @@ struct WestwoodOnlineUpgradeDialog : CDialog {
     static const AFX_MSGMAP messageMap;
     static const AFX_MSGMAP_ENTRY messageEntries[];
 
-    static const AFX_MSGMAP *RECOIL_STDCALL GetBaseMessageMapForMfc();
-    RECOIL_NOINLINE const AFX_MSGMAP *RECOIL_THISCALL GetMessageMap() const;
-    RECOIL_NOINLINE int RECOIL_THISCALL OnInitDialogBootstrap();
-    RECOIL_NOINLINE WestwoodOnlineUpgradeDialog *RECOIL_THISCALL Constructor(CWnd *parentWnd);
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE WestwoodOnlineUpgradeDialog *RECOIL_THISCALL ScalarDeletingDestructor(
+    static const AFX_MSGMAP *__stdcall GetBaseMessageMapForMfc();
+    const AFX_MSGMAP * GetMessageMap() const;
+    int OnInitDialogBootstrap();
+    WestwoodOnlineUpgradeDialog * Constructor(CWnd *parentWnd);
+    void Destructor();
+    WestwoodOnlineUpgradeDialog * ScalarDeletingDestructor(
         unsigned int flags
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL DoDataExchange(CDataExchange *dataExchange);
-    RECOIL_NOINLINE int RECOIL_CDECL AppendStatusTextFmt(
+    void DoDataExchange(CDataExchange *dataExchange);
+    int AppendStatusTextFmt(
         const char *format,
         ...
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL SetSelectedProfilePlayerName(CString playerName);
-    RECOIL_NOINLINE void RECOIL_THISCALL SetSelectedProfileConnectString(CString connectString);
-    RECOIL_NOINLINE CString *RECOIL_THISCALL GetSelectedProfilePlayerName(CString *outName);
-    RECOIL_NOINLINE CString *RECOIL_THISCALL GetSelectedProfileConnectString(
+    void SetSelectedProfilePlayerName(CString playerName);
+    void SetSelectedProfileConnectString(CString connectString);
+    CString * GetSelectedProfilePlayerName(CString *outName);
+    CString * GetSelectedProfileConnectString(
         CString *outConnectString
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL OnRefreshListTimer(UINT_PTR timerId);
-    RECOIL_NOINLINE void RECOIL_THISCALL BeginDisconnectAndShowProgress();
-    RECOIL_NOINLINE void RECOIL_THISCALL BeginConnect();
-    RECOIL_NOINLINE int RECOIL_THISCALL CheckAndApplyUpgrade();
-    RECOIL_NOINLINE int RECOIL_THISCALL QueryStatus();
-    RECOIL_NOINLINE void RECOIL_THISCALL UpdateSessionListQueryFromControls();
-    RECOIL_NOINLINE void RECOIL_THISCALL RequestActiveListMode();
-    RECOIL_NOINLINE void RECOIL_THISCALL RequestListMode0();
-    RECOIL_NOINLINE void RECOIL_THISCALL RequestListMode11();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnRefreshCurrentQuery();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnQuerySessionsByName();
-    RECOIL_NOINLINE void RECOIL_THISCALL SubmitVisibleSessionRequestsAndStatusText();
-    RECOIL_NOINLINE void RECOIL_THISCALL QueueVisibleSessionRequests();
-    RECOIL_NOINLINE void RECOIL_THISCALL QueueVisibleSessionRequestsAndLookupBrowseRecords();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnBrowseRecordListDblClk();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnSessionModeComboSelChange();
-    RECOIL_NOINLINE void RECOIL_THISCALL SubmitPendingSessionListFromResults();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnQueryControlsChanged();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnMaxPlayersEditChange();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnMaxPlayersEditKillFocus();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnAuxParamEditKillFocus();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnValueOrTimeEditKillFocus();
-    RECOIL_NOINLINE void RECOIL_THISCALL OnDestroy();
-    RECOIL_NOINLINE void RECOIL_THISCALL EnableQueryControls(int enable);
-    RECOIL_NOINLINE void RECOIL_THISCALL EnableConnectButton(int enable);
-    RECOIL_NOINLINE void RECOIL_THISCALL ResetSelectedBrowseRecordAndRefreshList();
-    RECOIL_NOINLINE void RECOIL_THISCALL ClearStatusList();
-    RECOIL_NOINLINE void RECOIL_THISCALL AppendConnectStatusAndRefreshList(const char *sessionName);
-    RECOIL_NOINLINE void RECOIL_THISCALL SetAbortAndClose();
-    RECOIL_NOINLINE static int RECOIL_FASTCALL ShowModalAndGetSelectedMissionIndex(
+    void OnRefreshListTimer(UINT_PTR timerId);
+    void BeginDisconnectAndShowProgress();
+    void BeginConnect();
+    int CheckAndApplyUpgrade();
+    int QueryStatus();
+    void UpdateSessionListQueryFromControls();
+    void RequestActiveListMode();
+    void RequestListMode0();
+    void RequestListMode11();
+    void OnRefreshCurrentQuery();
+    void OnQuerySessionsByName();
+    void SubmitVisibleSessionRequestsAndStatusText();
+    void QueueVisibleSessionRequests();
+    void QueueVisibleSessionRequestsAndLookupBrowseRecords();
+    void OnBrowseRecordListDblClk();
+    void OnSessionModeComboSelChange();
+    void SubmitPendingSessionListFromResults();
+    void OnQueryControlsChanged();
+    void OnMaxPlayersEditChange();
+    void OnMaxPlayersEditKillFocus();
+    void OnAuxParamEditKillFocus();
+    void OnValueOrTimeEditKillFocus();
+    void OnDestroy();
+    void EnableQueryControls(int enable);
+    void EnableConnectButton(int enable);
+    void ResetSelectedBrowseRecordAndRefreshList();
+    void ClearStatusList();
+    void AppendConnectStatusAndRefreshList(const char *sessionName);
+    void SetAbortAndClose();
+    static int __fastcall ShowModalAndGetSelectedMissionIndex(
         int *selectedMissionIndexOut
     );
-    RECOIL_NOINLINE static int RECOIL_FASTCALL ShowDownloadReadyList(
+    static int __fastcall ShowDownloadReadyList(
         WestwoodOnlineUpgradeDownloadReadyEntry *readyListHead
     );
-    RECOIL_NOINLINE static int RECOIL_STDCALL OnBootstrapServerList(
+    static int __stdcall OnBootstrapServerList(
         void *callbackContext,
         int resultCode,
         WestwoodOnlineUpgradeBootstrapServerRecord *serverList
@@ -144,7 +144,7 @@ extern "C" int g_WestwoodOnlineUpgradeSelectedMissionIndex;
 extern "C" char g_WestwoodOnlineUpgradeStatusAppendBuffer[1024];
 
 namespace WestwoodOnlineUpgrade {
-RECOIL_NOINLINE void RECOIL_FASTCALL TruncateStringAtFirstSpace(char *text);
+void __fastcall TruncateStringAtFirstSpace(char *text);
 }
 
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeProgressDialog) == 0x60);

@@ -185,7 +185,7 @@ void RestoreImportPatch(ImportFunctionPatch &patch)
     patch.original = 0;
 }
 
-void RECOIL_FASTCALL FakeCWndOnDestroy(void *self, void *)
+void __fastcall FakeCWndOnDestroy(void *self, void *)
 {
     ++g_onDestroyCalls;
     g_onDestroyThis = self;
@@ -222,7 +222,7 @@ int WINAPI FakeShowCursor(BOOL show)
     return 0;
 }
 
-void RECOIL_FASTCALL FakeSetDlgItemTextA(
+void __fastcall FakeSetDlgItemTextA(
     void *self,
     void *,
     int controlId,

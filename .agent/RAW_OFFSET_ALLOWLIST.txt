@@ -1,0 +1,5 @@
+# Existing raw runtime-state offset uses accepted by current source guards.
+# Do not add entries without explicit user approval and durable justification.
+#
+# Format:
+# <repo-relative-path> <line-number> <label>

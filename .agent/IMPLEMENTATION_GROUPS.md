@@ -51,11 +51,11 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
 - Anchor: 0x42de60 RecoilApp::Destructor and 0x42dfa0 RecoilApp::Constructor
 - Reason: class cluster / compiler-generated constructor/destructor cleanup-state model
 - Source blockers:
-  - 0x42de60 RecoilApp::Destructor is tier B but not tier S; BN shows an
+  - 0x42de60 RecoilApp::Destructor is tier C but not tier S; BN shows an
     MSVC EH registration frame and cleanup state transitions for embedded
     RecoilApp state destruction, while the current authored source uses a
     manual non-EH `Destructor()` body.
-  - 0x42dfa0 RecoilApp::Constructor is tier B but not tier S; BN shows the
+  - 0x42dfa0 RecoilApp::Constructor is tier C but not tier S; BN shows the
     paired MSVC EH registration frame and constructor unwind map. Its former
     owner dependency at 0x442c70
     `RecoilApp_MfcOleModuleOwner::RecoilApp_MfcOleModuleOwner` is tier S under
@@ -64,8 +64,8 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
   - Recover the smallest source-faithful RecoilApp owner model that lets VC
     emit the paired member/base constructor and destructor cleanup chains
     before retrying byte verification with
-    `python tools/recoil_vc6_verify.py 0x42dfa0` and
-    `python tools/recoil_vc6_verify.py 0x42de60`.
+    `python tools/recoil_vc5_verify.py 0x42dfa0` and
+    `python tools/recoil_vc5_verify.py 0x42de60`.
     The BN EH unwind map has member/base cleanup states 0-4 plus parent-frame
     `IState*` local cleanup states 5-7; rejected probes show `try`/`catch`
     emits the wrong EBP/catch EH shape, a synthetic automatic local emits the
@@ -108,8 +108,9 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
     The recovered state-queue map helper 0x443690
     `RecoilApp_StateQueue::GrowAndCenterChunkBaseList` remains tier S; 0x443700
     `RecoilApp_StateQueueBlock::InitFromCursor` and the queue entrypoints
-    remain tier B because current clean C++ spelling is source-equivalent but
-    still differs in stack/register scheduling.
+    remain tier C unless their touched globals have since been audited to tier
+    B; current clean C++ spelling is source-plausible but still differs in
+    stack/register scheduling.
     Remaining current VC5 blockers in the owner cluster are 0x42dfa0
     `RecoilApp::Constructor` and 0x42de60 `RecoilApp::Destructor`, both still
     requiring the source-faithful owner/EH model rather than queue or vtable
@@ -120,11 +121,12 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
 - Anchor: 0x4a2ea0 zSndSample::InitFromWaveData
 - Reason: source file cluster / backend initialization dependency closure
 - Source blockers:
-  - none visible; DirectSound and A3D backend paths are tier B and source-ready
+  - none visible; DirectSound and A3D backend paths are tier C/source-ready,
+    with any touched global-data audit tracked through the plan data gate
 - Next action:
   - Continue binary-lane shaping from the current closest baselines:
     0x4a2ea0 dispatcher is tier S with VC5 `vc5_o2_ob0_facs` zero-mismatch
-    evidence, 0x4a3180 DirectSound is VC6 `vc6_o2_ob0_facs` at 543
+    evidence, 0x4a3180 DirectSound is VC5SP3 `vc5_o2_ob0_facs` at 543
     mismatches, and 0x4a2ec0 A3D is tier S with VC5 `vc5_o2_ob0_md_facs`
     zero-mismatch evidence. DirectSound tier S remains the source-cluster
     binary-lane blocker; see

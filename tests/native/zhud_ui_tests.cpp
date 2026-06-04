@@ -81,9 +81,9 @@ struct zTimedTask {
     int rasterVertexCount;
     int rasterDrawParam;
 
-    void RECOIL_THISCALL RemoveFromActiveList();
-    void RECOIL_THISCALL RunImmediateAction();
-    static void RECOIL_CDECL TickActiveList();
+    void RemoveFromActiveList();
+    void RunImmediateAction();
+    static void TickActiveList();
 };
 
 extern zTimedTask *g_zTimedTask_ActiveHead;
@@ -212,7 +212,7 @@ std::int32_t __stdcall HudUiTestDirectSoundStop(void *) {
     return 0;
 }
 
-void RECOIL_FASTCALL HudTestImmediateRaster4(void *frameBuffer, int x0, int y0, int x1,
+void __fastcall HudTestImmediateRaster4(void *frameBuffer, int x0, int y0, int x1,
                                              int y1, int color16) {
     if (g_HudTestLine4Count < 4) {
         g_HudTestLine4Args[g_HudTestLine4Count][0] = x0;
@@ -226,7 +226,7 @@ void RECOIL_FASTCALL HudTestImmediateRaster4(void *frameBuffer, int x0, int y0, 
     g_HudTestLine4FrameBuffer = frameBuffer;
 }
 
-void RECOIL_FASTCALL HudTestImmediateRaster5(void *frameBuffer, const void *clipRect, int x0,
+void __fastcall HudTestImmediateRaster5(void *frameBuffer, const void *clipRect, int x0,
                                              int y0, int x1, int y1, int color16) {
     if (g_HudTestLine5Count < 4) {
         g_HudTestLineArgs[g_HudTestLine5Count][0] = x0;
@@ -241,7 +241,7 @@ void RECOIL_FASTCALL HudTestImmediateRaster5(void *frameBuffer, const void *clip
     g_HudTestLineClipRect = clipRect;
 }
 
-void RECOIL_FASTCALL HudTestPointOp(void *frameBuffer, int y, int x, int color16) {
+void __fastcall HudTestPointOp(void *frameBuffer, int y, int x, int color16) {
     ++g_HudTestPointOpCount;
     g_HudTestPointOpFrameBuffer = frameBuffer;
     g_HudTestPointOpArgs[0] = y;
@@ -250,10 +250,10 @@ void RECOIL_FASTCALL HudTestPointOp(void *frameBuffer, int y, int x, int color16
 }
 
 struct TestCircleDrawDirtyOps : HudUiCircle {
-    void RECOIL_THISCALL DrawBase();
+    void DrawBase();
 };
 
-void RECOIL_THISCALL TestCircleDrawDirtyOps::DrawBase() {
+void TestCircleDrawDirtyOps::DrawBase() {
     ++g_HudCircleDrawBaseCount;
 }
 
@@ -479,23 +479,23 @@ std::int32_t g_testNetExitHidePreviewCount = 0;
 HudUiZrdWidget *g_testNetExitHidePreviewThis = nullptr;
 
 struct TestNetExitPanel : HudUiNetExitPanel {
-    void RECOIL_THISCALL UpdateAll(float deltaSeconds) {
+    void UpdateAll(float deltaSeconds) {
         g_testNetExitUpdateDelta = deltaSeconds;
     }
 
-    std::int32_t RECOIL_THISCALL SetEnabled(std::int32_t enabled) {
+    std::int32_t SetEnabled(std::int32_t enabled) {
         g_testNetExitSetEnabled = enabled;
         return enabled;
     }
 
-    HudUiNetExitPanel *RECOIL_THISCALL ScalarDeletingDestructor(std::uint32_t flags) {
+    HudUiNetExitPanel * ScalarDeletingDestructor(std::uint32_t flags) {
         g_testNetExitDeleteFlags = flags;
         return this;
     }
 };
 
 struct TestNetExitPatchOps {
-    RecoilPtr32 RECOIL_THISCALL QueueSwitchCurrentState(RecoilApp_IState *state,
+    RecoilPtr32 QueueSwitchCurrentState(RecoilApp_IState *state,
                                                         std::int32_t stateParam) {
         ++g_testNetExitQueueSwitchCount;
         g_testNetExitQueueSwitchState = state;
@@ -503,7 +503,7 @@ struct TestNetExitPatchOps {
         return 0;
     }
 
-    void RECOIL_THISCALL ZrdWidgetDestructorCore() {
+    void ZrdWidgetDestructorCore() {
         const int index = g_testNetExitDestructorStep;
         if (index < 2) {
             g_testNetExitDestroyedWidgets[index] =
@@ -512,18 +512,18 @@ struct TestNetExitPatchOps {
         ++g_testNetExitDestructorStep;
     }
 
-    void RECOIL_THISCALL BackgroundDestructor() {
+    void BackgroundDestructor() {
         g_testNetExitDestroyedBackground = reinterpret_cast<HudUiBackground *>(this);
         ++g_testNetExitDestructorStep;
     }
 
-    void RECOIL_THISCALL HidePreview() {
+    void HidePreview() {
         ++g_testNetExitResumeStep;
         g_testNetExitResumeHideThis =
             reinterpret_cast<HudUiNetExitPanel_ResumeWidget *>(this);
     }
 
-    std::int32_t RECOIL_THISCALL NetExitSetEnabled(std::int32_t enabled) {
+    std::int32_t NetExitSetEnabled(std::int32_t enabled) {
         ++g_testNetExitResumeStep;
         g_testNetExitResumeSetEnabledThis =
             reinterpret_cast<HudUiNetExitPanel *>(this);
@@ -531,12 +531,12 @@ struct TestNetExitPatchOps {
         return 0;
     }
 
-    void RECOIL_THISCALL ZrdWidgetOnActivate() {
+    void ZrdWidgetOnActivate() {
         ++g_testNetExitResumeStep;
         g_testNetExitResumeActivateThis = reinterpret_cast<HudUiZrdWidget *>(this);
     }
 
-    void RECOIL_THISCALL BackgroundContainerSetInputFocus(HudUiElement *element) {
+    void BackgroundContainerSetInputFocus(HudUiElement *element) {
         ++g_testNetExitShowPreviewStep;
         ++g_testNetExitSetInputFocusCount;
         g_testNetExitSetInputFocusThis =
@@ -544,13 +544,13 @@ struct TestNetExitPatchOps {
         g_testNetExitSetInputFocusElement = element;
     }
 
-    void RECOIL_THISCALL ZrdWidgetShowPreview() {
+    void ZrdWidgetShowPreview() {
         ++g_testNetExitShowPreviewStep;
         ++g_testNetExitShowPreviewCount;
         g_testNetExitShowPreviewThis = reinterpret_cast<HudUiZrdWidget *>(this);
     }
 
-    HudUiElement *RECOIL_THISCALL BackgroundContainerGetInputFocus() {
+    HudUiElement * BackgroundContainerGetInputFocus() {
         ++g_testNetExitHidePreviewStep;
         ++g_testNetExitGetInputFocusCount;
         g_testNetExitGetInputFocusThis =
@@ -558,7 +558,7 @@ struct TestNetExitPatchOps {
         return g_testNetExitGetInputFocusResult;
     }
 
-    void RECOIL_THISCALL BackgroundContainerSetInputFocusForHide(
+    void BackgroundContainerSetInputFocusForHide(
         HudUiElement *element) {
         ++g_testNetExitHidePreviewStep;
         ++g_testNetExitHideSetInputFocusCount;
@@ -567,32 +567,32 @@ struct TestNetExitPatchOps {
         g_testNetExitHideSetInputFocusElement = element;
     }
 
-    void RECOIL_THISCALL ZrdWidgetHidePreview() {
+    void ZrdWidgetHidePreview() {
         ++g_testNetExitHidePreviewStep;
         ++g_testNetExitHidePreviewCount;
         g_testNetExitHidePreviewThis = reinterpret_cast<HudUiZrdWidget *>(this);
     }
 };
 
-void RECOIL_CDECL FakeNetExitTriggerCurrentLayoutOnActivated() {
+void FakeNetExitTriggerCurrentLayoutOnActivated() {
     ++g_testNetExitResumeStep;
     g_testNetExitResumeTriggerStep = g_testNetExitResumeStep;
 }
 
-void RECOIL_FASTCALL FakeNetExitBindMapContextPush(zInput_BindMapContext *bindMapOrNull) {
+void __fastcall FakeNetExitBindMapContextPush(zInput_BindMapContext *bindMapOrNull) {
     ++g_testNetExitShowPreviewStep;
     ++g_testNetExitPushCount;
     g_testNetExitPushArg = bindMapOrNull;
 }
 
-void RECOIL_FASTCALL FakeNetExitSetMouseBinding(int mouseSlot, int commandId) {
+void __fastcall FakeNetExitSetMouseBinding(int mouseSlot, int commandId) {
     ++g_testNetExitShowPreviewStep;
     ++g_testNetExitMouseBindingCount;
     g_testNetExitMouseSlot = mouseSlot;
     g_testNetExitMouseCommand = commandId;
 }
 
-int RECOIL_FASTCALL FakeNetExitUpdateTargetReticleFromCursor(
+int __fastcall FakeNetExitUpdateTargetReticleFromCursor(
     int reticleMode,
     zVec3 *worldHitPoint,
     float normalizedX,
@@ -625,12 +625,12 @@ void ResetNetExitShowPreviewProbe() {
     g_testNetExitShowPreviewThis = nullptr;
 }
 
-void RECOIL_CDECL FakeNetExitBindMapContextPop() {
+void FakeNetExitBindMapContextPop() {
     ++g_testNetExitHidePreviewStep;
     ++g_testNetExitPopCount;
 }
 
-int RECOIL_FASTCALL FakeNetExitHideUpdateTargetReticleFromCursor(
+int __fastcall FakeNetExitHideUpdateTargetReticleFromCursor(
     int reticleMode,
     zVec3 *worldHitPoint,
     float normalizedX,
@@ -672,14 +672,14 @@ int AuxLineIndexFromPanel(void *self) {
     return static_cast<int>(item - g_HudUiMgrStringMenu->items);
 }
 
-void RECOIL_CDECL TestAuxSetTextFmt(HudUiPanel *self, const char *format, ...) {
+void TestAuxSetTextFmt(HudUiPanel *self, const char *format, ...) {
     const int index = AuxLineIndexFromPanel(self);
     ++g_auxTextFmtCount[index];
     g_auxLastText[index] = format;
 }
 
 struct TestAuxPanel {
-    void RECOIL_THISCALL SetVisible(std::int32_t visible) {
+    void SetVisible(std::int32_t visible) {
         const int index = AuxLineIndexFromPanel(this);
         ++g_auxVisibleCount[index];
         g_auxLastVisible[index] = visible;
@@ -697,7 +697,7 @@ int g_disableLayoutDisableCount = 0;
 int g_enableLayoutEnableCount = 0;
 
 struct TestDisableVisibleReceiver {
-    void RECOIL_THISCALL SetVisible(std::int32_t visible) {
+    void SetVisible(std::int32_t visible) {
         const int index = g_disableVisibleCount;
         if (index < 96) {
             g_disableVisibleThis[index] = this;
@@ -709,7 +709,7 @@ struct TestDisableVisibleReceiver {
 };
 
 struct TestDisableContainer {
-    void RECOIL_THISCALL SetEnabled(std::int32_t enabled) {
+    void SetEnabled(std::int32_t enabled) {
         const int index = g_disableSetEnabledCount;
         if (index < 16) {
             g_disableSetEnabledThis[index] = this;
@@ -722,13 +722,13 @@ struct TestDisableContainer {
 };
 
 struct TestDisableLayout {
-    void RECOIL_THISCALL Disable() {
+    void Disable() {
         ++g_disableLayoutDisableCount;
     }
 };
 
 struct TestEnableLayout {
-    void RECOIL_THISCALL Enable() {
+    void Enable() {
         ++g_enableLayoutEnableCount;
     }
 };
@@ -746,18 +746,18 @@ void *g_updateFrameSetVisibleThis[80] = {};
 int g_updateFrameSetVisibleValue[80] = {};
 
 struct TestUpdateFrameLayoutDispatch {
-    void RECOIL_THISCALL PreUpdate() {
+    void PreUpdate() {
         ++g_updateFrameLayoutNoOpCount;
     }
 
-    void RECOIL_THISCALL UpdateAll(float deltaSeconds) {
+    void UpdateAll(float deltaSeconds) {
         ++g_updateFrameLayoutUpdateCount;
         g_updateFrameLayoutDelta = deltaSeconds;
     }
 };
 
 struct TestUpdateFrameElementDispatch {
-    void RECOIL_THISCALL Update(float deltaSeconds) {
+    void Update(float deltaSeconds) {
         const int index = g_updateFrameElementUpdateCount;
         if (index < 12) {
             g_updateFrameElementThis[index] = this;
@@ -768,7 +768,7 @@ struct TestUpdateFrameElementDispatch {
 };
 
 struct TestUpdateFramePanelDispatch {
-    void RECOIL_THISCALL Draw() {
+    void Draw() {
         const int index = g_updateFramePanelDrawCount;
         if (index < 4) {
             g_updateFramePanelDrawThis[index] = this;
@@ -778,7 +778,7 @@ struct TestUpdateFramePanelDispatch {
 };
 
 struct TestUpdateFrameVisibleDispatch {
-    void RECOIL_THISCALL SetVisible(int visible) {
+    void SetVisible(int visible) {
         const int index = g_updateFrameSetVisibleCount;
         if (index < 80) {
             g_updateFrameSetVisibleThis[index] = this;
@@ -790,7 +790,7 @@ struct TestUpdateFrameVisibleDispatch {
 
 int g_layoutActivatedCount = 0;
 
-void RECOIL_FASTCALL TestLayoutOnActivated(HudLayoutBase *) {
+void __fastcall TestLayoutOnActivated(HudLayoutBase *) {
     ++g_layoutActivatedCount;
 }
 
@@ -803,15 +803,15 @@ int g_barDrawLastContext = 0;
 int g_barDrawLastPixelCount = 0;
 std::uint16_t *g_barDrawLastDst = nullptr;
 
-void RECOIL_FASTCALL TestElementDraw(HudUiElement *) {
+void __fastcall TestElementDraw(HudUiElement *) {
     ++g_elementDrawCount;
 }
 
-void RECOIL_FASTCALL TestElementBaseDraw(HudUiElement *) {
+void __fastcall TestElementBaseDraw(HudUiElement *) {
     ++g_elementBaseDrawCount;
 }
 
-void RECOIL_FASTCALL TestBarDrawSpanOp(int spanOpContext, int pixelCount) {
+void __fastcall TestBarDrawSpanOp(int spanOpContext, int pixelCount) {
     ++g_barDrawSpanOpCount;
     g_barDrawLastContext = spanOpContext;
     g_barDrawLastPixelCount = pixelCount;
@@ -819,7 +819,7 @@ void RECOIL_FASTCALL TestBarDrawSpanOp(int spanOpContext, int pixelCount) {
 }
 
 struct TestMessagePanelDrawDispatch {
-    void RECOIL_THISCALL Draw() {
+    void Draw() {
         ++g_messagePanelDrawCount;
         g_messagePanelDrawThis = this;
     }
@@ -827,7 +827,7 @@ struct TestMessagePanelDrawDispatch {
 
 int g_elementInvalidateCount = 0;
 
-void RECOIL_FASTCALL TestElementInvalidate(HudUiElement *element) {
+void __fastcall TestElementInvalidate(HudUiElement *element) {
     ++g_elementInvalidateCount;
     element->Invalidate();
 }
@@ -835,7 +835,7 @@ void RECOIL_FASTCALL TestElementInvalidate(HudUiElement *element) {
 int g_elementConstructorInvalidateCount = 0;
 HudUiElement *g_elementConstructorInvalidateThis = nullptr;
 
-void RECOIL_FASTCALL TestElementConstructorInvalidate(HudUiElement *element) {
+void __fastcall TestElementConstructorInvalidate(HudUiElement *element) {
     ++g_elementConstructorInvalidateCount;
     g_elementConstructorInvalidateThis = element;
     element->Invalidate();
@@ -847,7 +847,7 @@ float g_containerUpdateDelta[4] = {};
 struct TestContainerUpdateElement {
     HudUiElement base;
 
-    void RECOIL_THISCALL Update(float deltaSeconds) {
+    void Update(float deltaSeconds) {
         const int index = g_containerUpdateCount;
         if (index < 4) {
             g_containerUpdateDelta[index] = deltaSeconds;
@@ -868,7 +868,7 @@ int g_textStackSetFontCharSet[4] = {};
 int g_textStackSetFontPitch[4] = {};
 
 struct TestTextStackFontPanel {
-    void RECOIL_THISCALL SetFont(const char *faceName, int height, int weight, int width,
+    void SetFont(const char *faceName, int height, int weight, int width,
                                  int italic, int charSet, int pitchAndFamily) {
         const int index = g_textStackSetFontCount;
         if (index < 4) {
@@ -895,7 +895,7 @@ void *g_applyTextLabelSetTextFmtThis[4] = {};
 const char *g_applyTextLabelSetTextFmtFormat[4] = {};
 
 struct TestApplyTextLabelPanel {
-    void RECOIL_THISCALL SetPos(int x, int y) {
+    void SetPos(int x, int y) {
         const int index = g_applyTextLabelSetPosCount;
         if (index < 4) {
             g_applyTextLabelSetPosThis[index] = this;
@@ -907,7 +907,7 @@ struct TestApplyTextLabelPanel {
     }
 };
 
-void RECOIL_CDECL TestApplyTextLabelSetTextFmt(HudUiPanel *self, const char *format, ...) {
+void TestApplyTextLabelSetTextFmt(HudUiPanel *self, const char *format, ...) {
     const int index = g_applyTextLabelSetTextFmtCount;
     if (index < 4) {
         g_applyTextLabelSetTextFmtThis[index] = self;
@@ -934,19 +934,19 @@ void *g_shieldApplyUpdateBoundsThis = nullptr;
 int g_shieldApplyInvalidateCount = 0;
 
 struct TestShieldApplyLayoutOps {
-    int RECOIL_THISCALL GetX() {
+    int GetX() {
         ++g_shieldApplyGetXCount;
         return this == g_shieldApplyWidgetThis ? g_shieldApplyWidgetCenterX
                                                : g_shieldApplyPanelX;
     }
 
-    int RECOIL_THISCALL GetY() {
+    int GetY() {
         ++g_shieldApplyGetYCount;
         return this == g_shieldApplyWidgetThis ? g_shieldApplyWidgetCenterY
                                                : g_shieldApplyPanelY;
     }
 
-    void RECOIL_THISCALL SetClip(void *bltSource, const HudUiRect *rect) {
+    void SetClip(void *bltSource, const HudUiRect *rect) {
         const int index = g_shieldApplySetClipCount;
         if (index < 4) {
             g_shieldApplySetClipThis[index] = this;
@@ -957,12 +957,12 @@ struct TestShieldApplyLayoutOps {
         ++g_shieldApplySetClipCount;
     }
 
-    void RECOIL_THISCALL UpdateTextBoundsFromContent() {
+    void UpdateTextBoundsFromContent() {
         ++g_shieldApplyUpdateBoundsCount;
         g_shieldApplyUpdateBoundsThis = this;
     }
 
-    void RECOIL_THISCALL Invalidate() {
+    void Invalidate() {
         ++g_shieldApplyInvalidateCount;
     }
 };
@@ -980,12 +980,12 @@ void *g_naniteInitPanelBltSource = nullptr;
 HudUiRect g_naniteInitPanelClip = {};
 
 struct TestNaniteInitWidget {
-    int RECOIL_THISCALL GetCenterX() {
+    int GetCenterX() {
         ++g_naniteInitGetCenterXCount;
         return this == g_naniteInitLayoutWidget2 ? 300 : 33;
     }
 
-    int RECOIL_THISCALL GetCenterY() {
+    int GetCenterY() {
         ++g_naniteInitGetCenterYCount;
         return this == g_naniteInitLayoutWidget2 ? 400 : 44;
     }
@@ -996,7 +996,7 @@ void *g_objectiveMeterGetCenterXThis = nullptr;
 int g_objectiveMeterCenterX = 0;
 
 struct TestObjectiveMeterWidget {
-    int RECOIL_THISCALL GetCenterX() {
+    int GetCenterX() {
         ++g_objectiveMeterGetCenterXCount;
         g_objectiveMeterGetCenterXThis = this;
         return g_objectiveMeterCenterX;
@@ -1011,7 +1011,7 @@ int g_objectiveDirtyRectInvalidateCount = 0;
 void *g_objectiveDirtyRectInvalidateThis = nullptr;
 
 struct TestObjectiveDirtyRectWidgetDispatch {
-    int RECOIL_THISCALL GetCenterX() {
+    int GetCenterX() {
         ++g_objectiveDirtyRectGetCenterXCount;
         if (this == g_objectiveDirtyRectObjectiveWidget) {
             return 30;
@@ -1019,7 +1019,7 @@ struct TestObjectiveDirtyRectWidgetDispatch {
         return this == g_objectiveDirtyRectLayoutWidget ? 5 : 0;
     }
 
-    int RECOIL_THISCALL GetCenterY() {
+    int GetCenterY() {
         ++g_objectiveDirtyRectGetCenterYCount;
         if (this == g_objectiveDirtyRectObjectiveWidget) {
             return 40;
@@ -1027,21 +1027,21 @@ struct TestObjectiveDirtyRectWidgetDispatch {
         return this == g_objectiveDirtyRectLayoutWidget ? 6 : 0;
     }
 
-    void RECOIL_THISCALL Invalidate() {
+    void Invalidate() {
         ++g_objectiveDirtyRectInvalidateCount;
         g_objectiveDirtyRectInvalidateThis = this;
     }
 };
 
 struct TestNaniteInitPanel {
-    void RECOIL_THISCALL SetPos(int x, int y) {
+    void SetPos(int x, int y) {
         ++g_naniteInitPanelSetPosCount;
         g_naniteInitPanelSetPosThis = this;
         g_naniteInitPanelSetPosX = x;
         g_naniteInitPanelSetPosY = y;
     }
 
-    void RECOIL_THISCALL SetBltSourceAndClipRect(void *bltSourceOrNull,
+    void SetBltSourceAndClipRect(void *bltSourceOrNull,
                                                  const HudUiRect *clipRect) {
         ++g_naniteInitPanelSetClipCount;
         g_naniteInitPanelSetClipThis = this;
@@ -1080,22 +1080,22 @@ struct TestBackgroundInputElement {
     int hitResult;
     int shouldHandleResult;
 
-    int RECOIL_THISCALL HitTest(int x, int y) {
+    int HitTest(int x, int y) {
         ++g_backgroundHitCount;
         return x == 123 && y == 456 ? hitResult : 0;
     }
 
-    int RECOIL_THISCALL ShouldHandleInput(HudUiBackground *, int hovered) {
+    int ShouldHandleInput(HudUiBackground *, int hovered) {
         ++g_backgroundShouldHandleCount;
         g_backgroundShouldHandleHovered = hovered;
         return shouldHandleResult;
     }
 
-    void RECOIL_THISCALL DrawBase() {
+    void DrawBase() {
         ++g_backgroundDrawBaseCount;
     }
 
-    void RECOIL_THISCALL SetPos(int x, int y) {
+    void SetPos(int x, int y) {
         ++g_backgroundSetPosCount;
         g_backgroundSetPosX = x;
         g_backgroundSetPosY = y;
@@ -1103,7 +1103,7 @@ struct TestBackgroundInputElement {
         base.y = y;
     }
 
-    void RECOIL_THISCALL Update(float deltaSeconds) {
+    void Update(float deltaSeconds) {
         if (this == g_backgroundChildElement) {
             ++g_backgroundChildUpdateCount;
             g_backgroundChildUpdateDelta = deltaSeconds;
@@ -1113,43 +1113,43 @@ struct TestBackgroundInputElement {
         }
     }
 
-    void RECOIL_THISCALL OnPrimaryButtonReleased() {
+    void OnPrimaryButtonReleased() {
         ++g_backgroundPrimaryReleaseCount;
     }
 
-    void RECOIL_THISCALL OnSecondaryButtonReleased() {
+    void OnSecondaryButtonReleased() {
         ++g_backgroundSecondaryReleaseCount;
     }
 
-    void RECOIL_THISCALL OnHoverRepeat() {
+    void OnHoverRepeat() {
         ++g_backgroundHoverRepeatCount;
     }
 
-    void RECOIL_THISCALL OnHoverEnter() {
+    void OnHoverEnter() {
         ++g_backgroundHoverEnterCount;
     }
 
-    void RECOIL_THISCALL OnHoverExit() {
+    void OnHoverExit() {
         ++g_backgroundHoverExitCount;
     }
 
-    void RECOIL_THISCALL OnCaptureEnter() {
+    void OnCaptureEnter() {
         ++g_backgroundCaptureEnterCount;
     }
 
-    void RECOIL_THISCALL OnCaptureExit() {
+    void OnCaptureExit() {
         ++g_backgroundCaptureExitCount;
     }
 
-    void RECOIL_THISCALL OnPointerButtonState(int, int) {
+    void OnPointerButtonState(int, int) {
         ++g_backgroundPointerStateCount;
     }
 
-    void RECOIL_THISCALL OnActivate() {
+    void OnActivate() {
         ++g_backgroundActivateCount;
     }
 
-    void RECOIL_THISCALL AfterInputUpdate(HudUiBackground *, int hovered) {
+    void AfterInputUpdate(HudUiBackground *, int hovered) {
         ++g_backgroundAfterInputCount;
         g_backgroundAfterHovered = hovered;
     }
@@ -1162,7 +1162,7 @@ int g_listSelectorOwnerSelectedIndex = -1;
 struct TestListSelectorOwner {
     unsigned int *ftable;
 
-    void RECOIL_THISCALL OnSelectedIndexChanged(int selectedIndex) {
+    void OnSelectedIndexChanged(int selectedIndex) {
         ++g_listSelectorOwnerSelectedCount;
         g_listSelectorOwnerSelectedThis = this;
         g_listSelectorOwnerSelectedIndex = selectedIndex;
@@ -1173,7 +1173,7 @@ struct TestLayoutSetActiveElement {
     const HudLayoutBase_FTable *ftable;
     std::int32_t activeValue;
 
-    std::int32_t RECOIL_THISCALL SetActive(std::int32_t active) {
+    std::int32_t SetActive(std::int32_t active) {
         activeValue = active;
         return 1;
     }
@@ -1181,14 +1181,14 @@ struct TestLayoutSetActiveElement {
 
 int g_numericAcceptCount = 0;
 
-void RECOIL_FASTCALL TestNumericAccept(HudUiNumericTextInput *) {
+void __fastcall TestNumericAccept(HudUiNumericTextInput *) {
     ++g_numericAcceptCount;
 }
 
 int g_polylineLineCount = 0;
 int g_polylineLineArgs[5] = {};
 
-void RECOIL_FASTCALL TestPolylineRaster4(void *, int x0, int y0, int x1, int y1, int color16) {
+void __fastcall TestPolylineRaster4(void *, int x0, int y0, int x1, int y1, int color16) {
     ++g_polylineLineCount;
     g_polylineLineArgs[0] = x0;
     g_polylineLineArgs[1] = y0;
@@ -1197,7 +1197,7 @@ void RECOIL_FASTCALL TestPolylineRaster4(void *, int x0, int y0, int x1, int y1,
     g_polylineLineArgs[4] = color16;
 }
 
-void RECOIL_FASTCALL TestPolylineRaster5(void *, const void *, int x0, int y0, int x1, int y1,
+void __fastcall TestPolylineRaster5(void *, const void *, int x0, int y0, int x1, int y1,
                                          int color16) {
     ++g_polylineLineCount;
     g_polylineLineArgs[0] = x0;
@@ -1211,7 +1211,7 @@ int g_timedTaskRasterCount = 0;
 void *g_timedTaskRasterFrameBuffer = nullptr;
 int g_timedTaskRasterArgs[5] = {};
 
-void RECOIL_FASTCALL TestTimedTaskRaster4(void *frameBuffer, int x0, int y0, int x1,
+void __fastcall TestTimedTaskRaster4(void *frameBuffer, int x0, int y0, int x1,
                                           int y1, int color16) {
     ++g_timedTaskRasterCount;
     g_timedTaskRasterFrameBuffer = frameBuffer;
@@ -1226,7 +1226,7 @@ struct TestNumericLabelPanel {
     const HudUiPanel_FTable *ftable;
     const char *text;
 
-    void RECOIL_THISCALL SetText(const char *value) {
+    void SetText(const char *value) {
         text = value;
     }
 };
@@ -1235,7 +1235,7 @@ struct TestZrdChildWidget {
     const HudUiWidget_FTable *ftable;
     std::uint32_t deleteFlags;
 
-    TestZrdChildWidget *RECOIL_THISCALL ScalarDeletingDestructor(std::uint32_t flags) {
+    TestZrdChildWidget * ScalarDeletingDestructor(std::uint32_t flags) {
         deleteFlags = flags;
         return this;
     }
@@ -1247,13 +1247,13 @@ struct TestBackgroundBindWidget {
     void *owner;
     int postLoadCount;
 
-    int RECOIL_THISCALL LoadFromZrd(zReader::Node *node, void *ownerDialog) {
+    int LoadFromZrd(zReader::Node *node, void *ownerDialog) {
         loadedNode = node;
         owner = ownerDialog;
         return 1;
     }
 
-    void RECOIL_THISCALL PostLoadFromZrd() {
+    void PostLoadFromZrd() {
         ++postLoadCount;
     }
 };
@@ -1291,7 +1291,7 @@ int g_compositeSetPosY = 0;
 struct TestCompositePanelEntry {
     const HudUiCommon_FTable *ftable;
 
-    TestCompositePanelEntry *RECOIL_THISCALL ScalarDeletingDestructor(std::uint32_t flags) {
+    TestCompositePanelEntry * ScalarDeletingDestructor(std::uint32_t flags) {
         const int index = g_compositeEntryDestructorCount;
         if (index < 4) {
             g_compositeEntryDestructorThis[index] = this;
@@ -1302,7 +1302,7 @@ struct TestCompositePanelEntry {
         return this;
     }
 
-    void RECOIL_THISCALL Update(float deltaSeconds) {
+    void Update(float deltaSeconds) {
         const int index = g_compositeEntryUpdateCount;
         if (index < 4) {
             g_compositeEntryUpdateThis[index] = this;
@@ -1312,19 +1312,19 @@ struct TestCompositePanelEntry {
         ++g_compositeEntryUpdateCount;
     }
 
-    void RECOIL_THISCALL SetTextFmtV(const char *format, va_list args) {
+    void SetTextFmtV(const char *format, va_list args) {
         ++g_compositeEntrySetTextFmtVCount;
         g_compositeEntrySetTextFmtVThis = this;
         g_compositeEntrySetTextFmtVFormat = format;
         g_compositeEntrySetTextFmtVArg = va_arg(args, int);
     }
 
-    void RECOIL_THISCALL SetVisible(int visible) {
+    void SetVisible(int visible) {
         g_compositeEntrySetVisibleThis = this;
         g_compositeEntrySetVisibleValue = visible;
     }
 
-    void RECOIL_THISCALL SetFont(const char *faceName, int height, int weight,
+    void SetFont(const char *faceName, int height, int weight,
                                  int width, int italic, int charSet,
                                  int pitchAndFamily) {
         const int index = g_compositeEntrySetFontCount;
@@ -1344,26 +1344,26 @@ struct TestCompositePanelEntry {
 };
 
 struct TestCompositePanelDispatch {
-    void RECOIL_THISCALL SetTextFmtV(const char *format, va_list args) {
+    void SetTextFmtV(const char *format, va_list args) {
         ++g_compositeWrapperSetTextFmtVCount;
         g_compositeWrapperSetTextFmtVThis = this;
         g_compositeWrapperSetTextFmtVFormat = format;
         g_compositeWrapperSetTextFmtVArg = va_arg(args, int);
     }
 
-    void RECOIL_THISCALL ScrollHistory() {
+    void ScrollHistory() {
         g_compositeScrollHistoryThis = this;
     }
 
-    int RECOIL_THISCALL GetX() {
+    int GetX() {
         return 123;
     }
 
-    int RECOIL_THISCALL GetY() {
+    int GetY() {
         return 456;
     }
 
-    void RECOIL_THISCALL SetPos(int x, int y) {
+    void SetPos(int x, int y) {
         g_compositeSetPosThis = this;
         g_compositeSetPosX = x;
         g_compositeSetPosY = y;
@@ -1372,7 +1372,7 @@ struct TestCompositePanelDispatch {
 
 int g_slotWidgetDrawCount = 0;
 
-void RECOIL_FASTCALL TestSlotWidgetDraw(HudUiWidget *) {
+void __fastcall TestSlotWidgetDraw(HudUiWidget *) {
     ++g_slotWidgetDrawCount;
 }
 
@@ -1382,7 +1382,7 @@ int g_primitiveSetPosX = 0;
 int g_primitiveSetPosY = 0;
 
 struct TestPrimitiveBindTarget : HudUiPrimitiveBindTarget {
-    void RECOIL_THISCALL SetPos(int x, int y) {
+    void SetPos(int x, int y) {
         ++g_primitiveSetPosCount;
         g_primitiveSetPosThis = this;
         g_primitiveSetPosX = x;
@@ -1400,14 +1400,14 @@ int g_barSetPointInvalidateCount = 0;
 void *g_barSetPointInvalidateThis = nullptr;
 
 struct TestBarSetPointReceiver {
-    void RECOIL_THISCALL SetPos(int x, int y) {
+    void SetPos(int x, int y) {
         ++g_barSetPointSetPosCount;
         g_barSetPointSetPosThis = this;
         g_barSetPointSetPosX = x;
         g_barSetPointSetPosY = y;
     }
 
-    void RECOIL_THISCALL Invalidate() {
+    void Invalidate() {
         ++g_barSetPointInvalidateCount;
         g_barSetPointInvalidateThis = this;
     }
@@ -1434,21 +1434,21 @@ unsigned short g_musicVolumeSetPrimary = 0;
 unsigned short g_musicVolumeSetSecondary = 0;
 
 struct TestOptionSelectorRefreshItem : HudUiZrdWidgetEx17C_Item {
-    void RECOIL_THISCALL RefreshState() {
+    void RefreshState() {
         ++g_optionSelectorRefreshCount;
         g_optionSelectorRefreshThis = this;
     }
 };
 
 struct TestOptionSelectorActivate : HudUiZrdWidgetEx17C {
-    void RECOIL_THISCALL OnActivate() {
+    void OnActivate() {
         ++g_optionSelectorActivateCount;
         g_optionSelectorActivateThis = this;
     }
 };
 
 struct TestOptionSelectorHideItem : HudUiZrdWidgetEx17C_Item {
-    void RECOIL_THISCALL HidePreviewIfNotSelected() {
+    void HidePreviewIfNotSelected() {
         ++g_optionSelectorHideCount;
         g_optionSelectorHideThis = this;
         HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected();
@@ -1456,7 +1456,7 @@ struct TestOptionSelectorHideItem : HudUiZrdWidgetEx17C_Item {
 };
 
 struct TestOptionSelectorDeleteItem : HudUiZrdWidgetEx17C_Item {
-    HudUiZrdWidgetEx17C_Item *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags) {
+    HudUiZrdWidgetEx17C_Item * ScalarDeletingDestructor(unsigned int flags) {
         ++g_optionSelectorDeleteCount;
         g_optionSelectorDeleteThis = this;
         g_optionSelectorDeleteFlags = flags;
@@ -1465,19 +1465,19 @@ struct TestOptionSelectorDeleteItem : HudUiZrdWidgetEx17C_Item {
     }
 };
 
-int RECOIL_FASTCALL FakeMusicEnablePlayTrackWithMode(int trackIndex, int playbackMode) {
+int __fastcall FakeMusicEnablePlayTrackWithMode(int trackIndex, int playbackMode) {
     ++g_musicEnablePlayTrackCount;
     g_musicEnablePlayTrack = trackIndex;
     g_musicEnablePlayMode = playbackMode;
     return 1;
 }
 
-int RECOIL_CDECL FakeMusicEnableStop() {
+int FakeMusicEnableStop() {
     ++g_musicEnableStopCount;
     return 1;
 }
 
-int RECOIL_FASTCALL FakeMusicVolumeGetVolume(unsigned short *primaryVolumeOut,
+int __fastcall FakeMusicVolumeGetVolume(unsigned short *primaryVolumeOut,
                                              unsigned short *secondaryVolumeOut) {
     ++g_musicVolumeGetVolumeCount;
     *primaryVolumeOut = g_musicVolumePrimary;
@@ -1485,7 +1485,7 @@ int RECOIL_FASTCALL FakeMusicVolumeGetVolume(unsigned short *primaryVolumeOut,
     return 1;
 }
 
-int RECOIL_FASTCALL FakeMusicVolumeSetVolume(unsigned short primaryVolume,
+int __fastcall FakeMusicVolumeSetVolume(unsigned short primaryVolume,
                                              unsigned short secondaryVolume) {
     ++g_musicVolumeSetVolumeCount;
     g_musicVolumeSetPrimary = primaryVolume;
@@ -1557,7 +1557,7 @@ std::int32_t g_testBlitFlags[8] = {};
 zVidRect32 g_testBlitRects[8] = {};
 std::int32_t g_testBlitHasRect[8] = {};
 
-void RECOIL_FASTCALL TestBltSourceToPrimary(zVidImagePartial *self, std::int32_t dstX,
+void __fastcall TestBltSourceToPrimary(zVidImagePartial *self, std::int32_t dstX,
                                             std::int32_t dstY, std::int32_t clipFlags,
                                             zVidRect32 *srcRect) {
     const int index = g_testBlitCount;
@@ -1589,26 +1589,26 @@ void *g_transitionTextPanelSetVisibleThis = nullptr;
 int g_transitionTextPanelSetVisibleValue = 0;
 
 struct TestHudUiWidgetDrawDispatch {
-    void RECOIL_THISCALL DrawBase() {
+    void DrawBase() {
         ++g_hudUiWidgetDrawBaseCount;
         g_hudUiWidgetDrawBaseThis = this;
     }
 };
 
 struct TestHudUiPanelRebuildDispatch {
-    void RECOIL_THISCALL RebuildTextRect() {
+    void RebuildTextRect() {
         ++g_hudUiPanelRebuildTextRectCount;
         g_hudUiPanelRebuildTextRectThis = this;
         TestFieldAt<std::uint32_t>(this, 0x270) = 0;
     }
 };
 
-void RECOIL_FASTCALL TestTimerPanelFloatInvalidate(void *self) {
+void __fastcall TestTimerPanelFloatInvalidate(void *self) {
     ++g_timerPanelFloatInvalidateCount;
     g_timerPanelFloatInvalidateThis = self;
 }
 
-void RECOIL_CDECL TestTimerPanelFloatSetTextFmt(void *self, const char *format, ...) {
+void TestTimerPanelFloatSetTextFmt(void *self, const char *format, ...) {
     va_list args;
     va_start(args, format);
     ++g_timerPanelFloatSetTextFmtCount;
@@ -1619,7 +1619,7 @@ void RECOIL_CDECL TestTimerPanelFloatSetTextFmt(void *self, const char *format, 
 }
 
 struct TestTransitionTextPanelVisibleDispatch {
-    void RECOIL_THISCALL SetVisible(int visible) {
+    void SetVisible(int visible) {
         ++g_transitionTextPanelSetVisibleCount;
         g_transitionTextPanelSetVisibleThis = this;
         g_transitionTextPanelSetVisibleValue = visible;
@@ -1635,7 +1635,7 @@ int g_tripletUpdateAllCount = 0;
 float g_tripletUpdateAllDelta = 0.0f;
 
 struct TestTripletContainerDispatch {
-    void RECOIL_THISCALL UpdateAll(float deltaSeconds) {
+    void UpdateAll(float deltaSeconds) {
         ++g_tripletUpdateAllCount;
         g_tripletUpdateAllDelta = deltaSeconds;
     }
@@ -1646,7 +1646,7 @@ float g_statsListDispatchUpdateDelta = 0.0f;
 void *g_statsListDispatchUpdateThis = nullptr;
 
 struct TestStatsListElementDispatch {
-    void RECOIL_THISCALL Update(float deltaSeconds) {
+    void Update(float deltaSeconds) {
         ++g_statsListDispatchUpdateCount;
         g_statsListDispatchUpdateDelta = deltaSeconds;
         g_statsListDispatchUpdateThis = this;
@@ -1662,24 +1662,24 @@ void *g_widgetHitTestGetBoundsThis = nullptr;
 HudUiRect *g_widgetHitTestBounds = nullptr;
 
 struct TestWidgetInvalidateRectDispatch {
-    int RECOIL_THISCALL GetCenterX() {
+    int GetCenterX() {
         ++g_widgetInvalidateRectGetCenterXCount;
         return 7;
     }
 
-    int RECOIL_THISCALL GetCenterY() {
+    int GetCenterY() {
         ++g_widgetInvalidateRectGetCenterYCount;
         return 11;
     }
 
-    void RECOIL_THISCALL Invalidate() {
+    void Invalidate() {
         ++g_widgetInvalidateRectInvalidateCount;
         g_widgetInvalidateRectInvalidateThis = this;
     }
 };
 
 struct TestWidgetHitTestDispatch {
-    HudUiRect *RECOIL_THISCALL GetBoundsRectOrNull() {
+    HudUiRect * GetBoundsRectOrNull() {
         ++g_widgetHitTestGetBoundsCount;
         g_widgetHitTestGetBoundsThis = this;
         return g_widgetHitTestBounds;
@@ -1692,14 +1692,14 @@ int g_tripletPanelDrawItemCount = 0;
 HudUiWidget *g_tripletPanelDrawItems[3] = {};
 
 struct TestTripletPanelDrawBaseDispatch {
-    void RECOIL_THISCALL DrawBase() {
+    void DrawBase() {
         ++g_tripletPanelDrawBaseCount;
         g_tripletPanelDrawBaseThis = this;
     }
 };
 
 struct TestTripletPanelDrawItemDispatch {
-    void RECOIL_THISCALL Draw() {
+    void Draw() {
         const int index = g_tripletPanelDrawItemCount;
         if (index < 3) {
             g_tripletPanelDrawItems[index] = reinterpret_cast<HudUiWidget *>(this);
@@ -1715,7 +1715,7 @@ void TestPanelSetTextFmtV(HudUiPanel *panel, const char *format, ...) {
     va_end(args);
 }
 
-int RECOIL_FASTCALL TestVideoSurfaceStateNoOp(zVideo_SurfaceStatePartial *) {
+int __fastcall TestVideoSurfaceStateNoOp(zVideo_SurfaceStatePartial *) {
     return 0;
 }
 } // namespace
@@ -2297,16 +2297,16 @@ void ResetMpExitLayoutProbe() {
     g_mpExitBackgroundThis = nullptr;
 }
 
-int RECOIL_CDECL FakeMpExitIsLocalPlayerFirstInStatsList() {
+int FakeMpExitIsLocalPlayerFirstInStatsList() {
     return g_mpExitLocalPlayerFirst;
 }
 
-zVidImagePartial *RECOIL_FASTCALL FakeMpExitCaptureSurfaceToImage(int selector) {
+zVidImagePartial *__fastcall FakeMpExitCaptureSurfaceToImage(int selector) {
     g_mpExitCaptureSelector = selector;
     return g_mpExitCaptureImage;
 }
 
-void RECOIL_FASTCALL FakeMpExitFxSetSurfaceState(void *pixels, int width, int height,
+void __fastcall FakeMpExitFxSetSurfaceState(void *pixels, int width, int height,
                                                 int pitchBytes) {
     g_mpExitFxPixels = pixels;
     g_mpExitFxWidth = width;
@@ -2314,7 +2314,7 @@ void RECOIL_FASTCALL FakeMpExitFxSetSurfaceState(void *pixels, int width, int he
     g_mpExitFxPitch = pitchBytes;
 }
 
-void RECOIL_FASTCALL FakeMpExitBlurRegionByMode(zVidRect32 *rectOrNull, int mode) {
+void __fastcall FakeMpExitBlurRegionByMode(zVidRect32 *rectOrNull, int mode) {
     const int index = g_mpExitBlurCount;
     if (index < 4) {
         g_mpExitBlurRects[index] = rectOrNull;
@@ -2323,23 +2323,23 @@ void RECOIL_FASTCALL FakeMpExitBlurRegionByMode(zVidRect32 *rectOrNull, int mode
     ++g_mpExitBlurCount;
 }
 
-void RECOIL_STDCALL FakeMpExitSetScaleAndRebuild(float scale) {
+void __stdcall FakeMpExitSetScaleAndRebuild(float scale) {
     g_mpExitScale = scale;
 }
 
-void RECOIL_CDECL FakeMpExitEnableTopAndChatStacks() {
+void FakeMpExitEnableTopAndChatStacks() {
     ++g_mpExitEnableTopCount;
 }
 
-int RECOIL_CDECL FakeMpExitGetPrimarySurfaceWidth() {
+int FakeMpExitGetPrimarySurfaceWidth() {
     return g_mpExitPrimaryWidth;
 }
 
-int RECOIL_CDECL FakeMpExitGetNetworkModemEnabled() {
+int FakeMpExitGetNetworkModemEnabled() {
     return g_mpExitNetworkModem;
 }
 
-char *RECOIL_FASTCALL FakeMpExitGetMessageString(unsigned int messageId) {
+char *__fastcall FakeMpExitGetMessageString(unsigned int messageId) {
     const int index = g_mpExitLocCount;
     if (index < 4) {
         g_mpExitLocIds[index] = messageId;
@@ -2348,7 +2348,7 @@ char *RECOIL_FASTCALL FakeMpExitGetMessageString(unsigned int messageId) {
     return index < 4 ? g_mpExitMessages[index] : g_mpExitMessages[3];
 }
 
-void RECOIL_FASTCALL FakeMpExitShowTopMessageLine(const char *message, float duration) {
+void __fastcall FakeMpExitShowTopMessageLine(const char *message, float duration) {
     const int index = g_mpExitShowCount;
     if (index < 4) {
         g_mpExitShownMessages[index] = message;
@@ -2358,7 +2358,7 @@ void RECOIL_FASTCALL FakeMpExitShowTopMessageLine(const char *message, float dur
 }
 
 struct MpExitDialogPatchOps {
-    zReader::Node *RECOIL_THISCALL LoadFromZrd(const char *path, const char *section,
+    zReader::Node * LoadFromZrd(const char *path, const char *section,
                                                int capturePrimary) {
         g_mpExitLoadPath = path;
         g_mpExitLoadSection = section;
@@ -2366,7 +2366,7 @@ struct MpExitDialogPatchOps {
         return g_mpExitLoadResult;
     }
 
-    int RECOIL_THISCALL BindWidgetByName(zReader::Node *, HudUiWidget *widget,
+    int BindWidgetByName(zReader::Node *, HudUiWidget *widget,
                                          const char *name) {
         const int index = g_mpExitBindCount;
         if (index < 4) {
@@ -2377,26 +2377,26 @@ struct MpExitDialogPatchOps {
         return 1;
     }
 
-    void RECOIL_THISCALL FreeLoadedTreeRoots(int rootArg) {
+    void FreeLoadedTreeRoots(int rootArg) {
         ++g_mpExitFreeCount;
         g_mpExitFreeArg = rootArg;
     }
 
-    void RECOIL_THISCALL SetChildFlags(unsigned int flags) {
+    void SetChildFlags(unsigned int flags) {
         g_mpExitChildFlags = (int)flags;
     }
 
-    void RECOIL_THISCALL RefreshState() {
+    void RefreshState() {
         ++g_mpExitRefreshCount;
         g_mpExitRefreshThis = (HudUiZrdWidget *)this;
     }
 
-    void RECOIL_THISCALL SetXAll(int x) {
+    void SetXAll(int x) {
         g_mpExitTextStackX = x;
         g_mpExitTextStackThis = (HudUiTextStack4 *)this;
     }
 
-    void RECOIL_THISCALL SetEnabled(int enabled) {
+    void SetEnabled(int enabled) {
         g_mpExitBackgroundEnabled = enabled;
         g_mpExitBackgroundThis = (HudUiBackground *)this;
     }
@@ -2602,7 +2602,7 @@ int g_netGameSetupDeactivateBlitCalls;
 int g_netGameSetupDeactivateUnlockCalls;
 
 struct NetGameSetupQueuePatchOps {
-    RecoilPtr32 RECOIL_THISCALL QueuePushState(RecoilApp_IState *state, int suspendParam) {
+    RecoilPtr32 QueuePushState(RecoilApp_IState *state, int suspendParam) {
         ++g_netGameSetupQueueCallCount;
         g_netGameSetupQueuedState = state;
         g_netGameSetupQueuedParam = suspendParam;
@@ -2611,15 +2611,14 @@ struct NetGameSetupQueuePatchOps {
 };
 
 struct TestNetGameSetupOverlayPanel {
-    virtual void RECOIL_THISCALL Update(float) {}
+    virtual void Update(float) {}
 
-    virtual void RECOIL_THISCALL SetEnabled(int enabled) {
+    virtual void SetEnabled(int enabled) {
         ++g_netGameSetupOverlaySetEnabledCalls;
         g_netGameSetupOverlaySetEnabledValue = enabled;
     }
 
-    virtual TestNetGameSetupOverlayPanel *RECOIL_THISCALL
-    ScalarDeletingDestructor(unsigned int flags) {
+    virtual TestNetGameSetupOverlayPanel * ScalarDeletingDestructor(unsigned int flags) {
         ++g_netGameSetupOverlayScalarCalls;
         g_netGameSetupOverlayScalarFlags = flags;
         return this;
@@ -2673,38 +2672,38 @@ void ResetNetGameSetupDeactivateProbe() {
 }
 
 struct NetGameSetupTryPatchOps {
-    static int RECOIL_FASTCALL SetHalfResAdjustMode(int mode) {
+    static int __fastcall SetHalfResAdjustMode(int mode) {
         ++g_netGameSetupTryHalfResCalls;
         g_netGameSetupTryHalfResMode = mode;
         return 3;
     }
 
-    static void RECOIL_FASTCALL SetInvalidateMode(int mode) {
+    static void __fastcall SetInvalidateMode(int mode) {
         ++g_netGameSetupTryInvalidateCalls;
         g_netGameSetupTryInvalidateMode = mode;
     }
 
-    static int RECOIL_CDECL GetPrimarySurfacePitch() {
+    static int GetPrimarySurfacePitch() {
         ++g_netGameSetupTryPitchCalls;
         return 3200;
     }
 
-    static int RECOIL_CDECL GetDisplaySectionBitsPerPixel() {
+    static int GetDisplaySectionBitsPerPixel() {
         ++g_netGameSetupTryBppCalls;
         return 16;
     }
 
-    static zOpt_ViewRectSection *RECOIL_CDECL GetWindowSection() {
+    static zOpt_ViewRectSection *GetWindowSection() {
         ++g_netGameSetupTryWindowCalls;
         return g_netGameSetupTryWindow;
     }
 
-    static void *RECOIL_CDECL GetPrimarySurfacePixels() {
+    static void *GetPrimarySurfacePixels() {
         ++g_netGameSetupTryPixelsCalls;
         return g_netGameSetupTryPixels;
     }
 
-    static void RECOIL_FASTCALL SetFrameBufferRegion(void *pixels,
+    static void __fastcall SetFrameBufferRegion(void *pixels,
                                                      zOpt_ViewRectSection *region,
                                                      int bitsPerPixel, int pitchBytes) {
         g_netGameSetupTryFramePixels = pixels;
@@ -2713,13 +2712,13 @@ struct NetGameSetupTryPatchOps {
         g_netGameSetupTryFramePitch = pitchBytes;
     }
 
-    static int RECOIL_FASTCALL InitSampleSetByName(const char *setName) {
+    static int __fastcall InitSampleSetByName(const char *setName) {
         ++g_netGameSetupTrySampleCalls;
         g_netGameSetupTrySampleName = setName;
         return 1;
     }
 
-    HudUiNetGameSetupPanel *RECOIL_THISCALL PanelConstructor(int reconfigure) {
+    HudUiNetGameSetupPanel * PanelConstructor(int reconfigure) {
         ++g_netGameSetupTryConstructorCalls;
         g_netGameSetupTryConstructorThis = (HudUiNetGameSetupPanel *)this;
         g_netGameSetupTryConstructorReconfigure = reconfigure;
@@ -2727,17 +2726,17 @@ struct NetGameSetupTryPatchOps {
         return (HudUiNetGameSetupPanel *)this;
     }
 
-    void RECOIL_THISCALL PanelSetEnabled(int enabled) {
+    void PanelSetEnabled(int enabled) {
         ++g_netGameSetupTryPanelSetEnabledCalls;
         g_netGameSetupTryPanelSetEnabledValue = enabled;
     }
 
-    static int RECOIL_CDECL GetCDAudioOption() {
+    static int GetCDAudioOption() {
         ++g_netGameSetupTryCdOptionCalls;
         return g_netGameSetupTryCdAudioOption;
     }
 
-    static int RECOIL_FASTCALL PlayTrackWithMode(int track, int mode) {
+    static int __fastcall PlayTrackWithMode(int track, int mode) {
         ++g_netGameSetupTryCdPlayCalls;
         g_netGameSetupTryCdTrack = track;
         g_netGameSetupTryCdMode = mode;
@@ -2749,25 +2748,25 @@ void WINAPI FakeNetGameSetupDeactivateSleep(DWORD milliseconds) {
     g_netGameSetupDeactivateSleepMs = milliseconds;
 }
 
-int RECOIL_FASTCALL FakeNetGameSetupDeactivateSampleSetDestroyByName(
+int __fastcall FakeNetGameSetupDeactivateSampleSetDestroyByName(
     const char *setName) {
     ++g_netGameSetupDeactivateSampleCalls;
     g_netGameSetupDeactivateSampleName = setName;
     return 1;
 }
 
-int RECOIL_CDECL FakeNetGameSetupDeactivateRunPostprocessOnPrimaryBuffer() {
+int FakeNetGameSetupDeactivateRunPostprocessOnPrimaryBuffer() {
     ++g_netGameSetupDeactivatePostprocessCalls;
     return 1;
 }
 
-int RECOIL_CDECL FakeNetGameSetupDeactivateUnlockPrimarySurfaceState() {
+int FakeNetGameSetupDeactivateUnlockPrimarySurfaceState() {
     ++g_netGameSetupDeactivateUnlockCalls;
     return 1;
 }
 
 struct NetGameSetupDeactivatePatchOps {
-    void RECOIL_THISCALL BlitOwnedSurfaceToPrimary() {
+    void BlitOwnedSurfaceToPrimary() {
         ++g_netGameSetupDeactivateBlitCalls;
         g_netGameSetupDeactivateBlitThis = (HudUiDialogController *)this;
     }
@@ -3239,37 +3238,37 @@ void ResetNetGameSetupProbe() {
     g_netSetupFrame.m_useArchiveBanks = 7;
 }
 
-char *RECOIL_CDECL FakeNetGameSetupGetPlayerName() {
+char *FakeNetGameSetupGetPlayerName() {
     return g_netSetupPlayerName;
 }
 
-int RECOIL_CDECL FakeNetGameSetupGetNetworkModemEnabled() {
+int FakeNetGameSetupGetNetworkModemEnabled() {
     return g_netSetupNetworkModem;
 }
 
-void RECOIL_FASTCALL FakeNetGameSetupSetNetworkEnabled(int value) {
+void __fastcall FakeNetGameSetupSetNetworkEnabled(int value) {
     ++g_netSetupSetNetworkEnabledCalls;
     g_netSetupSetNetworkEnabledValue = value;
 }
 
-int RECOIL_FASTCALL FakeNetGameSetupCreateSession(zNetworkSessionDescStatusFields *statusFields) {
+int __fastcall FakeNetGameSetupCreateSession(zNetworkSessionDescStatusFields *statusFields) {
     ++g_netSetupCreateSessionCalls;
     g_netSetupCapturedStatusFields = *statusFields;
     return g_netSetupCreateSessionResult;
 }
 
-int RECOIL_FASTCALL FakeNetGameSetupCreateLocalPlayer(char *playerName) {
+int __fastcall FakeNetGameSetupCreateLocalPlayer(char *playerName) {
     ++g_netSetupCreateLocalPlayerCalls;
     g_netSetupCreateLocalPlayerName = playerName;
     return 0x1234;
 }
 
-void RECOIL_FASTCALL FakeNetGameSetupSetStatusBits(unsigned int statusFlags) {
+void __fastcall FakeNetGameSetupSetStatusBits(unsigned int statusFlags) {
     ++g_netSetupSetStatusFlagsCalls;
     g_netSetupSetStatusFlagsValue = static_cast<int>(statusFlags);
 }
 
-int RECOIL_FASTCALL FakeNetGameSetupSendPkt14(int eventCode, unsigned int statusFlags,
+int __fastcall FakeNetGameSetupSendPkt14(int eventCode, unsigned int statusFlags,
                                               int valueOrTime, int auxParam) {
     ++g_netSetupSendPkt14Calls;
     g_netSetupSendPkt14EventCode = eventCode;
@@ -3279,11 +3278,11 @@ int RECOIL_FASTCALL FakeNetGameSetupSendPkt14(int eventCode, unsigned int status
     return 0;
 }
 
-int RECOIL_CDECL FakeNetGameSetupIsHost() {
+int FakeNetGameSetupIsHost() {
     return g_netSetupIsHostValue;
 }
 
-int RECOIL_FASTCALL FakeNetGameSetupHostUpdate(int eventCode, int auxParam,
+int __fastcall FakeNetGameSetupHostUpdate(int eventCode, int auxParam,
                                                int valueOrTime, int statusFlags) {
     ++g_netSetupHostUpdateCalls;
     g_netSetupHostUpdateEventCode = eventCode;
@@ -3293,11 +3292,11 @@ int RECOIL_FASTCALL FakeNetGameSetupHostUpdate(int eventCode, int auxParam,
     return 1;
 }
 
-void RECOIL_CDECL FakeNetGameSetupUnregisterHandlers() {
+void FakeNetGameSetupUnregisterHandlers() {
     ++g_netSetupUnregisterCalls;
 }
 
-void RECOIL_CDECL FakeNetGameSetupResetRemotePlayers() {
+void FakeNetGameSetupResetRemotePlayers() {
     ++g_netSetupResetRemoteCalls;
 }
 
@@ -3320,11 +3319,11 @@ void RecordNetGameSetupDestructor(void *object, int kind) {
 }
 
 struct NetGameSetupPatchOps {
-    void RECOIL_THISCALL ZrdOnActivate() {
+    void ZrdOnActivate() {
         ++g_netSetupZrdActivateCalls;
     }
 
-    zReader::Node *RECOIL_THISCALL LoadFromZrd(const char *path, const char *section,
+    zReader::Node * LoadFromZrd(const char *path, const char *section,
                                                int capturePrimary) {
         g_netSetupLoadPath = path;
         g_netSetupLoadSection = section;
@@ -3332,7 +3331,7 @@ struct NetGameSetupPatchOps {
         return g_netSetupLoadResult;
     }
 
-    int RECOIL_THISCALL BindPrimitiveNodeToElement(zReader::Node *, HudUiElement *element,
+    int BindPrimitiveNodeToElement(zReader::Node *, HudUiElement *element,
                                                    const char *name) {
         const int index = g_netSetupPrimitiveBindCount;
         if (index < 4) {
@@ -3343,7 +3342,7 @@ struct NetGameSetupPatchOps {
         return 1;
     }
 
-    int RECOIL_THISCALL BindWidgetByName(zReader::Node *, HudUiWidget *widget,
+    int BindWidgetByName(zReader::Node *, HudUiWidget *widget,
                                          const char *name) {
         const int index = g_netSetupWidgetBindCount;
         if (index < 24) {
@@ -3354,39 +3353,39 @@ struct NetGameSetupPatchOps {
         return 1;
     }
 
-    void RECOIL_THISCALL FreeLoadedTreeRoots(int rootArg) {
+    void FreeLoadedTreeRoots(int rootArg) {
         ++g_netSetupFreeCount;
         g_netSetupFreeArg = rootArg;
     }
 
-    void RECOIL_THISCALL SetChildFlags(unsigned int flags) {
+    void SetChildFlags(unsigned int flags) {
         g_netSetupChildFlags = static_cast<int>(flags);
     }
 
-    void RECOIL_THISCALL SetRuntimeTimerSecAndGoalValue(int timerSecRaw, int goalValue) {
+    void SetRuntimeTimerSecAndGoalValue(int timerSecRaw, int goalValue) {
         ++g_netSetupTimerCalls;
         g_netSetupTimerRaw = timerSecRaw;
         g_netSetupTimerGoal = goalValue;
     }
 
-    int RECOIL_THISCALL InitMissionIdAndFlags(int missionId, int flags) {
+    int InitMissionIdAndFlags(int missionId, int flags) {
         ++g_netSetupInitMissionCalls;
         g_netSetupInitMissionId = missionId;
         g_netSetupInitMissionFlags = flags;
         return 1;
     }
 
-    RecoilPtr32 RECOIL_THISCALL GetMainWnd() const {
+    RecoilPtr32 GetMainWnd() const {
         return (RecoilPtr32)((unsigned int)(&g_netSetupFrame));
     }
 
-    RecoilPtr32 RECOIL_THISCALL QueueExitCurrentState(int stateParam) {
+    RecoilPtr32 QueueExitCurrentState(int stateParam) {
         ++g_netSetupQueueExitCalls;
         g_netSetupQueueExitParam = stateParam;
         return 0;
     }
 
-    RecoilPtr32 RECOIL_THISCALL QueueSwitchCurrentState(RecoilApp_IState *state,
+    RecoilPtr32 QueueSwitchCurrentState(RecoilApp_IState *state,
                                                         int stateParam) {
         ++g_netSetupQueueSwitchCalls;
         g_netSetupQueueSwitchState = state;
@@ -3394,13 +3393,13 @@ struct NetGameSetupPatchOps {
         return 0;
     }
 
-    void RECOIL_THISCALL SetIndexClamped(int index) {
+    void SetIndexClamped(int index) {
         ++g_netSetupSetIndexCalls;
         g_netSetupSetIndexArg = index;
         ((HudUiCycleSelectorWidget *)(this))->selectedIndex = index;
     }
 
-    void RECOIL_THISCALL SetVisible(int visible) {
+    void SetVisible(int visible) {
         const int index = g_netSetupSetVisibleCount;
         if (index < 4) {
             g_netSetupSetVisibleThis[index] = this;
@@ -3409,18 +3408,18 @@ struct NetGameSetupPatchOps {
         ++g_netSetupSetVisibleCount;
     }
 
-    int RECOIL_THISCALL CommitAndGetValue() {
+    int CommitAndGetValue() {
         ++g_netSetupCommitCalls;
         return g_netSetupCommitValue;
     }
 
-    void RECOIL_THISCALL NumericTextInputUpdate(const char *text) {
+    void NumericTextInputUpdate(const char *text) {
         ++g_netSetupUpdateCalls;
         std::strncpy(g_netSetupUpdateText, text, sizeof(g_netSetupUpdateText) - 1);
         g_netSetupUpdateText[sizeof(g_netSetupUpdateText) - 1] = '\0';
     }
 
-    void RECOIL_THISCALL RefreshState() {
+    void RefreshState() {
         const int index = g_netSetupRefreshCount;
         if (index < 8) {
             g_netSetupRefreshThis[index] = this;
@@ -3428,7 +3427,7 @@ struct NetGameSetupPatchOps {
         ++g_netSetupRefreshCount;
     }
 
-    void RECOIL_THISCALL Invalidate() {
+    void Invalidate() {
         const int index = g_netSetupInvalidateCount;
         if (index < 8) {
             g_netSetupInvalidateThis[index] = this;
@@ -3436,27 +3435,27 @@ struct NetGameSetupPatchOps {
         ++g_netSetupInvalidateCount;
     }
 
-    void RECOIL_THISCALL WidgetDestructorCore() {
+    void WidgetDestructorCore() {
         RecordNetGameSetupDestructor(this, kNetGameSetupDestroyWidget);
     }
 
-    void RECOIL_THISCALL CheckToggleDestructorCore() {
+    void CheckToggleDestructorCore() {
         RecordNetGameSetupDestructor(this, kNetGameSetupDestroyCheckToggle);
     }
 
-    void RECOIL_THISCALL ZrdWidgetDestructorCore() {
+    void ZrdWidgetDestructorCore() {
         RecordNetGameSetupDestructor(this, kNetGameSetupDestroyZrdWidget);
     }
 
-    void RECOIL_THISCALL NumericTextInputDestructor() {
+    void NumericTextInputDestructor() {
         RecordNetGameSetupDestructor(this, kNetGameSetupDestroyNumericTextInput);
     }
 
-    void RECOIL_THISCALL CycleSelectorDestructorCore() {
+    void CycleSelectorDestructorCore() {
         RecordNetGameSetupDestructor(this, kNetGameSetupDestroyCycleSelector);
     }
 
-    void RECOIL_THISCALL BackgroundDestructor() {
+    void BackgroundDestructor() {
         RecordNetGameSetupDestructor(this, kNetGameSetupDestroyBackground);
     }
 };
@@ -4202,26 +4201,26 @@ void ResetMpExitClusterProbe() {
     }
 }
 
-void RECOIL_STDCALL FakeMpExitClusterSetScaleAndRebuild(float scale) {
+void __stdcall FakeMpExitClusterSetScaleAndRebuild(float scale) {
     if (g_mpExitClusterSetScaleCount < 4) {
         g_mpExitClusterSetScales[g_mpExitClusterSetScaleCount] = scale;
     }
     ++g_mpExitClusterSetScaleCount;
 }
 
-void RECOIL_STDCALL FakeMpExitClusterDispatchSetScale(float deltaSeconds) {
+void __stdcall FakeMpExitClusterDispatchSetScale(float deltaSeconds) {
     if (g_mpExitClusterDispatchCount < 4) {
         g_mpExitClusterDispatchScales[g_mpExitClusterDispatchCount] = deltaSeconds;
     }
     ++g_mpExitClusterDispatchCount;
 }
 
-int RECOIL_CDECL FakeMpExitClusterRunPostprocessOnPrimaryBuffer() {
+int FakeMpExitClusterRunPostprocessOnPrimaryBuffer() {
     ++g_mpExitClusterRunPostCount;
     return 1;
 }
 
-void RECOIL_FASTCALL FakeMpExitClusterBlitToActiveTarget(zVidImagePartial *image, int dstX,
+void __fastcall FakeMpExitClusterBlitToActiveTarget(zVidImagePartial *image, int dstX,
                                                         int dstY, int clipFlags,
                                                         zVidRect32 *srcRect) {
     g_mpExitClusterBlitImage = image;
@@ -4231,18 +4230,18 @@ void RECOIL_FASTCALL FakeMpExitClusterBlitToActiveTarget(zVidImagePartial *image
     g_mpExitClusterBlitRect = srcRect;
 }
 
-int RECOIL_CDECL FakeMpExitClusterDispatchUnlockPrimarySurfaceState() {
+int FakeMpExitClusterDispatchUnlockPrimarySurfaceState() {
     ++g_mpExitClusterUnlockCount;
     return 1;
 }
 
-zOpt_ViewRectSection *RECOIL_CDECL FakeMpExitClusterGetWindowSection() {
+zOpt_ViewRectSection *FakeMpExitClusterGetWindowSection() {
     ++g_mpExitClusterGetWindowCount;
     return g_mpExitClusterGetWindowCount == 1 ? &g_mpExitClusterWindowA
                                               : &g_mpExitClusterWindowB;
 }
 
-int RECOIL_FASTCALL FakeMpExitClusterAdjustSurfacesIfEnabled(
+int __fastcall FakeMpExitClusterAdjustSurfacesIfEnabled(
     zVidRect32 *srcRect, zVidRect32 *dstRect, int waitForPresent,
     int blitPrimaryToSwFirst) {
     ++g_mpExitClusterAdjustCount;
@@ -4253,45 +4252,45 @@ int RECOIL_FASTCALL FakeMpExitClusterAdjustSurfacesIfEnabled(
     return 1;
 }
 
-void RECOIL_CDECL FakeMpExitClusterQueueEnterWithReconfigureFlag(int flag) {
+void FakeMpExitClusterQueueEnterWithReconfigureFlag(int flag) {
     ++g_mpExitClusterQueueEnterCount;
     g_mpExitClusterQueueEnterFlag = flag;
 }
 
 struct MpExitClusterPatchOps {
-    void RECOIL_THISCALL BackgroundUpdate(float deltaSeconds) {
+    void BackgroundUpdate(float deltaSeconds) {
         ++g_mpExitClusterUpdateCount;
         g_mpExitClusterUpdateThis = (HudUiBackground *)this;
         g_mpExitClusterUpdateDelta = deltaSeconds;
     }
 
-    void RECOIL_THISCALL ContainerUpdateAll(float deltaSeconds) {
+    void ContainerUpdateAll(float deltaSeconds) {
         ++g_mpExitClusterTopUpdateCount;
         g_mpExitClusterTopUpdateDelta = deltaSeconds;
     }
 
-    void RECOIL_THISCALL BackgroundSetEnabled(int enabled) {
+    void BackgroundSetEnabled(int enabled) {
         g_mpExitClusterSetEnabledThis = (HudUiBackground *)this;
         g_mpExitClusterSetEnabledValue = enabled;
     }
 
-    void RECOIL_THISCALL MpDialogUpdate(float deltaSeconds) {
+    void MpDialogUpdate(float deltaSeconds) {
         ++g_mpExitClusterUnloadUpdateCount;
         g_mpExitClusterUnloadUpdateThis = (HudUiMpExitDialog *)this;
         g_mpExitClusterUnloadUpdateDelta = deltaSeconds;
     }
 
-    void RECOIL_THISCALL TextStackClear() {
+    void TextStackClear() {
         ++g_mpExitClusterClearCount;
         g_mpExitClusterClearThis = (HudUiTextStack4 *)this;
     }
 
-    int RECOIL_THISCALL ReleaseIfNotDefaultThunk() {
+    int ReleaseIfNotDefaultThunk() {
         g_mpExitClusterReleaseImage = (zVidImagePartial *)this;
         return 0;
     }
 
-    RecoilPtr32 RECOIL_THISCALL QueueSwitchCurrentState(RecoilApp_IState *state,
+    RecoilPtr32 QueueSwitchCurrentState(RecoilApp_IState *state,
                                                         int stateParam) {
         const int index = g_mpExitClusterQueueSwitchCount;
         if (index < 4) {
@@ -4302,7 +4301,7 @@ struct MpExitClusterPatchOps {
         return 0;
     }
 
-    void RECOIL_THISCALL ZrdWidgetOnActivate() {
+    void ZrdWidgetOnActivate() {
         const int index = g_mpExitClusterActivateCount;
         if (index < 4) {
             g_mpExitClusterActivateThis[index] = (HudUiZrdWidget *)this;
@@ -4310,7 +4309,7 @@ struct MpExitClusterPatchOps {
         ++g_mpExitClusterActivateCount;
     }
 
-    void RECOIL_THISCALL ZrdWidgetDestructorCore() {
+    void ZrdWidgetDestructorCore() {
         const int index = g_mpExitClusterWidgetDtorCount;
         if (index < 4) {
             g_mpExitClusterDestroyedWidgets[index] = (HudUiZrdWidget *)this;
@@ -4318,7 +4317,7 @@ struct MpExitClusterPatchOps {
         ++g_mpExitClusterWidgetDtorCount;
     }
 
-    void RECOIL_THISCALL BackgroundDestructor() {
+    void BackgroundDestructor() {
         ++g_mpExitClusterBackgroundDtorCount;
         g_mpExitClusterBackgroundDtorThis = (HudUiBackground *)this;
     }
@@ -4551,17 +4550,17 @@ void ResetMpExitOnEnterProbe() {
     g_mpExitOnEnterLoadCount = 0;
 }
 
-int RECOIL_CDECL FakeMpExitOnEnterGetAccelerationOption() {
+int FakeMpExitOnEnterGetAccelerationOption() {
     return g_mpExitOnEnterAccelerationMode;
 }
 
 struct MpExitOnEnterPatchOps {
-    HudUiBackground *RECOIL_THISCALL BackgroundConstructor() {
+    HudUiBackground * BackgroundConstructor() {
         g_mpExitOnEnterBackgroundCtorThis = (HudUiBackground *)this;
         return (HudUiBackground *)this;
     }
 
-    HudUiZrdWidget *RECOIL_THISCALL ZrdWidgetConstructor() {
+    HudUiZrdWidget * ZrdWidgetConstructor() {
         const int index = g_mpExitOnEnterZrdCtorCount;
         if (index < 4) {
             g_mpExitOnEnterZrdCtorThis[index] = (HudUiZrdWidget *)this;
@@ -4570,7 +4569,7 @@ struct MpExitOnEnterPatchOps {
         return (HudUiZrdWidget *)this;
     }
 
-    void RECOIL_THISCALL LoadLayout() {
+    void LoadLayout() {
         ++g_mpExitOnEnterLoadCount;
         g_mpExitOnEnterLoadThis = (HudUiMpExitDialog *)this;
     }
@@ -4687,32 +4686,32 @@ void ResetMpExitTryProbe() {
     g_mpExitTryLoadCount = 0;
 }
 
-int RECOIL_FASTCALL FakeMpExitTrySetHalfResAdjustMode(int mode) {
+int __fastcall FakeMpExitTrySetHalfResAdjustMode(int mode) {
     g_mpExitTryHalfResMode = mode;
     return 0;
 }
 
-void RECOIL_FASTCALL FakeMpExitTrySetInvalidateMode(int mode) {
+void __fastcall FakeMpExitTrySetInvalidateMode(int mode) {
     g_mpExitTryInvalidateMode = mode;
 }
 
-int RECOIL_CDECL FakeMpExitTryGetPrimarySurfacePitch() {
+int FakeMpExitTryGetPrimarySurfacePitch() {
     return g_mpExitTryPitch;
 }
 
-int RECOIL_CDECL FakeMpExitTryGetDisplaySectionBitsPerPixel() {
+int FakeMpExitTryGetDisplaySectionBitsPerPixel() {
     return g_mpExitTryBitsPerPixel;
 }
 
-zOpt_ViewRectSection *RECOIL_CDECL FakeMpExitTryGetWindowSection() {
+zOpt_ViewRectSection *FakeMpExitTryGetWindowSection() {
     return &g_mpExitTryRect;
 }
 
-void *RECOIL_CDECL FakeMpExitTryGetPrimarySurfacePixels() {
+void *FakeMpExitTryGetPrimarySurfacePixels() {
     return g_mpExitTryPixels;
 }
 
-void RECOIL_FASTCALL FakeMpExitTrySetFrameBufferRegion(void *pixels,
+void __fastcall FakeMpExitTrySetFrameBufferRegion(void *pixels,
                                                        zOpt_ViewRectSection *activeRegionRect,
                                                        int bitsPerPixel,
                                                        int pitchBytes) {
@@ -4722,27 +4721,27 @@ void RECOIL_FASTCALL FakeMpExitTrySetFrameBufferRegion(void *pixels,
     g_mpExitTryFramePitch = pitchBytes;
 }
 
-int RECOIL_FASTCALL FakeMpExitTrySampleSetInitByName(const char *setName) {
+int __fastcall FakeMpExitTrySampleSetInitByName(const char *setName) {
     ++g_mpExitTrySoundCount;
     g_mpExitTrySoundName = setName;
     return 1;
 }
 
-void RECOIL_FASTCALL FakeMpExitTryBindMapContextPush(zInput_BindMapContext *bindMapOrNull) {
+void __fastcall FakeMpExitTryBindMapContextPush(zInput_BindMapContext *bindMapOrNull) {
     ++g_mpExitTryPushCount;
     g_mpExitTryPushContext = bindMapOrNull;
 }
 
-void RECOIL_CDECL FakeMpExitTryBindMapCurrentResetAllBindings() {
+void FakeMpExitTryBindMapCurrentResetAllBindings() {
     ++g_mpExitTryResetCount;
 }
 
-int RECOIL_CDECL FakeMpExitTryGetAccelerationOption() {
+int FakeMpExitTryGetAccelerationOption() {
     return g_mpExitTryAccelerationMode;
 }
 
 struct MpExitTryPatchOps {
-    void RECOIL_THISCALL LoadLayout() {
+    void LoadLayout() {
         ++g_mpExitTryLoadCount;
         g_mpExitTryLoadThis = (HudUiMpExitDialog *)this;
     }
@@ -4863,7 +4862,7 @@ void ResetMpExitDeactivateProbe() {
     g_mpExitDeactivateScaleCount = 0;
 }
 
-void RECOIL_CDECL FakeMpExitDeactivateBindMapContextPop() {
+void FakeMpExitDeactivateBindMapContextPop() {
     ++g_mpExitDeactivatePopCount;
 }
 
@@ -4871,24 +4870,24 @@ void WINAPI FakeMpExitDeactivateSleep(DWORD milliseconds) {
     g_mpExitDeactivateSleepMs = milliseconds;
 }
 
-int RECOIL_FASTCALL FakeMpExitDeactivateSampleSetDestroyByName(const char *setName) {
+int __fastcall FakeMpExitDeactivateSampleSetDestroyByName(const char *setName) {
     ++g_mpExitDeactivateSoundCount;
     g_mpExitDeactivateSoundName = setName;
     return 1;
 }
 
-void RECOIL_FASTCALL FakeMpExitDeactivateSetScaleAndRebuild(float scale) {
+void __fastcall FakeMpExitDeactivateSetScaleAndRebuild(float scale) {
     ++g_mpExitDeactivateScaleCount;
     g_mpExitDeactivateScale = scale;
 }
 
 struct MpExitDeactivatePatchOps {
-    void RECOIL_THISCALL UnloadLayout() {
+    void UnloadLayout() {
         ++g_mpExitDeactivateUnloadCount;
         g_mpExitDeactivateUnloadThis = (HudUiMpExitDialog *)this;
     }
 
-    HudUiMpExitDialog *RECOIL_THISCALL ScalarDeletingDtor(unsigned int flags) {
+    HudUiMpExitDialog * ScalarDeletingDtor(unsigned int flags) {
         ++g_mpExitDeactivateDtorCount;
         g_mpExitDeactivateDtorThis = (HudUiMpExitDialog *)this;
         g_mpExitDeactivateDtorFlags = flags;
@@ -4996,16 +4995,16 @@ void ExpectMpExitUpdateStep(int expected) {
     }
 }
 
-void RECOIL_FASTCALL FakeMpExitUpdatePollActiveDevices(int dispatchCallbacks) {
+void __fastcall FakeMpExitUpdatePollActiveDevices(int dispatchCallbacks) {
     g_mpExitUpdatePollDispatch = dispatchCallbacks;
     ++g_mpExitUpdatePollCount;
 }
 
-void RECOIL_CDECL FakeMpExitUpdateTimeTick() {
+void FakeMpExitUpdateTimeTick() {
     ++g_mpExitUpdateTickCount;
 }
 
-char *RECOIL_FASTCALL FakeMpExitUpdateGetMessageString(int messageId) {
+char *__fastcall FakeMpExitUpdateGetMessageString(int messageId) {
     if (g_mpExitUpdateLocCount < 2) {
         g_mpExitUpdateLocIds[g_mpExitUpdateLocCount] = messageId;
     }
@@ -5014,26 +5013,26 @@ char *RECOIL_FASTCALL FakeMpExitUpdateGetMessageString(int messageId) {
                            : const_cast<char *>("Fatal text");
 }
 
-void RECOIL_CDECL FakeMpExitUpdateFlipToGDI() {
+void FakeMpExitUpdateFlipToGDI() {
     ExpectMpExitUpdateStep(1);
 }
 
-int RECOIL_CDECL FakeMpExitUpdateSndShutdown() {
+int FakeMpExitUpdateSndShutdown() {
     ExpectMpExitUpdateStep(2);
     return 1;
 }
 
-int RECOIL_CDECL FakeMpExitUpdateNetworkShutdown() {
+int FakeMpExitUpdateNetworkShutdown() {
     ExpectMpExitUpdateStep(3);
     return 1;
 }
 
-int RECOIL_CDECL FakeMpExitUpdateVideoShutdown() {
+int FakeMpExitUpdateVideoShutdown() {
     ExpectMpExitUpdateStep(4);
     return 1;
 }
 
-int RECOIL_CDECL FakeMpExitUpdatePrintf(const char *, const char *caption, const char *text) {
+int FakeMpExitUpdatePrintf(const char *, const char *caption, const char *text) {
     ExpectMpExitUpdateStep(5);
     std::strncpy(g_mpExitUpdatePrintfCaption, caption,
                  sizeof(g_mpExitUpdatePrintfCaption) - 1);
@@ -5062,13 +5061,13 @@ int WINAPI FakeMpExitUpdateMessageBoxA(HWND hwnd, LPCSTR text, LPCSTR caption, U
     return IDOK;
 }
 
-void RECOIL_FASTCALL FakeMpExitUpdateExitProcessWithCleanup(int exitCode) {
+void __fastcall FakeMpExitUpdateExitProcessWithCleanup(int exitCode) {
     ExpectMpExitUpdateStep(9);
     g_mpExitUpdateExitCode = exitCode;
 }
 
 struct MpExitUpdatePatchOps {
-    void RECOIL_THISCALL Update(float deltaSeconds) {
+    void Update(float deltaSeconds) {
         ++g_mpExitUpdateCount;
         g_mpExitUpdateThis = (HudUiMpExitDialog *)this;
         g_mpExitUpdateDelta = deltaSeconds;
@@ -7120,7 +7119,7 @@ void *g_scrollingTextUpdateFirstSelf = nullptr;
 void *g_scrollingTextUpdateSecondSelf = nullptr;
 
 struct TestScrollingTextUpdatePanel {
-    void RECOIL_THISCALL Update(float deltaSeconds) {
+    void Update(float deltaSeconds) {
         ++g_scrollingTextUpdateDispatchCount;
         g_scrollingTextUpdateLastDelta = deltaSeconds;
         if (g_scrollingTextUpdateDispatchCount == 1) {
@@ -7245,7 +7244,7 @@ void CleanupSingleQueuedItemForTest(RecoilApp_StateQueue *queue) {
 }
 
 struct TestCreditsLeaveNetworkState : RecoilApp_IState {
-    void RECOIL_THISCALL OnEnter() {}
+    void OnEnter() {}
 };
 
 extern "C" int zhud_credits_panel_update_fade_and_exit_smoke(void) {
@@ -8027,7 +8026,7 @@ extern "C" int zhud_panel_set_clip_smoke(void) {
     TestFieldAt<HudUiRect>(&panel, 0x20) = HudUiRect{10, 20, 30, 40};
 
     HudUiRect rect{1, 2, 3, 4};
-    typedef void (RECOIL_THISCALL *SetClipFn)(HudUiPanel * self,
+    typedef void ( *SetClipFn)(HudUiPanel * self,
                                               void *bltSourceOrNull,
                                               const HudUiRect *rectOrNull);
     g_HudUi_InvalidateMask = 0x24;
@@ -13168,7 +13167,7 @@ float g_messageBoxRunModalLastDelta = -1.0f;
 zVideo_SurfaceStatePartial *g_messageBoxRunModalUnlockedState = nullptr;
 
 struct TestMessageBoxRunModalDispatch : HudUiContainer {
-    void RECOIL_THISCALL Update(float deltaSeconds) {
+    void Update(float deltaSeconds) {
         ++g_messageBoxRunModalUpdateCount;
         g_messageBoxRunModalLastDelta = deltaSeconds;
         auto *const dialog = reinterpret_cast<HudUiMessageBoxDialog *>(this);
@@ -13176,14 +13175,14 @@ struct TestMessageBoxRunModalDispatch : HudUiContainer {
         dialog->modalFrameCountdown = 0;
     }
 
-    void RECOIL_THISCALL SetEnabled(int enabledValue) {
+    void SetEnabled(int enabledValue) {
         ++g_messageBoxRunModalSetEnabledCount;
         g_messageBoxRunModalLastEnabled = enabledValue;
         enabled = enabledValue;
     }
 };
 
-int RECOIL_FASTCALL TestMessageBoxRunModalUnlockSurface(zVideo_SurfaceStatePartial *state) {
+int __fastcall TestMessageBoxRunModalUnlockSurface(zVideo_SurfaceStatePartial *state) {
     g_messageBoxRunModalUnlockedState = state;
     return 0;
 }
@@ -13963,7 +13962,7 @@ int g_backgroundVideoReadCount = 0;
 zFMV_Stream *g_backgroundVideoLastStream = nullptr;
 unsigned int g_backgroundVideoLastFrame = 0;
 
-int RECOIL_FASTCALL TestBackgroundVideoReadAndDecodeFrame(zFMV_Stream *stream, void *,
+int __fastcall TestBackgroundVideoReadAndDecodeFrame(zFMV_Stream *stream, void *,
                                                           unsigned int frame) {
     ++g_backgroundVideoReadCount;
     g_backgroundVideoLastStream = stream;
@@ -14025,7 +14024,7 @@ int g_backgroundVideoDrawBaseCount = 0;
 void *g_backgroundVideoDrawBaseThis = nullptr;
 
 struct TestBackgroundVideoDrawDispatch {
-    void RECOIL_THISCALL DrawBase() {
+    void DrawBase() {
         ++g_backgroundVideoDrawBaseCount;
         g_backgroundVideoDrawBaseThis = this;
     }
@@ -14115,17 +14114,17 @@ void *g_backgroundVideoRebuildSetClipThis = nullptr;
 HudUiRect g_backgroundVideoRebuildSetClipRect = {};
 
 struct TestBackgroundVideoRebuildDispatch {
-    int RECOIL_THISCALL GetX() {
+    int GetX() {
         ++g_backgroundVideoRebuildGetXCount;
         return g_backgroundVideoRebuildGetXValue;
     }
 
-    int RECOIL_THISCALL GetY() {
+    int GetY() {
         ++g_backgroundVideoRebuildGetYCount;
         return g_backgroundVideoRebuildGetYValue;
     }
 
-    void RECOIL_THISCALL SetClipRect(const HudUiRect *rect) {
+    void SetClipRect(const HudUiRect *rect) {
         ++g_backgroundVideoRebuildSetClipCount;
         g_backgroundVideoRebuildSetClipThis = this;
         g_backgroundVideoRebuildSetClipRect = *rect;
@@ -15599,7 +15598,7 @@ extern "C" int zhud_message_draw_smoke(void) {
     g_messagePanelDrawCount = 0;
     g_messagePanelDrawThis = nullptr;
 
-    typedef void (RECOIL_THISCALL *DrawMessageFn)(HudUiMessage * self);
+    typedef void ( *DrawMessageFn)(HudUiMessage * self);
     ((DrawMessageFn)(messageTable.slots[1]))(&message);
 
     return messageTable.slots[1] == MethodAddress(&HudUiMessage::Draw) &&
@@ -17670,7 +17669,7 @@ int g_optionsBackButtonBaseActivateCount;
 HudUiZrdWidget *g_optionsBackButtonBaseActivateThis;
 
 struct TestOptionsDialogBackgroundLoad {
-    zReader::Node *RECOIL_THISCALL LoadFromZrd(const char *zrdPath,
+    zReader::Node * LoadFromZrd(const char *zrdPath,
                                                const char *sectionName,
                                                int capturePrimary) {
         ++g_optionsDialogLoadCount;
@@ -17682,7 +17681,7 @@ struct TestOptionsDialogBackgroundLoad {
 };
 
 struct TestOptionsDialogBackButtonPatchOps {
-    RecoilPtr32 RECOIL_THISCALL QueueExitCurrentState(
+    RecoilPtr32 QueueExitCurrentState(
         int stateParam
     ) {
         ++g_optionsBackButtonQueueExitCount;
@@ -17690,7 +17689,7 @@ struct TestOptionsDialogBackButtonPatchOps {
         return 0;
     }
 
-    void RECOIL_THISCALL ZrdWidgetOnActivate() {
+    void ZrdWidgetOnActivate() {
         ++g_optionsBackButtonBaseActivateCount;
         g_optionsBackButtonBaseActivateThis = (HudUiZrdWidget *)(this);
     }
@@ -18027,7 +18026,7 @@ extern "C" int zhud_options_panel_perspective_init_from_options_smoke(void) {
 namespace {
 int g_optionsPanelPerspectiveSelectSpanCount;
 
-void RECOIL_CDECL FakeOptionsPanelPerspectiveSelectSpanRoutines() {
+void FakeOptionsPanelPerspectiveSelectSpanRoutines() {
     ++g_optionsPanelPerspectiveSelectSpanCount;
 }
 } // namespace
@@ -18845,12 +18844,12 @@ int g_hudCmdDialogStateSetEnabledCount;
 int g_hudCmdDialogStateSetEnabledValue;
 
 struct HudCmdDialogStateTestDialog {
-    virtual void RECOIL_THISCALL Update(float) {}
-    virtual void RECOIL_THISCALL SetEnabled(int enabled) {
+    virtual void Update(float) {}
+    virtual void SetEnabled(int enabled) {
         ++g_hudCmdDialogStateSetEnabledCount;
         g_hudCmdDialogStateSetEnabledValue = enabled;
     }
-    virtual HudCmdDialog *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags) {
+    virtual HudCmdDialog * ScalarDeletingDestructor(unsigned int flags) {
         ++g_hudCmdDialogStateDeleteCount;
         g_hudCmdDialogStateDeleteFlags = flags;
         return reinterpret_cast<HudCmdDialog *>(this);
@@ -18862,7 +18861,7 @@ struct HudCmdDialogStateTestDialog {
 int g_hudCmdDialogStateQueueEnterOnEnterCount;
 
 struct HudCmdDialogStateQueueEnterTestState {
-    void RECOIL_THISCALL OnEnter() {
+    void OnEnter() {
         ++g_hudCmdDialogStateQueueEnterOnEnterCount;
     }
 };
@@ -20330,19 +20329,19 @@ static int g_HudLayoutHWEnableSetEnabledCount;
 static HudLayoutHW *g_HudLayoutHWEnableSetEnabledThis;
 static int g_HudLayoutHWEnableSetEnabledValue;
 
-static void RECOIL_FASTCALL HudLayoutHWUpdateAllBlitCapture(zVidRect32 *srcRect,
+static void __fastcall HudLayoutHWUpdateAllBlitCapture(zVidRect32 *srcRect,
                                                             zVidRect32 *dstRect) {
     ++g_HudLayoutHWUpdateAllBlitCount;
     g_HudLayoutHWUpdateAllBlitSrc = srcRect;
     g_HudLayoutHWUpdateAllBlitDst = dstRect;
 }
 
-static void RECOIL_FASTCALL HudLayoutHWSetActiveOnActivatedCapture(HudLayoutBase *layout) {
+static void __fastcall HudLayoutHWSetActiveOnActivatedCapture(HudLayoutBase *layout) {
     ++g_HudLayoutHWSetActiveOnActivatedCount;
     g_HudLayoutHWSetActiveOnActivatedThis = layout;
 }
 
-static void RECOIL_FASTCALL
+static void __fastcall
 HudLayoutHWSetActiveClearCapture(zVidRect32 *rect, zVideo_SurfaceStatePartial *surfaceState) {
     ++g_HudLayoutHWSetActiveClearCount;
     g_HudLayoutHWSetActiveClearRect = rect;
@@ -20350,7 +20349,7 @@ HudLayoutHWSetActiveClearCapture(zVidRect32 *rect, zVideo_SurfaceStatePartial *s
 }
 
 struct TestHudLayoutHWEnableDispatch {
-    void RECOIL_THISCALL SetEnabled(int enabled) {
+    void SetEnabled(int enabled) {
         ++g_HudLayoutHWEnableSetEnabledCount;
         g_HudLayoutHWEnableSetEnabledThis = reinterpret_cast<HudLayoutHW *>(this);
         g_HudLayoutHWEnableSetEnabledValue = enabled;
@@ -24838,7 +24837,7 @@ float g_weatherSubmittedAlpha = 0.0f;
 int g_weatherSubmittedQueueMode = 0;
 int g_weatherFlushSortedCount = 0;
 
-zVideo_TextureRecordPartial *RECOIL_FASTCALL
+zVideo_TextureRecordPartial *__fastcall
 HudWeatherFxCreateTextureRecordStub(const char *textureName, zVidImagePartial *image,
                                     int useAlpha, int arg3, int arg4) {
     g_weatherTextureName = textureName;
@@ -24849,20 +24848,20 @@ HudWeatherFxCreateTextureRecordStub(const char *textureName, zVidImagePartial *i
     return &g_weatherTextureRecord;
 }
 
-void RECOIL_FASTCALL HudWeatherFxDestroyTextureRecordStub(
+void __fastcall HudWeatherFxDestroyTextureRecordStub(
     zVideo_TextureRecordPartial *textureRecord) {
     ++g_weatherTextureDestroyCount;
     g_weatherTextureDestroyed = textureRecord;
 }
 
-void RECOIL_FASTCALL HudWeatherFxFinalizeUploadStub(
+void __fastcall HudWeatherFxFinalizeUploadStub(
     zVideo_TextureRecordPartial *textureRecord, void *, zVidImagePartial *image) {
     ++g_weatherFinalizeUploadCount;
     g_weatherFinalizeTextureRecord = textureRecord;
     g_weatherFinalizeImage = image;
 }
 
-void RECOIL_FASTCALL HudWeatherFxSubmitPolyStub(zVideo_XyzVertex *vertices,
+void __fastcall HudWeatherFxSubmitPolyStub(zVideo_XyzVertex *vertices,
                                                 zVideo_TexCoord *texCoords,
                                                 int vertexCount,
                                                 zVideo_RenderClass *renderClass,
@@ -24880,7 +24879,7 @@ void RECOIL_FASTCALL HudWeatherFxSubmitPolyStub(zVideo_XyzVertex *vertices,
     }
 }
 
-void RECOIL_CDECL HudWeatherFxFlushSortedStub() {
+void HudWeatherFxFlushSortedStub() {
     ++g_weatherFlushSortedCount;
 }
 } // namespace

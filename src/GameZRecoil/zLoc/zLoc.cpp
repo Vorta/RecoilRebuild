@@ -4,13 +4,13 @@
 
 extern "C" {
 HMODULE g_zLoc_MessagesDllHandle = 0;
-unsigned int(RECOIL_CDECL *g_zLoc_GetIdProc)(const char *key) = 0;
+unsigned int(*g_zLoc_GetIdProc)(const char *key) = 0;
 char g_zLoc_TempMessageBuffer[0x100] = {0};
 }
 
 namespace zLoc {
 // Reimplements 0x4a5ad0: zLoc::LoadMessagesDll
-RECOIL_NOINLINE int RECOIL_FASTCALL LoadMessagesDll(
+int __fastcall LoadMessagesDll(
     const char *dllPath
 ) {
     int result = 0;
@@ -19,7 +19,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadMessagesDll(
     if (module != 0) {
         result = 1;
         g_zLoc_GetIdProc =
-            (unsigned int(RECOIL_CDECL *)(const char *))GetProcAddress(
+            (unsigned int(*)(const char *))GetProcAddress(
                 module,
                 "ZLocGetID"
             );
@@ -28,7 +28,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL LoadMessagesDll(
 }
 
 // Reimplements 0x4a5b00: zLoc::UnloadMessagesDll
-RECOIL_NOINLINE void RECOIL_CDECL UnloadMessagesDll() {
+void UnloadMessagesDll() {
     HMODULE const module = g_zLoc_MessagesDllHandle;
     if (module != 0) {
         FreeLibrary(module);
@@ -38,7 +38,7 @@ RECOIL_NOINLINE void RECOIL_CDECL UnloadMessagesDll() {
 }
 
 // Reimplements 0x4a5b20: zLoc::GetMessageId
-RECOIL_NOINLINE unsigned int RECOIL_FASTCALL GetMessageId(
+unsigned int __fastcall GetMessageId(
     const char *key
 ) {
     if (g_zLoc_GetIdProc != 0) {
@@ -49,7 +49,7 @@ RECOIL_NOINLINE unsigned int RECOIL_FASTCALL GetMessageId(
 }
 
 // Reimplements 0x4a5b40: zLoc::ResolveMessageKeyOrFallback
-RECOIL_NOINLINE char *RECOIL_FASTCALL ResolveMessageKeyOrFallback(
+char *__fastcall ResolveMessageKeyOrFallback(
     const char *key
 ) {
     const unsigned int messageId = GetMessageId(key);
@@ -61,7 +61,7 @@ RECOIL_NOINLINE char *RECOIL_FASTCALL ResolveMessageKeyOrFallback(
 }
 
 // Reimplements 0x4a5b60: zLoc::FormatMessage
-RECOIL_NOINLINE unsigned int RECOIL_CDECL FormatMessage(
+unsigned int FormatMessage(
     char *outBuffer,
     int maxChars,
     unsigned int messageId,
@@ -100,7 +100,7 @@ RECOIL_NOINLINE unsigned int RECOIL_CDECL FormatMessage(
 }
 
 // Reimplements 0x4a5bf0: zLoc::GetMessageString
-RECOIL_NOINLINE char *RECOIL_FASTCALL GetMessageString(
+char *__fastcall GetMessageString(
     unsigned int messageId
 ) {
     char *message = 0;

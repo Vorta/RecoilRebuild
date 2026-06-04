@@ -20,7 +20,7 @@ static void CopyUppercasePrefix(
 }
 
 // Reimplements 0x406a00: zStr::ContainsCaseInsensitive (D:\Proj\Battlesport\zStr.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL ContainsCaseInsensitive(
+int __fastcall ContainsCaseInsensitive(
     const char *haystack,
     const char *needle
 ) {

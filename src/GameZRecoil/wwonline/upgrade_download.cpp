@@ -48,7 +48,7 @@ const DWORD kDownloadErrorStatusSleepMs = 1000;
 
 // Reimplements 0x414b50: WestwoodOnlineUpgradeDownloadEventSink::CallbackNoOp
 // (D:\Proj\GameZRecoil\wwonline\upgrade_download.cpp)
-RECOIL_NOINLINE int RECOIL_THISCALL WestwoodOnlineUpgradeDownloadEventSink::CallbackNoOp(
+int WestwoodOnlineUpgradeDownloadEventSink::CallbackNoOp(
     void *
 ) {
     return 0;
@@ -56,7 +56,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL WestwoodOnlineUpgradeDownloadEventSink::Call
 
 // Reimplements 0x442660: WestwoodOnlineUpgradeDownloadEventSink::OnDownloadFinished
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeDownloadEventSink.cpp)
-RECOIL_NOINLINE HRESULT STDMETHODCALLTYPE
+HRESULT STDMETHODCALLTYPE
 WestwoodOnlineUpgradeDownloadEventSink::OnDownloadFinished(
     IUnknown *
 ) {
@@ -67,7 +67,7 @@ WestwoodOnlineUpgradeDownloadEventSink::OnDownloadFinished(
 
 // Reimplements 0x442680: WestwoodOnlineUpgradeDownloadEventSink::OnDownloadError
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeDownloadEventSink.cpp)
-RECOIL_NOINLINE HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::OnDownloadError(
+HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::OnDownloadError(
     IUnknown *,
     HRESULT
 ) {
@@ -79,7 +79,7 @@ RECOIL_NOINLINE HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink
 
 // Reimplements 0x4426b0: WestwoodOnlineUpgradeDownloadEventSink::OnDownloadProgress
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeDownloadEventSink.cpp)
-RECOIL_NOINLINE HRESULT STDMETHODCALLTYPE
+HRESULT STDMETHODCALLTYPE
 WestwoodOnlineUpgradeDownloadEventSink::OnDownloadProgress(
     IUnknown *,
     unsigned int bytesRead,
@@ -113,7 +113,7 @@ WestwoodOnlineUpgradeDownloadEventSink::OnDownloadProgress(
 
 // Reimplements 0x442720: WestwoodOnlineUpgradeDownloadEventSink::OnStateChanged
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeDownloadEventSink.cpp)
-RECOIL_NOINLINE HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::OnStateChanged(
+HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::OnStateChanged(
     IUnknown *,
     WestwoodOnlineUpgradeDownloadState stateCode
 ) {
@@ -129,7 +129,7 @@ RECOIL_NOINLINE HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink
 
 // Reimplements 0x442770: WestwoodOnlineUpgradeDownloadEventSink::AddRef
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeDownloadEventSink.cpp)
-RECOIL_NOINLINE ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::AddRef(
+ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::AddRef(
     WestwoodOnlineUpgradeDownloadEventSink *self
 ) {
     return (ULONG)InterlockedIncrement(&self->m_refCountAndLock.refCount);
@@ -137,7 +137,7 @@ RECOIL_NOINLINE ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::
 
 // Reimplements 0x442790: WestwoodOnlineUpgradeDownloadEventSink::Release
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeDownloadEventSink.cpp)
-RECOIL_NOINLINE ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::Release(
+ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::Release(
     WestwoodOnlineUpgradeDownloadEventSink *self
 ) {
     ULONG refCount;
@@ -153,7 +153,7 @@ RECOIL_NOINLINE ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::
 
 // Reimplements 0x4427d0: WestwoodOnlineUpgradeDownloadEventSink::QueryInterface
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeDownloadEventSink.cpp)
-RECOIL_NOINLINE HRESULT RECOIL_STDCALL WestwoodOnlineUpgradeDownloadEventSink::QueryInterface(
+HRESULT __stdcall WestwoodOnlineUpgradeDownloadEventSink::QueryInterface(
     WestwoodOnlineUpgradeDownloadEventSink *self,
     REFIID iid,
     void **outInterface
@@ -168,7 +168,7 @@ RECOIL_NOINLINE HRESULT RECOIL_STDCALL WestwoodOnlineUpgradeDownloadEventSink::Q
 
 // Reimplements 0x4427f0: WestwoodOnlineUpgradeDownloadEventSink::Destructor
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeDownloadEventSink.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL WestwoodOnlineUpgradeDownloadEventSink::Destructor() {
+void WestwoodOnlineUpgradeDownloadEventSink::Destructor() {
     m_vftable = &g_WestwoodOnlineUpgradeDownloadEventSink_Vtbl;
     m_refCountAndLock.refCount = 1;
     InterlockedDecrement(&g_WestwoodOnlineUpgradeEventSinkLiveCount);
@@ -177,7 +177,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL WestwoodOnlineUpgradeDownloadEventSink::Des
 
 // Reimplements 0x4425c0: WestwoodOnlineUpgradeDownloadEventSink::CreateInstance
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeDownloadEventSink.cpp)
-RECOIL_NOINLINE HRESULT RECOIL_STDCALL WestwoodOnlineUpgradeDownloadEventSink::CreateInstance(
+HRESULT __stdcall WestwoodOnlineUpgradeDownloadEventSink::CreateInstance(
     WestwoodOnlineUpgradeDownloadEventSink **outSink
 ) {
     HRESULT result = E_OUTOFMEMORY;
@@ -199,7 +199,7 @@ RECOIL_NOINLINE HRESULT RECOIL_STDCALL WestwoodOnlineUpgradeDownloadEventSink::C
 
 // Reimplements 0x4422a0: WestwoodOnlineUpgradeDownload::CreateInstanceAndAdvise
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeDownload.cpp)
-RECOIL_NOINLINE HRESULT RECOIL_CDECL WestwoodOnlineUpgradeDownload::CreateInstanceAndAdvise() {
+HRESULT WestwoodOnlineUpgradeDownload::CreateInstanceAndAdvise() {
     CoCreateInstance(
         g_WestwoodOnlineUpgradeDownload_CLSID,
         0,
@@ -221,7 +221,7 @@ RECOIL_NOINLINE HRESULT RECOIL_CDECL WestwoodOnlineUpgradeDownload::CreateInstan
 
 // Reimplements 0x4422f0: WestwoodOnlineUpgradeDownload::UnadviseAndRelease
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeDownload.cpp)
-RECOIL_NOINLINE ULONG RECOIL_CDECL WestwoodOnlineUpgradeDownload::UnadviseAndRelease() {
+ULONG WestwoodOnlineUpgradeDownload::UnadviseAndRelease() {
     zCom::ConnectionPointContainer_Unadvise(
         g_pWestwoodOnlineUpgradeDownload,
         g_WestwoodOnlineUpgradeDownloadEventSink_IID,

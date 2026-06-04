@@ -57,23 +57,23 @@ int g_zclassRenderTraverseClipMasks[16] = {};
 float g_zclassRenderTraverseAlphaScales[16] = {};
 int g_zclassRenderTraverseVertexAlphaEnabled[16] = {};
 
-void RECOIL_CDECL TestZGameUpdateFogColor(void) {
+void TestZGameUpdateFogColor(void) {
     ++g_zgameFogColorUpdateCount;
 }
 
-void RECOIL_FASTCALL TestModelRefLerpCallback(void *callbackCtx) {
+void __fastcall TestModelRefLerpCallback(void *callbackCtx) {
     ++g_modelRefLerpCallbackCount;
     g_modelRefLerpLastCallbackCtx = callbackCtx;
 }
 
-int RECOIL_FASTCALL TestZClassUpdateBucketCallback(zClass_NodePartial *node) {
+int __fastcall TestZClassUpdateBucketCallback(zClass_NodePartial *node) {
     ++g_zclassUpdateBucketCallbackCount;
     g_zclassUpdateBucketLastNode = node;
     g_zclassUpdateBucketDeferredDuringCallback = g_zClass_DeferredProcessingEnabled;
     return 0;
 }
 
-void RECOIL_FASTCALL TestZClassRenderTraverseCallback(zClass_NodePartial *node, int clipMask) {
+void __fastcall TestZClassRenderTraverseCallback(zClass_NodePartial *node, int clipMask) {
     if (g_zclassRenderTraverseCallCount < 16) {
         g_zclassRenderTraverseNodes[g_zclassRenderTraverseCallCount] = node;
         g_zclassRenderTraverseClipMasks[g_zclassRenderTraverseCallCount] = clipMask;
@@ -88,17 +88,17 @@ void RECOIL_FASTCALL TestZClassRenderTraverseCallback(zClass_NodePartial *node, 
 int g_zmodelReleaseTextureUploadCount = 0;
 zVideo_TextureRecordPartial *g_zmodelReleaseTextureUploadLast = nullptr;
 
-void RECOIL_FASTCALL TestReleaseTextureUploadSurfaceRef(
+void __fastcall TestReleaseTextureUploadSurfaceRef(
     zVideo_TextureRecordPartial *textureRecord) {
     ++g_zmodelReleaseTextureUploadCount;
     g_zmodelReleaseTextureUploadLast = textureRecord;
 }
 
-int RECOIL_FASTCALL TextureMemoryQueryMissingStub(int, int *, int *) {
+int __fastcall TextureMemoryQueryMissingStub(int, int *, int *) {
     return 0;
 }
 
-int RECOIL_FASTCALL DamageMaskLockUploadStub(zVideo_TextureRecordPartial *textureRecord,
+int __fastcall DamageMaskLockUploadStub(zVideo_TextureRecordPartial *textureRecord,
                                              void **outPixels, int *outPitchBytes) {
     ++g_damageMaskUploadLockCount;
     g_damageMaskLastTextureRecord = textureRecord;
@@ -107,12 +107,12 @@ int RECOIL_FASTCALL DamageMaskLockUploadStub(zVideo_TextureRecordPartial *textur
     return 1;
 }
 
-void RECOIL_FASTCALL DamageMaskUnlockUploadStub(zVideo_TextureRecordPartial *textureRecord) {
+void __fastcall DamageMaskUnlockUploadStub(zVideo_TextureRecordPartial *textureRecord) {
     ++g_damageMaskUploadUnlockCount;
     g_damageMaskLastTextureRecord = textureRecord;
 }
 
-void RECOIL_FASTCALL DamageMaskFinalizeUploadStub(zVideo_TextureRecordPartial *textureRecord,
+void __fastcall DamageMaskFinalizeUploadStub(zVideo_TextureRecordPartial *textureRecord,
                                                   void *, void *) {
     ++g_damageMaskUploadFinalizeCount;
     g_damageMaskLastTextureRecord = textureRecord;
@@ -231,11 +231,11 @@ std::int32_t FloatBitsForTest(float value) {
     return raw;
 }
 
-std::int32_t RECOIL_FASTCALL zclass_test_node_type_0x42(zClass_NodePartial *node) {
+std::int32_t __fastcall zclass_test_node_type_0x42(zClass_NodePartial *node) {
     return node->nodeType == 0x42 ? 1 : 0;
 }
 
-float RECOIL_FASTCALL zclass_damage_timer_stub(void *context, float damageAmount) {
+float __fastcall zclass_damage_timer_stub(void *context, float damageAmount) {
     *static_cast<float *>(context) = damageAmount;
     return damageAmount + 1.0f;
 }
@@ -252,7 +252,7 @@ std::uint32_t g_submitFlatLastRenderParam = 0;
 std::int32_t g_submitFlatLastQueueMode = 0;
 zVideo_XyzVertex g_submitFlatLastVerts[0x40]{};
 
-void RECOIL_FASTCALL zmodel_draw_point_color16_stub(zProjectedPoint *point,
+void __fastcall zmodel_draw_point_color16_stub(zProjectedPoint *point,
                                                     std::uint32_t packedColor16,
                                                     std::int32_t pointCount) {
     g_drawPointLastPoint = *point;
@@ -261,7 +261,7 @@ void RECOIL_FASTCALL zmodel_draw_point_color16_stub(zProjectedPoint *point,
     ++g_drawPointCallCount;
 }
 
-void RECOIL_FASTCALL zmodel_submit_poly_flat_stub(zVideo_XyzVertex *vertices,
+void __fastcall zmodel_submit_poly_flat_stub(zVideo_XyzVertex *vertices,
                                                   std::uint32_t packedColor16,
                                                   std::int32_t alpha,
                                                   std::int32_t renderParam,
@@ -6213,7 +6213,7 @@ extern "C" int zclass_gwnode_update_smoke(void) {
     objectSlot.node.classData = &objectData;
     objectSlot.node.flags = 0x202;
     objectData.flags = 0x11;
-    zBBox3f *objectBounds = reinterpret_cast<zBBox3f *>(objectSlot.unknown_8c);
+    zBBox3f *objectBounds = &objectSlot.primaryBounds;
     *objectBounds = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f};
     if (zClass_Class::gwNodeUpdate(&objectSlot.node) != 0 || (objectData.flags & 0x01) != 0 ||
         (objectSlot.node.flags & 0x02) != 0 || (objectSlot.node.flags & 0x100) == 0 ||
@@ -9971,7 +9971,7 @@ extern "C" int zclass_model_ref_lerp_queue_clear_global_state_smoke() {
                : 1;
 }
 
-void RECOIL_FASTCALL zclass_model_ref_lerp_test_callback(void *) {
+void __fastcall zclass_model_ref_lerp_test_callback(void *) {
 }
 
 extern "C" int zclass_model_ref_lerp_queue_add_smoke() {
@@ -13018,7 +13018,7 @@ extern "C" int zclass_node_predicate_helpers_smoke() {
         return 62;
     }
     zBoundsMinMaxPartial *displayBounds =
-        reinterpret_cast<zBoundsMinMaxPartial *>(displaySlot.unknown_8c);
+        reinterpret_cast<zBoundsMinMaxPartial *>(&displaySlot.primaryBounds);
     if (displayBounds->min.x != -1.0f || displayBounds->max.z != 7.0f) {
         return 63;
     }
@@ -13169,8 +13169,7 @@ extern "C" int zclass_node_predicate_helpers_smoke() {
         (parentSlot.node.flags & 0x400) == 0) {
         return 69;
     }
-    zBBox3f *childBounds =
-        reinterpret_cast<zBBox3f *>(reinterpret_cast<unsigned char *>(&parentSlot.node) + 0xa4);
+    zBBox3f *childBounds = &parentSlot.secondaryBounds;
     if (childBounds->minX != -2.0f || childBounds->minY != 1.0f || childBounds->minZ != -1.0f ||
         childBounds->maxX != 10.0f || childBounds->maxY != 7.0f || childBounds->maxZ != 8.0f) {
         return 70;
@@ -13282,8 +13281,8 @@ extern "C" int zclass_node_predicate_helpers_smoke() {
     recalcSlot.node.flags = 0x200 | 0x400;
     recalcSlot.node.listCountA = 1;
     recalcSlot.node.listA = recalcParents;
-    zBBox3f *primaryBounds = reinterpret_cast<zBBox3f *>(recalcSlot.unknown_8c);
-    zBBox3f *secondaryBounds = reinterpret_cast<zBBox3f *>(recalcSlot.unknown_8c + 0x18);
+    zBBox3f *primaryBounds = &recalcSlot.primaryBounds;
+    zBBox3f *secondaryBounds = &recalcSlot.secondaryBounds;
     *primaryBounds = {0.0f, 2.0f, -1.0f, 4.0f, 8.0f, 6.0f};
     *secondaryBounds = {-3.0f, 3.0f, -2.0f, 2.0f, 9.0f, 5.0f};
     if (zClass_Class::gwNodeRecalcBBox(&recalcSlot.node) != 0 ||
@@ -15857,7 +15856,7 @@ extern "C" int zclass_render_traverse_dispatch_smoke() {
 
         setIdentity(cameraData.worldTransform);
         setIdentity(lightData.savedParentMatrix);
-        setIdentity(reinterpret_cast<float *>(soundData.unknown_48));
+        setIdentity(soundData.savedParentMatrix);
         fanoutChildData.flags = 0x08;
         initVisibleNode(cameraNode, 1, &cameraData);
         initVisibleNode(lightNode, 9, &lightData);

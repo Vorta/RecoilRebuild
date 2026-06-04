@@ -203,7 +203,7 @@ RECOIL_STATIC_ASSERT(
     ) == 0x98
 );
 
-WestwoodOnlineUpgradeApiCallbackComObject *RECOIL_CDECL GetCallbackApiComObject() {
+WestwoodOnlineUpgradeApiCallbackComObject *GetCallbackApiComObject() {
     return (WestwoodOnlineUpgradeApiCallbackComObject *)g_pWestwoodOnlineUpgradeApi;
 }
 } // namespace
@@ -223,7 +223,7 @@ const zCom::InterfaceMapEntry g_WestwoodOnlineUpgradeApiEventSink_InterfaceMap[2
 
 // Reimplements 0x43f610: WestwoodOnlineUpgradeApiEventSink::CreateInstance
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeApiEventSink.cpp)
-RECOIL_NOINLINE HRESULT RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::CreateInstance(
+HRESULT __stdcall WestwoodOnlineUpgradeApiEventSink::CreateInstance(
     WestwoodOnlineUpgradeApiEventSink **outSink
 ) {
     HRESULT result = E_OUTOFMEMORY;
@@ -245,7 +245,7 @@ RECOIL_NOINLINE HRESULT RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::Create
 
 // Reimplements 0x441660: WestwoodOnlineUpgradeApiEventSink::QueryInterface
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE HRESULT RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::QueryInterface(
+HRESULT __stdcall WestwoodOnlineUpgradeApiEventSink::QueryInterface(
     WestwoodOnlineUpgradeApiEventSink *self,
     REFIID iid,
     void **outInterface
@@ -260,7 +260,7 @@ RECOIL_NOINLINE HRESULT RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::QueryI
 
 // Reimplements 0x441620: WestwoodOnlineUpgradeApiEventSink::Release
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE ULONG RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::Release(
+ULONG __stdcall WestwoodOnlineUpgradeApiEventSink::Release(
     WestwoodOnlineUpgradeApiEventSink *self
 ) {
     ULONG refCount;
@@ -276,7 +276,7 @@ RECOIL_NOINLINE ULONG RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::Release(
 
 // Reimplements 0x441680: WestwoodOnlineUpgradeApiEventSink::Destructor
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE void RECOIL_THISCALL WestwoodOnlineUpgradeApiEventSink::Destructor() {
+void WestwoodOnlineUpgradeApiEventSink::Destructor() {
     m_vftable = &g_WestwoodOnlineUpgradeApiEventSink_Vtbl;
     m_refCountAndLock.refCount = 1;
     InterlockedDecrement(&g_WestwoodOnlineUpgradeEventSinkLiveCount);
@@ -285,7 +285,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL WestwoodOnlineUpgradeApiEventSink::Destruct
 
 // Reimplements 0x43f830: WestwoodOnlineUpgradeApiEventSink::OnDownloadReadyResult
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeApiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnDownloadReadyResult(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::OnDownloadReadyResult(
     void *,
     int resultCode,
     WestwoodOnlineUpgradeDownloadReadyEntry *downloadReadyList
@@ -348,7 +348,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnDownload
 
 // Reimplements 0x43fa70: WestwoodOnlineUpgradeApiEventSink::OnServerError
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeApiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnServerError(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::OnServerError(
     void *,
     int,
     const char *errorText
@@ -364,7 +364,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnServerEr
 
 // Reimplements 0x43fa90: WestwoodOnlineUpgradeApiEventSink::OnApiStatus
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeApiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnApiStatus(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::OnApiStatus(
     void *,
     int statusCode,
     const char *statusText
@@ -468,7 +468,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnApiStatu
 // Reimplements 0x43fde0:
 // WestwoodOnlineUpgradeApiEventSink::OnStatusTextReceived
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeApiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnStatusTextReceived(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::OnStatusTextReceived(
     void *,
     int status,
     const char *statusText
@@ -499,7 +499,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnStatusTe
 // Reimplements 0x43fe50:
 // WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAdded
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeApiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAdded(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAdded(
     void *,
     int status,
     WestwoodOnlineUpgradeBrowseRecord *browseRecord
@@ -558,7 +558,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnBrowseRe
 // Reimplements 0x43ff80:
 // WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessionResolved
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeApiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL
+int __stdcall
 WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessionResolved(
     void *,
     int status,
@@ -675,7 +675,7 @@ WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessionResolved(
 // Reimplements 0x4401d0:
 // WestwoodOnlineUpgradeApiEventSink::OnSessionQueryFinished
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeApiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnSessionQueryFinished(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::OnSessionQueryFinished(
     void *,
     int status,
     WestwoodOnlineUpgradeBrowseRecord *browseRecord,
@@ -743,7 +743,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnSessionQ
 // Reimplements 0x441480:
 // WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult(
     void *,
     int status,
     WestwoodOnlineUpgradeBrowseRecord *browseRecord,
@@ -823,7 +823,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnSessionL
 // Reimplements 0x4402c0:
 // WestwoodOnlineUpgradeApiEventSink::OnSessionListEnumerated
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeApiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnSessionListEnumerated(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::OnSessionListEnumerated(
     void *,
     int status,
     WestwoodOnlineUpgradeBrowseRecord *browseRecord,
@@ -914,7 +914,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnSessionL
 // Reimplements 0x4404c0:
 // WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeApiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
     void *,
     int status,
     int,
@@ -1058,7 +1058,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::LaunchSele
 // Reimplements 0x440a30:
 // WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString0
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString0(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString0(
     void *,
     int status,
     int,
@@ -1121,7 +1121,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::ApplyEncod
 // Reimplements 0x4407e0:
 // WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString1
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString1(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString1(
     void *,
     int status,
     int,
@@ -1185,7 +1185,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::ApplyEncod
 // Reimplements 0x440c80:
 // WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301B
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL
+int __stdcall
 WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301B(
     void *,
     int status,
@@ -1213,7 +1213,7 @@ WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301B(
 // Reimplements 0x440ce0:
 // WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL
+int __stdcall
 WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C(
     void *,
     int status,
@@ -1240,7 +1240,7 @@ WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C(
 // Reimplements 0x4411c0:
 // WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt0
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL
+int __stdcall
 WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt0(
     void *,
     int status,
@@ -1262,7 +1262,7 @@ WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt0(
 // Reimplements 0x441200:
 // WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt1
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL
+int __stdcall
 WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt1(
     void *,
     int status,
@@ -1284,7 +1284,7 @@ WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt1(
 
 // Reimplements 0x441240: WestwoodOnlineUpgradeApiEventSink::CallbackNoOp0
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::CallbackNoOp0(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::CallbackNoOp0(
     void *,
     int,
     int,
@@ -1295,7 +1295,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::CallbackNo
 
 // Reimplements 0x441250: WestwoodOnlineUpgradeApiEventSink::CallbackNoOp1
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::CallbackNoOp1(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::CallbackNoOp1(
     void *,
     int,
     int
@@ -1306,7 +1306,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::CallbackNo
 // Reimplements 0x441260:
 // WestwoodOnlineUpgradeApiEventSink::AppendTimeStatus302A
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::AppendTimeStatus302A(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendTimeStatus302A(
     void *,
     int status,
     long unixTime
@@ -1331,7 +1331,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::AppendTime
 // Reimplements 0x4412c0:
 // WestwoodOnlineUpgradeApiEventSink::AppendValueStatus302B_302C
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::AppendValueStatus302B_302C(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendValueStatus302B_302C(
     void *,
     int,
     int value,
@@ -1354,7 +1354,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::AppendValu
 // Reimplements 0x441350:
 // WestwoodOnlineUpgradeApiEventSink::UpdateSessionResultItemFlags
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::UpdateSessionResultItemFlags(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::UpdateSessionResultItemFlags(
     void *,
     int,
     const char *sessionName,
@@ -1420,7 +1420,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::UpdateSess
 // Reimplements 0x440d40:
 // WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301D
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL
+int __stdcall
 WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301D(
     void *,
     int,
@@ -1443,7 +1443,7 @@ WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301D(
 // Reimplements 0x440d90:
 // WestwoodOnlineUpgradeApiEventSink::AppendConnectStatus301E_3021
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::AppendConnectStatus301E_3021(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendConnectStatus301E_3021(
     void *,
     int connectionStatusCode
 ) {
@@ -1466,7 +1466,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::AppendConn
 // Reimplements 0x440e10:
 // WestwoodOnlineUpgradeApiEventSink::AppendBrowseRecordStatus3022_3025
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL
+int __stdcall
 WestwoodOnlineUpgradeApiEventSink::AppendBrowseRecordStatus3022_3025(
     void *,
     int status,
@@ -1503,7 +1503,7 @@ WestwoodOnlineUpgradeApiEventSink::AppendBrowseRecordStatus3022_3025(
 // Reimplements 0x440ef0:
 // WestwoodOnlineUpgradeApiEventSink::AppendValueStatus3026
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::AppendValueStatus3026(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendValueStatus3026(
     void *,
     int status,
     int value
@@ -1527,7 +1527,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::AppendValu
 // Reimplements 0x440f40:
 // WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged(
     void *,
     int connectionStatusCode
 ) {
@@ -1580,7 +1580,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnNetworkS
 // Reimplements 0x441040:
 // WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordListReceived
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordListReceived(
+int __stdcall WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordListReceived(
     void *,
     int status,
     WestwoodOnlineUpgradeBrowseRecord *browseRecordList
@@ -1667,7 +1667,7 @@ RECOIL_NOINLINE int RECOIL_STDCALL WestwoodOnlineUpgradeApiEventSink::OnBrowseRe
 // Reimplements 0x43f9d0:
 // WestwoodOnlineUpgradeApiEventSink::OnPendingSessionRequestRemoved
 // (D:\Proj\Battlesport\WestwoodOnlineUpgradeApiEventSink.cpp)
-RECOIL_NOINLINE int RECOIL_STDCALL
+int __stdcall
 WestwoodOnlineUpgradeApiEventSink::OnPendingSessionRequestRemoved(
     void *,
     int status,

@@ -9,17 +9,17 @@ output.
 - Current source: `src/GameZRecoil/zSound/zsnd_play.cpp`; the old
   `zsnd_snapshot_stop_all.cpp` file is a build placeholder so this function
   shares the original sound playback translation-unit register allocation.
-- Current VC target: `tools/vc6_verify_targets/zsnd_snapshot_stop_all_if_playing.json`
-  with VC6 `cl` 12.00.8168, `/G5 /O2 /Oy /Ob0 /Zp4 /FAcs`.
-- Current best verification result: `python tools/recoil_vc6_verify.py zsnd_snapshot_stop_all_if_playing`
+- Current VC target: `tools/vc5_verify_targets/zsnd_snapshot_stop_all_if_playing.json`
+  with VC5SP3 `cl` 11.00.7022, `/G5 /O2 /Oy /Ob0 /Zp4 /FAcs`.
+- Current best verification result: `python tools/recoil_vc5_verify.py zsnd_snapshot_stop_all_if_playing`
   fails with 27 unmasked byte mismatches, 8 relocation-masked bytes, BN size
-  134, VC6 object size 144, and 10 trailing VC6 NOPs trimmed.
+  134, VC5SP3 object size 144, and 10 trailing VC5SP3 NOPs trimmed.
 - BN prologue uses `push ecx; push ebx; push esi; push edi`, `xor edx, edx`,
   `mov ebx, 1`, then branchless `sete/neg/sbb/inc/test` sentinel materialization.
-  The full-TU VC6 build now matches the stack `GetStatus` scratch at `[esp+0xc]`,
+  The full-TU VC5SP3 build now matches the stack `GetStatus` scratch at `[esp+0xc]`,
   A3D `GetStatus` slot `0xe0`, DirectSound `GetStatus` slot `0x24`, playing
   tests through `BL`, and `StopIfActive` call shape. Remaining drift is limited
-  to the initial and loop-tail sentinel predicates: VC6 omits the pre-compare
+  to the initial and loop-tail sentinel predicates: VC5SP3 omits the pre-compare
   `xor edx, edx` in the first predicate, emits an extra byte `neg` when checking
   the materialized byte against zero, and tests against `BL` instead of itself.
 - Predicate probes in `build/experiments/4a0500/bool_shapes.cpp` show plausible
@@ -30,9 +30,9 @@ output.
   `python tools/recoil_functional_verify.py 0x4a0500` passes; the entry remains below tier `S`.
 - VC5SP3 full-TU probe (`cl` 11.00.7022, `zsnd_snapshot_stop_all_if_playing_vc5`)
   now fails with **100** unmasked mismatches and **144-byte** object code, worse
-  than the VC6 full-TU profile.
+  than the VC5SP3 full-TU profile.
 - A prior in-`zsnd_play.cpp` VC5 listing (see
-  `build/vc6-verify/zsnd_snapshot_create_from_active_samples/zsnd_play.cod`) used `push ecx`,
+  `build/vc5-verify/zsnd_snapshot_create_from_active_samples/zsnd_play.cod`) used `push ecx`,
   stack `outStatus`, and `do { } while`, but still used plain `cmp/jne` and an EBP frame — closer
   prologue/scratch shape, still not a byte match.
 - **Runtime impact of current drift (reviewed 2026-05-21):** no known caller-visible effect.
@@ -49,10 +49,10 @@ output.
 
 - Current source: `src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnTryBecomeCurrent.cpp`
   (uses production `zFMV_ActionBlur` from `fmv.h`).
-- VC target: `tools/vc6_verify_targets/recoil_state_main_menu_transition_on_try_become_current.json`
+- VC target: `tools/vc5_verify_targets/recoil_state_main_menu_transition_on_try_become_current.json`
   with VC5SP3 `cl` 11.00.7022, `/G5 /O2 /Ob1 /GX /Zp4 /FAcs`, plus
   `fmv_script.cpp` for blur `Constructor` linkage.
-- Tier `S`: `python tools/recoil_vc6_verify.py 0x415220` now has zero
+- Tier `S`: `python tools/recoil_vc5_verify.py 0x415220` now has zero
   unmasked COFF-byte mismatches after 76 relocation-masked bytes. BN body is
   321 bytes, VC object symbol is 336 bytes, and 15 trailing VC NOPs are
   trimmed.
@@ -67,8 +67,8 @@ output.
 ## 0x49fff0 CreateFromActiveSamples
 
 - Current source: `src/GameZRecoil/zSound/zsnd_play.cpp`.
-- Current VC target: `tools/vc6_verify_targets/zsnd_snapshot_create_from_active_samples.json`.
-- Current best verification result: `python tools/recoil_vc6_verify.py 0x49fff0`
+- Current VC target: `tools/vc5_verify_targets/zsnd_snapshot_create_from_active_samples.json`.
+- Current best verification result: `python tools/recoil_vc5_verify.py 0x49fff0`
   with VC5SP3 `cl` 11.00.7022, `/G5 /O2 /Ob1 /GX /Zp4 /FAcs`, fails with
   317 unmasked byte mismatches, 80 relocation-masked bytes, BN size 778, and
   VC object symbol size 784.
@@ -114,10 +114,10 @@ output.
 - A refreshed 2026-06-03 full profile sweep against the current
   `src/GameZRecoil/zSound/zsnd_play.cpp` source found `vc5_o2_ob1_gx_facs`,
   `vc5_o2_ob1_md_gx_facs`, `vc5_o2_ob1_gx_uintptr_facs`,
-  `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`, and `vc6_o2_ob1_gx_facs` tied
-  as closest at 317 mismatches. `/Ob0` profiles were 675-677 mismatches, VC6
+  `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`, and `vc5_o2_ob1_gx_facs` tied
+  as closest at 317 mismatches. `/Ob0` profiles were 675-677 mismatches, VC5SP3
   `/Oy /Ob0` was 677 mismatches with a 576-byte object, plain VC5 `/Ob1`
-  without `/GX` was 687 mismatches, VC5/VC6 `/Ob2 /GX` profiles were 707
+  without `/GX` was 687 mismatches, VC5SP3 `/Ob2 /GX` profiles were 707
   mismatches, and VC5 `/Ob2` without `/GX` was 718 mismatches.
 - Changing `/O2` to `/Ox` was neutral at the 317 mismatch profile. Changing
   `/G5` to `/G6` worsened the target to 384 mismatches, so the manifest was

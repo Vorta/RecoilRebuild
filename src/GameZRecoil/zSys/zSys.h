@@ -27,29 +27,29 @@ struct CpuBenchmarkResult {
     unsigned int cpuMhzRounded;
 };
 
-RECOIL_NO_GS void RECOIL_FASTCALL ProbePlatformAndVideoCaps(
+RECOIL_NO_GS void __fastcall ProbePlatformAndVideoCaps(
     zSysVideoCapsLevel *outVideoCaps,
     zSysPlatformCapsLevel *outPlatformCaps
 );
 
-RECOIL_NOINLINE RECOIL_NO_GS char *RECOIL_FASTCALL FindFileOnDriveType(
+RECOIL_NO_GS char *__fastcall FindFileOnDriveType(
     int driveType,
     const char *relativePath,
     int unused
 );
 
-RECOIL_NOINLINE int RECOIL_CDECL CheckCpuSignatureMask();
-RECOIL_NOINLINE int RECOIL_CDECL HasCpuidSupportRuntimeOptions();
-RECOIL_NOINLINE int RECOIL_CDECL HasCpuidSupport();
-RECOIL_NOINLINE int RECOIL_CDECL DetectCpuClassAndFeatures();
-RECOIL_NOINLINE int RECOIL_CDECL ReadCpuidVendorAndFamily();
-RECOIL_NOINLINE unsigned int RECOIL_CDECL ReadCpuidFeatureFlags();
-RECOIL_NOINLINE unsigned int RECOIL_CDECL ReadCmosRtcSecondsBcd();
-RECOIL_NOINLINE void RECOIL_FASTCALL ReadTsc64(
+int CheckCpuSignatureMask();
+int HasCpuidSupportRuntimeOptions();
+unsigned short HasCpuidSupport();
+int DetectCpuClassAndFeatures();
+int ReadCpuidVendorAndFamily();
+unsigned int ReadCpuidFeatureFlags();
+unsigned int ReadCmosRtcSecondsBcd();
+void __fastcall ReadTsc64(
     unsigned int *outHigh,
     unsigned int *outLow
 );
-RECOIL_NOINLINE void RECOIL_FASTCALL Sub64(
+void __fastcall Sub64(
     unsigned int subHigh,
     unsigned int subLow,
     unsigned int minuendHigh,
@@ -57,13 +57,13 @@ RECOIL_NOINLINE void RECOIL_FASTCALL Sub64(
     unsigned int *outHigh,
     unsigned int *outLow
 );
-RECOIL_NOINLINE int RECOIL_CDECL GetCpuClass();
-RECOIL_NOINLINE RECOIL_NO_GS int RECOIL_CDECL GetCpuMhz();
-RECOIL_NOINLINE int RECOIL_CDECL ReturnZeroStub();
-RECOIL_NOINLINE RECOIL_NO_GS unsigned int RECOIL_CDECL GetTotalPhysKb();
-RECOIL_NOINLINE void RECOIL_FASTCALL ExitProcessWithCleanup(int exitCode);
+int GetCpuClass();
+RECOIL_NO_GS int GetCpuMhz();
+int ReturnZeroStub();
+RECOIL_NO_GS unsigned int GetTotalPhysKb();
+void __fastcall ExitProcessWithCleanup(int exitCode);
 } // namespace zSys
 
 namespace zCpu {
-RECOIL_NOINLINE int RECOIL_CDECL HasMmxSupport();
+int HasMmxSupport();
 }

@@ -105,8 +105,8 @@ struct SelectedHardwareRenderer {
     char d3dDeviceName[0x20];
 };
 
-typedef void(RECOIL_CDECL *ViewerVideoFlushProc)();
-typedef void(RECOIL_FASTCALL *ViewerSubmitFlatColor16Proc)(
+typedef void(*ViewerVideoFlushProc)();
+typedef void(__fastcall *ViewerSubmitFlatColor16Proc)(
     zVideo_XyzVertex *vertices,
     unsigned int packedColor16,
     int alpha,
@@ -114,7 +114,7 @@ typedef void(RECOIL_FASTCALL *ViewerSubmitFlatColor16Proc)(
     int vertexCount,
     int queueMode
 );
-typedef void(RECOIL_FASTCALL *ViewerSubmitGouraudColor16Proc)(
+typedef void(__fastcall *ViewerSubmitGouraudColor16Proc)(
     zVideo_XyzVertex *vertices,
     unsigned int *packedColors16,
     int alpha,
@@ -122,7 +122,7 @@ typedef void(RECOIL_FASTCALL *ViewerSubmitGouraudColor16Proc)(
     int vertexCount,
     int queueMode
 );
-typedef void(RECOIL_FASTCALL *ViewerSubmitColorAttrProc)(
+typedef void(__fastcall *ViewerSubmitColorAttrProc)(
     zVideo_XyzVertex *vertices,
     unsigned int packedColor16,
     zVideo_ColorRgbFloat *baseColor,
@@ -134,7 +134,7 @@ typedef void(RECOIL_FASTCALL *ViewerSubmitColorAttrProc)(
     unsigned int renderParam,
     int queueMode
 );
-typedef void(RECOIL_FASTCALL *ViewerSubmitRenderClassProc)(
+typedef void(__fastcall *ViewerSubmitRenderClassProc)(
     zVideo_XyzVertex *vertices,
     zVideo_TexCoord *texCoords,
     int vertexCount,
@@ -143,7 +143,7 @@ typedef void(RECOIL_FASTCALL *ViewerSubmitRenderClassProc)(
     float alpha,
     int queueMode
 );
-typedef void(RECOIL_FASTCALL *ViewerSubmitPolygonProc)(
+typedef void(__fastcall *ViewerSubmitPolygonProc)(
     zVideo_XyzVertex *vertices,
     zVideo_TexCoord *uvPairs,
     float *attr1,
@@ -391,7 +391,7 @@ bool CheckDispatchPointer(
     return true;
 }
 
-void RECOIL_FASTCALL TextureRecordFinalizeUploadDispatchAdapter(
+void __fastcall TextureRecordFinalizeUploadDispatchAdapter(
     zVideo_TextureRecordPartial *textureRecord,
     void *,
     zVidImagePartial *image
@@ -402,7 +402,7 @@ void RECOIL_FASTCALL TextureRecordFinalizeUploadDispatchAdapter(
     );
 }
 
-zVideo_TextureRecordPartial *RECOIL_FASTCALL TextureRecordCreateDispatchAdapter(
+zVideo_TextureRecordPartial *__fastcall TextureRecordCreateDispatchAdapter(
     const char *textureName,
     zVidImagePartial *image,
     int useAlpha,
@@ -444,7 +444,7 @@ zVideo_TextureRecordPartial *RECOIL_FASTCALL TextureRecordCreateDispatchAdapter(
     return &g_viewerMissingTextureRecord;
 }
 
-int RECOIL_FASTCALL QueryTextureMemoryBytesForViewer(
+int __fastcall QueryTextureMemoryBytesForViewer(
     int,
     int *outTotalBytes,
     int *outFreeBytes
@@ -466,7 +466,7 @@ void ResetSubmitCounters() {
     );
 }
 
-void RECOIL_FASTCALL SubmitPolyFlatColor16DispatchAdapter(
+void __fastcall SubmitPolyFlatColor16DispatchAdapter(
     zVideo_XyzVertex *vertices,
     unsigned int packedColor16,
     int alpha,
@@ -485,7 +485,7 @@ void RECOIL_FASTCALL SubmitPolyFlatColor16DispatchAdapter(
     );
 }
 
-void RECOIL_FASTCALL SubmitPolyGouraudColor16DispatchAdapter(
+void __fastcall SubmitPolyGouraudColor16DispatchAdapter(
     zVideo_XyzVertex *vertices,
     unsigned int *packedColors16,
     int alpha,
@@ -504,7 +504,7 @@ void RECOIL_FASTCALL SubmitPolyGouraudColor16DispatchAdapter(
     );
 }
 
-void RECOIL_FASTCALL SubmitPolyColorAttrDispatchAdapter(
+void __fastcall SubmitPolyColorAttrDispatchAdapter(
     zVideo_XyzVertex *vertices,
     unsigned int packedColor16,
     zVideo_ColorRgbFloat *baseColor,
@@ -531,7 +531,7 @@ void RECOIL_FASTCALL SubmitPolyColorAttrDispatchAdapter(
     );
 }
 
-void RECOIL_FASTCALL SubmitPolyRenderClassDispatchAdapter(
+void __fastcall SubmitPolyRenderClassDispatchAdapter(
     zVideo_XyzVertex *vertices,
     zVideo_TexCoord *texCoords,
     int vertexCount,
@@ -552,7 +552,7 @@ void RECOIL_FASTCALL SubmitPolyRenderClassDispatchAdapter(
     );
 }
 
-void RECOIL_FASTCALL SubmitPolygonDispatchAdapter(
+void __fastcall SubmitPolygonDispatchAdapter(
     zVideo_XyzVertex *vertices,
     zVideo_TexCoord *uvPairs,
     float *attr1,
@@ -579,7 +579,7 @@ void RECOIL_FASTCALL SubmitPolygonDispatchAdapter(
     );
 }
 
-void RECOIL_FASTCALL SubmitPolygonLitDispatchAdapter(
+void __fastcall SubmitPolygonLitDispatchAdapter(
     zVideo_XyzVertex *vertices,
     zVideo_TexCoord *uvPairs,
     float *attr1,
@@ -606,17 +606,17 @@ void RECOIL_FASTCALL SubmitPolygonLitDispatchAdapter(
     );
 }
 
-void RECOIL_CDECL FlushSortedPolysDispatchAdapter() {
+void FlushSortedPolysDispatchAdapter() {
     ++g_viewerSubmitCounters.sortedFlushCalls;
     zVideo_dd3d::FlushSortedPolys();
 }
 
-void RECOIL_CDECL FlushOverwritePolysDispatchAdapter() {
+void FlushOverwritePolysDispatchAdapter() {
     ++g_viewerSubmitCounters.overwriteFlushCalls;
     zVideo_dd3d::FlushOverwritePolys();
 }
 
-void RECOIL_CDECL FlushQuadBatchDispatchAdapter() {
+void FlushQuadBatchDispatchAdapter() {
     ++g_viewerSubmitCounters.quadFlushCalls;
     zVideo_dd3d::FlushQuadBatch();
 }

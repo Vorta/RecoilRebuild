@@ -10,8 +10,8 @@
 #include <windows.h>
 
 struct WestwoodOnlineUpgradeDownload {
-    RECOIL_NOINLINE static HRESULT RECOIL_CDECL CreateInstanceAndAdvise();
-    RECOIL_NOINLINE static ULONG RECOIL_CDECL UnadviseAndRelease();
+    static HRESULT CreateInstanceAndAdvise();
+    static ULONG UnadviseAndRelease();
 };
 
 struct WestwoodOnlineUpgradeDownloadComVtable {
@@ -64,36 +64,36 @@ struct WestwoodOnlineUpgradeDownloadEventSink {
     WestwoodOnlineUpgradeDownloadEventSinkVtable *m_vftable;
     WestwoodOnlineUpgradeRefCountAndLock m_refCountAndLock;
 
-    RECOIL_NOINLINE int RECOIL_THISCALL CallbackNoOp(void *arg);
-    RECOIL_NOINLINE static HRESULT STDMETHODCALLTYPE OnDownloadFinished(IUnknown *self);
-    RECOIL_NOINLINE static HRESULT STDMETHODCALLTYPE OnDownloadError(
+    int CallbackNoOp(void *arg);
+    static HRESULT STDMETHODCALLTYPE OnDownloadFinished(IUnknown *self);
+    static HRESULT STDMETHODCALLTYPE OnDownloadError(
         IUnknown *self,
         HRESULT result
     );
-    RECOIL_NOINLINE static HRESULT STDMETHODCALLTYPE OnDownloadProgress(
+    static HRESULT STDMETHODCALLTYPE OnDownloadProgress(
         IUnknown *self,
         unsigned int bytesRead,
         unsigned int totalBytes,
         int unusedArg4,
         int secondsLeft
     );
-    RECOIL_NOINLINE static HRESULT STDMETHODCALLTYPE OnStateChanged(
+    static HRESULT STDMETHODCALLTYPE OnStateChanged(
         IUnknown *self,
         WestwoodOnlineUpgradeDownloadState stateCode
     );
-    RECOIL_NOINLINE static ULONG STDMETHODCALLTYPE AddRef(
+    static ULONG STDMETHODCALLTYPE AddRef(
         WestwoodOnlineUpgradeDownloadEventSink *self
     );
-    RECOIL_NOINLINE static ULONG STDMETHODCALLTYPE Release(
+    static ULONG STDMETHODCALLTYPE Release(
         WestwoodOnlineUpgradeDownloadEventSink *self
     );
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    RECOIL_NOINLINE static HRESULT RECOIL_STDCALL QueryInterface(
+    void Destructor();
+    static HRESULT __stdcall QueryInterface(
         WestwoodOnlineUpgradeDownloadEventSink *self,
         REFIID iid,
         void **outInterface
     );
-    RECOIL_NOINLINE static HRESULT RECOIL_STDCALL CreateInstance(
+    static HRESULT __stdcall CreateInstance(
         WestwoodOnlineUpgradeDownloadEventSink **outSink
     );
 };

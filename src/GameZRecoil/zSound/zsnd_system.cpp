@@ -345,7 +345,7 @@ void LoadLegacySampleSet(
 
 namespace zSndFadeLists {
 // Reimplements 0x4a3940: zSndFadeLists::InitGlobals
-RECOIL_NOINLINE void RECOIL_CDECL InitGlobals() {
+void InitGlobals() {
     InitializeSentinel(g_zSndFadeActiveListSentinel);
     g_zSndFadeActiveListCount = 0;
     InitializeSentinel(g_zSndFadeDispatchListSentinel);
@@ -353,7 +353,7 @@ RECOIL_NOINLINE void RECOIL_CDECL InitGlobals() {
 }
 
 // Reimplements 0x4a39b0: zSndFadeLists::ShutdownAtExit
-RECOIL_NOINLINE void RECOIL_CDECL ShutdownAtExit() {
+void ShutdownAtExit() {
     zSndFadeListNode *dispatchSentinel = g_zSndFadeDispatchListSentinel;
     zSndFadeListNode *node = dispatchSentinel->next;
     while (node != dispatchSentinel) {
@@ -384,12 +384,12 @@ RECOIL_NOINLINE void RECOIL_CDECL ShutdownAtExit() {
 }
 
 // Reimplements 0x4a39a0: zSndFadeLists::RegisterShutdownAtExit
-RECOIL_NOINLINE void RECOIL_CDECL RegisterShutdownAtExit() {
+void RegisterShutdownAtExit() {
     atexit(ShutdownAtExit);
 }
 
 // Reimplements 0x4a3930: zSndFadeLists::Init
-RECOIL_NOINLINE void RECOIL_CDECL Init() {
+void Init() {
     InitGlobals();
     RegisterShutdownAtExit();
 }
@@ -397,7 +397,7 @@ RECOIL_NOINLINE void RECOIL_CDECL Init() {
 
 namespace zSndFadeDispatchList {
 // Reimplements 0x4a3a80: zSndFadeDispatchList::PushBack
-RECOIL_NOINLINE void RECOIL_FASTCALL PushBack(
+void __fastcall PushBack(
     zSndFadeEntry *fadeEntry
 ) {
     zSndFadeListNode *const sentinel = g_zSndFadeDispatchListSentinel;
@@ -417,7 +417,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL PushBack(
 } // namespace zSndFadeDispatchList
 
 // Reimplements 0x4a3ad0: zSndFadeEntry::TickAndMaybeDispatch
-RECOIL_NOINLINE int RECOIL_THISCALL zSndFadeEntry::TickAndMaybeDispatch(
+int zSndFadeEntry::TickAndMaybeDispatch(
     float deltaTime
 ) {
     const float direction = (targetValue - currentValue) < 0.0f ? -1.0f : 1.0f;
@@ -459,7 +459,7 @@ RECOIL_NOINLINE int RECOIL_THISCALL zSndFadeEntry::TickAndMaybeDispatch(
 }
 
 // Reimplements 0x4a3c20: zSndFadeActiveList_TickAll
-extern "C" RECOIL_NOINLINE void RECOIL_STDCALL zSndFadeActiveList_TickAll(
+extern "C" void __stdcall zSndFadeActiveList_TickAll(
     float deltaTime
 ) {
     if (g_zSndFadeActiveListCount == 0) {
@@ -494,7 +494,7 @@ extern "C" RECOIL_NOINLINE void RECOIL_STDCALL zSndFadeActiveList_TickAll(
 }
 
 // Reimplements 0x4a3e50: zSndFadeList::DeleteNodeAndAdvanceCursor
-RECOIL_NOINLINE void RECOIL_THISCALL zSndFadeList::DeleteNodeAndAdvanceCursor(
+void zSndFadeList::DeleteNodeAndAdvanceCursor(
     zSndFadeListNode *node,
     zSndFadeListNode **outCursor
 ) {
@@ -505,7 +505,7 @@ RECOIL_NOINLINE void RECOIL_THISCALL zSndFadeList::DeleteNodeAndAdvanceCursor(
 }
 
 // Reimplements 0x4a3e90: zSndFadeListCursor::PopFrontCursor
-RECOIL_NOINLINE zSndFadeListNode **RECOIL_THISCALL zSndFadeListCursor::PopFrontCursor(
+zSndFadeListNode ** zSndFadeListCursor::PopFrontCursor(
     zSndFadeListNode **outNode,
     int unused
 ) {
@@ -518,7 +518,7 @@ RECOIL_NOINLINE zSndFadeListNode **RECOIL_THISCALL zSndFadeListCursor::PopFrontC
 }
 
 // Reimplements 0x49f620: zSnd_Tick
-extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_Tick(
+extern "C" void __fastcall zSnd_Tick(
     int skipA3dCommit
 ) {
     if (g_zSnd_ActiveBackend == 1 && skipA3dCommit == 0) {
@@ -566,14 +566,14 @@ extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_Tick(
 }
 
 // Reimplements 0x49f614: zSnd_TickWrapper
-extern "C" RECOIL_NOINLINE void RECOIL_FASTCALL zSnd_TickWrapper(
+extern "C" void __fastcall zSnd_TickWrapper(
     int skipA3dCommit
 ) {
     zSnd_Tick(skipA3dCommit);
 }
 
 // Reimplements 0x4a1870: zSndSystem_InitNamedSetsSyntax
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndSystem_InitNamedSetsSyntax(
+extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
     zReader::Node *configRootNode
 ) {
     (void)configRootNode;
@@ -635,7 +635,7 @@ extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndSystem_InitNamedSetsSyntax(
 
 namespace zSndFadeLists {
 // Reimplements 0x4a3d20: zSndFadeLists::StopAllAndShutdown
-RECOIL_NOINLINE void RECOIL_CDECL StopAllAndShutdown() {
+void StopAllAndShutdown() {
     zSndFadeListNode *activeSentinel = g_zSndFadeActiveListSentinel;
     zSndFadeListNode *node = activeSentinel->next;
     while (node != activeSentinel) {
@@ -682,7 +682,7 @@ RECOIL_NOINLINE void RECOIL_CDECL StopAllAndShutdown() {
 
 namespace zSndSystem {
 // Reimplements 0x4a13d0: zSndSystem::Shutdown
-RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
+int Shutdown() {
     zSndStreamMgr::Shutdown();
     zSndBackend::Shutdown();
     zSndCd::Shutdown();
@@ -704,7 +704,7 @@ RECOIL_NOINLINE int RECOIL_CDECL Shutdown() {
 } // namespace zSndSystem
 
 // Reimplements 0x4a1510: zSndSystem_InitLegacySetsSyntax
-extern "C" RECOIL_NOINLINE int RECOIL_FASTCALL zSndSystem_InitLegacySetsSyntax(
+extern "C" int __fastcall zSndSystem_InitLegacySetsSyntax(
     zReader::Node *configRootNode
 ) {
     (void)configRootNode;

@@ -6,14 +6,14 @@ These notes track binary-lane evidence for the `zFMV_Script::Cleanup` and
 ## 0x462630 zFMV_Script::Cleanup
 
 - Current source: `src/GameZRecoil/zFMV/fmv_script.cpp`.
-- Current VC target: `tools/vc6_verify_targets/zfmv_script_cleanup_reset.json`.
+- Current VC target: `tools/vc5_verify_targets/zfmv_script_cleanup_reset.json`.
 - Current best verification result:
-  `python tools/recoil_vc6_verify.py 0x462630 --build-root
-  build/vc6-verify-probe-462630-import-free` with VC5SP3 `cl` 11.00.7022,
+  `python tools/recoil_vc5_verify.py 0x462630 --build-root
+  build/vc5-verify-probe-462630-import-free` with VC5SP3 `cl` 11.00.7022,
   `/G5 /O2 /Ob0 /Zp4 /FAcs`, passes with zero unmasked byte mismatches after
   8 relocation-masked bytes. BN body size is 36 bytes, VC object size is
   48 bytes, and 12 trailing VC NOP bytes are trimmed.
-- The tier S source shape uses the existing repo-local imported CRT provider
+- The verification spelling used for the tier S byte match uses the existing repo-local imported CRT provider
   pattern for VC5 32-bit builds: `__imp__free(m_fmvPath)` under the VC5 x86
   guard and ordinary `free(m_fmvPath)` for modern/native builds. This matches
   the retail `call dword [free]` spelling and fixes the nullable-path branch
@@ -23,20 +23,20 @@ These notes track binary-lane evidence for the `zFMV_Script::Cleanup` and
 ## 0x462660 zFMV_Script::Reset
 
 - Current source: `src/GameZRecoil/zFMV/fmv_script.cpp`.
-- Current VC target: `tools/vc6_verify_targets/zfmv_script_cleanup_reset.json`.
+- Current VC target: `tools/vc5_verify_targets/zfmv_script_cleanup_reset.json`.
 - Current best verification result:
-  `python tools/recoil_vc6_verify.py 0x462660 --build-root
-  build/vc6-verify-final-462660-tier-s` with VC5SP3 `cl` 11.00.7022,
+  `python tools/recoil_vc5_verify.py 0x462660 --build-root
+  build/vc5-verify-final-462660-tier-s` with VC5SP3 `cl` 11.00.7022,
   `/G5 /O2 /Ob0 /Zp4 /FAcs`, passes with zero unmasked byte mismatches, no
   relocation-masked bytes, BN body size 71 bytes, VC object size 80 bytes, and
   9 trailing VC NOP bytes trimmed.
 - Before the dispatch overlay fix, a focused profile sweep found no better
   compiler profile. `vc5_o2_ob0_facs`, `vc5_o2_ob1_facs`,
   `vc5_o2_ob1_gx_facs`, `vc5_o2_ob2_facs`, `vc5_o2_ob2_gx_facs`,
-  `vc6_o2_ob0_facs`, `vc6_o2_ob1_gx_facs`, and `vc6_o2_ob2_gx_facs` all tied
+  `vc5_o2_ob0_facs`, `vc5_o2_ob1_gx_facs`, and `vc5_o2_ob2_gx_facs` all tied
   at 35 mismatches, BN size 71, VC object size 80, and 9 trailing VC NOPs
   trimmed.
-- The tier S source shape keeps the raw `zFMV_Action_Vtbl` owner model for table
+- The verification layout used for the tier S byte match keeps the raw `zFMV_Action_Vtbl` owner model for table
   construction, but uses a narrow `zFMV_ActionScalarDeletingDestructorDispatch`
   overlay at the Reset callsite. That overlay makes VC5 emit the retail
   member-call dispatch for slot 0: action in `ecx`, only the scalar-delete flag

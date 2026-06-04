@@ -94,51 +94,51 @@ extern zClipUV *g_Clip_PolyUvs;
 extern zClipRectPartial gClipRect_Primary;
 
 namespace zClipRect {
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPolyNearZ(
+int __fastcall ClipPolyNearZ(
     zClipRectPartial *clipRect,
     int *vertexCount
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPolyNearZ_WithAttr0(
+int __fastcall ClipPolyNearZ_WithAttr0(
     zClipRectPartial *clipRect,
     int *vertexCount
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPolyZRange_NoUV(
+int __fastcall ClipPolyZRange_NoUV(
     zClipRectPartial *clipRect,
     int *vertexCount
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPolyZRange_NoUV_WithAttribs(
+int __fastcall ClipPolyZRange_NoUV_WithAttribs(
     zClipRectPartial *clipRect,
     int *vertexCount
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPolyZRange_WithAttr012(
+int __fastcall ClipPolyZRange_WithAttr012(
     zClipRectPartial *clipRect,
     int *vertexCount
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPoly_NoUV_Alt(
+int __fastcall ClipPoly_NoUV_Alt(
     zClipRectPartial *clipRect,
     int *vertexCount
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPoly_NoUV(
+int __fastcall ClipPoly_NoUV(
     zClipRectPartial *clipRect,
     int *vertexCount
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPoly(
+int __fastcall ClipPoly(
     zClipRectPartial *clipRect,
     int *vertexCount
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPoly_WithAttr012(
+int __fastcall ClipPoly_WithAttr012(
     zClipRectPartial *clipRect,
     int *vertexCount
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPoly_NoUV_WithAttr0_Alt(
+int __fastcall ClipPoly_NoUV_WithAttr0_Alt(
     zClipRectPartial *clipRect,
     int *vertexCount
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL ClipPoly_NoUV_WithAttr012_Alt(
+int __fastcall ClipPoly_NoUV_WithAttr012_Alt(
     zClipRectPartial *clipRect,
     int *vertexCount
 );
-RECOIL_NOINLINE int RECOIL_FASTCALL TrivialRejectPolyXY(
+int __fastcall TrivialRejectPolyXY(
     zClipRectPartial *clipRect,
     int vertexCount
 );

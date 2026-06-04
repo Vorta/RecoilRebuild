@@ -79,6 +79,16 @@ add_test(
 )
 
 add_test(
+    NAME recoil_raw_offset_guard
+    COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tools/recoil_raw_offset_guard.py
+        --root src
+        --plan .agent/RECOIL_PLAN.md
+        --allowlist .agent/RAW_OFFSET_ALLOWLIST.txt
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
     NAME recoil_provider_boundary_guard
     COMMAND ${Python3_EXECUTABLE}
         ${PROJECT_SOURCE_DIR}/tools/recoil_provider_boundary_guard.py
@@ -127,9 +137,25 @@ add_test(
 )
 
 add_test(
-    NAME recoil_vc6_manifest_source_policy
+    NAME recoil_source_data_initializer_guard
     COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil_vc6_manifest_source_guard.py
+        ${PROJECT_SOURCE_DIR}/tools/recoil_source_data_initializer_guard.py
+        --manifest .agent/SOURCE_DATA_INITIALIZERS.json
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+    NAME recoil_source_data_initializer_guard_selftest
+    COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tools/recoil_source_data_initializer_guard.py
+        --self-test
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+    NAME recoil_vc5_manifest_source_policy
+    COMMAND ${Python3_EXECUTABLE}
+        ${PROJECT_SOURCE_DIR}/tools/recoil_vc5_manifest_source_guard.py
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
 

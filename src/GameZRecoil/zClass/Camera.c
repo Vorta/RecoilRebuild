@@ -266,7 +266,7 @@ namespace {
 
 namespace zClass_Camera {
     // Reimplements 0x449be0: zClass_Camera::gwCameraNew
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_CDECL gwCameraNew() {
+    zClass_NodePartial *gwCameraNew() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
             ReportCameraError(
@@ -298,7 +298,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x449c90: zClass_Camera::gwCameraAddChild
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraAddChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -325,7 +325,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x449cd0: zClass_Camera::gwCameraRemoveChild
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraRemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -352,7 +352,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x449d20: zClass_Camera::gwCameraSetFlagBit0
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraSetFlagBit0(
         zClass_NodePartial * node,
         int enabled
@@ -379,13 +379,13 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x449da0: zClass_Camera::SetTargetNode
-    RECOIL_NOINLINE int RECOIL_FASTCALL SetTargetNode(zClass_NodePartial * target) {
+    int __fastcall SetTargetNode(zClass_NodePartial * target) {
         g_zClass_CameraTargetNode = target;
         return 0;
     }
 
     // Reimplements 0x449db0: zClass_Camera::SetActiveCamera
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL SetActiveCamera(
+    zClass_NodePartial *__fastcall SetActiveCamera(
         zClass_NodePartial * camera
     ) {
         g_zClass_CurrentCamera = camera;
@@ -393,13 +393,13 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x449dc0: zClass_Camera::SetObjectHseTestEnabled
-    RECOIL_NOINLINE int RECOIL_FASTCALL SetObjectHseTestEnabled(int enabled) {
+    int __fastcall SetObjectHseTestEnabled(int enabled) {
         g_zClass_ObjectHseTestEnabled = enabled;
         return 0;
     }
 
     // Reimplements 0x449dd0: zClass_Camera::gwCameraSetWorld
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraSetWorld(
         zClass_NodePartial * camera,
         zClass_NodePartial * world
@@ -462,14 +462,14 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x449e80: zClass_Camera::gwCameraGetWorld
-    RECOIL_NOINLINE zClass_NodePartial *RECOIL_FASTCALL gwCameraGetWorld(
+    zClass_NodePartial *__fastcall gwCameraGetWorld(
         zClass_NodePartial * camera
     ) {
         return ((zClass_CameraDataPartial *)(camera->classData))->worldNode;
     }
 
     // Reimplements 0x449e90: zClass_Camera::gwCameraSetWindow
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraSetWindow(
         zClass_NodePartial * camera,
         zClass_NodePartial * window
@@ -479,7 +479,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x449f50: zClass_Camera::ActivateChildren
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     ActivateChildren(
         zClass_NodePartial * camera,
         zClass_CameraDataPartial * data
@@ -502,7 +502,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x449ea0: zClass_Camera::gwCameraSetPosition
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraSetPosition(
         zClass_NodePartial * camera,
         float x,
@@ -539,7 +539,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x449fb0: zClass_Camera::gwCameraTranslate
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraTranslate(
         zClass_NodePartial * camera,
         float dx,
@@ -573,7 +573,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x44a060: zClass_Camera::gwCameraGetPosition
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraGetPosition(
         zClass_NodePartial * camera,
         float *outX,
@@ -599,7 +599,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x44a0f0: zClass_Camera::gwCameraSetTarget
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraSetTarget(
         zClass_NodePartial * camera,
         float x,
@@ -634,7 +634,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x44a1a0: zClass_Camera::gwCameraTranslateTarget
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraTranslateTarget(
         zClass_NodePartial * camera,
         float dx,
@@ -668,7 +668,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x44a250: zClass_Camera::gwCameraGetTarget
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraGetTarget(
         zClass_NodePartial * camera,
         float *outX,
@@ -695,7 +695,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x44a2f0: zClass_Camera::gwCameraSetNearFarClip
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraSetNearFarClip(
         zClass_NodePartial * camera,
         float nearClip,
@@ -720,7 +720,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x44a380: zClass_Camera::gwCameraGetNearFarClip
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraGetNearFarClip(
         zClass_NodePartial * camera,
         float *outNear,
@@ -744,7 +744,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x44a410: zClass_Camera::gwCameraSetViewport
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraSetViewport(
         zClass_NodePartial * camera,
         float viewportWidth,
@@ -789,7 +789,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x44a580: zClass_Camera::gwCameraGetViewport
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraGetViewport(
         zClass_NodePartial * camera,
         float *outWidth,
@@ -813,7 +813,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x44a760: zClass_Camera::gwCameraGetFOV
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraGetFOV(
         zClass_NodePartial * camera,
         float *outFovX,
@@ -837,7 +837,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x44a610: zClass_Camera::gwCameraSetFOV
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraSetFOV(
         zClass_NodePartial * camera,
         float fovX,
@@ -876,7 +876,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x44a7f0: zClass_Camera::gwCameraGetClipDistance
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraGetClipDistance(
         zClass_NodePartial * camera,
         float *outClipDistance
@@ -898,7 +898,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x44a870: zClass_Camera::gwCameraSetClipDistance
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraSetClipDistance(
         zClass_NodePartial * camera,
         float clipDistance
@@ -921,7 +921,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x44a910: zClass_Camera::gwCameraSetHorizon
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraSetHorizon(
         zClass_NodePartial * camera,
         zClass_NodePartial * horizonNode
@@ -943,7 +943,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x44a980: zClass_Camera::gwCameraSetHorizonXZ
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraSetHorizonXZ(
         zClass_NodePartial * camera,
         zClass_NodePartial * horizonXZNode
@@ -965,7 +965,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x449ba0: zClass_Camera::SetViewDistance
-    RECOIL_NOINLINE void RECOIL_FASTCALL SetViewDistance(
+    void __fastcall SetViewDistance(
         int enableAutoClip,
         float distance
     ){
@@ -979,7 +979,7 @@ namespace zClass_Camera {
 
     // Reimplements 0x44c1b0: zClass_Camera::FastAngleXZ
     // (D:\Proj\GameZRecoil\zClass\Camera.c)
-    RECOIL_NOINLINE float RECOIL_FASTCALL FastAngleXZ(
+    float __fastcall FastAngleXZ(
         zVec3 * point1,
         zVec3 * point2
     ){
@@ -1008,7 +1008,7 @@ namespace zClass_Camera {
 
     // Reimplements 0x44c230: zClass_Camera::FindConvexHullXZ
     // (D:\Proj\GameZRecoil\zClass\Camera.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL FindConvexHullXZ(
+    int __fastcall FindConvexHullXZ(
         zVec3 * points,
         int count
     ){
@@ -1081,7 +1081,7 @@ namespace zClass_Camera {
 
     // Reimplements 0x44c3c0: zClass_Camera::BuildFrustumGridTiles
     // (D:\Proj\GameZRecoil\zClass\Camera.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL BuildFrustumGridTiles(
+    int __fastcall BuildFrustumGridTiles(
         zClass_NodePartial * world,
         zClass_WorldDataPartial * worldData,
         zClass_CameraDataPartial * cameraData
@@ -1230,7 +1230,7 @@ namespace zClass_Camera {
 
     // Reimplements 0x44c8e0: zClass_Camera::BuildFrustumGridTilesFromParams
     // (D:\Proj\GameZRecoil\zClass\Camera.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL BuildFrustumGridTilesFromParams(
+    int __fastcall BuildFrustumGridTilesFromParams(
         zClass_NodePartial * world,
         zClass_WorldDataPartial * worldData,
         zClass_CameraDataPartial * cameraData
@@ -1416,7 +1416,7 @@ namespace zClass_Camera {
 
     // Reimplements 0x44ce70: zClass_Camera::RenderFrustumGridTiles
     // (D:\Proj\GameZRecoil\zClass\Camera.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL RenderFrustumGridTiles(
+    int __fastcall RenderFrustumGridTiles(
         zClass_NodePartial * world,
         zClass_NodePartial * camera,
         zClass_CameraDataPartial * cameraData
@@ -1569,7 +1569,7 @@ namespace zClass_Camera {
 
     // Reimplements 0x44d200: zClass_Camera::RenderOverlayNodes
     // (GameZRecoil/zClass/Camera.c)
-    RECOIL_NOINLINE void RECOIL_FASTCALL RenderOverlayNodes(zClass_NodePartial * world) {
+    void __fastcall RenderOverlayNodes(zClass_NodePartial * world) {
         *gModel_ClipMaskStackTop = 0x3f;
         for (int i = 0; i < world->listCountB; ++i) {
             zClass_Class::gwNodeRenderDispatch(
@@ -1581,7 +1581,7 @@ namespace zClass_Camera {
 
     // Reimplements 0x44d240: zClass_Camera::RenderWorld
     // (GameZRecoil/zClass/Camera.c)
-    RECOIL_NOINLINE void RECOIL_FASTCALL RenderWorld(
+    void __fastcall RenderWorld(
         zClass_NodePartial * world,
         zClass_NodePartial * camera,
         zClass_CameraDataPartial * cameraData
@@ -1596,7 +1596,7 @@ namespace zClass_Camera {
 
     // Reimplements 0x44d260: zClass_Camera::gwCameraSetVariantTagOverride
     // (GameZRecoil/zClass/Camera.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     gwCameraSetVariantTagOverride(
         zClass_NodePartial * camera,
         zTag4Partial * variantTag
@@ -1629,7 +1629,7 @@ namespace zClass_Camera {
 
     // Reimplements 0x44d3a0: zClass_Camera::RenderScene
     // (GameZRecoil/zClass/Camera.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RenderScene(
         zClass_NodePartial * camera,
         int updateFxPass3Local
@@ -1737,7 +1737,7 @@ namespace zClass_Camera {
 
     // Reimplements 0x44abf0: zClass_Camera::BuildWorldTransform
     // (GameZRecoil/zClass/Camera.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL BuildWorldTransform(
+    int __fastcall BuildWorldTransform(
         zClass_NodePartial * camera,
         zClass_CameraDataPartial * data,
         zVec3 * posOffset
@@ -1812,7 +1812,7 @@ namespace zClass_Camera {
 
     // Reimplements 0x44aa30: zClass_Camera::UpdateImpl
     // (GameZRecoil/zClass/Camera.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL UpdateImpl(
+    int __fastcall UpdateImpl(
         zClass_NodePartial * camera,
         zVec3 * posOffset
     ){
@@ -1883,7 +1883,7 @@ namespace zClass_Camera {
 
     // Reimplements 0x44a9f0: zClass_Camera::gwCameraUpdate
     // (GameZRecoil/zClass/Camera.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL gwCameraUpdate(zClass_NodePartial * camera) {
+    int __fastcall gwCameraUpdate(zClass_NodePartial * camera) {
         if (camera == 0) {
             ReportCameraError(
                 0x75c,
@@ -1907,7 +1907,7 @@ namespace zClass_Camera {
     }
 
     // Reimplements 0x44d320: zClass_Camera::SyncViewContextPositions (GameZRecoil/zClass/Camera.c)
-    RECOIL_NOINLINE void RECOIL_CDECL SyncViewContextPositions() {
+    void SyncViewContextPositions() {
         zClass_CameraDataPartial *viewContext = g_zVideo_pActiveViewContext;
         int updatedAnyNode = 0;
 
@@ -1949,7 +1949,7 @@ namespace zClass_Camera {
 
     // Reimplements 0x44ada0: zClass_Camera::RenderTraverse
     // (D:\Proj\GameZRecoil\zClass\Camera.c)
-    RECOIL_NOINLINE int RECOIL_FASTCALL
+    int __fastcall
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint

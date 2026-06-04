@@ -1,6 +1,6 @@
 // Reimplements 0x4b3420: zSys::DetectCpuClassAndFeatures
 // (D:\Proj\GameZRecoil\zSys\zsys_cpu.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL zSys::DetectCpuClassAndFeatures() {
+int zSys::DetectCpuClassAndFeatures() {
     int result;
     if ((unsigned short)HasCpuidSupport() != 0) {
         result = ReadCpuidVendorAndFamily();

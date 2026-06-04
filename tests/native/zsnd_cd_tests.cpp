@@ -55,22 +55,22 @@ extern "C" zVec3 g_zSnd_ListenerVelocity;
 #define g_zSndCdPlayToSecond (g_zSndCdPlayTo.second)
 
 namespace zSnd {
-void RECOIL_FASTCALL SetUseArchiveBanksFlag(std::int32_t useArchiveBanks);
+void __fastcall SetUseArchiveBanksFlag(std::int32_t useArchiveBanks);
 }
 
 namespace zSndCd {
-std::int32_t RECOIL_FASTCALL Init(zReader::Node *cdTracksNode);
-int RECOIL_CDECL ResetTrackState();
-std::int32_t RECOIL_CDECL IsStereoAuxEnabled();
-std::int32_t RECOIL_FASTCALL ApplyPlaybackMode(std::int32_t playbackMode);
-std::int32_t RECOIL_FASTCALL PlayTrack(std::int32_t trackIndex);
-std::int32_t RECOIL_FASTCALL PlayTrackWithMode(std::int32_t trackIndex, std::int32_t playbackMode);
-void RECOIL_FASTCALL OnMciNotify(std::uint32_t wParam, std::uint32_t lParam);
-std::int32_t RECOIL_CDECL Stop();
-std::int32_t RECOIL_CDECL Shutdown();
-std::int32_t RECOIL_FASTCALL GetVolume(unsigned short *primaryVolumeOut,
+std::int32_t __fastcall Init(zReader::Node *cdTracksNode);
+int ResetTrackState();
+std::int32_t IsStereoAuxEnabled();
+std::int32_t __fastcall ApplyPlaybackMode(std::int32_t playbackMode);
+std::int32_t __fastcall PlayTrack(std::int32_t trackIndex);
+std::int32_t __fastcall PlayTrackWithMode(std::int32_t trackIndex, std::int32_t playbackMode);
+void __fastcall OnMciNotify(std::uint32_t wParam, std::uint32_t lParam);
+std::int32_t Stop();
+std::int32_t Shutdown();
+std::int32_t __fastcall GetVolume(unsigned short *primaryVolumeOut,
                                        unsigned short *secondaryVolumeOut);
-std::int32_t RECOIL_FASTCALL SetVolume(unsigned short primaryVolume,
+std::int32_t __fastcall SetVolume(unsigned short primaryVolume,
                                        unsigned short secondaryVolume);
 } // namespace zSndCd
 
@@ -187,7 +187,7 @@ struct TestAuxCapsConfig {
 
 TestAuxCapsConfig g_fakeAuxCaps[8];
 
-std::int32_t RECOIL_FASTCALL FakePlayTrackWithMode(std::int32_t trackIndex,
+std::int32_t __fastcall FakePlayTrackWithMode(std::int32_t trackIndex,
                                                    std::int32_t playbackMode) {
     ++g_fakePlayTrackWithModeCount;
     g_fakePlayTrackWithModeTrack = trackIndex;
@@ -860,7 +860,7 @@ std::int32_t __stdcall TestA3dDeviceTick(void *) {
     return 0;
 }
 
-void RECOIL_FASTCALL TestMarkerEvent(std::int32_t eventCode) {
+void __fastcall TestMarkerEvent(std::int32_t eventCode) {
     ++g_testMarkerCallbackCount;
     g_testLastMarkerEvent = eventCode;
 }
@@ -4167,10 +4167,10 @@ extern "C" int zsnd_sample_set_destroy_owned_data_smoke(void) {
     return set.sampleCount == 0 ? 0 : 3;
 }
 
-void RECOIL_FASTCALL TestPlaybackEventHandler(int) {
+void __fastcall TestPlaybackEventHandler(int) {
 }
 
-void RECOIL_FASTCALL TestPlaybackEventHandlerOther(int) {
+void __fastcall TestPlaybackEventHandlerOther(int) {
 }
 
 extern "C" int zsnd_sample_set_playback_event_handler_smoke(void) {

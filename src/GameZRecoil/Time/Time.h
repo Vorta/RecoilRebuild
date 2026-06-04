@@ -5,8 +5,8 @@
 #include "recoil/recoil_types.h"
 
 namespace Time {
-RECOIL_NOINLINE void RECOIL_CDECL Reset();
-RECOIL_NOINLINE void RECOIL_CDECL Tick();
+void Reset();
+void Tick();
 } // namespace Time
 
 extern "C" {

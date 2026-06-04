@@ -97,7 +97,7 @@ void RestoreFunctionJump(FunctionJumpPatch *patch)
     patch->installed = 0;
 }
 
-char *RECOIL_FASTCALL FakeHudCheatGetMessageString(unsigned int messageId)
+char *__fastcall FakeHudCheatGetMessageString(unsigned int messageId)
 {
     ++g_hudCheatFakeState.messageCalls;
     g_hudCheatFakeState.lastMessageId = messageId;
@@ -118,7 +118,7 @@ char *RECOIL_FASTCALL FakeHudCheatGetMessageString(unsigned int messageId)
     }
 }
 
-int RECOIL_FASTCALL FakeHudCheatApplyEffect(int pickupTypeId, int overrideAmount,
+int __fastcall FakeHudCheatApplyEffect(int pickupTypeId, int overrideAmount,
                                            zUtil_SaveGameState *saveState)
 {
     const int index = g_hudCheatFakeState.pickupCalls++;
@@ -131,7 +131,7 @@ int RECOIL_FASTCALL FakeHudCheatApplyEffect(int pickupTypeId, int overrideAmount
     return 100000 + pickupTypeId;
 }
 
-int RECOIL_FASTCALL FakeHudCheatBindCommandCallback(int commandId,
+int __fastcall FakeHudCheatBindCommandCallback(int commandId,
                                                    zInputCommandCallbackFn callback)
 {
     const int index = g_hudCheatFakeState.bindCalls++;
@@ -143,31 +143,31 @@ int RECOIL_FASTCALL FakeHudCheatBindCommandCallback(int commandId,
     return 1;
 }
 
-int RECOIL_FASTCALL FakeHudCheatStop(zEffectAnimEntry *entry)
+int __fastcall FakeHudCheatStop(zEffectAnimEntry *entry)
 {
     ++g_hudCheatFakeState.stopCalls;
     g_hudCheatFakeState.stoppedEntry = entry;
     return 1;
 }
 
-void RECOIL_FASTCALL FakeHudCheatSetSteeringMode(int enable)
+void __fastcall FakeHudCheatSetSteeringMode(int enable)
 {
     ++g_hudCheatFakeState.steeringCalls;
     g_hudCheatFakeState.steeringMode = enable;
 }
 
-void RECOIL_FASTCALL FakeHudCheatApplyCameraState(int newState)
+void __fastcall FakeHudCheatApplyCameraState(int newState)
 {
     ++g_hudCheatFakeState.cameraCalls;
     g_hudCheatFakeState.cameraState = newState;
 }
 
-void RECOIL_FASTCALL FakeHudCheatResetMouseControl(zUtil_SaveGameState *)
+void __fastcall FakeHudCheatResetMouseControl(zUtil_SaveGameState *)
 {
     ++g_hudCheatFakeState.resetMouseCalls;
 }
 
-int RECOIL_FASTCALL FakeHudCheatNodeAction(zEffectAnimEntry *entry,
+int __fastcall FakeHudCheatNodeAction(zEffectAnimEntry *entry,
                                           zClass_NodePartial *rootNode)
 {
     ++g_hudCheatFakeState.nodeActionCalls;
@@ -176,7 +176,7 @@ int RECOIL_FASTCALL FakeHudCheatNodeAction(zEffectAnimEntry *entry,
     return 1;
 }
 
-void RECOIL_FASTCALL FakeHudCheatResetDamage(zUtil_SaveGameState *)
+void __fastcall FakeHudCheatResetDamage(zUtil_SaveGameState *)
 {
     ++g_hudCheatFakeState.resetDamageCalls;
 }
@@ -191,25 +191,25 @@ void RecordHudCheatTransition(int transitionId, int flags)
     }
 }
 
-int RECOIL_FASTCALL FakeHudCheatTransitionTrack(zUtil_SaveGameState *, int flags)
+int __fastcall FakeHudCheatTransitionTrack(zUtil_SaveGameState *, int flags)
 {
     RecordHudCheatTransition(1, flags);
     return 1;
 }
 
-int RECOIL_FASTCALL FakeHudCheatTransitionAmphib(zUtil_SaveGameState *, int, int extraFlags)
+int __fastcall FakeHudCheatTransitionAmphib(zUtil_SaveGameState *, int, int extraFlags)
 {
     RecordHudCheatTransition(2, extraFlags);
     return 1;
 }
 
-int RECOIL_FASTCALL FakeHudCheatTransitionSub(zUtil_SaveGameState *, int flags)
+int __fastcall FakeHudCheatTransitionSub(zUtil_SaveGameState *, int flags)
 {
     RecordHudCheatTransition(3, flags);
     return 1;
 }
 
-int RECOIL_FASTCALL FakeHudCheatTransitionHover(zUtil_SaveGameState *, int flags)
+int __fastcall FakeHudCheatTransitionHover(zUtil_SaveGameState *, int flags)
 {
     RecordHudCheatTransition(4, flags);
     return 1;

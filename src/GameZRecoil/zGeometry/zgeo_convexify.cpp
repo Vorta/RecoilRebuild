@@ -391,7 +391,7 @@ float EstimateMagnitudeFromSquaredLength(
 namespace zGeometry_Vec3Array {
 // Reimplements 0x46c5b0: zGeometry_Vec3Array::ReversePoints
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ReversePoints(
+void __fastcall ReversePoints(
     int pointCount,
     zVec3 *points
 ) {
@@ -410,7 +410,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ReversePoints(
 
 // Reimplements 0x46c620: zGeometry_Vec3Array::EnsurePositiveCrossZ
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL EnsurePositiveCrossZ(
+int __fastcall EnsurePositiveCrossZ(
     int pointCount,
     zVec3 *points,
     int allowReverse
@@ -441,7 +441,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL EnsurePositiveCrossZ(
 
 // Reimplements 0x46c3a0: zGeometry_Vec3Array::ComputeNewellPlane
 // (D:\Proj\GameZRecoil\zGeometry\zgeometry.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ComputeNewellPlane(
+void __fastcall ComputeNewellPlane(
     int pointCount,
     zVec3 *points,
     zGeometry_PlaneEquationPartial *outPlane
@@ -490,7 +490,7 @@ namespace zGeometry_TriangulateHole {
 // Reimplements 0x46bf70:
 // zGeometry_TriangulateHole::FindActiveEdgeState
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
-RECOIL_NOINLINE zGeometry_TriangulateHole_EdgeState *RECOIL_FASTCALL FindActiveEdgeState(
+zGeometry_TriangulateHole_EdgeState *__fastcall FindActiveEdgeState(
     int vertexIndex0,
     int vertexIndex1,
     int edgeCount,
@@ -514,7 +514,7 @@ RECOIL_NOINLINE zGeometry_TriangulateHole_EdgeState *RECOIL_FASTCALL FindActiveE
 // Reimplements 0x46bd50:
 // zGeometry_TriangulateHole::TryAppendBridgeEdge
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL TryAppendBridgeEdge(
+int __fastcall TryAppendBridgeEdge(
     zGeometry_TriangulateHole_EdgeState *edgeState,
     int edgeCount,
     zGeometry_TriangulateHole_EdgeState *edgeStates
@@ -557,7 +557,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL TryAppendBridgeEdge(
 // Reimplements 0x46bf30:
 // zGeometry_TriangulateHole::CollectActiveEdgeIndicesForVertex
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL CollectActiveEdgeIndicesForVertex(
+int __fastcall CollectActiveEdgeIndicesForVertex(
     int vertexIndex,
     int edgeCount,
     zGeometry_TriangulateHole_EdgeState *edgeStates,
@@ -579,7 +579,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL CollectActiveEdgeIndicesForVertex(
 // Reimplements 0x46bfc0:
 // zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL TryEmitTriangleFromEdgePair(
+void __fastcall TryEmitTriangleFromEdgePair(
     int edgeIndex0,
     int edgeIndex1,
     int vertexIndex,
@@ -633,7 +633,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL TryEmitTriangleFromEdgePair(
 // Reimplements 0x46c390:
 // zGeometry_TriangulateHole::CacheCombinedPlane
 // (D:\Proj\GameZRecoil\zGeometry\zgeometry.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL CacheCombinedPlane(
+void __fastcall CacheCombinedPlane(
     int pointCount,
     zVec3 *points
 ) {
@@ -647,7 +647,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL CacheCombinedPlane(
 // Reimplements 0x46c570:
 // zGeometry_TriangulateHole::ProjectInnerRingOntoCachedPlane
 // (D:\Proj\GameZRecoil\zGeometry\zgeometry.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL ProjectInnerRingOntoCachedPlane(
+void __fastcall ProjectInnerRingOntoCachedPlane(
     int pointCount,
     zVec3 *points
 ) {
@@ -664,7 +664,7 @@ RECOIL_NOINLINE void RECOIL_FASTCALL ProjectInnerRingOntoCachedPlane(
 namespace zGeometry {
 // Reimplements 0x46c070: zGeometry::TriangulatePolygonWithHole
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
-RECOIL_NOINLINE zGeometry_TriangleSoup *RECOIL_FASTCALL TriangulatePolygonWithHole(
+zGeometry_TriangleSoup *__fastcall TriangulatePolygonWithHole(
     int outerPointCount,
     zVec3 *outerPoints,
     int innerPointCount,
@@ -815,7 +815,7 @@ namespace zGeometry_Polygon {
 // Reimplements 0x46ced0:
 // zGeometry_Polygon::TrySplitPointDwordOffsetsAtBestDiagonal
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
-RECOIL_NOINLINE int RECOIL_FASTCALL TrySplitPointDwordOffsetsAtBestDiagonal(
+int __fastcall TrySplitPointDwordOffsetsAtBestDiagonal(
     int pointCount,
     float *pointDwords,
     int *pointDwordOffsets,
@@ -907,7 +907,7 @@ RECOIL_NOINLINE int RECOIL_FASTCALL TrySplitPointDwordOffsetsAtBestDiagonal(
 // Reimplements 0x46cb50:
 // zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
-RECOIL_NOINLINE zGeometry_TriangleDwordOffsetList *RECOIL_FASTCALL
+zGeometry_TriangleDwordOffsetList *__fastcall
 TriangulatePointDwordOffsetsRecursive(
     int pointCount,
     float *pointDwords,
@@ -1030,7 +1030,7 @@ TriangulatePointDwordOffsetsRecursive(
 
 // Reimplements 0x46c760: zGeometry_Polygon::Convexify
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
-RECOIL_NOINLINE zGeometry_ConvexPolygonSetPartial *RECOIL_FASTCALL Convexify(
+zGeometry_ConvexPolygonSetPartial *__fastcall Convexify(
     zGeometry_PolygonSpanArrayPartial *polygonSet,
     int inputPointCount,
     zVec3 *points
@@ -1119,7 +1119,7 @@ RECOIL_NOINLINE zGeometry_ConvexPolygonSetPartial *RECOIL_FASTCALL Convexify(
 namespace zGeometry_ConvexPolygonSet {
 // Reimplements 0x46c720: zGeometry_ConvexPolygonSet::Destroy
 // (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
-RECOIL_NOINLINE void RECOIL_FASTCALL Destroy(
+void __fastcall Destroy(
     zGeometry_ConvexPolygonSetPartial *self
 ) {
     if (self == 0) {

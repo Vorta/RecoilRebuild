@@ -8,12 +8,10 @@
 #include <string.h>
 
 struct RecoilStateCredits {
-    static void RECOIL_CDECL QueuePush();
+    static void QueuePush();
 };
 
 namespace {
-const size_t kPlayerMenuSaveLoadBlockOffset = 0x25c;
-
 template <typename Method>
 unsigned int MethodAddress(
     Method method
@@ -48,7 +46,7 @@ void AssignMethodSlot(
     );
 }
 
-RECOIL_NOINLINE void RECOIL_CDECL HudUiWidgetPostLoadNoOp() {}
+void HudUiWidgetPostLoadNoOp() {}
 
 // Main-menu button vtables differ in the activation callback at slot 12.
 HudUiWidget_FTable MakeMainMenuButtonFTable(
@@ -78,14 +76,14 @@ HudUiWidget_FTable MakeMainMenuButtonFTable(
 
 // Reimplements 0x414f40: HudUiMainMenuDialog_CreditsButton::OnActivate
 // (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
-void RECOIL_THISCALL HudUiMainMenuDialog_CreditsButton::OnActivate() {
+void HudUiMainMenuDialog_CreditsButton::OnActivate() {
     RecoilStateCredits::QueuePush();
     HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x414fa0: HudUiMenuBackButton::OnActivate
 // (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
-void RECOIL_THISCALL HudUiMenuBackButton::OnActivate() {
+void HudUiMenuBackButton::OnActivate() {
     g_RecoilApp.QueueExitCurrentState(0);
     HudUiZrdWidget::OnActivate();
     HudUiMgr::TriggerCurrentLayoutOnActivated();
@@ -93,7 +91,7 @@ void RECOIL_THISCALL HudUiMenuBackButton::OnActivate() {
 
 // Reimplements 0x414f60: HudUiMainMenuDialog_SaveButton::OnActivate
 // (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
-void RECOIL_THISCALL HudUiMainMenuDialog_SaveButton::OnActivate() {
+void HudUiMainMenuDialog_SaveButton::OnActivate() {
     RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
         RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED
     );
@@ -102,7 +100,7 @@ void RECOIL_THISCALL HudUiMainMenuDialog_SaveButton::OnActivate() {
 
 // Reimplements 0x415140: HudUiMainMenuDialog_LoadButton::OnActivate
 // (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
-void RECOIL_THISCALL HudUiMainMenuDialog_LoadButton::OnActivate() {
+void HudUiMainMenuDialog_LoadButton::OnActivate() {
     if (g_RecoilState_MainMenuTransition.m_entryRoute != RECOIL_MAINMENU_ROUTE_FRONTEND) {
         RecoilStateSaveLoadTransition::QueueOpenLoadDialog(RECOIL_SAVELOAD_MODE_FADE);
         HudUiZrdWidget::OnActivate();
@@ -115,28 +113,28 @@ void RECOIL_THISCALL HudUiMainMenuDialog_LoadButton::OnActivate() {
 
 // Reimplements 0x414f80: HudUiMainMenuDialog_NewGameButton::OnActivate
 // (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
-void RECOIL_THISCALL HudUiMainMenuDialog_NewGameButton::OnActivate() {
+void HudUiMainMenuDialog_NewGameButton::OnActivate() {
     HudUiNewGamePanelOverlayOwner::QueueEnter();
     HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x414fc0: HudUiMainMenuDialog_OptionsButton::OnActivate
 // (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
-void RECOIL_THISCALL HudUiMainMenuDialog_OptionsButton::OnActivate() {
+void HudUiMainMenuDialog_OptionsButton::OnActivate() {
     HudUiOptionsPanelOverlayOwner::QueueEnter();
     HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x414fe0: HudUiMainMenuDialog_QuitButton::OnActivate
 // (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
-void RECOIL_THISCALL HudUiMainMenuDialog_QuitButton::OnActivate() {
+void HudUiMainMenuDialog_QuitButton::OnActivate() {
     RecoilStateConfirmQuit::QueueEnter();
     HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x415000: HudUiMainMenuDialog_ControlsButton::OnActivate
 // (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
-void RECOIL_THISCALL HudUiMainMenuDialog_ControlsButton::OnActivate() {
+void HudUiMainMenuDialog_ControlsButton::OnActivate() {
     RecoilStateControls::QueueEnter();
     HudUiZrdWidget::OnActivate();
 }
@@ -187,8 +185,7 @@ RECOIL_FORCEINLINE void InstallMainMenuDialogFTable(
 RECOIL_FORCEINLINE int PlayerMenuSaveLoadBlocked(
     zUtil_PlayerStateStorage *playerState
 ) {
-    const unsigned char *const playerBytes = playerState->bytes;
-    return *(const int *)(playerBytes + kPlayerMenuSaveLoadBlockOffset);
+    return playerState->environmentAttachmentActive;
 }
 
 RECOIL_FORCEINLINE void BindButton(
@@ -448,7 +445,7 @@ extern const HudUiWidget_FTable g_HudUiMainMenu_BackButton_FTable =
 
 // Reimplements 0x414b60: HudUiMainMenuDialog::CanLoadGame
 // (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL HudUiMainMenuDialog::CanLoadGame() {
+int HudUiMainMenuDialog::CanLoadGame() {
     zUtil_PlayerStateStorage *playerState;
     zInput_GameStateOrMapTablePartial *const gameState = g_GameStateOrMapTable;
     if (gameState == 0) {
@@ -470,7 +467,7 @@ canLoad:
 
 // Reimplements 0x414b90: HudUiMainMenuDialog::CanSaveGame
 // (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
-RECOIL_NOINLINE int RECOIL_CDECL HudUiMainMenuDialog::CanSaveGame() {
+int HudUiMainMenuDialog::CanSaveGame() {
     zInput_GameStateOrMapTablePartial *const gameState = g_GameStateOrMapTable;
     if (gameState == 0) {
         return (int)gameState;

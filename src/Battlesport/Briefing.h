@@ -7,15 +7,15 @@
 
 struct HudUiBriefingRuntime;
 
-typedef void(RECOIL_THISCALL *HudUiBriefingRuntimeUpdate)(
+typedef void( *HudUiBriefingRuntimeUpdate)(
     HudUiBriefingRuntime *self,
     float deltaSec
 );
-typedef void(RECOIL_THISCALL *HudUiBriefingRuntimeSetEnabled)(
+typedef void( *HudUiBriefingRuntimeSetEnabled)(
     HudUiBriefingRuntime *self,
     int enabled
 );
-typedef HudUiBriefingRuntime *(RECOIL_THISCALL *HudUiBriefingRuntimeScalarDeletingDestructor)(
+typedef HudUiBriefingRuntime *( *HudUiBriefingRuntimeScalarDeletingDestructor)(
     HudUiBriefingRuntime *self,
     unsigned int flags
 );
@@ -41,11 +41,11 @@ struct HudUiBriefingRuntime {
     unsigned char unknown_0004[0xa95c];
     HudUiBriefingTransportProgress transportProgress;
 
-    RECOIL_NOINLINE HudUiBriefingRuntime *RECOIL_THISCALL Constructor(int missionId);
-    RECOIL_NOINLINE void RECOIL_THISCALL Destructor();
-    HudUiBriefingRuntime *RECOIL_THISCALL ScalarDeletingDestructor(unsigned int flags);
-    RECOIL_NOINLINE int RECOIL_THISCALL BuildObjectiveActionsFromIndex(int objectiveIndex);
-    RECOIL_NOINLINE void RECOIL_THISCALL Update(float deltaSec);
+    HudUiBriefingRuntime * Constructor(int missionId);
+    void Destructor();
+    HudUiBriefingRuntime * ScalarDeletingDestructor(unsigned int flags);
+    int BuildObjectiveActionsFromIndex(int objectiveIndex);
+    void Update(float deltaSec);
 };
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -55,12 +55,12 @@ RECOIL_STATIC_ASSERT(
 );
 
 namespace Briefing {
-RECOIL_NOINLINE void RECOIL_FASTCALL BuildObjectiveActionsGlobal(int objectiveIndex);
-RECOIL_NOINLINE void RECOIL_FASTCALL SampleEventCallback(int progressEventCode);
-RECOIL_NOINLINE int RECOIL_FASTCALL StartForMission(int missionId);
-RECOIL_NOINLINE void RECOIL_CDECL ThreadMain(void *threadParameter);
-RECOIL_NOINLINE void RECOIL_FASTCALL StopAndShutdownThread(int waitForInput);
-RECOIL_NOINLINE void RECOIL_STDCALL SetProgressAndSleep(float progressValue);
+void __fastcall BuildObjectiveActionsGlobal(int objectiveIndex);
+void __fastcall SampleEventCallback(int progressEventCode);
+int __fastcall StartForMission(int missionId);
+void ThreadMain(void *threadParameter);
+void __fastcall StopAndShutdownThread(int waitForInput);
+void __stdcall SetProgressAndSleep(float progressValue);
 } // namespace Briefing
 
 extern HudUiBriefingRuntime *g_Briefing_Runtime;

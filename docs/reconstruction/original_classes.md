@@ -20,6 +20,12 @@ function-table object, provider boundary, callback/data system, or
 namespace/record subsystem that owns the table, then use the table layout only as
 ABI evidence.
 
+When current evidence proves an authored class, interface, custom table object,
+or method cluster, recreating that owner is required for `Model: source-faithful`.
+A flattened function body, copied table array, or raw slot/offset scaffold can
+preserve behavior or byte evidence, but it is not a source-faithful model for
+code that originally belonged to the owner.
+
 Raw `slots[n]` dispatch is acceptable only when current evidence proves one of
 these cases:
 
@@ -53,6 +59,12 @@ classification is known for every table dispatch used by that caller. For an
 authored table owner, the caller remains source-blocked until the owner is
 modeled as a class/interface or typed custom table object; a copied Binary Ninja
 ftable/vtable array is not enough.
+
+Do not set `Model: source-faithful` for an entry or source group that flattens a
+proven authored class/table owner into isolated functions. Restore the
+higher-order source construct first, including the layout, methods,
+constructor/destructor behavior, and dispatch contract needed by the verified
+frontier.
 
 ## Boundary Decisions
 
@@ -129,6 +141,11 @@ smallest coherent class/source cluster:
 - direct methods and table-dispatched methods needed by the caller frontier
 - focused tests or functional verification for reachable behavior
 - VC byte/provider verification when doing a tier `S` class/table pass
+
+The same class/source cluster is the minimum source-shape unit for
+`Model: source-faithful` when current evidence proves the function belonged to
+that owner. Record, namespace, provider, or data-driven callback models remain
+valid only when the boundary evidence supports them instead of an authored class.
 
 If clean original-era member or virtual spelling fails binary verification, keep
 the readable source shape when behavior is proven and document the mismatch. Use

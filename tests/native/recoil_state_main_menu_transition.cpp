@@ -11,15 +11,15 @@
 
 extern "C" int g_RecoilState_MainMenuSkipExitDelay;
 
-extern "C" int(RECOIL_FASTCALL *g_zVideo_pfnLockSurfaceState)(
+extern "C" int(__fastcall *g_zVideo_pfnLockSurfaceState)(
     zVideo_SurfaceStatePartial *surfaceState);
-extern "C" int(RECOIL_FASTCALL *g_zVideo_pfnUnlockSurfaceState)(
+extern "C" int(__fastcall *g_zVideo_pfnUnlockSurfaceState)(
     zVideo_SurfaceStatePartial *surfaceState);
 
 struct RecoilStateCredits {
     RecoilPtr32 vftable;
 
-    static void RECOIL_CDECL QueuePush();
+    static void QueuePush();
 };
 
 extern RecoilStateCredits g_RecoilStateCredits;
@@ -30,18 +30,18 @@ int g_queueEnterOnExitCalls;
 int g_mainMenuLayoutActivatedCount;
 
 struct TestQueueEnterState : RecoilApp_IState {
-    void RECOIL_THISCALL OnEnter() {
+    void OnEnter() {
         ++g_queueEnterOnEnterCalls;
     }
 
-    void RECOIL_THISCALL OnExit() {
+    void OnExit() {
         ++g_queueEnterOnExitCalls;
     }
 };
 
-RecoilFn32 QueueEnterMethodToFn(void (RECOIL_THISCALL TestQueueEnterState::*method)()) {
+RecoilFn32 QueueEnterMethodToFn(void ( TestQueueEnterState::*method)()) {
     union MemberToFunction {
-        void (RECOIL_THISCALL TestQueueEnterState::*member)();
+        void ( TestQueueEnterState::*member)();
         RecoilFn32 fn;
     };
 
@@ -59,11 +59,11 @@ RecoilApp_IState_Vtbl MakeQueueEnterVtable() {
 
 RecoilApp_IState_Vtbl g_queueEnterVtable = MakeQueueEnterVtable();
 
-void RECOIL_FASTCALL TestMainMenuLayoutOnActivated(HudLayoutBase *) {
+void __fastcall TestMainMenuLayoutOnActivated(HudLayoutBase *) {
     ++g_mainMenuLayoutActivatedCount;
 }
 
-int RECOIL_FASTCALL TestVideoSurfaceStateNoOp(zVideo_SurfaceStatePartial *surfaceState) {
+int __fastcall TestVideoSurfaceStateNoOp(zVideo_SurfaceStatePartial *surfaceState) {
     (void)surfaceState;
     return 0;
 }
@@ -283,7 +283,7 @@ extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void) {
         resumeDialog.quitButton.base.ftable != nullptr;
 
     playerState.lifecycleState = 3;
-    *reinterpret_cast<int *>(playerState.bytes + 0x25c) = 1;
+    playerState.environmentAttachmentActive = 1;
     HudUiMainMenuDialog blockedDialog(RECOIL_MAINMENU_ROUTE_INGAME);
     const bool blockedConstructed =
         blockedDialog.saveGameButton.modeOrEnabled == 0 &&
@@ -412,7 +412,7 @@ extern "C" int hud_ui_main_menu_credits_button_on_activate_smoke(void) {
     zVidImagePartial activateImage{};
     dialog.creditsButton.activateImage = &activateImage;
 
-    typedef void(RECOIL_THISCALL *ActivateFn)(HudUiZrdWidget * self);
+    typedef void( *ActivateFn)(HudUiZrdWidget * self);
     ((ActivateFn)(dialog.creditsButton.base.ftable->slots[12]))(&dialog.creditsButton);
 
     RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
@@ -496,7 +496,7 @@ extern "C" int hud_ui_main_menu_save_button_on_activate_smoke(void) {
     zVidImagePartial activateImage{};
     dialog.saveGameButton.activateImage = &activateImage;
 
-    typedef void(RECOIL_THISCALL *ActivateFn)(HudUiZrdWidget * self);
+    typedef void( *ActivateFn)(HudUiZrdWidget * self);
     ((ActivateFn)(dialog.saveGameButton.base.ftable->slots[12]))(&dialog.saveGameButton);
 
     RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
@@ -573,7 +573,7 @@ extern "C" int hud_ui_main_menu_load_button_on_activate_smoke(void) {
     HudUiMainMenuDialog &dialog =
         *new (dialogStorage) HudUiMainMenuDialog(RECOIL_MAINMENU_ROUTE_FRONTEND);
 
-    typedef void(RECOIL_THISCALL *ActivateFn)(HudUiZrdWidget * self);
+    typedef void( *ActivateFn)(HudUiZrdWidget * self);
     ActivateFn activate = (ActivateFn)(dialog.loadGameButton.base.ftable->slots[12]);
 
     g_RecoilStateSaveLoadTransition = RecoilStateSaveLoadTransition{};
@@ -703,7 +703,7 @@ extern "C" int hud_ui_main_menu_new_game_button_on_activate_smoke(void) {
     zVidImagePartial activateImage{};
     dialog.newGameButton.activateImage = &activateImage;
 
-    typedef void(RECOIL_THISCALL *ActivateFn)(HudUiZrdWidget * self);
+    typedef void( *ActivateFn)(HudUiZrdWidget * self);
     ((ActivateFn)(dialog.newGameButton.base.ftable->slots[12]))(&dialog.newGameButton);
 
     RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
@@ -787,7 +787,7 @@ extern "C" int hud_ui_menu_back_button_on_activate_smoke(void) {
     zVidImagePartial activateImage{};
     dialog.backButton.activateImage = &activateImage;
 
-    typedef void(RECOIL_THISCALL *ActivateFn)(HudUiZrdWidget * self);
+    typedef void( *ActivateFn)(HudUiZrdWidget * self);
     ((ActivateFn)(dialog.backButton.base.ftable->slots[12]))(&dialog.backButton);
 
     RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
@@ -865,7 +865,7 @@ extern "C" int hud_ui_main_menu_options_button_on_activate_smoke(void) {
     zVidImagePartial activateImage{};
     dialog.optionsButton.activateImage = &activateImage;
 
-    typedef void(RECOIL_THISCALL *ActivateFn)(HudUiZrdWidget * self);
+    typedef void( *ActivateFn)(HudUiZrdWidget * self);
     ((ActivateFn)(dialog.optionsButton.base.ftable->slots[12]))(&dialog.optionsButton);
 
     RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
@@ -945,7 +945,7 @@ extern "C" int hud_ui_main_menu_quit_button_on_activate_smoke(void) {
     zVidImagePartial activateImage{};
     dialog.quitButton.activateImage = &activateImage;
 
-    typedef void(RECOIL_THISCALL *ActivateFn)(HudUiZrdWidget * self);
+    typedef void( *ActivateFn)(HudUiZrdWidget * self);
     ((ActivateFn)(dialog.quitButton.base.ftable->slots[12]))(&dialog.quitButton);
 
     RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
@@ -1025,7 +1025,7 @@ extern "C" int hud_ui_main_menu_controls_button_on_activate_smoke(void) {
     zVidImagePartial activateImage{};
     dialog.controlsButton.activateImage = &activateImage;
 
-    typedef void(RECOIL_THISCALL *ActivateFn)(HudUiZrdWidget * self);
+    typedef void( *ActivateFn)(HudUiZrdWidget * self);
     ((ActivateFn)(dialog.controlsButton.base.ftable->slots[12]))(&dialog.controlsButton);
 
     RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;

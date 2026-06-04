@@ -66,7 +66,7 @@ int g_logThirdInt = 0;
 int g_logFourthInt = 0;
 int g_logCallCount = 0;
 
-void RECOIL_CDECL TestLogFn(const char *fmt, char *args)
+void TestLogFn(const char *fmt, char *args)
 {
     int *const argWords = reinterpret_cast<int *>(args);
     g_logFmt = fmt;
