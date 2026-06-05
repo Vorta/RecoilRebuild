@@ -7,6 +7,12 @@
 namespace {
 const char kZSndParmSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_parm.cpp";
 
+/**
+ * Original inline helper observed in caller 0x4a10e0.
+ *
+ * Purpose: clamp normalized sound pitch and frequency scales to the accepted
+ * [0, 1] range before backend dispatch.
+ */
 float Clamp01(
     float value
 ) {
@@ -19,6 +25,12 @@ float Clamp01(
     return value;
 }
 
+/**
+ * Original static helper observed in caller 0x4a11d0.
+ *
+ * Purpose: copy a float's stored bit pattern into an integer field used by
+ * the A3D backend path.
+ */
 int FloatToBits(
     float value
 ) {
@@ -32,8 +44,13 @@ int FloatToBits(
 }
 } // namespace
 
-// Reimplements 0x4a10e0: zSndPlayHandle::SetFreqScaled
-// (D:\Proj\GameZRecoil\zSound\zsnd_parm.cpp)
+/**
+ * Reimplements 0x4a10e0: zSndPlayHandle::SetFreqScaled
+ * (D:\Proj\GameZRecoil\zSound\zsnd_parm.cpp).
+ *
+ * Purpose: clamp and interpolate a playback-rate scale, then apply it to the
+ * active DirectSound or A3D backend handle.
+ */
 int zSndPlayHandle::SetFreqScaled(
     float scale
 ) {
@@ -82,8 +99,13 @@ int zSndPlayHandle::SetFreqScaled(
     return 1;
 }
 
-// Reimplements 0x4a11d0: zSndPlayHandle::SetEnableScale
-// (D:\Proj\GameZRecoil\zSound\zsnd_parm.cpp)
+/**
+ * Reimplements 0x4a11d0: zSndPlayHandle::SetEnableScale
+ * (D:\Proj\GameZRecoil\zSound\zsnd_parm.cpp).
+ *
+ * Purpose: apply global volume scaling to the backend handle and refresh its
+ * active 3D/backend state.
+ */
 void zSndPlayHandle::SetEnableScale(
     float scale
 ) {
@@ -110,8 +132,13 @@ void zSndPlayHandle::SetEnableScale(
     }
 }
 
-// Reimplements 0x4a1240: zSndSample::SetPlaybackEventHandler
-// (D:\Proj\GameZRecoil\zSound\zsnd_parm.cpp)
+/**
+ * Reimplements 0x4a1240: zSndSample::SetPlaybackEventHandler
+ * (D:\Proj\GameZRecoil\zSound\zsnd_parm.cpp).
+ *
+ * Purpose: install the playback event callback while the sample is not under
+ * the creation guard.
+ */
 void __fastcall zSndSample::SetPlaybackEventHandler(
     void(__fastcall *callback)(int eventCode)
 ) {
@@ -120,8 +147,13 @@ void __fastcall zSndSample::SetPlaybackEventHandler(
     }
 }
 
-// Reimplements 0x4a1250: zSndPlayHandle_TryEnableManaged
-// (D:\Proj\GameZRecoil\zSound\zsnd_parm.cpp)
+/**
+ * Reimplements 0x4a1250: zSndPlayHandle_TryEnableManaged
+ * (D:\Proj\GameZRecoil\zSound\zsnd_parm.cpp).
+ *
+ * Purpose: mark a managed play handle active only when it exists and is not
+ * already active.
+ */
 extern "C" int __fastcall zSndPlayHandle_TryEnableManaged(
     zSndPlayHandle *handle
 ) {
@@ -133,7 +165,12 @@ extern "C" int __fastcall zSndPlayHandle_TryEnableManaged(
     return 1;
 }
 
-// Reimplements 0x4a1270: zSndPlayHandle_TryDisableManaged
+/**
+ * Reimplements 0x4a1270: zSndPlayHandle_TryDisableManaged.
+ *
+ * Purpose: clear a managed play handle's active flag only when it exists and
+ * is currently active.
+ */
 extern "C" int __fastcall zSndPlayHandle_TryDisableManaged(
     zSndPlayHandle *handle
 ) {

@@ -1,5 +1,10 @@
-// Reimplements 0x4b3420: zSys::DetectCpuClassAndFeatures
-// (D:\Proj\GameZRecoil\zSys\zsys_cpu.cpp)
+/**
+ * Reimplements 0x4b3420: zSys::DetectCpuClassAndFeatures
+ * (D:\Proj\GameZRecoil\zSys\zsys_cpu.cpp).
+ *
+ * Purpose: classify the CPU family and carry the non-Intel vendor marker in
+ * the high bit of the returned class value.
+ */
 int zSys::DetectCpuClassAndFeatures() {
     int result;
     if ((unsigned short)HasCpuidSupport() != 0) {

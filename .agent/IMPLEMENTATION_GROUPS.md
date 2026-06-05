@@ -56,10 +56,10 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
     RecoilApp state destruction, while the current authored source uses a
     manual non-EH `Destructor()` body.
   - 0x42dfa0 RecoilApp::Constructor is tier C but not tier S; BN shows the
-    paired MSVC EH registration frame and constructor unwind map. Its former
-    owner dependency at 0x442c70
-    `RecoilApp_MfcOleModuleOwner::RecoilApp_MfcOleModuleOwner` is tier S under
-    `recoil_app_mfc_ole_module_constructor_s`.
+    paired MSVC EH registration frame and constructor unwind map. Its
+    intermediate owner dependency at 0x442c70 is now modeled as
+    `RecoilApp_MfcOleModule`, but the local VC5 byte targets for
+    0x442c70/0x4428b0 still fail and do not justify tier S.
 - Next action:
   - Recover the smallest source-faithful RecoilApp owner model that lets VC
     emit the paired member/base constructor and destructor cleanup chains
@@ -79,19 +79,39 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
     the desired `5`, `6`, and `7` state writes, but forced extra stack space,
     saved `ebx`, guard-pointer stores, and duplicate vtable resets, regressing
     to 150 mismatches.
-    Direct destructor binary-lane dependencies are now tier S:
-    `RecoilApp::MfcOleModuleDestructor` at 0x4428b0 passes under the narrow
-    `recoil_app_mfc_ole_module_destructor` VC target, and
-    `zFMV_Script::Cleanup` at 0x462630 plus `zFMV_Script::Reset` at 0x462660
-    pass under the shared `zfmv_script_cleanup_reset` VC target. See
-    `docs/reconstruction/recoil_app_destructor_tier_s.md` and
-    `docs/reconstruction/zfmv_script_cleanup_reset_verification.md`.
-    `zFMV_Script::Init` at 0x4625e0 is tier S. Current VC5 comparisons also
-    accept 0x42e220 `RecoilApp::StartEngine`, 0x442bc0
-    `RecoilApp::ShutdownSubsystems`, 0x42e430
-    `RecoilApp::ShutdownEngine`, 0x42e330
-    `RecoilApp::InitializeDisplay`, and 0x4a5780
-    `RecoilApp::InitStdLogFiles` as tier S.
+    Current direct binary-lane dependencies are split: `zFMV_Script::Cleanup`
+    at 0x462630 and `zFMV_Script::Reset` at 0x462660 pass under the shared
+    `zfmv_script_cleanup_reset` VC target, but this session's local
+    `recoil_app_mfc_ole_module_destructor` and
+    `recoil_app_mfc_ole_module_constructor_s` manifests did not produce
+    accepted byte evidence. Best observed 0x4428b0 result was
+    `vc5_o2_ob1_md_facs` with 223 mismatches; best observed 0x442c70 result
+    was `vc5_o2_ob0_md_facs` with 118 mismatches, while the current manifest
+    profile remains `vc5_o2_ob1_md_facs` for owner-shape consistency. The older
+    `docs/reconstruction/recoil_app_destructor_tier_s.md` MFC/OLE tier S notes
+    describe removed local probes and are not current acceptance evidence.
+    Production source compiles with the intermediate `RecoilApp_MfcOleModule`
+    owner, but the native smoke suite still needs broad test-only cleanup from
+    raw `vftable`/`.base`/32-bit queue-slot assumptions to the typed
+    `RecoilApp_IState` and `RecoilApp_StateQueue` source model.
+    `zFMV_Script::Init` at 0x4625e0 remains tier C/data-blocked through
+    0x4626b0 `zFMV_Script::LoadActionsFromZrd`; action construction is now
+    folded into the loader body, but BN assembly at 0x4159e0 and 0x462e30
+    proves the FMV action dispatch is VC-style virtual dispatch
+    (`ecx=this`, slots 0x4/0x8/0xc). The null words after slot 0x10 in
+    `.rdata` are alignment padding, not authored reserved fields. The
+    scalar-deleting destructor entries 0x415a80, 0x462e70, 0x4631d0,
+    0x463650, and 0x463bf0 are now classified in the plan as VC++ provider
+    glue, but production source still authors manual
+    `ScalarDeletingDestructor`/`Make...Vtable` stand-ins. The helper/data
+    guard now treats this as not reimplemented until the zFMV action virtual
+    class family, generated vtables, and destructor model are recovered.
+    Current VC5 comparisons accept 0x4a5780 `RecoilApp::InitStdLogFiles` as
+    tier S. Existing plan entries should be checked with
+    `python tools/recoil_status.py 0xNNNNNN --lane binary` before relying on
+    any older note for 0x42e220 `RecoilApp::StartEngine`, 0x442bc0
+    `RecoilApp::ShutdownSubsystems`, 0x42e430 `RecoilApp::ShutdownEngine`, or
+    0x42e330 `RecoilApp::InitializeDisplay`.
     The FMV state constructor cleanup model is now accepted: 0x42eb70
     `RecoilApp_AttractFmvState::Constructor`, 0x42ed30
     `RecoilApp_MissionFmvState::Constructor`, and 0x42eb00

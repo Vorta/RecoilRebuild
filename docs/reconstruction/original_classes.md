@@ -5,36 +5,53 @@ and `.agent/RECOIL_PLAN.md` remain authoritative for current function identity,
 layout, xrefs, source readiness, and acceptance markers.
 
 Use this document before introducing, reshaping, or reimplementing anything that
-looks like a class, vtable, ftable, callback table, provider table, or
+looks like a class, vtable, ftable, callback/data table, provider table, or
 namespace-style subsystem.
 
 ## Core Rule
 
-Tables are ABI evidence, not the source design.
+Tables are ABI evidence, not the source design. Source recovery is class-first.
 
 When Binary Ninja shows vtable or function-table dispatch, first recover the
-owning source boundary. Do not copy a decompiled ftable/vtable array as the main
-implementation of an authored class or custom table object, and do not use raw
-slot arrays as the source substitute. Model the class, interface, typed custom
-function-table object, provider boundary, callback/data system, or
-namespace/record subsystem that owns the table, then use the table layout only as
-ABI evidence.
+owning source boundary. If constructor/destructor ownership, object offset zero,
+`this` methods, inherited cleanup, and dispatch xrefs fit an authored C++
+class/interface, reconstruct that class/interface first. Do not copy a
+decompiled ftable/vtable array as the main implementation of authored code, and
+do not use raw slot arrays as the source substitute. Only when the class model
+does not fit should agents model the proven `struct`/record, provider boundary,
+callback/data system, namespace/source-file owner, global-data set, or subsystem.
+Use the table layout only as ABI evidence.
 
-When current evidence proves an authored class, interface, custom table object,
-or method cluster, recreating that owner is required for `Model: source-faithful`.
-A flattened function body, copied table array, or raw slot/offset scaffold can
-preserve behavior or byte evidence, but it is not a source-faithful model for
-code that originally belonged to the owner.
+When current evidence proves an authored class/interface or method cluster,
+recreating that owner is required before any `Reimplemented` tier can be
+accepted. A flattened function body, copied table array, hand-authored
+`VTable`/`FTable`, or raw slot/offset scaffold can preserve behavior or byte
+evidence, but it is not a reimplementation for code that originally belonged to
+the owner.
 
 Raw `slots[n]` dispatch is acceptable only when current evidence proves one of
 these cases:
 
-- a custom engine table where original-era C++ virtual spelling is not supported
-  by the evidence
 - a COM, DirectX, MFC, import, or provider-owned ABI table
 - a data-driven callback table that is not an authored C++ class
-- a documented temporary blocker after clean member/virtual spelling was tried
-  and failed source or byte verification
+- non-authored verification/test code that is not production source
+
+Local virtual dispatch views are not source models. Do not introduce
+`struct ...Dispatch { virtual ... }`, `struct ...Virtual { virtual ... }`, or
+similar call-shape-only declarations unless current Binary Ninja evidence proves
+the original owner was that C++ class/interface. A compiler-generated
+member-call sequence can prove ABI shape, but it does not prove the source had a
+local dispatch wrapper. If evidence points away from a class, recover the typed
+callback/data record or owning subsystem that the evidence actually supports.
+Do not create production `FTable`/`VTable` types, globals, or factories for
+authored game dispatch. If evidence points to a provider table, classify the
+provider boundary. If evidence is incomplete, keep the source blocked and
+improve Binary Ninja instead of adding a production scaffold.
+
+Temporary ABI/source-shape scaffolds are allowed only as scratch probes outside
+committed production source and durable evidence. They must be removed before
+handoff and must never be staged, committed, cited in plan markers, or used to
+claim `Model: source-faithful`.
 
 ## Class-Promotion Gate
 
@@ -49,22 +66,23 @@ Required evidence checks:
 - inspect destructor writes that restore a base table or tear down embedded bases
 - inspect table xrefs and all indirect dispatch callsites needed by the caller
 - identify slot order, target functions, calling conventions, and cleanup shape
-- decide whether the table is compiler-generated C++, custom authored engine
-  dispatch, COM/provider data, MFC/runtime metadata, or data-driven callbacks
+- decide whether the table is compiler-generated C++, COM/provider data,
+  MFC/runtime metadata, data-driven callbacks, or unresolved
 - update `.agent/IMPLEMENTATION_GROUPS.md` before editing a multi-function class,
   table, layout, provider, or source-file cluster
 
 Do not mark `Source dependencies satisfied` for a caller until this ownership
-classification is known for every table dispatch used by that caller. For an
-authored table owner, the caller remains source-blocked until the owner is
-modeled as a class/interface or typed custom table object; a copied Binary Ninja
+classification is known for every table dispatch used by that caller. For
+authored dispatch, the caller remains source-blocked until the owner is modeled
+as a class/interface when evidence fits, or as the proven non-class
+record/callback/data subsystem when it does not; a copied Binary Ninja
 ftable/vtable array is not enough.
 
-Do not set `Model: source-faithful` for an entry or source group that flattens a
-proven authored class/table owner into isolated functions. Restore the
-higher-order source construct first, including the layout, methods,
-constructor/destructor behavior, and dispatch contract needed by the verified
-frontier.
+Do not set any `Reimplemented` tier, `Source owner ✅`, or
+`Model: source-faithful` for an entry or source group that flattens a proven
+authored class/table owner into isolated functions. Restore the higher-order
+source construct first, including the layout, methods, constructor/destructor
+behavior, and dispatch contract needed by the verified frontier.
 
 ## Boundary Decisions
 
@@ -73,7 +91,7 @@ Use the first matching classification that is supported by current evidence.
 | Evidence | Source model |
 |---|---|
 | Constructor installs a table at object offset `0`, methods use `this`, destructor restores or destroys base state | Authored class/interface. Implement class/layout/method cluster before isolated callers. |
-| Offset `0` table exists, but dispatch is a hand-built engine table rather than compiler C++ virtuals | Authored custom function-table object. Implement the typed owner and named methods/table fields; use raw slots only where necessary. |
+| Offset `0` table exists, but compiler C++ virtuals do not fit after constructor/destructor/xref review | Do not create a production VTable/FTable model. Implement the proven `struct`/record, callback/data record, namespace/source-file owner, global-data set, or subsystem with named fields and functions. |
 | Table is COM/MFC/DirectX/import/runtime-owned | Provider boundary. Do not author fake provider internals; model only the game-owned wrapper or derived class. |
 | Functions operate on explicit records, globals, tags, or data nodes without constructor-owned table identity | Record or namespace subsystem. Do not promote to a C++ class by name alone. |
 | Repeated caller bodies look like an inlined helper or method and no standalone executable function exists | Restore a likely inline helper/member and verify through callers or the smallest class/source cluster. |
@@ -96,12 +114,12 @@ and table slots in Binary Ninja before editing source.
 | `RecoilApp_IState` and derived states | Authored state interface. Model state objects and virtual-style lifecycle methods instead of flattening into app switches. |
 | `CZRecoilFrame`, `CZGameFrame`, `CAboutDlg` | Authored MFC-derived classes over provider-owned MFC bases, runtime classes, and message maps. |
 | Net session and Westwood Online dialogs/event sinks | Authored dialog/sink classes where constructors and vtables prove ownership; imported WOL/MFC/COM providers stay external. |
-| HUD/UI core | Custom authored function-table hierarchy rooted around `HudUiElement`, widgets, panels, containers, backgrounds, dialogs, text inputs, and variants. Reconstruct the object hierarchy and typed tables before adding more copied slot arrays. |
+| HUD/UI core | Class-first authored UI hierarchy around `HudUiElement`, widgets, panels, containers, backgrounds, dialogs, text inputs, and variants when constructor/destructor/table evidence supports it. Existing explicit FTable models are source-shape debt; do not add more copied slot arrays or production FTable owners. |
 | HUD app/dialog state wrappers | Authored app-state wrappers around HUD dialogs/controllers. Keep state lifecycle and dialog ownership explicit. |
-| HUD briefing runtime/actions | Mixed authored class/custom-table system. Classify runtime, action queues, and callback tables before editing. |
+| HUD briefing runtime/actions | Mixed authored class, record, and callback/data system. Classify runtime, action queues, and callback data before editing; do not model authored dispatch as production FTables. |
 | `zFMV_Action` hierarchy and `zFMV_Script` | Authored action classes/records. Preserve action ownership, script list order, and destructor behavior. |
 | `zInterp_Context` and global context | Authored interpreter context with table evidence and global singleton lifetime. |
-| `zVideoFxPass3*`, HUD weather/pass-3 UI elements | Authored overlay/function-table objects when constructor/table evidence is present. |
+| `zVideoFxPass3*`, HUD weather/pass-3 UI elements | Authored overlay classes or records when constructor/table evidence is present. Classify first; do not reimplement as production FTable objects. |
 
 ### Record, Data-System, Or Namespace Boundaries
 
@@ -109,7 +127,7 @@ and table slots in Binary Ninja before editing source.
 |---|---|
 | `RecoilApp_StateQueue` | Non-polymorphic deque-like record embedded in `RecoilApp`; implement as an original-era helper record. |
 | zClass scene node system | Data-driven node/class system over `zClass_Node`, `classType`, and `classData`; not ordinary C++ inheritance. |
-| `Player` | Large subsystem over records/globals. Do not promote the whole namespace to a C++ class unless a constructor-owned table proves one. Isolated Player UI/pass-3 table objects may still be authored table objects. |
+| `Player` | Large subsystem over records/globals. Do not promote the whole namespace to a C++ class unless a constructor-owned table proves one. Isolated Player UI/pass-3 evidence must still be class-first; do not model it as production FTables. |
 | `zVideo`, `zVid`, `zRndr` | Static subsystems plus provider/COM objects and records. Keep DirectDraw/D3D interfaces provider-owned. |
 | `zInput` | Static subsystem/global input state plus bind records unless table ownership proves a class. |
 | `zSnd` | Static subsystem/provider mix. DirectSound/A3D tables are provider ABI; samples, banks, handles, and snapshots are authored records/classes only where evidence supports it. |
@@ -127,29 +145,34 @@ or derived class:
   and COM interface vtables
 - Westwood Online imported API/provider interfaces
 
-Provider tables can be represented with typed ABI structs where needed for
-callsites and tests, but they are not authored game classes.
+Provider tables must come from real provider headers or provider-boundary
+classification. Do not add fake provider table structs under production `src/`.
 
 ## Implementation Pattern
 
-For a table-shaped authored object, the default implementation unit is the
+For table-shaped authored evidence, the default implementation unit is the
 smallest coherent class/source cluster:
 
 - layout declaration with `RECOIL_STATIC_ASSERT` size/offset checks
-- typed table or virtual/member declarations that match the recovered call shape
+- virtual/member declarations only for proven C++ class/interface owners, or
+  named record/callback/data fields only when the class model does not fit
 - constructor and destructor table/base behavior
-- direct methods and table-dispatched methods needed by the caller frontier
+- direct methods and dispatch behavior needed by the caller frontier
 - focused tests or functional verification for reachable behavior
 - VC byte/provider verification when doing a tier `S` class/table pass
 
 The same class/source cluster is the minimum source-shape unit for
-`Model: source-faithful` when current evidence proves the function belonged to
-that owner. Record, namespace, provider, or data-driven callback models remain
-valid only when the boundary evidence supports them instead of an authored class.
+`Source owner ✅` and `Model: source-faithful` when current evidence proves the
+function belonged to that owner. Record, namespace, provider, or data-driven
+callback models remain valid only when the boundary evidence supports them
+instead of an authored class.
 
 If clean original-era member or virtual spelling fails binary verification, keep
 the readable source shape when behavior is proven and document the mismatch. Use
-raw slot dispatch only for the specific callsites where evidence requires it.
+provider-header dispatch only for the specific provider callsites where evidence
+requires it. Do not replace a proven class or unresolved table with a local
+virtual dispatch view or production FTable/VTable to make the compiler emit a
+convenient call shape.
 
 ## Updating This Guide
 

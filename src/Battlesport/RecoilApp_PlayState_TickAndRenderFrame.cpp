@@ -14,22 +14,13 @@
 #include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
-namespace {
-int HalfTruncTowardZero(
-    int value
-) {
-    return value / 2;
-}
-
-zOpt_ViewRectSection *ViewRectFromPtr(
-    void *ptr
-) {
-    return (zOpt_ViewRectSection *)ptr;
-}
-} // namespace
-
-// Reimplements 0x42f280: RecoilApp_PlayState::TickAndRenderFrame
-// (D:\Proj\Battlesport\RecoilApp.cpp)
+/**
+ * Reimplements 0x42f280: RecoilApp_PlayState::TickAndRenderFrame
+ * (D:\Proj\Battlesport\RecoilApp.cpp).
+ *
+ * Purpose: tick input, simulation, rendering, HUD, audio, and presentation for
+ * one active play-state frame.
+ */
 int RecoilApp_PlayState::TickAndRenderFrame(
     int shouldPresent
 ) {
@@ -49,9 +40,9 @@ int RecoilApp_PlayState::TickAndRenderFrame(
     pRenderSection = zOpt::GetRenderSection();
     pDisplaySection = zOpt::GetDisplaySection();
     pWindowSection = zOpt::GetWindowSection();
-    zOpt_ViewRectSection *const renderSection = ViewRectFromPtr(pRenderSection);
-    zOpt_ViewRectSection *const displaySection = ViewRectFromPtr(pDisplaySection);
-    zOpt_ViewRectSection *const windowSection = ViewRectFromPtr(pWindowSection);
+    zOpt_ViewRectSection *const renderSection = (zOpt_ViewRectSection *)pRenderSection;
+    zOpt_ViewRectSection *const displaySection = (zOpt_ViewRectSection *)pDisplaySection;
+    zOpt_ViewRectSection *const windowSection = (zOpt_ViewRectSection *)pWindowSection;
     zClass_TypeList::UpdateAllBuckets();
 
     if (g_RecoilApp_QuitAfterCredits != 0) {
@@ -116,12 +107,10 @@ int RecoilApp_PlayState::TickAndRenderFrame(
     int fxTop = g_HudUiMgrSensor_FxRectScratch.top;
     int fxBottom = g_HudUiMgrSensor_FxRectScratch.bottom;
     if (zOpt::GetReplicateMode() != 0) {
-        fxTop = HalfTruncTowardZero(fxTop);
-        fxBottom = HalfTruncTowardZero(fxBottom);
-        g_HudUiMgrSensor_FxRectScratch.left =
-            HalfTruncTowardZero(g_HudUiMgrSensor_FxRectScratch.left);
-        g_HudUiMgrSensor_FxRectScratch.right =
-            HalfTruncTowardZero(g_HudUiMgrSensor_FxRectScratch.right);
+        fxTop = fxTop / 2;
+        fxBottom = fxBottom / 2;
+        g_HudUiMgrSensor_FxRectScratch.left = g_HudUiMgrSensor_FxRectScratch.left / 2;
+        g_HudUiMgrSensor_FxRectScratch.right = g_HudUiMgrSensor_FxRectScratch.right / 2;
         g_HudUiMgrSensor_FxRectScratch.top = fxTop;
         g_HudUiMgrSensor_FxRectScratch.bottom = fxBottom;
     }

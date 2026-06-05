@@ -19,7 +19,13 @@ namespace {
 }
 
 namespace zDi {
-    // Reimplements 0x476340: zDi::SetVariantTagIfUnset
+    /**
+     * Reimplements 0x476340: zDi::SetVariantTagIfUnset
+     * (D:\Proj\GameZRecoil\zModel\zModel_Di.cpp).
+     *
+     * Purpose: assign the variant tag to each display-instance entry that has
+     * not already initialized its variant-tag state.
+     */
     void __fastcall SetVariantTagIfUnset(
         zDiPartial * self,
         int variantTag
@@ -39,8 +45,13 @@ namespace zDi {
 }
 
 namespace zModel_MatlSlot {
-    // Reimplements 0x4805b0: zModel_MatlSlot::IndexFromPtrOrMinus1
-    // (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp)
+    /**
+     * Reimplements 0x4805b0: zModel_MatlSlot::IndexFromPtrOrMinus1
+     * (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp).
+     *
+     * Purpose: convert a material-slot pointer into its pool index, or return
+     * -1 for a null slot pointer.
+     */
     int __fastcall IndexFromPtrOrMinus1(zModel_MaterialSlot * slot) {
         if (slot == 0) {
             return -1;
@@ -51,8 +62,13 @@ namespace zModel_MatlSlot {
 }
 
 namespace zModel_MatlBuffer {
-    // Reimplements 0x480bf0: zModel_MatlBuffer::SetArraySize
-    // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
+    /**
+     * Reimplements 0x480bf0: zModel_MatlBuffer::SetArraySize
+     * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+     *
+     * Purpose: set the material-pool capacity before allocation, enforcing the
+     * original 32767-entry serialized index limit.
+     */
     void __fastcall SetArraySize(int count) {
         if (g_zModel_MatlPoolCapacity != 0) {
             zError::ReportOld(
@@ -79,8 +95,13 @@ namespace zModel_MatlBuffer {
         g_zModel_MatlPoolCapacity = count;
     }
 
-    // Reimplements 0x480600: zModel_MatlBuffer::WriteGameZ
-    // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
+    /**
+     * Reimplements 0x480600: zModel_MatlBuffer::WriteGameZ
+     * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+     *
+     * Purpose: serialize the material-pool header, active material slots, and
+     * cycle-frame data while converting live texture pointers to TexDir indices.
+     */
     int __fastcall WriteGameZ(void *stream) {
         zImage_TexDirEntryPartial **frameBuffer = 0;
         FILE *const file = (FILE *)(stream);
@@ -241,8 +262,13 @@ namespace zModel_MatlBuffer {
         return result;
     }
 
-    // Reimplements 0x4808c0: zModel_MatlBuffer::ReadGameZ
-    // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
+    /**
+     * Reimplements 0x4808c0: zModel_MatlBuffer::ReadGameZ
+     * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+     *
+     * Purpose: read a serialized material pool, resize backing storage, restore
+     * texture pointers from TexDir indices, and rebuild cycle frame tables.
+     */
     int __fastcall ReadGameZ(void *stream) {
         FILE *const file = (FILE *)(stream);
         const int oldCapacity = g_zModel_MatlPoolCapacity;

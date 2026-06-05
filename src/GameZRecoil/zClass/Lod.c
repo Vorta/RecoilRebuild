@@ -10,6 +10,12 @@
 namespace {
     const int kZClassNodeLod = 6;
 
+    /**
+     * Original static helper recovered with zClass_Lod::RenderTraverse.
+     *
+     * Purpose: approximate the square root used by LOD distance and fade
+     * scaling with the original bit-level floating-point estimate.
+     */
     float ApproximateSqrt(float value) {
         int bits = 0;
         memcpy(
@@ -27,6 +33,12 @@ namespace {
         return result;
     }
 
+    /**
+     * Original static helper recovered with zClass_Lod::RenderTraverse.
+     *
+     * Purpose: refresh the node view-space bounds when needed, push the LOD
+     * bounds context, and test the current distance against the LOD range.
+     */
     int EnsureLodSphereAndDistance(
         zClass_NodePartial * node,
         zClass_LodDataPartial * data,
@@ -68,12 +80,24 @@ namespace {
         return state.distanceSq >= data->nearRangeSq && state.distanceSq < data->farRangeSq;
     }
 
+    /**
+     * Original static helper recovered with zClass_Lod::RenderTraverse.
+     *
+     * Purpose: push a render alpha-scale override and publish it to the model
+     * renderer's current alpha-scale state.
+     */
     void PushAlphaScale(float scale) {
         ++g_zClass_RenderAlphaScaleStackTop;
         g_zClass_RenderAlphaScaleStack[g_zClass_RenderAlphaScaleStackTop] = scale;
         zModel_RenderAlphaScale_SetCurrent(scale);
     }
 
+    /**
+     * Original static helper recovered with zClass_Lod::RenderTraverse.
+     *
+     * Purpose: pop the render alpha-scale override and restore the previous
+     * scale, or the default opaque scale when the stack is empty.
+     */
     void PopAlphaScale() {
         --g_zClass_RenderAlphaScaleStackTop;
         const float scale = g_zClass_RenderAlphaScaleStackTop >= 0
@@ -84,9 +108,14 @@ namespace {
 }
 
 namespace zClass_Lod {
-    // Reimplements 0x44b8c0: zClass_Lod::RenderTraverse
-    // (D:\Proj\GameZRecoil\zClass\Lod.c)
     int __fastcall
+    /**
+     * Reimplements 0x44b8c0: zClass_Lod::RenderTraverse
+     * (D:\Proj\GameZRecoil\zClass\Lod.c).
+     *
+     * Purpose: cull and render an LOD node, applying range, scale, alpha, and
+     * vertex-alpha fades while maintaining the render traversal stacks.
+     */
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint
@@ -261,7 +290,13 @@ namespace zClass_Lod {
         return result;
     }
 
-    // Reimplements 0x4542a0: zClass_Lod::gwLodNew
+    /**
+     * Reimplements 0x4542a0: zClass_Lod::gwLodNew
+     * (D:\Proj\GameZRecoil\zClass\Lod.c).
+     *
+     * Purpose: allocate an LOD node, attach zeroed LOD class data, and seed the
+     * original default range and active-distance settings.
+     */
     zClass_NodePartial *gwLodNew() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         node->classId = kZClassNodeLod;
@@ -279,8 +314,14 @@ namespace zClass_Lod {
         return node;
     }
 
-    // Reimplements 0x454310: zClass_Lod::gwLodAddChild
     int __fastcall
+    /**
+     * Reimplements 0x454310: zClass_Lod::gwLodAddChild
+     * (D:\Proj\GameZRecoil\zClass\Lod.c).
+     *
+     * Purpose: append a child to an LOD node using the shared zClass child-list
+     * helper.
+     */
     gwLodAddChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -291,8 +332,14 @@ namespace zClass_Lod {
         );
     }
 
-    // Reimplements 0x454320: zClass_Lod::RemoveChild
     int __fastcall
+    /**
+     * Reimplements 0x454320: zClass_Lod::RemoveChild
+     * (D:\Proj\GameZRecoil\zClass\Lod.c).
+     *
+     * Purpose: remove a child from an LOD node through the shared zClass
+     * child-list helper and return success.
+     */
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -304,8 +351,14 @@ namespace zClass_Lod {
         return 0;
     }
 
-    // Reimplements 0x454330: zClass_Lod::SetComputeOwnDistance
     int __fastcall
+    /**
+     * Reimplements 0x454330: zClass_Lod::SetComputeOwnDistance
+     * (D:\Proj\GameZRecoil\zClass\Lod.c).
+     *
+     * Purpose: update whether this LOD node computes its own camera distance
+     * during render traversal.
+     */
     SetComputeOwnDistance(
         zClass_NodePartial * node,
         int enabled
@@ -314,8 +367,14 @@ namespace zClass_Lod {
         return 0;
     }
 
-    // Reimplements 0x454340: zClass_Lod::SetTargetNodeAndRange
     int __fastcall
+    /**
+     * Reimplements 0x454340: zClass_Lod::SetTargetNodeAndRange
+     * (D:\Proj\GameZRecoil\zClass\Lod.c).
+     *
+     * Purpose: assign the range-fade target node and cache the squared fade
+     * range when a target is present.
+     */
     SetTargetNodeAndRange(
         zClass_NodePartial * node,
         zClass_NodePartial * target,

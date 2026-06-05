@@ -30,7 +30,13 @@ enum zSndCdAudioOption {
 
 extern "C" int g_RecoilState_MainMenuSkipExitDelay;
 
-static RECOIL_FORCEINLINE void ApplyDeferredVideoMode(
+/**
+ * Original inline helper observed in caller 0x4153d0.
+ *
+ * Purpose: apply a deferred video mode when it differs from the current option
+ * and synchronize half-resolution and HUD invalidation state.
+ */
+static inline void ApplyDeferredVideoMode(
     int targetMode,
     zVideoHalfResAdjustMode halfResMode
 ) {
@@ -64,7 +70,12 @@ namespace zSnd {
 int GetCDAudioOption();
 }
 
-// Reimplements 0x4153d0: RecoilStateMainMenuTransition::OnDeactivate
+/**
+ * Reimplements 0x4153d0: RecoilStateMainMenuTransition::OnDeactivate.
+ *
+ * Purpose: tear down the main-menu dialog, apply deferred video/HUD/audio
+ * restoration, resume paused sounds, and stop CD audio when leaving the state.
+ */
 void RecoilStateMainMenuTransition::OnDeactivate() {
     int previousHudType;
 

@@ -17,7 +17,10 @@ float g_Time_UnscaledAccumulatedTimeSec = 0.0f;
 }
 
 namespace Time {
-// Reimplements 0x4a5670: Time::Reset
+/**
+ * Reimplements 0x4a5670: Time::Reset.
+ * Purpose: Clears accumulated frame timing state and seeds the current time from GetTickCount.
+ */
 void Reset() {
     g_Time_NewTimeSec = 0.0f;
     g_Time_UnscaledAccumulatedTimeSec = 0.0f;
@@ -29,7 +32,10 @@ void Reset() {
     g_Time_CurrentTimeSec = (float)(tickCountMillis) * 0.00100000005f;
 }
 
-// Reimplements 0x4a56d0: Time::Tick (Time.cpp)
+/**
+ * Reimplements 0x4a56d0: Time::Tick (Time.cpp).
+ * Purpose: Advances scaled and unscaled frame time, applying the configured maximum-delta clamp.
+ */
 void Tick() {
     const __int64 tickCountMillis = GetTickCount();
     const float newTimeSec = (float)(tickCountMillis) * 0.00100000005f;

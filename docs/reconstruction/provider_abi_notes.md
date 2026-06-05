@@ -26,15 +26,18 @@ per-target VC verification evidence.
 - VC5SP3 `cl` 11.00.7022 rejects an explicit `__thiscall` keyword as C4234.
   Production reconstruction must not use forced thiscall wrappers or explicit
   `__thiscall`; member ABI must come from real C++ member syntax, virtual
-  declarations, typed custom tables, or documented provider boundaries. If a
-  free-function pointer with `self` in `ecx` is the only current model, keep the
-  affected entry below tier `B` as `Model: abi-forced-scaffold` until the owning
-  source model is recovered.
+  declarations for proven classes/interfaces, callback/data records only when
+  class evidence does not fit, or real provider headers/types. If a
+  free-function pointer with `self` in `ecx` is the only current model, the
+  source is not reimplemented and the affected entry must stay
+  `Reimplemented [X]`/`❌` until the owning source model is recovered.
 - Current executable provenance indicates VS97 SP3 `cvtres` for 1 object,
   VS97 SP3 `link` 5.10.7303 for 293 objects, and VS97-era tooling for 10
   objects.
 - MFC42, DirectX, CRT, Win32, and imported runtime behavior should be modeled as
-  providers, not fake production stand-ins.
+  providers, not fake production stand-ins or local ABI shims. Use repo-local
+  provider headers where available; otherwise leave the provider detail as a
+  blocker.
 - Production source must preserve 32-bit pointer, alignment, calling convention,
   message-map, vtable, import, and cleanup behavior when those affect generated
   code or ABI.

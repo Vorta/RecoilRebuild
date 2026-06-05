@@ -35,6 +35,12 @@ struct HudUiMainMenuDialogVirtualDispatch {
 };
 
 struct zFMV_ActionBlurStack : zFMV_ActionBlur {
+    /**
+     * Original inline helper observed in caller 0x415220.
+     *
+     * Purpose: construct the temporary blur action used while entering the
+     * main-menu transition from gameplay.
+     */
     zFMV_ActionBlurStack(
         int framesRemaining,
         int blurPassCount
@@ -45,6 +51,12 @@ struct zFMV_ActionBlurStack : zFMV_ActionBlur {
         );
     }
 
+    /**
+     * Original inline helper observed in caller 0x415220.
+     *
+     * Purpose: restore the base action vtable after the stack blur action's
+     * lifetime ends.
+     */
     ~zFMV_ActionBlurStack() {
         vftable = &g_zFMV_ActionBase_Vtable;
     }
@@ -70,7 +82,13 @@ int __fastcall PlayTrackWithMode(
 );
 }
 
-// Reimplements 0x415220: RecoilStateMainMenuTransition::OnTryBecomeCurrent
+/**
+ * Reimplements 0x415220: RecoilStateMainMenuTransition::OnTryBecomeCurrent.
+ *
+ * Purpose: enter the main-menu transition by preparing video/HUD state,
+ * pausing active sounds, loading dialog audio, constructing the menu dialog,
+ * and starting CD audio when enabled.
+ */
 RECOIL_NO_GS int RecoilStateMainMenuTransition::OnTryBecomeCurrent() {
     if (g_zVideo_ActiveRendererPath != ZVID_RENDERER_BACKEND_SOFTWARE) {
         g_zVideo_pfnBltSwToPrimaryRectDirect(

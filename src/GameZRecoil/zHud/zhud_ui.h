@@ -23,7 +23,40 @@ struct HudUiTextInput;
 struct RecoilApp_IState_Vtbl;
 
 struct HudUiCommon_FTable {
-    unsigned int slots[29];
+    union {
+        unsigned int slots[29];
+        struct {
+            unsigned int dtor;
+            unsigned int Draw;
+            unsigned int DrawBase;
+            unsigned int SetPos;
+            unsigned int SetX;
+            unsigned int SetY;
+            unsigned int SetClip;
+            unsigned int SetClipRect;
+            unsigned int Invalidate;
+            unsigned int Update;
+            unsigned int field_28;
+            unsigned int field_2c;
+            unsigned int OnPrimaryButtonReleased;
+            unsigned int OnSecondaryButtonReleased;
+            unsigned int OnHoverRepeat;
+            unsigned int OnHoverEnter;
+            unsigned int OnHoverExit;
+            unsigned int OnCaptureEnter;
+            unsigned int OnCaptureExit;
+            unsigned int OnPointerButtonState;
+            unsigned int OnActivate;
+            unsigned int ShouldHandleInput;
+            unsigned int AfterInputUpdate;
+            unsigned int HitTest;
+            unsigned int SetVisible;
+            unsigned int GetX;
+            unsigned int GetY;
+            unsigned int function;
+            unsigned int GetRect;
+        };
+    };
 };
 
 struct HudUiWidget_FTable {
@@ -84,7 +117,48 @@ struct HudUiMessage_FTable {
 };
 
 struct HudUiPanel_FTable {
-    unsigned int slots[37];
+    union {
+        unsigned int slots[37];
+        struct {
+            unsigned int dtor;
+            unsigned int Draw;
+            unsigned int DrawBase;
+            unsigned int SetPos;
+            unsigned int SetX;
+            unsigned int SetY;
+            unsigned int SetClip;
+            unsigned int SetClipRect;
+            unsigned int Invalidate;
+            unsigned int Update;
+            unsigned int field_28;
+            unsigned int GetTextBufferPtrOrNull;
+            unsigned int OnActivate;
+            unsigned int field_34;
+            unsigned int field_38;
+            unsigned int field_3c;
+            unsigned int field_40;
+            unsigned int field_44;
+            unsigned int field_48;
+            unsigned int field_4c;
+            unsigned int field_50;
+            unsigned int HitTest;
+            unsigned int field_58;
+            unsigned int field_5c;
+            unsigned int SetVisible;
+            unsigned int GetX;
+            unsigned int GetY;
+            unsigned int EnableWordWrapWithRect;
+            unsigned int GetTextRect;
+            unsigned int SetTextFmt;
+            unsigned int UpdateTextBoundsFromContent;
+            unsigned int GetFont;
+            unsigned int SetFont;
+            unsigned int SetFontHandle;
+            unsigned int SetTextFmtV;
+            unsigned int SetText;
+            unsigned int RebuildTextRect;
+        };
+    };
 };
 
 struct HudCmdDialog_BackgroundPanelFTable {

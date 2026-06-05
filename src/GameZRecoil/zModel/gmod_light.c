@@ -42,18 +42,35 @@ zColorRgb gModel_AmbientColorRgb01 = {0};
 zModel_PaletteRemapRecipePartial gModel_SpecialLightPaletteRemapRecipe = {0};
 
 namespace {
+    /**
+     * Original static helper observed in callers 0x476190 and 0x4761e0
+     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * Purpose: cache the reciprocal distance-fog range when the range is
+     * nonzero.
+     */
     void UpdateDistanceInvRange(float range) {
         if (range != 0.0f) {
             gModel_FogDistanceInvRange = 1.0f / range;
         }
     }
 
+    /**
+     * Original static helper observed in callers 0x476220 and 0x476260
+     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * Purpose: cache the reciprocal height-fog range when the range is nonzero.
+     */
     void UpdateHeightInvRange(float range) {
         if (range != 0.0f) {
             gModel_FogHeightInvRange = 1.0f / range;
         }
     }
 
+    /**
+     * Original static helper observed in zModel light/fog callers
+     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * Purpose: produce the original fast square-root estimate from a float bit
+     * pattern for distance and radius checks.
+     */
     float ApproximateSqrtFromBits(float value) {
         int bits = 0;
         memcpy(
@@ -72,6 +89,12 @@ namespace {
         return result;
     }
 
+    /**
+     * Original static helper observed in caller 0x489540
+     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * Purpose: evaluate vertical fog coverage for a sphere using the cached
+     * projected Y coordinate and height-fog range.
+     */
     float EvalHeightFogFade(
         const zVec3 *point,
         float radius
@@ -96,6 +119,11 @@ namespace {
         return (gModel_FogHeightHigh - clampedBottom) * gModel_FogHeightInvRange;
     }
 
+    /**
+     * Original static helper observed in zModel light-weight callers
+     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * Purpose: clamp a lighting or fog contribution weight to the unit interval.
+     */
     float ClampWeight(float weight) {
         if (weight > 1.0f) {
             return 1.0f;
@@ -108,6 +136,12 @@ namespace {
         return weight;
     }
 
+    /**
+     * Original static helper observed in zModel light-weight callers
+     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * Purpose: compute the dot product used for angular light and normal
+     * weighting.
+     */
     float DotVec3(
         const zVec3 &a,
         const zVec3 &b
@@ -115,6 +149,12 @@ namespace {
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
+    /**
+     * Original static helper observed in zModel light-weight callers
+     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * Purpose: subtract view-space vectors for light-to-vertex distance and
+     * direction calculations.
+     */
     zVec3 SubtractVec3(
         const zVec3 &a,
         const zVec3 &b
@@ -123,15 +163,32 @@ namespace {
         return result;
     }
 
+    /**
+     * Original static helper observed in caller 0x487f10
+     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * Purpose: test whether a light or fog weight exceeds the visible one-byte
+     * attribute threshold.
+     */
     bool IsVisibleWeight(float weight) {
         return weight > (1.0f / 255.0f);
     }
 
+    /**
+     * Original static helper observed in caller 0x487f10
+     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * Purpose: clamp an attribute weight in place and return the clamped value.
+     */
     float ClampWeightInPlace(float *weight) {
         *weight = ClampWeight(*weight);
         return *weight;
     }
 
+    /**
+     * Original static helper observed in callers 0x487f10 and 0x488d60
+     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * Purpose: select either the fog target override color or an active light's
+     * specular color for fog-target commits.
+     */
     zColorRgb *SelectActiveLightColor(int lightIndex) {
         if (lightIndex < 0) {
             return &g_zModel_FogTargetColorOverride.colorRgb01;
@@ -141,19 +198,32 @@ namespace {
     }
 }
 
-// Reimplements 0x476170: zModel_Fog_SetEnabled
+/**
+ * Reimplements 0x476170: zModel_Fog_SetEnabled
+ * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+ * Purpose: store the current fog-enabled flag.
+ */
 void __fastcall zModel_Fog_SetEnabled(
     int enabled
 ) {
     gModel_FogEnabled = enabled;
 }
 
-// Reimplements 0x476180: zModel_Fog_IsEnabled (GameZRecoil/zModel/zmodel.cpp)
+/**
+ * Reimplements 0x476180: zModel_Fog_IsEnabled
+ * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+ * Purpose: return the current fog-enabled flag.
+ */
 int zModel_Fog_IsEnabled() {
     return gModel_FogEnabled;
 }
 
-// Reimplements 0x476190: zModel_Fog_SetDistanceStart
+/**
+ * Reimplements 0x476190: zModel_Fog_SetDistanceStart
+ * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+ * Purpose: store the distance-fog start value and refresh the cached inverse
+ * range against the current end value.
+ */
 void __stdcall zModel_Fog_SetDistanceStart(
     float distanceStart
 ) {
@@ -162,13 +232,21 @@ void __stdcall zModel_Fog_SetDistanceStart(
     UpdateDistanceInvRange(range);
 }
 
-// Reimplements 0x4761d0: zModel_Fog_GetDistanceStart
-// (GameZRecoil/zModel/zModel_Display.cpp)
+/**
+ * Reimplements 0x4761d0: zModel_Fog_GetDistanceStart
+ * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+ * Purpose: return the current distance-fog start value.
+ */
 float zModel_Fog_GetDistanceStart() {
     return gModel_FogDistanceStart;
 }
 
-// Reimplements 0x4761e0: zModel_Fog_SetDistanceEnd
+/**
+ * Reimplements 0x4761e0: zModel_Fog_SetDistanceEnd
+ * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+ * Purpose: store the distance-fog end value and refresh the cached inverse
+ * range against the current start value.
+ */
 void __stdcall zModel_Fog_SetDistanceEnd(
     float distanceEnd
 ) {
@@ -177,7 +255,12 @@ void __stdcall zModel_Fog_SetDistanceEnd(
     UpdateDistanceInvRange(range);
 }
 
-// Reimplements 0x476220: zModel_Fog_SetHeightHigh
+/**
+ * Reimplements 0x476220: zModel_Fog_SetHeightHigh
+ * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+ * Purpose: store the high height-fog bound and refresh the cached inverse
+ * vertical range.
+ */
 void __stdcall zModel_Fog_SetHeightHigh(
     float heightHigh
 ) {
@@ -186,7 +269,12 @@ void __stdcall zModel_Fog_SetHeightHigh(
     UpdateHeightInvRange(range);
 }
 
-// Reimplements 0x476260: zModel_Fog_SetHeightLow
+/**
+ * Reimplements 0x476260: zModel_Fog_SetHeightLow
+ * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+ * Purpose: store the low height-fog bound and refresh the cached inverse
+ * vertical range.
+ */
 void __stdcall zModel_Fog_SetHeightLow(
     float heightLow
 ) {
@@ -195,21 +283,34 @@ void __stdcall zModel_Fog_SetHeightLow(
     UpdateHeightInvRange(range);
 }
 
-// Reimplements 0x4762a0: zModel_Fog_SetDensity
+/**
+ * Reimplements 0x4762a0: zModel_Fog_SetDensity
+ * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+ * Purpose: store the current fog density scalar.
+ */
 void __stdcall zModel_Fog_SetDensity(
     float density
 ) {
     gModel_FogDensity = density;
 }
 
-// Reimplements 0x4762b0: zModel_Fog_SetLinearModeEnabled
+/**
+ * Reimplements 0x4762b0: zModel_Fog_SetLinearModeEnabled
+ * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+ * Purpose: store the linear fog mode enabled flag.
+ */
 void __fastcall zModel_Fog_SetLinearModeEnabled(
     int enabled
 ) {
     gModel_FogLinearModeEnabled = enabled;
 }
 
-// Reimplements 0x4762c0: zModel_Fog_SetColorRgb01
+/**
+ * Reimplements 0x4762c0: zModel_Fog_SetColorRgb01
+ * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+ * Purpose: copy the fog RGB color and update hardware renderer fog color when
+ * the active renderer path requires it.
+ */
 void __fastcall zModel_Fog_SetColorRgb01(
     zColorRgb *rgb01
 ) {
@@ -223,12 +324,21 @@ void __fastcall zModel_Fog_SetColorRgb01(
     }
 }
 
-// Reimplements 0x4762f0: zModel_Fog_ApplyCurrentColor
+/**
+ * Reimplements 0x4762f0: zModel_Fog_ApplyCurrentColor
+ * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+ * Purpose: apply the current fog color through the renderer's clamped RGB path.
+ */
 void zModel_Fog_ApplyCurrentColor() {
     zRndr::FogColor_SetRgb01Clamped(&gModel_FogColorRgb01);
 }
 
-// Reimplements 0x476040: zModel_FogTargetColorOverride_SetCurrent
+/**
+ * Reimplements 0x476040: zModel_FogTargetColorOverride_SetCurrent
+ * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+ * Purpose: optionally copy a fog-target override color and always store its
+ * blend weight.
+ */
 void __fastcall zModel_FogTargetColorOverride_SetCurrent(
     zColorRgb *colorRgb01,
     float weight
@@ -239,14 +349,22 @@ void __fastcall zModel_FogTargetColorOverride_SetCurrent(
     g_zModel_FogTargetColorOverride.weight = weight;
 }
 
-// Reimplements 0x476070: zModel_RenderAlphaScale_SetCurrent
+/**
+ * Reimplements 0x476070: zModel_RenderAlphaScale_SetCurrent
+ * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+ * Purpose: store the current render alpha-scale value.
+ */
 void __stdcall zModel_RenderAlphaScale_SetCurrent(
     float scale
 ) {
     gModel_RenderAlphaScaleCurrent = scale;
 }
 
-// Reimplements 0x476080: zModel_RenderVertexAlphaEnabled_SetCurrent
+/**
+ * Reimplements 0x476080: zModel_RenderVertexAlphaEnabled_SetCurrent
+ * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+ * Purpose: store the current vertex-alpha enabled flag.
+ */
 void __fastcall zModel_RenderVertexAlphaEnabled_SetCurrent(
     int enabled
 ) {
@@ -254,8 +372,13 @@ void __fastcall zModel_RenderVertexAlphaEnabled_SetCurrent(
 }
 
 namespace zModel_Light {
-    // Reimplements 0x4894f0: zModel_Light::EvalDistanceWeight
     float __fastcall
+    /**
+     * Reimplements 0x4894f0: zModel_Light::EvalDistanceWeight
+     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * Purpose: compute a light's range falloff as full, zero, or a linear blend
+     * between the inner and outer range.
+     */
     EvalDistanceWeight(
         const zClass_LightDataPartial *light,
         float distance
@@ -271,7 +394,12 @@ namespace zModel_Light {
         return (light->range2 - distance) * light->invRangeDelta;
     }
 
-    // Reimplements 0x489540: zModel_Light::EvalSphereFogFade
+    /**
+     * Reimplements 0x489540: zModel_Light::EvalSphereFogFade
+     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * Purpose: combine distance and height fog coverage for a bounding sphere
+     * and clamp the resulting fade.
+     */
     float __fastcall EvalSphereFogFade(
         const zVec3 *point,
         float radius
@@ -306,7 +434,12 @@ namespace zModel_Light {
         return fade;
     }
 
-    // Reimplements 0x4896d0: zModel_Light::BuildAttr0DepthFade
+    /**
+     * Reimplements 0x4896d0: zModel_Light::BuildAttr0DepthFade
+     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * Purpose: build per-vertex attr0 depth-fog weights from clip scratch
+     * positions, distance fog, projected height fog, and 255-scale output.
+     */
     int __fastcall BuildAttr0DepthFade(
         int vertexCount,
         int *outHasVariation
@@ -389,7 +522,12 @@ namespace zModel_Light {
         return result;
     }
 
-    // Reimplements 0x489a90: zModel_Light::BuildAttr1Falloff
+    /**
+     * Reimplements 0x489a90: zModel_Light::BuildAttr1Falloff
+     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * Purpose: build per-vertex fog falloff weights in attr2, update lighting
+     * variation flags, and commit the current fog color.
+     */
     int __fastcall BuildAttr1Falloff(
         int vertexCount,
         int *pLightingFlags
@@ -467,7 +605,12 @@ namespace zModel_Light {
         return hasVisibleFog;
     }
 
-    // Reimplements 0x489920: zModel_Light::EvalBatchSphereFade
+    /**
+     * Reimplements 0x489920: zModel_Light::EvalBatchSphereFade
+     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * Purpose: evaluate depth and height fog for the current scratch vertex,
+     * store the clamped fade, and report whether it is visible.
+     */
     int __fastcall EvalBatchSphereFade(float *outFade) {
         const zClipVert &vert = g_Clip_PolyVertsScratch[0];
         const float distance = ApproximateSqrtFromBits(vert.x * vert.x + vert.z * vert.z);
@@ -504,7 +647,12 @@ namespace zModel_Light {
     }
 }
 
-// Reimplements 0x488d60: zModel_Light::BuildLightWeights
+/**
+ * Reimplements 0x488d60: zModel_Light::BuildLightWeights
+ * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+ * Purpose: build software-path per-vertex light weights, choose and commit fog
+ * target state, blend the packed fog color, and report whether lighting applied.
+ */
 int __fastcall zModel_Light_BuildLightWeights(
     zVec3 *surfaceNormal,
     int vertexCount,
@@ -696,7 +844,12 @@ int __fastcall zModel_Light_BuildLightWeights(
     return 1;
 }
 
-// Reimplements 0x487a30: zModel_Light_PointInPolygonInitXZ
+/**
+ * Reimplements 0x487a30: zModel_Light_PointInPolygonInitXZ
+ * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+ * Purpose: seed active light inputs, filter enabled light states, track the
+ * active point-light index, and initialize software-path ambient/remap state.
+ */
 void __fastcall zModel_Light_PointInPolygonInitXZ(
     zClass_LightDataPartial **lightDataList,
     zModel_LightStatePartial **lightNodeStates,
@@ -770,8 +923,12 @@ void __fastcall zModel_Light_PointInPolygonInitXZ(
 }
 
 namespace zModel_Light {
-    // Reimplements 0x487f10: zModel_Light::SetActiveLights
-    // (D:\Proj\GameZRecoil\zModel\gmod_light.c)
+    /**
+     * Reimplements 0x487f10: zModel_Light::SetActiveLights
+     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * Purpose: build active-light vertex attributes for software and hardware
+     * render paths, including fog target, point-light, attr1, and attr2 state.
+     */
     int __fastcall SetActiveLights(
         zVec3 * surfaceNormal,
         int vertexCount,
@@ -1133,8 +1290,13 @@ namespace zModel_Light {
         return resultFlags | pointAttrsVisible;
     }
 
-    // Reimplements 0x487c50: zModel_Light::PointInPolygonTestRadiusXZ
     int __fastcall
+    /**
+     * Reimplements 0x487c50: zModel_Light::PointInPolygonTestRadiusXZ
+     * (D:\Proj\GameZRecoil\zModel\gmod_light.c).
+     * Purpose: evaluate active light contribution flags and per-light weights
+     * for a bounding sphere in view-space XZ/radius terms.
+     */
     PointInPolygonTestRadiusXZ(
         const zVec3 *sphereCenter,
         float radius

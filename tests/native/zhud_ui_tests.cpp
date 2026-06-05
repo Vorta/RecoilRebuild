@@ -16,6 +16,8 @@
 #include "GameZRecoil/include/zDi.h"
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zFMV/fmv.h"
+#include "GameZRecoil/zClass/cls_stubs.h"
+#include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/include/zClipAlt.h"
 #include "GameZRecoil/include/zImage.h"
 #include "GameZRecoil/zGame/zGame.h"
@@ -19028,6 +19030,53 @@ extern "C" int zhud_cmd_dialog_state_on_deactivate_smoke(void) {
     g_zVideo_pfnBltSourceToPrimary = oldBlit;
 
     return nullPath && deactivated ? 0 : 1;
+}
+
+extern "C" int zhud_panel_ftable_global_smoke(void) {
+    const HudUiPanel_FTable &table = g_HudUiPanel_FTable;
+    const std::uintptr_t reportOld = reinterpret_cast<std::uintptr_t>(&zError::ReportOld);
+
+    const bool commonPrefix =
+        table.dtor == MethodAddress(&HudUiPanel::ScalarDeletingDestructor) &&
+        table.Draw == MethodAddress(&HudUiPanel::Draw) &&
+        table.DrawBase == MethodAddress(&HudUiElement::DrawBase) &&
+        table.SetPos == MethodAddress(&HudUiElement::SetPos) &&
+        table.SetX == MethodAddress(&HudUiElement::SetX) &&
+        table.SetY == MethodAddress(&HudUiElement::SetY) &&
+        table.SetClip == MethodAddress(&HudUiPanel::SetClip) &&
+        table.SetClipRect == MethodAddress(&HudUiElement::SetClipRect) &&
+        table.Invalidate == MethodAddress(&HudUiPanel::Invalidate) &&
+        table.Update == MethodAddress(&HudUiElement::Update) &&
+        table.field_28 == MethodAddress(&zStub::NoOp1Arg) &&
+        table.GetTextBufferPtrOrNull == MethodAddress(&zStub::ReturnZeroNoArgs);
+
+    const bool noOpBlock =
+        table.OnActivate == reportOld && table.field_34 == reportOld &&
+        table.field_38 == reportOld && table.field_3c == reportOld &&
+        table.field_40 == reportOld && table.field_44 == reportOld &&
+        table.field_48 == reportOld && table.field_4c == reportOld &&
+        table.field_50 == reportOld;
+
+    const bool tail =
+        table.HitTest == MethodAddress(&StdPtrVector::ClearNoOpDestroy) &&
+        table.field_58 == reportOld &&
+        table.field_5c == MethodAddress(&HudUiElement::HitTestTrue) &&
+        table.SetVisible == MethodAddress(&HudUiElement::SetVisible) &&
+        table.GetX == MethodAddress(&HudUiElement::GetX) &&
+        table.GetY == MethodAddress(&HudUiElement::GetY) &&
+        table.EnableWordWrapWithRect == MethodAddress(&HudUiPanel::EnableWordWrapWithRect) &&
+        table.GetTextRect == MethodAddress(&HudUiPanel::GetTextRect) &&
+        table.SetTextFmt == MethodAddress(&HudUiPanel::SetTextFmt) &&
+        table.UpdateTextBoundsFromContent ==
+            MethodAddress(&HudUiPanel::UpdateTextBoundsFromContent) &&
+        table.GetFont == MethodAddress(&HudUiPanel::GetFont) &&
+        table.SetFont == MethodAddress(&HudUiPanel::SetFont) &&
+        table.SetFontHandle == MethodAddress(&HudUiPanel::SetFontHandle) &&
+        table.SetTextFmtV == MethodAddress(&HudUiPanel::SetTextFmtV) &&
+        table.SetText == MethodAddress(&HudUiPanel::SetText) &&
+        table.RebuildTextRect == MethodAddress(&HudUiPanel::RebuildTextRect);
+
+    return commonPrefix && noOpBlock && tail ? 0 : 1;
 }
 
 extern "C" int zhud_panel_constructor_default_smoke(void) {

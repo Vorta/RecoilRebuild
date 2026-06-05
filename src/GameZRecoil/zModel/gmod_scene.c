@@ -4,8 +4,13 @@ float gModel_SmallPolyRejectArea2x = 0.0f;
 float gModel_SmallPolyRejectArea20x = 0.0f;
 
 namespace zModel {
-    // Reimplements 0x4804c0: zModel::UpdateSmallPolyRejectThresholds
-    // (GameZRecoil/zModel/gmod_scene.c)
+    /**
+     * Reimplements 0x4804c0: zModel::UpdateSmallPolyRejectThresholds
+     * (Battlesport/zModel/gmod_scene.c).
+     *
+     * Purpose: cache the doubled and twenty-times small-polygon reject-area
+     * thresholds used by projected model clipping.
+     */
     void __stdcall UpdateSmallPolyRejectThresholds(float baseRejectArea) {
         const float doubledArea = baseRejectArea + baseRejectArea;
         gModel_SmallPolyRejectArea2x = doubledArea;

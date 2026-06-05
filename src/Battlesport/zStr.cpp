@@ -7,19 +7,13 @@ namespace zStr {
 
 const int kContainsCaseInsensitiveBufferChars = 128;
 
-static void CopyUppercasePrefix(
-    char *dest,
-    const char *source
-) {
-    int index = 0;
-    while (source[index] != '\0' && index < kContainsCaseInsensitiveBufferChars) {
-        dest[index] = (char)toupper(source[index]);
-        ++index;
-    }
-    dest[index] = '\0';
-}
-
-// Reimplements 0x406a00: zStr::ContainsCaseInsensitive (D:\Proj\Battlesport\zStr.cpp)
+/**
+ * Reimplements 0x406a00: zStr::ContainsCaseInsensitive
+ * (D:\Proj\Battlesport\zStr.cpp).
+ *
+ * Purpose: compare uppercase bounded copies of two strings and report whether
+ * the needle appears in the haystack.
+ */
 int __fastcall ContainsCaseInsensitive(
     const char *haystack,
     const char *needle
@@ -27,14 +21,25 @@ int __fastcall ContainsCaseInsensitive(
     char uppercaseHaystack[kContainsCaseInsensitiveBufferChars + 1];
     char uppercaseNeedle[kContainsCaseInsensitiveBufferChars + 1];
 
-    CopyUppercasePrefix(
-        uppercaseHaystack,
-        haystack
-    );
-    CopyUppercasePrefix(
-        uppercaseNeedle,
-        needle
-    );
+    int haystackIndex = 0;
+    while (
+        haystack[haystackIndex] != '\0' &&
+        haystackIndex < kContainsCaseInsensitiveBufferChars
+    ) {
+        uppercaseHaystack[haystackIndex] = (char)toupper(haystack[haystackIndex]);
+        ++haystackIndex;
+    }
+    uppercaseHaystack[haystackIndex] = '\0';
+
+    int needleIndex = 0;
+    while (
+        needle[needleIndex] != '\0' &&
+        needleIndex < kContainsCaseInsensitiveBufferChars
+    ) {
+        uppercaseNeedle[needleIndex] = (char)toupper(needle[needleIndex]);
+        ++needleIndex;
+    }
+    uppercaseNeedle[needleIndex] = '\0';
 
     return strstr(
         uppercaseHaystack,

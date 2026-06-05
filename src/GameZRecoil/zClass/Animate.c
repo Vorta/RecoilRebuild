@@ -13,7 +13,13 @@ namespace {
     const short kAnimateAdvanceActive = 1;
     const short kAnimateLoopDisabled = -1;
 
-    RECOIL_FORCEINLINE void SampleVec3(
+    /**
+     * Original inline helper recovered with zClass_Animate::SampleTransform.
+     *
+     * Purpose: linearly interpolate a three-component keyframe value and apply
+     * the corresponding output scale.
+     */
+    inline void SampleVec3(
         zVec3 * dest,
         const zVec3 *start,
         const zVec3 *end,
@@ -28,6 +34,12 @@ namespace {
         dest->z *= scale->z;
     }
 
+    /**
+     * Original static helper recovered with zClass_Animate::RenderTraverse.
+     *
+     * Purpose: refresh animated-node bounds when needed and run the sphere
+     * frustum cull used by animate render traversal.
+     */
     int CullNodeForRender(
         zClass_NodePartial * node,
         int siblingCountHint,
@@ -64,6 +76,12 @@ namespace {
         return result;
     }
 
+    /**
+     * Original static helper recovered with zClass_Animate::RenderTraverse.
+     *
+     * Purpose: render the animated node, apply range-fade display-instance
+     * state, and dispatch child traversal under the current clip mask.
+     */
     void RenderNodeAndChildren(
         zClass_NodePartial * node,
         int clipMask
@@ -95,9 +113,14 @@ namespace {
 }
 
 namespace zClass_Animate {
-    // Reimplements 0x453c90: zClass_Animate::AdvanceTime
-    // (GameZRecoil/zClass/Animate.c)
     short __fastcall
+    /**
+     * Reimplements 0x453c90: zClass_Animate::AdvanceTime
+     * (D:\Proj\GameZRecoil\zClass\Animate.c).
+     *
+     * Purpose: advance the animation clock, stop non-looping animations at the
+     * end, and wrap looping animations back to their loop base.
+     */
     AdvanceTime(
         zClass_AnimateRuntimePartial * runtime,
         float deltaTime
@@ -126,8 +149,13 @@ namespace zClass_Animate {
         return kAnimateAdvanceActive;
     }
 
-    // Reimplements 0x453d20: zClass_Animate::SampleTransform
-    // (GameZRecoil/zClass/Animate.c)
+    /**
+     * Reimplements 0x453d20: zClass_Animate::SampleTransform
+     * (D:\Proj\GameZRecoil\zClass\Animate.c).
+     *
+     * Purpose: sample interpolated rotation, position, and scale keyframe data
+     * for the current animation time.
+     */
     short __fastcall SampleTransform(zClass_AnimateRuntimePartial * runtime) {
         if (runtime->state == kAnimateStateStopped) {
             return kAnimateStateStopped;
@@ -165,8 +193,13 @@ namespace zClass_Animate {
         return kAnimateAdvanceActive;
     }
 
-    // Reimplements 0x453bd0: zClass_Animate::UpdateNode
-    // (GameZRecoil/zClass/Animate.c)
+    /**
+     * Reimplements 0x453bd0: zClass_Animate::UpdateNode
+     * (D:\Proj\GameZRecoil\zClass\Animate.c).
+     *
+     * Purpose: update active animation runtime state, sample transforms, and
+     * enqueue the node for type-list processing when it becomes dirty.
+     */
     int __fastcall UpdateNode(zClass_NodePartial * node) {
         const char *message;
         int line;
@@ -219,9 +252,14 @@ namespace zClass_Animate {
         return 5;
     }
 
-    // Reimplements 0x453b40: zClass_Animate::AddChild
-    // (GameZRecoil/zClass/Animate.c)
     int __fastcall
+    /**
+     * Reimplements 0x453b40: zClass_Animate::AddChild
+     * (D:\Proj\GameZRecoil\zClass\Animate.c).
+     *
+     * Purpose: validate animate parent and child nodes, then append the child
+     * through the shared zClass child-list helper.
+     */
     AddChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -251,7 +289,13 @@ namespace zClass_Animate {
         );
     }
 
-    // Reimplements 0x453b10: zClass_Animate::DeleteNode
+    /**
+     * Reimplements 0x453b10: zClass_Animate::DeleteNode
+     * (D:\Proj\GameZRecoil\zClass\Animate.c).
+     *
+     * Purpose: validate the animate node pointer and return the node to the
+     * shared zClass free-list machinery.
+     */
     int __fastcall DeleteNode(zClass_NodePartial * node) {
         if (node == 0) {
             zError::ReportOld(
@@ -266,8 +310,14 @@ namespace zClass_Animate {
         return zClass_Class::TryFreeNode(node);
     }
 
-    // Reimplements 0x453b80: zClass_Animate::RemoveChild
     int __fastcall
+    /**
+     * Reimplements 0x453b80: zClass_Animate::RemoveChild
+     * (D:\Proj\GameZRecoil\zClass\Animate.c).
+     *
+     * Purpose: validate animate parent, child, and class-data pointers, then
+     * remove the child through the shared zClass child-list helper.
+     */
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -306,9 +356,14 @@ namespace zClass_Animate {
         );
     }
 
-    // Reimplements 0x44b710: zClass_Animate::RenderTraverse
-    // (GameZRecoil/zClass/Animate.c)
     int __fastcall
+    /**
+     * Reimplements 0x44b710: zClass_Animate::RenderTraverse
+     * (D:\Proj\GameZRecoil\zClass\Animate.c).
+     *
+     * Purpose: cull an animate node, push its animated transform when active,
+     * render the node and children, and restore traversal state.
+     */
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint

@@ -839,6 +839,7 @@ extern "C" int zhud_cmd_dialog_state_lifecycle_smoke(void);
 extern "C" int zhud_cmd_dialog_state_queue_enter_smoke(void);
 extern "C" int zhud_cmd_dialog_state_on_deactivate_smoke(void);
 extern "C" int zhud_panel_destructor_thunk_smoke(void);
+extern "C" int zhud_panel_ftable_global_smoke(void);
 extern "C" int zhud_panel_text_color_shadow_smoke(void);
 extern "C" int zhud_panel_constructor_default_smoke(void);
 extern "C" int zhud_panel_draw_smoke(void);
@@ -2098,7 +2099,7 @@ extern "C" int zsys_exit_process_with_cleanup_child_smoke(void);
 extern "C" int zsys_exit_process_with_cleanup_smoke(void);
 extern "C" int zerror_init_output_context_smoke(void);
 extern "C" int zerror_emit_debug_buffer_smoke(void);
-extern "C" int zerror_report_old_debug_output_smoke(void);
+extern "C" int zerror_report_old_noop_smoke(void);
 extern "C" int zcom_query_interface_from_interface_map_smoke(void);
 extern "C" int zcom_connection_point_container_advise_smoke(void);
 extern "C" int zcom_connection_point_container_unadvise_smoke(void);
@@ -3526,6 +3527,7 @@ int main(int argc, char **argv) {
         {"zhud_cmd_dialog_state_on_deactivate_smoke",
          zhud_cmd_dialog_state_on_deactivate_smoke},
         {"zhud_panel_destructor_thunk_smoke", zhud_panel_destructor_thunk_smoke},
+        {"zhud_panel_ftable_global_smoke", zhud_panel_ftable_global_smoke},
         {"zhud_panel_text_color_shadow_smoke", zhud_panel_text_color_shadow_smoke},
         {"zhud_panel_constructor_default_smoke", zhud_panel_constructor_default_smoke},
         {"zhud_panel_draw_smoke", zhud_panel_draw_smoke},
@@ -5293,7 +5295,7 @@ int main(int argc, char **argv) {
         {"zsys_exit_process_with_cleanup_smoke", zsys_exit_process_with_cleanup_smoke},
         {"zerror_init_output_context_smoke", zerror_init_output_context_smoke},
         {"zerror_emit_debug_buffer_smoke", zerror_emit_debug_buffer_smoke},
-        {"zerror_report_old_debug_output_smoke", zerror_report_old_debug_output_smoke},
+        {"zerror_report_old_noop_smoke", zerror_report_old_noop_smoke},
         {"zcom_query_interface_from_interface_map_smoke",
          zcom_query_interface_from_interface_map_smoke},
         {"zcom_connection_point_container_advise_smoke",

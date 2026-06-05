@@ -1,6 +1,11 @@
 #include "GameZRecoil/RecoilApp/RecoilStateBase.h"
 
-// Reimplements 0x407170: RecoilStateBase::ScalarDeletingDestructor
+/**
+ * Reimplements 0x407170: RecoilStateBase::ScalarDeletingDestructor.
+ *
+ * Purpose: reset the state object to the base state table and optionally free
+ * the object for VC scalar-deleting-destructor callers.
+ */
 RecoilApp_IState * RecoilStateBase::ScalarDeletingDestructor(
     unsigned int flags
 ) {

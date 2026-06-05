@@ -6,11 +6,6 @@
 #else
 #define RECOIL_NO_GS
 #endif
-#if _MSC_VER >= 1200
-#define RECOIL_FORCEINLINE __forceinline
-#else
-#define RECOIL_FORCEINLINE inline
-#endif
 #elif defined(__i386__) && (defined(__GNUC__) || defined(__clang__))
 #ifndef __stdcall
 #define __stdcall __attribute__((stdcall))
@@ -19,7 +14,6 @@
 #define __fastcall __attribute__((fastcall))
 #endif
 #define RECOIL_NO_GS
-#define RECOIL_FORCEINLINE inline __attribute__((always_inline))
 #else
 #ifndef __stdcall
 #define __stdcall
@@ -28,5 +22,4 @@
 #define __fastcall
 #endif
 #define RECOIL_NO_GS
-#define RECOIL_FORCEINLINE inline
 #endif

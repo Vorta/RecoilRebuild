@@ -31,58 +31,14 @@ struct zSndDirectSoundLegacyBufferDesc {
     WAVEFORMATEX *lpwfxFormat;
 };
 RECOIL_STATIC_ASSERT(sizeof(zSndDirectSoundLegacyBufferDesc) == 20);
-
-unsigned int ReadU32(
-    const void *address
-) {
-    unsigned int value = 0;
-    memcpy(
-        &value,
-        address,
-        sizeof(value)
-    );
-    return value;
-}
-
-// Shared marker setup recovered from the sound creation paths.
-inline void InitWaveMarkers(
-    zSndSample *sample,
-    zSndWaveData *waveData
-) {
-    sample->markerCount = waveData->cuePointCount;
-    if (sample->markerCount == 0) {
-        return;
-    }
-
-    if (sample->markerCount > 0) {
-        sample->markerTimes =
-            (float *)(malloc((size_t)(sample->markerCount) * sizeof(float) + sizeof(float)));
-        sample->markerValues =
-            (float *)(malloc((size_t)(sample->markerCount) * sizeof(float) + sizeof(float)));
-        sample->markerAux =
-            (int *)(malloc((size_t)(sample->markerCount) * 2 * sizeof(int) + 2 * sizeof(int)));
-    } else {
-        sample->markerTimes = 0;
-        sample->markerValues = 0;
-        sample->markerAux = 0;
-    }
-
-    int index = 0;
-    while (index < sample->markerCount) {
-        const zSndCuePoint &cue = waveData->cuePoints[index];
-        sample->markerAux[index * 2] =
-            (waveData->fmt->wBitsPerSample >> 3) * (int)(cue.position) * waveData->fmt->nChannels;
-        sample->markerTimes[index] = (float)(cue.position) / (float)(waveData->fmt->nSamplesPerSec);
-        ++index;
-    }
-
-    sample->markerTimes[index] =
-        (float)(waveData->pcmByteCount) / (float)(waveData->fmt->nAvgBytesPerSec);
-    ++sample->markerCount;
-}
 } // namespace
 
-// Reimplements 0x4a3180: zSndSample::InitFromWaveData_DirectSound
+/**
+ * Reimplements 0x4a3180: zSndSample::InitFromWaveData_DirectSound.
+ *
+ * Purpose: create a DirectSound sample buffer from parsed WAV data, upload the
+ * PCM bytes, initialize cue markers, and clear the loading flag.
+ */
 int __fastcall zSndSample::InitFromWaveData_DirectSound(
     zSndWaveData *waveData
 ) {
@@ -271,7 +227,12 @@ int __fastcall zSndSample::InitFromWaveData_DirectSound(
     return 1;
 }
 
-// Reimplements 0x4a2ec0: zSndSample::InitFromWaveData_A3D
+/**
+ * Reimplements 0x4a2ec0: zSndSample::InitFromWaveData_A3D.
+ *
+ * Purpose: create an A3D source from parsed WAV data, upload the PCM bytes,
+ * configure spatial playback, initialize cue markers, and clear the loading flag.
+ */
 int __fastcall zSndSample::InitFromWaveData_A3D(
     zSndWaveData *waveData
 ) {
@@ -431,7 +392,12 @@ int __fastcall zSndSample::InitFromWaveData_A3D(
     return 1;
 }
 
-// Reimplements 0x4a34e0: zSndSample::LockBackendBuffers
+/**
+ * Reimplements 0x4a34e0: zSndSample::LockBackendBuffers.
+ *
+ * Purpose: lock the active DirectSound or A3D sample buffer and return the
+ * writable spans for streamed audio updates.
+ */
 int __fastcall zSndSample::LockBackendBuffers(
     unsigned int offset,
     unsigned int bytes,
@@ -492,7 +458,12 @@ int __fastcall zSndSample::LockBackendBuffers(
     return error == 0 ? 1 : 0;
 }
 
-// Reimplements 0x4a3590: zSndSample::UnlockBackendBuffers
+/**
+ * Reimplements 0x4a3590: zSndSample::UnlockBackendBuffers.
+ *
+ * Purpose: unlock or commit the active backend sample-buffer spans after
+ * streamed audio updates.
+ */
 int __fastcall zSndSample::UnlockBackendBuffers(
     void *buffer1,
     int buffer1Bytes,
@@ -540,7 +511,12 @@ int __fastcall zSndSample::UnlockBackendBuffers(
     return error == 0 ? 1 : 0;
 }
 
-// Reimplements 0x4a2ea0: zSndSample::InitFromWaveData
+/**
+ * Reimplements 0x4a2ea0: zSndSample::InitFromWaveData.
+ *
+ * Purpose: dispatch parsed WAV initialization to the currently selected sound
+ * backend.
+ */
 int __fastcall zSndSample::InitFromWaveData(
     zSndWaveData *waveData
 ) {
@@ -557,7 +533,12 @@ int __fastcall zSndSample::InitFromWaveData(
     return initResult;
 }
 
-// Reimplements 0x4a3850: zSndSample_CreateQueuedStreamingSample
+/**
+ * Reimplements 0x4a3850: zSndSample_CreateQueuedStreamingSample.
+ *
+ * Purpose: allocate a streaming zSndSample around caller-owned PCM storage and
+ * initialize it through the active backend.
+ */
 extern "C" zSndSample *__fastcall zSndSample_CreateQueuedStreamingSample(
     WAVEFORMATEX *audioFormat,
     void *audioBuffer,
@@ -593,7 +574,12 @@ extern "C" zSndSample *__fastcall zSndSample_CreateQueuedStreamingSample(
     return sample;
 }
 
-// Reimplements 0x4a53f0: zSndWaveData::ConstructorFromPath
+/**
+ * Reimplements 0x4a53f0: zSndWaveData::ConstructorFromPath.
+ *
+ * Purpose: initialize a WAV data record from a path and optionally load and
+ * parse it immediately.
+ */
 zSndWaveData * zSndWaveData::ConstructorFromPath(
     const char *path,
     int loadNow
@@ -615,7 +601,11 @@ zSndWaveData * zSndWaveData::ConstructorFromPath(
     return this;
 }
 
-// Reimplements 0x4a5440: zSndWaveData::Destructor
+/**
+ * Reimplements 0x4a5440: zSndWaveData::Destructor.
+ *
+ * Purpose: reset parsed WAV state and release the duplicated path string.
+ */
 void zSndWaveData::Destructor() {
     Reset();
     if (nameOrPath != 0) {
@@ -623,7 +613,12 @@ void zSndWaveData::Destructor() {
     }
 }
 
-// Reimplements 0x4a5460: zSndWaveData::ParseLoadedWaveFile
+/**
+ * Reimplements 0x4a5460: zSndWaveData::ParseLoadedWaveFile.
+ *
+ * Purpose: scan a loaded RIFF/WAVE buffer and cache its fmt, data, and cue
+ * chunk records.
+ */
 int zSndWaveData::ParseLoadedWaveFile() {
     unsigned char *chunk = (unsigned char *)(fileData);
     if (chunk == 0) {
@@ -682,7 +677,12 @@ int zSndWaveData::ParseLoadedWaveFile() {
     return 1;
 }
 
-// Reimplements 0x4a5540: zSndWaveData::LoadAndParseIfNeeded
+/**
+ * Reimplements 0x4a5540: zSndWaveData::LoadAndParseIfNeeded.
+ *
+ * Purpose: load a named WAV file from disk once, parse it, and cache the parse
+ * result.
+ */
 int zSndWaveData::LoadAndParseIfNeeded() {
     if (parsedOk != 0) {
         return 1;
@@ -717,7 +717,12 @@ int zSndWaveData::LoadAndParseIfNeeded() {
     return parsedOk;
 }
 
-// Reimplements 0x4a5600: zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded
+/**
+ * Reimplements 0x4a5600: zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded.
+ *
+ * Purpose: load a named WAV payload from an index archive once, parse it, and
+ * cache the parse result.
+ */
 int zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded(
     zIndexArchive *archive
 ) {
@@ -749,7 +754,11 @@ int zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded(
     return parsedOk;
 }
 
-// Reimplements 0x4a55c0: zSndWaveData::Reset
+/**
+ * Reimplements 0x4a55c0: zSndWaveData::Reset.
+ *
+ * Purpose: free loaded WAV file storage and clear cached parse fields.
+ */
 int zSndWaveData::Reset() {
     if (parsedOk != 0) {
         if (fileData != 0) {

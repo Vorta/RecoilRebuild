@@ -16,51 +16,22 @@ AINet *g_AINetListTail = 0;
 
 namespace {
 const char kAINetSourceFile[] = "D:\\Proj\\Battlesport\\ai_net.cpp";
-
-zReader::Node *AINetZrdPayload(
-    zReader::Node *node
-) {
-    return node->value.nodes;
-}
-
-int AINetZrdFirstInt(
-    zReader::Node *node
-) {
-    return AINetZrdPayload(node)[1].value.i32;
-}
-
-float AINetZrdFirstFloat(
-    zReader::Node *node
-) {
-    return AINetZrdPayload(node)[1].value.f32;
-}
-
-const char *AINetZrdFirstString(
-    zReader::Node *node
-) {
-    return AINetZrdPayload(node)[1].value.str;
-}
-
-void AINetCopyAndUpper(
-    char *buffer,
-    const char *text
-) {
-    strcpy(
-        buffer,
-        text
-    );
-    _strupr(buffer);
-}
 } // namespace
 
-// Reimplements 0x402fd0: AINet::LoadAllFromZrd (D:\Proj\Battlesport\ai_net.cpp)
+/**
+ * Reimplements 0x402fd0: AINet::LoadAllFromZrd (Battlesport/ai_net.cpp).
+ * Purpose: Loads every numbered AI path network definition from the mission ZRD set.
+ */
 void AINet::LoadAllFromZrd() {
     for (int netId = 1; netId < 100; ++netId) {
         AINet::LoadFromZrd(netId);
     }
 }
 
-// Reimplements 0x403040: AINet::LoadFromZrd (D:\Proj\Battlesport\ai_net.cpp)
+/**
+ * Reimplements 0x403040: AINet::LoadFromZrd (Battlesport/ai_net.cpp).
+ * Purpose: Parses one AI path network ZRD, builds its node list, resolves links, and returns the loaded network.
+ */
 AINet *__fastcall AINet::LoadFromZrd(
     int netId
 ) {
@@ -91,7 +62,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         root,
         "version"
     );
-    if (versionNode != 0 && AINetZrdFirstInt(versionNode) != 105) {
+    if (versionNode != 0 && versionNode->value.nodes[1].value.i32 != 105) {
         zError::ReportOld(
             0x200,
             kAINetSourceFile,
@@ -110,7 +81,7 @@ AINet *__fastcall AINet::LoadFromZrd(
     );
     strcpy(
         aiNet->name,
-        nameNode != 0 ? AINetZrdFirstString(nameNode) : baseName
+        nameNode != 0 ? nameNode->value.nodes[1].value.str : baseName
     );
 
     char token[0x18];
@@ -119,10 +90,11 @@ AINet *__fastcall AINet::LoadFromZrd(
         "type"
     );
     if (typeNode != 0) {
-        AINetCopyAndUpper(
+        strcpy(
             token,
-            AINetZrdFirstString(typeNode)
+            typeNode->value.nodes[1].value.str
         );
+        _strupr(token);
     }
 
     if (typeNode == 0 || strncmp(
@@ -155,14 +127,14 @@ AINet *__fastcall AINet::LoadFromZrd(
         root,
         "path_width"
     );
-    aiNet->pathWidth = pathWidthNode != 0 ? AINetZrdFirstFloat(pathWidthNode) : 10.0f;
+    aiNet->pathWidth = pathWidthNode != 0 ? pathWidthNode->value.nodes[1].value.f32 : 10.0f;
 
     zReader::Node *activateRadiusNode = zReader_GetNamedNode(
         root,
         "activate_rad"
     );
     if (activateRadiusNode != 0) {
-        aiNet->activateRadius = AINetZrdFirstFloat(activateRadiusNode);
+        aiNet->activateRadius = activateRadiusNode->value.nodes[1].value.f32;
     }
 
     zReader::Node *attackRadiusNode = zReader_GetNamedNode(
@@ -170,7 +142,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         "attack_rad"
     );
     if (attackRadiusNode != 0) {
-        aiNet->attackRadius = AINetZrdFirstFloat(attackRadiusNode);
+        aiNet->attackRadius = attackRadiusNode->value.nodes[1].value.f32;
     }
 
     zReader::Node *attackDwellNode = zReader_GetNamedNode(
@@ -178,7 +150,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         "attack_dwell"
     );
     if (attackDwellNode != 0) {
-        aiNet->attackDwell = AINetZrdFirstFloat(attackDwellNode);
+        aiNet->attackDwell = attackDwellNode->value.nodes[1].value.f32;
     }
 
     zReader::Node *pursuitNode = zReader_GetNamedNode(
@@ -192,7 +164,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         );
     }
     if (pursuitNode != 0) {
-        zReader::Node *const payload = AINetZrdPayload(pursuitNode);
+        zReader::Node *const payload = pursuitNode->value.nodes;
         aiNet->pursuitParam0 = payload[1].value.f32;
         aiNet->pursuitParam1 = payload[2].value.f32;
     }
@@ -202,7 +174,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         "not_pursuit_dwell"
     );
     if (notPursuitDwellNode != 0) {
-        aiNet->notPursuitDwell = AINetZrdFirstFloat(notPursuitDwellNode);
+        aiNet->notPursuitDwell = notPursuitDwellNode->value.nodes[1].value.f32;
     }
 
     zReader::Node *returnRangeNode = zReader_GetNamedNode(
@@ -210,7 +182,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         "return_range"
     );
     if (returnRangeNode != 0) {
-        aiNet->returnRange = AINetZrdFirstFloat(returnRangeNode);
+        aiNet->returnRange = returnRangeNode->value.nodes[1].value.f32;
     }
 
     zReader::Node *hideTimesNode = zReader_GetNamedNode(
@@ -218,7 +190,7 @@ AINet *__fastcall AINet::LoadFromZrd(
         "hide_times"
     );
     if (hideTimesNode != 0) {
-        zReader::Node *const payload = AINetZrdPayload(hideTimesNode);
+        zReader::Node *const payload = hideTimesNode->value.nodes;
         aiNet->hideTime0 = payload[1].value.f32;
         aiNet->hideTime1 = payload[2].value.f32;
     } else {
@@ -230,14 +202,14 @@ AINet *__fastcall AINet::LoadFromZrd(
         root,
         "attack_buddy"
     );
-    aiNet->attackBuddyNetId = attackBuddyNode != 0 ? AINetZrdFirstInt(attackBuddyNode) : 0;
+    aiNet->attackBuddyNetId = attackBuddyNode != 0 ? attackBuddyNode->value.nodes[1].value.i32 : 0;
 
     zReader::Node *activateBuddyNode = zReader_GetNamedNode(
         root,
         "activate_buddy"
     );
     if (activateBuddyNode != 0) {
-        aiNet->activateBuddyNetId = AINetZrdFirstInt(activateBuddyNode);
+        aiNet->activateBuddyNetId = activateBuddyNode->value.nodes[1].value.i32;
     } else {
         aiNet->attackBuddyNetId = 0;
     }
@@ -247,10 +219,11 @@ AINet *__fastcall AINet::LoadFromZrd(
         "attack_strategy"
     );
     if (attackStrategyNode != 0) {
-        AINetCopyAndUpper(
+        strcpy(
             token,
-            AINetZrdFirstString(attackStrategyNode)
+            attackStrategyNode->value.nodes[1].value.str
         );
+        _strupr(token);
         if (strncmp(
             token,
             "FOL",
@@ -323,9 +296,9 @@ AINet *__fastcall AINet::LoadFromZrd(
         }
         tail = aiNode;
 
-        zReader::Node *const payload = AINetZrdPayload(node);
-        zReader::Node *const position = AINetZrdPayload(&payload[2]);
-        zReader::Node *const neighbors = AINetZrdPayload(&payload[3]);
+        zReader::Node *const payload = node->value.nodes;
+        zReader::Node *const position = payload[2].value.nodes;
+        zReader::Node *const neighbors = payload[3].value.nodes;
 
         aiNode->nodeIndex = nodeIndex;
         aiNode->costOrType = payload[1].value.i32;
@@ -345,7 +318,10 @@ AINet *__fastcall AINet::LoadFromZrd(
     return aiNet;
 }
 
-// Reimplements 0x402ff0: AINet::Alloc (D:\Proj\Battlesport\ai_net.cpp)
+/**
+ * Reimplements 0x402ff0: AINet::Alloc (Battlesport/ai_net.cpp).
+ * Purpose: Allocates a zeroed AI network record and appends it to the global AI network list.
+ */
 AINet *AINet::Alloc() {
     AINet *const aiNet = (AINet *)(malloc(sizeof(AINet)));
     memset(
@@ -365,7 +341,10 @@ AINet *AINet::Alloc() {
     return aiNet;
 }
 
-// Reimplements 0x403510: AINet::FindByNetId (D:\Proj\Battlesport\ai_net.cpp)
+/**
+ * Reimplements 0x403510: AINet::FindByNetId (Battlesport/ai_net.cpp).
+ * Purpose: Finds the first loaded AI network with the requested network id.
+ */
 AINet *__fastcall AINet::FindByNetId(
     int netId
 ) {
@@ -380,7 +359,10 @@ AINet *__fastcall AINet::FindByNetId(
     return 0;
 }
 
-// Reimplements 0x4036f0: AINet::FindNearestNode (D:\Proj\Battlesport\ainet.cpp)
+/**
+ * Reimplements 0x4036f0: AINet::FindNearestNode (Battlesport/ainet.cpp).
+ * Purpose: Scans an AI node list and returns the node nearest to the query position.
+ */
 AINetNode *__fastcall AINet::FindNearestNode(
     const zVec3 *position,
     AINetNode *nodeListHead
@@ -404,7 +386,10 @@ AINetNode *__fastcall AINet::FindNearestNode(
     return nearest;
 }
 
-// Reimplements 0x403530: AINet::FindNodeByIndex (D:\Proj\Battlesport\ai_net.cpp)
+/**
+ * Reimplements 0x403530: AINet::FindNodeByIndex (Battlesport/ai_net.cpp).
+ * Purpose: Finds the first AI path node with the requested parsed node index.
+ */
 AINetNode *__fastcall AINet::FindNodeByIndex(
     int nodeIndex,
     AINetNode *nodeListHead
@@ -420,8 +405,10 @@ AINetNode *__fastcall AINet::FindNodeByIndex(
     return 0;
 }
 
-// Reimplements 0x403620: AINetPathProbeFan::InitFromSegment
-// (D:\Proj\Battlesport\ai_net.cpp)
+/**
+ * Reimplements 0x403620: AINetPathProbeFan::InitFromSegment (Battlesport/ai_net.cpp).
+ * Purpose: Builds the normalized path-probe fan basis and travel clamp for one AI navigation segment.
+ */
 void AINetPathProbeFan::InitFromSegment(
     zVec3 fromPosition,
     zVec3 toPosition,
@@ -457,8 +444,10 @@ void AINetPathProbeFan::InitFromSegment(
     this->pathWidth = pathWidth;
 }
 
-// Reimplements 0x403550: AINet::ResolveNeighborLinksAndBuildProbeFans
-// (D:\Proj\Battlesport\ai_net.cpp)
+/**
+ * Reimplements 0x403550: AINet::ResolveNeighborLinksAndBuildProbeFans (Battlesport/ai_net.cpp).
+ * Purpose: Resolves neighbor indices into node pointers and allocates probe fans for valid AI path links.
+ */
 void __fastcall AINet::ResolveNeighborLinksAndBuildProbeFans(
     AINetNode *nodeListHead,
     float pathWidth
@@ -497,7 +486,10 @@ void __fastcall AINet::ResolveNeighborLinksAndBuildProbeFans(
     }
 }
 
-// Reimplements 0x4037c0: AINetNode::Free (src/Battlesport/ainet.cpp)
+/**
+ * Reimplements 0x4037c0: AINetNode::Free (Battlesport/ainet.cpp).
+ * Purpose: Frees a path node and any probe-fan records allocated for its neighbor links.
+ */
 void AINetNode::Free() {
     if (this == 0) {
         return;
@@ -515,7 +507,10 @@ void AINetNode::Free() {
     free(this);
 }
 
-// Reimplements 0x403800: AINet::Free (src/Battlesport/ainet.cpp)
+/**
+ * Reimplements 0x403800: AINet::Free (Battlesport/ainet.cpp).
+ * Purpose: Frees every node owned by this AI network and then releases the network record.
+ */
 void AINet::Free() {
     if (this == 0) {
         return;
@@ -531,7 +526,10 @@ void AINet::Free() {
     free(this);
 }
 
-// Reimplements 0x403870: AINet::FreeAll (src/Battlesport/ainet.cpp)
+/**
+ * Reimplements 0x403870: AINet::FreeAll (Battlesport/ainet.cpp).
+ * Purpose: Walks the global AI network list and frees every loaded network.
+ */
 void AINet::FreeAll() {
     AINet *aiNet = g_AINetListHead;
     while (aiNet != 0) {

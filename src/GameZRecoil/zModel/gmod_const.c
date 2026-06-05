@@ -14,6 +14,11 @@ namespace {
 
     const char *kModel3DBufferReadError = "Error reading GameZ Model3D buffer data.";
 
+    /**
+     * Original static helper observed in zModel_DiPool read paths
+     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * Purpose: report a model3d-buffer read failure with the original source-file line.
+     */
     void ReportModel3DBufferReadError(
         int line,
         const char *message
@@ -26,6 +31,11 @@ namespace {
         );
     }
 
+    /**
+     * Original static helper observed in zModel_DiPool write paths
+     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * Purpose: report a model3d-buffer write failure with the original source-file line.
+     */
     void ReportModel3DBufferWriteError(int line) {
         zError::ReportOld(
             0x200,
@@ -47,14 +57,20 @@ float g_zModel_UvQuantizeScale = 256.0f;
 float g_zModel_UvQuantizeInvScale = 0.00390625f;
 
 namespace zModel_Const {
-    // Reimplements 0x481530: zModel_Const::GetVertexMergeEpsilon
-    // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
+    /**
+     * Reimplements 0x481530: zModel_Const::GetVertexMergeEpsilon
+     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * Purpose: return the global vertex-merge epsilon.
+     */
     float GetVertexMergeEpsilon() {
         return g_zModel_ConstVertexMergeEpsilon;
     }
 
-    // Reimplements 0x481540: zModel_Const::SetVertexMergeEpsilon
-    // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
+    /**
+     * Reimplements 0x481540: zModel_Const::SetVertexMergeEpsilon
+     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * Purpose: set the global vertex-merge epsilon using the original bit-preserving copy.
+     */
     void __stdcall SetVertexMergeEpsilon(float epsilon) {
         unsigned int bits;
         memcpy(
@@ -69,22 +85,31 @@ namespace zModel_Const {
         );
     }
 
-    // Reimplements 0x481550: zModel_Const::SetCoplanarTolerance
-    // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
+    /**
+     * Reimplements 0x481550: zModel_Const::SetCoplanarTolerance
+     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * Purpose: set the global coplanar polygon tolerance.
+     */
     void __stdcall SetCoplanarTolerance(float tolerance) {
         g_zModel_CoplanarTolerance = tolerance;
     }
 
-    // Reimplements 0x481560: zModel_Const::SetColinearTolerance
-    // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
+    /**
+     * Reimplements 0x481560: zModel_Const::SetColinearTolerance
+     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * Purpose: set the global colinear polygon tolerance.
+     */
     void __stdcall SetColinearTolerance(float tolerance) {
         g_zModel_ColinearTolerance = tolerance;
     }
 }
 
 namespace zModel_DiPool {
-    // Reimplements 0x4815c0: zModel_DiPool::WriteToStream
-    // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
+    /**
+     * Reimplements 0x4815c0: zModel_DiPool::WriteToStream
+     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * Purpose: serialize the display-instance pool and its dynamic arrays to a stream.
+     */
     int __fastcall WriteToStream(void *stream) {
         FILE *const file = (FILE *)(stream);
 
@@ -317,8 +342,11 @@ namespace zModel_DiPool {
         return result;
     }
 
-    // Reimplements 0x481bc0: zModel_DiPool::ReadHeaderFromStream
-    // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
+    /**
+     * Reimplements 0x481bc0: zModel_DiPool::ReadHeaderFromStream
+     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * Purpose: read display-instance pool header fields from a stream.
+     */
     int __fastcall ReadHeaderFromStream(
         void *stream,
         int *outCapacity,
@@ -367,10 +395,12 @@ namespace zModel_DiPool {
         return 0;
     }
 
-    // Reimplements 0x481c50: zModel_DiPool::ReadEntryDynamicDataFromStream
-    // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
-    int __fastcall
-    ReadEntryDynamicDataFromStream(
+    /**
+     * Reimplements 0x481c50: zModel_DiPool::ReadEntryDynamicDataFromStream
+     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * Purpose: read one display-instance entry's dynamic arrays and repair material pointers.
+     */
+    int __fastcall ReadEntryDynamicDataFromStream(
         void *stream,
         zDiPartial *entry
     ){
@@ -561,10 +591,12 @@ namespace zModel_DiPool {
         return 0;
     }
 
-    // Reimplements 0x481aa0: zModel_DiPool::ReadEntryByIndexFromStream
-    // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
-    RECOIL_NO_GS zDiPartial *__fastcall
-    ReadEntryByIndexFromStream(
+    /**
+     * Reimplements 0x481aa0: zModel_DiPool::ReadEntryByIndexFromStream
+     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * Purpose: load one serialized display-instance entry by pool index.
+     */
+    RECOIL_NO_GS zDiPartial *__fastcall ReadEntryByIndexFromStream(
         void *stream,
         int index
     ){
@@ -640,8 +672,11 @@ namespace zModel_DiPool {
         return entry;
     }
 
-    // Reimplements 0x481fa0: zModel_DiPool::ReadFromStream
-    // (D:\Proj\GameZRecoil\zModel\gmod_const.c)
+    /**
+     * Reimplements 0x481fa0: zModel_DiPool::ReadFromStream
+     * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+     * Purpose: read the display-instance pool and all dynamic entry payloads from a stream.
+     */
     int __fastcall ReadFromStream(void *stream) {
         FILE *const file = (FILE *)(stream);
         const int oldCapacity = g_zModel_DiPoolCapacity;

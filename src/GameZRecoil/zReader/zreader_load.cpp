@@ -1290,7 +1290,10 @@ int __fastcall MountIndexArchive(
 }
 } // namespace zArchive
 
-// Reimplements 0x48cda0: zReader_AllocateNode
+/**
+ * Reimplements 0x48cda0: zReader_AllocateNode (GameZRecoil/zReader/zreader.cpp).
+ * Purpose: Allocates a zReader node array and stores the serialized header word in the first node.
+ */
 extern "C" zReader::Node *__fastcall zReader_AllocateNode(
     int headerWord,
     int fieldCount
@@ -1300,7 +1303,10 @@ extern "C" zReader::Node *__fastcall zReader_AllocateNode(
     return result;
 }
 
-// Reimplements 0x4a6110: zReader_ReadString
+/**
+ * Reimplements 0x4a6110: zReader_ReadString (GameZRecoil/zReader/zreader.cpp).
+ * Purpose: Reads a length-prefixed string payload, allocates a nul-terminated buffer, and returns bytes consumed.
+ */
 extern "C" int __fastcall zReader_ReadString(
     void *hFile,
     zReader::Value *outString
@@ -1338,7 +1344,10 @@ extern "C" int __fastcall zReader_ReadString(
     return result;
 }
 
-// Reimplements 0x48d080: zReader_ReadNode
+/**
+ * Reimplements 0x48d080: zReader_ReadNode (GameZRecoil/zReader/zreader.cpp).
+ * Purpose: Reads one serialized zReader node, including recursive array children and scalar/string payloads.
+ */
 extern "C" int __fastcall zReader_ReadNode(
     void *hFile,
     zReader::Node *outNode
@@ -1401,7 +1410,7 @@ extern "C" int __fastcall zReader_ReadNode(
     default:
         zError::ReportOld(
             0x400,
-            "D:\\Proj\\GameZRecoil\\zReader\\zReader.cpp",
+            "D:\\Proj\\GameZRecoil\\zReader\\zreader.cpp",
             0x40c,
             "Invalid reader node type in zRdrRead()"
         );
@@ -1409,7 +1418,10 @@ extern "C" int __fastcall zReader_ReadNode(
     }
 }
 
-// Reimplements 0x48ce60: zReader_FreeNodeRecursive
+/**
+ * Reimplements 0x48ce60: zReader_FreeNodeRecursive (GameZRecoil/zReader/zreader.cpp).
+ * Purpose: Recursively releases string and array payload storage owned by a zReader node tree.
+ */
 extern "C" void __fastcall zReader_FreeNodeRecursive(
     zReader::Node *node
 ) {
@@ -1431,7 +1443,10 @@ extern "C" void __fastcall zReader_FreeNodeRecursive(
     node->value.nodes = 0;
 }
 
-// Reimplements 0x48d1c0: zReader_OpenFileFromMountedArchives
+/**
+ * Reimplements 0x48d1c0: zReader_OpenFileFromMountedArchives (GameZRecoil/zReader/zreader.cpp).
+ * Purpose: Searches mounted index archives for a member file and returns the first opened handle.
+ */
 extern "C" void *__fastcall zReader_OpenFileFromMountedArchives(
     const char *path
 ) {
@@ -1539,7 +1554,10 @@ int __fastcall BuildResolvedParentDir(
     );
 }
 
-// Reimplements 0x48cdc0: zReader::LoadNodeFromPath
+/**
+ * Reimplements 0x48cdc0: zReader::LoadNodeFromPath (GameZRecoil/zReader/zreader.cpp).
+ * Purpose: Reduces a path to its basename, opens the mounted archive member, and parses a zReader node tree.
+ */
 Node *__fastcall LoadNodeFromPath(
     const char *path,
     const char *,
@@ -1573,7 +1591,10 @@ Node *__fastcall LoadNodeFromPath(
     return outNode;
 }
 
-// Reimplements 0x48ce40: zReader::FreeLoadedTree
+/**
+ * Reimplements 0x48ce40: zReader::FreeLoadedTree (GameZRecoil/zReader/zreader.cpp).
+ * Purpose: Releases a loaded zReader tree root and all recursive payload storage.
+ */
 int __fastcall FreeLoadedTree(
     Node *loaded
 ) {

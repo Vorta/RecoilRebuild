@@ -8,6 +8,13 @@
 namespace {
     const int kZClassNodeDisplay = 4;
 
+    /**
+     * Local helper with no standalone retail function; observed in callers 0x44fe90
+     * and 0x44ff10 through display-node validation failures.
+     *
+     * Purpose: report a Display.c class validation failure and return the
+     * generic zClass error code.
+     */
     int ReportDisplayClassError(
         int sourceLine,
         const char *message
@@ -22,6 +29,13 @@ namespace {
     }
 
     zClass_DisplayDataPartial *
+    /**
+     * Local helper with no standalone retail function; observed in callers 0x44fe90
+     * and 0x44ff10 as shared display-node validation.
+     *
+     * Purpose: validate a display node and return its class data for size and
+     * position updates.
+     */
     GetDisplayData(
         zClass_NodePartial * node,
         int nullLine,
@@ -57,6 +71,13 @@ namespace {
         return (zClass_DisplayDataPartial *)(node->classData);
     }
 
+    /**
+     * Local helper with no standalone retail function; observed in caller
+     * 0x44ff90 with the original Display.c diagnostic strings.
+     *
+     * Purpose: validate a display node and preserve the old Display.c error
+     * messages for background-color updates.
+     */
     zClass_DisplayDataPartial *GetDisplayDataOldMessages(
         zClass_NodePartial * node,
         int nullLine,
@@ -105,7 +126,13 @@ namespace {
 }
 
 namespace zClass_Display {
-    // Reimplements 0x44fdd0: zClass_Display::gwDisplayInit
+    /**
+     * Reimplements 0x44fdd0: zClass_Display::gwDisplayInit
+     * (GameZRecoil/zClass/Display.c).
+     *
+     * Purpose: allocate a display node, initialize its class data defaults, and
+     * insert it into the display type list.
+     */
     zClass_NodePartial *gwDisplayInit() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
@@ -142,8 +169,14 @@ namespace zClass_Display {
         return node;
     }
 
-    // Reimplements 0x44fe50: zClass_Display::RemoveChild
     int __fastcall
+    /**
+     * Reimplements 0x44fe50: zClass_Display::RemoveChild
+     * (GameZRecoil/zClass/Display.c).
+     *
+     * Purpose: validate the parent and child pointers, then remove the child
+     * through the generic zClass child-list helper.
+     */
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -175,8 +208,13 @@ namespace zClass_Display {
         return 0;
     }
 
-    // Reimplements 0x44fe90: zClass_Display::gwDisplaySetSize
     int __fastcall
+    /**
+     * Reimplements 0x44fe90: zClass_Display::gwDisplaySetSize
+     * (GameZRecoil/zClass/Display.c).
+     *
+     * Purpose: validate a display node and update its stored width and height.
+     */
     gwDisplaySetSize(
         zClass_NodePartial * node,
         int width,
@@ -197,8 +235,13 @@ namespace zClass_Display {
         return 0;
     }
 
-    // Reimplements 0x44ff10: zClass_Display::gwDisplaySetPosition
     int __fastcall
+    /**
+     * Reimplements 0x44ff10: zClass_Display::gwDisplaySetPosition
+     * (GameZRecoil/zClass/Display.c).
+     *
+     * Purpose: validate a display node and update its stored screen position.
+     */
     gwDisplaySetPosition(
         zClass_NodePartial * node,
         int x,
@@ -219,8 +262,14 @@ namespace zClass_Display {
         return 0;
     }
 
-    // Reimplements 0x44ff90: zClass_Display::gwDisplaySetBackgroundColor
     int __fastcall
+    /**
+     * Reimplements 0x44ff90: zClass_Display::gwDisplaySetBackgroundColor
+     * (GameZRecoil/zClass/Display.c).
+     *
+     * Purpose: update the display background color, pack it to the video clear
+     * color format, and set the renderer clear color.
+     */
     gwDisplaySetBackgroundColor(
         zClass_NodePartial * node,
         float red,

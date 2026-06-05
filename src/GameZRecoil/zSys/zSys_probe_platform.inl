@@ -1,4 +1,9 @@
-// Reimplements 0x40c370: zSys::ProbePlatformAndVideoCaps
+/**
+ * Reimplements 0x40c370: zSys::ProbePlatformAndVideoCaps.
+ *
+ * Purpose: probe Windows, DirectDraw, DirectDrawSurface, and DirectInput
+ * availability to classify the runtime platform and video capability levels.
+ */
 RECOIL_NO_GS void __fastcall zSys::ProbePlatformAndVideoCaps(
     zSysVideoCapsLevel *outVideoCaps,
     zSysPlatformCapsLevel *outPlatformCaps

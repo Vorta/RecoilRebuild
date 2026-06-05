@@ -11,6 +11,12 @@
 namespace {
     const char *kSequenceSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Seq.c";
 
+    /**
+     * Original static helper recovered with zClass_Sequence::RenderTraverse.
+     *
+     * Purpose: update sequence-node bounds when needed and run the sphere
+     * frustum cull used by sequence render traversal.
+     */
     int CullNodeForRender(
         zClass_NodePartial * node,
         int siblingCountHint,
@@ -46,8 +52,13 @@ namespace {
 }
 
 namespace zClass_Sequence {
-    // Reimplements 0x453ee0: zClass_Sequence::gwSequenceNew
-    // (GameZRecoil/zClass/Seq.c)
+    /**
+     * Reimplements 0x453ee0: zClass_Sequence::gwSequenceNew
+     * (D:\Proj\GameZRecoil\zClass\Seq.c).
+     *
+     * Purpose: allocate a sequence node, attach zeroed sequence class data,
+     * seed the forward step, and register the node with the type list.
+     */
     zClass_NodePartial *gwSequenceNew() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
@@ -75,8 +86,13 @@ namespace zClass_Sequence {
         return node;
     }
 
-    // Reimplements 0x453f40: zClass_Sequence::gwSequenceAddChild
-    // (GameZRecoil/zClass/Seq.c)
+    /**
+     * Reimplements 0x453f40: zClass_Sequence::gwSequenceAddChild
+     * (D:\Proj\GameZRecoil\zClass\Seq.c).
+     *
+     * Purpose: append a child node, grow the sequence entry storage, and insert
+     * the child delay record at the requested sequence index.
+     */
     int __fastcall gwSequenceAddChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child,
@@ -142,8 +158,12 @@ namespace zClass_Sequence {
         return 5;
     }
 
-    // Reimplements 0x4540c0: zClass_Sequence::SetActive
-    // (GameZRecoil/zClass/Seq.c)
+    /**
+     * Reimplements 0x4540c0: zClass_Sequence::SetActive
+     * (D:\Proj\GameZRecoil\zClass\Seq.c).
+     *
+     * Purpose: set whether the sequence advances and renders its active child.
+     */
     int __fastcall SetActive(
         zClass_NodePartial * node,
         int active
@@ -178,8 +198,13 @@ namespace zClass_Sequence {
         return 5;
     }
 
-    // Reimplements 0x454100: zClass_Sequence::SetRepeat
-    // (GameZRecoil/zClass/Seq.c)
+    /**
+     * Reimplements 0x454100: zClass_Sequence::SetRepeat
+     * (D:\Proj\GameZRecoil\zClass\Seq.c).
+     *
+     * Purpose: set whether the sequence remains active when traversal reaches
+     * either end of the entry list.
+     */
     int __fastcall SetRepeat(
         zClass_NodePartial * node,
         int repeat
@@ -214,8 +239,13 @@ namespace zClass_Sequence {
         return 5;
     }
 
-    // Reimplements 0x454140: zClass_Sequence::SetLoop
-    // (GameZRecoil/zClass/Seq.c)
+    /**
+     * Reimplements 0x454140: zClass_Sequence::SetLoop
+     * (D:\Proj\GameZRecoil\zClass\Seq.c).
+     *
+     * Purpose: set whether sequence traversal wraps at the entry-list bounds
+     * instead of reversing direction.
+     */
     int __fastcall SetLoop(
         zClass_NodePartial * node,
         int loop
@@ -250,8 +280,13 @@ namespace zClass_Sequence {
         return 5;
     }
 
-    // Reimplements 0x454180: zClass_Sequence::SetPause
-    // (GameZRecoil/zClass/Seq.c)
+    /**
+     * Reimplements 0x454180: zClass_Sequence::SetPause
+     * (D:\Proj\GameZRecoil\zClass\Seq.c).
+     *
+     * Purpose: set the pause flag that suppresses time advancement while
+     * keeping the sequence active state unchanged.
+     */
     int __fastcall SetPause(
         zClass_NodePartial * node,
         int paused
@@ -286,8 +321,14 @@ namespace zClass_Sequence {
         return 5;
     }
 
-    // Reimplements 0x454000: zClass_Sequence::RemoveChild
     int __fastcall
+    /**
+     * Reimplements 0x454000: zClass_Sequence::RemoveChild
+     * (D:\Proj\GameZRecoil\zClass\Seq.c).
+     *
+     * Purpose: remove a child from both the zClass child list and the sequence
+     * entry list, then clamp the active index back to the first entry if needed.
+     */
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -351,7 +392,13 @@ namespace zClass_Sequence {
         return 0;
     }
 
-    // Reimplements 0x4541c0: zClass_Sequence::Update (GameZRecoil/zClass/Seq.c)
+    /**
+     * Reimplements 0x4541c0: zClass_Sequence::Update
+     * (D:\Proj\GameZRecoil\zClass\Seq.c).
+     *
+     * Purpose: accumulate frame time and advance the active sequence entry,
+     * applying repeat, wrap, and direction-reversal behavior at the bounds.
+     */
     int __fastcall Update(zClass_NodePartial * node) {
         zClass_SequenceDataPartial *data;
 
@@ -424,9 +471,14 @@ namespace zClass_Sequence {
         return 0;
     }
 
-    // Reimplements 0x44bea0: zClass_Sequence::RenderTraverse
-    // (GameZRecoil/zClass/Seq.c)
     int __fastcall
+    /**
+     * Reimplements 0x44bea0: zClass_Sequence::RenderTraverse
+     * (D:\Proj\GameZRecoil\zClass\Seq.c).
+     *
+     * Purpose: cull an active sequence node, push traversal state, and render
+     * only the currently selected child entry.
+     */
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint

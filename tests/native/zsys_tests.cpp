@@ -131,8 +131,8 @@ extern "C" int zerror_emit_debug_buffer_smoke(void) {
     return g_zError_DebugMsgBuffer[0] == 'x' && g_zError_DebugMsgBuffer[1] == '\0' ? 0 : 1;
 }
 
-extern "C" int zerror_report_old_debug_output_smoke(void) {
-    g_RecoilError_OutputByteCount = 0;
+extern "C" int zerror_report_old_noop_smoke(void) {
+    g_RecoilError_OutputByteCount = 11;
     g_zError_DebugMsgBuffer[0] = 'q';
     g_zError_DebugMsgBuffer[1] = '\0';
 
@@ -144,7 +144,6 @@ extern "C" int zerror_report_old_debug_output_smoke(void) {
         9,
         "ok"
     );
-    const std::int32_t firstByteCount = g_RecoilError_OutputByteCount;
     zError::ReportOld(
         0,
         nullptr,
@@ -152,7 +151,7 @@ extern "C" int zerror_report_old_debug_output_smoke(void) {
         nullptr
     );
 
-    return firstByteCount > 0 && g_RecoilError_OutputByteCount > firstByteCount &&
+    return g_RecoilError_OutputByteCount == 11 &&
                    g_zError_DebugMsgBuffer[0] == 'q' && g_zError_DebugMsgBuffer[1] == '\0'
                ? 0
                : 1;

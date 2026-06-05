@@ -78,6 +78,11 @@ struct zVec3 {
     float z;
 };
 
+/**
+ * Original inline helper observed in zClass vector-field initialization callers
+ * (D:\Proj\GameZRecoil\zClass\*.c).
+ * Purpose: construct a zVec3 value from explicit x, y, and z components.
+ */
 inline zVec3 zVec3_Make(
     float x,
     float y,
@@ -1959,37 +1964,37 @@ extern int g_zClass_LodDistanceStateStackTop;
 extern zClass_LodDistanceState g_zClass_LodDistanceStateStack[0x20];
 }
 
-RECOIL_FORCEINLINE zClass_NodeFreeListSlot *zClass_NodeSlotFromNode(
+inline zClass_NodeFreeListSlot *zClass_NodeSlotFromNode(
     zClass_NodePartial *node
 ) {
     return (zClass_NodeFreeListSlot *)node;
 }
 
-RECOIL_FORCEINLINE const zClass_NodeFreeListSlot *zClass_NodeSlotFromNode(
+inline const zClass_NodeFreeListSlot *zClass_NodeSlotFromNode(
     const zClass_NodePartial *node
 ) {
     return (const zClass_NodeFreeListSlot *)node;
 }
 
-RECOIL_FORCEINLINE zVec3 *zClass_NodeViewSphereCenter(
+inline zVec3 *zClass_NodeViewSphereCenter(
     zClass_NodePartial *node
 ) {
     return (zVec3 *)(&zClass_NodeSlotFromNode(node)->primaryBounds.minX);
 }
 
-RECOIL_FORCEINLINE const zVec3 *zClass_NodeViewSphereCenter(
+inline const zVec3 *zClass_NodeViewSphereCenter(
     const zClass_NodePartial *node
 ) {
     return (const zVec3 *)(&zClass_NodeSlotFromNode(node)->primaryBounds.minX);
 }
 
-RECOIL_FORCEINLINE float *zClass_NodeViewSphereRadius(
+inline float *zClass_NodeViewSphereRadius(
     zClass_NodePartial *node
 ) {
     return &zClass_NodeSlotFromNode(node)->primaryBounds.maxX;
 }
 
-RECOIL_FORCEINLINE const float *zClass_NodeViewSphereRadius(
+inline const float *zClass_NodeViewSphereRadius(
     const zClass_NodePartial *node
 ) {
     return &zClass_NodeSlotFromNode(node)->primaryBounds.maxX;
@@ -3250,25 +3255,25 @@ extern char g_zClass_GWWorldNodeName[8];
 }
 
 namespace zClass_TypeList {
-RECOIL_FORCEINLINE zClass_TypeListBucket &Bucket(
+inline zClass_TypeListBucket &Bucket(
     int bucket
 ) {
     return *(zClass_TypeListBucket *)(g_zClass_TypeList_HeadSlotPtrs[bucket]);
 }
 
-RECOIL_FORCEINLINE zClass_TypeListLink *&Head(
+inline zClass_TypeListLink *&Head(
     int bucket
 ) {
     return *g_zClass_TypeList_HeadSlotPtrs[bucket];
 }
 
-RECOIL_FORCEINLINE zClass_TypeListLink *&Tail(
+inline zClass_TypeListLink *&Tail(
     int bucket
 ) {
     return *g_zClass_TypeList_TailSlotPtrs[bucket];
 }
 
-RECOIL_FORCEINLINE int &PendingRemovalDirty(
+inline int &PendingRemovalDirty(
     int bucket
 ) {
     switch (bucket) {
@@ -3309,7 +3314,7 @@ RECOIL_FORCEINLINE int &PendingRemovalDirty(
     }
 }
 
-RECOIL_FORCEINLINE void SetPendingRemovalDirty(
+inline void SetPendingRemovalDirty(
     int bucket,
     int value
 ) {

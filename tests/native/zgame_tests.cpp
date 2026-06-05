@@ -15381,7 +15381,7 @@ extern "C" int zclass_camera_build_frustum_grid_tiles_smoke() {
     cameraData.cameraPos = {5.0f, 0.0f, -1.0f};
     cameraData.frustumOrigin = {0.0f, 0.0f, 0.0f};
     cameraData.frustumCorners[0] = {10.0f, 0.0f, 0.0f};
-    cameraData.frustumCorners[1] = {0.0f, 0.0f, 2.0f};
+    cameraData.frustumCorners[1] = {0.0f, 0.0f, 12.0f};
     g_zVideo_pActiveViewContext = &cameraData;
 
     int result = zClass_Camera::BuildFrustumGridTiles(&world, &worldData, &cameraData);

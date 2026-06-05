@@ -176,19 +176,19 @@ HudUiMainMenuDialog_FTable MakeMainMenuDialogFTable() {
 
 const HudUiMainMenuDialog_FTable g_HudUiMainMenuDialog_FTable = MakeMainMenuDialogFTable();
 
-RECOIL_FORCEINLINE void InstallMainMenuDialogFTable(
+inline void InstallMainMenuDialogFTable(
     HudUiMainMenuDialog *dialog
 ) {
     dialog->base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiMainMenuDialog_FTable);
 }
 
-RECOIL_FORCEINLINE int PlayerMenuSaveLoadBlocked(
+inline int PlayerMenuSaveLoadBlocked(
     zUtil_PlayerStateStorage *playerState
 ) {
     return playerState->environmentAttachmentActive;
 }
 
-RECOIL_FORCEINLINE void BindButton(
+inline void BindButton(
     HudUiMainMenuDialog *dialog,
     zReader::Node *loadedSection,
     HudUiZrdWidget *widget,
@@ -360,83 +360,83 @@ void BindNetworkButtons(
 }
 } // namespace
 
-RECOIL_FORCEINLINE HudUiMainMenuDialogBackground::HudUiMainMenuDialogBackground() {
+inline HudUiMainMenuDialogBackground::HudUiMainMenuDialogBackground() {
     HudUiBackground::Constructor();
 }
 
-RECOIL_FORCEINLINE HudUiMainMenuDialogBackground::~HudUiMainMenuDialogBackground() {
+inline HudUiMainMenuDialogBackground::~HudUiMainMenuDialogBackground() {
     HudUiBackground::Destructor();
 }
 
-RECOIL_FORCEINLINE HudUiMainMenuDialog_CreditsButton::HudUiMainMenuDialog_CreditsButton() {
+inline HudUiMainMenuDialog_CreditsButton::HudUiMainMenuDialog_CreditsButton() {
     HudUiZrdWidget::Constructor();
     base.ftable = &g_HudUiMainMenu_CreditsButton_FTable;
 }
 
-RECOIL_FORCEINLINE HudUiMainMenuDialog_CreditsButton::~HudUiMainMenuDialog_CreditsButton() {
+inline HudUiMainMenuDialog_CreditsButton::~HudUiMainMenuDialog_CreditsButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-RECOIL_FORCEINLINE HudUiMenuBackButton::HudUiMenuBackButton() {
+inline HudUiMenuBackButton::HudUiMenuBackButton() {
     HudUiZrdWidget::Constructor();
     base.ftable = &g_HudUiMainMenu_BackButton_FTable;
 }
 
-RECOIL_FORCEINLINE HudUiMenuBackButton::~HudUiMenuBackButton() {
+inline HudUiMenuBackButton::~HudUiMenuBackButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-RECOIL_FORCEINLINE HudUiMainMenuDialog_SaveButton::HudUiMainMenuDialog_SaveButton() {
+inline HudUiMainMenuDialog_SaveButton::HudUiMainMenuDialog_SaveButton() {
     HudUiZrdWidget::Constructor();
     base.ftable = &g_HudUiMainMenu_SaveGameButton_FTable;
 }
 
-RECOIL_FORCEINLINE HudUiMainMenuDialog_SaveButton::~HudUiMainMenuDialog_SaveButton() {
+inline HudUiMainMenuDialog_SaveButton::~HudUiMainMenuDialog_SaveButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-RECOIL_FORCEINLINE HudUiMainMenuDialog_LoadButton::HudUiMainMenuDialog_LoadButton() {
+inline HudUiMainMenuDialog_LoadButton::HudUiMainMenuDialog_LoadButton() {
     HudUiZrdWidget::Constructor();
     base.ftable = &g_HudUiMainMenu_LoadGameButton_FTable;
 }
 
-RECOIL_FORCEINLINE HudUiMainMenuDialog_LoadButton::~HudUiMainMenuDialog_LoadButton() {
+inline HudUiMainMenuDialog_LoadButton::~HudUiMainMenuDialog_LoadButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-RECOIL_FORCEINLINE HudUiMainMenuDialog_NewGameButton::HudUiMainMenuDialog_NewGameButton() {
+inline HudUiMainMenuDialog_NewGameButton::HudUiMainMenuDialog_NewGameButton() {
     HudUiZrdWidget::Constructor();
     base.ftable = &g_HudUiMainMenu_NewGameButton_FTable;
 }
 
-RECOIL_FORCEINLINE HudUiMainMenuDialog_NewGameButton::~HudUiMainMenuDialog_NewGameButton() {
+inline HudUiMainMenuDialog_NewGameButton::~HudUiMainMenuDialog_NewGameButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-RECOIL_FORCEINLINE HudUiMainMenuDialog_OptionsButton::HudUiMainMenuDialog_OptionsButton() {
+inline HudUiMainMenuDialog_OptionsButton::HudUiMainMenuDialog_OptionsButton() {
     HudUiZrdWidget::Constructor();
     base.ftable = &g_HudUiMainMenu_OptionsButton_FTable;
 }
 
-RECOIL_FORCEINLINE HudUiMainMenuDialog_OptionsButton::~HudUiMainMenuDialog_OptionsButton() {
+inline HudUiMainMenuDialog_OptionsButton::~HudUiMainMenuDialog_OptionsButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-RECOIL_FORCEINLINE HudUiMainMenuDialog_QuitButton::HudUiMainMenuDialog_QuitButton() {
+inline HudUiMainMenuDialog_QuitButton::HudUiMainMenuDialog_QuitButton() {
     HudUiZrdWidget::Constructor();
     base.ftable = &g_HudUiMainMenu_QuitButton_FTable;
 }
 
-RECOIL_FORCEINLINE HudUiMainMenuDialog_QuitButton::~HudUiMainMenuDialog_QuitButton() {
+inline HudUiMainMenuDialog_QuitButton::~HudUiMainMenuDialog_QuitButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-RECOIL_FORCEINLINE HudUiMainMenuDialog_ControlsButton::HudUiMainMenuDialog_ControlsButton() {
+inline HudUiMainMenuDialog_ControlsButton::HudUiMainMenuDialog_ControlsButton() {
     HudUiZrdWidget::Constructor();
     base.ftable = &g_HudUiMainMenu_ControlsButton_FTable;
 }
 
-RECOIL_FORCEINLINE HudUiMainMenuDialog_ControlsButton::~HudUiMainMenuDialog_ControlsButton() {
+inline HudUiMainMenuDialog_ControlsButton::~HudUiMainMenuDialog_ControlsButton() {
     HudUiZrdWidget::DestructorCore();
 }
 

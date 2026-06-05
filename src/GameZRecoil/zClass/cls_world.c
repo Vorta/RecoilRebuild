@@ -14,6 +14,11 @@
 namespace {
     const char *kWorldSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c";
 
+    /**
+     * Original static helper observed in zClass_World grid-coordinate callers
+     * (D:\Proj\GameZRecoil\zClass\cls_world.c).
+     * Purpose: truncate a floating-point world/grid coordinate to an integer cell coordinate.
+     */
     int TruncateToInt(float value) {
         return (int)(value);
     }
@@ -93,7 +98,7 @@ namespace {
 
     // Restores likely inlined VAP edge-cell helper observed four times in
     // 0x4502b0; no standalone function exists in the retail executable.
-    RECOIL_FORCEINLINE void MoveAreaChildrenToVapStatics(
+    inline void MoveAreaChildrenToVapStatics(
         zClass_NodePartial * world,
         zWorldAreaPartial * area
     ) {

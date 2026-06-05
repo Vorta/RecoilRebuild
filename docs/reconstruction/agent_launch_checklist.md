@@ -49,13 +49,13 @@ before editing source, Binary Ninja state, plan markers, VC verification
 manifests, or group notes.
 
 Treat the selected address as an anchor, not necessarily the implementation
-unit. If the frontier exposes a class, table owner, provider boundary,
-source-file cluster, or strongly connected dependency group, plan and verify that
-owning boundary before marking individual functions complete. If current
-evidence proves an authored class, interface, custom table object, or method
-cluster, recreating that owner is required before setting
-`Model: source-faithful`; behavior-correct flattened functions remain
-source-shape debt.
+unit. If the frontier exposes a class/interface, table-shaped dispatch evidence,
+provider boundary, source-file cluster, or strongly connected dependency group,
+plan and verify that owning boundary before marking individual functions
+complete. If current evidence proves an authored class/interface or method
+cluster, recreating that owner is required before setting any `Reimplemented`
+tier or `Model: source-faithful`; behavior-correct flattened functions and
+production VTable/FTable scaffolds remain not reimplemented.
 
 Generate a handoff report before ending a multi-step reconstruction session:
 
@@ -128,7 +128,8 @@ python tools/recoil_source_file_map.py --check docs/reconstruction/source_file_m
 
 Use `docs/reconstruction/source_file_map.md` as placement guidance, then confirm
 with current Binary Ninja source comments and call-site evidence. Regenerate the
-map only when provenance comments in `src/` changed.
+map only when address-backed provenance docblocks or the legacy line-comment
+form in `src/` changed.
 
 Check `docs/reconstruction/verified_patterns.md` before introducing a new
 destructor, thunk, vtable stub, provider glue, or small-accessor idiom.
@@ -143,9 +144,11 @@ Check `docs/reconstruction/original_classes.md` before introducing or reshaping
 classes, inheritance, vtables, function tables, records, provider boundaries, or
 namespace/module boundaries. Use its class/table gate and boundary ledger, then
 confirm against current Binary Ninja facts. For table dispatch, model the owner
-first; do not add copied ftable/vtable arrays or raw slots as the source
-substitute for an authored class or typed custom table object. Do not claim
-`Model: source-faithful` when a proven class/table owner has been flattened away.
+first; do not add copied ftable/vtable arrays, production VTable/FTable structs
+or globals, or raw slots as the source substitute for an authored class,
+callback/data record, provider boundary, or subsystem. Do not claim any
+`Reimplemented` tier or `Model: source-faithful` when a proven class/source owner
+has been flattened away.
 
 ## Source literals
 

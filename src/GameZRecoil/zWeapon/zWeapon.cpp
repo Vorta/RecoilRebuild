@@ -16,6 +16,13 @@ float g_zWeapon_MaxTetherAltitude = 0.0f;
 
 namespace {
 template <typename T>
+/**
+ * Local ABI adapter with no standalone retail function.
+ * Observed in caller 0x4b1090.
+ *
+ * Purpose: preserve the typed callback declaration at each registration site
+ * while passing the raw ZAR section-callback pointer expected by zUtil_ZAR.
+ */
 zZbdSectionCallback ZbdCallbackPtr(
     T callback
 ) {
@@ -28,7 +35,12 @@ zZbdSectionCallback ZbdCallbackPtr(
 }
 } // namespace
 
-// Reimplements 0x4b1090: zWepInit
+/**
+ * Reimplements 0x4b1090: zWepInit.
+ *
+ * Purpose: reset weapon and OptCatalog runtime globals, restore weapon
+ * defaults, and optionally register the Weapons ZAR section callbacks.
+ */
 extern "C" int zWepInit() {
     g_OptCatalog_FallbackImpactProbeEnabled = 1;
     g_OptCatalog_CaptureHitSnapshotEnabled = 1;
@@ -68,8 +80,13 @@ extern "C" int zWepInit() {
 }
 
 namespace zWeapon {
-// Reimplements 0x4b1140: zWeapon::OnWeaponsSectionPreLoad
-// (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+/**
+ * Reimplements 0x4b1140: zWeapon::OnWeaponsSectionPreLoad
+ * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+ *
+ * Purpose: write the current weapon damage-feedback hit count into the
+ * WeaponData section blob before the Weapons archive section is saved.
+ */
 int __fastcall OnWeaponsSectionPreLoad(
     zZbdSectionCallbackCtx *callbackCtx,
     void *
@@ -83,8 +100,13 @@ int __fastcall OnWeaponsSectionPreLoad(
     );
 }
 
-// Reimplements 0x4b1160: zWeapon::OnWeaponsSectionDataReady
-// (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+/**
+ * Reimplements 0x4b1160: zWeapon::OnWeaponsSectionDataReady
+ * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+ *
+ * Purpose: restore the weapon damage-feedback hit count from the WeaponData
+ * section blob and reset the lock-on warning gate.
+ */
 void __fastcall OnWeaponsSectionDataReady(
     zZbdSectionCallbackCtx *,
     const char *,
@@ -96,8 +118,12 @@ void __fastcall OnWeaponsSectionDataReady(
     g_OptCatalog_DamageFeedbackHitCount = *(int *)(weaponData);
 }
 
-// Reimplements 0x4b1d80: zWeapon::SetMaxTetherAltitude
-// (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+/**
+ * Reimplements 0x4b1d80: zWeapon::SetMaxTetherAltitude
+ * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+ *
+ * Purpose: store the maximum tether altitude used by weapon script commands.
+ */
 void __stdcall SetMaxTetherAltitude(
     float altitude
 ) {
@@ -105,8 +131,13 @@ void __stdcall SetMaxTetherAltitude(
 }
 } // namespace zWeapon
 
-// Reimplements 0x4b21c0: PlayerTimedHitStatus::ResetFields
-// (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+/**
+ * Reimplements 0x4b21c0: PlayerTimedHitStatus::ResetFields
+ * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+ *
+ * Purpose: clear the active and interpolation flags and reset the timed-hit
+ * light, level, and update timer fields.
+ */
 void PlayerTimedHitStatus::ResetFields() {
     runtimeFlags &= ~3u;
     lightNode = 0;
@@ -115,8 +146,13 @@ void PlayerTimedHitStatus::ResetFields() {
     nextUpdateTime = 0.0f;
 }
 
-// Reimplements 0x4b22d0: PlayerTimedHitStatus::ClearLightAndReset
-// (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+/**
+ * Reimplements 0x4b22d0: PlayerTimedHitStatus::ClearLightAndReset
+ * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+ *
+ * Purpose: detach and recycle the active timed-hit light, then reset the
+ * status fields.
+ */
 void PlayerTimedHitStatus::ClearLightAndReset() {
     if (lightNode != 0) {
         zClass_Class::RemoveChild(
@@ -128,8 +164,13 @@ void PlayerTimedHitStatus::ClearLightAndReset() {
     }
 }
 
-// Reimplements 0x4b2300: PlayerTimedHitStatus::TickAndUpdateLight
-// (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+/**
+ * Reimplements 0x4b2300: PlayerTimedHitStatus::TickAndUpdateLight
+ * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+ *
+ * Purpose: advance timed-hit interpolation or decay, update the status light,
+ * and return the current damage band.
+ */
 int PlayerTimedHitStatus::TickAndUpdateLight(
     float hitStatus
 ) {
@@ -202,8 +243,13 @@ int PlayerTimedHitStatus::TickAndUpdateLight(
 }
 
 namespace HitSource {
-// Reimplements 0x4b2210: HitSource::UpdateTimedStatus
-// (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+/**
+ * Reimplements 0x4b2210: HitSource::UpdateTimedStatus
+ * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+ *
+ * Purpose: apply a hit source's timed-status contribution, allocate its
+ * status light when needed, and report the current damage band.
+ */
 int __fastcall UpdateTimedStatus(
     OptCatalogEntryDef *self,
     PlayerTimedHitStatus *status,

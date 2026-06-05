@@ -25,7 +25,7 @@ namespace {
     const int kZClassNodeLight = 9;
     const int kZClassNodeSound = 10;
 
-    RECOIL_FORCEINLINE int ReportZbdWriteFailure(
+    inline int ReportZbdWriteFailure(
         int sourceLine,
         const char *message
     ){
@@ -38,7 +38,7 @@ namespace {
         return -1;
     }
 
-    RECOIL_FORCEINLINE int ReportZbdReadFailure(
+    inline int ReportZbdReadFailure(
         int sourceLine,
         const char *message
     ){
@@ -51,7 +51,7 @@ namespace {
         return -1;
     }
 
-    RECOIL_FORCEINLINE bool WriteZbdBlob(
+    inline bool WriteZbdBlob(
         const void *data,
         size_t byteCount,
         void *stream
@@ -64,7 +64,7 @@ namespace {
         ) == 1;
     }
 
-    RECOIL_FORCEINLINE bool ReadZbdBlob(
+    inline bool ReadZbdBlob(
         void *data,
         size_t byteCount,
         void *stream

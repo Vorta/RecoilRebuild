@@ -19,10 +19,18 @@ class AiPropertyDlgCDialogMessageMapAccessor : public CDialog {
     static const AFX_MSGMAP *__stdcall GetMessageMap();
 };
 
+/**
+ * MFC provider-boundary shim for imported CDialog message-map metadata.
+ * Purpose: Exposes CDialog::messageMap through the callback shape expected by the derived map.
+ */
 const AFX_MSGMAP *__stdcall AiPropertyDlgCDialogMessageMapAccessor::GetMessageMap() {
     return &CDialog::messageMap;
 }
 
+/**
+ * MFC provider-boundary shim for AiPropertyDlg's base message-map callback.
+ * Purpose: Returns the provider-owned CDialog base message map for MFC dispatch chaining.
+ */
 const AFX_MSGMAP *__stdcall AiPropertyDlg::GetBaseMessageMapForMfc() {
     return AiPropertyDlgCDialogMessageMapAccessor::GetMessageMap();
 }
@@ -43,12 +51,18 @@ const AFX_MSGMAP AiPropertyDlg::messageMap = {
     &AiPropertyDlg::messageEntries[0],
 };
 
+/**
+ * MFC provider-boundary message-map accessor for AiPropertyDlg.
+ * Purpose: Returns the authored dialog message-map table used by MFC command routing.
+ */
 const AFX_MSGMAP * AiPropertyDlg::GetMessageMap() const {
     return &AiPropertyDlg::messageMap;
 }
 
-// Reimplements 0x41c0c0: AiPropertyDlg::OnDestroy
-// (D:\Proj\Recoil\AiPropertyDlg.cpp)
+/**
+ * Reimplements 0x41c0c0: AiPropertyDlg::OnDestroy (Battlesport/AiPropertyDlg.cpp).
+ * Purpose: Saves combo-box selections when the AI property dialog closes and hides the cursor.
+ */
 void AiPropertyDlg::OnDestroy() {
     CWnd::OnDestroy();
 
@@ -85,8 +99,10 @@ void AiPropertyDlg::OnDestroy() {
     ::ShowCursor(FALSE);
 }
 
-// Reimplements 0x41c130: AiPropertyDlg::OnSelChange
-// (D:\Proj\Recoil\AiPropertyDlg.cpp)
+/**
+ * Reimplements 0x41c130: AiPropertyDlg::OnSelChange (Battlesport/AiPropertyDlg.cpp).
+ * Purpose: Updates the selected AI behavior and refreshes the property labels.
+ */
 void AiPropertyDlg::OnSelChange() {
     const LRESULT selectedBehaviorComboIndex =
         ::SendMessageA(
@@ -105,8 +121,10 @@ void AiPropertyDlg::OnSelChange() {
     UpdatePropertyLabels();
 }
 
-// Reimplements 0x41c170: AiPropertyDlg::UpdatePropertyLabels
-// (D:\Proj\Recoil\AiPropertyDlg.cpp)
+/**
+ * Reimplements 0x41c170: AiPropertyDlg::UpdatePropertyLabels (Battlesport/AiPropertyDlg.cpp).
+ * Purpose: Chooses the two property label strings for the currently selected AI behavior.
+ */
 void AiPropertyDlg::UpdatePropertyLabels() {
     CString firstLabel;
     CString secondLabel;

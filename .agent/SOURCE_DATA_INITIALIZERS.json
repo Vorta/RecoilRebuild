@@ -3,7 +3,7 @@
     {
       "path": "src/Battlesport/pickup.cpp",
       "name": "g_PickupTypes",
-      "state": "source-equivalent",
+      "data_reimplemented": "✅",
       "group": "battlesport.pickup",
       "original_address": "0x4db6e8",
       "original_section": ".data",

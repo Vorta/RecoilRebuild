@@ -19,7 +19,8 @@ for function identity, types, markers, and acceptance state.
 - `provider_abi_notes.md` - repo-local provider assumptions for VC5SP3, MFC42,
   legacy DirectX, imports, and runtime verification.
 - `source_file_map.md` - generated original-source placement map from
-  `Reimplements` provenance comments in `src/`.
+  address-backed `Reimplements` provenance docblocks in `src/`, plus legacy
+  line comments until touched source is converted.
 - `visual_studio_mcp_workflow.md` - preferred Visual Studio MCP development
   workflow for generated `vs-x86` solution projects.
 - `verified_patterns.md` - compact ledger of currently verified reusable source
@@ -57,7 +58,8 @@ progress notes or duplicated plan state.
 ## Agent Use
 
 - For new implementation placement, check `source_file_map.md` first, then
-  confirm current Binary Ninja source comments and call-site evidence.
+  confirm current Binary Ninja source comments and call-site evidence. New or
+  touched functions need immediate provenance/Purpose docblocks.
 - For new agent handoff, start with `agent_launch_checklist.md`, then use
   `AGENTS.md` for the full workflow rules.
 - For compiler or provider questions, check `provider_abi_notes.md` and

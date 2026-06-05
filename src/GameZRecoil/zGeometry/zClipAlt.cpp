@@ -22,8 +22,13 @@ int gAltClipSourceRectValid = 0;
 int gAltClipPassEnabled = 0;
 }
 
-// Reimplements 0x47a1d0: zClipAlt_BuildFrustumPlanes
-// (GameZRecoil/zModel/zmodel.cpp)
+/**
+ * Reimplements 0x47a1d0: zClipAlt_BuildFrustumPlanes
+ * (GameZRecoil/zModel/zmodel.cpp).
+ *
+ * Purpose: transform the camera's local frustum normals into world-space
+ * clipping planes for the alternate clipping pass.
+ */
 void __fastcall zClipAlt_BuildFrustumPlanes(
     zClass_CameraDataPartial *cameraData
 ) {
@@ -37,7 +42,12 @@ void __fastcall zClipAlt_BuildFrustumPlanes(
 }
 
 namespace zClipAlt {
-// Reimplements 0x476120: zClipAlt::SetSourceRect
+/**
+ * Reimplements 0x476120: zClipAlt::SetSourceRect.
+ *
+ * Purpose: cache the source rectangle extents used to remap alternate clipped
+ * points into the active target rectangle.
+ */
 void __fastcall SetSourceRect(
     const zClipAltFloatRect *rect
 ) {
@@ -50,7 +60,13 @@ void __fastcall SetSourceRect(
     g_zClipAlt_SourceHeight = rect->bottom - rect->top;
 }
 
-// Reimplements 0x479f90: zClipAlt::SetTargetRect (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+/**
+ * Reimplements 0x479f90: zClipAlt::SetTargetRect
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ *
+ * Purpose: configure the alternate clipping rectangle and source-to-target
+ * coordinate remap scale and bias.
+ */
 void __fastcall SetTargetRect(
     const zClipAltFloatRect *rect,
     int replicate
@@ -84,8 +100,13 @@ void __fastcall SetTargetRect(
     }
 }
 
-// Reimplements 0x4766a0: zClipAlt::RemapPointXYInPlace
-// (D:\Proj\Battlesport\zClip.cpp)
+/**
+ * Reimplements 0x4766a0: zClipAlt::RemapPointXYInPlace
+ * (D:\Proj\Battlesport\zClip.cpp).
+ *
+ * Purpose: reject a point outside the alternate clip rectangle or remap its XY
+ * coordinates into source-rectangle space in place.
+ */
 int __fastcall RemapPointXYInPlace(
     float *point
 ) {

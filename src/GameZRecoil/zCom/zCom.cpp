@@ -4,6 +4,12 @@ namespace {
 template <typename T> struct ComReleaseOnExit {
     T *ptr;
 
+    /**
+     * Local template helper with no standalone retail function; observed in callers 0x42dc30
+     * and 0x42dcf0 through EH cleanup.
+     *
+     * Purpose: release a COM interface pointer when the helper leaves scope.
+     */
     ~ComReleaseOnExit() {
         if (ptr != 0) {
             ptr->Release();
@@ -13,7 +19,13 @@ template <typename T> struct ComReleaseOnExit {
 
 } // namespace
 
-// Reimplements 0x42db50: zCom::QueryInterfaceFromInterfaceMap
+/**
+ * Reimplements 0x42db50: zCom::QueryInterfaceFromInterfaceMap
+ * (GameZRecoil/zCom/zCom.cpp).
+ *
+ * Purpose: resolve an interface-map entry for a requested IID and AddRef the
+ * adjusted interface pointer returned to the caller.
+ */
 HRESULT WINAPI zCom::QueryInterfaceFromInterfaceMap(
     void *objectBase,
     const InterfaceMapEntry *interfaceMap,
@@ -73,7 +85,13 @@ HRESULT WINAPI zCom::QueryInterfaceFromInterfaceMap(
     return E_NOINTERFACE;
 }
 
-// Reimplements 0x42dc30: zCom::ConnectionPointContainer_Advise
+/**
+ * Reimplements 0x42dc30: zCom::ConnectionPointContainer_Advise
+ * (GameZRecoil/zCom/zCom.cpp).
+ *
+ * Purpose: query a source for IConnectionPointContainer, find the requested
+ * connection point, and advise the sink while releasing temporary interfaces.
+ */
 HRESULT WINAPI zCom::ConnectionPointContainer_Advise(
     IUnknown *source,
     IUnknown *sink,
@@ -103,7 +121,13 @@ HRESULT WINAPI zCom::ConnectionPointContainer_Advise(
     return result;
 }
 
-// Reimplements 0x42dcf0: zCom::ConnectionPointContainer_Unadvise
+/**
+ * Reimplements 0x42dcf0: zCom::ConnectionPointContainer_Unadvise
+ * (GameZRecoil/zCom/zCom.cpp).
+ *
+ * Purpose: query a source for IConnectionPointContainer, find the requested
+ * connection point, and unadvise the cookie while releasing temporary interfaces.
+ */
 HRESULT WINAPI zCom::ConnectionPointContainer_Unadvise(
     IUnknown *source,
     REFIID connectionPointIid,

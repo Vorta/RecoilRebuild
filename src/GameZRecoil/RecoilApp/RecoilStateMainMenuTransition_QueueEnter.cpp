@@ -1,6 +1,11 @@
 #include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
 
-// Reimplements 0x415650: RecoilStateMainMenuTransition::QueueEnter
+/**
+ * Reimplements 0x415650: RecoilStateMainMenuTransition::QueueEnter.
+ *
+ * Purpose: record the requested main-menu entry route and queue the global
+ * transition state on RecoilApp's app-state stack.
+ */
 void __fastcall RecoilStateMainMenuTransition::QueueEnter(
     RecoilMainMenuEntryRoute entryRoute
 ) {

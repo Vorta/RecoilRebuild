@@ -10,7 +10,15 @@
 typedef recoil::Ptr32 RecoilPtr32;
 typedef recoil::Fn32 RecoilFn32;
 
-RECOIL_FORCEINLINE RecoilPtr32 RecoilSymbolPtr32(
+/**
+ * No standalone retail function; treated as an original inline helper for
+ * ABI-table smoke tests and transitional state wrappers to compare symbol
+ * addresses through the recovered 32-bit pointer representation.
+ *
+ * Purpose: preserve the original x86 pointer-width contract at call sites
+ * that still store table identities as recovered 32-bit values.
+ */
+inline RecoilPtr32 RecoilSymbolPtr32(
     const void *symbol
 ) {
     return (RecoilPtr32)((unsigned int)(symbol));
@@ -131,10 +139,10 @@ struct RecoilApp_StateQueue {
     RecoilApp_StateQueueItem *** GrowAndCenterChunkBaseList(
         int newCapacity
     );
-    RECOIL_FORCEINLINE bool Empty() const;
-    RECOIL_FORCEINLINE RecoilApp_StateQueueItem *Front() const;
-    RECOIL_FORCEINLINE void PopFront();
-    RECOIL_FORCEINLINE void PushBack(RecoilApp_StateQueueItem *const &item);
+    inline bool Empty() const;
+    inline RecoilApp_StateQueueItem *Front() const;
+    inline void PopFront();
+    inline void PushBack(RecoilApp_StateQueueItem *const &item);
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_StateQueue) == 0x30);
 RECOIL_STATIC_ASSERT(
@@ -173,6 +181,13 @@ RECOIL_STATIC_ASSERT(sizeof(RecoilApp_FmvState) == 0x04);
 // Embedded FMV script member used by RecoilApp states. Retail state
 // constructors initialize this subobject before installing the final state vptr.
 struct RecoilApp_FmvScript : zFMV_Script {
+    /**
+     * No standalone retail function; original inline helper observed in callers
+     * 0x42eb70 and 0x42ed30 through RecoilApp FMV state construction.
+     *
+     * Purpose: initialize the embedded zFMV_Script member to its empty script
+     * state before the owning RecoilApp state installs its final vptr.
+     */
     RecoilApp_FmvScript() {
         Init(
             0,
