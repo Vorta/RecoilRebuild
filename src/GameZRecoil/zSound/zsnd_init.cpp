@@ -105,7 +105,12 @@ typedef ULONG(__stdcall *UnknownReleaseProc)(void *);
 } // namespace
 
 namespace zSnd {
-// Reimplements 0x4a3ef0: zSnd::ReportA3DError
+/**
+ * Reimplements 0x4a3ef0: zSnd::ReportA3DError.
+ *
+ * Purpose: translate an A3D provider error code into the original diagnostic
+ * text and report it through zError.
+ */
 int __fastcall ReportA3DError(
     int a3dError,
     const char *sourceFile,
@@ -483,7 +488,12 @@ reportA3D:
     return 0;
 }
 
-// Reimplements 0x4a4330: zSnd::ReportDirectSoundError
+/**
+ * Reimplements 0x4a4330: zSnd::ReportDirectSoundError.
+ *
+ * Purpose: translate a DirectSound provider error code into the original
+ * diagnostic text and report it through zError.
+ */
 int __fastcall ReportDirectSoundError(
     int directSoundError,
     const char *sourceFile,
@@ -595,7 +605,12 @@ int __fastcall ReportDirectSoundError(
     return 0;
 }
 
-// Reimplements 0x4b31f0: zSnd::HasMmxMixerSupport
+/**
+ * Reimplements 0x4b31f0: zSnd::HasMmxMixerSupport.
+ *
+ * Purpose: report MMX mixer availability only when CPUID probing is available
+ * and the CPU feature probe reports MMX support.
+ */
 int HasMmxMixerSupport() {
     if (zSys::HasCpuidSupportRuntimeOptions() == 0) {
         return 0;
@@ -604,7 +619,12 @@ int HasMmxMixerSupport() {
     return zCpu::HasMmxSupport();
 }
 
-// Reimplements 0x4b2f50: zSnd::AcquireCachedDirectSound
+/**
+ * Reimplements 0x4b2f50: zSnd::AcquireCachedDirectSound.
+ *
+ * Purpose: return the matching cached DirectSound device or create and cache a
+ * new device for the requested GUID.
+ */
 LPDIRECTSOUND __fastcall AcquireCachedDirectSound(
     LPGUID deviceGuid
 ) {
@@ -630,7 +650,11 @@ LPDIRECTSOUND __fastcall AcquireCachedDirectSound(
     return g_zSnd_CachedDirectSound;
 }
 
-// Reimplements 0x4b2fa0: zSnd::ReleaseCachedDirectSound
+/**
+ * Reimplements 0x4b2fa0: zSnd::ReleaseCachedDirectSound.
+ *
+ * Purpose: release and clear the cached DirectSound device when present.
+ */
 void ReleaseCachedDirectSound() {
     LPDIRECTSOUND cached = g_zSnd_CachedDirectSound;
     if (cached != 0) {
@@ -639,7 +663,12 @@ void ReleaseCachedDirectSound() {
     }
 }
 
-// Reimplements 0x4b2fc0: zSnd::CachedDirectSound_GetCaps
+/**
+ * Reimplements 0x4b2fc0: zSnd::CachedDirectSound_GetCaps.
+ *
+ * Purpose: initialize the DirectSound caps structure size and query the cached
+ * DirectSound device.
+ */
 HRESULT __fastcall CachedDirectSound_GetCaps(
     DSCAPS *caps
 ) {
@@ -648,7 +677,12 @@ HRESULT __fastcall CachedDirectSound_GetCaps(
 }
 } // namespace zSnd
 
-// Reimplements 0x4a12c0: zSnd_PreInitializeRuntimeState
+/**
+ * Reimplements 0x4a12c0: zSnd_PreInitializeRuntimeState.
+ *
+ * Purpose: reset sound runtime globals, cache option pointers, and prepare the
+ * selected backend for later initialization.
+ */
 extern "C" int __fastcall zSnd_PreInitializeRuntimeState(
     unsigned int hwnd
 ) {
@@ -704,7 +738,12 @@ extern "C" int __fastcall zSnd_PreInitializeRuntimeState(
     return 1;
 }
 
-// Reimplements 0x4a1420: zSndSystem_Init
+/**
+ * Reimplements 0x4a1420: zSndSystem_Init.
+ *
+ * Purpose: initialize the selected sound backend, load the sound configuration
+ * tree, and dispatch the supported syntax parser.
+ */
 extern "C" int __fastcall zSndSystem_Init(
     unsigned int hwnd,
     const char *zrdPath
@@ -766,7 +805,12 @@ extern "C" int __fastcall zSndSystem_Init(
     return 1;
 }
 
-// Reimplements 0x4a1e50: zSndBackend_InitDirectSound
+/**
+ * Reimplements 0x4a1e50: zSndBackend_InitDirectSound.
+ *
+ * Purpose: create the DirectSound device, set cooperative level, cache device
+ * caps, and create the primary listener buffer.
+ */
 extern "C" int zSndBackend_InitDirectSound() {
     HRESULT directSoundError = DirectSoundCreate(
         0,
@@ -824,7 +868,12 @@ extern "C" int zSndBackend_InitDirectSound() {
     return 1;
 }
 
-// Reimplements 0x4a1d10: zSndBackend_InitA3D
+/**
+ * Reimplements 0x4a1d10: zSndBackend_InitA3D.
+ *
+ * Purpose: create the A3D provider object, query geometry/listener interfaces,
+ * configure output mode, and validate buffer creation.
+ */
 extern "C" int zSndBackend_InitA3D() {
     if (CoInitialize(0) < 0) {
         return 0;
@@ -923,6 +972,12 @@ extern "C" int zSndBackend_InitA3D() {
 
 namespace zSndBackend {
 namespace {
+/**
+ * Original static helper observed in caller 0x4a1f40.
+ *
+ * Purpose: release an A3D/COM-style provider object through vtable slot 2 and
+ * clear the stored pointer.
+ */
 void ReleaseUnknown(
     void *&object
 ) {
@@ -934,7 +989,12 @@ void ReleaseUnknown(
 }
 } // namespace
 
-// Reimplements 0x4a1f40: zSndBackend::Shutdown
+/**
+ * Reimplements 0x4a1f40: zSndBackend::Shutdown.
+ *
+ * Purpose: shut down CD, streaming, sample-set, and backend provider state for
+ * the active sound system.
+ */
 int Shutdown() {
     if (g_zSnd_IsInitialized == 0 || g_zSnd_PreInitialized == 0) {
         return 0;

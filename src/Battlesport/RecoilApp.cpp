@@ -155,7 +155,7 @@ LPCSTR IntResource(
     return (LPCSTR)(value);
 }
 
-RECOIL_FORCEINLINE void ExtendPlayStateTransitionTimer(
+inline void ExtendPlayStateTransitionTimer(
     float seconds
 ) {
     if (g_RecoilApp.m_transitionFadeTimer > 0.0) {
@@ -2265,15 +2265,15 @@ RecoilApp_StateQueueItem *** RecoilApp_StateQueue::GrowAndCenterChunkBaseList(
     return centeredSlot;
 }
 
-RECOIL_FORCEINLINE bool RecoilApp_StateQueue::Empty() const {
+inline bool RecoilApp_StateQueue::Empty() const {
     return m_itemCount == 0;
 }
 
-RECOIL_FORCEINLINE RecoilApp_StateQueueItem *RecoilApp_StateQueue::Front() const {
+inline RecoilApp_StateQueueItem *RecoilApp_StateQueue::Front() const {
     return *m_readBlock.m_cursor;
 }
 
-RECOIL_FORCEINLINE void RecoilAppQueueBlockAssignFromCursor(
+inline void RecoilAppQueueBlockAssignFromCursor(
     RecoilApp_StateQueueBlock *block,
     RecoilApp_StateQueueItem **cursor,
     RecoilApp_StateQueueItem ***chunkBaseSlot
@@ -2284,7 +2284,7 @@ RECOIL_FORCEINLINE void RecoilAppQueueBlockAssignFromCursor(
     block->m_chunkBaseSlot = chunkBaseSlot;
 }
 
-RECOIL_FORCEINLINE void RecoilApp_StateQueue::PopFront() {
+inline void RecoilApp_StateQueue::PopFront() {
     ++m_readBlock.m_cursor;
     --m_itemCount;
 
@@ -2297,7 +2297,7 @@ RECOIL_FORCEINLINE void RecoilApp_StateQueue::PopFront() {
     }
 }
 
-RECOIL_FORCEINLINE void RecoilApp_StateQueue::PushBack(
+inline void RecoilApp_StateQueue::PushBack(
     RecoilApp_StateQueueItem *const &item
 ) {
     if (Empty() || m_writeBlock.m_cursor == m_writeBlock.m_chunkEnd) {

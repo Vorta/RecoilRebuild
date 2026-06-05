@@ -7,8 +7,13 @@
 
 namespace NetUi {
 
-// Reimplements 0x43ce80: NetUi::VerifyWinsock2OrPromptContinue
-// (D:\Proj\Battlesport\Net\NetUi.cpp)
+/**
+ * Reimplements 0x43ce80: NetUi::VerifyWinsock2OrPromptContinue
+ * (D:\Proj\Battlesport\Net\NetUi.cpp).
+ *
+ * Purpose: verify Winsock 2.0 availability and ask the user whether network
+ * flows should continue when startup or version checks fail.
+ */
 int __fastcall VerifyWinsock2OrPromptContinue(
     const char *caption,
     const char *messageFormat

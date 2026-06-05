@@ -3,6 +3,12 @@
 #include "GameZRecoil/zVideo/zVideo.h"
 
 namespace {
+    /**
+     * Original static helper observed in caller 0x44bfb0.
+     *
+     * Purpose: update switch-node bounds when needed and run the sphere
+     * frustum cull used by switch render traversal.
+     */
     int CullNodeForRender(
         zClass_NodePartial * node,
         int siblingCountHint,
@@ -38,9 +44,14 @@ namespace {
 }
 
 namespace zClass_Switch {
-    // Reimplements 0x44bfb0: zClass_Switch::RenderTraverse
-    // (D:\Proj\GameZRecoil\zClass\Switch.c)
     int __fastcall
+    /**
+     * Reimplements 0x44bfb0: zClass_Switch::RenderTraverse
+     * (D:\Proj\GameZRecoil\zClass\Switch.c).
+     *
+     * Purpose: cull the switch node, push the clip mask, and render only the
+     * active child-mask entries.
+     */
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint

@@ -1,6 +1,11 @@
 #include "GameZRecoil/RecoilApp/RecoilStateDialogHost.h"
 
-// Reimplements 0x408f50: RecoilStateDialogHost::OnWndActivate
+/**
+ * Reimplements 0x408f50: RecoilStateDialogHost::OnWndActivate.
+ *
+ * Purpose: redraw and re-present the hosted HUD dialog when the application
+ * receives a window activation notification.
+ */
 void RecoilStateDialogHost::OnWndActivate(
     int activateCode
 ) {

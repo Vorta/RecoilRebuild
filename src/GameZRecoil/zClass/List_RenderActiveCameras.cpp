@@ -13,7 +13,12 @@ int __fastcall RenderScene(
 
 namespace zClass_List {
 
-// Reimplements 0x44f630: zClass_List::RenderActiveCameras (GameZRecoil/zClass/List.c)
+/**
+ * Reimplements 0x44f630: zClass_List::RenderActiveCameras (GameZRecoil/zClass/List.c).
+ *
+ * Purpose: walk the active camera bucket and render each enabled camera through
+ * the current software or scene-render path.
+ */
 int RenderActiveCameras() {
     zClass_TypeListLink *link = zClass_TypeList::GetBucketHead(8);
     if (link == 0) {

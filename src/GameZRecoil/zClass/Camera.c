@@ -34,6 +34,12 @@ namespace {
     const int kZClassNodeWorld = 2;
     const char *kCameraSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Camera.c";
 
+    /**
+     * Original static helper observed in camera validation callers
+     * (D:\Proj\GameZRecoil\zClass\Camera.c).
+     * Purpose: emit the legacy zError camera-source diagnostic for null or
+     * invalid camera node state.
+     */
     void ReportCameraError(
         int sourceLine,
         const char *message
@@ -46,6 +52,12 @@ namespace {
         );
     }
 
+    /**
+     * Original static helper observed in camera setter/getter callers
+     * (D:\Proj\GameZRecoil\zClass\Camera.c).
+     * Purpose: validate a camera node, recover its camera data pointer, and
+     * preserve the caller-specific legacy source-line diagnostics.
+     */
     int ValidateCameraNode(
         zClass_NodePartial * node,
         zClass_CameraDataPartial * *outData,
@@ -85,10 +97,22 @@ namespace {
         return 0;
     }
 
+    /**
+     * Original static helper observed in camera target callers
+     * (D:\Proj\GameZRecoil\zClass\Camera.c).
+     * Purpose: select the active target vector field based on the camera flag
+     * that switches between world target and Euler/target storage.
+     */
     zVec3 *GetSelectedTargetVector(zClass_CameraDataPartial * data) {
         return (data->cameraFlags & 0x02) != 0 ? &data->worldTarget : &data->targetOrEuler;
     }
 
+    /**
+     * Original static helper observed in caller 0x44abf0
+     * (D:\Proj\GameZRecoil\zClass\Camera.c).
+     * Purpose: flip a float sign bit without changing the remaining bit pattern
+     * while deriving the camera forward vector.
+     */
     float NegateFloatSignBit(float value) {
         unsigned int bits = 0;
         memcpy(
@@ -105,10 +129,22 @@ namespace {
         return value;
     }
 
+    /**
+     * Original static helper observed in frustum-grid tiling callers
+     * (D:\Proj\GameZRecoil\zClass\Camera.c).
+     * Purpose: compute the absolute integer delta used for diamond ring
+     * indexing.
+     */
     int AbsInt(int value) {
         return value < 0 ? -value : value;
     }
 
+    /**
+     * Original static helper observed in callers 0x44c3c0 and 0x44c8e0
+     * (D:\Proj\GameZRecoil\zClass\Camera.c).
+     * Purpose: reset all cached frustum-grid tile ring counts before rebuilding
+     * visible world-cell candidates.
+     */
     void ClearFrustumGridTileRings() {
         {
             for (int ringIndex = 0; ringIndex < 50; ++ringIndex) {
@@ -117,6 +153,12 @@ namespace {
         }
     }
 
+    /**
+     * Original static helper observed in camera frustum footprint callers
+     * (D:\Proj\GameZRecoil\zClass\Camera.c).
+     * Purpose: copy the camera frustum footprint points and transform them by
+     * the active matrix when the matrix is not identity.
+     */
     void CopyCurrentCameraFrustumFootprint(
         zClass_CameraDataPartial * data,
         int pointCount
@@ -135,6 +177,12 @@ namespace {
         }
     }
 
+    /**
+     * Original static helper observed in callers 0x44c3c0 and 0x44c8e0
+     * (D:\Proj\GameZRecoil\zClass\Camera.c).
+     * Purpose: build and optionally convex-hull/filter the camera frustum
+     * footprint used by world-cell culling.
+     */
     int BuildCameraFrustumFootprint(
         zClass_CameraDataPartial * data,
         int filterErrorLine
@@ -188,8 +236,12 @@ namespace {
         return pointCount;
     }
 
-    void
-    GetFrustumFootprintBounds(
+    /**
+     * Original static helper observed in callers 0x44c3c0 and 0x44c8e0
+     * (D:\Proj\GameZRecoil\zClass\Camera.c).
+     * Purpose: compute X/Z bounds for the cached frustum footprint points.
+     */
+    void GetFrustumFootprintBounds(
         int pointCount,
         float *minX,
         float *maxX,
@@ -218,6 +270,12 @@ namespace {
         }
     }
 
+    /**
+     * Original static helper observed in callers 0x44c3c0 and 0x44c8e0
+     * (D:\Proj\GameZRecoil\zClass\Camera.c).
+     * Purpose: append one world-cell tile to the appropriate frustum-grid
+     * diamond ring while preserving legacy overflow diagnostics.
+     */
     void AddFrustumGridTile(
         int col,
         int row,
@@ -1079,8 +1137,12 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44c3c0: zClass_Camera::BuildFrustumGridTiles
-    // (D:\Proj\GameZRecoil\zClass\Camera.c)
+    /**
+     * Reimplements 0x44c3c0: zClass_Camera::BuildFrustumGridTiles
+     * (D:\Proj\GameZRecoil\zClass\Camera.c).
+     * Purpose: build clamped in-world frustum grid rings from the active
+     * camera footprint.
+     */
     int __fastcall BuildFrustumGridTiles(
         zClass_NodePartial * world,
         zClass_WorldDataPartial * worldData,
@@ -1228,8 +1290,12 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44c8e0: zClass_Camera::BuildFrustumGridTilesFromParams
-    // (D:\Proj\GameZRecoil\zClass\Camera.c)
+    /**
+     * Reimplements 0x44c8e0: zClass_Camera::BuildFrustumGridTilesFromParams
+     * (D:\Proj\GameZRecoil\zClass\Camera.c).
+     * Purpose: build frustum grid rings while preserving raw out-of-bounds
+     * grid offsets for wrapped/clamped world positions.
+     */
     int __fastcall BuildFrustumGridTilesFromParams(
         zClass_NodePartial * world,
         zClass_WorldDataPartial * worldData,

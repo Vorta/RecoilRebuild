@@ -88,12 +88,22 @@ int g_zRndr_GlobalStringCount = 6;
 char *g_zRndr_GlobalStringTable[100] = {0};
 
 namespace {
+/**
+ * Original static helper observed in zModel_Display projected-sphere callers
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: truncate a projected floating-point coordinate to integer screen space.
+ */
 int TruncateToInt(
     float value
 ) {
     return (int)(value);
 }
 
+/**
+ * Original static helper observed in zModel_Display projected-sphere callers
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: query whether the span occlusion buffer leaves a projected column visible.
+ */
 bool TestSpanColumnVisible(
     int columnIndex
 ) {
@@ -105,6 +115,11 @@ bool TestSpanColumnVisible(
     return isVisible > 0;
 }
 
+/**
+ * Original static helper observed in zModel_Display damage-mask stamping
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: wrap a damage-mask UV phase into the repeat range used by the stamp.
+ */
 void WrapDamageMaskPhase(
     float *phase
 ) {
@@ -116,6 +131,11 @@ void WrapDamageMaskPhase(
     }
 }
 
+/**
+ * Original static helper observed in zModel_Display damage-mask stamping
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: clamp one source/destination axis for a damage-mask stamp copy.
+ */
 void ClampDamageMaskAxis(
     int dstCoord,
     int srcSize,
@@ -142,6 +162,11 @@ void ClampDamageMaskAxis(
     }
 }
 
+/**
+ * Original static helper observed in zModel_Display damage-mask stamping
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: blend one RGB565 destination pixel with a damage-mask source pixel.
+ */
 unsigned short BlendDamageMaskPixel565(
     unsigned short dstPixel,
     unsigned short srcPixel,
@@ -155,6 +180,11 @@ unsigned short BlendDamageMaskPixel565(
     return (unsigned short)(dst + green + blue);
 }
 
+/**
+ * Original static helper observed in zModel_Display damage-mask stamping
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: blend one RGB555 destination pixel with a damage-mask source pixel.
+ */
 unsigned short BlendDamageMaskPixel555(
     unsigned short dstPixel,
     unsigned short srcPixel,
@@ -184,24 +214,33 @@ typedef void(__fastcall *TextureRecordFinalizeUploadProc)(
 } // namespace
 
 namespace zModel {
-// Reimplements 0x476460: zModel::SetBackfaceEliminationToleranceScalar
-// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+/**
+ * Reimplements 0x476460: zModel::SetBackfaceEliminationToleranceScalar
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: store the global backface-elimination tolerance scalar.
+ */
 void __stdcall SetBackfaceEliminationToleranceScalar(
     float scalar
 ) {
     g_zModel_BFETolerance = scalar;
 }
 
-// Reimplements 0x476470: zModel::GetBackfaceEliminationToleranceScalar
-// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+/**
+ * Reimplements 0x476470: zModel::GetBackfaceEliminationToleranceScalar
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: return the current global backface-elimination tolerance scalar.
+ */
 float GetBackfaceEliminationToleranceScalar() {
     return g_zModel_BFETolerance;
 }
 } // namespace zModel
 
 namespace zRndr {
-// Reimplements 0x476300: zRndr::SetInverseZTolerance
-// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+/**
+ * Reimplements 0x476300: zRndr::SetInverseZTolerance
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: update the software inverse-Z tolerance and mirror it to the active renderer path.
+ */
 void __stdcall SetInverseZTolerance(
     float inverseZTolerance
 ) {
@@ -213,8 +252,11 @@ void __stdcall SetInverseZTolerance(
 } // namespace zRndr
 
 namespace zScene {
-// Reimplements 0x476700: zScene::TestProjectedSphereVisible
-// (GameZRecoil/zModel/gmod_scene.c)
+/**
+ * Reimplements 0x476700: zScene::TestProjectedSphereVisible
+ * (GameZRecoil/zModel/gmod_scene.c).
+ * Purpose: project a bounding sphere and test representative span-buffer columns for visibility.
+ */
 int __fastcall TestProjectedSphereVisible(
     zVec3 *center,
     float radius
@@ -333,7 +375,11 @@ int __fastcall TestProjectedSphereVisible(
 }
 } // namespace zScene
 
-// Reimplements 0x475c40: zModel_Display_Init
+/**
+ * Reimplements 0x475c40: zModel_Display_Init
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: initialize zModel display globals, fog defaults, scratch buffers, and damage-mask state.
+ */
 int zModel_Display_Init() {
     g_zModel_DisplayInitFlagA = 1;
     g_zModel_DisplayInitFlagB = 1;
@@ -411,7 +457,11 @@ int zModel_Display_Init() {
     return 0;
 }
 
-// Reimplements 0x479c90: OptCatalog_SetDamageMaskUv (GameZRecoil/zModel/zModel_Display.cpp)
+/**
+ * Reimplements 0x479c90: OptCatalog_SetDamageMaskUv
+ * (GameZRecoil/zModel/zModel_Display.cpp).
+ * Purpose: set the current damage-mask UV phase used by the OptCatalog stamp pass.
+ */
 void __stdcall OptCatalog_SetDamageMaskUv(
     float u,
     float v
@@ -420,23 +470,32 @@ void __stdcall OptCatalog_SetDamageMaskUv(
     g_OptCatalogDamageMaskPhaseV = v;
 }
 
-// Reimplements 0x479c80: OptCatalog_IsDamageMaskEnabled
-// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+/**
+ * Reimplements 0x479c80: OptCatalog_IsDamageMaskEnabled
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: report whether OptCatalog damage-mask stamping is currently enabled.
+ */
 int OptCatalog_IsDamageMaskEnabled() {
     return g_OptCatalogDamageMaskEnabled;
 }
 
 namespace OptCatalog {
-// Reimplements 0x479c50: OptCatalog::SetDamageMaskSlotIndex
-// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+/**
+ * Reimplements 0x479c50: OptCatalog::SetDamageMaskSlotIndex
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: select the active damage-mask handle slot.
+ */
 void __fastcall SetDamageMaskSlotIndex(
     int slotIndex
 ) {
     g_OptCatalogDamageMaskSlotIndex = slotIndex;
 }
 
-// Reimplements 0x479c60: OptCatalog::RegisterDamageMaskSlotPtr
-// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+/**
+ * Reimplements 0x479c60: OptCatalog::RegisterDamageMaskSlotPtr
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: register a damage-mask texture handle in the active OptCatalog slot.
+ */
 void __fastcall RegisterDamageMaskSlotPtr(
     void *slotPtr
 ) {
@@ -444,8 +503,11 @@ void __fastcall RegisterDamageMaskSlotPtr(
     g_OptCatalogDamageMaskHandles[g_OptCatalogDamageMaskSlotIndex] = slotPtr;
 }
 
-// Reimplements 0x479660: OptCatalog::ApplyDamageMaskStampOnHit
-// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+/**
+ * Reimplements 0x479660: OptCatalog::ApplyDamageMaskStampOnHit
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: stamp the active damage mask onto an eligible OptCatalog hit surface.
+ */
 void __fastcall ApplyDamageMaskStampOnHit(
     OptCatalogHitEventPartial *hitEvent
 ) {
@@ -589,16 +651,22 @@ void __fastcall ApplyDamageMaskStampOnHit(
 }
 } // namespace OptCatalog
 
-// Reimplements 0x479cb0: OptCatalog_SetDamageMaskEnabled
-// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+/**
+ * Reimplements 0x479cb0: OptCatalog_SetDamageMaskEnabled
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: update the global OptCatalog damage-mask enable flag.
+ */
 void __fastcall OptCatalog_SetDamageMaskEnabled(
     int enabled
 ) {
     g_OptCatalogDamageMaskEnabled = enabled;
 }
 
-// Reimplements 0x479cc0: OptCatalog_IsDamageMaskSlotPtrRegistered
-// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+/**
+ * Reimplements 0x479cc0: OptCatalog_IsDamageMaskSlotPtrRegistered
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: test whether a damage-mask slot already references the supplied handle.
+ */
 int __fastcall OptCatalog_IsDamageMaskSlotPtrRegistered(
     void *slotPtr
 ) {
@@ -612,8 +680,11 @@ int __fastcall OptCatalog_IsDamageMaskSlotPtrRegistered(
 }
 
 namespace zRndr {
-// Reimplements 0x480ec0: zRndr::GlobalStringTable_ReleaseDynamicEntries
-// (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
+/**
+ * Reimplements 0x480ec0: zRndr::GlobalStringTable_ReleaseDynamicEntries
+ * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+ * Purpose: release dynamically loaded renderer global-string entries and restore the fixed prefix count.
+ */
 void GlobalStringTable_ReleaseDynamicEntries() {
     for (int i = 6; i < g_zRndr_GlobalStringCount; ++i) {
         free(g_zRndr_GlobalStringTable[i]);
@@ -625,8 +696,11 @@ void GlobalStringTable_ReleaseDynamicEntries() {
 } // namespace zRndr
 
 namespace zRndr_GlobalStringTable {
-// Reimplements 0x481460: zRndr_GlobalStringTable::LoadDynamicEntriesFromPath
-// (D:\Proj\GameZRecoil\zRndr\zRndr_GlobalStringTable.cpp)
+/**
+ * Reimplements 0x481460: zRndr_GlobalStringTable::LoadDynamicEntriesFromPath
+ * (D:\Proj\GameZRecoil\zRndr\zRndr_GlobalStringTable.cpp).
+ * Purpose: append non-prefix dynamic global-string entries loaded from a zReader node tree.
+ */
 void __fastcall LoadDynamicEntriesFromPath(
     char *path
 ) {
@@ -677,8 +751,11 @@ void __fastcall LoadDynamicEntriesFromPath(
 } // namespace zRndr_GlobalStringTable
 
 namespace zDi {
-// Reimplements 0x481570: zDi::PtrToIndexOrMinus1
-// (D:\Proj\GameZRecoil\zModel\gmod_const.c)
+/**
+ * Reimplements 0x481570: zDi::PtrToIndexOrMinus1
+ * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+ * Purpose: convert a display-instance pool pointer to its pool index, or -1 for null.
+ */
 int __fastcall PtrToIndexOrMinus1(
     zDiPartial *self
 ) {
@@ -689,8 +766,11 @@ int __fastcall PtrToIndexOrMinus1(
     return (int)(self - g_zModel_DiPoolBase);
 }
 
-// Reimplements 0x4815a0: zDi::IndexToPtrOrNull
-// (D:\Proj\GameZRecoil\zModel\gmod_const.c)
+/**
+ * Reimplements 0x4815a0: zDi::IndexToPtrOrNull
+ * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+ * Purpose: convert a non-negative display-instance pool index to its entry pointer.
+ */
 zDiPartial *__fastcall IndexToPtrOrNull(
     int index
 ) {
@@ -703,8 +783,11 @@ zDiPartial *__fastcall IndexToPtrOrNull(
 } // namespace zDi
 
 namespace zModel_DiPool {
-// Reimplements 0x482080: zModel_DiPool::AllocFromFreeList
-// (D:\Proj\GameZRecoil\zModel\gmod_const.c)
+/**
+ * Reimplements 0x482080: zModel_DiPool::AllocFromFreeList
+ * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+ * Purpose: allocate and initialize a display-instance pool entry from the free list.
+ */
 zDiPartial *AllocFromFreeList() {
     const int slotIndex = g_zModel_DiPoolFreeHeadIndex;
     if (slotIndex < 0) {
@@ -729,8 +812,11 @@ zDiPartial *AllocFromFreeList() {
     return entry;
 }
 
-// Reimplements 0x4820f0: zModel_DiPool::FreeIfUnreferenced
-// (D:\Proj\GameZRecoil\zModel\gmod_const.c)
+/**
+ * Reimplements 0x4820f0: zModel_DiPool::FreeIfUnreferenced
+ * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+ * Purpose: release an unreferenced display-instance entry back to the pool free list.
+ */
 int __fastcall FreeIfUnreferenced(
     zDiPartial *di
 ) {
@@ -758,8 +844,11 @@ int __fastcall FreeIfUnreferenced(
 } // namespace zModel_DiPool
 
 namespace zModel_MatlSlot {
-// Reimplements 0x480dc0: zModel_MatlSlot::Release
-// (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp)
+/**
+ * Reimplements 0x480dc0: zModel_MatlSlot::Release
+ * (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp).
+ * Purpose: release a material slot, free cycle data, and return the slot to the material free list.
+ */
 void __fastcall Release(
     zModel_MaterialSlot *slot
 ) {
@@ -814,8 +903,11 @@ enum {
     kRendererBackend3dfx = 2,
 };
 
-// Reimplements 0x480d80: zModel_MatlBuffer::ReleaseAllActive
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x480d80: zModel_MatlBuffer::ReleaseAllActive
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: release every active material slot and clear the material reuse cache.
+ */
 int ReleaseAllActive() {
     while (g_zModel_MatlActiveHeadIndex >= 0) {
         if (g_zModel_MatlPool == 0 || g_zModel_MatlActiveHeadIndex >= g_zModel_MatlPoolCapacity) {
@@ -829,8 +921,11 @@ int ReleaseAllActive() {
     return 0;
 }
 
-// Reimplements 0x480fd0: zModel_MatlBuffer::ReleaseTextureSurfaces
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x480fd0: zModel_MatlBuffer::ReleaseTextureSurfaces
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: release upload-surface references for active, unpinned texture materials.
+ */
 void ReleaseTextureSurfaces() {
     int slotIndex = g_zModel_MatlActiveHeadIndex;
     while (slotIndex >= 0) {
@@ -856,10 +951,11 @@ void ReleaseTextureSurfaces() {
     }
 }
 
-// Reimplements 0x480f10: zModel_MatlBuffer::Shutdown
-// (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
-// Reimplements 0x475fa0: zModel_Display::Shutdown
-// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+/**
+ * Reimplements 0x480f10: zModel_MatlBuffer::Shutdown
+ * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+ * Purpose: shut down the material pool and release dynamic renderer string entries.
+ */
 int Shutdown() {
     ReleaseAllActive();
     if (g_zModel_MatlPool != 0) {
@@ -878,8 +974,11 @@ int Shutdown() {
 } // namespace zModel_MatlBuffer
 
 namespace zModel_Matl {
-// Reimplements 0x480ae0: zModel_Matl::InitGlobals
-// (GameZRecoil/zModel/zModel_Matl.cpp)
+/**
+ * Reimplements 0x480ae0: zModel_Matl::InitGlobals
+ * (GameZRecoil/zModel/zModel_Matl.cpp).
+ * Purpose: allocate and initialize the global material-slot pool and default material.
+ */
 int InitGlobals() {
     if (g_zModel_MatlPoolCapacity == 0) {
         g_zModel_MatlPoolCapacity = 2500;
@@ -908,7 +1007,11 @@ int InitGlobals() {
     return 0;
 }
 
-// Reimplements 0x4805e0: zModel_Matl::GetPoolEntry
+/**
+ * Reimplements 0x4805e0: zModel_Matl::GetPoolEntry
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: return the material-slot pool entry for a non-negative index.
+ */
 zModel_MaterialSlot *__fastcall GetPoolEntry(
     int index
 ) {
@@ -921,7 +1024,11 @@ zModel_MaterialSlot *__fastcall GetPoolEntry(
 } // namespace zModel_Matl
 
 namespace zModel_Display {
-// Reimplements 0x475f60: zModel_Display::Reset
+/**
+ * Reimplements 0x475f60: zModel_Display::Reset
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: free all currently in-use display-instance pool entries.
+ */
 int Reset() {
     if (g_zModel_DiPoolCapacity > 0) {
         for (int i = 0; i < g_zModel_DiPoolInUseCount; ++i) {
@@ -932,6 +1039,11 @@ int Reset() {
     return 0;
 }
 
+/**
+ * Reimplements 0x475fa0: zModel_Display::Shutdown
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: shut down display materials and release the display-instance pool.
+ */
 int Shutdown() {
     zModel_MatlBuffer::Shutdown();
     if (g_zModel_DiPoolCapacity > 0) {
@@ -946,8 +1058,11 @@ int Shutdown() {
     return 0;
 }
 
-// Reimplements 0x475e60: zModel_Display::ShutdownThunk
-// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+/**
+ * Reimplements 0x475e60: zModel_Display::ShutdownThunk
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: registration thunk that invokes zModel_Display::Shutdown.
+ */
 int ShutdownThunk() {
     Shutdown();
     return 0;
@@ -955,7 +1070,11 @@ int ShutdownThunk() {
 } // namespace zModel_Display
 
 namespace zTag4 {
-// Reimplements 0x476320: zTag4::Clear
+/**
+ * Reimplements 0x476320: zTag4::Clear
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: reset a variant tag set to the empty sentinel state.
+ */
 void __fastcall Clear(
     zTag4Partial *tag
 ) {
@@ -971,8 +1090,11 @@ void __fastcall Clear(
 } // namespace zTag4
 
 namespace VariantTag {
-// Reimplements 0x476370: VariantTag::TagsOverlap
-// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+/**
+ * Reimplements 0x476370: VariantTag::TagsOverlap
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+ * Purpose: test whether two variant tag sets pass the active filter.
+ */
 int __fastcall TagsOverlap(
     const zTag4Partial *tagA,
     const zTag4Partial *tagB
@@ -1007,8 +1129,11 @@ int __fastcall TagsOverlap(
     return 0;
 }
 
-// Reimplements 0x476400: VariantTag::CurrentAllowsId
-// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+/**
+ * Reimplements 0x476400: VariantTag::CurrentAllowsId
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+ * Purpose: test whether one variant id is accepted by the active tag filter.
+ */
 int __fastcall CurrentAllowsId(
     int variantId
 ) {

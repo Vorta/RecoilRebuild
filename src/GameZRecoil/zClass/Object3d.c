@@ -22,6 +22,12 @@ namespace {
 
     const char *kObject3DSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c";
 
+    /**
+     * Original static helper observed in callers 0x438020 and 0x44dc30
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: clamp model-reference, color, and alpha inputs to the unit
+     * interval used by object render state.
+     */
     float ClampUnit(float value) {
         if (value < 0.0f) {
             return 0.0f;
@@ -33,6 +39,12 @@ namespace {
     }
 
     zClass_Object3DDataPartial *
+    /**
+     * Original static helper observed in Object3D setter/getter callers
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate node, class-data, and Object3D class id before returning
+     * the node's Object3D data.
+     */
     GetObject3DData(
         zClass_NodePartial * node,
         int nullLine,
@@ -74,6 +86,12 @@ namespace {
         return (zClass_Object3DDataPartial *)(node->classData);
     }
 
+    /**
+     * Original static helper observed in Object3D transform callers
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate node and class-data pointers before returning Object3D
+     * data for callers that do not perform a class-id check.
+     */
     zClass_Object3DDataPartial *GetObject3DDataNoClassCheck(
         zClass_NodePartial * node,
         int nullLine,
@@ -102,6 +120,12 @@ namespace {
         return (zClass_Object3DDataPartial *)(node->classData);
     }
 
+    /**
+     * Original static helper observed in Object3D transform-mutator callers
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: mark Object3D transform state dirty, propagate dirty bounds to
+     * descendants, and enqueue the node on the transform-update type list.
+     */
     void QueueTransformUpdate(
         zClass_NodePartial * node,
         zClass_Object3DDataPartial * data
@@ -119,6 +143,12 @@ namespace {
     }
 
     void
+    /**
+     * Original static helper observed in callers 0x44e030, 0x44e170, 0x44e300,
+     * and 0x44e3d0 (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: clear the identity-transform flag when any supplied component is
+     * nonzero.
+     */
     ClearIdentityFlagIfAnyNonZero(
         zClass_Object3DDataPartial * data,
         float x,
@@ -130,6 +160,12 @@ namespace {
         }
     }
 
+    /**
+     * Original static helper observed in caller 0x44b300
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: decide whether object render culling is needed, refresh the view
+     * bounding sphere, and run the frustum sphere clip-mask test.
+     */
     int CullNodeForRender(
         zClass_NodePartial * node,
         int siblingCountHint,
@@ -177,6 +213,12 @@ namespace {
         return result;
     }
 
+    /**
+     * Original static helper observed in caller 0x44b300
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: push the correct object matrix onto the zMath stack, recomputing
+     * cached world matrix state when the transform is dirty.
+     */
     void PushObjectMatrix(
         zClass_Object3DDataPartial * data,
         int *pushed
@@ -206,6 +248,12 @@ namespace {
         }
     }
 
+    /**
+     * Original static helper observed in caller 0x44b300
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: push vertex-alpha, alpha-scale, and software color override
+     * render state for an Object3D node.
+     */
     void PushObjectRenderState(
         zClass_NodePartial * node,
         zClass_Object3DDataPartial * data,
@@ -244,6 +292,12 @@ namespace {
         }
     }
 
+    /**
+     * Original static helper observed in caller 0x44b300
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: restore Object3D render-state stacks after rendering a node
+     * subtree.
+     */
     void PopObjectRenderState(
         int pushedVertexAlpha,
         int pushedAlphaScale,
@@ -280,6 +334,12 @@ namespace {
         }
     }
 
+    /**
+     * Original static helper observed in caller 0x44b300
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: render Object3D children through variant filtering and dispatch
+     * non-Object3D children through the generic node renderer.
+     */
     void RenderObjectChildren(
         zClass_NodePartial * node,
         int clipMask
@@ -311,9 +371,13 @@ namespace {
 }
 
 namespace zClass_Object3D {
-    // Reimplements 0x44b300: zClass_Object3D::RenderTraverse
-    // (D:\Proj\GameZRecoil\zClass\Object3d.c)
     int __fastcall
+    /**
+     * Reimplements 0x44b300: zClass_Object3D::RenderTraverse
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: cull visible Object3D nodes, manage alt-clip and render-bounds
+     * state, push transform/render state, render the node, and recurse children.
+     */
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint
@@ -406,7 +470,12 @@ namespace zClass_Object3D {
         return result;
     }
 
-    // Reimplements 0x44daa0: zClass_Object3D::gwObject3DInit
+    /**
+     * Reimplements 0x44daa0: zClass_Object3D::gwObject3DInit
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: allocate an Object3D node, attach zeroed Object3D data, and
+     * initialize/queue its default transform state.
+     */
     zClass_NodePartial *gwObject3DInit() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
@@ -427,8 +496,13 @@ namespace zClass_Object3D {
         return PropagateTransformDirty(node) == 0 ? node : 0;
     }
 
-    // Reimplements 0x44db10: zClass_Object3D::gwObject3DAddChild
     int __fastcall
+    /**
+     * Reimplements 0x44db10: zClass_Object3D::gwObject3DAddChild
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate parent, child, and Object3D class data before delegating
+     * to the generic child-add helper.
+     */
     gwObject3DAddChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -467,8 +541,13 @@ namespace zClass_Object3D {
         );
     }
 
-    // Reimplements 0x44db60: zClass_Object3D::RemoveChild
     int __fastcall
+    /**
+     * Reimplements 0x44db60: zClass_Object3D::RemoveChild
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate parent, child, and Object3D class data before delegating
+     * to the generic child-removal helper.
+     */
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -507,12 +586,21 @@ namespace zClass_Object3D {
         );
     }
 
-    // Reimplements 0x44db00: zClass_Object3D::DeleteNode
+    /**
+     * Reimplements 0x44db00: zClass_Object3D::DeleteNode
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: release an Object3D node through the generic node free-list path.
+     */
     int __fastcall DeleteNode(zClass_NodePartial * node) {
         return zClass_Class::TryFreeNode(node);
     }
 
-    // Reimplements 0x44d9e0: zClass_Object3D::PropagateTransformDirty
+    /**
+     * Reimplements 0x44d9e0: zClass_Object3D::PropagateTransformDirty
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: reset local Object3D transform fields to identity defaults and
+     * queue a transform/bounds dirty update for the node subtree.
+     */
     int __fastcall PropagateTransformDirty(zClass_NodePartial * node) {
         zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
             node,
@@ -550,8 +638,12 @@ namespace zClass_Object3D {
         return 0;
     }
 
-    // Reimplements 0x44dbb0: zClass_Object3D::gwObject3DSetVisibleFlag
     int __fastcall
+    /**
+     * Reimplements 0x44dbb0: zClass_Object3D::gwObject3DSetVisibleFlag
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate Object3D data and set or clear the visible render flag.
+     */
     gwObject3DSetVisibleFlag(
         zClass_NodePartial * node,
         int visible
@@ -574,8 +666,13 @@ namespace zClass_Object3D {
         return 0;
     }
 
-    // Reimplements 0x44dc30: zClass_Object3D::gwObject3DSetColorAlpha
     int __fastcall
+    /**
+     * Reimplements 0x44dc30: zClass_Object3D::gwObject3DSetColorAlpha
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate Object3D data, clamp alpha/color inputs, and store the
+     * software color override state.
+     */
     gwObject3DSetColorAlpha(
         zClass_NodePartial * node,
         zColorRgb * color,
@@ -601,8 +698,12 @@ namespace zClass_Object3D {
         return 0;
     }
 
-    // Reimplements 0x44dd90: zClass_Object3D::gwObject3DSetAlphaScale
     int __fastcall
+    /**
+     * Reimplements 0x44dd90: zClass_Object3D::gwObject3DSetAlphaScale
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate Object3D data and store the alpha-scale render value.
+     */
     gwObject3DSetAlphaScale(
         zClass_NodePartial * node,
         float alphaScale
@@ -621,8 +722,12 @@ namespace zClass_Object3D {
         return 0;
     }
 
-    // Reimplements 0x44de10: zClass_Object3D::gwObject3DGetAlphaScale
     int __fastcall
+    /**
+     * Reimplements 0x44de10: zClass_Object3D::gwObject3DGetAlphaScale
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate Object3D data and return the stored alpha-scale value.
+     */
     gwObject3DGetAlphaScale(
         zClass_NodePartial * node,
         float *outAlphaScale
@@ -641,7 +746,12 @@ namespace zClass_Object3D {
         return 0;
     }
 
-    // Reimplements 0x44de80: zClass_Object3D::gwObject3DSetLitFlag
+    /**
+     * Reimplements 0x44de80: zClass_Object3D::gwObject3DSetLitFlag
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate Object3D data and set or clear the lit/model-reference
+     * render flag.
+     */
     int __fastcall gwObject3DSetLitFlag(
         zClass_NodePartial * node,
         int lit
@@ -664,8 +774,12 @@ namespace zClass_Object3D {
         return 0;
     }
 
-    // Reimplements 0x44dfd0: zClass_Object3D::gwObject3DGetScale
     int __fastcall
+    /**
+     * Reimplements 0x44dfd0: zClass_Object3D::gwObject3DGetScale
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate Object3D data and return the local scale vector.
+     */
     gwObject3DGetScale(
         zClass_NodePartial * node,
         float *outX,
@@ -687,8 +801,13 @@ namespace zClass_Object3D {
         return 0;
     }
 
-    // Reimplements 0x44df00: zClass_Object3D::gwObject3DSetScale
     int __fastcall
+    /**
+     * Reimplements 0x44df00: zClass_Object3D::gwObject3DSetScale
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate Object3D data, store local scale, update identity state,
+     * and queue transform/bounds propagation.
+     */
     gwObject3DSetScale(
         zClass_NodePartial * node,
         float x,
@@ -719,8 +838,12 @@ namespace zClass_Object3D {
         return 0;
     }
 
-    // Reimplements 0x44e110: zClass_Object3D::gwObject3DGetRotation
     int __fastcall
+    /**
+     * Reimplements 0x44e110: zClass_Object3D::gwObject3DGetRotation
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate Object3D data and return the local rotation vector.
+     */
     gwObject3DGetRotation(
         zClass_NodePartial * node,
         float *outX,
@@ -742,8 +865,13 @@ namespace zClass_Object3D {
         return 0;
     }
 
-    // Reimplements 0x44e030: zClass_Object3D::gwObject3DSetRotation
     int __fastcall
+    /**
+     * Reimplements 0x44e030: zClass_Object3D::gwObject3DSetRotation
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate Object3D data, store local rotation, update identity
+     * state, and queue transform/bounds propagation.
+     */
     gwObject3DSetRotation(
         zClass_NodePartial * node,
         float x,
@@ -777,8 +905,13 @@ namespace zClass_Object3D {
         return 0;
     }
 
-    // Reimplements 0x44e170: zClass_Object3D::gwObject3DTranslateRotation
     int __fastcall
+    /**
+     * Reimplements 0x44e170: zClass_Object3D::gwObject3DTranslateRotation
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate Object3D data, add local rotation deltas, update
+     * identity state, and queue transform/bounds propagation.
+     */
     gwObject3DTranslateRotation(
         zClass_NodePartial * node,
         float dx,
@@ -812,8 +945,13 @@ namespace zClass_Object3D {
         return 0;
     }
 
-    // Reimplements 0x44e270: zClass_Object3D::gwObject3DGetPosition
     int __fastcall
+    /**
+     * Reimplements 0x44e270: zClass_Object3D::gwObject3DGetPosition
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate Object3D data and return translation components from
+     * the local matrix.
+     */
     gwObject3DGetPosition(
         zClass_NodePartial * node,
         float *outX,
@@ -836,8 +974,13 @@ namespace zClass_Object3D {
         return 0;
     }
 
-    // Reimplements 0x44e300: zClass_Object3D::gwObject3DSetPosition
     int __fastcall
+    /**
+     * Reimplements 0x44e300: zClass_Object3D::gwObject3DSetPosition
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate Object3D data, store local matrix translation, update
+     * identity state, and queue transform/bounds propagation.
+     */
     gwObject3DSetPosition(
         zClass_NodePartial * node,
         float x,
@@ -870,8 +1013,13 @@ namespace zClass_Object3D {
         return 0;
     }
 
-    // Reimplements 0x44e3d0: zClass_Object3D::gwObject3DTranslatePosition
     int __fastcall
+    /**
+     * Reimplements 0x44e3d0: zClass_Object3D::gwObject3DTranslatePosition
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate Object3D data, add local translation deltas, update
+     * identity state, and queue transform/bounds propagation.
+     */
     gwObject3DTranslatePosition(
         zClass_NodePartial * node,
         float dx,
@@ -905,7 +1053,12 @@ namespace zClass_Object3D {
         return 0;
     }
 
-    // Reimplements 0x44e5b0: zClass_Object3D::gwObject3DGetMatrixPtr
+    /**
+     * Reimplements 0x44e5b0: zClass_Object3D::gwObject3DGetMatrixPtr
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate Object3D data and return a pointer to the local matrix
+     * storage.
+     */
     float *__fastcall gwObject3DGetMatrixPtr(zClass_NodePartial * node) {
         zClass_Object3DDataPartial *data = GetObject3DData(
             node,
@@ -920,8 +1073,13 @@ namespace zClass_Object3D {
         return data->localMatrix;
     }
 
-    // Reimplements 0x44e4f0: zClass_Object3D::gwObject3DSetMatrix
     int __fastcall
+    /**
+     * Reimplements 0x44e4f0: zClass_Object3D::gwObject3DSetMatrix
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate Object3D data, copy local matrix storage when needed,
+     * mark matrix-authored transform state, and enqueue transform propagation.
+     */
     gwObject3DSetMatrix(
         zClass_NodePartial * node,
         float *matrix
@@ -963,8 +1121,12 @@ zClass_Object3D_ModelRefLerpQueueState g_ModelRefLerpQueueState = {0};
 }
 
 namespace zClass_Object3D_ModelRefLerpQueue {
-    // Reimplements 0x437fe4: zClass_Object3D_ModelRefLerpQueue::ClearGlobalState
-    // (D:\Proj\GameZRecoil\zClass\Object3d.c)
+    /**
+     * Reimplements 0x437fe4: zClass_Object3D_ModelRefLerpQueue::ClearGlobalState
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: clear the global model-reference lerp queue head, tail, aux, and
+     * count fields.
+     */
     void ClearGlobalState() {
         g_ModelRefLerpQueueState.listAux = 0;
         g_ModelRefLerpQueueState.tail = 0;
@@ -972,7 +1134,12 @@ namespace zClass_Object3D_ModelRefLerpQueue {
         g_ModelRefLerpQueueState.count = 0;
     }
 
-    // Reimplements 0x438020: zClass_Object3D_ModelRefLerpQueue::Add
+    /**
+     * Reimplements 0x438020: zClass_Object3D_ModelRefLerpQueue::Add
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: allocate and append a model-reference lerp task, normalize fade
+     * direction/rate, and enable the node's lit/model-reference flag.
+     */
     void __fastcall Add(
         zClass_NodePartial * node,
         void *callbackCtx,
@@ -1027,8 +1194,12 @@ namespace zClass_Object3D_ModelRefLerpQueue {
         );
     }
 
-    // Reimplements 0x4381d0: zClass_Object3D_ModelRefLerpQueue::Update
-    // (D:\Proj\GameZRecoil\zClass\Object3d.c)
+    /**
+     * Reimplements 0x4381d0: zClass_Object3D_ModelRefLerpQueue::Update
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: advance queued model-reference fades by frame time, apply alpha
+     * scale, invoke completion callbacks, and unlink finished tasks.
+     */
     void Update() {
         if (g_ModelRefLerpQueueState.count == 0) {
             return;
@@ -1108,7 +1279,12 @@ namespace zClass_Object3D_ModelRefLerpQueue {
         }
     }
 
-    // Reimplements 0x438180: zClass_Object3D_ModelRefLerpQueue::Reset
+    /**
+     * Reimplements 0x438180: zClass_Object3D_ModelRefLerpQueue::Reset
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: delete all queued model-reference lerp tasks and zero the global
+     * queue state.
+     */
     void Reset() {
         zClass_Object3D_ModelRefLerpTask *task = g_ModelRefLerpQueueState.head;
         while (task != 0) {
@@ -1133,7 +1309,12 @@ namespace zClass_Node {
         };
     }
 
-    // Reimplements 0x4527f0: zClass_Node::HasRenderableDiPredicate
+    /**
+     * Reimplements 0x4527f0: zClass_Node::HasRenderableDiPredicate
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: test whether a node's DI reference points to a renderable display
+     * instance mode without the hidden flag.
+     */
     int __fastcall HasRenderableDiPredicate(zClass_NodePartial * node) {
         zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
         if (di != 0 && di->mode == 1 && (di->flags & 0x10) == 0) {
@@ -1143,7 +1324,12 @@ namespace zClass_Node {
         return 0;
     }
 
-    // Reimplements 0x44d990: zClass_Node::PropagateTransformDirtyRecursive
+    /**
+     * Reimplements 0x44d990: zClass_Node::PropagateTransformDirtyRecursive
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: mark Object3D transform data, node bounds, and descendants dirty
+     * for transform-dependent world/render updates.
+     */
     void __fastcall PropagateTransformDirtyRecursive(
         zClass_NodePartial * self
     ) {

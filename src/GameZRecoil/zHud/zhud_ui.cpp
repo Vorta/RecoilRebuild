@@ -50,6 +50,20 @@ const float ZSND_CD_VOLUME_TO_NORMALIZED = 1.52590219e-05f;
 const float ZSND_CD_NORMALIZED_TO_VOLUME = 65535.0f;
 const unsigned int HUD_UI_NET_GAME_SETUP_FOCUS_TEXT_INPUT_OFFSET = 0xa94c;
 
+RECOIL_STATIC_ASSERT(sizeof(HudUiCommon_FTable) == 0x74);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCommon_FTable, dtor) == 0x0);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCommon_FTable, DrawBase) == 0x8);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCommon_FTable, SetClip) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCommon_FTable, HitTest) == 0x5c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCommon_FTable, GetRect) == 0x70);
+RECOIL_STATIC_ASSERT(sizeof(HudUiPanel_FTable) == 0x94);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanel_FTable, dtor) == 0x0);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanel_FTable, SetClip) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanel_FTable, HitTest) == 0x54);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanel_FTable, SetTextFmt) == 0x74);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanel_FTable, SetFont) == 0x80);
+RECOIL_STATIC_ASSERT(offsetof(HudUiPanel_FTable, RebuildTextRect) == 0x90);
+
 template <typename Method>
 unsigned int MethodAddress(
     Method method
@@ -93,29 +107,35 @@ void AssignMethodSlot(
     );
 }
 
-void __fastcall HudUiCommonInvalidateThunk(
-    HudUiElement *element
-) {
-    element->Invalidate();
-}
-
+/**
+ * Provider boundary for 0x413eb0: NoOp::MethodStub.
+ * Purpose: preserve the compiler-generated no-op method target used by HUD
+ * teardown stubs without modeling it as authored HUD source.
+ */
 void __fastcall HudUiNoOpMethodStub(
     void *
 ) {}
 
+/**
+ * Restores the common HUD method-table initializer used by the HUD ftable globals.
+ * No standalone retail function exists; Binary Ninja data at 0x4cca10 and derived
+ * table initializers identify these common slot values.
+ * Purpose: materialize the common HUD element dispatch table with source-named
+ * fields instead of anonymous slot indexes.
+ */
 HudUiCommon_FTable MakeHudUiCommonFTable() {
     HudUiCommon_FTable table = {0};
-    table.slots[1] = MethodAddress(&HudUiElement::Draw);
-    table.slots[2] = MethodAddress(&HudUiElement::DrawBase);
-    table.slots[8] = (unsigned int)(&HudUiCommonInvalidateThunk);
-    table.slots[3] = MethodAddress(&HudUiElement::SetPos);
-    table.slots[4] = MethodAddress(&HudUiElement::SetX);
-    table.slots[5] = MethodAddress(&HudUiElement::SetY);
-    table.slots[6] = MethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    table.slots[7] = MethodAddress(&HudUiElement::SetClipRect);
-    table.slots[24] = MethodAddress(&HudUiElement::SetVisible);
-    table.slots[25] = MethodAddress(&HudUiElement::GetX);
-    table.slots[26] = MethodAddress(&HudUiElement::GetY);
+    table.Draw = MethodAddress(&HudUiElement::Draw);
+    table.DrawBase = MethodAddress(&HudUiElement::DrawBase);
+    table.SetPos = MethodAddress(&HudUiElement::SetPos);
+    table.SetX = MethodAddress(&HudUiElement::SetX);
+    table.SetY = MethodAddress(&HudUiElement::SetY);
+    table.SetClip = MethodAddress(&HudUiElement::SetBltSourceAndClipRect);
+    table.SetClipRect = MethodAddress(&HudUiElement::SetClipRect);
+    table.Invalidate = MethodAddress(&HudUiElement::Invalidate);
+    table.SetVisible = MethodAddress(&HudUiElement::SetVisible);
+    table.GetX = MethodAddress(&HudUiElement::GetX);
+    table.GetY = MethodAddress(&HudUiElement::GetY);
     return table;
 }
 
@@ -175,11 +195,11 @@ template <typename FTable> FTable MakeHudUiContainerLikeFTable() {
 template <typename FTable> FTable MakeHudUiFTableWithCommonInvalidate() {
     FTable table = {0};
     if ((sizeof(table.slots) / sizeof(table.slots[0])) > 2) {
-        table.slots[2] = (unsigned int)(&HudUiNoOpMethodStub);
+        table.slots[2] = (unsigned int)(&zError::ReportOld);
     }
 
     if ((sizeof(table.slots) / sizeof(table.slots[0])) > 8) {
-        table.slots[8] = (unsigned int)(&HudUiCommonInvalidateThunk);
+        table.slots[8] = MethodAddress(&HudUiElement::Invalidate);
     }
 
     if ((sizeof(table.slots) / sizeof(table.slots[0])) > 3) {
@@ -293,6 +313,63 @@ HudUiMessage_FTable MakeHudUiMessageFTable() {
     return table;
 }
 
+/**
+ * Restores the concrete panel HUD method-table initializer used by
+ * g_HudUiPanel_FTable at 0x4d3a88.
+ * No standalone retail function exists; Binary Ninja data and panel constructor/
+ * destructor table writes identify the panel slot names.
+ * Purpose: overlay the common HUD table with panel-specific dispatch methods
+ * through the recovered named panel ftable fields.
+ */
+HudUiPanel_FTable MakeHudUiPanelFTableConcrete() {
+    HudUiPanel_FTable table = {0};
+    table.dtor = MethodAddress(&HudUiPanel::ScalarDeletingDestructor);
+    table.Draw = MethodAddress(&HudUiPanel::Draw);
+    table.DrawBase = MethodAddress(&HudUiElement::DrawBase);
+    table.SetPos = MethodAddress(&HudUiElement::SetPos);
+    table.SetX = MethodAddress(&HudUiElement::SetX);
+    table.SetY = MethodAddress(&HudUiElement::SetY);
+    table.SetClip = MethodAddress(&HudUiPanel::SetClip);
+    table.SetClipRect = MethodAddress(&HudUiElement::SetClipRect);
+    table.Invalidate = MethodAddress(&HudUiPanel::Invalidate);
+    table.Update = MethodAddress(&HudUiElement::Update);
+    table.field_28 = MethodAddress(&zStub::NoOp1Arg);
+    table.GetTextBufferPtrOrNull = MethodAddress(&zStub::ReturnZeroNoArgs);
+    table.OnActivate = (unsigned int)(&zError::ReportOld);
+    table.field_34 = (unsigned int)(&zError::ReportOld);
+    table.field_38 = (unsigned int)(&zError::ReportOld);
+    table.field_3c = (unsigned int)(&zError::ReportOld);
+    table.field_40 = (unsigned int)(&zError::ReportOld);
+    table.field_44 = (unsigned int)(&zError::ReportOld);
+    table.field_48 = (unsigned int)(&zError::ReportOld);
+    table.field_4c = (unsigned int)(&zError::ReportOld);
+    table.field_50 = (unsigned int)(&zError::ReportOld);
+    table.HitTest = MethodAddress(&StdPtrVector::ClearNoOpDestroy);
+    table.field_58 = (unsigned int)(&zError::ReportOld);
+    table.field_5c = MethodAddress(&HudUiElement::HitTestTrue);
+    table.SetVisible = MethodAddress(&HudUiElement::SetVisible);
+    table.GetX = MethodAddress(&HudUiElement::GetX);
+    table.GetY = MethodAddress(&HudUiElement::GetY);
+    table.EnableWordWrapWithRect = MethodAddress(&HudUiPanel::EnableWordWrapWithRect);
+    table.GetTextRect = MethodAddress(&HudUiPanel::GetTextRect);
+    table.SetTextFmt = MethodAddress(&HudUiPanel::SetTextFmt);
+    table.UpdateTextBoundsFromContent = MethodAddress(&HudUiPanel::UpdateTextBoundsFromContent);
+    table.GetFont = MethodAddress(&HudUiPanel::GetFont);
+    table.SetFont = MethodAddress(&HudUiPanel::SetFont);
+    table.SetFontHandle = MethodAddress(&HudUiPanel::SetFontHandle);
+    table.SetTextFmtV = MethodAddress(&HudUiPanel::SetTextFmtV);
+    table.SetText = MethodAddress(&HudUiPanel::SetText);
+    table.RebuildTextRect = MethodAddress(&HudUiPanel::RebuildTextRect);
+    return table;
+}
+
+/**
+ * Restores the panel-family HUD method-table initializer used by panel-derived
+ * globals that still expose only slot-array table layouts.
+ * No standalone retail function exists; Binary Ninja data and panel constructor/
+ * destructor table writes identify the inherited panel slot values.
+ * Purpose: overlay a common HUD slot table with panel-family dispatch methods.
+ */
 template <typename FTable> FTable MakeHudUiPanelFTable() {
     FTable table = MakeHudUiFTableWithCommonInvalidate<FTable>();
     RECOIL_STATIC_ASSERT((sizeof(table.slots) / sizeof(table.slots[0])) > 36);
@@ -308,7 +385,7 @@ template <typename FTable> FTable MakeHudUiPanelFTable() {
 }
 
 HudUiPanel_FTable MakeHudUiTransitionTextPanelFTable() {
-    HudUiPanel_FTable table = MakeHudUiPanelFTable<HudUiPanel_FTable>();
+    HudUiPanel_FTable table = MakeHudUiPanelFTableConcrete();
     table.slots[9] = MethodAddress(&HudUiTransitionTextPanel::TickFlash);
     return table;
 }
@@ -356,7 +433,7 @@ HudUiTripletPanel_FTable MakeHudUiTripletPanelFTable() {
     HudUiTripletPanel_FTable table =
         MakeHudUiFTableWithCommonInvalidate<HudUiTripletPanel_FTable>();
     table.slots[1] = MethodAddress(&HudUiTripletPanel::Draw);
-    table.slots[2] = (unsigned int)(&HudUiNoOpMethodStub);
+    table.slots[2] = (unsigned int)(&zError::ReportOld);
     return table;
 }
 
@@ -400,7 +477,7 @@ HudUiZrdWidget_FTable MakeHudUiMessageBoxButtonFTable(
     table.slots[16] = MethodAddress(&HudUiZrdWidget::HidePreview);
     table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
     table.slots[31] = MethodAddress(&HudUiZrdWidget::LoadFromZrd);
-    table.slots[32] = (unsigned int)(&HudUiNoOpMethodStub);
+    table.slots[32] = (unsigned int)(&zError::ReportOld);
     return table;
 }
 
@@ -424,7 +501,7 @@ HudUiCycleSelectorWidget_FTable MakeHudCmdSetListFTable() {
     table.slots[12] = MethodAddress(&HudCmdSetListWidget::OnActivate);
     table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
     table.slots[31] = MethodAddress(&HudUiCycleSelectorWidget::LoadFromZrd);
-    table.slots[32] = (unsigned int)(&HudUiNoOpMethodStub);
+    table.slots[32] = (unsigned int)(&zError::ReportOld);
     return table;
 }
 
@@ -438,12 +515,12 @@ HudCmdBindButtonBase_FTable MakeHudCmdBindButtonFTable(
     table.slots[0] = scalarDeletingDestructor;
     table.slots[12] = activateSlot;
     table.slots[13] = clearBindingSlot;
-    table.slots[14] = (unsigned int)(&HudUiNoOpMethodStub);
+    table.slots[14] = (unsigned int)(&zError::ReportOld);
     table.slots[15] = MethodAddress(&HudUiCheckToggleWidget::ShowPreview);
     table.slots[16] = MethodAddress(&HudUiCheckToggleWidget::HidePreview);
     table.slots[30] = MethodAddress(&HudUiCheckToggleWidget::RefreshState);
     table.slots[31] = MethodAddress(&HudCmdBindButtonBase::LoadFromZrd);
-    table.slots[32] = (unsigned int)(&HudUiNoOpMethodStub);
+    table.slots[32] = (unsigned int)(&zError::ReportOld);
     table.slots[33] = MethodAddress(&HudCmdBindButtonBase::OnSelectionChangedRefresh);
     return table;
 }
@@ -460,7 +537,7 @@ HudCmdDialog_BackgroundPanelFTable MakeHudCmdDialogFTable() {
     table.primarySlots[0] = MethodAddress(&HudCmdDialog::UpdateCaptureState);
     table.primarySlots[1] = MethodAddress(&HudUiBackground::SetEnabled);
     table.primarySlots[2] = MethodAddress(&HudCmdDialog::ScalarDeletingDestructor);
-    table.SecondaryAction = MakeHudUiPanelFTable<HudUiPanel_FTable>();
+    table.SecondaryAction = MakeHudUiPanelFTableConcrete();
     return table;
 }
 
@@ -472,7 +549,7 @@ HudUiZrdWidget_FTable MakeHudUiOptionsPanelBackButtonFTable() {
     table.slots[16] = MethodAddress(&HudUiZrdWidget::HidePreview);
     table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
     table.slots[31] = MethodAddress(&HudUiZrdWidget::LoadFromZrd);
-    table.slots[32] = (unsigned int)(&HudUiNoOpMethodStub);
+    table.slots[32] = (unsigned int)(&zError::ReportOld);
     return table;
 }
 
@@ -546,7 +623,7 @@ HudUiCreditsPanel_FTable MakeHudUiCreditsPanelFTable() {
         MethodAddress(&HudUiZrdScrollingText::OnActivateResetOwnerFade);
     table.SecondaryAction.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
     table.SecondaryAction.slots[31] = MethodAddress(&HudUiZrdScrollingText::LoadFromZrd);
-    table.SecondaryAction.slots[32] = (unsigned int)(&HudUiNoOpMethodStub);
+    table.SecondaryAction.slots[32] = (unsigned int)(&zError::ReportOld);
     return table;
 }
 
@@ -799,7 +876,7 @@ const HudUiZrdWidget_FTable g_HudCmdResetButton_FTable =
 const HudCmdBindButtonBase_FTable g_HudCmdCommandList_FTable = MakeHudCmdBindButtonFTable(
     MethodAddress(&HudCmdCommandList::ScalarDeletingDestructor),
     MethodAddress(&HudUiCheckToggleWidget::OnActivate),
-    (unsigned int)(&HudUiNoOpMethodStub)
+    (unsigned int)(&zError::ReportOld)
 );
 const HudCmdBindButtonBase_FTable g_HudCmdKeyAButton_FTable = MakeHudCmdBindButtonFTable(
     MethodAddress(&HudCmdKeyAButton::ScalarDeletingDestructor),
@@ -916,7 +993,7 @@ const HudUiZrdWidget_FTable g_HudUiMessageBoxCancelButton_Vtbl =
 const HudUiCounter_FTable g_HudUiCounter_FTable =
     MakeHudUiFTableWithCommonInvalidate<HudUiCounter_FTable>();
 const HudUiMessage_FTable g_HudUiMessage_FTable = MakeHudUiMessageFTable();
-const HudUiPanel_FTable g_HudUiPanel_FTable = MakeHudUiPanelFTable<HudUiPanel_FTable>();
+const HudUiPanel_FTable g_HudUiPanel_FTable = MakeHudUiPanelFTableConcrete();
 const HudUiPanel_FTable g_HudUiTransitionTextPanel_FTable = MakeHudUiTransitionTextPanelFTable();
 const HudUiCompositePanel_FTable g_HudUiCompositePanel_FTable = MakeHudUiCompositePanelFTable();
 const HudUiListSelectorItem_FTable g_HudUiListSelectorItem_FTable =
@@ -6437,7 +6514,10 @@ void HudUiElement::DrawBase() {
     }
 }
 
-// Reimplements 0x4b4180: HudUiElement::Invalidate
+/**
+ * Reimplements 0x4b4180: HudUiElement::Invalidate.
+ * Purpose: mark the element dirty by OR-ing the current HUD invalidation mask into its flags.
+ */
 void HudUiElement::Invalidate() {
     flags |= g_HudUi_InvalidateMask;
 }
@@ -17558,7 +17638,11 @@ HudUiPanel * HudUiPanel::ConstructorCopy(
     return this;
 }
 
-// Reimplements 0x4bab40: HudUiPanel::Destructor
+/**
+ * Reimplements 0x4bab40: HudUiPanel::Destructor.
+ * Purpose: release the owned text image/font resources and restore the common
+ * HUD element ftable during panel teardown.
+ */
 void HudUiPanel::Destructor() {
     vtbl = &g_HudUiPanel_FTable;
 
@@ -17571,8 +17655,12 @@ void HudUiPanel::Destructor() {
     vtbl = &g_HudUiCommon_FTable;
 }
 
-// Reimplements 0x40bef0: HudUiPanel::DestructorThunk
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x40bef0: HudUiPanel::DestructorThunk.
+ * Original file: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: tail-call the panel destructor through the callback-compatible
+ * panel method slot.
+ */
 void HudUiPanel::DestructorThunk() {
     Destructor();
 }

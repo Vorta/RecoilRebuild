@@ -146,6 +146,12 @@ const DWORD kCallbackSleepMs = 300;
 const DWORD kBootstrapWaitTimeoutMs = 5;
 const DWORD kFailureDisplaySleepMs = 1000;
 
+/**
+ * Local helper with no standalone retail function; observed in callers 0x43d130
+ * and 0x43d2e0 as inlined localized failure-message copies.
+ *
+ * Purpose: copy a localized Westwood Online failure message into a stack buffer.
+ */
 void CopyFailureMessage(
     char *destination,
     const char *source
@@ -160,6 +166,13 @@ WestwoodOnlineUpgradeApiComObject *GetApiComObject() {
     return (WestwoodOnlineUpgradeApiComObject *)g_pWestwoodOnlineUpgradeApi;
 }
 
+/**
+ * Local helper with no standalone retail function; observed in caller 0x43d2e0
+ * at the progress-dialog DestroyWindow dispatch.
+ *
+ * Purpose: destroy the modal Westwood Online progress dialog through its MFC
+ * provider virtual slot.
+ */
 void DestroyProgressDialog() {
     CWnd *const progressWnd = (CWnd *)g_pWestwoodOnlineUpgradeProgressDialog;
     WestwoodOnlineUpgradeMfcWndVtable *const vftable =
@@ -170,6 +183,13 @@ void DestroyProgressDialog() {
     );
 }
 
+/**
+ * Local helper with no standalone retail function; observed in caller 0x43d2e0
+ * as the GetSystemDefaultLangID language switch.
+ *
+ * Purpose: choose the Westwood Online language id for German, French, or the
+ * default localized startup path.
+ */
 int GetWolLanguageId() {
     const LANGID primaryLanguage = GetSystemDefaultLangID() & 0x3ff;
     if (primaryLanguage == LANG_GERMAN) {
@@ -181,6 +201,13 @@ int GetWolLanguageId() {
     return kWolLanguageDefault;
 }
 
+/**
+ * Local helper with no standalone retail function; observed in caller 0x43d2e0
+ * as the initial WAIT_TIMEOUT callback pump.
+ *
+ * Purpose: process WOL API callbacks until the initial connect/status/failure
+ * wait set leaves the timeout state.
+ */
 void PumpInitialCallbacksUntilEvent(
     DWORD *waitResult
 ) {
@@ -205,6 +232,13 @@ void PumpInitialCallbacksUntilEvent(
     }
 }
 
+/**
+ * Local helper with no standalone retail function; observed in caller 0x43d2e0
+ * as the bootstrap-server wait loop.
+ *
+ * Purpose: process WOL API callbacks while waiting for the bootstrap server
+ * list/status/failure events.
+ */
 DWORD PumpBootstrapCallbacksUntilEvent() {
     DWORD waitResult = WaitForMultipleObjects(
         3,
@@ -230,8 +264,13 @@ DWORD PumpBootstrapCallbacksUntilEvent() {
 }
 } // namespace
 
-// Reimplements 0x42dda0: WestwoodOnlineUpgradeApiInitState::Init
-// (D:\Proj\Battlesport\WestwoodOnlineUpgradeApi.cpp)
+/**
+ * Reimplements 0x42dda0: WestwoodOnlineUpgradeApiInitState::Init
+ * (D:\Proj\Battlesport\WestwoodOnlineUpgradeApi.cpp).
+ *
+ * Purpose: validate and initialize the transient WOL bootstrap-state block,
+ * module handles, events, and critical sections.
+ */
 HRESULT __stdcall WestwoodOnlineUpgradeApiInitState::Init(
     WestwoodOnlineUpgradeApiInitState *self,
     HANDLE bootstrapServerListEvent,
@@ -257,8 +296,13 @@ HRESULT __stdcall WestwoodOnlineUpgradeApiInitState::Init(
     return S_OK;
 }
 
-// Reimplements 0x43d2e0: WestwoodOnlineUpgradeApi::Init
-// (D:\Proj\Battlesport\WestwoodOnlineUpgradeApi.cpp)
+/**
+ * Reimplements 0x43d2e0: WestwoodOnlineUpgradeApi::Init
+ * (D:\Proj\Battlesport\WestwoodOnlineUpgradeApi.cpp).
+ *
+ * Purpose: create the WOL startup events and progress UI, begin the selected
+ * profile connection, request bootstrap servers, and enter list mode on success.
+ */
 int WestwoodOnlineUpgradeApi::Init() {
     char failureCaption[kWolApiFailureMessageBufferSize];
     char failureText[kWolApiFailureMessageBufferSize];
@@ -393,8 +437,13 @@ int WestwoodOnlineUpgradeApi::Init() {
     return 0;
 }
 
-// Reimplements 0x43d130: WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig
-// (D:\Proj\Battlesport\WestwoodOnlineUpgradeApi.cpp)
+/**
+ * Reimplements 0x43d130: WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig
+ * (D:\Proj\Battlesport\WestwoodOnlineUpgradeApi.cpp).
+ *
+ * Purpose: initialize COM/MFC control hosting, create the WOL ActiveX API,
+ * advise the event sink, and apply the selected upgrade profile.
+ */
 int WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig(
     HANDLE bootstrapServerListEvent
 ) {
@@ -457,8 +506,13 @@ int WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig(
     return 0;
 }
 
-// Reimplements 0x43d280: WestwoodOnlineUpgradeApi::Shutdown
-// (D:\Proj\Battlesport\WestwoodOnlineUpgradeApi.cpp)
+/**
+ * Reimplements 0x43d280: WestwoodOnlineUpgradeApi::Shutdown
+ * (D:\Proj\Battlesport\WestwoodOnlineUpgradeApi.cpp).
+ *
+ * Purpose: unadvise the WOL event sink, release the API COM object, and close
+ * the startup wait handles.
+ */
 void WestwoodOnlineUpgradeApi::Shutdown() {
     if (g_pWestwoodOnlineUpgradeApi == 0) {
         return;

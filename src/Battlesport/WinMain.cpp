@@ -11,7 +11,12 @@ extern int WINAPI AfxWinMain(
 // VC5SP3 needs this local shape to emit the original direct stack-argument pushes.
 #pragma optimize("t", off)
 #endif
-// Reimplements 0x4c81c0: WinMain (WinMain.cpp)
+/**
+ * Reimplements 0x4c81c0: WinMain (WinMain.cpp).
+ *
+ * Purpose: forward the process entrypoint parameters to the MFC application
+ * entrypoint using the VC5SP3 stack-argument shape matched by tier S evidence.
+ */
 extern "C" int WINAPI WinMain(
     HINSTANCE hInstance,
     HINSTANCE hPrevInstance,

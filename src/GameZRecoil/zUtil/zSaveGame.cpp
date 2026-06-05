@@ -7,7 +7,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Reimplements 0x4383e0: zUtil_SaveGameStateList_Init
+/**
+ * Reimplements 0x4383e0: zUtil_SaveGameStateList_Init.
+ *
+ * Purpose: initialize a save-state list sentinel and allocate zeroed player
+ * state storage for the owning save-game state.
+ */
 zUtil_SaveGameState *__fastcall zUtil_SaveGameStateList_Init(
     zUtil_SaveGameState *self
 ) {
@@ -31,7 +36,12 @@ zUtil_SaveGameState *__fastcall zUtil_SaveGameStateList_Init(
     return self;
 }
 
-// Reimplements 0x4384e0: zUtil_SaveGameStateList_AllocAppend
+/**
+ * Reimplements 0x4384e0: zUtil_SaveGameStateList_AllocAppend.
+ *
+ * Purpose: allocate a zeroed save-state node and append it to the tracked
+ * save-state list.
+ */
 zUtil_SaveGameState *__fastcall zUtil_SaveGameStateList_AllocAppend(
     zUtil_SaveGameState *self
 ) {
@@ -63,8 +73,13 @@ zUtil_SaveGameState *__fastcall zUtil_SaveGameStateList_AllocAppend(
     return saveState;
 }
 
-// Reimplements 0x438430: zUtil_SaveGameState::FreeOwnedResources
-// (D:\Proj\GameZRecoil\zUtil\zUtil.cpp)
+/**
+ * Reimplements 0x438430: zUtil_SaveGameState::FreeOwnedResources
+ * (D:\Proj\GameZRecoil\zUtil\zUtil.cpp).
+ *
+ * Purpose: detach save-state back-references, free modal-state nodes, and
+ * release the owned player-state storage.
+ */
 void zUtil_SaveGameState::FreeOwnedResources() {
     if (playerState->lifecycleState == 2) {
         Player::AiDiscardNegativeBranchPathNodes(this);

@@ -19,6 +19,11 @@ int g_zModel_VertexShadingEnabled = 0;
 namespace {
 const double kVisibleContributionThreshold = 1.0 / 255.0;
 
+/**
+ * Original static helper observed in zModel render point/lighting paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: transform one model-space point by the current zMath matrix.
+ */
 zVec3 TransformPointByCurrentMatrix(
     const zVec3 *point
 ) {
@@ -30,11 +35,21 @@ zVec3 TransformPointByCurrentMatrix(
     return out;
 }
 
+/**
+ * Original static helper observed in zModel render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: test whether graphics option flag bit 0 is enabled.
+ */
 bool ModelGraphicsFlagBit0Enabled() {
     const int *graphicsFlags = (const int *)(g_zModel_GraphicsFlagsOption);
     return graphicsFlags != 0 && ((*graphicsFlags & 1) != 0);
 }
 
+/**
+ * Original static helper observed in zModel scrolling-texture update paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: compute the renderer-dependent UV wrap extent for one axis.
+ */
 int TextureWrapExtent(
     const zModel_TextureScrollInfoPartial *textureInfo,
     bool uAxis
@@ -44,6 +59,11 @@ int TextureWrapExtent(
     return (int)((unsigned int)(baseExtent) >> shift);
 }
 
+/**
+ * Original static helper observed in zModel scrolling-texture update paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: compute a whole-tile UV correction for coordinates outside the wrap extent.
+ */
 int ComputeWrapCorrection(
     float minValue,
     float maxValue,
@@ -60,6 +80,11 @@ int ComputeWrapCorrection(
     return 0;
 }
 
+/**
+ * Original static helper observed in zModel scrolling-texture update paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: apply a whole-tile UV correction to a polygon UV array.
+ */
 void ApplyUvCorrection(
     zModel_Uv *uvs,
     int uvCount,
@@ -76,6 +101,11 @@ void ApplyUvCorrection(
     }
 }
 
+/**
+ * Original static helper observed in zModel point and software render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: test whether a projected point lies inside the active projection clip bounds.
+ */
 bool ProjectedPointInClipBounds(
     const zProjectedPoint &point
 ) {
@@ -148,6 +178,11 @@ zDiPartial *NodeDisplayInstance(
     return node != 0 ? (zDiPartial *)(node->userDataOrDiRef) : 0;
 }
 
+/**
+ * Original static helper observed in zModel software/hardware render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: prepare transformed display-instance vertices, including optional blend vertices.
+ */
 void PrepareTransformedVertices(
     zDiPartial *di
 ) {
@@ -185,6 +220,11 @@ void PrepareTransformedVertices(
     );
 }
 
+/**
+ * Original static helper observed in zModel hardware render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: transform and normalize display-instance normals for per-vertex shading.
+ */
 void PrepareTransformedNormals(
     zDiPartial *di
 ) {
@@ -206,6 +246,11 @@ void PrepareTransformedNormals(
     }
 }
 
+/**
+ * Original static helper observed in zModel polygon render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: gather an entry's transformed vertices into the clip scratch polygon.
+ */
 int CopyEntryVerticesToScratch(
     zDiPartial *di,
     zDiEntryPartial *entry,
@@ -229,6 +274,11 @@ int CopyEntryVerticesToScratch(
     return 1;
 }
 
+/**
+ * Original static helper observed in zModel polygon render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: gather an entry's transformed normals for the current polygon when present.
+ */
 void CopyEntryNormalsToCurrent(
     zDiPartial *di,
     zDiEntryPartial *entry,
@@ -252,6 +302,11 @@ void CopyEntryNormalsToCurrent(
     g_zModel_CurrentPolyNormals = g_zModel_CurrentPolyNormalsStorage;
 }
 
+/**
+ * Original static helper observed in zModel polygon render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: clear the three clip-attribute arrays for a polygon.
+ */
 void ClearPolyAttributes(
     int vertexCount
 ) {
@@ -262,6 +317,11 @@ void ClearPolyAttributes(
     }
 }
 
+/**
+ * Original static helper observed in zModel polygon render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: fill the three clip-attribute arrays with one constant value.
+ */
 void FillPolyAttributes(
     float value,
     int vertexCount
@@ -273,6 +333,11 @@ void FillPolyAttributes(
     }
 }
 
+/**
+ * Original static helper observed in zModel polygon render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: build fog/light clip attributes for a polygon and fill defaults when unused.
+ */
 int BuildPolyAttributes(
     const zVec3 *surfaceNormal,
     int vertexCount
@@ -309,6 +374,11 @@ int BuildPolyAttributes(
     return attrFlags;
 }
 
+/**
+ * Original static helper observed in zModel software/hardware render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: compute the polygon facing normal and apply backface/show-backface culling.
+ */
 int ComputeSurfaceNormalAndCull(
     int vertexCount,
     int showBackFace,
@@ -355,6 +425,11 @@ int ComputeSurfaceNormalAndCull(
     return 0;
 }
 
+/**
+ * Original static helper observed in zModel textured polygon render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: copy an entry's UV pairs into the current clip UV scratch array.
+ */
 void CopyEntryUvsToScratch(
     zDiEntryPartial *entry,
     int vertexCount
@@ -369,6 +444,11 @@ void CopyEntryUvsToScratch(
     );
 }
 
+/**
+ * Original static helper observed in zModel software/hardware render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: project the current scratch polygon into the clip vertex buffer.
+ */
 void ProjectScratchToClipVerts(
     int vertexCount
 ) {
@@ -387,6 +467,11 @@ void ProjectScratchToClipVerts(
     }
 }
 
+/**
+ * Original static helper observed in zModel polygon render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: apply the encoded depth bias to projected clip vertices.
+ */
 void ApplyDepthBiasToProjectedVerts(
     unsigned int drawFlags,
     int vertexCount
@@ -398,6 +483,11 @@ void ApplyDepthBiasToProjectedVerts(
     }
 }
 
+/**
+ * Original static helper observed in zModel untextured polygon render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: clip and project a polygon without UV coordinates.
+ */
 int ClipAndProjectNoUv(
     zClipRectPartial *clipRect,
     int *vertexCount,
@@ -431,6 +521,11 @@ int ClipAndProjectNoUv(
     );
 }
 
+/**
+ * Original static helper observed in zModel textured software render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: clip, project, and perspective-correct a textured polygon.
+ */
 int ClipAndProjectUv(
     zClipRectPartial *clipRect,
     int *vertexCount,
@@ -475,6 +570,11 @@ int ClipAndProjectUv(
     );
 }
 
+/**
+ * Original static helper observed in zModel hardware textured render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: multiply current clip UVs by projected reciprocal depth.
+ */
 void MultiplyUvsByProjectedReciprocalZ(
     int vertexCount
 ) {
@@ -484,6 +584,11 @@ void MultiplyUvsByProjectedReciprocalZ(
     }
 }
 
+/**
+ * Original static helper observed in zModel hardware submit paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: convert clipped reciprocal-depth UVs back to submit-time perspective UVs.
+ */
 void FillPerspectiveUvsForHardwareSubmit(
     zClipUV *outUvs,
     int vertexCount
@@ -500,6 +605,11 @@ void FillPerspectiveUvsForHardwareSubmit(
     }
 }
 
+/**
+ * Original static helper observed in zModel hardware clip paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: initialize attributes for clip-generated vertices from the first source vertex.
+ */
 void FillConstantAttrsForGeneratedClipVerts(
     int previousCount,
     int vertexCount
@@ -511,7 +621,11 @@ void FillConstantAttrsForGeneratedClipVerts(
     }
 }
 
-// Matches the DD3D path in 0x477b30: clip UVs as u*rhw, then submit u/rhw.
+/**
+ * Original static helper observed in zModel hardware textured render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: clip UVs as u*rhw, then submit u/rhw on the DD3D path.
+ */
 int ClipAndProjectHardwareUv(
     zClipRectPartial *clipRect,
     int *vertexCount,
@@ -563,6 +677,11 @@ int ClipAndProjectHardwareUv(
     return 1;
 }
 
+/**
+ * Original static helper observed in zModel software textured render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: clip and project a software textured polygon with optional vertex shade.
+ */
 int ClipAndProjectSoftwareTextured(
     zClipRectPartial *clipRect,
     int *vertexCount,
@@ -595,6 +714,11 @@ int ClipAndProjectSoftwareTextured(
     );
 }
 
+/**
+ * Original static helper observed in zModel software/hardware render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: reject projected polygons whose screen-space area is below the configured threshold.
+ */
 int RejectProjectedSmallPoly(
     int vertexCount
 ) {
@@ -613,6 +737,11 @@ int RejectProjectedSmallPoly(
     return fabs(twiceArea) < gModel_SmallPolyRejectArea2x ? 1 : 0;
 }
 
+/**
+ * Original static helper observed in zModel software triangle render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: copy the first three projected clip vertices into a triangle buffer.
+ */
 void CopyProjectedTriVerts(
     zVec3 *triVerts
 ) {
@@ -623,6 +752,11 @@ void CopyProjectedTriVerts(
     );
 }
 
+/**
+ * Original static helper observed in zModel software render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: remap projected vertices through the alternate clip-space mapping.
+ */
 void RemapAltProjectedVerts(
     zVec3 *verts,
     int vertexCount
@@ -632,6 +766,11 @@ void RemapAltProjectedVerts(
     }
 }
 
+/**
+ * Original static helper observed in zModel software render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: set the renderer inverse-depth bias and scale from draw flags.
+ */
 void ApplySoftwareDepthScale(
     unsigned int drawFlags
 ) {
@@ -640,6 +779,11 @@ void ApplySoftwareDepthScale(
         (float)((short)(drawFlags & 0xffff)) * g_zRndr_InverseZTolerance + 1.0f;
 }
 
+/**
+ * Original static helper observed in zModel material render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: convert material alpha flags to the current integer render alpha.
+ */
 int MaterialAlphaInt(
     const zModel_MaterialPartial *material
 ) {
@@ -647,6 +791,11 @@ int MaterialAlphaInt(
     return (int)((float)(alpha)*gModel_RenderAlphaScaleCurrent);
 }
 
+/**
+ * Original static helper observed in zModel material render paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: convert material alpha flags to normalized floating render alpha.
+ */
 float MaterialAlphaFloat(
     const zModel_MaterialPartial *material
 ) {
@@ -662,6 +811,11 @@ zVideo_RenderClass *MaterialRenderClass(
     return (zVideo_RenderClass *)(material->currentTextureDirectoryEntry->texture);
 }
 
+/**
+ * Original static helper observed in zDi polygon construction paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: append one vertex to a display-instance vertex array.
+ */
 int AppendDiVertex(
     zDiPartial *self,
     const zVec3 *point
@@ -676,6 +830,11 @@ int AppendDiVertex(
     return index;
 }
 
+/**
+ * Original static helper observed in zDi polygon construction paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: append one normal to a display-instance normal array.
+ */
 int AppendDiNormal(
     zDiPartial *self,
     const zVec3 *normal
@@ -690,6 +849,11 @@ int AppendDiNormal(
     return index;
 }
 
+/**
+ * Original static helper observed in zDi polygon construction paths
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: normalize UV coordinates to a local tile origin.
+ */
 void NormalizeUvTileOrigin(
     zClipUV *uvPairs,
     int uvCount
@@ -719,8 +883,11 @@ void NormalizeUvTileOrigin(
 } // namespace
 
 namespace zDi {
-// Reimplements 0x483650: zDi::AddPolygonEx
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x483650: zDi::AddPolygonEx
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: add a polygon entry with optional normals, UVs, splitting, and generated UV repair.
+ */
 int __fastcall AddPolygonEx(
     zDiPartial *self,
     int vertexCount,
@@ -916,8 +1083,11 @@ int __fastcall AddPolygonEx(
     return 0;
 }
 
-// Reimplements 0x483610: zDi::AddPolygon
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x483610: zDi::AddPolygon
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: add a polygon entry without explicit per-entry normals.
+ */
 int __fastcall AddPolygon(
     zDiPartial *self,
     int pointCount,
@@ -947,8 +1117,11 @@ int __fastcall AddPolygon(
     );
 }
 
-// Reimplements 0x483240: zDi::AddPolygonSplitByVertexLimit
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x483240: zDi::AddPolygonSplitByVertexLimit
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: split an oversized polygon into overlapping chunks within the vertex limit.
+ */
 void __fastcall AddPolygonSplitByVertexLimit(
     zDiPartial *self,
     int totalVertexCount,
@@ -1050,8 +1223,11 @@ void __fastcall AddPolygonSplitByVertexLimit(
     } while (chunkStartVertexIndex < totalVertexCount - 1);
 }
 
-// Reimplements 0x4843b0: zDi::RebuildGeneratedUvPairsForEntry
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x4843b0: zDi::RebuildGeneratedUvPairsForEntry
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: rebuild generated UV pairs for polygon vertices beyond the first triangle.
+ */
 void __fastcall RebuildGeneratedUvPairsForEntry(
     zDiPartial *self,
     int entryIndex
@@ -1156,8 +1332,11 @@ void __fastcall RebuildGeneratedUvPairsForEntry(
 } // namespace zDi
 
 namespace zModel_Const {
-// Reimplements 0x482c60: zModel_Const::SetNormalizedCrossFromVertexTriplet
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x482c60: zModel_Const::SetNormalizedCrossFromVertexTriplet
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: compute and normalize the cross product from three polygon vertices.
+ */
 zVec3 *__fastcall SetNormalizedCrossFromVertexTriplet(
     zVec3 *vertex0,
     zVec3 *vertex1,
@@ -1192,8 +1371,11 @@ zVec3 *__fastcall SetNormalizedCrossFromVertexTriplet(
     return outNormal;
 }
 
-// Reimplements 0x482b40: zModel_Const::RemoveColinearVerticesInPlace
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x482b40: zModel_Const::RemoveColinearVerticesInPlace
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: remove colinear vertices from a polygon point array in place.
+ */
 int __fastcall RemoveColinearVerticesInPlace(
     int *vertexCount,
     zVec3 *points,
@@ -1252,8 +1434,11 @@ int __fastcall RemoveColinearVerticesInPlace(
     return removedAnyVertices;
 }
 
-// Reimplements 0x482e30: zModel_Const::ComputePolygonPlaneEquation
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x482e30: zModel_Const::ComputePolygonPlaneEquation
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: compute a normalized plane equation for a polygon.
+ */
 zGeometry_PlaneEquationPartial *__fastcall ComputePolygonPlaneEquation(
     int vertexCount,
     zVec3 *vertices,
@@ -1297,8 +1482,11 @@ zGeometry_PlaneEquationPartial *__fastcall ComputePolygonPlaneEquation(
     return outPlane;
 }
 
-// Reimplements 0x482db0: zModel_Const::IsPolygonCoplanar
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x482db0: zModel_Const::IsPolygonCoplanar
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: test whether every polygon vertex lies within the coplanar tolerance.
+ */
 int __fastcall IsPolygonCoplanar(
     int vertexCount,
     zVec3 *vertices
@@ -1326,8 +1514,11 @@ int __fastcall IsPolygonCoplanar(
     return 1;
 }
 
-// Reimplements 0x482720: zModel_Const::AddOrMergeVertex
-// (D:\Proj\GameZRecoil\zModel\gmod_const.c)
+/**
+ * Reimplements 0x482720: zModel_Const::AddOrMergeVertex
+ * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+ * Purpose: find an existing nearby vertex or append a new display-instance vertex.
+ */
 int __fastcall AddOrMergeVertex(
     zDiPartial *self,
     zVec3 *point
@@ -1369,8 +1560,11 @@ int __fastcall AddOrMergeVertex(
     return appendedVertexIndex;
 }
 
-// Reimplements 0x482860: zModel_Const::AddOrMergeVertexAndNormal
-// (D:\Proj\GameZRecoil\zModel\gmod_const.c)
+/**
+ * Reimplements 0x482860: zModel_Const::AddOrMergeVertexAndNormal
+ * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+ * Purpose: find or append a vertex plus its blend-normal delta.
+ */
 int __fastcall AddOrMergeVertexAndNormal(
     zDiPartial *self,
     zVec3 *point,
@@ -1428,8 +1622,11 @@ int __fastcall AddOrMergeVertexAndNormal(
     return appendedVertexIndex;
 }
 
-// Reimplements 0x482a10: zModel_Const::FindOrAppendNormalIndex
-// (D:\Proj\GameZRecoil\zModel\gmod_const.c)
+/**
+ * Reimplements 0x482a10: zModel_Const::FindOrAppendNormalIndex
+ * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
+ * Purpose: find an existing nearby normal or append a new normal.
+ */
 int __fastcall FindOrAppendNormalIndex(
     zDiPartial *self,
     zVec3 *normal
@@ -1471,8 +1668,11 @@ int __fastcall FindOrAppendNormalIndex(
     return appendedNormalIndex;
 }
 
-// Reimplements 0x484860: zModel_Const::SolveTriScalarGradient2D
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x484860: zModel_Const::SolveTriScalarGradient2D
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: solve the 2D scalar gradient over a triangle.
+ */
 zClipUV __stdcall SolveTriScalarGradient2D(
     float vertex0A,
     float vertex0B,
@@ -1503,8 +1703,11 @@ zClipUV __stdcall SolveTriScalarGradient2D(
     return gradient;
 }
 
-// Reimplements 0x483510: zModel_Const::QuantizeAndNormalizeUvPairs
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x483510: zModel_Const::QuantizeAndNormalizeUvPairs
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: quantize UV pairs and normalize them to a local tile origin.
+ */
 void __fastcall QuantizeAndNormalizeUvPairs(
     int vertexCount,
     zClipUV *uvPairs
@@ -1539,8 +1742,11 @@ void __fastcall QuantizeAndNormalizeUvPairs(
     }
 }
 
-// Reimplements 0x482fe0: zModel_Const::SplitPolygonChunkedByVertexLimit
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x482fe0: zModel_Const::SplitPolygonChunkedByVertexLimit
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: triangulate a polygon into fan triangles for AddPolygonEx.
+ */
 void __fastcall SplitPolygonChunkedByVertexLimit(
     zDiPartial *self,
     int totalVertexCount,
@@ -1618,7 +1824,11 @@ void __fastcall SplitPolygonChunkedByVertexLimit(
 }
 } // namespace zModel_Const
 
-// Reimplements 0x4791c0: zModel_Instance_UpdateScrollingTextures
+/**
+ * Reimplements 0x4791c0: zModel_Instance_UpdateScrollingTextures
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: advance scrolling texture UVs for one surface entry and wrap them into range.
+ */
 void __fastcall zModel_Instance_UpdateScrollingTextures(
     const zModel_TextureScrollInfoPartial *textureInfo,
     zModel_Uv *uvs,
@@ -1695,7 +1905,11 @@ void __fastcall zModel_Instance_UpdateScrollingTextures(
     );
 }
 
-// Reimplements 0x478fc0: zModel_Instance_UpdateScrollingTexturesIfNeeded
+/**
+ * Reimplements 0x478fc0: zModel_Instance_UpdateScrollingTexturesIfNeeded
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: update all scrolling-texture surface entries once per video frame.
+ */
 int __fastcall zModel_Instance_UpdateScrollingTexturesIfNeeded(
     zModel_InstancePartial *instance
 ) {
@@ -1727,8 +1941,11 @@ int __fastcall zModel_Instance_UpdateScrollingTexturesIfNeeded(
 }
 
 namespace zModel {
-// Reimplements 0x475e70: zModel::Init
-// (D:\Proj\GameZRecoil\zModel\gmod_init.c)
+/**
+ * Reimplements 0x475e70: zModel::Init
+ * (D:\Proj\GameZRecoil\zModel\gmod_init.c).
+ * Purpose: initialize zModel material and display-instance pools and choose the render path.
+ */
 int Init() {
     zModel_Matl::InitGlobals();
 
@@ -1770,16 +1987,22 @@ int Init() {
     return 0;
 }
 
-// Reimplements 0x476030: zModel::SetVertexShadingEnabled
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x476030: zModel::SetVertexShadingEnabled
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: set the global vertex-shading enable flag.
+ */
 void __fastcall SetVertexShadingEnabled(
     int enabled
 ) {
     g_zModel_VertexShadingEnabled = enabled;
 }
 
-// Reimplements 0x475ff0: zModel::SetDisplayInstancePoolCapacity
-// (D:\Proj\GameZRecoil\zModel\gmod_init.c)
+/**
+ * Reimplements 0x475ff0: zModel::SetDisplayInstancePoolCapacity
+ * (D:\Proj\GameZRecoil\zModel\gmod_init.c).
+ * Purpose: set the display-instance pool capacity before zModel initialization.
+ */
 void __fastcall SetDisplayInstancePoolCapacity(
     int capacity
 ) {
@@ -1797,8 +2020,11 @@ void __fastcall SetDisplayInstancePoolCapacity(
     g_zModel_DiPoolCapacity = capacity;
 }
 
-// Reimplements 0x476020: zModel::SetSoftwarePathActive
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x476020: zModel::SetSoftwarePathActive
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: update the software render path flag when no hardware renderer is active.
+ */
 void __fastcall SetSoftwarePathActive(
     int active
 ) {
@@ -1807,8 +2033,11 @@ void __fastcall SetSoftwarePathActive(
     }
 }
 
-// Reimplements 0x476090: zModel::SetTextureWorldPerMeter
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x476090: zModel::SetTextureWorldPerMeter
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: set global texture-world scale per meter.
+ */
 void __stdcall SetTextureWorldPerMeter(
     float worldPerMeterU,
     float worldPerMeterV
@@ -1817,8 +2046,11 @@ void __stdcall SetTextureWorldPerMeter(
     g_zModel_TextureWorldPerMeterV = worldPerMeterV;
 }
 
-// Reimplements 0x4760b0: zModel::SetTextureWorldBase
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x4760b0: zModel::SetTextureWorldBase
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: set global texture-world base coordinates.
+ */
 void __stdcall SetTextureWorldBase(
     float worldBaseU,
     float worldBaseV
@@ -1827,8 +2059,11 @@ void __stdcall SetTextureWorldBase(
     g_zModel_TextureWorldBaseV = worldBaseV;
 }
 
-// Reimplements 0x4760d0: zModel::SetDiTextureWorldPerMeter
-// (D:\Proj\GameZRecoil\zModel\gmod_init.c)
+/**
+ * Reimplements 0x4760d0: zModel::SetDiTextureWorldPerMeter
+ * (D:\Proj\GameZRecoil\zModel\gmod_init.c).
+ * Purpose: set display-instance texture-world mapping flags and scale.
+ */
 int __fastcall SetDiTextureWorldPerMeter(
     zDiPartial *di,
     int worldSpaceEnabled,
@@ -1851,8 +2086,11 @@ int __fastcall SetDiTextureWorldPerMeter(
     return 0;
 }
 
-// Reimplements 0x476cf0: zModel::RenderNodeSoftware
-// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+/**
+ * Reimplements 0x476cf0: zModel::RenderNodeSoftware
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: render a display-instance node through the software renderer path.
+ */
 void __fastcall RenderNodeSoftware(
     zClass_NodePartial *node,
     int clipMask
@@ -2227,8 +2465,11 @@ void __fastcall RenderNodeSoftware(
     zRndr::g_perspectiveTextureEnabled = 0;
 }
 
-// Reimplements 0x477b30: zModel::RenderNodeHardware
-// (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp)
+/**
+ * Reimplements 0x477b30: zModel::RenderNodeHardware
+ * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
+ * Purpose: render a display-instance node through the hardware renderer path.
+ */
 void __fastcall RenderNodeHardware(
     zClass_NodePartial *node,
     int clipMask
@@ -2446,7 +2687,11 @@ void __fastcall RenderNodeHardware(
 }
 } // namespace zModel
 
-// Reimplements 0x479020: zModel_RenderPointQueueEntry
+/**
+ * Reimplements 0x479020: zModel_RenderPointQueueEntry
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: project and submit one display-instance point/lens-flare queue entry.
+ */
 void __fastcall zModel_RenderPointQueueEntry(
     const zVec3 *pointPos,
     int packedColor16,
@@ -2510,8 +2755,11 @@ void __fastcall zModel_RenderPointQueueEntry(
 }
 
 namespace zDi {
-// Reimplements 0x484140: zDi::SetEntryValueForAllEntries
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x484140: zDi::SetEntryValueForAllEntries
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: set the draw-flags value for every display-instance polygon entry.
+ */
 void __fastcall SetEntryValueForAllEntries(
     zDiPartial *self,
     unsigned int entryValue
@@ -2525,8 +2773,11 @@ void __fastcall SetEntryValueForAllEntries(
     }
 }
 
-// Reimplements 0x484170: zDi::SetShowBackFaceForAllEntries
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x484170: zDi::SetShowBackFaceForAllEntries
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: update the show-backface bit on every display-instance polygon entry.
+ */
 void __fastcall SetShowBackFaceForAllEntries(
     zDiPartial *self,
     int enabled
@@ -2538,8 +2789,11 @@ void __fastcall SetShowBackFaceForAllEntries(
     }
 }
 
-// Reimplements 0x484230: zDi::ResetCurrentVariant
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x484230: zDi::ResetCurrentVariant
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: reset the current material cycle frame on the first entry.
+ */
 void __fastcall ResetCurrentVariant(
     zDiPartial *self
 ) {
@@ -2551,8 +2805,11 @@ void __fastcall ResetCurrentVariant(
     }
 }
 
-// Reimplements 0x484250: zDi::SetCurrentVariantCycleTextureCount
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x484250: zDi::SetCurrentVariantCycleTextureCount
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: configure the current material cycle texture count.
+ */
 int __fastcall SetCurrentVariantCycleTextureCount(
     zDiPartial *self,
     int textureCount
@@ -2586,8 +2843,11 @@ int __fastcall SetCurrentVariantCycleTextureCount(
     return 0;
 }
 
-// Reimplements 0x4842b0: zDi::SetCurrentVariant
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x4842b0: zDi::SetCurrentVariant
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: select the current texture-cycle variant frame.
+ */
 void __fastcall SetCurrentVariant(
     zDiPartial *self,
     int variantIndex
@@ -2609,8 +2869,11 @@ void __fastcall SetCurrentVariant(
     cycle->currentFrame = (float)(variantIndex);
 }
 
-// Reimplements 0x484310: zDi::SetCurrentVariantCycleTextureSpeed
-// (D:\Proj\GameZRecoil\zDi\zdi.cpp)
+/**
+ * Reimplements 0x484310: zDi::SetCurrentVariantCycleTextureSpeed
+ * (D:\Proj\GameZRecoil\zDi\zdi.cpp).
+ * Purpose: set the cycle speed for the current material variant.
+ */
 int __fastcall SetCurrentVariantCycleTextureSpeed(
     zDiPartial *self,
     float cycleSpeed
@@ -2625,8 +2888,11 @@ int __fastcall SetCurrentVariantCycleTextureSpeed(
     );
 }
 
-// Reimplements 0x483f80: zDi::BuildBlendVertsFromConnectivity
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x483f80: zDi::BuildBlendVertsFromConnectivity
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: build blend-vertex offsets from connectivity and exclusion rules.
+ */
 void __fastcall BuildBlendVertsFromConnectivity(
     zDiPartial *self,
     int *excludedVertexIndices,
@@ -2699,8 +2965,11 @@ void __fastcall BuildBlendVertsFromConnectivity(
     self->blendVertCount = self->vertCount;
 }
 
-// Reimplements 0x484350: zDi::SetObject3DColorModeForMaterials
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x484350: zDi::SetObject3DColorModeForMaterials
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: apply an object3D color mode to untextured materials.
+ */
 void __fastcall SetObject3DColorModeForMaterials(
     zDiPartial *self,
     int colorMode
@@ -2723,8 +2992,11 @@ void __fastcall SetObject3DColorModeForMaterials(
 } // namespace zDi
 
 namespace zModel_Instance {
-// Reimplements 0x4842f0: zModel_Instance::SetCycleTextureLoop
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x4842f0: zModel_Instance::SetCycleTextureLoop
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: set the cycle loop flag on an instance's first material entry.
+ */
 int __fastcall SetCycleTextureLoop(
     zDiPartial *instance,
     int loopEnabled
@@ -2739,8 +3011,11 @@ int __fastcall SetCycleTextureLoop(
     );
 }
 
-// Reimplements 0x484330: zModel_Instance::AddCycleTexture
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x484330: zModel_Instance::AddCycleTexture
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: add a cycle texture to an instance's first material entry.
+ */
 int __fastcall AddCycleTexture(
     zDiPartial *instance,
     zImage_TexDirEntryPartial *textureDirectoryEntry
@@ -2758,7 +3033,11 @@ int __fastcall AddCycleTexture(
 
 namespace zDi {
 
-// Reimplements 0x476a50: zDi::EvalBoundingSphereLightingFlags
+/**
+ * Reimplements 0x476a50: zDi::EvalBoundingSphereLightingFlags
+ * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+ * Purpose: evaluate fog, active-light, and lens-flare visibility flags for a display instance.
+ */
 void __fastcall EvalBoundingSphereLightingFlags(
     zDiPartial *self,
     int *outDepthFade,

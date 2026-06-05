@@ -2,7 +2,12 @@
 
 #include "GameZRecoil/zGame/zGame.h"
 
-// Reimplements 0x415370: RecoilStateMainMenuTransition::OnResume
+/**
+ * Reimplements 0x415370: RecoilStateMainMenuTransition::OnResume.
+ *
+ * Purpose: re-enable and refresh the main-menu dialog after a child state
+ * resumes back into the menu transition state.
+ */
 void RecoilStateMainMenuTransition::OnResume(
     int param
 ) {

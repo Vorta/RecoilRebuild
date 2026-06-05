@@ -49,6 +49,13 @@ struct zFMV_Playback {
     int SetDestRect(const zFMV_Rect *rect);
 };
 
+/*
+ * Temporary ABI scaffold for the FMV action virtual table packet. Current BN
+ * assembly at 0x4159e0 and 0x462e30 dispatches with ecx=this through VC-style
+ * virtual slots; the null words after slot 0x10 in .rdata are alignment
+ * padding, not authored reserved fields. Source-faithful recovery should
+ * replace this table mirror with the VC5 zFMV_Action virtual class family.
+ */
 struct zFMV_Action_Vtbl {
     zFMV_Action *( *ScalarDeletingDestructor)(
         zFMV_Action *self,
@@ -76,8 +83,6 @@ struct zFMV_Action {
     zFMV_Action * DerivedScalarDeletingDestructor(
         unsigned int flags
     );
-    void NoOpBegin(double timeSec);
-    void NoOpEnd();
     int NoOpUpdate(double timeSec);
     void FlipSurfaces();
     void RunBlockingImmediate();

@@ -22,6 +22,7 @@ const float g_zMath_MidpointHalf = 0.5f;
 const float g_zMath_Vec3ZeroFloat = 0.0f;
 const float g_zMath_Vec3UnitFloat = 1.0f;
 const float g_zMath_Vec3NegUnitFloat = -1.0f;
+const float g_zMath_MatrixUnitFloat = 1.0f;
 const double g_zMath_DoubleZero = 0.0;
 const double g_zMath_Vec3SlerpDotNegThreshold = -0.95;
 const float g_zMath_Vec3SlerpPiFloat = 3.14159274f;
@@ -102,6 +103,12 @@ namespace {
 int g_matrixIdentityFlagSlots[32] = {0};
 float *g_matrixSlots[32] = {0};
 
+/**
+ * Original static helper observed in callers 0x4753e0 and 0x475210
+ * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
+ * Purpose: subtract two zVec3 values for triangle-gradient and intersection
+ * vector math.
+ */
 zVec3 Subtract(
     const zVec3 &lhs,
     const zVec3 &rhs
@@ -110,6 +117,12 @@ zVec3 Subtract(
     return result;
 }
 
+/**
+ * Original static helper observed in caller 0x4753e0
+ * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
+ * Purpose: compute a zVec3 cross product for perspective texture-gradient
+ * setup.
+ */
 zVec3 Cross(
     const zVec3 &lhs,
     const zVec3 &rhs
@@ -120,6 +133,12 @@ zVec3 Cross(
     return result;
 }
 
+/**
+ * Original static helper observed in zMath vector and projection callers
+ * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
+ * Purpose: compute the zVec3 dot product used by gradient, slerp, and
+ * line/sphere routines.
+ */
 float Dot(
     const zVec3 &lhs,
     const zVec3 &rhs
@@ -127,6 +146,12 @@ float Dot(
     return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
 }
 
+/**
+ * Original static helper observed in caller 0x473e60
+ * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
+ * Purpose: flip a float sign bit without changing the remaining bit pattern
+ * while staging the inverse camera rotation.
+ */
 float NegateFloatSignBit(
     float value
 ) {
@@ -145,6 +170,12 @@ float NegateFloatSignBit(
     return value;
 }
 
+/**
+ * Original static helper observed in zMath vector/intersection callers
+ * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
+ * Purpose: recover the original fast square-root estimate from a float bit
+ * pattern for vector normalization and hit tests.
+ */
 float FastSqrtEstimate(
     float value
 ) {
@@ -163,6 +194,12 @@ float FastSqrtEstimate(
     return value;
 }
 
+/**
+ * Original static helper observed in caller 0x4753e0
+ * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
+ * Purpose: add two zVec3 values during perspective texture-gradient plane
+ * construction.
+ */
 zVec3 Add(
     const zVec3 &lhs,
     const zVec3 &rhs
@@ -171,6 +208,12 @@ zVec3 Add(
     return result;
 }
 
+/**
+ * Original static helper observed in caller 0x4753e0
+ * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
+ * Purpose: scale a zVec3 value during perspective texture-gradient plane
+ * construction.
+ */
 zVec3 Scale(
     const zVec3 &value,
     float scale
@@ -179,6 +222,12 @@ zVec3 Scale(
     return result;
 }
 
+/**
+ * Original static helper observed in caller 0x4753e0
+ * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
+ * Purpose: build one perspective-correct UV-over-Z gradient plane and base
+ * term from triangle geometry and reciprocal-Z gradients.
+ */
 void BuildUvOverZPlane(
     const zVec3 *triVerts,
     const zVec3 &edge21,
@@ -213,6 +262,12 @@ void BuildUvOverZPlane(
     *outBase = originDelta * recipZBase + plane.z;
 }
 
+/**
+ * Original static helper observed in caller 0x474870
+ * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
+ * Purpose: transform one bounding-box corner by a 4x3 matrix into the caller's
+ * corner output storage.
+ */
 void TransformBBoxCorner(
     const zMat4x3 *matrix,
     float x,
@@ -278,8 +333,10 @@ void __fastcall zMath_Vec3Array_UntransformDirection(
     }
 }
 
-// Reimplements 0x4743e0: zMath_SetScreenSize
-// (D:\Proj\GameZRecoil\zMath\zmath_proj.cpp)
+/**
+ * Reimplements 0x4743e0: zMath_SetScreenSize (GameZRecoil/zMath/zmath_proj.cpp).
+ * Purpose: Stores the active projection screen width and height globals.
+ */
 void __stdcall zMath_SetScreenSize(
     int screenWidthPx,
     int screenHeightPx
@@ -288,8 +345,10 @@ void __stdcall zMath_SetScreenSize(
     g_zMath_ScreenHeightPx = screenHeightPx;
 }
 
-// Reimplements 0x474400: zMath_Setup_Projection
-// (D:\Proj\GameZRecoil\zMath\zmath_proj.cpp)
+/**
+ * Reimplements 0x474400: zMath_Setup_Projection (GameZRecoil/zMath/zmath_proj.cpp).
+ * Purpose: Derives cached projection scale, inverse scale, viewport, offset, radius-scale, and depth globals.
+ */
 void __stdcall zMath_Setup_Projection(
     float viewportOriginX,
     float viewportOriginY,
@@ -302,23 +361,27 @@ void __stdcall zMath_Setup_Projection(
 ) {
     g_zMath_FocalScaleX = focalScaleX;
     g_zMath_FocalScaleY = focalScaleY;
-    g_zMath_InvFocalScaleX = 1.0f / focalScaleX;
+    g_zMath_InvFocalScaleX = g_zMath_MatrixUnitFloat / focalScaleX;
     g_zMath_ProjScaleX = focalScaleX * halfViewWidthPx;
     g_zMath_ProjScaleY = focalScaleY * halfViewHeightPx;
-    g_zMath_InvFocalScaleY = 1.0f / focalScaleY;
-    g_zMath_InvProjScaleX = 1.0f / g_zMath_ProjScaleX;
-    g_zMath_InvProjScaleY = 1.0f / g_zMath_ProjScaleY;
+    g_zMath_InvFocalScaleY = g_zMath_MatrixUnitFloat / focalScaleY;
+    g_zMath_InvProjScaleX = g_zMath_MatrixUnitFloat / g_zMath_ProjScaleX;
+    g_zMath_InvProjScaleY = g_zMath_MatrixUnitFloat / g_zMath_ProjScaleY;
+    g_zMath_ProjOffsetX = halfViewWidthPx + viewportOriginX;
+    g_zMath_ProjOffsetY = halfViewHeightPx + viewportOriginY;
     g_zMath_HalfViewWidth = halfViewWidthPx;
     g_zMath_HalfViewHeight = halfViewHeightPx;
     g_zMath_ViewportOriginX = viewportOriginX;
     g_zMath_ViewportOriginY = viewportOriginY;
-    g_zMath_ProjOffsetX = halfViewWidthPx + viewportOriginX;
-    g_zMath_ProjOffsetY = halfViewHeightPx + viewportOriginY;
     g_zMath_ProjSphereRadiusScale = clipDistance;
     g_zMath_ProjDepth = projDepth;
 }
 
-// Reimplements 0x4753e0: zMath_BuildPerspectiveTextureInterpolants
+/**
+ * Reimplements 0x4753e0: zMath_BuildPerspectiveTextureInterpolants
+ * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
+ * Purpose: recovers perspective-correct reciprocal-Z and UV-over-Z plane gradients for a triangle.
+ */
 void __fastcall zMath_BuildPerspectiveTextureInterpolants(
     const zVec3 *triVerts,
     const zVec2 *triUVs,
@@ -482,7 +545,10 @@ void MatLoadIdentity() {
     *g_currentMatrixIdentityFlagSlot = 1;
 }
 
-// Reimplements 0x402f60: zMath::Vec3Normalize
+/**
+ * Reimplements 0x402f60: zMath::Vec3Normalize.
+ * Purpose: Normalizes a nonzero vector in place and returns the original 3D length.
+ */
 float __fastcall Vec3Normalize(
     zVec3 *vec
 ) {
@@ -496,8 +562,10 @@ float __fastcall Vec3Normalize(
     return length;
 }
 
-// Reimplements 0x4727f0: zMath::Vec3NormalizeXZ
-// (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
+/**
+ * Reimplements 0x4727f0: zMath::Vec3NormalizeXZ (GameZRecoil/zMath/zmath_vec3.cpp).
+ * Purpose: Normalizes a vector in the XZ plane while preserving the input Y value and leaving output Y untouched.
+ */
 void __fastcall Vec3NormalizeXZ(
     zVec3 *vec,
     zVec3 *out
@@ -516,8 +584,10 @@ void __fastcall Vec3NormalizeXZ(
     out->z = vec->z * scale;
 }
 
-// Reimplements 0x472cc0: zMath::Vec3Perp2D
-// (D:\Proj\GameZRecoil\zMath\zmath_vec2.cpp)
+/**
+ * Reimplements 0x472cc0: zMath::Vec3Perp2D (GameZRecoil/zMath/zmath_vec2.cpp).
+ * Purpose: Computes a unit XY-plane perpendicular using the recovered fast square-root estimate.
+ */
 void __fastcall Vec3Perp2D(
     const zVec3 *in,
     zVec3 *out
@@ -546,8 +616,10 @@ void __fastcall Vec3PerpXZ(
     out->y = 0.0f;
 }
 
-// Reimplements 0x472770: zMath::Vec3ScaleAdd
-// (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
+/**
+ * Reimplements 0x472770: zMath::Vec3ScaleAdd (GameZRecoil/zMath/zmath_vec3.cpp).
+ * Purpose: Computes out = vec + scale * delta for each vector component.
+ */
 void __fastcall Vec3ScaleAdd(
     const zVec3 *vec,
     const zVec3 *delta,
@@ -559,8 +631,10 @@ void __fastcall Vec3ScaleAdd(
     out->z = vec->z + delta->z * scale;
 }
 
-// Reimplements 0x472860: zMath::Vec3Reflect
-// (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
+/**
+ * Reimplements 0x472860: zMath::Vec3Reflect (GameZRecoil/zMath/zmath_vec3.cpp).
+ * Purpose: Reflects an incident vector around a normal, with the zero-dot case negating the incident vector.
+ */
 void __fastcall Vec3Reflect(
     zVec3 *normal,
     zVec3 *incident,
@@ -575,31 +649,35 @@ void __fastcall Vec3Reflect(
     }
 
     zVec3 scaledNormal;
-    scaledNormal.x = -dot * normal->x;
-    scaledNormal.y = normal->y * -dot;
-    scaledNormal.z = normal->z * -dot;
+    zVec3 *scaledNormalPtr = &scaledNormal;
+    scaledNormalPtr->x = -dot * normal->x;
+    scaledNormalPtr->y = normal->y * -dot;
+    scaledNormalPtr->z = normal->z * -dot;
 
     zVec3 halfReflected;
-    halfReflected.x = incident->x + scaledNormal.x;
-    halfReflected.y = incident->y + scaledNormal.y;
-    halfReflected.z = incident->z + scaledNormal.z;
+    zVec3 *halfReflectedPtr = &halfReflected;
+    halfReflectedPtr->x = incident->x + scaledNormalPtr->x;
+    halfReflectedPtr->y = incident->y + scaledNormalPtr->y;
+    halfReflectedPtr->z = incident->z + scaledNormalPtr->z;
 
-    reflected->x = scaledNormal.x + halfReflected.x;
-    reflected->y = scaledNormal.y + halfReflected.y;
-    reflected->z = scaledNormal.z + halfReflected.z;
+    reflected->x = scaledNormalPtr->x + halfReflectedPtr->x;
+    reflected->y = scaledNormalPtr->y + halfReflectedPtr->y;
+    reflected->z = scaledNormalPtr->z + halfReflectedPtr->z;
 }
 
-// Reimplements 0x472960: zMath::Vec3Lerp
-// (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
+/**
+ * Reimplements 0x472960: zMath::Vec3Lerp (GameZRecoil/zMath/zmath_vec3.cpp).
+ * Purpose: Blends the first vector in place with a second vector using a*t + b*(1-t).
+ */
 void __fastcall Vec3Lerp(
     zVec3 *inOut,
     const zVec3 *other,
     float t
 ) {
     const float otherScale = g_zMath_Vec3UnitFloat - t;
-    inOut->x = inOut->x * t + other->x * otherScale;
-    inOut->y = inOut->y * t + other->y * otherScale;
-    inOut->z = inOut->z * t + other->z * otherScale;
+    inOut->x = t * inOut->x + otherScale * other->x;
+    inOut->y = t * inOut->y + otherScale * other->y;
+    inOut->z = t * inOut->z + otherScale * other->z;
 }
 
 // Reimplements 0x4729f0: zMath::Vec3LerpNormalize
@@ -617,21 +695,28 @@ void __fastcall Vec3LerpNormalize(
     Vec3Normalize(inOut);
 }
 
-// Reimplements 0x4729b0: zMath::Vec3DirectionTo
-// (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
+/**
+ * Reimplements 0x4729b0: zMath::Vec3DirectionTo (GameZRecoil/zMath/zmath_vec3.cpp).
+ * Purpose: Writes the normalized direction from one point to another and returns the original distance.
+ */
 float __fastcall Vec3DirectionTo(
     const zVec3 *from,
     const zVec3 *to,
     zVec3 *outDir
 ) {
-    outDir->x = to->x - from->x;
-    outDir->y = to->y - from->y;
-    outDir->z = to->z - from->z;
+    const float dx = to->x - from->x;
+    const float dy = to->y - from->y;
+    const float dz = to->z - from->z;
+    outDir->x = dx;
+    outDir->y = dy;
+    outDir->z = dz;
     return Vec3Normalize(outDir);
 }
 
-// Reimplements 0x472a10: zMath::Vec3Slerp
-// (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
+/**
+ * Reimplements 0x472a10: zMath::Vec3Slerp (GameZRecoil/zMath/zmath_vec3.cpp).
+ * Purpose: Interpolates between two unit vectors with endpoint, near-linear, antiparallel, and spherical paths.
+ */
 void __fastcall Vec3Slerp(
     const zVec3 *a,
     const zVec3 *b,
@@ -765,24 +850,31 @@ int __fastcall LineVsSphereHit(
     return 1;
 }
 
-// Reimplements 0x42d560: zMath::Vec3Midpoint
-// (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
+/**
+ * Reimplements 0x42d560: zMath::Vec3Midpoint (GameZRecoil/zMath/zmath_vec3.cpp).
+ * Purpose: Writes the component-wise midpoint of two vectors and returns the output pointer.
+ */
 zVec3 *__fastcall Vec3Midpoint(
     const zVec3 *a,
     const zVec3 *b,
     zVec3 *outMidpoint
 ) {
-    outMidpoint->x = a->x + b->x;
-    outMidpoint->y = a->y + b->y;
-    outMidpoint->z = a->z + b->z;
+    const float sumX = a->x + b->x;
+    const float sumY = a->y + b->y;
+    const float sumZ = a->z + b->z;
+    outMidpoint->x = sumX;
+    outMidpoint->y = sumY;
+    outMidpoint->z = sumZ;
     outMidpoint->x *= g_zMath_MidpointHalf;
     outMidpoint->y *= g_zMath_MidpointHalf;
     outMidpoint->z *= g_zMath_MidpointHalf;
     return outMidpoint;
 }
 
-// Reimplements 0x4726d0: zMath::Vec3DeltaLength
-// (D:\Proj\GameZRecoil\zMath.cpp)
+/**
+ * Reimplements 0x4726d0: zMath::Vec3DeltaLength (GameZRecoil/zMath.cpp).
+ * Purpose: Stores the vector delta in the shared scratch vector and returns its length.
+ */
 float __fastcall Vec3DeltaLength(
     const zVec3 *a,
     const zVec3 *b
@@ -797,7 +889,10 @@ float __fastcall Vec3DeltaLength(
     return sqrt(lengthSq);
 }
 
-// Reimplements 0x472670: zMath::Vec3DeltaLengthSq (GameZRecoil/zMath.cpp)
+/**
+ * Reimplements 0x472670: zMath::Vec3DeltaLengthSq (GameZRecoil/zMath.cpp).
+ * Purpose: Stores the vector delta in the shared scratch vector and returns its squared length.
+ */
 float __fastcall Vec3DeltaLengthSq(
     const zVec3 *a,
     const zVec3 *b
@@ -811,8 +906,10 @@ float __fastcall Vec3DeltaLengthSq(
            g_zMath_Vec3DeltaScratch.z * g_zMath_Vec3DeltaScratch.z;
 }
 
-// Reimplements 0x472730: zMath::Vec3DistSqXZ
-// (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
+/**
+ * Reimplements 0x472730: zMath::Vec3DistSqXZ (GameZRecoil/zMath/zmath_vec3.cpp).
+ * Purpose: Stores the XZ delta in the shared scratch vector and returns squared XZ-plane distance.
+ */
 float __fastcall Vec3DistSqXZ(
     const zVec3 *a,
     const zVec3 *b
@@ -1172,7 +1269,10 @@ void __fastcall Vec3ArrayProjectToCachedY(
     }
 }
 
-// Reimplements 0x474f40: zMath::Vec3RotateY
+/**
+ * Reimplements 0x474f40: zMath::Vec3RotateY (GameZRecoil/zMath/zmath_vec.cpp).
+ * Purpose: Rotates an input vector around the Y axis and copies the original Y component to the output.
+ */
 void __fastcall Vec3RotateY(
     zVec3 *outVec,
     const zVec3 *inVec,
@@ -1403,28 +1503,46 @@ float __stdcall ApproxExpNeg(
 }
 } // namespace zMath
 
-// Reimplements 0x473690: zMath_Mat_Scale
-// (GameZRecoil/zMath/zmth_main.c)
+/**
+ * Reimplements 0x473690: zMath_Mat_Scale (GameZRecoil/zMath/zmath_matrix.cpp).
+ * Purpose: Applies per-axis scale to the current matrix basis while preserving translation.
+ */
 void zMath_Mat_Scale(
     float sx,
     float sy,
     float sz
 ) {
-    zMat4x3 *matrix = (zMat4x3 *)*zMath::g_currentMatrixPtrSlot;
+    zMat4x3 scaled;
     if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-        matrix->xx = sx;
-        matrix->yy = sy;
-        matrix->zz = sz;
+        ((zMat4x3 *)*zMath::g_currentMatrixPtrSlot)->xx = sx;
+        ((zMat4x3 *)*zMath::g_currentMatrixPtrSlot)->yy = sy;
+        ((zMat4x3 *)*zMath::g_currentMatrixPtrSlot)->zz = sz;
     } else {
-        matrix->xx *= sx;
-        matrix->xy *= sx;
-        matrix->xz *= sx;
-        matrix->yx *= sy;
-        matrix->yy *= sy;
-        matrix->yz *= sy;
-        matrix->zx *= sz;
-        matrix->zy *= sz;
-        matrix->zz *= sz;
+        zMat4x3 *matrix = (zMat4x3 *)*zMath::g_currentMatrixPtrSlot;
+        scaled.xx = matrix->xx * sx;
+        scaled.xy = matrix->xy * sx;
+        scaled.xz = matrix->xz * sx;
+        scaled.yx = matrix->yx * sy;
+        scaled.yy = matrix->yy * sy;
+        scaled.yz = matrix->yz * sy;
+        scaled.zx = matrix->zx * sz;
+        scaled.zy = matrix->zy * sz;
+        scaled.zz = matrix->zz * sz;
+        scaled.posX = matrix->posX;
+        scaled.posY = matrix->posY;
+        scaled.posZ = matrix->posZ;
+        matrix->xx = scaled.xx;
+        matrix->xy = scaled.xy;
+        matrix->xz = scaled.xz;
+        matrix->yx = scaled.yx;
+        matrix->yy = scaled.yy;
+        matrix->yz = scaled.yz;
+        matrix->zx = scaled.zx;
+        matrix->zy = scaled.zy;
+        matrix->zz = scaled.zz;
+        matrix->posX = scaled.posX;
+        matrix->posY = scaled.posY;
+        matrix->posZ = scaled.posZ;
     }
     *zMath::g_currentMatrixIdentityFlagSlot = 0;
 }
@@ -1495,7 +1613,11 @@ void __stdcall zMath_Mat_LoadProjection(
     zMath::MatLoadCurrentFrom(&slotBuffer);
 }
 
-// Reimplements 0x474bc0: zMath_UnprojectPointBatch
+/**
+ * Reimplements 0x474bc0: zMath_UnprojectPointBatch
+ * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
+ * Purpose: converts projected screen coordinates with reciprocal Z back into view-space points.
+ */
 void __fastcall zMath_UnprojectPointBatch(
     const zProjectedPoint *projectedPoints,
     zVec3 *outPoints,
@@ -1509,7 +1631,11 @@ void __fastcall zMath_UnprojectPointBatch(
     }
 }
 
-// Reimplements 0x474c20: zMath_UnprojectPointBatchZBuf
+/**
+ * Reimplements 0x474c20: zMath_UnprojectPointBatchZBuf
+ * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
+ * Purpose: unprojects projected points and transforms them through the staged camera inverse matrix.
+ */
 void __fastcall zMath_UnprojectPointBatchZBuf(
     const zProjectedPoint *projectedPoints,
     zVec3 *outPoints,
@@ -1533,7 +1659,11 @@ void __fastcall zMath_UnprojectPointBatchZBuf(
     }
 }
 
-// Reimplements 0x473060: zMath_Mat_LoadView
+/**
+ * Reimplements 0x473060: zMath_Mat_LoadView
+ * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
+ * Purpose: builds the current view matrix from camera and parent transforms.
+ */
 void zMath_Mat_LoadView() {
     zVec3 parentEuler = {0};
     if (zMath::g_currentMatrixIdentityFlagSlot[-1] == 0) {
@@ -1704,8 +1834,11 @@ void __fastcall zMath_Vec3_DirFromYaw(
     );
 }
 
-// Reimplements 0x473e60: zMath_Camera_StageInverseRotation
-// (GameZRecoil/zMath/zmath_camera.cpp)
+/**
+ * Reimplements 0x473e60: zMath_Camera_StageInverseRotation
+ * (D:\Proj\GameZRecoil\zMath\zmath_camera.cpp).
+ * Purpose: stages camera scratch matrices for inverse rotation and translated camera position.
+ */
 void __fastcall zMath_Camera_StageInverseRotation(
     const zMat4x3 *worldMatrix
 ) {
@@ -1757,7 +1890,11 @@ void __fastcall zMath_Camera_StageInverseRotation(
                                          pos.z * zMath::g_zMath_CameraScratchB.zx;
 }
 
-// Reimplements 0x4757c0: zMath_Quat_FromEuler
+/**
+ * Reimplements 0x4757c0: zMath_Quat_FromEuler
+ * (D:\Proj\GameZRecoil\zMath\zMath_Quat.cpp).
+ * Purpose: converts three Euler rotation angles into a quaternion.
+ */
 void __fastcall zMath_Quat_FromEuler(
     zQuat *outQuat,
     float angle0,
@@ -1799,7 +1936,11 @@ void __fastcall zMath_Quat_Multiply(
         quatB->w * quatA->z + quatA->w * quatB->z + quatB->y * quatA->x - quatA->y * quatB->x;
 }
 
-// Reimplements 0x4759d0: zMath_Quat_MultiplyInverse
+/**
+ * Reimplements 0x4759d0: zMath_Quat_MultiplyInverse
+ * (D:\Proj\GameZRecoil\zMath\zMath_Quat.cpp).
+ * Purpose: multiplies a quaternion by the inverse/conjugate form used by camera-view composition.
+ */
 void __fastcall zMath_Quat_MultiplyInverse(
     const zQuat *quatA,
     const zQuat *quatB,
@@ -1815,7 +1956,11 @@ void __fastcall zMath_Quat_MultiplyInverse(
         quatB->w * quatA->z - quatA->w * quatB->z - quatB->y * quatA->x + quatA->y * quatB->x;
 }
 
-// Reimplements 0x475a80: zMath_Quat_ToMatrix
+/**
+ * Reimplements 0x475a80: zMath_Quat_ToMatrix
+ * (D:\Proj\GameZRecoil\zMath\zMath_Quat.cpp).
+ * Purpose: expands a quaternion into the rotational part of a 4x3 matrix.
+ */
 void __fastcall zMath_Quat_ToMatrix(
     const zQuat *quat,
     zMat4x3 *outMatrix3x3
@@ -1936,7 +2081,10 @@ void __fastcall zMath_SolveLinearGradient2D(
     *outDuDy = (duCB * dxAB - dxCB * duAB) * invDeterminant;
 }
 
-// Reimplements 0x4727a0: zMath_Vec3_DivScalar
+/**
+ * Reimplements 0x4727a0: zMath_Vec3_DivScalar (GameZRecoil/zMath/zmath_vec3.cpp).
+ * Purpose: Divides a vector by a scalar while preserving the input vector for zero divisors.
+ */
 void __fastcall zMath_Vec3_DivScalar(
     const zVec3 *vec,
     zVec3 *out,
@@ -1980,7 +2128,11 @@ void __fastcall Set255f(
 }
 } // namespace zFloat
 
-// Reimplements 0x474870: zMath_Mat_TransformBBoxToCorners
+/**
+ * Reimplements 0x474870: zMath_Mat_TransformBBoxToCorners
+ * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
+ * Purpose: transforms a bounding box into its eight output corner positions.
+ */
 void __fastcall zMath_Mat_TransformBBoxToCorners(
     const zMat4x3 *matrix,
     const zBBox3f *bbox,

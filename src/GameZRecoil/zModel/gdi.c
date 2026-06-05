@@ -23,6 +23,11 @@ namespace {
         return lhs < rhs ? rhs : lhs;
     }
 
+    /**
+     * Original static helper observed in zModel display-instance bounds rebuilds
+     * (D:\Proj\GameZRecoil\zModel\gdi.c).
+     * Purpose: expand a min/max bounds record to include one point.
+     */
     void IncludePoint(
         zBoundsMinMaxPartial * bounds,
         const zVec3 &point
@@ -53,6 +58,11 @@ namespace {
         );
     }
 
+    /**
+     * Original static helper observed in zModel display-instance bounds rebuilds
+     * (D:\Proj\GameZRecoil\zModel\gdi.c).
+     * Purpose: initialize a min/max bounds record from its first point.
+     */
     void InitializeBounds(
         zBoundsMinMaxPartial * bounds,
         const zVec3 &point
@@ -61,6 +71,11 @@ namespace {
         bounds->max = point;
     }
 
+    /**
+     * Original static helper observed in zModel display-instance bounds rebuilds
+     * (D:\Proj\GameZRecoil\zModel\gdi.c).
+     * Purpose: approximate a square root with the original bit-level exponent estimate.
+     */
     float FastSqrtApprox(float value) {
         int bits = 0;
         memcpy(
@@ -83,6 +98,11 @@ namespace {
         zModel_MaterialPartial *clone;
     };
 
+    /**
+     * Original static helper observed in zModel display-instance clone code
+     * (D:\Proj\GameZRecoil\zModel\gdi.c).
+     * Purpose: allocate and copy an optional entry-owned byte array.
+     */
     void *CopyArrayBytes(
         const void *source,
         size_t byteCount
@@ -98,6 +118,11 @@ namespace {
         return copy;
     }
 
+    /**
+     * Original static helper observed in zModel display-instance clone code
+     * (D:\Proj\GameZRecoil\zModel\gdi.c).
+     * Purpose: clone an entry-owned array only when the source entry has bytes to copy.
+     */
     void CopyEntryArrayIfPresent(
         void **dest,
         void *source,
@@ -113,24 +138,40 @@ namespace {
 }
 
 namespace zDi {
-    // Reimplements 0x4826f0: zDi::AddRef (GameZRecoil/zDi/zdi.c)
+    /**
+     * Reimplements 0x4826f0: zDi::AddRef
+     * (GameZRecoil/zDi/zdi.c).
+     * Purpose: increment a display-instance reference count.
+     */
     int __fastcall AddRef(zDiPartial * self) {
         ++self->refCount;
         return 0;
     }
 
-    // Reimplements 0x482700: zDi::Release (GameZRecoil/zDi/zdi.c)
+    /**
+     * Reimplements 0x482700: zDi::Release
+     * (GameZRecoil/zDi/zdi.c).
+     * Purpose: decrement a display-instance reference count.
+     */
     int __fastcall Release(zDiPartial * self) {
         --self->refCount;
         return 0;
     }
 
-    // Reimplements 0x482710: zDi::GetRefCount (GameZRecoil/zModel/gdi.c)
+    /**
+     * Reimplements 0x482710: zDi::GetRefCount
+     * (GameZRecoil/zModel/gdi.c).
+     * Purpose: return a display-instance reference count.
+     */
     int __fastcall GetRefCount(zDiPartial * self) {
         return self->refCount;
     }
 
-    // Reimplements 0x482160: zDi::FreeContents (GameZRecoil/zModel/gdi.c)
+    /**
+     * Reimplements 0x482160: zDi::FreeContents
+     * (GameZRecoil/zModel/gdi.c).
+     * Purpose: release all heap-owned arrays and materials held by a display instance.
+     */
     int __fastcall FreeContents(zDiPartial * self) {
         if (self == 0) {
             return 5;
@@ -184,7 +225,11 @@ namespace zDi {
         return 0;
     }
 
-    // Reimplements 0x4826d0: zDi::SetFlagBit0
+    /**
+     * Reimplements 0x4826d0: zDi::SetFlagBit0
+     * (GameZRecoil/zModel/gdi.c).
+     * Purpose: update display-instance flag bit 0 while preserving other flags.
+     */
     void __fastcall SetFlagBit0(
         zDiPartial * self,
         int enabled
@@ -194,7 +239,11 @@ namespace zDi {
         }
     }
 
-    // Reimplements 0x4826b0: zDi::SetClonedFlag (GameZRecoil/zModel/gdi.c)
+    /**
+     * Reimplements 0x4826b0: zDi::SetClonedFlag
+     * (GameZRecoil/zModel/gdi.c).
+     * Purpose: update the display-instance cloned flag bit.
+     */
     void __fastcall SetClonedFlag(
         zDiPartial * self,
         int isCloned
@@ -204,9 +253,12 @@ namespace zDi {
         }
     }
 
-    // Reimplements 0x482270: zDi::CloneToInstance (GameZRecoil/zModel/gdi.c)
-    zDiPartial *__fastcall
-    CloneToInstance(
+    /**
+     * Reimplements 0x482270: zDi::CloneToInstance
+     * (GameZRecoil/zModel/gdi.c).
+     * Purpose: clone a display instance, optionally cloning or sharing its material references.
+     */
+    zDiPartial *__fastcall CloneToInstance(
         zDiPartial * self,
         int cloneMaterials,
         int cloneAuxOnly
@@ -362,8 +414,11 @@ namespace zDi {
         return clone;
     }
 
-    // Reimplements 0x483a60: zDi::HasSpecialFlagsOrAuxMaterialData
-    // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+    /**
+     * Reimplements 0x483a60: zDi::HasSpecialFlagsOrAuxMaterialData
+     * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+     * Purpose: test whether a display instance needs special render/material handling.
+     */
     int __fastcall HasSpecialFlagsOrAuxMaterialData(zDiPartial * self) {
         if (self == 0) {
             return 0;
@@ -382,9 +437,12 @@ namespace zDi {
         return 0;
     }
 
-    // Reimplements 0x483b80: zDi::BuildAabb
-    void __fastcall
-    BuildAabb(
+    /**
+     * Reimplements 0x483b80: zDi::BuildAabb
+     * (D:\Proj\GameZRecoil\zModel\gdi.c).
+     * Purpose: build a display-instance axis-aligned bounds box from vertices and point data.
+     */
+    void __fastcall BuildAabb(
         zDiPartial * self,
         zBoundsMinMaxPartial * outBoundsMinMax
     ){
@@ -445,9 +503,12 @@ namespace zDi {
         }
     }
 
-    // Reimplements 0x483e60: zDi::BuildOriginSymmetricAabb
-    void __fastcall
-    BuildOriginSymmetricAabb(
+    /**
+     * Reimplements 0x483e60: zDi::BuildOriginSymmetricAabb
+     * (D:\Proj\GameZRecoil\zModel\gdi.c).
+     * Purpose: symmetrize display-instance bounds around the origin according to mode flags.
+     */
+    void __fastcall BuildOriginSymmetricAabb(
         zDiPartial * self,
         zBoundsMinMaxPartial * outBoundsMinMax
     ){
@@ -500,9 +561,12 @@ namespace zDi {
         outBoundsMinMax->max.z = extentZ;
     }
 
-    // Reimplements 0x483ad0: zDi::RebuildBounds
-    void __fastcall
-    RebuildBounds(
+    /**
+     * Reimplements 0x483ad0: zDi::RebuildBounds
+     * (D:\Proj\GameZRecoil\zModel\gdi.c).
+     * Purpose: rebuild display-instance bounds, center, and approximate bounding radius.
+     */
+    void __fastcall RebuildBounds(
         zDiPartial * self,
         zBoundsMinMaxPartial * outBoundsMinMax
     ){
@@ -533,8 +597,11 @@ namespace zDi {
 }
 
 namespace zModel_Material {
-    // Reimplements 0x480c40: zModel_Material::ResetDefaults
-    // (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp)
+    /**
+     * Reimplements 0x480c40: zModel_Material::ResetDefaults
+     * (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp).
+     * Purpose: reset a material record to the default texture, color, and flag state.
+     */
     void __fastcall ResetDefaults(zModel_MaterialPartial * material) {
         material->cycle = 0;
         material->currentTextureDirectoryEntry = 0;
@@ -549,8 +616,11 @@ namespace zModel_Material {
         material->userTag = 0;
     }
 
-    // Reimplements 0x480c80: zModel_Material::HasAuxData
-    // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
+    /**
+     * Reimplements 0x480c80: zModel_Material::HasAuxData
+     * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+     * Purpose: test whether a material has auxiliary data or cycle state.
+     */
     int __fastcall HasAuxData(zModel_MaterialPartial * material) {
         return (material->flags & 0x0200) != 0 || (material->flags & 0x0400) != 0 ||
                        material->cycle != 0
@@ -558,10 +628,12 @@ namespace zModel_Material {
                    : 0;
     }
 
-    // Reimplements 0x480d20: zModel_Material::CompareForReuse
-    // (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp)
-    int __fastcall
-    CompareForReuse(
+    /**
+     * Reimplements 0x480d20: zModel_Material::CompareForReuse
+     * (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp).
+     * Purpose: compare two material records for reuse, merging missing user tags when possible.
+     */
+    int __fastcall CompareForReuse(
         zModel_MaterialPartial * lhs,
         zModel_MaterialPartial * rhs
     ){
@@ -595,8 +667,11 @@ namespace zModel_Material {
         return 1;
     }
 
-    // Reimplements 0x481420: zModel_Material::FindByTexDirEntry
-    // (D:\Proj\GameZRecoil\zModel\zmat.cpp)
+    /**
+     * Reimplements 0x481420: zModel_Material::FindByTexDirEntry
+     * (D:\Proj\GameZRecoil\zModel\zmat.cpp).
+     * Purpose: find the active material that references a texture-directory entry.
+     */
     zModel_MaterialPartial *__fastcall FindByTexDirEntry(
         zImage_TexDirEntryPartial * texDirEntry
     ) {
@@ -617,8 +692,11 @@ namespace zModel_Material {
         return 0;
     }
 
-    // Reimplements 0x480ca0: zModel_Material::FindOrClone
-    // (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp)
+    /**
+     * Reimplements 0x480ca0: zModel_Material::FindOrClone
+     * (D:\Proj\GameZRecoil\zModel\zModel_Matl.cpp).
+     * Purpose: reuse a matching active material or clone the supplied material into the pool.
+     */
     zModel_MaterialPartial *__fastcall FindOrClone(
         zModel_MaterialPartial * material
     ) {
@@ -647,8 +725,11 @@ namespace zModel_Material {
         return g_zModel_MatlReuseCache;
     }
 
-    // Reimplements 0x481040: zModel_Material::SetUserTag
-    // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
+    /**
+     * Reimplements 0x481040: zModel_Material::SetUserTag
+     * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+     * Purpose: assign a caller-defined material user tag.
+     */
     int __fastcall SetUserTag(
         zModel_MaterialPartial * material,
         int userTag
@@ -661,10 +742,12 @@ namespace zModel_Material {
         return 1;
     }
 
-    // Reimplements 0x481050: zModel_Material::SetCycleTextureCount
-    // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-    int __fastcall
-    SetCycleTextureCount(
+    /**
+     * Reimplements 0x481050: zModel_Material::SetCycleTextureCount
+     * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+     * Purpose: allocate or grow the material texture-cycle frame table.
+     */
+    int __fastcall SetCycleTextureCount(
         zModel_MaterialPartial * material,
         int textureCount
     ){
@@ -702,8 +785,11 @@ namespace zModel_Material {
         return 1;
     }
 
-    // Reimplements 0x481100: zModel_Material::AddCycleTexture
-    // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+    /**
+     * Reimplements 0x481100: zModel_Material::AddCycleTexture
+     * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+     * Purpose: append one texture-directory entry to a material cycle.
+     */
     int __fastcall AddCycleTexture(
         zModel_MaterialPartial * material,
         zImage_TexDirEntryPartial * textureDirectoryEntry
@@ -729,8 +815,11 @@ namespace zModel_Material {
         return 1;
     }
 
-    // Reimplements 0x481140: zModel_Material::UpdateCycleIfNeeded
-    // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
+    /**
+     * Reimplements 0x481140: zModel_Material::UpdateCycleIfNeeded
+     * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+     * Purpose: advance a cycled material texture once per video frame tick.
+     */
     void __fastcall UpdateCycleIfNeeded(zModel_MaterialPartial * material) {
         zModel_MaterialCyclePartial *cycle = material->cycle;
         if (cycle == 0) {
@@ -765,10 +854,12 @@ namespace zModel_Material {
         material->cycle->lastUpdateFrameTick = g_zVideo_FrameTick;
     }
 
-    // Reimplements 0x481220: zModel_Material::SetCycleTextureLoop
-    // (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
-    int __fastcall
-    SetCycleTextureLoop(
+    /**
+     * Reimplements 0x481220: zModel_Material::SetCycleTextureLoop
+     * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
+     * Purpose: set whether a cycled material loops after the last frame.
+     */
+    int __fastcall SetCycleTextureLoop(
         zModel_MaterialPartial * material,
         int loopEnabled
     ){
@@ -792,10 +883,12 @@ namespace zModel_Material {
         return 0;
     }
 
-    // Reimplements 0x481260: zModel_Material::SetCycleTextureSpeed
-    // (D:\Proj\GameZRecoil\zModel\zmodel_mat.cpp)
-    int __fastcall
-    SetCycleTextureSpeed(
+    /**
+     * Reimplements 0x481260: zModel_Material::SetCycleTextureSpeed
+     * (D:\Proj\GameZRecoil\zModel\zmodel_mat.cpp).
+     * Purpose: set the frames-per-second speed for a cycled material.
+     */
+    int __fastcall SetCycleTextureSpeed(
         zModel_MaterialPartial * material,
         float cycleSpeed
     ){
@@ -825,8 +918,11 @@ namespace zModel_Material {
 }
 
 namespace zModel_MatlBuffer {
-    // Reimplements 0x4812c0: zModel_MatlBuffer::CloneToActiveSlot
-    // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
+    /**
+     * Reimplements 0x4812c0: zModel_MatlBuffer::CloneToActiveSlot
+     * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+     * Purpose: clone a material into a free material-buffer slot and link it active.
+     */
     zModel_MaterialPartial *__fastcall CloneToActiveSlot(
         zModel_MaterialPartial * material
     ) {
@@ -896,8 +992,11 @@ namespace zModel_MatlBuffer {
 }
 
 namespace zModel_Material {
-    // Reimplements 0x4812b0: zModel_Material::Clone
-    // (D:\Proj\GameZRecoil\zModel\gmod_matl.c)
+    /**
+     * Reimplements 0x4812b0: zModel_Material::Clone
+     * (D:\Proj\GameZRecoil\zModel\gmod_matl.c).
+     * Purpose: clone a material through the active material-buffer slot allocator.
+     */
     zModel_MaterialPartial *__fastcall Clone(
         zModel_MaterialPartial * material
     ) {
@@ -905,7 +1004,11 @@ namespace zModel_Material {
     }
 }
 
-// Reimplements 0x480f60: zModel_Material_SetFlagBit9
+/**
+ * Reimplements 0x480f60: zModel_Material_SetFlagBit9
+ * (D:\Proj\GameZRecoil\zModel\gdi.c).
+ * Purpose: update material flag bit 9 from a boolean input.
+ */
 int __fastcall zModel_Material_SetFlagBit9(
     zModel_MaterialPartial *material,
     int enabled
@@ -919,7 +1022,11 @@ int __fastcall zModel_Material_SetFlagBit9(
 }
 
 namespace zModel_Material {
-    // Reimplements 0x480f80: zModel_Material::InvalidateImagesIfEligible
+    /**
+     * Reimplements 0x480f80: zModel_Material::InvalidateImagesIfEligible
+     * (D:\Proj\GameZRecoil\zModel\gdi.c).
+     * Purpose: invalidate texture variants for materials with loaded texture surfaces.
+     */
     void __fastcall InvalidateImagesIfEligible(
         zModel_MaterialPartial * material
     ) {
@@ -939,7 +1046,11 @@ namespace zModel_Material {
     }
 }
 
-// Reimplements 0x4841b0: zDi_SetMaterialFlagBit9ForFlagBit0Entries
+/**
+ * Reimplements 0x4841b0: zDi_SetMaterialFlagBit9ForFlagBit0Entries
+ * (D:\Proj\GameZRecoil\zModel\gdi.c).
+ * Purpose: set material flag bit 9 for display-instance entries whose material has flag bit 0.
+ */
 void __fastcall zDi_SetMaterialFlagBit9ForFlagBit0Entries(
     zDiPartial *self,
     int enabled
@@ -956,7 +1067,11 @@ void __fastcall zDi_SetMaterialFlagBit9ForFlagBit0Entries(
 }
 
 namespace zDi {
-    // Reimplements 0x4841f0: zDi::InvalidateImagesForFlagBit8Materials
+    /**
+     * Reimplements 0x4841f0: zDi::InvalidateImagesForFlagBit8Materials
+     * (D:\Proj\GameZRecoil\zModel\gdi.c).
+     * Purpose: invalidate eligible images for display-instance materials selected by flag bit 0.
+     */
     void __fastcall InvalidateImagesForFlagBit8Materials(zDiPartial * self) {
         for (int i = 0; i < self->entryCount; ++i) {
             zModel_MaterialPartial *material = self->entries[i].material;

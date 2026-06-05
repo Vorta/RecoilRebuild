@@ -9,7 +9,10 @@ char g_zLoc_TempMessageBuffer[0x100] = {0};
 }
 
 namespace zLoc {
-// Reimplements 0x4a5ad0: zLoc::LoadMessagesDll
+/**
+ * Reimplements 0x4a5ad0: zLoc::LoadMessagesDll.
+ * Purpose: Loads the localization messages DLL and resolves its ZLocGetID export.
+ */
 int __fastcall LoadMessagesDll(
     const char *dllPath
 ) {
@@ -27,7 +30,10 @@ int __fastcall LoadMessagesDll(
     return result;
 }
 
-// Reimplements 0x4a5b00: zLoc::UnloadMessagesDll
+/**
+ * Reimplements 0x4a5b00: zLoc::UnloadMessagesDll.
+ * Purpose: Releases the loaded localization messages DLL and clears the cached module handle.
+ */
 void UnloadMessagesDll() {
     HMODULE const module = g_zLoc_MessagesDllHandle;
     if (module != 0) {
@@ -37,7 +43,10 @@ void UnloadMessagesDll() {
     g_zLoc_MessagesDllHandle = 0;
 }
 
-// Reimplements 0x4a5b20: zLoc::GetMessageId
+/**
+ * Reimplements 0x4a5b20: zLoc::GetMessageId.
+ * Purpose: Looks up a localization message id through the loaded ZLocGetID export.
+ */
 unsigned int __fastcall GetMessageId(
     const char *key
 ) {
@@ -48,7 +57,10 @@ unsigned int __fastcall GetMessageId(
     return 0;
 }
 
-// Reimplements 0x4a5b40: zLoc::ResolveMessageKeyOrFallback
+/**
+ * Reimplements 0x4a5b40: zLoc::ResolveMessageKeyOrFallback.
+ * Purpose: Resolves a localization key to a message string, or returns the key when lookup fails.
+ */
 char *__fastcall ResolveMessageKeyOrFallback(
     const char *key
 ) {
@@ -60,7 +72,10 @@ char *__fastcall ResolveMessageKeyOrFallback(
     return (char *)(key);
 }
 
-// Reimplements 0x4a5b60: zLoc::FormatMessage
+/**
+ * Reimplements 0x4a5b60: zLoc::FormatMessage.
+ * Purpose: Formats a message resource from the loaded DLL into a caller-provided buffer.
+ */
 unsigned int FormatMessage(
     char *outBuffer,
     int maxChars,
@@ -99,7 +114,10 @@ unsigned int FormatMessage(
     return result;
 }
 
-// Reimplements 0x4a5bf0: zLoc::GetMessageString
+/**
+ * Reimplements 0x4a5bf0: zLoc::GetMessageString.
+ * Purpose: Formats a message resource into the shared temporary localization buffer.
+ */
 char *__fastcall GetMessageString(
     unsigned int messageId
 ) {

@@ -122,6 +122,7 @@ void __cdecl zMath_Vec3_ScaleAdd(
 
 /* ==================================================================
  * zMath_Vec3_DivScalar -- 0x4727A0
+ * Reimplements 0x4727a0: zMath_Vec3_DivScalar.
  * out = v / s, with zero-division protection (returns unchanged).
  * ================================================================== */
 void __cdecl zMath_Vec3_DivScalar(
@@ -820,6 +821,7 @@ void __cdecl zMath_ProjectPointBatchZBuf(
 
 /* ==================================================================
  * zMath_UnprojectPointBatch -- 0x474BC0
+ * Reimplements 0x474bc0: zMath_UnprojectPointBatch.
  * Reverse-projects screen coordinates back to view-space.
  * For each point:
  *   invZ  = 1.0 / src.z   (src.z is stored 1/Z from projection)
@@ -1041,6 +1043,7 @@ void __cdecl zMath_TriangleScreenGradients(
 
 /* ==================================================================
  * zMath_Quat_FromEuler -- 0x4757C0
+ * Reimplements 0x4757c0: zMath_Quat_FromEuler.
  * Converts Euler angles (pitch, yaw, roll) to a quaternion.
  * Uses half-angle formula with ZYX rotation order.
  * q = [w, x, y, z]
@@ -1085,6 +1088,7 @@ float *__cdecl zMath_Quat_Multiply(
 
 /* ==================================================================
  * zMath_Quat_MultiplyInverse -- 0x4759D0
+ * Reimplements 0x4759d0: zMath_Quat_MultiplyInverse.
  * Multiplies q1 by the conjugate of q2: out = q2* * q1
  * Effectively computes the relative rotation from q2 to q1.
  * ================================================================== */
@@ -1102,6 +1106,7 @@ float *__cdecl zMath_Quat_MultiplyInverse(
 
 /* ==================================================================
  * zMath_Quat_ToMatrix -- 0x475A80
+ * Reimplements 0x475a80: zMath_Quat_ToMatrix.
  * Converts a quaternion [w, x, y, z] to a 3x3 rotation matrix.
  * Output is written to a float[9] or the rotation part of a 4x3 matrix.
  * Standard formula:

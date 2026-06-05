@@ -35,16 +35,35 @@ typedef void( *RecoilStateWndActivateMethod)(
 );
 typedef void( *CFrameWndDestructorProc)(CFrameWnd *);
 
+/**
+ * Local MFC provider boundary helper for CZGameFrame runtime-class/message-map
+ * thunks.
+ *
+ * Purpose: return source symbols through the 32-bit pointer value shape used by
+ * the recovered retail accessors.
+ */
 RecoilPtr32 Ptr32FromSymbol(
     const void *symbol
 ) {
     return (RecoilPtr32)((unsigned int)(symbol));
 }
 
+/**
+ * Local MFC provider boundary callback for CZGameFrame::classCZGameFrame.
+ *
+ * Purpose: expose the CFrameWnd provider runtime class through the callback
+ * shape expected by the recovered MFC class record.
+ */
 CRuntimeClass *__stdcall GetCZGameFrameBaseRuntimeClass() {
     return (CRuntimeClass *)(&CFrameWnd::classCFrameWnd);
 }
 
+/**
+ * Local MFC provider boundary ABI helper for CZGameFrame teardown.
+ *
+ * Purpose: resolve and call the MFC42 CFrameWnd destructor without rebuilding
+ * provider-owned MFC internals in production source.
+ */
 void CallMfcCFrameWndDestructor(
     CFrameWnd *frame
 ) {
@@ -84,16 +103,32 @@ CRuntimeClass CZGameFrame::classCZGameFrame = {
     0,
 };
 
-// Reimplements 0x443790: CZGameFrame::GetBaseRuntimeClass
+/**
+ * Reimplements 0x443790: CZGameFrame::GetBaseRuntimeClass.
+ *
+ * Purpose: return the MFC CFrameWnd runtime-class symbol for CZGameFrame's
+ * recovered runtime-class hierarchy.
+ */
 RecoilPtr32 CZGameFrame::GetBaseRuntimeClass() {
     return Ptr32FromSymbol(&CFrameWnd::classCFrameWnd);
 }
 
+/**
+ * Local MFC provider boundary message-map callback for CZGameFrame::messageMap.
+ *
+ * Purpose: expose CFrameWnd's provider message map through the callback shape
+ * stored in the recovered CZGameFrame message-map record.
+ */
 const AFX_MSGMAP *__stdcall CZGameFrame::GetBaseMessageMapForMfc() {
     return &CFrameWnd::messageMap;
 }
 
-// Reimplements 0x443730: CZGameFrame::CreateObject
+/**
+ * Reimplements 0x443730: CZGameFrame::CreateObject.
+ *
+ * Purpose: allocate and construct the game frame object for the recovered MFC
+ * runtime-class factory path.
+ */
 CZGameFrame *CZGameFrame::CreateObject() {
     CZGameFrame *const frame = (CZGameFrame *)(::operator new(sizeof(CZGameFrame)));
     if (frame == 0) {
@@ -108,22 +143,40 @@ CZGameFrame *CZGameFrame::CreateObject() {
     }
 }
 
-// Reimplements 0x4437a0: CZGameFrame::GetRuntimeClass
+/**
+ * Reimplements 0x4437a0: CZGameFrame::GetRuntimeClass.
+ *
+ * Purpose: return CZGameFrame's recovered runtime-class record to MFC callers.
+ */
 RecoilPtr32 CZGameFrame::GetRuntimeClass() {
     return Ptr32FromSymbol(&CZGameFrame::classCZGameFrame);
 }
 
-// Reimplements 0x4437b0: CZGameFrame::GetBaseMessageMap
+/**
+ * Reimplements 0x4437b0: CZGameFrame::GetBaseMessageMap.
+ *
+ * Purpose: return the provider CFrameWnd message-map symbol for the frame's
+ * recovered message-map hierarchy.
+ */
 RecoilPtr32 CZGameFrame::GetBaseMessageMap() {
     return Ptr32FromSymbol(&CFrameWnd::messageMap);
 }
 
-// Reimplements 0x4437c0: CZGameFrame::GetMessageMap
+/**
+ * Reimplements 0x4437c0: CZGameFrame::GetMessageMap.
+ *
+ * Purpose: return CZGameFrame's recovered MFC message-map record.
+ */
 RecoilPtr32 CZGameFrame::GetMessageMap() {
     return Ptr32FromSymbol(&CZGameFrame::messageMap);
 }
 
-// Reimplements 0x4438a0: CZGameFrame::IsWindowValid
+/**
+ * Reimplements 0x4438a0: CZGameFrame::IsWindowValid.
+ *
+ * Purpose: treat a missing or disabled MFC window as eligible for the game
+ * frame's idle dispatch checks.
+ */
 int __stdcall CZGameFrame::IsWindowValid(
     CWnd *pWnd
 ) {
@@ -134,7 +187,12 @@ int __stdcall CZGameFrame::IsWindowValid(
     return pWnd->IsWindowEnabled() == 0 ? 1 : 0;
 }
 
-// Reimplements 0x4437d0: CZGameFrame::Constructor
+/**
+ * Reimplements 0x4437d0: CZGameFrame::Constructor.
+ *
+ * Purpose: initialize the MFC frame base, game bitmap member, frame vtable, and
+ * game/video startup hooks for the lightweight game frame.
+ */
 CZGameFrame * CZGameFrame::Constructor(
     const char *appId
 ) {
@@ -146,7 +204,12 @@ CZGameFrame * CZGameFrame::Constructor(
     return this;
 }
 
-// Reimplements 0x443830: CZGameFrame::Destructor
+/**
+ * Reimplements 0x443830: CZGameFrame::Destructor.
+ *
+ * Purpose: tear down the lightweight game frame bitmap, video hook, and MFC
+ * CFrameWnd provider base.
+ */
 void CZGameFrame::Destructor() {
     *(RecoilPtr32 *)(this) = Ptr32FromSymbol(&kCZGameFrame_Vtable);
     zVideo::ReturnSuccessStub();
@@ -155,7 +218,11 @@ void CZGameFrame::Destructor() {
     CallMfcCFrameWndDestructor((CFrameWnd *)(this));
 }
 
-// Reimplements 0x4438c0: CZGameFrame::BuildWindowTitle
+/**
+ * Reimplements 0x4438c0: CZGameFrame::BuildWindowTitle.
+ *
+ * Purpose: construct the fixed Zipper Interactive title used by the game frame.
+ */
 CString * CZGameFrame::BuildWindowTitle(
     CString *outTitle
 ) {
@@ -163,7 +230,12 @@ CString * CZGameFrame::BuildWindowTitle(
     return outTitle;
 }
 
-// Reimplements 0x443a60: CZGameFrame::OnCreate
+/**
+ * Reimplements 0x443a60: CZGameFrame::OnCreate.
+ *
+ * Purpose: finish MFC frame creation by loading the game bitmap and shutting
+ * down the startup mouse device path.
+ */
 int CZGameFrame::OnCreate(
     CREATESTRUCTA *createStruct
 ) {
@@ -182,12 +254,21 @@ int CZGameFrame::OnCreate(
     return 0;
 }
 
-// Reimplements 0x4438f0: CZGameFrame::OnClose
+/**
+ * Reimplements 0x4438f0: CZGameFrame::OnClose.
+ *
+ * Purpose: forward close handling to the MFC CFrameWnd provider base.
+ */
 void CZGameFrame::OnClose() {
     CFrameWnd::OnClose();
 }
 
-// Reimplements 0x443900: CZGameFrame::OnPaint
+/**
+ * Reimplements 0x443900: CZGameFrame::OnPaint.
+ *
+ * Purpose: paint the startup game bitmap into the frame unless the 3dfx client
+ * rectangle update path is active.
+ */
 void CZGameFrame::OnPaint() {
     CPaintDC paintDc((CWnd *)(void *)this);
     if (zVid_QueryCachedClientRectUpdateMaskIf3dfx() != 0) {
@@ -236,7 +317,12 @@ void CZGameFrame::OnPaint() {
     DeleteDC(compatibleDc);
 }
 
-// Reimplements 0x443ab0: CZGameFrame::OnDestroy
+/**
+ * Reimplements 0x443ab0: CZGameFrame::OnDestroy.
+ *
+ * Purpose: release network/video/audio frame resources before the MFC destroy
+ * handler and bitmap cleanup run.
+ */
 void CZGameFrame::OnDestroy() {
     zNetwork_DPlay_DestroyCachedLocalPlayer();
     zVideo::ShutdownVideoSystem();
@@ -245,7 +331,12 @@ void CZGameFrame::OnDestroy() {
     m_gameBitmap.DeleteObject();
 }
 
-// Reimplements 0x443ae0: CZGameFrame::OnActivate
+/**
+ * Reimplements 0x443ae0: CZGameFrame::OnActivate.
+ *
+ * Purpose: forward activation to MFC and synchronize Recoil app, input, game,
+ * and video activation state.
+ */
 void CZGameFrame::OnActivate(
     unsigned int nState,
     CWnd *pWndOther,
@@ -273,7 +364,12 @@ void CZGameFrame::OnActivate(
     }
 }
 
-// Reimplements 0x443a20: CZGameFrame::OnSize
+/**
+ * Reimplements 0x443a20: CZGameFrame::OnSize.
+ *
+ * Purpose: let MFC handle resizing and refresh the cached video client rect
+ * when the update mask requests it.
+ */
 void CZGameFrame::OnSize(
     unsigned int nType,
     int cx,
@@ -287,7 +383,12 @@ void CZGameFrame::OnSize(
     zVid_UpdateCachedClientRectIfUpdateMaskEnabled();
 }
 
-// Reimplements 0x443a50: CZGameFrame::OnMove
+/**
+ * Reimplements 0x443a50: CZGameFrame::OnMove.
+ *
+ * Purpose: dispatch default MFC move handling and refresh the cached video
+ * client rect when the update mask requests it.
+ */
 void CZGameFrame::OnMove(
     int,
     int
@@ -296,7 +397,12 @@ void CZGameFrame::OnMove(
     zVid_UpdateCachedClientRectIfUpdateMaskEnabled();
 }
 
-// Reimplements 0x443b50: CZGameFrame::OnAppIdleDispatchMessage
+/**
+ * Reimplements 0x443b50: CZGameFrame::OnAppIdleDispatchMessage.
+ *
+ * Purpose: route frame idle/dispatch work into the current Recoil application
+ * object.
+ */
 int CZGameFrame::OnAppIdleDispatchMessage(
     unsigned int wParam,
     unsigned int lParam

@@ -14,6 +14,12 @@
 namespace {
     const char *kSoundSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Sound.c";
 
+    /**
+     * Original static helper recovered with zClass_Sound::RenderTraverse.
+     *
+     * Purpose: refresh sound-node bounds when needed and run the sphere
+     * frustum cull used by sound render traversal.
+     */
     int CullNodeForRender(
         zClass_NodePartial * node,
         int siblingCountHint,
@@ -50,6 +56,12 @@ namespace {
         return result;
     }
 
+    /**
+     * Original static helper recovered with zClass_Sound::RenderTraverse.
+     *
+     * Purpose: render the sound node, apply range-fade display-instance state,
+     * and dispatch child traversal under the current clip mask.
+     */
     void RenderNodeAndChildren(
         zClass_NodePartial * node,
         int clipMask
@@ -81,8 +93,13 @@ namespace {
 }
 
 namespace zClass_Sound {
-    // Reimplements 0x4529c0: zClass_Sound::gwSoundNew
-    // (D:\Proj\GameZRecoil\zClass\Sound.c)
+    /**
+     * Reimplements 0x4529c0: zClass_Sound::gwSoundNew
+     * (D:\Proj\GameZRecoil\zClass\Sound.c).
+     *
+     * Purpose: allocate a sound node, seed default bounds and attenuation
+     * state, activate it, and register it with the sound type list.
+     */
     zClass_NodePartial *gwSoundNew() {
         zClass_NodePartial *const node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
@@ -133,7 +150,13 @@ namespace zClass_Sound {
         return node;
     }
 
-    // Reimplements 0x452ab0: zClass_Sound::DeleteNode
+    /**
+     * Reimplements 0x452ab0: zClass_Sound::DeleteNode
+     * (D:\Proj\GameZRecoil\zClass\Sound.c).
+     *
+     * Purpose: stop and release active playback, reject deletion while attached
+     * to world nodes, free world attachment storage, and free the node.
+     */
     int __fastcall DeleteNode(zClass_NodePartial * node) {
         if (node == 0) {
             zError::ReportOld(
@@ -186,8 +209,14 @@ namespace zClass_Sound {
         return zClass_Class::TryFreeNode(node);
     }
 
-    // Reimplements 0x452b80: zClass_Sound::RemoveChild
     int __fastcall
+    /**
+     * Reimplements 0x452b80: zClass_Sound::RemoveChild
+     * (D:\Proj\GameZRecoil\zClass\Sound.c).
+     *
+     * Purpose: validate sound parent and child nodes, then remove the child
+     * through the shared zClass child-list helper.
+     */
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
@@ -217,9 +246,14 @@ namespace zClass_Sound {
         );
     }
 
-    // Reimplements 0x452bc0: zClass_Sound::SetSampleSetByName
-    // (D:\Proj\GameZRecoil\zClass\Sound.c)
     int __fastcall
+    /**
+     * Reimplements 0x452bc0: zClass_Sound::SetSampleSetByName
+     * (D:\Proj\GameZRecoil\zClass\Sound.c).
+     *
+     * Purpose: copy the sample-set name into the sound data, resolve the sound
+     * sample, reset playback, and mark the runtime state dirty.
+     */
     SetSampleSetByName(
         zClass_NodePartial * node,
         const char *name
@@ -267,7 +301,13 @@ namespace zClass_Sound {
         return 0;
     }
 
-    // Reimplements 0x452c60: zClass_Sound::gwSoundSetActive
+    /**
+     * Reimplements 0x452c60: zClass_Sound::gwSoundSetActive
+     * (D:\Proj\GameZRecoil\zClass\Sound.c).
+     *
+     * Purpose: toggle sound-node activity, stopping managed playback when the
+     * node is deactivated.
+     */
     int __fastcall gwSoundSetActive(
         zClass_NodePartial * node,
         int active
@@ -312,9 +352,14 @@ namespace zClass_Sound {
         return 0;
     }
 
-    // Reimplements 0x452d00: zClass_Sound::gwSoundSetPosition
-    // (D:\Proj\GameZRecoil\zClass\Sound.c)
     int __fastcall
+    /**
+     * Reimplements 0x452d00: zClass_Sound::gwSoundSetPosition
+     * (D:\Proj\GameZRecoil\zClass\Sound.c).
+     *
+     * Purpose: store the sound node's local position and mark transform and
+     * playback state dirty.
+     */
     gwSoundSetPosition(
         zClass_NodePartial * node,
         float x,
@@ -349,9 +394,14 @@ namespace zClass_Sound {
         return 0;
     }
 
-    // Reimplements 0x452d60: zClass_Sound::gwSoundGetPosition
-    // (D:\Proj\GameZRecoil\zClass\Sound.c)
     int __fastcall
+    /**
+     * Reimplements 0x452d60: zClass_Sound::gwSoundGetPosition
+     * (D:\Proj\GameZRecoil\zClass\Sound.c).
+     *
+     * Purpose: copy the sound node's local position into the caller-provided
+     * output coordinates.
+     */
     gwSoundGetPosition(
         zClass_NodePartial * node,
         float *outX,
@@ -385,8 +435,13 @@ namespace zClass_Sound {
         return 0;
     }
 
-    // Reimplements 0x452dc0: zClass_Sound::UpdatePlayback
-    // (D:\Proj\GameZRecoil\zClass\Sound.c)
+    /**
+     * Reimplements 0x452dc0: zClass_Sound::UpdatePlayback
+     * (D:\Proj\GameZRecoil\zClass\Sound.c).
+     *
+     * Purpose: update or create positional and non-positional playback handles
+     * for active sound nodes, then clear the dirty playback flag.
+     */
     int __fastcall UpdatePlayback(zClass_NodePartial * node) {
         if (node == 0) {
             zError::ReportOld(
@@ -454,9 +509,14 @@ namespace zClass_Sound {
         return 0;
     }
 
-    // Reimplements 0x452ec0: zClass_Sound::ComputeWorldTransform
-    // (D:\Proj\GameZRecoil\zClass\Sound.c)
     int __fastcall
+    /**
+     * Reimplements 0x452ec0: zClass_Sound::ComputeWorldTransform
+     * (D:\Proj\GameZRecoil\zClass\Sound.c).
+     *
+     * Purpose: build the node-to-world matrix and cache the sound emitter's
+     * world position in sound runtime data.
+     */
     ComputeWorldTransform(
         zClass_NodePartial * node,
         zClass_SoundDataPartial * soundData
@@ -487,9 +547,14 @@ namespace zClass_Sound {
         return 0;
     }
 
-    // Reimplements 0x44af60: zClass_Sound::RenderTraverse
-    // (D:\Proj\GameZRecoil\zClass\Sound.c)
     int __fastcall
+    /**
+     * Reimplements 0x44af60: zClass_Sound::RenderTraverse
+     * (D:\Proj\GameZRecoil\zClass\Sound.c).
+     *
+     * Purpose: cull a sound node, push its local transform, render the node and
+     * children, and restore traversal state.
+     */
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint

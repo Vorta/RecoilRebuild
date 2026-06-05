@@ -1,21 +1,15 @@
 #include "GameZRecoil/zError/zError.h"
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
-
 extern "C" HWND g_RecoilError_OutputHWnd = 0;
 extern "C" int g_RecoilError_OutputMaxBytes = 0;
 extern "C" int g_RecoilError_OutputByteCount = 0;
 extern "C" char g_zError_DebugMsgBuffer[1024] = {0};
 
 namespace zError {
-    const int kReportOldMessageBytes = 1024;
-    const int kReportOldOutputBytes = 1280;
-    const char kReportOldUnknownSource[] = "(unknown source)";
-    const char kReportOldNullMessage[] = "(null message)";
-
-    // Reimplements 0x462310: RecoilError::InitOutputContext
+    /**
+     * Reimplements 0x462310: RecoilError::InitOutputContext.
+     * Purpose: Resets the legacy error-output counters and stores the target output window.
+     */
     int __fastcall InitOutputContext(
         HWND hWnd,
         int maxBytes,
@@ -27,56 +21,22 @@ namespace zError {
         return 0;
     }
 
-    // Reimplements 0x404e80: zError::ReportOld (GameZRecoil/zError/zerr_old.c)
+    /**
+     * Reimplements 0x404e80: zError::ReportOldNoOp.
+     * Purpose: Preserves the stripped retail legacy-report call ABI without producing output.
+     */
     void ReportOld(
-        int flags,
-        const char *sourceFile,
-        int sourceLine,
-        const char *format,
+        int,
+        const char *,
+        int,
+        const char *,
         ...
-    ) {
-        // Retail 0x404e80 is a single retn. This body is deliberate
-        // non-retail debug instrumentation for the reconstructed engine.
-        char message[kReportOldMessageBytes];
-        char output[kReportOldOutputBytes];
-        va_list args;
+    ) {}
 
-        if (sourceFile == 0) {
-            sourceFile = kReportOldUnknownSource;
-        }
-        if (format == 0) {
-            format = kReportOldNullMessage;
-        }
-
-        va_start(
-            args,
-            format
-        );
-        _vsnprintf(
-            message,
-            sizeof(message),
-            format,
-            args
-        );
-        va_end(args);
-        message[sizeof(message) - 1] = '\0';
-
-        _snprintf(
-            output,
-            sizeof(output),
-            "zError::ReportOld flags=0x%08x %s:%d: %s\r\n",
-            flags,
-            sourceFile,
-            sourceLine,
-            message
-        );
-        output[sizeof(output) - 1] = '\0';
-
-        g_RecoilError_OutputByteCount += (int)strlen(output);
-        OutputDebugStringA(output);
-    }
-
-    // Reimplements 0x4622f0: zError::EmitDebugBuffer
+    /**
+     * Reimplements 0x4622f0: zError::EmitDebugBuffer.
+     * Purpose: Forwards the shared debug buffer through the stripped legacy report stub.
+     */
     void __fastcall EmitDebugBuffer(int severity) {
         ReportOld(
             severity,

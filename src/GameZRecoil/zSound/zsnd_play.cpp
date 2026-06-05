@@ -44,7 +44,7 @@ bool A3dHandleIsAvailable(
     return (status & 1) == 0;
 }
 
-RECOIL_FORCEINLINE bool DirectSoundBufferIsPlaying(
+inline bool DirectSoundBufferIsPlaying(
     zSndBuffer *backendBuffer,
     int *status
 ) {
@@ -53,7 +53,7 @@ RECOIL_FORCEINLINE bool DirectSoundBufferIsPlaying(
     return (*status & 1) != 0;
 }
 
-RECOIL_FORCEINLINE bool DirectSoundBufferIsPlaying(
+inline bool DirectSoundBufferIsPlaying(
     zSndBuffer *backendBuffer
 ) {
     int status;
@@ -63,7 +63,7 @@ RECOIL_FORCEINLINE bool DirectSoundBufferIsPlaying(
     );
 }
 
-RECOIL_FORCEINLINE bool A3dSourceIsPlaying(
+inline bool A3dSourceIsPlaying(
     zSndBuffer *backendBuffer,
     int *status
 ) {
@@ -75,7 +75,7 @@ RECOIL_FORCEINLINE bool A3dSourceIsPlaying(
     return (*status & 1) != 0;
 }
 
-RECOIL_FORCEINLINE bool A3dSourceIsPlaying(
+inline bool A3dSourceIsPlaying(
     zSndBuffer *backendBuffer
 ) {
     int status;
@@ -162,6 +162,12 @@ int FloatToBits(
     return bits;
 }
 
+/**
+ * Original static helper observed in zSnd 3D playback callers
+ * (D:\Proj\GameZRecoil\zSound\zsnd_play.cpp).
+ * Purpose: compute the zVec3 dot product used by distance, panning, and
+ * Doppler calculations.
+ */
 float Dot(
     const zVec3 &lhs,
     const zVec3 &rhs
@@ -188,7 +194,7 @@ void RefreshPlaybackMarkers(
 }
 } // namespace
 
-RECOIL_FORCEINLINE void zSndPlayHandleSnapshot::AppendPayload(
+inline void zSndPlayHandleSnapshot::AppendPayload(
     const zSndPlayHandleSnapshotPayload &payload
 ) {
     zSndPlayHandleSnapshotItem *const listHead = this->listHead;
@@ -643,7 +649,7 @@ void __fastcall zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(
     *velocityDest = *velocitySrc;
 }
 
-RECOIL_FORCEINLINE zSndPlayHandleSnapshot::zSndPlayHandleSnapshot(
+inline zSndPlayHandleSnapshot::zSndPlayHandleSnapshot(
     unsigned char tag
 ) {
     backendTag = tag;

@@ -58,10 +58,20 @@ namespace {
     const unsigned short kPickFaceBatchDamageMaskUvFlag = 0x0100;
     const unsigned short kPickFaceTexturedDamageMaskFlag = 0x0200;
 
+    /**
+     * Original static helper observed in cls_di polygon pick callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: absolute float component for dominant-axis selection.
+     */
     float AbsFloat(float value) {
         return value < 0.0f ? -value : value;
     }
 
+    /**
+     * Original static helper observed in cls_di segment-polygon pick callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: read float sign bits for side-test rejection.
+     */
     unsigned int FloatBits(float value) {
         union {
             float f;
@@ -70,6 +80,11 @@ namespace {
         return bits.u;
     }
 
+    /**
+     * Original static helper observed in cls_di segment-polygon pick callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: three-component dot product for plane side tests.
+     */
     float Dot3(
         const zVec3 *a,
         const zVec3 *b
@@ -77,6 +92,11 @@ namespace {
         return a->x * b->x + a->y * b->y + a->z * b->z;
     }
 
+    /**
+     * Original static helper observed in cls_di segment-polygon pick callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: build the segment endpoint delta used by plane tests.
+     */
     zVec3 Delta3(
         const zVec3 *a,
         const zVec3 *b
@@ -85,8 +105,12 @@ namespace {
         return result;
     }
 
-    double
-    ProjectedEdgeCross(
+    /**
+     * Original static helper observed in cls_di projected-polygon pick callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: projected 2D edge cross product for winding tests.
+     */
+    double ProjectedEdgeCross(
         const zVec3 *edgeStart,
         const zVec3 *edgeEnd,
         const zVec3 *point,
@@ -105,6 +129,11 @@ namespace {
         }
     }
 
+    /**
+     * Original static helper observed in cls_di projected-polygon pick callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: choose the dominant normal component for 2D projection.
+     */
     int DominantAxis(const zVec3 *normal) {
         int axis = 0;
         float maxAbs = AbsFloat(normal->x);
@@ -120,6 +149,11 @@ namespace {
         return axis;
     }
 
+    /**
+     * Original static helper observed in cls_di projected-polygon pick callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: read the normal component selected by DominantAxis.
+     */
     float DominantAxisComponent(
         const zVec3 *normal,
         int axis
@@ -133,6 +167,11 @@ namespace {
         return normal->z;
     }
 
+    /**
+     * Original static helper observed in cls_di projected-polygon pick callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: orient projected polygon winding against the dominant axis.
+     */
     int ProjectedWindingSign(
         const zVec3 *normal,
         int axis
@@ -147,6 +186,11 @@ namespace {
         return componentIsNegative != 0 ? -1 : 1;
     }
 
+    /**
+     * Original static helper observed in cls_di projected-polygon pick callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: test whether the projected segment-plane hit lies inside the polygon.
+     */
     bool PointInProjectedPolygon(
         const zVec3 *polygonVertices,
         int vertexCount,
@@ -179,6 +223,11 @@ namespace {
         return true;
     }
 
+    /**
+     * Original static helper observed in cls_di segment-polygon pick callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: build a pick candidate from one segment-plane intersection and projected polygon test.
+     */
     bool BuildPickCandidateForSegmentVsPolygonCore(
         zClassDiPickCandidateEntry * candidate,
         const zVec3 *segmentStart,
@@ -241,6 +290,11 @@ namespace {
         );
     }
 
+    /**
+     * Original static helper observed in cls_di segment-batch polygon callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: compute a batched segment-plane hit point before polygon inclusion tests.
+     */
     bool BuildBatchSegmentPlaneHit(
         zClassDiPickCandidateEntry * candidate,
         const zClass_DiSegmentEndpoints *segment,
@@ -283,6 +337,11 @@ namespace {
         return true;
     }
 
+    /**
+     * Original static helper observed in cls_di segment-batch polygon callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: append the current polygon hit to the player-probe candidate buffer.
+     */
     void AppendBatchPolygonCandidate(
         zClass_NodePartial * candidateOwner,
         PlayerProbeSampleCandidateBuffer * buffer,
@@ -300,6 +359,11 @@ namespace {
         ++buffer->candidateCount;
     }
 
+    /**
+     * Original static helper observed in cls_di damage-mask polygon pick callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: solve hit UV coordinates in the dominant projected plane.
+     */
     void SolvePickCandidateUvForProjectedPlane(
         const zClassDiPickCandidateEntry *candidate,
         const zVec3 *polygonVertices,
@@ -419,6 +483,11 @@ namespace {
         return (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
     }
 
+    /**
+     * Original static helper observed in cls_di transformed face-pick callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: transform a world-space query point into the active model matrix space.
+     */
     zVec3 TransformWorldPointToModel(const zVec3 *point) {
         const zMat4x3 *matrix = CurrentMatrix();
         const float x = point->x - matrix->posX;
@@ -431,6 +500,11 @@ namespace {
         return result;
     }
 
+    /**
+     * Original static helper observed in cls_di transformed face-pick callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: transform a model-space hit point into world space.
+     */
     zVec3 TransformModelPointToWorld(const zVec3 *point) {
         const zMat4x3 *matrix = CurrentMatrix();
 
@@ -441,6 +515,11 @@ namespace {
         return result;
     }
 
+    /**
+     * Original static helper observed in cls_di transformed face-pick callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: rotate a model-space surface normal into world space.
+     */
     zVec3 TransformModelVectorToWorld(const zVec3 *vec) {
         const zMat4x3 *matrix = CurrentMatrix();
 
@@ -450,6 +529,11 @@ namespace {
         return result;
     }
 
+    /**
+     * Original static helper observed in cls_di mesh and polygon pick callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: gather indexed face vertices into the four-entry DI scratch buffer.
+     */
     void CopyFaceVerticesToScratch(
         const zVec3 *vertices,
         const int *vertexIndices,
@@ -464,20 +548,40 @@ namespace {
         return (zModel_PickFaceData *)((unsigned int)(node->userDataOrDiRef));
     }
 
+    /**
+     * Original static helper observed in cls_di pick traversal callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: append the current node to the active pick-candidate cursor.
+     */
     void AppendCurrentCandidateNode(zClass_NodePartial * node) {
         g_DiPickCandidateCursor->node = node;
         ++g_DiPickCandidateCursor;
         ++g_DiPickCandidateBuffer->candidateCount;
     }
 
+    /**
+     * Original static helper observed in cls_di pick traversal callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: test whether traversal should stop after the first accepted candidate.
+     */
     bool BreakOnFirstCandidateHit() {
         return g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0;
     }
 
+    /**
+     * Original static helper observed in cls_di pick traversal callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: convert the active candidate count into the original no-hit return value.
+     */
     int NoCandidatesReturn() {
         return g_DiPickCandidateBuffer->candidateCount <= 0 ? 1 : 0;
     }
 
+    /**
+     * Original static helper observed in cls_di segment bounds callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: choose the smaller floating-point segment bound.
+     */
     float MinFloat(
         float a,
         float b
@@ -485,6 +589,11 @@ namespace {
         return a < b ? a : b;
     }
 
+    /**
+     * Original static helper observed in cls_di segment bounds callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: choose the larger floating-point segment bound.
+     */
     float MaxFloat(
         float a,
         float b
@@ -492,6 +601,11 @@ namespace {
         return a > b ? a : b;
     }
 
+    /**
+     * Original static helper observed in cls_di filter-region callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: expand a bounding box into the local eight-corner scratch order.
+     */
     void CopyBBoxToCornersLocal(
         const zBBox3f *bbox,
         zBBoxCorners *outCorners
@@ -530,6 +644,11 @@ namespace {
         values[23] = minZ;
     }
 
+    /**
+     * Original static helper observed in cls_di filter-region callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: apply the optional node-name prefix filter for region hits.
+     */
     int FilterRegionNodeNameAllowed(zClass_NodePartial * node) {
         const char *prefix = g_zClass_cls_di_FilterRegions_NodeNamePrefix;
         if (prefix == 0) {
@@ -543,6 +662,11 @@ namespace {
         ) == 0 ? 1 : 0;
     }
 
+    /**
+     * Original static helper observed in cls_di filter-region callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: compute squared clearance outside the active filter sphere.
+     */
     float FilterRegionClearanceDistanceSq(
         const zVec3 *boundsCenter,
         float boundsRadius
@@ -564,6 +688,11 @@ namespace {
         return clearance * clearance;
     }
 
+    /**
+     * Original static helper observed in cls_di filter-region callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: reject nodes whose bounds center is hidden by the active world raycast.
+     */
     int FilterRegionLineOfSightBlocked(
         zClass_NodePartial * node,
         const zVec3 *boundsCenter
@@ -600,6 +729,11 @@ namespace {
         return result == 0 && rayData.candidateCount != 0 ? 1 : 0;
     }
 
+    /**
+     * Original static helper observed in cls_di filter-region callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: append one filter-region hit entry to the active raycast hit list.
+     */
     void AppendFilterRegionHit(
         zClass_NodePartial * node,
         const zVec3 *hitPos,
@@ -614,6 +748,11 @@ namespace {
         ++hitList->hitCount;
     }
 
+    /**
+     * Original static helper observed in cls_di segment-grid traversal callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: choose the signed grid step direction for a ray delta.
+     */
     int RayGridStep(float delta) {
         if (delta > 0.0f) {
             return 1;
@@ -624,6 +763,11 @@ namespace {
         return 0;
     }
 
+    /**
+     * Original static helper observed in cls_di segment child traversal callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: append the node when its pick-face data produces a segment hit.
+     */
     void AppendNodeFaceCandidateIfHit(zClass_NodePartial * node) {
         zModel_PickFaceData *faceData = NodePickFaceData(node);
         if (faceData != 0 && zClass_cls_di::AppendPickCandidatesForFace(
@@ -636,6 +780,11 @@ namespace {
         }
     }
 
+    /**
+     * Original static helper observed in cls_di segment-grid traversal callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: shift the active ray packet into or out of a world-area cell.
+     */
     void OffsetActiveRayPacket(
         float offsetX,
         float offsetZ
@@ -650,6 +799,11 @@ namespace {
         g_DiSegmentMaxZ += offsetZ;
     }
 
+    /**
+     * Original static helper observed in cls_di segment-grid traversal callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: restore candidate hit positions from local cell space to world space.
+     */
     void OffsetCandidatesFromCell(
         PlayerProbeSampleCandidateBuffer * rayData,
         int firstCandidate,
@@ -662,6 +816,11 @@ namespace {
         }
     }
 
+    /**
+     * Original static helper observed in cls_di segment-grid traversal callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: scan one world-area cell for raycastable segment children.
+     */
     void ProcessWorldAreaPickCell(
         zWorldAreaPartial * area,
         int nodeCountHint
@@ -682,6 +841,11 @@ namespace {
         }
     }
 
+    /**
+     * Original static helper observed in cls_di segment child traversal callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: recurse over list-B children with optional enabled/raycastable filtering.
+     */
     void RecurseListBChildren(
         zClass_NodePartial * node,
         bool requireEnabledRaycastFlags
@@ -705,6 +869,11 @@ namespace {
         }
     }
 
+    /**
+     * Original static helper observed in cls_di bbox pick/filter callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: compute min/max extents from the eight transformed bbox corners.
+     */
     void ComputeBBoxExtents(
         const zBBoxCorners *corners,
         float *outMinX,
@@ -742,6 +911,11 @@ namespace {
         }
     }
 
+    /**
+     * Original static helper observed in cls_di bbox face-test callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: copy one bbox corner into the DI four-vertex scratch polygon.
+     */
     void CopyBBoxCornerToScratch(
         const zBBoxCorners *bboxCorners,
         int sourceCorner,
@@ -754,6 +928,11 @@ namespace {
         dst->z = src[2];
     }
 
+    /**
+     * Original static helper observed in cls_di single-segment bbox callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: build and test one bbox face polygon against the active segment.
+     */
     bool TestBBoxFace(
         zClassDiPickCandidateEntry * candidate,
         const zVec3 *segmentStart,
@@ -794,6 +973,11 @@ namespace {
                ) != 0;
     }
 
+    /**
+     * Original static helper observed in cls_di segment-batch bbox callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: build and test one bbox face polygon against the active segment batch.
+     */
     int TestSegmentBatchBBoxFace(
         zClass_NodePartial * candidateOwner,
         PlayerProbeSampleCandidateBuffer * outCandidateBuffersBySegment,
@@ -842,6 +1026,11 @@ namespace {
         return (zClass_DiSegmentEndpoints *)((void *)(g_DiPickPointArray));
     }
 
+    /**
+     * Original static helper observed in cls_di segment-bbox callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: reject segment bounds that do not overlap a candidate box.
+     */
     bool SegmentBoundsOverlapBox(
         const zClass_DiSegmentBounds *bounds,
         float minX,
@@ -855,6 +1044,11 @@ namespace {
                bounds->minY < maxY && bounds->maxZ > minZ && bounds->minZ < maxZ;
     }
 
+    /**
+     * Original static helper observed in cls_di segment-batch traversal callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: copy the per-segment active mask for recursive filtering.
+     */
     void CopySegmentActiveMask(
         int *dst,
         const int *src
@@ -866,6 +1060,11 @@ namespace {
         );
     }
 
+    /**
+     * Original static helper observed in cls_di segment-batch grid callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: convert a world coordinate to a grid cell coordinate.
+     */
     int GridCoordFromWorld(
         float value,
         float origin,
@@ -874,6 +1073,11 @@ namespace {
         return (int)(floor((value - origin) * invCellSize));
     }
 
+    /**
+     * Original static helper observed in cls_di segment-batch grid callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: clamp a grid coordinate into the world-area grid range.
+     */
     int ClampGridCoord(
         int coord,
         int count
@@ -887,6 +1091,11 @@ namespace {
         return coord;
     }
 
+    /**
+     * Original static helper observed in cls_di segment-batch grid callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: shift all active segment endpoints and bounds in the XZ plane.
+     */
     void OffsetSegmentBatchXZ(
         float offsetX,
         float offsetZ
@@ -905,12 +1114,22 @@ namespace {
         }
     }
 
+    /**
+     * Original static helper observed in cls_di segment-batch grid callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: snapshot candidate counts before processing a clamped grid cell.
+     */
     void SaveSegmentCandidateCounts(int *candidateCounts) {
         for (int i = 0; i < g_DiPickPointCount; ++i) {
             candidateCounts[i] = g_DiPickCandidateBuffer[i].candidateCount;
         }
     }
 
+    /**
+     * Original static helper observed in cls_di segment-batch grid callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: restore new candidate positions from clamped cell space to world space.
+     */
     void RestoreClampedSegmentCandidatePositions(
         const int *firstNewCandidate,
         float offsetX,
@@ -925,6 +1144,11 @@ namespace {
         }
     }
 
+    /**
+     * Original static helper observed in cls_di segment-batch traversal callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: build axis-aligned segment bounds from start and end points.
+     */
     void BuildSegmentBoundsFromEndpoints(
         const zClass_DiSegmentEndpoints *segments,
         zClass_DiSegmentBounds *bounds
@@ -937,6 +1161,11 @@ namespace {
         bounds->maxZ = segments->start.z < segments->end.z ? segments->end.z : segments->start.z;
     }
 
+    /**
+     * Original static helper observed in cls_di segment-batch traversal callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: test whether segment bounds overlap the world grid in XZ.
+     */
     bool SegmentBoundsOverlapWorldXZ(
         const zClass_DiSegmentBounds *bounds,
         const zClass_WorldDataPartial *worldData
@@ -947,6 +1176,11 @@ namespace {
 
     zDiPartial *NodeDiRef(zClass_NodePartial * node);
 
+    /**
+     * Original static helper observed in cls_di segment-batch traversal callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: filter the current node's pick faces against the active segment batch.
+     */
     void FilterCurrentSegmentRegions(
         zClass_NodePartial * node,
         int *activeMask
@@ -964,6 +1198,11 @@ namespace {
         }
     }
 
+    /**
+     * Original static helper observed in cls_di segment-batch traversal callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: recurse over list-B children for the active segment batch.
+     */
     void RecurseSegmentBatchChildren(
         zClass_NodePartial * node,
         int *activeMask,
@@ -990,14 +1229,29 @@ namespace {
         return (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
     }
 
+    /**
+     * Original static helper observed in cls_di point-query traversal callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: apply the optional variant id gate for point-query nodes.
+     */
     bool NodePassesQueryVariant(zClass_NodePartial * node) {
         return (node->flags & 0x01000000) == 0 || VariantTag::CurrentAllowsId(node->nodeType) != 0;
     }
 
+    /**
+     * Original static helper observed in cls_di point-query traversal callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: test the node flags required for point-query candidates.
+     */
     bool NodePassesQueryFlags(zClass_NodePartial * node) {
         return (node->flags & kNodeFlagEnabledForPick) != 0 && (node->flags & 0x08) != 0;
     }
 
+    /**
+     * Original static helper observed in cls_di point-query traversal callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: append the node when its DI payload accepts the active query point.
+     */
     void AppendQueryPointCandidateIfHit(zClass_NodePartial * node) {
         zDiPartial *di = NodeDiRef(node);
         if (di == 0) {
@@ -1015,6 +1269,11 @@ namespace {
         }
     }
 
+    /**
+     * Original static helper observed in cls_di point-query traversal callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: recurse over list-B children for the active single point query.
+     */
     void RecurseQueryPointChildren(
         zClass_NodePartial * node,
         int cullCount,
@@ -1031,6 +1290,11 @@ namespace {
         }
     }
 
+    /**
+     * Original static helper observed in cls_di point-batch traversal callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: recurse over list-B children for the active point batch query.
+     */
     void RecursePointBatchChildren(
         zClass_NodePartial * node,
         int depth,
@@ -1049,6 +1313,11 @@ namespace {
         }
     }
 
+    /**
+     * Original static helper observed in cls_di transformed mesh and polygon pick callers
+     * (D:\Proj\GameZRecoil\zClass\cls_di.c).
+     * Purpose: copy or transform model vertices into the shared world-space scratch buffer.
+     */
     void TransformVerticesToSharedScratch(
         const zVec3 *vertices,
         int vertexCount
