@@ -19,3 +19,7 @@ extern "C" int mfc_cstring_default_ctor_provider_smoke(void) {
 
     return 0;
 }
+
+BOOL CWinThread::SetThreadPriority(int priority) {
+    return ::SetThreadPriority(m_hThread, priority);
+}

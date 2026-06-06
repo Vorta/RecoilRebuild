@@ -5,9 +5,6 @@
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zLoc/zLoc.h"
 
-#define DIRECTINPUT_VERSION 0x0500
-#include <dinput.h>
-
 #if defined(_MSC_VER) && defined(_M_IX86)
 #include <intrin.h>
 #endif
@@ -617,7 +614,13 @@ int zInput_BindMapContext::ReadCommandInputState(
     return result;
 }
 
-// Reimplements 0x470f50: zInput_BindMapContext::CopyCommandLabel
+/**
+ * Reimplements 0x470f50: zInput_BindMapContext::CopyCommandLabel.
+ * Binary Ninja reads the class-owned m_commandLabels table at offset 0x10,
+ * returns null for a missing command label, and otherwise copies the label with
+ * strncpy using the caller's byte limit.
+ * Purpose: Copy the recovered command label for one bind-map command.
+ */
 char * zInput_BindMapContext::CopyCommandLabel(
     int commandId,
     char *destBuf,
@@ -635,7 +638,10 @@ char * zInput_BindMapContext::CopyCommandLabel(
     );
 }
 
-// Reimplements 0x42a9d0: zInput_BindGroupInfoVec::Count
+/**
+ * Reimplements 0x42a9d0: zInput_BindGroupInfoVec::Count.
+ * Purpose: Returns the number of bind-group pointers stored in the VC vector.
+ */
 int zInput_BindGroupInfoVec::Count() {
     zInput_BindGroupInfo **const begin = this->begin;
     if (begin == 0) {
@@ -645,8 +651,24 @@ int zInput_BindGroupInfoVec::Count() {
     return (int)(end - begin);
 }
 
+/**
+ * Reimplements 0x42a000: zInput_BindGroupInfo::Destroy.
+ * Purpose: Releases a bind-group record's CString title and command-id vector.
+ */
+void zInput_BindGroupInfo::Destroy() {
+    title.Empty();
+    ::operator delete(commandIdsBegin);
+    commandIdsBegin = 0;
+    commandIdsEnd = 0;
+    commandIdsCapacity = 0;
+    title.CString::~CString();
+}
+
 namespace zInput {
-// Reimplements 0x429f20: zInput::BindGroupListStaticInit
+/**
+ * Reimplements 0x429f20: zInput::BindGroupListStaticInit.
+ * Purpose: Default-constructs the global bind-group pointer vector storage.
+ */
 void BindGroupListStaticInit() {
     g_zInput_BindGroupInfoList.allocatorByte = 0;
     g_zInput_BindGroupInfoList.begin = 0;
@@ -654,7 +676,10 @@ void BindGroupListStaticInit() {
     g_zInput_BindGroupInfoList.capacity = 0;
 }
 
-// Reimplements 0x429f50: zInput::BindGroupListAtExitDestructor
+/**
+ * Reimplements 0x429f50: zInput::BindGroupListAtExitDestructor.
+ * Purpose: Releases the global bind-group pointer vector buffer at process exit.
+ */
 void BindGroupListAtExitDestructor() {
     ::operator delete(g_zInput_BindGroupInfoList.begin);
     g_zInput_BindGroupInfoList.begin = 0;
@@ -662,12 +687,18 @@ void BindGroupListAtExitDestructor() {
     g_zInput_BindGroupInfoList.capacity = 0;
 }
 
-// Reimplements 0x429f40: zInput::BindGroupListRegisterAtExit
+/**
+ * Reimplements 0x429f40: zInput::BindGroupListRegisterAtExit.
+ * Purpose: Registers the bind-group global vector cleanup callback.
+ */
 int BindGroupListRegisterAtExit() {
     return atexit(BindGroupListAtExitDestructor);
 }
 
-// Reimplements 0x429f10: zInput::BindGroupList_StaticInitAndRegisterAtExit
+/**
+ * Reimplements 0x429f10: zInput::BindGroupList_StaticInitAndRegisterAtExit.
+ * Purpose: Initializes the bind-group vector global and registers its cleanup.
+ */
 int BindGroupList_StaticInitAndRegisterAtExit() {
     BindGroupListStaticInit();
     return BindGroupListRegisterAtExit();
@@ -722,22 +753,19 @@ int zInput_DI_IsForceFeedbackEnabled() {
 // Reimplements 0x472450: zInput_DI_CreateForceFeedbackEffect
 zInput_DiEffect *__fastcall zInput_DI_CreateForceFeedbackEffect(
     const GUID *rguidEffect,
-    const void *effect
+    const DIEFFECT *effect
 ) {
     if (g_zInput_JoystickDevice == 0) {
         return 0;
     }
 
     zInput_DiEffect *outEffect = 0;
-    const int result =
-        g_zInput_JoystickDevice->vtbl_00
-            ->CreateEffect_48(
-                g_zInput_JoystickDevice,
-                rguidEffect,
-                effect,
-                &outEffect,
-                0
-            );
+    const int result = g_zInput_JoystickDevice->CreateEffect(
+        *rguidEffect,
+        effect,
+        &outEffect,
+        0
+    );
     return result < 0 ? 0 : outEffect;
 }
 
@@ -825,13 +853,11 @@ static void SetAndStartDirectionalForceFeedbackEffect(
     desc.dwGain = (DWORD)(gain * 10000.0f);
     desc.cAxes = 2;
     desc.rglDirection = polarDirection;
-    effect->vtbl_00->SetParameters_18(
-        effect,
+    effect->SetParameters(
         &desc,
         0x44
     );
-    effect->vtbl_00->Start_1c(
-        effect,
+    effect->Start(
         1,
         0
     );
@@ -935,9 +961,8 @@ void __fastcall zInput_DI_RestartPrimaryFireEffect(
         return;
     }
 
-    effect->vtbl_00->Stop_20(effect);
-    effectSet->PrimaryFire->vtbl_00->Start_1c(
-        effectSet->PrimaryFire,
+    effect->Stop();
+    effectSet->PrimaryFire->Start(
         1,
         0
     );
@@ -963,7 +988,7 @@ void __fastcall zInput_DI_PlayAltFireEffect(
     RECOIL_STATIC_ASSERT(offsetof(DiEffectGainDesc, dwGain) == 0x10);
 
     DiEffectGainDesc desc = {0};
-    effect->vtbl_00->Stop_20(effect);
+    effect->Stop();
     if (gain > 1.0f) {
         gain = 1.0f;
     }
@@ -973,13 +998,11 @@ void __fastcall zInput_DI_PlayAltFireEffect(
 
     desc.dwSize = sizeof(desc);
     desc.dwGain = (int)(gain * 10000.0f);
-    effectSet->AltFire->vtbl_00->SetParameters_18(
-        effectSet->AltFire,
-        &desc,
+    effectSet->AltFire->SetParameters(
+        (LPCDIEFFECT)(&desc),
         4
     );
-    effectSet->AltFire->vtbl_00->Start_1c(
-        effectSet->AltFire,
+    effectSet->AltFire->Start(
         1,
         0
     );
@@ -998,15 +1021,13 @@ zInput_FFEffectSet *__fastcall zInput_DI_InitForceFeedbackEffectSet(
     effectSet->PitchForce = zInput_DI_CreateConstantForceEffectWithDirection(0x4650);
 
     if (effectSet->SteerForce != 0) {
-        effectSet->SteerForce->vtbl_00->Start_1c(
-            effectSet->SteerForce,
+        effectSet->SteerForce->Start(
             1,
             0
         );
     }
     if (effectSet->PitchForce != 0) {
-        effectSet->PitchForce->vtbl_00->Start_1c(
-            effectSet->PitchForce,
+        effectSet->PitchForce->Start(
             1,
             0
         );
@@ -1026,7 +1047,7 @@ void zInput_FFEffectSet::PlayCollisionImpactEffect(
         return;
     }
 
-    effect->vtbl_00->Stop_20(effect);
+    effect->Stop();
     const int direction = ForceFeedbackDirectionFromImpact(
         impactWorldPosXZ,
         false
@@ -1054,7 +1075,7 @@ void zInput_FFEffectSet::PlayDamageHitEffect(
         return;
     }
 
-    effect->vtbl_00->Stop_20(effect);
+    effect->Stop();
     const int direction = ForceFeedbackDirectionFromImpact(
         damageSourceWorldPosXZ,
         true
@@ -1577,7 +1598,12 @@ RECOIL_NO_GS int __fastcall DI_ReportError(
     return 0;
 }
 
-// Reimplements 0x471120: zInput::BindMap_InitDikKeyNameTable
+/**
+ * Reimplements 0x471120: zInput::BindMap_InitDikKeyNameTable.
+ * Binary Ninja shows the zinput.cpp initializer filling the BSS DIK-name
+ * pointer table at g_zInput_DikKeyNames with the recovered key-name literals.
+ * Purpose: Populate the DirectInput key-name lookup table used by bind-map UI.
+ */
 void BindMap_InitDikKeyNameTable() {
     g_zInput_DikKeyNames[1] = "ESCAPE";
     g_zInput_DikKeyNames[2] = "1";
@@ -1701,7 +1727,12 @@ void BindMap_InitDikKeyNameTable() {
     g_zInput_DikKeyNames[0xdd] = "APPS";
 }
 
-// Reimplements 0x4715e0: zInput::BindMap_InitJoystickButtonNameTable
+/**
+ * Reimplements 0x4715e0: zInput::BindMap_InitJoystickButtonNameTable.
+ * Binary Ninja shows the zinput.cpp initializer filling one-based
+ * g_zInput_JoystickButtonNames slots 1..8 with Button 1..Button 8 literals.
+ * Purpose: Populate the joystick button-name lookup table used by bind-map UI.
+ */
 void BindMap_InitJoystickButtonNameTable() {
     g_zInput_JoystickButtonNames[1] = "Button 1";
     g_zInput_JoystickButtonNames[2] = "Button 2";
@@ -1713,7 +1744,12 @@ void BindMap_InitJoystickButtonNameTable() {
     g_zInput_JoystickButtonNames[8] = "Button 8";
 }
 
-// Reimplements 0x471640: zInput::BindMap_InitMouseButtonNameTable
+/**
+ * Reimplements 0x471640: zInput::BindMap_InitMouseButtonNameTable.
+ * Binary Ninja shows the zinput.cpp initializer filling one-based
+ * g_zInput_MouseButtonNames slots 1..3 with Left, Right, and Middle literals.
+ * Purpose: Populate the mouse button-name lookup table used by bind-map UI.
+ */
 void BindMap_InitMouseButtonNameTable() {
     g_zInput_MouseButtonNames[1] = "Left";
     g_zInput_MouseButtonNames[2] = "Right";
@@ -1731,7 +1767,10 @@ int __fastcall BindMap_PackBindingCode(
            (primary & 0x7ff);
 }
 
-// Reimplements 0x42a480: zInput::BindGroupList_GetCount
+/**
+ * Reimplements 0x42a480: zInput::BindGroupList_GetCount.
+ * Purpose: Returns the number of active bind groups in the global vector.
+ */
 int BindGroupList_GetCount() {
     zInput_BindGroupInfo **const begin = g_zInput_BindGroupInfoList.begin;
     if (begin == 0) {
@@ -1741,14 +1780,20 @@ int BindGroupList_GetCount() {
     return (int)(g_zInput_BindGroupInfoList.end - begin);
 }
 
-// Reimplements 0x42a4a0: zInput::BindGroupList_GetGroupTitle
+/**
+ * Reimplements 0x42a4a0: zInput::BindGroupList_GetGroupTitle.
+ * Purpose: Returns the CString buffer for the selected bind-group title.
+ */
 char *__fastcall BindGroupList_GetGroupTitle(
     int groupIndex
 ) {
-    return g_zInput_BindGroupInfoList.begin[groupIndex]->title;
+    return (char *)(LPCTSTR)(g_zInput_BindGroupInfoList.begin[groupIndex]->title);
 }
 
-// Reimplements 0x42a4b0: zInput::BindGroupList_GetGroupCommandCount
+/**
+ * Reimplements 0x42a4b0: zInput::BindGroupList_GetGroupCommandCount.
+ * Purpose: Returns the number of command ids stored in a bind group.
+ */
 int __fastcall BindGroupList_GetGroupCommandCount(
     int groupIndex
 ) {
@@ -1761,7 +1806,10 @@ int __fastcall BindGroupList_GetGroupCommandCount(
     return (int)(group->commandIdsEnd - begin);
 }
 
-// Reimplements 0x42a4d0: zInput::BindGroupList_GetGroupCommandId
+/**
+ * Reimplements 0x42a4d0: zInput::BindGroupList_GetGroupCommandId.
+ * Purpose: Returns one command id from a bind group's command-id vector.
+ */
 int __fastcall BindGroupList_GetGroupCommandId(
     int groupIndex,
     int commandIndex
@@ -1769,26 +1817,17 @@ int __fastcall BindGroupList_GetGroupCommandId(
     return g_zInput_BindGroupInfoList.begin[groupIndex]->commandIdsBegin[commandIndex];
 }
 
-// Reimplements 0x42a000: zInput_BindGroupInfo::Destroy
-void __fastcall BindGroupInfo_Destroy(
-    zInput_BindGroupInfo *group
-) {
-    free(group->title);
-    group->title = 0;
-    ::operator delete(group->commandIdsBegin);
-    group->commandIdsBegin = 0;
-    group->commandIdsEnd = 0;
-    group->commandIdsCapacity = 0;
-}
-
-// Reimplements 0x429f80: zInput::BindGroupList_Clear
+/**
+ * Reimplements 0x429f80: zInput::BindGroupList_Clear.
+ * Purpose: Destroys active bind-group records and resets the vector end pointer.
+ */
 void BindGroupList_Clear() {
     zInput_BindGroupInfo **cursor = g_zInput_BindGroupInfoList.begin;
     zInput_BindGroupInfo **const end = g_zInput_BindGroupInfoList.end;
     while (cursor != end) {
         zInput_BindGroupInfo *const group = *cursor;
         if (group != 0) {
-            BindGroupInfo_Destroy(group);
+            group->Destroy();
             ::operator delete(group);
         }
         *cursor = 0;
@@ -1798,16 +1837,18 @@ void BindGroupList_Clear() {
     g_zInput_BindGroupInfoList.end = g_zInput_BindGroupInfoList.begin;
 }
 
-// Reimplements 0x42a070: zInput::BindGroupList_AddGroup
+/**
+ * Reimplements 0x42a070: zInput::BindGroupList_AddGroup.
+ * Purpose: Allocates a bind-group record and appends it to the global vector.
+ */
 int __fastcall BindGroupList_AddGroup(
     const char *title
 ) {
     const int groupIndex = BindGroupList_GetCount();
 
-    zInput_BindGroupInfo *group =
-        (zInput_BindGroupInfo *)(::operator new(sizeof(zInput_BindGroupInfo)));
-    group->title = title != 0 ? _strdup(title) : 0;
-    group->unknown_04 = 0;
+    zInput_BindGroupInfo *group = new zInput_BindGroupInfo;
+    group->title = title;
+    group->commandIdsAllocatorByte = 0;
     group->commandIdsBegin = 0;
     group->commandIdsEnd = 0;
     group->commandIdsCapacity = 0;
@@ -1840,7 +1881,10 @@ int __fastcall BindGroupList_AddGroup(
     return groupIndex;
 }
 
-// Reimplements 0x42a2c0: zInput::BindGroupList_AddCommandToGroup
+/**
+ * Reimplements 0x42a2c0: zInput::BindGroupList_AddCommandToGroup.
+ * Purpose: Appends a command id to the selected bind group's command-id vector.
+ */
 void __fastcall BindGroupList_AddCommandToGroup(
     int groupIndex,
     int commandId
@@ -1872,7 +1916,12 @@ void __fastcall BindGroupList_AddCommandToGroup(
     group->commandIdsCapacity = newBegin + newCapacity;
 }
 
-// Reimplements 0x42a4e0: zInput::BindMap_GetCommandLabel
+/**
+ * Reimplements 0x42a4e0: zInput::BindMap_GetCommandLabel.
+ * Binary Ninja indexes g_zInput_CommandLocIdTable by command id and tail-calls
+ * zLoc::GetMessageString for the command's localized label.
+ * Purpose: Resolve a bind-map command id to its localized display label.
+ */
 char *__fastcall BindMap_GetCommandLabel(
     int commandId
 ) {
@@ -2148,28 +2197,48 @@ void BindMapCurrent_ResetAllBindings() {
     g_zInput_BindMap_Current->ResetAllBindings();
 }
 
-// Reimplements 0x4716d0: zInput::BindMapCurrent_GetPrimaryKeyboardKey
+/**
+ * Reimplements 0x4716d0: zInput::BindMapCurrent_GetPrimaryKeyboardKey.
+ * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
+ * the recovered zInput_BindMapContext primary-key getter.
+ * Purpose: Return the current bind map's primary keyboard key for a command.
+ */
 int __fastcall BindMapCurrent_GetPrimaryKeyboardKey(
     int commandIndex
 ) {
     return g_zInput_BindMap_Current->GetPrimaryKeyboardKey(commandIndex);
 }
 
-// Reimplements 0x4716e0: zInput::BindMapCurrent_GetSecondaryKeyboardKey
+/**
+ * Reimplements 0x4716e0: zInput::BindMapCurrent_GetSecondaryKeyboardKey.
+ * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
+ * the recovered zInput_BindMapContext secondary-key getter.
+ * Purpose: Return the current bind map's secondary keyboard key for a command.
+ */
 int __fastcall BindMapCurrent_GetSecondaryKeyboardKey(
     int commandIndex
 ) {
     return g_zInput_BindMap_Current->GetSecondaryKeyboardKey(commandIndex);
 }
 
-// Reimplements 0x4716f0: zInput::BindMapCurrent_GetJoystickButtonSlot
+/**
+ * Reimplements 0x4716f0: zInput::BindMapCurrent_GetJoystickButtonSlot.
+ * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
+ * the recovered zInput_BindMapContext joystick-slot getter.
+ * Purpose: Return the current bind map's joystick button slot for a command.
+ */
 int __fastcall BindMapCurrent_GetJoystickButtonSlot(
     int commandIndex
 ) {
     return g_zInput_BindMap_Current->GetJoystickButtonSlot(commandIndex);
 }
 
-// Reimplements 0x471700: zInput::BindMapCurrent_GetMouseButtonSlot
+/**
+ * Reimplements 0x471700: zInput::BindMapCurrent_GetMouseButtonSlot.
+ * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
+ * the recovered zInput_BindMapContext mouse-slot getter.
+ * Purpose: Return the current bind map's mouse button slot for a command.
+ */
 int __fastcall BindMapCurrent_GetMouseButtonSlot(
     int commandIndex
 ) {
@@ -2287,7 +2356,13 @@ int __fastcall BindMap_Current_ReadCommandInputState(
     return g_zInput_BindMap_Current->ReadCommandInputState(commandIndex);
 }
 
-// Reimplements 0x4717e0: zInput::BindMapCurrent_CopyCommandLabel
+/**
+ * Reimplements 0x4717e0: zInput::BindMapCurrent_CopyCommandLabel.
+ * Binary Ninja shows a namespace forwarder through g_zInput_BindMap_Current to
+ * zInput_BindMapContext::CopyCommandLabel with command id, destination buffer,
+ * and byte limit preserved.
+ * Purpose: Copy a command label from the current bind map.
+ */
 char *__fastcall BindMapCurrent_CopyCommandLabel(
     int commandId,
     char *destBuf,
@@ -2300,7 +2375,13 @@ char *__fastcall BindMapCurrent_CopyCommandLabel(
     );
 }
 
-// Reimplements 0x470f80: zInput::BindMap_FormatKeyComboName
+/**
+ * Reimplements 0x470f80: zInput::BindMap_FormatKeyComboName.
+ * Binary Ninja shows the zinput.cpp helper reading g_zInput_DikKeyNames,
+ * appending Ctrl/Alt/Shift prefixes in retail order, and returning
+ * g_zInput_EmptyName when the DIK slot has no name.
+ * Purpose: Format a packed keyboard binding into the user-visible key name.
+ */
 char *__stdcall BindMap_FormatKeyComboName(
     int packedKey,
     char *destBuf,
@@ -2345,7 +2426,12 @@ char *__stdcall BindMap_FormatKeyComboName(
     );
 }
 
-// Reimplements 0x471040: zInput::BindMap_CopyJoystickButtonName
+/**
+ * Reimplements 0x471040: zInput::BindMap_CopyJoystickButtonName.
+ * Binary Ninja reads the one-based g_zInput_JoystickButtonNames table, returns
+ * g_zInput_EmptyName for an empty slot, or copies the selected literal.
+ * Purpose: Copy a joystick button name for bind-map display.
+ */
 char *__stdcall BindMap_CopyJoystickButtonName(
     int joystickSlot,
     char *outBuf,
@@ -2363,7 +2449,12 @@ char *__stdcall BindMap_CopyJoystickButtonName(
     );
 }
 
-// Reimplements 0x471070: zInput::BindMap_CopyMouseButtonName
+/**
+ * Reimplements 0x471070: zInput::BindMap_CopyMouseButtonName.
+ * Binary Ninja reads the one-based g_zInput_MouseButtonNames table, returns
+ * g_zInput_EmptyName for an empty slot, or copies the selected literal.
+ * Purpose: Copy a mouse button name for bind-map display.
+ */
 char *__stdcall BindMap_CopyMouseButtonName(
     int mouseSlot,
     char *outBuf,
@@ -2381,7 +2472,12 @@ char *__stdcall BindMap_CopyMouseButtonName(
     );
 }
 
-// Reimplements 0x471800: zInput::BindMapCurrent_FormatKeyComboName
+/**
+ * Reimplements 0x471800: zInput::BindMapCurrent_FormatKeyComboName.
+ * Binary Ninja shows the current-map namespace wrapper forwarding the packed
+ * key, destination buffer, and byte limit to BindMap_FormatKeyComboName.
+ * Purpose: Format a packed keyboard binding for the current bind map.
+ */
 char *__fastcall BindMapCurrent_FormatKeyComboName(
     int packedKey,
     char *destBuf,
@@ -2394,7 +2490,12 @@ char *__fastcall BindMapCurrent_FormatKeyComboName(
     );
 }
 
-// Reimplements 0x471820: zInput::BindMapCurrent_CopyJoystickButtonName
+/**
+ * Reimplements 0x471820: zInput::BindMapCurrent_CopyJoystickButtonName.
+ * Binary Ninja shows the current-map namespace wrapper forwarding the slot,
+ * destination buffer, and byte limit to BindMap_CopyJoystickButtonName.
+ * Purpose: Copy a joystick button name for the current bind map.
+ */
 char *__fastcall BindMapCurrent_CopyJoystickButtonName(
     int joystickSlot,
     char *outBuf,
@@ -2407,7 +2508,12 @@ char *__fastcall BindMapCurrent_CopyJoystickButtonName(
     );
 }
 
-// Reimplements 0x471840: zInput::BindMapCurrent_CopyMouseButtonName
+/**
+ * Reimplements 0x471840: zInput::BindMapCurrent_CopyMouseButtonName.
+ * Binary Ninja shows the current-map namespace wrapper forwarding the slot,
+ * destination buffer, and byte limit to BindMap_CopyMouseButtonName.
+ * Purpose: Copy a mouse button name for the current bind map.
+ */
 char *__fastcall BindMapCurrent_CopyMouseButtonName(
     int mouseSlot,
     char *outBuf,
@@ -2515,8 +2621,8 @@ int __fastcall Init(
 int Joystick_ShutdownDevice() {
     DIDevice *const joystick = g_zInput_JoystickDevice;
     if (joystick != 0) {
-        joystick->vtbl_00->Unacquire_20(joystick);
-        g_zInput_JoystickDevice->vtbl_00->Release_08(g_zInput_JoystickDevice);
+        joystick->Unacquire();
+        g_zInput_JoystickDevice->Release();
         g_zInput_JoystickDevice = 0;
     }
 
@@ -2527,8 +2633,8 @@ int Joystick_ShutdownDevice() {
 int Keyboard_ShutdownDevice() {
     DIDevice *const keyboard = g_zInput_KbdDevice;
     if (keyboard != 0) {
-        keyboard->vtbl_00->Unacquire_20(keyboard);
-        g_zInput_KbdDevice->vtbl_00->Release_08(g_zInput_KbdDevice);
+        keyboard->Unacquire();
+        g_zInput_KbdDevice->Release();
     }
 
     if (g_zInput_KbdEventBuffer != 0) {
@@ -2549,7 +2655,7 @@ int Shutdown() {
     Mouse_ShutdownDevice();
 
     if (g_zInput_GlobalState != 0) {
-        g_zInput_GlobalState->vtbl_00->Release_08(g_zInput_GlobalState);
+        g_zInput_GlobalState->Release();
     }
 
     g_zInput_hWnd = 0;
@@ -2696,36 +2802,29 @@ int __fastcall Mouse_GetStateSnapshot(
 // Reimplements 0x4701f0: zInput::Mouse_InitDevice
 int Mouse_InitDevice() {
     DIDevice *baseDevice = 0;
-    g_zInput_GlobalState->vtbl_00
-        ->CreateDevice_0c(
-            g_zInput_GlobalState,
-            &GUID_SysMouse,
-            &baseDevice,
-            0
-        );
-    baseDevice->vtbl_00
-        ->QueryInterface_00(
-            baseDevice,
-            &IID_IDirectInputDevice2A,
-            &g_zInput_MouseDevice
-        );
-    baseDevice->vtbl_00->Release_08(baseDevice);
+    g_zInput_GlobalState->CreateDevice(
+        GUID_SysMouse,
+        (LPDIRECTINPUTDEVICEA *)(&baseDevice),
+        0
+    );
+    baseDevice->QueryInterface(
+        IID_IDirectInputDevice2A,
+        (void **)(&g_zInput_MouseDevice)
+    );
+    baseDevice->Release();
 
-    g_zInput_MouseDevice->vtbl_00->SetDataFormat_2c(
-        g_zInput_MouseDevice,
+    g_zInput_MouseDevice->SetDataFormat(
         &c_dfDIMouse
     );
-    g_zInput_MouseDevice->vtbl_00->SetCooperativeLevel_34(
-        g_zInput_MouseDevice,
+    g_zInput_MouseDevice->SetCooperativeLevel(
         g_zInput_hWnd,
         (unsigned int)(g_zInput_MouseCoopLevelFlags)
     );
 
     DipropDwordInit bufferSizeProp = {0x14, 0x10, 0, 0, 0x10};
-    g_zInput_MouseDevice->vtbl_00->SetProperty_18(
-        g_zInput_MouseDevice,
-        1,
-        &bufferSizeProp
+    g_zInput_MouseDevice->SetProperty(
+        DIPROP_BUFFERSIZE,
+        (LPCDIPROPHEADER)(&bufferSizeProp)
     );
 
     g_zInput_MouseStateSnapshot.button1Transition = 0;
@@ -2752,13 +2851,11 @@ int Keyboard_InitDevice() {
     g_zInput_KbdRawEventCallback = 0;
     g_zInput_KbdRawEventCallbackCtx = 0;
 
-    int hr = g_zInput_GlobalState->vtbl_00
-                 ->CreateDevice_0c(
-                     g_zInput_GlobalState,
-                     &GUID_SysKeyboard,
-                     &g_zInput_KbdDevice,
-                     0
-                 );
+    int hr = g_zInput_GlobalState->CreateDevice(
+        GUID_SysKeyboard,
+        (LPDIRECTINPUTDEVICEA *)(&g_zInput_KbdDevice),
+        0
+    );
     if (hr != 0) {
         DI_ReportError(
             hr,
@@ -2769,8 +2866,7 @@ int Keyboard_InitDevice() {
     }
 
     hr =
-        g_zInput_KbdDevice->vtbl_00->SetCooperativeLevel_34(
-            g_zInput_KbdDevice,
+        g_zInput_KbdDevice->SetCooperativeLevel(
             g_zInput_hWnd,
             0xa
         );
@@ -2783,10 +2879,9 @@ int Keyboard_InitDevice() {
         return 1;
     }
 
-    hr = g_zInput_KbdDevice->vtbl_00->SetProperty_18(
-        g_zInput_KbdDevice,
-        1,
-        &bufferSizeProp
+    hr = g_zInput_KbdDevice->SetProperty(
+        DIPROP_BUFFERSIZE,
+        (LPCDIPROPHEADER)(&bufferSizeProp)
     );
     if (hr != 0) {
         DI_ReportError(
@@ -2797,8 +2892,7 @@ int Keyboard_InitDevice() {
         return 1;
     }
 
-    hr = g_zInput_KbdDevice->vtbl_00->SetDataFormat_2c(
-        g_zInput_KbdDevice,
+    hr = g_zInput_KbdDevice->SetDataFormat(
         &c_dfDIKeyboard
     );
     if (hr != 0) {
@@ -2810,7 +2904,7 @@ int Keyboard_InitDevice() {
         return 1;
     }
 
-    hr = g_zInput_KbdDevice->vtbl_00->Acquire_1c(g_zInput_KbdDevice);
+    hr = g_zInput_KbdDevice->Acquire();
     if (hr != 0) {
         DI_ReportError(
             hr,
@@ -3057,9 +3151,8 @@ int Keyboard_AddRef() {
 void __fastcall Keyboard_PollState(
     int dispatchCallbacks
 ) {
-    unsigned int inOutCount = 0x80;
-    const int hresult = g_zInput_KbdDevice->vtbl_00->GetDeviceData_28(
-        g_zInput_KbdDevice,
+    DWORD inOutCount = 0x80;
+    const int hresult = g_zInput_KbdDevice->GetDeviceData(
         sizeof(DIDeviceObjectData),
         g_zInput_KbdEventBuffer,
         &inOutCount,
@@ -3075,7 +3168,7 @@ void __fastcall Keyboard_PollState(
             return;
         }
 
-        g_zInput_KbdDevice->vtbl_00->Acquire_1c(g_zInput_KbdDevice);
+        g_zInput_KbdDevice->Acquire();
     }
 
     for (unsigned int i = 0; i < inOutCount; ++i) {
@@ -3106,9 +3199,8 @@ int __fastcall Keyboard_WaitForAnyKeyPress(
 ) {
     int result = 0;
     do {
-        unsigned int inOutCount = 1;
-        const int hresult = g_zInput_KbdDevice->vtbl_00->GetDeviceData_28(
-            g_zInput_KbdDevice,
+        DWORD inOutCount = 1;
+        const int hresult = g_zInput_KbdDevice->GetDeviceData(
             sizeof(DIDeviceObjectData),
             g_zInput_KbdEventBuffer,
             &inOutCount,
@@ -3124,7 +3216,7 @@ int __fastcall Keyboard_WaitForAnyKeyPress(
                 return 0;
             }
 
-            g_zInput_KbdDevice->vtbl_00->Acquire_1c(g_zInput_KbdDevice);
+            g_zInput_KbdDevice->Acquire();
         }
 
         for (unsigned int i = 0; i < inOutCount; ++i) {
@@ -3205,25 +3297,20 @@ int __stdcall DI_EnumDevicesCallback_SelectFirstJoystick(
     void *
 ) {
     DIDevice *baseDevice = 0;
-    const int hr =
-        g_zInput_GlobalState->vtbl_00
-            ->CreateDevice_0c(
-                g_zInput_GlobalState,
-                &instance->guidInstance,
-                &baseDevice,
-                0
-            );
+    const int hr = g_zInput_GlobalState->CreateDevice(
+        instance->guidInstance,
+        (LPDIRECTINPUTDEVICEA *)(&baseDevice),
+        0
+    );
     if (hr != 0) {
         return 1;
     }
 
-    baseDevice->vtbl_00
-        ->QueryInterface_00(
-            baseDevice,
-            &IID_IDirectInputDevice2A,
-            &g_zInput_JoystickDevice
-        );
-    baseDevice->vtbl_00->Release_08(baseDevice);
+    baseDevice->QueryInterface(
+        IID_IDirectInputDevice2A,
+        (void **)(&g_zInput_JoystickDevice)
+    );
+    baseDevice->Release();
     return 0;
 }
 
@@ -3233,7 +3320,7 @@ int DI_AcquireJoystickDevice() {
         return 0;
     }
 
-    return g_zInput_JoystickDevice->vtbl_00->Acquire_1c(g_zInput_JoystickDevice) == 0 ? 1 : 0;
+    return g_zInput_JoystickDevice->Acquire() == 0 ? 1 : 0;
 }
 
 // Reimplements 0x471e40: zInput::DI_InitJoystickDevice
@@ -3245,14 +3332,12 @@ int __fastcall DI_InitJoystickDevice(
     }
 
     g_zInput_JoystickDevice = 0;
-    g_zInput_GlobalState->vtbl_00
-        ->EnumDevices_10(
-            g_zInput_GlobalState,
-            4,
-            DI_EnumDevicesCallback_SelectFirstJoystick,
-            0,
-            1
-        );
+    g_zInput_GlobalState->EnumDevices(
+        4,
+        DI_EnumDevicesCallback_SelectFirstJoystick,
+        0,
+        1
+    );
 
     DIDevice *joystickDevice = g_zInput_JoystickDevice;
     if (joystickDevice == 0) {
@@ -3261,13 +3346,11 @@ int __fastcall DI_InitJoystickDevice(
 
     DIDeviceCaps caps;
     caps.dwSize = 0x2c;
-    joystickDevice->vtbl_00->SetDataFormat_2c(
-        joystickDevice,
+    joystickDevice->SetDataFormat(
         &c_dfDIJoystick
     );
-    joystickDevice->vtbl_00->GetCapabilities_0c(
-        joystickDevice,
-        &caps
+    joystickDevice->GetCapabilities(
+        (LPDIDEVCAPS)(&caps)
     );
 
     g_zInput_JoystickAxisCount = caps.dwAxes;
@@ -3276,8 +3359,7 @@ int __fastcall DI_InitJoystickDevice(
     g_zInput_JoystickCaps_FFFade = caps.dwFlags & 0x400;
 
     const unsigned int coopFlags = g_zInput_JoystickCaps_ForceFeedback != 0 ? 5U : 9U;
-    joystickDevice->vtbl_00->SetCooperativeLevel_34(
-        joystickDevice,
+    joystickDevice->SetCooperativeLevel(
         hwnd,
         coopFlags
     );
@@ -3324,10 +3406,9 @@ int __fastcall DI_SetAxisDeadzone(
     prop.dwObj = (unsigned int)(axisOffset);
     prop.dwHow = 1;
     prop.dwData = (unsigned int)(deadzone);
-    return g_zInput_JoystickDevice->vtbl_00->SetProperty_18(
-        g_zInput_JoystickDevice,
-        5,
-        &prop
+    return g_zInput_JoystickDevice->SetProperty(
+        DIPROP_DEADZONE,
+        (LPCDIPROPHEADER)(&prop)
     );
 }
 
@@ -3352,10 +3433,9 @@ int __fastcall DI_SetAxisRange(
     prop.dwHow = 1;
     prop.lMin = rangeMin;
     prop.lMax = rangeMax;
-    return g_zInput_JoystickDevice->vtbl_00->SetProperty_18(
-        g_zInput_JoystickDevice,
-        4,
-        &prop
+    return g_zInput_JoystickDevice->SetProperty(
+        DIPROP_RANGE,
+        (LPCDIPROPHEADER)(&prop)
     );
 }
 
@@ -3379,10 +3459,9 @@ int __fastcall DI_GetAxisRange(
     prop.dwObj = (unsigned int)(axisOffset);
     prop.dwHow = 1;
     const int result =
-        g_zInput_JoystickDevice->vtbl_00->GetProperty_14(
-            g_zInput_JoystickDevice,
-            4,
-            &prop
+        g_zInput_JoystickDevice->GetProperty(
+            DIPROP_RANGE,
+            (LPDIPROPHEADER)(&prop)
         );
     *pOutMin = prop.lMin;
     *pOutMax = prop.lMax;
@@ -3479,9 +3558,8 @@ JoystickStatePartial *__fastcall DI_PollJoystickState(
     }
 
     JoystickStatePartial polledState = {0};
-    g_zInput_JoystickDevice->vtbl_00->Poll_64(g_zInput_JoystickDevice);
-    const int result = g_zInput_JoystickDevice->vtbl_00->GetDeviceState_24(
-        g_zInput_JoystickDevice,
+    g_zInput_JoystickDevice->Poll();
+    const int result = g_zInput_JoystickDevice->GetDeviceState(
         sizeof(JoystickStatePartial),
         &polledState
     );
@@ -3589,14 +3667,14 @@ void Mouse_UpdateAcquireState() {
 
     if (g_zInput_MouseActive != 0) {
         if (device != 0) {
-            const int result = device->vtbl_00->Acquire_1c(device);
+            const int result = device->Acquire();
             if (result != kDiOk && result != kDiFalse) {
                 g_zInput_MouseActive = 0;
             }
         }
     } else {
         if (device != 0) {
-            const int result = device->vtbl_00->Unacquire_20(device);
+            const int result = device->Unacquire();
             if (result != kDiOk && result != kDiFalse) {
                 g_zInput_MouseActive = 1;
             }
@@ -3611,7 +3689,7 @@ int Mouse_ShutdownDevice() {
 
     DIDevice *device = g_zInput_MouseDevice;
     if (device != 0) {
-        device->vtbl_00->Release_08(device);
+        device->Release();
     }
 
     g_zInput_MouseDevice = 0;
@@ -3660,9 +3738,8 @@ int __fastcall Mouse_PollState(
     }
 
     MouseDeviceState deviceState = {0};
-    g_zInput_MouseDevice->vtbl_00->Poll_64(g_zInput_MouseDevice);
-    const int result = g_zInput_MouseDevice->vtbl_00->GetDeviceState_24(
-        g_zInput_MouseDevice,
+    g_zInput_MouseDevice->Poll();
+    const int result = g_zInput_MouseDevice->GetDeviceState(
         sizeof(MouseDeviceState),
         &deviceState
     );
@@ -3753,7 +3830,17 @@ void Mouse_ApplyAccumulatedDelta() {
         (float)((double)(g_zInput_MouseStateSnapshot.deltaY) * g_zInput_MouseInvClientCenterY);
 }
 
-// Reimplements 0x470610: zInput::Mouse_ResetTransitionState
+/**
+ * Reimplements 0x470610: zInput::Mouse_ResetTransitionState.
+ *
+ * Purpose: copy current mouse state into previous state, clear transition deltas,
+ * and refresh the derived mouse snapshot when mouse input is initialized.
+ *
+ * Evidence: BN assembly at 0x470610 guards on g_zInput_MouseInitialized, copies
+ * zInput_DIMouseState fields at 0x565e7c/0x565e8c, clears snapshot fields at
+ * 0x561c90/0x561c94/0x561ca0/0x561ca4/0x561ca8, and tail-calls
+ * Mouse_ApplyAccumulatedDelta.
+ */
 void Mouse_ResetTransitionState() {
     if (g_zInput_MouseInitialized != 1) {
         return;
@@ -3809,15 +3896,24 @@ void Mouse_ResumeFromSuspend() {
     g_zInput_MouseSuspendFlags &= (unsigned char)(~kSuspendFlag);
 }
 
-// Reimplements 0x46f450: zInput::Keyboard_ResetTransitionState
+/**
+ * Reimplements 0x46f450: zInput::Keyboard_ResetTransitionState.
+ *
+ * Purpose: drain pending keyboard events, update transient modifier state, then
+ * clear every key-dispatch transition state for the next input frame.
+ *
+ * Evidence: BN assembly at 0x46f450 calls IDirectInputDevice::GetDeviceData
+ * with 0x80 DIDeviceObjectData entries, reacquires on DIERR_INPUTLOST, applies
+ * the same modifier fix-up as keyboard polling, clears the 0x7de-entry
+ * g_zInputKbdKeyDispatchTable state column, and resets g_zInput_KbdModifierState.
+ */
 void Keyboard_ResetTransitionState() {
     if (g_zInput_KbdSystemReady == 0) {
         return;
     }
 
-    unsigned int inOutCount = 128;
-    const int hresult = g_zInput_KbdDevice->vtbl_00->GetDeviceData_28(
-        g_zInput_KbdDevice,
+    DWORD inOutCount = 128;
+    const int hresult = g_zInput_KbdDevice->GetDeviceData(
         sizeof(DIDeviceObjectData),
         g_zInput_KbdEventBuffer,
         &inOutCount,
@@ -3825,7 +3921,7 @@ void Keyboard_ResetTransitionState() {
     );
     if (hresult != kDiOk) {
         if (hresult == kDiInputLost) {
-            g_zInput_KbdDevice->vtbl_00->Acquire_1c(g_zInput_KbdDevice);
+            g_zInput_KbdDevice->Acquire();
         } else {
             DI_ReportError(
                 hresult,
@@ -3909,7 +4005,16 @@ void Keyboard_ResumeFromSuspend() {
     g_zInput_KeyboardSuspendFlags &= (unsigned char)(~kSuspendFlag);
 }
 
-// Reimplements 0x472410: zInput::DI_ResetTransitionState
+/**
+ * Reimplements 0x472410: zInput::DI_ResetTransitionState.
+ *
+ * Purpose: clear joystick button transition bytes and reset POV transition
+ * state while preserving the untouched first button byte.
+ *
+ * Evidence: BN assembly at 0x472410 guards on g_zInput_JoystickInitialized,
+ * zeroes current/previous rgbButtons[1..10], and writes 0xffff to
+ * current/previous rgdwPOV[0..3] across the two DIJOYSTATE2 BSS globals.
+ */
 void DI_ResetTransitionState() {
     if (g_zInput_JoystickInitialized == 0) {
         return;
@@ -3926,7 +4031,15 @@ void DI_ResetTransitionState() {
     }
 }
 
-// Reimplements 0x471c50: zInput::ResetAllTransitionState
+/**
+ * Reimplements 0x471c50: zInput::ResetAllTransitionState.
+ *
+ * Purpose: reset keyboard, joystick, and mouse transition state as a single
+ * zInput mode/focus transition operation.
+ *
+ * Evidence: BN assembly at 0x471c50 calls Keyboard_ResetTransitionState,
+ * calls DI_ResetTransitionState, then tail-calls Mouse_ResetTransitionState.
+ */
 void ResetAllTransitionState() {
     Keyboard_ResetTransitionState();
     DI_ResetTransitionState();

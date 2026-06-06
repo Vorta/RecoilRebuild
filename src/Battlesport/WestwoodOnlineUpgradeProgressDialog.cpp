@@ -9,15 +9,12 @@
 RECOIL_STATIC_ASSERT(sizeof(CWnd) == 0x40);
 RECOIL_STATIC_ASSERT(sizeof(CDialog) == 0x60);
 
-// Access shim for imported MFC42 CDialog metadata; this does not reimplement
+// Provider-boundary accessor for imported MFC42 CDialog metadata; this does not reimplement
 // CDialog behavior.
 class WestwoodOnlineUpgradeProgressCDialogMessageMapAccessor : public CDialog {
   public:
     static const AFX_MSGMAP *__stdcall GetMessageMap();
 };
-
-const RecoilNamedVtable kWestwoodOnlineUpgradeProgressDialog_Vtable = {
-    "WestwoodOnlineUpgradeProgressDialog vtable"};
 
 namespace {
 const UINT kWestwoodOnlineUpgradeProgressDialogResourceId = 157;
@@ -31,6 +28,7 @@ const unsigned int kDownloadPromptMessageId = 0x3043;
 const unsigned int kDownloadDialogResourceId = 162;
 const char kDownloadSourcePathFormat[] = "%s\\%s";
 const char kWestwoodOnlineUpgradeRegistryKey[] = "SOFTWARE\\Westwood\\Recoil";
+
 } // namespace
 
 extern "C" HINSTANCE g_RecoilApp_hInstance;
@@ -127,7 +125,7 @@ BOOL CALLBACK WestwoodOnlineUpgradeProgressDialog::DlgProc(
 ) {
     char sourcePath[kDownloadPathBufferSize];
     WestwoodOnlineUpgradeDownloadReadyEntry *entry;
-    WestwoodOnlineUpgradeDownloadComObject *download;
+    IWestwoodOnlineUpgradeDownload *download;
 
     if (uMsg == WM_SETFONT) {
         return TRUE;
@@ -182,9 +180,8 @@ BOOL CALLBACK WestwoodOnlineUpgradeProgressDialog::DlgProc(
         );
 
         entry = g_pWestwoodOnlineUpgradeDownloadReadyList;
-        download = (WestwoodOnlineUpgradeDownloadComObject *)g_pWestwoodOnlineUpgradeDownload;
-        download->vftable->BeginDownload(
-            (IUnknown *)download,
+        download = (IWestwoodOnlineUpgradeDownload *)g_pWestwoodOnlineUpgradeDownload;
+        download->BeginDownload(
             entry->m_descriptor0,
             entry->m_descriptor1,
             entry->m_descriptor2,
@@ -205,8 +202,8 @@ BOOL CALLBACK WestwoodOnlineUpgradeProgressDialog::DlgProc(
 
     if (uMsg == WM_COMMAND) {
         if (LOWORD(wParam) == IDCANCEL) {
-            download = (WestwoodOnlineUpgradeDownloadComObject *)g_pWestwoodOnlineUpgradeDownload;
-            download->vftable->Abort((IUnknown *)download);
+            download = (IWestwoodOnlineUpgradeDownload *)g_pWestwoodOnlineUpgradeDownload;
+            download->Abort();
             ::DestroyWindow(g_hWestwoodOnlineUpgradeProgressDialog);
             return TRUE;
         }
@@ -219,8 +216,8 @@ BOOL CALLBACK WestwoodOnlineUpgradeProgressDialog::DlgProc(
             return TRUE;
         }
 
-        download = (WestwoodOnlineUpgradeDownloadComObject *)g_pWestwoodOnlineUpgradeDownload;
-        download->vftable->Pump((IUnknown *)download);
+        download = (IWestwoodOnlineUpgradeDownload *)g_pWestwoodOnlineUpgradeDownload;
+        download->Pump();
         return TRUE;
     }
 

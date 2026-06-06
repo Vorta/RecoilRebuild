@@ -3,6 +3,7 @@
 #include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zRndr/zRndr.h"
+#include "GameZRecoil/zVideo/zVideo.h"
 
 #include <cstdint>
 #include <cstdio>
@@ -115,6 +116,226 @@ void ResetDefaultTexturePackState() {
     g_zVid_TexturePackCount = 0;
 }
 } // namespace
+
+extern "C" int zvid_pack_color_rgb_smoke(void) {
+    const int savedRMaskShifted = g_zVideo_PixelPack_RMaskShifted;
+    const int savedGMaskShifted = g_zVideo_PixelPack_GMaskShifted;
+    const int savedRShift = g_zVideo_PixelPack_RShift;
+    const int savedGShift = g_zVideo_PixelPack_GShift;
+    const int savedBShiftTo8 = g_zVideo_PixelPack_BShiftTo8;
+
+    g_zVideo_PixelPack_RMaskShifted = 0xf8;
+    g_zVideo_PixelPack_GMaskShifted = 0xfc;
+    g_zVideo_PixelPack_RShift = 8;
+    g_zVideo_PixelPack_GShift = 3;
+    g_zVideo_PixelPack_BShiftTo8 = 3;
+
+    const unsigned int packedWhite = zVid_PackColorRGB(0xff, 0xff, 0xff);
+    const unsigned int packedMaskedWhite = zVid_PackColorRGB(0xf8, 0xfc, 0xf8);
+    const unsigned int packedSample = zVid_PackColorRGB(0x20, 0x60, 0x40);
+    const unsigned int expectedSample = ((0xfc & 0x60) << 3) |
+                                        ((0xf8 & 0x20) << 8) |
+                                        (0x40 >> 3);
+
+    g_zVideo_PixelPack_RMaskShifted = savedRMaskShifted;
+    g_zVideo_PixelPack_GMaskShifted = savedGMaskShifted;
+    g_zVideo_PixelPack_RShift = savedRShift;
+    g_zVideo_PixelPack_GShift = savedGShift;
+    g_zVideo_PixelPack_BShiftTo8 = savedBShiftTo8;
+
+    return packedWhite == 0xffff && packedMaskedWhite == 0xffff &&
+                   packedSample == expectedSample
+               ? 0
+               : 1;
+}
+
+extern "C" int zvideo_image_set_pixels_smoke(void) {
+    zVidImagePartial image{};
+    std::uint16_t pixels[2] = {0x1111, 0x2222};
+    char alpha[2] = {1, 0};
+
+    image.formatFlagsPacked = 0x20;
+    const bool withAlpha = zVid_Image_SetPixels(&image, pixels, alpha) == 0 &&
+                           image.pixels == pixels && image.alphaMap == alpha &&
+                           (image.formatFlagsPacked & 0x22u) == 0x22u;
+
+    image.formatFlagsPacked = 0x20;
+    const bool withoutAlpha = zVid_Image_SetPixels(&image, pixels, nullptr) == 0 &&
+                              image.pixels == pixels && image.alphaMap == nullptr &&
+                              image.formatFlagsPacked == 0x20u;
+
+    return withAlpha && withoutAlpha ? 0 : 1;
+}
+
+extern "C" int zvid_image_create_format_size_pixels_smoke(void) {
+    zVidImagePartial *const image = zVid_Image::Create();
+    if (image == nullptr) {
+        return 1;
+    }
+
+    const bool createdZeroed =
+        image->pixelCount == 0 && image->width == 0 && image->height == 0 &&
+        image->formatFlagsPacked == 0 && image->pixels == nullptr && image->alphaMap == nullptr;
+
+    std::uint16_t pixels[128] = {};
+    char alpha[128] = {};
+    const bool configured =
+        zVid_Image::SetFormatCode(image, 1) == 0 &&
+        zVid_Image::SetHeaderFlagsByte(image, 0x7a) == 0 &&
+        zVid_Image_SetPixels(image, pixels, alpha) == 0;
+
+    image->widthScale = 3.5f;
+    image->uShiftFrom20 = 77;
+    image->uMask = 88;
+    image->vMaskFixed20 = 99;
+    const bool sized =
+        zVid_Image::SetSize(image, 16, 8) == 0 &&
+        image->headerFlagsByte == 0x7a && image->formatFlagsPacked == 3 &&
+        image->pixels == pixels && image->alphaMap == alpha && image->width == 16 &&
+        image->height == 8 && image->pixelCount == 128 && image->pitchWords == 16 &&
+        image->widthScale == 3.5f &&
+        image->uShiftFrom20 == 77 && image->uMask == 88 &&
+        image->vMaskFixed20 == 99;
+
+    const bool unpackedPixelDataBytes = zVid_Image::QueryPixelDataBytes(image) == 256;
+    image->paletteMetaPacked = 32;
+    const bool palettedPixelDataBytes = zVid_Image::QueryPixelDataBytes(image) == 128;
+    image->paletteMetaPacked = 0;
+
+    zVid_Image::Destroy(image);
+    return createdZeroed && configured && sized && unpackedPixelDataBytes && palettedPixelDataBytes
+               ? 0
+               : 2;
+}
+
+extern "C" int zvideo_capture_surface_to_image_smoke(void) {
+    zVideo::BindRendererDispatch(0, 0);
+    std::uint16_t pixels[6] = {1, 2, 0xaaaa, 3, 4, 0xbbbb};
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState.width = 2;
+    g_zVideo_DisplayModeSurfaceState.height = 2;
+    g_zVideo_DisplayModeSurfaceState.pitch = 6;
+    g_zVideo_DisplayModeSurfaceState.pixels = pixels;
+
+    zVidImagePartial *image = zVideo_buff_CaptureSurfaceToImage(2);
+    if (image == nullptr) {
+        return 1;
+    }
+
+    std::uint16_t *const captured = static_cast<std::uint16_t *>(image->pixels);
+    const bool ok = image->width == 2 && image->height == 2 && image->pixelCount == 4 &&
+                    (image->formatFlagsPacked & 0x20u) != 0 && captured != nullptr &&
+                    captured[0] == 1 && captured[1] == 2 && captured[2] == 3 &&
+                    captured[3] == 4;
+
+    zVid_Image::ReleaseIfNotDefault(image);
+    return ok ? 0 : 2;
+}
+
+extern "C" int zvideo_fx_set_surface_state_smoke(void) {
+    unsigned short *const oldPixels = g_zVideo_FxSurfacePixels16;
+    const int oldWidth = g_zVideo_FxSurfaceWidth;
+    const int oldHeight = g_zVideo_FxSurfaceHeight;
+    const int oldPitchBytes = g_zVideo_FxSurfacePitchBytes;
+    const int oldPitchPixels = g_zVideo_FxSurfacePitchPixels16;
+
+    unsigned short pixels[8] = {};
+    zVideo::Fx_SetSurfaceState(pixels, 5, 7, 14);
+
+    const bool ok = g_zVideo_FxSurfacePixels16 == pixels &&
+                    g_zVideo_FxSurfaceWidth == 5 &&
+                    g_zVideo_FxSurfaceHeight == 7 &&
+                    g_zVideo_FxSurfacePitchBytes == 14 &&
+                    g_zVideo_FxSurfacePitchPixels16 == 7;
+
+    g_zVideo_FxSurfacePixels16 = oldPixels;
+    g_zVideo_FxSurfaceWidth = oldWidth;
+    g_zVideo_FxSurfaceHeight = oldHeight;
+    g_zVideo_FxSurfacePitchBytes = oldPitchBytes;
+    g_zVideo_FxSurfacePitchPixels16 = oldPitchPixels;
+    return ok ? 0 : 1;
+}
+
+extern "C" int zvideo_image_alpha_clear_smoke(void) {
+    std::uint16_t pixels[4] = {0x1111, 0x2222, 0x3333, 0x4444};
+    char alpha[4] = {1, 0, 1, 0};
+
+    zVidImagePartial image{};
+    image.pixelCount = 4;
+    image.formatFlagsPacked = 1;
+    image.paletteMetaPacked = 0;
+    image.pixels = pixels;
+    image.alphaMap = alpha;
+
+    if (zVid_Image::QueryBytesPerPixel(&image) != 2) {
+        return 1;
+    }
+
+    zVid_Image::ClearZeroAlphaPixelsInPlace(&image);
+    return pixels[0] == 0x1111 && pixels[1] == 0 && pixels[2] == 0x3333 &&
+                   pixels[3] == 0
+               ? 0
+               : 2;
+}
+
+extern "C" int zvideo_texture_pack_load_image_smoke(void) {
+    char tempDir[MAX_PATH] = {};
+    char packPath[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "ztp", 0, packPath) == 0) {
+        return 1;
+    }
+
+    zVidTexturePackHeader packHeader{};
+    packHeader.fileFormat = 1;
+    packHeader.recordCount = 1;
+    zVidTexturePackRecord record{};
+    std::strcpy(record.name, "font.tex");
+    record.fileOffset = sizeof(packHeader) + sizeof(record);
+    record.paletteIndex = -1;
+
+    unsigned char imageHeader[0x10] = {};
+    imageHeader[0] = 1;
+    *reinterpret_cast<std::int16_t *>(&imageHeader[4]) = 1;
+    *reinterpret_cast<std::int16_t *>(&imageHeader[6]) = 1;
+    std::uint16_t pixel = 0x1234;
+
+    FILE *out = std::fopen(packPath, "wb");
+    if (out == nullptr) {
+        DeleteFileA(packPath);
+        return 2;
+    }
+    std::fwrite(&packHeader, sizeof(packHeader), 1, out);
+    std::fwrite(&record, sizeof(record), 1, out);
+    std::fwrite(imageHeader, 1, sizeof(imageHeader), out);
+    std::fwrite(&pixel, sizeof(pixel), 1, out);
+    std::fclose(out);
+
+    zVidTexturePackEntry entry{};
+    std::strcpy(entry.filePath, packPath);
+    g_zVid_TexturePackLoadState = 1;
+    g_zVideo_PixelPack_RBits = 0;
+    if (zVid_TexturePackEntry_LoadFromFile(&entry) == nullptr) {
+        DeleteFileA(packPath);
+        return 3;
+    }
+
+    g_zVid_TexturePacks = &entry;
+    g_zVid_TexturePackCount = 1;
+    zVidImagePartial *image = zVid_TexturePack_LoadImageByName("font.tex");
+    const bool ok = image != nullptr && image->width == 1 && image->height == 1 &&
+                    image->pixelCount == 1 &&
+                    static_cast<std::uint16_t *>(image->pixels)[0] == pixel;
+
+    zVid_Image::Destroy(image);
+    std::fclose(entry.fileHandle);
+    std::free(entry.records);
+    g_zVid_TexturePacks = nullptr;
+    g_zVid_TexturePackCount = 0;
+    g_zVid_TexturePackLoadState = 0;
+    DeleteFileA(packPath);
+    return ok ? 0 : 4;
+}
 
 extern "C" int zimage_font_glyph_scan_smoke(void) {
     constexpr std::int32_t kWidth = 192;
@@ -857,14 +1078,14 @@ extern "C" int zimage_init_mission_resources_smoke(void) {
         return 1;
     }
 
-    if (g_zImage_MissionResourcePaths != nullptr) {
-        zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionResourcePaths);
+    if (g_zImage_MissionSearchPathList != nullptr) {
+        zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionSearchPathList);
     }
-    g_zImage_MissionResourcePaths = nullptr;
+    g_zImage_MissionSearchPathList = nullptr;
 
-    if (zImage_InitMissionResources(tempPathA) != 0 || g_zImage_MissionResourcePaths == nullptr ||
-        g_zImage_MissionResourcePaths->count != 1 ||
-        std::strcmp(static_cast<const char *>(g_zImage_MissionResourcePaths->head->payload),
+    if (zImage_InitMissionResources(tempPathA) != 0 || g_zImage_MissionSearchPathList == nullptr ||
+        g_zImage_MissionSearchPathList->count != 1 ||
+        std::strcmp(static_cast<const char *>(g_zImage_MissionSearchPathList->head->payload),
                     tempPathA) != 0) {
         DeleteFileA(tempPathA);
         DeleteFileA(tempPathB);
@@ -873,14 +1094,14 @@ extern "C" int zimage_init_mission_resources_smoke(void) {
 
     zImage_InitMissionResources(tempPathB);
     const bool appendOk =
-        g_zImage_MissionResourcePaths->count == 2 &&
-        std::strcmp(static_cast<const char *>(g_zImage_MissionResourcePaths->head->payload),
+        g_zImage_MissionSearchPathList->count == 2 &&
+        std::strcmp(static_cast<const char *>(g_zImage_MissionSearchPathList->head->payload),
                     tempPathB) == 0 &&
-        std::strcmp(static_cast<const char *>(g_zImage_MissionResourcePaths->head->next->payload),
+        std::strcmp(static_cast<const char *>(g_zImage_MissionSearchPathList->head->next->payload),
                     tempPathA) == 0;
 
-    zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionResourcePaths);
-    g_zImage_MissionResourcePaths = nullptr;
+    zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionSearchPathList);
+    g_zImage_MissionSearchPathList = nullptr;
     DeleteFileA(tempPathA);
     DeleteFileA(tempPathB);
     return appendOk ? 0 : 3;
@@ -940,4 +1161,102 @@ extern "C" int zimage_shutdown_texdir_smoke(void) {
     g_zVideo_pfnTextureRecordDestroy = 0;
     g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces = 0;
     return ok ? 0 : 1;
+}
+
+extern "C" int zvid_image_release_owned_buffers_smoke(void) {
+    zVidImagePartial image{};
+    image.pixels = std::malloc(4);
+    image.alphaMap = static_cast<char *>(std::malloc(4));
+    image.palette = std::malloc(4);
+    if (image.pixels == nullptr || image.alphaMap == nullptr || image.palette == nullptr) {
+        std::free(image.pixels);
+        std::free(image.alphaMap);
+        std::free(image.palette);
+        return 1;
+    }
+
+    image.formatFlagsPacked = 0xe0;
+    zVid_Image::ReleaseOwnedBuffers(&image);
+    if (image.pixels != nullptr || image.alphaMap != nullptr || image.palette != nullptr ||
+        (image.formatFlagsPacked & 0xe0) != 0) {
+        return 2;
+    }
+
+    void *palette = std::malloc(4);
+    if (palette == nullptr) {
+        return 3;
+    }
+
+    image.palette = palette;
+    image.formatFlagsPacked = 0x90;
+    zVid_Image::ReleaseOwnedBuffers(&image);
+    const bool keptSharedPalette = image.palette == palette && image.formatFlagsPacked == 0x90;
+    std::free(palette);
+    image.palette = nullptr;
+    return keptSharedPalette ? 0 : 4;
+}
+
+extern "C" int zvid_image_destroy_smoke(void) {
+    zVidImagePartial *image =
+        static_cast<zVidImagePartial *>(std::malloc(sizeof(zVidImagePartial)));
+    if (image == nullptr) {
+        return 1;
+    }
+
+    *image = {};
+    image->pixels = std::malloc(4);
+    if (image->pixels == nullptr) {
+        std::free(image);
+        return 2;
+    }
+    image->formatFlagsPacked = 0x20;
+
+    return zVid_Image::Destroy(image) == 0 && zVid_Image::Destroy(nullptr) == 0 ? 0 : 3;
+}
+
+extern "C" int zvideo_buff_clip_coord_to_range_smoke(void) {
+    std::int32_t coord = 5;
+    if (zVideo_buff::ClipCoordToRange(&coord, 2, 8) != 0 || coord != 5) {
+        return 1;
+    }
+
+    coord = -3;
+    if (zVideo_buff::ClipCoordToRange(&coord, 2, 8) != -5 || coord != 2) {
+        return 2;
+    }
+
+    coord = 12;
+    return zVideo_buff::ClipCoordToRange(&coord, 2, 8) == 4 && coord == 8 ? 0 : 3;
+}
+
+extern "C" int zvideo_buff_copy_surface_rect_to_image_smoke(void) {
+    std::uint16_t pixels[12] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+    std::uint16_t captured[12] = {};
+    zVidImagePartial image{};
+    image.pixels = captured;
+
+    const zVideo_SurfaceStatePartial oldSwSurfaceState = g_zVideo_SwSurfaceState;
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_SwSurfaceState.width = 4;
+    g_zVideo_SwSurfaceState.height = 3;
+    g_zVideo_SwSurfaceState.pitch = 8;
+    g_zVideo_SwSurfaceState.pixels = pixels;
+
+    zVidRect32 rect{-1, 1, 3, 4};
+    zVidImagePartial *result = zVideo_buff::CopySurfaceRectToImage(0, &rect, &image);
+    if (result != &image) {
+        g_zVideo_SwSurfaceState = oldSwSurfaceState;
+        return 1;
+    }
+
+    if (rect.left != 0 || rect.top != 1 || rect.right != 3 || rect.bottom != 3) {
+        g_zVideo_SwSurfaceState = oldSwSurfaceState;
+        return 2;
+    }
+
+    const bool ok = captured[0] == 0 && captured[1] == 5 && captured[2] == 6 &&
+                    captured[3] == 7 && captured[4] == 0 && captured[5] == 9 &&
+                    captured[6] == 10 && captured[7] == 11;
+    g_zVideo_SwSurfaceState = oldSwSurfaceState;
+    return ok ? 0 : 3;
 }

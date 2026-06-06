@@ -7237,13 +7237,13 @@ extern "C" int recoil_app_attract_fmv_on_deactivate_smoke(void) {
 extern "C" int recoil_app_mission_fmv_on_try_become_current_skip_smoke(void) {
     zArchiveList *const oldSearchPathList = g_zRdr_SearchPathList;
     zArchiveList *const oldScratchSearchPathList = g_zRdr_ScratchSearchPathList;
-    zArchiveList *const oldMissionResourcePaths = g_zImage_MissionResourcePaths;
+    zArchiveList *const oldMissionSearchPathList = g_zImage_MissionSearchPathList;
     zArchiveList *const oldMountedList = g_zArchive_MountedList;
     HWND const oldMainHwnd = g_RecoilApp_hWndMain;
 
     g_zRdr_SearchPathList = nullptr;
     g_zRdr_ScratchSearchPathList = nullptr;
-    g_zImage_MissionResourcePaths = nullptr;
+    g_zImage_MissionSearchPathList = nullptr;
     g_zArchive_MountedList = zArchiveList_CreateEmpty();
     g_RecoilApp_hWndMain = reinterpret_cast<HWND>(0x12345678);
 
@@ -7262,7 +7262,7 @@ extern "C" int recoil_app_mission_fmv_on_try_become_current_skip_smoke(void) {
         adoptedResult == 1 && adoptedState.m_missionId == 6 &&
         g_HudSensorTracker.GetMissionId() == 6 && adoptedScript->m_hWnd == nullptr &&
         g_zRdr_SearchPathList != nullptr && g_zRdr_ScratchSearchPathList != nullptr &&
-        g_zImage_MissionResourcePaths != nullptr;
+        g_zImage_MissionSearchPathList != nullptr;
 
     RecoilApp_MissionFmvState explicitState{};
     explicitState.m_missionId = 4;
@@ -7281,8 +7281,8 @@ extern "C" int recoil_app_mission_fmv_on_try_become_current_skip_smoke(void) {
     if (g_zRdr_ScratchSearchPathList != nullptr) {
         zUtil_ZRDR_FreeSearchPathList(g_zRdr_ScratchSearchPathList);
     }
-    if (g_zImage_MissionResourcePaths != nullptr) {
-        zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionResourcePaths);
+    if (g_zImage_MissionSearchPathList != nullptr) {
+        zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionSearchPathList);
     }
     if (g_zArchive_MountedList != nullptr) {
         zArchiveList_Destroy(g_zArchive_MountedList);
@@ -7291,7 +7291,7 @@ extern "C" int recoil_app_mission_fmv_on_try_become_current_skip_smoke(void) {
     g_HudSensorTracker.Shutdown();
     g_zRdr_SearchPathList = oldSearchPathList;
     g_zRdr_ScratchSearchPathList = oldScratchSearchPathList;
-    g_zImage_MissionResourcePaths = oldMissionResourcePaths;
+    g_zImage_MissionSearchPathList = oldMissionSearchPathList;
     g_zArchive_MountedList = oldMountedList;
     g_RecoilApp_hWndMain = oldMainHwnd;
 

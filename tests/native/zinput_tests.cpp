@@ -105,6 +105,63 @@ std::int32_t __stdcall TestEffectStop(zInput_DiEffect *) {
     return 0;
 }
 
+struct TestEffectFake : zInput_DiEffect {
+    STDMETHOD(QueryInterface)(REFIID, LPVOID *outObject) {
+        if (outObject != nullptr) {
+            *outObject = nullptr;
+        }
+        return E_NOINTERFACE;
+    }
+
+    STDMETHOD_(ULONG, AddRef)() {
+        return 1;
+    }
+
+    STDMETHOD_(ULONG, Release)() {
+        return 1;
+    }
+
+    STDMETHOD(Initialize)(HINSTANCE, DWORD, REFGUID) {
+        return 0;
+    }
+
+    STDMETHOD(GetEffectGuid)(LPGUID) {
+        return 0;
+    }
+
+    STDMETHOD(GetParameters)(LPDIEFFECT, DWORD) {
+        return 0;
+    }
+
+    STDMETHOD(SetParameters)(LPCDIEFFECT effect, DWORD flags) {
+        return TestEffectSetParameters(this, effect, flags);
+    }
+
+    STDMETHOD(Start)(DWORD iterations, DWORD flags) {
+        return TestEffectStart(this, iterations, flags);
+    }
+
+    STDMETHOD(Stop)() {
+        return TestEffectStop(this);
+    }
+
+    STDMETHOD(GetEffectStatus)(LPDWORD) {
+        return 0;
+    }
+
+    STDMETHOD(Download)() {
+        return 0;
+    }
+
+    STDMETHOD(Unload)() {
+        return 0;
+    }
+
+    STDMETHOD(Escape)(LPDIEFFESCAPE) {
+        return 0;
+    }
+};
+
 void FreeOptionList() {
     zOptionEntryPartial *entry = g_zGame_Options_OptionListHead;
     while (entry != nullptr) {
@@ -220,12 +277,8 @@ extern "C" int zinput_joystick_option_accessors_smoke(void) {
 }
 
 extern "C" int zinput_force_feedback_effect_wrappers_smoke(void) {
-    zInput_DiEffectVtable vtbl = {};
-    vtbl.SetParameters_18 = TestEffectSetParameters;
-    vtbl.Start_1c = TestEffectStart;
-    vtbl.Stop_20 = TestEffectStop;
-    zInput_DiEffect primary = {&vtbl};
-    zInput_DiEffect alt = {&vtbl};
+    TestEffectFake primary{};
+    TestEffectFake alt{};
     zInput_FFEffectSet effects = {};
 
     g_ffStopCount = 0;
@@ -294,7 +347,8 @@ extern "C" int zinput_bindgroup_accessors_smoke(void) {
     g_zInput_CommandLocIdTable[7] = 100;
     g_zLoc_MessagesDllHandle = nullptr;
 
-    if (zInput::BindGroupList_GetCount() != 1 || zInput::BindGroupList_GetGroupTitle(0) != title ||
+    if (zInput::BindGroupList_GetCount() != 1 ||
+        std::strcmp(zInput::BindGroupList_GetGroupTitle(0), title) != 0 ||
         zInput::BindGroupList_GetGroupCommandCount(0) != 3 ||
         zInput::BindGroupList_GetGroupCommandId(0, 1) != 7 ||
         zInput::BindMap_GetCommandLabel(7) != nullptr ||
@@ -1053,14 +1107,6 @@ extern "C" int zinput_bindmap_dispatch_mouse_callbacks_smoke(void) {
 }
 
 namespace {
-struct MouseDeviceFake {
-    zInput::DIDevice device;
-};
-
-struct DirectInputFake {
-    zInput::DIDirectInput input;
-};
-
 int releaseCalls;
 int directInputReleaseCalls;
 int acquireCalls;
@@ -1312,37 +1358,171 @@ std::int32_t __stdcall GetPropertyFake(zInput::DIDevice *, std::uint32_t propert
     return 0;
 }
 
-const zInput::DIDeviceVtable kMouseVtable = {
-    QueryInterfaceFake,
-    nullptr,
-    ReleaseFake,
-    GetCapabilitiesFake,
-    nullptr,
-    GetPropertyFake,
-    SetPropertyFake,
-    AcquireFake,
-    UnacquireFake,
-    GetDeviceStateFake,
-    GetDeviceDataFake,
-    SetDataFormatFake,
-    nullptr,
-    SetCooperativeLevelFake,
-    nullptr,
-    nullptr,
-    nullptr,
-    nullptr,
-    CreateEffectFake,
-    nullptr,
-    nullptr,
-    nullptr,
-    nullptr,
-    nullptr,
-    nullptr,
-    PollFake,
+struct MouseDeviceFake : zInput::DIDevice {
+    zInput::DIDevice &device;
+
+    MouseDeviceFake() : device(*this) {}
+
+    STDMETHOD(QueryInterface)(REFIID iid, LPVOID *outObject) {
+        return QueryInterfaceFake(this, &iid, reinterpret_cast<zInput::DIDevice **>(outObject));
+    }
+
+    STDMETHOD_(ULONG, AddRef)() {
+        return 1;
+    }
+
+    STDMETHOD_(ULONG, Release)() {
+        return ReleaseFake(this);
+    }
+
+    STDMETHOD(GetCapabilities)(LPDIDEVCAPS capabilities) {
+        return GetCapabilitiesFake(this, capabilities);
+    }
+
+    STDMETHOD(EnumObjects)(LPDIENUMDEVICEOBJECTSCALLBACKA, LPVOID, DWORD) {
+        return 0;
+    }
+
+    STDMETHOD(GetProperty)(REFGUID propertyId, LPDIPROPHEADER propHeader) {
+        return GetPropertyFake(this, static_cast<std::uint32_t>(
+                                         reinterpret_cast<std::uintptr_t>(&propertyId)),
+                               propHeader);
+    }
+
+    STDMETHOD(SetProperty)(REFGUID propertyId, LPCDIPROPHEADER propHeader) {
+        return SetPropertyFake(this, static_cast<std::uint32_t>(
+                                         reinterpret_cast<std::uintptr_t>(&propertyId)),
+                               const_cast<LPDIPROPHEADER>(propHeader));
+    }
+
+    STDMETHOD(Acquire)() {
+        return AcquireFake(this);
+    }
+
+    STDMETHOD(Unacquire)() {
+        return UnacquireFake(this);
+    }
+
+    STDMETHOD(GetDeviceState)(DWORD dataSize, LPVOID outState) {
+        return GetDeviceStateFake(this, dataSize, outState);
+    }
+
+    STDMETHOD(GetDeviceData)(DWORD objectDataSize, LPDIDEVICEOBJECTDATA objectData,
+                             LPDWORD inOutCount, DWORD flags) {
+        return GetDeviceDataFake(this, objectDataSize, objectData,
+                                 reinterpret_cast<std::uint32_t *>(inOutCount), flags);
+    }
+
+    STDMETHOD(SetDataFormat)(LPCDIDATAFORMAT format) {
+        return SetDataFormatFake(this, format);
+    }
+
+    STDMETHOD(SetEventNotification)(HANDLE) {
+        return 0;
+    }
+
+    STDMETHOD(SetCooperativeLevel)(HWND hwnd, DWORD flags) {
+        return SetCooperativeLevelFake(this, hwnd, flags);
+    }
+
+    STDMETHOD(GetObjectInfo)(LPDIDEVICEOBJECTINSTANCEA, DWORD, DWORD) {
+        return 0;
+    }
+
+    STDMETHOD(GetDeviceInfo)(LPDIDEVICEINSTANCEA) {
+        return 0;
+    }
+
+    STDMETHOD(RunControlPanel)(HWND, DWORD) {
+        return 0;
+    }
+
+    STDMETHOD(Initialize)(HINSTANCE, DWORD, REFGUID) {
+        return 0;
+    }
+
+    STDMETHOD(CreateEffect)(REFGUID effectGuid, LPCDIEFFECT effect,
+                            LPDIRECTINPUTEFFECT *outEffect, LPUNKNOWN outer) {
+        return CreateEffectFake(this, &effectGuid, effect, outEffect, outer);
+    }
+
+    STDMETHOD(EnumEffects)(LPDIENUMEFFECTSCALLBACKA, LPVOID, DWORD) {
+        return 0;
+    }
+
+    STDMETHOD(GetEffectInfo)(LPDIEFFECTINFOA, REFGUID) {
+        return 0;
+    }
+
+    STDMETHOD(GetForceFeedbackState)(LPDWORD) {
+        return 0;
+    }
+
+    STDMETHOD(SendForceFeedbackCommand)(DWORD) {
+        return 0;
+    }
+
+    STDMETHOD(EnumCreatedEffectObjects)(LPDIENUMCREATEDEFFECTOBJECTSCALLBACK, LPVOID, DWORD) {
+        return 0;
+    }
+
+    STDMETHOD(Escape)(LPDIEFFESCAPE) {
+        return 0;
+    }
+
+    STDMETHOD(Poll)() {
+        return PollFake(this);
+    }
+
+    STDMETHOD(SendDeviceData)(DWORD, LPDIDEVICEOBJECTDATA, LPDWORD, DWORD) {
+        return 0;
+    }
 };
 
-const zInput::DIDirectInputVtable kDirectInputVtable = {
-    nullptr, nullptr, ReleaseDirectInputFake, CreateDeviceFake, EnumDevicesFake,
+struct DirectInputFake : zInput::DIDirectInput {
+    zInput::DIDirectInput &input;
+
+    DirectInputFake() : input(*this) {}
+
+    STDMETHOD(QueryInterface)(REFIID, LPVOID *outObject) {
+        if (outObject != nullptr) {
+            *outObject = nullptr;
+        }
+        return E_NOINTERFACE;
+    }
+
+    STDMETHOD_(ULONG, AddRef)() {
+        return 1;
+    }
+
+    STDMETHOD_(ULONG, Release)() {
+        return ReleaseDirectInputFake(this);
+    }
+
+    STDMETHOD(CreateDevice)(REFGUID instanceGuid, LPDIRECTINPUTDEVICEA *outDevice,
+                            LPUNKNOWN outer) {
+        return CreateDeviceFake(this, &instanceGuid,
+                                reinterpret_cast<zInput::DIDevice **>(outDevice), outer);
+    }
+
+    STDMETHOD(EnumDevices)(DWORD deviceType, LPDIENUMDEVICESCALLBACKA callback, LPVOID ref,
+                           DWORD flags) {
+        return EnumDevicesFake(this, deviceType,
+                               reinterpret_cast<zInput::DIEnumDevicesCallback>(callback), ref,
+                               flags);
+    }
+
+    STDMETHOD(GetDeviceStatus)(REFGUID) {
+        return 0;
+    }
+
+    STDMETHOD(RunControlPanel)(HWND, DWORD) {
+        return 0;
+    }
+
+    STDMETHOD(Initialize)(HINSTANCE, DWORD) {
+        return 0;
+    }
 };
 
 void ResetMouseGlobals() {
@@ -1484,7 +1664,7 @@ extern "C" int zinput_keyboard_raw_callback_smoke(void) {
 
 extern "C" int zinput_keyboard_wait_for_key_press_smoke(void) {
     ResetMouseGlobals();
-    MouseDeviceFake fake = {{&kMouseVtable}};
+    MouseDeviceFake fake{};
     g_zInput_KbdDevice = &fake.device;
     g_zInput_KbdEventBuffer = keyboardEvents;
 
@@ -1548,7 +1728,7 @@ extern "C" int zinput_keyboard_wait_for_key_press_smoke(void) {
 
 extern "C" int zinput_keyboard_poll_state_smoke(void) {
     ResetMouseGlobals();
-    MouseDeviceFake fake = {{&kMouseVtable}};
+    MouseDeviceFake fake{};
     g_zInput_KbdDevice = &fake.device;
     g_zInput_KbdEventBuffer = keyboardEvents;
     g_zInput_KbdModifierState = 0;
@@ -1625,11 +1805,10 @@ extern "C" int zinput_keyboard_mouse_addref_smoke(void) {
 
 extern "C" int zinput_force_feedback_create_effect_smoke(void) {
     ResetMouseGlobals();
-    zInput_DiEffectVtable vtbl = {};
     GUID guid = {};
-    int desc = 123;
-    MouseDeviceFake joystick = {{&kMouseVtable}};
-    zInput_DiEffect created = {&vtbl};
+    DIEFFECT desc = {};
+    MouseDeviceFake joystick{};
+    TestEffectFake created{};
     createEffectOut = &created;
 
     if (zInput_DI_CreateForceFeedbackEffect(&guid, &desc) != nullptr) {
@@ -1679,10 +1858,8 @@ extern "C" int zinput_force_feedback_create_effect_smoke(void) {
 
 extern "C" int zinput_force_feedback_effect_set_smoke(void) {
     ResetMouseGlobals();
-    zInput_DiEffectVtable vtbl = {};
-    vtbl.Start_1c = TestEffectStart;
-    MouseDeviceFake joystick = {{&kMouseVtable}};
-    zInput_DiEffect created = {&vtbl};
+    MouseDeviceFake joystick{};
+    TestEffectFake created{};
     zInput_FFEffectSet effects = {};
     g_zInput_JoystickDevice = &joystick.device;
     createEffectOut = &created;
@@ -1702,14 +1879,10 @@ extern "C" int zinput_force_feedback_effect_set_smoke(void) {
 
 extern "C" int zinput_force_feedback_directional_runtime_smoke(void) {
     ResetMouseGlobals();
-    zInput_DiEffectVtable vtbl = {};
-    vtbl.SetParameters_18 = TestEffectSetParameters;
-    vtbl.Start_1c = TestEffectStart;
-    vtbl.Stop_20 = TestEffectStop;
-    zInput_DiEffect collision = {&vtbl};
-    zInput_DiEffect damage = {&vtbl};
-    zInput_DiEffect steer = {&vtbl};
-    zInput_DiEffect pitch = {&vtbl};
+    TestEffectFake collision{};
+    TestEffectFake damage{};
+    TestEffectFake steer{};
+    TestEffectFake pitch{};
     zInput_FFEffectSet effects = {};
     zInput_PlayerStatePartial playerState = {};
     zInput_GameStateOrMapTablePartial gameState = {};
@@ -1774,8 +1947,6 @@ extern "C" int zinput_keyboard_init_device_smoke(void) {
     ResetMouseGlobals();
     DirectInputFake directInput{};
     MouseDeviceFake keyboard{};
-    directInput.input.vtbl_00 = &kDirectInputVtable;
-    keyboard.device.vtbl_00 = &kMouseVtable;
     g_zInput_GlobalState = &directInput.input;
     createDeviceOut = &keyboard.device;
 
@@ -1807,9 +1978,6 @@ extern "C" int zinput_mouse_init_device_smoke(void) {
     DirectInputFake directInput{};
     MouseDeviceFake base{};
     MouseDeviceFake mouse{};
-    directInput.input.vtbl_00 = &kDirectInputVtable;
-    base.device.vtbl_00 = &kMouseVtable;
-    mouse.device.vtbl_00 = &kMouseVtable;
     g_zInput_GlobalState = &directInput.input;
     g_zInput_hWnd = hwnd;
     g_zInput_MouseCoopLevelFlags = 5;
@@ -1840,9 +2008,6 @@ extern "C" int zinput_joystick_init_device_smoke(void) {
     DirectInputFake directInput{};
     MouseDeviceFake base{};
     MouseDeviceFake joystick{};
-    directInput.input.vtbl_00 = &kDirectInputVtable;
-    base.device.vtbl_00 = &kMouseVtable;
-    joystick.device.vtbl_00 = &kMouseVtable;
     g_zInput_GlobalState = &directInput.input;
     createDeviceOut = &base.device;
     queryInterfaceOut = &joystick.device;
@@ -1890,7 +2055,6 @@ extern "C" int zinput_joystick_acquire_device_smoke(void) {
     }
 
     MouseDeviceFake joystick{};
-    joystick.device.vtbl_00 = &kMouseVtable;
     g_zInput_JoystickDevice = &joystick.device;
     acquireResult = 0;
     if (zInput::DI_AcquireJoystickDevice() != 1 || acquireCalls != 1) {
@@ -1904,7 +2068,6 @@ extern "C" int zinput_joystick_acquire_device_smoke(void) {
 extern "C" int zinput_joystick_axis_property_smoke(void) {
     ResetMouseGlobals();
     MouseDeviceFake joystick{};
-    joystick.device.vtbl_00 = &kMouseVtable;
     g_zInput_JoystickDevice = &joystick.device;
     g_zInput_JoystickAxisCount = 4;
 
@@ -1957,7 +2120,6 @@ extern "C" int zinput_joystick_axis_property_smoke(void) {
 
 extern "C" int zinput_joystick_ref_and_enable_smoke(void) {
     MouseDeviceFake joystick{};
-    joystick.device.vtbl_00 = &kMouseVtable;
     g_zInput_JoystickDevice = &joystick.device;
     if (zInput::DI_IsJoystickDeviceReady() != 0) {
         return 7;
@@ -2018,7 +2180,6 @@ extern "C" int zinput_joystick_ref_and_enable_smoke(void) {
 extern "C" int zinput_joystick_poll_and_wait_smoke(void) {
     ResetMouseGlobals();
     MouseDeviceFake joystick{};
-    joystick.device.vtbl_00 = &kMouseVtable;
     g_zInput_JoystickDevice = &joystick.device;
     g_zInput_JoystickInitialized = 1;
     g_zInput_JoystickAxisCount = 2;
@@ -2087,7 +2248,7 @@ extern "C" int zinput_joystick_poll_and_wait_smoke(void) {
 
 extern "C" int zinput_mouse_update_acquire_state_smoke() {
     ResetMouseGlobals();
-    MouseDeviceFake fake = {{&kMouseVtable}};
+    MouseDeviceFake fake{};
     g_zInput_MouseDevice = &fake.device;
 
     g_zInput_MouseActive = 1;
@@ -2114,7 +2275,7 @@ extern "C" int zinput_mouse_update_acquire_state_smoke() {
 
 extern "C" int zinput_mouse_shutdown_device_smoke() {
     ResetMouseGlobals();
-    MouseDeviceFake fake = {{&kMouseVtable}};
+    MouseDeviceFake fake{};
     g_zInput_MouseDevice = &fake.device;
     g_zInput_MouseInitialized = 1;
     g_zInput_MouseActive = 1;
@@ -2135,7 +2296,7 @@ extern "C" int zinput_joystick_shutdown_device_smoke() {
         return 1;
     }
 
-    MouseDeviceFake joystick = {{&kMouseVtable}};
+    MouseDeviceFake joystick{};
     g_zInput_JoystickDevice = &joystick.device;
     const int result = zInput::Joystick_ShutdownDevice();
     if (result != 1 || unacquireCalls != 1 || releaseCalls != 1) {
@@ -2153,7 +2314,7 @@ extern "C" int zinput_keyboard_shutdown_device_smoke() {
         return 1;
     }
 
-    MouseDeviceFake keyboard = {{&kMouseVtable}};
+    MouseDeviceFake keyboard{};
     zInput::DIDeviceObjectData *events =
         static_cast<zInput::DIDeviceObjectData *>(std::malloc(16));
     if (events == nullptr) {
@@ -2174,10 +2335,10 @@ extern "C" int zinput_keyboard_shutdown_device_smoke() {
 extern "C" int zinput_shutdown_smoke() {
     ResetMouseGlobals();
 
-    MouseDeviceFake mouse = {{&kMouseVtable}};
-    MouseDeviceFake keyboard = {{&kMouseVtable}};
-    MouseDeviceFake joystick = {{&kMouseVtable}};
-    DirectInputFake directInput = {{&kDirectInputVtable}};
+    MouseDeviceFake mouse{};
+    MouseDeviceFake keyboard{};
+    MouseDeviceFake joystick{};
+    DirectInputFake directInput{};
 
     g_zInput_hWnd = reinterpret_cast<HWND>(1);
     g_zInput_MouseDevice = &mouse.device;
@@ -2208,7 +2369,7 @@ extern "C" int zinput_shutdown_smoke() {
 
 extern "C" int zinput_mouse_poll_state_smoke() {
     ResetMouseGlobals();
-    MouseDeviceFake fake = {{&kMouseVtable}};
+    MouseDeviceFake fake{};
     g_zInput_MouseDevice = &fake.device;
     g_zInput_MouseInitialized = 1;
     g_zInput_MouseActive = 1;
@@ -2304,10 +2465,9 @@ extern "C" int zinput_mouse_poll_state_smoke() {
 extern "C" int zinput_poll_active_devices_smoke() {
     ResetMouseGlobals();
 
-    MouseDeviceFake mouse = {{&kMouseVtable}};
+    MouseDeviceFake mouse{};
     MouseDeviceFake joystick{};
-    joystick.device.vtbl_00 = &kMouseVtable;
-    MouseDeviceFake keyboard = {{&kMouseVtable}};
+    MouseDeviceFake keyboard{};
 
     g_zInput_MouseDevice = &mouse.device;
     g_zInput_MouseActive = 1;
@@ -2383,7 +2543,7 @@ extern "C" int zinput_suspend_flags_smoke() {
 
 extern "C" int zinput_on_app_deactivate_smoke() {
     ResetMouseGlobals();
-    MouseDeviceFake fake = {{&kMouseVtable}};
+    MouseDeviceFake fake{};
     g_zInput_MouseDevice = &fake.device;
     g_zInput_MouseActive = 1;
     g_zInput_MouseSuspendFlags = 0;
@@ -2502,7 +2662,7 @@ extern "C" int zinput_directinput_report_error_smoke() {
 
 extern "C" int zinput_keyboard_reset_and_resume_smoke() {
     ResetMouseGlobals();
-    MouseDeviceFake fake = {{&kMouseVtable}};
+    MouseDeviceFake fake{};
     g_zInput_KbdSystemReady = 1;
     g_zInput_KbdDevice = &fake.device;
     g_zInput_KbdEventBuffer = keyboardEvents;
@@ -2526,7 +2686,7 @@ extern "C" int zinput_keyboard_reset_and_resume_smoke() {
 
 extern "C" int zinput_keyboard_reset_inputlost_smoke() {
     ResetMouseGlobals();
-    MouseDeviceFake fake = {{&kMouseVtable}};
+    MouseDeviceFake fake{};
     g_zInput_KbdSystemReady = 1;
     g_zInput_KbdDevice = &fake.device;
     g_zInput_KbdEventBuffer = keyboardEvents;
@@ -2584,7 +2744,7 @@ extern "C" int zinput_reset_all_transition_state_smoke() {
 
 extern "C" int zinput_on_app_activate_smoke() {
     ResetMouseGlobals();
-    MouseDeviceFake fake = {{&kMouseVtable}};
+    MouseDeviceFake fake{};
     g_zInput_hWnd = reinterpret_cast<HWND>(1);
     g_zInput_MouseDevice = &fake.device;
     g_zInput_MouseInitialized = 0;

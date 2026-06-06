@@ -9,74 +9,25 @@
 
 #include <string.h>
 
-struct WestwoodOnlineUpgradeApiComVtable {
-    void *QueryInterface;
-    void *AddRef;
-    void *Release;
-    void(STDMETHODCALLTYPE *ProcessCallbacks)(IUnknown *self);
-    void(STDMETHODCALLTYPE *BeginConnect)(
-        IUnknown *self,
+struct IWestwoodOnlineUpgradeApi : IUnknown {
+    virtual void STDMETHODCALLTYPE ProcessCallbacks() = 0;
+    virtual void STDMETHODCALLTYPE BeginConnect(
         int languageId,
         int productId,
         const char *playerName,
         const char *connectString,
         int timeoutSeconds
-    );
-    void(STDMETHODCALLTYPE *RequestBootstrapServerList)(
-        IUnknown *self,
+    ) = 0;
+    virtual void STDMETHODCALLTYPE RequestBootstrapServerList(
         WestwoodOnlineUpgradeBootstrapServerRecord *selectedBootstrapServer,
         int timeoutSeconds,
         int useAlternateConnectString
-    );
-    void(STDMETHODCALLTYPE *RequestListMode)(
-        IUnknown *self,
+    ) = 0;
+    virtual void STDMETHODCALLTYPE RequestListMode(
         int listMode,
         int enabled
-    );
+    ) = 0;
 };
-
-struct WestwoodOnlineUpgradeApiComObject {
-    WestwoodOnlineUpgradeApiComVtable *vftable;
-};
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeApiComVtable,
-        ProcessCallbacks
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeApiComVtable,
-        BeginConnect
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeApiComVtable,
-        RequestBootstrapServerList
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeApiComVtable,
-        RequestListMode
-    ) == 0x18
-);
-
-// BN observes CWnd::DestroyWindow as a provider virtual dispatch at vtable offset 0x60.
-struct WestwoodOnlineUpgradeMfcWndVtable {
-    void *reserved000[24];
-    int(__fastcall *DestroyWindow)(
-        CWnd *self,
-        void *edx
-    );
-};
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeMfcWndVtable,
-        DestroyWindow
-    ) == 0x60
-);
 
 extern "C" WestwoodOnlineUpgradeApiInitState g_WestwoodOnlineUpgradeApiInitState = {0};
 extern "C" IUnknown *g_pWestwoodOnlineUpgradeApi = 0;
@@ -162,8 +113,8 @@ void CopyFailureMessage(
     );
 }
 
-WestwoodOnlineUpgradeApiComObject *GetApiComObject() {
-    return (WestwoodOnlineUpgradeApiComObject *)g_pWestwoodOnlineUpgradeApi;
+IWestwoodOnlineUpgradeApi *GetApiComObject() {
+    return (IWestwoodOnlineUpgradeApi *)g_pWestwoodOnlineUpgradeApi;
 }
 
 /**
@@ -175,12 +126,7 @@ WestwoodOnlineUpgradeApiComObject *GetApiComObject() {
  */
 void DestroyProgressDialog() {
     CWnd *const progressWnd = (CWnd *)g_pWestwoodOnlineUpgradeProgressDialog;
-    WestwoodOnlineUpgradeMfcWndVtable *const vftable =
-        (WestwoodOnlineUpgradeMfcWndVtable *)(*(void **)progressWnd);
-    vftable->DestroyWindow(
-        progressWnd,
-        0
-    );
+    progressWnd->DestroyWindow();
 }
 
 /**
@@ -214,8 +160,8 @@ void PumpInitialCallbacksUntilEvent(
     while (*waitResult == WAIT_TIMEOUT) {
         if (g_WestwoodOnlineUpgradeApiReadyFlag != 0 &&
             g_WestwoodOnlineUpgradeApiAsyncErrorFlag == 0) {
-            WestwoodOnlineUpgradeApiComObject *const api = GetApiComObject();
-            api->vftable->ProcessCallbacks((IUnknown *)api);
+            IWestwoodOnlineUpgradeApi *const api = GetApiComObject();
+            api->ProcessCallbacks();
         }
 
         Sleep(kCallbackSleepMs);
@@ -247,8 +193,8 @@ DWORD PumpBootstrapCallbacksUntilEvent() {
         kBootstrapWaitTimeoutMs
     );
     while (waitResult == WAIT_TIMEOUT) {
-        WestwoodOnlineUpgradeApiComObject *const api = GetApiComObject();
-        api->vftable->ProcessCallbacks((IUnknown *)api);
+        IWestwoodOnlineUpgradeApi *const api = GetApiComObject();
+        api->ProcessCallbacks();
         if (g_WestwoodOnlineUpgradeApiAsyncErrorFlag != 0) {
             break;
         }
@@ -357,9 +303,8 @@ int WestwoodOnlineUpgradeApi::Init() {
     g_pWestwoodOnlineUpgradeDialog->GetSelectedProfileConnectString(&connectString);
     g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName(&playerName);
 
-    WestwoodOnlineUpgradeApiComObject *apiCom = GetApiComObject();
-    apiCom->vftable->BeginConnect(
-        (IUnknown *)apiCom,
+    IWestwoodOnlineUpgradeApi *apiCom = GetApiComObject();
+    apiCom->BeginConnect(
         GetWolLanguageId(),
         kWolProductId,
         (const char *)playerName,
@@ -391,8 +336,7 @@ int WestwoodOnlineUpgradeApi::Init() {
     g_WestwoodOnlineUpgradeApiAsyncErrorFlag = 0;
 
     apiCom = GetApiComObject();
-    apiCom->vftable->RequestBootstrapServerList(
-        (IUnknown *)apiCom,
+    apiCom->RequestBootstrapServerList(
         &g_WestwoodOnlineUpgradeSelectedBootstrapServer,
         kWolBootstrapTimeoutSeconds,
         g_pWestwoodOnlineUpgradeDialog->m_selectedProfileConnectStringMode == 0 ? 1 : 0
@@ -412,8 +356,7 @@ int WestwoodOnlineUpgradeApi::Init() {
 
     if (waitResult != WAIT_OBJECT_0 + 2) {
         apiCom = GetApiComObject();
-        apiCom->vftable->RequestListMode(
-            (IUnknown *)apiCom,
+        apiCom->RequestListMode(
             kWolRequestListMode,
             1
         );

@@ -7358,10 +7358,10 @@ extern "C" int hud_sensor_tracker_load_objectives_from_path_smoke() {
     list.head = &node;
 
     zArchiveList *const oldMountedList = g_zArchive_MountedList;
-    zArchiveList *const oldMissionResourcePaths = g_zImage_MissionResourcePaths;
+    zArchiveList *const oldMissionSearchPathList = g_zImage_MissionSearchPathList;
     int *const oldNetwork = ZOPT_NETWORK_ENABLED;
     g_zArchive_MountedList = &list;
-    g_zImage_MissionResourcePaths = nullptr;
+    g_zImage_MissionSearchPathList = nullptr;
 
     std::int32_t networkEnabled = 0;
     ZOPT_NETWORK_ENABLED = &networkEnabled;
@@ -7397,12 +7397,12 @@ extern "C" int hud_sensor_tracker_load_objectives_from_path_smoke() {
         networkTracker.objectivesRootNode = nullptr;
     }
 
-    if (g_zImage_MissionResourcePaths != nullptr) {
-        zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionResourcePaths);
+    if (g_zImage_MissionSearchPathList != nullptr) {
+        zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionSearchPathList);
     }
 
     g_zArchive_MountedList = oldMountedList;
-    g_zImage_MissionResourcePaths = oldMissionResourcePaths;
+    g_zImage_MissionSearchPathList = oldMissionSearchPathList;
     ZOPT_NETWORK_ENABLED = oldNetwork;
     CloseHandle(file);
     DeleteFileA(tempPath);

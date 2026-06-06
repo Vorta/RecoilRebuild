@@ -24,22 +24,6 @@
 #include <time.h>
 
 namespace {
-template <
-    typename Function,
-    typename Method>
-Function MethodFunction(
-    Method method
-) {
-    RECOIL_STATIC_ASSERT(sizeof(method) <= sizeof(Function));
-    Function function = 0;
-    memcpy(
-        &function,
-        &method,
-        sizeof(method)
-    );
-    return function;
-}
-
 const int kPreparedScriptMagic = 0x08971119;
 const int kPreparedScriptVersion = 7;
 const double kDegreesToRadians = 0.01745329251994;
@@ -50,62 +34,16 @@ const char kTokenDelimiters[] = ", \t\n";
 char g_zInterp_MacroExpansionScratch[2048];
 } // namespace
 
-const int g_zInterp_Context_VTableMarker = 0;
 int g_zInterp_EnablePreparedScripts = 0;
 int g_zInterp_VerboseLevel = 0;
 char g_zInterp_LineBuffer[1024] = {0};
 char g_zInterp_AssignToken_Equal = '=';
 unsigned int g_zInterp_NodeUserDataScratch = 0;
 zDiPartial *g_zInterp_CurrentCycleTextureDi = 0;
-zInterp_Context g_zInterp_GlobalContext = {0};
+zInterp_GlobalContext g_zInterp_GlobalContext;
 char *g_zInterp_PreparedIndexFileName = g_zInterp_PreparedIndexFileNameText;
 
-const zInterp_Context_VTable g_zInterp_GlobalContext_VTable = {
-    MethodFunction<zInterp_DispatchHook>(&zInterp_Command::WeaponSetMaxTetherAltitude),
-    MethodFunction<zInterp_DispatchHook>(&zInterp_Context::ReportParseError),
-    MethodFunction<zInterp_DispatchHook>(&WestwoodOnlineUpgradeDownloadEventSink::CallbackNoOp),
-};
-
 namespace {
-struct zInterp_DefaultDispatchHooks {
-    int PreDispatch(char *commandToken);
-    int PostDispatch(char *commandToken);
-    int DeferredDispatch(char *commandToken);
-};
-
-int zInterp_DefaultDispatchHooks::PreDispatch(
-    char *
-) {
-    return 1;
-}
-
-int zInterp_DefaultDispatchHooks::PostDispatch(
-    char *
-) {
-    return 0;
-}
-
-int zInterp_DefaultDispatchHooks::DeferredDispatch(
-    char *
-) {
-    return 0;
-}
-
-const zInterp_Context_VTable g_zInterp_DefaultRuntimeVTable = {
-    MethodFunction<zInterp_DispatchHook>(&zInterp_DefaultDispatchHooks::PreDispatch),
-    MethodFunction<zInterp_DispatchHook>(&zInterp_DefaultDispatchHooks::PostDispatch),
-    MethodFunction<zInterp_DispatchHook>(&zInterp_DefaultDispatchHooks::DeferredDispatch),
-};
-
-const zInterp_Context_VTable *RuntimeVTable(
-    const zInterp_Context *ctx
-) {
-    if (ctx->vftable == 0 || ctx->vftable == &g_zInterp_Context_VTableMarker) {
-        return &g_zInterp_DefaultRuntimeVTable;
-    }
-    return (const zInterp_Context_VTable *)(ctx->vftable);
-}
-
 char *CurrentCommandToken(
     zInterp_Context *ctx
 ) {
@@ -139,6 +77,24 @@ int CommandHasPrefix(
     );
 }
 } // namespace
+
+int zInterp_Context::DispatchHook(
+    char *commandToken
+) {
+    return ReportParseError(commandToken);
+}
+
+int zInterp_Context::PostDispatchHook(
+    char *commandToken
+) {
+    return ReportParseError(commandToken);
+}
+
+int zInterp_Context::DeferredDispatchHook(
+    char *
+) {
+    return 0;
+}
 
 // Reimplements 0x4c58c0: zInterp_Context::DefaultDispatchHook
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
@@ -352,12 +308,12 @@ void zInterp_Context::ClearVarTable() {
     varCount = 0;
 }
 
-// Reimplements 0x414ad0: zInterp_Command::WeaponSetMaxTetherAltitude
+// Reimplements 0x414ad0: zInterp_GlobalContext::DispatchHook
 // (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
-int zInterp_Command::WeaponSetMaxTetherAltitude(
+int zInterp_GlobalContext::DispatchHook(
     char *commandToken
 ) {
-    zInterp_Context *const context = (zInterp_Context *)(this);
+    zInterp_Context *const context = this;
     if (commandToken[0] != 'W' ||
         context->tokenCount == 0 ||
         strcmp(
@@ -385,7 +341,6 @@ zInterp_Context * zInterp_Context::Constructor(
     scrollAlwaysListHead = head;
     scrollAlwaysListCount = 0;
 
-    vftable = &g_zInterp_Context_VTableMarker;
     includeDepth = 0;
 
     runtimeBlob = (zInterp_RuntimeBlob *)(malloc(sizeof(zInterp_RuntimeBlob)));
@@ -437,7 +392,6 @@ zInterp_Context * zInterp_GlobalContext::Constructor() {
         kGlobalContextSearchPath,
         g_zInterp_PreparedIndexFileName
     );
-    context->vftable = &g_zInterp_GlobalContext_VTable;
     return context;
 }
 
@@ -502,8 +456,6 @@ void zInterp_Context::Destroy() {
 // Reimplements 0x4c0e50: zInterp_Context::Destructor
 // (D:\Proj\GameZRecoil\zInterp\interp_context.c)
 void zInterp_Context::Destructor() {
-    vftable = &g_zInterp_Context_VTableMarker;
-
     Destroy();
 
     if (tempAlloc != 0) {
@@ -1201,19 +1153,12 @@ int zInterp_Context::RunStream(
     if (tokenCount != 0) {
         char *const commandToken = CurrentCommandToken(this);
         if (HandleBuiltinCommand(commandToken) != 0) {
-            const zInterp_Context_VTable *const table = RuntimeVTable(this);
             tokenReadIndex = 1;
-            if (table->preDispatch(
-                this,
-                commandToken
-            ) != 0) {
+            if (DispatchHook(commandToken) != 0) {
                 tokenReadIndex = 1;
                 DispatchCoreCommand(commandToken);
                 tokenReadIndex = 1;
-                table->postDispatch(
-                    this,
-                    commandToken
-                );
+                PostDispatchHook(commandToken);
                 if (errorCount == 3) {
                     Logf(
                         this,
@@ -1226,10 +1171,7 @@ int zInterp_Context::RunStream(
         }
 
         if (lineHadError != 0) {
-            RuntimeVTable(this)->deferredHook(
-                this,
-                commandToken
-            );
+            DeferredDispatchHook(commandToken);
         }
     }
 

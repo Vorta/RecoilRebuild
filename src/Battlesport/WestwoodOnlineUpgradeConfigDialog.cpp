@@ -6,7 +6,7 @@
 
 #include <string.h>
 
-// Access shim for imported MFC42 CDialog members; this does not reimplement
+// Provider-boundary accessor for imported MFC42 CDialog members; this does not reimplement
 // provider behavior.
 class CDialogProviderAccessor : public CDialog {
   public:
@@ -19,42 +19,52 @@ RECOIL_STATIC_ASSERT(sizeof(CDialog) == 0x60);
 RECOIL_STATIC_ASSERT(sizeof(CEdit) == 0x40);
 RECOIL_STATIC_ASSERT(sizeof(CComboBox) == 0x40);
 
-// Provider ABI shim for the WOL COM object slot used by this dialog. The
-// object is supplied by the WOL API provider; this source only names the
-// consumed table entry.
-struct WestwoodOnlineUpgradeApiConfigProfileVtable {
-    void *reserved000[36];
-    int(STDMETHODCALLTYPE *LoadConnectProfileStrings)(
-        IUnknown *self,
+struct IWestwoodOnlineUpgradeConfigProfileApi : IUnknown {
+    virtual void STDMETHODCALLTYPE Reserved0c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved10() = 0;
+    virtual void STDMETHODCALLTYPE Reserved14() = 0;
+    virtual void STDMETHODCALLTYPE Reserved18() = 0;
+    virtual void STDMETHODCALLTYPE Reserved1c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved20() = 0;
+    virtual void STDMETHODCALLTYPE Reserved24() = 0;
+    virtual void STDMETHODCALLTYPE Reserved28() = 0;
+    virtual void STDMETHODCALLTYPE Reserved2c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved30() = 0;
+    virtual void STDMETHODCALLTYPE Reserved34() = 0;
+    virtual void STDMETHODCALLTYPE Reserved38() = 0;
+    virtual void STDMETHODCALLTYPE Reserved3c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved40() = 0;
+    virtual void STDMETHODCALLTYPE Reserved44() = 0;
+    virtual void STDMETHODCALLTYPE Reserved48() = 0;
+    virtual void STDMETHODCALLTYPE Reserved4c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved50() = 0;
+    virtual void STDMETHODCALLTYPE Reserved54() = 0;
+    virtual void STDMETHODCALLTYPE Reserved58() = 0;
+    virtual void STDMETHODCALLTYPE Reserved5c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved60() = 0;
+    virtual void STDMETHODCALLTYPE Reserved64() = 0;
+    virtual void STDMETHODCALLTYPE Reserved68() = 0;
+    virtual void STDMETHODCALLTYPE Reserved6c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved70() = 0;
+    virtual void STDMETHODCALLTYPE Reserved74() = 0;
+    virtual void STDMETHODCALLTYPE Reserved78() = 0;
+    virtual void STDMETHODCALLTYPE Reserved7c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved80() = 0;
+    virtual void STDMETHODCALLTYPE Reserved84() = 0;
+    virtual void STDMETHODCALLTYPE Reserved88() = 0;
+    virtual void STDMETHODCALLTYPE Reserved8c() = 0;
+    virtual int STDMETHODCALLTYPE LoadConnectProfileStrings(
         int profileId,
         char **playerNameOut,
         char **connectStringOut
-    );
-    int(STDMETHODCALLTYPE *SaveConnectProfileStrings)(
-        IUnknown *self,
+    ) = 0;
+    virtual int STDMETHODCALLTYPE SaveConnectProfileStrings(
         int profileId,
         const char *playerName,
         const char *connectString,
         int connectStringMode
-    );
+    ) = 0;
 };
-
-struct WestwoodOnlineUpgradeApiConfigProfileProvider {
-    WestwoodOnlineUpgradeApiConfigProfileVtable *vftable;
-};
-
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeApiConfigProfileVtable,
-        LoadConnectProfileStrings
-    ) == 0x90
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeApiConfigProfileVtable,
-        SaveConnectProfileStrings
-    ) == 0x94
-);
 
 void __stdcall DDX_Control(
     CDataExchange *dataExchange,
@@ -71,9 +81,6 @@ void __stdcall DDX_Check(
     int controlId,
     int &value
 );
-
-const RecoilNamedVtable kWestwoodOnlineUpgradeConfigDialog_Vtable = {
-    "WestwoodOnlineUpgradeConfigDialog vtable"};
 
 namespace {
 const UINT kWestwoodOnlineUpgradeConfigDialogResourceId = 156;
@@ -234,13 +241,12 @@ void WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditKillFocus() {
 BOOL WestwoodOnlineUpgradeConfigDialog::OnInitDialog() {
     ((CDialog *)this)->CDialog::OnInitDialog();
 
-    WestwoodOnlineUpgradeApiConfigProfileProvider *const api =
-        (WestwoodOnlineUpgradeApiConfigProfileProvider *)g_pWestwoodOnlineUpgradeApi;
+    IWestwoodOnlineUpgradeConfigProfileApi *const api =
+        (IWestwoodOnlineUpgradeConfigProfileApi *)g_pWestwoodOnlineUpgradeApi;
     char *playerName = 0;
     char *connectString = 0;
 
-    if (api->vftable->LoadConnectProfileStrings((IUnknown *)api, 1, &playerName, &connectString) !=
-        0) {
+    if (api->LoadConnectProfileStrings(1, &playerName, &connectString) != 0) {
         playerName = (char *)kEmptyString;
         connectString = (char *)kEmptyString;
     }
@@ -268,8 +274,7 @@ BOOL WestwoodOnlineUpgradeConfigDialog::OnInitDialog() {
         0
     );
 
-    if (api->vftable->LoadConnectProfileStrings((IUnknown *)api, 2, &playerName, &connectString) !=
-        0) {
+    if (api->LoadConnectProfileStrings(2, &playerName, &connectString) != 0) {
         playerName = (char *)kEmptyString;
         connectString = (char *)kEmptyString;
     }
@@ -313,34 +318,30 @@ BOOL WestwoodOnlineUpgradeConfigDialog::OnInitDialog() {
 // Reimplements 0x441f40: WestwoodOnlineUpgradeConfigDialog::OnOK
 // (D:\Proj\GameZRecoil\westwoodonline\WolapiConfigDialog.cpp)
 void WestwoodOnlineUpgradeConfigDialog::OnOK() {
-    WestwoodOnlineUpgradeApiConfigProfileProvider *const api =
-        (WestwoodOnlineUpgradeApiConfigProfileProvider *)g_pWestwoodOnlineUpgradeApi;
+    IWestwoodOnlineUpgradeConfigProfileApi *const api =
+        (IWestwoodOnlineUpgradeConfigProfileApi *)g_pWestwoodOnlineUpgradeApi;
 
     if (m_wolPasswordFlag == 0) {
-        api->vftable->SaveConnectProfileStrings(
-            (IUnknown *)api,
+        api->SaveConnectProfileStrings(
             1,
             (const char *)m_profilePlayerNames[0],
             kEmptyString,
             0
         );
-        api->vftable->SaveConnectProfileStrings(
-            (IUnknown *)api,
+        api->SaveConnectProfileStrings(
             2,
             (const char *)m_profilePlayerNames[1],
             kEmptyString,
             0
         );
     } else {
-        api->vftable->SaveConnectProfileStrings(
-            (IUnknown *)api,
+        api->SaveConnectProfileStrings(
             1,
             (const char *)m_profilePlayerNames[0],
             (const char *)m_profileConnectStrings[0],
             m_profileConnectStringModes[0] == 0
         );
-        api->vftable->SaveConnectProfileStrings(
-            (IUnknown *)api,
+        api->SaveConnectProfileStrings(
             2,
             (const char *)m_profilePlayerNames[1],
             (const char *)m_profileConnectStrings[1],

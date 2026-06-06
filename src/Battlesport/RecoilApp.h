@@ -8,21 +8,6 @@
 #include "recoil/recoil_callconv.h"
 
 typedef recoil::Ptr32 RecoilPtr32;
-typedef recoil::Fn32 RecoilFn32;
-
-/**
- * No standalone retail function; treated as an original inline helper for
- * ABI-table smoke tests and transitional state wrappers to compare symbol
- * addresses through the recovered 32-bit pointer representation.
- *
- * Purpose: preserve the original x86 pointer-width contract at call sites
- * that still store table identities as recovered 32-bit values.
- */
-inline RecoilPtr32 RecoilSymbolPtr32(
-    const void *symbol
-) {
-    return (RecoilPtr32)((unsigned int)(symbol));
-}
 
 // App-owned state transition request queued by RecoilApp::Run.
 enum RecoilApp_StateQueueKind {
@@ -35,24 +20,6 @@ enum RecoilAppMissionShutdownMode {
     RECOILAPP_MISSION_SHUTDOWN_ON_EXIT = 0,
     RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY = 1,
 };
-
-// Compatibility table for app-state wrappers that have not yet been promoted
-// to ordinary virtual classes. The RecoilApp owner no longer uses these tables.
-struct RecoilApp_IState_Vtbl {
-    RecoilFn32 ScalarDeletingDtor;
-    RecoilFn32 OnWndActivate;
-    RecoilFn32 OnEnter;
-    RecoilFn32 OnCanBecomeCurrent;
-    RecoilFn32 OnUpdateShouldQuit;
-    RecoilFn32 OnExit;
-    RecoilFn32 OnDeactivate;
-    RecoilFn32 OnSuspend;
-    RecoilFn32 OnResume;
-    RecoilFn32 OnIdleOrDispatch;
-};
-RECOIL_STATIC_ASSERT(sizeof(RecoilApp_IState_Vtbl) == 0x28);
-
-extern RecoilApp_IState_Vtbl g_RecoilStateBase_Vtbl;
 
 // Authored app-state interface. Retail evidence shows constructor-owned state
 // objects with a common vptr at offset zero and lifecycle calls through that
@@ -282,9 +249,9 @@ RECOIL_STATIC_ASSERT(sizeof(RecoilApp_MpExitDialogState) == 0x08);
 struct CZRecoilFrame;
 struct tagMSG;
 
-// Authored MFC app shell recovered from the message map, constructor,
-// destructor, and run-state host. MFC base behavior stays provider-owned.
-class RecoilApp : public CWinApp {
+// Authored MFC/OLE app shell recovered from the constructor/destructor pair at
+// 0x442c70/0x4428b0. MFC base behavior stays provider-owned.
+class RecoilApp_MfcOleModule : public CWinApp {
   public:
 #if !defined(_AFXDLL)
     int m_recoilPad;
@@ -297,6 +264,15 @@ class RecoilApp : public CWinApp {
     RecoilApp_IState *m_stateStack[16];
     RecoilApp_StateQueue m_stateQueue;
     int m_reserved148;
+
+    RecoilApp_MfcOleModule();
+    virtual ~RecoilApp_MfcOleModule();
+};
+
+// Authored MFC app shell recovered from the message map, constructor,
+// destructor, and run-state host.
+class RecoilApp : public RecoilApp_MfcOleModule {
+  public:
     int m_skipIntroFmv;
     float m_transitionFadeTimer;
     int m_transitionReserved[3];
@@ -356,6 +332,31 @@ class RecoilApp : public CWinApp {
     int MarkSkipWaitMessage();
 };
 #if defined(_MSC_VER) && _MSC_VER < 1300 && defined(_M_IX86)
+RECOIL_STATIC_ASSERT(sizeof(RecoilApp_MfcOleModule) == 0x14c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        RecoilApp_MfcOleModule,
+        m_pendingState
+    ) == 0x0c4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        RecoilApp_MfcOleModule,
+        m_currentStateIndex
+    ) == 0x0c8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        RecoilApp_MfcOleModule,
+        m_stateStack
+    ) == 0x0d8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        RecoilApp_MfcOleModule,
+        m_stateQueue
+    ) == 0x118
+);
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp) == 0x228);
 RECOIL_STATIC_ASSERT(
     offsetof(

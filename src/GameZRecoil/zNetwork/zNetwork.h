@@ -3,12 +3,14 @@
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 
+#include <dplay.h>
+
 #include "recoil/recoil_callconv.h"
 
 struct zArchiveList;
-struct zNetwork_DPlay4;
 struct IDirectPlayLobby3;
 typedef IDirectPlayLobby3 IDirectPlayLobby3A;
+typedef IDirectPlay4A zNetwork_DPlay4;
 struct zNetworkDPlayName;
 struct zNetworkDPlayCaps;
 struct zNetworkDPlaySessionDesc;
@@ -47,189 +49,6 @@ struct zNetworkDPlayName {
     char *shortName;
     char *longName;
 };
-
-struct zNetwork_DPlay4Vtable {
-    void *reserved_00[2];
-    int(__stdcall *Release_08)(zNetwork_DPlay4 *self);
-    void *reserved_0c;
-    int(__stdcall *Close_10)(zNetwork_DPlay4 *self);
-    void *reserved_14;
-    int(__stdcall *CreatePlayer_18)(
-        zNetwork_DPlay4 *self,
-        unsigned int *playerId,
-        zNetworkDPlayName *playerNameInfo,
-        void *eventHandle,
-        void *data,
-        unsigned int dataSize,
-        unsigned int flags
-    );
-    void *reserved_1c[2];
-    int(__stdcall *DestroyPlayer_24)(
-        zNetwork_DPlay4 *self,
-        unsigned int playerKey
-    );
-    void *reserved_28[2];
-    int(__stdcall *EnumPlayers_30)(
-        zNetwork_DPlay4 *self,
-        void *sessionGuid,
-        zNetworkDPlayEnumPlayersCallback callback,
-        void *context,
-        unsigned int flags
-    );
-    int(__stdcall *EnumSessions_34)(
-        zNetwork_DPlay4 *self,
-        zNetworkDPlaySessionDesc *sessionDesc,
-        unsigned int timeoutMs,
-        zNetworkDPlayEnumSessionsCallback callback,
-        void *context,
-        unsigned int flags
-    );
-    int(__stdcall *GetCaps_38)(
-        zNetwork_DPlay4 *self,
-        zNetworkDPlayCaps *caps,
-        unsigned int flags
-    );
-    void *reserved_3c[4];
-    int(__stdcall *GetPlayerCaps_4c)(
-        zNetwork_DPlay4 *self,
-        unsigned int playerId,
-        zNetworkDPlayCaps *caps,
-        unsigned int flags
-    );
-    void *reserved_50[3];
-    void *reserved_5c;
-    int(__stdcall *Open_60)(
-        zNetwork_DPlay4 *self,
-        zNetworkDPlaySessionDesc *sessionDesc,
-        unsigned int flags
-    );
-    int(__stdcall *Receive_64)(
-        zNetwork_DPlay4 *self,
-        unsigned int *fromPlayer,
-        unsigned int *toPlayer,
-        unsigned int flags,
-        void *packet,
-        unsigned int *packetSizeBytes
-    );
-    int(__stdcall *Send_68)(
-        zNetwork_DPlay4 *self,
-        unsigned int fromPlayer,
-        unsigned int toPlayer,
-        unsigned int flags,
-        void *packet,
-        unsigned int packetSizeBytes
-    );
-    void *reserved_6c[4];
-    int(__stdcall *SetSessionDesc_7c)(
-        zNetwork_DPlay4 *self,
-        zNetworkDPlaySessionDesc *sessionDesc,
-        unsigned int flags
-    );
-    void *reserved_80[3];
-    int(__stdcall *EnumConnections_8c)(
-        zNetwork_DPlay4 *self,
-        unsigned char *applicationGuid,
-        zNetworkDPlayEnumConnectionsCallback callback,
-        void *context,
-        unsigned int flags
-    );
-    void *reserved_90[2];
-    int(__stdcall *InitializeConnection_98)(
-        zNetwork_DPlay4 *self,
-        void *connectionData,
-        unsigned int flags
-    );
-    void *reserved_9c[10];
-    int(__stdcall *SendEx_c4)(
-        zNetwork_DPlay4 *self,
-        unsigned int fromPlayer,
-        unsigned int toPlayer,
-        unsigned int flags,
-        void *packet,
-        unsigned int packetSizeBytes,
-        unsigned int priority,
-        unsigned int timeout,
-        void *context,
-        unsigned int *asyncHandle
-    );
-    void *reserved_c8[1];
-    int(__stdcall *CancelMessage_cc)(
-        zNetwork_DPlay4 *self,
-        unsigned int asyncHandle,
-        unsigned int flags
-    );
-};
-
-struct zNetwork_DPlay4 {
-    const zNetwork_DPlay4Vtable *vtbl_00;
-};
-
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zNetwork_DPlay4Vtable,
-        Release_08
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zNetwork_DPlay4Vtable,
-        Close_10
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zNetwork_DPlay4Vtable,
-        CreatePlayer_18
-    ) == 0x18
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zNetwork_DPlay4Vtable,
-        DestroyPlayer_24
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zNetwork_DPlay4Vtable,
-        GetCaps_38
-    ) == 0x38
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zNetwork_DPlay4Vtable,
-        GetPlayerCaps_4c
-    ) == 0x4c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zNetwork_DPlay4Vtable,
-        Open_60
-    ) == 0x60
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zNetwork_DPlay4Vtable,
-        Send_68
-    ) == 0x68
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zNetwork_DPlay4Vtable,
-        SetSessionDesc_7c
-    ) == 0x7c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zNetwork_DPlay4Vtable,
-        EnumConnections_8c
-    ) == 0x8c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zNetwork_DPlay4Vtable,
-        InitializeConnection_98
-    ) == 0x98
-);
 
 struct zNetworkDPlayCaps {
     int size;
@@ -618,12 +437,6 @@ RECOIL_STATIC_ASSERT(
         zNetworkDPlayCaps,
         flags
     ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zNetwork_DPlay4Vtable,
-        EnumSessions_34
-    ) == 0x34
 );
 RECOIL_STATIC_ASSERT(sizeof(zNetworkDPlaySessionDesc) == 0x50);
 RECOIL_STATIC_ASSERT(

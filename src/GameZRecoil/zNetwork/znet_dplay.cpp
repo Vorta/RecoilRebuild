@@ -337,12 +337,8 @@ extern "C" int __fastcall zNetwork_ApplyStatusFieldsToSessionDesc(
         strlen(statusFields->sessionNameBuf) + 1
     );
 
-    const int hresult = g_zNetwork_pDirectPlay4->vtbl_00
-                            ->SetSessionDesc_7c(
-                                g_zNetwork_pDirectPlay4,
-                                sessionDesc,
-                                0
-                            );
+    const int hresult =
+        g_zNetwork_pDirectPlay4->SetSessionDesc((LPDPSESSIONDESC2)sessionDesc, 0);
     if (hresult < 0) {
         return 0;
     }
@@ -386,8 +382,7 @@ extern "C" int __fastcall zNetwork_DPlay_SendUnreliable(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes
 ) {
-    const int hresult = g_zNetwork_pDirectPlay4->vtbl_00->Send_68(
-        g_zNetwork_pDirectPlay4,
+    const int hresult = g_zNetwork_pDirectPlay4->Send(
         g_zNetwork_LocalPlayerRecord->playerKey,
         0,
         0,
@@ -410,8 +405,7 @@ extern "C" int __fastcall zNetwork_DPlay_SendReliable(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes
 ) {
-    const int hresult = g_zNetwork_pDirectPlay4->vtbl_00->Send_68(
-        g_zNetwork_pDirectPlay4,
+    const int hresult = g_zNetwork_pDirectPlay4->Send(
         g_zNetwork_LocalPlayerRecord->playerKey,
         0,
         1,
@@ -439,19 +433,16 @@ extern "C" int __fastcall zNetwork_DPlay_SendExUnreliableTracked(
     if (packet->packetType == 6) {
         flags = 0x200;
         if (g_zNetwork_LastSendExCompleted == 0) {
-            g_zNetwork_pDirectPlay4->vtbl_00
-                ->CancelMessage_cc(
-                    g_zNetwork_pDirectPlay4,
-                    g_zNetwork_LastSendExHandle,
-                    0
-                );
+            g_zNetwork_pDirectPlay4->CancelMessage(
+                g_zNetwork_LastSendExHandle,
+                0
+            );
         } else {
             g_zNetwork_LastSendExCompleted = 0;
         }
     }
 
-    const int hresult = g_zNetwork_pDirectPlay4->vtbl_00->SendEx_c4(
-        g_zNetwork_pDirectPlay4,
+    const int hresult = g_zNetwork_pDirectPlay4->SendEx(
         g_zNetwork_LocalPlayerRecord->playerKey,
         0,
         flags,
@@ -460,7 +451,7 @@ extern "C" int __fastcall zNetwork_DPlay_SendExUnreliableTracked(
         0,
         0,
         0,
-        &g_zNetwork_LastSendExHandle
+        (LPDWORD)&g_zNetwork_LastSendExHandle
     );
     if (hresult != kDPlayPending && hresult < 0) {
         return zNetwork_DPlay_ReportError(
@@ -480,8 +471,7 @@ extern "C" int __fastcall zNetwork_DPlay_SendExReliable(
     unsigned int packetSizeBytes
 ) {
     unsigned int asyncHandle = 0;
-    const int hresult = g_zNetwork_pDirectPlay4->vtbl_00->SendEx_c4(
-        g_zNetwork_pDirectPlay4,
+    const int hresult = g_zNetwork_pDirectPlay4->SendEx(
         g_zNetwork_LocalPlayerRecord->playerKey,
         0,
         0x601,
@@ -490,7 +480,7 @@ extern "C" int __fastcall zNetwork_DPlay_SendExReliable(
         0,
         0,
         0,
-        &asyncHandle
+        (LPDWORD)&asyncHandle
     );
     if (hresult != kDPlayPending && hresult < 0) {
         return zNetwork_DPlay_ReportError(
@@ -573,10 +563,7 @@ extern "C" int zNetwork_DPlay_DestroyCachedLocalPlayer() {
     }
 
     zNetwork_DPlay4 *directPlay = g_zNetwork_pDirectPlay4;
-    const int hresult = directPlay->vtbl_00->DestroyPlayer_24(
-        directPlay,
-        localPlayer->playerKey
-    );
+    const int hresult = directPlay->DestroyPlayer(localPlayer->playerKey);
     if (hresult < 0) {
         return zNetwork_DPlay_ReportError(
             hresult,
@@ -717,10 +704,10 @@ int RefreshServiceProviderList() {
     zNetwork::ClearServiceProviderList();
 
     zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
-    const int hresult = directPlay->vtbl_00->EnumConnections_8c(
-        directPlay,
-        g_zNetwork_AppGuid,
-        zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo,
+    const int hresult = directPlay->EnumConnections(
+        (LPCGUID)g_zNetwork_AppGuid,
+        (LPDPENUMCONNECTIONSCALLBACK)
+            zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo,
         g_RecoilApp_hWndMain,
         0
     );
@@ -792,12 +779,10 @@ int __fastcall InitializeConnectionFromProviderInfo(
 ) {
     const int kDPlayUserCancel = (int)(0x88770118);
     zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
-    const int hresult =
-        directPlay->vtbl_00->InitializeConnection_98(
-            directPlay,
-            providerInfo->connectionData,
-            0
-        );
+    const int hresult = directPlay->InitializeConnection(
+        providerInfo->connectionData,
+        0
+    );
 
     if (hresult >= 0) {
         return 1;
@@ -883,11 +868,7 @@ int __stdcall EnumSessionCallback_AddSessionDescCache(
 int QueryCapsAndConfigureSendMode() {
     zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
     g_zNetwork_DPlayCaps.size = sizeof(zNetworkDPlayCaps);
-    const int hresult = directPlay->vtbl_00->GetCaps_38(
-        directPlay,
-        &g_zNetwork_DPlayCaps,
-        1
-    );
+    const int hresult = directPlay->GetCaps((LPDPCAPS)&g_zNetwork_DPlayCaps, 1);
     if (hresult < 0) {
         fprintf(
             stderr,
@@ -1114,13 +1095,12 @@ int __fastcall ReceivePendingMessages(
         unsigned int receiveBufferCapacity = g_zNetwork_ReceiveBufferCapacity;
         unsigned int fromPlayer = 0;
         unsigned int toPlayer = 0;
-        const int hresult = g_zNetwork_pDirectPlay4->vtbl_00->Receive_64(
-            g_zNetwork_pDirectPlay4,
-            &fromPlayer,
-            &toPlayer,
+        const int hresult = g_zNetwork_pDirectPlay4->Receive(
+            (LPDPID)&fromPlayer,
+            (LPDPID)&toPlayer,
             1,
             g_zNetwork_ReceiveBuffer,
-            &receiveBufferCapacity
+            (LPDWORD)&receiveBufferCapacity
         );
 
         if (hresult == kDPlayBufferTooSmall) {
@@ -1231,11 +1211,11 @@ int EnumSessions() {
         sizeof(desc.appGuid)
     );
 
-    const int hresult = directPlay->vtbl_00->EnumSessions_34(
-        directPlay,
-        &desc,
+    const int hresult = directPlay->EnumSessions(
+        (LPDPSESSIONDESC2)&desc,
         0,
-        zNetworkDPlay::EnumSessionCallback_AddSessionDescCache,
+        (LPDPENUMSESSIONSCALLBACK2)
+            zNetworkDPlay::EnumSessionCallback_AddSessionDescCache,
         0,
         2
     );
@@ -1257,10 +1237,10 @@ int EnumSessions() {
 // Reimplements 0x48a310: zNetwork_DPlay::EnumPlayers
 int EnumPlayers() {
     zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
-    const int hresult = directPlay->vtbl_00->EnumPlayers_30(
-        directPlay,
+    const int hresult = directPlay->EnumPlayers(
         0,
-        zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord,
+        (LPDPENUMPLAYERSCALLBACK2)
+            zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord,
         0,
         0
     );
@@ -1316,11 +1296,10 @@ int __fastcall CreateLocalPlayerRecordAndRegister(
     );
 
     zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
-    const int createResult = directPlay->vtbl_00->CreatePlayer_18(
-        directPlay,
-        &localPlayerRecord->playerKey,
-        &localPlayerRecord->playerNameInfo,
-        localPlayerRecord->createPlayerEventHandle,
+    const int createResult = directPlay->CreatePlayer(
+        (LPDPID)&localPlayerRecord->playerKey,
+        (LPDPNAME)&localPlayerRecord->playerNameInfo,
+        (HANDLE)localPlayerRecord->createPlayerEventHandle,
         0,
         0,
         0
@@ -1371,10 +1350,9 @@ int __fastcall CreateLocalPlayerRecordAndRegister(
         sizeof(zNetworkDPlayCaps)
     );
     localPlayerRecord->playerCaps.size = sizeof(zNetworkDPlayCaps);
-    const int capsResult = directPlay->vtbl_00->GetPlayerCaps_4c(
-        directPlay,
+    const int capsResult = directPlay->GetPlayerCaps(
         localPlayerRecord->playerKey,
-        &localPlayerRecord->playerCaps,
+        (LPDPCAPS)&localPlayerRecord->playerCaps,
         0
     );
     g_zNetwork_IsHostFlag = localPlayerRecord->playerCaps.flags & 2;
@@ -1448,9 +1426,8 @@ int __fastcall CreateSessionFromStatusFields(
     cache->desc.sessionName = _strdup(g_zNetwork_SessionNameCache);
 
     zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
-    const int hresult = directPlay->vtbl_00->Open_60(
-        directPlay,
-        &cache->desc,
+    const int hresult = directPlay->Open(
+        (LPDPSESSIONDESC2)&cache->desc,
         2
     );
     if (hresult == (int)(0x88770118)) {
@@ -1466,7 +1443,7 @@ int __fastcall CreateSessionFromStatusFields(
     }
 
     if (zNetworkDPlay::QueryCapsAndConfigureSendMode() == 0) {
-        directPlay->vtbl_00->Close_10(directPlay);
+        directPlay->Close();
         return 0;
     }
 
@@ -1499,9 +1476,8 @@ int __fastcall OpenSelectedSessionAndReadStatusFields(
     sessionCache->desc.size = sizeof(zNetworkDPlaySessionDesc);
 
     zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
-    const int openResult = directPlay->vtbl_00->Open_60(
-        directPlay,
-        &sessionCache->desc,
+    const int openResult = directPlay->Open(
+        (LPDPSESSIONDESC2)&sessionCache->desc,
         1
     );
     if (openResult < 0) {
@@ -1509,7 +1485,7 @@ int __fastcall OpenSelectedSessionAndReadStatusFields(
     }
 
     if (QueryCapsAndConfigureSendMode() == 0) {
-        directPlay->vtbl_00->Close_10(directPlay);
+        directPlay->Close();
         return 0;
     }
 
@@ -1665,11 +1641,11 @@ int EnumSessionsForCurrentApp() {
         g_zNetwork_AppGuid,
         sizeof(desc.appGuid)
     );
-    return directPlay->vtbl_00->EnumSessions_34(
-        directPlay,
-        &desc,
+    return directPlay->EnumSessions(
+        (LPDPSESSIONDESC2)&desc,
         0,
-        zNetworkDPlay::EnumSessionCallback_AddSessionDescCache,
+        (LPDPENUMSESSIONSCALLBACK2)
+            zNetworkDPlay::EnumSessionCallback_AddSessionDescCache,
         0,
         0x82
     );
@@ -1804,8 +1780,8 @@ int __fastcall CloseReleaseAndCoUninitialize(
 ) {
     int releaseRefCount = 0;
     if (directPlay4 != 0) {
-        directPlay4->vtbl_00->Close_10(directPlay4);
-        releaseRefCount = directPlay4->vtbl_00->Release_08(directPlay4);
+        directPlay4->Close();
+        releaseRefCount = directPlay4->Release();
     }
 
     CoUninitialize();

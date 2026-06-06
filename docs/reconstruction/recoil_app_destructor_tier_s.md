@@ -254,7 +254,7 @@ without adding unrelated synthetic locals or catch handling.
   EH family, but added `sub esp, 8`, saved `ebx`, and stored a temporary
   pointer before each FMV cleanup so EH could run the inlined member base
   destructor. Retail keeps only the parent `this` slot, uses `edi` for
-  `g_RecoilStateBase_Vtbl`, and has no per-FMV temporary pointer slots in the
+  the base `RecoilApp_IState` vtable constant, and has no per-FMV temporary pointer slots in the
   normal body. A profile sweep of the same source shape also failed:
   `vc5_o2_ob0_facs` produced 128 mismatches with a 96-byte non-EH body,
   `vc5_o2_ob1_facs` returned to the 146-mismatch non-EH baseline, and

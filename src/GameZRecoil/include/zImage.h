@@ -49,7 +49,7 @@ struct zImage_Font {
 };
 
 extern "C" {
-extern zArchiveList *g_zImage_MissionResourcePaths;
+extern zArchiveList *g_zImage_MissionSearchPathList;
 extern int g_zImage_TexDirEntryCount;
 extern zImage_TexDirEntryPartial g_zImage_TexDirEntries[0x1000];
 extern zImage_Font *g_zImage_FontTable[20];

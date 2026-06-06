@@ -82,13 +82,13 @@ void RecoilStateMainMenuTransition::OnDeactivate() {
     if (m_mainMenuDialog != 0) {
         zVideo::RunPostprocessOnPrimaryBuffer();
 
-        HudUiMainMenuDialog *dialog = (HudUiMainMenuDialog *)(unsigned int)m_mainMenuDialog;
+        HudUiMainMenuDialog *dialog = m_mainMenuDialog;
         dialog->SetEnabled(0);
 
-        ((HudUiDialogController *)(unsigned int)m_mainMenuDialog)->BlitOwnedSurfaceToPrimary();
+        ((HudUiDialogController *)m_mainMenuDialog)->BlitOwnedSurfaceToPrimary();
         zVideo::Dispatch_UnlockPrimarySurfaceState();
 
-        dialog = (HudUiMainMenuDialog *)(unsigned int)m_mainMenuDialog;
+        dialog = m_mainMenuDialog;
         if (dialog != 0) {
             delete dialog;
         }

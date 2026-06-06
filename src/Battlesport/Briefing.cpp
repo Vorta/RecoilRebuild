@@ -13,295 +13,15 @@
 #include <windows.h>
 
 #include "recoil/recoil_types.h"
+#include <new>
 #include <process.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 
 namespace {
-typedef void( *BriefingSetNormalizedValue)(
-    void *self,
-    float value
-);
-
-typedef void( *HudVirtualNoArg)(void *self);
-typedef void( *HudVirtualSetVisible)(
-    void *self,
-    int visible
-);
-typedef void(*HudPanelSetTextFmt)(
-    void *self,
-    const char *format,
-    ...
-);
-
-template <typename Method>
-unsigned int MethodAddress(
-    Method method
-) {
-    RECOIL_STATIC_ASSERT(sizeof(method) <= sizeof(unsigned int));
-    unsigned int address = 0;
-    memcpy(
-        &address,
-        &method,
-        sizeof(method)
-    );
-    return address;
-}
-
-template <typename FTable> FTable MakeBriefingHudUiFTableWithCommonSlots() {
-    FTable table = {0};
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 2) {
-        table.slots[2] = MethodAddress(&HudUiElement::DrawBase);
-    }
-
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 8) {
-        table.slots[8] = MethodAddress(&HudUiElement::Invalidate);
-    }
-
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 3) {
-        table.slots[3] = MethodAddress(&HudUiElement::SetPos);
-    }
-
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 4) {
-        table.slots[4] = MethodAddress(&HudUiElement::SetX);
-    }
-
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 5) {
-        table.slots[5] = MethodAddress(&HudUiElement::SetY);
-    }
-
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 6) {
-        table.slots[6] = MethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    }
-
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 7) {
-        table.slots[7] = MethodAddress(&HudUiElement::SetClipRect);
-    }
-
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 24) {
-        table.slots[24] = MethodAddress(&HudUiElement::SetVisible);
-    }
-
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 25) {
-        table.slots[25] = MethodAddress(&HudUiElement::GetX);
-    }
-
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 26) {
-        table.slots[26] = MethodAddress(&HudUiElement::GetY);
-    }
-
-    return table;
-}
-
-struct HudUiBriefingLocatorPanel {
-    HudUiCircle base;
-
-    HudUiBriefingLocatorPanel * Constructor();
-    void BlitDirtyRect();
-    void Update(float deltaSec);
-};
-
-struct HudUiBriefingObjectivePicture {
-    HudUiWidget base;
-    float noiseAlpha;
-
-    void DrawWithNoiseOverlay();
-};
-
-struct HudUiBriefingObjectivePicture_FTable {
-    unsigned int slots[30];
-};
-
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiBriefingObjectivePicture,
-        noiseAlpha
-    ) == 0xbc
-);
-RECOIL_STATIC_ASSERT(sizeof(HudUiBriefingObjectivePicture_FTable) == 0x78);
-
-HudUiCommon_FTable MakeBriefingLocatorPanelFTable() {
-    HudUiCommon_FTable table = MakeBriefingHudUiFTableWithCommonSlots<HudUiCommon_FTable>();
-    table.slots[1] = MethodAddress(&HudUiCircle::DrawDirtyForwarder);
-    table.slots[2] = MethodAddress(&HudUiBriefingLocatorPanel::BlitDirtyRect);
-    table.slots[9] = MethodAddress(&HudUiBriefingLocatorPanel::Update);
-    return table;
-}
-
-HudUiBriefingObjectivePicture_FTable MakeBriefingObjectivePictureFTable() {
-    HudUiBriefingObjectivePicture_FTable table =
-        MakeBriefingHudUiFTableWithCommonSlots<HudUiBriefingObjectivePicture_FTable>();
-    table.slots[1] = MethodAddress(&HudUiBriefingObjectivePicture::DrawWithNoiseOverlay);
-    table.slots[25] = MethodAddress(&HudUiWidget::GetCenterX);
-    table.slots[26] = MethodAddress(&HudUiWidget::GetCenterY);
-    return table;
-}
-
-HudUiFillBitmap_FTable MakeBriefingTransportProgressFTable() {
-    HudUiFillBitmap_FTable table = MakeBriefingHudUiFTableWithCommonSlots<HudUiFillBitmap_FTable>();
-    table.slots[0x84 / 4] = MethodAddress(&HudUiFillBitmap::SetNormalizedValueAndRebuild);
-    return table;
-}
-
-HudUiBriefingRuntimeVtable MakeBriefingRuntimeFTable() {
-    HudUiBriefingRuntimeVtable table = {0};
-    table.Update = (HudUiBriefingRuntimeUpdate)(MethodAddress(&HudUiBriefingRuntime::Update));
-    table.SetEnabled =
-        (HudUiBriefingRuntimeSetEnabled)(MethodAddress(&HudUiBackground::SetEnabled));
-    table.ScalarDeletingDtor = (HudUiBriefingRuntimeScalarDeletingDestructor)(MethodAddress(
-        &HudUiBriefingRuntime::ScalarDeletingDestructor
-    ));
-    return table;
-}
-
-const HudUiCommon_FTable g_HudUiBriefingLocatorPanel_Vtbl = MakeBriefingLocatorPanelFTable();
-const HudUiBriefingObjectivePicture_FTable g_HudUiBriefingObjectivePicture_Vtbl =
-    MakeBriefingObjectivePictureFTable();
-const HudUiFillBitmap_FTable g_HudUiBriefingTransportProgress_Vtbl =
-    MakeBriefingTransportProgressFTable();
-const HudUiBriefingRuntimeVtable g_HudUiBriefingRuntime_Vtbl = MakeBriefingRuntimeFTable();
-
-struct BriefingAction {
-    virtual int Tick(float deltaSec) = 0;
-};
-
-struct BriefingActionNode {
-    BriefingActionNode *prev;
-    BriefingActionNode *next;
-    BriefingAction *action;
-};
-
-struct Briefing_ActionQueue {
-    int missionId;
-    BriefingActionNode *headSentinel;
-    int nodeCount;
-    BriefingActionNode *currentNode;
-    int sequenceActive;
-
-    int InsertAction(BriefingAction *action);
-    int AddHideElement(void *element);
-    int AddShowElement(void *element);
-    int AddFadeInElement(void *element);
-    int AddSetPanelText(
-        const char *text,
-        void *panel
-    );
-    int AddSetWidgetImageTimed(
-        zVidImagePartial *imageRef,
-        HudUiWidget *widget
-    );
-    int AddPlaySampleByName(
-        const char *sampleName,
-        float gain,
-        int useVariant,
-        int progressId
-    );
-    int AddDelayUntilProgress(int progressId);
-};
-
-RECOIL_STATIC_ASSERT(sizeof(BriefingActionNode) == 0x0c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        Briefing_ActionQueue,
-        headSentinel
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        Briefing_ActionQueue,
-        nodeCount
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        Briefing_ActionQueue,
-        currentNode
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        Briefing_ActionQueue,
-        sequenceActive
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(sizeof(Briefing_ActionQueue) == 0x14);
-
-struct HudUiBriefingPanelStorage {
-    unsigned char storage[0x2a4];
-};
-
-struct HudUiBriefingRuntimeLayout {
-    HudUiBackground base;
-    Briefing_ActionQueue actionQueue;
-    HudUiFillBitmap transportProgress;
-    HudUiBriefingPanelStorage missionName;
-    HudUiBriefingPanelStorage objectiveSummary;
-    HudUiBriefingPanelStorage objectiveDesc;
-    HudUiBriefingObjectivePicture objectivePicture;
-    HudUiBriefingPanelStorage transmissionHalted;
-    HudUiCompositePanel messagesPanel;
-    HudUiBriefingLocatorPanel locatorPanels[6];
-};
-
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiBriefingRuntimeLayout,
-        actionQueue
-    ) == 0xa94c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiBriefingRuntimeLayout,
-        transportProgress
-    ) == 0xa960
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiBriefingRuntimeLayout,
-        missionName
-    ) == 0xaae8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiBriefingRuntimeLayout,
-        objectiveSummary
-    ) == 0xad8c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiBriefingRuntimeLayout,
-        objectiveDesc
-    ) == 0xb030
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiBriefingRuntimeLayout,
-        objectivePicture
-    ) == 0xb2d4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiBriefingRuntimeLayout,
-        transmissionHalted
-    ) == 0xb394
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiBriefingRuntimeLayout,
-        messagesPanel
-    ) == 0xb638
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiBriefingRuntimeLayout,
-        locatorPanels
-    ) == 0xb8f0
-);
-RECOIL_STATIC_ASSERT(sizeof(HudUiBriefingRuntimeLayout) == 0xba70);
-
 struct BriefingActionElementTarget : BriefingAction {
-    void *target;
+    HudUiElement *target;
 };
 
 struct BriefingActionHideElement : BriefingActionElementTarget {
@@ -320,7 +40,7 @@ struct BriefingActionFadeInElement : BriefingActionElementTarget {
 
 struct BriefingActionSetPanelText : BriefingAction {
     char text[0x100];
-    void *target;
+    HudUiPanel *target;
 
     int Tick(float deltaSec);
 };
@@ -403,16 +123,16 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(sizeof(BriefingActionDelayUntilProgress) == 0x08);
 
-HudUiBriefingRuntimeLayout *BriefingLayout(
+HudUiBriefingRuntime *BriefingLayout(
     HudUiBriefingRuntime *runtime
 ) {
-    return (HudUiBriefingRuntimeLayout *)(runtime);
+    return runtime;
 }
 
 HudUiPanel *BriefingPanel(
-    HudUiBriefingPanelStorage *panelStorage
+    HudUiPanel *panel
 ) {
-    return (HudUiPanel *)(panelStorage);
+    return panel;
 }
 
 Briefing_ActionQueue *BriefingActionQueue(
@@ -421,77 +141,41 @@ Briefing_ActionQueue *BriefingActionQueue(
     return &BriefingLayout(runtime)->actionQueue;
 }
 
-void *BriefingMissionNamePanel(
+HudUiPanel *BriefingMissionNamePanel(
     HudUiBriefingRuntime *runtime
 ) {
     return BriefingPanel(&BriefingLayout(runtime)->missionName);
 }
 
-void *BriefingObjectiveSummaryPanel(
+HudUiPanel *BriefingObjectiveSummaryPanel(
     HudUiBriefingRuntime *runtime
 ) {
     return BriefingPanel(&BriefingLayout(runtime)->objectiveSummary);
 }
 
-void *BriefingObjectiveDescPanel(
+HudUiPanel *BriefingObjectiveDescPanel(
     HudUiBriefingRuntime *runtime
 ) {
     return BriefingPanel(&BriefingLayout(runtime)->objectiveDesc);
 }
 
-HudUiWidget *BriefingObjectivePicture(
+HudUiBriefingObjectivePicture *BriefingObjectivePicture(
     HudUiBriefingRuntime *runtime
 ) {
-    return &BriefingLayout(runtime)->objectivePicture.base;
+    return &BriefingLayout(runtime)->objectivePicture;
 }
 
-void *BriefingTransmissionHaltedPanel(
+HudUiPanel *BriefingTransmissionHaltedPanel(
     HudUiBriefingRuntime *runtime
 ) {
     return BriefingPanel(&BriefingLayout(runtime)->transmissionHalted);
 }
 
-void *BriefingLocatorPanel(
+HudUiBriefingLocatorPanel *BriefingLocatorPanel(
     HudUiBriefingRuntime *runtime,
     int objectiveIndex
 ) {
     return &BriefingLayout(runtime)->locatorPanels[objectiveIndex];
-}
-
-const unsigned int *HudVtable(
-    void *element
-) {
-    return *(const unsigned int *const *)(element);
-}
-
-void HudCallNoArg(
-    void *element,
-    size_t vtableOffset
-) {
-    HudVirtualNoArg const method = (HudVirtualNoArg)(HudVtable(element)[vtableOffset / 4]);
-    method(element);
-}
-
-void HudCallSetVisible(
-    void *element,
-    int visible
-) {
-    HudVirtualSetVisible const method = (HudVirtualSetVisible)(HudVtable(element)[0x60 / 4]);
-    method(
-        element,
-        visible
-    );
-}
-
-void HudCallPanelSetText(
-    void *panel,
-    const char *text
-) {
-    HudPanelSetTextFmt const method = (HudPanelSetTextFmt)(HudVtable(panel)[0x74 / 4]);
-    method(
-        panel,
-        text
-    );
 }
 
 } // namespace
@@ -512,8 +196,8 @@ int g_Briefing_ProgressEventCode = 0;
 HudUiBriefingRuntime * HudUiBriefingRuntime::Constructor(
     int missionId
 ) {
-    HudUiBriefingRuntimeLayout *const layout = BriefingLayout(this);
-    layout->base.Constructor();
+    HudUiBriefingRuntime *const layout = BriefingLayout(this);
+    new ((HudUiBackground *)layout) HudUiBackground;
 
     layout->actionQueue.missionId = missionId & 0xff;
     BriefingActionNode *const sentinel = new BriefingActionNode;
@@ -525,8 +209,6 @@ HudUiBriefingRuntime * HudUiBriefingRuntime::Constructor(
     g_Briefing_ProgressEventCode = -1;
 
     layout->transportProgress.Constructor();
-    layout->transportProgress.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiBriefingTransportProgress_Vtbl);
 
     BriefingPanel(&layout->missionName)->ConstructorDefault(
         0,
@@ -544,11 +226,9 @@ HudUiBriefingRuntime * HudUiBriefingRuntime::Constructor(
         0
     );
 
-    layout->objectivePicture.base.Constructor(0);
-    layout->objectivePicture.base.ftable =
-        (const HudUiWidget_FTable *)&g_HudUiBriefingObjectivePicture_Vtbl;
+    layout->objectivePicture.Constructor(0);
     layout->objectivePicture.noiseAlpha = 0.0f;
-    ((HudUiElement *)(&layout->objectivePicture.base))->Invalidate();
+    layout->objectivePicture.Invalidate();
 
     BriefingPanel(&layout->transmissionHalted)->ConstructorDefault(
         0,
@@ -562,97 +242,89 @@ HudUiBriefingRuntime * HudUiBriefingRuntime::Constructor(
         }
     }
 
-    layout->base.base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiBriefingRuntime_Vtbl);
-
     char campaignSection[0x20];
     sprintf(
         campaignSection,
         "CAMPAIGN%1d",
         missionId
     );
-    zReader::Node *const loadedRoot = layout->base.LoadFromZrd(
+    zReader::Node *const loadedRoot = layout->LoadFromZrd(
         "briefing.zrd",
         campaignSection,
         0
     );
     if (loadedRoot != 0) {
-        layout->base.BindWidgetByName(
+        layout->BindWidgetByName(
             loadedRoot,
             (HudUiWidget *)(&layout->transportProgress),
             "TRANSPORT_PROGRESS"
         );
-        layout->base.BindPrimitiveNodeToElement(
+        layout->BindPrimitiveNodeToElement(
             loadedRoot,
             (HudUiElement *)(&layout->missionName),
             "MISSION_NAME"
         );
-        layout->base.BindPrimitiveNodeToElement(
+        layout->BindPrimitiveNodeToElement(
             loadedRoot,
             (HudUiElement *)(&layout->objectiveSummary),
             "OBJECTIVE_SUMMARY"
         );
-        layout->base.BindPrimitiveNodeToElement(
+        layout->BindPrimitiveNodeToElement(
             loadedRoot,
             (HudUiElement *)(&layout->objectiveDesc),
             "OBJECTIVE_DESC"
         );
-        layout->base.BindPrimitiveNodeToElement(
+        layout->BindPrimitiveNodeToElement(
             loadedRoot,
             (HudUiElement *)(&layout->objectivePicture),
             "OBJECTIVE_PICT"
         );
-        layout->base.BindPrimitiveNodeToElement(
+        layout->BindPrimitiveNodeToElement(
             loadedRoot,
             (HudUiElement *)(&layout->messagesPanel),
             "MESSAGES"
         );
-        layout->base.BindPrimitiveNodeToElement(
+        layout->BindPrimitiveNodeToElement(
             loadedRoot,
             (HudUiElement *)(&layout->transmissionHalted),
             "TRANSMISSION_HALTED"
         );
-        layout->base.BindPrimitiveNodeToElement(
+        layout->BindPrimitiveNodeToElement(
             loadedRoot,
             (HudUiElement *)(&layout->locatorPanels[0]),
             "LOCATOR1"
         );
-        layout->base.BindPrimitiveNodeToElement(
+        layout->BindPrimitiveNodeToElement(
             loadedRoot,
             (HudUiElement *)(&layout->locatorPanels[1]),
             "LOCATOR2"
         );
-        layout->base.BindPrimitiveNodeToElement(
+        layout->BindPrimitiveNodeToElement(
             loadedRoot,
             (HudUiElement *)(&layout->locatorPanels[2]),
             "LOCATOR3"
         );
-        layout->base.BindPrimitiveNodeToElement(
+        layout->BindPrimitiveNodeToElement(
             loadedRoot,
             (HudUiElement *)(&layout->locatorPanels[3]),
             "LOCATOR4"
         );
-        layout->base.BindPrimitiveNodeToElement(
+        layout->BindPrimitiveNodeToElement(
             loadedRoot,
             (HudUiElement *)(&layout->locatorPanels[4]),
             "LOCATOR5"
         );
-        layout->base.BindPrimitiveNodeToElement(
+        layout->BindPrimitiveNodeToElement(
             loadedRoot,
             (HudUiElement *)(&layout->locatorPanels[5]),
             "LOCATOR6"
         );
-        layout->base.FreeLoadedTreeRoots(0);
+        layout->FreeLoadedTreeRoots(0);
     }
 
-    HudCallSetVisible(
-        &layout->missionName,
-        0
-    );
-    HudCallSetVisible(
-        &layout->messagesPanel,
-        1
-    );
-    layout->base.SetEnabled(1);
+    layout->missionName.SetVisible(0);
+    layout->messagesPanel.SetVisible(1);
+    layout->SetEnabled(1);
 
     Time::Tick();
     zSnd_Tick(1);
@@ -668,49 +340,16 @@ HudUiBriefingRuntime * HudUiBriefingRuntime::Constructor(
     return this;
 }
 
-// Reimplements 0x403d90: HudUiBriefingRuntime::ScalarDeletingDestructor
-HudUiBriefingRuntime * HudUiBriefingRuntime::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
 // Reimplements 0x403ed0: HudUiBriefingRuntime::Destructor (D:\Proj\Battlesport\Briefing.cpp)
 void HudUiBriefingRuntime::Destructor() {
-    HudUiBriefingRuntimeLayout *const layout = BriefingLayout(this);
-    layout->base.base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiBriefingRuntime_Vtbl);
+    HudUiBriefingRuntime *const layout = BriefingLayout(this);
 
-    layout->base.SetEnabled(0);
-    for (int index = 5; index >= 0; --index) {
-        layout->locatorPanels[index].base.base.ResetCommonFTable();
-    }
-
-    HudUiCompositePanelEntry *entry = layout->messagesPanel.entryVector.begin;
-    while (entry != layout->messagesPanel.entryVector.end) {
-        typedef HudUiCompositePanelEntry *( * ScalarDeletingDestructorFn)(
-            HudUiCompositePanelEntry * self,
-            unsigned int flags
-        );
-        const unsigned int *const ftable = *(const unsigned int *const *)(entry);
-        ((ScalarDeletingDestructorFn)(ftable[0]))(
-            entry,
-            0
-        );
-        ++entry;
-    }
-    ::operator delete(layout->messagesPanel.entryVector.begin);
-    layout->messagesPanel.entryVector.begin = 0;
-    layout->messagesPanel.entryVector.end = 0;
-    layout->messagesPanel.entryVector.capacityEnd = 0;
+    layout->SetEnabled(0);
+    layout->messagesPanel.entryVector.Clear();
 
     ((HudUiPanel *)(&layout->messagesPanel))->Destructor();
     BriefingPanel(&layout->transmissionHalted)->Destructor();
-    layout->objectivePicture.base.DestructorCore();
+    layout->objectivePicture.DestructorCore();
     BriefingPanel(&layout->objectiveDesc)->Destructor();
     BriefingPanel(&layout->objectiveSummary)->Destructor();
     BriefingPanel(&layout->missionName)->Destructor();
@@ -730,26 +369,30 @@ void HudUiBriefingRuntime::Destructor() {
 
     layout->actionQueue.headSentinel = 0;
     layout->actionQueue.nodeCount = 0;
-    layout->base.Destructor();
+    layout->HudUiBackground::~HudUiBackground();
 }
 
 // Reimplements 0x4038a0: HudUiBriefingObjectivePicture::DrawWithNoiseOverlay
 void HudUiBriefingObjectivePicture::DrawWithNoiseOverlay() {
-    base.Draw();
+    HudUiWidget::Draw();
     if (noiseAlpha <= 0.0) {
         return;
     }
 
     zVidRect32 rect;
-    rect.left = base.GetCenterX();
-    rect.top = base.GetCenterY();
-    const zVidImagePartial *const image = base.image;
+    rect.left = GetCenterX();
+    rect.top = GetCenterY();
+    const zVidImagePartial *const image = this->image;
     rect.right = rect.left + (image != 0 ? image->width : 0);
     rect.bottom = rect.top + (image != 0 ? image->height : 0);
     zVid::DrawNoiseRect(
         &rect,
         noiseAlpha
     );
+}
+
+void HudUiBriefingObjectivePicture::Draw() {
+    DrawWithNoiseOverlay();
 }
 
 // Reimplements 0x403c10: HudUiBriefingLocatorPanel::Constructor
@@ -759,60 +402,63 @@ HudUiBriefingLocatorPanel * HudUiBriefingLocatorPanel::Constructor() {
         0,
         0
     ));
-    base.Constructor(
+    HudUiCircle::Constructor(
         0x64,
         0x6e,
         0x1e,
         color
     );
-    base.base.ftable = &g_HudUiBriefingLocatorPanel_Vtbl;
-    base.base.SetVisible(0);
+    SetVisible(0);
     return this;
 }
 
 // Reimplements 0x403c90: HudUiBriefingLocatorPanel::BlitDirtyRect
 void HudUiBriefingLocatorPanel::BlitDirtyRect() {
-    if (base.base.bltSource != 0) {
+    if (bltSource != 0) {
         zVid_Image::BlitToActiveTarget(
-            (zVidImagePartial *)(base.base.bltSource),
-            base.base.clipRect.left,
-            base.base.clipRect.top,
+            (zVidImagePartial *)(bltSource),
+            clipRect.left,
+            clipRect.top,
             0,
-            (zVidRect32 *)(&base.base.clipRect)
+            (zVidRect32 *)(&clipRect)
         );
     }
+}
+
+void HudUiBriefingLocatorPanel::DrawBase() {
+    BlitDirtyRect();
 }
 
 // Reimplements 0x403cb0: HudUiBriefingLocatorPanel::Update
 void HudUiBriefingLocatorPanel::Update(
     float deltaSec
 ) {
-    if ((base.base.flags & 0x10) == 0) {
+    if ((flags & 0x10) == 0) {
         return;
     }
 
-    base.base.clipRect.left = base.base.GetX() - base.radius;
-    base.base.clipRect.top = base.base.GetY() - base.radius;
-    base.base.clipRect.right = base.base.GetX() + base.radius + 1;
-    base.base.clipRect.bottom = base.base.GetY() + base.radius + 1;
+    clipRect.left = GetX() - radius;
+    clipRect.top = GetY() - radius;
+    clipRect.right = GetX() + radius + 1;
+    clipRect.bottom = GetY() + radius + 1;
 
-    if (base.radius > 3) {
+    if (radius > 3) {
         float radiusStep = deltaSec * 20.0f;
         if (radiusStep < 1.0f) {
             radiusStep = 1.0f;
         }
 
-        const int newRadius = base.radius - (int)(radiusStep);
-        base.radius = newRadius;
-        base.radiusSquared = newRadius * newRadius;
-        if (base.radius < 3) {
-            base.radius = 3;
-            base.radiusSquared = 9;
+        const int newRadius = radius - (int)(radiusStep);
+        radius = newRadius;
+        radiusSquared = newRadius * newRadius;
+        if (radius < 3) {
+            radius = 3;
+            radiusSquared = 9;
         }
     }
 
-    base.base.Update(deltaSec);
-    base.base.Invalidate();
+    HudUiElement::Update(deltaSec);
+    Invalidate();
 }
 
 /**
@@ -841,10 +487,7 @@ inline int Briefing_ActionQueue::InsertAction(
 int BriefingActionHideElement::Tick(
     float
 ) {
-    HudCallSetVisible(
-        target,
-        0
-    );
+    target->SetVisible(0);
     return 1;
 }
 
@@ -852,14 +495,8 @@ int BriefingActionHideElement::Tick(
 int BriefingActionShowElement::Tick(
     float
 ) {
-    HudCallSetVisible(
-        target,
-        1
-    );
-    HudCallNoArg(
-        target,
-        0x20
-    );
+    target->SetVisible(1);
+    target->Invalidate();
     return 1;
 }
 
@@ -869,12 +506,9 @@ int BriefingActionFadeInElement::Tick(
 ) {
     alpha += 0.5f;
 
-    HudUiWidget *const widget = (HudUiWidget *)(target);
-    ((HudUiBriefingObjectivePicture *)(widget))->noiseAlpha = alpha;
-    HudCallNoArg(
-        widget,
-        0x20
-    );
+    HudUiBriefingObjectivePicture *const widget = (HudUiBriefingObjectivePicture *)(target);
+    widget->noiseAlpha = alpha;
+    widget->Invalidate();
 
     return alpha >= 1.0f ? 1 : 0;
 }
@@ -883,22 +517,10 @@ int BriefingActionFadeInElement::Tick(
 int BriefingActionSetPanelText::Tick(
     float
 ) {
-    HudCallPanelSetText(
-        target,
-        text
-    );
-    HudCallNoArg(
-        target,
-        0x78
-    );
-    HudCallSetVisible(
-        target,
-        1
-    );
-    HudCallNoArg(
-        target,
-        0x20
-    );
+    target->SetTextFmt(text);
+    target->UpdateTextBoundsFromContent();
+    target->SetVisible(1);
+    target->Invalidate();
     return 1;
 }
 
@@ -906,24 +528,12 @@ int BriefingActionSetPanelText::Tick(
 int BriefingActionSetWidgetImageTimed::Tick(
     float
 ) {
-    HudCallNoArg(
-        target,
-        0x08
-    );
+    target->DrawBase();
     target->SetImageBorrowedAndInvalidate(imageRef);
-    HudCallNoArg(
-        target,
-        0x74
-    );
-    HudCallSetVisible(
-        target,
-        1
-    );
+    target->RebuildBltRectFromImage();
+    target->SetVisible(1);
     ((HudUiBriefingObjectivePicture *)(target))->noiseAlpha = timer;
-    HudCallNoArg(
-        target,
-        0x20
-    );
+    target->Invalidate();
 
     timer -= 0.5f;
     return timer < 0.0f ? 1 : 0;
@@ -969,7 +579,7 @@ int BriefingActionDelayUntilProgress::Tick(
 
 // Reimplements 0x4045b0: Briefing_ActionQueue::AddHideElement
 int Briefing_ActionQueue::AddHideElement(
-    void *element
+    HudUiElement *element
 ) {
     BriefingActionHideElement *const action = new BriefingActionHideElement;
     if (action != 0) {
@@ -981,7 +591,7 @@ int Briefing_ActionQueue::AddHideElement(
 
 // Reimplements 0x404640: Briefing_ActionQueue::AddShowElement
 int Briefing_ActionQueue::AddShowElement(
-    void *element
+    HudUiElement *element
 ) {
     BriefingActionShowElement *const action = new BriefingActionShowElement;
     if (action != 0) {
@@ -993,7 +603,7 @@ int Briefing_ActionQueue::AddShowElement(
 
 // Reimplements 0x4046d0: Briefing_ActionQueue::AddFadeInElement
 int Briefing_ActionQueue::AddFadeInElement(
-    void *element
+    HudUiElement *element
 ) {
     BriefingActionFadeInElement *const action = new BriefingActionFadeInElement;
     if (action != 0) {
@@ -1007,7 +617,7 @@ int Briefing_ActionQueue::AddFadeInElement(
 // Reimplements 0x404780: Briefing_ActionQueue::AddSetPanelText
 int Briefing_ActionQueue::AddSetPanelText(
     const char *text,
-    void *panel
+    HudUiPanel *panel
 ) {
     BriefingActionSetPanelText *const action = new BriefingActionSetPanelText;
     if (action != 0) {
@@ -1017,10 +627,7 @@ int Briefing_ActionQueue::AddSetPanelText(
             sizeof(action->text)
         );
         action->target = panel;
-        HudCallSetVisible(
-            panel,
-            0
-        );
+        panel->SetVisible(0);
     }
 
     return InsertAction(action);
@@ -1035,10 +642,7 @@ int Briefing_ActionQueue::AddSetWidgetImageTimed(
     if (action != 0) {
         action->imageRef = imageRef;
         action->target = widget;
-        HudCallSetVisible(
-            widget,
-            0
-        );
+        widget->SetVisible(0);
         action->timer = 1.0f;
     }
 
@@ -1103,7 +707,7 @@ int __fastcall StartForMission(
     g_Briefing_SystemActiveFlag = 1;
 
     HudUiBriefingRuntime *runtime =
-        (HudUiBriefingRuntime *)(::operator new(sizeof(HudUiBriefingRuntimeLayout)));
+        (HudUiBriefingRuntime *)(::operator new(sizeof(HudUiBriefingRuntime)));
     if (runtime != 0) {
         runtime = runtime->Constructor(missionId);
     }
@@ -1161,35 +765,18 @@ void ThreadMain(
             g_Briefing_SequenceActiveFlag = 0;
             actionQueue->currentNode = actionQueue->headSentinel;
 
-            HudCallSetVisible(
-                BriefingMissionNamePanel(runtime),
-                0
-            );
-            HudCallSetVisible(
-                BriefingObjectiveSummaryPanel(runtime),
-                0
-            );
-            HudCallSetVisible(
-                BriefingObjectiveDescPanel(runtime),
-                0
-            );
+            BriefingMissionNamePanel(runtime)->SetVisible(0);
+            BriefingObjectiveSummaryPanel(runtime)->SetVisible(0);
+            BriefingObjectiveDescPanel(runtime)->SetVisible(0);
 
-            HudUiWidget *const objectivePicture = BriefingObjectivePicture(runtime);
-            ((HudUiBriefingObjectivePicture *)(objectivePicture))->noiseAlpha = 1.0f;
-            HudCallNoArg(
-                objectivePicture,
-                0x20
-            );
+            HudUiBriefingObjectivePicture *const objectivePicture =
+                BriefingObjectivePicture(runtime);
+            objectivePicture->noiseAlpha = 1.0f;
+            objectivePicture->Invalidate();
 
-            void *const transmissionHalted = BriefingTransmissionHaltedPanel(runtime);
-            HudCallPanelSetText(
-                transmissionHalted,
-                zLoc::GetMessageString(0x110)
-            );
-            HudCallSetVisible(
-                transmissionHalted,
-                1
-            );
+            HudUiPanel *const transmissionHalted = BriefingTransmissionHaltedPanel(runtime);
+            transmissionHalted->SetTextFmt(zLoc::GetMessageString(0x110));
+            transmissionHalted->SetVisible(1);
         }
 
         Time::Tick();
@@ -1240,10 +827,8 @@ void __fastcall StopAndShutdownThread(
 
     HudUiBriefingRuntime *const runtime = g_Briefing_Runtime;
     if (runtime != 0) {
-        runtime->vptr->ScalarDeletingDtor(
-            runtime,
-            1
-        );
+        runtime->Destructor();
+        ::operator delete(runtime);
         g_Briefing_Runtime = 0;
     }
 
@@ -1257,13 +842,7 @@ void __stdcall SetProgressAndSleep(
     if (g_Briefing_Runtime != 0) {
         HudUiBriefingTransportProgress *const transportProgress =
             &g_Briefing_Runtime->transportProgress;
-        const unsigned int *const ftable = (const unsigned int *)transportProgress->vptr;
-        BriefingSetNormalizedValue const setNormalizedValue =
-            (BriefingSetNormalizedValue)(ftable[0x84 / 4]);
-        setNormalizedValue(
-            transportProgress,
-            progressValue
-        );
+        transportProgress->SetNormalizedValueAndRebuild(progressValue);
     }
 
     Sleep(100);
@@ -1289,31 +868,13 @@ void HudUiBriefingRuntime::Update(
         }
     }
 
-    HudCallNoArg(
-        BriefingObjectivePicture(this),
-        0x20
-    );
-    HudCallNoArg(
-        BriefingTransmissionHaltedPanel(this),
-        0x20
-    );
-    HudCallNoArg(
-        BriefingMissionNamePanel(this),
-        0x20
-    );
-    HudCallNoArg(
-        &transportProgress,
-        0x20
-    );
-    HudCallNoArg(
-        BriefingObjectiveSummaryPanel(this),
-        0x20
-    );
-    HudCallNoArg(
-        BriefingObjectiveDescPanel(this),
-        0x20
-    );
-    ((HudUiBackground *)(this))->Update(deltaSec);
+    BriefingObjectivePicture(this)->Invalidate();
+    BriefingTransmissionHaltedPanel(this)->Invalidate();
+    BriefingMissionNamePanel(this)->Invalidate();
+    transportProgress.Invalidate();
+    BriefingObjectiveSummaryPanel(this)->Invalidate();
+    BriefingObjectiveDescPanel(this)->Invalidate();
+    BriefingLayout(this)->HudUiBackground::Update(deltaSec);
 }
 
 // Reimplements 0x404400: Briefing::BuildObjectiveActionsFromIndex
@@ -1361,11 +922,11 @@ int HudUiBriefingRuntime::BuildObjectiveActionsFromIndex(
                 index + 1
             );
 
-            void *const missionNamePanel = BriefingMissionNamePanel(this);
-            void *const objectiveSummaryPanel = BriefingObjectiveSummaryPanel(this);
-            void *const objectiveDescPanel = BriefingObjectiveDescPanel(this);
-            HudUiWidget *const objectivePicture = BriefingObjectivePicture(this);
-            void *const locatorPanel = BriefingLocatorPanel(
+            HudUiPanel *const missionNamePanel = BriefingMissionNamePanel(this);
+            HudUiPanel *const objectiveSummaryPanel = BriefingObjectiveSummaryPanel(this);
+            HudUiPanel *const objectiveDescPanel = BriefingObjectiveDescPanel(this);
+            HudUiBriefingObjectivePicture *const objectivePicture = BriefingObjectivePicture(this);
+            HudUiBriefingLocatorPanel *const locatorPanel = BriefingLocatorPanel(
                 this,
                 index
             );

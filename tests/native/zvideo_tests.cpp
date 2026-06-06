@@ -480,8 +480,16 @@ DWORD gFakeDirectDrawSurface3LastPageUnlockFlags;
 void *gFakeComVTable[3];
 int gFakeComReleaseCalls;
 void *gFakeComReleaseObjects[8];
-zVideo_SurfaceLockVerifierVtbl gFakeSurfaceLockVerifierVTable;
-zVideo_SurfaceLockVerifier gFakeSurfaceLockVerifier;
+
+struct FakeSurfaceLockVerifier : zVideo_SurfaceLockVerifier {
+    virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, void **);
+    virtual ULONG STDMETHODCALLTYPE AddRef();
+    virtual ULONG STDMETHODCALLTYPE Release();
+    virtual HRESULT STDMETHODCALLTYPE Unknown0c();
+    virtual HRESULT STDMETHODCALLTYPE VerifySurfaceState(zVideo_SurfaceLockVerifyArgs *args);
+};
+
+FakeSurfaceLockVerifier gFakeSurfaceLockVerifier;
 int gFakeSurfaceLockVerifierVerifyCalls;
 zVideo_SurfaceLockVerifyArgs gFakeSurfaceLockVerifierLastArgs;
 HRESULT gFakeSurfaceLockVerifierVerifyResult;
@@ -783,20 +791,32 @@ ULONG __stdcall FakeCom_Release(void *self) {
     return 1;
 }
 
-int __stdcall FakeSurfaceLockVerifier_VerifySurfaceState(
-    zVideo_SurfaceLockVerifier *,
+HRESULT STDMETHODCALLTYPE FakeSurfaceLockVerifier::QueryInterface(
+    REFIID,
+    void **
+) {
+    return E_NOINTERFACE;
+}
+
+ULONG STDMETHODCALLTYPE FakeSurfaceLockVerifier::AddRef() {
+    return 1;
+}
+
+ULONG STDMETHODCALLTYPE FakeSurfaceLockVerifier::Release() {
+    ++gFakeSurfaceLockVerifierReleaseCalls;
+    return 1;
+}
+
+HRESULT STDMETHODCALLTYPE FakeSurfaceLockVerifier::Unknown0c() {
+    return DD_OK;
+}
+
+HRESULT STDMETHODCALLTYPE FakeSurfaceLockVerifier::VerifySurfaceState(
     zVideo_SurfaceLockVerifyArgs *args
 ) {
     ++gFakeSurfaceLockVerifierVerifyCalls;
     gFakeSurfaceLockVerifierLastArgs = *args;
     return gFakeSurfaceLockVerifierVerifyResult;
-}
-
-unsigned int __stdcall FakeSurfaceLockVerifier_Release(
-    zVideo_SurfaceLockVerifier *
-) {
-    ++gFakeSurfaceLockVerifierReleaseCalls;
-    return 1;
 }
 
 HRESULT __stdcall FakeDirectDraw2_CreateSurface(
@@ -1696,15 +1716,6 @@ void ResetFakeComReleaseTracking() {
 }
 
 void InstallFakeSurfaceLockVerifier() {
-    std::memset(
-        &gFakeSurfaceLockVerifierVTable,
-        0,
-        sizeof(gFakeSurfaceLockVerifierVTable)
-    );
-    gFakeSurfaceLockVerifierVTable.Release = FakeSurfaceLockVerifier_Release;
-    gFakeSurfaceLockVerifierVTable.VerifySurfaceState =
-        FakeSurfaceLockVerifier_VerifySurfaceState;
-    gFakeSurfaceLockVerifier.vtable = &gFakeSurfaceLockVerifierVTable;
     gFakeSurfaceLockVerifierVerifyCalls = 0;
     gFakeSurfaceLockVerifierLastArgs = {};
     gFakeSurfaceLockVerifierVerifyResult = DD_OK;
@@ -12698,14 +12709,20 @@ extern "C" int zvid_image_create_format_size_pixels_smoke(void) {
     const bool configured =
         zVid_Image::SetFormatCode(image, 1) == 0 &&
         zVid_Image::SetHeaderFlagsByte(image, 0x7a) == 0 &&
-        zVid_Image_SetPixels(image, pixels, alpha) == 0 &&
+        zVid_Image_SetPixels(image, pixels, alpha) == 0;
+
+    image->widthScale = 3.5f;
+    image->uShiftFrom20 = 77;
+    image->uMask = 88;
+    image->vMaskFixed20 = 99;
+    const bool sized =
         zVid_Image::SetSize(image, 16, 8) == 0 &&
         image->headerFlagsByte == 0x7a && image->formatFlagsPacked == 3 &&
         image->pixels == pixels && image->alphaMap == alpha && image->width == 16 &&
         image->height == 8 && image->pixelCount == 128 && image->pitchWords == 16 &&
-        image->widthScale == 16.0f &&
-        image->uShiftFrom20 == 20 && image->uMask == 15 &&
-        image->vMaskFixed20 == (7 << 20);
+        image->widthScale == 3.5f &&
+        image->uShiftFrom20 == 77 && image->uMask == 88 &&
+        image->vMaskFixed20 == 99;
 
     const bool unpackedPixelDataBytes = zVid_Image::QueryPixelDataBytes(image) == 256;
     image->paletteMetaPacked = 32;
@@ -12713,7 +12730,9 @@ extern "C" int zvid_image_create_format_size_pixels_smoke(void) {
     image->paletteMetaPacked = 0;
 
     zVid_Image::Destroy(image);
-    return createdZeroed && configured && unpackedPixelDataBytes && palettedPixelDataBytes ? 0 : 2;
+    return createdZeroed && configured && sized && unpackedPixelDataBytes && palettedPixelDataBytes
+               ? 0
+               : 2;
 }
 
 extern "C" int zvideo_image_file_read_helpers_smoke(void) {

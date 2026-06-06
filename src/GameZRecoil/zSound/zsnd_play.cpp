@@ -37,10 +37,7 @@ bool A3dHandleIsAvailable(
 
     zA3dProviderSource *const source = (zA3dProviderSource *)(handle->backendBuffer);
     int status = 0;
-    source->vtable->GetStatus(
-        source,
-        &status
-    );
+    source->GetStatus((LPDWORD)&status);
     return (status & 1) == 0;
 }
 
@@ -68,10 +65,7 @@ inline bool A3dSourceIsPlaying(
     int *status
 ) {
     zA3dProviderSource *const source = (zA3dProviderSource *)(backendBuffer);
-    source->vtable->GetStatus(
-        source,
-        status
-    );
+    source->GetStatus((LPDWORD)status);
     return (*status & 1) != 0;
 }
 
@@ -115,7 +109,7 @@ int FreeA3dWaveData(
     }
 
     zA3dProviderSource *object = (zA3dProviderSource *)(buffer);
-    return object->vtable->FreeWaveData(object);
+    return object->FreeWaveData();
 }
 
 float ApproximateDirectSoundDistance(
@@ -373,10 +367,7 @@ zSndPlayHandle * zSndSample::AcquireA3dVoice() {
     unsigned char playingMask = 1;
     if (primaryVoice.isActive == 0) {
         zA3dProviderSource *const source = (zA3dProviderSource *)(primaryVoice.backendBuffer);
-        source->vtable->GetStatus(
-            source,
-            &status
-        );
+        source->GetStatus((LPDWORD)&status);
         if (((unsigned char)status & playingMask) == 0) {
             return &primaryVoice;
         }
@@ -384,18 +375,15 @@ zSndPlayHandle * zSndSample::AcquireA3dVoice() {
 
     /*
      * The retail function inlines the availability test here instead of
-     * calling A3dHandleIsAvailable, preserving the provider vtable call shape
-     * visible at BN 0x49f6f0.
+     * calling A3dHandleIsAvailable, preserving the provider call shape visible
+     * at BN 0x49f6f0.
      */
     int index = 0;
     for (; index < duplicateVoiceCount; ++index) {
         voice = duplicateVoices[index];
         if (voice != 0 && voice->isActive == 0) {
             zA3dProviderSource *const source = (zA3dProviderSource *)(voice->backendBuffer);
-            source->vtable->GetStatus(
-                source,
-                &status
-            );
+            source->GetStatus((LPDWORD)&status);
             if (((unsigned char)status & playingMask) == 0) {
                 break;
             }
@@ -412,11 +400,12 @@ zSndPlayHandle * zSndSample::AcquireA3dVoice() {
         );
 
         zA3dProviderDevice *const device = (zA3dProviderDevice *)(g_zSnd_BackendDevice);
-        const int error = device->vtable->DuplicateBufferA3D(
-            device,
-            primaryVoice.backendBuffer,
-            &voice->backendBuffer
+        zA3dProviderSource *duplicateSource = 0;
+        const int error = device->DuplicateSource(
+            (zA3dProviderSource *)primaryVoice.backendBuffer,
+            &duplicateSource
         );
+        voice->backendBuffer = (zSndBuffer *)duplicateSource;
         if (error < 0) {
             zSnd::ReportA3DError(
                 error,
@@ -529,13 +518,9 @@ int __fastcall zSnd::ApplyMuteStateToActiveVoices(
             zSndPlayHandle *const playHandle = item->payload.playHandle;
             zA3dProviderSource *const source = (zA3dProviderSource *)(playHandle->backendBuffer);
             if (zSnd::IsMuted() != 0) {
-                source->vtable->SetGain(
-                    source,
-                    0.0f
-                );
+                source->SetGain(0.0f);
             } else {
-                source->vtable->SetGain(
-                    source,
+                source->SetGain(
                     zSndSample_PlaySimple(FloatFromBits(playHandle->gainScaled))
                 );
             }
@@ -578,10 +563,7 @@ int zSndPlayHandleSnapshot::StopAllIfPlaying() {
             case 1: {
                 zA3dProviderSource *const source =
                     (zA3dProviderSource *)(snapshotItem->payload.playHandle->backendBuffer);
-                source->vtable->GetStatus(
-                    source,
-                    &status
-                );
+                source->GetStatus((LPDWORD)&status);
                 if ((status & result) != 0) {
                     snapshotItem->payload.playHandle->StopIfActive();
                 }
@@ -773,21 +755,18 @@ void __fastcall zSndPlayHandle::PlayWithDelta_A3D(
         *(float *)&playHandle->gainScaled = gainDelta;
 
         zA3dProviderSource *const gainSource = (zA3dProviderSource *)playHandle->backendBuffer;
-        zA3dProviderSourceVTable *const vtable = gainSource->vtable;
-        vtable->SetGain(
-            gainSource,
+        gainSource->SetGain(
             zSndSample_PlaySimple(gainDelta)
         );
     }
 
     if (restartBeforePlay != 0) {
         zA3dProviderSource *const source = (zA3dProviderSource *)playHandle->backendBuffer;
-        source->vtable->Rewind(source);
+        source->Rewind();
     }
 
     zA3dProviderSource *const source = (zA3dProviderSource *)playHandle->backendBuffer;
-    const int error = source->vtable->Play(
-        source,
+    const int error = source->Play(
         (unsigned char)(replayFields->flags) & 1
     );
     if (error != 0) {
@@ -1014,7 +993,7 @@ int zSndPlayHandle::StopIfActive() {
             return -1;
         }
 
-        error = source->vtable->Stop(source);
+        error = source->Stop();
         if (error != 0) {
             return zSnd::ReportA3DError(
                 error,
@@ -1078,7 +1057,7 @@ int zSndSample::StopActiveVoicesIfPlaying() {
             return 0;
         }
 
-        int error = primarySource->vtable->Stop(primarySource);
+        int error = primarySource->Stop();
         if (error != 0) {
             return zSnd::ReportA3DError(
                 error,
@@ -1092,7 +1071,7 @@ int zSndSample::StopActiveVoicesIfPlaying() {
                 zSndPlayHandle *const voice = duplicateVoices[index];
                 if (voice != 0) {
                     zA3dProviderSource *const source = (zA3dProviderSource *)(voice->backendBuffer);
-                    error = source->vtable->Stop(source);
+                    error = source->Stop();
                     if (error != 0) {
                         return zSnd::ReportDirectSoundError(
                             error,
@@ -1131,10 +1110,7 @@ unsigned int zSndSample::GetPlayCursorBytes() {
     }
     case 1: {
         zA3dProviderSource *const source = (zA3dProviderSource *)(primaryVoice.backendBuffer);
-        source->vtable->GetCurrentPosition(
-            source,
-            &playCursorBytes
-        );
+        source->GetWavePosition((LPDWORD)&playCursorBytes);
         break;
     }
     }
@@ -1172,14 +1148,12 @@ extern "C" int __fastcall zSnd_UpdateListenerState(
         }
 
         if (listenerState != 0) {
-            listener->vtable->SetPosition(
-                listener,
+            listener->SetPosition3f(
                 listenerState->position.x,
                 listenerState->position.y,
                 listenerState->position.z
             );
-            listener->vtable->SetOrientation(
-                listener,
+            listener->SetOrientation6f(
                 -listenerState->forward.x,
                 -listenerState->forward.y,
                 -listenerState->forward.z,
@@ -1190,8 +1164,7 @@ extern "C" int __fastcall zSnd_UpdateListenerState(
         }
 
         if (listenerVelocity != 0) {
-            listener->vtable->SetVelocity(
-                listener,
+            listener->SetVelocity3f(
                 listenerVelocity->x,
                 listenerVelocity->y,
                 listenerVelocity->z
@@ -1368,8 +1341,7 @@ int __fastcall zSndPlayHandle::Update3D_A3D(
     }
 
     if (worldPos != 0) {
-        source->vtable->SetPosition(
-            source,
+        source->SetPosition3f(
             worldPos->x,
             worldPos->y,
             worldPos->z
@@ -1377,8 +1349,7 @@ int __fastcall zSndPlayHandle::Update3D_A3D(
     }
 
     if (velocity != 0) {
-        source->vtable->SetVelocity(
-            source,
+        source->SetVelocity3f(
             velocity->x,
             velocity->y,
             velocity->z
@@ -1386,19 +1357,14 @@ int __fastcall zSndPlayHandle::Update3D_A3D(
     }
 
     if (zSnd::IsMuted() != 0) {
-        source->vtable->SetGain(
-            source,
-            0.0f
-        );
+        source->SetGain(0.0f);
     } else {
-        source->vtable->SetGain(
-            source,
+        source->SetGain(
             zSndSample_PlaySimple(FloatFromBits(gainScaled))
         );
     }
 
-    source->vtable->SetDopplerScale(
-        source,
+    source->SetDopplerScale(
         velocityScaleMode != 0 ? 1.0f : 0.0f
     );
     return 1;
@@ -1458,8 +1424,7 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnA3D(
 
     zA3dProviderSource *const source = (zA3dProviderSource *)(result->backendBuffer);
     if (worldPos != 0) {
-        source->vtable->SetSpatializationEnabled(
-            source,
+        source->SetTransformMode(
             0
         );
         if (result->Update3DDispatch(worldPos, velocity, 0) == 0 &&
@@ -1467,25 +1432,19 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnA3D(
             return 0;
         }
     } else {
-        source->vtable->SetSpatializationEnabled(
-            source,
+        source->SetTransformMode(
             1
         );
         if (zSnd::IsMuted() != 0) {
-            source->vtable->SetGain(
-                source,
-                0.0f
-            );
+            source->SetGain(0.0f);
         } else {
-            source->vtable->SetGain(
-                source,
+            source->SetGain(
                 zSndSample_PlaySimple(FloatFromBits(result->gainScaled))
             );
         }
     }
 
-    source->vtable->SetMode(
-        source,
+    source->SetWavePosition(
         backendArg
     );
     RefreshPlaybackMarkers(
@@ -1493,13 +1452,12 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnA3D(
         result
     );
 
-    const int playError = source->vtable->Play(
-        source,
+    const int playError = source->Play(
         replayFields.flags & 0x01
     );
 
     zA3dProviderDevice *const device = (zA3dProviderDevice *)(g_zSnd_BackendDevice);
-    device->vtable->CommitDeferredSettings(device);
+    device->Flush();
 
     if (playError != 0) {
         zSnd::ReportA3DError(

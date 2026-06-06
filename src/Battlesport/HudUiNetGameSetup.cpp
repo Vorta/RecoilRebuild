@@ -10,111 +10,11 @@
 #include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zReader/zReader.h"
 
+#include <new>
 #include <stdio.h>
 #include <string.h>
 
 namespace {
-template <typename Method>
-unsigned int MethodAddress(
-    Method method
-) {
-    RECOIL_STATIC_ASSERT(sizeof(method) <= sizeof(unsigned int));
-    unsigned int address = 0;
-    memcpy(
-        &address,
-        &method,
-        sizeof(method)
-    );
-    return address;
-}
-
-void HudUiNetGameSetupPostLoadNoOp() {}
-
-template <typename FTable>
-FTable MakeHudUiNetGameSetupZrdFTable(
-    unsigned int activateSlot
-) {
-    FTable table = {0};
-    table.slots[0] = MethodAddress(&HudUiZrdWidget::ScalarDeletingDestructor);
-    table.slots[1] = MethodAddress(&HudUiWidget::Draw);
-    table.slots[3] = MethodAddress(&HudUiElement::SetPos);
-    table.slots[4] = MethodAddress(&HudUiElement::SetX);
-    table.slots[5] = MethodAddress(&HudUiElement::SetY);
-    table.slots[6] = MethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    table.slots[7] = MethodAddress(&HudUiElement::SetClipRect);
-    table.slots[8] = MethodAddress(&HudUiZrdWidget::Invalidate);
-    table.slots[12] = activateSlot;
-    table.slots[15] = MethodAddress(&HudUiZrdWidget::ShowPreview);
-    table.slots[16] = MethodAddress(&HudUiZrdWidget::HidePreview);
-    table.slots[24] = MethodAddress(&HudUiElement::SetVisible);
-    table.slots[25] = MethodAddress(&HudUiElement::GetX);
-    table.slots[26] = MethodAddress(&HudUiElement::GetY);
-    table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
-    table.slots[31] = MethodAddress(&HudUiZrdWidget::LoadFromZrd);
-    table.slots[32] = (unsigned int)(&HudUiNetGameSetupPostLoadNoOp);
-    return table;
-}
-
-HudUiNetGameSetupPanel_FTable MakeHudUiNetGameSetupPanelFTable() {
-    HudUiNetGameSetupPanel_FTable table = {0};
-    table.slots[0] = MethodAddress(&HudUiBackground::Update);
-    table.slots[1] = MethodAddress(&HudUiBackground::SetEnabled);
-    table.slots[2] = MethodAddress(&HudUiNetGameSetupPanel::ScalarDeletingDestructor);
-    return table;
-}
-
-HudUiZrdWidget_FTable MakeHudUiNetGameSetupPanelPlayButtonFTable() {
-    return MakeHudUiNetGameSetupZrdFTable<HudUiZrdWidget_FTable>(
-        MethodAddress(&HudUiNetGameSetupPanel_LaunchButton::OnActivate)
-    );
-}
-
-HudUiNumericTextInput_Base_FTable MakeHudUiNetGameSetupPanelGameNameInputFTable() {
-    HudUiNumericTextInput_Base_FTable table =
-        MakeHudUiNetGameSetupZrdFTable<HudUiNumericTextInput_Base_FTable>(
-            MethodAddress(&HudUiNetGameSetupTextInput::OnActivateFocusAndCursor)
-        );
-    table.slots[0] = MethodAddress(&HudUiNumericTextInput::ScalarDeletingDestructorThunk);
-    table.slots[2] = MethodAddress(&HudUiNumericTextInput::UpdateCaptureUiAndClip);
-    table.slots[34] = MethodAddress(&HudUiNumericTextInput::OnRawKeyboardChar);
-    table.slots[35] = MethodAddress(&zStub::ReturnZeroNoArgs);
-    return table;
-}
-
-HudUiClampedIntTextInput_FTable MakeHudUiNetGameSetupPanelClampedInputFTable() {
-    HudUiClampedIntTextInput_FTable table =
-        MakeHudUiNetGameSetupZrdFTable<HudUiClampedIntTextInput_FTable>(
-            MethodAddress(&HudUiNetGameSetupTextInput::OnActivateFocusAndCursor)
-        );
-    table.slots[0] = MethodAddress(&HudUiNumericTextInput::ScalarDeletingDestructorThunk);
-    table.slots[2] = MethodAddress(&HudUiNumericTextInput::UpdateCaptureUiAndClip);
-    table.slots[33] = MethodAddress(&HudUiClampedIntTextInput::OnRawKeyboardDigitOnly);
-    table.slots[34] = MethodAddress(&HudUiNumericTextInput::OnAcceptForwardToCommit);
-    table.slots[35] = MethodAddress(&HudUiClampedIntTextInput::CommitAndGetValue);
-    return table;
-}
-
-HudUiCycleSelectorWidget_FTable MakeHudUiNetGameSetupPanelWorldSelectorFTable() {
-    HudUiCycleSelectorWidget_FTable table =
-        MakeHudUiNetGameSetupZrdFTable<HudUiCycleSelectorWidget_FTable>(
-            MethodAddress(&HudUiZrdWidget::OnActivate)
-        );
-    table.slots[0] = MethodAddress(&HudUiCycleSelectorWidget::ScalarDeletingDestructor);
-    table.slots[9] = MethodAddress(&HudUiCycleSelectorWidget::Update);
-    table.slots[31] = MethodAddress(&HudUiCycleSelectorWidget::LoadFromZrd);
-    return table;
-}
-
-HudUiCheckToggleWidget_FTable MakeHudUiNetGameSetupPanelCheckToggleFTable() {
-    HudUiCheckToggleWidget_FTable table =
-        MakeHudUiNetGameSetupZrdFTable<HudUiCheckToggleWidget_FTable>(
-            MethodAddress(&HudUiCheckToggleWidget::OnActivate)
-        );
-    table.slots[0] = MethodAddress(&HudUiCheckToggleWidget::ScalarDeletingDestructor);
-    table.slots[31] = MethodAddress(&HudUiCheckToggleWidget::LoadFromZrd);
-    return table;
-}
-
 int ClampInt(
     int value,
     int minValue,
@@ -194,11 +94,11 @@ void ApplyWorldSelectionSideEffects(
         panel->killsInput.maxValue = 99;
 
         SetZrdWidgetEnabled(
-            &panel->incTimeLimitButton.base,
+            &panel->incTimeLimitButton,
             0
         );
         SetZrdWidgetEnabled(
-            &panel->decTimeLimitButton.base,
+            &panel->decTimeLimitButton,
             0
         );
     } else {
@@ -214,130 +114,66 @@ void ApplyWorldSelectionSideEffects(
         panel->killsInput.maxValue = 99;
 
         SetZrdWidgetEnabled(
-            &panel->timeLimitInput.base,
+            &panel->timeLimitInput,
             1
         );
         SetZrdWidgetEnabled(
-            &panel->incTimeLimitButton.base,
+            &panel->incTimeLimitButton,
             1
         );
         SetZrdWidgetEnabled(
-            &panel->decTimeLimitButton.base,
+            &panel->decTimeLimitButton,
             1
         );
     }
 
-    panel->killsInput.base.Invalidate();
-    panel->incKillsButton.base.Invalidate();
-    panel->decKillsButton.base.Invalidate();
+    panel->killsInput.Invalidate();
+    panel->incKillsButton.Invalidate();
+    panel->decKillsButton.Invalidate();
 }
 } // namespace
-
-const HudUiNetGameSetupPanel_FTable g_HudUiNetGameSetupPanel_FTable =
-    MakeHudUiNetGameSetupPanelFTable();
-const HudUiZrdWidget_FTable g_HudUiNetGameSetupPanel_PlayButton_FTable =
-    MakeHudUiNetGameSetupPanelPlayButtonFTable();
-const HudUiZrdWidget_FTable g_HudUiNetGameSetupPanel_CancelButton_FTable =
-    MakeHudUiNetGameSetupZrdFTable<HudUiZrdWidget_FTable>(
-        MethodAddress(&HudUiNetGameSetupPanel_CancelButton::OnActivate)
-    );
-const HudUiNumericTextInput_Base_FTable g_HudUiNetGameSetupPanel_GameNameInput_FTable =
-    MakeHudUiNetGameSetupPanelGameNameInputFTable();
-const HudUiCycleSelectorWidget_FTable g_HudUiNetGameSetupPanel_WorldSelector_FTable =
-    MakeHudUiNetGameSetupPanelWorldSelectorFTable();
-const HudUiZrdWidget_FTable g_HudUiNetGameSetupPanel_NextWorldButton_FTable =
-    MakeHudUiNetGameSetupZrdFTable<HudUiZrdWidget_FTable>(
-        MethodAddress(&HudUiNetGameSetupPanel_NextWorldButton::OnActivate)
-    );
-const HudUiZrdWidget_FTable g_HudUiNetGameSetupPanel_PrevWorldButton_FTable =
-    MakeHudUiNetGameSetupZrdFTable<HudUiZrdWidget_FTable>(
-        MethodAddress(&HudUiNetGameSetupPanel_PrevWorldButton::OnActivate)
-    );
-const HudUiClampedIntTextInput_FTable g_HudUiNetGameSetupPanel_ClampedInput_FTable =
-    MakeHudUiNetGameSetupPanelClampedInputFTable();
-const HudUiZrdWidget_FTable g_HudUiNetGameSetupPanel_StepButton_FTable =
-    MakeHudUiNetGameSetupZrdFTable<HudUiZrdWidget_FTable>(
-        MethodAddress(&HudUiClampedIntStepButton::OnActivate)
-    );
-const HudUiCheckToggleWidget_FTable g_HudUiNetGameSetupPanel_CheckToggle_FTable =
-    MakeHudUiNetGameSetupPanelCheckToggleFTable();
 
 // Reimplements 0x419aa0: HudUiNetGameSetupPanel::Constructor
 // (D:\Proj\Battlesport\HudUiNetGameSetup.cpp)
 HudUiNetGameSetupPanel * HudUiNetGameSetupPanel::Constructor(
     int reconfigureExistingSessionValue
 ) {
-    HudUiBackground::Constructor();
+    new ((HudUiBackground *)this) HudUiBackground;
 
     playButton.Constructor();
-    playButton.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiNetGameSetupPanel_PlayButton_FTable);
     cancelButton.Constructor();
-    cancelButton.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiNetGameSetupPanel_CancelButton_FTable);
     gameNameInput.Constructor(21);
-    gameNameInput.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiNetGameSetupPanel_GameNameInput_FTable);
     worldSelector.Constructor();
-    worldSelector.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiNetGameSetupPanel_WorldSelector_FTable);
     nextWorldButton.Constructor();
-    nextWorldButton.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiNetGameSetupPanel_NextWorldButton_FTable);
     prevWorldButton.Constructor();
-    prevWorldButton.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiNetGameSetupPanel_PrevWorldButton_FTable);
     timeLimitInput.HudUiNumericTextInput::Constructor(4);
     timeLimitInput.minValue = -2147483647 - 1;
     timeLimitInput.maxValue = 2147483647;
-    timeLimitInput.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiNetGameSetupPanel_ClampedInput_FTable);
-    incTimeLimitButton.base.Constructor();
-    incTimeLimitButton.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiNetGameSetupPanel_StepButton_FTable);
+    incTimeLimitButton.Constructor();
     incTimeLimitButton.targetInput = 0;
     incTimeLimitButton.stepDelta = 1;
-    decTimeLimitButton.base.Constructor();
-    decTimeLimitButton.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiNetGameSetupPanel_StepButton_FTable);
+    decTimeLimitButton.Constructor();
     decTimeLimitButton.targetInput = 0;
     decTimeLimitButton.stepDelta = 1;
     killsInput.Constructor(2);
-    killsInput.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiNetGameSetupPanel_ClampedInput_FTable);
-    incKillsButton.base.Constructor();
-    incKillsButton.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiNetGameSetupPanel_StepButton_FTable);
+    incKillsButton.Constructor();
     incKillsButton.targetInput = 0;
     incKillsButton.stepDelta = 1;
-    decKillsButton.base.Constructor();
-    decKillsButton.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiNetGameSetupPanel_StepButton_FTable);
+    decKillsButton.Constructor();
     decKillsButton.targetInput = 0;
     decKillsButton.stepDelta = 1;
     maxPlayersInput.Constructor(2);
-    maxPlayersInput.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiNetGameSetupPanel_ClampedInput_FTable);
-    incMaxPlayersButton.base.Constructor();
-    incMaxPlayersButton.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiNetGameSetupPanel_StepButton_FTable);
+    incMaxPlayersButton.Constructor();
     incMaxPlayersButton.targetInput = 0;
     incMaxPlayersButton.stepDelta = 1;
-    decMaxPlayersButton.base.Constructor();
-    decMaxPlayersButton.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiNetGameSetupPanel_StepButton_FTable);
+    decMaxPlayersButton.Constructor();
     decMaxPlayersButton.targetInput = 0;
     decMaxPlayersButton.stepDelta = 1;
     allowMapsToggle.Constructor();
-    allowMapsToggle.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiNetGameSetupPanel_CheckToggle_FTable);
     nameTagsToggle.Constructor();
-    nameTagsToggle.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiNetGameSetupPanel_CheckToggle_FTable);
     killsSwitch.Constructor(0);
     lapsSwitch.Constructor(0);
 
-    base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiNetGameSetupPanel_FTable);
     reconfigureExistingSession = reconfigureExistingSessionValue;
 
     zReader::Node *const loadedSection =
@@ -359,87 +195,87 @@ HudUiNetGameSetupPanel * HudUiNetGameSetupPanel::Constructor(
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &playButton.base,
+            &playButton,
             "PLAY"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &cancelButton.base,
+            &cancelButton,
             "CANCEL"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &gameNameInput.base.base,
+            &gameNameInput,
             "GAME_NAME"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &worldSelector.base.base,
+            &worldSelector,
             "WORLD"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &nextWorldButton.base,
+            &nextWorldButton,
             "INC_WORLD"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &prevWorldButton.base,
+            &prevWorldButton,
             "DEC_WORLD"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &timeLimitInput.base.base,
+            &timeLimitInput,
             "TIME_LIMIT"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &incTimeLimitButton.base.base,
+            &incTimeLimitButton,
             "INC_TIME_LIMIT"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &decTimeLimitButton.base.base,
+            &decTimeLimitButton,
             "DEC_TIME_LIMIT"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &killsInput.base.base,
+            &killsInput,
             "KILLS"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &incKillsButton.base.base,
+            &incKillsButton,
             "INC_KILLS"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &decKillsButton.base.base,
+            &decKillsButton,
             "DEC_KILLS"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &maxPlayersInput.base.base,
+            &maxPlayersInput,
             "MAX_PLAYERS"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &incMaxPlayersButton.base.base,
+            &incMaxPlayersButton,
             "INC_MAX_PLAYERS"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &decMaxPlayersButton.base.base,
+            &decMaxPlayersButton,
             "DEC_MAX_PLAYERS"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &allowMapsToggle.base.base,
+            &allowMapsToggle,
             "ALLOW_MAPS"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &nameTagsToggle.base.base,
+            &nameTagsToggle,
             "NAME_TAGS"
         );
         HudUiBackground::FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
@@ -467,7 +303,7 @@ HudUiNetGameSetupPanel * HudUiNetGameSetupPanel::Constructor(
 
     const int enabledForNewSession = reconfigureExistingSession == 0 ? 1 : 0;
     SetZrdWidgetEnabled(
-        &gameNameInput.base,
+        &gameNameInput,
         enabledForNewSession
     );
 
@@ -507,15 +343,15 @@ HudUiNetGameSetupPanel * HudUiNetGameSetupPanel::Constructor(
 
     if (zOpt::GetNetworkModemEnabled() != 0) {
         SetZrdWidgetEnabled(
-            &maxPlayersInput.base,
+            &maxPlayersInput,
             0
         );
         SetZrdWidgetEnabled(
-            &incMaxPlayersButton.base,
+            &incMaxPlayersButton,
             0
         );
         SetZrdWidgetEnabled(
-            &decMaxPlayersButton.base,
+            &decMaxPlayersButton,
             0
         );
     } else {
@@ -526,7 +362,7 @@ HudUiNetGameSetupPanel * HudUiNetGameSetupPanel::Constructor(
             8
         );
         SetZrdWidgetEnabled(
-            &maxPlayersInput.base,
+            &maxPlayersInput,
             enabledForNewSession
         );
         ConfigureStepButton(
@@ -535,7 +371,7 @@ HudUiNetGameSetupPanel * HudUiNetGameSetupPanel::Constructor(
             1
         );
         SetZrdWidgetEnabled(
-            &incMaxPlayersButton.base,
+            &incMaxPlayersButton,
             enabledForNewSession
         );
         ConfigureStepButton(
@@ -544,14 +380,14 @@ HudUiNetGameSetupPanel * HudUiNetGameSetupPanel::Constructor(
             -1
         );
         SetZrdWidgetEnabled(
-            &decMaxPlayersButton.base,
+            &decMaxPlayersButton,
             enabledForNewSession
         );
     }
 
     allowMapsToggle.SetChecked(1);
     nameTagsToggle.SetChecked(0);
-    base.base.SetChildFlags(0);
+    SetChildFlags(0);
     return this;
 }
 
@@ -562,14 +398,14 @@ void HudUiNetGameSetupPanel::Destructor() {
     killsSwitch.DestructorCore();
     nameTagsToggle.DestructorCore();
     allowMapsToggle.DestructorCore();
-    decMaxPlayersButton.base.DestructorCore();
-    incMaxPlayersButton.base.DestructorCore();
+    decMaxPlayersButton.DestructorCore();
+    incMaxPlayersButton.DestructorCore();
     maxPlayersInput.Destructor();
-    decKillsButton.base.DestructorCore();
-    incKillsButton.base.DestructorCore();
+    decKillsButton.DestructorCore();
+    incKillsButton.DestructorCore();
     killsInput.Destructor();
-    decTimeLimitButton.base.DestructorCore();
-    incTimeLimitButton.base.DestructorCore();
+    decTimeLimitButton.DestructorCore();
+    incTimeLimitButton.DestructorCore();
     timeLimitInput.Destructor();
     prevWorldButton.DestructorCore();
     nextWorldButton.DestructorCore();
@@ -577,7 +413,7 @@ void HudUiNetGameSetupPanel::Destructor() {
     gameNameInput.Destructor();
     cancelButton.DestructorCore();
     playButton.DestructorCore();
-    HudUiBackground::Destructor();
+    this->HudUiBackground::~HudUiBackground();
 }
 
 HudUiNetGameSetupPanel * HudUiNetGameSetupPanel::ScalarDeletingDestructor(

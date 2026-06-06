@@ -18,22 +18,6 @@ enum zSndCdAudioOption {
 
 extern "C" int g_RecoilState_MainMenuSkipExitDelay;
 
-struct zFMV_ActionVirtual {
-    virtual zFMV_Action * ScalarDeletingDestructor(unsigned int flags);
-    virtual int Update(double timeSec);
-    virtual void Begin(double timeSec);
-    virtual void End();
-    virtual void RunBlocking();
-    void *reserved14;
-};
-
-// Models the HudUi dialog controller vtable prefix used by BN 0x415319 for
-// virtual SetEnabled dispatch after constructing the concrete main-menu dialog.
-struct HudUiMainMenuDialogVirtualDispatch {
-    virtual void Update();
-    virtual void SetEnabled(int enabled);
-};
-
 struct zFMV_ActionBlurStack : zFMV_ActionBlur {
     /**
      * Original inline helper observed in caller 0x415220.
@@ -51,15 +35,6 @@ struct zFMV_ActionBlurStack : zFMV_ActionBlur {
         );
     }
 
-    /**
-     * Original inline helper observed in caller 0x415220.
-     *
-     * Purpose: restore the base action vtable after the stack blur action's
-     * lifetime ends.
-     */
-    ~zFMV_ActionBlurStack() {
-        vftable = &g_zFMV_ActionBase_Vtable;
-    }
 };
 } // namespace
 
@@ -105,11 +80,10 @@ RECOIL_NO_GS int RecoilStateMainMenuTransition::OnTryBecomeCurrent() {
             4,
             1
         );
-        zFMV_ActionVirtual *const actionVirtual = (zFMV_ActionVirtual *)&blurAction;
-        actionVirtual->Begin(0.0);
-        while (actionVirtual->Update(0.0) != 0) {
+        blurAction.Begin(0.0);
+        while (blurAction.Update(0.0) != 0) {
         }
-        actionVirtual->End();
+        blurAction.End();
     }
 
     zSndPlayHandleSnapshot *const audioSnapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
@@ -120,9 +94,9 @@ RECOIL_NO_GS int RecoilStateMainMenuTransition::OnTryBecomeCurrent() {
 
     HudUiMainMenuDialog *const dialog = new HudUiMainMenuDialog(m_entryRoute);
 
-    m_mainMenuDialog = (RecoilPtr32)(unsigned int)dialog;
+    m_mainMenuDialog = dialog;
 
-    ((HudUiMainMenuDialogVirtualDispatch *)dialog)->SetEnabled(1);
+    dialog->SetEnabled(1);
 
     if (zSnd::GetCDAudioOption() != ZSND_CDAUDIO_DISABLED) {
         zSndCd::PlayTrackWithMode(

@@ -3058,28 +3058,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48c800:
   - [✅] Reconstructed (Name: zUtil_ZRDR::GrowFreePool)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zUtil; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zUtil; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zUtil_ZRDR_GrowFreePool;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zutil_zrdr_grow_free_pool;
     - Group: engine.zutil;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48c820:
   - [✅] Reconstructed (Name: zUtil_ZRDR::PushFreeNode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zUtil; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zUtil; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zUtil_ZRDR_PushFreeNode;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zutil_zrdr_push_free_node;
     - Group: engine.zutil;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48c890:
   - [✅] Reconstructed (Name: zUtil_ZRDR::FreeNodePool)
@@ -3097,22 +3097,22 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48c8e0:
   - [✅] Reconstructed (Name: zUtil_ZRDR::PopFreeNode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zUtil; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zUtil; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zUtil_ZRDR_PopFreeNode;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zutil_zrdr_pop_free_node;
     - Group: engine.zutil;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48ca10:
   - [✅] Reconstructed (Name: zUtil_ZRDR::AllocNodeWithPayload)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zUtil; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zUtil_ZRDR_AllocNodeWithPayload;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zutil_zrdr_alloc_node_with_payload;
@@ -3189,8 +3189,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zUtil_ZRDR::CreateSearchPathList)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zUtil; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zUtil_ZRDR_CreateSearchPathList;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zutil_zrdr_create_search_path_list;
@@ -3214,22 +3214,22 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a5ce0:
   - [✅] Reconstructed (Name: zUtil::ZRDR_AddSearchPaths)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zUtil; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zUtil; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zUtil::ZRDR_AddSearchPaths;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zutil_zrdr_add_search_paths;
     - Group: engine.zutil;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte mismatch remains: zreader_search_path_helpers has 132 unmasked mismatches for zUtil::ZRDR_AddSearchPaths.
 
 - 0x4a5da0:
   - [☑️] Reconstructed (Name: zUtil_ZRDR::StrCmpPredicate)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zUtil; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zUtil_ZRDR_StrCmpPredicate;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zutil_zrdr_str_cmp_predicate;
@@ -3730,8 +3730,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zReader::LoadNodeFromPath)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zReader; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zReader::LoadNodeFromPath;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zreader_load_node_from_path;
@@ -3743,8 +3743,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zReader::FreeLoadedTree)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zReader; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zReader::FreeLoadedTree;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zreader_free_loaded_tree;
@@ -3756,8 +3756,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zReader::FreeNodeRecursive)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zReader; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zReader_FreeNodeRecursive;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zreader_free_node_recursive;
@@ -3769,8 +3769,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zReader::FindChildRecursive)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zReader; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zReader_FindChildRecursive;
     - File: src/GameZRecoil/zReader/zreader_lookup.cpp;
     - Target: zreader_find_child_recursive;
@@ -3782,8 +3782,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zReader::GetNamedNode)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zReader; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zReader_GetNamedNode;
     - File: src/GameZRecoil/zReader/zreader_lookup.cpp;
     - Target: zreader_get_named_node;
@@ -3821,8 +3821,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zReader::ReadNamedInt)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zReader; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zReader::ReadNamedInt;
     - File: src/GameZRecoil/zReader/zreader_lookup.cpp;
     - Target: zreader_read_named_int;
@@ -3847,8 +3847,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zReader::OpenFileFromMountedArchives)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zReader; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zReader_OpenFileFromMountedArchives;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zreader_load_node_from_path;
@@ -3860,8 +3860,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zReader::FileExists)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zReader; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zReader::FileExists;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zreader_file_exists;
@@ -3873,8 +3873,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zReader::FileExistsWrapper)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zReader; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zReader_FileExists_Wrapper;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zreader_file_exists;
@@ -3898,15 +3898,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48c950:
   - [✅] Reconstructed (Name: zArchiveList::CreateEmpty)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zReader; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: zArchiveList; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zArchiveList_CreateEmpty;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zarchive_list_create_empty;
     - Group: engine.zreader;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48c970:
   - [✅] Reconstructed (Name: zArchiveList::Destroy)
@@ -3924,9 +3924,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48c9a0:
   - [✅] Reconstructed (Name: zArchiveList::LinkNodeBetween)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zReader; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: zArchiveList; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zArchiveList_LinkNodeBetween;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zarchive_list_link_node_between;
@@ -3937,22 +3937,22 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48c9c0:
   - [✅] Reconstructed (Name: zArchiveList::PushFrontPayload)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zReader; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: zArchiveList; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zArchiveList_PushFrontPayload;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zarchive_list_push_front_payload;
     - Group: engine.zreader;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48ca30:
   - [✅] Reconstructed (Name: zArchiveList::PushBackPayload)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zReader; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: zArchiveList; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zArchiveList_PushBackPayload;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zarchive_list_push_back_payload;
@@ -4002,15 +4002,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48cb30:
   - [✅] Reconstructed (Name: zArchiveList::GetAt)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zReader; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: zArchiveList; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zArchiveList_GetAt;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zarchive_list_get_at;
     - Group: engine.zreader;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48cb70:
   - [✅] Reconstructed (Name: zArchiveList::PopFrontPayload)
@@ -4028,9 +4028,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48cbd0:
   - [✅] Reconstructed (Name: zArchiveList::FindPayloadByPredicate)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zReader; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: zArchiveList; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zArchiveList_FindPayloadByPredicate;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zarchive_list_find_payload_by_predicate;
@@ -4054,35 +4054,35 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48cc50:
   - [✅] Reconstructed (Name: zArchiveList::FindPayloadByPredicateThunk)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zReader; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: zArchiveList; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zArchiveList_FindPayloadByPredicate_Thunk;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zarchive_list_find_payload_by_predicate_thunk;
     - Group: engine.zreader;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48cc60:
   - [✅] Reconstructed (Name: zArchiveList::GetCount)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zReader; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: zArchiveList; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zArchiveList_GetCount;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zarchive_list_get_count;
     - Group: engine.zreader;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48cda0:
   - [✅] Reconstructed (Name: zReader::AllocateNode)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zReader; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zReader_AllocateNode;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zreader_load_node_from_path;
@@ -4236,9 +4236,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a65d0:
   - [✅] Reconstructed (Name: zIndexArchive::FindRecordByNameCI)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zReader; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: zIndexArchive; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zIndexArchive::FindRecordByNameCI;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zindex_archive_find_record_by_name_ci;
@@ -4249,9 +4249,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a6630:
   - [✅] Reconstructed (Name: zIndexArchive::OpenFileByName)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zReader; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: zIndexArchive; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zIndexArchive::OpenFileByName;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zindex_archive_open_file_by_name;
@@ -10384,8 +10384,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zVid_Image::ReleaseIfNotDefault)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zImage; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVid_Image::ReleaseIfNotDefault;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_image_release_if_not_default;
@@ -10410,8 +10410,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zImage::TexDirFindOrCreateByPath)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zImage; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zImage::TexDir_FindOrCreateByPath;
     - File: src/GameZRecoil/zImage/zimg_texture.cpp;
     - Target: zimage_texdir_find_or_create_by_path;
@@ -10488,8 +10488,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zImage::InitMissionResources)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zImage; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zImage_InitMissionResources;
     - File: src/GameZRecoil/zImage/zimg_texture.cpp;
     - Target: zimage_init_mission_resources;
@@ -10500,15 +10500,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x46ec00:
   - [✅] Reconstructed (Name: zVid_Image::Create)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zImage; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: zVidImagePartial; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVid_Image::Create;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_image_create;
     - Group: engine.zimage;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46ec20:
   - [☑️] Reconstructed (Name: zVid_Image::QueryBytesPerPixel)
@@ -10565,35 +10565,35 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x46ec70:
   - [✅] Reconstructed (Name: zVid_Image::SetPixels)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zImage; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: zVidImagePartial; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVid_Image_SetPixels;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_image_set_pixels;
     - Group: engine.zimage;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46ec90:
   - [✅] Reconstructed (Name: zVid_Image::SetSize)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zImage; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: zVidImagePartial; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVid_Image::SetSize;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_image_set_size;
     - Group: engine.zimage;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46ecc0:
   - [✅] Reconstructed (Name: zVid_Image::Destroy)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zImage; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVid_Image::Destroy;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_image_destroy;
@@ -10605,8 +10605,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zVid_Image::ReleaseOwnedBuffers)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zImage; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVid_Image::ReleaseOwnedBuffers;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_image_release_owned_buffers;
@@ -10657,8 +10657,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zImage_Font::GetByIndexOrDefault)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zImage; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zImage_Font::GetByIndexOrDefault;
     - File: src/GameZRecoil/zImage/zimg_texture.cpp;
     - Target: zimage_font_get_by_index_or_default;
@@ -10708,15 +10708,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x46f260:
   - [☑️] Reconstructed (Name: zImage_Font::MeasureString)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zImage; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zImage; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zImage_Font::MeasureString;
     - File: src/GameZRecoil/zImage/zimg_texture.cpp;
     - Target: zimage_font_measure_string;
     - Group: engine.zimage;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S blocked: VC5SP3 zimage_init_helpers still fails for zImage_Font::MeasureString with 133 unmasked mismatches after relocation masking
 
 - 0x4c7f00:
   - [✅] Reconstructed (Name: zImage_Font::BlitStringToActiveTarget)
@@ -10773,15 +10773,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x46d870:
   - [✅] Reconstructed (Name: zVid_Image::ClearZeroAlphaPixelsInPlace)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zImage; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: zVidImagePartial; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVid_Image_ClearZeroAlphaPixelsInPlace;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_image_clear_zero_alpha_pixels;
     - Group: engine.zimage;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte mismatch remains: zvideo_texture_pack_image_helpers has 121 unmasked mismatches for zVid_Image::ClearZeroAlphaPixelsInPlace.
 
 - 0x46de50:
   - [☑️] Reconstructed (Name: zImage::TexDir_LoadPendingEntries)
@@ -10872,113 +10872,113 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x429f10:
   - [✅] Reconstructed (Name: zInput::BindGroupList_StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindGroupList_StaticInitAndRegisterAtExit;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindgroup_list_static_init_and_register_at_exit;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x429f20:
   - [☑️] Reconstructed (Name: zInput::BindGroupListStaticInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindGroupListStaticInit;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindgroup_list_static_init;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x429f40:
   - [✅] Reconstructed (Name: zInput::BindGroupListRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindGroupListRegisterAtExit;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindgroup_list_register_at_exit;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x429f50:
   - [☑️] Reconstructed (Name: zInput::BindGroupListAtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindGroupListAtExitDestructor;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindgroup_list_at_exit_destructor;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x429f80:
   - [☑️] Reconstructed (Name: zInput::BindGroupList_Clear)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindGroupList_Clear;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindgroup_list_clear;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x42a000:
   - [☑️] Reconstructed (Name: zInput_BindGroupInfo::Destroy)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: zInput_BindGroupInfo; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput_BindGroupInfo::Destroy;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindgroup_info_destroy;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x42a070:
   - [☑️] Reconstructed (Name: zInput::BindGroupList_AddGroup)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindGroupList_AddGroup;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindgroup_list_add_group;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x42a2c0:
   - [☑️] Reconstructed (Name: zInput::BindGroupList_AddCommandToGroup)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindGroupList_AddCommandToGroup;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindgroup_list_add_command_to_group;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x42a480:
   - [✅] Reconstructed (Name: zInput::BindGroupList_GetCount)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindGroupList_GetCount;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bind_group_list_get_count;
@@ -10989,48 +10989,48 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x42a4a0:
   - [✅] Reconstructed (Name: zInput::BindGroupList_GetGroupTitle)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindGroupList_GetGroupTitle;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bind_group_list_get_group_title;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x42a4b0:
   - [✅] Reconstructed (Name: zInput::BindGroupList_GetGroupCommandCount)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindGroupList_GetGroupCommandCount;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bind_group_list_get_group_command_count;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x42a4d0:
   - [✅] Reconstructed (Name: zInput::BindGroupList_GetGroupCommandId)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindGroupList_GetGroupCommandId;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bind_group_list_get_group_command_id;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x42a4e0:
   - [✅] Reconstructed (Name: zInput::BindMap_GetCommandLabel)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindMap_GetCommandLabel;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindmap_get_command_label;
@@ -11171,15 +11171,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x471c50:
   - [✅] Reconstructed (Name: zInput::ResetAllTransitionState)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::ResetAllTransitionState;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_reset_all_transition_state;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x471de0:
   - [✅] Reconstructed (Name: zInput::PollActiveDevices)
@@ -11301,9 +11301,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x42a9d0:
   - [✅] Reconstructed (Name: zInput_BindGroupInfoVec::Count)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: zInput_BindGroupInfoVec; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput_BindGroupInfoVec::Count;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bind_group_info_vec_count;
@@ -11484,8 +11484,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [☑️] Reconstructed (Name: zInput::Keyboard_ResetTransitionState)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::Keyboard_ResetTransitionState;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_keyboard_reset_transition_state;
@@ -11509,15 +11509,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x46f970:
   - [✅] Reconstructed (Name: zInput::Keyboard_SetRawEventCallback)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::Keyboard_SetRawEventCallback;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_keyboard_set_raw_event_callback;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46f980:
   - [✅] Reconstructed (Name: zInput::Keyboard_GetKeyTransitionState)
@@ -11821,15 +11821,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x470610:
   - [✅] Reconstructed (Name: zInput::Mouse_ResetTransitionState)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::Mouse_ResetTransitionState;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_mouse_reset_transition_state;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x470670:
   - [✅] Reconstructed (Name: zInput::Mouse_SetCooperativeLevelFlags)
@@ -12198,54 +12198,54 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x470f50:
   - [✅] Reconstructed (Name: zInput_BindMapContext::CopyCommandLabel)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: zInput_BindMapContext; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput_BindMapContext::CopyCommandLabel;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindmap_context_copy_command_label;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x470f80:
   - [☑️] Reconstructed (Name: zInput::BindMap_FormatKeyComboName)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindMap_FormatKeyComboName;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindmap_format_key_combo_name;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x471040:
   - [✅] Reconstructed (Name: zInput::BindMap_CopyJoystickButtonName)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindMap_CopyJoystickButtonName;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindmap_copy_joystick_button_name;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x471070:
   - [✅] Reconstructed (Name: zInput::BindMap_CopyMouseButtonName)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindMap_CopyMouseButtonName;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindmap_copy_mouse_button_name;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4710a0:
   - [☑️] Reconstructed (Name: zInput::BindMapSystem_Init)
@@ -12263,41 +12263,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x471120:
   - [☑️] Reconstructed (Name: zInput::BindMap_InitDikKeyNameTable)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindMap_InitDikKeyNameTable;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindmap_init_dik_key_name_table;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4715e0:
   - [✅] Reconstructed (Name: zInput::BindMap_InitJoystickButtonNameTable)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindMap_InitJoystickButtonNameTable;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindmap_init_joystick_button_name_table;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x471640:
   - [✅] Reconstructed (Name: zInput::BindMap_InitMouseButtonNameTable)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindMap_InitMouseButtonNameTable;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindmap_init_mouse_button_name_table;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x471660:
   - [✅] Reconstructed (Name: zInput::BindMapSystem_Shutdown)
@@ -12342,8 +12342,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetPrimaryKeyboardKey)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindMapCurrent_GetPrimaryKeyboardKey;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindmap_current_get_primary_keyboard_key;
@@ -12355,8 +12355,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetSecondaryKeyboardKey)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindMapCurrent_GetSecondaryKeyboardKey;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindmap_current_get_secondary_keyboard_key;
@@ -12368,8 +12368,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetJoystickButtonSlot)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindMapCurrent_GetJoystickButtonSlot;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindmap_current_get_joystick_button_slot;
@@ -12381,8 +12381,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_GetMouseButtonSlot)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindMapCurrent_GetMouseButtonSlot;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindmap_current_get_mouse_button_slot;
@@ -12537,8 +12537,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_CopyCommandLabel)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindMapCurrent_CopyCommandLabel;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindmap_current_copy_command_label;
@@ -12549,41 +12549,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x471800:
   - [☑️] Reconstructed (Name: zInput::BindMapCurrent_FormatKeyComboName)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindMapCurrent_FormatKeyComboName;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindmap_current_format_key_combo_name;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x471820:
   - [☑️] Reconstructed (Name: zInput::BindMapCurrent_CopyJoystickButtonName)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindMapCurrent_CopyJoystickButtonName;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindmap_current_copy_joystick_button_name;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x471840:
   - [☑️] Reconstructed (Name: zInput::BindMapCurrent_CopyMouseButtonName)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindMapCurrent_CopyMouseButtonName;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindmap_current_copy_mouse_button_name;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x471860:
   - [☑️] Reconstructed (Name: zInput::PushBindMapContextOverlay)
@@ -12965,15 +12965,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x472410:
   - [☑️] Reconstructed (Name: zInput::DI_ResetTransitionState)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::DI_ResetTransitionState;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_di_reset_transition_state;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x472450:
   - [☑️] Reconstructed (Name: zInputDI::CreateForceFeedbackEffect)
@@ -18792,15 +18792,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x46d940:
   - [✅] Reconstructed (Name: zVid_TexturePack::LoadImageByName)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVid_TexturePack; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVid_TexturePack_LoadImageByName;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_texture_pack_load_image_by_name;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte mismatch remains in zvideo_texture_pack_image_helpers.
 
 - 0x46e4e0:
   - [☑️] Reconstructed (Name: zVid_PaletteRemap::ApplyRecipeToPaletteVariant)
@@ -19026,15 +19026,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x46dd30:
   - [✅] Reconstructed (Name: zVid_TexturePack::LoadBuiltinImageByName)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVid_TexturePack; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVid_TexturePack_LoadBuiltinImageByName;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_texture_pack_load_builtin_image_by_name;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte mismatch remains in zvideo_texture_pack_image_helpers.
 
 - 0x46df50:
   - [☑️] Reconstructed (Name: zVid_TexturePack::EnsureBuiltinTexturePacksLoaded)
@@ -19144,8 +19144,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zVideo::Fx_SetSurfaceState)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVideo::Fx_SetSurfaceState;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_fx_set_surface_state;
@@ -19299,15 +19299,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a67d0:
   - [✅] Reconstructed (Name: zVideo::Dispatch_UnlockSwSurfaceState)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zVideo/zVideo.cpp; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::Dispatch_UnlockSwSurfaceState;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dispatch_unlock_sw_surface_state;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a6830:
   - [✅] Reconstructed (Name: zVideo::CallClearPrimarySurfaceAndZBuffer)
@@ -19325,15 +19325,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a68d0:
   - [✅] Reconstructed (Name: zVideo::Dispatch_UnlockPrimarySurfaceState)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: source-file; Parent: src/GameZRecoil/zVideo/zVideo.cpp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zVideo/zVideo.cpp; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVideo::Dispatch_UnlockPrimarySurfaceState;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_fx_surface_queue;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: VC5SP3 tier S verification pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a6b80:
   - [✅] Reconstructed (Name: zVideo::SetClearColorPacked16)
@@ -19871,12 +19871,12 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bee20:
   - [✅] Reconstructed (Name: zVideoFxPass3Config::QueuePrimitiveRaw)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: zVideoFxPass3Config; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVideoFxPass3Config::QueuePrimitiveRaw;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
-    - Target: zvideo_fxpass3_config_queue_primitive_raw;
+    - Target: zvideo_fx_surface_queue;
     - Group: engine.zvideo;
     - Model: source-faithful;
     - Blocker: none
@@ -20002,11 +20002,11 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zVideo::GetPrimarySurfacePixels)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVideo::GetPrimarySurfacePixels;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
-    - Target: zvideo_get_primary_surface_pixels;
+    - Target: zvideo_fx_surface_queue;
     - Group: engine.zvideo;
     - Model: source-faithful;
     - Blocker: none
@@ -20053,28 +20053,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a68e0:
   - [✅] Reconstructed (Name: zVideo::Dispatch_LockDisplayModeSurfaceState)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zVideo/zVideo.cpp; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::Dispatch_LockDisplayModeSurfaceState;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dispatch_lock_display_mode_surface_state;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a68f0:
   - [✅] Reconstructed (Name: zVideo::Dispatch_UnlockDisplayModeSurfaceState)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zVideo/zVideo.cpp; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::Dispatch_UnlockDisplayModeSurfaceState;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dispatch_unlock_display_mode_surface_state;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a6900:
   - [✅] Reconstructed (Name: zVideo::PresentOrAdjustSurfacesIfEnabled)
@@ -21236,25 +21236,25 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a6770:
   - [✅] Reconstructed (Name: zVideo::RunPostprocessOnSwBuffer)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zVideo/zVideo.cpp; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::RunPostprocessOnSwBuffer;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_run_postprocess_on_sw_buffer;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a6840:
   - [☑️] Reconstructed (Name: zVideo::RunPostprocessOnPrimaryBuffer)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVideo::RunPostprocessOnPrimaryBuffer;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
-    - Target: zvideo_run_postprocess_on_primary_buffer;
+    - Target: zvideo_fx_surface_queue;
     - Group: engine.zvideo;
     - Model: source-faithful;
     - Blocker: none
@@ -21263,8 +21263,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zVideo_buff::ClipCoordToRange)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVideo_buff::ClipCoordToRange;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_buff_clip_coord_to_range;
@@ -21314,9 +21314,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a6b90:
   - [✅] Reconstructed (Name: zVideo::PixelPack_GetRgbBits)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: global-data; Parent: zVideo.pixel-pack; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::PixelPack_GetRgbBits;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_pixel_pack_get_rgb_bits;
@@ -21327,9 +21327,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a6bb0:
   - [✅] Reconstructed (Name: zVideo::PixelPack_GetRgbMasks)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: global-data; Parent: zVideo.pixel-pack; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::PixelPack_GetRgbMasks;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_pixel_pack_get_rgb_masks;
@@ -21340,9 +21340,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a6bd0:
   - [✅] Reconstructed (Name: zVideo::PixelPack_GetPackingParams)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: global-data; Parent: zVideo.pixel-pack; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::PixelPack_GetPackingParams;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_pixel_pack_get_packing_params;
@@ -21353,15 +21353,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a6bf0:
   - [☑️] Reconstructed (Name: zVideo_PixelPack::SetupFromMasks)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: global-data; Parent: zVideo.pixel-pack; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::PixelPack_SetupFromMasks;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_pixel_pack_setup_from_masks;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a6ca0:
   - [☑️] Reconstructed (Name: zVid::PackColor00RRGGBB)
@@ -21379,15 +21379,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a6cf0:
   - [✅] Reconstructed (Name: zVid::PackColorRGB)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVid_PackColorRGB;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_pack_color_rgb;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a6d40:
   - [☑️] Reconstructed (Name: zVid::PackColorRgbFloats)
@@ -21418,28 +21418,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a6e80:
   - [✅] Reconstructed (Name: zVideoBuffer::CaptureSurfaceToImage)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zVideo/zVideo.cpp; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_buff_CaptureSurfaceToImage;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_capture_surface_to_image;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a6fe0:
   - [☑️] Reconstructed (Name: zVideo_buff::CopySurfaceRectToImage)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo_buff; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_buff::CopySurfaceRectToImage;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_buff_copy_surface_rect_to_image;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S blocked: no VC5SP3 byte target currently covers zVideo_buff::CopySurfaceRectToImage; current source is accepted at tier B with typed zVideo_SurfaceStatePartial globals
 
 - 0x4bee60:
   - [✅] Reconstructed (Name: zVideoFxPass3Config::RegisterDestroyAtExit)
@@ -21510,11 +21510,11 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zVideo::FxPass3_QueuePrimitive)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVideo::FxPass3_QueuePrimitive;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
-    - Target: zvideo_fxpass3_queue_primitive;
+    - Target: zvideo_fx_surface_queue;
     - Group: engine.zvideo;
     - Model: source-faithful;
     - Blocker: none
@@ -22934,15 +22934,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x490340:
   - [✅] Reconstructed (Name: zRndr::SetFrameBufferRegion)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: source-file; Parent: src/GameZRecoil/zRndr/zRndr.cpp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zRndr::SetFrameBufferRegion;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_set_framebuffer_region;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: VC5SP3 tier S verification pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x490480:
   - [✅] Reconstructed (Name: zRndr::SetPerspectiveAdaptiveSpanParams)
@@ -26292,14 +26292,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [☑️] Reconstructed (Name: zGame::Options_FindOption)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zGame; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zGame::Options_FindOption;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zgame_options_find_option;
     - Group: engine.zgame;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S retry blocked by MFC/windows include ordering in current VC5 target
 
 - 0x4b3090:
   - [✅] Reconstructed (Name: zGame_OptionsRuntimeConfig::CopyDefault)
@@ -28605,16 +28605,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x41eb30:
   - [✅] Reconstructed (Name: Player_UnderwaterFxPass3Ui::Constructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: Player; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: Player_FxPass3Ui; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: Player_UnderwaterFxPass3Ui::Constructor;
-    - File: src/Battlesport/player.cpp;
-    - Target: player_underwater_fx_pass3_ui_constructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: battlesport.player;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: Player FX pass-3 local table globals/factories, constructor table writes, and raw visibility dispatch were removed; still blocked on broader zVideo FxPass3/HudUiElement dispatch owner model, callback binding for ApplyBlueTint/ApplyGreenMask, touched data audit, and tier S byte/provider evidence.
 
 - 0x41eb50:
   - [✅] Reconstructed (Name: Player::InitAndRegisterProjectileCameraFxPass3UiSingleton)
@@ -28670,16 +28670,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x41eb90:
   - [✅] Reconstructed (Name: Player_ProjectileCameraFxPass3Ui::Constructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: Player; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: Player_FxPass3Ui; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: Player_ProjectileCameraFxPass3Ui::Constructor;
-    - File: src/Battlesport/player.cpp;
-    - Target: player_projectile_camera_fx_pass3_ui_constructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: battlesport.player;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: Player FX pass-3 local table globals/factories, constructor table writes, and raw visibility dispatch were removed; still blocked on broader zVideo FxPass3/HudUiElement dispatch owner model, callback binding for ApplyBlueTint/ApplyGreenMask, touched data audit, and tier S byte/provider evidence.
 
 - 0x41ec00:
   - [✅] Reconstructed (Name: Player::InitSaveStateList)
@@ -33114,55 +33114,55 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x419740:
   - [☑️] Reconstructed (Name: RecoilApp_MpExitDialogState::OnEnter)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: HUD; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiMpExitDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: RecoilApp_MpExitDialogState::OnEnter;
-    - File: src/Battlesport/HudUiMpExitDialog.cpp;
-    - Target: recoil_app_mp_exit_dialog_state_on_enter;
-    - Group: ui.hud_runtime;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
+    - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: MpExit-local table type/globals/factories, constructor table overwrites, raw update/delete dispatch, and authored scalar deleting destructor source were removed; still blocked on broader HudUiBackground/HudUiElement/HUD widget dispatch owner model, button activation dispatch owner, touched data audit, and tier S byte/provider evidence.
 
 - 0x4198d0:
   - [✅] Reconstructed (Name: RecoilApp_MpExitDialogState::OnTryBecomeCurrent)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: subsystem; Parent: HUD; State: implemented)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiMpExitDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: RecoilApp_MpExitDialogState::OnTryBecomeCurrent;
-    - File: src/Battlesport/HudUiMpExitDialog.cpp;
-    - Target: recoil_app_mp_exit_dialog_state_on_try_become_current;
-    - Group: ui.hud_runtime;
-    - Model: source-faithful;
-    - Blocker: none
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
+    - Group: ui.zhud;
+    - Model: pending;
+    - Blocker: MpExit-local table type/globals/factories, constructor table overwrites, raw update/delete dispatch, and authored scalar deleting destructor source were removed; still blocked on broader HudUiBackground/HudUiElement/HUD widget dispatch owner model, button activation dispatch owner, touched data audit, and tier S byte/provider evidence.
 
 - 0x419940:
   - [✅] Reconstructed (Name: RecoilApp_MpExitDialogState::OnDeactivate)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: HUD; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiMpExitDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: RecoilApp_MpExitDialogState::OnDeactivate;
-    - File: src/Battlesport/HudUiMpExitDialog.cpp;
-    - Target: recoil_app_mp_exit_dialog_state_on_deactivate;
-    - Group: ui.hud_runtime;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
+    - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: MpExit-local table type/globals/factories, constructor table overwrites, raw update/delete dispatch, and authored scalar deleting destructor source were removed; still blocked on broader HudUiBackground/HudUiElement/HUD widget dispatch owner model, button activation dispatch owner, touched data audit, and tier S byte/provider evidence.
 
 - 0x419990:
   - [☑️] Reconstructed (Name: RecoilApp_MpExitDialogState::OnUpdateShouldQuit)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: HUD; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiMpExitDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: RecoilApp_MpExitDialogState::OnUpdateShouldQuit;
-    - File: src/Battlesport/HudUiMpExitDialog.cpp;
-    - Target: recoil_app_mp_exit_dialog_state_on_update_should_quit;
-    - Group: ui.hud_runtime;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
+    - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: MpExit-local table type/globals/factories, constructor table overwrites, raw update/delete dispatch, and authored scalar deleting destructor source were removed; still blocked on broader HudUiBackground/HudUiElement/HUD widget dispatch owner model, button activation dispatch owner, touched data audit, and tier S byte/provider evidence.
 
 - 0x415ab0:
   - [✅] Reconstructed (Name: HudSensorMapNode::Init)
@@ -33942,7 +33942,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_sensor_tracker_reset_mission_state;
     - Group: ui.hud_runtime;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudSensorTracker-local raw SetVisible/delete slot helpers were removed; still blocked on broader HUD/HudUiElement/weather FX dispatch owner model, touched data audit, and tier S byte/provider evidence.
 
 - 0x417770:
   - [✅] Reconstructed (Name: HudSensorTracker::InitMissionIdAndFlags)
@@ -34383,16 +34383,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x403930:
   - [✅] Reconstructed (Name: HudUiBriefingRuntime::Constructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiBriefingRuntime; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiBriefingRuntime::Constructor;
-    - File: src/Battlesport/Briefing.cpp;
-    - Target: briefing_runtime_constructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: Briefing-local table globals/factories, constructor table overwrites, raw slot helpers, and authored scalar deleting destructor source were removed; still blocked on broader HudUiBackground/HudUiElement/HUD dispatch owner model, composite-entry destructor owner, touched data audit, and tier S byte/provider evidence.
 
 - 0x403c10:
   - [✅] Reconstructed (Name: HudUiBriefingLocatorPanel::Constructor)
@@ -34435,55 +34435,55 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x403ed0:
   - [☑️] Reconstructed (Name: HudUiBriefingRuntime::Destructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiBriefingRuntime; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiBriefingRuntime::Destructor;
-    - File: src/Battlesport/Briefing.cpp;
-    - Target: briefing_runtime_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: Briefing-local table globals/factories, constructor table overwrites, raw slot helpers, and authored scalar deleting destructor source were removed; still blocked on broader HudUiBackground/HudUiElement/HUD dispatch owner model, composite-entry destructor owner, touched data audit, and tier S byte/provider evidence.
 
 - 0x404070:
   - [✅] Reconstructed (Name: HudUiBriefingRuntime::Update)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiBriefingRuntime; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiBriefingRuntime::Update;
-    - File: src/Battlesport/Briefing.cpp;
-    - Target: briefing_runtime_update;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: Briefing-local table globals/factories, constructor table overwrites, raw slot helpers, and authored scalar deleting destructor source were removed; still blocked on broader HudUiBackground/HudUiElement/HUD dispatch owner model, composite-entry destructor owner, touched data audit, and tier S byte/provider evidence.
 
 - 0x404400:
   - [✅] Reconstructed (Name: HudUiBriefingRuntime::BuildObjectiveActionsFromIndex)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiBriefingRuntime; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiBriefingRuntime::BuildObjectiveActionsFromIndex;
-    - File: src/Battlesport/Briefing.cpp;
-    - Target: briefing_runtime_build_objective_actions_from_index;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: Briefing-local table globals/factories, constructor table overwrites, raw slot helpers, and authored scalar deleting destructor source were removed; still blocked on broader HudUiBackground/HudUiElement/HUD dispatch owner model, composite-entry destructor owner, touched data audit, and tier S byte/provider evidence.
 
 - 0x406d20:
   - [✅] Reconstructed (Name: HudUiCheatCodeDialog::Constructor)
-  - [✅] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiCheatCodeDialog::Constructor;
-    - File: src/Battlesport/hud.cpp;
-    - Target: hud_ui_cheat_code_dialog_constructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: Cheat-code owner-local FTable factories/globals were removed from production source. BN proves a class-shaped HudUiCheatCodeDialog constructor with embedded child objects, but source remains blocked on the broader HudUiBackground/HudUiElement C++ dispatch owner before retiering.
 
 - 0x406e10:
   - [✅] Reconstructed (Name: HudUiCheatCodeDialog::ScalarDeletingDestructor)
@@ -34564,25 +34564,25 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Blocker: source-shape audit pending
 
 - 0x409040:
-  - [☑️] Reconstructed (Name: HudUiCreditsPanel::Constructor)
+  - [✅] Reconstructed (Name: HudUiCreditsPanel::HudUiCreditsPanel)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiCreditsPanel::Constructor;
+  - [✅] Source owner (Kind: class; Parent: HudUiCreditsPanel; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiCreditsPanel::HudUiCreditsPanel;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_credits_panel_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S verification blocked: class-first VC5 constructor target hud_ui_credits_panel_constructor compiles but still has 28 unmasked byte mismatches (BN 283 vs VC5 288) in final flags/epilogue shape after source-faithful member constructors.
 
 - 0x409160:
-  - [✅] Reconstructed (Name: HudUiZrdWidget::OnActivateQueueExitCurrentState)
+  - [✅] Reconstructed (Name: HudUiCreditsBackButton::OnActivate)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
-    - Name: HudUiZrdWidget::OnActivateQueueExitCurrentState;
+    - Name: HudUiCreditsBackButton::OnActivate;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_zrd_widget_on_activate_queue_exit_current_state;
     - Group: ui.zhud;
@@ -34592,132 +34592,132 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x409180:
   - [✅] Reconstructed (Name: HudUiCreditsQuitButton::OnActivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiCreditsQuitButton; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiCreditsQuitButton::OnActivate;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_credits_quit_button_on_activate;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4091c0:
   - [✅] Reconstructed (Name: HudUiCreditsPanel::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiCreditsPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiCreditsPanel::ScalarDeletingDestructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_credits_panel_scalar_deleting_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiCreditsPanel/HudUiZrdScrollingText FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x4091e0:
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiCreditsPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiZrdScrollingText::Destructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_zrd_scrolling_text_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiCreditsPanel/HudUiZrdScrollingText FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x4092a0:
   - [✅] Reconstructed (Name: HudUiCreditsPanel::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiCreditsPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiCreditsPanel::Destructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_credits_panel_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiCreditsPanel/HudUiZrdScrollingText FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x409360:
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiCreditsPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiZrdScrollingText::ScalarDeletingDestructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_zrd_scrolling_text_scalar_deleting_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiCreditsPanel/HudUiZrdScrollingText FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x409380:
   - [✅] Reconstructed (Name: HudUiCreditsPanel::UpdateFadeAndExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiCreditsPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiCreditsPanel::UpdateFadeAndExit;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_credits_panel_update_fade_and_exit;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiCreditsPanel/HudUiZrdScrollingText FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x409410:
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::Update)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiCreditsPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiZrdScrollingText::Update;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_zrd_scrolling_text_update;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiCreditsPanel/HudUiZrdScrollingText FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x409470:
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::UpdateScrollPositions)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiCreditsPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiZrdScrollingText::UpdateScrollPositions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_zrd_scrolling_text_update_scroll_positions;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiCreditsPanel/HudUiZrdScrollingText FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x409550:
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::OnActivateResetOwnerFade)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiCreditsPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiZrdScrollingText::OnActivateResetOwnerFade;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_zrd_scrolling_text_on_activate_reset_owner_fade;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiCreditsPanel/HudUiZrdScrollingText FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x409570:
   - [☑️] Reconstructed (Name: HudUiZrdScrollingText::LoadFromZrd)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiCreditsPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiZrdScrollingText::LoadFromZrd;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_zrd_scrolling_text_load_from_zrd;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiCreditsPanel/HudUiZrdScrollingText FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x409910:
   - [✅] Reconstructed (Name: HudUiPanelSpan::Clear)
@@ -34878,124 +34878,124 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40a940:
   - [☑️] Reconstructed (Name: HudCmdCommandList::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdCommandList; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdCommandList::Destructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_command_list_destructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier B/S plan promotion is blocked by HudUi/HudCmd data gates and destructor EH byte mismatch
 
 - 0x40aa30:
   - [☑️] Reconstructed (Name: HudCmdKeyAButton::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdKeyAButton; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdKeyAButton::Destructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_key_a_button_destructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier B/S plan promotion is blocked by HudUi/HudCmd data gates and destructor EH byte mismatch
 
 - 0x40ab20:
   - [☑️] Reconstructed (Name: HudCmdKeyBButton::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdKeyBButton; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdKeyBButton::Destructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_key_b_button_destructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier B/S plan promotion is blocked by HudUi/HudCmd data gates and destructor EH byte mismatch
 
 - 0x40ac10:
   - [☑️] Reconstructed (Name: HudCmdJoyButton::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdJoyButton; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdJoyButton::Destructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_joy_button_destructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier B/S plan promotion is blocked by HudUi/HudCmd data gates and destructor EH byte mismatch
 
 - 0x40ad00:
   - [☑️] Reconstructed (Name: HudCmdMouseButton::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdMouseButton; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdMouseButton::Destructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_mouse_button_destructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier B/S plan promotion is blocked by HudUi/HudCmd data gates and destructor EH byte mismatch
 
 - 0x40adf0:
-  - [☑️] Reconstructed (Name: HudCmdDialog::Destructor)
+  - [✅] Reconstructed (Name: HudCmdDialog::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialog; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdDialog::Destructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_destructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: data/tier S blocked: destructor depends on wider HUD cleanup/data debts and VC5 byte comparison still mismatches EH-expanded cleanup shape
 
 - 0x40b140:
   - [✅] Reconstructed (Name: HudCmdDialog::UpdateCaptureState)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialog; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdDialog::UpdateCaptureState;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_update_capture_state;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier B/S plan promotion is blocked by HudUi/zInput/HUD data gates and a VC5 UpdateCaptureState byte mismatch
 
 - 0x40b3e0:
   - [✅] Reconstructed (Name: HudCmdDialog::ApplyPrimaryKeyRebind)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialog; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdDialog::ApplyPrimaryKeyRebind;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_apply_primary_key_rebind;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier B/S plan promotion is blocked by zInput/HUD data gates and a VC5 key-branch byte mismatch
 
 - 0x40b460:
   - [✅] Reconstructed (Name: HudCmdDialog::ApplySecondaryKeyRebind)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialog; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdDialog::ApplySecondaryKeyRebind;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_apply_secondary_key_rebind;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier B/S plan promotion is blocked by zInput/HUD data gates and a VC5 key-branch byte mismatch
 
 - 0x40b4e0:
   - [✅] Reconstructed (Name: HudCmdDialog::ApplyJoystickButtonRebind)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialog; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdDialog::ApplyJoystickButtonRebind;
@@ -35003,12 +35003,12 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_cmd_dialog_apply_joystick_button_rebind;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by zInput/HUD data gates
 
 - 0x40b560:
   - [✅] Reconstructed (Name: HudCmdDialog::ApplyMouseButtonRebind)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialog; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdDialog::ApplyMouseButtonRebind;
@@ -35016,12 +35016,12 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_cmd_dialog_apply_mouse_button_rebind;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by zInput/HUD data gates
 
 - 0x40b5e0:
   - [✅] Reconstructed (Name: HudCmdDialog::SelectGroupRelative)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialog; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdDialog::SelectGroupRelative;
@@ -35029,12 +35029,12 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_cmd_dialog_select_group_relative;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by zInput binding data gate through RebuildCommandBindingListsForGroup
 
 - 0x40b630:
   - [✅] Reconstructed (Name: HudCmdDialog::SelectCommandRelative)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialog; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdDialog::SelectCommandRelative;
@@ -35042,25 +35042,25 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_cmd_dialog_select_command_relative;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by zInput command-hint data gate through OnCommandSelectionChanged
 
 - 0x40b680:
-  - [☑️] Reconstructed (Name: HudCmdDialog::RebuildCommandBindingListsForGroup)
+  - [✅] Reconstructed (Name: HudCmdDialog::RebuildCommandBindingListsForGroup)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialog; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdDialog::RebuildCommandBindingListsForGroup;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_rebuild_command_binding_lists;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: data/tier S blocked: depends on zInput binding group/name global data and VC5 byte comparison still mismatches
 
 - 0x40b930:
   - [✅] Reconstructed (Name: HudCmdResetButton::OnActivate)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdResetButton; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdResetButton::OnActivate;
@@ -35068,12 +35068,12 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_cmd_reset_button_on_activate;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by zInput/HudCmdDialog rebuild data gates
 
 - 0x40b960:
   - [✅] Reconstructed (Name: HudCmdSetListWidget::OnActivate)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdSetListWidget; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdSetListWidget::OnActivate;
@@ -35081,25 +35081,25 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_cmd_set_list_widget_on_activate;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by HudUi/zInput/HUD data gates
 
 - 0x40b980:
-  - [☑️] Reconstructed (Name: HudCmdDialog::OnCommandSelectionChanged)
+  - [✅] Reconstructed (Name: HudCmdDialog::OnCommandSelectionChanged)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialog; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdDialog::OnCommandSelectionChanged;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_on_command_selection_changed;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: data/tier S blocked: depends on zInput command-hint global data and VC5 byte comparison still mismatches
 
 - 0x40ba30:
   - [✅] Reconstructed (Name: HudCmdKeyAButton::OnBeginCapture)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdKeyAButton; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdKeyAButton::OnBeginCapture;
@@ -35107,12 +35107,12 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_cmd_key_a_button_on_begin_capture;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by zInput/HUD data gates
 
 - 0x40ba60:
   - [✅] Reconstructed (Name: HudCmdKeyAButton::OnClearBinding)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdKeyAButton; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdKeyAButton::OnClearBinding;
@@ -35120,12 +35120,12 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_cmd_key_a_button_on_clear_binding;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by zInput/HUD data gates
 
 - 0x40ba90:
   - [✅] Reconstructed (Name: HudCmdBindButtonBase::OnSelectionChangedRefresh)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdBindButtonBase; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdBindButtonBase::OnSelectionChangedRefresh;
@@ -35133,12 +35133,12 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_cmd_bind_button_base_on_selection_changed_refresh;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by zInput data gate through HudCmdDialog::OnCommandSelectionChanged
 
 - 0x40bab0:
   - [✅] Reconstructed (Name: HudCmdKeyBButton::OnBeginCapture)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdKeyBButton; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdKeyBButton::OnBeginCapture;
@@ -35146,12 +35146,12 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_cmd_key_b_button_on_begin_capture;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by zInput/HUD data gates
 
 - 0x40bae0:
   - [✅] Reconstructed (Name: HudCmdKeyBButton::OnClearBinding)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdKeyBButton; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdKeyBButton::OnClearBinding;
@@ -35159,12 +35159,12 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_cmd_key_b_button_on_clear_binding;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by zInput/HUD data gates
 
 - 0x40bb00:
   - [✅] Reconstructed (Name: HudCmdJoyButton::OnBeginCapture)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdJoyButton; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdJoyButton::OnBeginCapture;
@@ -35172,12 +35172,12 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_cmd_joy_button_on_begin_capture;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by zInput/HUD data gates
 
 - 0x40bb30:
   - [✅] Reconstructed (Name: HudCmdJoyButton::OnClearBinding)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdJoyButton; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdJoyButton::OnClearBinding;
@@ -35185,12 +35185,12 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_cmd_joy_button_on_clear_binding;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by zInput/HUD data gates
 
 - 0x40bb50:
   - [✅] Reconstructed (Name: HudCmdMouseButton::OnBeginCapture)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdMouseButton; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdMouseButton::OnBeginCapture;
@@ -35198,12 +35198,12 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_cmd_mouse_button_on_begin_capture;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by zInput/HUD data gates
 
 - 0x40bb80:
   - [✅] Reconstructed (Name: HudCmdMouseButton::OnClearBinding)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdMouseButton; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdMouseButton::OnClearBinding;
@@ -35211,64 +35211,64 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_cmd_mouse_button_on_clear_binding;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by zInput/HUD data gates
 
 - 0x40bba0:
-  - [✅] Reconstructed (Name: HudCmdDialogCallback::NextSet)
+  - [✅] Reconstructed (Name: HudCmdNextSetButton::OnActivate)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdNextSetButton; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
-    - Name: HudCmdDialogCallback::NextSet;
+    - Name: HudCmdNextSetButton::OnActivate;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_callback_next_set;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by zInput data gate through HudCmdDialog::SelectGroupRelative
 
 - 0x40bbc0:
-  - [✅] Reconstructed (Name: HudCmdDialogCallback::PrevSet)
+  - [✅] Reconstructed (Name: HudCmdPrevSetButton::OnActivate)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdPrevSetButton; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
-    - Name: HudCmdDialogCallback::PrevSet;
+    - Name: HudCmdPrevSetButton::OnActivate;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_callback_prev_set;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by zInput data gate through HudCmdDialog::SelectGroupRelative
 
 - 0x40bbe0:
-  - [✅] Reconstructed (Name: HudCmdDialogCallback::NextCommand)
+  - [✅] Reconstructed (Name: HudCmdNextCommandButton::OnActivate)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdNextCommandButton; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
-    - Name: HudCmdDialogCallback::NextCommand;
+    - Name: HudCmdNextCommandButton::OnActivate;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_callback_next_command;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by zInput data gate through HudCmdDialog::SelectCommandRelative
 
 - 0x40bc00:
-  - [✅] Reconstructed (Name: HudCmdDialogCallback::PrevCommand)
+  - [✅] Reconstructed (Name: HudCmdPrevCommandButton::OnActivate)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdPrevCommandButton; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
-    - Name: HudCmdDialogCallback::PrevCommand;
+    - Name: HudCmdPrevCommandButton::OnActivate;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_callback_prev_command;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by zInput data gate through HudCmdDialog::SelectCommandRelative
 
 - 0x40bc20:
   - [✅] Reconstructed (Name: HudCmdDialogState::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdDialogState::StaticInitAndRegisterAtExit;
@@ -35281,7 +35281,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40bc30:
   - [✅] Reconstructed (Name: HudCmdDialogState::StaticInit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdDialogState::StaticInit;
@@ -35294,7 +35294,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40bc40:
   - [✅] Reconstructed (Name: HudCmdDialogState::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdDialogState::RegisterAtExit;
@@ -35306,21 +35306,21 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x40bc50:
   - [✅] Reconstructed (Name: HudCmdDialogState::AtExitDestructor)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudCmdDialogState::AtExitDestructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_cmd_dialog_state_at_exit_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: HudCmdDialogState lifecycle depends on HudCmdDialog constructor/destructor source-shape debt
 
 - 0x40bc60:
   - [✅] Reconstructed (Name: HudCmdDialogState::Constructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdDialogState::Constructor;
@@ -35332,55 +35332,55 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x40bc90:
   - [☑️] Reconstructed (Name: HudCmdDialogState::DestructorCore)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudCmdDialogState::DestructorCore;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_cmd_dialog_state_destructor_core;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: HudCmdDialogState lifecycle depends on HudCmdDialog constructor/destructor source-shape debt
 
 - 0x40bcf0:
   - [☑️] Reconstructed (Name: HudCmdDialogState::OnTryBecomeCurrent)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudCmdDialogState::OnTryBecomeCurrent;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_cmd_dialog_state_on_try_become_current;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudCmdDialogState lifecycle depends on HudCmdDialog constructor/destructor source-shape debt
 
 - 0x40bd60:
   - [✅] Reconstructed (Name: HudCmdDialogState::OnDeactivate)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudCmdDialogState::OnDeactivate;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_cmd_dialog_state_on_deactivate;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudCmdDialogState lifecycle depends on HudCmdDialog constructor/destructor source-shape debt
 
 - 0x40bda0:
   - [✅] Reconstructed (Name: HudCmdDialogState::QueueEnter)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdDialogState::QueueEnter;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_queue_enter;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40be00:
   - [✅] Reconstructed (Name: HudCmdBinding::DestroyRange)
@@ -35411,496 +35411,478 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40bf20:
   - [✅] Reconstructed (Name: HudCmdBindingEntry::DeleteAndReturnNull)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudCmdBindingEntry; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudCmdBindingEntry::DeleteAndReturnNull;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_binding_entry_delete_and_return_null;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40bf50:
   - [✅] Reconstructed (Name: HudCmdBindingEntry::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudCmdBindingEntry::ScalarDeletingDestructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_cmd_binding_entry_scalar_deleting_destructor;
-    - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+  - [✅] Provider-boundary (Kind: VC++ compiler; Name: HudCmdBindingEntry::ScalarDeletingDestructor; Origin: VC++ scalar deleting destructor generated for authored HudCmdBindingEntry destructor; BN body inlines displayText cleanup, tests flags bit 0, optionally calls operator delete, returns this, and retn 4.; File: external; Target: hud_cmd_binding_entry_scalar_deleting_destructor; Group: ui.zhud)
 
 - 0x40bf80:
-  - [☑️] Reconstructed (Name: HudCmdBindButtonBase::AddBindingEntry)
+  - [✅] Reconstructed (Name: HudCmdBindButtonBase::AddBindingEntry)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudCmdBindButtonBase; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudCmdBindButtonBase::AddBindingEntry;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_bind_button_base_add_binding_entry;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S blocked: VC5 byte comparison for hud_cmd_bind_button_base_add_binding_entry still mismatches due vector insert/EH codegen shape
 
 - 0x40c280:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::DestructorCore)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdBindButtonBase; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdBindButtonBase::DestructorCore;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_bind_button_base_destructor_core;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier B/S plan promotion is blocked by HudUi/HudCmd data gates and destructor EH byte mismatch
 
 - 0x40c720:
   - [☑️] Reconstructed (Name: HudOptionsDialog::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudOptionsDialog::Constructor;
+  - [✅] Source owner (Kind: class; Parent: HudOptionsDialog; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
+    - Name: HudOptionsDialog::HudOptionsDialog;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_options_dialog_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40c9c0:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Lighting::InitFromOptions)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_Lighting::InitFromOptions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_lighting_init_from_options;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40c9e0:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Lighting::SyncFromOptions)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_Lighting::SyncFromOptions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_lighting_sync_from_options;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40ca20:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Perspective::InitFromOptions)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_Perspective::InitFromOptions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_perspective_init_from_options;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40ca40:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Perspective::SyncFromOptions)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_Perspective::SyncFromOptions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_perspective_sync_from_options;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40ca80:
   - [☑️] Reconstructed (Name: HudUiOptionsPanel_FullHud::InitFromOptions)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_FullHud::InitFromOptions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_full_hud_init_from_options;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40cab0:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_ObjectDetail::InitFromOptions)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_ObjectDetail::InitFromOptions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_object_detail_init_from_options;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40cad0:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_ObjectDetail::SyncFromOptions)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_ObjectDetail::SyncFromOptions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_object_detail_sync_from_options;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40caf0:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_TextureMemory::InitFromOptions)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_TextureMemory::InitFromOptions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_texture_memory_init_from_options;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40cb10:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_TextureMemory::SyncFromOptions)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_TextureMemory::SyncFromOptions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_texture_memory_sync_from_options;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40cb30:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Effects::InitFromOptions)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_Effects::InitFromOptions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_effects_init_from_options;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40cb70:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Effects::SyncFromOptions)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_Effects::SyncFromOptions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_effects_sync_from_options;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40cb90:
   - [☑️] Reconstructed (Name: HudUiOptionsPanel_SoundActive::InitFromOptions)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_SoundActive::InitFromOptions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_sound_active_init_from_options;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40cbb0:
   - [☑️] Reconstructed (Name: HudUiOptionsPanel_SoundActive::SyncFromOptions)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_SoundActive::SyncFromOptions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_sound_active_sync_from_options;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40cbd0:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_SoundQuality::InitFromOptions)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_SoundQuality::InitFromOptions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_sound_quality_init_from_options;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40cbf0:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_SoundQuality::SyncFromOptions)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_SoundQuality::SyncFromOptions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_sound_quality_sync_from_options;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40cc10:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_SoundVolume::SyncFromOptions)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_SoundVolume::SyncFromOptions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_sound_volume_sync_from_options;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40cc30:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_SoundVolume::OnActivate)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_SoundVolume::OnActivate;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_sound_volume_on_activate;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40cc60:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_MusicEnable::SyncFromOptions)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_MusicEnable::SyncFromOptions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_music_enable_sync_from_options;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40cc80:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_MusicEnable::OnActivate)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_MusicEnable::OnActivate;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_music_enable_on_activate;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40ccc0:
   - [☑️] Reconstructed (Name: HudUiOptionsPanel_MusicVolume::SyncFromOptions)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_MusicVolume::SyncFromOptions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_music_volume_sync_from_options;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40cd00:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_MusicVolume::OnActivate)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_MusicVolume::OnActivate;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_music_volume_on_activate;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40cd30:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Resolution::SyncFromOptions)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_Resolution::SyncFromOptions;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_resolution_sync_from_options;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40ce80:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Resolution::OnActivate)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanel_Resolution::OnActivate;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_options_panel_resolution_on_activate;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40cf00:
   - [✅] Reconstructed (Name: HudOptionsDialog::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudOptionsDialog::ScalarDeletingDestructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_options_dialog_scalar_deleting_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40cf60:
   - [☑️] Reconstructed (Name: HudOptionsDialog::DestructorCore)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudOptionsDialog::DestructorCore;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_options_dialog_destructor_core;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40d070:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_static_init_and_register_at_exit;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40d080:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::StaticInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiOptionsPanelOverlayOwner::StaticInit;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_static_init;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40d090:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiOptionsPanelOverlayOwner::RegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_register_at_exit;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40d0a0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::AtExitDestructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanelOverlayOwner::AtExitDestructor;
-    - File: src/Battlesport/hud.cpp;
-    - Target: hud_ui_options_panel_overlay_owner_at_exit_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40d0b0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiOptionsPanelOverlayOwner::Constructor;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40d0c0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanelOverlayOwner::ScalarDeletingDestructor;
-    - File: src/Battlesport/hud.cpp;
-    - Target: hud_ui_options_panel_overlay_owner_scalar_deleting_destructor;
-    - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+  - [✅] Provider-boundary (Kind: VC++ scalar deleting destructor; Name: HudUiOptionsPanelOverlayOwner::ScalarDeletingDestructor; Origin: compiler-generated glue; BN body calls HudUiOptionsPanelOverlayOwner::DestructorCore, conditionally calls imported operator delete when flags & 1, and returns self; File: external; Target: pending; Group: ui.zhud)
 
 - 0x40d150:
   - [☑️] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent;
-    - File: src/Battlesport/hud.cpp;
-    - Target: hud_ui_options_panel_overlay_owner_on_try_become_current;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40d1c0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::QueueEnter)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiOptionsPanelOverlayOwner::QueueEnter;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_queue_enter;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40d220:
   - [☑️] Reconstructed (Name: HudUiListMenuEntry::CompareSortKey)
@@ -35944,7 +35926,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40e070:
   - [☑️] Reconstructed (Name: HudUiTriplet::DestructorCore)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTriplet; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTriplet::DestructorCore;
@@ -35957,7 +35939,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40e140:
   - [✅] Reconstructed (Name: HudUiTriplet::RebuildDisplay)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTriplet; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTriplet::RebuildDisplay;
@@ -35970,7 +35952,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40e590:
   - [☑️] Reconstructed (Name: HudUiTriplet::AddEntry)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTriplet; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTriplet::AddEntry;
@@ -35983,7 +35965,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40e800:
   - [✅] Reconstructed (Name: HudUiTriplet::UpdateEntryData)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTriplet; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTriplet::UpdateEntryData;
@@ -35996,7 +35978,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40e880:
   - [☑️] Reconstructed (Name: HudUiTriplet::RemoveEntry)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTriplet; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTriplet::RemoveEntry;
@@ -36009,7 +35991,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40e910:
   - [✅] Reconstructed (Name: HudUiTriplet::InterpolateLayout)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTriplet; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTriplet::InterpolateLayout;
@@ -36022,7 +36004,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40ea60:
   - [☑️] Reconstructed (Name: HudUiTriplet::IsLocalPlayerFirstEntry)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTriplet; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTriplet::IsLocalPlayerFirstEntry;
@@ -36074,15 +36056,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40fb70:
   - [✅] Reconstructed (Name: HudUiMeter::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMeter; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiMeter::Constructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_meter_constructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiMeter FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x40fe30:
   - [☑️] Reconstructed (Name: HudUiShieldMessageWidget::Destructor)
@@ -36203,16 +36185,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x414bc0:
   - [✅] Reconstructed (Name: HudUiMainMenuDialog::Constructor)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiMainMenuDialog::HudUiMainMenuDialog;
-    - File: src/Battlesport/HudUiMainMenuDialog.cpp;
-    - Target: hud_ui_main_menu_dialog_constructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: Main-menu dialog/button FTable factories/globals, dialog table install, and raw refresh slot dispatch were removed from production source. BN proves class-shaped dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement C++ dispatch owner before retiering.
 
 - 0x414f40:
   - [✅] Reconstructed (Name: HudUiMainMenuDialog_CreditsButton::OnActivate)
@@ -36489,16 +36471,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x41c290:
   - [✅] Reconstructed (Name: HudUiNewGamePanel::Constructor)
-  - [✅] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNewGamePanel::Constructor;
-    - File: src/Battlesport/hud.cpp;
-    - Target: hud_ui_new_game_panel_constructor_cluster;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: New Game owner-local FTable factories/globals were removed from production source. BN proves a class-shaped HudUiNewGamePanel constructor with embedded child objects, but source remains blocked on the broader HudUiBackground/HudUiElement C++ dispatch owner before retiering.
 
 - 0x41c3b0:
   - [✅] Reconstructed (Name: HudUiNewGamePanel_NameInput::OnActivate)
@@ -36594,145 +36576,145 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x41c560:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_on_try_become_current;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41c5e0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_lifecycle;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41c5f0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::StaticInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiNewGamePanelOverlayOwner::StaticInit;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_lifecycle;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41c630:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiNewGamePanelOverlayOwner::Destructor;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_lifecycle;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41c6a0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiNewGamePanelOverlayOwner::RegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_lifecycle;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41c6b0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiNewGamePanelOverlayOwner::AtExitDestructor;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_lifecycle;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41c6c0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::QueueEnter)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiNewGamePanelOverlayOwner::QueueEnter;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_queue_enter;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b4390:
   - [✅] Reconstructed (Name: HudUiTextInput::AllocTextBuffer)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTextInput; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiTextInput::AllocTextBuffer;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_text_input_alloc_text_buffer;
+    - Target: hud_ui_numeric_text_input_cluster;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b43d0:
   - [✅] Reconstructed (Name: HudUiTextInput::SetContents)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTextInput; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiTextInput::SetContents;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_text_input_set_contents;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b4410:
   - [✅] Reconstructed (Name: HudUiTextInput::GetBuffer)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTextInput; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiTextInput::GetBuffer;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_text_input_get_buffer;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b4420:
   - [☑️] Reconstructed (Name: HudUiTextInput::SetCursorPosition)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTextInput; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiTextInput::SetCursorPosition;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_text_input_set_cursor_position;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b4460:
   - [✅] Reconstructed (Name: HudUiTextInput::DispatchKeyAction)
@@ -36841,28 +36823,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b4620:
   - [✅] Reconstructed (Name: HudUiSliderBorder::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiSliderBorder; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiSliderBorder::Constructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_slider_border_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b47a0:
   - [✅] Reconstructed (Name: HudUiElement::ResetCommonFTable)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiElement::ResetCommonFTable;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_element_reset_common_ftable;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
 
 - 0x4b47b0:
   - [☑️] Reconstructed (Name: HudUiSliderBorder::Update)
@@ -36893,15 +36875,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b49e0:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::BaseConstructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiNumericTextInput; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiNumericTextInput::BaseConstructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_numeric_text_input_base_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S verification blocked: local hud_ui_numeric_text_input_cluster VC5 target compiles, but HudUiNumericTextInput::BaseConstructor at 0x4b49e0 still fails with 153 unmasked byte mismatches and EH/member-constructor drift; BN shows exception cleanup and derived text-input/slider construction not yet reproduced byte-equivalently.
 
 - 0x4b4a90:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::ScalarDeletingDestructor)
@@ -36958,28 +36940,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b4ba0:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::SetInputActive)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiNumericTextInput; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiNumericTextInput::SetInputActive;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_numeric_text_input_set_input_active;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S verification blocked: local hud_ui_numeric_text_input_cluster VC5 target compiles, but HudUiNumericTextInput::SetInputActive at 0x4b4ba0 still fails with 163 unmasked byte mismatches; remaining drift is tied to HUD virtual SetVisible slot/source-shape ordering.
 
 - 0x4b4c50:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::SetRawKeyboardCapture)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiNumericTextInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiNumericTextInput::SetRawKeyboardCapture;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_numeric_text_input_set_raw_keyboard_capture;
+    - Target: hud_ui_numeric_text_input_cluster;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b4c90:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::OnActivate)
@@ -37023,15 +37005,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b4e60:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::Update)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiNumericTextInput; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiNumericTextInput::Update;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_numeric_text_input_update;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S verification blocked: local hud_ui_numeric_text_input_cluster VC5 target compiles, but HudUiNumericTextInput::Update at 0x4b4e60 still fails with 53 unmasked byte mismatches after matching the no-null label vector count shape; remaining drift is virtual label update/invalidation source-shape and register/control-flow differences.
 
 - 0x4b4ed0:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::GetBuffer)
@@ -37049,15 +37031,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b4ee0:
   - [☑️] Reconstructed (Name: HudUiZrdWidget::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiZrdWidget; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiZrdWidget::Constructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_zrd_widget_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S verification blocked: recoil_vc5_verify.py 0x4b4ee0 now compiles after HudWeatherFx scalar-deleting destructor return normalization, but hud_ui_zrd_widget_constructor still fails with 393 unmasked byte mismatches and size drift (BN 434 vs VC5 336), indicating unresolved constructor/EH/source-shape drift in HudUiZrdWidget.
 
 - 0x4b50a0:
   - [✅] Reconstructed (Name: HudUiZrdWidget::ScalarDeletingDestructor)
@@ -37193,8 +37175,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: HudUiCheckToggleWidget::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiCheckToggleWidget::Constructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_check_toggle_widget_constructor;
@@ -37323,9 +37305,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [☑️] Reconstructed (Name: HudUiCycleSelectorWidget::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiCycleSelectorWidget::Constructor;
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
+    - Name: HudUiCycleSelectorWidget::HudUiCycleSelectorWidget;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_cycle_selector_widget_constructor;
     - Group: ui.zhud;
@@ -37413,28 +37395,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b7fd0:
   - [☑️] Reconstructed (Name: HudUiCycleSelectorWidget::AddTextEntry)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiCycleSelectorWidget; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiCycleSelectorWidget::AddTextEntry;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_cycle_selector_widget_add_text_entry;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b8100:
   - [☑️] Reconstructed (Name: HudUiCycleSelectorWidget::ApplyFontStyleForEntry)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiCycleSelectorWidget; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiCycleSelectorWidget::ApplyFontStyleForEntry;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_cycle_selector_widget_apply_font_style_for_entry;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b8200:
   - [✅] Reconstructed (Name: HudUiCycleSelectorWidget::AddBitmapEntry)
@@ -37466,9 +37448,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: HudUiFillBitmap::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiFillBitmap::Constructor;
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiFillBitmap::HudUiFillBitmap;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_fill_bitmap_constructor;
     - Group: ui.zhud;
@@ -37569,15 +37551,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b8760:
   - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiZrdWidgetEx17C_Item::Constructor;
+  - [✅] Source owner (Kind: class; Parent: HudUiZrdWidgetEx17C_Item; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
+    - Name: HudUiZrdWidgetEx17C_Item::HudUiZrdWidgetEx17C_Item;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_zrd_widget_ex17c_item_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b87a0:
   - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor)
@@ -37684,17 +37666,17 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Blocker: source-shape audit pending
 
 - 0x4b8b10:
-  - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::Constructor)
+  - [✅] Reconstructed (Name: HudUiZrdWidgetEx17C::HudUiZrdWidgetEx17C)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiZrdWidgetEx17C::Constructor;
+  - [✅] Source owner (Kind: class; Parent: HudUiZrdWidgetEx17C; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
+    - Name: HudUiZrdWidgetEx17C::HudUiZrdWidgetEx17C;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_new_game_panel_constructor_cluster;
+    - Target: hud_ui_zrd_widget_ex17c_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b8b40:
   - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::ScalarDeletingDestructor)
@@ -37749,56 +37731,56 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Blocker: source-shape audit pending
 
 - 0x4b8d30:
-  - [☑️] Reconstructed (Name: HudCmdBindButtonBase::Constructor)
+  - [✅] Reconstructed (Name: HudCmdBindButtonBase::HudCmdBindButtonBase)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudCmdBindButtonBase::Constructor;
+  - [✅] Source owner (Kind: class; Parent: HudCmdBindButtonBase; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
+    - Name: HudCmdBindButtonBase::HudCmdBindButtonBase;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_bind_button_base_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b8de0:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::LoadFromZrd)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudCmdBindButtonBase; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudCmdBindButtonBase::LoadFromZrd;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_cmd_bind_button_base_load_from_zrd;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudCmdBindButtonBase::LoadFromZrd functional verification is blocked by the active minimal ZRD load fixture crashing inside the load path; recover a stable ZRD fixture or narrower BN-backed smoke before tiering
 
 - 0x4b90e0:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::RebuildBindingSlotWidgets)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdBindButtonBase; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdBindButtonBase::RebuildBindingSlotWidgets;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_bind_button_base_rebuild_binding_slot_widgets;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier B/S plan promotion is blocked by HudUi/HudCmd data gates and x87/_ftol byte verification debt
 
 - 0x4b92a0:
-  - [✅] Reconstructed (Name: HudUiListSelectorItem::Constructor)
+  - [✅] Reconstructed (Name: HudUiListSelectorItem::HudUiListSelectorItem)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiListSelectorItem::Constructor;
+  - [✅] Source owner (Kind: class; Parent: HudUiListSelectorItem; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
+    - Name: HudUiListSelectorItem::HudUiListSelectorItem;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_list_selector_item_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4ba410:
   - [✅] Reconstructed (Name: HudUiListSelectorItem::Draw)
@@ -37829,7 +37811,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bf060:
   - [☑️] Reconstructed (Name: HudUiMessageBoxDialog::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessageBoxDialog; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessageBoxDialog::Constructor;
@@ -37842,7 +37824,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bf540:
   - [✅] Reconstructed (Name: HudUiMessageBoxDialog::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessageBoxDialog; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessageBoxDialog::ScalarDeletingDestructor;
@@ -37855,7 +37837,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bf560:
   - [✅] Reconstructed (Name: HudUiMessageBoxDialog::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessageBoxDialog; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessageBoxDialog::Destructor;
@@ -37868,7 +37850,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bf630:
   - [☑️] Reconstructed (Name: HudUiMessageBoxDialog::RunModal)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessageBoxDialog; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessageBoxDialog::RunModal;
@@ -37881,7 +37863,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bf7c0:
   - [✅] Reconstructed (Name: HudUiMessageBoxDialog::OnOk)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessageBoxDialog; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessageBoxDialog::OnOk;
@@ -37894,7 +37876,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bf7e0:
   - [✅] Reconstructed (Name: HudUiMessageBoxDialog::OnCancel)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessageBoxDialog; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessageBoxDialog::OnCancel;
@@ -37907,7 +37889,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bf800:
   - [✅] Reconstructed (Name: HudUiMessageBoxOkButton::OnActivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessageBoxOkButton; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessageBoxOkButton::OnActivate;
@@ -37920,7 +37902,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bf820:
   - [✅] Reconstructed (Name: HudUiMessageBoxCancelButton::OnActivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessageBoxCancelButton; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessageBoxCancelButton::OnActivate;
@@ -37933,33 +37915,33 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bf840:
   - [✅] Reconstructed (Name: HudUiPolyline::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiPolyline; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiPolyline::Constructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_polyline_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bf8b0:
   - [✅] Reconstructed (Name: HudUiPolyline::SetPoint)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiPolyline; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiPolyline::SetPoint;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_polyline_set_point;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40a920:
   - [✅] Reconstructed (Name: HudCmdDialog::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialog; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdDialog::ScalarDeletingDestructor;
@@ -37967,150 +37949,141 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_cmd_dialog_scalar_deleting_destructor;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by data gate through HudCmdDialog::Destructor
 
 - 0x40bc70:
   - [☑️] Reconstructed (Name: HudCmdDialogState::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudCmdDialogState::ScalarDeletingDestructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_cmd_dialog_state_scalar_deleting_destructor;
-    - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+  - [✅] Provider-boundary (Kind: VC++ scalar deleting destructor; Name: HudCmdDialogState::ScalarDeletingDestructor; Origin: compiler-generated scalar deleting destructor glue; BN assembly calls HudCmdDialogState destructor, tests flags bit 0, optionally calls operator delete, returns this; File: external; Target: hud_cmd_dialog_state_scalar_deleting_destructor; Group: ui.zhud)
 
 - 0x404ca0:
   - [✅] Reconstructed (Name: HudUiElement::Draw)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiElement::Draw;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_element_draw;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
 
 - 0x404cb0:
   - [✅] Reconstructed (Name: HudUiElement::DrawBase)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiElement::DrawBase;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_element_draw_base;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
 
 - 0x404cd0:
   - [✅] Reconstructed (Name: HudUiElement::SetPos)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiElement::SetPos;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_element_set_pos;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
 
 - 0x404cf0:
   - [✅] Reconstructed (Name: HudUiElement::SetX)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiElement::SetX;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_element_set_x;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
 
 - 0x404d00:
   - [✅] Reconstructed (Name: HudUiElement::SetY)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiElement::SetY;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_element_set_y;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
 
 - 0x404d10:
   - [✅] Reconstructed (Name: HudUiElement::HitTestTrue)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiElement::HitTestTrue;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_element_hit_test_true;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
 
 - 0x404d20:
   - [✅] Reconstructed (Name: HudUiElement::SetVisible)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiElement::SetVisible;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_element_set_visible;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
 
 - 0x404d50:
   - [✅] Reconstructed (Name: HudUiElement::GetX)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiElement::GetX;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_element_get_x;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
 
 - 0x404d60:
   - [✅] Reconstructed (Name: HudUiElement::GetY)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiElement::GetY;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_element_get_y;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
 
 - 0x404d70:
   - [✅] Reconstructed (Name: HudUiElement::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: source-file; Parent: src/GameZRecoil/zHud/zhud_ui.cpp; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiElement::ScalarDeletingDestructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_element_scalar_deleting_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: VC5SP3 tier S verification pending
+    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
 
 - 0x404d90:
   - [✅] Reconstructed (Name: HudUiWidget::GetCenterX)
@@ -38246,8 +38219,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: HudUiPanel::DestructorThunk)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiPanel::DestructorThunk;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_panel_destructor_thunk;
@@ -38271,132 +38244,132 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40d270:
   - [✅] Reconstructed (Name: HudLayoutSW::GlobalInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutSW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutSW::GlobalInit;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_sw_global_init;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x40d280:
   - [✅] Reconstructed (Name: HudLayoutSW::GlobalConstructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutSW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutSW::RegisterAtExit;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_sw_register_at_exit;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x40d290:
   - [✅] Reconstructed (Name: HudLayoutSW::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutSW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutSW::AtExitDestructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_sw_atexit_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x40d2a0:
   - [✅] Reconstructed (Name: HudLayoutSW::GlobalDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutSW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutSW::GlobalDestructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_sw_global_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x40d2f0:
   - [☑️] Reconstructed (Name: StaticInit_g_HudLayoutHW)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutHW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutHW::CrtInitGlobalSingleton;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_hw_crt_init_global_singleton;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x40d300:
   - [☑️] Reconstructed (Name: HudLayoutHW::GlobalInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutHW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutHW::GlobalInit;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_hw_global_init;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x40d310:
   - [✅] Reconstructed (Name: HudLayoutHW::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutHW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutHW::RegisterAtExit;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_hw_register_at_exit;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x40d320:
   - [☑️] Reconstructed (Name: HudLayoutHW::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutHW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutHW::AtExitDestructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_hw_atexit_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x40d330:
   - [☑️] Reconstructed (Name: HudLayoutHW::GlobalDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutHW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutHW::GlobalDestructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_hw_global_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x40d3b0:
   - [☑️] Reconstructed (Name: HudLayoutBase::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutBase; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutBase::Destructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_base_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x40d400:
   - [✅] Reconstructed (Name: HudUiMgr::StaticInitAndRegisterAtExit)
@@ -38453,7 +38426,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40d590:
   - [☑️] Reconstructed (Name: HudUiMessage::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessage; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessage::Destructor;
@@ -38466,7 +38439,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40d600:
   - [✅] Reconstructed (Name: HudUiTripletPanel::UnwindDestructFirstItem)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTripletPanel; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTripletPanel::UnwindDestructFirstItem;
@@ -38479,7 +38452,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40d610:
   - [☑️] Reconstructed (Name: HudUiTripletPanel::DestructorCore)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTripletPanel; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTripletPanel::DestructorCore;
@@ -38531,33 +38504,33 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40d9d0:
   - [✅] Reconstructed (Name: HudUiContainer::SetEnabled)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: source-file; Parent: src/GameZRecoil/zHud/zhud_ui.cpp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiContainer; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiContainer::SetEnabled;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_container_set_enabled;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: VC5SP3 tier S verification pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40d9e0:
   - [✅] Reconstructed (Name: HudUiMeter::ConstructorEx)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMeter; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiMeter::ConstructorEx;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_meter_constructor_ex;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiMeter FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x40da00:
   - [☑️] Reconstructed (Name: HudUiMessage::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessage; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessage::Constructor;
@@ -38583,7 +38556,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40daa0:
   - [✅] Reconstructed (Name: HudUiMessage::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessage; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessage::ScalarDeletingDestructor;
@@ -38635,7 +38608,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40dbf0:
   - [✅] Reconstructed (Name: HudUiCounterTextPanel::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiCounterTextPanel; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiCounterTextPanel::Constructor;
@@ -38648,7 +38621,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40dcd0:
   - [✅] Reconstructed (Name: HudUiTriplet::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTriplet; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTriplet::Constructor;
@@ -38674,15 +38647,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40ec90:
   - [✅] Reconstructed (Name: HudLayoutBase::Shutdown_Stub)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutBase; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutBase::Shutdown_Stub;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_base_shutdown_stub;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x40eca0:
   - [☑️] Reconstructed (Name: HudUiTimerPanel::SetRunning)
@@ -38869,7 +38842,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40f200:
   - [☑️] Reconstructed (Name: HudUiTripletPanel::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTripletPanel; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTripletPanel::Constructor;
@@ -38882,7 +38855,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40f2b0:
   - [✅] Reconstructed (Name: HudUiTripletPanel::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTripletPanel; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTripletPanel::ScalarDeletingDestructor;
@@ -38894,16 +38867,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x40f2d0:
   - [✅] Reconstructed (Name: HudUiWidget::CtorDefaultThunk)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiWidget::CtorDefaultThunk;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_widget_ctor_default_thunk;
-    - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+  - [✅] Provider-boundary (Kind: compiler-generated constructor thunk; Name: HudUiWidget::CtorDefaultThunk; Origin: MSVC array-constructor default-argument thunk; File: external; Target: hud_ui_background_member_helpers; Group: ui.zhud)
 
 - 0x40f2e0:
   - [☑️] Reconstructed (Name: HudUiNanitePanel::InitLayout)
@@ -38921,20 +38885,20 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40f3e0:
   - [✅] Reconstructed (Name: HudUiTripletPanel::ShutdownItems_Stub)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiTripletPanel; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTripletPanel::ShutdownItems_Stub;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_triplet_panel_shutdown_items_stub;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: source-shape audit pending
 
 - 0x40f400:
   - [☑️] Reconstructed (Name: HudUiTripletPanel::Draw)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTripletPanel; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTripletPanel::Draw;
@@ -38947,7 +38911,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40f460:
   - [✅] Reconstructed (Name: HudUiTripletPanel::SetVisibleCount)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTripletPanel; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTripletPanel::SetVisibleCount;
@@ -38986,7 +38950,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40fa10:
   - [☑️] Reconstructed (Name: HudUiStatsListElement::Update)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiStatsListElement; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiStatsListElement::Update;
@@ -39012,7 +38976,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40fa40:
   - [☑️] Reconstructed (Name: HudUiStatsListElement::DestructorCore)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiStatsListElement; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiStatsListElement::DestructorCore;
@@ -39077,7 +39041,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40fdd0:
   - [☑️] Reconstructed (Name: HudUiStringMenu::DestructorCore)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiStringMenu; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiStringMenu::DestructorCore;
@@ -39090,7 +39054,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40fe90:
   - [☑️] Reconstructed (Name: HudUiTextStack4::DestructorCore_TopStack)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTopMessageStack; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTopMessageStack::DestructorCore;
@@ -39103,7 +39067,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40fef0:
   - [☑️] Reconstructed (Name: HudUiTextStack4::DestructorCore_ChatStack)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiChatMessageStack; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiChatMessageStack::DestructorCore;
@@ -39324,7 +39288,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x412650:
   - [☑️] Reconstructed (Name: HudUiMessage::SetValueIfOwnerMatches)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessage; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessage::SetValueIfOwnerMatches;
@@ -39337,7 +39301,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4126e0:
   - [✅] Reconstructed (Name: HudUiMessage::SelectVariantDisplay)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessage; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessage::SelectVariantDisplay;
@@ -39350,7 +39314,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x412790:
   - [✅] Reconstructed (Name: HudUiMessage::ApplySideImageSwap)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessage; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessage::ApplySideImageSwap;
@@ -39363,7 +39327,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4127d0:
   - [✅] Reconstructed (Name: HudUiMessage::ClearDisplay)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessage; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessage::ClearDisplay;
@@ -39376,7 +39340,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x412820:
   - [☑️] Reconstructed (Name: HudUiMessage::UpdateSelectedWeaponDisplay)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessage; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessage::UpdateSelectedWeaponDisplay;
@@ -39389,93 +39353,93 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x412b60:
   - [✅] Reconstructed (Name: HudLayoutSW::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutSW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutSW::Constructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_sw_constructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x412bd0:
   - [✅] Reconstructed (Name: HudLayout::SetActiveNoOp)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutBase; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutBase::SetActiveNoOp;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_base_set_active_no_op;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x412be0:
   - [✅] Reconstructed (Name: HudLayout::UpdateAll)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutBase; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutBase::UpdateAll;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_base_update_all;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x412bf0:
   - [✅] Reconstructed (Name: HudLayoutBase::Enable)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutBase; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutBase::Enable;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_base_enable;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x412c00:
   - [✅] Reconstructed (Name: HudLayoutBase::Disable)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutBase; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutBase::Disable;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_base_disable;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x412c10:
   - [✅] Reconstructed (Name: HudLayoutSW::LoadTypeIFromZarRoot)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutBase; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutBase::LoadTypeIFromZarRoot;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_base_load_type_i_from_zar_root;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x412c60:
   - [✅] Reconstructed (Name: HudLayoutSW::SetActive)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutSW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutSW::SetActive;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_sw_set_active;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x412db0:
   - [☑️] Reconstructed (Name: HudLayout::ApplyViewportRect)
@@ -39493,85 +39457,85 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x412ea0:
   - [☑️] Reconstructed (Name: HudLayoutHW::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutHW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutHW::Constructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_hw_constructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x412f70:
   - [✅] Reconstructed (Name: HudLayoutHW::LoadTypeIIFromZarRoot)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutHW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutHW::LoadTypeIIFromZarRoot;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_hw_load_type_ii_from_zar_root;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x413080:
   - [✅] Reconstructed (Name: HudLayoutHW::ReleaseImages)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutHW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutHW::ReleaseImages;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_hw_release_images;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x4130d0:
   - [☑️] Reconstructed (Name: HudLayoutHW::SetActive)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutHW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutHW::SetActive;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_hw_set_active;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x4132b0:
   - [☑️] Reconstructed (Name: HudLayoutHW::UpdateObjectiveDirtyRect)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutHW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutHW::UpdateObjectiveDirtyRect;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_hw_update_objective_dirty_rect;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x413340:
   - [☑️] Reconstructed (Name: HudLayoutHW::OnActivated)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutHW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutHW::OnActivated;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_hw_on_activated;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x4134e0:
   - [✅] Reconstructed (Name: HudUiMessage::Draw)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessage; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessage::Draw;
@@ -39584,41 +39548,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x413500:
   - [✅] Reconstructed (Name: HudLayoutHW::UpdateAll)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutHW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutHW::UpdateAll;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_hw_update_all;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x413540:
   - [☑️] Reconstructed (Name: HudLayoutHW::Enable)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutHW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutHW::Enable;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_hw_enable;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x4135f0:
   - [✅] Reconstructed (Name: HudLayoutHW::Disable)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudLayoutHW; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudLayoutHW::Disable;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_layout_hw_disable;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
 
 - 0x413640:
   - [✅] Reconstructed (Name: HudUiMgr::ToggleHud)
@@ -39857,7 +39821,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x413ec0:
   - [☑️] Reconstructed (Name: HudUiMessage::LoadWeaponLayoutFromNode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessage; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessage::LoadWeaponLayoutFromNode;
@@ -39870,7 +39834,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x413ff0:
   - [✅] Reconstructed (Name: HudUiMessage::ReleaseImages)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: source-file; Parent: src/GameZRecoil/zHud/zhud_ui.cpp; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessage; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessage::ReleaseImages;
@@ -39883,7 +39847,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x414070:
   - [✅] Reconstructed (Name: HudUiMessage::RebuildWeaponLayout)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiMessage; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiMessage::RebuildWeaponLayout;
@@ -39934,16 +39898,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x415680:
   - [☑️] Reconstructed (Name: HudUiBackgroundConfirmQuit::Constructor)
-  - [✅] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiBackgroundConfirmQuit::Constructor;
-    - File: src/Battlesport/hud.cpp;
-    - Target: hud_ui_background_confirm_quit_lifecycle;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: Confirm-quit owner-local FTable factories/globals were removed from production source. BN proves a class-shaped HudUiBackgroundConfirmQuit constructor with embedded child objects, but source remains blocked on the broader HudUiBackground/HudUiElement C++ dispatch owner before retiering.
 
 - 0x4157b0:
   - [☑️] Reconstructed (Name: HudUiBackgroundConfirmQuit::Destructor)
@@ -39960,16 +39924,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x41a350:
   - [✅] Reconstructed (Name: HudUiClampedIntStepButton::OnActivate)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiClampedIntStepButton::OnActivate;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_clamped_int_step_button_on_activate;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiNetGameSetupPanel owner-local table factories/globals and constructor table overwrites were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
 
 - 0x4b3ce0:
   - [☑️] Reconstructed (Name: HudUiWidget::ScalarDeletingDestructor)
@@ -39987,28 +39951,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b3d50:
   - [☑️] Reconstructed (Name: HudUiWidget::DestructorCore)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiWidget::DestructorCore;
+  - [✅] Source owner (Kind: class; Parent: HudUiWidget; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
+    - Name: HudUiWidget::~HudUiWidget;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_widget_destructor_core;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b3da0:
   - [✅] Reconstructed (Name: HudUiWidget::ReleaseImageIfOwned)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiWidget; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiWidget::ReleaseImageIfOwned;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_widget_release_image_if_owned;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte mismatch remains: hud_ui_widget_release_image_if_owned has 15 unmasked mismatches for HudUiWidget::ReleaseImageIfOwned.
 
 - 0x4b3dd0:
   - [✅] Reconstructed (Name: HudUiWidget::SetPos)
@@ -40026,15 +39990,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b3e30:
   - [✅] Reconstructed (Name: HudUiWidget::SetImageByPathOwned)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiWidget; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiWidget::SetImageByPathOwned;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_widget_set_image_by_path_owned;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b3e70:
   - [✅] Reconstructed (Name: HudUiWidget::SetImageBorrowedAndInvalidate)
@@ -40091,132 +40055,132 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b4070:
   - [✅] Reconstructed (Name: HudUiElement::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiElement::Constructor;
+  - [✅] Source owner (Kind: class; Parent: HudUiElement; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiElement::HudUiElement;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_element_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S blocked: VC5SP3 hud_ui_element_constructor/scratch single-address compare for ??0HudUiElement@@QAE@HH@Z still fails with 9 unmasked mismatches after relocation masking; constructor source now emits class vptr write and slot-8 invalidate dispatch, remaining drift is coordinate-store scheduling
 
 - 0x4b40c0:
   - [☑️] Reconstructed (Name: HudUiElement::CopyConstructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiElement::CopyConstructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_element_copy_constructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
 
 - 0x4b4120:
   - [☑️] Reconstructed (Name: HudUiElement::CopyFrom)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiElement::CopyFrom;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_element_copy_from;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
 
 - 0x4b4180:
   - [✅] Reconstructed (Name: HudUiElement::Invalidate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiElement; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiElement::Invalidate;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_element_invalidate;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b4190:
   - [✅] Reconstructed (Name: HudUiElement::SetBltSourceAndClipRect)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiElement; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiElement::SetBltSourceAndClipRect;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_element_set_blt_source_and_clip_rect;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
 
 - 0x4b41b0:
   - [✅] Reconstructed (Name: HudUiElement::SetClipRect)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiElement::SetClipRect;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_element_set_clip_rect;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
 
 - 0x4b41e0:
   - [☑️] Reconstructed (Name: HudUiElement::Update)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiElement::Update;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_element_update;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
 
 - 0x4b4280:
   - [☑️] Reconstructed (Name: HudUiElement::SetTimer)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiElement::SetTimer;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_element_set_timer;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
 
 - 0x4b42c0:
   - [✅] Reconstructed (Name: HudUiElement::GetRect)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiElement::GetRect;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_element_get_rect;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
 
 - 0x4b42f0:
   - [✅] Reconstructed (Name: HudUiTextInput::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTextInput; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiTextInput::Constructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_text_input_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b4370:
   - [✅] Reconstructed (Name: HudUiTextInput::DestructorCore)
@@ -40260,15 +40224,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b9540:
   - [☑️] Reconstructed (Name: HudUiBackground::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiBackground::Constructor;
+  - [✅] Source owner (Kind: class; Parent: HudUiBackground; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiBackground::HudUiBackground;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_background_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S blocked: VC5SP3 hud_ui_background_constructor still has 204 unmasked mismatches after 106 relocation-masked bytes; remaining drift is the post-array full-object cleanup state before final background dispatch state plus VMode/register shape.
 
 - 0x4b9760:
   - [☑️] Reconstructed (Name: HudUiBackground::Destructor)
@@ -40281,7 +40245,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_ui_background_destructor;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiBackground C++ destructor source is functional, but source-owner/tier S remain blocked by broader HudUiBackground/HudUiElement cleanup ownership and VC5 EH array-destruction shape; after explicit cursor DestructorCore cleanup, hud_ui_background_destructor still fails with 169 unmasked mismatches after 64 relocation-masked bytes and 11 trailing VC NOPs trimmed.
 
 - 0x4b9850:
   - [✅] Reconstructed (Name: HudUiBackground::SetEnabled)
@@ -40299,20 +40263,20 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b98d0:
   - [✅] Reconstructed (Name: HudUiBackground::LoadFromZrd)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiBackground; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiBackground::LoadFromZrd;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_background_load_from_zrd;
+    - Target: hud_ui_background_load_zrd;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b9900:
   - [☑️] Reconstructed (Name: HudUiBackground::LoadZrdAndSection)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiBackground; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiBackground::LoadZrdAndSection;
@@ -40320,20 +40284,20 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_ui_background_load_zrd_and_section;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: data dependency/source-shape audit pending: current frontier shows zVideo/zReader/zImage/HudUiWidget/zLoc/zSnd direct callees still at tier C with owner/data blockers; local ZRD accessor helper provenance needs focused audit before Model: source-faithful.
 
 - 0x4ba020:
   - [✅] Reconstructed (Name: HudUiTransitionTextPanel::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiTransitionTextPanel::Constructor;
+  - [✅] Source owner (Kind: class; Parent: HudUiTransitionTextPanel; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
+    - Name: HudUiTransitionTextPanel::HudUiTransitionTextPanel;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_transition_text_panel_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4ba070:
   - [☑️] Reconstructed (Name: HudUiBackground::BindButtonsNodeToWidgetByName)
@@ -40351,54 +40315,54 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4ba0c0:
   - [✅] Reconstructed (Name: HudUiBackground::BindWidgetByName)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiBackground; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiBackground::BindWidgetByName;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_background_bind_widget_by_name;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4ba0e0:
   - [☑️] Reconstructed (Name: HudUiBackground::BindPrimitiveNodeToElement)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiBackground; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiBackground::BindPrimitiveNodeToElement;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_background_bind_primitive_node_to_element;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4ba350:
   - [✅] Reconstructed (Name: HudUiBackground::FreeLoadedTreeRoots)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiBackground; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiBackground::FreeLoadedTreeRoots;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_background_free_loaded_tree_roots;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4ba380:
   - [✅] Reconstructed (Name: HudUiDialogController::BlitOwnedSurfaceToPrimary)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: source-file; Parent: src/GameZRecoil/zHud/zhud_ui.cpp; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiDialogController; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiDialogController::BlitOwnedSurfaceToPrimary;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hudui_dialog_controller_blit_owned_surface;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: VC5SP3 tier S verification pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4ba3a0:
   - [✅] Reconstructed (Name: HudUiContainer::InvalidateChildren)
@@ -40456,9 +40420,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: HudFontStyle::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudFontStyle::Constructor;
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
+    - Name: HudFontStyle::HudFontStyle;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_font_style_constructor;
     - Group: ui.zhud;
@@ -40468,54 +40432,54 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4ba4c0:
   - [✅] Reconstructed (Name: HudFontStyle::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudFontStyle; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudFontStyle::Destructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_font_style_destructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4ba4d0:
   - [☑️] Reconstructed (Name: StdPtrVector::EraseRange)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: HudUiPanelPtrVector; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiPanelPtrVector::EraseRange;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_panel_ptr_vector_erase_range;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4ba510:
   - [✅] Reconstructed (Name: HudUiPanelPtrVector::InsertN)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: HudUiPanelPtrVector; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiPanelPtrVector::InsertN;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_panel_ptr_vector_insert_n;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4ba740:
   - [✅] Reconstructed (Name: HudUiPanel::ConstructorDefault)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiPanel; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiPanel::ConstructorDefault;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_panel_constructor_default;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S blocked: VC5SP3 hud_ui_text_label_panel_helpers still fails for HudUiPanel::ConstructorDefault with 224 unmasked mismatches after current source changes; text-label constructor dependency remains tier B
 
 - 0x4ba850:
   - [✅] Reconstructed (Name: HudUiPanel::CopyConstructCore)
@@ -40910,54 +40874,54 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bc510:
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: source-file; Parent: src/GameZRecoil/zHud/zhud_ui.cpp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiBackgroundContainer::Constructor;
+  - [✅] Source owner (Kind: class; Parent: HudUiBackgroundContainer; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
+    - Name: HudUiBackgroundContainer::HudUiBackgroundContainer;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_background_container_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: VC5SP3 tier S verification pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bc540:
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiBackgroundContainer; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiBackgroundContainer::Destructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_background_container_destructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bc550:
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::SetInputFocus)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiBackgroundContainer; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiBackgroundContainer::SetInputFocus;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: zhud_background_container_set_input_focus;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bc560:
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::GetInputFocus)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiBackgroundContainer; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiBackgroundContainer::GetInputFocus;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: zhud_background_container_get_input_focus;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bc570:
   - [☑️] Reconstructed (Name: HudUiBackground::Update)
@@ -40988,15 +40952,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bc780:
   - [✅] Reconstructed (Name: HudUiContainer::ConstructorDefault)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: source-file; Parent: src/GameZRecoil/zHud/zhud_ui.cpp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiContainer::ConstructorDefault;
+  - [✅] Source owner (Kind: class; Parent: HudUiContainer; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
+    - Name: HudUiContainer::HudUiContainer;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_container_constructor_default;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: VC5SP3 tier S verification pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bc7b0:
   - [✅] Reconstructed (Name: HudUiContainer::DestructorCore)
@@ -41015,8 +40979,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: HudUiContainer::AddChild)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiContainer::AddChild;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_container_add_child;
@@ -41053,15 +41017,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bc8d0:
   - [☑️] Reconstructed (Name: HudUiContainer::SetChildFlags)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiContainer; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiContainer::SetChildFlags;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: zhud_container_set_child_flags;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bc900:
   - [✅] Reconstructed (Name: HudUiContainer::UpdateAll)
@@ -41079,22 +41043,22 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bc930:
   - [☑️] Reconstructed (Name: HudUiFlashPanel::ResetFlashState)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTransitionTextPanel; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiTransitionTextPanel::ResetFlashState;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_flash_panel_reset_flash_state;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bc980:
   - [✅] Reconstructed (Name: HudUiFlashPanel::SetFlashRate)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTransitionTextPanel; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiTransitionTextPanel::SetFlashRate;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_flash_panel_set_flash_rate;
@@ -41118,15 +41082,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bcb50:
   - [✅] Reconstructed (Name: HudUiTextLabel::ConstructorWithPosAndFlags)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTextLabel; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiTextLabel::ConstructorWithPosAndFlags;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_text_label_constructor_with_pos_and_flags;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S blocked: VC5SP3 hud_ui_text_label_panel_helpers still fails for HudUiTextLabel::ConstructorWithPosAndFlags with 137 unmasked mismatches after current source changes; dependencies remain tier B
 
 - 0x4bcbe0:
   - [✅] Reconstructed (Name: HudUiTextLabel::CopyConstructor)
@@ -41157,15 +41121,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bccf0:
   - [☑️] Reconstructed (Name: HudUiTextLabel::SetTextFmt)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTextLabel; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiTextLabel::SetTextFmt;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_text_label_set_text_fmt;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S blocked: VC5SP3 hud_ui_text_label_panel_helpers does not currently produce/accept the varargs SetTextFmt byte comparison; previous evidence records 23 unmasked mismatches
 
 - 0x4bcd40:
   - [✅] Reconstructed (Name: HudUiPanel::SetClip)
@@ -41183,41 +41147,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bcd80:
   - [✅] Reconstructed (Name: HudUiTextLabel::RebuildTextBounds)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTextLabel; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiTextLabel::RebuildTextBounds;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_text_label_rebuild_text_bounds;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S blocked: VC5SP3 hud_ui_text_label_panel_helpers still fails for HudUiTextLabel::RebuildTextBounds with 60 unmasked mismatches
 
 - 0x4bcdc0:
   - [✅] Reconstructed (Name: HudUiTextLabel::MeasureTextWidth)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTextLabel; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiTextLabel::MeasureTextWidth;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_text_label_measure_text_width;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S blocked: VC5SP3 hud_ui_text_label_panel_helpers still fails for HudUiTextLabel::MeasureTextWidth with 39 unmasked mismatches
 
 - 0x4bcdf0:
   - [✅] Reconstructed (Name: HudUiTextLabel::UpdateTextExtents)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTextLabel; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiTextLabel::UpdateTextExtents;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_text_label_update_text_extents;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S blocked: VC5SP3 hud_ui_text_label_panel_helpers still fails for HudUiTextLabel::UpdateTextExtents with 10 unmasked mismatches
 
 - 0x4bce30:
   - [✅] Reconstructed (Name: HudUiTextLabel::OnDraw)
@@ -41248,7 +41212,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bcf20:
   - [✅] Reconstructed (Name: HudUiBar::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiBar; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiBar::Constructor;
@@ -41261,7 +41225,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bcf80:
   - [☑️] Reconstructed (Name: HudUiBar::SetPointXY)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiBar; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiBar::SetPointXY;
@@ -41274,7 +41238,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bcff0:
   - [✅] Reconstructed (Name: HudUiBar::Draw)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiBar; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiBar::Draw;
@@ -41287,7 +41251,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bd020:
   - [✅] Reconstructed (Name: HudUiTopMessageStack::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTopMessageStack; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTopMessageStack::Constructor;
@@ -41313,7 +41277,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bd110:
   - [✅] Reconstructed (Name: HudUiTextStack4::SetFontAll)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTextStack4; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTextStack4::SetFontAll;
@@ -41326,7 +41290,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bd160:
   - [☑️] Reconstructed (Name: HudUiTextStack4::PushLine)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTextStack4; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTextStack4::PushLine;
@@ -41352,7 +41316,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bd2a0:
   - [✅] Reconstructed (Name: HudUiTextStack4::Clear)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTextStack4; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTextStack4::Clear;
@@ -41365,7 +41329,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bd2d0:
   - [✅] Reconstructed (Name: HudUiChatMessageStack::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiChatMessageStack; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiChatMessageStack::Constructor;
@@ -41378,7 +41342,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bd3d0:
   - [☑️] Reconstructed (Name: HudUiTextStack4::SetTextColors)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTextStack4; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTextStack4::SetTextColors;
@@ -41391,7 +41355,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bd410:
   - [✅] Reconstructed (Name: HudUiTextStack4::SetXAll)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTextStack4; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTextStack4::SetXAll;
@@ -41404,7 +41368,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bd440:
   - [✅] Reconstructed (Name: HudUiTextStack4::SetYDescending)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiTextStack4; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTextStack4::SetYDescending;
@@ -41455,29 +41419,29 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x4bdc70:
   - [☑️] Reconstructed (Name: HudWeatherFx::Constructor)
-  - [✅] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudWeatherFx::Constructor;
-    - File: src/Battlesport/hud.cpp;
-    - Target: hud_weather_fx_constructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudWeatherFx FTable factory/global and constructor table write were removed from production source. BN proves class-shaped HudWeatherFx dispatch, but source remains blocked on the broader HudUiElement C++ dispatch owner before retiering.
 
 - 0x4bde40:
   - [✅] Reconstructed (Name: HudWeatherFx::Destructor)
-  - [✅] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudWeatherFx::Destructor;
-    - File: src/Battlesport/hud.cpp;
-    - Target: hud_weather_fx_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudWeatherFx destructor table reset source was removed with the local FTable global. BN proves class destructor dispatch, but source remains blocked on the broader HudUiElement C++ dispatch owner before retiering.
 
 - 0x4bdee0:
   - [☑️] Reconstructed (Name: HudWeatherFx::ResetParticleSlot)
@@ -41520,16 +41484,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x4be280:
   - [✅] Reconstructed (Name: HudWeatherFxSnow::Constructor)
-  - [✅] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudWeatherFxSnow::Constructor;
-    - File: src/Battlesport/hud.cpp;
-    - Target: hud_weather_fx_snow_constructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudWeatherFxSnow FTable global and constructor table write were removed from production source. BN proves derived class dispatch, but source remains blocked on the broader HudUiElement/HudWeatherFx C++ dispatch owner before retiering.
 
 - 0x4be2f0:
   - [☑️] Reconstructed (Name: HudWeatherFxSnow::Update)
@@ -41546,29 +41510,29 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x4be810:
   - [✅] Reconstructed (Name: HudWeatherFxRain::Constructor)
-  - [✅] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudWeatherFxRain::Constructor;
-    - File: src/Battlesport/hud.cpp;
-    - Target: hud_weather_fx_rain_constructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudWeatherFxRain FTable global and constructor table write were removed from production source. BN proves derived class dispatch, but source remains blocked on the broader HudUiElement/HudWeatherFx C++ dispatch owner before retiering.
 
 - 0x4be870:
   - [✅] Reconstructed (Name: HudWeatherFxRain::Destructor)
-  - [✅] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudWeatherFxRain::Destructor;
-    - File: src/Battlesport/hud.cpp;
-    - Target: hud_weather_fx_rain_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudWeatherFxRain destructor table reset source was removed with the local FTable global. BN proves derived class dispatch, but source remains blocked on the broader HudUiElement/HudWeatherFx C++ dispatch owner before retiering.
 
 - 0x4be880:
   - [☑️] Reconstructed (Name: HudWeatherFxRain::Update)
@@ -41599,15 +41563,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bf980:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::MemberConstructorLocal)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiBackgroundCursorWidget::MemberConstructorLocal;
+  - [✅] Source owner (Kind: class; Parent: HudUiBackgroundCursorWidget; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
+    - Name: HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_background_cursor_widget_member_constructor_local;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bfa20:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::DestructorCore)
@@ -41620,7 +41584,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_ui_background_cursor_widget_destructor_core;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: source-owner blocked: current source models DestructorCore as a normal helper, so VC5 omits the retail vptr reset at function entry; recover the destructor-shaped HudUiBackgroundCursorWidget class model without manual vptr/table stores
 
 - 0x4bfa70:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged)
@@ -41638,41 +41602,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bfa50:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: source-file; Parent: src/GameZRecoil/zHud/zhud_ui.cpp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiBackgroundCursorWidget; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_background_cursor_widget_set_image_by_path_owned_and_refresh;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: VC5SP3 tier S verification pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bfa90:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::SetCaptureEnabled)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiBackgroundCursorWidget; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_background_cursor_set_capture_enabled;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bfae0:
   - [☑️] Reconstructed (Name: HudUiBackgroundCursorWidget::RebuildCapturedImageForCurrentImage)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiBackgroundCursorWidget; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_background_cursor_set_image_borrowed_refresh;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S blocked: no VC5SP3 byte target currently covers HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh, and dependency 0x4bfba0 remains tier B
 
 - 0x4bfb70:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::SetPos)
@@ -41690,15 +41654,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bfba0:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::CaptureBackgroundUnderCursorImage)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiBackgroundCursorWidget; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiBackgroundCursorWidget::RebuildCapturedImage;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_background_cursor_rebuild_captured_image;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S blocked: no VC5SP3 byte target currently covers HudUiBackgroundCursorWidget::RebuildCapturedImage, and dependency zVideo_buff::CopySurfaceRectToImage remains tier B
 
 - 0x4bfc50:
   - [✅] Reconstructed (Name: HudUiBackgroundCursorWidget::Draw)
@@ -41729,54 +41693,54 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bfc80:
   - [✅] Reconstructed (Name: HudUiBackgroundVideoWidget::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: source-file; Parent: src/GameZRecoil/zHud/zhud_ui.cpp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiBackgroundVideoWidget::Constructor;
+  - [✅] Source owner (Kind: class; Parent: HudUiBackgroundVideoWidget; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
+    - Name: HudUiBackgroundVideoWidget::HudUiBackgroundVideoWidget;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_background_video_widget_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: VC5SP3 tier S verification pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bfcd0:
   - [✅] Reconstructed (Name: HudUiBackgroundVideoWidget::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiBackgroundVideoWidget::Destructor;
+  - [✅] Source owner (Kind: class; Parent: HudUiBackgroundVideoWidget; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
+    - Name: HudUiBackgroundVideoWidget::~HudUiBackgroundVideoWidget;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_background_video_widget_destructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bfd40:
   - [☑️] Reconstructed (Name: HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiBackgroundVideoWidget; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_background_video_widget_set_media_path;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bfe20:
   - [✅] Reconstructed (Name: HudUiBackgroundVideoWidget::SetColorKey565)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiBackgroundVideoWidget; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiBackgroundVideoWidget::SetColorKey565;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_background_video_widget_set_color_key565;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bfe40:
   - [☑️] Reconstructed (Name: HudUiBackgroundVideoWidget::Update)
@@ -41833,15 +41797,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bffb0:
   - [✅] Reconstructed (Name: HudUiPrimitiveBindTarget::SetSegmentEndpoints)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiPrimitiveBindTarget; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiPrimitiveBindTarget::SetSegmentEndpoints;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: :SetSegmentEndpoints;
+    - Target: hud_ui_primitive_bind_target_set_segment_endpoints;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x403e20:
   - [☑️] Reconstructed (Name: HudUiCompositePanel::Destructor)
@@ -41857,24 +41821,24 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Blocker: source-shape audit pending
 
 - 0x40a5b0:
-  - [☑️] Reconstructed (Name: HudCmdDialog::Constructor)
+  - [✅] Reconstructed (Name: HudCmdDialog::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialog; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdDialog::Constructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: data/tier S blocked: constructor depends on wider HUD and zInput data/byte-equivalence debts; source model is class-faithful
 
 - 0x4b9320:
   - [✅] Reconstructed (Name: HudCmdBindButtonBase::OnSelectedIndexChanged)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudCmdBindButtonBase; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudCmdBindButtonBase::OnSelectedIndexChanged;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_bind_button_base_on_selected_index_changed;
@@ -41883,17 +41847,17 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Blocker: none
 
 - 0x4b9330:
-  - [☑️] Reconstructed (Name: HudCmdBindButtonBase::SetSelectedEntry)
+  - [✅] Reconstructed (Name: HudCmdBindButtonBase::SetSelectedEntry)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudCmdBindButtonBase; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudCmdBindButtonBase::SetSelectedEntry;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_bind_button_base_set_selected_entry;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S blocked: VC5 byte comparison for hud_cmd_bind_button_base_set_selected_entry still mismatches around virtual panel refresh/codegen shape
 
 - 0x4ba9e0:
   - [✅] Reconstructed (Name: HudUiPanel::CopyConstructor)
@@ -41975,406 +41939,406 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x419500:
   - [☑️] Reconstructed (Name: HudUiMpExitDialog::LoadLayout)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiMpExitDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiMpExitDialog::LoadLayout;
-    - File: src/Battlesport/HudUiMpExitDialog.cpp;
-    - Target: hud_ui_mp_exit_dialog_load_layout;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: MpExit-local table type/globals/factories, constructor table overwrites, raw update/delete dispatch, and authored scalar deleting destructor source were removed; still blocked on broader HudUiBackground/HudUiElement/HUD widget dispatch owner model, button activation dispatch owner, touched data audit, and tier S byte/provider evidence.
 
 - 0x419650:
   - [✅] Reconstructed (Name: HudUiMpExitDialog::UnloadLayout)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiMpExitDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiMpExitDialog::UnloadLayout;
-    - File: src/Battlesport/HudUiMpExitDialog.cpp;
-    - Target: hud_ui_mp_exit_dialog_table_cluster;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: MpExit-local table type/globals/factories, constructor table overwrites, raw update/delete dispatch, and authored scalar deleting destructor source were removed; still blocked on broader HudUiBackground/HudUiElement/HUD widget dispatch owner model, button activation dispatch owner, touched data audit, and tier S byte/provider evidence.
 
 - 0x419690:
   - [☑️] Reconstructed (Name: HudUiMpExitDialog::Update)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiMpExitDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiMpExitDialog::Update;
-    - File: src/Battlesport/HudUiMpExitDialog.cpp;
-    - Target: hud_ui_mp_exit_dialog_table_cluster;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: MpExit-local table type/globals/factories, constructor table overwrites, raw update/delete dispatch, and authored scalar deleting destructor source were removed; still blocked on broader HudUiBackground/HudUiElement/HUD widget dispatch owner model, button activation dispatch owner, touched data audit, and tier S byte/provider evidence.
 
 - 0x419800:
   - [✅] Reconstructed (Name: HudUiMpExitDialog_MpNewGameButton::OnActivate)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiMpExitDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiMpExitDialog_NewGameButton::OnActivate;
-    - File: src/Battlesport/HudUiMpExitDialog.cpp;
-    - Target: hud_ui_mp_exit_dialog_table_cluster;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: MpExit-local table type/globals/factories, constructor table overwrites, raw update/delete dispatch, and authored scalar deleting destructor source were removed; still blocked on broader HudUiBackground/HudUiElement/HUD widget dispatch owner model, button activation dispatch owner, touched data audit, and tier S byte/provider evidence.
 
 - 0x419830:
   - [✅] Reconstructed (Name: HudUiMpExitDialog_MpExitButton::OnActivate)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiMpExitDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiMpExitDialog_ExitButton::OnActivate;
-    - File: src/Battlesport/HudUiMpExitDialog.cpp;
-    - Target: hud_ui_mp_exit_dialog_table_cluster;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: MpExit-local table type/globals/factories, constructor table overwrites, raw update/delete dispatch, and authored scalar deleting destructor source were removed; still blocked on broader HudUiBackground/HudUiElement/HUD widget dispatch owner model, button activation dispatch owner, touched data audit, and tier S byte/provider evidence.
 
 - 0x419870:
   - [☑️] Reconstructed (Name: HudUiMpExitDialog::Destructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiMpExitDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiMpExitDialog::Destructor;
-    - File: src/Battlesport/HudUiMpExitDialog.cpp;
-    - Target: hud_ui_mp_exit_dialog_table_cluster;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: MpExit-local table type/globals/factories, constructor table overwrites, raw update/delete dispatch, and authored scalar deleting destructor source were removed; still blocked on broader HudUiBackground/HudUiElement/HUD widget dispatch owner model, button activation dispatch owner, touched data audit, and tier S byte/provider evidence.
 
 - 0x419aa0:
   - [☑️] Reconstructed (Name: HudUiNetGameSetupPanel::Constructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNetGameSetupPanel::Constructor;
-    - File: src/Battlesport/HudUiNetGameSetup.cpp;
-    - Target: hud_ui_net_game_setup_panel_constructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiNetGameSetupPanel owner-local table factories/globals and constructor table overwrites were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
 
 - 0x41a160:
   - [✅] Reconstructed (Name: HudUiNetGameSetupPanel_CancelButton::OnActivate)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNetGameSetupPanel_CancelButton::OnActivate;
-    - File: src/Battlesport/HudUiNetGameSetup.cpp;
-    - Target: hud_ui_net_game_setup_cancel_button;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiNetGameSetupPanel owner-local table factories/globals and constructor table overwrites were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
 
 - 0x41a400:
   - [✅] Reconstructed (Name: HudUiNetGameSetupPanel::Destructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNetGameSetupPanel::Destructor;
-    - File: src/Battlesport/HudUiNetGameSetup.cpp;
-    - Target: hud_ui_net_game_setup_panel_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiNetGameSetupPanel owner-local table factories/globals and constructor table overwrites were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
 
 - 0x41a5b0:
   - [☑️] Reconstructed (Name: HudUiNetGameSetupPanel_LaunchButton::OnActivate)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNetGameSetupPanel_LaunchButton::OnActivate;
-    - File: src/Battlesport/HudUiNetGameSetup.cpp;
-    - Target: hud_ui_net_game_setup_launch_button;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiNetGameSetupPanel owner-local table factories/globals and constructor table overwrites were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
 
 - 0x41a820:
   - [✅] Reconstructed (Name: HudUiNetGameSetupPanel_NextWorldButton::OnActivate)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNetGameSetupPanel_NextWorldButton::OnActivate;
-    - File: src/Battlesport/HudUiNetGameSetup.cpp;
-    - Target: hud_ui_net_game_setup_next_world_button;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiNetGameSetupPanel owner-local table factories/globals and constructor table overwrites were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
 
 - 0x41a9c0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupPanel_PrevWorldButton::OnActivate)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNetGameSetupPanel_PrevWorldButton::OnActivate;
-    - File: src/Battlesport/HudUiNetGameSetup.cpp;
-    - Target: hud_ui_net_game_setup_prev_world_button;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiNetGameSetupPanel owner-local table factories/globals and constructor table overwrites were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
 
 - 0x41ab60:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_static_init_and_register_at_exit;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41ab70:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::StaticInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiNetGameSetupOverlayOwner::StaticInit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_static_init;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41ab80:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiNetGameSetupOverlayOwner::RegisterAtExit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_register_at_exit;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41ab90:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiNetGameSetupOverlayOwner::AtExitDestructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_at_exit_destructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41aba0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiNetGameSetupOverlayOwner::Constructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41abe0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiNetGameSetupOverlayOwner::Destructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_destructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41ac50:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_on_try_become_current;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41ad20:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::OnDeactivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiNetGameSetupOverlayOwner::OnDeactivate;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_on_deactivate;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41ad80:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_queue_enter_reconfigure;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41bd80:
   - [☑️] Reconstructed (Name: HudUiNetExitPanel::Constructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiNetExitPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNetExitPanel::Constructor;
-    - File: src/Battlesport/HudUiNetExitPanel.cpp;
-    - Target: hud_ui_net_exit_panel_constructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiNetExitPanel owner-local table factories/globals, constructor table overwrites, raw table dispatch, and hand-authored scalar deleting destructor source were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
 
 - 0x41be70:
   - [✅] Reconstructed (Name: HudUiNetExitPanel_ExitButton::OnActivate)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiNetExitPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNetExitPanel_ExitButton::OnActivate;
-    - File: src/Battlesport/HudUiNetExitPanel.cpp;
-    - Target: hud_ui_net_exit_exit_button_on_activate;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiNetExitPanel owner-local table factories/globals, constructor table overwrites, raw table dispatch, and hand-authored scalar deleting destructor source were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
 
 - 0x41beb0:
   - [☑️] Reconstructed (Name: HudUiNetExitPanel::Destructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiNetExitPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNetExitPanel::Destructor;
-    - File: src/Battlesport/HudUiNetExitPanel.cpp;
-    - Target: hud_ui_net_exit_panel_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiNetExitPanel owner-local table factories/globals, constructor table overwrites, raw table dispatch, and hand-authored scalar deleting destructor source were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
 
 - 0x41bf10:
   - [☑️] Reconstructed (Name: HudUiNetExitPanel_ResumeWidget::OnActivate)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiNetExitPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNetExitPanel_ResumeWidget::OnActivate;
-    - File: src/Battlesport/HudUiNetExitPanel.cpp;
-    - Target: hud_ui_net_exit_resume_widget_on_activate;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiNetExitPanel owner-local table factories/globals, constructor table overwrites, raw table dispatch, and hand-authored scalar deleting destructor source were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
 
 - 0x41bf40:
   - [✅] Reconstructed (Name: HudUiNetExitPanel_ResumeWidget::OnShowPreview)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiNetExitPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNetExitPanel_ResumeWidget::OnShowPreview;
-    - File: src/Battlesport/HudUiNetExitPanel.cpp;
-    - Target: hud_ui_net_exit_resume_widget_on_show_preview;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiNetExitPanel owner-local table factories/globals, constructor table overwrites, raw table dispatch, and hand-authored scalar deleting destructor source were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
 
 - 0x41bfa0:
   - [✅] Reconstructed (Name: HudUiNetExitPanel_ResumeWidget::OnHidePreview)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiNetExitPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNetExitPanel_ResumeWidget::OnHidePreview;
-    - File: src/Battlesport/HudUiNetExitPanel.cpp;
-    - Target: hud_ui_net_exit_resume_widget_on_hide_preview;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiNetExitPanel owner-local table factories/globals, constructor table overwrites, raw table dispatch, and hand-authored scalar deleting destructor source were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
 
 - 0x41c000:
   - [☑️] Reconstructed (Name: HudUiNetExitPanel::CreateGlobal)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiNetExitPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNetExitPanel::CreateGlobal;
-    - File: src/Battlesport/HudUiNetExitPanel.cpp;
-    - Target: hud_ui_net_exit_panel_create_global;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiNetExitPanel owner-local table factories/globals, constructor table overwrites, raw table dispatch, and hand-authored scalar deleting destructor source were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
 
 - 0x41c070:
   - [✅] Reconstructed (Name: HudUiNetExitPanel::Show)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiNetExitPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNetExitPanel::Show;
-    - File: src/Battlesport/HudUiNetExitPanel.cpp;
-    - Target: hud_ui_net_exit_panel_show;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiNetExitPanel owner-local table factories/globals, constructor table overwrites, raw table dispatch, and hand-authored scalar deleting destructor source were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
 
 - 0x41c080:
   - [✅] Reconstructed (Name: HudUiNetExitPanel::Tick)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiNetExitPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNetExitPanel::Tick;
-    - File: src/Battlesport/HudUiNetExitPanel.cpp;
-    - Target: hud_ui_net_exit_panel_tick;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiNetExitPanel owner-local table factories/globals, constructor table overwrites, raw table dispatch, and hand-authored scalar deleting destructor source were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
 
 - 0x41c0a0:
   - [✅] Reconstructed (Name: HudUiNetExitPanel::DestroyGlobal)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudUiNetExitPanel; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNetExitPanel::DestroyGlobal;
-    - File: src/Battlesport/HudUiNetExitPanel.cpp;
-    - Target: hud_ui_net_exit_panel_destroy_global;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiNetExitPanel owner-local table factories/globals, constructor table overwrites, raw table dispatch, and hand-authored scalar deleting destructor source were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
 
 - 0x40d6e0:
   - [☑️] Reconstructed (Name: HudUiMgrSensorBlock::Destructor)
@@ -42548,9 +42512,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x42ee40:
   - [✅] Reconstructed (Name: HudUiBackgroundContainer::SetEnabled)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiBackgroundContainer; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiBackgroundContainer::SetEnabled;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_background_container_set_enabled;
@@ -42664,16 +42628,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x408a30:
   - [☑️] Reconstructed (Name: HudUiControlsDialog::Constructor)
-  - [✅] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiControlsDialog::Constructor;
-    - File: src/Battlesport/hud.cpp;
-    - Target: hud_ui_controls_dialog_constructor_cluster;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: Controls owner-local FTable factories/globals were removed from production source. BN proves a class-shaped HudUiControlsDialog constructor with embedded child objects, but source remains blocked on the broader HudUiBackground/HudUiElement C++ dispatch owner before retiering.
 
 - 0x408c20:
   - [✅] Reconstructed (Name: HudUiControlsDialog::CommandsButton_OnActivate)
@@ -42728,17 +42692,17 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Blocker: source-shape audit pending
 
 - 0x40c1d0:
-  - [☑️] Reconstructed (Name: HudCmdBindButtonBase::ClearBindingEntries)
+  - [✅] Reconstructed (Name: HudCmdBindButtonBase::ClearBindingEntries)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudCmdBindButtonBase; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudCmdBindButtonBase::ClearBindingEntries;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_bind_button_base_clear_binding_entries;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S blocked: VC5 byte comparison for hud_cmd_bind_button_base_clear_binding_entries still mismatches cleanup codegen
 
 - 0x4ba470:
   - [✅] Reconstructed (Name: StdPtrVector::FreeBufferAndReset)
@@ -42755,16 +42719,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x40c6e0:
   - [☑️] Reconstructed (Name: HudUiOptionsPanelBackButton::OnActivate)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanelBackButton::OnActivate;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: zhud_options_panel_back_button_on_activate;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x413630:
   - [☑️] Reconstructed (Name: HudUiMgr::TriggerCurrentLayoutOnActivated)
@@ -42782,72 +42746,72 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b3d00:
   - [✅] Reconstructed (Name: HudUiWidget::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiWidget::Constructor;
+  - [✅] Source owner (Kind: class; Parent: HudUiWidget; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
+    - Name: HudUiWidget::HudUiWidget;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_widget_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bde20:
   - [✅] Reconstructed (Name: HudWeatherFx::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudWeatherFx::ScalarDeletingDestructor;
-    - File: src/Battlesport/hud.cpp;
-    - Target: hud_weather_fx_scalar_deleting_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: Weather scalar-deleting destructor evidence depended on removed HudWeatherFx FTable/global smoke assertions. Recover the class/provider-glue owner before retiering.
 
 - 0x4be2c0:
   - [✅] Reconstructed (Name: HudWeatherFxSnow::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudWeatherFxSnow::ScalarDeletingDestructor;
-    - File: src/Battlesport/hud.cpp;
-    - Target: hud_weather_fx_snow_scalar_deleting_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: Snow scalar-deleting destructor evidence depended on removed HudWeatherFxSnow FTable/global smoke assertions. Recover the class/provider-glue owner before retiering.
 
 - 0x4be2e0:
   - [✅] Reconstructed (Name: HudWeatherFxSnow::Destructor)
-  - [✅] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudWeatherFxSnow::Destructor;
-    - File: src/Battlesport/hud.cpp;
-    - Target: hud_weather_fx_snow_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: Snow destructor evidence depended on removed HudWeatherFx/HudWeatherFxSnow FTable smoke assertions. Recover the class dispatch owner before retiering.
 
 - 0x4be850:
   - [✅] Reconstructed (Name: HudWeatherFxRain::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
+  - [❌] Source dependencies satisfied
   - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudWeatherFxRain::ScalarDeletingDestructor;
-    - File: src/Battlesport/hud.cpp;
-    - Target: hud_weather_fx_rain_scalar_deleting_destructor;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: Rain scalar-deleting destructor evidence depended on removed HudWeatherFxRain FTable/global smoke assertions. Recover the class/provider-glue owner before retiering.
 
 - 0x40b0a0:
   - [✅] Reconstructed (Name: HudCmdCommandList::ScalarDeletingDestructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudCmdCommandList; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudCmdCommandList::ScalarDeletingDestructor;
@@ -42855,20 +42819,20 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_cmd_command_list_scalar_deleting_destructor;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by HudCmdCommandList destructor data/EH gates
 
 - 0x40d0e0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::DestructorCore)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [❌] Source dependencies satisfied
+  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiOptionsPanelOverlayOwner::DestructorCore;
-    - File: src/Battlesport/hud.cpp;
-    - Target: hud_ui_options_panel_overlay_owner_destructor_core;
+  - [❌] Reimplemented [X]
+    - Name: pending;
+    - File: pending;
+    - Target: pending;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x415790:
   - [✅] Reconstructed (Name: HudUiBackgroundConfirmQuit::ScalarDeletingDestructor)
@@ -42885,42 +42849,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x419850:
   - [✅] Reconstructed (Name: HudUiMpExitDialog::ScalarDeletingDestructorThunk)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiMpExitDialog::ScalarDeletingDestructorThunk;
-    - File: src/Battlesport/HudUiMpExitDialog.cpp;
-    - Target: hud_ui_mp_exit_dialog_table_cluster;
-    - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudUiMpExitDialog::ScalarDeletingDestructorThunk; Origin: VC++ scalar deleting destructor provider; File: external; Target: pending; Group: ui.zhud)
 
 - 0x41abc0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_net_game_setup_overlay_owner_scalar_deleting_destructor;
-    - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+  - [✅] Provider-boundary (Kind: VC++ scalar deleting destructor; Name: HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor; Origin: compiler-generated scalar deleting destructor glue; BN assembly calls HudUiNetGameSetupOverlayOwner destructor, tests flags bit 0, optionally calls operator delete, returns this; File: external; Target: hud_ui_net_game_setup_overlay_owner_scalar_deleting_destructor; Group: ui.zhud)
 
 - 0x41be90:
   - [✅] Reconstructed (Name: HudUiNetExitPanel::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNetExitPanel::ScalarDeletingDestructor;
-    - File: src/Battlesport/HudUiNetExitPanel.cpp;
-    - Target: hud_ui_net_exit_panel_scalar_deleting_destructor;
-    - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+  - [✅] Provider-boundary (Kind: VC++ scalar deleting destructor; Name: HudUiNetExitPanel::ScalarDeletingDestructor; Origin: compiler-generated scalar deleting destructor glue; BN assembly calls HudUiNetExitPanel::Destructor, tests flags bit 0, optionally calls imported operator delete, returns this, and retn 4; File: external; Target: pending; Group: ui.zhud)
 
 - 0x41c3e0:
   - [✅] Reconstructed (Name: HudUiNewGamePanel::ScalarDeletingDestructor)
@@ -42937,23 +42874,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x41c610:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiNewGamePanelOverlayOwner::ScalarDeletingDestructor;
-    - File: src/Battlesport/hud.cpp;
-    - Target: hud_ui_new_game_panel_overlay_owner_lifecycle;
-    - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+  - [✅] Provider-boundary (Kind: VC++ scalar deleting destructor; Name: HudUiNewGamePanelOverlayOwner::ScalarDeletingDestructor; Origin: compiler-generated glue; BN body calls HudUiNewGamePanelOverlayOwner::Destructor, conditionally calls imported operator delete when flags & 1, and returns self; File: external; Target: pending; Group: ui.zhud)
 
 - 0x40bdf0:
   - [✅] Reconstructed (Name: StdPtrVector::ClearNoOpDestroy)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: StdPtrVector::ClearNoOpDestroy;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: std_ptr_vector_clear_no_op_destroy;
@@ -44461,21 +44389,12 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x407170:
   - [✅] Reconstructed (Name: RecoilStateBase::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: RecoilStateBase; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: RecoilStateBase::ScalarDeletingDestructor;
-    - File: src/GameZRecoil/RecoilApp/RecoilStateBase.cpp;
-    - Target: recoil_state_base_scalar_deleting_destructor;
-    - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+  - [✅] Provider-boundary (Kind: VC++ scalar deleting destructor; Name: RecoilStateBase::ScalarDeletingDestructor; Origin: compiler-generated scalar deleting destructor glue; BN assembly writes the base RecoilApp_IState vptr constant, tests flags bit 0, optionally calls operator delete, returns this; File: external; Target: recoil_state_base_scalar_deleting_destructor; Group: app.recoil_state_base)
 
 - 0x408f50:
   - [✅] Reconstructed (Name: RecoilStateDialogHost::OnWndActivate)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: RecoilStateBase; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateDialogHost; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateDialogHost::OnWndActivate;
@@ -44500,120 +44419,102 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x415860:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: RecoilStateBase; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: RecoilStateConfirmQuit::ScalarDeletingDestructor;
-    - File: src/Battlesport/hud.cpp;
-    - Target: recoil_state_confirm_quit_scalar_deleting_destructor;
-    - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+  - [✅] Provider-boundary (Kind: VC++ scalar deleting destructor; Name: RecoilStateConfirmQuit::ScalarDeletingDestructor; Origin: compiler-generated glue; BN body calls RecoilStateConfirmQuit::Destructor, conditionally calls imported operator delete when flags & 1, and returns self; File: external; Target: pending; Group: app.recoil_state_base)
 
 - 0x406e90:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateCheatCode::StaticInitAndRegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_static_init_and_register_at_exit;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x406eb0:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::StaticInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateCheatCode::StaticInit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_static_init;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x406ec0:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateCheatCode::AtExitDestructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_at_exit_destructor;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x406ed0:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateCheatCode::Constructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_constructor;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x406ee0:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: RecoilStateCheatCode::ScalarDeletingDestructor;
-    - File: src/Battlesport/hud.cpp;
-    - Target: recoil_state_cheat_code_scalar_deleting_destructor;
-    - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+  - [✅] Provider-boundary (Kind: VC++ scalar deleting destructor; Name: RecoilStateCheatCode::ScalarDeletingDestructor; Origin: compiler-generated glue; BN body calls RecoilStateCheatCode::Destructor, conditionally calls imported operator delete when flags & 1, and returns self; File: external; Target: pending; Group: app.recoil_state_base)
 
 - 0x406f00:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateCheatCode::Destructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_destructor;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x406f60:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateCheatCode::OnTryBecomeCurrent;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_on_try_become_current;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x407010:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::OnDeactivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateCheatCode::OnDeactivate;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_on_deactivate;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x409990:
   - [✅] Reconstructed (Name: RecoilStateCredits::Constructor)
@@ -44644,15 +44545,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x409a60:
   - [☑️] Reconstructed (Name: RecoilStateCredits::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateCredits; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateCredits::OnTryBecomeCurrent;
     - File: src/Battlesport/RecoilStateCredits.cpp;
     - Target: recoil_state_credits_on_try_become_current;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x409ad0:
   - [✅] Reconstructed (Name: RecoilStateCredits::OnDeactivate)
@@ -44683,7 +44584,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x415810:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: RecoilStateBase; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateConfirmQuit::StaticInitAndRegisterAtExit;
@@ -44696,7 +44597,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x415820:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::StaticInit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: RecoilStateBase; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateConfirmQuit::StaticInit;
@@ -44709,7 +44610,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x415830:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: RecoilStateBase; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateConfirmQuit::RegisterAtExit;
@@ -44722,7 +44623,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x415840:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: RecoilStateBase; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateConfirmQuit::AtExitDestructor;
@@ -44735,7 +44636,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x415850:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::Constructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: RecoilStateBase; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateConfirmQuit::Constructor;
@@ -44748,7 +44649,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x415880:
   - [☑️] Reconstructed (Name: RecoilStateConfirmQuit::Destructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: RecoilStateBase; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateConfirmQuit::~RecoilStateConfirmQuit;
@@ -44761,20 +44662,20 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4158f0:
   - [☑️] Reconstructed (Name: RecoilStateConfirmQuit::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateConfirmQuit::OnTryBecomeCurrent;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_confirm_quit_on_try_become_current;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x415960:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::OnDeactivate)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: RecoilStateBase; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateConfirmQuit::OnDeactivate;
@@ -44787,7 +44688,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4159b0:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::QueueEnter)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: RecoilStateBase; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateConfirmQuit::QueueEnter;
@@ -44800,145 +44701,136 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x408d20:
   - [✅] Reconstructed (Name: RecoilStateControls::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateControls::StaticInitAndRegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408d30:
   - [✅] Reconstructed (Name: RecoilStateControls::StaticInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateControls::StaticInit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408d40:
   - [✅] Reconstructed (Name: RecoilStateControls::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateControls::RegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408d50:
   - [✅] Reconstructed (Name: RecoilStateControls::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateControls::AtExitDestructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408d60:
   - [✅] Reconstructed (Name: RecoilStateControls::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateControls::Constructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408d70:
   - [✅] Reconstructed (Name: RecoilStateControls::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: RecoilStateControls::ScalarDeletingDestructor;
-    - File: src/Battlesport/hud.cpp;
-    - Target: recoil_state_controls_lifecycle;
-    - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+  - [✅] Provider-boundary (Kind: VC++ scalar deleting destructor; Name: RecoilStateControls::ScalarDeletingDestructor; Origin: compiler-generated glue; BN body calls RecoilStateControls::Destructor, conditionally calls imported operator delete when flags & 1, and returns self; File: external; Target: pending; Group: app.recoil_state_base)
 
 - 0x408d90:
   - [☑️] Reconstructed (Name: RecoilStateControls::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateControls::Destructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408df0:
   - [☑️] Reconstructed (Name: RecoilStateControls::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateControls::OnTryBecomeCurrent;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408ec0:
   - [✅] Reconstructed (Name: RecoilStateControls::OnDeactivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateControls::OnDeactivate;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408fa0:
   - [✅] Reconstructed (Name: RecoilStateControls::OnResume)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateControls::OnResume;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408ff0:
   - [✅] Reconstructed (Name: RecoilStateControls::QueueEnter)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: RecoilStateBase; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateControls::QueueEnter;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_queue_enter;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x409950:
   - [✅] Reconstructed (Name: RecoilStateCredits::StaticInitAndRegisterAtExit)
@@ -44990,15 +44882,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x415170:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: source-file; Parent: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateMainMenuTransition; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateMainMenuTransition::Constructor;
     - File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp;
     - Target: recoil_state_main_menu_transition;
     - Group: app.main_menu_transition;
-    - Model: byte-equivalent-only;
-    - Blocker: source-shape audit pending; tier S records byte/provider-ABI evidence only
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4151b0:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::Destructor)
@@ -45055,15 +44947,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x415630:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::ClearPausedAudioSnapshot)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: source-file; Parent: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_ClearPausedAudioSnapshot.cpp; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateMainMenuTransition; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateMainMenuTransition::ClearPausedAudioSnapshot;
     - File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_ClearPausedAudioSnapshot.cpp;
     - Target: recoil_state_main_menu_transition_clear_paused_audio_snapshot;
     - Group: app.main_menu_transition;
-    - Model: byte-equivalent-only;
-    - Blocker: source-shape audit pending; tier S records byte/provider-ABI evidence only
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x415650:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::QueueEnter)
@@ -45088,21 +44980,12 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_SetDeferredVideoModeIndex.cpp;
     - Target: recoil_state_main_menu_transition_set_deferred_video_mode_index;
     - Group: app.main_menu_transition;
-    - Model: byte-equivalent-only;
-    - Blocker: source-shape audit pending; tier S records byte/provider-ABI evidence only
+    - Model: pending;
+    - Blocker: source owner and data gates pending; standalone owner marker is not accepted
 
 - 0x415190:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateMainMenuTransition; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: RecoilStateMainMenuTransition::ScalarDeletingDestructor;
-    - File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp;
-    - Target: recoil_state_main_menu_transition_scalar_deleting_destructor;
-    - Group: app.main_menu_transition;
-    - Model: source-faithful;
-    - Blocker: none
+  - [✅] Provider-boundary (Kind: VC++ scalar deleting destructor; Name: RecoilStateMainMenuTransition::ScalarDeletingDestructor; Origin: compiler-generated glue; BN body calls RecoilStateMainMenuTransition::Destructor, conditionally calls imported operator delete when flags & 1, and returns self; File: external; Target: pending; Group: app.main_menu_transition)
 
 - 0x415100:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit)
@@ -45120,15 +45003,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x415110:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::StaticInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateMainMenuTransition; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateMainMenuTransition; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateMainMenuTransition::StaticInit;
     - File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp;
     - Target: recoil_state_main_menu_transition_static_init_thunks;
     - Group: app.main_menu_transition;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x415120:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::RegisterAtExit)
@@ -45154,7 +45037,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: recoil_state_main_menu_transition_static_init_thunks;
     - Group: app.main_menu_transition;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: source owner and data gates pending; class owner marker is not accepted
 
 ## G033. Main Recoil frame windows and MFC message maps
 
@@ -46267,15 +46150,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x42e110:
   - [✅] Reconstructed (Name: RecoilApp::CreateMainWnd)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: RecoilApp; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: RecoilApp::CreateMainWnd;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_app_create_main_wnd;
     - Group: app.recoil_app.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x42e220:
   - [✅] Reconstructed (Name: RecoilApp::StartEngine)
@@ -46345,15 +46228,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x42e520:
   - [✅] Reconstructed (Name: RecoilApp::InitInstance)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilApp; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilApp::InitInstance;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_app_init_instance;
     - Group: app.recoil_app.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x42e930:
   - [✅] Reconstructed (Name: RecoilApp::ExitInstance)
@@ -46371,15 +46254,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x42e990:
   - [✅] Reconstructed (Name: RecoilApp::ActivateExistingInstance)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilApp; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilApp::ActivateExistingInstance;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_app_activate_existing_instance_absent;
     - Group: app.recoil_app.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x42e9f0:
   - [✅] Reconstructed (Name: RecoilApp::PreTranslateMessage)
@@ -46397,28 +46280,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x430c90:
   - [✅] Reconstructed (Name: RecoilApp::FatalErrorAndExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilApp; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilApp::FatalErrorAndExit;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_app_fatal_error_and_exit;
     - Group: app.recoil_app.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x434660:
   - [✅] Reconstructed (Name: HudUiSaveLoadEntry::IsNewerThan)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: HudUiSaveLoadEntry; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiSaveLoadEntry::IsNewerThan;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: hud_ui_save_load_entry_is_newer_than;
     - Group: app.recoil_app.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x435d20:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::OnTryBecomeCurrent)
@@ -46449,28 +46332,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x435f50:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::QueueOpenSaveDialog)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateSaveLoadTransition; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateSaveLoadTransition::QueueOpenSaveDialog;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_state_save_load_transition_queue_open_save_dialog;
     - Group: app.recoil_app.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x435f80:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::QueueOpenLoadDialog)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateSaveLoadTransition; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: RecoilStateSaveLoadTransition::QueueOpenLoadDialog;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_state_save_load_transition_queue_open_load_dialog;
     - Group: app.recoil_app.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4428b0:
   - [✅] Reconstructed (Name: RecoilApp_MfcOleModule::Destructor)
@@ -46487,16 +46370,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x4429b0:
   - [✅] Reconstructed (Name: RecoilApp_MfcOleModule::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: RecoilApp::MfcOleModuleScalarDeletingDestructor;
-    - File: src/Battlesport/RecoilApp.cpp;
-    - Target: recoil_app_mfc_ole_module_scalar_deleting_destructor;
-    - Group: app.recoil_app.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: RecoilApp_MfcOleModule::ScalarDeletingDestructor; Origin: VC++ scalar deleting destructor generated for RecoilApp_MfcOleModule virtual destructor; source models the class destructor and no hand-authored wrapper remains; File: external; Target: recoil_app_mfc_ole_module_scalar_deleting_destructor; Group: app.recoil_app.core)
 
 - 0x4429d0:
   - [✅] Reconstructed (Name: RecoilApp::InitMainWindow)
@@ -46683,28 +46557,19 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x435a70:
   - [✅] Reconstructed (Name: HudUiSaveLoadDialog::ProcessDialogResult)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiSaveLoadDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiSaveLoadDialog::ProcessDialogResult;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_save_load_process_dialog_result;
+    - Target: pending;
     - Group: app.recoil_app.core;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiSaveLoadDialog::ProcessDialogResult accepted at tier F only; behavior smoke/VC evidence and touched-global Data gate remain pending for g_RecoilApp/g_RecoilStateSaveLoadTransition and option/audio provider state.
 
 - 0x435ca0:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilApp; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: RecoilStateSaveLoadTransition::ScalarDeletingDestructor;
-    - File: src/Battlesport/RecoilApp.cpp;
-    - Target: recoil_state_save_load_transition_lifecycle;
-    - Group: app.recoil_app.core;
-    - Model: source-faithful;
-    - Blocker: none
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: RecoilStateSaveLoadTransition::ScalarDeletingDestructor; Origin: VC++ scalar deleting destructor generated for RecoilStateSaveLoadTransition; source uses the authored destructor/atexit cleanup and no hand-authored wrapper remains; File: external; Target: recoil_state_save_load_transition_lifecycle; Group: app.recoil_app.core)
 
 - 0x435cc0:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::Destructor)
@@ -46722,15 +46587,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x434680:
   - [☑️] Reconstructed (Name: HudUiSaveGameDialog::InitLayout)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiSaveGameDialog; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiSaveGameDialog::InitLayout;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: hud_ui_save_game_dialog_init_layout;
     - Group: app.recoil_app.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x435ed0:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::OnDeactivate)
@@ -46748,249 +46613,240 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x436530:
   - [✅] Reconstructed (Name: HudUiSaveLoadDialog::InsertEntryIntoSortedPrefix)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiSaveLoadDialog; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiSaveLoadDialog::InsertEntryIntoSortedPrefix;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: hud_ui_save_load_insert_entry_sorted_prefix;
     - Group: app.recoil_app.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x436580:
   - [✅] Reconstructed (Name: HudUiSaveLoadDialog::PartitionEntriesByPivot)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiSaveLoadDialog; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiSaveLoadDialog::PartitionEntriesByPivot;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: hud_ui_save_load_partition_entries_by_pivot;
     - Group: app.recoil_app.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4349a0:
   - [☑️] Reconstructed (Name: HudUiSaveLoadDialog::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiSaveLoadDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiSaveLoadDialog::Destructor;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_save_load_dialog_destructor;
+    - Target: pending;
     - Group: app.recoil_app.core;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiSaveLoadDialog::Destructor accepted at tier F only; behavior smoke/VC evidence and source-faithful owner/data gates remain pending for the save/load dialog class cluster.
 
 - 0x434a80:
   - [☑️] Reconstructed (Name: HudUiSaveGameDialog::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiSaveGameDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiSaveGameDialog::Destructor;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_save_game_dialog_destructor;
+    - Target: pending;
     - Group: app.recoil_app.core;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiSaveGameDialog::Destructor accepted at tier F only; behavior smoke/VC evidence and source-faithful owner/data gates remain pending for the save-game dialog class cluster.
 
 - 0x434b90:
   - [☑️] Reconstructed (Name: HudUiSaveLoadDialog::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiLoadGameDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiLoadGameDialog::Constructor;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_load_game_dialog_constructor;
+    - Target: pending;
     - Group: app.recoil_app.core;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiLoadGameDialog::Constructor accepted at tier F only; behavior smoke/VC evidence and source-faithful owner/data gates remain pending for the load-game dialog class cluster.
 
 - 0x434dc0:
   - [✅] Reconstructed (Name: HudUiLoadGameDialog::ProcessDialogResult)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiLoadGameDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiLoadGameDialog::ProcessDialogResult;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_load_game_dialog_process_dialog_result;
+    - Target: pending;
     - Group: app.recoil_app.core;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiLoadGameDialog::ProcessDialogResult accepted at tier F only; behavior smoke/VC evidence and owner/data gates remain pending for the save/load dialog class cluster.
 
 - 0x434dd0:
   - [✅] Reconstructed (Name: HudUiLoadGameDialog::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiLoadGameDialog::ScalarDeletingDestructor;
-    - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_load_game_dialog_scalar_deleting_destructor;
-    - Group: app.recoil_app.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudUiLoadGameDialog::ScalarDeletingDestructor; Origin: VC++ scalar deleting destructor generated for concrete dialog destructor; source now uses delete on HudUiLoadGameDialog and no hand-authored wrapper remains; File: external; Target: hud_ui_load_game_dialog_scalar_deleting_destructor; Group: app.recoil_app.core)
 
 - 0x434df0:
   - [☑️] Reconstructed (Name: HudUiLoadGameDialog::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiLoadGameDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiLoadGameDialog::Destructor;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_load_game_dialog_destructor;
+    - Target: pending;
     - Group: app.recoil_app.core;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiLoadGameDialog::Destructor accepted at tier F only; behavior smoke/VC evidence and source-faithful owner/data gates remain pending for the load-game dialog class cluster.
 
 - 0x434ee0:
   - [✅] Reconstructed (Name: HudUiSaveLoadDialog::InitializeFileEntries)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiSaveLoadDialog; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiSaveLoadDialog::InitializeFileEntries;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: hud_ui_save_load_initialize_file_entries;
     - Group: app.recoil_app.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x434fb0:
   - [☑️] Reconstructed (Name: HudUiSaveLoadDialog::DeleteSaveFile)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiSaveLoadDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiSaveLoadDialog::DeleteSaveFile;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_save_load_delete_save_file;
+    - Target: pending;
     - Group: app.recoil_app.core;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiSaveLoadDialog::DeleteSaveFile accepted at tier F only; behavior smoke/VC evidence and touched provider/global/data gates for filesystem, zLoc, and dialog state remain pending.
 
 - 0x435140:
   - [✅] Reconstructed (Name: HudUiSaveLoadDeleteButton::OnActivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiSaveLoadDeleteButton; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiSaveLoadDeleteButton::OnActivate;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_save_load_delete_button_on_activate;
+    - Target: pending;
     - Group: app.recoil_app.core;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiSaveLoadDeleteButton::OnActivate accepted at tier F only; behavior smoke/VC evidence and source-faithful button/dialog owner gates remain pending.
 
 - 0x435160:
   - [☑️] Reconstructed (Name: HudUiSaveLoadNextButton::OnActivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiSaveLoadNextButton; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiSaveLoadNextButton::OnActivate;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_save_load_next_button_on_activate;
+    - Target: pending;
     - Group: app.recoil_app.core;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiSaveLoadNextButton::OnActivate accepted at tier F only; behavior smoke/VC evidence and source-faithful button/dialog owner gates remain pending.
 
 - 0x4351b0:
   - [☑️] Reconstructed (Name: HudUiSaveLoadPrevButton::OnActivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiSaveLoadPrevButton; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiSaveLoadPrevButton::OnActivate;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_save_load_prev_button_on_activate;
+    - Target: pending;
     - Group: app.recoil_app.core;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiSaveLoadPrevButton::OnActivate accepted at tier F only; behavior smoke/VC evidence and source-faithful button/dialog owner gates remain pending.
 
 - 0x435200:
   - [✅] Reconstructed (Name: HudUiLoadGamePrimaryActionButton::OnActivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiLoadGamePrimaryActionButton; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiLoadGamePrimaryActionButton::OnActivate;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_load_game_primary_action_button_on_activate;
+    - Target: pending;
     - Group: app.recoil_app.core;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiLoadGamePrimaryActionButton::OnActivate accepted at tier F only; behavior smoke/VC evidence and source-faithful button/dialog owner gates remain pending.
 
 - 0x435220:
   - [✅] Reconstructed (Name: HudUiSaveGamePrimaryActionButton::OnActivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiSaveGamePrimaryActionButton; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiSaveGamePrimaryActionButton::OnActivate;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_save_game_primary_action_button_on_activate;
+    - Target: pending;
     - Group: app.recoil_app.core;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiSaveGamePrimaryActionButton::OnActivate accepted at tier F only; behavior smoke/VC evidence and source-faithful button/dialog owner gates remain pending.
 
 - 0x435240:
   - [☑️] Reconstructed (Name: HudUiLoadGameDialog::OnPrimaryAction)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiLoadGameDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiLoadGameDialog::OnPrimaryAction;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_load_game_dialog_on_primary_action;
+    - Target: pending;
     - Group: app.recoil_app.core;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiLoadGameDialog::OnPrimaryAction accepted at tier F only; behavior smoke/VC evidence and touched filesystem/zLoc/zUtil/g_RecoilApp data gates remain pending.
 
 - 0x4353f0:
   - [✅] Reconstructed (Name: HudUiSaveLoadDialog::SetSelectedEntryIndex)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiSaveLoadDialog; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiSaveLoadDialog::SetSelectedEntryIndex;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: hud_ui_save_load_set_selected_entry_index;
     - Group: app.recoil_app.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S verification blocked: local hud_ui_save_load_set_selected_entry_index VC5 target compiles, but typed row-window source still differs from retail 0x4353f0; latest VC5 profile vc5_o2_ob1_md_gx_facs emits 448 bytes vs BN 482 with prologue/local-stack and loop scheduling drift around repeated vector bounds and entry filename address formation
 
 - 0x4355e0:
   - [✅] Reconstructed (Name: HudUiSaveLoadDialog::RefreshSaveFileList)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiSaveLoadDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiSaveLoadDialog::RefreshSaveFileList;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_save_load_refresh_file_list;
+    - Target: pending;
     - Group: app.recoil_app.core;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiSaveLoadDialog::RefreshSaveFileList accepted at tier F only; behavior smoke/VC evidence and touched filesystem/fileEntries data gates remain pending.
 
 - 0x435a10:
   - [✅] Reconstructed (Name: HudUiSaveLoadListItem::OnActivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiSaveLoadListItem; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiSaveLoadListItem::OnActivate;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_save_load_list_item_on_activate;
+    - Target: pending;
     - Group: app.recoil_app.core;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiSaveLoadListItem::OnActivate accepted at tier F only; behavior smoke/VC evidence remain pending and Source owner/Data gates remain blocked on the HUD list-item/dialog class hierarchy.
 
 - 0x435a30:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit)
@@ -47021,61 +46877,61 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4348b0:
   - [✅] Reconstructed (Name: HudUiSaveLoadGameNameInput::OnActivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiSaveLoadGameNameInput; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiSaveLoadGameNameInput::OnActivate;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_save_load_game_name_input_on_activate;
+    - Target: pending;
     - Group: app.recoil_app.core;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiSaveLoadGameNameInput::OnActivate accepted at tier F only; behavior smoke/VC evidence and source-faithful input/dialog owner gates remain pending.
 
 - 0x4348f0:
   - [✅] Reconstructed (Name: HudUiSaveLoadGameNameInput::OnRawKeyboardEvent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: HudUiSaveLoadGameNameInput; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiSaveLoadGameNameInput::OnRawKeyboardEvent;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_save_load_game_name_input_on_raw_keyboard_event;
+    - Target: pending;
     - Group: app.recoil_app.core;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiSaveLoadGameNameInput::OnRawKeyboardEvent accepted at tier F only; behavior smoke/VC evidence and source-faithful input/dialog owner gates remain pending.
 
 - 0x434920:
   - [✅] Reconstructed (Name: HudUiSaveLoadListItem::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiSaveLoadListItem; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiSaveLoadListItem::Constructor;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: hud_ui_save_load_list_item_constructor;
     - Group: app.recoil_app.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S blocked: no VC5SP3 byte target currently covers HudUiSaveLoadListItem::Constructor and HudUiPanel::ConstructorDefault dependency remains tier B
 
 - 0x434950:
   - [✅] Reconstructed (Name: HudUiSaveLoadListItem::Draw)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilApp; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiSaveLoadListItem; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiSaveLoadListItem::Draw;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_save_load_list_item_draw;
+    - Target: pending;
     - Group: app.recoil_app.core;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: HudUiSaveLoadListItem::Draw accepted at tier F only; behavior smoke/VC evidence remain pending and Source owner/Data gates remain blocked on the HUD list-item/dialog class hierarchy.
 
 - 0x434970:
   - [✅] Reconstructed (Name: HudUiLoadGameDialog::OnPrimaryActionThunk)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilApp; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiLoadGameDialog; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiLoadGameDialog::OnPrimaryActionThunk;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: hud_ui_load_game_dialog_on_primary_action_thunk;
@@ -47085,29 +46941,20 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x434980:
   - [✅] Reconstructed (Name: HudUiSaveGameDialog::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilApp; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiSaveGameDialog::ScalarDeletingDestructor;
-    - File: src/Battlesport/RecoilApp.cpp;
-    - Target: hud_ui_save_game_dialog_scalar_deleting_destructor;
-    - Group: app.recoil_app.core;
-    - Model: source-faithful;
-    - Blocker: none
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudUiSaveGameDialog::ScalarDeletingDestructor; Origin: VC++ scalar deleting destructor generated for concrete dialog destructor; source now uses delete on HudUiSaveGameDialog and no hand-authored wrapper remains; File: external; Target: hud_ui_save_game_dialog_scalar_deleting_destructor; Group: app.recoil_app.core)
 
 - 0x4362f0:
   - [✅] Reconstructed (Name: HudUiSaveLoadDialog::SortEntryRange)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiSaveLoadDialog; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiSaveLoadDialog::SortEntryRange;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: hud_ui_save_load_sort_entry_range;
     - Group: app.recoil_app.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 ## G035. RecoilApp state queue and run-loop dispatch
 
@@ -47612,22 +47459,22 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a5ad0:
   - [✅] Reconstructed (Name: zLoc::LoadMessagesDll)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: source-file; Parent: src/GameZRecoil/zLoc/zLoc.cpp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zLoc/zLoc.cpp; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zLoc::LoadMessagesDll;
     - File: src/GameZRecoil/zLoc/zLoc.cpp;
     - Target: zloc_load_messages_dll;
     - Group: misc.authored_stubs;
-    - Model: pending;
-    - Blocker: touched localization globals audit pending; required function docblock and original-source helper guard are clean as of 2026-06-05, and VC5SP3 byte compare for zLoc::LoadMessagesDll passes with zero unmasked mismatches (BN 45 bytes, VC 48 bytes, 20 relocation bytes masked, 3 trailing VC NOPs trimmed).
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a5b00:
   - [✅] Reconstructed (Name: zLoc::UnloadMessagesDll)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: authored-stubs; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zLoc/zLoc.cpp; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zLoc::UnloadMessagesDll;
     - File: src/GameZRecoil/zLoc/zLoc.cpp;
     - Target: zloc_unload_messages_dll;
@@ -47638,22 +47485,22 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a5b20:
   - [✅] Reconstructed (Name: zLoc::GetMessageId)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: source-file; Parent: src/GameZRecoil/zLoc/zLoc.cpp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zLoc/zLoc.cpp; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zLoc::GetMessageId;
     - File: src/GameZRecoil/zLoc/zLoc.cpp;
     - Target: zloc_get_message_id;
     - Group: misc.authored_stubs;
-    - Model: pending;
-    - Blocker: touched localization function-pointer global audit pending; required function docblock and original-source helper guard are clean as of 2026-06-05, and VC5SP3 byte compare for zLoc::GetMessageId passes with zero unmasked mismatches (BN 19 bytes, VC 32 bytes, 4 relocation bytes masked, 13 trailing VC NOPs trimmed).
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a5b40:
   - [✅] Reconstructed (Name: zLoc::ResolveMessageKeyOrFallback)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: authored-stubs; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zLoc/zLoc.cpp; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zLoc::ResolveMessageKeyOrFallback;
     - File: src/GameZRecoil/zLoc/zLoc.cpp;
     - Target: zloc_resolve_message_key_or_fallback;
@@ -47664,22 +47511,22 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a5b60:
   - [✅] Reconstructed (Name: zLoc::FormatMessage)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: authored-stubs; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zLoc/zLoc.cpp; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zLoc::FormatMessage;
     - File: src/GameZRecoil/zLoc/zLoc.cpp;
     - Target: zloc_format_message;
     - Group: misc.authored_stubs;
-    - Model: pending;
-    - Blocker: source-shape and touched localization global data audit pending; required function docblock and original-source helper guard are clean as of 2026-06-05, functional target zloc_format_message passes, and VC5SP3 byte compare still fails with 2 unmasked mismatches (BN 131 bytes, VC 144 bytes, 16 relocation bytes masked, 13 trailing VC NOPs trimmed).
+    - Model: source-faithful;
+    - Blocker: tier S byte mismatch remains: VC5SP3 compare has 2 unmasked mismatches; source owner/data gates accepted.
 
 - 0x4a5bf0:
   - [✅] Reconstructed (Name: zLoc::GetMessageString)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: authored-stubs; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zLoc/zLoc.cpp; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zLoc::GetMessageString;
     - File: src/GameZRecoil/zLoc/zLoc.cpp;
     - Target: zloc_get_message_string;

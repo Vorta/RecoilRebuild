@@ -29,7 +29,6 @@ add_library(recoil_native STATIC
     ../Battlesport/CZGameFrame.cpp
     ../Battlesport/CZRecoilFrame.cpp
     ../GameZRecoil/mission.cpp
-    ../GameZRecoil/RecoilApp/RecoilStateBase.cpp
     ../GameZRecoil/RecoilApp/RecoilStateDialogHost.cpp
     ../GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp
     ../GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnTryBecomeCurrent.cpp
@@ -147,6 +146,7 @@ endif()
 
 target_link_libraries(recoil_native PUBLIC
     recoil_compiler_options
+    recoil_aureal_a3d20_legacy
     recoil_directx_legacy
     recoil_mfc42_legacy
     winmm

@@ -13,6 +13,15 @@ per-target VC verification evidence.
   libraries from the original-era DirectX 6 SDK.
 - `support/sdk/MFC42` supplies repo-local MFC42 headers, libraries, runtime DLL,
   and selected source evidence for MFC shell ABI work.
+- The A3D backend uses the Aureal A3D 2.0-era COM API, not the A3D 1.2 API:
+  `support/Recoil.exe` contains `CLSID_A3dApi`
+  `{92FA2C24-253C-11D2-90FB-006008A1F441}`, `IID_IA3d3`,
+  `IID_IA3dGeom`, and `IID_IA3dListener`, and does not contain the A3D 1.x
+  `CLSID_A3d` or `IID_IA3d`. The preserved A3D 1.2 SDK `Ia3d.h` lacks those
+  2.0 symbols and lacks the `IA3d3` `NewSource`, `DuplicateSource`, and
+  `SetCooperativeLevel` methods used by `zSndBackend_InitA3D`; the local
+  `support/sdk/Aureal/A3D20/inc/ia3dapi.h` and `Ia3dutil.h` match the preserved
+  A3D 2.0 SDK headers byte-for-byte.
 - `tools/compiler_linker_profiles.json` records accepted compiler flag profiles;
   `tools/recoil_provenance_audit.py --strict` guards VC verification manifests
   against those profiles.

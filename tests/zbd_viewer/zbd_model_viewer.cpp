@@ -1680,9 +1680,9 @@ void ResetSceneGlobals() {
     g_zClass_ActiveNodeCount = 0;
     g_zClass_NodeFreeHeadIndex = -1;
     g_zClass_CurrentZbdPath[0] = 0;
-    if (g_zImage_MissionResourcePaths != 0) {
-        zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionResourcePaths);
-        g_zImage_MissionResourcePaths = 0;
+    if (g_zImage_MissionSearchPathList != 0) {
+        zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionSearchPathList);
+        g_zImage_MissionSearchPathList = 0;
     }
     memset(
         g_zImage_TexDirEntries,

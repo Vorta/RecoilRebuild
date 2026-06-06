@@ -102,6 +102,20 @@ bool HudFloatNear(float actual, float expected) {
     return delta > -0.0001f && delta < 0.0001f;
 }
 
+HudCmdBindingEntry *MakeTestBindingEntry(const char *text) {
+    HudCmdBindingEntry *const binding =
+        static_cast<HudCmdBindingEntry *>(::operator new(sizeof(HudCmdBindingEntry)));
+    new (binding) HudCmdBindingEntry;
+    binding->displayText = nullptr;
+    if (text != nullptr) {
+        const std::size_t length = std::strlen(text) + 1;
+        binding->displayText = static_cast<char *>(std::malloc(length));
+        std::memcpy(binding->displayText, text, length);
+    }
+    binding->commandId = 0;
+    return binding;
+}
+
 std::size_t HudUiTripletEntryCountForTest(const HudUiTriplet &triplet) {
     if (triplet.entries.begin == nullptr) {
         return 0;
@@ -5942,7 +5956,7 @@ extern "C" int zhud_mgr_apply_hud_mode_switch_smoke(void) {
 extern "C" int zhud_mgr_ensure_hud_loaded_minimal_smoke(void) {
     zArchiveList *const oldMountedArchives = g_zArchive_MountedList;
     zArchiveList *const oldCurrentArchive = g_zArchive_Current;
-    zArchiveList *const oldMissionResourcePaths = g_zImage_MissionResourcePaths;
+    zArchiveList *const oldMissionSearchPathList = g_zImage_MissionSearchPathList;
     HudUiTimerPanelFloat *const oldFloatTimer = g_HudUiMgrTimerPanelFloat;
     HudUiStringMenu *const oldStringMenu = g_HudUiMgrStringMenu;
     HudLayoutBase *const oldCurrentLayout = g_HudUiMgrCurrentLayout;
@@ -6024,8 +6038,8 @@ extern "C" int zhud_mgr_ensure_hud_loaded_minimal_smoke(void) {
     list.count = 1;
     list.head = &node;
 
-    if (g_zImage_MissionResourcePaths != nullptr) {
-        g_zImage_MissionResourcePaths = nullptr;
+    if (g_zImage_MissionSearchPathList != nullptr) {
+        g_zImage_MissionSearchPathList = nullptr;
     }
 
     HudUiTimerPanelFloat_FTable timerTable{};
@@ -6087,12 +6101,12 @@ extern "C" int zhud_mgr_ensure_hud_loaded_minimal_smoke(void) {
                         g_disableVisibleValue[0] == 0 && g_disableSetEnabledCount == 1 &&
                         g_disableSetEnabledThis[0] == &menu.base &&
                         g_disableSetEnabledValues[0] == 0 && g_layoutActivatedCount == 1 &&
-                        g_zImage_MissionResourcePaths != nullptr;
+                        g_zImage_MissionSearchPathList != nullptr;
 
-    if (g_zImage_MissionResourcePaths != nullptr) {
-        zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionResourcePaths);
+    if (g_zImage_MissionSearchPathList != nullptr) {
+        zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionSearchPathList);
     }
-    g_zImage_MissionResourcePaths = oldMissionResourcePaths;
+    g_zImage_MissionSearchPathList = oldMissionSearchPathList;
     g_zArchive_MountedList = oldMountedArchives;
     g_zArchive_Current = oldCurrentArchive;
     g_HudUiMgrTimerPanelFloat = oldFloatTimer;
@@ -10704,13 +10718,8 @@ extern "C" int zhud_cmd_bind_button_base_constructor_smoke(void) {
         button.selectedFontStyleRef == static_cast<std::int32_t>(0xcccccccc) &&
         button.listFontStyleRef == static_cast<std::int32_t>(0xcccccccc);
 
-    auto *firstBinding =
-        static_cast<HudCmdBindingEntry *>(::operator new(sizeof(HudCmdBindingEntry)));
-    auto *secondBinding =
-        static_cast<HudCmdBindingEntry *>(::operator new(sizeof(HudCmdBindingEntry)));
-    firstBinding->displayText = static_cast<char *>(std::malloc(6));
-    secondBinding->displayText = nullptr;
-    std::strcpy(firstBinding->displayText, "Fire");
+    auto *firstBinding = MakeTestBindingEntry("Fire");
+    auto *secondBinding = MakeTestBindingEntry(nullptr);
     auto **bindingSlots =
         static_cast<HudCmdBindingEntry **>(::operator new(2 * sizeof(HudCmdBindingEntry *)));
     bindingSlots[0] = firstBinding;
@@ -14203,8 +14212,10 @@ extern "C" int zhud_background_constructor_smoke(void) {
     zOptionEntryPartial *const oldOptionsHead = g_zGame_Options_OptionListHead;
     g_zGame_Options_OptionListHead = &vmodeOption;
 
-    HudUiBackground background{};
-    const HudUiBackground *const result = background.Constructor();
+    void *const backgroundStorage = ::operator new(sizeof(HudUiBackground));
+    HudUiBackground *const backgroundPtr = new (backgroundStorage) HudUiBackground;
+    HudUiBackground &background = *backgroundPtr;
+    const HudUiBackground *const result = &background;
 
     bool soundsInitialized = true;
     for (int index = 0; index < 10; ++index) {
@@ -14244,7 +14255,7 @@ extern "C" int zhud_background_constructor_smoke(void) {
         background.loadedRoot == nullptr && background.cfgRoot == nullptr && soundsInitialized &&
         background.uiOriginX == 0 && background.uiOriginY == 60;
 
-    background.Destructor();
+    background.~HudUiBackground();
     const bool destructed =
         background.base.base.vptr == &g_HudUiContainer_FTable &&
         background.cursorWidget.base.ftable ==
@@ -14257,6 +14268,7 @@ extern "C" int zhud_background_constructor_smoke(void) {
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
 
     g_zGame_Options_OptionListHead = oldOptionsHead;
+    ::operator delete(backgroundStorage);
     return constructed && destructed ? 0 : 1;
 }
 
@@ -17343,19 +17355,16 @@ extern "C" int zhud_cmd_binding_entry_copy_range_smoke(void) {
     HudCmdBindingEntry owned{};
     owned.displayText = (char *)(std::malloc(6));
     std::strcpy(owned.displayText, "Entry");
-    HudCmdBindingEntry *const scalarResult = owned.ScalarDeletingDestructor(0);
+    owned.~HudCmdBindingEntry();
 
-    HudCmdBindingEntry *const deleteEntry =
-        (HudCmdBindingEntry *)(::operator new(sizeof(HudCmdBindingEntry)));
-    deleteEntry->displayText = (char *)(std::malloc(7));
-    std::strcpy(deleteEntry->displayText, "Delete");
+    HudCmdBindingEntry *const deleteEntry = MakeTestBindingEntry("Delete");
     HudCmdBindingEntry *const deleteResult =
         HudCmdBindingEntry::DeleteAndReturnNull(deleteEntry);
     HudCmdBindingEntry *const nullDeleteResult =
         HudCmdBindingEntry::DeleteAndReturnNull(0);
 
     return result == dest + 3 && dest[0] == &first && dest[1] == &second &&
-                   dest[2] == &third && dest[3] == nullptr && scalarResult == &owned &&
+                   dest[2] == &third && dest[3] == nullptr &&
                    owned.displayText == nullptr && deleteResult == nullptr &&
                    nullDeleteResult == nullptr
                ? 0
@@ -17403,13 +17412,8 @@ extern "C" int zhud_cmd_command_list_destructor_smoke(void) {
     HudCmdCommandList list{};
     list.base.Constructor();
 
-    HudCmdBindingEntry *const first =
-        (HudCmdBindingEntry *)(::operator new(sizeof(HudCmdBindingEntry)));
-    HudCmdBindingEntry *const second =
-        (HudCmdBindingEntry *)(::operator new(sizeof(HudCmdBindingEntry)));
-    first->displayText = (char *)(std::malloc(6));
-    second->displayText = 0;
-    std::strcpy(first->displayText, "Fire");
+    HudCmdBindingEntry *const first = MakeTestBindingEntry("Fire");
+    HudCmdBindingEntry *const second = MakeTestBindingEntry(nullptr);
 
     HudCmdBindingEntry **const slots =
         (HudCmdBindingEntry **)(::operator new(2 * sizeof(HudCmdBindingEntry *)));
@@ -17452,10 +17456,7 @@ extern "C" int zhud_cmd_key_a_button_destructor_smoke(void) {
     HudCmdKeyAButton button{};
     button.base.Constructor();
 
-    HudCmdBindingEntry *const binding =
-        (HudCmdBindingEntry *)(::operator new(sizeof(HudCmdBindingEntry)));
-    binding->displayText = (char *)(std::malloc(4));
-    std::strcpy(binding->displayText, "Alt");
+    HudCmdBindingEntry *const binding = MakeTestBindingEntry("Alt");
 
     HudCmdBindingEntry **const slots =
         (HudCmdBindingEntry **)(::operator new(sizeof(HudCmdBindingEntry *)));
@@ -17478,10 +17479,7 @@ extern "C" int zhud_cmd_key_b_button_destructor_smoke(void) {
     HudCmdKeyBButton button{};
     button.base.Constructor();
 
-    HudCmdBindingEntry *const binding =
-        (HudCmdBindingEntry *)(::operator new(sizeof(HudCmdBindingEntry)));
-    binding->displayText = (char *)(std::malloc(6));
-    std::strcpy(binding->displayText, "Brake");
+    HudCmdBindingEntry *const binding = MakeTestBindingEntry("Brake");
 
     HudCmdBindingEntry **const slots =
         (HudCmdBindingEntry **)(::operator new(sizeof(HudCmdBindingEntry *)));
@@ -17504,10 +17502,7 @@ extern "C" int zhud_cmd_joy_button_destructor_smoke(void) {
     HudCmdJoyButton button{};
     button.base.Constructor();
 
-    HudCmdBindingEntry *const binding =
-        (HudCmdBindingEntry *)(::operator new(sizeof(HudCmdBindingEntry)));
-    binding->displayText = (char *)(std::malloc(4));
-    std::strcpy(binding->displayText, "Joy");
+    HudCmdBindingEntry *const binding = MakeTestBindingEntry("Joy");
 
     HudCmdBindingEntry **const slots =
         (HudCmdBindingEntry **)(::operator new(sizeof(HudCmdBindingEntry *)));
@@ -17530,10 +17525,7 @@ extern "C" int zhud_cmd_mouse_button_destructor_smoke(void) {
     HudCmdMouseButton button{};
     button.base.Constructor();
 
-    HudCmdBindingEntry *const binding =
-        (HudCmdBindingEntry *)(::operator new(sizeof(HudCmdBindingEntry)));
-    binding->displayText = (char *)(std::malloc(6));
-    std::strcpy(binding->displayText, "Mouse");
+    HudCmdBindingEntry *const binding = MakeTestBindingEntry("Mouse");
 
     HudCmdBindingEntry **const slots =
         (HudCmdBindingEntry **)(::operator new(sizeof(HudCmdBindingEntry *)));
@@ -17553,14 +17545,7 @@ extern "C" int zhud_cmd_mouse_button_destructor_smoke(void) {
 }
 
 static void InstallDialogBinding(HudCmdBindButtonBase &button, const char *text) {
-    HudCmdBindingEntry *const binding =
-        (HudCmdBindingEntry *)(::operator new(sizeof(HudCmdBindingEntry)));
-    binding->displayText = 0;
-    if (text != 0) {
-        const std::size_t length = std::strlen(text) + 1;
-        binding->displayText = (char *)(std::malloc(length));
-        std::memcpy(binding->displayText, text, length);
-    }
+    HudCmdBindingEntry *const binding = MakeTestBindingEntry(text);
 
     HudCmdBindingEntry **const slots =
         (HudCmdBindingEntry **)(::operator new(sizeof(HudCmdBindingEntry *)));

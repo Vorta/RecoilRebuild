@@ -6,11 +6,22 @@ artifacts remain authoritative for individual functions.
 
 ## Current Patterns
 
-- Scalar deleting destructor wrappers: verified examples include
-  `0x407170` (`RecoilStateBase::ScalarDeletingDestructor`) and the
-  `RecoilStateMainMenuTransition` constructor/destructor helpers. Preserve the
-  original-era member ABI, destructor cleanup shape, and nearby provenance
-  comments when adding similar wrappers.
+- Scalar deleting destructor wrappers: current Binary Ninja evidence classifies
+  wrappers such as `0x407170` (`RecoilStateBase::ScalarDeletingDestructor`),
+  `0x434980` (`HudUiSaveGameDialog::ScalarDeletingDestructor`), and `0x434dd0`
+  (`HudUiLoadGameDialog::ScalarDeletingDestructor`), and `0x435ca0`
+  (`RecoilStateSaveLoadTransition::ScalarDeletingDestructor`), and `0x4429b0`
+  (`RecoilApp_MfcOleModule::ScalarDeletingDestructor`) as compiler-generated
+  provider glue when the body only performs destructor dispatch, tests the
+  delete flag, optionally calls `operator delete`, and returns `this`. Do not
+  author these wrappers manually in production source; model the owning C++
+  class/interface and record the wrapper as a provider boundary.
+- Scalar deleting destructor wrappers with an inlined small destructor body
+  follow the same source-shape rule. For example, `0x40bf50`
+  (`HudCmdBindingEntry::ScalarDeletingDestructor`) is compiler glue that
+  inlines the authored `HudCmdBindingEntry` display-string destructor before
+  testing the delete flag. Model the destructor on the class, not as a
+  hand-authored production `ScalarDeletingDestructor` method.
 - Tiny vtable/no-op helpers: verified examples include `0x407130`,
   `0x407140`, `0x407150`, and `0x407160`. Keep these as simple authored C/C++
   bodies or provider-marked glue according to the plan entry; do not replace

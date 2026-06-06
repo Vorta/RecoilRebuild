@@ -5,74 +5,11 @@
 #include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zUtil/zSaveGame.h"
 
-#include <string.h>
+#include <new>
 
 struct RecoilStateCredits {
     static void QueuePush();
 };
-
-namespace {
-template <typename Method>
-unsigned int MethodAddress(
-    Method method
-) {
-    RECOIL_STATIC_ASSERT(sizeof(method) <= sizeof(unsigned int));
-    unsigned int address = 0;
-    memcpy(
-        &address,
-        &method,
-        sizeof(method)
-    );
-    return address;
-}
-
-template <
-    typename Slot,
-    typename Method>
-void AssignMethodSlot(
-    Slot &slot,
-    Method method
-) {
-    RECOIL_STATIC_ASSERT(sizeof(method) <= sizeof(slot));
-    memset(
-        &slot,
-        0,
-        sizeof(slot)
-    );
-    memcpy(
-        &slot,
-        &method,
-        sizeof(method)
-    );
-}
-
-void HudUiWidgetPostLoadNoOp() {}
-
-// Main-menu button vtables differ in the activation callback at slot 12.
-HudUiWidget_FTable MakeMainMenuButtonFTable(
-    unsigned int activateCallback
-) {
-    HudUiWidget_FTable table = {0};
-    table.slots[0] = MethodAddress(&HudUiZrdWidget::ScalarDeletingDestructor);
-    table.slots[1] = MethodAddress(&HudUiWidget::Draw);
-    table.slots[3] = MethodAddress(&HudUiElement::SetPos);
-    table.slots[4] = MethodAddress(&HudUiElement::SetX);
-    table.slots[5] = MethodAddress(&HudUiElement::SetY);
-    table.slots[6] = MethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    table.slots[7] = MethodAddress(&HudUiElement::SetClipRect);
-    table.slots[8] = MethodAddress(&HudUiZrdWidget::Invalidate);
-    table.slots[12] = activateCallback;
-    table.slots[15] = MethodAddress(&HudUiZrdWidget::ShowPreview);
-    table.slots[16] = MethodAddress(&HudUiZrdWidget::HidePreview);
-    table.slots[24] = MethodAddress(&HudUiElement::SetVisible);
-    table.slots[25] = MethodAddress(&HudUiElement::GetX);
-    table.slots[26] = MethodAddress(&HudUiElement::GetY);
-    table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
-    table.slots[31] = MethodAddress(&HudUiZrdWidget::LoadFromZrd);
-    table.slots[32] = MethodAddress(&HudUiWidgetPostLoadNoOp);
-    return table;
-}
-} // namespace
 
 // Reimplements 0x414f40: HudUiMainMenuDialog_CreditsButton::OnActivate
 // (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
@@ -140,48 +77,6 @@ void HudUiMainMenuDialog_ControlsButton::OnActivate() {
 }
 
 namespace {
-const HudUiWidget_FTable g_HudUiMainMenu_CreditsButton_FTable =
-    MakeMainMenuButtonFTable(MethodAddress(&HudUiMainMenuDialog_CreditsButton::OnActivate));
-const HudUiWidget_FTable g_HudUiMainMenu_SaveGameButton_FTable =
-    MakeMainMenuButtonFTable(MethodAddress(&HudUiMainMenuDialog_SaveButton::OnActivate));
-const HudUiWidget_FTable g_HudUiMainMenu_LoadGameButton_FTable =
-    MakeMainMenuButtonFTable(MethodAddress(&HudUiMainMenuDialog_LoadButton::OnActivate));
-const HudUiWidget_FTable g_HudUiMainMenu_NewGameButton_FTable =
-    MakeMainMenuButtonFTable(MethodAddress(&HudUiMainMenuDialog_NewGameButton::OnActivate));
-const HudUiWidget_FTable g_HudUiMainMenu_OptionsButton_FTable =
-    MakeMainMenuButtonFTable(MethodAddress(&HudUiMainMenuDialog_OptionsButton::OnActivate));
-const HudUiWidget_FTable g_HudUiMainMenu_QuitButton_FTable =
-    MakeMainMenuButtonFTable(MethodAddress(&HudUiMainMenuDialog_QuitButton::OnActivate));
-const HudUiWidget_FTable g_HudUiMainMenu_ControlsButton_FTable =
-    MakeMainMenuButtonFTable(MethodAddress(&HudUiMainMenuDialog_ControlsButton::OnActivate));
-
-struct HudUiMainMenuDialog_FTable {
-    HudUiContainerUpdateAllFn updateAll;
-    HudUiContainerSetEnabledFn setEnabled;
-    unsigned int scalarDeletingDestructor;
-};
-
-HudUiMainMenuDialog_FTable MakeMainMenuDialogFTable() {
-    HudUiMainMenuDialog_FTable table = {0};
-    AssignMethodSlot(
-        table.updateAll,
-        &HudUiBackground::Update
-    );
-    AssignMethodSlot(
-        table.setEnabled,
-        &HudUiBackground::SetEnabled
-    );
-    return table;
-}
-
-const HudUiMainMenuDialog_FTable g_HudUiMainMenuDialog_FTable = MakeMainMenuDialogFTable();
-
-inline void InstallMainMenuDialogFTable(
-    HudUiMainMenuDialog *dialog
-) {
-    dialog->base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiMainMenuDialog_FTable);
-}
-
 inline int PlayerMenuSaveLoadBlocked(
     zUtil_PlayerStateStorage *playerState
 ) {
@@ -196,12 +91,10 @@ inline void BindButton(
 ) {
     dialog->BindWidgetByName(
         loadedSection,
-        &widget->base,
+        widget,
         name
     );
 }
-
-typedef void (HudUiZrdWidget::*HudUiMainMenuRefreshStateMethod)();
 
 void BindNewLoadQuit(
     HudUiMainMenuDialog *dialog,
@@ -360,88 +253,71 @@ void BindNetworkButtons(
 }
 } // namespace
 
-inline HudUiMainMenuDialogBackground::HudUiMainMenuDialogBackground() {
-    HudUiBackground::Constructor();
+inline HudUiMainMenuDialogBackground::HudUiMainMenuDialogBackground() : HudUiBackground() {
 }
 
 inline HudUiMainMenuDialogBackground::~HudUiMainMenuDialogBackground() {
-    HudUiBackground::Destructor();
 }
 
-inline HudUiMainMenuDialog_CreditsButton::HudUiMainMenuDialog_CreditsButton() {
-    HudUiZrdWidget::Constructor();
-    base.ftable = &g_HudUiMainMenu_CreditsButton_FTable;
+inline HudUiMainMenuDialog_CreditsButton::HudUiMainMenuDialog_CreditsButton() :
+    HudUiZrdWidget() {
 }
 
 inline HudUiMainMenuDialog_CreditsButton::~HudUiMainMenuDialog_CreditsButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-inline HudUiMenuBackButton::HudUiMenuBackButton() {
-    HudUiZrdWidget::Constructor();
-    base.ftable = &g_HudUiMainMenu_BackButton_FTable;
+inline HudUiMenuBackButton::HudUiMenuBackButton() : HudUiZrdWidget() {
 }
 
 inline HudUiMenuBackButton::~HudUiMenuBackButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-inline HudUiMainMenuDialog_SaveButton::HudUiMainMenuDialog_SaveButton() {
-    HudUiZrdWidget::Constructor();
-    base.ftable = &g_HudUiMainMenu_SaveGameButton_FTable;
+inline HudUiMainMenuDialog_SaveButton::HudUiMainMenuDialog_SaveButton() : HudUiZrdWidget() {
 }
 
 inline HudUiMainMenuDialog_SaveButton::~HudUiMainMenuDialog_SaveButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-inline HudUiMainMenuDialog_LoadButton::HudUiMainMenuDialog_LoadButton() {
-    HudUiZrdWidget::Constructor();
-    base.ftable = &g_HudUiMainMenu_LoadGameButton_FTable;
+inline HudUiMainMenuDialog_LoadButton::HudUiMainMenuDialog_LoadButton() : HudUiZrdWidget() {
 }
 
 inline HudUiMainMenuDialog_LoadButton::~HudUiMainMenuDialog_LoadButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-inline HudUiMainMenuDialog_NewGameButton::HudUiMainMenuDialog_NewGameButton() {
-    HudUiZrdWidget::Constructor();
-    base.ftable = &g_HudUiMainMenu_NewGameButton_FTable;
+inline HudUiMainMenuDialog_NewGameButton::HudUiMainMenuDialog_NewGameButton() :
+    HudUiZrdWidget() {
 }
 
 inline HudUiMainMenuDialog_NewGameButton::~HudUiMainMenuDialog_NewGameButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-inline HudUiMainMenuDialog_OptionsButton::HudUiMainMenuDialog_OptionsButton() {
-    HudUiZrdWidget::Constructor();
-    base.ftable = &g_HudUiMainMenu_OptionsButton_FTable;
+inline HudUiMainMenuDialog_OptionsButton::HudUiMainMenuDialog_OptionsButton() :
+    HudUiZrdWidget() {
 }
 
 inline HudUiMainMenuDialog_OptionsButton::~HudUiMainMenuDialog_OptionsButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-inline HudUiMainMenuDialog_QuitButton::HudUiMainMenuDialog_QuitButton() {
-    HudUiZrdWidget::Constructor();
-    base.ftable = &g_HudUiMainMenu_QuitButton_FTable;
+inline HudUiMainMenuDialog_QuitButton::HudUiMainMenuDialog_QuitButton() : HudUiZrdWidget() {
 }
 
 inline HudUiMainMenuDialog_QuitButton::~HudUiMainMenuDialog_QuitButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-inline HudUiMainMenuDialog_ControlsButton::HudUiMainMenuDialog_ControlsButton() {
-    HudUiZrdWidget::Constructor();
-    base.ftable = &g_HudUiMainMenu_ControlsButton_FTable;
+inline HudUiMainMenuDialog_ControlsButton::HudUiMainMenuDialog_ControlsButton() :
+    HudUiZrdWidget() {
 }
 
 inline HudUiMainMenuDialog_ControlsButton::~HudUiMainMenuDialog_ControlsButton() {
     HudUiZrdWidget::DestructorCore();
 }
-
-extern const HudUiWidget_FTable g_HudUiMainMenu_BackButton_FTable =
-    MakeMainMenuButtonFTable(MethodAddress(&HudUiMenuBackButton::OnActivate));
 
 // Reimplements 0x414b60: HudUiMainMenuDialog::CanLoadGame
 // (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
@@ -492,8 +368,6 @@ canSave:
 HudUiMainMenuDialog::HudUiMainMenuDialog(
     RecoilMainMenuEntryRoute route
 ) {
-    InstallMainMenuDialogFTable(this);
-
     // Preserves the VC5SP3 register lifetime observed in BN 0x414bc0 for the
     // repeatedly bound save, load, and quit button subobjects.
     HudUiMainMenuDialog_SaveButton *const saveButton = &saveGameButton;
@@ -633,9 +507,9 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(
         }
 
         saveButton->modeOrEnabled = CanSaveGame();
-        (saveButton->*((HudUiMainMenuRefreshStateMethod *)(&saveButton->base.ftable->slots[30]))[0])();
+        saveButton->RefreshState();
         loadButton->modeOrEnabled = CanLoadGame();
-        (loadButton->*((HudUiMainMenuRefreshStateMethod *)(&loadButton->base.ftable->slots[30]))[0])();
+        loadButton->RefreshState();
         return;
     }
 
@@ -685,7 +559,7 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(
     }
 
     loadButton->modeOrEnabled = CanLoadGame();
-    (loadButton->*((HudUiMainMenuRefreshStateMethod *)(&loadButton->base.ftable->slots[30]))[0])();
+    loadButton->RefreshState();
 }
 
 // Reimplements 0x415040: HudUiMainMenuDialog::~HudUiMainMenuDialog

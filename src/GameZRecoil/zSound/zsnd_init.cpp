@@ -3,6 +3,7 @@
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zReader/zReader.h"
+#include "GameZRecoil/zSound/zA3dProvider.h"
 #include "GameZRecoil/zSys/zSys.h"
 
 #include "recoil/recoil_types.h"
@@ -46,61 +47,6 @@ const GUID kIID_IA3dListener = {0xc398e563,
     0x11d1,
     {0x90, 0xfb, 0x00, 0x60, 0x08, 0xa1, 0xf4, 0x41}};
 const char *kZSndInitSourceFile = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_init.cpp";
-
-struct A3DApi;
-
-typedef HRESULT(__stdcall *A3DQueryInterfaceProc)(
-    A3DApi *,
-    REFIID,
-    void **
-);
-typedef ULONG(__stdcall *A3DAddRefProc)(A3DApi *);
-typedef ULONG(__stdcall *A3DReleaseProc)(A3DApi *);
-typedef HRESULT(__stdcall *A3DSetOutputModeProc)(
-    A3DApi *,
-    int
-);
-typedef HRESULT(__stdcall *A3DTickProc)(A3DApi *);
-typedef HRESULT(__stdcall *A3DConfigureOutputProc)(
-    A3DApi *,
-    int,
-    int,
-    int
-);
-typedef HRESULT(__stdcall *A3DCreateBufferByKindProc)(
-    A3DApi *,
-    int,
-    void **
-);
-typedef HRESULT(__stdcall *A3DSetCooperativeLevelProc)(
-    A3DApi *,
-    HWND,
-    int
-);
-
-struct A3DApiVtable {
-    A3DQueryInterfaceProc QueryInterface;
-    A3DAddRefProc AddRef;
-    A3DReleaseProc Release;
-    void *slot0c;
-    void *slot10;
-    A3DSetOutputModeProc SetOutputMode;
-    void *slots18_2c[6];
-    A3DTickProc Tick;
-    void *slot34;
-    void *slot38;
-    A3DConfigureOutputProc ConfigureOutput;
-    void *slot40;
-    A3DCreateBufferByKindProc CreateBufferByKind;
-    void *slot48;
-    A3DSetCooperativeLevelProc SetCooperativeLevel;
-};
-
-struct A3DApi {
-    A3DApiVtable *vtbl;
-};
-
-typedef ULONG(__stdcall *UnknownReleaseProc)(void *);
 
 } // namespace
 
@@ -901,22 +847,19 @@ extern "C" int zSndBackend_InitA3D() {
         return 0;
     }
 
-    A3DApi *api = (A3DApi *)(g_zSnd_BackendDevice);
-    api->vtbl->ConfigureOutput(
-        api,
+    zA3dProviderDevice *api = (zA3dProviderDevice *)(g_zSnd_BackendDevice);
+    api->Init(
         0,
         0x28,
         0x0c
     );
-    api->vtbl->SetCooperativeLevel(
-        api,
+    api->SetCooperativeLevel(
         (HWND)(g_zSnd_WindowHandle),
         1
     );
 
     a3dError =
-        api->vtbl->QueryInterface(
-            api,
+        api->QueryInterface(
             kIID_IA3dGeom,
             (void **)(&g_zSnd_BackendAuxHandleOrConfig)
         );
@@ -929,8 +872,7 @@ extern "C" int zSndBackend_InitA3D() {
     }
 
     a3dError =
-        api->vtbl->QueryInterface(
-            api,
+        api->QueryInterface(
             kIID_IA3dListener,
             (void **)(&g_zSnd_BackendListenerHandle)
         );
@@ -942,8 +884,7 @@ extern "C" int zSndBackend_InitA3D() {
         );
     }
 
-    a3dError = api->vtbl->SetOutputMode(
-        api,
+    a3dError = api->SetResourceManagerMode(
         2
     );
     if (a3dError != 0) {
@@ -954,17 +895,15 @@ extern "C" int zSndBackend_InitA3D() {
         );
     }
 
-    api->vtbl->Tick(api);
+    api->Clear();
 
-    void *outBuffer = 0;
-    api->vtbl->CreateBufferByKind(
-        api,
+    zA3dProviderSource *outBuffer = 0;
+    api->NewSource(
         0,
         &outBuffer
     );
     if (outBuffer != 0) {
-        void **vtbl = *(void ***)(outBuffer);
-        ((UnknownReleaseProc)(vtbl[2]))(outBuffer);
+        outBuffer->Release();
     }
 
     return 1;
@@ -975,15 +914,14 @@ namespace {
 /**
  * Original static helper observed in caller 0x4a1f40.
  *
- * Purpose: release an A3D/COM-style provider object through vtable slot 2 and
- * clear the stored pointer.
+ * Purpose: release an A3D/COM-style provider object and clear the stored
+ * pointer.
  */
 void ReleaseUnknown(
     void *&object
 ) {
     if (object != 0) {
-        void **vtable = *(void ***)object;
-        ((UnknownReleaseProc)vtable[2])(object);
+        ((IUnknown *)object)->Release();
         object = 0;
     }
 }

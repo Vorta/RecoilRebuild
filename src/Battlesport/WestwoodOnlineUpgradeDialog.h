@@ -133,9 +133,6 @@ struct WestwoodOnlineUpgradeDialog : CDialog {
     );
 };
 
-extern const RecoilNamedVtable kWestwoodOnlineUpgradeDialog_Vtable;
-extern const RecoilNamedVtable kWestwoodOnlineUpgradeProgressDialog_Vtable;
-
 extern "C" HINSTANCE g_hWestwoodOnlineUpgradeModuleInstance;
 extern "C" WestwoodOnlineUpgradeProgressDialog *g_pWestwoodOnlineUpgradeProgressDialog;
 extern "C" WestwoodOnlineUpgradeDialog *g_pWestwoodOnlineUpgradeDialog;

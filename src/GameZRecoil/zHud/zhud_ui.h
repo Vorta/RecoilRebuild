@@ -6,238 +6,19 @@
 
 #include <windows.h>
 
+#include "Battlesport/RecoilApp.h"
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zInput/zInput.h"
 #include "recoil/recoil_callconv.h"
 #include "zClipAlt.h"
 
 struct zVec3;
 struct zTag4Partial;
 struct HudUiContainer;
-struct HudUiContainer_FTable;
-struct HudUiBackgroundContainer_FTable;
-struct HudUiTriplet_FTable;
-struct HudUiTextStack4_FTable;
-struct HudUiStringMenu_FTable;
+struct HudUiBackground;
 struct HudUiTextInput;
-struct RecoilApp_IState_Vtbl;
-
-struct HudUiCommon_FTable {
-    union {
-        unsigned int slots[29];
-        struct {
-            unsigned int dtor;
-            unsigned int Draw;
-            unsigned int DrawBase;
-            unsigned int SetPos;
-            unsigned int SetX;
-            unsigned int SetY;
-            unsigned int SetClip;
-            unsigned int SetClipRect;
-            unsigned int Invalidate;
-            unsigned int Update;
-            unsigned int field_28;
-            unsigned int field_2c;
-            unsigned int OnPrimaryButtonReleased;
-            unsigned int OnSecondaryButtonReleased;
-            unsigned int OnHoverRepeat;
-            unsigned int OnHoverEnter;
-            unsigned int OnHoverExit;
-            unsigned int OnCaptureEnter;
-            unsigned int OnCaptureExit;
-            unsigned int OnPointerButtonState;
-            unsigned int OnActivate;
-            unsigned int ShouldHandleInput;
-            unsigned int AfterInputUpdate;
-            unsigned int HitTest;
-            unsigned int SetVisible;
-            unsigned int GetX;
-            unsigned int GetY;
-            unsigned int function;
-            unsigned int GetRect;
-        };
-    };
-};
-
-struct HudUiWidget_FTable {
-    unsigned int slots[34];
-};
-
-struct HudUiBackgroundCursorWidget_FTable {
-    unsigned int slots[34];
-};
-
-struct HudUiBackgroundVideoWidget_FTable {
-    unsigned int slots[34];
-};
-
-struct HudUiZrdWidget_FTable {
-    unsigned int slots[34];
-};
-
-struct HudUiCreditsPanel_FTable {
-    unsigned int primarySlots[4];
-    HudUiZrdWidget_FTable SecondaryAction;
-};
-
-struct HudUiCheckToggleWidget_FTable {
-    unsigned int slots[34];
-};
-
-struct HudUiCycleSelectorWidget_FTable {
-    unsigned int slots[34];
-};
-
-struct HudUiFillBitmap_FTable {
-    unsigned int slots[34];
-};
-
-struct HudUiZrdWidgetEx17C_Item_FTable {
-    unsigned int slots[34];
-};
-
-struct HudUiZrdWidgetEx17C_FTable {
-    unsigned int slots[34];
-};
-
-struct HudCmdBindButtonBase_FTable {
-    unsigned int slots[34];
-};
-
-struct HudUiMessageBoxDialog_FTable {
-    unsigned int slots[5];
-};
-
-struct HudUiCounter_FTable {
-    unsigned int slots[34];
-};
-
-struct HudUiMessage_FTable {
-    unsigned int slots[30];
-};
-
-struct HudUiPanel_FTable {
-    union {
-        unsigned int slots[37];
-        struct {
-            unsigned int dtor;
-            unsigned int Draw;
-            unsigned int DrawBase;
-            unsigned int SetPos;
-            unsigned int SetX;
-            unsigned int SetY;
-            unsigned int SetClip;
-            unsigned int SetClipRect;
-            unsigned int Invalidate;
-            unsigned int Update;
-            unsigned int field_28;
-            unsigned int GetTextBufferPtrOrNull;
-            unsigned int OnActivate;
-            unsigned int field_34;
-            unsigned int field_38;
-            unsigned int field_3c;
-            unsigned int field_40;
-            unsigned int field_44;
-            unsigned int field_48;
-            unsigned int field_4c;
-            unsigned int field_50;
-            unsigned int HitTest;
-            unsigned int field_58;
-            unsigned int field_5c;
-            unsigned int SetVisible;
-            unsigned int GetX;
-            unsigned int GetY;
-            unsigned int EnableWordWrapWithRect;
-            unsigned int GetTextRect;
-            unsigned int SetTextFmt;
-            unsigned int UpdateTextBoundsFromContent;
-            unsigned int GetFont;
-            unsigned int SetFont;
-            unsigned int SetFontHandle;
-            unsigned int SetTextFmtV;
-            unsigned int SetText;
-            unsigned int RebuildTextRect;
-        };
-    };
-};
-
-struct HudCmdDialog_BackgroundPanelFTable {
-    unsigned int primarySlots[4];
-    HudUiPanel_FTable SecondaryAction;
-};
-
-struct HudUiOptionsPanel_BackgroundFTable {
-    unsigned int primarySlots[4];
-    HudUiCycleSelectorWidget_FTable SecondaryAction;
-};
-
-struct HudUiCompositePanel_FTable {
-    unsigned int slots[38];
-};
-
-struct HudUiListSelectorItem_FTable {
-    unsigned int slots[37];
-};
-
-struct HudUiTextLabel_FTable {
-    unsigned int slots[29];
-};
-
-struct HudUiPanelSimple_FTable {
-    unsigned int slots[37];
-};
-
-struct HudUiBar_FTable {
-    unsigned int slots[29];
-};
-
-struct HudUiPolyline_FTable {
-    unsigned int slots[29];
-};
-
-struct HudUiSliderBorder_FTable {
-    unsigned int slots[29];
-};
-
-struct HudUiMeter_FTable {
-    unsigned int slots[29];
-};
-
-struct HudUiTimerPanelFloat_FTable {
-    unsigned int slots[37];
-};
-
-struct HudUiTimerPanel_FTable {
-    unsigned int slots[37];
-};
-
-struct HudUiCounterTextPanel_FTable {
-    unsigned int slots[37];
-};
-
-struct HudUiStatsListElement_FTable {
-    unsigned int slots[29];
-};
-
-struct HudUiTripletPanel_FTable {
-    unsigned int slots[29];
-};
-
-struct HudUiTextInput_FTable {
-    unsigned int slots[9];
-};
-
-struct HudUiNumericTextInput_Base_FTable {
-    unsigned int slots[36];
-};
-
-struct HudUiClampedIntTextInput_FTable {
-    unsigned int slots[36];
-};
-
-struct HudUiSlot_FTable {
-    unsigned int slots[29];
-};
+struct HudUiNetGameSetupPanel;
 
 struct HudUiElement;
 struct HudUiPanel;
@@ -266,85 +47,7 @@ struct zSndSample;
 struct zSndPlayHandle;
 struct zFMV_Stream;
 
-extern const HudUiCommon_FTable g_HudUiCommon_FTable;
-extern const HudUiCommon_FTable g_HudUiCircle_FTable;
-extern const HudUiContainer_FTable g_HudUiContainer_FTable;
-extern const HudUiContainer_FTable g_HudUiMgr_FTable;
-extern const HudUiBackgroundContainer_FTable g_HudUiBackgroundContainer_FTable;
-extern const HudUiBackgroundContainer_FTable g_HudUiBackground_FTable;
-extern const HudUiWidget_FTable g_HudUiWidget_FTable;
-extern const HudUiBackgroundCursorWidget_FTable g_HudUiBackgroundCursorWidget_FTable;
-extern const HudUiBackgroundCursorWidget_FTable g_HudUiBackgroundCursorWidget_MemberFTable;
-extern const HudUiBackgroundVideoWidget_FTable g_HudUiBackgroundVideoWidget_FTable;
-extern const HudUiZrdWidget_FTable g_HudUiZrdWidget_FTable;
-extern const HudUiZrdWidget_FTable g_HudUiCreditsButtonQueueExitOnly_Vtbl;
-extern const HudUiZrdWidget_FTable g_HudUiCreditsButtonQueueExitAndLeaveNetwork_Vtbl;
-extern const HudUiCreditsPanel_FTable g_HudUiCreditsPanel_FTable;
-extern const HudUiCheckToggleWidget_FTable g_HudUiCheckToggleWidget_FTable;
-extern const HudUiCycleSelectorWidget_FTable g_HudUiCycleSelectorWidget_FTable;
-extern const HudUiFillBitmap_FTable g_HudUiFillBitmap_FTable;
-extern const HudUiZrdWidgetEx17C_Item_FTable g_HudUiZrdWidgetEx17C_Item_FTable;
-extern const HudUiZrdWidgetEx17C_FTable g_HudUiZrdWidgetEx17C_FTable;
-extern const HudCmdBindButtonBase_FTable g_HudCmdBindButtonBase_FTable;
-extern const HudUiZrdWidget_FTable g_HudCmdResumeButton_FTable;
-extern const HudUiZrdWidget_FTable g_HudCmdResetButton_FTable;
-extern const HudCmdBindButtonBase_FTable g_HudCmdCommandList_FTable;
-extern const HudCmdBindButtonBase_FTable g_HudCmdKeyAButton_FTable;
-extern const HudCmdBindButtonBase_FTable g_HudCmdKeyBButton_FTable;
-extern const HudCmdBindButtonBase_FTable g_HudCmdJoyButton_FTable;
-extern const HudCmdBindButtonBase_FTable g_HudCmdMouseButton_FTable;
-extern const HudUiCycleSelectorWidget_FTable g_HudCmdSetList_FTable;
-extern const HudUiZrdWidget_FTable g_HudCmdNextSetButton_FTable;
-extern const HudUiZrdWidget_FTable g_HudCmdPrevSetButton_FTable;
-extern const HudUiZrdWidget_FTable g_HudCmdNextCommandButton_FTable;
-extern const HudUiZrdWidget_FTable g_HudCmdPrevCommandButton_FTable;
-extern const HudCmdDialog_BackgroundPanelFTable g_HudCmdDialog_BackgroundPanelFTable;
-extern const HudUiOptionsPanel_BackgroundFTable g_HudUiOptionsPanel_FTableHeader;
-extern const HudUiZrdWidget_FTable g_HudUiOptionsPanel_BackButton_Vtbl;
-extern const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_LightingToggle_Vtbl;
-extern const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_PerspectiveToggle_Vtbl;
-extern const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_FullHudToggle_Vtbl;
-extern const HudUiCycleSelectorWidget_FTable g_HudUiOptionsPanel_ObjectDetailSelector_Vtbl;
-extern const HudUiCycleSelectorWidget_FTable g_HudUiOptionsPanel_TextureMemorySelector_Vtbl;
-extern const HudUiCycleSelectorWidget_FTable g_HudUiOptionsPanel_EffectsSelector_Vtbl;
-extern const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_SoundActiveToggle_Vtbl;
-extern const HudUiCycleSelectorWidget_FTable g_HudUiOptionsPanel_SoundQualitySelector_Vtbl;
-extern const HudUiFillBitmap_FTable g_HudUiOptionsPanel_SoundVolumeWidget_Vtbl;
-extern const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_MusicEnableToggle_Vtbl;
-extern const HudUiFillBitmap_FTable g_HudUiOptionsPanel_MusicVolumeWidget_Vtbl;
-extern const HudUiMessageBoxDialog_FTable g_HudUiMessageBoxDialog_FTable;
-extern const HudUiCounter_FTable g_HudUiCounter_FTable;
-extern const HudUiMessage_FTable g_HudUiMessage_FTable;
-extern const HudUiPanel_FTable g_HudUiPanel_FTable;
-extern const HudUiPanel_FTable g_HudUiTransitionTextPanel_FTable;
 extern int g_HudCmdMouseDebounceFrames;
-extern const HudUiCompositePanel_FTable g_HudUiCompositePanel_FTable;
-extern const HudUiListSelectorItem_FTable g_HudUiListSelectorItem_FTable;
-extern const HudUiTextLabel_FTable g_HudUiTextLabel_FTable;
-extern const HudUiPanelSimple_FTable g_HudUiPanelSimple_FTable;
-extern const HudUiBar_FTable g_HudUiBar_FTable;
-extern const HudUiPolyline_FTable g_HudUiPolyline_FTable;
-extern const HudUiSliderBorder_FTable g_HudUiSliderBorder_FTable;
-extern const HudUiMeter_FTable g_HudUiMeter_FTable;
-extern const HudUiMeter_FTable g_HudUiMeterEx_FTable;
-extern const HudUiTimerPanelFloat_FTable g_HudUiTimerPanelFloat_FTable;
-extern const HudUiTimerPanel_FTable g_HudUiTimerPanel_FTable;
-extern const HudUiCounterTextPanel_FTable g_HudUiCounterTextPanel_FTable;
-extern const HudUiTriplet_FTable g_HudUiTriplet_FTable;
-extern const HudUiTextStack4_FTable g_HudUiTopMessageStack_FTable;
-extern const HudUiTextStack4_FTable g_HudUiChatMessageStack_FTable;
-extern const HudUiStringMenu_FTable g_HudUiStringMenu_FTable;
-extern const HudUiStatsListElement_FTable g_HudUiStatsListElement_FTable;
-extern const HudUiTripletPanel_FTable g_HudUiTripletPanel_FTable;
-extern const HudUiTextInput_FTable g_HudUiTextInput_FTable;
-extern const HudUiTextInput_FTable g_HudUiChatComposeTextInput_FTable;
-extern const HudUiTextInput_FTable g_HudUiNumericTextInput_TextInputFTable;
-extern const HudUiNumericTextInput_Base_FTable g_HudUiNumericTextInput_Base_FTable;
-extern const HudUiNumericTextInput_Base_FTable g_HudUiNumericTextInput_CtorTable_FTable;
-extern const HudUiClampedIntTextInput_FTable g_HudUiClampedIntTextInput_CtorTable_FTable;
-extern const HudUiSlot_FTable g_HudUiSlot_FTable;
-extern const HudUiZrdWidget_FTable g_HudUiMessageBoxOkButton_Vtbl;
-extern const HudUiZrdWidget_FTable g_HudUiMessageBoxCancelButton_Vtbl;
 struct HudUiWidget;
 struct HudUiMgrSensorTrackNode;
 struct PlayerProgressTargetSlotRuntime;
@@ -394,8 +97,7 @@ struct HudUiRectDirty {
     int srcBottom;
 };
 
-struct HudUiWidget {
-    const HudUiWidget_FTable *ftable;
+struct HudUiElement {
     HudUiElement *next;
     void *parent;
     unsigned int flags;
@@ -406,6 +108,107 @@ struct HudUiWidget {
     HudUiRect clipRect;
     unsigned short state;
     unsigned short padding32;
+
+    HudUiElement() {
+    }
+    HudUiElement(
+        int x,
+        int y
+    );
+    ~HudUiElement() {
+    }
+    HudUiElement * Constructor(
+        int x,
+        int y
+    );
+    HudUiElement * CopyConstructor(const HudUiElement *source);
+    HudUiElement * CopyFrom(const HudUiElement *source);
+    virtual HudUiElement * ScalarDeletingDestructor(unsigned int flags);
+    virtual void Draw();
+    virtual void DrawBase();
+    virtual void SetPos(
+        int x,
+        int y
+    );
+    virtual void SetX(int x);
+    virtual void SetY(int y);
+    virtual void SetBltSourceAndClipRect(
+        void *bltSourceOrNull,
+        const HudUiRect *rectOrNull
+    );
+    virtual void SetClipRect(const HudUiRect *clipRect);
+    virtual void Invalidate();
+    virtual void Update(float deltaSeconds);
+    virtual void OnHoverRepeat();
+    virtual HudUiRect * GetBoundsRectOrNull();
+    virtual void OnActivate();
+    virtual void OnClearBinding();
+    virtual void ShowPreview();
+    virtual void HidePreview();
+    virtual void OnBeginCapture();
+    virtual void OnEndCapture();
+    virtual void OnPointerButtonState(
+        int x,
+        int y
+    );
+    virtual void OnCapturedPrimaryRelease();
+    virtual int ShouldHandleInput(
+        HudUiBackground *background,
+        int hovered
+    );
+    virtual void AfterInputUpdate(
+        HudUiBackground *background,
+        int hovered
+    );
+    virtual int HitTest(
+        int px,
+        int py
+    );
+    virtual void SetVisible(int visible);
+    virtual int GetX();
+    virtual int GetY();
+    virtual void EnableWordWrapWithRect(const HudUiRect *rect);
+    virtual void GetTextRect(HudUiRect *outRect);
+    virtual void SetTextFmt(
+        const char *format,
+        ...
+    );
+    virtual void UpdateTextBoundsFromContent();
+    virtual HGDIOBJ GetFont();
+    virtual void SetFont(
+        const char *faceName,
+        int height,
+        int weight,
+        int width,
+        int italic,
+        int charSet,
+        int pitchAndFamily
+    );
+    virtual void SetFontHandle(HGDIOBJ fontHandle);
+    virtual void SetTextFmtV(
+        const char *format,
+        va_list args
+    );
+    virtual void SetText(const char *text);
+    virtual void RebuildTextRect();
+    virtual void RefreshState();
+    virtual int LoadFromZrd(
+        zReader::Node *zrdSection,
+        HudUiBackground *ownerDialog
+    );
+    virtual void PostLoadFromZrd();
+    virtual int OnRawKeyboardChar(int key);
+    virtual int OnAcceptForwardToCommit();
+    virtual int CommitAndGetValue();
+    void SetTimer(float duration);
+    void GetRect(HudUiRect *outRect);
+    unsigned char HitTestTrue(
+        int px,
+        int py
+    );
+};
+
+struct HudUiWidget : HudUiElement {
     unsigned int ownsImage;
     unsigned int dirtyRectCount;
     zVidImagePartial *image;
@@ -414,8 +217,10 @@ struct HudUiWidget {
     unsigned int alignFlags;
     HudUiRectDirty dirtyRects[4];
 
+    HudUiWidget();
+    HudUiWidget(unsigned int alignFlags);
+    ~HudUiWidget();
     HudUiWidget * Constructor(unsigned int alignFlags);
-    HudUiWidget * CtorDefaultThunk();
     void DestructorCore();
     void ReleaseImageIfOwned();
     zVidImagePartial * SetImageByPathOwned(const char *imagePath);
@@ -427,7 +232,7 @@ struct HudUiWidget {
         int newY
     );
     void InvalidateRect(const HudUiRect *dirtyRect);
-    HudUiWidget * ScalarDeletingDestructor(unsigned int flags);
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     int GetCenterX();
     int GetCenterY();
     int HitTest(
@@ -525,35 +330,40 @@ extern int g_HudUiMgrReticleProjectedY;
 extern int g_HudUiMgrReticleMode;
 extern HudUiWidget g_HudUiMgrReticleWidget;
 
-struct HudLayoutBase;
-typedef void(__fastcall *HudLayoutOnActivatedFn)(HudLayoutBase *self);
+struct HudUiContainer {
+    HudUiContainer();
 
-struct HudLayoutBase_FTable {
-    unsigned int slots[6];
-    HudLayoutOnActivatedFn OnActivated;
-};
+    virtual void UpdateAll(float deltaSeconds);
+    virtual void SetEnabled(int enabled);
 
-struct HudLayoutHW_FTable {
-    unsigned int slots[6];
-    HudLayoutOnActivatedFn OnActivated;
-    unsigned int UpdateObjectiveDirtyRect;
-};
-
-struct HudLayoutBase {
-    const HudLayoutBase_FTable *ftable;
     int enabled;
     HudUiElement *childHead;
     HudUiElement *childTail;
+
+    void DestructorCore();
+    int AddChild(HudUiElement *child);
+    int FindChildWithPrev(
+        HudUiElement *child,
+        HudUiElement **previousOut
+    );
+    int RemoveChild(HudUiElement *child);
+    void SetChildFlags(unsigned int childFlags);
+    void InvalidateChildren();
+};
+
+struct HudLayoutBase : HudUiContainer {
     HudUiRect layoutRect;
     HudUiRect activeRect;
     HudUiWidget widget0;
 
     static void Shutdown_Stub();
     void Destructor();
-    int SetActiveNoOp(int active);
-    void UpdateAll(float deltaSeconds);
-    void Enable();
-    void Disable();
+    int SetActive(int active);
+    virtual void UpdateAll(float deltaSeconds);
+    virtual void LayoutPreUpdate();
+    virtual void Enable();
+    virtual void Disable();
+    virtual void OnActivated();
     void LoadTypeIFromZarRoot(zReader::Node *parentNode);
 };
 
@@ -563,11 +373,10 @@ struct HudLayoutSW : HudLayoutBase {
     static void AtExitDestructor();
     HudLayoutSW * Constructor();
     void GlobalDestructor();
-    int SetActive(int active);
+    virtual int SetActive(int active);
 };
 
-struct HudLayoutHW {
-    HudLayoutBase base;
+struct HudLayoutHW : HudLayoutBase {
     HudUiWidget widget1;
     zVidImagePartial *widget1ImageDefault;
     zVidImagePartial *widget1Image320;
@@ -587,14 +396,14 @@ struct HudLayoutHW {
     static void AtExitDestructor();
     HudLayoutHW * Constructor();
     void GlobalDestructor();
-    void UpdateAll(float deltaSeconds);
+    virtual void UpdateAll(float deltaSeconds);
     int LoadTypeIIFromZarRoot(zReader::Node *parentNode);
     void ReleaseImages();
-    int SetActive(int active);
-    void UpdateObjectiveDirtyRect();
-    void OnActivated();
-    void Enable();
-    void Disable();
+    virtual int SetActive(int active);
+    virtual void OnActivated();
+    virtual void UpdateObjectiveDirtyRect();
+    virtual void Enable();
+    virtual void Disable();
 };
 
 extern HudLayoutHW g_HudLayoutHW;
@@ -748,9 +557,10 @@ extern int g_HudUiMgrObjectiveShowResetUnused;
 extern int g_HudUiMgrObjectiveWidgetRightX;
 extern float g_HudUiMgrObjectiveMeterFillAnimTimerSec;
 extern unsigned int g_HudUiMgrObjectiveMeterFillAnimEnabled;
+struct HudUiObjectiveBar;
 extern HudUiWidget g_HudUiMgrSensorPanel;
 extern HudUiWidget g_HudUiMgrObjectiveWidget;
-extern HudUiBar g_HudUiMgrObjectiveBar;
+extern HudUiObjectiveBar g_HudUiMgrObjectiveBar;
 extern HudUiWidget g_HudUiMgrObjectiveSensorRect;
 extern HudUiWidget g_HudUiMgrSensorOverlay;
 extern HudUiMeter g_HudUiMgrSensorMeter;
@@ -758,7 +568,8 @@ extern HudUiPanel *g_HudUiMgrObjectiveSummaryTextPanel;
 extern HudUiPanel *g_HudUiMgrObjectiveDescTextPanel;
 extern HudUiPanel *g_HudUiMgrObjectiveLabelTextPanel;
 extern HudUiCounterTextPanel *g_HudUiMgrObjectiveCounterTextPanel;
-extern HudUiTextInput g_HudUiMgrObjectiveChatComposeTextInput;
+struct HudUiChatComposeTextInput;
+extern HudUiChatComposeTextInput g_HudUiMgrObjectiveChatComposeTextInput;
 extern HudUiBar g_HudUiMgrTailBar;
 extern int g_HudUi_AuxOverlayEnabled;
 
@@ -782,53 +593,6 @@ namespace HudUiMgrTarget {
 void __fastcall UpdateSelectedProgressMeter(int clearSelectedTrack);
 } // namespace HudUiMgrTarget
 
-struct HudUiElement {
-    const HudUiCommon_FTable *ftable;
-    HudUiElement *next;
-    void *parent;
-    unsigned int flags;
-    float timer;
-    int x;
-    int y;
-    void *bltSource;
-    HudUiRect clipRect;
-    unsigned short state;
-    unsigned short padding32;
-
-    HudUiElement * Constructor(
-        int x,
-        int y
-    );
-    HudUiElement * CopyConstructor(const HudUiElement *source);
-    HudUiElement * CopyFrom(const HudUiElement *source);
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
-    void Draw();
-    void DrawBase();
-    void Invalidate();
-    void SetPos(
-        int x,
-        int y
-    );
-    void SetX(int x);
-    void SetY(int y);
-    void SetVisible(int visible);
-    void ResetCommonFTable();
-    void Update(float deltaSeconds);
-    void SetTimer(float duration);
-    void SetBltSourceAndClipRect(
-        void *bltSourceOrNull,
-        const HudUiRect *rectOrNull
-    );
-    void SetClipRect(const HudUiRect *clipRect);
-    void GetRect(HudUiRect *outRect);
-    unsigned char HitTestTrue(
-        int px,
-        int py
-    );
-    int GetX();
-    int GetY();
-};
-
 struct StdPtrVector {
     void ClearNoOpDestroy(
         int *begin,
@@ -836,8 +600,7 @@ struct StdPtrVector {
     );
 };
 
-struct HudUiPrimitiveBindTarget {
-    HudUiElement base;
+struct HudUiPrimitiveBindTarget : HudUiElement {
     int endX;
     int endY;
     unsigned int color565;
@@ -850,8 +613,7 @@ struct HudUiPrimitiveBindTarget {
     );
 };
 
-struct HudUiTextLabel {
-    HudUiElement base;
+struct HudUiTextLabel : HudUiElement {
     char textBuffer[0x100];
     int fontHandle;
     int centerText;
@@ -859,6 +621,14 @@ struct HudUiTextLabel {
     int centerBoundsRight;
     int alignMode;
 
+    HudUiTextLabel() {
+    }
+    HudUiTextLabel(
+        const char *text,
+        int x,
+        int y,
+        int flags
+    );
     HudUiTextLabel * ConstructorWithPosAndFlags(
         const char *text,
         int x,
@@ -881,8 +651,7 @@ struct HudUiTextLabel {
     void UpdateTextExtents();
 };
 
-struct HudUiCircle {
-    HudUiElement base;
+struct HudUiCircle : HudUiElement {
     int radius;
     int radiusSquared;
     unsigned int color565;
@@ -905,63 +674,14 @@ struct HudUiCircle {
     );
 };
 
-struct HudUiContainer {
-    const HudUiContainer_FTable *vptr;
-    int enabled;
-    HudUiElement *childHead;
-    HudUiElement *childTail;
-
-    HudUiContainer * ConstructorDefault();
-    void DestructorCore();
-    void SetEnabled(int enabled);
-    int AddChild(HudUiElement *child);
-    int FindChildWithPrev(
-        HudUiElement *child,
-        HudUiElement **previousOut
-    );
-    int RemoveChild(HudUiElement *child);
-    void SetChildFlags(unsigned int childFlags);
-    void UpdateAll(float deltaSeconds);
-    void InvalidateChildren();
-};
-
-typedef void (HudUiContainer::*HudUiContainerUpdateAllFn)(float deltaSeconds);
-typedef void (HudUiContainer::*HudUiContainerSetEnabledFn)(int enabled);
-
-struct HudUiContainer_FTable {
-    HudUiContainerUpdateAllFn updateAll;
-    HudUiContainerSetEnabledFn setEnabled;
-};
-
-struct HudUiBackgroundContainer_FTable {
-    HudUiContainerUpdateAllFn updateAll;
-    HudUiContainerSetEnabledFn setEnabled;
-};
-
-struct HudUiTriplet_FTable {
-    HudUiContainerUpdateAllFn updateAll;
-    HudUiContainerSetEnabledFn setEnabled;
-};
-
-struct HudUiTextStack4_FTable {
-    HudUiContainerUpdateAllFn updateAll;
-    HudUiContainerSetEnabledFn setEnabled;
-};
-
-struct HudUiStringMenu_FTable {
-    HudUiContainerUpdateAllFn updateAll;
-    HudUiContainerSetEnabledFn setEnabled;
-};
-
-struct HudUiBackgroundContainer {
-    HudUiContainer base;
+struct HudUiBackgroundContainer : HudUiContainer {
     HudUiElement *inputFocusElement;
-    unsigned char reserved14[0x2c];
+    zInput::MouseStateSnapshot mouseState;
     int captureTransitionMask;
 
-    HudUiBackgroundContainer * Constructor(int initFlag);
-    void Destructor();
-    void SetEnabled(int enabled);
+    HudUiBackgroundContainer(int initFlag);
+    ~HudUiBackgroundContainer();
+    virtual void SetEnabled(int enabled);
     void SetInputFocus(HudUiElement *element);
     HudUiElement * GetInputFocus();
 };
@@ -979,15 +699,14 @@ struct HudUiDialogController {
     void BlitOwnedSurfaceToPrimary();
 };
 
-struct HudUiBackgroundCursorWidget {
-    HudUiWidget base;
+struct HudUiBackgroundCursorWidget : HudUiWidget {
     zVidImagePartial *capturedImage;
     int captureEnabled;
     int captureSourceSelector;
     int reservedC8;
     int reservedCC;
 
-    HudUiBackgroundCursorWidget * MemberConstructorLocal(
+    HudUiBackgroundCursorWidget(
         const char *imagePath,
         int captureEnabled
     );
@@ -1008,14 +727,14 @@ struct HudUiBackgroundCursorWidget {
     void DrawBase();
 };
 
-struct HudUiBackgroundVideoWidget {
-    HudUiElement base;
+struct HudUiBackgroundVideoWidget : HudUiElement {
     zFMV_Stream *stream;
     float elapsedTimeSec;
     unsigned short colorKey565;
     char mediaPath[0x106];
 
-    HudUiBackgroundVideoWidget * Constructor();
+    HudUiBackgroundVideoWidget();
+    ~HudUiBackgroundVideoWidget();
     void Destructor();
     void SetMediaPathOwnedAndRefresh(const char *path);
     void SetColorKey565(unsigned short colorKey);
@@ -1025,12 +744,39 @@ struct HudUiBackgroundVideoWidget {
     void RebuildBltRect();
 };
 
+struct HudUiBackgroundMemberCursorWidget : HudUiBackgroundCursorWidget {
+    HudUiBackgroundMemberCursorWidget(
+        const char *imagePath,
+        int captureEnabled
+    ) : HudUiBackgroundCursorWidget(
+            imagePath,
+            captureEnabled
+        ) {
+    }
+};
+
 struct HudUiPanelPtrVector {
+    // Recovered VC5 std::vector<HudUiPanel *> storage. Native builds keep the
+    // ABI-compatible record because host STL vector layout is not compatible
+    // with the retail VC5 object layout.
     char allocatorProxy;
     char padding[3];
     HudUiPanel **begin;
     HudUiPanel **end;
     HudUiPanel **capacityEnd;
+
+    HudUiPanelPtrVector() {
+        // VC5 copies an uninitialized STL allocator proxy byte into the vector.
+#if defined(_MSC_VER) && _MSC_VER < 1200
+        char allocatorProxyValue;
+#else
+        char allocatorProxyValue = 0;
+#endif
+        allocatorProxy = allocatorProxyValue;
+        begin = 0;
+        end = 0;
+        capacityEnd = 0;
+    }
 
     HudUiPanel ** EraseRange(
         HudUiPanel **first,
@@ -1043,12 +789,11 @@ struct HudUiPanelPtrVector {
     );
 };
 
-struct HudUiZrdWidget {
-    HudUiWidget base;
+struct HudUiZrdWidget : HudUiWidget {
     int originX;
     int originY;
     int modeOrEnabled;
-    void *owner;
+    HudUiBackground *owner;
     HudUiRect boundsRect;
     zVidImagePartial *defaultImage;
     zVidImagePartial *disabledImage;
@@ -1067,26 +812,25 @@ struct HudUiZrdWidget {
     HudUiPanelPtrVector activateLabelPanels;
     HudUiPanelPtrVector disabledLabelPanels;
 
+    HudUiZrdWidget();
     HudUiZrdWidget * Constructor();
-    HudUiZrdWidget * ScalarDeletingDestructor(unsigned int flags);
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     HudUiZrdWidget * ScalarDeletingDestructorThunk(unsigned int flags);
     void DestructorCore();
     void Invalidate();
     HudUiRect * GetBoundsRectOrNull();
     void ShowPreview();
     void OnActivate();
-    void OnActivateQueueExitCurrentState();
     int LoadFromZrd(
         zReader::Node *zrdSection,
-        void *ownerDialog
+        HudUiBackground *ownerDialog
     );
     void RefreshState();
     void HidePreview();
     static void *__stdcall DeleteChildIfPresent(void *childWidgetOrNull);
 };
 
-struct HudUiCheckToggleWidget {
-    HudUiZrdWidget base;
+struct HudUiCheckToggleWidget : HudUiZrdWidget {
     int checked;
     zVidImagePartial *disabledCheckedImage;
     zVidImagePartial *disabledCheckedFallbackImage;
@@ -1094,8 +838,9 @@ struct HudUiCheckToggleWidget {
     zVidImagePartial *checkedImage;
     HudUiPanel *checkedLabelPanel;
 
+    HudUiCheckToggleWidget();
     HudUiCheckToggleWidget * Constructor();
-    HudUiCheckToggleWidget * ScalarDeletingDestructor(unsigned int flags);
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     HudUiCheckToggleWidget * ScalarDeletingDestructorThunk(unsigned int flags);
     void DestructorCore();
     void DestructorCoreThunk();
@@ -1107,13 +852,12 @@ struct HudUiCheckToggleWidget {
     void OnActivateThunk();
     int LoadFromZrd(
         zReader::Node *zrdSection,
-        void *ownerDialog
+        HudUiBackground *ownerDialog
     );
     int SetChecked(int newChecked);
 };
 
-struct HudUiCycleSelectorWidget {
-    HudUiZrdWidget base;
+struct HudUiCycleSelectorWidget : HudUiZrdWidget {
     int selectedIndex;
     int itemCount;
     int firstIndex;
@@ -1124,8 +868,9 @@ struct HudUiCycleSelectorWidget {
     HudUiWidget *entriesA[20];
     HudUiWidget *entriesB[20];
 
+    HudUiCycleSelectorWidget();
     HudUiCycleSelectorWidget * Constructor();
-    HudUiCycleSelectorWidget * ScalarDeletingDestructor(unsigned int flags);
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     HudUiCycleSelectorWidget * ScalarDeletingDestructorThunk(unsigned int flags);
     void DestructorCore();
     void DestructorCoreThunk();
@@ -1154,12 +899,11 @@ struct HudUiCycleSelectorWidget {
     );
     int LoadFromZrd(
         zReader::Node *zrdSection,
-        void *ownerDialog
+        HudUiBackground *ownerDialog
     );
 };
 
-struct HudUiFillBitmap {
-    HudUiZrdWidget base;
+struct HudUiFillBitmap : HudUiZrdWidget {
     float normalizedValue;
     zVidImagePartial *fillImage;
     HudUiRect fillRect;
@@ -1170,22 +914,21 @@ struct HudUiFillBitmap {
     int previewOffsetX;
     int previewOffsetY;
 
-    HudUiFillBitmap * Constructor();
-    HudUiFillBitmap * ScalarDeletingDestructor(unsigned int flags);
+    HudUiFillBitmap();
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     void DestructorCore();
     void DestructorCoreThunk();
     void Draw();
     int LoadFromZrd(
         zReader::Node *zrdSection,
-        void *ownerDialog
+        HudUiBackground *ownerDialog
     );
     void UpdateNormalizedFromCursor();
     void SetNormalizedValue(float value);
     void SetNormalizedValueAndRebuild(float value);
 };
 
-struct HudUiZrdWidgetEx17C_Item {
-    HudUiZrdWidget base;
+struct HudUiZrdWidgetEx17C_Item : HudUiZrdWidget {
     int selected;
     HudUiZrdWidgetEx17C *ownerSelector;
     int itemIndex;
@@ -1196,560 +939,70 @@ struct HudUiZrdWidgetEx17C_Item {
     zVidImagePartial *selectedRolloverImage;
     zVidImagePartial *unselectedRolloverImage;
 
+    HudUiZrdWidgetEx17C_Item();
     HudUiZrdWidgetEx17C_Item * Constructor();
-    HudUiZrdWidgetEx17C_Item * ScalarDeletingDestructor(unsigned int flags);
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     void DestructorCore();
     void ShowPreviewIfNotSelected();
     void HidePreviewIfNotSelected();
+    void ShowPreview();
+    void HidePreview();
+    void OnActivate();
     void OnActivateSelectSelf();
     int LoadFromZrd(
         zReader::Node *zrdSection,
-        void *ownerDialog
+        HudUiBackground *ownerDialog
     );
     void SetSelected(int selectedValue);
     HudUiRect * GetMouseRectOrBounds();
 };
 
-struct HudUiZrdWidgetEx17C {
-    HudUiZrdWidget base;
+struct HudUiZrdWidgetEx17C : HudUiZrdWidget {
     int optionCount;
     HudUiZrdWidgetEx17C_Item *options[10];
     int selectedIndex;
 
+    HudUiZrdWidgetEx17C();
     HudUiZrdWidgetEx17C * Constructor();
-    HudUiZrdWidgetEx17C * ScalarDeletingDestructor(unsigned int flags);
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     HudUiZrdWidgetEx17C * ScalarDeletingDestructorThunk(unsigned int flags);
     void DestructorCore();
+    void SetVisible(int childIndex);
     int LoadFromZrd(
         zReader::Node *zrdSection,
-        void *ownerDialog
+        HudUiBackground *ownerDialog
     );
     void EnableChildAtIndex(int childIndex);
     int SetSelectedIndex(int index);
 };
 
-struct HudUiListSelectorItem {
-    unsigned char panelStorage[0x2a4];
-    int entryIndex;
-    void *owner;
+struct HudUiPanel : HudUiTextLabel {
+    zVidImagePartial *textPick;
+    unsigned int textColor0;
+    unsigned int textColor1;
+    HGDIOBJ hFont;
+    unsigned int cachedTextLength;
+    char cachedText[0x100];
+    int textWidthPx;
+    int textHeightPx;
+    unsigned int shadowEnabled;
+    int bkMode;
+    COLORREF bkColor;
+    unsigned int textDirty;
+    int unknown274;
+    unsigned int wordWrapEnabled;
+    HudUiRect wrapRect;
+    HudUiRect textRect;
+    int shadowOffsetX;
+    int shadowOffsetY;
 
-    HudUiListSelectorItem * Constructor();
-    void OnActivate();
-    void Draw();
-};
-
-struct HudCmdBindingVector {
-    unsigned char allocator;
-    unsigned char padding_01[3];
-    void *begin;
-    void *end;
-    void *capacity;
-};
-
-struct HudCmdBindingEntry {
-    char *displayText;
-    int commandId;
-
-    HudCmdBindingEntry * ScalarDeletingDestructor(unsigned int flags);
-    static HudCmdBindingEntry *__stdcall DeleteAndReturnNull(HudCmdBindingEntry *entry);
-    static HudCmdBindingEntry **__fastcall CopyRange(
-        HudCmdBindingEntry **sourceBegin,
-        HudCmdBindingEntry **sourceEnd,
-        HudCmdBindingEntry **dest
-    );
-};
-
-struct HudCmdBinding {
-    char *displayText;
-
-    static HudCmdBinding **__fastcall DestroyRange(
-        HudCmdBinding **first,
-        HudCmdBinding **last,
-        HudCmdBinding **dest,
-        void *unusedAlloc
-    );
-};
-
-struct HudCmdBindButtonBase {
-    HudUiCheckToggleWidget base;
-    int bindingSlotTotalCount;
-    int visibleBindingSlotCount;
-    HudUiListSelectorItem bindPanel;
-    HudUiListSelectorItem *bindingSlotPanels;
-    HudCmdBindingVector bindingVec;
-    int bindingSlotSpacing;
-    int selectedBindingIndex;
-    float visibleListOffsetX;
-    float visibleListOffsetY;
-    float overflowListOffsetX;
-    float overflowListOffsetY;
-    int selectedFontStyleRef;
-    int listFontStyleRef;
-
-    HudCmdBindButtonBase * Constructor();
-    int AddBindingEntry(
-        const char *displayText,
-        int commandId
-    );
-    void OnSelectedIndexChanged(int selectedIndex);
-    void SetSelectedEntry(int selectedIndex);
-    void OnSelectionChangedRefresh(int selectedIndex);
-    void ClearBindingEntries();
-    void DestructorCore();
-    int LoadFromZrd(
-        zReader::Node *zrdSection,
-        void *ownerDialog
-    );
-    void RebuildBindingSlotWidgets(
-        int totalCount,
-        int visibleCount
-    );
-};
-
-struct HudCmdCommandList {
-    HudCmdBindButtonBase base;
-
-    void Destructor();
-    HudCmdCommandList * ScalarDeletingDestructor(unsigned int flags);
-};
-
-struct HudCmdKeyAButton {
-    HudCmdBindButtonBase base;
-
-    void Destructor();
-    HudCmdKeyAButton * ScalarDeletingDestructor(unsigned int flags);
-    void OnBeginCapture();
-    void OnClearBinding();
-};
-
-struct HudCmdKeyBButton {
-    HudCmdBindButtonBase base;
-
-    void Destructor();
-    HudCmdKeyBButton * ScalarDeletingDestructor(unsigned int flags);
-    void OnBeginCapture();
-    void OnClearBinding();
-};
-
-struct HudCmdJoyButton {
-    HudCmdBindButtonBase base;
-
-    void Destructor();
-    HudCmdJoyButton * ScalarDeletingDestructor(unsigned int flags);
-    void OnBeginCapture();
-    void OnClearBinding();
-};
-
-struct HudCmdMouseButton {
-    HudCmdBindButtonBase base;
-
-    void Destructor();
-    HudCmdMouseButton * ScalarDeletingDestructor(unsigned int flags);
-    void OnBeginCapture();
-    void OnClearBinding();
-};
-
-void **__fastcall zUtil_StdPtrVector_Clear(HudCmdBindingVector *self);
-void __fastcall zUtil_StdPtrVector_FreeBufferAndReset(
-    HudCmdBindingVector *self
-);
-
-struct HudUiMessageBoxDialog;
-
-struct HudUiMessageBoxOkButton {
-    HudUiZrdWidget base;
-
-    void OnActivate();
-};
-
-struct HudUiMessageBoxCancelButton {
-    HudUiZrdWidget base;
-
-    void OnActivate();
-};
-
-struct HudUiTripletPanel {
-    HudUiElement base;
-    int visibleCount;
-    unsigned char unknown_38[0x04];
-    HudUiWidget items[3];
-
-    HudUiTripletPanel * Constructor();
-    HudUiTripletPanel * ScalarDeletingDestructor(unsigned int flags);
-    void Draw();
-    void SetVisibleCount(int count);
-    void ShutdownItems_Stub();
-    void DestructorCore();
-    void UnwindDestructFirstItem();
-};
-
-struct HudUiNanitePanel : HudUiTripletPanel {
-    void InitLayout(zReader::Node *layoutRoot);
-};
-
-struct HudUiPanelFull {
-    unsigned char storage[0x2a4];
-    int unknown_2a4;
-    int layoutX;
-    int layoutY;
-};
-
-struct HudUiPanelFontParams {
-    const char *faceName;
-    int height;
-    int weight;
-    int width;
-};
-
-struct HudUiMessage {
-    HudUiWidget base;
-    zVidImagePartial *variantImages[5];
-    unsigned char unknown_0d0[0x08];
-    zVidImagePartial *sideImageSwaps[2];
-    HudUiPanelFull panel;
-    HudUiWidget widget;
-
-    void Destructor();
-    HudUiMessage * ScalarDeletingDestructor(unsigned int flags);
-    HudUiMessage * Constructor();
-    void Draw();
-    void ReleaseImages();
-    void RebuildWeaponLayout();
-    int LoadWeaponLayoutFromNode(
-        zReader::Node *layoutNode,
-        const HudUiPanelFontParams *fontParams
-    );
-    static void __fastcall SelectVariantDisplay(
-        int messageIndex,
-        int variantIndex
-    );
-    static void __fastcall ApplySideImageSwap(
-        int messageIndex,
-        int sideIndex
-    );
-    static void __fastcall ClearDisplay(int messageIndex);
-    static void __fastcall SetValueIfOwnerMatches(
-        int messageIndex,
-        int ownerSideIndex,
-        float valueOrClearToken
-    );
-    static void __fastcall UpdateSelectedWeaponDisplay(
-        int weaponBankIndex,
-        int weaponSideIndex,
-        float valueOrClearToken
-    );
-};
-
-struct HudUiBarPoint {
-    float x;
-    float y;
-    int reserved;
-};
-
-struct HudUiPolylinePoint {
-    int x;
-    int y;
-};
-
-struct HudUiPolyline {
-    HudUiElement base;
-    HudUiPolylinePoint points[21];
-    int pointCount;
-    int color565;
-    const RECT *clipRect;
-
-    HudUiPolyline * Constructor();
-    void Draw();
-    void SetPoint(
-        int index,
+    HudUiPanel() {
+    }
+    HudUiPanel(
+        const char *text,
         int x,
         int y
     );
-};
-
-struct HudUiSliderBorder {
-    HudUiPolyline base;
-    int originX;
-    int originY;
-    int halfWidth;
-    int height;
-    int blinkEnabled;
-    float blinkPeriodSec;
-    float blinkTimeRemainingSec;
-    int blinkDirSign;
-    int caretHalfWidth;
-    int inputActive;
-    char sliderVisibleWhenInputActive;
-    char rawKeyFilterEnabled;
-    char unknown112[2];
-
-    HudUiSliderBorder * Constructor();
-    void Update(float deltaSeconds);
-    void SetBounds(
-        int originX,
-        int originY,
-        int halfWidth,
-        int height
-    );
-};
-
-struct HudUiCounter {
-    HudUiWidget base;
-    zVidImagePartial *stateImages[3];
-    HudUiRect clipViewportRect;
-    int layoutX;
-    int layoutY;
-
-    HudUiCounter * Constructor();
-    int ApplyFromLayoutNode(zReader::Node *layoutNode);
-    void ReleaseStateImages();
-    void UpdateLayoutPosition();
-};
-
-struct HudUiBar {
-    const HudUiBar_FTable *ftable;
-    HudUiElement *next;
-    void *parent;
-    unsigned int flags;
-    float timer;
-    int x;
-    int y;
-    void *bltSource;
-    HudUiRect clipRect;
-    unsigned short state;
-    unsigned short padding32;
-    HudUiBarPoint points[21];
-    int drawVertexCount;
-    int drawParam;
-    int quadHeight;
-    float quadLeftX;
-
-    HudUiBar * Constructor();
-    void Draw();
-    void SetPointXY(
-        int pointIndex,
-        float x,
-        float y
-    );
-};
-
-struct HudUiMeter {
-    const HudUiMeter_FTable *ftable;
-    HudUiElement *next;
-    void *parent;
-    unsigned int flags;
-    float timer;
-    int x;
-    int y;
-    void *bltSource;
-    HudUiRect clipRect;
-    unsigned short state;
-    unsigned short padding32;
-    HudUiBarPoint points[21];
-    unsigned int drawVertexCount;
-    unsigned int color565;
-    int fillPixelsMax;
-    unsigned int meterFlags;
-
-    HudUiMeter * Constructor();
-    HudUiMeter * ConstructorEx();
-};
-
-struct HudUiObjectiveBar {
-    const HudUiBar_FTable *ftable;
-    HudUiElement *next;
-    void *parent;
-    unsigned int flags;
-    float timer;
-    int x;
-    int y;
-    void *bltSource;
-    HudUiRect clipRect;
-    unsigned short state;
-    unsigned short padding32;
-    HudUiBarPoint points[21];
-    unsigned int drawVertexCount;
-    unsigned int drawParam;
-    float slideRangeX;
-    unsigned int chatComposeActive;
-};
-
-struct HudUiTextInput {
-    const HudUiTextInput_FTable *ftable;
-    char *buffer;
-    unsigned int capacity;
-    unsigned int cursor;
-    char keyActionMap[0x100];
-
-    HudUiTextInput * Constructor(unsigned int bufferSize);
-    void AllocTextBuffer(unsigned int bufferSize);
-    void DestructorCore();
-    void DestructorCoreThunk();
-    void SetContents(const char *source);
-    char * GetBuffer();
-    void SetCursorPosition(int position);
-    void DispatchKeyAction(int key);
-    void InsertCharAtCursor(int ch);
-    void BackspaceDeleteChar();
-    void DeleteCharForward();
-    void MoveCursorLeft();
-    void MoveCursorRight();
-    int ShiftTextRight(
-        int count,
-        int startPos
-    );
-    int ShiftTextLeft(
-        int count,
-        int startPos
-    );
-};
-
-struct HudUiOwnedTextInput {
-    HudUiTextInput base;
-    void *owner;
-
-    void OnAcceptNotifyOwner();
-};
-
-struct HudUiNumericTextInput {
-    HudUiZrdWidget base;
-    HudUiTextInput textInput;
-    HudUiNumericTextInput *owner;
-    HudUiSliderBorder sliderBorder;
-
-    HudUiNumericTextInput * Constructor(unsigned int maxDigits);
-    HudUiNumericTextInput * BaseConstructor();
-    HudUiNumericTextInput * ScalarDeletingDestructor(unsigned int flags);
-    HudUiNumericTextInput * ScalarDeletingDestructorThunk(unsigned int flags);
-    void Destructor();
-    void DestructorThunk();
-    void AllocTextBuffer(unsigned int bufferSize);
-    char * GetBuffer();
-    void Update(const char *text);
-    RECOIL_NO_GS void UpdateCaptureUiAndClip(float deltaSeconds);
-    int SetInputActive(int active);
-    void SetRawKeyboardCapture(int enable);
-    int OnRawKeyboardChar(int key);
-    int OnAcceptForwardToCommit();
-    void OnActivate();
-    static int __fastcall RawKeyboardCallback(
-        int key,
-        HudUiNumericTextInput *callbackCtx
-    );
-};
-
-struct HudUiNetGameSetupTextInput : HudUiNumericTextInput {
-    void OnActivateFocusAndCursor();
-};
-
-struct HudUiNetGameSetupOverlayOwner {
-    unsigned int vftable; // RecoilApp_IState_Vtbl*
-    unsigned int m_panel; // HudUiNetGameSetupDialog*
-    int m_reconfigureExistingSession;
-
-    static void StaticInitAndRegisterAtExit();
-    static HudUiNetGameSetupOverlayOwner *StaticInit();
-    static void RegisterAtExit();
-    static void AtExitDestructor();
-    HudUiNetGameSetupOverlayOwner * Constructor();
-    void Destructor();
-    HudUiNetGameSetupOverlayOwner * ScalarDeletingDestructor(
-        unsigned int flags
-    );
-    int OnTryBecomeCurrent();
-    void OnDeactivate();
-    static void QueueEnterWithReconfigureFlag(int reconfigureExistingSession);
-};
-RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupOverlayOwner) == 0x0c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiNetGameSetupOverlayOwner,
-        m_panel
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiNetGameSetupOverlayOwner,
-        m_reconfigureExistingSession
-    ) == 0x08
-);
-
-extern RecoilApp_IState_Vtbl g_HudUiNetGameSetupOverlayOwner_Vtbl;
-
-struct HudUiClampedIntTextInput : HudUiNumericTextInput {
-    int minValue;
-    int maxValue;
-
-    HudUiClampedIntTextInput * Constructor(unsigned int maxDigits);
-    int OnRawKeyboardDigitOnly(int key);
-    int CommitAndGetValue();
-};
-
-struct HudUiClampedIntStepButton {
-    HudUiZrdWidget base;
-    HudUiClampedIntTextInput *targetInput;
-    int stepDelta;
-
-    void OnActivate();
-};
-
-struct HudUiSlot {
-    const HudUiSlot_FTable *ftable;
-    HudUiElement *next;
-    void *parent;
-    unsigned int flags;
-    float timer;
-    unsigned char unknown_14[0x20];
-    unsigned int screenEdgeCode;
-    void *trackNode;
-    float screenX;
-    float screenY;
-    unsigned char unknown_44[0x04];
-    HudUiWidget slotWidget;
-    HudUiWidget trackMarkerWidget;
-
-    HudUiSlot * Constructor();
-    void Destructor();
-    void Draw();
-    HudUiSlot * ScalarDeletingDestructor(unsigned int flags);
-};
-
-struct HudUiMgrObjectiveBlock {
-    unsigned int state;
-    unsigned int phase;
-    float phaseTimerSec;
-    float phaseDurationSec;
-    float autoHideDelaySec;
-    unsigned int showResetUnused;
-    int objectiveWidgetRightX;
-    HudUiWidget objectiveWidget;
-    HudUiWidget objectiveSensorRect;
-    HudUiPanel *objectiveSummaryTextPanel;
-    HudUiPanel *objectiveLabelTextPanel;
-    HudUiMeter objectiveMeter;
-    float objectiveMeterFillAnimTimerSec;
-    unsigned int objectiveMeterFillAnimEnabled;
-    HudUiPanel *objectiveDescTextPanel;
-    HudUiObjectiveBar objectiveBar;
-    HudUiTextInput chatComposeTextInput;
-    HudUiCounterTextPanel *counterTextPanel;
-
-    void Destructor();
-};
-
-struct HudUiPanel {
-    const void *vtbl;
-    unsigned char reserved004[0x144];
-    zVidImagePartial *textPick;
-    unsigned char reserved14c[0x08];
-    HGDIOBJ hFont;
-    unsigned char reserved158[0x118];
-    unsigned int textDirty;
-    unsigned char reserved274[0x04];
-    unsigned int wordWrapEnabled;
-    HudUiRect wrapRect;
-    unsigned char reserved28c[0x18];
-
     HudUiPanel * ConstructorDefault(
         const char *text,
         int x,
@@ -1812,7 +1065,494 @@ struct HudUiPanel {
     );
     char * GetLastTextPtr();
     void GetTextRect(HudUiRect *outRect);
-    HudUiPanel * ScalarDeletingDestructor(unsigned int flags);
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
+};
+
+struct HudUiListSelectorItem : HudUiPanel {
+    int entryIndex;
+    void *owner;
+
+    // Reimplements 0x4b92a0: HudUiListSelectorItem::HudUiListSelectorItem
+    HudUiListSelectorItem() :
+        HudUiPanel(
+            0,
+            0,
+            0
+        )
+    {
+    }
+    void OnActivate();
+    void Draw();
+};
+
+struct HudCmdBindingVector {
+    unsigned char allocator;
+    unsigned char padding_01[3];
+    void *begin;
+    void *end;
+    void *capacity;
+
+    HudCmdBindingVector() {
+#if defined(_MSC_VER) && _MSC_VER < 1200
+        char allocatorValue;
+#else
+        char allocatorValue = 0;
+#endif
+        allocator = (unsigned char)(allocatorValue);
+        begin = 0;
+        end = 0;
+        capacity = 0;
+    }
+};
+
+struct HudCmdBindingEntry {
+    char *displayText;
+    int commandId;
+
+    ~HudCmdBindingEntry();
+    static HudCmdBindingEntry *__stdcall DeleteAndReturnNull(HudCmdBindingEntry *entry);
+    static HudCmdBindingEntry **__fastcall CopyRange(
+        HudCmdBindingEntry **sourceBegin,
+        HudCmdBindingEntry **sourceEnd,
+        HudCmdBindingEntry **dest
+    );
+};
+
+struct HudCmdBinding {
+    char *displayText;
+
+    static HudCmdBinding **__fastcall DestroyRange(
+        HudCmdBinding **first,
+        HudCmdBinding **last,
+        HudCmdBinding **dest,
+        void *unusedAlloc
+    );
+};
+
+struct HudCmdBindButtonBase : HudUiCheckToggleWidget {
+    int bindingSlotTotalCount;
+    int visibleBindingSlotCount;
+    HudUiListSelectorItem bindPanel;
+    HudUiListSelectorItem *bindingSlotPanels;
+    HudCmdBindingVector bindingVec;
+    int bindingSlotSpacing;
+    int selectedBindingIndex;
+    float visibleListOffsetX;
+    float visibleListOffsetY;
+    float overflowListOffsetX;
+    float overflowListOffsetY;
+    int selectedFontStyleRef;
+    int listFontStyleRef;
+
+    HudCmdBindButtonBase();
+    int AddBindingEntry(
+        const char *displayText,
+        int commandId
+    );
+    void OnSelectedIndexChanged(int selectedIndex);
+    void SetSelectedEntry(int selectedIndex);
+    void OnSelectionChangedRefresh(int selectedIndex);
+    void ClearBindingEntries();
+    void DestructorCore();
+    int LoadFromZrd(
+        zReader::Node *zrdSection,
+        HudUiBackground *ownerDialog
+    );
+    void RebuildBindingSlotWidgets(
+        int totalCount,
+        int visibleCount
+    );
+};
+
+struct HudCmdCommandList : HudCmdBindButtonBase {
+
+    void Destructor();
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
+};
+
+struct HudCmdKeyAButton : HudCmdBindButtonBase {
+
+    void Destructor();
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
+    void OnBeginCapture();
+    void OnClearBinding();
+};
+
+struct HudCmdKeyBButton : HudCmdBindButtonBase {
+
+    void Destructor();
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
+    void OnBeginCapture();
+    void OnClearBinding();
+};
+
+struct HudCmdJoyButton : HudCmdBindButtonBase {
+
+    void Destructor();
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
+    void OnBeginCapture();
+    void OnClearBinding();
+};
+
+struct HudCmdMouseButton : HudCmdBindButtonBase {
+
+    void Destructor();
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
+    void OnBeginCapture();
+    void OnClearBinding();
+};
+
+void **__fastcall zUtil_StdPtrVector_Clear(HudCmdBindingVector *self);
+void __fastcall zUtil_StdPtrVector_FreeBufferAndReset(
+    HudCmdBindingVector *self
+);
+
+struct HudUiMessageBoxDialog;
+
+struct HudUiMessageBoxOkButton : HudUiZrdWidget {
+
+    void OnActivate();
+};
+
+struct HudUiMessageBoxCancelButton : HudUiZrdWidget {
+
+    void OnActivate();
+};
+
+struct HudUiTripletPanel : HudUiElement {
+    int visibleCount;
+    unsigned char unknown_38[0x04];
+    HudUiWidget items[3];
+
+    HudUiTripletPanel * Constructor();
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
+    void Draw();
+    void SetVisibleCount(int count);
+    void ShutdownItems_Stub();
+    void DestructorCore();
+    void UnwindDestructFirstItem();
+};
+
+struct HudUiNanitePanel : HudUiTripletPanel {
+    void InitLayout(zReader::Node *layoutRoot);
+};
+
+struct HudUiPanelFull : HudUiPanel {
+    int activeSideIndex;
+    int layoutX;
+    int layoutY;
+};
+
+struct HudUiPanelFontParams {
+    const char *faceName;
+    int height;
+    int weight;
+    int width;
+};
+
+struct HudUiMessage : HudUiWidget {
+    zVidImagePartial *variantImages[5];
+    zVidImagePartial *activeSideImages[2];
+    zVidImagePartial *sideImageSwaps[2];
+    HudUiPanelFull panel;
+    HudUiWidget widget;
+
+    void Destructor();
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
+    HudUiMessage * Constructor();
+    void Draw();
+    void ReleaseImages();
+    void RebuildWeaponLayout();
+    int LoadWeaponLayoutFromNode(
+        zReader::Node *layoutNode,
+        const HudUiPanelFontParams *fontParams
+    );
+    static void __fastcall SelectVariantDisplay(
+        int messageIndex,
+        int variantIndex
+    );
+    static void __fastcall ApplySideImageSwap(
+        int messageIndex,
+        int sideIndex
+    );
+    static void __fastcall ClearDisplay(int messageIndex);
+    static void __fastcall SetValueIfOwnerMatches(
+        int messageIndex,
+        int ownerSideIndex,
+        float valueOrClearToken
+    );
+    static void __fastcall UpdateSelectedWeaponDisplay(
+        int weaponBankIndex,
+        int weaponSideIndex,
+        float valueOrClearToken
+    );
+};
+
+struct HudUiBarPoint {
+    float x;
+    float y;
+    int reserved;
+};
+
+struct HudUiPolylinePoint {
+    int x;
+    int y;
+};
+
+struct HudUiPolyline : HudUiElement {
+    HudUiPolylinePoint points[21];
+    int pointCount;
+    int color565;
+    const RECT *clipRect;
+
+    HudUiPolyline * Constructor();
+    void Draw();
+    void SetPoint(
+        int index,
+        int x,
+        int y
+    );
+};
+
+struct HudUiSliderBorder : HudUiPolyline {
+    int originX;
+    int originY;
+    int halfWidth;
+    int height;
+    int blinkEnabled;
+    float blinkPeriodSec;
+    float blinkTimeRemainingSec;
+    int blinkDirSign;
+    int caretHalfWidth;
+    int inputActive;
+    char sliderVisibleWhenInputActive;
+    char rawKeyFilterEnabled;
+    char unknown112[2];
+
+    HudUiSliderBorder * Constructor();
+    void Update(float deltaSeconds);
+    void SetBounds(
+        int originX,
+        int originY,
+        int halfWidth,
+        int height
+    );
+};
+
+struct HudUiCounter : HudUiWidget {
+    zVidImagePartial *stateImages[3];
+    HudUiRect clipViewportRect;
+    int layoutX;
+    int layoutY;
+
+    HudUiCounter * Constructor();
+    int ApplyFromLayoutNode(zReader::Node *layoutNode);
+    void ReleaseStateImages();
+    void UpdateLayoutPosition();
+};
+
+struct HudUiBar : HudUiElement {
+    HudUiBarPoint points[21];
+    int drawVertexCount;
+    union {
+        struct {
+            int drawParam;
+            int quadHeight;
+            float quadLeftX;
+        };
+        struct {
+            unsigned int color565;
+            int fillPixelsMax;
+            unsigned int meterFlags;
+        };
+        struct {
+            unsigned int objectiveDrawParam;
+            float slideRangeX;
+            unsigned int chatComposeActive;
+        };
+    };
+
+    HudUiBar * Constructor();
+    void Draw();
+    void SetPointXY(
+        int pointIndex,
+        float x,
+        float y
+    );
+};
+
+struct HudUiMeter : HudUiBar {
+    HudUiMeter * Constructor();
+    HudUiMeter * ConstructorEx();
+};
+
+struct HudUiObjectiveBar : HudUiBar {};
+
+struct HudUiTextInput {
+    virtual void OnPrintableKey(int key);
+    virtual void OnIgnoredKey(int key);
+    virtual void OnAccept();
+    virtual void OnCancel();
+    virtual void OnBackspace();
+    virtual void OnDeleteForward();
+    virtual void OnMoveCursorLeft();
+    virtual void OnMoveCursorRight();
+    virtual void OnOverflow();
+
+    char *buffer;
+    int capacity;
+    unsigned int cursor;
+    char keyActionMap[0x100];
+
+    HudUiTextInput * Constructor(int bufferSize);
+    void AllocTextBuffer(int bufferSize);
+    void DestructorCore();
+    void DestructorCoreThunk();
+    void SetContents(const char *source);
+    char * GetBuffer();
+    void SetCursorPosition(int position);
+    void DispatchKeyAction(int key);
+    void InsertCharAtCursor(int ch);
+    void BackspaceDeleteChar();
+    void DeleteCharForward();
+    void MoveCursorLeft();
+    void MoveCursorRight();
+    int ShiftTextRight(
+        int count,
+        int startPos
+    );
+    int ShiftTextLeft(
+        int count,
+        int startPos
+    );
+};
+
+struct HudUiNumericTextInput;
+
+struct HudUiOwnedTextInput : HudUiTextInput {
+    HudUiNumericTextInput *owner;
+
+    virtual void OnAccept();
+    void OnAcceptNotifyOwner();
+};
+
+struct HudUiChatComposeTextInput : HudUiTextInput {
+    virtual void OnAccept();
+};
+
+struct HudUiNumericTextInput : HudUiZrdWidget {
+    HudUiOwnedTextInput textInput;
+    HudUiSliderBorder sliderBorder;
+
+    HudUiNumericTextInput * Constructor(unsigned int maxDigits);
+    HudUiNumericTextInput * BaseConstructor();
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
+    HudUiNumericTextInput * ScalarDeletingDestructorThunk(unsigned int flags);
+    void Destructor();
+    void DestructorThunk();
+    void AllocTextBuffer(unsigned int bufferSize);
+    char * GetBuffer();
+    void Update(const char *text);
+    RECOIL_NO_GS void UpdateCaptureUiAndClip(float deltaSeconds);
+    int SetInputActive(int active);
+    void SetRawKeyboardCapture(int enable);
+    int OnRawKeyboardChar(int key);
+    int OnAcceptForwardToCommit();
+    void OnActivate();
+    static int __fastcall RawKeyboardCallback(
+        int key,
+        HudUiNumericTextInput *callbackCtx
+    );
+};
+
+struct HudUiNetGameSetupTextInput : HudUiNumericTextInput {
+    void OnActivate();
+    void OnActivateFocusAndCursor();
+};
+
+struct HudUiNetGameSetupOverlayOwner : RecoilApp_IState {
+    HudUiNetGameSetupPanel *m_panel;
+    int m_reconfigureExistingSession;
+
+    HudUiNetGameSetupOverlayOwner();
+    static void StaticInitAndRegisterAtExit();
+    static HudUiNetGameSetupOverlayOwner *StaticInit();
+    static void RegisterAtExit();
+    static void AtExitDestructor();
+    ~HudUiNetGameSetupOverlayOwner();
+    int OnTryBecomeCurrent();
+    void OnDeactivate();
+    static void QueueEnterWithReconfigureFlag(int reconfigureExistingSession);
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupOverlayOwner) == 0x0c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupOverlayOwner,
+        m_panel
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiNetGameSetupOverlayOwner,
+        m_reconfigureExistingSession
+    ) == 0x08
+);
+
+struct HudUiClampedIntTextInput : HudUiNumericTextInput {
+    int minValue;
+    int maxValue;
+
+    HudUiClampedIntTextInput * Constructor(unsigned int maxDigits);
+    int OnRawKeyboardChar(int key);
+    int OnRawKeyboardDigitOnly(int key);
+    int CommitAndGetValue();
+};
+
+struct HudUiClampedIntStepButton : HudUiZrdWidget {
+    HudUiClampedIntTextInput *targetInput;
+    int stepDelta;
+
+    void OnActivate();
+};
+
+// BN constructors at 0x40db20 initialize HudUiElement at object offset zero,
+// then construct the slot and marker widgets at offsets 0x48 and 0x104.
+struct HudUiSlot : HudUiElement {
+    unsigned int screenEdgeCode;
+    void *trackNode;
+    float screenX;
+    float screenY;
+    unsigned char unknown_44[0x04];
+    HudUiWidget slotWidget;
+    HudUiWidget trackMarkerWidget;
+
+    HudUiSlot * Constructor();
+    void Destructor();
+    void Draw();
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
+};
+
+struct HudUiMgrObjectiveBlock {
+    unsigned int state;
+    unsigned int phase;
+    float phaseTimerSec;
+    float phaseDurationSec;
+    float autoHideDelaySec;
+    unsigned int showResetUnused;
+    int objectiveWidgetRightX;
+    HudUiWidget objectiveWidget;
+    HudUiWidget objectiveSensorRect;
+    HudUiPanel *objectiveSummaryTextPanel;
+    HudUiPanel *objectiveLabelTextPanel;
+    HudUiMeter objectiveMeter;
+    float objectiveMeterFillAnimTimerSec;
+    unsigned int objectiveMeterFillAnimEnabled;
+    HudUiPanel *objectiveDescTextPanel;
+    HudUiObjectiveBar objectiveBar;
+    HudUiTextInput chatComposeTextInput;
+    HudUiCounterTextPanel *counterTextPanel;
+
+    void Destructor();
 };
 
 struct HudUtil {
@@ -1821,8 +1561,7 @@ struct HudUtil {
     void FreeFieldPtr();
 };
 
-struct HudUiTransitionTextPanel {
-    unsigned char panelStorage[0x2a4];
+struct HudUiTransitionTextPanel : HudUiPanel {
     float flashCountdown;
     float flashResetValue;
     int flashAltColor0;
@@ -1831,7 +1570,8 @@ struct HudUiTransitionTextPanel {
     int flashMode;
     int flashDirectionSign;
 
-    HudUiTransitionTextPanel * Constructor();
+    HudUiTransitionTextPanel();
+    ~HudUiTransitionTextPanel();
     void TickFlash(float deltaSeconds);
     void ResetFlashState(float flashRate);
     void SetFlashRate(float flashRate);
@@ -1877,8 +1617,7 @@ struct HudUiCompositePanelVector {
     );
 };
 
-struct HudUiCompositePanel {
-    unsigned char panelStorage[0x2a4];
+struct HudUiCompositePanel : HudUiPanel {
     int activeEntryCount;
     HudUiCompositePanelVector entryVector;
 
@@ -1913,7 +1652,7 @@ struct HudUiCompositePanel {
     );
     void Update(float deltaSeconds);
     void Destructor();
-    HudUiCompositePanel * ScalarDeletingDestructor(unsigned int flags);
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
 };
 
 struct HudFontStyle {
@@ -1927,13 +1666,13 @@ struct HudFontStyle {
     int fontWeight;
     unsigned int alignMode;
 
-    HudFontStyle * Constructor();
+    HudFontStyle();
+    ~HudFontStyle();
     void Destructor();
 };
 
-struct HudUiBackground {
-    HudUiBackgroundContainer base;
-    HudUiBackgroundCursorWidget cursorWidget;
+struct HudUiBackground : HudUiBackgroundContainer {
+    HudUiBackgroundMemberCursorWidget cursorWidget;
     zVidImagePartial *primaryClipImage;
     zVidImagePartial *capturedCompositeImage;
     HudUiWidget backgroundImageWidgets[20];
@@ -1946,8 +1685,8 @@ struct HudUiBackground {
     int uiOriginX;
     int uiOriginY;
 
-    HudUiBackground * Constructor();
-    void Destructor();
+    HudUiBackground();
+    ~HudUiBackground();
     zReader::Node * LoadFromZrd(
         const char *zrdPath,
         const char *sectionName,
@@ -1958,7 +1697,7 @@ struct HudUiBackground {
         const char *sectionName,
         int capturePrimary
     );
-    void SetEnabled(int enabled);
+    virtual void SetEnabled(int enabled);
     unsigned char __fastcall BindButtonsNodeToWidgetByName(
         zReader::Node *parentNode,
         HudUiWidget *widget,
@@ -1975,45 +1714,50 @@ struct HudUiBackground {
         const char *name
     );
     void FreeLoadedTreeRoots(int unused);
-    void Update(float deltaSeconds);
+    virtual void Update(float deltaSeconds);
 };
 
-struct HudCmdSimpleWidget {
-    HudUiZrdWidget base;
+struct HudCmdSimpleWidget : HudUiZrdWidget {
 };
 
-struct HudCmdDialogCallback {
-    HudUiZrdWidget base;
-
-    void NextSet();
-    void PrevSet();
-    void NextCommand();
-    void PrevCommand();
-};
-
-struct HudCmdResetButton {
-    HudUiZrdWidget base;
+struct HudCmdNextSetButton : HudUiZrdWidget {
 
     void OnActivate();
 };
 
-struct HudCmdSetListWidget {
-    HudUiCycleSelectorWidget base;
+struct HudCmdPrevSetButton : HudUiZrdWidget {
 
     void OnActivate();
 };
 
-struct HudCmdPromptPanel {
-    HudUiTransitionTextPanel base;
+struct HudCmdNextCommandButton : HudUiZrdWidget {
+
+    void OnActivate();
 };
 
-struct HudCmdDescriptionPanel {
-    HudUiPanel base;
+struct HudCmdPrevCommandButton : HudUiZrdWidget {
+
+    void OnActivate();
+};
+
+struct HudCmdResetButton : HudUiZrdWidget {
+
+    void OnActivate();
+};
+
+struct HudCmdSetListWidget : HudUiCycleSelectorWidget {
+
+    void OnActivate();
+};
+
+struct HudCmdPromptPanel : HudUiTransitionTextPanel {
+};
+
+struct HudCmdDescriptionPanel : HudUiPanel {
     int captureState;
 };
 
-struct HudCmdDialog {
-    HudUiBackground base;
+struct HudCmdDialog : HudUiBackground {
     HudCmdSimpleWidget resumeButton;
     HudCmdResetButton resetButton;
     HudCmdCommandList commandList;
@@ -2022,10 +1766,10 @@ struct HudCmdDialog {
     HudCmdJoyButton joyButton;
     HudCmdMouseButton mouseButton;
     HudCmdSetListWidget setList;
-    HudCmdDialogCallback nextSetButton;
-    HudCmdDialogCallback prevSetButton;
-    HudCmdDialogCallback nextCommandButton;
-    HudCmdDialogCallback prevCommandButton;
+    HudCmdNextSetButton nextSetButton;
+    HudCmdPrevSetButton prevSetButton;
+    HudCmdNextCommandButton nextCommandButton;
+    HudCmdPrevCommandButton prevCommandButton;
     HudCmdPromptPanel promptPanel;
     HudCmdDescriptionPanel descriptionPanel;
 
@@ -2057,97 +1801,128 @@ struct HudCmdDialog {
 
 struct HudOptionsDialog;
 
-struct HudUiOptionsPanelBackButton {
-    HudUiZrdWidget base;
+struct HudUiOptionsPanelBackButton : HudUiZrdWidget {
+    HudUiOptionsPanelBackButton() {
+    }
 
     void OnActivate();
 };
 
-struct HudUiOptionsPanel_Lighting {
-    HudUiCheckToggleWidget base;
+struct HudUiOptionsPanel_Lighting : HudUiCheckToggleWidget {
+    HudUiOptionsPanel_Lighting() {
+    }
 
+    void OnActivate();
+    void PostLoadFromZrd();
     void InitFromOptions();
     void SyncFromOptions();
 };
 
-struct HudUiOptionsPanel_Perspective {
-    HudUiCheckToggleWidget base;
+struct HudUiOptionsPanel_Perspective : HudUiCheckToggleWidget {
+    HudUiOptionsPanel_Perspective() {
+    }
 
+    void OnActivate();
+    void PostLoadFromZrd();
     void InitFromOptions();
     void SyncFromOptions();
 };
 
-struct HudUiOptionsPanel_FullHud {
-    HudUiCheckToggleWidget base;
+struct HudUiOptionsPanel_FullHud : HudUiCheckToggleWidget {
+    HudUiOptionsPanel_FullHud() {
+    }
 
+    void PostLoadFromZrd();
     void InitFromOptions();
 };
 
-struct HudUiOptionsPanel_ObjectDetail {
-    HudUiCycleSelectorWidget base;
+struct HudUiOptionsPanel_ObjectDetail : HudUiCycleSelectorWidget {
+    HudUiOptionsPanel_ObjectDetail() {
+    }
 
-    void InitFromOptions();
-    void SyncFromOptions();
-};
-
-struct HudUiOptionsPanel_TextureMemory {
-    HudUiCycleSelectorWidget base;
-
+    void OnActivate();
+    void PostLoadFromZrd();
     void InitFromOptions();
     void SyncFromOptions();
 };
 
-struct HudUiOptionsPanel_Effects {
-    HudUiCycleSelectorWidget base;
+struct HudUiOptionsPanel_TextureMemory : HudUiCycleSelectorWidget {
+    HudUiOptionsPanel_TextureMemory() {
+    }
 
+    void OnActivate();
+    void PostLoadFromZrd();
     void InitFromOptions();
     void SyncFromOptions();
 };
 
-struct HudUiOptionsPanel_SoundActive {
-    HudUiCheckToggleWidget base;
+struct HudUiOptionsPanel_Effects : HudUiCycleSelectorWidget {
+    HudUiOptionsPanel_Effects() {
+    }
 
+    void OnActivate();
+    void PostLoadFromZrd();
     void InitFromOptions();
     void SyncFromOptions();
 };
 
-struct HudUiOptionsPanel_SoundQuality {
-    HudUiCycleSelectorWidget base;
+struct HudUiOptionsPanel_SoundActive : HudUiCheckToggleWidget {
+    HudUiOptionsPanel_SoundActive() {
+    }
 
+    void OnActivate();
+    void PostLoadFromZrd();
     void InitFromOptions();
     void SyncFromOptions();
 };
 
-struct HudUiOptionsPanel_SoundVolume {
-    HudUiFillBitmap base;
+struct HudUiOptionsPanel_SoundQuality : HudUiCycleSelectorWidget {
+    HudUiOptionsPanel_SoundQuality() {
+    }
 
+    void OnActivate();
+    void PostLoadFromZrd();
+    void InitFromOptions();
+    void SyncFromOptions();
+};
+
+struct HudUiOptionsPanel_SoundVolume : HudUiFillBitmap {
+    HudUiOptionsPanel_SoundVolume() {
+    }
+
+    void PostLoadFromZrd();
     void SyncFromOptions();
     void OnActivate();
 };
 
-struct HudUiOptionsPanel_MusicEnable {
-    HudUiCheckToggleWidget base;
+struct HudUiOptionsPanel_MusicEnable : HudUiCheckToggleWidget {
+    HudUiOptionsPanel_MusicEnable() {
+    }
 
+    void PostLoadFromZrd();
     void SyncFromOptions();
     void OnActivate();
 };
 
-struct HudUiOptionsPanel_MusicVolume {
-    HudUiFillBitmap base;
+struct HudUiOptionsPanel_MusicVolume : HudUiFillBitmap {
+    HudUiOptionsPanel_MusicVolume() {
+    }
 
+    void PostLoadFromZrd();
     void SyncFromOptions();
     void OnActivate();
 };
 
-struct HudUiOptionsPanel_Resolution {
-    HudUiCycleSelectorWidget base;
+struct HudUiOptionsPanel_Resolution : HudUiCycleSelectorWidget {
+    HudUiOptionsPanel_Resolution() {
+    }
 
+    void PostLoadFromZrd();
     void SyncFromOptions();
     void OnActivate();
 };
 
-struct HudOptionsDialog {
-    HudUiBackground base;
+struct HudOptionsDialog : HudUiBackground {
     HudUiOptionsPanelBackButton backButton;
     HudUiOptionsPanel_Lighting lightingToggle;
     HudUiOptionsPanel_Perspective perspectiveToggle;
@@ -2162,27 +1937,23 @@ struct HudOptionsDialog {
     HudUiOptionsPanel_MusicVolume musicVolumeWidget;
     HudUiOptionsPanel_Resolution resolutionSelector;
 
-    HudOptionsDialog * Constructor();
+    HudOptionsDialog();
     void DestructorCore();
     HudOptionsDialog * ScalarDeletingDestructor(unsigned int flags);
 };
 
-struct RecoilApp_IState_Vtbl;
+struct HudCmdDialogState : RecoilApp_IState {
+    HudCmdDialog *m_dialog;
 
-struct HudCmdDialogState {
-    unsigned int vftable;  // RecoilApp_IState_Vtbl*
-    unsigned int m_dialog; // HudCmdDialog*
-
+    HudCmdDialogState();
     static void StaticInitAndRegisterAtExit();
     static HudCmdDialogState *StaticInit();
     static void RegisterAtExit();
     static void AtExitDestructor();
     static void QueueEnter();
-    HudCmdDialogState * Constructor();
     int OnTryBecomeCurrent();
     void OnDeactivate();
-    void DestructorCore();
-    HudCmdDialogState * ScalarDeletingDestructor(unsigned int flags);
+    ~HudCmdDialogState();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudCmdDialogState) == 0x08);
 RECOIL_STATIC_ASSERT(
@@ -2192,7 +1963,6 @@ RECOIL_STATIC_ASSERT(
     ) == 0x04
 );
 
-extern RecoilApp_IState_Vtbl g_HudCmdDialogState_Vtbl;
 extern HudCmdDialogState g_HudCmdDialogState;
 
 struct HudUiMessageBoxDialog : HudUiBackground {
@@ -2262,11 +2032,23 @@ struct HudUiPanelSpan {
 };
 
 struct HudUiPanelSpanVec {
-    unsigned int allocatorProxy;
+    unsigned char allocatorProxy;
+    unsigned char allocatorPadding[3];
     HudUiPanelSpan *begin;
     HudUiPanelSpan *end;
     HudUiPanelSpan *cap;
 
+    HudUiPanelSpanVec() {
+#if defined(_MSC_VER) && _MSC_VER < 1200
+        char allocatorProxyValue;
+#else
+        char allocatorProxyValue = 0;
+#endif
+        allocatorProxy = allocatorProxyValue;
+        begin = 0;
+        end = 0;
+        cap = 0;
+    }
     void InsertN(
         HudUiPanelSpan *insertPos,
         unsigned int count,
@@ -2274,40 +2056,52 @@ struct HudUiPanelSpanVec {
     );
 };
 
-struct HudUiZrdScrollingText {
-    HudUiZrdWidget base;
+struct HudUiCreditsBackButton : HudUiZrdWidget {
+    HudUiCreditsBackButton();
+    ~HudUiCreditsBackButton();
+    void OnActivate();
+};
+
+struct HudUiCreditsQuitButton : HudUiZrdWidget {
+    HudUiCreditsQuitButton();
+    ~HudUiCreditsQuitButton();
+    void OnActivate();
+};
+
+struct HudUiZrdScrollingText : HudUiZrdWidget {
     HudUiPanelSpanVec rows;
     HudUiRect rect;
     int totalHeight;
 
+    HudUiZrdScrollingText();
+    ~HudUiZrdScrollingText();
+    void OnActivate();
     void OnActivateResetOwnerFade();
     void Update(float deltaSeconds);
     void UpdateScrollPositions(float scrollProgress);
     int LoadFromZrd(
         zReader::Node *zrdSection,
-        void *ownerDialog
+        HudUiBackground *ownerDialog
     );
     void Destructor();
-    HudUiZrdScrollingText * ScalarDeletingDestructor(unsigned int flags);
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
 };
 
-struct HudUiCreditsPanel {
-    HudUiBackground base;
+struct HudUiCreditsPanel : HudUiBackground {
     float fadeStep;
-    HudUiZrdWidget backButton;
-    HudUiZrdWidget quitButton;
+    HudUiCreditsBackButton backButton;
+    HudUiCreditsQuitButton quitButton;
     HudUiZrdScrollingText creditsScreen;
     float fadeProgress;
 
-    HudUiCreditsPanel * Constructor();
+    HudUiCreditsPanel();
+    void Update(float deltaSeconds);
     void UpdateFadeAndExit(float deltaSeconds);
     void Destructor();
     HudUiCreditsPanel * ScalarDeletingDestructor(unsigned int flags);
 };
 
-struct HudUiPanelSimple {
-    unsigned char storage[0x2a4];
-
+struct HudUiPanelSimple : HudUiPanel {
     HudUiPanelSimple * Constructor(
         const char *text,
         int x,
@@ -2332,32 +2126,34 @@ struct HudUiShieldMessageWidget {
 
 typedef HudUiShieldMessageWidget HudUiShieldMessageWidgetState;
 
-struct HudUiTimerPanelFloat {
-    unsigned char storage[0x2b0];
+struct HudUiTimerPanelFloat : HudUiPanel {
+    float sampleElapsedSec;
+    float displayValue;
+    float sampleFrameCount;
 
     HudUiTimerPanelFloat * ConstructorDefault();
     void Draw();
 };
 
-struct HudUiStringMenu {
-    HudUiContainer base;
+struct HudUiStringMenu : HudUiContainer {
     unsigned char unknown_10[0x10];
     HudUiPanelSimple items[23];
 
     void DestructorCore();
 };
 
-struct HudUiStatsListElement {
-    HudUiElement base;
+struct HudUiStatsListElement : HudUiElement {
     HudUiTriplet *triplet;
 
     void Update(float deltaSeconds);
     void DestructorCore();
-    HudUiStatsListElement * ScalarDeletingDestructor(unsigned int flags);
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
 };
 
-struct HudUiTimerPanel {
-    unsigned char storage[0x2b0];
+struct HudUiTimerPanel : HudUiPanel {
+    float elapsedSeconds;
+    int stopped;
+    int secondsStep;
 
     static void __fastcall SetRunning(int running);
     static void __stdcall SetElapsedSeconds(float seconds);
@@ -2385,9 +2181,7 @@ struct HudUiTimerPanel {
     );
 };
 
-struct HudUiCounterTextPanel {
-    unsigned char storage[0x2a4];
-
+struct HudUiCounterTextPanel : HudUiPanel {
     HudUiCounterTextPanel * Constructor();
 };
 
@@ -2419,8 +2213,7 @@ struct HudUiTripletEntries {
     );
 };
 
-struct HudUiTriplet {
-    HudUiContainer base;
+struct HudUiTriplet : HudUiContainer {
     HudUiPanel *headerPanels[3];
     HudUiPanel *rowCells[24];
     HudUiTripletEntries entries;
@@ -2456,8 +2249,7 @@ struct HudUiTriplet {
     int IsLocalPlayerFirstEntry();
 };
 
-struct HudUiTextStack4 {
-    HudUiContainer base;
+struct HudUiTextStack4 : HudUiContainer {
     unsigned char lines[4][0x2a4];
 
     HudUiPanel * PushLine(
@@ -2585,12 +2377,11 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(sizeof(HudLayoutBase) == 0xec);
 RECOIL_STATIC_ASSERT(sizeof(HudLayoutSW) == 0xec);
-RECOIL_STATIC_ASSERT(sizeof(HudLayoutHW_FTable) == 0x20);
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudLayoutHW,
-        base
-    ) == 0x00
+        widget0
+    ) == 0x30
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -2715,11 +2506,6 @@ RECOIL_STATIC_ASSERT(
     ) == 0x37c
 );
 RECOIL_STATIC_ASSERT(sizeof(HudUiContainer) == 0x10);
-RECOIL_STATIC_ASSERT(sizeof(HudUiContainer_FTable) == 0x08);
-RECOIL_STATIC_ASSERT(sizeof(HudUiBackgroundContainer_FTable) == 0x08);
-RECOIL_STATIC_ASSERT(sizeof(HudUiTriplet_FTable) == 0x08);
-RECOIL_STATIC_ASSERT(sizeof(HudUiTextStack4_FTable) == 0x08);
-RECOIL_STATIC_ASSERT(sizeof(HudUiStringMenu_FTable) == 0x08);
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiContainer,
@@ -3378,7 +3164,10 @@ RECOIL_STATIC_ASSERT(sizeof(HudCmdKeyBButton) == 0x44c);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdJoyButton) == 0x44c);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdMouseButton) == 0x44c);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdSimpleWidget) == 0x14c);
-RECOIL_STATIC_ASSERT(sizeof(HudCmdDialogCallback) == 0x14c);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdNextSetButton) == 0x14c);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdPrevSetButton) == 0x14c);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdNextCommandButton) == 0x14c);
+RECOIL_STATIC_ASSERT(sizeof(HudCmdPrevCommandButton) == 0x14c);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdSetListWidget) == 0x208);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdPromptPanel) == 0x2c0);
 RECOIL_STATIC_ASSERT(sizeof(HudCmdDescriptionPanel) == 0x2a8);
@@ -3803,12 +3592,6 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiCreditsPanel_FTable,
-        SecondaryAction
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
         HudUiCreditsPanel,
         fadeStep
     ) == 0xa94c
@@ -3993,6 +3776,12 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiMessage,
+        activeSideImages
+    ) == 0xd0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMessage,
         sideImageSwaps
     ) == 0xd8
 );
@@ -4022,12 +3811,6 @@ RECOIL_STATIC_ASSERT(
     ) == 0x390
 );
 RECOIL_STATIC_ASSERT(sizeof(HudUiMessage) == 0x44c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiCounter,
-        base
-    ) == 0x00
-);
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiCounter,
@@ -4286,10 +4069,8 @@ RECOIL_STATIC_ASSERT(
     ) == 0x14c
 );
 RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiNumericTextInput,
-        owner
-    ) == 0x25c
+    offsetof(HudUiNumericTextInput, textInput) +
+    offsetof(HudUiOwnedTextInput, owner) == 0x25c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -4406,8 +4187,50 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiPanel,
+        textColor0
+    ) == 0x14c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanel,
+        textColor1
+    ) == 0x150
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanel,
         hFont
     ) == 0x154
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanel,
+        cachedText
+    ) == 0x15c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanel,
+        textWidthPx
+    ) == 0x25c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanel,
+        textHeightPx
+    ) == 0x260
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanel,
+        shadowEnabled
+    ) == 0x264
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanel,
+        bkMode
+    ) == 0x268
 );
 RECOIL_STATIC_ASSERT(sizeof(HudUiPanel) == 0x2a4);
 RECOIL_STATIC_ASSERT(
@@ -4428,8 +4251,44 @@ RECOIL_STATIC_ASSERT(
         wrapRect
     ) == 0x27c
 );
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanel,
+        textRect
+    ) == 0x28c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanel,
+        shadowOffsetX
+    ) == 0x29c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiPanel,
+        shadowOffsetY
+    ) == 0x2a0
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiPanelSimple) == 0x2a4);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTimerPanelFloat) == 0x2b0);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTimerPanelFloat,
+        sampleElapsedSec
+    ) == 0x2a4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTimerPanelFloat,
+        displayValue
+    ) == 0x2a8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTimerPanelFloat,
+        sampleFrameCount
+    ) == 0x2ac
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiStringMenu) == 0x3cdc);
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -4445,6 +4304,24 @@ RECOIL_STATIC_ASSERT(
     ) == 0x34
 );
 RECOIL_STATIC_ASSERT(sizeof(HudUiTimerPanel) == 0x2b0);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTimerPanel,
+        elapsedSeconds
+    ) == 0x2a4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTimerPanel,
+        stopped
+    ) == 0x2a8
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiTimerPanel,
+        secondsStep
+    ) == 0x2ac
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiCounterTextPanel) == 0x2a4);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTripletEntries) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(HudUiScoreboardEntry) == 0x50);

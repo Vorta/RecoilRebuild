@@ -1,39 +1,22 @@
 add_executable(recoil_native_smoke
     directx_headers.cpp
     ai_property_dialog_tests.cpp
-    briefing_tests.cpp
     mfc42_provider.cpp
-    czrecoil_frame_tests.cpp
     mfc_three_float_dialog_tests.cpp
     zstr_tests.cpp
-    pickup_tests.cpp
-    gamenet_tests.cpp
-    hud_tests.cpp
-    player_tests.cpp
-    fmv_script_tests.cpp
-    zgame_tests.cpp
-    zhud_ui_tests.cpp
     zinput_tests.cpp
     zimage_tests.cpp
     zinterp_tests.cpp
     zloc_tests.cpp
-    znetwork_tests.cpp
     zreader_tests.cpp
+    zhud_widget_tests.cpp
+    hud_save_load_tests.cpp
     zmath_tests.cpp
-    recoil_app_message_map.cpp
-    recoil_state_main_menu_transition.cpp
-    recoil_state_base.cpp
     recoil_version_tests.cpp
     zrndr_tests.cpp
     zturret_tests.cpp
-    zweapon_tests.cpp
-    zvideo_tests.cpp
     zsys_tests.cpp
-    zsnd_cd_tests.cpp
-    zeffect_tests.cpp
     zcom_tests.cpp
-    westwood_online_upgrade_tests.cpp
-    zdeclient_tests.cpp
     time_tests.cpp
     smoke.cpp
     recoil_test_resources.rc

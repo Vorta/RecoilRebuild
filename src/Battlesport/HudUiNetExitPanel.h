@@ -1,33 +1,14 @@
 #pragma once
 
 #include "GameZRecoil/zHud/zhud_ui.h"
-#include "recoil/recoil_callconv.h"
 
-#include "recoil/recoil_types.h"
 #include <stddef.h>
 
 struct HudUiNetExitPanel;
 struct HudUiNetExitPanel_ExitButton;
 struct HudUiNetExitPanel_ResumeWidget;
 
-struct HudUiNetExitPanel_FTable {
-    void( *updateAll)(
-        HudUiNetExitPanel *self,
-        float deltaSeconds
-    );
-    int( *setEnabled)(
-        HudUiNetExitPanel *self,
-        int enabled
-    );
-    HudUiNetExitPanel *( *scalarDeletingDtor)(
-        HudUiNetExitPanel *self,
-        unsigned int flags
-    );
-};
-RECOIL_STATIC_ASSERT(sizeof(HudUiNetExitPanel_FTable) == 0x0c);
-
-struct HudUiNetExitPanel_ExitButton {
-    HudUiZrdWidget base;
+struct HudUiNetExitPanel_ExitButton : HudUiZrdWidget {
     int previewInputCaptureActive;
 
     void OnActivate();
@@ -40,8 +21,7 @@ RECOIL_STATIC_ASSERT(
     ) == 0x14c
 );
 
-struct HudUiNetExitPanel_ResumeWidget {
-    HudUiZrdWidget base;
+struct HudUiNetExitPanel_ResumeWidget : HudUiZrdWidget {
     int previewInputCaptureActive;
 
     void OnActivate();
@@ -56,16 +36,14 @@ RECOIL_STATIC_ASSERT(
     ) == 0x14c
 );
 
-struct HudUiNetExitPanel {
-    HudUiBackground base;
+struct HudUiNetExitPanel : HudUiBackground {
     HudUiNetExitPanel_ResumeWidget resumeWidget;
     HudUiNetExitPanel_ExitButton exitWidget;
 
     HudUiNetExitPanel * Constructor();
     void Destructor();
     void Update(float deltaSeconds);
-    int SetEnabled(int enabled);
-    HudUiNetExitPanel * ScalarDeletingDestructor(unsigned int flags);
+    virtual void SetEnabled(int enabled);
     static HudUiNetExitPanel *CreateGlobal();
     static void Show();
     static int Tick();

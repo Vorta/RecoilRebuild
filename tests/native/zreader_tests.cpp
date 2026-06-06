@@ -606,20 +606,20 @@ extern "C" int zutil_set_mission_zrdr_paths_and_mount_zbd_smoke(void) {
 
     zArchiveList *const oldSearchPathList = g_zRdr_SearchPathList;
     zArchiveList *const oldScratchSearchPathList = g_zRdr_ScratchSearchPathList;
-    zArchiveList *const oldMissionResourcePaths = g_zImage_MissionResourcePaths;
+    zArchiveList *const oldMissionSearchPathList = g_zImage_MissionSearchPathList;
     zArchiveList *const oldMountedList = g_zArchive_MountedList;
     const int oldMissionFlags = g_HudSensorTracker.missionFlags;
 
     g_zRdr_SearchPathList = nullptr;
     g_zRdr_ScratchSearchPathList = nullptr;
-    g_zImage_MissionResourcePaths = nullptr;
+    g_zImage_MissionSearchPathList = nullptr;
     g_zArchive_MountedList = zArchiveList_CreateEmpty();
 
     g_HudSensorTracker.missionFlags = 0;
     const int looseResult = zUtil::SetMissionZrdrPathsAndMountZbd(3);
     const bool looseOk = looseResult == 0 && g_zRdr_SearchPathList != nullptr &&
                          g_zRdr_ScratchSearchPathList != nullptr &&
-                         g_zImage_MissionResourcePaths != nullptr &&
+                         g_zImage_MissionSearchPathList != nullptr &&
                          g_zArchive_MountedList != nullptr &&
                          g_zArchive_MountedList->count == 0;
 
@@ -631,12 +631,12 @@ extern "C" int zutil_set_mission_zrdr_paths_and_mount_zbd_smoke(void) {
 
     zUtil_ZRDR_FreeSearchPathList(g_zRdr_SearchPathList);
     zUtil_ZRDR_FreeSearchPathList(g_zRdr_ScratchSearchPathList);
-    zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionResourcePaths);
+    zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionSearchPathList);
     zArchiveList_Destroy(g_zArchive_MountedList);
 
     g_zRdr_SearchPathList = oldSearchPathList;
     g_zRdr_ScratchSearchPathList = oldScratchSearchPathList;
-    g_zImage_MissionResourcePaths = oldMissionResourcePaths;
+    g_zImage_MissionSearchPathList = oldMissionSearchPathList;
     g_zArchive_MountedList = oldMountedList;
     g_HudSensorTracker.missionFlags = oldMissionFlags;
 

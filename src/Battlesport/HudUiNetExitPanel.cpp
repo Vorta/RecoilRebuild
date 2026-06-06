@@ -4,147 +4,49 @@
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zInput/zInput.h"
 
-#include <string.h>
+#include <new>
 
 extern "C" {
 HudUiNetExitPanel *g_HudUiNetExitPanel = 0;
 HudUiElement *g_HudUiNetExitPanel_SavedInputFocus = 0;
 }
 
-namespace {
-template <typename Method>
-unsigned int MethodAddress(
-    Method method
-) {
-    RECOIL_STATIC_ASSERT(sizeof(method) <= sizeof(unsigned int));
-    unsigned int address = 0;
-    memcpy(
-        &address,
-        &method,
-        sizeof(method)
-    );
-    return address;
-}
-
-template <
-    typename Function,
-    typename Method>
-Function MethodFunction(
-    Method method
-) {
-    RECOIL_STATIC_ASSERT(sizeof(method) <= sizeof(Function));
-    Function function = 0;
-    memcpy(
-        &function,
-        &method,
-        sizeof(method)
-    );
-    return function;
-}
-
-void HudUiWidgetPostLoadNoOp() {}
-
-HudUiWidget_FTable MakeHudUiNetExitPanelExitWidgetFTable() {
-    HudUiWidget_FTable table = {0};
-    table.slots[0] = MethodAddress(&HudUiZrdWidget::ScalarDeletingDestructor);
-    table.slots[1] = MethodAddress(&HudUiWidget::Draw);
-    table.slots[3] = MethodAddress(&HudUiElement::SetPos);
-    table.slots[4] = MethodAddress(&HudUiElement::SetX);
-    table.slots[5] = MethodAddress(&HudUiElement::SetY);
-    table.slots[6] = MethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    table.slots[7] = MethodAddress(&HudUiElement::SetClipRect);
-    table.slots[8] = MethodAddress(&HudUiZrdWidget::Invalidate);
-    table.slots[12] = MethodAddress(&HudUiNetExitPanel_ExitButton::OnActivate);
-    table.slots[15] = MethodAddress(&HudUiNetExitPanel_ResumeWidget::OnShowPreview);
-    table.slots[16] = MethodAddress(&HudUiNetExitPanel_ResumeWidget::OnHidePreview);
-    table.slots[24] = MethodAddress(&HudUiElement::SetVisible);
-    table.slots[25] = MethodAddress(&HudUiElement::GetX);
-    table.slots[26] = MethodAddress(&HudUiElement::GetY);
-    table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
-    table.slots[31] = MethodAddress(&HudUiZrdWidget::LoadFromZrd);
-    table.slots[32] = (unsigned int)(&HudUiWidgetPostLoadNoOp);
-    return table;
-}
-
-const HudUiWidget_FTable g_HudUiNetExitPanel_ExitWidget_FTable =
-    MakeHudUiNetExitPanelExitWidgetFTable();
-
-HudUiWidget_FTable MakeHudUiNetExitPanelResumeWidgetFTable() {
-    HudUiWidget_FTable table = g_HudUiNetExitPanel_ExitWidget_FTable;
-    table.slots[12] = MethodAddress(&HudUiNetExitPanel_ResumeWidget::OnActivate);
-    return table;
-}
-
-const HudUiWidget_FTable g_HudUiNetExitPanel_ResumeWidget_FTable =
-    MakeHudUiNetExitPanelResumeWidgetFTable();
-
-HudUiNetExitPanel_FTable MakeHudUiNetExitPanelFTable() {
-    HudUiNetExitPanel_FTable table = {0};
-    table.updateAll = MethodFunction<void( *)(
-        HudUiNetExitPanel *,
-        float
-    )>(
-        &HudUiNetExitPanel::Update
-    );
-    table.setEnabled = MethodFunction<int( *)(
-        HudUiNetExitPanel *,
-        int
-    )>(
-        &HudUiNetExitPanel::SetEnabled
-    );
-    table.scalarDeletingDtor =
-        MethodFunction<HudUiNetExitPanel *( *)(
-            HudUiNetExitPanel *,
-            unsigned int
-        )>(
-            &HudUiNetExitPanel::ScalarDeletingDestructor
-        );
-    return table;
-}
-
-const HudUiNetExitPanel_FTable g_HudUiNetExitPanel_FTable = MakeHudUiNetExitPanelFTable();
-} // namespace
-
 // Reimplements 0x41bd80: HudUiNetExitPanel::Constructor
 // (D:\Proj\Battlesport\HudUi_NetExit.cpp)
 HudUiNetExitPanel * HudUiNetExitPanel::Constructor() {
-    base.Constructor();
+    new ((HudUiBackground *)this) HudUiBackground;
 
-    resumeWidget.base.Constructor();
+    resumeWidget.Constructor();
     resumeWidget.previewInputCaptureActive = 0;
-    resumeWidget.base.base.ftable = &g_HudUiNetExitPanel_ResumeWidget_FTable;
 
-    exitWidget.base.Constructor();
+    exitWidget.Constructor();
     exitWidget.previewInputCaptureActive = 0;
-    exitWidget.base.base.ftable = &g_HudUiNetExitPanel_ExitWidget_FTable;
 
-    base.base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiNetExitPanel_FTable);
-
-    zReader::Node *const loadedSection = base.LoadFromZrd(
+    zReader::Node *const loadedSection = LoadFromZrd(
         "dialog.zrd",
         "NETEXIT",
         1
     );
     if (loadedSection != 0) {
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &exitWidget.base.base,
+            &exitWidget,
             "EXIT"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &resumeWidget.base.base,
+            &resumeWidget,
             "RESUME"
         );
-        base.FreeLoadedTreeRoots((int)((unsigned int)(loadedSection)));
+        FreeLoadedTreeRoots((int)((unsigned int)(loadedSection)));
     }
 
     if (zInp::GetJoystickOption() == 0) {
-        g_HudUiNetExitPanel_SavedInputFocus = base.base.GetInputFocus();
-        base.base.SetInputFocus(0);
+        g_HudUiNetExitPanel_SavedInputFocus = GetInputFocus();
+        SetInputFocus(0);
     }
 
-    base.base.base.SetChildFlags(0);
+    SetChildFlags(0);
     SetEnabled(0);
     return this;
 }
@@ -152,34 +54,21 @@ HudUiNetExitPanel * HudUiNetExitPanel::Constructor() {
 // Reimplements 0x41beb0: HudUiNetExitPanel::Destructor
 // (D:\Proj\Battlesport\HudUi_NetExit.cpp)
 void HudUiNetExitPanel::Destructor() {
-    exitWidget.base.DestructorCore();
-    resumeWidget.base.DestructorCore();
-    base.Destructor();
+    exitWidget.DestructorCore();
+    resumeWidget.DestructorCore();
+    this->HudUiBackground::~HudUiBackground();
 }
 
 void HudUiNetExitPanel::Update(
     float deltaSeconds
 ) {
-    base.Update(deltaSeconds);
+    HudUiBackground::Update(deltaSeconds);
 }
 
-int HudUiNetExitPanel::SetEnabled(
+void HudUiNetExitPanel::SetEnabled(
     int enabled
 ) {
-    base.SetEnabled(enabled);
-    return 0;
-}
-
-// Reimplements 0x41be90: HudUiNetExitPanel_ScalarDeletingDtor
-HudUiNetExitPanel * HudUiNetExitPanel::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
+    HudUiBackground::SetEnabled(enabled);
 }
 
 // Reimplements 0x41be70: HudUiNetExitPanel_ExitButton::OnActivate
@@ -192,17 +81,10 @@ void HudUiNetExitPanel_ExitButton::OnActivate() {
 
 // Reimplements 0x41bf10: HudUiNetExitPanel_ResumeWidget::OnActivate
 void HudUiNetExitPanel_ResumeWidget::OnActivate() {
-    typedef void( * HidePreviewFn)(HudUiNetExitPanel_ResumeWidget * self);
-    ((HidePreviewFn)(base.base.ftable->slots[0x40 / 4]))(this);
-
-    const HudUiNetExitPanel_FTable *const panelFtable =
-        (const HudUiNetExitPanel_FTable *)(g_HudUiNetExitPanel->base.base.base.vptr);
-    panelFtable->setEnabled(
-        g_HudUiNetExitPanel,
-        0
-    );
+    HidePreview();
+    g_HudUiNetExitPanel->SetEnabled(0);
     HudUiMgr::TriggerCurrentLayoutOnActivated();
-    base.OnActivate();
+    HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x41bf40: HudUiNetExitPanel_ResumeWidget::OnShowPreview
@@ -224,14 +106,14 @@ void HudUiNetExitPanel_ResumeWidget::OnShowPreview() {
 
             HudUiElement *const focus = g_HudUiNetExitPanel_SavedInputFocus;
             if (focus != 0) {
-                ((HudUiBackgroundContainer *)(base.owner))->SetInputFocus(focus);
+                ((HudUiBackgroundContainer *)(owner))->SetInputFocus(focus);
             }
         }
 
         previewInputCaptureActive = 1;
     }
 
-    base.ShowPreview();
+    ShowPreview();
 }
 
 // Reimplements 0x41bfa0: HudUiNetExitPanel_ResumeWidget::OnHidePreview
@@ -246,15 +128,15 @@ void HudUiNetExitPanel_ResumeWidget::OnHidePreview() {
                 0.0f,
                 0.0f
             );
-            HudUiBackgroundContainer *const owner = (HudUiBackgroundContainer *)(base.owner);
-            g_HudUiNetExitPanel_SavedInputFocus = owner->GetInputFocus();
-            owner->SetInputFocus(0);
+            HudUiBackgroundContainer *const backgroundOwner = (HudUiBackgroundContainer *)(owner);
+            g_HudUiNetExitPanel_SavedInputFocus = backgroundOwner->GetInputFocus();
+            backgroundOwner->SetInputFocus(0);
         }
 
         previewInputCaptureActive = 0;
     }
 
-    base.HidePreview();
+    HidePreview();
 }
 
 // Reimplements 0x41c000: HudUiNetExitPanel::CreateGlobal
@@ -273,27 +155,12 @@ HudUiNetExitPanel *HudUiNetExitPanel::CreateGlobal() {
 
 // Reimplements 0x41c070: HudUiNetExitPanel::Show
 void HudUiNetExitPanel::Show() {
-    const HudUiNetExitPanel_FTable *const ftable =
-        (const HudUiNetExitPanel_FTable *)(g_HudUiNetExitPanel->base.base.base.vptr);
-    ftable->setEnabled(
-        g_HudUiNetExitPanel,
-        1
-    );
+    g_HudUiNetExitPanel->SetEnabled(1);
 }
 
 // Reimplements 0x41c080: HudUiNetExitPanel::Tick
 int HudUiNetExitPanel::Tick() {
-    const HudUiNetExitPanel_FTable *const ftable =
-        (const HudUiNetExitPanel_FTable *)(g_HudUiNetExitPanel->base.base.base.vptr);
-    const unsigned int deltaBits = *(const unsigned int *)(&g_FrameDeltaTimeSec);
-    typedef void( * UpdateAllBitsFn)(
-        HudUiNetExitPanel * self,
-        unsigned int deltaBits
-    );
-    ((UpdateAllBitsFn)(ftable->updateAll))(
-        g_HudUiNetExitPanel,
-        deltaBits
-    );
+    g_HudUiNetExitPanel->Update(g_FrameDeltaTimeSec);
     return 0;
 }
 
@@ -301,12 +168,8 @@ int HudUiNetExitPanel::Tick() {
 void HudUiNetExitPanel::DestroyGlobal() {
     HudUiNetExitPanel *const panel = g_HudUiNetExitPanel;
     if (panel != 0) {
-        const HudUiNetExitPanel_FTable *const ftable =
-            (const HudUiNetExitPanel_FTable *)(panel->base.base.base.vptr);
-        ftable->scalarDeletingDtor(
-            panel,
-            1
-        );
+        panel->Destructor();
+        ::operator delete(panel);
         g_HudUiNetExitPanel = 0;
     }
 }

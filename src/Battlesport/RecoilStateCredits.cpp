@@ -1,81 +1,56 @@
-#include "Battlesport/RecoilApp.h"
+#include "Battlesport/RecoilStateCredits.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 
-struct RecoilStateCredits {
-    RecoilPtr32 vftable;
-    RecoilPtr32 dialog;
+#include <new>
+#include <stdlib.h>
 
-    RecoilStateCredits * Constructor();
-    static void StaticInitAndRegisterAtExit();
-    static void StaticInit();
-    static void RegisterAtExit();
-    void OnWndActivate(int activateCode);
-    int OnTryBecomeCurrent();
-    void OnDeactivate();
-    ~RecoilStateCredits();
-    static void QueuePush();
-};
-RECOIL_STATIC_ASSERT(sizeof(RecoilStateCredits) == 0x08);
+RecoilStateCredits g_RecoilStateCredits;
 
-namespace {
-struct HudUiCreditsPanelVirtual {
-    virtual void Update(float deltaSeconds) = 0;
-    virtual void SetEnabled(int enabled) = 0;
-    virtual HudUiCreditsPanelVirtual * ScalarDeletingDestructor(
-        unsigned int flags
-    ) = 0;
-};
+/**
+ * Reimplements 0x409990: RecoilStateCredits::RecoilStateCredits.
+ *
+ * Purpose: initialize the credits app-state object and clear the active
+ * credits-panel pointer.
+ */
+RecoilStateCredits::RecoilStateCredits() : m_dialog(0) {}
 
-struct RecoilStateCredits_Vtbl {
-    RecoilFn32 slots[10];
-};
-RECOIL_STATIC_ASSERT(sizeof(RecoilStateCredits_Vtbl) == sizeof(RecoilApp_IState_Vtbl));
-
-RecoilStateCredits_Vtbl g_RecoilStateCredits_Vtbl = {0};
-
-struct RecoilStateCreditsBaseVtableGuard {
-    RecoilStateCredits *self;
-
-    ~RecoilStateCreditsBaseVtableGuard() {
-        self->vftable = RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl);
-    }
-};
-} // namespace
-
-RecoilStateCredits g_RecoilStateCredits = {
-    (RecoilPtr32)(unsigned int)&g_RecoilStateCredits_Vtbl,
-    0,
-};
-
-// Reimplements 0x409950: RecoilStateCredits::StaticInitAndRegisterAtExit
-// (D:\Proj\Battlesport\RecoilStateCredits.cpp)
+/**
+ * Reimplements 0x409950: RecoilStateCredits::StaticInitAndRegisterAtExit.
+ *
+ * Purpose: construct the static credits state and register its at-exit
+ * destructor callback.
+ */
 void RecoilStateCredits::StaticInitAndRegisterAtExit() {
-    g_RecoilStateCredits.Constructor();
+    new (&g_RecoilStateCredits) RecoilStateCredits;
     StaticInit();
 }
 
-// Reimplements 0x409970: RecoilStateCredits::StaticInit
-// (D:\Proj\Battlesport\RecoilStateCredits.cpp)
+/**
+ * Reimplements 0x409970: RecoilStateCredits::StaticInit.
+ *
+ * Purpose: register the static credits state's destruction callback with the
+ * CRT at-exit list.
+ */
 void RecoilStateCredits::StaticInit() {
     atexit(RegisterAtExit);
 }
 
-// Reimplements 0x409980: RecoilStateCredits::RegisterAtExit
-// Retail name is the registered at-exit callback; it destroys the global credits state.
+/**
+ * Reimplements 0x409980: RecoilStateCredits::RegisterAtExit.
+ *
+ * Purpose: destroy the global credits state from the registered at-exit
+ * callback.
+ */
 void RecoilStateCredits::RegisterAtExit() {
     g_RecoilStateCredits.~RecoilStateCredits();
 }
 
-// Reimplements 0x409990: RecoilStateCredits::Constructor
-// (D:\Proj\Battlesport\RecoilStateCredits.cpp)
-RecoilStateCredits * RecoilStateCredits::Constructor() {
-    vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateCredits_Vtbl;
-    dialog = 0;
-    return this;
-}
-
-// Reimplements 0x4099a0: RecoilStateCredits::OnWndActivate
-// (D:\Proj\Battlesport\RecoilStateCredits.cpp)
+/**
+ * Reimplements 0x4099a0: RecoilStateCredits::OnWndActivate.
+ *
+ * Purpose: refresh the credits dialog surfaces when the application is
+ * reactivated.
+ */
 void RecoilStateCredits::OnWndActivate(
     int activateCode
 ) {
@@ -83,71 +58,81 @@ void RecoilStateCredits::OnWndActivate(
         return;
     }
 
-    RecoilStateCredits *const state = this;
-    HudUiCreditsPanel *const creditsPanel = (HudUiCreditsPanel *)(unsigned int)state->dialog;
+    HudUiCreditsPanel *const creditsPanel = m_dialog;
     if (creditsPanel != 0) {
         ((HudUiDialogController *)creditsPanel)->BlitOwnedSurfaceToPrimary();
-        ((HudUiContainer *)(unsigned int)state->dialog)->InvalidateChildren();
+        ((HudUiContainer *)creditsPanel)->InvalidateChildren();
     }
 }
 
-// Reimplements 0x409a60: RecoilStateCredits::OnTryBecomeCurrent
-// (D:\Proj\Battlesport\RecoilStateCredits.cpp)
+/**
+ * Reimplements 0x409a60: RecoilStateCredits::OnTryBecomeCurrent.
+ *
+ * Purpose: allocate, construct, and enable the credits dialog when the credits
+ * app state becomes current.
+ */
 int RecoilStateCredits::OnTryBecomeCurrent() {
     HudUiCreditsPanel *creditsPanel =
         (HudUiCreditsPanel *) ::operator new(sizeof(HudUiCreditsPanel));
     if (creditsPanel != 0) {
-        creditsPanel = creditsPanel->Constructor();
+        creditsPanel = new (creditsPanel) HudUiCreditsPanel;
     }
-    dialog = (RecoilPtr32)(unsigned int)creditsPanel;
+    m_dialog = creditsPanel;
 
-    ((HudUiCreditsPanelVirtual *)creditsPanel)->SetEnabled(1);
+    creditsPanel->SetEnabled(1);
     return 1;
 }
 
-// Reimplements 0x409ad0: RecoilStateCredits::OnDeactivate
-// (D:\Proj\Battlesport\RecoilStateCredits.cpp)
+/**
+ * Reimplements 0x409ad0: RecoilStateCredits::OnDeactivate.
+ *
+ * Purpose: disable, repaint, destroy, and clear the active credits dialog when
+ * leaving the credits state.
+ */
 void RecoilStateCredits::OnDeactivate() {
-    HudUiCreditsPanelVirtual *dialogView = (HudUiCreditsPanelVirtual *)dialog;
-    if (dialogView == 0) {
+    HudUiCreditsPanel *creditsPanel = m_dialog;
+    if (creditsPanel == 0) {
         return;
     }
 
-    dialogView->SetEnabled(0);
-    ((HudUiDialogController *)(unsigned int)dialog)->BlitOwnedSurfaceToPrimary();
+    creditsPanel->SetEnabled(0);
+    ((HudUiDialogController *)creditsPanel)->BlitOwnedSurfaceToPrimary();
 
-    dialogView = (HudUiCreditsPanelVirtual *)dialog;
-    if (dialogView != 0) {
-        dialogView->ScalarDeletingDestructor(1);
+    creditsPanel = m_dialog;
+    if (creditsPanel != 0) {
+        creditsPanel->ScalarDeletingDestructor(1);
     }
 
-    dialog = 0;
+    m_dialog = 0;
 }
 
-// Reimplements 0x4099f0: RecoilStateCredits::Destructor
-// (D:\Proj\Battlesport\RecoilStateCredits.cpp)
+/**
+ * Reimplements 0x4099f0: RecoilStateCredits::~RecoilStateCredits.
+ *
+ * Purpose: tear down the owned credits dialog during static state destruction.
+ */
 RecoilStateCredits::~RecoilStateCredits() {
-    vftable = (RecoilPtr32)(unsigned int)&g_RecoilStateCredits_Vtbl;
-    RecoilStateCreditsBaseVtableGuard baseVtableOnExit = {this};
+    HudUiCreditsPanel *creditsPanel = m_dialog;
+    if (creditsPanel != 0) {
+        creditsPanel->SetEnabled(0);
 
-    HudUiCreditsPanelVirtual *dialogView = (HudUiCreditsPanelVirtual *)dialog;
-    if (dialogView != 0) {
-        dialogView->SetEnabled(0);
-
-        dialogView = (HudUiCreditsPanelVirtual *)dialog;
-        if (dialogView != 0) {
-            dialogView->ScalarDeletingDestructor(1);
+        creditsPanel = m_dialog;
+        if (creditsPanel != 0) {
+            creditsPanel->ScalarDeletingDestructor(1);
         }
 
-        dialog = 0;
+        m_dialog = 0;
     }
 }
 
-// Reimplements 0x409b00: RecoilStateCredits::QueuePush
-// (D:\Proj\Battlesport\RecoilStateCredits.cpp)
+/**
+ * Reimplements 0x409b00: RecoilStateCredits::QueuePush.
+ *
+ * Purpose: queue the global credits state as the next pushed RecoilApp state.
+ */
 void RecoilStateCredits::QueuePush() {
     g_RecoilApp.QueuePushState(
-        (RecoilApp_IState *)&g_RecoilStateCredits,
+        &g_RecoilStateCredits,
         0
     );
 }

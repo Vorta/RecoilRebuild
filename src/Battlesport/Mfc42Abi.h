@@ -125,7 +125,3 @@ RECOIL_STATIC_ASSERT(sizeof(CRuntimeClass) == 0x18);
 RECOIL_STATIC_ASSERT(sizeof(AFX_MSGMAP_ENTRY) == 0x18);
 RECOIL_STATIC_ASSERT(sizeof(AFX_MSGMAP) == 0x08);
 #endif
-
-struct RecoilNamedVtable {
-    const char *name;
-};

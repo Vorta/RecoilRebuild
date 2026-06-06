@@ -97,11 +97,6 @@ struct zFMV_MciPlayParams {
 
 typedef void( *zFMV_ImageEnsureSurfaceProc)(zVidImagePartial *image);
 
-struct zFMV_ActionScalarDeletingDestructorDispatch {
-    // Models slot-0 scalar-deleting destructor dispatch so VC emits ecx=this.
-    virtual zFMV_Action *ScalarDeletingDestructor(unsigned int flags);
-};
-
 /**
  * Observed in callers 0x462330, 0x4631af, 0x463221, 0x4635af, and 0x463b2f.
  * Purpose: duplicate an input C string through the active C runtime spelling.
@@ -114,559 +109,6 @@ char *DuplicateCString(
 #else
     return strdup(value);
 #endif
-}
-
-/**
- * Table contents observed in callers 0x415a89, 0x415aa0, 0x4632ec, 0x4636b7, and 0x463c76;
- * source-model blocker: table builder scaffold.
- * Purpose: assemble the base FMV action dispatch table used by reset/destructor paths.
- */
-zFMV_Action_Vtbl MakeBaseActionVtable() {
-    union DtorThunk {
-        zFMV_Action *( zFMV_Action::*member)(unsigned int);
-        zFMV_Action *( *function)(
-            zFMV_Action *,
-            unsigned int
-        );
-    };
-    union UpdateThunk {
-        int ( zFMV_Action::*member)(double);
-        int( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union BeginThunk {
-        void ( StdPtrVector::*member)(
-            int *,
-            int *
-        );
-        void( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union EndThunk {
-        void ( zFMV_Action::*member)();
-        void( *function)(zFMV_Action *);
-    };
-
-    DtorThunk dtor = {0};
-    dtor.member = &zFMV_Action::ScalarDeletingDestructor;
-    UpdateThunk update = {0};
-    update.member = &zFMV_Action::NoOpUpdate;
-    BeginThunk begin = {0};
-    begin.member = &StdPtrVector::ClearNoOpDestroy;
-    EndThunk end = {0};
-    end.function = (void( *)(zFMV_Action *))zError::ReportOld;
-    EndThunk runBlocking = {0};
-    runBlocking.member = &zFMV_Action::RunBlockingTimed;
-    zFMV_Action_Vtbl vtable = {
-        dtor.function,
-        update.function,
-        begin.function,
-        end.function,
-        runBlocking.function,
-        0,
-    };
-    return vtable;
-}
-
-/**
- * Table contents observed in caller 0x463861; source-model blocker: table builder scaffold.
- * Purpose: assemble the combined blur action dispatch table.
- */
-zFMV_Action_Vtbl MakeBlurActionVtable() {
-    union DtorThunk {
-        zFMV_Action *( zFMV_Action::*member)(unsigned int);
-        zFMV_Action *( *function)(
-            zFMV_Action *,
-            unsigned int
-        );
-    };
-    union UpdateThunk {
-        int ( zFMV_ActionBlur::*member)(double);
-        int( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union BeginThunk {
-        void ( zFMV_ActionBlur::*member)(double);
-        void( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union EndThunk {
-        void ( zFMV_ActionBlur::*member)();
-        void( *function)(zFMV_Action *);
-    };
-    union RunBlockingThunk {
-        void ( zFMV_Action::*member)();
-        void( *function)(zFMV_Action *);
-    };
-
-    DtorThunk dtor = {0};
-    dtor.member = &zFMV_Action::DerivedScalarDeletingDestructor;
-    UpdateThunk update = {0};
-    update.member = &zFMV_ActionBlur::Update;
-    BeginThunk begin = {0};
-    begin.member = &zFMV_ActionBlur::Begin;
-    EndThunk end = {0};
-    end.member = &zFMV_ActionBlur::End;
-    RunBlockingThunk runBlocking = {0};
-    runBlocking.member = &zFMV_Action::RunBlockingImmediate;
-    zFMV_Action_Vtbl vtable = {
-        dtor.function,
-        update.function,
-        begin.function,
-        end.function,
-        runBlocking.function,
-        0,
-    };
-    return vtable;
-}
-
-/**
- * Table contents observed in caller 0x462cad; source-model blocker: table builder scaffold.
- * Purpose: assemble the horizontal blur action dispatch table.
- */
-zFMV_Action_Vtbl MakeBlurHActionVtable() {
-    union DtorThunk {
-        zFMV_Action *( zFMV_Action::*member)(unsigned int);
-        zFMV_Action *( *function)(
-            zFMV_Action *,
-            unsigned int
-        );
-    };
-    union UpdateThunk {
-        int ( zFMV_ActionBlurH::*member)(double);
-        int( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union BeginThunk {
-        void ( zFMV_ActionBlur::*member)(double);
-        void( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union EndThunk {
-        void ( zFMV_ActionBlur::*member)();
-        void( *function)(zFMV_Action *);
-    };
-    union RunBlockingThunk {
-        void ( zFMV_Action::*member)();
-        void( *function)(zFMV_Action *);
-    };
-
-    DtorThunk dtor = {0};
-    dtor.member = &zFMV_Action::DerivedScalarDeletingDestructor;
-    UpdateThunk update = {0};
-    update.member = &zFMV_ActionBlurH::Update;
-    BeginThunk begin = {0};
-    begin.member = &zFMV_ActionBlur::Begin;
-    EndThunk end = {0};
-    end.member = &zFMV_ActionBlur::End;
-    RunBlockingThunk runBlocking = {0};
-    runBlocking.member = &zFMV_Action::RunBlockingImmediate;
-    zFMV_Action_Vtbl vtable = {
-        dtor.function,
-        update.function,
-        begin.function,
-        end.function,
-        runBlocking.function,
-        0,
-    };
-    return vtable;
-}
-
-/**
- * Table contents observed in caller 0x462d20; source-model blocker: table builder scaffold.
- * Purpose: assemble the vertical blur action dispatch table.
- */
-zFMV_Action_Vtbl MakeBlurVActionVtable() {
-    union DtorThunk {
-        zFMV_Action *( zFMV_Action::*member)(unsigned int);
-        zFMV_Action *( *function)(
-            zFMV_Action *,
-            unsigned int
-        );
-    };
-    union UpdateThunk {
-        int ( zFMV_ActionBlurV::*member)(double);
-        int( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union BeginThunk {
-        void ( zFMV_ActionBlur::*member)(double);
-        void( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union EndThunk {
-        void ( zFMV_ActionBlur::*member)();
-        void( *function)(zFMV_Action *);
-    };
-    union RunBlockingThunk {
-        void ( zFMV_Action::*member)();
-        void( *function)(zFMV_Action *);
-    };
-
-    DtorThunk dtor = {0};
-    dtor.member = &zFMV_Action::DerivedScalarDeletingDestructor;
-    UpdateThunk update = {0};
-    update.member = &zFMV_ActionBlurV::Update;
-    BeginThunk begin = {0};
-    begin.member = &zFMV_ActionBlur::Begin;
-    EndThunk end = {0};
-    end.member = &zFMV_ActionBlur::End;
-    RunBlockingThunk runBlocking = {0};
-    runBlocking.member = &zFMV_Action::RunBlockingImmediate;
-    zFMV_Action_Vtbl vtable = {
-        dtor.function,
-        update.function,
-        begin.function,
-        end.function,
-        runBlocking.function,
-        0,
-    };
-    return vtable;
-}
-
-/**
- * Table contents observed in caller 0x462943; source-model blocker: table builder scaffold.
- * Purpose: assemble the wait action dispatch table.
- */
-zFMV_Action_Vtbl MakeWaitActionVtable() {
-    union DtorThunk {
-        zFMV_Action *( zFMV_Action::*member)(unsigned int);
-        zFMV_Action *( *function)(
-            zFMV_Action *,
-            unsigned int
-        );
-    };
-    union UpdateThunk {
-        int ( zFMV_ActionWait::*member)(double);
-        int( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union BeginThunk {
-        void ( zFMV_ActionWait::*member)(double);
-        void( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union EndThunk {
-        void ( zFMV_Action::*member)();
-        void( *function)(zFMV_Action *);
-    };
-
-    DtorThunk dtor = {0};
-    dtor.member = &zFMV_Action::DerivedScalarDeletingDestructor;
-    UpdateThunk update = {0};
-    update.member = &zFMV_ActionWait::Update;
-    BeginThunk begin = {0};
-    begin.member = &zFMV_ActionWait::Begin;
-    EndThunk end = {0};
-    end.member = &zFMV_Action::FlipSurfaces;
-    EndThunk runBlocking = {0};
-    runBlocking.member = &zFMV_Action::RunBlockingTimed;
-    zFMV_Action_Vtbl vtable = {
-        dtor.function,
-        update.function,
-        begin.function,
-        end.function,
-        runBlocking.function,
-        0,
-    };
-    return vtable;
-}
-
-/**
- * Table contents observed in caller 0x462d91; source-model blocker: table builder scaffold.
- * Purpose: assemble the play-sound action dispatch table.
- */
-zFMV_Action_Vtbl MakePlaySoundActionVtable() {
-    union DtorThunk {
-        zFMV_Action *( zFMV_Action::*member)(unsigned int);
-        zFMV_Action *( *function)(
-            zFMV_Action *,
-            unsigned int
-        );
-    };
-    union UpdateThunk {
-        int ( zFMV_Action::*member)(double);
-        int( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union BeginThunk {
-        void ( zFMV_ActionPlaySound::*member)(double);
-        void( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union EndThunk {
-        void ( zFMV_Action::*member)();
-        void( *function)(zFMV_Action *);
-    };
-
-    DtorThunk dtor = {0};
-    dtor.member = &zFMV_Action::DerivedScalarDeletingDestructor;
-    UpdateThunk update = {0};
-    update.member = &zFMV_Action::NoOpUpdate;
-    BeginThunk begin = {0};
-    begin.member = &zFMV_ActionPlaySound::Begin;
-    EndThunk end = {0};
-    end.function = (void( *)(zFMV_Action *))zError::ReportOld;
-    EndThunk runBlocking = {0};
-    runBlocking.member = &zFMV_Action::RunBlockingTimed;
-    zFMV_Action_Vtbl vtable = {
-        dtor.function,
-        update.function,
-        begin.function,
-        end.function,
-        runBlocking.function,
-        0,
-    };
-    return vtable;
-}
-
-/**
- * Table contents observed in callers 0x46315d, 0x46321c, and 0x4632bd;
- * source-model blocker: table builder scaffold.
- * Purpose: assemble the image action dispatch table.
- */
-zFMV_Action_Vtbl MakeImageActionVtable() {
-    union DtorThunk {
-        zFMV_ActionImage *( zFMV_ActionImage::*member)(unsigned int);
-        zFMV_Action *( *function)(
-            zFMV_Action *,
-            unsigned int
-        );
-    };
-    union UpdateThunk {
-        int ( zFMV_ActionImage::*member)(double);
-        int( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union BeginThunk {
-        void ( zFMV_ActionImage::*member)(double);
-        void( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union EndThunk {
-        void ( zFMV_ActionImage::*member)();
-        void( *function)(zFMV_Action *);
-    };
-    union RunBlockingThunk {
-        void ( zFMV_Action::*member)();
-        void( *function)(zFMV_Action *);
-    };
-
-    DtorThunk dtor = {0};
-    dtor.member = &zFMV_ActionImage::ScalarDeletingDestructor;
-    UpdateThunk update = {0};
-    update.member = &zFMV_ActionImage::Update;
-    BeginThunk begin = {0};
-    begin.member = &zFMV_ActionImage::Begin;
-    EndThunk end = {0};
-    end.member = &zFMV_ActionImage::End;
-    RunBlockingThunk runBlocking = {0};
-    runBlocking.member = &zFMV_Action::RunBlockingTimed;
-    zFMV_Action_Vtbl vtable = {
-        dtor.function,
-        update.function,
-        begin.function,
-        end.function,
-        runBlocking.function,
-        0,
-    };
-    return vtable;
-}
-
-/**
- * Table contents observed in caller 0x4633d7; source-model blocker: table builder scaffold.
- * Purpose: assemble the fade action dispatch table.
- */
-zFMV_Action_Vtbl MakeFadeActionVtable() {
-    union DtorThunk {
-        zFMV_Action *( zFMV_Action::*member)(unsigned int);
-        zFMV_Action *( *function)(
-            zFMV_Action *,
-            unsigned int
-        );
-    };
-    union UpdateThunk {
-        int ( zFMV_ActionFade::*member)(double);
-        int( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union BeginThunk {
-        void ( zFMV_ActionFade::*member)(double);
-        void( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union EndThunk {
-        void ( zFMV_ActionFade::*member)();
-        void( *function)(zFMV_Action *);
-    };
-    union RunBlockingThunk {
-        void ( zFMV_Action::*member)();
-        void( *function)(zFMV_Action *);
-    };
-
-    DtorThunk dtor = {0};
-    dtor.member = &zFMV_Action::DerivedScalarDeletingDestructor;
-    UpdateThunk update = {0};
-    update.member = &zFMV_ActionFade::Update;
-    BeginThunk begin = {0};
-    begin.member = &zFMV_ActionFade::Begin;
-    EndThunk end = {0};
-    end.member = &zFMV_ActionFade::End;
-    RunBlockingThunk runBlocking = {0};
-    runBlocking.member = &zFMV_Action::RunBlockingTimed;
-    zFMV_Action_Vtbl vtable = {
-        dtor.function,
-        update.function,
-        begin.function,
-        end.function,
-        runBlocking.function,
-        0,
-    };
-    return vtable;
-}
-
-/**
- * Table contents observed in callers 0x4635a0 and 0x46368d; source-model blocker: table builder scaffold.
- * Purpose: assemble the play-AVI action dispatch table.
- */
-zFMV_Action_Vtbl MakePlayAviActionVtable() {
-    union DtorThunk {
-        zFMV_ActionPlayAvi *( zFMV_ActionPlayAvi::*member)(unsigned int);
-        zFMV_Action *( *function)(
-            zFMV_Action *,
-            unsigned int
-        );
-    };
-    union UpdateThunk {
-        int ( zFMV_ActionPlayAvi::*member)(double);
-        int( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union BeginThunk {
-        void ( zFMV_ActionPlayAvi::*member)(double);
-        void( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union EndThunk {
-        void ( zFMV_ActionPlayAvi::*member)();
-        void( *function)(zFMV_Action *);
-    };
-    union RunBlockingThunk {
-        void ( zFMV_Action::*member)();
-        void( *function)(zFMV_Action *);
-    };
-
-    DtorThunk dtor = {0};
-    dtor.member = &zFMV_ActionPlayAvi::ScalarDeletingDestructor;
-    UpdateThunk update = {0};
-    update.member = &zFMV_ActionPlayAvi::Update;
-    BeginThunk begin = {0};
-    begin.member = &zFMV_ActionPlayAvi::Begin;
-    EndThunk end = {0};
-    end.member = &zFMV_ActionPlayAvi::End;
-    RunBlockingThunk runBlocking = {0};
-    runBlocking.member = &zFMV_Action::RunBlockingTimed;
-    zFMV_Action_Vtbl vtable = {
-        dtor.function,
-        update.function,
-        begin.function,
-        end.function,
-        runBlocking.function,
-        0,
-    };
-    return vtable;
-}
-
-/**
- * Table contents observed in callers 0x463b2e and 0x463c2e; source-model blocker: table builder scaffold.
- * Purpose: assemble the MCI playback action dispatch table.
- */
-zFMV_Action_Vtbl MakePlayMciActionVtable() {
-    union DtorThunk {
-        zFMV_ActionPlayMci *( zFMV_ActionPlayMci::*member)(unsigned int);
-        zFMV_Action *( *function)(
-            zFMV_Action *,
-            unsigned int
-        );
-    };
-    union UpdateThunk {
-        int ( zFMV_ActionPlayMci::*member)(double);
-        int( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union BeginThunk {
-        void ( zFMV_ActionPlayMci::*member)(double);
-        void( *function)(
-            zFMV_Action *,
-            double
-        );
-    };
-    union EndThunk {
-        void ( zFMV_ActionPlayMci::*member)();
-        void( *function)(zFMV_Action *);
-    };
-    union RunBlockingThunk {
-        void ( zFMV_Action::*member)();
-        void( *function)(zFMV_Action *);
-    };
-
-    DtorThunk dtor = {0};
-    dtor.member = &zFMV_ActionPlayMci::ScalarDeletingDestructor;
-    UpdateThunk update = {0};
-    update.member = &zFMV_ActionPlayMci::Update;
-    BeginThunk begin = {0};
-    begin.member = &zFMV_ActionPlayMci::Begin;
-    EndThunk end = {0};
-    end.member = &zFMV_ActionPlayMci::End;
-    RunBlockingThunk runBlocking = {0};
-    runBlocking.member = &zFMV_Action::RunBlockingTimed;
-    zFMV_Action_Vtbl vtable = {
-        dtor.function,
-        update.function,
-        begin.function,
-        end.function,
-        runBlocking.function,
-        0,
-    };
-    return vtable;
 }
 
 /**
@@ -707,63 +149,28 @@ const char *StringArg(
 
 } // namespace
 
-zFMV_Action_Vtbl g_zFMV_ActionBase_Vtable = MakeBaseActionVtable();
-zFMV_Action_Vtbl g_zFMV_ActionWait_Vtable = MakeWaitActionVtable();
-zFMV_Action_Vtbl g_zFMV_ActionPlaySound_Vtable = MakePlaySoundActionVtable();
-zFMV_Action_Vtbl g_zFMV_ActionBlur_Vtable = MakeBlurActionVtable();
-zFMV_Action_Vtbl g_zFMV_ActionBlurH_Vtable = MakeBlurHActionVtable();
-zFMV_Action_Vtbl g_zFMV_ActionBlurV_Vtable = MakeBlurVActionVtable();
-zFMV_Action_Vtbl g_zFMV_ActionImage_Vtable = MakeImageActionVtable();
-zFMV_Action_Vtbl g_zFMV_ActionFade_Vtable = MakeFadeActionVtable();
-zFMV_Action_Vtbl g_zFMV_ActionPlayAvi_Vtable = MakePlayAviActionVtable();
-zFMV_Action_Vtbl g_zFMV_ActionPlayMci_Vtable = MakePlayMciActionVtable();
-
 /**
- * Reimplements 0x415aa0: zFMV_Action::Destructor.
- * Purpose: reset an FMV action object to the base dispatch table.
+ * Reimplements 0x415aa0: zFMV_Action::~zFMV_Action.
+ * Purpose: provide the shared virtual action destructor.
  */
-void zFMV_Action::Destructor() {
-    vftable = &g_zFMV_ActionBase_Vtable;
-}
+zFMV_Action::~zFMV_Action() {}
 
 /**
- * Reimplements 0x415a80: zFMV_Action::ScalarDeletingDestructor.
- * Purpose: run the base action destructor and optionally free the object.
- */
-zFMV_Action * zFMV_Action::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    zFMV_Action *const self = this;
-    Destructor();
-    if ((flags & 1) != 0) {
-        ::operator delete(self);
-    }
-    return self;
-}
-
-/**
- * Reimplements 0x462e70: zFMV_Action::DerivedScalarDeletingDestructor.
- * Purpose: run base action cleanup for derived actions that do not own extra resources.
- */
-zFMV_Action * zFMV_Action::DerivedScalarDeletingDestructor(
-    unsigned int flags
-) {
-    zFMV_Action *const self = this;
-    Destructor();
-    if ((flags & 1) != 0) {
-        ::operator delete(self);
-    }
-    return self;
-}
-
-/**
- * Reimplements 0x4159d0: zFMV_Action::NoOpUpdate.
+ * Reimplements 0x4159d0: zFMV_Action::Update.
  * Purpose: report immediate completion for action types without update behavior.
  */
-int zFMV_Action::NoOpUpdate(
+int zFMV_Action::Update(
     double
 ) {
     return 0;
+}
+
+void zFMV_Action::Begin(double) {}
+
+void zFMV_Action::End() {}
+
+void zFMV_Action::RunBlocking() {
+    RunBlockingTimed();
 }
 
 /**
@@ -784,16 +191,10 @@ void zFMV_Action::FlipSurfaces() {
  * Purpose: run an action to completion without advancing elapsed time.
  */
 void zFMV_Action::RunBlockingImmediate() {
-    vftable->Begin(
-        this,
-        0.0
-    );
-    while (vftable->Update(
-        this,
-        0.0
-    ) != 0) {
+    Begin(0.0);
+    while (Update(0.0) != 0) {
     }
-    vftable->End(this);
+    End();
 }
 
 /**
@@ -802,20 +203,14 @@ void zFMV_Action::RunBlockingImmediate() {
  */
 void zFMV_Action::RunBlockingTimed() {
     const double startSec = (double)(GetTickCount()) * 0.00100000005;
-    vftable->Begin(
-        this,
-        0.0
-    );
+    Begin(0.0);
     while (true) {
         const double currentSec = ((double)(GetTickCount()) * 0.00100000005) - startSec;
-        if (vftable->Update(
-            this,
-            currentSec
-        ) == 0) {
+        if (Update(currentSec) == 0) {
             break;
         }
     }
-    vftable->End(this);
+    End();
 }
 
 /**
@@ -836,6 +231,10 @@ int zFMV_ActionWait::Update(
     double timeSec
 ) {
     return timeSec < (double)(startSec + durationSec) ? 1 : 0;
+}
+
+void zFMV_ActionWait::End() {
+    FlipSurfaces();
 }
 
 /**
@@ -1755,9 +1154,7 @@ void zFMV_Script::Reset(
         while (action != 0) {
             zFMV_Action *const next = action->next;
             if (action != 0) {
-                ((zFMV_ActionScalarDeletingDestructorDispatch *)(action))->ScalarDeletingDestructor(
-                    1
-                );
+                delete action;
             }
             action = next;
         }
@@ -1839,8 +1236,7 @@ int zFMV_Script::LoadActionsFromZrd(
                     actionTag,
                     "SHOWIMAGE"
                 ) == 0) {
-                zFMV_ActionImage *imageAction =
-                    (zFMV_ActionImage *)(::operator new(sizeof(zFMV_ActionImage)));
+                zFMV_ActionImage *imageAction = new zFMV_ActionImage;
                 action = imageAction != 0
                              ? imageAction->ConstructorScaled(
                                    StringArg(
@@ -1854,8 +1250,7 @@ int zFMV_Script::LoadActionsFromZrd(
                            actionTag,
                            "BLITIMAGE"
                        ) == 0) {
-                zFMV_ActionImage *imageAction =
-                    (zFMV_ActionImage *)(::operator new(sizeof(zFMV_ActionImage)));
+                zFMV_ActionImage *imageAction = new zFMV_ActionImage;
                 action = imageAction != 0
                              ? imageAction->ConstructorWithScreenRect(
                                    StringArg(
@@ -1871,8 +1266,7 @@ int zFMV_Script::LoadActionsFromZrd(
                            actionTag,
                            "LOADIMAGE"
                        ) == 0) {
-                zFMV_ActionImage *imageAction =
-                    (zFMV_ActionImage *)(::operator new(sizeof(zFMV_ActionImage)));
+                zFMV_ActionImage *imageAction = new zFMV_ActionImage;
                 action = imageAction != 0
                              ? imageAction->ConstructorScaled(
                                    StringArg(
@@ -1886,12 +1280,10 @@ int zFMV_Script::LoadActionsFromZrd(
                            actionTag,
                            "WAIT"
                        ) == 0) {
-                zFMV_ActionWait *waitAction =
-                    (zFMV_ActionWait *)(::operator new(sizeof(zFMV_ActionWait)));
+                zFMV_ActionWait *waitAction = new zFMV_ActionWait;
                 if (waitAction != 0) {
                     zReader::Node *durationArg = &actionNode->value.nodes[2];
                     waitAction->next = 0;
-                    waitAction->vftable = &g_zFMV_ActionWait_Vtable;
                     waitAction->durationSec =
                         durationArg->type == zReader::ZRDR_NODE_INT
                             ? (float)(durationArg->value.i32)
@@ -1905,8 +1297,7 @@ int zFMV_Script::LoadActionsFromZrd(
                            actionTag,
                            "FADEOUT"
                        ) == 0) {
-                zFMV_ActionFade *fadeAction =
-                    (zFMV_ActionFade *)(::operator new(sizeof(zFMV_ActionFade)));
+                zFMV_ActionFade *fadeAction = new zFMV_ActionFade;
                 if (fadeAction != 0) {
                     zReader::Node *color = ArrayItem(
                         actionNode,
@@ -1929,8 +1320,7 @@ int zFMV_Script::LoadActionsFromZrd(
                            actionTag,
                            "PLAYAVI"
                        ) == 0) {
-                zFMV_ActionPlayAvi *aviAction =
-                    (zFMV_ActionPlayAvi *)(::operator new(sizeof(zFMV_ActionPlayAvi)));
+                zFMV_ActionPlayAvi *aviAction = new zFMV_ActionPlayAvi;
                 if (aviAction != 0) {
                     const int actionArgCount = actionNode->value.nodes[0].value.i32;
                     const int modeFlags =
@@ -1948,8 +1338,7 @@ int zFMV_Script::LoadActionsFromZrd(
                            actionTag,
                            "PLAYMCI"
                        ) == 0) {
-                zFMV_ActionPlayMci *mciAction =
-                    (zFMV_ActionPlayMci *)(::operator new(sizeof(zFMV_ActionPlayMci)));
+                zFMV_ActionPlayMci *mciAction = new zFMV_ActionPlayMci;
                 action = mciAction != 0
                              ? mciAction->Constructor(
                                    m_fmvPath,
@@ -1970,34 +1359,33 @@ int zFMV_Script::LoadActionsFromZrd(
                            actionTag,
                            "BLURV"
                        ) == 0) {
-                zFMV_ActionBlur *blurAction =
-                    (zFMV_ActionBlur *)(::operator new(sizeof(zFMV_ActionBlur)));
-                if (blurAction != 0) {
-                    action = blurAction->Constructor(
-                        1,
-                        actionNode->value.nodes[2].value.i32
-                    );
-                    if (strcmp(
-                            actionTag,
-                            "BLURH"
-                        ) == 0) {
-                        blurAction->vftable = &g_zFMV_ActionBlurH_Vtable;
-                    } else if (strcmp(
-                                   actionTag,
-                                   "BLURV"
-                               ) == 0) {
-                        blurAction->vftable = &g_zFMV_ActionBlurV_Vtable;
-                    }
+                zFMV_ActionBlur *blurAction = 0;
+                if (strcmp(
+                        actionTag,
+                        "BLURH"
+                    ) == 0) {
+                    blurAction = new zFMV_ActionBlurH;
+                } else if (strcmp(
+                               actionTag,
+                               "BLURV"
+                           ) == 0) {
+                    blurAction = new zFMV_ActionBlurV;
+                } else {
+                    blurAction = new zFMV_ActionBlur;
                 }
+                action = blurAction != 0
+                             ? blurAction->Constructor(
+                                   1,
+                                   actionNode->value.nodes[2].value.i32
+                               )
+                             : 0;
             } else if (strcmp(
                            actionTag,
                            "PLAYSOUND"
                        ) == 0) {
-                zFMV_ActionPlaySound *soundAction =
-                    (zFMV_ActionPlaySound *)(::operator new(sizeof(zFMV_ActionPlaySound)));
+                zFMV_ActionPlaySound *soundAction = new zFMV_ActionPlaySound;
                 if (soundAction != 0) {
                     soundAction->next = 0;
-                    soundAction->vftable = &g_zFMV_ActionPlaySound_Vtable;
                     strncpy(
                         soundAction->sampleName,
                         StringArg(
@@ -2066,10 +1454,7 @@ int zFMV_Script::BeginCurrentAction(
     zSndSampleSet_InitByName("FMV");
     zInput::Keyboard_ResetTransitionState();
     m_startTimeSec = startTimeSec;
-    m_cur->vftable->Begin(
-        m_cur,
-        0.0
-    );
+    m_cur->Begin(0.0);
     return 1;
 }
 
@@ -2094,7 +1479,7 @@ int zFMV_Script::Update(
 
     if (m_abortOnKey != 0) {
         if (zInput::Keyboard_WaitForAnyKeyPress(0) != 0) {
-            m_cur->vftable->End(m_cur);
+            m_cur->End();
             zSndPlayHandleSnapshot::CreateFromActiveSamples()->StopAllIfPlaying();
             m_cur = 0;
             return 0;
@@ -2104,18 +1489,12 @@ int zFMV_Script::Update(
     }
 
     const double relativeTimeSec = timeSec - m_startTimeSec;
-    if (m_cur->vftable->Update(
-        m_cur,
-        relativeTimeSec
-    ) == 0) {
-        m_cur->vftable->End(m_cur);
+    if (m_cur->Update(relativeTimeSec) == 0) {
+        m_cur->End();
         zFMV_Action *const next = m_cur->next;
         m_cur = next;
         if (next != 0) {
-            next->vftable->Begin(
-                next,
-                relativeTimeSec
-            );
+            next->Begin(relativeTimeSec);
         }
     }
 
@@ -2170,7 +1549,6 @@ zFMV_ActionImage * zFMV_ActionImage::ConstructorWithScreenRect(
 ) {
     next = 0;
     image = 0;
-    vftable = &g_zFMV_ActionImage_Vtable;
     imagePath = DuplicateCString(path);
     doAdjustSurfaces = adjustSurfaces;
     g_zFMV_ActionImage_BlitRectY = blitY;
@@ -2192,7 +1570,6 @@ zFMV_ActionImage * zFMV_ActionImage::ConstructorScaled(
     int adjustSurfaces
 ) {
     next = 0;
-    vftable = &g_zFMV_ActionImage_Vtable;
     image = 0;
     imagePath = DuplicateCString(path);
     doAdjustSurfaces = adjustSurfaces;
@@ -2280,32 +1657,15 @@ void zFMV_ActionImage::End() {
 }
 
 /**
- * Reimplements 0x4632a0: zFMV_ActionImage::Destructor.
- * Purpose: end image playback, free the image path, and reset the base table.
+ * Reimplements 0x4632a0: zFMV_ActionImage::~zFMV_ActionImage.
+ * Purpose: end image playback and free the image path.
  */
-void zFMV_ActionImage::Destructor() {
-    vftable = &g_zFMV_ActionImage_Vtable;
+zFMV_ActionImage::~zFMV_ActionImage() {
     End();
     if (imagePath != 0) {
         free(imagePath);
         imagePath = 0;
     }
-    vftable = &g_zFMV_ActionBase_Vtable;
-}
-
-/**
- * Reimplements 0x4631d0: zFMV_ActionImage::ScalarDeletingDestructor.
- * Purpose: destroy an image action and optionally free the object.
- */
-zFMV_ActionImage * zFMV_ActionImage::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    zFMV_ActionImage *const self = this;
-    Destructor();
-    if ((flags & 1) != 0) {
-        ::operator delete(self);
-    }
-    return self;
 }
 
 /**
@@ -2321,7 +1681,6 @@ zFMV_ActionFade * zFMV_ActionFade::Constructor(
     int alpha
 ) {
     next = 0;
-    vftable = &g_zFMV_ActionFade_Vtable;
     fadeColorPacked16 = (unsigned short)(zVid_PackColorRGB(
         (unsigned char)(red),
         (unsigned char)(green),
@@ -2435,7 +1794,6 @@ zFMV_ActionPlayAvi * zFMV_ActionPlayAvi::Constructor(
     int flags
 ) {
     next = 0;
-    vftable = &g_zFMV_ActionPlayAvi_Vtable;
 
     const size_t rootLen = strlen(mediaRootPath);
     const size_t fileLen = strlen(mediaFileName);
@@ -2473,31 +1831,14 @@ zFMV_ActionPlayAvi * zFMV_ActionPlayAvi::Constructor(
 }
 
 /**
- * Reimplements 0x463670: zFMV_ActionPlayAvi::Destructor.
- * Purpose: free the AVI media path and reset the base action table.
+ * Reimplements 0x463670: zFMV_ActionPlayAvi::~zFMV_ActionPlayAvi.
+ * Purpose: free the AVI media path.
  */
-void zFMV_ActionPlayAvi::Destructor() {
-    vftable = &g_zFMV_ActionPlayAvi_Vtable;
+zFMV_ActionPlayAvi::~zFMV_ActionPlayAvi() {
     if (mediaPath != 0) {
         free(mediaPath);
         mediaPath = 0;
     }
-    vftable = &g_zFMV_ActionBase_Vtable;
-}
-
-/**
- * Reimplements 0x463650: zFMV_ActionPlayAvi::ScalarDeletingDestructor.
- * Purpose: destroy an AVI action and optionally free the object.
- */
-zFMV_ActionPlayAvi * zFMV_ActionPlayAvi::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    zFMV_ActionPlayAvi *const self = this;
-    Destructor();
-    if ((flags & 1) != 0) {
-        ::operator delete(self);
-    }
-    return self;
 }
 
 /**
@@ -2603,7 +1944,6 @@ zFMV_ActionPlayMci * zFMV_ActionPlayMci::Constructor(
     HWND hwnd
 ) {
     next = 0;
-    vftable = &g_zFMV_ActionPlayMci_Vtable;
 
     const size_t rootLen = strlen(mediaRootPath);
     const size_t titleLen = strlen(playbackTitle);
@@ -2642,11 +1982,10 @@ zFMV_ActionPlayMci * zFMV_ActionPlayMci::Constructor(
 }
 
 /**
- * Reimplements 0x463c10: zFMV_ActionPlayMci::Destructor.
- * Purpose: free MCI media/playback state and reset the base action table.
+ * Reimplements 0x463c10: zFMV_ActionPlayMci::~zFMV_ActionPlayMci.
+ * Purpose: free MCI media/playback state.
  */
-void zFMV_ActionPlayMci::Destructor() {
-    vftable = &g_zFMV_ActionPlayMci_Vtable;
+zFMV_ActionPlayMci::~zFMV_ActionPlayMci() {
     if (mediaPath != 0) {
         free(mediaPath);
         mediaPath = 0;
@@ -2658,22 +1997,6 @@ void zFMV_ActionPlayMci::Destructor() {
         ::operator delete(playbackObject);
         playback = 0;
     }
-    vftable = &g_zFMV_ActionBase_Vtable;
-}
-
-/**
- * Reimplements 0x463bf0: zFMV_ActionPlayMci::ScalarDeletingDestructor.
- * Purpose: destroy an MCI action and optionally free the object.
- */
-zFMV_ActionPlayMci * zFMV_ActionPlayMci::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    zFMV_ActionPlayMci *const self = this;
-    Destructor();
-    if ((flags & 1) != 0) {
-        ::operator delete(self);
-    }
-    return self;
 }
 
 /**
@@ -2685,7 +2008,6 @@ zFMV_ActionBlur * zFMV_ActionBlur::Constructor(
     int blurPassCountParam
 ) {
     next = 0;
-    vftable = &g_zFMV_ActionBlur_Vtable;
     framesRemaining = framesRemainingParam;
     blurPassCount = blurPassCountParam;
     return this;
@@ -2743,6 +2065,10 @@ void zFMV_ActionBlur::End() {
         zVideo::GetPrimarySurfaceHeight(),
         zVideo::GetPrimarySurfacePitch()
     );
+}
+
+void zFMV_ActionBlur::RunBlocking() {
+    RunBlockingImmediate();
 }
 
 /**

@@ -3,9 +3,15 @@
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 
+#include "Battlesport/Mfc42Abi.h"
 #include <windows.h>
 
 #include "recoil/recoil_callconv.h"
+
+#ifndef DIRECTINPUT_VERSION
+#define DIRECTINPUT_VERSION 0x0500
+#endif
+#include <dinput.h>
 
 typedef void(*zInputCommandCallbackFn)();
 
@@ -135,17 +141,26 @@ struct zInput_BindMapOverlayStackNode {
 RECOIL_STATIC_ASSERT(sizeof(zInput_BindMapOverlayStackNode) == 0x0c);
 
 struct zInput_BindGroupInfo {
-    char *title;
-    int unknown_04;
+    CString title;
+    unsigned char commandIdsAllocatorByte;
+    unsigned char commandIdsAllocatorPadding[3];
     int *commandIdsBegin;
     int *commandIdsEnd;
     int *commandIdsCapacity;
+
+    void Destroy();
 };
 RECOIL_STATIC_ASSERT(
     offsetof(
         zInput_BindGroupInfo,
         title
     ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zInput_BindGroupInfo,
+        commandIdsAllocatorByte
+    ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -159,6 +174,7 @@ RECOIL_STATIC_ASSERT(
         commandIdsEnd
     ) == 0x0c
 );
+RECOIL_STATIC_ASSERT(sizeof(zInput_BindGroupInfo) == 0x14);
 
 struct zInput_BindGroupInfoList {
     unsigned char allocatorByte;
@@ -202,49 +218,7 @@ RECOIL_STATIC_ASSERT(
     ) == 0x08
 );
 
-struct zInput_DiEffect;
-
-struct zInput_DiEffectVtable {
-    void *unknown_00;
-    void *unknown_04;
-    void *unknown_08;
-    void *unknown_0c;
-    void *unknown_10;
-    void *unknown_14;
-    int(__stdcall *SetParameters_18)(
-        zInput_DiEffect *self,
-        const void *effect,
-        unsigned int flags
-    );
-    int(__stdcall *Start_1c)(
-        zInput_DiEffect *self,
-        unsigned int iterations,
-        unsigned int flags
-    );
-    int(__stdcall *Stop_20)(zInput_DiEffect *self);
-};
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_DiEffectVtable,
-        SetParameters_18
-    ) == 0x18
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_DiEffectVtable,
-        Start_1c
-    ) == 0x1c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_DiEffectVtable,
-        Stop_20
-    ) == 0x20
-);
-
-struct zInput_DiEffect {
-    zInput_DiEffectVtable *vtbl_00;
-};
+typedef IDirectInputEffect zInput_DiEffect;
 
 struct zInput_FFEffectSet {
     zInput_DiEffect *PrimaryFire;
@@ -363,145 +337,16 @@ RECOIL_STATIC_ASSERT(
 );
 
 namespace zInput {
-struct DIDirectInput;
-struct DIDevice;
-struct DIDeviceInstance;
-struct DIDeviceObjectData;
-
-struct DIDeviceVtable {
-    int(__stdcall *QueryInterface_00)(
-        DIDevice *self,
-        const GUID *iid,
-        DIDevice **outDevice
-    );
-    void *AddRef_04;
-    int(__stdcall *Release_08)(DIDevice *self);
-    int(__stdcall *GetCapabilities_0c)(
-        DIDevice *self,
-        void *capabilities
-    );
-    void *EnumObjects_10;
-    int(__stdcall *GetProperty_14)(
-        DIDevice *self,
-        unsigned int property,
-        void *propHeader
-    );
-    int(__stdcall *SetProperty_18)(
-        DIDevice *self,
-        unsigned int property,
-        void *propHeader
-    );
-    int(__stdcall *Acquire_1c)(DIDevice *self);
-    int(__stdcall *Unacquire_20)(DIDevice *self);
-    int(__stdcall *GetDeviceState_24)(
-        DIDevice *self,
-        unsigned int cbData,
-        void *outState
-    );
-    int(__stdcall *GetDeviceData_28)(
-        DIDevice *self,
-        unsigned int cbObjectData,
-        DIDeviceObjectData *rgdod,
-        unsigned int *pdwInOut,
-        unsigned int flags
-    );
-    int(__stdcall *SetDataFormat_2c)(
-        DIDevice *self,
-        const void *dataFormat
-    );
-    void *SetEventNotification_30;
-    int(__stdcall *SetCooperativeLevel_34)(
-        DIDevice *self,
-        HWND hwnd,
-        unsigned int flags
-    );
-    void *unknown_38;
-    void *unknown_3c;
-    void *unknown_40;
-    void *unknown_44;
-    int(__stdcall *CreateEffect_48)(
-        DIDevice *self,
-        const GUID *rguid,
-        const void *effect,
-        zInput_DiEffect **outEffect,
-        void *outer
-    );
-    void *unknown_4c;
-    void *unknown_50;
-    void *unknown_54;
-    void *unknown_58;
-    void *unknown_5c;
-    void *unknown_60;
-    int(__stdcall *Poll_64)(DIDevice *self);
-};
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        DIDeviceVtable,
-        GetDeviceState_24
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        DIDeviceVtable,
-        CreateEffect_48
-    ) == 0x48
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        DIDeviceVtable,
-        Poll_64
-    ) == 0x64
-);
-
-struct DIDevice {
-    const DIDeviceVtable *vtbl_00;
-};
+typedef IDirectInputA DIDirectInput;
+typedef IDirectInputDevice2A DIDevice;
+typedef DIDEVICEINSTANCEA DIDeviceInstance;
+typedef DIDEVICEOBJECTDATA DIDeviceObjectData;
 
 typedef int(__stdcall *DIEnumDevicesCallback)(
     const DIDeviceInstance *instance,
     void *ref
 );
-
-struct DIDirectInputVtable {
-    void *QueryInterface_00;
-    void *AddRef_04;
-    int(__stdcall *Release_08)(DIDirectInput *self);
-    int(__stdcall *CreateDevice_0c)(
-        DIDirectInput *self,
-        const GUID *guid,
-        DIDevice **outDevice,
-        void *outer
-    );
-    int(__stdcall *EnumDevices_10)(
-        DIDirectInput *self,
-        unsigned int deviceType,
-        DIEnumDevicesCallback callback,
-        void *ref,
-        unsigned int flags
-    );
-};
-
-struct DIDirectInput {
-    const DIDirectInputVtable *vtbl_00;
-};
-
-struct DIDeviceInstance {
-    unsigned int dwSize;
-    GUID guidInstance;
-};
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        DIDeviceInstance,
-        guidInstance
-    ) == 0x04
-);
-
-struct DIDeviceObjectData {
-    unsigned int dwOfs;
-    unsigned int dwData;
-    unsigned int dwTimeStamp;
-    unsigned int dwSequence;
-};
+RECOIL_STATIC_ASSERT(offsetof(DIDeviceInstance, guidInstance) == 0x04);
 RECOIL_STATIC_ASSERT(sizeof(DIDeviceObjectData) == 0x10);
 
 struct KbdKeyDispatchEntry {
@@ -646,6 +491,8 @@ struct MouseDeviceState {
     int lZ;
     unsigned int rgbButtons;
 };
+RECOIL_STATIC_ASSERT(offsetof(MouseDeviceState, rgbButtons) == 0x0c);
+RECOIL_STATIC_ASSERT(sizeof(MouseDeviceState) == 0x10);
 
 struct MouseStateSnapshot {
     int cursorClientX;
@@ -660,6 +507,9 @@ struct MouseStateSnapshot {
     int button2Transition;
     int button3Transition;
 };
+RECOIL_STATIC_ASSERT(offsetof(MouseStateSnapshot, deltaX) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(MouseStateSnapshot, button1Transition) == 0x20);
+RECOIL_STATIC_ASSERT(sizeof(MouseStateSnapshot) == 0x2c);
 
 void Mouse_UpdateAcquireState();
 int Mouse_ShutdownDevice();
@@ -780,7 +630,6 @@ int __fastcall BindGroupList_GetGroupCommandId(
     int groupIndex,
     int commandIndex
 );
-void __fastcall BindGroupInfo_Destroy(zInput_BindGroupInfo *group);
 void BindGroupList_Clear();
 int __fastcall BindGroupList_AddGroup(const char *title);
 void __fastcall BindGroupList_AddCommandToGroup(
@@ -970,7 +819,7 @@ int zInput_DI_HasForceFeedback();
 int zInput_DI_IsForceFeedbackEnabled();
 zInput_DiEffect *__fastcall zInput_DI_CreateForceFeedbackEffect(
     const GUID *rguidEffect,
-    const void *effect
+    const DIEFFECT *effect
 );
 zInput_DiEffect *__stdcall zInput_DI_CreateConstantForceEffectScaled(float gain);
 zInput_DiEffect *__fastcall zInput_DI_CreateConstantForceEffectWithDirection(int direction);

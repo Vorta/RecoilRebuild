@@ -4116,7 +4116,7 @@ extern "C" int gamenet_begin_chat_compose_smoke(void) {
         reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiWidget_FTable);
     g_HudUiMgrSensorOverlay.ftable =
         reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiWidget_FTable);
-    g_HudUiMgrObjectiveBar.ftable = &g_HudUiBar_FTable;
+    g_HudUiMgrObjectiveBar.ftable = (const HudUiCommon_FTable *)(&g_HudUiBar_FTable);
     g_HudUiMgrObjectivePhase = 0;
     g_HudUiMgrObjectiveState = 0;
     g_HudUiMgrObjectiveChatComposeActive = 0;
@@ -4217,7 +4217,7 @@ extern "C" int gamenet_end_chat_compose_and_send_smoke(void) {
         reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiWidget_FTable);
     g_HudUiMgrSensorOverlay.ftable =
         reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiWidget_FTable);
-    g_HudUiMgrObjectiveBar.ftable = &g_HudUiBar_FTable;
+    g_HudUiMgrObjectiveBar.ftable = (const HudUiCommon_FTable *)(&g_HudUiBar_FTable);
     g_HudUiMgrObjectivePhase = 0;
     g_HudUiMgrObjectiveState = 0;
     g_HudUiMgrObjectiveChatComposeActive = 0;
@@ -4320,7 +4320,7 @@ extern "C" int hud_ui_handle_hotkey_command_begin_chat_smoke(void) {
         reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiWidget_FTable);
     g_HudUiMgrSensorOverlay.ftable =
         reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiWidget_FTable);
-    g_HudUiMgrObjectiveBar.ftable = &g_HudUiBar_FTable;
+    g_HudUiMgrObjectiveBar.ftable = (const HudUiCommon_FTable *)(&g_HudUiBar_FTable);
     g_HudUiMgrObjectivePhase = 0;
     g_HudUiMgrObjectiveState = 0;
     g_HudUiMgrObjectiveChatComposeActive = 0;

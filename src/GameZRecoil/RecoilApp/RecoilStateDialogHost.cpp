@@ -11,15 +11,15 @@ void RecoilStateDialogHost::OnWndActivate(
 ) {
     (void)activateCode;
 
-    if (dialog_04 == 0) {
+    if (m_dialog == 0) {
         return;
     }
 
     zVideo::RunPostprocessOnPrimaryBuffer();
 
-    ((HudUiDialogControllerVirtual *)dialog_04)->SetEnabled(0);
+    m_dialog->SetEnabled(0);
 
-    ((HudUiDialogController *)dialog_04)->BlitOwnedSurfaceToPrimary();
+    m_dialog->BlitOwnedSurfaceToPrimary();
     zVideo::Dispatch_UnlockPrimarySurfaceState();
 
     zVideo::AdjustSurfacesIfEnabled(

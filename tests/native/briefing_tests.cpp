@@ -266,6 +266,11 @@ struct TestBriefingRuntime : HudUiBriefingRuntime {
     }
 };
 
+typedef HudUiBriefingRuntime *( *HudUiBriefingRuntimeScalarDeletingDestructor)(
+    HudUiBriefingRuntime *self,
+    unsigned int flags
+);
+
 HudUiBriefingRuntimeScalarDeletingDestructor MakeScalarDeletingDtorThunk() {
     union MemberToFunction {
         HudUiBriefingRuntime *( TestBriefingRuntime::*member)(std::uint32_t);
@@ -430,13 +435,14 @@ void RestoreConstructorGlobals(const ConstructorGlobalState &state) {
 
 extern "C" int briefing_stop_and_shutdown_thread_smoke(void) {
     static TestBriefingRuntime runtime;
-    static HudUiBriefingRuntimeVtable vtable;
+    static unsigned int vtable[3];
 
     g_deleteCount = 0;
     g_deleteFlags = 0;
     g_deletedRuntime = nullptr;
-    vtable.ScalarDeletingDtor = MakeScalarDeletingDtorThunk();
-    runtime.vptr = &vtable;
+    std::memset(vtable, 0, sizeof(vtable));
+    vtable[2] = reinterpret_cast<unsigned int>(MakeScalarDeletingDtorThunk());
+    runtime.vptr = reinterpret_cast<const HudUiContainer_FTable *>(&vtable);
 
     g_Briefing_Runtime = &runtime;
     g_Briefing_ThreadRunFlag = 1;
@@ -625,7 +631,8 @@ extern "C" int briefing_set_progress_and_sleep_smoke(void) {
     std::memset(&runtime, 0, sizeof(runtime));
     std::memset(transportProgressFtable, 0, sizeof(transportProgressFtable));
     transportProgressFtable[0x84 / 4] = MakeSetNormalizedValueThunk();
-    runtime.transportProgress.vptr = transportProgressFtable;
+    runtime.transportProgress.ftable =
+        reinterpret_cast<const HudUiCommon_FTable *>(transportProgressFtable);
     g_setProgressCount = 0;
     g_setProgressValue = 0.0f;
     g_setProgressThis = nullptr;
@@ -728,12 +735,12 @@ extern "C" int briefing_locator_panel_constructor_smoke(void) {
             reinterpret_cast<HudUiCircle *>(storage + kLocatorPanelsOffset +
                                             index * kLocatorPanelStride);
         if (index == 0) {
-            locatorFTable = locator->base.ftable;
+            locatorFTable = locator->ftable;
             ok = ok && locatorFTable != nullptr && locatorFTable != &g_HudUiCircle_FTable;
         }
 
-        ok = ok && locator->base.ftable == locatorFTable && locator->base.x == 100 &&
-             locator->base.y == 110 && (locator->base.flags & 0x10u) != 0 &&
+        ok = ok && locator->ftable == locatorFTable && locator->x == 100 &&
+             locator->y == 110 && (locator->flags & 0x10u) != 0 &&
              locator->radius == 30 && locator->radiusSquared == 900 &&
              locator->color565 == expectedColor;
     }
@@ -757,21 +764,21 @@ extern "C" int briefing_locator_panel_blit_dirty_rect_smoke(void) {
 
     auto *const locator = reinterpret_cast<HudUiCircle *>(storage + kLocatorPanelsOffset);
     typedef void ( *DrawBaseFn)(HudUiCircle * self);
-    DrawBaseFn const drawBase = reinterpret_cast<DrawBaseFn>(locator->base.ftable->slots[2]);
+    DrawBaseFn const drawBase = reinterpret_cast<DrawBaseFn>(locator->ftable->slots[2]);
 
     g_zVideo_pfnBltSourceToPrimary = TestBriefingBltSourceToPrimary;
     g_briefingBlitCount = 0;
     g_briefingBlitImage = nullptr;
-    locator->base.bltSource = nullptr;
+    locator->bltSource = nullptr;
     drawBase(locator);
     const bool nullSkipped = g_briefingBlitCount == 0 && g_briefingBlitImage == nullptr;
 
     zVidImagePartial image{};
-    locator->base.bltSource = &image;
-    locator->base.clipRect.left = 4;
-    locator->base.clipRect.top = 5;
-    locator->base.clipRect.right = 24;
-    locator->base.clipRect.bottom = 25;
+    locator->bltSource = &image;
+    locator->clipRect.left = 4;
+    locator->clipRect.top = 5;
+    locator->clipRect.right = 24;
+    locator->clipRect.bottom = 25;
     g_briefingBlitCount = 0;
     g_briefingBlitImage = nullptr;
     drawBase(locator);
@@ -801,52 +808,52 @@ extern "C" int briefing_locator_panel_update_smoke(void) {
 
     auto *const locator = reinterpret_cast<HudUiCircle *>(storage + kLocatorPanelsOffset);
     typedef void ( *UpdateFn)(HudUiCircle * self, float deltaSec);
-    UpdateFn const update = reinterpret_cast<UpdateFn>(locator->base.ftable->slots[9]);
+    UpdateFn const update = reinterpret_cast<UpdateFn>(locator->ftable->slots[9]);
 
     const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
 
-    locator->base.flags = 0;
-    locator->base.clipRect.left = 1;
-    locator->base.clipRect.top = 2;
-    locator->base.clipRect.right = 3;
-    locator->base.clipRect.bottom = 4;
+    locator->flags = 0;
+    locator->clipRect.left = 1;
+    locator->clipRect.top = 2;
+    locator->clipRect.right = 3;
+    locator->clipRect.bottom = 4;
     locator->radius = 12;
     locator->radiusSquared = 144;
     g_HudUi_InvalidateMask = 0x80;
     update(locator, 1.0f);
     const bool visibleSkipped =
-        locator->base.flags == 0 && locator->base.clipRect.left == 1 &&
-        locator->base.clipRect.top == 2 && locator->base.clipRect.right == 3 &&
-        locator->base.clipRect.bottom == 4 && locator->radius == 12 &&
+        locator->flags == 0 && locator->clipRect.left == 1 &&
+        locator->clipRect.top == 2 && locator->clipRect.right == 3 &&
+        locator->clipRect.bottom == 4 && locator->radius == 12 &&
         locator->radiusSquared == 144;
 
-    locator->base.flags = 0x10 | 0x02 | 0x08;
-    locator->base.x = 100;
-    locator->base.y = 110;
-    locator->base.bltSource = nullptr;
+    locator->flags = 0x10 | 0x02 | 0x08;
+    locator->x = 100;
+    locator->y = 110;
+    locator->bltSource = nullptr;
     locator->radius = 30;
     locator->radiusSquared = 900;
     update(locator, 0.25f);
     const bool clipAndShrink =
-        locator->base.clipRect.left == 70 && locator->base.clipRect.top == 80 &&
-        locator->base.clipRect.right == 131 && locator->base.clipRect.bottom == 141 &&
+        locator->clipRect.left == 70 && locator->clipRect.top == 80 &&
+        locator->clipRect.right == 131 && locator->clipRect.bottom == 141 &&
         locator->radius == 25 && locator->radiusSquared == 625;
     const bool baseUpdateAndInvalidate =
-        (locator->base.flags & 0x08) == 0 && (locator->base.flags & 0x80) != 0;
+        (locator->flags & 0x08) == 0 && (locator->flags & 0x80) != 0;
 
-    locator->base.flags = 0x10;
-    locator->base.x = 20;
-    locator->base.y = 25;
+    locator->flags = 0x10;
+    locator->x = 20;
+    locator->y = 25;
     locator->radius = 10;
     locator->radiusSquared = 100;
     g_HudUi_InvalidateMask = 0;
     update(locator, 0.01f);
     const bool minimumStep =
-        locator->base.clipRect.left == 10 && locator->base.clipRect.top == 15 &&
-        locator->base.clipRect.right == 31 && locator->base.clipRect.bottom == 36 &&
+        locator->clipRect.left == 10 && locator->clipRect.top == 15 &&
+        locator->clipRect.right == 31 && locator->clipRect.bottom == 36 &&
         locator->radius == 9 && locator->radiusSquared == 81;
 
-    locator->base.flags = 0x10;
+    locator->flags = 0x10;
     locator->radius = 4;
     locator->radiusSquared = 16;
     update(locator, 1.0f);
@@ -883,7 +890,7 @@ extern "C" int briefing_runtime_destructor_smoke(void) {
         auto *const locator =
             reinterpret_cast<HudUiCircle *>(storage + kLocatorPanelsOffset +
                                             index * kLocatorPanelStride);
-        locator->base.ftable = &locatorTable;
+        locator->ftable = &locatorTable;
     }
 
     HudUiCompositePanelEntry *const entries =
@@ -928,7 +935,7 @@ extern "C" int briefing_runtime_destructor_smoke(void) {
         auto *const locator =
             reinterpret_cast<HudUiCircle *>(storage + kLocatorPanelsOffset +
                                             index * kLocatorPanelStride);
-        locatorsReset = locatorsReset && locator->base.ftable == &g_HudUiCommon_FTable;
+        locatorsReset = locatorsReset && locator->ftable == &g_HudUiCommon_FTable;
     }
 
     const bool messageEntriesDestroyed =
@@ -944,13 +951,12 @@ extern "C" int briefing_runtime_destructor_smoke(void) {
         *reinterpret_cast<ActionNode **>(storage + kActionQueueHeadOffset) == nullptr &&
         *reinterpret_cast<int *>(storage + kActionQueueCountOffset) == 0;
     const bool transportDestructed =
-        reinterpret_cast<HudUiFillBitmap *>(storage + kTransportProgressOffset)
-            ->base.base.ftable == reinterpret_cast<const HudUiWidget_FTable *>(
-                                    &g_HudUiCommon_FTable);
+        reinterpret_cast<HudUiBriefingTransportProgress *>(storage + kTransportProgressOffset)
+            ->ftable == &g_HudUiCommon_FTable;
     const bool baseDestructed =
-        reinterpret_cast<HudUiBackground *>(storage)->base.base.vptr ==
+        reinterpret_cast<HudUiBackground *>(storage)->vptr ==
             &g_HudUiContainer_FTable &&
-        reinterpret_cast<HudUiBackground *>(storage)->base.base.enabled == 0;
+        reinterpret_cast<HudUiBackground *>(storage)->enabled == 0;
 
     return locatorsReset && messageEntriesDestroyed && actionQueueReset &&
                    transportDestructed && baseDestructed

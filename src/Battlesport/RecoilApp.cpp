@@ -31,6 +31,8 @@
 #include "pickup.h"
 #include "zImage.h"
 
+#include <new>
+
 #ifndef SPI_SETSCREENSAVERRUNNING
 #define SPI_SETSCREENSAVERRUNNING 0x0061
 #endif
@@ -44,7 +46,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Access shim for imported MFC42 CWinApp protected members; this does not
+// Provider-boundary accessor for imported MFC42 CWinApp protected members; this does not
 // reimplement CWinApp behavior.
 class RecoilMfcWinAppAccess : public CWinApp {
   public:
@@ -56,10 +58,6 @@ const AFX_MSGMAP *__stdcall RecoilMfcWinAppAccess::GetMessageMapForRecoilApp() {
 }
 
 struct RecoilStateCredits {
-    RecoilPtr32 vftable;
-    RecoilPtr32 dialog;
-
-    RecoilStateCredits * Constructor();
     static void QueuePush();
 };
 
@@ -71,61 +69,6 @@ HINSTANCE __stdcall AfxFindResourceHandle(
 );
 
 namespace {
-template <
-    typename Function,
-    typename Method>
-Function RecoilMethodFunction(
-    Method method
-) {
-    RECOIL_STATIC_ASSERT(sizeof(method) <= sizeof(Function));
-    Function function = 0;
-    memcpy(
-        &function,
-        &method,
-        sizeof(method)
-    );
-    return function;
-}
-
-template <typename Method>
-unsigned int RecoilMethodAddress(
-    Method method
-) {
-    RECOIL_STATIC_ASSERT(sizeof(method) <= sizeof(unsigned int));
-    unsigned int address = 0;
-    memcpy(
-        &address,
-        &method,
-        sizeof(method)
-    );
-    return address;
-}
-
-struct HudUiSaveLoadBackButton : HudUiZrdWidget {
-    void OnActivate();
-};
-
-struct HudUiSaveLoadDialogVtable {
-    unsigned int slots[3];
-};
-
-struct HudUiSaveLoadDialogUpdateDispatch {
-    virtual void Update(float deltaSeconds) = 0;
-};
-
-struct RecoilStateSaveLoadDialogVirtual {
-    virtual void Update(float deltaSeconds) = 0;
-    virtual void SetEnabled(int enabled) = 0;
-    virtual RecoilStateSaveLoadDialogVirtual * ScalarDeletingDestructor(
-        unsigned int flags
-    ) = 0;
-};
-
-struct RecoilStateSaveLoadTransition_Vtbl {
-    RecoilFn32 slots[10];
-};
-RECOIL_STATIC_ASSERT(sizeof(RecoilStateSaveLoadTransition_Vtbl) == 0x28);
-
 enum zVideoRendererBackend {
     ZVID_RENDERER_BACKEND_SOFTWARE = 0,
 };
@@ -175,24 +118,14 @@ void RunGrandPrizeBlurAction() {
     );
 
     zFMV_Action *const action = &blurAction;
-    action->vftable->Begin(
-        action,
-        0.0
-    );
-    while (action->vftable->Update(
-        action,
-        0.0
-    ) != 0) {
+    action->Begin(0.0);
+    while (action->Update(0.0) != 0) {
     }
-    action->vftable->End(action);
+    action->End();
 
     RecoilStateMainMenuTransition::QueueEnter(RECOIL_MAINMENU_ROUTE_FRONTEND);
     RecoilStateCredits::QueuePush();
-
-    blurAction.vftable = &g_zFMV_ActionBase_Vtable;
 }
-
-RecoilStateSaveLoadTransition_Vtbl g_RecoilStateSaveLoadTransition_Vtbl = {0};
 
 void AppendSaveLoadEntry(
     HudUiSaveLoadEntries *entries,
@@ -229,85 +162,10 @@ int SaveLoadEntryCount(
                : 0;
 }
 
-HudUiSaveLoadListItemVtable MakeHudUiSaveLoadListItemVtable() {
-    HudUiSaveLoadListItemVtable table = {0};
-    table.Draw = RecoilMethodFunction<HudUiSaveLoadDrawFn>(&HudUiSaveLoadListItem::Draw);
-    table.Invalidate = RecoilMethodFunction<HudUiSaveLoadInvalidateFn>(&HudUiPanel::Invalidate);
-    table.OnActivate =
-        RecoilMethodFunction<HudUiSaveLoadOnActivateFn>(&HudUiSaveLoadListItem::OnActivate);
-    table.SetVisible = RecoilMethodFunction<HudUiSaveLoadSetVisibleFn>(&HudUiElement::SetVisible);
-    table.SetTextFmt = RecoilMethodFunction<HudUiSaveLoadSetTextFmtFn>(&HudUiPanel::SetTextFmt);
-    table.UpdateTextBoundsFromContent = RecoilMethodFunction<HudUiSaveLoadUpdateTextBoundsFn>(
-        &HudUiPanel::UpdateTextBoundsFromContent
-    );
-    return table;
-}
-
-void HudUiSaveLoadWidgetPostLoadNoOp() {}
-
-HudUiWidget_FTable MakeHudUiSaveLoadButtonFTable(
-    unsigned int activateCallback
-) {
-    HudUiWidget_FTable table = {0};
-    table.slots[0] = RecoilMethodAddress(&HudUiZrdWidget::ScalarDeletingDestructor);
-    table.slots[1] = RecoilMethodAddress(&HudUiWidget::Draw);
-    table.slots[3] = RecoilMethodAddress(&HudUiElement::SetPos);
-    table.slots[4] = RecoilMethodAddress(&HudUiElement::SetX);
-    table.slots[5] = RecoilMethodAddress(&HudUiElement::SetY);
-    table.slots[6] = RecoilMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    table.slots[7] = RecoilMethodAddress(&HudUiElement::SetClipRect);
-    table.slots[8] = RecoilMethodAddress(&HudUiZrdWidget::Invalidate);
-    table.slots[12] = activateCallback;
-    table.slots[15] = RecoilMethodAddress(&HudUiZrdWidget::ShowPreview);
-    table.slots[16] = RecoilMethodAddress(&HudUiZrdWidget::HidePreview);
-    table.slots[24] = RecoilMethodAddress(&HudUiElement::SetVisible);
-    table.slots[25] = RecoilMethodAddress(&HudUiElement::GetX);
-    table.slots[26] = RecoilMethodAddress(&HudUiElement::GetY);
-    table.slots[30] = RecoilMethodAddress(&HudUiZrdWidget::RefreshState);
-    table.slots[31] = RecoilMethodAddress(&HudUiZrdWidget::LoadFromZrd);
-    table.slots[32] = RecoilMethodAddress(&HudUiSaveLoadWidgetPostLoadNoOp);
-    return table;
-}
-
-HudUiNumericTextInput_Base_FTable MakeHudUiSaveLoadGameNameInputFTable() {
-    HudUiNumericTextInput_Base_FTable table = g_HudUiNumericTextInput_Base_FTable;
-    table.slots[12] = RecoilMethodAddress(&HudUiSaveLoadGameNameInput::OnActivate);
-    table.slots[33] = RecoilMethodAddress(&HudUiSaveLoadGameNameInput::OnRawKeyboardEvent);
-    return table;
-}
-
-HudUiSaveLoadDialogVtable MakeHudUiSaveLoadDialogVtable() {
-    HudUiSaveLoadDialogVtable table = {0};
-    table.slots[0] = RecoilMethodAddress(&HudUiBackground::Update);
-    table.slots[1] = RecoilMethodAddress(&HudUiBackground::SetEnabled);
-    return table;
-}
-
 } // namespace
 
 RecoilApp g_RecoilApp;
-RecoilApp_IState_Vtbl g_RecoilStateBase_Vtbl = {0};
 RecoilStateSaveLoadTransition g_RecoilStateSaveLoadTransition;
-const HudUiSaveLoadListItemVtable g_HudUiSaveLoadListItem_Vtbl = MakeHudUiSaveLoadListItemVtable();
-const HudUiWidget_FTable g_HudUiSaveLoad_DeleteButton_Vtbl =
-    MakeHudUiSaveLoadButtonFTable(RecoilMethodAddress(&HudUiSaveLoadDeleteButton::OnActivate));
-const HudUiWidget_FTable g_HudUiSaveLoad_NextButton_Vtbl =
-    MakeHudUiSaveLoadButtonFTable(RecoilMethodAddress(&HudUiSaveLoadNextButton::OnActivate));
-const HudUiWidget_FTable g_HudUiSaveLoad_PrevButton_Vtbl =
-    MakeHudUiSaveLoadButtonFTable(RecoilMethodAddress(&HudUiSaveLoadPrevButton::OnActivate));
-const HudUiWidget_FTable g_HudUiSaveLoad_BackButton_Vtbl =
-    MakeHudUiSaveLoadButtonFTable(RecoilMethodAddress(&HudUiSaveLoadBackButton::OnActivate));
-const HudUiWidget_FTable g_HudUiSaveGame_PrimaryActionButton_Vtbl = MakeHudUiSaveLoadButtonFTable(
-    RecoilMethodAddress(&HudUiSaveGamePrimaryActionButton::OnActivate)
-);
-const HudUiWidget_FTable g_HudUiLoadGame_PrimaryActionButton_Vtbl = MakeHudUiSaveLoadButtonFTable(
-    RecoilMethodAddress(&HudUiLoadGamePrimaryActionButton::OnActivate)
-);
-const HudUiNumericTextInput_Base_FTable g_HudUiSaveLoadGameNameInput_Vtbl =
-    MakeHudUiSaveLoadGameNameInputFTable();
-const HudUiSaveLoadDialogVtable g_HudUiSaveLoadDialog_Vtbl = MakeHudUiSaveLoadDialogVtable();
-const HudUiSaveLoadDialogVtable g_HudUiSaveGameDialog_Vtbl = MakeHudUiSaveLoadDialogVtable();
-const HudUiSaveLoadDialogVtable g_HudUiLoadGameDialog_Vtbl = MakeHudUiSaveLoadDialogVtable();
 
 extern "C" HWND g_RecoilApp_hWndMain;
 extern "C" HINSTANCE g_RecoilApp_hInstance;
@@ -317,65 +175,76 @@ int g_RecoilApp_WindowClassRegistered = 0;
 int g_RecoilApp_AttractFmvReloadMode = 1;
 }
 
-// Reimplements 0x435a30: RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit
-// (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
+/**
+ * Reimplements 0x435a30: RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit.
+ * Original source path: D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp.
+ * Purpose: Initializes the save/load transition singleton and registers its exit cleanup.
+ */
 void RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
 
-// Reimplements 0x435a40: RecoilStateSaveLoadTransition::StaticInit
-// (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
+/**
+ * Reimplements 0x435a40: RecoilStateSaveLoadTransition::StaticInit.
+ * Original source path: D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp.
+ * Purpose: Constructs the global save/load transition object.
+ */
 RecoilStateSaveLoadTransition *RecoilStateSaveLoadTransition::StaticInit() {
     return g_RecoilStateSaveLoadTransition.Constructor();
 }
 
-// Reimplements 0x435a50: RecoilStateSaveLoadTransition::RegisterAtExit
-// (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
+/**
+ * Reimplements 0x435a50: RecoilStateSaveLoadTransition::RegisterAtExit.
+ * Original source path: D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp.
+ * Purpose: Registers the save/load transition singleton destructor with atexit.
+ */
 void RecoilStateSaveLoadTransition::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
-// Reimplements 0x435a60: RecoilStateSaveLoadTransition::AtExitDestructor
-// (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
+/**
+ * Reimplements 0x435a60: RecoilStateSaveLoadTransition::AtExitDestructor.
+ * Original source path: D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp.
+ * Purpose: Tears down the global save/load transition during process exit.
+ */
 void RecoilStateSaveLoadTransition::AtExitDestructor() {
     g_RecoilStateSaveLoadTransition.Destructor();
 }
 
-// Reimplements 0x435c80: RecoilStateSaveLoadTransition::Constructor
-// (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
+/**
+ * Reimplements 0x435c80: RecoilStateSaveLoadTransition::Constructor.
+ * Original source path: D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp.
+ * Purpose: Initializes the save/load transition to the default save-dialog state.
+ */
 RecoilStateSaveLoadTransition * RecoilStateSaveLoadTransition::Constructor() {
     m_dialogKind = RECOIL_SAVELOAD_DIALOG_SAVE;
     m_dialog = 0;
     return this;
 }
 
-// Reimplements 0x435ca0: RecoilStateSaveLoadTransition::ScalarDeletingDestructor
-// (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
-RecoilStateSaveLoadTransition * RecoilStateSaveLoadTransition::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
-// Reimplements 0x435cc0: RecoilStateSaveLoadTransition::Destructor
-// (D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp)
+/**
+ * Reimplements 0x435cc0: RecoilStateSaveLoadTransition::Destructor.
+ * Original source path: D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp.
+ * Purpose: Deletes the active save or load dialog owned by the transition.
+ */
 void RecoilStateSaveLoadTransition::Destructor() {
-    RecoilStateSaveLoadDialogVirtual *dialog = (RecoilStateSaveLoadDialogVirtual *)m_dialog;
+    HudUiSaveLoadDialog *dialog = (HudUiSaveLoadDialog *)m_dialog;
     if (dialog != 0) {
-        dialog->ScalarDeletingDestructor(1);
+        if (m_dialogKind == RECOIL_SAVELOAD_DIALOG_SAVE) {
+            delete (HudUiSaveGameDialog *)dialog;
+        } else {
+            delete (HudUiLoadGameDialog *)dialog;
+        }
         m_dialog = 0;
     }
 }
 
-// Reimplements 0x434660: HudUiSaveLoadEntry::IsNewerThan
-// (D:\Proj\Battlesport\RecoilApp.cpp)
+/**
+ * Reimplements 0x434660: HudUiSaveLoadEntry::IsNewerThan.
+ * Original source path: D:\Proj\Battlesport\RecoilApp.cpp.
+ * Purpose: Orders save-game file entries by most recent write time.
+ */
 int __fastcall HudUiSaveLoadEntry::IsNewerThan(
     const HudUiSaveLoadEntry *other
 ) const {
@@ -385,38 +254,49 @@ int __fastcall HudUiSaveLoadEntry::IsNewerThan(
     ) > 0 ? 1 : 0;
 }
 
-// Reimplements 0x434920: HudUiSaveLoadListItem::Constructor
-// (D:\Proj\Battlesport\hudui_saveload.cpp)
+/**
+ * Reimplements 0x434920: HudUiSaveLoadListItem::Constructor.
+ * Original source path: D:\Proj\Battlesport\hudui_saveload.cpp.
+ * Purpose: Initializes a save/load list row panel and clears its entry index.
+ */
 HudUiSaveLoadListItem * HudUiSaveLoadListItem::Constructor() {
-    ((HudUiPanel *)(this))->ConstructorDefault(
+    HudUiPanel::ConstructorDefault(
         0,
         0,
         0
     );
-    vftable = &g_HudUiSaveLoadListItem_Vtbl;
     layoutY = 32767;
     layoutX = -1;
     return this;
 }
 
-// Reimplements 0x434950: HudUiSaveLoadListItem::Draw
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x434950: HudUiSaveLoadListItem::Draw.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Draws the list row panel and refreshes text bounds after rendering.
+ */
 void HudUiSaveLoadListItem::Draw() {
-    ((HudUiPanel *)(this))->Draw();
-    typedef void ( HudUiSaveLoadListItem::*UpdateTextBoundsFn)();
-    (this->*((UpdateTextBoundsFn *)(&vftable->UpdateTextBoundsFromContent))[0])();
+    HudUiPanel::Draw();
+    UpdateTextBoundsFromContent();
 }
 
-// Reimplements 0x435a10: HudUiSaveLoadListItem::OnActivate
-// (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
+/**
+ * Reimplements 0x435a10: HudUiSaveLoadListItem::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
+ * Purpose: Selects this row's save/load entry in its parent dialog.
+ */
 void HudUiSaveLoadListItem::OnActivate() {
-    if (parent != 0) {
-        parent->SetSelectedEntryIndex(layoutX);
+    HudUiSaveLoadDialog *const owner = (HudUiSaveLoadDialog *)(parent);
+    if (owner != 0) {
+        owner->SetSelectedEntryIndex(layoutX);
     }
 }
 
-// Reimplements 0x434fb0: HudUiSaveLoadDialog::DeleteSaveFile
-// (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
+/**
+ * Reimplements 0x434fb0: HudUiSaveLoadDialog::DeleteSaveFile.
+ * Original source path: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
+ * Purpose: Deletes the selected saved-game file and refreshes the dialog list.
+ */
 void HudUiSaveLoadDialog::DeleteSaveFile(
     int confirmDelete
 ) {
@@ -473,16 +353,22 @@ void HudUiSaveLoadDialog::DeleteSaveFile(
     SetSelectedEntryIndex(selectedIndex);
 }
 
-// Reimplements 0x4348b0: HudUiSaveLoadGameNameInput::OnActivate
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4348b0: HudUiSaveLoadGameNameInput::OnActivate.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Activates the save-game name input and moves the cursor to the end.
+ */
 void HudUiSaveLoadGameNameInput::OnActivate() {
     Update(GetBuffer());
     textInput.SetCursorPosition((int)(strlen(GetBuffer())));
     HudUiNumericTextInput::OnActivate();
 }
 
-// Reimplements 0x4348f0: HudUiSaveLoadGameNameInput::OnRawKeyboardEvent
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4348f0: HudUiSaveLoadGameNameInput::OnRawKeyboardEvent.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Filters raw key input to the save-game filename character set.
+ */
 int HudUiSaveLoadGameNameInput::OnRawKeyboardEvent(
     int key
 ) {
@@ -496,24 +382,22 @@ int HudUiSaveLoadGameNameInput::OnRawKeyboardEvent(
     return 0;
 }
 
-// Reimplements 0x435140: HudUiSaveLoadDeleteButton::OnActivate
-// (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
+/**
+ * Reimplements 0x435140: HudUiSaveLoadDeleteButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
+ * Purpose: Runs widget activation behavior and asks the dialog to delete the selected file.
+ */
 void HudUiSaveLoadDeleteButton::OnActivate() {
     HudUiSaveLoadDialog *const dialog = (HudUiSaveLoadDialog *)(owner);
     HudUiZrdWidget::OnActivate();
     dialog->DeleteSaveFile(1);
 }
 
-// Restores shared back-button behavior used by save/load layouts; the retail standalone
-// body is HudUiMenuBackButton::OnActivate at 0x414fa0.
-void HudUiSaveLoadBackButton::OnActivate() {
-    g_RecoilApp.QueueExitCurrentState(0);
-    HudUiZrdWidget::OnActivate();
-    HudUiMgr::TriggerCurrentLayoutOnActivated();
-}
-
-// Reimplements 0x435160: HudUiSaveLoadNextButton::OnActivate
-// (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
+/**
+ * Reimplements 0x435160: HudUiSaveLoadNextButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
+ * Purpose: Advances the selected save/load entry when another entry exists.
+ */
 void HudUiSaveLoadNextButton::OnActivate() {
     HudUiSaveLoadDialog *const dialog = (HudUiSaveLoadDialog *)(owner);
     HudUiZrdWidget::OnActivate();
@@ -524,8 +408,11 @@ void HudUiSaveLoadNextButton::OnActivate() {
     }
 }
 
-// Reimplements 0x4351b0: HudUiSaveLoadPrevButton::OnActivate
-// (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
+/**
+ * Reimplements 0x4351b0: HudUiSaveLoadPrevButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
+ * Purpose: Moves the selected save/load entry to the previous valid row.
+ */
 void HudUiSaveLoadPrevButton::OnActivate() {
     HudUiSaveLoadDialog *const dialog = (HudUiSaveLoadDialog *)(owner);
     HudUiZrdWidget::OnActivate();
@@ -536,8 +423,11 @@ void HudUiSaveLoadPrevButton::OnActivate() {
     }
 }
 
-// Reimplements 0x435220: HudUiSaveGamePrimaryActionButton::OnActivate
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x435220: HudUiSaveGamePrimaryActionButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Commits the save-game dialog result before running the widget activation path.
+ */
 void HudUiSaveGamePrimaryActionButton::OnActivate() {
     HudUiSaveLoadDialog *const dialog = (HudUiSaveLoadDialog *)(owner);
     if (dialog != 0) {
@@ -547,8 +437,11 @@ void HudUiSaveGamePrimaryActionButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x435200: HudUiLoadGamePrimaryActionButton::OnActivate
-// (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
+/**
+ * Reimplements 0x435200: HudUiLoadGamePrimaryActionButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
+ * Purpose: Commits the load-game dialog result before running the widget activation path.
+ */
 void HudUiLoadGamePrimaryActionButton::OnActivate() {
     HudUiLoadGameDialog *const dialog = (HudUiLoadGameDialog *)(owner);
     if (dialog != 0) {
@@ -558,8 +451,11 @@ void HudUiLoadGamePrimaryActionButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x436530: HudUiSaveLoadDialog::InsertEntryIntoSortedPrefix
-// (D:\Proj\Battlesport\hudui_saveload.cpp)
+/**
+ * Reimplements 0x436530: HudUiSaveLoadDialog::InsertEntryIntoSortedPrefix.
+ * Original source path: D:\Proj\Battlesport\hudui_saveload.cpp.
+ * Purpose: Inserts one save/load entry into the already sorted prefix before it.
+ */
 void __fastcall HudUiSaveLoadDialog::InsertEntryIntoSortedPrefix(
     HudUiSaveLoadEntry *entryPosition,
     HudUiSaveLoadEntry entry
@@ -576,8 +472,11 @@ void __fastcall HudUiSaveLoadDialog::InsertEntryIntoSortedPrefix(
     *writePosition = entry;
 }
 
-// Reimplements 0x436580: HudUiSaveLoadDialog::PartitionEntriesByPivot
-// (D:\Proj\Battlesport\hudui_saveload.cpp)
+/**
+ * Reimplements 0x436580: HudUiSaveLoadDialog::PartitionEntriesByPivot.
+ * Original source path: D:\Proj\Battlesport\hudui_saveload.cpp.
+ * Purpose: Partitions a save/load entry range around the selected pivot entry.
+ */
 HudUiSaveLoadEntry *__fastcall HudUiSaveLoadDialog::PartitionEntriesByPivot(
     HudUiSaveLoadEntry *begin,
     HudUiSaveLoadEntry *end,
@@ -609,8 +508,11 @@ HudUiSaveLoadEntry *__fastcall HudUiSaveLoadDialog::PartitionEntriesByPivot(
     return left;
 }
 
-// Reimplements 0x4362f0: HudUiSaveLoadDialog::SortEntryRange
-// (D:\Proj\Battlesport\hudui_saveload.cpp)
+/**
+ * Reimplements 0x4362f0: HudUiSaveLoadDialog::SortEntryRange.
+ * Original source path: D:\Proj\Battlesport\hudui_saveload.cpp.
+ * Purpose: Sorts a save/load entry range from newest to oldest using quicksort with insertion cleanup.
+ */
 void __fastcall HudUiSaveLoadDialog::SortEntryRange(
     HudUiSaveLoadEntry *begin,
     HudUiSaveLoadEntry *end,
@@ -699,8 +601,11 @@ void __fastcall HudUiSaveLoadDialog::SortEntryRange(
     }
 }
 
-// Reimplements 0x4355e0: HudUiSaveLoadDialog::RefreshSaveFileList
-// (D:\Proj\Battlesport\hudui_saveload.cpp)
+/**
+ * Reimplements 0x4355e0: HudUiSaveLoadDialog::RefreshSaveFileList.
+ * Original source path: D:\Proj\Battlesport\hudui_saveload.cpp.
+ * Purpose: Rebuilds and sorts the saved-game file entry vector from the SavedGames directory.
+ */
 void HudUiSaveLoadDialog::RefreshSaveFileList() {
     HudUiSaveLoadEntries *entries = &fileEntries;
     entries->end = entries->begin;
@@ -866,8 +771,11 @@ void HudUiSaveLoadDialog::RefreshSaveFileList() {
     }
 }
 
-// Reimplements 0x434ee0: HudUiSaveLoadDialog::InitializeFileEntries
-// (D:\Proj\Battlesport\hudui_saveload.cpp)
+/**
+ * Reimplements 0x434ee0: HudUiSaveLoadDialog::InitializeFileEntries.
+ * Original source path: D:\Proj\Battlesport\hudui_saveload.cpp.
+ * Purpose: Seeds list-row layout metadata, loads saved-game entries, and binds visible rows.
+ */
 void HudUiSaveLoadDialog::InitializeFileEntries() {
     entryWidgets[0].layoutY = 9830;
     entryWidgets[1].layoutY = 16383;
@@ -886,13 +794,11 @@ void HudUiSaveLoadDialog::InitializeFileEntries() {
     while (index < 9 && entry != fileEntries.end) {
         HudUiSaveLoadListItem *listItem = &entryWidgets[index];
         listItem->layoutX = index;
-        listItem->vftable->SetTextFmt(
-            listItem,
+        listItem->SetTextFmt(
             "%s",
             entry->cFileName
         );
-        listItem->vftable->SetVisible(
-            listItem,
+        listItem->SetVisible(
             1
         );
 
@@ -901,67 +807,76 @@ void HudUiSaveLoadDialog::InitializeFileEntries() {
     }
 }
 
-// Reimplements 0x4353f0: HudUiSaveLoadDialog::SetSelectedEntryIndex
-// (D:\Proj\Battlesport\hudui_saveload.cpp)
+/**
+ * Reimplements 0x4353f0: HudUiSaveLoadDialog::SetSelectedEntryIndex.
+ * Original source path: D:\Proj\Battlesport\hudui_saveload.cpp.
+ * Purpose: Updates the selected save/load entry and repopulates visible list rows around it.
+ */
 void HudUiSaveLoadDialog::SetSelectedEntryIndex(
     int selectedEntryIndexValue
 ) {
     selectedEntryIndex = selectedEntryIndexValue;
-    const int entryCount = SaveLoadEntryCount(this);
 
+    HudUiSaveLoadEntry *upperEntry = fileEntries.begin + selectedEntryIndexValue - 3;
     for (int row = 0; row < 3; ++row) {
         const int entryIndex = selectedEntryIndexValue + row - 3;
         HudUiSaveLoadListItem *listItem = &entryWidgets[row];
-        if (entryIndex >= 0 && entryIndex < entryCount) {
+        if (entryIndex >= 0 &&
+            entryIndex <
+                (fileEntries.begin != 0 ? (int)(fileEntries.end - fileEntries.begin) : 0)) {
             listItem->layoutX = entryIndex;
-            listItem->vftable->SetTextFmt(
-                listItem,
+            listItem->SetTextFmt(
                 "%s",
-                fileEntries.begin[entryIndex].cFileName
+                upperEntry->cFileName
             );
-            listItem->vftable->SetVisible(
-                listItem,
+            listItem->SetVisible(
                 1
             );
-            listItem->vftable->Invalidate(listItem);
+            listItem->Invalidate();
         } else {
-            listItem->vftable->SetVisible(
-                listItem,
+            listItem->SetVisible(
                 0
             );
         }
+        ++upperEntry;
     }
 
-    if (selectedEntryIndexValue >= 0 && selectedEntryIndexValue < entryCount) {
+    if (selectedEntryIndexValue >= 0 &&
+        selectedEntryIndexValue <
+            (fileEntries.begin != 0 ? (int)(fileEntries.end - fileEntries.begin) : 0)) {
         gameNameInput.Update(fileEntries.begin[selectedEntryIndexValue].cFileName);
     }
 
+    HudUiSaveLoadEntry *lowerEntry = fileEntries.begin + selectedEntryIndexValue + 1;
     for (int lowerRow = 3; lowerRow < 9; ++lowerRow) {
         const int entryIndex = selectedEntryIndexValue + lowerRow - 2;
         HudUiSaveLoadListItem *listItem = &entryWidgets[lowerRow];
-        if (entryIndex >= 0 && entryIndex < entryCount) {
+        if (entryIndex >= 0 &&
+            entryIndex <
+                (fileEntries.begin != 0 ? (int)(fileEntries.end - fileEntries.begin) : 0)) {
             listItem->layoutX = entryIndex;
-            listItem->vftable->SetTextFmt(
-                listItem,
+            listItem->SetTextFmt(
                 "%s",
-                fileEntries.begin[entryIndex].cFileName
+                lowerEntry->cFileName
             );
-            listItem->vftable->SetVisible(
-                listItem,
+            listItem->SetVisible(
                 1
             );
-            listItem->vftable->Invalidate(listItem);
+            listItem->Invalidate();
         } else {
-            listItem->vftable->SetVisible(
-                listItem,
+            listItem->SetVisible(
                 0
             );
         }
+        ++lowerEntry;
     }
 }
 
-// Reimplements 0x435a70: HudUiSaveLoadDialog::ProcessDialogResult
-// (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
+/**
+ * Reimplements 0x435a70: HudUiSaveLoadDialog::ProcessDialogResult.
+ * Original source path: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
+ * Purpose: Loads the selected saved game and queues the appropriate game-state transition.
+ */
 void HudUiSaveLoadDialog::ProcessDialogResult() {
     char *const gameName = gameNameInput.GetBuffer();
     char saveGamePath[MAX_PATH];
@@ -1026,20 +941,29 @@ void HudUiSaveLoadDialog::ProcessDialogResult() {
     }
 }
 
-// Reimplements 0x434dc0: HudUiLoadGameDialog::ProcessDialogResult
-// (D:\Proj\Battlesport\HudUiLoadGameDialog.cpp)
+/**
+ * Reimplements 0x434dc0: HudUiLoadGameDialog::ProcessDialogResult.
+ * Original source path: D:\Proj\Battlesport\HudUiLoadGameDialog.cpp.
+ * Purpose: Uses the common save/load result handler for the load-game dialog.
+ */
 void HudUiLoadGameDialog::ProcessDialogResult() {
     HudUiSaveLoadDialog::ProcessDialogResult();
 }
 
-// Reimplements 0x434970: HudUiLoadGameDialog::OnPrimaryActionThunk
-// (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
+/**
+ * Reimplements 0x434970: HudUiLoadGameDialog::OnPrimaryActionThunk.
+ * Original source path: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
+ * Purpose: Dispatches the load dialog primary action through the concrete dialog object.
+ */
 void HudUiLoadGameDialog::OnPrimaryActionThunk() {
     OnPrimaryAction();
 }
 
-// Reimplements 0x435240: HudUiLoadGameDialog::OnPrimaryAction
-// (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
+/**
+ * Reimplements 0x435240: HudUiLoadGameDialog::OnPrimaryAction.
+ * Original source path: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
+ * Purpose: Processes the selected file path through the global archive entry path and exits the dialog.
+ */
 void HudUiLoadGameDialog::OnPrimaryAction() {
     char *const gameName = gameNameInput.GetBuffer();
     if (gameName == 0 || gameName[0] == '\0') {
@@ -1100,23 +1024,20 @@ void HudUiLoadGameDialog::OnPrimaryAction() {
     g_RecoilApp.QueueExitCurrentState(0);
 }
 
-// Reimplements 0x434680: HudUiSaveGameDialog::InitLayout
-// (D:\Proj\Battlesport\hudui_saveload.cpp)
+/**
+ * Reimplements 0x434680: HudUiSaveGameDialog::InitLayout.
+ * Original source path: D:\Proj\Battlesport\hudui_saveload.cpp.
+ * Purpose: Builds the save-game dialog controls from dialog.zrd and initializes list contents.
+ */
 HudUiSaveGameDialog * HudUiSaveGameDialog::InitLayout() {
-    base.Constructor();
+    new ((HudUiBackground *)this) HudUiBackground;
 
     deleteButton.Constructor();
-    deleteButton.base.ftable = &g_HudUiSaveLoad_DeleteButton_Vtbl;
     backButton.Constructor();
-    backButton.base.ftable = &g_HudUiSaveLoad_BackButton_Vtbl;
     nextEntryButton.Constructor();
-    nextEntryButton.base.ftable = &g_HudUiSaveLoad_NextButton_Vtbl;
     prevEntryButton.Constructor();
-    prevEntryButton.base.ftable = &g_HudUiSaveLoad_PrevButton_Vtbl;
 
     gameNameInput.BaseConstructor();
-    gameNameInput.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiSaveLoadGameNameInput_Vtbl);
     gameNameInput.textInput.AllocTextBuffer(20);
     gameNameInput.Update("");
     gameNameInput.SetInputActive(1);
@@ -1130,46 +1051,43 @@ HudUiSaveGameDialog * HudUiSaveGameDialog::InitLayout() {
     fileEntries.begin = 0;
     fileEntries.end = 0;
     fileEntries.capacityEnd = 0;
-    base.base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiSaveLoadDialog_Vtbl);
 
     primaryActionButton.Constructor();
-    primaryActionButton.base.ftable = &g_HudUiSaveGame_PrimaryActionButton_Vtbl;
-    base.base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiSaveGameDialog_Vtbl);
 
-    zReader::Node *const loadedSection = base.LoadFromZrd(
+    zReader::Node *const loadedSection = LoadFromZrd(
         "dialog.zrd",
         "SAVE_GAME_DIALOG",
         0
     );
     if (loadedSection != 0) {
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &backButton.base,
+            &backButton,
             "BACK"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &nextEntryButton.base,
+            &nextEntryButton,
             "NEXT_GAME_BTN"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &prevEntryButton.base,
+            &prevEntryButton,
             "PREV_GAME_BTN"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &deleteButton.base,
+            &deleteButton,
             "DELETE_BTN"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &primaryActionButton.base,
+            &primaryActionButton,
             "SAVE"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &gameNameInput.base.base,
+            &gameNameInput,
             "GAMENAME"
         );
 
@@ -1180,14 +1098,14 @@ HudUiSaveGameDialog * HudUiSaveGameDialog::InitLayout() {
                 "LIST_%d",
                 i
             );
-            base.BindPrimitiveNodeToElement(
+            BindPrimitiveNodeToElement(
                 loadedSection,
-                (HudUiElement *)(&entryWidgets[i]),
+                &entryWidgets[i],
                 listNodeName
             );
         }
 
-        base.FreeLoadedTreeRoots((int)(unsigned int)(loadedSection));
+        FreeLoadedTreeRoots((int)(unsigned int)(loadedSection));
     }
 
     InitializeFileEntries();
@@ -1195,9 +1113,12 @@ HudUiSaveGameDialog * HudUiSaveGameDialog::InitLayout() {
     return this;
 }
 
-// Reimplements 0x434a80: HudUiSaveGameDialog::Destructor
-// (D:\Proj\Battlesport\hud.cpp)
-void HudUiSaveGameDialog::Destructor() {
+/**
+ * Reimplements 0x434a80: HudUiSaveGameDialog::Destructor.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Tears down save-game dialog child widgets, entry storage, and background state.
+ */
+HudUiSaveGameDialog::~HudUiSaveGameDialog() {
     primaryActionButton.DestructorCore();
 
     ::operator delete(fileEntries.begin);
@@ -1206,7 +1127,7 @@ void HudUiSaveGameDialog::Destructor() {
     fileEntries.capacityEnd = 0;
 
     for (int index = 9; index > 0; --index) {
-        ((HudUiPanel *)(&entryWidgets[index - 1]))->Destructor();
+        entryWidgets[index - 1].HudUiPanel::Destructor();
     }
 
     gameNameInput.Destructor();
@@ -1214,39 +1135,22 @@ void HudUiSaveGameDialog::Destructor() {
     nextEntryButton.DestructorCore();
     backButton.DestructorCore();
     deleteButton.DestructorCore();
-    base.Destructor();
 }
 
-// Reimplements 0x434980: HudUiSaveGameDialog::ScalarDeletingDestructor
-// (D:\Proj\Battlesport\hud.cpp)
-HudUiSaveGameDialog * HudUiSaveGameDialog::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
-// Reimplements 0x434b90: HudUiLoadGameDialog::Constructor
-// (D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp)
+/**
+ * Reimplements 0x434b90: HudUiLoadGameDialog::Constructor.
+ * Original source path: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
+ * Purpose: Builds the load-game dialog controls from dialog.zrd and initializes list contents.
+ */
 HudUiLoadGameDialog * HudUiLoadGameDialog::Constructor() {
-    base.Constructor();
+    new ((HudUiBackground *)this) HudUiBackground;
 
     deleteButton.Constructor();
-    deleteButton.base.ftable = &g_HudUiSaveLoad_DeleteButton_Vtbl;
     backButton.Constructor();
-    backButton.base.ftable = &g_HudUiSaveLoad_BackButton_Vtbl;
     nextEntryButton.Constructor();
-    nextEntryButton.base.ftable = &g_HudUiSaveLoad_NextButton_Vtbl;
     prevEntryButton.Constructor();
-    prevEntryButton.base.ftable = &g_HudUiSaveLoad_PrevButton_Vtbl;
 
     gameNameInput.BaseConstructor();
-    gameNameInput.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiSaveLoadGameNameInput_Vtbl);
     gameNameInput.textInput.AllocTextBuffer(20);
     gameNameInput.Update("");
     gameNameInput.SetInputActive(1);
@@ -1260,46 +1164,43 @@ HudUiLoadGameDialog * HudUiLoadGameDialog::Constructor() {
     fileEntries.begin = 0;
     fileEntries.end = 0;
     fileEntries.capacityEnd = 0;
-    base.base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiSaveLoadDialog_Vtbl);
 
     primaryActionButton.Constructor();
-    primaryActionButton.base.ftable = &g_HudUiLoadGame_PrimaryActionButton_Vtbl;
-    base.base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiLoadGameDialog_Vtbl);
 
-    zReader::Node *const loadedSection = base.LoadFromZrd(
+    zReader::Node *const loadedSection = LoadFromZrd(
         "dialog.zrd",
         "LOAD_GAME_DIALOG",
         0
     );
     if (loadedSection != 0) {
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &backButton.base,
+            &backButton,
             "BACK"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &nextEntryButton.base,
+            &nextEntryButton,
             "NEXT_GAME_BTN"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &prevEntryButton.base,
+            &prevEntryButton,
             "PREV_GAME_BTN"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &deleteButton.base,
+            &deleteButton,
             "DELETE_BTN"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &primaryActionButton.base,
+            &primaryActionButton,
             "LOAD"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &gameNameInput.base.base,
+            &gameNameInput,
             "GAMENAME"
         );
 
@@ -1310,14 +1211,14 @@ HudUiLoadGameDialog * HudUiLoadGameDialog::Constructor() {
                 "LIST_%d",
                 i
             );
-            base.BindPrimitiveNodeToElement(
+            BindPrimitiveNodeToElement(
                 loadedSection,
-                (HudUiElement *)(&entryWidgets[i]),
+                &entryWidgets[i],
                 listNodeName
             );
         }
 
-        base.FreeLoadedTreeRoots((int)(unsigned int)(loadedSection));
+        FreeLoadedTreeRoots((int)(unsigned int)(loadedSection));
     }
 
     InitializeFileEntries();
@@ -1326,8 +1227,11 @@ HudUiLoadGameDialog * HudUiLoadGameDialog::Constructor() {
     return this;
 }
 
-// Reimplements 0x4349a0: HudUiSaveLoadDialog::Destructor
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4349a0: HudUiSaveLoadDialog::Destructor.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Tears down common save/load dialog child widgets, entry storage, and background state.
+ */
 void HudUiSaveLoadDialog::Destructor() {
     ::operator delete(fileEntries.begin);
     fileEntries.begin = 0;
@@ -1335,7 +1239,7 @@ void HudUiSaveLoadDialog::Destructor() {
     fileEntries.capacityEnd = 0;
 
     for (int index = 9; index > 0; --index) {
-        ((HudUiPanel *)(&entryWidgets[index - 1]))->Destructor();
+        entryWidgets[index - 1].HudUiPanel::Destructor();
     }
 
     gameNameInput.Destructor();
@@ -1343,12 +1247,14 @@ void HudUiSaveLoadDialog::Destructor() {
     nextEntryButton.DestructorCore();
     backButton.DestructorCore();
     deleteButton.DestructorCore();
-    base.Destructor();
 }
 
-// Reimplements 0x434df0: HudUiLoadGameDialog::Destructor
-// (D:\Proj\Battlesport\HudUiLoadGameDialog.cpp)
-void HudUiLoadGameDialog::Destructor() {
+/**
+ * Reimplements 0x434df0: HudUiLoadGameDialog::Destructor.
+ * Original source path: D:\Proj\Battlesport\HudUiLoadGameDialog.cpp.
+ * Purpose: Tears down load-game dialog child widgets, entry storage, and background state.
+ */
+HudUiLoadGameDialog::~HudUiLoadGameDialog() {
     primaryActionButton.DestructorCore();
 
     ::operator delete(fileEntries.begin);
@@ -1357,7 +1263,7 @@ void HudUiLoadGameDialog::Destructor() {
     fileEntries.capacityEnd = 0;
 
     for (int index = 9; index > 0; --index) {
-        ((HudUiPanel *)(&entryWidgets[index - 1]))->Destructor();
+        entryWidgets[index - 1].HudUiPanel::Destructor();
     }
 
     gameNameInput.Destructor();
@@ -1365,24 +1271,13 @@ void HudUiLoadGameDialog::Destructor() {
     nextEntryButton.DestructorCore();
     backButton.DestructorCore();
     deleteButton.DestructorCore();
-    base.Destructor();
 }
 
-// Reimplements 0x434dd0: HudUiLoadGameDialog::ScalarDeletingDestructor
-// (D:\Proj\Battlesport\HudUiLoadGameDialog.cpp)
-HudUiLoadGameDialog * HudUiLoadGameDialog::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
-// Reimplements 0x435d20: RecoilStateSaveLoadTransition::OnTryBecomeCurrent
-// (D:\Proj\Battlesport\RecoilApp.cpp)
+/**
+ * Reimplements 0x435d20: RecoilStateSaveLoadTransition::OnTryBecomeCurrent.
+ * Original source path: D:\Proj\Battlesport\RecoilApp.cpp.
+ * Purpose: Captures presentation/audio state and opens the requested save/load dialog.
+ */
 int RecoilStateSaveLoadTransition::OnTryBecomeCurrent() {
     if (m_capturePresentationMode != RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED) {
         if (g_zVideo_ActiveRendererPath != 0) {
@@ -1407,17 +1302,10 @@ int RecoilStateSaveLoadTransition::OnTryBecomeCurrent() {
             4,
             1
         );
-        blurAction.vftable->Begin(
-            &blurAction,
-            0.0
-        );
-        while (blurAction.vftable->Update(
-            &blurAction,
-            0.0
-        ) != 0) {
+        blurAction.Begin(0.0);
+        while (blurAction.Update(0.0) != 0) {
         }
-        blurAction.vftable->End(&blurAction);
-        blurAction.vftable = &g_zFMV_ActionBase_Vtable;
+        blurAction.End();
 
         zSndSampleSet_InitByName("DIALOG");
     }
@@ -1438,12 +1326,15 @@ int RecoilStateSaveLoadTransition::OnTryBecomeCurrent() {
     }
 
     m_dialog = (RecoilPtr32)(unsigned int)dialog;
-    dialog->base.base.base.SetEnabled(1);
+    dialog->SetEnabled(1);
     return 1;
 }
 
-// Reimplements 0x435e80: RecoilStateSaveLoadTransition::OnUpdateShouldQuit
-// (D:\Proj\Battlesport\RecoilApp.cpp)
+/**
+ * Reimplements 0x435e80: RecoilStateSaveLoadTransition::OnUpdateShouldQuit.
+ * Original source path: D:\Proj\Battlesport\RecoilApp.cpp.
+ * Purpose: Updates the active save/load dialog and reports whether the transition should quit.
+ */
 int RecoilStateSaveLoadTransition::OnUpdateShouldQuit() {
     zInput::PollActiveDevices(0);
 
@@ -1451,9 +1342,7 @@ int RecoilStateSaveLoadTransition::OnUpdateShouldQuit() {
         Time::Tick();
         zVideo::RunPostprocessOnPrimaryBuffer();
 
-        HudUiSaveLoadDialogUpdateDispatch *const dialog =
-            (HudUiSaveLoadDialogUpdateDispatch *)((unsigned int)(m_dialog));
-        dialog->Update(g_FrameDeltaTimeSec);
+        ((HudUiSaveLoadDialog *)((unsigned int)m_dialog))->Update(g_FrameDeltaTimeSec);
 
         zVideo::Dispatch_UnlockPrimarySurfaceState();
     }
@@ -1469,22 +1358,28 @@ int RecoilStateSaveLoadTransition::OnUpdateShouldQuit() {
     return 0;
 }
 
-// Reimplements 0x435ed0: RecoilStateSaveLoadTransition::OnDeactivate
-// (D:\Proj\Battlesport\RecoilApp.cpp)
+/**
+ * Reimplements 0x435ed0: RecoilStateSaveLoadTransition::OnDeactivate.
+ * Original source path: D:\Proj\Battlesport\RecoilApp.cpp.
+ * Purpose: Restores captured presentation/audio state and deletes the active save/load dialog.
+ */
 void RecoilStateSaveLoadTransition::OnDeactivate() {
     if (m_dialog != 0) {
         zVideo::RunPostprocessOnPrimaryBuffer();
 
-        RecoilStateSaveLoadDialogVirtual *dialog =
-            (RecoilStateSaveLoadDialogVirtual *)((unsigned int)m_dialog);
+        HudUiSaveLoadDialog *dialog = (HudUiSaveLoadDialog *)((unsigned int)m_dialog);
         dialog->SetEnabled(0);
 
         ((HudUiDialogController *)((unsigned int)m_dialog))->BlitOwnedSurfaceToPrimary();
         zVideo::Dispatch_UnlockPrimarySurfaceState();
 
-        dialog = (RecoilStateSaveLoadDialogVirtual *)((unsigned int)m_dialog);
+        dialog = (HudUiSaveLoadDialog *)((unsigned int)m_dialog);
         if (dialog != 0) {
-            dialog->ScalarDeletingDestructor(1);
+            if (m_dialogKind == RECOIL_SAVELOAD_DIALOG_SAVE) {
+                delete (HudUiSaveGameDialog *)dialog;
+            } else {
+                delete (HudUiLoadGameDialog *)dialog;
+            }
         }
 
         m_dialog = 0;
@@ -1508,8 +1403,11 @@ void RecoilStateSaveLoadTransition::OnDeactivate() {
     HudUiMgr::TriggerCurrentLayoutOnActivated();
 }
 
-// Reimplements 0x435f50: RecoilStateSaveLoadTransition::QueueOpenSaveDialog
-// (D:\Proj\Battlesport\RecoilApp.cpp)
+/**
+ * Reimplements 0x435f50: RecoilStateSaveLoadTransition::QueueOpenSaveDialog.
+ * Original source path: D:\Proj\Battlesport\RecoilApp.cpp.
+ * Purpose: Configures and queues the save-dialog transition.
+ */
 void __fastcall RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
     RecoilSaveLoadPresentationCaptureMode capturePresentationMode
 ) {
@@ -1525,8 +1423,11 @@ void __fastcall RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
     );
 }
 
-// Reimplements 0x435f80: RecoilStateSaveLoadTransition::QueueOpenLoadDialog
-// (D:\Proj\Battlesport\RecoilApp.cpp)
+/**
+ * Reimplements 0x435f80: RecoilStateSaveLoadTransition::QueueOpenLoadDialog.
+ * Original source path: D:\Proj\Battlesport\RecoilApp.cpp.
+ * Purpose: Configures and queues the load-dialog transition.
+ */
 void __fastcall RecoilStateSaveLoadTransition::QueueOpenLoadDialog(
     RecoilSaveLoadTransitionMode transitionMode
 ) {
@@ -2363,13 +2264,51 @@ inline void RecoilApp_StateQueue::PushBack(
     ++m_itemCount;
 }
 
-// Reimplements 0x42dfa0: RecoilApp::RecoilApp
-RecoilApp::RecoilApp()
+// Reimplements 0x442c70: RecoilApp_MfcOleModule::RecoilApp_MfcOleModule
+// (D:\Proj\Battlesport\RecoilApp.cpp)
+RecoilApp_MfcOleModule::RecoilApp_MfcOleModule()
     : CWinApp(0),
 #if !defined(_AFXDLL)
       m_recoilPad(0),
 #endif
+      m_pendingState(0),
       m_currentStateIndex(-1),
+      m_stateHostReserved(0),
+      m_skipWait(1),
+      m_missionShutdownMode(RECOILAPP_MISSION_SHUTDOWN_ON_EXIT),
+      m_stateQueue(),
+      m_reserved148(0) {
+    memset(
+        m_stateStack,
+        0,
+        sizeof(m_stateStack)
+    );
+}
+
+// Reimplements 0x4428b0: RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule
+// (D:\Proj\Battlesport\RecoilApp.cpp)
+RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule() {
+    if (m_stateQueue.m_chunkBaseList != 0) {
+        RecoilApp_StateQueueItem ***slot = m_stateQueue.m_readBlock.m_chunkBaseSlot;
+        RecoilApp_StateQueueItem ***const lastSlot = m_stateQueue.m_writeBlock.m_chunkBaseSlot;
+        while (slot != 0 && slot <= lastSlot) {
+            ::operator delete(*slot);
+            ++slot;
+        }
+
+        ::operator delete(m_stateQueue.m_chunkBaseList);
+        memset(
+            &m_stateQueue,
+            0,
+            sizeof(m_stateQueue)
+        );
+    }
+}
+
+// Reimplements 0x42dfa0: RecoilApp::RecoilApp
+RecoilApp::RecoilApp()
+    : RecoilApp_MfcOleModule(),
+      m_skipIntroFmv(0),
       m_transitionFadeTimer(0.0f) {
 }
 

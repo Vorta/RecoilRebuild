@@ -52,8 +52,6 @@ struct WestwoodOnlineUpgradeConfigDialog : CDialog {
     static int ShowModalAndApplySelectedProfileValues();
 };
 
-extern const RecoilNamedVtable kWestwoodOnlineUpgradeConfigDialog_Vtable;
-
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeConfigDialog) == 0x11c);
 RECOIL_STATIC_ASSERT(
     offsetof(

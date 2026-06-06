@@ -14,29 +14,17 @@ struct WestwoodOnlineUpgradeDownload {
     static ULONG UnadviseAndRelease();
 };
 
-struct WestwoodOnlineUpgradeDownloadComVtable {
-    HRESULT(STDMETHODCALLTYPE *QueryInterface)(
-        IUnknown *self,
-        REFIID iid,
-        void **out
-    );
-    ULONG(STDMETHODCALLTYPE *AddRef)(IUnknown *self);
-    ULONG(STDMETHODCALLTYPE *Release)(IUnknown *self);
-    HRESULT(STDMETHODCALLTYPE *BeginDownload)(
-        IUnknown *self,
+struct IWestwoodOnlineUpgradeDownload : IUnknown {
+    virtual HRESULT STDMETHODCALLTYPE BeginDownload(
         const char *descriptor0,
         const char *descriptor1,
         const char *descriptor2,
         const char *sourcePath,
         const char *fileName,
         const char *registryKey
-    );
-    HRESULT(STDMETHODCALLTYPE *Abort)(IUnknown *self);
-    HRESULT(STDMETHODCALLTYPE *Pump)(IUnknown *self);
-};
-
-struct WestwoodOnlineUpgradeDownloadComObject {
-    WestwoodOnlineUpgradeDownloadComVtable *vftable;
+    ) = 0;
+    virtual HRESULT STDMETHODCALLTYPE Abort() = 0;
+    virtual HRESULT STDMETHODCALLTYPE Pump() = 0;
 };
 
 struct WestwoodOnlineUpgradeDownloadReadyEntry {
@@ -50,55 +38,47 @@ struct WestwoodOnlineUpgradeDownloadReadyEntry {
     char m_downloadDirectory[0x100];
 };
 
-struct WestwoodOnlineUpgradeDownloadEventSinkVtable {
-    void *slots[32];
-};
-
 enum WestwoodOnlineUpgradeDownloadState {
     WOL_DOWNLOAD_STATE_CONNECTING = 2,
     WOL_DOWNLOAD_STATE_FINDING_PATCH = 4,
     WOL_DOWNLOAD_STATE_DOWNLOADING_PATCH = 6
 };
 
-struct WestwoodOnlineUpgradeDownloadEventSink {
-    WestwoodOnlineUpgradeDownloadEventSinkVtable *m_vftable;
+struct WestwoodOnlineUpgradeDownloadEventSink : IUnknown {
     WestwoodOnlineUpgradeRefCountAndLock m_refCountAndLock;
 
-    int CallbackNoOp(void *arg);
-    static HRESULT STDMETHODCALLTYPE OnDownloadFinished(IUnknown *self);
-    static HRESULT STDMETHODCALLTYPE OnDownloadError(
-        IUnknown *self,
+    virtual int STDMETHODCALLTYPE CallbackNoOp(void *arg);
+    virtual HRESULT STDMETHODCALLTYPE OnDownloadFinished();
+    virtual HRESULT STDMETHODCALLTYPE OnDownloadError(
         HRESULT result
     );
-    static HRESULT STDMETHODCALLTYPE OnDownloadProgress(
-        IUnknown *self,
+    virtual HRESULT STDMETHODCALLTYPE OnDownloadProgress(
         unsigned int bytesRead,
         unsigned int totalBytes,
         int unusedArg4,
         int secondsLeft
     );
-    static HRESULT STDMETHODCALLTYPE OnStateChanged(
-        IUnknown *self,
+    virtual HRESULT STDMETHODCALLTYPE OnStateChanged(
         WestwoodOnlineUpgradeDownloadState stateCode
     );
-    static ULONG STDMETHODCALLTYPE AddRef(
-        WestwoodOnlineUpgradeDownloadEventSink *self
+    HRESULT STDMETHODCALLTYPE QueryInterface(
+        REFIID iid,
+        void **outInterface
     );
-    static ULONG STDMETHODCALLTYPE Release(
-        WestwoodOnlineUpgradeDownloadEventSink *self
-    );
+    ULONG STDMETHODCALLTYPE AddRef();
+    ULONG STDMETHODCALLTYPE Release();
     void Destructor();
     static HRESULT __stdcall QueryInterface(
         WestwoodOnlineUpgradeDownloadEventSink *self,
         REFIID iid,
         void **outInterface
     );
+    static ULONG __stdcall Release(WestwoodOnlineUpgradeDownloadEventSink *self);
     static HRESULT __stdcall CreateInstance(
         WestwoodOnlineUpgradeDownloadEventSink **outSink
     );
 };
 
-extern WestwoodOnlineUpgradeDownloadEventSinkVtable g_WestwoodOnlineUpgradeDownloadEventSink_Vtbl;
 extern "C" IUnknown *g_pWestwoodOnlineUpgradeDownload;
 extern "C" void *g_pWestwoodOnlineUpgradeDownloadEventSink;
 extern "C" DWORD g_WestwoodOnlineUpgradeDownloadAdviseCookie;
@@ -113,24 +93,6 @@ extern const CLSID g_WestwoodOnlineUpgradeDownload_CLSID;
 extern const IID g_WestwoodOnlineUpgradeDownload_IID;
 extern const IID g_WestwoodOnlineUpgradeDownloadEventSink_IID;
 
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDownloadComVtable,
-        BeginDownload
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDownloadComVtable,
-        Abort
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDownloadComVtable,
-        Pump
-    ) == 0x14
-);
 RECOIL_STATIC_ASSERT(
     offsetof(
         WestwoodOnlineUpgradeDownloadReadyEntry,
@@ -173,14 +135,7 @@ RECOIL_STATIC_ASSERT(
         m_downloadDirectory
     ) == 0x1d4
 );
-RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeDownloadEventSinkVtable) == 0x80);
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeDownloadEventSink) == 0x20);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDownloadEventSink,
-        m_vftable
-    ) == 0x00
-);
 RECOIL_STATIC_ASSERT(
     offsetof(
         WestwoodOnlineUpgradeDownloadEventSink,

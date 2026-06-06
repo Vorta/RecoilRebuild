@@ -90,8 +90,7 @@ int zSndPlayHandle::SetFreqScaled(
             return -1;
         }
 
-        source->vtable->SetPitchScaled(
-            source,
+        source->SetPitch(
             playbackRate / sample->sampleRate
         );
     }

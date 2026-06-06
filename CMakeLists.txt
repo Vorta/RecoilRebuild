@@ -13,6 +13,7 @@ option(RECOIL_REQUIRE_32BIT "Fail configure unless the selected native compiler 
 option(RECOIL_EMIT_ASM "Ask MSVC to emit assembly listings for binary-safety comparison." OFF)
 
 include(cmake/RecoilCompiler.cmake)
+include(cmake/RecoilAureal.cmake)
 include(cmake/RecoilDirectX.cmake)
 include(cmake/RecoilMfc42.cmake)
 

@@ -198,23 +198,17 @@ struct zVidPaletteRemapRecipe {
     float color1Strength;
 };
 
-struct zVideo_SurfaceLockVerifierVtbl {
-    unsigned int(__stdcall *QueryInterface)(
-        zVideo_SurfaceLockVerifier *self,
+struct zVideo_SurfaceLockVerifier {
+    virtual HRESULT STDMETHODCALLTYPE QueryInterface(
         REFIID riid,
         void **object
-    );
-    unsigned int(__stdcall *AddRef)(zVideo_SurfaceLockVerifier *self);
-    unsigned int(__stdcall *Release)(zVideo_SurfaceLockVerifier *self);
-    unsigned int(__stdcall *unknown_0c)(zVideo_SurfaceLockVerifier *self);
-    int(__stdcall *VerifySurfaceState)(
-        zVideo_SurfaceLockVerifier *self,
+    ) = 0;
+    virtual ULONG STDMETHODCALLTYPE AddRef() = 0;
+    virtual ULONG STDMETHODCALLTYPE Release() = 0;
+    virtual HRESULT STDMETHODCALLTYPE Unknown0c() = 0;
+    virtual HRESULT STDMETHODCALLTYPE VerifySurfaceState(
         zVideo_SurfaceLockVerifyArgs *args
-    );
-};
-
-struct zVideo_SurfaceLockVerifier {
-    zVideo_SurfaceLockVerifierVtbl *vtable;
+    ) = 0;
 };
 
 struct zVideo_QuadBatchItemPartial {

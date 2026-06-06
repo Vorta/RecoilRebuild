@@ -56,7 +56,6 @@ const unsigned int kFullscreenMenuCommandId = 0x9c4e;
 const DWORD kMainWindowStyle = 0x82ca0000;
 const char *kRecoilWndClassName = "RecoilClass";
 const char *kMainMenuResourceName = "MYMENU";
-const RecoilNamedVtable kCZRecoilFrame_Vtable = {"CZRecoilFrame vtable"};
 
 unsigned int Ptr32FromSymbol(
     const void *symbol
@@ -168,7 +167,6 @@ void __stdcall EnableAlways(
 CZRecoilFrame * CZRecoilFrame::Constructor() {
     ((CZGameFrame *)(this))->Constructor("recoil");
     new (&m_mainMenu) CMenu();
-    vftable = Ptr32FromSymbol(&kCZRecoilFrame_Vtable);
 
     unsigned long
         titleStorage[(sizeof(CString) + sizeof(unsigned long) - 1) / sizeof(unsigned long)];
@@ -332,7 +330,6 @@ CZRecoilFrame * CZRecoilFrame::Constructor() {
 
 // Reimplements 0x430610: CZRecoilFrame::Destructor
 void CZRecoilFrame::Destructor() {
-    vftable = Ptr32FromSymbol(&kCZRecoilFrame_Vtable);
     m_mainMenu.DestroyMenu();
     m_mainMenu.CMenu::~CMenu();
     ((CZGameFrame *)(this))->Destructor();

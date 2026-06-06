@@ -1,3 +1,5 @@
+#include "Battlesport/Mfc42Abi.h"
+
 #include "zGame.h"
 
 #include "GameZRecoil/zEffect/zEffect.h"

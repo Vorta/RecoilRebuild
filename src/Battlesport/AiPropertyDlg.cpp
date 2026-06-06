@@ -12,7 +12,7 @@ const char kAiPropertyDlgLabelMinPursuitRange[] = "Min Pursuit Rng";
 const char kAiPropertyDlgLabelMaxPursuitRange[] = "Max Pursuit Rng";
 } // namespace
 
-// Access shim for imported MFC42 CDialog metadata; this does not reimplement
+// Provider-boundary accessor for imported MFC42 CDialog metadata; this does not reimplement
 // CDialog behavior.
 class AiPropertyDlgCDialogMessageMapAccessor : public CDialog {
   public:
@@ -20,7 +20,7 @@ class AiPropertyDlgCDialogMessageMapAccessor : public CDialog {
 };
 
 /**
- * MFC provider-boundary shim for imported CDialog message-map metadata.
+ * MFC provider-boundary accessor for imported CDialog message-map metadata.
  * Purpose: Exposes CDialog::messageMap through the callback shape expected by the derived map.
  */
 const AFX_MSGMAP *__stdcall AiPropertyDlgCDialogMessageMapAccessor::GetMessageMap() {
@@ -28,7 +28,7 @@ const AFX_MSGMAP *__stdcall AiPropertyDlgCDialogMessageMapAccessor::GetMessageMa
 }
 
 /**
- * MFC provider-boundary shim for AiPropertyDlg's base message-map callback.
+ * MFC provider-boundary accessor for AiPropertyDlg's base message-map callback.
  * Purpose: Returns the provider-owned CDialog base message map for MFC dispatch chaining.
  */
 const AFX_MSGMAP *__stdcall AiPropertyDlg::GetBaseMessageMapForMfc() {

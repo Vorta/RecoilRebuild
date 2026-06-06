@@ -1,4 +1,5 @@
 #include "Battlesport/HudSensorTracker.h"
+#include "Battlesport/hud.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zGame/zGame.h"
@@ -36,10 +37,6 @@ constexpr std::size_t kEffectFxPass3SlotSinFreqOffset = 0x44;
 constexpr std::size_t kEffectFxPass3SlotSinPhaseOffset = 0x48;
 constexpr std::size_t kEffectFxPass3SlotWriteIndexOffset = 0x1ec;
 
-int g_hudSensorVisibleCallCount = 0;
-int g_hudSensorLastVisible = -1;
-int g_hudSensorDeleteCallCount = 0;
-std::uint32_t g_hudSensorDeleteFlags = 0;
 int g_effectAnimDispatchCallCount = 0;
 zEffectAnimActivationRecord *g_effectAnimDispatchRecord = nullptr;
 int g_effectAnimEventCallbackCallCount = 0;
@@ -211,7 +208,7 @@ using EffectBackendPlayDirectSoundFn = std::int32_t(__stdcall *)(void *self,
                                                                  std::uint32_t flags);
 using EffectBackendSimpleFn = std::int32_t(__stdcall *)(void *self);
 
-struct EffectDirectSoundBufferVTable {
+struct EffectDirectSoundDispatchTable {
     void *slots00_1c[8];
     EffectBackendGetUint32Fn GetFrequency;
     EffectBackendGetStatusFn GetStatus;
@@ -229,7 +226,7 @@ struct EffectDirectSoundBufferVTable {
 };
 
 struct EffectDirectSoundBuffer {
-    EffectDirectSoundBufferVTable *vtable;
+    EffectDirectSoundDispatchTable *dispatch;
 };
 
 void ResetEffectDirectSoundCounters() {
@@ -304,39 +301,8 @@ std::int32_t __stdcall EffectDirectSoundPlay(void *, std::uint32_t, std::uint32_
     return 0;
 }
 
-template <typename Method> std::uintptr_t MethodAddress(Method method) {
-    static_assert(sizeof(method) <= sizeof(std::uintptr_t));
-    std::uintptr_t address = 0;
-    std::memcpy(&address, &method, sizeof(method));
-    return address;
-}
-
 bool FloatNear(float lhs, float rhs) {
     return std::fabs(lhs - rhs) < 0.0001f;
-}
-
-struct HudSensorTestElement : HudUiElement {
-    HudSensorTestElement * ScalarDeletingDestructor(std::uint32_t flags) {
-        ++g_hudSensorDeleteCallCount;
-        g_hudSensorDeleteFlags = flags;
-        if ((flags & 1u) != 0) {
-            ::operator delete(this);
-        }
-
-        return this;
-    }
-
-    void SetVisible(std::int32_t visible) {
-        ++g_hudSensorVisibleCallCount;
-        g_hudSensorLastVisible = visible;
-    }
-};
-
-HudUiCommon_FTable MakeHudSensorTestFTable() {
-    HudUiCommon_FTable table = {};
-    table.slots[0] = MethodAddress(&HudSensorTestElement::ScalarDeletingDestructor);
-    table.slots[24] = MethodAddress(&HudSensorTestElement::SetVisible);
-    return table;
 }
 
 bool CStringIsEmpty(const CString &value) {
@@ -1205,17 +1171,12 @@ extern "C" int hud_sensor_tracker_load_map_paths_smoke(void) {
 }
 
 extern "C" int hud_sensor_reset_mission_state_smoke(void) {
-    static const HudUiCommon_FTable ftable = MakeHudSensorTestFTable();
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    g_zVideo_ActiveRendererPath = 0;
 
-    g_hudSensorVisibleCallCount = 0;
-    g_hudSensorLastVisible = -1;
-    g_hudSensorDeleteCallCount = 0;
-    g_hudSensorDeleteFlags = 0;
-
-    auto *fxElement =
-        static_cast<HudSensorTestElement *>(::operator new(sizeof(HudSensorTestElement)));
+    auto *fxElement = static_cast<HudWeatherFxSnow *>(::operator new(sizeof(HudWeatherFxSnow)));
     std::memset(fxElement, 0, sizeof(*fxElement));
-    fxElement->ftable = &ftable;
+    fxElement->Constructor(1);
 
     auto *const fxContainer = reinterpret_cast<HudUiContainer *>(&g_zVideo_FxPass3ConfigLocal);
     fxContainer->childHead = fxElement;
@@ -1238,12 +1199,11 @@ extern "C" int hud_sensor_reset_mission_state_smoke(void) {
                     tracker.objectiveCount == 0 && tracker.worldNode == nullptr &&
                     CStringIsEmpty(tracker.missionDataPath) && CStringIsEmpty(tracker.zbdPath) &&
                     tracker.fxPass3Obj == nullptr && fxContainer->childHead == nullptr &&
-                    fxContainer->childTail == nullptr && g_hudSensorVisibleCallCount == 1 &&
-                    g_hudSensorLastVisible == 0 && g_hudSensorDeleteCallCount == 1 &&
-                    g_hudSensorDeleteFlags == 1;
+                    fxContainer->childTail == nullptr;
 
     fxContainer->childHead = nullptr;
     fxContainer->childTail = nullptr;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
     return ok ? 0 : 1;
 }
 
@@ -2418,15 +2378,15 @@ extern "C" int zeffect_handle_sample_ref_offset_event_smoke(void) {
         return 1;
     }
 
-    EffectDirectSoundBufferVTable directSoundVTable = {};
-    directSoundVTable.GetFrequency = &EffectDirectSoundGetFrequency;
-    directSoundVTable.GetStatus = &EffectDirectSoundGetStatus;
-    directSoundVTable.SetVolume = &EffectDirectSoundSetVolume;
-    directSoundVTable.SetPan = &EffectDirectSoundSetPan;
-    directSoundVTable.SetFrequency = &EffectDirectSoundSetFrequency;
-    directSoundVTable.SetCurrentPosition = &EffectDirectSoundSetCurrentPosition;
-    directSoundVTable.Play = &EffectDirectSoundPlay;
-    EffectDirectSoundBuffer directSoundBuffer{&directSoundVTable};
+    EffectDirectSoundDispatchTable directSoundDispatch = {};
+    directSoundDispatch.GetFrequency = &EffectDirectSoundGetFrequency;
+    directSoundDispatch.GetStatus = &EffectDirectSoundGetStatus;
+    directSoundDispatch.SetVolume = &EffectDirectSoundSetVolume;
+    directSoundDispatch.SetPan = &EffectDirectSoundSetPan;
+    directSoundDispatch.SetFrequency = &EffectDirectSoundSetFrequency;
+    directSoundDispatch.SetCurrentPosition = &EffectDirectSoundSetCurrentPosition;
+    directSoundDispatch.Play = &EffectDirectSoundPlay;
+    EffectDirectSoundBuffer directSoundBuffer{&directSoundDispatch};
     sample.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
 
     float globalVolume = 1.0f;

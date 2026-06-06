@@ -84,35 +84,6 @@ void ClearZbdPath(
     tracker->zbdPath.Empty();
 }
 
-void HudUiElementSetVisibleVirtual(
-    HudUiElement *element,
-    int visible
-) {
-    typedef void( * SetVisibleFn)(
-        HudUiElement * self,
-        int visible
-    );
-
-    ((SetVisibleFn)(element->ftable->slots[24]))(
-        element,
-        visible
-    );
-}
-
-void HudUiElementDeleteVirtual(
-    HudUiElement *element
-) {
-    typedef HudUiElement *( * ScalarDeletingDestructorFn)(
-        HudUiElement * self,
-        unsigned int flags
-    );
-
-    ((ScalarDeletingDestructorFn)(element->ftable->slots[0]))(
-        element,
-        1
-    );
-}
-
 int FloatToRawSeconds(
     float value
 ) {
@@ -1736,14 +1707,13 @@ int HudSensorTracker::ResetMissionState() {
     objectiveCount = 0;
 
     if (fxElement != 0) {
-        HudUiElementSetVisibleVirtual(
-            fxElement,
-            0
-        );
+        fxElement->SetVisible(0);
         ((HudUiContainer *)(&g_zVideo_FxPass3ConfigLocal))->RemoveChild(fxPass3Obj);
 
         if (fxPass3Obj != 0) {
-            HudUiElementDeleteVirtual(fxPass3Obj);
+            HudWeatherFx *const weatherFx = (HudWeatherFx *)(fxPass3Obj);
+            weatherFx->Destructor();
+            ::operator delete(weatherFx);
         }
 
         fxPass3Obj = 0;

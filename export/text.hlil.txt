@@ -22267,7 +22267,7 @@
     AiPropertyDlg::UpdatePropertyLabels(self)
 }
 
-// Source: D:\Proj\Recoil\AiPropertyDlg.cpp. Updates the two property-label controls according to the selected AI behavior index: pursuit range labels for mode 0, attack/movement labels for mode 2, and unused labels for the other handled modes. BN limitation: MFC CString SEH cleanup renders as explicit exception-registration scaffolding.
+// Source: D:\Proj\Recoil\AiPropertyDlg.cpp. Updates the two property-label controls according to the selected AI behavior index: pursuit range labels for mode 0, attack/movement labels for mode 2, and unused labels for the other handled modes. Local switch table is jump_table_AiPropertyDlg_UpdatePropertyLabels at 0x41c258 (uint32_t[6]) after the function-body ret; VC5 emits the same one-byte nop plus table layout, while current function-byte extraction stops before the adjacent table.
 0x41c170 void __fastcall AiPropertyDlg::UpdatePropertyLabels(struct AiPropertyDlg* self)
 {
     int32_t var_4_2 = 0xffffffff
@@ -50086,7 +50086,7 @@
     // BN stack merge: the &self/atoi(self) display is the local queryFieldText CString at stack -0x20, not the event-sink receiver.
     CString::operator=(&self, CString::Mid(&encodedQuery, &var_10, 0))
     var_8.b = 1
-    struct CString __saved_esi
+    int32_t __saved_esi
     CString::~CString(&__saved_esi)
     int32_t wParam = atoi(self)
     SendMessageA(g_pWestwoodOnlineUpgradeDialog->m_sessionModeCombo.base.m_hWnd, 0x14e, wParam, 0)
@@ -50153,7 +50153,7 @@
     // BN stack merge: the &self/atoi(self) display is the local queryFieldText CString at stack -0x20, not the event-sink receiver.
     CString::operator=(&self, CString::Mid(&encodedQuery, &var_10, 0))
     var_8.b = 1
-    struct CString __saved_esi
+    int32_t __saved_esi
     CString::~CString(&__saved_esi)
     int32_t wParam = atoi(self)
     SendMessageA(g_pWestwoodOnlineUpgradeDialog->m_sessionModeCombo.base.m_hWnd, 0x14e, wParam, 0)
@@ -50882,7 +50882,7 @@
     TEB* fsbase
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
-    struct CString var_13c = 0
+    struct CWnd* var_13c = nullptr
     struct WestwoodOnlineUpgradeConfigDialog configDialog
     WestwoodOnlineUpgradeConfigDialog::Constructor(&configDialog, var_13c)
     int32_t var_4 = 0
@@ -50918,17 +50918,17 @@
     // GetSelectedProfileValues returns void and fills outPlayerName/outConnectString/selectedProfileConnectStringMode by pointer. HLIL's ecx_3 return capture is a stack-temp artifact.
     char* outPlayerName
     char* outConnectString
-    struct CString ecx_3 = WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(&configDialog, &outPlayerName, &outConnectString, var_13c)
+    struct CWnd* ecx_3 = WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(&configDialog, &outPlayerName, &outConnectString, var_13c)
     char* outPlayerName_1 = outPlayerName
     // BN models the stack CString temporary slot as var_13c/ecx_*; assembly is reserving and constructing CString temporaries for the two selected-profile setter calls.
     var_13c = ecx_3
-    struct CString* var_130 = &var_13c
+    struct CWnd** var_130 = &var_13c
     // Constructs a temporary CString from outPlayerName for SetSelectedProfilePlayerName; this is not a CWnd* var_13c semantic local.
     CString::CString(&var_13c, outPlayerName_1)
-    struct CString ecx_6 = WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName(g_pWestwoodOnlineUpgradeDialog, var_13c)
+    struct CWnd* ecx_6 = WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName(g_pWestwoodOnlineUpgradeDialog, var_13c)
     char* outConnectString_1 = outConnectString
     var_13c = ecx_6
-    struct CString* var_130_1 = &var_13c
+    struct CWnd** var_130_1 = &var_13c
     // Constructs a temporary CString from outConnectString for SetSelectedProfileConnectString; this reuses the caller's transient stack argument slot.
     CString::CString(&var_13c, outConnectString_1)
     WestwoodOnlineUpgradeDialog::SetSelectedProfileConnectString(g_pWestwoodOnlineUpgradeDialog, var_13c)
@@ -98417,8 +98417,8 @@
                 zMath::MatTransformPointBatchInPlace(gTransformedVerts, di->vertCount)
 
             int32_t vertIndex = 0
-            int32_t packedColor
-            packedColor.w = di->entries->materialRef->packedColor
+            uint32_t edi_2
+            edi_2.w = di->entries->materialRef->packedColor
 
             if (di->vertCount s> 0)
                 int32_t var_c = 0
@@ -98464,10 +98464,10 @@
 
                                     if ((((x87_r7_12 < temp19_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_12, temp19_1) ? 1 : 0) << 0xa | (x87_r7_12 == temp19_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
                                         if (zVideo_ActiveRendererPath_1 == ZVID_RENDERER_BACKEND_SOFTWARE)
-                                            zRndr_LensFlare::QueueProjectedSample(&var_3c, packedColor, nullptr)
+                                            zRndr_LensFlare::QueueProjectedSample(&var_3c, edi_2, nullptr)
                                         else
     // Indirect fastcall: ECX=&projectedPoint, EDX=packedColor16, stack pointCount=1; DD3D callee ignores pointCount.
-                                            g_zVideo_pfnDrawPointColor16(1)
+                                            g_zVideo_pfnDrawPointColor16(&var_3c, edi_2, 1)
 
                     int32_t vertIndex = &di_1->mode + 1
                     int32_t var_c_1 = gTransformedVerts_1 + 0xc
@@ -98522,11 +98522,11 @@
                     while (i_1 != 1)
                     di = di_1
                 else
-                    int32_t ecx_19 = vertCount_1 * 0xc
+                    int32_t ecx_20 = vertCount_1 * 0xc
                     int32_t esi_2
-                    int32_t edi_2
-                    edi_2, esi_2 = __builtin_memcpy(gTransformedVerts_4, verts_1, ecx_19 & 0xfffffffc)
-                    __builtin_memcpy(edi_2, esi_2, ecx_19 & 3)
+                    int32_t edi_3
+                    edi_3, esi_2 = __builtin_memcpy(gTransformedVerts_4, verts_1, ecx_20 & 0xfffffffc)
+                    __builtin_memcpy(edi_3, esi_2, ecx_20 & 3)
         else
             long double x87_r7_13 = di->blendScale
             gTransformedVerts_1 = x87_r7_13
@@ -98626,13 +98626,13 @@
                 int32_t eax_32 = *vertexIndices
                 vertexIndices = &vertexIndices[1]
                 int32_t eax_34 = gTransformedVerts_1 + eax_32 * 0xc
-                struct zClipVert* edi_6 = edx_24
+                struct zClipVert* edi_7 = edx_24
                 edx_24 = &edx_24[1]
                 i_2 = i_13
                 i_13 -= 1
-                edi_6->x = *eax_34
-                edi_6->y = *(eax_34 + 4)
-                edi_6->z = *(eax_34 + 8)
+                edi_7->x = *eax_34
+                edi_7->y = *(eax_34 + 4)
+                edi_7->z = *(eax_34 + 8)
             while (i_2 != 1)
             long double x87_r7_28 = g_Clip_PolyVertsScratch[2].x - g_Clip_PolyVertsScratch[1].x
             long double x87_r6_14 = g_Clip_PolyVertsScratch[2].y - g_Clip_PolyVertsScratch[1].y
@@ -98670,11 +98670,11 @@
                 struct zClipVert triClipVerts[0x3]
 
                 if ((outActiveLightState_1:1.b & 1) == 0)
-                    int32_t ecx_57
-                    ecx_57.w = materialRef->packedColor
+                    int32_t ecx_58
+                    ecx_58.w = materialRef->packedColor
                     int32_t esi_13 = 0
                     float outFade = 0f
-                    int32_t var_c_2 = ecx_57
+                    int32_t var_c_2 = ecx_58
 
                     if (outDepthFade != 0)
                         int32_t eax_78
@@ -98710,13 +98710,13 @@
                         struct zClipVert* eax_83 = &g_Clip_PolyVerts
                         long double x87_r7_80 = 0f
                         int32_t i_20 = i_23
-                        float* ecx_63 = &g_Clip_PolyVertsScratch[0x3f + i_23]
+                        float* ecx_64 = &g_Clip_PolyVertsScratch[0x3f + i_23]
                         int32_t i_3
 
                         do
-                            long double x87_r6_26 = eax_83->y * *ecx_63
-                            long double x87_r5_36 = ecx_63[1] * eax_83->x
-                            ecx_63 = eax_83
+                            long double x87_r6_26 = eax_83->y * *ecx_64
+                            long double x87_r5_36 = ecx_64[1] * eax_83->x
+                            ecx_64 = eax_83
                             eax_83 = &eax_83[1]
                             i_3 = i_20
                             i_20 -= 1
@@ -98822,15 +98822,15 @@
                         if (vertexCount_2 s> 0)
     // Attribute clear loop zeros g_Clip_PolyAttr0[i] and the adjacent g_Clip_PolyAttr1[i] array in one stride.
                             float* eax_38 = &g_Clip_PolyAttr0
-                            uint32_t ecx_32 = vertexCount_2
+                            uint32_t ecx_33 = vertexCount_2
                             uint32_t i_6
 
                             do
                                 eax_38[0x40] = 0
                                 *eax_38 = 0f
                                 eax_38 = &eax_38[1]
-                                i_6 = ecx_32
-                                ecx_32 -= 1
+                                i_6 = ecx_33
+                                ecx_33 -= 1
                             while (i_6 != 1)
 
                         int32_t outDepthFade_1 = outDepthFade
@@ -98865,12 +98865,12 @@
                             zRndr::CommitFogColorParamsIfChanged()
                             vertexCount_2 = var_8
 
-                    uint32_t ecx_39 = vertexCount_2 << 3
+                    uint32_t ecx_40 = vertexCount_2 << 3
                     materialRef.b = clipMask.b
                     int32_t esi_9
-                    int32_t edi_8
-                    edi_8, esi_9 = __builtin_memcpy(g_Clip_PolyUvs, entries_1->uvPairs, ecx_39 & 0xfffffffc)
-                    __builtin_memcpy(edi_8, esi_9, ecx_39 & 3)
+                    int32_t edi_9
+                    edi_9, esi_9 = __builtin_memcpy(g_Clip_PolyUvs, entries_1->uvPairs, ecx_40 & 0xfffffffc)
+                    __builtin_memcpy(edi_9, esi_9, ecx_40 & 3)
 
                     if (lightFlags == 0)
                         int32_t eax_65
@@ -98887,13 +98887,13 @@
                             struct zClipVert* eax_67 = &g_Clip_PolyVerts
                             long double x87_r7_60 = 0f
                             int32_t esi_11 = vertexCount
-                            float* ecx_50 = &g_Clip_PolyVertsScratch[0x3f + vertexCount]
+                            float* ecx_51 = &g_Clip_PolyVertsScratch[0x3f + vertexCount]
                             int32_t i_7
 
                             do
-                                long double x87_r6_23 = eax_67->y * *ecx_50
-                                long double x87_r5_34 = ecx_50[1] * eax_67->x
-                                ecx_50 = eax_67
+                                long double x87_r6_23 = eax_67->y * *ecx_51
+                                long double x87_r5_34 = ecx_51[1] * eax_67->x
+                                ecx_51 = eax_67
                                 eax_67 = &eax_67[1]
                                 i_7 = esi_11
                                 esi_11 -= 1
@@ -98943,14 +98943,14 @@
                                         if (vertexCount_1 s> 0)
     // Alt-clip remap loop walks zClipVert triplets as float x/y pairs; pointer arithmetic is the compiler's tight-loop form.
                                             float* eax_74 = &g_Clip_PolyVerts[0].y
-                                            int32_t ecx_53 = vertexCount_1
+                                            int32_t ecx_54 = vertexCount_1
                                             int32_t i_9
 
                                             do
                                                 long double x87_r7_72 = g_zClipAlt_RemapScaleX * eax_74[-1]
                                                 eax_74 = &eax_74[3]
-                                                i_9 = ecx_53
-                                                ecx_53 -= 1
+                                                i_9 = ecx_54
+                                                ecx_54 -= 1
                                                 eax_74[-4] = x87_r7_72 + g_zClipAlt_RemapBiasX
                                                 eax_74[-3] = g_zClipAlt_RemapScaleY * eax_74[-3] + g_zClipAlt_RemapBiasY
                                             while (i_9 != 1)
@@ -98975,13 +98975,13 @@
                             struct zClipVert* eax_50 = &g_Clip_PolyVerts
                             long double x87_r7_43 = 0f
                             int32_t i_19 = i_22
-                            float* ecx_45 = &g_Clip_PolyVertsScratch[0x3f + i_22]
+                            float* ecx_46 = &g_Clip_PolyVertsScratch[0x3f + i_22]
                             int32_t i_10
 
                             do
-                                long double x87_r6_20 = eax_50->y * *ecx_45
-                                long double x87_r5_32 = ecx_45[1] * eax_50->x
-                                ecx_45 = eax_50
+                                long double x87_r6_20 = eax_50->y * *ecx_46
+                                long double x87_r5_32 = ecx_46[1] * eax_50->x
+                                ecx_46 = eax_50
                                 eax_50 = &eax_50[1]
                                 i_10 = i_19
                                 i_19 -= 1
@@ -146431,12 +146431,12 @@
 0x4af060 void __fastcall OptCatalog::ProcessRuntimeInstances(struct zClass_Node* actionNode)
 {
     __alloca_probe()
-    int32_t entry_impactSlot
-    int32_t impactSlot = entry_impactSlot
-    int32_t* entry_runtimeState
-    int32_t* runtimeState_4 = entry_runtimeState
-    int32_t runtimeState_3
-    int32_t runtimeState = runtimeState_3
+    int32_t impactSlot_1
+    int32_t impactSlot = impactSlot_1
+    int32_t* runtimeState_6
+    int32_t* runtimeState_4 = runtimeState_6
+    struct OptCatalogRuntimeImpactState* runtimeState_3
+    struct OptCatalogRuntimeImpactState* runtimeState = runtimeState_3
     void* edi = &g_OptCatalog_EntryTable[g_OptCatalog_EntryCount]
     struct zTag4 ecx_4 = g_Variant_CurrentTag.count.d
     float runtimeState_5 = *_HUGE
@@ -146474,7 +146474,7 @@
                 for (struct OptCatalogTrailRuntimeState* j = OptCatalog_EntryTable_1->runtimeListHead.activeList; j != 0; j = j->next)
                     struct zTag4* variantTagPtr_10 = j->variantTagPtr
                     struct OptCatalogTrailSegment* segment_1 = &j->segments
-                    runtimeState = 0
+                    runtimeState = nullptr
                     struct OptCatalogTrailSegment* segment_3 = segment_1
 
                     if (variantTagPtr_10 == 0)
@@ -146533,7 +146533,7 @@
                         top = top
 
                         do
-                            runtimeState += 1
+                            runtimeState = &runtimeState->next + 1
                             impactSlot = 0
                             zClass_Class::gwNodeSetActive(segment_1->node, 1)
                             float z_3 = 0f
@@ -146581,12 +146581,12 @@
                                 zClass_Class::gwNodeSetRaycastable(j->projectileNode, 0)
 
                             struct PlayerProbeSampleCandidateBuffer rayData
-                            int32_t eax_92 = zClass_cls_di::RaycastSelectClosestHitBetweenPoints(g_OptCatalogRuntimeWorld, var_1c_18, var_1c_18, &rayData)
+                            int32_t eax_93 = zClass_cls_di::RaycastSelectClosestHitBetweenPoints(g_OptCatalogRuntimeWorld, var_1c_18, var_1c_18, &rayData)
 
                             if (runtimeState == 1)
                                 zClass_Class::gwNodeSetRaycastable(j->projectileNode, 1)
 
-                            if (eax_92 == 0)
+                            if (eax_93 == 0)
                                 int32_t candidateCount = rayData.candidateCount
                                 struct zVec3 var_a8
                                 struct zVec3* reflectedDirOut = &var_a8
@@ -146595,16 +146595,16 @@
                                 float x = &scale
                                 forwardVec = reflectedDirOut
                                 float y = &(&__saved_ebp)[candidateCount * 0xa - 0x558]
-                                int32_t eax_96
+                                int32_t eax_97
                                 int32_t ecx_127
-                                eax_96, ecx_127 = OptCatalog::CanSpawnThroughRay(OptCatalog_EntryTable_1, &(&__saved_ebp)[candidateCount * 0xa - 0x558], forwardVec, var_1c_18, x, y, reflectedDirOut)
+                                eax_97, ecx_127 = OptCatalog::CanSpawnThroughRay(OptCatalog_EntryTable_1, &(&__saved_ebp)[candidateCount * 0xa - 0x558], forwardVec, var_1c_18, x, y, reflectedDirOut)
                                 unimplemented  {fld st0, dword [ebp-0x44]}
                                 unimplemented  {fadd dword [ebp-0x48]}
                                 int16_t flags_2 = (OptCatalog_EntryTable_1->flags).w
                                 float var_48_2 = unimplemented  {fstp dword [ebp-0x44], st0}
                                 unimplemented  {fstp dword [ebp-0x44], st0}
 
-                                if (eax_96 != 0)
+                                if (eax_97 != 0)
                                     if ((flags_2:1.b & 8) != 0)
                                         unimplemented  {fld st0, dword [ebx+0x30]}
                                         unimplemented  {fsub st0, dword [0x56bca8]}
@@ -146700,7 +146700,7 @@
                                         x = hitEvent->pos.x
                                         zClass_Light::gwLightSetPosition(j->attachNode, x, y, hitEvent->pos.z)
 
-                                if (eax_96 != 1)
+                                if (eax_97 != 1)
                                     *x = *(y i+ 0xc)
                                     *(x i+ 4) = *(y i+ 0x10)
                                     *(x i+ 8) = *(y i+ 0x14)
@@ -146729,11 +146729,11 @@
                                 break
                         while (runtimeState s< j->segmentCount)
                     else
-                        int32_t* targetCountPtr = j->targetCountPtr
-                        int32_t var_1c_13 = 0
+                        void** targetCountPtr = j->targetCountPtr
+                        void* const var_1c_13 = nullptr
 
                         if (targetCountPtr != 0)
-                            int32_t eax_44 = *targetCountPtr
+                            void* eax_44 = *targetCountPtr
                             var_1c_13 = eax_44
 
                             if (eax_44 s> 8)
@@ -146755,7 +146755,7 @@
                             struct zVec3 var_9c
                             OptCatalog::ReflectAndSortImpactTraceList(j, &targetProjectionScratch, &var_9c)
                             unimplemented  {call 0x4b0ca0}
-                            int32_t ecx_72 = var_1c_13
+                            void* const ecx_72 = var_1c_13
 
                             if (ecx_72 s> 4)
                                 ecx_72 = 4
@@ -146780,31 +146780,30 @@
                                 while (k != 1)
 
                             struct zVec3* originPos_1 = j->originPos
-                            int32_t var_20_4 = 0
+                            void* const var_20_4 = nullptr
                             targetPos_1.x = originPos_1->x
                             targetPos_1.y = originPos_1->y
                             targetPos_1.z = originPos_1->z
 
                             if (ecx_72 s> 0)
                                 struct zVec3* vec_1 = &j->segments[0].pos
-                                float (* var_8)[0x8] = &targetProjectionScratch
-                                int32_t var_18_22 = ecx_72
+                                float* var_8 = &targetProjectionScratch
+                                void* const var_18_22 = ecx_72
                                 var_20_4 = ecx_72
                                 struct zVec3* out_1
                                 float scale_4
 
                                 do
                                     float y_2 = targetPos_1.y
-                                    float* vec_2 = vec_1
-                                    *vec_2 = targetPos_1.x
+                                    vec_1->x = targetPos_1.x
                                     float z = targetPos_1.z
-                                    vec_2[1] = y_2
+                                    vec_1->y = y_2
                                     out_1 = &targetPos_1
-                                    vec_2[2] = z
+                                    vec_1->z = z
                                     scale_4 = *var_8
                                     zMath::Vec3ScaleAdd(vec_1, &var_9c, scale_4, out_1)
                                     vec_1 += 0x20
-                                    var_8 = &(*var_8)[1]
+                                    var_8 = &var_8[1]
                                     int32_t var_18_24 = scale_4 i- 1
                                 while (scale_4 != 1)
                                 out_3 = out_1
@@ -146855,12 +146854,12 @@
                                     unimplemented  {call 0x4729b0}
                                     (to - 0x14)->__offset(0xfffffffffffffff8).d = unimplemented  {fstp dword [eax-0x8], st0}
                                     unimplemented  {fstp dword [eax-0x8], st0}
-                                    int32_t eax_63 = OptCatalog::ComputeTrailImpactResponse(OptCatalog_EntryTable_1, j, segment, to - 0x14)
+                                    int32_t eax_64 = OptCatalog::ComputeTrailImpactResponse(OptCatalog_EntryTable_1, j, segment, to - 0x14)
                                     unimplemented  {call 0x4b0e20}
-                                    var_24_1 = eax_63
+                                    var_24_1 = eax_64
                                     OptCatalog::UpdateTrailSegmentVisual(segment)
                                     unimplemented  {call 0x4b0f70}
-                                    runtimeState += 1
+                                    runtimeState = &runtimeState->next + 1
 
                                     if (var_24_1 != 0)
                                         break
@@ -146881,7 +146880,7 @@
                                     unimplemented  {call 0x4b0e20}
                                     OptCatalog::UpdateTrailSegmentVisual(&edi_8[-1])
                                     unimplemented  {call 0x4b0f70}
-                                    runtimeState += 1
+                                    runtimeState = &runtimeState->next + 1
                                     edi_8 = &edi_8[8]
                                     segment = &edi_8[7]
                                     to = targetPos + 0x20
@@ -146891,7 +146890,7 @@
                                 segment_2 = segment
 
                             if (var_24_1 == 0)
-                                zMath::Vec3DirectionTo(&segment_2->pos, j->targetList[impactSlot * 2], &segment_2->dir)
+                                zMath::Vec3DirectionTo(&segment_2->pos, j->targetList[impactSlot].targetPos, &segment_2->dir)
                                 unimplemented  {call 0x4729b0}
                                 segment_2->scale = unimplemented  {fstp dword [edi+0x1c], st0}
                                 unimplemented  {fstp dword [edi+0x1c], st0}
@@ -146899,7 +146898,7 @@
                                 unimplemented  {call 0x4b0e20}
                                 OptCatalog::UpdateTrailSegmentVisual(segment_2)
                                 unimplemented  {call 0x4b0f70}
-                                runtimeState += 1
+                                runtimeState = &runtimeState->next + 1
                         else if (var_1c_13 != 1)
                             unimplemented  {fld st0, dword [esi+0x1c]}
                             float scale_3 = unimplemented  {fst dword [ebp-0x8], st0}
@@ -146944,13 +146943,13 @@
                             unimplemented  {call 0x4729b0}
                             segment_1->scale = unimplemented  {fstp dword [edi+0x1c], st0}
                             unimplemented  {fstp dword [edi+0x1c], st0}
-                            int32_t eax_83 = OptCatalog::ComputeTrailImpactResponse(OptCatalog_EntryTable_1, j, segment_1, impactSlot)
+                            int32_t eax_84 = OptCatalog::ComputeTrailImpactResponse(OptCatalog_EntryTable_1, j, segment_1, impactSlot)
                             unimplemented  {call 0x4b0e20}
                             OptCatalog::UpdateTrailSegmentVisual(segment_1)
                             unimplemented  {call 0x4b0f70}
                             runtimeState = 1
 
-                            if (eax_83 == 0)
+                            if (eax_84 == 0)
                                 zMath::Vec3DirectionTo(impactSlot, *j->targetList, segment_1 + 0x30)
                                 unimplemented  {call 0x4729b0}
                                 segment_1[1].scale = unimplemented  {fstp dword [edi+0x1c], st0}
@@ -146961,7 +146960,7 @@
                                 unimplemented  {call 0x4b0f70}
                                 runtimeState = 2
 
-                    int32_t runtimeState_2 = runtimeState
+                    struct OptCatalogRuntimeImpactState* runtimeState_2 = runtimeState
                     runtimeState_4 = runtimeState_2
 
                     if (runtimeState_2 s< j->activeSegmentCount)
@@ -146989,7 +146988,7 @@
                     runtimeState = 1
 
                     if (updateCallback != 0)
-                        updateCallback(runtimeState, runtimeState_4, impactSlot)
+                        updateCallback(runtimeState)
 
                     if (j_1->variantTag.b == 4)
                         struct zTag4 ecx_10
@@ -147035,7 +147034,7 @@
                                     unimplemented  {call 0x4729b0}
                                     runtimeState_4 = unimplemented  {fstp dword [ebp-0x8], st0}
                                     unimplemented  {fstp dword [ebp-0x8], st0}
-                                    int32_t pendingTargetB
+                                    enum OptCatalogEntryFlags pendingTargetB
 
                                     if ((OptCatalog_EntryTable_1->flags:1.b & 0x80) != 0)
                                         pendingTargetB = j_1->pendingTargetB
@@ -147536,7 +147535,7 @@
                                     if ((flags_1:1.b & 0x40) != 0 && (flags_1.b & 0x40) == 0)
                                         OptCatalog::HandleImpactEventFromRuntimeState(OptCatalog_EntryTable_1, j_1)
 
-                                    runtimeState = 0
+                                    runtimeState = nullptr
                                 else if ((flags_1:1.b & 0x40) != 0)
                                     struct zVec3* pendingTargetA_1 = j_1->pendingTargetA
 
@@ -147561,7 +147560,7 @@
 
                                             if ((((c0_26 ? 1 : 0) << 8 | (c2_26 ? 1 : 0) << 0xa | (c3_26 ? 1 : 0) << 0xe | (top & 7) << 0xb):1.b & 0x41) != 0)
                                                 struct zClass_Node* ownerNode = nullptr
-                                                runtimeState = 0
+                                                runtimeState = nullptr
                                                 g_OptCatalog_FallbackImpactProbeEnabled = 0
                                                 OptCatalog::RemoveRuntimeInstance(OptCatalog_EntryTable_1, &j_1->impactPos, ownerNode)
                                                 g_OptCatalog_FallbackImpactProbeEnabled = 1
@@ -147618,15 +147617,15 @@
                                 unimplemented  {call 0x44e170}
                             else
                                 OptCatalog::HandleImpactFromRuntimeProbe(OptCatalog_EntryTable_1, j_1, &var_b60, nullptr)
-                                runtimeState = 0
+                                runtimeState = nullptr
                                 g_OptCatalog_FallbackImpactProbeEnabled = 0
                                 OptCatalog::ProcessRuntimeInstance(OptCatalog_EntryTable_1, j_1)
                                 g_OptCatalog_FallbackImpactProbeEnabled = 1
                     else
                         OptCatalog::HandleImpactEventFromRuntimeState(OptCatalog_EntryTable_1, j_1)
-                        runtimeState = 0
+                        runtimeState = nullptr
 
-                    int32_t runtimeState_1 = runtimeState
+                    struct OptCatalogRuntimeImpactState* runtimeState_1 = runtimeState
                     struct zVec3 var_34
 
                     if (runtimeState_1 == 1)
@@ -147676,7 +147675,7 @@
                                     float var_28
 
                                     if (OptCatalog::CanSpawnThroughRay(OptCatalog_EntryTable_1, ebx_4, rayStart, &var_34, &rayLengthOut, &var_28, &j_1->direction) == 0)
-                                        runtimeState = 0
+                                        runtimeState = nullptr
                                         OptCatalog::HandleImpactEvent(OptCatalog_EntryTable_1, ebx_4, j_1)
                                         break
 
@@ -147782,7 +147781,7 @@
                                     g_OptCatalog_CapturedDamageHitPos.z = ebx_4->pos.z
 
                                 j_1->impactPos.x = ebx_4->pos.x
-                                runtimeState = 0
+                                runtimeState = nullptr
                                 j_1->impactPos.y = ebx_4->pos.y
                                 j_1->impactPos.z = ebx_4->pos.z
                                 g_OptCatalog_CaptureHitSnapshotEnabled = 0
@@ -147810,7 +147809,7 @@
                     enum OptCatalogEntryFlags flags_4 = OptCatalog_EntryTable_1->flags
 
                     if ((flags_4:1.b & 4) != 0)
-                        runtimeState_1 = 0
+                        runtimeState_1 = nullptr
 
                     if (runtimeState_1 == 0)
                         struct OptCatalogRuntimeImpactState* next = j_1->next
@@ -147955,12 +147954,12 @@
             g_OptCatalogLockOnWarningGateTimeSec = unimplemented  {fstp dword [0x779a78], st0}
             unimplemented  {fstp dword [0x779a78], st0}
 
-    struct zTag4 eax_113
-    eax_113.count = var_58.count
-    eax_113.tags[0] = var_58.tags[0]
-    eax_113.tags[1] = var_58.tags[1]
-    eax_113.tags[2] = var_58.tags[2]
-    g_Variant_CurrentTag.count.d = eax_113
+    struct zTag4 eax_114
+    eax_114.count = var_58.count
+    eax_114.tags[0] = var_58.tags[0]
+    eax_114.tags[1] = var_58.tags[1]
+    eax_114.tags[2] = var_58.tags[2]
+    g_Variant_CurrentTag.count.d = eax_114
 }
 
 // Source: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp -- OptCatalog_ComputeAimPitchForTarget.
@@ -150532,7 +150531,7 @@
 }
 
 // Likely original file: D:\Proj\GameZRecoil\zSys\zsys.cpp. Probes CPUID support by toggling the EFLAGS ID bit with pushfd/popfd and returns 1 when the bit sticks. BN renders the flag-register sequence as synthetic flag temporaries.
-0x4b2fe0 uint32_t zSys::HasCpuidSupport() __pure
+0x4b2fe0 int32_t zSys::HasCpuidSupportRuntimeOptions() __pure
 {
     int32_t ecx
     int32_t var_8 = ecx
@@ -150643,9 +150642,9 @@
 // Likely original file: D:\Proj\GameZRecoil\zGame\zgame_opt.c. If CPUID is supported, reads CPUID leaf 0, stores the 12-byte CPU vendor string into zGame_OptionsRuntimeConfig::cpuVendor_00, and writes a terminator at byte 12. BN exposes the CPUID register shuffle as synthetic locals.
 0x4b3160 void __thiscall zGame_OptionsRuntimeConfig::LoadCpuVendorString(struct zGame_OptionsRuntimeConfig* self)
 {
-    uint32_t eax
+    int32_t eax
     int32_t ecx
-    eax, ecx = zSys::HasCpuidSupport()
+    eax, ecx = zSys::HasCpuidSupportRuntimeOptions()
 
     if (eax == 0)
         return
@@ -150686,7 +150685,7 @@
 // Likely original file: D:\Proj\GameZRecoil\zSound\zsound.cpp. Returns 1 when CPUID is available and zCpu::HasMmxSupport reports EDX bit 23, otherwise 0. InitFromSystem stores this into defaultFlags bit 0 to gate the MMX audio mixer path.
 0x4b31f0 uint32_t zSnd::HasMmxMixerSupport()
 {
-    if (zSys::HasCpuidSupport() == 0)
+    if (zSys::HasCpuidSupportRuntimeOptions() == 0)
         return 0
 
     return zCpu::HasMmxSupport()
@@ -150843,7 +150842,7 @@
 
 // Source: D:\Proj\GameZRecoil\zSys\zsys_cpu.cpp
 // Leaf CPUID-support probe: toggles EFLAGS bit 21 (ID) with pushfd/popfd and returns AX=1 if the bit sticks, AX=0 otherwise. BN cannot model pushfd/popfd accurately and renders the flags as decomposed c/p/a/z/s/d/o booleans.
-0x4b33f0 int16_t zSys::HasCpuidSupport() __pure
+0x4b33f0 uint16_t zSys::HasCpuidSupport() __pure
 {
     int32_t value
     int32_t value_1 = value
@@ -150903,7 +150902,7 @@
     int32_t var_20 = (*"GenuineIntel")[0].d
     int32_t var_1c = (*"ineIntel")[0].d
     int32_t var_18 = (*"ntel")[0].d
-    int16_t eax_2
+    uint16_t eax_2
     int32_t ecx_2
     eax_2, ecx_2 = zSys::HasCpuidSupport()
 
