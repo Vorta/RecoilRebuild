@@ -248,11 +248,12 @@ int __fastcall zSndSample::InitFromWaveData_A3D(
     const unsigned int pcmByteCount = (unsigned int)(loadedWaveData->pcmByteCount);
     WAVEFORMATEX *const fmt = loadedWaveData->fmt;
     zA3dProviderDevice *const device = (zA3dProviderDevice *)(g_zSnd_BackendDevice);
-    int error = device->vtable->CreateBufferByKind(
-        device,
+    zA3dProviderSource *source = 0;
+    int error = device->NewSource(
         0,
-        &primaryVoice.backendBuffer
+        &source
     );
+    primaryVoice.backendBuffer = (zSndBuffer *)source;
     if (error != 0) {
         return zSnd::ReportA3DError(
             error,
@@ -261,8 +262,7 @@ int __fastcall zSndSample::InitFromWaveData_A3D(
         );
     }
 
-    error = ((zA3dProviderSource *)(primaryVoice.backendBuffer))->vtable->SetWaveFormat(
-        (zA3dProviderSource *)(primaryVoice.backendBuffer),
+    error = ((zA3dProviderSource *)(primaryVoice.backendBuffer))->SetWaveFormat(
         fmt
     );
     if (error != 0) {
@@ -273,8 +273,7 @@ int __fastcall zSndSample::InitFromWaveData_A3D(
         );
     }
 
-    error = ((zA3dProviderSource *)(primaryVoice.backendBuffer))->vtable->SetSampleDataSize(
-        (zA3dProviderSource *)(primaryVoice.backendBuffer),
+    error = ((zA3dProviderSource *)(primaryVoice.backendBuffer))->AllocateWaveData(
         pcmByteCount
     );
     if (error != 0) {
@@ -286,14 +285,13 @@ int __fastcall zSndSample::InitFromWaveData_A3D(
     }
 
     zA3dProviderSource *buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
-    error = buffer->vtable->Lock(
-        buffer,
+    error = buffer->Lock(
         0,
         loadedWaveData->pcmByteCount,
         &audioPtr1,
-        &audioBytes1,
+        (LPDWORD)&audioBytes1,
         &audioPtr2,
-        &audioBytes2,
+        (LPDWORD)&audioBytes2,
         0
     );
     if (error != 0) {
@@ -319,8 +317,7 @@ int __fastcall zSndSample::InitFromWaveData_A3D(
     }
 
     buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
-    error = buffer->vtable->CommitWrite(
-        buffer,
+    error = buffer->Unlock(
         audioPtr1,
         audioBytes1,
         audioPtr2,
@@ -335,28 +332,25 @@ int __fastcall zSndSample::InitFromWaveData_A3D(
     }
 
     buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
-    buffer->vtable->Rewind(buffer);
+    buffer->Rewind();
 
     unsigned int spatialFlags = (unsigned int)(replayFields.flags);
     spatialFlags >>= 2;
     unsigned char spatialMode = (unsigned char)(spatialFlags);
     if ((spatialMode & 1) != 0) {
         buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
-        buffer->vtable->SetRange(
-            buffer,
+        buffer->SetMinMaxDistance(
             rangeMin,
             rangeMax,
             1
         );
         buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
-        buffer->vtable->SetA3DDistanceScale(
-            buffer,
+        buffer->SetDistanceModelScale(
             a3dDistanceScale
         );
     } else {
         buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
-        buffer->vtable->SetSpatializationEnabled(
-            buffer,
+        buffer->SetTransformMode(
             1
         );
     }
@@ -435,17 +429,15 @@ int __fastcall zSndSample::LockBackendBuffers(
         }
     } else if (g_zSnd_ActiveBackend == 1) {
         zA3dProviderSource *const buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
-        error = buffer->vtable
-                    ->Lock(
-                        buffer,
-                        offset,
-                        bytes,
-                        buffer1,
-                        buffer1Bytes,
-                        buffer2,
-                        buffer2Bytes,
-                        0
-                    );
+        error = buffer->Lock(
+            offset,
+            bytes,
+            buffer1,
+            (LPDWORD)buffer1Bytes,
+            buffer2,
+            (LPDWORD)buffer2Bytes,
+            0
+        );
         if (error != 0) {
             return zSnd::ReportA3DError(
                 error,
@@ -492,8 +484,7 @@ int __fastcall zSndSample::UnlockBackendBuffers(
         }
     } else if (g_zSnd_ActiveBackend == 1) {
         zA3dProviderSource *const buffer = (zA3dProviderSource *)(primaryVoice.backendBuffer);
-        error = buffer->vtable->CommitWrite(
-            buffer,
+        error = buffer->Unlock(
             buffer1,
             buffer1Bytes,
             buffer2,

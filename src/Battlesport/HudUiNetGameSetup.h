@@ -6,11 +6,6 @@
 
 struct HudUiNetGameSetupPanel;
 
-struct HudUiNetGameSetupPanel_FTable {
-    unsigned int slots[3];
-};
-RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_FTable) == 0x0c);
-
 struct HudUiNetGameSetupPanel_LaunchButton : HudUiZrdWidget {
     void OnActivate();
 };
@@ -187,14 +182,3 @@ RECOIL_STATIC_ASSERT(
         reconfigureExistingSession
     ) == 0xcaa8
 );
-
-extern const HudUiNetGameSetupPanel_FTable g_HudUiNetGameSetupPanel_FTable;
-extern const HudUiZrdWidget_FTable g_HudUiNetGameSetupPanel_PlayButton_FTable;
-extern const HudUiZrdWidget_FTable g_HudUiNetGameSetupPanel_CancelButton_FTable;
-extern const HudUiNumericTextInput_Base_FTable g_HudUiNetGameSetupPanel_GameNameInput_FTable;
-extern const HudUiCycleSelectorWidget_FTable g_HudUiNetGameSetupPanel_WorldSelector_FTable;
-extern const HudUiZrdWidget_FTable g_HudUiNetGameSetupPanel_NextWorldButton_FTable;
-extern const HudUiZrdWidget_FTable g_HudUiNetGameSetupPanel_PrevWorldButton_FTable;
-extern const HudUiClampedIntTextInput_FTable g_HudUiNetGameSetupPanel_ClampedInput_FTable;
-extern const HudUiZrdWidget_FTable g_HudUiNetGameSetupPanel_StepButton_FTable;
-extern const HudUiCheckToggleWidget_FTable g_HudUiNetGameSetupPanel_CheckToggle_FTable;

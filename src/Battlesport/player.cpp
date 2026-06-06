@@ -123,66 +123,12 @@ int g_PlayerEnvProbe_AboveGroundCount = 0;
 zEffectAnimEntry *g_PlayerRecentHitFxAnimEntry = 0;
 zVec3 *g_Player_LocalFxOffsetWorldPtr = 0;
 int g_Player_MissionInitFirstRunFlag = 1;
-HudUiPanel g_Player_TopMsgPanel1 = {0};
-HudUiPanel g_Player_TopMsgPanel2 = {0};
+HudUiPanel g_Player_TopMsgPanel1;
+HudUiPanel g_Player_TopMsgPanel2;
 char g_Player_AivParentDir[0x100] = {0};
 }
 
 namespace {
-template <typename Method>
-unsigned int PlayerMethodAddress(
-    Method method
-) {
-    RECOIL_STATIC_ASSERT(sizeof(method) <= sizeof(unsigned int));
-    unsigned int address = 0;
-    memcpy(
-        &address,
-        &method,
-        sizeof(method)
-    );
-    return address;
-}
-
-void __fastcall PlayerHudUiCommonInvalidateThunk(
-    HudUiElement *element
-) {
-    element->Invalidate();
-}
-
-HudUiCommon_FTable MakePlayerUnderwaterFxPass3UiFTable() {
-    HudUiCommon_FTable table = {0};
-    table.slots[1] = PlayerMethodAddress(&HudUiElement::Draw);
-    table.slots[2] = PlayerMethodAddress(&HudUiElement::DrawBase);
-    table.slots[3] = PlayerMethodAddress(&HudUiElement::SetPos);
-    table.slots[4] = PlayerMethodAddress(&HudUiElement::SetX);
-    table.slots[5] = PlayerMethodAddress(&HudUiElement::SetY);
-    table.slots[6] = PlayerMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    table.slots[7] = PlayerMethodAddress(&HudUiElement::SetClipRect);
-    table.slots[8] = (unsigned int)(&PlayerHudUiCommonInvalidateThunk);
-    table.slots[9] = PlayerMethodAddress(&Player_UnderwaterFxPass3Ui::ApplyBlueTint);
-    table.slots[24] = PlayerMethodAddress(&HudUiElement::SetVisible);
-    table.slots[25] = PlayerMethodAddress(&HudUiElement::GetX);
-    table.slots[26] = PlayerMethodAddress(&HudUiElement::GetY);
-    return table;
-}
-
-HudUiCommon_FTable MakePlayerProjectileCameraFxPass3UiFTable() {
-    HudUiCommon_FTable table = {0};
-    table.slots[1] = PlayerMethodAddress(&HudUiElement::Draw);
-    table.slots[2] = PlayerMethodAddress(&HudUiElement::DrawBase);
-    table.slots[3] = PlayerMethodAddress(&HudUiElement::SetPos);
-    table.slots[4] = PlayerMethodAddress(&HudUiElement::SetX);
-    table.slots[5] = PlayerMethodAddress(&HudUiElement::SetY);
-    table.slots[6] = PlayerMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    table.slots[7] = PlayerMethodAddress(&HudUiElement::SetClipRect);
-    table.slots[8] = (unsigned int)(&PlayerHudUiCommonInvalidateThunk);
-    table.slots[9] = PlayerMethodAddress(&Player_ProjectileCameraFxPass3Ui::ApplyGreenMask);
-    table.slots[24] = PlayerMethodAddress(&HudUiElement::SetVisible);
-    table.slots[25] = PlayerMethodAddress(&HudUiElement::GetX);
-    table.slots[26] = PlayerMethodAddress(&HudUiElement::GetY);
-    return table;
-}
-
 float PlayerClamp01(
     float value
 ) {
@@ -591,15 +537,7 @@ void SetHudUiElementVisible(
     HudUiElement *element,
     int visible
 ) {
-    typedef void( * SetVisibleFn)(
-        HudUiElement * self,
-        int visible
-    );
-    SetVisibleFn const setVisible = (SetVisibleFn)(element->ftable->slots[24]);
-    setVisible(
-        element,
-        visible
-    );
+    element->SetVisible(visible);
 }
 
 void SetHudPanelVisible(
@@ -1729,10 +1667,6 @@ zZbdSectionCallback ZbdCallbackPtr(
 }
 } // namespace
 
-const HudUiCommon_FTable g_Player_UnderwaterFxPass3Ui_Vtbl = MakePlayerUnderwaterFxPass3UiFTable();
-const HudUiCommon_FTable g_Player_State7FxPass3Ui_FTable =
-    MakePlayerProjectileCameraFxPass3UiFTable();
-
 // Reimplements 0x4385a0: Player::StartMasterTypeLoopSfxHandle
 // (D:\Proj\Battlesport\player.cpp)
 zSndPlayHandle * zUtil_SaveGameState::StartMasterTypeLoopSfxHandle(
@@ -1942,7 +1876,6 @@ Player_UnderwaterFxPass3Ui * Player_UnderwaterFxPass3Ui::Constructor() {
         0
     );
     overlayRectOrNull = 0;
-    ftable = &g_Player_UnderwaterFxPass3Ui_Vtbl;
     return this;
 }
 
@@ -1954,7 +1887,6 @@ Player_ProjectileCameraFxPass3Ui * Player_ProjectileCameraFxPass3Ui::Constructor
         0
     );
     overlayRectOrNull = 0;
-    ftable = &g_Player_State7FxPass3Ui_FTable;
     return this;
 }
 
@@ -2112,7 +2044,6 @@ void RegisterUnderwaterFxPass3UiOnExit() {
 // Reimplements 0x41eb20: Player::ResetUnderwaterFxPass3UiSingleton
 // (src/Battlesport/player.cpp)
 void ResetUnderwaterFxPass3UiSingleton() {
-    g_Player_UnderwaterFxPass3Ui.ResetCommonFTable();
 }
 
 // Reimplements 0x41eb50: Player::InitAndRegisterProjectileCameraFxPass3UiSingleton
@@ -2137,7 +2068,6 @@ void RegisterProjectileCameraFxPass3UiCleanup() {
 // Reimplements 0x41eb80: Player::ResetProjectileCameraFxPass3UiSingleton
 // (src/Battlesport/player.cpp)
 void ResetProjectileCameraFxPass3UiSingleton() {
-    g_Player_State7FxPass3Ui.ResetCommonFTable();
 }
 
 // Reimplements 0x41ec00: Player::InitSaveStateList
@@ -2432,8 +2362,8 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     zClass_NodePartial *cameraNode
 ) {
     if (g_Player_MissionInitFirstRunFlag != 0) {
-        g_HudUiTopMessageStack->base.AddChild((HudUiElement *)(&g_Player_TopMsgPanel1));
-        g_HudUiTopMessageStack->base.AddChild((HudUiElement *)(&g_Player_TopMsgPanel2));
+        g_HudUiTopMessageStack->AddChild((HudUiElement *)(&g_Player_TopMsgPanel1));
+        g_HudUiTopMessageStack->AddChild((HudUiElement *)(&g_Player_TopMsgPanel2));
         g_Player_MissionInitFirstRunFlag = 0;
     }
 
@@ -5163,16 +5093,7 @@ struct PlayerContactSurfacePayload {
 void SetState7FxPass3Visible(
     int visible
 ) {
-    typedef void( * SetVisibleFn)(
-        HudUiElement * self,
-        int visible
-    );
-    SetVisibleFn const setVisible =
-        (SetVisibleFn)(g_Player_State7FxPass3Ui.ftable->slots[0x60 / 4]);
-    setVisible(
-        &g_Player_State7FxPass3Ui,
-        visible
-    );
+    g_Player_State7FxPass3Ui.SetVisible(visible);
 }
 
 PlayerPendingContact *AppendPendingContact(

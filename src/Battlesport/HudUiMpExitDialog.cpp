@@ -9,72 +9,19 @@
 #include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/zSys/zSys.h"
 
+#include <new>
 #include <stdio.h>
 #include <string.h>
 #include <windows.h>
 
 extern "C" HWND g_RecoilApp_hWndMain;
 
-namespace {
-template <typename Method>
-unsigned int MpExitMethodAddress(
-    Method method
-) {
-    RECOIL_STATIC_ASSERT(sizeof(method) <= sizeof(unsigned int));
-    unsigned int address = 0;
-    memcpy(
-        &address,
-        &method,
-        sizeof(method)
-    );
-    return address;
-}
-
-void HudUiMpExitDialogPostLoadNoOp() {}
-
-HudUiWidget_FTable MakeMpExitDialogButtonFTable(
-    unsigned int activateCallback
-) {
-    HudUiWidget_FTable table = {0};
-    table.slots[0] = MpExitMethodAddress(&HudUiZrdWidget::ScalarDeletingDestructorThunk);
-    table.slots[1] = MpExitMethodAddress(&HudUiWidget::Draw);
-    table.slots[3] = MpExitMethodAddress(&HudUiElement::SetPos);
-    table.slots[4] = MpExitMethodAddress(&HudUiElement::SetX);
-    table.slots[5] = MpExitMethodAddress(&HudUiElement::SetY);
-    table.slots[6] = MpExitMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    table.slots[7] = MpExitMethodAddress(&HudUiElement::SetClipRect);
-    table.slots[8] = MpExitMethodAddress(&HudUiZrdWidget::Invalidate);
-    table.slots[12] = activateCallback;
-    table.slots[15] = MpExitMethodAddress(&HudUiZrdWidget::ShowPreview);
-    table.slots[16] = MpExitMethodAddress(&HudUiZrdWidget::HidePreview);
-    table.slots[24] = MpExitMethodAddress(&HudUiElement::SetVisible);
-    table.slots[25] = MpExitMethodAddress(&HudUiElement::GetX);
-    table.slots[26] = MpExitMethodAddress(&HudUiElement::GetY);
-    table.slots[30] = MpExitMethodAddress(&HudUiZrdWidget::RefreshState);
-    table.slots[31] = MpExitMethodAddress(&HudUiZrdWidget::LoadFromZrd);
-    table.slots[32] = MpExitMethodAddress(&HudUiMpExitDialogPostLoadNoOp);
-    return table;
-}
-
-} // namespace
-
-const HudUiWidget_FTable g_HudUiZrdWidget_MpExitDialog_NewGameButton_Vtbl =
-    MakeMpExitDialogButtonFTable(MpExitMethodAddress(&HudUiMpExitDialog_NewGameButton::OnActivate));
-const HudUiWidget_FTable g_HudUiZrdWidget_MpExitDialog_ExitButton_Vtbl =
-    MakeMpExitDialogButtonFTable(MpExitMethodAddress(&HudUiMpExitDialog_ExitButton::OnActivate));
-const HudUiMpExitDialog_Vtbl g_HudUiMpExitDialog_Vtbl = {
-    {
-        MpExitMethodAddress(&HudUiMpExitDialog::Update),
-        MpExitMethodAddress(&HudUiBackground::SetEnabled),
-        MpExitMethodAddress(&HudUiMpExitDialog::ScalarDeletingDestructorThunk),
-    },
-};
 HudUiMpExitDialog *g_HudUiMpExitDialog = 0;
 
 // Reimplements 0x419650: HudUiMpExitDialog::UnloadLayout
 // (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
 void HudUiMpExitDialog::UnloadLayout() {
-    base.SetEnabled(0);
+    SetEnabled(0);
     Update(0.0f);
     HudScoreboard::SetScaleAndRebuild(0.0f);
     g_HudUiTopMessageStack->Clear();
@@ -105,12 +52,12 @@ void HudUiMpExitDialog::Update(
         0,
         0
     );
-    base.Update(deltaSeconds);
+    HudUiBackground::Update(deltaSeconds);
 
     if (m_mpNewGameButtonMode >= 0) {
         HudScoreboard::DispatchSetScale(deltaSeconds);
     } else {
-        g_HudUiTopMessageStack->base.UpdateAll(g_Time_UnscaledDeltaTimeSec);
+        g_HudUiTopMessageStack->UpdateAll(g_Time_UnscaledDeltaTimeSec);
     }
 
     zVideo::Dispatch_UnlockPrimarySurfaceState();
@@ -153,28 +100,28 @@ void HudUiMpExitDialog::LoadLayout() {
 
     HudScoreboard::SetScaleAndRebuild(0.0f);
 
-    zReader::Node *const loadedSection = base.LoadFromZrd(
+    zReader::Node *const loadedSection = LoadFromZrd(
         "dialog.zrd",
         "MPEXIT",
         1
     );
     if (loadedSection != 0) {
         if (m_mpNewGameButtonMode >= 0) {
-            base.BindWidgetByName(
+            BindWidgetByName(
                 loadedSection,
-                &m_mpNewGameButton.base,
+                &m_mpNewGameButton,
                 "MPNEWGAME"
             );
         }
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &m_mpExitButton.base,
+            &m_mpExitButton,
             "MPEXITBTN"
         );
-        base.FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
+        FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
     }
 
-    base.base.base.SetChildFlags(0);
+    SetChildFlags(0);
     if (m_mpNewGameButtonMode >= 0) {
         m_mpNewGameButton.modeOrEnabled = m_mpNewGameButtonMode;
         m_mpNewGameButton.RefreshState();
@@ -199,7 +146,7 @@ void HudUiMpExitDialog::LoadLayout() {
     }
 
     m_fadeElapsedSeconds = 0.0f;
-    base.SetEnabled(1);
+    SetEnabled(1);
 }
 
 // Reimplements 0x419800: HudUiMpExitDialog_MpNewGameButton::OnActivate
@@ -228,20 +175,7 @@ void HudUiMpExitDialog_ExitButton::OnActivate() {
 void HudUiMpExitDialog::Destructor() {
     m_mpExitButton.DestructorCore();
     m_mpNewGameButton.DestructorCore();
-    base.Destructor();
-}
-
-// Reimplements 0x419850: HudUiMpExitDialog::ScalarDeletingDestructorThunk
-// (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
-HudUiMpExitDialog * HudUiMpExitDialog::ScalarDeletingDestructorThunk(
-    unsigned int flags
-) {
-    Destructor();
-    if ((flags & 1) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
+    this->HudUiBackground::~HudUiBackground();
 }
 
 // Reimplements 0x419740: RecoilApp_MpExitDialogState::OnEnter
@@ -250,13 +184,9 @@ void RecoilApp_MpExitDialogState::OnEnter() {
     if (g_HudUiMpExitDialog == 0) {
         HudUiMpExitDialog *dialog = (HudUiMpExitDialog *) ::operator new(sizeof(HudUiMpExitDialog));
         if (dialog != 0) {
-            dialog->base.Constructor();
+            new ((HudUiBackground *)dialog) HudUiBackground;
             dialog->m_mpNewGameButton.Constructor();
-            dialog->m_mpNewGameButton.base.ftable =
-                &g_HudUiZrdWidget_MpExitDialog_NewGameButton_Vtbl;
             dialog->m_mpExitButton.Constructor();
-            dialog->m_mpExitButton.base.ftable = &g_HudUiZrdWidget_MpExitDialog_ExitButton_Vtbl;
-            dialog->base.base.base.vptr = (const HudUiContainer_FTable *)&g_HudUiMpExitDialog_Vtbl;
         }
 
         g_HudUiMpExitDialog = dialog;
@@ -298,16 +228,8 @@ void RecoilApp_MpExitDialogState::OnDeactivate() {
 
     HudUiMpExitDialog *const dialog = g_HudUiMpExitDialog;
     if (dialog != 0) {
-        const HudUiMpExitDialog_Vtbl *const vtable =
-            (const HudUiMpExitDialog_Vtbl *)dialog->base.base.base.vptr;
-        typedef HudUiMpExitDialog *( * ScalarDeletingDtorFn)(
-            HudUiMpExitDialog * self,
-            unsigned int flags
-        );
-        ((ScalarDeletingDtorFn)vtable->slots[2])(
-            dialog,
-            1
-        );
+        dialog->Destructor();
+        ::operator delete(dialog);
     }
 
     g_HudUiMpExitDialog = 0;
@@ -324,16 +246,7 @@ int RecoilApp_MpExitDialogState::OnUpdateShouldQuit() {
     Time::Tick();
 
     HudUiMpExitDialog *const dialog = g_HudUiMpExitDialog;
-    const HudUiMpExitDialog_Vtbl *const vtable =
-        (const HudUiMpExitDialog_Vtbl *)dialog->base.base.base.vptr;
-    typedef void( * UpdateFn)(
-        HudUiMpExitDialog * self,
-        float deltaSeconds
-    );
-    ((UpdateFn)vtable->slots[0])(
-        dialog,
-        g_FrameDeltaTimeSec
-    );
+    dialog->Update(g_FrameDeltaTimeSec);
 
     if (g_HudUiMpExitDialog->m_fadeElapsedSeconds > 600.0f) {
         char caption[128];

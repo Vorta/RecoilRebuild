@@ -215,8 +215,6 @@ RECOIL_STATIC_ASSERT(
     ) == 0x178
 );
 
-extern const RecoilNamedVtable kNetSessionBrowserDialog_Vtable;
-extern const RecoilNamedVtable kNetSessionConfigDialog_Vtable;
 extern CString *g_NetSessionConfigDialog_MapNameStrings;
 
 extern "C" int g_NetUiTcpIpProviderWarningShown;

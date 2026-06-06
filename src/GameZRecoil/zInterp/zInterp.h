@@ -68,27 +68,13 @@ struct zInterp_LinkNode {
 
 struct zInterp_Context;
 
-typedef int( *zInterp_DispatchHook)(
-    zInterp_Context *ctx,
-    char *commandToken
-);
-
-struct zInterp_Context_VTable {
-    zInterp_DispatchHook preDispatch;
-    zInterp_DispatchHook postDispatch;
-    zInterp_DispatchHook deferredHook;
-};
-
-extern const int g_zInterp_Context_VTableMarker;
 extern int g_zInterp_EnablePreparedScripts;
 extern int g_zInterp_VerboseLevel;
 extern char g_zInterp_LineBuffer[1024];
 extern char g_zInterp_AssignToken_Equal;
 extern unsigned int g_zInterp_NodeUserDataScratch;
 extern zDiPartial *g_zInterp_CurrentCycleTextureDi;
-extern zInterp_Context g_zInterp_GlobalContext;
 extern char *g_zInterp_PreparedIndexFileName;
-extern const zInterp_Context_VTable g_zInterp_GlobalContext_VTable;
 
 typedef void(*zInterp_LogFn)(
     const char *fmt,
@@ -96,7 +82,10 @@ typedef void(*zInterp_LogFn)(
 );
 
 struct zInterp_Context {
-    const void *vftable;
+    virtual int DispatchHook(char *commandToken);
+    virtual int PostDispatchHook(char *commandToken);
+    virtual int DeferredDispatchHook(char *commandToken);
+
     unsigned int unknown_04;
     unsigned int tokenCount;
     int tokenReadIndex;
@@ -218,17 +207,17 @@ struct zInterp_Context {
     );
 };
 
-struct zInterp_Command {
-    int WeaponSetMaxTetherAltitude(char *commandToken);
-};
+struct zInterp_GlobalContext : zInterp_Context {
+    virtual int DispatchHook(char *commandToken);
 
-struct zInterp_GlobalContext {
     static int StaticInitAndRegisterAtExit();
     static zInterp_Context *StaticInit();
     static int RegisterAtExit();
     static void AtExitDestructor();
     zInterp_Context * Constructor();
 };
+
+extern zInterp_GlobalContext g_zInterp_GlobalContext;
 
 namespace zInterp_Object3D {
 int __fastcall DefaultRenderAction(zClass_NodePartial *node);

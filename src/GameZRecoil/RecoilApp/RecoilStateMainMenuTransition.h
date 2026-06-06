@@ -4,7 +4,6 @@
 #include <stddef.h>
 
 #include "Battlesport/RecoilApp.h"
-#include "GameZRecoil/RecoilApp/RecoilStateBase.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zSound/zSound.h"
 #include "recoil/recoil_callconv.h"
@@ -24,18 +23,16 @@ enum zVidModeIndex {
     ZVID_MODE_1024X768 = 7,
 };
 
-struct RecoilStateMainMenuTransition {
-    RecoilPtr32 vftable;                   // RecoilStateMainMenuTransition_Vtbl*
-    volatile RecoilPtr32 m_mainMenuDialog; // HudUiMainMenuDialog*
+class HudUiMainMenuDialog;
+
+struct RecoilStateMainMenuTransition : RecoilApp_IState {
+    HudUiMainMenuDialog *m_mainMenuDialog;
     int m_savedHalfResAdjustMode;
     RecoilMainMenuEntryRoute m_entryRoute;
     zVidModeIndex m_deferredVideoModeIndex;
     RecoilPtr32 m_pausedAudioSnapshot; // zSndPlayHandleSnapshot*
 
-    RecoilStateMainMenuTransition * Constructor();
-    RecoilStateMainMenuTransition * ScalarDeletingDestructor(
-        unsigned int flags
-    );
+    RecoilStateMainMenuTransition();
     RECOIL_NO_GS ~RecoilStateMainMenuTransition();
     RECOIL_NO_GS int OnTryBecomeCurrent();
     void OnResume(int param);
@@ -82,9 +79,6 @@ RECOIL_STATIC_ASSERT(
 );
 
 extern RecoilStateMainMenuTransition g_RecoilState_MainMenuTransition;
-extern RecoilApp_IState_Vtbl g_RecoilStateMainMenuTransition_Vtbl;
-
-class HudUiMainMenuDialog;
 
 struct HudUiMainMenuDialogBackground : HudUiBackground {
     HudUiMainMenuDialogBackground();

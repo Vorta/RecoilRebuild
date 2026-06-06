@@ -34,21 +34,21 @@
 #include <new>
 #endif
 
-// Access shim for imported MFC42 CDialog metadata; this does not reimplement
+// Provider-boundary accessor for imported MFC42 CDialog metadata; this does not reimplement
 // CDialog behavior.
 class NetSessionBrowserCDialogMessageMapAccessor : public CDialog {
   public:
     static const AFX_MSGMAP *__stdcall GetMessageMap();
 };
 
-// Access shim for imported MFC42 CDialog metadata; this does not reimplement
+// Provider-boundary accessor for imported MFC42 CDialog metadata; this does not reimplement
 // CDialog behavior.
 class NetSessionConfigCDialogMessageMapAccessor : public CDialog {
   public:
     static const AFX_MSGMAP *__stdcall GetMessageMap();
 };
 
-// Access shim for imported MFC42 protected window/dialog members; this does
+// Provider-boundary accessor for imported MFC42 protected window/dialog members; this does
 // not reimplement provider behavior.
 class GameNetMfcWndAccess : public CWnd {
   public:
@@ -56,7 +56,7 @@ class GameNetMfcWndAccess : public CWnd {
     void CallOnDestroy();
 };
 
-// Access shim for imported MFC42 protected dialog members; this does not
+// Provider-boundary accessor for imported MFC42 protected dialog members; this does not
 // reimplement provider behavior.
 class GameNetMfcDialogAccess : public CDialog {
   public:
@@ -202,9 +202,6 @@ extern "C" HWND g_RecoilApp_hWndMain;
 unsigned int g_NetSessionConfigDialog_MapNameStringStorage[7] = {0};
 CString *g_NetSessionConfigDialog_MapNameStrings =
     (CString *)&g_NetSessionConfigDialog_MapNameStringStorage[0];
-
-const RecoilNamedVtable kNetSessionBrowserDialog_Vtable = {"NetSessionBrowserDialog vtable"};
-const RecoilNamedVtable kNetSessionConfigDialog_Vtable = {"NetSessionConfigDialog vtable"};
 
 namespace {
 const float kGameNetPkt06SendIntervalSec = 0.100000001f;
@@ -365,15 +362,7 @@ void GameNetSetRemoteHudVisible(
     HudUiPanel *panel,
     int visible
 ) {
-    typedef void( * SetVisibleFn)(
-        HudUiPanel * self,
-        int visible
-    );
-    const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(panel);
-    ((SetVisibleFn)(ftable->slots[0x60 / 4]))(
-        panel,
-        visible
-    );
+    panel->SetVisible(visible);
 }
 
 void GameNetSetRemoteHudPos(
@@ -381,14 +370,7 @@ void GameNetSetRemoteHudPos(
     int x,
     int y
 ) {
-    typedef void( * SetPosFn)(
-        HudUiPanel * self,
-        int x,
-        int y
-    );
-    const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(panel);
-    ((SetPosFn)(ftable->slots[0x0c / 4]))(
-        panel,
+    panel->SetPos(
         x,
         y
     );
@@ -1579,15 +1561,7 @@ void __fastcall ChatComposeKeyCallback(
 
     g_HudUiMgrObjectiveChatComposeTextInput.DispatchKeyAction(key);
 
-    typedef void(* SetTextFmtFn)(
-        HudUiPanel * self,
-        const char *format,
-        ...
-    );
-    const HudUiPanel_FTable *const descFTable =
-        (const HudUiPanel_FTable *)(g_HudUiMgrObjectiveDescTextPanel->vtbl);
-    ((SetTextFmtFn)(descFTable->slots[0x74 / 4]))(
-        g_HudUiMgrObjectiveDescTextPanel,
+    g_HudUiMgrObjectiveDescTextPanel->SetTextFmt(
         g_HudUiMgrObjectiveChatComposeTextInput.GetBuffer()
     );
 }
@@ -1666,7 +1640,7 @@ void EndChatComposeAndSend() {
 }
 
 // Reimplements 0x414660: GameNet::EndChatComposeAndSendThunk
-// Pure forwarding callback thunk referenced by the chat-compose text input ftable.
+// Pure forwarding callback thunk referenced by the chat-compose text input dispatch record.
 void EndChatComposeAndSendThunk() {
     EndChatComposeAndSend();
 }
@@ -2189,7 +2163,7 @@ int __fastcall SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
         &row->hudWidget,
         0
     );
-    g_HudUiTopMessageStack->base.AddChild((HudUiElement *)(&row->hudWidget));
+    g_HudUiTopMessageStack->AddChild((HudUiElement *)(&row->hudWidget));
 
     if (saveState != 0) {
         saveState->netPlayerRow = row;
@@ -2580,7 +2554,7 @@ void ResetRemotePlayersAndSpawnLists() {
     GameNetPlayerRow *row = g_GameNetPlayerRowHead;
     while (row != 0) {
         HudUi::RemoveScoreboardEntryRow(row);
-        g_HudUiTopMessageStack->base.RemoveChild((HudUiElement *)(&row->hudWidget));
+        g_HudUiTopMessageStack->RemoveChild((HudUiElement *)(&row->hudWidget));
         row = row->next;
     }
 
@@ -2815,7 +2789,7 @@ int __fastcall HandlePkt03_RemoveRemotePlayer(
         &row->hudWidget,
         0
     );
-    g_HudUiTopMessageStack->base.RemoveChild((HudUiElement *)(&row->hudWidget));
+    g_HudUiTopMessageStack->RemoveChild((HudUiElement *)(&row->hudWidget));
 
     if (g_GameNetPlayerRowCount == 0) {
         return 0;

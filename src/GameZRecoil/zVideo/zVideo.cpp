@@ -1,3 +1,5 @@
+#include "Battlesport/Mfc42Abi.h"
+
 #include "GameZRecoil/zVideo/zVideo.h"
 
 #include "GameZRecoil/Time/Time.h"
@@ -15,6 +17,7 @@
 
 #include <math.h>
 #include <malloc.h>
+#include <new>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,20 +43,6 @@ size_t zVidPaletteRemapTableBytesForRecipeCount(
         (recipeCount * kZVidPaletteRemapColorsPerRecipe) +
         kZVidPaletteColorCount
     ) * sizeof(unsigned short);
-}
-
-template <typename Method>
-unsigned int zVideo_MethodAddress(
-    Method method
-) {
-    RECOIL_STATIC_ASSERT(sizeof(method) <= sizeof(unsigned int));
-    unsigned int address = 0;
-    memcpy(
-        &address,
-        &method,
-        sizeof(method)
-    );
-    return address;
 }
 
 unsigned short zVideo_BlendPixel565Alpha8(
@@ -283,14 +272,13 @@ zVideo_SurfaceStatePartial g_zVideo_SwSurfaceState = {0};
 zVideo_SurfaceStatePartial g_zVideo_PrimarySurfaceState = {0};
 zVideo_SurfaceStatePartial g_zVideo_DisplayModeSurfaceState = {0};
 zVideo_SurfaceStatePartial g_zVideo_SurfaceStateSwapScratch = {0};
-// Pass-3 HUD effect elements use the normal HudUiElement prefix, but offset
-// 0x08 is the owning pass-3 config and offset 0x34 is the active input clip
-// rectangle consumed by the element-specific slot at vtable +0x74.
-struct zVideoFxPass3Element {
-    HudUiElement base;
+// Pass-3 HUD effect elements are HUD elements with an element-specific pass
+// callback used by Draw after the shared source-surface setup.
+struct zVideoFxPass3Element : HudUiElement {
     HudUiRect *clipRectOrNull;
 
     void Draw();
+    virtual void ApplyPass3();
 };
 
 struct zVideoFxPass3RootElement : zVideoFxPass3Element {
@@ -298,7 +286,7 @@ struct zVideoFxPass3RootElement : zVideoFxPass3Element {
     unsigned char unknown_3a[0x06];
     double alpha;
 
-    void ApplyOverlayRect();
+    void ApplyPass3();
 };
 
 struct zVideoFxPass3Slot : zVideoFxPass3Element {
@@ -318,37 +306,10 @@ struct zVideoFxPass3Slot : zVideoFxPass3Element {
         float sinFreqValue,
         float sinPhaseValue
     );
-    void ApplyToCurrentSurface();
+    void ApplyPass3();
 };
 
-// Typed owner for g_zVideo_FxPass3Slot_Vtable at 0x4d3d78. Binary Ninja shows
-// the HudUi common table prefix plus the pass-3 slot callback at offset 0x74.
-struct zVideoFxPass3Slot_FTable {
-    HudUiCommon_FTable base;
-    unsigned int ApplyToCurrentSurface;
-};
-
-// Root pass-3 elements share the same custom HudUi table shape as slots, but
-// their callback submits the overlay rectangle instead of applying the radial
-// surface warp.
-struct zVideoFxPass3RootElement_FTable {
-    HudUiCommon_FTable base;
-    unsigned int ApplyOverlayRect;
-};
-
-// Custom two-slot container table installed by zVideoFxPass3Config::Constructor.
-// The first slot is the config update method; the second reuses the HudUiContainer
-// SetEnabled method.
-struct zVideoFxPass3Config_VTable {
-    unsigned int UpdateLocal;
-    unsigned int SetEnabled;
-};
-
-struct zVideoFxPass3Config {
-    const zVideoFxPass3Config_VTable *vptr;
-    int enabled;
-    HudUiElement *childHead;
-    HudUiElement *childTail;
+struct zVideoFxPass3Config : HudUiContainer {
     HudUiRect *inputRectsOrNull[2];
     unsigned short *surfacePixels;
     int surfaceWidth;
@@ -405,6 +366,30 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
+        zVideoFxPass3Config,
+        surfacePixels
+    ) == 0x18
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideoFxPass3Config,
+        surfaceWidth
+    ) == 0x1c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideoFxPass3Config,
+        surfaceHeight
+    ) == 0x20
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideoFxPass3Config,
+        surfacePitchBytes
+    ) == 0x24
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
         zVideoFxPass3Slot,
         currentRadius
     ) == 0x38
@@ -416,21 +401,6 @@ RECOIL_STATIC_ASSERT(
     ) == 0x48
 );
 RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Slot) == 0x4c);
-RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Slot_FTable) == 0x78);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zVideoFxPass3Slot_FTable,
-        ApplyToCurrentSurface
-    ) == 0x74
-);
-RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3RootElement_FTable) == 0x78);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zVideoFxPass3RootElement_FTable,
-        ApplyOverlayRect
-    ) == 0x74
-);
-RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Config_VTable) == 0x08);
 RECOIL_STATIC_ASSERT(
     offsetof(
         zVideoFxPass3Config,
@@ -443,60 +413,8 @@ RECOIL_STATIC_ASSERT(
         slotWriteIndex
     ) == 0x1ec
 );
+RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Config) == 0x1f0);
 #endif
-
-void __fastcall zVideoFxPass3InvalidateThunk(
-    HudUiElement *element
-) {
-    element->Invalidate();
-}
-
-void zVideoFxPass3FillElementTablePrefix(
-    HudUiCommon_FTable *table
-) {
-    table->slots[0] = zVideo_MethodAddress(&HudUiElement::ScalarDeletingDestructor);
-    table->slots[2] = zVideo_MethodAddress(&HudUiElement::DrawBase);
-    table->slots[3] = zVideo_MethodAddress(&HudUiElement::SetPos);
-    table->slots[4] = zVideo_MethodAddress(&HudUiElement::SetX);
-    table->slots[5] = zVideo_MethodAddress(&HudUiElement::SetY);
-    table->slots[6] = zVideo_MethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    table->slots[7] = zVideo_MethodAddress(&HudUiElement::SetClipRect);
-    table->slots[8] = (unsigned int)(&zVideoFxPass3InvalidateThunk);
-    table->slots[24] = zVideo_MethodAddress(&HudUiElement::SetVisible);
-    table->slots[25] = zVideo_MethodAddress(&HudUiElement::GetX);
-    table->slots[26] = zVideo_MethodAddress(&HudUiElement::GetY);
-}
-
-zVideoFxPass3Slot_FTable MakeZVideoFxPass3SlotFTable() {
-    zVideoFxPass3Slot_FTable table = {0};
-    zVideoFxPass3FillElementTablePrefix(&table.base);
-    table.base.slots[1] = zVideo_MethodAddress(&zVideoFxPass3Element::Draw);
-    table.ApplyToCurrentSurface =
-        zVideo_MethodAddress(&zVideoFxPass3Slot::ApplyToCurrentSurface);
-    return table;
-}
-
-zVideoFxPass3RootElement_FTable MakeZVideoFxPass3RootElementFTable() {
-    zVideoFxPass3RootElement_FTable table = {0};
-    zVideoFxPass3FillElementTablePrefix(&table.base);
-    table.base.slots[1] = zVideo_MethodAddress(&zVideoFxPass3Element::Draw);
-    table.ApplyOverlayRect = zVideo_MethodAddress(&zVideoFxPass3RootElement::ApplyOverlayRect);
-    return table;
-}
-
-zVideoFxPass3Config_VTable MakeZVideoFxPass3ConfigVTable() {
-    zVideoFxPass3Config_VTable table = {0};
-    table.UpdateLocal = zVideo_MethodAddress(&zVideo::zVideoFxPass3Config_UpdateLocal);
-    table.SetEnabled = zVideo_MethodAddress(&HudUiContainer::SetEnabled);
-    return table;
-}
-
-const zVideoFxPass3Slot_FTable g_zVideo_FxPass3Slot_Vtable =
-    MakeZVideoFxPass3SlotFTable();
-const zVideoFxPass3RootElement_FTable g_zVideo_FxPass3RootElement_Vtable =
-    MakeZVideoFxPass3RootElementFTable();
-const zVideoFxPass3Config_VTable g_zVideoFxPass3Config_Vtable =
-    MakeZVideoFxPass3ConfigVTable();
 
 zVideoFxPass3Config g_zVideo_FxPass3ConfigLocal;
 zVidRect32 g_zVideo_PrimarySurfaceRectScratch = {0};
@@ -1222,6 +1140,43 @@ RECOIL_STATIC_ASSERT(
     ) == 0x1c
 );
 RECOIL_STATIC_ASSERT(sizeof(zVideo_SurfaceStatePartial) == 0x20);
+RECOIL_STATIC_ASSERT(sizeof(zVidImagePartial) == 0x38);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        width
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        height
+    ) == 0x06
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        formatFlagsPacked
+    ) == 0x09
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        pixels
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        alphaMap
+    ) == 0x14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVidImagePartial,
+        pitchWords
+    ) == 0x34
+);
 RECOIL_STATIC_ASSERT(sizeof(zVidTexturePackRecord) == 0x28);
 RECOIL_STATIC_ASSERT(sizeof(zVidTexturePackHeader) == 0x18);
 RECOIL_STATIC_ASSERT(
@@ -1722,14 +1677,11 @@ char *__fastcall GetHwApiDriverName(
 // dispatches the element-specific pass callback once for each configured input
 // rectangle.
 void zVideoFxPass3Element::Draw() {
-    typedef void(__fastcall *zVideoFxPass3ElementDispatch)(zVideoFxPass3Element *element);
-
-    zVideoFxPass3Config *const parentConfig = (zVideoFxPass3Config *)(base.parent);
-    const unsigned int *const slots = base.ftable->slots;
-    ((zVideoFxPass3ElementDispatch)(slots[2]))(this);
+    zVideoFxPass3Config *const parentConfig = (zVideoFxPass3Config *)(parent);
+    DrawBase();
 
     if (parentConfig == 0) {
-        ((zVideoFxPass3ElementDispatch)(base.ftable->slots[0x74 / 4]))(this);
+        ApplyPass3();
         return;
     }
 
@@ -1747,17 +1699,19 @@ void zVideoFxPass3Element::Draw() {
         HudUiRect *const inputRect = parentConfig->inputRectsOrNull[index];
         if (inputRect != 0) {
             clipRectOrNull = inputRect;
-            ((zVideoFxPass3ElementDispatch)(base.ftable->slots[0x74 / 4]))(this);
+            ApplyPass3();
         }
     }
 
     clipRectOrNull = parentConfig->inputRectsOrNull[0];
 }
 
-// Reimplements 0x4bdbc0: zVideoFxPass3RootElement::ApplyOverlayRect
+void zVideoFxPass3Element::ApplyPass3() {}
+
+// Reimplements 0x4bdbc0: zVideoFxPass3RootElement::ApplyPass3
 // Root pass-3 callback submits the currently selected input rectangle as a
 // framebuffer overlay using the root element's recovered color and alpha.
-void zVideoFxPass3RootElement::ApplyOverlayRect() {
+void zVideoFxPass3RootElement::ApplyPass3() {
     zRndr_OverlayRect_Submit(
         (unsigned int)(packedColor16),
         (zVidRect32 *)(clipRectOrNull),
@@ -1769,12 +1723,11 @@ void zVideoFxPass3RootElement::ApplyOverlayRect() {
 // Installs the pass-3 slot table after the HudUiElement base constructor and
 // clears the input clip consumed by zVideoFxPass3Element::Draw.
 zVideoFxPass3Slot * zVideoFxPass3Slot::Constructor() {
-    base.Constructor(
+    HudUiElement::Constructor(
         0,
         0
     );
     clipRectOrNull = 0;
-    base.ftable = (const HudUiCommon_FTable *)(&g_zVideo_FxPass3Slot_Vtable);
     return this;
 }
 
@@ -1789,15 +1742,10 @@ void zVideoFxPass3Slot::SetRectAndPayload(
     float sinFreqValue,
     float sinPhaseValue
 ) {
-    if (base.ftable != 0) {
-        base.SetPos(
-            rectLeftPixels,
-            rectTopPixels
-        );
-    } else {
-        base.x = rectLeftPixels;
-        base.y = rectTopPixels;
-    }
+    SetPos(
+        rectLeftPixels,
+        rectTopPixels
+    );
 
     currentRadius = currentRadiusPixels;
     maxRadius = maxRadiusPixels;
@@ -1806,14 +1754,14 @@ void zVideoFxPass3Slot::SetRectAndPayload(
     sinPhase = sinPhaseValue;
 }
 
-// Reimplements 0x4bdc40: zVideoFxPass3Slot::ApplyToCurrentSurface
-// Vtable callback at slot 0x74 forwards the slot position, integer radius
+// Reimplements 0x4bdc40: zVideoFxPass3Slot::ApplyPass3
+// The pass callback forwards the slot position, integer radius
 // payload, sine parameters, and active input clip to the shared pass-3 radial
 // warp routine.
-void zVideoFxPass3Slot::ApplyToCurrentSurface() {
+void zVideoFxPass3Slot::ApplyPass3() {
     zVideo::FxPass3_ApplyToCurrentSurface(
-        base.x,
-        base.y,
+        x,
+        y,
         currentRadius,
         maxRadius,
         extent,
@@ -1828,51 +1776,43 @@ void zVideoFxPass3Slot::ApplyToCurrentSurface() {
 // element tables, links the root plus five slot children, hides them, and enables
 // the container. The retail constructor leaves surfacePitchBytes untouched.
 zVideoFxPass3Config * zVideoFxPass3Config::Constructor() {
-    ((HudUiContainer *)(this))->ConstructorDefault();
+    new ((HudUiContainer *)this) HudUiContainer;
 
-    rootElement.base.Constructor(
+    rootElement.HudUiElement::Constructor(
         0,
         0
     );
     rootElement.clipRectOrNull = 0;
-    rootElement.base.ftable = (const HudUiCommon_FTable *)(&g_zVideo_FxPass3RootElement_Vtable);
 
     int slotIndex;
     for (slotIndex = 0; slotIndex < 5; ++slotIndex) {
         slots[slotIndex].Constructor();
     }
 
-    vptr = &g_zVideoFxPass3Config_Vtable;
     inputRectsOrNull[0] = 0;
     inputRectsOrNull[1] = 0;
     surfacePixels = 0;
     surfaceWidth = 0;
     surfaceHeight = 0;
 
-    ((HudUiContainer *)(this))->AddChild((HudUiElement *)(&rootElement));
-    rootElement.base.SetVisible(0);
+    HudUiContainer::AddChild((HudUiElement *)(&rootElement));
+    rootElement.SetVisible(0);
 
     for (slotIndex = 0; slotIndex < 5; ++slotIndex) {
-        ((HudUiContainer *)(this))->AddChild((HudUiElement *)(&slots[slotIndex]));
-        slots[slotIndex].base.SetVisible(0);
+        HudUiContainer::AddChild((HudUiElement *)(&slots[slotIndex]));
+        slots[slotIndex].SetVisible(0);
     }
 
     slotWriteIndex = 0;
-    ((HudUiContainer *)(this))->SetEnabled(1);
+    HudUiContainer::SetEnabled(1);
     return this;
 }
 
 // Reimplements 0x4bee80: zVideoFxPass3Config::Destructor
-// Destruction mirrors the MSVC array-destructor path: reset each slot back to
-// the common HudUi table, reset the root table, then tear down the container.
+// Destruction mirrors the MSVC array-destructor path, then tears down the
+// container.
 void zVideoFxPass3Config::Destructor() {
-    int slotIndex;
-    for (slotIndex = 4; slotIndex >= 0; --slotIndex) {
-        slots[slotIndex].base.ResetCommonFTable();
-    }
-
-    rootElement.base.ResetCommonFTable();
-    ((HudUiContainer *)(this))->DestructorCore();
+    HudUiContainer::DestructorCore();
 }
 
 // Reimplements 0x4bee50: zVideoFxPass3Config::ConstructGlobalSingleton
@@ -2338,7 +2278,10 @@ int GetSwSurfaceLockedFlag() {
     return g_zVideo_SwSurfaceState.locked;
 }
 
-// Reimplements 0x4a67f0: zVideo::GetPrimarySurfacePixels
+/**
+ * Reimplements 0x4a67f0: zVideo::GetPrimarySurfacePixels.
+ * Purpose: Returns the current primary surface pixel pointer from the recovered surface-state global.
+ */
 void *GetPrimarySurfacePixels() {
     return g_zVideo_PrimarySurfaceState.pixels;
 }
@@ -2588,7 +2531,10 @@ int Dispatch_UnlockSwSurfaceState() {
     return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_SwSurfaceState);
 }
 
-// Reimplements 0x4a68d0: zVideo::Dispatch_UnlockPrimarySurfaceState
+/**
+ * Reimplements 0x4a68d0: zVideo::Dispatch_UnlockPrimarySurfaceState.
+ * Purpose: Dispatches the configured surface unlock provider for the primary surface state.
+ */
 int Dispatch_UnlockPrimarySurfaceState() {
     return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_PrimarySurfaceState);
 }
@@ -2604,7 +2550,10 @@ int __fastcall PresentOrAdjustSurfacesIfEnabled(
     return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_PrimarySurfaceState);
 }
 
-// Reimplements 0x48d420: zVideo::Fx_SetSurfaceState
+/**
+ * Reimplements 0x48d420: zVideo::Fx_SetSurfaceState.
+ * Purpose: Publishes the active FX surface descriptor and derives the 16-bit pitch.
+ */
 void __fastcall Fx_SetSurfaceState(
     void *pixels,
     int width,
@@ -3284,7 +3233,10 @@ void __fastcall buff_BlurRegionByMode(
 
 } // namespace zVideo
 
-// Reimplements 0x4bee20: zVideoFxPass3Config::QueuePrimitiveRaw
+/**
+ * Reimplements 0x4bee20: zVideoFxPass3Config::QueuePrimitiveRaw.
+ * Purpose: Stores the pending primitive surface descriptor in the pass-3 config.
+ */
 void zVideoFxPass3Config::QueuePrimitiveRaw(
     void *primitive,
     int width,
@@ -3305,7 +3257,7 @@ void __fastcall zVideoFxPass3Config_UpdateLocal(
     zVideoFxPass3Config *config,
     float deltaTime
 ) {
-    ((HudUiContainer *)(config))->UpdateAll(deltaTime);
+    config->HudUiContainer::UpdateAll(deltaTime);
     config->slotWriteIndex = 0;
 }
 
@@ -3317,11 +3269,9 @@ void __fastcall zVideoFxPass3Config_SetPrimaryElementParamsLocal(
 ) {
     config->rootElement.packedColor16 = (unsigned short)(packedColor);
     config->rootElement.alpha = primaryAlpha;
-    if (config->rootElement.base.ftable != 0) {
-        config->rootElement.base.SetVisible(1);
-    }
-    config->rootElement.base.timer = 0.0f;
-    config->rootElement.base.flags |= 0x01u;
+    config->rootElement.SetVisible(1);
+    config->rootElement.timer = 0.0f;
+    config->rootElement.flags |= 0x01u;
 }
 
 // Reimplements 0x4beee0: zVideo::FxPass3_SetPrimaryElementParamsLocal
@@ -3362,11 +3312,9 @@ void __fastcall zVideoFxPass3Config_QueueElementLocal(
         sinFreq,
         sinPhase
     );
-    if (slot->base.ftable != 0) {
-        slot->base.SetVisible(1);
-    }
-    slot->base.timer = 0.0f;
-    slot->base.flags |= 0x01u;
+    slot->SetVisible(1);
+    slot->timer = 0.0f;
+    slot->flags |= 0x01u;
 }
 
 // Reimplements 0x4bef10: zVideo::FxPass3_QueueElementLocal
@@ -3391,7 +3339,10 @@ void __fastcall FxPass3_QueueElementLocal(
     );
 }
 
-// Reimplements 0x4bef50: zVideo::FxPass3_QueuePrimitive
+/**
+ * Reimplements 0x4bef50: zVideo::FxPass3_QueuePrimitive.
+ * Purpose: Queues a primitive descriptor on the global pass-3 FX config.
+ */
 void __fastcall FxPass3_QueuePrimitive(
     void *primitive,
     int width,
@@ -3453,7 +3404,10 @@ void RunPostprocessOnSwBuffer() {
     );
 }
 
-// Reimplements 0x4a6840: zVideo::RunPostprocessOnPrimaryBuffer
+/**
+ * Reimplements 0x4a6840: zVideo::RunPostprocessOnPrimaryBuffer.
+ * Purpose: Runs the pass-3 postprocess pipeline against the primary surface.
+ */
 int RunPostprocessOnPrimaryBuffer() {
     if (g_zVideo_RendererType != 0 || g_zVideo_UseHalfResBackbuffer != 0) {
         g_zVideo_pfnLockSurfaceState(&g_zVideo_PrimarySurfaceState);
@@ -4409,18 +4363,47 @@ void __fastcall DrawColoredLinesBatch(
 } // namespace zVideo_FxSurface
 
 namespace zVid_Image {
-zVidImagePartial g_zImage_DefaultImage = {0};
+unsigned short g_zImage_DefaultImagePixels[64] = {
+    0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0,
+    0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800,
+    0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0,
+    0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800,
+    0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0,
+    0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800,
+    0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0,
+    0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800
+};
+
+zVidImagePartial g_zImage_DefaultImage = {
+    64,
+    8,
+    8,
+    0,
+    5,
+    0,
+    0,
+    0,
+    0,
+    g_zImage_DefaultImagePixels,
+    0,
+    0,
+    0.0f,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+};
 
 // Reimplements 0x46ec00: zVid_Image::Create
 zVidImagePartial *Create() {
     zVidImagePartial *image = (zVidImagePartial *)(malloc(sizeof(zVidImagePartial)));
-    if (image != 0) {
-        memset(
-            image,
-            0,
-            sizeof(zVidImagePartial)
-        );
-    }
+    memset(
+        image,
+        0,
+        sizeof(zVidImagePartial)
+    );
     return image;
 }
 
@@ -4444,7 +4427,10 @@ int __fastcall Destroy(
     return 0;
 }
 
-// Reimplements 0x46d5a0: zVid_Image::ReleaseIfNotDefault
+/**
+ * Reimplements 0x46d5a0: zVid_Image::ReleaseIfNotDefault.
+ * Purpose: destroy dynamically allocated images while preserving the initialized default image singleton.
+ */
 int __fastcall ReleaseIfNotDefault(
     zVidImagePartial *image
 ) {
@@ -4739,10 +4725,6 @@ int __fastcall SetSize(
     image->height = height;
     image->pixelCount = (int)(width) * (int)(height);
     image->pitchWords = width;
-    image->widthScale = width != 0 ? (float)(width) : 1.0f;
-    image->uShiftFrom20 = 20;
-    image->uMask = width > 0 ? width - 1 : 0;
-    image->vMaskFixed20 = height > 0 ? (height - 1) << 20 : 0;
     return 0;
 }
 
@@ -5467,7 +5449,7 @@ extern "C" RECOIL_NO_GS void zVid_TexturePack_EnsureBuiltinTexturePacksLoaded() 
             zVidTexturePackEntry *const entry = &g_zVid_BuiltinTexturePacks[i];
             if (entry->fileHandle == 0) {
                 entry->fileHandle = zUtil_ZRDR_OpenFileResolved(
-                    g_zImage_MissionResourcePaths,
+                    g_zImage_MissionSearchPathList,
                     entry->filePath,
                     "rb"
                 );
@@ -10684,10 +10666,7 @@ void __fastcall VerifySurfaceStateLocking(
     zVideo_SurfaceLockVerifyArgs args = {0};
     args.size = sizeof(args);
     args.callerContext = callerContext;
-    const int hresult = g_zVideo_pSurfaceLockVerifier->vtable->VerifySurfaceState(
-        g_zVideo_pSurfaceLockVerifier,
-        &args
-    );
+    const int hresult = g_zVideo_pSurfaceLockVerifier->VerifySurfaceState(&args);
     if (hresult != DD_OK) {
         ReportError(
             hresult,
@@ -10709,7 +10688,7 @@ void TeardownVideoSubsystem() {
 
     if (g_zVideo_pSurfaceLockVerifier != 0) {
         VerifySurfaceStateLocking(g_zVideo_SurfaceLockVerifyContext);
-        g_zVideo_pSurfaceLockVerifier->vtable->Release(g_zVideo_pSurfaceLockVerifier);
+        g_zVideo_pSurfaceLockVerifier->Release();
         g_zVideo_pSurfaceLockVerifier = 0;
     }
 

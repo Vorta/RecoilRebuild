@@ -28,7 +28,6 @@ RECOIL_STATIC_ASSERT(
 );
 
 namespace {
-const RecoilNamedVtable kCZGameFrame_Vtable = {"CZGameFrame vtable"};
 typedef void( *RecoilStateWndActivateMethod)(
     RecoilApp_IState *,
     unsigned int
@@ -190,15 +189,14 @@ int __stdcall CZGameFrame::IsWindowValid(
 /**
  * Reimplements 0x4437d0: CZGameFrame::Constructor.
  *
- * Purpose: initialize the MFC frame base, game bitmap member, frame vtable, and
- * game/video startup hooks for the lightweight game frame.
+ * Purpose: initialize the MFC frame base, game bitmap member, and game/video
+ * startup hooks for the lightweight game frame.
  */
 CZGameFrame * CZGameFrame::Constructor(
     const char *appId
 ) {
     new ((CFrameWnd *)(this)) CFrameWnd();
     new (&m_gameBitmap) CBitmap();
-    *(RecoilPtr32 *)(this) = Ptr32FromSymbol(&kCZGameFrame_Vtable);
     RecoilApp::InitStdLogFiles(appId);
     zVideo::ModuleInit();
     return this;
@@ -211,7 +209,6 @@ CZGameFrame * CZGameFrame::Constructor(
  * CFrameWnd provider base.
  */
 void CZGameFrame::Destructor() {
-    *(RecoilPtr32 *)(this) = Ptr32FromSymbol(&kCZGameFrame_Vtable);
     zVideo::ReturnSuccessStub();
     m_gameBitmap.DeleteObject();
     m_gameBitmap.CBitmap::~CBitmap();

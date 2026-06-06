@@ -15,7 +15,7 @@ class RecoilApp;
 // Authored Recoil frame reconstructed over imported MFC42 frame/window
 // providers; MFC base behavior is not reimplemented here.
 struct CZRecoilFrame {
-    unsigned int vftable;
+    unsigned int m_mfcDispatchWord;
     unsigned char reserved004[0x1c];
     HWND m_hWnd;
     unsigned char reserved024[0x9c];

@@ -13,14 +13,15 @@ struct WestwoodOnlineUpgradeDownloadReadyEntry;
 struct WestwoodOnlineUpgradeBrowseRecord;
 struct WestwoodOnlineUpgradeSessionRequest;
 
-struct WestwoodOnlineUpgradeApiEventSinkVtable {
-    void *slots[32];
-};
-
-struct WestwoodOnlineUpgradeApiEventSink {
-    WestwoodOnlineUpgradeApiEventSinkVtable *m_vftable;
+struct WestwoodOnlineUpgradeApiEventSink : IUnknown {
     WestwoodOnlineUpgradeRefCountAndLock m_refCountAndLock;
 
+    HRESULT STDMETHODCALLTYPE QueryInterface(
+        REFIID iid,
+        void **outInterface
+    );
+    ULONG STDMETHODCALLTYPE AddRef();
+    ULONG STDMETHODCALLTYPE Release();
     static HRESULT __stdcall CreateInstance(
         WestwoodOnlineUpgradeApiEventSink **outSink
     );
@@ -193,16 +194,8 @@ struct WestwoodOnlineUpgradeApiEventSink {
 };
 
 extern "C" LONG g_WestwoodOnlineUpgradeEventSinkLiveCount;
-extern WestwoodOnlineUpgradeApiEventSinkVtable g_WestwoodOnlineUpgradeApiEventSink_Vtbl;
 
-RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeApiEventSinkVtable) == 0x80);
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeApiEventSink) == 0x20);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeApiEventSink,
-        m_vftable
-    ) == 0x00
-);
 RECOIL_STATIC_ASSERT(
     offsetof(
         WestwoodOnlineUpgradeApiEventSink,

@@ -49,41 +49,14 @@ struct zFMV_Playback {
     int SetDestRect(const zFMV_Rect *rect);
 };
 
-/*
- * Temporary ABI scaffold for the FMV action virtual table packet. Current BN
- * assembly at 0x4159e0 and 0x462e30 dispatches with ecx=this through VC-style
- * virtual slots; the null words after slot 0x10 in .rdata are alignment
- * padding, not authored reserved fields. Source-faithful recovery should
- * replace this table mirror with the VC5 zFMV_Action virtual class family.
- */
-struct zFMV_Action_Vtbl {
-    zFMV_Action *( *ScalarDeletingDestructor)(
-        zFMV_Action *self,
-        unsigned int flags
-    );
-    int( *Update)(
-        zFMV_Action *self,
-        double timeSec
-    );
-    void( *Begin)(
-        zFMV_Action *self,
-        double timeSec
-    );
-    void( *End)(zFMV_Action *self);
-    void( *RunBlocking)(zFMV_Action *self);
-    void *reserved14;
-};
-
 struct zFMV_Action {
-    zFMV_Action_Vtbl *vftable;
     zFMV_Action *next;
 
-    void Destructor();
-    zFMV_Action * ScalarDeletingDestructor(unsigned int flags);
-    zFMV_Action * DerivedScalarDeletingDestructor(
-        unsigned int flags
-    );
-    int NoOpUpdate(double timeSec);
+    virtual ~zFMV_Action();
+    virtual int Update(double timeSec);
+    virtual void Begin(double timeSec);
+    virtual void End();
+    virtual void RunBlocking();
     void FlipSurfaces();
     void RunBlockingImmediate();
     void RunBlockingTimed();
@@ -109,10 +82,7 @@ struct zFMV_ActionImage : zFMV_Action {
     void Begin(double timeSec);
     int Update(double timeSec);
     void End();
-    void Destructor();
-    zFMV_ActionImage * ScalarDeletingDestructor(
-        unsigned int flags
-    );
+    ~zFMV_ActionImage();
 };
 
 struct zFMV_ActionFade : zFMV_Action {
@@ -153,10 +123,7 @@ struct zFMV_ActionPlayAvi : zFMV_Action {
         const char *mediaFileName,
         int modeFlags
     );
-    void Destructor();
-    zFMV_ActionPlayAvi * ScalarDeletingDestructor(
-        unsigned int flags
-    );
+    ~zFMV_ActionPlayAvi();
     int Update(double timeSec);
     void Begin(double timeSec);
     void End();
@@ -174,10 +141,7 @@ struct zFMV_ActionPlayMci : zFMV_Action {
         const char *playbackTitle,
         HWND notifyHwnd
     );
-    void Destructor();
-    zFMV_ActionPlayMci * ScalarDeletingDestructor(
-        unsigned int flags
-    );
+    ~zFMV_ActionPlayMci();
 };
 
 struct zFMV_ActionWait : zFMV_Action {
@@ -186,6 +150,7 @@ struct zFMV_ActionWait : zFMV_Action {
 
     void Begin(double timeSec);
     int Update(double timeSec);
+    void End();
 };
 
 struct zFMV_ActionBlur : zFMV_Action {
@@ -201,6 +166,7 @@ struct zFMV_ActionBlur : zFMV_Action {
     void Begin(double timeSec);
     void End();
     int Update(double timeSec);
+    void RunBlocking();
 };
 
 struct zFMV_ActionBlurH : zFMV_ActionBlur {
@@ -296,20 +262,9 @@ struct zFMV_Stream : zVidImagePartial {
     void Destructor();
 };
 
-extern zFMV_Action_Vtbl g_zFMV_ActionBase_Vtable;
-extern zFMV_Action_Vtbl g_zFMV_ActionImage_Vtable;
-extern zFMV_Action_Vtbl g_zFMV_ActionFade_Vtable;
-extern zFMV_Action_Vtbl g_zFMV_ActionPlayAvi_Vtable;
-extern zFMV_Action_Vtbl g_zFMV_ActionPlayMci_Vtable;
-extern zFMV_Action_Vtbl g_zFMV_ActionWait_Vtable;
-extern zFMV_Action_Vtbl g_zFMV_ActionPlaySound_Vtable;
-extern zFMV_Action_Vtbl g_zFMV_ActionBlur_Vtable;
-extern zFMV_Action_Vtbl g_zFMV_ActionBlurH_Vtable;
-extern zFMV_Action_Vtbl g_zFMV_ActionBlurV_Vtable;
 extern "C" zFMV_Rect g_zFMV_ActionPlayMci_DestRect;
 
 #if defined(_M_IX86) || defined(__i386__)
-RECOIL_STATIC_ASSERT(sizeof(zFMV_Action_Vtbl) == 0x18);
 RECOIL_STATIC_ASSERT(sizeof(zFMV_Rect) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(zFMV_Playback) == 0x30);
 RECOIL_STATIC_ASSERT(

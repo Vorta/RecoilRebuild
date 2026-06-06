@@ -440,8 +440,7 @@ int zSndFadeEntry::TickAndMaybeDispatch(
         }
 
         zA3dProviderSource *const source = (zA3dProviderSource *)(handle->backendBuffer);
-        source->vtable->SetGain(
-            source,
+        source->SetGain(
             zSndSample_PlaySimple(currentValue)
         );
     }
@@ -523,8 +522,8 @@ extern "C" void __fastcall zSnd_Tick(
 ) {
     if (g_zSnd_ActiveBackend == 1 && skipA3dCommit == 0) {
         zA3dProviderDevice *const device = (zA3dProviderDevice *)(g_zSnd_BackendDevice);
-        device->vtable->CommitDeferredSettings(device);
-        device->vtable->Tick(device);
+        device->Flush();
+        device->Clear();
     }
 
     zSndFadeActiveList_TickAll(g_FrameDeltaTimeSec);

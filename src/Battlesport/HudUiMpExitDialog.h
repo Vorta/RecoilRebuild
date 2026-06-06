@@ -11,13 +11,7 @@ struct HudUiMpExitDialog_ExitButton : HudUiZrdWidget {
     void OnActivate();
 };
 
-struct HudUiMpExitDialog_Vtbl {
-    unsigned int slots[3];
-};
-RECOIL_STATIC_ASSERT(sizeof(HudUiMpExitDialog_Vtbl) == 0x0c);
-
-struct HudUiMpExitDialog {
-    HudUiBackground base;
+struct HudUiMpExitDialog : HudUiBackground {
     HudUiMpExitDialog_NewGameButton m_mpNewGameButton;
     HudUiMpExitDialog_ExitButton m_mpExitButton;
     zVidImagePartial *m_capturedBackgroundImage;
@@ -28,12 +22,8 @@ struct HudUiMpExitDialog {
     void Update(float deltaSeconds);
     void LoadLayout();
     void Destructor();
-    HudUiMpExitDialog * ScalarDeletingDestructorThunk(unsigned int flags);
 };
 
-extern const HudUiWidget_FTable g_HudUiZrdWidget_MpExitDialog_NewGameButton_Vtbl;
-extern const HudUiWidget_FTable g_HudUiZrdWidget_MpExitDialog_ExitButton_Vtbl;
-extern const HudUiMpExitDialog_Vtbl g_HudUiMpExitDialog_Vtbl;
 extern HudUiMpExitDialog *g_HudUiMpExitDialog;
 
 RECOIL_STATIC_ASSERT(

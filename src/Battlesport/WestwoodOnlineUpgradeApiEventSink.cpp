@@ -132,87 +132,60 @@ const char kBrowseRecordLatencyStep5Text[] = " ||||||||||| ";
 const char kBrowseRecordLatencyStep6Text[] = " ||||||||||||| ";
 const char kBrowseRecordLatencyStep7Text[] = " ||||||||||||||| ";
 
-// Provider ABI shim for the unavailable Westwood Online upgrade API COM object.
-// Only consumed slots are named; offset asserts keep the imported contract fixed.
-struct WestwoodOnlineUpgradeApiCallbackVtable {
-    void *reserved000[6];
-    void(STDMETHODCALLTYPE *RequestListMode)(
-        IUnknown *self,
+struct IWestwoodOnlineUpgradeApiCallbacks : IUnknown {
+    virtual void STDMETHODCALLTYPE Reserved0c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved10() = 0;
+    virtual void STDMETHODCALLTYPE Reserved14() = 0;
+    virtual void STDMETHODCALLTYPE RequestListMode(
         int listMode,
         int enabled
-    );
-    void *reserved01c[3];
-    void(STDMETHODCALLTYPE *CancelPendingSessionFlow)(IUnknown *self);
-    void *reserved02c[2];
-    void(STDMETHODCALLTYPE *Disconnect)(IUnknown *self);
-    void *reserved038[8];
-    void(STDMETHODCALLTYPE *RequestSessionDetails)(
-        IUnknown *self,
+    ) = 0;
+    virtual void STDMETHODCALLTYPE Reserved1c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved20() = 0;
+    virtual void STDMETHODCALLTYPE Reserved24() = 0;
+    virtual void STDMETHODCALLTYPE CancelPendingSessionFlow() = 0;
+    virtual void STDMETHODCALLTYPE Reserved2c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved30() = 0;
+    virtual void STDMETHODCALLTYPE Disconnect() = 0;
+    virtual void STDMETHODCALLTYPE Reserved38() = 0;
+    virtual void STDMETHODCALLTYPE Reserved3c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved40() = 0;
+    virtual void STDMETHODCALLTYPE Reserved44() = 0;
+    virtual void STDMETHODCALLTYPE Reserved48() = 0;
+    virtual void STDMETHODCALLTYPE Reserved4c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved50() = 0;
+    virtual void STDMETHODCALLTYPE Reserved54() = 0;
+    virtual void STDMETHODCALLTYPE RequestSessionDetails(
         WestwoodOnlineUpgradeSessionRequest *sessionRequest
-    );
-    void *reserved05c[6];
-    void(STDMETHODCALLTYPE *SetQueryMode)(
-        IUnknown *self,
+    ) = 0;
+    virtual void STDMETHODCALLTYPE Reserved5c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved60() = 0;
+    virtual void STDMETHODCALLTYPE Reserved64() = 0;
+    virtual void STDMETHODCALLTYPE Reserved68() = 0;
+    virtual void STDMETHODCALLTYPE Reserved6c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved70() = 0;
+    virtual void STDMETHODCALLTYPE SetQueryMode(
         int listMode
-    );
-    void *reserved078[8];
-    void(STDMETHODCALLTYPE *GetQueryResultCount)(
-        IUnknown *self,
+    ) = 0;
+    virtual void STDMETHODCALLTYPE Reserved78() = 0;
+    virtual void STDMETHODCALLTYPE Reserved7c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved80() = 0;
+    virtual void STDMETHODCALLTYPE Reserved84() = 0;
+    virtual void STDMETHODCALLTYPE Reserved88() = 0;
+    virtual void STDMETHODCALLTYPE Reserved8c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved90() = 0;
+    virtual void STDMETHODCALLTYPE Reserved94() = 0;
+    virtual void STDMETHODCALLTYPE GetQueryResultCount(
         int *outCount
-    );
+    ) = 0;
 };
 
-struct WestwoodOnlineUpgradeApiCallbackComObject {
-    WestwoodOnlineUpgradeApiCallbackVtable *vftable;
-};
-
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeApiCallbackVtable,
-        RequestListMode
-    ) == 0x18
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeApiCallbackVtable,
-        CancelPendingSessionFlow
-    ) == 0x28
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeApiCallbackVtable,
-        Disconnect
-    ) == 0x34
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeApiCallbackVtable,
-        RequestSessionDetails
-    ) == 0x58
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeApiCallbackVtable,
-        SetQueryMode
-    ) == 0x74
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeApiCallbackVtable,
-        GetQueryResultCount
-    ) == 0x98
-);
-
-WestwoodOnlineUpgradeApiCallbackComObject *GetCallbackApiComObject() {
-    return (WestwoodOnlineUpgradeApiCallbackComObject *)g_pWestwoodOnlineUpgradeApi;
+IWestwoodOnlineUpgradeApiCallbacks *GetCallbackApiComObject() {
+    return (IWestwoodOnlineUpgradeApiCallbacks *)g_pWestwoodOnlineUpgradeApi;
 }
 } // namespace
 
 extern "C" LONG g_WestwoodOnlineUpgradeEventSinkLiveCount = 0;
-
-// Vtable identity installed by 0x43f610 and 0x441680. The typed COM slot owner
-// remains source-model debt; current tier C evidence only needs identity.
-WestwoodOnlineUpgradeApiEventSinkVtable g_WestwoodOnlineUpgradeApiEventSink_Vtbl = {0};
 
 // Recovered interface map used by 0x441660. BN data at 0x4d1ba0 contains
 // {IID_WestwoodOnlineUpgradeApiEventSink, offset 0, direct} followed by end.
@@ -229,14 +202,10 @@ HRESULT __stdcall WestwoodOnlineUpgradeApiEventSink::CreateInstance(
     WestwoodOnlineUpgradeApiEventSink **outSink
 ) {
     HRESULT result = E_OUTOFMEMORY;
-    WestwoodOnlineUpgradeApiEventSink *eventSink =
-        (WestwoodOnlineUpgradeApiEventSink *)(::operator new(
-            sizeof(WestwoodOnlineUpgradeApiEventSink)
-        ));
+    WestwoodOnlineUpgradeApiEventSink *eventSink = new WestwoodOnlineUpgradeApiEventSink;
 
     if (eventSink != 0) {
         eventSink->m_refCountAndLock.Init();
-        eventSink->m_vftable = &g_WestwoodOnlineUpgradeApiEventSink_Vtbl;
         InterlockedIncrement(&g_WestwoodOnlineUpgradeEventSinkLiveCount);
         result = S_OK;
     }
@@ -249,6 +218,17 @@ HRESULT __stdcall WestwoodOnlineUpgradeApiEventSink::CreateInstance(
  * Reimplements 0x441660: WestwoodOnlineUpgradeApiEventSink::QueryInterface.
  * Purpose: Resolves the API event sink interfaces through its recovered interface map.
  */
+HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::QueryInterface(
+    REFIID iid,
+    void **outInterface
+) {
+    return WestwoodOnlineUpgradeApiEventSink::QueryInterface(
+        this,
+        iid,
+        outInterface
+    );
+}
+
 HRESULT __stdcall WestwoodOnlineUpgradeApiEventSink::QueryInterface(
     WestwoodOnlineUpgradeApiEventSink *self,
     REFIID iid,
@@ -260,6 +240,14 @@ HRESULT __stdcall WestwoodOnlineUpgradeApiEventSink::QueryInterface(
         &iid,
         outInterface
     );
+}
+
+ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AddRef() {
+    return (ULONG)InterlockedIncrement(&m_refCountAndLock.refCount);
+}
+
+ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::Release() {
+    return WestwoodOnlineUpgradeApiEventSink::Release(this);
 }
 
 /**
@@ -285,7 +273,6 @@ ULONG __stdcall WestwoodOnlineUpgradeApiEventSink::Release(
  * Purpose: Tears down the embedded lock and decrements the live Westwood event-sink count.
  */
 void WestwoodOnlineUpgradeApiEventSink::Destructor() {
-    m_vftable = &g_WestwoodOnlineUpgradeApiEventSink_Vtbl;
     m_refCountAndLock.refCount = 1;
     InterlockedDecrement(&g_WestwoodOnlineUpgradeEventSinkLiveCount);
     DeleteCriticalSection(&m_refCountAndLock.lock);
@@ -390,7 +377,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnApiStatus(
     int failureMessageId;
     UINT messageBoxFlags;
     char *statusLine;
-    WestwoodOnlineUpgradeApiCallbackComObject *api;
+    IWestwoodOnlineUpgradeApiCallbacks *api;
 
     Time::Reset();
 
@@ -413,15 +400,9 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnApiStatus(
         free(statusLine);
 
         api = GetCallbackApiComObject();
-        api->vftable->SetQueryMode(
-            (IUnknown *)api,
-            kApiStatusActiveListMode
-        );
+        api->SetQueryMode(kApiStatusActiveListMode);
         g_WestwoodOnlineUpgradeActiveListMode = kApiStatusActiveListMode;
-        api->vftable->GetQueryResultCount(
-            (IUnknown *)api,
-            &resultCount
-        );
+        api->GetQueryResultCount(&resultCount);
 
         if (resultCount == 0) {
             g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(
@@ -521,7 +502,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAdded(
     WestwoodOnlineUpgradeBrowseRecord *browseRecord
 ) {
     char statusText[kBrowseRecordAddedStatusBufferSize];
-    WestwoodOnlineUpgradeApiCallbackComObject *api;
+    IWestwoodOnlineUpgradeApiCallbacks *api;
 
     if (status < 0) {
         g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(
@@ -531,8 +512,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAdded(
         g_pWestwoodOnlineUpgradeDialog->EnableQueryControls(0);
         g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName[0] = '\0';
         api = GetCallbackApiComObject();
-        api->vftable->RequestListMode(
-            (IUnknown *)api,
+        api->RequestListMode(
             g_WestwoodOnlineUpgradeActiveListMode,
             1
         );
@@ -583,7 +563,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessionResolve
 ) {
     char statusText[kBrowseSessionResolvedStatusBufferSize];
     unsigned int failureMessageId;
-    WestwoodOnlineUpgradeApiCallbackComObject *api;
+    IWestwoodOnlineUpgradeApiCallbacks *api;
 
     if (status < 0) {
         strcpy(
@@ -614,12 +594,10 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessionResolve
             g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = 0;
             g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName[0] = '\0';
             api = GetCallbackApiComObject();
-            api->vftable
-                ->RequestListMode(
-                    (IUnknown *)api,
-                    g_WestwoodOnlineUpgradeActiveListMode,
-                    1
-                );
+            api->RequestListMode(
+                g_WestwoodOnlineUpgradeActiveListMode,
+                1
+            );
             return 0;
         }
 
@@ -631,8 +609,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessionResolve
         g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = 0;
         g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName[0] = '\0';
         api = GetCallbackApiComObject();
-        api->vftable->RequestListMode(
-            (IUnknown *)api,
+        api->RequestListMode(
             g_WestwoodOnlineUpgradeActiveListMode,
             1
         );
@@ -646,8 +623,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessionResolve
 
     if ((sessionRequest->m_rowFlags & kSessionRequestSkipDetailsFlag) == 0) {
         api = GetCallbackApiComObject();
-        api->vftable->RequestListMode(
-            (IUnknown *)api,
+        api->RequestListMode(
             g_WestwoodOnlineUpgradeActiveListMode,
             1
         );
@@ -679,8 +655,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessionResolve
         ++g_WestwoodOnlineUpgradePendingSessionResultCount;
         g_pWestwoodOnlineUpgradeDialog->EnableConnectButton(1);
         api = GetCallbackApiComObject();
-        api->vftable->RequestSessionDetails(
-            (IUnknown *)api,
+        api->RequestSessionDetails(
             sessionRequest
         );
     }
@@ -700,17 +675,16 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnSessionQueryFinished(
 ) {
     char statusText[kBrowseSessionResolvedStatusBufferSize];
     LRESULT sessionIndex;
-    WestwoodOnlineUpgradeApiCallbackComObject *api;
+    IWestwoodOnlineUpgradeApiCallbacks *api;
 
     if (status < 0) {
         api = GetCallbackApiComObject();
-        api->vftable->RequestListMode(
-            (IUnknown *)api,
+        api->RequestListMode(
             kApiStatusActiveListMode,
             1
         );
         api = GetCallbackApiComObject();
-        api->vftable->CancelPendingSessionFlow((IUnknown *)api);
+        api->CancelPendingSessionFlow();
         return 0;
     }
 
@@ -749,8 +723,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnSessionQueryFinished(
     }
 
     api = GetCallbackApiComObject();
-    api->vftable->RequestListMode(
-        (IUnknown *)api,
+    api->RequestListMode(
         g_WestwoodOnlineUpgradeActiveListMode,
         1
     );
@@ -770,11 +743,11 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult(
 ) {
     char statusText[kSessionRequestStatusBufferSize];
     LRESULT sessionIndex;
-    WestwoodOnlineUpgradeApiCallbackComObject *api;
+    IWestwoodOnlineUpgradeApiCallbacks *api;
 
     if (status < 0) {
         api = GetCallbackApiComObject();
-        api->vftable->CancelPendingSessionFlow((IUnknown *)api);
+        api->CancelPendingSessionFlow();
         return 0;
     }
 
@@ -790,8 +763,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult(
         api = GetCallbackApiComObject();
         g_WestwoodOnlineUpgradePendingSessionResultCount = 0;
         g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName[0] = '\0';
-        api->vftable->RequestListMode(
-            (IUnknown *)api,
+        api->RequestListMode(
             g_WestwoodOnlineUpgradeActiveListMode,
             1
         );
@@ -949,7 +921,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
     char failureMessageText[128];
     WestwoodOnlineUpgradeSessionRequest *selectedSessionNode;
     WestwoodOnlineUpgradeDialog *dialog;
-    WestwoodOnlineUpgradeApiCallbackComObject *api;
+    IWestwoodOnlineUpgradeApiCallbacks *api;
 
     if (status < 0) {
         return 0;
@@ -1071,7 +1043,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
     }
 
     api = GetCallbackApiComObject();
-    api->vftable->Disconnect((IUnknown *)api);
+    api->Disconnect();
     return 0;
 }
 

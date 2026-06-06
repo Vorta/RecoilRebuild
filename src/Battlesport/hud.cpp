@@ -16,6 +16,7 @@
 #include "GameZRecoil/zUtil/zSaveGame.h"
 
 #include <math.h>
+#include <new>
 #include <stdlib.h>
 #include <string.h>
 
@@ -33,20 +34,6 @@ float g_Hud_LowMeterNextBeepTime = 0.0f;
 extern "C" int g_RecoilState_MainMenuSkipExitDelay;
 
 namespace {
-template <typename Method>
-unsigned int HudMethodAddress(
-    Method method
-) {
-    RECOIL_STATIC_ASSERT(sizeof(method) <= sizeof(unsigned int));
-    unsigned int address = 0;
-    memcpy(
-        &address,
-        &method,
-        sizeof(method)
-    );
-    return address;
-}
-
 typedef void(__fastcall *HudWeatherFxTextureUploadProc)(
     zVideo_TextureRecordPartial *textureRecord,
     void *reserved,
@@ -62,26 +49,6 @@ typedef void(__fastcall *HudWeatherFxSubmitPolyProc)(
     int queueMode
 );
 typedef void(*HudWeatherFxFlushProc)();
-
-HudUiCommon_FTable MakeHudWeatherFxFTable(
-    unsigned int scalarDeletingDestructor,
-    unsigned int updateMethod
-) {
-    HudUiCommon_FTable table = {0};
-    table.slots[0] = scalarDeletingDestructor;
-    table.slots[2] = HudMethodAddress(&HudUiElement::DrawBase);
-    table.slots[3] = HudMethodAddress(&HudUiElement::SetPos);
-    table.slots[4] = HudMethodAddress(&HudUiElement::SetX);
-    table.slots[5] = HudMethodAddress(&HudUiElement::SetY);
-    table.slots[6] = HudMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    table.slots[7] = HudMethodAddress(&HudUiElement::SetClipRect);
-    table.slots[8] = HudMethodAddress(&HudUiElement::Invalidate);
-    table.slots[9] = updateMethod;
-    table.slots[24] = HudMethodAddress(&HudUiElement::SetVisible);
-    table.slots[25] = HudMethodAddress(&HudUiElement::GetX);
-    table.slots[26] = HudMethodAddress(&HudUiElement::GetY);
-    return table;
-}
 
 const float kHudWeatherFxDepthRandScale = -0.0000152592547f;
 const float kHudWeatherFxConeRandScale = -0.0000457777642f;
@@ -127,300 +94,8 @@ enum zVideoRendererBackend {
     ZVID_RENDERER_BACKEND_SOFTWARE = 0,
 };
 
-struct HudUiBackgroundConfirmQuitVirtual {
-    virtual void Update(float deltaSeconds) = 0;
-    virtual void SetEnabled(int enabled) = 0;
-    virtual HudUiBackgroundConfirmQuitVirtual * ScalarDeletingDestructor(
-        unsigned int flags
-    ) = 0;
-};
-
-struct HudUiBackgroundConfirmQuit_FTable {
-    unsigned int slots[3];
-};
-
-struct HudUiCheatCodeDialog_FTable {
-    unsigned int slots[3];
-};
-
-struct HudUiCheatCodeDialogVirtual {
-    virtual void Update(float deltaSeconds) = 0;
-    virtual void SetEnabled(int enabled) = 0;
-    virtual HudUiCheatCodeDialogVirtual * ScalarDeletingDestructor(
-        unsigned int flags
-    ) = 0;
-};
-
-struct HudUiControlsDialogVirtual {
-    virtual void Update(float deltaSeconds) = 0;
-    virtual void SetEnabled(int enabled) = 0;
-    virtual HudUiControlsDialogVirtual * ScalarDeletingDestructor(
-        unsigned int flags
-    ) = 0;
-};
-
-void HudUiConfirmQuitPostLoadNoOp() {}
-
-HudUiWidget_FTable MakeConfirmQuitButtonFTable(
-    unsigned int activateCallback
-) {
-    HudUiWidget_FTable table = {0};
-    table.slots[0] = HudMethodAddress(&HudUiZrdWidget::ScalarDeletingDestructor);
-    table.slots[1] = HudMethodAddress(&HudUiWidget::Draw);
-    table.slots[3] = HudMethodAddress(&HudUiElement::SetPos);
-    table.slots[4] = HudMethodAddress(&HudUiElement::SetX);
-    table.slots[5] = HudMethodAddress(&HudUiElement::SetY);
-    table.slots[6] = HudMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    table.slots[7] = HudMethodAddress(&HudUiElement::SetClipRect);
-    table.slots[8] = HudMethodAddress(&HudUiZrdWidget::Invalidate);
-    table.slots[12] = activateCallback;
-    table.slots[15] = HudMethodAddress(&HudUiZrdWidget::ShowPreview);
-    table.slots[16] = HudMethodAddress(&HudUiZrdWidget::HidePreview);
-    table.slots[24] = HudMethodAddress(&HudUiElement::SetVisible);
-    table.slots[25] = HudMethodAddress(&HudUiElement::GetX);
-    table.slots[26] = HudMethodAddress(&HudUiElement::GetY);
-    table.slots[30] = HudMethodAddress(&HudUiZrdWidget::RefreshState);
-    table.slots[31] = HudMethodAddress(&HudUiZrdWidget::LoadFromZrd);
-    table.slots[32] = (unsigned int)&HudUiConfirmQuitPostLoadNoOp;
-    return table;
-}
-
-HudUiBackgroundConfirmQuit_FTable MakeConfirmQuitDialogFTable() {
-    HudUiBackgroundConfirmQuit_FTable table = {0};
-    table.slots[0] = HudMethodAddress(&HudUiBackground::Update);
-    table.slots[1] = HudMethodAddress(&HudUiBackground::SetEnabled);
-    table.slots[2] = HudMethodAddress(&HudUiBackgroundConfirmQuit::ScalarDeletingDestructor);
-    return table;
-}
-
-HudUiZrdWidget_FTable MakeCheatCodeTitleWidgetFTable() {
-    HudUiZrdWidget_FTable table = {0};
-    table.slots[0] = HudMethodAddress(&HudUiZrdWidget::ScalarDeletingDestructor);
-    table.slots[1] = HudMethodAddress(&HudUiWidget::Draw);
-    table.slots[3] = HudMethodAddress(&HudUiElement::SetPos);
-    table.slots[4] = HudMethodAddress(&HudUiElement::SetX);
-    table.slots[5] = HudMethodAddress(&HudUiElement::SetY);
-    table.slots[6] = HudMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    table.slots[7] = HudMethodAddress(&HudUiElement::SetClipRect);
-    table.slots[8] = HudMethodAddress(&HudUiZrdWidget::Invalidate);
-    table.slots[12] = HudMethodAddress(&HudUiCheatTextInputWidget::OnActivate);
-    table.slots[15] = HudMethodAddress(&HudUiZrdWidget::ShowPreview);
-    table.slots[16] = HudMethodAddress(&HudUiZrdWidget::HidePreview);
-    table.slots[24] = HudMethodAddress(&HudUiElement::SetVisible);
-    table.slots[25] = HudMethodAddress(&HudUiElement::GetX);
-    table.slots[26] = HudMethodAddress(&HudUiElement::GetY);
-    table.slots[30] = HudMethodAddress(&HudUiZrdWidget::RefreshState);
-    table.slots[31] = HudMethodAddress(&HudUiZrdWidget::LoadFromZrd);
-    table.slots[32] = (unsigned int)&HudUiConfirmQuitPostLoadNoOp;
-    return table;
-}
-
-HudUiNumericTextInput_Base_FTable MakeCheatCodeInputWidgetFTable() {
-    HudUiNumericTextInput_Base_FTable table = {0};
-    table.slots[0] = HudMethodAddress(&HudUiNumericTextInput::ScalarDeletingDestructor);
-    table.slots[1] = HudMethodAddress(&HudUiWidget::Draw);
-    table.slots[2] = HudMethodAddress(&HudUiNumericTextInput::UpdateCaptureUiAndClip);
-    table.slots[3] = HudMethodAddress(&HudUiElement::SetPos);
-    table.slots[4] = HudMethodAddress(&HudUiElement::SetX);
-    table.slots[5] = HudMethodAddress(&HudUiElement::SetY);
-    table.slots[6] = HudMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    table.slots[7] = HudMethodAddress(&HudUiElement::SetClipRect);
-    table.slots[8] = HudMethodAddress(&HudUiZrdWidget::Invalidate);
-    table.slots[12] = HudMethodAddress(&HudUiCheatTextInputWidget::OnActivate);
-    table.slots[15] = HudMethodAddress(&HudUiZrdWidget::ShowPreview);
-    table.slots[16] = HudMethodAddress(&HudUiZrdWidget::HidePreview);
-    table.slots[24] = HudMethodAddress(&HudUiElement::SetVisible);
-    table.slots[25] = HudMethodAddress(&HudUiElement::GetX);
-    table.slots[26] = HudMethodAddress(&HudUiElement::GetY);
-    table.slots[30] = HudMethodAddress(&HudUiZrdWidget::RefreshState);
-    table.slots[31] = HudMethodAddress(&HudUiZrdWidget::LoadFromZrd);
-    table.slots[32] = (unsigned int)&HudUiConfirmQuitPostLoadNoOp;
-    table.slots[34] = HudMethodAddress(&HudUiNumericTextInput::OnRawKeyboardChar);
-    return table;
-}
-
-HudUiWidget_FTable MakeHudUiNewGamePanelStartButtonFTable() {
-    HudUiWidget_FTable table = {0};
-    table.slots[0] = HudMethodAddress(&HudUiZrdWidget::ScalarDeletingDestructorThunk);
-    table.slots[1] = HudMethodAddress(&HudUiWidget::Draw);
-    table.slots[3] = HudMethodAddress(&HudUiElement::SetPos);
-    table.slots[4] = HudMethodAddress(&HudUiElement::SetX);
-    table.slots[5] = HudMethodAddress(&HudUiElement::SetY);
-    table.slots[6] = HudMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    table.slots[7] = HudMethodAddress(&HudUiElement::SetClipRect);
-    table.slots[8] = HudMethodAddress(&HudUiZrdWidget::Invalidate);
-    table.slots[12] = HudMethodAddress(&HudUiNewGamePanel_StartButton::OnActivate);
-    table.slots[15] = HudMethodAddress(&HudUiZrdWidget::ShowPreview);
-    table.slots[16] = HudMethodAddress(&HudUiZrdWidget::HidePreview);
-    table.slots[24] = HudMethodAddress(&HudUiElement::SetVisible);
-    table.slots[25] = HudMethodAddress(&HudUiElement::GetX);
-    table.slots[26] = HudMethodAddress(&HudUiElement::GetY);
-    table.slots[30] = HudMethodAddress(&HudUiZrdWidget::RefreshState);
-    table.slots[31] = HudMethodAddress(&HudUiZrdWidget::LoadFromZrd);
-    table.slots[32] = (unsigned int)&HudUiConfirmQuitPostLoadNoOp;
-    return table;
-}
-
-HudUiNumericTextInput_Base_FTable MakeHudUiNewGamePanelNameInputFTable() {
-    HudUiNumericTextInput_Base_FTable table = {0};
-    table.slots[0] = HudMethodAddress(&HudUiNumericTextInput::ScalarDeletingDestructorThunk);
-    table.slots[1] = HudMethodAddress(&HudUiWidget::Draw);
-    table.slots[2] = HudMethodAddress(&HudUiNumericTextInput::UpdateCaptureUiAndClip);
-    table.slots[3] = HudMethodAddress(&HudUiElement::SetPos);
-    table.slots[4] = HudMethodAddress(&HudUiElement::SetX);
-    table.slots[5] = HudMethodAddress(&HudUiElement::SetY);
-    table.slots[6] = HudMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    table.slots[7] = HudMethodAddress(&HudUiElement::SetClipRect);
-    table.slots[8] = HudMethodAddress(&HudUiZrdWidget::Invalidate);
-    table.slots[12] = HudMethodAddress(&HudUiNewGamePanel_NameInput::OnActivate);
-    table.slots[15] = HudMethodAddress(&HudUiZrdWidget::ShowPreview);
-    table.slots[16] = HudMethodAddress(&HudUiZrdWidget::HidePreview);
-    table.slots[24] = HudMethodAddress(&HudUiElement::SetVisible);
-    table.slots[25] = HudMethodAddress(&HudUiElement::GetX);
-    table.slots[26] = HudMethodAddress(&HudUiElement::GetY);
-    table.slots[30] = HudMethodAddress(&HudUiZrdWidget::RefreshState);
-    table.slots[31] = HudMethodAddress(&HudUiZrdWidget::LoadFromZrd);
-    table.slots[32] = (unsigned int)&HudUiConfirmQuitPostLoadNoOp;
-    table.slots[34] = HudMethodAddress(&HudUiNumericTextInput::OnRawKeyboardChar);
-    return table;
-}
-
-HudUiNewGamePanel_FTableHeader MakeHudUiNewGamePanelFTable() {
-    HudUiNewGamePanel_FTableHeader table = {0};
-    table.primarySlots[0] = HudMethodAddress(&HudUiBackground::Update);
-    table.primarySlots[1] = HudMethodAddress(&HudUiBackground::SetEnabled);
-    table.primarySlots[2] = HudMethodAddress(&HudUiNewGamePanel::ScalarDeletingDestructor);
-
-    table.SecondaryAction.slots[0] =
-        HudMethodAddress(&HudUiZrdWidgetEx17C::ScalarDeletingDestructorThunk);
-    table.SecondaryAction.slots[1] = HudMethodAddress(&HudUiWidget::Draw);
-    table.SecondaryAction.slots[3] = HudMethodAddress(&HudUiElement::SetPos);
-    table.SecondaryAction.slots[4] = HudMethodAddress(&HudUiElement::SetX);
-    table.SecondaryAction.slots[5] = HudMethodAddress(&HudUiElement::SetY);
-    table.SecondaryAction.slots[6] = HudMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    table.SecondaryAction.slots[7] = HudMethodAddress(&HudUiElement::SetClipRect);
-    table.SecondaryAction.slots[8] = HudMethodAddress(&HudUiZrdWidget::Invalidate);
-    table.SecondaryAction.slots[12] = HudMethodAddress(&HudUiZrdWidget::OnActivate);
-    table.SecondaryAction.slots[15] = HudMethodAddress(&HudUiZrdWidget::ShowPreview);
-    table.SecondaryAction.slots[16] = HudMethodAddress(&HudUiZrdWidget::HidePreview);
-    table.SecondaryAction.slots[24] = HudMethodAddress(&HudUiZrdWidgetEx17C::EnableChildAtIndex);
-    table.SecondaryAction.slots[25] = HudMethodAddress(&HudUiElement::GetX);
-    table.SecondaryAction.slots[26] = HudMethodAddress(&HudUiElement::GetY);
-    table.SecondaryAction.slots[30] = HudMethodAddress(&HudUiZrdWidget::RefreshState);
-    table.SecondaryAction.slots[31] = HudMethodAddress(&HudUiZrdWidgetEx17C::LoadFromZrd);
-    table.SecondaryAction.slots[32] = (unsigned int)&HudUiConfirmQuitPostLoadNoOp;
-    return table;
-}
-
-HudUiWidget_FTable MakeHudUiControlsDialogButtonFTable(
-    unsigned int activateCallback
-) {
-    HudUiWidget_FTable table = {0};
-    table.slots[0] = HudMethodAddress(&HudUiZrdWidget::ScalarDeletingDestructorThunk);
-    table.slots[1] = HudMethodAddress(&HudUiWidget::Draw);
-    table.slots[2] = HudMethodAddress(&HudUiElement::DrawBase);
-    table.slots[3] = HudMethodAddress(&HudUiElement::SetPos);
-    table.slots[4] = HudMethodAddress(&HudUiElement::SetX);
-    table.slots[5] = HudMethodAddress(&HudUiElement::SetY);
-    table.slots[6] = HudMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    table.slots[7] = HudMethodAddress(&HudUiElement::SetClipRect);
-    table.slots[8] = HudMethodAddress(&HudUiZrdWidget::Invalidate);
-    table.slots[12] = activateCallback;
-    table.slots[15] = HudMethodAddress(&HudUiZrdWidget::ShowPreview);
-    table.slots[16] = HudMethodAddress(&HudUiZrdWidget::HidePreview);
-    table.slots[24] = HudMethodAddress(&HudUiElement::SetVisible);
-    table.slots[25] = HudMethodAddress(&HudUiElement::GetX);
-    table.slots[26] = HudMethodAddress(&HudUiElement::GetY);
-    table.slots[30] = HudMethodAddress(&HudUiZrdWidget::RefreshState);
-    table.slots[31] = HudMethodAddress(&HudUiZrdWidget::LoadFromZrd);
-    table.slots[32] = (unsigned int)&HudUiConfirmQuitPostLoadNoOp;
-    return table;
-}
-
-HudUiZrdWidgetEx17C_FTable MakeHudUiControlsDialogSelectorFTable() {
-    HudUiZrdWidgetEx17C_FTable table = {0};
-    table.slots[0] = HudMethodAddress(&HudUiZrdWidgetEx17C::ScalarDeletingDestructorThunk);
-    table.slots[1] = HudMethodAddress(&HudUiWidget::Draw);
-    table.slots[2] = HudMethodAddress(&HudUiElement::DrawBase);
-    table.slots[3] = HudMethodAddress(&HudUiElement::SetPos);
-    table.slots[4] = HudMethodAddress(&HudUiElement::SetX);
-    table.slots[5] = HudMethodAddress(&HudUiElement::SetY);
-    table.slots[6] = HudMethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    table.slots[7] = HudMethodAddress(&HudUiElement::SetClipRect);
-    table.slots[8] = HudMethodAddress(&HudUiZrdWidget::Invalidate);
-    table.slots[12] = HudMethodAddress(&HudUiZrdWidget::OnActivate);
-    table.slots[15] = HudMethodAddress(&HudUiZrdWidget::ShowPreview);
-    table.slots[16] = HudMethodAddress(&HudUiZrdWidget::HidePreview);
-    table.slots[24] = HudMethodAddress(&HudUiZrdWidgetEx17C::EnableChildAtIndex);
-    table.slots[25] = HudMethodAddress(&HudUiElement::GetX);
-    table.slots[26] = HudMethodAddress(&HudUiElement::GetY);
-    table.slots[30] = HudMethodAddress(&HudUiZrdWidget::RefreshState);
-    table.slots[31] = HudMethodAddress(&HudUiZrdWidgetEx17C::LoadFromZrd);
-    table.slots[32] = (unsigned int)&HudUiConfirmQuitPostLoadNoOp;
-    return table;
-}
-
-HudUiControlsDialog_FTableHeader MakeHudUiControlsDialogFTable() {
-    HudUiControlsDialog_FTableHeader table = {0};
-    table.primarySlots[0] = HudMethodAddress(&HudUiBackground::Update);
-    table.primarySlots[1] = HudMethodAddress(&HudUiBackground::SetEnabled);
-    table.primarySlots[2] = HudMethodAddress(&HudUiControlsDialog::ScalarDeletingDestructor);
-    table.cameraModeSelector = MakeHudUiControlsDialogSelectorFTable();
-    return table;
-}
-
-HudUiCheatCodeDialog_FTable MakeCheatCodeDialogFTable() {
-    HudUiCheatCodeDialog_FTable table = {0};
-    table.slots[0] = HudMethodAddress(&HudUiBackground::Update);
-    table.slots[1] = HudMethodAddress(&HudUiBackground::SetEnabled);
-    table.slots[2] = HudMethodAddress(&HudUiCheatCodeDialog::ScalarDeletingDestructor);
-    return table;
-}
-
-const HudUiWidget_FTable g_HudUiConfirmQuitCancelButton_FTable =
-    MakeConfirmQuitButtonFTable(HudMethodAddress(&HudUiZrdWidget::OnActivateQueueExitCurrentState));
-const HudUiWidget_FTable g_HudUiConfirmQuitOkButton_FTable =
-    MakeConfirmQuitButtonFTable(HudMethodAddress(&HudUiConfirmQuitOkButton::OnActivate));
-const HudUiBackgroundConfirmQuit_FTable g_HudUiBackgroundConfirmQuit_FTable =
-    MakeConfirmQuitDialogFTable();
-const HudUiCheatCodeDialog_FTable g_HudUiCheatCodeDialog_FTable = MakeCheatCodeDialogFTable();
-RecoilApp_IState_Vtbl g_RecoilStateConfirmQuit_Vtbl = {0};
-RecoilApp_IState_Vtbl g_RecoilStateControls_Vtbl = {0};
-RecoilApp_IState_Vtbl g_RecoilStateCheatCode_Vtbl = {0};
-
-struct HudUiOptionsPanelOverlayVirtual {
-    virtual void Update(float deltaSeconds) = 0;
-    virtual void SetEnabled(int enabled) = 0;
-    virtual HudUiOptionsPanelOverlayVirtual * ScalarDeletingDestructor(
-        unsigned int flags
-    ) = 0;
-};
-
-struct HudUiNewGamePanelOverlayVirtual {
-    virtual void Update(float deltaSeconds) = 0;
-    virtual void SetEnabled(int enabled) = 0;
-    virtual HudUiNewGamePanelOverlayVirtual * ScalarDeletingDestructor(
-        unsigned int flags
-    ) = 0;
-};
-
 } // namespace
 
-RecoilApp_IState_Vtbl g_HudUiNewGamePanelOverlayOwner_Vtbl = {0};
-RecoilApp_IState_Vtbl g_HudUiOptionsPanelOverlayOwner_Vtbl = {0};
-
-const HudUiCommon_FTable g_HudWeatherFx_Vtable = MakeHudWeatherFxFTable(
-    HudMethodAddress(&HudWeatherFx::ScalarDeletingDestructor),
-    HudMethodAddress(&HudUiElement::Update)
-);
-const HudUiCommon_FTable g_HudWeatherFxSnow_Vtable = MakeHudWeatherFxFTable(
-    HudMethodAddress(&HudWeatherFxSnow::ScalarDeletingDestructor),
-    HudMethodAddress(&HudWeatherFxSnow::Update)
-);
-const HudUiCommon_FTable g_HudWeatherFxRain_Vtable = MakeHudWeatherFxFTable(
-    HudMethodAddress(&HudWeatherFxRain::ScalarDeletingDestructor),
-    HudMethodAddress(&HudWeatherFxRain::Update)
-);
 float g_HudWeatherFxSnow_LastCameraTargetX = 0.0f;
 float g_HudWeatherFxSnow_LastCameraTargetY = 0.0f;
 float g_HudWeatherFxSnow_LastCameraTargetZ = 0.0f;
@@ -429,35 +104,6 @@ float g_HudWeatherFxRain_LastCameraTargetX = 0.0f;
 float g_HudWeatherFxRain_LastCameraTargetY = 0.0f;
 float g_HudWeatherFxRain_LastCameraTargetZ = 0.0f;
 float g_HudWeatherFxRain_TimeAccumulator = 0.0f;
-extern const HudUiZrdWidget_FTable g_HudUiCheatCodeTitleWidget_FTable =
-    MakeCheatCodeTitleWidgetFTable();
-extern const HudUiNumericTextInput_Base_FTable g_HudUiCheatCodeInputWidget_FTable =
-    MakeCheatCodeInputWidgetFTable();
-extern const HudUiNewGamePanel_FTableHeader g_HudUiNewGamePanel_FTableHeader =
-    MakeHudUiNewGamePanelFTable();
-extern const HudUiWidget_FTable g_HudUiNewGamePanel_StartButton_Vtbl =
-    MakeHudUiNewGamePanelStartButtonFTable();
-extern const HudUiNumericTextInput_Base_FTable g_HudUiNewGamePanel_NameInput_Vtbl =
-    MakeHudUiNewGamePanelNameInputFTable();
-extern const HudUiControlsDialog_FTableHeader g_HudUiControlsDialog_FTableHeader =
-    MakeHudUiControlsDialogFTable();
-extern const HudUiZrdWidgetEx17C_FTable g_HudUiControlsDialog_CursorModeSelector_Vtbl =
-    MakeHudUiControlsDialogSelectorFTable();
-extern const HudUiZrdWidgetEx17C_FTable g_HudUiControlsDialog_SteeringModeSelector_Vtbl =
-    MakeHudUiControlsDialogSelectorFTable();
-extern const HudUiZrdWidgetEx17C_FTable g_HudUiControlsDialog_ThrottleModeSelector_Vtbl =
-    MakeHudUiControlsDialogSelectorFTable();
-extern const HudUiZrdWidgetEx17C_FTable g_HudUiControlsDialog_MouseOrJoystickSelector_Vtbl =
-    MakeHudUiControlsDialogSelectorFTable();
-extern const HudUiWidget_FTable g_HudUiControlsDialog_CommandsWidget_Vtbl =
-    MakeHudUiControlsDialogButtonFTable(
-        HudMethodAddress(&HudUiControlsDialog_CommandsWidget::OnActivate)
-    );
-extern const HudUiWidget_FTable g_HudUiControlsDialog_ResumeWidget_Vtbl =
-    MakeHudUiControlsDialogButtonFTable(
-        HudMethodAddress(&HudUiZrdWidget::OnActivateQueueExitCurrentState)
-    );
-
 // Reimplements 0x4bdc70: HudWeatherFx::Constructor
 // (D:\Proj\Battlesport\hud.cpp)
 HudWeatherFx * HudWeatherFx::Constructor(
@@ -468,7 +114,6 @@ HudWeatherFx * HudWeatherFx::Constructor(
         0
     );
     viewportRect = 0;
-    ftable = &g_HudWeatherFx_Vtable;
     maxParticles = newParticleCount;
     particleCount = newParticleCount;
     particleQuads = (HudWeatherFxParticleQuad *)(::operator new(
@@ -544,8 +189,7 @@ HudWeatherFx * HudWeatherFx::Constructor(
 }
 
 // Reimplements 0x4bde20: HudWeatherFx::ScalarDeletingDestructor
-// Compiler-generated deleting destructor wrapper; slot 0 of g_HudWeatherFx_Vtable.
-HudWeatherFx * HudWeatherFx::ScalarDeletingDestructor(
+HudUiElement * HudWeatherFx::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     HudWeatherFx *self = this;
@@ -559,8 +203,6 @@ HudWeatherFx * HudWeatherFx::ScalarDeletingDestructor(
 // Reimplements 0x4bde40: HudWeatherFx::Destructor
 // (D:\Proj\Battlesport\hud.cpp)
 void HudWeatherFx::Destructor() {
-    ftable = &g_HudWeatherFx_Vtable;
-
     if (particleQuads != 0) {
         ::operator delete(particleQuads);
     }
@@ -581,7 +223,6 @@ void HudWeatherFx::Destructor() {
         }
     }
 
-    ftable = &g_HudUiCommon_FTable;
 }
 
 // Reimplements 0x4be210: HudWeatherFx::ArePointBatchInsideRect
@@ -739,7 +380,6 @@ HudWeatherFxSnow * HudWeatherFxSnow::Constructor(
     int particleCount
 ) {
     HudWeatherFx::Constructor(particleCount);
-    ftable = &g_HudWeatherFxSnow_Vtable;
     emitEnabled = 1;
     emitRadius = 20.0f;
     emitDepth = 400.0f;
@@ -747,8 +387,7 @@ HudWeatherFxSnow * HudWeatherFxSnow::Constructor(
 }
 
 // Reimplements 0x4be2c0: HudWeatherFxSnow::ScalarDeletingDestructor
-// Compiler-generated deleting destructor wrapper; slot 0 of g_HudWeatherFxSnow_Vtable.
-HudWeatherFxSnow * HudWeatherFxSnow::ScalarDeletingDestructor(
+HudUiElement * HudWeatherFxSnow::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     HudWeatherFxSnow *self = this;
@@ -929,7 +568,6 @@ HudWeatherFxRain * HudWeatherFxRain::Constructor(
     int particleCount
 ) {
     HudWeatherFx::Constructor(particleCount);
-    ftable = &g_HudWeatherFxRain_Vtable;
     emitEnabled = 1;
     emitRadius = 20.0f;
     emitDepth = 400.0f;
@@ -937,8 +575,7 @@ HudWeatherFxRain * HudWeatherFxRain::Constructor(
 }
 
 // Reimplements 0x4be850: HudWeatherFxRain::ScalarDeletingDestructor
-// Compiler-generated deleting destructor wrapper; slot 0 of g_HudWeatherFxRain_Vtable.
-HudWeatherFxRain * HudWeatherFxRain::ScalarDeletingDestructor(
+HudUiElement * HudWeatherFxRain::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     HudWeatherFxRain *self = this;
@@ -952,7 +589,6 @@ HudWeatherFxRain * HudWeatherFxRain::ScalarDeletingDestructor(
 // Reimplements 0x4be870: HudWeatherFxRain::Destructor
 // (D:\Proj\Battlesport\hud.cpp)
 void HudWeatherFxRain::Destructor() {
-    ftable = &g_HudWeatherFxRain_Vtable;
     HudWeatherFx::Destructor();
 }
 
@@ -1130,8 +766,7 @@ void HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit() {
 // Reimplements 0x41c5f0: HudUiNewGamePanelOverlayOwner::StaticInit
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
 HudUiNewGamePanelOverlayOwner *HudUiNewGamePanelOverlayOwner::StaticInit() {
-    g_HudUiNewGamePanelOverlayOwner.m_panel = 0;
-    return &g_HudUiNewGamePanelOverlayOwner;
+    return new (&g_HudUiNewGamePanelOverlayOwner) HudUiNewGamePanelOverlayOwner;
 }
 
 // Reimplements 0x41c6a0: HudUiNewGamePanelOverlayOwner::RegisterAtExit
@@ -1143,37 +778,31 @@ void HudUiNewGamePanelOverlayOwner::RegisterAtExit() {
 // Reimplements 0x41c6b0: HudUiNewGamePanelOverlayOwner::AtExitDestructor
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
 void HudUiNewGamePanelOverlayOwner::AtExitDestructor() {
-    g_HudUiNewGamePanelOverlayOwner.Destructor();
+    g_HudUiNewGamePanelOverlayOwner.~HudUiNewGamePanelOverlayOwner();
 }
 
-// Reimplements 0x41c630: HudUiNewGamePanelOverlayOwner::Destructor
+/**
+ * No standalone retail function; the constructor body is inlined into
+ * 0x41c5f0 HudUiNewGamePanelOverlayOwner::StaticInit.
+ *
+ * Purpose: initialize the typed new-game overlay app-state owner.
+ */
+HudUiNewGamePanelOverlayOwner::HudUiNewGamePanelOverlayOwner() : m_panel(0) {}
+
+// Reimplements 0x41c630: HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
-void HudUiNewGamePanelOverlayOwner::Destructor() {
-    HudUiNewGamePanelOverlayVirtual *panel =
-        (HudUiNewGamePanelOverlayVirtual *)(unsigned int)m_panel;
+HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner() {
+    HudUiNewGamePanel *panel = m_panel;
     if (panel != 0) {
         panel->SetEnabled(0);
 
-        panel = (HudUiNewGamePanelOverlayVirtual *)(unsigned int)m_panel;
+        panel = m_panel;
         if (panel != 0) {
             panel->ScalarDeletingDestructor(1);
         }
 
         m_panel = 0;
     }
-}
-
-// Reimplements 0x41c610: HudUiNewGamePanelOverlayOwner::ScalarDeletingDestructor
-// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
-HudUiNewGamePanelOverlayOwner * HudUiNewGamePanelOverlayOwner::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
 }
 
 // Reimplements 0x41c560: HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent
@@ -1184,29 +813,21 @@ int HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent() {
         panel = panel->Constructor();
     }
 
-    m_panel = (RecoilPtr32)(unsigned int)panel;
+    m_panel = panel;
     panel->SyncIntensityFromDifficulty();
-    HudUiNewGamePanelOverlayVirtual *panelView = (HudUiNewGamePanelOverlayVirtual *)panel;
-    panelView->SetEnabled(1);
+    panel->SetEnabled(1);
     return 1;
 }
 
 // Reimplements 0x41c290: HudUiNewGamePanel::Constructor
 // (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
 HudUiNewGamePanel * HudUiNewGamePanel::Constructor() {
-    HudUiBackground::Constructor();
+    new ((HudUiBackground *)this) HudUiBackground;
 
     backWidget.Constructor();
-    backWidget.base.ftable = &g_HudUiMainMenu_BackButton_FTable;
     startWidget.Constructor();
-    startWidget.base.ftable = &g_HudUiNewGamePanel_StartButton_Vtbl;
     nameInput.BaseConstructor();
-    nameInput.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiNewGamePanel_NameInput_Vtbl);
     intensity.Constructor();
-    intensity.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiNewGamePanel_FTableHeader.SecondaryAction);
-
-    base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiNewGamePanel_FTableHeader);
 
     zReader::Node *const loadedSection =
         HudUiBackground::LoadFromZrd(
@@ -1217,22 +838,22 @@ HudUiNewGamePanel * HudUiNewGamePanel::Constructor() {
     if (loadedSection != 0) {
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &backWidget.base,
+            &backWidget,
             "BACK"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &startWidget.base,
+            &startWidget,
             "START"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &nameInput.base.base,
+            &nameInput,
             "NAME"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            &intensity.base.base,
+            &intensity,
             "INTENSITY"
         );
         HudUiBackground::FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
@@ -1258,7 +879,7 @@ void HudUiNewGamePanel::Destructor() {
     nameInput.Destructor();
     startWidget.DestructorCore();
     backWidget.DestructorCore();
-    HudUiBackground::Destructor();
+    this->HudUiBackground::~HudUiBackground();
 }
 
 // Reimplements 0x41c3e0: HudUiNewGamePanel::ScalarDeletingDestructor
@@ -1325,7 +946,7 @@ void HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit() {
 // Reimplements 0x40d080: HudUiOptionsPanelOverlayOwner::StaticInit
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
 HudUiOptionsPanelOverlayOwner *HudUiOptionsPanelOverlayOwner::StaticInit() {
-    return g_HudUiOptionsPanelOverlayOwner.Constructor();
+    return new (&g_HudUiOptionsPanelOverlayOwner) HudUiOptionsPanelOverlayOwner;
 }
 
 // Reimplements 0x40d090: HudUiOptionsPanelOverlayOwner::RegisterAtExit
@@ -1337,24 +958,21 @@ void HudUiOptionsPanelOverlayOwner::RegisterAtExit() {
 // Reimplements 0x40d0a0: HudUiOptionsPanelOverlayOwner::AtExitDestructor
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
 void HudUiOptionsPanelOverlayOwner::AtExitDestructor() {
-    g_HudUiOptionsPanelOverlayOwner.DestructorCore();
+    g_HudUiOptionsPanelOverlayOwner.~HudUiOptionsPanelOverlayOwner();
 }
 
-// Reimplements 0x40d0b0: HudUiOptionsPanelOverlayOwner::Constructor
+// Reimplements 0x40d0b0: HudUiOptionsPanelOverlayOwner::HudUiOptionsPanelOverlayOwner
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
-HudUiOptionsPanelOverlayOwner * HudUiOptionsPanelOverlayOwner::Constructor() {
-    m_panel = 0;
-    return this;
-}
+HudUiOptionsPanelOverlayOwner::HudUiOptionsPanelOverlayOwner() : m_panel(0) {}
 
-// Reimplements 0x40d0e0: HudUiOptionsPanelOverlayOwner::DestructorCore
+// Reimplements 0x40d0e0: HudUiOptionsPanelOverlayOwner::~HudUiOptionsPanelOverlayOwner
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
-void HudUiOptionsPanelOverlayOwner::DestructorCore() {
-    HudUiOptionsPanelOverlayVirtual *panel = (HudUiOptionsPanelOverlayVirtual *)m_panel;
+HudUiOptionsPanelOverlayOwner::~HudUiOptionsPanelOverlayOwner() {
+    HudOptionsDialog *panel = m_panel;
     if (panel != 0) {
         panel->SetEnabled(0);
 
-        panel = (HudUiOptionsPanelOverlayVirtual *)m_panel;
+        panel = m_panel;
         if (panel != 0) {
             panel->ScalarDeletingDestructor(1);
         }
@@ -1363,31 +981,17 @@ void HudUiOptionsPanelOverlayOwner::DestructorCore() {
     }
 }
 
-// Reimplements 0x40d0c0: HudUiOptionsPanelOverlayOwner::ScalarDeletingDestructor
-// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
-HudUiOptionsPanelOverlayOwner * HudUiOptionsPanelOverlayOwner::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    DestructorCore();
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
 // Reimplements 0x40d150: HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
 int HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent() {
     HudOptionsDialog *panel = (HudOptionsDialog *) ::operator new(sizeof(HudOptionsDialog));
     if (panel != 0) {
-        panel = panel->Constructor();
+        panel = new (panel) HudOptionsDialog;
     }
 
-    m_panel = (RecoilPtr32)(unsigned int)panel;
+    m_panel = panel;
 
-    HudUiOptionsPanelOverlayVirtual *panelView = (HudUiOptionsPanelOverlayVirtual *)panel;
-    panelView->SetEnabled(1);
+    panel->SetEnabled(1);
     return 1;
 }
 
@@ -1400,11 +1004,11 @@ void RecoilStateConfirmQuit::QueueEnter() {
     );
 }
 
-// Reimplements 0x409160: HudUiZrdWidget::OnActivateQueueExitCurrentState
+// Reimplements 0x409160: HudUiCreditsBackButton::OnActivate
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
-void HudUiZrdWidget::OnActivateQueueExitCurrentState() {
+void HudUiCreditsBackButton::OnActivate() {
     g_RecoilApp.QueueExitCurrentState(0);
-    OnActivate();
+    HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x409180: HudUiCreditsQuitButton::OnActivate
@@ -1429,7 +1033,7 @@ void RecoilStateConfirmQuit::StaticInitAndRegisterAtExit() {
 // Reimplements 0x415820: RecoilStateConfirmQuit::StaticInit
 // (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
 RecoilStateConfirmQuit *RecoilStateConfirmQuit::StaticInit() {
-    return g_RecoilState_ConfirmQuit.Constructor();
+    return new (&g_RecoilState_ConfirmQuit) RecoilStateConfirmQuit;
 }
 
 // Reimplements 0x415830: RecoilStateConfirmQuit::RegisterAtExit
@@ -1461,12 +1065,9 @@ void HudUiConfirmQuitOkButton::OnActivate() {
 // Reimplements 0x415680: HudUiBackgroundConfirmQuit::Constructor
 // (D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp)
 HudUiBackgroundConfirmQuit * HudUiBackgroundConfirmQuit::Constructor() {
-    HudUiBackground::Constructor();
+    new ((HudUiBackground *)this) HudUiBackground;
     okButton.Constructor();
-    okButton.base.ftable = &g_HudUiConfirmQuitOkButton_FTable;
     cancelButton.Constructor();
-    cancelButton.base.ftable = &g_HudUiConfirmQuitCancelButton_FTable;
-    base.base.vptr = (const HudUiContainer_FTable *)&g_HudUiBackgroundConfirmQuit_FTable;
 
     zReader::Node *const dialogRoot = HudUiBackground::LoadFromZrd(
         "dialog.zrd",
@@ -1476,12 +1077,12 @@ HudUiBackgroundConfirmQuit * HudUiBackgroundConfirmQuit::Constructor() {
     if (dialogRoot != 0) {
         HudUiBackground::BindWidgetByName(
             dialogRoot,
-            &okButton.base,
+            &okButton,
             "OK_TO_QUIT"
         );
         HudUiBackground::BindWidgetByName(
             dialogRoot,
-            &cancelButton.base,
+            &cancelButton,
             "CANCEL_QUIT"
         );
         HudUiBackground::FreeLoadedTreeRoots((int)dialogRoot);
@@ -1495,7 +1096,7 @@ HudUiBackgroundConfirmQuit * HudUiBackgroundConfirmQuit::Constructor() {
 void HudUiBackgroundConfirmQuit::Destructor() {
     cancelButton.DestructorCore();
     okButton.DestructorCore();
-    HudUiBackground::Destructor();
+    this->HudUiBackground::~HudUiBackground();
 }
 
 // Reimplements 0x415790: HudUiBackgroundConfirmQuit::ScalarDeletingDestructor
@@ -1516,26 +1117,21 @@ HudUiBackgroundConfirmQuit * HudUiBackgroundConfirmQuit::ScalarDeletingDestructo
 // (D:\Proj\Battlesport\HudUiCheatCode.cpp)
 void HudUiCheatTextInputWidget::OnActivate() {
     g_RecoilApp.QueueExitCurrentState(0);
-    base.OnActivate();
+    HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x406d20: HudUiCheatCodeDialog::Constructor
 // (D:\Proj\Battlesport\HudUiCheatCode.cpp)
 HudUiCheatCodeDialog * HudUiCheatCodeDialog::Constructor() {
-    HudUiBackground::Constructor();
+    new ((HudUiBackground *)this) HudUiBackground;
 
     titleWidget.Constructor();
-    titleWidget.base.ftable = (const HudUiWidget_FTable *)&g_HudUiCheatCodeTitleWidget_FTable;
 
     cheatInputWidget.BaseConstructor();
-    cheatInputWidget.base.base.ftable =
-        (const HudUiWidget_FTable *)&g_HudUiCheatCodeInputWidget_FTable;
     cheatInputWidget.textInput.AllocTextBuffer(80);
     cheatInputWidget.Update("");
     cheatInputWidget.SetInputActive(1);
     cheatInputWidget.SetRawKeyboardCapture(1);
-
-    base.base.vptr = (const HudUiContainer_FTable *)&g_HudUiCheatCodeDialog_FTable;
 
     zReader::Node *const dialogRoot =
         HudUiBackground::LoadFromZrd(
@@ -1546,12 +1142,12 @@ HudUiCheatCodeDialog * HudUiCheatCodeDialog::Constructor() {
     if (dialogRoot != 0) {
         HudUiBackground::BindWidgetByName(
             dialogRoot,
-            &titleWidget.base,
+            &titleWidget,
             "GO"
         );
         HudUiBackground::BindWidgetByName(
             dialogRoot,
-            &cheatInputWidget.base.base,
+            &cheatInputWidget,
             "CHEATCODE"
         );
         HudUiBackground::FreeLoadedTreeRoots((int)dialogRoot);
@@ -1565,7 +1161,7 @@ HudUiCheatCodeDialog * HudUiCheatCodeDialog::Constructor() {
 void HudUiCheatCodeDialog::Destructor() {
     cheatInputWidget.Destructor();
     titleWidget.DestructorCore();
-    HudUiBackground::Destructor();
+    this->HudUiBackground::~HudUiBackground();
 }
 
 // Reimplements 0x406e10: HudUiCheatCodeDialog::ScalarDeletingDestructor
@@ -1592,7 +1188,7 @@ void RecoilStateCheatCode::StaticInitAndRegisterAtExit() {
 // Reimplements 0x406ea0: RecoilStateCheatCode::ConstructGlobal
 // (D:\Proj\Battlesport\HudUiCheatCode.cpp)
 RecoilStateCheatCode *RecoilStateCheatCode::ConstructGlobal() {
-    return g_RecoilStateCheatCode.Constructor();
+    return new (&g_RecoilStateCheatCode) RecoilStateCheatCode;
 }
 
 // Reimplements 0x406eb0: RecoilStateCheatCode::StaticInit
@@ -1607,12 +1203,9 @@ void RecoilStateCheatCode::AtExitDestructor() {
     g_RecoilStateCheatCode.~RecoilStateCheatCode();
 }
 
-// Reimplements 0x406ed0: RecoilStateCheatCode::Constructor
+// Reimplements 0x406ed0: RecoilStateCheatCode::RecoilStateCheatCode
 // (D:\Proj\Battlesport\HudUiCheatCode.cpp)
-RecoilStateCheatCode * RecoilStateCheatCode::Constructor() {
-    m_dialog = 0;
-    return this;
-}
+RecoilStateCheatCode::RecoilStateCheatCode() : m_dialog(0) {}
 
 // Reimplements 0x406f60: RecoilStateCheatCode::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\RecoilStateCheatCode.cpp)
@@ -1639,10 +1232,9 @@ int RecoilStateCheatCode::OnTryBecomeCurrent() {
     if (dialog != 0) {
         dialog = dialog->Constructor();
     }
-    m_dialog = (RecoilPtr32)(unsigned int)dialog;
+    m_dialog = dialog;
 
-    HudUiCheatCodeDialogVirtual *const dialogView = (HudUiCheatCodeDialogVirtual *)dialog;
-    dialogView->SetEnabled(1);
+    dialog->SetEnabled(1);
     return 1;
 }
 
@@ -1651,22 +1243,20 @@ int RecoilStateCheatCode::OnTryBecomeCurrent() {
 void RecoilStateCheatCode::OnDeactivate() {
     CString commandString;
 
-    HudUiCheatCodeDialog *dialog = (HudUiCheatCodeDialog *)(unsigned int)m_dialog;
+    HudUiCheatCodeDialog *dialog = m_dialog;
     if (dialog != 0) {
         commandString = dialog->cheatInputWidget.GetBuffer();
 
         zVideo::RunPostprocessOnPrimaryBuffer();
 
-        HudUiCheatCodeDialogVirtual *dialogView =
-            (HudUiCheatCodeDialogVirtual *)(unsigned int)m_dialog;
-        dialogView->SetEnabled(0);
+        dialog->SetEnabled(0);
 
-        ((HudUiDialogController *)(unsigned int)m_dialog)->BlitOwnedSurfaceToPrimary();
+        ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
         zVideo::Dispatch_UnlockPrimarySurfaceState();
 
-        dialogView = (HudUiCheatCodeDialogVirtual *)(unsigned int)m_dialog;
-        if (dialogView != 0) {
-            dialogView->ScalarDeletingDestructor(1);
+        dialog = m_dialog;
+        if (dialog != 0) {
+            dialog->ScalarDeletingDestructor(1);
         }
 
         m_dialog = 0;
@@ -1689,34 +1279,17 @@ void RecoilStateCheatCode::OnDeactivate() {
 // Reimplements 0x406f00: RecoilStateCheatCode::Destructor
 // (D:\Proj\Battlesport\HudUiCheatCode.cpp)
 RecoilStateCheatCode::~RecoilStateCheatCode() {
-    HudUiCheatCodeDialogVirtual *dialogView = (HudUiCheatCodeDialogVirtual *)m_dialog;
-    if (dialogView != 0) {
-        dialogView->ScalarDeletingDestructor(1);
+    HudUiCheatCodeDialog *dialog = m_dialog;
+    if (dialog != 0) {
+        dialog->ScalarDeletingDestructor(1);
     }
 
     m_dialog = 0;
 }
 
-// Reimplements 0x406ee0: RecoilStateCheatCode::ScalarDeletingDestructor
-// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
-RecoilStateCheatCode * RecoilStateCheatCode::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    this->~RecoilStateCheatCode();
-
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
-// Reimplements 0x415850: RecoilStateConfirmQuit::Constructor
+// Reimplements 0x415850: RecoilStateConfirmQuit::RecoilStateConfirmQuit
 // (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
-RecoilStateConfirmQuit * RecoilStateConfirmQuit::Constructor() {
-    m_dialog = 0;
-    return this;
-}
+RecoilStateConfirmQuit::RecoilStateConfirmQuit() : m_dialog(0) {}
 
 // Reimplements 0x4158f0: RecoilStateConfirmQuit::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
@@ -1726,10 +1299,9 @@ int RecoilStateConfirmQuit::OnTryBecomeCurrent() {
     if (dialog != 0) {
         dialog = dialog->Constructor();
     }
-    m_dialog = (RecoilPtr32)(unsigned int)dialog;
+    m_dialog = dialog;
 
-    HudUiBackgroundConfirmQuitVirtual *dialogView = (HudUiBackgroundConfirmQuitVirtual *)m_dialog;
-    dialogView->SetEnabled(1);
+    dialog->SetEnabled(1);
 
     return 1;
 }
@@ -1743,15 +1315,15 @@ void RecoilStateConfirmQuit::OnDeactivate() {
 
     zVideo::RunPostprocessOnPrimaryBuffer();
 
-    HudUiBackgroundConfirmQuitVirtual *dialogView = (HudUiBackgroundConfirmQuitVirtual *)m_dialog;
-    dialogView->SetEnabled(0);
+    HudUiBackgroundConfirmQuit *dialog = m_dialog;
+    dialog->SetEnabled(0);
 
-    ((HudUiDialogController *)(unsigned int)m_dialog)->BlitOwnedSurfaceToPrimary();
+    ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
     zVideo::Dispatch_UnlockPrimarySurfaceState();
 
-    dialogView = (HudUiBackgroundConfirmQuitVirtual *)m_dialog;
-    if (dialogView != 0) {
-        dialogView->ScalarDeletingDestructor(1);
+    dialog = m_dialog;
+    if (dialog != 0) {
+        dialog->ScalarDeletingDestructor(1);
     }
 
     m_dialog = 0;
@@ -1761,31 +1333,17 @@ void RecoilStateConfirmQuit::OnDeactivate() {
 // Reimplements 0x415880: RecoilStateConfirmQuit::~RecoilStateConfirmQuit
 // (D:\Proj\Battlesport\RecoilStateConfirmQuit.cpp)
 RecoilStateConfirmQuit::~RecoilStateConfirmQuit() {
-    HudUiBackgroundConfirmQuitVirtual *dialogView = (HudUiBackgroundConfirmQuitVirtual *)m_dialog;
-    if (dialogView != 0) {
-        dialogView->SetEnabled(0);
+    HudUiBackgroundConfirmQuit *dialog = m_dialog;
+    if (dialog != 0) {
+        dialog->SetEnabled(0);
 
-        dialogView = (HudUiBackgroundConfirmQuitVirtual *)m_dialog;
-        if (dialogView != 0) {
-            dialogView->ScalarDeletingDestructor(1);
+        dialog = m_dialog;
+        if (dialog != 0) {
+            dialog->ScalarDeletingDestructor(1);
         }
 
         m_dialog = 0;
     }
-}
-
-// Reimplements 0x415860: RecoilStateConfirmQuit::ScalarDeletingDestructor
-// (D:\Proj\Battlesport\RecoilStateConfirmQuit.cpp)
-RecoilStateConfirmQuit * RecoilStateConfirmQuit::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    this->~RecoilStateConfirmQuit();
-
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
 }
 
 // Reimplements 0x408d20: RecoilStateControls::StaticInitAndRegisterAtExit
@@ -1798,7 +1356,7 @@ void RecoilStateControls::StaticInitAndRegisterAtExit() {
 // Reimplements 0x408d30: RecoilStateControls::StaticInit
 // (D:\Proj\Battlesport\recoil_state.cpp)
 RecoilStateControls *RecoilStateControls::StaticInit() {
-    return g_RecoilStateControls.Constructor();
+    return new (&g_RecoilStateControls) RecoilStateControls;
 }
 
 // Reimplements 0x408d40: RecoilStateControls::RegisterAtExit
@@ -1813,33 +1371,16 @@ void RecoilStateControls::AtExitDestructor() {
     g_RecoilStateControls.~RecoilStateControls();
 }
 
-// Reimplements 0x408d60: RecoilStateControls::Constructor
+// Reimplements 0x408d60: RecoilStateControls::RecoilStateControls
 // (D:\Proj\Battlesport\recoil_state.cpp)
-RecoilStateControls * RecoilStateControls::Constructor() {
-    m_dialog = 0;
-    return this;
-}
-
-// Reimplements 0x408d70: RecoilStateControls::ScalarDeletingDestructor
-// (D:\Proj\Battlesport\recoil_state.cpp)
-RecoilStateControls * RecoilStateControls::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    this->~RecoilStateControls();
-
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
+RecoilStateControls::RecoilStateControls() : m_dialog(0) {}
 
 // Reimplements 0x408d90: RecoilStateControls::Destructor
 // (D:\Proj\Battlesport\recoil_state.cpp)
 RecoilStateControls::~RecoilStateControls() {
-    HudUiControlsDialogVirtual *dialogView = (HudUiControlsDialogVirtual *)m_dialog;
-    if (dialogView != 0) {
-        dialogView->ScalarDeletingDestructor(1);
+    HudUiControlsDialog *dialog = m_dialog;
+    if (dialog != 0) {
+        dialog->ScalarDeletingDestructor(1);
     }
 
     m_dialog = 0;
@@ -1854,13 +1395,11 @@ int RecoilStateControls::OnTryBecomeCurrent() {
         if (dialog != 0) {
             dialog = dialog->Constructor();
         }
-        m_dialog = (RecoilPtr32)(unsigned int)dialog;
+        m_dialog = dialog;
     }
 
-    HudUiControlsDialog *const dialog = (HudUiControlsDialog *)(unsigned int)m_dialog;
-    HudUiControlsDialogVirtual *const dialogView =
-        (HudUiControlsDialogVirtual *)(unsigned int)m_dialog;
-    dialogView->SetEnabled(1);
+    HudUiControlsDialog *const dialog = m_dialog;
+    dialog->SetEnabled(1);
 
     dialog->mouseOrJoystickSelector.SetSelectedIndex(zInp::GetJoystickOption());
     dialog->throttleModeSelector.SetSelectedIndex(zOpt::GetThrottleMode());
@@ -1880,7 +1419,7 @@ void RecoilStateControls::OnDeactivate() {
         return;
     }
 
-    HudUiControlsDialog *const dialog = (HudUiControlsDialog *)(unsigned int)m_dialog;
+    HudUiControlsDialog *const dialog = m_dialog;
     zInp::SetJoystickOption(
         zInput::DI_SetJoystickEnabled(dialog->mouseOrJoystickSelector.selectedIndex)
     );
@@ -1895,13 +1434,12 @@ void RecoilStateControls::OnDeactivate() {
         );
     }
 
-    HudUiControlsDialogVirtual *dialogView = (HudUiControlsDialogVirtual *)(unsigned int)m_dialog;
-    dialogView->SetEnabled(0);
-    ((HudUiDialogController *)(unsigned int)m_dialog)->BlitOwnedSurfaceToPrimary();
+    dialog->SetEnabled(0);
+    ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
 
-    dialogView = (HudUiControlsDialogVirtual *)(unsigned int)m_dialog;
-    if (dialogView != 0) {
-        dialogView->ScalarDeletingDestructor(1);
+    HudUiControlsDialog *dialogToDelete = m_dialog;
+    if (dialogToDelete != 0) {
+        dialogToDelete->ScalarDeletingDestructor(1);
     }
 
     m_dialog = 0;
@@ -1920,11 +1458,10 @@ void RecoilStateControls::OnResume(
 
     zVideo::RunPostprocessOnPrimaryBuffer();
 
-    HudUiControlsDialogVirtual *const dialogView =
-        (HudUiControlsDialogVirtual *)(unsigned int)m_dialog;
-    dialogView->SetEnabled(1);
-    ((HudUiContainer *)(unsigned int)m_dialog)->InvalidateChildren();
-    dialogView->Update(0.0f);
+    HudUiControlsDialog *const dialog = m_dialog;
+    dialog->SetEnabled(1);
+    ((HudUiContainer *)dialog)->InvalidateChildren();
+    dialog->Update(0.0f);
     zVideo::Dispatch_UnlockPrimarySurfaceState();
 
     zOpt_ViewRectSection *const dstRect = zOpt::GetWindowSection();
@@ -1956,28 +1493,15 @@ void HudUiControlsDialog_CommandsWidget::OnActivate() {
 // Reimplements 0x408a30: HudUiControlsDialog::Constructor
 // (D:\Proj\Battlesport\hud_ui_dialogs.cpp)
 HudUiControlsDialog * HudUiControlsDialog::Constructor() {
-    HudUiBackground::Constructor();
+    new ((HudUiBackground *)this) HudUiBackground;
 
     resumeWidget.Constructor();
-    resumeWidget.base.ftable = &g_HudUiControlsDialog_ResumeWidget_Vtbl;
     commandsWidget.Constructor();
-    commandsWidget.base.ftable = &g_HudUiControlsDialog_CommandsWidget_Vtbl;
     mouseOrJoystickSelector.Constructor();
-    mouseOrJoystickSelector.base.base.ftable =
-        (const HudUiWidget_FTable *)&g_HudUiControlsDialog_MouseOrJoystickSelector_Vtbl;
     throttleModeSelector.Constructor();
-    throttleModeSelector.base.base.ftable =
-        (const HudUiWidget_FTable *)&g_HudUiControlsDialog_ThrottleModeSelector_Vtbl;
     steeringModeSelector.Constructor();
-    steeringModeSelector.base.base.ftable =
-        (const HudUiWidget_FTable *)&g_HudUiControlsDialog_SteeringModeSelector_Vtbl;
     cursorModeSelector.Constructor();
-    cursorModeSelector.base.base.ftable =
-        (const HudUiWidget_FTable *)&g_HudUiControlsDialog_CursorModeSelector_Vtbl;
     cameraModeSelector.Constructor();
-    cameraModeSelector.base.base.ftable =
-        (const HudUiWidget_FTable *)&g_HudUiControlsDialog_FTableHeader.cameraModeSelector;
-    base.base.vptr = (const HudUiContainer_FTable *)&g_HudUiControlsDialog_FTableHeader;
 
     zReader::Node *const dialogRoot = HudUiBackground::LoadFromZrd(
         "dialog.zrd",
@@ -1987,37 +1511,37 @@ HudUiControlsDialog * HudUiControlsDialog::Constructor() {
     if (dialogRoot != 0) {
         HudUiBackground::BindWidgetByName(
             dialogRoot,
-            &resumeWidget.base,
+            &resumeWidget,
             "RESUME"
         );
         HudUiBackground::BindWidgetByName(
             dialogRoot,
-            &commandsWidget.base,
+            &commandsWidget,
             "COMMANDS_BTN"
         );
         HudUiBackground::BindWidgetByName(
             dialogRoot,
-            &mouseOrJoystickSelector.base.base,
+            &mouseOrJoystickSelector,
             "MOUSE_OR_JOYSTICK"
         );
         HudUiBackground::BindWidgetByName(
             dialogRoot,
-            &throttleModeSelector.base.base,
+            &throttleModeSelector,
             "THROTTLE_MODE"
         );
         HudUiBackground::BindWidgetByName(
             dialogRoot,
-            &steeringModeSelector.base.base,
+            &steeringModeSelector,
             "STEERING_MODE"
         );
         HudUiBackground::BindWidgetByName(
             dialogRoot,
-            &cursorModeSelector.base.base,
+            &cursorModeSelector,
             "CURSOR_MODE"
         );
         HudUiBackground::BindWidgetByName(
             dialogRoot,
-            &cameraModeSelector.base.base,
+            &cameraModeSelector,
             "CAMERA_MODE"
         );
         HudUiBackground::FreeLoadedTreeRoots((int)(unsigned int)dialogRoot);
@@ -2041,7 +1565,7 @@ void HudUiControlsDialog::Destructor() {
     mouseOrJoystickSelector.DestructorCore();
     commandsWidget.DestructorCore();
     resumeWidget.DestructorCore();
-    HudUiBackground::Destructor();
+    this->HudUiBackground::~HudUiBackground();
 }
 
 // Reimplements 0x408c40: HudUiControlsDialog::ScalarDeletingDestructor

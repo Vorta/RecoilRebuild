@@ -16,10 +16,6 @@ extern "C" char g_WestwoodOnlineUpgradeDownloadRestoreCwd[0x100] = {0};
 extern "C" int g_WestwoodOnlineUpgradeDownloadDialogResult = 0;
 extern "C" HWND g_hWestwoodOnlineUpgradeProgressDialog = 0;
 
-// Vtable identity installed by 0x4425c0 and 0x4427f0. The typed COM slot
-// owner remains source-model debt; current tier C evidence only needs identity.
-WestwoodOnlineUpgradeDownloadEventSinkVtable g_WestwoodOnlineUpgradeDownloadEventSink_Vtbl = {0};
-
 // BN observes these COM identity objects in the WOL download ActiveX path.
 // Exact GUID contents remain future provider-interface recovery evidence.
 const CLSID g_WestwoodOnlineUpgradeDownload_CLSID = {0};
@@ -50,7 +46,7 @@ const DWORD kDownloadErrorStatusSleepMs = 1000;
  * Reimplements 0x414b50: WestwoodOnlineUpgradeDownloadEventSink::CallbackNoOp.
  * Purpose: Handles an unused download event callback slot with a zero result.
  */
-int WestwoodOnlineUpgradeDownloadEventSink::CallbackNoOp(
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::CallbackNoOp(
     void *
 ) {
     return 0;
@@ -60,9 +56,7 @@ int WestwoodOnlineUpgradeDownloadEventSink::CallbackNoOp(
  * Reimplements 0x442660: WestwoodOnlineUpgradeDownloadEventSink::OnDownloadFinished.
  * Purpose: Marks the upgrade download dialog as finished and reports success to COM.
  */
-HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::OnDownloadFinished(
-    IUnknown *
-) {
+HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::OnDownloadFinished() {
     WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt(kDownloadFinishedStatusText);
     g_WestwoodOnlineUpgradeDownloadDialogResult = 1;
     return S_OK;
@@ -73,7 +67,6 @@ HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::OnDownloadFini
  * Purpose: Shows the download error state, pauses briefly, and records dialog failure.
  */
 HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::OnDownloadError(
-    IUnknown *,
     HRESULT
 ) {
     WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt(kDownloadErrorStatusText);
@@ -87,7 +80,6 @@ HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::OnDownloadErro
  * Purpose: Updates the progress control and byte-count status for an active patch download.
  */
 HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::OnDownloadProgress(
-    IUnknown *,
     unsigned int bytesRead,
     unsigned int totalBytes,
     int,
@@ -122,7 +114,6 @@ HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::OnDownloadProg
  * Purpose: Maps selected Westwood download state codes to progress-dialog status text.
  */
 HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::OnStateChanged(
-    IUnknown *,
     WestwoodOnlineUpgradeDownloadState stateCode
 ) {
     if (stateCode == WOL_DOWNLOAD_STATE_CONNECTING) {
@@ -139,17 +130,19 @@ HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::OnStateChanged
  * Reimplements 0x442770: WestwoodOnlineUpgradeDownloadEventSink::AddRef.
  * Purpose: Increments the embedded COM reference count for the download event sink.
  */
-ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::AddRef(
-    WestwoodOnlineUpgradeDownloadEventSink *self
-) {
-    return (ULONG)InterlockedIncrement(&self->m_refCountAndLock.refCount);
+ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::AddRef() {
+    return (ULONG)InterlockedIncrement(&m_refCountAndLock.refCount);
 }
 
 /**
  * Reimplements 0x442790: WestwoodOnlineUpgradeDownloadEventSink::Release.
  * Purpose: Decrements the COM reference count and destroys the sink on the final release.
  */
-ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::Release(
+ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::Release() {
+    return WestwoodOnlineUpgradeDownloadEventSink::Release(this);
+}
+
+ULONG __stdcall WestwoodOnlineUpgradeDownloadEventSink::Release(
     WestwoodOnlineUpgradeDownloadEventSink *self
 ) {
     ULONG refCount;
@@ -180,12 +173,22 @@ HRESULT __stdcall WestwoodOnlineUpgradeDownloadEventSink::QueryInterface(
     );
 }
 
+HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::QueryInterface(
+    REFIID iid,
+    void **outInterface
+) {
+    return WestwoodOnlineUpgradeDownloadEventSink::QueryInterface(
+        this,
+        iid,
+        outInterface
+    );
+}
+
 /**
  * Reimplements 0x4427f0: WestwoodOnlineUpgradeDownloadEventSink::Destructor.
  * Purpose: Tears down the embedded lock and decrements the live Westwood event-sink count.
  */
 void WestwoodOnlineUpgradeDownloadEventSink::Destructor() {
-    m_vftable = &g_WestwoodOnlineUpgradeDownloadEventSink_Vtbl;
     m_refCountAndLock.refCount = 1;
     InterlockedDecrement(&g_WestwoodOnlineUpgradeEventSinkLiveCount);
     DeleteCriticalSection(&m_refCountAndLock.lock);
@@ -200,13 +203,10 @@ HRESULT __stdcall WestwoodOnlineUpgradeDownloadEventSink::CreateInstance(
 ) {
     HRESULT result = E_OUTOFMEMORY;
     WestwoodOnlineUpgradeDownloadEventSink *eventSink =
-        (WestwoodOnlineUpgradeDownloadEventSink *)(::operator new(
-            sizeof(WestwoodOnlineUpgradeDownloadEventSink)
-        ));
+        new WestwoodOnlineUpgradeDownloadEventSink;
 
     if (eventSink != 0) {
         eventSink->m_refCountAndLock.Init();
-        eventSink->m_vftable = &g_WestwoodOnlineUpgradeDownloadEventSink_Vtbl;
         InterlockedIncrement(&g_WestwoodOnlineUpgradeEventSinkLiveCount);
         result = S_OK;
     }

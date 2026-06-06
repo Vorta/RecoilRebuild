@@ -11,7 +11,7 @@
 #include <string.h>
 
 extern "C" {
-zArchiveList *g_zImage_MissionResourcePaths = 0;
+zArchiveList *g_zImage_MissionSearchPathList = 0;
 int g_zImage_TexDirEntryCount = 0;
 zImage_TexDirEntryPartial g_zImage_TexDirEntries[0x1000] = {0};
 zImage_Font *g_zImage_FontTable[20] = {0};
@@ -229,13 +229,13 @@ int TexDir_LoadPendingEntries() {
 extern "C" int __fastcall zImage_InitMissionResources(
     const char *pathText
 ) {
-    if (g_zImage_MissionResourcePaths == 0) {
-        g_zImage_MissionResourcePaths = zUtil_ZRDR_CreateSearchPathList(pathText);
+    if (g_zImage_MissionSearchPathList == 0) {
+        g_zImage_MissionSearchPathList = zUtil_ZRDR_CreateSearchPathList(pathText);
         return 0;
     }
 
     zUtil::ZRDR_AddSearchPaths(
-        g_zImage_MissionResourcePaths,
+        g_zImage_MissionSearchPathList,
         pathText
     );
     return 0;
@@ -606,8 +606,8 @@ void __fastcall InvalidateLoadedVariantChain(
 // Reimplements 0x46ebb0: zImage::Shutdown
 int Shutdown() {
     zVid_TexDir::Shutdown();
-    zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionResourcePaths);
-    g_zImage_MissionResourcePaths = 0;
+    zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionSearchPathList);
+    g_zImage_MissionSearchPathList = 0;
     return 1;
 }
 

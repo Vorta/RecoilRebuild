@@ -99,7 +99,6 @@ RECOIL_STATIC_ASSERT(
         overlayRectOrNull
     ) == 0x34
 );
-extern const HudUiCommon_FTable g_Player_UnderwaterFxPass3Ui_Vtbl;
 
 struct Player_ProjectileCameraFxPass3Ui : HudUiElement {
     zVidRect32 *overlayRectOrNull;
@@ -114,7 +113,6 @@ RECOIL_STATIC_ASSERT(
         overlayRectOrNull
     ) == 0x34
 );
-extern const HudUiCommon_FTable g_Player_State7FxPass3Ui_FTable;
 
 struct HudUiMgrSensorTrackNode {
     int trackKind;

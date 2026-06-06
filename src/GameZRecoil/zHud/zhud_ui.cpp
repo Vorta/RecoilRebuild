@@ -30,6 +30,7 @@
 #include <cctype>
 #include <cstdarg>
 #include <math.h>
+#include <new>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -50,63 +51,6 @@ const float ZSND_CD_VOLUME_TO_NORMALIZED = 1.52590219e-05f;
 const float ZSND_CD_NORMALIZED_TO_VOLUME = 65535.0f;
 const unsigned int HUD_UI_NET_GAME_SETUP_FOCUS_TEXT_INPUT_OFFSET = 0xa94c;
 
-RECOIL_STATIC_ASSERT(sizeof(HudUiCommon_FTable) == 0x74);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCommon_FTable, dtor) == 0x0);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCommon_FTable, DrawBase) == 0x8);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCommon_FTable, SetClip) == 0x18);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCommon_FTable, HitTest) == 0x5c);
-RECOIL_STATIC_ASSERT(offsetof(HudUiCommon_FTable, GetRect) == 0x70);
-RECOIL_STATIC_ASSERT(sizeof(HudUiPanel_FTable) == 0x94);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanel_FTable, dtor) == 0x0);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanel_FTable, SetClip) == 0x18);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanel_FTable, HitTest) == 0x54);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanel_FTable, SetTextFmt) == 0x74);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanel_FTable, SetFont) == 0x80);
-RECOIL_STATIC_ASSERT(offsetof(HudUiPanel_FTable, RebuildTextRect) == 0x90);
-
-template <typename Method>
-unsigned int MethodAddress(
-    Method method
-) {
-    RECOIL_STATIC_ASSERT(sizeof(method) <= sizeof(unsigned int));
-    unsigned int address = 0;
-    memcpy(
-        &address,
-        &method,
-        sizeof(method)
-    );
-    return address;
-}
-
-struct HudUiNetGameSetupOverlayOwnerBaseVtableGuard {
-    HudUiNetGameSetupOverlayOwner *self;
-
-    ~HudUiNetGameSetupOverlayOwnerBaseVtableGuard() {
-        self->vftable = RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl);
-    }
-};
-
-struct HudUiNetGameSetupPanelOverlayVirtual {
-    virtual void Update(float deltaSeconds);
-    virtual void SetEnabled(int enabled);
-    virtual HudUiNetGameSetupPanel * ScalarDeletingDestructor(unsigned int flags);
-};
-
-template <
-    typename Slot,
-    typename Method>
-void AssignMethodSlot(
-    Slot &slot,
-    Method method
-) {
-    RECOIL_STATIC_ASSERT(sizeof(slot) == sizeof(method));
-    memcpy(
-        &slot,
-        &method,
-        sizeof(slot)
-    );
-}
-
 /**
  * Provider boundary for 0x413eb0: NoOp::MethodStub.
  * Purpose: preserve the compiler-generated no-op method target used by HUD
@@ -115,559 +59,6 @@ void AssignMethodSlot(
 void __fastcall HudUiNoOpMethodStub(
     void *
 ) {}
-
-/**
- * Restores the common HUD method-table initializer used by the HUD ftable globals.
- * No standalone retail function exists; Binary Ninja data at 0x4cca10 and derived
- * table initializers identify these common slot values.
- * Purpose: materialize the common HUD element dispatch table with source-named
- * fields instead of anonymous slot indexes.
- */
-HudUiCommon_FTable MakeHudUiCommonFTable() {
-    HudUiCommon_FTable table = {0};
-    table.Draw = MethodAddress(&HudUiElement::Draw);
-    table.DrawBase = MethodAddress(&HudUiElement::DrawBase);
-    table.SetPos = MethodAddress(&HudUiElement::SetPos);
-    table.SetX = MethodAddress(&HudUiElement::SetX);
-    table.SetY = MethodAddress(&HudUiElement::SetY);
-    table.SetClip = MethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    table.SetClipRect = MethodAddress(&HudUiElement::SetClipRect);
-    table.Invalidate = MethodAddress(&HudUiElement::Invalidate);
-    table.SetVisible = MethodAddress(&HudUiElement::SetVisible);
-    table.GetX = MethodAddress(&HudUiElement::GetX);
-    table.GetY = MethodAddress(&HudUiElement::GetY);
-    return table;
-}
-
-HudUiContainer_FTable MakeHudUiContainerFTable() {
-    HudUiContainer_FTable table = {0};
-    AssignMethodSlot(
-        table.updateAll,
-        &HudUiContainer::UpdateAll
-    );
-    AssignMethodSlot(
-        table.setEnabled,
-        &HudUiContainer::SetEnabled
-    );
-    return table;
-}
-
-HudLayoutBase_FTable MakeHudLayoutFTable(
-    unsigned int setActiveSlot
-) {
-    HudLayoutBase_FTable table = {0};
-    table.slots[0] = MethodAddress(&HudLayoutBase::UpdateAll);
-    table.slots[1] = MethodAddress(&HudUiContainer::SetEnabled);
-    table.slots[2] = setActiveSlot;
-    table.slots[3] = (unsigned int)(&zError::ReportOld);
-    table.slots[4] = MethodAddress(&HudLayoutBase::Enable);
-    table.slots[5] = MethodAddress(&HudLayoutBase::Disable);
-    table.OnActivated = (HudLayoutOnActivatedFn)(&zError::ReportOld);
-    return table;
-}
-
-HudLayoutHW_FTable MakeHudLayoutHWFTable() {
-    HudLayoutHW_FTable table = {0};
-    table.slots[0] = MethodAddress(&HudLayoutHW::UpdateAll);
-    table.slots[1] = MethodAddress(&HudUiContainer::SetEnabled);
-    table.slots[2] = MethodAddress(&HudLayoutHW::SetActive);
-    table.slots[3] = (unsigned int)(&zError::ReportOld);
-    table.slots[4] = MethodAddress(&HudLayoutHW::Enable);
-    table.slots[5] = MethodAddress(&HudLayoutHW::Disable);
-    table.OnActivated = (HudLayoutOnActivatedFn)(MethodAddress(&HudLayoutHW::OnActivated));
-    table.UpdateObjectiveDirtyRect = MethodAddress(&HudLayoutHW::UpdateObjectiveDirtyRect);
-    return table;
-}
-
-template <typename FTable> FTable MakeHudUiContainerLikeFTable() {
-    FTable table = {0};
-    AssignMethodSlot(
-        table.updateAll,
-        &HudUiContainer::UpdateAll
-    );
-    AssignMethodSlot(
-        table.setEnabled,
-        &HudUiContainer::SetEnabled
-    );
-    return table;
-}
-
-template <typename FTable> FTable MakeHudUiFTableWithCommonInvalidate() {
-    FTable table = {0};
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 2) {
-        table.slots[2] = (unsigned int)(&zError::ReportOld);
-    }
-
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 8) {
-        table.slots[8] = MethodAddress(&HudUiElement::Invalidate);
-    }
-
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 3) {
-        table.slots[3] = MethodAddress(&HudUiElement::SetPos);
-    }
-
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 4) {
-        table.slots[4] = MethodAddress(&HudUiElement::SetX);
-    }
-
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 5) {
-        table.slots[5] = MethodAddress(&HudUiElement::SetY);
-    }
-
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 6) {
-        table.slots[6] = MethodAddress(&HudUiElement::SetBltSourceAndClipRect);
-    }
-
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 7) {
-        table.slots[7] = MethodAddress(&HudUiElement::SetClipRect);
-    }
-
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 24) {
-        table.slots[24] = MethodAddress(&HudUiElement::SetVisible);
-    }
-
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 25) {
-        table.slots[25] = MethodAddress(&HudUiElement::GetX);
-    }
-
-    if ((sizeof(table.slots) / sizeof(table.slots[0])) > 26) {
-        table.slots[26] = MethodAddress(&HudUiElement::GetY);
-    }
-
-    return table;
-}
-
-HudUiCommon_FTable MakeHudUiCircleFTable() {
-    HudUiCommon_FTable table = MakeHudUiCommonFTable();
-    table.slots[1] = MethodAddress(&HudUiCircle::DrawDirty);
-    table.slots[2] = MethodAddress(&HudUiElement::DrawBase);
-    return table;
-}
-
-HudUiZrdWidgetEx17C_Item_FTable MakeHudUiZrdWidgetEx17CItemFTable() {
-    HudUiZrdWidgetEx17C_Item_FTable table =
-        MakeHudUiFTableWithCommonInvalidate<HudUiZrdWidgetEx17C_Item_FTable>();
-    table.slots[0] = MethodAddress(&HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor);
-    table.slots[11] = MethodAddress(&HudUiZrdWidgetEx17C_Item::SetSelected);
-    table.slots[12] = MethodAddress(&HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf);
-    table.slots[15] = MethodAddress(&HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected);
-    table.slots[16] = MethodAddress(&HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected);
-    table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
-    table.slots[31] = MethodAddress(&HudUiZrdWidgetEx17C_Item::LoadFromZrd);
-    return table;
-}
-
-HudUiZrdWidgetEx17C_FTable MakeHudUiZrdWidgetEx17CFTable() {
-    HudUiZrdWidgetEx17C_FTable table =
-        MakeHudUiFTableWithCommonInvalidate<HudUiZrdWidgetEx17C_FTable>();
-    table.slots[0] = MethodAddress(&HudUiZrdWidgetEx17C::ScalarDeletingDestructor);
-    table.slots[12] = MethodAddress(&HudUiZrdWidget::OnActivate);
-    table.slots[15] = MethodAddress(&HudUiZrdWidget::ShowPreview);
-    table.slots[16] = MethodAddress(&HudUiZrdWidget::HidePreview);
-    table.slots[24] = MethodAddress(&HudUiZrdWidgetEx17C::EnableChildAtIndex);
-    table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
-    table.slots[31] = MethodAddress(&HudUiZrdWidgetEx17C::LoadFromZrd);
-    return table;
-}
-
-HudUiTextInput_FTable MakeHudUiTextInputFTable() {
-    HudUiTextInput_FTable table = {0};
-    table.slots[0] = MethodAddress(&HudUiTextInput::InsertCharAtCursor);
-    table.slots[1] = MethodAddress(&HudUiTextInput::InsertCharAtCursor);
-    table.slots[2] = MethodAddress(&HudUiTextInput::MoveCursorRight);
-    table.slots[3] = MethodAddress(&HudUiTextInput::MoveCursorLeft);
-    table.slots[4] = MethodAddress(&HudUiTextInput::BackspaceDeleteChar);
-    table.slots[5] = MethodAddress(&HudUiTextInput::DeleteCharForward);
-    table.slots[6] = MethodAddress(&HudUiTextInput::MoveCursorLeft);
-    table.slots[7] = MethodAddress(&HudUiTextInput::MoveCursorRight);
-    table.slots[8] = MethodAddress(&HudUiTextInput::MoveCursorRight);
-    return table;
-}
-
-HudUiTextInput_FTable MakeHudUiChatComposeTextInputFTable() {
-    HudUiTextInput_FTable table = MakeHudUiTextInputFTable();
-    table.slots[2] = (unsigned int)(&GameNet::EndChatComposeAndSendThunk);
-    return table;
-}
-
-HudUiTextInput_FTable MakeHudUiNumericTextInputTextInputFTable() {
-    HudUiTextInput_FTable table = MakeHudUiTextInputFTable();
-    table.slots[2] = MethodAddress(&HudUiOwnedTextInput::OnAcceptNotifyOwner);
-    table.slots[3] = (unsigned int)(&zGame::ReturnOnlyStub);
-    table.slots[8] = (unsigned int)(&zGame::ReturnOnlyStub);
-    return table;
-}
-
-HudUiWidget_FTable MakeHudUiWidgetFTable() {
-    HudUiWidget_FTable table = MakeHudUiFTableWithCommonInvalidate<HudUiWidget_FTable>();
-    table.slots[3] = MethodAddress(&HudUiWidget::SetPos);
-    table.slots[0x5c / 4] = MethodAddress(&HudUiWidget::HitTest);
-    table.slots[25] = MethodAddress(&HudUiWidget::GetCenterX);
-    table.slots[26] = MethodAddress(&HudUiWidget::GetCenterY);
-    return table;
-}
-
-HudUiMessage_FTable MakeHudUiMessageFTable() {
-    HudUiMessage_FTable table = MakeHudUiFTableWithCommonInvalidate<HudUiMessage_FTable>();
-    table.slots[1] = MethodAddress(&HudUiMessage::Draw);
-    return table;
-}
-
-/**
- * Restores the concrete panel HUD method-table initializer used by
- * g_HudUiPanel_FTable at 0x4d3a88.
- * No standalone retail function exists; Binary Ninja data and panel constructor/
- * destructor table writes identify the panel slot names.
- * Purpose: overlay the common HUD table with panel-specific dispatch methods
- * through the recovered named panel ftable fields.
- */
-HudUiPanel_FTable MakeHudUiPanelFTableConcrete() {
-    HudUiPanel_FTable table = {0};
-    table.dtor = MethodAddress(&HudUiPanel::ScalarDeletingDestructor);
-    table.Draw = MethodAddress(&HudUiPanel::Draw);
-    table.DrawBase = MethodAddress(&HudUiElement::DrawBase);
-    table.SetPos = MethodAddress(&HudUiElement::SetPos);
-    table.SetX = MethodAddress(&HudUiElement::SetX);
-    table.SetY = MethodAddress(&HudUiElement::SetY);
-    table.SetClip = MethodAddress(&HudUiPanel::SetClip);
-    table.SetClipRect = MethodAddress(&HudUiElement::SetClipRect);
-    table.Invalidate = MethodAddress(&HudUiPanel::Invalidate);
-    table.Update = MethodAddress(&HudUiElement::Update);
-    table.field_28 = MethodAddress(&zStub::NoOp1Arg);
-    table.GetTextBufferPtrOrNull = MethodAddress(&zStub::ReturnZeroNoArgs);
-    table.OnActivate = (unsigned int)(&zError::ReportOld);
-    table.field_34 = (unsigned int)(&zError::ReportOld);
-    table.field_38 = (unsigned int)(&zError::ReportOld);
-    table.field_3c = (unsigned int)(&zError::ReportOld);
-    table.field_40 = (unsigned int)(&zError::ReportOld);
-    table.field_44 = (unsigned int)(&zError::ReportOld);
-    table.field_48 = (unsigned int)(&zError::ReportOld);
-    table.field_4c = (unsigned int)(&zError::ReportOld);
-    table.field_50 = (unsigned int)(&zError::ReportOld);
-    table.HitTest = MethodAddress(&StdPtrVector::ClearNoOpDestroy);
-    table.field_58 = (unsigned int)(&zError::ReportOld);
-    table.field_5c = MethodAddress(&HudUiElement::HitTestTrue);
-    table.SetVisible = MethodAddress(&HudUiElement::SetVisible);
-    table.GetX = MethodAddress(&HudUiElement::GetX);
-    table.GetY = MethodAddress(&HudUiElement::GetY);
-    table.EnableWordWrapWithRect = MethodAddress(&HudUiPanel::EnableWordWrapWithRect);
-    table.GetTextRect = MethodAddress(&HudUiPanel::GetTextRect);
-    table.SetTextFmt = MethodAddress(&HudUiPanel::SetTextFmt);
-    table.UpdateTextBoundsFromContent = MethodAddress(&HudUiPanel::UpdateTextBoundsFromContent);
-    table.GetFont = MethodAddress(&HudUiPanel::GetFont);
-    table.SetFont = MethodAddress(&HudUiPanel::SetFont);
-    table.SetFontHandle = MethodAddress(&HudUiPanel::SetFontHandle);
-    table.SetTextFmtV = MethodAddress(&HudUiPanel::SetTextFmtV);
-    table.SetText = MethodAddress(&HudUiPanel::SetText);
-    table.RebuildTextRect = MethodAddress(&HudUiPanel::RebuildTextRect);
-    return table;
-}
-
-/**
- * Restores the panel-family HUD method-table initializer used by panel-derived
- * globals that still expose only slot-array table layouts.
- * No standalone retail function exists; Binary Ninja data and panel constructor/
- * destructor table writes identify the inherited panel slot values.
- * Purpose: overlay a common HUD slot table with panel-family dispatch methods.
- */
-template <typename FTable> FTable MakeHudUiPanelFTable() {
-    FTable table = MakeHudUiFTableWithCommonInvalidate<FTable>();
-    RECOIL_STATIC_ASSERT((sizeof(table.slots) / sizeof(table.slots[0])) > 36);
-    table.slots[0] = MethodAddress(&HudUiPanel::ScalarDeletingDestructor);
-    table.slots[6] = MethodAddress(&HudUiPanel::SetClip);
-    table.slots[27] = MethodAddress(&HudUiPanel::EnableWordWrapWithRect);
-    table.slots[29] = MethodAddress(&HudUiPanel::SetTextFmt);
-    table.slots[32] = MethodAddress(&HudUiPanel::SetFont);
-    table.slots[34] = MethodAddress(&HudUiPanel::SetTextFmtV);
-    table.slots[35] = MethodAddress(&HudUiPanel::SetText);
-    table.slots[36] = MethodAddress(&HudUiPanel::RebuildTextRect);
-    return table;
-}
-
-HudUiPanel_FTable MakeHudUiTransitionTextPanelFTable() {
-    HudUiPanel_FTable table = MakeHudUiPanelFTableConcrete();
-    table.slots[9] = MethodAddress(&HudUiTransitionTextPanel::TickFlash);
-    return table;
-}
-
-HudUiListSelectorItem_FTable MakeHudUiListSelectorItemFTable() {
-    HudUiListSelectorItem_FTable table = MakeHudUiPanelFTable<HudUiListSelectorItem_FTable>();
-    table.slots[0] = MethodAddress(&HudUiListSelectorItem::OnActivate);
-    table.slots[1] = MethodAddress(&HudUiListSelectorItem::Draw);
-    return table;
-}
-
-HudUiTextLabel_FTable MakeHudUiTextLabelFTable() {
-    HudUiTextLabel_FTable table = MakeHudUiFTableWithCommonInvalidate<HudUiTextLabel_FTable>();
-    table.slots[1] = MethodAddress(&HudUiTextLabel::OnDraw);
-    table.slots[0x5c / 4] = MethodAddress(&HudUiTextLabel::HitTest);
-    table.slots[28] = MethodAddress(&HudUiTextLabel::SetTextFmt);
-    return table;
-}
-
-HudUiBar_FTable MakeHudUiBarFTable() {
-    HudUiBar_FTable table = MakeHudUiFTableWithCommonInvalidate<HudUiBar_FTable>();
-    table.slots[1] = MethodAddress(&HudUiBar::Draw);
-    return table;
-}
-
-HudUiTimerPanelFloat_FTable MakeHudUiTimerPanelFloatFTable() {
-    HudUiTimerPanelFloat_FTable table = MakeHudUiPanelFTable<HudUiTimerPanelFloat_FTable>();
-    table.slots[1] = MethodAddress(&HudUiTimerPanelFloat::Draw);
-    return table;
-}
-
-HudUiCompositePanel_FTable MakeHudUiCompositePanelFTable() {
-    HudUiCompositePanel_FTable table = MakeHudUiPanelFTable<HudUiCompositePanel_FTable>();
-    table.slots[0] = MethodAddress(&HudUiCompositePanel::ScalarDeletingDestructor);
-    table.slots[3] = MethodAddress(&HudUiCompositePanel::LayoutEntries);
-    table.slots[9] = MethodAddress(&HudUiCompositePanel::Update);
-    table.slots[29] = MethodAddress(&HudUiCompositePanel::SetTextFmt);
-    table.slots[32] = MethodAddress(&HudUiCompositePanel::SetFont);
-    table.slots[34] = MethodAddress(&HudUiCompositePanel::SetTextFmtV);
-    table.slots[37] = MethodAddress(&HudUiCompositePanel::ScrollHistory);
-    return table;
-}
-
-HudUiTripletPanel_FTable MakeHudUiTripletPanelFTable() {
-    HudUiTripletPanel_FTable table =
-        MakeHudUiFTableWithCommonInvalidate<HudUiTripletPanel_FTable>();
-    table.slots[1] = MethodAddress(&HudUiTripletPanel::Draw);
-    table.slots[2] = (unsigned int)(&zError::ReportOld);
-    return table;
-}
-
-HudUiNumericTextInput_Base_FTable MakeHudUiNumericTextInputCtorFTable() {
-    HudUiNumericTextInput_Base_FTable table =
-        MakeHudUiFTableWithCommonInvalidate<HudUiNumericTextInput_Base_FTable>();
-    table.slots[0] = MethodAddress(&HudUiNumericTextInput::ScalarDeletingDestructorThunk);
-    table.slots[12] = MethodAddress(&HudUiNetGameSetupTextInput::OnActivateFocusAndCursor);
-    table.slots[35] = MethodAddress(&zStub::ReturnZeroNoArgs);
-    return table;
-}
-
-HudUiClampedIntTextInput_FTable MakeHudUiClampedIntTextInputCtorFTable() {
-    HudUiClampedIntTextInput_FTable table =
-        MakeHudUiFTableWithCommonInvalidate<HudUiClampedIntTextInput_FTable>();
-    table.slots[0] = MethodAddress(&HudUiNumericTextInput::ScalarDeletingDestructorThunk);
-    table.slots[12] = MethodAddress(&HudUiNetGameSetupTextInput::OnActivateFocusAndCursor);
-    table.slots[33] = MethodAddress(&HudUiClampedIntTextInput::OnRawKeyboardDigitOnly);
-    table.slots[34] = MethodAddress(&HudUiNumericTextInput::OnAcceptForwardToCommit);
-    table.slots[35] = MethodAddress(&HudUiClampedIntTextInput::CommitAndGetValue);
-    return table;
-}
-
-HudUiMessageBoxDialog_FTable MakeHudUiMessageBoxDialogFTable() {
-    HudUiMessageBoxDialog_FTable table = {0};
-    table.slots[0] = MethodAddress(&HudUiBackground::Update);
-    table.slots[1] = MethodAddress(&HudUiBackground::SetEnabled);
-    table.slots[2] = MethodAddress(&HudUiMessageBoxDialog::ScalarDeletingDestructor);
-    table.slots[3] = MethodAddress(&HudUiMessageBoxDialog::OnOk);
-    table.slots[4] = MethodAddress(&HudUiMessageBoxDialog::OnCancel);
-    return table;
-}
-
-HudUiZrdWidget_FTable MakeHudUiMessageBoxButtonFTable(
-    unsigned int activateSlot
-) {
-    HudUiZrdWidget_FTable table = MakeHudUiFTableWithCommonInvalidate<HudUiZrdWidget_FTable>();
-    table.slots[0] = MethodAddress(&HudUiZrdWidget::ScalarDeletingDestructor);
-    table.slots[12] = activateSlot;
-    table.slots[15] = MethodAddress(&HudUiZrdWidget::ShowPreview);
-    table.slots[16] = MethodAddress(&HudUiZrdWidget::HidePreview);
-    table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
-    table.slots[31] = MethodAddress(&HudUiZrdWidget::LoadFromZrd);
-    table.slots[32] = (unsigned int)(&zError::ReportOld);
-    return table;
-}
-
-HudUiZrdWidget_FTable MakeHudUiCreditsButtonFTable(
-    unsigned int activateSlot
-) {
-    return MakeHudUiMessageBoxButtonFTable(activateSlot);
-}
-
-HudUiZrdWidget_FTable MakeHudCmdZrdButtonFTable(
-    unsigned int activateSlot
-) {
-    return MakeHudUiMessageBoxButtonFTable(activateSlot);
-}
-
-HudUiCycleSelectorWidget_FTable MakeHudCmdSetListFTable() {
-    HudUiCycleSelectorWidget_FTable table =
-        MakeHudUiFTableWithCommonInvalidate<HudUiCycleSelectorWidget_FTable>();
-    table.slots[0] = MethodAddress(&HudUiCycleSelectorWidget::ScalarDeletingDestructor);
-    table.slots[9] = MethodAddress(&HudUiCycleSelectorWidget::Update);
-    table.slots[12] = MethodAddress(&HudCmdSetListWidget::OnActivate);
-    table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
-    table.slots[31] = MethodAddress(&HudUiCycleSelectorWidget::LoadFromZrd);
-    table.slots[32] = (unsigned int)(&zError::ReportOld);
-    return table;
-}
-
-HudCmdBindButtonBase_FTable MakeHudCmdBindButtonFTable(
-    unsigned int scalarDeletingDestructor,
-    unsigned int activateSlot,
-    unsigned int clearBindingSlot
-) {
-    HudCmdBindButtonBase_FTable table =
-        MakeHudUiFTableWithCommonInvalidate<HudCmdBindButtonBase_FTable>();
-    table.slots[0] = scalarDeletingDestructor;
-    table.slots[12] = activateSlot;
-    table.slots[13] = clearBindingSlot;
-    table.slots[14] = (unsigned int)(&zError::ReportOld);
-    table.slots[15] = MethodAddress(&HudUiCheckToggleWidget::ShowPreview);
-    table.slots[16] = MethodAddress(&HudUiCheckToggleWidget::HidePreview);
-    table.slots[30] = MethodAddress(&HudUiCheckToggleWidget::RefreshState);
-    table.slots[31] = MethodAddress(&HudCmdBindButtonBase::LoadFromZrd);
-    table.slots[32] = (unsigned int)(&zError::ReportOld);
-    table.slots[33] = MethodAddress(&HudCmdBindButtonBase::OnSelectionChangedRefresh);
-    return table;
-}
-
-HudCmdBindButtonBase_FTable MakeHudCmdBindButtonBaseFTable() {
-    HudCmdBindButtonBase_FTable table =
-        MakeHudUiFTableWithCommonInvalidate<HudCmdBindButtonBase_FTable>();
-    table.slots[33] = MethodAddress(&HudCmdBindButtonBase::OnSelectedIndexChanged);
-    return table;
-}
-
-HudCmdDialog_BackgroundPanelFTable MakeHudCmdDialogFTable() {
-    HudCmdDialog_BackgroundPanelFTable table = {0};
-    table.primarySlots[0] = MethodAddress(&HudCmdDialog::UpdateCaptureState);
-    table.primarySlots[1] = MethodAddress(&HudUiBackground::SetEnabled);
-    table.primarySlots[2] = MethodAddress(&HudCmdDialog::ScalarDeletingDestructor);
-    table.SecondaryAction = MakeHudUiPanelFTableConcrete();
-    return table;
-}
-
-HudUiZrdWidget_FTable MakeHudUiOptionsPanelBackButtonFTable() {
-    HudUiZrdWidget_FTable table = MakeHudUiFTableWithCommonInvalidate<HudUiZrdWidget_FTable>();
-    table.slots[0] = MethodAddress(&HudUiZrdWidget::ScalarDeletingDestructor);
-    table.slots[12] = MethodAddress(&HudUiOptionsPanelBackButton::OnActivate);
-    table.slots[15] = MethodAddress(&HudUiZrdWidget::ShowPreview);
-    table.slots[16] = MethodAddress(&HudUiZrdWidget::HidePreview);
-    table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
-    table.slots[31] = MethodAddress(&HudUiZrdWidget::LoadFromZrd);
-    table.slots[32] = (unsigned int)(&zError::ReportOld);
-    return table;
-}
-
-HudUiCheckToggleWidget_FTable MakeHudUiOptionsPanelCheckToggleFTable(
-    unsigned int activateSlot,
-    unsigned int initSlot
-) {
-    HudUiCheckToggleWidget_FTable table =
-        MakeHudUiFTableWithCommonInvalidate<HudUiCheckToggleWidget_FTable>();
-    table.slots[0] = MethodAddress(&HudUiCheckToggleWidget::ScalarDeletingDestructor);
-    table.slots[12] = activateSlot;
-    table.slots[15] = MethodAddress(&HudUiCheckToggleWidget::ShowPreview);
-    table.slots[16] = MethodAddress(&HudUiCheckToggleWidget::HidePreview);
-    table.slots[30] = MethodAddress(&HudUiCheckToggleWidget::RefreshState);
-    table.slots[31] = MethodAddress(&HudUiCheckToggleWidget::LoadFromZrd);
-    table.slots[32] = initSlot;
-    return table;
-}
-
-HudUiCycleSelectorWidget_FTable MakeHudUiOptionsPanelCycleSelectorFTable(
-    unsigned int activateSlot,
-    unsigned int initSlot
-) {
-    HudUiCycleSelectorWidget_FTable table =
-        MakeHudUiFTableWithCommonInvalidate<HudUiCycleSelectorWidget_FTable>();
-    table.slots[0] = MethodAddress(&HudUiCycleSelectorWidget::ScalarDeletingDestructor);
-    table.slots[9] = MethodAddress(&HudUiCycleSelectorWidget::Update);
-    table.slots[12] = activateSlot;
-    table.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
-    table.slots[31] = MethodAddress(&HudUiCycleSelectorWidget::LoadFromZrd);
-    table.slots[32] = initSlot;
-    return table;
-}
-
-HudUiFillBitmap_FTable MakeHudUiOptionsPanelFillBitmapFTable(
-    unsigned int activateSlot,
-    unsigned int syncSlot
-) {
-    HudUiFillBitmap_FTable table = MakeHudUiFTableWithCommonInvalidate<HudUiFillBitmap_FTable>();
-    table.slots[0] = MethodAddress(&HudUiFillBitmap::ScalarDeletingDestructor);
-    table.slots[12] = activateSlot;
-    table.slots[31] = MethodAddress(&HudUiFillBitmap::LoadFromZrd);
-    table.slots[32] = syncSlot;
-    table.slots[33] = MethodAddress(&HudUiFillBitmap::SetNormalizedValueAndRebuild);
-    return table;
-}
-
-HudUiOptionsPanel_BackgroundFTable MakeHudUiOptionsPanelFTable() {
-    HudUiOptionsPanel_BackgroundFTable table = {0};
-    table.primarySlots[0] = MethodAddress(&HudUiBackground::Update);
-    table.primarySlots[1] = MethodAddress(&HudUiBackground::SetEnabled);
-    table.primarySlots[2] = MethodAddress(&HudOptionsDialog::ScalarDeletingDestructor);
-    table.SecondaryAction = MakeHudUiOptionsPanelCycleSelectorFTable(
-        MethodAddress(&HudUiOptionsPanel_Resolution::OnActivate),
-        MethodAddress(&HudUiOptionsPanel_Resolution::SyncFromOptions)
-    );
-    return table;
-}
-
-HudUiCreditsPanel_FTable MakeHudUiCreditsPanelFTable() {
-    HudUiCreditsPanel_FTable table = {0};
-    table.primarySlots[0] = MethodAddress(&HudUiCreditsPanel::UpdateFadeAndExit);
-    table.primarySlots[1] = MethodAddress(&HudUiBackground::SetEnabled);
-    table.primarySlots[2] = MethodAddress(&HudUiCreditsPanel::ScalarDeletingDestructor);
-
-    table.SecondaryAction = MakeHudUiFTableWithCommonInvalidate<HudUiZrdWidget_FTable>();
-    table.SecondaryAction.slots[0] =
-        MethodAddress(&HudUiZrdScrollingText::ScalarDeletingDestructor);
-    table.SecondaryAction.slots[9] = MethodAddress(&HudUiZrdScrollingText::Update);
-    table.SecondaryAction.slots[12] =
-        MethodAddress(&HudUiZrdScrollingText::OnActivateResetOwnerFade);
-    table.SecondaryAction.slots[30] = MethodAddress(&HudUiZrdWidget::RefreshState);
-    table.SecondaryAction.slots[31] = MethodAddress(&HudUiZrdScrollingText::LoadFromZrd);
-    table.SecondaryAction.slots[32] = (unsigned int)(&zError::ReportOld);
-    return table;
-}
-
-HudUiBackgroundCursorWidget_FTable MakeHudUiBackgroundCursorWidgetFTable() {
-    HudUiBackgroundCursorWidget_FTable table =
-        MakeHudUiFTableWithCommonInvalidate<HudUiBackgroundCursorWidget_FTable>();
-    table.slots[1] = MethodAddress(&HudUiBackgroundCursorWidget::Draw);
-    table.slots[2] = MethodAddress(&HudUiBackgroundCursorWidget::DrawBase);
-    table.slots[3] = MethodAddress(&HudUiBackgroundCursorWidget::SetPos);
-    table.slots[30] =
-        MethodAddress(&HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged);
-    table.slots[31] = MethodAddress(&HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh);
-    return table;
-}
-
-HudUiBackgroundContainer_FTable MakeHudUiBackgroundFTable() {
-    HudUiBackgroundContainer_FTable table = {0};
-    AssignMethodSlot(
-        table.updateAll,
-        &HudUiBackground::Update
-    );
-    AssignMethodSlot(
-        table.setEnabled,
-        &HudUiBackground::SetEnabled
-    );
-    return table;
-}
-
-HudUiBackgroundVideoWidget_FTable MakeHudUiBackgroundVideoWidgetFTable() {
-    HudUiBackgroundVideoWidget_FTable table =
-        MakeHudUiFTableWithCommonInvalidate<HudUiBackgroundVideoWidget_FTable>();
-    table.slots[1] = MethodAddress(&HudUiBackgroundVideoWidget::Draw);
-    table.slots[2] = MethodAddress(&HudUiBackgroundVideoWidget::DrawBase);
-    table.slots[9] = MethodAddress(&HudUiBackgroundVideoWidget::Update);
-    table.slots[0x74 / 4] = MethodAddress(&HudUiBackgroundVideoWidget::RebuildBltRect);
-    return table;
-}
-
-HudUiSliderBorder_FTable MakeHudUiSliderBorderFTable() {
-    HudUiSliderBorder_FTable table =
-        MakeHudUiFTableWithCommonInvalidate<HudUiSliderBorder_FTable>();
-    table.slots[9] = MethodAddress(&HudUiSliderBorder::Update);
-    return table;
-}
 
 bool IsCallableProviderAddress(
     unsigned int address
@@ -707,36 +98,12 @@ struct HudReticlePlayerStatePartial {
     zClass_NodePartial *rootNode;
 };
 
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudReticleAttachStatePartial,
-        projectileNode
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudReticleAltGunControllerPartial,
-        attachState
-    ) == 0x28
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudReticlePlayerStatePartial,
-        cameraState
-    ) == 0x58c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudReticlePlayerStatePartial,
-        activeAltGunController
-    ) == 0x5e4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudReticlePlayerStatePartial,
-        rootNode
-    ) == 0xed0
-);
+RECOIL_STATIC_ASSERT(offsetof(HudReticleAttachStatePartial, projectileNode) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(HudReticleAltGunControllerPartial, attachState) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(HudReticlePlayerStatePartial, cameraState) == 0x58c);
+RECOIL_STATIC_ASSERT(offsetof(HudReticlePlayerStatePartial, activeAltGunController) == 0x5e4);
+RECOIL_STATIC_ASSERT(offsetof(HudReticlePlayerStatePartial, rootNode) == 0xed0);
+
 } // namespace
 
 struct zTimedTask {
@@ -762,284 +129,26 @@ struct zTimedTask {
     static void TickActiveList();
 };
 
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zTimedTask,
-        next
-    ) == 0x00
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zTimedTask,
-        kind
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zTimedTask,
-        flags
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zTimedTask,
-        remainingSeconds
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zTimedTask,
-        actionArg0
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zTimedTask,
-        actionArg4
-    ) == 0x20
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zTimedTask,
-        alphaPointCount
-    ) == 0xb8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zTimedTask,
-        alphaVariantIndex
-    ) == 0xbc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zTimedTask,
-        alpha255
-    ) == 0xc0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zTimedTask,
-        rasterVertexCount
-    ) == 0x10c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zTimedTask,
-        rasterDrawParam
-    ) == 0x110
-);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, next) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, kind) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, flags) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, remainingSeconds) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, actionArg0) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, actionArg4) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, alphaPointCount) == 0xb8);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, alphaVariantIndex) == 0xbc);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, alpha255) == 0xc0);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, rasterVertexCount) == 0x10c);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, rasterDrawParam) == 0x110);
 
 zTimedTask *g_zTimedTask_ActiveHead = 0;
 zTimedTask *g_zTimedTask_ActiveTail = 0;
 int g_zTimedTask_ActiveCount = 0;
 
-const HudUiCommon_FTable g_HudUiCommon_FTable = MakeHudUiCommonFTable();
-const HudUiCommon_FTable g_HudUiCircle_FTable = MakeHudUiCircleFTable();
-const HudUiContainer_FTable g_HudUiContainer_FTable = MakeHudUiContainerFTable();
-const HudUiContainer_FTable g_HudUiMgr_FTable =
-    MakeHudUiContainerLikeFTable<HudUiContainer_FTable>();
-const HudUiBackgroundContainer_FTable g_HudUiBackgroundContainer_FTable = {0};
-const HudUiBackgroundContainer_FTable g_HudUiBackground_FTable = MakeHudUiBackgroundFTable();
-const HudLayoutBase_FTable g_HudLayoutBase_FTable =
-    MakeHudLayoutFTable(MethodAddress(&HudLayoutBase::SetActiveNoOp));
-const HudLayoutBase_FTable g_HudLayoutSW_FTable =
-    MakeHudLayoutFTable(MethodAddress(&HudLayoutSW::SetActive));
-const HudLayoutHW_FTable g_HudLayoutHW_FTable = MakeHudLayoutHWFTable();
-const HudUiWidget_FTable g_HudUiWidget_FTable = MakeHudUiWidgetFTable();
-const HudUiBackgroundCursorWidget_FTable g_HudUiBackgroundCursorWidget_FTable =
-    MakeHudUiBackgroundCursorWidgetFTable();
-const HudUiBackgroundCursorWidget_FTable g_HudUiBackgroundCursorWidget_MemberFTable =
-    MakeHudUiBackgroundCursorWidgetFTable();
-const HudUiBackgroundVideoWidget_FTable g_HudUiBackgroundVideoWidget_FTable =
-    MakeHudUiBackgroundVideoWidgetFTable();
-const HudUiZrdWidget_FTable g_HudUiZrdWidget_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiZrdWidget_FTable>();
-const HudUiZrdWidget_FTable g_HudUiCreditsButtonQueueExitOnly_Vtbl =
-    MakeHudUiCreditsButtonFTable(MethodAddress(&HudUiZrdWidget::OnActivateQueueExitCurrentState));
-const HudUiZrdWidget_FTable g_HudUiCreditsButtonQueueExitAndLeaveNetwork_Vtbl =
-    MakeHudUiCreditsButtonFTable(MethodAddress(&HudUiCreditsQuitButton::OnActivate));
-const HudUiCreditsPanel_FTable g_HudUiCreditsPanel_FTable = MakeHudUiCreditsPanelFTable();
-const HudUiCheckToggleWidget_FTable g_HudUiCheckToggleWidget_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiCheckToggleWidget_FTable>();
-const HudUiCycleSelectorWidget_FTable g_HudUiCycleSelectorWidget_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiCycleSelectorWidget_FTable>();
-const HudUiFillBitmap_FTable g_HudUiFillBitmap_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiFillBitmap_FTable>();
-const HudUiZrdWidgetEx17C_Item_FTable g_HudUiZrdWidgetEx17C_Item_FTable =
-    MakeHudUiZrdWidgetEx17CItemFTable();
-const HudUiZrdWidgetEx17C_FTable g_HudUiZrdWidgetEx17C_FTable = MakeHudUiZrdWidgetEx17CFTable();
-const HudCmdBindButtonBase_FTable g_HudCmdBindButtonBase_FTable = MakeHudCmdBindButtonBaseFTable();
-const HudUiZrdWidget_FTable g_HudCmdResumeButton_FTable =
-    MakeHudCmdZrdButtonFTable(MethodAddress(&HudUiZrdWidget::OnActivateQueueExitCurrentState));
-const HudUiZrdWidget_FTable g_HudCmdResetButton_FTable =
-    MakeHudCmdZrdButtonFTable(MethodAddress(&HudCmdResetButton::OnActivate));
-const HudCmdBindButtonBase_FTable g_HudCmdCommandList_FTable = MakeHudCmdBindButtonFTable(
-    MethodAddress(&HudCmdCommandList::ScalarDeletingDestructor),
-    MethodAddress(&HudUiCheckToggleWidget::OnActivate),
-    (unsigned int)(&zError::ReportOld)
-);
-const HudCmdBindButtonBase_FTable g_HudCmdKeyAButton_FTable = MakeHudCmdBindButtonFTable(
-    MethodAddress(&HudCmdKeyAButton::ScalarDeletingDestructor),
-    MethodAddress(&HudCmdKeyAButton::OnBeginCapture),
-    MethodAddress(&HudCmdKeyAButton::OnClearBinding)
-);
-const HudCmdBindButtonBase_FTable g_HudCmdKeyBButton_FTable = MakeHudCmdBindButtonFTable(
-    MethodAddress(&HudCmdKeyBButton::ScalarDeletingDestructor),
-    MethodAddress(&HudCmdKeyBButton::OnBeginCapture),
-    MethodAddress(&HudCmdKeyBButton::OnClearBinding)
-);
-const HudCmdBindButtonBase_FTable g_HudCmdJoyButton_FTable = MakeHudCmdBindButtonFTable(
-    MethodAddress(&HudCmdJoyButton::ScalarDeletingDestructor),
-    MethodAddress(&HudCmdJoyButton::OnBeginCapture),
-    MethodAddress(&HudCmdJoyButton::OnClearBinding)
-);
-const HudCmdBindButtonBase_FTable g_HudCmdMouseButton_FTable = MakeHudCmdBindButtonFTable(
-    MethodAddress(&HudCmdMouseButton::ScalarDeletingDestructor),
-    MethodAddress(&HudCmdMouseButton::OnBeginCapture),
-    MethodAddress(&HudCmdMouseButton::OnClearBinding)
-);
-const HudUiCycleSelectorWidget_FTable g_HudCmdSetList_FTable = MakeHudCmdSetListFTable();
-const HudUiZrdWidget_FTable g_HudCmdNextSetButton_FTable =
-    MakeHudCmdZrdButtonFTable(MethodAddress(&HudCmdDialogCallback::NextSet));
-const HudUiZrdWidget_FTable g_HudCmdPrevSetButton_FTable =
-    MakeHudCmdZrdButtonFTable(MethodAddress(&HudCmdDialogCallback::PrevSet));
-const HudUiZrdWidget_FTable g_HudCmdNextCommandButton_FTable =
-    MakeHudCmdZrdButtonFTable(MethodAddress(&HudCmdDialogCallback::NextCommand));
-const HudUiZrdWidget_FTable g_HudCmdPrevCommandButton_FTable =
-    MakeHudCmdZrdButtonFTable(MethodAddress(&HudCmdDialogCallback::PrevCommand));
-const HudCmdDialog_BackgroundPanelFTable g_HudCmdDialog_BackgroundPanelFTable =
-    MakeHudCmdDialogFTable();
-const HudUiOptionsPanel_BackgroundFTable g_HudUiOptionsPanel_FTableHeader =
-    MakeHudUiOptionsPanelFTable();
-const HudUiZrdWidget_FTable g_HudUiOptionsPanel_BackButton_Vtbl =
-    MakeHudUiOptionsPanelBackButtonFTable();
-const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_LightingToggle_Vtbl =
-    MakeHudUiOptionsPanelCheckToggleFTable(
-        MethodAddress(&HudUiOptionsPanel_Lighting::SyncFromOptions),
-        MethodAddress(&HudUiOptionsPanel_Lighting::InitFromOptions)
-    );
-const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_PerspectiveToggle_Vtbl =
-    MakeHudUiOptionsPanelCheckToggleFTable(
-        MethodAddress(&HudUiOptionsPanel_Perspective::SyncFromOptions),
-        MethodAddress(&HudUiOptionsPanel_Perspective::InitFromOptions)
-    );
-const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_FullHudToggle_Vtbl =
-    MakeHudUiOptionsPanelCheckToggleFTable(
-        MethodAddress(&HudUiCheckToggleWidget::OnActivateThunk),
-        MethodAddress(&HudUiOptionsPanel_FullHud::InitFromOptions)
-    );
-const HudUiCycleSelectorWidget_FTable g_HudUiOptionsPanel_ObjectDetailSelector_Vtbl =
-    MakeHudUiOptionsPanelCycleSelectorFTable(
-        MethodAddress(&HudUiOptionsPanel_ObjectDetail::SyncFromOptions),
-        MethodAddress(&HudUiOptionsPanel_ObjectDetail::InitFromOptions)
-    );
-const HudUiCycleSelectorWidget_FTable g_HudUiOptionsPanel_TextureMemorySelector_Vtbl =
-    MakeHudUiOptionsPanelCycleSelectorFTable(
-        MethodAddress(&HudUiOptionsPanel_TextureMemory::SyncFromOptions),
-        MethodAddress(&HudUiOptionsPanel_TextureMemory::InitFromOptions)
-    );
-const HudUiCycleSelectorWidget_FTable g_HudUiOptionsPanel_EffectsSelector_Vtbl =
-    MakeHudUiOptionsPanelCycleSelectorFTable(
-        MethodAddress(&HudUiOptionsPanel_Effects::SyncFromOptions),
-        MethodAddress(&HudUiOptionsPanel_Effects::InitFromOptions)
-    );
-const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_SoundActiveToggle_Vtbl =
-    MakeHudUiOptionsPanelCheckToggleFTable(
-        MethodAddress(&HudUiOptionsPanel_SoundActive::SyncFromOptions),
-        MethodAddress(&HudUiOptionsPanel_SoundActive::InitFromOptions)
-    );
-const HudUiCycleSelectorWidget_FTable g_HudUiOptionsPanel_SoundQualitySelector_Vtbl =
-    MakeHudUiOptionsPanelCycleSelectorFTable(
-        MethodAddress(&HudUiOptionsPanel_SoundQuality::SyncFromOptions),
-        MethodAddress(&HudUiOptionsPanel_SoundQuality::InitFromOptions)
-    );
-const HudUiFillBitmap_FTable g_HudUiOptionsPanel_SoundVolumeWidget_Vtbl =
-    MakeHudUiOptionsPanelFillBitmapFTable(
-        MethodAddress(&HudUiOptionsPanel_SoundVolume::OnActivate),
-        MethodAddress(&HudUiOptionsPanel_SoundVolume::SyncFromOptions)
-    );
-const HudUiCheckToggleWidget_FTable g_HudUiOptionsPanel_MusicEnableToggle_Vtbl =
-    MakeHudUiOptionsPanelCheckToggleFTable(
-        MethodAddress(&HudUiOptionsPanel_MusicEnable::OnActivate),
-        MethodAddress(&HudUiOptionsPanel_MusicEnable::SyncFromOptions)
-    );
-const HudUiFillBitmap_FTable g_HudUiOptionsPanel_MusicVolumeWidget_Vtbl =
-    MakeHudUiOptionsPanelFillBitmapFTable(
-        MethodAddress(&HudUiOptionsPanel_MusicVolume::OnActivate),
-        MethodAddress(&HudUiOptionsPanel_MusicVolume::SyncFromOptions)
-    );
-RecoilApp_IState_Vtbl g_HudCmdDialogState_Vtbl = {0};
-RecoilApp_IState_Vtbl g_HudUiNetGameSetupOverlayOwner_Vtbl = {
-    MethodAddress(&HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor),
-    0,
-    0,
-    MethodAddress(&HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent),
-    0,
-    0,
-    MethodAddress(&HudUiNetGameSetupOverlayOwner::OnDeactivate),
-    0,
-    0,
-    0};
-HudCmdDialogState g_HudCmdDialogState = {0};
-HudUiNetGameSetupOverlayOwner g_HudUiNetGameSetupOverlayOwner = {0};
-// Recovered global 0x4e5e00: HUD command-dialog mouse capture debounce frames.
 int g_HudCmdMouseDebounceFrames = 0;
-const HudUiMessageBoxDialog_FTable g_HudUiMessageBoxDialog_FTable =
-    MakeHudUiMessageBoxDialogFTable();
-const HudUiZrdWidget_FTable g_HudUiMessageBoxOkButton_Vtbl =
-    MakeHudUiMessageBoxButtonFTable(MethodAddress(&HudUiMessageBoxOkButton::OnActivate));
-const HudUiZrdWidget_FTable g_HudUiMessageBoxCancelButton_Vtbl =
-    MakeHudUiMessageBoxButtonFTable(MethodAddress(&HudUiMessageBoxCancelButton::OnActivate));
-const HudUiCounter_FTable g_HudUiCounter_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiCounter_FTable>();
-const HudUiMessage_FTable g_HudUiMessage_FTable = MakeHudUiMessageFTable();
-const HudUiPanel_FTable g_HudUiPanel_FTable = MakeHudUiPanelFTableConcrete();
-const HudUiPanel_FTable g_HudUiTransitionTextPanel_FTable = MakeHudUiTransitionTextPanelFTable();
-const HudUiCompositePanel_FTable g_HudUiCompositePanel_FTable = MakeHudUiCompositePanelFTable();
-const HudUiListSelectorItem_FTable g_HudUiListSelectorItem_FTable =
-    MakeHudUiListSelectorItemFTable();
-const HudUiTextLabel_FTable g_HudUiTextLabel_FTable = MakeHudUiTextLabelFTable();
-const HudUiPanelSimple_FTable g_HudUiPanelSimple_FTable =
-    MakeHudUiPanelFTable<HudUiPanelSimple_FTable>();
-const HudUiBar_FTable g_HudUiBar_FTable = MakeHudUiBarFTable();
-const HudUiPolyline_FTable g_HudUiPolyline_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiPolyline_FTable>();
-const HudUiSliderBorder_FTable g_HudUiSliderBorder_FTable = MakeHudUiSliderBorderFTable();
-const HudUiMeter_FTable g_HudUiMeter_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiMeter_FTable>();
-const HudUiMeter_FTable g_HudUiMeterEx_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiMeter_FTable>();
-const HudUiTimerPanelFloat_FTable g_HudUiTimerPanelFloat_FTable = MakeHudUiTimerPanelFloatFTable();
-const HudUiTimerPanel_FTable g_HudUiTimerPanel_FTable =
-    MakeHudUiPanelFTable<HudUiTimerPanel_FTable>();
-const HudUiCounterTextPanel_FTable g_HudUiCounterTextPanel_FTable =
-    MakeHudUiPanelFTable<HudUiCounterTextPanel_FTable>();
-const HudUiTriplet_FTable g_HudUiTriplet_FTable =
-    MakeHudUiContainerLikeFTable<HudUiTriplet_FTable>();
-const HudUiTextStack4_FTable g_HudUiTopMessageStack_FTable =
-    MakeHudUiContainerLikeFTable<HudUiTextStack4_FTable>();
-const HudUiTextStack4_FTable g_HudUiChatMessageStack_FTable =
-    MakeHudUiContainerLikeFTable<HudUiTextStack4_FTable>();
-const HudUiStringMenu_FTable g_HudUiStringMenu_FTable =
-    MakeHudUiContainerLikeFTable<HudUiStringMenu_FTable>();
-const HudUiStatsListElement_FTable g_HudUiStatsListElement_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiStatsListElement_FTable>();
-const HudUiTripletPanel_FTable g_HudUiTripletPanel_FTable = MakeHudUiTripletPanelFTable();
-const HudUiTextInput_FTable g_HudUiTextInput_FTable = MakeHudUiTextInputFTable();
-const HudUiTextInput_FTable g_HudUiChatComposeTextInput_FTable =
-    MakeHudUiChatComposeTextInputFTable();
-const HudUiTextInput_FTable g_HudUiNumericTextInput_TextInputFTable =
-    MakeHudUiNumericTextInputTextInputFTable();
-const HudUiNumericTextInput_Base_FTable g_HudUiNumericTextInput_Base_FTable =
-    MakeHudUiFTableWithCommonInvalidate<HudUiNumericTextInput_Base_FTable>();
-const HudUiNumericTextInput_Base_FTable g_HudUiNumericTextInput_CtorTable_FTable =
-    MakeHudUiNumericTextInputCtorFTable();
-const HudUiClampedIntTextInput_FTable g_HudUiClampedIntTextInput_CtorTable_FTable =
-    MakeHudUiClampedIntTextInputCtorFTable();
-const HudUiSlot_FTable g_HudUiSlot_FTable = MakeHudUiFTableWithCommonInvalidate<HudUiSlot_FTable>();
 zVidImagePartial *g_HudUiWidget_ExclusiveDrawImage = 0;
-HudUiContainer g_HudUiMgr = {0};
-HudUiTransitionTextPanel g_HudUiMgrHudRootPanel = {0};
+HudUiContainer g_HudUiMgr;
+HudUiTransitionTextPanel g_HudUiMgrHudRootPanel;
 HudUiTimerPanel *g_HudUiMgrTimerPanel = 0;
 HudUiTimerPanelFloat *g_HudUiMgrTimerPanelFloat = 0;
 HudUiStringMenu *g_HudUiMgrStringMenu = 0;
@@ -1049,15 +158,15 @@ unsigned char g_HudUi_PowerupSampleInitFlags = 0;
 zVidImagePartial *g_HudUiMgrReticleImages[3] = {0};
 zVidImagePartial *g_HudUiMgrSensorTargetMarkerImages[5] = {0};
 HudUiNanitePanel g_HudUiMgrNanitePanel;
-HudUiMessage g_HudUiMgrMessages[10] = {0};
+HudUiMessage g_HudUiMgrMessages[10];
 int g_HudUiMgrActiveWeaponMessageIndex = 0;
 int g_HudUiMgrActiveWeaponSideIndex = 0;
-HudUiCounter g_HudUiMgrModeCounters[4] = {0};
-HudUiSlot g_HudUiMgrWeaponSlots[32] = {0};
+HudUiCounter g_HudUiMgrModeCounters[4];
+HudUiSlot g_HudUiMgrWeaponSlots[32];
 HudUiSlot *g_HudUiMgrSensorTrackedProgressSlot = 0;
 int g_HudUiMgrSensorRoundRobinTrackIndex = 0;
 HudUiRect g_HudUiMgrSensor_FxRectScratch = {0};
-HudUiMeter g_HudUiMgrObjectiveMeter = {0};
+HudUiMeter g_HudUiMgrObjectiveMeter;
 int g_HudUiMgrActiveModeCounterIndex = 0;
 int g_HudUiMgrHudLayoutsInitialized = 0;
 int g_HudUiMgrHudLoaded = 0;
@@ -1066,6 +175,7 @@ int g_HudUiMgrSensorTargetMarkerCount = 0;
 int g_HudUiMgrWeaponState = 0;
 int g_HudUiMgrHudOriginX = 0;
 int g_HudUiMgrHudOriginY = 0;
+HudUiNetGameSetupOverlayOwner g_HudUiNetGameSetupOverlayOwner;
 int g_HudUiMgrStatsListState1 = 0;
 int g_HudUiMgrStatsListState2 = 0;
 int g_HudUiMgrStatsListState3 = 0;
@@ -1089,7 +199,7 @@ int g_HudUiMgrReticleWidgetHalfH = 0;
 int g_HudUiMgrReticleProjectedX = 0;
 int g_HudUiMgrReticleProjectedY = 0;
 int g_HudUiMgrReticleMode = 0;
-HudUiWidget g_HudUiMgrReticleWidget = {0};
+HudUiWidget g_HudUiMgrReticleWidget;
 HudLayoutBase *g_HudUiMgrCurrentLayout = 0;
 float g_HudUiLoadingCheckpointRawProgress[19] = {0};
 float g_HudUiLoadingCheckpointProgress[19] = {0};
@@ -1097,7 +207,7 @@ float g_HudUiLoadingCheckpointProgressScale = 0.0186219737f;
 unsigned int g_HudUiLoadingCheckpointMaxIndex = 0;
 unsigned int g_HudUiLoadingCheckpointCurrentIndex = 0;
 float g_HudUiLoadingCheckpointCurrentProgress = 0.0f;
-HudLayoutHW g_HudLayoutHW = {0};
+HudLayoutHW g_HudLayoutHW;
 HudLayoutSW g_HudLayoutSW;
 HudUiTextStack4 *g_HudUiTopMessageStack = 0;
 HudUiTextStack4 *g_HudUiChatMessageStack = 0;
@@ -1114,19 +224,20 @@ int g_HudUiMgrObjectiveShowResetUnused = 0;
 int g_HudUiMgrObjectiveWidgetRightX = 0;
 float g_HudUiMgrObjectiveMeterFillAnimTimerSec = 0.0f;
 unsigned int g_HudUiMgrObjectiveMeterFillAnimEnabled = 0;
-HudUiWidget g_HudUiMgrSensorPanel = {0};
-HudUiWidget g_HudUiMgrObjectiveWidget = {0};
-HudUiBar g_HudUiMgrObjectiveBar = {0};
-HudUiWidget g_HudUiMgrObjectiveSensorRect = {0};
-HudUiWidget g_HudUiMgrSensorOverlay = {0};
-HudUiMeter g_HudUiMgrSensorMeter = {0};
+HudUiWidget g_HudUiMgrSensorPanel;
+HudUiWidget g_HudUiMgrObjectiveWidget;
+HudUiObjectiveBar g_HudUiMgrObjectiveBar;
+HudUiWidget g_HudUiMgrObjectiveSensorRect;
+HudUiWidget g_HudUiMgrSensorOverlay;
+HudUiMeter g_HudUiMgrSensorMeter;
 HudUiPanel *g_HudUiMgrObjectiveSummaryTextPanel = 0;
 HudUiPanel *g_HudUiMgrObjectiveDescTextPanel = 0;
 HudUiPanel *g_HudUiMgrObjectiveLabelTextPanel = 0;
 HudUiCounterTextPanel *g_HudUiMgrObjectiveCounterTextPanel = 0;
-HudUiTextInput g_HudUiMgrObjectiveChatComposeTextInput = {0};
-HudUiBar g_HudUiMgrTailBar = {0};
+HudUiChatComposeTextInput g_HudUiMgrObjectiveChatComposeTextInput;
+HudUiBar g_HudUiMgrTailBar;
 int g_HudUi_AuxOverlayEnabled = 0;
+HudCmdDialogState g_HudCmdDialogState;
 CString g_HudUiTripletWndClassName("");
 
 // Reimplements 0x40ec90: HudLayoutBase::Shutdown_Stub
@@ -1137,11 +248,11 @@ void HudLayoutBase::Shutdown_Stub() {
 // Reimplements 0x40d3b0: HudLayoutBase::Destructor
 void HudLayoutBase::Destructor() {
     widget0.DestructorCore();
-    ((HudUiContainer *)(this))->DestructorCore();
+    HudUiContainer::DestructorCore();
 }
 
-// Reimplements 0x412bd0: HudLayoutBase::SetActiveNoOp
-int HudLayoutBase::SetActiveNoOp(
+// Reimplements 0x412bd0: HudLayoutBase::SetActive
+int HudLayoutBase::SetActive(
     int
 ) {
     return 1;
@@ -1150,12 +261,10 @@ int HudLayoutBase::SetActiveNoOp(
 // Reimplements 0x412b60: HudLayoutSW::Constructor
 // (D:\Proj\Battlesport\hud.cpp)
 HudLayoutSW * HudLayoutSW::Constructor() {
-    ((HudUiContainer *)(this))->ConstructorDefault();
+    new ((HudUiContainer *)this) HudUiContainer;
     HudUiWidget *const childWidget = (HudUiWidget *)(&widget0);
     childWidget->Constructor(0);
-    ftable = &g_HudLayoutBase_FTable;
-    ((HudUiContainer *)(this))->AddChild((HudUiElement *)(childWidget));
-    ftable = &g_HudLayoutSW_FTable;
+    AddChild((HudUiElement *)(childWidget));
     return this;
 }
 
@@ -1178,17 +287,16 @@ void HudLayoutSW::AtExitDestructor() {
 // (D:\Proj\Battlesport\hud.cpp)
 void HudLayoutSW::GlobalDestructor() {
     ((HudUiWidget *)(&widget0))->DestructorCore();
-    ((HudUiContainer *)(this))->DestructorCore();
+    DestructorCore();
 }
 
 // Reimplements 0x412ea0: HudLayoutHW::Constructor
 // (D:\Proj\Battlesport\hud.cpp)
 HudLayoutHW * HudLayoutHW::Constructor() {
-    ((HudUiContainer *)(this))->ConstructorDefault();
-    HudUiWidget *const baseWidget = (HudUiWidget *)(&base.widget0);
+    new ((HudUiContainer *)this) HudUiContainer;
+    HudUiWidget *const baseWidget = (HudUiWidget *)(&widget0);
     baseWidget->Constructor(0);
-    base.ftable = &g_HudLayoutBase_FTable;
-    ((HudUiContainer *)(this))->AddChild((HudUiElement *)(baseWidget));
+    AddChild((HudUiElement *)(baseWidget));
 
     HudUiWidget *const widget1Object = (HudUiWidget *)(&widget1);
     widget1Object->Constructor(0);
@@ -1197,10 +305,9 @@ HudLayoutHW * HudLayoutHW::Constructor() {
     HudUiWidget *const widget3Object = (HudUiWidget *)(&widget3);
     widget3Object->Constructor(0);
 
-    base.ftable = (const HudLayoutBase_FTable *)(&g_HudLayoutHW_FTable);
-    ((HudUiContainer *)(this))->AddChild((HudUiElement *)(widget1Object));
-    ((HudUiContainer *)(this))->AddChild((HudUiElement *)(widget3Object));
-    ((HudUiContainer *)(this))->AddChild((HudUiElement *)(widget2Object));
+    AddChild((HudUiElement *)(widget1Object));
+    AddChild((HudUiElement *)(widget3Object));
+    AddChild((HudUiElement *)(widget2Object));
     return this;
 }
 
@@ -1225,8 +332,8 @@ void HudLayoutHW::GlobalDestructor() {
     ((HudUiWidget *)(&widget3))->DestructorCore();
     ((HudUiWidget *)(&widget2))->DestructorCore();
     ((HudUiWidget *)(&widget1))->DestructorCore();
-    ((HudUiWidget *)(&base.widget0))->DestructorCore();
-    ((HudUiContainer *)(this))->DestructorCore();
+    ((HudUiWidget *)(&widget0))->DestructorCore();
+    DestructorCore();
 }
 
 // Reimplements 0x40d2f0: HudLayoutHW::CrtInitGlobalSingleton
@@ -1239,27 +346,24 @@ void HudLayoutHW::CrtInitGlobalSingleton() {
 void HudLayoutBase::UpdateAll(
     float deltaSeconds
 ) {
-    ((HudUiContainer *)(this))->UpdateAll(deltaSeconds);
+    HudUiContainer::UpdateAll(deltaSeconds);
+}
+
+// Reimplements 0x412bf0: HudLayoutBase::Enable
+void HudLayoutBase::LayoutPreUpdate() {
 }
 
 // Reimplements 0x412bf0: HudLayoutBase::Enable
 void HudLayoutBase::Enable() {
-    typedef int ( HudLayoutBase::*SetActiveMethod)(int active);
-    union {
-        unsigned int slot;
-        SetActiveMethod method;
-    } dispatch = {ftable->slots[1]};
-    (this->*dispatch.method)(1);
+    SetActive(1);
 }
 
 // Reimplements 0x412c00: HudLayoutBase::Disable
 void HudLayoutBase::Disable() {
-    typedef int ( HudLayoutBase::*SetActiveMethod)(int active);
-    union {
-        unsigned int slot;
-        SetActiveMethod method;
-    } dispatch = {ftable->slots[1]};
-    (this->*dispatch.method)(0);
+    SetActive(0);
+}
+
+void HudLayoutBase::OnActivated() {
 }
 
 // Reimplements 0x413500: HudLayoutHW::UpdateAll
@@ -1274,7 +378,7 @@ void HudLayoutHW::UpdateAll(
         );
     }
 
-    ((HudUiContainer *)(this))->UpdateAll(deltaSeconds);
+    HudUiContainer::UpdateAll(deltaSeconds);
 }
 
 // Reimplements 0x412c60: HudLayoutSW::SetActive
@@ -1302,7 +406,7 @@ int HudLayoutSW::SetActive(
             &g_HudUiMgrSensorBlock.sensorViewportRect
         );
         g_HudUiMgr.SetChildFlags(0);
-        ((HudUiContainer *)(this))->SetChildFlags(0);
+        SetChildFlags(0);
         zClipAlt::SetSourceRect(&g_HudUiMgrSensorBlock.sensorPiVSrcRect);
 
         if (g_HudUiMgr.enabled != 0 && zVid::GetAccelerationOption() == ZVID_HW_MODE_SOFTWARE) {
@@ -1457,7 +561,7 @@ void HudLayoutHW::OnActivated() {
     HudUi::SetInvalidateMode(zOpt::GetReplicateMode() == 0 ? 1 : 0);
 
     g_HudUiMgr.SetChildFlags(0x0e);
-    ((HudUiContainer *)(this))->SetChildFlags(0x0e);
+    SetChildFlags(0x0e);
 
     widget2.flags = (unsigned int)((unsigned char)(widget2.flags) & 0x10u);
 
@@ -1524,11 +628,8 @@ void HudLayoutHW::UpdateObjectiveDirtyRect() {
     zVidImagePartial *const image = g_HudUiMgrObjectiveWidget.image;
     const int width = image != 0 ? image->width : 0;
 
-    typedef int( * GetCoordFn)(HudUiWidget * self);
-    const int centerX =
-        ((GetCoordFn)(g_HudUiMgrObjectiveWidget.ftable->slots[25]))(&g_HudUiMgrObjectiveWidget);
-    const int centerY =
-        ((GetCoordFn)(g_HudUiMgrObjectiveWidget.ftable->slots[26]))(&g_HudUiMgrObjectiveWidget);
+    const int centerX = g_HudUiMgrObjectiveWidget.GetCenterX();
+    const int centerY = g_HudUiMgrObjectiveWidget.GetCenterY();
 
     const int height = image != 0 ? image->height : 0;
     HudUiRect dirtyRect;
@@ -1573,11 +674,11 @@ int HudLayoutHW::SetActive(
         {
             for (int index = 0; index < 10; ++index) {
                 HudUiMessage &message = g_HudUiMgrMessages[index];
-                ((HudUiElement *)(&message.base))->SetBltSourceAndClipRect(
+                message.SetBltSourceAndClipRect(
                     0,
                     0
                 );
-                ((HudUiElement *)(&message.panel))->SetBltSourceAndClipRect(
+                message.panel.SetBltSourceAndClipRect(
                     0,
                     0
                 );
@@ -1590,7 +691,7 @@ int HudLayoutHW::SetActive(
         return 1;
     }
 
-    layout->ftable->OnActivated(layout);
+    layout->OnActivated();
 
     zVidImagePartial *const widget1Image = widget1.image;
     zVidImagePartial *const widget2Image = widget2.image;
@@ -1607,11 +708,11 @@ int HudLayoutHW::SetActive(
     {
         for (int index = 1; index < 10; ++index) {
             HudUiMessage &message = g_HudUiMgrMessages[index];
-            ((HudUiElement *)(&message.base))->SetBltSourceAndClipRect(
+            message.SetBltSourceAndClipRect(
                 widget2Image,
                 0
             );
-            ((HudUiElement *)(&message.panel))->SetBltSourceAndClipRect(
+            message.panel.SetBltSourceAndClipRect(
                 widget2Image,
                 0
             );
@@ -1716,7 +817,7 @@ int HudLayoutHW::LoadTypeIIFromZarRoot(
 // (D:\Proj\Battlesport\hud.cpp)
 void HudLayoutHW::Enable() {
     g_HudUiMgr.SetChildFlags(0x0e);
-    ((HudUiContainer *)(this))->SetChildFlags(0x0e);
+    SetChildFlags(0x0e);
 
     widget2.flags = (unsigned int)((unsigned char)(widget2.flags) & 0x10u);
 
@@ -1741,31 +842,17 @@ void HudLayoutHW::Enable() {
         }
     }
 
-    typedef void( * SetEnabledFn)(
-        HudLayoutHW * self,
-        int enabled
-    );
-    ((SetEnabledFn)(((HudLayoutBase *)(this))->ftable->slots[1]))(
-        this,
-        1
-    );
+    SetEnabled(1);
 }
 
 // Reimplements 0x4135f0: HudLayoutHW::Disable
 // (D:\Proj\Battlesport\hud.cpp)
 void HudLayoutHW::Disable() {
-    typedef void( * SetEnabledFn)(
-        HudLayoutHW * self,
-        int enabled
-    );
-    ((SetEnabledFn)(((HudLayoutBase *)(this))->ftable->slots[1]))(
-        this,
-        0
-    );
+    SetEnabled(0);
 }
 
 extern "C" {
-unsigned int g_HudUi_InvalidateMask = 0;
+unsigned int g_HudUi_InvalidateMask = 0x0c;
 }
 
 namespace {
@@ -2076,18 +1163,9 @@ void HudUiTripletSetPanelTextColor(
     HudUiPanel *panel,
     unsigned int color
 ) {
-    FieldAt<unsigned int>(
-        panel,
-        0x14c
-    ) = color;
-    FieldAt<unsigned int>(
-        panel,
-        0x150
-    ) = color;
-    FieldAt<unsigned int>(
-        panel,
-        0x270
-    ) = 1;
+    panel->textColor0 = color;
+    panel->textColor1 = color;
+    panel->textDirty = 1;
 }
 
 void HudUiTripletSetPanelVisible(
@@ -2157,385 +1235,15 @@ HudUiPanel *TextStackLineAt(
     return (HudUiPanel *)(&stack->lines[index][0]);
 }
 
-void HudUiVirtualSetTextFmtEmpty(
-    HudUiPanel *panel
-) {
-    typedef void(* SetTextFmtFn)(
-        HudUiPanel * self,
-        const char *format,
-        ...
-    );
-
-    const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(panel);
-    ((SetTextFmtFn)(ftable->slots[0x74 / 4]))(
-        panel,
-        ""
-    );
-}
-
-void HudUiPanelVirtualSetTextFmtRequired(
-    HudUiPanel *panel,
-    const char *text
-) {
-    typedef void(* SetTextFmtFn)(
-        HudUiPanel * self,
-        const char *format,
-        ...
-    );
-
-    const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(panel);
-    ((SetTextFmtFn)(ftable->slots[0x74 / 4]))(
-        panel,
-        text
-    );
-}
-
 const char kHudUiMessageClearSpecialToken165[] = "\xa5";
 const float kHudUiMessageClearSpecialTokenValue = 123456792.0f;
-
-void HudUiVirtualSetContainerEnabled(
-    HudUiContainer *container,
-    int enabled
-) {
-    (container->*(container->vptr->setEnabled))(enabled);
-}
-
-void HudUiVirtualInvalidate(void *element);
-
-void HudUiVirtualSetVisibleRequired(
-    void *element,
-    int visible
-) {
-    typedef void( * SetVisibleFn)(
-        void *self,
-        int visible
-    );
-
-    const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
-    ((SetVisibleFn)(ftable->slots[24]))(
-        element,
-        visible
-    );
-}
-
-void HudUiVirtualSetPosRequired(
-    void *element,
-    int x,
-    int y
-) {
-    typedef void( * SetPosFn)(
-        void *self,
-        int x,
-        int y
-    );
-
-    const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
-    ((SetPosFn)(ftable->slots[3]))(
-        element,
-        x,
-        y
-    );
-}
-
-void HudUiVirtualSetVisible(
-    void *element,
-    int visible
-) {
-    typedef void( * SetVisibleFn)(
-        void *self,
-        int visible
-    );
-
-    const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
-    if (ftable != 0 && ftable->slots[24] != 0) {
-        ((SetVisibleFn)(ftable->slots[24]))(
-            element,
-            visible
-        );
-        return;
-    }
-
-    HudUiElement *const base = (HudUiElement *)(element);
-    if (visible != 0) {
-        base->flags &= 0xffffffefu;
-    } else {
-        base->flags |= 0x10;
-    }
-
-    HudUiVirtualInvalidate(base);
-}
-
-void HudUiVirtualInvalidate(
-    void *element
-) {
-    typedef void( * InvalidateFn)(void *self);
-
-    const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
-    if (ftable != 0 && ftable->slots[8] != 0) {
-        ((InvalidateFn)(ftable->slots[8]))(element);
-        return;
-    }
-
-    ((HudUiElement *)(element))->Invalidate();
-}
-
-void HudUiVirtualInvalidateRequired(
-    void *element
-) {
-    typedef void( * InvalidateFn)(void *self);
-
-    const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
-    ((InvalidateFn)(ftable->slots[8]))(element);
-}
-
-void HudUiVirtualDrawRequired(
-    void *element
-) {
-    typedef void( * DrawFn)(void *self);
-
-    const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
-    ((DrawFn)(ftable->slots[2]))(element);
-}
-
-static void HudUiPanelVirtualSetTextFmtStringRequired(
-    void *panel,
-    const char *text
-) {
-    typedef void(* SetTextFmtFn)(
-        void *self,
-        const char *format,
-        ...
-    );
-
-    const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(panel);
-    ((SetTextFmtFn)(ftable->slots[0x74 / 4]))(
-        panel,
-        "%s",
-        text
-    );
-}
-
-static void HudUiPanelVirtualSetTextFmtEmptyRequired(
-    void *panel
-) {
-    typedef void(* SetTextFmtFn)(
-        void *self,
-        const char *format,
-        ...
-    );
-
-    const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(panel);
-    ((SetTextFmtFn)(ftable->slots[0x74 / 4]))(
-        panel,
-        ""
-    );
-}
-
-void HudUiVirtualSetClipRect(
-    void *element,
-    const HudUiRect *rect
-) {
-    typedef void( * SetClipRectFn)(
-        void *self,
-        const HudUiRect *rect
-    );
-
-    const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
-    if (ftable != 0 && ftable->slots[7] != 0) {
-        ((SetClipRectFn)(ftable->slots[7]))(
-            element,
-            rect
-        );
-        return;
-    }
-
-    ((HudUiElement *)(element))->SetClipRect(rect);
-}
-
-int HudUiVirtualGetX(
-    void *element
-) {
-    typedef int( * GetCoordFn)(void *self);
-
-    const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
-    if (ftable != 0 && ftable->slots[25] != 0) {
-        return ((GetCoordFn)(ftable->slots[25]))(element);
-    }
-
-    return ((HudUiElement *)(element))->x;
-}
-
-int HudUiVirtualGetXRequired(
-    void *element
-) {
-    typedef int( * GetCoordFn)(void *self);
-
-    const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
-    return ((GetCoordFn)(ftable->slots[25]))(element);
-}
-
-int HudUiVirtualGetY(
-    void *element
-) {
-    typedef int( * GetCoordFn)(void *self);
-
-    const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
-    if (ftable != 0 && ftable->slots[26] != 0) {
-        return ((GetCoordFn)(ftable->slots[26]))(element);
-    }
-
-    return ((HudUiElement *)(element))->y;
-}
-
-int HudUiVirtualGetYRequired(
-    void *element
-) {
-    typedef int( * GetCoordFn)(void *self);
-
-    const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(element);
-    return ((GetCoordFn)(ftable->slots[26]))(element);
-}
-
-void HudUiVirtualSetText(
-    void *panel,
-    const char *text
-) {
-    typedef void( * SetTextFn)(
-        void *self,
-        const char *text
-    );
-
-    const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(panel);
-    if (ftable != 0 && ftable->slots[35] != 0) {
-        ((SetTextFn)(ftable->slots[35]))(
-            panel,
-            text
-        );
-        return;
-    }
-
-    char *const textBuffer = &FieldAt<char>(
-        panel,
-        0x34
-    );
-    strncpy(
-        textBuffer,
-        text,
-        0x100
-    );
-    textBuffer[0xff] = '\0';
-}
-
-void HudUiVirtualSetTextRequired(
-    void *panel,
-    const char *text
-) {
-    typedef void( * SetTextFn)(
-        void *self,
-        const char *text
-    );
-
-    const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(panel);
-    ((SetTextFn)(ftable->slots[35]))(
-        panel,
-        text
-    );
-}
-
-void HudUiPanelVirtualRebuildTextRect(
-    HudUiPanel *panel
-) {
-    typedef void( * RebuildFn)(HudUiPanel * self);
-
-    const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(panel);
-    if (ftable != 0 && ftable->slots[36] != 0) {
-        ((RebuildFn)(ftable->slots[36]))(panel);
-        return;
-    }
-
-    panel->UpdateTextBoundsFromContent();
-}
-
-void HudUiPanelVirtualRebuildTextRectRequired(
-    HudUiPanel *panel
-) {
-    typedef void( * RebuildFn)(HudUiPanel * self);
-
-    const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(panel);
-    ((RebuildFn)(ftable->slots[36]))(panel);
-}
-
-void HudUiPanelVirtualSetFontRequired(
-    HudUiPanel *panel,
-    const char *faceName,
-    int height,
-    int weight,
-    int width,
-    int italic,
-    int charSet,
-    int pitchAndFamily
-) {
-    typedef void( * SetFontFn)(
-        HudUiPanel * self,
-        const char *faceName,
-        int height,
-        int weight,
-        int width,
-        int italic,
-        int charSet,
-        int pitchAndFamily
-    );
-
-    const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(panel);
-    ((SetFontFn)(ftable
-            ->slots[32]))(
-                panel,
-                faceName,
-                height,
-                weight,
-                width,
-                italic,
-                charSet,
-                pitchAndFamily
-            );
-}
-
-void HudUiPanelVirtualDrawBase(
-    HudUiPanel *panel
-) {
-    typedef void( * DrawFn)(HudUiPanel * self);
-
-    const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(panel);
-    if (ftable != 0 && ftable->slots[2] != 0) {
-        ((DrawFn)(ftable->slots[2]))(panel);
-    }
-}
-
-int HudUiPanelTextWidth(
-    HudUiPanel *panel
-) {
-    if (FieldAt<unsigned int>(
-        panel,
-        0x270
-    ) != 0) {
-        HudUiPanelVirtualRebuildTextRect(panel);
-    }
-
-    return FieldAt<int>(
-        panel,
-        0x25c
-    );
-}
 
 void HudUiSetPanelVectorVisible(
     HudUiPanelPtrVector &panels,
     int visible
 ) {
     for (HudUiPanel **it = panels.begin; it != panels.end; ++it) {
-        HudUiVirtualSetVisibleRequired(
-            *it,
-            visible
-        );
+        (*it)->SetVisible(visible);
     }
 }
 
@@ -2887,24 +1595,11 @@ int __fastcall ApplyTextLabel(
         y += offsetXY[1];
     }
 
-    const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(target);
-    typedef void( * SetPosFn)(
-        HudUiPanel * self,
-        int x,
-        int y
-    );
-    typedef void(* SetTextFmtFn)(
-        HudUiPanel * self,
-        const char *format,
-        ...
-    );
-    ((SetPosFn)(ftable->slots[0x0c / 4]))(
-        target,
+    target->SetPos(
         x,
         y
     );
-    ((SetTextFmtFn)(ftable->slots[0x74 / 4]))(
-        target,
+    target->SetTextFmt(
         text != 0 ? text : ""
     );
     return 1;
@@ -2964,19 +1659,12 @@ zVidImagePartial *__fastcall ApplyImageWidget(
         y -= (int)(image->height) / 2;
     }
 
-    typedef void( * SetPosFn)(
-        HudUiWidget * self,
-        int x,
-        int y
-    );
-    typedef void( * InvalidateFn)(HudUiWidget * self);
-    ((SetPosFn)(widget->ftable->slots[3]))(
-        widget,
+    widget->SetPos(
         x,
         y
     );
     widget->imageStateWord = (widget->imageStateWord & 0xffff0000u) | visibleState;
-    ((InvalidateFn)(widget->ftable->slots[8]))(widget);
+    widget->Invalidate();
 
     if (outRectOrNull != 0) {
         outRectOrNull->left = x;
@@ -2991,31 +1679,15 @@ zVidImagePartial *__fastcall ApplyImageWidget(
 
 namespace {
 
-template <typename T>
-T &OwnerField(
-    void *owner,
-    size_t offset
-) {
-#if defined(_MSC_VER) && _MSC_VER < 1200
-    return *&FieldAt<T>(
-        owner,
-        offset
-    );
-#else
-    return FieldAt<T>(
-        owner,
-        offset
-    );
-#endif
-}
+struct HudUiListSelectorItemArrayHeader {
+    int count;
+};
 
 const HudFontStyle *HudUiZrdOwnerFontStyle(
-    void *owner,
+    const HudUiBackground *owner,
     int styleIndex
 ) {
-    const HudFontStyle *const stylesBase =
-        (const HudFontStyle *)((const unsigned char *)(owner) + 0x1cec);
-    const HudFontStyle *const style = &stylesBase[styleIndex];
+    const HudFontStyle *const style = &owner->fontStyles[styleIndex];
     return style->validMarker != 0 ? style : 0;
 }
 
@@ -3036,42 +1708,15 @@ void ApplyHudFontStyleToPanel(
         0,
         2
     );
-    FieldAt<unsigned int>(
-        panel,
-        0x144
-    ) = style->alignMode;
-    FieldAt<unsigned int>(
-        panel,
-        0x14c
-    ) = style->textColor;
-    FieldAt<unsigned int>(
-        panel,
-        0x150
-    ) = style->textColor;
-    FieldAt<unsigned int>(
-        panel,
-        0x270
-    ) = 1;
-    FieldAt<unsigned int>(
-        panel,
-        0x264
-    ) = style->shadowEnabled;
-    FieldAt<int>(
-        panel,
-        0x29c
-    ) = 1;
-    FieldAt<int>(
-        panel,
-        0x2a0
-    ) = 1;
-    FieldAt<unsigned int>(
-        panel,
-        0x268
-    ) = style->bkMode;
-    FieldAt<unsigned int>(
-        panel,
-        0x26c
-    ) = style->bkColor;
+    panel->alignMode = style->alignMode;
+    panel->textColor0 = style->textColor;
+    panel->textColor1 = style->textColor;
+    panel->textDirty = 1;
+    panel->shadowEnabled = style->shadowEnabled;
+    panel->shadowOffsetX = 1;
+    panel->shadowOffsetY = 1;
+    panel->bkMode = style->bkMode;
+    panel->bkColor = style->bkColor;
 }
 
 void ApplyHudFontStyleTextOnly(
@@ -3091,30 +1736,12 @@ void ApplyHudFontStyleTextOnly(
         0,
         2
     );
-    FieldAt<unsigned int>(
-        panel,
-        0x14c
-    ) = style->textColor;
-    FieldAt<unsigned int>(
-        panel,
-        0x150
-    ) = style->textColor;
-    FieldAt<unsigned int>(
-        panel,
-        0x270
-    ) = 1;
-    FieldAt<unsigned int>(
-        panel,
-        0x264
-    ) = style->shadowEnabled;
-    FieldAt<int>(
-        panel,
-        0x29c
-    ) = 1;
-    FieldAt<int>(
-        panel,
-        0x2a0
-    ) = 1;
+    panel->textColor0 = style->textColor;
+    panel->textColor1 = style->textColor;
+    panel->textDirty = 1;
+    panel->shadowEnabled = style->shadowEnabled;
+    panel->shadowOffsetX = 1;
+    panel->shadowOffsetY = 1;
 }
 
 void DeleteHudUiListSelectorItemArray(
@@ -3124,11 +1751,9 @@ void DeleteHudUiListSelectorItemArray(
         return;
     }
 
-    unsigned char *const header = (unsigned char *)(items) - sizeof(int);
-    const int count = FieldAt<int>(
-        header,
-        0
-    );
+    HudUiListSelectorItemArrayHeader *const header =
+        ((HudUiListSelectorItemArrayHeader *)(items)) - 1;
+    const int count = header->count;
     {
         for (int index = 0; index < count; ++index) {
             ((HudUiPanel *)(&items[index]))->Destructor();
@@ -3146,7 +1771,7 @@ HudUiPanel *CreateHudZrdLabelPanel(
 ) {
     HudUiTransitionTextPanel *const transitionPanel =
         (HudUiTransitionTextPanel *)(::operator new(sizeof(HudUiTransitionTextPanel)));
-    transitionPanel->Constructor();
+    new (transitionPanel) HudUiTransitionTextPanel;
 
     HudUiPanel *const panel = (HudUiPanel *)(transitionPanel);
     HudUiElement *const element = (HudUiElement *)(transitionPanel);
@@ -3215,7 +1840,7 @@ HudUiPanel *CreateHudZrdTextPanel(
 
     HudUiTransitionTextPanel *const transitionPanel =
         (HudUiTransitionTextPanel *)(::operator new(sizeof(HudUiTransitionTextPanel)));
-    transitionPanel->Constructor();
+    new (transitionPanel) HudUiTransitionTextPanel;
 
     HudUiPanel *const panel = (HudUiPanel *)(transitionPanel);
     const char *const key = ZrdArrayString(
@@ -3399,43 +2024,6 @@ void LoadHudZrdSound(
     *outSound = zSnd::FindSampleByName(name);
 }
 
-void HudUiVirtualUpdateSlider(
-    HudUiSliderBorder *slider,
-    float deltaSeconds
-) {
-    typedef void( * UpdateFn)(
-        HudUiSliderBorder * self,
-        float deltaSeconds
-    );
-
-    const HudUiCommon_FTable *const ftable = slider->base.base.ftable;
-    if (ftable != 0 && ftable->slots[9] != 0) {
-        ((UpdateFn)(ftable->slots[9]))(
-            slider,
-            deltaSeconds
-        );
-        return;
-    }
-
-    slider->Update(deltaSeconds);
-}
-
-void HudUiVirtualUpdateSliderRequired(
-    HudUiSliderBorder *slider,
-    float deltaSeconds
-) {
-    typedef void( * UpdateFn)(
-        HudUiSliderBorder * self,
-        float deltaSeconds
-    );
-
-    const HudUiCommon_FTable *const ftable = slider->base.base.ftable;
-    ((UpdateFn)(ftable->slots[9]))(
-        slider,
-        deltaSeconds
-    );
-}
-
 void ConfigureTextStackLine(
     HudUiTextStack4 *stack,
     HudUiPanel *panel,
@@ -3445,7 +2033,7 @@ void ConfigureTextStackLine(
     int fontWidth
 ) {
     HudUiElement *const element = (HudUiElement *)(panel);
-    stack->base.AddChild(element);
+    stack->AddChild(element);
     panel->SetFont(
         "Arial",
         fontSize,
@@ -3460,10 +2048,7 @@ void ConfigureTextStackLine(
         -1,
         -1
     );
-    FieldAt<int>(
-        panel,
-        0x144
-    ) = 1;
+    panel->alignMode = 1;
     element->SetPos(
         0x140,
         y
@@ -3483,7 +2068,7 @@ void DestroyTextStackLines(
         }
     }
 
-    stack->base.DestructorCore();
+    stack->HudUiContainer::DestructorCore();
 }
 } // namespace
 
@@ -3555,8 +2140,7 @@ int __fastcall PlaceTrackCounterWidget(
         slotX = (int)(slot->screenX + slot->screenX);
         slotY = (int)(slot->screenY + slot->screenY);
     }
-    HudUiVirtualSetPosRequired(
-        slot,
+    slot->SetPos(
         slotX,
         slotY
     );
@@ -3568,21 +2152,17 @@ int __fastcall PlaceTrackCounterWidget(
 
     case 1: {
         HudUiWidget *const counterWidget = &slot->slotWidget;
-        HudUiVirtualSetVisibleRequired(
-            counterWidget,
-            1
-        );
+        counterWidget->SetVisible(1);
         counterWidget->SetImageBorrowedAndInvalidate(g_HudUiMgrSensorTargetMarkerImages[1]);
 
         const int halfHeight = counterWidget->image->height / 2;
-        int top = ((HudUiElement *)(slot))->GetY() - halfHeight;
+        int top = slot->GetY() - halfHeight;
         if (top <= g_HudUiMgrHudRect.top + halfHeight) {
             top = g_HudUiMgrHudRect.top;
         } else if (top > g_HudUiMgrSensorBlock.sensorViewportRect.top - halfHeight) {
             top = g_HudUiMgrSensorBlock.sensorViewportRect.top - halfHeight * 2;
         }
-        HudUiVirtualSetPosRequired(
-            counterWidget,
+        counterWidget->SetPos(
             0,
             top
         );
@@ -3591,24 +2171,20 @@ int __fastcall PlaceTrackCounterWidget(
 
     case 2: {
         HudUiWidget *const counterWidget = &slot->slotWidget;
-        HudUiVirtualSetVisibleRequired(
-            counterWidget,
-            1
-        );
+        counterWidget->SetVisible(1);
         counterWidget->SetImageBorrowedAndInvalidate(g_HudUiMgrSensorTargetMarkerImages[2]);
 
         const zVidImagePartial *const image = counterWidget->image;
         const int height = image->height;
-        int top = ((HudUiElement *)(slot))->GetY() - height;
+        int top = slot->GetY() - height;
         if (top <= g_HudUiMgrHudRect.top + height) {
             top = g_HudUiMgrHudRect.top;
         } else if (top > g_HudUiMgrHudRect.bottom - height) {
             top = g_HudUiMgrHudRect.bottom - height * 2;
         }
 
-        const int left = ((HudUiElement *)(slot))->GetX() + 1 - image->width;
-        HudUiVirtualSetPosRequired(
-            counterWidget,
+        const int left = slot->GetX() + 1 - image->width;
+        counterWidget->SetPos(
             left,
             top
         );
@@ -3617,17 +2193,13 @@ int __fastcall PlaceTrackCounterWidget(
 
     case 4: {
         HudUiWidget *const counterWidget = &slot->slotWidget;
-        HudUiVirtualSetVisibleRequired(
-            counterWidget,
-            1
-        );
+        counterWidget->SetVisible(1);
         counterWidget->SetImageBorrowedAndInvalidate(g_HudUiMgrSensorTargetMarkerImages[3]);
 
         const zVidImagePartial *const image = counterWidget->image;
-        const int top = ((HudUiElement *)(slot))->GetY() + 1;
-        const int left = ((HudUiElement *)(slot))->GetX() - image->width / 2;
-        HudUiVirtualSetPosRequired(
-            counterWidget,
+        const int top = slot->GetY() + 1;
+        const int left = slot->GetX() - image->width / 2;
+        counterWidget->SetPos(
             left,
             top
         );
@@ -3636,14 +2208,11 @@ int __fastcall PlaceTrackCounterWidget(
 
     case 8: {
         HudUiWidget *const counterWidget = &slot->slotWidget;
-        HudUiVirtualSetVisibleRequired(
-            counterWidget,
-            1
-        );
+        counterWidget->SetVisible(1);
         counterWidget->SetImageBorrowedAndInvalidate(g_HudUiMgrSensorTargetMarkerImages[4]);
 
-        int left = ((HudUiElement *)(slot))->GetX();
-        int top = ((HudUiElement *)(slot))->GetY();
+        int left = slot->GetX();
+        int top = slot->GetY();
         if (left < g_HudUiMgrObjectiveWidgetRightX) {
             top = g_HudUiMgrSensorBlock.sensorViewportRect.top;
         }
@@ -3651,8 +2220,7 @@ int __fastcall PlaceTrackCounterWidget(
         const zVidImagePartial *const image = counterWidget->image;
         top -= image->height;
         left -= image->width / 2;
-        HudUiVirtualSetPosRequired(
-            counterWidget,
+        counterWidget->SetPos(
             left,
             top
         );
@@ -3703,8 +2271,8 @@ int __fastcall PlaceTrackMarker(
                 }
             }
 
-            const int dx = ((HudUiElement *)(slot))->GetX() - g_HudUiMgrReticleProjectedX;
-            const int dy = ((HudUiElement *)(slot))->GetY() - g_HudUiMgrReticleProjectedY;
+            const int dx = slot->GetX() - g_HudUiMgrReticleProjectedX;
+            const int dy = slot->GetY() - g_HudUiMgrReticleProjectedY;
             const int distSq = dx * dx + dy * dy;
             if (distSq < nearestDistSq) {
                 g_HudUiMgrSensorTrackedProgressSlot = slot;
@@ -3730,15 +2298,11 @@ int __fastcall PlaceTrackMarker(
     const zVidImagePartial *const image = trackedProgressSlot->trackMarkerWidget.image;
     const int markerY = ((HudUiElement *)(trackedProgressSlot))->GetY() - image->height / 2;
     const int markerX = ((HudUiElement *)(trackedProgressSlot))->GetX() - image->width / 2;
-    HudUiVirtualSetPosRequired(
-        &trackedProgressSlot->trackMarkerWidget,
+    trackedProgressSlot->trackMarkerWidget.SetPos(
         markerX,
         markerY
     );
-    HudUiVirtualSetVisibleRequired(
-        &trackedProgressSlot->trackMarkerWidget,
-        1
-    );
+    trackedProgressSlot->trackMarkerWidget.SetVisible(1);
 
     HudUiMgrSensorTrackNode *const trackNode =
         (HudUiMgrSensorTrackNode *)(trackedProgressSlot->trackNode);
@@ -3907,12 +2471,6 @@ void __fastcall UpdateMarkersAndProgressFromVariantTag(
 void __fastcall SetShieldMessageRatio(
     float ratio
 ) {
-    typedef void(* SetTextFmtFn)(
-        void *self,
-        const char *format,
-        ...
-    );
-
     if (ratio > 1.0f) {
         ratio = 1.0f;
     } else if (ratio < 0.0f) {
@@ -3932,18 +2490,15 @@ void __fastcall SetShieldMessageRatio(
     const int top = (int)(meter->points[1].y) - fillPixels;
     meter->points[0].y = (float)(top);
     meter->points[3].y = (float)(top);
-    HudUiVirtualInvalidate(meter);
+    meter->Invalidate();
 
     HudUiPanel *const percentTextPanel = (HudUiPanel *)(&shieldMessageWidget->percentTextPanel);
-    const HudUiCommon_FTable *const panelFTable =
-        *(const HudUiCommon_FTable *const *)(percentTextPanel);
     const int percent = (int)(ceil((double)(ratio) * 100.0));
-    ((SetTextFmtFn)(panelFTable->slots[0x74 / 4]))(
-        percentTextPanel,
+    percentTextPanel->SetTextFmt(
         "%d",
         percent
     );
-    HudUiVirtualInvalidate(percentTextPanel);
+    percentTextPanel->Invalidate();
 }
 
 // Reimplements 0x410d10: HudUiMgrSensor::SetViewportRect
@@ -4035,10 +2590,7 @@ void __fastcall UpdateSelectedProgressMeter(
     }
 
     if (selectedHealthCurrent == 0.0f) {
-        HudUiVirtualSetVisibleRequired(
-            &g_HudUiMgrSensorMeter,
-            0
-        );
+        g_HudUiMgrSensorMeter.SetVisible(0);
         trackedProgressSlot = g_HudUiMgrSensorTrackedProgressSlot;
     }
 
@@ -4065,11 +2617,8 @@ void __fastcall UpdateSelectedProgressMeter(
     const int top = (int)(g_HudUiMgrSensorMeter.points[1].y) - fillPixels;
     g_HudUiMgrSensorMeter.points[0].y = (float)(top);
     g_HudUiMgrSensorMeter.points[3].y = (float)(top);
-    HudUiVirtualInvalidate(&g_HudUiMgrSensorMeter);
-    HudUiVirtualSetVisibleRequired(
-        &g_HudUiMgrSensorMeter,
-        1
-    );
+    g_HudUiMgrSensorMeter.Invalidate();
+    g_HudUiMgrSensorMeter.SetVisible(1);
 }
 } // namespace HudUiMgrTarget
 
@@ -4093,25 +2642,13 @@ void __fastcall SetVisibleAndResetMeterFill(
     int visible
 ) {
     if (visible == 0) {
-        HudUiVirtualSetVisibleRequired(
-            g_HudUiMgrObjectiveLabelTextPanel,
-            0
-        );
-        HudUiVirtualSetVisibleRequired(
-            &g_HudUiMgrObjectiveMeter,
-            0
-        );
+        g_HudUiMgrObjectiveLabelTextPanel->SetVisible(0);
+        g_HudUiMgrObjectiveMeter.SetVisible(0);
         return;
     }
 
-    HudUiVirtualSetVisibleRequired(
-        g_HudUiMgrObjectiveLabelTextPanel,
-        1
-    );
-    HudUiVirtualSetVisibleRequired(
-        &g_HudUiMgrObjectiveMeter,
-        1
-    );
+    g_HudUiMgrObjectiveLabelTextPanel->SetVisible(1);
+    g_HudUiMgrObjectiveMeter.SetVisible(1);
 
     const int meterTop = (int)(g_HudUiMgrObjectiveMeter.points[1].y);
     g_HudUiMgrObjectiveMeterFillAnimTimerSec = 0.0f;
@@ -4123,11 +2660,7 @@ void __fastcall SetVisibleAndResetMeterFill(
 // Reimplements 0x4118b0: HudUiMgrObjective::UpdateMeterXPoints
 // (D:\Proj\Battlesport\hud.cpp)
 void UpdateMeterXPoints() {
-    typedef int( * GetCenterXFn)(HudUiWidget * self);
-
-    const HudUiWidget_FTable *const ftable = g_HudUiMgrObjectiveWidget.ftable;
-    const float left =
-        (float)(((GetCenterXFn)(ftable->slots[0x64 / 4]))(&g_HudUiMgrObjectiveWidget)) + 5.0f;
+    const float left = (float)(g_HudUiMgrObjectiveWidget.GetCenterX()) + 5.0f;
     const float right = left + 7.0f;
     g_HudUiMgrObjectiveMeter.points[0].x = left;
     g_HudUiMgrObjectiveMeter.points[1].x = left;
@@ -4166,7 +2699,7 @@ static void HudUiMgrObjective_SetSlidePosition(
 ) {
     g_HudUiMgrObjectiveBar.points[2].x = slideX;
     g_HudUiMgrObjectiveBar.points[3].x = slideX;
-    ((HudUiElement *)(&g_HudUiMgrObjectiveBar))->Invalidate();
+    g_HudUiMgrObjectiveBar.Invalidate();
     ((HudUiElement *)(&g_HudUiMgrObjectiveWidget))->SetX((int)(slideX)-1);
     HudUiMgrObjective::UpdateMeterXPoints();
 }
@@ -4194,10 +2727,7 @@ static void HudUiMgrObjective_DrawSensorNoise(
         return;
     }
 
-    HudUiVirtualSetVisibleRequired(
-        &g_HudUiMgrObjectiveSensorRect,
-        visibleWhenCovered
-    );
+    g_HudUiMgrObjectiveSensorRect.SetVisible(visibleWhenCovered);
     zVid::DrawNoiseRect(
         (zVidRect32 *)(&g_HudUiMgrSensorBlock.sensorRectRaw),
         (double)(2.0f - noise)
@@ -4216,18 +2746,9 @@ int __fastcall Show(
         return 0;
     }
 
-    HudUiPanelVirtualSetTextFmtRequired(
-        g_HudUiMgrObjectiveSummaryTextPanel,
-        summaryFormat
-    );
-    HudUiPanelVirtualSetTextFmtRequired(
-        g_HudUiMgrObjectiveDescTextPanel,
-        descText
-    );
-    HudUiVirtualSetVisibleRequired(
-        &g_HudUiMgrSensorOverlay,
-        0
-    );
+    g_HudUiMgrObjectiveSummaryTextPanel->SetTextFmt(summaryFormat);
+    g_HudUiMgrObjectiveDescTextPanel->SetTextFmt(descText);
+    g_HudUiMgrSensorOverlay.SetVisible(0);
 
     const int phase = g_HudUiMgrObjectivePhase;
     if (phase == 0) {
@@ -4241,10 +2762,7 @@ int __fastcall Show(
 
         const int imageWidth = widgetImage != 0 ? widgetImage->width : 0;
         g_HudUiMgrObjectiveWidgetRightX = g_HudUiMgrObjectiveWidget.GetCenterX() + imageWidth;
-        HudUiVirtualSetVisibleRequired(
-            &g_HudUiMgrObjectiveBar,
-            1
-        );
+        g_HudUiMgrObjectiveBar.SetVisible(1);
         gAltClipPassEnabled = 0;
         return 1;
     }
@@ -4280,10 +2798,7 @@ void Begin() {
             ((HudUiElement *)(g_HudUiMgrObjectiveLabelTextPanel))->SetVisible(0);
         }
 
-        HudUiVirtualSetVisibleRequired(
-            &g_HudUiMgrObjectiveSensorRect,
-            0
-        );
+        g_HudUiMgrObjectiveSensorRect.SetVisible(0);
         g_HudUiMgrObjectiveAutoHideDelaySec = 0.0f;
         return;
     }
@@ -4307,7 +2822,7 @@ void StartHide() {
                 g_HudUiMgrObjectivePhaseTimerSec / g_HudUiMgrObjectivePhaseDurationSec;
             const float slideX =
                 g_HudUiMgrObjectiveBar.points[1].x +
-                fade * ((HudUiObjectiveBar *)(&g_HudUiMgrObjectiveBar))->slideRangeX;
+                fade * g_HudUiMgrObjectiveBar.slideRangeX;
             HudUiMgrObjective_SetSlidePosition(slideX);
             HudUiMgrObjective_UpdateWidgetRightX();
             HudUiMgrObjective_DrawSensorNoise(
@@ -4315,29 +2830,20 @@ void StartHide() {
                 1
             );
         } else {
-            const float slideX = g_HudUiMgrObjectiveBar.points[1].x +
-                                 ((HudUiObjectiveBar *)(&g_HudUiMgrObjectiveBar))->slideRangeX;
+            const float slideX =
+                g_HudUiMgrObjectiveBar.points[1].x + g_HudUiMgrObjectiveBar.slideRangeX;
             g_HudUiMgrObjectivePhase = 2;
             g_HudUiMgrObjectivePhaseTimerSec = 0.0f;
             HudUiMgrObjective_SetSlidePosition(slideX);
             HudUiMgrObjective_UpdateWidgetRightX();
-            HudUiVirtualSetVisibleRequired(
-                g_HudUiMgrObjectiveSummaryTextPanel,
-                1
-            );
-            HudUiVirtualSetVisibleRequired(
-                g_HudUiMgrObjectiveDescTextPanel,
-                1
-            );
-            HudUiVirtualSetVisibleRequired(
-                &g_HudUiMgrObjectiveSensorRect,
-                1
-            );
+            g_HudUiMgrObjectiveSummaryTextPanel->SetVisible(1);
+            g_HudUiMgrObjectiveDescTextPanel->SetVisible(1);
+            g_HudUiMgrObjectiveSensorRect.SetVisible(1);
         }
     } else if (g_HudUiMgrObjectivePhase == 2) {
         ((HudUiElement *)(g_HudUiMgrObjectiveSummaryTextPanel))->Invalidate();
         ((HudUiElement *)(g_HudUiMgrObjectiveDescTextPanel))->Invalidate();
-        ((HudUiElement *)(&g_HudUiMgrObjectiveBar))->Invalidate();
+        g_HudUiMgrObjectiveBar.Invalidate();
         ((HudUiElement *)(&g_HudUiMgrObjectiveSensorRect))->Invalidate();
     } else if (g_HudUiMgrObjectivePhase == 3) {
         if (g_HudUiMgrObjectivePhaseTimerSec < g_HudUiMgrObjectivePhaseDurationSec) {
@@ -4345,7 +2851,7 @@ void StartHide() {
                 1.0f - g_HudUiMgrObjectivePhaseTimerSec / g_HudUiMgrObjectivePhaseDurationSec;
             const float slideX =
                 g_HudUiMgrObjectiveBar.points[1].x +
-                fade * ((HudUiObjectiveBar *)(&g_HudUiMgrObjectiveBar))->slideRangeX;
+                fade * g_HudUiMgrObjectiveBar.slideRangeX;
             HudUiMgrObjective_SetSlidePosition(slideX);
             HudUiMgrObjective_UpdateHwDirtyRectIfNeeded();
             HudUiMgrObjective_UpdateWidgetRightX();
@@ -4362,14 +2868,8 @@ void StartHide() {
             HudUiMgrObjective::UpdateMeterXPoints();
             HudUiMgrObjective_UpdateHwDirtyRectIfNeeded();
             HudUiMgrObjective_UpdateWidgetRightX();
-            HudUiVirtualSetVisibleRequired(
-                &g_HudUiMgrObjectiveBar,
-                0
-            );
-            HudUiVirtualSetVisibleRequired(
-                &g_HudUiMgrSensorOverlay,
-                1
-            );
+            g_HudUiMgrObjectiveBar.SetVisible(0);
+            g_HudUiMgrSensorOverlay.SetVisible(1);
             gAltClipPassEnabled = 1;
         }
     }
@@ -4385,15 +2885,12 @@ void StartHide() {
 
 // Reimplements 0x411eb0: HudUiMgrObjective::Update
 void Update() {
-    HudUiVirtualSetVisibleRequired(
-        &g_HudUiMgrObjectiveWidget,
-        1
-    );
+    g_HudUiMgrObjectiveWidget.SetVisible(1);
     if (g_HudUiMgrObjectivePhase == 0) {
         return;
     }
 
-    ((HudUiElement *)(&g_HudUiMgrObjectiveBar))->SetVisible(1);
+    g_HudUiMgrObjectiveBar.SetVisible(1);
     if (g_HudUiMgrObjectivePhase != 2) {
         return;
     }
@@ -4406,10 +2903,7 @@ void Update() {
         ((HudUiElement *)(g_HudUiMgrObjectiveLabelTextPanel))->SetVisible(1);
     }
 
-    HudUiVirtualSetVisibleRequired(
-        &g_HudUiMgrObjectiveSensorRect,
-        1
-    );
+    g_HudUiMgrObjectiveSensorRect.SetVisible(1);
 }
 } // namespace HudUiMgrObjective
 
@@ -4491,40 +2985,22 @@ void __fastcall UpdateTextLine(
     HudUiPanel *const panel = (HudUiPanel *)(&g_HudUiMgrStringMenu->items[index]);
 
     if (op == 1) {
-        HudUiPanelVirtualSetTextFmtRequired(
-            panel,
-            format
-        );
-        HudUiVirtualSetVisibleRequired(
-            panel,
-            1
-        );
+        panel->SetTextFmt(format);
+        panel->SetVisible(1);
         return;
     }
 
     if (op == 0) {
-        HudUiVirtualSetVisibleRequired(
-            panel,
-            0
-        );
+        panel->SetVisible(0);
         return;
     }
 
     if (op == 2) {
         if (*format != '\0') {
-            HudUiPanelVirtualSetTextFmtRequired(
-                panel,
-                format
-            );
-            HudUiVirtualSetVisibleRequired(
-                panel,
-                1
-            );
+            panel->SetTextFmt(format);
+            panel->SetVisible(1);
         } else {
-            HudUiVirtualSetVisibleRequired(
-                panel,
-                0
-            );
+            panel->SetVisible(0);
         }
     }
 }
@@ -4570,30 +3046,14 @@ int HudUiZrdIntAt(
 }
 
 void HudUiEnsureLoaderWidgetsConstructed() {
-    if (g_HudUiMgrSensorPanel.ftable == 0) {
-        g_HudUiMgrSensorPanel.Constructor(0);
-    }
-    if (g_HudUiMgrSensorOverlay.ftable == 0) {
-        g_HudUiMgrSensorOverlay.Constructor(0);
-    }
-    if (g_HudUiMgrSensorMeter.ftable == 0) {
-        g_HudUiMgrSensorMeter.Constructor();
-    }
-    if (g_HudUiMgrObjectiveWidget.ftable == 0) {
-        g_HudUiMgrObjectiveWidget.Constructor(0);
-    }
-    if (g_HudUiMgrObjectiveSensorRect.ftable == 0) {
-        g_HudUiMgrObjectiveSensorRect.Constructor(0);
-    }
-    if (((HudUiElement *)(&g_HudUiMgrObjectiveBar))->ftable == 0) {
-        g_HudUiMgrObjectiveBar.Constructor();
-    }
-    if (g_HudUiMgrReticleWidget.ftable == 0) {
-        g_HudUiMgrReticleWidget.Constructor(0);
-    }
-    if (g_HudUiMgrNanitePanel.base.ftable == 0) {
-        ((HudUiTripletPanel *)(&g_HudUiMgrNanitePanel))->Constructor();
-    }
+    g_HudUiMgrSensorPanel.Constructor(0);
+    g_HudUiMgrSensorOverlay.Constructor(0);
+    g_HudUiMgrSensorMeter.Constructor();
+    g_HudUiMgrObjectiveWidget.Constructor(0);
+    g_HudUiMgrObjectiveSensorRect.Constructor(0);
+    g_HudUiMgrObjectiveBar.Constructor();
+    g_HudUiMgrReticleWidget.Constructor(0);
+    ((HudUiTripletPanel *)(&g_HudUiMgrNanitePanel))->Constructor();
 
     {
         int messageIndex1;
@@ -4601,9 +3061,7 @@ void HudUiEnsureLoaderWidgetsConstructed() {
             messageIndex1 < (int)(sizeof(g_HudUiMgrMessages) / sizeof(g_HudUiMgrMessages[0]));
             ++messageIndex1) {
             HudUiMessage &message = g_HudUiMgrMessages[messageIndex1];
-            if (message.base.ftable == 0) {
-                message.Constructor();
-            }
+            message.Constructor();
         }
     }
 
@@ -4613,9 +3071,7 @@ void HudUiEnsureLoaderWidgetsConstructed() {
                                                       sizeof(g_HudUiMgrModeCounters[0]));
             ++counterIndex2) {
             HudUiCounter &counter = g_HudUiMgrModeCounters[counterIndex2];
-            if (((HudUiWidget *)(&counter))->ftable == 0) {
-                counter.Constructor();
-            }
+            counter.Constructor();
         }
     }
 
@@ -4625,9 +3081,7 @@ void HudUiEnsureLoaderWidgetsConstructed() {
             slotIndex3 < (int)(sizeof(g_HudUiMgrWeaponSlots) / sizeof(g_HudUiMgrWeaponSlots[0]));
             ++slotIndex3) {
             HudUiSlot &slot = g_HudUiMgrWeaponSlots[slotIndex3];
-            if (slot.ftable == 0) {
-                slot.Constructor();
-            }
+            slot.Constructor();
         }
     }
 }
@@ -4648,19 +3102,11 @@ void HudUiSetFontFromRect(
 }
 
 void HudUiSetPanelClipWithSource(
-    void *panel,
+    HudUiPanel *panel,
     void *source,
     const HudUiRect *clipRect
 ) {
-    typedef void( * SetClipFn)(
-        void *self,
-        void *source,
-        const HudUiRect *clipRect
-    );
-
-    const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(panel);
-    ((SetClipFn)(ftable->slots[6]))(
-        panel,
+    panel->SetClip(
         source,
         clipRect
     );
@@ -4692,15 +3138,13 @@ HudUiContainer *__fastcall Constructor(
     HudUiContainer *self
 ) {
     HudUiContainer *const manager = self;
-    manager->ConstructorDefault();
+    new (manager) HudUiContainer;
 
     ((HudUiPanel *)(&g_HudUiMgrHudRootPanel))->ConstructorDefault(
         0,
         0,
         0
     );
-    *(const HudUiPanel_FTable **)(&g_HudUiMgrHudRootPanel) =
-        &g_HudCmdDialog_BackgroundPanelFTable.SecondaryAction;
     g_HudUiMgrHudRootPanel.flashResetValue = 0.349999994f;
     g_HudUiMgrHudRootPanel.flashCountdown = 0.0f;
     g_HudUiMgrHudRootPanel.flashAltColor0 = 0;
@@ -4714,15 +3158,12 @@ HudUiContainer *__fastcall Constructor(
     g_HudUiMgrObjectiveWidget.Constructor(0);
     g_HudUiMgrObjectiveSensorRect.Constructor(0);
     g_HudUiMgrObjectiveMeter.ConstructorEx();
-    g_HudUiMgrObjectiveMeter.ftable = &g_HudUiMeter_FTable;
     g_HudUiMgrObjectiveBar.Constructor();
     g_HudUiMgrObjectiveChatComposeTextInput.Constructor(256);
-    g_HudUiMgrObjectiveChatComposeTextInput.ftable = &g_HudUiChatComposeTextInput_FTable;
 
     g_HudUiMgrSensorPanel.Constructor(0);
     g_HudUiMgrSensorOverlay.Constructor(0);
     g_HudUiMgrSensorMeter.ConstructorEx();
-    g_HudUiMgrSensorMeter.ftable = &g_HudUiMeter_FTable;
 
     {
         int index;
@@ -4748,8 +3189,6 @@ HudUiContainer *__fastcall Constructor(
     g_HudUiMgrTailBar.Constructor();
     g_HudUiMgrTailBar.quadHeight = 0;
     g_HudUiMgrTailBar.quadLeftX = 0.0f;
-    g_HudUiMgrTailBar.ftable = &g_HudUiBar_FTable;
-    manager->vptr = &g_HudUiMgr_FTable;
     return manager;
 }
 
@@ -4783,7 +3222,6 @@ void AtExitDestructor() {
 void __fastcall StaticDestructor(
     HudUiContainer *self
 ) {
-    g_HudUiMgrTailBar.ftable = (const HudUiBar_FTable *)(&g_HudUiCommon_FTable);
 
     {
         int index;
@@ -4795,7 +3233,7 @@ void __fastcall StaticDestructor(
     {
         int index;
         for (index = 4; index > 0; --index) {
-            g_HudUiMgrModeCounters[index - 1].base.DestructorCore();
+            g_HudUiMgrModeCounters[index - 1].DestructorCore();
         }
     }
 
@@ -4809,8 +3247,6 @@ void __fastcall StaticDestructor(
     g_HudUiMgrSensorBlock.Destructor();
 
     g_HudUiMgrObjectiveChatComposeTextInput.DestructorCore();
-    g_HudUiMgrObjectiveBar.ftable = (const HudUiBar_FTable *)(&g_HudUiCommon_FTable);
-    g_HudUiMgrObjectiveMeter.ftable = (const HudUiMeter_FTable *)(&g_HudUiCommon_FTable);
     g_HudUiMgrObjectiveSensorRect.DestructorCore();
     g_HudUiMgrObjectiveWidget.DestructorCore();
 
@@ -4862,7 +3298,7 @@ int __fastcall ProjectPointToNormalizedClamped(
 // Reimplements 0x413630: HudUiMgr::TriggerCurrentLayoutOnActivated
 void TriggerCurrentLayoutOnActivated() {
     if (g_HudUiMgrCurrentLayout != 0) {
-        g_HudUiMgrCurrentLayout->ftable->OnActivated(g_HudUiMgrCurrentLayout);
+        g_HudUiMgrCurrentLayout->OnActivated();
     }
 }
 
@@ -4957,8 +3393,7 @@ int __fastcall EnsureHudLoaded(
                                                         sizeof(g_HudUiMgrStringMenu->items[0]));
                     ++itemIndex4) {
                     HudUiPanelSimple &item = g_HudUiMgrStringMenu->items[itemIndex4];
-                    HudUiPanelVirtualSetFontRequired(
-                        (HudUiPanel *)(&item),
+                    item.SetFont(
                         fontArgs->faceName,
                         fontArgs->height,
                         fontArgs->weight,
@@ -5144,10 +3579,7 @@ int __fastcall EnsureHudLoaded(
             objectiveCenter,
             &objectiveBarRect
         );
-        FieldAt<float>(
-            &g_HudUiMgrObjectiveBar,
-            0x138
-        ) =
+        g_HudUiMgrObjectiveBar.slideRangeX =
             (float)(panelCenter[0] - objectiveBarRect.left);
 
         int red = 0;
@@ -5236,12 +3668,12 @@ int __fastcall EnsureHudLoaded(
 
         g_HudUiMgr.AddChild((HudUiElement *)(&g_HudUiMgrObjectiveWidget));
         g_HudUiMgr.AddChild((HudUiElement *)(&g_HudUiMgrObjectiveSensorRect));
-        g_HudUiMgr.AddChild((HudUiElement *)(&g_HudUiMgrObjectiveBar));
+        g_HudUiMgr.AddChild(&g_HudUiMgrObjectiveBar);
         g_HudUiMgr.AddChild((HudUiElement *)(g_HudUiMgrObjectiveSummaryTextPanel));
         g_HudUiMgr.AddChild((HudUiElement *)(g_HudUiMgrObjectiveDescTextPanel));
         g_HudUiMgr.AddChild((HudUiElement *)(g_HudUiMgrObjectiveLabelTextPanel));
         g_HudUiMgr.AddChild((HudUiElement *)(&g_HudUiMgrObjectiveMeter));
-        ((HudUiElement *)(&g_HudUiMgrObjectiveBar))->SetVisible(0);
+        g_HudUiMgrObjectiveBar.SetVisible(0);
 
         g_HudUiMgrObjectiveState = 0;
         g_HudUiMgrObjectivePhase = 0;
@@ -5291,10 +3723,7 @@ int __fastcall EnsureHudLoaded(
         root,
         "STATS"
     ))) {
-        HudUiWidget *const layoutWidget = &FieldAt<HudUiWidget>(
-            &g_HudLayoutHW,
-            0xec
-        );
+        HudUiWidget *const layoutWidget = &g_HudLayoutHW.widget1;
         const int layoutCenterX = layoutWidget->GetCenterX();
         const int layoutCenterY = layoutWidget->GetCenterY();
         int x = 0;
@@ -5312,10 +3741,7 @@ int __fastcall EnsureHudLoaded(
                 counterX + layoutCenterX,
                 y + layoutCenterY
             );
-        FieldAt<int>(
-            g_HudUiMgrObjectiveCounterTextPanel,
-            0x144
-        ) = 1;
+        ((HudUiPanel *)(g_HudUiMgrObjectiveCounterTextPanel))->alignMode = 1;
         HudUiRect counterClip = {counterX - 0x14, y, counterX + 0x14, y + 0x0a};
         HudUiSetPanelClipWithSource(
             g_HudUiMgrObjectiveCounterTextPanel,
@@ -5438,7 +3864,7 @@ int __fastcall EnsureHudLoaded(
                 ++slotIndex6) {
                 HudUiSlot &slot = g_HudUiMgrWeaponSlots[slotIndex6];
                 ((HudUiElement *)(&slot.slotWidget))->Invalidate();
-                g_HudUiMgr.AddChild((HudUiElement *)(&slot));
+                g_HudUiMgr.AddChild(&slot);
                 ((HudUiElement *)(&slot.trackMarkerWidget))->SetVisible(0);
                 ((HudUiElement *)(&slot.slotWidget))->SetVisible(0);
             }
@@ -5499,20 +3925,12 @@ void __fastcall SetModeCounterState(
 ) {
     if (state == 2) {
         HudUiCounter &previous = g_HudUiMgrModeCounters[g_HudUiMgrActiveModeCounterIndex];
-        ((HudUiWidget *)(&previous))
-            ->SetImageBorrowedAndInvalidate(FieldAt<zVidImagePartial *>(
-                &previous,
-                0xc0
-            ));
+        previous.SetImageBorrowedAndInvalidate(previous.stateImages[1]);
         g_HudUiMgrActiveModeCounterIndex = counterIndex;
     }
 
     HudUiCounter &counter = g_HudUiMgrModeCounters[counterIndex];
-    ((HudUiWidget *)(&counter))
-        ->SetImageBorrowedAndInvalidate(FieldAt<zVidImagePartial *>(
-            &counter,
-            0xbc + state * 4
-        ));
+    counter.SetImageBorrowedAndInvalidate(counter.stateImages[state]);
 }
 
 // Reimplements 0x411710: HudUiMgr::ReticleStaticAtexitStub
@@ -5750,8 +4168,7 @@ int EnableHud() {
     const int previouslyEnabled = g_HudUiMgr.enabled;
     g_HudUiMgr.SetEnabled(1);
 
-    typedef void( * LayoutEnableFn)(HudLayoutBase * self);
-    ((LayoutEnableFn)(g_HudUiMgrCurrentLayout->ftable->slots[4]))(g_HudUiMgrCurrentLayout);
+    g_HudUiMgrCurrentLayout->Enable();
 
     HudUiMgrObjective::Update();
     zClipAlt::SetSourceRect(&g_HudUiMgrSensorBlock.sensorPiVSrcRect);
@@ -5770,55 +4187,24 @@ int DisableHud() {
             slotIndex < (int)(sizeof(g_HudUiMgrWeaponSlots) / sizeof(g_HudUiMgrWeaponSlots[0]));
             ++slotIndex) {
             HudUiSlot &slot = g_HudUiMgrWeaponSlots[slotIndex];
-            HudUiVirtualSetVisibleRequired(
-                &slot.trackMarkerWidget,
-                0
-            );
-            HudUiVirtualSetVisibleRequired(
-                &slot.slotWidget,
-                0
-            );
+            slot.trackMarkerWidget.SetVisible(0);
+            slot.slotWidget.SetVisible(0);
         }
     }
 
     g_HudUiMgrSensorTargetMarkerCount = 0;
     g_HudUiMgrWeaponState = 0;
-    HudUiVirtualSetContainerEnabled(
-        &g_HudUiMgr,
-        0
-    );
+    g_HudUiMgr.SetEnabled(0);
 
-    typedef void( * LayoutDisableFn)(HudLayoutBase * self);
-    ((LayoutDisableFn)(g_HudUiMgrCurrentLayout->ftable->slots[5]))(g_HudUiMgrCurrentLayout);
+    g_HudUiMgrCurrentLayout->Disable();
 
-    HudUiVirtualSetVisibleRequired(
-        &g_HudUiMgrObjectiveWidget,
-        0
-    );
-    HudUiVirtualSetVisibleRequired(
-        g_HudUiMgrObjectiveDescTextPanel,
-        0
-    );
-    HudUiVirtualSetVisibleRequired(
-        &g_HudUiMgrObjectiveBar,
-        0
-    );
-    HudUiVirtualSetVisibleRequired(
-        &g_HudUiMgrObjectiveSensorRect,
-        0
-    );
-    HudUiVirtualSetVisibleRequired(
-        g_HudUiMgrObjectiveSummaryTextPanel,
-        0
-    );
-    HudUiVirtualSetVisibleRequired(
-        g_HudUiMgrObjectiveLabelTextPanel,
-        0
-    );
-    HudUiVirtualSetVisibleRequired(
-        &g_HudUiMgrObjectiveMeter,
-        0
-    );
+    g_HudUiMgrObjectiveWidget.SetVisible(0);
+    g_HudUiMgrObjectiveDescTextPanel->SetVisible(0);
+    g_HudUiMgrObjectiveBar.SetVisible(0);
+    g_HudUiMgrObjectiveSensorRect.SetVisible(0);
+    g_HudUiMgrObjectiveSummaryTextPanel->SetVisible(0);
+    g_HudUiMgrObjectiveLabelTextPanel->SetVisible(0);
+    g_HudUiMgrObjectiveMeter.SetVisible(0);
 
     gAltClipPassEnabled = 0;
     if (zVid::GetAccelerationOption() == 0) {
@@ -5830,10 +4216,7 @@ int DisableHud() {
         g_HudUiMgrLayoutDelayFrames = hudType;
     }
 
-    HudUiVirtualSetVisibleRequired(
-        g_HudUiMgrTimerPanel,
-        1
-    );
+    g_HudUiMgrTimerPanel->SetVisible(1);
     return previouslyEnabled;
 }
 
@@ -5850,17 +4233,7 @@ int ToggleHud() {
 
 // Reimplements 0x410fe0: HudUiMgr::UpdateFrame (D:\Proj\Battlesport\hud.cpp)
 void UpdateFrame() {
-    typedef void( * NoArgFn)(void *self);
-    typedef void( * UpdateFn)(
-        void *self,
-        float deltaSeconds
-    );
-    typedef void( * SetVisibleFn)(
-        void *self,
-        int visible
-    );
-
-    ((NoArgFn)(g_HudUiMgrCurrentLayout->ftable->slots[3]))(g_HudUiMgrCurrentLayout);
+    g_HudUiMgrCurrentLayout->LayoutPreUpdate();
 
     if (g_HudUiMgr.enabled != 0) {
         if (g_HudUiMgrObjectiveState != 0) {
@@ -5868,16 +4241,11 @@ void UpdateFrame() {
         }
     } else {
         if (g_HudUiMgrObjectiveChatComposeActive != 0) {
-            const HudUiPanel_FTable *summaryFTable =
-                (const HudUiPanel_FTable *)(g_HudUiMgrObjectiveSummaryTextPanel->vtbl);
-            const HudUiPanel_FTable *descFTable =
-                (const HudUiPanel_FTable *)(g_HudUiMgrObjectiveDescTextPanel->vtbl);
-            ((NoArgFn)(summaryFTable->slots[1]))(g_HudUiMgrObjectiveSummaryTextPanel);
-            ((NoArgFn)(descFTable->slots[1]))(g_HudUiMgrObjectiveDescTextPanel);
+            g_HudUiMgrObjectiveSummaryTextPanel->Draw();
+            g_HudUiMgrObjectiveDescTextPanel->Draw();
         }
 
-        ((UpdateFn)(((HudUiCommon_FTable **)(g_HudUiMgrTimerPanel))[0]->slots[9]))(
-            g_HudUiMgrTimerPanel,
+        g_HudUiMgrTimerPanel->Update(
             g_Time_UnscaledDeltaTimeSec
         );
     }
@@ -5889,72 +4257,40 @@ void UpdateFrame() {
     g_HudSensorTracker.Update();
     zTimedTask::TickActiveList();
 
-    ((UpdateFn)(g_HudUiMgrCurrentLayout->ftable->slots[0]))(
-        g_HudUiMgrCurrentLayout,
-        g_Time_UnscaledDeltaTimeSec
-    );
+    g_HudUiMgrCurrentLayout->UpdateAll(g_Time_UnscaledDeltaTimeSec);
     g_HudUiMgr.UpdateAll(g_Time_UnscaledDeltaTimeSec);
-    g_HudUiTopMessageStack->base.UpdateAll(g_Time_UnscaledDeltaTimeSec);
-    g_HudUiChatMessageStack->base.UpdateAll(g_Time_UnscaledDeltaTimeSec);
-    g_HudUiMgrStringMenu->base.UpdateAll(g_Time_UnscaledDeltaTimeSec);
+    g_HudUiTopMessageStack->UpdateAll(g_Time_UnscaledDeltaTimeSec);
+    g_HudUiChatMessageStack->UpdateAll(g_Time_UnscaledDeltaTimeSec);
+    g_HudUiMgrStringMenu->UpdateAll(g_Time_UnscaledDeltaTimeSec);
 
     const float sampleElapsedSec =
-        FieldAt<float>(
-            g_HudUiMgrTimerPanelFloat,
-            0x2a4
-        ) + g_FrameDeltaTimeSec;
-    FieldAt<float>(
-        g_HudUiMgrTimerPanelFloat,
-        0x2a4
-    ) = sampleElapsedSec;
+        g_HudUiMgrTimerPanelFloat->sampleElapsedSec + g_FrameDeltaTimeSec;
+    g_HudUiMgrTimerPanelFloat->sampleElapsedSec = sampleElapsedSec;
 
-    const float sampleFrameCount = FieldAt<float>(
-        g_HudUiMgrTimerPanelFloat,
-        0x2ac
-    ) + 1.0f;
-    FieldAt<float>(
-        g_HudUiMgrTimerPanelFloat,
-        0x2ac
-    ) = sampleFrameCount;
+    const float sampleFrameCount =
+        g_HudUiMgrTimerPanelFloat->sampleFrameCount + 1.0f;
+    g_HudUiMgrTimerPanelFloat->sampleFrameCount = sampleFrameCount;
     if (sampleElapsedSec >= 1.0f) {
-        FieldAt<float>(
-            g_HudUiMgrTimerPanelFloat,
-            0x2ac
-        ) = 0.0f;
-        FieldAt<float>(
-            g_HudUiMgrTimerPanelFloat,
-            0x2a4
-        ) = 0.0f;
-        FieldAt<float>(
-            g_HudUiMgrTimerPanelFloat,
-            0x2a8
-        ) = sampleFrameCount / sampleElapsedSec;
+        g_HudUiMgrTimerPanelFloat->sampleFrameCount = 0.0f;
+        g_HudUiMgrTimerPanelFloat->sampleElapsedSec = 0.0f;
+        g_HudUiMgrTimerPanelFloat->displayValue =
+            sampleFrameCount / sampleElapsedSec;
     }
 
     HudUiElement *const floatingTimerElement = (HudUiElement *)(g_HudUiMgrTimerPanelFloat);
     if ((floatingTimerElement->flags & 0x10) == 0) {
-        ((UpdateFn)(floatingTimerElement->ftable->slots[9]))(
-            floatingTimerElement,
-            g_Time_UnscaledDeltaTimeSec
-        );
+        g_HudUiMgrTimerPanelFloat->Draw();
     }
 
-    ((UpdateFn)(g_HudUiMgrReticleWidget.ftable->slots[9]))(
-        &g_HudUiMgrReticleWidget,
+    g_HudUiMgrReticleWidget.Update(
         g_Time_UnscaledDeltaTimeSec
     );
 
     {
         for (int slotIndex = 0; slotIndex < 32; ++slotIndex) {
             HudUiSlot &slot = g_HudUiMgrWeaponSlots[slotIndex];
-            HudUiVirtualSetVisibleRequired(
-                &slot.trackMarkerWidget,
-                0
-            );
-            HudUiVirtualSetVisibleRequired(
-                &slot.slotWidget,
-                0
-            );
+            slot.trackMarkerWidget.SetVisible(0);
+            slot.slotWidget.SetVisible(0);
         }
     }
 
@@ -5974,22 +4310,11 @@ void __fastcall SwitchActiveDialog(
         g_HudUiMgrLayoutDelayFrames = 2;
     }
 
-    typedef int( * LayoutSetActiveFn)(
-        HudLayoutBase * self,
-        int active
-    );
-
     if (g_HudUiMgrCurrentLayout != 0) {
-        ((LayoutSetActiveFn)(g_HudUiMgrCurrentLayout->ftable->slots[2]))(
-            g_HudUiMgrCurrentLayout,
-            0
-        );
+        g_HudUiMgrCurrentLayout->SetActive(0);
     }
 
-    ((LayoutSetActiveFn)(newDialog->ftable->slots[2]))(
-        newDialog,
-        1
-    );
+    newDialog->SetActive(1);
     g_HudUiMgrCurrentLayout = newDialog;
 
     if (enabled != 0) {
@@ -6002,10 +4327,7 @@ void __fastcall SwitchActiveDialog(
 void __fastcall SetFloatTimerVisible(
     int visible
 ) {
-    HudUiVirtualSetVisibleRequired(
-        g_HudUiMgrTimerPanelFloat,
-        visible != 0 ? 1 : 0
-    );
+    g_HudUiMgrTimerPanelFloat->SetVisible(visible != 0 ? 1 : 0);
 
     if (visible == 0) {
         TriggerCurrentLayoutOnActivated();
@@ -6025,10 +4347,7 @@ void __fastcall HideTrackedProgressMeterIfOwnerMatches(
     HudUiMgrSensorTrackNode *const trackNode =
         (HudUiMgrSensorTrackNode *)(trackedProgressSlot->trackNode);
     if (trackNode->payload == ownerPayload) {
-        HudUiVirtualSetVisibleRequired(
-            &g_HudUiMgrSensorMeter,
-            0
-        );
+        g_HudUiMgrSensorMeter.SetVisible(0);
     }
 }
 
@@ -6037,10 +4356,7 @@ void __fastcall HideTrackedProgressMeterIfOwnerMatches(
 void __fastcall SetAuxOverlayVisible(
     int visible
 ) {
-    HudUiVirtualSetContainerEnabled(
-        &g_HudUiMgrStringMenu->base,
-        visible != 0 ? 1 : 0
-    );
+    g_HudUiMgrStringMenu->SetEnabled(visible != 0 ? 1 : 0);
 }
 
 // Reimplements 0x4136b0: HudUiMgr::ApplyHudModeSwitch
@@ -6120,7 +4436,7 @@ void __fastcall OnViewportChanged(
     );
 
     if (g_HudUiMgrCurrentLayout != 0) {
-        g_HudUiMgrCurrentLayout->ftable->OnActivated(g_HudUiMgrCurrentLayout);
+        g_HudUiMgrCurrentLayout->OnActivated();
     }
 
     HudUiMgrObjective::Update();
@@ -6160,29 +4476,17 @@ void __fastcall ActivateHud(
 // Reimplements 0x413910: HudUiMgr::EnableTopAndChatStacks
 void EnableTopAndChatStacks() {
     g_HudUiTopMessageStack->Clear();
-    HudUiVirtualSetContainerEnabled(
-        &g_HudUiTopMessageStack->base,
-        1
-    );
+    g_HudUiTopMessageStack->SetEnabled(1);
     g_HudUiChatMessageStack->Clear();
-    HudUiVirtualSetContainerEnabled(
-        &g_HudUiChatMessageStack->base,
-        1
-    );
+    g_HudUiChatMessageStack->SetEnabled(1);
 }
 
 // Reimplements 0x413950: HudUiMgr::DisableTopAndChatStacks
 void DisableTopAndChatStacks() {
     g_HudUiTopMessageStack->Clear();
-    HudUiVirtualSetContainerEnabled(
-        &g_HudUiTopMessageStack->base,
-        0
-    );
+    g_HudUiTopMessageStack->SetEnabled(0);
     g_HudUiChatMessageStack->Clear();
-    HudUiVirtualSetContainerEnabled(
-        &g_HudUiChatMessageStack->base,
-        0
-    );
+    g_HudUiChatMessageStack->SetEnabled(0);
 }
 
 // Reimplements 0x40f4c0: HudUiMgr::InitHudLayouts
@@ -6199,9 +4503,7 @@ int __fastcall InitHudLayouts(
 
     HudUiStringMenu *const stringMenu = AllocateHudObject<HudUiStringMenu>();
     if (stringMenu != 0) {
-        stringMenu->base.ConstructorDefault();
-
-        stringMenu->base.vptr = (const HudUiContainer_FTable *)(&g_HudUiStringMenu_FTable);
+        new ((HudUiContainer *)stringMenu) HudUiContainer;
 
         int y = 0x5f;
         {
@@ -6217,13 +4519,13 @@ int __fastcall InitHudLayouts(
                     5,
                     y
                 );
-                stringMenu->base.AddChild(child);
+                stringMenu->AddChild(child);
                 child->SetVisible(1);
                 y += 0x0f;
             }
         }
 
-        stringMenu->base.SetEnabled(1);
+        stringMenu->SetEnabled(1);
     }
     g_HudUiMgrStringMenu = stringMenu;
 
@@ -6237,7 +4539,6 @@ int __fastcall InitHudLayouts(
             0,
             0
         );
-        percentTextPanel->vtbl = &g_HudUiPanelSimple_FTable;
         percentTextPanel->SetTextColor(0x0020bf40);
         percentTextPanel->SetFont(
             "Arial",
@@ -6266,11 +4567,10 @@ int __fastcall InitHudLayouts(
 
     HudUiStatsListElement *const statsList = AllocateHudObject<HudUiStatsListElement>();
     if (statsList != 0) {
-        statsList->base.Constructor(
+        statsList->Constructor(
             0,
             0
         );
-        statsList->base.ftable = (const HudUiCommon_FTable *)(&g_HudUiStatsListElement_FTable);
 
         HudUiTriplet *const statsTriplet = AllocateHudObject<HudUiTriplet>();
         statsList->triplet = statsTriplet != 0 ? statsTriplet->Constructor() : 0;
@@ -6318,8 +4618,8 @@ int __fastcall InitHudLayouts(
 
     g_HudUiMgrHudLayoutsInitialized = 1;
     if (g_HudUiMgrStatsList != 0) {
-        g_HudUiMgrStatsList->base.SetVisible(1);
-        g_HudUiMgr.AddChild(&g_HudUiMgrStatsList->base);
+        g_HudUiMgrStatsList->SetVisible(1);
+        g_HudUiMgr.AddChild(g_HudUiMgrStatsList);
     }
     return 1;
 }
@@ -6420,26 +4720,38 @@ void ShutdownResources() {
 }
 } // namespace HudUiMgr
 
-// Reimplements 0x4b4070: HudUiElement::Constructor
+/**
+ * Reimplements 0x4b4070: HudUiElement::Constructor.
+ * Original source path: D:\Proj\Battlesport\hudui_element.cpp.
+ * Purpose: Initializes the common HUD element position, links, timer, invalidation state, and blit source.
+ */
+HudUiElement::HudUiElement(
+    int initX,
+    int initY
+) {
+    HudUiElement *const element = this;
+    element->y = initY;
+    parent = 0;
+    next = 0;
+    timer = 0.0f;
+    element->x = initX;
+    element->Invalidate();
+
+    flags = 0;
+    state = 0;
+    HudUiElement::SetBltSourceAndClipRect(
+        0,
+        0
+    );
+}
+
 HudUiElement * HudUiElement::Constructor(
     int initX,
     int initY
 ) {
-    y = initY;
-    ftable = &g_HudUiCommon_FTable;
-    parent = 0;
-    next = 0;
-    timer = 0.0f;
-
-    typedef void(__fastcall * InvalidateFn)(HudUiElement *);
-    x = initX;
-    ((InvalidateFn)(((const unsigned int *)ftable)[8]))(this);
-
-    flags = 0;
-    state = 0;
-    SetBltSourceAndClipRect(
-        0,
-        0
+    new (this) HudUiElement(
+        initX,
+        initY
     );
     return this;
 }
@@ -6448,7 +4760,6 @@ HudUiElement * HudUiElement::Constructor(
 HudUiElement * HudUiElement::CopyConstructor(
     const HudUiElement *source
 ) {
-    ftable = &g_HudUiCommon_FTable;
     next = 0;
     parent = 0;
     flags = source->flags;
@@ -6469,13 +4780,7 @@ HudUiElement * HudUiElement::CopyFrom(
     parent = 0;
     flags = source->flags;
     state = source->state;
-    FieldAt<unsigned int>(
-        this,
-        0x10
-    ) = FieldAt<const unsigned int>(
-        source,
-        0x10
-    );
+    timer = source->timer;
     x = source->x;
     y = source->y;
     bltSource = source->bltSource;
@@ -6487,7 +4792,6 @@ HudUiElement * HudUiElement::CopyFrom(
 HudUiElement * HudUiElement::ScalarDeletingDestructor(
     unsigned int flags
 ) {
-    ftable = &g_HudUiCommon_FTable;
     if ((flags & 1u) != 0) {
         ::operator delete(this);
     }
@@ -6497,8 +4801,7 @@ HudUiElement * HudUiElement::ScalarDeletingDestructor(
 
 // Reimplements 0x404ca0: HudUiElement::Draw
 void HudUiElement::Draw() {
-    typedef void(__fastcall * DrawBaseFn)(HudUiElement * self);
-    ((DrawBaseFn)(ftable->slots[2]))(this);
+    DrawBase();
 }
 
 // Reimplements 0x404cb0: HudUiElement::DrawBase
@@ -6527,53 +4830,38 @@ void HudUiElement::SetPos(
     int newX,
     int newY
 ) {
-    typedef void(__fastcall * InvalidateFn)(HudUiElement * self);
-
     x = newX;
     y = newY;
-    ((InvalidateFn)(ftable->slots[8]))(this);
+    Invalidate();
 }
 
 // Reimplements 0x404cf0: HudUiElement::SetX
 void HudUiElement::SetX(
     int newX
 ) {
-    typedef void(__fastcall * InvalidateFn)(HudUiElement * self);
-
     x = newX;
-    ((InvalidateFn)(ftable->slots[8]))(this);
+    Invalidate();
 }
 
 // Reimplements 0x404d00: HudUiElement::SetY
 void HudUiElement::SetY(
     int newY
 ) {
-    typedef void(__fastcall * InvalidateFn)(HudUiElement * self);
-
     y = newY;
-    ((InvalidateFn)(ftable->slots[8]))(this);
+    Invalidate();
 }
 
 // Reimplements 0x404d20: HudUiElement::SetVisible
-// BN patches only the low flag byte, then indirect-calls Invalidate through ftable slot 8.
 void HudUiElement::SetVisible(
     int visible
 ) {
-    typedef void(__fastcall * InvalidateFn)(HudUiElement * self);
-
     if (visible != 0) {
         flags &= 0xffffffefu;
     } else {
         flags |= 0x10u;
     }
 
-    volatile const HudUiCommon_FTable *const dispatchTable = ftable;
-    ((InvalidateFn)(dispatchTable->slots[8]))(this);
-}
-
-// Reimplements 0x4b47a0: HudUiElement::ResetCommonFTable
-void HudUiElement::ResetCommonFTable() {
-    ftable = &g_HudUiCommon_FTable;
+    Invalidate();
 }
 
 // Reimplements 0x4b41e0: HudUiElement::Update
@@ -6581,21 +4869,16 @@ void HudUiElement::Update(
     float deltaSeconds
 ) {
     unsigned int currentFlags = flags;
-    typedef void(__fastcall * DispatchFn)(HudUiElement * self);
-    typedef void( * SetVisibleFn)(
-        HudUiElement * self,
-        int visible
-    );
 
     if ((currentFlags & 0x10) == 0) {
         if ((currentFlags & 0x02) == 0) {
-            ((DispatchFn)(ftable->slots[1]))(this);
+            Draw();
         } else if ((currentFlags & 0x04) != 0) {
-            ((DispatchFn)(ftable->slots[1]))(this);
+            Draw();
             currentFlags = flags & ~0x04u;
             flags = currentFlags;
         } else if ((currentFlags & 0x08) != 0) {
-            ((DispatchFn)(ftable->slots[1]))(this);
+            Draw();
             currentFlags = flags & ~0x08u;
             flags = currentFlags;
         }
@@ -6603,18 +4886,15 @@ void HudUiElement::Update(
         if ((flags & 0x01) != 0) {
             timer -= deltaSeconds;
             if (timer <= 0.0f) {
-                ((SetVisibleFn)(ftable->slots[24]))(
-                    this,
-                    0
-                );
+                SetVisible(0);
             }
         }
     } else if ((currentFlags & 0x02) != 0) {
         if ((currentFlags & 0x04) != 0) {
-            ((DispatchFn)(ftable->slots[2]))(this);
+            DrawBase();
             flags &= ~0x04u;
         } else if ((currentFlags & 0x08) != 0) {
-            ((DispatchFn)(ftable->slots[2]))(this);
+            DrawBase();
             flags &= ~0x08u;
         }
     }
@@ -6630,10 +4910,11 @@ void HudUiElement::SetTimer(
         &duration,
         sizeof(durationBits)
     );
-    FieldAt<unsigned int>(
-        this,
-        0x10
-    ) = durationBits;
+    memcpy(
+        &timer,
+        &durationBits,
+        sizeof(timer)
+    );
 
     if (duration >= 0.0f) {
         flags |= 0x01u;
@@ -6647,14 +4928,8 @@ void HudUiElement::SetBltSourceAndClipRect(
     void *bltSourceOrNull,
     const HudUiRect *rectOrNull
 ) {
-    struct SetClipRectFTable {
-        unsigned int slots[7];
-        void (HudUiElement::*SetClipRect)(const HudUiRect *rect);
-    };
-
     bltSource = bltSourceOrNull;
-    const SetClipRectFTable *const dispatch = (const SetClipRectFTable *)ftable;
-    (this->*dispatch->SetClipRect)(rectOrNull);
+    SetClipRect(rectOrNull);
 }
 
 // Reimplements 0x4b41b0: HudUiElement::SetClipRect
@@ -6673,28 +4948,23 @@ void HudUiPanel::SetClip(
     void *bltSourceOrNull,
     const HudUiRect *rectOrNull
 ) {
-    HudUiElement *const element = (HudUiElement *)(this);
-    element->bltSource = bltSourceOrNull;
+    bltSource = bltSourceOrNull;
     if (rectOrNull != 0) {
-        element->clipRect = *rectOrNull;
+        clipRect = *rectOrNull;
     }
 
-    typedef void(__fastcall * InvalidateFn)(void *self);
-    const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(this);
-    ((InvalidateFn)(ftable->slots[8]))(this);
+    Invalidate();
 }
 
 // Reimplements 0x4b42c0: HudUiElement::GetRect
 void HudUiElement::GetRect(
     HudUiRect *outRect
 ) {
-    typedef int( * GetCoordFn)(HudUiElement * self);
-
-    const int rectX = ((GetCoordFn)(ftable->slots[25]))(this);
+    const int rectX = GetX();
     outRect->left = rectX;
     outRect->right = rectX;
 
-    const int rectY = ((GetCoordFn)(ftable->slots[26]))(this);
+    const int rectY = GetY();
     outRect->top = rectY;
     outRect->bottom = rectY;
 }
@@ -6720,6 +4990,124 @@ int HudUiElement::GetY() {
     return y;
 }
 
+void HudUiElement::OnHoverRepeat() {}
+
+HudUiRect * HudUiElement::GetBoundsRectOrNull() {
+    return 0;
+}
+
+void HudUiElement::OnActivate() {}
+
+void HudUiElement::OnClearBinding() {}
+
+void HudUiElement::ShowPreview() {}
+
+void HudUiElement::HidePreview() {}
+
+void HudUiElement::OnBeginCapture() {}
+
+void HudUiElement::OnEndCapture() {}
+
+void HudUiElement::OnPointerButtonState(
+    int,
+    int
+) {}
+
+void HudUiElement::OnCapturedPrimaryRelease() {}
+
+int HudUiElement::ShouldHandleInput(
+    HudUiBackground *,
+    int
+) {
+    return 1;
+}
+
+void HudUiElement::AfterInputUpdate(
+    HudUiBackground *,
+    int
+) {}
+
+int HudUiElement::HitTest(
+    int px,
+    int py
+) {
+    return HitTestTrue(
+        px,
+        py
+    );
+}
+
+void HudUiElement::EnableWordWrapWithRect(
+    const HudUiRect *
+) {}
+
+void HudUiElement::GetTextRect(
+    HudUiRect *outRect
+) {
+    GetRect(outRect);
+}
+
+void HudUiElement::SetTextFmt(
+    const char *,
+    ...
+) {}
+
+void HudUiElement::UpdateTextBoundsFromContent() {}
+
+HGDIOBJ HudUiElement::GetFont() {
+    return 0;
+}
+
+void HudUiElement::SetFont(
+    const char *,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int
+) {}
+
+void HudUiElement::SetFontHandle(
+    HGDIOBJ
+) {}
+
+void HudUiElement::SetTextFmtV(
+    const char *,
+    va_list
+) {}
+
+void HudUiElement::SetText(
+    const char *
+) {}
+
+void HudUiElement::RebuildTextRect() {}
+
+void HudUiElement::RefreshState() {}
+
+int HudUiElement::LoadFromZrd(
+    zReader::Node *,
+    HudUiBackground *
+) {
+    return 0;
+}
+
+void HudUiElement::PostLoadFromZrd() {}
+
+int HudUiElement::OnRawKeyboardChar(
+    int
+) {
+    return 0;
+}
+
+int HudUiElement::OnAcceptForwardToCommit() {
+    return CommitAndGetValue();
+}
+
+int HudUiElement::CommitAndGetValue() {
+    return 0;
+}
+
 // Reimplements 0x4bffb0: HudUiPrimitiveBindTarget::SetSegmentEndpoints (HudUiBackground.cpp)
 void HudUiPrimitiveBindTarget::SetSegmentEndpoints(
     int startX,
@@ -6727,14 +5115,7 @@ void HudUiPrimitiveBindTarget::SetSegmentEndpoints(
     int newEndX,
     int newEndY
 ) {
-    typedef void( * SetPosFn)(
-        HudUiPrimitiveBindTarget * self,
-        int x,
-        int y
-    );
-
-    ((SetPosFn)(base.ftable->slots[0x0c / 4]))(
-        this,
+    SetPos(
         startX,
         startY
     );
@@ -6749,11 +5130,10 @@ HudUiCircle * HudUiCircle::Constructor(
     int circleRadius,
     unsigned int circleColor565
 ) {
-    base.Constructor(
+    HudUiElement::Constructor(
         x,
         y
     );
-    base.ftable = &g_HudUiCircle_FTable;
     radius = circleRadius;
     const unsigned int radiusBits = (unsigned int)(circleRadius);
     radiusSquared = (int)(radiusBits * radiusBits);
@@ -6763,16 +5143,10 @@ HudUiCircle * HudUiCircle::Constructor(
 
 // Reimplements 0x4bc4c0: HudUiCircle::DrawDirty
 void HudUiCircle::DrawDirty() {
-    struct DrawBaseFTable {
-        unsigned int slots[2];
-        void (HudUiCircle::*DrawBase)();
-    };
-
-    const DrawBaseFTable *const dispatch = (const DrawBaseFTable *)(base.ftable);
-    (this->*dispatch->DrawBase)();
+    DrawBase();
     zRndr_DrawCircleOutline16_Framebuffer(
-        base.x,
-        base.y,
+        x,
+        y,
         radius,
         color565,
         0
@@ -6800,25 +5174,16 @@ unsigned char HudUiCircle::HitTestCore(
     int px,
     int py
 ) {
-    const unsigned int dx = (unsigned int)(px) - (unsigned int)(base.x);
-    const unsigned int dy = (unsigned int)(py) - (unsigned int)(base.y);
+    const unsigned int dx = (unsigned int)(px) - (unsigned int)(x);
+    const unsigned int dy = (unsigned int)(py) - (unsigned int)(y);
     const unsigned int distanceSquared = dx * dx + dy * dy;
     return (int)(distanceSquared) < radiusSquared ? 1 : 0;
 }
 
 // Reimplements 0x4bbfa0: HudUiCompositePanelVector::Clear
 void HudUiCompositePanelVector::Clear() {
-    typedef HudUiCompositePanelEntry *( * ScalarDeletingDestructorFn)(
-        HudUiCompositePanelEntry * self,
-        unsigned int flags
-    );
-
     for (HudUiCompositePanelEntry *entry = begin; entry != end; ++entry) {
-        const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(entry);
-        ((ScalarDeletingDestructorFn)(ftable->slots[0]))(
-            entry,
-            0
-        );
+        entry->panel.ScalarDeletingDestructor(0);
     }
 
     ::operator delete(begin);
@@ -6909,16 +5274,8 @@ void HudUiCompositePanelVector::InsertCopies(
         dest->ConstructorCopy(&begin[suffixIndex]);
     }
 
-    typedef HudUiCompositePanelEntry *( * ScalarDeletingDestructorFn)(
-        HudUiCompositePanelEntry * self,
-        unsigned int flags
-    );
     for (HudUiCompositePanelEntry *entry = begin; entry != end; ++entry) {
-        const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(entry);
-        ((ScalarDeletingDestructorFn)(ftable->slots[0]))(
-            entry,
-            0
-        );
+        entry->panel.Destructor();
     }
 
     ::operator delete(begin);
@@ -6931,8 +5288,7 @@ void HudUiCompositePanelVector::InsertCopies(
 HudUiCompositePanel * HudUiCompositePanel::ConstructorWithEntryCount(
     int entryCount
 ) {
-    HudUiPanel *const panel = (HudUiPanel *)(this);
-    panel->ConstructorDefault(
+    HudUiPanel::ConstructorDefault(
         0,
         0,
         0
@@ -6943,16 +5299,13 @@ HudUiCompositePanel * HudUiCompositePanel::ConstructorWithEntryCount(
     entryVector.begin = 0;
     entryVector.end = 0;
     entryVector.capacityEnd = 0;
-    *(const HudUiCompositePanel_FTable **)(this) = &g_HudUiCompositePanel_FTable;
 
     HudUiCompositePanelEntry templateEntry;
-    ((HudUiTransitionTextPanel *)(&templateEntry))->Constructor();
     entryVector.InsertCopies(
         entryVector.end,
         (unsigned int)(entryCount),
         &templateEntry
     );
-    ((HudUiPanel *)(&templateEntry))->Destructor();
 
     SetTextFmt("");
     LayoutEntries(
@@ -6960,26 +5313,14 @@ HudUiCompositePanel * HudUiCompositePanel::ConstructorWithEntryCount(
         0
     );
     ResizeEntryVectorAndRelayout(entryCount);
-    HudUiVirtualSetVisibleRequired(
-        this,
-        1
-    );
+    SetVisible(1);
     return this;
 }
 
 // Reimplements 0x403e20: HudUiCompositePanel::Destructor
 void HudUiCompositePanel::Destructor() {
-    typedef HudUiCompositePanelEntry *( * ScalarDeletingDestructorFn)(
-        HudUiCompositePanelEntry * self,
-        unsigned int flags
-    );
-
     for (HudUiCompositePanelEntry *entry = entryVector.begin; entry != entryVector.end; ++entry) {
-        const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(entry);
-        ((ScalarDeletingDestructorFn)(ftable->slots[0]))(
-            entry,
-            0
-        );
+        entry->panel.Destructor();
     }
 
     ::operator delete(entryVector.begin);
@@ -6987,11 +5328,11 @@ void HudUiCompositePanel::Destructor() {
     entryVector.end = 0;
     entryVector.capacityEnd = 0;
 
-    ((HudUiPanel *)(this))->Destructor();
+    HudUiPanel::Destructor();
 }
 
 // Reimplements 0x4bb960: HudUiCompositePanel::ScalarDeletingDestructor
-HudUiCompositePanel * HudUiCompositePanel::ScalarDeletingDestructor(
+HudUiElement * HudUiCompositePanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -7006,10 +5347,7 @@ HudUiCompositePanel * HudUiCompositePanel::ScalarDeletingDestructor(
 void HudUiCompositePanel::Update(
     float deltaSeconds
 ) {
-    if ((FieldAt<unsigned int>(
-        this,
-        0x0c
-    ) & 0x10u) != 0) {
+    if ((flags & 0x10u) != 0) {
         return;
     }
 
@@ -7017,15 +5355,7 @@ void HudUiCompositePanel::Update(
         index < (unsigned int)(HudUiCompositePanelVectorCount(entryVector));
         ++index) {
         HudUiCompositePanelEntry *const entry = &entryVector.begin[index];
-        typedef void( * UpdateFn)(
-            HudUiCompositePanelEntry * self,
-            float deltaSeconds
-        );
-        const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(entry);
-        ((UpdateFn)(ftable->slots[9]))(
-            entry,
-            deltaSeconds
-        );
+        entry->panel.TickFlash(deltaSeconds);
     }
 }
 
@@ -7034,26 +5364,16 @@ void HudUiCompositePanel::LayoutEntries(
     int x,
     int y
 ) {
-    typedef void( * SetPosFn)(
-        HudUiCompositePanelEntry * self,
-        int x,
-        int y
-    );
+    this->x = x;
+    this->y = y;
+    Invalidate();
 
-    HudUiPanel *const panel = (HudUiPanel *)(this);
-    HudUiElement *const element = (HudUiElement *)(this);
-    element->x = x;
-    element->y = y;
-    element->Invalidate();
-
-    const int entryHeight = panel->QueryTextHeight();
+    const int entryHeight = QueryTextHeight();
     int yOffset = 0;
     for (HudUiCompositePanelEntry *entry = entryVector.begin; entry != entryVector.end; ++entry) {
-        const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(entry);
-        ((SetPosFn)(ftable->slots[0x0c / 4]))(
-            entry,
-            element->GetX(),
-            element->GetY() + yOffset
+        entry->panel.SetPos(
+            GetX(),
+            GetY() + yOffset
         );
         yOffset += entryHeight;
     }
@@ -7072,12 +5392,6 @@ void HudUiCompositePanel::ResizeEntryCount(
     int oldCount,
     int entryCount
 ) {
-    typedef void(* SetTextFmtFn)(
-        HudUiCompositePanelEntry * self,
-        const char *format,
-        ...
-    );
-
     int activeCount = oldCount;
     if (activeCount > entryCount) {
         activeCount = entryCount;
@@ -7094,15 +5408,8 @@ void HudUiCompositePanel::ResizeEntryCount(
     {
         for (int index = activeCount; index < entryCount; ++index) {
             HudUiCompositePanelEntry *const entry = &entryVector.begin[index];
-            const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(entry);
-            ((SetTextFmtFn)(ftable->slots[0x74 / 4]))(
-                entry,
-                ""
-            );
-            HudUiVirtualSetVisibleRequired(
-                entry,
-                0
-            );
+            entry->panel.SetTextFmt("");
+            entry->panel.SetVisible(0);
         }
     }
 
@@ -7119,15 +5426,7 @@ void HudUiCompositePanel::SetTextFmt(
         args,
         format
     );
-    typedef void( * SetTextFmtVFn)(
-        HudUiCompositePanel * self,
-        const char *format,
-        va_list args
-    );
-    const HudUiCompositePanel_FTable *const ftable =
-        *(const HudUiCompositePanel_FTable *const *)(this);
-    ((SetTextFmtVFn)(ftable->slots[34]))(
-        this,
+    SetTextFmtV(
         format,
         args
     );
@@ -7140,26 +5439,12 @@ void HudUiCompositePanel::SetTextFmtV(
     va_list args
 ) {
     HudUiCompositePanelEntry *const entry = &entryVector.begin[activeEntryCount];
-    typedef void( * SetTextFmtVFn)(
-        HudUiCompositePanelEntry * self,
-        const char *format,
-        va_list args
-    );
-    const HudUiPanel_FTable *const entryFTable = *(const HudUiPanel_FTable *const *)(entry);
-    ((SetTextFmtVFn)(entryFTable->slots[34]))(
-        entry,
+    entry->panel.SetTextFmtV(
         format,
         args
     );
-    HudUiVirtualSetVisibleRequired(
-        entry,
-        1
-    );
-
-    typedef void( * ScrollHistoryFn)(HudUiCompositePanel * self);
-    const HudUiCompositePanel_FTable *const ftable =
-        *(const HudUiCompositePanel_FTable *const *)(this);
-    ((ScrollHistoryFn)(ftable->slots[37]))(this);
+    entry->panel.SetVisible(1);
+    ScrollHistory();
 }
 
 // Reimplements 0x4bbb20: HudUiCompositePanel::ScrollHistory
@@ -7174,22 +5459,13 @@ void HudUiCompositePanel::ScrollHistory() {
                 ++index) {
                 HudUiCompositePanelEntry *const current = &entryVector.begin[index];
                 HudUiCompositePanelEntry *const next = &entryVector.begin[index + 1];
-                typedef void( * SetTextFn)(
-                    HudUiCompositePanelEntry * self,
-                    const char *text
-                );
-                const HudUiPanel_FTable *const currentFTable =
-                    *(const HudUiPanel_FTable *const *)(current);
-                ((SetTextFn)(currentFTable->slots[35]))(
-                    current,
-                    ((HudUiPanel *)(next))->GetLastTextPtr()
-                );
+                current->panel.SetText(next->panel.GetLastTextPtr());
             }
         }
         --activeEntryCount;
     }
 
-    HudUiVirtualInvalidate(this);
+    Invalidate();
 }
 
 // Reimplements 0x4bbbe0: HudUiCompositePanel::SetFont
@@ -7206,19 +5482,7 @@ void HudUiCompositePanel::SetFont(
         index < (unsigned int)(HudUiCompositePanelVectorCount(entryVector));
         ++index) {
         HudUiCompositePanelEntry *const entry = &entryVector.begin[index];
-        typedef void( * SetFontFn)(
-            HudUiCompositePanelEntry * self,
-            const char *faceName,
-            int height,
-            int weight,
-            int width,
-            int italic,
-            int charSet,
-            int pitchAndFamily
-        );
-        const HudUiPanel_FTable *const entryFTable = *(const HudUiPanel_FTable *const *)(entry);
-        ((SetFontFn)(entryFTable->slots[32]))(
-            entry,
+        entry->panel.SetFont(
             faceName,
             height,
             weight,
@@ -7229,8 +5493,7 @@ void HudUiCompositePanel::SetFont(
         );
     }
 
-    HudUiPanel *const panel = (HudUiPanel *)(this);
-    panel->SetFont(
+    HudUiPanel::SetFont(
         faceName,
         height,
         weight,
@@ -7240,10 +5503,9 @@ void HudUiCompositePanel::SetFont(
         pitchAndFamily
     );
 
-    HudUiVirtualSetPosRequired(
-        this,
-        HudUiVirtualGetXRequired(this),
-        HudUiVirtualGetYRequired(this)
+    SetPos(
+        GetX(),
+        GetY()
     );
 }
 
@@ -7255,7 +5517,6 @@ void HudUiCompositePanel::ResizeEntryVectorAndRelayout(
 
     if (entryCount != oldCount) {
         HudUiCompositePanelEntry templateEntry;
-        ((HudUiTransitionTextPanel *)(&templateEntry))->Constructor();
 
         if (entryCount > oldCount) {
             entryVector.InsertCopies(
@@ -7265,22 +5526,12 @@ void HudUiCompositePanel::ResizeEntryVectorAndRelayout(
             );
         } else {
             HudUiCompositePanelEntry *const newEnd = entryVector.begin + entryCount;
-            typedef HudUiCompositePanelEntry *( * ScalarDeletingDestructorFn)(
-                HudUiCompositePanelEntry * self,
-                unsigned int flags
-            );
             for (HudUiCompositePanelEntry *entry = newEnd; entry != entryVector.end; ++entry) {
-                const HudUiCommon_FTable *const ftable =
-                    *(const HudUiCommon_FTable *const *)(entry);
-                ((ScalarDeletingDestructorFn)(ftable->slots[0]))(
-                    entry,
-                    0
-                );
+                entry->panel.Destructor();
             }
             entryVector.end = newEnd;
         }
 
-        ((HudUiPanel *)(&templateEntry))->Destructor();
         ResizeEntryCount(
             oldCount,
             entryCount
@@ -7289,10 +5540,9 @@ void HudUiCompositePanel::ResizeEntryVectorAndRelayout(
         ReapplyEntryCount();
     }
 
-    HudUiElement *const element = (HudUiElement *)(this);
     LayoutEntries(
-        element->GetX(),
-        element->GetY()
+        HudUiElement::GetX(),
+        HudUiElement::GetY()
     );
 }
 
@@ -7300,56 +5550,14 @@ void HudUiCompositePanel::ResizeEntryVectorAndRelayout(
 HudUiCompositePanelEntry * HudUiCompositePanelEntry::AssignCopy(
     const HudUiCompositePanelEntry *source
 ) {
-    ((HudUiPanel *)(this))->ConstructorCopy((const HudUiPanel *)(source));
-    FieldAt<unsigned int>(
-        this,
-        0x2a4
-    ) = FieldAt<const unsigned int>(
-        source,
-        0x2a4
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x2a8
-    ) = FieldAt<const unsigned int>(
-        source,
-        0x2a8
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x2ac
-    ) = FieldAt<const unsigned int>(
-        source,
-        0x2ac
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x2b0
-    ) = FieldAt<const unsigned int>(
-        source,
-        0x2b0
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x2b4
-    ) = FieldAt<const unsigned int>(
-        source,
-        0x2b4
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x2b8
-    ) = FieldAt<const unsigned int>(
-        source,
-        0x2b8
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x2bc
-    ) = FieldAt<const unsigned int>(
-        source,
-        0x2bc
-    );
+    panel.ConstructorCopy(&source->panel);
+    panel.flashCountdown = source->panel.flashCountdown;
+    panel.flashResetValue = source->panel.flashResetValue;
+    panel.flashAltColor0 = source->panel.flashAltColor0;
+    panel.flashAltColor1 = source->panel.flashAltColor1;
+    panel.flashEnabled = source->panel.flashEnabled;
+    panel.flashMode = source->panel.flashMode;
+    panel.flashDirectionSign = source->panel.flashDirectionSign;
     return this;
 }
 
@@ -7357,60 +5565,14 @@ HudUiCompositePanelEntry * HudUiCompositePanelEntry::AssignCopy(
 HudUiCompositePanelEntry * HudUiCompositePanelEntry::ConstructorCopy(
     const HudUiCompositePanelEntry *source
 ) {
-    ((HudUiPanel *)(this))->CopyConstructCore((const HudUiPanel *)(source));
-    FieldAt<unsigned int>(
-        this,
-        0x2a4
-    ) = FieldAt<const unsigned int>(
-        source,
-        0x2a4
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x2a8
-    ) = FieldAt<const unsigned int>(
-        source,
-        0x2a8
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x2ac
-    ) = FieldAt<const unsigned int>(
-        source,
-        0x2ac
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x2b0
-    ) = FieldAt<const unsigned int>(
-        source,
-        0x2b0
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x2b4
-    ) = FieldAt<const unsigned int>(
-        source,
-        0x2b4
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x2b8
-    ) = FieldAt<const unsigned int>(
-        source,
-        0x2b8
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x2bc
-    ) = FieldAt<const unsigned int>(
-        source,
-        0x2bc
-    );
-    FieldAt<const HudUiPanel_FTable *>(
-        this,
-        0x00
-    ) = &g_HudUiTransitionTextPanel_FTable;
+    panel.CopyConstructCore(&source->panel);
+    panel.flashCountdown = source->panel.flashCountdown;
+    panel.flashResetValue = source->panel.flashResetValue;
+    panel.flashAltColor0 = source->panel.flashAltColor0;
+    panel.flashAltColor1 = source->panel.flashAltColor1;
+    panel.flashEnabled = source->panel.flashEnabled;
+    panel.flashMode = source->panel.flashMode;
+    panel.flashDirectionSign = source->panel.flashDirectionSign;
     return this;
 }
 
@@ -7423,56 +5585,14 @@ HudUiCompositePanelEntry *__fastcall HudUiCompositePanelEntry::ConstructorCopyRa
     HudUiCompositePanelEntry *dest = destBegin;
     for (const HudUiCompositePanelEntry *source = sourceBegin; source != sourceEnd;
         ++source, ++dest) {
-        ((HudUiPanel *)(dest))->ConstructorCopy((const HudUiPanel *)(source));
-        FieldAt<unsigned int>(
-            dest,
-            0x2a4
-        ) = FieldAt<const unsigned int>(
-            source,
-            0x2a4
-        );
-        FieldAt<unsigned int>(
-            dest,
-            0x2a8
-        ) = FieldAt<const unsigned int>(
-            source,
-            0x2a8
-        );
-        FieldAt<unsigned int>(
-            dest,
-            0x2ac
-        ) = FieldAt<const unsigned int>(
-            source,
-            0x2ac
-        );
-        FieldAt<unsigned int>(
-            dest,
-            0x2b0
-        ) = FieldAt<const unsigned int>(
-            source,
-            0x2b0
-        );
-        FieldAt<unsigned int>(
-            dest,
-            0x2b4
-        ) = FieldAt<const unsigned int>(
-            source,
-            0x2b4
-        );
-        FieldAt<unsigned int>(
-            dest,
-            0x2b8
-        ) = FieldAt<const unsigned int>(
-            source,
-            0x2b8
-        );
-        FieldAt<unsigned int>(
-            dest,
-            0x2bc
-        ) = FieldAt<const unsigned int>(
-            source,
-            0x2bc
-        );
+        dest->panel.ConstructorCopy(&source->panel);
+        dest->panel.flashCountdown = source->panel.flashCountdown;
+        dest->panel.flashResetValue = source->panel.flashResetValue;
+        dest->panel.flashAltColor0 = source->panel.flashAltColor0;
+        dest->panel.flashAltColor1 = source->panel.flashAltColor1;
+        dest->panel.flashEnabled = source->panel.flashEnabled;
+        dest->panel.flashMode = source->panel.flashMode;
+        dest->panel.flashDirectionSign = source->panel.flashDirectionSign;
     }
 
     return dest;
@@ -7505,18 +5625,16 @@ unsigned int __fastcall HudUiFlashPanel::ComputeFlashBlendColor(
     return (red << 16) | (green << 8) | blue;
 }
 
-// Reimplements 0x4bc780: HudUiContainer::ConstructorDefault
-HudUiContainer * HudUiContainer::ConstructorDefault() {
-    vptr = &g_HudUiContainer_FTable;
-    (this->*(vptr->setEnabled))(0);
+// Reimplements 0x4bc780: HudUiContainer::HudUiContainer
+HudUiContainer::HudUiContainer() {
+    HudUiContainer *const container = this;
+    container->SetEnabled(0);
     childHead = 0;
     childTail = 0;
-    return this;
 }
 
 // Reimplements 0x4bc7b0: HudUiContainer::DestructorCore
 void HudUiContainer::DestructorCore() {
-    vptr = &g_HudUiContainer_FTable;
 }
 
 // Reimplements 0x40d9d0: HudUiContainer::SetEnabled
@@ -7603,7 +5721,16 @@ int HudUiContainer::RemoveChild(
     return 1;
 }
 
-// Reimplements 0x4bc8d0: HudUiContainer::SetChildFlags
+/**
+ * Reimplements 0x4bc8d0: HudUiContainer::SetChildFlags.
+ *
+ * Purpose: apply a shared child flag mask to every child while preserving each
+ * child's hidden/disabled bit 0x10.
+ *
+ * Evidence: BN assembly at 0x4bc8d0 walks HudUiContainer::childHead through
+ * HudUiElement::next, writes childFlags directly when bit 0x10 is clear, and
+ * writes childFlags|0x10 when the existing child flags preserve that bit.
+ */
 void HudUiContainer::SetChildFlags(
     unsigned int childFlags
 ) {
@@ -7621,33 +5748,14 @@ void HudUiContainer::UpdateAll(
     }
 
     for (HudUiElement *child = childHead; child != 0; child = child->next) {
-        typedef void( * UpdateFn)(
-            HudUiElement *,
-            float
-        );
-        ((UpdateFn)(child->ftable->slots[9]))(
-            child,
-            deltaSeconds
-        );
+        child->Update(deltaSeconds);
     }
 }
-
-struct HudUiElementInvalidateDispatch {
-    virtual void Slot0();
-    virtual void Slot1();
-    virtual void Slot2();
-    virtual void Slot3();
-    virtual void Slot4();
-    virtual void Slot5();
-    virtual void Slot6();
-    virtual void Slot7();
-    virtual void Invalidate();
-};
 
 // Reimplements 0x4ba3a0: HudUiContainer::InvalidateChildren
 void HudUiContainer::InvalidateChildren() {
     for (HudUiElement *child = childHead; child != 0; child = child->next) {
-        ((HudUiElementInvalidateDispatch *)child)->Invalidate();
+        child->Invalidate();
     }
 }
 
@@ -7655,82 +5763,107 @@ void HudUiContainer::InvalidateChildren() {
 void HudUiBackgroundContainer::SetEnabled(
     int enabled
 ) {
-    base.enabled = enabled;
+    HudUiContainer::SetEnabled(enabled);
 }
 
-// Reimplements 0x409040: HudUiCreditsPanel::Constructor
+inline HudUiCreditsBackButton::HudUiCreditsBackButton() : HudUiZrdWidget() {
+}
+
+inline HudUiCreditsBackButton::~HudUiCreditsBackButton() {
+    HudUiZrdWidget::DestructorCore();
+}
+
+inline HudUiCreditsQuitButton::HudUiCreditsQuitButton() : HudUiZrdWidget() {
+}
+
+inline HudUiCreditsQuitButton::~HudUiCreditsQuitButton() {
+    HudUiZrdWidget::DestructorCore();
+}
+
+inline HudUiZrdScrollingText::HudUiZrdScrollingText() : HudUiZrdWidget() {
+}
+
+inline HudUiZrdScrollingText::~HudUiZrdScrollingText() {
+    HudUiPanelSpan *row = rows.begin;
+    while (row != rows.end) {
+        HudUiPanelLayoutEntry *entry = row->begin;
+        while (entry != row->end) {
+            HudUiPanel::DestructorCallback(&entry->panel);
+            ++entry;
+        }
+
+        ::operator delete(row->begin);
+        row->begin = 0;
+        row->end = 0;
+        row->cap = 0;
+        ++row;
+    }
+
+    ::operator delete(rows.begin);
+    rows.begin = 0;
+    rows.end = 0;
+    rows.cap = 0;
+
+    HudUiZrdWidget::DestructorCore();
+}
+
+// Reimplements 0x409040: HudUiCreditsPanel::HudUiCreditsPanel
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
-HudUiCreditsPanel * HudUiCreditsPanel::Constructor() {
-    base.Constructor();
-
-    backButton.Constructor();
-    backButton.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiCreditsButtonQueueExitOnly_Vtbl);
-
-    quitButton.Constructor();
-    quitButton.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiCreditsButtonQueueExitAndLeaveNetwork_Vtbl);
-
-    creditsScreen.base.Constructor();
-#if defined(_MSC_VER) && _MSC_VER < 1200
-    char allocatorProxy;
-#else
-    char allocatorProxy = 0;
-#endif
-    creditsScreen.rows.allocatorProxy = allocatorProxy;
-    creditsScreen.rows.begin = 0;
-    creditsScreen.rows.end = 0;
-    creditsScreen.rows.cap = 0;
-    creditsScreen.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiCreditsPanel_FTable.SecondaryAction);
-
-    base.base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiCreditsPanel_FTable);
+HudUiCreditsPanel::HudUiCreditsPanel() : HudUiBackground() {
     fadeProgress = 0.0f;
     fadeStep = 0.05f;
+    HudUiZrdScrollingText *const screen = &creditsScreen;
 
-    zReader::Node *const loadedSection = base.LoadFromZrd(
+    zReader::Node *const loadedSection = HudUiBackground::LoadFromZrd(
         "dialog.zrd",
         "CREDITSPANEL",
         0
     );
     if (loadedSection != 0) {
-        HudUiWidget *button = (HudUiWidget *)(&backButton);
-        const char *buttonName = "BACK";
         if (g_RecoilApp_QuitAfterCredits != 0) {
-            button = (HudUiWidget *)(&quitButton);
-            buttonName = "QUIT";
+            HudUiBackground::BindWidgetByName(
+                loadedSection,
+                (HudUiWidget *)(&quitButton),
+                "QUIT"
+            );
+        } else {
+            HudUiBackground::BindWidgetByName(
+                loadedSection,
+                (HudUiWidget *)(&backButton),
+                "BACK"
+            );
         }
 
-        base.BindWidgetByName(
+        HudUiBackground::BindWidgetByName(
             loadedSection,
-            button,
-            buttonName
-        );
-        base.BindWidgetByName(
-            loadedSection,
-            (HudUiWidget *)(&creditsScreen),
+            (HudUiWidget *)(screen),
             "CREDITS_SCREEN"
         );
-        base.FreeLoadedTreeRoots(0);
+        HudUiBackground::FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
     }
 
-    creditsScreen.base.base.flags =
-        (unsigned int)((unsigned char)(creditsScreen.base.base.flags) & 0x10u);
-    return this;
+    unsigned int screenFlags = 0;
+    screenFlags = (unsigned char)(screen->flags);
+    screen->flags = screenFlags & 0x10u;
 }
 
 // Reimplements 0x409550: HudUiZrdScrollingText::OnActivateResetOwnerFade
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
 void HudUiZrdScrollingText::OnActivateResetOwnerFade() {
-    ((HudUiCreditsPanel *)(base.owner))->fadeProgress = 0.0f;
+    ((HudUiCreditsPanel *)(owner))->fadeProgress = 0.0f;
+}
+
+void HudUiZrdScrollingText::OnActivate() {
+    OnActivateResetOwnerFade();
 }
 
 // Reimplements 0x409570: HudUiZrdScrollingText::LoadFromZrd
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
 int HudUiZrdScrollingText::LoadFromZrd(
     zReader::Node *zrdSection,
-    void *ownerDialog
+    HudUiBackground *ownerDialog
 ) {
-    base.LoadFromZrd(
+    HudUiZrdWidget::LoadFromZrd(
         zrdSection,
         ownerDialog
     );
@@ -7747,22 +5880,22 @@ int HudUiZrdScrollingText::LoadFromZrd(
             topLeft,
             1,
             0
-        ) + base.originX;
+        ) + originX;
         rect.top = ZrdArrayInt(
             topLeft,
             2,
             0
-        ) + base.originY;
+        ) + originY;
         rect.right = ZrdArrayInt(
             bottomRight,
             1,
             0
-        ) + base.originX;
+        ) + originX;
         rect.bottom = ZrdArrayInt(
             bottomRight,
             2,
             0
-        ) + base.originY;
+        ) + originY;
     }
 
     zReader::Node *const scrollRateNode = zReader_GetNamedNode(
@@ -7770,10 +5903,7 @@ int HudUiZrdScrollingText::LoadFromZrd(
         "SCROLL_RATE"
     );
     if (scrollRateNode != 0) {
-        OwnerField<float>(
-            ownerDialog,
-            0xa94c
-        ) = scrollRateNode->value.f32;
+        ((HudUiCreditsPanel *)(ownerDialog))->fadeStep = scrollRateNode->value.f32;
     }
 
     zReader::Node *const scrollingTextNode = zReader_GetNamedNode(
@@ -7845,7 +5975,7 @@ int HudUiZrdScrollingText::LoadFromZrd(
 
             ApplyHudFontStyleTextOnly(
                 &templateEntry.panel,
-                HudUiZrdOwnerFontStyle(base.owner, styleIndex)
+                HudUiZrdOwnerFontStyle(owner, styleIndex)
             );
             templateSpan.InsertN(
                 templateSpan.end,
@@ -7901,22 +6031,13 @@ int HudUiZrdScrollingText::LoadFromZrd(
 void HudUiZrdScrollingText::Update(
     float deltaSeconds
 ) {
-    ((HudUiElement *)(this))->Update(deltaSeconds);
+    HudUiElement::Update(deltaSeconds);
 
     HudUiPanelSpan *row = rows.begin;
     while (row != rows.end) {
         HudUiPanelLayoutEntry *entry = row->begin;
         while (entry != row->end) {
-            typedef void( * UpdateFn)(
-                HudUiPanel * self,
-                float deltaSeconds
-            );
-            const HudUiPanel_FTable *const ftable =
-                *(const HudUiPanel_FTable *const *)(&entry->panel);
-            ((UpdateFn)(ftable->slots[9]))(
-                &entry->panel,
-                deltaSeconds
-            );
+            entry->panel.Update(deltaSeconds);
             ++entry;
         }
 
@@ -7938,21 +6059,14 @@ void HudUiZrdScrollingText::UpdateScrollPositions(
         HudUiPanelLayoutEntry *entry = row->begin;
         while (entry != row->end) {
             const int y = entry->layoutY + scrollY;
-            HudUiVirtualSetPosRequired(
-                &entry->panel,
+            entry->panel.SetPos(
                 entry->layoutX + left,
                 y
             );
             if (y > rect.top && y + entry->panel.QueryTextHeight() < rect.bottom) {
-                HudUiVirtualSetVisibleRequired(
-                    &entry->panel,
-                    1
-                );
+                entry->panel.SetVisible(1);
             } else {
-                HudUiVirtualSetVisibleRequired(
-                    &entry->panel,
-                    0
-                );
+                entry->panel.SetVisible(0);
             }
 
             ++entry;
@@ -7973,32 +6087,12 @@ void __stdcall HudUiPanel::DestructorCallback(
 // Reimplements 0x4091e0: HudUiZrdScrollingText::Destructor
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
 void HudUiZrdScrollingText::Destructor() {
-    HudUiPanelSpan *row = rows.begin;
-    while (row != rows.end) {
-        HudUiPanelLayoutEntry *entry = row->begin;
-        while (entry != row->end) {
-            HudUiPanel::DestructorCallback(&entry->panel);
-            ++entry;
-        }
-
-        ::operator delete(row->begin);
-        row->begin = 0;
-        row->end = 0;
-        row->cap = 0;
-        ++row;
-    }
-
-    ::operator delete(rows.begin);
-    rows.begin = 0;
-    rows.end = 0;
-    rows.cap = 0;
-
-    base.DestructorCore();
+    this->~HudUiZrdScrollingText();
 }
 
 // Reimplements 0x409360: HudUiZrdScrollingText::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
-HudUiZrdScrollingText * HudUiZrdScrollingText::ScalarDeletingDestructor(
+HudUiElement * HudUiZrdScrollingText::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     HudUiZrdScrollingText *self = this;
@@ -8017,7 +6111,7 @@ void HudUiCreditsPanel::UpdateFadeAndExit(
 ) {
     creditsScreen.UpdateScrollPositions(fadeProgress);
     fadeProgress += fadeStep * deltaSeconds;
-    base.Update(deltaSeconds);
+    HudUiBackground::Update(deltaSeconds);
 
     if (fadeProgress < 1.0f) {
         return;
@@ -8036,6 +6130,12 @@ void HudUiCreditsPanel::UpdateFadeAndExit(
     g_RecoilApp.QueueExitCurrentState(0);
 }
 
+void HudUiCreditsPanel::Update(
+    float deltaSeconds
+) {
+    UpdateFadeAndExit(deltaSeconds);
+}
+
 // Reimplements 0x4092a0: HudUiCreditsPanel::Destructor
 // (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
 void HudUiCreditsPanel::Destructor() {
@@ -8050,10 +6150,10 @@ void HudUiCreditsPanel::Destructor() {
     creditsScreen.rows.end = 0;
     creditsScreen.rows.cap = 0;
 
-    creditsScreen.base.DestructorCore();
+    creditsScreen.HudUiZrdWidget::DestructorCore();
     quitButton.DestructorCore();
     backButton.DestructorCore();
-    base.Destructor();
+    this->HudUiBackground::~HudUiBackground();
 }
 
 // Reimplements 0x4091c0: HudUiCreditsPanel::ScalarDeletingDestructor
@@ -8432,21 +6532,20 @@ void HudUiPanelSpan::DestroyAndFree() {
     cap = 0;
 }
 
-// Reimplements 0x4bc510: HudUiBackgroundContainer::Constructor
-HudUiBackgroundContainer * HudUiBackgroundContainer::Constructor(
+// Reimplements 0x4bc510: HudUiBackgroundContainer::HudUiBackgroundContainer
+HudUiBackgroundContainer::HudUiBackgroundContainer(
     int initFlag
-) {
-    base.ConstructorDefault();
-    base.vptr = (const HudUiContainer_FTable *)(&g_HudUiBackgroundContainer_FTable);
+) : HudUiContainer() {
     captureTransitionMask = initFlag;
     inputFocusElement = 0;
-    return this;
 }
 
-// Reimplements 0x4bc540: HudUiBackgroundContainer::Destructor
-void HudUiBackgroundContainer::Destructor() {
-    base.vptr = (const HudUiContainer_FTable *)(&g_HudUiBackgroundContainer_FTable);
-    base.DestructorCore();
+/**
+ * Reimplements 0x4bc540: HudUiBackgroundContainer::~HudUiBackgroundContainer.
+ * Purpose: Restores the background-container base state and tears down the inherited container.
+ */
+HudUiBackgroundContainer::~HudUiBackgroundContainer() {
+    HudUiContainer::DestructorCore();
 }
 
 // Reimplements 0x4bc550: HudUiBackgroundContainer::SetInputFocus
@@ -8461,43 +6560,11 @@ HudUiElement * HudUiBackgroundContainer::GetInputFocus() {
     return inputFocusElement;
 }
 
-// Reimplements 0x4b9540: HudUiBackground::Constructor
+// Reimplements 0x4b9540: HudUiBackground::HudUiBackground
 // (D:\Proj\Battlesport\hudui_background.cpp)
-HudUiBackground * HudUiBackground::Constructor() {
-    base.Constructor(1);
-
-    cursorWidget.MemberConstructorLocal(
-        0,
-        1
-    );
-    cursorWidget.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiBackgroundCursorWidget_MemberFTable);
-
-    {
-        for (int index = 0; index < 20; ++index) {
-            backgroundImageWidgets[index].CtorDefaultThunk();
-        }
-    }
-
-    {
-        for (int index = 0; index < 10; ++index) {
-            backgroundVideoWidgets[index].Constructor();
-        }
-    }
-
-    {
-        for (int index = 0; index < 20; ++index) {
-            fontStyles[index].Constructor();
-        }
-    }
-
-    {
-        for (int index = 0; index < 50; ++index) {
-            backgroundTextPanels[index].Constructor();
-        }
-    }
-
-    base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiBackground_FTable);
+HudUiBackground::HudUiBackground()
+    : HudUiBackgroundContainer(1),
+      cursorWidget(0, 1) {
     primaryClipImage = 0;
     capturedCompositeImage = 0;
 
@@ -8509,9 +6576,11 @@ HudUiBackground * HudUiBackground::Constructor() {
         }
     }
 
-    int vmodeDefault = 5;
+    int vmode = 5;
     zOptionEntryPartial *vmodeOption = zGame::Options_FindOption("VMode");
-    int vmode = vmodeOption != 0 ? vmodeOption->payloadOrBuffer : vmodeDefault;
+    if (vmodeOption != 0) {
+        vmode = vmodeOption->payloadOrBuffer;
+    }
 
     switch (vmode) {
     case 2:
@@ -8534,14 +6603,14 @@ HudUiBackground * HudUiBackground::Constructor() {
         break;
     }
 
-    return this;
 }
 
-// Reimplements 0x4b9760: HudUiBackground::Destructor
-// (D:\Proj\Battlesport\hudui_background.cpp)
-void HudUiBackground::Destructor() {
-    base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiBackground_FTable);
-
+/**
+ * Reimplements 0x4b9760: HudUiBackground::~HudUiBackground.
+ * Original source path: D:\Proj\Battlesport\hudui_background.cpp.
+ * Purpose: Releases owned background clip images before compiler-generated member and base cleanup.
+ */
+HudUiBackground::~HudUiBackground() {
     if (primaryClipImage != 0) {
         zVid_Image::ReleaseIfNotDefault(primaryClipImage);
         primaryClipImage = 0;
@@ -8552,32 +6621,7 @@ void HudUiBackground::Destructor() {
         capturedCompositeImage = 0;
     }
 
-    {
-        for (int index = 50; index > 0; --index) {
-            ((HudUiPanel *)(&backgroundTextPanels[index - 1]))->Destructor();
-        }
-    }
-
-    {
-        for (int index = 20; index > 0; --index) {
-            fontStyles[index - 1].Destructor();
-        }
-    }
-
-    {
-        for (int index = 10; index > 0; --index) {
-            backgroundVideoWidgets[index - 1].Destructor();
-        }
-    }
-
-    {
-        for (int index = 20; index > 0; --index) {
-            backgroundImageWidgets[index - 1].DestructorCore();
-        }
-    }
-
     cursorWidget.DestructorCore();
-    base.Destructor();
 }
 
 // Reimplements 0x4ba380: HudUiDialogController::BlitOwnedSurfaceToPrimary
@@ -8820,7 +6864,7 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
                 child.flags = (child.flags & 0x10u) | 0x02u;
                 ((HudUiElement *)(&child))->SetVisible(1);
                 ((HudUiElement *)(&child))->Invalidate();
-                base.base.AddChild((HudUiElement *)(&child));
+                AddChild((HudUiElement *)(&child));
             }
         }
 
@@ -8847,7 +6891,7 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
                     1
                 ));
                 if (ZrdArrayCount(videoSpec) >= 4) {
-                    child.base.SetPos(
+                    child.SetPos(
                         ZrdArrayInt(
                             videoSpec,
                             2,
@@ -8881,14 +6925,14 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
                     )));
                 }
 
-                child.base.SetVisible(1);
-                child.base.Invalidate();
-                child.base.SetBltSourceAndClipRect(
+                child.SetVisible(1);
+                child.Invalidate();
+                child.SetBltSourceAndClipRect(
                     primaryClipImage,
                     0
                 );
                 child.RebuildBltRect();
-                base.base.AddChild(&child.base);
+                AddChild(&child);
             }
         }
 
@@ -8917,8 +6961,7 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
                         1
                     ))
                 );
-                HudUiVirtualSetPosRequired(
-                    child,
+                child->SetPos(
                     ZrdArrayInt(
                         textSpec,
                         2,
@@ -8938,19 +6981,16 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
                         0
                     ))
                 );
-                HudUiVirtualSetVisibleRequired(
-                    child,
-                    1
-                );
-                base.base.AddChild((HudUiElement *)(child));
+                child->SetVisible(1);
+                AddChild((HudUiElement *)(child));
             }
         }
 
         if (capturePrimary == 0) {
-            base.base.SetEnabled(1);
-            base.base.UpdateAll(0.0f);
+            HudUiBackgroundContainer::SetEnabled(1);
+            UpdateAll(0.0f);
             capturedCompositeImage = zVideo_buff_CaptureSurfaceToImage(0);
-            base.base.SetEnabled(0);
+            HudUiBackgroundContainer::SetEnabled(0);
             ((HudUiDialogController *)(this))->BlitOwnedSurfaceToPrimary();
         }
 
@@ -8971,7 +7011,7 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
                 ));
             }
 
-            base.SetInputFocus((HudUiElement *)(&cursorWidget));
+            SetInputFocus((HudUiElement *)(&cursorWidget));
 
             zReader::Node *const centerNode =
                 ZrdArrayBase(zReader_GetNamedNode(
@@ -8981,14 +7021,8 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
             if (centerNode != 0) {
                 // Original 0x4b9f69 stores CENTER's string pointer into HudUiWidget::alignFlags;
                 // GetCenterX/Y only test the slot for nonzero on this cursor path.
-                FieldAt<unsigned int>(
-                    &cursorWidget,
-                    offsetof(HudUiWidget, alignFlags)
-                ) =
-                    (unsigned int)(ZrdArrayString(
-                        centerNode,
-                        1
-                    ));
+                cursorWidget.alignFlags =
+                    (unsigned int)(ZrdArrayString(centerNode, 1));
             }
 
             int cursorCapture = 1;
@@ -9056,7 +7090,7 @@ void HudUiBackground::SetEnabled(
             entry.playHandle = 0;
         }
 
-        base.base.SetEnabled(enabled);
+        HudUiBackgroundContainer::SetEnabled(enabled);
         return;
     }
 
@@ -9072,8 +7106,8 @@ void HudUiBackground::SetEnabled(
         }
     }
 
-    base.base.InvalidateChildren();
-    base.base.SetEnabled(enabled);
+    InvalidateChildren();
+    HudUiBackgroundContainer::SetEnabled(enabled);
 }
 
 // Reimplements 0x4ba070: HudUiBackground::BindButtonsNodeToWidgetByName
@@ -9092,17 +7126,11 @@ unsigned char __fastcall HudUiBackground::BindButtonsNodeToWidgetByName(
             name
         );
         if (widgetNode != 0) {
-            typedef int (HudUiWidget::*LoadFromZrdFn)(
-                zReader::Node *zrdSection,
-                void *ownerDialog
-            );
-            typedef void (HudUiWidget::*PostLoadFromZrdFn)();
-
-            (widget->*((LoadFromZrdFn *)(&widget->ftable->slots[0x7c / 4]))[0])(
+            widget->LoadFromZrd(
                 widgetNode,
                 this
             );
-            (widget->*((PostLoadFromZrdFn *)(&widget->ftable->slots[0x80 / 4]))[0])();
+            widget->PostLoadFromZrd();
         }
     }
 
@@ -9128,36 +7156,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(
     HudUiElement *element,
     const char *name
 ) {
-    typedef void( * SetPosFn)(
-        HudUiElement * self,
-        int x,
-        int y
-    );
-    typedef void( * EnableWordWrapFn)(
-        HudUiElement * self,
-        const HudUiRect *rect
-    );
-    typedef void( * SetFontFn)(
-        HudUiElement * self,
-        const char *faceName,
-        int height,
-        int weight,
-        int width,
-        int italic,
-        int charSet,
-        int pitchAndFamily
-    );
-    typedef void( * SetClipFn)(
-        HudUiElement * self,
-        void *bltSource,
-        const HudUiRect *rect
-    );
-    typedef int( * GetCoordFn)(HudUiElement * self);
-
-    zReader::Node *const cfgRoot = FieldAt<zReader::Node *>(
-        this,
-        0xa940
-    );
+    zReader::Node *const cfgRoot = this->cfgRoot;
     if (cfgRoot == 0) {
         return 0;
     }
@@ -9198,20 +7197,13 @@ int HudUiBackground::BindPrimitiveNodeToElement(
         "POSITION"
     ));
     if (positionBase != 0) {
-        ((SetPosFn)(element->ftable->slots[0x0c / 4]))(
-            element,
-            FieldAt<int>(
-                this,
-                0xa944
-            ) + ZrdArrayInt(
+        element->SetPos(
+            uiOriginX + ZrdArrayInt(
                 positionBase,
                 1,
                 0
             ),
-            FieldAt<int>(
-                this,
-                0xa948
-            ) + ZrdArrayInt(positionBase, 2, 0)
+            uiOriginY + ZrdArrayInt(positionBase, 2, 0)
         );
     }
 
@@ -9231,10 +7223,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(
             2,
             0
         );
-        ((EnableWordWrapFn)(element->ftable->slots[0x6c / 4]))(
-            element,
-            &wordWrapRect
-        );
+        element->EnableWordWrapWithRect(&wordWrapRect);
     }
 
     zReader::Node *fontNode = zReader_GetNamedNode(
@@ -9253,12 +7242,9 @@ int HudUiBackground::BindPrimitiveNodeToElement(
             fontIndex
         );
         if (style != 0) {
-            FieldAt<unsigned int>(
-                element,
-                0x144
-            ) = style->alignMode;
-            ((SetFontFn)(element->ftable->slots[0x80 / 4]))(
-                element,
+            HudUiPanel *const panel = (HudUiPanel *)(element);
+            panel->alignMode = style->alignMode;
+            element->SetFont(
                 style->fontName,
                 style->fontSize,
                 style->fontWeight,
@@ -9267,38 +7253,14 @@ int HudUiBackground::BindPrimitiveNodeToElement(
                 0,
                 2
             );
-            FieldAt<unsigned int>(
-                element,
-                0x14c
-            ) = style->textColor;
-            FieldAt<unsigned int>(
-                element,
-                0x150
-            ) = style->textColor;
-            FieldAt<unsigned int>(
-                element,
-                0x270
-            ) = 1;
-            FieldAt<unsigned int>(
-                element,
-                0x264
-            ) = style->shadowEnabled;
-            FieldAt<int>(
-                element,
-                0x29c
-            ) = 1;
-            FieldAt<int>(
-                element,
-                0x2a0
-            ) = 1;
-            FieldAt<unsigned int>(
-                element,
-                0x26c
-            ) = style->bkColor;
-            FieldAt<unsigned int>(
-                element,
-                0x268
-            ) = style->bkMode;
+            panel->textColor0 = style->textColor;
+            panel->textColor1 = style->textColor;
+            panel->textDirty = 1;
+            panel->shadowEnabled = style->shadowEnabled;
+            panel->shadowOffsetX = 1;
+            panel->shadowOffsetY = 1;
+            panel->bkColor = style->bkColor;
+            panel->bkMode = style->bkMode;
         }
     }
 
@@ -9322,10 +7284,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(
             3,
             0
         ));
-        FieldAt<unsigned int>(
-            element,
-            0x3c
-        ) = zVid_PackColorRGB(
+        ((HudUiPrimitiveBindTarget *)(element))->color565 = zVid_PackColorRGB(
             red,
             green,
             blue
@@ -9337,8 +7296,8 @@ int HudUiBackground::BindPrimitiveNodeToElement(
         "ENDP_REL"
     ));
     if (relativeEndBase != 0) {
-        const int startX = ((GetCoordFn)(element->ftable->slots[0x64 / 4]))(element);
-        const int startY = ((GetCoordFn)(element->ftable->slots[0x68 / 4]))(element);
+        const int startX = element->GetX();
+        const int startY = element->GetY();
         ((HudUiPrimitiveBindTarget *)(element))
             ->SetSegmentEndpoints(
                 startX,
@@ -9359,8 +7318,8 @@ int HudUiBackground::BindPrimitiveNodeToElement(
     if (absoluteEndBase != 0) {
         ((HudUiPrimitiveBindTarget *)(element))
             ->SetSegmentEndpoints(
-                ((GetCoordFn)(element->ftable->slots[0x64 / 4]))(element),
-                ((GetCoordFn)(element->ftable->slots[0x68 / 4]))(element),
+                element->GetX(),
+                element->GetY(),
                 ZrdArrayInt(
                     absoluteEndBase,
                     1,
@@ -9371,16 +7330,12 @@ int HudUiBackground::BindPrimitiveNodeToElement(
     }
 
     HudUiRect clipRect;
-    clipRect.left = ((GetCoordFn)(element->ftable->slots[0x64 / 4]))(element);
-    clipRect.top = ((GetCoordFn)(element->ftable->slots[0x68 / 4]))(element);
-    clipRect.right = ((GetCoordFn)(element->ftable->slots[0x64 / 4]))(element);
-    clipRect.bottom = ((GetCoordFn)(element->ftable->slots[0x68 / 4]))(element);
-    ((SetClipFn)(element->ftable->slots[0x18 / 4]))(
-        element,
-        FieldAt<void *>(
-            this,
-            0x118
-        ),
+    clipRect.left = element->GetX();
+    clipRect.top = element->GetY();
+    clipRect.right = element->GetX();
+    clipRect.bottom = element->GetY();
+    element->SetBltSourceAndClipRect(
+        capturedCompositeImage,
         &clipRect
     );
 
@@ -9405,119 +7360,73 @@ void HudUiBackground::FreeLoadedTreeRoots(
 void HudUiBackground::Update(
     float deltaSeconds
 ) {
-    typedef void( * NoArgFn)(HudUiElement * self);
-    typedef void( * SetPosFn)(
-        HudUiElement * self,
-        int x,
-        int y
-    );
-    typedef void( * UpdateFn)(
-        HudUiElement * self,
-        float deltaSeconds
-    );
-    typedef void( * PointerFn)(
-        HudUiElement * self,
-        int x,
-        int y
-    );
-    typedef int( * HitTestFn)(
-        HudUiElement * self,
-        int x,
-        int y
-    );
-    typedef int( * ShouldHandleInputFn)(
-        HudUiElement * self,
-        HudUiBackground * background,
-        int hovered
-    );
-    typedef void( * AfterInputUpdateFn)(
-        HudUiElement * self,
-        HudUiBackground * background,
-        int hovered
-    );
-
-    if (base.base.enabled == 0) {
+    if (enabled == 0) {
         return;
     }
 
-#if defined(_MSC_VER) && _MSC_VER < 1200
-    zInput::MouseStateSnapshot &mouseState = *&FieldAt<zInput::MouseStateSnapshot>(
-        this,
-        0x14
-    );
-#else
-    zInput::MouseStateSnapshot &mouseState = FieldAt<zInput::MouseStateSnapshot>(
-        this,
-        0x14
-    );
-#endif
     memcpy(
         &mouseState,
         zInput::Mouse_GetStateSnapshotPtr(),
         sizeof(mouseState)
     );
 
-    for (HudUiElement *widget = base.base.childHead; widget != 0; widget = widget->next) {
-        const int hit = ((HitTestFn)(widget->ftable->slots[0x5c / 4]))(
-            widget,
+    for (HudUiElement *widget = childHead; widget != 0; widget = widget->next) {
+        const int hit = widget->HitTest(
             mouseState.cursorClientX,
             mouseState.cursorClientY
         );
         const int hovered = hit == 1 ? 1 : 0;
 
-        if (((ShouldHandleInputFn)(widget->ftable->slots[0x54 / 4]))(
-            widget,
+        if (widget->ShouldHandleInput(
             this,
             hovered
         ) != 0) {
             if ((mouseState.button2Transition & 4) != 0 && (widget->state & 2) == 2) {
                 widget->state = (unsigned short)(widget->state & 0xfffd);
-                ((NoArgFn)(widget->ftable->slots[0x48 / 4]))(widget);
+                widget->OnEndCapture();
             }
 
             if (hovered != 0) {
                 if ((widget->state & 1) == 0) {
                     widget->state = (unsigned short)(widget->state | 1);
-                    ((NoArgFn)(widget->ftable->slots[0x3c / 4]))(widget);
+                    widget->ShowPreview();
                 } else {
-                    ((NoArgFn)(widget->ftable->slots[0x38 / 4]))(widget);
+                    widget->OnHoverRepeat();
                 }
 
-                if ((mouseState.button1Transition & base.captureTransitionMask) != 0 &&
+                if ((mouseState.button1Transition & captureTransitionMask) != 0 &&
                     (widget->state & 2) == 0) {
                     widget->state = (unsigned short)(widget->state | 2);
-                    ((NoArgFn)(widget->ftable->slots[0x44 / 4]))(widget);
+                    widget->OnBeginCapture();
                 }
 
                 if ((mouseState.button1Transition & 4) != 0) {
-                    ((NoArgFn)(widget->ftable->slots[0x30 / 4]))(widget);
+                    widget->OnActivate();
                 }
 
                 if ((mouseState.button2Transition & 4) != 0) {
-                    ((NoArgFn)(widget->ftable->slots[0x34 / 4]))(widget);
+                    widget->OnClearBinding();
                 }
 
                 if ((mouseState.button1Transition & 3) != 0) {
-                    ((PointerFn)(widget->ftable->slots[0x4c / 4]))(
-                        widget,
+                    widget->OnPointerButtonState(
                         mouseState.cursorClientX,
                         mouseState.cursorClientY
                     );
                 }
 
                 if ((mouseState.button1Transition & 4) != 0 && (widget->state & 2) == 2) {
-                    ((NoArgFn)(widget->ftable->slots[0x50 / 4]))(widget);
+                    widget->OnCapturedPrimaryRelease();
                 }
             } else {
-                if ((mouseState.button1Transition & base.captureTransitionMask) != 0 &&
+                if ((mouseState.button1Transition & captureTransitionMask) != 0 &&
                     (widget->state & 2) == 2) {
                     widget->state = (unsigned short)(widget->state & 0xfffd);
-                    ((NoArgFn)(widget->ftable->slots[0x48 / 4]))(widget);
+                    widget->OnEndCapture();
                 }
 
                 if ((mouseState.button1Transition & 3) != 0 && (widget->state & 2) == 2) {
-                    ((PointerFn)(widget->ftable->slots[0x4c / 4]))(
-                        widget,
+                    widget->OnPointerButtonState(
                         mouseState.cursorClientX,
                         mouseState.cursorClientY
                     );
@@ -9525,41 +7434,36 @@ void HudUiBackground::Update(
 
                 if ((widget->state & 1) == 1) {
                     widget->state = (unsigned short)(widget->state & 0xfffe);
-                    ((NoArgFn)(widget->ftable->slots[0x40 / 4]))(widget);
+                    widget->HidePreview();
                 }
             }
         }
 
-        ((AfterInputUpdateFn)(widget->ftable->slots[0x58 / 4]))(
-            widget,
+        widget->AfterInputUpdate(
             this,
             hovered
         );
     }
 
-    HudUiElement *const focusBeforeUpdate = base.inputFocusElement;
+    HudUiElement *const focusBeforeUpdate = inputFocusElement;
     if (focusBeforeUpdate != 0) {
-        ((NoArgFn)(focusBeforeUpdate->ftable->slots[0x08 / 4]))(focusBeforeUpdate);
+        focusBeforeUpdate->DrawBase();
     }
 
-    base.base.UpdateAll(deltaSeconds);
+    UpdateAll(deltaSeconds);
 
-    HudUiElement *const focusAfterUpdate = base.inputFocusElement;
+    HudUiElement *const focusAfterUpdate = inputFocusElement;
     if (focusAfterUpdate != 0) {
-        ((SetPosFn)(focusAfterUpdate->ftable->slots[0x0c / 4]))(
-            focusAfterUpdate,
+        focusAfterUpdate->SetPos(
             mouseState.cursorClientX,
             mouseState.cursorClientY
         );
-        ((UpdateFn)(focusAfterUpdate->ftable->slots[0x24 / 4]))(
-            focusAfterUpdate,
-            deltaSeconds
-        );
+        focusAfterUpdate->Update(deltaSeconds);
     }
 }
 
-// Reimplements 0x4ba4a0: HudFontStyle::Constructor
-HudFontStyle * HudFontStyle::Constructor() {
+// Reimplements 0x4ba4a0: HudFontStyle::HudFontStyle
+HudFontStyle::HudFontStyle() {
     validMarker = 0;
     fontName = 0;
     fontSize = 0;
@@ -9567,7 +7471,10 @@ HudFontStyle * HudFontStyle::Constructor() {
     shadowEnabled = 0;
     alignMode = 0;
     fontWeight = 0x1f4;
-    return this;
+}
+
+HudFontStyle::~HudFontStyle() {
+    Destructor();
 }
 
 // Reimplements 0x4ba4c0: HudFontStyle::Destructor
@@ -9576,19 +7483,14 @@ void HudFontStyle::Destructor() {
 }
 
 // Reimplements 0x4b3d00: HudUiWidget::Constructor
-HudUiWidget * HudUiWidget::Constructor(
+HudUiWidget::HudUiWidget(
     unsigned int initAlignFlags
-) {
-    ((HudUiElement *)(this))->Constructor(
-        0,
-        0
-    );
-    ftable = &g_HudUiWidget_FTable;
+) : HudUiElement(0, 0) {
     alignFlags = initAlignFlags;
     image = 0;
     ownsImage = 0;
     bltClipRectOrNull = 0;
-    state = 0;
+    *((unsigned short *)(&imageStateWord)) = 0;
     dirtyRectCount = 0;
 
     {
@@ -9597,7 +7499,12 @@ HudUiWidget * HudUiWidget::Constructor(
             dirtyRects[dirtyRectIndex].framesRemaining = 0;
         }
     }
+}
 
+HudUiWidget * HudUiWidget::Constructor(
+    unsigned int initAlignFlags
+) {
+    new (this) HudUiWidget(initAlignFlags);
     return this;
 }
 
@@ -9656,24 +7563,20 @@ void HudUiWidget::InvalidateRect(
     slot->drawX = slot->srcLeft;
     slot->drawY = slot->srcTop;
 
-    typedef int( * GetCoordFn)(HudUiWidget * self);
-    typedef void( * InvalidateFn)(HudUiWidget * self);
-    slot->srcLeft -= ((GetCoordFn)(ftable->slots[25]))(this);
-    slot->srcRight -= ((GetCoordFn)(ftable->slots[25]))(this);
-    slot->srcTop -= ((GetCoordFn)(ftable->slots[26]))(this);
-    slot->srcBottom -= ((GetCoordFn)(ftable->slots[26]))(this);
-    ((InvalidateFn)(ftable->slots[8]))(this);
+    slot->srcLeft -= GetCenterX();
+    slot->srcRight -= GetCenterX();
+    slot->srcTop -= GetCenterY();
+    slot->srcBottom -= GetCenterY();
+    Invalidate();
 }
 
-// Reimplements 0x4bf980: HudUiBackgroundCursorWidget::MemberConstructorLocal
+// Reimplements 0x4bf980: HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget
 // (D:\Proj\Battlesport\hudui_background.cpp)
-HudUiBackgroundCursorWidget * HudUiBackgroundCursorWidget::MemberConstructorLocal(
+HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget(
     const char *imagePath,
     int initCaptureEnabled
-) {
-    base.Constructor(0);
+) : HudUiWidget(0) {
     captureEnabled = initCaptureEnabled;
-    base.ftable = (const HudUiWidget_FTable *)(&g_HudUiBackgroundCursorWidget_FTable);
     capturedImage = 0;
     if (imagePath != 0) {
         SetImageByPathOwnedAndRefresh(imagePath);
@@ -9682,18 +7585,16 @@ HudUiBackgroundCursorWidget * HudUiBackgroundCursorWidget::MemberConstructorLoca
     reservedC8 = 0;
     reservedCC = 0;
     captureSourceSelector = 1;
-    return this;
 }
 
 // Reimplements 0x4bfa20: HudUiBackgroundCursorWidget::DestructorCore
 // (D:\Proj\Battlesport\hudui_background.cpp)
 void HudUiBackgroundCursorWidget::DestructorCore() {
-    base.ftable = (const HudUiWidget_FTable *)(&g_HudUiBackgroundCursorWidget_FTable);
     if (capturedImage != 0) {
         zVid_Image::Destroy(capturedImage);
     }
 
-    base.DestructorCore();
+    HudUiWidget::DestructorCore();
 }
 
 // Reimplements 0x4bfa50: HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh
@@ -9701,7 +7602,7 @@ void HudUiBackgroundCursorWidget::DestructorCore() {
 void HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh(
     const char *imagePath
 ) {
-    if (base.SetImageByPathOwned(imagePath) != 0) {
+    if (HudUiWidget::SetImageByPathOwned(imagePath) != 0) {
         SetImageBorrowedAndRefresh();
     }
 }
@@ -9711,7 +7612,7 @@ void HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh(
 void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged(
     zVidImagePartial *image
 ) {
-    if (base.SetImageBorrowedAndInvalidate(image) != 0) {
+    if (HudUiWidget::SetImageBorrowedAndInvalidate(image) != 0) {
         SetImageBorrowedAndRefresh();
     }
 }
@@ -9721,18 +7622,11 @@ void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged(
 void HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh(
     int newCaptureEnabled
 ) {
-    typedef void( * SetBltSourceFn)(
-        HudUiBackgroundCursorWidget * self,
-        zVidImagePartial * image,
-        const HudUiRect *clipRect
-    );
-
     captureEnabled = newCaptureEnabled;
     if (newCaptureEnabled == 0 && capturedImage != 0) {
         zVid_Image::Destroy(capturedImage);
         capturedImage = 0;
-        ((SetBltSourceFn)(base.ftable->slots[6]))(
-            this,
+        HudUiElement::SetBltSourceAndClipRect(
             0,
             0
         );
@@ -9747,7 +7641,7 @@ void HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh(
 // Reimplements 0x4bfae0: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh
 // (D:\Proj\Battlesport\hudui_background.cpp)
 void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh() {
-    if (captureEnabled == 0 || base.image == 0) {
+    if (captureEnabled == 0 || image == 0) {
         return;
     }
 
@@ -9762,8 +7656,8 @@ void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh() {
 
     zVid_Image::SetSize(
         capturedImage,
-        base.image->width,
-        base.image->height
+        image->width,
+        image->height
     );
     void *const pixels = malloc((size_t)(capturedImage->pixelCount) * sizeof(unsigned short));
     zVid_Image_SetPixels(
@@ -9773,9 +7667,8 @@ void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh() {
     );
     capturedImage->formatFlagsPacked = (unsigned char)(capturedImage->formatFlagsPacked | 0x20u);
 
-    typedef int( * GetCoordFn)(HudUiBackgroundCursorWidget * self);
-    const int y = ((GetCoordFn)(base.ftable->slots[26]))(this);
-    const int x = ((GetCoordFn)(base.ftable->slots[25]))(this);
+    const int y = HudUiElement::GetY();
+    const int x = HudUiElement::GetX();
     RebuildCapturedImage(
         x,
         y
@@ -9788,13 +7681,13 @@ void HudUiBackgroundCursorWidget::SetPos(
     int newX,
     int newY
 ) {
-    base.SetPos(
+    HudUiWidget::SetPos(
         newX,
         newY
     );
     RebuildCapturedImage(
-        base.x,
-        base.y
+        x,
+        y
     );
 }
 
@@ -9804,12 +7697,6 @@ void HudUiBackgroundCursorWidget::RebuildCapturedImage(
     int originX,
     int originY
 ) {
-    typedef void( * SetBltSourceFn)(
-        HudUiBackgroundCursorWidget * self,
-        zVidImagePartial * image,
-        const HudUiRect *clipRect
-    );
-
     if (capturedImage == 0) {
         return;
     }
@@ -9817,8 +7704,8 @@ void HudUiBackgroundCursorWidget::RebuildCapturedImage(
     zVidRect32 sourceRect;
     sourceRect.left = originX;
     sourceRect.top = originY;
-    sourceRect.right = originX + base.image->width;
-    sourceRect.bottom = originY + base.image->height;
+    sourceRect.right = originX + image->width;
+    sourceRect.bottom = originY + image->height;
 
     if (zVideo_buff::CopySurfaceRectToImage(captureSourceSelector, &sourceRect, capturedImage) !=
         0) {
@@ -9826,16 +7713,14 @@ void HudUiBackgroundCursorWidget::RebuildCapturedImage(
             sourceRect.top - originY,
             sourceRect.right - originX,
             sourceRect.bottom - originY};
-        ((SetBltSourceFn)(base.ftable->slots[6]))(
-            this,
+        SetBltSourceAndClipRect(
             capturedImage,
             &clipRect
         );
         return;
     }
 
-    ((SetBltSourceFn)(base.ftable->slots[6]))(
-        this,
+    SetBltSourceAndClipRect(
         0,
         0
     );
@@ -9844,49 +7729,45 @@ void HudUiBackgroundCursorWidget::RebuildCapturedImage(
 // Reimplements 0x4bfc50: HudUiBackgroundCursorWidget::Draw
 // (D:\Proj\Battlesport\hudui_background.cpp)
 void HudUiBackgroundCursorWidget::Draw() {
-    base.Draw();
+    HudUiWidget::Draw();
 }
 
 // Reimplements 0x4bfc60: HudUiBackgroundCursorWidget::DrawBase
 // (D:\Proj\Battlesport\hudui_background.cpp)
 void HudUiBackgroundCursorWidget::DrawBase() {
-    if (base.bltSource != 0) {
+    if (bltSource != 0) {
         zVid_Image::BlitToActiveTarget(
-            (zVidImagePartial *)(base.bltSource),
-            base.x,
-            base.y,
+            (zVidImagePartial *)(bltSource),
+            x,
+            y,
             0,
-            (zVidRect32 *)(&base.clipRect)
+            (zVidRect32 *)(&clipRect)
         );
     }
 }
 
-// Reimplements 0x4bfc80: HudUiBackgroundVideoWidget::Constructor
+// Reimplements 0x4bfc80: HudUiBackgroundVideoWidget::HudUiBackgroundVideoWidget
 // (D:\Proj\Battlesport\hudui_background.cpp)
-HudUiBackgroundVideoWidget * HudUiBackgroundVideoWidget::Constructor() {
-    base.Constructor(
-        0,
-        0
-    );
-    base.ftable = (const HudUiCommon_FTable *)(&g_HudUiBackgroundVideoWidget_FTable);
+HudUiBackgroundVideoWidget::HudUiBackgroundVideoWidget()
+    : HudUiElement(0, 0) {
     mediaPath[0] = '\0';
     stream = 0;
     elapsedTimeSec = 0.0f;
-    return this;
 }
 
-// Reimplements 0x4bfcd0: HudUiBackgroundVideoWidget::Destructor
-// (D:\Proj\Battlesport\hudui_background.cpp)
-void HudUiBackgroundVideoWidget::Destructor() {
-    base.ftable = (const HudUiCommon_FTable *)(&g_HudUiBackgroundVideoWidget_FTable);
+HudUiBackgroundVideoWidget::~HudUiBackgroundVideoWidget() {
     zFMV_Stream *const oldStream = stream;
     if (oldStream != 0) {
         oldStream->Destructor();
         ::operator delete(oldStream);
         stream = 0;
     }
+}
 
-    base.ftable = &g_HudUiCommon_FTable;
+// Reimplements 0x4bfcd0: HudUiBackgroundVideoWidget::Destructor
+// (D:\Proj\Battlesport\hudui_background.cpp)
+void HudUiBackgroundVideoWidget::Destructor() {
+    this->~HudUiBackgroundVideoWidget();
 }
 
 // Reimplements 0x4bfd40: HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh
@@ -9933,10 +7814,7 @@ void HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh(
         0
     ) : 0;
 
-    typedef void( * RebuildBltRectFn)(HudUiBackgroundVideoWidget * self);
-    const HudUiBackgroundVideoWidget_FTable *const ftable =
-        (const HudUiBackgroundVideoWidget_FTable *)(base.ftable);
-    ((RebuildBltRectFn)(ftable->slots[0x74 / 4]))(this);
+    RebuildBltRect();
 }
 
 // Reimplements 0x4bfe20: HudUiBackgroundVideoWidget::SetColorKey565
@@ -9956,7 +7834,7 @@ void HudUiBackgroundVideoWidget::SetColorKey565(
 void HudUiBackgroundVideoWidget::Update(
     float deltaSeconds
 ) {
-    if ((base.flags & 0x10u) != 0) {
+    if ((flags & 0x10u) != 0) {
         return;
     }
 
@@ -9965,23 +7843,20 @@ void HudUiBackgroundVideoWidget::Update(
         stream->ReadAndDecodeFrame((unsigned int)(frameTick % stream->videoFrameCount));
     }
 
-    base.Update(deltaSeconds);
+    HudUiElement::Update(deltaSeconds);
     elapsedTimeSec += deltaSeconds;
 }
 
 // Reimplements 0x4bfe90: HudUiBackgroundVideoWidget::Draw
 // (D:\Proj\Battlesport\hudui_background.cpp)
 void HudUiBackgroundVideoWidget::Draw() {
-    typedef void( * DrawBaseFn)(HudUiBackgroundVideoWidget * self);
-    const HudUiBackgroundVideoWidget_FTable *const ftable =
-        (const HudUiBackgroundVideoWidget_FTable *)(base.ftable);
-    ((DrawBaseFn)(ftable->slots[2]))(this);
+    DrawBase();
 
     if (stream != 0) {
         zVid_Image::BlitToActiveTarget(
             (zVidImagePartial *)(stream),
-            base.x,
-            base.y,
+            x,
+            y,
             colorKey565,
             0
         );
@@ -9991,16 +7866,16 @@ void HudUiBackgroundVideoWidget::Draw() {
 // Reimplements 0x4bfec0: HudUiBackgroundVideoWidget::DrawBase
 // (D:\Proj\Battlesport\hudui_background.cpp)
 void HudUiBackgroundVideoWidget::DrawBase() {
-    zVidImagePartial *const bltSource = (zVidImagePartial *)(base.bltSource);
+    zVidImagePartial *const bltSource = (zVidImagePartial *)(this->bltSource);
     if (bltSource != 0) {
-        const int dstX = base.x > 0 ? base.x : 0;
-        const int dstY = base.y > 0 ? base.y : 0;
+        const int dstX = x > 0 ? x : 0;
+        const int dstY = y > 0 ? y : 0;
         zVid_Image::BlitToActiveTarget(
             bltSource,
             dstX,
             dstY,
             0,
-            (zVidRect32 *)(&base.clipRect)
+            (zVidRect32 *)(&clipRect)
         );
     }
 }
@@ -10009,8 +7884,8 @@ void HudUiBackgroundVideoWidget::DrawBase() {
 // (D:\Proj\Battlesport\hudui_background.cpp)
 void HudUiBackgroundVideoWidget::RebuildBltRect() {
     HudUiRect rect;
-    rect.left = HudUiVirtualGetXRequired(&base) > 0 ? HudUiVirtualGetXRequired(&base) : 0;
-    rect.top = HudUiVirtualGetYRequired(&base) > 0 ? HudUiVirtualGetYRequired(&base) : 0;
+    rect.left = GetX() > 0 ? GetX() : 0;
+    rect.top = GetY() > 0 ? GetY() : 0;
 
     if (stream == 0) {
         return;
@@ -10019,7 +7894,7 @@ void HudUiBackgroundVideoWidget::RebuildBltRect() {
     const int streamRight = rect.left + stream->width;
     const int streamBottom = rect.top + stream->height;
 
-    zVidImagePartial *const bltSource = (zVidImagePartial *)(base.bltSource);
+    zVidImagePartial *const bltSource = (zVidImagePartial *)(this->bltSource);
     if (bltSource != 0) {
         rect.right = streamRight < bltSource->width ? streamRight : bltSource->width;
         rect.bottom = streamBottom < bltSource->height ? streamBottom : bltSource->height;
@@ -10028,45 +7903,15 @@ void HudUiBackgroundVideoWidget::RebuildBltRect() {
         rect.bottom = streamBottom;
     }
 
-    typedef void( * SetClipRectFn)(
-        HudUiBackgroundVideoWidget * self,
-        const HudUiRect *rect
-    );
-    const HudUiBackgroundVideoWidget_FTable *const ftable =
-        (const HudUiBackgroundVideoWidget_FTable *)(base.ftable);
-    ((SetClipRectFn)(ftable->slots[7]))(
-        this,
-        &rect
-    );
+    SetClipRect(&rect);
 }
 
-// Reimplements 0x4b4ee0: HudUiZrdWidget::Constructor
-HudUiZrdWidget * HudUiZrdWidget::Constructor() {
-    base.Constructor(0);
-    // VC5 copies an uninitialized STL allocator proxy byte into each vector.
-#if defined(_MSC_VER) && _MSC_VER < 1200
-    char allocatorProxy;
-#else
-    char allocatorProxy = 0;
-#endif
-    labelPanels.allocatorProxy = allocatorProxy;
-    labelPanels.begin = 0;
-    labelPanels.end = 0;
-    labelPanels.capacityEnd = 0;
-    rolloverLabelPanels.allocatorProxy = allocatorProxy;
-    rolloverLabelPanels.begin = 0;
-    rolloverLabelPanels.end = 0;
-    rolloverLabelPanels.capacityEnd = 0;
-    activateLabelPanels.begin = 0;
-    activateLabelPanels.allocatorProxy = allocatorProxy;
-    activateLabelPanels.end = 0;
-    activateLabelPanels.capacityEnd = 0;
-    disabledLabelPanels.begin = 0;
-    disabledLabelPanels.allocatorProxy = allocatorProxy;
-    disabledLabelPanels.end = 0;
-    disabledLabelPanels.capacityEnd = 0;
-
-    base.ftable = (const HudUiWidget_FTable *)(&g_HudUiZrdWidget_FTable);
+/**
+ * Reimplements 0x4b4ee0: HudUiZrdWidget::HudUiZrdWidget.
+ * Purpose: initialize the ZRD widget's base widget state, image/sound slots,
+ * panel vectors, enabled mode, and initial invalidation state.
+ */
+HudUiZrdWidget::HudUiZrdWidget() : HudUiWidget(0) {
     modeOrEnabled = 1;
     originY = 0;
     originX = 0;
@@ -10124,30 +7969,28 @@ HudUiZrdWidget * HudUiZrdWidget::Constructor() {
         );
     activateLabelPanels.end = activateDest;
 
-    *((unsigned short *)(&base.imageStateWord)) = 1;
-    typedef void( * InvalidateFn)(HudUiZrdWidget * self);
-    ((InvalidateFn)(base.ftable->slots[8]))(this);
-    base.flags = ((unsigned char)(base.flags) & 0x10u) | 0x02u;
+    *((unsigned short *)(&imageStateWord)) = 1;
+    Invalidate();
+    flags = ((unsigned char)(flags) & 0x10u) | 0x02u;
+}
+
+// Reimplements 0x4b4ee0: HudUiZrdWidget::Constructor
+HudUiZrdWidget * HudUiZrdWidget::Constructor() {
+    new (this) HudUiZrdWidget;
     return this;
 }
 
 // Reimplements 0x4b59f0: HudUiZrdWidget::LoadFromZrd
 int HudUiZrdWidget::LoadFromZrd(
     zReader::Node *zrdSection,
-    void *ownerDialog
+    HudUiBackground *ownerDialog
 ) {
     owner = ownerDialog;
-    ((HudUiElement *)(&base))->SetVisible(1);
-    ((HudUiContainer *)(ownerDialog))->AddChild((HudUiElement *)(this));
+    HudUiElement::SetVisible(1);
+    ((HudUiContainer *)(ownerDialog))->AddChild(this);
 
-    originX = OwnerField<int>(
-        ownerDialog,
-        0xa944
-    );
-    originY = OwnerField<int>(
-        ownerDialog,
-        0xa948
-    );
+    originX = ownerDialog->uiOriginX;
+    originY = ownerDialog->uiOriginY;
     if (zrdSection == 0) {
         return 0;
     }
@@ -10182,7 +8025,7 @@ int HudUiZrdWidget::LoadFromZrd(
         1
     );
     if (bitmapPath != 0) {
-        defaultImage = base.SetImageByPathOwned(bitmapPath);
+        defaultImage = SetImageByPathOwned(bitmapPath);
         if (ZrdArrayCount(bitmapBase) >= 4) {
             widgetX += ZrdArrayInt(
                 bitmapBase,
@@ -10197,19 +8040,16 @@ int HudUiZrdWidget::LoadFromZrd(
         }
     }
 
-    ((HudUiElement *)(&base))->SetPos(
+    HudUiElement::SetPos(
         widgetX,
         widgetY
     );
 
-    void *const clipSource = OwnerField<void *>(
-        ownerDialog,
-        0x118
-    );
+    void *const clipSource = ownerDialog->capturedCompositeImage;
     if (clipSource != 0) {
         HudUiRect *const bounds = GetBoundsRectOrNull();
         if (bounds != 0) {
-            ((HudUiElement *)(&base))->SetBltSourceAndClipRect(
+            HudUiElement::SetBltSourceAndClipRect(
                 clipSource,
                 bounds
             );
@@ -10302,7 +8142,12 @@ int HudUiZrdWidget::LoadFromZrd(
     return 1;
 }
 
-// Reimplements 0x4ba4d0: HudUiPanelPtrVector::EraseRange
+/**
+ * Reimplements 0x4ba4d0: HudUiPanelPtrVector::EraseRange.
+ * Binary Ninja identifies the body as a VC5 std::vector-style erase helper
+ * over the recovered HudUiPanelPtrVector storage: shift [last, end) over
+ * first, update end, and return the original first iterator.
+ */
 HudUiPanel ** HudUiPanelPtrVector::EraseRange(
     HudUiPanel **first,
     HudUiPanel **last
@@ -10320,7 +8165,12 @@ HudUiPanel ** HudUiPanelPtrVector::EraseRange(
     return first;
 }
 
-// Reimplements 0x4ba510: HudUiPanelPtrVector::InsertN
+/**
+ * Reimplements 0x4ba510: HudUiPanelPtrVector::InsertN.
+ * Binary Ninja shows the matching VC5 std::vector-style insert helper for
+ * HudUiPanel pointers, including in-place tail movement and reallocation when
+ * the current capacity cannot hold the requested insertion count.
+ */
 void HudUiPanelPtrVector::InsertN(
     HudUiPanel **position,
     unsigned int count,
@@ -10375,23 +8225,12 @@ void HudUiPanelPtrVector::InsertN(
     capacityEnd = newBegin + newCapacity;
 }
 
-struct HudUiScalarDeletingDestructorDispatch {
-    // Models slot-0 scalar-deleting destructor dispatch so VC emits ecx=this.
-    virtual void *ScalarDeletingDestructor(unsigned int flags);
-};
-
-struct HudCmdDialogVirtual {
-    virtual void Update(float deltaSeconds);
-    virtual void SetEnabled(int enabled);
-    virtual HudCmdDialog * ScalarDeletingDestructor(unsigned int flags);
-};
-
 // Reimplements 0x4b52f0: HudUiZrdWidget::DeleteChildIfPresent
 void *__stdcall HudUiZrdWidget::DeleteChildIfPresent(
     void *childWidgetOrNull
 ) {
     if (childWidgetOrNull != 0) {
-        ((HudUiScalarDeletingDestructorDispatch *)(childWidgetOrNull))->ScalarDeletingDestructor(1);
+        ((HudUiElement *)(childWidgetOrNull))->ScalarDeletingDestructor(1);
     }
 
     return 0;
@@ -10402,15 +8241,7 @@ void HudUiZrdWidget_DeletePanelVectorChildren(
 ) {
     for (HudUiPanel **it = vector.begin; it != vector.end; ++it) {
         if (*it != 0) {
-            const HudUiWidget_FTable *const ftable = *(const HudUiWidget_FTable *const *)(*it);
-            typedef void *( * ScalarDeletingDtorFn)(
-                void *self,
-                unsigned int flags
-            );
-            ((ScalarDeletingDtorFn)(ftable->slots[0]))(
-                *it,
-                1
-            );
+            (*it)->ScalarDeletingDestructor(1);
         }
 
         *it = 0;
@@ -10419,7 +8250,6 @@ void HudUiZrdWidget_DeletePanelVectorChildren(
 
 // Reimplements 0x4b50c0: HudUiZrdWidget::DestructorCore
 void HudUiZrdWidget::DestructorCore() {
-    base.ftable = (const HudUiWidget_FTable *)(&g_HudUiZrdWidget_FTable);
 
     for (HudUiPanel **it = labelPanels.begin; it != labelPanels.end; ++it) {
         *it = (HudUiPanel *)(DeleteChildIfPresent(*it));
@@ -10441,28 +8271,28 @@ void HudUiZrdWidget::DestructorCore() {
         activateLabelPanels.end
     );
 
-    if (defaultImage != 0 && defaultImage != base.image) {
+    if (defaultImage != 0 && defaultImage != image) {
         zVid_Image::ReleaseIfNotDefault(defaultImage);
         defaultImage = 0;
     }
 
-    if (activateImage != 0 && activateImage != base.image) {
+    if (activateImage != 0 && activateImage != image) {
         zVid_Image::ReleaseIfNotDefault(activateImage);
         activateImage = 0;
     }
 
-    if (rolloverImage != 0 && rolloverImage != base.image) {
+    if (rolloverImage != 0 && rolloverImage != image) {
         zVid_Image::ReleaseIfNotDefault(rolloverImage);
         rolloverImage = 0;
     }
 
-    if (disabledImage != 0 && disabledImage != base.image) {
+    if (disabledImage != 0 && disabledImage != image) {
         zVid_Image::ReleaseIfNotDefault(disabledImage);
         disabledImage = 0;
     }
 
-    if (base.image != 0 && base.ownsImage == 0) {
-        zVid_Image::ReleaseIfNotDefault(base.image);
+    if (image != 0 && ownsImage == 0) {
+        zVid_Image::ReleaseIfNotDefault(image);
     }
 
     ::operator delete(disabledLabelPanels.begin);
@@ -10485,11 +8315,11 @@ void HudUiZrdWidget::DestructorCore() {
     labelPanels.end = 0;
     labelPanels.capacityEnd = 0;
 
-    base.DestructorCore();
+    HudUiWidget::DestructorCore();
 }
 
 // Reimplements 0x4b50a0: HudUiZrdWidget::ScalarDeletingDestructor
-HudUiZrdWidget * HudUiZrdWidget::ScalarDeletingDestructor(
+HudUiElement * HudUiZrdWidget::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -10514,9 +8344,7 @@ HudUiZrdWidget * HudUiZrdWidget::ScalarDeletingDestructorThunk(
 
 // Reimplements 0x4b5310: HudUiZrdWidget::Invalidate
 void HudUiZrdWidget::Invalidate() {
-    typedef void( * InvalidateFn)(HudUiPanel * self);
-
-    ((HudUiElement *)(&base))->Invalidate();
+    HudUiElement::Invalidate();
 
     HudUiPanel **panel = labelPanels.begin;
     if (panel == 0) {
@@ -10525,8 +8353,7 @@ void HudUiZrdWidget::Invalidate() {
 
     while (panel != labelPanels.end) {
         HudUiPanel *const label = *panel;
-        const HudUiPanel_FTable *const panelFTable = (const HudUiPanel_FTable *)(label->vtbl);
-        ((InvalidateFn)(panelFTable->slots[8]))(label);
+        label->Invalidate();
         ++panel;
     }
 }
@@ -10537,11 +8364,11 @@ HudUiRect * HudUiZrdWidget::GetBoundsRectOrNull() {
         return 0;
     }
 
-    if (base.image != 0) {
-        boundsRect.left = base.x;
-        boundsRect.top = base.y;
-        boundsRect.right = base.x + base.image->width;
-        boundsRect.bottom = base.y + base.image->height;
+    if (image != 0) {
+        boundsRect.left = x;
+        boundsRect.top = y;
+        boundsRect.right = x + image->width;
+        boundsRect.bottom = y + image->height;
         return &boundsRect;
     }
 
@@ -10551,23 +8378,22 @@ HudUiRect * HudUiZrdWidget::GetBoundsRectOrNull() {
     }
 
     HudUiPanel *const firstPanel = *panelIt;
-    HudUiElement *const firstElement = (HudUiElement *)(firstPanel);
-    boundsRect.top = HudUiVirtualGetYRequired(firstElement);
+    boundsRect.top = firstPanel->GetY();
     boundsRect.bottom = boundsRect.top + firstPanel->QueryTextHeight();
 
     while (panelIt != labelPanels.end) {
         HudUiPanel *const panel = *panelIt;
-        HudUiElement *const panelElement = (HudUiElement *)(panel);
         boundsRect.bottom += panel->QueryTextHeight();
 
-        const int alignMode = FieldAt<int>(
-            panel,
-            0x144
-        );
-        const int panelX = HudUiVirtualGetXRequired(panelElement);
-        const int width = HudUiPanelTextWidth(panel);
+        const int alignMode = panel->alignMode;
+        const int panelX = panel->GetX();
+        if (panel->textDirty != 0) {
+            panel->RebuildTextRect();
+        }
+
+        const int width = panel->textWidthPx;
         if (alignMode == 0) {
-            boundsRect.left = HudUiVirtualGetXRequired(firstElement);
+            boundsRect.left = firstPanel->GetX();
             const int right = panelX + width;
             if (right > boundsRect.right) {
                 boundsRect.right = right;
@@ -10584,7 +8410,7 @@ HudUiRect * HudUiZrdWidget::GetBoundsRectOrNull() {
                 boundsRect.right = right;
             }
         } else if (alignMode == 2) {
-            boundsRect.right = HudUiVirtualGetXRequired(firstElement);
+            boundsRect.right = firstPanel->GetX();
             const int left = panelX - width;
             if (left > boundsRect.left) {
                 boundsRect.left = boundsRect.left;
@@ -10602,90 +8428,60 @@ HudUiRect * HudUiZrdWidget::GetBoundsRectOrNull() {
 
 // Reimplements 0x4b5740: HudUiZrdWidget::RefreshState
 void HudUiZrdWidget::RefreshState() {
-    typedef void( * SetVisibleFn)(
-        HudUiPanel * self,
-        int visible
-    );
-    typedef void( * InvalidateFn)(HudUiZrdWidget * self);
-
     for (HudUiPanel **rolloverIt = rolloverLabelPanels.begin; rolloverIt != rolloverLabelPanels.end;
         ++rolloverIt) {
         HudUiPanel *const panel = *rolloverIt;
-        const HudUiPanel_FTable *const ftable = (const HudUiPanel_FTable *)(panel->vtbl);
-        ((SetVisibleFn)(ftable->slots[24]))(
-            panel,
-            0
-        );
+        panel->SetVisible(0);
     }
 
     for (HudUiPanel **activateIt = activateLabelPanels.begin; activateIt != activateLabelPanels.end;
         ++activateIt) {
         HudUiPanel *const panel = *activateIt;
-        const HudUiPanel_FTable *const ftable = (const HudUiPanel_FTable *)(panel->vtbl);
-        ((SetVisibleFn)(ftable->slots[24]))(
-            panel,
-            0
-        );
+        panel->SetVisible(0);
     }
 
     if (modeOrEnabled != 0) {
         for (HudUiPanel **labelIt = labelPanels.begin; labelIt != labelPanels.end; ++labelIt) {
             HudUiPanel *const panel = *labelIt;
-            const HudUiPanel_FTable *const ftable = (const HudUiPanel_FTable *)(panel->vtbl);
-            ((SetVisibleFn)(ftable->slots[24]))(
-                panel,
-                1
-            );
+            panel->SetVisible(1);
         }
 
         for (HudUiPanel **disabledIt = disabledLabelPanels.begin;
             disabledIt != disabledLabelPanels.end;
             ++disabledIt) {
             HudUiPanel *const panel = *disabledIt;
-            const HudUiPanel_FTable *const ftable = (const HudUiPanel_FTable *)(panel->vtbl);
-            ((SetVisibleFn)(ftable->slots[24]))(
-                panel,
-                0
-            );
+            panel->SetVisible(0);
         }
 
-        base.SetImageBorrowedAndInvalidate(defaultImage);
-        ((InvalidateFn)(base.ftable->slots[8]))(this);
+        SetImageBorrowedAndInvalidate(defaultImage);
+        Invalidate();
         return;
     }
 
     for (HudUiPanel **labelIt2 = labelPanels.begin; labelIt2 != labelPanels.end; ++labelIt2) {
         HudUiPanel *const panel = *labelIt2;
-        const HudUiPanel_FTable *const ftable = (const HudUiPanel_FTable *)(panel->vtbl);
-        ((SetVisibleFn)(ftable->slots[24]))(
-            panel,
-            0
-        );
+        panel->SetVisible(0);
     }
 
     for (HudUiPanel **disabledIt2 = disabledLabelPanels.begin;
         disabledIt2 != disabledLabelPanels.end;
         ++disabledIt2) {
         HudUiPanel *const panel = *disabledIt2;
-        const HudUiPanel_FTable *const ftable = (const HudUiPanel_FTable *)(panel->vtbl);
-        ((SetVisibleFn)(ftable->slots[24]))(
-            panel,
-            1
-        );
+        panel->SetVisible(1);
     }
 
-    base.SetImageBorrowedAndInvalidate(disabledImage);
-    ((InvalidateFn)(base.ftable->slots[8]))(this);
+    SetImageBorrowedAndInvalidate(disabledImage);
+    Invalidate();
 }
 
 // Reimplements 0x4b5630: HudUiZrdWidget::ShowPreview
 void HudUiZrdWidget::ShowPreview() {
     if (rolloverImage != 0) {
         if (defaultImage == 0) {
-            defaultImage = base.image;
+            defaultImage = image;
         }
 
-        base.SetImageBorrowedAndInvalidate(rolloverImage);
+        SetImageBorrowedAndInvalidate(rolloverImage);
     }
 
     if (rolloverSound != 0) {
@@ -10723,7 +8519,7 @@ void HudUiZrdWidget::OnActivate() {
     zInput::ResetAllTransitionState();
 
     if (activateImage != 0) {
-        base.SetImageBorrowedAndInvalidate(activateImage);
+        SetImageBorrowedAndInvalidate(activateImage);
     }
 
     if (rolloverPlayHandle != 0) {
@@ -10760,13 +8556,8 @@ void HudUiZrdWidget::OnActivate() {
 
 // Reimplements 0x4b5860: HudUiZrdWidget::HidePreview
 void HudUiZrdWidget::HidePreview() {
-    typedef void( * SetVisibleFn)(
-        HudUiPanel * self,
-        int visible
-    );
-
     if (defaultImage != 0) {
-        base.SetImageBorrowedAndInvalidate(defaultImage);
+        SetImageBorrowedAndInvalidate(defaultImage);
     }
 
     if (rolloverPlayHandle != 0) {
@@ -10776,50 +8567,40 @@ void HudUiZrdWidget::HidePreview() {
     for (HudUiPanel **rolloverIt = rolloverLabelPanels.begin; rolloverIt != rolloverLabelPanels.end;
         ++rolloverIt) {
         HudUiPanel *const panel = *rolloverIt;
-        const HudUiPanel_FTable *const ftable = (const HudUiPanel_FTable *)(panel->vtbl);
-        ((SetVisibleFn)(ftable->slots[24]))(
-            panel,
-            0
-        );
+        panel->SetVisible(0);
     }
 
     for (HudUiPanel **activateIt = activateLabelPanels.begin; activateIt != activateLabelPanels.end;
         ++activateIt) {
         HudUiPanel *const panel = *activateIt;
-        const HudUiPanel_FTable *const ftable = (const HudUiPanel_FTable *)(panel->vtbl);
-        ((SetVisibleFn)(ftable->slots[24]))(
-            panel,
-            0
-        );
+        panel->SetVisible(0);
     }
 
     for (HudUiPanel **labelIt = labelPanels.begin; labelIt != labelPanels.end; ++labelIt) {
         HudUiPanel *const panel = *labelIt;
-        const HudUiPanel_FTable *const ftable = (const HudUiPanel_FTable *)(panel->vtbl);
-        ((SetVisibleFn)(ftable->slots[24]))(
-            panel,
-            1
-        );
+        panel->SetVisible(1);
     }
 }
 
-// Reimplements 0x4b6fc0: HudUiCheckToggleWidget::Constructor
-HudUiCheckToggleWidget * HudUiCheckToggleWidget::Constructor() {
-    base.Constructor();
-    base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiCheckToggleWidget_FTable);
+// Reimplements 0x4b6fc0: HudUiCheckToggleWidget::HudUiCheckToggleWidget
+HudUiCheckToggleWidget::HudUiCheckToggleWidget() : HudUiZrdWidget() {
     checked = 0;
     uncheckedImage = 0;
     checkedImage = 0;
     checkedLabelPanel = 0;
     disabledCheckedImage = 0;
     disabledCheckedFallbackImage = 0;
+}
+
+// Reimplements 0x4b6fc0: HudUiCheckToggleWidget::Constructor
+HudUiCheckToggleWidget * HudUiCheckToggleWidget::Constructor() {
+    new (this) HudUiCheckToggleWidget;
     return this;
 }
 
 // Reimplements 0x4b7020: HudUiCheckToggleWidget::DestructorCore
 void HudUiCheckToggleWidget::DestructorCore() {
-    base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiCheckToggleWidget_FTable);
-    base.base.SetImageBorrowedAndInvalidate(uncheckedImage);
+    SetImageBorrowedAndInvalidate(uncheckedImage);
 
     if (checkedImage != 0) {
         ::operator delete(checkedImage);
@@ -10827,11 +8608,11 @@ void HudUiCheckToggleWidget::DestructorCore() {
     }
 
     if (checkedLabelPanel != 0) {
-        ((HudUiScalarDeletingDestructorDispatch *)(checkedLabelPanel))->ScalarDeletingDestructor(1);
+        checkedLabelPanel->ScalarDeletingDestructor(1);
         checkedLabelPanel = 0;
     }
 
-    base.DestructorCore();
+    HudUiZrdWidget::DestructorCore();
 }
 
 // Reimplements 0x40cf30: HudUiCheckToggleWidget::DestructorCoreThunk
@@ -10840,7 +8621,7 @@ void HudUiCheckToggleWidget::DestructorCoreThunk() {
 }
 
 // Reimplements 0x4b7000: HudUiCheckToggleWidget::ScalarDeletingDestructor
-HudUiCheckToggleWidget * HudUiCheckToggleWidget::ScalarDeletingDestructor(
+HudUiElement * HudUiCheckToggleWidget::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -10865,49 +8646,49 @@ HudUiCheckToggleWidget * HudUiCheckToggleWidget::ScalarDeletingDestructorThunk(
 
 // Reimplements 0x4b70b0: HudUiCheckToggleWidget::GetBoundsRectOrNull
 HudUiRect * HudUiCheckToggleWidget::GetBoundsRectOrNull() {
-    return &base.boundsRect;
+    return &boundsRect;
 }
 
 // Reimplements 0x4b70c0: HudUiCheckToggleWidget::RefreshState
 void HudUiCheckToggleWidget::RefreshState() {
     HudUiSetPanelVectorVisible(
-        base.rolloverLabelPanels,
+        rolloverLabelPanels,
         0
     );
     HudUiSetPanelVectorVisible(
-        base.activateLabelPanels,
+        activateLabelPanels,
         0
     );
 
-    if (base.modeOrEnabled != 0) {
+    if (modeOrEnabled != 0) {
         HudUiSetPanelVectorVisible(
-            base.labelPanels,
+            labelPanels,
             1
         );
         HudUiSetPanelVectorVisible(
-            base.disabledLabelPanels,
+            disabledLabelPanels,
             0
         );
 
         if (checked != 0) {
             zVidImagePartial *const image = checkedImage != 0 ? checkedImage : uncheckedImage;
             if (image != 0) {
-                base.base.SetImageBorrowedAndInvalidate(image);
-                HudUiVirtualInvalidateRequired(this);
+                SetImageBorrowedAndInvalidate(image);
+                Invalidate();
                 return;
             }
         }
 
-        HudUiVirtualInvalidateRequired(this);
+        Invalidate();
         return;
     }
 
     HudUiSetPanelVectorVisible(
-        base.labelPanels,
+        labelPanels,
         0
     );
     HudUiSetPanelVectorVisible(
-        base.disabledLabelPanels,
+        disabledLabelPanels,
         1
     );
 
@@ -10915,48 +8696,48 @@ void HudUiCheckToggleWidget::RefreshState() {
         zVidImagePartial *const image =
             disabledCheckedImage != 0 ? disabledCheckedImage : disabledCheckedFallbackImage;
         if (image != 0) {
-            base.base.SetImageBorrowedAndInvalidate(image);
+            SetImageBorrowedAndInvalidate(image);
         }
     }
 
-    HudUiVirtualInvalidateRequired(this);
+    Invalidate();
 }
 
 // Reimplements 0x4b7210: HudUiCheckToggleWidget::ShowPreview
 void HudUiCheckToggleWidget::ShowPreview() {
-    if (base.modeOrEnabled == 0 || checked != 0) {
+    if (modeOrEnabled == 0 || checked != 0) {
         return;
     }
 
-    if (base.rolloverSound != 0) {
-        base.rolloverPlayHandle = base.rolloverSound->PlayA3DSimple(base.rolloverSoundScale);
+    if (rolloverSound != 0) {
+        rolloverPlayHandle = rolloverSound->PlayA3DSimple(rolloverSoundScale);
     }
 
-    base.ShowPreview();
+    HudUiZrdWidget::ShowPreview();
 }
 
 // Reimplements 0x4b7250: HudUiCheckToggleWidget::HidePreview
 void HudUiCheckToggleWidget::HidePreview() {
-    if (base.modeOrEnabled == 0 || checked != 0) {
+    if (modeOrEnabled == 0 || checked != 0) {
         return;
     }
 
-    if (base.rolloverPlayHandle != 0) {
-        base.rolloverPlayHandle->StopIfActive();
-        base.rolloverPlayHandle = 0;
+    if (rolloverPlayHandle != 0) {
+        rolloverPlayHandle->StopIfActive();
+        rolloverPlayHandle = 0;
     }
 
-    base.HidePreview();
+    HudUiZrdWidget::HidePreview();
 }
 
 // Reimplements 0x4b7290: HudUiCheckToggleWidget::OnActivate
 void HudUiCheckToggleWidget::OnActivate() {
-    if (base.modeOrEnabled == 0) {
+    if (modeOrEnabled == 0) {
         return;
     }
 
     SetChecked(checked == 0 ? 1 : 0);
-    base.OnActivate();
+    HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x40caa0: HudUiCheckToggleWidget::OnActivateThunk
@@ -10967,13 +8748,13 @@ void HudUiCheckToggleWidget::OnActivateThunk() {
 // Reimplements 0x4b7340: HudUiCheckToggleWidget::LoadFromZrd
 int HudUiCheckToggleWidget::LoadFromZrd(
     zReader::Node *zrdSection,
-    void *ownerDialog
+    HudUiBackground *ownerDialog
 ) {
-    base.LoadFromZrd(
+    HudUiZrdWidget::LoadFromZrd(
         zrdSection,
         ownerDialog
     );
-    uncheckedImage = base.base.image;
+    uncheckedImage = image;
 
     zReader::Node *const checkedNode = zReader_GetNamedNode(
         zrdSection,
@@ -10991,7 +8772,7 @@ int HudUiCheckToggleWidget::LoadFromZrd(
         );
         if (textNode != 0) {
             checkedLabelPanel = CreateHudZrdTextPanel(
-                &base,
+                this,
                 textNode,
                 0
             );
@@ -11014,16 +8795,16 @@ int HudUiCheckToggleWidget::LoadFromZrd(
         );
         if (textNode != 0) {
             checkedLabelPanel = CreateHudZrdTextPanel(
-                &base,
+                this,
                 textNode,
                 0
             );
         }
 
         LoadHudZrdLabelSection(
-            &base,
+            this,
             zrdSection,
-            base.disabledLabelPanels
+            disabledLabelPanels
         );
     }
 
@@ -11043,7 +8824,7 @@ int HudUiCheckToggleWidget::LoadFromZrd(
         );
         if (textNode != 0) {
             checkedLabelPanel = CreateHudZrdTextPanel(
-                &base,
+                this,
                 textNode,
                 0
             );
@@ -11051,30 +8832,34 @@ int HudUiCheckToggleWidget::LoadFromZrd(
     }
 
     if (uncheckedImage != 0) {
-        base.boundsRect.left = base.base.x;
-        base.boundsRect.top = base.base.y;
-        base.boundsRect.right = base.base.x + uncheckedImage->width;
-        base.boundsRect.bottom = base.base.y + uncheckedImage->height;
-    } else if (base.labelPanels.begin != 0) {
-        HudUiPanel **panelIt = base.labelPanels.begin;
+        boundsRect.left = x;
+        boundsRect.top = y;
+        boundsRect.right = x + uncheckedImage->width;
+        boundsRect.bottom = y + uncheckedImage->height;
+    } else if (labelPanels.begin != 0) {
+        HudUiPanel **panelIt = labelPanels.begin;
         HudUiPanel *const firstPanel = *panelIt;
-        base.boundsRect.top = HudUiVirtualGetYRequired(firstPanel);
-        base.boundsRect.left = HudUiVirtualGetXRequired(firstPanel);
-        base.boundsRect.bottom = firstPanel->QueryTextHeight() + base.boundsRect.top;
+        boundsRect.top = firstPanel->GetY();
+        boundsRect.left = firstPanel->GetX();
+        boundsRect.bottom = firstPanel->QueryTextHeight() + boundsRect.top;
 
-        while (panelIt != base.labelPanels.end) {
+        while (panelIt != labelPanels.end) {
             HudUiPanel *const panel = *panelIt;
-            base.boundsRect.bottom += panel->QueryTextHeight();
+            boundsRect.bottom += panel->QueryTextHeight();
 
-            const int right = HudUiPanelTextWidth(panel) + base.boundsRect.left;
-            if (right > base.boundsRect.right) {
-                base.boundsRect.right = right;
+            if (panel->textDirty != 0) {
+                panel->RebuildTextRect();
+            }
+
+            const int right = panel->textWidthPx + boundsRect.left;
+            if (right > boundsRect.right) {
+                boundsRect.right = right;
             }
 
             ++panelIt;
         }
 
-        base.boundsRect.bottom -= firstPanel->QueryTextHeight();
+        boundsRect.bottom -= firstPanel->QueryTextHeight();
     }
 
     return 1;
@@ -11089,38 +8874,30 @@ int HudUiCheckToggleWidget::SetChecked(
 
     if (newChecked != 0) {
         if (checkedImage != 0) {
-            base.base.SetImageBorrowedAndInvalidate(checkedImage);
+            SetImageBorrowedAndInvalidate(checkedImage);
         }
 
         if (checkedLabelPanel != 0) {
-            HudUiVirtualSetVisibleRequired(
-                checkedLabelPanel,
-                1
-            );
-            HudUiVirtualInvalidateRequired(this);
+            checkedLabelPanel->SetVisible(1);
+            Invalidate();
             return previousChecked;
         }
     } else {
         if (uncheckedImage != 0) {
-            base.base.SetImageBorrowedAndInvalidate(uncheckedImage);
+            SetImageBorrowedAndInvalidate(uncheckedImage);
         }
 
         if (checkedLabelPanel != 0) {
-            HudUiVirtualSetVisibleRequired(
-                checkedLabelPanel,
-                0
-            );
+            checkedLabelPanel->SetVisible(0);
         }
     }
 
-    HudUiVirtualInvalidateRequired(this);
+    Invalidate();
     return previousChecked;
 }
 
-// Reimplements 0x4b7d60: HudUiCycleSelectorWidget::Constructor
-HudUiCycleSelectorWidget * HudUiCycleSelectorWidget::Constructor() {
-    base.Constructor();
-    base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiCycleSelectorWidget_FTable);
+// Reimplements 0x4b7d60: HudUiCycleSelectorWidget::HudUiCycleSelectorWidget
+HudUiCycleSelectorWidget::HudUiCycleSelectorWidget() : HudUiZrdWidget() {
     selectedIndex = 0;
     itemCount = 0;
     for (int i = 0; i < 20; ++i) {
@@ -11133,12 +8910,16 @@ HudUiCycleSelectorWidget * HudUiCycleSelectorWidget::Constructor() {
     fontStyleRef = 0;
     textOffsetY = 0;
     textOffsetX = 0;
+}
+
+// Reimplements 0x4b7d60: HudUiCycleSelectorWidget::Constructor
+HudUiCycleSelectorWidget * HudUiCycleSelectorWidget::Constructor() {
+    new (this) HudUiCycleSelectorWidget;
     return this;
 }
 
 // Reimplements 0x4b7de0: HudUiCycleSelectorWidget::DestructorCore
 void HudUiCycleSelectorWidget::DestructorCore() {
-    base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiCycleSelectorWidget_FTable);
 
     for (int i = 0; i < 20; ++i) {
         if (entriesA[i] != 0) {
@@ -11152,7 +8933,7 @@ void HudUiCycleSelectorWidget::DestructorCore() {
         }
     }
 
-    base.DestructorCore();
+    HudUiZrdWidget::DestructorCore();
 }
 
 // Reimplements 0x40cf40: HudUiCycleSelectorWidget::DestructorCoreThunk
@@ -11161,7 +8942,7 @@ void HudUiCycleSelectorWidget::DestructorCoreThunk() {
 }
 
 // Reimplements 0x4b7dc0: HudUiCycleSelectorWidget::ScalarDeletingDestructor
-HudUiCycleSelectorWidget * HudUiCycleSelectorWidget::ScalarDeletingDestructor(
+HudUiElement * HudUiCycleSelectorWidget::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -11198,7 +8979,7 @@ void HudUiCycleSelectorWidget::AdvanceSelectionAndActivate() {
         selectedIndex = firstIndex;
     }
 
-    base.OnActivate();
+    HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x4b7f20: HudUiCycleSelectorWidget::SetIndexClamped
@@ -11250,27 +9031,30 @@ void HudUiCycleSelectorWidget::Update(
     float deltaSeconds
 ) {
     for (int i = 0; i < itemCount; ++i) {
-        HudUiVirtualInvalidate(this);
+        Invalidate();
 
         if (entriesA[i] != 0) {
-            HudUiVirtualSetVisible(
-                entriesA[i],
-                i == selectedIndex ? 1 : 0
-            );
+            entriesA[i]->SetVisible(i == selectedIndex ? 1 : 0);
         }
 
         if (entriesB[i] != 0) {
-            HudUiVirtualSetVisible(
-                entriesB[i],
-                i == selectedIndex ? 1 : 0
-            );
+            entriesB[i]->SetVisible(i == selectedIndex ? 1 : 0);
         }
     }
 
-    ((HudUiElement *)(this))->Update(deltaSeconds);
+    HudUiElement::Update(deltaSeconds);
 }
 
-// Reimplements 0x4b7fd0: HudUiCycleSelectorWidget::AddTextEntry
+/**
+ * Reimplements 0x4b7fd0: HudUiCycleSelectorWidget::AddTextEntry.
+ *
+ * Purpose: create a hidden transition text-panel entry, position it with the
+ * selector text offset, and attach it to the owning HUD background container.
+ *
+ * Evidence: BN assembly at 0x4b7fd0 grows itemCount/visibleCount, allocates a
+ * 0x2c0 HudUiTransitionTextPanel, stores it in entriesA[index], dispatches
+ * SetTextFmt/SetPos/SetVisible, and adds it through the owner container.
+ */
 void HudUiCycleSelectorWidget::AddTextEntry(
     int index,
     const char *text,
@@ -11295,100 +9079,72 @@ void HudUiCycleSelectorWidget::AddTextEntry(
 
     HudUiTransitionTextPanel *const transitionPanel =
         (HudUiTransitionTextPanel *)(::operator new(sizeof(HudUiTransitionTextPanel)));
-    HudUiPanel *const panel = (HudUiPanel *)(transitionPanel);
-    panel->ConstructorDefault(
-        0,
-        0,
-        0
-    );
-    *(const HudUiPanel_FTable **)(transitionPanel) = &g_HudUiTransitionTextPanel_FTable;
-    transitionPanel->flashResetValue = 0.349999994f;
-    transitionPanel->flashCountdown = 0;
-    transitionPanel->flashAltColor0 = 0;
-    transitionPanel->flashEnabled = 0;
-    transitionPanel->flashMode = 0;
-    transitionPanel->flashDirectionSign = 1;
+    new (transitionPanel) HudUiTransitionTextPanel;
 
     entriesA[index] = (HudUiWidget *)(transitionPanel);
-    HudUiPanelVirtualSetTextFmtRequired(
-        panel,
-        text
-    );
+    transitionPanel->SetTextFmt(text);
 
-    HudUiElement *const element = (HudUiElement *)(transitionPanel);
-    HudUiVirtualSetPosRequired(
-        element,
+    transitionPanel->SetPos(
         textOffsetX + posX,
         textOffsetY + posY
     );
-    HudUiVirtualSetVisibleRequired(
-        element,
-        0
-    );
-    ((HudUiContainer *)(base.owner))->AddChild(element);
+    transitionPanel->SetVisible(0);
+    ((HudUiContainer *)(owner))->AddChild(transitionPanel);
 }
 
-// Reimplements 0x4ba020: HudUiTransitionTextPanel::Constructor
-HudUiTransitionTextPanel * HudUiTransitionTextPanel::Constructor() {
-    HudUiPanel *const panel = (HudUiPanel *)(this);
-    panel->ConstructorDefault(
+// Reimplements 0x4ba020: HudUiTransitionTextPanel::HudUiTransitionTextPanel
+HudUiTransitionTextPanel::HudUiTransitionTextPanel()
+    : HudUiPanel(
         0,
         0,
         0
-    );
-    *(const HudUiPanel_FTable **)(this) = &g_HudUiTransitionTextPanel_FTable;
+    ) {
     flashCountdown = 0;
     flashAltColor0 = 0;
     flashEnabled = 0;
     flashMode = 0;
     flashResetValue = 0.349999994f;
     flashDirectionSign = 1;
-    return this;
+}
+
+HudUiTransitionTextPanel::~HudUiTransitionTextPanel() {
+    HudUiPanel::Destructor();
 }
 
 // Reimplements 0x4bc9f0: HudUiTransitionTextPanel::TickFlash
 void HudUiTransitionTextPanel::TickFlash(
     float deltaSeconds
 ) {
-    HudUiElement *const element = (HudUiElement *)(this);
-    HudUiPanel *const panel = (HudUiPanel *)(this);
-
-    const unsigned int elementFlags = element->flags;
+    const unsigned int elementFlags = flags;
     if ((elementFlags & 0x10u) != 0) {
         return;
     }
 
     if ((elementFlags & 1u) != 0) {
-        element->timer -= deltaSeconds;
-        if (element->timer <= 0.0f) {
-            HudUiVirtualSetVisibleRequired(
-                element,
-                0
-            );
+        timer -= deltaSeconds;
+        if (timer <= 0.0f) {
+            SetVisible(0);
         }
     }
 
-    if (flashEnabled == 0 || (element->flags & 0x10u) != 0) {
-        panel->Draw();
+    if (flashEnabled == 0 || (flags & 0x10u) != 0) {
+        HudUiPanel::Draw();
         return;
     }
 
     flashCountdown -= deltaSeconds;
     switch (flashMode) {
     case 0:
-        panel->Draw();
+        HudUiPanel::Draw();
     case 1:
         if (flashCountdown < 0.0f) {
             flashCountdown += flashResetValue;
-            FieldAt<unsigned int>(
-                this,
-                0x270
-            ) = 1;
+            textDirty = 1;
             flashDirectionSign = -flashDirectionSign;
         }
 
         if (flashDirectionSign == 1) {
-            panel->Draw();
+            HudUiPanel::Draw();
         }
         return;
 
@@ -11396,42 +9152,36 @@ void HudUiTransitionTextPanel::TickFlash(
     case 3:
         if (flashCountdown < 0.0f) {
             flashCountdown = flashResetValue;
-            FieldAt<unsigned int>(
-                this,
-                0x270
-            ) = 1;
+            textDirty = 1;
             flashDirectionSign = -flashDirectionSign;
 
-            const unsigned int textColor0 = FieldAt<unsigned int>(
-                this,
-                0x14c
-            );
-            const unsigned int textColor1 = FieldAt<unsigned int>(
-                this,
-                0x150
-            );
-            FieldAt<unsigned int>(
-                this,
-                0x14c
-            ) = (unsigned int)(flashAltColor0);
-            FieldAt<unsigned int>(
-                this,
-                0x150
-            ) = (unsigned int)(flashAltColor1);
-            flashAltColor0 = (int)(textColor0);
-            flashAltColor1 = (int)(textColor1);
+            const unsigned int oldTextColor0 = textColor0;
+            const unsigned int oldTextColor1 = textColor1;
+            textColor0 = (unsigned int)(flashAltColor0);
+            textColor1 = (unsigned int)(flashAltColor1);
+            flashAltColor0 = (int)(oldTextColor0);
+            flashAltColor1 = (int)(oldTextColor1);
         }
 
-        panel->Draw();
+        HudUiPanel::Draw();
         return;
 
     default:
-        panel->Draw();
+        HudUiPanel::Draw();
         return;
     }
 }
 
-// Reimplements 0x4bc930: HudUiTransitionTextPanel::ResetFlashState
+/**
+ * Reimplements 0x4bc930: HudUiTransitionTextPanel::ResetFlashState.
+ *
+ * Purpose: enable flash state, update a positive flash rate to its half-period,
+ * reset the countdown from that period, and restore forward flash direction.
+ *
+ * Evidence: BN assembly at 0x4bc930 writes flashEnabled, conditionally stores
+ * flashRate*0.5 into flashResetValue when flashRate is positive, copies
+ * flashResetValue into flashCountdown, and writes flashDirectionSign = 1.
+ */
 void HudUiTransitionTextPanel::ResetFlashState(
     float flashRate
 ) {
@@ -11448,7 +9198,15 @@ void HudUiTransitionTextPanel::ResetFlashState(
     );
 }
 
-// Reimplements 0x4bc980: HudUiTransitionTextPanel::SetFlashRate
+/**
+ * Reimplements 0x4bc980: HudUiTransitionTextPanel::SetFlashRate.
+ *
+ * Purpose: enter rate-only flashing by resetting flash state unless the panel
+ * is already in rate-only flash mode.
+ *
+ * Evidence: BN assembly at 0x4bc980 returns when flashMode is 1; otherwise it
+ * calls ResetFlashState(flashRate) and stores flashMode = 1.
+ */
 void HudUiTransitionTextPanel::SetFlashRate(
     float flashRate
 ) {
@@ -11475,7 +9233,17 @@ void HudUiTransitionTextPanel::SetFlashColorAndRate(
     flashAltColor1 = flashColor;
 }
 
-// Reimplements 0x4b8100: HudUiCycleSelectorWidget::ApplyFontStyleForEntry
+/**
+ * Reimplements 0x4b8100: HudUiCycleSelectorWidget::ApplyFontStyleForEntry.
+ *
+ * Purpose: grow the selector entry range when needed, validate the owning
+ * background font style, and copy that style onto the text-panel entry.
+ *
+ * Evidence: BN assembly at 0x4b8100 selects owner->fontStyles[styleIndex] at
+ * HudUiBackground offset 0x1cec, checks validMarker, calls the entry SetFont
+ * slot, and copies text color, shadow, alignment, background mode, and
+ * background color fields.
+ */
 void HudUiCycleSelectorWidget::ApplyFontStyleForEntry(
     int index,
     int styleIndex
@@ -11496,16 +9264,13 @@ void HudUiCycleSelectorWidget::ApplyFontStyleForEntry(
         return;
     }
 
-    const HudFontStyle *const stylesBase =
-        (const HudFontStyle *)((const unsigned char *)(base.owner) + 0x1cec);
-    const HudFontStyle *const style = &stylesBase[styleIndex];
+    const HudFontStyle *const style = &owner->fontStyles[styleIndex];
     if (style->validMarker == 0) {
         return;
     }
 
     HudUiPanel *const panel = (HudUiPanel *)(entriesA[index]);
-    HudUiPanelVirtualSetFontRequired(
-        panel,
+    panel->SetFont(
         style->fontName,
         style->fontSize,
         style->fontWeight,
@@ -11515,42 +9280,15 @@ void HudUiCycleSelectorWidget::ApplyFontStyleForEntry(
         2
     );
 
-    FieldAt<unsigned int>(
-        panel,
-        0x14c
-    ) = style->textColor;
-    FieldAt<unsigned int>(
-        panel,
-        0x150
-    ) = style->textColor;
-    FieldAt<unsigned int>(
-        panel,
-        0x270
-    ) = 1;
-    FieldAt<unsigned int>(
-        panel,
-        0x264
-    ) = style->shadowEnabled;
-    FieldAt<int>(
-        panel,
-        0x29c
-    ) = 1;
-    FieldAt<int>(
-        panel,
-        0x2a0
-    ) = 1;
-    FieldAt<unsigned int>(
-        panel,
-        0x144
-    ) = style->alignMode;
-    FieldAt<unsigned int>(
-        panel,
-        0x268
-    ) = style->bkMode;
-    FieldAt<unsigned int>(
-        panel,
-        0x26c
-    ) = style->bkColor;
+    panel->textColor0 = style->textColor;
+    panel->textColor1 = style->textColor;
+    panel->textDirty = 1;
+    panel->shadowEnabled = style->shadowEnabled;
+    panel->shadowOffsetX = 1;
+    panel->shadowOffsetY = 1;
+    panel->alignMode = style->alignMode;
+    panel->bkMode = style->bkMode;
+    panel->bkColor = style->bkColor;
 }
 
 // Reimplements 0x4b8200: HudUiCycleSelectorWidget::AddBitmapEntry
@@ -11580,24 +9318,20 @@ void HudUiCycleSelectorWidget::AddBitmapEntry(
     bitmapWidget->Constructor(0);
     entriesB[index] = bitmapWidget;
     bitmapWidget->SetImageByPathOwned(imagePath);
-    HudUiVirtualSetPosRequired(
-        bitmapWidget,
+    bitmapWidget->SetPos(
         posX,
         posY
     );
-    HudUiVirtualSetVisibleRequired(
-        bitmapWidget,
-        0
-    );
-    ((HudUiContainer *)(base.owner))->AddChild((HudUiElement *)(bitmapWidget));
+    bitmapWidget->SetVisible(0);
+    ((HudUiContainer *)(owner))->AddChild((HudUiElement *)(bitmapWidget));
 }
 
 // Reimplements 0x4b82e0: HudUiCycleSelectorWidget::LoadFromZrd
 int HudUiCycleSelectorWidget::LoadFromZrd(
     zReader::Node *zrdSection,
-    void *ownerDialog
+    HudUiBackground *ownerDialog
 ) {
-    base.LoadFromZrd(
+    HudUiZrdWidget::LoadFromZrd(
         zrdSection,
         ownerDialog
     );
@@ -11668,12 +9402,12 @@ int HudUiCycleSelectorWidget::LoadFromZrd(
                 AddTextEntry(
                     index,
                     text != 0 ? text : "",
-                    base.originX + ZrdArrayInt(
+                    originX + ZrdArrayInt(
                         textBase,
                         2,
                         0
                     ),
-                    base.originY + ZrdArrayInt(textBase, 3, 0)
+                    originY + ZrdArrayInt(textBase, 3, 0)
                 );
                 ApplyFontStyleForEntry(
                     index,
@@ -11687,8 +9421,8 @@ int HudUiCycleSelectorWidget::LoadFromZrd(
             );
             zReader::Node *const bitmapBase = ZrdArrayBase(bitmapNode);
             if (bitmapBase != 0) {
-                int bitmapX = base.originX;
-                int bitmapY = base.originY;
+                int bitmapX = originX;
+                int bitmapY = originY;
                 if (ZrdArrayCount(bitmapBase) >= 4) {
                     bitmapX += ZrdArrayInt(
                         bitmapBase,
@@ -11718,10 +9452,8 @@ int HudUiCycleSelectorWidget::LoadFromZrd(
     return 1;
 }
 
-// Reimplements 0x4b8450: HudUiFillBitmap::Constructor
-HudUiFillBitmap * HudUiFillBitmap::Constructor() {
-    base.Constructor();
-    base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiFillBitmap_FTable);
+// Reimplements 0x4b8450: HudUiFillBitmap::HudUiFillBitmap
+HudUiFillBitmap::HudUiFillBitmap() : HudUiZrdWidget() {
     normalizedValue = 0.0f;
     previewImage = 0;
     fillImage = 0;
@@ -11733,24 +9465,22 @@ HudUiFillBitmap * HudUiFillBitmap::Constructor() {
     fillRect.left = 0;
     fillRect.bottom = 0;
     fillRect.top = 0;
-    return this;
 }
 
 // Reimplements 0x4b84d0: HudUiFillBitmap::DestructorCore
 void HudUiFillBitmap::DestructorCore() {
-    base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiFillBitmap_FTable);
 
-    if (previewImage != 0 && previewImage != base.base.image) {
+    if (previewImage != 0 && previewImage != image) {
         zVid_Image::ReleaseIfNotDefault(previewImage);
         previewImage = 0;
     }
 
-    if (fillImage != 0 && fillImage != base.base.image) {
+    if (fillImage != 0 && fillImage != image) {
         zVid_Image::ReleaseIfNotDefault(fillImage);
         fillImage = 0;
     }
 
-    base.DestructorCore();
+    HudUiZrdWidget::DestructorCore();
 }
 
 // Reimplements 0x40cf50: HudUiFillBitmap::DestructorCoreThunk
@@ -11759,7 +9489,7 @@ void HudUiFillBitmap::DestructorCoreThunk() {
 }
 
 // Reimplements 0x4b84b0: HudUiFillBitmap::ScalarDeletingDestructor
-HudUiFillBitmap * HudUiFillBitmap::ScalarDeletingDestructor(
+HudUiElement * HudUiFillBitmap::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -11776,13 +9506,13 @@ void HudUiFillBitmap::Draw() {
         return;
     }
 
-    base.base.Draw();
+    HudUiWidget::Draw();
 
     if (fillRect.left != fillRect.right) {
         zVid_Image::BlitToActiveTarget(
             fillImage,
-            base.base.x + fillOffsetX,
-            base.base.y + fillOffsetY,
+            x + fillOffsetX,
+            y + fillOffsetY,
             0,
             (zVidRect32 *)(&fillRect)
         );
@@ -11791,8 +9521,8 @@ void HudUiFillBitmap::Draw() {
     if (previewRect.left != previewRect.right) {
         zVid_Image::BlitToActiveTarget(
             previewImage,
-            base.base.x + previewOffsetX,
-            base.base.y + previewOffsetY,
+            x + previewOffsetX,
+            y + previewOffsetY,
             0,
             (zVidRect32 *)(&previewRect)
         );
@@ -11802,9 +9532,9 @@ void HudUiFillBitmap::Draw() {
 // Reimplements 0x4b85c0: HudUiFillBitmap::LoadFromZrd
 int HudUiFillBitmap::LoadFromZrd(
     zReader::Node *zrdSection,
-    void *ownerDialog
+    HudUiBackground *ownerDialog
 ) {
-    base.LoadFromZrd(
+    HudUiZrdWidget::LoadFromZrd(
         zrdSection,
         ownerDialog
     );
@@ -11819,10 +9549,10 @@ int HudUiFillBitmap::LoadFromZrd(
             fillBitmapBase,
             1
         ));
-        ((HudUiElement *)(this))->Invalidate();
+        HudUiElement::Invalidate();
 
-        int posX = base.originX;
-        int posY = base.originY;
+        int posX = originX;
+        int posY = originY;
         if (ZrdArrayCount(fillBitmapBase) >= 4) {
             posX += ZrdArrayInt(
                 fillBitmapBase,
@@ -11836,12 +9566,12 @@ int HudUiFillBitmap::LoadFromZrd(
             );
         }
 
-        ((HudUiElement *)(this))->SetPos(
+        HudUiElement::SetPos(
             posX,
             posY
         );
-        previewImage = base.base.image;
-        ((HudUiElement *)(this))->Invalidate();
+        previewImage = image;
+        HudUiElement::Invalidate();
     }
 
     SetNormalizedValueAndRebuild(0.0f);
@@ -11850,14 +9580,11 @@ int HudUiFillBitmap::LoadFromZrd(
 
 // Reimplements 0x4b8650: HudUiFillBitmap::UpdateNormalizedFromCursor
 void HudUiFillBitmap::UpdateNormalizedFromCursor() {
-    const int cursorX = OwnerField<int>(
-        base.owner,
-        0x14
-    );
-    const int relativeX = cursorX - HudUiVirtualGetX(this);
-    const int imageWidth = base.base.image != 0 ? base.base.image->width : 0;
+    const int cursorX = owner->mouseState.cursorClientX;
+    const int relativeX = cursorX - GetCenterX();
+    const int imageWidth = image != 0 ? image->width : 0;
     SetNormalizedValueAndRebuild((float)(relativeX) / (float)(imageWidth));
-    base.OnActivate();
+    OnActivate();
 }
 
 // Reimplements 0x4ba3c0: HudUiFillBitmap::SetNormalizedValue
@@ -11870,13 +9597,12 @@ void HudUiFillBitmap::SetNormalizedValue(
         &value,
         sizeof(valueBits)
     );
-    FieldAt<unsigned int>(
-        this,
-        0x14c
-    ) = valueBits;
-    typedef void( * InvalidateFn)(HudUiElement * self);
-    HudUiElement *const element = (HudUiElement *)(this);
-    ((InvalidateFn)(element->ftable->slots[8]))(element);
+    memcpy(
+        &normalizedValue,
+        &valueBits,
+        sizeof(normalizedValue)
+    );
+    Invalidate();
 }
 
 // Reimplements 0x4b86b0: HudUiFillBitmap::SetNormalizedValueAndRebuild
@@ -11888,7 +9614,7 @@ void HudUiFillBitmap::SetNormalizedValueAndRebuild(
     }
 
     normalizedValue = value;
-    ((HudUiElement *)(this))->Invalidate();
+    HudUiElement::Invalidate();
 
     const int fillWidth = fillImage->width;
     const int fillHeight = fillImage->height;
@@ -11913,26 +9639,27 @@ void HudUiFillBitmap::SetNormalizedValueAndRebuild(
     previewOffsetY = 0;
 }
 
-// Reimplements 0x4b8760: HudUiZrdWidgetEx17C_Item::Constructor
-HudUiZrdWidgetEx17C_Item * HudUiZrdWidgetEx17C_Item::Constructor() {
-    base.Constructor();
-    base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiZrdWidgetEx17C_Item_FTable);
+// Reimplements 0x4b8760: HudUiZrdWidgetEx17C_Item::HudUiZrdWidgetEx17C_Item
+HudUiZrdWidgetEx17C_Item::HudUiZrdWidgetEx17C_Item() : HudUiZrdWidget() {
     selected = 0;
-    ownerSelector = 0;
-    mouseRectValid = 0;
     selectedImage = 0;
     unselectedImage = 0;
+    ownerSelector = 0;
+    mouseRectValid = 0;
+}
+
+HudUiZrdWidgetEx17C_Item * HudUiZrdWidgetEx17C_Item::Constructor() {
+    new (this) HudUiZrdWidgetEx17C_Item;
     return this;
 }
 
 // Reimplements 0x4b87c0: HudUiZrdWidgetEx17C_Item::DestructorCore
 void HudUiZrdWidgetEx17C_Item::DestructorCore() {
-    base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiZrdWidgetEx17C_Item_FTable);
-    base.DestructorCore();
+    HudUiZrdWidget::DestructorCore();
 }
 
 // Reimplements 0x4b87a0: HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor
-HudUiZrdWidgetEx17C_Item * HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor(
+HudUiElement * HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -11946,88 +9673,101 @@ HudUiZrdWidgetEx17C_Item * HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor(
 // Reimplements 0x4b87d0: HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected
 void HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected() {
     if (selected == 0) {
-        base.ShowPreview();
+        HudUiZrdWidget::ShowPreview();
     }
+}
+
+void HudUiZrdWidgetEx17C_Item::ShowPreview() {
+    ShowPreviewIfNotSelected();
 }
 
 // Reimplements 0x4b87e0: HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected
 void HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected() {
     if (selected == 0) {
-        base.HidePreview();
+        HudUiZrdWidget::HidePreview();
     }
+}
+
+void HudUiZrdWidgetEx17C_Item::HidePreview() {
+    HidePreviewIfNotSelected();
 }
 
 // Reimplements 0x4b87f0: HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf
 void HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf() {
-    typedef void( * ActivateFn)(HudUiZrdWidgetEx17C * self);
-    typedef void( * HidePreviewFn)(HudUiZrdWidgetEx17C_Item * self);
-
     ownerSelector->SetSelectedIndex(itemIndex);
-    ((ActivateFn)(ownerSelector->base.base.ftable->slots[12]))(ownerSelector);
-    base.OnActivate();
+    ownerSelector->OnActivate();
+    HudUiZrdWidget::OnActivate();
 
     {
         for (int index = 0; index < ownerSelector->optionCount; ++index) {
             HudUiZrdWidgetEx17C_Item *const option = ownerSelector->options[index];
-            ((HidePreviewFn)(option->base.base.ftable->slots[16]))(option);
+            option->HidePreviewIfNotSelected();
         }
     }
+}
+
+void HudUiZrdWidgetEx17C_Item::OnActivate() {
+    OnActivateSelectSelf();
 }
 
 // Reimplements 0x4b8850: HudUiZrdWidgetEx17C_Item::LoadFromZrd
 int HudUiZrdWidgetEx17C_Item::LoadFromZrd(
     zReader::Node *zrdSection,
-    void *ownerDialog
+    HudUiBackground *ownerDialog
 ) {
-    base.LoadFromZrd(
+    HudUiZrdWidget::LoadFromZrd(
         zrdSection,
         ownerDialog
     );
 
-    unselectedImage = base.base.image;
-    unselectedRolloverImage = base.rolloverImage;
-    selectedImage = base.activateImage;
-    selectedRolloverImage = base.activateImage;
+    unselectedImage = image;
+    unselectedRolloverImage = rolloverImage;
+    selectedImage = activateImage;
+    selectedRolloverImage = activateImage;
 
-    base.boundsRect.top = HudUiVirtualGetYRequired(this);
-    base.boundsRect.left = HudUiVirtualGetXRequired(this);
+    boundsRect.top = GetCenterY();
+    boundsRect.left = GetCenterX();
 
-    if (base.base.image != 0) {
-        base.boundsRect.bottom = base.boundsRect.top + base.base.image->width;
-        base.boundsRect.right = base.boundsRect.left + base.base.image->height;
+    if (image != 0) {
+        boundsRect.bottom = boundsRect.top + image->width;
+        boundsRect.right = boundsRect.left + image->height;
     } else {
-        base.boundsRect.bottom = base.boundsRect.top;
-        base.boundsRect.right = base.boundsRect.left;
+        boundsRect.bottom = boundsRect.top;
+        boundsRect.right = boundsRect.left;
     }
 
     if (unselectedImage != 0) {
-        base.boundsRect.top = base.base.y;
-        base.boundsRect.left = base.base.x;
-        base.boundsRect.bottom = base.base.y + unselectedImage->height;
-        base.boundsRect.right = base.base.x + unselectedImage->width;
-    } else if (base.labelPanels.begin != 0) {
-        HudUiPanel **panelIt = base.labelPanels.begin;
+        boundsRect.top = y;
+        boundsRect.left = x;
+        boundsRect.bottom = y + unselectedImage->height;
+        boundsRect.right = x + unselectedImage->width;
+    } else if (labelPanels.begin != 0) {
+        HudUiPanel **panelIt = labelPanels.begin;
         HudUiPanel *const firstPanel = *panelIt;
-        base.boundsRect.top = HudUiVirtualGetYRequired(firstPanel);
-        base.boundsRect.left = HudUiVirtualGetXRequired(firstPanel);
-        base.boundsRect.bottom = firstPanel->QueryTextHeight() + base.boundsRect.top;
+        boundsRect.top = firstPanel->GetY();
+        boundsRect.left = firstPanel->GetX();
+        boundsRect.bottom = firstPanel->QueryTextHeight() + boundsRect.top;
 
-        while (panelIt != base.labelPanels.end) {
+        while (panelIt != labelPanels.end) {
             HudUiPanel *const panel = *panelIt;
-            base.boundsRect.bottom += panel->QueryTextHeight();
+            boundsRect.bottom += panel->QueryTextHeight();
 
-            const int right = HudUiPanelTextWidth(panel) + base.boundsRect.left;
-            if (right > base.boundsRect.right) {
-                base.boundsRect.right = right;
+            if (panel->textDirty != 0) {
+                panel->RebuildTextRect();
+            }
+
+            const int right = panel->textWidthPx + boundsRect.left;
+            if (right > boundsRect.right) {
+                boundsRect.right = right;
             }
 
             ++panelIt;
         }
 
-        base.boundsRect.bottom -= firstPanel->QueryTextHeight();
+        boundsRect.bottom -= firstPanel->QueryTextHeight();
     }
 
-    mouseRect = base.boundsRect;
+    mouseRect = boundsRect;
     mouseRectValid = 1;
 
     zReader::Node *const mouseRectNode = zReader_GetNamedNode(
@@ -12066,30 +9806,28 @@ void HudUiZrdWidgetEx17C_Item::SetSelected(
     int selectedValue
 ) {
     selected = selectedValue;
-    if (base.modeOrEnabled == 0) {
+    if (modeOrEnabled == 0) {
         return;
     }
 
     if (selectedValue != 0) {
-        base.defaultImage = selectedImage;
-        base.rolloverImage = selectedRolloverImage;
+        defaultImage = selectedImage;
+        rolloverImage = selectedRolloverImage;
     } else {
-        base.defaultImage = unselectedImage;
-        base.rolloverImage = unselectedRolloverImage;
+        defaultImage = unselectedImage;
+        rolloverImage = unselectedRolloverImage;
     }
 
-    base.base.SetImageBorrowedAndInvalidate(base.defaultImage);
+    SetImageBorrowedAndInvalidate(defaultImage);
 }
 
 // Reimplements 0x4b8af0: HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds
 HudUiRect * HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds() {
-    return mouseRectValid != 0 ? &mouseRect : base.GetBoundsRectOrNull();
+    return mouseRectValid != 0 ? &mouseRect : GetBoundsRectOrNull();
 }
 
-// Reimplements 0x4b8b10: HudUiZrdWidgetEx17C::Constructor
-HudUiZrdWidgetEx17C * HudUiZrdWidgetEx17C::Constructor() {
-    base.Constructor();
-    base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiZrdWidgetEx17C_FTable);
+// Reimplements 0x4b8b10: HudUiZrdWidgetEx17C::HudUiZrdWidgetEx17C
+HudUiZrdWidgetEx17C::HudUiZrdWidgetEx17C() : HudUiZrdWidget() {
     optionCount = 0;
 
     {
@@ -12098,38 +9836,32 @@ HudUiZrdWidgetEx17C * HudUiZrdWidgetEx17C::Constructor() {
             options[optionIndex] = 0;
         }
     }
+}
 
+HudUiZrdWidgetEx17C * HudUiZrdWidgetEx17C::Constructor() {
+    new (this) HudUiZrdWidgetEx17C;
     return this;
 }
 
 // Reimplements 0x4b8b60: HudUiZrdWidgetEx17C::DestructorCore
 void HudUiZrdWidgetEx17C::DestructorCore() {
-    typedef HudUiZrdWidgetEx17C_Item *( * ScalarDeleteFn)(
-        HudUiZrdWidgetEx17C_Item * self,
-        unsigned int flags
-    );
-
-    base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiZrdWidgetEx17C_FTable);
 
     {
         int optionIndex;
         for (optionIndex = 0; optionIndex < 10; ++optionIndex) {
             HudUiZrdWidgetEx17C_Item *option = options[optionIndex];
             if (option != 0) {
-                ((ScalarDeleteFn)(option->base.base.ftable->slots[0]))(
-                    option,
-                    1
-                );
+                option->ScalarDeletingDestructor(1);
                 options[optionIndex] = 0;
             }
         }
     }
 
-    base.DestructorCore();
+    HudUiZrdWidget::DestructorCore();
 }
 
 // Reimplements 0x4b8b40: HudUiZrdWidgetEx17C::ScalarDeletingDestructor
-HudUiZrdWidgetEx17C * HudUiZrdWidgetEx17C::ScalarDeletingDestructor(
+HudUiElement * HudUiZrdWidgetEx17C::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -12155,15 +9887,9 @@ HudUiZrdWidgetEx17C * HudUiZrdWidgetEx17C::ScalarDeletingDestructorThunk(
 // Reimplements 0x4b8be0: HudUiZrdWidgetEx17C::LoadFromZrd
 int HudUiZrdWidgetEx17C::LoadFromZrd(
     zReader::Node *zrdSection,
-    void *ownerDialog
+    HudUiBackground *ownerDialog
 ) {
-    typedef int( * LoadFromZrdFn)(
-        HudUiZrdWidgetEx17C_Item * self,
-        zReader::Node * zrdSection,
-        void *ownerDialog
-    );
-
-    base.owner = ownerDialog;
+    owner = ownerDialog;
 
     zReader::Node *const radioNode = zReader_GetNamedNode(
         zrdSection,
@@ -12183,8 +9909,7 @@ int HudUiZrdWidgetEx17C::LoadFromZrd(
                 option->Constructor();
                 options[index] = option;
 
-                ((LoadFromZrdFn)(option->base.base.ftable->slots[31]))(
-                    option,
+                option->LoadFromZrd(
                     &radioBase[index + 1],
                     ownerDialog
                 );
@@ -12202,15 +9927,19 @@ int HudUiZrdWidgetEx17C::LoadFromZrd(
 void HudUiZrdWidgetEx17C::EnableChildAtIndex(
     int childIndex
 ) {
-    typedef void( * RefreshStateFn)(HudUiZrdWidgetEx17C_Item * self);
-
     if (childIndex >= optionCount) {
         return;
     }
 
     HudUiZrdWidgetEx17C_Item *const option = options[childIndex];
     option->selected = 1;
-    ((RefreshStateFn)(option->base.base.ftable->slots[30]))(option);
+    option->RefreshState();
+}
+
+void HudUiZrdWidgetEx17C::SetVisible(
+    int childIndex
+) {
+    EnableChildAtIndex(childIndex);
 }
 
 // Reimplements 0x4b8cf0: HudUiZrdWidgetEx17C::SetSelectedIndex
@@ -12230,33 +9959,20 @@ int HudUiZrdWidgetEx17C::SetSelectedIndex(
     return 1;
 }
 
-// Reimplements 0x4b92a0: HudUiListSelectorItem::Constructor
-HudUiListSelectorItem * HudUiListSelectorItem::Constructor() {
-    ((HudUiPanel *)(this))->ConstructorDefault(
-        0,
-        0,
-        0
-    );
-    ((HudUiPanel *)(this))->vtbl = &g_HudUiListSelectorItem_FTable;
-    return this;
-}
-
+// Reimplements 0x4b92a0: HudUiListSelectorItem::HudUiListSelectorItem
+// Source model lives in the inline class-body constructor in zhud_ui.h.
 // Reimplements 0x4b9520: HudUiListSelectorItem::OnActivate
 void HudUiListSelectorItem::OnActivate() {
     typedef void( * OnSelectedIndexChangedFn)(
         void *self,
         int selectedIndex
     );
-    struct HudUiListSelectionOwnerFTable {
-        unsigned int slots[33];
-        OnSelectedIndexChangedFn OnSelectedIndexChanged;
-    };
 
     void *const selectionOwner = owner;
     if (selectionOwner != 0) {
-        const HudUiListSelectionOwnerFTable *const ownerFTable =
-            *(const HudUiListSelectionOwnerFTable *const *)selectionOwner;
-        ownerFTable->OnSelectedIndexChanged(
+        const unsigned int *const ownerSlots =
+            *(const unsigned int *const *)selectionOwner;
+        ((OnSelectedIndexChangedFn)(ownerSlots[33]))(
             selectionOwner,
             entryIndex
         );
@@ -12265,56 +9981,31 @@ void HudUiListSelectorItem::OnActivate() {
 
 // Reimplements 0x4ba410: HudUiListSelectorItem::Draw
 void HudUiListSelectorItem::Draw() {
-    HudUiPanel *const panel = (HudUiPanel *)(this);
-    panel->Draw();
+    HudUiPanel::Draw();
 
-    FieldAt<int>(
-        panel,
-        0x20
-    ) = HudUiVirtualGetXRequired(panel);
-    if (FieldAt<unsigned int>(
-        panel,
-        0x270
-    ) != 0) {
-        HudUiPanelVirtualRebuildTextRectRequired(panel);
+    clipRect.left = GetX();
+    if (textDirty != 0) {
+        RebuildTextRect();
     }
 
-    FieldAt<int>(
-        panel,
-        0x28
-    ) = HudUiVirtualGetXRequired(panel) + FieldAt<int>(
-        panel,
-        0x25c
-    );
-    FieldAt<int>(
-        panel,
-        0x24
-    ) = HudUiVirtualGetYRequired(panel);
-    const int textHeight = panel->QueryTextHeight();
-    FieldAt<int>(
-        panel,
-        0x2c
-    ) = textHeight + HudUiVirtualGetYRequired(panel);
+    clipRect.right = GetX() + textWidthPx;
+    clipRect.top = GetY();
+    const int textHeight = QueryTextHeight();
+    clipRect.bottom = textHeight + GetY();
 }
 
-// Reimplements 0x4b8d30: HudCmdBindButtonBase::Constructor
-HudCmdBindButtonBase * HudCmdBindButtonBase::Constructor() {
-    base.Constructor();
-    bindPanel.Constructor();
-
-    bindingVec.begin = 0;
-    bindingVec.end = 0;
-    bindingVec.capacity = 0;
+// Reimplements 0x4b8d30: HudCmdBindButtonBase::HudCmdBindButtonBase
+HudCmdBindButtonBase::HudCmdBindButtonBase() :
+    HudUiCheckToggleWidget()
+{
     bindingSlotTotalCount = 0;
     bindingSlotPanels = 0;
     visibleListOffsetX = 0.0f;
     visibleListOffsetY = 0.0f;
     overflowListOffsetX = 0.0f;
     overflowListOffsetY = 0.0f;
-    base.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdBindButtonBase_FTable);
     bindingSlotSpacing = 0xf;
     selectedBindingIndex = -1;
-    return this;
 }
 
 // Reimplements 0x40bdf0: StdPtrVector::ClearNoOpDestroy
@@ -12344,42 +10035,40 @@ HudCmdBindingEntry **__fastcall HudCmdBindingEntry::CopyRange(
     return dest;
 }
 
-// Reimplements 0x40bf50: HudCmdBindingEntry::ScalarDeletingDestructor
-// (D:\Proj\Battlesport\HudCmdBindButton.cpp)
-HudCmdBindingEntry * HudCmdBindingEntry::ScalarDeletingDestructor(
-    unsigned int flags
-) {
+/**
+ * No standalone retail function; current Binary Ninja evidence shows this
+ * destructor body inlined into the VC scalar-deleting destructor at 0x40bf50
+ * and the static delete helper at 0x40bf20.
+ * Purpose: release the owned command-binding display string.
+ */
+HudCmdBindingEntry::~HudCmdBindingEntry() {
     if (displayText != 0) {
         free(displayText);
         displayText = 0;
     }
-
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
 }
 
-// Reimplements 0x40bf20: HudCmdBindingEntry::DeleteAndReturnNull
-// (D:\Proj\Battlesport\HudCmdBindButton.cpp)
+/**
+ * Reimplements 0x40bf20: HudCmdBindingEntry::DeleteAndReturnNull.
+ * Binary Ninja shows a static HudCmdBindButton.cpp helper that destroys a
+ * non-null binding entry, deletes its storage, and returns null.
+ */
 HudCmdBindingEntry *__stdcall HudCmdBindingEntry::DeleteAndReturnNull(
     HudCmdBindingEntry *entry
 ) {
     if (entry != 0) {
-        if (entry->displayText != 0) {
-            free(entry->displayText);
-            entry->displayText = 0;
-        }
-
-        ::operator delete(entry);
+        delete entry;
     }
 
     return 0;
 }
 
-// Reimplements 0x40bf80: HudCmdBindButtonBase::AddBindingEntry
-// (D:\Proj\Battlesport\HudCmdBindButton.cpp)
+/**
+ * Reimplements 0x40bf80: HudCmdBindButtonBase::AddBindingEntry.
+ * Binary Ninja shows the HudCmdBindButton.cpp method allocating a
+ * HudCmdBindingEntry, duplicating the display text, assigning the command id,
+ * and appending it to the binding vector with growth when capacity is full.
+ */
 int HudCmdBindButtonBase::AddBindingEntry(
     const char *displayText,
     int commandId
@@ -12392,6 +10081,7 @@ int HudCmdBindButtonBase::AddBindingEntry(
     HudCmdBindingEntry *const entry =
         (HudCmdBindingEntry *)(::operator new(sizeof(HudCmdBindingEntry)));
     if (entry != 0) {
+        new (entry) HudCmdBindingEntry;
         entry->displayText = _strdup(displayText);
         entry->commandId = commandId;
     }
@@ -12443,36 +10133,24 @@ void HudCmdBindButtonBase::SetSelectedEntry(
         HudUiListSelectorItem *const item = &bindingSlotPanels[slotIndex];
         const int entryIndex = selectedIndex + slotIndex - visibleBindingSlotCount;
         if (entryIndex >= 0 && entryIndex < entryCount) {
-            FieldAt<int>(
-                item,
-                0x2a4
-            ) = entryIndex;
-            HudUiPanelVirtualSetTextFmtStringRequired(
-                item,
+            item->entryIndex = entryIndex;
+            item->SetTextFmt(
+                "%s",
                 entries[entryIndex]->displayText
             );
-            HudUiVirtualSetVisibleRequired(
-                item,
-                1
-            );
+            item->SetVisible(1);
         } else {
-            HudUiVirtualSetVisibleRequired(
-                item,
-                0
-            );
-            HudUiVirtualDrawRequired(item);
+            item->SetVisible(0);
+            item->Draw();
         }
 
-        HudUiVirtualInvalidateRequired(item);
+        item->Invalidate();
     }
 
     if (selectedIndex >= 0 && selectedIndex < entryCount) {
-        FieldAt<int>(
-            &bindPanel,
-            0x2a4
-        ) = selectedIndex;
-        HudUiPanelVirtualSetTextFmtStringRequired(
-            &bindPanel,
+        bindPanel.entryIndex = selectedIndex;
+        bindPanel.SetTextFmt(
+            "%s",
             entries[selectedIndex]->displayText
         );
     }
@@ -12481,27 +10159,18 @@ void HudCmdBindButtonBase::SetSelectedEntry(
         HudUiListSelectorItem *const item = &bindingSlotPanels[slotIndex];
         const int entryIndex = selectedIndex + slotIndex - visibleBindingSlotCount + 1;
         if (entryIndex >= 0 && entryIndex < entryCount) {
-            FieldAt<int>(
-                item,
-                0x2a4
-            ) = entryIndex;
-            HudUiPanelVirtualSetTextFmtStringRequired(
-                item,
+            item->entryIndex = entryIndex;
+            item->SetTextFmt(
+                "%s",
                 entries[entryIndex]->displayText
             );
-            HudUiVirtualSetVisibleRequired(
-                item,
-                1
-            );
+            item->SetVisible(1);
         } else {
-            HudUiVirtualSetVisibleRequired(
-                item,
-                0
-            );
-            HudUiVirtualDrawRequired(item);
+            item->SetVisible(0);
+            item->Draw();
         }
 
-        HudUiVirtualInvalidateRequired(item);
+        item->Invalidate();
     }
 
     selectedBindingIndex = selectedIndex;
@@ -12581,7 +10250,6 @@ void HudCmdBindButtonBase::ClearBindingEntries() {
 // Reimplements 0x40c280: HudCmdBindButtonBase::DestructorCore
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
 void HudCmdBindButtonBase::DestructorCore() {
-    base.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdBindButtonBase_FTable);
 
     HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(bindingVec.begin);
     HudCmdBindingEntry **const end = (HudCmdBindingEntry **)(bindingVec.end);
@@ -12617,16 +10285,15 @@ void HudCmdBindButtonBase::DestructorCore() {
     bindingVec.capacity = 0;
 
     ((HudUiPanel *)(&bindPanel))->Destructor();
-    base.DestructorCore();
+    HudUiCheckToggleWidget::DestructorCore();
 }
 
 // Reimplements 0x40a940: HudCmdCommandList::Destructor
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
 void HudCmdCommandList::Destructor() {
-    base.base.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdBindButtonBase_FTable);
 
-    HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(base.bindingVec.begin);
-    HudCmdBindingEntry **const end = (HudCmdBindingEntry **)(base.bindingVec.end);
+    HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(bindingVec.begin);
+    HudCmdBindingEntry **const end = (HudCmdBindingEntry **)(bindingVec.end);
     while (entry != end) {
         HudCmdBindingEntry *const binding = *entry;
         if (binding != 0) {
@@ -12642,29 +10309,29 @@ void HudCmdCommandList::Destructor() {
         ++entry;
     }
 
-    HudCmdBindingEntry **const oldEnd = (HudCmdBindingEntry **)(base.bindingVec.end);
-    HudCmdBindingEntry **const oldBegin = (HudCmdBindingEntry **)(base.bindingVec.begin);
-    base.bindingVec.end = HudCmdBindingEntry::CopyRange(
+    HudCmdBindingEntry **const oldEnd = (HudCmdBindingEntry **)(bindingVec.end);
+    HudCmdBindingEntry **const oldBegin = (HudCmdBindingEntry **)(bindingVec.begin);
+    bindingVec.end = HudCmdBindingEntry::CopyRange(
         oldEnd,
         oldEnd,
         oldBegin
     );
-    ((StdPtrVector *)(&base.bindingVec))
+    ((StdPtrVector *)(&bindingVec))
         ->ClearNoOpDestroy(
-            (int *)(base.bindingVec.end),
+            (int *)(bindingVec.end),
             (int *)(oldEnd)
         );
-    ::operator delete(base.bindingVec.begin);
-    base.bindingVec.begin = 0;
-    base.bindingVec.end = 0;
-    base.bindingVec.capacity = 0;
+    ::operator delete(bindingVec.begin);
+    bindingVec.begin = 0;
+    bindingVec.end = 0;
+    bindingVec.capacity = 0;
 
-    ((HudUiPanel *)(&base.bindPanel))->Destructor();
-    base.base.DestructorCore();
+    ((HudUiPanel *)(&bindPanel))->Destructor();
+    DestructorCore();
 }
 
 // Reimplements 0x40b0a0: HudCmdCommandList::ScalarDeletingDestructor
-HudCmdCommandList * HudCmdCommandList::ScalarDeletingDestructor(
+HudUiElement * HudCmdCommandList::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -12678,10 +10345,9 @@ HudCmdCommandList * HudCmdCommandList::ScalarDeletingDestructor(
 // Reimplements 0x40aa30: HudCmdKeyAButton::Destructor
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
 void HudCmdKeyAButton::Destructor() {
-    base.base.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdBindButtonBase_FTable);
 
-    HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(base.bindingVec.begin);
-    HudCmdBindingEntry **const end = (HudCmdBindingEntry **)(base.bindingVec.end);
+    HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(bindingVec.begin);
+    HudCmdBindingEntry **const end = (HudCmdBindingEntry **)(bindingVec.end);
     while (entry != end) {
         HudCmdBindingEntry *const binding = *entry;
         if (binding != 0) {
@@ -12697,29 +10363,29 @@ void HudCmdKeyAButton::Destructor() {
         ++entry;
     }
 
-    HudCmdBindingEntry **const oldEnd = (HudCmdBindingEntry **)(base.bindingVec.end);
-    HudCmdBindingEntry **const oldBegin = (HudCmdBindingEntry **)(base.bindingVec.begin);
-    base.bindingVec.end = HudCmdBindingEntry::CopyRange(
+    HudCmdBindingEntry **const oldEnd = (HudCmdBindingEntry **)(bindingVec.end);
+    HudCmdBindingEntry **const oldBegin = (HudCmdBindingEntry **)(bindingVec.begin);
+    bindingVec.end = HudCmdBindingEntry::CopyRange(
         oldEnd,
         oldEnd,
         oldBegin
     );
-    ((StdPtrVector *)(&base.bindingVec))
+    ((StdPtrVector *)(&bindingVec))
         ->ClearNoOpDestroy(
-            (int *)(base.bindingVec.end),
+            (int *)(bindingVec.end),
             (int *)(oldEnd)
         );
-    ::operator delete(base.bindingVec.begin);
-    base.bindingVec.begin = 0;
-    base.bindingVec.end = 0;
-    base.bindingVec.capacity = 0;
+    ::operator delete(bindingVec.begin);
+    bindingVec.begin = 0;
+    bindingVec.end = 0;
+    bindingVec.capacity = 0;
 
-    ((HudUiPanel *)(&base.bindPanel))->Destructor();
-    base.base.DestructorCore();
+    ((HudUiPanel *)(&bindPanel))->Destructor();
+    DestructorCore();
 }
 
 // Reimplements 0x40b0c0: HudCmdKeyAButton::ScalarDeletingDestructor
-HudCmdKeyAButton * HudCmdKeyAButton::ScalarDeletingDestructor(
+HudUiElement * HudCmdKeyAButton::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -12733,10 +10399,9 @@ HudCmdKeyAButton * HudCmdKeyAButton::ScalarDeletingDestructor(
 // Reimplements 0x40ab20: HudCmdKeyBButton::Destructor
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
 void HudCmdKeyBButton::Destructor() {
-    base.base.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdBindButtonBase_FTable);
 
-    HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(base.bindingVec.begin);
-    HudCmdBindingEntry **const end = (HudCmdBindingEntry **)(base.bindingVec.end);
+    HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(bindingVec.begin);
+    HudCmdBindingEntry **const end = (HudCmdBindingEntry **)(bindingVec.end);
     while (entry != end) {
         HudCmdBindingEntry *const binding = *entry;
         if (binding != 0) {
@@ -12752,29 +10417,29 @@ void HudCmdKeyBButton::Destructor() {
         ++entry;
     }
 
-    HudCmdBindingEntry **const oldEnd = (HudCmdBindingEntry **)(base.bindingVec.end);
-    HudCmdBindingEntry **const oldBegin = (HudCmdBindingEntry **)(base.bindingVec.begin);
-    base.bindingVec.end = HudCmdBindingEntry::CopyRange(
+    HudCmdBindingEntry **const oldEnd = (HudCmdBindingEntry **)(bindingVec.end);
+    HudCmdBindingEntry **const oldBegin = (HudCmdBindingEntry **)(bindingVec.begin);
+    bindingVec.end = HudCmdBindingEntry::CopyRange(
         oldEnd,
         oldEnd,
         oldBegin
     );
-    ((StdPtrVector *)(&base.bindingVec))
+    ((StdPtrVector *)(&bindingVec))
         ->ClearNoOpDestroy(
-            (int *)(base.bindingVec.end),
+            (int *)(bindingVec.end),
             (int *)(oldEnd)
         );
-    ::operator delete(base.bindingVec.begin);
-    base.bindingVec.begin = 0;
-    base.bindingVec.end = 0;
-    base.bindingVec.capacity = 0;
+    ::operator delete(bindingVec.begin);
+    bindingVec.begin = 0;
+    bindingVec.end = 0;
+    bindingVec.capacity = 0;
 
-    ((HudUiPanel *)(&base.bindPanel))->Destructor();
-    base.base.DestructorCore();
+    ((HudUiPanel *)(&bindPanel))->Destructor();
+    DestructorCore();
 }
 
 // Reimplements 0x40b0e0: HudCmdKeyBButton::ScalarDeletingDestructor
-HudCmdKeyBButton * HudCmdKeyBButton::ScalarDeletingDestructor(
+HudUiElement * HudCmdKeyBButton::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -12788,10 +10453,9 @@ HudCmdKeyBButton * HudCmdKeyBButton::ScalarDeletingDestructor(
 // Reimplements 0x40ac10: HudCmdJoyButton::Destructor
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
 void HudCmdJoyButton::Destructor() {
-    base.base.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdBindButtonBase_FTable);
 
-    HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(base.bindingVec.begin);
-    HudCmdBindingEntry **const end = (HudCmdBindingEntry **)(base.bindingVec.end);
+    HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(bindingVec.begin);
+    HudCmdBindingEntry **const end = (HudCmdBindingEntry **)(bindingVec.end);
     while (entry != end) {
         HudCmdBindingEntry *const binding = *entry;
         if (binding != 0) {
@@ -12807,29 +10471,29 @@ void HudCmdJoyButton::Destructor() {
         ++entry;
     }
 
-    HudCmdBindingEntry **const oldEnd = (HudCmdBindingEntry **)(base.bindingVec.end);
-    HudCmdBindingEntry **const oldBegin = (HudCmdBindingEntry **)(base.bindingVec.begin);
-    base.bindingVec.end = HudCmdBindingEntry::CopyRange(
+    HudCmdBindingEntry **const oldEnd = (HudCmdBindingEntry **)(bindingVec.end);
+    HudCmdBindingEntry **const oldBegin = (HudCmdBindingEntry **)(bindingVec.begin);
+    bindingVec.end = HudCmdBindingEntry::CopyRange(
         oldEnd,
         oldEnd,
         oldBegin
     );
-    ((StdPtrVector *)(&base.bindingVec))
+    ((StdPtrVector *)(&bindingVec))
         ->ClearNoOpDestroy(
-            (int *)(base.bindingVec.end),
+            (int *)(bindingVec.end),
             (int *)(oldEnd)
         );
-    ::operator delete(base.bindingVec.begin);
-    base.bindingVec.begin = 0;
-    base.bindingVec.end = 0;
-    base.bindingVec.capacity = 0;
+    ::operator delete(bindingVec.begin);
+    bindingVec.begin = 0;
+    bindingVec.end = 0;
+    bindingVec.capacity = 0;
 
-    ((HudUiPanel *)(&base.bindPanel))->Destructor();
-    base.base.DestructorCore();
+    ((HudUiPanel *)(&bindPanel))->Destructor();
+    DestructorCore();
 }
 
 // Reimplements 0x40b100: HudCmdJoyButton::ScalarDeletingDestructor
-HudCmdJoyButton * HudCmdJoyButton::ScalarDeletingDestructor(
+HudUiElement * HudCmdJoyButton::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -12843,10 +10507,9 @@ HudCmdJoyButton * HudCmdJoyButton::ScalarDeletingDestructor(
 // Reimplements 0x40ad00: HudCmdMouseButton::Destructor
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
 void HudCmdMouseButton::Destructor() {
-    base.base.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdBindButtonBase_FTable);
 
-    HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(base.bindingVec.begin);
-    HudCmdBindingEntry **const end = (HudCmdBindingEntry **)(base.bindingVec.end);
+    HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(bindingVec.begin);
+    HudCmdBindingEntry **const end = (HudCmdBindingEntry **)(bindingVec.end);
     while (entry != end) {
         HudCmdBindingEntry *const binding = *entry;
         if (binding != 0) {
@@ -12862,29 +10525,29 @@ void HudCmdMouseButton::Destructor() {
         ++entry;
     }
 
-    HudCmdBindingEntry **const oldEnd = (HudCmdBindingEntry **)(base.bindingVec.end);
-    HudCmdBindingEntry **const oldBegin = (HudCmdBindingEntry **)(base.bindingVec.begin);
-    base.bindingVec.end = HudCmdBindingEntry::CopyRange(
+    HudCmdBindingEntry **const oldEnd = (HudCmdBindingEntry **)(bindingVec.end);
+    HudCmdBindingEntry **const oldBegin = (HudCmdBindingEntry **)(bindingVec.begin);
+    bindingVec.end = HudCmdBindingEntry::CopyRange(
         oldEnd,
         oldEnd,
         oldBegin
     );
-    ((StdPtrVector *)(&base.bindingVec))
+    ((StdPtrVector *)(&bindingVec))
         ->ClearNoOpDestroy(
-            (int *)(base.bindingVec.end),
+            (int *)(bindingVec.end),
             (int *)(oldEnd)
         );
-    ::operator delete(base.bindingVec.begin);
-    base.bindingVec.begin = 0;
-    base.bindingVec.end = 0;
-    base.bindingVec.capacity = 0;
+    ::operator delete(bindingVec.begin);
+    bindingVec.begin = 0;
+    bindingVec.end = 0;
+    bindingVec.capacity = 0;
 
-    ((HudUiPanel *)(&base.bindPanel))->Destructor();
-    base.base.DestructorCore();
+    ((HudUiPanel *)(&bindPanel))->Destructor();
+    DestructorCore();
 }
 
 // Reimplements 0x40b120: HudCmdMouseButton::ScalarDeletingDestructor
-HudCmdMouseButton * HudCmdMouseButton::ScalarDeletingDestructor(
+HudUiElement * HudCmdMouseButton::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -12900,7 +10563,6 @@ HudCmdMouseButton * HudCmdMouseButton::ScalarDeletingDestructor(
 static void HudCmdDialog_DestroyBindButtonRange(
     HudCmdBindButtonBase *button
 ) {
-    button->base.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdBindButtonBase_FTable);
 
     HudCmdBinding **const begin = (HudCmdBinding **)(button->bindingVec.begin);
     HudCmdBinding **const end = (HudCmdBinding **)(button->bindingVec.end);
@@ -12913,7 +10575,7 @@ static void HudCmdDialog_DestroyBindButtonRange(
     zUtil_StdPtrVector_Clear(&button->bindingVec);
     zUtil_StdPtrVector_FreeBufferAndReset(&button->bindingVec);
     ((HudUiPanel *)(&button->bindPanel))->Destructor();
-    button->base.DestructorCore();
+    button->HudUiCheckToggleWidget::DestructorCore();
 }
 
 // Restores the mouse-button cleanup variant observed in 0x40adf0; no
@@ -12921,12 +10583,11 @@ static void HudCmdDialog_DestroyBindButtonRange(
 static void HudCmdDialog_DestroyMouseButton(
     HudCmdBindButtonBase *button
 ) {
-    button->base.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdBindButtonBase_FTable);
 
     button->ClearBindingEntries();
     zUtil_StdPtrVector_FreeBufferAndReset(&button->bindingVec);
     ((HudUiPanel *)(&button->bindPanel))->Destructor();
-    button->base.DestructorCore();
+    button->HudUiCheckToggleWidget::DestructorCore();
 }
 
 // Restores repeated inline binding-vector clearing observed in 0x40b680; no
@@ -12940,147 +10601,123 @@ static void HudCmdDialog_ClearBindButtonEntries(
 // Reimplements 0x40a5b0: HudCmdDialog::Constructor
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 HudCmdDialog * HudCmdDialog::Constructor() {
-    base.Constructor();
+    new ((HudUiBackground *)this) HudUiBackground;
 
-    resumeButton.base.Constructor();
-    resumeButton.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdResumeButton_FTable);
-    resetButton.base.Constructor();
-    resetButton.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdResetButton_FTable);
+    new (&resumeButton) HudCmdSimpleWidget;
+    new (&resetButton) HudCmdResetButton;
 
-    commandList.base.Constructor();
-    commandList.base.base.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudCmdCommandList_FTable);
-    keyAButton.base.Constructor();
-    keyAButton.base.base.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudCmdKeyAButton_FTable);
-    keyBButton.base.Constructor();
-    keyBButton.base.base.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudCmdKeyBButton_FTable);
-    joyButton.base.Constructor();
-    joyButton.base.base.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdJoyButton_FTable);
-    mouseButton.base.Constructor();
-    mouseButton.base.base.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudCmdMouseButton_FTable);
+    new (&commandList) HudCmdCommandList;
+    new (&keyAButton) HudCmdKeyAButton;
+    new (&keyBButton) HudCmdKeyBButton;
+    new (&joyButton) HudCmdJoyButton;
+    new (&mouseButton) HudCmdMouseButton;
 
-    setList.base.Constructor();
-    setList.base.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdSetList_FTable);
-    nextSetButton.base.Constructor();
-    nextSetButton.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdNextSetButton_FTable);
-    prevSetButton.base.Constructor();
-    prevSetButton.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudCmdPrevSetButton_FTable);
-    nextCommandButton.base.Constructor();
-    nextCommandButton.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudCmdNextCommandButton_FTable);
-    prevCommandButton.base.Constructor();
-    prevCommandButton.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudCmdPrevCommandButton_FTable);
+    setList.HudUiCycleSelectorWidget::Constructor();
+    new (&nextSetButton) HudCmdNextSetButton;
+    new (&prevSetButton) HudCmdPrevSetButton;
+    new (&nextCommandButton) HudCmdNextCommandButton;
+    new (&prevCommandButton) HudCmdPrevCommandButton;
 
-    promptPanel.base.Constructor();
-    ((HudUiPanel *)(&promptPanel))->vtbl = &g_HudCmdDialog_BackgroundPanelFTable.SecondaryAction;
-    descriptionPanel.base.ConstructorDefault(
+    new ((HudUiTransitionTextPanel *)(&promptPanel)) HudUiTransitionTextPanel;
+    descriptionPanel.HudUiPanel::ConstructorDefault(
         0,
         0,
         0
     );
-    base.base.base.vptr = (const HudUiContainer_FTable *)(&g_HudCmdDialog_BackgroundPanelFTable);
-
-    zReader::Node *const loadedSection = base.LoadFromZrd(
+    zReader::Node *const loadedSection = HudUiBackground::LoadFromZrd(
         "dialog.zrd",
         "COMMANDS_DIALOG",
         0
     );
     if (loadedSection != 0) {
-        base.BindWidgetByName(
+        HudUiBackground::BindWidgetByName(
             loadedSection,
             (HudUiWidget *)(&resumeButton),
             "CMD_RESUME_BTN"
         );
-        base.BindWidgetByName(
+        HudUiBackground::BindWidgetByName(
             loadedSection,
             (HudUiWidget *)(&resetButton),
             "CMD_RESET_BTN"
         );
-        base.BindWidgetByName(
+        HudUiBackground::BindWidgetByName(
             loadedSection,
             (HudUiWidget *)(&commandList),
             "CMD_COMMAND_BTN"
         );
-        base.BindWidgetByName(
+        HudUiBackground::BindWidgetByName(
             loadedSection,
             (HudUiWidget *)(&keyAButton),
             "CMD_KEYA_BTN"
         );
-        base.BindWidgetByName(
+        HudUiBackground::BindWidgetByName(
             loadedSection,
             (HudUiWidget *)(&keyBButton),
             "CMD_KEYB_BTN"
         );
-        base.BindWidgetByName(
+        HudUiBackground::BindWidgetByName(
             loadedSection,
             (HudUiWidget *)(&joyButton),
             "CMD_JOY_BTN"
         );
-        base.BindWidgetByName(
+        HudUiBackground::BindWidgetByName(
             loadedSection,
             (HudUiWidget *)(&mouseButton),
             "CMD_MOUSE_BTN"
         );
-        base.BindWidgetByName(
+        HudUiBackground::BindWidgetByName(
             loadedSection,
             (HudUiWidget *)(&setList),
             "CMD_SET_BTN"
         );
-        base.BindWidgetByName(
+        HudUiBackground::BindWidgetByName(
             loadedSection,
             (HudUiWidget *)(&nextSetButton),
             "CMD_NEXT_SET_BTN"
         );
-        base.BindWidgetByName(
+        HudUiBackground::BindWidgetByName(
             loadedSection,
             (HudUiWidget *)(&prevSetButton),
             "CMD_PREV_SET_BTN"
         );
-        base.BindWidgetByName(
+        HudUiBackground::BindWidgetByName(
             loadedSection,
             (HudUiWidget *)(&nextCommandButton),
             "CMD_NEXT_CMD_BTN"
         );
-        base.BindWidgetByName(
+        HudUiBackground::BindWidgetByName(
             loadedSection,
             (HudUiWidget *)(&prevCommandButton),
             "CMD_PREV_CMD_BTN"
         );
 
-        base.BindPrimitiveNodeToElement(
+        HudUiBackground::BindPrimitiveNodeToElement(
             loadedSection,
             (HudUiElement *)(&promptPanel),
             "PRESS_A_KEY"
         );
-        base.BindPrimitiveNodeToElement(
+        HudUiBackground::BindPrimitiveNodeToElement(
             loadedSection,
             (HudUiElement *)(&descriptionPanel),
             "CMD_DESCRIPTION"
         );
-        base.FreeLoadedTreeRoots(0);
-        promptPanel.base.SetFlashRate(1.0f);
+        HudUiBackground::FreeLoadedTreeRoots(0);
+        promptPanel.SetFlashRate(1.0f);
     }
 
-    HudUiVirtualSetVisibleRequired(
-        &promptPanel,
-        0
-    );
+    promptPanel.SetVisible(0);
 
     const int groupCount = zInput::BindGroupList_GetCount();
     for (int groupIndex = 0; groupIndex < groupCount; ++groupIndex) {
-        setList.base.AddTextEntry(
+        setList.AddTextEntry(
             groupIndex,
             zInput::BindGroupList_GetGroupTitle(groupIndex),
-            setList.base.textOffsetX,
-            setList.base.textOffsetY
+            setList.textOffsetX,
+            setList.textOffsetY
         );
-        setList.base.ApplyFontStyleForEntry(
+        setList.ApplyFontStyleForEntry(
             groupIndex,
-            (int)((unsigned int)(setList.base.fontStyleRef))
+            (int)((unsigned int)(setList.fontStyleRef))
         );
     }
 
@@ -13094,23 +10731,23 @@ HudCmdDialog * HudCmdDialog::Constructor() {
 // Reimplements 0x40adf0: HudCmdDialog::Destructor
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void HudCmdDialog::Destructor() {
-    descriptionPanel.base.Destructor();
+    descriptionPanel.HudUiPanel::Destructor();
     ((HudUiPanel *)(&promptPanel))->Destructor();
-    prevCommandButton.base.DestructorCore();
-    nextCommandButton.base.DestructorCore();
-    prevSetButton.base.DestructorCore();
-    nextSetButton.base.DestructorCore();
-    setList.base.DestructorCore();
+    prevCommandButton.HudUiZrdWidget::DestructorCore();
+    nextCommandButton.HudUiZrdWidget::DestructorCore();
+    prevSetButton.HudUiZrdWidget::DestructorCore();
+    nextSetButton.HudUiZrdWidget::DestructorCore();
+    setList.HudUiCycleSelectorWidget::DestructorCore();
 
-    HudCmdDialog_DestroyMouseButton(&mouseButton.base);
-    HudCmdDialog_DestroyBindButtonRange(&joyButton.base);
-    HudCmdDialog_DestroyBindButtonRange(&keyBButton.base);
-    HudCmdDialog_DestroyBindButtonRange(&keyAButton.base);
-    HudCmdDialog_DestroyBindButtonRange(&commandList.base);
+    HudCmdDialog_DestroyMouseButton(&mouseButton);
+    HudCmdDialog_DestroyBindButtonRange(&joyButton);
+    HudCmdDialog_DestroyBindButtonRange(&keyBButton);
+    HudCmdDialog_DestroyBindButtonRange(&keyAButton);
+    HudCmdDialog_DestroyBindButtonRange(&commandList);
 
-    resetButton.base.DestructorCore();
-    resumeButton.base.DestructorCore();
-    base.Destructor();
+    resetButton.HudUiZrdWidget::DestructorCore();
+    resumeButton.HudUiZrdWidget::DestructorCore();
+    this->HudUiBackground::~HudUiBackground();
 }
 
 // Reimplements 0x40a920: HudCmdDialog::ScalarDeletingDestructor
@@ -13130,71 +10767,113 @@ HudCmdDialog * HudCmdDialog::ScalarDeletingDestructor(
 // Reimplements 0x40c6e0: HudUiOptionsPanelBackButton::OnActivate
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
 void HudUiOptionsPanelBackButton::OnActivate() {
-    HudOptionsDialog *const ownerDialog = (HudOptionsDialog *)(base.owner);
-    const int hudType = ownerDialog->fullHudToggle.base.checked != 0 ? ZOPT_HUD_TYPE_PERSPECTIVE
-                                                                     : ZOPT_HUD_TYPE_STANDARD;
+    HudOptionsDialog *const ownerDialog = (HudOptionsDialog *)(owner);
+    const int hudType = ownerDialog->fullHudToggle.checked != 0 ? ZOPT_HUD_TYPE_PERSPECTIVE
+                                                                : ZOPT_HUD_TYPE_STANDARD;
     zOpt::SetHudTypeForCurrentHwMode(hudType);
 
     g_RecoilApp.QueueExitCurrentState(0);
-    base.OnActivate();
+    HudUiZrdWidget::OnActivate();
+}
+
+void HudUiOptionsPanel_Lighting::OnActivate() {
+    SyncFromOptions();
+}
+
+void HudUiOptionsPanel_Lighting::PostLoadFromZrd() {
+    InitFromOptions();
 }
 
 // Reimplements 0x40c9c0: HudUiOptionsPanel_Lighting::InitFromOptions
 void HudUiOptionsPanel_Lighting::InitFromOptions() {
-    base.SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_GLOBAL_LIGHT);
+    SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_GLOBAL_LIGHT);
 }
 
 // Reimplements 0x40c9e0: HudUiOptionsPanel_Lighting::SyncFromOptions
 void HudUiOptionsPanel_Lighting::SyncFromOptions() {
     const int flags = zOpt::GetGraphicsFlagsForCurrentHwMode();
-    base.OnActivate();
+    HudUiCheckToggleWidget::OnActivate();
     zOpt::SetGraphicsFlagsForCurrentHwMode(
-        base.checked != 0 ? (flags | ZOPT_GRAPHICS_GLOBAL_LIGHT)
-                          : (flags & ~ZOPT_GRAPHICS_GLOBAL_LIGHT)
+        checked != 0 ? (flags | ZOPT_GRAPHICS_GLOBAL_LIGHT) : (flags & ~ZOPT_GRAPHICS_GLOBAL_LIGHT)
     );
+}
+
+void HudUiOptionsPanel_Perspective::OnActivate() {
+    SyncFromOptions();
+}
+
+void HudUiOptionsPanel_Perspective::PostLoadFromZrd() {
+    InitFromOptions();
 }
 
 // Reimplements 0x40ca20: HudUiOptionsPanel_Perspective::InitFromOptions
 void HudUiOptionsPanel_Perspective::InitFromOptions() {
-    base.SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_PERSPECTIVE);
+    SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_PERSPECTIVE);
 }
 
 // Reimplements 0x40ca40: HudUiOptionsPanel_Perspective::SyncFromOptions
 void HudUiOptionsPanel_Perspective::SyncFromOptions() {
     const int flags = zOpt::GetGraphicsFlagsForCurrentHwMode();
-    base.OnActivate();
+    HudUiCheckToggleWidget::OnActivate();
     zOpt::SetGraphicsFlagsForCurrentHwMode(
-        base.checked != 0 ? (flags | ZOPT_GRAPHICS_PERSPECTIVE)
-                          : (flags & ~ZOPT_GRAPHICS_PERSPECTIVE)
+        checked != 0 ? (flags | ZOPT_GRAPHICS_PERSPECTIVE) : (flags & ~ZOPT_GRAPHICS_PERSPECTIVE)
     );
     zRndr::SelectSpanRoutines();
 }
 
+void HudUiOptionsPanel_FullHud::PostLoadFromZrd() {
+    InitFromOptions();
+}
+
 // Reimplements 0x40ca80: HudUiOptionsPanel_FullHud::InitFromOptions
 void HudUiOptionsPanel_FullHud::InitFromOptions() {
-    base.SetChecked(zOpt::GetHudTypeForCurrentHwMode() == ZOPT_HUD_TYPE_PERSPECTIVE);
+    SetChecked(zOpt::GetHudTypeForCurrentHwMode() == ZOPT_HUD_TYPE_PERSPECTIVE);
+}
+
+void HudUiOptionsPanel_ObjectDetail::OnActivate() {
+    SyncFromOptions();
+}
+
+void HudUiOptionsPanel_ObjectDetail::PostLoadFromZrd() {
+    InitFromOptions();
 }
 
 // Reimplements 0x40cab0: HudUiOptionsPanel_ObjectDetail::InitFromOptions
 void HudUiOptionsPanel_ObjectDetail::InitFromOptions() {
-    base.SetIndexClamped(zOpt::GetObjectLODForCurrentHwMode());
+    SetIndexClamped(zOpt::GetObjectLODForCurrentHwMode());
 }
 
 // Reimplements 0x40cad0: HudUiOptionsPanel_ObjectDetail::SyncFromOptions
 void HudUiOptionsPanel_ObjectDetail::SyncFromOptions() {
-    base.AdvanceSelectionAndActivate();
-    zOpt::SetObjectLODForCurrentHwMode(base.selectedIndex);
+    AdvanceSelectionAndActivate();
+    zOpt::SetObjectLODForCurrentHwMode(selectedIndex);
+}
+
+void HudUiOptionsPanel_TextureMemory::OnActivate() {
+    SyncFromOptions();
+}
+
+void HudUiOptionsPanel_TextureMemory::PostLoadFromZrd() {
+    InitFromOptions();
 }
 
 // Reimplements 0x40caf0: HudUiOptionsPanel_TextureMemory::InitFromOptions
 void HudUiOptionsPanel_TextureMemory::InitFromOptions() {
-    base.SetIndexClamped(zOpt::GetTextureMemoryForCurrentHwMode());
+    SetIndexClamped(zOpt::GetTextureMemoryForCurrentHwMode());
 }
 
 // Reimplements 0x40cb10: HudUiOptionsPanel_TextureMemory::SyncFromOptions
 void HudUiOptionsPanel_TextureMemory::SyncFromOptions() {
-    base.AdvanceSelectionAndActivate();
-    zOpt::SetTextureMemoryForCurrentHwMode(base.selectedIndex);
+    AdvanceSelectionAndActivate();
+    zOpt::SetTextureMemoryForCurrentHwMode(selectedIndex);
+}
+
+void HudUiOptionsPanel_Effects::OnActivate() {
+    SyncFromOptions();
+}
+
+void HudUiOptionsPanel_Effects::PostLoadFromZrd() {
+    InitFromOptions();
 }
 
 // Reimplements 0x40cb30: HudUiOptionsPanel_Effects::InitFromOptions
@@ -13204,64 +10883,88 @@ void HudUiOptionsPanel_Effects::InitFromOptions() {
         if (level == 0) {
             level = 1;
         }
-        base.SetVisibleRange(
+        SetVisibleRange(
             1,
             3
         );
     }
 
-    base.SetIndexClamped(level);
+    SetIndexClamped(level);
 }
 
 // Reimplements 0x40cb70: HudUiOptionsPanel_Effects::SyncFromOptions
 void HudUiOptionsPanel_Effects::SyncFromOptions() {
-    base.AdvanceSelectionAndActivate();
-    zOpt::SetEffectsLevelForCurrentHwMode(base.selectedIndex);
+    AdvanceSelectionAndActivate();
+    zOpt::SetEffectsLevelForCurrentHwMode(selectedIndex);
+}
+
+void HudUiOptionsPanel_SoundActive::OnActivate() {
+    SyncFromOptions();
+}
+
+void HudUiOptionsPanel_SoundActive::PostLoadFromZrd() {
+    InitFromOptions();
 }
 
 // Reimplements 0x40cb90: HudUiOptionsPanel_SoundActive::InitFromOptions
 void HudUiOptionsPanel_SoundActive::InitFromOptions() {
-    base.SetChecked(zOpt::GetMuteSoundOption() == 0);
+    SetChecked(zOpt::GetMuteSoundOption() == 0);
 }
 
 // Reimplements 0x40cbb0: HudUiOptionsPanel_SoundActive::SyncFromOptions
 void HudUiOptionsPanel_SoundActive::SyncFromOptions() {
-    base.OnActivate();
-    zOpt::SetMuteSoundOption(base.checked == 0);
+    HudUiCheckToggleWidget::OnActivate();
+    zOpt::SetMuteSoundOption(checked == 0);
+}
+
+void HudUiOptionsPanel_SoundQuality::OnActivate() {
+    SyncFromOptions();
+}
+
+void HudUiOptionsPanel_SoundQuality::PostLoadFromZrd() {
+    InitFromOptions();
 }
 
 // Reimplements 0x40cbd0: HudUiOptionsPanel_SoundQuality::InitFromOptions
 void HudUiOptionsPanel_SoundQuality::InitFromOptions() {
-    base.SetIndexClamped(zOpt::GetSoundLODOption());
+    SetIndexClamped(zOpt::GetSoundLODOption());
 }
 
 // Reimplements 0x40cbf0: HudUiOptionsPanel_SoundQuality::SyncFromOptions
 void HudUiOptionsPanel_SoundQuality::SyncFromOptions() {
-    base.AdvanceSelectionAndActivate();
-    zOpt::SetSoundLODOption(base.selectedIndex);
+    AdvanceSelectionAndActivate();
+    zOpt::SetSoundLODOption(selectedIndex);
+}
+
+void HudUiOptionsPanel_SoundVolume::PostLoadFromZrd() {
+    SyncFromOptions();
 }
 
 // Reimplements 0x40cc10: HudUiOptionsPanel_SoundVolume::SyncFromOptions
 void HudUiOptionsPanel_SoundVolume::SyncFromOptions() {
-    base.SetNormalizedValue(zOpt::GetSoundVolumeOption());
+    SetNormalizedValue(zOpt::GetSoundVolumeOption());
 }
 
 // Reimplements 0x40cc30: HudUiOptionsPanel_SoundVolume::OnActivate
 void HudUiOptionsPanel_SoundVolume::OnActivate() {
-    base.UpdateNormalizedFromCursor();
-    zOpt::SetSoundVolumeOption(base.normalizedValue);
-    base.SetNormalizedValue(zOpt::GetSoundVolumeOption());
+    UpdateNormalizedFromCursor();
+    zOpt::SetSoundVolumeOption(normalizedValue);
+    SetNormalizedValue(zOpt::GetSoundVolumeOption());
+}
+
+void HudUiOptionsPanel_MusicEnable::PostLoadFromZrd() {
+    SyncFromOptions();
 }
 
 // Reimplements 0x40cc60: HudUiOptionsPanel_MusicEnable::SyncFromOptions
 void HudUiOptionsPanel_MusicEnable::SyncFromOptions() {
-    base.SetChecked(zSnd::GetCDAudioOption());
+    SetChecked(zSnd::GetCDAudioOption());
 }
 
 // Reimplements 0x40cc80: HudUiOptionsPanel_MusicEnable::OnActivate
 void HudUiOptionsPanel_MusicEnable::OnActivate() {
-    base.OnActivate();
-    if (base.checked == 0) {
+    HudUiCheckToggleWidget::OnActivate();
+    if (checked == 0) {
         zSnd::SetCDAudioOption(0);
         zSndCd::Stop();
     } else {
@@ -13273,6 +10976,10 @@ void HudUiOptionsPanel_MusicEnable::OnActivate() {
     }
 }
 
+void HudUiOptionsPanel_MusicVolume::PostLoadFromZrd() {
+    SyncFromOptions();
+}
+
 // Reimplements 0x40ccc0: HudUiOptionsPanel_MusicVolume::SyncFromOptions
 void HudUiOptionsPanel_MusicVolume::SyncFromOptions() {
     unsigned short primaryVolume = 0;
@@ -13281,18 +10988,21 @@ void HudUiOptionsPanel_MusicVolume::SyncFromOptions() {
         &primaryVolume,
         &secondaryVolume
     );
-    base.SetNormalizedValue((float)(primaryVolume)*ZSND_CD_VOLUME_TO_NORMALIZED);
+    SetNormalizedValue((float)(primaryVolume)*ZSND_CD_VOLUME_TO_NORMALIZED);
 }
 
 // Reimplements 0x40cd00: HudUiOptionsPanel_MusicVolume::OnActivate
 void HudUiOptionsPanel_MusicVolume::OnActivate() {
-    base.UpdateNormalizedFromCursor();
-    const unsigned short volume =
-        (unsigned short)(base.normalizedValue * ZSND_CD_NORMALIZED_TO_VOLUME);
+    UpdateNormalizedFromCursor();
+    const unsigned short volume = (unsigned short)(normalizedValue * ZSND_CD_NORMALIZED_TO_VOLUME);
     zSndCd::SetVolume(
         volume,
         volume
     );
+}
+
+void HudUiOptionsPanel_Resolution::PostLoadFromZrd() {
+    SyncFromOptions();
 }
 
 // Reimplements 0x40cd30: HudUiOptionsPanel_Resolution::SyncFromOptions
@@ -13305,43 +11015,43 @@ void HudUiOptionsPanel_Resolution::SyncFromOptions() {
     if (zVid::GetAccelerationOption() == ZVID_HW_MODE_SOFTWARE) {
         switch (modeCase) {
         case 0:
-            base.SetIndexClamped(3);
-            base.SetVisibleRange(
+            SetIndexClamped(3);
+            SetVisibleRange(
                 2,
                 4
             );
             return;
         case 1:
-            base.SetIndexClamped(1);
-            base.SetVisibleRange(
+            SetIndexClamped(1);
+            SetVisibleRange(
                 0,
                 2
             );
             return;
         case 2:
-            base.SetIndexClamped(2);
-            base.SetVisibleRange(
+            SetIndexClamped(2);
+            SetVisibleRange(
                 2,
                 4
             );
             return;
         case 3:
-            base.SetIndexClamped(0);
-            base.SetVisibleRange(
+            SetIndexClamped(0);
+            SetVisibleRange(
                 0,
                 2
             );
             return;
         case 4:
-            base.SetIndexClamped(4);
-            base.SetVisibleRange(
+            SetIndexClamped(4);
+            SetVisibleRange(
                 4,
                 5
             );
             return;
         case 5:
-            base.SetIndexClamped(5);
-            base.SetVisibleRange(
+            SetIndexClamped(5);
+            SetVisibleRange(
                 5,
                 6
             );
@@ -13351,43 +11061,43 @@ void HudUiOptionsPanel_Resolution::SyncFromOptions() {
 
     switch (modeCase) {
     case 0:
-        base.SetIndexClamped(3);
-        base.SetVisibleRange(
+        SetIndexClamped(3);
+        SetVisibleRange(
             3,
             4
         );
         return;
     case 1:
-        base.SetIndexClamped(1);
-        base.SetVisibleRange(
+        SetIndexClamped(1);
+        SetVisibleRange(
             1,
             2
         );
         return;
     case 2:
-        base.SetIndexClamped(2);
-        base.SetVisibleRange(
+        SetIndexClamped(2);
+        SetVisibleRange(
             2,
             3
         );
         return;
     case 3:
-        base.SetIndexClamped(0);
-        base.SetVisibleRange(
+        SetIndexClamped(0);
+        SetVisibleRange(
             0,
             1
         );
         return;
     case 4:
-        base.SetIndexClamped(4);
-        base.SetVisibleRange(
+        SetIndexClamped(4);
+        SetVisibleRange(
             4,
             5
         );
         return;
     case 5:
-        base.SetIndexClamped(5);
-        base.SetVisibleRange(
+        SetIndexClamped(5);
+        SetVisibleRange(
             5,
             6
         );
@@ -13397,8 +11107,8 @@ void HudUiOptionsPanel_Resolution::SyncFromOptions() {
 
 // Reimplements 0x40ce80: HudUiOptionsPanel_Resolution::OnActivate
 void HudUiOptionsPanel_Resolution::OnActivate() {
-    base.AdvanceSelectionAndActivate();
-    switch (base.selectedIndex) {
+    AdvanceSelectionAndActivate();
+    switch (selectedIndex) {
     case 0:
         RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(ZVID_MODE_640X480);
         return;
@@ -13420,147 +11130,101 @@ void HudUiOptionsPanel_Resolution::OnActivate() {
     }
 }
 
-// Reimplements 0x40c720: HudOptionsDialog::Constructor
+// Reimplements 0x40c720: HudOptionsDialog::HudOptionsDialog
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
-HudOptionsDialog * HudOptionsDialog::Constructor() {
-    base.Constructor();
-
-    backButton.base.Constructor();
-    backButton.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_BackButton_Vtbl);
-    lightingToggle.base.Constructor();
-    lightingToggle.base.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_LightingToggle_Vtbl);
-    perspectiveToggle.base.Constructor();
-    perspectiveToggle.base.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_PerspectiveToggle_Vtbl);
-    fullHudToggle.base.Constructor();
-    fullHudToggle.base.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_FullHudToggle_Vtbl);
-    objectDetailSelector.base.Constructor();
-    objectDetailSelector.base.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_ObjectDetailSelector_Vtbl);
-    textureMemorySelector.base.Constructor();
-    textureMemorySelector.base.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_TextureMemorySelector_Vtbl);
-    effectsSelector.base.Constructor();
-    effectsSelector.base.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_EffectsSelector_Vtbl);
-    soundActiveToggle.base.Constructor();
-    soundActiveToggle.base.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_SoundActiveToggle_Vtbl);
-    soundQualitySelector.base.Constructor();
-    soundQualitySelector.base.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_SoundQualitySelector_Vtbl);
-    soundVolumeWidget.base.Constructor();
-    soundVolumeWidget.base.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_SoundVolumeWidget_Vtbl);
-    musicEnableToggle.base.Constructor();
-    musicEnableToggle.base.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_MusicEnableToggle_Vtbl);
-    musicVolumeWidget.base.Constructor();
-    musicVolumeWidget.base.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_MusicVolumeWidget_Vtbl);
-    resolutionSelector.base.Constructor();
-    resolutionSelector.base.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiOptionsPanel_FTableHeader.SecondaryAction);
-
-    base.base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiOptionsPanel_FTableHeader);
-
-    zReader::Node *const loadedSection = base.LoadFromZrd(
+HudOptionsDialog::HudOptionsDialog() : HudUiBackground() {
+    zReader::Node *const loadedSection = LoadFromZrd(
         "dialog.zrd",
         "OPTIONSPANEL",
         0
     );
     if (loadedSection != 0) {
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &backButton.base.base,
+            &backButton,
             "BACK"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &lightingToggle.base.base.base,
+            &lightingToggle,
             "LIGHTING"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &perspectiveToggle.base.base.base,
+            &perspectiveToggle,
             "PERSPECTIVE"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &fullHudToggle.base.base.base,
+            &fullHudToggle,
             "FULLHUD"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &objectDetailSelector.base.base.base,
+            &objectDetailSelector,
             "OBJECT_DETAIL"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &textureMemorySelector.base.base.base,
+            &textureMemorySelector,
             "TEXTURE_MEMORY"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &effectsSelector.base.base.base,
+            &effectsSelector,
             "EFFECTS"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &soundActiveToggle.base.base.base,
+            &soundActiveToggle,
             "SOUND_ACTIVE"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &soundQualitySelector.base.base.base,
+            &soundQualitySelector,
             "SOUND_QUALITY"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &soundVolumeWidget.base.base.base,
+            &soundVolumeWidget,
             "SOUND_VOLUME"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &musicEnableToggle.base.base.base,
+            &musicEnableToggle,
             "MUSIC_ENABLE"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &musicVolumeWidget.base.base.base,
+            &musicVolumeWidget,
             "MUSIC_VOLUME"
         );
-        base.BindWidgetByName(
+        BindWidgetByName(
             loadedSection,
-            &resolutionSelector.base.base.base,
+            &resolutionSelector,
             "RESOLUTION_CYCLE"
         );
-        base.FreeLoadedTreeRoots(0);
+        FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
     }
-
-    return this;
 }
 
 // Reimplements 0x40cf60: HudOptionsDialog::DestructorCore
 // (D:\Proj\Battlesport\HudOptionsDialog.cpp)
 void HudOptionsDialog::DestructorCore() {
-    resolutionSelector.base.DestructorCore();
-    musicVolumeWidget.base.DestructorCore();
-    musicEnableToggle.base.DestructorCore();
-    soundVolumeWidget.base.DestructorCore();
-    soundQualitySelector.base.DestructorCore();
-    soundActiveToggle.base.DestructorCore();
-    effectsSelector.base.DestructorCore();
-    textureMemorySelector.base.DestructorCore();
-    objectDetailSelector.base.DestructorCore();
-    fullHudToggle.base.DestructorCore();
-    perspectiveToggle.base.DestructorCore();
-    lightingToggle.base.DestructorCore();
-    backButton.base.DestructorCore();
-    base.Destructor();
+    resolutionSelector.HudUiCycleSelectorWidget::DestructorCore();
+    musicVolumeWidget.HudUiFillBitmap::DestructorCore();
+    musicEnableToggle.HudUiCheckToggleWidget::DestructorCore();
+    soundVolumeWidget.HudUiFillBitmap::DestructorCore();
+    soundQualitySelector.HudUiCycleSelectorWidget::DestructorCore();
+    soundActiveToggle.HudUiCheckToggleWidget::DestructorCore();
+    effectsSelector.HudUiCycleSelectorWidget::DestructorCore();
+    textureMemorySelector.HudUiCycleSelectorWidget::DestructorCore();
+    objectDetailSelector.HudUiCycleSelectorWidget::DestructorCore();
+    fullHudToggle.HudUiCheckToggleWidget::DestructorCore();
+    perspectiveToggle.HudUiCheckToggleWidget::DestructorCore();
+    lightingToggle.HudUiCheckToggleWidget::DestructorCore();
+    backButton.HudUiZrdWidget::DestructorCore();
+    this->HudUiBackground::~HudUiBackground();
 }
 
 // Reimplements 0x40cf00: HudOptionsDialog::ScalarDeletingDestructor
@@ -13586,7 +11250,7 @@ void HudCmdDialogState::StaticInitAndRegisterAtExit() {
 // Reimplements 0x40bc30: HudCmdDialogState::StaticInit
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 HudCmdDialogState *HudCmdDialogState::StaticInit() {
-    return g_HudCmdDialogState.Constructor();
+    return new (&g_HudCmdDialogState) HudCmdDialogState;
 }
 
 // Reimplements 0x40bc40: HudCmdDialogState::RegisterAtExit
@@ -13598,25 +11262,21 @@ void HudCmdDialogState::RegisterAtExit() {
 // Reimplements 0x40bc50: HudCmdDialogState::AtExitDestructor
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void HudCmdDialogState::AtExitDestructor() {
-    g_HudCmdDialogState.DestructorCore();
+    g_HudCmdDialogState.~HudCmdDialogState();
 }
 
 // Reimplements 0x40bda0: HudCmdDialogState::QueueEnter
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void HudCmdDialogState::QueueEnter() {
     g_RecoilApp.QueuePushState(
-        (RecoilApp_IState *)&g_HudCmdDialogState,
+        &g_HudCmdDialogState,
         0
     );
 }
 
-// Reimplements 0x40bc60: HudCmdDialogState::Constructor
+// Reimplements 0x40bc60: HudCmdDialogState::HudCmdDialogState
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-HudCmdDialogState * HudCmdDialogState::Constructor() {
-    vftable = (RecoilPtr32)(unsigned int)&g_HudCmdDialogState_Vtbl;
-    m_dialog = 0;
-    return this;
-}
+HudCmdDialogState::HudCmdDialogState() : m_dialog(0) {}
 
 // Reimplements 0x40bcf0: HudCmdDialogState::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
@@ -13625,9 +11285,9 @@ int HudCmdDialogState::OnTryBecomeCurrent() {
     if (dialog != 0) {
         dialog = dialog->Constructor();
     }
-    m_dialog = (RecoilPtr32)(unsigned int)dialog;
+    m_dialog = dialog;
 
-    ((HudCmdDialogVirtual *)dialog)->SetEnabled(1);
+    dialog->SetEnabled(1);
     zInput::Keyboard_Suspend();
     return 1;
 }
@@ -13637,56 +11297,31 @@ int HudCmdDialogState::OnTryBecomeCurrent() {
 void HudCmdDialogState::OnDeactivate() {
     zInput::Keyboard_ResumeFromSuspend();
 
-    HudCmdDialogVirtual *dialogView = (HudCmdDialogVirtual *)(unsigned int)m_dialog;
-    if (dialogView == 0) {
+    HudCmdDialog *dialog = m_dialog;
+    if (dialog == 0) {
         return;
     }
 
-    dialogView->SetEnabled(0);
-    ((HudUiDialogController *)(unsigned int)m_dialog)->BlitOwnedSurfaceToPrimary();
+    dialog->SetEnabled(0);
+    ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
 
-    dialogView = (HudCmdDialogVirtual *)(unsigned int)m_dialog;
-    if (dialogView != 0) {
-        dialogView->ScalarDeletingDestructor(1);
+    dialog = m_dialog;
+    if (dialog != 0) {
+        dialog->ScalarDeletingDestructor(1);
     }
 
     m_dialog = 0;
     zInput::BindMap_Current_RebuildLookupIndices();
 }
 
-struct HudCmdDialogStateBaseVtableGuard {
-    HudCmdDialogState *self;
-
-    ~HudCmdDialogStateBaseVtableGuard() {
-        self->vftable = RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl);
-    }
-};
-
-// Reimplements 0x40bc90: HudCmdDialogState::DestructorCore
+// Reimplements 0x40bc90: HudCmdDialogState::~HudCmdDialogState
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void HudCmdDialogState::DestructorCore() {
-    vftable = (RecoilPtr32)(unsigned int)&g_HudCmdDialogState_Vtbl;
-    HudCmdDialogStateBaseVtableGuard baseVtableOnExit = {this};
-
-    HudCmdDialogVirtual *const dialogView = (HudCmdDialogVirtual *)(unsigned int)m_dialog;
-    if (dialogView != 0) {
-        dialogView->ScalarDeletingDestructor(1);
+HudCmdDialogState::~HudCmdDialogState() {
+    HudCmdDialog *const dialog = m_dialog;
+    if (dialog != 0) {
+        dialog->ScalarDeletingDestructor(1);
         m_dialog = 0;
     }
-}
-
-// Reimplements 0x40bc70: HudCmdDialogState::ScalarDeletingDestructor
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
-HudCmdDialogState * HudCmdDialogState::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    DestructorCore();
-
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
 }
 
 // Reimplements 0x40b5e0: HudCmdDialog::SelectGroupRelative
@@ -13694,15 +11329,15 @@ HudCmdDialogState * HudCmdDialogState::ScalarDeletingDestructor(
 int HudCmdDialog::SelectGroupRelative(
     int delta
 ) {
-    int groupIndex = setList.base.selectedIndex + delta;
-    if (groupIndex >= setList.base.itemCount) {
+    int groupIndex = setList.selectedIndex + delta;
+    if (groupIndex >= setList.itemCount) {
         groupIndex = 0;
     } else if (groupIndex < 0) {
-        groupIndex = setList.base.itemCount - 1;
+        groupIndex = setList.itemCount - 1;
     }
 
-    setList.base.SetIndexClamped(groupIndex);
-    const int selectedIndex = setList.base.selectedIndex;
+    setList.SetIndexClamped(groupIndex);
+    const int selectedIndex = setList.selectedIndex;
     RebuildCommandBindingListsForGroup(selectedIndex);
     return selectedIndex;
 }
@@ -13713,22 +11348,22 @@ int HudCmdDialog::SelectCommandRelative(
     int delta
 ) {
     int selectedIndex = delta;
-    selectedIndex += commandList.base.selectedBindingIndex;
+    selectedIndex += commandList.selectedBindingIndex;
     if (selectedIndex >= 0) {
         HudCmdBindingEntry **const begin =
-            (HudCmdBindingEntry **)(commandList.base.bindingVec.begin);
+            (HudCmdBindingEntry **)(commandList.bindingVec.begin);
         int count;
         if (begin == 0) {
             count = 0;
         } else {
-            count = (int)((HudCmdBindingEntry **)(commandList.base.bindingVec.end) - begin);
+            count = (int)((HudCmdBindingEntry **)(commandList.bindingVec.end) - begin);
         }
         if (selectedIndex < count) {
-            commandList.base.SetSelectedEntry(selectedIndex);
+            commandList.SetSelectedEntry(selectedIndex);
         }
     }
 
-    const int currentIndex = commandList.base.selectedBindingIndex;
+    const int currentIndex = commandList.selectedBindingIndex;
     OnCommandSelectionChanged(currentIndex);
     return currentIndex;
 }
@@ -13736,37 +11371,37 @@ int HudCmdDialog::SelectCommandRelative(
 // Reimplements 0x40b930: HudCmdResetButton::OnActivate
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void HudCmdResetButton::OnActivate() {
-    HudCmdDialog *const dialog = (HudCmdDialog *)(base.owner);
+    HudCmdDialog *const dialog = (HudCmdDialog *)(owner);
     zInput::BindMap_InitDefaultBindings();
     zInput::BindMap_Current_RebuildLookupIndices();
-    dialog->RebuildCommandBindingListsForGroup(dialog->setList.base.selectedIndex);
-    base.OnActivate();
+    dialog->RebuildCommandBindingListsForGroup(dialog->setList.selectedIndex);
+    HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x40b960: HudCmdSetListWidget::OnActivate
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void HudCmdSetListWidget::OnActivate() {
-    base.AdvanceSelectionAndActivate();
-    ((HudCmdDialog *)(base.base.owner))->RebuildCommandBindingListsForGroup(base.selectedIndex);
+    AdvanceSelectionAndActivate();
+    ((HudCmdDialog *)(owner))->RebuildCommandBindingListsForGroup(selectedIndex);
 }
 
 // Reimplements 0x40ba30: HudCmdKeyAButton::OnBeginCapture
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void HudCmdKeyAButton::OnBeginCapture() {
-    ((HudCmdDialog *)(base.base.base.owner))->descriptionPanel.captureState = 1;
+    ((HudCmdDialog *)(owner))->descriptionPanel.captureState = 1;
     zInput::ResetAllTransitionState();
-    base.base.OnActivate();
+    HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x40ba60: HudCmdKeyAButton::OnClearBinding
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void HudCmdKeyAButton::OnClearBinding() {
-    const int selectedIndex = base.selectedBindingIndex;
-    ((HudCmdDialog *)(base.base.base.owner))->ApplyPrimaryKeyRebind(
+    const int selectedIndex = selectedBindingIndex;
+    ((HudCmdDialog *)(owner))->ApplyPrimaryKeyRebind(
         0,
         selectedIndex
     );
-    base.SetSelectedEntry(selectedIndex);
+    SetSelectedEntry(selectedIndex);
 }
 
 // Reimplements 0x40ba90: HudCmdBindButtonBase::OnSelectionChangedRefresh
@@ -13774,41 +11409,41 @@ void HudCmdKeyAButton::OnClearBinding() {
 void HudCmdBindButtonBase::OnSelectionChangedRefresh(
     int selectedIndex
 ) {
-    ((HudCmdDialog *)(base.base.owner))->OnCommandSelectionChanged(selectedIndex);
+    ((HudCmdDialog *)(owner))->OnCommandSelectionChanged(selectedIndex);
 }
 
 // Reimplements 0x40bab0: HudCmdKeyBButton::OnBeginCapture
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void HudCmdKeyBButton::OnBeginCapture() {
-    ((HudCmdDialog *)(base.base.base.owner))->descriptionPanel.captureState = 2;
+    ((HudCmdDialog *)(owner))->descriptionPanel.captureState = 2;
     zInput::ResetAllTransitionState();
-    base.base.OnActivate();
+    HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x40bae0: HudCmdKeyBButton::OnClearBinding
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void HudCmdKeyBButton::OnClearBinding() {
-    ((HudCmdDialog *)(base.base.base.owner))->ApplySecondaryKeyRebind(
+    ((HudCmdDialog *)(owner))->ApplySecondaryKeyRebind(
         0,
-        base.selectedBindingIndex
+        selectedBindingIndex
     );
 }
 
 // Reimplements 0x40bb00: HudCmdJoyButton::OnBeginCapture
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void HudCmdJoyButton::OnBeginCapture() {
-    ((HudCmdDialog *)(base.base.base.owner))->descriptionPanel.captureState = 3;
+    ((HudCmdDialog *)(owner))->descriptionPanel.captureState = 3;
     zInput::ResetAllTransitionState();
-    base.base.OnActivate();
+    HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x40bb30: HudCmdJoyButton::OnClearBinding
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void HudCmdJoyButton::OnClearBinding() {
-    ((HudCmdDialog *)(base.base.base.owner))
+    ((HudCmdDialog *)(owner))
         ->ApplyJoystickButtonRebind(
             0,
-            base.selectedBindingIndex
+            selectedBindingIndex
         );
 }
 
@@ -13819,9 +11454,9 @@ void HudCmdMouseButton::OnBeginCapture() {
         return;
     }
 
-    ((HudCmdDialog *)(base.base.base.owner))->descriptionPanel.captureState = 4;
+    ((HudCmdDialog *)(owner))->descriptionPanel.captureState = 4;
     zInput::ResetAllTransitionState();
-    base.base.OnActivate();
+    HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x40bb80: HudCmdMouseButton::OnClearBinding
@@ -13831,38 +11466,38 @@ void HudCmdMouseButton::OnClearBinding() {
         return;
     }
 
-    ((HudCmdDialog *)(base.base.base.owner))->ApplyMouseButtonRebind(
+    ((HudCmdDialog *)(owner))->ApplyMouseButtonRebind(
         0,
-        base.selectedBindingIndex
+        selectedBindingIndex
     );
 }
 
-// Reimplements 0x40bba0: HudCmdDialogCallback::NextSet
+// Reimplements 0x40bba0: HudCmdNextSetButton::OnActivate
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void HudCmdDialogCallback::NextSet() {
-    ((HudCmdDialog *)(base.owner))->SelectGroupRelative(1);
-    base.OnActivate();
+void HudCmdNextSetButton::OnActivate() {
+    ((HudCmdDialog *)(owner))->SelectGroupRelative(1);
+    HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x40bbc0: HudCmdDialogCallback::PrevSet
+// Reimplements 0x40bbc0: HudCmdPrevSetButton::OnActivate
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void HudCmdDialogCallback::PrevSet() {
-    ((HudCmdDialog *)(base.owner))->SelectGroupRelative(-1);
-    base.OnActivate();
+void HudCmdPrevSetButton::OnActivate() {
+    ((HudCmdDialog *)(owner))->SelectGroupRelative(-1);
+    HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x40bbe0: HudCmdDialogCallback::NextCommand
+// Reimplements 0x40bbe0: HudCmdNextCommandButton::OnActivate
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void HudCmdDialogCallback::NextCommand() {
-    ((HudCmdDialog *)(base.owner))->SelectCommandRelative(1);
-    base.OnActivate();
+void HudCmdNextCommandButton::OnActivate() {
+    ((HudCmdDialog *)(owner))->SelectCommandRelative(1);
+    HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x40bc00: HudCmdDialogCallback::PrevCommand
+// Reimplements 0x40bc00: HudCmdPrevCommandButton::OnActivate
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-void HudCmdDialogCallback::PrevCommand() {
-    ((HudCmdDialog *)(base.owner))->SelectCommandRelative(-1);
-    base.OnActivate();
+void HudCmdPrevCommandButton::OnActivate() {
+    ((HudCmdDialog *)(owner))->SelectCommandRelative(-1);
+    HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x40b680: HudCmdDialog::RebuildCommandBindingListsForGroup
@@ -13870,11 +11505,11 @@ void HudCmdDialogCallback::PrevCommand() {
 void HudCmdDialog::RebuildCommandBindingListsForGroup(
     int groupIndex
 ) {
-    HudCmdDialog_ClearBindButtonEntries(&commandList.base);
-    HudCmdDialog_ClearBindButtonEntries(&keyAButton.base);
-    HudCmdDialog_ClearBindButtonEntries(&keyBButton.base);
-    HudCmdDialog_ClearBindButtonEntries(&joyButton.base);
-    HudCmdDialog_ClearBindButtonEntries(&mouseButton.base);
+    HudCmdDialog_ClearBindButtonEntries(&commandList);
+    HudCmdDialog_ClearBindButtonEntries(&keyAButton);
+    HudCmdDialog_ClearBindButtonEntries(&keyBButton);
+    HudCmdDialog_ClearBindButtonEntries(&joyButton);
+    HudCmdDialog_ClearBindButtonEntries(&mouseButton);
 
     int commandIndex;
     for (commandIndex = 0; commandIndex < zInput::BindGroupList_GetGroupCommandCount(groupIndex);
@@ -13890,11 +11525,11 @@ void HudCmdDialog::RebuildCommandBindingListsForGroup(
             sizeof(labelBuffer)
         );
         if (strlen(labelBuffer) != 0) {
-            commandList.base.AddBindingEntry(
+            commandList.AddBindingEntry(
                 zInput::BindMap_GetCommandLabel(commandId),
                 commandId
             );
-            keyAButton.base.AddBindingEntry(
+            keyAButton.AddBindingEntry(
                 zInput::BindMapCurrent_FormatKeyComboName(
                     zInput::BindMapCurrent_GetPrimaryKeyboardKey(commandId),
                     labelBuffer,
@@ -13902,7 +11537,7 @@ void HudCmdDialog::RebuildCommandBindingListsForGroup(
                 ),
                 commandId
             );
-            keyBButton.base.AddBindingEntry(
+            keyBButton.AddBindingEntry(
                 zInput::BindMapCurrent_FormatKeyComboName(
                     zInput::BindMapCurrent_GetSecondaryKeyboardKey(commandId),
                     labelBuffer,
@@ -13910,7 +11545,7 @@ void HudCmdDialog::RebuildCommandBindingListsForGroup(
                 ),
                 commandId
             );
-            joyButton.base.AddBindingEntry(
+            joyButton.AddBindingEntry(
                 zInput::BindMapCurrent_CopyJoystickButtonName(
                     zInput::BindMapCurrent_GetJoystickButtonSlot(commandId),
                     labelBuffer,
@@ -13918,7 +11553,7 @@ void HudCmdDialog::RebuildCommandBindingListsForGroup(
                 ),
                 commandId
             );
-            mouseButton.base.AddBindingEntry(
+            mouseButton.AddBindingEntry(
                 zInput::BindMapCurrent_CopyMouseButtonName(
                     zInput::BindMapCurrent_GetMouseButtonSlot(commandId),
                     labelBuffer,
@@ -13939,22 +11574,22 @@ void HudCmdDialog::OnCommandSelectionChanged(
 ) {
     descriptionPanel.captureState = 0;
     zInput::ResetAllTransitionState();
-    commandList.base.SetSelectedEntry(commandIndex);
-    keyAButton.base.SetSelectedEntry(commandIndex);
-    keyBButton.base.SetSelectedEntry(commandIndex);
-    joyButton.base.SetSelectedEntry(commandIndex);
-    mouseButton.base.SetSelectedEntry(commandIndex);
+    commandList.SetSelectedEntry(commandIndex);
+    keyAButton.SetSelectedEntry(commandIndex);
+    keyBButton.SetSelectedEntry(commandIndex);
+    joyButton.SetSelectedEntry(commandIndex);
+    mouseButton.SetSelectedEntry(commandIndex);
 
-    HudCmdBindingEntry **const entries = (HudCmdBindingEntry **)(commandList.base.bindingVec.begin);
-    HudCmdBindingEntry *const selectedEntry = entries[commandList.base.selectedBindingIndex];
+    HudCmdBindingEntry **const entries = (HudCmdBindingEntry **)(commandList.bindingVec.begin);
+    HudCmdBindingEntry *const selectedEntry = entries[commandList.selectedBindingIndex];
     char *const hint = zInput::BindMap_GetCommandHint(selectedEntry->commandId);
     if (hint != 0) {
-        HudUiPanelVirtualSetTextFmtStringRequired(
-            &descriptionPanel,
+        descriptionPanel.SetTextFmt(
+            "%s",
             hint
         );
     } else {
-        HudUiPanelVirtualSetTextFmtEmptyRequired(&descriptionPanel);
+        descriptionPanel.SetTextFmt("");
     }
 }
 
@@ -13963,82 +11598,61 @@ void HudCmdDialog::OnCommandSelectionChanged(
 void HudCmdDialog::UpdateCaptureState(
     float deltaTime
 ) {
-    base.Update(deltaTime);
+    HudUiBackground::Update(deltaTime);
 
     switch (descriptionPanel.captureState) {
     case 0:
-        HudUiVirtualSetVisible(
-            &promptPanel,
-            0
-        );
+        promptPanel.SetVisible(0);
         --g_HudCmdMouseDebounceFrames;
         break;
 
     case 1: {
-        HudUiVirtualSetVisible(
-            &promptPanel,
-            1
-        );
-        HudUiPanelVirtualSetTextFmtRequired(
-            (HudUiPanel *)(&promptPanel),
-            "Press desired keyboard key."
-        );
-        keyBButton.base.base.SetChecked(0);
-        joyButton.base.base.SetChecked(0);
-        mouseButton.base.base.SetChecked(0);
+        promptPanel.SetVisible(1);
+        promptPanel.SetTextFmt("Press desired keyboard key.");
+        keyBButton.SetChecked(0);
+        joyButton.SetChecked(0);
+        mouseButton.SetChecked(0);
 
         const int keyCode = zInput::Keyboard_WaitForAnyKeyPress(0);
         if (keyCode != 0) {
             ApplyPrimaryKeyRebind(
                 keyCode,
-                keyAButton.base.selectedBindingIndex
+                keyAButton.selectedBindingIndex
             );
-            keyAButton.base.base.SetChecked(0);
+            keyAButton.SetChecked(0);
         }
         break;
     }
 
     case 2: {
-        HudUiVirtualSetVisible(
-            &promptPanel,
-            1
-        );
-        HudUiPanelVirtualSetTextFmtRequired(
-            (HudUiPanel *)(&promptPanel),
-            "Press desired keyboard key."
-        );
-        keyAButton.base.base.SetChecked(0);
-        joyButton.base.base.SetChecked(0);
-        mouseButton.base.base.SetChecked(0);
+        promptPanel.SetVisible(1);
+        promptPanel.SetTextFmt("Press desired keyboard key.");
+        keyAButton.SetChecked(0);
+        joyButton.SetChecked(0);
+        mouseButton.SetChecked(0);
 
         const int keyCode = zInput::Keyboard_WaitForAnyKeyPress(0);
         if (keyCode != 0) {
             ApplySecondaryKeyRebind(
                 keyCode,
-                keyBButton.base.selectedBindingIndex
+                keyBButton.selectedBindingIndex
             );
-            keyBButton.base.base.SetChecked(0);
+            keyBButton.SetChecked(0);
         }
         break;
     }
 
     case 3: {
-        HudUiVirtualSetVisible(
-            &promptPanel,
-            1
-        );
-        HudUiPanelVirtualSetTextFmtRequired(
-            (HudUiPanel *)(&promptPanel),
-            "Press desired joystick button."
-        );
-        keyAButton.base.base.SetChecked(0);
-        keyBButton.base.base.SetChecked(0);
-        mouseButton.base.base.SetChecked(0);
+        promptPanel.SetVisible(1);
+        promptPanel.SetTextFmt("Press desired joystick button.");
+        keyAButton.SetChecked(0);
+        keyBButton.SetChecked(0);
+        mouseButton.SetChecked(0);
 
         if (zInput::Keyboard_WaitForAnyKeyPress(0) == 1) {
             descriptionPanel.captureState = 0;
             zInput::ResetAllTransitionState();
-            joyButton.base.base.SetChecked(0);
+            joyButton.SetChecked(0);
             return;
         }
 
@@ -14046,30 +11660,24 @@ void HudCmdDialog::UpdateCaptureState(
         if (buttonCode != 0) {
             ApplyJoystickButtonRebind(
                 buttonCode,
-                joyButton.base.selectedBindingIndex
+                joyButton.selectedBindingIndex
             );
-            joyButton.base.base.SetChecked(0);
+            joyButton.SetChecked(0);
         }
         break;
     }
 
     case 4: {
-        HudUiVirtualSetVisible(
-            &promptPanel,
-            1
-        );
-        HudUiPanelVirtualSetTextFmtRequired(
-            (HudUiPanel *)(&promptPanel),
-            "Press desired mouse button."
-        );
-        keyAButton.base.base.SetChecked(0);
-        keyBButton.base.base.SetChecked(0);
-        joyButton.base.base.SetChecked(0);
+        promptPanel.SetVisible(1);
+        promptPanel.SetTextFmt("Press desired mouse button.");
+        keyAButton.SetChecked(0);
+        keyBButton.SetChecked(0);
+        joyButton.SetChecked(0);
 
         if (zInput::Keyboard_WaitForAnyKeyPress(0) == 1) {
             descriptionPanel.captureState = 0;
             zInput::ResetAllTransitionState();
-            joyButton.base.base.SetChecked(0);
+            joyButton.SetChecked(0);
             return;
         }
 
@@ -14077,9 +11685,9 @@ void HudCmdDialog::UpdateCaptureState(
         if (buttonCode != 0) {
             ApplyMouseButtonRebind(
                 buttonCode,
-                mouseButton.base.selectedBindingIndex
+                mouseButton.selectedBindingIndex
             );
-            mouseButton.base.base.SetChecked(0);
+            mouseButton.SetChecked(0);
             g_HudCmdMouseDebounceFrames = 10;
         }
         break;
@@ -14098,7 +11706,7 @@ int HudCmdDialog::ApplyPrimaryKeyRebind(
 ) {
     if (keyCode != 1) {
         const int primaryCommand = zInput::BindMapCurrent_GetCommandByPrimaryKey(keyCode);
-        const int groupIndex = setList.base.selectedIndex;
+        const int groupIndex = setList.selectedIndex;
         const int commandId = zInput::BindGroupList_GetGroupCommandId(
             groupIndex,
             commandIndex
@@ -14131,7 +11739,7 @@ int HudCmdDialog::ApplySecondaryKeyRebind(
 ) {
     if (keyCode != 1) {
         const int secondaryCommand = zInput::BindMapCurrent_GetCommandBySecondaryKey(keyCode);
-        const int groupIndex = setList.base.selectedIndex;
+        const int groupIndex = setList.selectedIndex;
         const int commandId = zInput::BindGroupList_GetGroupCommandId(
             groupIndex,
             commandIndex
@@ -14163,7 +11771,7 @@ int HudCmdDialog::ApplyJoystickButtonRebind(
     int commandIndex
 ) {
     const int joystickCommand = zInput::BindMapCurrent_GetCommandByJoystickSlot(buttonCode);
-    const int groupIndex = setList.base.selectedIndex;
+    const int groupIndex = setList.selectedIndex;
     const int commandId = zInput::BindGroupList_GetGroupCommandId(
         groupIndex,
         commandIndex
@@ -14193,7 +11801,7 @@ int HudCmdDialog::ApplyMouseButtonRebind(
     int commandIndex
 ) {
     const int mouseCommand = zInput::BindMapCurrent_GetCommandByMouseSlot(buttonCode);
-    const int groupIndex = setList.base.selectedIndex;
+    const int groupIndex = setList.selectedIndex;
     const int commandId = zInput::BindGroupList_GetGroupCommandId(
         groupIndex,
         commandIndex
@@ -14226,15 +11834,13 @@ void HudCmdBindButtonBase::RebuildBindingSlotWidgets(
 
     const unsigned int allocationSize =
         sizeof(int) + (unsigned int)(totalCount) * sizeof(HudUiListSelectorItem);
-    unsigned char *const header = (unsigned char *)(::operator new(allocationSize));
-    FieldAt<int>(
-        header,
-        0
-    ) = totalCount;
-    HudUiListSelectorItem *const items = (HudUiListSelectorItem *)(header + sizeof(int));
+    HudUiListSelectorItemArrayHeader *const header =
+        (HudUiListSelectorItemArrayHeader *)(::operator new(allocationSize));
+    header->count = totalCount;
+    HudUiListSelectorItem *const items = (HudUiListSelectorItem *)(header + 1);
     {
         for (int index = 0; index < totalCount; ++index) {
-            items[index].Constructor();
+            new (&items[index]) HudUiListSelectorItem;
         }
     }
 
@@ -14244,32 +11850,29 @@ void HudCmdBindButtonBase::RebuildBindingSlotWidgets(
 
     {
         for (int index = 0; index < visibleBindingSlotCount; ++index) {
-            const int x = (int)((float)(base.base.originX) + visibleListOffsetX);
-            const int y = (int)((float)(base.base.originY +
+            const int x = (int)((float)(originX) + visibleListOffsetX);
+            const int y = (int)((float)(originY +
                                         (index - visibleBindingSlotCount) * bindingSlotSpacing) +
                                 visibleListOffsetY);
-            HudUiVirtualSetPosRequired(
-                &bindingSlotPanels[index],
+            bindingSlotPanels[index].SetPos(
                 x,
                 y
             );
         }
     }
 
-    HudUiVirtualSetPosRequired(
-        &bindPanel,
-        base.base.originX,
-        base.base.originY
+    bindPanel.SetPos(
+        originX,
+        originY
     );
 
     {
         for (int index = visibleBindingSlotCount; index < bindingSlotTotalCount; ++index) {
-            const int x = (int)((float)(base.base.originX) + overflowListOffsetX);
-            const int y = (int)((float)(base.base.originY + (index - visibleBindingSlotCount + 1) *
+            const int x = (int)((float)(originX) + overflowListOffsetX);
+            const int y = (int)((float)(originY + (index - visibleBindingSlotCount + 1) *
                                                                 bindingSlotSpacing) +
                                 overflowListOffsetY);
-            HudUiVirtualSetPosRequired(
-                &bindingSlotPanels[index],
+            bindingSlotPanels[index].SetPos(
                 x,
                 y
             );
@@ -14280,17 +11883,14 @@ void HudCmdBindButtonBase::RebuildBindingSlotWidgets(
 // Reimplements 0x4b8de0: HudCmdBindButtonBase::LoadFromZrd
 int HudCmdBindButtonBase::LoadFromZrd(
     zReader::Node *zrdSection,
-    void *ownerDialog
+    HudUiBackground *ownerDialog
 ) {
-    base.LoadFromZrd(
+    HudUiCheckToggleWidget::LoadFromZrd(
         zrdSection,
         ownerDialog
     );
 
-    void *const clipSource = OwnerField<void *>(
-        ownerDialog,
-        0x118
-    );
+    void *const clipSource = ownerDialog->capturedCompositeImage;
 
     zReader::Node *const selectedFontNode = zReader_GetNamedNode(
         zrdSection,
@@ -14300,7 +11900,7 @@ int HudCmdBindButtonBase::LoadFromZrd(
         selectedFontStyleRef = selectedFontNode->value.i32;
         ApplyHudFontStyleTextOnly(
             (HudUiPanel *)(&bindPanel),
-            HudUiZrdOwnerFontStyle(base.base.owner, selectedFontStyleRef)
+            HudUiZrdOwnerFontStyle(owner, selectedFontStyleRef)
         );
     }
 
@@ -14380,17 +11980,14 @@ int HudCmdBindButtonBase::LoadFromZrd(
         HudUiRect clipRect = {0};
         const HudFontStyle *const listStyle =
             HudUiZrdOwnerFontStyle(
-                base.base.owner,
+                owner,
                 listFontStyleRef
             );
         {
             for (int index = 0; index < bindingSlotTotalCount; ++index) {
                 HudUiListSelectorItem *const item = &bindingSlotPanels[index];
                 ((HudUiContainer *)(ownerDialog))->AddChild((HudUiElement *)(item));
-                HudUiVirtualSetVisibleRequired(
-                    item,
-                    1
-                );
+                item->SetVisible(1);
                 item->owner = this;
                 if (clipSource != 0) {
                     HudUiSetPanelClipWithSource(
@@ -14408,10 +12005,7 @@ int HudCmdBindButtonBase::LoadFromZrd(
         }
 
         ((HudUiContainer *)(ownerDialog))->AddChild((HudUiElement *)(&bindPanel));
-        HudUiVirtualSetVisibleRequired(
-            &bindPanel,
-            1
-        );
+        bindPanel.SetVisible(1);
         bindPanel.owner = this;
         if (clipSource != 0) {
             HudUiSetPanelClipWithSource(
@@ -14469,7 +12063,7 @@ HudUiMessageBoxDialog * HudUiMessageBoxDialog::Constructor(
     const char *zrdPath,
     const char *sectionName
 ) {
-    HudUiBackground::Constructor();
+    new ((HudUiBackground *)this) HudUiBackground;
     backdropWidget.Constructor(0);
     messagePanel.ConstructorDefault(
         0,
@@ -14481,13 +12075,8 @@ HudUiMessageBoxDialog * HudUiMessageBoxDialog::Constructor(
         0,
         0
     );
-    okButton.base.Constructor();
-    okButton.base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiMessageBoxOkButton_Vtbl);
-    cancelButton.base.Constructor();
-    cancelButton.base.base.ftable =
-        (const HudUiWidget_FTable *)(&g_HudUiMessageBoxCancelButton_Vtbl);
-    base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiMessageBoxDialog_FTable);
-
+    okButton.Constructor();
+    cancelButton.Constructor();
     const zVidRect32 *const primaryRect = zVideo::GetPrimarySurfaceRectScratch();
     blitRect = *primaryRect;
 
@@ -14504,29 +12093,29 @@ HudUiMessageBoxDialog * HudUiMessageBoxDialog::Constructor(
         if (loadedSection != 0) {
             BindWidgetByName(
                 loadedSection,
-                &okButton.base.base,
+                &okButton,
                 "MB_OK"
             );
             BindWidgetByName(
                 loadedSection,
-                &cancelButton.base.base,
+                &cancelButton,
                 "MB_CANCEL"
             );
             BindPrimitiveNodeToElement(
                 loadedSection,
-                (HudUiElement *)(&titlePanel),
+                &titlePanel,
                 "TITLE"
             );
             BindPrimitiveNodeToElement(
                 loadedSection,
-                (HudUiElement *)(&messagePanel),
+                &messagePanel,
                 "MESSAGE"
             );
         }
 
         FreeLoadedTreeRoots(0);
-        ((HudUiElement *)(&titlePanel))->SetVisible(1);
-        ((HudUiElement *)(&messagePanel))->SetVisible(1);
+        titlePanel.SetVisible(1);
+        messagePanel.SetVisible(1);
         return this;
     }
 
@@ -14581,50 +12170,48 @@ HudUiMessageBoxDialog * HudUiMessageBoxDialog::Constructor(
     backdropWidget.SetImageBorrowedAndInvalidate(backgroundImage);
     messagePanel.SetTextFmt("");
     titlePanel.SetTextFmt("");
-    okButton.base.LoadFromZrd(
+    okButton.LoadFromZrd(
         0,
         this
     );
-    okButton.base.defaultImage =
-        okButton.base.base.SetImageBorrowedAndInvalidate(okButtonNormalImage);
-    okButton.base.rolloverImage = okButtonPressedImage;
+    okButton.defaultImage = okButton.SetImageBorrowedAndInvalidate(okButtonNormalImage);
+    okButton.rolloverImage = okButtonPressedImage;
 
-    ((HudUiElement *)(&backdropWidget))->SetPos(
+    backdropWidget.SetPos(
         centerX - 150,
         centerY - 100
     );
-    ((HudUiElement *)(&titlePanel))->SetPos(
+    titlePanel.SetPos(
         centerX - 140,
         centerY - 90
     );
-    ((HudUiElement *)(&messagePanel))->SetPos(
+    messagePanel.SetPos(
         centerX - 140,
         centerY - 70
     );
-    ((HudUiElement *)(&okButton.base))
-        ->SetPos(
-            centerX - 150 + HudUiDialogSignedDivPow2(
+    okButton.SetPos(
+        centerX - 150 + HudUiDialogSignedDivPow2(
+            fallbackWidth,
+            1
+        ) -
+            HudUiDialogSignedDivPow2(
                 fallbackWidth,
-                1
-            ) -
-                HudUiDialogSignedDivPow2(
-                    fallbackWidth,
-                    3
-                ),
-            centerY - 100 - HudUiDialogSignedDivPow2(
-                fallbackHeight,
-                2
-            ) + fallbackHeight - 10
-        );
+                3
+            ),
+        centerY - 100 - HudUiDialogSignedDivPow2(
+            fallbackHeight,
+            2
+        ) + fallbackHeight - 10
+    );
 
-    ((HudUiContainer *)(this))->AddChild((HudUiElement *)(&backdropWidget));
-    ((HudUiContainer *)(this))->AddChild((HudUiElement *)(&messagePanel));
-    ((HudUiContainer *)(this))->AddChild((HudUiElement *)(&titlePanel));
-    ((HudUiContainer *)(this))->AddChild((HudUiElement *)(&okButton.base));
-    ((HudUiElement *)(&messagePanel))->SetVisible(1);
-    ((HudUiElement *)(&titlePanel))->SetVisible(1);
-    ((HudUiElement *)(&okButton.base))->SetVisible(0);
-    ((HudUiContainer *)(this))->SetChildFlags(0);
+    AddChild(&backdropWidget);
+    AddChild(&messagePanel);
+    AddChild(&titlePanel);
+    AddChild(&okButton);
+    messagePanel.SetVisible(1);
+    titlePanel.SetVisible(1);
+    okButton.SetVisible(0);
+    SetChildFlags(0);
     return this;
 }
 
@@ -14642,8 +12229,6 @@ HudUiMessageBoxDialog * HudUiMessageBoxDialog::ScalarDeletingDestructor(
 
 // Reimplements 0x4bf560: HudUiMessageBoxDialog::Destructor
 void HudUiMessageBoxDialog::Destructor() {
-    base.base.vptr = (const HudUiContainer_FTable *)(&g_HudUiMessageBoxDialog_FTable);
-
     if (backgroundImage != 0) {
         if (backgroundImage->pixels != 0) {
             free(backgroundImage->pixels);
@@ -14654,12 +12239,12 @@ void HudUiMessageBoxDialog::Destructor() {
         backgroundImage = 0;
     }
 
-    cancelButton.base.DestructorCore();
-    okButton.base.DestructorCore();
+    cancelButton.DestructorCore();
+    okButton.DestructorCore();
     titlePanel.Destructor();
     messagePanel.Destructor();
     backdropWidget.DestructorCore();
-    HudUiBackground::Destructor();
+    this->HudUiBackground::~HudUiBackground();
 }
 
 // Reimplements 0x4bf630: HudUiMessageBoxDialog::RunModal
@@ -14712,25 +12297,12 @@ int HudUiMessageBoxDialog::RunModal(
         dialogPitchBytes
     );
 
-    const unsigned int *const dialogDispatch = (const unsigned int *)(base.base.vptr);
-    typedef void( * DialogSetEnabledFn)(
-        HudUiMessageBoxDialog * self,
-        int enabled
-    );
-    typedef void( * DialogUpdateFn)(
-        HudUiMessageBoxDialog * self,
-        float deltaSeconds
-    );
-
     modalResult = 0;
     modalFrameCountdown = 100000;
-    ((DialogSetEnabledFn)(dialogDispatch[1]))(
-        this,
-        1
-    );
+    SetEnabled(1);
     messagePanel.SetTextFmt(messageText);
     titlePanel.SetTextFmt(titleText);
-    ((HudUiElement *)(&okButton.base))->SetVisible(1);
+    okButton.SetVisible(1);
 
     int framesRemaining = modalFrameCountdown;
     modalFrameCountdown = framesRemaining - 1;
@@ -14738,10 +12310,7 @@ int HudUiMessageBoxDialog::RunModal(
         zInput::PollActiveDevices(0);
         Time::Tick();
         zVideo::RunPostprocessOnPrimaryBuffer();
-        ((DialogUpdateFn)(dialogDispatch[0]))(
-            this,
-            g_FrameDeltaTimeSec
-        );
+        Update(g_FrameDeltaTimeSec);
         zVideo::Dispatch_UnlockPrimarySurfaceState();
         zVideo::AdjustSurfacesIfEnabled(
             &blitRect,
@@ -14754,10 +12323,7 @@ int HudUiMessageBoxDialog::RunModal(
     }
 
     ((HudUiDialogController *)(this))->BlitOwnedSurfaceToPrimary();
-    ((DialogSetEnabledFn)(dialogDispatch[1]))(
-        this,
-        0
-    );
+    SetEnabled(0);
     zVideo::SetHalfResAdjustMode(previousHalfResMode);
     HudUi::SetInvalidateMode(previousHalfResMode);
     zRndr::SetFrameBufferRegion(
@@ -14783,29 +12349,27 @@ void HudUiMessageBoxDialog::OnCancel() {
 
 // Reimplements 0x4bf800: HudUiMessageBoxOkButton::OnActivate
 void HudUiMessageBoxOkButton::OnActivate() {
-    HudUiMessageBoxDialog *const dialog = (HudUiMessageBoxDialog *)(base.owner);
-    const HudUiMessageBoxDialog_FTable *const ftable =
-        *(const HudUiMessageBoxDialog_FTable *const *)(dialog);
-    typedef void( * OnOkFn)(HudUiMessageBoxDialog *);
-    ((OnOkFn)(ftable->slots[3]))(dialog);
+    HudUiMessageBoxDialog *const dialog = (HudUiMessageBoxDialog *)(owner);
+    dialog->OnOk();
 
-    base.OnActivate();
+    HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x4bf820: HudUiMessageBoxCancelButton::OnActivate
 void HudUiMessageBoxCancelButton::OnActivate() {
-    HudUiMessageBoxDialog *const dialog = (HudUiMessageBoxDialog *)(base.owner);
-    const HudUiMessageBoxDialog_FTable *const ftable =
-        *(const HudUiMessageBoxDialog_FTable *const *)(dialog);
-    typedef void( * OnCancelFn)(HudUiMessageBoxDialog *);
-    ((OnCancelFn)(ftable->slots[4]))(dialog);
+    HudUiMessageBoxDialog *const dialog = (HudUiMessageBoxDialog *)(owner);
+    dialog->OnCancel();
 
-    base.OnActivate();
+    HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x40f2d0: HudUiWidget::CtorDefaultThunk
-HudUiWidget * HudUiWidget::CtorDefaultThunk() {
-    return Constructor(0);
+// Reimplements 0x40f2d0: HudUiWidget::HudUiWidget
+HudUiWidget::HudUiWidget() {
+    Constructor(0);
+}
+
+HudUiWidget::~HudUiWidget() {
+    ReleaseImageIfOwned();
 }
 
 // Reimplements 0x404d90: HudUiWidget::GetCenterX
@@ -14833,13 +12397,11 @@ int HudUiWidget::HitTest(
     int px,
     int py
 ) {
-    typedef HudUiRect *( * GetBoundsRectFn)(HudUiWidget * self);
-
     if ((flags & 0x10) != 0) {
         return 0;
     }
 
-    HudUiRect *const bounds = ((GetBoundsRectFn)(ftable->slots[0x2c / 4]))(this);
+    HudUiRect *const bounds = GetBoundsRectOrNull();
     if (bounds == 0) {
         return 0;
     }
@@ -14851,11 +12413,6 @@ int HudUiWidget::HitTest(
 
 // Reimplements 0x404e10: HudUiWidget::RebuildBltRectFromImage
 RECOIL_NO_GS void HudUiWidget::RebuildBltRectFromImage() {
-    struct SetClipRectFTable {
-        unsigned int slots[7];
-        void (HudUiWidget::*SetClipRect)(const HudUiRect *rect);
-    };
-
     zVidImagePartial *const sourceImage = image;
     int right = x;
     int bottom = y;
@@ -14868,8 +12425,7 @@ RECOIL_NO_GS void HudUiWidget::RebuildBltRectFromImage() {
     bottom += sourceImage != 0 ? sourceImage->height : 0;
     rect.bottom = bottom;
 
-    const SetClipRectFTable *const dispatch = (const SetClipRectFTable *)ftable;
-    (this->*dispatch->SetClipRect)(&rect);
+    SetClipRect(&rect);
 }
 
 // Reimplements 0x4b3fb0: HudUiWidget::Draw
@@ -14906,8 +12462,7 @@ void HudUiWidget::Draw() {
         return;
     }
 
-    typedef void( * DrawBaseFn)(HudUiWidget * self);
-    ((DrawBaseFn)(ftable->slots[2]))(this);
+    DrawBase();
 
     zVid_Image::BlitToActiveTarget(
         image,
@@ -14918,7 +12473,10 @@ void HudUiWidget::Draw() {
     );
 }
 
-// Reimplements 0x4b3da0: HudUiWidget::ReleaseImageIfOwned
+/**
+ * Reimplements 0x4b3da0: HudUiWidget::ReleaseImageIfOwned.
+ * Purpose: release an owned widget image and clear the ownership bit.
+ */
 void HudUiWidget::ReleaseImageIfOwned() {
     if (image != 0 && ownsImage != 0) {
         zVid_Image::ReleaseIfNotDefault(image);
@@ -14932,20 +12490,19 @@ void HudUiWidget::ReleaseImageIfOwned() {
 zVidImagePartial * HudUiWidget::SetImageBorrowedAndInvalidate(
     zVidImagePartial *newImage
 ) {
-    typedef void( * InvalidateFn)(HudUiWidget * self);
-
     ownsImage = 0;
     image = newImage;
-    ((InvalidateFn)(ftable->slots[8]))(this);
+    Invalidate();
     return newImage;
 }
 
-// Reimplements 0x4b3e30: HudUiWidget::SetImageByPathOwned
+/**
+ * Reimplements 0x4b3e30: HudUiWidget::SetImageByPathOwned.
+ * Purpose: replace an owned widget image from a texture-directory path and invalidate the widget.
+ */
 zVidImagePartial * HudUiWidget::SetImageByPathOwned(
     const char *imagePath
 ) {
-    typedef void( * InvalidateFn)(HudUiWidget * self);
-
     if (imagePath == 0) {
         return 0;
     }
@@ -14956,18 +12513,17 @@ zVidImagePartial * HudUiWidget::SetImageByPathOwned(
         ownsImage = 1;
     }
 
-    ((InvalidateFn)(ftable->slots[8]))(this);
+    Invalidate();
     return image;
 }
 
 // Reimplements 0x4b3d50: HudUiWidget::DestructorCore
 void HudUiWidget::DestructorCore() {
-    ReleaseImageIfOwned();
-    ftable = (const HudUiWidget_FTable *)(&g_HudUiCommon_FTable);
+    this->~HudUiWidget();
 }
 
 // Reimplements 0x4b3ce0: HudUiWidget::ScalarDeletingDestructor
-HudUiWidget * HudUiWidget::ScalarDeletingDestructor(
+HudUiElement * HudUiWidget::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -14983,8 +12539,6 @@ void HudUiWidget::SetPos(
     int newX,
     int newY
 ) {
-    typedef void( * InvalidateFn)(HudUiWidget * self);
-
     if (alignFlags != 0 && image != 0) {
         x = newX - (image->width / 2);
         y = newY - (image->height / 2);
@@ -14993,33 +12547,32 @@ void HudUiWidget::SetPos(
         y = newY;
     }
 
-    ((InvalidateFn)(ftable->slots[8]))(this);
+    Invalidate();
 }
 
 // Reimplements 0x40f200: HudUiTripletPanel::Constructor
 HudUiTripletPanel * HudUiTripletPanel::Constructor() {
-    base.Constructor(
+    HudUiElement::Constructor(
         0,
         0
     );
-    base.ftable = (const HudUiCommon_FTable *)(&g_HudUiTripletPanel_FTable);
     visibleCount = 0;
 
     {
         int itemIndex;
         for (itemIndex = 0; itemIndex < (int)(sizeof(items) / sizeof(items[0])); ++itemIndex) {
             HudUiWidget &item = items[itemIndex];
-            item.CtorDefaultThunk();
-            ((HudUiElement *)(&item))->SetVisible(0);
+            new (&item) HudUiWidget;
+            item.HudUiElement::SetVisible(0);
         }
     }
 
-    g_HudUiMgr.AddChild((HudUiElement *)(this));
+    g_HudUiMgr.AddChild(this);
     return this;
 }
 
 // Reimplements 0x40f2b0: HudUiTripletPanel::ScalarDeletingDestructor
-HudUiTripletPanel * HudUiTripletPanel::ScalarDeletingDestructor(
+HudUiElement * HudUiTripletPanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -15033,16 +12586,13 @@ HudUiTripletPanel * HudUiTripletPanel::ScalarDeletingDestructor(
 // Reimplements 0x40f400: HudUiTripletPanel::Draw
 // (D:\Proj\Battlesport\hud.cpp)
 void HudUiTripletPanel::Draw() {
-    typedef void( * DrawBaseFn)(HudUiTripletPanel * self);
-    typedef void( * DrawFn)(HudUiWidget * self);
-
-    ((DrawBaseFn)(base.ftable->slots[2]))(this);
+    DrawBase();
 
     {
         for (int index = 2; index >= 0; --index) {
             HudUiWidget &item = items[index];
             if (((unsigned char)(item.flags) & 0x10u) == 0) {
-                ((DrawFn)(item.ftable->slots[1]))(&item);
+                item.Draw();
             }
         }
     }
@@ -15052,12 +12602,6 @@ void HudUiTripletPanel::Draw() {
 void HudUiTripletPanel::SetVisibleCount(
     int count
 ) {
-    typedef void( * SetVisibleFn)(
-        HudUiElement * self,
-        int visible
-    );
-    typedef void( * InvalidateFn)(HudUiElement * self);
-
     if (visibleCount == count) {
         return;
     }
@@ -15072,15 +12616,11 @@ void HudUiTripletPanel::SetVisibleCount(
 
     {
         for (int index = 0; index < 3; ++index) {
-            HudUiElement *const item = (HudUiElement *)(&items[index]);
-            ((SetVisibleFn)(item->ftable->slots[24]))(
-                item,
-                count > index ? 1 : 0
-            );
+            items[index].SetVisible(count > index ? 1 : 0);
         }
     }
 
-    ((InvalidateFn)(base.ftable->slots[8]))(&base);
+    Invalidate();
 }
 
 // Reimplements 0x40f2e0: HudUiNanitePanel::InitLayout
@@ -15088,24 +12628,11 @@ void HudUiTripletPanel::SetVisibleCount(
 void HudUiNanitePanel::InitLayout(
     zReader::Node *layoutRoot
 ) {
-    typedef int( * GetCenterFn)(HudUiWidget * self);
-    typedef void( * SetPosFn)(
-        HudUiNanitePanel * self,
-        int x,
-        int y
-    );
-    typedef void( * SetBltSourceAndClipRectFn)(
-        HudUiNanitePanel * self,
-        void *bltSourceOrNull,
-        const HudUiRect *clipRect
-    );
-
     HudUiWidget *const layoutWidget2 = &g_HudLayoutHW.widget2;
     const int baseX = g_HudUiMgrHudOriginX / 2;
-    const HudUiWidget_FTable *const layoutWidget2FTable = layoutWidget2->ftable;
     int anchor[2];
-    anchor[0] = ((GetCenterFn)(layoutWidget2FTable->slots[0x64 / 4]))(layoutWidget2);
-    anchor[1] = ((GetCenterFn)(layoutWidget2FTable->slots[0x68 / 4]))(layoutWidget2);
+    anchor[0] = layoutWidget2->GetCenterX();
+    anchor[1] = layoutWidget2->GetCenterY();
 
     zReader::Node *const layoutPayload = layoutRoot->value.nodes;
     HudUiRect clipRect;
@@ -15147,19 +12674,16 @@ void HudUiNanitePanel::InitLayout(
     );
 
     HudUiWidget *const anchorItem = &items[2];
-    const HudUiWidget_FTable *const anchorFTable = anchorItem->ftable;
-    const int y = ((GetCenterFn)(anchorFTable->slots[0x68 / 4]))(anchorItem);
-    const int x = ((GetCenterFn)(anchorFTable->slots[0x64 / 4]))(anchorItem);
-    ((SetPosFn)(base.ftable->slots[3]))(
-        this,
+    const int y = anchorItem->GetCenterY();
+    const int x = anchorItem->GetCenterX();
+    SetPos(
         x,
         y
     );
 
     clipRect.left += baseX;
     clipRect.right += baseX;
-    ((SetBltSourceAndClipRectFn)(base.ftable->slots[6]))(
-        this,
+    SetBltSourceAndClipRect(
         0,
         &clipRect
     );
@@ -15185,7 +12709,6 @@ void HudUiTripletPanel::DestructorCore() {
         }
     }
 
-    base.ftable = &g_HudUiCommon_FTable;
 }
 
 // Reimplements 0x40e910: HudUiTriplet::InterpolateLayout
@@ -15204,10 +12727,48 @@ void HudUiTriplet::InterpolateLayout(
     fontWeight = (int)((float)(fontWeightEnd - fontWeightStart) * t + fontWeightStart);
 }
 
+void HudUiTextInput::OnPrintableKey(
+    int key
+) {
+    InsertCharAtCursor(key);
+}
+
+void HudUiTextInput::OnIgnoredKey(
+    int
+) {
+}
+
+void HudUiTextInput::OnAccept() {
+    zGame::ReturnOnlyStub();
+}
+
+void HudUiTextInput::OnCancel() {
+    zGame::ReturnOnlyStub();
+}
+
+void HudUiTextInput::OnBackspace() {
+    BackspaceDeleteChar();
+}
+
+void HudUiTextInput::OnDeleteForward() {
+    DeleteCharForward();
+}
+
+void HudUiTextInput::OnMoveCursorLeft() {
+    MoveCursorLeft();
+}
+
+void HudUiTextInput::OnMoveCursorRight() {
+    MoveCursorRight();
+}
+
+void HudUiTextInput::OnOverflow() {
+    zGame::ReturnOnlyStub();
+}
+
 // Reimplements 0x4b4370: HudUiTextInput::DestructorCore
 void HudUiTextInput::DestructorCore() {
     char *const ownedBuffer = buffer;
-    ftable = &g_HudUiTextInput_FTable;
     ::operator delete(ownedBuffer);
 }
 
@@ -15218,12 +12779,12 @@ void HudUiTextInput::DestructorCoreThunk() {
 
 // Reimplements 0x4b4390: HudUiTextInput::AllocTextBuffer
 void HudUiTextInput::AllocTextBuffer(
-    unsigned int bufferSize
+    int bufferSize
 ) {
     char *const newBuffer = (char *)(::operator new(bufferSize));
     char *const oldBuffer = buffer;
     if (oldBuffer != 0) {
-        unsigned int copyCount = capacity;
+        int copyCount = capacity;
         if (bufferSize < copyCount) {
             copyCount = bufferSize;
         }
@@ -15241,9 +12802,8 @@ void HudUiTextInput::AllocTextBuffer(
 
 // Reimplements 0x4b42f0: HudUiTextInput::Constructor
 HudUiTextInput * HudUiTextInput::Constructor(
-    unsigned int bufferSize
+    int bufferSize
 ) {
-    ftable = &g_HudUiTextInput_FTable;
     cursor = 0;
     buffer = 0;
     capacity = 0;
@@ -15365,8 +12925,7 @@ void HudUiTextInput::InsertCharAtCursor(
 ) {
     const int textLength = (int)(strlen(buffer));
     if (textLength >= (int)(capacity)-1) {
-        typedef void( * NoArgFn)(HudUiTextInput * self);
-        ((NoArgFn)(ftable->slots[8]))(this);
+        OnOverflow();
         return;
     }
 
@@ -15385,42 +12944,30 @@ void HudUiTextInput::DispatchKeyAction(
     const int keyIndex = (signed char)(key);
     const int action = (signed char)(keyActionMap[keyIndex]);
 
-    typedef void( * KeyFn)(
-        HudUiTextInput * self,
-        int key
-    );
-    typedef void( * NoArgFn)(HudUiTextInput * self);
-
     switch (action) {
     case 0:
-        ((KeyFn)(ftable->slots[0]))(
-            this,
-            key
-        );
+        OnPrintableKey(key);
         break;
     case 1:
-        ((KeyFn)(ftable->slots[1]))(
-            this,
-            key
-        );
+        OnIgnoredKey(key);
         break;
     case 2:
-        ((NoArgFn)(ftable->slots[3]))(this);
+        OnCancel();
         break;
     case 3:
-        ((NoArgFn)(ftable->slots[2]))(this);
+        OnAccept();
         break;
     case 4:
-        ((NoArgFn)(ftable->slots[4]))(this);
+        OnBackspace();
         break;
     case 5:
-        ((NoArgFn)(ftable->slots[5]))(this);
+        OnDeleteForward();
         break;
     case 6:
-        ((NoArgFn)(ftable->slots[6]))(this);
+        OnMoveCursorLeft();
         break;
     case 7:
-        ((NoArgFn)(ftable->slots[7]))(this);
+        OnMoveCursorRight();
         break;
     default:
         break;
@@ -15429,23 +12976,22 @@ void HudUiTextInput::DispatchKeyAction(
 
 // Reimplements 0x4ba3e0: HudUiOwnedTextInput::OnAcceptNotifyOwner
 void HudUiOwnedTextInput::OnAcceptNotifyOwner() {
-    typedef void( * AcceptFn)(void *self);
-    struct OwnerFTable {
-        unsigned int slots[34];
-        AcceptFn OnAccept;
-    };
+    if (owner != 0) {
+        owner->OnAcceptForwardToCommit();
+    }
+}
 
-    zGame::ReturnOnlyStub();
+void HudUiOwnedTextInput::OnAccept() {
+    OnAcceptNotifyOwner();
+}
 
-    const OwnerFTable *const ownerFTable = *(const OwnerFTable *const *)(owner);
-    ownerFTable->OnAccept(owner);
+void HudUiChatComposeTextInput::OnAccept() {
+    GameNet::EndChatComposeAndSendThunk();
 }
 
 // Reimplements 0x40d660: HudUiMgrObjectiveBlock::Destructor
 void HudUiMgrObjectiveBlock::Destructor() {
     chatComposeTextInput.DestructorCore();
-    objectiveBar.ftable = (const HudUiBar_FTable *)(&g_HudUiCommon_FTable);
-    objectiveMeter.ftable = (const HudUiMeter_FTable *)(&g_HudUiCommon_FTable);
     objectiveSensorRect.DestructorCore();
     objectiveWidget.DestructorCore();
 }
@@ -15456,45 +13002,52 @@ void HudUiMgrObjectiveBlock::Destructor() {
 // current source keeps those recovered subobjects as globals in the HUD manager
 // cluster, so this method applies the same teardown to the named objects.
 void HudUiMgrSensorBlock::Destructor() {
-    g_HudUiMgrSensorMeter.ftable = (const HudUiMeter_FTable *)(&g_HudUiCommon_FTable);
     g_HudUiMgrSensorOverlay.DestructorCore();
     g_HudUiMgrSensorPanel.DestructorCore();
 }
 
-// Reimplements 0x40d780: HudUiSlot::Destructor
+/**
+ * Reimplements 0x40d780: HudUiSlot::Destructor.
+ * Purpose: Tears down the marker and slot widgets before resetting the slot to the common HUD element table.
+ */
 void HudUiSlot::Destructor() {
     trackMarkerWidget.DestructorCore();
     slotWidget.DestructorCore();
-    ftable = (const HudUiSlot_FTable *)(&g_HudUiCommon_FTable);
 }
 
-// Reimplements 0x40db20: HudUiSlot::Constructor
+/**
+ * Reimplements 0x40db20: HudUiSlot::Constructor.
+ * Purpose: Constructs the HUD element base and embedded slot widgets for a weapon/sensor HUD slot.
+ */
 HudUiSlot * HudUiSlot::Constructor() {
-    ((HudUiElement *)(this))->Constructor(
+    HudUiElement::Constructor(
         0,
         0
     );
     slotWidget.Constructor(0);
     trackMarkerWidget.Constructor(0);
-    ftable = &g_HudUiSlot_FTable;
     return this;
 }
 
-// Reimplements 0x40db90: HudUiSlot::Draw
+/**
+ * Reimplements 0x40db90: HudUiSlot::Draw.
+ * Purpose: Draws the visible slot and track-marker widgets in recovered HUD slot order.
+ */
 void HudUiSlot::Draw() {
-    typedef void(__fastcall * DispatchFn)(HudUiWidget * self);
-
     if ((slotWidget.flags & 0x10) == 0) {
-        ((DispatchFn)(slotWidget.ftable->slots[1]))(&slotWidget);
+        slotWidget.Draw();
     }
 
     if ((trackMarkerWidget.flags & 0x10) == 0) {
-        ((DispatchFn)(trackMarkerWidget.ftable->slots[1]))(&trackMarkerWidget);
+        trackMarkerWidget.Draw();
     }
 }
 
-// Reimplements 0x40dbd0: HudUiSlot::ScalarDeletingDestructor
-HudUiSlot * HudUiSlot::ScalarDeletingDestructor(
+/**
+ * Reimplements 0x40dbd0: HudUiSlot::ScalarDeletingDestructor.
+ * Purpose: Runs slot destruction and conditionally releases heap storage according to the MSVC deleting-destructor flag.
+ */
+HudUiElement * HudUiSlot::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -15509,12 +13062,11 @@ HudUiSlot * HudUiSlot::ScalarDeletingDestructor(
 void HudUiStatsListElement::Update(
     float deltaSeconds
 ) {
-    (triplet->base.*(triplet->base.vptr->updateAll))(deltaSeconds);
+    triplet->UpdateAll(deltaSeconds);
 }
 
 // Reimplements 0x40fa40: HudUiStatsListElement::DestructorCore
 void HudUiStatsListElement::DestructorCore() {
-    base.ftable = (const HudUiCommon_FTable *)(&g_HudUiStatsListElement_FTable);
 
     HudUiTriplet *const ownedTriplet = triplet;
     if (ownedTriplet != 0) {
@@ -15523,11 +13075,10 @@ void HudUiStatsListElement::DestructorCore() {
     }
 
     triplet = 0;
-    base.ftable = &g_HudUiCommon_FTable;
 }
 
 // Reimplements 0x40fa20: HudUiStatsListElement::ScalarDeletingDestructor
-HudUiStatsListElement * HudUiStatsListElement::ScalarDeletingDestructor(
+HudUiElement * HudUiStatsListElement::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -15547,20 +13098,25 @@ void HudUiStringMenu::DestructorCore() {
         }
     }
 
-    base.DestructorCore();
+    HudUiContainer::DestructorCore();
 }
 
-// Reimplements 0x40dac0: HudUiCounter::Constructor
+/**
+ * Reimplements 0x40dac0: HudUiCounter::Constructor.
+ * Purpose: Constructs the widget base and clears the three HUD counter state-image slots.
+ */
 HudUiCounter * HudUiCounter::Constructor() {
-    base.Constructor(0);
-    base.ftable = (const HudUiWidget_FTable *)(&g_HudUiCounter_FTable);
+    HudUiWidget::Constructor(0);
     stateImages[2] = 0;
     stateImages[1] = 0;
     stateImages[0] = 0;
     return this;
 }
 
-// Reimplements 0x40f0f0: HudUiCounter::ReleaseStateImages
+/**
+ * Reimplements 0x40f0f0: HudUiCounter::ReleaseStateImages.
+ * Purpose: Releases and clears the counter's three variant images.
+ */
 void HudUiCounter::ReleaseStateImages() {
     zVid_Image::ReleaseIfNotDefault(stateImages[0]);
     zVid_Image::ReleaseIfNotDefault(stateImages[1]);
@@ -15571,8 +13127,10 @@ void HudUiCounter::ReleaseStateImages() {
     stateImages[0] = 0;
 }
 
-// Reimplements 0x40f070: HudUiCounter::ApplyFromLayoutNode
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x40f070: HudUiCounter::ApplyFromLayoutNode.
+ * Purpose: Loads counter image/layout data from a ZRD array node and registers the counter with the HUD manager.
+ */
 int HudUiCounter::ApplyFromLayoutNode(
     zReader::Node *layoutNode
 ) {
@@ -15588,24 +13146,19 @@ int HudUiCounter::ApplyFromLayoutNode(
     layoutY = payload[5].value.i32;
 
     UpdateLayoutPosition();
-    base.SetImageBorrowedAndInvalidate(stateImages[0]);
-    g_HudUiMgr.AddChild((HudUiElement *)(this));
+    SetImageBorrowedAndInvalidate(stateImages[0]);
+    g_HudUiMgr.AddChild(this);
     return 1;
 }
 
-// Reimplements 0x40f130: HudUiCounter::UpdateLayoutPosition
+/**
+ * Reimplements 0x40f130: HudUiCounter::UpdateLayoutPosition.
+ * Purpose: Places the counter relative to the HUD origin and rebuilds the local clip viewport rectangle.
+ */
 void HudUiCounter::UpdateLayoutPosition() {
-    typedef void( * SetPosFn)(
-        HudUiCounter * self,
-        int x,
-        int y
-    );
-
     const int localX = layoutX;
     const int localY = layoutY;
-    const HudUiCounter_FTable *const ftable = (const HudUiCounter_FTable *)(base.ftable);
-    ((SetPosFn)(ftable->slots[3]))(
-        this,
+    SetPos(
         g_HudUiMgrHudOriginX + localX,
         g_HudUiMgrHudOriginY + localY
     );
@@ -15620,34 +13173,16 @@ void HudUiCounter::UpdateLayoutPosition() {
 // Reimplements 0x4134e0: HudUiMessage::Draw
 // (D:\Proj\Battlesport\hud.cpp)
 void HudUiMessage::Draw() {
-    typedef void( * DrawPanelFn)(HudUiPanel * self);
-
-    base.Draw();
-
-    HudUiPanel *const textPanel = (HudUiPanel *)(&panel);
-    const HudUiPanel_FTable *const dispatch = (const HudUiPanel_FTable *)(textPanel->vtbl);
-    ((DrawPanelFn)(dispatch->slots[1]))(textPanel);
+    HudUiWidget::Draw();
+    panel.Draw();
 }
 
 // Reimplements 0x414070: HudUiMessage::RebuildWeaponLayout
 // (D:\Proj\Battlesport\hud.cpp)
 void HudUiMessage::RebuildWeaponLayout() {
-    typedef int( * GetCoordFn)(void *self);
-    typedef void( * SetPosFn)(
-        void *self,
-        int x,
-        int y
-    );
-    typedef void( * SetClipFn)(
-        void *self,
-        void *bltSourceOrNull,
-        const HudUiRect *rect
-    );
-
     HudUiWidget *const layoutWidget2 = &g_HudLayoutHW.widget2;
-    const HudUiWidget_FTable *const layoutWidget2FTable = layoutWidget2->ftable;
-    const int anchorX = ((GetCoordFn)(layoutWidget2FTable->slots[0x64 / 4]))(layoutWidget2);
-    const int anchorY = ((GetCoordFn)(layoutWidget2FTable->slots[0x68 / 4]))(layoutWidget2);
+    const int anchorX = layoutWidget2->GetCenterX();
+    const int anchorY = layoutWidget2->GetCenterY();
 
     const int clipLeft = panel.layoutX + (g_HudUiMgrHudOriginX / 2);
     zVidImagePartial *const baseImage = variantImages[0];
@@ -15657,14 +13192,11 @@ void HudUiMessage::RebuildWeaponLayout() {
     widgetClipRect.right = clipLeft + baseImage->width;
     widgetClipRect.bottom = panel.layoutY + baseImage->height;
 
-    const HudUiWidget_FTable *const baseFTable = base.ftable;
-    ((SetPosFn)(baseFTable->slots[0x0c / 4]))(
-        this,
+    SetPos(
         clipLeft + anchorX,
         panel.layoutY + anchorY
     );
-    ((SetClipFn)(baseFTable->slots[0x18 / 4]))(
-        this,
+    SetBltSourceAndClipRect(
         0,
         &widgetClipRect
     );
@@ -15675,32 +13207,28 @@ void HudUiMessage::RebuildWeaponLayout() {
     panelClipRect.right = widgetClipRect.right - 2;
     panelClipRect.bottom = widgetClipRect.bottom + 12;
 
-    HudUiPanel *const textPanel = (HudUiPanel *)(&panel);
-    const HudUiPanel_FTable *const panelFTable = *(const HudUiPanel_FTable *const *)(textPanel);
     const int textX =
         panelClipRect.left + ((panelClipRect.right - panelClipRect.left) / 2) + anchorX;
-    ((SetPosFn)(panelFTable->slots[0x0c / 4]))(
-        textPanel,
+    panel.SetPos(
         textX,
         widgetClipRect.bottom + anchorY
     );
-    ((SetClipFn)(panelFTable->slots[0x18 / 4]))(
-        textPanel,
+    panel.SetClip(
         0,
         &panelClipRect
     );
 
     zVidImagePartial *const sideImage = sideImageSwaps[0];
-    const HudUiWidget_FTable *const widgetFTable = widget.ftable;
-    ((SetPosFn)(widgetFTable->slots[0x0c / 4]))(
-        &widget,
+    widget.SetPos(
         anchorX - sideImage->width + widgetClipRect.right - 1,
         anchorY - sideImage->height + widgetClipRect.bottom - 1
     );
 }
 
-// Reimplements 0x413ec0: HudUiMessage::LoadWeaponLayoutFromNode
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x413ec0: HudUiMessage::LoadWeaponLayoutFromNode.
+ * Purpose: Load weapon-message images/layout and register the message owner and side widget with the HUD manager.
+ */
 int HudUiMessage::LoadWeaponLayoutFromNode(
     zReader::Node *layoutNode,
     const HudUiPanelFontParams *fontParams
@@ -15722,59 +13250,18 @@ int HudUiMessage::LoadWeaponLayoutFromNode(
 
     RebuildWeaponLayout();
 
-    typedef void( * InvalidateFn)(HudUiMessage * self);
-    const HudUiWidget_FTable *const baseFTable = base.ftable;
-    base.imageStateWord = (base.imageStateWord & 0xffff0000u) | 1u;
-    ((InvalidateFn)(baseFTable->slots[0x20 / 4]))(this);
+    imageStateWord = (imageStateWord & 0xffff0000u) | 1u;
+    Invalidate();
 
-    HudUiPanel *const textPanel = (HudUiPanel *)(&panel);
-    FieldAt<unsigned int>(
-        textPanel,
-        0x144
-    ) = 1;
-    FieldAt<unsigned int>(
-        textPanel,
-        0x14c
-    ) = 0x0020bf40;
-    FieldAt<unsigned int>(
-        textPanel,
-        0x150
-    ) = 0x0020bf40;
-    FieldAt<unsigned int>(
-        textPanel,
-        0x270
-    ) = 1;
-    FieldAt<int>(
-        textPanel,
-        0x29c
-    ) = -1;
-    FieldAt<int>(
-        textPanel,
-        0x2a0
-    ) = -1;
-    FieldAt<unsigned int>(
-        textPanel,
-        0x264
-    ) = 1;
+    panel.centerText = 1;
+    panel.textColor0 = 0x0020bf40;
+    panel.textColor1 = 0x0020bf40;
+    panel.textDirty = 1;
+    panel.shadowOffsetX = -1;
+    panel.shadowOffsetY = -1;
+    panel.shadowEnabled = 1;
 
-    const HudUiPanel_FTable *const panelFTable = *(const HudUiPanel_FTable *const *)(textPanel);
-    typedef void( * SetFontFn)(
-        HudUiPanel * self,
-        const char *faceName,
-        int height,
-        int weight,
-        int width,
-        int italic,
-        int charSet,
-        int pitchAndFamily
-    );
-    typedef void(* SetTextFmtFn)(
-        HudUiPanel * self,
-        const char *format,
-        ...
-    );
-    ((SetFontFn)(panelFTable->slots[0x80 / 4]))(
-        textPanel,
+    panel.SetFont(
         fontParams->faceName,
         fontParams->height,
         fontParams->weight,
@@ -15783,13 +13270,10 @@ int HudUiMessage::LoadWeaponLayoutFromNode(
         0,
         2
     );
-    ((SetTextFmtFn)(panelFTable->slots[0x74 / 4]))(
-        textPanel,
-        "   "
-    );
+    panel.SetTextFmt("   ");
 
-    g_HudUiMgr.AddChild((HudUiElement *)(this));
-    g_HudUiMgr.AddChild((HudUiElement *)(&widget));
+    g_HudUiMgr.AddChild(this);
+    g_HudUiMgr.AddChild(&widget);
     return 1;
 }
 
@@ -15818,58 +13302,26 @@ void __fastcall HudUiMessage::SelectVariantDisplay(
     int variantIndex
 ) {
     HudUiMessage &message = g_HudUiMgrMessages[messageIndex];
-    message.base.SetImageBorrowedAndInvalidate(
-        FieldAt<zVidImagePartial *>(&message, 0xbc + variantIndex * 4)
-    );
+    message.SetImageBorrowedAndInvalidate(message.variantImages[variantIndex]);
 
     if (variantIndex == 0 || variantIndex == 3) {
-        FieldAt<zVidImagePartial *>(
-            &message,
-            0xd0
-        ) = FieldAt<zVidImagePartial *>(
-            &message,
-            0xd8
-        );
-        message.widget.SetImageBorrowedAndInvalidate(FieldAt<zVidImagePartial *>(
-            &message,
-            0xd4
-        ));
-        FieldAt<int>(
-            &message,
-            0x384
-        ) = 0;
+        message.activeSideImages[0] = message.sideImageSwaps[0];
+        message.widget.SetImageBorrowedAndInvalidate(message.activeSideImages[1]);
+        message.panel.activeSideIndex = 0;
     }
 
     if (variantIndex == 5) {
-        FieldAt<int>(
-            &message,
-            0x384
-        ) = 0;
+        message.panel.activeSideIndex = 0;
     }
 
     if (variantIndex == 1 || variantIndex == 4) {
-        FieldAt<zVidImagePartial *>(
-            &message,
-            0xd4
-        ) = FieldAt<zVidImagePartial *>(
-            &message,
-            0xdc
-        );
-        message.widget.SetImageBorrowedAndInvalidate(FieldAt<zVidImagePartial *>(
-            &message,
-            0xd0
-        ));
-        FieldAt<int>(
-            &message,
-            0x384
-        ) = 1;
+        message.activeSideImages[1] = message.sideImageSwaps[1];
+        message.widget.SetImageBorrowedAndInvalidate(message.activeSideImages[0]);
+        message.panel.activeSideIndex = 1;
     }
 
     if (variantIndex == 6) {
-        FieldAt<int>(
-            &message,
-            0x384
-        ) = 1;
+        message.panel.activeSideIndex = 1;
     }
 }
 
@@ -15879,14 +13331,8 @@ void __fastcall HudUiMessage::ApplySideImageSwap(
     int sideIndex
 ) {
     HudUiMessage &message = g_HudUiMgrMessages[messageIndex];
-    zVidImagePartial *const image = FieldAt<zVidImagePartial *>(
-        &message,
-        0xd8 + sideIndex * 4
-    );
-    FieldAt<zVidImagePartial *>(
-        &message,
-        0xd0 + sideIndex * 4
-    ) = image;
+    zVidImagePartial *const image = message.sideImageSwaps[sideIndex];
+    message.activeSideImages[sideIndex] = image;
     message.widget.SetImageBorrowedAndInvalidate(image);
     message.widget.flags &= 0x10u;
 }
@@ -15896,11 +13342,11 @@ void __fastcall HudUiMessage::ClearDisplay(
     int messageIndex
 ) {
     HudUiMessage &message = g_HudUiMgrMessages[messageIndex];
-    message.base.SetImageBorrowedAndInvalidate(0);
+    message.SetImageBorrowedAndInvalidate(0);
     message.widget.SetImageBorrowedAndInvalidate(0);
 
-    ((HudUiPanel *)(&message.panel))->SetText("");
-    ((HudUiElement *)(&message.base))->Invalidate();
+    message.panel.SetText("");
+    message.Invalidate();
 }
 
 // Reimplements 0x412650: HudUiMessage::SetValueIfOwnerMatches
@@ -15911,24 +13357,20 @@ void __fastcall HudUiMessage::SetValueIfOwnerMatches(
     float valueOrClearToken
 ) {
     HudUiMessage &message = g_HudUiMgrMessages[messageIndex];
-    if (ownerSideIndex != FieldAt<int>(
-        &message.panel,
-        0x2a4
-    )) {
+    if (ownerSideIndex != message.panel.activeSideIndex) {
         return;
     }
 
-    HudUiPanel *const panel = (HudUiPanel *)(&message.panel);
     if (valueOrClearToken == kHudUiMessageClearSpecialTokenValue) {
-        panel->SetText(kHudUiMessageClearSpecialToken165);
+        message.panel.SetText(kHudUiMessageClearSpecialToken165);
         return;
     }
 
-    panel->SetTextFmt(
+    message.panel.SetTextFmt(
         "%d",
         (int)(ceil(valueOrClearToken))
     );
-    ((HudUiElement *)(&message.base))->Invalidate();
+    message.Invalidate();
 }
 
 // Reimplements 0x412820: HudUiMessage::UpdateSelectedWeaponDisplay
@@ -15965,30 +13407,26 @@ void __fastcall HudUiMessage::UpdateSelectedWeaponDisplay(
     }
 
     HudUiMessage &message = g_HudUiMgrMessages[messageIndexForText];
-    if (weaponSideIndex != FieldAt<int>(
-        &message.panel,
-        0x2a4
-    )) {
+    if (weaponSideIndex != message.panel.activeSideIndex) {
         return;
     }
 
-    HudUiPanel *const panel = (HudUiPanel *)(&message.panel);
     if (valueOrClearToken == kHudUiMessageClearSpecialTokenValue) {
-        panel->SetTextFmt(kHudUiMessageClearSpecialToken165);
+        message.panel.SetTextFmt(kHudUiMessageClearSpecialToken165);
         return;
     }
 
-    panel->SetTextFmt(
+    message.panel.SetTextFmt(
         "%d",
         (int)(ceil(valueOrClearToken))
     );
-    ((HudUiElement *)(&message.base))->Invalidate();
+    message.Invalidate();
 }
 
 // Reimplements 0x40da00: HudUiMessage::Constructor
 HudUiMessage * HudUiMessage::Constructor() {
-    base.Constructor(0);
-    ((HudUiPanel *)(&panel))->ConstructorDefault(
+    HudUiWidget::Constructor(0);
+    panel.ConstructorDefault(
         0,
         0,
         0
@@ -16000,23 +13438,19 @@ HudUiMessage * HudUiMessage::Constructor() {
         0,
         0x24
     );
-    FieldAt<int>(
-        &panel,
-        0x2a4
-    ) = 0;
-    base.ftable = (const HudUiWidget_FTable *)(&g_HudUiMessage_FTable);
+    panel.activeSideIndex = 0;
     return this;
 }
 
 // Reimplements 0x40d590: HudUiMessage::Destructor
 void HudUiMessage::Destructor() {
     widget.DestructorCore();
-    ((HudUiPanel *)(&panel))->Destructor();
-    base.DestructorCore();
+    panel.Destructor();
+    HudUiWidget::DestructorCore();
 }
 
 // Reimplements 0x40daa0: HudUiMessage::ScalarDeletingDestructor
-HudUiMessage * HudUiMessage::ScalarDeletingDestructor(
+HudUiElement * HudUiMessage::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -16032,19 +13466,6 @@ HudUiMessage * HudUiMessage::ScalarDeletingDestructor(
 int __stdcall HudUiShieldMessageWidget::ApplyLayout(
     zReader::Node *layoutRoot
 ) {
-    typedef int( * GetCoordFn)(void *self);
-    typedef void( * SetClipFn)(
-        void *self,
-        void *bltSourceOrNull,
-        const HudUiRect *rect
-    );
-    typedef void(* SetTextFmtFn)(
-        void *self,
-        const char *format,
-        ...
-    );
-    typedef void( * UpdateBoundsFn)(void *self);
-
     HudUiShieldMessageWidget *const shieldMessageWidget = g_HudUiMgrShieldMessageWidget;
     zReader::Node *const layoutPayload = layoutRoot->value.nodes;
 
@@ -16059,9 +13480,8 @@ int __stdcall HudUiShieldMessageWidget::ApplyLayout(
     );
 
     int offsetXY[2];
-    const HudUiWidget_FTable *const widgetFTable = shieldMessageWidget->widget.ftable;
-    offsetXY[0] = ((GetCoordFn)(widgetFTable->slots[0x64 / 4]))(&shieldMessageWidget->widget);
-    offsetXY[1] = ((GetCoordFn)(widgetFTable->slots[0x68 / 4]))(&shieldMessageWidget->widget);
+    offsetXY[0] = shieldMessageWidget->widget.GetCenterX();
+    offsetXY[1] = shieldMessageWidget->widget.GetCenterY();
 
     HudUiPanel *const percentTextPanel = (HudUiPanel *)(&shieldMessageWidget->percentTextPanel);
     HudUiLayoutNode::ApplyTextLabel(
@@ -16073,21 +13493,15 @@ int __stdcall HudUiShieldMessageWidget::ApplyLayout(
     );
 
     HudUiRect clipRect;
-    const HudUiCommon_FTable *const panelFTable =
-        *(const HudUiCommon_FTable *const *)(percentTextPanel);
-    clipRect.left = ((GetCoordFn)(panelFTable->slots[0x64 / 4]))(percentTextPanel)-offsetXY[0];
-    clipRect.top = ((GetCoordFn)(panelFTable->slots[0x68 / 4]))(percentTextPanel)-offsetXY[1];
-    ((SetClipFn)(panelFTable->slots[0x18 / 4]))(
-        percentTextPanel,
+    clipRect.left = percentTextPanel->GetX() - offsetXY[0];
+    clipRect.top = percentTextPanel->GetY() - offsetXY[1];
+    percentTextPanel->SetClip(
         shieldMessageWidget->widget.image,
         &clipRect
     );
 
-    ((SetTextFmtFn)(panelFTable->slots[0x74 / 4]))(
-        percentTextPanel,
-        "000"
-    );
-    ((UpdateBoundsFn)(panelFTable->slots[0x78 / 4]))(percentTextPanel);
+    percentTextPanel->SetTextFmt("000");
+    percentTextPanel->UpdateTextBoundsFromContent();
 
     HudUiLayoutNode::ApplyMeterQuad(
         &layoutPayload[3],
@@ -16098,9 +13512,7 @@ int __stdcall HudUiShieldMessageWidget::ApplyLayout(
         &clipRect
     );
 
-    const HudUiMeter_FTable *const meterFTable = shieldMessageWidget->meter.ftable;
-    ((SetClipFn)(meterFTable->slots[0x18 / 4]))(
-        &shieldMessageWidget->meter,
+    shieldMessageWidget->meter.SetBltSourceAndClipRect(
         shieldMessageWidget->widget.image,
         &clipRect
     );
@@ -16113,33 +13525,29 @@ int __stdcall HudUiShieldMessageWidget::ApplyLayout(
 
 // Reimplements 0x40fe30: HudUiShieldMessageWidget::Destructor
 void HudUiShieldMessageWidget::Destructor() {
-    meter.ftable = (const HudUiMeter_FTable *)(&g_HudUiCommon_FTable);
     ((HudUiPanel *)(&percentTextPanel))->Destructor();
     widget.DestructorCore();
 }
 
 // Reimplements 0x4bcf20: HudUiBar::Constructor
 HudUiBar * HudUiBar::Constructor() {
-    ((HudUiElement *)(this))->Constructor(
+    HudUiElement::Constructor(
         0,
         0
     );
     drawVertexCount = 0;
-    ftable = &g_HudUiBar_FTable;
     memset(
         points,
         0,
         sizeof(points)
     );
-    ((HudUiElement *)(this))->Invalidate();
+    Invalidate();
     return this;
 }
 
 // Reimplements 0x4bcff0: HudUiBar::Draw
 void HudUiBar::Draw() {
-    typedef void( * DrawBaseFn)(HudUiBar * self);
-
-    ((DrawBaseFn)(ftable->slots[2]))(this);
+    DrawBase();
     if (drawVertexCount != 0) {
         zRndr_RasterizePoly(
             (zVec3 *)(points),
@@ -16165,46 +13573,36 @@ void HudUiBar::SetPointXY(
         }
 
         if (pointIndex == 0) {
-            typedef void( * SetPosFn)(
-                HudUiBar * self,
-                int x,
-                int y
-            );
-
-            ((SetPosFn)(ftable->slots[3]))(
-                this,
+            SetPos(
                 (int)(x),
                 (int)(y)
             );
         }
     }
 
-    typedef void( * InvalidateFn)(HudUiBar * self);
-    ((InvalidateFn)(ftable->slots[8]))(this);
+    Invalidate();
 }
 
 // Reimplements 0x4bf840: HudUiPolyline::Constructor
 HudUiPolyline * HudUiPolyline::Constructor() {
-    base.Constructor(
+    HudUiElement::Constructor(
         0,
         0
     );
-    base.ftable = (const HudUiCommon_FTable *)(&g_HudUiPolyline_FTable);
     pointCount = 0;
     memset(
         points,
         0,
         sizeof(points)
     );
-    base.Invalidate();
+    Invalidate();
     clipRect = 0;
     return this;
 }
 
 // Reimplements 0x4bf900: HudUiPolyline::Draw
 void HudUiPolyline::Draw() {
-    typedef void(__fastcall * DrawBaseFn)(HudUiPolyline * self);
-    ((DrawBaseFn)(base.ftable->slots[2]))(this);
+    DrawBase();
 
     const int currentPointCount = pointCount;
     if (currentPointCount == 0) {
@@ -16242,13 +13640,6 @@ void HudUiPolyline::SetPoint(
     int pointX,
     int pointY
 ) {
-    typedef void( * SetPosFn)(
-        HudUiPolyline * self,
-        int x,
-        int y
-    );
-    typedef void( * InvalidateFn)(HudUiPolyline * self);
-
     points[index].x = pointX;
     points[index].y = pointY;
 
@@ -16257,20 +13648,18 @@ void HudUiPolyline::SetPoint(
     }
 
     if (index == 0) {
-        ((SetPosFn)(base.ftable->slots[3]))(
-            this,
+        SetPos(
             pointX,
             pointY
         );
     }
 
-    ((InvalidateFn)(base.ftable->slots[8]))(this);
+    Invalidate();
 }
 
 // Reimplements 0x4b4620: HudUiSliderBorder::Constructor
 HudUiSliderBorder * HudUiSliderBorder::Constructor() {
-    base.Constructor();
-    base.base.ftable = (const HudUiCommon_FTable *)(&g_HudUiSliderBorder_FTable);
+    HudUiPolyline::Constructor();
     originX = 0;
     originY = 0;
     halfWidth = 1;
@@ -16280,67 +13669,67 @@ HudUiSliderBorder * HudUiSliderBorder::Constructor() {
     blinkDirSign = 1;
     blinkTimeRemainingSec = 0.0f;
 
-    base.SetPoint(
+    SetPoint(
         0,
         -1,
         0
     );
-    base.SetPoint(
+    SetPoint(
         1,
         halfWidth,
         0
     );
-    base.SetPoint(
+    SetPoint(
         2,
         halfWidth,
         1
     );
-    base.SetPoint(
+    SetPoint(
         3,
         0,
         1
     );
-    base.SetPoint(
+    SetPoint(
         4,
         0,
         height - 1
     );
-    base.SetPoint(
+    SetPoint(
         5,
         halfWidth,
         height - 1
     );
-    base.SetPoint(
+    SetPoint(
         6,
         halfWidth,
         height
     );
-    base.SetPoint(
+    SetPoint(
         7,
         -halfWidth,
         height
     );
-    base.SetPoint(
+    SetPoint(
         8,
         -halfWidth,
         height - 1
     );
-    base.SetPoint(
+    SetPoint(
         9,
         0,
         height - 1
     );
-    base.SetPoint(
+    SetPoint(
         10,
         0,
         1
     );
-    base.SetPoint(
+    SetPoint(
         11,
         -halfWidth,
         1
     );
-    base.SetPoint(
+    SetPoint(
         12,
         -halfWidth,
         0
@@ -16352,7 +13741,7 @@ HudUiSliderBorder * HudUiSliderBorder::Constructor() {
 void HudUiSliderBorder::Update(
     float deltaSeconds
 ) {
-    if ((base.base.flags & 0x10) != 0) {
+    if ((flags & 0x10) != 0) {
         return;
     }
 
@@ -16366,7 +13755,7 @@ void HudUiSliderBorder::Update(
     }
 
     if (blinkEnabled == 0 || blinkDirSign == 1) {
-        base.Draw();
+        HudUiPolyline::Draw();
     }
 }
 
@@ -16382,90 +13771,91 @@ void HudUiSliderBorder::SetBounds(
     halfWidth = newHalfWidth;
     height = newHeight;
 
-    base.SetPoint(
+    SetPoint(
         0,
         originX - halfWidth,
         originY
     );
-    base.SetPoint(
+    SetPoint(
         1,
         originX + halfWidth,
         originY
     );
-    base.SetPoint(
+    SetPoint(
         2,
         originX + halfWidth,
         originY + 1
     );
-    base.SetPoint(
+    SetPoint(
         3,
         originX,
         originY + 1
     );
-    base.SetPoint(
+    SetPoint(
         4,
         originX,
         originY + height - 1
     );
-    base.SetPoint(
+    SetPoint(
         5,
         originX + halfWidth,
         originY + height - 1
     );
-    base.SetPoint(
+    SetPoint(
         6,
         originX + halfWidth,
         originY + height
     );
-    base.SetPoint(
+    SetPoint(
         7,
         originX - halfWidth,
         originY + height
     );
-    base.SetPoint(
+    SetPoint(
         8,
         originX - halfWidth,
         originY + height - 1
     );
-    base.SetPoint(
+    SetPoint(
         9,
         originX,
         originY + height - 1
     );
-    base.SetPoint(
+    SetPoint(
         10,
         originX,
         originY + 1
     );
-    base.SetPoint(
+    SetPoint(
         11,
         originX - halfWidth,
         originY + 1
     );
-    base.SetPoint(
+    SetPoint(
         12,
         originX - halfWidth,
         originY
     );
 }
 
-// Reimplements 0x4b49e0: HudUiNumericTextInput::BaseConstructor
+/**
+ * Reimplements 0x4b49e0: HudUiNumericTextInput::BaseConstructor.
+ * Purpose: Construct the ZRD widget base and owned numeric text-entry controls.
+ */
 HudUiNumericTextInput * HudUiNumericTextInput::BaseConstructor() {
-    base.Constructor();
+    HudUiZrdWidget::Constructor();
     textInput.Constructor(0x100);
-    owner = 0;
-    textInput.ftable = &g_HudUiNumericTextInput_TextInputFTable;
+    textInput.owner = 0;
 
     sliderBorder.Constructor();
     sliderBorder.sliderVisibleWhenInputActive = 0;
     sliderBorder.rawKeyFilterEnabled = 0;
-    base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiNumericTextInput_Base_FTable);
     sliderBorder.inputActive = 1;
     sliderBorder.caretHalfWidth = 0;
 
-    sliderBorder.base.base.SetVisible(1);
-    owner = this;
-    ((HudUiElement *)(&base.base))->SetVisible(1);
+    sliderBorder.SetVisible(1);
+    textInput.owner = this;
+    SetVisible(1);
     return this;
 }
 
@@ -16474,7 +13864,6 @@ HudUiNumericTextInput * HudUiNumericTextInput::Constructor(
     unsigned int maxDigits
 ) {
     BaseConstructor();
-    base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiNumericTextInput_CtorTable_FTable);
     textInput.AllocTextBuffer(maxDigits);
     Update("");
     SetInputActive(0);
@@ -16486,11 +13875,9 @@ HudUiClampedIntTextInput * HudUiClampedIntTextInput::Constructor(
     unsigned int maxDigits
 ) {
     BaseConstructor();
-    base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiNumericTextInput_CtorTable_FTable);
     textInput.AllocTextBuffer(maxDigits + 1);
     Update("");
     SetInputActive(0);
-    base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiClampedIntTextInput_CtorTable_FTable);
     minValue = -2147483647 - 1;
     maxValue = 2147483647;
     return this;
@@ -16508,7 +13895,10 @@ char * HudUiNumericTextInput::GetBuffer() {
     return textInput.GetBuffer();
 }
 
-// Reimplements 0x4b4e60: HudUiNumericTextInput::Update
+/**
+ * Reimplements 0x4b4e60: HudUiNumericTextInput::Update.
+ * Purpose: Update the text-input buffer, mirror the visible label text, and invalidate the owning widget.
+ */
 void HudUiNumericTextInput::Update(
     const char *text
 ) {
@@ -16516,108 +13906,74 @@ void HudUiNumericTextInput::Update(
     textInput.SetCursorPosition((int)(strlen(text)));
     char *const buffer = textInput.GetBuffer();
 
-    if (base.labelPanels.begin != 0 && base.labelPanels.end != base.labelPanels.begin) {
-        void *const firstPanel = base.labelPanels.begin[0];
-        typedef void( * SetTextFn)(
-            void *panel,
-            const char *text
-        );
-        const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(firstPanel);
-        ((SetTextFn)(ftable->slots[35]))(
-            firstPanel,
-            buffer
-        );
+    if (labelPanels.end != labelPanels.begin) {
+        HudUiPanel *const firstPanel = labelPanels.begin[0];
+        firstPanel->SetText(buffer);
     }
 
-    ((HudUiElement *)(&base.base))->Invalidate();
+    Invalidate();
 }
 
 // Reimplements 0x4b4ca0: HudUiNumericTextInput::UpdateCaptureUiAndClip
 RECOIL_NO_GS void HudUiNumericTextInput::UpdateCaptureUiAndClip(
     float deltaSeconds
 ) {
-    HudUiPanel *const firstPanel = base.labelPanels.begin[0];
-    HudUiElement *const firstElement = (HudUiElement *)(firstPanel);
-    HudUiElement *const baseElement = (HudUiElement *)(&base.base);
-    HudUiElement *const sliderElement = (HudUiElement *)(&sliderBorder);
+    HudUiPanel *const firstPanel = labelPanels.begin[0];
+    HudUiElement *const baseElement = (HudUiElement *)(this);
 
-    if ((base.base.flags & 0x10) != 0) {
-        HudUiVirtualSetVisibleRequired(
-            firstElement,
-            0
-        );
-        HudUiVirtualInvalidateRequired(firstElement);
-        HudUiVirtualSetVisibleRequired(
-            sliderElement,
-            0
-        );
-        HudUiVirtualInvalidateRequired(sliderElement);
+    if ((flags & 0x10) != 0) {
+        firstPanel->SetVisible(0);
+        firstPanel->Invalidate();
+        sliderBorder.SetVisible(0);
+        sliderBorder.Invalidate();
         return;
     }
 
     if (sliderBorder.sliderVisibleWhenInputActive != 0) {
-        HudUiVirtualSetVisibleRequired(
-            firstElement,
-            1
-        );
+        firstPanel->SetVisible(1);
         char *const buffer = textInput.GetBuffer();
 
-        if (base.labelPanels.begin != 0) {
-            const ptrdiff_t panelCount = base.labelPanels.end - base.labelPanels.begin;
+        if (labelPanels.begin != 0) {
+            const ptrdiff_t panelCount = labelPanels.end - labelPanels.begin;
             if (panelCount != 0) {
-                HudUiVirtualSetTextRequired(
-                    firstPanel,
-                    buffer
-                );
+                firstPanel->SetText(buffer);
             }
         }
 
         RECT textRect = {0};
-        textRect.left = HudUiVirtualGetXRequired(firstElement);
-        textRect.top = HudUiVirtualGetYRequired(firstElement);
-        textRect.right = HudUiVirtualGetXRequired(firstElement);
-        textRect.bottom = HudUiVirtualGetYRequired(firstElement);
+        textRect.left = firstPanel->GetX();
+        textRect.top = firstPanel->GetY();
+        textRect.right = firstPanel->GetX();
+        textRect.bottom = firstPanel->GetY();
 
         if (firstPanel->MeasureTextPrefixRect(
             (int)(textInput.cursor),
             &textRect
         ) != 0) {
-            const unsigned int textColor = FieldAt<unsigned int>(
-                firstPanel,
-                0x14c
-            );
+            const unsigned int textColor = firstPanel->textColor0;
             const unsigned int packedColor = zVid_PackColorRGB(
                                                  (unsigned char)(textColor),
                                                  (unsigned char)(textColor >> 8),
                                                  (unsigned char)(textColor >> 16)
                                              ) &
                                              0xffffu;
-            sliderBorder.base.color565 = (int)(packedColor);
+            sliderBorder.color565 = (int)(packedColor);
             sliderBorder.SetBounds(
                 textRect.right,
                 textRect.top,
                 sliderBorder.caretHalfWidth,
                 textRect.bottom - textRect.top
             );
-            HudUiVirtualSetVisibleRequired(
-                sliderElement,
-                1
-            );
+            sliderBorder.SetVisible(1);
         }
 
-        HudUiVirtualInvalidateRequired(baseElement);
+        Invalidate();
     } else {
-        HudUiVirtualSetVisibleRequired(
-            sliderElement,
-            0
-        );
+        sliderBorder.SetVisible(0);
     }
 
     baseElement->Update(deltaSeconds);
-    HudUiVirtualUpdateSliderRequired(
-        &sliderBorder,
-        deltaSeconds
-    );
+    sliderBorder.Update(deltaSeconds);
 }
 
 // Reimplements 0x4b4c50: HudUiNumericTextInput::SetRawKeyboardCapture
@@ -16646,16 +14002,14 @@ void HudUiNumericTextInput::SetRawKeyboardCapture(
 // Reimplements 0x4b4c90: HudUiNumericTextInput::OnActivate
 void HudUiNumericTextInput::OnActivate() {
     sliderBorder.inputActive = 1;
-    base.OnActivate();
+    HudUiZrdWidget::OnActivate();
 }
 
 // Reimplements 0x4b4ac0: HudUiNumericTextInput::Destructor
 void HudUiNumericTextInput::Destructor() {
-    base.base.ftable = (const HudUiWidget_FTable *)(&g_HudUiNumericTextInput_Base_FTable);
     SetRawKeyboardCapture(0);
-    sliderBorder.base.base.ftable = &g_HudUiCommon_FTable;
     textInput.DestructorCore();
-    base.DestructorCore();
+    HudUiZrdWidget::DestructorCore();
 }
 
 // Reimplements 0x41a3f0: HudUiNumericTextInput::DestructorThunk
@@ -16664,7 +14018,7 @@ void HudUiNumericTextInput::DestructorThunk() {
 }
 
 // Reimplements 0x4b4a90: HudUiNumericTextInput::ScalarDeletingDestructor
-HudUiNumericTextInput * HudUiNumericTextInput::ScalarDeletingDestructor(
+HudUiElement * HudUiNumericTextInput::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -16696,14 +14050,7 @@ int __fastcall HudUiNumericTextInput::RawKeyboardCallback(
         return 0;
     }
 
-    typedef int( * RawKeyboardFn)(
-        HudUiNumericTextInput * self,
-        int key
-    );
-    return ((RawKeyboardFn)(callbackCtx->base.base.ftable->slots[33]))(
-        callbackCtx,
-        key
-    );
+    return callbackCtx->OnRawKeyboardChar(key);
 }
 
 // Reimplements 0x4b4ba0: HudUiNumericTextInput::SetInputActive
@@ -16713,41 +14060,21 @@ int HudUiNumericTextInput::SetInputActive(
     const int previousActive = sliderBorder.inputActive;
     sliderBorder.inputActive = active;
 
-    HudUiElement *firstLabelPanel = 0;
-    if (base.labelPanels.begin != 0 && base.labelPanels.end != base.labelPanels.begin) {
-        firstLabelPanel = (HudUiElement *)(base.labelPanels.begin[0]);
-    }
+    HudUiPanel *const firstLabelPanel =
+        labelPanels.end != labelPanels.begin ? labelPanels.begin[0] : 0;
 
     if (active != 0) {
-        HudUiVirtualSetVisibleRequired(
-            &base.base,
-            1
-        );
-        HudUiVirtualSetVisibleRequired(
-            &sliderBorder,
-            1
-        );
+        SetVisible(1);
+        sliderBorder.SetVisible(1);
         if (firstLabelPanel != 0) {
-            HudUiVirtualSetVisibleRequired(
-                firstLabelPanel,
-                1
-            );
+            firstLabelPanel->SetVisible(1);
         }
     } else {
-        HudUiVirtualSetVisibleRequired(
-            &base.base,
-            0
-        );
+        SetVisible(0);
         if (firstLabelPanel != 0) {
-            HudUiVirtualSetVisibleRequired(
-                firstLabelPanel,
-                0
-            );
+            firstLabelPanel->SetVisible(0);
         }
-        HudUiVirtualSetVisibleRequired(
-            &sliderBorder,
-            0
-        );
+        sliderBorder.SetVisible(0);
     }
 
     return previousActive;
@@ -16770,10 +14097,7 @@ int HudUiNumericTextInput::OnRawKeyboardChar(
 
 // Reimplements 0x41a290: HudUiNumericTextInput::OnAcceptForwardToCommit
 int HudUiNumericTextInput::OnAcceptForwardToCommit() {
-    typedef int( * CommitFn)(HudUiNumericTextInput * self);
-    const HudUiNumericTextInput_Base_FTable *const ftable =
-        (const HudUiNumericTextInput_Base_FTable *)(base.base.ftable);
-    return ((CommitFn)(ftable->slots[35]))(this);
+    return CommitAndGetValue();
 }
 
 // Reimplements 0x41a2a0: HudUiClampedIntTextInput::OnRawKeyboardDigitOnly
@@ -16788,6 +14112,12 @@ int HudUiClampedIntTextInput::OnRawKeyboardDigitOnly(
     }
 
     return 0;
+}
+
+int HudUiClampedIntTextInput::OnRawKeyboardChar(
+    int key
+) {
+    return OnRawKeyboardDigitOnly(key);
 }
 
 // Reimplements 0x41a2d0: HudUiClampedIntTextInput::CommitAndGetValue
@@ -16831,13 +14161,8 @@ int HudUiClampedIntTextInput::CommitAndGetValue() {
 // Reimplements 0x41a350: HudUiClampedIntStepButton::OnActivate
 void HudUiClampedIntStepButton::OnActivate() {
     if (targetInput != 0) {
-        typedef int ( HudUiClampedIntTextInput::*CommitFn)();
-        typedef void ( HudUiClampedIntTextInput::*InvalidateFn)();
-
         HudUiClampedIntTextInput *input = targetInput;
-        const HudUiClampedIntTextInput_FTable *const inputFTable =
-            (const HudUiClampedIntTextInput_FTable *)(input->base.base.ftable);
-        int value = (input->*((CommitFn *)(&inputFTable->slots[35]))[0])() + stepDelta;
+        int value = input->CommitAndGetValue() + stepDelta;
 
         if (value < input->minValue) {
             value = input->minValue;
@@ -16856,10 +14181,10 @@ void HudUiClampedIntStepButton::OnActivate() {
         input->Update(valueText);
 
         input = targetInput;
-        (input->*((InvalidateFn *)(&input->base.base.ftable->slots[8]))[0])();
+        input->Invalidate();
     }
 
-    base.OnActivate();
+    HudUiZrdWidget::OnActivate();
 }
 
 static HudUiNumericTextInput **HudUiNetGameSetupFocusTextInputSlot(
@@ -16873,14 +14198,11 @@ static HudUiNumericTextInput **HudUiNetGameSetupFocusTextInputSlot(
 // Reimplements 0x41a7b0: HudUiNetGameSetupTextInput::OnActivateFocusAndCursor
 void HudUiNetGameSetupTextInput::OnActivateFocusAndCursor() {
     HudUiNumericTextInput **const focusTextInputSlot =
-        HudUiNetGameSetupFocusTextInputSlot(base.owner);
+        HudUiNetGameSetupFocusTextInputSlot(HudUiZrdWidget::owner);
     HudUiNumericTextInput *const previousFocusTextInput = *focusTextInputSlot;
 
     if (previousFocusTextInput != 0) {
-        typedef int( * FocusLostFn)(HudUiNumericTextInput * self);
-        const HudUiNumericTextInput_Base_FTable *const ftable =
-            (const HudUiNumericTextInput_Base_FTable *)(previousFocusTextInput->base.base.ftable);
-        ((FocusLostFn)(ftable->slots[35]))(previousFocusTextInput);
+        previousFocusTextInput->CommitAndGetValue();
         previousFocusTextInput->SetRawKeyboardCapture(0);
     }
 
@@ -16888,7 +14210,11 @@ void HudUiNetGameSetupTextInput::OnActivateFocusAndCursor() {
     SetRawKeyboardCapture(1);
     Update(GetBuffer());
     textInput.SetCursorPosition((int)(strlen(GetBuffer())));
-    OnActivate();
+    HudUiNumericTextInput::OnActivate();
+}
+
+void HudUiNetGameSetupTextInput::OnActivate() {
+    OnActivateFocusAndCursor();
 }
 
 // Reimplements 0x41ab60: HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit
@@ -16901,7 +14227,7 @@ void HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit() {
 // Reimplements 0x41ab70: HudUiNetGameSetupOverlayOwner::StaticInit
 // (D:\Proj\Battlesport\HudUi.cpp)
 HudUiNetGameSetupOverlayOwner *HudUiNetGameSetupOverlayOwner::StaticInit() {
-    return g_HudUiNetGameSetupOverlayOwner.Constructor();
+    return new (&g_HudUiNetGameSetupOverlayOwner) HudUiNetGameSetupOverlayOwner;
 }
 
 // Reimplements 0x41ab80: HudUiNetGameSetupOverlayOwner::RegisterAtExit
@@ -16913,48 +14239,29 @@ void HudUiNetGameSetupOverlayOwner::RegisterAtExit() {
 // Reimplements 0x41ab90: HudUiNetGameSetupOverlayOwner::AtExitDestructor
 // (D:\Proj\Battlesport\HudUi.cpp)
 void HudUiNetGameSetupOverlayOwner::AtExitDestructor() {
-    g_HudUiNetGameSetupOverlayOwner.Destructor();
+    g_HudUiNetGameSetupOverlayOwner.~HudUiNetGameSetupOverlayOwner();
 }
 
-// Reimplements 0x41aba0: HudUiNetGameSetupOverlayOwner::Constructor
+// Reimplements 0x41aba0: HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner
 // (D:\Proj\Battlesport\HudUi.cpp)
-HudUiNetGameSetupOverlayOwner * HudUiNetGameSetupOverlayOwner::Constructor() {
-    vftable = (unsigned int)&g_HudUiNetGameSetupOverlayOwner_Vtbl;
-    m_panel = 0;
-    m_reconfigureExistingSession = 0;
-    return this;
-}
+HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner()
+    : m_panel(0),
+      m_reconfigureExistingSession(0) {}
 
-// Reimplements 0x41abe0: HudUiNetGameSetupOverlayOwner::Destructor
+// Reimplements 0x41abe0: HudUiNetGameSetupOverlayOwner::~HudUiNetGameSetupOverlayOwner
 // (D:\Proj\Battlesport\HudUi.cpp)
-void HudUiNetGameSetupOverlayOwner::Destructor() {
-    vftable = (unsigned int)&g_HudUiNetGameSetupOverlayOwner_Vtbl;
-    HudUiNetGameSetupOverlayOwnerBaseVtableGuard baseVtableOnExit = {this};
-
-    HudUiNetGameSetupPanelOverlayVirtual *panel = (HudUiNetGameSetupPanelOverlayVirtual *)m_panel;
+HudUiNetGameSetupOverlayOwner::~HudUiNetGameSetupOverlayOwner() {
+    HudUiNetGameSetupPanel *panel = m_panel;
     if (panel != 0) {
         panel->SetEnabled(0);
 
-        panel = (HudUiNetGameSetupPanelOverlayVirtual *)m_panel;
+        panel = m_panel;
         if (panel != 0) {
             panel->ScalarDeletingDestructor(1);
         }
 
         m_panel = 0;
     }
-}
-
-// Reimplements 0x41abc0: HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor
-// (D:\Proj\Battlesport\HudUi.cpp)
-HudUiNetGameSetupOverlayOwner * HudUiNetGameSetupOverlayOwner::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
 }
 
 // Reimplements 0x41ac50: HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent
@@ -16981,8 +14288,8 @@ int HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent() {
         panel = panel->Constructor(m_reconfigureExistingSession);
     }
 
-    m_panel = (unsigned int)panel;
-    ((HudUiNetGameSetupPanelOverlayVirtual *)panel)->SetEnabled(1);
+    m_panel = panel;
+    panel->SetEnabled(1);
 
     if (zSnd::GetCDAudioOption() != 0) {
         zSndCd::PlayTrackWithMode(
@@ -17000,20 +14307,20 @@ void HudUiNetGameSetupOverlayOwner::OnDeactivate() {
     Sleep(1000);
     zSndSampleSet_DestroyByName("DIALOG");
 
-    HudUiNetGameSetupPanelOverlayVirtual *panel = (HudUiNetGameSetupPanelOverlayVirtual *)m_panel;
+    HudUiNetGameSetupPanel *panel = m_panel;
     if (panel == 0) {
         return;
     }
 
     zVideo::RunPostprocessOnPrimaryBuffer();
 
-    panel = (HudUiNetGameSetupPanelOverlayVirtual *)m_panel;
+    panel = m_panel;
     panel->SetEnabled(0);
 
     ((HudUiDialogController *)m_panel)->BlitOwnedSurfaceToPrimary();
     zVideo::Dispatch_UnlockPrimarySurfaceState();
 
-    panel = (HudUiNetGameSetupPanelOverlayVirtual *)m_panel;
+    panel = m_panel;
     if (panel != 0) {
         panel->ScalarDeletingDestructor(1);
     }
@@ -17028,15 +14335,14 @@ void HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(
 ) {
     g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession = reconfigureExistingSession;
     g_RecoilApp.QueuePushState(
-        (RecoilApp_IState *)&g_HudUiNetGameSetupOverlayOwner,
+        &g_HudUiNetGameSetupOverlayOwner,
         0
     );
 }
 
 // Reimplements 0x40fb70: HudUiMeter::Constructor
 HudUiMeter * HudUiMeter::Constructor() {
-    ((HudUiBar *)(this))->Constructor();
-    ftable = &g_HudUiMeter_FTable;
+    HudUiBar::Constructor();
     fillPixelsMax = 0;
     meterFlags = 0;
     return this;
@@ -17044,33 +14350,44 @@ HudUiMeter * HudUiMeter::Constructor() {
 
 // Reimplements 0x40d9e0: HudUiMeter::ConstructorEx
 HudUiMeter * HudUiMeter::ConstructorEx() {
-    ((HudUiBar *)(this))->Constructor();
-    ftable = &g_HudUiMeterEx_FTable;
+    HudUiBar::Constructor();
     fillPixelsMax = 0;
     meterFlags = 0;
     return this;
 }
 
-// Reimplements 0x4bcb50: HudUiTextLabel::ConstructorWithPosAndFlags
+// Reimplements 0x4bcb50: HudUiTextLabel::HudUiTextLabel
+HudUiTextLabel::HudUiTextLabel(
+    const char *text,
+    int initX,
+    int initY,
+    int flags
+) : HudUiElement(
+        0,
+        0
+    ) {
+    centerText = 0;
+    SetTextFmt(text);
+    x = initX;
+    y = initY;
+    ((HudUiElement *)(this))->Invalidate();
+    fontHandle = flags;
+    ((HudUiElement *)(this))->Invalidate();
+    alignMode = 0;
+}
+
 HudUiTextLabel * HudUiTextLabel::ConstructorWithPosAndFlags(
     const char *text,
     int initX,
     int initY,
     int flags
 ) {
-    base.Constructor(
-        0,
-        0
+    new (this) HudUiTextLabel(
+        text,
+        initX,
+        initY,
+        flags
     );
-    base.ftable = (const HudUiCommon_FTable *)(&g_HudUiTextLabel_FTable);
-    centerText = 0;
-    SetTextFmt(text);
-    base.x = initX;
-    base.y = initY;
-    HudUiVirtualInvalidateRequired(&base);
-    fontHandle = flags;
-    HudUiVirtualInvalidateRequired(&base);
-    alignMode = 0;
     return this;
 }
 
@@ -17078,8 +14395,7 @@ HudUiTextLabel * HudUiTextLabel::ConstructorWithPosAndFlags(
 HudUiTextLabel * HudUiTextLabel::CopyConstructor(
     const HudUiTextLabel *source
 ) {
-    base.CopyConstructor(&source->base);
-    base.ftable = (const HudUiCommon_FTable *)(&g_HudUiTextLabel_FTable);
+    HudUiElement::CopyConstructor(source);
     strncpy(
         textBuffer,
         source->textBuffer,
@@ -17097,7 +14413,7 @@ HudUiTextLabel * HudUiTextLabel::CopyConstructor(
 HudUiTextLabel * HudUiTextLabel::Constructor(
     const HudUiTextLabel *source
 ) {
-    base.CopyFrom(&source->base);
+    HudUiElement::CopyFrom(source);
     strncpy(
         textBuffer,
         source->textBuffer,
@@ -17141,7 +14457,7 @@ void HudUiTextLabel::SetTextFmt(
         UpdateTextExtents();
     }
 
-    HudUiVirtualInvalidateRequired(&base);
+    Invalidate();
 }
 
 // Reimplements 0x4bcd80: HudUiTextLabel::RebuildTextBounds
@@ -17154,8 +14470,8 @@ void HudUiTextLabel::RebuildTextBounds() {
         &widthPx,
         &lineAdvance
     );
-    base.clipRect.right = base.clipRect.left + widthPx;
-    base.clipRect.bottom = base.clipRect.top + lineAdvance;
+    clipRect.right = clipRect.left + widthPx;
+    clipRect.bottom = clipRect.top + lineAdvance;
 }
 
 // Reimplements 0x4bcdc0: HudUiTextLabel::MeasureTextWidth
@@ -17173,10 +14489,7 @@ int HudUiTextLabel::MeasureTextWidth() {
 
 // Reimplements 0x4bce30: HudUiTextLabel::OnDraw
 void HudUiTextLabel::OnDraw() {
-    typedef void( * DrawBaseFn)(HudUiTextLabel * self);
-
-    const HudUiCommon_FTable *const ftable = *(const HudUiCommon_FTable *const *)(this);
-    ((DrawBaseFn)(ftable->slots[2]))(this);
+    DrawBase();
 
     if (textBuffer[0] == '\0') {
         return;
@@ -17188,21 +14501,21 @@ void HudUiTextLabel::OnDraw() {
             xOffset >>= 1;
         }
 
-        base.x -= xOffset;
+        x -= xOffset;
         zImage_Font::BlitStringToActiveTarget(
             textBuffer,
-            base.x,
-            base.y,
+            x,
+            y,
             fontHandle
         );
-        base.x += xOffset;
+        x += xOffset;
         return;
     }
 
     zImage_Font::BlitStringToActiveTarget(
         textBuffer,
-        base.x,
-        base.y,
+        x,
+        y,
         fontHandle
     );
 }
@@ -17212,7 +14525,7 @@ int HudUiTextLabel::HitTest(
     int px,
     int py
 ) {
-    if ((base.flags & 0x10u) != 0 || base.x > px || base.y > py) {
+    if ((flags & 0x10u) != 0 || x > px || y > py) {
         return 0;
     }
 
@@ -17225,121 +14538,70 @@ int HudUiTextLabel::HitTest(
         &lineAdvance
     );
 
-    if (px > base.x + textWidth) {
+    if (px > x + textWidth) {
         return 0;
     }
 
-    return py <= base.y + lineAdvance ? 1 : 0;
+    return py <= y + lineAdvance ? 1 : 0;
 }
 
 // Reimplements 0x4bcdf0: HudUiTextLabel::UpdateTextExtents
 void HudUiTextLabel::UpdateTextExtents() {
     const int widthPx = MeasureTextWidth();
-    base.x = centerBoundsLeft + (centerBoundsRight - widthPx - centerBoundsLeft) / 2;
+    x = centerBoundsLeft + (centerBoundsRight - widthPx - centerBoundsLeft) / 2;
 
-    if (base.bltSource != 0) {
-        base.clipRect.left = base.x;
-        base.clipRect.top = base.y;
+    if (bltSource != 0) {
+        clipRect.left = x;
+        clipRect.top = y;
         RebuildTextBounds();
     }
 }
 
-// Reimplements 0x4ba740: HudUiPanel::ConstructorDefault
+// Reimplements 0x4ba740: HudUiPanel::HudUiPanel
+HudUiPanel::HudUiPanel(
+    const char *text,
+    int initX,
+    int initY
+) : HudUiTextLabel(
+        text,
+        initX,
+        initY,
+        0
+) {
+    textPick = 0;
+    textColor0 = 0x00ffffff;
+    textColor1 = 0x00ffffff;
+    textDirty = 1;
+    hFont = GetStockObject(OEM_FIXED_FONT);
+    textRect.left = 0;
+    cachedText[0] = '\0';
+    shadowEnabled = 0;
+    textDirty = 1;
+    textRect.top = 0;
+    alignMode = 0;
+    bkMode = TRANSPARENT;
+    wrapRect.right = 0;
+    textRect.bottom = 0;
+    wrapRect.left = 0;
+    wrapRect.bottom = 0;
+    shadowOffsetY = 0;
+    wrapRect.top = 0;
+    wordWrapEnabled = 0;
+    unknown274 = 0;
+    textHeightPx = 0;
+    textWidthPx = 0;
+}
+
 HudUiPanel * HudUiPanel::ConstructorDefault(
     const char *text,
     int initX,
     int initY
 ) {
-    ((HudUiTextLabel *)(this))->ConstructorWithPosAndFlags(
+    new (this) HudUiPanel(
         text,
         initX,
-        initY,
-        0
+        initY
     );
-
-    vtbl = &g_HudUiPanel_FTable;
-    textPick = 0;
-    FieldAt<unsigned int>(
-        this,
-        0x14c
-    ) = 0x00ffffff;
-    FieldAt<unsigned int>(
-        this,
-        0x150
-    ) = 0x00ffffff;
-    FieldAt<unsigned int>(
-        this,
-        0x270
-    ) = 1;
-    hFont = GetStockObject(OEM_FIXED_FONT);
-    FieldAt<int>(
-        this,
-        0x28c
-    ) = 0;
-    FieldAt<char>(
-        this,
-        0x15c
-    ) = 0;
-    FieldAt<unsigned int>(
-        this,
-        0x264
-    ) = 0;
-    FieldAt<unsigned int>(
-        this,
-        0x270
-    ) = 1;
-    FieldAt<int>(
-        this,
-        0x290
-    ) = 0;
-    FieldAt<int>(
-        this,
-        0x144
-    ) = 0;
-    FieldAt<unsigned int>(
-        this,
-        0x268
-    ) = 1;
-    FieldAt<int>(
-        this,
-        0x284
-    ) = 0;
-    FieldAt<int>(
-        this,
-        0x294
-    ) = 0;
-    FieldAt<int>(
-        this,
-        0x27c
-    ) = 0;
-    FieldAt<int>(
-        this,
-        0x288
-    ) = 0;
-    FieldAt<int>(
-        this,
-        0x298
-    ) = 0;
-    FieldAt<int>(
-        this,
-        0x280
-    ) = 0;
-    FieldAt<int>(
-        this,
-        0x278
-    ) = 0;
-    FieldAt<int>(
-        this,
-        0x274
-    ) = 0;
-    FieldAt<int>(
-        this,
-        0x260
-    ) = 0;
-    FieldAt<int>(
-        this,
-        0x25c
-    ) = 0;
     return this;
 }
 
@@ -17356,24 +14618,11 @@ HudUiPanel * HudUiPanel::ConstructorDefaultThunk() {
 HudUiPanel * HudUiPanel::CopyConstructCore(
     const HudUiPanel *source
 ) {
-    ((HudUiTextLabel *)(this))->CopyConstructor((const HudUiTextLabel *)(source));
+    HudUiTextLabel::CopyConstructor(source);
 
-    vtbl = &g_HudUiPanel_FTable;
     textPick = 0;
-    FieldAt<unsigned int>(
-        this,
-        0x14c
-    ) = FieldAt<unsigned int>(
-        source,
-        0x14c
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x150
-    ) = FieldAt<unsigned int>(
-        source,
-        0x150
-    );
+    textColor0 = source->textColor0;
+    textColor1 = source->textColor1;
 
     LOGFONTA logFont = {0};
     if (GetObjectA(
@@ -17384,116 +14633,26 @@ HudUiPanel * HudUiPanel::CopyConstructCore(
         hFont = CreateFontIndirectA(&logFont);
     }
 
-    FieldAt<unsigned int>(
-        this,
-        0x158
-    ) = FieldAt<unsigned int>(
-        source,
-        0x158
-    );
+    cachedTextLength = source->cachedTextLength;
     strncpy(
-        &FieldAt<char>(
-            this,
-            0x15c
-        ),
-        &FieldAt<char>(
-            source,
-            0x15c
-        ),
+        cachedText,
+        source->cachedText,
         0x100
     );
 
-    FieldAt<int>(
-        this,
-        0x25c
-    ) = FieldAt<int>(
-        source,
-        0x25c
-    );
-    FieldAt<int>(
-        this,
-        0x260
-    ) = FieldAt<int>(
-        source,
-        0x260
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x264
-    ) = FieldAt<unsigned int>(
-        source,
-        0x264
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x268
-    ) = FieldAt<unsigned int>(
-        source,
-        0x268
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x26c
-    ) = FieldAt<unsigned int>(
-        source,
-        0x26c
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x270
-    ) = FieldAt<unsigned int>(
-        source,
-        0x270
-    );
-    FieldAt<int>(
-        this,
-        0x274
-    ) = FieldAt<int>(
-        source,
-        0x274
-    );
-    FieldAt<int>(
-        this,
-        0x278
-    ) = FieldAt<int>(
-        source,
-        0x278
-    );
-    FieldAt<HudUiRect>(
-        this,
-        0x27c
-    ) = FieldAt<HudUiRect>(
-        source,
-        0x27c
-    );
-    FieldAt<HudUiRect>(
-        this,
-        0x28c
-    ) = FieldAt<HudUiRect>(
-        source,
-        0x28c
-    );
-    FieldAt<int>(
-        this,
-        0x144
-    ) = FieldAt<int>(
-        source,
-        0x144
-    );
-    FieldAt<int>(
-        this,
-        0x29c
-    ) = FieldAt<int>(
-        source,
-        0x29c
-    );
-    FieldAt<int>(
-        this,
-        0x2a0
-    ) = FieldAt<int>(
-        source,
-        0x2a0
-    );
+    textWidthPx = source->textWidthPx;
+    textHeightPx = source->textHeightPx;
+    shadowEnabled = source->shadowEnabled;
+    bkMode = source->bkMode;
+    bkColor = source->bkColor;
+    textDirty = source->textDirty;
+    unknown274 = source->unknown274;
+    wordWrapEnabled = source->wordWrapEnabled;
+    wrapRect = source->wrapRect;
+    textRect = source->textRect;
+    alignMode = source->alignMode;
+    shadowOffsetX = source->shadowOffsetX;
+    shadowOffsetY = source->shadowOffsetY;
     return this;
 }
 
@@ -17501,23 +14660,11 @@ HudUiPanel * HudUiPanel::CopyConstructCore(
 HudUiPanel * HudUiPanel::ConstructorCopy(
     const HudUiPanel *source
 ) {
-    ((HudUiTextLabel *)(this))->Constructor((const HudUiTextLabel *)(source));
+    HudUiTextLabel::Constructor(source);
 
     textPick = 0;
-    FieldAt<unsigned int>(
-        this,
-        0x14c
-    ) = FieldAt<unsigned int>(
-        source,
-        0x14c
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x150
-    ) = FieldAt<unsigned int>(
-        source,
-        0x150
-    );
+    textColor0 = source->textColor0;
+    textColor1 = source->textColor1;
 
     LOGFONTA logFont = {0};
     if (GetObjectA(
@@ -17528,123 +14675,34 @@ HudUiPanel * HudUiPanel::ConstructorCopy(
         hFont = CreateFontIndirectA(&logFont);
     }
 
-    FieldAt<unsigned int>(
-        this,
-        0x158
-    ) = FieldAt<unsigned int>(
-        source,
-        0x158
-    );
+    cachedTextLength = source->cachedTextLength;
     strncpy(
-        &FieldAt<char>(
-            this,
-            0x15c
-        ),
-        &FieldAt<char>(
-            source,
-            0x15c
-        ),
+        cachedText,
+        source->cachedText,
         0x100
     );
 
-    FieldAt<int>(
-        this,
-        0x25c
-    ) = FieldAt<int>(
-        source,
-        0x25c
-    );
-    FieldAt<int>(
-        this,
-        0x260
-    ) = FieldAt<int>(
-        source,
-        0x260
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x264
-    ) = FieldAt<unsigned int>(
-        source,
-        0x264
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x268
-    ) = FieldAt<unsigned int>(
-        source,
-        0x268
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x26c
-    ) = FieldAt<unsigned int>(
-        source,
-        0x26c
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x270
-    ) = 1;
-    FieldAt<int>(
-        this,
-        0x274
-    ) = FieldAt<int>(
-        source,
-        0x274
-    );
-    FieldAt<int>(
-        this,
-        0x278
-    ) = FieldAt<int>(
-        source,
-        0x278
-    );
-    FieldAt<HudUiRect>(
-        this,
-        0x27c
-    ) = FieldAt<HudUiRect>(
-        source,
-        0x27c
-    );
-    FieldAt<HudUiRect>(
-        this,
-        0x28c
-    ) = FieldAt<HudUiRect>(
-        source,
-        0x28c
-    );
-    FieldAt<int>(
-        this,
-        0x144
-    ) = FieldAt<int>(
-        source,
-        0x144
-    );
-    FieldAt<int>(
-        this,
-        0x29c
-    ) = FieldAt<int>(
-        source,
-        0x29c
-    );
-    FieldAt<int>(
-        this,
-        0x2a0
-    ) = FieldAt<int>(
-        source,
-        0x2a0
-    );
+    textWidthPx = source->textWidthPx;
+    textHeightPx = source->textHeightPx;
+    shadowEnabled = source->shadowEnabled;
+    bkMode = source->bkMode;
+    bkColor = source->bkColor;
+    textDirty = 1;
+    unknown274 = source->unknown274;
+    wordWrapEnabled = source->wordWrapEnabled;
+    wrapRect = source->wrapRect;
+    textRect = source->textRect;
+    alignMode = source->alignMode;
+    shadowOffsetX = source->shadowOffsetX;
+    shadowOffsetY = source->shadowOffsetY;
     return this;
 }
 
 /**
  * Reimplements 0x4bab40: HudUiPanel::Destructor.
- * Purpose: release the owned text image/font resources and restore the common
- * HUD element ftable during panel teardown.
+ * Purpose: release the owned text image/font resources during panel teardown.
  */
 void HudUiPanel::Destructor() {
-    vtbl = &g_HudUiPanel_FTable;
 
     if (textPick != 0) {
         zVid_Image::Destroy(textPick);
@@ -17652,7 +14710,6 @@ void HudUiPanel::Destructor() {
     }
 
     DeleteObject(hFont);
-    vtbl = &g_HudUiCommon_FTable;
 }
 
 /**
@@ -17665,104 +14722,60 @@ void HudUiPanel::DestructorThunk() {
     Destructor();
 }
 
-// Reimplements 0x4bb460: HudUiPanel::Draw
+/**
+ * Reimplements 0x4bb460: HudUiPanel::Draw.
+ * Purpose: rebuild dirty panel text, draw the panel base, and blit the rendered text image with recovered alignment behavior.
+ */
 void HudUiPanel::Draw() {
-    if (FieldAt<unsigned int>(
-        this,
-        0x270
-    ) != 0) {
-        typedef void( * RebuildFn)(HudUiPanel * self);
-        const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(this);
-        ((RebuildFn)(ftable->slots[36]))(this);
+    if (textDirty != 0) {
+        RebuildTextRect();
     }
 
     if (textPick == 0) {
         return;
     }
 
-    if (FieldAt<char>(
-        this,
-        0x34
-    ) == '\0') {
-        HudUiPanelVirtualDrawBase(this);
+    if (textBuffer[0] == '\0') {
+        DrawBase();
         return;
     }
 
-    const int alignMode = FieldAt<int>(
-        this,
-        0x144
-    );
     if (alignMode == 0) {
-        HudUiPanelVirtualDrawBase(this);
+        DrawBase();
         zVid_Image::BlitToActiveTarget(
             textPick,
-            FieldAt<int>(
-                this,
-                0x14
-            ),
-            FieldAt<int>(
-                this,
-                0x18
-            ),
+            x,
+            y,
             0,
-            &FieldAt<zVidRect32>(this, 0x28c)
+            (zVidRect32 *)(&textRect)
         );
         return;
     }
 
-    if (FieldAt<unsigned int>(
-        this,
-        0x270
-    ) != 0) {
-        typedef void( * RebuildFn)(HudUiPanel * self);
-        const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(this);
-        ((RebuildFn)(ftable->slots[36]))(this);
+    if (textDirty != 0) {
+        RebuildTextRect();
     }
 
-    int frameWidth = FieldAt<int>(
-        this,
-        0x28
-    ) - FieldAt<int>(
-        this,
-        0x20
-    );
-    int textWidth = FieldAt<int>(
-        this,
-        0x25c
-    );
+    int frameWidth = clipRect.right - clipRect.left;
+    int textWidth = textWidthPx;
     if (alignMode == 1) {
         frameWidth >>= 1;
         textWidth >>= 1;
     }
 
-    FieldAt<int>(
-        this,
-        0x14
-    ) -= frameWidth;
-    HudUiPanelVirtualDrawBase(this);
+    x -= frameWidth;
+    DrawBase();
 
-    const int dstX = FieldAt<int>(
-        this,
-        0x14
-    ) + frameWidth - textWidth;
-    FieldAt<int>(
-        this,
-        0x14
-    ) = dstX;
+    const int dstX = x + frameWidth - textWidth;
+    x = dstX;
     zVid_Image::BlitToActiveTarget(
         textPick,
         dstX,
-        FieldAt<int>(
-            this,
-            0x18
-        ),
+        y,
         0,
-        &FieldAt<zVidRect32>(this, 0x28c)
+        (zVidRect32 *)(&textRect)
     );
-    FieldAt<int>(
-        this,
-        0x14
-    ) += textWidth;
+    x += textWidth;
 }
 
 // Reimplements 0x4ba400: HudUiPanel::GetWrapRect
@@ -17770,84 +14783,62 @@ HudUiRect * HudUiPanel::GetWrapRect() {
     return &wrapRect;
 }
 
-// Reimplements 0x4bb3d0: HudUiPanel::HitTest
+/**
+ * Reimplements 0x4bb3d0: HudUiPanel::HitTest.
+ * Purpose: test a point against the current visible text bounds, rebuilding dirty text metrics first.
+ */
 int HudUiPanel::HitTest(
     int px,
     int py
 ) {
-    if ((FieldAt<unsigned int>(this, 0x0c) & 0x10u) != 0 || FieldAt<int>(this, 0x14) > px ||
-        FieldAt<int>(
-            this,
-            0x18
-        ) > py) {
+    if ((flags & 0x10u) != 0 || x > px || y > py) {
         return 0;
     }
 
-    if (FieldAt<unsigned int>(
-        this,
-        0x270
-    ) != 0) {
-        typedef void( * RebuildFn)(HudUiPanel * self);
-        const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(this);
-        ((RebuildFn)(ftable->slots[36]))(this);
+    if (textDirty != 0) {
+        RebuildTextRect();
     }
 
-    if (px >= FieldAt<int>(this, 0x14) + FieldAt<int>(
-        this,
-        0x25c
-    )) {
+    if (px >= x + textWidthPx) {
         return 0;
     }
 
-    return py < FieldAt<int>(
-        this,
-        0x18
-    ) + QueryTextHeight() ? 1 : 0;
+    return py < y + QueryTextHeight() ? 1 : 0;
 }
 
-// Reimplements 0x4bb440: HudUiPanel::GetLastTextPtr
+/**
+ * Reimplements 0x4bb440: HudUiPanel::GetLastTextPtr.
+ * Purpose: return the cached panel text after ensuring dirty text rendering state is rebuilt.
+ */
 char * HudUiPanel::GetLastTextPtr() {
-    if (FieldAt<unsigned int>(
-        this,
-        0x270
-    ) != 0) {
-        typedef void( * RebuildFn)(HudUiPanel * self);
-        const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(this);
-        ((RebuildFn)(ftable->slots[36]))(this);
+    if (textDirty != 0) {
+        RebuildTextRect();
     }
 
-    return &FieldAt<char>(
-        this,
-        0x15c
-    );
+    return cachedText;
 }
 
-// Reimplements 0x4bb740: HudUiPanel::GetTextRect
+/**
+ * Reimplements 0x4bb740: HudUiPanel::GetTextRect.
+ * Purpose: report the inherited element rectangle extended to the current rendered panel text dimensions.
+ */
 void HudUiPanel::GetTextRect(
     HudUiRect *outRect
 ) {
-    ((HudUiElement *)(this))->GetRect(outRect);
+    HudUiElement::GetRect(outRect);
 
-    if (FieldAt<unsigned int>(
-        this,
-        0x270
-    ) != 0) {
-        typedef void( * RebuildFn)(HudUiPanel * self);
-        const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(this);
-        ((RebuildFn)(ftable->slots[36]))(this);
+    if (textDirty != 0) {
+        RebuildTextRect();
     }
 
-    outRect->right = outRect->left + FieldAt<int>(
-        this,
-        0x25c
-    );
+    outRect->right = outRect->left + textWidthPx;
     outRect->bottom = outRect->top + QueryTextHeight();
 }
 
 // Reimplements 0x40be90: HudUiPanel::Invalidate
 void HudUiPanel::Invalidate() {
     textDirty = 1;
-    ((HudUiElement *)(this))->Invalidate();
+    HudUiElement::Invalidate();
 }
 
 // Reimplements 0x40bea0: HudUiPanel::GetFont
@@ -17879,7 +14870,7 @@ void HudUtil::FreeFieldPtr() {
 }
 
 // Reimplements 0x40a590: HudUiPanel::ScalarDeletingDestructor
-HudUiPanel * HudUiPanel::ScalarDeletingDestructor(
+HudUiElement * HudUiPanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -17894,22 +14885,10 @@ HudUiPanel * HudUiPanel::ScalarDeletingDestructor(
 unsigned int HudUiPanel::SetTextColor(
     unsigned int color
 ) {
-    const unsigned int previous = FieldAt<unsigned int>(
-        this,
-        0x14c
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x14c
-    ) = color;
-    FieldAt<unsigned int>(
-        this,
-        0x150
-    ) = color;
-    FieldAt<unsigned int>(
-        this,
-        0x270
-    ) = 1;
+    const unsigned int previous = textColor0;
+    textColor0 = color;
+    textColor1 = color;
+    textDirty = 1;
     return previous;
 }
 
@@ -17918,42 +14897,21 @@ void HudUiPanel::SetTextColorsAndMarkDirty(
     unsigned int color0,
     unsigned int color1
 ) {
-    FieldAt<unsigned int>(
-        this,
-        0x14c
-    ) = color0;
-    FieldAt<unsigned int>(
-        this,
-        0x150
-    ) = color1;
-    FieldAt<unsigned int>(
-        this,
-        0x270
-    ) = 1;
+    textColor0 = color0;
+    textColor1 = color1;
+    textDirty = 1;
 }
 
 // Reimplements 0x40e040: HudUiPanel::SetShadow
 unsigned int HudUiPanel::SetShadow(
-    unsigned int shadowEnabled,
-    int shadowOffsetX,
-    int shadowOffsetY
+    unsigned int enableShadow,
+    int offsetX,
+    int offsetY
 ) {
-    const unsigned int previous = FieldAt<unsigned int>(
-        this,
-        0x264
-    );
-    FieldAt<unsigned int>(
-        this,
-        0x264
-    ) = shadowEnabled;
-    FieldAt<int>(
-        this,
-        0x29c
-    ) = shadowOffsetX;
-    FieldAt<int>(
-        this,
-        0x2a0
-    ) = shadowOffsetY;
+    const unsigned int previous = shadowEnabled;
+    shadowEnabled = enableShadow;
+    shadowOffsetX = offsetX;
+    shadowOffsetY = offsetY;
     return previous;
 }
 
@@ -17984,10 +14942,7 @@ void HudUiPanel::SetFont(
         pitchAndFamily,
         faceName
     );
-    FieldAt<unsigned int>(
-        this,
-        0x270
-    ) = 1;
+    textDirty = 1;
 }
 
 // Reimplements 0x4bb540: HudUiPanel::SetTextFmt
@@ -18012,20 +14967,13 @@ void HudUiPanel::SetTextFmtV(
     const char *format,
     va_list args
 ) {
-    char *const textBuffer = &FieldAt<char>(
-        this,
-        0x34
-    );
     if (format == 0) {
         memset(
             textBuffer,
             0,
             0x100
         );
-        FieldAt<unsigned int>(
-            this,
-            0x270
-        ) = 1;
+        textDirty = 1;
         return;
     }
 
@@ -18037,32 +14985,22 @@ void HudUiPanel::SetTextFmtV(
     );
     textBuffer[0xff] = '\0';
 
-    char *const cached = &FieldAt<char>(
-        this,
-        0x15c
-    );
     if (strncmp(
-        cached,
+        cachedText,
         textBuffer,
         0x100
     ) == 0) {
         return;
     }
 
-    if (FieldAt<unsigned int>(
-        this,
-        0x138
-    ) != 0) {
-        ((HudUiTextLabel *)(this))->UpdateTextExtents();
+    if (centerText != 0) {
+        HudUiTextLabel::UpdateTextExtents();
     }
 
-    HudUiVirtualInvalidate(this);
-    FieldAt<unsigned int>(
-        this,
-        0x270
-    ) = 1;
+    Invalidate();
+    textDirty = 1;
     strncpy(
-        cached,
+        cachedText,
         textBuffer,
         0x100
     );
@@ -18072,20 +15010,13 @@ void HudUiPanel::SetTextFmtV(
 void HudUiPanel::SetText(
     const char *text
 ) {
-    char *const textBuffer = &FieldAt<char>(
-        this,
-        0x34
-    );
     if (text == 0) {
         memset(
             textBuffer,
             0,
             0x100
         );
-        FieldAt<unsigned int>(
-            this,
-            0x270
-        ) = 1;
+        textDirty = 1;
         return;
     }
 
@@ -18095,32 +15026,22 @@ void HudUiPanel::SetText(
         0x100
     );
 
-    char *const cached = &FieldAt<char>(
-        this,
-        0x15c
-    );
     if (strncmp(
-        cached,
+        cachedText,
         textBuffer,
         0x100
     ) == 0) {
         return;
     }
 
-    if (FieldAt<unsigned int>(
-        this,
-        0x138
-    ) != 0) {
-        ((HudUiTextLabel *)(this))->UpdateTextExtents();
+    if (centerText != 0) {
+        HudUiTextLabel::UpdateTextExtents();
     }
 
-    HudUiVirtualInvalidate(this);
-    FieldAt<unsigned int>(
-        this,
-        0x270
-    ) = 1;
+    Invalidate();
+    textDirty = 1;
     strncpy(
-        cached,
+        cachedText,
         textBuffer,
         0x100
     );
@@ -18128,40 +15049,21 @@ void HudUiPanel::SetText(
 
 // Reimplements 0x4bac10: HudUiPanel::RebuildTextRect
 void HudUiPanel::RebuildTextRect() {
-    char *const textBuffer = &FieldAt<char>(
-        this,
-        0x34
-    );
     if (strlen(textBuffer) == 0) {
         memset(
-            &FieldAt<HudUiRect>(
-                this,
-                0x28c
-            ),
+            &textRect,
             0,
             sizeof(HudUiRect)
         );
-        FieldAt<int>(
-            this,
-            0x260
-        ) = 0;
-        FieldAt<int>(
-            this,
-            0x25c
-        ) = 0;
-        FieldAt<unsigned int>(
-            this,
-            0x270
-        ) = 0;
+        textHeightPx = 0;
+        textWidthPx = 0;
+        textDirty = 0;
         return;
     }
 
     HDC measureDc = CreateCompatibleDC(0);
     if (measureDc == 0) {
-        FieldAt<unsigned int>(
-            this,
-            0x270
-        ) = 0;
+        textDirty = 0;
         return;
     }
 
@@ -18170,27 +15072,11 @@ void HudUiPanel::RebuildTextRect() {
         hFont
     );
 
-#if defined(_MSC_VER) && _MSC_VER < 1200
-    RECT &textRect = *&FieldAt<RECT>(
-        this,
-        0x28c
-    );
-#else
-    RECT &textRect = FieldAt<RECT>(
-        this,
-        0x28c
-    );
-#endif
+    RECT &textRectRef = *(RECT *)(&textRect);
     UINT drawFormat = DT_LEFT;
     BOOL measured = FALSE;
-    if (FieldAt<unsigned int>(
-        this,
-        0x278
-    ) != 0) {
-        textRect = FieldAt<RECT>(
-            this,
-            0x27c
-        );
+    if (wordWrapEnabled != 0) {
+        textRectRef = *(RECT *)(&wrapRect);
         drawFormat = DT_WORDBREAK;
         measured = TRUE;
     } else {
@@ -18198,7 +15084,7 @@ void HudUiPanel::RebuildTextRect() {
             measureDc,
             textBuffer,
             -1,
-            &textRect,
+            &textRectRef,
             DT_CALCRECT
         );
     }
@@ -18206,30 +15092,15 @@ void HudUiPanel::RebuildTextRect() {
     if (measured == 0) {
         GetLastError();
     } else {
-        if (FieldAt<unsigned int>(
-            this,
-            0x264
-        ) != 0) {
-            textRect.bottom += abs(FieldAt<int>(
-                this,
-                0x2a0
-            ));
-            textRect.right += abs(FieldAt<int>(
-                this,
-                0x29c
-            ));
+        if (shadowEnabled != 0) {
+            textRectRef.bottom += abs(shadowOffsetY);
+            textRectRef.right += abs(shadowOffsetX);
         }
 
-        const int textWidth = textRect.right - textRect.left;
-        const int textHeight = textRect.bottom - textRect.top;
-        FieldAt<int>(
-            this,
-            0x25c
-        ) = textWidth;
-        FieldAt<int>(
-            this,
-            0x260
-        ) = textHeight;
+        const int textWidth = textRectRef.right - textRectRef.left;
+        const int textHeight = textRectRef.bottom - textRectRef.top;
+        textWidthPx = textWidth;
+        textHeightPx = textHeight;
 
         if (textPick != 0 && (textWidth > textPick->width || textHeight > textPick->height)) {
             zVid_Image::Destroy(textPick);
@@ -18281,55 +15152,31 @@ void HudUiPanel::RebuildTextRect() {
                 textPick,
                 &drawDc
             ) != 0) {
-                RECT shadowRect = textRect;
-                RECT mainRect = textRect;
+                RECT shadowRect = textRectRef;
+                RECT mainRect = textRectRef;
                 SelectObject(
                     drawDc,
                     hFont
                 );
 
-                if (FieldAt<unsigned int>(
-                    this,
-                    0x264
-                ) != 0) {
-                    if (FieldAt<int>(
-                        this,
-                        0x29c
-                    ) > 0) {
-                        shadowRect.left += FieldAt<int>(
-                            this,
-                            0x29c
-                        );
+                if (shadowEnabled != 0) {
+                    if (shadowOffsetX > 0) {
+                        shadowRect.left += shadowOffsetX;
                     } else {
-                        mainRect.left -= FieldAt<int>(
-                            this,
-                            0x29c
-                        );
+                        mainRect.left -= shadowOffsetX;
                     }
 
-                    if (FieldAt<int>(
-                        this,
-                        0x2a0
-                    ) > 0) {
-                        shadowRect.top += FieldAt<int>(
-                            this,
-                            0x2a0
-                        );
+                    if (shadowOffsetY > 0) {
+                        shadowRect.top += shadowOffsetY;
                     } else {
-                        mainRect.top -= FieldAt<int>(
-                            this,
-                            0x2a0
-                        );
+                        mainRect.top -= shadowOffsetY;
                     }
 
                     ::SetTextColor(
                         drawDc,
                         0x00141414
                     );
-                    if (FieldAt<int>(
-                        this,
-                        0x268
-                    ) == OPAQUE) {
+                    if (bkMode == OPAQUE) {
                         SetBkColor(
                             drawDc,
                             0x20
@@ -18338,7 +15185,7 @@ void HudUiPanel::RebuildTextRect() {
 
                     SetBkMode(
                         drawDc,
-                        FieldAt<int>(this, 0x268)
+                        bkMode
                     );
                     DrawTextA(
                         drawDc,
@@ -18349,31 +15196,20 @@ void HudUiPanel::RebuildTextRect() {
                     );
                 }
 
-                const unsigned int textColor0 = FieldAt<unsigned int>(
-                    this,
-                    0x14c
-                );
-                const unsigned int textColor1 = FieldAt<unsigned int>(
-                    this,
-                    0x150
-                );
                 ::SetTextColor(
                     drawDc,
                     textColor0 == textColor1 ? textColor0 : 0x00ffffff
                 );
-                if (FieldAt<int>(
-                    this,
-                    0x268
-                ) == OPAQUE) {
+                if (bkMode == OPAQUE) {
                     SetBkColor(
                         drawDc,
-                        FieldAt<COLORREF>(this, 0x26c)
+                        bkColor
                     );
                 }
 
                 SetBkMode(
                     drawDc,
-                    FieldAt<int>(this, 0x268)
+                    bkMode
                 );
                 DrawTextA(
                     drawDc,
@@ -18398,13 +15234,7 @@ void HudUiPanel::RebuildTextRect() {
                 measureDc,
                 &metrics
             ) != 0) {
-                if (FieldAt<unsigned int>(
-                    this,
-                    0x14c
-                ) != FieldAt<unsigned int>(
-                    this,
-                    0x150
-                )) {
+                if (textColor0 != textColor1) {
                     const unsigned short sourceWhite =
                         (unsigned short)(zVid_PackColorRGB(
                             0xff,
@@ -18415,8 +15245,8 @@ void HudUiPanel::RebuildTextRect() {
                     {
                         for (int row = 0; row < textPick->height; ++row) {
                             const int lineSpan = metrics.tmHeight + metrics.tmExternalLeading;
-                            const int rowPhase = (FieldAt<unsigned int>(this, 0x264) != 0
-                                                         ? row + FieldAt<int>(this, 0x2a0)
+                            const int rowPhase = (shadowEnabled != 0
+                                                         ? row + shadowOffsetY
                                                          : row) %
                                                  lineSpan;
                             const float blend =
@@ -18424,14 +15254,8 @@ void HudUiPanel::RebuildTextRect() {
                                 (float)(metrics.tmAscent - metrics.tmInternalLeading);
                             const unsigned int blendedColor =
                                 HudUiFlashPanel::ComputeFlashBlendColor(
-                                    FieldAt<unsigned int>(
-                                        this,
-                                        0x14c
-                                    ),
-                                    FieldAt<unsigned int>(
-                                        this,
-                                        0x150
-                                    ),
+                                    textColor0,
+                                    textColor1,
                                     blend
                                 );
                             const unsigned short packedColor = (unsigned short)(zVid_PackColorRGB(
@@ -18451,44 +15275,28 @@ void HudUiPanel::RebuildTextRect() {
                     }
                 }
 
-                FieldAt<int>(
-                    this,
-                    0x274
-                ) = (int)(metrics.tmExternalLeading);
+                unknown274 = (int)(metrics.tmExternalLeading);
             }
         }
     }
 
     DeleteDC(measureDc);
-    FieldAt<unsigned int>(
-        this,
-        0x270
-    ) = 0;
+    textDirty = 0;
 }
 
-// Reimplements 0x4bb2a0: HudUiPanel::UpdateTextBoundsFromContent
+/**
+ * Reimplements 0x4bb2a0: HudUiPanel::UpdateTextBoundsFromContent.
+ * Purpose: update the panel clip rectangle from current text contents, alignment, wrapping, and shadow state.
+ */
 void HudUiPanel::UpdateTextBoundsFromContent() {
-    HudUiElement *const element = (HudUiElement *)(this);
-    char *const textBuffer = &FieldAt<char>(
-        this,
-        0x34
-    );
-    const int textLength = (int)(strlen(textBuffer));
+    char *const panelText = textBuffer;
+    const int textLength = (int)(strlen(panelText));
 
-    if (FieldAt<unsigned int>(
-        this,
-        0x278
-    ) != 0) {
-        element->clipRect.left = element->x;
-        element->clipRect.top = element->y;
-        element->clipRect.right = element->x + FieldAt<int>(
-            this,
-            0x284
-        );
-        element->clipRect.bottom = element->y + FieldAt<int>(
-            this,
-            0x288
-        );
+    if (wordWrapEnabled != 0) {
+        clipRect.left = x;
+        clipRect.top = y;
+        clipRect.right = x + wrapRect.right;
+        clipRect.bottom = y + wrapRect.bottom;
         return;
     }
 
@@ -18504,65 +15312,34 @@ void HudUiPanel::UpdateTextBoundsFromContent() {
     SIZE textSize = {0};
     if (GetTextExtentPoint32A(
         hdc,
-        textBuffer,
+        panelText,
         textLength,
         &textSize
     ) != 0) {
         int left;
-        const int alignMode = FieldAt<int>(
-            this,
-            0x144
-        );
         if (alignMode == 1) {
-            if (FieldAt<unsigned int>(
-                this,
-                0x270
-            ) != 0) {
-                typedef void( * RebuildFn)(HudUiPanel * self);
-                const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(this);
-                ((RebuildFn)(ftable->slots[36]))(this);
+            if (textDirty != 0) {
+                RebuildTextRect();
             }
 
-            const int textWidth = FieldAt<int>(
-                this,
-                0x25c
-            );
-            left = element->clipRect.left +
-                   ((element->clipRect.right - element->clipRect.left) / 2) - (textWidth / 2);
+            left = clipRect.left + ((clipRect.right - clipRect.left) / 2) - (textWidthPx / 2);
         } else if (alignMode == 0) {
-            left = element->clipRect.left;
+            left = clipRect.left;
         } else {
-            if (FieldAt<unsigned int>(
-                this,
-                0x270
-            ) != 0) {
-                typedef void( * RebuildFn)(HudUiPanel * self);
-                const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(this);
-                ((RebuildFn)(ftable->slots[36]))(this);
+            if (textDirty != 0) {
+                RebuildTextRect();
             }
 
-            left = element->clipRect.right - FieldAt<int>(
-                this,
-                0x25c
-            );
+            left = clipRect.right - textWidthPx;
         }
 
-        element->clipRect.left = left;
-        element->clipRect.right = left + textSize.cx;
-        element->clipRect.bottom = element->clipRect.top + textSize.cy;
+        clipRect.left = left;
+        clipRect.right = left + textSize.cx;
+        clipRect.bottom = clipRect.top + textSize.cy;
 
-        if (FieldAt<unsigned int>(
-            this,
-            0x264
-        ) != 0) {
-            element->clipRect.bottom += abs(FieldAt<int>(
-                this,
-                0x2a0
-            ));
-            element->clipRect.right += abs(FieldAt<int>(
-                this,
-                0x29c
-            ));
+        if (shadowEnabled != 0) {
+            clipRect.bottom += abs(shadowOffsetY);
+            clipRect.right += abs(shadowOffsetX);
         }
     }
 
@@ -18585,10 +15362,7 @@ int HudUiPanel::MeasureTextPrefixRect(
         hFont
     );
     if (maxChars > 0) {
-        char *const textCopy = _strdup(&FieldAt<char>(
-            this,
-            0x34
-        ));
+        char *const textCopy = _strdup(textBuffer);
         if (maxChars <= (int)(strlen(textCopy))) {
             textCopy[maxChars] = '\0';
             if (DrawTextA(
@@ -18622,24 +15396,16 @@ int HudUiPanel::MeasureTextPrefixRect(
     return result;
 }
 
-// Reimplements 0x4bb710: HudUiPanel::QueryTextHeight
+/**
+ * Reimplements 0x4bb710: HudUiPanel::QueryTextHeight.
+ * Purpose: return the panel text height without external leading after rebuilding dirty text metrics.
+ */
 int HudUiPanel::QueryTextHeight() {
-    if (FieldAt<unsigned int>(
-        this,
-        0x270
-    ) != 0) {
-        typedef void( * RebuildFn)(HudUiPanel * self);
-        const HudUiPanel_FTable *const ftable = *(const HudUiPanel_FTable *const *)(this);
-        ((RebuildFn)(ftable->slots[36]))(this);
+    if (textDirty != 0) {
+        RebuildTextRect();
     }
 
-    return FieldAt<int>(
-        this,
-        0x260
-    ) - FieldAt<int>(
-        this,
-        0x274
-    );
+    return textHeightPx - unknown274;
 }
 
 // Reimplements 0x40fac0: HudUiPanelSimple::Constructor
@@ -18648,29 +15414,15 @@ HudUiPanelSimple * HudUiPanelSimple::Constructor(
     int initX,
     int initY
 ) {
-    HudUiPanel *const panel = (HudUiPanel *)(this);
-    panel->ConstructorDefault(
+    HudUiPanel::ConstructorDefault(
         text,
         initX,
         initY
     );
-    FieldAt<const void *>(
-        this,
-        0x00
-    ) = &g_HudUiPanelSimple_FTable;
-    FieldAt<unsigned int>(
-        this,
-        0x14c
-    ) = 0x0020bf40;
-    FieldAt<unsigned int>(
-        this,
-        0x150
-    ) = 0x0020bf40;
-    FieldAt<unsigned int>(
-        this,
-        0x270
-    ) = 1;
-    panel->SetFont(
+    textColor0 = 0x0020bf40;
+    textColor1 = 0x0020bf40;
+    textDirty = 1;
+    HudUiPanel::SetFont(
         "Arial",
         0x0a,
         0x1f4,
@@ -18679,18 +15431,9 @@ HudUiPanelSimple * HudUiPanelSimple::Constructor(
         0,
         2
     );
-    FieldAt<int>(
-        this,
-        0x29c
-    ) = -1;
-    FieldAt<int>(
-        this,
-        0x2a0
-    ) = -1;
-    FieldAt<unsigned int>(
-        this,
-        0x264
-    ) = 1;
+    shadowOffsetX = -1;
+    shadowOffsetY = -1;
+    shadowEnabled = 1;
     return this;
 }
 
@@ -18709,29 +15452,25 @@ void HudUiTimerPanel::SetTimeSeconds(
     int minutes,
     int seconds
 ) {
-    HudUiPanel *const panel = (HudUiPanel *)(this);
     if (hours >= 0 && minutes >= 0 && seconds >= 0) {
-        panel->SetTextFmt(
+        HudUiPanel::SetTextFmt(
             "%02d:%02d:%02d",
             hours,
             minutes,
             seconds
         );
     } else {
-        panel->SetTextFmt("00:00:00");
+        HudUiPanel::SetTextFmt("00:00:00");
     }
 
-    panel->UpdateTextBoundsFromContent();
+    HudUiPanel::UpdateTextBoundsFromContent();
 }
 
 // Reimplements 0x40ee60: HudUiTimerPanel::UpdateHMSFromSeconds
 void HudUiTimerPanel::UpdateHMSFromSeconds(
     float seconds
 ) {
-    FieldAt<float>(
-        this,
-        0x2a4
-    ) = seconds;
+    elapsedSeconds = seconds;
 
     const int hours = (int)(floor(seconds * 0.000277777785f));
     float remaining = seconds - (float)(hours) * 3600.0f;
@@ -18749,20 +15488,14 @@ void HudUiTimerPanel::UpdateHMSFromSeconds(
 void __fastcall HudUiTimerPanel::SetRunning(
     int running
 ) {
-    FieldAt<int>(
-        g_HudUiMgrTimerPanel,
-        0x2a8
-    ) = running == 0 ? 1 : 0;
+    g_HudUiMgrTimerPanel->stopped = running == 0 ? 1 : 0;
 }
 
 // Reimplements 0x40ecc0: HudUiTimerPanel::SetElapsedSeconds
 void __stdcall HudUiTimerPanel::SetElapsedSeconds(
     float seconds
 ) {
-    FieldAt<float>(
-        g_HudUiMgrTimerPanel,
-        0x2a4
-    ) = seconds;
+    g_HudUiMgrTimerPanel->elapsedSeconds = seconds;
 }
 
 // Reimplements 0x40ece0: HudUiTimerPanel::SetSeconds
@@ -18770,47 +15503,29 @@ void __stdcall HudUiTimerPanel::SetSeconds(
     float elapsedSeconds,
     float secondsStep
 ) {
-    FieldAt<int>(
-        g_HudUiMgrTimerPanel,
-        0x2ac
-    ) = (int)(secondsStep);
+    g_HudUiMgrTimerPanel->secondsStep = (int)(secondsStep);
     g_HudUiMgrTimerPanel->UpdateHMSFromSeconds(elapsedSeconds);
 }
 
 // Reimplements 0x40ed10: HudUiTimerPanel::GetSeconds
 float HudUiTimerPanel::GetSeconds() {
-    return FieldAt<float>(
-        g_HudUiMgrTimerPanel,
-        0x2a4
-    );
+    return g_HudUiMgrTimerPanel->elapsedSeconds;
 }
 
 // Reimplements 0x40ed20: HudUiTimerPanel::Update
 void HudUiTimerPanel::Update(
     float deltaSeconds
 ) {
-    if (FieldAt<int>(
-        this,
-        0x2a8
-    ) == 0) {
+    if (stopped == 0) {
         const float frameDelta =
             zOpt::GetNetworkEnabled() != 0 ? g_Time_UnscaledDeltaTimeSec : g_FrameDeltaTimeSec;
-        const float elapsedSeconds =
-            FieldAt<float>(
-                this,
-                0x2a4
-            ) + (float)(FieldAt<int>(
-                this,
-                0x2ac
-            )) * frameDelta;
-        FieldAt<float>(
-            this,
-            0x2a4
-        ) = elapsedSeconds;
-        UpdateHMSFromSeconds(elapsedSeconds);
+        const float newElapsedSeconds =
+            elapsedSeconds + (float)(secondsStep) * frameDelta;
+        elapsedSeconds = newElapsedSeconds;
+        UpdateHMSFromSeconds(newElapsedSeconds);
     }
 
-    ((HudUiElement *)(this))->Update(deltaSeconds);
+    HudUiElement::Update(deltaSeconds);
 }
 
 // Reimplements 0x40fbb0: HudUiTimerPanel::ZarReadTimerData
@@ -18830,45 +15545,25 @@ void __fastcall HudUiTimerPanel::ZarWriteTimerDataCallback(
     zZbdSectionCallbackCtx *sectionCtx,
     HudUiTimerPanel *userData
 ) {
-    const float elapsedSeconds = FieldAt<float>(
-        userData,
-        0x2a4
-    );
     zUtil_ZAR::WriteSectionBlob(
         sectionCtx,
         "TimerData",
-        &elapsedSeconds,
-        sizeof(elapsedSeconds)
+        &userData->elapsedSeconds,
+        sizeof(userData->elapsedSeconds)
     );
 }
 
 // Reimplements 0x40ed80: HudUiTimerPanel::ConstructorDefault
 HudUiTimerPanel * HudUiTimerPanel::ConstructorDefault() {
-    HudUiPanel *const panel = (HudUiPanel *)(this);
-    HudUiElement *const element = (HudUiElement *)(this);
-
-    panel->ConstructorDefault(
+    HudUiPanel::ConstructorDefault(
         0,
         0,
         0
     );
-    FieldAt<const void *>(
-        this,
-        0x00
-    ) = &g_HudUiPanelSimple_FTable;
-    FieldAt<unsigned int>(
-        this,
-        0x14c
-    ) = 0x0020bf40;
-    FieldAt<unsigned int>(
-        this,
-        0x150
-    ) = 0x0020bf40;
-    FieldAt<unsigned int>(
-        this,
-        0x270
-    ) = 1;
-    panel->SetFont(
+    textColor0 = 0x0020bf40;
+    textColor1 = 0x0020bf40;
+    textDirty = 1;
+    HudUiPanel::SetFont(
         "Arial",
         0x0a,
         0x1f4,
@@ -18877,72 +15572,34 @@ HudUiTimerPanel * HudUiTimerPanel::ConstructorDefault() {
         0,
         2
     );
-    FieldAt<unsigned int>(
-        this,
-        0x264
-    ) = 1;
-    FieldAt<int>(
-        this,
-        0x29c
-    ) = -1;
-    FieldAt<int>(
-        this,
-        0x2a0
-    ) = -1;
+    shadowEnabled = 1;
+    shadowOffsetX = -1;
+    shadowOffsetY = -1;
 
-    FieldAt<const void *>(
-        this,
-        0x00
-    ) = &g_HudUiTimerPanel_FTable;
-    FieldAt<int>(
-        this,
-        0x2ac
-    ) = 1;
+    secondsStep = 1;
     SetTimeSeconds(
         0,
         0,
         0
     );
-    FieldAt<int>(
-        this,
-        0x2a8
-    ) = 1;
-    FieldAt<float>(
-        this,
-        0x2a4
-    ) = 0.0f;
-    element->SetVisible(1);
-    g_HudUiMgr.AddChild(element);
+    stopped = 1;
+    elapsedSeconds = 0.0f;
+    HudUiElement::SetVisible(1);
+    g_HudUiMgr.AddChild(this);
     return this;
 }
 
 // Reimplements 0x40dbf0: HudUiCounterTextPanel::Constructor
 HudUiCounterTextPanel * HudUiCounterTextPanel::Constructor() {
-    HudUiPanel *const panel = (HudUiPanel *)(this);
-    HudUiElement *const element = (HudUiElement *)(this);
-
-    panel->ConstructorDefault(
+    HudUiPanel::ConstructorDefault(
         0,
         0,
         0
     );
-    FieldAt<const void *>(
-        this,
-        0x00
-    ) = &g_HudUiPanelSimple_FTable;
-    FieldAt<unsigned int>(
-        this,
-        0x14c
-    ) = 0x0020bf40;
-    FieldAt<unsigned int>(
-        this,
-        0x150
-    ) = 0x0020bf40;
-    FieldAt<unsigned int>(
-        this,
-        0x270
-    ) = 1;
-    panel->SetFont(
+    textColor0 = 0x0020bf40;
+    textColor1 = 0x0020bf40;
+    textDirty = 1;
+    HudUiPanel::SetFont(
         "Arial",
         0x0a,
         0x1f4,
@@ -18951,41 +15608,27 @@ HudUiCounterTextPanel * HudUiCounterTextPanel::Constructor() {
         0,
         2
     );
-    FieldAt<unsigned int>(
-        this,
-        0x264
-    ) = 1;
-    FieldAt<int>(
-        this,
-        0x29c
-    ) = -1;
-    FieldAt<int>(
-        this,
-        0x2a0
-    ) = -1;
+    shadowEnabled = 1;
+    shadowOffsetX = -1;
+    shadowOffsetY = -1;
 
-    FieldAt<const void *>(
-        this,
-        0x00
-    ) = &g_HudUiCounterTextPanel_FTable;
-    panel->SetTextFmt(
+    HudUiPanel::SetTextFmt(
         "%d",
         0
     );
-    panel->UpdateTextBoundsFromContent();
-    element->SetVisible(1);
-    g_HudUiMgr.AddChild(element);
+    HudUiPanel::UpdateTextBoundsFromContent();
+    HudUiElement::SetVisible(1);
+    g_HudUiMgr.AddChild(this);
     return this;
 }
 
 // Reimplements 0x40dcd0: HudUiTriplet::Constructor
 HudUiTriplet * HudUiTriplet::Constructor() {
-    base.ConstructorDefault();
+    new ((HudUiContainer *)this) HudUiContainer;
     entries.rowInitFlag = 0;
     entries.begin = 0;
     entries.end = 0;
     entries.cap = 0;
-    base.vptr = (const HudUiContainer_FTable *)(&g_HudUiTriplet_FTable);
     lapsColumnOffsetX = 0x23;
     killsColumnOffsetX = 0x46;
     fontSize = 8;
@@ -18999,22 +15642,13 @@ HudUiTriplet * HudUiTriplet::Constructor() {
                 fontWeight
             );
             headerPanels[headerIndex] = header;
-            base.AddChild((HudUiElement *)(header));
+            HudUiContainer::AddChild((HudUiElement *)(header));
         }
     }
 
-    FieldAt<int>(
-        headerPanels[0],
-        0x144
-    ) = 2;
-    FieldAt<int>(
-        headerPanels[1],
-        0x144
-    ) = 1;
-    FieldAt<int>(
-        headerPanels[2],
-        0x144
-    ) = 1;
+    headerPanels[0]->alignMode = 2;
+    headerPanels[1]->alignMode = 1;
+    headerPanels[2]->alignMode = 1;
     headerPanels[0]->SetTextFmt("Player");
     headerPanels[1]->SetTextFmt("Laps");
     headerPanels[2]->SetTextFmt("Kills");
@@ -19029,29 +15663,21 @@ HudUiTriplet * HudUiTriplet::Constructor() {
                     fontSize,
                     fontWeight
                 );
-                base.AddChild((HudUiElement *)(*rowCell));
+                HudUiContainer::AddChild((HudUiElement *)(*rowCell));
                 ++rowCell;
             }
 
-            FieldAt<int>(
-                rowCells[row * 3 + 1],
-                0x144
-            ) = 1;
-            FieldAt<int>(
-                rowCells[row * 3 + 2],
-                0x144
-            ) = 1;
+            rowCells[row * 3 + 1]->alignMode = 1;
+            rowCells[row * 3 + 2]->alignMode = 1;
         }
     }
 
-    base.SetEnabled(1);
+    HudUiContainer::SetEnabled(1);
     return this;
 }
 
 // Reimplements 0x40e070: HudUiTriplet::DestructorCore
 void HudUiTriplet::DestructorCore() {
-    base.vptr = (const HudUiContainer_FTable *)(&g_HudUiTriplet_FTable);
-
     {
         int headerIndex;
         for (headerIndex = 0; headerIndex < 3; ++headerIndex) {
@@ -19081,7 +15707,7 @@ void HudUiTriplet::DestructorCore() {
     entries.end = 0;
     entries.cap = 0;
 
-    base.DestructorCore();
+    HudUiContainer::DestructorCore();
 }
 
 // Reimplements 0x40e140: HudUiTriplet::RebuildDisplay (D:\Proj\Battlesport\HudUiTriplet.cpp)
@@ -19351,16 +15977,8 @@ void __stdcall SetScaleAndRebuild(
 void __stdcall DispatchSetScale(
     float deltaTime
 ) {
-    typedef void( * UpdateFn)(
-        HudUiStatsListElement * self,
-        float deltaTime
-    );
-
     HudUiStatsListElement *const statsList = g_HudUiMgrStatsList;
-    ((UpdateFn)(statsList->base.ftable->slots[9]))(
-        statsList,
-        deltaTime
-    );
+    statsList->Update(deltaTime);
 }
 
 } // namespace HudScoreboard
@@ -19370,10 +15988,7 @@ HudUiPanel * HudUiTextStack4::PushLine(
     const char *message,
     float duration
 ) {
-    HudUiVirtualSetContainerEnabled(
-        &base,
-        1
-    );
+    SetEnabled(1);
 
     HudUiPanel *const firstLine = TextStackLineAt(
         this,
@@ -19397,40 +16012,15 @@ HudUiPanel * HudUiTextStack4::PushLine(
                 HudUiElement *const sourceElement = (HudUiElement *)(source);
 
                 if ((sourceElement->flags & 0x10u) == 0) {
-                    HudUiVirtualSetVisibleRequired(
-                        source,
-                        0
+                    source->SetVisible(0);
+                    ((HudUiElement *)(dest))->SetTimer(
+                        ((HudUiElement *)(source))->timer
                     );
-                    ((HudUiElement *)(dest))->SetTimer(FieldAt<float>(
-                        source,
-                        0x10
-                    ));
-                    HudUiPanelVirtualSetTextFmtRequired(
-                        dest,
-                        source->GetLastTextPtr()
-                    );
-                    FieldAt<unsigned int>(
-                        dest,
-                        0x14c
-                    ) = FieldAt<unsigned int>(
-                        source,
-                        0x14c
-                    );
-                    FieldAt<unsigned int>(
-                        dest,
-                        0x150
-                    ) = FieldAt<unsigned int>(
-                        source,
-                        0x150
-                    );
-                    FieldAt<unsigned int>(
-                        dest,
-                        0x270
-                    ) = 1;
-                    HudUiVirtualSetVisibleRequired(
-                        dest,
-                        1
-                    );
+                    dest->SetTextFmt(source->GetLastTextPtr());
+                    dest->textColor0 = source->textColor0;
+                    dest->textColor1 = source->textColor1;
+                    dest->textDirty = 1;
+                    dest->SetVisible(1);
                 }
             }
         }
@@ -19441,10 +16031,7 @@ HudUiPanel * HudUiTextStack4::PushLine(
         "%s",
         message
     );
-    HudUiVirtualSetVisibleRequired(
-        firstLine,
-        1
-    );
+    firstLine->SetVisible(1);
     return firstLine;
 }
 
@@ -19767,7 +16354,7 @@ void __fastcall ShowTopMessageLine(
     float duration
 ) {
     HudUiTextStack4 *const topStack = g_HudUiTopMessageStack;
-    if (topStack->base.enabled != 0) {
+    if (topStack->enabled != 0) {
         topStack->PushLine(
             message,
             duration
@@ -19781,7 +16368,7 @@ void __fastcall ShowChatLine(
     float duration
 ) {
     HudUiTextStack4 *const chatStack = g_HudUiChatMessageStack;
-    if (chatStack->base.enabled != 0) {
+    if (chatStack->enabled != 0) {
         chatStack->PushLine(
             message,
             duration
@@ -19820,42 +16407,26 @@ void HudUiTextStack4::SetTextColors(
     unsigned int color0,
     unsigned int color1
 ) {
-    {
-        for (int index = 3; index >= 0; --index) {
-            HudUiPanel *const panel = TextStackLineAt(
-                this,
-                index
-            );
-            FieldAt<unsigned int>(
-                panel,
-                0x14c
-            ) = color0;
-            FieldAt<unsigned int>(
-                panel,
-                0x150
-            ) = color1;
-            FieldAt<unsigned int>(
-                panel,
-                0x270
-            ) = 1;
-        }
+    for (int index = 3; index >= 0; --index) {
+        HudUiPanel *const panel = TextStackLineAt(
+            this,
+            index
+        );
+        panel->textColor0 = color0;
+        panel->textColor1 = color1;
+        panel->textDirty = 1;
     }
 }
 
 // Reimplements 0x4bd2a0: HudUiTextStack4::Clear
 void HudUiTextStack4::Clear() {
-    {
-        for (int index = 0; index < 4; ++index) {
-            HudUiPanel *const panel = TextStackLineAt(
-                this,
-                index
-            );
-            HudUiVirtualSetTextFmtEmpty(panel);
-            HudUiVirtualSetVisibleRequired(
-                panel,
-                0
-            );
-        }
+    for (int index = 0; index < 4; ++index) {
+        HudUiPanel *const panel = TextStackLineAt(
+            this,
+            index
+        );
+        panel->SetTextFmt("");
+        panel->SetVisible(0);
     }
 }
 
@@ -19867,35 +16438,20 @@ void HudUiTextStack4::SetFontAll(
     int weight,
     int width
 ) {
-    typedef void( * SetFontFn)(
-        HudUiPanel * self,
-        const char *faceName,
-        int height,
-        int weight,
-        int width,
-        int italic,
-        int charSet,
-        int pitchAndFamily
-    );
-
-    {
-        for (int index = 3; index >= 0; --index) {
-            HudUiPanel *const panel = TextStackLineAt(
-                this,
-                index
-            );
-            const HudUiPanel_FTable *const ftable = (const HudUiPanel_FTable *)(panel->vtbl);
-            ((SetFontFn)(ftable->slots[0x80 / 4]))(
-                panel,
-                faceName,
-                height,
-                weight,
-                width,
-                0,
-                0,
-                2
-            );
-        }
+    for (int index = 3; index >= 0; --index) {
+        HudUiPanel *const panel = TextStackLineAt(
+            this,
+            index
+        );
+        panel->SetFont(
+            faceName,
+            height,
+            weight,
+            width,
+            0,
+            0,
+            2
+        );
     }
 }
 
@@ -19903,23 +16459,12 @@ void HudUiTextStack4::SetFontAll(
 void HudUiTextStack4::SetXAll(
     int newX
 ) {
-    typedef void( * SetXFn)(
-        HudUiPanel * self,
-        int x
-    );
-
-    {
-        for (int index = 0; index < 4; ++index) {
-            HudUiPanel *const panel = TextStackLineAt(
-                this,
-                index
-            );
-            const HudUiPanel_FTable *const ftable = (const HudUiPanel_FTable *)(panel->vtbl);
-            ((SetXFn)(ftable->slots[4]))(
-                panel,
-                newX
-            );
-        }
+    for (int index = 0; index < 4; ++index) {
+        HudUiPanel *const panel = TextStackLineAt(
+            this,
+            index
+        );
+        panel->SetX(newX);
     }
 }
 
@@ -19927,31 +16472,20 @@ void HudUiTextStack4::SetXAll(
 void HudUiTextStack4::SetYDescending(
     int yStart
 ) {
-    typedef void( * SetYFn)(
-        HudUiPanel * self,
-        int y
-    );
-
     int y = yStart;
-    {
-        for (int index = 0; index < 4; ++index) {
-            HudUiPanel *const panel = TextStackLineAt(
-                this,
-                index
-            );
-            const HudUiPanel_FTable *const ftable = (const HudUiPanel_FTable *)(panel->vtbl);
-            ((SetYFn)(ftable->slots[5]))(
-                panel,
-                y
-            );
-            y -= 0x12;
-        }
+    for (int index = 0; index < 4; ++index) {
+        HudUiPanel *const panel = TextStackLineAt(
+            this,
+            index
+        );
+        panel->SetY(y);
+        y -= 0x12;
     }
 }
 
 // Reimplements 0x4bd020: HudUiTopMessageStack::Constructor
 HudUiTopMessageStack * HudUiTopMessageStack::Constructor() {
-    base.ConstructorDefault();
+    new ((HudUiContainer *)this) HudUiContainer;
 
     {
         for (int index = 0; index < 4; ++index) {
@@ -19965,8 +16499,6 @@ HudUiTopMessageStack * HudUiTopMessageStack::Constructor() {
             );
         }
     }
-
-    base.vptr = (const HudUiContainer_FTable *)(&g_HudUiTopMessageStack_FTable);
 
     int y = 0x1e;
     {
@@ -19996,7 +16528,7 @@ void HudUiTopMessageStack::DestructorCore() {
 
 // Reimplements 0x4bd2d0: HudUiChatMessageStack::Constructor
 HudUiChatMessageStack * HudUiChatMessageStack::Constructor() {
-    base.ConstructorDefault();
+    new ((HudUiContainer *)this) HudUiContainer;
 
     {
         for (int index = 0; index < 4; ++index) {
@@ -20011,8 +16543,6 @@ HudUiChatMessageStack * HudUiChatMessageStack::Constructor() {
         }
     }
 
-    base.vptr = (const HudUiContainer_FTable *)(&g_HudUiChatMessageStack_FTable);
-
     int y = 0x159;
     {
         for (int index = 0; index < 4; ++index) {
@@ -20020,18 +16550,9 @@ HudUiChatMessageStack * HudUiChatMessageStack::Constructor() {
                 this,
                 index
             );
-            FieldAt<unsigned int>(
-                panel,
-                0x14c
-            ) = 0x00996a00;
-            FieldAt<unsigned int>(
-                panel,
-                0x150
-            ) = 0x0095c7ff;
-            FieldAt<unsigned int>(
-                panel,
-                0x270
-            ) = 1;
+            panel->textColor0 = 0x00996a00;
+            panel->textColor1 = 0x0095c7ff;
+            panel->textDirty = 1;
             ConfigureTextStackLine(
                 this,
                 panel,
@@ -20054,54 +16575,25 @@ void HudUiChatMessageStack::DestructorCore() {
 
 // Reimplements 0x40f040: HudUiTimerPanelFloat::Draw
 void HudUiTimerPanelFloat::Draw() {
-    typedef void(__fastcall * InvalidateFn)(void *self);
-    typedef void(* SetTextFmtFn)(
-        void *self,
-        const char *format,
-        ...
-    );
-
-    const HudUiTimerPanelFloat_FTable *const ftable =
-        *(const HudUiTimerPanelFloat_FTable *const *)(this);
-    ((InvalidateFn)(ftable->slots[0x20 / 4]))(this);
-    ((SetTextFmtFn)(ftable->slots[0x74 / 4]))(
-        this,
+    HudUiPanel::Invalidate();
+    HudUiPanel::SetTextFmt(
         "%2.1f",
-        (double)(FieldAt<float>(
-            this,
-            0x2a8
-        ))
+        (double)(displayValue)
     );
-    ((HudUiPanel *)(this))->Draw();
+    HudUiPanel::Draw();
 }
 
 // Reimplements 0x40ef60: HudUiTimerPanelFloat::ConstructorDefault
 HudUiTimerPanelFloat * HudUiTimerPanelFloat::ConstructorDefault() {
-    HudUiPanel *const panel = (HudUiPanel *)(this);
-    HudUiElement *const element = (HudUiElement *)(this);
-
-    panel->ConstructorDefault(
+    HudUiPanel::ConstructorDefault(
         " ",
         3,
         0x1c
     );
-    FieldAt<const void *>(
-        this,
-        0x00
-    ) = &g_HudUiPanelSimple_FTable;
-    FieldAt<unsigned int>(
-        this,
-        0x14c
-    ) = 0x0020bf40;
-    FieldAt<unsigned int>(
-        this,
-        0x150
-    ) = 0x0020bf40;
-    FieldAt<unsigned int>(
-        this,
-        0x270
-    ) = 1;
-    panel->SetFont(
+    textColor0 = 0x0020bf40;
+    textColor1 = 0x0020bf40;
+    textDirty = 1;
+    HudUiPanel::SetFont(
         "Arial",
         0x0a,
         0x1f4,
@@ -20110,42 +16602,18 @@ HudUiTimerPanelFloat * HudUiTimerPanelFloat::ConstructorDefault() {
         0,
         2
     );
-    FieldAt<unsigned int>(
-        this,
-        0x264
-    ) = 1;
-    FieldAt<int>(
-        this,
-        0x29c
-    ) = -1;
-    FieldAt<int>(
-        this,
-        0x2a0
-    ) = -1;
+    shadowEnabled = 1;
+    shadowOffsetX = -1;
+    shadowOffsetY = -1;
 
-    const int x = element->x;
-    const int y = element->y;
-    element->clipRect.left = x;
-    element->clipRect.top = y;
-    element->clipRect.right = x + 0x3c;
+    clipRect.left = x;
+    clipRect.top = y;
+    clipRect.right = x + 0x3c;
 
-    FieldAt<const void *>(
-        this,
-        0x00
-    ) = &g_HudUiTimerPanelFloat_FTable;
-    FieldAt<float>(
-        this,
-        0x2ac
-    ) = 0.0f;
-    FieldAt<float>(
-        this,
-        0x2a8
-    ) = 0.0f;
-    FieldAt<float>(
-        this,
-        0x2a4
-    ) = 0.0f;
-    element->clipRect.bottom = y + 0x0f;
-    element->SetVisible(0);
+    sampleFrameCount = 0.0f;
+    displayValue = 0.0f;
+    sampleElapsedSec = 0.0f;
+    clipRect.bottom = y + 0x0f;
+    HudUiElement::SetVisible(0);
     return this;
 }
