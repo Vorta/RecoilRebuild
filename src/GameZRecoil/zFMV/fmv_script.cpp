@@ -101,6 +101,7 @@ typedef void( *zFMV_ImageEnsureSurfaceProc)(zVidImagePartial *image);
  * Observed in callers 0x462330, 0x4631af, 0x463221, 0x4635af, and 0x463b2f.
  * Purpose: duplicate an input C string through the active C runtime spelling.
  */
+// Source-faithful helper recovered from address-backed callers in this source file.
 char *DuplicateCString(
     const char *value
 ) {
@@ -115,6 +116,7 @@ char *DuplicateCString(
  * Observed in caller 0x4626b0.
  * Purpose: return the first node of a zReader array payload.
  */
+// Source-faithful helper recovered from address-backed callers in this source file.
 zReader::Node *ArrayBase(
     zReader::Node *node
 ) {
@@ -125,6 +127,7 @@ zReader::Node *ArrayBase(
  * Observed in caller 0x4626b0.
  * Purpose: return one indexed zReader array element.
  */
+// Source-faithful helper recovered from address-backed callers in this source file.
 zReader::Node *ArrayItem(
     zReader::Node *node,
     int index
@@ -136,6 +139,7 @@ zReader::Node *ArrayItem(
  * Observed in caller 0x4626b0.
  * Purpose: fetch a string argument from an FMV action node.
  */
+// Source-faithful helper recovered from address-backed callers in this source file.
 const char *StringArg(
     zReader::Node *actionNode,
     int index

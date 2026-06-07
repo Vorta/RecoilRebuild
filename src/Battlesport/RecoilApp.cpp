@@ -53,6 +53,7 @@ class RecoilMfcWinAppAccess : public CWinApp {
     static const AFX_MSGMAP *__stdcall GetMessageMapForRecoilApp();
 };
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 const AFX_MSGMAP *__stdcall RecoilMfcWinAppAccess::GetMessageMapForRecoilApp() {
     return &CWinApp::messageMap;
 }
@@ -86,18 +87,21 @@ const char k_SaveGameNameAllowedChars[] =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIKJKLMNOPQRSTUVWXYZ0123456789_ \x1b\r\x08\x7f\x02\x06";
 RECOIL_STATIC_ASSERT(sizeof(k_SaveGameNameAllowedChars) == 0x48);
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zOpt_ViewRectSection *ViewRectFromPtr(
     void *ptr
 ) {
     return (zOpt_ViewRectSection *)ptr;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 LPCSTR IntResource(
     unsigned int value
 ) {
     return (LPCSTR)(value);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline void ExtendPlayStateTransitionTimer(
     float seconds
 ) {
@@ -110,6 +114,7 @@ inline void ExtendPlayStateTransitionTimer(
     zOpt::SetMuteSoundOption(1);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void RunGrandPrizeBlurAction() {
     zFMV_ActionBlur blurAction;
     blurAction.Constructor(
@@ -127,34 +132,10 @@ void RunGrandPrizeBlurAction() {
     RecoilStateCredits::QueuePush();
 }
 
-void AppendSaveLoadEntry(
-    HudUiSaveLoadEntries *entries,
-    const HudUiSaveLoadEntry &entry
-) {
-    const int size = entries->begin != 0 ? (int)(entries->end - entries->begin) : 0;
-    const int capacity = entries->begin != 0 ? (int)(entries->capacityEnd - entries->begin) : 0;
-
-    if (size >= capacity) {
-        const int growth = size > 0 ? size : 1;
-        const int newCapacity = size + growth;
-        HudUiSaveLoadEntry *const newBegin =
-            (HudUiSaveLoadEntry *)(::operator new(sizeof(HudUiSaveLoadEntry) * newCapacity));
-
-        for (int i = 0; i < size; ++i) {
-            newBegin[i] = entries->begin[i];
-        }
-
-        ::operator delete(entries->begin);
-        entries->begin = newBegin;
-        entries->end = newBegin + size;
-        entries->capacityEnd = newBegin + newCapacity;
-    }
-
-    *entries->end = entry;
-    ++entries->end;
-}
-
-int SaveLoadEntryCount(
+// original-source inline helper: retail has no standalone function address, and
+// BN callers 0x434fb0, 0x435160, and 0x4351b0 inline this same nullable
+// HudUiSaveLoadEntries count expression.
+inline int SaveLoadEntryCount(
     const HudUiSaveLoadDialog *dialog
 ) {
     return dialog->fileEntries.begin != 0
@@ -241,33 +222,33 @@ void RecoilStateSaveLoadTransition::Destructor() {
 }
 
 /**
- * Reimplements 0x434660: HudUiSaveLoadEntry::IsNewerThan.
+ * Reimplements 0x434660: operator<(HudUiSaveLoadEntry const &, HudUiSaveLoadEntry const &).
  * Original source path: D:\Proj\Battlesport\RecoilApp.cpp.
  * Purpose: Orders save-game file entries by most recent write time.
  */
-int __fastcall HudUiSaveLoadEntry::IsNewerThan(
-    const HudUiSaveLoadEntry *other
-) const {
+int __fastcall operator<(
+    const HudUiSaveLoadEntry &lhs,
+    const HudUiSaveLoadEntry &rhs
+) {
     return CompareFileTime(
-        &ftLastWriteTime,
-        &other->ftLastWriteTime
+        &lhs.ftLastWriteTime,
+        &rhs.ftLastWriteTime
     ) > 0 ? 1 : 0;
 }
 
 /**
- * Reimplements 0x434920: HudUiSaveLoadListItem::Constructor.
+ * Reimplements 0x434920: HudUiSaveLoadListItem::HudUiSaveLoadListItem.
  * Original source path: D:\Proj\Battlesport\hudui_saveload.cpp.
  * Purpose: Initializes a save/load list row panel and clears its entry index.
  */
-HudUiSaveLoadListItem * HudUiSaveLoadListItem::Constructor() {
-    HudUiPanel::ConstructorDefault(
-        0,
-        0,
-        0
-    );
+HudUiSaveLoadListItem::HudUiSaveLoadListItem()
+    : HudUiPanel(
+          0,
+          0,
+          0
+) {
     layoutY = 32767;
     layoutX = -1;
-    return this;
 }
 
 /**
@@ -452,18 +433,18 @@ void HudUiLoadGamePrimaryActionButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x436530: HudUiSaveLoadDialog::InsertEntryIntoSortedPrefix.
+ * Reimplements 0x436530: InsertEntryIntoSortedPrefix.
  * Original source path: D:\Proj\Battlesport\hudui_saveload.cpp.
  * Purpose: Inserts one save/load entry into the already sorted prefix before it.
  */
-void __fastcall HudUiSaveLoadDialog::InsertEntryIntoSortedPrefix(
+void __fastcall InsertEntryIntoSortedPrefix(
     HudUiSaveLoadEntry *entryPosition,
     HudUiSaveLoadEntry entry
 ) {
     HudUiSaveLoadEntry *writePosition = entryPosition;
     HudUiSaveLoadEntry *previous = entryPosition - 1;
 
-    while (entry.IsNewerThan(previous) != 0) {
+    while (entry < *previous) {
         *writePosition = *previous;
         writePosition = previous;
         --previous;
@@ -473,25 +454,25 @@ void __fastcall HudUiSaveLoadDialog::InsertEntryIntoSortedPrefix(
 }
 
 /**
- * Reimplements 0x436580: HudUiSaveLoadDialog::PartitionEntriesByPivot.
+ * Reimplements 0x436580: PartitionEntriesByPivot.
  * Original source path: D:\Proj\Battlesport\hudui_saveload.cpp.
  * Purpose: Partitions a save/load entry range around the selected pivot entry.
  */
-HudUiSaveLoadEntry *__fastcall HudUiSaveLoadDialog::PartitionEntriesByPivot(
+HudUiSaveLoadEntry *__fastcall PartitionEntriesByPivot(
     HudUiSaveLoadEntry *begin,
     HudUiSaveLoadEntry *end,
     HudUiSaveLoadEntry pivot
 ) {
-    HudUiSaveLoadEntry *left = begin;
     HudUiSaveLoadEntry *right = end;
+    HudUiSaveLoadEntry *left = begin;
 
     for (;;) {
-        while (left->IsNewerThan(&pivot) != 0) {
+        while (*left < pivot) {
             ++left;
         }
 
         --right;
-        while (pivot.IsNewerThan(right) != 0) {
+        while (pivot < *right) {
             --right;
         }
 
@@ -509,11 +490,11 @@ HudUiSaveLoadEntry *__fastcall HudUiSaveLoadDialog::PartitionEntriesByPivot(
 }
 
 /**
- * Reimplements 0x4362f0: HudUiSaveLoadDialog::SortEntryRange.
+ * Reimplements 0x4362f0: SortEntryRange.
  * Original source path: D:\Proj\Battlesport\hudui_saveload.cpp.
  * Purpose: Sorts a save/load entry range from newest to oldest using quicksort with insertion cleanup.
  */
-void __fastcall HudUiSaveLoadDialog::SortEntryRange(
+void __fastcall SortEntryRange(
     HudUiSaveLoadEntry *begin,
     HudUiSaveLoadEntry *end,
     int unused
@@ -533,18 +514,18 @@ void __fastcall HudUiSaveLoadDialog::SortEntryRange(
         HudUiSaveLoadEntry firstEntry = *rangeBegin;
 
         HudUiSaveLoadEntry *pivotSource;
-        if (firstEntry.IsNewerThan(&middleEntry) != 0) {
-            if (middleEntry.IsNewerThan(&lastEntry) != 0) {
+        if (firstEntry < middleEntry) {
+            if (middleEntry < lastEntry) {
                 pivotSource = &middleEntry;
-            } else if (firstEntry.IsNewerThan(&lastEntry) != 0) {
+            } else if (firstEntry < lastEntry) {
                 pivotSource = &lastEntry;
             } else {
                 pivotSource = &firstEntry;
             }
         } else {
-            if (firstEntry.IsNewerThan(&lastEntry) != 0) {
+            if (firstEntry < lastEntry) {
                 pivotSource = &firstEntry;
-            } else if (middleEntry.IsNewerThan(&lastEntry) != 0) {
+            } else if (middleEntry < lastEntry) {
                 pivotSource = &lastEntry;
             } else {
                 pivotSource = &middleEntry;
@@ -557,12 +538,12 @@ void __fastcall HudUiSaveLoadDialog::SortEntryRange(
         HudUiSaveLoadEntry *right = rangeEnd;
 
         for (;;) {
-            while (left->IsNewerThan(&pivotEntry) != 0) {
+            while (*left < pivotEntry) {
                 ++left;
             }
 
             --right;
-            while (pivotEntry.IsNewerThan(right) != 0) {
+            while (pivotEntry < *right) {
                 --right;
             }
 
@@ -608,23 +589,22 @@ void __fastcall HudUiSaveLoadDialog::SortEntryRange(
  */
 void HudUiSaveLoadDialog::RefreshSaveFileList() {
     HudUiSaveLoadEntries *entries = &fileEntries;
-    entries->end = entries->begin;
+    entries->EraseRangeNoDestroyInline(
+        entries->begin,
+        entries->end
+    );
 
     HudUiSaveLoadEntry findData;
-    memset(
-        &findData,
-        0,
-        sizeof(findData)
-    );
     HANDLE findHandle = FindFirstFileA(
         "SavedGames\\*.*",
         &findData
     );
     if (findHandle != INVALID_HANDLE_VALUE) {
         if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
-            AppendSaveLoadEntry(
-                entries,
-                findData
+            entries->InsertCopiesAt(
+                entries->end,
+                1,
+                &findData
             );
         }
 
@@ -633,9 +613,10 @@ void HudUiSaveLoadDialog::RefreshSaveFileList() {
             &findData
         ) != 0) {
             if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
-                AppendSaveLoadEntry(
-                    entries,
-                    findData
+                entries->InsertCopiesAt(
+                    entries->end,
+                    1,
+                    &findData
                 );
             }
         }
@@ -656,25 +637,26 @@ void HudUiSaveLoadDialog::RefreshSaveFileList() {
             HudUiSaveLoadEntry firstEntry = *rangeBegin;
 
             HudUiSaveLoadEntry *pivotSource;
-            if (firstEntry.IsNewerThan(&middleEntry) != 0) {
-                if (middleEntry.IsNewerThan(&lastEntry) != 0) {
+            if (firstEntry < middleEntry) {
+                if (middleEntry < lastEntry) {
                     pivotSource = &middleEntry;
-                } else if (firstEntry.IsNewerThan(&lastEntry) != 0) {
+                } else if (firstEntry < lastEntry) {
                     pivotSource = &lastEntry;
                 } else {
                     pivotSource = &firstEntry;
                 }
             } else {
-                if (firstEntry.IsNewerThan(&lastEntry) != 0) {
+                if (firstEntry < lastEntry) {
                     pivotSource = &firstEntry;
-                } else if (middleEntry.IsNewerThan(&lastEntry) != 0) {
+                } else if (middleEntry < lastEntry) {
                     pivotSource = &lastEntry;
                 } else {
                     pivotSource = &middleEntry;
                 }
             }
 
-            HudUiSaveLoadEntry pivot = *pivotSource;
+            HudUiSaveLoadEntry pivotStageCopy = *pivotSource;
+            HudUiSaveLoadEntry pivot = pivotStageCopy;
             HudUiSaveLoadEntry *split = PartitionEntriesByPivot(
                 rangeBegin,
                 rangeEnd,
@@ -714,7 +696,7 @@ void HudUiSaveLoadDialog::RefreshSaveFileList() {
 
         do {
             HudUiSaveLoadEntry entry = *entryPosition;
-            if (entry.IsNewerThan(begin) != 0) {
+            if (entry < *begin) {
                 HudUiSaveLoadEntry *writePosition = entryPosition;
                 while (writePosition != begin) {
                     *writePosition = *(writePosition - 1);
@@ -738,7 +720,7 @@ void HudUiSaveLoadDialog::RefreshSaveFileList() {
         if (entryPosition != firstBlockEnd) {
             do {
                 HudUiSaveLoadEntry entry = *entryPosition;
-                if (entry.IsNewerThan(begin) != 0) {
+                if (entry < *begin) {
                     HudUiSaveLoadEntry *writePosition = entryPosition;
                     while (writePosition != begin) {
                         *writePosition = *(writePosition - 1);
@@ -760,12 +742,12 @@ void HudUiSaveLoadDialog::RefreshSaveFileList() {
         HudUiSaveLoadEntry entry = *entryPosition;
         HudUiSaveLoadEntry *previous = entryPosition - 1;
         HudUiSaveLoadEntry *writePosition = entryPosition;
-        if (entry.IsNewerThan(previous) != 0) {
+        if (entry < *previous) {
             do {
                 *writePosition = *previous;
                 writePosition = previous;
                 --previous;
-            } while (entry.IsNewerThan(previous) != 0);
+            } while (entry < *previous);
             *writePosition = entry;
         }
     }
@@ -777,22 +759,22 @@ void HudUiSaveLoadDialog::RefreshSaveFileList() {
  * Purpose: Seeds list-row layout metadata, loads saved-game entries, and binds visible rows.
  */
 void HudUiSaveLoadDialog::InitializeFileEntries() {
-    entryWidgets[0].layoutY = 9830;
-    entryWidgets[1].layoutY = 16383;
-    entryWidgets[2].layoutY = 32767;
-    entryWidgets[3].layoutY = 32767;
-    entryWidgets[4].layoutY = 32767;
+    entryWidgets[0].layoutY = 0x2666;
+    entryWidgets[1].layoutY = 0x3fff;
+    entryWidgets[2].layoutY = 0x7fff;
+    entryWidgets[3].layoutY = 0x7fff;
+    entryWidgets[4].layoutY = 0x7fff;
     entryWidgets[5].layoutY = 29490;
     entryWidgets[6].layoutY = 22936;
-    entryWidgets[7].layoutY = 16383;
-    entryWidgets[8].layoutY = 9830;
+    entryWidgets[7].layoutY = 0x3fff;
+    entryWidgets[8].layoutY = 0x2666;
 
     RefreshSaveFileList();
 
-    HudUiSaveLoadEntry *entry = fileEntries.begin;
     int index = 0;
-    while (index < 9 && entry != fileEntries.end) {
-        HudUiSaveLoadListItem *listItem = &entryWidgets[index];
+    HudUiSaveLoadEntry *entry = fileEntries.begin;
+    HudUiSaveLoadListItem *listItem = entryWidgets;
+    while (entry != fileEntries.end && index < 9) {
         listItem->layoutX = index;
         listItem->SetTextFmt(
             "%s",
@@ -804,6 +786,7 @@ void HudUiSaveLoadDialog::InitializeFileEntries() {
 
         ++entry;
         ++index;
+        ++listItem;
     }
 }
 
@@ -817,58 +800,83 @@ void HudUiSaveLoadDialog::SetSelectedEntryIndex(
 ) {
     selectedEntryIndex = selectedEntryIndexValue;
 
-    HudUiSaveLoadEntry *upperEntry = fileEntries.begin + selectedEntryIndexValue - 3;
     for (int row = 0; row < 3; ++row) {
         const int entryIndex = selectedEntryIndexValue + row - 3;
         HudUiSaveLoadListItem *listItem = &entryWidgets[row];
-        if (entryIndex >= 0 &&
-            entryIndex <
-                (fileEntries.begin != 0 ? (int)(fileEntries.end - fileEntries.begin) : 0)) {
-            listItem->layoutX = entryIndex;
-            listItem->SetTextFmt(
-                "%s",
-                upperEntry->cFileName
-            );
-            listItem->SetVisible(
-                1
-            );
-            listItem->Invalidate();
+        if (entryIndex >= 0) {
+            unsigned int entryCount;
+            if (fileEntries.begin != 0) {
+                entryCount = (unsigned int)(fileEntries.end - fileEntries.begin);
+            } else {
+                entryCount = 0;
+            }
+
+            if ((unsigned int)entryIndex < entryCount) {
+                listItem->layoutX = entryIndex;
+                listItem->SetTextFmt(
+                    "%s",
+                    fileEntries.begin[entryIndex].cFileName
+                );
+                listItem->SetVisible(
+                    1
+                );
+                listItem->Invalidate();
+            } else {
+                listItem->SetVisible(
+                    0
+                );
+            }
         } else {
             listItem->SetVisible(
                 0
             );
         }
-        ++upperEntry;
     }
 
-    if (selectedEntryIndexValue >= 0 &&
-        selectedEntryIndexValue <
-            (fileEntries.begin != 0 ? (int)(fileEntries.end - fileEntries.begin) : 0)) {
-        gameNameInput.Update(fileEntries.begin[selectedEntryIndexValue].cFileName);
+    if (selectedEntryIndexValue >= 0) {
+        unsigned int selectedEntryCount;
+        if (fileEntries.begin != 0) {
+            selectedEntryCount = (unsigned int)(fileEntries.end - fileEntries.begin);
+        } else {
+            selectedEntryCount = 0;
+        }
+
+        if ((unsigned int)selectedEntryIndexValue < selectedEntryCount) {
+            gameNameInput.Update(fileEntries.begin[selectedEntryIndexValue].cFileName);
+        }
     }
 
-    HudUiSaveLoadEntry *lowerEntry = fileEntries.begin + selectedEntryIndexValue + 1;
     for (int lowerRow = 3; lowerRow < 9; ++lowerRow) {
         const int entryIndex = selectedEntryIndexValue + lowerRow - 2;
         HudUiSaveLoadListItem *listItem = &entryWidgets[lowerRow];
-        if (entryIndex >= 0 &&
-            entryIndex <
-                (fileEntries.begin != 0 ? (int)(fileEntries.end - fileEntries.begin) : 0)) {
-            listItem->layoutX = entryIndex;
-            listItem->SetTextFmt(
-                "%s",
-                lowerEntry->cFileName
-            );
-            listItem->SetVisible(
-                1
-            );
-            listItem->Invalidate();
+        if (entryIndex >= 0) {
+            unsigned int entryCount;
+            if (fileEntries.begin != 0) {
+                entryCount = (unsigned int)(fileEntries.end - fileEntries.begin);
+            } else {
+                entryCount = 0;
+            }
+
+            if ((unsigned int)entryIndex < entryCount) {
+                listItem->layoutX = entryIndex;
+                listItem->SetTextFmt(
+                    "%s",
+                    fileEntries.begin[entryIndex].cFileName
+                );
+                listItem->SetVisible(
+                    1
+                );
+                listItem->Invalidate();
+            } else {
+                listItem->SetVisible(
+                    0
+                );
+            }
         } else {
             listItem->SetVisible(
                 0
             );
         }
-        ++lowerEntry;
     }
 }
 
@@ -1025,34 +1033,20 @@ void HudUiLoadGameDialog::OnPrimaryAction() {
 }
 
 /**
- * Reimplements 0x434680: HudUiSaveGameDialog::InitLayout.
+ * Reimplements 0x434680: HudUiSaveGameDialog::HudUiSaveGameDialog.
  * Original source path: D:\Proj\Battlesport\hudui_saveload.cpp.
  * Purpose: Builds the save-game dialog controls from dialog.zrd and initializes list contents.
  */
-HudUiSaveGameDialog * HudUiSaveGameDialog::InitLayout() {
-    new ((HudUiBackground *)this) HudUiBackground;
-
-    deleteButton.Constructor();
-    backButton.Constructor();
-    nextEntryButton.Constructor();
-    prevEntryButton.Constructor();
-
-    gameNameInput.BaseConstructor();
+HudUiSaveGameDialog::HudUiSaveGameDialog() {
     gameNameInput.textInput.AllocTextBuffer(20);
     gameNameInput.Update("");
     gameNameInput.SetInputActive(1);
     gameNameInput.SetRawKeyboardCapture(1);
 
-    for (int i = 0; i < 9; ++i) {
-        entryWidgets[i].Constructor();
-    }
-
     fileEntries.reserved00 = 0;
     fileEntries.begin = 0;
     fileEntries.end = 0;
     fileEntries.capacityEnd = 0;
-
-    primaryActionButton.Constructor();
 
     zReader::Node *const loadedSection = LoadFromZrd(
         "dialog.zrd",
@@ -1110,7 +1104,6 @@ HudUiSaveGameDialog * HudUiSaveGameDialog::InitLayout() {
 
     InitializeFileEntries();
     SetSelectedEntryIndex(-1);
-    return this;
 }
 
 /**
@@ -1118,7 +1111,7 @@ HudUiSaveGameDialog * HudUiSaveGameDialog::InitLayout() {
  * Original source path: D:\Proj\Battlesport\hud.cpp.
  * Purpose: Tears down save-game dialog child widgets, entry storage, and background state.
  */
-HudUiSaveGameDialog::~HudUiSaveGameDialog() {
+void HudUiSaveGameDialog::Destructor() {
     primaryActionButton.DestructorCore();
 
     ::operator delete(fileEntries.begin);
@@ -1127,7 +1120,7 @@ HudUiSaveGameDialog::~HudUiSaveGameDialog() {
     fileEntries.capacityEnd = 0;
 
     for (int index = 9; index > 0; --index) {
-        entryWidgets[index - 1].HudUiPanel::Destructor();
+        entryWidgets[index - 1].HudUiPanel::~HudUiPanel();
     }
 
     gameNameInput.Destructor();
@@ -1135,37 +1128,24 @@ HudUiSaveGameDialog::~HudUiSaveGameDialog() {
     nextEntryButton.DestructorCore();
     backButton.DestructorCore();
     deleteButton.DestructorCore();
+    this->HudUiBackground::~HudUiBackground();
 }
 
 /**
- * Reimplements 0x434b90: HudUiLoadGameDialog::Constructor.
+ * Reimplements 0x434b90: HudUiLoadGameDialog::HudUiLoadGameDialog.
  * Original source path: D:\Proj\Battlesport\HudUiSaveLoadDialog.cpp.
  * Purpose: Builds the load-game dialog controls from dialog.zrd and initializes list contents.
  */
-HudUiLoadGameDialog * HudUiLoadGameDialog::Constructor() {
-    new ((HudUiBackground *)this) HudUiBackground;
-
-    deleteButton.Constructor();
-    backButton.Constructor();
-    nextEntryButton.Constructor();
-    prevEntryButton.Constructor();
-
-    gameNameInput.BaseConstructor();
+HudUiLoadGameDialog::HudUiLoadGameDialog() {
     gameNameInput.textInput.AllocTextBuffer(20);
     gameNameInput.Update("");
     gameNameInput.SetInputActive(1);
     gameNameInput.SetRawKeyboardCapture(1);
 
-    for (int i = 0; i < 9; ++i) {
-        entryWidgets[i].Constructor();
-    }
-
     fileEntries.reserved00 = 0;
     fileEntries.begin = 0;
     fileEntries.end = 0;
     fileEntries.capacityEnd = 0;
-
-    primaryActionButton.Constructor();
 
     zReader::Node *const loadedSection = LoadFromZrd(
         "dialog.zrd",
@@ -1223,8 +1203,6 @@ HudUiLoadGameDialog * HudUiLoadGameDialog::Constructor() {
 
     InitializeFileEntries();
     SetSelectedEntryIndex(0);
-
-    return this;
 }
 
 /**
@@ -1239,7 +1217,7 @@ void HudUiSaveLoadDialog::Destructor() {
     fileEntries.capacityEnd = 0;
 
     for (int index = 9; index > 0; --index) {
-        entryWidgets[index - 1].HudUiPanel::Destructor();
+        entryWidgets[index - 1].HudUiPanel::~HudUiPanel();
     }
 
     gameNameInput.Destructor();
@@ -1247,6 +1225,7 @@ void HudUiSaveLoadDialog::Destructor() {
     nextEntryButton.DestructorCore();
     backButton.DestructorCore();
     deleteButton.DestructorCore();
+    this->HudUiBackground::~HudUiBackground();
 }
 
 /**
@@ -1254,7 +1233,7 @@ void HudUiSaveLoadDialog::Destructor() {
  * Original source path: D:\Proj\Battlesport\HudUiLoadGameDialog.cpp.
  * Purpose: Tears down load-game dialog child widgets, entry storage, and background state.
  */
-HudUiLoadGameDialog::~HudUiLoadGameDialog() {
+void HudUiLoadGameDialog::Destructor() {
     primaryActionButton.DestructorCore();
 
     ::operator delete(fileEntries.begin);
@@ -1263,7 +1242,7 @@ HudUiLoadGameDialog::~HudUiLoadGameDialog() {
     fileEntries.capacityEnd = 0;
 
     for (int index = 9; index > 0; --index) {
-        entryWidgets[index - 1].HudUiPanel::Destructor();
+        entryWidgets[index - 1].HudUiPanel::~HudUiPanel();
     }
 
     gameNameInput.Destructor();
@@ -1271,6 +1250,7 @@ HudUiLoadGameDialog::~HudUiLoadGameDialog() {
     nextEntryButton.DestructorCore();
     backButton.DestructorCore();
     deleteButton.DestructorCore();
+    this->HudUiBackground::~HudUiBackground();
 }
 
 /**
@@ -1315,13 +1295,13 @@ int RecoilStateSaveLoadTransition::OnTryBecomeCurrent() {
         HudUiSaveGameDialog *const storage =
             (HudUiSaveGameDialog *) ::operator new(sizeof(HudUiSaveGameDialog));
         if (storage != 0) {
-            dialog = storage->InitLayout();
+            dialog = new (storage) HudUiSaveGameDialog;
         }
     } else {
         HudUiLoadGameDialog *const storage =
             (HudUiLoadGameDialog *) ::operator new(sizeof(HudUiLoadGameDialog));
         if (storage != 0) {
-            dialog = storage->Constructor();
+            dialog = new (storage) HudUiLoadGameDialog;
         }
     }
 
@@ -1728,6 +1708,7 @@ namespace {
 const char kEngineInitFailed[] = "FAILED";
 const char kEngineInitPassed[] = "PASSED";
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline void PrintEngineInitZeroStatus(
     const char *format,
     int result
@@ -1738,6 +1719,7 @@ inline void PrintEngineInitZeroStatus(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline void PrintEngineInitNonzeroStatus(
     const char *format,
     int result
@@ -2166,14 +2148,17 @@ RecoilApp_StateQueueItem *** RecoilApp_StateQueue::GrowAndCenterChunkBaseList(
     return centeredSlot;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline bool RecoilApp_StateQueue::Empty() const {
     return m_itemCount == 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline RecoilApp_StateQueueItem *RecoilApp_StateQueue::Front() const {
     return *m_readBlock.m_cursor;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline void RecoilAppQueueBlockAssignFromCursor(
     RecoilApp_StateQueueBlock *block,
     RecoilApp_StateQueueItem **cursor,
@@ -2185,6 +2170,7 @@ inline void RecoilAppQueueBlockAssignFromCursor(
     block->m_chunkBaseSlot = chunkBaseSlot;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline void RecoilApp_StateQueue::PopFront() {
     ++m_readBlock.m_cursor;
     --m_itemCount;
@@ -2198,6 +2184,7 @@ inline void RecoilApp_StateQueue::PopFront() {
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline void RecoilApp_StateQueue::PushBack(
     RecoilApp_StateQueueItem *const &item
 ) {
@@ -2316,6 +2303,7 @@ RecoilApp::RecoilApp()
 RecoilApp::~RecoilApp() {
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 const AFX_MSGMAP *__stdcall RecoilApp::GetBaseMessageMapForMfc() {
     return RecoilMfcWinAppAccess::GetMessageMapForRecoilApp();
 }
@@ -2458,10 +2446,12 @@ int RecoilApp::MarkSkipWaitMessage() {
     return wasSkipped;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void RecoilApp::OnAppActivate() {
     MarkSkipWaitMessage();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void RecoilApp::OnAppDeactivate() {
     TakeSkipWaitMessage();
 }
@@ -2898,6 +2888,7 @@ int RecoilApp_LeaveNetworkState::OnTryBecomeCurrent() {
 RecoilApp_AttractFmvState::RecoilApp_AttractFmvState() {
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 RecoilApp_IntroFmvState::RecoilApp_IntroFmvState() {
     m_stateData04 = 0;
 }
@@ -3109,6 +3100,7 @@ int RecoilApp_MissionFmvState::OnUpdateShouldQuit() {
     return 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 RecoilApp_IState::~RecoilApp_IState() {
 }
 
@@ -3116,6 +3108,7 @@ void RecoilApp_IState::OnWndActivate(
     int
 ) {}
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void RecoilApp_IState::OnEnter() {}
 
 int RecoilApp_IState::OnTryBecomeCurrent() {
@@ -3126,10 +3119,12 @@ int RecoilApp_IState::OnUpdateShouldQuit() {
     return 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void RecoilApp_IState::OnExit() {}
 
 void RecoilApp_IState::OnDeactivate() {}
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void RecoilApp_IState::OnSuspend(
     int
 ) {}

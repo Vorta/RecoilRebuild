@@ -15,6 +15,7 @@
 #include <string.h>
 
 namespace {
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ClampInt(
     int value,
     int minValue,
@@ -29,6 +30,7 @@ int ClampInt(
     return value;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void SetZrdWidgetEnabled(
     HudUiZrdWidget *widget,
     int enabled
@@ -37,6 +39,7 @@ void SetZrdWidgetEnabled(
     widget->RefreshState();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void InitClampedInput(
     HudUiClampedIntTextInput *input,
     int minValue,
@@ -55,6 +58,7 @@ void InitClampedInput(
     input->Update(valueText);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ConfigureStepButton(
     HudUiClampedIntStepButton *button,
     HudUiClampedIntTextInput *targetInput,
@@ -64,6 +68,7 @@ void ConfigureStepButton(
     button->stepDelta = stepDelta;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void SetWidgetVisible(
     HudUiWidget *widget,
     int visible
@@ -71,6 +76,7 @@ void SetWidgetVisible(
     ((HudUiElement *)(widget))->SetVisible(visible);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ApplyWorldSelectionSideEffects(
     HudUiNetGameSetupPanel *panel,
     int selectedIndex
@@ -146,23 +152,21 @@ HudUiNetGameSetupPanel * HudUiNetGameSetupPanel::Constructor(
     worldSelector.Constructor();
     nextWorldButton.Constructor();
     prevWorldButton.Constructor();
-    timeLimitInput.HudUiNumericTextInput::Constructor(4);
-    timeLimitInput.minValue = -2147483647 - 1;
-    timeLimitInput.maxValue = 2147483647;
+    new (&timeLimitInput) HudUiClampedIntTextInput(4);
     incTimeLimitButton.Constructor();
     incTimeLimitButton.targetInput = 0;
     incTimeLimitButton.stepDelta = 1;
     decTimeLimitButton.Constructor();
     decTimeLimitButton.targetInput = 0;
     decTimeLimitButton.stepDelta = 1;
-    killsInput.Constructor(2);
+    new (&killsInput) HudUiClampedIntTextInput(2);
     incKillsButton.Constructor();
     incKillsButton.targetInput = 0;
     incKillsButton.stepDelta = 1;
     decKillsButton.Constructor();
     decKillsButton.targetInput = 0;
     decKillsButton.stepDelta = 1;
-    maxPlayersInput.Constructor(2);
+    new (&maxPlayersInput) HudUiClampedIntTextInput(2);
     incMaxPlayersButton.Constructor();
     incMaxPlayersButton.targetInput = 0;
     incMaxPlayersButton.stepDelta = 1;
@@ -416,6 +420,7 @@ void HudUiNetGameSetupPanel::Destructor() {
     this->HudUiBackground::~HudUiBackground();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HudUiNetGameSetupPanel * HudUiNetGameSetupPanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {

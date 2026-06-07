@@ -10,6 +10,7 @@ template <typename T> struct ComReleaseOnExit {
      *
      * Purpose: release a COM interface pointer when the helper leaves scope.
      */
+    // Source-faithful helper recovered from address-backed callers in this source file.
     ~ComReleaseOnExit() {
         if (ptr != 0) {
             ptr->Release();

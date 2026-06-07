@@ -45,6 +45,7 @@ zDEClient_NetRelayCallback g_zDEClientCraterNetRelayCallback = 0;
 
 namespace {
 template <typename T>
+// Source-faithful helper recovered from address-backed callers in this source file.
 zZbdSectionCallback ZbdCallbackPtr(
     T callback
 ) {
@@ -57,12 +58,14 @@ zZbdSectionCallback ZbdCallbackPtr(
     return value.raw;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool IsNil(
     const zDEClient_MapTreeNode *node
 ) {
     return node == 0 || node == g_zDEClient_FeatureMapTreeNil;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zDEClient_MapTreeNode *TreeMinimum(
     zDEClient_MapTreeNode *node
 ) {
@@ -73,6 +76,7 @@ zDEClient_MapTreeNode *TreeMinimum(
     return node;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zDEClient_MapTreeNode *TreeMaximum(
     zDEClient_MapTreeNode *node
 ) {
@@ -83,6 +87,7 @@ zDEClient_MapTreeNode *TreeMaximum(
     return node;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void RotateTreeLeft(
     zDEClient_MapTreeState *tree,
     zDEClient_MapTreeNode *node
@@ -106,6 +111,7 @@ void RotateTreeLeft(
     node->parent = pivot;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void RotateTreeRight(
     zDEClient_MapTreeState *tree,
     zDEClient_MapTreeNode *node
@@ -129,6 +135,7 @@ void RotateTreeRight(
     node->parent = pivot;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ResetHeader(
     zDEClient_MapTreeState *tree
 ) {
@@ -141,6 +148,7 @@ void ResetHeader(
     tree->header->right = tree->header;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void Transplant(
     zDEClient_MapTreeState *tree,
     zDEClient_MapTreeNode *oldNode,
@@ -159,6 +167,7 @@ void Transplant(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void RefreshHeaderExtents(
     zDEClient_MapTreeState *tree
 ) {
@@ -172,6 +181,7 @@ void RefreshHeaderExtents(
     tree->header->right = TreeMaximum(root);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void EnsureFeatureMapTreeInitialized(
     zDEClient_MapTreeState *tree
 ) {
@@ -198,6 +208,7 @@ void EnsureFeatureMapTreeInitialized(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int zReaderArrayCount(
     zReader::Node *node
 ) {
@@ -208,6 +219,7 @@ int zReaderArrayCount(
     return node->value.nodes[0].value.i32;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 char *zReaderArrayString(
     zReader::Node *node,
     int index

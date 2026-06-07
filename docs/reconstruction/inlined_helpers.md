@@ -42,6 +42,34 @@ Open limits:
 
 ## Current Entries
 
-No standalone inlined-helper entries have been promoted yet. When adding the
-first entry, keep it compact and include the caller addresses that prove the
-helper-like body was duplicated by compiler inlining.
+## SaveLoadEntryCount
+
+Evidence:
+- Caller addresses: `0x434fb0` `HudUiSaveLoadDialog::DeleteSaveFile`,
+  `0x435160` `HudUiSaveLoadNextButton::OnActivate`, and `0x4351b0`
+  `HudUiSaveLoadPrevButton::OnActivate`.
+- Repeated instruction/source pattern: each caller checks whether
+  `fileEntries.begin` is null, returns zero when it is null, otherwise computes
+  `(fileEntries.end - fileEntries.begin)` for `HudUiSaveLoadEntry` records.
+- Likely original owner/source file: save/load dialog source cluster under
+  `Battlesport/RecoilApp.cpp` / `HudUiSaveLoadDialog.cpp`.
+- Why no standalone retail function is expected: Binary Ninja shows the count
+  expression inlined at every observed caller and no standalone call target for
+  this helper.
+
+Restored source form:
+- `inline int SaveLoadEntryCount(const HudUiSaveLoadDialog *dialog)` in the
+  anonymous namespace for the save/load dialog source cluster.
+- Callers using it: `HudUiSaveLoadDialog::DeleteSaveFile`,
+  `HudUiSaveLoadNextButton::OnActivate`, and
+  `HudUiSaveLoadPrevButton::OnActivate`.
+
+Verification notes:
+- Native tests: save/load delete, next, and prev button functional smokes
+  exercise callers through their class methods.
+- VC byte or source-cluster attempt: no standalone helper byte target exists;
+  caller tier `S` remains deferred to the save/load dialog/button cluster.
+
+Open limits:
+- The helper is accepted as recovered inline source shape only; it is not a
+  tier `S` byte marker for any caller.

@@ -2161,11 +2161,11 @@ extern "C" int directdraw_enumerate_import_provider_smoke(void) {
 }
 
 extern "C" int zvid_pack_color_rgb_smoke(void) {
-    g_zVideo_PixelPack_RMaskShifted = 0xf8;
-    g_zVideo_PixelPack_GMaskShifted = 0xfc;
-    g_zVideo_PixelPack_RShift = 8;
-    g_zVideo_PixelPack_GShift = 3;
-    g_zVideo_PixelPack_BShiftTo8 = 3;
+    g_zVideo_PixelPack.rMaskShifted = 0xf8;
+    g_zVideo_PixelPack.gMaskShifted = 0xfc;
+    g_zVideo_PixelPack.packedBase = 8;
+    g_zVideo_PixelPack.sumMinus8 = 3;
+    g_zVideo_PixelPack.bShiftTo8 = 3;
 
     const std::uint32_t packed565 = zVid_PackColorRGB(0xff, 0x80, 0x20);
     const std::uint32_t packed00RRGGBB = zVid_PackColor00RRGGBB(0x00123456);
@@ -2200,11 +2200,11 @@ extern "C" int zvid_pack_color_rgb_smoke(void) {
 extern "C" int zvideo_pixel_pack_setup_smoke(void) {
     zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
 
-    if (g_zVideo_PixelPack_RBits != 5 || g_zVideo_PixelPack_GBits != 6 ||
-        g_zVideo_PixelPack_BBits != 5 || g_zVideo_PixelPack_RShift != 8 ||
-        g_zVideo_PixelPack_GShift != 3 || g_zVideo_PixelPack_BShiftTo8 != 3 ||
-        g_zVideo_PixelPack_RMaskShifted != 0xf8 || g_zVideo_PixelPack_GMaskShifted != 0xfc ||
-        g_zVideo_PixelPack_BMaskShifted != 0xf8) {
+    if (g_zVideo_PixelPack.rBits != 5 || g_zVideo_PixelPack.gBits != 6 ||
+        g_zVideo_PixelPack.bBits != 5 || g_zVideo_PixelPack.packedBase != 8 ||
+        g_zVideo_PixelPack.sumMinus8 != 3 || g_zVideo_PixelPack.bShiftTo8 != 3 ||
+        g_zVideo_PixelPack.rMaskShifted != 0xf8 || g_zVideo_PixelPack.gMaskShifted != 0xfc ||
+        g_zVideo_PixelPack.bMaskShifted != 0xf8) {
         return 1;
     }
 
@@ -7535,18 +7535,18 @@ extern "C" int zvideo_dd_init_fullscreen_software_pixel_pack_smoke(void) {
     IDirectDrawSurface3 *const displayInterface =
         reinterpret_cast<IDirectDrawSurface3 *>(&displaySurface);
 
-    const int savedRShift = g_zVideo_PixelPack_RShift;
-    const int savedGShift = g_zVideo_PixelPack_GShift;
-    const int savedBShiftTo8 = g_zVideo_PixelPack_BShiftTo8;
-    const int savedRMaskShifted = g_zVideo_PixelPack_RMaskShifted;
-    const int savedGMaskShifted = g_zVideo_PixelPack_GMaskShifted;
-    const int savedBMaskShifted = g_zVideo_PixelPack_BMaskShifted;
-    const int savedRBits = g_zVideo_PixelPack_RBits;
-    const int savedGBits = g_zVideo_PixelPack_GBits;
-    const int savedBBits = g_zVideo_PixelPack_BBits;
-    const unsigned int savedRMask = g_zVideo_PixelPack_RMask;
-    const unsigned int savedGMask = g_zVideo_PixelPack_GMask;
-    const unsigned int savedBMask = g_zVideo_PixelPack_BMask;
+    const int savedRShift = g_zVideo_PixelPack.packedBase;
+    const int savedGShift = g_zVideo_PixelPack.sumMinus8;
+    const int savedBShiftTo8 = g_zVideo_PixelPack.bShiftTo8;
+    const int savedRMaskShifted = g_zVideo_PixelPack.rMaskShifted;
+    const int savedGMaskShifted = g_zVideo_PixelPack.gMaskShifted;
+    const int savedBMaskShifted = g_zVideo_PixelPack.bMaskShifted;
+    const int savedRBits = g_zVideo_PixelPack.rBits;
+    const int savedGBits = g_zVideo_PixelPack.gBits;
+    const int savedBBits = g_zVideo_PixelPack.bBits;
+    const unsigned int savedRMask = g_zVideo_PixelPack.rMask;
+    const unsigned int savedGMask = g_zVideo_PixelPack.gMask;
+    const unsigned int savedBMask = g_zVideo_PixelPack.bMask;
 
     gFakeDirectDrawSurface3PixelFormat.dwRBitMask = 0xf800;
     gFakeDirectDrawSurface3PixelFormat.dwGBitMask = 0x07e0;
@@ -7555,9 +7555,9 @@ extern "C" int zvideo_dd_init_fullscreen_software_pixel_pack_smoke(void) {
         zVideo_dd::InitFullscreenSoftwarePixelPack(displayInterface) == 0 &&
         gFakeDirectDrawSurface3GetPixelFormatCalls == 1 &&
         gFakeDirectDrawSurface3LastPixelFormatInputSize == sizeof(DDPIXELFORMAT) &&
-        g_zVideo_PixelPack_RBits == 5 && g_zVideo_PixelPack_GBits == 6 &&
-        g_zVideo_PixelPack_BBits == 5 && g_zVideo_PixelPack_RMask == 0xf800 &&
-        g_zVideo_PixelPack_GMask == 0x07e0 && g_zVideo_PixelPack_BMask == 0x001f;
+        g_zVideo_PixelPack.rBits == 5 && g_zVideo_PixelPack.gBits == 6 &&
+        g_zVideo_PixelPack.bBits == 5 && g_zVideo_PixelPack.rMask == 0xf800 &&
+        g_zVideo_PixelPack.gMask == 0x07e0 && g_zVideo_PixelPack.bMask == 0x001f;
 
     gFakeDirectDrawSurface3PixelFormat.dwRBitMask = 0x7c00;
     gFakeDirectDrawSurface3PixelFormat.dwGBitMask = 0x03e0;
@@ -7565,9 +7565,9 @@ extern "C" int zvideo_dd_init_fullscreen_software_pixel_pack_smoke(void) {
     const bool secondOk =
         zVideo_dd::InitFullscreenSoftwarePixelPack(displayInterface) == 0 &&
         gFakeDirectDrawSurface3GetPixelFormatCalls == 2 &&
-        g_zVideo_PixelPack_RBits == 5 && g_zVideo_PixelPack_GBits == 5 &&
-        g_zVideo_PixelPack_BBits == 5 && g_zVideo_PixelPack_RMask == 0x7c00 &&
-        g_zVideo_PixelPack_GMask == 0x03e0 && g_zVideo_PixelPack_BMask == 0x001f;
+        g_zVideo_PixelPack.rBits == 5 && g_zVideo_PixelPack.gBits == 5 &&
+        g_zVideo_PixelPack.bBits == 5 && g_zVideo_PixelPack.rMask == 0x7c00 &&
+        g_zVideo_PixelPack.gMask == 0x03e0 && g_zVideo_PixelPack.bMask == 0x001f;
 
     gFakeDirectDrawSurface3PixelFormat.dwRBitMask = 0xff0000;
     gFakeDirectDrawSurface3PixelFormat.dwGBitMask = 0xff00;
@@ -7575,22 +7575,22 @@ extern "C" int zvideo_dd_init_fullscreen_software_pixel_pack_smoke(void) {
     const bool thirdOk =
         zVideo_dd::InitFullscreenSoftwarePixelPack(displayInterface) == 0 &&
         gFakeDirectDrawSurface3GetPixelFormatCalls == 3 &&
-        g_zVideo_PixelPack_RBits == 5 && g_zVideo_PixelPack_GBits == 6 &&
-        g_zVideo_PixelPack_BBits == 5 && g_zVideo_PixelPack_RMask == 0xff0000 &&
-        g_zVideo_PixelPack_GMask == 0xff00 && g_zVideo_PixelPack_BMask == 0x00ff;
+        g_zVideo_PixelPack.rBits == 5 && g_zVideo_PixelPack.gBits == 6 &&
+        g_zVideo_PixelPack.bBits == 5 && g_zVideo_PixelPack.rMask == 0xff0000 &&
+        g_zVideo_PixelPack.gMask == 0xff00 && g_zVideo_PixelPack.bMask == 0x00ff;
 
-    g_zVideo_PixelPack_RShift = savedRShift;
-    g_zVideo_PixelPack_GShift = savedGShift;
-    g_zVideo_PixelPack_BShiftTo8 = savedBShiftTo8;
-    g_zVideo_PixelPack_RMaskShifted = savedRMaskShifted;
-    g_zVideo_PixelPack_GMaskShifted = savedGMaskShifted;
-    g_zVideo_PixelPack_BMaskShifted = savedBMaskShifted;
-    g_zVideo_PixelPack_RBits = savedRBits;
-    g_zVideo_PixelPack_GBits = savedGBits;
-    g_zVideo_PixelPack_BBits = savedBBits;
-    g_zVideo_PixelPack_RMask = savedRMask;
-    g_zVideo_PixelPack_GMask = savedGMask;
-    g_zVideo_PixelPack_BMask = savedBMask;
+    g_zVideo_PixelPack.packedBase = savedRShift;
+    g_zVideo_PixelPack.sumMinus8 = savedGShift;
+    g_zVideo_PixelPack.bShiftTo8 = savedBShiftTo8;
+    g_zVideo_PixelPack.rMaskShifted = savedRMaskShifted;
+    g_zVideo_PixelPack.gMaskShifted = savedGMaskShifted;
+    g_zVideo_PixelPack.bMaskShifted = savedBMaskShifted;
+    g_zVideo_PixelPack.rBits = savedRBits;
+    g_zVideo_PixelPack.gBits = savedGBits;
+    g_zVideo_PixelPack.bBits = savedBBits;
+    g_zVideo_PixelPack.rMask = savedRMask;
+    g_zVideo_PixelPack.gMask = savedGMask;
+    g_zVideo_PixelPack.bMask = savedBMask;
     return firstOk && secondOk && thirdOk ? 0 : 1;
 }
 
@@ -7691,12 +7691,12 @@ extern "C" int zvideo_dd_create_half_res_backbuffer_surfaces_smoke(void) {
     zVidHwApiDeviceRecordPartial *const savedSelectedDevice =
         g_zVideo_pSelectedHwApiDeviceRecord;
     const HWND savedHwnd = g_zVideo_hWnd;
-    const int savedRBits = g_zVideo_PixelPack_RBits;
-    const int savedGBits = g_zVideo_PixelPack_GBits;
-    const int savedBBits = g_zVideo_PixelPack_BBits;
-    const unsigned int savedRMask = g_zVideo_PixelPack_RMask;
-    const unsigned int savedGMask = g_zVideo_PixelPack_GMask;
-    const unsigned int savedBMask = g_zVideo_PixelPack_BMask;
+    const int savedRBits = g_zVideo_PixelPack.rBits;
+    const int savedGBits = g_zVideo_PixelPack.gBits;
+    const int savedBBits = g_zVideo_PixelPack.bBits;
+    const unsigned int savedRMask = g_zVideo_PixelPack.rMask;
+    const unsigned int savedGMask = g_zVideo_PixelPack.gMask;
+    const unsigned int savedBMask = g_zVideo_PixelPack.bMask;
 
     zVidHwApiDeviceRecordPartial selectedDevice{};
     selectedDevice.m_deviceFeatureFlags = 0;
@@ -7743,9 +7743,9 @@ extern "C" int zvideo_dd_create_half_res_backbuffer_surfaces_smoke(void) {
         g_zVideo_SwSurfaceState.surf == displayInterface &&
         g_zVideo_PrimaryHasAttachedBackbuffer == 1 &&
         g_zVideo_pClipper == clipperInterface &&
-        g_zVideo_PixelPack_RBits == 5 && g_zVideo_PixelPack_GBits == 6 &&
-        g_zVideo_PixelPack_BBits == 5 && g_zVideo_PixelPack_RMask == 0xf800 &&
-        g_zVideo_PixelPack_GMask == 0x07e0 && g_zVideo_PixelPack_BMask == 0x001f;
+        g_zVideo_PixelPack.rBits == 5 && g_zVideo_PixelPack.gBits == 6 &&
+        g_zVideo_PixelPack.bBits == 5 && g_zVideo_PixelPack.rMask == 0xf800 &&
+        g_zVideo_PixelPack.gMask == 0x07e0 && g_zVideo_PixelPack.bMask == 0x001f;
 
     int failCode = 0;
     if (result != 0) {
@@ -7796,12 +7796,12 @@ extern "C" int zvideo_dd_create_half_res_backbuffer_surfaces_smoke(void) {
     g_zVideo_ActiveRendererPath = savedActiveRendererPath;
     g_zVideo_pSelectedHwApiDeviceRecord = savedSelectedDevice;
     g_zVideo_hWnd = savedHwnd;
-    g_zVideo_PixelPack_RBits = savedRBits;
-    g_zVideo_PixelPack_GBits = savedGBits;
-    g_zVideo_PixelPack_BBits = savedBBits;
-    g_zVideo_PixelPack_RMask = savedRMask;
-    g_zVideo_PixelPack_GMask = savedGMask;
-    g_zVideo_PixelPack_BMask = savedBMask;
+    g_zVideo_PixelPack.rBits = savedRBits;
+    g_zVideo_PixelPack.gBits = savedGBits;
+    g_zVideo_PixelPack.bBits = savedBBits;
+    g_zVideo_PixelPack.rMask = savedRMask;
+    g_zVideo_PixelPack.gMask = savedGMask;
+    g_zVideo_PixelPack.bMask = savedBMask;
     return failCode;
 }
 
@@ -7850,18 +7850,18 @@ extern "C" int zvideo_dd_create_fullscreen_software_surfaces_smoke(void) {
     zVidHwApiDeviceRecordPartial *const savedSelectedDevice =
         g_zVideo_pSelectedHwApiDeviceRecord;
     const HWND savedHwnd = g_zVideo_hWnd;
-    const int savedRShift = g_zVideo_PixelPack_RShift;
-    const int savedGShift = g_zVideo_PixelPack_GShift;
-    const int savedBShiftTo8 = g_zVideo_PixelPack_BShiftTo8;
-    const int savedRMaskShifted = g_zVideo_PixelPack_RMaskShifted;
-    const int savedGMaskShifted = g_zVideo_PixelPack_GMaskShifted;
-    const int savedBMaskShifted = g_zVideo_PixelPack_BMaskShifted;
-    const int savedRBits = g_zVideo_PixelPack_RBits;
-    const int savedGBits = g_zVideo_PixelPack_GBits;
-    const int savedBBits = g_zVideo_PixelPack_BBits;
-    const unsigned int savedRMask = g_zVideo_PixelPack_RMask;
-    const unsigned int savedGMask = g_zVideo_PixelPack_GMask;
-    const unsigned int savedBMask = g_zVideo_PixelPack_BMask;
+    const int savedRShift = g_zVideo_PixelPack.packedBase;
+    const int savedGShift = g_zVideo_PixelPack.sumMinus8;
+    const int savedBShiftTo8 = g_zVideo_PixelPack.bShiftTo8;
+    const int savedRMaskShifted = g_zVideo_PixelPack.rMaskShifted;
+    const int savedGMaskShifted = g_zVideo_PixelPack.gMaskShifted;
+    const int savedBMaskShifted = g_zVideo_PixelPack.bMaskShifted;
+    const int savedRBits = g_zVideo_PixelPack.rBits;
+    const int savedGBits = g_zVideo_PixelPack.gBits;
+    const int savedBBits = g_zVideo_PixelPack.bBits;
+    const unsigned int savedRMask = g_zVideo_PixelPack.rMask;
+    const unsigned int savedGMask = g_zVideo_PixelPack.gMask;
+    const unsigned int savedBMask = g_zVideo_PixelPack.bMask;
 
     zVidHwApiDeviceRecordPartial selectedDevice{};
     selectedDevice.m_deviceFeatureFlags = 0;
@@ -7914,12 +7914,12 @@ extern "C" int zvideo_dd_create_fullscreen_software_surfaces_smoke(void) {
         g_zVideo_DisplayModeSurfaceState.locked == 0 &&
         g_zVideo_PrimaryHasAttachedBackbuffer == 0 &&
         g_zVideo_pClipper == clipperInterface &&
-        g_zVideo_PixelPack_RBits == 5 &&
-        g_zVideo_PixelPack_GBits == 6 &&
-        g_zVideo_PixelPack_BBits == 5 &&
-        g_zVideo_PixelPack_RMask == 0xf800 &&
-        g_zVideo_PixelPack_GMask == 0x07e0 &&
-        g_zVideo_PixelPack_BMask == 0x001f;
+        g_zVideo_PixelPack.rBits == 5 &&
+        g_zVideo_PixelPack.gBits == 6 &&
+        g_zVideo_PixelPack.bBits == 5 &&
+        g_zVideo_PixelPack.rMask == 0xf800 &&
+        g_zVideo_PixelPack.gMask == 0x07e0 &&
+        g_zVideo_PixelPack.bMask == 0x001f;
 
     int failCode = 0;
     if (result != 0) {
@@ -7985,18 +7985,18 @@ extern "C" int zvideo_dd_create_fullscreen_software_surfaces_smoke(void) {
     g_zVideo_FullscreenOption = savedFullscreenOption;
     g_zVideo_pSelectedHwApiDeviceRecord = savedSelectedDevice;
     g_zVideo_hWnd = savedHwnd;
-    g_zVideo_PixelPack_RShift = savedRShift;
-    g_zVideo_PixelPack_GShift = savedGShift;
-    g_zVideo_PixelPack_BShiftTo8 = savedBShiftTo8;
-    g_zVideo_PixelPack_RMaskShifted = savedRMaskShifted;
-    g_zVideo_PixelPack_GMaskShifted = savedGMaskShifted;
-    g_zVideo_PixelPack_BMaskShifted = savedBMaskShifted;
-    g_zVideo_PixelPack_RBits = savedRBits;
-    g_zVideo_PixelPack_GBits = savedGBits;
-    g_zVideo_PixelPack_BBits = savedBBits;
-    g_zVideo_PixelPack_RMask = savedRMask;
-    g_zVideo_PixelPack_GMask = savedGMask;
-    g_zVideo_PixelPack_BMask = savedBMask;
+    g_zVideo_PixelPack.packedBase = savedRShift;
+    g_zVideo_PixelPack.sumMinus8 = savedGShift;
+    g_zVideo_PixelPack.bShiftTo8 = savedBShiftTo8;
+    g_zVideo_PixelPack.rMaskShifted = savedRMaskShifted;
+    g_zVideo_PixelPack.gMaskShifted = savedGMaskShifted;
+    g_zVideo_PixelPack.bMaskShifted = savedBMaskShifted;
+    g_zVideo_PixelPack.rBits = savedRBits;
+    g_zVideo_PixelPack.gBits = savedGBits;
+    g_zVideo_PixelPack.bBits = savedBBits;
+    g_zVideo_PixelPack.rMask = savedRMask;
+    g_zVideo_PixelPack.gMask = savedGMask;
+    g_zVideo_PixelPack.bMask = savedBMask;
     return failCode;
 }
 
@@ -8043,18 +8043,18 @@ extern "C" int zvideo_dd_create_fullscreen_hw_surfaces_smoke(void) {
     zVidHwApiDeviceRecordPartial *const savedSelectedDevice =
         g_zVideo_pSelectedHwApiDeviceRecord;
     const HWND savedHwnd = g_zVideo_hWnd;
-    const int savedRShift = g_zVideo_PixelPack_RShift;
-    const int savedGShift = g_zVideo_PixelPack_GShift;
-    const int savedBShiftTo8 = g_zVideo_PixelPack_BShiftTo8;
-    const int savedRMaskShifted = g_zVideo_PixelPack_RMaskShifted;
-    const int savedGMaskShifted = g_zVideo_PixelPack_GMaskShifted;
-    const int savedBMaskShifted = g_zVideo_PixelPack_BMaskShifted;
-    const int savedRBits = g_zVideo_PixelPack_RBits;
-    const int savedGBits = g_zVideo_PixelPack_GBits;
-    const int savedBBits = g_zVideo_PixelPack_BBits;
-    const unsigned int savedRMask = g_zVideo_PixelPack_RMask;
-    const unsigned int savedGMask = g_zVideo_PixelPack_GMask;
-    const unsigned int savedBMask = g_zVideo_PixelPack_BMask;
+    const int savedRShift = g_zVideo_PixelPack.packedBase;
+    const int savedGShift = g_zVideo_PixelPack.sumMinus8;
+    const int savedBShiftTo8 = g_zVideo_PixelPack.bShiftTo8;
+    const int savedRMaskShifted = g_zVideo_PixelPack.rMaskShifted;
+    const int savedGMaskShifted = g_zVideo_PixelPack.gMaskShifted;
+    const int savedBMaskShifted = g_zVideo_PixelPack.bMaskShifted;
+    const int savedRBits = g_zVideo_PixelPack.rBits;
+    const int savedGBits = g_zVideo_PixelPack.gBits;
+    const int savedBBits = g_zVideo_PixelPack.bBits;
+    const unsigned int savedRMask = g_zVideo_PixelPack.rMask;
+    const unsigned int savedGMask = g_zVideo_PixelPack.gMask;
+    const unsigned int savedBMask = g_zVideo_PixelPack.bMask;
 
     zVidHwApiDeviceRecordPartial selectedDevice{};
     selectedDevice.m_deviceFeatureFlags = 0;
@@ -8102,12 +8102,12 @@ extern "C" int zvideo_dd_create_fullscreen_hw_surfaces_smoke(void) {
         g_zVideo_DisplayModeSurfaceState.height == 600 &&
         g_zVideo_PrimaryHasAttachedBackbuffer == 1 &&
         g_zVideo_pClipper == clipperInterface &&
-        g_zVideo_PixelPack_RBits == 5 &&
-        g_zVideo_PixelPack_GBits == 6 &&
-        g_zVideo_PixelPack_BBits == 5 &&
-        g_zVideo_PixelPack_RMask == 0xf800 &&
-        g_zVideo_PixelPack_GMask == 0x07e0 &&
-        g_zVideo_PixelPack_BMask == 0x001f;
+        g_zVideo_PixelPack.rBits == 5 &&
+        g_zVideo_PixelPack.gBits == 6 &&
+        g_zVideo_PixelPack.bBits == 5 &&
+        g_zVideo_PixelPack.rMask == 0xf800 &&
+        g_zVideo_PixelPack.gMask == 0x07e0 &&
+        g_zVideo_PixelPack.bMask == 0x001f;
 
     g_zVideo_pDirectDraw2 = savedDirectDraw;
     g_zVideo_pClipper = savedClipper;
@@ -8117,18 +8117,18 @@ extern "C" int zvideo_dd_create_fullscreen_hw_surfaces_smoke(void) {
     g_zVideo_PrimaryHasAttachedBackbuffer = savedPrimaryAttached;
     g_zVideo_pSelectedHwApiDeviceRecord = savedSelectedDevice;
     g_zVideo_hWnd = savedHwnd;
-    g_zVideo_PixelPack_RShift = savedRShift;
-    g_zVideo_PixelPack_GShift = savedGShift;
-    g_zVideo_PixelPack_BShiftTo8 = savedBShiftTo8;
-    g_zVideo_PixelPack_RMaskShifted = savedRMaskShifted;
-    g_zVideo_PixelPack_GMaskShifted = savedGMaskShifted;
-    g_zVideo_PixelPack_BMaskShifted = savedBMaskShifted;
-    g_zVideo_PixelPack_RBits = savedRBits;
-    g_zVideo_PixelPack_GBits = savedGBits;
-    g_zVideo_PixelPack_BBits = savedBBits;
-    g_zVideo_PixelPack_RMask = savedRMask;
-    g_zVideo_PixelPack_GMask = savedGMask;
-    g_zVideo_PixelPack_BMask = savedBMask;
+    g_zVideo_PixelPack.packedBase = savedRShift;
+    g_zVideo_PixelPack.sumMinus8 = savedGShift;
+    g_zVideo_PixelPack.bShiftTo8 = savedBShiftTo8;
+    g_zVideo_PixelPack.rMaskShifted = savedRMaskShifted;
+    g_zVideo_PixelPack.gMaskShifted = savedGMaskShifted;
+    g_zVideo_PixelPack.bMaskShifted = savedBMaskShifted;
+    g_zVideo_PixelPack.rBits = savedRBits;
+    g_zVideo_PixelPack.gBits = savedGBits;
+    g_zVideo_PixelPack.bBits = savedBBits;
+    g_zVideo_PixelPack.rMask = savedRMask;
+    g_zVideo_PixelPack.gMask = savedGMask;
+    g_zVideo_PixelPack.bMask = savedBMask;
     return ok ? 0 : 1;
 }
 
@@ -11537,18 +11537,18 @@ extern "C" int zvideo_draw_point_color16_smoke(void) {
     IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
     const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderState_TextureHandle;
     const int savedShadeMode = g_zVideo_D3DRenderState_ShadeMode;
-    const int savedRShift = g_zVideo_PixelPack_RShift;
-    const int savedGShift = g_zVideo_PixelPack_GShift;
-    const int savedBShiftTo8 = g_zVideo_PixelPack_BShiftTo8;
-    const int savedRMaskShifted = g_zVideo_PixelPack_RMaskShifted;
-    const int savedGMaskShifted = g_zVideo_PixelPack_GMaskShifted;
-    const int savedBMaskShifted = g_zVideo_PixelPack_BMaskShifted;
-    const int savedRBits = g_zVideo_PixelPack_RBits;
-    const int savedGBits = g_zVideo_PixelPack_GBits;
-    const int savedBBits = g_zVideo_PixelPack_BBits;
-    const unsigned int savedRMask = g_zVideo_PixelPack_RMask;
-    const unsigned int savedGMask = g_zVideo_PixelPack_GMask;
-    const unsigned int savedBMask = g_zVideo_PixelPack_BMask;
+    const int savedRShift = g_zVideo_PixelPack.packedBase;
+    const int savedGShift = g_zVideo_PixelPack.sumMinus8;
+    const int savedBShiftTo8 = g_zVideo_PixelPack.bShiftTo8;
+    const int savedRMaskShifted = g_zVideo_PixelPack.rMaskShifted;
+    const int savedGMaskShifted = g_zVideo_PixelPack.gMaskShifted;
+    const int savedBMaskShifted = g_zVideo_PixelPack.bMaskShifted;
+    const int savedRBits = g_zVideo_PixelPack.rBits;
+    const int savedGBits = g_zVideo_PixelPack.gBits;
+    const int savedBBits = g_zVideo_PixelPack.bBits;
+    const unsigned int savedRMask = g_zVideo_PixelPack.rMask;
+    const unsigned int savedGMask = g_zVideo_PixelPack.gMask;
+    const unsigned int savedBMask = g_zVideo_PixelPack.bMask;
 
     zVideo::PixelPack_SetupFromMasks(
         5,
@@ -11618,18 +11618,18 @@ extern "C" int zvideo_draw_point_color16_smoke(void) {
     g_zVideo_pD3DDevice = savedDevice;
     g_zVideo_D3DRenderState_TextureHandle = savedTextureHandle;
     g_zVideo_D3DRenderState_ShadeMode = savedShadeMode;
-    g_zVideo_PixelPack_RShift = savedRShift;
-    g_zVideo_PixelPack_GShift = savedGShift;
-    g_zVideo_PixelPack_BShiftTo8 = savedBShiftTo8;
-    g_zVideo_PixelPack_RMaskShifted = savedRMaskShifted;
-    g_zVideo_PixelPack_GMaskShifted = savedGMaskShifted;
-    g_zVideo_PixelPack_BMaskShifted = savedBMaskShifted;
-    g_zVideo_PixelPack_RBits = savedRBits;
-    g_zVideo_PixelPack_GBits = savedGBits;
-    g_zVideo_PixelPack_BBits = savedBBits;
-    g_zVideo_PixelPack_RMask = savedRMask;
-    g_zVideo_PixelPack_GMask = savedGMask;
-    g_zVideo_PixelPack_BMask = savedBMask;
+    g_zVideo_PixelPack.packedBase = savedRShift;
+    g_zVideo_PixelPack.sumMinus8 = savedGShift;
+    g_zVideo_PixelPack.bShiftTo8 = savedBShiftTo8;
+    g_zVideo_PixelPack.rMaskShifted = savedRMaskShifted;
+    g_zVideo_PixelPack.gMaskShifted = savedGMaskShifted;
+    g_zVideo_PixelPack.bMaskShifted = savedBMaskShifted;
+    g_zVideo_PixelPack.rBits = savedRBits;
+    g_zVideo_PixelPack.gBits = savedGBits;
+    g_zVideo_PixelPack.bBits = savedBBits;
+    g_zVideo_PixelPack.rMask = savedRMask;
+    g_zVideo_PixelPack.gMask = savedGMask;
+    g_zVideo_PixelPack.bMask = savedBMask;
     return renderStateOk && drawOk && vertexOk && cacheHitOk ? 0 : 1;
 }
 
@@ -12145,18 +12145,18 @@ extern "C" int zvideo_convert_image_pixels_for_texture_smoke(void) {
 
 extern "C" int zvideo_dd3d_upload_image_to_surface_smoke(void) {
     const int savedDisplayModeBpp = g_zVideo_DisplayModeBpp;
-    const int savedRShift = g_zVideo_PixelPack_RShift;
-    const int savedGShift = g_zVideo_PixelPack_GShift;
-    const int savedBShiftTo8 = g_zVideo_PixelPack_BShiftTo8;
-    const int savedRMaskShifted = g_zVideo_PixelPack_RMaskShifted;
-    const int savedGMaskShifted = g_zVideo_PixelPack_GMaskShifted;
-    const int savedBMaskShifted = g_zVideo_PixelPack_BMaskShifted;
-    const int savedRBits = g_zVideo_PixelPack_RBits;
-    const int savedGBits = g_zVideo_PixelPack_GBits;
-    const int savedBBits = g_zVideo_PixelPack_BBits;
-    const unsigned int savedRMask = g_zVideo_PixelPack_RMask;
-    const unsigned int savedGMask = g_zVideo_PixelPack_GMask;
-    const unsigned int savedBMask = g_zVideo_PixelPack_BMask;
+    const int savedRShift = g_zVideo_PixelPack.packedBase;
+    const int savedGShift = g_zVideo_PixelPack.sumMinus8;
+    const int savedBShiftTo8 = g_zVideo_PixelPack.bShiftTo8;
+    const int savedRMaskShifted = g_zVideo_PixelPack.rMaskShifted;
+    const int savedGMaskShifted = g_zVideo_PixelPack.gMaskShifted;
+    const int savedBMaskShifted = g_zVideo_PixelPack.bMaskShifted;
+    const int savedRBits = g_zVideo_PixelPack.rBits;
+    const int savedGBits = g_zVideo_PixelPack.gBits;
+    const int savedBBits = g_zVideo_PixelPack.bBits;
+    const unsigned int savedRMask = g_zVideo_PixelPack.rMask;
+    const unsigned int savedGMask = g_zVideo_PixelPack.gMask;
+    const unsigned int savedBMask = g_zVideo_PixelPack.bMask;
 
     FakeDirectDrawSurface3Object uploadSurface{};
     zVidImagePartial image{};
@@ -12257,18 +12257,18 @@ extern "C" int zvideo_dd3d_upload_image_to_surface_smoke(void) {
         gFakeDirectDrawSurface3UnlockCalls == 1;
 
     g_zVideo_DisplayModeBpp = savedDisplayModeBpp;
-    g_zVideo_PixelPack_RShift = savedRShift;
-    g_zVideo_PixelPack_GShift = savedGShift;
-    g_zVideo_PixelPack_BShiftTo8 = savedBShiftTo8;
-    g_zVideo_PixelPack_RMaskShifted = savedRMaskShifted;
-    g_zVideo_PixelPack_GMaskShifted = savedGMaskShifted;
-    g_zVideo_PixelPack_BMaskShifted = savedBMaskShifted;
-    g_zVideo_PixelPack_RBits = savedRBits;
-    g_zVideo_PixelPack_GBits = savedGBits;
-    g_zVideo_PixelPack_BBits = savedBBits;
-    g_zVideo_PixelPack_RMask = savedRMask;
-    g_zVideo_PixelPack_GMask = savedGMask;
-    g_zVideo_PixelPack_BMask = savedBMask;
+    g_zVideo_PixelPack.packedBase = savedRShift;
+    g_zVideo_PixelPack.sumMinus8 = savedGShift;
+    g_zVideo_PixelPack.bShiftTo8 = savedBShiftTo8;
+    g_zVideo_PixelPack.rMaskShifted = savedRMaskShifted;
+    g_zVideo_PixelPack.gMaskShifted = savedGMaskShifted;
+    g_zVideo_PixelPack.bMaskShifted = savedBMaskShifted;
+    g_zVideo_PixelPack.rBits = savedRBits;
+    g_zVideo_PixelPack.gBits = savedGBits;
+    g_zVideo_PixelPack.bBits = savedBBits;
+    g_zVideo_PixelPack.rMask = savedRMask;
+    g_zVideo_PixelPack.gMask = savedGMask;
+    g_zVideo_PixelPack.bMask = savedBMask;
     return contiguousOk && rowCopyOk && alphaConvertOk ? 0 : 1;
 }
 
@@ -12766,7 +12766,7 @@ extern "C" int zvideo_image_file_read_helpers_smoke(void) {
         directReadImage.paletteMetaPacked == 0;
 
     std::rewind(file);
-    g_zVideo_PixelPack_RBits = 5;
+    g_zVideo_PixelPack.rBits = 5;
     zVidImagePartial *image = zVid_Image::ReadFromFile(file);
     std::fclose(file);
 
@@ -12868,14 +12868,14 @@ extern "C" int zvideo_palette_remap_no_recipes_smoke(void) {
 }
 
 extern "C" int zvideo_palette_remap_recipe_variants_smoke(void) {
-    g_zVideo_PixelPack_RMaskShifted = 0xf8;
-    g_zVideo_PixelPack_GMaskShifted = 0xfc;
-    g_zVideo_PixelPack_RShift = 8;
-    g_zVideo_PixelPack_GShift = 3;
-    g_zVideo_PixelPack_BShiftTo8 = 3;
-    g_zVideo_PixelPack_RBits = 5;
-    g_zVideo_PixelPack_GBits = 6;
-    g_zVideo_PixelPack_BBits = 5;
+    g_zVideo_PixelPack.rMaskShifted = 0xf8;
+    g_zVideo_PixelPack.gMaskShifted = 0xfc;
+    g_zVideo_PixelPack.packedBase = 8;
+    g_zVideo_PixelPack.sumMinus8 = 3;
+    g_zVideo_PixelPack.bShiftTo8 = 3;
+    g_zVideo_PixelPack.rBits = 5;
+    g_zVideo_PixelPack.gBits = 6;
+    g_zVideo_PixelPack.bBits = 5;
 
     zVidPaletteRemapRecipe recipe{};
     std::uint16_t source[2] = {0x0000, 0xffff};
@@ -12950,7 +12950,7 @@ extern "C" int zvideo_texture_pack_load_image_smoke(void) {
     zVidTexturePackEntry entry{};
     std::strcpy(entry.filePath, packPath);
     g_zVid_TexturePackLoadState = 1;
-    g_zVideo_PixelPack_RBits = 0;
+    g_zVideo_PixelPack.rBits = 0;
     if (zVid_TexturePackEntry_LoadFromFile(&entry) == nullptr) {
         DeleteFileA(packPath);
         return 3;

@@ -479,6 +479,7 @@ namespace {
                    (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     const zMat4x3 *CurrentMatrix() {
         return (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
     }
@@ -544,6 +545,7 @@ namespace {
         }
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     zModel_PickFaceData *NodePickFaceData(zClass_NodePartial * node) {
         return (zModel_PickFaceData *)((unsigned int)(node->userDataOrDiRef));
     }
@@ -1022,6 +1024,7 @@ namespace {
         );
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     zClass_DiSegmentEndpoints *SegmentEndpointBatchFromPickPointArray() {
         return (zClass_DiSegmentEndpoints *)((void *)(g_DiPickPointArray));
     }
@@ -1225,6 +1228,7 @@ namespace {
         }
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     zDiPartial *NodeDiRef(zClass_NodePartial * node) {
         return (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
     }

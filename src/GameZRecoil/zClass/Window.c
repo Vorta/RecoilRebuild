@@ -9,6 +9,7 @@
 namespace {
     const int kZClassNodeWindow = 3;
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     int ReportWindowClassError(
         int sourceLine,
         const char *message
@@ -23,6 +24,7 @@ namespace {
     }
 
     zClass_WindowDataPartial *
+    // Source-faithful helper recovered from address-backed callers in this source file.
     GetWindowData(
         zClass_NodePartial * node,
         int nullLine,
@@ -58,6 +60,7 @@ namespace {
         return (zClass_WindowDataPartial *)(node->classData);
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     zClass_WindowDataPartial *GetWindowDataOldMessages(
         zClass_NodePartial * node,
         int nullLine,

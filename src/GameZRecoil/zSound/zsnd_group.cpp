@@ -62,18 +62,21 @@ int __fastcall UpdateActiveRequestPredicate(
 
 namespace {
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zReader::Node *ArrayBase(
     zReader::Node *node
 ) {
     return node->value.nodes;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ArrayCount(
     zReader::Node *node
 ) {
     return ArrayBase(node)[0].value.i32;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ReportConfigError(
     int line,
     const char *message,
@@ -88,6 +91,7 @@ void ReportConfigError(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void StorePlayCount(
     zSndGroupConfigBlock *block,
     unsigned short count
@@ -96,6 +100,7 @@ void StorePlayCount(
     block->currentPlayCount = block->maxPlayCount;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool StoreFloatField(
     zReader::Node *valueNode,
     float *outValue
@@ -113,6 +118,7 @@ bool StoreFloatField(
     return false;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool StoreRepeatCount(
     zReader::Node *valueNode,
     unsigned short *outValue
@@ -130,6 +136,7 @@ bool StoreRepeatCount(
     return false;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void NormalizeDefaultWeights(
     zSndGroup *group
 ) {
@@ -407,6 +414,7 @@ extern "C" int zSndStreamMgr_EnsureInit() {
 
 namespace zSndStreamMgr {
 namespace {
+// Source-faithful helper recovered from address-backed callers in this source file.
 void FreeRequestList(
     zArchiveList *&list
 ) {
@@ -423,6 +431,7 @@ void FreeRequestList(
     list = 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void FreePendingGroupConfig(
     zSndGroup *pendingConfig
 ) {
@@ -443,6 +452,7 @@ void FreePendingGroupConfig(
     free(pendingConfig);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void FreePendingList(
     zArchiveList *&list
 ) {

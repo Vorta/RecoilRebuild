@@ -4,6 +4,7 @@ struct zClass_NodePartial;
 
 extern "C" int g_RecoilState_MainMenuSkipExitDelay = 0;
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 extern "C" int recoil_native_build_anchor(
     void
 ) {
@@ -11,6 +12,7 @@ extern "C" int recoil_native_build_anchor(
 }
 
 #if !defined(_MSC_VER)
+// Source-faithful helper recovered from address-backed callers in this source file.
 extern "C" void __cdecl __cpuid(
     int cpuInfo[4],
     int

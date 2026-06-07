@@ -103,6 +103,7 @@ const DWORD kFailureDisplaySleepMs = 1000;
  *
  * Purpose: copy a localized Westwood Online failure message into a stack buffer.
  */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void CopyFailureMessage(
     char *destination,
     const char *source
@@ -113,6 +114,7 @@ void CopyFailureMessage(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 IWestwoodOnlineUpgradeApi *GetApiComObject() {
     return (IWestwoodOnlineUpgradeApi *)g_pWestwoodOnlineUpgradeApi;
 }
@@ -124,6 +126,7 @@ IWestwoodOnlineUpgradeApi *GetApiComObject() {
  * Purpose: destroy the modal Westwood Online progress dialog through its MFC
  * provider virtual slot.
  */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void DestroyProgressDialog() {
     CWnd *const progressWnd = (CWnd *)g_pWestwoodOnlineUpgradeProgressDialog;
     progressWnd->DestroyWindow();
@@ -136,6 +139,7 @@ void DestroyProgressDialog() {
  * Purpose: choose the Westwood Online language id for German, French, or the
  * default localized startup path.
  */
+// Source-faithful helper recovered from address-backed callers in this source file.
 int GetWolLanguageId() {
     const LANGID primaryLanguage = GetSystemDefaultLangID() & 0x3ff;
     if (primaryLanguage == LANG_GERMAN) {
@@ -154,6 +158,7 @@ int GetWolLanguageId() {
  * Purpose: process WOL API callbacks until the initial connect/status/failure
  * wait set leaves the timeout state.
  */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void PumpInitialCallbacksUntilEvent(
     DWORD *waitResult
 ) {
@@ -185,6 +190,7 @@ void PumpInitialCallbacksUntilEvent(
  * Purpose: process WOL API callbacks while waiting for the bootstrap server
  * list/status/failure events.
  */
+// Source-faithful helper recovered from address-backed callers in this source file.
 DWORD PumpBootstrapCallbacksUntilEvent() {
     DWORD waitResult = WaitForMultipleObjects(
         3,

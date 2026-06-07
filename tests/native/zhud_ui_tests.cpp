@@ -6200,7 +6200,7 @@ extern "C" int zhud_element_copy_constructor_smoke(void) {
 
     HudUiRect copiedRect{-1, -1, -1, -1};
     HudUiElement *const copiedResult = copied.CopyConstructor(&source);
-    copiedResult->GetRect(&copiedRect);
+    copiedResult->GetTextRect(&copiedRect);
     const bool copiedCoords = copiedResult->GetX() == source.x && copiedResult->GetY() == source.y;
 
     HudUiElement assigned{};
@@ -8205,7 +8205,7 @@ extern "C" int zhud_element_get_xy_smoke(void) {
     const bool initial = element.GetX() == -12 && element.GetY() == 345;
     element.SetPos(78, -90);
     HudUiRect rect = {};
-    element.GetRect(&rect);
+    element.GetTextRect(&rect);
     const bool rectMatches = rect.left == 78 && rect.right == 78 && rect.top == -90 &&
                              rect.bottom == -90;
 
@@ -8253,11 +8253,11 @@ extern "C" int zhud_primitive_bind_target_set_segment_endpoints_smoke(void) {
 }
 
 extern "C" int zhud_background_bind_primitive_node_to_element_smoke(void) {
-    g_zVideo_PixelPack_RMaskShifted = 0xf8;
-    g_zVideo_PixelPack_GMaskShifted = 0xfc;
-    g_zVideo_PixelPack_RShift = 8;
-    g_zVideo_PixelPack_GShift = 3;
-    g_zVideo_PixelPack_BShiftTo8 = 3;
+    g_zVideo_PixelPack.rMaskShifted = 0xf8;
+    g_zVideo_PixelPack.gMaskShifted = 0xfc;
+    g_zVideo_PixelPack.packedBase = 8;
+    g_zVideo_PixelPack.sumMinus8 = 3;
+    g_zVideo_PixelPack.bShiftTo8 = 3;
 
     zReader::Node positionItems[3] = {};
     positionItems[0].value.i32 = 3;
@@ -11054,9 +11054,9 @@ extern "C" int zhud_cmd_dialog_rebuild_command_binding_lists_smoke(void) {
 
     int commandIds[] = {5};
     zInput_BindGroupInfo group{};
-    group.commandIdsBegin = commandIds;
-    group.commandIdsEnd = commandIds + 1;
-    group.commandIdsCapacity = commandIds + 1;
+    group.commandIds.begin = commandIds;
+    group.commandIds.end = commandIds + 1;
+    group.commandIds.capacity = commandIds + 1;
     zInput_BindGroupInfo *groups[] = {&group};
     g_zInput_BindGroupInfoList.begin = groups;
     g_zInput_BindGroupInfoList.end = groups + 1;
@@ -11200,9 +11200,9 @@ extern "C" int zhud_cmd_dialog_constructor_smoke(void) {
     int commandIds[] = {5};
     zInput_BindGroupInfo group = {};
     group.title = const_cast<char *>("Weapons");
-    group.commandIdsBegin = commandIds;
-    group.commandIdsEnd = commandIds + 1;
-    group.commandIdsCapacity = commandIds + 1;
+    group.commandIds.begin = commandIds;
+    group.commandIds.end = commandIds + 1;
+    group.commandIds.capacity = commandIds + 1;
     zInput_BindGroupInfo *groups[] = {&group};
     g_zInput_BindGroupInfoList.begin = groups;
     g_zInput_BindGroupInfoList.end = groups + 1;
@@ -11385,9 +11385,9 @@ extern "C" int zhud_cmd_dialog_state_on_try_become_current_smoke(void) {
     int commandIds[] = {5};
     zInput_BindGroupInfo group = {};
     group.title = const_cast<char *>("Weapons");
-    group.commandIdsBegin = commandIds;
-    group.commandIdsEnd = commandIds + 1;
-    group.commandIdsCapacity = commandIds + 1;
+    group.commandIds.begin = commandIds;
+    group.commandIds.end = commandIds + 1;
+    group.commandIds.capacity = commandIds + 1;
     zInput_BindGroupInfo *groups[] = {&group};
     g_zInput_BindGroupInfoList.begin = groups;
     g_zInput_BindGroupInfoList.end = groups + 1;
@@ -11523,15 +11523,15 @@ extern "C" int zhud_cmd_dialog_select_group_relative_smoke(void) {
     int groupOneCommandIds[] = {6};
     int groupTwoCommandIds[] = {7};
     zInput_BindGroupInfo groupsStorage[3] = {};
-    groupsStorage[0].commandIdsBegin = groupZeroCommandIds;
-    groupsStorage[0].commandIdsEnd = groupZeroCommandIds + 1;
-    groupsStorage[0].commandIdsCapacity = groupZeroCommandIds + 1;
-    groupsStorage[1].commandIdsBegin = groupOneCommandIds;
-    groupsStorage[1].commandIdsEnd = groupOneCommandIds + 1;
-    groupsStorage[1].commandIdsCapacity = groupOneCommandIds + 1;
-    groupsStorage[2].commandIdsBegin = groupTwoCommandIds;
-    groupsStorage[2].commandIdsEnd = groupTwoCommandIds + 1;
-    groupsStorage[2].commandIdsCapacity = groupTwoCommandIds + 1;
+    groupsStorage[0].commandIds.begin = groupZeroCommandIds;
+    groupsStorage[0].commandIds.end = groupZeroCommandIds + 1;
+    groupsStorage[0].commandIds.capacity = groupZeroCommandIds + 1;
+    groupsStorage[1].commandIds.begin = groupOneCommandIds;
+    groupsStorage[1].commandIds.end = groupOneCommandIds + 1;
+    groupsStorage[1].commandIds.capacity = groupOneCommandIds + 1;
+    groupsStorage[2].commandIds.begin = groupTwoCommandIds;
+    groupsStorage[2].commandIds.end = groupTwoCommandIds + 1;
+    groupsStorage[2].commandIds.capacity = groupTwoCommandIds + 1;
     zInput_BindGroupInfo *groups[] = {&groupsStorage[0], &groupsStorage[1], &groupsStorage[2]};
     g_zInput_BindGroupInfoList.begin = groups;
     g_zInput_BindGroupInfoList.end = groups + 3;
@@ -11641,12 +11641,12 @@ extern "C" int zhud_cmd_set_list_widget_on_activate_smoke(void) {
     int groupZeroCommandIds[] = {5};
     int groupOneCommandIds[] = {6};
     zInput_BindGroupInfo groupsStorage[2] = {};
-    groupsStorage[0].commandIdsBegin = groupZeroCommandIds;
-    groupsStorage[0].commandIdsEnd = groupZeroCommandIds + 1;
-    groupsStorage[0].commandIdsCapacity = groupZeroCommandIds + 1;
-    groupsStorage[1].commandIdsBegin = groupOneCommandIds;
-    groupsStorage[1].commandIdsEnd = groupOneCommandIds + 1;
-    groupsStorage[1].commandIdsCapacity = groupOneCommandIds + 1;
+    groupsStorage[0].commandIds.begin = groupZeroCommandIds;
+    groupsStorage[0].commandIds.end = groupZeroCommandIds + 1;
+    groupsStorage[0].commandIds.capacity = groupZeroCommandIds + 1;
+    groupsStorage[1].commandIds.begin = groupOneCommandIds;
+    groupsStorage[1].commandIds.end = groupOneCommandIds + 1;
+    groupsStorage[1].commandIds.capacity = groupOneCommandIds + 1;
     zInput_BindGroupInfo *groups[] = {&groupsStorage[0], &groupsStorage[1]};
     g_zInput_BindGroupInfoList.begin = groups;
     g_zInput_BindGroupInfoList.end = groups + 2;
@@ -11778,15 +11778,15 @@ extern "C" int zhud_cmd_dialog_callback_navigation_smoke(void) {
     int groupZeroCommandIds[] = {5, 6, 7};
     int groupOneCommandIds[] = {6};
     zInput_BindGroupInfo groupsStorage[3] = {};
-    groupsStorage[0].commandIdsBegin = groupZeroCommandIds;
-    groupsStorage[0].commandIdsEnd = groupZeroCommandIds + 3;
-    groupsStorage[0].commandIdsCapacity = groupZeroCommandIds + 3;
-    groupsStorage[1].commandIdsBegin = groupOneCommandIds;
-    groupsStorage[1].commandIdsEnd = groupOneCommandIds + 1;
-    groupsStorage[1].commandIdsCapacity = groupOneCommandIds + 1;
-    groupsStorage[2].commandIdsBegin = &groupZeroCommandIds[2];
-    groupsStorage[2].commandIdsEnd = groupZeroCommandIds + 3;
-    groupsStorage[2].commandIdsCapacity = groupZeroCommandIds + 3;
+    groupsStorage[0].commandIds.begin = groupZeroCommandIds;
+    groupsStorage[0].commandIds.end = groupZeroCommandIds + 3;
+    groupsStorage[0].commandIds.capacity = groupZeroCommandIds + 3;
+    groupsStorage[1].commandIds.begin = groupOneCommandIds;
+    groupsStorage[1].commandIds.end = groupOneCommandIds + 1;
+    groupsStorage[1].commandIds.capacity = groupOneCommandIds + 1;
+    groupsStorage[2].commandIds.begin = &groupZeroCommandIds[2];
+    groupsStorage[2].commandIds.end = groupZeroCommandIds + 3;
+    groupsStorage[2].commandIds.capacity = groupZeroCommandIds + 3;
     zInput_BindGroupInfo *groups[] = {&groupsStorage[0], &groupsStorage[1], &groupsStorage[2]};
     g_zInput_BindGroupInfoList.begin = groups;
     g_zInput_BindGroupInfoList.end = groups + 3;
@@ -12152,9 +12152,9 @@ extern "C" int zhud_cmd_key_a_button_on_clear_binding_smoke(void) {
 
     int commandIds[] = {5};
     zInput_BindGroupInfo group{};
-    group.commandIdsBegin = commandIds;
-    group.commandIdsEnd = commandIds + 1;
-    group.commandIdsCapacity = commandIds + 1;
+    group.commandIds.begin = commandIds;
+    group.commandIds.end = commandIds + 1;
+    group.commandIds.capacity = commandIds + 1;
     zInput_BindGroupInfo *groups[] = {&group};
     g_zInput_BindGroupInfoList.begin = groups;
     g_zInput_BindGroupInfoList.end = groups + 1;
@@ -12250,9 +12250,9 @@ extern "C" int zhud_cmd_key_b_button_on_clear_binding_smoke(void) {
 
     int commandIds[] = {5};
     zInput_BindGroupInfo group{};
-    group.commandIdsBegin = commandIds;
-    group.commandIdsEnd = commandIds + 1;
-    group.commandIdsCapacity = commandIds + 1;
+    group.commandIds.begin = commandIds;
+    group.commandIds.end = commandIds + 1;
+    group.commandIds.capacity = commandIds + 1;
     zInput_BindGroupInfo *groups[] = {&group};
     g_zInput_BindGroupInfoList.begin = groups;
     g_zInput_BindGroupInfoList.end = groups + 1;
@@ -12348,9 +12348,9 @@ extern "C" int zhud_cmd_joy_button_on_clear_binding_smoke(void) {
 
     int commandIds[] = {5};
     zInput_BindGroupInfo group{};
-    group.commandIdsBegin = commandIds;
-    group.commandIdsEnd = commandIds + 1;
-    group.commandIdsCapacity = commandIds + 1;
+    group.commandIds.begin = commandIds;
+    group.commandIds.end = commandIds + 1;
+    group.commandIds.capacity = commandIds + 1;
     zInput_BindGroupInfo *groups[] = {&group};
     g_zInput_BindGroupInfoList.begin = groups;
     g_zInput_BindGroupInfoList.end = groups + 1;
@@ -12442,9 +12442,9 @@ extern "C" int zhud_cmd_mouse_button_on_clear_binding_smoke(void) {
 
     int commandIds[] = {5};
     zInput_BindGroupInfo group{};
-    group.commandIdsBegin = commandIds;
-    group.commandIdsEnd = commandIds + 1;
-    group.commandIdsCapacity = commandIds + 1;
+    group.commandIds.begin = commandIds;
+    group.commandIds.end = commandIds + 1;
+    group.commandIds.capacity = commandIds + 1;
     zInput_BindGroupInfo *groups[] = {&group};
     g_zInput_BindGroupInfoList.begin = groups;
     g_zInput_BindGroupInfoList.end = groups + 1;
@@ -12673,9 +12673,9 @@ extern "C" int zhud_cmd_dialog_apply_primary_key_rebind_smoke(void) {
 
     int commandIds[] = {5};
     zInput_BindGroupInfo group{};
-    group.commandIdsBegin = commandIds;
-    group.commandIdsEnd = commandIds + 1;
-    group.commandIdsCapacity = commandIds + 1;
+    group.commandIds.begin = commandIds;
+    group.commandIds.end = commandIds + 1;
+    group.commandIds.capacity = commandIds + 1;
     zInput_BindGroupInfo *groups[] = {&group};
     g_zInput_BindGroupInfoList.begin = groups;
     g_zInput_BindGroupInfoList.end = groups + 1;
@@ -12784,9 +12784,9 @@ extern "C" int zhud_cmd_dialog_apply_secondary_key_rebind_smoke(void) {
 
     int commandIds[] = {5};
     zInput_BindGroupInfo group{};
-    group.commandIdsBegin = commandIds;
-    group.commandIdsEnd = commandIds + 1;
-    group.commandIdsCapacity = commandIds + 1;
+    group.commandIds.begin = commandIds;
+    group.commandIds.end = commandIds + 1;
+    group.commandIds.capacity = commandIds + 1;
     zInput_BindGroupInfo *groups[] = {&group};
     g_zInput_BindGroupInfoList.begin = groups;
     g_zInput_BindGroupInfoList.end = groups + 1;
@@ -12895,9 +12895,9 @@ extern "C" int zhud_cmd_dialog_apply_joystick_button_rebind_smoke(void) {
 
     int commandIds[] = {5};
     zInput_BindGroupInfo group{};
-    group.commandIdsBegin = commandIds;
-    group.commandIdsEnd = commandIds + 1;
-    group.commandIdsCapacity = commandIds + 1;
+    group.commandIds.begin = commandIds;
+    group.commandIds.end = commandIds + 1;
+    group.commandIds.capacity = commandIds + 1;
     zInput_BindGroupInfo *groups[] = {&group};
     g_zInput_BindGroupInfoList.begin = groups;
     g_zInput_BindGroupInfoList.end = groups + 1;
@@ -12990,9 +12990,9 @@ extern "C" int zhud_cmd_dialog_apply_mouse_button_rebind_smoke(void) {
 
     int commandIds[] = {5};
     zInput_BindGroupInfo group{};
-    group.commandIdsBegin = commandIds;
-    group.commandIdsEnd = commandIds + 1;
-    group.commandIdsCapacity = commandIds + 1;
+    group.commandIds.begin = commandIds;
+    group.commandIds.end = commandIds + 1;
+    group.commandIds.capacity = commandIds + 1;
     zInput_BindGroupInfo *groups[] = {&group};
     g_zInput_BindGroupInfoList.begin = groups;
     g_zInput_BindGroupInfoList.end = groups + 1;
@@ -14776,7 +14776,7 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
     const bool textInputTable =
         g_HudUiNumericTextInput_TextInputFTable.slots[2] ==
             static_cast<std::uint32_t>(
-                MethodAddress(&HudUiOwnedTextInput::OnAcceptNotifyOwner)) &&
+                MethodAddress(&HudUiOwnedTextInput::OnAccept)) &&
         g_HudUiNumericTextInput_TextInputFTable.slots[3] ==
             reinterpret_cast<std::uintptr_t>(&zGame::ReturnOnlyStub) &&
         g_HudUiNumericTextInput_TextInputFTable.slots[8] ==
@@ -14806,7 +14806,7 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
     const bool clampedTable =
         g_HudUiClampedIntTextInput_CtorTable_FTable.slots[33] ==
             static_cast<std::uint32_t>(
-                MethodAddress(&HudUiClampedIntTextInput::OnRawKeyboardDigitOnly)) &&
+                MethodAddress(&HudUiClampedIntTextInput::OnRawKeyboardChar)) &&
         g_HudUiClampedIntTextInput_CtorTable_FTable.slots[34] ==
             static_cast<std::uint32_t>(
                 MethodAddress(&HudUiNumericTextInput::OnAcceptForwardToCommit)) &&
@@ -14815,9 +14815,8 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
                 MethodAddress(&HudUiClampedIntTextInput::CommitAndGetValue));
 
     HudUiClampedIntTextInput clamped{};
-    HudUiClampedIntTextInput *const clampedConstructorResult = clamped.Constructor(6);
+    new (&clamped) HudUiClampedIntTextInput(6);
     const bool clampedConstructed =
-        clampedConstructorResult == &clamped &&
         clamped.base.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(
                 &g_HudUiClampedIntTextInput_CtorTable_FTable) &&
@@ -14844,9 +14843,9 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
 
     clamped.textInput.buffer[0] = 0;
     clamped.textInput.cursor = 0;
-    clamped.OnRawKeyboardDigitOnly('7');
+    clamped.OnRawKeyboardChar('7');
     const bool clampedDigitAccepted = std::strcmp(clamped.textInput.buffer, "7") == 0;
-    clamped.OnRawKeyboardDigitOnly('-');
+    clamped.OnRawKeyboardChar('-');
     const bool clampedMinusFiltered = std::strcmp(clamped.textInput.buffer, "7") == 0;
 
     input.SetRawKeyboardCapture(0);
@@ -14869,7 +14868,7 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
     acceptTable.slots[34] = reinterpret_cast<std::uintptr_t>(&TestNumericAccept);
     input.base.base.ftable = reinterpret_cast<const HudUiWidget_FTable *>(&acceptTable);
     g_numericAcceptCount = 0;
-    reinterpret_cast<HudUiOwnedTextInput *>(&input.textInput)->OnAcceptNotifyOwner();
+    reinterpret_cast<HudUiOwnedTextInput *>(&input.textInput)->OnAccept();
     const bool acceptedNotify = g_numericAcceptCount == 1;
 
     input.textInput.DispatchKeyAction(0x0d);
@@ -15060,7 +15059,7 @@ extern "C" int zhud_clamped_int_step_button_on_activate_smoke(void) {
     const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
 
     HudUiClampedIntTextInput input{};
-    input.Constructor(6);
+    new (&input) HudUiClampedIntTextInput(6);
     input.minValue = 5;
     input.maxValue = 10;
 
@@ -15329,14 +15328,14 @@ extern "C" int zhud_counter_apply_from_layout_node_smoke(void) {
     zVidTexturePackEntry *const oldBuiltinPacks = g_zVid_BuiltinTexturePacks;
     const int oldBuiltinPackCount = g_zVid_BuiltinTexturePackCount;
     const int oldTexturePackLoadState = g_zVid_TexturePackLoadState;
-    const int oldPixelPackRBits = g_zVideo_PixelPack_RBits;
+    const int oldPixelPackRBits = g_zVideo_PixelPack.rBits;
     HudUiContainer oldMgr = g_HudUiMgr;
     const int oldHudOriginX = g_HudUiMgrHudOriginX;
     const int oldHudOriginY = g_HudUiMgrHudOriginY;
     const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
 
     g_zVid_TexturePackLoadState = 1;
-    g_zVideo_PixelPack_RBits = 0;
+    g_zVideo_PixelPack.rBits = 0;
     g_zVid_BuiltinTexturePacks = nullptr;
     g_zVid_BuiltinTexturePackCount = 0;
     if (zVid_TexturePackEntry_LoadFromFile(&entry) == nullptr) {
@@ -15345,7 +15344,7 @@ extern "C" int zhud_counter_apply_from_layout_node_smoke(void) {
         g_zVid_BuiltinTexturePacks = oldBuiltinPacks;
         g_zVid_BuiltinTexturePackCount = oldBuiltinPackCount;
         g_zVid_TexturePackLoadState = oldTexturePackLoadState;
-        g_zVideo_PixelPack_RBits = oldPixelPackRBits;
+        g_zVideo_PixelPack.rBits = oldPixelPackRBits;
         DeleteFileA(packPath);
         return 3;
     }
@@ -15415,7 +15414,7 @@ extern "C" int zhud_counter_apply_from_layout_node_smoke(void) {
     g_zVid_BuiltinTexturePacks = oldBuiltinPacks;
     g_zVid_BuiltinTexturePackCount = oldBuiltinPackCount;
     g_zVid_TexturePackLoadState = oldTexturePackLoadState;
-    g_zVideo_PixelPack_RBits = oldPixelPackRBits;
+    g_zVideo_PixelPack.rBits = oldPixelPackRBits;
     g_HudUiMgr = oldMgr;
     g_HudUiMgrHudOriginX = oldHudOriginX;
     g_HudUiMgrHudOriginY = oldHudOriginY;
@@ -15787,14 +15786,14 @@ extern "C" int zhud_message_load_weapon_layout_from_node_smoke(void) {
     zVidTexturePackEntry *const oldBuiltinPacks = g_zVid_BuiltinTexturePacks;
     const int oldBuiltinPackCount = g_zVid_BuiltinTexturePackCount;
     const int oldTexturePackLoadState = g_zVid_TexturePackLoadState;
-    const int oldPixelPackRBits = g_zVideo_PixelPack_RBits;
+    const int oldPixelPackRBits = g_zVideo_PixelPack.rBits;
     HudUiContainer oldMgr = g_HudUiMgr;
     const int oldHudOriginX = g_HudUiMgrHudOriginX;
     HudUiWidget *const layoutWidget2 = &TestFieldAt<HudUiWidget>(&g_HudLayoutHW, 0x1b4);
     const HudUiWidget_FTable *const oldLayoutWidget2FTable = layoutWidget2->ftable;
 
     g_zVid_TexturePackLoadState = 1;
-    g_zVideo_PixelPack_RBits = 0;
+    g_zVideo_PixelPack.rBits = 0;
     g_zVid_BuiltinTexturePacks = nullptr;
     g_zVid_BuiltinTexturePackCount = 0;
     if (zVid_TexturePackEntry_LoadFromFile(&entry) == nullptr) {
@@ -15803,7 +15802,7 @@ extern "C" int zhud_message_load_weapon_layout_from_node_smoke(void) {
         g_zVid_BuiltinTexturePacks = oldBuiltinPacks;
         g_zVid_BuiltinTexturePackCount = oldBuiltinPackCount;
         g_zVid_TexturePackLoadState = oldTexturePackLoadState;
-        g_zVideo_PixelPack_RBits = oldPixelPackRBits;
+        g_zVideo_PixelPack.rBits = oldPixelPackRBits;
         DeleteFileA(packPath);
         return 3;
     }
@@ -15911,7 +15910,7 @@ extern "C" int zhud_message_load_weapon_layout_from_node_smoke(void) {
     g_zVid_BuiltinTexturePacks = oldBuiltinPacks;
     g_zVid_BuiltinTexturePackCount = oldBuiltinPackCount;
     g_zVid_TexturePackLoadState = oldTexturePackLoadState;
-    g_zVideo_PixelPack_RBits = oldPixelPackRBits;
+    g_zVideo_PixelPack.rBits = oldPixelPackRBits;
     g_HudUiMgr = oldMgr;
     g_HudUiMgrHudOriginX = oldHudOriginX;
     layoutWidget2->ftable = oldLayoutWidget2FTable;
@@ -16361,6 +16360,10 @@ extern "C" int zhud_triplet_panel_destructor_core_smoke(void) {
 }
 
 extern "C" int zhud_text_input_destructor_core_smoke(void) {
+    HudUiTextInput baseProbe{};
+    baseProbe.buffer = nullptr;
+    void *const baseVptr = *reinterpret_cast<void **>(&baseProbe);
+
     HudUiTextInput input{};
     input.ftable = nullptr;
     input.buffer = static_cast<char *>(::operator new(16));
@@ -16368,21 +16371,23 @@ extern "C" int zhud_text_input_destructor_core_smoke(void) {
     input.cursor = 4;
 
     input.DestructorCore();
-    const bool destructed = input.ftable == &g_HudUiTextInput_FTable && input.capacity == 16 &&
+    const bool destructed = *reinterpret_cast<void **>(&input) == baseVptr && input.capacity == 16 &&
                             input.cursor == 4;
+    input.buffer = nullptr;
 
-    HudUiTextInput thunkInput{};
-    thunkInput.ftable = nullptr;
-    thunkInput.buffer = static_cast<char *>(::operator new(8));
-    thunkInput.capacity = 8;
-    thunkInput.cursor = 2;
+    HudUiTextInput directInput{};
+    directInput.ftable = nullptr;
+    directInput.buffer = static_cast<char *>(::operator new(8));
+    directInput.capacity = 8;
+    directInput.cursor = 2;
 
-    thunkInput.DestructorCoreThunk();
+    directInput.HudUiTextInput::~HudUiTextInput();
+    const bool directDestructed =
+        *reinterpret_cast<void **>(&directInput) == baseVptr && directInput.capacity == 8 &&
+        directInput.cursor == 2;
+    directInput.buffer = nullptr;
 
-    return destructed && thunkInput.ftable == &g_HudUiTextInput_FTable &&
-                   thunkInput.capacity == 8 && thunkInput.cursor == 2
-               ? 0
-               : 1;
+    return destructed && directDestructed ? 0 : 1;
 }
 
 extern "C" int zhud_text_input_constructor_and_alloc_smoke(void) {
@@ -24019,19 +24024,19 @@ extern "C" int hud_sensor_tracker_save_state_marker_smoke(void) {
     zRndr::SpanRoutineProc const oldRaster5 = zRndr::g_pfnImmediateRaster5;
     zRndr::PointOpProc const oldPointOp = zRndr::g_pfnPointOpActive;
     int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
-    const int oldRMaskShifted = g_zVideo_PixelPack_RMaskShifted;
-    const int oldGMaskShifted = g_zVideo_PixelPack_GMaskShifted;
-    const int oldRShift = g_zVideo_PixelPack_RShift;
-    const int oldGShift = g_zVideo_PixelPack_GShift;
-    const int oldBShiftTo8 = g_zVideo_PixelPack_BShiftTo8;
+    const int oldRMaskShifted = g_zVideo_PixelPack.rMaskShifted;
+    const int oldGMaskShifted = g_zVideo_PixelPack.gMaskShifted;
+    const int oldRShift = g_zVideo_PixelPack.packedBase;
+    const int oldGShift = g_zVideo_PixelPack.sumMinus8;
+    const int oldBShiftTo8 = g_zVideo_PixelPack.bShiftTo8;
 
     int networkEnabled = 0;
     ZOPT_NETWORK_ENABLED = &networkEnabled;
-    g_zVideo_PixelPack_RMaskShifted = 0xf8;
-    g_zVideo_PixelPack_GMaskShifted = 0xfc;
-    g_zVideo_PixelPack_RShift = 8;
-    g_zVideo_PixelPack_GShift = 3;
-    g_zVideo_PixelPack_BShiftTo8 = 3;
+    g_zVideo_PixelPack.rMaskShifted = 0xf8;
+    g_zVideo_PixelPack.gMaskShifted = 0xfc;
+    g_zVideo_PixelPack.packedBase = 8;
+    g_zVideo_PixelPack.sumMinus8 = 3;
+    g_zVideo_PixelPack.bShiftTo8 = 3;
 
     HudSensorTracker tracker{};
     zVec3 trackedOrigin{10.0f, 20.0f, 30.0f};
@@ -24100,11 +24105,11 @@ extern "C" int hud_sensor_tracker_save_state_marker_smoke(void) {
     zRndr::g_pfnImmediateRaster5 = oldRaster5;
     zRndr::g_pfnPointOpActive = oldPointOp;
     ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
-    g_zVideo_PixelPack_RMaskShifted = oldRMaskShifted;
-    g_zVideo_PixelPack_GMaskShifted = oldGMaskShifted;
-    g_zVideo_PixelPack_RShift = oldRShift;
-    g_zVideo_PixelPack_GShift = oldGShift;
-    g_zVideo_PixelPack_BShiftTo8 = oldBShiftTo8;
+    g_zVideo_PixelPack.rMaskShifted = oldRMaskShifted;
+    g_zVideo_PixelPack.gMaskShifted = oldGMaskShifted;
+    g_zVideo_PixelPack.packedBase = oldRShift;
+    g_zVideo_PixelPack.sumMinus8 = oldGShift;
+    g_zVideo_PixelPack.bShiftTo8 = oldBShiftTo8;
 
     return trackedOk && saveOk && inactiveOk ? 0 : 1;
 }

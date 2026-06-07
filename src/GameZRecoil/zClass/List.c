@@ -82,6 +82,7 @@ namespace {
         zClass_NodePartial *
     );
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     int RemoveAllChildren(
         zClass_NodePartial * node,
         RemoveChildProc removeChild
@@ -99,6 +100,7 @@ namespace {
         return 0;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     int DeleteObject3DWhenDetached(zClass_NodePartial * node) {
         if (node->listCountA != 0) {
             return 1;

@@ -59,12 +59,14 @@ void HudUiNetExitPanel::Destructor() {
     this->HudUiBackground::~HudUiBackground();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiNetExitPanel::Update(
     float deltaSeconds
 ) {
     HudUiBackground::Update(deltaSeconds);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiNetExitPanel::SetEnabled(
     int enabled
 ) {

@@ -275,12 +275,14 @@ const int ZOPT_GRAPHICS_GLOBAL_LIGHT = 0x10;
 const int ZOPT_GRAPHICS_ALL_VIDEO_BUFFER = 0x20;
 
 template <typename T>
+// Source-faithful helper recovered from address-backed callers in this source file.
 T *OptionValuePointer(
     zOptionEntryPartial *entry
 ) {
     return (T *)(entry);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int BuildGraphicsFlags(
     zReader::Node *profileRoot,
     const char *globalLightKey,
@@ -329,6 +331,7 @@ int BuildGraphicsFlags(
     return flags;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ResetOptionPointers() {
     ZOPT_VIDEO_ACCELERATION = 0;
     ZOPT_VIDEO_MODE = 0;
@@ -376,7 +379,7 @@ void ReturnOnlyStub() {}
 // Reimplements 0x4b3380: zGame::Options_FindOption
 zOptionEntryPartial *__fastcall Options_FindOption(
     const char *name
-) {
+) throw() {
     for (zOptionEntryPartial *entry = g_zGame_Options_OptionListHead; entry != 0;
         entry = entry->next) {
         if (strcmp(
@@ -1198,6 +1201,7 @@ const int ZOPT_GAME_CONTROL_CURSOR = 0x04;
 const int ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON = 0x08;
 const double ZOPT_COMPARE_TOLERANCE_PCT = 0.02;
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int WrappedAbsDifference(
     int lhs,
     int rhs

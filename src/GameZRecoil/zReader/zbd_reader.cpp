@@ -45,6 +45,7 @@ struct NodeRecord32 {
 };
 RECOIL_STATIC_ASSERT(sizeof(NodeRecord32) == 0xC4);
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static wstring Win32LastErrorToString(
     DWORD err
 ) {
@@ -80,6 +81,7 @@ static wstring Win32LastErrorToString(
     return out;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static bool ReadExact(
     FILE *f,
     void *dst,
@@ -93,6 +95,7 @@ static bool ReadExact(
     ) == sz;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void InitSummary(
     Summary &s
 ) {
@@ -106,6 +109,7 @@ static void InitSummary(
     s.classTypeHistogram.clear();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static unsigned __int64 GetFileSizeOrZero(
     const wstring &path
 ) {
@@ -123,6 +127,7 @@ static unsigned __int64 GetFileSizeOrZero(
     return size.QuadPart;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static bool ClassTypeCountGreater(
     const pair<
         unsigned int,
@@ -134,6 +139,7 @@ static bool ClassTypeCountGreater(
     return lhs.second > rhs.second;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static unsigned int ReadU32FromBuffer(
     const unsigned char *buf,
     size_t offset
@@ -147,6 +153,7 @@ static unsigned int ReadU32FromBuffer(
     return value;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static int ReadI32FromBuffer(
     const unsigned char *buf,
     size_t offset
@@ -160,6 +167,7 @@ static int ReadI32FromBuffer(
     return value;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static wstring BytesToHex(
     const unsigned char *p,
     size_t n
@@ -175,6 +183,7 @@ static wstring BytesToHex(
     return out;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static wstring FormatSummary(
     const Summary &s
 ) {
@@ -222,6 +231,7 @@ static wstring FormatSummary(
     return ss.str();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 wstring ReadZbdSummaryText(
     const wstring &path
 ) {
@@ -350,6 +360,7 @@ struct PayloadSanitySummary {
     vector<unsigned int> sampleSoundVarRangeFail;
 };
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static bool ReadAt(
     FILE *f,
     unsigned __int64 off,
@@ -369,6 +380,7 @@ static bool ReadAt(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static bool CanAddRange(
     unsigned __int64 base,
     unsigned __int64 add,
@@ -381,6 +393,7 @@ static bool CanAddRange(
     return base <= (fileSize - add);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static bool ValidateNodeRefList(
     FILE *f,
     unsigned __int64 off,
@@ -422,6 +435,7 @@ static bool ValidateNodeRefList(
     return true;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static unsigned int PayloadSizeForClassType(
     unsigned int classType
 ) {
@@ -448,6 +462,7 @@ static unsigned int PayloadSizeForClassType(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void PrintStrongSamples(
     wstringstream &ss,
     const Summary &s,
@@ -473,6 +488,7 @@ static void PrintStrongSamples(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void PrintPointerFieldSamples(
     wstringstream &ss,
     const Summary &s,
@@ -500,6 +516,7 @@ static void PrintPointerFieldSamples(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void PrintOffsetLine(
     wstringstream &ss,
     const Summary &s,
@@ -513,6 +530,7 @@ static void PrintOffsetLine(
         ss << L" (out of range)\n";
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void PrintPayloadOffsetSamples(
     wstringstream &ss,
     const vector<NodePayloadInfo> &payloadOffsets,
@@ -533,6 +551,7 @@ static void PrintPayloadOffsetSamples(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static wstring FormatDetailed(
     const Summary &s,
     const vector<NodePayloadInfo> &payloadOffsets,
@@ -1087,6 +1106,7 @@ static wstring FormatDetailed(
     return ss.str();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 wstring ReadZbdDetailedText(
     const wstring &path
 ) {
@@ -1647,6 +1667,7 @@ wstring ReadZbdDetailedText(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 wstring ReadZbdNodesCsvText(
     const wstring &path
 ) {

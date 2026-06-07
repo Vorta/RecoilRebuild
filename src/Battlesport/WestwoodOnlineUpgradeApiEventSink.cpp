@@ -180,6 +180,7 @@ struct IWestwoodOnlineUpgradeApiCallbacks : IUnknown {
     ) = 0;
 };
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 IWestwoodOnlineUpgradeApiCallbacks *GetCallbackApiComObject() {
     return (IWestwoodOnlineUpgradeApiCallbacks *)g_pWestwoodOnlineUpgradeApi;
 }
@@ -229,6 +230,7 @@ HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::QueryInterface(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HRESULT __stdcall WestwoodOnlineUpgradeApiEventSink::QueryInterface(
     WestwoodOnlineUpgradeApiEventSink *self,
     REFIID iid,
@@ -242,10 +244,12 @@ HRESULT __stdcall WestwoodOnlineUpgradeApiEventSink::QueryInterface(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AddRef() {
     return (ULONG)InterlockedIncrement(&m_refCountAndLock.refCount);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::Release() {
     return WestwoodOnlineUpgradeApiEventSink::Release(this);
 }

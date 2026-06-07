@@ -49,12 +49,14 @@ RECOIL_STATIC_ASSERT(
     ) == 0xa0
 );
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zModel_DrawBatchBasePartial *ModelDrawBatchFromNode(
     zGeometry_ClipPatchNodeView *node
 ) {
     return (zModel_DrawBatchBasePartial *)((unsigned int)(node->userDataOrDiRef));
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool IsClipPatchNodeOutsideClipBoundsXY(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zGeometry_ClipPatchNodeView *node
@@ -81,6 +83,7 @@ bool IsClipPatchNodeOutsideClipBoundsXY(
     return false;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zVec3 *PointAtDwordOffset(
     zVec3 *points,
     int pointDwordOffset

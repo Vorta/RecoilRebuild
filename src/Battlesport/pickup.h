@@ -51,12 +51,14 @@ struct PickupNodeRuntimeFields {
     int amount;
 };
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline PickupNodeRuntimeFields *PickupNodeFields(
     zClass_NodePartial *node
 ) {
     return (PickupNodeRuntimeFields *)(node->name);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline const PickupNodeRuntimeFields *PickupNodeFields(
     const zClass_NodePartial *node
 ) {

@@ -118,17 +118,17 @@ void ResetDefaultTexturePackState() {
 } // namespace
 
 extern "C" int zvid_pack_color_rgb_smoke(void) {
-    const int savedRMaskShifted = g_zVideo_PixelPack_RMaskShifted;
-    const int savedGMaskShifted = g_zVideo_PixelPack_GMaskShifted;
-    const int savedRShift = g_zVideo_PixelPack_RShift;
-    const int savedGShift = g_zVideo_PixelPack_GShift;
-    const int savedBShiftTo8 = g_zVideo_PixelPack_BShiftTo8;
+    const int savedRMaskShifted = g_zVideo_PixelPack.rMaskShifted;
+    const int savedGMaskShifted = g_zVideo_PixelPack.gMaskShifted;
+    const int savedRShift = g_zVideo_PixelPack.packedBase;
+    const int savedGShift = g_zVideo_PixelPack.sumMinus8;
+    const int savedBShiftTo8 = g_zVideo_PixelPack.bShiftTo8;
 
-    g_zVideo_PixelPack_RMaskShifted = 0xf8;
-    g_zVideo_PixelPack_GMaskShifted = 0xfc;
-    g_zVideo_PixelPack_RShift = 8;
-    g_zVideo_PixelPack_GShift = 3;
-    g_zVideo_PixelPack_BShiftTo8 = 3;
+    g_zVideo_PixelPack.rMaskShifted = 0xf8;
+    g_zVideo_PixelPack.gMaskShifted = 0xfc;
+    g_zVideo_PixelPack.packedBase = 8;
+    g_zVideo_PixelPack.sumMinus8 = 3;
+    g_zVideo_PixelPack.bShiftTo8 = 3;
 
     const unsigned int packedWhite = zVid_PackColorRGB(0xff, 0xff, 0xff);
     const unsigned int packedMaskedWhite = zVid_PackColorRGB(0xf8, 0xfc, 0xf8);
@@ -137,11 +137,11 @@ extern "C" int zvid_pack_color_rgb_smoke(void) {
                                         ((0xf8 & 0x20) << 8) |
                                         (0x40 >> 3);
 
-    g_zVideo_PixelPack_RMaskShifted = savedRMaskShifted;
-    g_zVideo_PixelPack_GMaskShifted = savedGMaskShifted;
-    g_zVideo_PixelPack_RShift = savedRShift;
-    g_zVideo_PixelPack_GShift = savedGShift;
-    g_zVideo_PixelPack_BShiftTo8 = savedBShiftTo8;
+    g_zVideo_PixelPack.rMaskShifted = savedRMaskShifted;
+    g_zVideo_PixelPack.gMaskShifted = savedGMaskShifted;
+    g_zVideo_PixelPack.packedBase = savedRShift;
+    g_zVideo_PixelPack.sumMinus8 = savedGShift;
+    g_zVideo_PixelPack.bShiftTo8 = savedBShiftTo8;
 
     return packedWhite == 0xffff && packedMaskedWhite == 0xffff &&
                    packedSample == expectedSample
@@ -314,7 +314,7 @@ extern "C" int zvideo_texture_pack_load_image_smoke(void) {
     zVidTexturePackEntry entry{};
     std::strcpy(entry.filePath, packPath);
     g_zVid_TexturePackLoadState = 1;
-    g_zVideo_PixelPack_RBits = 0;
+    g_zVideo_PixelPack.rBits = 0;
     if (zVid_TexturePackEntry_LoadFromFile(&entry) == nullptr) {
         DeleteFileA(packPath);
         return 3;

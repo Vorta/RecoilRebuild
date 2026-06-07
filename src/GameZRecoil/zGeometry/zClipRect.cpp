@@ -13,6 +13,7 @@ zClipRectPartial gClipRect_Primary = {0};
 namespace {
 const int kClipBufferCapacity = 0x40;
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool IsInsideNear(
     const zClipVert &vertex,
     float zMin
@@ -20,6 +21,7 @@ bool IsInsideNear(
     return vertex.z >= zMin;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool IsInsideMin(
     float value,
     float minValue
@@ -27,6 +29,7 @@ bool IsInsideMin(
     return value >= minValue;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool IsInsideMax(
     float value,
     float maxValue
@@ -34,6 +37,7 @@ bool IsInsideMax(
     return value < maxValue;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zClipVert InterpolateVert(
     const zClipVert &a,
     const zClipVert &b,
@@ -47,6 +51,7 @@ zClipVert InterpolateVert(
     return out;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zClipVert InterpolateVertOnAxis(
     const zClipVert &a,
     const zClipVert &b,
@@ -66,6 +71,7 @@ zClipVert InterpolateVertOnAxis(
     return out;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zClipUV InterpolateUv(
     const zClipUV &a,
     const zClipUV &b,
@@ -77,6 +83,7 @@ zClipUV InterpolateUv(
     return out;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float InterpolateFloat(
     float a,
     float b,
@@ -85,6 +92,7 @@ float InterpolateFloat(
     return a + (b - a) * t;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void AppendClipped(
     zClipVert *verts,
     zClipUV *uvs,
@@ -101,6 +109,7 @@ void AppendClipped(
     ++count;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void AppendClippedVert(
     zClipVert *verts,
     int &count,
@@ -114,6 +123,7 @@ void AppendClippedVert(
     ++count;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void AppendClippedWithAttr(
     zClipVert *verts,
     zClipUV *uvs,
@@ -133,6 +143,7 @@ void AppendClippedWithAttr(
     ++count;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void AppendClippedWithAttr012(
     zClipVert *verts,
     zClipUV *uvs,
@@ -158,6 +169,7 @@ void AppendClippedWithAttr012(
     ++count;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void AppendClippedVertWithAttr012(
     zClipVert *verts,
     float *attr0,
@@ -180,6 +192,7 @@ void AppendClippedVertWithAttr012(
     ++count;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ClipVertsAgainstPlane(
     const zClipVert *source,
     int sourceCount,
@@ -242,6 +255,7 @@ int ClipVertsAgainstPlane(
     return destCount;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ClipVertsUvsAgainstPlane(
     const zClipVert *sourceVerts,
     const zClipUV *sourceUvs,
@@ -313,6 +327,7 @@ int ClipVertsUvsAgainstPlane(
     return destCount;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ClipVertsAttr0AgainstPlane(
     const zClipVert *sourceVerts,
     const float *sourceAttrs,
@@ -384,6 +399,7 @@ int ClipVertsAttr0AgainstPlane(
     return destCount;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ClipVertsAttr012AgainstPlane(
     const zClipVert *sourceVerts,
     const float *sourceAttr0,
@@ -477,6 +493,7 @@ int ClipVertsAttr012AgainstPlane(
     return destCount;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ClipVertsUvsAttr012AgainstPlane(
     const zClipVert *sourceVerts,
     const zClipUV *sourceUvs,
@@ -581,6 +598,7 @@ int ClipVertsUvsAttr012AgainstPlane(
     return destCount;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ClipPolyNoUvCore(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -671,6 +689,7 @@ int ClipPolyNoUvCore(
     return 1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ClipPolyUvCore(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -789,6 +808,7 @@ int ClipPolyUvCore(
     return 1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ClipPolyAttr0NoUvCore(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -907,6 +927,7 @@ int ClipPolyAttr0NoUvCore(
     return 1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ClipPolyAttr012NoUvCore(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -1071,6 +1092,7 @@ int ClipPolyAttr012NoUvCore(
     return 1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ClipPolyAttr012UvCore(
     zClipRectPartial *clipRect,
     int *vertexCount

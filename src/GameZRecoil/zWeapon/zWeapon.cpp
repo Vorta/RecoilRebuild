@@ -23,6 +23,7 @@ template <typename T>
  * Purpose: preserve the typed callback declaration at each registration site
  * while passing the raw ZAR section-callback pointer expected by zUtil_ZAR.
  */
+// Source-faithful helper recovered from address-backed callers in this source file.
 zZbdSectionCallback ZbdCallbackPtr(
     T callback
 ) {

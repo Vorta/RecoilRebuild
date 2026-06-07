@@ -60,6 +60,7 @@ void __fastcall HudUiNoOpMethodStub(
     void *
 ) {}
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool IsCallableProviderAddress(
     unsigned int address
 ) {
@@ -363,6 +364,7 @@ void HudLayoutBase::Disable() {
     SetActive(0);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudLayoutBase::OnActivated() {
 }
 
@@ -865,12 +867,14 @@ const char kClampedIntTextInputAcceptedRawKeyChars[] = "0123456789\x1b\r\x08\x7f
 // modern compiler codegen.
 template <typename T> class FieldAt {
   public:
+    // Source-faithful helper recovered from address-backed callers in this source file.
     FieldAt(
         void *base,
         size_t offset
     )
         : address((T *)((unsigned char *)(base) + offset)) {}
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     FieldAt(
         const void *base,
         size_t offset
@@ -918,6 +922,7 @@ template <typename T> class FieldAt {
 };
 #else
 template <typename T>
+// Source-faithful helper recovered from address-backed callers in this source file.
 T &FieldAt(
     void *base,
     size_t offset
@@ -926,6 +931,7 @@ T &FieldAt(
 }
 
 template <typename T>
+// Source-faithful helper recovered from address-backed callers in this source file.
 const T &FieldAt(
     const void *base,
     size_t offset
@@ -934,6 +940,7 @@ const T &FieldAt(
 }
 #endif
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HudUiPanel *NewSimplePanel(
     int fontSize,
     int fontWeight
@@ -957,12 +964,14 @@ HudUiPanel *NewSimplePanel(
     return panel;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 size_t HudUiTripletEntryCount(
     const HudUiTripletEntries &entries
 ) {
     return (size_t)(((HudUiTripletEntries *)(&entries))->GetCount());
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 size_t HudUiTripletEntryCapacity(
     const HudUiTripletEntries &entries
 ) {
@@ -973,6 +982,7 @@ size_t HudUiTripletEntryCapacity(
     return (size_t)(entries.cap - entries.begin);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int HudUiTripletEntrySortKey(
     const HudUiScoreboardEntry &entry
 ) {
@@ -996,6 +1006,7 @@ int __fastcall CompareSortKey(
     return (unsigned int)(entryB->playerKey) < (unsigned int)(entryA->playerKey) ? 1 : 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool EntryComesBefore(
     const HudUiScoreboardEntry &lhs,
     const HudUiScoreboardEntry &rhs
@@ -1062,6 +1073,7 @@ void __fastcall InsertionSortRange(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HudUiScoreboardEntry *MedianOfThree(
     HudUiScoreboardEntry *first,
     HudUiScoreboardEntry *middle,
@@ -1113,6 +1125,7 @@ void __fastcall SortRange(
 
 } // namespace HudUiListMenuEntry
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiTripletInsertionSort(
     HudUiScoreboardEntry *begin,
     HudUiScoreboardEntry *end
@@ -1128,6 +1141,7 @@ void HudUiTripletInsertionSort(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiTripletEnsureCapacity(
     HudUiTripletEntries &entries,
     size_t neededCount
@@ -1159,6 +1173,7 @@ void HudUiTripletEnsureCapacity(
     entries.cap = newBegin + newCapacity;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiTripletSetPanelTextColor(
     HudUiPanel *panel,
     unsigned int color
@@ -1168,6 +1183,7 @@ void HudUiTripletSetPanelTextColor(
     panel->textDirty = 1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiTripletSetPanelVisible(
     HudUiPanel *panel,
     int visible
@@ -1175,6 +1191,7 @@ void HudUiTripletSetPanelVisible(
     ((HudUiElement *)(panel))->SetVisible(visible);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiTripletPrepareCell(
     HudUiTriplet *triplet,
     HudUiPanel *panel,
@@ -1197,11 +1214,13 @@ void HudUiTripletPrepareCell(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 template <typename T> T *AllocateHudObject() {
     return (T *)(::operator new(sizeof(T)));
 }
 
 template <typename T>
+// Source-faithful helper recovered from address-backed callers in this source file.
 zZbdSectionCallback ZbdCallbackPtr(
     T callback
 ) {
@@ -1214,6 +1233,7 @@ zZbdSectionCallback ZbdCallbackPtr(
     return value.raw;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HudUiPanel *NewObjectivePanel() {
     HudUiPanelSimple *const storage = AllocateHudObject<HudUiPanelSimple>();
     if (storage == 0) {
@@ -1228,6 +1248,7 @@ HudUiPanel *NewObjectivePanel() {
     return (HudUiPanel *)(storage);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HudUiPanel *TextStackLineAt(
     HudUiTextStack4 *stack,
     int index
@@ -1238,6 +1259,13 @@ HudUiPanel *TextStackLineAt(
 const char kHudUiMessageClearSpecialToken165[] = "\xa5";
 const float kHudUiMessageClearSpecialTokenValue = 123456792.0f;
 
+/**
+ * Recovered original inline/static helper with no standalone retail function.
+ * Observed in callers 0x4b5630, 0x4b5740, 0x4b5860, and 0x4b5900 as the
+ * same HudUiPanelPtrVector begin/end loop dispatching HudUiElement::SetVisible.
+ * Purpose: apply a visibility state to every panel in a recovered panel-vector
+ * member while preserving the original HudUiZrdWidget source pattern.
+ */
 void HudUiSetPanelVectorVisible(
     HudUiPanelPtrVector &panels,
     int visible
@@ -1247,6 +1275,7 @@ void HudUiSetPanelVectorVisible(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zReader::Node *ZrdArrayBase(
     zReader::Node *node
 ) {
@@ -1257,12 +1286,14 @@ zReader::Node *ZrdArrayBase(
     return node->value.nodes;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ZrdArrayCount(
     zReader::Node *arrayBase
 ) {
     return arrayBase != 0 ? arrayBase[0].value.i32 : 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zReader::Node *ZrdArrayItem(
     zReader::Node *arrayBase,
     int index
@@ -1270,6 +1301,7 @@ zReader::Node *ZrdArrayItem(
     return arrayBase != 0 ? &arrayBase[index] : 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 const char *ZrdArrayString(
     zReader::Node *arrayBase,
     int index
@@ -1281,6 +1313,7 @@ const char *ZrdArrayString(
     return item != 0 && item->type == zReader::ZRDR_NODE_STRING ? item->value.str : 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ZrdArrayInt(
     zReader::Node *arrayBase,
     int index,
@@ -1293,6 +1326,7 @@ int ZrdArrayInt(
     return item != 0 && item->type == zReader::ZRDR_NODE_INT ? item->value.i32 : fallback;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float ZrdArrayFloat(
     zReader::Node *arrayBase,
     int index,
@@ -1683,6 +1717,7 @@ struct HudUiListSelectorItemArrayHeader {
     int count;
 };
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 const HudFontStyle *HudUiZrdOwnerFontStyle(
     const HudUiBackground *owner,
     int styleIndex
@@ -1691,6 +1726,7 @@ const HudFontStyle *HudUiZrdOwnerFontStyle(
     return style->validMarker != 0 ? style : 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ApplyHudFontStyleToPanel(
     HudUiPanel *panel,
     const HudFontStyle *style
@@ -1719,6 +1755,7 @@ void ApplyHudFontStyleToPanel(
     panel->bkColor = style->bkColor;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ApplyHudFontStyleTextOnly(
     HudUiPanel *panel,
     const HudFontStyle *style
@@ -1744,6 +1781,7 @@ void ApplyHudFontStyleTextOnly(
     panel->shadowOffsetY = 1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void DeleteHudUiListSelectorItemArray(
     HudUiListSelectorItem *items
 ) {
@@ -1756,13 +1794,14 @@ void DeleteHudUiListSelectorItemArray(
     const int count = header->count;
     {
         for (int index = 0; index < count; ++index) {
-            ((HudUiPanel *)(&items[index]))->Destructor();
+            ((HudUiPanel *)(&items[index]))->~HudUiPanel();
         }
     }
 
     ::operator delete(header);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HudUiPanel *CreateHudZrdLabelPanel(
     HudUiZrdWidget *widget,
     zReader::Node *labelSpecBase,
@@ -1808,6 +1847,7 @@ HudUiPanel *CreateHudZrdLabelPanel(
     return panel;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void AppendHudZrdLabelPanel(
     HudUiZrdWidget *widget,
     HudUiPanelPtrVector &panels,
@@ -1828,6 +1868,7 @@ void AppendHudZrdLabelPanel(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HudUiPanel *CreateHudZrdTextPanel(
     HudUiZrdWidget *widget,
     zReader::Node *textNode,
@@ -1875,6 +1916,7 @@ HudUiPanel *CreateHudZrdTextPanel(
     return panel;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void LoadHudZrdLabelSection(
     HudUiZrdWidget *widget,
     zReader::Node *parentNode,
@@ -1923,6 +1965,7 @@ void LoadHudZrdLabelSection(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ApplyHudZrdFlashSection(
     zReader::Node *parentNode,
     HudUiPanelPtrVector &panels
@@ -1979,6 +2022,7 @@ void ApplyHudZrdFlashSection(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void LoadHudZrdBitmap(
     zReader::Node *parentNode,
     const char *sectionName,
@@ -1998,6 +2042,7 @@ void LoadHudZrdBitmap(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void LoadHudZrdSound(
     zReader::Node *parentNode,
     zSndSample **outSound,
@@ -2024,6 +2069,7 @@ void LoadHudZrdSound(
     *outSound = zSnd::FindSampleByName(name);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ConfigureTextStackLine(
     HudUiTextStack4 *stack,
     HudUiPanel *panel,
@@ -2056,6 +2102,7 @@ void ConfigureTextStackLine(
     element->SetVisible(0);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void DestroyTextStackLines(
     HudUiTextStack4 *stack
 ) {
@@ -2064,7 +2111,7 @@ void DestroyTextStackLines(
             TextStackLineAt(
                 stack,
                 index
-            )->Destructor();
+            )->~HudUiPanel();
         }
     }
 
@@ -2688,12 +2735,14 @@ void TickMeterFillAnimation() {
     g_HudUiMgrObjectiveMeter.points[3].y = (float)(top);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void HudUiMgrObjective_UpdateWidgetRightX() {
     const zVidImagePartial *const image = g_HudUiMgrObjectiveWidget.image;
     const int width = image != 0 ? image->width : 0;
     g_HudUiMgrObjectiveWidgetRightX = g_HudUiMgrObjectiveWidget.GetCenterX() + width;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void HudUiMgrObjective_SetSlidePosition(
     float slideX
 ) {
@@ -2704,12 +2753,14 @@ static void HudUiMgrObjective_SetSlidePosition(
     HudUiMgrObjective::UpdateMeterXPoints();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void HudUiMgrObjective_UpdateHwDirtyRectIfNeeded() {
     if (zOpt::GetHudTypeForCurrentHwMode() == 2) {
         g_HudLayoutHW.UpdateObjectiveDirtyRect();
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void HudUiMgrObjective_DrawSensorNoise(
     float fade,
     int visibleWhenCovered
@@ -3025,12 +3076,14 @@ void ClearTextLines() {
 } // namespace HudUiAuxOverlay
 
 namespace {
+// Source-faithful helper recovered from address-backed callers in this source file.
 zReader::Node *HudUiZrdPayload(
     zReader::Node *node
 ) {
     return node != 0 && node->type == zReader::ZRDR_NODE_ARRAY ? node->value.nodes : 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 const char *HudUiZrdStringAt(
     zReader::Node *payload,
     int index
@@ -3038,6 +3091,7 @@ const char *HudUiZrdStringAt(
     return payload != 0 ? payload[index].value.str : 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int HudUiZrdIntAt(
     zReader::Node *payload,
     int index
@@ -3045,13 +3099,14 @@ int HudUiZrdIntAt(
     return payload != 0 ? payload[index].value.i32 : 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiEnsureLoaderWidgetsConstructed() {
     g_HudUiMgrSensorPanel.Constructor(0);
     g_HudUiMgrSensorOverlay.Constructor(0);
-    g_HudUiMgrSensorMeter.Constructor();
+    new (&g_HudUiMgrSensorMeter) HudUiMeter;
     g_HudUiMgrObjectiveWidget.Constructor(0);
     g_HudUiMgrObjectiveSensorRect.Constructor(0);
-    g_HudUiMgrObjectiveBar.Constructor();
+    new ((HudUiBar *)(&g_HudUiMgrObjectiveBar)) HudUiBar;
     g_HudUiMgrReticleWidget.Constructor(0);
     ((HudUiTripletPanel *)(&g_HudUiMgrNanitePanel))->Constructor();
 
@@ -3071,7 +3126,7 @@ void HudUiEnsureLoaderWidgetsConstructed() {
                                                       sizeof(g_HudUiMgrModeCounters[0]));
             ++counterIndex2) {
             HudUiCounter &counter = g_HudUiMgrModeCounters[counterIndex2];
-            counter.Constructor();
+            new (&counter) HudUiCounter;
         }
     }
 
@@ -3086,6 +3141,7 @@ void HudUiEnsureLoaderWidgetsConstructed() {
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiSetFontFromRect(
     HudUiPanel *panel,
     const HudUiRect &fontSpec
@@ -3101,6 +3157,7 @@ void HudUiSetFontFromRect(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiSetPanelClipWithSource(
     HudUiPanel *panel,
     void *source,
@@ -3112,6 +3169,7 @@ void HudUiSetPanelClipWithSource(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiApplyStatsTripletInt3(
     zReader::Node *payload,
     int nodeIndex,
@@ -3158,7 +3216,7 @@ HudUiContainer *__fastcall Constructor(
     g_HudUiMgrObjectiveWidget.Constructor(0);
     g_HudUiMgrObjectiveSensorRect.Constructor(0);
     g_HudUiMgrObjectiveMeter.ConstructorEx();
-    g_HudUiMgrObjectiveBar.Constructor();
+    new ((HudUiBar *)(&g_HudUiMgrObjectiveBar)) HudUiBar;
     g_HudUiMgrObjectiveChatComposeTextInput.Constructor(256);
 
     g_HudUiMgrSensorPanel.Constructor(0);
@@ -3175,7 +3233,7 @@ HudUiContainer *__fastcall Constructor(
     {
         int index;
         for (index = 0; index < 4; ++index) {
-            g_HudUiMgrModeCounters[index].Constructor();
+            new (&g_HudUiMgrModeCounters[index]) HudUiCounter;
         }
     }
 
@@ -3186,7 +3244,7 @@ HudUiContainer *__fastcall Constructor(
         }
     }
 
-    g_HudUiMgrTailBar.Constructor();
+    new (&g_HudUiMgrTailBar) HudUiBar;
     g_HudUiMgrTailBar.quadHeight = 0;
     g_HudUiMgrTailBar.quadLeftX = 0.0f;
     return manager;
@@ -3252,7 +3310,7 @@ void __fastcall StaticDestructor(
 
     ((HudUiTripletPanel *)(&g_HudUiMgrNanitePanel))->DestructorCore();
     g_HudUiMgrReticleWidget.DestructorCore();
-    ((HudUiPanel *)(&g_HudUiMgrHudRootPanel))->Destructor();
+    ((HudUiPanel *)(&g_HudUiMgrHudRootPanel))->~HudUiPanel();
     self->DestructorCore();
 }
 
@@ -4554,7 +4612,7 @@ int __fastcall InitHudLayouts(
             -1,
             -1
         );
-        shieldMessageWidget->meter.Constructor();
+        new (&shieldMessageWidget->meter) HudUiMeter;
     }
     g_HudUiMgrShieldMessageWidget = shieldMessageWidget;
 
@@ -4730,11 +4788,11 @@ HudUiElement::HudUiElement(
     int initY
 ) {
     HudUiElement *const element = this;
+    element->x = initX;
     element->y = initY;
     parent = 0;
     next = 0;
     timer = 0.0f;
-    element->x = initX;
     element->Invalidate();
 
     flags = 0;
@@ -4788,10 +4846,21 @@ HudUiElement * HudUiElement::CopyFrom(
     return this;
 }
 
-// Reimplements 0x404d70: HudUiElement::ScalarDeletingDestructor
+/**
+ * Reimplements 0x4b47a0: HudUiElement::~HudUiElement.
+ * Purpose: Reset the HudUiElement virtual table during class destruction.
+ */
+HudUiElement::~HudUiElement() {
+}
+
+/**
+ * Reimplements 0x404d70: HudUiElement::ScalarDeletingDestructor.
+ * Purpose: Destroy a HudUiElement and free scalar-deleting-destructor storage when requested.
+ */
 HudUiElement * HudUiElement::ScalarDeletingDestructor(
     unsigned int flags
 ) {
+    this->~HudUiElement();
     if ((flags & 1u) != 0) {
         ::operator delete(this);
     }
@@ -4900,6 +4969,18 @@ void HudUiElement::Update(
     }
 }
 
+/**
+ * Recovered original helper slot with no standalone HudUiElement retail function.
+ * Binary Ninja vtables for HudUiElement/HudUiZrdWidget/HudUiPanel and
+ * HudUiNumericTextInput place a one-argument no-op provider target at slot
+ * +0x28 between Update and GetBoundsRectOrNull.
+ * Purpose: preserve the source-faithful HudUiElement virtual order used by
+ * retail input/update dispatch without recreating table data under src/.
+ */
+void HudUiElement::OnUpdateIdle(
+    float
+) {}
+
 // Reimplements 0x4b4280: HudUiElement::SetTimer
 void HudUiElement::SetTimer(
     float duration
@@ -4956,17 +5037,23 @@ void HudUiPanel::SetClip(
     Invalidate();
 }
 
-// Reimplements 0x4b42c0: HudUiElement::GetRect
-void HudUiElement::GetRect(
+/**
+ * Reimplements 0x4b42c0: HudUiElement::GetTextRect.
+ * Purpose: fill a degenerate rectangle from the element position.
+ * Binary Ninja: 0x4b42c0 dispatches the HudUiElement virtual GetX and GetY
+ * methods from the base text-rectangle slot, then writes right/left and
+ * bottom/top in that order.
+ */
+void HudUiElement::GetTextRect(
     HudUiRect *outRect
 ) {
     const int rectX = GetX();
-    outRect->left = rectX;
     outRect->right = rectX;
+    outRect->left = rectX;
 
     const int rectY = GetY();
-    outRect->top = rectY;
     outRect->bottom = rectY;
+    outRect->top = rectY;
 }
 
 // Reimplements 0x404d10: HudUiElement::HitTestTrue (D:\Proj\Battlesport\hud.cpp)
@@ -4990,6 +5077,7 @@ int HudUiElement::GetY() {
     return y;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiElement::OnHoverRepeat() {}
 
 HudUiRect * HudUiElement::GetBoundsRectOrNull() {
@@ -4998,6 +5086,7 @@ HudUiRect * HudUiElement::GetBoundsRectOrNull() {
 
 void HudUiElement::OnActivate() {}
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiElement::OnClearBinding() {}
 
 void HudUiElement::ShowPreview() {}
@@ -5006,15 +5095,19 @@ void HudUiElement::HidePreview() {}
 
 void HudUiElement::OnBeginCapture() {}
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiElement::OnEndCapture() {}
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiElement::OnPointerButtonState(
     int,
     int
 ) {}
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiElement::OnCapturedPrimaryRelease() {}
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int HudUiElement::ShouldHandleInput(
     HudUiBackground *,
     int
@@ -5022,6 +5115,7 @@ int HudUiElement::ShouldHandleInput(
     return 1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiElement::AfterInputUpdate(
     HudUiBackground *,
     int
@@ -5041,24 +5135,28 @@ void HudUiElement::EnableWordWrapWithRect(
     const HudUiRect *
 ) {}
 
-void HudUiElement::GetTextRect(
-    HudUiRect *outRect
-) {
-    GetRect(outRect);
-}
+/**
+ * No standalone retail function has been identified; restored as the default
+ * HudUiTextLabel text-tail virtual while HudUiPanel overrides the slot.
+ * Purpose: keep text virtual ownership on the text-label family.
+ */
+void HudUiTextLabel::UpdateTextBoundsFromContent() {}
 
-void HudUiElement::SetTextFmt(
-    const char *,
-    ...
-) {}
-
-void HudUiElement::UpdateTextBoundsFromContent() {}
-
-HGDIOBJ HudUiElement::GetFont() {
+/**
+ * No standalone retail function has been identified; restored as the default
+ * HudUiTextLabel text-tail virtual while HudUiPanel overrides the slot.
+ * Purpose: keep font lookup ownership on the text-label family.
+ */
+HGDIOBJ HudUiTextLabel::GetFont() {
     return 0;
 }
 
-void HudUiElement::SetFont(
+/**
+ * No standalone retail function has been identified; restored as the default
+ * HudUiTextLabel text-tail virtual while HudUiPanel overrides the slot.
+ * Purpose: keep font assignment ownership on the text-label family.
+ */
+void HudUiTextLabel::SetFont(
     const char *,
     int,
     int,
@@ -5068,45 +5166,49 @@ void HudUiElement::SetFont(
     int
 ) {}
 
-void HudUiElement::SetFontHandle(
+/**
+ * No standalone retail function has been identified; restored as the default
+ * HudUiTextLabel text-tail virtual while HudUiPanel overrides the slot.
+ * Purpose: keep font-handle ownership on the text-label family.
+ */
+void HudUiTextLabel::SetFontHandle(
     HGDIOBJ
 ) {}
 
-void HudUiElement::SetTextFmtV(
+/**
+ * No standalone retail function has been identified; restored as the default
+ * HudUiTextLabel text-tail virtual while HudUiPanel overrides the slot.
+ * Purpose: keep formatted text ownership on the text-label family.
+ */
+void HudUiTextLabel::SetTextFmtV(
     const char *,
     va_list
 ) {}
 
-void HudUiElement::SetText(
+/**
+ * No standalone retail function has been identified; restored as the default
+ * HudUiTextLabel text-tail virtual while HudUiPanel overrides the slot.
+ * Purpose: keep text assignment ownership on the text-label family.
+ */
+void HudUiTextLabel::SetText(
     const char *
 ) {}
 
-void HudUiElement::RebuildTextRect() {}
+/**
+ * No standalone retail function has been identified; restored as the default
+ * HudUiTextLabel text-tail virtual while HudUiPanel overrides the slot.
+ * Purpose: keep text-rectangle rebuild ownership on the text-label family.
+ */
+void HudUiTextLabel::RebuildTextRect() {}
 
-void HudUiElement::RefreshState() {}
-
-int HudUiElement::LoadFromZrd(
-    zReader::Node *,
-    HudUiBackground *
-) {
-    return 0;
-}
-
-void HudUiElement::PostLoadFromZrd() {}
-
-int HudUiElement::OnRawKeyboardChar(
-    int
-) {
-    return 0;
-}
-
-int HudUiElement::OnAcceptForwardToCommit() {
-    return CommitAndGetValue();
-}
-
-int HudUiElement::CommitAndGetValue() {
-    return 0;
-}
+/**
+ * No standalone retail function has been identified; restored as the default
+ * HudUiZrdWidget post-load virtual observed as the ZRD widget tail slot before
+ * numeric input adds raw-key virtuals.
+ * Purpose: keep ZRD loading ownership on HudUiZrdWidget.
+ */
+// Source-faithful helper recovered from address-backed callers in this source file.
+void HudUiZrdWidget::PostLoadFromZrd() {}
 
 // Reimplements 0x4bffb0: HudUiPrimitiveBindTarget::SetSegmentEndpoints (HudUiBackground.cpp)
 void HudUiPrimitiveBindTarget::SetSegmentEndpoints(
@@ -5192,6 +5294,7 @@ void HudUiCompositePanelVector::Clear() {
     capacityEnd = 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 size_t HudUiCompositePanelVectorCount(
     const HudUiCompositePanelVector &vector
 ) {
@@ -5275,7 +5378,7 @@ void HudUiCompositePanelVector::InsertCopies(
     }
 
     for (HudUiCompositePanelEntry *entry = begin; entry != end; ++entry) {
-        entry->panel.Destructor();
+        entry->panel.HudUiPanel::~HudUiPanel();
     }
 
     ::operator delete(begin);
@@ -5320,7 +5423,7 @@ HudUiCompositePanel * HudUiCompositePanel::ConstructorWithEntryCount(
 // Reimplements 0x403e20: HudUiCompositePanel::Destructor
 void HudUiCompositePanel::Destructor() {
     for (HudUiCompositePanelEntry *entry = entryVector.begin; entry != entryVector.end; ++entry) {
-        entry->panel.Destructor();
+        entry->panel.HudUiPanel::~HudUiPanel();
     }
 
     ::operator delete(entryVector.begin);
@@ -5328,7 +5431,7 @@ void HudUiCompositePanel::Destructor() {
     entryVector.end = 0;
     entryVector.capacityEnd = 0;
 
-    HudUiPanel::Destructor();
+    HudUiPanel::~HudUiPanel();
 }
 
 // Reimplements 0x4bb960: HudUiCompositePanel::ScalarDeletingDestructor
@@ -5527,7 +5630,7 @@ void HudUiCompositePanel::ResizeEntryVectorAndRelayout(
         } else {
             HudUiCompositePanelEntry *const newEnd = entryVector.begin + entryCount;
             for (HudUiCompositePanelEntry *entry = newEnd; entry != entryVector.end; ++entry) {
-                entry->panel.Destructor();
+                entry->panel.HudUiPanel::~HudUiPanel();
             }
             entryVector.end = newEnd;
         }
@@ -5735,7 +5838,12 @@ void HudUiContainer::SetChildFlags(
     unsigned int childFlags
 ) {
     for (HudUiElement *child = childHead; child != 0; child = child->next) {
-        child->flags = childFlags | (child->flags & 0x10u);
+        const unsigned int invertedFlags = ~child->flags;
+        if ((invertedFlags & 0x10u) != 0) {
+            child->flags = childFlags;
+        } else {
+            child->flags = childFlags | 0x10u;
+        }
     }
 }
 
@@ -5766,23 +5874,29 @@ void HudUiBackgroundContainer::SetEnabled(
     HudUiContainer::SetEnabled(enabled);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiCreditsBackButton::HudUiCreditsBackButton() : HudUiZrdWidget() {
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiCreditsBackButton::~HudUiCreditsBackButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiCreditsQuitButton::HudUiCreditsQuitButton() : HudUiZrdWidget() {
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiCreditsQuitButton::~HudUiCreditsQuitButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiZrdScrollingText::HudUiZrdScrollingText() : HudUiZrdWidget() {
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiZrdScrollingText::~HudUiZrdScrollingText() {
     HudUiPanelSpan *row = rows.begin;
     while (row != rows.end) {
@@ -5823,20 +5937,20 @@ HudUiCreditsPanel::HudUiCreditsPanel() : HudUiBackground() {
         if (g_RecoilApp_QuitAfterCredits != 0) {
             HudUiBackground::BindWidgetByName(
                 loadedSection,
-                (HudUiWidget *)(&quitButton),
+                (HudUiZrdWidget *)(&quitButton),
                 "QUIT"
             );
         } else {
             HudUiBackground::BindWidgetByName(
                 loadedSection,
-                (HudUiWidget *)(&backButton),
+                (HudUiZrdWidget *)(&backButton),
                 "BACK"
             );
         }
 
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            (HudUiWidget *)(screen),
+            (HudUiZrdWidget *)(screen),
             "CREDITS_SCREEN"
         );
         HudUiBackground::FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
@@ -5982,7 +6096,7 @@ int HudUiZrdScrollingText::LoadFromZrd(
                 1,
                 &templateEntry
             );
-            templateEntry.panel.Destructor();
+            templateEntry.panel.~HudUiPanel();
         }
 
         rows.InsertN(
@@ -6018,7 +6132,7 @@ int HudUiZrdScrollingText::LoadFromZrd(
 
     HudUiPanelLayoutEntry *entry = templateSpan.begin;
     while (entry != templateSpan.end) {
-        entry->panel.Destructor();
+        entry->panel.~HudUiPanel();
         ++entry;
     }
 
@@ -6230,7 +6344,7 @@ void __stdcall HudUiPanelLayoutEntry::DestroyRange(
 void HudUiPanelSpan::Clear() {
     HudUiPanelLayoutEntry *entry = begin;
     while (entry != end) {
-        entry->panel.Destructor();
+        entry->panel.~HudUiPanel();
         ++entry;
     }
 
@@ -6576,13 +6690,13 @@ HudUiBackground::HudUiBackground()
         }
     }
 
-    int vmode = 5;
+    int defaultVMode = 5;
     zOptionEntryPartial *vmodeOption = zGame::Options_FindOption("VMode");
-    if (vmodeOption != 0) {
-        vmode = vmodeOption->payloadOrBuffer;
+    if (vmodeOption == 0) {
+        vmodeOption = (zOptionEntryPartial *)(&defaultVMode);
     }
 
-    switch (vmode) {
+    switch (vmodeOption->payloadOrBuffer) {
     case 2:
     case 4:
         uiOriginX = 0;
@@ -6637,6 +6751,7 @@ void HudUiDialogController::BlitOwnedSurfaceToPrimary() {
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned int HudUiReadPackedColor(
     zReader::Node *colorBase
 ) {
@@ -7113,7 +7228,7 @@ void HudUiBackground::SetEnabled(
 // Reimplements 0x4ba070: HudUiBackground::BindButtonsNodeToWidgetByName
 unsigned char __fastcall HudUiBackground::BindButtonsNodeToWidgetByName(
     zReader::Node *parentNode,
-    HudUiWidget *widget,
+    HudUiZrdWidget *widget,
     const char *name
 ) {
     if (parentNode != 0) {
@@ -7140,7 +7255,7 @@ unsigned char __fastcall HudUiBackground::BindButtonsNodeToWidgetByName(
 // Reimplements 0x4ba0c0: HudUiBackground::BindWidgetByName
 int HudUiBackground::BindWidgetByName(
     zReader::Node *,
-    HudUiWidget *widget,
+    HudUiZrdWidget *widget,
     const char *name
 ) {
     return BindButtonsNodeToWidgetByName(
@@ -7150,7 +7265,13 @@ int HudUiBackground::BindWidgetByName(
     ) & 0xff;
 }
 
-// Reimplements 0x4ba0e0: HudUiBackground::BindPrimitiveNodeToElement
+/**
+ * Reimplements 0x4ba0e0: HudUiBackground::BindPrimitiveNodeToElement.
+ * Purpose: bind a named ZRD primitive node to an existing HUD element.
+ * Binary Ninja: 0x4ba0e0 performs direct zReader::Node child/value reads for
+ * optional BITMAP, POSITION, WORDWRAP, FONT, COLOR, ENDP_REL, and ENDP_ABS
+ * records before assigning the final blit source, clip rect, and dirty state.
+ */
 int HudUiBackground::BindPrimitiveNodeToElement(
     zReader::Node *,
     HudUiElement *element,
@@ -7183,46 +7304,33 @@ int HudUiBackground::BindPrimitiveNodeToElement(
         primitiveNode,
         "BITMAP"
     );
-    zReader::Node *bitmapBase = ZrdArrayBase(bitmapNode);
-    const char *const bitmapPath = ZrdArrayString(
-        bitmapBase,
-        1
-    );
-    if (bitmapPath != 0) {
-        ((HudUiWidget *)(element))->SetImageByPathOwned(bitmapPath);
+    if (bitmapNode != 0) {
+        ((HudUiWidget *)(element))->SetImageByPathOwned(
+            bitmapNode->value.nodes[1].value.str
+        );
     }
 
-    zReader::Node *positionBase = ZrdArrayBase(zReader_GetNamedNode(
+    zReader::Node *positionNode = zReader_GetNamedNode(
         primitiveNode,
         "POSITION"
-    ));
-    if (positionBase != 0) {
+    );
+    if (positionNode != 0) {
+        zReader::Node *const positionBase = positionNode->value.nodes;
         element->SetPos(
-            uiOriginX + ZrdArrayInt(
-                positionBase,
-                1,
-                0
-            ),
-            uiOriginY + ZrdArrayInt(positionBase, 2, 0)
+            uiOriginX + positionBase[1].value.i32,
+            uiOriginY + positionBase[2].value.i32
         );
     }
 
-    zReader::Node *wordWrapBase = ZrdArrayBase(zReader_GetNamedNode(
+    zReader::Node *wordWrapNode = zReader_GetNamedNode(
         primitiveNode,
         "WORDWRAP"
-    ));
-    if (wordWrapBase != 0) {
+    );
+    if (wordWrapNode != 0) {
+        zReader::Node *const wordWrapBase = wordWrapNode->value.nodes;
         HudUiRect wordWrapRect = {0};
-        wordWrapRect.right = ZrdArrayInt(
-            wordWrapBase,
-            1,
-            0
-        );
-        wordWrapRect.bottom = ZrdArrayInt(
-            wordWrapBase,
-            2,
-            0
-        );
+        wordWrapRect.right = wordWrapBase[1].value.i32;
+        wordWrapRect.bottom = wordWrapBase[2].value.i32;
         element->EnableWordWrapWithRect(&wordWrapRect);
     }
 
@@ -7230,21 +7338,13 @@ int HudUiBackground::BindPrimitiveNodeToElement(
         primitiveNode,
         "FONT"
     );
-    zReader::Node *fontBase = ZrdArrayBase(fontNode);
     if (fontNode != 0) {
-        const int fontIndex = fontBase != 0 ? ZrdArrayInt(
-            fontBase,
-            1,
-            0
-        ) : fontNode->value.i32;
-        const HudFontStyle *const style = HudUiZrdOwnerFontStyle(
-            this,
-            fontIndex
-        );
-        if (style != 0) {
+        const int fontIndex = fontNode->value.i32;
+        const HudFontStyle *const style = &fontStyles[fontIndex];
+        if (style->validMarker != 0) {
             HudUiPanel *const panel = (HudUiPanel *)(element);
             panel->alignMode = style->alignMode;
-            element->SetFont(
+            panel->SetFont(
                 style->fontName,
                 style->fontSize,
                 style->fontWeight,
@@ -7264,26 +7364,15 @@ int HudUiBackground::BindPrimitiveNodeToElement(
         }
     }
 
-    zReader::Node *colorBase = ZrdArrayBase(zReader_GetNamedNode(
+    zReader::Node *colorNode = zReader_GetNamedNode(
         primitiveNode,
         "COLOR"
-    ));
-    if (colorBase != 0) {
-        const unsigned char red = (unsigned char)(ZrdArrayInt(
-            colorBase,
-            1,
-            0
-        ));
-        const unsigned char green = (unsigned char)(ZrdArrayInt(
-            colorBase,
-            2,
-            0
-        ));
-        const unsigned char blue = (unsigned char)(ZrdArrayInt(
-            colorBase,
-            3,
-            0
-        ));
+    );
+    if (colorNode != 0) {
+        zReader::Node *const colorBase = colorNode->value.nodes;
+        const unsigned char red = (unsigned char)(colorBase[1].value.i32);
+        const unsigned char green = (unsigned char)(colorBase[2].value.i32);
+        const unsigned char blue = (unsigned char)(colorBase[3].value.i32);
         ((HudUiPrimitiveBindTarget *)(element))->color565 = zVid_PackColorRGB(
             red,
             green,
@@ -7291,41 +7380,35 @@ int HudUiBackground::BindPrimitiveNodeToElement(
         ) & 0xffffu;
     }
 
-    zReader::Node *relativeEndBase = ZrdArrayBase(zReader_GetNamedNode(
+    zReader::Node *relativeEndNode = zReader_GetNamedNode(
         primitiveNode,
         "ENDP_REL"
-    ));
-    if (relativeEndBase != 0) {
+    );
+    if (relativeEndNode != 0) {
+        zReader::Node *const relativeEndBase = relativeEndNode->value.nodes;
         const int startX = element->GetX();
         const int startY = element->GetY();
         ((HudUiPrimitiveBindTarget *)(element))
             ->SetSegmentEndpoints(
                 startX,
                 startY,
-                startX + ZrdArrayInt(
-                    relativeEndBase,
-                    1,
-                    0
-                ),
-                startY + ZrdArrayInt(relativeEndBase, 2, 0)
+                startX + relativeEndBase[1].value.i32,
+                startY + relativeEndBase[2].value.i32
             );
     }
 
-    zReader::Node *absoluteEndBase = ZrdArrayBase(zReader_GetNamedNode(
+    zReader::Node *absoluteEndNode = zReader_GetNamedNode(
         primitiveNode,
         "ENDP_ABS"
-    ));
-    if (absoluteEndBase != 0) {
+    );
+    if (absoluteEndNode != 0) {
+        zReader::Node *const absoluteEndBase = absoluteEndNode->value.nodes;
         ((HudUiPrimitiveBindTarget *)(element))
             ->SetSegmentEndpoints(
                 element->GetX(),
                 element->GetY(),
-                ZrdArrayInt(
-                    absoluteEndBase,
-                    1,
-                    0
-                ),
-                ZrdArrayInt(absoluteEndBase, 2, 0)
+                absoluteEndBase[1].value.i32,
+                absoluteEndBase[2].value.i32
             );
     }
 
@@ -7473,6 +7556,7 @@ HudFontStyle::HudFontStyle() {
     fontWeight = 0x1f4;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HudFontStyle::~HudFontStyle() {
     Destructor();
 }
@@ -7917,61 +8001,34 @@ HudUiZrdWidget::HudUiZrdWidget() : HudUiWidget(0) {
     originX = 0;
     owner = 0;
     defaultImage = 0;
-    disabledImage = 0;
     rolloverImage = 0;
+    disabledImage = 0;
     rolloverSound = 0;
-    rolloverPlayHandle = 0;
     rolloverSoundScale = 1.0f;
+    rolloverPlayHandle = 0;
     activateImage = 0;
     activateSound = 0;
     activateSoundScale = 1.0f;
     activatePlayHandle = 0;
 
-    HudUiPanel **labelSource = labelPanels.end;
-    HudUiPanel **labelDest = labelPanels.begin;
-    if (labelSource != labelPanels.end) {
-        do {
-            *labelDest++ = *labelSource++;
-        } while (labelSource != labelPanels.end);
-    }
-    ((StdPtrVector *)(&labelPanels))
-        ->ClearNoOpDestroy(
-            (int *)(labelDest),
-            (int *)(labelPanels.end)
-        );
-    labelPanels.end = labelDest;
-
-    HudUiPanel **rolloverSource = rolloverLabelPanels.end;
-    HudUiPanel **rolloverDest = rolloverLabelPanels.begin;
-    if (rolloverSource != rolloverLabelPanels.end) {
-        do {
-            *rolloverDest++ = *rolloverSource++;
-        } while (rolloverSource != rolloverLabelPanels.end);
-    }
-    ((StdPtrVector *)(&rolloverLabelPanels))
-        ->ClearNoOpDestroy(
-            (int *)(rolloverDest),
-            (int *)(rolloverLabelPanels.end)
-        );
-    rolloverLabelPanels.end = rolloverDest;
-
-    HudUiPanel **activateSource = activateLabelPanels.end;
-    HudUiPanel **activateDest = activateLabelPanels.begin;
-    if (activateSource != activateLabelPanels.end) {
-        do {
-            *activateDest++ = *activateSource++;
-        } while (activateSource != activateLabelPanels.end);
-    }
-    ((StdPtrVector *)(&activateLabelPanels))
-        ->ClearNoOpDestroy(
-            (int *)(activateDest),
-            (int *)(activateLabelPanels.end)
-        );
-    activateLabelPanels.end = activateDest;
+    labelPanels.EraseRangeNoDestroyInline(
+        labelPanels.begin,
+        labelPanels.end
+    );
+    rolloverLabelPanels.EraseRangeNoDestroyInline(
+        rolloverLabelPanels.begin,
+        rolloverLabelPanels.end
+    );
+    activateLabelPanels.EraseRangeNoDestroyInline(
+        activateLabelPanels.begin,
+        activateLabelPanels.end
+    );
 
     *((unsigned short *)(&imageStateWord)) = 1;
-    Invalidate();
-    flags = ((unsigned char)(flags) & 0x10u) | 0x02u;
+    HudUiElement *element = this;
+    element->Invalidate();
+    unsigned int visibleFlag = (unsigned char)(flags);
+    flags = (visibleFlag & 0x10u) | 0x02u;
 }
 
 // Reimplements 0x4b4ee0: HudUiZrdWidget::Constructor
@@ -8236,6 +8293,13 @@ void *__stdcall HudUiZrdWidget::DeleteChildIfPresent(
     return 0;
 }
 
+/**
+ * No standalone retail function; recovered original-source helper observed in
+ * caller 0x4b50c0 as the repeated HudUiPanelPtrVector begin/end loop that
+ * scalar-deletes non-null child panels and clears each vector slot.
+ * Purpose: share the original HudUiZrdWidget panel-vector child teardown shape
+ * for rollover and activate label panels.
+ */
 void HudUiZrdWidget_DeletePanelVectorChildren(
     HudUiPanelPtrVector &vector
 ) {
@@ -8982,26 +9046,39 @@ void HudUiCycleSelectorWidget::AdvanceSelectionAndActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x4b7f20: HudUiCycleSelectorWidget::SetIndexClamped
-void HudUiCycleSelectorWidget::SetIndexClamped(
+/**
+ * Reimplements 0x4b7f20: HudUiCycleSelectorWidget::SetIndexClamped.
+ *
+ * Purpose: clamp a requested cycle-selector index and return the previous
+ * selected index.
+ *
+ * Evidence: BN assembly at 0x4b7f20 loads selectedIndex into eax before the
+ * clamp branches, compares the requested index against firstIndex, itemCount,
+ * and visibleCount, writes selectedIndex to the clamped value, and returns with
+ * eax preserved.
+ */
+int HudUiCycleSelectorWidget::SetIndexClamped(
     int index
 ) {
+    const int previousIndex = selectedIndex;
+
     if (index < firstIndex) {
         selectedIndex = firstIndex;
-        return;
+        return previousIndex;
     }
 
     if (index >= itemCount) {
         selectedIndex = itemCount - 1;
-        return;
+        return previousIndex;
     }
 
     if (index >= visibleCount) {
         selectedIndex = visibleCount - 1;
-        return;
+        return previousIndex;
     }
 
     selectedIndex = index;
+    return previousIndex;
 }
 
 // Reimplements 0x4b7f80: HudUiCycleSelectorWidget::SetVisibleRange
@@ -9107,8 +9184,9 @@ HudUiTransitionTextPanel::HudUiTransitionTextPanel()
     flashDirectionSign = 1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HudUiTransitionTextPanel::~HudUiTransitionTextPanel() {
-    HudUiPanel::Destructor();
+    HudUiPanel::~HudUiPanel();
 }
 
 // Reimplements 0x4bc9f0: HudUiTransitionTextPanel::TickFlash
@@ -9240,9 +9318,9 @@ void HudUiTransitionTextPanel::SetFlashColorAndRate(
  * background font style, and copy that style onto the text-panel entry.
  *
  * Evidence: BN assembly at 0x4b8100 selects owner->fontStyles[styleIndex] at
- * HudUiBackground offset 0x1cec, checks validMarker, calls the entry SetFont
- * slot, and copies text color, shadow, alignment, background mode, and
- * background color fields.
+ * HudUiBackground offset 0x1cec, masks the style pointer to null when
+ * validMarker is clear, calls the entry SetFont slot, and copies text color,
+ * shadow, alignment, background mode, and background color fields.
  */
 void HudUiCycleSelectorWidget::ApplyFontStyleForEntry(
     int index,
@@ -9264,12 +9342,13 @@ void HudUiCycleSelectorWidget::ApplyFontStyleForEntry(
         return;
     }
 
-    const HudFontStyle *const style = &owner->fontStyles[styleIndex];
-    if (style->validMarker == 0) {
+    const HudFontStyle *style = &owner->fontStyles[styleIndex];
+    style = style->validMarker != 0 ? style : 0;
+    if (style == 0) {
         return;
     }
 
-    HudUiPanel *const panel = (HudUiPanel *)(entriesA[index]);
+    HudUiPanel *panel = (HudUiPanel *)(entriesA[index]);
     panel->SetFont(
         style->fontName,
         style->fontSize,
@@ -9280,15 +9359,25 @@ void HudUiCycleSelectorWidget::ApplyFontStyleForEntry(
         2
     );
 
-    panel->textColor0 = style->textColor;
-    panel->textColor1 = style->textColor;
+    panel = (HudUiPanel *)(entriesA[index]);
+    const unsigned int textColor = style->textColor;
+    panel->textColor0 = textColor;
+    panel->textColor1 = textColor;
     panel->textDirty = 1;
+
+    panel = (HudUiPanel *)(entriesA[index]);
     panel->shadowEnabled = style->shadowEnabled;
     panel->shadowOffsetX = 1;
     panel->shadowOffsetY = 1;
+
+    panel = (HudUiPanel *)(entriesA[index]);
     panel->alignMode = style->alignMode;
-    panel->bkMode = style->bkMode;
-    panel->bkColor = style->bkColor;
+
+    panel = (HudUiPanel *)(entriesA[index]);
+    const unsigned int backgroundColor = style->bkColor;
+    const int backgroundMode = style->bkMode;
+    panel->bkMode = backgroundMode;
+    panel->bkColor = backgroundColor;
 }
 
 // Reimplements 0x4b8200: HudUiCycleSelectorWidget::AddBitmapEntry
@@ -9936,6 +10025,7 @@ void HudUiZrdWidgetEx17C::EnableChildAtIndex(
     option->RefreshState();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiZrdWidgetEx17C::SetVisible(
     int childIndex
 ) {
@@ -10036,19 +10126,6 @@ HudCmdBindingEntry **__fastcall HudCmdBindingEntry::CopyRange(
 }
 
 /**
- * No standalone retail function; current Binary Ninja evidence shows this
- * destructor body inlined into the VC scalar-deleting destructor at 0x40bf50
- * and the static delete helper at 0x40bf20.
- * Purpose: release the owned command-binding display string.
- */
-HudCmdBindingEntry::~HudCmdBindingEntry() {
-    if (displayText != 0) {
-        free(displayText);
-        displayText = 0;
-    }
-}
-
-/**
  * Reimplements 0x40bf20: HudCmdBindingEntry::DeleteAndReturnNull.
  * Binary Ninja shows a static HudCmdBindButton.cpp helper that destroys a
  * non-null binding entry, deletes its storage, and returns null.
@@ -10073,41 +10150,12 @@ int HudCmdBindButtonBase::AddBindingEntry(
     const char *displayText,
     int commandId
 ) {
-    HudCmdBindingEntry **begin = (HudCmdBindingEntry **)(bindingVec.begin);
-    HudCmdBindingEntry **end = (HudCmdBindingEntry **)(bindingVec.end);
-    HudCmdBindingEntry **capacity = (HudCmdBindingEntry **)(bindingVec.capacity);
-    const int oldCount = begin != 0 ? (int)(end - begin) : 0;
-
-    HudCmdBindingEntry *const entry =
-        (HudCmdBindingEntry *)(::operator new(sizeof(HudCmdBindingEntry)));
-    if (entry != 0) {
-        new (entry) HudCmdBindingEntry;
-        entry->displayText = _strdup(displayText);
-        entry->commandId = commandId;
-    }
-
-    const int hasCapacity = begin != 0 && (capacity - end) >= 1;
-    if (!hasCapacity) {
-        const int growCount = oldCount > 1 ? oldCount : 1;
-        const int newCapacityCount = oldCount + growCount;
-        HudCmdBindingEntry **const newBegin = (HudCmdBindingEntry **)(::operator new(
-            (unsigned int)newCapacityCount * sizeof(HudCmdBindingEntry *)
-        ));
-
-        for (int index = 0; index < oldCount; ++index) {
-            newBegin[index] = begin[index];
-        }
-        newBegin[oldCount] = entry;
-
-        ::operator delete(begin);
-        bindingVec.begin = newBegin;
-        bindingVec.end = newBegin + oldCount + 1;
-        bindingVec.capacity = newBegin + newCapacityCount;
-    } else {
-        *end = entry;
-        bindingVec.end = end + 1;
-    }
-
+    const int oldCount = bindingVec.Count();
+    HudCmdBindingEntry *const entry = new HudCmdBindingEntry(
+        displayText,
+        commandId
+    );
+    bindingVec.PushBack(entry);
     return oldCount;
 }
 
@@ -10124,30 +10172,27 @@ void HudCmdBindButtonBase::OnSelectedIndexChanged(
 void HudCmdBindButtonBase::SetSelectedEntry(
     int selectedIndex
 ) {
-    HudCmdBindingEntry **const entries = (HudCmdBindingEntry **)(bindingVec.begin);
-    const int entryCount =
-        entries != 0 ? (int)((HudCmdBindingEntry **)(bindingVec.end) - entries) : 0;
-
     int slotIndex;
     for (slotIndex = 0; slotIndex < visibleBindingSlotCount; ++slotIndex) {
-        HudUiListSelectorItem *const item = &bindingSlotPanels[slotIndex];
         const int entryIndex = selectedIndex + slotIndex - visibleBindingSlotCount;
-        if (entryIndex >= 0 && entryIndex < entryCount) {
-            item->entryIndex = entryIndex;
-            item->SetTextFmt(
+        if (entryIndex >= 0 && entryIndex < bindingVec.Count()) {
+            HudCmdBindingEntry **const entries = (HudCmdBindingEntry **)(bindingVec.begin);
+            bindingSlotPanels[slotIndex].entryIndex = entryIndex;
+            bindingSlotPanels[slotIndex].SetTextFmt(
                 "%s",
                 entries[entryIndex]->displayText
             );
-            item->SetVisible(1);
+            bindingSlotPanels[slotIndex].SetVisible(1);
         } else {
-            item->SetVisible(0);
-            item->Draw();
+            bindingSlotPanels[slotIndex].SetVisible(0);
+            bindingSlotPanels[slotIndex].DrawBase();
         }
 
-        item->Invalidate();
+        bindingSlotPanels[slotIndex].Invalidate();
     }
 
-    if (selectedIndex >= 0 && selectedIndex < entryCount) {
+    if (selectedIndex >= 0 && selectedIndex < bindingVec.Count()) {
+        HudCmdBindingEntry **const entries = (HudCmdBindingEntry **)(bindingVec.begin);
         bindPanel.entryIndex = selectedIndex;
         bindPanel.SetTextFmt(
             "%s",
@@ -10156,21 +10201,21 @@ void HudCmdBindButtonBase::SetSelectedEntry(
     }
 
     for (slotIndex = visibleBindingSlotCount; slotIndex < bindingSlotTotalCount; ++slotIndex) {
-        HudUiListSelectorItem *const item = &bindingSlotPanels[slotIndex];
         const int entryIndex = selectedIndex + slotIndex - visibleBindingSlotCount + 1;
-        if (entryIndex >= 0 && entryIndex < entryCount) {
-            item->entryIndex = entryIndex;
-            item->SetTextFmt(
+        if (entryIndex >= 0 && entryIndex < bindingVec.Count()) {
+            HudCmdBindingEntry **const entries = (HudCmdBindingEntry **)(bindingVec.begin);
+            bindingSlotPanels[slotIndex].entryIndex = entryIndex;
+            bindingSlotPanels[slotIndex].SetTextFmt(
                 "%s",
                 entries[entryIndex]->displayText
             );
-            item->SetVisible(1);
+            bindingSlotPanels[slotIndex].SetVisible(1);
         } else {
-            item->SetVisible(0);
-            item->Draw();
+            bindingSlotPanels[slotIndex].SetVisible(0);
+            bindingSlotPanels[slotIndex].DrawBase();
         }
 
-        item->Invalidate();
+        bindingSlotPanels[slotIndex].Invalidate();
     }
 
     selectedBindingIndex = selectedIndex;
@@ -10212,6 +10257,34 @@ void **__fastcall zUtil_StdPtrVector_Clear(
     void **const oldEnd = (void **)(self->end);
     self->end = self->begin;
     return oldEnd;
+}
+
+/**
+ * Restores the VC5 std::vector<HudCmdBindingEntry *>::erase(first,last)
+ * dependency used by 0x40b680 after the caller destroys each pointed-to
+ * binding entry. The caller-visible retail body invokes the vector erase
+ * helper rather than only assigning end = begin.
+ * Purpose: keep command-binding vector cleanup source-shaped as typed STL
+ * storage while matching the retail caller's erase dependency.
+ */
+HudCmdBindingEntry ** HudCmdBindingVector::EraseRange(
+    HudCmdBindingEntry **first,
+    HudCmdBindingEntry **last
+) {
+    HudCmdBindingEntry **write = first;
+    HudCmdBindingEntry **read = last;
+    HudCmdBindingEntry **const oldEnd = end;
+    if (read != oldEnd) {
+        do {
+            *write++ = *read++;
+        } while (read != oldEnd);
+    }
+    ((StdPtrVector *)(this))->ClearNoOpDestroy(
+        (int *)(write),
+        (int *)(oldEnd)
+    );
+    end = write;
+    return first;
 }
 
 // Reimplements 0x4ba470: zUtil_StdPtrVector_FreeBufferAndReset
@@ -10284,7 +10357,7 @@ void HudCmdBindButtonBase::DestructorCore() {
     bindingVec.end = 0;
     bindingVec.capacity = 0;
 
-    ((HudUiPanel *)(&bindPanel))->Destructor();
+    ((HudUiPanel *)(&bindPanel))->~HudUiPanel();
     HudUiCheckToggleWidget::DestructorCore();
 }
 
@@ -10326,7 +10399,7 @@ void HudCmdCommandList::Destructor() {
     bindingVec.end = 0;
     bindingVec.capacity = 0;
 
-    ((HudUiPanel *)(&bindPanel))->Destructor();
+    ((HudUiPanel *)(&bindPanel))->~HudUiPanel();
     DestructorCore();
 }
 
@@ -10380,7 +10453,7 @@ void HudCmdKeyAButton::Destructor() {
     bindingVec.end = 0;
     bindingVec.capacity = 0;
 
-    ((HudUiPanel *)(&bindPanel))->Destructor();
+    ((HudUiPanel *)(&bindPanel))->~HudUiPanel();
     DestructorCore();
 }
 
@@ -10434,7 +10507,7 @@ void HudCmdKeyBButton::Destructor() {
     bindingVec.end = 0;
     bindingVec.capacity = 0;
 
-    ((HudUiPanel *)(&bindPanel))->Destructor();
+    ((HudUiPanel *)(&bindPanel))->~HudUiPanel();
     DestructorCore();
 }
 
@@ -10488,7 +10561,7 @@ void HudCmdJoyButton::Destructor() {
     bindingVec.end = 0;
     bindingVec.capacity = 0;
 
-    ((HudUiPanel *)(&bindPanel))->Destructor();
+    ((HudUiPanel *)(&bindPanel))->~HudUiPanel();
     DestructorCore();
 }
 
@@ -10542,7 +10615,7 @@ void HudCmdMouseButton::Destructor() {
     bindingVec.end = 0;
     bindingVec.capacity = 0;
 
-    ((HudUiPanel *)(&bindPanel))->Destructor();
+    ((HudUiPanel *)(&bindPanel))->~HudUiPanel();
     DestructorCore();
 }
 
@@ -10560,6 +10633,7 @@ HudUiElement * HudCmdMouseButton::ScalarDeletingDestructor(
 
 // Restores repeated inline bind-button cleanup observed in 0x40adf0; no
 // standalone helper exists in the retail executable.
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void HudCmdDialog_DestroyBindButtonRange(
     HudCmdBindButtonBase *button
 ) {
@@ -10574,28 +10648,21 @@ static void HudCmdDialog_DestroyBindButtonRange(
     );
     zUtil_StdPtrVector_Clear(&button->bindingVec);
     zUtil_StdPtrVector_FreeBufferAndReset(&button->bindingVec);
-    ((HudUiPanel *)(&button->bindPanel))->Destructor();
+    ((HudUiPanel *)(&button->bindPanel))->~HudUiPanel();
     button->HudUiCheckToggleWidget::DestructorCore();
 }
 
 // Restores the mouse-button cleanup variant observed in 0x40adf0; no
 // standalone helper exists in the retail executable.
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void HudCmdDialog_DestroyMouseButton(
     HudCmdBindButtonBase *button
 ) {
 
     button->ClearBindingEntries();
     zUtil_StdPtrVector_FreeBufferAndReset(&button->bindingVec);
-    ((HudUiPanel *)(&button->bindPanel))->Destructor();
+    ((HudUiPanel *)(&button->bindPanel))->~HudUiPanel();
     button->HudUiCheckToggleWidget::DestructorCore();
-}
-
-// Restores repeated inline binding-vector clearing observed in 0x40b680; no
-// standalone helper exists in the retail executable.
-static void HudCmdDialog_ClearBindButtonEntries(
-    HudCmdBindButtonBase *button
-) {
-    button->ClearBindingEntries();
 }
 
 // Reimplements 0x40a5b0: HudCmdDialog::Constructor
@@ -10632,62 +10699,62 @@ HudCmdDialog * HudCmdDialog::Constructor() {
     if (loadedSection != 0) {
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            (HudUiWidget *)(&resumeButton),
+            (HudUiZrdWidget *)(&resumeButton),
             "CMD_RESUME_BTN"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            (HudUiWidget *)(&resetButton),
+            (HudUiZrdWidget *)(&resetButton),
             "CMD_RESET_BTN"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            (HudUiWidget *)(&commandList),
+            (HudUiZrdWidget *)(&commandList),
             "CMD_COMMAND_BTN"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            (HudUiWidget *)(&keyAButton),
+            (HudUiZrdWidget *)(&keyAButton),
             "CMD_KEYA_BTN"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            (HudUiWidget *)(&keyBButton),
+            (HudUiZrdWidget *)(&keyBButton),
             "CMD_KEYB_BTN"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            (HudUiWidget *)(&joyButton),
+            (HudUiZrdWidget *)(&joyButton),
             "CMD_JOY_BTN"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            (HudUiWidget *)(&mouseButton),
+            (HudUiZrdWidget *)(&mouseButton),
             "CMD_MOUSE_BTN"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            (HudUiWidget *)(&setList),
+            (HudUiZrdWidget *)(&setList),
             "CMD_SET_BTN"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            (HudUiWidget *)(&nextSetButton),
+            (HudUiZrdWidget *)(&nextSetButton),
             "CMD_NEXT_SET_BTN"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            (HudUiWidget *)(&prevSetButton),
+            (HudUiZrdWidget *)(&prevSetButton),
             "CMD_PREV_SET_BTN"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            (HudUiWidget *)(&nextCommandButton),
+            (HudUiZrdWidget *)(&nextCommandButton),
             "CMD_NEXT_CMD_BTN"
         );
         HudUiBackground::BindWidgetByName(
             loadedSection,
-            (HudUiWidget *)(&prevCommandButton),
+            (HudUiZrdWidget *)(&prevCommandButton),
             "CMD_PREV_CMD_BTN"
         );
 
@@ -10731,8 +10798,8 @@ HudCmdDialog * HudCmdDialog::Constructor() {
 // Reimplements 0x40adf0: HudCmdDialog::Destructor
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
 void HudCmdDialog::Destructor() {
-    descriptionPanel.HudUiPanel::Destructor();
-    ((HudUiPanel *)(&promptPanel))->Destructor();
+    descriptionPanel.HudUiPanel::~HudUiPanel();
+    ((HudUiPanel *)(&promptPanel))->~HudUiPanel();
     prevCommandButton.HudUiZrdWidget::DestructorCore();
     nextCommandButton.HudUiZrdWidget::DestructorCore();
     prevSetButton.HudUiZrdWidget::DestructorCore();
@@ -10780,6 +10847,7 @@ void HudUiOptionsPanel_Lighting::OnActivate() {
     SyncFromOptions();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiOptionsPanel_Lighting::PostLoadFromZrd() {
     InitFromOptions();
 }
@@ -10802,6 +10870,7 @@ void HudUiOptionsPanel_Perspective::OnActivate() {
     SyncFromOptions();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiOptionsPanel_Perspective::PostLoadFromZrd() {
     InitFromOptions();
 }
@@ -10821,6 +10890,7 @@ void HudUiOptionsPanel_Perspective::SyncFromOptions() {
     zRndr::SelectSpanRoutines();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiOptionsPanel_FullHud::PostLoadFromZrd() {
     InitFromOptions();
 }
@@ -10834,6 +10904,7 @@ void HudUiOptionsPanel_ObjectDetail::OnActivate() {
     SyncFromOptions();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiOptionsPanel_ObjectDetail::PostLoadFromZrd() {
     InitFromOptions();
 }
@@ -10853,6 +10924,7 @@ void HudUiOptionsPanel_TextureMemory::OnActivate() {
     SyncFromOptions();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiOptionsPanel_TextureMemory::PostLoadFromZrd() {
     InitFromOptions();
 }
@@ -10872,6 +10944,7 @@ void HudUiOptionsPanel_Effects::OnActivate() {
     SyncFromOptions();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiOptionsPanel_Effects::PostLoadFromZrd() {
     InitFromOptions();
 }
@@ -10902,6 +10975,7 @@ void HudUiOptionsPanel_SoundActive::OnActivate() {
     SyncFromOptions();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiOptionsPanel_SoundActive::PostLoadFromZrd() {
     InitFromOptions();
 }
@@ -10921,6 +10995,7 @@ void HudUiOptionsPanel_SoundQuality::OnActivate() {
     SyncFromOptions();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiOptionsPanel_SoundQuality::PostLoadFromZrd() {
     InitFromOptions();
 }
@@ -10936,6 +11011,7 @@ void HudUiOptionsPanel_SoundQuality::SyncFromOptions() {
     zOpt::SetSoundLODOption(selectedIndex);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiOptionsPanel_SoundVolume::PostLoadFromZrd() {
     SyncFromOptions();
 }
@@ -10952,6 +11028,7 @@ void HudUiOptionsPanel_SoundVolume::OnActivate() {
     SetNormalizedValue(zOpt::GetSoundVolumeOption());
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiOptionsPanel_MusicEnable::PostLoadFromZrd() {
     SyncFromOptions();
 }
@@ -10976,6 +11053,7 @@ void HudUiOptionsPanel_MusicEnable::OnActivate() {
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiOptionsPanel_MusicVolume::PostLoadFromZrd() {
     SyncFromOptions();
 }
@@ -11001,6 +11079,7 @@ void HudUiOptionsPanel_MusicVolume::OnActivate() {
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiOptionsPanel_Resolution::PostLoadFromZrd() {
     SyncFromOptions();
 }
@@ -11505,11 +11584,91 @@ void HudCmdPrevCommandButton::OnActivate() {
 void HudCmdDialog::RebuildCommandBindingListsForGroup(
     int groupIndex
 ) {
-    HudCmdDialog_ClearBindButtonEntries(&commandList);
-    HudCmdDialog_ClearBindButtonEntries(&keyAButton);
-    HudCmdDialog_ClearBindButtonEntries(&keyBButton);
-    HudCmdDialog_ClearBindButtonEntries(&joyButton);
-    HudCmdDialog_ClearBindButtonEntries(&mouseButton);
+    HudCmdBindButtonBase *button = &commandList;
+    HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(button->bindingVec.begin);
+    HudCmdBindingEntry **end = (HudCmdBindingEntry **)(button->bindingVec.end);
+    HudCmdBindingEntry **write = entry;
+    while (entry != end) {
+        HudCmdBindingEntry *const binding = *entry;
+        if (binding != 0) {
+            HudCmdBindingEntry::DeleteAndReturnNull(binding);
+        }
+        *write = 0;
+        ++entry;
+        ++write;
+    }
+    button->bindingVec.EraseRange(
+        (HudCmdBindingEntry **)(button->bindingVec.begin),
+        (HudCmdBindingEntry **)(button->bindingVec.end)
+    );
+
+    button = &keyAButton;
+    entry = (HudCmdBindingEntry **)(button->bindingVec.begin);
+    end = (HudCmdBindingEntry **)(button->bindingVec.end);
+    write = entry;
+    while (entry != end) {
+        HudCmdBindingEntry *const binding = *entry;
+        if (binding != 0) {
+            HudCmdBindingEntry::DeleteAndReturnNull(binding);
+        }
+        *write = 0;
+        ++entry;
+        ++write;
+    }
+    button->bindingVec.EraseRange(
+        (HudCmdBindingEntry **)(button->bindingVec.begin),
+        (HudCmdBindingEntry **)(button->bindingVec.end)
+    );
+
+    button = &keyBButton;
+    entry = (HudCmdBindingEntry **)(button->bindingVec.begin);
+    end = (HudCmdBindingEntry **)(button->bindingVec.end);
+    write = entry;
+    while (entry != end) {
+        HudCmdBindingEntry *const binding = *entry;
+        if (binding != 0) {
+            HudCmdBindingEntry::DeleteAndReturnNull(binding);
+        }
+        *write = 0;
+        ++entry;
+        ++write;
+    }
+    button->bindingVec.EraseRange(
+        (HudCmdBindingEntry **)(button->bindingVec.begin),
+        (HudCmdBindingEntry **)(button->bindingVec.end)
+    );
+
+    button = &joyButton;
+    entry = (HudCmdBindingEntry **)(button->bindingVec.begin);
+    end = (HudCmdBindingEntry **)(button->bindingVec.end);
+    write = entry;
+    while (entry != end) {
+        HudCmdBindingEntry *const binding = *entry;
+        if (binding != 0) {
+            HudCmdBindingEntry::DeleteAndReturnNull(binding);
+        }
+        *write = 0;
+        ++entry;
+        ++write;
+    }
+    button->bindingVec.EraseRange(
+        (HudCmdBindingEntry **)(button->bindingVec.begin),
+        (HudCmdBindingEntry **)(button->bindingVec.end)
+    );
+
+    button = &mouseButton;
+    entry = (HudCmdBindingEntry **)(button->bindingVec.begin);
+    end = (HudCmdBindingEntry **)(button->bindingVec.end);
+    write = entry;
+    while (entry != end) {
+        *write = HudCmdBindingEntry::DeleteAndReturnNull(*entry);
+        ++entry;
+        ++write;
+    }
+    button->bindingVec.EraseRange(
+        (HudCmdBindingEntry **)(button->bindingVec.begin),
+        (HudCmdBindingEntry **)(button->bindingVec.end)
+    );
 
     int commandIndex;
     for (commandIndex = 0; commandIndex < zInput::BindGroupList_GetGroupCommandCount(groupIndex);
@@ -11567,21 +11726,28 @@ void HudCmdDialog::RebuildCommandBindingListsForGroup(
     OnCommandSelectionChanged(0);
 }
 
-// Reimplements 0x40b980: HudCmdDialog::OnCommandSelectionChanged
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40b980: HudCmdDialog::OnCommandSelectionChanged.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Binary Ninja clears the description panel capture state, resets zInput
+ * transition state, selects the same entry in each command binding list, then
+ * resolves the selected command hint through zInput::BindMap_GetCommandHint.
+ * Purpose: Refresh the command dialog selection and description text.
+ */
 void HudCmdDialog::OnCommandSelectionChanged(
     int commandIndex
 ) {
     descriptionPanel.captureState = 0;
     zInput::ResetAllTransitionState();
-    commandList.SetSelectedEntry(commandIndex);
+    HudCmdBindButtonBase *const commandButton = &commandList;
+    commandButton->SetSelectedEntry(commandIndex);
     keyAButton.SetSelectedEntry(commandIndex);
     keyBButton.SetSelectedEntry(commandIndex);
     joyButton.SetSelectedEntry(commandIndex);
     mouseButton.SetSelectedEntry(commandIndex);
 
-    HudCmdBindingEntry **const entries = (HudCmdBindingEntry **)(commandList.bindingVec.begin);
-    HudCmdBindingEntry *const selectedEntry = entries[commandList.selectedBindingIndex];
+    HudCmdBindingEntry **const entries = (HudCmdBindingEntry **)(commandButton->bindingVec.begin);
+    HudCmdBindingEntry *const selectedEntry = entries[commandButton->selectedBindingIndex];
     char *const hint = zInput::BindMap_GetCommandHint(selectedEntry->commandId);
     if (hint != 0) {
         descriptionPanel.SetTextFmt(
@@ -12019,6 +12185,7 @@ int HudCmdBindButtonBase::LoadFromZrd(
     return 1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int HudUiDialogSignedDivPow2(
     int value,
     int shift
@@ -12027,6 +12194,7 @@ int HudUiDialogSignedDivPow2(
     return (value + (signMask & ((1 << shift) - 1))) >> shift;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zVidImagePartial *HudUiMessageBoxCreateSolidImage(
     int width,
     int height,
@@ -12241,8 +12409,8 @@ void HudUiMessageBoxDialog::Destructor() {
 
     cancelButton.DestructorCore();
     okButton.DestructorCore();
-    titlePanel.Destructor();
-    messagePanel.Destructor();
+    titlePanel.~HudUiPanel();
+    messagePanel.~HudUiPanel();
     backdropWidget.DestructorCore();
     this->HudUiBackground::~HudUiBackground();
 }
@@ -12486,7 +12654,16 @@ void HudUiWidget::ReleaseImageIfOwned() {
     ownsImage = 0;
 }
 
-// Reimplements 0x4b3e70: HudUiWidget::SetImageBorrowedAndInvalidate
+/**
+ * Reimplements 0x4b3e70: HudUiWidget::SetImageBorrowedAndInvalidate.
+ *
+ * Purpose: install a borrowed widget image, clear ownership, invalidate the
+ * widget, and return the borrowed image pointer.
+ *
+ * Evidence: BN assembly at 0x4b3e70 clears ownsImage at offset 0x34, stores
+ * the incoming image at offset 0x3c, dispatches Invalidate through the
+ * HudUiWidget class slot, and returns the image argument in eax.
+ */
 zVidImagePartial * HudUiWidget::SetImageBorrowedAndInvalidate(
     zVidImagePartial *newImage
 ) {
@@ -12727,12 +12904,14 @@ void HudUiTriplet::InterpolateLayout(
     fontWeight = (int)((float)(fontWeightEnd - fontWeightStart) * t + fontWeightStart);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiTextInput::OnPrintableKey(
     int key
 ) {
     InsertCharAtCursor(key);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiTextInput::OnIgnoredKey(
     int
 ) {
@@ -12746,35 +12925,52 @@ void HudUiTextInput::OnCancel() {
     zGame::ReturnOnlyStub();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiTextInput::OnBackspace() {
     BackspaceDeleteChar();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiTextInput::OnDeleteForward() {
     DeleteCharForward();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiTextInput::OnMoveCursorLeft() {
     MoveCursorLeft();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiTextInput::OnMoveCursorRight() {
     MoveCursorRight();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiTextInput::OnOverflow() {
     zGame::ReturnOnlyStub();
 }
 
-// Reimplements 0x4b4370: HudUiTextInput::DestructorCore
-void HudUiTextInput::DestructorCore() {
+/**
+ * Reimplements 0x4b4370: HudUiTextInput::~HudUiTextInput.
+ * Current BN assembly resets the HudUiTextInput vptr, then deletes the owned
+ * buffer. Modeling this as the authored C++ destructor preserves that class
+ * cleanup shape without a hand-written table reset.
+ * Purpose: tear down the base text-input buffer after derived text-input
+ * cleanup has restored the base class identity.
+ */
+HudUiTextInput::~HudUiTextInput() {
     char *const ownedBuffer = buffer;
     ::operator delete(ownedBuffer);
 }
 
-// Reimplements 0x4b4ab0: HudUiTextInput::DestructorCoreThunk
-void HudUiTextInput::DestructorCoreThunk() {
-    DestructorCore();
+/**
+ * Source-faithful helper wrapper for legacy native smoke call sites; no
+ * production source should depend on this spelling now that 0x4b4370 is
+ * recovered as HudUiTextInput::~HudUiTextInput.
+ * Purpose: route compatibility calls through the recovered C++ destructor.
+ */
+void HudUiTextInput::DestructorCore() {
+    this->HudUiTextInput::~HudUiTextInput();
 }
 
 // Reimplements 0x4b4390: HudUiTextInput::AllocTextBuffer
@@ -12800,29 +12996,40 @@ void HudUiTextInput::AllocTextBuffer(
     buffer = newBuffer;
 }
 
-// Reimplements 0x4b42f0: HudUiTextInput::Constructor
-HudUiTextInput * HudUiTextInput::Constructor(
+// Reimplements 0x4b42f0: HudUiTextInput::HudUiTextInput
+HudUiTextInput::HudUiTextInput(
     int bufferSize
 ) {
-    cursor = 0;
-    buffer = 0;
-    capacity = 0;
-    AllocTextBuffer(bufferSize);
+    HudUiTextInput *const input = this;
+    input->cursor = 0;
+    input->buffer = 0;
+    input->capacity = 0;
+    input->AllocTextBuffer(bufferSize);
 
     {
         for (int code = 0; code < 0x100; ++code) {
-            keyActionMap[code] = isprint(code) != 0 ? (char)(0) : (char)(1);
+            if (isprint(code) != 0) {
+                input->keyActionMap[code] = 0;
+            } else {
+                input->keyActionMap[code] = 1;
+            }
         }
     }
 
-    keyActionMap[0x20] = 0;
-    keyActionMap[0x2e] = 0;
-    keyActionMap[0x1b] = 2;
-    keyActionMap[0x0d] = 3;
-    keyActionMap[0x08] = 4;
-    keyActionMap[0x7f] = 5;
-    keyActionMap[0x02] = 6;
-    keyActionMap[0x06] = 7;
+    input->keyActionMap[0x20] = 0;
+    input->keyActionMap[0x2e] = 0;
+    input->keyActionMap[0x1b] = 2;
+    input->keyActionMap[0x0d] = 3;
+    input->keyActionMap[0x08] = 4;
+    input->keyActionMap[0x7f] = 5;
+    input->keyActionMap[0x02] = 6;
+    input->keyActionMap[0x06] = 7;
+}
+
+HudUiTextInput * HudUiTextInput::Constructor(
+    int bufferSize
+) {
+    new (this) HudUiTextInput(bufferSize);
     return this;
 }
 
@@ -12830,8 +13037,10 @@ HudUiTextInput * HudUiTextInput::Constructor(
 void HudUiTextInput::SetCursorPosition(
     int position
 ) {
-    const int textLength = (int)(strlen(buffer));
-    cursor = position < textLength ? (unsigned int)(position) : (unsigned int)(textLength);
+    cursor =
+        (position < (int)(strlen(buffer)))
+            ? (unsigned int)(position)
+            : (unsigned int)(strlen(buffer));
 }
 
 // Reimplements 0x4b43d0: HudUiTextInput::SetContents
@@ -12974,15 +13183,10 @@ void HudUiTextInput::DispatchKeyAction(
     }
 }
 
-// Reimplements 0x4ba3e0: HudUiOwnedTextInput::OnAcceptNotifyOwner
-void HudUiOwnedTextInput::OnAcceptNotifyOwner() {
-    if (owner != 0) {
-        owner->OnAcceptForwardToCommit();
-    }
-}
-
+// Reimplements 0x4ba3e0: HudUiOwnedTextInput::OnAccept
 void HudUiOwnedTextInput::OnAccept() {
-    OnAcceptNotifyOwner();
+    zGame::ReturnOnlyStub();
+    owner->OnAcceptForwardToCommit();
 }
 
 void HudUiChatComposeTextInput::OnAccept() {
@@ -12991,7 +13195,7 @@ void HudUiChatComposeTextInput::OnAccept() {
 
 // Reimplements 0x40d660: HudUiMgrObjectiveBlock::Destructor
 void HudUiMgrObjectiveBlock::Destructor() {
-    chatComposeTextInput.DestructorCore();
+    chatComposeTextInput.HudUiTextInput::~HudUiTextInput();
     objectiveSensorRect.DestructorCore();
     objectiveWidget.DestructorCore();
 }
@@ -13094,7 +13298,7 @@ void HudUiStringMenu::DestructorCore() {
     {
         int itemIndex;
         for (itemIndex = 0; itemIndex < 23; ++itemIndex) {
-            ((HudUiPanel *)(&items[itemIndex]))->Destructor();
+            ((HudUiPanel *)(&items[itemIndex]))->~HudUiPanel();
         }
     }
 
@@ -13102,15 +13306,13 @@ void HudUiStringMenu::DestructorCore() {
 }
 
 /**
- * Reimplements 0x40dac0: HudUiCounter::Constructor.
+ * Reimplements 0x40dac0: HudUiCounter::HudUiCounter.
  * Purpose: Constructs the widget base and clears the three HUD counter state-image slots.
  */
-HudUiCounter * HudUiCounter::Constructor() {
-    HudUiWidget::Constructor(0);
+HudUiCounter::HudUiCounter() : HudUiWidget(0) {
     stateImages[2] = 0;
     stateImages[1] = 0;
     stateImages[0] = 0;
-    return this;
 }
 
 /**
@@ -13445,7 +13647,7 @@ HudUiMessage * HudUiMessage::Constructor() {
 // Reimplements 0x40d590: HudUiMessage::Destructor
 void HudUiMessage::Destructor() {
     widget.DestructorCore();
-    panel.Destructor();
+    panel.HudUiPanel::~HudUiPanel();
     HudUiWidget::DestructorCore();
 }
 
@@ -13525,16 +13727,18 @@ int __stdcall HudUiShieldMessageWidget::ApplyLayout(
 
 // Reimplements 0x40fe30: HudUiShieldMessageWidget::Destructor
 void HudUiShieldMessageWidget::Destructor() {
-    ((HudUiPanel *)(&percentTextPanel))->Destructor();
+    ((HudUiPanel *)(&percentTextPanel))->~HudUiPanel();
     widget.DestructorCore();
 }
 
-// Reimplements 0x4bcf20: HudUiBar::Constructor
-HudUiBar * HudUiBar::Constructor() {
-    HudUiElement::Constructor(
-        0,
-        0
-    );
+/**
+ * Reimplements 0x4bcf20: HudUiBar::HudUiBar.
+ * Purpose: Constructs the HUD element base, clears bar point storage, and marks the bar dirty.
+ */
+HudUiBar::HudUiBar() : HudUiElement(
+    0,
+    0
+) {
     drawVertexCount = 0;
     memset(
         points,
@@ -13542,7 +13746,6 @@ HudUiBar * HudUiBar::Constructor() {
         sizeof(points)
     );
     Invalidate();
-    return this;
 }
 
 // Reimplements 0x4bcff0: HudUiBar::Draw
@@ -13583,12 +13786,12 @@ void HudUiBar::SetPointXY(
     Invalidate();
 }
 
-// Reimplements 0x4bf840: HudUiPolyline::Constructor
-HudUiPolyline * HudUiPolyline::Constructor() {
-    HudUiElement::Constructor(
-        0,
-        0
-    );
+// Reimplements 0x4bf840: HudUiPolyline::HudUiPolyline
+HudUiPolyline::HudUiPolyline()
+    : HudUiElement(
+          0,
+          0
+      ) {
     pointCount = 0;
     memset(
         points,
@@ -13597,6 +13800,10 @@ HudUiPolyline * HudUiPolyline::Constructor() {
     );
     Invalidate();
     clipRect = 0;
+}
+
+HudUiPolyline * HudUiPolyline::Constructor() {
+    new (this) HudUiPolyline;
     return this;
 }
 
@@ -13657,9 +13864,8 @@ void HudUiPolyline::SetPoint(
     Invalidate();
 }
 
-// Reimplements 0x4b4620: HudUiSliderBorder::Constructor
-HudUiSliderBorder * HudUiSliderBorder::Constructor() {
-    HudUiPolyline::Constructor();
+// Reimplements 0x4b4620: HudUiSliderBorder::HudUiSliderBorder
+HudUiSliderBorder::HudUiSliderBorder() {
     originX = 0;
     originY = 0;
     halfWidth = 1;
@@ -13734,6 +13940,10 @@ HudUiSliderBorder * HudUiSliderBorder::Constructor() {
         -halfWidth,
         0
     );
+}
+
+HudUiSliderBorder * HudUiSliderBorder::Constructor() {
+    new (this) HudUiSliderBorder;
     return this;
 }
 
@@ -13839,23 +14049,27 @@ void HudUiSliderBorder::SetBounds(
 }
 
 /**
- * Reimplements 0x4b49e0: HudUiNumericTextInput::BaseConstructor.
+ * Reimplements 0x4b49e0: HudUiNumericTextInput::HudUiNumericTextInput.
  * Purpose: Construct the ZRD widget base and owned numeric text-entry controls.
  */
-HudUiNumericTextInput * HudUiNumericTextInput::BaseConstructor() {
-    HudUiZrdWidget::Constructor();
-    textInput.Constructor(0x100);
-    textInput.owner = 0;
-
-    sliderBorder.Constructor();
+HudUiNumericTextInput::HudUiNumericTextInput()
+    : HudUiZrdWidget(),
+      textInput(0x100),
+      sliderBorder() {
     sliderBorder.sliderVisibleWhenInputActive = 0;
     sliderBorder.rawKeyFilterEnabled = 0;
     sliderBorder.inputActive = 1;
     sliderBorder.caretHalfWidth = 0;
 
-    sliderBorder.SetVisible(1);
+    HudUiElement *sliderElement = &sliderBorder;
+    sliderElement->SetVisible(1);
     textInput.owner = this;
-    SetVisible(1);
+    HudUiElement *element = this;
+    element->SetVisible(1);
+}
+
+HudUiNumericTextInput * HudUiNumericTextInput::BaseConstructor() {
+    new (this) HudUiNumericTextInput;
     return this;
 }
 
@@ -13870,17 +14084,19 @@ HudUiNumericTextInput * HudUiNumericTextInput::Constructor(
     return this;
 }
 
-// Reimplements 0x41a200: HudUiClampedIntTextInput::Constructor
-HudUiClampedIntTextInput * HudUiClampedIntTextInput::Constructor(
+/**
+ * Reimplements 0x41a200: HudUiClampedIntTextInput::HudUiClampedIntTextInput.
+ * Purpose: constructs the numeric input base, allocates a digit buffer, clears
+ * the display, disables capture, and initializes the signed 32-bit clamp range.
+ */
+HudUiClampedIntTextInput::HudUiClampedIntTextInput(
     unsigned int maxDigits
 ) {
-    BaseConstructor();
     textInput.AllocTextBuffer(maxDigits + 1);
     Update("");
     SetInputActive(0);
     minValue = -2147483647 - 1;
     maxValue = 2147483647;
-    return this;
 }
 
 // Reimplements 0x4b4e40: HudUiNumericTextInput::AllocTextBuffer
@@ -13906,8 +14122,8 @@ void HudUiNumericTextInput::Update(
     textInput.SetCursorPosition((int)(strlen(text)));
     char *const buffer = textInput.GetBuffer();
 
-    if (labelPanels.end != labelPanels.begin) {
-        HudUiPanel *const firstPanel = labelPanels.begin[0];
+    if (labelPanels.Count() != 0) {
+        HudUiPanel *const firstPanel = labelPanels.At(0);
         firstPanel->SetText(buffer);
     }
 
@@ -14008,7 +14224,7 @@ void HudUiNumericTextInput::OnActivate() {
 // Reimplements 0x4b4ac0: HudUiNumericTextInput::Destructor
 void HudUiNumericTextInput::Destructor() {
     SetRawKeyboardCapture(0);
-    textInput.DestructorCore();
+    textInput.HudUiOwnedTextInput::~HudUiOwnedTextInput();
     HudUiZrdWidget::DestructorCore();
 }
 
@@ -14046,22 +14262,26 @@ int __fastcall HudUiNumericTextInput::RawKeyboardCallback(
     int key,
     HudUiNumericTextInput *callbackCtx
 ) {
-    if (callbackCtx == 0) {
-        return 0;
+    if (callbackCtx != 0) {
+        return callbackCtx->OnRawKeyboardChar(key);
     }
 
-    return callbackCtx->OnRawKeyboardChar(key);
+    return 0;
 }
 
 // Reimplements 0x4b4ba0: HudUiNumericTextInput::SetInputActive
 int HudUiNumericTextInput::SetInputActive(
     int active
 ) {
+    HudUiPanel *firstLabelPanel = 0;
     const int previousActive = sliderBorder.inputActive;
     sliderBorder.inputActive = active;
 
-    HudUiPanel *const firstLabelPanel =
-        labelPanels.end != labelPanels.begin ? labelPanels.begin[0] : 0;
+    const int labelPanelCount = labelPanels.Count();
+    unsigned char labelPanelsEmpty = labelPanelCount == 0;
+    if (labelPanelsEmpty == 0) {
+        firstLabelPanel = labelPanels.At(0);
+    }
 
     if (active != 0) {
         SetVisible(1);
@@ -14084,14 +14304,18 @@ int HudUiNumericTextInput::SetInputActive(
 int HudUiNumericTextInput::OnRawKeyboardChar(
     int key
 ) {
-    if (sliderBorder.rawKeyFilterEnabled == 0 ||
-        strchr(
+    if (sliderBorder.rawKeyFilterEnabled != 0) {
+        if (strchr(
             kNumericTextInputAcceptedRawKeyChars,
             key
-        ) != 0) {
+        ) == 0) {
+            return 0;
+        }
         textInput.DispatchKeyAction(key);
+        return 0;
     }
 
+    textInput.DispatchKeyAction(key);
     return 0;
 }
 
@@ -14100,8 +14324,18 @@ int HudUiNumericTextInput::OnAcceptForwardToCommit() {
     return CommitAndGetValue();
 }
 
-// Reimplements 0x41a2a0: HudUiClampedIntTextInput::OnRawKeyboardDigitOnly
-int HudUiClampedIntTextInput::OnRawKeyboardDigitOnly(
+/**
+ * No standalone retail function has been identified for the base numeric
+ * text-input commit slot; clamped/save-game owners override the slot when they
+ * need committed values.
+ * Purpose: provide the base numeric input commit default.
+ */
+int HudUiNumericTextInput::CommitAndGetValue() {
+    return 0;
+}
+
+// Reimplements 0x41a2a0: HudUiClampedIntTextInput::OnRawKeyboardChar
+int HudUiClampedIntTextInput::OnRawKeyboardChar(
     int key
 ) {
     if (strchr(
@@ -14112,12 +14346,6 @@ int HudUiClampedIntTextInput::OnRawKeyboardDigitOnly(
     }
 
     return 0;
-}
-
-int HudUiClampedIntTextInput::OnRawKeyboardChar(
-    int key
-) {
-    return OnRawKeyboardDigitOnly(key);
 }
 
 // Reimplements 0x41a2d0: HudUiClampedIntTextInput::CommitAndGetValue
@@ -14187,6 +14415,7 @@ void HudUiClampedIntStepButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static HudUiNumericTextInput **HudUiNetGameSetupFocusTextInputSlot(
     void *owner
 ) {
@@ -14340,17 +14569,18 @@ void HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(
     );
 }
 
-// Reimplements 0x40fb70: HudUiMeter::Constructor
-HudUiMeter * HudUiMeter::Constructor() {
-    HudUiBar::Constructor();
+/**
+ * Reimplements 0x40fb70: HudUiMeter::HudUiMeter.
+ * Purpose: Constructs the HUD bar base and clears the meter fill state.
+ */
+HudUiMeter::HudUiMeter() : HudUiBar() {
     fillPixelsMax = 0;
     meterFlags = 0;
-    return this;
 }
 
 // Reimplements 0x40d9e0: HudUiMeter::ConstructorEx
 HudUiMeter * HudUiMeter::ConstructorEx() {
-    HudUiBar::Constructor();
+    new ((HudUiBar *)this) HudUiBar;
     fillPixelsMax = 0;
     meterFlags = 0;
     return this;
@@ -14462,8 +14692,8 @@ void HudUiTextLabel::SetTextFmt(
 
 // Reimplements 0x4bcd80: HudUiTextLabel::RebuildTextBounds
 void HudUiTextLabel::RebuildTextBounds() {
-    int widthPx = 0;
-    int lineAdvance = 0;
+    int widthPx;
+    int lineAdvance;
     zImage_Font::MeasureString(
         textBuffer,
         fontHandle,
@@ -14476,8 +14706,8 @@ void HudUiTextLabel::RebuildTextBounds() {
 
 // Reimplements 0x4bcdc0: HudUiTextLabel::MeasureTextWidth
 int HudUiTextLabel::MeasureTextWidth() {
-    int widthPx = 0;
-    int lineAdvance = 0;
+    int widthPx;
+    int lineAdvance;
     zImage_Font::MeasureString(
         textBuffer,
         fontHandle,
@@ -14551,8 +14781,8 @@ void HudUiTextLabel::UpdateTextExtents() {
     x = centerBoundsLeft + (centerBoundsRight - widthPx - centerBoundsLeft) / 2;
 
     if (bltSource != 0) {
-        clipRect.left = x;
         clipRect.top = y;
+        clipRect.left = x;
         RebuildTextBounds();
     }
 }
@@ -14573,18 +14803,21 @@ HudUiPanel::HudUiPanel(
     textColor1 = 0x00ffffff;
     textDirty = 1;
     hFont = GetStockObject(OEM_FIXED_FONT);
-    textRect.left = 0;
+    HudUiRect *const bounds = &textRect;
+    int zeroLeft = 0;
+    int zeroTop = 0;
+    bounds->left = zeroLeft;
     cachedText[0] = '\0';
     shadowEnabled = 0;
     textDirty = 1;
-    textRect.top = 0;
+    bounds->top = zeroTop;
     alignMode = 0;
     bkMode = TRANSPARENT;
     wrapRect.right = 0;
-    textRect.bottom = 0;
+    bounds->right = zeroLeft;
     wrapRect.left = 0;
     wrapRect.bottom = 0;
-    shadowOffsetY = 0;
+    bounds->bottom = zeroTop;
     wrapRect.top = 0;
     wordWrapEnabled = 0;
     unknown274 = 0;
@@ -14699,11 +14932,11 @@ HudUiPanel * HudUiPanel::ConstructorCopy(
 }
 
 /**
- * Reimplements 0x4bab40: HudUiPanel::Destructor.
- * Purpose: release the owned text image/font resources during panel teardown.
+ * Reimplements 0x4bab40: HudUiPanel::~HudUiPanel.
+ * Purpose: release the panel-owned text image and font resources during C++
+ * object teardown.
  */
-void HudUiPanel::Destructor() {
-
+HudUiPanel::~HudUiPanel() {
     if (textPick != 0) {
         zVid_Image::Destroy(textPick);
         textPick = 0;
@@ -14719,7 +14952,7 @@ void HudUiPanel::Destructor() {
  * panel method slot.
  */
 void HudUiPanel::DestructorThunk() {
-    Destructor();
+    this->~HudUiPanel();
 }
 
 /**
@@ -14825,7 +15058,7 @@ char * HudUiPanel::GetLastTextPtr() {
 void HudUiPanel::GetTextRect(
     HudUiRect *outRect
 ) {
-    HudUiElement::GetRect(outRect);
+    HudUiElement::GetTextRect(outRect);
 
     if (textDirty != 0) {
         RebuildTextRect();
@@ -14869,11 +15102,15 @@ void HudUtil::FreeFieldPtr() {
     }
 }
 
-// Reimplements 0x40a590: HudUiPanel::ScalarDeletingDestructor
+/**
+ * Reimplements 0x40a590: HudUiPanel::ScalarDeletingDestructor.
+ * Purpose: run the recovered complete destructor and conditionally free heap
+ * storage for compiler-generated deleting-destructor calls.
+ */
 HudUiElement * HudUiPanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {
-    Destructor();
+    DestructorThunk();
     if ((flags & 1u) != 0) {
         ::operator delete(this);
     }
@@ -15683,7 +15920,7 @@ void HudUiTriplet::DestructorCore() {
         for (headerIndex = 0; headerIndex < 3; ++headerIndex) {
             HudUiPanel *header = headerPanels[headerIndex];
             if (header != 0) {
-                header->Destructor();
+                header->~HudUiPanel();
                 ::operator delete(header);
                 headerPanels[headerIndex] = 0;
             }
@@ -15695,7 +15932,7 @@ void HudUiTriplet::DestructorCore() {
         for (rowCellIndex = 0; rowCellIndex < 24; ++rowCellIndex) {
             HudUiPanel *rowCell = rowCells[rowCellIndex];
             if (rowCell != 0) {
-                rowCell->Destructor();
+                rowCell->~HudUiPanel();
                 ::operator delete(rowCell);
                 rowCells[rowCellIndex] = 0;
             }

@@ -16,6 +16,7 @@ namespace {
     const int kZClassNodeLight = 9;
     const char *kLightSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Light.c";
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     zClass_LightDataPartial *GetLightData(
         zClass_NodePartial * node,
         int nullLine,

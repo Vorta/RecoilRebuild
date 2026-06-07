@@ -15,6 +15,7 @@ namespace {
      * Purpose: report a Display.c class validation failure and return the
      * generic zClass error code.
      */
+    // Source-faithful helper recovered from address-backed callers in this source file.
     int ReportDisplayClassError(
         int sourceLine,
         const char *message
@@ -36,6 +37,7 @@ namespace {
      * Purpose: validate a display node and return its class data for size and
      * position updates.
      */
+    // Source-faithful helper recovered from address-backed callers in this source file.
     GetDisplayData(
         zClass_NodePartial * node,
         int nullLine,
@@ -78,6 +80,7 @@ namespace {
      * Purpose: validate a display node and preserve the old Display.c error
      * messages for background-color updates.
      */
+    // Source-faithful helper recovered from address-backed callers in this source file.
     zClass_DisplayDataPartial *GetDisplayDataOldMessages(
         zClass_NodePartial * node,
         int nullLine,

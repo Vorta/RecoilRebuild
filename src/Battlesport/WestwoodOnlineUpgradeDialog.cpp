@@ -56,6 +56,7 @@ RECOIL_STATIC_ASSERT(sizeof(CButton) == 0x40);
 RECOIL_STATIC_ASSERT(sizeof(CListBox) == 0x40);
 RECOIL_STATIC_ASSERT(sizeof(CComboBox) == 0x40);
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void CDialogCancelAccessor::CallBaseOnCancel() {
     CDialog::OnCancel();
 }
@@ -64,6 +65,7 @@ const AFX_MSGMAP *__stdcall WestwoodOnlineUpgradeCDialogMessageMapAccessor::GetM
     return &CDialog::messageMap;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 long WestwoodOnlineUpgradeCWndAccess::CallDefault() {
     return CWnd::Default();
 }
@@ -133,6 +135,7 @@ struct IWestwoodOnlineUpgradeDialogApi : IUnknown {
     ) = 0;
 };
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 IWestwoodOnlineUpgradeDialogApi *GetDialogApiComObject() {
     return (IWestwoodOnlineUpgradeDialogApi *)g_pWestwoodOnlineUpgradeApi;
 }
@@ -244,12 +247,14 @@ const UINT kMfcMessageMapSigVoidUInt = 13;
 
 RECOIL_STATIC_ASSERT(sizeof(g_WestwoodOnlineUpgradeStatusAppendBuffer) == kStatusAppendBufferSize);
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void DestructProgressDialog(
     WestwoodOnlineUpgradeProgressDialog *dialog
 ) {
     ((CDialog *)dialog)->CDialog::~CDialog();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void DestructMainDialog(
     WestwoodOnlineUpgradeDialog *dialog
 ) {
@@ -257,6 +262,7 @@ void DestructMainDialog(
 }
 } // namespace
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 const AFX_MSGMAP *__stdcall WestwoodOnlineUpgradeDialog::GetBaseMessageMapForMfc() {
     return WestwoodOnlineUpgradeCDialogMessageMapAccessor::GetMessageMap();
 }

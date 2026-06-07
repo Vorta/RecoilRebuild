@@ -111,6 +111,7 @@ struct WeilerPointBoundsXY {
     float maxY;
 };
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ClassifyFloatAgainstPivot(
     float value,
     float pivot
@@ -126,6 +127,7 @@ int ClassifyFloatAgainstPivot(
     return 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ComputePointBoundsXY(
     zVec3 *points,
     int pointCount,
@@ -156,6 +158,7 @@ void ComputePointBoundsXY(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void BuildPointSideTable(
     zVec3 *edgePoints,
     int edgePointCount,
@@ -186,6 +189,7 @@ void BuildPointSideTable(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void TogglePointAxes(
     zGeometry_WeilerBufferPartial *buffer,
     int contourSource
@@ -208,6 +212,7 @@ void TogglePointAxes(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void RecenterPoints(
     zGeometry_WeilerBufferPartial *buffer,
     float translationX,
@@ -220,6 +225,7 @@ void RecenterPoints(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float EdgeSideXY(
     zVec3 *point,
     zVec3 *start,
@@ -230,6 +236,7 @@ float EdgeSideXY(
     return (point->x - start->x) * edgeDeltaY - (point->y - start->y) * edgeDeltaX;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int SignClassForIntersectTable(
     float value
 ) {
@@ -244,6 +251,7 @@ int SignClassForIntersectTable(
     return 2;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool HasStrictSameSign(
     float first,
     float second
@@ -251,6 +259,7 @@ bool HasStrictSameSign(
     return (first < 0.0f && second < 0.0f) || (first > 0.0f && second > 0.0f);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zGeometry_WeilerXingPartial *AllocWeilerXing(
     zGeometry_WeilerStatePartial *self,
     int errorLine
@@ -273,6 +282,7 @@ zGeometry_WeilerXingPartial *AllocWeilerXing(
     return xing;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ValidateWeilerXingSegmentSet(
     zGeometry_WeilerXingPartial *xing
 ) {
@@ -373,6 +383,7 @@ int ValidateWeilerXingSegmentSet(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ReportMergeContourOutputFailure(
     int errorLine
 ) {
@@ -384,6 +395,7 @@ void ReportMergeContourOutputFailure(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int EnsureMergedContourOutput(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerContourSegmentPartial *segment,
@@ -400,6 +412,7 @@ int EnsureMergedContourOutput(
     return 1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int EnsureMergedContourOutputs(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerContourSegmentPartial *firstSegment,
@@ -418,12 +431,14 @@ int EnsureMergedContourOutputs(
     return 1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool IsNearZeroForCoincidentWeedOut(
     float value
 ) {
     return fabs((double)(value)) < 0.0000099999997473787516;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool IsNearPointXY(
     zVec3 *first,
     zVec3 *second
@@ -432,6 +447,7 @@ bool IsNearPointXY(
            fabs((double)(first->y) - (double)(second->y)) <= 0.0010000000474974513;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool HaveSameDirectionXY(
     zVec3 *firstStart,
     zVec3 *firstEnd,
@@ -448,6 +464,7 @@ bool HaveSameDirectionXY(
     return (firstEnd->y < firstStart->y) == (secondEnd->y < secondStart->y);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ReportWeedOutInsideAFailure(
     int errorLine
 ) {
@@ -460,6 +477,7 @@ void ReportWeedOutInsideAFailure(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ReportWeedOutForwardSegmentFailure(
     int errorLine
 ) {
@@ -472,6 +490,7 @@ void ReportWeedOutForwardSegmentFailure(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ReportWeedOutSegForwardFailure(
     int errorLine
 ) {
@@ -483,6 +502,7 @@ void ReportWeedOutSegForwardFailure(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void UnlinkWeilerContourSegmentPair(
     WeilerPreclassifyContourPacket *contourPacket,
     zGeometry_WeilerContourSegmentPartial *originalContourC,
@@ -502,6 +522,7 @@ void UnlinkWeilerContourSegmentPair(
     contourDWalker->next->prev = contourDWalker->prev;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ClearWeilerXingSegments(
     zGeometry_WeilerXingPartial *xing
 ) {
@@ -519,6 +540,7 @@ void ClearWeilerXingSegments(
     xing->segment1 = 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool SegmentBoundsOverlapXY(
     zGeometry_WeilerContourSegmentPartial *first,
     zGeometry_WeilerContourSegmentPartial *second
@@ -535,6 +557,7 @@ bool SegmentBoundsOverlapXY(
            first->minY <= second->maxY && first->maxY >= second->minY;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool XingTouchesContourPair(
     zGeometry_WeilerXingPartial *xing,
     zGeometry_WeilerContourSegmentPartial *firstSegment,
@@ -544,6 +567,7 @@ bool XingTouchesContourPair(
            xing == secondSegment->startXing || xing == secondSegment->endXing;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool HasExistingXingWithContourPair(
     zGeometry_WeilerContourSegmentPartial *contourCSegment,
     zGeometry_WeilerContourSegmentPartial *contourDSegment,
@@ -572,6 +596,7 @@ bool HasExistingXingWithContourPair(
                ));
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ReportWeilerIntersectError(
     int errorLine
 ) {
@@ -584,6 +609,7 @@ void ReportWeilerIntersectError(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ReportWeilerIntersectDivideFailure(
     int errorLine
 ) {
@@ -595,6 +621,7 @@ void ReportWeilerIntersectDivideFailure(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int DivideContainedContourSegment(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerXingPartial *xing,
@@ -615,6 +642,7 @@ int DivideContainedContourSegment(
     return 1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int DivideContainedContourPairAtXing(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerXingPartial *xing,
@@ -650,6 +678,7 @@ int DivideContainedContourPairAtXing(
                : 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void PropagateXingBackReferencesForContourPair(
     zGeometry_WeilerContourSegmentPartial *contourAStart,
     zGeometry_WeilerContourSegmentPartial *contourBStart,
@@ -705,6 +734,7 @@ void PropagateXingBackReferencesForContourPair(
     } while (contourCSegment != contourCStart);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool SelectMaxXThenMaxY(
     zVec3 *candidate,
     zVec3 *current
@@ -717,6 +747,7 @@ bool SelectMaxXThenMaxY(
            candidate->y > current->y;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void CopyPointAndAdvance(
     zVec3 *&outPoint,
     zVec3 *point
@@ -725,6 +756,7 @@ void CopyPointAndAdvance(
     ++outPoint;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ClassifyPointAgainstAdjacentEdgePair(
     zVec3 *point,
     zGeometry_WeilerContourSegmentPartial *firstSegment,
@@ -760,6 +792,7 @@ int ClassifyPointAgainstAdjacentEdgePair(
     return -1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool ArePointsStrictlyNegativeToAdjacentEdgePair(
     zVec3 *firstPoint,
     zVec3 *secondPoint,

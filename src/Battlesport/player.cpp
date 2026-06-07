@@ -129,6 +129,7 @@ char g_Player_AivParentDir[0x100] = {0};
 }
 
 namespace {
+// Source-faithful helper recovered from address-backed callers in this source file.
 float PlayerClamp01(
     float value
 ) {
@@ -141,6 +142,7 @@ float PlayerClamp01(
     return value;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float PlayerFloatFromBits(
     int bits
 ) {
@@ -153,6 +155,7 @@ float PlayerFloatFromBits(
     return value;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float PlayerFastSqrtEstimate(
     float value
 ) {
@@ -171,12 +174,14 @@ float PlayerFastSqrtEstimate(
     return value;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float PlayerDampingFromRate(
     float rate
 ) {
     return PlayerFloatFromBits((int)(-rate * g_Player_DeltaTime * 12102200.0f) + 0x3f800000);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float PlayerWrapSignedTwoPi(
     float angle
 ) {
@@ -189,6 +194,7 @@ float PlayerWrapSignedTwoPi(
     return angle;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float PlayerClampSigned(
     float value,
     float limit
@@ -202,6 +208,7 @@ float PlayerClampSigned(
     return value;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zVec3 TransformWorldVectorToLocal(
     const zVec3 &vec,
     const zMat4x3 &matrix
@@ -213,6 +220,7 @@ zVec3 TransformWorldVectorToLocal(
     return out;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zVec3 TransformLocalVectorToWorld(
     const zVec3 &vec,
     const zMat4x3 &matrix
@@ -330,18 +338,21 @@ RECOIL_STATIC_ASSERT(
     ) == 0x04
 );
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zReader::Node *PlayerZrdArrayBase(
     zReader::Node *node
 ) {
     return node->value.nodes;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int PlayerZrdArrayCount(
     zReader::Node *node
 ) {
     return PlayerZrdArrayBase(node)[0].value.i32;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 const char *PlayerZrdArrayString(
     zReader::Node *node,
     int index
@@ -349,6 +360,7 @@ const char *PlayerZrdArrayString(
     return PlayerZrdArrayBase(node)[index].value.str;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void PlayerDetachDisplayInstanceIfRequested(
     zClass_NodePartial *node
 ) {
@@ -369,6 +381,7 @@ void PlayerDetachDisplayInstanceIfRequested(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void PlayerCacheGunHardpoint(
     zUtil_PlayerStateStorage *playerState,
     const char *nodeName,
@@ -395,6 +408,7 @@ void PlayerCacheGunHardpoint(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int PlayerZrdArrayInt(
     zReader::Node *node,
     int index
@@ -402,6 +416,7 @@ int PlayerZrdArrayInt(
     return PlayerZrdArrayBase(node)[index].value.i32;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float PlayerZrdArrayFloat(
     zReader::Node *node,
     int index
@@ -409,6 +424,7 @@ float PlayerZrdArrayFloat(
     return PlayerZrdArrayBase(node)[index].value.f32;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zReader::Node *PlayerZrdArrayNode(
     zReader::Node *node,
     int index
@@ -416,6 +432,7 @@ zReader::Node *PlayerZrdArrayNode(
     return &PlayerZrdArrayBase(node)[index];
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void PlayerCopyZrdArrayString(
     char *dest,
     zReader::Node *node,
@@ -427,6 +444,7 @@ void PlayerCopyZrdArrayString(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void PlayerLoadSoundSample(
     zReader::Node *parentNode,
     const char *name,
@@ -444,6 +462,7 @@ void PlayerLoadSoundSample(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void PlayerLoadModalPointList(
     zReader::Node *node,
     zVec3 *points,
@@ -464,6 +483,7 @@ void PlayerLoadModalPointList(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void PlayerLoadModalFxList(
     zReader::Node *modalNode,
     const char *name,
@@ -490,6 +510,7 @@ void PlayerLoadModalFxList(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void PlayerLoadModalWaveParams(
     PlayerMasterModalData *modalData,
     zReader::Node *modalNode,
@@ -533,6 +554,7 @@ void PlayerLoadModalWaveParams(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void SetHudUiElementVisible(
     HudUiElement *element,
     int visible
@@ -540,6 +562,7 @@ void SetHudUiElementVisible(
     element->SetVisible(visible);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void SetHudPanelVisible(
     HudUiPanel *panel,
     int visible
@@ -550,6 +573,7 @@ void SetHudPanelVisible(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void PlayerInitActionCallbackNode(
     void *callback
 ) {
@@ -564,6 +588,7 @@ void PlayerInitActionCallbackNode(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 PlayerMasterCommonData *PlayerAllocMasterCommonData() {
     PlayerMasterCommonData *const commonData =
         (PlayerMasterCommonData *)(::operator new(sizeof(PlayerMasterCommonData)));
@@ -583,6 +608,7 @@ PlayerMasterCommonData *PlayerAllocMasterCommonData() {
     return commonData;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 PlayerMasterModalData *PlayerAllocMasterModalData() {
     PlayerMasterModalData *const modalData =
         (PlayerMasterModalData *)(::operator new(sizeof(PlayerMasterModalData)));
@@ -602,6 +628,7 @@ PlayerMasterModalData *PlayerAllocMasterModalData() {
     return modalData;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zUtil_SaveGameState *PlayerAllocLinkedSaveState() {
     zUtil_SaveGameState *saveState =
         (zUtil_SaveGameState *)(::operator new(sizeof(zUtil_SaveGameState)));
@@ -617,6 +644,7 @@ zUtil_SaveGameState *PlayerAllocLinkedSaveState() {
     return saveState;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void PlayerLoadPlayerZrdTuning(
     zReader::Node *root
 ) {
@@ -898,6 +926,7 @@ RECOIL_STATIC_ASSERT(
     ) == 0x54
 );
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void TriggerZeroVelocityFxList(
     zEffectAnimEntry **entries,
     zClass_NodePartial *rootNode,
@@ -917,6 +946,7 @@ void TriggerZeroVelocityFxList(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void CopyNodeCachedWorldMatrix(
     zMat4x3 *outMatrix,
     zClass_NodePartial *node
@@ -929,6 +959,7 @@ void CopyNodeCachedWorldMatrix(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float ExtractYawFromMatrix(
     const zMat4x3 *matrix
 ) {
@@ -938,6 +969,7 @@ float ExtractYawFromMatrix(
     ));
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 const char *PlayerDebugMasterTypeName(
     int masterType
 ) {
@@ -959,6 +991,7 @@ const char *PlayerDebugMasterTypeName(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void CacheAttachmentLocalOffset(
     zUtil_PlayerStateStorage *playerState
 ) {
@@ -972,6 +1005,7 @@ void CacheAttachmentLocalOffset(
     playerState->fxOffsetLocal.z = dx * matrix->zx + dy * matrix->zy + dz * matrix->zz;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 PlayerGunFireController *PlayerSavedWeaponController(
     PlayerAltWeaponBank *bank,
     int sideIndex
@@ -979,6 +1013,7 @@ PlayerGunFireController *PlayerSavedWeaponController(
     return sideIndex == 0 ? &bank->controllerA : &bank->controllerB;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void PlayerRestoreSavedWeaponSide(
     PlayerGunFireController *controller,
     const PlayerMissionSaveWeaponSide *savedSide
@@ -990,6 +1025,7 @@ void PlayerRestoreSavedWeaponSide(
     controller->ammoOrCharge = savedSide->ammoOrCharge;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void PlayerRefreshSavedWeaponBankHud(
     int bankIndex,
     PlayerAltWeaponBank *bank
@@ -1015,6 +1051,7 @@ void PlayerRefreshSavedWeaponBankHud(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void PlayerRefreshPreviousWeaponControllerHud(
     PlayerGunFireController *controller
 ) {
@@ -1028,6 +1065,7 @@ void PlayerRefreshPreviousWeaponControllerHud(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void PlayerResetWeaponController(
     PlayerGunFireController *controller,
     int bankIndex,
@@ -1042,6 +1080,7 @@ void PlayerResetWeaponController(
     controller->trailRuntimeState = 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zDiPartial *PlayerFindScrollTextureModel(
     zClass_NodePartial *root,
     const char *mountName
@@ -1077,6 +1116,7 @@ zDiPartial *PlayerFindScrollTextureModel(
     return textureModel;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void PlayerBindDualWeaponMount(
     zUtil_PlayerStateStorage *playerState,
     PlayerGunFireController *controller
@@ -1127,6 +1167,7 @@ void PlayerBindDualWeaponMount(
         );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void PlayerBindSingleWeaponMount(
     zUtil_PlayerStateStorage *playerState,
     PlayerGunFireController *controller
@@ -1149,12 +1190,14 @@ void PlayerBindSingleWeaponMount(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float &PlayerAltGunTransitionAnimScale(
     zUtil_PlayerStateStorage *playerState
 ) {
     return *((float *)playerState->unknown_0f24);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void TickAltGunRetractDelay(
     zUtil_SaveGameState *saveState,
     zUtil_PlayerStateStorage *playerState
@@ -1170,6 +1213,7 @@ void TickAltGunRetractDelay(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void TickAltGunLowerTransition(
     zUtil_PlayerStateStorage *playerState,
     PlayerGunFireController *controller
@@ -1220,6 +1264,7 @@ void TickAltGunLowerTransition(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void TickAltGunDoorOpen(
     zUtil_PlayerStateStorage *playerState
 ) {
@@ -1245,6 +1290,7 @@ void TickAltGunDoorOpen(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void DeactivateOppositeAltGunControllerNodes(
     zUtil_PlayerStateStorage *playerState,
     PlayerGunFireController *activeController
@@ -1268,6 +1314,7 @@ void DeactivateOppositeAltGunControllerNodes(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void TickAltGunActivateTransition(
     zUtil_SaveGameState *saveState,
     zUtil_PlayerStateStorage *playerState
@@ -1367,6 +1414,7 @@ void TickAltGunActivateTransition(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void TickAltGunDoorClose(
     zUtil_PlayerStateStorage *playerState
 ) {
@@ -1392,6 +1440,7 @@ void TickAltGunDoorClose(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void TickAltGunRaiseTransition(
     zUtil_PlayerStateStorage *playerState,
     PlayerGunFireController *controller
@@ -1435,6 +1484,7 @@ void TickAltGunRaiseTransition(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void TickAltGunTransitionAnimation(
     zUtil_SaveGameState *saveState
 ) {
@@ -1475,6 +1525,7 @@ void TickAltGunTransitionAnimation(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void TickAltGunTetherCleanup(
     zUtil_SaveGameState *saveState
 ) {
@@ -1512,6 +1563,7 @@ void TickAltGunTetherCleanup(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void TickAltGunTriggerProcessCleanup(
     zUtil_SaveGameState *saveState
 ) {
@@ -1571,6 +1623,7 @@ void TickAltGunTriggerProcessCleanup(
     playerState->altGunTriggerProcessFlag = 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int TickAltGunLocalAmmoState(
     zUtil_SaveGameState *saveState
 ) {
@@ -1617,6 +1670,7 @@ int TickAltGunLocalAmmoState(
     return 1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void TickAltGunLocalSlotAndPrimaryState(
     zUtil_SaveGameState *saveState
 ) {
@@ -1654,6 +1708,7 @@ void TickAltGunLocalSlotAndPrimaryState(
 }
 
 template <typename T>
+// Source-faithful helper recovered from address-backed callers in this source file.
 zZbdSectionCallback ZbdCallbackPtr(
     T callback
 ) {
@@ -1868,37 +1923,51 @@ void zUtil_SaveGameState::UpdateModalLoopSfx(
     }
 }
 
-// Reimplements 0x41eb30: Player_UnderwaterFxPass3Ui::Constructor
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x41eb30: Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui.
+ * Purpose: constructs the underwater pass-3 HUD overlay as a zVideoFxPass3Element
+ * and clears the per-pass clip rectangle consumed by ApplyPass3.
+ */
+Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui() {
+    HudUiElement::Constructor(
+        0,
+        0
+    );
+    clipRectOrNull = 0;
+}
+
 Player_UnderwaterFxPass3Ui * Player_UnderwaterFxPass3Ui::Constructor() {
+    new (this) Player_UnderwaterFxPass3Ui();
+    return this;
+}
+
+/**
+ * Reimplements 0x41eb90: Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui.
+ * Purpose: constructs the projectile-camera pass-3 HUD overlay as a zVideoFxPass3Element
+ * and clears the per-pass clip rectangle consumed by ApplyPass3.
+ */
+Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui() {
     HudUiElement::Constructor(
         0,
         0
     );
-    overlayRectOrNull = 0;
-    return this;
+    clipRectOrNull = 0;
 }
 
-// Reimplements 0x41eb90: Player_ProjectileCameraFxPass3Ui::Constructor
-// (src/Battlesport/player.cpp)
 Player_ProjectileCameraFxPass3Ui * Player_ProjectileCameraFxPass3Ui::Constructor() {
-    HudUiElement::Constructor(
-        0,
-        0
-    );
-    overlayRectOrNull = 0;
+    new (this) Player_ProjectileCameraFxPass3Ui();
     return this;
 }
 
-// Reimplements 0x423440: Player_UnderwaterFxPass3Ui::ApplyBlueTint
-void Player_UnderwaterFxPass3Ui::ApplyBlueTint() {
-    zVideo_FxSurface::ApplyBlueTintRect(overlayRectOrNull);
+// Reimplements 0x423440: Player_UnderwaterFxPass3Ui::ApplyPass3
+void Player_UnderwaterFxPass3Ui::ApplyPass3() {
+    zVideo_FxSurface::ApplyBlueTintRect((zVidRect32 *)(clipRectOrNull));
 }
 
-// Reimplements 0x423450: Player_ProjectileCameraFxPass3Ui::ApplyGreenMask
+// Reimplements 0x423450: Player_ProjectileCameraFxPass3Ui::ApplyPass3
 // (src/Battlesport/player.cpp)
-void Player_ProjectileCameraFxPass3Ui::ApplyGreenMask() {
-    zVideo_FxSurface::ApplyGreenMaskRect(overlayRectOrNull);
+void Player_ProjectileCameraFxPass3Ui::ApplyPass3() {
+    zVideo_FxSurface::ApplyGreenMaskRect((zVidRect32 *)(clipRectOrNull));
 }
 
 namespace zVehicle {
@@ -1943,7 +2012,7 @@ void Constructor() {
 // Reimplements 0x41ec70: Player_TopMsgPanel1::Destructor
 // (src/Battlesport/player.cpp)
 void Destructor() {
-    g_Player_TopMsgPanel1.Destructor();
+    g_Player_TopMsgPanel1.~HudUiPanel();
 }
 
 } // namespace Player_TopMsgPanel1
@@ -1963,7 +2032,7 @@ void Constructor() {
 // Reimplements 0x41ecc0: Player_TopMsgPanel2::Destructor
 // (D:\Proj\Battlesport\player.cpp)
 void Destructor() {
-    g_Player_TopMsgPanel2.Destructor();
+    g_Player_TopMsgPanel2.~HudUiPanel();
 }
 
 } // namespace Player_TopMsgPanel2
@@ -5054,6 +5123,7 @@ PlayerPendingContact *__fastcall PlayerPendingContact::SelectPreferred(
 }
 
 namespace Player {
+// Source-faithful helper recovered from address-backed callers in this source file.
 zVec3 TransformPointByMatrix(
     const zVec3 &point,
     const zMat4x3 &matrix
@@ -5090,12 +5160,14 @@ struct PlayerContactSurfacePayload {
     int impactSlot;
 };
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void SetState7FxPass3Visible(
     int visible
 ) {
     g_Player_State7FxPass3Ui.SetVisible(visible);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 PlayerPendingContact *AppendPendingContact(
     PlayerPendingContactQueue *queue
 ) {
@@ -5119,6 +5191,7 @@ PlayerPendingContact *AppendPendingContact(
     return contact;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void CopyPendingContactPayload(
     PlayerPendingContact *contact,
     const zClassDiPickCandidateEntry *candidate,
@@ -5132,12 +5205,14 @@ void CopyPendingContactPayload(
     contact->segmentTag = segmentTag;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 OptCatalogDamageHandlerPartial *GetNodeDamageHandler(
     zClass_NodePartial *node
 ) {
     return (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(node))->damageHandler);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void FreePendingContactQueue(
     PlayerPendingContactQueue *queue
 ) {
@@ -5154,6 +5229,7 @@ void FreePendingContactQueue(
     queue->count = 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void AppendExistingPendingContact(
     PlayerPendingContactQueue *queue,
     PlayerPendingContact *contact
@@ -5170,6 +5246,7 @@ void AppendExistingPendingContact(
     ++queue->count;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void RemoveExistingPendingContact(
     PlayerPendingContactQueue *queue,
     PlayerPendingContact *contact
@@ -5202,6 +5279,7 @@ void RemoveExistingPendingContact(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void MoveTransferContactsToPreferredCollision(
     zUtil_PlayerStateStorage *playerState
 ) {
@@ -5223,6 +5301,7 @@ void MoveTransferContactsToPreferredCollision(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void EnableContactSegment(
     int *enabledSegmentFlags,
     int index
@@ -5230,6 +5309,7 @@ void EnableContactSegment(
     enabledSegmentFlags[index] = 1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void BuildModalAndRootProbeWorldCaches(
     zUtil_PlayerStateStorage *playerState,
     const PlayerMasterModalData *masterModalData
@@ -5248,12 +5328,14 @@ void BuildModalAndRootProbeWorldCaches(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float Vec3Length(
     const zVec3 &vec
 ) {
     return (float)(sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z));
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float Vec3Dot(
     const zVec3 &a,
     const zVec3 &b
@@ -5261,6 +5343,7 @@ float Vec3Dot(
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float Vec3DotXZ(
     const zVec3 &a,
     const zVec3 &b
@@ -5268,6 +5351,7 @@ float Vec3DotXZ(
     return a.x * b.x + a.z * b.z;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zVec3 Vec3Cross(
     const zVec3 &a,
     const zVec3 &b
@@ -12719,6 +12803,7 @@ int __fastcall IsAltWeaponAllowedInCurrentMasterMode(
     return 1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static int IsUsableAltWeaponController(
     zUtil_SaveGameState *saveState,
     PlayerGunFireController *controller
@@ -12891,6 +12976,7 @@ void __fastcall ResetAltGunDoorAnimationState(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ResetAltGunAttachNode(
     PlayerGunFireController *controller
 ) {
@@ -16392,6 +16478,7 @@ void __fastcall TickAltGunRuntimeState(
     TickAltGunLocalSlotAndPrimaryState(saveState);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void RemoveTrackNode(
     HudUiMgrSensorTrackNode *trackNode
 ) {
@@ -16422,6 +16509,7 @@ static void RemoveTrackNode(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void UnlinkSaveState(
     zUtil_SaveGameState *saveState
 ) {
@@ -16477,6 +16565,7 @@ void __fastcall DestroySaveGameState(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void DeleteRemainingTrackNodes() {
     HudUiMgrSensorTrackNode *node = g_HudUiMgrSensor_TrackList.head;
     while (node != 0) {
@@ -16492,6 +16581,7 @@ static void DeleteRemainingTrackNodes() {
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void DeleteWeaponSpecs(
     PlayerMasterCommonData *commonData
 ) {

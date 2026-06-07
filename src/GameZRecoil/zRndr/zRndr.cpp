@@ -15,6 +15,7 @@
 
 namespace {
 template <class T>
+// Source-faithful helper recovered from address-backed callers in this source file.
 const T &MinValue(
     const T &lhs,
     const T &rhs
@@ -23,6 +24,7 @@ const T &MinValue(
 }
 
 template <class T>
+// Source-faithful helper recovered from address-backed callers in this source file.
 const T &MaxValue(
     const T &lhs,
     const T &rhs
@@ -30,6 +32,7 @@ const T &MaxValue(
     return lhs < rhs ? rhs : lhs;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void sort(
     float *first,
     float *last
@@ -432,6 +435,7 @@ struct ScanVertex {
     float y;
 };
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int Fixed16FromFloat(
     float value
 ) {
@@ -439,30 +443,35 @@ int Fixed16FromFloat(
     return (int)(scaled >= 0.0 ? scaled + 0.5 : scaled - 0.5);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ScanlineStartFromY(
     float y
 ) {
     return (Fixed16FromFloat(y) + 0x7fff) >> 16;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ScanlineEndFromY(
     float y
 ) {
     return (Fixed16FromFloat(y) - 0x8041) >> 16;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int SpanStartFromX(
     float x
 ) {
     return (Fixed16FromFloat(x) + 0x7fff) >> 16;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int SpanEndFromX(
     float x
 ) {
     return (Fixed16FromFloat(x) - 0x8001) >> 16;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float FloatFromBits(
     unsigned int bits
 ) {
@@ -475,6 +484,7 @@ float FloatFromBits(
     return value;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void AppendSpanListNode(
     SpanNodePartial **spanList,
     int *spanCount,
@@ -497,6 +507,7 @@ void AppendSpanListNode(
     g_spanLastNode = node;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float SpanDepthAtX(
     const SpanNodePartial *span,
     int x
@@ -511,6 +522,7 @@ float SpanDepthAtX(
     return span->invDepth + (float)(x - span->sampleXMin) * span->depthSlope;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float SpanDepthAtX(
     int sampleXMin,
     float invDepth,
@@ -520,6 +532,7 @@ float SpanDepthAtX(
     return invDepth + (float)(x - sampleXMin) * depthSlope;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float SpanDepthAtXByParts(
     int sampleXMin,
     float invDepth,
@@ -529,6 +542,7 @@ float SpanDepthAtXByParts(
     return invDepth + (float)(x - sampleXMin) * depthSlope;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void LinkSpanNode(
     int columnIndex,
     SpanNodePartial *previous,
@@ -546,6 +560,7 @@ void LinkSpanNode(
     g_spanIterNode = node;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void InsertPendingSpanSorted(
     SpanNodePartial **spanList,
     int columnIndex,
@@ -604,6 +619,7 @@ void InsertPendingSpanSorted(
     ++g_spanAllocCursor;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void InsertPendingSpanNoDepthTest(
     SpanNodePartial **spanList,
     int columnIndex,
@@ -727,6 +743,7 @@ void InsertPendingSpanNoDepthTest(
     ++g_spanAllocCursor;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void BuildVisibleSpanListWithDepthTest(
     SpanNodePartial **spanList,
     int columnIndex,
@@ -878,6 +895,7 @@ void BuildVisibleSpanListWithDepthTest(
     ++g_spanAllocCursor;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void InsertPendingSpanWithDepthTest(
     SpanNodePartial **spanList,
     int columnIndex,
@@ -1070,11 +1088,13 @@ void InsertPendingSpanWithDepthTest(
     ++g_spanAllocCursor;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __fastcall SpanRoutineUnavailable(
     int,
     int
 ) {}
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __fastcall PointOpUnavailable(
     void *,
     int,
@@ -1082,6 +1102,7 @@ void __fastcall PointOpUnavailable(
     int
 ) {}
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __fastcall TexturedQueuedSpanRoutineUnavailable(
     int,
     int,
@@ -1089,12 +1110,14 @@ void __fastcall TexturedQueuedSpanRoutineUnavailable(
     int
 ) {}
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __fastcall FlatImmediateSpanRoutineUnavailable(
     int,
     int,
     int
 ) {}
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool FogParamsDifferFromActive(
     const FogParamsPartial &params
 ) {
@@ -1104,6 +1127,7 @@ bool FogParamsDifferFromActive(
            fabs(g_fogParamsActive.colorRgb01[2] - params.colorRgb01[2]) >= kCommitThreshold;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void CommitFogParamsIfChanged(
     const FogParamsPartial &params
 ) {
@@ -2784,6 +2808,7 @@ void __fastcall SpanAlphaBlend555ConstAlphaFastFromPal8(
 }
 
 namespace {
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned int RotateRight32(
     unsigned int value,
     int count
@@ -2791,24 +2816,28 @@ unsigned int RotateRight32(
     return (value >> count) | (value << (32 - count));
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool FogCoordIsFullyFogged(
     unsigned int fogCoordFixed24
 ) {
     return (int)(fogCoordFixed24) >= 0x1000000;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool FogCoordUsesRamp(
     unsigned int fogCoordFixed24
 ) {
     return (int)(fogCoordFixed24) >= 0x80000;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned int FogRampIndex(
     unsigned int fogCoordFixed24
 ) {
     return (0x1000000u - fogCoordFixed24) >> 19;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned short FogBlendPixel565(
     unsigned short pixel,
     unsigned int fogCoordFixed24
@@ -2833,6 +2862,7 @@ unsigned short FogBlendPixel565(
     return (unsigned short)(green + redBlue);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned short FogBlendPixel555(
     unsigned short pixel,
     unsigned int fogCoordFixed24
@@ -2857,6 +2887,7 @@ unsigned short FogBlendPixel555(
     return (unsigned short)(green + redBlue);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned int FogBlendPair565(
     unsigned int packedPixels,
     unsigned int fogCoordFixed24
@@ -2882,6 +2913,7 @@ unsigned int FogBlendPair565(
     return green + redBlue;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned int FogBlendPair555(
     unsigned int packedPixels,
     unsigned int fogCoordFixed24
@@ -2907,6 +2939,7 @@ unsigned int FogBlendPair555(
     return green + redBlue;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 short SaturatingSubWord(
     unsigned short minuend,
     unsigned short subtrahend
@@ -2921,6 +2954,7 @@ short SaturatingSubWord(
     return (short)(result);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned short MultiplyLowWord(
     short lhs,
     short rhs
@@ -2928,6 +2962,7 @@ unsigned short MultiplyLowWord(
     return (unsigned short)((int)(lhs) * (int)(rhs));
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned short FogBlendMmxLane(
     unsigned short pixel,
     unsigned short fogFactor,
@@ -2972,6 +3007,7 @@ unsigned short FogBlendMmxLane(
     return (unsigned short)(pixel + redTerm + greenTerm + blueTerm);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned int BlendMmxQuad(
     unsigned short *pixels,
     unsigned int fogCoordFixed24,
@@ -3007,6 +3043,7 @@ unsigned int BlendMmxQuad(
     return coord;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void FogBlendSpanMmxCore(
     unsigned short *pixels,
     int pixelCount,
@@ -3067,6 +3104,7 @@ void FogBlendSpanMmxCore(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int SpanTex16SampleIndex(
     int texU,
     int texV,
@@ -3078,6 +3116,7 @@ int SpanTex16SampleIndex(
     return vIndex + uIndex;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned short SpanTex16Sample(
     int texU,
     int texV,
@@ -3093,6 +3132,7 @@ unsigned short SpanTex16Sample(
     )];
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned short SpanPal8SampleExpanded(
     int texU,
     int texV,
@@ -3108,6 +3148,7 @@ unsigned short SpanPal8SampleExpanded(
     return g_spanActiveTexPalette[g_spanActiveTexels[sourceIndex]];
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned short BlendPixel565Alpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
@@ -3123,6 +3164,7 @@ unsigned short BlendPixel565Alpha8(
     return (unsigned short)(blended);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned int BlendPair565Alpha5(
     unsigned int dstPair,
     unsigned short srcPixel,
@@ -3140,6 +3182,7 @@ unsigned int BlendPair565Alpha5(
     return lowTerms | highTerms;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned short BlendPixel555Alpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
@@ -3155,6 +3198,7 @@ unsigned short BlendPixel555Alpha8(
     return (unsigned short)(blended);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned int BlendPair555Alpha5(
     unsigned int dstPair,
     unsigned short srcPixel,
@@ -3172,6 +3216,7 @@ unsigned int BlendPair555Alpha5(
     return highTerms | lowTerms;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned short BlendPixel555ConstAlphaMap(
     unsigned short dstPixel,
     unsigned short srcPixel,
@@ -3186,6 +3231,7 @@ unsigned short BlendPixel555ConstAlphaMap(
                             blueDelta);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void SpanCopy16FromTex16Forward(
     unsigned short *dst,
     int texU,
@@ -3589,9 +3635,9 @@ void __fastcall FogColor_SetRgb01Clamped(
     const int blue = (int)(color->blue * 255.0f + 0.5f);
     SpanAlphaBlend565_Mmx_FromPal8(
         &g_fogColorParams,
-        (red << g_zVideo_PixelPack_RShift) & (int)(g_zVideo_PixelPack_RMask),
-        (green << g_zVideo_PixelPack_GShift) & (int)(g_zVideo_PixelPack_GMask),
-        blue >> g_zVideo_PixelPack_BShiftTo8
+        (red << g_zVideo_PixelPack.packedBase) & (int)(g_zVideo_PixelPack.rMask),
+        (green << g_zVideo_PixelPack.sumMinus8) & (int)(g_zVideo_PixelPack.gMask),
+        blue >> g_zVideo_PixelPack.bShiftTo8
     );
 }
 
@@ -3636,9 +3682,9 @@ void __fastcall SetFogTargetColorRgb01Clamped(
     const int blue = (int)(color->blue * 255.0f + 0.5f);
     SpanAlphaBlend565_Mmx_FromPal8(
         &g_fogParamsActive,
-        (red << g_zVideo_PixelPack_RShift) & (int)(g_zVideo_PixelPack_RMask),
-        (green << g_zVideo_PixelPack_GShift) & (int)(g_zVideo_PixelPack_GMask),
-        blue >> g_zVideo_PixelPack_BShiftTo8
+        (red << g_zVideo_PixelPack.packedBase) & (int)(g_zVideo_PixelPack.rMask),
+        (green << g_zVideo_PixelPack.sumMinus8) & (int)(g_zVideo_PixelPack.gMask),
+        blue >> g_zVideo_PixelPack.bShiftTo8
     );
 }
 
@@ -3683,6 +3729,7 @@ void LensFlare_ResetSampleQueue() {
 }
 
 namespace {
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned short BlendPacked565(
     unsigned short from,
     unsigned short to,
@@ -3696,6 +3743,7 @@ unsigned short BlendPacked565(
     return (unsigned short)(((red & 0x1f) << 11) | ((green & 0x3f) << 5) | (blue & 0x1f));
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned short BlendPacked555(
     unsigned short from,
     unsigned short to,
@@ -3709,6 +3757,7 @@ unsigned short BlendPacked555(
     return (unsigned short)(((red & 0x1f) << 10) | ((green & 0x1f) << 5) | (blue & 0x1f));
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned short BlendLensFlarePixel(
     unsigned short from,
     unsigned short to,
@@ -3832,6 +3881,7 @@ void __fastcall LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(
     g_overlayBlendEnabled = 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void SpanOcclusionInsertPendingSpanSorted(
     SpanNodePartial **spanList,
     int columnIndex,
@@ -3844,6 +3894,7 @@ void SpanOcclusionInsertPendingSpanSorted(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void SpanOcclusionInsertPendingSpanWithDepthTest(
     SpanNodePartial **spanList,
     int columnIndex,
@@ -3856,6 +3907,7 @@ void SpanOcclusionInsertPendingSpanWithDepthTest(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void SpanOcclusionInsertPendingSpanNoDepthTest(
     SpanNodePartial **spanList,
     int columnIndex,
@@ -3868,6 +3920,7 @@ void SpanOcclusionInsertPendingSpanNoDepthTest(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void SpanOcclusionBuildVisibleSpanListWithDepthTest(
     SpanNodePartial **spanList,
     int columnIndex,
@@ -3881,6 +3934,7 @@ void SpanOcclusionBuildVisibleSpanListWithDepthTest(
 }
 } // namespace zRndr
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static float zRndrSpanDepthAtXByPartsLocal(
     int sampleXMin,
     float invDepth,
@@ -4612,12 +4666,14 @@ struct TexturedPlanes {
     float originY;
 };
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int RoundToFixed20(
     float value
 ) {
     return (int)(value >= 0.0f ? value + 0.5f : value - 0.5f);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int Fixed16FromFloat(
     float value
 ) {
@@ -4625,24 +4681,28 @@ int Fixed16FromFloat(
     return (int)(scaled >= 0.0 ? scaled + 0.5 : scaled - 0.5);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ScanlineStartFromY(
     float y
 ) {
     return (Fixed16FromFloat(y) + 0x7fff) >> 16;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ScanlineEndFromY(
     float y
 ) {
     return (Fixed16FromFloat(y) - 0x8041) >> 16;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int SpanStartFromX(
     float x
 ) {
     return (Fixed16FromFloat(x) + 0x7fff) >> 16;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int SpanEndFromX(
     float x
 ) {
@@ -4656,6 +4716,7 @@ struct ScanConvertEdge {
     int reserved;
 };
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int WrapPolygonIndex(
     int index,
     int vertexCount
@@ -4671,6 +4732,7 @@ int WrapPolygonIndex(
     return index;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int BuildScanConvertEdges(
     const zVec3 *vertices,
     int vertexCount,
@@ -4717,6 +4779,7 @@ int BuildScanConvertEdges(
     return edgeCount;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 Plane2f BuildPlaneFromTriangle(
     const zVec3 *triVerts,
     const float values[3]
@@ -4740,6 +4803,7 @@ Plane2f BuildPlaneFromTriangle(
     return plane;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 Plane2f BuildScreenPlaneFromTriangle(
     const zVec3 *triVerts,
     const float values[3]
@@ -4752,6 +4816,7 @@ Plane2f BuildScreenPlaneFromTriangle(
     return plane;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 TexturedPlanes BuildQueuedTexturePlanes(
     const zVec3 *clippedTriVerts,
     const zVec3 *triVerts,
@@ -4818,6 +4883,7 @@ TexturedPlanes BuildQueuedTexturePlanes(
     return planes;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float EvalPlane(
     const Plane2f &plane,
     float x,
@@ -4826,6 +4892,7 @@ float EvalPlane(
     return x * plane.gradient.x + y * plane.gradient.y + plane.base;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int SelectPerspectiveChunkPixels(
     float minPositiveReciprocalZ,
     float reciprocalZStepX
@@ -4858,6 +4925,7 @@ int SelectPerspectiveChunkPixels(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void DispatchTexturedSpanChunks(
     zRndr::TexturedQueuedSpanProc spanProc,
     const TexturedPlanes &planes,
@@ -7677,9 +7745,9 @@ void __fastcall zRndr_FogTargetColorStaged_SetRgb01Clamped(
     const int blue = (int)(color->blue * 255.0f + 0.5f);
     zRndr::SpanAlphaBlend565_Mmx_FromPal8(
         staged,
-        (red << g_zVideo_PixelPack_RShift) & (int)(g_zVideo_PixelPack_RMask),
-        (green << g_zVideo_PixelPack_GShift) & (int)(g_zVideo_PixelPack_GMask),
-        blue >> g_zVideo_PixelPack_BShiftTo8
+        (red << g_zVideo_PixelPack.packedBase) & (int)(g_zVideo_PixelPack.rMask),
+        (green << g_zVideo_PixelPack.sumMinus8) & (int)(g_zVideo_PixelPack.gMask),
+        blue >> g_zVideo_PixelPack.bShiftTo8
     );
 }
 

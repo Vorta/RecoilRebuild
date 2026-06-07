@@ -4788,7 +4788,7 @@ extern "C" int hud_ui_save_load_entry_is_newer_than_smoke(void) {
 extern "C" int hud_ui_save_load_list_item_constructor_smoke(void) {
     HudUiSaveLoadListItem item{};
 
-    HudUiSaveLoadListItem *const result = item.Constructor();
+    HudUiSaveLoadListItem *const result = &item;
 
     return result == &item && item.vftable == &g_HudUiSaveLoadListItem_Vtbl &&
                    item.vftable->Draw != nullptr && item.vftable->OnActivate != nullptr &&
@@ -4837,7 +4837,7 @@ extern "C" int hud_ui_save_load_dialog_destructor_smoke(void) {
     dialog.gameNameInput.BaseConstructor();
     dialog.gameNameInput.textInput.AllocTextBuffer(8);
     for (int index = 0; index < 9; ++index) {
-        dialog.entryWidgets[index].Constructor();
+        new (&dialog.entryWidgets[index]) HudUiSaveLoadListItem;
     }
 
     HudUiSaveLoadEntry *const entries =
@@ -4884,7 +4884,7 @@ extern "C" int hud_ui_save_game_dialog_destructor_smoke(void) {
     dialog.gameNameInput.BaseConstructor();
     dialog.gameNameInput.textInput.AllocTextBuffer(8);
     for (int index = 0; index < 9; ++index) {
-        dialog.entryWidgets[index].Constructor();
+        new (&dialog.entryWidgets[index]) HudUiSaveLoadListItem;
     }
     dialog.primaryActionButton.Constructor();
 
@@ -4935,7 +4935,7 @@ extern "C" int hud_ui_save_game_dialog_scalar_deleting_destructor_smoke(void) {
     dialog->gameNameInput.BaseConstructor();
     dialog->gameNameInput.textInput.AllocTextBuffer(8);
     for (int index = 0; index < 9; ++index) {
-        dialog->entryWidgets[index].Constructor();
+        new (&dialog->entryWidgets[index]) HudUiSaveLoadListItem;
     }
     dialog->primaryActionButton.Constructor();
 
@@ -4966,7 +4966,7 @@ extern "C" int hud_ui_save_game_dialog_scalar_deleting_destructor_smoke(void) {
     deleteDialog->gameNameInput.BaseConstructor();
     deleteDialog->gameNameInput.textInput.AllocTextBuffer(8);
     for (int index = 0; index < 9; ++index) {
-        deleteDialog->entryWidgets[index].Constructor();
+        new (&deleteDialog->entryWidgets[index]) HudUiSaveLoadListItem;
     }
     deleteDialog->primaryActionButton.Constructor();
     deleteDialog->ScalarDeletingDestructor(1);
@@ -5704,7 +5704,7 @@ extern "C" int hud_ui_save_game_dialog_init_layout_smoke(void) {
     g_saveGameInitLoadCalls = 0;
     g_saveGameInitLoadArgsOk = false;
     g_saveLoadInitExpectedSectionName = "SAVE_GAME_DIALOG";
-    HudUiSaveGameDialog *const result = dialog.InitLayout();
+    HudUiSaveGameDialog *const result = new (&dialog) HudUiSaveGameDialog;
     RestoreFunctionPatch(loadPatch);
 
     int checkResult = 0;
@@ -5751,7 +5751,7 @@ extern "C" int hud_ui_load_game_dialog_constructor_smoke(void) {
     g_saveGameInitLoadCalls = 0;
     g_saveGameInitLoadArgsOk = false;
     g_saveLoadInitExpectedSectionName = "LOAD_GAME_DIALOG";
-    HudUiLoadGameDialog *const result = dialog.Constructor();
+    HudUiLoadGameDialog *const result = new (&dialog) HudUiLoadGameDialog;
     RestoreFunctionPatch(loadPatch);
 
     int checkResult = 0;
@@ -5797,7 +5797,7 @@ static void InitLoadGameDialogDestructorFixture(HudUiLoadGameDialog *dialog) {
     dialog->primaryActionButton.Constructor();
 
     for (int i = 0; i < 9; ++i) {
-        dialog->entryWidgets[i].Constructor();
+        new (&dialog->entryWidgets[i]) HudUiSaveLoadListItem;
     }
 
     dialog->fileEntries.begin =

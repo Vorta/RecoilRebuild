@@ -94,6 +94,7 @@ const char *kZeffInitSourceFile = "D:\\Proj\\GameZRecoil\\zEffect\\zeff_init.c";
 const char *kAnimationNodeNotFoundMessage =
     "Animation node not found.\n  Animation: %s; Node: %s\n";
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void FreeIfSet(
     void *ptr
 ) {
@@ -226,6 +227,7 @@ RECOIL_STATIC_ASSERT(sizeof(zEffectAnimRunningSaveHeader) == 0x68);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimRuntimeNodeSaveRecord) == 0x38);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimSoundNodeSaveRecord) == 0x3c);
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool ReadOne(
     FILE *stream,
     void *data,
@@ -239,6 +241,7 @@ bool ReadOne(
     ) == 1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool ReadArrayRaw(
     FILE *stream,
     void **outData,
@@ -265,6 +268,7 @@ bool ReadArrayRaw(
 }
 
 template <typename T>
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool ReadArray(
     FILE *stream,
     T **outData,
@@ -284,6 +288,7 @@ bool ReadArray(
     return true;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool ReadEventStream(
     FILE *stream,
     zEffectAnimSurfaceRuntime *runtime
@@ -305,18 +310,21 @@ bool ReadEventStream(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zReader::Node *zReaderArrayBase(
     zReader::Node *node
 ) {
     return node->value.nodes;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int zReaderArrayCount(
     zReader::Node *node
 ) {
     return zReaderArrayBase(node)->value.i32;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 char *zReaderArrayStringAt(
     zReader::Node *node,
     int index
@@ -324,6 +332,7 @@ char *zReaderArrayStringAt(
     return zReaderArrayBase(node)[index].value.str;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ReportAnimationNodeNotFound(
     zEffectAnimEntry *self,
     int sourceLine,
@@ -340,6 +349,7 @@ void ReportAnimationNodeNotFound(
     self->activationState = 5;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ResolveEmitterEventEntryIndex(
     zEffectAnimEmitterEvent *event
 ) {
@@ -359,6 +369,7 @@ int ResolveEmitterEventEntryIndex(
     return event->cachedEntryIndex;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ResolveAnimEntryIndexByName(
     short *cachedIndex,
     const char *animName
@@ -379,6 +390,7 @@ int ResolveAnimEntryIndexByName(
     return *cachedIndex;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ResolveSurfaceRuntimeIndex(
     zEffectAnimEntry *self,
     zEffectSurfaceControlEvent *event
@@ -398,6 +410,7 @@ int ResolveSurfaceRuntimeIndex(
     return event->surfaceSlotIndex;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void CopyPackedVariantOverrideToCurrentTag() {
     memcpy(
         &g_Variant_CurrentTag,
@@ -406,6 +419,7 @@ void CopyPackedVariantOverrideToCurrentTag() {
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void AdvanceVariantCycleDelay(
     zEffectAnimEntry *self
 ) {
@@ -418,6 +432,7 @@ void AdvanceVariantCycleDelay(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ResetActivatedBoundTransform(
     zEffectAnimEntry *activatedEntry
 ) {
@@ -459,6 +474,7 @@ void ResetActivatedBoundTransform(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool VelocityIsActive(
     float x,
     float y,
@@ -468,6 +484,7 @@ bool VelocityIsActive(
            fabs(z) > kEffectAnimVelocityEpsilon;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float BeamLengthFromLengthSq(
     float lengthSq
 ) {
@@ -488,6 +505,7 @@ float BeamLengthFromLengthSq(
     return length;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float ClampUnitFloat(
     float value
 ) {
@@ -500,12 +518,14 @@ float ClampUnitFloat(
     return value;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned char UnitFloatToByte(
     float value
 ) {
     return (unsigned char)((int)(value * 255.0f + 0.5f));
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void SetNodeDiBlendScale(
     zClass_NodePartial *node,
     float blendScale
@@ -524,6 +544,7 @@ void SetNodeDiBlendScale(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void AddNodeDiBlendScale(
     zClass_NodePartial *node,
     float blendDelta
@@ -539,12 +560,14 @@ void AddNodeDiBlendScale(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float NextEffectRandUnit() {
     const float value = g_zEffect_RandUnitTable[g_zEffect_RandTableIndex];
     g_zEffect_RandTableIndex = (g_zEffect_RandTableIndex + 1) % 200;
     return value;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zVec3 TransformByCurrentMatrix(
     const zVec3 *vec
 ) {
@@ -555,6 +578,7 @@ zVec3 TransformByCurrentMatrix(
     return result;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zVec3 TransformNodeBasisVector(
     zClass_NodePartial *node,
     const zVec3 *vec
@@ -584,6 +608,7 @@ zVec3 TransformNodeBasisVector(
     return out;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 short ResolveNodeAnimRuntimeIndex(
     zEffectAnimEntry *self,
     zEffectNodeAnimEvent *event
@@ -603,6 +628,7 @@ short ResolveNodeAnimRuntimeIndex(
     return event->packedRuntimeIndex;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void StoreResetScratchVec(
     zEffectAnimEntry *entry,
     size_t firstIndex,
@@ -631,6 +657,7 @@ void StoreResetScratchVec(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zVec3 LoadResetScratchVec(
     zEffectAnimEntry *entry,
     size_t firstIndex
@@ -654,6 +681,7 @@ zVec3 LoadResetScratchVec(
     return value;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zClass_NodePartial *LoadResetScratchNode(
     zEffectAnimEntry *entry,
     size_t index
@@ -661,6 +689,7 @@ zClass_NodePartial *LoadResetScratchNode(
     return (zClass_NodePartial *)((unsigned int)(entry->resetScratch[index]));
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zClass_NodePartial *ResolveNodeRefOrResetScratch(
     zEffectAnimEntry *self,
     short nodeRefIndex
@@ -677,6 +706,7 @@ zClass_NodePartial *ResolveNodeRefOrResetScratch(
     return 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int DispatchSequenceEvent(
     zEffectAnimEntry *self,
     zEffectAnimSurfaceRuntime *sequenceRuntime,
@@ -3473,6 +3503,7 @@ int __fastcall SaveActivationRecords(
     return result;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void QueueLoadedActivationRecord(
     const zEffectAnimActivationRecord *record
 ) {

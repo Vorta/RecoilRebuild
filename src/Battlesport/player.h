@@ -8,6 +8,7 @@
 #include "Battlesport/ainet.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zUtil/zSaveGame.h"
+#include "GameZRecoil/zVideo/zVideoFxPass3.h"
 #include "recoil/recoil_callconv.h"
 
 struct zInput_GameStateOrMapTablePartial;
@@ -86,33 +87,21 @@ extern int g_PlayerEnvProbe_AboveGroundCount;
 extern zEffectAnimEntry *g_PlayerRecentHitFxAnimEntry;
 }
 
-struct Player_UnderwaterFxPass3Ui : HudUiElement {
-    zVidRect32 *overlayRectOrNull;
+struct Player_UnderwaterFxPass3Ui : zVideoFxPass3Element {
 
+    Player_UnderwaterFxPass3Ui();
     Player_UnderwaterFxPass3Ui * Constructor();
-    void ApplyBlueTint();
+    void ApplyPass3();
 };
 RECOIL_STATIC_ASSERT(sizeof(Player_UnderwaterFxPass3Ui) == 0x38);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        Player_UnderwaterFxPass3Ui,
-        overlayRectOrNull
-    ) == 0x34
-);
 
-struct Player_ProjectileCameraFxPass3Ui : HudUiElement {
-    zVidRect32 *overlayRectOrNull;
+struct Player_ProjectileCameraFxPass3Ui : zVideoFxPass3Element {
 
+    Player_ProjectileCameraFxPass3Ui();
     Player_ProjectileCameraFxPass3Ui * Constructor();
-    void ApplyGreenMask();
+    void ApplyPass3();
 };
 RECOIL_STATIC_ASSERT(sizeof(Player_ProjectileCameraFxPass3Ui) == 0x38);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        Player_ProjectileCameraFxPass3Ui,
-        overlayRectOrNull
-    ) == 0x34
-);
 
 struct HudUiMgrSensorTrackNode {
     int trackKind;

@@ -7578,22 +7578,22 @@ extern "C" int hud_sensor_tracker_load_mission_weather_fx_smoke() {
 
     zArchiveList *const oldMountedList = g_zArchive_MountedList;
     const int oldRendererPath = g_zVideo_ActiveRendererPath;
-    const unsigned int oldRMask = g_zVideo_PixelPack_RMaskShifted;
-    const unsigned int oldGMask = g_zVideo_PixelPack_GMaskShifted;
-    const unsigned int oldRShift = g_zVideo_PixelPack_RShift;
-    const unsigned int oldGShift = g_zVideo_PixelPack_GShift;
-    const unsigned int oldBShift = g_zVideo_PixelPack_BShiftTo8;
+    const unsigned int oldRMask = g_zVideo_PixelPack.rMaskShifted;
+    const unsigned int oldGMask = g_zVideo_PixelPack.gMaskShifted;
+    const unsigned int oldRShift = g_zVideo_PixelPack.packedBase;
+    const unsigned int oldGShift = g_zVideo_PixelPack.sumMinus8;
+    const unsigned int oldBShift = g_zVideo_PixelPack.bShiftTo8;
     HudUiContainer *const pass3 = (HudUiContainer *)(&g_zVideo_FxPass3ConfigLocal);
     HudUiElement *const oldPass3Head = pass3->childHead;
     HudUiElement *const oldPass3Tail = pass3->childTail;
 
     g_zArchive_MountedList = &list;
     g_zVideo_ActiveRendererPath = 0;
-    g_zVideo_PixelPack_RMaskShifted = 0xf8;
-    g_zVideo_PixelPack_GMaskShifted = 0xfc;
-    g_zVideo_PixelPack_RShift = 8;
-    g_zVideo_PixelPack_GShift = 3;
-    g_zVideo_PixelPack_BShiftTo8 = 3;
+    g_zVideo_PixelPack.rMaskShifted = 0xf8;
+    g_zVideo_PixelPack.gMaskShifted = 0xfc;
+    g_zVideo_PixelPack.packedBase = 8;
+    g_zVideo_PixelPack.sumMinus8 = 3;
+    g_zVideo_PixelPack.bShiftTo8 = 3;
     pass3->childHead = nullptr;
     pass3->childTail = nullptr;
 
@@ -7627,11 +7627,11 @@ extern "C" int hud_sensor_tracker_load_mission_weather_fx_smoke() {
     pass3->childTail = oldPass3Tail;
     g_zArchive_MountedList = oldMountedList;
     g_zVideo_ActiveRendererPath = oldRendererPath;
-    g_zVideo_PixelPack_RMaskShifted = oldRMask;
-    g_zVideo_PixelPack_GMaskShifted = oldGMask;
-    g_zVideo_PixelPack_RShift = oldRShift;
-    g_zVideo_PixelPack_GShift = oldGShift;
-    g_zVideo_PixelPack_BShiftTo8 = oldBShift;
+    g_zVideo_PixelPack.rMaskShifted = oldRMask;
+    g_zVideo_PixelPack.gMaskShifted = oldGMask;
+    g_zVideo_PixelPack.packedBase = oldRShift;
+    g_zVideo_PixelPack.sumMinus8 = oldGShift;
+    g_zVideo_PixelPack.bShiftTo8 = oldBShift;
     CloseHandle(file);
     DeleteFileA(tempPath);
 
@@ -16471,11 +16471,11 @@ extern "C" int zclass_display_init_smoke() {
         return 3;
     }
 
-    g_zVideo_PixelPack_RMaskShifted = 0xf8;
-    g_zVideo_PixelPack_GMaskShifted = 0xfc;
-    g_zVideo_PixelPack_RShift = 8;
-    g_zVideo_PixelPack_GShift = 3;
-    g_zVideo_PixelPack_BShiftTo8 = 3;
+    g_zVideo_PixelPack.rMaskShifted = 0xf8;
+    g_zVideo_PixelPack.gMaskShifted = 0xfc;
+    g_zVideo_PixelPack.packedBase = 8;
+    g_zVideo_PixelPack.sumMinus8 = 3;
+    g_zVideo_PixelPack.bShiftTo8 = 3;
     g_zVideo_ClearColorPacked16 = 0;
     if (zClass_Display::gwDisplaySetBackgroundColor(node, 255.0f, 128.0f, 32.0f) != 0 ||
         data->backgroundR != 255.0f || data->backgroundG != 128.0f || data->backgroundB != 32.0f ||

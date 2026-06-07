@@ -692,11 +692,11 @@ extern "C" int hud_sensor_mission_identity_smoke(void) {
 }
 
 extern "C" int hud_sensor_map_node_basics_smoke(void) {
-    g_zVideo_PixelPack_RMaskShifted = 0xf8;
-    g_zVideo_PixelPack_GMaskShifted = 0xfc;
-    g_zVideo_PixelPack_RShift = 8;
-    g_zVideo_PixelPack_GShift = 3;
-    g_zVideo_PixelPack_BShiftTo8 = 3;
+    g_zVideo_PixelPack.rMaskShifted = 0xf8;
+    g_zVideo_PixelPack.gMaskShifted = 0xfc;
+    g_zVideo_PixelPack.packedBase = 8;
+    g_zVideo_PixelPack.sumMinus8 = 3;
+    g_zVideo_PixelPack.bShiftTo8 = 3;
 
     HudSensorMapNode node;
     std::memset(&node, 0x7f, sizeof(node));
@@ -799,11 +799,11 @@ extern "C" int hud_sensor_map_node_basics_smoke(void) {
 }
 
 extern "C" int hud_sensor_objective_marker_enable_color_smoke(void) {
-    g_zVideo_PixelPack_RMaskShifted = 0xf8;
-    g_zVideo_PixelPack_GMaskShifted = 0xfc;
-    g_zVideo_PixelPack_RShift = 8;
-    g_zVideo_PixelPack_GShift = 3;
-    g_zVideo_PixelPack_BShiftTo8 = 3;
+    g_zVideo_PixelPack.rMaskShifted = 0xf8;
+    g_zVideo_PixelPack.gMaskShifted = 0xfc;
+    g_zVideo_PixelPack.packedBase = 8;
+    g_zVideo_PixelPack.sumMinus8 = 3;
+    g_zVideo_PixelPack.bShiftTo8 = 3;
 
     HudSensorTracker tracker = {};
     HudSensorMapPoint matchedPoints[1] = {{1.0f, 2.0f, 3.0f}};
@@ -871,11 +871,11 @@ extern "C" int hud_sensor_objective_marker_enable_color_smoke(void) {
 }
 
 extern "C" int hud_sensor_find_first_incomplete_objective_smoke(void) {
-    g_zVideo_PixelPack_RMaskShifted = 0xf8;
-    g_zVideo_PixelPack_GMaskShifted = 0xfc;
-    g_zVideo_PixelPack_RShift = 8;
-    g_zVideo_PixelPack_GShift = 3;
-    g_zVideo_PixelPack_BShiftTo8 = 3;
+    g_zVideo_PixelPack.rMaskShifted = 0xf8;
+    g_zVideo_PixelPack.gMaskShifted = 0xfc;
+    g_zVideo_PixelPack.packedBase = 8;
+    g_zVideo_PixelPack.sumMinus8 = 3;
+    g_zVideo_PixelPack.bShiftTo8 = 3;
 
     HudSensorTracker tracker = {};
     tracker.objectiveCount = 3;
@@ -1082,11 +1082,11 @@ extern "C" int hud_sensor_map_overlay_toggle_smoke(void) {
 }
 
 extern "C" int hud_sensor_tracker_load_map_paths_smoke(void) {
-    g_zVideo_PixelPack_RMaskShifted = 0xf8;
-    g_zVideo_PixelPack_GMaskShifted = 0xfc;
-    g_zVideo_PixelPack_RShift = 8;
-    g_zVideo_PixelPack_GShift = 3;
-    g_zVideo_PixelPack_BShiftTo8 = 3;
+    g_zVideo_PixelPack.rMaskShifted = 0xf8;
+    g_zVideo_PixelPack.gMaskShifted = 0xfc;
+    g_zVideo_PixelPack.packedBase = 8;
+    g_zVideo_PixelPack.sumMinus8 = 3;
+    g_zVideo_PixelPack.bShiftTo8 = 3;
 
     const HudSensorMapBounds fileBounds = {-1.0f, 0.0f, -2.0f, 1.0f, 0.0f, 2.0f};
     const unsigned char rgb[3] = {0x30, 0x50, 0x70};
@@ -2571,11 +2571,11 @@ extern "C" int zeffect_handle_sound_light_events_smoke(void) {
 
 extern "C" int zeffect_handle_light_anim_event_smoke(void) {
     g_zVideo_RendererType = 0;
-    g_zVideo_PixelPack_RShift = 8;
-    g_zVideo_PixelPack_GShift = 3;
-    g_zVideo_PixelPack_BShiftTo8 = 3;
-    g_zVideo_PixelPack_RMask = 0xf800;
-    g_zVideo_PixelPack_GMask = 0x07e0;
+    g_zVideo_PixelPack.packedBase = 8;
+    g_zVideo_PixelPack.sumMinus8 = 3;
+    g_zVideo_PixelPack.bShiftTo8 = 3;
+    g_zVideo_PixelPack.rMask = 0xf800;
+    g_zVideo_PixelPack.gMask = 0x07e0;
 
     zClass_LightDataPartial lightData{};
     lightData.range1 = 8.0f;
@@ -3738,11 +3738,11 @@ extern "C" int zeffect_handle_screen_fx_events_smoke(void) {
     EffectFxPass3FieldAt<const HudUiCommon_FTable *>(kEffectFxPass3RootElementOffset) =
         &g_HudUiCommon_FTable;
     g_HudUi_InvalidateMask = 0;
-    g_zVideo_PixelPack_RMaskShifted = 0xf8;
-    g_zVideo_PixelPack_GMaskShifted = 0xfc;
-    g_zVideo_PixelPack_RShift = 8;
-    g_zVideo_PixelPack_GShift = 3;
-    g_zVideo_PixelPack_BShiftTo8 = 3;
+    g_zVideo_PixelPack.rMaskShifted = 0xf8;
+    g_zVideo_PixelPack.gMaskShifted = 0xfc;
+    g_zVideo_PixelPack.packedBase = 8;
+    g_zVideo_PixelPack.sumMinus8 = 3;
+    g_zVideo_PixelPack.bShiftTo8 = 3;
 
     zEffectAnimEntry entry = {};
     zEffectAnimSurfaceRuntime runtime = {};

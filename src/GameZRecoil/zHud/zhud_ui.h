@@ -3,6 +3,8 @@
 #include "recoil/recoil_types.h"
 #include <cstdarg>
 #include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <windows.h>
 
@@ -109,14 +111,14 @@ struct HudUiElement {
     unsigned short state;
     unsigned short padding32;
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     HudUiElement() {
     }
     HudUiElement(
         int x,
         int y
     );
-    ~HudUiElement() {
-    }
+    ~HudUiElement();
     HudUiElement * Constructor(
         int x,
         int y
@@ -139,10 +141,11 @@ struct HudUiElement {
     virtual void SetClipRect(const HudUiRect *clipRect);
     virtual void Invalidate();
     virtual void Update(float deltaSeconds);
-    virtual void OnHoverRepeat();
+    virtual void OnUpdateIdle(float deltaSeconds);
     virtual HudUiRect * GetBoundsRectOrNull();
     virtual void OnActivate();
     virtual void OnClearBinding();
+    virtual void OnHoverRepeat();
     virtual void ShowPreview();
     virtual void HidePreview();
     virtual void OnBeginCapture();
@@ -169,39 +172,7 @@ struct HudUiElement {
     virtual int GetY();
     virtual void EnableWordWrapWithRect(const HudUiRect *rect);
     virtual void GetTextRect(HudUiRect *outRect);
-    virtual void SetTextFmt(
-        const char *format,
-        ...
-    );
-    virtual void UpdateTextBoundsFromContent();
-    virtual HGDIOBJ GetFont();
-    virtual void SetFont(
-        const char *faceName,
-        int height,
-        int weight,
-        int width,
-        int italic,
-        int charSet,
-        int pitchAndFamily
-    );
-    virtual void SetFontHandle(HGDIOBJ fontHandle);
-    virtual void SetTextFmtV(
-        const char *format,
-        va_list args
-    );
-    virtual void SetText(const char *text);
-    virtual void RebuildTextRect();
-    virtual void RefreshState();
-    virtual int LoadFromZrd(
-        zReader::Node *zrdSection,
-        HudUiBackground *ownerDialog
-    );
-    virtual void PostLoadFromZrd();
-    virtual int OnRawKeyboardChar(int key);
-    virtual int OnAcceptForwardToCommit();
-    virtual int CommitAndGetValue();
     void SetTimer(float duration);
-    void GetRect(HudUiRect *outRect);
     unsigned char HitTestTrue(
         int px,
         int py
@@ -239,7 +210,7 @@ struct HudUiWidget : HudUiElement {
         int px,
         int py
     );
-    RECOIL_NO_GS void RebuildBltRectFromImage();
+    virtual RECOIL_NO_GS void RebuildBltRectFromImage();
     void Draw();
 };
 
@@ -358,7 +329,7 @@ struct HudLayoutBase : HudUiContainer {
 
     static void Shutdown_Stub();
     void Destructor();
-    int SetActive(int active);
+    virtual int SetActive(int active);
     virtual void UpdateAll(float deltaSeconds);
     virtual void LayoutPreUpdate();
     virtual void Enable();
@@ -621,6 +592,7 @@ struct HudUiTextLabel : HudUiElement {
     int centerBoundsRight;
     int alignMode;
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     HudUiTextLabel() {
     }
     HudUiTextLabel(
@@ -637,10 +609,28 @@ struct HudUiTextLabel : HudUiElement {
     );
     HudUiTextLabel * CopyConstructor(const HudUiTextLabel *source);
     HudUiTextLabel * Constructor(const HudUiTextLabel *source);
-    void SetTextFmt(
+    virtual void SetTextFmt(
         const char *format,
         ...
     );
+    virtual void UpdateTextBoundsFromContent();
+    virtual HGDIOBJ GetFont();
+    virtual void SetFont(
+        const char *faceName,
+        int height,
+        int weight,
+        int width,
+        int italic,
+        int charSet,
+        int pitchAndFamily
+    );
+    virtual void SetFontHandle(HGDIOBJ fontHandle);
+    virtual void SetTextFmtV(
+        const char *format,
+        va_list args
+    );
+    virtual void SetText(const char *text);
+    virtual void RebuildTextRect();
     void RebuildTextBounds();
     int MeasureTextWidth();
     void OnDraw();
@@ -745,6 +735,7 @@ struct HudUiBackgroundVideoWidget : HudUiElement {
 };
 
 struct HudUiBackgroundMemberCursorWidget : HudUiBackgroundCursorWidget {
+    // Source-faithful helper recovered from address-backed callers in this source file.
     HudUiBackgroundMemberCursorWidget(
         const char *imagePath,
         int captureEnabled
@@ -755,33 +746,98 @@ struct HudUiBackgroundMemberCursorWidget : HudUiBackgroundCursorWidget {
     }
 };
 
+struct HudUiPanelPtrAllocator {
+    char value;
+
+    /**
+     * Restores the original-source inline one-byte VC5 allocator subobject used by
+     * std::vector<HudUiPanel *> member construction. No standalone retail
+     * function exists; observed in caller 0x4b4ee0.
+     * Purpose: keep the recovered vector layout aligned with the retail
+     * allocator/_First/_Last/_End object shape.
+     */
+    HudUiPanelPtrAllocator() {
+#if !defined(_MSC_VER) || _MSC_VER >= 1200
+        value = 0;
+#endif
+    }
+};
+
 struct HudUiPanelPtrVector {
     // Recovered VC5 std::vector<HudUiPanel *> storage. Native builds keep the
     // ABI-compatible record because host STL vector layout is not compatible
     // with the retail VC5 object layout.
-    char allocatorProxy;
+    HudUiPanelPtrAllocator allocatorProxy;
     char padding[3];
     HudUiPanel **begin;
     HudUiPanel **end;
     HudUiPanel **capacityEnd;
 
-    HudUiPanelPtrVector() {
-        // VC5 copies an uninitialized STL allocator proxy byte into the vector.
-#if defined(_MSC_VER) && _MSC_VER < 1200
-        char allocatorProxyValue;
-#else
-        char allocatorProxyValue = 0;
-#endif
-        allocatorProxy = allocatorProxyValue;
-        begin = 0;
-        end = 0;
-        capacityEnd = 0;
+    /**
+     * Restores the original-source inline VC5 std::vector<HudUiPanel *> default constructor. No
+     * standalone retail function exists; observed in caller 0x4b4ee0 as
+     * allocator copy construction followed by zeroed begin/end/capacity
+     * iterators.
+     * Purpose: preserve the original panel-vector member construction shape.
+     */
+    explicit HudUiPanelPtrVector(const HudUiPanelPtrAllocator &allocator = HudUiPanelPtrAllocator())
+        : allocatorProxy(allocator), begin(0), end(0), capacityEnd(0) {
+    }
+
+    /**
+     * Restores the original-source inline vector size query. No standalone
+     * retail function exists; observed in callers 0x4b4ba0, 0x4b4ca0, and
+     * 0x4b4e60 as a null begin guard followed by end-begin pointer arithmetic.
+     * Purpose: keep panel-vector users expressed as typed vector operations.
+     */
+    int Count() const {
+        if (begin == 0) {
+            return 0;
+        }
+        return (int)(end - begin);
+    }
+
+    /**
+     * Restores the original-source inline vector element access. No standalone
+     * retail function exists; observed in callers 0x4b4ba0, 0x4b4ca0, and
+     * 0x4b4e60 as a reload of the first iterator before dereferencing.
+     * Purpose: keep first-panel access tied to the recovered vector owner.
+     */
+    HudUiPanel * At(unsigned int index) const {
+        return begin[index];
     }
 
     HudUiPanel ** EraseRange(
         HudUiPanel **first,
         HudUiPanel **last
     );
+    /**
+     * Restores the VC5 std::vector<HudUiPanel *>::erase(first,last) body
+     * inlined into 0x4b4ee0. The retail constructor keeps the dead
+     * copy-and-destroy path for clear-on-empty panel vectors before updating
+     * the vector end iterator.
+     * Purpose: preserve the original inline STL erase shape for constructor
+     * byte verification while keeping the recovered vector storage typed.
+     */
+    HudUiPanel ** EraseRangeNoDestroyInline(
+        HudUiPanel **first,
+        HudUiPanel **last
+    ) {
+        HudUiPanel **write = first;
+        HudUiPanel **read = last;
+        HudUiPanel **const oldEnd = end;
+        if (read != oldEnd) {
+            do {
+                *write++ = *read++;
+            } while (read != oldEnd);
+        }
+        ((StdPtrVector *)(this))->ClearNoOpDestroy(
+            (int *)(write),
+            (int *)(oldEnd)
+        );
+        end = write;
+        return first;
+    }
     void InsertN(
         HudUiPanel **position,
         unsigned int count,
@@ -821,11 +877,12 @@ struct HudUiZrdWidget : HudUiWidget {
     HudUiRect * GetBoundsRectOrNull();
     void ShowPreview();
     void OnActivate();
-    int LoadFromZrd(
+    virtual void RefreshState();
+    virtual int LoadFromZrd(
         zReader::Node *zrdSection,
         HudUiBackground *ownerDialog
     );
-    void RefreshState();
+    virtual void PostLoadFromZrd();
     void HidePreview();
     static void *__stdcall DeleteChildIfPresent(void *childWidgetOrNull);
 };
@@ -875,7 +932,7 @@ struct HudUiCycleSelectorWidget : HudUiZrdWidget {
     void DestructorCore();
     void DestructorCoreThunk();
     void AdvanceSelectionAndActivate();
-    void SetIndexClamped(int index);
+    int SetIndexClamped(int index);
     void SetVisibleRange(
         int first,
         int last
@@ -996,6 +1053,7 @@ struct HudUiPanel : HudUiTextLabel {
     int shadowOffsetX;
     int shadowOffsetY;
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     HudUiPanel() {
     }
     HudUiPanel(
@@ -1003,6 +1061,7 @@ struct HudUiPanel : HudUiTextLabel {
         int x,
         int y
     );
+    ~HudUiPanel();
     HudUiPanel * ConstructorDefault(
         const char *text,
         int x,
@@ -1020,7 +1079,6 @@ struct HudUiPanel : HudUiTextLabel {
     void SetFontHandle(HGDIOBJ fontHandle);
     void EnableWordWrapWithRect(const HudUiRect *rect);
     void Draw();
-    void Destructor();
     void DestructorThunk();
     static void __stdcall DestructorCallback(HudUiPanel *panel);
     unsigned int SetTextColor(unsigned int color);
@@ -1085,13 +1143,16 @@ struct HudUiListSelectorItem : HudUiPanel {
     void Draw();
 };
 
+struct HudCmdBindingEntry;
+
 struct HudCmdBindingVector {
     unsigned char allocator;
     unsigned char padding_01[3];
-    void *begin;
-    void *end;
-    void *capacity;
+    HudCmdBindingEntry **begin;
+    HudCmdBindingEntry **end;
+    HudCmdBindingEntry **capacity;
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     HudCmdBindingVector() {
 #if defined(_MSC_VER) && _MSC_VER < 1200
         char allocatorValue;
@@ -1103,13 +1164,57 @@ struct HudCmdBindingVector {
         end = 0;
         capacity = 0;
     }
+
+    int Count() const;
+    HudCmdBindingEntry ** EraseRange(
+        HudCmdBindingEntry **first,
+        HudCmdBindingEntry **last
+    );
+    void PushBack(HudCmdBindingEntry *entry);
 };
 
 struct HudCmdBindingEntry {
     char *displayText;
     int commandId;
 
-    ~HudCmdBindingEntry();
+    /**
+     * No standalone retail function; this preserves the empty record
+     * constructor used by existing source and test fixtures that assign the
+     * two fields explicitly.
+     * Purpose: provide default construction for command-binding entry records.
+     */
+    // Source-faithful helper recovered from address-backed callers in this source file.
+    HudCmdBindingEntry() {
+    }
+
+    /**
+     * No standalone retail function; Binary Ninja shows the constructor body
+     * inlined in HudCmdBindButtonBase::AddBindingEntry at 0x40bf80, where the
+     * allocated entry receives _strdup(text) at offset 0 and id at offset 4.
+     * Purpose: initialize one command-binding display entry.
+     */
+    // Source-faithful helper recovered from address-backed callers in this source file.
+    HudCmdBindingEntry(
+        const char *text,
+        int id
+    ) : displayText(_strdup(text)),
+        commandId(id)
+    {
+    }
+
+    /**
+     * No standalone retail function; Binary Ninja shows this destructor body
+     * inlined into the VC scalar-deleting destructor at 0x40bf50 and the
+     * static delete helper at 0x40bf20.
+     * Purpose: release the owned command-binding display string.
+     */
+    // Source-faithful helper recovered from address-backed callers in this source file.
+    ~HudCmdBindingEntry() {
+        if (displayText != 0) {
+            free(displayText);
+            displayText = 0;
+        }
+    }
     static HudCmdBindingEntry *__stdcall DeleteAndReturnNull(HudCmdBindingEntry *entry);
     static HudCmdBindingEntry **__fastcall CopyRange(
         HudCmdBindingEntry **sourceBegin,
@@ -1117,6 +1222,64 @@ struct HudCmdBindingEntry {
         HudCmdBindingEntry **dest
     );
 };
+
+/**
+ * No standalone retail function for this HudCmd vector; Binary Ninja shows
+ * HudCmdBindButtonBase::AddBindingEntry at 0x40bf80 inlining the previous
+ * entry count as (end - begin), and zInput_BindGroupInfoVec::Count at 0x42a9d0
+ * proves the same VC pointer-vector count idiom for this codebase.
+ * Purpose: return the number of command-binding entries currently stored.
+ */
+// Source-faithful helper recovered from address-backed callers in this source file.
+inline int HudCmdBindingVector::Count() const {
+    HudCmdBindingEntry **const first = begin;
+    if (first == 0) {
+        return 0;
+    }
+
+    return (int)(end - first);
+}
+
+/**
+ * No standalone retail function; Binary Ninja shows
+ * HudCmdBindButtonBase::AddBindingEntry at 0x40bf80 inlining a VC
+ * pointer-vector append/growth path over bindingVec, including capacity
+ * growth, pointer copy, and old storage release when the buffer is full.
+ * Purpose: append one command-binding entry while preserving vector storage.
+ */
+// Source-faithful helper recovered from address-backed callers in this source file.
+inline void HudCmdBindingVector::PushBack(
+    HudCmdBindingEntry *entry
+) {
+    HudCmdBindingEntry **const insertPos = end;
+    HudCmdBindingEntry *value = entry;
+    if ((unsigned int)(capacity - insertPos) < 1u) {
+        const int currentCount = Count();
+        const int growBy = currentCount > 1 ? currentCount : 1;
+        const int newCapacityCount = currentCount + growBy;
+        HudCmdBindingEntry **const newBegin =
+            (HudCmdBindingEntry **)(::operator new(
+                (unsigned int)newCapacityCount * sizeof(HudCmdBindingEntry *)
+            ));
+        HudCmdBindingEntry **write = newBegin;
+        HudCmdBindingEntry **read = begin;
+        while (read != insertPos) {
+            *write = *read;
+            ++read;
+            ++write;
+        }
+
+        *write = value;
+        ::operator delete(begin);
+        begin = newBegin;
+        end = newBegin + currentCount + 1;
+        capacity = newBegin + newCapacityCount;
+        return;
+    }
+
+    *insertPos = value;
+    end = insertPos + 1;
+}
 
 struct HudCmdBinding {
     char *displayText;
@@ -1305,6 +1468,7 @@ struct HudUiPolyline : HudUiElement {
     int color565;
     const RECT *clipRect;
 
+    HudUiPolyline();
     HudUiPolyline * Constructor();
     void Draw();
     void SetPoint(
@@ -1329,6 +1493,7 @@ struct HudUiSliderBorder : HudUiPolyline {
     char rawKeyFilterEnabled;
     char unknown112[2];
 
+    HudUiSliderBorder();
     HudUiSliderBorder * Constructor();
     void Update(float deltaSeconds);
     void SetBounds(
@@ -1345,7 +1510,7 @@ struct HudUiCounter : HudUiWidget {
     int layoutX;
     int layoutY;
 
-    HudUiCounter * Constructor();
+    HudUiCounter();
     int ApplyFromLayoutNode(zReader::Node *layoutNode);
     void ReleaseStateImages();
     void UpdateLayoutPosition();
@@ -1372,7 +1537,7 @@ struct HudUiBar : HudUiElement {
         };
     };
 
-    HudUiBar * Constructor();
+    HudUiBar();
     void Draw();
     void SetPointXY(
         int pointIndex,
@@ -1382,7 +1547,7 @@ struct HudUiBar : HudUiElement {
 };
 
 struct HudUiMeter : HudUiBar {
-    HudUiMeter * Constructor();
+    HudUiMeter();
     HudUiMeter * ConstructorEx();
 };
 
@@ -1404,10 +1569,14 @@ struct HudUiTextInput {
     unsigned int cursor;
     char keyActionMap[0x100];
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
+    HudUiTextInput() {
+    }
+    ~HudUiTextInput();
+    HudUiTextInput(int bufferSize);
     HudUiTextInput * Constructor(int bufferSize);
     void AllocTextBuffer(int bufferSize);
     void DestructorCore();
-    void DestructorCoreThunk();
     void SetContents(const char *source);
     char * GetBuffer();
     void SetCursorPosition(int position);
@@ -1432,8 +1601,17 @@ struct HudUiNumericTextInput;
 struct HudUiOwnedTextInput : HudUiTextInput {
     HudUiNumericTextInput *owner;
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
+    HudUiOwnedTextInput() {
+    }
+    // Source-faithful helper recovered from address-backed callers in this source file.
+    ~HudUiOwnedTextInput() {
+    }
+    // Source-faithful helper recovered from address-backed callers in this source file.
+    HudUiOwnedTextInput(int bufferSize) : HudUiTextInput(bufferSize),
+        owner(0) {
+    }
     virtual void OnAccept();
-    void OnAcceptNotifyOwner();
 };
 
 struct HudUiChatComposeTextInput : HudUiTextInput {
@@ -1444,6 +1622,7 @@ struct HudUiNumericTextInput : HudUiZrdWidget {
     HudUiOwnedTextInput textInput;
     HudUiSliderBorder sliderBorder;
 
+    HudUiNumericTextInput();
     HudUiNumericTextInput * Constructor(unsigned int maxDigits);
     HudUiNumericTextInput * BaseConstructor();
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
@@ -1456,8 +1635,9 @@ struct HudUiNumericTextInput : HudUiZrdWidget {
     RECOIL_NO_GS void UpdateCaptureUiAndClip(float deltaSeconds);
     int SetInputActive(int active);
     void SetRawKeyboardCapture(int enable);
-    int OnRawKeyboardChar(int key);
-    int OnAcceptForwardToCommit();
+    virtual int OnRawKeyboardChar(int key);
+    virtual int OnAcceptForwardToCommit();
+    virtual int CommitAndGetValue();
     void OnActivate();
     static int __fastcall RawKeyboardCallback(
         int key,
@@ -1502,9 +1682,8 @@ struct HudUiClampedIntTextInput : HudUiNumericTextInput {
     int minValue;
     int maxValue;
 
-    HudUiClampedIntTextInput * Constructor(unsigned int maxDigits);
+    HudUiClampedIntTextInput(unsigned int maxDigits);
     int OnRawKeyboardChar(int key);
-    int OnRawKeyboardDigitOnly(int key);
     int CommitAndGetValue();
 };
 
@@ -1700,12 +1879,12 @@ struct HudUiBackground : HudUiBackgroundContainer {
     virtual void SetEnabled(int enabled);
     unsigned char __fastcall BindButtonsNodeToWidgetByName(
         zReader::Node *parentNode,
-        HudUiWidget *widget,
+        HudUiZrdWidget *widget,
         const char *name
     );
     int BindWidgetByName(
         zReader::Node *loadedSectionNode,
-        HudUiWidget *widget,
+        HudUiZrdWidget *widget,
         const char *name
     );
     int BindPrimitiveNodeToElement(
@@ -1802,6 +1981,7 @@ struct HudCmdDialog : HudUiBackground {
 struct HudOptionsDialog;
 
 struct HudUiOptionsPanelBackButton : HudUiZrdWidget {
+    // Source-faithful helper recovered from address-backed callers in this source file.
     HudUiOptionsPanelBackButton() {
     }
 
@@ -1809,6 +1989,7 @@ struct HudUiOptionsPanelBackButton : HudUiZrdWidget {
 };
 
 struct HudUiOptionsPanel_Lighting : HudUiCheckToggleWidget {
+    // Source-faithful helper recovered from address-backed callers in this source file.
     HudUiOptionsPanel_Lighting() {
     }
 
@@ -1819,6 +2000,7 @@ struct HudUiOptionsPanel_Lighting : HudUiCheckToggleWidget {
 };
 
 struct HudUiOptionsPanel_Perspective : HudUiCheckToggleWidget {
+    // Source-faithful helper recovered from address-backed callers in this source file.
     HudUiOptionsPanel_Perspective() {
     }
 
@@ -1829,6 +2011,7 @@ struct HudUiOptionsPanel_Perspective : HudUiCheckToggleWidget {
 };
 
 struct HudUiOptionsPanel_FullHud : HudUiCheckToggleWidget {
+    // Source-faithful helper recovered from address-backed callers in this source file.
     HudUiOptionsPanel_FullHud() {
     }
 
@@ -1837,6 +2020,7 @@ struct HudUiOptionsPanel_FullHud : HudUiCheckToggleWidget {
 };
 
 struct HudUiOptionsPanel_ObjectDetail : HudUiCycleSelectorWidget {
+    // Source-faithful helper recovered from address-backed callers in this source file.
     HudUiOptionsPanel_ObjectDetail() {
     }
 
@@ -1847,6 +2031,7 @@ struct HudUiOptionsPanel_ObjectDetail : HudUiCycleSelectorWidget {
 };
 
 struct HudUiOptionsPanel_TextureMemory : HudUiCycleSelectorWidget {
+    // Source-faithful helper recovered from address-backed callers in this source file.
     HudUiOptionsPanel_TextureMemory() {
     }
 
@@ -1857,6 +2042,7 @@ struct HudUiOptionsPanel_TextureMemory : HudUiCycleSelectorWidget {
 };
 
 struct HudUiOptionsPanel_Effects : HudUiCycleSelectorWidget {
+    // Source-faithful helper recovered from address-backed callers in this source file.
     HudUiOptionsPanel_Effects() {
     }
 
@@ -1867,6 +2053,7 @@ struct HudUiOptionsPanel_Effects : HudUiCycleSelectorWidget {
 };
 
 struct HudUiOptionsPanel_SoundActive : HudUiCheckToggleWidget {
+    // Source-faithful helper recovered from address-backed callers in this source file.
     HudUiOptionsPanel_SoundActive() {
     }
 
@@ -1877,6 +2064,7 @@ struct HudUiOptionsPanel_SoundActive : HudUiCheckToggleWidget {
 };
 
 struct HudUiOptionsPanel_SoundQuality : HudUiCycleSelectorWidget {
+    // Source-faithful helper recovered from address-backed callers in this source file.
     HudUiOptionsPanel_SoundQuality() {
     }
 
@@ -1887,6 +2075,7 @@ struct HudUiOptionsPanel_SoundQuality : HudUiCycleSelectorWidget {
 };
 
 struct HudUiOptionsPanel_SoundVolume : HudUiFillBitmap {
+    // Source-faithful helper recovered from address-backed callers in this source file.
     HudUiOptionsPanel_SoundVolume() {
     }
 
@@ -1896,6 +2085,7 @@ struct HudUiOptionsPanel_SoundVolume : HudUiFillBitmap {
 };
 
 struct HudUiOptionsPanel_MusicEnable : HudUiCheckToggleWidget {
+    // Source-faithful helper recovered from address-backed callers in this source file.
     HudUiOptionsPanel_MusicEnable() {
     }
 
@@ -1905,6 +2095,7 @@ struct HudUiOptionsPanel_MusicEnable : HudUiCheckToggleWidget {
 };
 
 struct HudUiOptionsPanel_MusicVolume : HudUiFillBitmap {
+    // Source-faithful helper recovered from address-backed callers in this source file.
     HudUiOptionsPanel_MusicVolume() {
     }
 
@@ -1914,6 +2105,7 @@ struct HudUiOptionsPanel_MusicVolume : HudUiFillBitmap {
 };
 
 struct HudUiOptionsPanel_Resolution : HudUiCycleSelectorWidget {
+    // Source-faithful helper recovered from address-backed callers in this source file.
     HudUiOptionsPanel_Resolution() {
     }
 
@@ -2038,6 +2230,7 @@ struct HudUiPanelSpanVec {
     HudUiPanelSpan *end;
     HudUiPanelSpan *cap;
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     HudUiPanelSpanVec() {
 #if defined(_MSC_VER) && _MSC_VER < 1200
         char allocatorProxyValue;

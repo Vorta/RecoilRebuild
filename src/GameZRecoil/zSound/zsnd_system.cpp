@@ -18,14 +18,17 @@ extern "C" zSndFadeListNode *g_zSndFadeDispatchListSentinel = 0;
 extern "C" int g_zSndFadeDispatchListCount = 0;
 
 namespace {
+// Source-faithful helper recovered from address-backed callers in this source file.
 zSndFadeList *ActiveFadeList() {
     return (zSndFadeList *)(&g_zSndFadeActiveListFlags);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zSndFadeList *DispatchFadeList() {
     return (zSndFadeList *)(&g_zSndFadeDispatchListFlags);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void UnlinkAndDeleteFadeNode(
     zSndFadeListNode *node
 ) {
@@ -34,6 +37,7 @@ void UnlinkAndDeleteFadeNode(
     ::operator delete(node);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void InitializeSentinel(
     zSndFadeListNode *&sentinel
 ) {
@@ -42,18 +46,21 @@ void InitializeSentinel(
     sentinel->prev = sentinel;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zReader::Node *ArrayBase(
     zReader::Node *node
 ) {
     return node->value.nodes;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ArrayCount(
     zReader::Node *node
 ) {
     return ArrayBase(node)[0].value.i32;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ApplyPresenceFlag(
     zSndSample *sample,
     zReader::Node *sampleNode,
@@ -70,6 +77,7 @@ void ApplyPresenceFlag(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void LoadQualityVariant(
     zSndQualityVariant *variant,
     zReader::Node *sampleNode,
@@ -105,6 +113,7 @@ void LoadQualityVariant(
     variant->channelCount = format[3].value.i32;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void LoadRange(
     zSndSample *sample,
     zReader::Node *sampleNode
@@ -125,6 +134,7 @@ void LoadRange(
     sample->rangeMax = range[2].value.f32;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void LoadSample(
     zSndSample *sample,
     zReader::Node *sampleNode
@@ -224,6 +234,7 @@ void LoadSample(
     sample->playbackParam2 = 90000.0f;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void LoadSampleSet(
     const char *setName,
     zReader::Node *sampleListNode
@@ -247,6 +258,7 @@ void LoadSampleSet(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool LegacyFlagIsTrue(
     zReader::Node *node
 ) {
@@ -256,6 +268,7 @@ bool LegacyFlagIsTrue(
     ) == 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void LoadLegacySample(
     zSndSample *sample,
     zReader::Node *legacyEntryNode
@@ -319,6 +332,7 @@ void LoadLegacySample(
     sample->lowVariant.channelCount = 1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void LoadLegacySampleSet(
     const char *setName,
     zReader::Node *sampleListNode

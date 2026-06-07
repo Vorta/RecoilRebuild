@@ -93,6 +93,7 @@ const int kSelectedProfileTextBufferLength = 32;
 const int kDialogOkResult = 1;
 const unsigned int kStackStorageUnitSize = sizeof(unsigned int);
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void DestructConfigDialog(
     WestwoodOnlineUpgradeConfigDialog *dialog
 ) {
@@ -104,10 +105,12 @@ const AFX_MSGMAP *__stdcall CDialogProviderAccessor::GetMessageMap() {
     return &CDialog::messageMap;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void CDialogProviderAccessor::CallOnOK() {
     CDialog::OnOK();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 const AFX_MSGMAP *__stdcall WestwoodOnlineUpgradeConfigDialog::GetBaseMessageMapForMfc() {
     return CDialogProviderAccessor::GetMessageMap();
 }

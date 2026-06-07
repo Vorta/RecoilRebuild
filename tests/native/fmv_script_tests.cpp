@@ -1451,11 +1451,11 @@ extern "C" int zfmv_action_image_lifecycle_smoke(void) {
 }
 
 extern "C" int zfmv_action_fade_constructor_smoke(void) {
-    g_zVideo_PixelPack_RMaskShifted = 0xf8;
-    g_zVideo_PixelPack_GMaskShifted = 0xfc;
-    g_zVideo_PixelPack_RShift = 8;
-    g_zVideo_PixelPack_GShift = 3;
-    g_zVideo_PixelPack_BShiftTo8 = 3;
+    g_zVideo_PixelPack.rMaskShifted = 0xf8;
+    g_zVideo_PixelPack.gMaskShifted = 0xfc;
+    g_zVideo_PixelPack.packedBase = 8;
+    g_zVideo_PixelPack.sumMinus8 = 3;
+    g_zVideo_PixelPack.bShiftTo8 = 3;
 
     zFMV_ActionFade action{};
     action.next = reinterpret_cast<zFMV_Action *>(0x11111111);
@@ -2000,13 +2000,13 @@ extern "C" int zfmv_stream_constructor_success_smoke(void) {
     }
 
     const int oldBpp = g_zVideo_DisplayModeBpp;
-    const unsigned int oldRMask = g_zVideo_PixelPack_RMask;
-    const unsigned int oldGMask = g_zVideo_PixelPack_GMask;
-    const unsigned int oldBMask = g_zVideo_PixelPack_BMask;
+    const unsigned int oldRMask = g_zVideo_PixelPack.rMask;
+    const unsigned int oldGMask = g_zVideo_PixelPack.gMask;
+    const unsigned int oldBMask = g_zVideo_PixelPack.bMask;
     g_zVideo_DisplayModeBpp = 16;
-    g_zVideo_PixelPack_RMask = 0xf800;
-    g_zVideo_PixelPack_GMask = 0x07e0;
-    g_zVideo_PixelPack_BMask = 0x001f;
+    g_zVideo_PixelPack.rMask = 0xf800;
+    g_zVideo_PixelPack.gMask = 0x07e0;
+    g_zVideo_PixelPack.bMask = 0x001f;
 
     g_fakeFmvStreamOpenCount = 0;
     g_fakeFmvOpenedStream = reinterpret_cast<PAVISTREAM>(0x24681357);
@@ -2114,9 +2114,9 @@ extern "C" int zfmv_stream_constructor_success_smoke(void) {
     std::free(TestFieldAt<void *>(stream, 0x10));
 
     g_zVideo_DisplayModeBpp = oldBpp;
-    g_zVideo_PixelPack_RMask = oldRMask;
-    g_zVideo_PixelPack_GMask = oldGMask;
-    g_zVideo_PixelPack_BMask = oldBMask;
+    g_zVideo_PixelPack.rMask = oldRMask;
+    g_zVideo_PixelPack.gMask = oldGMask;
+    g_zVideo_PixelPack.bMask = oldBMask;
     RestoreFunctionPatch(sendPatch);
     RestoreFunctionPatch(locatePatch);
     RestoreFunctionPatch(infoPatch);

@@ -43,6 +43,7 @@ namespace {
     const int kNodeTransformDirtyPropagatedFlag = 0x02000000;
     const char *kSwitchSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Switch.c";
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     bool ReportNullNode(
         int sourceLine,
         zClass_NodePartial *node
@@ -60,57 +61,12 @@ namespace {
         return true;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     bool IsCallbackPriorityValid(int priority) {
         return priority >= 0 && priority < 6;
     }
 
-    int SetActionCallbackCommon(
-        zClass_NodePartial * node,
-        void *actionCallback,
-        bool appendToTail,
-        int nullLine,
-        int priorityLine
-    ) {
-        if (ReportNullNode(
-            nullLine,
-            node
-        )) {
-            return 5;
-        }
-        if (!IsCallbackPriorityValid(node->callbackPriority)) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                priorityLine,
-                "Action callback priority out of range: %d",
-                node->callbackPriority
-            );
-            return 1;
-        }
-
-        if (node->actionCallback == 0 && actionCallback != 0) {
-            if (appendToTail) {
-                zClass_TypeList::InsertChildNodes(
-                    node->callbackPriority,
-                    node
-                );
-            } else {
-                zClass_TypeList::Insert(
-                    node->callbackPriority,
-                    node
-                );
-            }
-        } else if (node->actionCallback != 0 && actionCallback == 0) {
-            zClass_TypeList::MarkPendingRemoval(
-                node->callbackPriority,
-                node
-            );
-        }
-
-        node->actionCallback = actionCallback;
-        return 0;
-    }
-
+    // Source-faithful helper recovered from address-backed callers in this source file.
     int ValidateParentChildForSwitch(
         zClass_NodePartial * parent,
         zClass_NodePartial * child,
@@ -149,6 +105,7 @@ namespace {
         return 0;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     zMat4x3 *MatrixAt(
         void *base,
         size_t offset
@@ -156,6 +113,7 @@ namespace {
         return (zMat4x3 *)((unsigned char *)(base) + offset);
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     const zMat4x3 *MatrixAt(
         const void *base,
         size_t offset
@@ -163,6 +121,7 @@ namespace {
         return (const zMat4x3 *)((const unsigned char *)(base) + offset);
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     zVec3 *Vec3At(
         void *base,
         size_t offset
@@ -170,6 +129,7 @@ namespace {
         return (zVec3 *)((unsigned char *)(base) + offset);
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     const zVec3 *Vec3At(
         const void *base,
         size_t offset
@@ -177,6 +137,7 @@ namespace {
         return (const zVec3 *)((const unsigned char *)(base) + offset);
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void CopyCurrentMatrixTo(float *outMatrix) {
         zMat4x3 out = {0};
         zMath::MatCopyCurrentTo(&out);
@@ -187,31 +148,38 @@ namespace {
         );
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     zVec3 UnitScale() {
         zVec3 result = {1.0f, 1.0f, 1.0f};
         return result;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     const zBBox3f *CachedBBox(const zClass_NodePartial *node) {
         return (const zBBox3f *)(node->cachedBounds);
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     zBBox3f *SecondaryBBox(zClass_NodePartial * node) {
         return &zClass_NodeSlotFromNode(node)->secondaryBounds;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     zBBox3f *PrimaryBBox(zClass_NodePartial * node) {
         return &zClass_NodeSlotFromNode(node)->primaryBounds;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     const zBBox3f *PrimaryBBox(const zClass_NodePartial *node) {
         return &zClass_NodeSlotFromNode(node)->primaryBounds;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     const zBBox3f *SecondaryBBox(const zClass_NodePartial *node) {
         return &zClass_NodeSlotFromNode(node)->secondaryBounds;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void CopyBBoxToCorners(
         const zBBox3f *bbox,
         zBBoxCorners *outCorners
@@ -243,6 +211,7 @@ namespace {
         out[23] = bbox->minZ;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void MultiplyMatricesForViewBBox(
         const zMat4x3 *currentMatrix,
         const zMat4x3 *nodeMatrix,
@@ -277,6 +246,7 @@ namespace {
                           currentMatrix->zz * nodeMatrix->posZ + currentMatrix->posZ;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void ExpandBBoxWithCorner(
         zBBox3f * bbox,
         const float *corner
@@ -298,6 +268,7 @@ namespace {
         }
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     zBBox3f MergeBBoxes(
         const zBBox3f *a,
         const zBBox3f *b
@@ -312,6 +283,7 @@ namespace {
         return merged;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void CopyBBoxToCachedBounds(
         zClass_NodePartial * node,
         const zBBox3f *bbox
@@ -323,6 +295,7 @@ namespace {
         );
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void ComputeXZRectFromCorners(
         zClass_NodePartial * node,
         float *outMinX,
@@ -1121,13 +1094,49 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         void *actionCallback
     ){
-        return SetActionCallbackCommon(
-            node,
-            actionCallback,
-            false,
-            0x47e,
-            0x483
-        );
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
+                0x47e,
+                "Null node pointer."
+            );
+            return 5;
+        }
+
+        int callbackPriority = node->callbackPriority;
+        if (callbackPriority < 0 || callbackPriority >= 6) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
+                0x483,
+                "ERROR setting action callback; priority = %d",
+                callbackPriority
+            );
+            return 1;
+        }
+
+        if (node->actionCallback == 0) {
+            if (actionCallback != 0) {
+                if (zClass_TypeList::Insert(
+                    callbackPriority,
+                    node
+                ) != 0) {
+                    if ((node->flags & 0x800) == 0) {
+                        free(node);
+                    }
+                    return 5;
+                }
+            }
+        } else if (actionCallback == 0) {
+            zClass_TypeList::MarkPendingRemoval(
+                callbackPriority,
+                node
+            );
+        }
+
+        node->actionCallback = actionCallback;
+        return 0;
     }
 
     // Reimplements 0x447fe0: zClass_Class::gwNodeSetActionCallbackTail
@@ -1136,13 +1145,49 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         void *actionCallback
     ){
-        return SetActionCallbackCommon(
-            node,
-            actionCallback,
-            true,
-            0x4c3,
-            0x4c8
-        );
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
+                0x4c3,
+                "Null node pointer."
+            );
+            return 5;
+        }
+
+        int callbackPriority = node->callbackPriority;
+        if (callbackPriority < 0 || callbackPriority >= 6) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
+                0x4c8,
+                "ERROR setting action callback; priority = %d",
+                callbackPriority
+            );
+            return 1;
+        }
+
+        if (node->actionCallback == 0) {
+            if (actionCallback != 0) {
+                if (zClass_TypeList::InsertChildNodes(
+                    callbackPriority,
+                    node
+                ) != 0) {
+                    if ((node->flags & 0x800) == 0) {
+                        free(node);
+                    }
+                    return 5;
+                }
+            }
+        } else if (actionCallback == 0) {
+            zClass_TypeList::MarkPendingRemoval(
+                callbackPriority,
+                node
+            );
+        }
+
+        node->actionCallback = actionCallback;
+        return 0;
     }
 
     // Reimplements 0x448090: zClass_Class::gwNodeSetPriority
@@ -2401,6 +2446,7 @@ namespace zClass_Class {
 
 namespace zClass_Node {
     namespace {
+        // Source-faithful helper recovered from address-backed callers in this source file.
         OptCatalogDamageHandlerPartial *&DamageHandlerRef(zClass_NodePartial * node) {
             return (OptCatalogDamageHandlerPartial *&)(((zClass_NodeFreeListSlot *)(node))
                     ->damageHandler);

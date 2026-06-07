@@ -8,6 +8,8 @@ add_executable(recoil_native_smoke
     zimage_tests.cpp
     zinterp_tests.cpp
     zloc_tests.cpp
+    zsnd_cd_tests.cpp
+    zsnd_stream_tests.cpp
     zreader_tests.cpp
     zhud_widget_tests.cpp
     hud_save_load_tests.cpp
@@ -15,6 +17,7 @@ add_executable(recoil_native_smoke
     recoil_version_tests.cpp
     zrndr_tests.cpp
     zturret_tests.cpp
+    zclass_tests.cpp
     zsys_tests.cpp
     zcom_tests.cpp
     time_tests.cpp

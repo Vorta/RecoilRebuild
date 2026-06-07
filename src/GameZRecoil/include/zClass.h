@@ -1964,36 +1964,42 @@ extern int g_zClass_LodDistanceStateStackTop;
 extern zClass_LodDistanceState g_zClass_LodDistanceStateStack[0x20];
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline zClass_NodeFreeListSlot *zClass_NodeSlotFromNode(
     zClass_NodePartial *node
 ) {
     return (zClass_NodeFreeListSlot *)node;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline const zClass_NodeFreeListSlot *zClass_NodeSlotFromNode(
     const zClass_NodePartial *node
 ) {
     return (const zClass_NodeFreeListSlot *)node;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline zVec3 *zClass_NodeViewSphereCenter(
     zClass_NodePartial *node
 ) {
     return (zVec3 *)(&zClass_NodeSlotFromNode(node)->primaryBounds.minX);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline const zVec3 *zClass_NodeViewSphereCenter(
     const zClass_NodePartial *node
 ) {
     return (const zVec3 *)(&zClass_NodeSlotFromNode(node)->primaryBounds.minX);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline float *zClass_NodeViewSphereRadius(
     zClass_NodePartial *node
 ) {
     return &zClass_NodeSlotFromNode(node)->primaryBounds.maxX;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline const float *zClass_NodeViewSphereRadius(
     const zClass_NodePartial *node
 ) {
@@ -3255,24 +3261,28 @@ extern char g_zClass_GWWorldNodeName[8];
 }
 
 namespace zClass_TypeList {
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline zClass_TypeListBucket &Bucket(
     int bucket
 ) {
     return *(zClass_TypeListBucket *)(g_zClass_TypeList_HeadSlotPtrs[bucket]);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline zClass_TypeListLink *&Head(
     int bucket
 ) {
     return *g_zClass_TypeList_HeadSlotPtrs[bucket];
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline zClass_TypeListLink *&Tail(
     int bucket
 ) {
     return *g_zClass_TypeList_TailSlotPtrs[bucket];
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline int &PendingRemovalDirty(
     int bucket
 ) {
@@ -3314,6 +3324,7 @@ inline int &PendingRemovalDirty(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline void SetPendingRemovalDirty(
     int bucket,
     int value

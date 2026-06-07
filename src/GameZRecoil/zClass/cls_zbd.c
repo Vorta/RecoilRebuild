@@ -25,6 +25,7 @@ namespace {
     const int kZClassNodeLight = 9;
     const int kZClassNodeSound = 10;
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     inline int ReportZbdWriteFailure(
         int sourceLine,
         const char *message
@@ -38,6 +39,7 @@ namespace {
         return -1;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     inline int ReportZbdReadFailure(
         int sourceLine,
         const char *message
@@ -51,6 +53,7 @@ namespace {
         return -1;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     inline bool WriteZbdBlob(
         const void *data,
         size_t byteCount,
@@ -64,6 +67,7 @@ namespace {
         ) == 1;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     inline bool ReadZbdBlob(
         void *data,
         size_t byteCount,

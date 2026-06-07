@@ -1640,12 +1640,12 @@ int InitVideoStandalone(
     zVideo::UpdateCachedClientRectScreenCoords();
     printf(
         "Pixel pack: rBits=%d gBits=%d bBits=%d rMask=0x%04x gMask=0x%04x bMask=0x%04x.\n",
-        g_zVideo_PixelPack_RBits,
-        g_zVideo_PixelPack_GBits,
-        g_zVideo_PixelPack_BBits,
-        g_zVideo_PixelPack_RMask,
-        g_zVideo_PixelPack_GMask,
-        g_zVideo_PixelPack_BMask
+        g_zVideo_PixelPack.rBits,
+        g_zVideo_PixelPack.gBits,
+        g_zVideo_PixelPack.bBits,
+        g_zVideo_PixelPack.rMask,
+        g_zVideo_PixelPack.gMask,
+        g_zVideo_PixelPack.bMask
     );
     fflush(stdout);
     if (g_zImage_DefaultTextureRecord == 0 ||

@@ -46,20 +46,6 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
 
 ## Active Groups
 
-### Group: HudCmdDialog class source recovery
-
-- Anchor: 0x40a5b0 HudCmdDialog::Constructor
-- Reason: class cluster / source-shape recovery / dispatch owner cleanup
-- Source blockers:
-  - 0x40b680 HudCmdDialog::RebuildCommandBindingListsForGroup
-  - 0x4b9330 HudCmdBindButtonBase::SetSelectedEntry
-  - 0x40b980 HudCmdDialog::OnCommandSelectionChanged
-  - 0x40b5e0 HudCmdDialog::SelectGroupRelative
-  - 0x40b630 HudCmdDialog::SelectCommandRelative
-  - 0x40bba0/0x40bbc0/0x40bbe0/0x40bc00 HudCmd*Button::OnActivate callback methods
-- Next action:
-  - python tools/recoil_frontier.py 0x40b680 --depth 1 --lane binary
-
 ### Group: HUD UI save/load class recovery
 
 - Anchor: 0x434680 HudUiSaveGameDialog::InitLayout

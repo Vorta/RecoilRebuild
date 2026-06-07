@@ -37,8 +37,8 @@ extern "C" int g_zSnd_IsInitialized = 0;
 extern "C" int g_zSnd_ActiveBackend = 0;
 extern "C" unsigned int g_zSnd_WindowHandle = 0;
 extern "C" int g_zSnd_UseArchiveBanksFlag = 0;
-extern "C" float g_zSndSpeedOfSoundMps = 0.0f;
-extern "C" float g_zSndInvSpeedOfSoundMps = 0.0f;
+extern "C" float g_zSndSpeedOfSoundMps = 345.0f;
+extern "C" float g_zSndInvSpeedOfSoundMps = 1.0f / 345.0f;
 
 #define g_zSndCdPlayFromTrack (g_zSndCdPlayFrom.track)
 #define g_zSndCdPlayFromMinute (g_zSndCdPlayFrom.minute)
@@ -55,18 +55,21 @@ const int ZSND_CD_FLAG_STEREO_AUX = 1;
 const int ZSND_CD_FLAG_READY = 2;
 const char kZSndCdSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp";
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zReader::Node *ArrayBase(
     zReader::Node *node
 ) {
     return node->value.nodes;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ArrayCount(
     zReader::Node *node
 ) {
     return ArrayBase(node)[0].value.i32;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void AppendCdTrackEntry(
     zSndCdTrackEntry *entry
 ) {

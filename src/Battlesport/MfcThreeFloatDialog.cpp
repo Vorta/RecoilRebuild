@@ -67,6 +67,7 @@ RECOIL_STATIC_ASSERT(
 namespace {
 const float kSpinStep = 0.25f;
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void OnKillFocusValue(
     float *value,
     MfcThreeFloatDialog *dialog
@@ -78,6 +79,7 @@ void OnKillFocusValue(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void OnDeltaposSpinValue(
     float *value,
     MfcThreeFloatDialog *dialog,
@@ -97,6 +99,7 @@ void OnDeltaposSpinValue(
 }
 } // namespace
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void MfcThreeFloatDialog::CallBaseOnOK() {
     CDialog::OnOK();
 }

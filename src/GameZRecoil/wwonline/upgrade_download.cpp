@@ -142,6 +142,7 @@ ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::Release() {
     return WestwoodOnlineUpgradeDownloadEventSink::Release(this);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 ULONG __stdcall WestwoodOnlineUpgradeDownloadEventSink::Release(
     WestwoodOnlineUpgradeDownloadEventSink *self
 ) {
@@ -173,6 +174,7 @@ HRESULT __stdcall WestwoodOnlineUpgradeDownloadEventSink::QueryInterface(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::QueryInterface(
     REFIID iid,
     void **outInterface

@@ -77,12 +77,14 @@ void HudUiMainMenuDialog_ControlsButton::OnActivate() {
 }
 
 namespace {
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline int PlayerMenuSaveLoadBlocked(
     zUtil_PlayerStateStorage *playerState
 ) {
     return playerState->environmentAttachmentActive;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline void BindButton(
     HudUiMainMenuDialog *dialog,
     zReader::Node *loadedSection,
@@ -96,6 +98,7 @@ inline void BindButton(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void BindNewLoadQuit(
     HudUiMainMenuDialog *dialog,
     zReader::Node *loadedSection
@@ -120,6 +123,7 @@ void BindNewLoadQuit(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void BindFrontendButtons(
     HudUiMainMenuDialog *dialog,
     zReader::Node *loadedSection
@@ -162,6 +166,7 @@ void BindFrontendButtons(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void BindFullInGameButtons(
     HudUiMainMenuDialog *dialog,
     zReader::Node *loadedSection
@@ -216,6 +221,7 @@ void BindFullInGameButtons(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void BindNetworkButtons(
     HudUiMainMenuDialog *dialog,
     zReader::Node *loadedSection
@@ -253,68 +259,86 @@ void BindNetworkButtons(
 }
 } // namespace
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiMainMenuDialogBackground::HudUiMainMenuDialogBackground() : HudUiBackground() {
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiMainMenuDialogBackground::~HudUiMainMenuDialogBackground() {
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiMainMenuDialog_CreditsButton::HudUiMainMenuDialog_CreditsButton() :
     HudUiZrdWidget() {
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiMainMenuDialog_CreditsButton::~HudUiMainMenuDialog_CreditsButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiMenuBackButton::HudUiMenuBackButton() : HudUiZrdWidget() {
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiMenuBackButton::~HudUiMenuBackButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiMainMenuDialog_SaveButton::HudUiMainMenuDialog_SaveButton() : HudUiZrdWidget() {
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiMainMenuDialog_SaveButton::~HudUiMainMenuDialog_SaveButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiMainMenuDialog_LoadButton::HudUiMainMenuDialog_LoadButton() : HudUiZrdWidget() {
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiMainMenuDialog_LoadButton::~HudUiMainMenuDialog_LoadButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiMainMenuDialog_NewGameButton::HudUiMainMenuDialog_NewGameButton() :
     HudUiZrdWidget() {
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiMainMenuDialog_NewGameButton::~HudUiMainMenuDialog_NewGameButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiMainMenuDialog_OptionsButton::HudUiMainMenuDialog_OptionsButton() :
     HudUiZrdWidget() {
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiMainMenuDialog_OptionsButton::~HudUiMainMenuDialog_OptionsButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiMainMenuDialog_QuitButton::HudUiMainMenuDialog_QuitButton() : HudUiZrdWidget() {
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiMainMenuDialog_QuitButton::~HudUiMainMenuDialog_QuitButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiMainMenuDialog_ControlsButton::HudUiMainMenuDialog_ControlsButton() :
     HudUiZrdWidget() {
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiMainMenuDialog_ControlsButton::~HudUiMainMenuDialog_ControlsButton() {
     HudUiZrdWidget::DestructorCore();
 }

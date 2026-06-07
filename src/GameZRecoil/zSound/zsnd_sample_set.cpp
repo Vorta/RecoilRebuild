@@ -8,6 +8,7 @@
 extern "C" zSndSampleSetRegistry g_zSnd_SampleSetRegistry = {0};
 
 namespace {
+// Source-faithful helper recovered from address-backed callers in this source file.
 int RegistrySize() {
     if (g_zSnd_SampleSetRegistry.begin == 0) {
         return 0;
@@ -16,6 +17,7 @@ int RegistrySize() {
     return (int)(g_zSnd_SampleSetRegistry.end - g_zSnd_SampleSetRegistry.begin);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int RegistryCapacity() {
     if (g_zSnd_SampleSetRegistry.begin == 0) {
         return 0;
@@ -25,6 +27,7 @@ int RegistryCapacity() {
 }
 
 // Restores likely inlined registry append helper observed in caller 0x4a09e0.
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline void RegistryAppend(
     zSndSampleSet *set
 ) {
@@ -54,6 +57,7 @@ inline void RegistryAppend(
     ++g_zSnd_SampleSetRegistry.end;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void UpdateSampleLoadedFlag(
     zSndSample *sample,
     int initResult
@@ -61,12 +65,14 @@ void UpdateSampleLoadedFlag(
     sample->replayFields.flags = (sample->replayFields.flags & ~0x08) | ((initResult & 1) << 3);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ClearSampleLoadedFlag(
     zSndSample *sample
 ) {
     sample->replayFields.flags &= ~0x08;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void LoadSampleFromWavePath(
     zSndSample *sample,
     const char *path

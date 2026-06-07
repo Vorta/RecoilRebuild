@@ -57,20 +57,24 @@ const DWORD kMainWindowStyle = 0x82ca0000;
 const char *kRecoilWndClassName = "RecoilClass";
 const char *kMainMenuResourceName = "MYMENU";
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned int Ptr32FromSymbol(
     const void *symbol
 ) {
     return (unsigned int)((unsigned int)(symbol));
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 CRuntimeClass *__stdcall GetCZRecoilFrameBaseRuntimeClass() {
     return &CZGameFrame::classCZGameFrame;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 const AFX_MSGMAP *__stdcall GetCZRecoilFrameBaseMessageMap() {
     return &CZGameFrame::messageMap;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int CommandCheckedIfMode(
     int currentMode,
     int targetMode
@@ -78,6 +82,7 @@ int CommandCheckedIfMode(
     return currentMode == targetMode ? kCmdUiChecked : 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void UpdateCmdUiFromState(
     CCmdUI *cmdUi,
     int state
@@ -92,6 +97,7 @@ void UpdateCmdUiFromState(
     cmdUi->SetCheck(state == kCmdUiChecked ? 1 : 0);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HMENU SubMenuHandleOrNull(
     HMENU menu,
     int position
@@ -121,6 +127,7 @@ CRuntimeClass CZRecoilFrame::classCZRecoilFrame = {
     0,
 };
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned int CZRecoilFrame::GetBaseRuntimeClass() {
     return Ptr32FromSymbol(&CZGameFrame::classCZGameFrame);
 }
@@ -145,6 +152,7 @@ unsigned int CZRecoilFrame::GetRuntimeClass() {
     return Ptr32FromSymbol(&CZRecoilFrame::classCZRecoilFrame);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned int CZRecoilFrame::GetBaseMessageMap() {
     return Ptr32FromSymbol(&CZGameFrame::messageMap);
 }

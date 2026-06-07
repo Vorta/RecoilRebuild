@@ -255,18 +255,22 @@ struct zVideo_OverwriteQueueEntry {
     D3DTLVERTEX vertices[64];
 };
 
-extern int g_zVideo_PixelPack_RShift;
-extern int g_zVideo_PixelPack_GShift;
-extern int g_zVideo_PixelPack_BShiftTo8;
-extern int g_zVideo_PixelPack_RMaskShifted;
-extern int g_zVideo_PixelPack_GMaskShifted;
-extern int g_zVideo_PixelPack_BMaskShifted;
-extern int g_zVideo_PixelPack_RBits;
-extern int g_zVideo_PixelPack_GBits;
-extern int g_zVideo_PixelPack_BBits;
-extern unsigned int g_zVideo_PixelPack_RMask;
-extern unsigned int g_zVideo_PixelPack_GMask;
-extern unsigned int g_zVideo_PixelPack_BMask;
+struct zVideo_PixelPackParams {
+    int rBits;
+    int gBits;
+    int bBits;
+    unsigned int rMask;
+    unsigned int gMask;
+    unsigned int bMask;
+    int packedBase;
+    int sumMinus8;
+    int bShiftTo8;
+    int rMaskShifted;
+    int gMaskShifted;
+    int bMaskShifted;
+};
+
+extern zVideo_PixelPackParams g_zVideo_PixelPack;
 extern int g_zVideo_TexturePixelPack_RBits;
 extern int g_zVideo_TexturePixelPack_GBits;
 extern int g_zVideo_TexturePixelPack_BBits;
@@ -440,9 +444,9 @@ extern HWND g_zVideo_hWnd;
 extern RECT g_zVideo_CachedClientRectScreen;
 
 unsigned int __fastcall zVid_PackColorRGB(
-    unsigned char red,
-    unsigned char green,
-    unsigned char blue
+    int red,
+    int green,
+    int blue
 );
 unsigned int __fastcall zVid_PackColor00RRGGBB(unsigned int color00RRGGBB);
 unsigned short __fastcall zVid_PackColorRgbFloats(zVideo_ColorRgbFloat *color);

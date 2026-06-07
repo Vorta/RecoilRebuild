@@ -328,9 +328,9 @@ extern "C" int zinput_bindgroup_accessors_smoke(void) {
     std::int32_t commandIds[] = {3, 7, 11};
     zInput_BindGroupInfo group = {};
     group.title = title;
-    group.commandIdsBegin = commandIds;
-    group.commandIdsEnd = commandIds + 3;
-    group.commandIdsCapacity = commandIds + 3;
+    group.commandIds.begin = commandIds;
+    group.commandIds.end = commandIds + 3;
+    group.commandIds.capacity = commandIds + 3;
 
     zInput_BindGroupInfo *groups[] = {&group};
     zInput_BindGroupInfoVec vec = {};
@@ -356,9 +356,9 @@ extern "C" int zinput_bindgroup_accessors_smoke(void) {
         return 2;
     }
 
-    group.commandIdsBegin = nullptr;
-    group.commandIdsEnd = nullptr;
-    group.commandIdsCapacity = nullptr;
+    group.commandIds.begin = nullptr;
+    group.commandIds.end = nullptr;
+    group.commandIds.capacity = nullptr;
     zInput::BindGroupList_AddCommandToGroup(0, 13);
     if (zInput::BindGroupList_GetGroupCommandCount(0) != 1 ||
         zInput::BindGroupList_GetGroupCommandId(0, 0) != 13) {
@@ -383,13 +383,13 @@ extern "C" int zinput_bindgroup_accessors_smoke(void) {
         g_zGame_Options_OptionListHead->payloadOrBuffer = 0;
     }
     FreeOptionList();
-    ::operator delete(group.commandIdsBegin);
-    group.commandIdsBegin = nullptr;
-    group.commandIdsEnd = nullptr;
-    group.commandIdsCapacity = nullptr;
+    ::operator delete(group.commandIds.begin);
+    group.commandIds.begin = nullptr;
+    group.commandIds.end = nullptr;
+    group.commandIds.capacity = nullptr;
     g_zInput_CommandLocIdTable[5] = 0;
 
-    group.commandIdsBegin = nullptr;
+    group.commandIds.begin = nullptr;
     if (zInput::BindGroupList_GetGroupCommandCount(0) != 0) {
         return 3;
     }
