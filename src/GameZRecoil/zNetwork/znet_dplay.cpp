@@ -128,6 +128,7 @@ const DPlayErrorName kDPlayErrorNames[] = {
     {(int)(0x88770820), "DPERR_LOGONDENIED "},
 };
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 const char *GetDPlayErrorName(
     int hresult
 ) {
@@ -146,6 +147,7 @@ const char *GetDPlayErrorName(
     return "UNKNOWN";
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ReportDPlayOpenFailure(
     int hresult
 ) {
@@ -228,6 +230,7 @@ int ReportDPlayOpenFailure(
     return 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void AppendServiceProviderInfo(
     zNetworkDPlayServiceProviderInfo *info
 ) {
@@ -1802,6 +1805,7 @@ void __fastcall FreeServiceProviderInfoBuffers(
 } // namespace zNetworkDPlay
 
 namespace {
+// Source-faithful helper recovered from address-backed callers in this source file.
 void FreeServiceProviderInfo(
     zNetworkDPlayServiceProviderInfo *info
 ) {
@@ -1813,6 +1817,7 @@ void FreeServiceProviderInfo(
     ::operator delete(info);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void DeletePlayerRecordNode(
     zNetworkPlayerRecordListNode *node
 ) {

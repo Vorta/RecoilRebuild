@@ -149,6 +149,7 @@ const char kPickupPuppiesHardZrd[] = "puppies_hard.zrd";
 const char kPickupPuppiesDefaultZrd[] = "puppies.zrd";
 
 template <typename T>
+// Source-faithful helper recovered from address-backed callers in this source file.
 zZbdSectionCallback ZbdCallbackPtr(
     T callback
 ) {

@@ -57,7 +57,6 @@ struct HudWeatherFxPointBatch {
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxPointBatch) == 0x0c);
 
 struct HudUiSaveLoadEntry : WIN32_FIND_DATAA {
-    int __fastcall IsNewerThan(const HudUiSaveLoadEntry *other) const;
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiSaveLoadEntry) == 0x140);
 RECOIL_STATIC_ASSERT(
@@ -66,12 +65,42 @@ RECOIL_STATIC_ASSERT(
         ftLastWriteTime
     ) == 0x14
 );
+int __fastcall operator<(
+    const HudUiSaveLoadEntry &lhs,
+    const HudUiSaveLoadEntry &rhs
+);
 
 struct HudUiSaveLoadEntries {
     int reserved00;
     HudUiSaveLoadEntry *begin;
     HudUiSaveLoadEntry *end;
     HudUiSaveLoadEntry *capacityEnd;
+
+    HudUiSaveLoadEntry * InsertCopiesAt(
+        HudUiSaveLoadEntry *position,
+        unsigned int count,
+        const HudUiSaveLoadEntry *entry
+    );
+    // Source-faithful helper recovered from address-backed callers in this source file.
+    HudUiSaveLoadEntry * EraseRangeNoDestroyInline(
+        HudUiSaveLoadEntry *first,
+        HudUiSaveLoadEntry *last
+    ) {
+        HudUiSaveLoadEntry *write = first;
+        HudUiSaveLoadEntry *read = last;
+        HudUiSaveLoadEntry *const oldEnd = end;
+        if (read != oldEnd) {
+            do {
+                *write++ = *read++;
+            } while (read != oldEnd);
+        }
+        ((StdPtrVector *)(this))->ClearNoOpDestroy(
+            (int *)(write),
+            (int *)(oldEnd)
+        );
+        end = write;
+        return first;
+    }
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiSaveLoadEntries) == 0x10);
 RECOIL_STATIC_ASSERT(
@@ -100,7 +129,7 @@ struct HudUiSaveLoadListItem : HudUiPanel {
     int layoutX;
     int layoutY;
 
-    HudUiSaveLoadListItem * Constructor();
+    HudUiSaveLoadListItem();
     void Draw();
     void OnActivate();
 };
@@ -194,20 +223,6 @@ struct HudUiSaveLoadDialog : HudUiBackground {
     void SetSelectedEntryIndex(int selectedEntryIndex);
     void ProcessDialogResult();
 
-    static void __fastcall InsertEntryIntoSortedPrefix(
-        HudUiSaveLoadEntry *entryPosition,
-        HudUiSaveLoadEntry entry
-    );
-    static HudUiSaveLoadEntry *__fastcall PartitionEntriesByPivot(
-        HudUiSaveLoadEntry *begin,
-        HudUiSaveLoadEntry *end,
-        HudUiSaveLoadEntry pivot
-    );
-    static void __fastcall SortEntryRange(
-        HudUiSaveLoadEntry *begin,
-        HudUiSaveLoadEntry *end,
-        int unused
-    );
 };
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -312,8 +327,8 @@ RECOIL_STATIC_ASSERT(
 struct HudUiSaveGameDialog : HudUiSaveLoadDialog {
     HudUiSaveGamePrimaryActionButton primaryActionButton;
 
-    HudUiSaveGameDialog * InitLayout();
-    ~HudUiSaveGameDialog();
+    HudUiSaveGameDialog();
+    void Destructor();
 };
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -325,8 +340,8 @@ RECOIL_STATIC_ASSERT(
 struct HudUiLoadGameDialog : HudUiSaveLoadDialog {
     HudUiLoadGamePrimaryActionButton primaryActionButton;
 
-    HudUiLoadGameDialog * Constructor();
-    ~HudUiLoadGameDialog();
+    HudUiLoadGameDialog();
+    void Destructor();
     void ProcessDialogResult();
     void OnPrimaryActionThunk();
     void OnPrimaryAction();

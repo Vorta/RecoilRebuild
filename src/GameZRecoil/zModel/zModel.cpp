@@ -172,6 +172,7 @@ typedef void(__fastcall *SubmitPolygonLitProc)(
     int queueMode
 );
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zDiPartial *NodeDisplayInstance(
     zClass_NodePartial *node
 ) {
@@ -802,6 +803,7 @@ float MaterialAlphaFloat(
     return (float)(MaterialAlphaInt(material)) * (1.0f / 255.0f);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zVideo_RenderClass *MaterialRenderClass(
     zModel_MaterialPartial *material
 ) {

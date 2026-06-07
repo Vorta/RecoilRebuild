@@ -23,6 +23,7 @@ namespace {
         return (int)(value);
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     float ApproximateSqrtFromRangeSq(float rangeSq) {
         int bits = 0;
         memcpy(
@@ -40,6 +41,7 @@ namespace {
         return range;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void InvalidateGrid(
         int *outGridCol,
         int *outGridRow
@@ -48,6 +50,7 @@ namespace {
         *outGridRow = -1;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void AppendNodeRef(
         zClass_NodePartial * **list,
         int *count,
@@ -63,6 +66,7 @@ namespace {
         ++*count;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void CompactNodeRefList(
         zClass_NodePartial * *list,
         int *count,
@@ -74,6 +78,7 @@ namespace {
         --*count;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     zWorldAreaPartial *AreaAt(
         zClass_WorldDataPartial * data,
         int gridCol,
@@ -82,6 +87,7 @@ namespace {
         return &data->areaGridRows[gridRow][gridCol];
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void ExpandAreaYBounds(
         zWorldAreaPartial * area,
         const zBBoxCorners &corners
@@ -98,6 +104,7 @@ namespace {
 
     // Restores likely inlined VAP edge-cell helper observed four times in
     // 0x4502b0; no standalone function exists in the retail executable.
+    // Source-faithful helper recovered from address-backed callers in this source file.
     inline void MoveAreaChildrenToVapStatics(
         zClass_NodePartial * world,
         zWorldAreaPartial * area

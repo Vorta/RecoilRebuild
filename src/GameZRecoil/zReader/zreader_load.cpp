@@ -554,6 +554,7 @@ extern "C" FILE *__fastcall zUtil_ZRDR_OpenFileResolved(
 }
 
 namespace {
+// Source-faithful helper recovered from address-backed callers in this source file.
 void zUtil_ZRDR_WriteWildcardDigits() {
     for (int i = g_zUtil_ZRDR_WildcardStarCount - 1; i >= 0; --i) {
         char digitText[16];
@@ -740,6 +741,7 @@ extern "C" int zUtil_ZRDR_ShutdownWildcardPath() {
 }
 
 namespace {
+// Source-faithful helper recovered from address-backed callers in this source file.
 void DestroyMountedArchive(
     zIndexArchive *archive
 ) {

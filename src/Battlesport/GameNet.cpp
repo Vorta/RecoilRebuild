@@ -310,6 +310,7 @@ struct GameNetReaderArray {
 };
 
 template <typename T>
+// Source-faithful helper recovered from address-backed callers in this source file.
 T &EmbeddedHudPanelField(
     HudUiPanel &panel,
     size_t offset
@@ -317,6 +318,7 @@ T &EmbeddedHudPanelField(
     return *(T *)((unsigned char *)(&panel) + offset);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void SetEmbeddedHudPanelColor(
     GameNetPlayerRow *row,
     unsigned int color
@@ -337,6 +339,7 @@ void SetEmbeddedHudPanelColor(
     ) = 1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void RegisterChatComposeKey(
     int comboIdx
 ) {
@@ -348,6 +351,7 @@ void RegisterChatComposeKey(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void RegisterChatComposeKeyRange(
     int firstComboIdx,
     int lastComboIdx
@@ -358,6 +362,7 @@ void RegisterChatComposeKeyRange(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void GameNetSetRemoteHudVisible(
     HudUiPanel *panel,
     int visible
@@ -365,6 +370,7 @@ void GameNetSetRemoteHudVisible(
     panel->SetVisible(visible);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void GameNetSetRemoteHudPos(
     HudUiPanel *panel,
     int x,
@@ -376,6 +382,7 @@ void GameNetSetRemoteHudPos(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void GameNetUnlockRemotePlayerWeaponBanks(
     zUtil_PlayerStateStorage *playerState
 ) {
@@ -388,6 +395,7 @@ void GameNetUnlockRemotePlayerWeaponBanks(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void GameNetShowPairedTimerMessages(
     int firstMessageId,
     int secondMessageId
@@ -402,6 +410,7 @@ void GameNetShowPairedTimerMessages(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void GameNetCopyPkt06ProgressTargets(
     NetPkt06_PlayerStateSnapshot *packet,
     zUtil_PlayerStateStorage *playerState
@@ -412,6 +421,7 @@ void GameNetCopyPkt06ProgressTargets(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 PlayerGunFireController *GameNetPkt06DecodeWeaponController(
     zUtil_PlayerStateStorage *playerState,
     int selectionCode
@@ -426,6 +436,7 @@ const AFX_MSGMAP *__stdcall NetSessionBrowserCDialogMessageMapAccessor::GetMessa
     return &CDialog::messageMap;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 const AFX_MSGMAP *__stdcall NetSessionBrowserDialog::GetBaseMessageMapForMfc() {
     return NetSessionBrowserCDialogMessageMapAccessor::GetMessageMap();
 }
@@ -463,18 +474,22 @@ const AFX_MSGMAP *__stdcall NetSessionConfigCDialogMessageMapAccessor::GetMessag
     return &CDialog::messageMap;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 long GameNetMfcWndAccess::CallDefault() {
     return CWnd::Default();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void GameNetMfcWndAccess::CallOnDestroy() {
     CWnd::OnDestroy();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void GameNetMfcDialogAccess::CallOnOK() {
     CDialog::OnOK();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 const AFX_MSGMAP *__stdcall NetSessionConfigDialog::GetBaseMessageMapForMfc() {
     return NetSessionConfigCDialogMessageMapAccessor::GetMessageMap();
 }
@@ -589,7 +604,7 @@ void GameNetPlayerRow::ApplyPlayerColorTint() {
 
 // Reimplements 0x434650: GameNetPlayerRow::DestroyEmbeddedPanel
 void GameNetPlayerRow::DestroyEmbeddedPanel() {
-    hudWidget.Destructor();
+    hudWidget.~HudUiPanel();
 }
 
 // Reimplements 0x433a40: HudTimerPanelNetState::ClearTailFlagsLocal

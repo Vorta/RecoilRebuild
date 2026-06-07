@@ -123,54 +123,63 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(sizeof(BriefingActionDelayUntilProgress) == 0x08);
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HudUiBriefingRuntime *BriefingLayout(
     HudUiBriefingRuntime *runtime
 ) {
     return runtime;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HudUiPanel *BriefingPanel(
     HudUiPanel *panel
 ) {
     return panel;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 Briefing_ActionQueue *BriefingActionQueue(
     HudUiBriefingRuntime *runtime
 ) {
     return &BriefingLayout(runtime)->actionQueue;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HudUiPanel *BriefingMissionNamePanel(
     HudUiBriefingRuntime *runtime
 ) {
     return BriefingPanel(&BriefingLayout(runtime)->missionName);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HudUiPanel *BriefingObjectiveSummaryPanel(
     HudUiBriefingRuntime *runtime
 ) {
     return BriefingPanel(&BriefingLayout(runtime)->objectiveSummary);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HudUiPanel *BriefingObjectiveDescPanel(
     HudUiBriefingRuntime *runtime
 ) {
     return BriefingPanel(&BriefingLayout(runtime)->objectiveDesc);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HudUiBriefingObjectivePicture *BriefingObjectivePicture(
     HudUiBriefingRuntime *runtime
 ) {
     return &BriefingLayout(runtime)->objectivePicture;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HudUiPanel *BriefingTransmissionHaltedPanel(
     HudUiBriefingRuntime *runtime
 ) {
     return BriefingPanel(&BriefingLayout(runtime)->transmissionHalted);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 HudUiBriefingLocatorPanel *BriefingLocatorPanel(
     HudUiBriefingRuntime *runtime,
     int objectiveIndex
@@ -256,7 +265,7 @@ HudUiBriefingRuntime * HudUiBriefingRuntime::Constructor(
     if (loadedRoot != 0) {
         layout->BindWidgetByName(
             loadedRoot,
-            (HudUiWidget *)(&layout->transportProgress),
+            (HudUiZrdWidget *)(&layout->transportProgress),
             "TRANSPORT_PROGRESS"
         );
         layout->BindPrimitiveNodeToElement(
@@ -347,12 +356,12 @@ void HudUiBriefingRuntime::Destructor() {
     layout->SetEnabled(0);
     layout->messagesPanel.entryVector.Clear();
 
-    ((HudUiPanel *)(&layout->messagesPanel))->Destructor();
-    BriefingPanel(&layout->transmissionHalted)->Destructor();
+    ((HudUiPanel *)(&layout->messagesPanel))->~HudUiPanel();
+    BriefingPanel(&layout->transmissionHalted)->~HudUiPanel();
     layout->objectivePicture.DestructorCore();
-    BriefingPanel(&layout->objectiveDesc)->Destructor();
-    BriefingPanel(&layout->objectiveSummary)->Destructor();
-    BriefingPanel(&layout->missionName)->Destructor();
+    BriefingPanel(&layout->objectiveDesc)->~HudUiPanel();
+    BriefingPanel(&layout->objectiveSummary)->~HudUiPanel();
+    BriefingPanel(&layout->missionName)->~HudUiPanel();
     layout->transportProgress.DestructorCore();
 
     BriefingActionNode *const head = layout->actionQueue.headSentinel;
@@ -391,6 +400,7 @@ void HudUiBriefingObjectivePicture::DrawWithNoiseOverlay() {
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiBriefingObjectivePicture::Draw() {
     DrawWithNoiseOverlay();
 }
@@ -425,6 +435,7 @@ void HudUiBriefingLocatorPanel::BlitDirtyRect() {
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiBriefingLocatorPanel::DrawBase() {
     BlitDirtyRect();
 }

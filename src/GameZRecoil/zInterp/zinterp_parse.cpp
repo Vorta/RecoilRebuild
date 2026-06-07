@@ -44,12 +44,14 @@ zInterp_GlobalContext g_zInterp_GlobalContext;
 char *g_zInterp_PreparedIndexFileName = g_zInterp_PreparedIndexFileNameText;
 
 namespace {
+// Source-faithful helper recovered from address-backed callers in this source file.
 char *CurrentCommandToken(
     zInterp_Context *ctx
 ) {
     return ctx->tokenCount > 0 ? ctx->tokenList[0] : 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int CommandIs(
     zInterp_Context *ctx,
     const char *text
@@ -60,6 +62,7 @@ int CommandIs(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int CommandIsExact(
     zInterp_Context *ctx,
     const char *text
@@ -67,6 +70,7 @@ int CommandIsExact(
     return ctx->CommandEquals(text);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int CommandHasPrefix(
     zInterp_Context *ctx,
     const char *text
@@ -78,18 +82,21 @@ int CommandHasPrefix(
 }
 } // namespace
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int zInterp_Context::DispatchHook(
     char *commandToken
 ) {
     return ReportParseError(commandToken);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int zInterp_Context::PostDispatchHook(
     char *commandToken
 ) {
     return ReportParseError(commandToken);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int zInterp_Context::DeferredDispatchHook(
     char *
 ) {

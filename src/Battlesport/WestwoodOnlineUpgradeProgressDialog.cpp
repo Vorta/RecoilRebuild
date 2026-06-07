@@ -40,6 +40,7 @@ WestwoodOnlineUpgradeProgressCDialogMessageMapAccessor::GetMessageMap() {
     return &CDialog::messageMap;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 const AFX_MSGMAP *__stdcall WestwoodOnlineUpgradeProgressDialog::GetBaseMessageMapForMfc() {
     return WestwoodOnlineUpgradeProgressCDialogMessageMapAccessor::GetMessageMap();
 }

@@ -37,12 +37,14 @@ const unsigned int kOptCatalogFlagUseNapalmVehicleDestroyAnim = 0x1000;
 const unsigned int kOptCatalogFlagRemoveRuntimeOnTurretFire = 0x2000;
 const char *const kZTurretSourceFile = "D:\\Proj\\Battlesport\\turret.cpp";
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int zTurret_ReaderArrayCount(
     zReader::Node *node
 ) {
     return node != 0 && node->type == zReader::ZRDR_NODE_ARRAY ? node->value.nodes[0].value.i32 : 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zReader::Node *zTurret_ReaderArraySlot(
     zReader::Node *node,
     int index
@@ -58,6 +60,7 @@ zReader::Node *zTurret_ReaderArraySlot(
     return &node->value.nodes[index];
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 const char *zTurret_ReaderArrayString(
     zReader::Node *node,
     int index
@@ -69,6 +72,7 @@ const char *zTurret_ReaderArrayString(
     return slot != 0 && slot->type == zReader::ZRDR_NODE_STRING ? slot->value.str : 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 char *zTurret_ReaderArrayMutableString(
     zReader::Node *node,
     int index
@@ -80,6 +84,7 @@ char *zTurret_ReaderArrayMutableString(
     return slot != 0 && slot->type == zReader::ZRDR_NODE_STRING ? slot->value.str : 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int zTurret_ReaderArrayInt(
     zReader::Node *node,
     int index
@@ -91,6 +96,7 @@ int zTurret_ReaderArrayInt(
     return slot != 0 ? slot->value.i32 : 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float zTurret_ReaderArrayFloat(
     zReader::Node *node,
     int index
@@ -106,6 +112,7 @@ float zTurret_ReaderArrayFloat(
     return slot->type == zReader::ZRDR_NODE_INT ? (float)(slot->value.i32) : slot->value.f32;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zClass_NodePartial *zTurret_FindChildByArrayString(
     zClass_NodePartial *root,
     zReader::Node *node,
@@ -121,6 +128,7 @@ zClass_NodePartial *zTurret_FindChildByArrayString(
     ) : 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float zTurret_FloatFromBits(
     int bits
 ) {
@@ -133,6 +141,7 @@ float zTurret_FloatFromBits(
     return value;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float zTurret_FastSqrtEstimate(
     float value
 ) {
@@ -151,12 +160,14 @@ float zTurret_FastSqrtEstimate(
     return value;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int zTurret_NodeIsActive(
     zClass_NodePartial *node
 ) {
     return node != 0 && (node->flags & kZClassNodeActiveFlag) != 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void zTurret_DeactivateRuntimeInstance(
     zTurret_Runtime *runtime
 ) {
@@ -166,6 +177,7 @@ void zTurret_DeactivateRuntimeInstance(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void zTurret_AddCandidateTarget(
     zTurret_Runtime *runtime,
     const zVec3 *candidatePos,
@@ -181,6 +193,7 @@ void zTurret_AddCandidateTarget(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 const zVec3 *zTurret_FindNearestTarget(
     zTurret_Runtime *runtime,
     zUtil_PlayerStateStorage *playerState,

@@ -66,6 +66,7 @@ const unsigned char g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24[4] = {0x00,
 const unsigned char g_HudSensorTracker_ObjectiveBlinkColorRedRgb24[4] = {0xff, 0x00, 0x00, 0x00};
 
 template <typename T>
+// Source-faithful helper recovered from address-backed callers in this source file.
 zZbdSectionCallback ZbdCallbackPtr(
     T callback
 ) {
@@ -78,12 +79,14 @@ zZbdSectionCallback ZbdCallbackPtr(
     return value.raw;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ClearZbdPath(
     HudSensorTracker *tracker
 ) {
     tracker->zbdPath.Empty();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int FloatToRawSeconds(
     float value
 ) {
@@ -96,6 +99,7 @@ int FloatToRawSeconds(
     return rawValue;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float RawSecondsToFloat(
     int rawValue
 ) {
@@ -108,6 +112,7 @@ float RawSecondsToFloat(
     return value;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float ApproxSqrtScaleFromBits(
     float value
 ) {
@@ -128,6 +133,7 @@ float ApproxSqrtScaleFromBits(
     return approxValue;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool IsPointStrictlyInsideRect(
     const HudUiRect &rect,
     const zVec3 &point
@@ -136,6 +142,7 @@ bool IsPointStrictlyInsideRect(
            (float)(rect.top) < point.y && (float)(rect.bottom) > point.y;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void AppendPickupFeature(
     char *featureText,
     const char *feature
@@ -146,6 +153,7 @@ void AppendPickupFeature(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zClass_NodePartial *ResolveObjectiveNodePath(
     zReader::Node *pathNode,
     int objectiveIndex,

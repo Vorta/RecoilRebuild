@@ -65,12 +65,14 @@ const float kHudWeatherFxVelocityMaxSq = 1.0f;
 const float kHudWeatherFxSnowSlantScale = 3.5f;
 const int kHudWeatherFxRainSlantDelta = 1;
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float HudWeatherFxVec3LengthSq(
     const zVec3 *value
 ) {
     return value->x * value->x + value->y * value->y + value->z * value->z;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int HudWeatherFxSnowNeedsReset(
     const zVec3 *position
 ) {
@@ -787,6 +789,7 @@ void HudUiNewGamePanelOverlayOwner::AtExitDestructor() {
  *
  * Purpose: initialize the typed new-game overlay app-state owner.
  */
+// Source-faithful helper recovered from address-backed callers in this source file.
 HudUiNewGamePanelOverlayOwner::HudUiNewGamePanelOverlayOwner() : m_panel(0) {}
 
 // Reimplements 0x41c630: HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner

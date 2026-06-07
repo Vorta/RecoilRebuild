@@ -129,10 +129,12 @@ namespace {
 
     RECOIL_STATIC_ASSERT(sizeof(OptCatalogRuntimeInstancePoolSlot) == 0x90);
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     int zReaderArrayCount(zReader::Node * node) {
         return node->value.nodes[0].value.i32;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     const char *zReaderArrayString(
         zReader::Node * node,
         int index
@@ -140,6 +142,7 @@ namespace {
         return node->value.nodes[index].value.str;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     int zReaderArrayInt(
         zReader::Node * node,
         int index
@@ -147,6 +150,7 @@ namespace {
         return node->value.nodes[index].value.i32;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     float zReaderArrayFloat(
         zReader::Node * node,
         int index
@@ -159,6 +163,7 @@ namespace {
         return valueNode->value.f32;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void SetFlagFromBool(
         unsigned int &flags,
         unsigned int flag,
@@ -171,6 +176,7 @@ namespace {
         }
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     template<typename T> void *ActionCallbackPtr(T callback) {
         RECOIL_STATIC_ASSERT(sizeof(T) == sizeof(void *));
         union {
@@ -180,6 +186,7 @@ namespace {
         return ptr.raw;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     float FastSqrtApprox(float value) {
         unsigned int bits = 0;
         memcpy(
@@ -196,6 +203,7 @@ namespace {
         return value;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     const char *ReadNamedArrayString(
         zReader::Node * parentNode,
         const char *name,
@@ -216,6 +224,7 @@ namespace {
         );
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void LoadNamedSoundSample(
         zReader::Node * parentNode,
         const char *name,
@@ -231,6 +240,7 @@ namespace {
         }
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void LoadNamedBoolFlag(
         zReader::Node * entryNode,
         const char *name,
@@ -250,6 +260,7 @@ namespace {
         }
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void LoadRadiusRange(
         zReader::Node * node,
         OptCatalogEntryDef * entry
@@ -274,6 +285,7 @@ namespace {
         }
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void LoadTimedStatusBlock(
         zReader::Node * node,
         OptCatalogEntryDef * entry
@@ -309,6 +321,7 @@ namespace {
         entry->flags |= kOptCatalogFlagAppliesTimedHitStatus;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void LoadDesignateStatusBlock(
         zReader::Node * node,
         OptCatalogEntryDef * entry
@@ -346,6 +359,7 @@ namespace {
         entry->flags |= kOptCatalogFlagRemoteDetonate;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void LoadDamageFeedbackOnHealth(
         zReader::Node * node,
         OptCatalogEntryDef * entry
@@ -370,6 +384,7 @@ namespace {
         }
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void LoadImpactFxTable(
         zReader::Node * impactNode,
         OptCatalogEntryDef * entry
@@ -408,6 +423,7 @@ namespace {
         }
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void SetupRuntimeInstancePool() {
         if (g_OptCatalogRuntimeInstanceCount <= 0) {
             return;
@@ -460,11 +476,13 @@ namespace {
         }
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     OptCatalogDamageHandlerPartial *DamageHandlerForNode(zClass_NodePartial * node) {
         return (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(node))
                 ->damageHandler);
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void ActivateDamageFeedbackEffect(
         zEffectAnimEntry * effect,
         OptCatalogHitEventPartial * hitEvent
@@ -484,6 +502,7 @@ namespace {
         );
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     zClass_NodePartial *ImpactOwnerNodeFromDamageContext() {
         OptCatalogHitEventPartial *const contextHitEvent =
             (OptCatalogHitEventPartial *)(g_OptCatalog_DamageContextHitEvent);
@@ -494,6 +513,7 @@ namespace {
         return contextHitEvent->surfaceRef->impactOwnerNode;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     unsigned int PackVariantTag(const zTag4Partial *tag) {
         unsigned int packed = 0;
         memcpy(
@@ -504,6 +524,7 @@ namespace {
         return packed;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void SetCurrentVariantTagFromPacked(unsigned int packedTag) {
         memcpy(
             &g_Variant_CurrentTag,
@@ -512,6 +533,7 @@ namespace {
         );
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     void SetCurrentVariantForRuntime(
         unsigned int packedRuntimeTag,
         unsigned int savedPackedVariantTag

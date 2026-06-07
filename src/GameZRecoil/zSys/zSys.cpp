@@ -69,6 +69,7 @@ struct CpuBenchmarkResolver {
     );
 };
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 CpuBenchmarkResolver *CpuBenchmarkResolverFromValue(
     unsigned int value
 ) {

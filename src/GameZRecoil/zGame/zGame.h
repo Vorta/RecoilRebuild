@@ -102,7 +102,7 @@ enum zOptHudTypeOption {
 
 namespace zGame {
 void ReturnOnlyStub();
-zOptionEntryPartial *__fastcall Options_FindOption(const char *name);
+zOptionEntryPartial *__fastcall Options_FindOption(const char *name) throw();
 zOptionEntryPartial *__fastcall Options_GetOrCreateOption(
     const char *name,
     int storageType,

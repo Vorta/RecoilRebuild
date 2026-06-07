@@ -65,6 +65,7 @@ extern int g_zMath_FogTableDirty;              /* 0x4E0E8C: rebuild flag */
  * If length is zero, vector is unchanged.
  * NOTE: Located outside main zMath range (early .text).
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 float __cdecl zMath_Vec3_Normalize(
     float *v
 ) {
@@ -82,6 +83,7 @@ float __cdecl zMath_Vec3_Normalize(
  * zMath_Vec3_Distance -- 0x4726D0
  * Returns the distance between two 3D points.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 float __cdecl zMath_Vec3_Distance(
     const float *a,
     const float *b
@@ -96,6 +98,7 @@ float __cdecl zMath_Vec3_Distance(
  * zMath_Vec3_DistSqXZ -- 0x472730
  * Returns the squared distance in the XZ plane (ignores Y).
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 float __cdecl zMath_Vec3_DistSqXZ(
     const float *a,
     const float *b
@@ -109,6 +112,7 @@ float __cdecl zMath_Vec3_DistSqXZ(
  * zMath_Vec3_ScaleAdd -- 0x472770
  * out = a + b * t
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_Vec3_ScaleAdd(
     float *out,
     const float *a,
@@ -146,6 +150,7 @@ void __cdecl zMath_Vec3_DivScalar(
  * zMath_Vec3_NormalizeXZ -- 0x4727F0
  * Normalizes a Vec3 in the XZ plane only (Y set to 0).
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_Vec3_NormalizeXZ(
     float *v
 ) {
@@ -166,6 +171,7 @@ void __cdecl zMath_Vec3_NormalizeXZ(
      n
  ) * n
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_Vec3_Reflect(
     float *out,
     const float *dir,
@@ -182,6 +188,7 @@ void __cdecl zMath_Vec3_Reflect(
  * zMath_Vec3_Lerp -- 0x472960
  * out = a + (b - a) * t  (linear interpolation)
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_Vec3_Lerp(
     float *out,
     const float *a,
@@ -197,6 +204,7 @@ void __cdecl zMath_Vec3_Lerp(
  * zMath_Vec3_DirectionTo -- 0x4729B0
  * Computes normalized direction from 'from' to 'to'.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_Vec3_DirectionTo(
     float *out,
     const float *from,
@@ -212,6 +220,7 @@ void __cdecl zMath_Vec3_DirectionTo(
  * zMath_Vec3_LerpNormalize -- 0x4729F0
  * Lerp then normalize. Used for blending directions.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_Vec3_LerpNormalize(
     float *out,
     const float *a,
@@ -230,6 +239,7 @@ void __cdecl zMath_Vec3_LerpNormalize(
  * Falls back to lerp+normalize when vectors are nearly parallel
  * (dot > +/-SLERP_THRESHOLD).
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_Vec3_Slerp(
     float *out,
     const float *a,
@@ -267,6 +277,7 @@ void __cdecl zMath_Vec3_Slerp(
      0
  ).
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_Vec3_Perp2D(
     float *out,
     const float *v
@@ -284,6 +295,7 @@ void __cdecl zMath_Vec3_Perp2D(
      v.x
  ).
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_Vec3_PerpXZ(
     float *out,
     const float *v
@@ -297,6 +309,7 @@ void __cdecl zMath_Vec3_PerpXZ(
  * zMath_Vec3_ScaleAddBatch -- 0x4744F0
  * Batch version: out[i] = a[i] + b[i] * t, for 'count' Vec3s.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_Vec3_ScaleAddBatch(
     float *out,
     const float *a,
@@ -321,6 +334,7 @@ void __cdecl zMath_Vec3_ScaleAddBatch(
  * out.y = in.y
  * out.z = -sin*in.x + cos*in.z
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_Vec3_RotateAroundY(
     float *out,
     const float *in,
@@ -340,6 +354,7 @@ void __cdecl zMath_Vec3_RotateAroundY(
  * out.y = cos*in.y - sin*in.z
  * out.z = sin*in.y + cos*in.z
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_Vec3_RotateAroundX(
     float *out,
     const float *in,
@@ -359,6 +374,7 @@ void __cdecl zMath_Vec3_RotateAroundX(
  * out[1] = yaw   = atan2(dz, dx)
  * out[2] = 0 (no roll)
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_Vec3_DirectionAngles(
     const float *from,
     const float *to,
@@ -384,6 +400,7 @@ void __cdecl zMath_Vec3_DirectionAngles(
  * Returns the elevation/pitch angle from 'from' toward 'to'.
  * = atan2(horizontalDist, dy)
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 float __cdecl zMath_Vec3_ElevationAngle(
     const float *from,
     const float *to
@@ -406,6 +423,7 @@ float __cdecl zMath_Vec3_ElevationAngle(
  * Handles floating-point math errors (set via _matherr).
  * In retail build this is a no-op/stub.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 int __cdecl zMath_Main_MathErrHandler(
     void *exception
 ) {
@@ -430,6 +448,7 @@ float __cdecl zMath_GetProjectedScreenSize(
  * zMath_MatStack_Push -- 0x472EF0
  * Pushes the current matrix, copies it to the new top of stack.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_MatStack_Push(
     void
 ) {
@@ -447,6 +466,7 @@ void __cdecl zMath_MatStack_Push(
  * zMath_MatStack_PushNew -- 0x472F30
  * Pushes and marks the new matrix as "clean" (not dirty).
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_MatStack_PushNew(
     void
 ) {
@@ -459,6 +479,7 @@ void __cdecl zMath_MatStack_PushNew(
  * zMath_MatStack_Pop -- 0x472F60
  * Pops the matrix stack by one level.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_MatStack_Pop(
     void
 ) {
@@ -470,6 +491,7 @@ void __cdecl zMath_MatStack_Pop(
  * zMath_Mat_LoadProjection -- 0x472F90
  * Copies the global projection matrix into the given destination.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_Mat_LoadProjection(
     float *dst
 ) {
@@ -484,6 +506,7 @@ void __cdecl zMath_Mat_LoadProjection(
  * zMath_Mat_LoadView -- 0x472FA0
  * Copies the global view matrix into the given destination.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_Mat_LoadView(
     float *dst
 ) {
@@ -510,6 +533,7 @@ void __cdecl zMath_Mat_SetupCamera(const float *worldTransform);
  * Transforms a single point by a 4x3 matrix (rotation + translation).
  * out = M * in + T
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_Mat_TransformPoint(
     float *out,
     const float *mat,
@@ -525,6 +549,7 @@ void __cdecl zMath_Mat_TransformPoint(
  * Copies a source matrix (48 bytes) into the current stack matrix.
  * Marks dirty flag.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_Mat_Load(
     const float *src
 ) {
@@ -543,6 +568,7 @@ void __cdecl zMath_Mat_Load(
  *   [0 1 0 0]
  *   [0 0 1 0]
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_Mat_LoadIdentity(
     void
 ) {
@@ -783,6 +809,7 @@ void __cdecl zMath_BBox_Transform(
  *   dst.y   = src.y * ProjScaleY * invZ + ProjOffsetY
  *   dst.z   = invZ   (raw reciprocal depth)
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_ProjectPointBatch(
     const float *srcArray,
     float *dstArray,
@@ -804,6 +831,7 @@ void __cdecl zMath_ProjectPointBatch(
  *   dst.z = invZ * ZBufScale
  * Used for hardware (D3D) rendering path.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_ProjectPointBatchZBuf(
     const float *srcArray,
     float *dstArray,
@@ -857,6 +885,7 @@ void __cdecl zMath_UnprojectPointBatch(
  * Table: fogTable[i] = exp(-i * FOG_SCALE)
  * Returns fog alpha in [0, 1] range.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 float __cdecl zMath_FogTableLookup(
     int unused,
     float distance
@@ -893,6 +922,7 @@ float __cdecl zMath_FogTableLookup(
      v2 - v0
  ))
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zMath_TriangleNormal(
     const float *v0,
     const float *v1,
@@ -942,6 +972,7 @@ void __cdecl zMath_SolveLinear2x2(
  * Returns 1 on hit (outHitNormal set), 0 on miss.
  * Uses fast inverse sqrt bit hack: (*(int*)&x >> 1) + 0x1FC00000
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 int __cdecl zMath_RaySphereIntersect(
     const float *rayOrigin,
     const float *sphereCenter,
@@ -1074,6 +1105,7 @@ void __cdecl zMath_Quat_FromEuler(
  * Hamilton product: out = q1 * q2
  * Both quaternions are [w, x, y, z].
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 float *__cdecl zMath_Quat_Multiply(
     const float *q1,
     const float *q2,
@@ -1152,6 +1184,7 @@ void __cdecl zMath_Quat_ToMatrix(
      0
  ).
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 int __cdecl zMath_Quat_FromRotationVector(
     const float *rv,
     float *qOut

@@ -140,13 +140,30 @@ struct zInput_BindMapOverlayStackNode {
 };
 RECOIL_STATIC_ASSERT(sizeof(zInput_BindMapOverlayStackNode) == 0x0c);
 
+struct zInput_CommandIdVector {
+    unsigned char allocatorByte;
+    unsigned char allocatorPadding[3];
+    int *begin;
+    int *end;
+    int *capacity;
+};
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zInput_CommandIdVector,
+        begin
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zInput_CommandIdVector,
+        end
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(sizeof(zInput_CommandIdVector) == 0x10);
+
 struct zInput_BindGroupInfo {
     CString title;
-    unsigned char commandIdsAllocatorByte;
-    unsigned char commandIdsAllocatorPadding[3];
-    int *commandIdsBegin;
-    int *commandIdsEnd;
-    int *commandIdsCapacity;
+    zInput_CommandIdVector commandIds;
 
     void Destroy();
 };
@@ -159,20 +176,20 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         zInput_BindGroupInfo,
-        commandIdsAllocatorByte
+        commandIds
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInput_BindGroupInfo,
-        commandIdsBegin
-    ) == 0x08
+        zInput_CommandIdVector,
+        begin
+    ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zInput_BindGroupInfo,
-        commandIdsEnd
-    ) == 0x0c
+        zInput_CommandIdVector,
+        end
+    ) == 0x08
 );
 RECOIL_STATIC_ASSERT(sizeof(zInput_BindGroupInfo) == 0x14);
 

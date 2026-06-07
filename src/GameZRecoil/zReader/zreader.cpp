@@ -94,6 +94,7 @@ void __cdecl zReader_FreeNodeRecursive(struct zReader_Node *node);
  * if not already created, sets the search path, clears current archive.
  * Called from RecoilApp_EngineInit.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 int __cdecl zUtil_ZRDR_Init(
     const char *searchPath
 ) {
@@ -110,6 +111,7 @@ int __cdecl zUtil_ZRDR_Init(
  * Resolves a file path by checking: direct existence, optional search
  * path text, then the global search path list.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 const char *__cdecl zReader_TryResolvePath(
     const char *file,
     const char *optionalSearchPathListText
@@ -146,6 +148,7 @@ const char *__cdecl zReader_TryResolvePath(
  * Allocates a block of zReader_Node(s). count is the number of nodes.
  * type is stored in the first node's type field.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 zReader_Node *__cdecl zReader_AllocateNode(
     int type,
     int count
@@ -161,6 +164,7 @@ zReader_Node *__cdecl zReader_AllocateNode(
  * opens from mounted archives, reads the node tree.
  * Returns a root array node, or NULL if file not found.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 zReader_Node *__cdecl zReader_LoadNodeFromPath(
     const char *path
 ) {
@@ -199,6 +203,7 @@ zReader_Node *__cdecl zReader_LoadNodeFromPath(
  * zReader_FreeLoadedTree — 0x48CE40
  * Frees a loaded ZRD node tree (recursive free + free root).
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zReader_FreeLoadedTree(
     zReader_Node *loaded
 ) {
@@ -213,6 +218,7 @@ void __cdecl zReader_FreeLoadedTree(
  * Recursively frees child nodes. For string nodes, frees the string.
  * For array nodes, recurses into children then frees the array block.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __cdecl zReader_FreeNodeRecursive(
     zReader_Node *node
 ) {
@@ -240,6 +246,7 @@ void __cdecl zReader_FreeNodeRecursive(
  * If a child is an array, recurses into it.
  * startIndex is the first child index to search from.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 zReader_Node *__cdecl zReader_FindChildRecursive(
     zReader_Node *self,
     const char *name,
@@ -284,6 +291,7 @@ zReader_Node *__cdecl zReader_FindChildRecursive(
  * zReader_GetCurrentRootNode — 0x48CF70
  * Convenience wrapper: finds a named child starting at index 1.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 zReader_Node *__cdecl zReader_GetCurrentRootNode(
     zReader_Node *parent,
     const char *name
@@ -301,6 +309,7 @@ zReader_Node *__cdecl zReader_GetCurrentRootNode(
  * Handles both direct string nodes and arrays containing a string.
  * Returns NULL if not found or wrong type.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 const char *__cdecl zReader_ReadNamedString(
     zReader_Node *parent,
     const char *name
@@ -333,6 +342,7 @@ const char *__cdecl zReader_ReadNamedString(
  * and array[int] (converts to float).
  * Returns 1 on success, 0 on failure.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 int __cdecl zReader_ReadNamedFloat(
     zReader_Node *parent,
     const char *name,
@@ -378,6 +388,7 @@ int __cdecl zReader_ReadNamedFloat(
  * Handles direct int and array[int].
  * Returns 1 on success, 0 on failure.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 int __cdecl zReader_ReadNamedInt(
     zReader_Node *parent,
     const char *name,
@@ -418,6 +429,7 @@ int __cdecl zReader_ReadNamedInt(
  * Error string: "Invalid reader node type in zRdrRead()"
  * Source file:  "D:\Proj\GameZRecoil\zReader\zreader.cpp" line 0x40C (1036)
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 int __cdecl zReader_ReadNode(
     HANDLE hFile,
     zReader_Node *outNode
@@ -496,6 +508,7 @@ int __cdecl zReader_ReadNode(
  * Iterates mounted archive list, attempting to open the file from each.
  * Returns a file handle or INVALID_HANDLE_VALUE (-1) if not found.
  * ================================================================== */
+// Source-faithful helper recovered from address-backed callers in this source file.
 int __cdecl zReader_OpenFileFromMountedArchives(
     const char *filename
 ) {

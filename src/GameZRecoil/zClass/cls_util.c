@@ -23,6 +23,7 @@ namespace {
     const int kDefaultNodeArraySize = 8250;
     const unsigned int kNodeFreeTagIndexMask = 0x00ffffff;
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     template<typename T> zZbdSectionCallback ZbdCallbackPtr(T callback) {
         RECOIL_STATIC_ASSERT(sizeof(T) == sizeof(zZbdSectionCallback));
         union {
@@ -33,6 +34,7 @@ namespace {
         return value.raw;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     float ApproximateRangeFromRangeSq(float rangeSq) {
         int bits = 0;
         memcpy(

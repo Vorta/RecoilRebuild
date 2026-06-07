@@ -17,6 +17,7 @@ zGeometry_TriangleIndexTriple
     g_zGeometry_TriangulateHole_TriangleIndices[kTriangulateHoleMaxTriangles];
 zGeometry_PlaneEquationPartial g_zGeometry_TriangulateHole_CachedPlane;
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float OffsetX(
     const float *pointDwords,
     const int *pointDwordOffsets,
@@ -26,6 +27,7 @@ float OffsetX(
     return pointDwords[pointDwordOffsets[index * stride]];
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float OffsetY(
     const float *pointDwords,
     const int *pointDwordOffsets,
@@ -35,6 +37,7 @@ float OffsetY(
     return pointDwords[pointDwordOffsets[index * stride + 1]];
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float Cross2D(
     float ax,
     float ay,
@@ -46,6 +49,7 @@ float Cross2D(
     return (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float PolygonArea2D(
     const float *pointDwords,
     const int *pointDwordOffsets,
@@ -84,6 +88,7 @@ float PolygonArea2D(
     return area;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool PointInTriangle2D(
     float px,
     float py,
@@ -127,6 +132,7 @@ bool PointInTriangle2D(
     return cross0 <= 0.0f && cross1 <= 0.0f && cross2 <= 0.0f;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void CopyOffsetVertex(
     int *dest,
     const int *source,
@@ -139,6 +145,7 @@ void CopyOffsetVertex(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 const float *PointDwordBase(
     const zVec3 *points,
     int pointDwordOffset
@@ -146,6 +153,7 @@ const float *PointDwordBase(
     return (const float *)(points) + pointDwordOffset;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zVec3 *CopySpanPoints(
     zGeometry_ConvexPolygonSetPartial *result,
     zVec3 *outputPointWriteCursor,
@@ -167,6 +175,7 @@ zVec3 *CopySpanPoints(
     return outputPointWriteCursor + pointCount;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool IsConvexQuadXY(
     const zVec3 *points
 ) {
@@ -198,6 +207,7 @@ bool IsConvexQuadXY(
     return true;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zVec3 *AppendTriangulatedSpan(
     zGeometry_ConvexPolygonSetPartial *result,
     zVec3 *outputPointWriteCursor,
@@ -245,12 +255,14 @@ zVec3 *AppendTriangulatedSpan(
     return outputPointWriteCursor;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int *TrianglePayload(
     zGeometry_TriangleDwordOffsetList *list
 ) {
     return list->triangleDwordOffsets;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void AppendTriangleOffsets(
     zGeometry_TriangleDwordOffsetList *list,
     int triangleIndex,
@@ -278,6 +290,7 @@ void AppendTriangleOffsets(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool IsEar(
     const float *pointDwords,
     const int *pointDwordOffsets,
@@ -374,6 +387,7 @@ bool IsEar(
     return true;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float EstimateMagnitudeFromSquaredLength(
     float squaredLength
 ) {

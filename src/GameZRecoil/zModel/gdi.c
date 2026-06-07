@@ -9,6 +9,7 @@
 #include <string.h>
 
 namespace {
+    // Source-faithful helper recovered from address-backed callers in this source file.
     template<class T> const T &MinValue(
         const T &lhs,
         const T &rhs
@@ -16,6 +17,7 @@ namespace {
         return lhs < rhs ? lhs : rhs;
     }
 
+    // Source-faithful helper recovered from address-backed callers in this source file.
     template<class T> const T &MaxValue(
         const T &lhs,
         const T &rhs

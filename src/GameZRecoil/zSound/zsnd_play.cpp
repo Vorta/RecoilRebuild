@@ -15,6 +15,7 @@ namespace {
 const char kZSndPlaySourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp";
 const char kZSnd3dSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_3d.cpp";
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool DirectSoundHandleIsAvailable(
     zSndPlayHandle *handle
 ) {
@@ -28,6 +29,7 @@ bool DirectSoundHandleIsAvailable(
     return (status & 1) == 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool A3dHandleIsAvailable(
     zSndPlayHandle *handle
 ) {
@@ -41,6 +43,7 @@ bool A3dHandleIsAvailable(
     return (status & 1) == 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline bool DirectSoundBufferIsPlaying(
     zSndBuffer *backendBuffer,
     int *status
@@ -50,6 +53,7 @@ inline bool DirectSoundBufferIsPlaying(
     return (*status & 1) != 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline bool DirectSoundBufferIsPlaying(
     zSndBuffer *backendBuffer
 ) {
@@ -60,6 +64,7 @@ inline bool DirectSoundBufferIsPlaying(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline bool A3dSourceIsPlaying(
     zSndBuffer *backendBuffer,
     int *status
@@ -69,6 +74,7 @@ inline bool A3dSourceIsPlaying(
     return (*status & 1) != 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline bool A3dSourceIsPlaying(
     zSndBuffer *backendBuffer
 ) {
@@ -79,6 +85,7 @@ inline bool A3dSourceIsPlaying(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool BackendHandleIsPlaying(
     zSndPlayHandle *handle
 ) {
@@ -93,6 +100,7 @@ bool BackendHandleIsPlaying(
     return false;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ReleaseBackendBuffer(
     zSndBuffer *buffer
 ) {
@@ -101,6 +109,7 @@ void ReleaseBackendBuffer(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int FreeA3dWaveData(
     zSndBuffer *buffer
 ) {
@@ -112,6 +121,7 @@ int FreeA3dWaveData(
     return object->FreeWaveData();
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float ApproximateDirectSoundDistance(
     float distanceSquared
 ) {
@@ -132,6 +142,7 @@ float ApproximateDirectSoundDistance(
     return distance;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 float FloatFromBits(
     int bits
 ) {
@@ -144,6 +155,7 @@ float FloatFromBits(
     return value;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int FloatToBits(
     float value
 ) {
@@ -169,6 +181,7 @@ float Dot(
     return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void RefreshPlaybackMarkers(
     zSndSample *sample,
     zSndPlayHandle *handle
@@ -188,6 +201,7 @@ void RefreshPlaybackMarkers(
 }
 } // namespace
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline void zSndPlayHandleSnapshot::AppendPayload(
     const zSndPlayHandleSnapshotPayload &payload
 ) {
@@ -631,6 +645,7 @@ void __fastcall zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(
     *velocityDest = *velocitySrc;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline zSndPlayHandleSnapshot::zSndPlayHandleSnapshot(
     unsigned char tag
 ) {

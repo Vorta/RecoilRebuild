@@ -33,6 +33,7 @@ zImage_TexDirEntryPartial *GetDefaultImageRefPtr() {
 
 // Hardware renderers need a real image for the default texture record; standalone
 // tools provide the same fallback callback path used by pending texture loads.
+// Source-faithful helper recovered from address-backed callers in this source file.
 zVideo_TextureRecordPartial *CreateDefaultTextureRecord() {
     zVidImagePartial *image = &zVid_Image::g_zImage_DefaultImage;
     int releaseImage = 0;

@@ -13,6 +13,7 @@
 #include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zRndr/zRndr.h"
+#include "GameZRecoil/zVideo/zVideoFxPass3.h"
 #include "zClass.h"
 
 #include <math.h>
@@ -36,6 +37,7 @@ const int kZVidPaletteRemapVariantCount = 32;
 const int kZVidPaletteRemapColorsPerRecipe =
     kZVidPaletteColorCount * kZVidPaletteRemapVariantCount;
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 size_t zVidPaletteRemapTableBytesForRecipeCount(
     int recipeCount
 ) {
@@ -45,6 +47,7 @@ size_t zVidPaletteRemapTableBytesForRecipeCount(
     ) * sizeof(unsigned short);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned short zVideo_BlendPixel565Alpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
@@ -60,6 +63,7 @@ unsigned short zVideo_BlendPixel565Alpha8(
     return (unsigned short)(blended);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned short zVideo_BlendPixel555Alpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
@@ -75,6 +79,7 @@ unsigned short zVideo_BlendPixel555Alpha8(
     return (unsigned short)(blended);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned short zVideo_BlendFramebufferPixelAlpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
@@ -95,24 +100,14 @@ unsigned short zVideo_BlendFramebufferPixelAlpha8(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int zVideo_GetAlphaSkipThreshold() {
     return zRndr::g_pixelPackGreenBits == 6 ? 3 : 7;
 }
 } // namespace
 
 extern "C" {
-int g_zVideo_PixelPack_RShift = 0;
-int g_zVideo_PixelPack_GShift = 0;
-int g_zVideo_PixelPack_BShiftTo8 = 0;
-int g_zVideo_PixelPack_RMaskShifted = 0;
-int g_zVideo_PixelPack_GMaskShifted = 0;
-int g_zVideo_PixelPack_BMaskShifted = 0;
-int g_zVideo_PixelPack_RBits = 0;
-int g_zVideo_PixelPack_GBits = 0;
-int g_zVideo_PixelPack_BBits = 0;
-unsigned int g_zVideo_PixelPack_RMask = 0;
-unsigned int g_zVideo_PixelPack_GMask = 0;
-unsigned int g_zVideo_PixelPack_BMask = 0;
+zVideo_PixelPackParams g_zVideo_PixelPack = {0};
 int g_zVideo_TexturePixelPack_RBits = 0;
 int g_zVideo_TexturePixelPack_GBits = 0;
 int g_zVideo_TexturePixelPack_BBits = 0;
@@ -272,14 +267,6 @@ zVideo_SurfaceStatePartial g_zVideo_SwSurfaceState = {0};
 zVideo_SurfaceStatePartial g_zVideo_PrimarySurfaceState = {0};
 zVideo_SurfaceStatePartial g_zVideo_DisplayModeSurfaceState = {0};
 zVideo_SurfaceStatePartial g_zVideo_SurfaceStateSwapScratch = {0};
-// Pass-3 HUD effect elements are HUD elements with an element-specific pass
-// callback used by Draw after the shared source-surface setup.
-struct zVideoFxPass3Element : HudUiElement {
-    HudUiRect *clipRectOrNull;
-
-    void Draw();
-    virtual void ApplyPass3();
-};
 
 struct zVideoFxPass3RootElement : zVideoFxPass3Element {
     unsigned short packedColor16;
@@ -338,13 +325,6 @@ struct zVideoFxPass3Config : HudUiContainer {
 };
 
 #if defined(_M_IX86) || defined(__i386__)
-RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Element) == 0x38);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zVideoFxPass3Element,
-        clipRectOrNull
-    ) == 0x34
-);
 RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3RootElement) == 0x48);
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -439,13 +419,16 @@ RECT g_zVideo_CachedClientRectScreen = {0};
 
 // Reimplements 0x4a6cf0: zVid_PackColorRGB
 unsigned int __fastcall zVid_PackColorRGB(
-    unsigned char red,
-    unsigned char green,
-    unsigned char blue
+    int red,
+    int green,
+    int blue
 ) {
-    return ((g_zVideo_PixelPack_GMaskShifted & green) << g_zVideo_PixelPack_GShift) |
-           ((g_zVideo_PixelPack_RMaskShifted & red) << g_zVideo_PixelPack_RShift) |
-           (blue >> g_zVideo_PixelPack_BShiftTo8);
+    const unsigned int greenPacked =
+        (g_zVideo_PixelPack.gMaskShifted & green) << g_zVideo_PixelPack.sumMinus8;
+    const unsigned int redPacked =
+        (g_zVideo_PixelPack.rMaskShifted & red) << g_zVideo_PixelPack.packedBase;
+    return greenPacked | redPacked |
+           ((unsigned char)(blue) >> g_zVideo_PixelPack.bShiftTo8);
 }
 
 // Reimplements 0x4a6ca0: zVid_PackColor00RRGGBB
@@ -456,9 +439,9 @@ unsigned int __fastcall zVid_PackColor00RRGGBB(
     const unsigned char green = (unsigned char)(color00RRGGBB >> 8);
     const unsigned char blue = (unsigned char)(color00RRGGBB >> 16);
 
-    return ((g_zVideo_PixelPack_GMaskShifted & green) << g_zVideo_PixelPack_GShift) |
-           ((g_zVideo_PixelPack_RMaskShifted & red) << g_zVideo_PixelPack_RShift) |
-           (blue >> g_zVideo_PixelPack_BShiftTo8);
+    return ((g_zVideo_PixelPack.gMaskShifted & green) << g_zVideo_PixelPack.sumMinus8) |
+           ((g_zVideo_PixelPack.rMaskShifted & red) << g_zVideo_PixelPack.packedBase) |
+           (blue >> g_zVideo_PixelPack.bShiftTo8);
 }
 
 // Reimplements 0x4a6d40: zVid_PackColorRgbFloats
@@ -469,9 +452,9 @@ unsigned short __fastcall zVid_PackColorRgbFloats(
     const int green = (int)(color->g + 0.5f);
     const int blue = (int)(color->b + 0.5f);
     const unsigned int packed =
-        ((g_zVideo_PixelPack_RMaskShifted & red) << g_zVideo_PixelPack_RShift) |
-        ((g_zVideo_PixelPack_GMaskShifted & green) << g_zVideo_PixelPack_GShift) |
-        ((unsigned int)(blue) >> g_zVideo_PixelPack_BShiftTo8);
+        ((g_zVideo_PixelPack.rMaskShifted & red) << g_zVideo_PixelPack.packedBase) |
+        ((g_zVideo_PixelPack.gMaskShifted & green) << g_zVideo_PixelPack.sumMinus8) |
+        ((unsigned int)(blue) >> g_zVideo_PixelPack.bShiftTo8);
     return (unsigned short)(packed);
 }
 
@@ -832,6 +815,7 @@ void __fastcall zVideo_UpdateProjectionStateFromCameraData(
     cameraData->localFrustumFarNormal.z = 1.0f;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static zVec3 zVideo_SubtractVec3(
     zVec3 *lhs,
     zVec3 *rhs
@@ -843,6 +827,7 @@ static zVec3 zVideo_SubtractVec3(
     return delta;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static float zVideo_DotVec3(
     zVec3 *lhs,
     zVec3 *rhs
@@ -850,6 +835,7 @@ static float zVideo_DotVec3(
     return lhs->x * rhs->x + lhs->y * rhs->y + lhs->z * rhs->z;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static int zVideo_TestSpherePlane(
     zVec3 *delta,
     zVec3 *normal,
@@ -1706,6 +1692,7 @@ void zVideoFxPass3Element::Draw() {
     clipRectOrNull = parentConfig->inputRectsOrNull[0];
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void zVideoFxPass3Element::ApplyPass3() {}
 
 // Reimplements 0x4bdbc0: zVideoFxPass3RootElement::ApplyPass3
@@ -2101,6 +2088,7 @@ void __fastcall BltSourceToPrimaryClipped(
 
 namespace zVideo {
 namespace {
+// Source-faithful helper recovered from address-backed callers in this source file.
 int MakeShiftedMask(
     int bits
 ) {
@@ -2117,19 +2105,21 @@ void __fastcall PixelPack_SetupFromMasks(
     unsigned int greenMask,
     unsigned int blueMask
 ) {
-    g_zVideo_PixelPack_RMask = redMask;
-    g_zVideo_PixelPack_GMask = greenMask;
-    g_zVideo_PixelPack_BMask = blueMask;
+    g_zVideo_PixelPack.rMask = redMask;
+    g_zVideo_PixelPack.gMask = greenMask;
+    g_zVideo_PixelPack.bMask = blueMask;
     const int greenBlueBits = greenBits + blueBits;
-    g_zVideo_PixelPack_RBits = redBits;
-    g_zVideo_PixelPack_GShift = greenBlueBits - 8;
-    g_zVideo_PixelPack_RShift = redBits + greenBlueBits - 8;
-    g_zVideo_PixelPack_GBits = greenBits;
-    g_zVideo_PixelPack_BShiftTo8 = 8 - blueBits;
-    g_zVideo_PixelPack_BBits = blueBits;
-    g_zVideo_PixelPack_RMaskShifted = ((1 << redBits) - 1) << (8 - redBits);
-    g_zVideo_PixelPack_GMaskShifted = ((1 << greenBits) - 1) << (8 - greenBits);
-    g_zVideo_PixelPack_BMaskShifted = ((1 << blueBits) - 1) << (8 - blueBits);
+    const int packedBase = redBits + greenBlueBits - 8;
+    const int sumMinus8 = greenBlueBits - 8;
+    g_zVideo_PixelPack.rBits = redBits;
+    g_zVideo_PixelPack.packedBase = packedBase;
+    g_zVideo_PixelPack.sumMinus8 = sumMinus8;
+    g_zVideo_PixelPack.gBits = greenBits;
+    g_zVideo_PixelPack.bShiftTo8 = 8 - blueBits;
+    g_zVideo_PixelPack.bBits = blueBits;
+    g_zVideo_PixelPack.rMaskShifted = ((1 << redBits) - 1) << (8 - redBits);
+    g_zVideo_PixelPack.gMaskShifted = ((1 << greenBits) - 1) << (8 - greenBits);
+    g_zVideo_PixelPack.bMaskShifted = ((1 << blueBits) - 1) << (8 - blueBits);
 }
 
 // Reimplements 0x4a6db0: zVideo::TexturePixelPack_SetupFromMasks
@@ -2598,6 +2588,7 @@ void __fastcall FxPass3_CopySurfacePixelToScratchClipped(
         g_zVideo_FxSurfacePixels16[srcY * g_zVideo_FxSurfacePitchPixels16 + srcX];
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static int __fastcall zVideoFxPass3ClampCurrentRadius(
     int currentRadius,
     int maxRadius
@@ -2615,6 +2606,7 @@ static int __fastcall zVideoFxPass3ClampCurrentRadius(
     return currentRadius;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static int __fastcall zVideoFxPass3ApproxRadiusIndex(
     int distanceSquared,
     int maxRadius
@@ -2629,6 +2621,7 @@ static int __fastcall zVideoFxPass3ApproxRadiusIndex(
     return radiusIndex;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void __fastcall zVideoFxPass3CopyDirect(
     int centerX,
     int centerY,
@@ -2644,6 +2637,7 @@ static void __fastcall zVideoFxPass3CopyDirect(
     ];
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void __fastcall zVideoFxPass3ScatterDirectSymmetric(
     int centerX,
     int centerY,
@@ -2718,6 +2712,7 @@ static void __fastcall zVideoFxPass3ScatterDirectSymmetric(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void __fastcall zVideoFxPass3ScatterClippedSymmetric(
     int x,
     int y,
@@ -2774,6 +2769,7 @@ static void __fastcall zVideoFxPass3ScatterClippedSymmetric(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void __fastcall zVideoFxPass3CopyScratchToSurface(
     int minX,
     int minY,
@@ -2945,6 +2941,7 @@ void __fastcall FxPass3_ApplyToCurrentSurface(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static unsigned short __fastcall zVideoBlendBlurPixel3(
     unsigned short before,
     unsigned short center,
@@ -3753,9 +3750,9 @@ void __fastcall PixelPack_GetRgbBits(
     int *outGBits,
     int *outBBits
 ) {
-    *outRBits = g_zVideo_PixelPack_RBits;
-    *outGBits = g_zVideo_PixelPack_GBits;
-    *outBBits = g_zVideo_PixelPack_BBits;
+    *outRBits = g_zVideo_PixelPack.rBits;
+    *outGBits = g_zVideo_PixelPack.gBits;
+    *outBBits = g_zVideo_PixelPack.bBits;
 }
 
 // Reimplements 0x4a6bb0: zVideo::PixelPack_GetRgbMasks
@@ -3764,9 +3761,9 @@ void __fastcall PixelPack_GetRgbMasks(
     unsigned int *outGMask,
     unsigned int *outBMask
 ) {
-    *outRMask = g_zVideo_PixelPack_RMask;
-    *outGMask = g_zVideo_PixelPack_GMask;
-    *outBMask = g_zVideo_PixelPack_BMask;
+    *outRMask = g_zVideo_PixelPack.rMask;
+    *outGMask = g_zVideo_PixelPack.gMask;
+    *outBMask = g_zVideo_PixelPack.bMask;
 }
 
 // Reimplements 0x4a6bd0: zVideo::PixelPack_GetPackingParams
@@ -3775,9 +3772,9 @@ void __fastcall PixelPack_GetPackingParams(
     int *outSumMinus8,
     int *outBShiftTo8
 ) {
-    *outPackedBase = g_zVideo_PixelPack_RShift;
-    *outSumMinus8 = g_zVideo_PixelPack_GShift;
-    *outBShiftTo8 = g_zVideo_PixelPack_BShiftTo8;
+    *outPackedBase = g_zVideo_PixelPack.packedBase;
+    *outSumMinus8 = g_zVideo_PixelPack.sumMinus8;
+    *outBShiftTo8 = g_zVideo_PixelPack.bShiftTo8;
 }
 } // namespace zVideo
 
@@ -3884,12 +3881,14 @@ int ShutdownFrameScratchBuffers() {
 } // namespace zVid
 
 namespace zVideo_FxSurface {
+// Source-faithful helper recovered from address-backed callers in this source file.
 static int TruncateFloat(
     float value
 ) {
     return (int)(value);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static int FxLineOutCode(
     int x,
     int y,
@@ -3914,6 +3913,7 @@ static int FxLineOutCode(
     return outCode;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static unsigned short BlendFxSurfacePixel565(
     unsigned short dst,
     unsigned short color,
@@ -3928,6 +3928,7 @@ static unsigned short BlendFxSurfacePixel565(
     return (unsigned short)(redApplied + (greenDelta & 0xffe0) + blueDelta);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static unsigned short BlendFxSurfacePixel555(
     unsigned short dst,
     unsigned short color,
@@ -3941,6 +3942,7 @@ static unsigned short BlendFxSurfacePixel555(
     return (unsigned short)(dstValue + (redDelta & 0xfc00) + (greenDelta & 0xffe0) + blueDelta);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void DrawFxSurfaceSpanPixel(
     unsigned short *pixel,
     unsigned short color,
@@ -5592,6 +5594,7 @@ extern "C" RECOIL_NO_GS void zVid_TexturePack_EnsureBuiltinTexturePacksLoaded() 
 }
 
 namespace {
+// Source-faithful helper recovered from address-backed callers in this source file.
 zVidImagePartial *LoadTexturePackImageByName(
     zVidTexturePackEntry *entries,
     int count,
@@ -5670,6 +5673,7 @@ zVid_TexturePack_LoadBuiltinImageByName(
 }
 
 namespace zVid_TexturePack {
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ClosePackEntry(
     zVidTexturePackEntry &entry
 ) {
@@ -5684,6 +5688,7 @@ void ClosePackEntry(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void FreePackEntryRecords(
     zVidTexturePackEntry &entry
 ) {
@@ -5872,6 +5877,7 @@ int EndScene() {
 namespace {
 const char *kZVideoDirect3DSourceFile = "D:\\Proj\\GameZRecoil\\zVideo\\zvid_ddd3d.c";
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 DWORD PackFogColorFrom255Floats(
     float red,
     float green,
@@ -5883,16 +5889,18 @@ DWORD PackFogColorFrom255Floats(
     return ((redByte << 8) | greenByte) << 8 | blueByte;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 DWORD PackD3DColorFrom16(
     unsigned int packedColor16,
     int alpha
 ) {
-    const DWORD red = (packedColor16 & g_zVideo_PixelPack_RMask) >> g_zVideo_PixelPack_RShift;
-    const DWORD green = (packedColor16 & g_zVideo_PixelPack_GMask) >> g_zVideo_PixelPack_GShift;
-    const DWORD blue = (packedColor16 & g_zVideo_PixelPack_BMask) << g_zVideo_PixelPack_BShiftTo8;
+    const DWORD red = (packedColor16 & g_zVideo_PixelPack.rMask) >> g_zVideo_PixelPack.packedBase;
+    const DWORD green = (packedColor16 & g_zVideo_PixelPack.gMask) >> g_zVideo_PixelPack.sumMinus8;
+    const DWORD blue = (packedColor16 & g_zVideo_PixelPack.bMask) << g_zVideo_PixelPack.bShiftTo8;
     return ((((red | ((DWORD)(alpha) << 8)) << 8) | green) << 8) | blue;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void WriteFlatTlVertex(
     D3DTLVERTEX &dst,
     const zVideo_XyzVertex &src,
@@ -5906,6 +5914,7 @@ void WriteFlatTlVertex(
     dst.specular = 0xff000000;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void CopyFlatVerticesReverse(
     D3DTLVERTEX *dst,
     const zVideo_XyzVertex *vertices,
@@ -5921,6 +5930,7 @@ void CopyFlatVerticesReverse(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void CopyGouraudVerticesReverse(
     D3DTLVERTEX *dst,
     const zVideo_XyzVertex *vertices,
@@ -5938,6 +5948,7 @@ void CopyGouraudVerticesReverse(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 DWORD PackColorAttrConstant(
     const zVideo_ColorRgbFloat &baseColor,
     float attr1Scale,
@@ -5949,6 +5960,7 @@ DWORD PackColorAttrConstant(
     return alphaBits | (((red << 8) | green) << 8) | blue;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 DWORD PackColorAttrBiased(
     const zVideo_ColorRgbFloat &baseColor,
     float attr1Scale,
@@ -5974,6 +5986,7 @@ DWORD PackColorAttrBiased(
     return alphaBits | (((redByte << 8) | greenByte) << 8) | blueByte;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void FillColorAttrSpecularReverse(
     const float *attr2,
     int vertexCount
@@ -5988,6 +6001,7 @@ void FillColorAttrSpecularReverse(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void FillColorAttrColorsReverse(
     const zVideo_ColorRgbFloat &baseColor,
     const float *attr0,
@@ -6017,6 +6031,7 @@ void FillColorAttrColorsReverse(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void CopyPositionsReverse(
     D3DTLVERTEX *dst,
     const zVideo_XyzVertex *vertices,
@@ -6031,12 +6046,14 @@ void CopyPositionsReverse(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 DWORD PackAlphaWhite(
     float alpha
 ) {
     return ((DWORD)((int)(alpha * 255.0f)) << 24) | 0x00ffffff;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void WriteTexturedTlVertex(
     D3DTLVERTEX &dst,
     const zVideo_XyzVertex &src,
@@ -6053,6 +6070,7 @@ void WriteTexturedTlVertex(
     dst.tv = texCoord.v;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void CopyTexturedVerticesReverse(
     D3DTLVERTEX *dst,
     const zVideo_XyzVertex *vertices,
@@ -6071,6 +6089,7 @@ void CopyTexturedVerticesReverse(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 DWORD PackGrayColor(
     float gray,
     DWORD alphaBits,
@@ -6083,6 +6102,7 @@ DWORD PackGrayColor(
     return alphaBits | (((grayByte << 8) | grayByte) << 8) | grayByte;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 DWORD PackPolygonBiasedColor(
     float grayBase,
     float attr0Value,
@@ -6107,6 +6127,7 @@ DWORD PackPolygonBiasedColor(
     return alphaBits | (((redByte << 8) | greenByte) << 8) | blueByte;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void FillPolygonColorsReverse(
     const float *attr0,
     float grayBase,
@@ -6145,6 +6166,7 @@ void FillPolygonColorsReverse(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void FillPolygonLitColorsReverse(
     const float *attr1,
     const float *attr0,
@@ -6172,6 +6194,7 @@ void FillPolygonLitColorsReverse(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void CopyPositionUvReversePreserveColor(
     D3DTLVERTEX *dst,
     const zVideo_XyzVertex *vertices,
@@ -6191,6 +6214,7 @@ void CopyPositionUvReversePreserveColor(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void CopyPositionUvWithPreparedColorReverse(
     D3DTLVERTEX *dst,
     const zVideo_XyzVertex *vertices,
@@ -6213,6 +6237,7 @@ void CopyPositionUvWithPreparedColorReverse(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void AppendFanCloseVertexIfNeeded(
     D3DTLVERTEX *vertices,
     int &count
@@ -6378,13 +6403,13 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
     DWORD blueMask;
     DWORD alphaMask;
     if (useAlpha == 0) {
-        redBits = g_zVideo_PixelPack_RBits;
-        greenBits = g_zVideo_PixelPack_GBits;
-        blueBits = g_zVideo_PixelPack_BBits;
+        redBits = g_zVideo_PixelPack.rBits;
+        greenBits = g_zVideo_PixelPack.gBits;
+        blueBits = g_zVideo_PixelPack.bBits;
         alphaBits = 0;
-        redMask = g_zVideo_PixelPack_RMask;
-        greenMask = g_zVideo_PixelPack_GMask;
-        blueMask = g_zVideo_PixelPack_BMask;
+        redMask = g_zVideo_PixelPack.rMask;
+        greenMask = g_zVideo_PixelPack.gMask;
+        blueMask = g_zVideo_PixelPack.bMask;
         alphaMask = 0;
     } else {
         desc.ddpfPixelFormat.dwFlags = DDPF_RGB | DDPF_ALPHAPIXELS;
@@ -8456,7 +8481,7 @@ void __fastcall ConvertImagePixelsForTexture(
     unsigned char *dstRowBytes = (unsigned char *)(dstPixels);
 
     if (image->alphaMap == 0) {
-        const unsigned int redGreenMask = g_zVideo_PixelPack_RMask | g_zVideo_PixelPack_GMask;
+        const unsigned int redGreenMask = g_zVideo_PixelPack.rMask | g_zVideo_PixelPack.gMask;
         {
             for (int row = 0; row < height; ++row) {
                 unsigned short *dstCursor = (unsigned short *)(dstRowBytes);
@@ -8465,7 +8490,7 @@ void __fastcall ConvertImagePixelsForTexture(
                         const unsigned short src = *srcPixels++;
                         const unsigned short alphaBit = src != 0 ? 0x8000 : 0;
                         *dstCursor++ =
-                            (unsigned short)((src & g_zVideo_PixelPack_BMask) |
+                            (unsigned short)((src & g_zVideo_PixelPack.bMask) |
                                              ((src >> 1) & (redGreenMask >> 1)) | alphaBit);
                     }
                 }
@@ -8480,7 +8505,7 @@ void __fastcall ConvertImagePixelsForTexture(
     int redAlphaShift;
     unsigned int greenAlphaMask;
     int greenAlphaShift;
-    if (g_zVideo_PixelPack_GBits == 6) {
+    if (g_zVideo_PixelPack.gBits == 6) {
         redAlphaMask = 0xf000;
         redAlphaShift = 4;
         greenAlphaMask = 0x780;
@@ -8500,7 +8525,7 @@ void __fastcall ConvertImagePixelsForTexture(
                     const unsigned short src = *srcPixels++;
                     const unsigned int alpha = (*alphaCursor++ & 0xf0) << 8;
                     *dstCursor++ =
-                        (unsigned short)(((src >> 1) & (g_zVideo_PixelPack_BMask >> 1)) |
+                        (unsigned short)(((src >> 1) & (g_zVideo_PixelPack.bMask >> 1)) |
                                          ((greenAlphaMask & src) >> greenAlphaShift) |
                                          ((redAlphaMask & src) >> redAlphaShift) | alpha);
                 }
@@ -8682,6 +8707,7 @@ const int kPresentLinePageUnlock = 0x91;
 const int kPresentLineBltOrRestore = 0xac;
 
 template <typename InterfaceT>
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ReleaseComInterface(
     InterfaceT *&value
 ) {
@@ -8691,6 +8717,7 @@ void ReleaseComInterface(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool PageUnlockBeforeRelease(
     zVideo_SurfaceStatePartial &state,
     int reportLine
@@ -8712,6 +8739,7 @@ bool PageUnlockBeforeRelease(
     return true;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 bool BltFillWithRestore(
     IDirectDrawSurface3 *surface,
     zVidRect32 *rect,
@@ -8747,174 +8775,6 @@ bool BltFillWithRestore(
     }
 }
 
-struct DirectDrawErrorName {
-    int hresult;
-    const char *name;
-};
-
-const DirectDrawErrorName kDirectDrawErrorNames[] = {
-    {DDERR_GENERIC, "DDERR_GENERIC"},
-    {DDERR_UNSUPPORTED, "DDERR_UNSUPPORTED"},
-    {DDERR_OUTOFMEMORY, "DDERR_OUTOFMEMORY"},
-    {DDERR_NOTINITIALIZED, "DDERR_NOTINITIALIZED"},
-    {DDERR_INVALIDPARAMS, "DDERR_INVALIDPARAMS"},
-    {DDERR_ALREADYINITIALIZED, "DDERR_ALREADYINITIALIZED"},
-    {DDERR_CANNOTATTACHSURFACE, "DDERR_CANNOTATTACHSURFACE"},
-    {DDERR_CANNOTDETACHSURFACE, "DDERR_CANNOTDETACHSURFACE"},
-    {DDERR_CURRENTLYNOTAVAIL, "DDERR_CURRENTLYNOTAVAIL"},
-    {DDERR_EXCEPTION, "DDERR_EXCEPTION"},
-    {DDERR_HEIGHTALIGN, "DDERR_HEIGHTALIGN"},
-    {DDERR_INVALIDCAPS, "DDERR_INVALIDCAPS"},
-    {DDERR_INVALIDCLIPLIST, "DDERR_INVALIDCLIPLIST"},
-    {DDERR_INVALIDMODE, "DDERR_INVALIDMODE"},
-    {DDERR_INVALIDOBJECT, "DDERR_INVALIDOBJECT"},
-    {DDERR_INVALIDPIXELFORMAT, "DDERR_INVALIDPIXELFORMAT"},
-    {DDERR_INVALIDRECT, "DDERR_INVALIDRECT"},
-    {DDERR_LOCKEDSURFACES, "DDERR_LOCKEDSURFACES"},
-    {DDERR_NO3D, "DDERR_NO3D"},
-    {DDERR_NOALPHAHW, "DDERR_NOALPHAHW"},
-    {DDERR_NOCLIPLIST, "DDERR_NOCLIPLIST"},
-    {DDERR_NOCOLORCONVHW, "DDERR_NOCOLORCONVHW"},
-    {DDERR_NOCOOPERATIVELEVELSET, "DDERR_NOCOOPERATIVELEVELSET"},
-    {DDERR_NOCOLORKEY, "DDERR_NOCOLORKEY"},
-    {DDERR_NOCOLORKEYHW, "DDERR_NOCOLORKEYHW"},
-    {DDERR_NODIRECTDRAWSUPPORT, "DDERR_NODIRECTDRAWSUPPORT"},
-    {DDERR_NOEXCLUSIVEMODE, "DDERR_NOEXCLUSIVEMODE"},
-    {DDERR_NOFLIPHW, "DDERR_NOFLIPHW"},
-    {DDERR_NOGDI, "DDERR_NOGDI"},
-    {DDERR_NOMIRRORHW, "DDERR_NOMIRRORHW"},
-    {DDERR_NOTFOUND, "DDERR_NOTFOUND"},
-    {DDERR_NOOVERLAYHW, "DDERR_NOOVERLAYHW"},
-    {DDERR_NORASTEROPHW, "DDERR_NORASTEROPHW"},
-    {DDERR_NOROTATIONHW, "DDERR_NOROTATIONHW"},
-    {DDERR_NOSTRETCHHW, "DDERR_NOSTRETCHHW"},
-    {DDERR_NOT4BITCOLOR, "DDERR_NOT4BITCOLOR"},
-    {DDERR_NOT4BITCOLORINDEX, "DDERR_NOT4BITCOLORINDEX"},
-    {DDERR_NOT8BITCOLOR, "DDERR_NOT8BITCOLOR"},
-    {DDERR_NOTEXTUREHW, "DDERR_NOTEXTUREHW"},
-    {DDERR_NOVSYNCHW, "DDERR_NOVSYNCHW"},
-    {DDERR_NOZBUFFERHW, "DDERR_NOZBUFFERHW"},
-    {DDERR_NOZOVERLAYHW, "DDERR_NOZOVERLAYHW"},
-    {DDERR_OUTOFCAPS, "DDERR_OUTOFCAPS"},
-    {DDERR_OUTOFVIDEOMEMORY, "DDERR_OUTOFVIDEOMEMORY"},
-    {DDERR_OVERLAYCANTCLIP, "DDERR_OVERLAYCANTCLIP"},
-    {DDERR_OVERLAYCOLORKEYONLYONEACTIVE, "DDERR_OVERLAYCOLORKEYONLYONEACTIVE"},
-    {DDERR_PALETTEBUSY, "DDERR_PALETTEBUSY"},
-    {DDERR_COLORKEYNOTSET, "DDERR_COLORKEYNOTSET"},
-    {DDERR_SURFACEALREADYATTACHED, "DDERR_SURFACEALREADYATTACHED"},
-    {DDERR_SURFACEALREADYDEPENDENT, "DDERR_SURFACEALREADYDEPENDENT"},
-    {DDERR_SURFACEBUSY, "DDERR_SURFACEBUSY"},
-    {DDERR_CANTLOCKSURFACE, "DDERR_CANTLOCKSURFACE"},
-    {DDERR_SURFACEISOBSCURED, "DDERR_SURFACEISOBSCURED"},
-    {DDERR_SURFACELOST, "DDERR_SURFACELOST"},
-    {DDERR_SURFACENOTATTACHED, "DDERR_SURFACENOTATTACHED"},
-    {DDERR_TOOBIGHEIGHT, "DDERR_TOOBIGHEIGHT"},
-    {DDERR_TOOBIGSIZE, "DDERR_TOOBIGSIZE"},
-    {DDERR_TOOBIGWIDTH, "DDERR_TOOBIGWIDTH"},
-    {DDERR_UNSUPPORTEDFORMAT, "DDERR_UNSUPPORTEDFORMAT"},
-    {DDERR_UNSUPPORTEDMASK, "DDERR_UNSUPPORTEDMASK"},
-    {DDERR_VERTICALBLANKINPROGRESS, "DDERR_VERTICALBLANKINPROGRESS"},
-    {DDERR_WASSTILLDRAWING, "DDERR_WASSTILLDRAWING"},
-    {DDERR_CANTPAGELOCK, "DDERR_CANTPAGELOCK"},
-    {DDERR_CANTPAGEUNLOCK, "DDERR_CANTPAGEUNLOCK"},
-    {DDERR_NOTPAGELOCKED, "DDERR_NOTPAGELOCKED"},
-    {DDERR_XALIGN, "DDERR_XALIGN"},
-    {DDERR_INVALIDDIRECTDRAWGUID, "DDERR_INVALIDDIRECTDRAWGUID"},
-    {DDERR_DIRECTDRAWALREADYCREATED, "DDERR_DIRECTDRAWALREADYCREATED"},
-    {DDERR_NODIRECTDRAWHW, "DDERR_NODIRECTDRAWHW"},
-    {DDERR_PRIMARYSURFACEALREADYEXISTS, "DDERR_PRIMARYSURFACEALREADYEXISTS"},
-    {DDERR_NOEMULATION, "DDERR_NOEMULATION"},
-    {DDERR_REGIONTOOSMALL, "DDERR_REGIONTOOSMALL"},
-    {DDERR_CLIPPERISUSINGHWND, "DDERR_CLIPPERISUSINGHWND"},
-    {DDERR_NOCLIPPERATTACHED, "DDERR_NOCLIPPERATTACHED"},
-    {DDERR_NOHWND, "DDERR_NOHWND"},
-    {DDERR_HWNDSUBCLASSED, "DDERR_HWNDSUBCLASSED"},
-    {DDERR_HWNDALREADYSET, "DDERR_HWNDALREADYSET"},
-    {DDERR_NOPALETTEATTACHED, "DDERR_NOPALETTEATTACHED"},
-    {DDERR_NOPALETTEHW, "DDERR_NOPALETTEHW"},
-    {DDERR_BLTFASTCANTCLIP, "DDERR_BLTFASTCANTCLIP"},
-    {DDERR_NOBLTHW, "DDERR_NOBLTHW"},
-    {DDERR_NODDROPSHW, "DDERR_NODDROPSHW"},
-    {DDERR_OVERLAYNOTVISIBLE, "DDERR_OVERLAYNOTVISIBLE"},
-    {DDERR_INVALIDPOSITION, "DDERR_INVALIDPOSITION"},
-    {DDERR_NOTAOVERLAYSURFACE, "DDERR_NOAOVERLAYSURFACE"},
-    {DDERR_EXCLUSIVEMODEALREADYSET, "DDERR_EXCLUSIVEMODEALREADYSET"},
-    {DDERR_NOTFLIPPABLE, "DDERR_NOTFLIPPABLE"},
-    {DDERR_CANTDUPLICATE, "DDERR_CANTDUPLICATE"},
-    {DDERR_NOTLOCKED, "DDERR_NOTLOCKED"},
-    {DDERR_CANTCREATEDC, "DDERR_CANTCREATEDC"},
-    {DDERR_NODC, "DDERR_NODIRECTDC"},
-    {DDERR_WRONGMODE, "DDERR_WRONGMODE"},
-    {DDERR_IMPLICITLYCREATED, "DDERR_IMPLICITLYCREATED"},
-    {DDERR_NOTPALETTIZED, "DDERR_NOTPALETTIZED"},
-    {DDERR_UNSUPPORTEDMODE, "DDERR_UNSUPPORTEDMODE"},
-    {DDERR_NOMIPMAPHW, "DDERR_NOMIPMAPHW"},
-    {DDERR_INVALIDSURFACETYPE, "DDERR_INVALIDSURFACETYPE"},
-    {DDERR_DCALREADYCREATED, "DDERR_DCALREADYCREATED"},
-    {D3DERR_BADMAJORVERSION, "D3DERR_BADMAJORVERSION"},
-    {D3DERR_BADMINORVERSION, "D3DERR_BADMINORVERSION"},
-    {D3DERR_INVALID_DEVICE, "D3DERR_INVALID_DEVICE"},
-    {D3DERR_EXECUTE_CREATE_FAILED, "D3DERR_EXECUTE_CREATE_FAILED"},
-    {D3DERR_EXECUTE_DESTROY_FAILED, "D3DERR_EXECUTE_DESTROY_FAILED"},
-    {D3DERR_EXECUTE_LOCK_FAILED, "D3DERR_EXECUTE_LOCK_FAILED"},
-    {D3DERR_EXECUTE_UNLOCK_FAILED, "D3DERR_EXECUTE_UNLOCK_FAILED"},
-    {D3DERR_EXECUTE_LOCKED, "D3DERR_EXECUTE_LOCKED"},
-    {D3DERR_EXECUTE_NOT_LOCKED, "D3DERR_EXECUTE_NOT_LOCKED"},
-    {D3DERR_EXECUTE_FAILED, "D3DERR_EXECUTE_FAILED"},
-    {D3DERR_EXECUTE_CLIPPED_FAILED, "D3DERR_EXECUTE_CLIPPED_FAILED"},
-    {D3DERR_TEXTURE_NO_SUPPORT, "D3DERR_TEXTURE_NO_SUPPORT"},
-    {D3DERR_TEXTURE_CREATE_FAILED, "D3DERR_TEXTURE_CREATE_FAILED"},
-    {D3DERR_TEXTURE_DESTROY_FAILED, "D3DERR_TEXTURE_DESTROY_FAILED"},
-    {D3DERR_TEXTURE_LOCK_FAILED, "D3DERR_TEXTURE_LOCK_FAILED"},
-    {D3DERR_TEXTURE_UNLOCK_FAILED, "D3DERR_TEXTURE_UNLOCK_FAILED"},
-    {D3DERR_TEXTURE_LOAD_FAILED, "D3DERR_TEXTURE_LOAD_FAILED"},
-    {D3DERR_TEXTURE_SWAP_FAILED, "D3DERR_TEXTURE_SWAP_FAILED"},
-    {D3DERR_TEXTURE_LOCKED, "D3DERR_TEXTURE_LOCKED"},
-    {D3DERR_TEXTURE_NOT_LOCKED, "D3DERR_TEXTURE_NOT_LOCKED"},
-    {D3DERR_TEXTURE_GETSURF_FAILED, "D3DERR_TEXTURE_GETSURF_FAILED"},
-    {D3DERR_MATRIX_CREATE_FAILED, "D3DERR_MATRIX_CREATE_FAILED"},
-    {D3DERR_MATRIX_DESTROY_FAILED, "D3DERR_MATRIX_DESTROY_FAILED"},
-    {D3DERR_MATRIX_SETDATA_FAILED, "D3DERR_MATRIX_SETDATA_FAILED"},
-    {D3DERR_MATRIX_GETDATA_FAILED, "D3DERR_MATRIX_GETDATA_FAILED"},
-    {D3DERR_SETVIEWPORTDATA_FAILED, "D3DERR_SETVIEWPORTDATA_FAILED"},
-    {D3DERR_INVALIDCURRENTVIEWPORT, "D3DERR_INVALIDCURRENTVIEWPORT"},
-    {D3DERR_INVALIDPRIMITIVETYPE, "D3DERR_INVALIDPRIMITIVETYPE"},
-    {D3DERR_INVALIDVERTEXTYPE, "D3DERR_INVALIDVERTEXTYPE"},
-    {D3DERR_TEXTURE_BADSIZE, "D3DERR_TEXTURE_BADSIZE"},
-    {D3DERR_MATERIAL_CREATE_FAILED, "D3DERR_MATERIAL_CREATE_FAILED"},
-    {D3DERR_MATERIAL_DESTROY_FAILED, "D3DERR_MATERIAL_DESTROY_FAILED"},
-    {D3DERR_MATERIAL_SETDATA_FAILED, "D3DERR_MATERIAL_SETDATA_FAILED"},
-    {D3DERR_MATERIAL_GETDATA_FAILED, "D3DERR_MATERIAL_GETDATA_FAILED"},
-    {D3DERR_ZBUFF_NEEDS_SYSTEMMEMORY, "D3DERR_ZBUFF_NEEDS_SYSTEMMEMORY"},
-    {D3DERR_ZBUFF_NEEDS_VIDEOMEMORY, "D3DERR_ZBUFF_NEEDS_VIDEOMEMORY"},
-    {D3DERR_LIGHT_SET_FAILED, "D3DERR_LIGHT_SET_FAILED"},
-    {D3DERR_SCENE_IN_SCENE, "D3DERR_SCENE_IN_SCENE"},
-    {D3DERR_SCENE_NOT_IN_SCENE, "D3DERR_SCENE_NOT_IN_SCENE"},
-    {D3DERR_SCENE_BEGIN_FAILED, "D3DERR_SCENE_BEGIN_FAILED"},
-    {D3DERR_SCENE_END_FAILED, "D3DERR_SCENE_END_FAILED"},
-    {D3DERR_INBEGIN, "D3DERR_INBEGIN"},
-    {D3DERR_NOTINBEGIN, "D3DERR_NOTINBEGIN"},
-    {D3DERR_NOVIEWPORTS, "D3DERR_NOVIEWPORTS"},
-    {D3DERR_VIEWPORTDATANOTSET, "D3DERR_VIEWPORTDATANOTSET"},
-};
-
-const char *GetDirectDrawErrorName(
-    int hresult
-) {
-    {
-        int entryIndex1;
-        for (entryIndex1 = 0;
-            entryIndex1 < (int)(sizeof(kDirectDrawErrorNames) / sizeof((kDirectDrawErrorNames)[0]));
-            ++entryIndex1) {
-            const DirectDrawErrorName &entry = (kDirectDrawErrorNames)[entryIndex1];
-            if (entry.hresult == hresult) {
-                return entry.name;
-            }
-        }
-    }
-
-    return "Unknown Error";
-}
 } // namespace
 
 // Reimplements 0x4a93d0: zVideo_dd::EnumDirectDrawDeviceCallback
@@ -10737,7 +10597,11 @@ int __fastcall GetHwApiDeviceFeatureFlags(
     return g_zVideo_HwApiDeviceTable[deviceIndex].m_deviceFeatureFlags;
 }
 
-// Reimplements 0x4ad6a0: zVideo_dd::ReportError
+/**
+ * Reimplements 0x4ad6a0: zVideo_dd::ReportError.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: maps DirectDraw/Direct3D HRESULTs to report text and emits the legacy DirectDraw error report.
+ */
 RECOIL_NO_GS int __fastcall ReportError(
     int hresult,
     const char *sourceFile,
@@ -10747,10 +10611,446 @@ RECOIL_NO_GS int __fastcall ReportError(
         return 0;
     }
 
+    const char *errorNameFormat;
+    switch (hresult) {
+    case DDERR_GENERIC:
+        errorNameFormat = "DDERR_GENERIC";
+        break;
+    case DDERR_UNSUPPORTED:
+        errorNameFormat = "DDERR_UNSUPPORTED";
+        break;
+    case DDERR_OUTOFMEMORY:
+        errorNameFormat = "DDERR_OUTOFMEMORY";
+        break;
+    case DDERR_NOTINITIALIZED:
+        errorNameFormat = "DDERR_NOTINITIALIZED";
+        break;
+    case DDERR_INVALIDPARAMS:
+        errorNameFormat = "DDERR_INVALIDPARAMS";
+        break;
+    case DDERR_ALREADYINITIALIZED:
+        errorNameFormat = "DDERR_ALREADYINITIALIZED";
+        break;
+    case DDERR_CANNOTATTACHSURFACE:
+        errorNameFormat = "DDERR_CANNOTATTACHSURFACE";
+        break;
+    case DDERR_CANNOTDETACHSURFACE:
+        errorNameFormat = "DDERR_CANNOTDETACHSURFACE";
+        break;
+    case DDERR_CURRENTLYNOTAVAIL:
+        errorNameFormat = "DDERR_CURRENTLYNOTAVAIL";
+        break;
+    case DDERR_EXCEPTION:
+        errorNameFormat = "DDERR_EXCEPTION";
+        break;
+    case DDERR_HEIGHTALIGN:
+        errorNameFormat = "DDERR_HEIGHTALIGN";
+        break;
+    case DDERR_INVALIDCAPS:
+        errorNameFormat = "DDERR_INVALIDCAPS";
+        break;
+    case DDERR_INVALIDCLIPLIST:
+        errorNameFormat = "DDERR_INVALIDCLIPLIST";
+        break;
+    case DDERR_INVALIDMODE:
+        errorNameFormat = "DDERR_INVALIDMODE";
+        break;
+    case DDERR_INVALIDOBJECT:
+        errorNameFormat = "DDERR_INVALIDOBJECT";
+        break;
+    case DDERR_INVALIDPIXELFORMAT:
+        errorNameFormat = "DDERR_INVALIDPIXELFORMAT";
+        break;
+    case DDERR_INVALIDRECT:
+        errorNameFormat = "DDERR_INVALIDRECT";
+        break;
+    case DDERR_LOCKEDSURFACES:
+        errorNameFormat = "DDERR_LOCKEDSURFACES";
+        break;
+    case DDERR_NO3D:
+        errorNameFormat = "DDERR_NO3D";
+        break;
+    case DDERR_NOALPHAHW:
+        errorNameFormat = "DDERR_NOALPHAHW";
+        break;
+    case DDERR_NOCLIPLIST:
+        errorNameFormat = "DDERR_NOCLIPLIST";
+        break;
+    case DDERR_NOCOLORCONVHW:
+        errorNameFormat = "DDERR_NOCOLORCONVHW";
+        break;
+    case DDERR_NOCOOPERATIVELEVELSET:
+        errorNameFormat = "DDERR_NOCOOPERATIVELEVELSET";
+        break;
+    case DDERR_NOCOLORKEY:
+        errorNameFormat = "DDERR_NOCOLORKEY";
+        break;
+    case DDERR_NOCOLORKEYHW:
+        errorNameFormat = "DDERR_NOCOLORKEYHW";
+        break;
+    case DDERR_NODIRECTDRAWSUPPORT:
+        errorNameFormat = "DDERR_NODIRECTDRAWSUPPORT";
+        break;
+    case DDERR_NOEXCLUSIVEMODE:
+        errorNameFormat = "DDERR_NOEXCLUSIVEMODE";
+        break;
+    case DDERR_NOFLIPHW:
+        errorNameFormat = "DDERR_NOFLIPHW";
+        break;
+    case DDERR_NOGDI:
+        errorNameFormat = "DDERR_NOGDI";
+        break;
+    case DDERR_NOMIRRORHW:
+        errorNameFormat = "DDERR_NOMIRRORHW";
+        break;
+    case DDERR_NOTFOUND:
+        errorNameFormat = "DDERR_NOTFOUND";
+        break;
+    case DDERR_NOOVERLAYHW:
+        errorNameFormat = "DDERR_NOOVERLAYHW";
+        break;
+    case DDERR_NORASTEROPHW:
+        errorNameFormat = "DDERR_NORASTEROPHW";
+        break;
+    case DDERR_NOROTATIONHW:
+        errorNameFormat = "DDERR_NOROTATIONHW";
+        break;
+    case DDERR_NOSTRETCHHW:
+        errorNameFormat = "DDERR_NOSTRETCHHW";
+        break;
+    case DDERR_NOT4BITCOLOR:
+        errorNameFormat = "DDERR_NOT4BITCOLOR";
+        break;
+    case DDERR_NOT4BITCOLORINDEX:
+        errorNameFormat = "DDERR_NOT4BITCOLORINDEX";
+        break;
+    case DDERR_NOT8BITCOLOR:
+        errorNameFormat = "DDERR_NOT8BITCOLOR";
+        break;
+    case DDERR_NOTEXTUREHW:
+        errorNameFormat = "DDERR_NOTEXTUREHW";
+        break;
+    case DDERR_NOVSYNCHW:
+        errorNameFormat = "DDERR_NOVSYNCHW";
+        break;
+    case DDERR_NOZBUFFERHW:
+        errorNameFormat = "DDERR_NOZBUFFERHW";
+        break;
+    case DDERR_NOZOVERLAYHW:
+        errorNameFormat = "DDERR_NOZOVERLAYHW";
+        break;
+    case DDERR_OUTOFCAPS:
+        errorNameFormat = "DDERR_OUTOFCAPS";
+        break;
+    case DDERR_OUTOFVIDEOMEMORY:
+        errorNameFormat = "DDERR_OUTOFVIDEOMEMORY";
+        break;
+    case DDERR_OVERLAYCANTCLIP:
+        errorNameFormat = "DDERR_OVERLAYCANTCLIP";
+        break;
+    case DDERR_OVERLAYCOLORKEYONLYONEACTIVE:
+        errorNameFormat = "DDERR_OVERLAYCOLORKEYONLYONEACTIVE";
+        break;
+    case DDERR_PALETTEBUSY:
+        errorNameFormat = "DDERR_PALETTEBUSY";
+        break;
+    case DDERR_COLORKEYNOTSET:
+        errorNameFormat = "DDERR_COLORKEYNOTSET";
+        break;
+    case DDERR_SURFACEALREADYATTACHED:
+        errorNameFormat = "DDERR_SURFACEALREADYATTACHED";
+        break;
+    case DDERR_SURFACEALREADYDEPENDENT:
+        errorNameFormat = "DDERR_SURFACEALREADYDEPENDENT";
+        break;
+    case DDERR_SURFACEBUSY:
+        errorNameFormat = "DDERR_SURFACEBUSY";
+        break;
+    case DDERR_CANTLOCKSURFACE:
+        errorNameFormat = "DDERR_CANTLOCKSURFACE";
+        break;
+    case DDERR_SURFACEISOBSCURED:
+        errorNameFormat = "DDERR_SURFACEISOBSCURED";
+        break;
+    case DDERR_SURFACELOST:
+        errorNameFormat = "DDERR_SURFACELOST";
+        break;
+    case DDERR_SURFACENOTATTACHED:
+        errorNameFormat = "DDERR_SURFACENOTATTACHED";
+        break;
+    case DDERR_TOOBIGHEIGHT:
+        errorNameFormat = "DDERR_TOOBIGHEIGHT";
+        break;
+    case DDERR_TOOBIGSIZE:
+        errorNameFormat = "DDERR_TOOBIGSIZE";
+        break;
+    case DDERR_TOOBIGWIDTH:
+        errorNameFormat = "DDERR_TOOBIGWIDTH";
+        break;
+    case DDERR_UNSUPPORTEDFORMAT:
+        errorNameFormat = "DDERR_UNSUPPORTEDFORMAT";
+        break;
+    case DDERR_UNSUPPORTEDMASK:
+        errorNameFormat = "DDERR_UNSUPPORTEDMASK";
+        break;
+    case DDERR_VERTICALBLANKINPROGRESS:
+        errorNameFormat = "DDERR_VERTICALBLANKINPROGRESS";
+        break;
+    case DDERR_WASSTILLDRAWING:
+        errorNameFormat = "DDERR_WASSTILLDRAWING";
+        break;
+    case DDERR_CANTPAGELOCK:
+        errorNameFormat = "DDERR_CANTPAGELOCK";
+        break;
+    case DDERR_CANTPAGEUNLOCK:
+        errorNameFormat = "DDERR_CANTPAGEUNLOCK";
+        break;
+    case DDERR_NOTPAGELOCKED:
+        errorNameFormat = "DDERR_NOTPAGELOCKED";
+        break;
+    case DDERR_XALIGN:
+        errorNameFormat = "DDERR_XALIGN";
+        break;
+    case DDERR_INVALIDDIRECTDRAWGUID:
+        errorNameFormat = "DDERR_INVALIDDIRECTDRAWGUID";
+        break;
+    case DDERR_DIRECTDRAWALREADYCREATED:
+        errorNameFormat = "DDERR_DIRECTDRAWALREADYCREATED";
+        break;
+    case DDERR_NODIRECTDRAWHW:
+        errorNameFormat = "DDERR_NODIRECTDRAWHW";
+        break;
+    case DDERR_PRIMARYSURFACEALREADYEXISTS:
+        errorNameFormat = "DDERR_PRIMARYSURFACEALREADYEXISTS";
+        break;
+    case DDERR_NOEMULATION:
+        errorNameFormat = "DDERR_NOEMULATION";
+        break;
+    case DDERR_REGIONTOOSMALL:
+        errorNameFormat = "DDERR_REGIONTOOSMALL";
+        break;
+    case DDERR_CLIPPERISUSINGHWND:
+        errorNameFormat = "DDERR_CLIPPERISUSINGHWND";
+        break;
+    case DDERR_NOCLIPPERATTACHED:
+        errorNameFormat = "DDERR_NOCLIPPERATTACHED";
+        break;
+    case DDERR_NOHWND:
+        errorNameFormat = "DDERR_NOHWND";
+        break;
+    case DDERR_HWNDSUBCLASSED:
+        errorNameFormat = "DDERR_HWNDSUBCLASSED";
+        break;
+    case DDERR_HWNDALREADYSET:
+        errorNameFormat = "DDERR_HWNDALREADYSET";
+        break;
+    case DDERR_NOPALETTEATTACHED:
+        errorNameFormat = "DDERR_NOPALETTEATTACHED";
+        break;
+    case DDERR_NOPALETTEHW:
+        errorNameFormat = "DDERR_NOPALETTEHW";
+        break;
+    case DDERR_BLTFASTCANTCLIP:
+        errorNameFormat = "DDERR_BLTFASTCANTCLIP";
+        break;
+    case DDERR_NOBLTHW:
+        errorNameFormat = "DDERR_NOBLTHW";
+        break;
+    case DDERR_NODDROPSHW:
+        errorNameFormat = "DDERR_NODDROPSHW";
+        break;
+    case DDERR_OVERLAYNOTVISIBLE:
+        errorNameFormat = "DDERR_OVERLAYNOTVISIBLE";
+        break;
+    case DDERR_INVALIDPOSITION:
+        errorNameFormat = "DDERR_INVALIDPOSITION";
+        break;
+    case DDERR_NOTAOVERLAYSURFACE:
+        errorNameFormat = "DDERR_NOAOVERLAYSURFACE";
+        break;
+    case DDERR_EXCLUSIVEMODEALREADYSET:
+        errorNameFormat = "DDERR_EXCLUSIVEMODEALREADYSET";
+        break;
+    case DDERR_NOTFLIPPABLE:
+        errorNameFormat = "DDERR_NOTFLIPPABLE";
+        break;
+    case DDERR_CANTDUPLICATE:
+        errorNameFormat = "DDERR_CANTDUPLICATE";
+        break;
+    case DDERR_NOTLOCKED:
+        errorNameFormat = "DDERR_NOTLOCKED";
+        break;
+    case DDERR_CANTCREATEDC:
+        errorNameFormat = "DDERR_CANTCREATEDC";
+        break;
+    case DDERR_NODC:
+        errorNameFormat = "DDERR_NODIRECTDC";
+        break;
+    case DDERR_WRONGMODE:
+        errorNameFormat = "DDERR_WRONGMODE";
+        break;
+    case DDERR_IMPLICITLYCREATED:
+        errorNameFormat = "DDERR_IMPLICITLYCREATED";
+        break;
+    case DDERR_NOTPALETTIZED:
+        errorNameFormat = "DDERR_NOTPALETTIZED";
+        break;
+    case DDERR_UNSUPPORTEDMODE:
+        errorNameFormat = "DDERR_UNSUPPORTEDMODE";
+        break;
+    case DDERR_NOMIPMAPHW:
+        errorNameFormat = "DDERR_NOMIPMAPHW";
+        break;
+    case DDERR_INVALIDSURFACETYPE:
+        errorNameFormat = "DDERR_INVALIDSURFACETYPE";
+        break;
+    case DDERR_DCALREADYCREATED:
+        errorNameFormat = "DDERR_DCALREADYCREATED";
+        break;
+    case D3DERR_BADMAJORVERSION:
+        errorNameFormat = "D3DERR_BADMAJORVERSION";
+        break;
+    case D3DERR_BADMINORVERSION:
+        errorNameFormat = "D3DERR_BADMINORVERSION";
+        break;
+    case D3DERR_INVALID_DEVICE:
+        errorNameFormat = "D3DERR_INVALID_DEVICE";
+        break;
+    case D3DERR_EXECUTE_CREATE_FAILED:
+        errorNameFormat = "D3DERR_EXECUTE_CREATE_FAILED";
+        break;
+    case D3DERR_EXECUTE_DESTROY_FAILED:
+        errorNameFormat = "D3DERR_EXECUTE_DESTROY_FAILED";
+        break;
+    case D3DERR_EXECUTE_LOCK_FAILED:
+        errorNameFormat = "D3DERR_EXECUTE_LOCK_FAILED";
+        break;
+    case D3DERR_EXECUTE_UNLOCK_FAILED:
+        errorNameFormat = "D3DERR_EXECUTE_UNLOCK_FAILED";
+        break;
+    case D3DERR_EXECUTE_LOCKED:
+        errorNameFormat = "D3DERR_EXECUTE_LOCKED";
+        break;
+    case D3DERR_EXECUTE_NOT_LOCKED:
+        errorNameFormat = "D3DERR_EXECUTE_NOT_LOCKED";
+        break;
+    case D3DERR_EXECUTE_FAILED:
+        errorNameFormat = "D3DERR_EXECUTE_FAILED";
+        break;
+    case D3DERR_EXECUTE_CLIPPED_FAILED:
+        errorNameFormat = "D3DERR_EXECUTE_CLIPPED_FAILED";
+        break;
+    case D3DERR_TEXTURE_NO_SUPPORT:
+        errorNameFormat = "D3DERR_TEXTURE_NO_SUPPORT";
+        break;
+    case D3DERR_TEXTURE_CREATE_FAILED:
+        errorNameFormat = "D3DERR_TEXTURE_CREATE_FAILED";
+        break;
+    case D3DERR_TEXTURE_DESTROY_FAILED:
+        errorNameFormat = "D3DERR_TEXTURE_DESTROY_FAILED";
+        break;
+    case D3DERR_TEXTURE_LOCK_FAILED:
+        errorNameFormat = "D3DERR_TEXTURE_LOCK_FAILED";
+        break;
+    case D3DERR_TEXTURE_UNLOCK_FAILED:
+        errorNameFormat = "D3DERR_TEXTURE_UNLOCK_FAILED";
+        break;
+    case D3DERR_TEXTURE_LOAD_FAILED:
+        errorNameFormat = "D3DERR_TEXTURE_LOAD_FAILED";
+        break;
+    case D3DERR_TEXTURE_SWAP_FAILED:
+        errorNameFormat = "D3DERR_TEXTURE_SWAP_FAILED";
+        break;
+    case D3DERR_TEXTURE_LOCKED:
+        errorNameFormat = "D3DERR_TEXTURE_LOCKED";
+        break;
+    case D3DERR_TEXTURE_NOT_LOCKED:
+        errorNameFormat = "D3DERR_TEXTURE_NOT_LOCKED";
+        break;
+    case D3DERR_TEXTURE_GETSURF_FAILED:
+        errorNameFormat = "D3DERR_TEXTURE_GETSURF_FAILED";
+        break;
+    case D3DERR_MATRIX_CREATE_FAILED:
+        errorNameFormat = "D3DERR_MATRIX_CREATE_FAILED";
+        break;
+    case D3DERR_MATRIX_DESTROY_FAILED:
+        errorNameFormat = "D3DERR_MATRIX_DESTROY_FAILED";
+        break;
+    case D3DERR_MATRIX_SETDATA_FAILED:
+        errorNameFormat = "D3DERR_MATRIX_SETDATA_FAILED";
+        break;
+    case D3DERR_MATRIX_GETDATA_FAILED:
+        errorNameFormat = "D3DERR_MATRIX_GETDATA_FAILED";
+        break;
+    case D3DERR_SETVIEWPORTDATA_FAILED:
+        errorNameFormat = "D3DERR_SETVIEWPORTDATA_FAILED";
+        break;
+    case D3DERR_INVALIDCURRENTVIEWPORT:
+        errorNameFormat = "D3DERR_INVALIDCURRENTVIEWPORT";
+        break;
+    case D3DERR_INVALIDPRIMITIVETYPE:
+        errorNameFormat = "D3DERR_INVALIDPRIMITIVETYPE";
+        break;
+    case D3DERR_INVALIDVERTEXTYPE:
+        errorNameFormat = "D3DERR_INVALIDVERTEXTYPE";
+        break;
+    case D3DERR_TEXTURE_BADSIZE:
+        errorNameFormat = "D3DERR_TEXTURE_BADSIZE";
+        break;
+    case D3DERR_MATERIAL_CREATE_FAILED:
+        errorNameFormat = "D3DERR_MATERIAL_CREATE_FAILED";
+        break;
+    case D3DERR_MATERIAL_DESTROY_FAILED:
+        errorNameFormat = "D3DERR_MATERIAL_DESTROY_FAILED";
+        break;
+    case D3DERR_MATERIAL_SETDATA_FAILED:
+        errorNameFormat = "D3DERR_MATERIAL_SETDATA_FAILED";
+        break;
+    case D3DERR_MATERIAL_GETDATA_FAILED:
+        errorNameFormat = "D3DERR_MATERIAL_GETDATA_FAILED";
+        break;
+    case D3DERR_ZBUFF_NEEDS_SYSTEMMEMORY:
+        errorNameFormat = "D3DERR_ZBUFF_NEEDS_SYSTEMMEMORY";
+        break;
+    case D3DERR_ZBUFF_NEEDS_VIDEOMEMORY:
+        errorNameFormat = "D3DERR_ZBUFF_NEEDS_VIDEOMEMORY";
+        break;
+    case D3DERR_LIGHT_SET_FAILED:
+        errorNameFormat = "D3DERR_LIGHT_SET_FAILED";
+        break;
+    case D3DERR_SCENE_IN_SCENE:
+        errorNameFormat = "D3DERR_SCENE_IN_SCENE";
+        break;
+    case D3DERR_SCENE_NOT_IN_SCENE:
+        errorNameFormat = "D3DERR_SCENE_NOT_IN_SCENE";
+        break;
+    case D3DERR_SCENE_BEGIN_FAILED:
+        errorNameFormat = "D3DERR_SCENE_BEGIN_FAILED";
+        break;
+    case D3DERR_SCENE_END_FAILED:
+        errorNameFormat = "D3DERR_SCENE_END_FAILED";
+        break;
+    case D3DERR_INBEGIN:
+        errorNameFormat = "D3DERR_INBEGIN";
+        break;
+    case D3DERR_NOTINBEGIN:
+        errorNameFormat = "D3DERR_NOTINBEGIN";
+        break;
+    case D3DERR_NOVIEWPORTS:
+        errorNameFormat = "D3DERR_NOVIEWPORTS";
+        break;
+    case D3DERR_VIEWPORTDATANOTSET:
+        errorNameFormat = "D3DERR_VIEWPORTDATANOTSET";
+        break;
+    default:
+        errorNameFormat = "Unknown Error";
+        break;
+    }
+
     char errorNameBuffer[0x100];
     sprintf(
         errorNameBuffer,
-        GetDirectDrawErrorName(hresult)
+        errorNameFormat
     );
 
     if (hresult == DDERR_OUTOFVIDEOMEMORY) {
@@ -10759,20 +11059,16 @@ RECOIL_NO_GS int __fastcall ReportError(
         int videoMemTotalBytes = 0;
         int videoMemFreeBytes = 0;
 
-        if (g_zVideo_pfnQueryTextureMemoryBytes != 0) {
-            g_zVideo_pfnQueryTextureMemoryBytes(
-                -1,
-                &textureMemTotalBytes,
-                &textureMemFreeBytes
-            );
-        }
-        if (g_zVideo_pfnQueryDeviceVideoMemoryBytes != 0) {
-            g_zVideo_pfnQueryDeviceVideoMemoryBytes(
-                -1,
-                &videoMemTotalBytes,
-                &videoMemFreeBytes
-            );
-        }
+        g_zVideo_pfnQueryTextureMemoryBytes(
+            -1,
+            &textureMemTotalBytes,
+            &textureMemFreeBytes
+        );
+        g_zVideo_pfnQueryDeviceVideoMemoryBytes(
+            -1,
+            &videoMemTotalBytes,
+            &videoMemFreeBytes
+        );
     }
 
     char reportMessageBuffer[0x100];

@@ -50,8 +50,8 @@ int g_zInput_MouseClientCenterX = 0;
 int g_zInput_MouseClientCenterY = 0;
 float g_zInput_MouseInvClientCenterX = 0.0f;
 float g_zInput_MouseInvClientCenterY = 0.0f;
-float g_zInput_MouseSensitivityX = 1.0f;
-float g_zInput_MouseSensitivityY = 1.0f;
+float g_zInput_MouseSensitivityX = 1.3f;
+float g_zInput_MouseSensitivityY = 1.3f;
 int g_zInput_MouseWrapModeFlag = 0;
 HWND g_zInput_hWnd = 0;
 int g_zInput_KbdSystemReady = 0;
@@ -107,6 +107,7 @@ struct BindMapDefaultBindingSpec {
     int mouseSlot;
 };
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 inline void CopyCommandSlots(
     void *dest,
     const void *src,
@@ -119,6 +120,7 @@ inline void CopyCommandSlots(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 zInput_BindMapOverlayStackNode *__fastcall BindMapOverlay_DetachHead(
     zInput_BindMapOverlayStackNode **head
 ) {
@@ -137,6 +139,7 @@ zInput_BindMapOverlayStackNode *__fastcall BindMapOverlay_DetachHead(
     return node;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void __fastcall BindMapOverlay_DeleteNodeList(
     zInput_BindMapOverlayStackNode **head
 ) {
@@ -657,10 +660,10 @@ int zInput_BindGroupInfoVec::Count() {
  */
 void zInput_BindGroupInfo::Destroy() {
     title.Empty();
-    ::operator delete(commandIdsBegin);
-    commandIdsBegin = 0;
-    commandIdsEnd = 0;
-    commandIdsCapacity = 0;
+    ::operator delete(commandIds.begin);
+    commandIds.begin = 0;
+    commandIds.end = 0;
+    commandIds.capacity = 0;
     title.CString::~CString();
 }
 
@@ -769,6 +772,7 @@ zInput_DiEffect *__fastcall zInput_DI_CreateForceFeedbackEffect(
     return result < 0 ? 0 : outEffect;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static float ClampForceFeedbackGain(
     float gain
 ) {
@@ -782,6 +786,7 @@ static float ClampForceFeedbackGain(
     return gain;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static float ClampForceFeedbackGainRange(
     float gain,
     float minGain,
@@ -797,6 +802,7 @@ static float ClampForceFeedbackGainRange(
     return gain;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static float WrapForceFeedbackPolarRadians(
     float angle
 ) {
@@ -810,6 +816,7 @@ static float WrapForceFeedbackPolarRadians(
     return angle;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static int ForceFeedbackDirectionFromRadians(
     float angle
 ) {
@@ -817,6 +824,7 @@ static int ForceFeedbackDirectionFromRadians(
     return (int)(angle * kRadToDeg) * 100;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static int ForceFeedbackDirectionFromImpact(
     const zVec3 *worldPosXZ,
     bool sourceToPlayer
@@ -841,6 +849,7 @@ static int ForceFeedbackDirectionFromImpact(
     return ForceFeedbackDirectionFromRadians(relativeBearing);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static void SetAndStartDirectionalForceFeedbackEffect(
     zInput_DiEffect *effect,
     int direction,
@@ -863,6 +872,7 @@ static void SetAndStartDirectionalForceFeedbackEffect(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 static float FastPitchLowpassFactor(
     float deltaTime
 ) {
@@ -1092,6 +1102,7 @@ void zInput_FFEffectSet::PlayDamageHitEffect(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void zInput_DI_PlayCollisionImpactEffect(
     zInput_FFEffectSet *effectSet,
     const zVec3 *impactWorldPosXZ,
@@ -1103,6 +1114,7 @@ void zInput_DI_PlayCollisionImpactEffect(
     );
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void zInput_DI_PlayDamageHitEffect(
     zInput_FFEffectSet *effectSet,
     const zVec3 *damageSourceWorldPosXZ,
@@ -1374,6 +1386,7 @@ int IsUnsuspended(
     return (~flags & kSuspendFlag) >> 1;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 const char *GetDirectInputErrorName(
     int hresult
 ) {
@@ -1392,6 +1405,7 @@ const char *GetDirectInputErrorName(
     return "Unknown Error";
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 unsigned char ClassifyKeyboardOffset(
     unsigned int dwOfs
 ) {
@@ -1403,6 +1417,7 @@ unsigned char ClassifyKeyboardOffset(
     return kKeyboardModifierClasses[tableIndex];
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void UpdateKeyboardModifierState(
     int mask,
     bool pressed
@@ -1414,6 +1429,7 @@ void UpdateKeyboardModifierState(
     }
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ApplyKeyboardKeyEvent(
     DIDeviceObjectData &event
 ) {
@@ -1442,6 +1458,7 @@ typedef int(__fastcall *KeyboardRawEventCallbackFn)(
 );
 typedef void(__fastcall *KeyboardComboCallbackFn)(int comboIdx);
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ApplyKeyboardWaitEvent(
     DIDeviceObjectData &event
 ) {
@@ -1494,6 +1511,7 @@ int ApplyKeyboardWaitEvent(
     return 0;
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int ApplyKeyboardPollEvent(
     DIDeviceObjectData &event
 ) {
@@ -1555,6 +1573,7 @@ int ApplyKeyboardPollEvent(
     return (int)(dispatchIndex);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int KeyboardEventDispatchIndex(
     const DIDeviceObjectData &event
 ) {
@@ -1787,7 +1806,9 @@ int BindGroupList_GetCount() {
 char *__fastcall BindGroupList_GetGroupTitle(
     int groupIndex
 ) {
-    return (char *)(LPCTSTR)(g_zInput_BindGroupInfoList.begin[groupIndex]->title);
+    zInput_BindGroupInfo **const groups = g_zInput_BindGroupInfoList.begin;
+    zInput_BindGroupInfo *const group = groups[groupIndex];
+    return (char *)(LPCTSTR)(group->title);
 }
 
 /**
@@ -1798,12 +1819,13 @@ int __fastcall BindGroupList_GetGroupCommandCount(
     int groupIndex
 ) {
     zInput_BindGroupInfo *const group = g_zInput_BindGroupInfoList.begin[groupIndex];
-    int *const begin = group->commandIdsBegin;
+    zInput_CommandIdVector *const commandIds = &group->commandIds;
+    int *const begin = commandIds->begin;
     if (begin == 0) {
         return 0;
     }
 
-    return (int)(group->commandIdsEnd - begin);
+    return (int)(commandIds->end - begin);
 }
 
 /**
@@ -1814,7 +1836,9 @@ int __fastcall BindGroupList_GetGroupCommandId(
     int groupIndex,
     int commandIndex
 ) {
-    return g_zInput_BindGroupInfoList.begin[groupIndex]->commandIdsBegin[commandIndex];
+    zInput_BindGroupInfo *const group = g_zInput_BindGroupInfoList.begin[groupIndex];
+    int *const begin = group->commandIds.begin;
+    return begin[commandIndex];
 }
 
 /**
@@ -1848,10 +1872,10 @@ int __fastcall BindGroupList_AddGroup(
 
     zInput_BindGroupInfo *group = new zInput_BindGroupInfo;
     group->title = title;
-    group->commandIdsAllocatorByte = 0;
-    group->commandIdsBegin = 0;
-    group->commandIdsEnd = 0;
-    group->commandIdsCapacity = 0;
+    group->commandIds.allocatorByte = 0;
+    group->commandIds.begin = 0;
+    group->commandIds.end = 0;
+    group->commandIds.capacity = 0;
 
     zInput_BindGroupInfo **begin = g_zInput_BindGroupInfoList.begin;
     zInput_BindGroupInfo **end = g_zInput_BindGroupInfoList.end;
@@ -1891,12 +1915,12 @@ void __fastcall BindGroupList_AddCommandToGroup(
 ) {
     zInput_BindGroupInfo *const group = g_zInput_BindGroupInfoList.begin[groupIndex];
 
-    int *begin = group->commandIdsBegin;
-    int *end = group->commandIdsEnd;
-    int *const capacity = group->commandIdsCapacity;
+    int *begin = group->commandIds.begin;
+    int *end = group->commandIds.end;
+    int *const capacity = group->commandIds.capacity;
     if (end != 0 && capacity != 0 && capacity - end >= 1) {
         *end = commandId;
-        group->commandIdsEnd = end + 1;
+        group->commandIds.end = end + 1;
         return;
     }
 
@@ -1911,9 +1935,9 @@ void __fastcall BindGroupList_AddCommandToGroup(
     newBegin[count] = commandId;
 
     ::operator delete(begin);
-    group->commandIdsBegin = newBegin;
-    group->commandIdsEnd = newBegin + count + 1;
-    group->commandIdsCapacity = newBegin + newCapacity;
+    group->commandIds.begin = newBegin;
+    group->commandIds.end = newBegin + count + 1;
+    group->commandIds.capacity = newBegin + newCapacity;
 }
 
 /**
@@ -1928,7 +1952,13 @@ char *__fastcall BindMap_GetCommandLabel(
     return zLoc::GetMessageString(g_zInput_CommandLocIdTable[commandId]);
 }
 
-// Reimplements 0x42a4f0: zInput::BindMap_GetCommandHint
+/**
+ * Reimplements 0x42a4f0: zInput::BindMap_GetCommandHint.
+ * Binary Ninja indexes g_zInput_CommandLocIdTable by command id, increments
+ * the recovered localization id, and tail-calls zLoc::GetMessageString for
+ * the command hint.
+ * Purpose: Resolve a bind-map command id to its localized hint text.
+ */
 char *__fastcall BindMap_GetCommandHint(
     int commandId
 ) {
@@ -3469,6 +3499,7 @@ int __fastcall DI_GetAxisRange(
 }
 
 namespace {
+// Source-faithful helper recovered from address-backed callers in this source file.
 void ApplyAxisConfigEntry(
     JoystickAxisConfig *axisCfg,
     int axisIndex,
@@ -3789,7 +3820,18 @@ int __fastcall Mouse_WaitForButtonPress(
     return result;
 }
 
-// Reimplements 0x4704f0: zInput::Mouse_ApplyAccumulatedDelta
+/**
+ * Reimplements 0x4704f0: zInput::Mouse_ApplyAccumulatedDelta.
+ *
+ * Purpose: apply mouse sensitivity to accumulated deltas, update the client
+ * cursor snapshot, clamp non-wrapping movement, and refresh normalized fields.
+ *
+ * Evidence: BN assembly at 0x4704f0 scales deltaX/deltaY through x87 _ftol,
+ * reads g_zInput_MouseSensitivityX/Y at 0x4e08f4/0x4e08f8, updates the typed
+ * g_zInput_MouseStateSnapshot at 0x561c80, clamps against client dimensions
+ * when g_zInput_Mouse_WrapModeFlag is clear, then writes cursor/delta normals
+ * from the center and inverse-center globals.
+ */
 void Mouse_ApplyAccumulatedDelta() {
     g_zInput_MouseStateSnapshot.deltaX =
         (int)((double)(g_zInput_MouseStateSnapshot.deltaX) * g_zInput_MouseSensitivityX);
@@ -3868,6 +3910,7 @@ int Joystick_IsUnsuspended() {
     return IsUnsuspended(g_zInput_JoystickSuspendFlags);
 }
 
+// Source-faithful helper recovered from address-backed callers in this source file.
 int Keyboard_IsUnsuspended() {
     return zInput_Keyboard_IsUnsuspended();
 }
