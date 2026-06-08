@@ -805,10 +805,10 @@ void HudUiSaveLoadDialog::SetSelectedEntryIndex(
         HudUiSaveLoadListItem *listItem = &entryWidgets[row];
         if (entryIndex >= 0) {
             unsigned int entryCount;
-            if (fileEntries.begin != 0) {
-                entryCount = (unsigned int)(fileEntries.end - fileEntries.begin);
-            } else {
+            if (fileEntries.begin == 0) {
                 entryCount = 0;
+            } else {
+                entryCount = (unsigned int)(fileEntries.end - fileEntries.begin);
             }
 
             if ((unsigned int)entryIndex < entryCount) {
@@ -835,10 +835,10 @@ void HudUiSaveLoadDialog::SetSelectedEntryIndex(
 
     if (selectedEntryIndexValue >= 0) {
         unsigned int selectedEntryCount;
-        if (fileEntries.begin != 0) {
-            selectedEntryCount = (unsigned int)(fileEntries.end - fileEntries.begin);
-        } else {
+        if (fileEntries.begin == 0) {
             selectedEntryCount = 0;
+        } else {
+            selectedEntryCount = (unsigned int)(fileEntries.end - fileEntries.begin);
         }
 
         if ((unsigned int)selectedEntryIndexValue < selectedEntryCount) {
@@ -851,10 +851,10 @@ void HudUiSaveLoadDialog::SetSelectedEntryIndex(
         HudUiSaveLoadListItem *listItem = &entryWidgets[lowerRow];
         if (entryIndex >= 0) {
             unsigned int entryCount;
-            if (fileEntries.begin != 0) {
-                entryCount = (unsigned int)(fileEntries.end - fileEntries.begin);
-            } else {
+            if (fileEntries.begin == 0) {
                 entryCount = 0;
+            } else {
+                entryCount = (unsigned int)(fileEntries.end - fileEntries.begin);
             }
 
             if ((unsigned int)entryIndex < entryCount) {
@@ -2104,22 +2104,25 @@ RECOIL_NO_GS void __fastcall RecoilApp::InitStdLogFiles(
     }
 }
 
-// Reimplements 0x443700: RecoilApp_StateQueueBlock::InitFromCursor
-// Initializes one chunk cursor descriptor from a slot in the queue chunk map.
+/**
+ * Reimplements 0x443700: RecoilApp_StateQueueBlock::InitFromCursor.
+ * Purpose: Initializes one chunk cursor descriptor from a slot in the queue chunk map.
+ */
 RecoilApp_StateQueueBlock * RecoilApp_StateQueueBlock::InitFromCursor(
     RecoilApp_StateQueueItem **cursor,
     RecoilApp_StateQueueItem ***chunkBaseSlot
 ) {
     m_chunkBegin = *chunkBaseSlot;
-    RecoilApp_StateQueueItem **const chunkEnd = *chunkBaseSlot + 1024;
+    m_chunkEnd = *chunkBaseSlot + 1024;
     m_chunkBaseSlot = chunkBaseSlot;
-    m_chunkEnd = chunkEnd;
     m_cursor = cursor;
     return this;
 }
 
-// Reimplements 0x443690: RecoilApp_StateQueue::GrowAndCenterChunkBaseList
-// Grows the chunk-map and recenters the active chunk-slot range in the new map.
+/**
+ * Reimplements 0x443690: RecoilApp_StateQueue::GrowAndCenterChunkBaseList.
+ * Purpose: Grows the chunk-map and recenters the active chunk-slot range in the new map.
+ */
 RecoilApp_StateQueueItem *** RecoilApp_StateQueue::GrowAndCenterChunkBaseList(
     int newCapacity
 ) {

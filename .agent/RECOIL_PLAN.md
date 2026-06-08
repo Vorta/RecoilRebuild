@@ -36892,7 +36892,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_ui_numeric_text_input_base_constructor;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S verification blocked: VC5SP3 hud_ui_numeric_text_input_cluster now fails with 20 unmasked byte mismatches after 36 relocation-masked bytes and 3 trimmed VC NOPs. Dependencies HudUiTextInput and HudUiSliderBorder verify tier S; remaining drift is VC5 constructor scheduling for the derived HudUiNumericTextInput vptr relative to two sliderBorder scalar stores and the final owner back-pointer scheduling. No source-faithful edit is justified without stronger class/source evidence.
+    - Blocker: tier S verification blocked: VC5SP3 hud_ui_numeric_text_input_cluster fails for HudUiNumericTextInput::BaseConstructor with 8 unmasked byte mismatches after 36 relocation-masked bytes and 3 trimmed VC NOPs. Dependencies HudUiTextInput and HudUiSliderBorder verify tier S; remaining drift is derived HudUiNumericTextInput vptr scheduling relative to two sliderBorder byte clears. No source-faithful edit is justified without stronger class/source evidence.
 
 - 0x4b4a90:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::ScalarDeletingDestructor)
@@ -37034,8 +37034,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_numeric_text_input_get_buffer;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b4ee0:
   - [☑️] Reconstructed (Name: HudUiZrdWidget::Constructor)
@@ -38083,16 +38083,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x404d70:
   - [✅] Reconstructed (Name: HudUiElement::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiElement; State: implemented)
-  - [❎] Data reimplemented
-  - [✅] Reimplemented [B]
-    - Name: HudUiElement::ScalarDeletingDestructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_element_scalar_deleting_destructor;
-    - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: tier S blocked: VC5SP3 hud_ui_element_scalar_deleting_destructor still fails with 11 unmasked byte mismatches after 8 relocation-masked bytes; tier C behavior now passes via zhud_element_scalar_deleting_destructor_smoke and HudUiElement class owner/data gates are accepted.
+  - [✅] Provider-boundary (Kind: MSVC 5 C++ compiler; Name: HudUiElement scalar deleting destructor; Origin: compiler-generated scalar deleting destructor glue for HudUiElement; BN 0x404d70 reads the low flags byte, resets the HudUiElement vtable, optionally calls operator delete, and returns this; File: external; Target: hud_ui_element_scalar_deleting_destructor; Group: ui.zhud)
 
 - 0x404d90:
   - [✅] Reconstructed (Name: HudUiWidget::GetCenterX)
@@ -38552,15 +38543,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40dac0:
   - [✅] Reconstructed (Name: HudUiCounter::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiCounter::Constructor;
+  - [✅] Source owner (Kind: class; Parent: HudUiCounter; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
+    - Name: HudUiCounter::HudUiCounter;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_counter_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40daa0:
   - [✅] Reconstructed (Name: HudUiMessage::ScalarDeletingDestructor)
@@ -38589,7 +38580,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Blocker: source-shape audit pending
 
 - 0x40db90:
-  - [☑️] Reconstructed (Name: HudUiSlot::Draw)
+  - [✅] Reconstructed (Name: HudUiSlot::Draw)
   - [✅] Source dependencies satisfied
   - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
   - [❌] Data reimplemented
@@ -39520,13 +39511,13 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [❌] Source owner (Kind: class; Parent: HudLayoutHW; State: parent-pending)
   - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Reimplemented [C]
+    - Name: HudLayoutHW::UpdateObjectiveDirtyRect;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_layout_hw_update_objective_dirty_rect;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: HudLayout FTable globals/raw slot dispatch remain unresolved source-shape debt
+    - Blocker: tier C functional target hud_layout_hw_update_objective_dirty_rect passes; owner/data remain pending through HudLayoutHW/HudUiWidget/HudUiTripletPanel globals and dependencies; no VC COFF byte-comparison target exists yet
 
 - 0x413340:
   - [☑️] Reconstructed (Name: HudLayoutHW::OnActivated)
@@ -40123,8 +40114,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_element_set_blt_source_and_clip_rect;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b41b0:
   - [✅] Reconstructed (Name: HudUiElement::SetClipRect)
@@ -40488,7 +40479,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_ui_panel_constructor_default;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S blocked: VC5SP3 hud_ui_text_label_panel_helpers still fails for HudUiPanel::ConstructorDefault with 224 unmasked mismatches after current source changes; text-label constructor dependency remains tier B
+    - Blocker: tier S blocked: VC5SP3 hud_ui_text_label_panel_helpers still fails for HudUiPanel::ConstructorDefault with 121 unmasked mismatches after current source changes; text-label constructor dependency remains tier B
 
 - 0x4ba850:
   - [✅] Reconstructed (Name: HudUiPanel::CopyConstructCore)
@@ -41093,13 +41084,13 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudUiTextLabel; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: HudUiTextLabel::ConstructorWithPosAndFlags;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_text_label_constructor_with_pos_and_flags;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S blocked: VC5SP3 hud_ui_text_label_panel_helpers still fails for HudUiTextLabel::ConstructorWithPosAndFlags with 137 unmasked mismatches after current source changes; dependencies remain tier B
+    - Blocker: none
 
 - 0x4bcbe0:
   - [✅] Reconstructed (Name: HudUiTextLabel::CopyConstructor)
@@ -41128,17 +41119,17 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Blocker: source-shape audit pending
 
 - 0x4bccf0:
-  - [☑️] Reconstructed (Name: HudUiTextLabel::SetTextFmt)
+  - [✅] Reconstructed (Name: HudUiTextLabel::SetTextFmt)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudUiTextLabel; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: HudUiTextLabel::SetTextFmt;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_text_label_set_text_fmt;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S blocked: VC5SP3 hud_ui_text_label_panel_helpers does not currently produce/accept the varargs SetTextFmt byte comparison; previous evidence records 23 unmasked mismatches
+    - Blocker: none
 
 - 0x4bcd40:
   - [✅] Reconstructed (Name: HudUiPanel::SetClip)
@@ -41158,39 +41149,39 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudUiTextLabel; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: HudUiTextLabel::RebuildTextBounds;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_text_label_rebuild_text_bounds;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S blocked: VC5SP3 hud_ui_text_label_panel_helpers still fails for HudUiTextLabel::RebuildTextBounds with 60 unmasked mismatches
+    - Blocker: none
 
 - 0x4bcdc0:
   - [✅] Reconstructed (Name: HudUiTextLabel::MeasureTextWidth)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudUiTextLabel; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: HudUiTextLabel::MeasureTextWidth;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_text_label_measure_text_width;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S blocked: VC5SP3 hud_ui_text_label_panel_helpers still fails for HudUiTextLabel::MeasureTextWidth with 39 unmasked mismatches
+    - Blocker: none
 
 - 0x4bcdf0:
   - [✅] Reconstructed (Name: HudUiTextLabel::UpdateTextExtents)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudUiTextLabel; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: HudUiTextLabel::UpdateTextExtents;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_text_label_update_text_extents;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S blocked: VC5SP3 hud_ui_text_label_panel_helpers still fails for HudUiTextLabel::UpdateTextExtents with 10 unmasked mismatches
+    - Blocker: none
 
 - 0x4bce30:
   - [✅] Reconstructed (Name: HudUiTextLabel::OnDraw)
@@ -46829,7 +46820,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_ui_save_load_set_selected_entry_index;
     - Group: app.recoil_app.core;
     - Model: source-faithful;
-    - Blocker: tier S verification blocked: local hud_ui_save_load_set_selected_entry_index VC5 target now fails with 364 unmasked byte mismatches after 12 relocation-masked bytes and 10 trimmed VC NOPs. Source now uses unsigned vector-size style bounds comparisons matching BN jae checks, but remaining drift includes one fewer stack local, per-row entry-offset scheduling before bounds checks, and loop branch layout.
+    - Blocker: tier S verification blocked: local hud_ui_save_load_set_selected_entry_index VC5 target now fails with 342 unmasked byte mismatches after 12 relocation-masked bytes and 10 trimmed VC NOPs. Source uses BN-matching nullable file-entry count branch direction, but remaining drift includes one fewer stack local, per-row entry-offset scheduling before bounds checks, and loop branch layout.
 
 - 0x4355e0:
   - [✅] Reconstructed (Name: HudUiSaveLoadDialog::RefreshSaveFileList)
@@ -46842,7 +46833,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_ui_save_load_refresh_file_list;
     - Group: app.recoil_app.core;
     - Model: source-faithful;
-    - Blocker: tier S blocked: VC5SP3 hud_ui_save_load_refresh_file_list fails for 0x4355e0 with 936 unmasked byte mismatches after 80 relocation-masked bytes and 15 trimmed VC NOPs; behavior/class owner/data gates are accepted.
+    - Blocker: tier S verification blocked: VC5SP3 hud_ui_save_load_refresh_file_list still fails for 0x4355e0 with 936 unmasked byte mismatches after 80 relocation-masked bytes and 15 trimmed VC NOPs. BN stack frame is 0x64c while VC5 emits 0x50c, again missing one 0x140-byte quicksort pivot staging local before the by-value PartitionEntriesByPivot call. Direct dependency blocker remains 0x4362f0 SortEntryRange; PartitionEntriesByPivot itself verifies tier S with zero unmasked mismatches.
 
 - 0x435a10:
   - [✅] Reconstructed (Name: HudUiSaveLoadListItem::OnActivate)
@@ -46888,13 +46879,13 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudUiSaveLoadGameNameInput; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: HudUiSaveLoadGameNameInput::OnActivate;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: hud_ui_save_load_game_name_input_on_activate;
     - Group: app.recoil_app.core;
     - Model: source-faithful;
-    - Blocker: tier S blocked: no VC COFF byte manifest currently covers 0x4348b0; functional target hud_ui_save_load_game_name_input_on_activate passes and source owner/data gates are accepted.
+    - Blocker: none
 
 - 0x4348f0:
   - [✅] Reconstructed (Name: HudUiSaveLoadGameNameInput::OnRawKeyboardEvent)
@@ -46963,7 +46954,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_ui_save_load_sort_entry_range;
     - Group: app.recoil_app.core;
     - Model: source-faithful;
-    - Blocker: tier S verification blocked: VC5SP3 hud_ui_save_load_sort_helpers fails for SortEntryRange with 489 unmasked byte mismatches after 44 relocation-masked bytes and 4 trimmed VC NOPs. Current source models the hudui_saveload.cpp median-of-three quicksort helper with typed HudUiSaveLoadEntry temporaries; a pivot staging pointer spelling produced no byte improvement and was reverted.
+    - Blocker: tier S verification blocked: VC5SP3 hud_ui_save_load_sort_helpers still fails for SortEntryRange with 489 unmasked byte mismatches after 44 relocation-masked bytes and 4 trimmed VC NOPs. BN stack vars prove separate 0x140-byte pivotStageCopy and pivotEntry locals, but VC5 emits a 0x648 frame versus BN 0x788 and collapses the staged pivot copy. Typed identity, split-assignment, and pointer-spelling probes produced no byte improvement.
 
 ## G035. RecoilApp state queue and run-loop dispatch
 
@@ -47055,11 +47046,11 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: RecoilApp_StateQueue::GrowAndCenterChunkBaseList)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: RecoilApp_StateQueue; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: RecoilApp_StateQueue::GrowAndCenterChunkBaseList;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: recoil_app_state_queue_grow_and_center_chunk_base_list;
+    - Target: recoil_app_state_queue;
     - Group: app.recoil_app.state_queue;
     - Model: source-faithful;
     - Blocker: none
@@ -47067,15 +47058,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x443700:
   - [✅] Reconstructed (Name: RecoilApp_StateQueueBlock::InitFromCursor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilApp_StateQueue; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: RecoilApp_StateQueue; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: RecoilApp_StateQueueBlock::InitFromCursor;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_app_state_queue_block_init_from_cursor;
     - Group: app.recoil_app.state_queue;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 ## G036. RecoilApp intro, attract, mission, and leave-network states
 

@@ -624,8 +624,11 @@ void HudLayoutHW::OnActivated() {
     }
 }
 
-// Reimplements 0x4132b0: HudLayoutHW::UpdateObjectiveDirtyRect
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4132b0: HudLayoutHW::UpdateObjectiveDirtyRect.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Rebuilds the objective dirty rectangle and refreshes the nanite panel after HUD layout changes.
+ */
 void HudLayoutHW::UpdateObjectiveDirtyRect() {
     zVidImagePartial *const image = g_HudUiMgrObjectiveWidget.image;
     const int width = image != 0 ? image->width : 0;
@@ -14063,8 +14066,9 @@ HudUiNumericTextInput::HudUiNumericTextInput()
 
     HudUiElement *sliderElement = &sliderBorder;
     sliderElement->SetVisible(1);
-    textInput.owner = this;
-    HudUiElement *element = this;
+    HudUiNumericTextInput *ownerSelf = this;
+    textInput.owner = ownerSelf;
+    HudUiElement *element = ownerSelf;
     element->SetVisible(1);
 }
 
@@ -14269,7 +14273,11 @@ int __fastcall HudUiNumericTextInput::RawKeyboardCallback(
     return 0;
 }
 
-// Reimplements 0x4b4ba0: HudUiNumericTextInput::SetInputActive
+/**
+ * Reimplements 0x4b4ba0: HudUiNumericTextInput::SetInputActive.
+ * Purpose: Show or hide the numeric text input, slider border, and first
+ * label panel while returning the previous active state.
+ */
 int HudUiNumericTextInput::SetInputActive(
     int active
 ) {
@@ -14821,6 +14829,8 @@ HudUiPanel::HudUiPanel(
     wrapRect.top = 0;
     wordWrapEnabled = 0;
     unknown274 = 0;
+    shadowOffsetX = 0;
+    shadowOffsetY = 0;
     textHeightPx = 0;
     textWidthPx = 0;
 }

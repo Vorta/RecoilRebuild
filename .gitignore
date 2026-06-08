@@ -130,6 +130,7 @@ __pycache__/
 .claude/
 .cursor/
 .agent/claims/
+.codex/
 AGENTS.md
 **/AGENTS.md
 

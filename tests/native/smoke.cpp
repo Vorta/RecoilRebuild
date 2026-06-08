@@ -123,6 +123,8 @@ extern "C" int zhud_element_scalar_deleting_destructor_smoke(void);
 extern "C" int zhud_element_destructor_smoke(void);
 extern "C" int zhud_element_draw_dispatch_smoke(void);
 extern "C" int zhud_widget_constructor_smoke(void);
+extern "C" int zhud_slot_draw_smoke(void);
+extern "C" int zhud_layout_hw_update_objective_dirty_rect_smoke(void);
 extern "C" int zhud_counter_constructor_smoke(void);
 extern "C" int zhud_bar_and_meter_constructor_smoke(void);
 extern "C" int zhud_widget_release_image_if_owned_smoke(void);
@@ -757,6 +759,9 @@ int main(int argc, char **argv) {
         {"zhud_element_destructor_smoke", zhud_element_destructor_smoke},
         {"zhud_element_draw_dispatch_smoke", zhud_element_draw_dispatch_smoke},
         {"zhud_widget_constructor_smoke", zhud_widget_constructor_smoke},
+        {"zhud_slot_draw_smoke", zhud_slot_draw_smoke},
+        {"zhud_layout_hw_update_objective_dirty_rect_smoke",
+         zhud_layout_hw_update_objective_dirty_rect_smoke},
         {"zhud_counter_constructor_smoke", zhud_counter_constructor_smoke},
         {"zhud_bar_and_meter_constructor_smoke", zhud_bar_and_meter_constructor_smoke},
         {"zhud_widget_release_image_if_owned_smoke",

@@ -1,42 +1,41 @@
 # Agent Launch Checklist
 
-Use this compact checklist before assigning address-led reconstruction work to a
-new agent. It does not replace `AGENTS.md`; Binary Ninja and
-`.agent/RECOIL_PLAN.md` remain authoritative for function evidence and plan
-state.
+Compact launch reminder for address-led reconstruction. It does not replace
+`AGENTS.md`; Binary Ninja and `.agent/RECOIL_PLAN.md` remain authoritative for
+function evidence and plan state.
 
-`AGENTS.md` and `.agent/AGENTS.md` are intentionally local ignored instruction
-surfaces in this workspace. `tools/` and `tests/tools/` are also ignored, but
-they are required local verification infrastructure for doctor, CTest guards,
-and tool tests.
+`AGENTS.md` and `.agent/AGENTS.md` are local ignored instruction surfaces.
+`tools/` and `tests/tools/` are ignored but required local verification
+infrastructure. Do not stage ignored local infrastructure, private inputs, or
+generated state.
 
-## Required preflight
+## Preflight
 
-Run the process-health check from the workspace root:
+From the workspace root:
 
 ```powershell
 python tools/recoil_doctor.py --quick --binja
 ```
 
-Use plain `--quick` only when Binary Ninja is intentionally unavailable or the
-task does not depend on current Binary Ninja evidence. For documentation-only or
-tooling-inspection work, inspect the relevant files and run targeted checks
-instead of selecting a plan address. For active implementation or verification
-handoff, also run the address-specific doctor command described in `AGENTS.md`.
+Use plain `--quick` only when Binary Ninja is intentionally unavailable or
+irrelevant. For documentation or tooling cleanup, inspect target files and run
+targeted checks instead of selecting an address. For active implementation or
+verification handoff, also run the address-specific doctor command from
+`AGENTS.md`.
 
-For an address-led reconstruction launch packet, use:
+Address-led launch packet for a known anchor:
 
 ```powershell
-python tools/recoil_task_packet.py
+python tools/recoil_task_packet.py --address 0xNNNNNN
 ```
 
-Use `--address 0xNNNNNN` for a specific function or `--no-binja` only when the
-task intentionally does not need Binary Ninja. Do not use this packet for
-documentation-only or tooling-inspection cleanup, because it selects an address.
+Use `--no-binja` only when intentional. Do not use the task packet for
+docs/tooling cleanup or other non-address work; inspect the relevant files and
+run targeted checks instead.
 
-## Task selection
+## Task Selection
 
-Choose the next address from current plan state, not from stale working notes:
+Use current plan state, not stale notes:
 
 ```powershell
 python tools/recoil_plan_cli.py next --lane binary
@@ -44,125 +43,88 @@ python tools/recoil_plan_cli.py group app.recoil_app --lane binary
 python tools/recoil_status.py 0xNNNNNN
 ```
 
-If a task expands into a multi-function closure, identify every affected address
-before editing source, Binary Ninja state, plan markers, VC verification
-manifests, or group notes.
+Treat the address as an evidence anchor, not necessarily the implementation
+unit. Expand to the proven owner boundary: class/interface, table-shaped
+dispatch owner, provider boundary, source-file cluster, or dependency group.
+Identify every affected address before editing source, BN state, plan markers,
+VC manifests, or group notes.
 
-Treat the selected address as an anchor, not necessarily the implementation
-unit. If the frontier exposes a class/interface, table-shaped dispatch evidence,
-provider boundary, source-file cluster, or strongly connected dependency group,
-plan and verify that owning boundary before marking individual functions
-complete. If current evidence proves an authored class/interface or method
-cluster, recreating that owner is required before setting any `Reimplemented`
-tier or `Model: source-faithful`; behavior-correct flattened functions and
-production VTable/FTable scaffolds remain not reimplemented.
+If BN proves an authored class/interface/method cluster, restore that owner
+before any `Reimplemented` tier or `Model: source-faithful`. Flattened functions
+and production `VTable`/`FTable` scaffolds are not accepted reimplementations.
 
-Generate a handoff report before ending a multi-step reconstruction session:
+Before ending a multi-step reconstruction session:
 
 ```powershell
 python tools/recoil_handoff.py 0xNNNNNN --include-artifacts
 ```
 
-After finishing a function or class reimplementation step, create a focused
-local git commit only when the completed batch includes tracked production
-source changes under `src/`. A coherent multi-function batch may use one commit.
-Do not commit for `.agent/RECOIL_PLAN.md`-only changes, or for docs-only,
-tools-only, manifest-only, or test-only changes. Related plan-marker updates may
-be staged with a qualifying source commit, but the commit subject must describe
-the source work or evidence level, not plan bookkeeping. Do not push. Stage only
-the agent's own related changes, do not use `git add .`, and do not stage
-private inputs, generated artifacts, ignored runtime state, local tools, local
-tool tests, local verification manifests, or unrelated user changes. Never use
-`git add -f` to force ignored paths.
+## Git And Groups
 
-Treat `.agent/IMPLEMENTATION_GROUPS.md` as a tracked temporary context ledger.
-If it disagrees with `.agent/RECOIL_PLAN.md`, Binary Ninja, or
-`recoil_status.py`, trust the current plan/Binary Ninja evidence and refresh or
-prune the group note. Stage it only when an active group update belongs with a
-qualifying source checkpoint.
+Commit only completed batches with tracked production source under `src/`. Do
+not commit plan-only, docs-only, tools-only, manifest-only, or test-only
+changes. Do not push. Do not use `git add .`. Never `git add -f` ignored paths.
+Stage only the agent's related changes; do not stage ignored, private,
+generated, runtime, or unrelated files.
 
-## Native build shell
+`.agent/IMPLEMENTATION_GROUPS.md` is temporary. If stale or contradicted by BN,
+`.agent/RECOIL_PLAN.md`, or `recoil_status.py`, refresh or prune it. Stage it
+only with a qualifying source checkpoint.
 
-Native CMake configure/build/test work needs an x86 MSVC developer environment.
-For generated Visual Studio solution work, prefer Visual Studio MCP when
-`build/vs-x86/RecoilRebuildNative.slnx` is open or can be opened without
-disrupting a user solution. Use it for solution navigation, builds, Error List
-triage, output panes, symbol outlines, open-buffer checks, and focused
-debugging. See `docs/reconstruction/visual_studio_mcp_workflow.md`.
+## Native Build Shell
 
-From normal PowerShell, use the checked-in one-shot Ninja build wrapper:
+Native builds/tests need an x86 MSVC environment. Prefer Visual Studio MCP for
+already-open or safely generated `build/vs-x86/RecoilRebuildNative.slnx` work.
+
+From normal PowerShell, use the wrapper:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File cmake\recoil_native_x86_build.ps1 -Preset ninja-x86-debug
 ```
 
-The wrapper loads `vcvarsall x86`, verifies the x86 MSVC/Windows SDK environment
-with `python tools/recoil_env_check.py --native-x86`, then configures and builds
-the selected preset. A missing `kernel32.lib` report means the shell lacks
-Windows SDK `LIB` paths; do not treat it as source evidence.
+The wrapper loads `vcvarsall x86` and runs
+`python tools/recoil_env_check.py --native-x86`. A missing `kernel32.lib` is an
+environment problem, not source evidence.
 
-For a manually prepared x86 MSVC shell, verify the shell before running CMake
-directly:
+Use `tools/recoil_msvc_x86_run.py -- ...` for `ctest`, native smokes, and other
+x86 MSVC commands. Do not call Visual Studio batch files under `Program Files`
+directly. If `cl.exe`, `INCLUDE`, `LIB`, the x86 target, Windows SDK,
+`support/sdk`, or `support/Recoil.exe` is missing, switch environments or ask
+for the missing private input.
 
-```powershell
-python tools/recoil_env_check.py --native-x86
-```
+## Source Placement
 
-Use `tools/recoil_msvc_x86_run.py -- ...` for direct `ctest`, native smoke runs
-with command-line arguments, and other arbitrary x86 MSVC command-line work that
-MCP cannot express. Do not call Visual Studio batch files under `Program Files`
-directly.
-
-If this fails because `cl.exe`, `INCLUDE`, `LIB`, the x86 compiler target, the
-Windows SDK, `support/sdk`, or `support/Recoil.exe` are unavailable, switch to a
-proper x86 developer shell or ask the user for the missing private input. Do not
-treat a normal PowerShell failure as source evidence.
-
-## Source placement
-
-Before creating or moving implementation files, check:
+Before creating or moving implementation files:
 
 ```powershell
 python tools/recoil_source_file_map.py --check docs/reconstruction/source_file_map.md
 ```
 
-Use `docs/reconstruction/source_file_map.md` as placement guidance, then confirm
-with current Binary Ninja source comments and call-site evidence. Regenerate the
-map only when address-backed provenance docblocks or the legacy line-comment
-form in `src/` changed.
+Use `source_file_map.md` plus current BN source comments and call-site evidence.
+Regenerate the map only when provenance docblocks or legacy source comments
+changed.
 
-Check `docs/reconstruction/verified_patterns.md` before introducing a new
-destructor, thunk, vtable stub, provider glue, or small-accessor idiom.
+Check:
 
-Check `docs/reconstruction/inlined_helpers.md` before duplicating a small
-repeated caller body. If Binary Ninja has no standalone function but multiple
-callers show the same helper-like code, restore the likely original inline
-helper or method and verify it through those callers or the smallest affected
-class/source cluster.
+- `docs/reconstruction/verified_patterns.md` before destructor, thunk, vtable,
+  provider, or small-accessor idioms.
+- `docs/reconstruction/inlined_helpers.md` before duplicating repeated inlined
+  caller bodies.
+- `docs/reconstruction/original_classes.md` before class, inheritance, vtable,
+  ftable, record, provider, namespace, or subsystem boundary edits.
 
-Check `docs/reconstruction/original_classes.md` before introducing or reshaping
-classes, inheritance, vtables, function tables, records, provider boundaries, or
-namespace/module boundaries. Use its class/table gate and boundary ledger, then
-confirm against current Binary Ninja facts. For table dispatch, model the owner
-first; do not add copied ftable/vtable arrays, production VTable/FTable structs
-or globals, or raw slots as the source substitute for an authored class,
-callback/data record, provider boundary, or subsystem. Do not claim any
-`Reimplemented` tier or `Model: source-faithful` when a proven class/source owner
-has been flattened away.
+For table dispatch, model the owner first. Do not use copied ftable/vtable
+arrays, production `VTable`/`FTable` structs/globals, or raw slots as authored
+source substitutes.
 
-## Source literals
+## Literals And Handoff Hygiene
 
-Use decimal numeric literals by default in authored C/C++ for ordinary counts,
-sizes, dimensions, enum values, loop bounds, return codes, allocation sizes, test
-expectations, and gameplay/config constants. Keep hexadecimal for addresses,
-bitmasks, byte patterns, PE/RVA/file offsets, serialized wire values, and other
-contracts where hexadecimal grouping carries evidence.
+Use decimal literals by default for ordinary counts, sizes, dimensions, enum
+values, loop bounds, return codes, allocation sizes, tests, and gameplay/config
+constants. Use hex only where hex grouping is evidence: addresses, bitmasks,
+byte patterns, PE/RVA/file offsets, serialized wire values, or equivalent
+contracts.
 
-## Working state hygiene
-
-Keep `.agent/IMPLEMENTATION_GROUPS.md` for short-lived dependency closures.
-Move durable cross-file facts into source comments or narrow notes under
-`docs/reconstruction/`, and prune completed group notes before handoff.
-Before final handoff or a required git checkpoint, state the documentation
-decision: durable facts were captured in source/docs, or no durable new
-documentation was needed.
+Before handoff or a qualifying checkpoint, move durable facts into source
+comments or `docs/reconstruction/`, prune completed group notes, and state the
+documentation decision.

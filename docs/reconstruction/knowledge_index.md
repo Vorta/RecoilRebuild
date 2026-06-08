@@ -18,6 +18,8 @@ for function identity, types, markers, and acceptance state.
   vtable/function-table, provider, and namespace-style subsystem boundaries.
 - `provider_abi_notes.md` - repo-local provider assumptions for VC5SP3, MFC42,
   legacy DirectX, imports, and runtime verification.
+- `recoil_app_destructor_tier_s.md` - RecoilApp constructor/destructor EH and
+  tier S verification notes for the app owner cleanup cluster.
 - `source_file_map.md` - generated original-source placement map from
   address-backed `Reimplements` provenance docblocks in `src/`, plus legacy
   line comments until touched source is converted.
@@ -25,12 +27,16 @@ for function identity, types, markers, and acceptance state.
   workflow for generated `vs-x86` solution projects.
 - `verified_patterns.md` - compact ledger of currently verified reusable source
   and verification shapes.
+- `zfmv_script_cleanup_reset_verification.md` - zFMV cleanup/reset tier S
+  verification notes for the script teardown dependency pair.
 - `zsnd_error_verification.md` - zSound error-helper verification notes,
   including the `ReportA3DError` switch-table comparison limitation.
 - `zsnd_cd_verification.md` - zSound CD helper verification notes, including the
   recovered playback-position triplet layout used by `ResetTrackState`.
 - `zsnd_play_handle_verification.md` - zSound play-handle verification notes,
   including the `StopIfActive` backend-dispatch mismatch profile.
+- `zsnd_sample_init_verification.md` - zSound wave-data initialization
+  verification notes for A3D and DirectSound sample backends.
 - `zsnd_sample_set_verification.md` - zSound sample-set registry verification
   notes, including the `FindByName` inline-`strcmp` mismatch profile.
 - `zsnd_snapshot_verification.md` - zSound snapshot verification notes,

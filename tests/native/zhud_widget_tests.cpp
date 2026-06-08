@@ -100,14 +100,21 @@ void RestoreFunctionPatch(CodeFunctionPatch &patch) {
             oldProtect,
             &ignored
         );
-        FlushInstructionCache(
-            GetCurrentProcess(),
-            patch.address,
-            sizeof(patch.original)
-        );
     }
-
+    FlushInstructionCache(
+        GetCurrentProcess(),
+        patch.address,
+        sizeof(patch.original)
+    );
     patch.address = nullptr;
+}
+
+void DestroyHudCmdDialogDescriptionPanelForSmoke(
+    HudCmdDialog &dialog
+) {
+    dialog.descriptionPanel.HudUiPanel::~HudUiPanel();
+    dialog.descriptionPanel.textPick = nullptr;
+    dialog.descriptionPanel.hFont = nullptr;
 }
 
 int g_optionsDialogLoadCalls;
@@ -560,6 +567,140 @@ extern "C" int zhud_widget_constructor_smoke(void) {
     const bool virtualsReady = widget.GetCenterX() == 15 && widget.GetCenterY() == 23;
 
     return initialized && virtualsReady ? 0 : 1;
+}
+
+extern "C" int zhud_slot_draw_smoke(void) {
+    zVideo_BltSourceToPrimaryProc const oldBlit =
+        g_zVideo_pfnBltSourceToPrimary;
+    zVidImagePartial *const oldExclusiveImage =
+        g_HudUiWidget_ExclusiveDrawImage;
+    g_zVideo_pfnBltSourceToPrimary = CaptureHudElementBlit;
+    g_HudUiWidget_ExclusiveDrawImage = nullptr;
+
+    HudUiSlot slot{};
+    slot.Constructor();
+    zVidImagePartial slotImage{};
+    zVidImagePartial trackMarkerImage{};
+    slot.slotWidget.image = &slotImage;
+    slot.slotWidget.bltSource = &slotImage;
+    slot.trackMarkerWidget.image = &trackMarkerImage;
+    slot.trackMarkerWidget.bltSource = &trackMarkerImage;
+    slot.slotWidget.dirtyRectCount = 0;
+    slot.trackMarkerWidget.dirtyRectCount = 0;
+    for (HudUiRectDirty &dirtyRect : slot.slotWidget.dirtyRects) {
+        dirtyRect.framesRemaining = 0;
+    }
+    for (HudUiRectDirty &dirtyRect : slot.trackMarkerWidget.dirtyRects) {
+        dirtyRect.framesRemaining = 0;
+    }
+
+    g_elementBlitCount = 0;
+    slot.Draw();
+    const int bothVisibleBlits = g_elementBlitCount;
+
+    slot.slotWidget.flags = 0x10;
+    slot.trackMarkerWidget.flags = 0;
+    const int beforeTrackMarkerOnly = g_elementBlitCount;
+    slot.Draw();
+    const int trackMarkerOnlyBlits = g_elementBlitCount - beforeTrackMarkerOnly;
+
+    slot.slotWidget.flags = 0;
+    slot.trackMarkerWidget.flags = 0x10;
+    const int beforeSlotOnly = g_elementBlitCount;
+    slot.Draw();
+    const int slotOnlyBlits = g_elementBlitCount - beforeSlotOnly;
+
+    g_HudUiWidget_ExclusiveDrawImage = oldExclusiveImage;
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+    slot.Destructor();
+
+    const bool bothVisible =
+        bothVisibleBlits != 0 &&
+        bothVisibleBlits == trackMarkerOnlyBlits + slotOnlyBlits;
+    const bool onlyTrackMarkerVisible = trackMarkerOnlyBlits != 0;
+    const bool onlySlotVisible = slotOnlyBlits != 0;
+    return bothVisible && onlyTrackMarkerVisible && onlySlotVisible ? 0 : 1;
+}
+
+extern "C" int zhud_layout_hw_update_objective_dirty_rect_smoke(void) {
+    const HudUiWidget oldObjectiveWidget = g_HudUiMgrObjectiveWidget;
+    const int oldObjectiveRightX = g_HudUiMgrObjectiveWidgetRightX;
+    const HudUiNanitePanel oldNanitePanel = g_HudUiMgrNanitePanel;
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+    zVideo_BltSourceToPrimaryProc const oldBlit =
+        g_zVideo_pfnBltSourceToPrimary;
+    zVidImagePartial *const oldExclusiveImage =
+        g_HudUiWidget_ExclusiveDrawImage;
+
+    zVidImagePartial objectiveImage{};
+    objectiveImage.width = 12;
+    objectiveImage.height = 6;
+    new (&g_HudUiMgrObjectiveWidget) HudUiWidget;
+    g_HudUiMgrObjectiveWidget.image = &objectiveImage;
+    g_HudUiMgrObjectiveWidget.x = 31;
+    g_HudUiMgrObjectiveWidget.y = 34;
+    g_HudUiMgrObjectiveWidget.alignFlags = 1;
+    g_HudUiMgrObjectiveWidgetRightX = 80;
+
+    HudLayoutHW layout{};
+    zVidImagePartial layoutImage{};
+    layoutImage.width = 100;
+    layoutImage.height = 100;
+    layout.widget2.image = &layoutImage;
+    layout.widget2.x = 10;
+    layout.widget2.y = 20;
+    layout.widget2.dirtyRectCount = 0;
+    for (HudUiRectDirty &dirtyRect : layout.widget2.dirtyRects) {
+        dirtyRect.framesRemaining = 0;
+    }
+
+    zVidImagePartial naniteImage{};
+    new (&g_HudUiMgrNanitePanel) HudUiNanitePanel();
+    g_HudUiMgrNanitePanel.items[0].image = &naniteImage;
+    g_HudUiMgrNanitePanel.items[0].bltSource = nullptr;
+    g_HudUiMgrNanitePanel.items[0].flags = 0;
+    g_HudUiMgrNanitePanel.items[0].dirtyRectCount = 0;
+    for (HudUiRectDirty &dirtyRect : g_HudUiMgrNanitePanel.items[0].dirtyRects) {
+        dirtyRect.framesRemaining = 0;
+    }
+    g_HudUiMgrNanitePanel.items[1].flags = 0x10;
+    g_HudUiMgrNanitePanel.items[2].flags = 0x10;
+
+    g_zVideo_pfnBltSourceToPrimary = CaptureHudElementBlit;
+    g_HudUiWidget_ExclusiveDrawImage = nullptr;
+    g_elementBlitCount = 0;
+    g_elementBlitImage = nullptr;
+    g_HudUi_InvalidateMask = 0x80;
+
+    layout.UpdateObjectiveDirtyRect();
+
+    const HudUiRectDirty &slot = layout.widget2.dirtyRects[0];
+    const bool dirtyRect =
+        layout.widget2.dirtyRectCount == 1 &&
+        slot.framesRemaining == 1 &&
+        slot.drawX == 49 &&
+        slot.drawY == 37 &&
+        slot.srcLeft == 39 &&
+        slot.srcTop == 17 &&
+        slot.srcRight == 70 &&
+        slot.srcBottom == 23;
+    const bool layoutInvalidated = (layout.widget2.flags & 0x80u) != 0;
+    const bool naniteInvalidated =
+        (g_HudUiMgrNanitePanel.flags & 0x80u) != 0;
+    const bool naniteDrawn =
+        g_elementBlitCount == 1 &&
+        g_elementBlitImage == &naniteImage;
+
+    g_HudUiMgrObjectiveWidget = oldObjectiveWidget;
+    g_HudUiMgrObjectiveWidgetRightX = oldObjectiveRightX;
+    g_HudUiMgrNanitePanel = oldNanitePanel;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    g_HudUiWidget_ExclusiveDrawImage = oldExclusiveImage;
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+
+    return dirtyRect && layoutInvalidated && naniteInvalidated && naniteDrawn
+               ? 0
+               : 1;
 }
 
 extern "C" int zhud_widget_release_image_if_owned_smoke(void) {
@@ -1232,6 +1373,7 @@ extern "C" int zhud_background_bind_primitive_node_to_element_smoke(void) {
     g_zVideo_PixelPack.packedBase = oldRShift;
     g_zVideo_PixelPack.sumMinus8 = oldGShift;
     g_zVideo_PixelPack.bShiftTo8 = oldBShiftTo8;
+    background.capturedCompositeImage = nullptr;
     return linked && primitive ? 0 : 1;
 }
 
@@ -1500,7 +1642,7 @@ extern "C" int zhud_cmd_dialog_on_command_selection_changed_smoke(void) {
         std::strcmp(dialog.descriptionPanel.textBuffer, "HintSeven") == 0;
 
     CleanupHudCmdDialogButtons(dialog);
-    dialog.descriptionPanel.HudUiPanel::~HudUiPanel();
+    DestroyHudCmdDialogDescriptionPanelForSmoke(dialog);
     RestoreFunctionPatch(labelPatch);
     RestoreFunctionPatch(hintPatch);
     return selected && labels ? 0 : 1;
@@ -1542,7 +1684,7 @@ extern "C" int zhud_cmd_bind_button_base_on_selection_changed_refresh_smoke(void
         std::strcmp(dialog.descriptionPanel.textBuffer, "HintSeven") == 0;
 
     CleanupHudCmdDialogButtons(dialog);
-    dialog.descriptionPanel.HudUiPanel::~HudUiPanel();
+    DestroyHudCmdDialogDescriptionPanelForSmoke(dialog);
     RestoreFunctionPatch(labelPatch);
     RestoreFunctionPatch(hintPatch);
     return selected ? 0 : 1;
@@ -1729,7 +1871,7 @@ extern "C" int zhud_cmd_dialog_rebuild_command_binding_lists_smoke(void) {
         std::strcmp(dialog.descriptionPanel.textBuffer, "HintFive") == 0;
 
     CleanupHudCmdDialogButtons(dialog);
-    dialog.descriptionPanel.HudUiPanel::~HudUiPanel();
+    DestroyHudCmdDialogDescriptionPanelForSmoke(dialog);
     g_zInput_BindMap_Current = oldCurrent;
     g_zInput_BindGroupInfoList = oldGroups;
     RestoreFunctionPatch(labelPatch);
@@ -1829,7 +1971,7 @@ extern "C" int zhud_cmd_dialog_select_group_relative_smoke(void) {
         wrapBackwardBegin[0]->commandId == 7;
 
     CleanupHudCmdDialogButtons(dialog);
-    dialog.descriptionPanel.HudUiPanel::~HudUiPanel();
+    DestroyHudCmdDialogDescriptionPanelForSmoke(dialog);
     g_zInput_BindMap_Current = oldCurrent;
     g_zInput_BindGroupInfoList = oldGroups;
     RestoreFunctionPatch(labelPatch);
@@ -1884,7 +2026,7 @@ extern "C" int zhud_cmd_dialog_select_command_relative_smoke(void) {
         dialog.commandList.selectedBindingIndex == 0;
 
     CleanupHudCmdDialogButtons(dialog);
-    dialog.descriptionPanel.HudUiPanel::~HudUiPanel();
+    DestroyHudCmdDialogDescriptionPanelForSmoke(dialog);
     RestoreFunctionPatch(labelPatch);
     RestoreFunctionPatch(hintPatch);
     return forward && clampedForward && backward && clampedBackward ? 0 : 1;
@@ -1908,17 +2050,15 @@ extern "C" int zhud_cmd_dialog_callback_navigation_smoke(void) {
         return 2;
     }
 
-    HudCmdDialog dialog{};
-    dialog.descriptionPanel.ConstructorDefault("stale", 0, 0);
-    dialog.setList.selectedIndex = 0;
-    dialog.setList.itemCount = 3;
-    dialog.setList.firstIndex = 0;
-    dialog.setList.visibleCount = 3;
-    dialog.nextSetButton.owner = &dialog;
-    dialog.prevSetButton.owner = &dialog;
-    dialog.nextCommandButton.owner = &dialog;
-    dialog.prevCommandButton.owner = &dialog;
-    SetupHudCmdDialogButtons(dialog);
+    HudCmdDialog setDialog{};
+    setDialog.descriptionPanel.ConstructorDefault("stale", 0, 0);
+    setDialog.setList.selectedIndex = 0;
+    setDialog.setList.itemCount = 3;
+    setDialog.setList.firstIndex = 0;
+    setDialog.setList.visibleCount = 3;
+    setDialog.nextSetButton.owner = &setDialog;
+    setDialog.prevSetButton.owner = &setDialog;
+    SetupHudCmdDialogButtons(setDialog);
 
     zInput_BindMapContext *const oldCurrent = g_zInput_BindMap_Current;
     zInput_BindGroupInfoList oldGroups = g_zInput_BindGroupInfoList;
@@ -1958,40 +2098,46 @@ extern "C" int zhud_cmd_dialog_callback_navigation_smoke(void) {
     g_zInput_BindGroupInfoList.end = groups + 3;
     g_zInput_BindGroupInfoList.capacity = groups + 3;
 
-    dialog.nextSetButton.OnActivate();
+    setDialog.nextSetButton.OnActivate();
     HudCmdBindingEntry **const nextSetBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.commandList.bindingVec.begin);
+        static_cast<HudCmdBindingEntry **>(setDialog.commandList.bindingVec.begin);
     const bool nextSet =
-        dialog.setList.selectedIndex == 1 &&
-        dialog.commandList.bindingVec.end == nextSetBegin + 1 &&
+        setDialog.setList.selectedIndex == 1 &&
+        setDialog.commandList.bindingVec.end == nextSetBegin + 1 &&
         nextSetBegin[0]->commandId == 7;
 
-    dialog.prevSetButton.OnActivate();
+    setDialog.prevSetButton.OnActivate();
     HudCmdBindingEntry **const prevSetBegin =
-        static_cast<HudCmdBindingEntry **>(dialog.commandList.bindingVec.begin);
+        static_cast<HudCmdBindingEntry **>(setDialog.commandList.bindingVec.begin);
     const bool prevSet =
-        dialog.setList.selectedIndex == 0 &&
-        dialog.commandList.bindingVec.end == prevSetBegin + 1 &&
+        setDialog.setList.selectedIndex == 0 &&
+        setDialog.commandList.bindingVec.end == prevSetBegin + 1 &&
         prevSetBegin[0]->commandId == 5;
 
-    CleanupHudCmdDialogButtons(dialog);
-    SetupHudCmdDialogButtons(dialog);
-    dialog.commandList.selectedBindingIndex = 0;
+    CleanupHudCmdDialogButtons(setDialog);
+    DestroyHudCmdDialogDescriptionPanelForSmoke(setDialog);
 
-    dialog.nextCommandButton.OnActivate();
+    HudCmdDialog commandDialog{};
+    commandDialog.descriptionPanel.ConstructorDefault("stale", 0, 0);
+    commandDialog.nextCommandButton.owner = &commandDialog;
+    commandDialog.prevCommandButton.owner = &commandDialog;
+    SetupHudCmdDialogButtons(commandDialog);
+    commandDialog.commandList.selectedBindingIndex = 0;
+
+    commandDialog.nextCommandButton.OnActivate();
     const bool nextCommand =
-        dialog.commandList.selectedBindingIndex == 1 &&
-        dialog.keyAButton.selectedBindingIndex == 1 &&
-        std::strcmp(dialog.descriptionPanel.textBuffer, "HintSeven") == 0;
+        commandDialog.commandList.selectedBindingIndex == 1 &&
+        commandDialog.keyAButton.selectedBindingIndex == 1 &&
+        std::strcmp(commandDialog.descriptionPanel.textBuffer, "HintSeven") == 0;
 
-    dialog.prevCommandButton.OnActivate();
+    commandDialog.prevCommandButton.OnActivate();
     const bool prevCommand =
-        dialog.commandList.selectedBindingIndex == 0 &&
-        dialog.keyAButton.selectedBindingIndex == 0 &&
-        std::strcmp(dialog.descriptionPanel.textBuffer, "HintFive") == 0;
+        commandDialog.commandList.selectedBindingIndex == 0 &&
+        commandDialog.keyAButton.selectedBindingIndex == 0 &&
+        std::strcmp(commandDialog.descriptionPanel.textBuffer, "HintFive") == 0;
 
-    CleanupHudCmdDialogButtons(dialog);
-    dialog.descriptionPanel.HudUiPanel::~HudUiPanel();
+    CleanupHudCmdDialogButtons(commandDialog);
+    DestroyHudCmdDialogDescriptionPanelForSmoke(commandDialog);
     g_zInput_BindMap_Current = oldCurrent;
     g_zInput_BindGroupInfoList = oldGroups;
     RestoreFunctionPatch(labelPatch);
@@ -2104,7 +2250,7 @@ extern "C" int zhud_cmd_dialog_constructor_smoke(void) {
     }
 
     CleanupHudCmdDialogButtons(*dialog);
-    dialog->descriptionPanel.HudUiPanel::~HudUiPanel();
+    DestroyHudCmdDialogDescriptionPanelForSmoke(*dialog);
     ::operator delete(storage);
     g_zInput_BindMap_Current = oldCurrent;
     g_zInput_BindGroupInfoList = oldGroups;
@@ -2248,31 +2394,34 @@ extern "C" int zhud_cmd_dialog_scalar_deleting_destructor_smoke(void) {
 }
 
 extern "C" int zhud_text_input_constructor_smoke(void) {
-    HudUiTextInput input{};
-    HudUiTextInput *const result = input.Constructor(8);
+    void *const storage = ::operator new(sizeof(HudUiTextInput));
+    std::memset(storage, 0, sizeof(HudUiTextInput));
+    HudUiTextInput *const input = static_cast<HudUiTextInput *>(storage);
+    HudUiTextInput *const result = input->Constructor(8);
 
     const bool constructed =
-        result == &input &&
-        input.buffer != nullptr &&
-        input.capacity == 8 &&
-        input.cursor == 0 &&
-        input.keyActionMap[0x20] == 0 &&
-        input.keyActionMap[0x2e] == 0 &&
-        input.keyActionMap[0x1b] == 2 &&
-        input.keyActionMap[0x0d] == 3 &&
-        input.keyActionMap[0x08] == 4 &&
-        input.keyActionMap[0x7f] == 5 &&
-        input.keyActionMap[0x02] == 6 &&
-        input.keyActionMap[0x06] == 7 &&
-        input.keyActionMap['A'] == 0 &&
-        input.keyActionMap[1] == 1;
+        result == input &&
+        input->buffer != nullptr &&
+        input->capacity == 8 &&
+        input->cursor == 0 &&
+        input->keyActionMap[0x20] == 0 &&
+        input->keyActionMap[0x2e] == 0 &&
+        input->keyActionMap[0x1b] == 2 &&
+        input->keyActionMap[0x0d] == 3 &&
+        input->keyActionMap[0x08] == 4 &&
+        input->keyActionMap[0x7f] == 5 &&
+        input->keyActionMap[0x02] == 6 &&
+        input->keyActionMap[0x06] == 7 &&
+        input->keyActionMap['A'] == 0 &&
+        input->keyActionMap[1] == 1;
 
-    input.SetContents("abcdef");
+    input->SetContents("abcdef");
     const bool contents =
-        std::strcmp(input.GetBuffer(), "abcdef") == 0 &&
-        input.cursor == 0;
+        std::strcmp(input->GetBuffer(), "abcdef") == 0 &&
+        input->cursor == 0;
 
-    input.DestructorCore();
+    input->DestructorCore();
+    ::operator delete(storage);
     return constructed && contents ? 0 : 1;
 }
 
@@ -2393,44 +2542,47 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
     const unsigned int oldMask = g_HudUi_InvalidateMask;
     g_HudUi_InvalidateMask = 0x80;
 
-    HudUiNumericTextInput input{};
-    HudUiNumericTextInput *const result = input.BaseConstructor();
+    void *const storage = ::operator new(sizeof(HudUiNumericTextInput));
+    std::memset(storage, 0, sizeof(HudUiNumericTextInput));
+    HudUiNumericTextInput *const input = static_cast<HudUiNumericTextInput *>(storage);
+    HudUiNumericTextInput *const result = input->BaseConstructor();
 
     const bool constructed =
-        result == &input &&
-        input.modeOrEnabled == 1 &&
-        input.textInput.buffer != nullptr &&
-        input.textInput.capacity == 0x100 &&
-        input.textInput.cursor == 0 &&
-        input.textInput.owner == &input &&
-        input.sliderBorder.sliderVisibleWhenInputActive == 0 &&
-        input.sliderBorder.rawKeyFilterEnabled == 0 &&
-        input.sliderBorder.inputActive == 1 &&
-        input.sliderBorder.caretHalfWidth == 0 &&
-        (input.sliderBorder.flags & 0x10u) == 0 &&
-        (input.flags & 0x10u) == 0;
+        result == input &&
+        input->modeOrEnabled == 1 &&
+        input->textInput.buffer != nullptr &&
+        input->textInput.capacity == 0x100 &&
+        input->textInput.cursor == 0 &&
+        input->textInput.owner == input &&
+        input->sliderBorder.sliderVisibleWhenInputActive == 0 &&
+        input->sliderBorder.rawKeyFilterEnabled == 0 &&
+        input->sliderBorder.inputActive == 1 &&
+        input->sliderBorder.caretHalfWidth == 0 &&
+        (input->sliderBorder.flags & 0x10u) == 0 &&
+        (input->flags & 0x10u) == 0;
 
-    input.Update("42");
+    input->Update("42");
     const bool updated =
-        std::strcmp(input.textInput.buffer, "42") == 0 &&
-        input.textInput.cursor == 2 &&
-        (input.flags & 0x80u) != 0;
+        std::strcmp(input->textInput.buffer, "42") == 0 &&
+        input->textInput.cursor == 2 &&
+        (input->flags & 0x80u) != 0;
 
-    const int previousActive = input.SetInputActive(0);
+    const int previousActive = input->SetInputActive(0);
     const bool disabled =
         previousActive == 1 &&
-        input.sliderBorder.inputActive == 0 &&
-        (input.flags & 0x10u) != 0 &&
-        (input.sliderBorder.flags & 0x10u) != 0;
+        input->sliderBorder.inputActive == 0 &&
+        (input->flags & 0x10u) != 0 &&
+        (input->sliderBorder.flags & 0x10u) != 0;
 
-    const int previousInactive = input.SetInputActive(1);
+    const int previousInactive = input->SetInputActive(1);
     const bool enabled =
         previousInactive == 0 &&
-        input.sliderBorder.inputActive == 1 &&
-        (input.flags & 0x10u) == 0 &&
-        (input.sliderBorder.flags & 0x10u) == 0;
+        input->sliderBorder.inputActive == 1 &&
+        (input->flags & 0x10u) == 0 &&
+        (input->sliderBorder.flags & 0x10u) == 0;
 
-    input.Destructor();
+    input->Destructor();
+    ::operator delete(storage);
     g_HudUi_InvalidateMask = oldMask;
     return constructed && updated && disabled && enabled ? 0 : 1;
 }

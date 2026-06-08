@@ -417,7 +417,10 @@ IDirectDrawPalette *g_zVideo_pDDPalette = 0;
 HWND g_zVideo_hWnd = 0;
 RECT g_zVideo_CachedClientRectScreen = {0};
 
-// Reimplements 0x4a6cf0: zVid_PackColorRGB
+/**
+ * Reimplements 0x4a6cf0: zVid_PackColorRGB.
+ * Purpose: Pack 8-bit RGB components into the active framebuffer pixel format.
+ */
 unsigned int __fastcall zVid_PackColorRGB(
     int red,
     int green,
