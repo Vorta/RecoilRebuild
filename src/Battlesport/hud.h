@@ -5,6 +5,7 @@
 #include <windows.h>
 
 #include "Battlesport/RecoilApp.h"
+#include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
 #include "GameZRecoil/include/zClass.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zVideo/zVideo.h"
@@ -70,18 +71,55 @@ int __fastcall operator<(
     const HudUiSaveLoadEntry &rhs
 );
 
+struct HudUiSaveLoadEntryAllocator {
+    char value;
+
+    /**
+     * Restores the original-source inline one-byte VC5 allocator subobject used
+     * by std::vector<HudUiSaveLoadEntry> member construction. No standalone
+     * retail function exists; observed in callers 0x434680 and 0x434b90.
+     * Purpose: keep the recovered save-entry vector layout aligned with the
+     * retail allocator/_First/_Last/_End object shape.
+     */
+    HudUiSaveLoadEntryAllocator() {
+#if !defined(_MSC_VER) || _MSC_VER >= 1200
+        value = 0;
+#endif
+    }
+};
+
 struct HudUiSaveLoadEntries {
-    int reserved00;
+    HudUiSaveLoadEntryAllocator allocatorProxy;
+    char padding[3];
     HudUiSaveLoadEntry *begin;
     HudUiSaveLoadEntry *end;
     HudUiSaveLoadEntry *capacityEnd;
+
+    /**
+     * Restores the original-source inline VC5 std::vector<HudUiSaveLoadEntry>
+     * default constructor. No standalone retail function exists; observed in
+     * callers 0x434680 and 0x434b90 immediately after the list-item array
+     * construction.
+     * Purpose: preserve the original save-entry vector member construction
+     * shape before derived save/load button construction.
+     */
+    explicit HudUiSaveLoadEntries(
+        const HudUiSaveLoadEntryAllocator &allocator = HudUiSaveLoadEntryAllocator()
+    ) : allocatorProxy(allocator), begin(0), end(0), capacityEnd(0) {
+    }
 
     HudUiSaveLoadEntry * InsertCopiesAt(
         HudUiSaveLoadEntry *position,
         unsigned int count,
         const HudUiSaveLoadEntry *entry
     );
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Restores the original-source inline VC5 std::vector<HudUiSaveLoadEntry>
+     * erase(first,last) body. No standalone retail function exists; observed in
+     * caller 0x4355e0 as the save-entry vector clear path.
+     * Purpose: preserve the original save-entry vector erase shape while
+     * keeping the recovered file-entry storage typed.
+     */
     HudUiSaveLoadEntry * EraseRangeNoDestroyInline(
         HudUiSaveLoadEntry *first,
         HudUiSaveLoadEntry *last
@@ -201,6 +239,21 @@ RECOIL_STATIC_ASSERT(
 );
 
 struct HudUiSaveLoadGameNameInput : HudUiNumericTextInput {
+    /**
+     * Restores the original-source inline save/load game-name input constructor.
+     * No standalone retail function exists; observed in callers 0x434680 and
+     * 0x434b90 after the numeric input base construction and before the
+     * list-item array construction.
+     * Purpose: keep game-name text-buffer setup owned by the game-name input
+     * member instead of the outer dialog constructor body.
+     */
+    HudUiSaveLoadGameNameInput() {
+        textInput.AllocTextBuffer(20);
+        Update("");
+        SetInputActive(1);
+        SetRawKeyboardCapture(1);
+    }
+
     void OnActivate();
     int OnRawKeyboardEvent(int key);
 };
@@ -208,7 +261,7 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiSaveLoadGameNameInput) == 0x374);
 
 struct HudUiSaveLoadDialog : HudUiBackground {
     HudUiSaveLoadDeleteButton deleteButton;
-    HudUiZrdWidget backButton;
+    HudUiMenuBackButton backButton;
     HudUiSaveLoadNextButton nextEntryButton;
     HudUiSaveLoadPrevButton prevEntryButton;
     HudUiSaveLoadGameNameInput gameNameInput;

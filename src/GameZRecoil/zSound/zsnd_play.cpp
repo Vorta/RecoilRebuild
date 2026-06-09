@@ -546,7 +546,11 @@ int __fastcall zSnd::ApplyMuteStateToActiveVoices(
     return previousMuted;
 }
 
-// Reimplements 0x49fa00: zSndSample_PlaySimple
+/**
+ * Reimplements 0x49fa00: zSndSample_PlaySimple.
+ * Purpose: return the supplied gain scale through the x87 floating-point
+ * return path unchanged.
+ */
 extern "C" float __stdcall zSndSample_PlaySimple(
     float value
 ) {
@@ -930,12 +934,16 @@ int zSndPlayHandleSnapshot::Destroy() {
     return 1;
 }
 
-// Reimplements 0x49fda0: zSndPlayHandle::StopIfActive
 // Modern MSVC /RTC traps the recovered unsupported-backend return of the
 // uninitialized status stack slot; keep the retail shape for debug smokes.
 #if defined(_MSC_VER)
 #pragma runtime_checks("", off)
 #endif
+/**
+ * Reimplements 0x49fda0: zSndPlayHandle::StopIfActive.
+ * Purpose: stop the active provider buffer/source for this play handle and
+ * clear any matching last-voice marker state.
+ */
 int zSndPlayHandle::StopIfActive() {
     zSndPlayHandle *playHandle = this;
     int status;

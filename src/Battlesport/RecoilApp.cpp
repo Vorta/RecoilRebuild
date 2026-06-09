@@ -42,6 +42,12 @@
 #endif
 
 #include <direct.h>
+#if defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+#ifndef __PLACEMENT_NEW_INLINE
+#define __PLACEMENT_NEW_INLINE
+#endif
+#include <deque>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1038,16 +1044,6 @@ void HudUiLoadGameDialog::OnPrimaryAction() {
  * Purpose: Builds the save-game dialog controls from dialog.zrd and initializes list contents.
  */
 HudUiSaveGameDialog::HudUiSaveGameDialog() {
-    gameNameInput.textInput.AllocTextBuffer(20);
-    gameNameInput.Update("");
-    gameNameInput.SetInputActive(1);
-    gameNameInput.SetRawKeyboardCapture(1);
-
-    fileEntries.reserved00 = 0;
-    fileEntries.begin = 0;
-    fileEntries.end = 0;
-    fileEntries.capacityEnd = 0;
-
     zReader::Node *const loadedSection = LoadFromZrd(
         "dialog.zrd",
         "SAVE_GAME_DIALOG",
@@ -1137,16 +1133,6 @@ void HudUiSaveGameDialog::Destructor() {
  * Purpose: Builds the load-game dialog controls from dialog.zrd and initializes list contents.
  */
 HudUiLoadGameDialog::HudUiLoadGameDialog() {
-    gameNameInput.textInput.AllocTextBuffer(20);
-    gameNameInput.Update("");
-    gameNameInput.SetInputActive(1);
-    gameNameInput.SetRawKeyboardCapture(1);
-
-    fileEntries.reserved00 = 0;
-    fileEntries.begin = 0;
-    fileEntries.end = 0;
-    fileEntries.capacityEnd = 0;
-
     zReader::Node *const loadedSection = LoadFromZrd(
         "dialog.zrd",
         "LOAD_GAME_DIALOG",
@@ -1822,14 +1808,14 @@ int __fastcall RecoilApp::InitializeDisplay(
         0
     );
     zVideo::CallClearPrimarySurfaceAndZBuffer(0);
-    zVideo::PresentOrAdjustSurfacesIfEnabled(
+    zVideo::AdjustSurfacesIfEnabled(
         0,
         0,
         1,
         1
     );
     zVideo::CallClearPrimarySurfaceAndZBuffer(0);
-    zVideo::PresentOrAdjustSurfacesIfEnabled(
+    zVideo::AdjustSurfacesIfEnabled(
         0,
         0,
         1,
@@ -2123,6 +2109,7 @@ RecoilApp_StateQueueBlock * RecoilApp_StateQueueBlock::InitFromCursor(
  * Reimplements 0x443690: RecoilApp_StateQueue::GrowAndCenterChunkBaseList.
  * Purpose: Grows the chunk-map and recenters the active chunk-slot range in the new map.
  */
+#if !(defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86))
 RecoilApp_StateQueueItem *** RecoilApp_StateQueue::GrowAndCenterChunkBaseList(
     int newCapacity
 ) {
@@ -2253,18 +2240,78 @@ inline void RecoilApp_StateQueue::PushBack(
     }
     ++m_itemCount;
 }
+#else
+/**
+ * Original-source inline helper: VC5 owner verification uses the retail STL deque member.
+ * Purpose: tests whether the recovered state queue has no pending transition items.
+ */
+inline bool RecoilApp_StateQueue::Empty() const {
+    return empty();
+}
 
-// Reimplements 0x442c70: RecoilApp_MfcOleModule::RecoilApp_MfcOleModule
-// (D:\Proj\Battlesport\RecoilApp.cpp)
-RecoilApp_MfcOleModule::RecoilApp_MfcOleModule()
-    : CWinApp(0),
-#if !defined(_AFXDLL)
-      m_recoilPad(0),
+/**
+ * Original-source inline helper: VC5 owner verification uses the retail STL deque member.
+ * Purpose: returns the pending transition item at the front of the queue.
+ */
+inline RecoilApp_StateQueueItem *RecoilApp_StateQueue::Front() const {
+    return front();
+}
+
+/**
+ * Original-source inline helper: VC5 owner verification uses the retail STL deque member.
+ * Purpose: removes the pending transition item at the front of the queue.
+ */
+inline void RecoilApp_StateQueue::PopFront() {
+    pop_front();
+}
+
+/**
+ * Original-source inline helper: VC5 owner verification uses the retail STL deque member.
+ * Purpose: appends one pending transition item to the queue.
+ */
+inline void RecoilApp_StateQueue::PushBack(
+    RecoilApp_StateQueueItem *const &item
+) {
+    push_back(item);
+}
 #endif
-      m_pendingState(0),
+
+/**
+ * Reimplements 0x442c70: RecoilApp_MfcOleModule::RecoilApp_MfcOleModule.
+ * Original source path: D:\Proj\Battlesport\RecoilApp.cpp.
+ * Purpose: constructs the MFC app subobject and initializes Recoil-owned state host fields.
+ */
+#if defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+RecoilApp_MfcOleModule::RecoilApp_MfcOleModule()
+    : CWinApp(0)
+#if !defined(_AFXDLL)
+      , m_recoilPad(0)
+#endif
+{
+    m_skipWait = 0;
+    m_pendingState = 0;
+    m_currentStateIndex = -1;
+    memset(
+        m_stateStack,
+        0,
+        sizeof(m_stateStack)
+    );
+}
+#else
+/**
+ * Reimplements 0x442c70: RecoilApp_MfcOleModule::RecoilApp_MfcOleModule.
+ * Original source path: D:\Proj\Battlesport\RecoilApp.cpp.
+ * Purpose: constructs the MFC app subobject and initializes Recoil-owned state host fields.
+ */
+RecoilApp_MfcOleModule::RecoilApp_MfcOleModule()
+    : CWinApp(0)
+#if !defined(_AFXDLL)
+      , m_recoilPad(0)
+#endif
+      , m_pendingState(0),
       m_currentStateIndex(-1),
       m_stateHostReserved(0),
-      m_skipWait(1),
+      m_skipWait(0),
       m_missionShutdownMode(RECOILAPP_MISSION_SHUTDOWN_ON_EXIT),
       m_stateQueue(),
       m_reserved148(0) {
@@ -2274,10 +2321,17 @@ RecoilApp_MfcOleModule::RecoilApp_MfcOleModule()
         sizeof(m_stateStack)
     );
 }
+#endif
 
-// Reimplements 0x4428b0: RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule
-// (D:\Proj\Battlesport\RecoilApp.cpp)
+/**
+ * Reimplements 0x4428b0: RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule.
+ * Original source path: D:\Proj\Battlesport\RecoilApp.cpp.
+ * Purpose: destroys the app state's chunked queue storage before chaining to the MFC base destructor.
+ */
 RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule() {
+#if defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+    // VC5 emits the retail chunk-drain loop from the recovered deque member destructor.
+#else
     if (m_stateQueue.m_chunkBaseList != 0) {
         RecoilApp_StateQueueItem ***slot = m_stateQueue.m_readBlock.m_chunkBaseSlot;
         RecoilApp_StateQueueItem ***const lastSlot = m_stateQueue.m_writeBlock.m_chunkBaseSlot;
@@ -2293,6 +2347,7 @@ RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule() {
             sizeof(m_stateQueue)
         );
     }
+#endif
 }
 
 // Reimplements 0x42dfa0: RecoilApp::RecoilApp
@@ -2334,7 +2389,10 @@ RecoilApp_IState * RecoilApp::GetCurrentState() const {
     return m_stateStack[m_currentStateIndex];
 }
 
-// Reimplements 0x443160: RecoilApp::QueueSwitchCurrentState
+/**
+ * Reimplements 0x443160: RecoilApp::QueueSwitchCurrentState.
+ * Purpose: enqueue a switch-current-state request and run the immediate exit/enter callbacks.
+ */
 RecoilApp_IState * RecoilApp::QueueSwitchCurrentState(
     RecoilApp_IState *state,
     int stateParam
@@ -2376,7 +2434,10 @@ RecoilApp_IState * RecoilApp::QueuePushState(
     return currentState;
 }
 
-// Reimplements 0x4434b0: RecoilApp::QueueExitCurrentState
+/**
+ * Reimplements 0x4434b0: RecoilApp::QueueExitCurrentState.
+ * Purpose: enqueue an exit-current-state request and run the current state's exit callback.
+ */
 RecoilApp_IState * RecoilApp::QueueExitCurrentState(
     int stateParam
 ) {

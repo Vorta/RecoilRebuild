@@ -184,6 +184,12 @@ zVideo_TextureRecordPartial *g_zImage_DefaultTextureRecord = 0;
 char g_zVideo_PalettePathBuffer[0x100] = {0};
 PALETTEENTRY g_zVideo_PaletteFileEntries[0x100] = {0};
 PALETTEENTRY g_zVideo_SystemPaletteEntries[0x100] = {0};
+
+/*
+ * Renderer dispatch owner: BN 0x4a77a0 initializes this backend function
+ * pointer set from zVideo_dd/zVideo_dd3d entry points and leaves the globals
+ * zero-initialized before BindRendererDispatch runs.
+ */
 zVideo_StatusProc g_zVideo_pfnOpenVideoMode = 0;
 zVideo_ShutdownVideoSystemProc g_zVideo_pfnShutdownVideoSystem = 0;
 zVideo_PaletteSetEntriesProc g_zVideo_pfnPaletteSetEntries = 0;
@@ -195,8 +201,8 @@ zVideo_ClearZBufferRectProc g_zVideo_pfnClearZBufferRect = 0;
 zVideo_ClearSwSurfaceAndZBufferProc g_zVideo_pfnClearSwSurfaceAndZBuffer = 0;
 zVideo_ClearStateSurfaceAndZBufferProc g_zVideo_pfnClearStateSurfaceAndZBuffer = 0;
 zVideo_UpdateFogColorProc g_zVideo_pfnUpdateFogColor = 0;
-zVideo_QueryMemoryBytesProc g_zVideo_pfnQueryTextureMemoryBytes = 0;
 zVideo_QueryMemoryBytesProc g_zVideo_pfnQueryDeviceVideoMemoryBytes = 0;
+zVideo_QueryMemoryBytesProc g_zVideo_pfnQueryTextureMemoryBytes = 0;
 zVideo_BltRectDirectProc g_zVideo_pfnBltSwToPrimaryRectDirect = 0;
 zVideo_BltRectDirectProc g_zVideo_pfnBltPrimaryToSwRectDirect = 0;
 unsigned int g_zVideo_pfnBltSwToPrimaryRect = 0;
@@ -226,6 +232,12 @@ unsigned int g_zVideo_pfnDrawPointColor16 = 0;
 unsigned int g_zVideo_pfnFlushSortedPolys = 0;
 unsigned int g_zVideo_pfnFlushOverwritePolys = 0;
 unsigned int g_zVideo_pfnFlushQuadBatch = 0;
+
+/*
+ * Cached DirectDraw hardware-device owner: BN memory-query callers 0x4a9950
+ * and 0x4a9a30 index four 0x6ec-byte records and the selected-device pointer
+ * populated by the DirectDraw enumeration path.
+ */
 zVidHwApiDeviceRecordPartial g_zVideo_HwApiDeviceTable[4] = {0};
 zVidHwApiDeviceRecordPartial *g_zVideo_pSelectedHwApiDeviceRecord = 0;
 zVidD3DDriverRecordPartial *g_zVideo_pSelectedD3DDeviceInfo = 0;
@@ -1553,8 +1565,11 @@ void __fastcall SetVideoModeIndex(
     }
 }
 
-// Reimplements 0x4a9950: zVid::QueryDeviceVideoMemoryBytes
-// Queries live DirectDraw video memory for the selected device or cached table values by index.
+/**
+ * Reimplements 0x4a9950: zVid::QueryDeviceVideoMemoryBytes.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: queries live or cached DirectDraw video memory totals and free bytes for a device.
+ */
 int __fastcall QueryDeviceVideoMemoryBytes(
     int deviceIndexOrMinus1,
     int *totalBytes,
@@ -1593,14 +1608,17 @@ int __fastcall QueryDeviceVideoMemoryBytes(
     return 1;
 }
 
-// Reimplements 0x4a9a30: zVid::QueryTextureMemoryBytes
-// Queries live DirectDraw texture memory or cached texture-memory fields by device index.
+/**
+ * Reimplements 0x4a9a30: zVid::QueryTextureMemoryBytes.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: queries live or cached DirectDraw texture memory totals and free bytes for a device.
+ */
 int __fastcall QueryTextureMemoryBytes(
     int deviceIndexOrMinus1,
     int *totalBytes,
     int *freeBytes
 ) {
-    if (g_zVideo_pDirectDraw2 == 0 && deviceIndexOrMinus1 == -1) {
+    if (g_zVideo_pDirectDraw2 == 0) {
         *freeBytes = 0;
         *totalBytes = 0;
         return 0;
@@ -2532,17 +2550,6 @@ int Dispatch_UnlockPrimarySurfaceState() {
     return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_PrimarySurfaceState);
 }
 
-// Restores the 0x42e330 call shape: retail passes present/adjust-style
-// arguments before forwarding primary-surface unlock through the provider.
-int __fastcall PresentOrAdjustSurfacesIfEnabled(
-    zVidRect32 *srcRect,
-    zVidRect32 *dstRect,
-    int waitForPresent,
-    int blitPrimaryToSwFirst
-) {
-    return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_PrimarySurfaceState);
-}
-
 /**
  * Reimplements 0x48d420: zVideo::Fx_SetSurfaceState.
  * Purpose: Publishes the active FX surface descriptor and derives the 16-bit pitch.
@@ -3439,7 +3446,11 @@ int RunPostprocessOnPrimaryBuffer() {
     return 0;
 }
 
-// Reimplements 0x4a6900: zVideo::AdjustSurfacesIfEnabled
+/**
+ * Reimplements 0x4a6900: zVideo::PresentOrAdjustSurfacesIfEnabled.
+ * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Purpose: forward enabled surface-present requests through the renderer dispatch and tick the video frame counter.
+ */
 int __fastcall AdjustSurfacesIfEnabled(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect,
@@ -3460,7 +3471,11 @@ int __fastcall AdjustSurfacesIfEnabled(
     return result;
 }
 
-// Reimplements 0x4a77a0: zVideo::BindRendererDispatch
+/**
+ * Reimplements 0x4a77a0: zVideo::BindRendererDispatch.
+ * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Purpose: bind renderer-specific zVideo dispatch functions and fullscreen state.
+ */
 void __fastcall BindRendererDispatch(
     int rendererType,
     int fullscreenOption
@@ -4435,10 +4450,12 @@ int __fastcall Destroy(
 /**
  * Reimplements 0x46d5a0: zVid_Image::ReleaseIfNotDefault.
  * Purpose: destroy dynamically allocated images while preserving the initialized default image singleton.
+ * The VC5-era throw() declaration is retained because callers such as
+ * HudUiBackground::~HudUiBackground use it to match retail EH cleanup state numbering.
  */
 int __fastcall ReleaseIfNotDefault(
     zVidImagePartial *image
-) {
+) throw() {
     if (image != &g_zImage_DefaultImage) {
         Destroy(image);
     }
@@ -8780,7 +8797,20 @@ bool BltFillWithRestore(
 
 } // namespace
 
-// Reimplements 0x4a93d0: zVideo_dd::EnumDirectDrawDeviceCallback
+/**
+ * Reimplements 0x4a93d0: zVideo_dd::EnumDirectDrawDeviceCallback.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: collect one DirectDraw device record and enumerate its usable
+ * Direct3D drivers during startup.
+ *
+ * Evidence: BN indexes g_zVideo_HwApiDeviceTable by
+ * g_zVideo_NumAcceptedDirectDrawDevices, copies the optional DirectDraw GUID
+ * plus driver strings, temporarily selects the record, creates DirectDraw2,
+ * gathers caps and video/texture memory, tags AGP-capable devices, calls
+ * EnumerateDirect3DDevicesForRecord, increments the accepted DirectDraw count
+ * only when D3D enumeration succeeds, tears down temporary interfaces, and
+ * returns TRUE to continue enumeration except on capacity or caps failure.
+ */
 BOOL CALLBACK EnumDirectDrawDeviceCallback(
     GUID *guid,
     LPSTR driverDescription,
@@ -8900,7 +8930,19 @@ BOOL CALLBACK EnumDirectDrawDeviceCallback(
     return TRUE;
 }
 
-// Reimplements 0x4a96b0: zVideo_dd::EnumDirect3DDeviceCallback
+/**
+ * Reimplements 0x4a96b0: zVideo_dd::EnumDirect3DDeviceCallback.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: filter Direct3D enumeration callbacks and append accepted hardware
+ * RGB devices with 16-bit Z-buffer support to the current DirectDraw record.
+ *
+ * Evidence: BN indexes entry->m_d3dDrivers by m_acceptedD3DDeviceCount,
+ * rejects non-hardware, non-RGB, and missing 16-bit Z-buffer devices, aborts
+ * with teardown plus zError::ReportOld on capacity overflow, copies optional
+ * GUID storage and the hardware D3D device descriptor, defaults zero max
+ * texture dimensions to 0x100, stores device strings, and increments both
+ * accepted-driver counters.
+ */
 HRESULT CALLBACK EnumDirect3DDeviceCallback(
     GUID *guid,
     LPSTR deviceDescription,
@@ -8985,7 +9027,16 @@ HRESULT CALLBACK EnumDirect3DDeviceCallback(
     return 1;
 }
 
-// Reimplements 0x4a6930: zVideo_dd::PrepareWindowForMode
+/**
+ * Reimplements 0x4a6930: zVideo_dd::PrepareWindowForMode.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: switch the main window to fullscreen DirectDraw style and snapshot
+ * the system palette when the desktop is palettized.
+ *
+ * Evidence: BN calls only Win32/GDI providers, writes no local tables, reads
+ * g_zVideo_hWnd, and snapshots 256 PALETTEENTRY records into
+ * g_zVideo_SystemPaletteEntries before returning zero.
+ */
 int PrepareWindowForMode() {
     SetMenu(
         g_zVideo_hWnd,
@@ -9026,7 +9077,12 @@ int PrepareWindowForMode() {
     return 0;
 }
 
-// Reimplements 0x4a7d20: zVideo_dd::OpenVideoMode
+/**
+ * Reimplements 0x4a7d20: zVideo_dd::OpenVideoMode.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: run the fullscreen window preparation step and create the selected
+ * DirectDraw2 device, returning one on failure and zero on success.
+ */
 int __fastcall OpenVideoMode(
     int
 ) {
@@ -9040,7 +9096,16 @@ int __fastcall OpenVideoMode(
     return 0;
 }
 
-// Reimplements 0x4a9390: zVideo_dd::RunDirectDrawDeviceEnumeration
+/**
+ * Reimplements 0x4a9390: zVideo_dd::RunDirectDrawDeviceEnumeration.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: run DirectDraw device enumeration during video startup.
+ *
+ * Evidence: BN prints the enumeration banner, calls the DirectDrawEnumerateA
+ * provider import with EnumDirectDrawDeviceCallback and a null context, returns
+ * one on DD_OK, and routes nonzero HRESULTs through ReportError at source line
+ * 0x6ad before returning zero.
+ */
 int RunDirectDrawDeviceEnumeration() {
     printf("\nENUMERATE GRAPHICS DEVICES...\n");
     const HRESULT hresult = DirectDrawEnumerateA(
@@ -9059,7 +9124,17 @@ int RunDirectDrawDeviceEnumeration() {
     return 0;
 }
 
-// Reimplements 0x4a8800: zVideo_dd::CreateDirectDraw2ForSelectedDevice
+/**
+ * Reimplements 0x4a8800: zVideo_dd::CreateDirectDraw2ForSelectedDevice.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: create the selected DirectDraw device, query its IDirectDraw2
+ * interface, and cache that interface for the active video backend.
+ *
+ * Evidence: BN reads g_zVideo_pSelectedHwApiDeviceRecord->pDirectDrawGuid,
+ * calls the DirectDrawCreate provider import, queries IID_IDirectDraw2 into
+ * g_zVideo_pDirectDraw2, releases the temporary IDirectDraw on success, and
+ * routes the two HRESULT failures through ReportError.
+ */
 int CreateDirectDraw2ForSelectedDevice() {
     IDirectDraw *directDraw1 = 0;
     const HRESULT createResult =
@@ -9093,7 +9168,18 @@ int CreateDirectDraw2ForSelectedDevice() {
     return 0;
 }
 
-// Reimplements 0x4a95e0: zVideo_dd::EnumerateDirect3DDevicesForRecord
+/**
+ * Reimplements 0x4a95e0: zVideo_dd::EnumerateDirect3DDevicesForRecord.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: query IDirect3D2 from the active DirectDraw2 object and enumerate
+ * usable Direct3D drivers for one DirectDraw device record.
+ *
+ * Evidence: BN preserves the original 0x68-byte stack zeroing, prints the
+ * selected DirectDraw record name, queries IID_IDirect3D2 into g_zVideo_pD3D2,
+ * resets m_acceptedD3DDeviceCount, runs EnumDevices with
+ * EnumDirect3DDeviceCallback, releases g_zVideo_pD3D2, and returns one only
+ * when the callback accepted at least one driver.
+ */
 int __fastcall EnumerateDirect3DDevicesForRecord(
     zVidHwApiDeviceRecordPartial *entry
 ) {
@@ -10488,7 +10574,17 @@ int CreateFullscreenHardwareSurfaces() {
     );
 }
 
-// Reimplements 0x4a91b0: zVideo_dd::ReleaseAllInterfacesAndSurfaces
+/**
+ * Reimplements 0x4a91b0: zVideo_dd::ReleaseAllInterfacesAndSurfaces.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: release the Direct3D and DirectDraw interface globals plus tracked
+ * surfaces, page-unlocking locked surfaces before their COM release.
+ *
+ * Evidence: BN releases the D3D material, viewport, device, Direct3D2,
+ * clipper, Z-buffer, software, primary, display-mode, and palette globals in
+ * this order; PageUnlock failures at source lines 0x652 and 0x662 route
+ * through ReportError and stop the remaining release pass.
+ */
 int ReleaseAllInterfacesAndSurfaces() {
     ReleaseComInterface(g_zVideo_pD3DMaterial2);
     ReleaseComInterface(g_zVideo_pD3DViewport2);
@@ -10518,7 +10614,17 @@ int ReleaseAllInterfacesAndSurfaces() {
     return 0;
 }
 
-// Reimplements 0x4a9160: zVideo_dd::VerifySurfaceStateLocking
+/**
+ * Reimplements 0x4a9160: zVideo_dd::VerifySurfaceStateLocking.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: optionally ask the surface-lock verifier to validate the current
+ * surface state for a teardown caller context.
+ *
+ * Evidence: BN gates on g_zVideo_SurfaceLockVerifyFlags bit 0x20, builds a
+ * 0x28-byte zVideo_SurfaceLockVerifyArgs record with callerContext at offset
+ * 0x1c, calls g_zVideo_pSurfaceLockVerifier->VerifySurfaceState, and reports
+ * nonzero HRESULTs at source line 0x61a.
+ */
 void __fastcall VerifySurfaceStateLocking(
     int callerContext
 ) {
@@ -10539,7 +10645,17 @@ void __fastcall VerifySurfaceStateLocking(
     }
 }
 
-// Reimplements 0x4a9300: zVideo_dd::TeardownVideoSubsystem
+/**
+ * Reimplements 0x4a9300: zVideo_dd::TeardownVideoSubsystem.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: tear down the remaining DirectDraw fullscreen state after the
+ * surface/interface release pass.
+ *
+ * Evidence: BN first calls ReleaseAllInterfacesAndSurfaces, then page-unlocks
+ * and releases g_zVideo_pPageUnlockSurface, verifies and releases
+ * g_zVideo_pSurfaceLockVerifier, restores IDirectDraw2 cooperative level to
+ * normal, releases g_zVideo_pDirectDraw2, and clears each released global.
+ */
 void TeardownVideoSubsystem() {
     ReleaseAllInterfacesAndSurfaces();
 

@@ -355,8 +355,8 @@ extern zVideo_AdjustSurfacesProc g_zVideo_pfnAdjustSurfaces;
 extern zVideo_SurfaceStateProc g_zVideo_pfnLockSurfaceState;
 extern zVideo_SurfaceStateProc g_zVideo_pfnUnlockSurfaceState;
 extern zVideo_ClearZBufferRectProc g_zVideo_pfnClearZBufferRect;
-extern zVideo_QueryMemoryBytesProc g_zVideo_pfnQueryTextureMemoryBytes;
 extern zVideo_QueryMemoryBytesProc g_zVideo_pfnQueryDeviceVideoMemoryBytes;
+extern zVideo_QueryMemoryBytesProc g_zVideo_pfnQueryTextureMemoryBytes;
 extern zVideo_BltRectDirectProc g_zVideo_pfnBltSwToPrimaryRectDirect;
 extern zVideo_BltRectDirectProc g_zVideo_pfnBltPrimaryToSwRectDirect;
 extern zVideo_ClearSwSurfaceAndZBufferProc g_zVideo_pfnClearSwSurfaceAndZBuffer;
@@ -626,12 +626,6 @@ int Dispatch_LockDisplayModeSurfaceState();
 int Dispatch_UnlockDisplayModeSurfaceState();
 int Dispatch_UnlockSwSurfaceState();
 int Dispatch_UnlockPrimarySurfaceState();
-int __fastcall PresentOrAdjustSurfacesIfEnabled(
-    zVidRect32 *srcRect,
-    zVidRect32 *dstRect,
-    int waitForPresent,
-    int blitPrimaryToSwFirst
-);
 void __fastcall Fx_SetSurfaceState(
     void *pixels,
     int width,
@@ -739,7 +733,7 @@ extern zVidImagePartial g_zImage_DefaultImage;
 
 zVidImagePartial *Create();
 int __fastcall Destroy(zVidImagePartial *image);
-int __fastcall ReleaseIfNotDefault(zVidImagePartial *image);
+int __fastcall ReleaseIfNotDefault(zVidImagePartial *image) throw();
 void __fastcall ReleaseOwnedBuffers(zVidImagePartial *image);
 void __fastcall CalcPow2ScratchFields(zVidImagePartial *image);
 int __fastcall QueryBytesPerPixel(zVidImagePartial *image);

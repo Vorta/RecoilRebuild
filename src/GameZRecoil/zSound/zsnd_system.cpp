@@ -18,17 +18,33 @@ extern "C" zSndFadeListNode *g_zSndFadeDispatchListSentinel = 0;
 extern "C" int g_zSndFadeDispatchListCount = 0;
 
 namespace {
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in 0x4a39b0 and 0x4a3d20 zSnd fade-list callers.
+ * Purpose: recover the authored active-fade list record from the adjacent BN
+ * globals for flags, sentinel, and count.
+ */
 zSndFadeList *ActiveFadeList() {
     return (zSndFadeList *)(&g_zSndFadeActiveListFlags);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in 0x4a39b0 and 0x4a3a80 zSnd fade-list callers.
+ * Purpose: recover the authored dispatch-fade list record from the adjacent BN
+ * globals for flags, sentinel, and count.
+ */
 zSndFadeList *DispatchFadeList() {
     return (zSndFadeList *)(&g_zSndFadeDispatchListFlags);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in 0x4a39b0, 0x4a3c20, 0x4a3d20, and 0x4a3e50 fade-list cleanup
+ * callers.
+ * Purpose: unlink one fade-list node from its intrusive list and release its
+ * storage.
+ */
 void UnlinkAndDeleteFadeNode(
     zSndFadeListNode *node
 ) {
@@ -358,7 +374,10 @@ void LoadLegacySampleSet(
 } // namespace
 
 namespace zSndFadeLists {
-// Reimplements 0x4a3940: zSndFadeLists::InitGlobals
+/**
+ * Reimplements 0x4a3940: zSndFadeLists::InitGlobals.
+ * Purpose: allocate both fade-list sentinels and reset their entry counts.
+ */
 void InitGlobals() {
     InitializeSentinel(g_zSndFadeActiveListSentinel);
     g_zSndFadeActiveListCount = 0;
@@ -366,7 +385,11 @@ void InitGlobals() {
     g_zSndFadeDispatchListCount = 0;
 }
 
-// Reimplements 0x4a39b0: zSndFadeLists::ShutdownAtExit
+/**
+ * Reimplements 0x4a39b0: zSndFadeLists::ShutdownAtExit.
+ * Purpose: release active and dispatch fade-list nodes during sound-system
+ * shutdown.
+ */
 void ShutdownAtExit() {
     zSndFadeListNode *dispatchSentinel = g_zSndFadeDispatchListSentinel;
     zSndFadeListNode *node = dispatchSentinel->next;
@@ -397,12 +420,18 @@ void ShutdownAtExit() {
     g_zSndFadeActiveListCount = 0;
 }
 
-// Reimplements 0x4a39a0: zSndFadeLists::RegisterShutdownAtExit
+/**
+ * Reimplements 0x4a39a0: zSndFadeLists::RegisterShutdownAtExit.
+ * Purpose: register the fade-list shutdown callback with the CRT atexit list.
+ */
 void RegisterShutdownAtExit() {
     atexit(ShutdownAtExit);
 }
 
-// Reimplements 0x4a3930: zSndFadeLists::Init
+/**
+ * Reimplements 0x4a3930: zSndFadeLists::Init.
+ * Purpose: initialize fade-list globals and arrange their process-exit cleanup.
+ */
 void Init() {
     InitGlobals();
     RegisterShutdownAtExit();
@@ -410,7 +439,11 @@ void Init() {
 } // namespace zSndFadeLists
 
 namespace zSndFadeDispatchList {
-// Reimplements 0x4a3a80: zSndFadeDispatchList::PushBack
+/**
+ * Reimplements 0x4a3a80: zSndFadeDispatchList::PushBack.
+ * Purpose: append a completed fade entry to the dispatch list for completion
+ * handling.
+ */
 void __fastcall PushBack(
     zSndFadeEntry *fadeEntry
 ) {
@@ -430,7 +463,11 @@ void __fastcall PushBack(
 }
 } // namespace zSndFadeDispatchList
 
-// Reimplements 0x4a3ad0: zSndFadeEntry::TickAndMaybeDispatch
+/**
+ * Reimplements 0x4a3ad0: zSndFadeEntry::UpdateAndQueueCompletion.
+ * Purpose: advance one fade entry toward its target, apply the backend
+ * volume/gain value, and queue completed entries for dispatch.
+ */
 int zSndFadeEntry::TickAndMaybeDispatch(
     float deltaTime
 ) {
@@ -471,7 +508,11 @@ int zSndFadeEntry::TickAndMaybeDispatch(
     return 1;
 }
 
-// Reimplements 0x4a3c20: zSndFadeActiveList_TickAll
+/**
+ * Reimplements 0x4a3c20: zSndFadeActiveList::TickAll.
+ * Purpose: tick active fades, compact unfinished entries, and delete completed
+ * fade-list nodes.
+ */
 extern "C" void __stdcall zSndFadeActiveList_TickAll(
     float deltaTime
 ) {
@@ -506,7 +547,11 @@ extern "C" void __stdcall zSndFadeActiveList_TickAll(
     }
 }
 
-// Reimplements 0x4a3e50: zSndFadeList::DeleteNodeAndAdvanceCursor
+/**
+ * Reimplements 0x4a3e50: zSndFadeList::DeleteNodeAndAdvanceCursor.
+ * Purpose: remove the current fade-list node, release its storage, and advance
+ * the caller's cursor to the next node.
+ */
 void zSndFadeList::DeleteNodeAndAdvanceCursor(
     zSndFadeListNode *node,
     zSndFadeListNode **outCursor
@@ -517,7 +562,11 @@ void zSndFadeList::DeleteNodeAndAdvanceCursor(
     *outCursor = next;
 }
 
-// Reimplements 0x4a3e90: zSndFadeListCursor::PopFrontCursor
+/**
+ * Reimplements 0x4a3e90: zSndFadeListCursor::PopFrontCursor.
+ * Purpose: return the current cursor node and advance the cursor to the next
+ * intrusive-list node.
+ */
 zSndFadeListNode ** zSndFadeListCursor::PopFrontCursor(
     zSndFadeListNode **outNode,
     int unused
@@ -530,7 +579,11 @@ zSndFadeListNode ** zSndFadeListCursor::PopFrontCursor(
     return outNode;
 }
 
-// Reimplements 0x49f620: zSnd_Tick
+/**
+ * Reimplements 0x49f620: zSnd::Tick.
+ * Purpose: advance backend deferred work, active fades, and the last-voice
+ * marker callback timeline.
+ */
 extern "C" void __fastcall zSnd_Tick(
     int skipA3dCommit
 ) {
@@ -578,7 +631,11 @@ extern "C" void __fastcall zSnd_Tick(
     g_zSndLastVoiceMarkerIndex = markerIndex + 1;
 }
 
-// Reimplements 0x49f614: zSnd_TickWrapper
+/**
+ * Reimplements 0x49f614: zSnd_TickWrapper.
+ * Purpose: forward the skip-A3D-commit flag into zSnd::Tick through the
+ * retail fallthrough wrapper entry.
+ */
 extern "C" void __fastcall zSnd_TickWrapper(
     int skipA3dCommit
 ) {

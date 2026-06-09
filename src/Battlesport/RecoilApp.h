@@ -7,6 +7,10 @@
 #include "GameZRecoil/zFMV/fmv.h"
 #include "recoil/recoil_callconv.h"
 
+#if defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+#include <deque>
+#endif
+
 typedef recoil::Ptr32 RecoilPtr32;
 
 // App-owned state transition request queued by RecoilApp::Run.
@@ -95,6 +99,14 @@ RECOIL_STATIC_ASSERT(
     ) == 0x0c
 );
 
+#if defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+struct RecoilApp_StateQueue : std::deque<RecoilApp_StateQueueItem *> {
+    inline bool Empty() const;
+    inline RecoilApp_StateQueueItem *Front() const;
+    inline void PopFront();
+    inline void PushBack(RecoilApp_StateQueueItem *const &item);
+};
+#else
 struct RecoilApp_StateQueue {
     int m_allocatorPad;
     RecoilApp_StateQueueBlock m_readBlock;
@@ -111,7 +123,9 @@ struct RecoilApp_StateQueue {
     inline void PopFront();
     inline void PushBack(RecoilApp_StateQueueItem *const &item);
 };
+#endif
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_StateQueue) == 0x30);
+#if !(defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86))
 RECOIL_STATIC_ASSERT(
     offsetof(
         RecoilApp_StateQueue,
@@ -136,6 +150,7 @@ RECOIL_STATIC_ASSERT(
         m_itemCount
     ) == 0x2c
 );
+#endif
 
 struct RecoilApp_FmvState : RecoilApp_IState {
     int OnIdleOrDispatch(
