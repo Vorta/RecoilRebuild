@@ -3,12 +3,14 @@
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zReader/zReader.h"
+#include "GameZRecoil/zUtil/zSaveGame.h"
 #include "GameZRecoil/zUtil/zZbd.h"
 
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <new>
 
 void __fastcall InsertEntryIntoSortedPrefix(
     HudUiSaveLoadEntry *entryPosition,
@@ -218,6 +220,13 @@ int g_saveLoadQueueExitParams[4];
 int g_saveLoadQueueSwitchCalls;
 RecoilApp_IState *g_saveLoadQueueSwitchStates[4];
 int g_saveLoadQueueSwitchParams[4];
+int g_saveLoadStateEnterCount;
+int g_saveLoadStateExitCount;
+int g_saveLoadStartEngineCount;
+int g_saveLoadShutdownEngineCount;
+int g_saveLoadExitInstanceCount;
+int g_saveLoadStartEngineResult;
+HWND g_saveLoadLastStartEngineHwnd;
 int g_saveLoadCallOrder;
 int g_saveLoadActionOrder;
 int g_saveLoadListItemUpdateBoundsCount;
@@ -265,6 +274,245 @@ struct TestSaveLoadListItem : HudUiSaveLoadListItem {
 void TestSaveLoadListItem::UpdateTextBoundsFromContent() {
     ++g_saveLoadListItemUpdateBoundsCount;
     g_saveLoadListItemUpdateBoundsThis = this;
+}
+
+struct SaveLoadTestAppState : RecoilApp_IState {
+    void OnEnter() {
+        ++g_saveLoadStateEnterCount;
+    }
+
+    void OnExit() {
+        ++g_saveLoadStateExitCount;
+    }
+};
+
+struct SaveLoadTestRecoilApp : RecoilApp {
+    int StartEngine(HWND hwnd) {
+        ++g_saveLoadStartEngineCount;
+        g_saveLoadLastStartEngineHwnd = hwnd;
+        return g_saveLoadStartEngineResult;
+    }
+
+    void ShutdownEngine() {
+        ++g_saveLoadShutdownEngineCount;
+    }
+
+    int ExitInstance() {
+        ++g_saveLoadExitInstanceCount;
+        return 77;
+    }
+};
+
+void InstallSaveLoadStateVptr(
+    RecoilApp_IState &target,
+    RecoilApp_IState &source
+) {
+    *reinterpret_cast<void **>(&target) =
+        *reinterpret_cast<void **>(&source);
+}
+
+extern "C" int recoil_app_state_queue_block_init_from_cursor_smoke(void) {
+    RecoilApp_StateQueueItem *chunk[1024] = {};
+    RecoilApp_StateQueueItem **chunkBaseSlot = chunk;
+    RecoilApp_StateQueueItem **const cursor = chunk + 512;
+    RecoilApp_StateQueueBlock block{};
+
+    RecoilApp_StateQueueBlock *const returned = block.InitFromCursor(
+        cursor,
+        &chunkBaseSlot
+    );
+
+    if (returned != &block) {
+        return 1;
+    }
+
+    return block.m_chunkBegin == chunk &&
+                   block.m_chunkEnd == chunk + 1024 &&
+                   block.m_cursor == cursor &&
+                   block.m_chunkBaseSlot == &chunkBaseSlot
+               ? 0
+               : 2;
+}
+
+extern "C" int recoil_app_queue_switch_current_state_smoke(void) {
+    g_saveLoadStateEnterCount = 0;
+    g_saveLoadStateExitCount = 0;
+
+    RecoilApp app;
+    SaveLoadTestAppState oldState;
+    SaveLoadTestAppState newState;
+    app.m_currentStateIndex = 0;
+    app.m_stateStack[0] = &oldState;
+
+    RecoilApp_IState *const returned = app.QueueSwitchCurrentState(
+        &newState,
+        42
+    );
+    RecoilApp_StateQueue &queue = app.m_stateQueue;
+    RecoilApp_StateQueueItem *const item = SaveLoadQueueItemAt(
+        queue,
+        0
+    );
+
+    int result = 0;
+    if (returned != &oldState ||
+        g_saveLoadStateExitCount != 1 ||
+        g_saveLoadStateEnterCount != 1 ||
+        queue.m_itemCount != 1) {
+        result = 1;
+    } else if (item == nullptr ||
+               item->m_type != 0 ||
+               item->m_kind != RecoilApp_StateQueueKind_SwitchCurrent ||
+               item->m_stateObj != &newState ||
+               item->m_param != 42) {
+        result = 2;
+    }
+
+    CleanupSaveLoadQueue(queue);
+    return result;
+}
+
+extern "C" int recoil_app_queue_exit_current_state_smoke(void) {
+    g_saveLoadStateEnterCount = 0;
+    g_saveLoadStateExitCount = 0;
+
+    RecoilApp app;
+    SaveLoadTestAppState oldState;
+    app.m_currentStateIndex = 0;
+    app.m_stateStack[0] = &oldState;
+
+    RecoilApp_IState *const returned = app.QueueExitCurrentState(17);
+    RecoilApp_StateQueue &queue = app.m_stateQueue;
+    RecoilApp_StateQueueItem *const item = SaveLoadQueueItemAt(
+        queue,
+        0
+    );
+
+    int result = 0;
+    if (returned != &oldState ||
+        g_saveLoadStateExitCount != 1 ||
+        g_saveLoadStateEnterCount != 0 ||
+        queue.m_itemCount != 1) {
+        result = 1;
+    } else if (item == nullptr ||
+               item->m_type != 0 ||
+               item->m_kind != RecoilApp_StateQueueKind_ExitCurrent ||
+               item->m_stateObj != nullptr ||
+               item->m_param != 17) {
+        result = 2;
+    }
+
+    CleanupSaveLoadQueue(queue);
+    return result;
+}
+
+extern "C" int recoil_app_mfc_ole_module_constructor_smoke(void) {
+    void *const storage = ::operator new(sizeof(RecoilApp_MfcOleModule));
+    std::memset(
+        storage,
+        0x5a,
+        sizeof(RecoilApp_MfcOleModule)
+    );
+
+    RecoilApp_MfcOleModule *const app = new (storage) RecoilApp_MfcOleModule;
+
+    int result = 0;
+    if (app->m_pendingState != nullptr ||
+        app->m_currentStateIndex != -1 ||
+        app->m_skipWait != 0) {
+        result = 1;
+    } else if (app->m_stateQueue.m_itemCount != 0 ||
+               app->m_stateQueue.m_chunkBaseList != nullptr) {
+        result = 2;
+    }
+
+    for (int index = 0; result == 0 && index < 16; ++index) {
+        if (app->m_stateStack[index] != nullptr) {
+            result = 3;
+        }
+    }
+
+    app->~RecoilApp_MfcOleModule();
+    ::operator delete(storage);
+    return result;
+}
+
+extern "C" int recoil_app_mfc_ole_module_destructor_smoke(void) {
+    void *const storage = ::operator new(sizeof(RecoilApp_MfcOleModule));
+    RecoilApp_MfcOleModule *const app = new (storage) RecoilApp_MfcOleModule;
+    RecoilApp_StateQueueItem *queuedItem = nullptr;
+    app->m_stateQueue.PushBack(queuedItem);
+
+    int result = 0;
+    if (app->m_stateQueue.m_itemCount != 1 ||
+        app->m_stateQueue.m_chunkBaseList == nullptr) {
+        result = 1;
+    }
+
+    app->~RecoilApp_MfcOleModule();
+
+    if (result == 0 &&
+        (app->m_stateQueue.m_itemCount != 0 ||
+         app->m_stateQueue.m_chunkBaseList != nullptr ||
+         app->m_stateQueue.m_readBlock.m_cursor != nullptr ||
+         app->m_stateQueue.m_writeBlock.m_cursor != nullptr)) {
+        result = 2;
+    }
+
+    ::operator delete(storage);
+    return result;
+}
+
+extern "C" int recoil_app_start_engine_and_queue_startup_state_smoke(void) {
+    g_saveLoadStateEnterCount = 0;
+    g_saveLoadStateExitCount = 0;
+    g_saveLoadStartEngineCount = 0;
+    g_saveLoadShutdownEngineCount = 0;
+    g_saveLoadExitInstanceCount = 0;
+    g_saveLoadStartEngineResult = 1;
+    g_saveLoadLastStartEngineHwnd = 0;
+
+    SaveLoadTestRecoilApp app;
+    SaveLoadTestAppState startupState;
+    void *frameWords[9] = {};
+    frameWords[8] = reinterpret_cast<void *>(0x44556677);
+
+    app.m_pMainWnd = reinterpret_cast<CWnd *>(frameWords);
+    app.m_pendingState = &startupState;
+    app.m_currentStateIndex = -1;
+    app.m_skipWait = 0;
+    app.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY;
+
+    const int returned = app.StartEngineAndQueueStartupState();
+    RecoilApp_StateQueue &queue = app.m_stateQueue;
+    RecoilApp_StateQueueItem *const item = SaveLoadQueueItemAt(
+        queue,
+        0
+    );
+
+    int result = 0;
+    if (returned != 1 ||
+        g_saveLoadStartEngineCount != 1 ||
+        g_saveLoadLastStartEngineHwnd !=
+            reinterpret_cast<HWND>(0x44556677) ||
+        g_saveLoadShutdownEngineCount != 0 ||
+        g_saveLoadExitInstanceCount != 0 ||
+        g_saveLoadStateEnterCount != 1 ||
+        g_saveLoadStateExitCount != 0 ||
+        app.m_skipWait != 1 ||
+        app.m_missionShutdownMode != RECOILAPP_MISSION_SHUTDOWN_ON_EXIT ||
+        queue.m_itemCount != 1) {
+        result = 1;
+    } else if (item == nullptr ||
+               item->m_type != 0 ||
+               item->m_kind != RecoilApp_StateQueueKind_SwitchCurrent ||
+               item->m_stateObj != &startupState ||
+               item->m_param != 0) {
+        result = 2;
+    }
+
+    CleanupSaveLoadQueue(queue);
+    return result;
 }
 
 struct LoadGameInitLoadProbe {
@@ -980,6 +1228,118 @@ extern "C" int hud_ui_load_game_primary_action_button_on_activate_smoke(void) {
     RestoreFunctionPatch(primaryPatch);
     ::operator delete(storage);
     return primaryThenActivate && nullOwnerIgnored ? 0 : 1;
+}
+
+extern "C" int hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke(void) {
+    unsigned char oldApp[sizeof(g_RecoilApp)];
+    std::memcpy(
+        oldApp,
+        &g_RecoilApp,
+        sizeof(oldApp)
+    );
+    std::memset(
+        &g_RecoilApp,
+        0,
+        sizeof(g_RecoilApp)
+    );
+
+    SaveLoadTestAppState oldState;
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] = &oldState;
+    g_saveLoadStateEnterCount = 0;
+    g_saveLoadStateExitCount = 0;
+
+    HudUiCreditsBackButton widget{};
+    widget.Constructor();
+    widget.OnActivate();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
+    int result = 0;
+    if (g_saveLoadStateExitCount != 1 ||
+        g_saveLoadStateEnterCount != 0) {
+        result = 1;
+    } else if (!SaveLoadQueueHasSingleExit(
+                   queue,
+                   0
+               )) {
+        result = 2;
+    }
+
+    CleanupSaveLoadQueue(queue);
+    widget.DestructorCore();
+    std::memcpy(
+        &g_RecoilApp,
+        oldApp,
+        sizeof(g_RecoilApp)
+    );
+    return result;
+}
+
+extern "C" int hud_ui_credits_quit_button_on_activate_smoke(void) {
+    unsigned char oldApp[sizeof(g_RecoilApp)];
+    std::memcpy(
+        oldApp,
+        &g_RecoilApp,
+        sizeof(oldApp)
+    );
+    std::memset(
+        &g_RecoilApp,
+        0,
+        sizeof(g_RecoilApp)
+    );
+
+    SaveLoadTestAppState oldState;
+    SaveLoadTestAppState leaveState;
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] = &oldState;
+    InstallSaveLoadStateVptr(
+        g_RecoilApp.m_leaveNetworkState,
+        leaveState
+    );
+    g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_ON_EXIT;
+    g_saveLoadStateEnterCount = 0;
+    g_saveLoadStateExitCount = 0;
+
+    HudUiCreditsQuitButton widget{};
+    widget.Constructor();
+    widget.OnActivate();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
+    RecoilApp_StateQueueItem *const exitItem = SaveLoadQueueItemAt(
+        queue,
+        0
+    );
+    RecoilApp_StateQueueItem *const switchItem = SaveLoadQueueItemAt(
+        queue,
+        1
+    );
+
+    int result = 0;
+    if (g_saveLoadStateExitCount != 2 ||
+        g_saveLoadStateEnterCount != 1 ||
+        g_RecoilApp.m_missionShutdownMode !=
+            RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY ||
+        queue.m_itemCount != 2) {
+        result = 1;
+    } else if (exitItem == nullptr ||
+               exitItem->m_kind != RecoilApp_StateQueueKind_ExitCurrent ||
+               exitItem->m_param != 1) {
+        result = 2;
+    } else if (switchItem == nullptr ||
+               switchItem->m_kind != RecoilApp_StateQueueKind_SwitchCurrent ||
+               switchItem->m_stateObj != &g_RecoilApp.m_leaveNetworkState ||
+               switchItem->m_param != 0) {
+        result = 3;
+    }
+
+    CleanupSaveLoadQueue(queue);
+    widget.DestructorCore();
+    std::memcpy(
+        &g_RecoilApp,
+        oldApp,
+        sizeof(g_RecoilApp)
+    );
+    return result;
 }
 
 extern "C" int hud_ui_load_game_dialog_on_primary_action_smoke(void) {
@@ -2060,4 +2420,30 @@ extern "C" int hud_ui_save_load_set_selected_entry_index_smoke(void) {
     ::operator delete(dialogStorage);
 
     return result;
+}
+
+extern "C" int hud_ui_main_menu_dialog_save_load_checks_smoke(void) {
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+
+    g_GameStateOrMapTable = nullptr;
+    const bool noGameOk =
+        HudUiMainMenuDialog::CanLoadGame() == 1 && HudUiMainMenuDialog::CanSaveGame() == 0;
+
+    zInput_GameStateOrMapTablePartial gameState = {};
+    g_GameStateOrMapTable = &gameState;
+    const bool noPlayerOk =
+        HudUiMainMenuDialog::CanLoadGame() == 1 && HudUiMainMenuDialog::CanSaveGame() == 1;
+
+    zUtil_PlayerStateStorage playerState = {};
+    gameState.playerState = reinterpret_cast<zInput_PlayerStatePartial *>(&playerState);
+    playerState.environmentAttachmentActive = 0;
+    const bool unblockedOk =
+        HudUiMainMenuDialog::CanLoadGame() == 1 && HudUiMainMenuDialog::CanSaveGame() == 1;
+
+    playerState.environmentAttachmentActive = 1;
+    const bool blockedOk =
+        HudUiMainMenuDialog::CanLoadGame() == 0 && HudUiMainMenuDialog::CanSaveGame() == 0;
+
+    g_GameStateOrMapTable = oldGameState;
+    return noGameOk && noPlayerOk && unblockedOk && blockedOk ? 0 : 1;
 }

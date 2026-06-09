@@ -22,9 +22,9 @@ per-target VC verification evidence.
   `SetCooperativeLevel` methods used by `zSndBackend_InitA3D`; the local
   `support/sdk/Aureal/A3D20/inc/ia3dapi.h` and `Ia3dutil.h` match the preserved
   A3D 2.0 SDK headers byte-for-byte.
-- `tools/compiler_linker_profiles.json` records accepted compiler flag profiles;
-  `tools/recoil_provenance_audit.py --strict` guards VC verification manifests
-  against those profiles.
+- `tools/_recoil/config/compiler_linker_profiles.json` records accepted compiler flag profiles;
+  `python tools/recoil.py audit provenance --strict` guards VC verification
+  manifests against those profiles.
 
 ## Recovered Contract
 
@@ -60,9 +60,10 @@ per-target VC verification evidence.
 - Passing tier `S` verification requires relocation-masked COFF object bytes to
   match Binary Ninja/original bytes, or an accepted provider ABI boundary when
   no authored compiler comparison applies.
-- Final executable comparison uses `tools/recoil_vc5_build.py` and
-  `tools/recoil_pe_reference.py`, but whole-binary acceptance is expected to
-  become useful only when the reconstructed source is substantially complete.
+- Final executable comparison uses `python tools/recoil.py verify final-build`
+  and `python tools/recoil.py verify pe`, but whole-binary acceptance is
+  expected to become useful only when the reconstructed source is substantially
+  complete.
 
 ## Open Limits
 

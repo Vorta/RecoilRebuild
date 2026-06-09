@@ -2809,7 +2809,10 @@ void __fastcall Mouse_SetClientSizeAndCenter(
     g_zInput_MouseInvClientCenterY = 1.0f / (float)(g_zInput_MouseClientCenterY);
 }
 
-// Reimplements 0x4703a0: zInput::Mouse_GetStateSnapshotPtr
+/**
+ * Reimplements 0x4703a0: zInput::Mouse_GetStateSnapshotPtr.
+ * Purpose: Return the shared mouse state snapshot used by input consumers.
+ */
 MouseStateSnapshot *Mouse_GetStateSnapshotPtr() {
     return &g_zInput_MouseStateSnapshot;
 }

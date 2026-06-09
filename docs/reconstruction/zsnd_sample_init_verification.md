@@ -9,7 +9,7 @@ backend cluster. Binary Ninja and VC verifier artifacts remain authoritative.
 - Current VC target:
   `tools/vc5_verify_targets/zsnd_sample_init_from_wave_data_a3d.json`.
 - Current tier S verification result:
-  `python tools/recoil_vc5_verify.py 0x4a2ec0` with VC5SP3
+  `python tools/recoil.py verify vc5 0x4a2ec0` with VC5SP3
   `cl` 11.00.7022, `/MD /G5 /O2 /Ob0 /Zp4 /FAcs`, passes with zero unmasked
   byte mismatches after 48 relocation-masked bytes. BN body size is 691 bytes,
   VC object size is 704 bytes, and 13 trailing VC NOP bytes are trimmed.
@@ -18,18 +18,19 @@ backend cluster. Binary Ninja and VC verifier artifacts remain authoritative.
   allocation import pointer into `edi` for marker-array allocation, matching
   VC5SP3 `/MD`.
 - Current evidence command:
-  `python tools/recoil_vc5_verify.py 0x4a2ec0 --build-root build/vc5-verify-final-4a2ec0-tier-s`.
+  `python tools/recoil.py verify vc5 0x4a2ec0 --build-root build/vc5-verify-final-4a2ec0-tier-s`.
 
 ## 0x4a3180 zSndSample::InitFromWaveData_DirectSound
 
 - Current source: `src/GameZRecoil/zSound/zsnd_create.cpp`.
 - Current VC target:
   `tools/vc5_verify_targets/zsnd_sample_init_from_wave_data_directsound.json`.
-- Current verification result:
-  `python tools/recoil_vc5_verify.py 0x4a3180` with VC5SP3 `cl` 11.00.7022,
-  `/G5 /O2 /Ob0 /Zp4 /FAcs`, fails with 543 unmasked byte mismatches after
-  76 relocation-masked bytes. BN body size is 852 bytes, VC object size is
-  848 bytes, and 2 trailing VC NOP bytes are trimmed.
+- Current VC target profile: `vc5_o2_ob0_facs`; rerun
+  `python tools/recoil.py verify vc5 0x4a3180` before updating any tier `S`
+  claim. The current closest byte result after the retained descriptor shaping
+  fails with 694 unmasked byte mismatches after 76 relocation-masked bytes, BN
+  body size 852 bytes, VC object size 848 bytes, and no trailing VC NOP bytes
+  trimmed.
 - The retained DirectSound descriptor setup uses unsigned-byte predicates after
   explicit shifts for the replay flag tests. This restores the retail
   shift/test shape for the descriptor flag block, and moving the format-pointer
@@ -51,13 +52,11 @@ backend cluster. Binary Ninja and VC verifier artifacts remain authoritative.
   zero unmasked byte mismatches after 48 relocation-masked bytes. The manifest
   now uses the simpler non-EH `vc5_o2_ob0_md_facs` profile.
 - A focused 0x4a3180 profile sweep against the current source confirmed the
-  existing VC5SP3 family profile is still the best choice. `vc5_o2_ob0_facs`,
-  `vc5_o2_ob1_gx_facs`, `vc5_o2_ob2_gx_facs`, and `vc5_o2_oy_ob0_facs` all
-  tied at 543 mismatches, 76 relocation-masked bytes, BN size 852, VC object
-  size 848, and 2 trailing VC NOPs trimmed. VC5SP3 static-CRT profiles
-  `vc5_o2_ob0_facs`, `vc5_o2_ob1_facs`, `vc5_o2_ob1_gx_facs`,
-  `vc5_o2_ob2_facs`, and `vc5_o2_ob2_gx_facs` all reported 694 mismatches.
-  VC5SP3 `/MD` profiles were also worse: `vc5_o2_ob0_md_facs` and
+  static VC5SP3 profiles are still closest. `vc5_o2_ob0_facs`,
+  `vc5_o2_ob1_facs`, `vc5_o2_ob1_gx_facs`, `vc5_o2_ob2_facs`,
+  `vc5_o2_ob2_gx_facs`, and `vc5_o2_oy_ob0_facs` all reported 694 mismatches,
+  76 relocation-masked bytes, BN size 852, VC object size 848, and no trailing
+  VC NOPs trimmed. VC5SP3 `/MD` profiles were worse: `vc5_o2_ob0_md_facs` and
   `vc5_o2_ob1_md_gx_facs` both reported 734 mismatches, 68 relocation-masked
   bytes, BN size 852, VC object size 864, and 11 trailing VC NOPs trimmed.
 

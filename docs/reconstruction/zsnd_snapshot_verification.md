@@ -11,7 +11,7 @@ output.
   shares the original sound playback translation-unit register allocation.
 - Current VC target: `tools/vc5_verify_targets/zsnd_snapshot_stop_all_if_playing.json`
   with VC5SP3 `cl` 11.00.7022, `/G5 /O2 /Oy /Ob0 /Zp4 /FAcs`.
-- Current best verification result: `python tools/recoil_vc5_verify.py zsnd_snapshot_stop_all_if_playing`
+- Current best verification result: `python tools/recoil.py verify vc5 zsnd_snapshot_stop_all_if_playing`
   fails with 27 unmasked byte mismatches, 8 relocation-masked bytes, BN size
   134, VC5SP3 object size 144, and 10 trailing VC5SP3 NOPs trimmed.
 - BN prologue uses `push ecx; push ebx; push esi; push edi`, `xor edx, edx`,
@@ -27,7 +27,7 @@ output.
   to `mov 1; sub`, so the current source keeps the 27-mismatch best profile.
 - Tier `B` evidence: `tools/functional_verify_targets/zsnd_snapshot_stop_all_if_playing.json`
   and native smoke `zsnd_snapshot_stop_all_if_playing_smoke` in `tests/native/zsnd_cd_tests.cpp`.
-  `python tools/recoil_functional_verify.py 0x4a0500` passes; the entry remains below tier `S`.
+  `python tools/recoil.py verify functional 0x4a0500` passes; the entry remains below tier `S`.
 - VC5SP3 full-TU probe (`cl` 11.00.7022, `zsnd_snapshot_stop_all_if_playing_vc5`)
   now fails with **100** unmasked mismatches and **144-byte** object code, worse
   than the VC5SP3 full-TU profile.
@@ -52,7 +52,7 @@ output.
 - VC target: `tools/vc5_verify_targets/recoil_state_main_menu_transition_on_try_become_current.json`
   with VC5SP3 `cl` 11.00.7022, `/G5 /O2 /Ob1 /GX /Zp4 /FAcs`, plus
   `fmv_script.cpp` for blur `Constructor` linkage.
-- Tier `S`: `python tools/recoil_vc5_verify.py 0x415220` now has zero
+- Tier `S`: `python tools/recoil.py verify vc5 0x415220` now has zero
   unmasked COFF-byte mismatches after 76 relocation-masked bytes. BN body is
   321 bytes, VC object symbol is 336 bytes, and 15 trailing VC NOPs are
   trimmed.
@@ -68,7 +68,7 @@ output.
 
 - Current source: `src/GameZRecoil/zSound/zsnd_play.cpp`.
 - Current VC target: `tools/vc5_verify_targets/zsnd_snapshot_create_from_active_samples.json`.
-- Current best verification result: `python tools/recoil_vc5_verify.py 0x49fff0`
+- Current best verification result: `python tools/recoil.py verify vc5 0x49fff0`
   with VC5SP3 `cl` 11.00.7022, `/G5 /O2 /Ob1 /GX /Zp4 /FAcs`, fails with
   317 unmasked byte mismatches, 80 relocation-masked bytes, BN size 778, and
   VC object symbol size 784.
@@ -114,9 +114,9 @@ output.
 - A refreshed 2026-06-03 full profile sweep against the current
   `src/GameZRecoil/zSound/zsnd_play.cpp` source found `vc5_o2_ob1_gx_facs`,
   `vc5_o2_ob1_md_gx_facs`, `vc5_o2_ob1_gx_uintptr_facs`,
-  `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`, and `vc5_o2_ob1_gx_facs` tied
-  as closest at 317 mismatches. `/Ob0` profiles were 675-677 mismatches, VC5SP3
-  `/Oy /Ob0` was 677 mismatches with a 576-byte object, plain VC5 `/Ob1`
+  and `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs` tied as closest at 317
+  mismatches. `/Ob0` profiles were 675-677 mismatches, VC5SP3 `/Oy /Ob0`
+  was 677 mismatches with a 576-byte object, plain VC5 `/Ob1`
   without `/GX` was 687 mismatches, VC5SP3 `/Ob2 /GX` profiles were 707
   mismatches, and VC5 `/Ob2` without `/GX` was 718 mismatches.
 - Changing `/O2` to `/Ox` was neutral at the 317 mismatch profile. Changing

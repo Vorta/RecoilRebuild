@@ -14,9 +14,9 @@ installed MSVC toolchain.
 - Use `cmake/recoil_native_x86_build.ps1` for Ninja configure/build from normal
   PowerShell. It loads `vcvarsall x86` and verifies the Windows SDK `LIB` path,
   including `kernel32.lib`, before CMake runs.
-- Use `tools/recoil_msvc_x86_run.py -- ...` for direct `ctest`, native smoke
-  runs with command-line arguments, and arbitrary x86 MSVC command-line work
-  that MCP cannot express.
+- Use `python tools/recoil.py build msvc-x86 -- ...` for direct `ctest`,
+  native smoke runs with command-line arguments, and arbitrary x86 MSVC
+  command-line work that MCP cannot express.
 - Do not hand-write `cmd /c` commands that call Visual Studio batch files under
   `Program Files`.
 
@@ -71,7 +71,7 @@ installed MSVC toolchain.
 - `recoil_native_smoke.exe` runs all registered smokes when launched without an
   argument, and the isolated runner passes one smoke name at a time. Prefer
   `tests/native/run_native_smokes.py`, `ctest`, or
-  `tools/recoil_functional_verify.py` for smoke runs that need explicit
+  `python tools/recoil.py verify functional` for smoke runs that need explicit
   arguments.
 - `debugger_set_variable` is for temporary diagnosis only. Do not use modified
   debugger state as tier `B`, tier `S`, or plan-marker
@@ -97,6 +97,6 @@ Visual Studio output tree, for example:
 build/vs-x86/tests/native/Debug/recoil_native_smoke.exe
 ```
 
-`tools/recoil_functional_verify.py` checks this path automatically when the
+`python tools/recoil.py verify functional` checks this path automatically when the
 Ninja smoke executable is absent. Pass `--executable` only when using a custom
 output location.

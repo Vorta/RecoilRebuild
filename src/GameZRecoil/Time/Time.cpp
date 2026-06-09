@@ -17,6 +17,9 @@ float g_Time_UnscaledAccumulatedTimeSec = 0.0f;
 }
 
 namespace Time {
+// BN .rdata 0x4d2f50 is referenced only by Time::Reset and Time::Tick.
+static const float g_Time_MillisecondsToSecondsScale = 0.00100000005f;
+
 /**
  * Reimplements 0x4a5670: Time::Reset.
  * Purpose: Clears accumulated frame timing state and seeds the current time from GetTickCount.
@@ -29,7 +32,7 @@ void Reset() {
     g_FrameDeltaTimeSec = 0.0f;
 
     const __int64 tickCountMillis = GetTickCount();
-    g_Time_CurrentTimeSec = (float)(tickCountMillis) * 0.00100000005f;
+    g_Time_CurrentTimeSec = (float)(tickCountMillis) * g_Time_MillisecondsToSecondsScale;
 }
 
 /**
@@ -38,7 +41,7 @@ void Reset() {
  */
 void Tick() {
     const __int64 tickCountMillis = GetTickCount();
-    const float newTimeSec = (float)(tickCountMillis) * 0.00100000005f;
+    const float newTimeSec = (float)(tickCountMillis) * g_Time_MillisecondsToSecondsScale;
     const float unscaledDeltaTimeSec = newTimeSec - g_Time_CurrentTimeSec;
     const float timeScaleFactor = g_Time_TimeScaleFactor;
 

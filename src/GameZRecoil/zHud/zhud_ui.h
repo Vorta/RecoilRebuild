@@ -6,14 +6,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <windows.h>
-
 #include "Battlesport/RecoilApp.h"
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 #include "GameZRecoil/zInput/zInput.h"
 #include "recoil/recoil_callconv.h"
 #include "zClipAlt.h"
+
+#include <windows.h>
 
 struct zVec3;
 struct zTag4Partial;
@@ -52,18 +52,16 @@ struct zFMV_Stream;
 extern int g_HudCmdMouseDebounceFrames;
 struct HudUiWidget;
 struct HudUiMgrSensorTrackNode;
+struct HudUiMgrData;
 struct PlayerProgressTargetSlotRuntime;
 struct HudUiNetGameSetupOverlayOwner;
 extern zVidImagePartial *g_HudUiWidget_ExclusiveDrawImage;
-extern HudUiContainer g_HudUiMgr;
-extern HudUiTransitionTextPanel g_HudUiMgrHudRootPanel;
+extern HudUiMgrData g_HudUiMgr;
 extern HudUiTimerPanel *g_HudUiMgrTimerPanel;
 extern HudUiTimerPanelFloat *g_HudUiMgrTimerPanelFloat;
 extern HudUiStringMenu *g_HudUiMgrStringMenu;
 extern HudUiStatsListElement *g_HudUiMgrStatsList;
-extern zVidImagePartial *g_HudUiMgrReticleImages[3];
 extern zVidImagePartial *g_HudUiMgrSensorTargetMarkerImages[5];
-extern HudUiNanitePanel g_HudUiMgrNanitePanel;
 extern HudUiMessage g_HudUiMgrMessages[10];
 extern int g_HudUiMgrActiveWeaponMessageIndex;
 extern int g_HudUiMgrActiveWeaponSideIndex;
@@ -71,15 +69,9 @@ extern HudUiCounter g_HudUiMgrModeCounters[4];
 extern HudUiSlot g_HudUiMgrWeaponSlots[32];
 extern HudUiSlot *g_HudUiMgrSensorTrackedProgressSlot;
 extern int g_HudUiMgrSensorRoundRobinTrackIndex;
-extern HudUiMeter g_HudUiMgrObjectiveMeter;
 extern int g_HudUiMgrActiveModeCounterIndex;
-extern int g_HudUiMgrHudLayoutsInitialized;
-extern int g_HudUiMgrHudLoaded;
-extern int g_HudUiMgrLayoutDelayFrames;
 extern int g_HudUiMgrSensorTargetMarkerCount;
 extern int g_HudUiMgrWeaponState;
-extern int g_HudUiMgrHudOriginX;
-extern int g_HudUiMgrHudOriginY;
 extern HudUiNetGameSetupOverlayOwner g_HudUiNetGameSetupOverlayOwner;
 
 struct HudUiRect {
@@ -118,7 +110,11 @@ struct HudUiElement {
         int x,
         int y
     );
-    ~HudUiElement();
+    /**
+     * Reimplements 0x4b47a0: HudUiElement::~HudUiElement.
+     * Purpose: reset the HudUiElement virtual table during class destruction.
+     */
+    ~HudUiElement() {}
     HudUiElement * Constructor(
         int x,
         int y
@@ -204,8 +200,8 @@ struct HudUiWidget : HudUiElement {
     );
     void InvalidateRect(const HudUiRect *dirtyRect);
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
-    int GetCenterX();
-    int GetCenterY();
+    virtual int GetCenterX();
+    virtual int GetCenterY();
     int HitTest(
         int px,
         int py
@@ -284,22 +280,7 @@ extern HudUiMgrSensorBlock g_HudUiMgrSensorBlock;
 extern HudUiRect g_HudUiMgrSensorFxRect;
 extern int g_HudUiMgrSensorFxViewportWidth;
 extern int g_HudUiMgrSensorFxViewportHeight;
-extern HudUiRect g_HudUiMgrHudRect;
-extern HudUiRect g_HudUiMgrViewRect;
-extern float g_HudUiMgrHudRectW;
-extern float g_HudUiMgrHudRectH;
-extern float g_HudUiMgrReticleMapBiasX;
-extern float g_HudUiMgrReticleMapBiasY;
-extern float g_HudUiMgrReticleMapScaleHalfW;
-extern float g_HudUiMgrReticleMapScaleHalfH;
 extern int g_HudUiMgrReticleSnapRadiusSq;
-extern float g_HudUiMgrReticleProjection[3];
-extern int g_HudUiMgrReticleWidgetHalfW;
-extern int g_HudUiMgrReticleWidgetHalfH;
-extern int g_HudUiMgrReticleProjectedX;
-extern int g_HudUiMgrReticleProjectedY;
-extern int g_HudUiMgrReticleMode;
-extern HudUiWidget g_HudUiMgrReticleWidget;
 
 struct HudUiContainer {
     HudUiContainer();
@@ -380,7 +361,6 @@ struct HudLayoutHW : HudLayoutBase {
 extern HudLayoutHW g_HudLayoutHW;
 extern HudLayoutSW g_HudLayoutSW;
 
-extern HudLayoutBase *g_HudUiMgrCurrentLayout;
 extern HudUiTextStack4 *g_HudUiTopMessageStack;
 extern HudUiTextStack4 *g_HudUiChatMessageStack;
 
@@ -518,30 +498,11 @@ void __stdcall SetScaleAndRebuild(float scale);
 void __stdcall DispatchSetScale(float deltaTime);
 } // namespace HudScoreboard
 
-extern int g_HudUiMgrObjectivePhase;
-extern int g_HudUiMgrObjectiveState;
 extern int g_HudUiMgrObjectiveChatComposeActive;
-extern float g_HudUiMgrObjectivePhaseTimerSec;
-extern float g_HudUiMgrObjectivePhaseDurationSec;
-extern float g_HudUiMgrObjectiveAutoHideDelaySec;
-extern int g_HudUiMgrObjectiveShowResetUnused;
-extern int g_HudUiMgrObjectiveWidgetRightX;
-extern float g_HudUiMgrObjectiveMeterFillAnimTimerSec;
-extern unsigned int g_HudUiMgrObjectiveMeterFillAnimEnabled;
 struct HudUiObjectiveBar;
 extern HudUiWidget g_HudUiMgrSensorPanel;
-extern HudUiWidget g_HudUiMgrObjectiveWidget;
-extern HudUiObjectiveBar g_HudUiMgrObjectiveBar;
-extern HudUiWidget g_HudUiMgrObjectiveSensorRect;
 extern HudUiWidget g_HudUiMgrSensorOverlay;
 extern HudUiMeter g_HudUiMgrSensorMeter;
-extern HudUiPanel *g_HudUiMgrObjectiveSummaryTextPanel;
-extern HudUiPanel *g_HudUiMgrObjectiveDescTextPanel;
-extern HudUiPanel *g_HudUiMgrObjectiveLabelTextPanel;
-extern HudUiCounterTextPanel *g_HudUiMgrObjectiveCounterTextPanel;
-struct HudUiChatComposeTextInput;
-extern HudUiChatComposeTextInput g_HudUiMgrObjectiveChatComposeTextInput;
-extern HudUiBar g_HudUiMgrTailBar;
 extern int g_HudUi_AuxOverlayEnabled;
 
 namespace HudUiMgrObjective {
@@ -565,10 +526,17 @@ void __fastcall UpdateSelectedProgressMeter(int clearSelectedTrack);
 } // namespace HudUiMgrTarget
 
 struct StdPtrVector {
+    unsigned char allocator;
+    unsigned char padding_01[3];
+    int *begin;
+    int *end;
+    int *capacityEnd;
+
     void ClearNoOpDestroy(
         int *begin,
         int *end
     );
+    void FreeBufferAndReset();
 };
 
 struct HudUiPrimitiveBindTarget : HudUiElement {
@@ -641,6 +609,12 @@ struct HudUiTextLabel : HudUiElement {
     void UpdateTextExtents();
 };
 
+/**
+ * HudUiCircle owner evidence: BN constructor 0x4bc480 proves a HudUiElement
+ * base at offset zero plus circle radius/color fields. The retail
+ * g_HudUiCircle_FTable pointer is dispatch/data evidence for the owner and
+ * remains data/byte-verification debt, not a production FTable scaffold.
+ */
 struct HudUiCircle : HudUiElement {
     int radius;
     int radiusSquared;
@@ -700,7 +674,7 @@ struct HudUiBackgroundCursorWidget : HudUiWidget {
         const char *imagePath,
         int captureEnabled
     );
-    void DestructorCore();
+    ~HudUiBackgroundCursorWidget();
     void SetImageByPathOwnedAndRefresh(const char *imagePath);
     void SetImageBorrowedAndRefreshIfChanged(zVidImagePartial *image);
     void SetImageOwnedAndRefresh(int captureEnabled);
@@ -785,6 +759,20 @@ struct HudUiPanelPtrVector {
     }
 
     /**
+     * Restores the original-source inline VC5 std::vector<HudUiPanel *> destructor.
+     * The EH table for 0x4b4ee0 invokes 0x4ba470 for each constructed panel
+     * vector member, proving the vector owns this free-buffer cleanup.
+     * Purpose: preserve constructor unwind cleanup for recovered panel-vector members.
+     */
+    ~HudUiPanelPtrVector() {
+        HudUiPanel **const oldBegin = begin;
+        ::operator delete(oldBegin);
+        begin = 0;
+        end = 0;
+        capacityEnd = 0;
+    }
+
+    /**
      * Restores the original-source inline vector size query. No standalone
      * retail function exists; observed in callers 0x4b4ba0, 0x4b4ca0, and
      * 0x4b4e60 as a null begin guard followed by end-begin pointer arithmetic.
@@ -838,6 +826,30 @@ struct HudUiPanelPtrVector {
         end = write;
         return first;
     }
+
+    /**
+     * Original inline helper evidence: no standalone retail function exists;
+     * recovered from the full-range vector erase inlined in
+     * HudUiZrdWidget::HudUiZrdWidget at 0x4b4ee0.
+     * Purpose: express the constructor's clear-on-empty panel-vector erase through
+     * the owning vector object so VC5 preserves the original cleanup shape.
+     */
+    HudUiPanel ** EraseRangeNoDestroyInline(HudUiPanel **first) {
+        HudUiPanel **write = first;
+        HudUiPanel **read = end;
+        HudUiPanel **const oldEnd = end;
+        if (read != oldEnd) {
+            do {
+                *write++ = *read++;
+            } while (read != oldEnd);
+        }
+        ((StdPtrVector *)(this))->ClearNoOpDestroy(
+            (int *)(write),
+            (int *)(oldEnd)
+        );
+        end = write;
+        return first;
+    }
     void InsertN(
         HudUiPanel **position,
         unsigned int count,
@@ -869,6 +881,7 @@ struct HudUiZrdWidget : HudUiWidget {
     HudUiPanelPtrVector disabledLabelPanels;
 
     HudUiZrdWidget();
+    ~HudUiZrdWidget();
     HudUiZrdWidget * Constructor();
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     HudUiZrdWidget * ScalarDeletingDestructorThunk(unsigned int flags);
@@ -1366,9 +1379,17 @@ struct HudCmdMouseButton : HudCmdBindButtonBase {
 };
 
 void **__fastcall zUtil_StdPtrVector_Clear(HudCmdBindingVector *self);
-void __fastcall zUtil_StdPtrVector_FreeBufferAndReset(
+/**
+ * Original inline helper evidence: no standalone retail function exists for
+ * this wrapper; existing HudCmdBindingVector callers share the recovered
+ * StdPtrVector free-buffer body at 0x4ba470.
+ * Purpose: keep command-binding vector cleanup routed through the typed vector owner.
+ */
+inline void zUtil_StdPtrVector_FreeBufferAndReset(
     HudCmdBindingVector *self
-);
+) {
+    ((StdPtrVector *)(self))->FreeBufferAndReset();
+}
 
 struct HudUiMessageBoxDialog;
 
@@ -1728,7 +1749,7 @@ struct HudUiMgrObjectiveBlock {
     unsigned int objectiveMeterFillAnimEnabled;
     HudUiPanel *objectiveDescTextPanel;
     HudUiObjectiveBar objectiveBar;
-    HudUiTextInput chatComposeTextInput;
+    HudUiChatComposeTextInput chatComposeTextInput;
     HudUiCounterTextPanel *counterTextPanel;
 
     void Destructor();
@@ -1759,6 +1780,86 @@ struct HudUiTransitionTextPanel : HudUiPanel {
         float flashRate
     );
 };
+
+struct HudUiMgrReticleMapCache {
+    float scaleHalfH;
+    int projectedX;
+    int projectedY;
+};
+
+// BN models g_HudUiMgr as one object; this recovered owner covers the fields
+// through the objective/nanite data gate currently used by HudLayoutHW.
+struct HudUiMgrData : HudUiContainer {
+    int hudLayoutsInitialized;
+    unsigned int hudLoaded;
+    HudLayoutBase *currentLayout;
+    HudUiTransitionTextPanel hudRootPanel;
+    unsigned int unknown_2DC[4];
+    int layoutDelayFrames;
+    HudUiRect hudRect;
+    float hudRectW;
+    float hudRectH;
+    HudUiRect viewRect;
+    unsigned int viewRectW;
+    unsigned int viewRectH;
+    int hudOriginX;
+    int hudOriginY;
+    float reticleProjection[3];
+    int reticleWidgetHalfW;
+    int reticleWidgetHalfH;
+    float reticleMapBiasX;
+    float reticleMapBiasY;
+    float reticleMapScaleHalfW;
+    HudUiMgrReticleMapCache reticleMapProject;
+    zVidImagePartial *reticleImages[3];
+    int reticleMode;
+    HudUiWidget reticleWidget;
+    HudUiNanitePanel nanitePanel;
+    HudUiMgrObjectiveBlock objective;
+};
+
+#define g_HudUiMgrHudLayoutsInitialized (g_HudUiMgr.hudLayoutsInitialized)
+#define g_HudUiMgrHudLoaded (g_HudUiMgr.hudLoaded)
+#define g_HudUiMgrCurrentLayout (g_HudUiMgr.currentLayout)
+#define g_HudUiMgrHudRootPanel (g_HudUiMgr.hudRootPanel)
+#define g_HudUiMgrLayoutDelayFrames (g_HudUiMgr.layoutDelayFrames)
+#define g_HudUiMgrHudRect (g_HudUiMgr.hudRect)
+#define g_HudUiMgrHudRectW (g_HudUiMgr.hudRectW)
+#define g_HudUiMgrHudRectH (g_HudUiMgr.hudRectH)
+#define g_HudUiMgrViewRect (g_HudUiMgr.viewRect)
+#define g_HudUiMgrHudOriginX (g_HudUiMgr.hudOriginX)
+#define g_HudUiMgrHudOriginY (g_HudUiMgr.hudOriginY)
+#define g_HudUiMgrReticleProjection (g_HudUiMgr.reticleProjection)
+#define g_HudUiMgrReticleWidgetHalfW (g_HudUiMgr.reticleWidgetHalfW)
+#define g_HudUiMgrReticleWidgetHalfH (g_HudUiMgr.reticleWidgetHalfH)
+#define g_HudUiMgrReticleMapBiasX (g_HudUiMgr.reticleMapBiasX)
+#define g_HudUiMgrReticleMapBiasY (g_HudUiMgr.reticleMapBiasY)
+#define g_HudUiMgrReticleMapScaleHalfW (g_HudUiMgr.reticleMapScaleHalfW)
+#define g_HudUiMgrReticleMapScaleHalfH (g_HudUiMgr.reticleMapProject.scaleHalfH)
+#define g_HudUiMgrReticleProjectedX (g_HudUiMgr.reticleMapProject.projectedX)
+#define g_HudUiMgrReticleProjectedY (g_HudUiMgr.reticleMapProject.projectedY)
+#define g_HudUiMgrReticleImages (g_HudUiMgr.reticleImages)
+#define g_HudUiMgrReticleMode (g_HudUiMgr.reticleMode)
+#define g_HudUiMgrReticleWidget (g_HudUiMgr.reticleWidget)
+#define g_HudUiMgrNanitePanel (g_HudUiMgr.nanitePanel)
+#define g_HudUiMgrObjectiveState (g_HudUiMgr.objective.state)
+#define g_HudUiMgrObjectivePhase (g_HudUiMgr.objective.phase)
+#define g_HudUiMgrObjectivePhaseTimerSec (g_HudUiMgr.objective.phaseTimerSec)
+#define g_HudUiMgrObjectivePhaseDurationSec (g_HudUiMgr.objective.phaseDurationSec)
+#define g_HudUiMgrObjectiveAutoHideDelaySec (g_HudUiMgr.objective.autoHideDelaySec)
+#define g_HudUiMgrObjectiveShowResetUnused (g_HudUiMgr.objective.showResetUnused)
+#define g_HudUiMgrObjectiveWidgetRightX (g_HudUiMgr.objective.objectiveWidgetRightX)
+#define g_HudUiMgrObjectiveWidget (g_HudUiMgr.objective.objectiveWidget)
+#define g_HudUiMgrObjectiveSensorRect (g_HudUiMgr.objective.objectiveSensorRect)
+#define g_HudUiMgrObjectiveSummaryTextPanel (g_HudUiMgr.objective.objectiveSummaryTextPanel)
+#define g_HudUiMgrObjectiveLabelTextPanel (g_HudUiMgr.objective.objectiveLabelTextPanel)
+#define g_HudUiMgrObjectiveMeter (g_HudUiMgr.objective.objectiveMeter)
+#define g_HudUiMgrObjectiveMeterFillAnimTimerSec (g_HudUiMgr.objective.objectiveMeterFillAnimTimerSec)
+#define g_HudUiMgrObjectiveMeterFillAnimEnabled (g_HudUiMgr.objective.objectiveMeterFillAnimEnabled)
+#define g_HudUiMgrObjectiveDescTextPanel (g_HudUiMgr.objective.objectiveDescTextPanel)
+#define g_HudUiMgrObjectiveBar (g_HudUiMgr.objective.objectiveBar)
+#define g_HudUiMgrObjectiveChatComposeTextInput (g_HudUiMgr.objective.chatComposeTextInput)
+#define g_HudUiMgrObjectiveCounterTextPanel (g_HudUiMgr.objective.counterTextPanel)
 
 struct HudUiFlashPanel {
     static unsigned int __fastcall ComputeFlashBlendColor(
@@ -1800,6 +1901,25 @@ struct HudUiCompositePanel : HudUiPanel {
     int activeEntryCount;
     HudUiCompositePanelVector entryVector;
 
+    /**
+     * Original inline helper; no standalone retail function exists.
+     * Observed in 0x4bb790 HudUiCompositePanel::ConstructorWithEntryCount.
+     * Purpose: install the composite-panel C++ object identity and clear its
+     * entry vector before the address-backed constructor fills the requested
+     * entries.
+     */
+    HudUiCompositePanel()
+        : HudUiPanel(
+            0,
+            0,
+            0
+        ) {
+        activeEntryCount = 0;
+        entryVector.allocatorStorage = 0;
+        entryVector.begin = 0;
+        entryVector.end = 0;
+        entryVector.capacityEnd = 0;
+    }
     HudUiCompositePanel * ConstructorWithEntryCount(int entryCount);
     void LayoutEntries(
         int x,
@@ -4371,6 +4491,37 @@ RECOIL_STATIC_ASSERT(
         counterTextPanel
     ) == 0x538
 );
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        currentLayout
+    ) == 0x18
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        hudRootPanel
+    ) == 0x1c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        reticleWidget
+    ) == 0x364
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        nanitePanel
+    ) == 0x420
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        objective
+    ) == 0x690
+);
+RECOIL_STATIC_ASSERT(sizeof(HudUiMgrData) == 0xbcc);
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiPanel,

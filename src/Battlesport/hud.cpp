@@ -1007,15 +1007,19 @@ void RecoilStateConfirmQuit::QueueEnter() {
     );
 }
 
-// Reimplements 0x409160: HudUiCreditsBackButton::OnActivate
-// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+/**
+ * Reimplements 0x409160: HudUiCreditsBackButton::OnActivate.
+ * Purpose: Queue exit from the credits state and run the inherited activation behavior.
+ */
 void HudUiCreditsBackButton::OnActivate() {
     g_RecoilApp.QueueExitCurrentState(0);
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x409180: HudUiCreditsQuitButton::OnActivate
-// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+/**
+ * Reimplements 0x409180: HudUiCreditsQuitButton::OnActivate.
+ * Purpose: Queue the credits-exit shutdown path and run the inherited activation behavior.
+ */
 void HudUiCreditsQuitButton::OnActivate() {
     g_RecoilApp.QueueExitCurrentState(1);
     g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY;
@@ -1051,8 +1055,11 @@ void RecoilStateConfirmQuit::AtExitDestructor() {
     g_RecoilState_ConfirmQuit.~RecoilStateConfirmQuit();
 }
 
-// Reimplements 0x415740: HudUiConfirmQuitOkButton::OnActivate
-// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+/**
+ * Reimplements 0x415740: HudUiConfirmQuitOkButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
+ * Purpose: Queue the confirm-quit transition path and run inherited activation behavior.
+ */
 void HudUiConfirmQuitOkButton::OnActivate() {
     g_RecoilState_MainMenuSkipExitDelay = 1;
     g_RecoilApp.QueueExitCurrentState(1);
@@ -1065,8 +1072,11 @@ void HudUiConfirmQuitOkButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x415680: HudUiBackgroundConfirmQuit::Constructor
-// (D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp)
+/**
+ * Reimplements 0x415680: HudUiBackgroundConfirmQuit::Constructor.
+ * Original source path: D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp.
+ * Purpose: Construct the confirm-quit dialog, bind its OK/cancel buttons, and load its ZRD layout.
+ */
 HudUiBackgroundConfirmQuit * HudUiBackgroundConfirmQuit::Constructor() {
     new ((HudUiBackground *)this) HudUiBackground;
     okButton.Constructor();
@@ -1094,16 +1104,22 @@ HudUiBackgroundConfirmQuit * HudUiBackgroundConfirmQuit::Constructor() {
     return this;
 }
 
-// Reimplements 0x4157b0: HudUiBackgroundConfirmQuit::Destructor
-// (D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp)
+/**
+ * Reimplements 0x4157b0: HudUiBackgroundConfirmQuit::Destructor.
+ * Original source path: D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp.
+ * Purpose: Destroy the confirm-quit child widgets before the inherited background cleanup.
+ */
 void HudUiBackgroundConfirmQuit::Destructor() {
     cancelButton.DestructorCore();
     okButton.DestructorCore();
     this->HudUiBackground::~HudUiBackground();
 }
 
-// Reimplements 0x415790: HudUiBackgroundConfirmQuit::ScalarDeletingDestructor
-// (D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp)
+/**
+ * Reimplements 0x415790: HudUiBackgroundConfirmQuit::ScalarDeletingDestructor.
+ * Original source path: D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp.
+ * Purpose: Run confirm-quit dialog cleanup and optionally free the object for VC5 scalar delete.
+ */
 HudUiBackgroundConfirmQuit * HudUiBackgroundConfirmQuit::ScalarDeletingDestructor(
     unsigned int flags
 ) {

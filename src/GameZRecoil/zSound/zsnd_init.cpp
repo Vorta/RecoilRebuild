@@ -26,7 +26,7 @@ extern "C" zSndSample *g_zSndLastSample = 0;
 extern "C" zSndSample *g_zSndLastVoice = 0;
 extern "C" zSndPlayHandle *g_zSndLastVoiceHandle = 0;
 extern "C" int g_zSndLastVoiceMarkerIndex = 0;
-extern "C" int g_zSndLastVoiceStopMarkerIndex = 999;
+extern "C" int g_zSndLastVoiceStopMarkerIndex = 0;
 extern "C" int g_zSnd_Flag10PlaybackEnabled = 0;
 
 namespace {

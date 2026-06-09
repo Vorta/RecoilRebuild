@@ -1,6 +1,6 @@
 # Compiler And Linker Provenance
 
-This ledger records the current compiler/linker assumptions used for source-faithful Recoil reconstruction. The machine-readable baseline is `tools/compiler_linker_profiles.json`; `tools/recoil_provenance_audit.py --strict` checks the active VC verification manifests against it.
+This ledger records the current compiler/linker assumptions used for source-faithful Recoil reconstruction. The machine-readable baseline is `tools/_recoil/config/compiler_linker_profiles.json`; `python tools/recoil.py audit provenance --strict` checks the active VC verification manifests against it.
 
 ## Role Of Each Build
 
@@ -11,7 +11,7 @@ This ledger records the current compiler/linker assumptions used for source-fait
 
 ## Final Candidate Build Assumptions
 
-The final candidate executable driver is `tools/vc5_final_build.json`.
+The final candidate executable driver is `tools/_recoil/config/vc5_final_build.json`.
 
 - Compiler environment: `D:\Recoil Project\Compiler\VC5SP3\vc5sp3-env.cmd`
 - Compiler flags: `/nologo /TP /W3 /G5 /O2 /Ob0 /MD /GX /GR /Zp4`
@@ -36,7 +36,7 @@ Accepted per-target verification profiles are intentionally narrow:
 
 New VC verification manifests should use `"compiler_profile": "<profile-name>"`.
 Adding a new compiler environment or flag tuple requires updating this ledger
-and `tools/compiler_linker_profiles.json` with the reason and expected compiler
+and `tools/_recoil/config/compiler_linker_profiles.json` with the reason and expected compiler
 version. Do not silently add one-off flags to a VC manifest.
 
 ## Required Checks
@@ -44,9 +44,9 @@ version. Do not silently add one-off flags to a VC manifest.
 Run these before relying on compiler/linker provenance:
 
 ```powershell
-python tools/recoil_provenance_audit.py --strict
-python tools/recoil_vc5_manifest_source_guard.py
-python tools/recoil_vc5_verify.py --all --skip-bn-compare
+python tools/recoil.py audit provenance --strict
+python tools/recoil.py guard vc5-manifest
+python tools/recoil.py verify vc5 --all --skip-bn-compare
 ```
 
-`python tools/recoil_doctor.py --quick` also runs the provenance audit.
+`python tools/recoil.py doctor --quick` also runs the provenance audit.

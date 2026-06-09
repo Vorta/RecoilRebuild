@@ -77,7 +77,13 @@ void HudUiMainMenuDialog_ControlsButton::OnActivate() {
 }
 
 namespace {
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline source helper: no standalone retail function.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Evidence: repeated caller bodies at 0x414b60 and 0x414b90 read
+ * zUtil_PlayerStateStorage::environmentAttachmentActive at offset 0x25c.
+ * Purpose: Report whether the current player state blocks save/load menu actions.
+ */
 inline int PlayerMenuSaveLoadBlocked(
     zUtil_PlayerStateStorage *playerState
 ) {
@@ -278,15 +284,6 @@ inline HudUiMainMenuDialog_CreditsButton::~HudUiMainMenuDialog_CreditsButton() {
 }
 
 // Source-faithful helper recovered from address-backed callers in this source file.
-inline HudUiMenuBackButton::HudUiMenuBackButton() : HudUiZrdWidget() {
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
-inline HudUiMenuBackButton::~HudUiMenuBackButton() {
-    HudUiZrdWidget::DestructorCore();
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
 inline HudUiMainMenuDialog_SaveButton::HudUiMainMenuDialog_SaveButton() : HudUiZrdWidget() {
 }
 
@@ -343,8 +340,11 @@ inline HudUiMainMenuDialog_ControlsButton::~HudUiMainMenuDialog_ControlsButton()
     HudUiZrdWidget::DestructorCore();
 }
 
-// Reimplements 0x414b60: HudUiMainMenuDialog::CanLoadGame
-// (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
+/**
+ * Reimplements 0x414b60: HudUiMainMenuDialog::CanLoadGame.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Allow load-game navigation unless the active player state is blocked.
+ */
 int HudUiMainMenuDialog::CanLoadGame() {
     zUtil_PlayerStateStorage *playerState;
     zInput_GameStateOrMapTablePartial *const gameState = g_GameStateOrMapTable;
@@ -365,8 +365,11 @@ canLoad:
     return 1;
 }
 
-// Reimplements 0x414b90: HudUiMainMenuDialog::CanSaveGame
-// (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
+/**
+ * Reimplements 0x414b90: HudUiMainMenuDialog::CanSaveGame.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Allow save-game navigation only when active game state is present and not blocked.
+ */
 int HudUiMainMenuDialog::CanSaveGame() {
     zInput_GameStateOrMapTablePartial *const gameState = g_GameStateOrMapTable;
     if (gameState == 0) {

@@ -1,4 +1,5 @@
 #include "GameZRecoil/zHud/zhud_ui.h"
+#include "Battlesport/RecoilApp.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/include/zImage.h"
 #include "GameZRecoil/zInput/zInput.h"
@@ -13,6 +14,7 @@
 
 extern "C" unsigned int g_HudUi_InvalidateMask;
 extern "C" int g_RecoilApp_QuitAfterCredits;
+extern RecoilApp g_RecoilApp;
 
 namespace {
 struct CodeFunctionPatch {
@@ -137,6 +139,40 @@ int g_elementBlitY;
 int g_elementBlitFlags;
 zVidRect32 g_elementBlitRect;
 int g_elementBlitHasRect;
+int g_tripletPanelBlitCount;
+zVidImagePartial *g_tripletPanelBlitImages[4];
+int g_layoutActivatedCount;
+int g_widgetInvalidateRectGetCenterXCount;
+int g_widgetInvalidateRectGetCenterYCount;
+int g_widgetInvalidateRectInvalidateCount;
+void *g_widgetInvalidateRectInvalidateThis;
+int g_elementUpdateDrawCount;
+int g_elementUpdateDrawBaseCount;
+int g_elementUpdateInvalidateCount;
+int g_circleDrawBaseCount;
+int g_circlePointOpCount;
+void *g_circlePointOpFrameBuffer;
+int g_circlePointOpArgs[3];
+
+struct CaptureActivatedLayout : HudLayoutBase {
+    void OnActivated();
+};
+
+struct TestWidgetInvalidateRect : HudUiWidget {
+    virtual int GetCenterX();
+    virtual int GetCenterY();
+    virtual void Invalidate();
+};
+
+struct TestElementUpdateElement : HudUiElement {
+    void Draw();
+    void DrawBase();
+    void Invalidate();
+};
+
+struct TestCircleDrawDirtyOps : HudUiCircle {
+    void DrawBase();
+};
 
 void __fastcall CaptureHudElementBlit(
     zVidImagePartial *image,
@@ -154,6 +190,69 @@ void __fastcall CaptureHudElementBlit(
     if (srcRect != nullptr) {
         g_elementBlitRect = *srcRect;
     }
+}
+
+void __fastcall CaptureTripletPanelBlit(
+    zVidImagePartial *image,
+    int,
+    int,
+    int,
+    zVidRect32 *
+) {
+    const int index = g_tripletPanelBlitCount;
+    if (index < 4) {
+        g_tripletPanelBlitImages[index] = image;
+    }
+    ++g_tripletPanelBlitCount;
+}
+
+void CaptureActivatedLayout::OnActivated() {
+    ++g_layoutActivatedCount;
+}
+
+int TestWidgetInvalidateRect::GetCenterX() {
+    ++g_widgetInvalidateRectGetCenterXCount;
+    return 7;
+}
+
+int TestWidgetInvalidateRect::GetCenterY() {
+    ++g_widgetInvalidateRectGetCenterYCount;
+    return 11;
+}
+
+void TestWidgetInvalidateRect::Invalidate() {
+    ++g_widgetInvalidateRectInvalidateCount;
+    g_widgetInvalidateRectInvalidateThis = this;
+}
+
+void TestElementUpdateElement::Draw() {
+    ++g_elementUpdateDrawCount;
+}
+
+void TestElementUpdateElement::DrawBase() {
+    ++g_elementUpdateDrawBaseCount;
+}
+
+void TestElementUpdateElement::Invalidate() {
+    ++g_elementUpdateInvalidateCount;
+    HudUiElement::Invalidate();
+}
+
+void TestCircleDrawDirtyOps::DrawBase() {
+    ++g_circleDrawBaseCount;
+}
+
+void __fastcall CaptureCirclePointOp(
+    void *frameBuffer,
+    int y,
+    int x,
+    int color16
+) {
+    ++g_circlePointOpCount;
+    g_circlePointOpFrameBuffer = frameBuffer;
+    g_circlePointOpArgs[0] = y;
+    g_circlePointOpArgs[1] = x;
+    g_circlePointOpArgs[2] = color16;
 }
 
 struct OptionsDialogLoadProbe {
@@ -227,6 +326,193 @@ zReader::Node * CreditsPanelLoadProbe::LoadFromZrd(
 void *CreditsPanelLoadProbeAddress() {
     return MethodAddress(&CreditsPanelLoadProbe::LoadFromZrd);
 }
+
+template <typename T> T &ZhudFieldAt(void *base, std::size_t offset) {
+    return *reinterpret_cast<T *>(static_cast<unsigned char *>(base) + offset);
+}
+
+bool ZhudFloatNear(float actual, float expected) {
+    const float delta = actual - expected;
+    return delta > -0.0001f && delta < 0.0001f;
+}
+
+HudUiPanelLayoutEntry *AllocateCreditsPanelEntries(int count) {
+    HudUiPanelLayoutEntry *const entries =
+        static_cast<HudUiPanelLayoutEntry *>(
+            ::operator new(sizeof(HudUiPanelLayoutEntry) * count)
+        );
+    std::memset(
+        entries,
+        0,
+        sizeof(HudUiPanelLayoutEntry) * count
+    );
+    return entries;
+}
+
+void InitCreditsPanelEntry(
+    HudUiPanelLayoutEntry *entry,
+    const char *text,
+    int x,
+    int y
+) {
+    entry->panel.ConstructorDefault(
+        text,
+        x,
+        y
+    );
+    entry->layoutX = x;
+    entry->layoutY = y;
+}
+
+bool CreditsPanelEntryMatches(
+    const HudUiPanelLayoutEntry &entry,
+    const char *text,
+    int x,
+    int y
+) {
+    return entry.layoutX == x && entry.layoutY == y &&
+           std::strcmp(entry.panel.textBuffer, text) == 0;
+}
+
+int g_PanelLayoutDestroyCount = 0;
+HudUiPanel *g_PanelLayoutDestroyPanels[4] = {};
+
+void __fastcall CountPanelDestructorThunk(HudUiPanel *panel) {
+    if (g_PanelLayoutDestroyCount < 4) {
+        g_PanelLayoutDestroyPanels[g_PanelLayoutDestroyCount] = panel;
+    }
+
+    ++g_PanelLayoutDestroyCount;
+}
+
+void InitSingleCreditsPanelSpan(
+    HudUiPanelSpan *span,
+    const char *text,
+    int x,
+    int y
+) {
+    span->allocatorProxy = 0;
+    span->begin = AllocateCreditsPanelEntries(1);
+    span->end = span->begin + 1;
+    span->cap = span->end;
+    InitCreditsPanelEntry(
+        &span->begin[0],
+        text,
+        x,
+        y
+    );
+}
+
+void InitScrollingCreditsTextForDestructor(
+    HudUiZrdScrollingText *text
+) {
+    new (text) HudUiZrdScrollingText;
+    text->rows.begin =
+        static_cast<HudUiPanelSpan *>(::operator new(sizeof(HudUiPanelSpan) * 2));
+    text->rows.end = text->rows.begin + 2;
+    text->rows.cap = text->rows.end;
+    InitSingleCreditsPanelSpan(
+        &text->rows.begin[0],
+        "scroll a",
+        100,
+        200
+    );
+    InitSingleCreditsPanelSpan(
+        &text->rows.begin[1],
+        "scroll b",
+        101,
+        201
+    );
+}
+
+int ScrollingCreditsTextDestructorFailureBits(
+    const HudUiZrdScrollingText &text
+) {
+    int failure = 0;
+    failure |= text.rows.begin == nullptr ? 0 : 1;
+    failure |= text.rows.end == nullptr ? 0 : 2;
+    failure |= text.rows.cap == nullptr ? 0 : 4;
+    return failure;
+}
+
+void InitCreditsPanelForDestructor(
+    HudUiCreditsPanel *panel
+) {
+    new ((HudUiBackground *)panel) HudUiBackground;
+    new (&panel->backButton) HudUiCreditsBackButton;
+    new (&panel->quitButton) HudUiCreditsQuitButton;
+    InitScrollingCreditsTextForDestructor(&panel->creditsScreen);
+}
+
+int CreditsPanelDestructorFailureBits(
+    const HudUiCreditsPanel &panel
+) {
+    int failure = 0;
+    failure |= panel.creditsScreen.rows.begin == nullptr ? 0 : 1;
+    failure |= panel.creditsScreen.rows.end == nullptr ? 0 : 2;
+    failure |= panel.creditsScreen.rows.cap == nullptr ? 0 : 4;
+    return failure;
+}
+
+RecoilApp_StateQueueItem *CreditsQueueItemAt(
+    RecoilApp_StateQueue &queue,
+    int index
+) {
+    if (index < 0 || index >= queue.m_itemCount || queue.m_readBlock.m_cursor == nullptr) {
+        return nullptr;
+    }
+
+    return queue.m_readBlock.m_cursor[index];
+}
+
+void CleanupCreditsQueue(
+    RecoilApp_StateQueue &queue
+) {
+    const int itemCount = queue.m_itemCount;
+    for (int index = 0; index < itemCount; ++index) {
+        ::operator delete(CreditsQueueItemAt(
+            queue,
+            index
+        ));
+    }
+
+    if (queue.m_chunkBaseList != nullptr) {
+        if (queue.m_readBlock.m_chunkBaseSlot != nullptr &&
+            queue.m_writeBlock.m_chunkBaseSlot != nullptr) {
+            for (RecoilApp_StateQueueItem ***slot = queue.m_readBlock.m_chunkBaseSlot;
+                 slot <= queue.m_writeBlock.m_chunkBaseSlot;
+                 ++slot) {
+                ::operator delete(*slot);
+            }
+        }
+        ::operator delete(queue.m_chunkBaseList);
+    }
+
+    std::memset(
+        &queue,
+        0,
+        sizeof(queue)
+    );
+}
+
+void InitCreditsPanelForUpdate(
+    HudUiCreditsPanel *panel,
+    float progress,
+    float step
+) {
+    new ((HudUiBackground *)panel) HudUiBackground;
+    new (&panel->creditsScreen) HudUiZrdScrollingText;
+    panel->creditsScreen.rows.begin = nullptr;
+    panel->creditsScreen.rows.end = nullptr;
+    panel->creditsScreen.rows.cap = nullptr;
+    panel->fadeProgress = progress;
+    panel->fadeStep = step;
+}
+
+struct CreditsLeaveNetworkState : RecoilApp_IState {
+    void OnEnter() {
+    }
+};
 
 struct CmdDialogLoadProbe {
     zReader::Node * LoadFromZrd(
@@ -409,6 +695,17 @@ void InitHudCmdInputTables() {
     zInput::BindMap_InitJoystickButtonNameTable();
     zInput::BindMap_InitMouseButtonNameTable();
 }
+
+const void *HudElementVptr(const HudUiElement &element) {
+    return *reinterpret_cast<const void *const *>(&element);
+}
+
+void SetHudElementVptr(
+    HudUiElement &element,
+    const void *vptr
+) {
+    *reinterpret_cast<const void **>(&element) = vptr;
+}
 } // namespace
 
 extern "C" int zhud_element_invalidate_smoke(void) {
@@ -421,6 +718,129 @@ extern "C" int zhud_element_invalidate_smoke(void) {
 
     g_HudUi_InvalidateMask = oldMask;
     return ok ? 0 : 1;
+}
+
+extern "C" int zhud_element_visible_smoke(void) {
+    const unsigned int oldMask = g_HudUi_InvalidateMask;
+    g_HudUi_InvalidateMask = 0x80;
+
+    HudUiElement element{};
+    element.flags = 0x10;
+    element.SetVisible(1);
+    const bool visible = element.flags == 0x80;
+
+    element.SetVisible(0);
+    const bool hidden = element.flags == 0x90;
+
+    g_HudUi_InvalidateMask = oldMask;
+    return visible && hidden ? 0 : 1;
+}
+
+extern "C" int zhud_circle_constructor_and_hit_test_smoke(void) {
+    HudUiCircle circle{};
+    HudUiCircle *const result = circle.Constructor(
+        10,
+        20,
+        5,
+        0x07e0
+    );
+
+    const bool constructed =
+        result == &circle &&
+        circle.x == 10 &&
+        circle.y == 20 &&
+        circle.radius == 5 &&
+        circle.radiusSquared == 25 &&
+        circle.color565 == 0x07e0;
+
+    const bool hitCore =
+        circle.HitTestCore(10, 20) == 1 &&
+        circle.HitTestCore(13, 23) == 1 &&
+        circle.HitTestCore(15, 20) == 0 &&
+        circle.HitTestCore(16, 20) == 0;
+    const bool hitWrapped =
+        circle.HitTest(10, 20) == 1 &&
+        circle.HitTest(16, 20) == 0;
+
+    return constructed && hitCore && hitWrapped ? 0 : 1;
+}
+
+extern "C" int zhud_circle_draw_dirty_smoke(void) {
+    void *const oldFrameBuffer = zRndr::g_frameBuffer;
+    zRndr::PointOpProc const oldPointOp = zRndr::g_pfnPointOpActive;
+    const int oldCircleCenterX = g_zRndr_CircleCenterX;
+    const int oldCircleCenterY = g_zRndr_CircleCenterY;
+    const int oldAuxArg = g_zRndr_CircleDrawAuxArg;
+
+    TestCircleDrawDirtyOps circle{};
+    circle.x = 10;
+    circle.y = 20;
+    circle.radius = 1;
+    circle.radiusSquared = 1;
+    circle.color565 = 0x07e0;
+
+    zRndr::g_frameBuffer = reinterpret_cast<void *>(0x87651234);
+    zRndr::g_pfnPointOpActive = CaptureCirclePointOp;
+    g_circleDrawBaseCount = 0;
+    g_circlePointOpCount = 0;
+    g_circlePointOpFrameBuffer = 0;
+    g_circlePointOpArgs[0] = 0;
+    g_circlePointOpArgs[1] = 0;
+    g_circlePointOpArgs[2] = 0;
+
+    circle.DrawDirty();
+    const bool directOk =
+        g_circleDrawBaseCount == 1 &&
+        g_circlePointOpCount == 16 &&
+        g_circlePointOpFrameBuffer == reinterpret_cast<void *>(0x87651234) &&
+        g_zRndr_CircleCenterX == 10 &&
+        g_zRndr_CircleCenterY == 20 &&
+        g_zRndr_CircleDrawAuxArg == 0 &&
+        g_circlePointOpArgs[2] == 0x07e0;
+
+    g_circleDrawBaseCount = 0;
+    g_circlePointOpCount = 0;
+    g_circlePointOpArgs[2] = 0;
+
+    circle.DrawDirtyForwarder();
+    const bool forwarderOk =
+        g_circleDrawBaseCount == 1 &&
+        g_circlePointOpCount == 16 &&
+        g_circlePointOpArgs[2] == 0x07e0;
+
+    zRndr::g_frameBuffer = oldFrameBuffer;
+    zRndr::g_pfnPointOpActive = oldPointOp;
+    g_zRndr_CircleCenterX = oldCircleCenterX;
+    g_zRndr_CircleCenterY = oldCircleCenterY;
+    g_zRndr_CircleDrawAuxArg = oldAuxArg;
+    if (!directOk) {
+        if (g_circleDrawBaseCount != 1) {
+            return 2;
+        }
+        if (g_circlePointOpCount != 16) {
+            return 3;
+        }
+        if (g_circlePointOpFrameBuffer != reinterpret_cast<void *>(0x87651234)) {
+            return 4;
+        }
+        if (g_zRndr_CircleCenterX != 10 || g_zRndr_CircleCenterY != 20) {
+            return 5;
+        }
+        if (g_zRndr_CircleDrawAuxArg != 0) {
+            return 6;
+        }
+        return 7;
+    }
+    if (!forwarderOk) {
+        if (g_circleDrawBaseCount != 1) {
+            return 8;
+        }
+        if (g_circlePointOpCount != 16) {
+            return 9;
+        }
+        return 10;
+    }
+    return 0;
 }
 
 extern "C" int zhud_element_clip_and_invalidate_smoke(void) {
@@ -470,6 +890,87 @@ extern "C" int zhud_element_constructor_smoke(void) {
 
     g_HudUi_InvalidateMask = oldMask;
     return initialized && virtualsReady ? 0 : 1;
+}
+
+extern "C" int zhud_element_copy_constructor_smoke(void) {
+    HudUiElement commonProbe(0, 0);
+    const void *const commonVptr = HudElementVptr(commonProbe);
+    const void *const preservedVptr = reinterpret_cast<const void *>(0x4444);
+
+    HudUiElement source{};
+    SetHudElementVptr(
+        source,
+        nullptr
+    );
+    source.next = reinterpret_cast<HudUiElement *>(0x1111);
+    source.parent = reinterpret_cast<void *>(0x2222);
+    source.flags = 0x1234;
+    source.timer = 2.5f;
+    source.x = 17;
+    source.y = 29;
+    source.bltSource = reinterpret_cast<void *>(0x3333);
+    source.clipRect.left = 1;
+    source.clipRect.top = 2;
+    source.clipRect.right = 3;
+    source.clipRect.bottom = 4;
+    source.state = 5;
+    source.padding32 = 6;
+
+    HudUiElement copied{};
+    copied.next = reinterpret_cast<HudUiElement *>(0xaaaa);
+    copied.parent = reinterpret_cast<void *>(0xbbbb);
+    copied.padding32 = 0xcccc;
+
+    HudUiRect copiedRect{-1, -1, -1, -1};
+    HudUiElement *const copiedResult = copied.CopyConstructor(&source);
+    copiedResult->GetTextRect(&copiedRect);
+    const bool copiedCoords =
+        copiedResult->GetX() == source.x &&
+        copiedResult->GetY() == source.y;
+
+    HudUiElement assigned{};
+    SetHudElementVptr(
+        assigned,
+        preservedVptr
+    );
+    assigned.next = reinterpret_cast<HudUiElement *>(0xaaaa);
+    assigned.parent = reinterpret_cast<void *>(0xbbbb);
+    assigned.padding32 = 0xdddd;
+    HudUiElement *const assignedResult = assigned.CopyFrom(&source);
+
+    HudUiElement scalar{};
+    SetHudElementVptr(
+        scalar,
+        nullptr
+    );
+    HudUiElement *const scalarResult = scalar.ScalarDeletingDestructor(0);
+
+    return copiedResult == &copied && HudElementVptr(copied) == commonVptr &&
+                   copied.next == nullptr && copied.parent == nullptr &&
+                   copied.flags == source.flags && copied.timer == source.timer &&
+                   copied.x == source.x && copied.y == source.y &&
+                   copied.bltSource == source.bltSource &&
+                   copied.clipRect.left == source.clipRect.left &&
+                   copied.clipRect.top == source.clipRect.top &&
+                   copied.clipRect.right == source.clipRect.right &&
+                   copied.clipRect.bottom == source.clipRect.bottom &&
+                   copiedRect.left == source.x && copiedRect.top == source.y &&
+                   copiedRect.right == source.x && copiedRect.bottom == source.y &&
+                   copiedCoords && copied.state == source.state &&
+                   copied.padding32 == 0xcccc && assignedResult == &assigned &&
+                   HudElementVptr(assigned) == preservedVptr &&
+                   assigned.next == nullptr && assigned.parent == nullptr &&
+                   assigned.flags == source.flags && assigned.timer == source.timer &&
+                   assigned.x == source.x && assigned.y == source.y &&
+                   assigned.bltSource == source.bltSource &&
+                   assigned.clipRect.left == source.clipRect.left &&
+                   assigned.clipRect.top == source.clipRect.top &&
+                   assigned.clipRect.right == source.clipRect.right &&
+                   assigned.clipRect.bottom == source.clipRect.bottom &&
+                   assigned.state == source.state && assigned.padding32 == 0xdddd &&
+                   scalarResult == &scalar && HudElementVptr(scalar) == commonVptr
+               ? 0
+               : 1;
 }
 
 extern "C" int zhud_element_scalar_deleting_destructor_smoke(void) {
@@ -532,6 +1033,96 @@ extern "C" int zhud_element_draw_dispatch_smoke(void) {
     return nullSkipped && blitted ? 0 : 1;
 }
 
+extern "C" int zhud_element_draw_base_smoke(void) {
+    zVideo_BltSourceToPrimaryProc const oldBlit =
+        g_zVideo_pfnBltSourceToPrimary;
+    g_zVideo_pfnBltSourceToPrimary = CaptureHudElementBlit;
+
+    HudUiElement element(14, 27);
+    element.bltSource = nullptr;
+    g_elementBlitCount = 0;
+    element.DrawBase();
+    const bool nullSkipped = g_elementBlitCount == 0;
+
+    zVidImagePartial image{};
+    HudUiRect rect{2, 3, 18, 21};
+    element.bltSource = &image;
+    element.clipRect = rect;
+    g_elementBlitCount = 0;
+    element.DrawBase();
+
+    const bool blitted =
+        g_elementBlitCount == 1 &&
+        g_elementBlitImage == &image &&
+        g_elementBlitX == 14 &&
+        g_elementBlitY == 27 &&
+        g_elementBlitFlags == 0 &&
+        g_elementBlitHasRect != 0 &&
+        g_elementBlitRect.left == 2 &&
+        g_elementBlitRect.top == 3 &&
+        g_elementBlitRect.right == 18 &&
+        g_elementBlitRect.bottom == 21;
+
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+    return nullSkipped && blitted ? 0 : 1;
+}
+
+extern "C" int zhud_element_update_smoke(void) {
+    const unsigned int oldMask = g_HudUi_InvalidateMask;
+
+    g_elementUpdateDrawCount = 0;
+    g_elementUpdateDrawBaseCount = 0;
+    g_elementUpdateInvalidateCount = 0;
+    g_HudUi_InvalidateMask = 0x80;
+
+    TestElementUpdateElement element{};
+    element.flags = 0;
+    element.Update(0.1f);
+    const bool visibleDraw = g_elementUpdateDrawCount == 1;
+
+    element.flags = 0x02 | 0x04;
+    element.Update(0.1f);
+    const bool visibleDirty =
+        g_elementUpdateDrawCount == 2 &&
+        (element.flags & 0x04) == 0;
+
+    element.flags = 0x02 | 0x08;
+    element.Update(0.1f);
+    const bool visibleAlternateDirty =
+        g_elementUpdateDrawCount == 3 &&
+        (element.flags & 0x08) == 0;
+
+    element.flags = 0x10 | 0x02 | 0x04;
+    element.Update(0.1f);
+    const bool hiddenDirty =
+        g_elementUpdateDrawBaseCount == 1 &&
+        (element.flags & 0x04) == 0;
+
+    element.flags = 0x10 | 0x02 | 0x08;
+    element.Update(0.1f);
+    const bool hiddenAlternateDirty =
+        g_elementUpdateDrawBaseCount == 2 &&
+        (element.flags & 0x08) == 0;
+
+    element.flags = 0x01;
+    element.timer = 0.5f;
+    element.Update(0.25f);
+    const bool countdownActive =
+        element.timer == 0.25f &&
+        (element.flags & 0x10) == 0;
+    element.Update(0.25f);
+    const bool countdownExpired =
+        element.timer == 0.0f &&
+        (element.flags & 0x10) != 0 &&
+        g_elementUpdateInvalidateCount == 1;
+
+    g_HudUi_InvalidateMask = oldMask;
+    return visibleDraw && visibleDirty && visibleAlternateDirty && hiddenDirty &&
+                   hiddenAlternateDirty && countdownActive && countdownExpired
+               ? 0
+               : 1;
+}
+
 extern "C" int zhud_widget_constructor_smoke(void) {
     HudUiWidget widget{};
     widget.imageStateWord = 0xabcd1234;
@@ -567,6 +1158,81 @@ extern "C" int zhud_widget_constructor_smoke(void) {
     const bool virtualsReady = widget.GetCenterX() == 15 && widget.GetCenterY() == 23;
 
     return initialized && virtualsReady ? 0 : 1;
+}
+
+extern "C" int zhud_widget_invalidate_rect_smoke(void) {
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+
+    g_widgetInvalidateRectGetCenterXCount = 0;
+    g_widgetInvalidateRectGetCenterYCount = 0;
+    g_widgetInvalidateRectInvalidateCount = 0;
+    g_widgetInvalidateRectInvalidateThis = nullptr;
+
+    zVidImagePartial image{};
+    image.width = 30;
+    image.height = 40;
+
+    TestWidgetInvalidateRect widget{};
+    widget.x = 10;
+    widget.y = 20;
+    widget.alignFlags = 0;
+    widget.image = &image;
+    widget.dirtyRectCount = 2;
+    for (HudUiRectDirty &dirtyRect : widget.dirtyRects) {
+        dirtyRect.framesRemaining = 9;
+    }
+    widget.dirtyRects[0].framesRemaining = 0;
+
+    g_HudUi_InvalidateMask = 0x0c;
+    const HudUiRect dirtyRect = {5, 15, 50, 80};
+    widget.InvalidateRect(&dirtyRect);
+
+    const HudUiRectDirty &slot = widget.dirtyRects[0];
+    const bool clipped =
+        widget.dirtyRectCount == 3 &&
+        slot.framesRemaining == 2 &&
+        slot.drawX == 10 &&
+        slot.drawY == 20 &&
+        slot.srcLeft == 3 &&
+        slot.srcTop == 9 &&
+        slot.srcRight == 43 &&
+        slot.srcBottom == 29;
+    const bool dispatched = g_widgetInvalidateRectGetCenterXCount == 2 &&
+                            g_widgetInvalidateRectGetCenterYCount == 2 &&
+                            g_widgetInvalidateRectInvalidateCount == 1 &&
+                            g_widgetInvalidateRectInvalidateThis == &widget;
+
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    return clipped && dispatched ? 0 : 1;
+}
+
+extern "C" int zhud_objective_update_meter_xpoints_smoke(void) {
+    const HudUiWidget oldWidget = g_HudUiMgrObjectiveWidget;
+    const HudUiMeter oldMeter = g_HudUiMgrObjectiveMeter;
+
+    g_HudUiMgrObjectiveWidget = {};
+    g_HudUiMgrObjectiveWidget.x = 123;
+    g_HudUiMgrObjectiveWidget.alignFlags = 0;
+    g_HudUiMgrObjectiveMeter = {};
+    g_HudUiMgrObjectiveMeter.points[0].x = -1.0f;
+    g_HudUiMgrObjectiveMeter.points[1].x = -2.0f;
+    g_HudUiMgrObjectiveMeter.points[2].x = -3.0f;
+    g_HudUiMgrObjectiveMeter.points[3].x = -4.0f;
+    g_HudUiMgrObjectiveMeter.points[0].y = 10.0f;
+    g_HudUiMgrObjectiveMeter.points[3].y = 40.0f;
+
+    HudUiMgrObjective::UpdateMeterXPoints();
+
+    const bool leftEdge = g_HudUiMgrObjectiveMeter.points[0].x == 128.0f &&
+                          g_HudUiMgrObjectiveMeter.points[1].x == 128.0f;
+    const bool rightEdge = g_HudUiMgrObjectiveMeter.points[2].x == 135.0f &&
+                           g_HudUiMgrObjectiveMeter.points[3].x == 135.0f;
+    const bool yUnchanged = g_HudUiMgrObjectiveMeter.points[0].y == 10.0f &&
+                            g_HudUiMgrObjectiveMeter.points[3].y == 40.0f;
+
+    g_HudUiMgrObjectiveWidget = oldWidget;
+    g_HudUiMgrObjectiveMeter = oldMeter;
+    return leftEdge && rightEdge && yUnchanged ? 0 : 1;
 }
 
 extern "C" int zhud_slot_draw_smoke(void) {
@@ -620,6 +1286,122 @@ extern "C" int zhud_slot_draw_smoke(void) {
     const bool onlyTrackMarkerVisible = trackMarkerOnlyBlits != 0;
     const bool onlySlotVisible = slotOnlyBlits != 0;
     return bothVisible && onlyTrackMarkerVisible && onlySlotVisible ? 0 : 1;
+}
+
+extern "C" int zhud_triplet_panel_draw_smoke(void) {
+    zVideo_BltSourceToPrimaryProc const oldBlit =
+        g_zVideo_pfnBltSourceToPrimary;
+    zVidImagePartial *const oldExclusiveImage =
+        g_HudUiWidget_ExclusiveDrawImage;
+    g_zVideo_pfnBltSourceToPrimary = CaptureTripletPanelBlit;
+    g_HudUiWidget_ExclusiveDrawImage = nullptr;
+    g_tripletPanelBlitCount = 0;
+    g_tripletPanelBlitImages[0] = nullptr;
+    g_tripletPanelBlitImages[1] = nullptr;
+    g_tripletPanelBlitImages[2] = nullptr;
+    g_tripletPanelBlitImages[3] = nullptr;
+
+    zVidImagePartial baseImage{};
+    zVidImagePartial itemImages[3]{};
+
+    HudUiTripletPanel panel{};
+    panel.bltSource = &baseImage;
+    panel.items[0].flags = 0;
+    panel.items[0].image = &itemImages[0];
+    panel.items[0].dirtyRectCount = 0;
+    panel.items[1].flags = 0x10;
+    panel.items[1].image = &itemImages[1];
+    panel.items[1].dirtyRectCount = 0;
+    panel.items[2].flags = 0;
+    panel.items[2].image = &itemImages[2];
+    panel.items[2].dirtyRectCount = 0;
+
+    panel.Draw();
+
+    const bool drawOrder =
+        g_tripletPanelBlitCount == 3 &&
+        g_tripletPanelBlitImages[0] == &baseImage &&
+        g_tripletPanelBlitImages[1] == &itemImages[2] &&
+        g_tripletPanelBlitImages[2] == &itemImages[0] &&
+        g_tripletPanelBlitImages[3] == nullptr;
+
+    g_HudUiWidget_ExclusiveDrawImage = oldExclusiveImage;
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+    return drawOrder ? 0 : 1;
+}
+
+extern "C" int zhud_triplet_panel_set_visible_count_smoke(void) {
+    const unsigned int oldMask = g_HudUi_InvalidateMask;
+    const HudUiNanitePanel oldNanitePanel = g_HudUiMgrNanitePanel;
+
+    g_HudUi_InvalidateMask = 0x80;
+
+    HudUiTripletPanel panel{};
+    panel.visibleCount = 99;
+    panel.items[0].flags = 0x10;
+    panel.items[1].flags = 0x10;
+    panel.items[2].flags = 0x10;
+    panel.SetVisibleCount(2);
+
+    const bool twoVisible =
+        panel.visibleCount == 2 &&
+        (panel.flags & 0x80) != 0 &&
+        (panel.items[0].flags & 0x10) == 0 &&
+        (panel.items[1].flags & 0x10) == 0 &&
+        (panel.items[2].flags & 0x10) != 0;
+
+    panel.flags = 0;
+    panel.items[0].flags = 0;
+    panel.items[1].flags = 0;
+    panel.items[2].flags = 0;
+    panel.SetVisibleCount(-3);
+
+    const bool noneVisible =
+        panel.visibleCount == 0 &&
+        (panel.flags & 0x80) != 0 &&
+        (panel.items[0].flags & 0x10) != 0 &&
+        (panel.items[1].flags & 0x10) != 0 &&
+        (panel.items[2].flags & 0x10) != 0;
+
+    panel.flags = 0;
+    panel.SetVisibleCount(0);
+    const bool unchanged = panel.flags == 0;
+
+    g_HudUiMgrNanitePanel.visibleCount = 0;
+    g_HudUiMgrNanitePanel.flags = 0;
+    g_HudUiMgrNanitePanel.items[0].flags = 0x10;
+    g_HudUiMgrNanitePanel.items[1].flags = 0x10;
+    g_HudUiMgrNanitePanel.items[2].flags = 0x10;
+
+    HudUiMgr::SetNanitePanelCount(2);
+    const bool naniteForwarded =
+        g_HudUiMgrNanitePanel.visibleCount == 2 &&
+        (g_HudUiMgrNanitePanel.flags & 0x80) != 0 &&
+        (g_HudUiMgrNanitePanel.items[0].flags & 0x10) == 0 &&
+        (g_HudUiMgrNanitePanel.items[1].flags & 0x10) == 0 &&
+        (g_HudUiMgrNanitePanel.items[2].flags & 0x10) != 0;
+
+    g_HudUiMgrNanitePanel = oldNanitePanel;
+    g_HudUi_InvalidateMask = oldMask;
+    return twoVisible && noneVisible && unchanged && naniteForwarded ? 0 : 1;
+}
+
+extern "C" int zhud_mgr_trigger_current_layout_on_activated_smoke(void) {
+    CaptureActivatedLayout layout{};
+
+    HudLayoutBase *const oldCurrentLayout = g_HudUiMgrCurrentLayout;
+    g_layoutActivatedCount = 0;
+
+    g_HudUiMgrCurrentLayout = nullptr;
+    HudUiMgr::TriggerCurrentLayoutOnActivated();
+    const bool nullPath = g_layoutActivatedCount == 0;
+
+    g_HudUiMgrCurrentLayout = &layout;
+    HudUiMgr::TriggerCurrentLayoutOnActivated();
+    const bool activePath = g_layoutActivatedCount == 1;
+
+    g_HudUiMgrCurrentLayout = oldCurrentLayout;
+    return nullPath && activePath ? 0 : 1;
 }
 
 extern "C" int zhud_layout_hw_update_objective_dirty_rect_smoke(void) {
@@ -744,6 +1526,51 @@ extern "C" int zhud_widget_destructor_core_smoke(void) {
     return borrowedOk && ownedOk ? 0 : 1;
 }
 
+extern "C" int zhud_fill_bitmap_core_smoke(void) {
+    HudUiFillBitmap bitmap{};
+    bitmap.Constructor();
+    bitmap.image = &zVid_Image::g_zImage_DefaultImage;
+    bitmap.ownsImage = 0;
+    bitmap.previewImage = &zVid_Image::g_zImage_DefaultImage;
+    bitmap.fillImage = &zVid_Image::g_zImage_DefaultImage;
+    const void *const bitmapVptr = HudElementVptr(bitmap);
+
+    bitmap.DestructorCore();
+    const bool coreDestructed =
+        HudElementVptr(bitmap) != bitmapVptr &&
+        bitmap.previewImage == &zVid_Image::g_zImage_DefaultImage &&
+        bitmap.fillImage == &zVid_Image::g_zImage_DefaultImage;
+
+    HudUiFillBitmap scalar{};
+    scalar.Constructor();
+    scalar.image = &zVid_Image::g_zImage_DefaultImage;
+    scalar.ownsImage = 0;
+    scalar.previewImage = &zVid_Image::g_zImage_DefaultImage;
+    scalar.fillImage = &zVid_Image::g_zImage_DefaultImage;
+    const void *const scalarVptr = HudElementVptr(scalar);
+    HudUiElement *const scalarResult = scalar.ScalarDeletingDestructor(0);
+    const bool scalarDestructed =
+        scalarResult == &scalar &&
+        HudElementVptr(scalar) != scalarVptr &&
+        scalar.previewImage == &zVid_Image::g_zImage_DefaultImage &&
+        scalar.fillImage == &zVid_Image::g_zImage_DefaultImage;
+
+    HudUiFillBitmap thunk{};
+    thunk.Constructor();
+    thunk.image = &zVid_Image::g_zImage_DefaultImage;
+    thunk.ownsImage = 0;
+    thunk.previewImage = &zVid_Image::g_zImage_DefaultImage;
+    thunk.fillImage = &zVid_Image::g_zImage_DefaultImage;
+    const void *const thunkVptr = HudElementVptr(thunk);
+    thunk.DestructorCoreThunk();
+    const bool thunkDestructed =
+        HudElementVptr(thunk) != thunkVptr &&
+        thunk.previewImage == &zVid_Image::g_zImage_DefaultImage &&
+        thunk.fillImage == &zVid_Image::g_zImage_DefaultImage;
+
+    return coreDestructed && scalarDestructed && thunkDestructed ? 0 : 1;
+}
+
 extern "C" int zhud_widget_set_image_by_path_owned_smoke(void) {
     const unsigned int oldMask = g_HudUi_InvalidateMask;
 
@@ -803,7 +1630,6 @@ extern "C" int zhud_background_cursor_widget_member_constructor_smoke(void) {
     cursor.y = 10;
     const bool virtualsReady = cursor.GetCenterX() == 10 && cursor.GetCenterY() == 11;
 
-    cursor.DestructorCore();
     return constructed && virtualsReady ? 0 : 1;
 }
 
@@ -844,6 +1670,7 @@ extern "C" int zhud_background_cursor_widget_rebuild_captured_image_smoke(void) 
         capturedPixels[2] == 10 &&
         capturedPixels[3] == 11;
     g_zVideo_SwSurfaceState = oldSwSurfaceState;
+    cursor.capturedImage = nullptr;
 
     return ok ? 0 : 1;
 }
@@ -1231,6 +2058,85 @@ extern "C" int zhud_panel_constructor_default_smoke(void) {
     return defaultCtor && thunkCtor ? 0 : 1;
 }
 
+extern "C" int zhud_panel_layout_entry_copy_construct_smoke(void) {
+    HudUiPanelLayoutEntry source{};
+    InitCreditsPanelEntry(&source, "source row", 14, 24);
+
+    HudUiPanelLayoutEntry copied{};
+    HudUiPanelLayoutEntry *const result = copied.CopyConstruct(&source);
+
+    const bool copiedValues =
+        result == &copied && CreditsPanelEntryMatches(copied, "source row", 14, 24);
+
+    copied.panel.DestructorThunk();
+    source.panel.DestructorThunk();
+    return copiedValues ? 0 : 1;
+}
+
+extern "C" int zhud_panel_layout_entry_copy_assign_smoke(void) {
+    HudUiPanelLayoutEntry source{};
+    InitCreditsPanelEntry(&source, "assign row", 16, 26);
+
+    HudUiPanelLayoutEntry copied{};
+    HudUiPanelLayoutEntry *const result = copied.CopyAssign(&source);
+
+    const bool copiedValues =
+        result == &copied && CreditsPanelEntryMatches(copied, "assign row", 16, 26);
+
+    copied.panel.DestructorThunk();
+    source.panel.DestructorThunk();
+    return copiedValues ? 0 : 1;
+}
+
+extern "C" int zhud_panel_layout_entry_copy_assign_range_smoke(void) {
+    HudUiPanelLayoutEntry source[2] = {};
+    InitCreditsPanelEntry(&source[0], "range a", 18, 28);
+    InitCreditsPanelEntry(&source[1], "range b", 38, 48);
+
+    HudUiPanelLayoutEntry dest[2] = {};
+    HudUiPanelLayoutEntry *const result =
+        HudUiPanelLayoutEntry::CopyAssignRange(source, source + 2, dest);
+
+    const bool copiedValues =
+        result == dest + 2 && CreditsPanelEntryMatches(dest[0], "range a", 18, 28) &&
+        CreditsPanelEntryMatches(dest[1], "range b", 38, 48);
+
+    HudUiPanelLayoutEntry::DestroyRange(dest, dest + 2);
+    source[1].panel.DestructorThunk();
+    source[0].panel.DestructorThunk();
+    return copiedValues ? 0 : 1;
+}
+
+extern "C" int zhud_panel_layout_entry_destroy_range_smoke(void) {
+    HudUiPanelLayoutEntry entries[2] = {};
+    InitCreditsPanelEntry(&entries[0], "destroy a", 11, 12);
+    InitCreditsPanelEntry(&entries[1], "destroy b", 13, 14);
+
+    CodeFunctionPatch destructorPatch{};
+    g_PanelLayoutDestroyCount = 0;
+    g_PanelLayoutDestroyPanels[0] = nullptr;
+    g_PanelLayoutDestroyPanels[1] = nullptr;
+
+    if (!PatchFunctionJump(
+            MethodAddress(&HudUiPanel::DestructorThunk),
+            reinterpret_cast<void *>(&CountPanelDestructorThunk),
+            destructorPatch
+        )) {
+        entries[1].panel.DestructorThunk();
+        entries[0].panel.DestructorThunk();
+        return 1;
+    }
+
+    HudUiPanelLayoutEntry::DestroyRange(entries, entries + 2);
+    RestoreFunctionPatch(destructorPatch);
+
+    return g_PanelLayoutDestroyCount == 2 &&
+                   g_PanelLayoutDestroyPanels[0] == &entries[0].panel &&
+                   g_PanelLayoutDestroyPanels[1] == &entries[1].panel
+               ? 0
+               : 1;
+}
+
 namespace {
 int g_primitiveSetPosCount = 0;
 HudUiPrimitiveBindTarget *g_primitiveSetPosThis = nullptr;
@@ -1375,6 +2281,207 @@ extern "C" int zhud_background_bind_primitive_node_to_element_smoke(void) {
     g_zVideo_PixelPack.bShiftTo8 = oldBShiftTo8;
     background.capturedCompositeImage = nullptr;
     return linked && primitive ? 0 : 1;
+}
+
+void *g_backgroundUpdateChildElement = nullptr;
+void *g_backgroundUpdateFocusElement = nullptr;
+int g_backgroundUpdateHitCount = 0;
+int g_backgroundUpdateShouldHandleCount = 0;
+int g_backgroundUpdateShouldHandleHovered = -1;
+int g_backgroundUpdateHoverEnterCount = 0;
+int g_backgroundUpdateHoverRepeatCount = 0;
+int g_backgroundUpdateHoverExitCount = 0;
+int g_backgroundUpdateCaptureEnterCount = 0;
+int g_backgroundUpdateCaptureExitCount = 0;
+int g_backgroundUpdatePrimaryReleaseCount = 0;
+int g_backgroundUpdateSecondaryReleaseCount = 0;
+int g_backgroundUpdatePointerStateCount = 0;
+int g_backgroundUpdateActivateCount = 0;
+int g_backgroundUpdateAfterInputCount = 0;
+int g_backgroundUpdateAfterHovered = -1;
+int g_backgroundUpdateDrawBaseCount = 0;
+int g_backgroundUpdateChildUpdateCount = 0;
+int g_backgroundUpdateFocusUpdateCount = 0;
+int g_backgroundUpdateSetPosCount = 0;
+int g_backgroundUpdateSetPosX = 0;
+int g_backgroundUpdateSetPosY = 0;
+float g_backgroundUpdateChildDelta = 0.0f;
+float g_backgroundUpdateFocusDelta = 0.0f;
+
+struct TestBackgroundUpdateElement : HudUiElement {
+    int hitResult;
+    int shouldHandleResult;
+
+    int HitTest(
+        int x,
+        int y
+    ) {
+        ++g_backgroundUpdateHitCount;
+        return x == 123 && y == 456 ? hitResult : 0;
+    }
+
+    int ShouldHandleInput(
+        HudUiBackground *,
+        int hovered
+    ) {
+        ++g_backgroundUpdateShouldHandleCount;
+        g_backgroundUpdateShouldHandleHovered = hovered;
+        return shouldHandleResult;
+    }
+
+    void DrawBase() {
+        ++g_backgroundUpdateDrawBaseCount;
+    }
+
+    void SetPos(
+        int x,
+        int y
+    ) {
+        ++g_backgroundUpdateSetPosCount;
+        g_backgroundUpdateSetPosX = x;
+        g_backgroundUpdateSetPosY = y;
+        this->x = x;
+        this->y = y;
+    }
+
+    void Update(
+        float deltaSeconds
+    ) {
+        if (this == g_backgroundUpdateChildElement) {
+            ++g_backgroundUpdateChildUpdateCount;
+            g_backgroundUpdateChildDelta = deltaSeconds;
+        } else if (this == g_backgroundUpdateFocusElement) {
+            ++g_backgroundUpdateFocusUpdateCount;
+            g_backgroundUpdateFocusDelta = deltaSeconds;
+        }
+    }
+
+    void OnCapturedPrimaryRelease() {
+        ++g_backgroundUpdatePrimaryReleaseCount;
+    }
+
+    void OnClearBinding() {
+        ++g_backgroundUpdateSecondaryReleaseCount;
+    }
+
+    void OnHoverRepeat() {
+        ++g_backgroundUpdateHoverRepeatCount;
+    }
+
+    void ShowPreview() {
+        ++g_backgroundUpdateHoverEnterCount;
+    }
+
+    void HidePreview() {
+        ++g_backgroundUpdateHoverExitCount;
+    }
+
+    void OnBeginCapture() {
+        ++g_backgroundUpdateCaptureEnterCount;
+    }
+
+    void OnEndCapture() {
+        ++g_backgroundUpdateCaptureExitCount;
+    }
+
+    void OnPointerButtonState(
+        int,
+        int
+    ) {
+        ++g_backgroundUpdatePointerStateCount;
+    }
+
+    void OnActivate() {
+        ++g_backgroundUpdateActivateCount;
+    }
+
+    void AfterInputUpdate(
+        HudUiBackground *,
+        int hovered
+    ) {
+        ++g_backgroundUpdateAfterInputCount;
+        g_backgroundUpdateAfterHovered = hovered;
+    }
+};
+
+extern "C" int zhud_background_update_input_focus_smoke(void) {
+    TestBackgroundUpdateElement child = {};
+    TestBackgroundUpdateElement focus = {};
+    child.hitResult = 1;
+    child.shouldHandleResult = 1;
+
+    HudUiBackground background = {};
+    background.enabled = 1;
+    background.childHead = &child;
+    background.childTail = &child;
+    background.inputFocusElement = &focus;
+    background.captureTransitionMask = 4;
+
+    g_zInput_MouseStateSnapshot = {};
+    g_zInput_MouseStateSnapshot.cursorClientX = 123;
+    g_zInput_MouseStateSnapshot.cursorClientY = 456;
+    g_zInput_MouseStateSnapshot.button1Transition = 4;
+    g_zInput_MouseStateSnapshot.button2Transition = 0;
+
+    g_backgroundUpdateChildElement = &child;
+    g_backgroundUpdateFocusElement = &focus;
+    g_backgroundUpdateHitCount = 0;
+    g_backgroundUpdateShouldHandleCount = 0;
+    g_backgroundUpdateShouldHandleHovered = -1;
+    g_backgroundUpdateHoverEnterCount = 0;
+    g_backgroundUpdateHoverRepeatCount = 0;
+    g_backgroundUpdateHoverExitCount = 0;
+    g_backgroundUpdateCaptureEnterCount = 0;
+    g_backgroundUpdateCaptureExitCount = 0;
+    g_backgroundUpdatePrimaryReleaseCount = 0;
+    g_backgroundUpdateSecondaryReleaseCount = 0;
+    g_backgroundUpdatePointerStateCount = 0;
+    g_backgroundUpdateActivateCount = 0;
+    g_backgroundUpdateAfterInputCount = 0;
+    g_backgroundUpdateAfterHovered = -1;
+    g_backgroundUpdateDrawBaseCount = 0;
+    g_backgroundUpdateChildUpdateCount = 0;
+    g_backgroundUpdateFocusUpdateCount = 0;
+    g_backgroundUpdateSetPosCount = 0;
+    g_backgroundUpdateSetPosX = 0;
+    g_backgroundUpdateSetPosY = 0;
+    g_backgroundUpdateChildDelta = 0.0f;
+    g_backgroundUpdateFocusDelta = 0.0f;
+
+    background.Update(0.25f);
+
+    const bool inputDispatched =
+        g_backgroundUpdateHitCount == 1 &&
+        g_backgroundUpdateShouldHandleCount == 1 &&
+        g_backgroundUpdateShouldHandleHovered == 1 &&
+        g_backgroundUpdateHoverEnterCount == 1 &&
+        g_backgroundUpdateHoverRepeatCount == 0 &&
+        g_backgroundUpdateCaptureEnterCount == 1 &&
+        g_backgroundUpdatePrimaryReleaseCount == 1 &&
+        g_backgroundUpdateActivateCount == 1 &&
+        g_backgroundUpdateAfterInputCount == 1 &&
+        g_backgroundUpdateAfterHovered == 1 &&
+        g_backgroundUpdateSecondaryReleaseCount == 0 &&
+        g_backgroundUpdatePointerStateCount == 0 &&
+        g_backgroundUpdateHoverExitCount == 0 &&
+        g_backgroundUpdateCaptureExitCount == 0 &&
+        child.state == 3;
+
+    const bool focusUpdated =
+        g_backgroundUpdateDrawBaseCount == 1 &&
+        g_backgroundUpdateChildUpdateCount == 1 &&
+        g_backgroundUpdateChildDelta == 0.25f &&
+        g_backgroundUpdateSetPosCount == 1 &&
+        g_backgroundUpdateSetPosX == 123 &&
+        g_backgroundUpdateSetPosY == 456 &&
+        g_backgroundUpdateFocusUpdateCount == 1 &&
+        g_backgroundUpdateFocusDelta == 0.25f &&
+        focus.x == 123 &&
+        focus.y == 456;
+
+    g_backgroundUpdateChildElement = 0;
+    g_backgroundUpdateFocusElement = 0;
+    return inputDispatched && focusUpdated ? 0 : 1;
 }
 
 extern "C" int zhud_container_child_list_smoke(void) {
@@ -1559,6 +2666,240 @@ extern "C" int zhud_credits_panel_constructor_smoke(void) {
     ::operator delete(storage);
     g_RecoilApp_QuitAfterCredits = oldQuitAfterCredits;
     return constructed ? 0 : 1;
+}
+
+extern "C" int zhud_credits_panel_destructor_smoke(void) {
+    void *const storage = ::operator new(sizeof(HudUiCreditsPanel));
+    std::memset(
+        storage,
+        0,
+        sizeof(HudUiCreditsPanel)
+    );
+    HudUiCreditsPanel *const panel = static_cast<HudUiCreditsPanel *>(storage);
+    InitCreditsPanelForDestructor(panel);
+    panel->Destructor();
+    const int failure = CreditsPanelDestructorFailureBits(*panel);
+    ::operator delete(storage);
+    return failure;
+}
+
+extern "C" int zhud_credits_panel_scalar_deleting_destructor_smoke(void) {
+    void *const storage = ::operator new(sizeof(HudUiCreditsPanel));
+    std::memset(
+        storage,
+        0,
+        sizeof(HudUiCreditsPanel)
+    );
+    HudUiCreditsPanel *const panel = static_cast<HudUiCreditsPanel *>(storage);
+    InitCreditsPanelForDestructor(panel);
+    HudUiCreditsPanel *const result = panel->ScalarDeletingDestructor(0);
+
+    int failure = result == panel ? 0 : 1;
+    failure |= CreditsPanelDestructorFailureBits(*panel) << 1;
+    ::operator delete(storage);
+    return failure;
+}
+
+extern "C" int zhud_scrolling_text_destructor_smoke(void) {
+    void *const storage = ::operator new(sizeof(HudUiZrdScrollingText));
+    std::memset(
+        storage,
+        0,
+        sizeof(HudUiZrdScrollingText)
+    );
+    HudUiZrdScrollingText *const text = static_cast<HudUiZrdScrollingText *>(storage);
+    InitScrollingCreditsTextForDestructor(text);
+    text->Destructor();
+    const int failure = ScrollingCreditsTextDestructorFailureBits(*text);
+    ::operator delete(storage);
+    return failure;
+}
+
+extern "C" int zhud_scrolling_text_scalar_deleting_destructor_smoke(void) {
+    void *const storage = ::operator new(sizeof(HudUiZrdScrollingText));
+    std::memset(
+        storage,
+        0,
+        sizeof(HudUiZrdScrollingText)
+    );
+    HudUiZrdScrollingText *const text = static_cast<HudUiZrdScrollingText *>(storage);
+    InitScrollingCreditsTextForDestructor(text);
+    HudUiElement *const result = text->ScalarDeletingDestructor(0);
+
+    int failure = result == text ? 0 : 1;
+    failure |= ScrollingCreditsTextDestructorFailureBits(*text) << 1;
+    ::operator delete(storage);
+    return failure;
+}
+
+extern "C" int zhud_scrolling_text_on_activate_reset_owner_fade_smoke(void) {
+    unsigned char ownerStorage[sizeof(HudUiCreditsPanel)] = {};
+    HudUiCreditsPanel *const owner = reinterpret_cast<HudUiCreditsPanel *>(ownerStorage);
+    owner->fadeProgress = 0.75f;
+
+    HudUiZrdScrollingText text{};
+    text.owner = owner;
+    text.OnActivateResetOwnerFade();
+
+    return ZhudFloatNear(
+               owner->fadeProgress,
+               0.0f
+           )
+               ? 0
+               : 1;
+}
+
+extern "C" int zhud_scrolling_text_update_scroll_positions_smoke(void) {
+    void *const storage = ::operator new(sizeof(HudUiZrdScrollingText));
+    std::memset(
+        storage,
+        0,
+        sizeof(HudUiZrdScrollingText)
+    );
+    HudUiZrdScrollingText *const text = new (storage) HudUiZrdScrollingText;
+    text->rect.left = 10;
+    text->rect.top = 100;
+    text->rect.bottom = 200;
+    text->totalHeight = 50;
+
+    HudUiPanelSpan row{};
+    row.begin = AllocateCreditsPanelEntries(3);
+    row.end = row.begin + 3;
+    row.cap = row.end;
+    InitCreditsPanelEntry(&row.begin[0], "first", 1, -30);
+    InitCreditsPanelEntry(&row.begin[1], "second", 2, -10);
+    InitCreditsPanelEntry(&row.begin[2], "third", 3, 70);
+    ZhudFieldAt<int>(&row.begin[0].panel, 0x260) = 20;
+    ZhudFieldAt<int>(&row.begin[1].panel, 0x260) = 20;
+    ZhudFieldAt<int>(&row.begin[2].panel, 0x260) = 20;
+
+    text->rows.begin = &row;
+    text->rows.end = &row + 1;
+    text->rows.cap = text->rows.end;
+    text->UpdateScrollPositions(0.5f);
+
+    const bool positions =
+        row.begin[0].panel.x == 11 && row.begin[0].panel.y == 95 &&
+        row.begin[1].panel.x == 12 && row.begin[1].panel.y == 115 &&
+        row.begin[2].panel.x == 13 && row.begin[2].panel.y == 195;
+    const bool visibility =
+        (row.begin[0].panel.flags & 0x10u) != 0 &&
+        (row.begin[1].panel.flags & 0x10u) == 0 &&
+        (row.begin[2].panel.flags & 0x10u) != 0;
+
+    row.DestroyAndFree();
+    ::operator delete(storage);
+    return positions && visibility ? 0 : 1;
+}
+
+extern "C" int zhud_credits_panel_update_fade_and_exit_smoke(void) {
+    unsigned char oldApp[sizeof(g_RecoilApp)];
+    std::memcpy(
+        oldApp,
+        &g_RecoilApp,
+        sizeof(oldApp)
+    );
+    const int oldQuitAfterCredits = g_RecoilApp_QuitAfterCredits;
+    std::memset(
+        &g_RecoilApp,
+        0,
+        sizeof(g_RecoilApp)
+    );
+    g_RecoilApp.m_currentStateIndex = -1;
+    g_RecoilApp_QuitAfterCredits = 0;
+
+    void *const belowStorage = ::operator new(sizeof(HudUiCreditsPanel));
+    std::memset(
+        belowStorage,
+        0,
+        sizeof(HudUiCreditsPanel)
+    );
+    HudUiCreditsPanel *const belowPanel = static_cast<HudUiCreditsPanel *>(belowStorage);
+    InitCreditsPanelForUpdate(
+        belowPanel,
+        0.25f,
+        0.5f
+    );
+    belowPanel->UpdateFadeAndExit(0.5f);
+    const bool belowThreshold =
+        ZhudFloatNear(
+            belowPanel->fadeProgress,
+            0.5f
+        ) &&
+        g_RecoilApp.m_stateQueue.m_itemCount == 0;
+    ::operator delete(belowStorage);
+
+    void *const normalStorage = ::operator new(sizeof(HudUiCreditsPanel));
+    std::memset(
+        normalStorage,
+        0,
+        sizeof(HudUiCreditsPanel)
+    );
+    HudUiCreditsPanel *const normalPanel = static_cast<HudUiCreditsPanel *>(normalStorage);
+    InitCreditsPanelForUpdate(
+        normalPanel,
+        1.0f,
+        0.0f
+    );
+    normalPanel->UpdateFadeAndExit(0.25f);
+    RecoilApp_StateQueueItem *const item = CreditsQueueItemAt(
+        g_RecoilApp.m_stateQueue,
+        0
+    );
+    const bool normalExit =
+        g_RecoilApp.m_stateQueue.m_itemCount == 1 &&
+        item != nullptr &&
+        item->m_kind == RecoilApp_StateQueueKind_ExitCurrent &&
+        item->m_stateObj == nullptr &&
+        item->m_param == 0;
+    CleanupCreditsQueue(g_RecoilApp.m_stateQueue);
+    ::operator delete(normalStorage);
+
+    g_RecoilApp_QuitAfterCredits = 1;
+    CreditsLeaveNetworkState leaveState;
+    *reinterpret_cast<void **>(&g_RecoilApp.m_leaveNetworkState) =
+        *reinterpret_cast<void **>(&leaveState);
+    void *const quitStorage = ::operator new(sizeof(HudUiCreditsPanel));
+    std::memset(
+        quitStorage,
+        0,
+        sizeof(HudUiCreditsPanel)
+    );
+    HudUiCreditsPanel *const quitPanel = static_cast<HudUiCreditsPanel *>(quitStorage);
+    InitCreditsPanelForUpdate(
+        quitPanel,
+        1.0f,
+        0.0f
+    );
+    quitPanel->UpdateFadeAndExit(0.25f);
+    RecoilApp_StateQueueItem *const exitItem = CreditsQueueItemAt(
+        g_RecoilApp.m_stateQueue,
+        0
+    );
+    RecoilApp_StateQueueItem *const switchItem = CreditsQueueItemAt(
+        g_RecoilApp.m_stateQueue,
+        1
+    );
+    const bool quitExit =
+        g_RecoilApp.m_stateQueue.m_itemCount == 2 &&
+        exitItem != nullptr &&
+        exitItem->m_kind == RecoilApp_StateQueueKind_ExitCurrent &&
+        exitItem->m_param == 1 &&
+        switchItem != nullptr &&
+        switchItem->m_kind == RecoilApp_StateQueueKind_SwitchCurrent &&
+        switchItem->m_stateObj == &g_RecoilApp.m_leaveNetworkState &&
+        switchItem->m_param == 0 &&
+        g_RecoilApp.m_missionShutdownMode == RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY;
+    CleanupCreditsQueue(g_RecoilApp.m_stateQueue);
+    ::operator delete(quitStorage);
+
+    std::memcpy(
+        &g_RecoilApp,
+        oldApp,
+        sizeof(g_RecoilApp)
+    );
+    g_RecoilApp_QuitAfterCredits = oldQuitAfterCredits;
+    return belowThreshold && normalExit && quitExit ? 0 : 1;
 }
 
 extern "C" int zhud_cmd_bind_button_base_constructor_smoke(void) {

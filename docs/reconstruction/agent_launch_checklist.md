@@ -14,7 +14,7 @@ generated state.
 From the workspace root:
 
 ```powershell
-python tools/recoil_doctor.py --quick --binja
+python tools/recoil.py doctor --quick --binja
 ```
 
 Use plain `--quick` only when Binary Ninja is intentionally unavailable or
@@ -23,13 +23,33 @@ targeted checks instead of selecting an address. For active implementation or
 verification handoff, also run the address-specific doctor command from
 `AGENTS.md`.
 
+For agent-facing command, doc, skill, or role drift:
+
+```powershell
+python tools/recoil.py audit agent-surface --strict
+```
+
+If a tool, instruction, environment, or workspace setup blocks work or forces a
+workaround, record it for a future agent instead of burying it in the final
+report:
+
+```powershell
+python tools/recoil.py issue report --kind tool-error --severity high --summary "..." --area tools/recoil.py --impact "..." --actual "..." --repro "..." --next-action "..."
+python tools/recoil.py issue request --severity medium --summary "..." --area tools/recoil.py --impact "..." --requested-change "..." --benefit "..." --next-action "..."
+python tools/recoil.py issue list --status open
+```
+
+Follow the `AGENTS.md` issue-ledger boundary: do not file normal
+reconstruction backlog, stale tests/code/manifests/markers, owner/data
+blockers, tier debt, or missing evidence as workspace issues.
+
 Address-led launch packet for a known anchor:
 
 ```powershell
-python tools/recoil_task_packet.py --address 0xNNNNNN
+python tools/recoil.py packet --address 0xNNNNNN
 ```
 
-Use `--no-binja` only when intentional. Do not use the task packet for
+Use `--no-binja` only when intentional. Do not use address-led packets for
 docs/tooling cleanup or other non-address work; inspect the relevant files and
 run targeted checks instead.
 
@@ -38,10 +58,15 @@ run targeted checks instead.
 Use current plan state, not stale notes:
 
 ```powershell
-python tools/recoil_plan_cli.py next --lane binary
-python tools/recoil_plan_cli.py group app.recoil_app --lane binary
-python tools/recoil_status.py 0xNNNNNN
+python tools/recoil.py plan next --lane binary
+python tools/recoil.py plan group app.recoil_app --lane binary
+python tools/recoil.py status 0xNNNNNN
 ```
+
+Normal binary-lane selection is owner-first after reconstruction/dependency
+readiness: unresolved `Source owner` markers come before isolated
+implementation or tier `C` behavior work, then `Data reimplemented`, and only
+then pure tier `S` verification.
 
 Treat the address as an evidence anchor, not necessarily the implementation
 unit. Expand to the proven owner boundary: class/interface, table-shaped
@@ -56,19 +81,20 @@ and production `VTable`/`FTable` scaffolds are not accepted reimplementations.
 Before ending a multi-step reconstruction session:
 
 ```powershell
-python tools/recoil_handoff.py 0xNNNNNN --include-artifacts
+python tools/recoil.py handoff 0xNNNNNN --include-artifacts
 ```
 
 ## Git And Groups
 
 Commit only completed batches with tracked production source under `src/`. Do
 not commit plan-only, docs-only, tools-only, manifest-only, or test-only
-changes. Do not push. Do not use `git add .`. Never `git add -f` ignored paths.
-Stage only the agent's related changes; do not stage ignored, private,
-generated, runtime, or unrelated files.
+changes. If a qualifying source commit is being made and `.agent/RECOIL_PLAN.md`
+is dirty, stage it with that checkpoint. Do not push. Do not use `git add .`.
+Never `git add -f` ignored paths. Stage only the agent's related changes; do
+not stage ignored, private, generated, runtime, or unrelated files.
 
 `.agent/IMPLEMENTATION_GROUPS.md` is temporary. If stale or contradicted by BN,
-`.agent/RECOIL_PLAN.md`, or `recoil_status.py`, refresh or prune it. Stage it
+`.agent/RECOIL_PLAN.md`, or `recoil.py status`, refresh or prune it. Stage it
 only with a qualifying source checkpoint.
 
 ## Native Build Shell
@@ -83,10 +109,10 @@ powershell -ExecutionPolicy Bypass -File cmake\recoil_native_x86_build.ps1 -Pres
 ```
 
 The wrapper loads `vcvarsall x86` and runs
-`python tools/recoil_env_check.py --native-x86`. A missing `kernel32.lib` is an
+`python tools/recoil.py env --native-x86`. A missing `kernel32.lib` is an
 environment problem, not source evidence.
 
-Use `tools/recoil_msvc_x86_run.py -- ...` for `ctest`, native smokes, and other
+Use `python tools/recoil.py build msvc-x86 -- ...` for `ctest`, native smokes, and other
 x86 MSVC commands. Do not call Visual Studio batch files under `Program Files`
 directly. If `cl.exe`, `INCLUDE`, `LIB`, the x86 target, Windows SDK,
 `support/sdk`, or `support/Recoil.exe` is missing, switch environments or ask
@@ -97,12 +123,17 @@ for the missing private input.
 Before creating or moving implementation files:
 
 ```powershell
-python tools/recoil_source_file_map.py --check docs/reconstruction/source_file_map.md
+python tools/recoil.py audit source-map --check docs/reconstruction/source_file_map.md
 ```
 
 Use `source_file_map.md` plus current BN source comments and call-site evidence.
 Regenerate the map only when provenance docblocks or legacy source comments
 changed.
+
+For docblock checks, audit touched source files before marker work. A broad
+`python tools/recoil.py audit docblocks --path src --summary --max 20` run
+currently reports legacy backlog and should be treated as status debt, not as a
+reason to block unrelated non-address workspace cleanup.
 
 Check:
 

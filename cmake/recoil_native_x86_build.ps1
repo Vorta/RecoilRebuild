@@ -53,7 +53,7 @@ $commands = @(
 )
 
 if (-not $SkipEnvCheck) {
-    $commands += "python tools\recoil_env_check.py --native-x86"
+    $commands += "python tools\recoil.py env --native-x86"
 }
 
 $configureCommand = "cmake --preset $Preset"

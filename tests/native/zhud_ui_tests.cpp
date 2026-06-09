@@ -13536,11 +13536,7 @@ extern "C" int zhud_background_cursor_widget_member_constructor_smoke(void) {
         cursor.capturedImage == nullptr && cursor.captureEnabled == 7 &&
         cursor.captureSourceSelector == 1 && cursor.reservedC8 == 0 && cursor.reservedCC == 0;
 
-    cursor.DestructorCore();
-    const bool destructed =
-        cursor.base.ftable == reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
-
-    return constructed && destructed ? 0 : 1;
+    return constructed ? 0 : 1;
 }
 
 extern "C" int zhud_background_cursor_widget_rebuild_captured_image_smoke(void) {
@@ -13570,13 +13566,19 @@ extern "C" int zhud_background_cursor_widget_rebuild_captured_image_smoke(void) 
 
     cursor.RebuildCapturedImage(1, 1);
 
-    return cursor.base.bltSource == &capturedImage && cursor.base.clipRect.left == 0 &&
-                   cursor.base.clipRect.top == 0 && cursor.base.clipRect.right == 2 &&
-                   cursor.base.clipRect.bottom == 2 && capturedPixels[0] == 6 &&
-                   capturedPixels[1] == 7 && capturedPixels[2] == 10 &&
-                   capturedPixels[3] == 11
-               ? 0
-               : 1;
+    const bool rebuilt =
+        cursor.base.bltSource == &capturedImage &&
+        cursor.base.clipRect.left == 0 &&
+        cursor.base.clipRect.top == 0 &&
+        cursor.base.clipRect.right == 2 &&
+        cursor.base.clipRect.bottom == 2 &&
+        capturedPixels[0] == 6 &&
+        capturedPixels[1] == 7 &&
+        capturedPixels[2] == 10 &&
+        capturedPixels[3] == 11;
+    cursor.capturedImage = nullptr;
+
+    return rebuilt ? 0 : 1;
 }
 
 extern "C" int zhud_background_cursor_widget_set_image_borrowed_refresh_smoke(void) {

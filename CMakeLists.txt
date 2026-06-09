@@ -54,7 +54,7 @@ int main(void) { return 0; }
         message(FATAL_ERROR
             "The selected MSVC environment cannot compile a minimal Recoil native "
             "x86 probe including <stddef.h> and <windows.h>. Run "
-            "`python tools/recoil_env_check.py --native-x86` from the same shell, "
+            "`python tools/recoil.py env --native-x86` from the same shell, "
             "then configure from an x86 MSVC Developer PowerShell or after vcvarsall x86."
         )
     endif()

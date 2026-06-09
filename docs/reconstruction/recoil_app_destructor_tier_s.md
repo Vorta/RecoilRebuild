@@ -24,7 +24,7 @@
   MFC/OLE base, attract FMV state, intro FMV script, mission FMV state, play
   state, MP exit state vtable, RecoilApp vtable, and transition timer.
 - Current byte evidence:
-  `python tools/recoil_vc5_verify.py 0x42dfa0 --build-root
+  `python tools/recoil.py verify vc5 0x42dfa0 --build-root
   build/vc5-verify-smoke-42dfa0-owner-call` fails under
   `vc5_o2_ob1_facs` with 164 unmasked mismatches after 20 relocation-masked
   bytes. BN body size is 194 bytes and the VC object symbol is 128 bytes.
@@ -44,7 +44,7 @@
   `g_RecoilApp_Dtor_EhFuncInfo`. Its VC5SP3 FuncInfo header has magic
   `0x19930520`, `maxState == 8`, and unwind map pointer `0x4d5e88`.
 - Local evidence command:
-  `python tools/recoil_msvc_eh_dump.py 0x4d5e68 0x4d5f18`.
+  `python tools/recoil.py msvc eh-dump 0x4d5e68 0x4d5f18`.
 - Destructor unwind map entries:
   - state 0 -> -1: `0x4c9d20`
     `MsvcEh::RecoilApp_Dtor_EhCleanup_MfcOleModule`, tail-calls
@@ -92,7 +92,7 @@
   `IState*` local, intro FMV state, main-menu prep state, leave-network state,
   and mission FMV state.
 - The attract and mission FMV state constructors each have one constructor
-  unwind state. `python tools/recoil_msvc_eh_dump.py 0x4d5fc0 0x4d5fe8`
+  unwind state. `python tools/recoil.py msvc eh-dump 0x4d5fc0 0x4d5fe8`
   decodes `0x4d5fc0` and `0x4d5fe8` with magic `0x19930520`,
   `maxState == 1`, no try/IP/ES maps, and cleanup actions `0x4c9e70` and
   `0x4c9e90`. Both action funclets load the parent-frame
@@ -108,11 +108,11 @@
 
 ## Current Byte Evidence
 
-- `python tools/recoil_vc5_verify.py 0x42de60` resolves to
-  `recoil_app_register_at_exit` and fails under the manifest's
-  `vc5_o2_ob0_facs` profile with 146 unmasked mismatches after 16
-  relocation-masked bytes. BN body size is 168 bytes, the VC object symbol is
-  96 bytes, and 2 trailing VC NOP bytes are trimmed.
+- `python tools/recoil.py verify vc5 0x42de60` resolves to
+  `recoil_app_register_at_exit` and currently fails under
+  `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs` with 109 unmasked mismatches
+  after 48 relocation-masked bytes. BN body size is 168 bytes, the VC object
+  symbol is 192 bytes, and 11 trailing VC NOP bytes are trimmed.
 - A focused profile sweep over `vc5_o2_ob0_facs`, `vc5_o2_ob1_gx_facs`,
   `vc5_o2_ob1_md_gx_facs`, and `vc5_o2_ob2_gx_facs` produced the same
   146-mismatch, 96-byte non-EH object body. `Mfc42Abi.h` now guards the
@@ -123,7 +123,7 @@
   EH registration prologue (`push -1`, frame-handler thunk, `fs:[0]` chain),
   while the authored object starts with the plain manual destructor prologue
   (`push esi`, `mov esi, ecx`, `push edi`).
-- `python tools/recoil_vc5_verify.py recoil_app_fmv_state_constructors
+- `python tools/recoil.py verify vc5 recoil_app_fmv_state_constructors
   --build-root build/vc5-verify-final-recoil-app-fmv-state-constructors`
   passes with zero unmasked byte mismatches for 0x42eb70
   `RecoilApp_AttractFmvState::Constructor`, 0x42ed30
@@ -138,17 +138,18 @@
   binary blockers: `operator delete` is an import/provider thunk and
   `CWinApp::~CWinApp` is the MFC provider chain.
 - Current tier S evidence:
-  `python tools/recoil_vc5_verify.py 0x4428b0 --build-root
-  build/vc5-verify-final-4428b0-tier-s` resolves to the local
+  `python tools/recoil.py verify vc5 0x4428b0` resolves to the local
   `recoil_app_mfc_ole_module_destructor` VC target and passes under
-  `vc5_o2_ob1_facs` with zero unmasked byte mismatches after 12
+  `vc5_o2_ob1_md_facs` with zero unmasked byte mismatches after 16
   relocation-masked bytes. BN body size and VC object body size are both
   256 bytes.
-- The verification layout used for the tier S byte match uses the VC5SP3 STL `std::deque<RecoilPtr32>`
-  destructor only under the 32-bit VC5 verification guard, with a static size
-  check against `RecoilApp_StateQueue`. Native builds keep the recovered manual
-  queue teardown because host STL deque layout is not ABI-compatible with the
-  retail VC5 storage contract.
+- The verification layout used for the tier S byte match opts the MFC/OLE
+  owner manifests into `RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER`, so VC5SP3 sees
+  the state queue as the original `std::deque<RecoilApp_StateQueueItem*>`
+  member for this constructor/destructor pair. Native builds and the
+  standalone queue-helper VC5 target keep the recovered manual queue owner
+  because host STL deque layout is not ABI-compatible with the retail VC5
+  storage contract.
 - The queue record matches the VC5SP3 STL `deque` layout in
   `D:\Recoil Project\Compiler\VC5SP3\VC\INCLUDE\DEQUE`: allocator/pad,
   `_First` iterator, `_Last` iterator, `_Map`, `_Mapsize`, and `_Size`.
@@ -163,22 +164,17 @@
 
 ## 0x442c70 MFC/OLE Module Constructor Dependency
 
-- `0x442c70 RecoilApp_MfcOleModuleOwner::RecoilApp_MfcOleModuleOwner` is
-  tier S. Current tier S evidence:
-  `python tools/recoil_vc5_verify.py
-  recoil_app_mfc_ole_module_constructor_s --build-root
-  build/vc5-verify-final-recoil-app-mfc-ole-module-constructor-s` passes
-  under `vc5_o2_ob1_facs` with zero unmasked byte mismatches after 4
-  relocation-masked bytes. BN body size is 138 bytes, VC object size is
-  144 bytes, and 6 trailing VC NOP bytes are trimmed.
-- The verification layout used for the tier S byte match uses a VC5-only `RecoilApp_MfcOleModuleOwner` with a
-  real `CWinApp` provider subobject at offset zero, an explicit pad through
-  offset `0x0c0`, the recovered Recoil-owned fields beginning at offset
-  `0x0c4`, and a VC5SP3 `std::deque<RecoilPtr32>` member at offset `0x118`.
-  `RecoilApp::Constructor` calls that owner constructor directly in the VC5
-  verification path; native builds keep the existing ABI mirror and manual
-  queue initialization because host STL deque storage is not compatible with
-  the retail VC5 layout.
+- `0x442c70 RecoilApp_MfcOleModule::RecoilApp_MfcOleModule` is now tier S.
+  `python tools/recoil.py verify vc5 0x442c70` resolves to
+  `recoil_app_mfc_ole_module_constructor_s` and passes with zero unmasked byte
+  mismatches after 8 relocation-masked bytes. BN body size is 138 bytes, the VC
+  object body is 144 bytes, and 6 trailing VC NOP bytes are trimmed.
+- The accepted constructor source keeps the current class-shaped
+  `RecoilApp_MfcOleModule` owner and opts only this owner manifest into
+  `RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER`. That makes VC5 emit the retail deque
+  member constructor shape: saved `this` stack byte copied into the queue
+  allocator byte at `0x118`, dword zeroing through `0x144`, then the late vptr
+  install, `m_currentStateIndex = -1`, and the state-stack `rep stosd`.
 
 ## Source-Model Blocker
 
@@ -337,9 +333,12 @@ without adding unrelated synthetic locals or catch handling.
   operations is not enough to reproduce the retail STL destructor/pop-front
   lowering.
 - A guarded VC5 `std::deque<RecoilApp_StateQueueItem *>` overlay for the
-  queue entrypoints was rejected too. Although it used the provider header
+  queue entrypoints remains rejected. Although it used the provider header
   directly, deriving a wrapper around `std::deque` made the queue entrypoint
   bodies much larger than retail: `0x443160` grew to 576 bytes versus the
   431-byte retail body under `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
-  The closer entrypoint source model remains the recovered VC5 deque-shaped
-  ABI mirror with `bool Empty()` and `PushBack(const T&)` spelling.
+  The accepted owner-only deque member is therefore limited to the
+  `RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER` MFC/OLE constructor/destructor
+  manifests; the standalone `recoil_app_state_queue` target keeps the recovered
+  VC5 deque-shaped ABI mirror with `bool Empty()` and `PushBack(const T&)`
+  spelling.

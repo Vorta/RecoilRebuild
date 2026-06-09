@@ -10,7 +10,7 @@ for function identity, types, markers, and acceptance state.
   reconstruction agents, including Binary Ninja, native x86 shell, source-map,
   and temporary-state hygiene checks.
 - `compiler_linker_provenance.md` - compiler, linker, and verification-profile
-  assumptions guarded by `tools/recoil_provenance_audit.py --strict`.
+  assumptions guarded by `python tools/recoil.py audit provenance --strict`.
 - `inlined_helpers.md` - compact ledger for likely original helpers and methods
   that were fully inlined by the retail compiler, with caller evidence and
   verification limits.

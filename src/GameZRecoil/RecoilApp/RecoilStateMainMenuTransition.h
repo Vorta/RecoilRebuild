@@ -93,8 +93,26 @@ struct HudUiMainMenuDialog_CreditsButton : HudUiZrdWidget {
 };
 
 struct HudUiMenuBackButton : HudUiZrdWidget {
-    HudUiMenuBackButton();
-    ~HudUiMenuBackButton();
+    /**
+     * Restores the original-source inline menu back-button constructor. No
+     * standalone retail function exists; observed in callers 0x414c12,
+     * 0x41c2ca, 0x434680, and 0x434b90.
+     * Purpose: keep shared back-button dispatch-table installation owned by
+     * the typed button member.
+     */
+    HudUiMenuBackButton() : HudUiZrdWidget() {
+    }
+
+    /**
+     * Restores the original-source inline menu back-button destructor. No
+     * standalone retail function exists; observed through owner destructor
+     * paths that tear down the shared HudUiZrdWidget base.
+     * Purpose: keep shared back-button cleanup on the typed button member.
+     */
+    ~HudUiMenuBackButton() {
+        HudUiZrdWidget::DestructorCore();
+    }
+
     void OnActivate();
 };
 

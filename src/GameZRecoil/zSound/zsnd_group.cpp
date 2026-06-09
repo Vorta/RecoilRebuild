@@ -17,7 +17,11 @@ extern "C" zClass_NodePartial *g_zSndStream_RootNode = 0;
 namespace {
 const char *kZSndGroupSourceFile = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_grp.cpp";
 
-// Reimplements 0x4a51e0: MatchStreamRequestPredicate
+/**
+ * Reimplements 0x4a51e0: zSndStreamRequest::MatchRequestPredicate.
+ * Purpose: compare an active stream-list payload against the requested play
+ * handle and return zero only for a match.
+ */
 int __fastcall MatchStreamRequestPredicate(
     void *payload,
     void *userData
@@ -161,7 +165,11 @@ void NormalizeDefaultWeights(
 }
 } // namespace
 
-// Reimplements 0x4a51f0: zSndStreamRequest_StopIfActive
+/**
+ * Reimplements 0x4a51f0: zSndStreamRequest::StopIfActive.
+ * Purpose: find an active stream request matching the play handle and move it
+ * into the stop state.
+ */
 extern "C" int __fastcall zSndStreamRequest_StopIfActive(
     zSndPlayHandle *request
 ) {

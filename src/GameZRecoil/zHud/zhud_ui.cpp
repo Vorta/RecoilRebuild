@@ -148,17 +148,14 @@ int g_zTimedTask_ActiveCount = 0;
 
 int g_HudCmdMouseDebounceFrames = 0;
 zVidImagePartial *g_HudUiWidget_ExclusiveDrawImage = 0;
-HudUiContainer g_HudUiMgr;
-HudUiTransitionTextPanel g_HudUiMgrHudRootPanel;
+HudUiMgrData g_HudUiMgr;
 HudUiTimerPanel *g_HudUiMgrTimerPanel = 0;
 HudUiTimerPanelFloat *g_HudUiMgrTimerPanelFloat = 0;
 HudUiStringMenu *g_HudUiMgrStringMenu = 0;
 HudUiStatsListElement *g_HudUiMgrStatsList = 0;
 zSndSample *g_HudUi_PowerupSample = 0;
 unsigned char g_HudUi_PowerupSampleInitFlags = 0;
-zVidImagePartial *g_HudUiMgrReticleImages[3] = {0};
 zVidImagePartial *g_HudUiMgrSensorTargetMarkerImages[5] = {0};
-HudUiNanitePanel g_HudUiMgrNanitePanel;
 HudUiMessage g_HudUiMgrMessages[10];
 int g_HudUiMgrActiveWeaponMessageIndex = 0;
 int g_HudUiMgrActiveWeaponSideIndex = 0;
@@ -167,15 +164,9 @@ HudUiSlot g_HudUiMgrWeaponSlots[32];
 HudUiSlot *g_HudUiMgrSensorTrackedProgressSlot = 0;
 int g_HudUiMgrSensorRoundRobinTrackIndex = 0;
 HudUiRect g_HudUiMgrSensor_FxRectScratch = {0};
-HudUiMeter g_HudUiMgrObjectiveMeter;
 int g_HudUiMgrActiveModeCounterIndex = 0;
-int g_HudUiMgrHudLayoutsInitialized = 0;
-int g_HudUiMgrHudLoaded = 0;
-int g_HudUiMgrLayoutDelayFrames = 0;
 int g_HudUiMgrSensorTargetMarkerCount = 0;
 int g_HudUiMgrWeaponState = 0;
-int g_HudUiMgrHudOriginX = 0;
-int g_HudUiMgrHudOriginY = 0;
 HudUiNetGameSetupOverlayOwner g_HudUiNetGameSetupOverlayOwner;
 int g_HudUiMgrStatsListState1 = 0;
 int g_HudUiMgrStatsListState2 = 0;
@@ -185,23 +176,7 @@ HudUiMgrSensorBlock g_HudUiMgrSensorBlock = {0};
 HudUiRect g_HudUiMgrSensorFxRect = {0};
 int g_HudUiMgrSensorFxViewportWidth = 0;
 int g_HudUiMgrSensorFxViewportHeight = 0;
-HudUiRect g_HudUiMgrHudRect = {0};
-HudUiRect g_HudUiMgrViewRect = {0};
-float g_HudUiMgrHudRectW = 0.0f;
-float g_HudUiMgrHudRectH = 0.0f;
-float g_HudUiMgrReticleMapBiasX = 0.0f;
-float g_HudUiMgrReticleMapBiasY = 0.0f;
-float g_HudUiMgrReticleMapScaleHalfW = 0.0f;
-float g_HudUiMgrReticleMapScaleHalfH = 0.0f;
 int g_HudUiMgrReticleSnapRadiusSq = 0;
-float g_HudUiMgrReticleProjection[3] = {0};
-int g_HudUiMgrReticleWidgetHalfW = 0;
-int g_HudUiMgrReticleWidgetHalfH = 0;
-int g_HudUiMgrReticleProjectedX = 0;
-int g_HudUiMgrReticleProjectedY = 0;
-int g_HudUiMgrReticleMode = 0;
-HudUiWidget g_HudUiMgrReticleWidget;
-HudLayoutBase *g_HudUiMgrCurrentLayout = 0;
 float g_HudUiLoadingCheckpointRawProgress[19] = {0};
 float g_HudUiLoadingCheckpointProgress[19] = {0};
 float g_HudUiLoadingCheckpointProgressScale = 0.0186219737f;
@@ -215,27 +190,10 @@ HudUiTextStack4 *g_HudUiChatMessageStack = 0;
 zFMV_Playback *g_HudUiSensorWindowPlayback = 0;
 CWnd g_HudUiSensorWindow;
 HudUiShieldMessageWidgetState *g_HudUiMgrShieldMessageWidget = 0;
-int g_HudUiMgrObjectivePhase = 0;
-int g_HudUiMgrObjectiveState = 0;
 int g_HudUiMgrObjectiveChatComposeActive = 0;
-float g_HudUiMgrObjectivePhaseTimerSec = 0.0f;
-float g_HudUiMgrObjectivePhaseDurationSec = 0.0f;
-float g_HudUiMgrObjectiveAutoHideDelaySec = 0.0f;
-int g_HudUiMgrObjectiveShowResetUnused = 0;
-int g_HudUiMgrObjectiveWidgetRightX = 0;
-float g_HudUiMgrObjectiveMeterFillAnimTimerSec = 0.0f;
-unsigned int g_HudUiMgrObjectiveMeterFillAnimEnabled = 0;
 HudUiWidget g_HudUiMgrSensorPanel;
-HudUiWidget g_HudUiMgrObjectiveWidget;
-HudUiObjectiveBar g_HudUiMgrObjectiveBar;
-HudUiWidget g_HudUiMgrObjectiveSensorRect;
 HudUiWidget g_HudUiMgrSensorOverlay;
 HudUiMeter g_HudUiMgrSensorMeter;
-HudUiPanel *g_HudUiMgrObjectiveSummaryTextPanel = 0;
-HudUiPanel *g_HudUiMgrObjectiveDescTextPanel = 0;
-HudUiPanel *g_HudUiMgrObjectiveLabelTextPanel = 0;
-HudUiCounterTextPanel *g_HudUiMgrObjectiveCounterTextPanel = 0;
-HudUiChatComposeTextInput g_HudUiMgrObjectiveChatComposeTextInput;
 HudUiBar g_HudUiMgrTailBar;
 int g_HudUi_AuxOverlayEnabled = 0;
 HudCmdDialogState g_HudCmdDialogState;
@@ -2707,8 +2665,12 @@ void __fastcall SetVisibleAndResetMeterFill(
     g_HudUiMgrObjectiveMeter.points[3].y = (float)(meterTop);
 }
 
-// Reimplements 0x4118b0: HudUiMgrObjective::UpdateMeterXPoints
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4118b0: HudUiMgrObjective::UpdateMeterXPoints.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: recompute the objective meter X edges from the objective widget
+ * center position.
+ */
 void UpdateMeterXPoints() {
     const float left = (float)(g_HudUiMgrObjectiveWidget.GetCenterX()) + 5.0f;
     const float right = left + 7.0f;
@@ -3356,7 +3318,10 @@ int __fastcall ProjectPointToNormalizedClamped(
     return 0;
 }
 
-// Reimplements 0x413630: HudUiMgr::TriggerCurrentLayoutOnActivated
+/**
+ * Reimplements 0x413630: HudUiMgr::TriggerCurrentLayoutOnActivated.
+ * Purpose: Re-run the active HUD layout activation hook when a layout is present.
+ */
 void TriggerCurrentLayoutOnActivated() {
     if (g_HudUiMgrCurrentLayout != 0) {
         g_HudUiMgrCurrentLayout->OnActivated();
@@ -4791,11 +4756,11 @@ HudUiElement::HudUiElement(
     int initY
 ) {
     HudUiElement *const element = this;
-    element->x = initX;
-    element->y = initY;
     parent = 0;
     next = 0;
     timer = 0.0f;
+    element->x = initX;
+    element->y = initY;
     element->Invalidate();
 
     flags = 0;
@@ -4817,7 +4782,10 @@ HudUiElement * HudUiElement::Constructor(
     return this;
 }
 
-// Reimplements 0x4b40c0: HudUiElement::CopyConstructor
+/**
+ * Reimplements 0x4b40c0: HudUiElement::CopyConstructor.
+ * Purpose: initialize a HUD element from another element while clearing owner links.
+ */
 HudUiElement * HudUiElement::CopyConstructor(
     const HudUiElement *source
 ) {
@@ -4833,7 +4801,10 @@ HudUiElement * HudUiElement::CopyConstructor(
     return this;
 }
 
-// Reimplements 0x4b4120: HudUiElement::CopyFrom
+/**
+ * Reimplements 0x4b4120: HudUiElement::CopyFrom.
+ * Purpose: copy another HUD element's runtime fields while preserving dispatch identity.
+ */
 HudUiElement * HudUiElement::CopyFrom(
     const HudUiElement *source
 ) {
@@ -4851,10 +4822,12 @@ HudUiElement * HudUiElement::CopyFrom(
 
 /**
  * Reimplements 0x4b47a0: HudUiElement::~HudUiElement.
- * Purpose: Reset the HudUiElement virtual table during class destruction.
+ * Purpose: reset the HudUiElement virtual table during class destruction.
+ *
+ * Evidence: the definition is kept inline in zhud_ui.h so VC5 can inline the
+ * base table reset into derived destructors while still emitting the standalone
+ * element destructor COMDAT when the address-backed symbol is required.
  */
-HudUiElement::~HudUiElement() {
-}
 
 /**
  * Reimplements 0x404d70: HudUiElement::ScalarDeletingDestructor.
@@ -4876,7 +4849,11 @@ void HudUiElement::Draw() {
     DrawBase();
 }
 
-// Reimplements 0x404cb0: HudUiElement::DrawBase
+/**
+ * Reimplements 0x404cb0: HudUiElement::DrawBase.
+ * Original file: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: blit the element's attached image at its current position using its clip rect.
+ */
 void HudUiElement::DrawBase() {
     if (bltSource != 0) {
         zVid_Image::BlitToActiveTarget(
@@ -4923,7 +4900,10 @@ void HudUiElement::SetY(
     Invalidate();
 }
 
-// Reimplements 0x404d20: HudUiElement::SetVisible
+/**
+ * Reimplements 0x404d20: HudUiElement::SetVisible.
+ * Purpose: update the hidden flag for one HUD element and invalidate it.
+ */
 void HudUiElement::SetVisible(
     int visible
 ) {
@@ -4936,7 +4916,11 @@ void HudUiElement::SetVisible(
     Invalidate();
 }
 
-// Reimplements 0x4b41e0: HudUiElement::Update
+/**
+ * Reimplements 0x4b41e0: HudUiElement::Update.
+ * Original file: D:\Proj\Battlesport\HudUiElement.cpp.
+ * Purpose: dispatch visible or hidden dirty drawing and hide the element when its timer expires.
+ */
 void HudUiElement::Update(
     float deltaSeconds
 ) {
@@ -5228,7 +5212,17 @@ void HudUiPrimitiveBindTarget::SetSegmentEndpoints(
     endY = newEndY;
 }
 
-// Reimplements 0x4bc480: HudUiCircle::Constructor
+/**
+ * Reimplements 0x4bc480: HudUiCircle::Constructor.
+ * Original file: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: initialize a circle element's position, radius, and color.
+ *
+ * Evidence: BN assembly calls HudUiElement::Constructor at object offset zero,
+ * writes the retail circle dispatch pointer, stores radius at 0x34, stores
+ * radiusSquared as radius * radius at 0x38, stores color565 at 0x3c, and
+ * returns this. The table pointer is owner/data evidence and is not recreated
+ * as a production FTable scaffold.
+ */
 HudUiCircle * HudUiCircle::Constructor(
     int x,
     int y,
@@ -5246,7 +5240,10 @@ HudUiCircle * HudUiCircle::Constructor(
     return this;
 }
 
-// Reimplements 0x4bc4c0: HudUiCircle::DrawDirty
+/**
+ * Reimplements 0x4bc4c0: HudUiCircle::DrawDirty.
+ * Purpose: redraw the inherited base and circle outline for a dirty circle element.
+ */
 void HudUiCircle::DrawDirty() {
     DrawBase();
     zRndr_DrawCircleOutline16_Framebuffer(
@@ -5258,12 +5255,18 @@ void HudUiCircle::DrawDirty() {
     );
 }
 
-// Reimplements 0x403c80: HudUiCircle::DrawDirtyForwarder
+/**
+ * Reimplements 0x403c80: HudUiCircle::DrawDirtyForwarder.
+ * Purpose: route the table dispatch slot to HudUiCircle::DrawDirty.
+ */
 void HudUiCircle::DrawDirtyForwarder() {
     DrawDirty();
 }
 
-// Reimplements 0x404e60: HudUiCircle::HitTest
+/**
+ * Reimplements 0x404e60: HudUiCircle::HitTest.
+ * Purpose: normalize circle hit-test membership to an integer result.
+ */
 int HudUiCircle::HitTest(
     int px,
     int py
@@ -5274,7 +5277,10 @@ int HudUiCircle::HitTest(
     ) != 0 ? 1 : 0;
 }
 
-// Reimplements 0x4bc4e0: HudUiCircle::HitTestCore
+/**
+ * Reimplements 0x4bc4e0: HudUiCircle::HitTestCore.
+ * Purpose: compare a point's squared distance against the circle radius.
+ */
 unsigned char HudUiCircle::HitTestCore(
     int px,
     int py
@@ -5285,7 +5291,10 @@ unsigned char HudUiCircle::HitTestCore(
     return (int)(distanceSquared) < radiusSquared ? 1 : 0;
 }
 
-// Reimplements 0x4bbfa0: HudUiCompositePanelVector::Clear
+/**
+ * Reimplements 0x4bbfa0: HudUiCompositePanelVector::Clear.
+ * Purpose: destroy all composite-panel entries and release the vector storage.
+ */
 void HudUiCompositePanelVector::Clear() {
     for (HudUiCompositePanelEntry *entry = begin; entry != end; ++entry) {
         entry->panel.ScalarDeletingDestructor(0);
@@ -5297,14 +5306,23 @@ void HudUiCompositePanelVector::Clear() {
     capacityEnd = 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-size_t HudUiCompositePanelVectorCount(
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in composite-panel callers 0x4bb980, 0x4bb9f0, 0x4bbed0,
+ * 0x4bbaa0, 0x4bbbe0, and 0x4bbca0.
+ * Purpose: compute the current composite-entry vector length.
+ */
+inline size_t HudUiCompositePanelVectorCount(
     const HudUiCompositePanelVector &vector
 ) {
     return vector.begin != 0 ? (size_t)(vector.end - vector.begin) : 0;
 }
 
-// Reimplements 0x4bbff0: HudUiCompositePanelVector::InsertCopies
+/**
+ * Reimplements 0x4bbff0: HudUiCompositePanelVector::InsertCopies.
+ * Purpose: insert copied composite entries with the original vector growth and
+ * in-place tail-shift behavior.
+ */
 void HudUiCompositePanelVector::InsertCopies(
     HudUiCompositePanelEntry *insertPos,
     unsigned int insertCount,
@@ -5390,21 +5408,14 @@ void HudUiCompositePanelVector::InsertCopies(
     capacityEnd = newBegin + newCapacity;
 }
 
-// Reimplements 0x4bb790: HudUiCompositePanel::ConstructorWithEntryCount
+/**
+ * Reimplements 0x4bb790: HudUiCompositePanel::ConstructorWithEntryCount.
+ * Purpose: initialize a composite panel and allocate its entry history vector.
+ */
 HudUiCompositePanel * HudUiCompositePanel::ConstructorWithEntryCount(
     int entryCount
 ) {
-    HudUiPanel::ConstructorDefault(
-        0,
-        0,
-        0
-    );
-
-    activeEntryCount = 0;
-    entryVector.allocatorStorage = 0;
-    entryVector.begin = 0;
-    entryVector.end = 0;
-    entryVector.capacityEnd = 0;
+    new (this) HudUiCompositePanel;
 
     HudUiCompositePanelEntry templateEntry;
     entryVector.InsertCopies(
@@ -5413,7 +5424,7 @@ HudUiCompositePanel * HudUiCompositePanel::ConstructorWithEntryCount(
         &templateEntry
     );
 
-    SetTextFmt("");
+    HudUiPanel::SetTextFmt("W");
     LayoutEntries(
         0,
         0
@@ -5423,7 +5434,11 @@ HudUiCompositePanel * HudUiCompositePanel::ConstructorWithEntryCount(
     return this;
 }
 
-// Reimplements 0x403e20: HudUiCompositePanel::Destructor
+/**
+ * Reimplements 0x403e20: HudUiCompositePanel::Destructor.
+ * Purpose: destroy composite-panel entries, free vector storage, and tear down
+ * the inherited panel state.
+ */
 void HudUiCompositePanel::Destructor() {
     for (HudUiCompositePanelEntry *entry = entryVector.begin; entry != entryVector.end; ++entry) {
         entry->panel.HudUiPanel::~HudUiPanel();
@@ -5437,7 +5452,11 @@ void HudUiCompositePanel::Destructor() {
     HudUiPanel::~HudUiPanel();
 }
 
-// Reimplements 0x4bb960: HudUiCompositePanel::ScalarDeletingDestructor
+/**
+ * Reimplements 0x4bb960: HudUiCompositePanel::ScalarDeletingDestructor.
+ * Purpose: run the complete composite-panel destructor and conditionally free
+ * heap storage for compiler deleting-destructor calls.
+ */
 HudUiElement * HudUiCompositePanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -5449,7 +5468,10 @@ HudUiElement * HudUiCompositePanel::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x4bb980: HudUiCompositePanel::Update
+/**
+ * Reimplements 0x4bb980: HudUiCompositePanel::Update.
+ * Purpose: tick flash state for each visible composite-panel entry.
+ */
 void HudUiCompositePanel::Update(
     float deltaSeconds
 ) {
@@ -5465,7 +5487,10 @@ void HudUiCompositePanel::Update(
     }
 }
 
-// Reimplements 0x4bb9f0: HudUiCompositePanel::LayoutEntries
+/**
+ * Reimplements 0x4bb9f0: HudUiCompositePanel::LayoutEntries.
+ * Purpose: position each composite text entry below the panel origin.
+ */
 void HudUiCompositePanel::LayoutEntries(
     int x,
     int y
@@ -5485,7 +5510,10 @@ void HudUiCompositePanel::LayoutEntries(
     }
 }
 
-// Reimplements 0x4bbe90: HudUiCompositePanel::ReapplyEntryCount
+/**
+ * Reimplements 0x4bbe90: HudUiCompositePanel::ReapplyEntryCount.
+ * Purpose: reapply the current composite-entry count after vector changes.
+ */
 void HudUiCompositePanel::ReapplyEntryCount() {
     ResizeEntryCount(
         0,
@@ -5493,17 +5521,19 @@ void HudUiCompositePanel::ReapplyEntryCount() {
     );
 }
 
-// Reimplements 0x4bbed0: HudUiCompositePanel::ResizeEntryCount
+/**
+ * Reimplements 0x4bbed0: HudUiCompositePanel::ResizeEntryCount.
+ * Purpose: update composite-entry visibility for the requested active count.
+ */
 void HudUiCompositePanel::ResizeEntryCount(
     int oldCount,
     int entryCount
 ) {
-    int activeCount = oldCount;
-    if (activeCount > entryCount) {
-        activeCount = entryCount;
+    if (oldCount > entryCount) {
+        oldCount = entryCount;
     }
-    if (activeCount < 0) {
-        activeCount = 0;
+    if (oldCount < 0) {
+        oldCount = 0;
     }
 
     const int vectorCount = (int)(HudUiCompositePanelVectorCount(entryVector));
@@ -5512,17 +5542,20 @@ void HudUiCompositePanel::ResizeEntryCount(
     }
 
     {
-        for (int index = activeCount; index < entryCount; ++index) {
+        for (int index = oldCount; index < entryCount; ++index) {
             HudUiCompositePanelEntry *const entry = &entryVector.begin[index];
             entry->panel.SetTextFmt("");
             entry->panel.SetVisible(0);
         }
     }
 
-    activeEntryCount = activeCount;
+    activeEntryCount = oldCount;
 }
 
-// Reimplements 0x4bbaa0: HudUiCompositePanel::SetTextFmt
+/**
+ * Reimplements 0x4bbaa0: HudUiCompositePanel::SetTextFmt.
+ * Purpose: format text into the next composite-panel history entry.
+ */
 void HudUiCompositePanel::SetTextFmt(
     const char *format,
     ...
@@ -5539,7 +5572,11 @@ void HudUiCompositePanel::SetTextFmt(
     va_end(args);
 }
 
-// Reimplements 0x4bbac0: HudUiCompositePanel::SetTextFmtV
+/**
+ * Reimplements 0x4bbac0: HudUiCompositePanel::SetTextFmtV.
+ * Purpose: write formatted text into the active composite entry and scroll
+ * history as needed.
+ */
 void HudUiCompositePanel::SetTextFmtV(
     const char *format,
     va_list args
@@ -5553,7 +5590,11 @@ void HudUiCompositePanel::SetTextFmtV(
     ScrollHistory();
 }
 
-// Reimplements 0x4bbb20: HudUiCompositePanel::ScrollHistory
+/**
+ * Reimplements 0x4bbb20: HudUiCompositePanel::ScrollHistory.
+ * Purpose: shift composite text history entries and keep the newest entry
+ * active.
+ */
 void HudUiCompositePanel::ScrollHistory() {
     ++activeEntryCount;
 
@@ -5574,7 +5615,11 @@ void HudUiCompositePanel::ScrollHistory() {
     Invalidate();
 }
 
-// Reimplements 0x4bbbe0: HudUiCompositePanel::SetFont
+/**
+ * Reimplements 0x4bbbe0: HudUiCompositePanel::SetFont.
+ * Purpose: apply font parameters to all composite-panel entries and relayout
+ * the panel.
+ */
 void HudUiCompositePanel::SetFont(
     const char *faceName,
     int height,
@@ -5615,7 +5660,11 @@ void HudUiCompositePanel::SetFont(
     );
 }
 
-// Reimplements 0x4bbca0: HudUiCompositePanel::ResizeEntryVectorAndRelayout
+/**
+ * Reimplements 0x4bbca0: HudUiCompositePanel::ResizeEntryVectorAndRelayout.
+ * Purpose: resize the composite-entry vector, update active entries, and
+ * relayout the panel.
+ */
 void HudUiCompositePanel::ResizeEntryVectorAndRelayout(
     int entryCount
 ) {
@@ -5652,7 +5701,10 @@ void HudUiCompositePanel::ResizeEntryVectorAndRelayout(
     );
 }
 
-// Reimplements 0x4bc3a0: HudUiCompositePanelEntry::AssignCopy
+/**
+ * Reimplements 0x4bc3a0: HudUiCompositePanelEntry::AssignCopy.
+ * Purpose: copy one composite-panel entry into existing entry storage.
+ */
 HudUiCompositePanelEntry * HudUiCompositePanelEntry::AssignCopy(
     const HudUiCompositePanelEntry *source
 ) {
@@ -5667,10 +5719,15 @@ HudUiCompositePanelEntry * HudUiCompositePanelEntry::AssignCopy(
     return this;
 }
 
-// Reimplements 0x4bc410: HudUiCompositePanelEntry::ConstructorCopy
+/**
+ * Reimplements 0x4bc410: HudUiCompositePanelEntry::ConstructorCopy.
+ * Purpose: copy-construct one composite-panel entry from another entry.
+ */
 HudUiCompositePanelEntry * HudUiCompositePanelEntry::ConstructorCopy(
     const HudUiCompositePanelEntry *source
 ) {
+    // BN shows the copy constructor finishing with the transition text-panel vptr installed.
+    new (&panel) HudUiTransitionTextPanel;
     panel.CopyConstructCore(&source->panel);
     panel.flashCountdown = source->panel.flashCountdown;
     panel.flashResetValue = source->panel.flashResetValue;
@@ -5682,7 +5739,11 @@ HudUiCompositePanelEntry * HudUiCompositePanelEntry::ConstructorCopy(
     return this;
 }
 
-// Reimplements 0x4bc320: HudUiCompositePanelEntry::ConstructorCopyRange
+/**
+ * Reimplements 0x4bc320: HudUiCompositePanelEntry::ConstructorCopyRange.
+ * Purpose: copy-construct a range of composite-panel entries into destination
+ * storage.
+ */
 HudUiCompositePanelEntry *__fastcall HudUiCompositePanelEntry::ConstructorCopyRange(
     const HudUiCompositePanelEntry *sourceBegin,
     const HudUiCompositePanelEntry *sourceEnd,
@@ -5850,7 +5911,10 @@ void HudUiContainer::SetChildFlags(
     }
 }
 
-// Reimplements 0x4bc900: HudUiContainer::UpdateAll
+/**
+ * Reimplements 0x4bc900: HudUiContainer::UpdateAll.
+ * Purpose: Dispatch per-frame updates to every child in an enabled container.
+ */
 void HudUiContainer::UpdateAll(
     float deltaSeconds
 ) {
@@ -5899,8 +5963,21 @@ inline HudUiCreditsQuitButton::~HudUiCreditsQuitButton() {
 inline HudUiZrdScrollingText::HudUiZrdScrollingText() : HudUiZrdWidget() {
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Inline helper: HudUiZrdScrollingText::~HudUiZrdScrollingText
+ * Evidence: original inline helper recovered from callers 0x4091e0 and 0x4092a0 in D:\Proj\Battlesport\HudUiCreditsPanel.cpp.
+ * Purpose: release the scrolling credits row spans and reset the embedded ZRD widget base.
+ */
 inline HudUiZrdScrollingText::~HudUiZrdScrollingText() {
+    Destructor();
+}
+
+/**
+ * Reimplements 0x4091e0: HudUiZrdScrollingText::Destructor
+ * Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
+ * Purpose: release the scrolling credits row spans and reset the embedded ZRD widget base.
+ */
+void HudUiZrdScrollingText::Destructor() {
     HudUiPanelSpan *row = rows.begin;
     while (row != rows.end) {
         HudUiPanelLayoutEntry *entry = row->begin;
@@ -5964,8 +6041,11 @@ HudUiCreditsPanel::HudUiCreditsPanel() : HudUiBackground() {
     screen->flags = screenFlags & 0x10u;
 }
 
-// Reimplements 0x409550: HudUiZrdScrollingText::OnActivateResetOwnerFade
-// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+/**
+ * Reimplements 0x409550: HudUiZrdScrollingText::OnActivateResetOwnerFade
+ * Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
+ * Purpose: reset the owning credits panel fade progress when the scrolling credits text activates.
+ */
 void HudUiZrdScrollingText::OnActivateResetOwnerFade() {
     ((HudUiCreditsPanel *)(owner))->fadeProgress = 0.0f;
 }
@@ -6162,14 +6242,17 @@ void HudUiZrdScrollingText::Update(
     }
 }
 
-// Reimplements 0x409470: HudUiZrdScrollingText::UpdateScrollPositions
-// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+/**
+ * Reimplements 0x409470: HudUiZrdScrollingText::UpdateScrollPositions
+ * Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
+ * Purpose: position scrolling credits row entries and clip their panel visibility to the text rectangle.
+ */
 void HudUiZrdScrollingText::UpdateScrollPositions(
     float scrollProgress
 ) {
     const int left = rect.left;
     const int scrollY = (int)((float)(rect.top - totalHeight) * scrollProgress +
-                              (1.0f - scrollProgress) * (float)(rect.bottom));
+                              (1.0 - scrollProgress) * (float)(rect.bottom));
 
     HudUiPanelSpan *row = rows.begin;
     while (row != rows.end) {
@@ -6193,22 +6276,22 @@ void HudUiZrdScrollingText::UpdateScrollPositions(
     }
 }
 
-// Reimplements 0x409ef0: HudUiPanel::DestructorCallback
-// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+/**
+ * Reimplements 0x409ef0: HudUiPanel::DestructorCallback
+ * Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
+ * Purpose: adapt HudUiPanel array cleanup callbacks to the recovered panel destructor thunk.
+ */
 void __stdcall HudUiPanel::DestructorCallback(
     HudUiPanel *panel
 ) {
     panel->DestructorThunk();
 }
 
-// Reimplements 0x4091e0: HudUiZrdScrollingText::Destructor
-// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
-void HudUiZrdScrollingText::Destructor() {
-    this->~HudUiZrdScrollingText();
-}
-
-// Reimplements 0x409360: HudUiZrdScrollingText::ScalarDeletingDestructor
-// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+/**
+ * Reimplements 0x409360: HudUiZrdScrollingText::ScalarDeletingDestructor
+ * Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
+ * Purpose: perform VC++ scalar deleting destructor cleanup for scrolling credits text objects.
+ */
 HudUiElement * HudUiZrdScrollingText::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -6253,8 +6336,11 @@ void HudUiCreditsPanel::Update(
     UpdateFadeAndExit(deltaSeconds);
 }
 
-// Reimplements 0x4092a0: HudUiCreditsPanel::Destructor
-// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+/**
+ * Reimplements 0x4092a0: HudUiCreditsPanel::Destructor
+ * Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
+ * Purpose: release the credits panel widgets and destroy the background base in VC++ cleanup order.
+ */
 void HudUiCreditsPanel::Destructor() {
     HudUiPanelSpan *row = creditsScreen.rows.begin;
     while (row != creditsScreen.rows.end) {
@@ -6273,8 +6359,11 @@ void HudUiCreditsPanel::Destructor() {
     this->HudUiBackground::~HudUiBackground();
 }
 
-// Reimplements 0x4091c0: HudUiCreditsPanel::ScalarDeletingDestructor
-// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+/**
+ * Reimplements 0x4091c0: HudUiCreditsPanel::ScalarDeletingDestructor
+ * Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
+ * Purpose: perform VC++ scalar deleting destructor cleanup for credits panel objects.
+ */
 HudUiCreditsPanel * HudUiCreditsPanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -6287,8 +6376,11 @@ HudUiCreditsPanel * HudUiCreditsPanel::ScalarDeletingDestructor(
     return self;
 }
 
-// Reimplements 0x40a210: HudUiPanelLayoutEntry::CopyConstruct
-// (D:\Proj\Battlesport\HudUiPanel.cpp)
+/**
+ * Reimplements 0x40a210: HudUiPanelLayoutEntry::CopyConstruct.
+ * Original source path: D:\Proj\Battlesport\HudUiPanel.cpp.
+ * Purpose: Copy-construct a panel layout entry from another layout entry.
+ */
 HudUiPanelLayoutEntry * HudUiPanelLayoutEntry::CopyConstruct(
     const HudUiPanelLayoutEntry *source
 ) {
@@ -6298,8 +6390,11 @@ HudUiPanelLayoutEntry * HudUiPanelLayoutEntry::CopyConstruct(
     return this;
 }
 
-// Reimplements 0x40a1e0: HudUiPanelLayoutEntry::CopyAssign
-// (D:\Proj\Battlesport\HudUiPanel.cpp)
+/**
+ * Reimplements 0x40a1e0: HudUiPanelLayoutEntry::CopyAssign.
+ * Original source path: D:\Proj\Battlesport\HudUiPanel.cpp.
+ * Purpose: Copy panel layout entry contents into an existing entry.
+ */
 HudUiPanelLayoutEntry * HudUiPanelLayoutEntry::CopyAssign(
     const HudUiPanelLayoutEntry *source
 ) {
@@ -6329,8 +6424,11 @@ HudUiPanelLayoutEntry *__fastcall HudUiPanelLayoutEntry::CopyAssignRange(
     return out;
 }
 
-// Reimplements 0x409b60: HudUiPanelLayoutEntry::DestroyRange
-// (D:\Proj\Battlesport\HudUiPanel.cpp)
+/**
+ * Reimplements 0x409b60: HudUiPanelLayoutEntry::DestroyRange.
+ * Original source path: D:\Proj\Battlesport\HudUiPanel.cpp.
+ * Purpose: Destroy a half-open range of recovered panel layout entries.
+ */
 void __stdcall HudUiPanelLayoutEntry::DestroyRange(
     HudUiPanelLayoutEntry *start,
     HudUiPanelLayoutEntry *end
@@ -6342,8 +6440,11 @@ void __stdcall HudUiPanelLayoutEntry::DestroyRange(
     }
 }
 
-// Reimplements 0x409910: HudUiPanelSpan::Clear
-// (D:\Proj\Battlesport\HudUiPanel.cpp)
+/**
+ * Reimplements 0x409910: HudUiPanelSpan::Clear.
+ * Original source path: D:\Proj\Battlesport\HudUiPanel.cpp.
+ * Purpose: Destroy all embedded panels, free the span storage, and reset the span.
+ */
 void HudUiPanelSpan::Clear() {
     HudUiPanelLayoutEntry *entry = begin;
     while (entry != end) {
@@ -6357,8 +6458,11 @@ void HudUiPanelSpan::Clear() {
     cap = 0;
 }
 
-// Reimplements 0x40a240: HudUiPanelSpan::CopyInit
-// (D:\Proj\Battlesport\HudUiPanel.cpp)
+/**
+ * Reimplements 0x40a240: HudUiPanelSpan::CopyInit.
+ * Original source path: D:\Proj\Battlesport\HudUiPanel.cpp.
+ * Purpose: Copy-construct span storage and entries from another panel span.
+ */
 HudUiPanelSpan * HudUiPanelSpan::CopyInit(
     const HudUiPanelSpan *source
 ) {
@@ -6384,8 +6488,11 @@ HudUiPanelSpan * HudUiPanelSpan::CopyInit(
     return this;
 }
 
-// Reimplements 0x40a300: HudUiPanelSpan::CopyFrom
-// (D:\Proj\Battlesport\HudUiPanel.cpp)
+/**
+ * Reimplements 0x40a300: HudUiPanelSpan::CopyFrom.
+ * Original source path: D:\Proj\Battlesport\HudUiPanel.cpp.
+ * Purpose: Assign another panel span into this span, resizing storage when needed.
+ */
 HudUiPanelSpan * HudUiPanelSpan::CopyFrom(
     const HudUiPanelSpan *source
 ) {
@@ -6459,8 +6566,11 @@ HudUiPanelSpan * HudUiPanelSpan::CopyFrom(
     return this;
 }
 
-// Reimplements 0x409b90: HudUiPanelSpan::InsertN
-// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+/**
+ * Reimplements 0x409b90: HudUiPanelSpan::InsertN.
+ * Original source path: D:\Proj\Battlesport\HudUiCreditsPanel.cpp.
+ * Purpose: Insert repeated panel layout entries into a recovered span vector.
+ */
 void HudUiPanelSpan::InsertN(
     HudUiPanelLayoutEntry *insertPos,
     unsigned int count,
@@ -6547,8 +6657,11 @@ void HudUiPanelSpan::InsertN(
     cap = newBegin + newCapacity;
 }
 
-// Reimplements 0x409f00: HudUiPanelSpanVec::InsertN
-// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+/**
+ * Reimplements 0x409f00: HudUiPanelSpanVec::InsertN.
+ * Original source path: D:\Proj\Battlesport\HudUiCreditsPanel.cpp.
+ * Purpose: Insert repeated panel spans into a recovered span-vector container.
+ */
 void HudUiPanelSpanVec::InsertN(
     HudUiPanelSpan *insertPos,
     unsigned int count,
@@ -6634,11 +6747,15 @@ void HudUiPanelSpanVec::InsertN(
     cap = newBegin + newCapacity;
 }
 
-// Reimplements 0x409b20: HudUiPanelSpan::DestroyAndFree
-// (D:\Proj\Battlesport\HudUiPanel.cpp)
+/**
+ * Reimplements 0x409b20: HudUiPanelSpan::DestroyAndFree
+ * Source: D:\Proj\Battlesport\HudUiPanel.cpp
+ * Purpose: destroy each owned panel layout entry, free the backing array, and clear the span.
+ */
 void HudUiPanelSpan::DestroyAndFree() {
+    HudUiPanelLayoutEntry *finish = end;
     HudUiPanelLayoutEntry *entry = begin;
-    while (entry != end) {
+    while (entry != finish) {
         entry->panel.DestructorThunk();
         ++entry;
     }
@@ -6665,14 +6782,20 @@ HudUiBackgroundContainer::~HudUiBackgroundContainer() {
     HudUiContainer::DestructorCore();
 }
 
-// Reimplements 0x4bc550: HudUiBackgroundContainer::SetInputFocus
+/**
+ * Reimplements 0x4bc550: HudUiBackgroundContainer::SetInputFocus.
+ * Purpose: Stores the child element that currently owns background input focus.
+ */
 void HudUiBackgroundContainer::SetInputFocus(
     HudUiElement *element
 ) {
     inputFocusElement = element;
 }
 
-// Reimplements 0x4bc560: HudUiBackgroundContainer::GetInputFocus
+/**
+ * Reimplements 0x4bc560: HudUiBackgroundContainer::GetInputFocus.
+ * Purpose: Returns the child element that currently owns background input focus.
+ */
 HudUiElement * HudUiBackgroundContainer::GetInputFocus() {
     return inputFocusElement;
 }
@@ -6729,16 +6852,19 @@ HudUiBackground::HudUiBackground()
  */
 HudUiBackground::~HudUiBackground() {
     if (primaryClipImage != 0) {
-        zVid_Image::ReleaseIfNotDefault(primaryClipImage);
-        primaryClipImage = 0;
+        primaryClipImage =
+            (zVidImagePartial *)(unsigned int)zVid_Image::ReleaseIfNotDefault(
+                primaryClipImage
+            );
     }
 
     if (capturedCompositeImage != 0) {
-        zVid_Image::ReleaseIfNotDefault(capturedCompositeImage);
-        capturedCompositeImage = 0;
+        capturedCompositeImage =
+            (zVidImagePartial *)(unsigned int)zVid_Image::ReleaseIfNotDefault(
+                capturedCompositeImage
+            );
     }
 
-    cursorWidget.DestructorCore();
 }
 
 // Reimplements 0x4ba380: HudUiDialogController::BlitOwnedSurfaceToPrimary
@@ -7442,7 +7568,10 @@ void HudUiBackground::FreeLoadedTreeRoots(
     cfgRoot = 0;
 }
 
-// Reimplements 0x4bc570: HudUiBackground::Update (D:\Proj\Battlesport\HudUi_Background.cpp)
+/**
+ * Reimplements 0x4bc570: HudUiBackground::Update.
+ * Purpose: Dispatch background mouse input, update child widgets, and move the focus cursor.
+ */
 void HudUiBackground::Update(
     float deltaSeconds
 ) {
@@ -7595,8 +7724,9 @@ HudUiWidget * HudUiWidget::Constructor(
     return this;
 }
 
-// Reimplements 0x4b3e90: HudUiWidget::InvalidateRect
-// (D:\Proj\Battlesport\hudui.cpp)
+/** Reimplements 0x4b3e90: HudUiWidget::InvalidateRect
+ * Original source path: D:\Proj\Battlesport\hudui.cpp.
+ * Purpose: queue and clip one widget dirty rectangle before invalidating the widget. */
 void HudUiWidget::InvalidateRect(
     const HudUiRect *dirtyRect
 ) {
@@ -7674,14 +7804,15 @@ HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget(
     captureSourceSelector = 1;
 }
 
-// Reimplements 0x4bfa20: HudUiBackgroundCursorWidget::DestructorCore
-// (D:\Proj\Battlesport\hudui_background.cpp)
-void HudUiBackgroundCursorWidget::DestructorCore() {
+/**
+ * Reimplements 0x4bfa20: HudUiBackgroundCursorWidget::~HudUiBackgroundCursorWidget.
+ * Original source path: D:\Proj\Battlesport\hudui_background.cpp.
+ * Purpose: restore the cursor widget dispatch state, release a captured image, and tear down the widget base.
+ */
+HudUiBackgroundCursorWidget::~HudUiBackgroundCursorWidget() {
     if (capturedImage != 0) {
         zVid_Image::Destroy(capturedImage);
     }
-
-    HudUiWidget::DestructorCore();
 }
 
 // Reimplements 0x4bfa50: HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh
@@ -7904,8 +8035,10 @@ void HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh(
     RebuildBltRect();
 }
 
-// Reimplements 0x4bfe20: HudUiBackgroundVideoWidget::SetColorKey565
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4bfe20: HudUiBackgroundVideoWidget::SetColorKey565.
+ * Purpose: Marks the active video stream format dirty and stores the 565 color key.
+ */
 void HudUiBackgroundVideoWidget::SetColorKey565(
     unsigned short colorKey
 ) {
@@ -8015,16 +8148,13 @@ HudUiZrdWidget::HudUiZrdWidget() : HudUiWidget(0) {
     activatePlayHandle = 0;
 
     labelPanels.EraseRangeNoDestroyInline(
-        labelPanels.begin,
-        labelPanels.end
+        labelPanels.begin
     );
     rolloverLabelPanels.EraseRangeNoDestroyInline(
-        rolloverLabelPanels.begin,
-        rolloverLabelPanels.end
+        rolloverLabelPanels.begin
     );
     activateLabelPanels.EraseRangeNoDestroyInline(
-        activateLabelPanels.begin,
-        activateLabelPanels.end
+        activateLabelPanels.begin
     );
 
     *((unsigned short *)(&imageStateWord)) = 1;
@@ -8207,6 +8337,7 @@ int HudUiZrdWidget::LoadFromZrd(
  * Binary Ninja identifies the body as a VC5 std::vector-style erase helper
  * over the recovered HudUiPanelPtrVector storage: shift [last, end) over
  * first, update end, and return the original first iterator.
+ * Purpose: erase a contiguous range from the recovered panel pointer vector.
  */
 HudUiPanel ** HudUiPanelPtrVector::EraseRange(
     HudUiPanel **first,
@@ -8285,7 +8416,11 @@ void HudUiPanelPtrVector::InsertN(
     capacityEnd = newBegin + newCapacity;
 }
 
-// Reimplements 0x4b52f0: HudUiZrdWidget::DeleteChildIfPresent
+/**
+ * Reimplements 0x4b52f0: HudUiZrdWidget::DeleteChildIfPresent
+ * Source: src/Battlesport/hud.cpp
+ * Purpose: scalar-delete an optional child widget through the recovered HudUiElement slot.
+ */
 void *__stdcall HudUiZrdWidget::DeleteChildIfPresent(
     void *childWidgetOrNull
 ) {
@@ -8297,33 +8432,30 @@ void *__stdcall HudUiZrdWidget::DeleteChildIfPresent(
 }
 
 /**
- * No standalone retail function; recovered original-source helper observed in
- * caller 0x4b50c0 as the repeated HudUiPanelPtrVector begin/end loop that
- * scalar-deletes non-null child panels and clears each vector slot.
- * Purpose: share the original HudUiZrdWidget panel-vector child teardown shape
- * for rollover and activate label panels.
+ * Reimplements 0x4b50c0: HudUiZrdWidget::~HudUiZrdWidget
+ * Source: D:\Proj\Battlesport\hud.cpp
+ * Purpose: release owned ZRD widget panels and alternate images before compiler-generated member cleanup.
  */
-void HudUiZrdWidget_DeletePanelVectorChildren(
-    HudUiPanelPtrVector &vector
-) {
-    for (HudUiPanel **it = vector.begin; it != vector.end; ++it) {
-        if (*it != 0) {
-            (*it)->ScalarDeletingDestructor(1);
+HudUiZrdWidget::~HudUiZrdWidget() {
+    for (HudUiPanel **labelIt = labelPanels.begin; labelIt != labelPanels.end; ++labelIt) {
+        *labelIt = (HudUiPanel *)(DeleteChildIfPresent(*labelIt));
+    }
+
+    for (HudUiPanel **rolloverIt = rolloverLabelPanels.begin; rolloverIt != rolloverLabelPanels.end; ++rolloverIt) {
+        if (*rolloverIt != 0) {
+            (*rolloverIt)->ScalarDeletingDestructor(1);
         }
 
-        *it = 0;
-    }
-}
-
-// Reimplements 0x4b50c0: HudUiZrdWidget::DestructorCore
-void HudUiZrdWidget::DestructorCore() {
-
-    for (HudUiPanel **it = labelPanels.begin; it != labelPanels.end; ++it) {
-        *it = (HudUiPanel *)(DeleteChildIfPresent(*it));
+        *rolloverIt = 0;
     }
 
-    HudUiZrdWidget_DeletePanelVectorChildren(rolloverLabelPanels);
-    HudUiZrdWidget_DeletePanelVectorChildren(activateLabelPanels);
+    for (HudUiPanel **activateIt = activateLabelPanels.begin; activateIt != activateLabelPanels.end; ++activateIt) {
+        if (*activateIt != 0) {
+            (*activateIt)->ScalarDeletingDestructor(1);
+        }
+
+        *activateIt = 0;
+    }
 
     labelPanels.EraseRange(
         labelPanels.begin,
@@ -8361,28 +8493,17 @@ void HudUiZrdWidget::DestructorCore() {
     if (image != 0 && ownsImage == 0) {
         zVid_Image::ReleaseIfNotDefault(image);
     }
+}
 
-    ::operator delete(disabledLabelPanels.begin);
-    disabledLabelPanels.begin = 0;
-    disabledLabelPanels.end = 0;
-    disabledLabelPanels.capacityEnd = 0;
-
-    ::operator delete(activateLabelPanels.begin);
-    activateLabelPanels.begin = 0;
-    activateLabelPanels.end = 0;
-    activateLabelPanels.capacityEnd = 0;
-
-    ::operator delete(rolloverLabelPanels.begin);
-    rolloverLabelPanels.begin = 0;
-    rolloverLabelPanels.end = 0;
-    rolloverLabelPanels.capacityEnd = 0;
-
-    ::operator delete(labelPanels.begin);
-    labelPanels.begin = 0;
-    labelPanels.end = 0;
-    labelPanels.capacityEnd = 0;
-
-    HudUiWidget::DestructorCore();
+/**
+ * No standalone retail function; source compatibility wrapper for recovered
+ * HudUiZrdWidget cleanup callers that historically named the destructor body
+ * DestructorCore in this reconstruction.
+ * Source: D:\Proj\Battlesport\hud.cpp
+ * Purpose: release owned ZRD widget panels, alternate images, panel vectors, and the base widget.
+ */
+void HudUiZrdWidget::DestructorCore() {
+    this->~HudUiZrdWidget();
 }
 
 // Reimplements 0x4b50a0: HudUiZrdWidget::ScalarDeletingDestructor
@@ -9172,7 +9293,15 @@ void HudUiCycleSelectorWidget::AddTextEntry(
     ((HudUiContainer *)(owner))->AddChild(transitionPanel);
 }
 
-// Reimplements 0x4ba020: HudUiTransitionTextPanel::HudUiTransitionTextPanel
+/**
+ * Reimplements 0x4ba020: HudUiTransitionTextPanel::HudUiTransitionTextPanel.
+ * Original source path: D:\Proj\Battlesport\hudui_background.cpp.
+ * Purpose: construct the transition text panel and initialize its flash state.
+ *
+ * Evidence: BN assembly calls HudUiPanel::ConstructorDefault, clears flash
+ * fields, writes flashResetValue = 0.35f and flashDirectionSign = 1, and
+ * installs the transition text panel table at 0x4cd388.
+ */
 HudUiTransitionTextPanel::HudUiTransitionTextPanel()
     : HudUiPanel(
         0,
@@ -9187,12 +9316,27 @@ HudUiTransitionTextPanel::HudUiTransitionTextPanel()
     flashDirectionSign = 1;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in transition-panel owners that destroy embedded panel members.
+ * Evidence: destructor callers tear down the HudUiPanel base without a
+ * separate retail HudUiTransitionTextPanel destructor body.
+ * Purpose: restore the source-level destructor for transition text panels.
+ */
 HudUiTransitionTextPanel::~HudUiTransitionTextPanel() {
     HudUiPanel::~HudUiPanel();
 }
 
-// Reimplements 0x4bc9f0: HudUiTransitionTextPanel::TickFlash
+/**
+ * Reimplements 0x4bc9f0: HudUiTransitionTextPanel::TickFlash.
+ * Original source path: D:\Proj\Battlesport\HudUiTransitionTextPanel.cpp.
+ * Purpose: update timed visibility and flash-color state before drawing the panel.
+ *
+ * Evidence: BN assembly subtracts delta time from the base timer and flash
+ * countdown, hides timed-out panels through the visibility slot, toggles
+ * flashDirectionSign/textDirty, swaps text colors for color-flash modes, and
+ * calls HudUiPanel::Draw on visible refresh paths.
+ */
 void HudUiTransitionTextPanel::TickFlash(
     float deltaSeconds
 ) {
@@ -9299,7 +9443,15 @@ void HudUiTransitionTextPanel::SetFlashRate(
     flashMode = 1;
 }
 
-// Reimplements 0x4bc9b0: HudUiTransitionTextPanel::SetFlashColorAndRate
+/**
+ * Reimplements 0x4bc9b0: HudUiTransitionTextPanel::SetFlashColorAndRate.
+ * Original source path: D:\Proj\Battlesport\HudUiPanel.cpp.
+ * Purpose: enter color-flash mode and store the alternate flash text colors.
+ *
+ * Evidence: BN assembly returns when flashMode is already color-flash mode,
+ * calls ResetFlashState, writes flashMode = 2, and stores the same alternate
+ * color into both flash color fields.
+ */
 void HudUiTransitionTextPanel::SetFlashColorAndRate(
     unsigned int flashColor,
     float flashRate
@@ -10110,6 +10262,18 @@ void StdPtrVector::ClearNoOpDestroy(
     (void)end;
 }
 
+/**
+ * Reimplements 0x4ba470: StdPtrVector::FreeBufferAndReset.
+ * Purpose: frees the owned pointer buffer and resets the vector iterator triplet.
+ */
+void StdPtrVector::FreeBufferAndReset() {
+    int *const oldBegin = begin;
+    ::operator delete(oldBegin);
+    begin = 0;
+    end = 0;
+    capacityEnd = 0;
+}
+
 // Reimplements 0x40be60: HudCmdBindingEntry::CopyRange
 // (D:\Proj\Battlesport\HudCmdBindButton.cpp)
 HudCmdBindingEntry **__fastcall HudCmdBindingEntry::CopyRange(
@@ -10288,16 +10452,6 @@ HudCmdBindingEntry ** HudCmdBindingVector::EraseRange(
     );
     end = write;
     return first;
-}
-
-// Reimplements 0x4ba470: zUtil_StdPtrVector_FreeBufferAndReset
-void __fastcall zUtil_StdPtrVector_FreeBufferAndReset(
-    HudCmdBindingVector *self
-) {
-    ::operator delete(self->begin);
-    self->begin = 0;
-    self->end = 0;
-    self->capacity = 0;
 }
 
 // Reimplements 0x40c1d0: HudCmdBindButtonBase::ClearBindingEntries
@@ -12763,22 +12917,30 @@ HudUiElement * HudUiTripletPanel::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x40f400: HudUiTripletPanel::Draw
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x40f400: HudUiTripletPanel::Draw.
+ * Purpose: Draws the triplet panel base and visible item widgets from back to front.
+ */
 void HudUiTripletPanel::Draw() {
     DrawBase();
 
-    {
-        for (int index = 2; index >= 0; --index) {
-            HudUiWidget &item = items[index];
-            if (((unsigned char)(item.flags) & 0x10u) == 0) {
-                item.Draw();
-            }
-        }
+    if (((~items[2].flags) & 0x10u) != 0) {
+        items[2].Draw();
+    }
+
+    if (((~items[1].flags) & 0x10u) != 0) {
+        items[1].Draw();
+    }
+
+    if (((~items[0].flags) & 0x10u) != 0) {
+        items[0].Draw();
     }
 }
 
-// Reimplements 0x40f460: HudUiTripletPanel::SetVisibleCount
+/**
+ * Reimplements 0x40f460: HudUiTripletPanel::SetVisibleCount.
+ * Purpose: Applies the visible item count, updates child visibility, and invalidates the panel.
+ */
 void HudUiTripletPanel::SetVisibleCount(
     int count
 ) {
@@ -12795,8 +12957,16 @@ void HudUiTripletPanel::SetVisibleCount(
     visibleCount = count;
 
     {
-        for (int index = 0; index < 3; ++index) {
-            items[index].SetVisible(count > index ? 1 : 0);
+        int index = 0;
+        HudUiWidget *item = items;
+        while (index < 3) {
+            if (count > index) {
+                item->SetVisible(1);
+            } else {
+                item->SetVisible(0);
+            }
+            ++index;
+            ++item;
         }
     }
 
@@ -13241,11 +13411,11 @@ HudUiSlot * HudUiSlot::Constructor() {
  * Purpose: Draws the visible slot and track-marker widgets in recovered HUD slot order.
  */
 void HudUiSlot::Draw() {
-    if ((slotWidget.flags & 0x10) == 0) {
+    if (((~slotWidget.flags) & 0x10) != 0) {
         slotWidget.Draw();
     }
 
-    if ((trackMarkerWidget.flags & 0x10) == 0) {
+    if (((~trackMarkerWidget.flags) & 0x10) != 0) {
         trackMarkerWidget.Draw();
     }
 }
@@ -13972,7 +14142,10 @@ void HudUiSliderBorder::Update(
     }
 }
 
-// Reimplements 0x4b4810: HudUiSliderBorder::SetBounds
+/**
+ * Reimplements 0x4b4810: HudUiSliderBorder::SetBounds.
+ * Purpose: Stores slider border bounds and rebuilds the polyline outline points.
+ */
 void HudUiSliderBorder::SetBounds(
     int newOriginX,
     int newOriginY,
@@ -14629,7 +14802,11 @@ HudUiTextLabel * HudUiTextLabel::ConstructorWithPosAndFlags(
     return this;
 }
 
-// Reimplements 0x4bcbe0: HudUiTextLabel::CopyConstructor
+/**
+ * Reimplements 0x4bcbe0: HudUiTextLabel::CopyConstructor.
+ * Original source path: D:\Proj\Battlesport\HudUiTextLabel.cpp.
+ * Purpose: Copy-construct a text label from an existing label, including its text buffer.
+ */
 HudUiTextLabel * HudUiTextLabel::CopyConstructor(
     const HudUiTextLabel *source
 ) {
@@ -14647,7 +14824,11 @@ HudUiTextLabel * HudUiTextLabel::CopyConstructor(
     return this;
 }
 
-// Reimplements 0x4bcc80: HudUiTextLabel::Constructor
+/**
+ * Reimplements 0x4bcc80: HudUiTextLabel::Constructor.
+ * Original source path: D:\Proj\Battlesport\HudUiTextLabel.cpp.
+ * Purpose: Initialize this text label by copying the source label state.
+ */
 HudUiTextLabel * HudUiTextLabel::Constructor(
     const HudUiTextLabel *source
 ) {
@@ -14857,7 +15038,11 @@ HudUiPanel * HudUiPanel::ConstructorDefaultThunk() {
     );
 }
 
-// Reimplements 0x4ba850: HudUiPanel::CopyConstructCore
+/**
+ * Reimplements 0x4ba850: HudUiPanel::CopyConstructCore.
+ * Original source path: D:\Proj\Battlesport\HudUiPanel.cpp.
+ * Purpose: Copy-construct panel-owned text and font state from another panel.
+ */
 HudUiPanel * HudUiPanel::CopyConstructCore(
     const HudUiPanel *source
 ) {
@@ -14899,7 +15084,11 @@ HudUiPanel * HudUiPanel::CopyConstructCore(
     return this;
 }
 
-// Reimplements 0x4ba9e0: HudUiPanel::ConstructorCopy
+/**
+ * Reimplements 0x4ba9e0: HudUiPanel::ConstructorCopy.
+ * Original source path: D:\Proj\Battlesport\HudUiPanel.cpp.
+ * Purpose: Initialize this panel by copying text, font, and layout state from another panel.
+ */
 HudUiPanel * HudUiPanel::ConstructorCopy(
     const HudUiPanel *source
 ) {
@@ -15021,7 +15210,10 @@ void HudUiPanel::Draw() {
     x += textWidth;
 }
 
-// Reimplements 0x4ba400: HudUiPanel::GetWrapRect
+/**
+ * Reimplements 0x4ba400: HudUiPanel::GetWrapRect.
+ * Purpose: Returns the panel word-wrap rectangle storage.
+ */
 HudUiRect * HudUiPanel::GetWrapRect() {
     return &wrapRect;
 }
@@ -15128,7 +15320,10 @@ HudUiElement * HudUiPanel::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x40f9e0: HudUiPanel::SetTextColor
+/**
+ * Reimplements 0x40f9e0: HudUiPanel::SetTextColor.
+ * Purpose: Sets both panel text colors, marks text metrics dirty, and returns the old primary color.
+ */
 unsigned int HudUiPanel::SetTextColor(
     unsigned int color
 ) {
@@ -15139,7 +15334,10 @@ unsigned int HudUiPanel::SetTextColor(
     return previous;
 }
 
-// Reimplements 0x40e010: HudUiPanel::SetTextColorsAndMarkDirty
+/**
+ * Reimplements 0x40e010: HudUiPanel::SetTextColorsAndMarkDirty.
+ * Purpose: Stores the panel text color pair and marks cached text metrics dirty.
+ */
 void HudUiPanel::SetTextColorsAndMarkDirty(
     unsigned int color0,
     unsigned int color1
@@ -15149,7 +15347,10 @@ void HudUiPanel::SetTextColorsAndMarkDirty(
     textDirty = 1;
 }
 
-// Reimplements 0x40e040: HudUiPanel::SetShadow
+/**
+ * Reimplements 0x40e040: HudUiPanel::SetShadow.
+ * Purpose: Stores panel text-shadow state and returns the previous shadow flag.
+ */
 unsigned int HudUiPanel::SetShadow(
     unsigned int enableShadow,
     int offsetX,
@@ -15192,7 +15393,11 @@ void HudUiPanel::SetFont(
     textDirty = 1;
 }
 
-// Reimplements 0x4bb540: HudUiPanel::SetTextFmt
+/**
+ * Reimplements 0x4bb540: HudUiPanel::SetTextFmt.
+ * Purpose: format stack varargs into the panel text buffer and refresh cached
+ * panel text state when the content changes.
+ */
 void HudUiPanel::SetTextFmt(
     const char *format,
     ...
@@ -15209,7 +15414,11 @@ void HudUiPanel::SetTextFmt(
     va_end(args);
 }
 
-// Reimplements 0x4bb5e0: HudUiPanel::SetTextFmtV
+/**
+ * Reimplements 0x4bb5e0: HudUiPanel::SetTextFmtV.
+ * Purpose: format a va_list into the panel text buffer and refresh cached
+ * panel text state when the content changes.
+ */
 void HudUiPanel::SetTextFmtV(
     const char *format,
     va_list args
@@ -15253,7 +15462,11 @@ void HudUiPanel::SetTextFmtV(
     );
 }
 
-// Reimplements 0x4bb680: HudUiPanel::SetText
+/**
+ * Reimplements 0x4bb680: HudUiPanel::SetText.
+ * Purpose: copy literal panel text and refresh cached panel text state when
+ * the content changes.
+ */
 void HudUiPanel::SetText(
     const char *text
 ) {

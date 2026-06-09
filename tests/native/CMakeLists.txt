@@ -11,6 +11,8 @@ add_executable(recoil_native_smoke
     zsnd_cd_tests.cpp
     zsnd_stream_tests.cpp
     zreader_tests.cpp
+    briefing_runtime_smokes.cpp
+    zhud_composite_panel_smokes.cpp
     zhud_widget_tests.cpp
     hud_save_load_tests.cpp
     zmath_tests.cpp
@@ -41,7 +43,9 @@ add_test(
 add_test(
     NAME recoil_no_raw_image_addresses
     COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil_no_raw_image_addresses.py
+        ${PROJECT_SOURCE_DIR}/tools/recoil.py
+        guard
+        raw-image
         --root src
         --allowlist .agent/RAW_ADDRESS_ALLOWLIST.txt
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
@@ -50,7 +54,9 @@ add_test(
 add_test(
     NAME recoil_no_raw_assembly
     COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil_no_raw_assembly.py
+        ${PROJECT_SOURCE_DIR}/tools/recoil.py
+        guard
+        raw-assembly
         --root src
         --allowlist .agent/RAW_ASSEMBLY_ALLOWLIST.txt
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
@@ -59,7 +65,9 @@ add_test(
 add_test(
     NAME recoil_no_modern_cpp_constructs
     COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil_no_modern_cpp_constructs.py
+        ${PROJECT_SOURCE_DIR}/tools/recoil.py
+        guard
+        modern-cpp
         --root src
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
@@ -67,7 +75,9 @@ add_test(
 add_test(
     NAME recoil_raw_offset_guard
     COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil_raw_offset_guard.py
+        ${PROJECT_SOURCE_DIR}/tools/recoil.py
+        guard
+        raw-offset
         --root src
         --plan .agent/RECOIL_PLAN.md
         --allowlist .agent/RAW_OFFSET_ALLOWLIST.txt
@@ -77,7 +87,9 @@ add_test(
 add_test(
     NAME recoil_provider_boundary_guard
     COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil_provider_boundary_guard.py
+        ${PROJECT_SOURCE_DIR}/tools/recoil.py
+        guard
+        provider
         --root src
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
@@ -85,7 +97,9 @@ add_test(
 add_test(
     NAME recoil_provider_boundary_guard_selftest
     COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil_provider_boundary_guard.py
+        ${PROJECT_SOURCE_DIR}/tools/recoil.py
+        guard
+        provider
         --self-test
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
@@ -93,7 +107,9 @@ add_test(
 add_test(
     NAME recoil_source_placement_guard
     COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil_source_placement_guard.py
+        ${PROJECT_SOURCE_DIR}/tools/recoil.py
+        guard
+        source-placement
         --root src
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
@@ -101,7 +117,9 @@ add_test(
 add_test(
     NAME recoil_source_placement_guard_selftest
     COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil_source_placement_guard.py
+        ${PROJECT_SOURCE_DIR}/tools/recoil.py
+        guard
+        source-placement
         --self-test
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
@@ -109,7 +127,9 @@ add_test(
 add_test(
     NAME recoil_multiline_style_guard
     COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil_multiline_style_guard.py
+        ${PROJECT_SOURCE_DIR}/tools/recoil.py
+        guard
+        multiline
         --root src
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
@@ -117,7 +137,9 @@ add_test(
 add_test(
     NAME recoil_multiline_style_guard_selftest
     COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil_multiline_style_guard.py
+        ${PROJECT_SOURCE_DIR}/tools/recoil.py
+        guard
+        multiline
         --self-test
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
@@ -125,7 +147,9 @@ add_test(
 add_test(
     NAME recoil_source_data_initializer_guard
     COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil_source_data_initializer_guard.py
+        ${PROJECT_SOURCE_DIR}/tools/recoil.py
+        guard
+        source-data
         --manifest .agent/SOURCE_DATA_INITIALIZERS.json
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
@@ -133,7 +157,9 @@ add_test(
 add_test(
     NAME recoil_source_data_initializer_guard_selftest
     COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil_source_data_initializer_guard.py
+        ${PROJECT_SOURCE_DIR}/tools/recoil.py
+        guard
+        source-data
         --self-test
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
@@ -141,14 +167,18 @@ add_test(
 add_test(
     NAME recoil_vc5_manifest_source_policy
     COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil_vc5_manifest_source_guard.py
+        ${PROJECT_SOURCE_DIR}/tools/recoil.py
+        guard
+        vc5-manifest
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
 
 add_test(
     NAME recoil_source_file_map_current
     COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil_source_file_map.py
+        ${PROJECT_SOURCE_DIR}/tools/recoil.py
+        audit
+        source-map
         --check docs/reconstruction/source_file_map.md
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
@@ -156,7 +186,9 @@ add_test(
 add_test(
     NAME recoil_compiler_linker_provenance
     COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil_provenance_audit.py
+        ${PROJECT_SOURCE_DIR}/tools/recoil.py
+        audit
+        provenance
         --strict
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
@@ -164,7 +196,9 @@ add_test(
 add_test(
     NAME recoil_workspace_hygiene
     COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil_workspace_hygiene.py
+        ${PROJECT_SOURCE_DIR}/tools/recoil.py
+        audit
+        workspace
         --strict
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )

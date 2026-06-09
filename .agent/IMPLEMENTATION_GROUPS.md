@@ -22,13 +22,18 @@ active.
   group-only bookkeeping.
 - Verification-only queues that no longer carry source blockers should not live
   in this active working file unless they are coordinating a current coherent
-tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
+tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil.py status
   0xNNNNNN`, VC verification manifests, and
-  `python tools/recoil_verification_backlog.py` for current verification state.
-- Recompute verification scope with `python tools/recoil_status.py 0xNNNNNN` or
-  `python tools/recoil_frontier.py 0xNNNNNN --depth 1` after source blockers
+  `python tools/recoil.py audit backlog` for current verification state.
+- Normal binary-lane planning prioritizes owner structure blockers before
+  isolated implementation/behavior work and prioritizes owner/data blockers
+  before verify-only tier `S` work. Active verify-only groups should condense
+  or move out of this file when any nearby class/source-file/global owner debt
+  remains.
+- Recompute verification scope with `python tools/recoil.py status 0xNNNNNN` or
+  `python tools/recoil.py frontier 0xNNNNNN --depth 1` after source blockers
   clear.
-- Use `python tools/recoil_groups_audit.py --summary --wip-limit 4` to check
+- Use `python tools/recoil.py audit groups --summary --wip-limit 4` to check
   for stale, completed, or overgrown groups.
 
 ## Active Group Template
@@ -41,19 +46,88 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
 - Source blockers:
   - 0xNNNNNN Name
 - Next action:
-  - python tools/recoil_status.py 0xNNNNNN
+  - python tools/recoil.py status 0xNNNNNN
 ```
 
 ## Active Groups
+
+### Group: zVideo renderer dispatch/global owner audit
+
+- Anchor: 0x4a77a0 zVideo::BindRendererDispatch
+- Reason: shared renderer-dispatch function-pointer globals and cached
+  DirectDraw hardware-device data used by zVid memory-query and primary blit
+  callers.
+- Source blockers:
+  - Current BN for 0x4a77a0 writes the renderer dispatch slots at
+    0x6333ac..0x6333d4 and 0x56bbfc..0x56bc74, binds the two memory-query
+    callback globals 0x56bc2c/0x56bc30, and clears selected-device feature
+    flags when present. `g_zVideo_HwApiDeviceTable`,
+    `g_zVideo_pSelectedHwApiDeviceRecord`, and the adjacent dispatch slots are
+    modeled as typed globals in production source, but the referenced
+    DirectDraw/Direct3D backend functions still carry source-owner/data debt.
+- Next action:
+  - Work the lowest 0x4a77a0 frontier owner blockers, starting with
+    0x4a7d20 zVideo_dd::OpenVideoMode, before promoting query-function,
+    ReportError, or primary-blit data markers.
+
+### Group: zVideo adjust-surfaces dispatch cleanup
+
+- Anchor: 0x4a6900 zVideo::PresentOrAdjustSurfacesIfEnabled
+- Reason: source-file owner/data readiness for renderer-present dispatch used
+  by RecoilApp display initialization and per-frame callers.
+- Source blockers:
+  - Removed the production `PresentOrAdjustSurfacesIfEnabled` adapter that
+    only unlocked the primary surface and ignored the four retail
+    present/adjust arguments. BN for `RecoilApp::InitializeDisplay` at
+    0x42e330 shows the two display-initialization call sites target 0x4a6900
+    directly, so `RecoilApp.cpp` now calls `zVideo::AdjustSurfacesIfEnabled`
+    there. The active 0x4a6900 body already has VC5SP3 zero-mismatch byte
+    evidence in `zvideo_adjust_surfaces`; remaining marker review is the
+    source-file owner/data gate for `g_zVideo_AdjustSurfacesDisableGate`,
+    `g_zVideo_pfnAdjustSurfaces`, and `g_zVideo_FrameTick`.
+
+### Group: zSound tick/fade/playhandle owner cleanup
+
+- Anchor: 0x49f620 zSnd::Tick
+- Reason: source-file/subsystem owner and shared authored global data
+- Source blockers:
+  - 0x4a3c20 zSndFadeActiveList::TickAll, 0x4a3ad0
+    zSndFadeEntry::TickAndMaybeDispatch, 0x49fda0
+    zSndPlayHandle::StopIfActive, and 0x49f620 zSnd::Tick now have
+    owner/source-faithful markers from current BN/source evidence.
+  - Data remains open for the shared zSound BSS/global owner set: backend/init
+    globals, last-voice marker globals, neighboring CD zero/padding layout,
+    active/dispatch fade-list records, and report-error callee data.
+  - 0x4a3a80 zSndFadeDispatchList::PushBack is isolated enough for accepted
+    dispatch-list data and tier S; broader tick/fade/playhandle callers remain
+    tier C until the shared data owner is accepted.
+- Next action:
+  - Continue the broader zSound data-owner pass before tier B review:
+    model or classify the zero padding/neighbor records around 0x56b3d0 through
+    0x56b430, then update data markers only with same-session BN/source/build
+    evidence.
 
 ### Group: HUD UI save/load class recovery
 
 - Anchor: 0x434680 HudUiSaveGameDialog::InitLayout
 - Reason: class cluster / HUD UI owner source-shape recovery
 - Source blockers:
+  - Current pass: `HudUiCompositePanelVector` / `HudUiCompositePanelEntry`
+    owner cleanup. `0x4bbff0` depends on `0x4bc410` and `0x4bc3a0`;
+    focused native smokes for entry copy, vector insert, and vector clear are
+    now registered and pass functional verification for `0x4bc410`,
+    `0x4bc3a0`, and `0x4bbff0`. Next source action is to replace the
+    composite owner functions' legacy `// Reimplements` comments with required
+    provenance docblocks before any source-owner/data marker review.
+  - Briefing owner cleanup removed the identity-only `BriefingLayout` and
+    `BriefingPanel` helpers from `src/Battlesport/Briefing.cpp`; constructors,
+    destructors, update, and selector helpers now use direct typed
+    `HudUiBriefingRuntime` member/base access. `Briefing.h` now records compact
+    ownership/evidence comments for the recovered briefing runtime, action
+    queue, and child panel/widget owner structs.
   - Current HUD dispatch cleanup status: production `src/` now has zero
     source-shape scaffold findings from
-    `python tools\recoil_no_source_shape_scaffolds.py --root src --summary
+    `python tools/recoil.py guard source-shape --root src --summary
     --top 20`. The zHud, zVideo pass-3, Briefing HUD, and player pass-3
     cleanup removed production `FTable`/`VTable`/`Vtbl`/raw-slot scaffolds and
     replaced remaining table-dispatch behavior with class methods or narrow
@@ -261,14 +335,16 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
   - `HudUiTripletPanel::Draw` now calls the inherited `DrawBase()` and the
     three owned `HudUiWidget` item `Draw()` methods directly. Current BN
     decompile for 0x40f400 shows that exact reverse-order member draw sequence;
-    the remaining `HudUiTripletPanel` table factory/global is still unresolved
-    dispatch-owner scaffold debt and blocks source-owner acceptance.
+    the current native smoke verifies the base blit followed by visible item
+    blits for item 2 then item 0, supporting source-owner acceptance for this
+    method.
   - `HudUiTripletPanel::SetVisibleCount` now calls the owned `HudUiWidget`
     item `SetVisible()` methods and inherited `Invalidate()` directly. Current
     BN decompile for 0x40f460 shows the item-array visibility loop followed by
     `self` invalidation; the production source no longer spells this method as
-    raw slot-24/slot-8 dispatch. The class table factory/global remains
-    unresolved HUD dispatch-owner scaffold debt.
+    raw slot-24/slot-8 dispatch. The current native smoke verifies clamping,
+    item visibility, unchanged-count early return, invalidation, and
+    `HudUiMgr::SetNanitePanelCount` forwarding.
   - `HudLayoutHW::UpdateObjectiveDirtyRect` now calls
     `g_HudUiMgrObjectiveWidget.GetCenterX()`/`GetCenterY()` directly. Current
     BN decompile for 0x4132b0 shows those objective-widget center queries
@@ -279,6 +355,14 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
     0x4118b0 shows the same objective-widget center query feeding the objective
     meter point X coordinates; the source no longer spells it as a raw
     slot-25 table call.
+  - `HudUiMgrData` now recovers the BN `g_HudUiMgr` owner slice through
+    offset 0xbcc: manager root global, nanite panel at offset 0x420,
+    objective block at offset 0x690, objective widget at objective offset
+    0x1c, objective meter at objective offset 0x19c, and
+    objective-widget-right X at objective offset 0x18. This clears the data
+    gate for 0x4132b0 `HudLayoutHW::UpdateObjectiveDirtyRect` and 0x4118b0
+    `HudUiMgrObjective::UpdateMeterXPoints`; the later sensor/weapon/message
+    manager span and tier-S VC targets remain open.
   - `HudUiLayoutNode::ApplyImageWidget` now calls the typed
     `HudUiWidget::SetPos()` and inherited `Invalidate()` methods after applying
     the image layout. Current BN decompile for 0x413d30 shows the dispatch tail
@@ -368,10 +452,10 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
     before installing the circle dispatch table and initializing
     radius/color fields. `HudUiBriefingLocatorPanel` call sites now use the
     inherited element fields and methods directly, and the production
-    `recoil_native` target builds after the inheritance change. The
-    `g_HudUiCircle_FTable` factory/global remains unresolved dispatch-owner
-    scaffold debt, so no source-owner or tier marker should be promoted from
-    this cleanup alone.
+    `recoil_native` target builds after the inheritance change. Current source
+    has no production `g_HudUiCircle_FTable` scaffold; the retail table pointer
+    remains dispatch data and tier-S evidence debt rather than a source-owner
+    blocker for the constructor.
   - `HudUiBriefingLocatorPanel` is now modeled as
     `HudUiBriefingLocatorPanel : HudUiCircle` in production source. Current
     BN decompile for 0x403c10 shows the constructor calls
@@ -383,9 +467,11 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
     builds after replacing the embedded `HudUiCircle base` spelling with
     inheritance. A follow-up cleanup removed the local
     `g_HudUiBriefingLocatorPanel_Vtbl` factory/global and constructor table
-    overwrite from production Briefing source; the wider shared HUD dispatch
-    owner remains unresolved source-shape debt, so no source-owner or tier
-    marker should be promoted from this cleanup alone.
+    overwrite from production Briefing source. The locator panel class owner is
+    source-modeled by the inherited `HudUiCircle` shape plus its constructor,
+    dirty-rect blit, update, and no-standalone `DrawBase` override; the retail
+    locator dispatch table remains data/tier-S evidence debt, not a production
+    source scaffold.
   - `HudUiBriefingObjectivePicture` is now modeled as
     `HudUiBriefingObjectivePicture : HudUiWidget` in production source.
     Current BN decompile for 0x403930 shows
@@ -673,7 +759,9 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
     flash ticking now use inherited `HudUiPanel` fields and methods directly,
     and composite-panel copy helpers copy the typed flash fields instead of
     using raw panel-tail offsets. The production `recoil_native` target builds
-    after the inheritance change. The `g_HudUiTransitionTextPanel_FTable` and
+    after the inheritance change. Provenance docblocks for the constructor,
+    destructor helper, flash tick, and color-flash setter now record the BN
+    address/source-path evidence. The `g_HudUiTransitionTextPanel_FTable` and
     related slot-table factories remain unresolved dispatch-owner scaffold
     debt, so no source owner, data, or tier marker should be promoted from this
     cleanup alone.
@@ -943,9 +1031,9 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
     `HudUiNumericTextInput`; remove the `HudUiSaveLoad*` `FTable`/`Vtbl`
     globals/factories only when the class owner can express the dispatch
     contract source-faithfully.
-  - Use `python tools/recoil_status.py 0x434680 --lane binary`,
-    `python tools/recoil_frontier.py 0x434680 --depth 1 --lane binary`, and
-    `python tools/recoil_no_source_shape_scaffolds.py --root
+  - Use `python tools/recoil.py status 0x434680 --lane binary`,
+    `python tools/recoil.py frontier 0x434680 --depth 1 --lane binary`, and
+    `python tools/recoil.py guard source-shape --root
     src\Battlesport\RecoilApp.cpp --root src\Battlesport\hud.h --summary
     --top 20` as the focused owner checks.
 
@@ -961,14 +1049,15 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
   - 0x42dfa0 RecoilApp::Constructor is tier C but not tier S; BN shows the
     paired MSVC EH registration frame and constructor unwind map. Its
     intermediate owner dependency at 0x442c70 is now modeled as
-    `RecoilApp_MfcOleModule`, but the local VC5 byte targets for
-    0x442c70/0x4428b0 still fail and do not justify tier S.
+    `RecoilApp_MfcOleModule`; current local VC5 byte evidence accepts both
+    0x442c70 and 0x4428b0, so the remaining blocker is the root owner
+    constructor/destructor cleanup-state model.
 - Next action:
   - Recover the smallest source-faithful RecoilApp owner model that lets VC
     emit the paired member/base constructor and destructor cleanup chains
     before retrying byte verification with
-    `python tools/recoil_vc5_verify.py 0x42dfa0` and
-    `python tools/recoil_vc5_verify.py 0x42de60`.
+    `python tools/recoil.py verify vc5 0x42dfa0` and
+    `python tools/recoil.py verify vc5 0x42de60`.
     The BN EH unwind map has member/base cleanup states 0-4 plus parent-frame
     `IState*` local cleanup states 5-7; rejected probes show `try`/`catch`
     emits the wrong EBP/catch EH shape, a synthetic automatic local emits the
@@ -984,39 +1073,39 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
     to 150 mismatches.
     Current direct binary-lane dependencies are split: `zFMV_Script::Cleanup`
     at 0x462630 and `zFMV_Script::Reset` at 0x462660 pass under the shared
-    `zfmv_script_cleanup_reset` VC target, but this session's local
-    `recoil_app_mfc_ole_module_destructor` and
-    `recoil_app_mfc_ole_module_constructor_s` manifests did not produce
-    accepted byte evidence. Best observed 0x4428b0 result was
-    `vc5_o2_ob1_md_facs` with 223 mismatches; best observed 0x442c70 result
-    was `vc5_o2_ob0_md_facs` with 118 mismatches, while the current manifest
-    profile remains `vc5_o2_ob1_md_facs` for owner-shape consistency. The older
-    `docs/reconstruction/recoil_app_destructor_tier_s.md` MFC/OLE tier S notes
-    describe removed local probes and are not current acceptance evidence.
+    `zfmv_script_cleanup_reset` VC target. The paired MFC/OLE owner
+    dependencies now pass current VC5SP3 byte verification: 0x442c70
+    `RecoilApp_MfcOleModule::RecoilApp_MfcOleModule` passes
+    `recoil_app_mfc_ole_module_constructor_s` with zero unmasked mismatches
+    after 8 relocation-masked bytes, and 0x4428b0
+    `RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule` passes
+    `recoil_app_mfc_ole_module_destructor` with zero unmasked mismatches after
+    16 relocation-masked bytes. Both ignored local owner manifests compile with
+    `RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER` so VC5SP3 sees the original
+    `std::deque<RecoilApp_StateQueueItem*>` member for this constructor and
+    destructor pair; native host builds and the standalone
+    `recoil_app_state_queue` VC target keep the recovered manual queue owner.
     Current implementation restores address-backed
     `RecoilApp_MfcOleModule::RecoilApp_MfcOleModule` at 0x442c70,
     `RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule` at 0x4428b0, with
     0x4429b0 now classified as compiler-generated scalar-deleting destructor
     glue for the real `CWinApp`-derived owner subobject. This fixes the stale
     `recoil_app_mfc_ole_module_constructor_s` provenance-manifest blocker and
-    compiles under VC5, but current byte compares still fail:
-    0x442c70 has 123 unmasked mismatches and a 96-byte VC body versus 138-byte
-    BN body; 0x4428b0 has 236 unmasked mismatches and a 112-byte VC body versus
-    256-byte BN body. Classified diffs show constructor drift in vptr-store and
-    zeroing order, while destructor drift remains the VC5 deque/queue teardown
-    shape.
+    compiles under VC5. Current byte compares close the MFC/OLE pair; the
+    residual drift is now above them in the root RecoilApp constructor and
+    destructor EH cleanup-state model.
     The top-level owner checks still fail after the split:
-    `python tools/recoil_vc5_verify.py 0x42dfa0` reports 131 unmasked
+    `python tools/recoil.py verify vc5 0x42dfa0` reports 131 unmasked
     mismatches with a 176-byte VC body versus 194-byte BN body, and
-    `python tools/recoil_vc5_verify.py 0x42de60 --build-root
+    `python tools/recoil.py verify vc5 0x42de60 --build-root
     build\vc5-verify-42de60-owner-pass` reports 109 unmasked mismatches with a
     192-byte VC body versus 168-byte BN body.
-    `python tools/recoil_msvc_x86_run.py -- cmake --build --preset
+    `python tools/recoil.py build msvc-x86 -- cmake --build --preset
     ninja-x86-debug --target recoil_native` passes for the production static
     library after this owner split. The full native smoke build still fails in
     tests with old test-only assumptions about RecoilApp copy assignment,
     `.base` state fields, and 32-bit queue pointer aliases.
-    `python tools/recoil_no_source_shape_scaffolds.py --root
+    `python tools/recoil.py guard source-shape --root
     src\Battlesport\RecoilApp.cpp --root src\Battlesport\RecoilApp.h
     --summary --top 20` now reports zero hits in `RecoilApp.cpp/.h`.
     The raw `RecoilApp_IState_Vtbl`, `g_RecoilStateBase_Vtbl`, and
@@ -1070,7 +1159,7 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
     class family, generated vtables, and destructor model are recovered.
     Current VC5 comparisons accept 0x4a5780 `RecoilApp::InitStdLogFiles` as
     tier S. Existing plan entries should be checked with
-    `python tools/recoil_status.py 0xNNNNNN --lane binary` before relying on
+    `python tools/recoil.py status 0xNNNNNN --lane binary` before relying on
     any older note for 0x42e220 `RecoilApp::StartEngine`, 0x442bc0
     `RecoilApp::ShutdownSubsystems`, 0x42e430 `RecoilApp::ShutdownEngine`, or
     0x42e330 `RecoilApp::InitializeDisplay`.
@@ -1117,7 +1206,7 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
 - Next action:
   - Continue grouped data-gate audit and VC5 tier S recovery for
     `app.main_menu_transition`; recheck current scope with
-    `python tools/recoil_status.py 0x415170` before editing.
+    `python tools/recoil.py status 0x415170` before editing.
 
 ### Group: HUD app-state class cleanup
 
@@ -1177,9 +1266,11 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
     `recoil_native` target builds after this class-shape cleanup, but
     `g_HudUiCreditsPanel_FTable`, its secondary slot table, and the related
     raw slot dispatch/factory source remain unresolved source-shape debt.
-    Plan entries 0x409040, 0x4091c0, 0x4091e0, 0x4092a0, 0x409360,
-    0x409380, 0x409410, 0x409470, 0x409550, and 0x409570 are therefore kept
-    at `Source owner ❌`, `Reimplemented [X]`, and `Model: pending`.
+    Plan entry 0x409380 has tier C behavior evidence but remains at
+    `Source owner ❌`, `Data reimplemented ❌`, and `Model: pending`; 0x409040,
+    0x4091c0, 0x4091e0, 0x4092a0, 0x409360, 0x409410, 0x409470, 0x409550, and
+    0x409570 are therefore kept at `Source owner ❌`, `Reimplemented [X]`, and
+    `Model: pending`.
   - `HudCmdDialog` is now modeled as a `HudUiBackground` subclass, and the
     command-list/key/joy/mouse/set-list/callback/prompt/description widgets
     are modeled as subclasses of their BN-proven HUD widget owners instead of
@@ -1367,7 +1458,7 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
     objects, `HudWeatherFx`/snow/rain FTable factory/globals, the
     New Game back-widget assignment to `g_HudUiMainMenu_BackButton_FTable`,
     and the matching constructor/destructor table writes. The focused
-    `python tools\recoil_no_source_shape_scaffolds.py --root
+    `python tools/recoil.py guard source-shape --root
     src\Battlesport\hud.cpp --root src\Battlesport\hud.h --summary --top 10`
     guard now reports zero findings. Affected constructor/destructor entries
     were downgraded to `Reimplemented [X]`/`Model: pending` where prior
@@ -1430,3 +1521,11 @@ tier `S` pass. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil_status.py
     findings, and the regenerated source-file map is current. Remaining HUD
     owner debt is the broader dispatch/source-owner and data/tier-S recovery;
     do not promote source-owner markers from this cleanup alone.
+  - Current destructor pass moved `HudUiElement::~HudUiElement` inline in the
+    class declaration while keeping a cpp provenance note for 0x4b47a0. This
+    lets VC5 inline the base table reset into `HudUiWidget::~HudUiWidget`
+    without manual vtable stores. Same-session VC5 evidence now passes for
+    0x4b47a0, 0x4b3d50, and 0x4bfa20 with zero unmasked mismatches; 0x4b9760
+    still fails on background-destructor EH state numbering,
+    `ReleaseIfNotDefault` zero-store codegen, and MSVC array-destructor
+    scheduling/argument order.

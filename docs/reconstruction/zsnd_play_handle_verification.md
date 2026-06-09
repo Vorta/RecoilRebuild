@@ -65,9 +65,9 @@ VC verifier artifacts remain authoritative.
   the best current profile.
 - Temporarily compiling the current source across
   `vc5_o2_ob0_facs`, `vc5_o2_ob1_gx_facs`, `vc5_o2_ob1_md_gx_facs`,
-  `vc5_o2_ob2_facs`, `vc5_o2_ob2_gx_facs`, `vc5_o2_ob1_gx_facs`, and
-  `vc5_o2_oy_ob0_facs` was neutral: every profile produced the same 135
-  mismatches, 60 relocation-masked bytes, BN size 275, and object size 288.
+  `vc5_o2_ob2_facs`, `vc5_o2_ob2_gx_facs`, and `vc5_o2_oy_ob0_facs` was
+  neutral: every profile produced the same 135 mismatches,
+  60 relocation-masked bytes, BN size 275, and object size 288.
 - Rewriting the backend dispatch as an explicit `if (activeBackend != 0)` with
   the A3D path physically before the DirectSound path worsened the target from
   135 to 155 mismatches, so the source was restored.
