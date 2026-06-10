@@ -152,6 +152,52 @@ bool EntryMatchesMarker(
 }
 } // namespace
 
+extern "C" int zhud_transition_text_panel_update_smoke(void) {
+    HudUiTransitionTextPanel panel;
+    HudUiElement *const element = &panel;
+    int failure = 0;
+
+    panel.flags = 0x10u;
+    panel.timer = 0.25f;
+    panel.flashEnabled = 1;
+    panel.flashCountdown = 0.25f;
+    element->Update(0.5f);
+    if (failure == 0 && (panel.timer != 0.25f || panel.flashCountdown != 0.25f)) {
+        failure = 2;
+    }
+
+    panel.flags = 1u;
+    panel.timer = 0.25f;
+    panel.flashEnabled = 0;
+    element->Update(0.5f);
+    if (failure == 0 && (panel.flags & 0x10u) == 0) {
+        failure = 3;
+    }
+
+    panel.flags = 0;
+    panel.textColor0 = 0x00010203u;
+    panel.textColor1 = 0x00040506u;
+    panel.flashEnabled = 1;
+    panel.flashMode = 2;
+    panel.flashCountdown = 0.25f;
+    panel.flashResetValue = 0.5f;
+    panel.flashAltColor0 = 0x00070809;
+    panel.flashAltColor1 = 0x000a0b0c;
+    panel.flashDirectionSign = 1;
+    panel.textDirty = 0;
+    element->Update(0.5f);
+    if (failure == 0 &&
+        (panel.flashCountdown != 0.5f || panel.flashDirectionSign != -1 ||
+            panel.textDirty != 0 || panel.textColor0 != 0x00070809u ||
+            panel.textColor1 != 0x000a0b0cu ||
+            panel.flashAltColor0 != 0x00010203 ||
+            panel.flashAltColor1 != 0x00040506)) {
+        failure = 4;
+    }
+
+    return failure;
+}
+
 extern "C" int zhud_composite_panel_entry_copy_smoke(void) {
     HudUiCompositePanelEntry source;
     InitCompositeEntry(
@@ -497,12 +543,12 @@ extern "C" int zhud_composite_panel_set_font_smoke(void) {
         DEFAULT_PITCH
     );
 
-    const bool ok = panel->textDirty == 1 &&
+    const bool ok = panel->hFont != 0 &&
         panel->entryVector.begin[0].panel.textDirty == 1 &&
         panel->entryVector.begin[1].panel.textDirty == 1;
 
     int result = 0;
-    if (panel->textDirty != 1) {
+    if (panel->hFont == 0) {
         result = 2;
     } else if (panel->entryVector.begin[0].panel.textDirty != 1) {
         result = 10 + (int)(panel->entryVector.begin[0].panel.textDirty & 0xf);

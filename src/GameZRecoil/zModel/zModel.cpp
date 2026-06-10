@@ -2154,10 +2154,9 @@ void __fastcall RenderNodeSoftware(
                     0
                 );
             } else {
-                const DrawPointColor16Proc drawPoint =
-                    (DrawPointColor16Proc)((unsigned int)(g_zVideo_pfnDrawPointColor16));
+                zVideo_DrawPointColor16Proc drawPoint = g_zVideo_pfnDrawPointColor16;
                 drawPoint(
-                    &projectedPoint,
+                    (zVideo_XyzVertex *)(&projectedPoint),
                     pointColor & 0xffff,
                     1
                 );
@@ -2559,8 +2558,7 @@ void __fastcall RenderNodeHardware(
                 clippedCount
             );
             if (hasAttributes != 0) {
-                SubmitPolyColorAttrProc submit =
-                    (SubmitPolyColorAttrProc)((unsigned int)(g_zVideo_pfnSubmitPolyColorAttr));
+                SubmitPolyColorAttrProc submit = g_zVideo_pfnSubmitPolyColorAttr;
                 submit(
                     (zVideo_XyzVertex *)g_Clip_PolyVerts,
                     material->packedColor,
@@ -2574,8 +2572,7 @@ void __fastcall RenderNodeHardware(
                     gModel_RenderVertexAlphaEnabled
                 );
             } else {
-                SubmitPolyFlatColor16Proc submit =
-                    (SubmitPolyFlatColor16Proc)((unsigned int)(g_zVideo_pfnSubmitPolyFlatColor16));
+                SubmitPolyFlatColor16Proc submit = g_zVideo_pfnSubmitPolyFlatColor16;
                 submit(
                     (zVideo_XyzVertex *)g_Clip_PolyVerts,
                     material->packedColor,
@@ -2634,8 +2631,7 @@ void __fastcall RenderNodeHardware(
         );
         zVideo_RenderClass *const renderClass = MaterialRenderClass(material);
         if (hasAttributes != 0 || g_zModel_CurrentPolyNormals != 0) {
-            SubmitPolygonProc submit =
-                (SubmitPolygonProc)((unsigned int)(g_zVideo_pfnSubmitPolygon));
+            SubmitPolygonProc submit = g_zVideo_pfnSubmitPolygon;
             submit(
                 (zVideo_XyzVertex *)g_Clip_PolyVerts,
                 (zVideo_TexCoord *)perspectiveUvs,
@@ -2649,8 +2645,7 @@ void __fastcall RenderNodeHardware(
                 gModel_RenderVertexAlphaEnabled
             );
         } else {
-            SubmitPolyRenderClassProc submit =
-                (SubmitPolyRenderClassProc)((unsigned int)(g_zVideo_pfnSubmitPolyRenderClass));
+            SubmitPolyRenderClassProc submit = g_zVideo_pfnSubmitPolyRenderClass;
             submit(
                 (zVideo_XyzVertex *)g_Clip_PolyVerts,
                 (zVideo_TexCoord *)perspectiveUvs,
@@ -2742,10 +2737,9 @@ void __fastcall zModel_RenderPointQueueEntry(
     projectedPoint.reciprocalZ =
         (((float)(depthBias)*g_zRndr_InverseZTolerance) + 1.0f) * projectedPoint.reciprocalZ;
 
-    const DrawPointColor16Proc drawPoint =
-        (DrawPointColor16Proc)((unsigned int)(g_zVideo_pfnDrawPointColor16));
+    zVideo_DrawPointColor16Proc drawPoint = g_zVideo_pfnDrawPointColor16;
     drawPoint(
-        &projectedPoint,
+        (zVideo_XyzVertex *)(&projectedPoint),
         (unsigned int)(color16),
         1
     );

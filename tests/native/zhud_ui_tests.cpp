@@ -831,7 +831,7 @@ void __fastcall TestBarDrawSpanOp(int spanOpContext, int pixelCount) {
     ++g_barDrawSpanOpCount;
     g_barDrawLastContext = spanOpContext;
     g_barDrawLastPixelCount = pixelCount;
-    g_barDrawLastDst = zRndr::g_spanCurrentDst16;
+    g_barDrawLastDst = zRndr::g_spanCurrentSpanBaseAddr;
 }
 
 struct TestMessagePanelDrawDispatch {
@@ -6262,7 +6262,7 @@ extern "C" int zhud_element_hit_test_true_smoke(void) {
 
 extern "C" int zhud_circle_constructor_and_hit_test_smoke(void) {
     HudUiCircle circle{};
-    HudUiCircle *const result = circle.Constructor(10, 20, 5, 0x07e0);
+    HudUiCircle *const result = new (&circle) HudUiCircle(10, 20, 5, 0x07e0);
 
     const bool constructed = result == &circle && circle.base.ftable == &g_HudUiCircle_FTable &&
                              circle.base.x == 10 && circle.base.y == 20 && circle.radius == 5 &&
@@ -6286,7 +6286,7 @@ extern "C" int zhud_circle_draw_dirty_smoke(void) {
     table.slots[2] = MethodAddress(&TestCircleDrawDirtyOps::DrawBase);
 
     HudUiCircle circle{};
-    circle.Constructor(10, 20, 1, 0x07e0);
+    new (&circle) HudUiCircle(10, 20, 1, 0x07e0);
     circle.base.ftable = &table;
 
     zRndr::g_frameBuffer = reinterpret_cast<void *>(0x87651234);
@@ -6336,7 +6336,7 @@ extern "C" int zhud_composite_panel_vector_clear_smoke(void) {
     TestFieldAt<const HudUiCommon_FTable *>(&entries[1], 0) = &table;
 
     HudUiCompositePanelVector vector{};
-    vector.allocatorStorage = 0x12345678;
+    vector.allocatorProxy.value = 0x78;
     vector.begin = entries;
     vector.end = entries + 2;
     vector.capacityEnd = entries + 2;
@@ -6349,7 +6349,7 @@ extern "C" int zhud_composite_panel_vector_clear_smoke(void) {
         g_compositeEntryDestructorThis[1] == &entries[1] &&
         g_compositeEntryDestructorFlags[0] == 0 &&
         g_compositeEntryDestructorFlags[1] == 0 &&
-        vector.allocatorStorage == 0x12345678 && vector.begin == nullptr &&
+        vector.allocatorProxy.value == 0x78 && vector.begin == nullptr &&
         vector.end == nullptr && vector.capacityEnd == nullptr;
 
     auto *realEntries = static_cast<HudUiCompositePanelEntry *>(
@@ -6358,7 +6358,7 @@ extern "C" int zhud_composite_panel_vector_clear_smoke(void) {
     realEntries[1].panel.Constructor();
 
     HudUiCompositePanelVector realVector{};
-    realVector.allocatorStorage = 0x87654321;
+    realVector.allocatorProxy.value = 0x21;
     realVector.begin = realEntries;
     realVector.end = realEntries + 2;
     realVector.capacityEnd = realEntries + 2;
@@ -6368,7 +6368,7 @@ extern "C" int zhud_composite_panel_vector_clear_smoke(void) {
     const bool realDispatch =
         g_HudUiTransitionTextPanel_FTable.slots[0] ==
             MethodAddress(&HudUiPanel::ScalarDeletingDestructor) &&
-        realVector.allocatorStorage == 0x87654321 && realVector.begin == nullptr &&
+        realVector.allocatorProxy.value == 0x21 && realVector.begin == nullptr &&
         realVector.end == nullptr && realVector.capacityEnd == nullptr;
 
     return customDispatch && realDispatch ? 0 : 1;
@@ -7482,7 +7482,7 @@ extern "C" int zhud_composite_panel_update_smoke(void) {
         g_HudUiCompositePanel_FTable.slots[9] == MethodAddress(&HudUiCompositePanel::Update);
     const bool transitionSlot =
         g_HudUiTransitionTextPanel_FTable.slots[9] ==
-        MethodAddress(&HudUiTransitionTextPanel::TickFlash);
+        MethodAddress(&HudUiTransitionTextPanel::Update);
 
     TestFieldAt<std::uint32_t>(&panel, 0x0c) = 0x10;
     g_compositeEntryUpdateCount = 0;
@@ -9779,7 +9779,7 @@ extern "C" int zhud_cycle_selector_widget_constructor_smoke(void) {
     flashPanel.flashMode = 2;
     flashPanel.flashDirectionSign = 1;
     TestFieldAt<std::uint32_t>(&flashPanel, 0x270) = 0;
-    flashPanel.TickFlash(0.5f);
+    flashPanel.Update(0.5f);
     const bool flashTickSwap =
         flashPanel.flashCountdown == 0.5f && flashPanel.flashDirectionSign == -1 &&
         TestFieldAt<std::uint32_t>(&flashPanel, 0x270) == 0 &&
@@ -9863,7 +9863,7 @@ extern "C" int zhud_cycle_selector_widget_constructor_smoke(void) {
                : 1;
 }
 
-extern "C" int zhud_transition_text_panel_tick_flash_smoke(void) {
+extern "C" int zhud_transition_text_panel_update_smoke(void) {
     HudUiPanel_FTable table = g_HudUiTransitionTextPanel_FTable;
     table.slots[2] = MethodAddress(&TestHudUiWidgetDrawDispatch::DrawBase);
     table.slots[24] = MethodAddress(&TestTransitionTextPanelVisibleDispatch::SetVisible);
@@ -9887,7 +9887,7 @@ extern "C" int zhud_transition_text_panel_tick_flash_smoke(void) {
     panel.flashEnabled = 1;
     g_hudUiWidgetDrawBaseCount = 0;
     g_transitionTextPanelSetVisibleCount = 0;
-    panel.TickFlash(0.25f);
+    panel.Update(0.25f);
     const bool hiddenSkipped =
         g_hudUiWidgetDrawBaseCount == 0 && g_transitionTextPanelSetVisibleCount == 0;
 
@@ -9899,7 +9899,7 @@ extern "C" int zhud_transition_text_panel_tick_flash_smoke(void) {
     g_transitionTextPanelSetVisibleCount = 0;
     g_transitionTextPanelSetVisibleThis = nullptr;
     g_transitionTextPanelSetVisibleValue = 1;
-    panel.TickFlash(0.5f);
+    panel.Update(0.5f);
     const bool timerHide =
         g_transitionTextPanelSetVisibleCount == 1 &&
         g_transitionTextPanelSetVisibleThis == &panel &&
@@ -9915,7 +9915,7 @@ extern "C" int zhud_transition_text_panel_tick_flash_smoke(void) {
     panel.flashDirectionSign = 1;
     TestFieldAt<std::uint32_t>(&panel, 0x270) = 0;
     g_hudUiWidgetDrawBaseCount = 0;
-    panel.TickFlash(0.1f);
+    panel.Update(0.1f);
     const bool mode0DrawsTwice =
         g_hudUiWidgetDrawBaseCount == 2 && panel.flashCountdown == 0.15f &&
         panel.flashDirectionSign == 1 && TestFieldAt<std::uint32_t>(&panel, 0x270) == 0;
@@ -9926,7 +9926,7 @@ extern "C" int zhud_transition_text_panel_tick_flash_smoke(void) {
     panel.flashDirectionSign = 1;
     TestFieldAt<std::uint32_t>(&panel, 0x270) = 0;
     g_hudUiWidgetDrawBaseCount = 0;
-    panel.TickFlash(0.5f);
+    panel.Update(0.5f);
     const bool mode1ExpiredNoDraw =
         g_hudUiWidgetDrawBaseCount == 0 && panel.flashCountdown == 0.25f &&
         panel.flashDirectionSign == -1 && TestFieldAt<std::uint32_t>(&panel, 0x270) == 1;
@@ -9942,7 +9942,7 @@ extern "C" int zhud_transition_text_panel_tick_flash_smoke(void) {
     TestFieldAt<std::uint32_t>(&panel, 0x270) = 0;
     g_hudUiWidgetDrawBaseCount = 0;
     g_hudUiPanelRebuildTextRectCount = 0;
-    panel.TickFlash(0.5f);
+    panel.Update(0.5f);
     const bool mode2Swap =
         g_hudUiWidgetDrawBaseCount == 1 && g_hudUiPanelRebuildTextRectCount == 1 &&
         panel.flashCountdown == 0.5f && panel.flashDirectionSign == -1 &&

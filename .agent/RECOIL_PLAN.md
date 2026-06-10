@@ -10812,15 +10812,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x46e9b0:
   - [☑️] Reconstructed (Name: zVid_Image::ResampleSquare)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zImage; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zImage; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVid_Image::ResampleSquare;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_image_resample_square;
     - Group: engine.zimage;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: No authored globals touched; tier S remains deferred because no VC5 COFF byte-comparison target covers 0x46e9b0 yet.
 
 - 0x46eb20:
   - [✅] Reconstructed (Name: zImage::Init)
@@ -11171,15 +11171,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x471c50:
   - [✅] Reconstructed (Name: zInput::ResetAllTransitionState)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::ResetAllTransitionState;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_reset_all_transition_state;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x471de0:
   - [✅] Reconstructed (Name: zInput::PollActiveDevices)
@@ -11484,8 +11484,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [☑️] Reconstructed (Name: zInput::Keyboard_ResetTransitionState)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::Keyboard_ResetTransitionState;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_keyboard_reset_transition_state;
@@ -11821,15 +11821,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x470610:
   - [✅] Reconstructed (Name: zInput::Mouse_ResetTransitionState)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::Mouse_ResetTransitionState;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_mouse_reset_transition_state;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x470670:
   - [✅] Reconstructed (Name: zInput::Mouse_SetCooperativeLevelFlags)
@@ -12965,15 +12965,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x472410:
   - [☑️] Reconstructed (Name: zInput::DI_ResetTransitionState)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::DI_ResetTransitionState;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_di_reset_transition_state;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x472450:
   - [☑️] Reconstructed (Name: zInputDI::CreateForceFeedbackEffect)
@@ -15408,14 +15408,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [☑️] Reconstructed (Name: zSnd::Tick)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zSound; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zSnd_Tick;
     - File: src/GameZRecoil/zSound/zsnd_system.cpp;
     - Target: zsnd_tick;
     - Group: engine.zsound;
     - Model: source-faithful;
-    - Blocker: data gate remains open for the shared zSound BSS/global owner set: backend/init globals, last-voice marker globals, neighboring CD zero/padding layout, active/dispatch fade-list records, and report-error callee data; tier S remains blocked by documented VC5 backend service and marker timeline byte drift.
+    - Blocker: tier S remains blocked by documented VC5 backend service and marker timeline byte drift (97 unmasked mismatches after relocation masking).
 
 - 0x4a0810:
   - [☑️] Reconstructed (Name: zSnd::SetUseArchiveBanks)
@@ -15967,14 +15967,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zSndPlayHandle::StopIfActive)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: zSndPlayHandle; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zSndPlayHandle::StopIfActive;
     - File: src/GameZRecoil/zSound/zsnd_play.cpp;
     - Target: zsnd_play_handle_stop_if_active;
     - Group: engine.zsound;
     - Model: source-faithful;
-    - Blocker: data gate remains open for init/backend/last-voice globals and report-error callee data; tier S remains blocked by documented VC5 backend dispatch byte drift.
+    - Blocker: tier S remains blocked by documented VC5 backend dispatch byte drift (135 unmasked mismatches after relocation masking); data gate accepted from current BN/source global and string evidence.
 
 - 0x49fec0:
   - [✅] Reconstructed (Name: zSndSample::StopActiveVoicesIfPlaying)
@@ -16487,27 +16487,27 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [☑️] Reconstructed (Name: zSndFadeEntry::UpdateAndQueueCompletion)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: struct; Parent: zSndFadeEntry; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zSndFadeEntry::TickAndMaybeDispatch;
     - File: src/GameZRecoil/zSound/zsnd_system.cpp;
     - Target: zsnd_fade_entry_update_and_queue_completion;
     - Group: engine.zsound;
     - Model: source-faithful;
-    - Blocker: data gate remains open for active backend and fade-list global data ownership; tier S remains blocked by documented VC5 clamp/backend/dispatch byte drift.
+    - Blocker: tier S remains blocked by documented VC5 clamp/backend/dispatch byte drift (246 unmasked mismatches after relocation masking); data gate accepted from current BN/source backend and fade-list global evidence.
 
 - 0x4a3c20:
   - [☑️] Reconstructed (Name: zSndFadeActiveList::TickAll)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: struct; Parent: zSndFadeList; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zSndFadeActiveList_TickAll;
     - File: src/GameZRecoil/zSound/zsnd_system.cpp;
     - Target: zsnd_fade_active_list_tick_all;
     - Group: engine.zsound;
     - Model: source-faithful;
-    - Blocker: data gate remains open for active fade-list global record ownership including the zero 0x56b3fc gap; tier S remains blocked by documented VC5 sentinel-loop/compaction byte drift.
+    - Blocker: tier S remains blocked by documented VC5 sentinel-loop and compaction byte drift (212 unmasked mismatches after relocation masking).
 
 - 0x4a3d20:
   - [☑️] Reconstructed (Name: zSndFadeLists::StopAllAndShutdown)
@@ -16565,8 +16565,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zSnd::ReportA3DError)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zSound; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zSnd::ReportA3DError;
     - File: src/GameZRecoil/zSound/zsnd_init.cpp;
     - Target: zsnd_report_a3d_error;
@@ -17124,8 +17124,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zSnd::ReportDirectSoundError)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zSound; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zSnd::ReportDirectSoundError;
     - File: src/GameZRecoil/zSound/zsnd_init.cpp;
     - Target: zsnd_report_direct_sound_error;
@@ -18871,8 +18871,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zVid::GetAccelerationOption)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVid::GetAccelerationOption;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_get_acceleration_option;
@@ -18884,8 +18884,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zVid::GetHwApiOption)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVid::GetHwApiOption;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_get_hw_api_option;
@@ -18897,8 +18897,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zVid::GetVideoModeIndexFromOptions)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVid::GetVideoModeIndexFromOptions;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_get_video_mode_index_from_options;
@@ -19229,7 +19229,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zvideo_init_frame_scratch_buffers;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: zVideo scratch/noise data order corrected; Data gate remains below tier B until zRndr SelectSpanRoutines callback/global owner data are accepted
 
 - 0x4a59a0:
   - [✅] Reconstructed (Name: zVid::SetCachedClientRectUpdateMask)
@@ -19260,15 +19260,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a66e0:
   - [✅] Reconstructed (Name: zVideo::GetDisplayModeBpp)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::GetDisplayModeBpp;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_get_display_mode_bpp;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a66f0:
   - [✅] Reconstructed (Name: zVideo::Init_ApplyModeIndex)
@@ -19455,22 +19455,22 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a75f0:
   - [☑️] Reconstructed (Name: zVideo::InitVideoSystem)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::InitVideoSystem;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_init_video_system;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S blocked by known VC5SP3 final success epilogue mismatch after UpdateCachedClientRectScreenCoords
 
 - 0x4a7700:
   - [✅] Reconstructed (Name: zVideo::UpdateCachedClientRectScreenCoords)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::UpdateCachedClientRectScreenCoords;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_update_cached_client_rect;
@@ -19482,8 +19482,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zVideo::ShutdownVideoSystem)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::ShutdownVideoSystem;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_shutdown_video_system;
@@ -19507,22 +19507,22 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a77a0:
   - [✅] Reconstructed (Name: zVideo::BindRendererDispatch)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: global-data; Parent: zVideo renderer dispatch; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVideo::BindRendererDispatch;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_bind_renderer_dispatch;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a7990:
   - [✅] Reconstructed (Name: zVideo::Init_SetSurfaceGeometryFromModeIndex)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVideo::Init_SetSurfaceGeometryFromModeIndex;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_init_set_surface_geometry_from_mode_index;
@@ -19534,8 +19534,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zVideo::SetVideoMode)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::SetVideoMode;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_set_video_mode;
@@ -19611,28 +19611,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a8870:
   - [✅] Reconstructed (Name: zVideo::CommitHwApiDeviceSelection)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::CommitHwApiDeviceSelection;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_commit_hw_api_device_selection;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte verification remains for exact zVideo hardware-device selection store order
 
 - 0x4a88f0:
   - [✅] Reconstructed (Name: zVideo_dd::CreateFullscreenSurfacesForRenderer)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::CreateFullscreenSurfacesForRenderer;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_create_fullscreen_surfaces_for_renderer;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte verification deferred to coherent zVideo DirectDraw display/mode-management source-cluster pass
 
 - 0x4a9900:
   - [✅] Reconstructed (Name: zVideo_dd::GetAcceptedDirectDrawDeviceCountCached)
@@ -19689,28 +19689,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a9950:
   - [☑️] Reconstructed (Name: zVid::QueryDeviceVideoMemoryBytes)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVid::QueryDeviceVideoMemoryBytes;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_query_device_video_memory_bytes;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: blocked on broader zVideo renderer-dispatch/global-data owner rooted at 0x4a77a0: query callback globals 0x56bc2c/0x56bc30, g_zVideo_HwApiDeviceTable record data, selected device pointer, and adjacent dispatch slots require owner/data acceptance before this query can promote past tier C.
+    - Model: source-faithful;
+    - Blocker: Tier S awaits VC5 byte verification for the zVid DirectDraw memory-query slice or coherent zVideo renderer-dispatch owner.
 
 - 0x4a9a30:
   - [☑️] Reconstructed (Name: zVid::QueryTextureMemoryBytes)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVid::QueryTextureMemoryBytes;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_query_texture_memory_bytes;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: blocked on broader zVideo renderer-dispatch/global-data owner rooted at 0x4a77a0: query callback globals 0x56bc2c/0x56bc30, g_zVideo_HwApiDeviceTable record data, selected device pointer, and adjacent dispatch slots require owner/data acceptance before this query can promote past tier C.
+    - Model: source-faithful;
+    - Blocker: Tier S awaits VC5 byte verification for the zVid DirectDraw memory-query slice or coherent zVideo renderer-dispatch owner.
 
 - 0x4a9ac0:
   - [✅] Reconstructed (Name: zVideo_dd3d::BeginSceneAndFlushPendingRenderStates)
@@ -19923,54 +19923,54 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a6710:
   - [✅] Reconstructed (Name: zVideo::GetSwSurfacePixels)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::GetSwSurfacePixels;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_sw_surface_pixels;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a6720:
   - [✅] Reconstructed (Name: zVideo::GetSwSurfaceWidth)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::GetSwSurfaceWidth;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_sw_surface_width;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a6730:
   - [✅] Reconstructed (Name: zVideo::GetSwSurfaceHeight)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::GetSwSurfaceHeight;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_sw_surface_height;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a6740:
   - [✅] Reconstructed (Name: zVideo::GetSwSurfacePitch)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::GetSwSurfacePitch;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_sw_surface_pitch;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a6750:
   - [✅] Reconstructed (Name: zVideo_dd3d::CallClearZBufferRect)
@@ -19988,15 +19988,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a67e0:
   - [✅] Reconstructed (Name: zVideo::GetSwSurfaceLockedFlag)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::GetSwSurfaceLockedFlag;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_get_sw_surface_locked_flag;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a67f0:
   - [✅] Reconstructed (Name: zVideo::GetPrimarySurfacePixels)
@@ -20015,8 +20015,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zVideo::GetPrimarySurfaceWidth)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVideo::GetPrimarySurfaceWidth;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_primary_surface_width;
@@ -20028,8 +20028,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zVideo::GetPrimarySurfaceHeight)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::GetPrimarySurfaceHeight;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_primary_surface_height;
@@ -20041,8 +20041,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zVideo::GetPrimarySurfacePitch)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::GetPrimarySurfacePitch;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_primary_surface_pitch;
@@ -20080,27 +20080,27 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zVideo::PresentOrAdjustSurfacesIfEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zVideo/zVideo.cpp; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVideo::AdjustSurfacesIfEnabled;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_adjust_surfaces;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: Source owner accepted and VC5SP3 byte evidence passes for 0x4a6900; Data reimplemented remains ❌ until zVideo dispatch-pointer data set ownership through 0x4a77a0 BindRendererDispatch is accepted before tier B/S promotion.
+    - Blocker: none
 
 - 0x4a6930:
   - [✅] Reconstructed (Name: zVideo_dd::PrepareWindowForMode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo_dd; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::PrepareWindowForMode;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_prepare_window_for_mode;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: Tier S awaits isolated or owner-level VC COFF byte target for this Win32/GDI provider wrapper.
 
 - 0x4a6b70:
   - [✅] Reconstructed (Name: zVideoDD3D::SetPendingDitherEnable)
@@ -20131,15 +20131,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a7200:
   - [✅] Reconstructed (Name: zVideo::GetPrimarySurfaceRectScratch)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::GetPrimarySurfaceRectScratch;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_primary_surface_rect_scratch;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a7410:
   - [✅] Reconstructed (Name: zVid::GetSelectedHwApiDescriptionOrDefault)
@@ -20183,48 +20183,48 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a7490:
   - [☑️] Reconstructed (Name: zVideo::SelectHwApiDeviceOrFallback)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::SelectHwApiDeviceOrFallback;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_select_hw_api_device_or_fallback;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte verification remains for exact zVideo hardware-device fallback branch and selected-pointer store shape
 
 - 0x4a7520:
   - [☑️] Reconstructed (Name: zVideo::AtExitReleaseAllInterfacesAndSurfaces)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::AtExitReleaseAllInterfacesAndSurfaces;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_at_exit_release_all_interfaces_and_surfaces;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: Tier S verification deferred to a coherent zVideo DirectDraw teardown/source-cluster pass.
 
 - 0x4a7530:
   - [☑️] Reconstructed (Name: zVideo::ModuleInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::ModuleInit;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_module_init;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: Tier S remains blocked on VC5SP3 byte drift: 81 unmasked mismatches after 64 relocation bytes masked; register-zero selection, store encoding, argument setup ordering, and call relocation drift remain.
 
 - 0x4a75e0:
   - [✅] Reconstructed (Name: zVideo::ReturnSuccessStub)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::ReturnSuccessStub;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_return_success_stub;
@@ -20236,8 +20236,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [☑️] Reconstructed (Name: zVideo_dd::StartupEnumerateAndDefaultSelect)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVideo_dd::StartupEnumerateAndDefaultSelect;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_startup_enumerate_default_select;
@@ -20248,28 +20248,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a7d20:
   - [✅] Reconstructed (Name: zVideo_dd::OpenVideoMode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo_dd; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::OpenVideoMode;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_open_video_mode;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: Tier S awaits VC5 byte verification for the mode-open wrapper or coherent zVideo DirectDraw device/source-cluster target.
 
 - 0x4a7d40:
   - [✅] Reconstructed (Name: zVideo_dd::ShutdownVideoSystem)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::ShutdownVideoSystem;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_shutdown_video_system;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S remains open; no isolated VC5 COFF byte comparison is recorded for the DirectDraw backend shutdown helper.
 
 - 0x4a7d70:
   - [✅] Reconstructed (Name: zVideo_dd::FlipToGDIIfAttached)
@@ -20301,79 +20301,79 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zVideo_dd::LockSurfaceState)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::LockSurfaceState;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_lock_surface_state;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: tier S blocked: current VC5SP3 /MD source-from check fails with 75 unmasked mismatches (BN 103 bytes, VC 96 bytes, 12 relocation bytes masked, no trailing NOP trim). Source-faithful lock-state guard, DirectDraw Lock call, and descriptor-copy model are behavior-verified; touched globals g_zVideo_FullscreenOption and g_zVideo_DisplayModeSurfaceState are BN-typed zero-initialized BSS.
+    - Blocker: tier S blocked: current VC5SP3 /MD source-from check fails with 75 unmasked mismatches (BN 103 bytes, VC 96 bytes, 12 relocation bytes masked, no trailing NOP trim). Source-faithful lock-state guard, DirectDraw Lock call, descriptor-copy model, and touched globals are behavior/data verified.
 
 - 0x4a8030:
   - [✅] Reconstructed (Name: zVideo_dd::UnlockSurfaceState)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::UnlockSurfaceState;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_unlock_surface_state;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: tier S blocked: current VC5SP3 /MD source-from check fails with 27 unmasked mismatches (BN 45 bytes, VC 48 bytes, 12 relocation bytes masked, 6 trailing VC NOPs trimmed). Source-faithful lock-state guard/clear/tail-dispatch model is behavior-verified; touched globals g_zVideo_FullscreenOption and g_zVideo_DisplayModeSurfaceState are BN-typed zero-initialized BSS.
+    - Blocker: tier S blocked: current VC5SP3 /MD source-from check fails with 27 unmasked mismatches (BN 45 bytes, VC 48 bytes, 12 relocation bytes masked, 6 trailing VC NOPs trimmed). Source-faithful lock-state guard/clear/tail-dispatch model and touched globals are behavior/data verified.
 
 - 0x4a8060:
   - [✅] Reconstructed (Name: zVideo_dd::LockDirectDrawSurface)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::LockDirectDrawSurface;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_lock_directdraw_surface;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S remains open; current VC5SP3 source-from check did not produce the expected LockDirectDrawSurface COFF symbol for comparison in the recorded attempt.
 
 - 0x4a80c0:
   - [✅] Reconstructed (Name: zVideo_dd::UnlockDirectDrawSurface)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::UnlockDirectDrawSurface;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_unlock_directdraw_surface;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S remains open; current VC5SP3 source-from check for UnlockDirectDrawSurface still has documented byte drift after Restore retry.
 
 - 0x4a8100:
   - [✅] Reconstructed (Name: zVideo_dd::LockSurface_WaitRestore)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::LockSurface_WaitRestore;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_lock_surface_wait_restore;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: No authored globals touched; tier S remains deferred to the coherent zVideo DirectDraw surface-lock source-cluster pass.
 
 - 0x4a8160:
   - [✅] Reconstructed (Name: zVideo_dd::UnlockSurface_WaitRestore)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::UnlockSurface_WaitRestore;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_unlock_surface_wait_restore;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: No authored globals touched; tier S remains deferred to the coherent zVideo DirectDraw surface-lock source-cluster pass.
 
 - 0x4a81a0:
   - [✅] Reconstructed (Name: zVideo_dd::ZBuffer_DepthFillRect)
@@ -20417,93 +20417,93 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a83d0:
   - [✅] Reconstructed (Name: zVideo_dd::Image_LazyCreateBackingSurface)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::Image_LazyCreateBackingSurface;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_image_lazy_create_backing_surface;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte verification deferred to coherent zVideo DirectDraw image/surface source-cluster pass
 
 - 0x4a84c0:
   - [✅] Reconstructed (Name: zVideo_dd::Image_LazyCreateVideoMemorySurface)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::Image_LazyCreateVideoMemorySurface;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_image_lazy_create_video_memory_surface;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte verification deferred to coherent zVideo DirectDraw image/surface source-cluster pass
 
 - 0x4a8500:
   - [✅] Reconstructed (Name: zVideo_dd::Image_PopulateSurfaceFromHeapPixels)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::Image_PopulateSurfaceFromHeapPixels;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_image_populate_surface_from_heap_pixels;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte verification deferred to coherent zVideo DirectDraw image/surface source-cluster pass
 
 - 0x4a8650:
   - [✅] Reconstructed (Name: zVideo_dd::Image_EnsureSurfaceForCurrentDevice)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::Image_EnsureSurfaceForCurrentDevice;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_image_ensure_surface_for_current_device;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte verification deferred to coherent zVideo DirectDraw image/surface source-cluster pass
 
 - 0x4a8680:
   - [✅] Reconstructed (Name: zVideo_dd::Image_UploadPixelsToSurface)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::Image_UploadPixelsToSurface;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_image_upload_pixels_to_surface;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte verification deferred to coherent zVideo DirectDraw image/surface source-cluster pass
 
 - 0x4a86f0:
   - [✅] Reconstructed (Name: zVideo_dd::Image_ReleaseSurface)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::Image_ReleaseSurface;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_image_release_surface;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte verification deferred to coherent zVideo DirectDraw image/surface source-cluster pass
 
 - 0x4a8720:
   - [✅] Reconstructed (Name: zVideo_dd::SetDisplayMode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::SetDisplayMode;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_set_display_mode;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S remains open; no isolated VC5 COFF byte comparison is recorded for the DirectDraw display-mode helper.
 
 - 0x4a8790:
   - [✅] Reconstructed (Name: zVideo_dd::SetVideoMode)
@@ -20516,215 +20516,215 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zvideo_dd_set_video_mode;
     - Group: engine.zvideo;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: Current functional evidence is repaired for zVideo_dd::SetVideoMode; Source owner/Data remain blocked on the zVideo DirectDraw fullscreen display/mode subsystem audit, with 0x4a8f80 InitFullscreenSoftwarePixelPack call-shape/data evidence next.
 
 - 0x4a8800:
   - [☑️] Reconstructed (Name: zVideo_dd::CreateDirectDraw2ForSelectedDevice)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::CreateDirectDraw2ForSelectedDevice;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_create_directdraw2_for_selected_device;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: touched zVideo DirectDraw globals still require Data reimplemented evidence
+    - Blocker: Tier S awaits VC5 byte verification for zVideo_dd::CreateDirectDraw2ForSelectedDevice or a coherent zVideo DirectDraw device/source-cluster target.
 
 - 0x4a88b0:
   - [✅] Reconstructed (Name: zVideo_dd::CreateSurface3FromDesc)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::CreateSurface3FromDesc;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_create_surface3_from_desc;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S remains open; no isolated VC5 COFF byte comparison is recorded for the DirectDraw CreateSurface3 helper.
 
 - 0x4a8920:
   - [☑️] Reconstructed (Name: zVideo_dd::CreateHalfResBackbufferSurfaces)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::CreateHalfResBackbufferSurfaces;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_create_half_res_backbuffer_surfaces;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte verification deferred to coherent zVideo DirectDraw display/mode-management source-cluster pass
 
 - 0x4a8b20:
   - [☑️] Reconstructed (Name: zVideo_dd::CreateFullscreenSoftwareSurfaces)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::CreateFullscreenSoftwareSurfaces;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_create_fullscreen_software_surfaces;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte verification deferred to coherent zVideo DirectDraw display/mode-management source-cluster pass
 
 - 0x4a8dc0:
   - [☑️] Reconstructed (Name: zVideo_dd::CreateFullscreenHardwareSurfaces)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::CreateFullscreenHardwareSurfaces;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_create_fullscreen_hw_surfaces;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte verification deferred to coherent zVideo DirectDraw display/mode-management source-cluster pass
 
 - 0x4a8f80:
   - [✅] Reconstructed (Name: zVideo_dd::InitFullscreenSoftwarePixelPack)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::InitFullscreenSoftwarePixelPack;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_init_fullscreen_software_pixel_pack;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a9060:
   - [✅] Reconstructed (Name: zVideo_dd::VerifyFullscreenSurfaceLocks)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::VerifyFullscreenSurfaceLocks;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_verify_fullscreen_surface_locks;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S remains open; no isolated VC COFF byte comparison is recorded, and byte verification is deferred to the coherent zVideo DirectDraw mode/surface source-cluster pass.
 
 - 0x4a90e0:
   - [✅] Reconstructed (Name: zVideo_dd::RestoreDisplaySurfaces)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::RestoreDisplaySurfaces;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_restore_display_surfaces;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S remains open; no isolated VC5 COFF byte comparison is recorded for the DirectDraw restore-surfaces helper.
 
 - 0x4a9160:
   - [✅] Reconstructed (Name: zVideo_dd::VerifySurfaceStateLocking)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::VerifySurfaceStateLocking;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_verify_surface_state_locking;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: touched surface-lock verifier globals still require Data reimplemented evidence
+    - Blocker: tier S remains open; no isolated VC5 COFF byte comparison is recorded for the surface-lock verifier helper.
 
 - 0x4a91b0:
   - [✅] Reconstructed (Name: zVideo_dd::ReleaseAllInterfacesAndSurfaces)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::ReleaseAllInterfacesAndSurfaces;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_release_all_interfaces_and_surfaces;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: touched zVideo DirectDraw/Direct3D interface and surface globals still require Data reimplemented evidence
+    - Blocker: tier S remains open; no isolated VC5 COFF byte comparison is recorded for the DirectDraw/D3D release helper.
 
 - 0x4a9300:
   - [✅] Reconstructed (Name: zVideo_dd::TeardownVideoSubsystem)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::TeardownVideoSubsystem;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_teardown_video_subsystem;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: touched zVideo teardown globals still require Data reimplemented evidence
+    - Blocker: tier S remains open; no isolated VC5 COFF byte comparison is recorded for the DirectDraw teardown helper.
 
 - 0x4a9390:
   - [✅] Reconstructed (Name: zVideo_dd::RunDirectDrawDeviceEnumeration)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::RunDirectDrawDeviceEnumeration;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_run_directdraw_device_enumeration;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: touched zVideo enumeration globals and ReportError globals still require Data reimplemented evidence
+    - Blocker: tier S byte verification deferred to coherent zVideo DirectDraw/Direct3D device-enumeration source-cluster pass
 
 - 0x4a93d0:
   - [✅] Reconstructed (Name: zVideo_dd::EnumDirectDrawDeviceCallback)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::EnumDirectDrawDeviceCallback;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_enum_directdraw_device_callback;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: touched zVideo hardware-device table and accepted-device counters still require Data reimplemented evidence
+    - Blocker: tier S byte verification deferred to coherent zVideo DirectDraw/Direct3D device-enumeration source-cluster pass
 
 - 0x4a95e0:
   - [✅] Reconstructed (Name: zVideo_dd::EnumerateDirect3DDevicesForRecord)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::EnumerateDirect3DDevicesForRecord;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_enumerate_direct3d_devices_for_record;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: touched zVideo D3D interface and device-record globals still require Data reimplemented evidence
+    - Blocker: tier S byte verification deferred to coherent zVideo DirectDraw/Direct3D device-enumeration source-cluster pass
 
 - 0x4a96b0:
   - [✅] Reconstructed (Name: zVideo_dd::EnumDirect3DDeviceCallback)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::EnumDirect3DDeviceCallback;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_enum_direct3d_device_callback;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: touched zVideo D3D device-record data and accepted-renderer counters still require Data reimplemented evidence
+    - Blocker: tier S byte verification deferred to coherent zVideo DirectDraw/Direct3D device-enumeration source-cluster pass
 
 - 0x4a9890:
   - [✅] Reconstructed (Name: zVideo_dd::PaletteSetEntries)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::PaletteSetEntries;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_palette_set_entries;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S remains open; no isolated VC5 COFF byte comparison is recorded for the DirectDraw palette helper.
 
 - 0x4a9b70:
   - [✅] Reconstructed (Name: zVideo_dd3d::PresentDisplayModeSurface)
@@ -20742,145 +20742,145 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a9c20:
   - [✅] Reconstructed (Name: zVideo_dd3d::CreateDeviceState)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_ddd3d.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd3d::CreateDeviceState;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd3d_create_device_state;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte verification deferred to coherent zVideo Direct3D device-state source-cluster pass
 
 - 0x4aa0f0:
   - [✅] Reconstructed (Name: zVideo_dd3d::CreateTextureRecord)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo_dd3d; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd3d::CreateTextureRecord;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd3d_create_texture_record;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4aa600:
   - [✅] Reconstructed (Name: zVideo_dd3d::UploadImageToSurface)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_ddd3d.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd3d::UploadImageToSurface;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd3d_upload_image_to_surface;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4aa6f0:
   - [✅] Reconstructed (Name: zVideo_dd3d::ConvertImagePixelsForTexture)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_ddd3d.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd3d::ConvertImagePixelsForTexture;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd3d_convert_image_pixels_for_texture;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4aa8b0:
   - [✅] Reconstructed (Name: zVideo_dd3d::TextureRecord_LockUploadSurface)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo_dd3d; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd3d::TextureRecord_LockUploadSurface;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd3d_texture_record_lock_upload_surface;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: No authored globals touched; tier S remains deferred to a coherent zVideo DD3D texture-record VC5 pass.
 
 - 0x4aa8f0:
   - [✅] Reconstructed (Name: zVideo_dd3d::TextureRecord_UnlockUploadSurface)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo_dd3d; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd3d::TextureRecord_UnlockUploadSurface;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd3d_texture_record_unlock_upload_surface;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: No authored globals touched; tier S remains deferred to a coherent zVideo DD3D texture-record VC5 pass.
 
 - 0x4aa900:
   - [✅] Reconstructed (Name: zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo_dd3d; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd3d_texture_record_release_upload_surface_ref;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: No authored globals touched; tier S remains deferred to a coherent zVideo DD3D texture-record VC5 pass.
 
 - 0x4aa920:
   - [✅] Reconstructed (Name: zVideo_dd3d::TextureRecord_FinalizeUpload)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo_dd3d; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd3d::TextureRecord_FinalizeUpload;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd3d_texture_record_finalize_upload;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4aa980:
   - [✅] Reconstructed (Name: zVideo_dd3d::TextureRecord_Destroy)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo_dd3d; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd3d::TextureRecord_Destroy;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd3d_texture_record_destroy;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S remains open; no isolated VC5 COFF byte comparison is recorded for this texture-record helper.
 
 - 0x4aa9d0:
   - [✅] Reconstructed (Name: zVideo_dd3d::TextureRecord_Create)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo_dd3d; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd3d::TextureRecord_Create;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd3d_texture_record_create;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: No authored globals touched; tier S remains deferred to a coherent zVideo DD3D texture-record VC5 pass.
 
 - 0x4aa9e0:
   - [✅] Reconstructed (Name: zVideo_dd3d::SetFogEnable)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_ddd3d.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd3d::SetFogEnable;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd3d_set_fog_enable;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte verification deferred to coherent zVideo Direct3D render-state source-cluster pass
 
 - 0x4aaa30:
   - [✅] Reconstructed (Name: zVideo_dd3d::SetFogStart)
@@ -21028,15 +21028,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4accc0:
   - [☑️] Reconstructed (Name: zVideo_dd3d::SetQuadBatchDepthAndRhw)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_ddd3d.c; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd3d::SetQuadBatchDepthAndRhw;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd3d_set_quad_batch_depth_and_rhw;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte verification deferred; isolated VC5 compare still mismatches and quad-batch byte work belongs with coherent zVideo Direct3D source-cluster pass
 
 - 0x4acd00:
   - [☑️] Reconstructed (Name: zVideo_dd3d::QueueSolidQuad)
@@ -21093,28 +21093,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4ad680:
   - [✅] Reconstructed (Name: zVideo_dd3d::FloorPowerOfTwo)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_ddd3d.c; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd3d::FloorPowerOfTwo;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd3d_floor_power_of_two;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: No authored globals touched; tier S remains deferred to the coherent zVideo DD3D texture source-cluster pass.
 
 - 0x4ad6a0:
   - [✅] Reconstructed (Name: zVideo_dd::ReportError)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zVideo/zvid_dd.c; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::ReportError;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_report_error;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: Tier S blocked by current VC5 COFF mismatch for zvideo_dd_report_error: 1800 unmasked mismatches after masking relocations; remaining drift is branch/register/layout shape around the inlined HRESULT decision tree.
 
 - 0x48d340:
   - [✅] Reconstructed (Name: zVid::Noise_InitBuffers)
@@ -21145,15 +21145,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48d910:
   - [☑️] Reconstructed (Name: zVid::DrawNoiseRect)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVid::DrawNoiseRect;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_draw_noise_rect;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: Tier S awaits a VC5 byte-comparison target for zVid::DrawNoiseRect; current verify vc5 --explain-missing reports no target covers 0x48d910.
 
 - 0x48da60:
   - [✅] Reconstructed (Name: zVideo::FxPass3_CopySurfacePixelToScratchClipped)
@@ -21184,54 +21184,54 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48e380:
   - [☑️] Reconstructed (Name: zVideo::buff_BlurRegionCombined)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: zVideo.blur-region; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::buff_BlurRegionCombined;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_blur_region_combined;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48e670:
   - [☑️] Reconstructed (Name: zVideo::buff_BlurRegionVertical)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: zVideo.blur-region; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::buff_BlurRegionVertical;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_blur_region_vertical;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48e870:
   - [☑️] Reconstructed (Name: zVideo::buff_BlurRegionHorizontal)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: zVideo.blur-region; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::buff_BlurRegionHorizontal;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_blur_region_horizontal;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48ea00:
   - [✅] Reconstructed (Name: zVideo::buff_BlurRegionByMode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: zVideo.blur-region; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::buff_BlurRegionByMode;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_blur_region_by_mode;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a6770:
   - [✅] Reconstructed (Name: zVideo::RunPostprocessOnSwBuffer)
@@ -21289,8 +21289,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zVideo::SetRendererTypeAndActivePath)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVideo::SetRendererTypeAndActivePath;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_set_renderer_type_and_active_path;
@@ -21405,15 +21405,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a6db0:
   - [☑️] Reconstructed (Name: zVideo_TexturePixelPack::SetupFromMasks)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVideo::TexturePixelPack_SetupFromMasks;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_texture_pixel_pack_setup_from_masks;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a6e80:
   - [✅] Reconstructed (Name: zVideoBuffer::CaptureSurfaceToImage)
@@ -21655,14 +21655,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_select_span_routines;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: active texture globals, saved-ESP pointer, callback bank, queued-alpha sentinel, and MMX vector globals are documented against BN; Source owner/Data acceptance remain pending for the selector-installed zRndr_Span.cpp family, including ESP-pivot source shape and data_57dab8/data_57dabc padding-vs-reserved-state decision
 
 - 0x4903e0:
   - [✅] Reconstructed (Name: zRndr::SetVideoStrideMirrors)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zRndr::SetVideoStrideMirrors;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_set_video_stride_mirrors;
@@ -21694,7 +21694,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_set_perspective_texture_delta_x;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: zRndr setup provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x4904a0:
   - [✅] Reconstructed (Name: zRndr::SetPerspectiveTextureFarZ)
@@ -21707,7 +21707,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_set_perspective_texture_far_z;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: zRndr setup provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x4904d0:
   - [☑️] Reconstructed (Name: zRndr::SetPerspectiveAdaptiveCorrection)
@@ -21720,150 +21720,150 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_set_perspective_adaptive_correction;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: zRndr setup provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x490520:
   - [✅] Reconstructed (Name: zRndr::SpanOcclusionInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr::SpanOcclusionInit;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_init;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x490590:
   - [✅] Reconstructed (Name: zRndr::SpanOcclusionBuildColumnHeadTable)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr::SpanOcclusionBuildColumnHeadTable;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_build_column_table;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x490600:
   - [✅] Reconstructed (Name: zRndr::SpanOcclusionResetFrame)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr::SpanOcclusionResetFrame;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_reset_frame;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x490610:
   - [✅] Reconstructed (Name: zRndr::SpanOcclusionSubmitOccluderRect)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr::SpanOcclusionSubmitOccluderRect;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_submit_occluder_rect;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x490780:
   - [✅] Reconstructed (Name: zRndr::SpanOcclusionShutdown)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr::SpanOcclusionShutdown;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_shutdown;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4907c0:
   - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::TestSpanDepthOrderPair)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr_SpanOcclusion_TestSpanDepthOrderPair;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_test_span_depth_order_pair;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x490ae0:
   - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::InsertSpanNodeIntoColumn)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr_SpanOcclusion_InsertSpanNode_Local;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_insert_span_node_local;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4912a0:
   - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::InsertSpanNodeNoDepthTest)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_insert_no_depth;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x491840:
   - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::BuildSpanList)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr_SpanOcclusion_BuildSpanList;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_build_span_list;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x491da0:
   - [✅] Reconstructed (Name: zRndr_SpanOcclusion::BuildSpanListFast)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr_SpanOcclusion_BuildSpanListFast;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_build_span_list_fast;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x491dd0:
   - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::TestColumnVisibility)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr_SpanOcclusion_TestColumnVisibility;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_test_column_visibility;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x492000:
   - [☑️] Reconstructed (Name: zRndr::RasterizePolyWithSpanList)
@@ -21881,15 +21881,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4927d0:
   - [☑️] Reconstructed (Name: zRndr::SpanOcclusionRasterizeOccluderPoly)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr::SpanOcclusionRasterizeOccluderPoly;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_rasterize;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x492f00:
   - [☑️] Reconstructed (Name: zRndr::DrawFlatImmediate)
@@ -21928,7 +21928,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_draw_flat_queued;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: active texture shift/masks and BN queued-vs-active alpha globals modeled; BN labels gRndr_QueuedTexAlphaMap 0x4e21ec and gRndr_ActiveTexAlphaMap 0x56b27c repaired/saved; owner/data still pending broader zRndr span-family global ownership audit
 
 - 0x494af0:
   - [☑️] Reconstructed (Name: zRndr::DrawPolyTLV)
@@ -21941,7 +21941,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_renderer_draw_poly_tlv;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: active texture shift/masks and BN queued-vs-active alpha globals modeled; BN labels gRndr_QueuedTexAlphaMap 0x4e21ec and gRndr_ActiveTexAlphaMap 0x56b27c repaired/saved; owner/data still pending broader zRndr span-family global ownership audit
 
 - 0x495850:
   - [☑️] Reconstructed (Name: zRndr::DrawTexturedQueued)
@@ -21954,7 +21954,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_draw_textured_queued;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: active texture shift/masks and BN queued-vs-active alpha globals modeled; BN labels gRndr_QueuedTexAlphaMap 0x4e21ec and gRndr_ActiveTexAlphaMap 0x56b27c repaired/saved; owner/data still pending broader zRndr span-family global ownership audit
 
 - 0x4969d0:
   - [☑️] Reconstructed (Name: zRndr::DrawTexturedQueuedAlpha)
@@ -21967,7 +21967,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_draw_textured_queued_alpha;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: active texture shift/masks and BN queued-vs-active alpha globals modeled; BN labels gRndr_QueuedTexAlphaMap 0x4e21ec and gRndr_ActiveTexAlphaMap 0x56b27c repaired/saved; owner/data still pending broader zRndr span-family global ownership audit
 
 - 0x497ac0:
   - [☑️] Reconstructed (Name: zRndr::DrawTexturedFanTri)
@@ -21980,7 +21980,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_draw_textured_fan_tri;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: active texture shift/masks and BN queued-vs-active alpha globals modeled; BN labels gRndr_QueuedTexAlphaMap 0x4e21ec and gRndr_ActiveTexAlphaMap 0x56b27c repaired/saved; owner/data still pending broader zRndr span-family global ownership audit
 
 - 0x498bd0:
   - [✅] Reconstructed (Name: zRndr::DrawImmediateLine)
@@ -22011,15 +22011,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x498c40:
   - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::TestPointVisibility)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr_SpanOcclusion_TestPointVisibility;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_test_point_visibility;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x498cb0:
   - [☑️] Reconstructed (Name: zRndr::LensFlare_DrawQueuedSample16_ClippedFramebuffer)
@@ -22032,46 +22032,46 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_lens_flare_draw_queued_sample16_clipped_framebuffer;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x498f90:
   - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::TestSample)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr_SpanOcclusion_TestSample;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_test_sample;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x498fb0:
   - [✅] Reconstructed (Name: zRndr::DrawCircleOutline16Framebuffer)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr_DrawCircleOutline16_Framebuffer;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_draw_circle_outline16_framebuffer;
     - Group: engine.zrndr;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S remains open: current grouped VC5 target zrndr_draw_circle_helpers fails to compile before byte comparison with MFC afxv_w32.h C1189 WINDOWS.H already included.
 
 - 0x499020:
   - [✅] Reconstructed (Name: zRndr::DrawCircleOctants16Framebuffer)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr_DrawCircleOctants16_Framebuffer;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_draw_circle_octants16_framebuffer;
     - Group: engine.zrndr;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S remains open: current grouped VC5 target zrndr_draw_circle_helpers fails to compile before byte comparison with MFC afxv_w32.h C1189 WINDOWS.H already included.
 
 - 0x499130:
   - [☑️] Reconstructed (Name: zRndr_TextureMip::SelectVariantImage)
@@ -22090,8 +22090,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zRndr::PlotPixel16)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zRndr_PlotPixel16;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_plot_pixel16;
@@ -22102,41 +22102,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4992d0:
   - [✅] Reconstructed (Name: zRndr::DrawLine16)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: zRndr_Draw.cpp; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr_DrawLine16;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_draw_line16;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4993a0:
   - [☑️] Reconstructed (Name: zRndr::DrawLine16Segmented)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: zRndr_Draw.cpp; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr_DrawLine16_Segmented;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_draw_line16_segmented;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x499500:
   - [☑️] Reconstructed (Name: zRndr::DrawLine16Clipped)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: zRndr_Draw.cpp; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr_DrawLine16_Clipped;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_draw_line16_clipped;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4997d0:
   - [✅] Reconstructed (Name: zRndr::FillSpan16Opaque)
@@ -22149,33 +22149,33 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_fill_span16_opaque;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: zRndr_Span.cpp source-shape blocked: BN FillSpan16Opaque pivots ESP from gRndr_CurrentSpanBaseAddr and writes with push ax/eax, while current C++ is ordinary pointer stores; recover source-family model without production raw asm before Source owner/Data promotion
 
 - 0x499810:
   - [✅] Reconstructed (Name: zRndr::FillSpan555Solid)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: zRndr_Span.cpp; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr_FillSpan555Solid;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_fill_span555_solid;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4998a0:
   - [☑️] Reconstructed (Name: zRndr::FillSpan565Solid)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: zRndr_Span.cpp; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr_FillSpan565Solid;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_fill_span565_solid;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x499930:
   - [☑️] Reconstructed (Name: zRndr::SetPaletteRemapKey)
@@ -22188,7 +22188,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_set_palette_remap_key;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x499990:
   - [✅] Reconstructed (Name: zRndr::SetPaletteRemapKeyFromRgb01)
@@ -22201,7 +22201,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_set_palette_remap_key_from_rgb01;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x499a00:
   - [☑️] Reconstructed (Name: zRndr::SetPaletteShadeRecipeIndex)
@@ -22214,7 +22214,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_set_palette_shade_recipe_index;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x499a20:
   - [☑️] Reconstructed (Name: zRndr::SubmitPolyWithSpanList)
@@ -22292,7 +22292,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_lens_flare_queue_projected_sample;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x49a8b0:
   - [✅] Reconstructed (Name: zRndr_LensFlare::GetQueuedSampleCount)
@@ -22305,7 +22305,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_lens_flare_get_queued_sample_count;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x49a910:
   - [✅] Reconstructed (Name: zRndr::LensFlare_ResetSampleQueue)
@@ -22344,7 +22344,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_lens_flare_set_visible_sample_stage;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x49aa90:
   - [☑️] Reconstructed (Name: zRndr_LensFlare::DrawSampleStageClipped)
@@ -22357,7 +22357,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_lens_flare_draw_sample_stage_clipped;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x49afb0:
   - [☑️] Reconstructed (Name: zRndr_LensFlare::DrawVisibleSample)
@@ -22370,7 +22370,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_lens_flare_draw_visible_sample;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x49b020:
   - [☑️] Reconstructed (Name: zRndr_LensFlare::DrawVisibleSampleStages)
@@ -22383,7 +22383,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_lens_flare_draw_visible_sample_stages;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x49b1a0:
   - [✅] Reconstructed (Name: zRndr_LensFlare::DrawVisibleSamples)
@@ -22396,7 +22396,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_lens_flare_draw_visible_samples;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x49b1e0:
   - [☑️] Reconstructed (Name: zRndr::FogColor_SetRgb01Clamped)
@@ -22409,7 +22409,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_fog_color_set_rgb01_clamped;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x49b350:
   - [☑️] Reconstructed (Name: zRndr::SetFogTargetColorRgb01Clamped)
@@ -22422,7 +22422,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_set_fog_target_color_rgb01_clamped;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x49b4c0:
   - [☑️] Reconstructed (Name: zRndr::CommitDirectFogParamsIfChanged)
@@ -22435,7 +22435,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_commit_direct_fog_params_if_changed;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x49b530:
   - [☑️] Reconstructed (Name: zRndr::CommitFogColorParamsIfChanged)
@@ -22448,7 +22448,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_commit_fog_color_params_if_changed;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x49b5a0:
   - [☑️] Reconstructed (Name: zRndr_FogTargetColorStaged::SetRgb01Clamped)
@@ -22461,7 +22461,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_fog_target_color_staged_set_rgb01_clamped;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x49b710:
   - [☑️] Reconstructed (Name: zRndr::CommitStagedFogParamsIfChanged)
@@ -22474,7 +22474,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_commit_staged_fog_params_if_changed;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x49b780:
   - [✅] Reconstructed (Name: zRndr::BlendPackedColor565WithFogInPlace)
@@ -22487,7 +22487,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_blend_packed_color_565_with_fog_in_place;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x49b7e0:
   - [☑️] Reconstructed (Name: zRndr::SpanMasked16FromTex16SwitchVShift)
@@ -22500,7 +22500,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_masked_16_from_tex16_switch_vshift;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: Selector-installed zRndr_Span.cpp switch-vshift span family remains owner/data gated: current C++ bodies preserve tier C reverse-store behavior, but retail BN uses gRndr_SavedEspSlot ESP-pivot push-word loops; recover the original source-family model/data shape without production raw asm before Source owner/Data/Model promotion
 
 - 0x49bbf0:
   - [☑️] Reconstructed (Name: zRndr::SpanMasked16FromPal8SwitchVShift)
@@ -22513,7 +22513,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_masked_16_from_pal8_switch_vshift;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: active fixed-20 U/V step globals and current span-base pointer use the BN active-texture model; switch-vshift zRndr_Span.cpp ESP-pivot evidence refreshed and sibling VC5 check still fails against retail's eight-case ESP-pivot jump-table body (BN 1035 bytes vs VC5 176, 1008 mismatches); owner/data still pending shared span-family data audit and source-shape review
 
 - 0x49c020:
   - [☑️] Reconstructed (Name: zRndr::SpanMasked16FromPal8To565)
@@ -22526,7 +22526,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_masked_16_from_pal8_to565;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: span-family provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x49c150:
   - [☑️] Reconstructed (Name: zRndr::SpanMasked16FromTex16To565)
@@ -22539,7 +22539,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_masked_16_from_tex16_to565;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: span-family provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x49c230:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend565ConstAlphaFromPal8)
@@ -22552,7 +22552,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_alpha_blend_565_const_alpha_pal8;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: span-family provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x49c360:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend565FromTex16Alpha8)
@@ -22565,7 +22565,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_alpha_blend_565_from_tex16_alpha8;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: span-family provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x49c560:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend555FromTex16Alpha8)
@@ -22578,7 +22578,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_alpha_blend_555_from_tex16_alpha8;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: span-family provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x49c760:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend565ConstAlphaFromTex16)
@@ -22591,7 +22591,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_alpha_blend_565_const_alpha_tex16;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: span-family provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x49c860:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend555ConstAlphaFromTex16)
@@ -22604,7 +22604,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_alpha_blend_555_const_alpha_tex16;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: span-family provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x49c970:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend565ConstAlphaFromTex16Alpha8)
@@ -22617,7 +22617,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_alpha_blend_565_const_alpha_from_tex16_alpha8;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: span-family provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x49ca90:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend555ConstAlphaFromTex16Alpha8)
@@ -22630,7 +22630,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_alpha_blend_555_const_alpha_from_tex16_alpha8;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: span-family provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x49cbb0:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend565MmxFromTex16Alpha8)
@@ -22643,7 +22643,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_alpha_blend_565_mmx_from_tex16_alpha8;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: span-family provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x49cea0:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend555MmxFromTex16Alpha8)
@@ -22656,7 +22656,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_alpha_blend_555_mmx_from_tex16_alpha8;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: span-family provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x49d1a0:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend565FromPal8Alpha8)
@@ -22669,7 +22669,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_alpha_blend_565_from_pal8_alpha8;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: span-family provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x49d3b0:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend555FromPal8Alpha8)
@@ -22682,7 +22682,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_alpha_blend_555_from_pal8_alpha8;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: span-family provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x49d5c0:
   - [✅] Reconstructed (Name: zRndr::SpanAlphaBlend565ConstAlphaFastFromPal8)
@@ -22695,7 +22695,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_alpha_blend_565_const_alpha_fast_from_pal8;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: span-family provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x49d6e0:
   - [✅] Reconstructed (Name: zRndr::SpanAlphaBlend555ConstAlphaFastFromPal8)
@@ -22708,7 +22708,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_alpha_blend_555_const_alpha_fast_from_pal8;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: span-family provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x49d810:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend565ConstAlphaFromPal8Alpha8)
@@ -22721,7 +22721,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_alpha_blend_565_const_alpha_from_pal8_alpha8;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: span-family provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x49d950:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend555ConstAlphaFromPal8Alpha8)
@@ -22734,7 +22734,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_alpha_blend_555_const_alpha_from_pal8_alpha8;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: span-family provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x49da80:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend565MmxFromPal8Alpha8)
@@ -22747,7 +22747,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_alpha_blend_565_mmx_from_pal8_alpha8;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: span-family provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x49ddb0:
   - [☑️] Reconstructed (Name: zRndr::SpanAlphaBlend555MmxFromPal8Alpha8)
@@ -22760,7 +22760,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_alpha_blend_555_mmx_from_pal8_alpha8;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: span-family provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x49e0e0:
   - [☑️] Reconstructed (Name: zRndr::FogTarget565_SetPackedColorAndRamp)
@@ -22773,46 +22773,46 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_fog_target565_set_packed_color_and_ramp;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog ramp provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr fog/span global data audit
 
 - 0x49e140:
   - [☑️] Reconstructed (Name: zRndr::SpanMmxSetPixelFormatMasks)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr::SpanMmxSetPixelFormatMasks;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_mmx_set_pixel_format_masks;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: VC5 byte compare still fails: two unmasked immediate-encoding mismatches at 0x49e1e0; tier S deferred
 
 - 0x49e200:
   - [☑️] Reconstructed (Name: zRndr::FogBlendSpan565Scalar)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: zRndr scalar fog-span leaf cluster; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr::FogBlendSpan565Scalar;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_fog_blend_span_565_scalar;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x49e300:
   - [☑️] Reconstructed (Name: zRndr::FogBlendSpan555Scalar)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: zRndr scalar fog-span leaf cluster; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr::FogBlendSpan555Scalar;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_fog_blend_span_555_scalar;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x49e400:
   - [☑️] Reconstructed (Name: zRndr::FogBlendSpan565Mmx)
@@ -22825,7 +22825,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_fog_blend_span_565_mmx;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: focused fog-span docblock converted to required address/Purpose form; source owner/data still pending shared zRndr span/fog owner audit and fog/MMX global data acceptance
 
 - 0x49e560:
   - [☑️] Reconstructed (Name: zRndr::FogBlendSpan555Mmx)
@@ -22838,7 +22838,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_fog_blend_span_555_mmx;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: focused fog-span docblock converted to required address/Purpose form; source owner/data still pending shared zRndr span/fog owner audit and fog/MMX global data acceptance
 
 - 0x49e6c0:
   - [☑️] Reconstructed (Name: zRndr::SpanCopy16FromTex16SwitchVShift)
@@ -22851,14 +22851,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_copy_16_from_tex16_switch_vshift;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: Selector-installed zRndr_Span.cpp switch-vshift span family remains owner/data gated: current C++ bodies preserve tier C reverse-store behavior, but retail BN uses gRndr_SavedEspSlot ESP-pivot push-word loops; recover the original source-family model/data shape without production raw asm before Source owner/Data/Model promotion
 
 - 0x49ea40:
   - [✅] Reconstructed (Name: zRndr::SpanMmxSetTexUvMasksAndVShift)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr::SpanMmxSetTexUvMasksAndVShift;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_mmx_set_tex_uv_masks_and_vshift;
@@ -22877,7 +22877,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_copy_16_from_tex16;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: recovered texture-sampling helpers marked inline; MMX U/V/mask/shift scratch globals modeled as BN zMmxQword lo/hi records and MMX word-lane arrays reordered to BN order; source-shape/data still pending retail MMX packed two-pixel loop recovery and broader interleaved BSS/global-order audit
 
 - 0x49ec20:
   - [☑️] Reconstructed (Name: zRndr::SpanCopy16FromTex16ExplicitVShift)
@@ -22890,7 +22890,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_copy_16_from_tex16_explicit_vshift;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: recovered texture-sampling helpers marked inline; MMX U/V/mask/shift scratch globals modeled as BN zMmxQword lo/hi records and MMX word-lane arrays reordered to BN order; source-shape/data still pending retail MMX packed two-pixel loop recovery and broader interleaved BSS/global-order audit
 
 - 0x49edc0:
   - [☑️] Reconstructed (Name: zRndr::SpanCopy16FromPal8SwitchVShift)
@@ -22903,7 +22903,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_copy_16_from_pal8_switch_vshift;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: active fixed-20 U/V step globals and current span-base pointer use the BN active-texture model; SpanPal8SampleExpanded now matches its recovered inline-helper evidence and VC5 emits compact inline pal8 expansion, but tier S still fails against retail's eight-case ESP-pivot jump-table body (BN 923 bytes vs VC5 128, 905 mismatches); owner/data still pending shared span-family data audit and source-shape review
 
 - 0x49f180:
   - [☑️] Reconstructed (Name: zRndr::SpanShade16FromPal8SwitchVShift)
@@ -22916,7 +22916,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_shade_16_from_pal8_switch_vshift;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: active fixed-20 U/V step globals and current span-base pointer renamed in source/tests to the BN active-texture model; switch-vshift zRndr_Span.cpp ESP-pivot evidence refreshed; owner/data still pending shared span-family data audit and source-shape review
 
 - 0x48fd80:
   - [✅] Reconstructed (Name: zRndr::InitGlobals)
@@ -22929,7 +22929,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_init_globals;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: zRndr setup provenance/docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr span dispatch/global data audit
 
 - 0x490340:
   - [✅] Reconstructed (Name: zRndr::SetFrameBufferRegion)
@@ -22948,8 +22948,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zRndr::SetPerspectiveAdaptiveSpanParams)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zRndr::SetPerspectiveAdaptiveSpanParams;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_set_perspective_adaptive_span_params;
@@ -22960,15 +22960,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x490710:
   - [☑️] Reconstructed (Name: zRndr::SpanOcclusionAddPolygon)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr::SpanOcclusionAddPolygon;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_add_polygon;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x49a8c0:
   - [✅] Reconstructed (Name: zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer)
@@ -22981,7 +22981,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_lens_flare_draw_queued_samples_scaled16_clipped_framebuffer;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x49a920:
   - [☑️] Reconstructed (Name: zRndr_LensFlare::DrawQueuedSamples16AndBuildVisibleList)
@@ -22994,7 +22994,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_lens_flare_draw_queued_samples16_and_build_visible_list;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 - 0x49a9c0:
   - [☑️] Reconstructed (Name: zRndr_LensFlare::BuildVisibleSampleListFromQueue)
@@ -23007,7 +23007,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_lens_flare_build_visible_sample_list_from_queue;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: fog/lens/palette provenance docblock refreshed in focused owner pass; Source owner and Data reimplemented still pending shared zRndr source-owner/global data audit
 
 ## G019. Effects, animation, and DE client helpers
 
@@ -25824,8 +25824,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zOpt::GetNetworkModemEnabled)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zGame; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zOpt::GetNetworkModemEnabled;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_get_network_modem_enabled;
@@ -25889,8 +25889,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zOpt::GetFullscreenOption)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zGame; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zOpt::GetFullscreenOption;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_get_fullscreen_option;
@@ -26097,8 +26097,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zOpt::GetDisplaySection)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zGame; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zOpt::GetDisplaySection;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_get_display_section;
@@ -26149,8 +26149,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zOpt::GetDisplaySectionBitsPerPixel)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zGame; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zOpt::GetDisplaySectionBitsPerPixel;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_get_display_section_bits_per_pixel;
@@ -26162,8 +26162,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zOpt::GetVideoStrideValue)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zGame; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zOpt::GetVideoStrideValue;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_get_video_stride_value;
@@ -26174,22 +26174,22 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4086c0:
   - [✅] Reconstructed (Name: zOpt::GetWindowSection)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: source-file; Parent: src/GameZRecoil/zGame/zGame.cpp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zGame; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zOpt::GetWindowSection;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_get_window_section;
     - Group: engine.zgame;
-    - Model: pending;
-    - Blocker: VC5SP3 tier S verification pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4086d0:
   - [✅] Reconstructed (Name: zOpt::GetWindowSectionHeight)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zGame; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zOpt::GetWindowSectionHeight;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_get_window_section_height;
@@ -28605,16 +28605,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x41eb30:
   - [✅] Reconstructed (Name: Player_UnderwaterFxPass3Ui::Constructor)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [❌] Source owner (Kind: class; Parent: Player_FxPass3Ui; State: parent-pending)
   - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Reimplemented [C]
+    - Name: Player_UnderwaterFxPass3Ui::Constructor;
+    - File: src/Battlesport/player.cpp;
+    - Target: player_underwater_fx_pass3_ui_constructor;
     - Group: battlesport.player;
     - Model: pending;
-    - Blocker: Player FX pass-3 local table globals/factories, constructor table writes, and raw visibility dispatch were removed; still blocked on broader zVideo FxPass3/HudUiElement dispatch owner model, callback binding for ApplyBlueTint/ApplyGreenMask, touched data audit, and tier S byte/provider evidence.
+    - Blocker: Player FX pass-3 constructors are class-shaped and tier C; remaining blockers are Player_FxPass3Ui/zVideoFxPass3/HudUiElement source-owner acceptance, touched data audit, and tier S byte/provider evidence.
 
 - 0x41eb50:
   - [✅] Reconstructed (Name: Player::InitAndRegisterProjectileCameraFxPass3UiSingleton)
@@ -28670,16 +28670,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x41eb90:
   - [✅] Reconstructed (Name: Player_ProjectileCameraFxPass3Ui::Constructor)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [❌] Source owner (Kind: class; Parent: Player_FxPass3Ui; State: parent-pending)
   - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Reimplemented [C]
+    - Name: Player_ProjectileCameraFxPass3Ui::Constructor;
+    - File: src/Battlesport/player.cpp;
+    - Target: player_projectile_camera_fx_pass3_ui_constructor;
     - Group: battlesport.player;
     - Model: pending;
-    - Blocker: Player FX pass-3 local table globals/factories, constructor table writes, and raw visibility dispatch were removed; still blocked on broader zVideo FxPass3/HudUiElement dispatch owner model, callback binding for ApplyBlueTint/ApplyGreenMask, touched data audit, and tier S byte/provider evidence.
+    - Blocker: Player FX pass-3 constructors are class-shaped and tier C; remaining blockers are Player_FxPass3Ui/zVideoFxPass3/HudUiElement source-owner acceptance, touched data audit, and tier S byte/provider evidence.
 
 - 0x41ec00:
   - [✅] Reconstructed (Name: Player::InitSaveStateList)
@@ -29178,7 +29178,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x423440:
   - [✅] Reconstructed (Name: Player_UnderwaterFxPass3Ui::ApplyBlueTint)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: Player; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: Player_FxPass3Ui; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: Player_UnderwaterFxPass3Ui::ApplyBlueTint;
@@ -29186,12 +29186,12 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: player_underwater_fx_pass3_ui_apply_blue_tint;
     - Group: battlesport.player;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: ApplyBlueTint is bound through the recovered zVideoFxPass3Element::ApplyPass3 virtual slot and has current tier C evidence; remaining blockers are Player_FxPass3Ui/zVideoFxPass3/HudUiElement source-owner acceptance, zVideo tint dependency owner/data audit, and tier S byte/provider evidence.
 
 - 0x423450:
   - [✅] Reconstructed (Name: Player_ProjectileCameraFxPass3Ui::ApplyGreenMask)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: Player; State: parent-pending)
+  - [❌] Source owner (Kind: class; Parent: Player_FxPass3Ui; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: Player_ProjectileCameraFxPass3Ui::ApplyGreenMask;
@@ -29199,7 +29199,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: player_projectile_camera_fx_pass3_ui_apply_green_mask;
     - Group: battlesport.player;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: ApplyGreenMask is bound through the recovered zVideoFxPass3Element::ApplyPass3 virtual slot and has current tier C evidence; remaining blockers are Player_FxPass3Ui/zVideoFxPass3/HudUiElement source-owner acceptance, zVideo mask dependency owner/data audit, and tier S byte/provider evidence.
 
 - 0x428c20:
   - [☑️] Reconstructed (Name: Player::UpdateSubVerticalDamping)
@@ -34405,7 +34405,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: briefing_locator_panel_constructor;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: retail HudUiBriefingLocatorPanel dispatch table/data unresolved; constructor installs g_HudUiBriefingLocatorPanel_FTable and dispatches SetVisible through slot 0x60
+    - Blocker: HudUiBriefingLocatorPanel now uses the real C++ constructor shape: same-session VC5SP3 compare for ??0HudUiBriefingLocatorPanel@@QAE@XZ emits the derived table install but still fails with 51 unmasked mismatches, 32 relocation-masked bytes, and 9 trimmed VC NOPs. Data/tier S remain blocked on exact color argument setup and constructor-time SetVisible dispatch through retail table slot 0x60; focused functional target briefing_locator_panel_constructor passes.
 
 - 0x403c90:
   - [✅] Reconstructed (Name: HudUiBriefingLocatorPanel::BlitDirtyRect)
@@ -34450,14 +34450,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: HudUiBriefingRuntime::Update)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudUiBriefingRuntime; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiBriefingRuntime::Update;
     - File: src/Battlesport/Briefing.cpp;
     - Target: briefing_runtime_update;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: Source owner accepted for HudUiBriefingRuntime::Update; remaining blockers are Data reimplemented ❌ for g_Briefing_AllowAdvanceFlag/touched briefing data and tier S byte evidence.
+    - Blocker: Tier S blocked: VC5SP3 briefing_runtime_update compare for 0x404070 fails with 159 unmasked mismatches after 8 relocation-masked bytes and 2 trimmed VC NOP bytes; remaining drift is action-queue control flow, sub-widget invalidation scheduling, and epilogue shape.
 
 - 0x404400:
   - [✅] Reconstructed (Name: HudUiBriefingRuntime::BuildObjectiveActionsFromIndex)
@@ -35896,15 +35896,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40d220:
   - [☑️] Reconstructed (Name: HudUiListMenuEntry::CompareSortKey)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: HudUiListMenu.cpp; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiListMenuEntry::CompareSortKey;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_list_menu_entry_compare_sort_key;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40e010:
   - [✅] Reconstructed (Name: HudUiPanel::SetTextColorsAndMarkDirty)
@@ -35948,22 +35948,22 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40e140:
   - [✅] Reconstructed (Name: HudUiTriplet::RebuildDisplay)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiTriplet; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiTriplet; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiTriplet::RebuildDisplay;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_triplet_rebuild_display;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40e590:
   - [☑️] Reconstructed (Name: HudUiTriplet::AddEntry)
   - [✅] Source dependencies satisfied
   - [❌] Source owner (Kind: class; Parent: HudUiTriplet; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiTriplet::AddEntry;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_triplet_add_entry;
@@ -35976,7 +35976,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [❌] Source owner (Kind: class; Parent: HudUiTriplet; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiTriplet::UpdateEntryData;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_triplet_update_entry_data;
@@ -35989,7 +35989,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [❌] Source owner (Kind: class; Parent: HudUiTriplet; State: parent-pending)
   - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [F]
     - Name: HudUiTriplet::RemoveEntry;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_triplet_remove_entry;
@@ -36000,15 +36000,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40e910:
   - [✅] Reconstructed (Name: HudUiTriplet::InterpolateLayout)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiTriplet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTriplet; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiTriplet::InterpolateLayout;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_triplet_interpolate_layout;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent HUD triplet/source-cluster VC5 byte comparison
 
 - 0x40ea60:
   - [☑️] Reconstructed (Name: HudUiTriplet::IsLocalPlayerFirstEntry)
@@ -36026,15 +36026,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40eab0:
   - [✅] Reconstructed (Name: HudScoreboard::SetScaleAndRebuild)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
+  - [✅] Source owner (Kind: namespace; Parent: HudScoreboard; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudScoreboard::SetScaleAndRebuild;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_scoreboard_set_scale_and_rebuild;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40eae0:
   - [✅] Reconstructed (Name: HudScoreboard::DispatchSetScale)
@@ -36130,41 +36130,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x414710:
   - [☑️] Reconstructed (Name: HudUiListMenuEntry::SortRange)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: HudUiListMenu.cpp; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiListMenuEntry::SortRange;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_list_menu_entry_sort_range;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x414930:
   - [☑️] Reconstructed (Name: HudUiListMenuEntry::InsertPivotIntoSortedPrefix)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: HudUiListMenu.cpp; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiListMenuEntry::InsertPivotIntoSortedPrefix;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_list_menu_entry_insert_pivot_into_sorted_prefix;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x414980:
   - [☑️] Reconstructed (Name: HudUiListMenuEntry::InsertionSortRange)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: HudUiListMenu.cpp; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiListMenuEntry::InsertionSortRange;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_list_menu_entry_insertion_sort_range;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x414b60:
   - [✅] Reconstructed (Name: HudUiMainMenuDialog::CanLoadGame)
@@ -37805,17 +37805,17 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Blocker: source-shape audit pending
 
 - 0x4bc9f0:
-  - [☑️] Reconstructed (Name: HudUiTransitionTextPanel::TickFlash)
+  - [☑️] Reconstructed (Name: HudUiTransitionTextPanel::Update)
   - [✅] Source dependencies satisfied
   - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
-    - Name: HudUiTransitionTextPanel::TickFlash;
+    - Name: HudUiTransitionTextPanel::Update;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_transition_text_panel_tick_flash;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: Transition text panel virtual Update(float) slot shape recovered from BN table evidence; source/BN renamed from TickFlash to Update and functional smoke passes. Owner/data remain pending on the broader HudUiPanel-derived dispatch-data owner: HudUiPanel::Draw/source owner, generated table data at 0x4cd388/0x4d3b40, and VC5 byte drift (0x4bc9f0 local target currently 45 unmasked mismatches, 28 relocation-masked bytes, 8 trimmed VC NOPs).
 
 - 0x4bf060:
   - [☑️] Reconstructed (Name: HudUiMessageBoxDialog::Constructor)
@@ -38128,14 +38128,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: HudUiCircle::DrawDirtyForwarder)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiCircle::DrawDirtyForwarder;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_circle_draw_dirty_forwarder;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: HudUiCircle::DrawDirty data gate remains ❌ through zRndr::DrawCircleOutline16Framebuffer 0x498fb0, so the forwarder cannot promote beyond C yet.
+    - Blocker: none
 
 - 0x404e60:
   - [✅] Reconstructed (Name: HudUiCircle::HitTest)
@@ -39054,28 +39054,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40fe90:
   - [☑️] Reconstructed (Name: HudUiTextStack4::DestructorCore_TopStack)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiTopMessageStack; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTopMessageStack; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiTopMessageStack::DestructorCore;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_top_message_stack_destructor_core;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40fef0:
   - [☑️] Reconstructed (Name: HudUiTextStack4::DestructorCore_ChatStack)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiChatMessageStack; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiChatMessageStack; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiChatMessageStack::DestructorCore;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_chat_message_stack_destructor_core;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40ff50:
   - [✅] Reconstructed (Name: HudUiMgr::ActivateHud)
@@ -39691,41 +39691,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4138d0:
   - [✅] Reconstructed (Name: HudUi::ShowTopMessageLine)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: HudUi text-stack globals; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUi::ShowTopMessageLine;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_show_top_message_line;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x413910:
   - [✅] Reconstructed (Name: HudUiMgr::EnableTopAndChatStacks)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: HudUi text-stack globals; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiMgr::EnableTopAndChatStacks;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: zhud_mgr_enable_top_and_chat_stacks;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x413950:
   - [✅] Reconstructed (Name: HudUiMgr::DisableTopAndChatStacks)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: HudUi text-stack globals; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiMgr::DisableTopAndChatStacks;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: zhud_mgr_disable_top_and_chat_stacks;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x413990:
   - [✅] Reconstructed (Name: HudUiLayoutNode::ApplyTextLabel)
@@ -40003,15 +40003,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b3e70:
   - [✅] Reconstructed (Name: HudUiWidget::SetImageBorrowedAndInvalidate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiWidget; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiWidget::SetImageBorrowedAndInvalidate;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_widget_set_image_borrowed_and_invalidate;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b3e90:
   - [✅] Reconstructed (Name: HudUiWidget::InvalidateRect)
@@ -40029,15 +40029,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b3fb0:
   - [☑️] Reconstructed (Name: HudUiWidget::Draw)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiWidget; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiWidget::Draw;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_widget_draw;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b4030:
   - [☑️] Reconstructed (Name: HudUiWidget::HitTest)
@@ -40622,7 +40622,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_ui_composite_panel_constructor_with_entry_count;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: Source owner and tier C behavior accepted for HudUiCompositePanel::ConstructorWithEntryCount; source now matches BN SetTextFmt reference glyph by spelling it as W for retail rdata 0x4e0be4. Data remains blocked on exact g_HudUiCompositePanel_FTable 0x4d3b40 and transition text-panel vtable 0x4cd388 under the broader HUD dispatch owner.
+    - Blocker: Source owner and tier C behavior accepted for HudUiCompositePanel::ConstructorWithEntryCount; source matches BN SetTextFmt reference glyph by spelling it as W for retail rdata 0x4e0be4. BN now types 0x4cd388 as g_HudUiTransitionTextPanel_FTable (HudUiPanel_FTable); data remains blocked on exact g_HudUiCompositePanel_FTable 0x4d3b40 source/VC table evidence under the broader HUD dispatch owner.
 
 - 0x4bb960:
   - [✅] Reconstructed (Name: HudUiCompositePanel::ScalarDeletingDestructor)
@@ -40664,17 +40664,17 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Blocker: source-shape audit pending
 
 - 0x4bb9f0:
-  - [☑️] Reconstructed (Name: HudUiCompositePanel::LayoutEntries)
+  - [☑️] Reconstructed (Name: HudUiCompositePanel::SetPos)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudUiCompositePanel; State: implemented)
   - [❎] Data reimplemented
   - [✅] Reimplemented [B]
-    - Name: HudUiCompositePanel::LayoutEntries;
+    - Name: HudUiCompositePanel::SetPos;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_ui_composite_panel_layout_entries;
+    - Target: hud_ui_composite_panel_set_pos;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: Tier B accepted for HudUiCompositePanel::LayoutEntries; tier S remains open due VC5 byte drift in hud_ui_composite_panel_layout_entries target.
+    - Blocker: Tier B accepted for HudUiCompositePanel::SetPos; source now matches the composite table slot-3 owner by preserving LayoutEntries only as an inline alias. Tier S remains open due VC5 byte drift in the hud_ui_composite_panel_set_pos target.
 
 - 0x4bbaa0:
   - [✅] Reconstructed (Name: HudUiCompositePanel::SetTextFmt)
@@ -40732,14 +40732,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [☑️] Reconstructed (Name: HudUiCompositePanel::ResizeEntryVectorAndRelayout)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudUiCompositePanel; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiCompositePanel::ResizeEntryVectorAndRelayout;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_composite_panel_resize_vector_relayout;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: Source owner and tier C behavior accepted for HudUiCompositePanel::ResizeEntryVectorAndRelayout; data remains blocked on exact transition text-panel vtable data at 0x4cd388.
+    - Blocker: Tier S blocked: VC5SP3 hud_ui_composite_panel_resize_vector_relayout compare for 0x4bbca0 fails with 410 unmasked mismatches after 52 relocation-masked bytes and 14 trimmed VC NOP bytes; remaining drift is helper factoring, EH/vector scheduling, and composite-panel layout codegen.
 
 - 0x4bbe90:
   - [☑️] Reconstructed (Name: HudUiCompositePanel::ReapplyEntryCount)
@@ -40758,14 +40758,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [☑️] Reconstructed (Name: HudUiCompositePanel::ResizeEntryCount)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudUiCompositePanel; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiCompositePanel::ResizeEntryCount;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_composite_panel_resize_entry_count;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: Source owner and tier C behavior accepted for HudUiCompositePanel::ResizeEntryCount; data remains blocked on exact pooled k_EmptyString data at 0x4e5ce0.
+    - Blocker: Tier S blocked: VC5SP3 hud_ui_composite_panel_resize_entry_count compare for 0x4bbed0 fails with 179 unmasked mismatches after 4 relocation-masked bytes and 11 trimmed VC NOP bytes; remaining drift is vector-count recomputation and virtual-call scheduling.
 
 - 0x4bbfa0:
   - [✅] Reconstructed (Name: HudUiCompositePanelVector::Clear)
@@ -40830,33 +40830,33 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_ui_composite_panel_entry_constructor_copy;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: Tier C behavior accepted for HudUiCompositePanelEntry::ConstructorCopy; data remains blocked on exact transition text-panel vtable data at 0x4cd388, and tier S remains open due VC5 byte drift.
+    - Blocker: Tier C behavior accepted for HudUiCompositePanelEntry::ConstructorCopy; VC5SP3 compare now reduced to 13 unmasked mismatches with 4 relocation-masked bytes and 7 trimmed VC NOPs. Remaining data/tier-S blocker is exact generated transition text-panel table install to 0x4cd388 under the HudUiPanel-derived dispatch-data owner; resolve HudUiTransitionTextPanel virtual owner shape before table-data acceptance.
 
 - 0x4bc480:
   - [✅] Reconstructed (Name: HudUiCircle::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiCircle::Constructor;
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
+    - Name: HudUiCircle::HudUiCircle;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_circle_constructor;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: retail HudUiCircle dispatch table/data and tier S byte evidence remain unresolved
+    - Blocker: none
 
 - 0x4bc4c0:
-  - [✅] Reconstructed (Name: HudUiCircle::DrawDirty)
+  - [✅] Reconstructed (Name: HudUiCircle::Draw)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudUiCircle::DrawDirty;
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
+    - Name: HudUiCircle::Draw;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_circle_draw_dirty;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: zRndr::DrawCircleOutline16Framebuffer data gate at 0x498fb0 remains ❌; DrawDirty calls it after DrawBase and cannot promote beyond C until zRndr circle-outline data is resolved.
+    - Blocker: none
 
 - 0x4bc4e0:
   - [✅] Reconstructed (Name: HudUiCircle::HitTestCore)
@@ -41017,15 +41017,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bc8d0:
   - [☑️] Reconstructed (Name: HudUiContainer::SetChildFlags)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiContainer; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiContainer::SetChildFlags;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: zhud_container_set_child_flags;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bc900:
   - [✅] Reconstructed (Name: HudUiContainer::UpdateAll)
@@ -41251,15 +41251,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bd020:
   - [✅] Reconstructed (Name: HudUiTopMessageStack::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiTopMessageStack; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTopMessageStack; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiTopMessageStack::Constructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_top_message_stack_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bd100:
   - [✅] Reconstructed (Name: HudUiPanel::ConstructorDefaultThunk)
@@ -41277,106 +41277,106 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bd110:
   - [✅] Reconstructed (Name: HudUiTextStack4::SetFontAll)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiTextStack4; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTextStack4; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiTextStack4::SetFontAll;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_text_stack_set_font_all;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bd160:
   - [☑️] Reconstructed (Name: HudUiTextStack4::PushLine)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiTextStack4; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTextStack4; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiTextStack4::PushLine;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_text_stack_push_line;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bd280:
   - [✅] Reconstructed (Name: HudUi::PushTopMessageLine)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: HudUi text-stack globals; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUi::PushTopMessageLine;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_push_top_message_line;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bd2a0:
   - [✅] Reconstructed (Name: HudUiTextStack4::Clear)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiTextStack4; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTextStack4; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiTextStack4::Clear;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: zhud_text_stack_clear;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bd2d0:
   - [✅] Reconstructed (Name: HudUiChatMessageStack::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiChatMessageStack; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiChatMessageStack; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiChatMessageStack::Constructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_chat_message_stack_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bd3d0:
   - [☑️] Reconstructed (Name: HudUiTextStack4::SetTextColors)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiTextStack4; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTextStack4; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiTextStack4::SetTextColors;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_text_stack_set_text_colors;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bd410:
   - [✅] Reconstructed (Name: HudUiTextStack4::SetXAll)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiTextStack4; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTextStack4; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiTextStack4::SetXAll;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_text_stack_set_x_all;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bd440:
   - [✅] Reconstructed (Name: HudUiTextStack4::SetYDescending)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiTextStack4; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiTextStack4; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiTextStack4::SetYDescending;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_text_stack_set_y_descending;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bd470:
   - [✅] Reconstructed (Name: zTimedTask::RemoveFromActiveList)
@@ -42577,15 +42577,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4138f0:
   - [✅] Reconstructed (Name: HudUi::ShowChatLine)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: HudUi text-stack globals; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUi::ShowChatLine;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_show_chat_line;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4143c0:
   - [✅] Reconstructed (Name: HudUi::RemoveScoreboardEntryRow)
@@ -46184,7 +46184,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: recoil_app_initialize_display;
     - Group: app.recoil_app.core;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: display-init provenance docblock refreshed; Data reimplemented remains blocked by 0x48ff70 and clear-dispatch authored data gates
 
 - 0x42e430:
   - [✅] Reconstructed (Name: RecoilApp::ShutdownEngine)

@@ -1145,7 +1145,7 @@ std::uint32_t lastGetPropertyObj;
 std::uint32_t lastGetPropertyHow;
 std::uint32_t getDeviceDataCount;
 zInput::MouseDeviceState fakeMouseState;
-zInput::JoystickStatePartial fakeJoystickState;
+DIJOYSTATE2 fakeJoystickState;
 zInput::DIDevice *createDeviceOut;
 zInput::DIDevice *queryInterfaceOut;
 zInput_DiEffect *createEffectOut;
@@ -1200,11 +1200,11 @@ std::int32_t __stdcall GetDeviceStateFake(zInput::DIDevice *, std::uint32_t cbDa
                                                void *outState) {
     ++getDeviceStateCalls;
     if (cbData != sizeof(zInput::MouseDeviceState)) {
-        if (cbData != sizeof(zInput::JoystickStatePartial)) {
+        if (cbData != sizeof(DIJOYSTATE2)) {
             return -3;
         }
 
-        *static_cast<zInput::JoystickStatePartial *>(outState) = fakeJoystickState;
+        *static_cast<DIJOYSTATE2 *>(outState) = fakeJoystickState;
         return getDeviceStateResult;
     }
 

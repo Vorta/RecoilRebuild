@@ -372,100 +372,67 @@ struct KbdKeyDispatchEntry {
 };
 RECOIL_STATIC_ASSERT(sizeof(KbdKeyDispatchEntry) == 0x08);
 
-struct JoystickStatePartial {
-    int lX;
-    int lY;
-    int lZ;
-    int lRx;
-    int lRy;
-    int lRz;
-    int rglSlider[2];
-    unsigned int rgdwPOV[4];
-    unsigned char rgbButtons[0x80];
-    int lVX;
-    int lVY;
-    int lVZ;
-    int lVRx;
-    int lVRy;
-    int lVRz;
-    int rglVSlider[2];
-    int lAX;
-    int lAY;
-    int lAZ;
-    int lARx;
-    int lARy;
-    int lARz;
-    int rglASlider[2];
-    int lFX;
-    int lFY;
-    int lFZ;
-    int lFRx;
-    int lFRy;
-    int lFRz;
-    int rglFSlider[2];
-};
-
 RECOIL_STATIC_ASSERT(
     offsetof(
-        JoystickStatePartial,
+        DIJOYSTATE2,
         lZ
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        JoystickStatePartial,
+        DIJOYSTATE2,
         lRz
     ) == 0x14
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        JoystickStatePartial,
+        DIJOYSTATE2,
         rgdwPOV
     ) == 0x20
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        JoystickStatePartial,
+        DIJOYSTATE2,
         rgbButtons
     ) == 0x30
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        JoystickStatePartial,
+        DIJOYSTATE2,
         lVZ
     ) == 0xb8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        JoystickStatePartial,
+        DIJOYSTATE2,
         lVRz
     ) == 0xc4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        JoystickStatePartial,
+        DIJOYSTATE2,
         lAZ
     ) == 0xd8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        JoystickStatePartial,
+        DIJOYSTATE2,
         lARz
     ) == 0xe4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        JoystickStatePartial,
+        DIJOYSTATE2,
         lFZ
     ) == 0xf8
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        JoystickStatePartial,
+        DIJOYSTATE2,
         lFRz
     ) == 0x104
 );
-RECOIL_STATIC_ASSERT(sizeof(JoystickStatePartial) == 0x110);
+RECOIL_STATIC_ASSERT(sizeof(DIJOYSTATE2) == 0x110);
 
 struct JoystickAxisConfigEntry {
     int lMin;
@@ -615,8 +582,8 @@ int __fastcall DI_GetAxisRange(
     int *pOutMax
 );
 int DI_IsJoystickDeviceReady();
-JoystickStatePartial *DI_GetCurrentState();
-JoystickStatePartial *__fastcall DI_PollJoystickState(int dispatchCallbacks);
+DIJOYSTATE2 *DI_GetCurrentState();
+DIJOYSTATE2 *__fastcall DI_PollJoystickState(int dispatchCallbacks);
 int __fastcall DI_SetJoystickEnabled(int enable);
 int __fastcall DI_WaitForButtonPress(int loopUntilPressed);
 int __fastcall DI_ReportError(
@@ -792,8 +759,8 @@ extern short g_zInputJoystickPollRefCount;
 extern int g_zInput_JoystickAxisCount;
 extern zInput::JoystickAxisConfig g_zInput_JoystickAxisConfig;
 extern zInput::JoystickAxisConfig g_zInput_JoystickAxisConfig_Gameplay;
-extern zInput::JoystickStatePartial g_zInput_JoystickCurrentState;
-extern zInput::JoystickStatePartial g_zInput_JoystickPreviousState;
+extern DIJOYSTATE2 g_zInput_JoystickCurrentState;
+extern DIJOYSTATE2 g_zInput_JoystickPreviousState;
 extern zInput::MouseDeviceState g_zInput_MouseCurrentState;
 extern zInput::MouseDeviceState g_zInput_MousePreviousState;
 extern zInput::MouseStateSnapshot g_zInput_MouseStateSnapshot;

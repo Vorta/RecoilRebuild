@@ -18,8 +18,6 @@ extern "C" std::int32_t g_zFMV_ActionImage_BlitRectW;
 extern "C" std::int32_t g_zFMV_ActionImage_BlitRectH;
 extern "C" int g_zFMV_ActionImage_BlitRectX;
 extern "C" int g_zFMV_ActionImage_BlitRectY;
-extern "C" unsigned int g_zVideo_pfnBltSwToPrimaryRect;
-extern unsigned int g_zVideo_pfnFlushQuadBatch;
 
 namespace {
 struct CodeFunctionPatch {
@@ -1619,7 +1617,7 @@ extern "C" int zfmv_action_fade_update_smoke(void) {
 
     const int oldRendererPath = g_zVideo_ActiveRendererPath;
     const unsigned int oldFlushQuadBatch = g_zVideo_pfnFlushQuadBatch;
-    g_zVideo_pfnFlushQuadBatch = reinterpret_cast<unsigned int>(&FakeFmvFlushQuadBatch);
+    g_zVideo_pfnFlushQuadBatch = FakeFmvFlushQuadBatch;
 
     zVidImagePartial image{};
     zFMV_ActionFade action{};

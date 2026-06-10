@@ -252,10 +252,10 @@ std::uint32_t g_submitFlatLastRenderParam = 0;
 std::int32_t g_submitFlatLastQueueMode = 0;
 zVideo_XyzVertex g_submitFlatLastVerts[0x40]{};
 
-void __fastcall zmodel_draw_point_color16_stub(zProjectedPoint *point,
+void __fastcall zmodel_draw_point_color16_stub(zVideo_XyzVertex *point,
                                                     std::uint32_t packedColor16,
                                                     std::int32_t pointCount) {
-    g_drawPointLastPoint = *point;
+    g_drawPointLastPoint = *(zProjectedPoint *)(point);
     g_drawPointLastColor = packedColor16;
     g_drawPointLastCount = pointCount;
     ++g_drawPointCallCount;
@@ -4803,8 +4803,7 @@ extern "C" int zmodel_render_point_queue_entry_smoke(void) {
     g_zRndr_InverseZTolerance = 0.5f;
     zRndr::g_lensFlareSampleQueueCount = 0;
     g_zVideo_ActiveRendererPath = 1;
-    g_zVideo_pfnDrawPointColor16 = static_cast<std::uint32_t>(
-        reinterpret_cast<std::uintptr_t>(&zmodel_draw_point_color16_stub));
+    g_zVideo_pfnDrawPointColor16 = zmodel_draw_point_color16_stub;
     zModel_RenderPointQueueEntry(&point, 0x1ffff, &entry);
     if (g_drawPointCallCount != 1 || g_drawPointLastColor != 0xffff || g_drawPointLastCount != 1 ||
         g_drawPointLastPoint.reciprocalZ < 1.999f || g_drawPointLastPoint.reciprocalZ > 2.001f ||
@@ -4981,8 +4980,7 @@ extern "C" int zmodel_render_node_hardware_flat_smoke(void) {
     g_zModel_TransformedVerts = g_zModel_SharedVec3ScratchAStorage;
     g_zModel_TransformedNormals = g_zModel_SharedVec3ScratchBStorage;
     g_zVideo_ActiveRendererPath = 1;
-    g_zVideo_pfnSubmitPolyFlatColor16 = static_cast<std::uint32_t>(
-        reinterpret_cast<std::uintptr_t>(&zmodel_submit_poly_flat_stub));
+    g_zVideo_pfnSubmitPolyFlatColor16 = zmodel_submit_poly_flat_stub;
     g_zVideo_pfnSubmitPolyColorAttr = 0;
     g_zVideo_pfnSubmitPolygon = 0;
     g_zVideo_pfnSubmitPolygonLit = 0;
@@ -5074,8 +5072,7 @@ extern "C" int zmodel_render_node_hardware_point_smoke(void) {
     g_zModel_TransformedVerts = g_zModel_SharedVec3ScratchAStorage;
     g_zModel_TransformedNormals = g_zModel_SharedVec3ScratchBStorage;
     g_zVideo_ActiveRendererPath = 1;
-    g_zVideo_pfnDrawPointColor16 = static_cast<std::uint32_t>(
-        reinterpret_cast<std::uintptr_t>(&zmodel_draw_point_color16_stub));
+    g_zVideo_pfnDrawPointColor16 = zmodel_draw_point_color16_stub;
     g_zMath_ProjScaleX = 1.0f;
     g_zMath_ProjScaleY = 1.0f;
     g_zMath_ProjOffsetX = 0.0f;

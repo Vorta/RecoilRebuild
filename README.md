@@ -51,16 +51,23 @@ testing, or review practical without changing the recovered engine contract.
 <!-- RECOIL_PROGRESS:START -->
 Generated from `.agent/RECOIL_PLAN.md`.
 
-| Progress marker | Count | Percent |
+| Plan marker | Scope | ✅ | ☑️ | ❎ | ❌ | ❓ | Total |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Reconstructed | all entries | 2766 | 1151 | 0 | 0 | 0 | 3917 |
+| Source dependencies satisfied | authored entries | 3420 | 0 | 0 | 110 | 0 | 3530 |
+| Source owner | authored entries | 821 | 0 | 0 | 2709 | 0 | 3530 |
+| Data reimplemented | authored entries | 255 | 0 | 211 | 3064 | 0 | 3530 |
+| Reimplemented | authored entries | 3344 | 0 | 0 | 186 | 0 | 3530 |
+| Provider-boundary | provider entries | 386 | 1 | 0 | 0 | 0 | 387 |
+
+| Reimplementation tier | Count | Percent of authored |
 | --- | ---: | ---: |
-| Reconstructed entries | 2765/3917 | 70.6% |
-| Partially reconstructed entries | 1152/3917 | 29.4% |
-| Source-ready entries | 3801/3917 | 97.0% |
-| Reimplemented authored functions | 3338/3530 | 94.6% |
-| Tier C+ authored functions | 3338/3530 | 94.6% |
-| Tier B+ authored functions | 275/3530 | 7.8% |
-| Tier S authored functions | 162/3530 | 4.6% |
-| Accepted provider boundaries | 387/387 | 100.0% |
+| X | 186 | 5.3% |
+| F | 3 | 0.1% |
+| C | 2938 | 83.2% |
+| B | 222 | 6.3% |
+| A | 1 | 0.0% |
+| S | 180 | 5.1% |
 <!-- RECOIL_PROGRESS:END -->
 
 Reconstruction is ongoing. Some subsystems have source-level implementations

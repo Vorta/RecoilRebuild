@@ -25,15 +25,32 @@ char g_zImage_DefaultTextureName[0x10] = "DEFAULT_TEXTURE";
 }
 
 namespace zImage {
-// Reimplements 0x46d4c0: zImage::GetDefaultImageRefPtr
-// (GameZRecoil/zImage/zimg_texture.cpp)
+/**
+ * Reimplements 0x46d4c0: zImage::GetDefaultImageRefPtr.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Purpose: expose the default image pointer through the texture-directory
+ * entry reference shape expected by legacy callers.
+ *
+ * Evidence: BN returns the address of g_zImage_DefaultImagePtr retyped as a
+ * texture-directory entry pointer without touching additional state.
+ */
 zImage_TexDirEntryPartial *GetDefaultImageRefPtr() {
     return (zImage_TexDirEntryPartial *)(&g_zImage_DefaultImagePtr);
 }
 
-// Hardware renderers need a real image for the default texture record; standalone
-// tools provide the same fallback callback path used by pending texture loads.
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: zImage::CreateDefaultTextureRecord.
+ * Original shape: no standalone retail function is currently identified in the
+ * inspected BN/plan evidence.
+ * Purpose: create and remember the default texture record through the active
+ * zVideo texture creation callback.
+ *
+ * Original helper evidence: source-faithful helper recovered from BN caller
+ * body 0x46d550, which routes the DEFAULT_TEXTURE/default-image contract
+ * through g_zVideo_pfnCreateTextureRecord and stores the result in
+ * g_zImage_DefaultTextureRecord. BN 0x4a75f0 uses a direct null-name
+ * default-image call instead.
+ */
 zVideo_TextureRecordPartial *CreateDefaultTextureRecord() {
     zVidImagePartial *image = &zVid_Image::g_zImage_DefaultImage;
     int releaseImage = 0;
@@ -60,8 +77,16 @@ zVideo_TextureRecordPartial *CreateDefaultTextureRecord() {
     return g_zImage_DefaultTextureRecord;
 }
 
-// Reimplements 0x46d550: zImage::InitTextureDirectory
-// (GameZRecoil/zImage/zimg_texture.cpp)
+/**
+ * Reimplements 0x46d550: zImage::InitTextureDirectory.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Purpose: reset the texture-directory table and create the hardware default
+ * texture record when a non-software renderer is active.
+ *
+ * Evidence: BN clears the texture-directory count/table, tests
+ * g_zVideo_ActiveRendererPath, and on the hardware path creates the default
+ * texture record before returning success.
+ */
 int InitTextureDirectory() {
     g_zImage_TexDirEntryCount = 0;
     memset(
@@ -158,14 +183,6 @@ RECOIL_NO_GS void __fastcall zImage_TexDirEntryPartial::BuildMipChain() {
     }
 }
 
-namespace {
-typedef void(__fastcall *zVideo_TextureRecordFinalizeUploadProc)(
-    zVideo_TextureRecordPartial *textureRecord,
-    void *reserved,
-    zVidImagePartial *image
-);
-}
-
 namespace zImage {
 // Reimplements 0x46de50: zImage::TexDir_LoadPendingEntries
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
@@ -196,7 +213,7 @@ int TexDir_LoadPendingEntries() {
             zVid_Image::CalcPow2ScratchFields(entry->image);
         } else if (entry->loadState == 3) {
             zVideo_TextureRecordFinalizeUploadProc finalizeUpload =
-                (zVideo_TextureRecordFinalizeUploadProc)(g_zVideo_pfnTextureRecordFinalizeUpload);
+                g_zVideo_pfnTextureRecordFinalizeUpload;
             finalizeUpload(
                 entry->texture,
                 0,

@@ -60,25 +60,6 @@ void __fastcall HudUiNoOpMethodStub(
     void *
 ) {}
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-bool IsCallableProviderAddress(
-    unsigned int address
-) {
-    if (address == 0) {
-        return false;
-    }
-
-    MEMORY_BASIC_INFORMATION info = {0};
-    if (VirtualQuery((const void *)(address), &info, sizeof(info)) == 0 ||
-        info.State != MEM_COMMIT) {
-        return false;
-    }
-
-    const DWORD protect = info.Protect & 0xffu;
-    return protect == PAGE_EXECUTE || protect == PAGE_EXECUTE_READ ||
-           protect == PAGE_EXECUTE_READWRITE || protect == PAGE_EXECUTE_WRITECOPY;
-}
-
 struct HudReticleAttachStatePartial {
     unsigned char unknown_00[0x0c];
     zClass_NodePartial *projectileNode;
@@ -185,8 +166,8 @@ unsigned int g_HudUiLoadingCheckpointCurrentIndex = 0;
 float g_HudUiLoadingCheckpointCurrentProgress = 0.0f;
 HudLayoutHW g_HudLayoutHW;
 HudLayoutSW g_HudLayoutSW;
-HudUiTextStack4 *g_HudUiTopMessageStack = 0;
 HudUiTextStack4 *g_HudUiChatMessageStack = 0;
+HudUiTextStack4 *g_HudUiTopMessageStack = 0;
 zFMV_Playback *g_HudUiSensorWindowPlayback = 0;
 CWnd g_HudUiSensorWindow;
 HudUiShieldMessageWidgetState *g_HudUiMgrShieldMessageWidget = 0;
@@ -901,7 +882,12 @@ const T &FieldAt(
 }
 #endif
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed in
+ * HudUiTriplet::Constructor at 0x40dcd0 as the repeated panel allocation,
+ * default construction, font setup, and hidden-state initialization sequence.
+ * Purpose: create one hidden simple triplet panel with the requested font shape.
+ */
 HudUiPanel *NewSimplePanel(
     int fontSize,
     int fontWeight
@@ -925,14 +911,20 @@ HudUiPanel *NewSimplePanel(
     return panel;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed callers 0x40e140, 0x40e590, 0x40e800, and 0x40e880 in the HUD triplet source cluster.
+ * Purpose: compute the current number of scoreboard entries from the recovered vector bounds.
+ */
 size_t HudUiTripletEntryCount(
     const HudUiTripletEntries &entries
 ) {
     return (size_t)(((HudUiTripletEntries *)(&entries))->GetCount());
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed caller 0x40e590 in the HUD triplet source cluster.
+ * Purpose: compute the allocated scoreboard-entry capacity from the recovered vector bounds.
+ */
 size_t HudUiTripletEntryCapacity(
     const HudUiTripletEntries &entries
 ) {
@@ -943,7 +935,10 @@ size_t HudUiTripletEntryCapacity(
     return (size_t)(entries.cap - entries.begin);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed callers 0x40d220, 0x414710, 0x414930, 0x414980, and 0x40e140 through the list-menu sort cluster.
+ * Purpose: compute the scoreboard sort key from score and completed-lap state.
+ */
 int HudUiTripletEntrySortKey(
     const HudUiScoreboardEntry &entry
 ) {
@@ -952,8 +947,11 @@ int HudUiTripletEntrySortKey(
 
 namespace HudUiListMenuEntry {
 
-// Reimplements 0x40d220: HudUiListMenuEntry::CompareSortKey
-// (D:\Proj\Battlesport\HudUiListMenu.cpp)
+/**
+ * Reimplements 0x40d220: HudUiListMenuEntry::CompareSortKey.
+ * Original source path: D:\Proj\Battlesport\HudUiListMenu.cpp.
+ * Purpose: compare two scoreboard entries by descending lap/score key and then descending player key.
+ */
 int __fastcall CompareSortKey(
     const HudUiScoreboardEntry *entryA,
     const HudUiScoreboardEntry *entryB
@@ -967,7 +965,10 @@ int __fastcall CompareSortKey(
     return (unsigned int)(entryB->playerKey) < (unsigned int)(entryA->playerKey) ? 1 : 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed callers 0x414710, 0x414930, and 0x414980 in HudUiListMenu.cpp.
+ * Purpose: expose the recovered comparator as a boolean ordering predicate for local sort helpers.
+ */
 bool EntryComesBefore(
     const HudUiScoreboardEntry &lhs,
     const HudUiScoreboardEntry &rhs
@@ -978,8 +979,11 @@ bool EntryComesBefore(
     ) != 0;
 }
 
-// Reimplements 0x414930: HudUiListMenuEntry::InsertPivotIntoSortedPrefix
-// (D:\Proj\Battlesport\HudUiListMenu.cpp)
+/**
+ * Reimplements 0x414930: HudUiListMenuEntry::InsertPivotIntoSortedPrefix.
+ * Original source path: D:\Proj\Battlesport\HudUiListMenu.cpp.
+ * Purpose: shift a sorted prefix forward and store the pivot entry at its sorted position.
+ */
 void InsertPivotIntoSortedPrefix(
     HudUiScoreboardEntry *slot,
     const HudUiScoreboardEntry &pivot
@@ -998,8 +1002,11 @@ void InsertPivotIntoSortedPrefix(
     *insertSlot = pivot;
 }
 
-// Reimplements 0x414980: HudUiListMenuEntry::InsertionSortRange
-// (D:\Proj\Battlesport\HudUiListMenu.cpp)
+/**
+ * Reimplements 0x414980: HudUiListMenuEntry::InsertionSortRange.
+ * Original source path: D:\Proj\Battlesport\HudUiListMenu.cpp.
+ * Purpose: insertion-sort a scoreboard-entry range in place using the recovered list-menu ordering.
+ */
 void __fastcall InsertionSortRange(
     HudUiScoreboardEntry *begin,
     HudUiScoreboardEntry *end,
@@ -1034,7 +1041,10 @@ void __fastcall InsertionSortRange(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed caller 0x414710 in HudUiListMenu.cpp.
+ * Purpose: select the median scoreboard entry among first, middle, and last candidates for quicksort partitioning.
+ */
 HudUiScoreboardEntry *MedianOfThree(
     HudUiScoreboardEntry *first,
     HudUiScoreboardEntry *middle,
@@ -1070,23 +1080,75 @@ HudUiScoreboardEntry *MedianOfThree(
     ) ? last : middle;
 }
 
-// Reimplements 0x414710: HudUiListMenuEntry::SortRange
-// (D:\Proj\Battlesport\HudUiListMenu.cpp)
+/**
+ * Reimplements 0x414710: HudUiListMenuEntry::SortRange.
+ * Original source path: D:\Proj\Battlesport\HudUiListMenu.cpp.
+ * Purpose: partition larger scoreboard-entry ranges before the final insertion-sort pass.
+ */
 void __fastcall SortRange(
     HudUiScoreboardEntry *begin,
     HudUiScoreboardEntry *end,
     int unusedFlags
 ) {
-    InsertionSortRange(
-        begin,
-        end,
-        unusedFlags
-    );
+    while (end - begin > 16) {
+        HudUiScoreboardEntry *left = begin;
+        HudUiScoreboardEntry *right = end - 1;
+        HudUiScoreboardEntry *const middle = begin + ((end - begin) / 2);
+        HudUiScoreboardEntry pivot = *MedianOfThree(
+            begin,
+            middle,
+            right
+        );
+
+        for (;;) {
+            while (EntryComesBefore(
+                *left,
+                pivot
+            )) {
+                ++left;
+            }
+
+            while (EntryComesBefore(
+                pivot,
+                *right
+            )) {
+                --right;
+            }
+
+            if (right <= left) {
+                break;
+            }
+
+            HudUiScoreboardEntry temp = *left;
+            *left = *right;
+            *right = temp;
+            ++left;
+        }
+
+        if (end - left <= left - begin) {
+            SortRange(
+                left,
+                end,
+                unusedFlags
+            );
+            end = left;
+        } else {
+            SortRange(
+                begin,
+                left,
+                unusedFlags
+            );
+            begin = left;
+        }
+    }
 }
 
 } // namespace HudUiListMenuEntry
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed caller 0x40e140 in HudUiTriplet.cpp.
+ * Purpose: route triplet scoreboard entry sorting through the recovered HudUiListMenuEntry sort cluster.
+ */
 void HudUiTripletInsertionSort(
     HudUiScoreboardEntry *begin,
     HudUiScoreboardEntry *end
@@ -1095,14 +1157,43 @@ void HudUiTripletInsertionSort(
         return;
     }
 
-    HudUiListMenuEntry::InsertionSortRange(
-        begin,
-        end,
-        0
-    );
+    if (end - begin > 16) {
+        HudUiListMenuEntry::SortRange(
+            begin,
+            end,
+            0
+        );
+
+        HudUiScoreboardEntry *insert = begin + 16;
+        HudUiListMenuEntry::InsertionSortRange(
+            begin,
+            insert,
+            0
+        );
+
+        while (insert != end) {
+            HudUiScoreboardEntry pivot = *insert;
+            HudUiListMenuEntry::InsertPivotIntoSortedPrefix(
+                insert,
+                pivot
+            );
+            ++insert;
+        }
+    } else {
+        HudUiListMenuEntry::InsertionSortRange(
+            begin,
+            end,
+            0
+        );
+    }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed in
+ * HudUiTriplet::AddEntry at 0x40e590 as the original vector growth body using
+ * the recovered HudUiTripletEntries copy/fill helpers and pointer-bound updates.
+ * Purpose: grow the scoreboard-entry vector while preserving existing entries.
+ */
 void HudUiTripletEnsureCapacity(
     HudUiTripletEntries &entries,
     size_t neededCount
@@ -1134,7 +1225,12 @@ void HudUiTripletEnsureCapacity(
     entries.cap = newBegin + newCapacity;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed in
+ * HudUiTriplet::RebuildDisplay at 0x40e140 as paired text-color writes and
+ * text-dirty invalidation on each row/header panel before text formatting.
+ * Purpose: apply one packed text color to both panel text-color slots.
+ */
 void HudUiTripletSetPanelTextColor(
     HudUiPanel *panel,
     unsigned int color
@@ -1144,7 +1240,12 @@ void HudUiTripletSetPanelTextColor(
     panel->textDirty = 1;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed in
+ * HudUiTriplet::RebuildDisplay at 0x40e140 as repeated dispatches through the
+ * HudUiElement visibility slot for row cells and headers.
+ * Purpose: show or hide a triplet panel through the recovered element API.
+ */
 void HudUiTripletSetPanelVisible(
     HudUiPanel *panel,
     int visible
@@ -1152,7 +1253,13 @@ void HudUiTripletSetPanelVisible(
     ((HudUiElement *)(panel))->SetVisible(visible);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed in
+ * HudUiTriplet::RebuildDisplay at 0x40e140 as the repeated per-cell sequence:
+ * apply entry color, preserve hidden flag while setting row text flags, and
+ * reset the panel font from the triplet font fields.
+ * Purpose: prepare a visible scoreboard cell before position and text updates.
+ */
 void HudUiTripletPrepareCell(
     HudUiTriplet *triplet,
     HudUiPanel *panel,
@@ -1207,14 +1314,6 @@ HudUiPanel *NewObjectivePanel() {
         0
     );
     return (HudUiPanel *)(storage);
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
-HudUiPanel *TextStackLineAt(
-    HudUiTextStack4 *stack,
-    int index
-) {
-    return (HudUiPanel *)(&stack->lines[index][0]);
 }
 
 const char kHudUiMessageClearSpecialToken165[] = "\xa5";
@@ -2030,7 +2129,13 @@ void LoadHudZrdSound(
     *outSound = zSnd::FindSampleByName(name);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline/static helper with no standalone retail function.
+ * Observed in text-stack constructors 0x4bd020 and 0x4bd2d0 after each
+ * HudUiPanel row is constructed.
+ * Purpose: attach and initialize one message-stack row with the recovered
+ * panel font, shadow, alignment, position, and hidden state.
+ */
 void ConfigureTextStackLine(
     HudUiTextStack4 *stack,
     HudUiPanel *panel,
@@ -2063,16 +2168,18 @@ void ConfigureTextStackLine(
     element->SetVisible(0);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline/static helper with no standalone retail function.
+ * Observed in destructors 0x40fe90 and 0x40fef0 as four HudUiPanel row
+ * destructors followed by HudUiContainer base destruction.
+ * Purpose: destroy all message-stack rows before releasing the container base.
+ */
 void DestroyTextStackLines(
     HudUiTextStack4 *stack
 ) {
     {
         for (int index = 0; index < 4; ++index) {
-            TextStackLineAt(
-                stack,
-                index
-            )->~HudUiPanel();
+            stack->lines[index].~HudUiPanel();
         }
     }
 
@@ -4499,7 +4606,10 @@ void __fastcall ActivateHud(
     g_HudUiMgrSensorBlock.state = 1;
 }
 
-// Reimplements 0x413910: HudUiMgr::EnableTopAndChatStacks
+/**
+ * Reimplements 0x413910: HudUiMgr::EnableTopAndChatStacks.
+ * Purpose: clear and enable the global top-message and chat text stacks.
+ */
 void EnableTopAndChatStacks() {
     g_HudUiTopMessageStack->Clear();
     g_HudUiTopMessageStack->SetEnabled(1);
@@ -4507,7 +4617,10 @@ void EnableTopAndChatStacks() {
     g_HudUiChatMessageStack->SetEnabled(1);
 }
 
-// Reimplements 0x413950: HudUiMgr::DisableTopAndChatStacks
+/**
+ * Reimplements 0x413950: HudUiMgr::DisableTopAndChatStacks.
+ * Purpose: clear and disable the global top-message and chat text stacks.
+ */
 void DisableTopAndChatStacks() {
     g_HudUiTopMessageStack->Clear();
     g_HudUiTopMessageStack->SetEnabled(0);
@@ -5213,38 +5326,37 @@ void HudUiPrimitiveBindTarget::SetSegmentEndpoints(
 }
 
 /**
- * Reimplements 0x4bc480: HudUiCircle::Constructor.
+ * Reimplements 0x4bc480: HudUiCircle::HudUiCircle.
  * Original file: D:\Proj\Battlesport\hud.cpp.
  * Purpose: initialize a circle element's position, radius, and color.
  *
- * Evidence: BN assembly calls HudUiElement::Constructor at object offset zero,
- * writes the retail circle dispatch pointer, stores radius at 0x34, stores
+ * Evidence: BN assembly calls the HudUiElement base constructor at object
+ * offset zero, installs the derived circle C++ dispatch identity, stores
+ * radius at 0x34, stores
  * radiusSquared as radius * radius at 0x38, stores color565 at 0x3c, and
- * returns this. The table pointer is owner/data evidence and is not recreated
- * as a production FTable scaffold.
+ * returns this.
  */
-HudUiCircle * HudUiCircle::Constructor(
+HudUiCircle::HudUiCircle(
     int x,
     int y,
     int circleRadius,
     unsigned int circleColor565
-) {
-    HudUiElement::Constructor(
+)
+    : HudUiElement(
         x,
         y
-    );
+    ) {
     radius = circleRadius;
     const unsigned int radiusBits = (unsigned int)(circleRadius);
     radiusSquared = (int)(radiusBits * radiusBits);
     color565 = circleColor565;
-    return this;
 }
 
 /**
- * Reimplements 0x4bc4c0: HudUiCircle::DrawDirty.
+ * Reimplements 0x4bc4c0: HudUiCircle::Draw.
  * Purpose: redraw the inherited base and circle outline for a dirty circle element.
  */
-void HudUiCircle::DrawDirty() {
+void HudUiCircle::Draw() {
     DrawBase();
     zRndr_DrawCircleOutline16_Framebuffer(
         x,
@@ -5257,10 +5369,10 @@ void HudUiCircle::DrawDirty() {
 
 /**
  * Reimplements 0x403c80: HudUiCircle::DrawDirtyForwarder.
- * Purpose: route the table dispatch slot to HudUiCircle::DrawDirty.
+ * Purpose: route the briefing table dispatch slot to HudUiCircle::Draw.
  */
 void HudUiCircle::DrawDirtyForwarder() {
-    DrawDirty();
+    HudUiCircle::Draw();
 }
 
 /**
@@ -5409,6 +5521,30 @@ void HudUiCompositePanelVector::InsertCopies(
 }
 
 /**
+ * Reimplements 0x4ba020: HudUiTransitionTextPanel::HudUiTransitionTextPanel.
+ * Original source path: D:\Proj\Battlesport\hudui_background.cpp.
+ * Purpose: construct the transition text panel and initialize its flash state.
+ *
+ * Evidence: BN assembly calls HudUiPanel::ConstructorDefault, clears flash
+ * fields, writes flashResetValue = 0.35f and flashDirectionSign = 1, and
+ * installs the transition text panel table at 0x4cd388. Retail callers such as
+ * 0x4bb790 inline this construction into stack template entries.
+ */
+inline HudUiTransitionTextPanel::HudUiTransitionTextPanel()
+    : HudUiPanel(
+        0,
+        0,
+        0
+    ) {
+    flashCountdown = 0;
+    flashAltColor0 = 0;
+    flashEnabled = 0;
+    flashMode = 0;
+    flashResetValue = 0.349999994f;
+    flashDirectionSign = 1;
+}
+
+/**
  * Reimplements 0x4bb790: HudUiCompositePanel::ConstructorWithEntryCount.
  * Purpose: initialize a composite panel and allocate its entry history vector.
  */
@@ -5483,15 +5619,20 @@ void HudUiCompositePanel::Update(
         index < (unsigned int)(HudUiCompositePanelVectorCount(entryVector));
         ++index) {
         HudUiCompositePanelEntry *const entry = &entryVector.begin[index];
-        entry->panel.TickFlash(deltaSeconds);
+        entry->panel.Update(deltaSeconds);
     }
 }
 
 /**
- * Reimplements 0x4bb9f0: HudUiCompositePanel::LayoutEntries.
- * Purpose: position each composite text entry below the panel origin.
+ * Reimplements 0x4bb9f0: HudUiCompositePanel::SetPos.
+ * Purpose: position the composite panel and lay out each text entry below the
+ * panel origin.
+ *
+ * Evidence: BN table g_HudUiCompositePanel_FTable stores 0x4bb9f0 in slot 3,
+ * the inherited HudUiElement::SetPos slot; the body writes x/y, invalidates,
+ * measures one entry height, and dispatches SetPos on each transition entry.
  */
-void HudUiCompositePanel::LayoutEntries(
+void HudUiCompositePanel::SetPos(
     int x,
     int y
 ) {
@@ -5654,9 +5795,13 @@ void HudUiCompositePanel::SetFont(
         pitchAndFamily
     );
 
-    SetPos(
-        GetX(),
-        GetY()
+    HudUiPanel *const panel = this;
+    void (HudUiPanel::*const setPosFn)(int, int) = &HudUiPanel::SetPos;
+    int (HudUiPanel::*const getXFn)() = &HudUiPanel::GetX;
+    int (HudUiPanel::*const getYFn)() = &HudUiPanel::GetY;
+    (panel->*setPosFn)(
+        (panel->*getXFn)(),
+        (panel->*getYFn)()
     );
 }
 
@@ -5695,9 +5840,13 @@ void HudUiCompositePanel::ResizeEntryVectorAndRelayout(
         ReapplyEntryCount();
     }
 
-    LayoutEntries(
-        HudUiElement::GetX(),
-        HudUiElement::GetY()
+    HudUiPanel *const panel = this;
+    void (HudUiPanel::*const setPosFn)(int, int) = &HudUiPanel::SetPos;
+    int (HudUiPanel::*const getXFn)() = &HudUiPanel::GetX;
+    int (HudUiPanel::*const getYFn)() = &HudUiPanel::GetY;
+    (panel->*setPosFn)(
+        (panel->*getXFn)(),
+        (panel->*getYFn)()
     );
 }
 
@@ -5726,8 +5875,9 @@ HudUiCompositePanelEntry * HudUiCompositePanelEntry::AssignCopy(
 HudUiCompositePanelEntry * HudUiCompositePanelEntry::ConstructorCopy(
     const HudUiCompositePanelEntry *source
 ) {
-    // BN shows the copy constructor finishing with the transition text-panel vptr installed.
+#if !defined(_MSC_VER) || _MSC_VER >= 1200
     new (&panel) HudUiTransitionTextPanel;
+#endif
     panel.CopyConstructCore(&source->panel);
     panel.flashCountdown = source->panel.flashCountdown;
     panel.flashResetValue = source->panel.flashResetValue;
@@ -9294,29 +9444,6 @@ void HudUiCycleSelectorWidget::AddTextEntry(
 }
 
 /**
- * Reimplements 0x4ba020: HudUiTransitionTextPanel::HudUiTransitionTextPanel.
- * Original source path: D:\Proj\Battlesport\hudui_background.cpp.
- * Purpose: construct the transition text panel and initialize its flash state.
- *
- * Evidence: BN assembly calls HudUiPanel::ConstructorDefault, clears flash
- * fields, writes flashResetValue = 0.35f and flashDirectionSign = 1, and
- * installs the transition text panel table at 0x4cd388.
- */
-HudUiTransitionTextPanel::HudUiTransitionTextPanel()
-    : HudUiPanel(
-        0,
-        0,
-        0
-    ) {
-    flashCountdown = 0;
-    flashAltColor0 = 0;
-    flashEnabled = 0;
-    flashMode = 0;
-    flashResetValue = 0.349999994f;
-    flashDirectionSign = 1;
-}
-
-/**
  * Original inline helper; no standalone retail function exists.
  * Observed in transition-panel owners that destroy embedded panel members.
  * Evidence: destructor callers tear down the HudUiPanel base without a
@@ -9328,7 +9455,7 @@ HudUiTransitionTextPanel::~HudUiTransitionTextPanel() {
 }
 
 /**
- * Reimplements 0x4bc9f0: HudUiTransitionTextPanel::TickFlash.
+ * Reimplements 0x4bc9f0: HudUiTransitionTextPanel::Update.
  * Original source path: D:\Proj\Battlesport\HudUiTransitionTextPanel.cpp.
  * Purpose: update timed visibility and flash-color state before drawing the panel.
  *
@@ -9337,22 +9464,22 @@ HudUiTransitionTextPanel::~HudUiTransitionTextPanel() {
  * flashDirectionSign/textDirty, swaps text colors for color-flash modes, and
  * calls HudUiPanel::Draw on visible refresh paths.
  */
-void HudUiTransitionTextPanel::TickFlash(
+void HudUiTransitionTextPanel::Update(
     float deltaSeconds
 ) {
     const unsigned int elementFlags = flags;
-    if ((elementFlags & 0x10u) != 0) {
+    if (((~elementFlags) & 0x10u) == 0) {
         return;
     }
 
     if ((elementFlags & 1u) != 0) {
         timer -= deltaSeconds;
-        if (timer <= 0.0f) {
+        if (timer <= 0.0) {
             SetVisible(0);
         }
     }
 
-    if (flashEnabled == 0 || (flags & 0x10u) != 0) {
+    if (flashEnabled == 0 || ((~flags) & 0x10u) == 0) {
         HudUiPanel::Draw();
         return;
     }
@@ -9362,7 +9489,7 @@ void HudUiTransitionTextPanel::TickFlash(
     case 0:
         HudUiPanel::Draw();
     case 1:
-        if (flashCountdown < 0.0f) {
+        if (flashCountdown < 0.0) {
             flashCountdown += flashResetValue;
             textDirty = 1;
             flashDirectionSign = -flashDirectionSign;
@@ -9375,7 +9502,7 @@ void HudUiTransitionTextPanel::TickFlash(
 
     case 2:
     case 3:
-        if (flashCountdown < 0.0f) {
+        if (flashCountdown < 0.0) {
             flashCountdown = flashResetValue;
             textDirty = 1;
             flashDirectionSign = -flashDirectionSign;
@@ -12753,7 +12880,11 @@ RECOIL_NO_GS void HudUiWidget::RebuildBltRectFromImage() {
     SetClipRect(&rect);
 }
 
-// Reimplements 0x4b3fb0: HudUiWidget::Draw
+/**
+ * Reimplements 0x4b3fb0: HudUiWidget::Draw.
+ * Original source path: D:\Proj\Battlesport\hudui.cpp.
+ * Purpose: draw pending widget dirty rectangles or the whole widget image after the base draw pass.
+ */
 void HudUiWidget::Draw() {
     if (image == 0) {
         return;
@@ -13061,8 +13192,11 @@ void HudUiTripletPanel::DestructorCore() {
 
 }
 
-// Reimplements 0x40e910: HudUiTriplet::InterpolateLayout
-// (D:\Proj\Battlesport\HudUiTriplet.cpp)
+/**
+ * Reimplements 0x40e910: HudUiTriplet::InterpolateLayout.
+ * Original source path: D:\Proj\Battlesport\HudUiTriplet.cpp.
+ * Purpose: interpolate the active scoreboard triplet layout fields between the stored start and end layouts.
+ */
 void HudUiTriplet::InterpolateLayout(
     float t
 ) {
@@ -15596,19 +15730,9 @@ void HudUiPanel::RebuildTextRect() {
                 clearBytes
             );
 
-            typedef int(__fastcall * UploadPixelsFn)(
-                zVidImagePartial * image,
-                HDC * outDc
-            );
-            typedef void(__fastcall * ReleaseSurfaceFn)(
-                zVidImagePartial * image,
-                HDC dc
-            );
-
             HDC drawDc = 0;
-            const unsigned int uploadAddress = g_zVideo_pfnImageUploadPixelsToSurface;
-            UploadPixelsFn uploadPixels = (UploadPixelsFn)(uploadAddress);
-            if (IsCallableProviderAddress(uploadAddress) && uploadPixels(
+            zVideo_ImageUploadPixelsProc uploadPixels = g_zVideo_pfnImageUploadPixelsToSurface;
+            if (uploadPixels != 0 && uploadPixels(
                 textPick,
                 &drawDc
             ) != 0) {
@@ -15679,9 +15803,8 @@ void HudUiPanel::RebuildTextRect() {
                     drawFormat
                 );
 
-                const unsigned int releaseAddress = g_zVideo_pfnImageReleaseSurface;
-                ReleaseSurfaceFn releaseSurface = (ReleaseSurfaceFn)(releaseAddress);
-                if (IsCallableProviderAddress(releaseAddress)) {
+                zVideo_ImageReleaseSurfaceProc releaseSurface = g_zVideo_pfnImageReleaseSurface;
+                if (releaseSurface != 0) {
                     releaseSurface(
                         textPick,
                         drawDc
@@ -16082,7 +16205,11 @@ HudUiCounterTextPanel * HudUiCounterTextPanel::Constructor() {
     return this;
 }
 
-// Reimplements 0x40dcd0: HudUiTriplet::Constructor
+/**
+ * Reimplements 0x40dcd0: HudUiTriplet::Constructor.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: initialize the scoreboard triplet container, entry vector, header panels, and row-cell panels.
+ */
 HudUiTriplet * HudUiTriplet::Constructor() {
     new ((HudUiContainer *)this) HudUiContainer;
     entries.rowInitFlag = 0;
@@ -16136,7 +16263,11 @@ HudUiTriplet * HudUiTriplet::Constructor() {
     return this;
 }
 
-// Reimplements 0x40e070: HudUiTriplet::DestructorCore
+/**
+ * Reimplements 0x40e070: HudUiTriplet::DestructorCore.
+ * Original source path: D:\Proj\Battlesport\HudUiTriplet.cpp.
+ * Purpose: release owned scoreboard header panels, row cells, and entry storage before container teardown.
+ */
 void HudUiTriplet::DestructorCore() {
     {
         int headerIndex;
@@ -16170,7 +16301,11 @@ void HudUiTriplet::DestructorCore() {
     HudUiContainer::DestructorCore();
 }
 
-// Reimplements 0x40e140: HudUiTriplet::RebuildDisplay (D:\Proj\Battlesport\HudUiTriplet.cpp)
+/**
+ * Reimplements 0x40e140: HudUiTriplet::RebuildDisplay.
+ * Original source path: D:\Proj\Battlesport\HudUiTriplet.cpp.
+ * Purpose: sort scoreboard entries and refresh the visible triplet rows and headers for score or lap mode.
+ */
 void HudUiTriplet::RebuildDisplay() {
     HudUiTripletInsertionSort(
         entries.begin,
@@ -16331,7 +16466,11 @@ void HudUiTriplet::RebuildDisplay() {
     }
 }
 
-// Reimplements 0x40e590: HudUiTriplet::AddEntry (D:\Proj\Battlesport\HudUiTriplet.cpp)
+/**
+ * Reimplements 0x40e590: HudUiTriplet::AddEntry.
+ * Original source path: D:\Proj\Battlesport\HudUiTriplet.cpp.
+ * Purpose: append a new network player row to the scoreboard entry vector and rebuild the display.
+ */
 void HudUiTriplet::AddEntry(
     GameNetPlayerRow *entryData
 ) {
@@ -16360,7 +16499,11 @@ void HudUiTriplet::AddEntry(
     RebuildDisplay();
 }
 
-// Reimplements 0x40e800: HudUiTriplet::UpdateEntryData (D:\Proj\Battlesport\HudUiTriplet.cpp)
+/**
+ * Reimplements 0x40e800: HudUiTriplet::UpdateEntryData.
+ * Original source path: D:\Proj\Battlesport\HudUiTriplet.cpp.
+ * Purpose: update the matching scoreboard entry from a network player row and rebuild the display.
+ */
 void HudUiTriplet::UpdateEntryData(
     GameNetPlayerRow *entryData
 ) {
@@ -16379,7 +16522,11 @@ void HudUiTriplet::UpdateEntryData(
     RebuildDisplay();
 }
 
-// Reimplements 0x40e880: HudUiTriplet::RemoveEntry (D:\Proj\Battlesport\HudUiTriplet.cpp)
+/**
+ * Reimplements 0x40e880: HudUiTriplet::RemoveEntry.
+ * Original source path: D:\Proj\Battlesport\HudUiTriplet.cpp.
+ * Purpose: remove the matching player row from the scoreboard entry vector and rebuild the display.
+ */
 void HudUiTriplet::RemoveEntry(
     GameNetPlayerRow *entryKey
 ) {
@@ -16405,8 +16552,11 @@ void HudUiTriplet::RemoveEntry(
     RebuildDisplay();
 }
 
-// Reimplements 0x40ea60: HudUiTriplet::IsLocalPlayerFirstEntry
-// (D:\Proj\Battlesport\HudUiTriplet.cpp)
+/**
+ * Reimplements 0x40ea60: HudUiTriplet::IsLocalPlayerFirstEntry.
+ * Original source path: D:\Proj\Battlesport\HudUiTriplet.cpp.
+ * Purpose: report whether the first scoreboard entry belongs to the local network player.
+ */
 int HudUiTriplet::IsLocalPlayerFirstEntry() {
     HudUiScoreboardEntry *const begin = entries.begin;
     int count = 0;
@@ -16423,8 +16573,11 @@ int HudUiTriplet::IsLocalPlayerFirstEntry() {
 
 namespace HudScoreboard {
 
-// Reimplements 0x40eab0: HudScoreboard::SetScaleAndRebuild
-// (D:\Proj\Battlesport\HudScoreboard.cpp)
+/**
+ * Reimplements 0x40eab0: HudScoreboard::SetScaleAndRebuild.
+ * Original source path: D:\Proj\Battlesport\HudScoreboard.cpp.
+ * Purpose: apply a scale to the global stats-list triplet layout and immediately rebuild its rows.
+ */
 void __stdcall SetScaleAndRebuild(
     float scale
 ) {
@@ -16432,8 +16585,11 @@ void __stdcall SetScaleAndRebuild(
     g_HudUiMgrStatsList->triplet->RebuildDisplay();
 }
 
-// Reimplements 0x40eae0: HudScoreboard::DispatchSetScale
-// (D:\Proj\Battlesport\HudScoreboard.cpp)
+/**
+ * Reimplements 0x40eae0: HudScoreboard::DispatchSetScale.
+ * Original source path: D:\Proj\Battlesport\HudScoreboard.cpp.
+ * Purpose: dispatch delta time through the global stats-list update slot during scoreboard scaling.
+ */
 void __stdcall DispatchSetScale(
     float deltaTime
 ) {
@@ -16443,17 +16599,18 @@ void __stdcall DispatchSetScale(
 
 } // namespace HudScoreboard
 
-// Reimplements 0x4bd160: HudUiTextStack4::PushLine (D:\Proj\Battlesport\HudUiTextStack4.cpp)
+/**
+ * Reimplements 0x4bd160: HudUiTextStack4::PushLine.
+ * Original source path: D:\Proj\Battlesport\HudUiTextStack4.cpp.
+ * Purpose: push a visible timed message into the four-row text stack.
+ */
 HudUiPanel * HudUiTextStack4::PushLine(
     const char *message,
     float duration
 ) {
     SetEnabled(1);
 
-    HudUiPanel *const firstLine = TextStackLineAt(
-        this,
-        0
-    );
+    HudUiPanel *const firstLine = &lines[0];
     if ((((HudUiElement *)(firstLine))->flags & 0x10u) == 0 &&
         strcmp(
             message,
@@ -16461,14 +16618,8 @@ HudUiPanel * HudUiTextStack4::PushLine(
         ) != 0) {
         {
             for (int sourceIndex = 2; sourceIndex >= 0; --sourceIndex) {
-                HudUiPanel *const source = TextStackLineAt(
-                    this,
-                    sourceIndex
-                );
-                HudUiPanel *const dest = TextStackLineAt(
-                    this,
-                    sourceIndex + 1
-                );
+                HudUiPanel *const source = &lines[sourceIndex];
+                HudUiPanel *const dest = &lines[sourceIndex + 1];
                 HudUiElement *const sourceElement = (HudUiElement *)(source);
 
                 if ((sourceElement->flags & 0x10u) == 0) {
@@ -16808,7 +16959,11 @@ void __fastcall PlayPowerupSfx(
     powerupSample->StopActiveVoicesIfPlaying();
 }
 
-// Reimplements 0x4138d0: HudUi::ShowTopMessageLine (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4138d0: HudUi::ShowTopMessageLine.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: show a top HUD message when the top-message stack is enabled.
+ */
 void __fastcall ShowTopMessageLine(
     const char *message,
     float duration
@@ -16822,7 +16977,11 @@ void __fastcall ShowTopMessageLine(
     }
 }
 
-// Reimplements 0x4138f0: HudUi::ShowChatLine (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4138f0: HudUi::ShowChatLine.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: show a chat HUD message when the chat stack is enabled.
+ */
 void __fastcall ShowChatLine(
     const char *message,
     float duration
@@ -16850,7 +17009,11 @@ void __fastcall RemoveScoreboardEntryRow(
     g_HudUiMgrStatsList->triplet->RemoveEntry(entryKey);
 }
 
-// Reimplements 0x4bd280: HudUi::PushTopMessageLine (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4bd280: HudUi::PushTopMessageLine.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: push a message directly into the global top-message stack.
+ */
 void __fastcall PushTopMessageLine(
     const char *message,
     float duration
@@ -16862,36 +17025,39 @@ void __fastcall PushTopMessageLine(
 }
 } // namespace HudUi
 
-// Reimplements 0x4bd3d0: HudUiTextStack4::SetTextColors
+/**
+ * Reimplements 0x4bd3d0: HudUiTextStack4::SetTextColors.
+ * Purpose: assign both text colors to every row in the four-line stack.
+ */
 void HudUiTextStack4::SetTextColors(
     unsigned int color0,
     unsigned int color1
 ) {
     for (int index = 3; index >= 0; --index) {
-        HudUiPanel *const panel = TextStackLineAt(
-            this,
-            index
-        );
+        HudUiPanel *const panel = &lines[index];
         panel->textColor0 = color0;
         panel->textColor1 = color1;
         panel->textDirty = 1;
     }
 }
 
-// Reimplements 0x4bd2a0: HudUiTextStack4::Clear
+/**
+ * Reimplements 0x4bd2a0: HudUiTextStack4::Clear.
+ * Purpose: clear text and hide every row in the four-line stack.
+ */
 void HudUiTextStack4::Clear() {
     for (int index = 0; index < 4; ++index) {
-        HudUiPanel *const panel = TextStackLineAt(
-            this,
-            index
-        );
+        HudUiPanel *const panel = &lines[index];
         panel->SetTextFmt("");
         panel->SetVisible(0);
     }
 }
 
-// Reimplements 0x4bd110: HudUiTextStack4::SetFontAll
-// (D:\Proj\Battlesport\HudUiTextStack4.cpp)
+/**
+ * Reimplements 0x4bd110: HudUiTextStack4::SetFontAll.
+ * Original source path: D:\Proj\Battlesport\HudUiTextStack4.cpp.
+ * Purpose: apply one font definition to every row in the four-line stack.
+ */
 void HudUiTextStack4::SetFontAll(
     const char *faceName,
     int height,
@@ -16899,10 +17065,7 @@ void HudUiTextStack4::SetFontAll(
     int width
 ) {
     for (int index = 3; index >= 0; --index) {
-        HudUiPanel *const panel = TextStackLineAt(
-            this,
-            index
-        );
+        HudUiPanel *const panel = &lines[index];
         panel->SetFont(
             faceName,
             height,
@@ -16915,44 +17078,44 @@ void HudUiTextStack4::SetFontAll(
     }
 }
 
-// Reimplements 0x4bd410: HudUiTextStack4::SetXAll
+/**
+ * Reimplements 0x4bd410: HudUiTextStack4::SetXAll.
+ * Purpose: move every row in the four-line stack to a shared x position.
+ */
 void HudUiTextStack4::SetXAll(
     int newX
 ) {
     for (int index = 0; index < 4; ++index) {
-        HudUiPanel *const panel = TextStackLineAt(
-            this,
-            index
-        );
+        HudUiPanel *const panel = &lines[index];
         panel->SetX(newX);
     }
 }
 
-// Reimplements 0x4bd440: HudUiTextStack4::SetYDescending
+/**
+ * Reimplements 0x4bd440: HudUiTextStack4::SetYDescending.
+ * Purpose: place every row in the four-line stack at descending y positions.
+ */
 void HudUiTextStack4::SetYDescending(
     int yStart
 ) {
     int y = yStart;
     for (int index = 0; index < 4; ++index) {
-        HudUiPanel *const panel = TextStackLineAt(
-            this,
-            index
-        );
+        HudUiPanel *const panel = &lines[index];
         panel->SetY(y);
         y -= 0x12;
     }
 }
 
-// Reimplements 0x4bd020: HudUiTopMessageStack::Constructor
+/**
+ * Reimplements 0x4bd020: HudUiTopMessageStack::Constructor.
+ * Purpose: construct the top-message four-line stack and configure ascending rows.
+ */
 HudUiTopMessageStack * HudUiTopMessageStack::Constructor() {
     new ((HudUiContainer *)this) HudUiContainer;
 
     {
         for (int index = 0; index < 4; ++index) {
-            TextStackLineAt(
-                this,
-                index
-            )->ConstructorDefault(
+            lines[index].ConstructorDefault(
                 0,
                 0,
                 0
@@ -16965,10 +17128,7 @@ HudUiTopMessageStack * HudUiTopMessageStack::Constructor() {
         for (int index = 0; index < 4; ++index) {
             ConfigureTextStackLine(
                 this,
-                TextStackLineAt(
-                    this,
-                    index
-                ),
+                &lines[index],
                 y,
                 0x0d,
                 0x258,
@@ -16981,21 +17141,24 @@ HudUiTopMessageStack * HudUiTopMessageStack::Constructor() {
     return this;
 }
 
-// Reimplements 0x40fe90: HudUiTopMessageStack::DestructorCore
+/**
+ * Reimplements 0x40fe90: HudUiTopMessageStack::DestructorCore.
+ * Purpose: destroy the top-message stack rows and container base.
+ */
 void HudUiTopMessageStack::DestructorCore() {
     DestroyTextStackLines(this);
 }
 
-// Reimplements 0x4bd2d0: HudUiChatMessageStack::Constructor
+/**
+ * Reimplements 0x4bd2d0: HudUiChatMessageStack::Constructor.
+ * Purpose: construct the chat-message four-line stack and configure descending rows.
+ */
 HudUiChatMessageStack * HudUiChatMessageStack::Constructor() {
     new ((HudUiContainer *)this) HudUiContainer;
 
     {
         for (int index = 0; index < 4; ++index) {
-            TextStackLineAt(
-                this,
-                index
-            )->ConstructorDefault(
+            lines[index].ConstructorDefault(
                 0,
                 0,
                 0
@@ -17006,10 +17169,7 @@ HudUiChatMessageStack * HudUiChatMessageStack::Constructor() {
     int y = 0x159;
     {
         for (int index = 0; index < 4; ++index) {
-            HudUiPanel *const panel = TextStackLineAt(
-                this,
-                index
-            );
+            HudUiPanel *const panel = &lines[index];
             panel->textColor0 = 0x00996a00;
             panel->textColor1 = 0x0095c7ff;
             panel->textDirty = 1;
@@ -17028,7 +17188,10 @@ HudUiChatMessageStack * HudUiChatMessageStack::Constructor() {
     return this;
 }
 
-// Reimplements 0x40fef0: HudUiChatMessageStack::DestructorCore
+/**
+ * Reimplements 0x40fef0: HudUiChatMessageStack::DestructorCore.
+ * Purpose: destroy the chat-message stack rows and container base.
+ */
 void HudUiChatMessageStack::DestructorCore() {
     DestroyTextStackLines(this);
 }

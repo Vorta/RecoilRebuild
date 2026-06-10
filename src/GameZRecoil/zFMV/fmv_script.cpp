@@ -32,16 +32,8 @@ extern "C" int g_zFMV_ActionImage_ActiveRegionY = 0;
 extern "C" int g_zFMV_ActionImage_ActiveRegionW = 0;
 extern "C" int g_zFMV_ActionImage_ActiveRegionH = 0;
 extern "C" zFMV_Rect g_zFMV_ActionPlayMci_DestRect = {0};
-extern "C" unsigned int g_zVideo_pfnBltSwToPrimaryRect;
 
 namespace {
-typedef void(__fastcall *zFMV_BltSwToPrimaryRectProc)(
-    zVidImagePartial *srcImage,
-    int srcColorKeyEnable,
-    zVidRect32 *srcRect,
-    zVidRect32 *dstRect
-);
-typedef void(*zFMV_FlushProc)();
 const int k_zFMV_RendererBackendSoftware = 0;
 const int k_zFMV_RendererBackend3dfx = 2;
 const int k_zFMV_BlurModeHorizontal = 1;
@@ -94,8 +86,6 @@ struct zFMV_MciPlayParams {
     DWORD from;
     DWORD to;
 };
-
-typedef void( *zFMV_ImageEnsureSurfaceProc)(zVidImagePartial *image);
 
 /**
  * Observed in callers 0x462330, 0x4631af, 0x463221, 0x4635af, and 0x463b2f.
@@ -1086,9 +1076,7 @@ void zFMV_Stream::Destructor() {
         free(compressedFrameBuffer);
 
         if (surface != 0) {
-            ((zFMV_ImageEnsureSurfaceProc)(g_zVideo_pfnImageEnsureSurfaceForCurrentDevice))(
-                (zVidImagePartial *)(this)
-            );
+            g_zVideo_pfnImageEnsureSurfaceForCurrentDevice((zVidImagePartial *)(this));
         }
 
         free(pixels);
@@ -1626,7 +1614,7 @@ int zFMV_ActionImage::Update(double) {
                 );
                 zVideo::Dispatch_UnlockPrimarySurfaceState();
             } else {
-                ((zFMV_BltSwToPrimaryRectProc)(g_zVideo_pfnBltSwToPrimaryRect))(
+                g_zVideo_pfnBltSwToPrimaryRect(
                     (zVidImagePartial *)(image),
                     0,
                     0,
@@ -1755,7 +1743,7 @@ int zFMV_ActionFade::Update(double timeSec) {
 
     if (g_zVideo_ActiveRendererPath != k_zFMV_RendererBackendSoftware) {
         zVideoD3D::SceneEnter();
-        ((zFMV_FlushProc)g_zVideo_pfnFlushQuadBatch)();
+        g_zVideo_pfnFlushQuadBatch();
         zVideoD3D::SceneLeave();
         zVideo::AdjustSurfacesIfEnabled(
             0,
@@ -1867,7 +1855,7 @@ int zFMV_ActionPlayAvi::Update(
             zVideo::RunPostprocessOnPrimaryBuffer();
             result = playbackStream->ReadAndDecodeFrame(frameIndex);
             zVideo::Dispatch_UnlockPrimarySurfaceState();
-            ((zFMV_BltSwToPrimaryRectProc)(g_zVideo_pfnBltSwToPrimaryRect))(
+            g_zVideo_pfnBltSwToPrimaryRect(
                 (zVidImagePartial *)(stream),
                 0,
                 0,
@@ -1876,7 +1864,7 @@ int zFMV_ActionPlayAvi::Update(
             blitPrimaryToSwFirst = 1;
         } else {
             result = playbackStream->ReadAndDecodeFrame(frameIndex);
-            ((zFMV_BltSwToPrimaryRectProc)(g_zVideo_pfnBltSwToPrimaryRect))(
+            g_zVideo_pfnBltSwToPrimaryRect(
                 (zVidImagePartial *)(stream),
                 0,
                 0,

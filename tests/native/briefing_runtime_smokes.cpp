@@ -141,7 +141,7 @@ struct TestCompositePanelConstructor {
             0
         );
         panel->activeEntryCount = 0;
-        panel->entryVector.allocatorStorage = 0;
+        panel->entryVector.allocatorProxy.value = 0;
         panel->entryVector.begin = 0;
         panel->entryVector.end = 0;
         panel->entryVector.capacityEnd = 0;
@@ -412,8 +412,9 @@ extern "C" int briefing_runtime_constructor_smoke(void) {
 }
 
 extern "C" int briefing_locator_panel_constructor_smoke(void) {
-    HudUiBriefingLocatorPanel locator{};
-    HudUiBriefingLocatorPanel *const result = locator.Constructor();
+    alignas(4) unsigned char storage[sizeof(HudUiBriefingLocatorPanel)] = {};
+    HudUiBriefingLocatorPanel *const locator =
+        new (storage) HudUiBriefingLocatorPanel;
 
     const unsigned int expectedColor =
         static_cast<unsigned short>(zVid_PackColorRGB(
@@ -423,13 +424,12 @@ extern "C" int briefing_locator_panel_constructor_smoke(void) {
         ));
 
     const bool ok =
-        result == &locator &&
-        locator.x == 100 &&
-        locator.y == 110 &&
-        (locator.flags & 0x10u) != 0 &&
-        locator.radius == 30 &&
-        locator.radiusSquared == 900 &&
-        locator.color565 == expectedColor;
+        locator->x == 100 &&
+        locator->y == 110 &&
+        (locator->flags & 0x10u) != 0 &&
+        locator->radius == 30 &&
+        locator->radiusSquared == 900 &&
+        locator->color565 == expectedColor;
     return ok ? 0 : 1;
 }
 
@@ -437,8 +437,7 @@ extern "C" int briefing_locator_panel_blit_dirty_rect_smoke(void) {
     zVideo_BltSourceToPrimaryProc const oldBlit = g_zVideo_pfnBltSourceToPrimary;
     g_zVideo_pfnBltSourceToPrimary = TestLocatorBltSourceToPrimary;
 
-    HudUiBriefingLocatorPanel locator{};
-    locator.Constructor();
+    HudUiBriefingLocatorPanel locator;
 
     g_locatorBlitCount = 0;
     g_locatorBlitImage = 0;
@@ -477,8 +476,7 @@ extern "C" int briefing_locator_panel_blit_dirty_rect_smoke(void) {
 extern "C" int briefing_locator_panel_update_smoke(void) {
     const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
 
-    HudUiBriefingLocatorPanel locator{};
-    locator.Constructor();
+    HudUiBriefingLocatorPanel locator;
 
     locator.flags = 0;
     locator.clipRect.left = 1;

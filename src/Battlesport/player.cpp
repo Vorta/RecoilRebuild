@@ -1928,12 +1928,10 @@ void zUtil_SaveGameState::UpdateModalLoopSfx(
  * Purpose: constructs the underwater pass-3 HUD overlay as a zVideoFxPass3Element
  * and clears the per-pass clip rectangle consumed by ApplyPass3.
  */
-Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui() {
-    HudUiElement::Constructor(
+Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui() : zVideoFxPass3Element(
         0,
         0
-    );
-    clipRectOrNull = 0;
+    ) {
 }
 
 Player_UnderwaterFxPass3Ui * Player_UnderwaterFxPass3Ui::Constructor() {
@@ -1946,12 +1944,10 @@ Player_UnderwaterFxPass3Ui * Player_UnderwaterFxPass3Ui::Constructor() {
  * Purpose: constructs the projectile-camera pass-3 HUD overlay as a zVideoFxPass3Element
  * and clears the per-pass clip rectangle consumed by ApplyPass3.
  */
-Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui() {
-    HudUiElement::Constructor(
+Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui() : zVideoFxPass3Element(
         0,
         0
-    );
-    clipRectOrNull = 0;
+    ) {
 }
 
 Player_ProjectileCameraFxPass3Ui * Player_ProjectileCameraFxPass3Ui::Constructor() {
@@ -1959,13 +1955,20 @@ Player_ProjectileCameraFxPass3Ui * Player_ProjectileCameraFxPass3Ui::Constructor
     return this;
 }
 
-// Reimplements 0x423440: Player_UnderwaterFxPass3Ui::ApplyPass3
+/**
+ * Reimplements 0x423440: Player_UnderwaterFxPass3Ui::ApplyBlueTint.
+ * Purpose: applies the underwater blue-tint pass to the active pass-3 input
+ * rectangle through the recovered ApplyPass3 virtual slot.
+ */
 void Player_UnderwaterFxPass3Ui::ApplyPass3() {
     zVideo_FxSurface::ApplyBlueTintRect((zVidRect32 *)(clipRectOrNull));
 }
 
-// Reimplements 0x423450: Player_ProjectileCameraFxPass3Ui::ApplyPass3
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x423450: Player_ProjectileCameraFxPass3Ui::ApplyGreenMask.
+ * Purpose: applies the projectile-camera green-mask pass to the active pass-3
+ * input rectangle through the recovered ApplyPass3 virtual slot.
+ */
 void Player_ProjectileCameraFxPass3Ui::ApplyPass3() {
     zVideo_FxSurface::ApplyGreenMaskRect((zVidRect32 *)(clipRectOrNull));
 }
@@ -9978,8 +9981,14 @@ void UpdateCameraWeatherFxEmitterVisibility() {
     fxEmitter->particleAgeTick = zOpt::GetReplicateMode() == 0 ? 1 : 0;
 }
 
-// Reimplements 0x425a20: Player::TickLocalPlayerControls
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x425a20: Player::TickLocalPlayerControls.
+ *
+ * Purpose: advance local player control input, camera, movement, weapon, and
+ * HUD interaction state for the current frame.
+ *
+ * Original source: D:\Proj\Battlesport\player.cpp.
+ */
 void __fastcall TickLocalPlayerControls(
     zUtil_SaveGameState *saveState
 ) {
@@ -9992,7 +10001,7 @@ void __fastcall TickLocalPlayerControls(
 
     zInput::MouseStateSnapshot mouseState = {0};
     if (zInp::GetJoystickOption() != 0) {
-        zInput::JoystickStatePartial *const joyState = zInput::DI_GetCurrentState();
+        DIJOYSTATE2 *const joyState = zInput::DI_GetCurrentState();
         if (playerState->cameraState == kPlayerCameraStateProjectileAttached) {
             playerState->cursorDeltaX = 0.0f;
             playerState->cursorDeltaY = 0.0f;

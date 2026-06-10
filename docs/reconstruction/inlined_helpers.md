@@ -40,6 +40,71 @@ Open limits:
 
 ## Current Entries
 
+## zRndrSpanDepthAtXByPartsLocal
+
+Evidence:
+- Caller addresses: `0x4907c0` `zRndr_SpanOcclusion::TestSpanDepthOrderPair`,
+  `0x491dd0` `zRndr_SpanOcclusion::TestColumnVisibility`, and nearby recovered
+  span-occlusion insertion/build helpers in `zRndr_Draw.cpp`.
+- Repeated instruction/source pattern: callers evaluate
+  `invDepth + (x - sampleXMin) * depthSlope` from `zRndr_SpanNode` fields before
+  depth-order, trimming, or visibility comparisons.
+- Likely original owner/source file: `GameZRecoil/zRndr/zRndr_Draw.cpp`.
+- Why no standalone retail function is expected: BN shows the arithmetic inlined
+  into the span-occlusion caller bodies and no standalone function target is
+  identified for this expression helper.
+
+Restored source form:
+- `static float zRndrSpanDepthAtXByPartsLocal(...)` in the zRndr translation
+  unit.
+- Callers using it: span-occlusion depth-order and visibility helpers.
+
+Verification notes:
+- Native tests: span-occlusion insert, build-list, column-visibility,
+  point-visibility, and rasterize smokes cover callers using the helper.
+- VC byte/source-cluster attempt: no standalone helper byte target exists; tier
+  `S` remains deferred to the coherent zRndr span-occlusion source-cluster pass.
+- Known tier `S` limits: accepted only as recovered inline source shape, not a
+  standalone tier marker.
+
+Open limits:
+- Some span-occlusion callers still carry BN limited reconstruction markers
+  because x87 scratch and depth comparisons render verbosely in HLIL.
+
+## zImage::CreateDefaultTextureRecord
+
+Evidence:
+- Caller address: `0x46d550` `zImage::InitTextureDirectory`.
+- Instruction/source pattern: source-faithful helper recovered from this caller
+  body, which routes the
+  `DEFAULT_TEXTURE`/default-image contract through
+  `g_zVideo_pfnCreateTextureRecord` and stores the returned texture record in
+  `g_zImage_DefaultTextureRecord`.
+- Likely original owner/source file: `GameZRecoil/zImage/zimg_texture.cpp`.
+- No standalone retail function is expected: no standalone plan/BN function was
+  identified for this helper in the inspected evidence; the behavior appears as
+  caller-local setup around the zImage default texture globals and active
+  zVideo texture callback.
+
+Restored source form:
+- namespace helper: `zImage::CreateDefaultTextureRecord()`.
+- Callers using it: `zImage::InitTextureDirectory`.
+
+Verification notes:
+- Native tests: `zvideo_init_video_system` and
+  `zimage_init_texture_directory` cover callers through focused smoke targets.
+- VC byte/source-cluster attempt: no standalone helper byte target exists;
+  `zImage::InitTextureDirectory` remains below tier `B` pending its owner/data
+  audit, and `zVideo::InitVideoSystem` now uses its own direct default-image
+  callback shape.
+- Known tier `S` limits: accepted only as recovered helper source shape, not a
+  standalone tier marker.
+
+Open limits:
+- `0x46d550` remains source-owner/data pending. `0x4a75f0` is tracked on its own
+  plan entry because BN shows a direct null-name call to the default image
+  texture record callback.
+
 ## SaveLoadEntryCount
 
 Evidence:

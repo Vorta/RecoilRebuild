@@ -26,7 +26,7 @@
     {
       "name": "vs-x86",
       "displayName": "Visual Studio 2026 Win32",
-      "description": "Generates a Win32 Visual Studio solution for native binary-safe work and VS MCP builds.",
+      "description": "Generates a Win32 Visual Studio solution for native tier S verification work and VS MCP builds.",
       "generator": "Visual Studio 18 2026",
       "architecture": "Win32",
       "binaryDir": "${sourceDir}/build/vs-x86",

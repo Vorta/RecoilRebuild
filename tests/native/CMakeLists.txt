@@ -7,12 +7,17 @@ add_executable(recoil_native_smoke
     zinput_tests.cpp
     zimage_tests.cpp
     zinterp_tests.cpp
+    zvideo_dd_enum_smokes.cpp
+    zvideo_noise_tests.cpp
+    zvideo_blur_region_smokes.cpp
     zloc_tests.cpp
+    zhud_triplet_smokes.cpp
     zsnd_cd_tests.cpp
     zsnd_stream_tests.cpp
     zreader_tests.cpp
     briefing_runtime_smokes.cpp
     zhud_composite_panel_smokes.cpp
+    player_fx_pass3_smokes.cpp
     zhud_widget_tests.cpp
     hud_save_load_tests.cpp
     zmath_tests.cpp

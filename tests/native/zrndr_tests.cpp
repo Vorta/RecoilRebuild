@@ -285,12 +285,12 @@ void __fastcall TestRasterSelectedSpanOp(std::int32_t spanOpContext, std::int32_
     ++g_rasterSpanOpCount;
     g_rasterLastContext = spanOpContext;
     g_rasterLastPixelCount = pixelCount;
-    g_rasterLastDst = zRndr::g_spanCurrentDst16;
+    g_rasterLastDst = zRndr::g_spanCurrentSpanBaseAddr;
     if (g_rasterSpanOpCount <= 16) {
         const int index = g_rasterSpanOpCount - 1;
         g_rasterTraceContext[index] = spanOpContext;
         g_rasterTracePixelCount[index] = pixelCount;
-        g_rasterTraceDst[index] = zRndr::g_spanCurrentDst16;
+        g_rasterTraceDst[index] = zRndr::g_spanCurrentSpanBaseAddr;
     }
 }
 
@@ -301,7 +301,7 @@ void __fastcall TestTexturedQueuedSpanOp(std::int32_t texU, std::int32_t texV,
     g_texturedQueuedLastTexV = texV;
     g_texturedQueuedLastPixelCount = pixelCount;
     g_texturedQueuedLastVShift = texVShift;
-    g_rasterLastDst = zRndr::g_spanCurrentDst16;
+    g_rasterLastDst = zRndr::g_spanCurrentSpanBaseAddr;
 }
 
 void __fastcall TestFlatImmediateSpanOp(std::int32_t flatSpanOpEcxArg,
@@ -311,7 +311,7 @@ void __fastcall TestFlatImmediateSpanOp(std::int32_t flatSpanOpEcxArg,
     g_flatImmediateLastEcxArg = flatSpanOpEcxArg;
     g_flatImmediateLastEdxArg = flatSpanOpEdxArg;
     g_rasterLastPixelCount = pixelCount;
-    g_rasterLastDst = zRndr::g_spanCurrentDst16;
+    g_rasterLastDst = zRndr::g_spanCurrentSpanBaseAddr;
 }
 
 bool SameQueuedVec3(const zRndr::QueuedVec3 &actual, const zVec3 &expected) {
@@ -3225,12 +3225,14 @@ extern "C" int zrndr_draw_textured_queued_alpha_smoke(void) {
     std::uint16_t frame[16 * 16] = {};
     zRndr::SpanNodePartial spanPool[16] = {};
     std::uint8_t texels[16] = {};
+    char alphaMap[16] = {};
     std::uint16_t palette[0x400] = {};
 
     zVidImagePartial image{};
     image.width = 4;
     image.height = 4;
     image.pixels = texels;
+    image.queuedAlphaMap = alphaMap;
     image.palette = palette;
     image.widthScale = 4.0f;
     image.uShiftFrom20 = 20;
@@ -3275,7 +3277,9 @@ extern "C" int zrndr_draw_textured_queued_alpha_smoke(void) {
     zRndr::g_inverseDepthScale = 1.0f;
     zRndr::g_perspectiveAdaptiveMinSpan = 0;
     zRndr::g_perspectiveTextureDeltaXPow2 = 4;
-    zRndr::g_spanActiveTexels = nullptr;
+    zRndr::g_spanActiveTexPixels = nullptr;
+    zRndr::g_spanActiveTexAlphaMap = nullptr;
+    zRndr::g_spanQueuedTexAlphaMap = nullptr;
     zRndr::g_spanActiveTexPalette = nullptr;
     zRndr::g_spanActiveTexUMask = 0;
     zRndr::g_spanActiveTexVMask = 0;
@@ -3287,7 +3291,9 @@ extern "C" int zrndr_draw_textured_queued_alpha_smoke(void) {
         return 1;
     }
 
-    if (zRndr::g_spanActiveTexels != texels || zRndr::g_spanActiveTexPalette != &palette[0x300] ||
+    if (zRndr::g_spanActiveTexPixels != texels || zRndr::g_spanActiveTexAlphaMap != nullptr ||
+        zRndr::g_spanQueuedTexAlphaMap != alphaMap ||
+        zRndr::g_spanActiveTexPalette != &palette[0x300] ||
         zRndr::g_spanActiveTexUMask != 3 || zRndr::g_spanActiveTexVMask != (3 << 20)) {
         return 2;
     }
@@ -3357,8 +3363,9 @@ extern "C" int zrndr_draw_textured_fan_tri_smoke(void) {
     zRndr::g_inverseDepthScale = 1.0f;
     zRndr::g_perspectiveAdaptiveMinSpan = 0;
     zRndr::g_perspectiveTextureDeltaXPow2 = 4;
-    zRndr::g_spanActiveTexels = nullptr;
+    zRndr::g_spanActiveTexPixels = nullptr;
     zRndr::g_spanActiveTexAlphaMap = nullptr;
+    zRndr::g_spanQueuedTexAlphaMap = nullptr;
     zRndr::g_spanActiveTexPalette = nullptr;
     zRndr::g_spanActiveConstAlphaBits = 0;
 
@@ -3369,7 +3376,8 @@ extern "C" int zrndr_draw_textured_fan_tri_smoke(void) {
         return 1;
     }
 
-    if (zRndr::g_spanActiveTexels != texels || zRndr::g_spanActiveTexAlphaMap != alphaMap ||
+    if (zRndr::g_spanActiveTexPixels != texels || zRndr::g_spanActiveTexAlphaMap != nullptr ||
+        zRndr::g_spanQueuedTexAlphaMap != alphaMap ||
         zRndr::g_spanActiveTexPalette != &palette[0x200] ||
         zRndr::g_spanActiveConstAlphaBits != 0x80) {
         return 2;
@@ -3438,7 +3446,7 @@ extern "C" int zrndr_draw_flat_queued_smoke(void) {
     zRndr::g_inverseDepthScale = 1.0f;
     zRndr::g_perspectiveAdaptiveMinSpan = 0;
     zRndr::g_perspectiveTextureDeltaXPow2 = 4;
-    zRndr::g_spanActiveTexels = nullptr;
+    zRndr::g_spanActiveTexPixels = nullptr;
     zRndr::g_spanActiveTexAlphaMap = nullptr;
     zRndr::g_spanActiveTexPalette = nullptr;
 
@@ -3449,7 +3457,7 @@ extern "C" int zrndr_draw_flat_queued_smoke(void) {
         return 1;
     }
 
-    if (zRndr::g_spanActiveTexels != texels || zRndr::g_spanActiveTexAlphaMap != alphaMap ||
+    if (zRndr::g_spanActiveTexPixels != texels || zRndr::g_spanActiveTexAlphaMap != alphaMap ||
         zRndr::g_spanActiveTexPalette != &palette[0x200] ||
         zRndr::g_pfnSelectedSpanOp_Mode0 != zRndr::g_pfnFlatQueuedSpanOp_Mode0) {
         return 2;
@@ -3516,7 +3524,7 @@ extern "C" int zrndr_renderer_draw_poly_tlv_smoke(void) {
     zRndr::g_pfnPolyTlvSpanOpAlt_Mode1 = nullptr;
     zRndr::g_inverseDepthBias = 0.0f;
     zRndr::g_inverseDepthScale = 1.0f;
-    zRndr::g_spanActiveTexels = nullptr;
+    zRndr::g_spanActiveTexPixels = nullptr;
     zRndr::g_spanActiveTexAlphaMap = nullptr;
     zRndr::g_spanActiveTexPalette = nullptr;
     zRndr::g_spanActiveConstAlphaBits = 0;
@@ -3528,7 +3536,7 @@ extern "C" int zrndr_renderer_draw_poly_tlv_smoke(void) {
         return 1;
     }
 
-    if (zRndr::g_spanActiveTexels != texels || zRndr::g_spanActiveTexAlphaMap != alphaMap ||
+    if (zRndr::g_spanActiveTexPixels != texels || zRndr::g_spanActiveTexAlphaMap != alphaMap ||
         zRndr::g_spanActiveTexPalette != &palette[0x200] ||
         zRndr::g_spanActiveConstAlphaBits != 0x3f000000) {
         return 2;
@@ -3592,7 +3600,7 @@ extern "C" int zrndr_draw_textured_queued_smoke(void) {
     zRndr::g_inverseDepthScale = 1.0f;
     zRndr::g_perspectiveAdaptiveMinSpan = 0;
     zRndr::g_perspectiveTextureDeltaXPow2 = 4;
-    zRndr::g_spanActiveTexels = nullptr;
+    zRndr::g_spanActiveTexPixels = nullptr;
     zRndr::g_spanActiveTexPalette = nullptr;
 
     zRndr_DrawTexturedQueued(&entry, projectedVerts, nullptr, triVerts, triUVs, &shadeTriplet, 3, 0,
@@ -3603,7 +3611,7 @@ extern "C" int zrndr_draw_textured_queued_smoke(void) {
         return 1;
     }
 
-    return zRndr::g_spanActiveTexels == texels && zRndr::g_spanActiveTexPalette == &palette[0x200]
+    return zRndr::g_spanActiveTexPixels == texels && zRndr::g_spanActiveTexPalette == &palette[0x200]
                ? 0
                : 2;
 }
@@ -3888,47 +3896,47 @@ extern "C" int zrndr_span_alpha_blend_565_const_alpha_pal8_smoke(void) {
     palette[9] = 0x07e0;
     palette[0x001f] = 0xffff;
 
-    zRndr::g_spanActiveTexels = texels;
+    zRndr::g_spanActiveTexPixels = texels;
     zRndr::g_spanActiveTexPalette = palette;
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x7f;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
     zRndr::g_spanActiveConstAlphaBits = 0xff;
 
     zRndr::SpanAlphaBlend565ConstAlphaFromPal8(0, 0, 2, 0);
-    if (dst[0] != 0x0000 || dst[1] != 0xf800 || zRndr::g_spanCurrentDst16 != dst) {
+    if (dst[0] != 0x0000 || dst[1] != 0xf800 || zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
     dst[1] = 0x001f;
-    zRndr::g_spanCurrentDst16 = &dst[1];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[1];
     zRndr::g_spanActiveConstAlphaBits = 0x80;
     zRndr::SpanAlphaBlend565ConstAlphaFromPal8(1 << 20, 0, 1, 0);
     if (dst[1] != 0x7bff) {
         return 2;
     }
 
-    zRndr::g_spanCurrentDst16 = &dst[2];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[2];
     zRndr::g_spanActiveConstAlphaBits = 3;
     zRndr::SpanAlphaBlend565ConstAlphaFromPal8(2 << 20, 0, 1, 0);
-    if (dst[2] != 0x0000 || zRndr::g_spanCurrentDst16 != &dst[2]) {
+    if (dst[2] != 0x0000 || zRndr::g_spanCurrentSpanBaseAddr != &dst[2]) {
         return 3;
     }
 
-    zRndr::g_spanCurrentDst16 = &dst[3];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[3];
     zRndr::g_spanActiveConstAlphaBits = 0xff;
     zRndr::SpanMasked16FromPal8To565(2 << 20, 0, 1, 0);
-    return dst[3] == 0x07e0 && zRndr::g_spanCurrentDst16 == &dst[3] ? 0 : 4;
+    return dst[3] == 0x07e0 && zRndr::g_spanCurrentSpanBaseAddr == &dst[3] ? 0 : 4;
 }
 
 extern "C" int zrndr_fill_span16_opaque_smoke(void) {
     std::uint16_t dst[7] = {0xaaaa, 0x1111, 0x2222, 0x3333, 0x4444, 0x5555, 0xbbbb};
 
-    zRndr::g_spanCurrentDst16 = &dst[1];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[1];
     zRndr_FillSpan16Opaque(0x12345, 5);
-    if (dst[0] != 0xaaaa || dst[6] != 0xbbbb || zRndr::g_spanCurrentDst16 != &dst[1]) {
+    if (dst[0] != 0xaaaa || dst[6] != 0xbbbb || zRndr::g_spanCurrentSpanBaseAddr != &dst[1]) {
         return 1;
     }
 
@@ -3944,19 +3952,19 @@ extern "C" int zrndr_fill_span16_opaque_smoke(void) {
 extern "C" int zrndr_fill_span555_solid_smoke(void) {
     std::uint16_t dst[4] = {0x001f, 0x2222, 0x3333, 0x4444};
 
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
     zRndr_FillSpan555Solid(0x7fff, 7, 1);
-    if (dst[0] != 0x001f || zRndr::g_spanCurrentDst16 != dst) {
+    if (dst[0] != 0x001f || zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
     zRndr_FillSpan555Solid(0x7fff, 0x80, 1);
     if (dst[0] != 0x3dff) {
         return 2;
     }
 
-    zRndr::g_spanCurrentDst16 = &dst[1];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[1];
     zRndr_FillSpan555Solid(0x1234, 0xfc, 2);
     return dst[1] == 0x1234 && dst[2] == 0x1234 && dst[3] == 0x4444 ? 0 : 3;
 }
@@ -3964,19 +3972,19 @@ extern "C" int zrndr_fill_span555_solid_smoke(void) {
 extern "C" int zrndr_fill_span565_solid_smoke(void) {
     std::uint16_t dst[4] = {0x001f, 0x2222, 0x3333, 0x4444};
 
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
     zRndr_FillSpan565Solid(0xffff, 3, 1);
-    if (dst[0] != 0x001f || zRndr::g_spanCurrentDst16 != dst) {
+    if (dst[0] != 0x001f || zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
     zRndr_FillSpan565Solid(0xffff, 0x80, 1);
     if (dst[0] != 0x7bff) {
         return 2;
     }
 
-    zRndr::g_spanCurrentDst16 = &dst[1];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[1];
     zRndr_FillSpan565Solid(0x5678, 0xfc, 2);
     return dst[1] == 0x5678 && dst[2] == 0x5678 && dst[3] == 0x4444 ? 0 : 3;
 }
@@ -3985,28 +3993,28 @@ extern "C" int zrndr_span_masked_tex16_to_565_smoke(void) {
     std::uint16_t texels[4] = {0x0000, 0xf800, 0x07e0, 0x001f};
     std::uint16_t dst[4] = {0x1111, 0x2222, 0x3333, 0x4444};
 
-    zRndr::g_spanActiveTexels = reinterpret_cast<std::uint8_t *>(texels);
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexPixels = reinterpret_cast<std::uint8_t *>(texels);
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x7f;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
     zRndr::g_spanActiveConstAlphaBits = 0xff;
 
     zRndr::SpanMasked16FromTex16To565(0, 0, 3, 0);
     if (dst[0] != 0x1111 || dst[1] != 0xf800 || dst[2] != 0x07e0 ||
-        zRndr::g_spanCurrentDst16 != dst) {
+        zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
-    zRndr::g_spanCurrentDst16 = &dst[2];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[2];
     zRndr::g_spanActiveConstAlphaBits = 0x80;
     zRndr::SpanMasked16FromTex16To565(3 << 20, 0, 1, 0);
     if (dst[2] != 0x07e0) {
         return 2;
     }
 
-    zRndr::g_spanCurrentDst16 = &dst[3];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[3];
     zRndr::g_spanActiveConstAlphaBits = 3;
     zRndr::SpanMasked16FromTex16To565(3 << 20, 0, 1, 0);
     return dst[3] == 0x4444 ? 0 : 3;
@@ -4020,60 +4028,60 @@ extern "C" int zrndr_span_masked_16_from_pal8_to565_smoke(void) {
     palette[9] = 0x07e0;
     palette[0x001f] = 0xffff;
 
-    zRndr::g_spanActiveTexels = texels;
+    zRndr::g_spanActiveTexPixels = texels;
     zRndr::g_spanActiveTexPalette = palette;
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x7f;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
     zRndr::g_spanActiveConstAlphaBits = 0xff;
 
     zRndr::SpanMasked16FromPal8To565(0, 0, 3, 0);
     if (dst[0] != 0x1111 || dst[1] != 0xf800 || dst[2] != 0x07e0 ||
-        zRndr::g_spanCurrentDst16 != dst) {
+        zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
-    zRndr::g_spanCurrentDst16 = &dst[3];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[3];
     zRndr::g_spanActiveConstAlphaBits = 0x80;
     zRndr::SpanMasked16FromPal8To565(3 << 20, 0, 1, 0);
-    if (dst[3] != 0x7bff || zRndr::g_spanCurrentDst16 != &dst[3]) {
+    if (dst[3] != 0x7bff || zRndr::g_spanCurrentSpanBaseAddr != &dst[3]) {
         return 2;
     }
 
     dst[3] = 0x4444;
-    zRndr::g_spanCurrentDst16 = &dst[3];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[3];
     zRndr::g_spanActiveConstAlphaBits = 3;
     zRndr::SpanMasked16FromPal8To565(3 << 20, 0, 1, 0);
-    return dst[3] == 0x4444 && zRndr::g_spanCurrentDst16 == &dst[3] ? 0 : 3;
+    return dst[3] == 0x4444 && zRndr::g_spanCurrentSpanBaseAddr == &dst[3] ? 0 : 3;
 }
 
 extern "C" int zrndr_span_alpha_blend_565_const_alpha_tex16_smoke(void) {
     std::uint16_t texels[4] = {0x0000, 0xf800, 0xffff, 0x001f};
     std::uint16_t dst[4] = {0x1111, 0x2222, 0x001f, 0x4444};
 
-    zRndr::g_spanActiveTexels = reinterpret_cast<std::uint8_t *>(texels);
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexPixels = reinterpret_cast<std::uint8_t *>(texels);
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x7f;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
     zRndr::g_spanActiveConstAlphaBits = 0xff;
 
     zRndr::SpanAlphaBlend565ConstAlphaFromTex16(0, 0, 2, 0);
-    if (dst[0] != 0x0000 || dst[1] != 0xf800 || zRndr::g_spanCurrentDst16 != dst) {
+    if (dst[0] != 0x0000 || dst[1] != 0xf800 || zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
-    zRndr::g_spanCurrentDst16 = &dst[2];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[2];
     zRndr::g_spanActiveConstAlphaBits = 0x80;
     zRndr::SpanAlphaBlend565ConstAlphaFromTex16(2 << 20, 0, 1, 0);
     if (dst[2] != 0x7bff) {
         return 2;
     }
 
-    zRndr::g_spanCurrentDst16 = &dst[3];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[3];
     zRndr::g_spanActiveConstAlphaBits = 3;
     zRndr::SpanAlphaBlend565ConstAlphaFromTex16(3 << 20, 0, 1, 0);
     return dst[3] == 0x4444 ? 0 : 3;
@@ -4084,17 +4092,17 @@ extern "C" int zrndr_span_alpha_blend_565_from_tex16_alpha8_smoke(void) {
     std::uint8_t alphaMap[4] = {0x80, 0xf8, 0x10, 0};
     std::uint16_t dst[4] = {0x001f, 0x2222, 0x3333, 0x4444};
 
-    zRndr::g_spanActiveTexels = reinterpret_cast<std::uint8_t *>(texels);
+    zRndr::g_spanActiveTexPixels = reinterpret_cast<std::uint8_t *>(texels);
     zRndr::g_spanActiveTexAlphaMap = reinterpret_cast<char *>(alphaMap);
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x7f;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
 
     zRndr::SpanAlphaBlend565FromTex16Alpha8(0, 0, 3, 0);
     if (dst[0] != ExpectedBlend565Alpha8(0x001f, 0xffff, 0x80) || dst[1] != 0xf800 ||
-        dst[2] != 0xf800 || dst[3] != 0x4444 || zRndr::g_spanCurrentDst16 != dst) {
+        dst[2] != 0xf800 || dst[3] != 0x4444 || zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
@@ -4122,31 +4130,31 @@ extern "C" int zrndr_span_alpha_blend_565_const_alpha_from_tex16_alpha8_smoke(vo
     std::uint8_t alphaMap[4] = {0x80, 0xff, 0x02, 0x40};
     std::uint16_t dst[4] = {0x001f, 0x2222, 0x3333, 0x4444};
 
-    zRndr::g_spanActiveTexels = reinterpret_cast<std::uint8_t *>(texels);
+    zRndr::g_spanActiveTexPixels = reinterpret_cast<std::uint8_t *>(texels);
     zRndr::g_spanActiveTexAlphaMap = reinterpret_cast<char *>(alphaMap);
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x7f;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
 
     float alphaScale = 0.5f;
     std::memcpy(&zRndr::g_spanActiveConstAlphaBits, &alphaScale, sizeof(alphaScale));
     zRndr::SpanAlphaBlend565ConstAlphaFromTex16Alpha8(0, 0, 1, 0);
     if (dst[0] != ExpectedBlend565Alpha8(0x001f, 0xffff, 0x40) ||
-        zRndr::g_spanCurrentDst16 != dst) {
+        zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
     alphaScale = 1.0f;
     std::memcpy(&zRndr::g_spanActiveConstAlphaBits, &alphaScale, sizeof(alphaScale));
-    zRndr::g_spanCurrentDst16 = &dst[1];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[1];
     zRndr::SpanAlphaBlend565ConstAlphaFromTex16Alpha8(1 << 20, 0, 1, 0);
     if (dst[1] != 0xf800) {
         return 2;
     }
 
-    zRndr::g_spanCurrentDst16 = &dst[2];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[2];
     zRndr::SpanAlphaBlend565ConstAlphaFromTex16Alpha8(2 << 20, 0, 1, 0);
     return dst[2] == 0x3333 ? 0 : 3;
 }
@@ -4156,26 +4164,26 @@ extern "C" int zrndr_span_alpha_blend_565_mmx_from_tex16_alpha8_smoke(void) {
     std::uint8_t alphaMap[5] = {0x80, 0xff, 0x00, 0x10, 0xfc};
     std::uint16_t dst[5] = {0x001f, 0x2222, 0x3333, 0x4444, 0x5555};
 
-    zRndr::g_spanActiveTexels = reinterpret_cast<std::uint8_t *>(texels);
+    zRndr::g_spanActiveTexPixels = reinterpret_cast<std::uint8_t *>(texels);
     zRndr::g_spanActiveTexAlphaMap = reinterpret_cast<char *>(alphaMap);
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x7f;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
 
     zRndr::SpanAlphaBlend565MmxFromTex16Alpha8(0, 0, 5, 0);
     if (dst[0] != ExpectedBlend565Alpha8(0x001f, 0xffff, 0x80) ||
         dst[1] != ExpectedBlend565Alpha8(0x2222, 0xf800, 0xff) ||
         dst[2] != ExpectedBlend565Alpha8(0x3333, 0x07e0, 0x00) ||
         dst[3] != ExpectedBlend565Alpha8(0x4444, 0x001f, 0x10) || dst[4] != 0x1234 ||
-        zRndr::g_spanCurrentDst16 != dst) {
+        zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
     dst[0] = 0x7777;
     alphaMap[0] = 3;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
     zRndr::SpanAlphaBlend565MmxFromTex16Alpha8(0, 0, 1, 0);
     return dst[0] == 0x7777 ? 0 : 2;
 }
@@ -4185,31 +4193,31 @@ extern "C" int zrndr_span_alpha_blend_555_const_alpha_from_tex16_alpha8_smoke(vo
     std::uint8_t alphaMap[4] = {0x80, 0xff, 0x07, 0x40};
     std::uint16_t dst[4] = {0x001f, 0x2222, 0x3333, 0x4444};
 
-    zRndr::g_spanActiveTexels = reinterpret_cast<std::uint8_t *>(texels);
+    zRndr::g_spanActiveTexPixels = reinterpret_cast<std::uint8_t *>(texels);
     zRndr::g_spanActiveTexAlphaMap = reinterpret_cast<char *>(alphaMap);
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x7f;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
 
     float alphaScale = 0.5f;
     std::memcpy(&zRndr::g_spanActiveConstAlphaBits, &alphaScale, sizeof(alphaScale));
     zRndr::SpanAlphaBlend555ConstAlphaFromTex16Alpha8(0, 0, 1, 0);
     if (dst[0] != ExpectedBlend555ConstAlphaMap(0x001f, 0x7fff, 0x40) ||
-        zRndr::g_spanCurrentDst16 != dst) {
+        zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
     alphaScale = 1.0f;
     std::memcpy(&zRndr::g_spanActiveConstAlphaBits, &alphaScale, sizeof(alphaScale));
-    zRndr::g_spanCurrentDst16 = &dst[1];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[1];
     zRndr::SpanAlphaBlend555ConstAlphaFromTex16Alpha8(1 << 20, 0, 1, 0);
     if (dst[1] != 0x7c00) {
         return 2;
     }
 
-    zRndr::g_spanCurrentDst16 = &dst[2];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[2];
     zRndr::SpanAlphaBlend555ConstAlphaFromTex16Alpha8(2 << 20, 0, 1, 0);
     return dst[2] == 0x3333 ? 0 : 3;
 }
@@ -4219,26 +4227,26 @@ extern "C" int zrndr_span_alpha_blend_555_mmx_from_tex16_alpha8_smoke(void) {
     std::uint8_t alphaMap[5] = {0x80, 0xff, 0x00, 0x10, 0xfc};
     std::uint16_t dst[5] = {0x001f, 0x2222, 0x3333, 0x4444, 0x5555};
 
-    zRndr::g_spanActiveTexels = reinterpret_cast<std::uint8_t *>(texels);
+    zRndr::g_spanActiveTexPixels = reinterpret_cast<std::uint8_t *>(texels);
     zRndr::g_spanActiveTexAlphaMap = reinterpret_cast<char *>(alphaMap);
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x7f;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
 
     zRndr::SpanAlphaBlend555MmxFromTex16Alpha8(0, 0, 5, 0);
     if (dst[0] != ExpectedBlend555Alpha8(0x001f, 0x7fff, 0x80) ||
         dst[1] != ExpectedBlend555Alpha8(0x2222, 0x7c00, 0xff) ||
         dst[2] != ExpectedBlend555Alpha8(0x3333, 0x03e0, 0x00) ||
         dst[3] != ExpectedBlend555Alpha8(0x4444, 0x001f, 0x10) || dst[4] != 0x1234 ||
-        zRndr::g_spanCurrentDst16 != dst) {
+        zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
     dst[0] = 0x7777;
     alphaMap[0] = 7;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
     zRndr::SpanAlphaBlend555MmxFromTex16Alpha8(0, 0, 1, 0);
     return dst[0] == 0x7777 ? 0 : 2;
 }
@@ -4249,18 +4257,18 @@ extern "C" int zrndr_span_alpha_blend_565_from_pal8_alpha8_smoke(void) {
     std::uint16_t palette[5] = {0x0000, 0xffff, 0xf800, 0x07e0, 0x001f};
     std::uint16_t dst[4] = {0x001f, 0x2222, 0x3333, 0x4444};
 
-    zRndr::g_spanActiveTexels = texels;
+    zRndr::g_spanActiveTexPixels = texels;
     zRndr::g_spanActiveTexAlphaMap = reinterpret_cast<char *>(alphaMap);
     zRndr::g_spanActiveTexPalette = palette;
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x7f;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
 
     zRndr::SpanAlphaBlend565FromPal8Alpha8(0, 0, 3, 0);
     if (dst[0] != ExpectedBlend565Alpha8(0x001f, 0xffff, 0x80) || dst[1] != 0xf800 ||
-        dst[2] != 0xf800 || dst[3] != 0x4444 || zRndr::g_spanCurrentDst16 != dst) {
+        dst[2] != 0xf800 || dst[3] != 0x4444 || zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
@@ -4289,18 +4297,18 @@ extern "C" int zrndr_span_alpha_blend_555_from_pal8_alpha8_smoke(void) {
     std::uint16_t palette[5] = {0x0000, 0x7fff, 0x7c00, 0x03e0, 0x001f};
     std::uint16_t dst[4] = {0x001f, 0x2222, 0x3333, 0x4444};
 
-    zRndr::g_spanActiveTexels = texels;
+    zRndr::g_spanActiveTexPixels = texels;
     zRndr::g_spanActiveTexAlphaMap = reinterpret_cast<char *>(alphaMap);
     zRndr::g_spanActiveTexPalette = palette;
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x7f;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
 
     zRndr::SpanAlphaBlend555FromPal8Alpha8(0, 0, 3, 0);
     if (dst[0] != ExpectedBlend555Alpha8(0x001f, 0x7fff, 0x80) || dst[1] != 0x7c00 ||
-        dst[2] != 0x7c00 || dst[3] != 0x4444 || zRndr::g_spanCurrentDst16 != dst) {
+        dst[2] != 0x7c00 || dst[3] != 0x4444 || zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
@@ -4329,32 +4337,32 @@ extern "C" int zrndr_span_alpha_blend_565_const_alpha_from_pal8_alpha8_smoke(voi
     std::uint16_t palette[5] = {0x0000, 0xffff, 0xf800, 0x07e0, 0x001f};
     std::uint16_t dst[4] = {0x001f, 0x2222, 0x3333, 0x4444};
 
-    zRndr::g_spanActiveTexels = texels;
+    zRndr::g_spanActiveTexPixels = texels;
     zRndr::g_spanActiveTexAlphaMap = reinterpret_cast<char *>(alphaMap);
     zRndr::g_spanActiveTexPalette = palette;
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x7f;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
 
     float alphaScale = 0.5f;
     std::memcpy(&zRndr::g_spanActiveConstAlphaBits, &alphaScale, sizeof(alphaScale));
     zRndr::SpanAlphaBlend565ConstAlphaFromPal8Alpha8(0, 0, 1, 0);
     if (dst[0] != ExpectedBlend565Alpha8(0x001f, 0xffff, 0x40) ||
-        zRndr::g_spanCurrentDst16 != dst) {
+        zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
     alphaScale = 1.0f;
     std::memcpy(&zRndr::g_spanActiveConstAlphaBits, &alphaScale, sizeof(alphaScale));
-    zRndr::g_spanCurrentDst16 = &dst[1];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[1];
     zRndr::SpanAlphaBlend565ConstAlphaFromPal8Alpha8(1 << 20, 0, 1, 0);
     if (dst[1] != 0xf800) {
         return 2;
     }
 
-    zRndr::g_spanCurrentDst16 = &dst[2];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[2];
     zRndr::SpanAlphaBlend565ConstAlphaFromPal8Alpha8(2 << 20, 0, 1, 0);
     return dst[2] == 0x3333 ? 0 : 3;
 }
@@ -4365,32 +4373,32 @@ extern "C" int zrndr_span_alpha_blend_555_const_alpha_from_pal8_alpha8_smoke(voi
     std::uint16_t palette[5] = {0x0000, 0x7fff, 0x7c00, 0x03e0, 0x001f};
     std::uint16_t dst[4] = {0x001f, 0x2222, 0x3333, 0x4444};
 
-    zRndr::g_spanActiveTexels = texels;
+    zRndr::g_spanActiveTexPixels = texels;
     zRndr::g_spanActiveTexAlphaMap = reinterpret_cast<char *>(alphaMap);
     zRndr::g_spanActiveTexPalette = palette;
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x7f;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
 
     float alphaScale = 0.5f;
     std::memcpy(&zRndr::g_spanActiveConstAlphaBits, &alphaScale, sizeof(alphaScale));
     zRndr::SpanAlphaBlend555ConstAlphaFromPal8Alpha8(0, 0, 1, 0);
     if (dst[0] != ExpectedBlend555ConstAlphaMap(0x001f, 0x7fff, 0x40) ||
-        zRndr::g_spanCurrentDst16 != dst) {
+        zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
     alphaScale = 1.0f;
     std::memcpy(&zRndr::g_spanActiveConstAlphaBits, &alphaScale, sizeof(alphaScale));
-    zRndr::g_spanCurrentDst16 = &dst[1];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[1];
     zRndr::SpanAlphaBlend555ConstAlphaFromPal8Alpha8(1 << 20, 0, 1, 0);
     if (dst[1] != 0x7c00) {
         return 2;
     }
 
-    zRndr::g_spanCurrentDst16 = &dst[2];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[2];
     zRndr::SpanAlphaBlend555ConstAlphaFromPal8Alpha8(2 << 20, 0, 1, 0);
     return dst[2] == 0x3333 ? 0 : 3;
 }
@@ -4401,27 +4409,27 @@ extern "C" int zrndr_span_alpha_blend_565_mmx_from_pal8_alpha8_smoke(void) {
     std::uint16_t palette[6] = {0x0000, 0xffff, 0xf800, 0x07e0, 0x001f, 0x1234};
     std::uint16_t dst[5] = {0x001f, 0x2222, 0x3333, 0x4444, 0x5555};
 
-    zRndr::g_spanActiveTexels = texels;
+    zRndr::g_spanActiveTexPixels = texels;
     zRndr::g_spanActiveTexAlphaMap = reinterpret_cast<char *>(alphaMap);
     zRndr::g_spanActiveTexPalette = palette;
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x7f;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
 
     zRndr::SpanAlphaBlend565MmxFromPal8Alpha8(0, 0, 5, 0);
     if (dst[0] != ExpectedBlend565Alpha8(0x001f, 0xffff, 0x80) ||
         dst[1] != ExpectedBlend565Alpha8(0x2222, 0xf800, 0xff) ||
         dst[2] != ExpectedBlend565Alpha8(0x3333, 0x07e0, 0x00) ||
         dst[3] != ExpectedBlend565Alpha8(0x4444, 0x001f, 0x10) || dst[4] != 0x1234 ||
-        zRndr::g_spanCurrentDst16 != dst) {
+        zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
     dst[0] = 0x7777;
     alphaMap[0] = 3;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
     zRndr::SpanAlphaBlend565MmxFromPal8Alpha8(0, 0, 1, 0);
     return dst[0] == 0x7777 ? 0 : 2;
 }
@@ -4432,27 +4440,27 @@ extern "C" int zrndr_span_alpha_blend_555_mmx_from_pal8_alpha8_smoke(void) {
     std::uint16_t palette[6] = {0x0000, 0x7fff, 0x7c00, 0x03e0, 0x001f, 0x1234};
     std::uint16_t dst[5] = {0x001f, 0x2222, 0x3333, 0x4444, 0x5555};
 
-    zRndr::g_spanActiveTexels = texels;
+    zRndr::g_spanActiveTexPixels = texels;
     zRndr::g_spanActiveTexAlphaMap = reinterpret_cast<char *>(alphaMap);
     zRndr::g_spanActiveTexPalette = palette;
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x7f;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
 
     zRndr::SpanAlphaBlend555MmxFromPal8Alpha8(0, 0, 5, 0);
     if (dst[0] != ExpectedBlend555Alpha8(0x001f, 0x7fff, 0x80) ||
         dst[1] != ExpectedBlend555Alpha8(0x2222, 0x7c00, 0xff) ||
         dst[2] != ExpectedBlend555Alpha8(0x3333, 0x03e0, 0x00) ||
         dst[3] != ExpectedBlend555Alpha8(0x4444, 0x001f, 0x10) || dst[4] != 0x1234 ||
-        zRndr::g_spanCurrentDst16 != dst) {
+        zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
     dst[0] = 0x7777;
     alphaMap[0] = 7;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
     zRndr::SpanAlphaBlend555MmxFromPal8Alpha8(0, 0, 1, 0);
     return dst[0] == 0x7777 ? 0 : 2;
 }
@@ -4462,17 +4470,17 @@ extern "C" int zrndr_span_alpha_blend_555_from_tex16_alpha8_smoke(void) {
     std::uint8_t alphaMap[4] = {0x80, 0xf8, 0x10, 0};
     std::uint16_t dst[4] = {0x001f, 0x2222, 0x3333, 0x4444};
 
-    zRndr::g_spanActiveTexels = reinterpret_cast<std::uint8_t *>(texels);
+    zRndr::g_spanActiveTexPixels = reinterpret_cast<std::uint8_t *>(texels);
     zRndr::g_spanActiveTexAlphaMap = reinterpret_cast<char *>(alphaMap);
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x7f;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
 
     zRndr::SpanAlphaBlend555FromTex16Alpha8(0, 0, 3, 0);
     if (dst[0] != ExpectedBlend555Alpha8(0x001f, 0x7fff, 0x80) || dst[1] != 0x7c00 ||
-        dst[2] != 0x7c00 || dst[3] != 0x4444 || zRndr::g_spanCurrentDst16 != dst) {
+        dst[2] != 0x7c00 || dst[3] != 0x4444 || zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
@@ -4499,27 +4507,27 @@ extern "C" int zrndr_span_alpha_blend_555_const_alpha_tex16_smoke(void) {
     std::uint16_t texels[4] = {0x0000, 0x7c00, 0x7fff, 0x001f};
     std::uint16_t dst[4] = {0x1111, 0x2222, 0x001f, 0x4444};
 
-    zRndr::g_spanActiveTexels = reinterpret_cast<std::uint8_t *>(texels);
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexPixels = reinterpret_cast<std::uint8_t *>(texels);
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x7f;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
     zRndr::g_spanActiveConstAlphaBits = 0xff;
 
     zRndr::SpanAlphaBlend555ConstAlphaFromTex16(0, 0, 2, 0);
-    if (dst[0] != 0x0000 || dst[1] != 0x7c00 || zRndr::g_spanCurrentDst16 != dst) {
+    if (dst[0] != 0x0000 || dst[1] != 0x7c00 || zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
-    zRndr::g_spanCurrentDst16 = &dst[2];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[2];
     zRndr::g_spanActiveConstAlphaBits = 0x80;
     zRndr::SpanAlphaBlend555ConstAlphaFromTex16(2 << 20, 0, 1, 0);
     if (dst[2] != 0x3dff) {
         return 2;
     }
 
-    zRndr::g_spanCurrentDst16 = &dst[3];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[3];
     zRndr::g_spanActiveConstAlphaBits = 7;
     zRndr::SpanAlphaBlend555ConstAlphaFromTex16(3 << 20, 0, 1, 0);
     return dst[3] == 0x4444 ? 0 : 3;
@@ -4530,21 +4538,21 @@ extern "C" int zrndr_span_alpha_blend_565_const_alpha_fast_pal8_smoke(void) {
     std::uint16_t palette[3] = {0x001f, 0xf800, 0xffff};
     std::uint16_t dst[3] = {0x1111, 0x2222, 0x001f};
 
-    zRndr::g_spanActiveTexels = texels;
+    zRndr::g_spanActiveTexPixels = texels;
     zRndr::g_spanActiveTexPalette = palette;
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x7f;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
     zRndr::g_spanActiveConstAlphaBits = 0xff;
 
     zRndr::SpanAlphaBlend565ConstAlphaFastFromPal8(0, 0, 2, 0);
-    if (dst[0] != 0x001f || dst[1] != 0xf800 || zRndr::g_spanCurrentDst16 != dst) {
+    if (dst[0] != 0x001f || dst[1] != 0xf800 || zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
-    zRndr::g_spanCurrentDst16 = &dst[2];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[2];
     zRndr::g_spanActiveConstAlphaBits = 0x80;
     zRndr::SpanAlphaBlend565ConstAlphaFastFromPal8(2 << 20, 0, 1, 0);
     if (dst[2] != 0x7bff) {
@@ -4562,21 +4570,21 @@ extern "C" int zrndr_span_alpha_blend_555_const_alpha_fast_pal8_smoke(void) {
     std::uint16_t palette[3] = {0x001f, 0x7c00, 0x7fff};
     std::uint16_t dst[3] = {0x1111, 0x2222, 0x001f};
 
-    zRndr::g_spanActiveTexels = texels;
+    zRndr::g_spanActiveTexPixels = texels;
     zRndr::g_spanActiveTexPalette = palette;
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x7f;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
     zRndr::g_spanActiveConstAlphaBits = 0xff;
 
     zRndr::SpanAlphaBlend555ConstAlphaFastFromPal8(0, 0, 2, 0);
-    if (dst[0] != 0x001f || dst[1] != 0x7c00 || zRndr::g_spanCurrentDst16 != dst) {
+    if (dst[0] != 0x001f || dst[1] != 0x7c00 || zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
-    zRndr::g_spanCurrentDst16 = &dst[2];
+    zRndr::g_spanCurrentSpanBaseAddr = &dst[2];
     zRndr::g_spanActiveConstAlphaBits = 0x80;
     zRndr::SpanAlphaBlend555ConstAlphaFastFromPal8(2 << 20, 0, 1, 0);
     if (dst[2] != 0x3dff) {
@@ -4734,49 +4742,49 @@ extern "C" int zrndr_span_copy_16_from_tex16_smoke(void) {
     }
 
     alignas(4) std::uint16_t dst[5] = {};
-    zRndr::g_spanActiveTexels = reinterpret_cast<std::uint8_t *>(texels);
-    zRndr::g_spanCurrentDst16 = dst;
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexPixels = reinterpret_cast<std::uint8_t *>(texels);
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0x003f0000;
     zRndr::g_spanActiveTexUMask = 0x0f;
 
     zRndr::SpanMmxSetTexUvMasksAndVShift(12);
-    if (zRndr::g_mmxVShiftCounts[0] != 12 || zRndr::g_mmxVShiftCounts[1] != 0 ||
-        zRndr::g_mmxVMask[0] != 0x003f0000 ||
-        zRndr::g_mmxVMask[1] != 0x003f0000 ||
-        zRndr::g_mmxUMask[0] != 0x00f00000 ||
-        zRndr::g_mmxUMask[1] != 0x00f00000) {
+    if (zRndr::g_mmxVShiftCounts.lo != 12 || zRndr::g_mmxVShiftCounts.hi != 0 ||
+        zRndr::g_mmxVMask.lo != 0x003f0000 ||
+        zRndr::g_mmxVMask.hi != 0x003f0000 ||
+        zRndr::g_mmxUMask.lo != 0x00f00000 ||
+        zRndr::g_mmxUMask.hi != 0x00f00000) {
         return 1;
     }
 
     zRndr::SpanCopy16FromTex16(0, 0, 3, 12);
     if (dst[0] != 0x1000 || dst[1] != 0x1001 || dst[2] != 0x1002 ||
-        zRndr::g_spanCurrentDst16 != dst) {
+        zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 2;
     }
 
     dst[0] = dst[1] = dst[2] = dst[3] = 0;
-    zRndr::g_spanCurrentDst16 = dst + 1;
+    zRndr::g_spanCurrentSpanBaseAddr = dst + 1;
     zRndr::SpanCopy16FromTex16(1 << 20, 0, 1, 12);
     if (dst[1] != 0x1001 || dst[0] != 0 || dst[2] != 0 ||
-        zRndr::g_spanCurrentDst16 != dst + 1) {
+        zRndr::g_spanCurrentSpanBaseAddr != dst + 1) {
         return 3;
     }
 
     dst[0] = dst[1] = dst[2] = dst[3] = 0;
-    zRndr::g_spanCurrentDst16 = dst;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
     zRndr::SpanCopy16FromTex16ExplicitVShift(1 << 20, 0, 3, 12);
     if (dst[0] != 0x1001 || dst[1] != 0x1002 || dst[2] != 0x1003 ||
-        zRndr::g_spanCurrentDst16 != dst) {
+        zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 4;
     }
 
     dst[0] = dst[1] = dst[2] = dst[3] = 0;
-    zRndr::g_spanCurrentDst16 = dst + 1;
+    zRndr::g_spanCurrentSpanBaseAddr = dst + 1;
     zRndr::SpanCopy16FromTex16ExplicitVShift(2 << 20, 0, 1, 12);
     if (dst[1] != 0x1002 || dst[0] != 0 || dst[2] != 0 ||
-        zRndr::g_spanCurrentDst16 != dst + 1) {
+        zRndr::g_spanCurrentSpanBaseAddr != dst + 1) {
         return 5;
     }
 
@@ -4790,10 +4798,10 @@ extern "C" int zrndr_span_copy_16_from_tex16_switch_vshift_smoke(void) {
     }
 
     alignas(4) std::uint16_t dst[4] = {};
-    zRndr::g_spanActiveTexels = reinterpret_cast<std::uint8_t *>(texels);
-    zRndr::g_spanCurrentDst16 = dst;
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexPixels = reinterpret_cast<std::uint8_t *>(texels);
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x0f;
 
@@ -4822,16 +4830,16 @@ extern "C" int zrndr_span_masked_16_from_tex16_switch_vshift_smoke(void) {
     texels[3] = 0x5003;
 
     alignas(4) std::uint16_t dst[4] = {0xaaaa, 0xbbbb, 0xcccc, 0xdddd};
-    zRndr::g_spanActiveTexels = reinterpret_cast<std::uint8_t *>(texels);
-    zRndr::g_spanCurrentDst16 = dst;
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanActiveTexPixels = reinterpret_cast<std::uint8_t *>(texels);
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x0f;
 
     zRndr::SpanMasked16FromTex16SwitchVShift(0, 0, 4, 16);
     if (dst[0] != 0x5003 || dst[1] != 0x5002 || dst[2] != 0xcccc || dst[3] != 0x5000 ||
-        zRndr::g_spanCurrentDst16 != dst) {
+        zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
@@ -4851,11 +4859,11 @@ extern "C" int zrndr_span_copy_16_from_pal8_switch_vshift_smoke(void) {
     }
 
     alignas(4) std::uint16_t dst[4] = {};
-    zRndr::g_spanActiveTexels = texels;
+    zRndr::g_spanActiveTexPixels = texels;
     zRndr::g_spanActiveTexPalette = palette;
-    zRndr::g_spanCurrentDst16 = dst;
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexUMask = 0x0f;
 
     for (int texVShift = 10; texVShift <= 17; ++texVShift) {
@@ -4866,7 +4874,7 @@ extern "C" int zrndr_span_copy_16_from_pal8_switch_vshift_smoke(void) {
         zRndr::g_spanActiveTexVMask = 7 << texVShift;
         zRndr::SpanCopy16FromPal8SwitchVShift(0, 1 << texVShift, 4, texVShift);
         if (dst[0] != 0x3004 || dst[1] != 0x3003 || dst[2] != 0x3002 ||
-            dst[3] != 0x3001 || zRndr::g_spanCurrentDst16 != dst) {
+            dst[3] != 0x3001 || zRndr::g_spanCurrentSpanBaseAddr != dst) {
             return texVShift;
         }
     }
@@ -4888,17 +4896,17 @@ extern "C" int zrndr_span_masked_16_from_pal8_switch_vshift_smoke(void) {
     }
 
     alignas(4) std::uint16_t dst[4] = {0xaaaa, 0xbbbb, 0xcccc, 0xdddd};
-    zRndr::g_spanActiveTexels = texels;
+    zRndr::g_spanActiveTexPixels = texels;
     zRndr::g_spanActiveTexPalette = palette;
-    zRndr::g_spanCurrentDst16 = dst;
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x0f;
 
     zRndr::SpanMasked16FromPal8SwitchVShift(0, 0, 4, 16);
     if (dst[0] != 0x6004 || dst[1] != 0x6003 || dst[2] != 0xcccc || dst[3] != 0x6001 ||
-        zRndr::g_spanCurrentDst16 != dst) {
+        zRndr::g_spanCurrentSpanBaseAddr != dst) {
         return 1;
     }
 
@@ -4918,11 +4926,11 @@ extern "C" int zrndr_span_shade_16_from_pal8_switch_vshift_smoke(void) {
     }
 
     alignas(4) std::uint16_t dst[4] = {};
-    zRndr::g_spanActiveTexels = texels;
+    zRndr::g_spanActiveTexPixels = texels;
     zRndr::g_spanActiveTexPalette = palette;
-    zRndr::g_spanCurrentDst16 = dst;
-    zRndr::g_spanTexUAdvance = 1 << 20;
-    zRndr::g_spanTexVAdvance = 0;
+    zRndr::g_spanCurrentSpanBaseAddr = dst;
+    zRndr::g_spanActiveTexUStepFixed20 = 1 << 20;
+    zRndr::g_spanActiveTexVStepFixed20 = 0;
     zRndr::g_spanActiveTexVMask = 0;
     zRndr::g_spanActiveTexUMask = 0x0f;
     zRndr::g_spanActiveShadeFixed16 = 0x00100000;

@@ -361,8 +361,8 @@ struct HudLayoutHW : HudLayoutBase {
 extern HudLayoutHW g_HudLayoutHW;
 extern HudLayoutSW g_HudLayoutSW;
 
-extern HudUiTextStack4 *g_HudUiTopMessageStack;
 extern HudUiTextStack4 *g_HudUiChatMessageStack;
+extern HudUiTextStack4 *g_HudUiTopMessageStack;
 
 extern HudUiShieldMessageWidget *g_HudUiMgrShieldMessageWidget;
 
@@ -620,13 +620,26 @@ struct HudUiCircle : HudUiElement {
     int radiusSquared;
     unsigned int color565;
 
-    HudUiCircle * Constructor(
+    /**
+     * Original inline helper; no standalone retail function exists. Observed
+     * in owner storage that is explicitly address-constructed later.
+     * Purpose: keep native raw-storage tests and aggregate owners from running
+     * the address-backed circle constructor implicitly.
+     */
+    HudUiCircle() {
+    }
+    /**
+     * Reimplements 0x4bc480: HudUiCircle::HudUiCircle.
+     * Purpose: construct the circle HUD element and install its C++ dispatch
+     * identity.
+     */
+    HudUiCircle(
         int x,
         int y,
         int circleRadius,
         unsigned int circleColor565
     );
-    void DrawDirty();
+    virtual void Draw();
     void DrawDirtyForwarder();
     int HitTest(
         int px,
@@ -1772,7 +1785,7 @@ struct HudUiTransitionTextPanel : HudUiPanel {
 
     HudUiTransitionTextPanel();
     ~HudUiTransitionTextPanel();
-    void TickFlash(float deltaSeconds);
+    void Update(float deltaSeconds);
     void ResetFlashState(float flashRate);
     void SetFlashRate(float flashRate);
     void SetFlashColorAndRate(
@@ -1883,11 +1896,45 @@ struct HudUiCompositePanelEntry {
     );
 };
 
+struct HudUiCompositePanelVectorAllocator {
+    unsigned char value;
+
+    /**
+     * Original inline helper; no standalone retail function exists. Observed
+     * in 0x4bb790 as the allocator byte copied into the vector member before
+     * begin/end/capacity are cleared.
+     * Purpose: model the VC5 std::vector allocator subobject without replacing
+     * the authored vector with host STL.
+     */
+    HudUiCompositePanelVectorAllocator() {
+#if !defined(_MSC_VER) || _MSC_VER >= 1200
+        value = 0;
+#endif
+    }
+};
+
 struct HudUiCompositePanelVector {
-    unsigned int allocatorStorage;
+    HudUiCompositePanelVectorAllocator allocatorProxy;
+    char padding_01[3];
     HudUiCompositePanelEntry *begin;
     HudUiCompositePanelEntry *end;
     HudUiCompositePanelEntry *capacityEnd;
+
+    /**
+     * Original inline helper; no standalone retail function exists. Observed
+     * in 0x4bb790 before HudUiCompositePanel installs its derived table.
+     * Purpose: preserve the VC5 vector member-construction shape for composite
+     * panel entries.
+     */
+    HudUiCompositePanelVector(
+        const HudUiCompositePanelVectorAllocator &allocatorProxyValue =
+            HudUiCompositePanelVectorAllocator()
+    )
+        : allocatorProxy(allocatorProxyValue),
+          begin(0),
+          end(0),
+          capacityEnd(0) {
+    }
 
     void Clear();
     void InsertCopies(
@@ -1915,16 +1962,27 @@ struct HudUiCompositePanel : HudUiPanel {
             0
         ) {
         activeEntryCount = 0;
-        entryVector.allocatorStorage = 0;
-        entryVector.begin = 0;
-        entryVector.end = 0;
-        entryVector.capacityEnd = 0;
     }
     HudUiCompositePanel * ConstructorWithEntryCount(int entryCount);
-    void LayoutEntries(
+    virtual void SetPos(
         int x,
         int y
     );
+    /**
+     * Original inline helper; no standalone retail function exists. Retail
+     * table slot 3 dispatches 0x4bb9f0 through the HudUiElement::SetPos slot,
+     * while existing source call sites use the recovered layout-oriented name.
+     * Purpose: keep local callers readable without adding a second dispatch slot.
+     */
+    void LayoutEntries(
+        int x,
+        int y
+    ) {
+        SetPos(
+            x,
+            y
+        );
+    }
     void ResizeEntryVectorAndRelayout(int entryCount);
     void ReapplyEntryCount();
     void ResizeEntryCount(
@@ -1939,7 +1997,7 @@ struct HudUiCompositePanel : HudUiPanel {
         const char *format,
         va_list args
     );
-    void ScrollHistory();
+    virtual void ScrollHistory();
     void SetFont(
         const char *faceName,
         int height,
@@ -2562,8 +2620,10 @@ struct HudUiTriplet : HudUiContainer {
     int IsLocalPlayerFirstEntry();
 };
 
+// BN constructors at 0x4bd020 and 0x4bd2d0 initialize four HudUiPanel rows
+// immediately after the HudUiContainer base; row stride is sizeof(HudUiPanel).
 struct HudUiTextStack4 : HudUiContainer {
-    unsigned char lines[4][0x2a4];
+    HudUiPanel lines[4];
 
     HudUiPanel * PushLine(
         const char *message,

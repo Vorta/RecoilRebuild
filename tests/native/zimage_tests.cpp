@@ -705,8 +705,7 @@ extern "C" int zimage_texdir_load_pending_entries_renderer_smoke(void) {
     g_createdTextureRecord = {};
     g_existingTextureRecord = {};
     g_zVideo_pfnCreateTextureRecord = CreateTextureRecordStub;
-    g_zVideo_pfnTextureRecordFinalizeUpload =
-        reinterpret_cast<std::uint32_t>(&TextureRecordFinalizeUploadStub);
+    g_zVideo_pfnTextureRecordFinalizeUpload = TextureRecordFinalizeUploadStub;
     g_OptCatalogDamageMaskHandles[0] = nullptr;
     g_OptCatalogDamageMaskHandles[1] = nullptr;
     g_OptCatalogDamageMaskHandles[2] = nullptr;
@@ -1110,9 +1109,9 @@ extern "C" int zimage_init_mission_resources_smoke(void) {
 extern "C" int zimage_shutdown_texdir_smoke(void) {
     g_textureDestroyCount = 0;
     g_uploadSurfaceReleaseCount = 0;
-    g_zVideo_pfnTextureRecordDestroy = reinterpret_cast<std::uint32_t>(&TextureRecordDestroyStub);
+    g_zVideo_pfnTextureRecordDestroy = TextureRecordDestroyStub;
     g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces =
-        reinterpret_cast<std::uint32_t>(&TextureRecordReleaseAllUploadSurfacesStub);
+        TextureRecordReleaseAllUploadSurfacesStub;
 
     g_zImage_TexDirEntryCount = 3;
     std::memset(g_zImage_TexDirEntries, 0, sizeof(g_zImage_TexDirEntries));

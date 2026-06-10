@@ -57,6 +57,9 @@ extern "C" int zinput_keyboard_raw_callback_smoke(void);
 extern "C" int zinput_keyboard_wait_for_key_press_smoke(void);
 extern "C" int zinput_keyboard_poll_state_smoke(void);
 extern "C" int zinput_poll_active_devices_smoke(void);
+extern "C" int zopt_fullscreen_accessors_smoke(void);
+extern "C" int zopt_section_accessor_smoke(void);
+extern "C" int zopt_view_rect_target_side_effects_smoke(void);
 extern "C" int zsnd_stream_request_stop_if_active_smoke(void);
 extern "C" int zsnd_play_handle_stop_if_active_smoke(void);
 extern "C" int zsnd_sample_play_simple_smoke(void);
@@ -74,6 +77,10 @@ extern "C" int zrndr_global_string_table_load_dynamic_entries_smoke(void);
 extern "C" int zreader_load_node_from_archive_smoke(void);
 extern "C" int zreader_file_exists_and_list_create_smoke(void);
 extern "C" int hud_ui_save_load_entry_is_newer_than_smoke(void);
+extern "C" int player_underwater_fx_pass3_ui_constructor_smoke(void);
+extern "C" int player_projectile_camera_fx_pass3_ui_constructor_smoke(void);
+extern "C" int player_underwater_fx_pass3_ui_apply_blue_tint_smoke(void);
+extern "C" int player_projectile_camera_fx_pass3_ui_apply_green_mask_smoke(void);
 extern "C" int hud_ui_save_load_list_item_constructor_smoke(void);
 extern "C" int hud_ui_save_load_list_item_draw_smoke(void);
 extern "C" int hud_ui_save_load_list_item_on_activate_smoke(void);
@@ -150,15 +157,28 @@ extern "C" int zhud_circle_constructor_and_hit_test_smoke(void);
 extern "C" int zhud_circle_draw_dirty_smoke(void);
 extern "C" int zhud_widget_constructor_smoke(void);
 extern "C" int zhud_widget_invalidate_rect_smoke(void);
+extern "C" int zhud_widget_draw_smoke(void);
 extern "C" int zhud_slot_draw_smoke(void);
 extern "C" int zhud_triplet_panel_draw_smoke(void);
 extern "C" int zhud_triplet_panel_set_visible_count_smoke(void);
+extern "C" int zhud_triplet_interpolate_layout_smoke(void);
+extern "C" int zhud_scoreboard_set_scale_and_rebuild_smoke(void);
+extern "C" int zhud_triplet_scoreboard_entry_update_smoke(void);
+extern "C" int zhud_text_stack_constructors_smoke(void);
+extern "C" int zhud_text_stack_set_font_all_smoke(void);
+extern "C" int zhud_text_stack_push_line_smoke(void);
+extern "C" int zhud_text_stack_clear_and_enable_smoke(void);
+extern "C" int zhud_text_stack_clear_and_disable_smoke(void);
+extern "C" int zhud_text_stack_destructor_core_smoke(void);
+extern "C" int zhud_text_stack_layout_mutators_smoke(void);
+extern "C" int zhud_list_menu_entry_sort_smoke(void);
 extern "C" int zhud_layout_hw_update_objective_dirty_rect_smoke(void);
 extern "C" int zhud_objective_update_meter_xpoints_smoke(void);
 extern "C" int zhud_mgr_trigger_current_layout_on_activated_smoke(void);
 extern "C" int zhud_counter_constructor_smoke(void);
 extern "C" int zhud_bar_and_meter_constructor_smoke(void);
 extern "C" int zhud_widget_release_image_if_owned_smoke(void);
+extern "C" int zhud_widget_set_image_borrowed_and_invalidate_smoke(void);
 extern "C" int zhud_widget_destructor_core_smoke(void);
 extern "C" int zhud_fill_bitmap_core_smoke(void);
 extern "C" int zhud_widget_set_image_by_path_owned_smoke(void);
@@ -183,6 +203,7 @@ extern "C" int zhud_composite_panel_entry_copy_smoke(void);
 extern "C" int zhud_composite_panel_constructor_with_entry_count_smoke(void);
 extern "C" int zhud_composite_panel_destructor_smoke(void);
 extern "C" int zhud_composite_panel_update_smoke(void);
+extern "C" int zhud_transition_text_panel_update_smoke(void);
 extern "C" int zhud_composite_panel_layout_entries_smoke(void);
 extern "C" int zhud_composite_panel_set_text_fmt_smoke(void);
 extern "C" int zhud_composite_panel_set_font_smoke(void);
@@ -380,13 +401,84 @@ extern "C" int zvid_image_create_format_size_pixels_smoke(void);
 extern "C" int zvideo_image_set_pixels_smoke(void);
 extern "C" int zvideo_capture_surface_to_image_smoke(void);
 extern "C" int zvideo_fx_set_surface_state_smoke(void);
+extern "C" int zvideo_surface_accessors_smoke(void);
+extern "C" int zvideo_primary_surface_rect_scratch_smoke(void);
 extern "C" int zvideo_image_alpha_clear_smoke(void);
+extern "C" int zvideo_mode_geometry_and_set_video_mode_smoke(void);
+extern "C" int zvideo_init_video_system_reentry_guard_smoke(void);
+extern "C" int zvideo_bind_renderer_dispatch_smoke(void);
+extern "C" int zvideo_module_init_smoke(void);
+extern "C" int zvideo_at_exit_release_all_interfaces_and_surfaces_smoke(void);
+extern "C" int zvideo_return_success_stub_smoke(void);
+extern "C" int zvid_cached_client_rect_smoke(void);
+extern "C" int zvideo_shutdown_video_system_smoke(void);
 extern "C" int zvideo_buff_clip_coord_to_range_smoke(void);
 extern "C" int zvideo_buff_copy_surface_rect_to_image_smoke(void);
+extern "C" int zvideo_draw_noise_rect_smoke(void);
+extern "C" int zvideo_blur_region_horizontal_smoke(void);
+extern "C" int zvideo_blur_region_vertical_smoke(void);
+extern "C" int zvideo_blur_region_combined_smoke(void);
+extern "C" int zvideo_blur_region_by_mode_smoke(void);
 extern "C" int zvideo_texture_pack_load_image_smoke(void);
+extern "C" int zvideo_dd_prepare_window_for_mode_smoke(void);
 extern "C" int zvid_query_device_video_memory_bytes_smoke(void);
 extern "C" int zvid_query_texture_memory_bytes_smoke(void);
+extern "C" int zvideo_pixel_pack_setup_smoke(void);
 extern "C" int zvideo_dd_report_error_smoke(void);
+extern "C" int zvideo_dd_create_directdraw2_for_selected_device_smoke(void);
+extern "C" int zvideo_dd_open_video_mode_smoke(void);
+extern "C" int zvideo_dd_create_surface3_from_desc_smoke(void);
+extern "C" int zvideo_dd_lock_directdraw_surface_smoke(void);
+extern "C" int zvideo_dd_unlock_directdraw_surface_smoke(void);
+extern "C" int zvideo_dd_lock_surface_wait_restore_smoke(void);
+extern "C" int zvideo_dd_unlock_surface_wait_restore_smoke(void);
+extern "C" int zvideo_surface_state_lock_skip_smoke(void);
+extern "C" int zvideo_dd_lock_surface_state_smoke(void);
+extern "C" int zvideo_dd_unlock_surface_state_smoke(void);
+extern "C" int zvideo_dd_verify_fullscreen_surface_locks_smoke(void);
+extern "C" int zvideo_texture_record_destroy_smoke(void);
+extern "C" int zvideo_dd_release_all_interfaces_and_surfaces_smoke(void);
+extern "C" int zvideo_dd_verify_surface_state_locking_smoke(void);
+extern "C" int zvideo_dd_teardown_video_subsystem_smoke(void);
+extern "C" int zvideo_dd_shutdown_video_system_smoke(void);
+extern "C" int zvideo_dd_palette_set_entries_smoke(void);
+extern "C" int zvideo_get_display_mode_bpp_smoke(void);
+extern "C" int zvideo_dd_set_display_mode_smoke(void);
+extern "C" int zvideo_dd_set_video_mode_smoke(void);
+extern "C" int zvideo_dd_restore_display_surfaces_smoke(void);
+extern "C" int zvideo_dd_init_fullscreen_software_pixel_pack_smoke(void);
+extern "C" int zvideo_dd_create_half_res_backbuffer_surfaces_smoke(void);
+extern "C" int zvideo_dd_create_fullscreen_software_surfaces_smoke(void);
+extern "C" int zvideo_dd_create_fullscreen_hw_surfaces_smoke(void);
+extern "C" int zvideo_dd_create_fullscreen_surfaces_for_renderer_smoke(void);
+extern "C" int zvideo_image_lazy_create_backing_surface_guards_smoke(void);
+extern "C" int zvideo_dd_image_populate_surface_from_heap_pixels_smoke(void);
+extern "C" int zvideo_dd_image_lazy_create_backing_surface_smoke(void);
+extern "C" int zvideo_dd_image_lazy_create_video_memory_surface_smoke(void);
+extern "C" int zvideo_dd_image_upload_pixels_to_surface_smoke(void);
+extern "C" int zvideo_dd_image_release_surface_smoke(void);
+extern "C" int zvideo_image_surface_helpers_guard_smoke(void);
+extern "C" int zvideo_set_renderer_type_smoke(void);
+extern "C" int zvid_option_accessors_smoke(void);
+extern "C" int zvideo_init_set_surface_geometry_from_mode_index_smoke(void);
+extern "C" int zvideo_select_hw_api_device_smoke(void);
+extern "C" int zvideo_dd_enum_direct3d_device_callback_smoke(void);
+extern "C" int zvideo_dd_enumerate_direct3d_devices_for_record_smoke(void);
+extern "C" int zvideo_dd_enum_directdraw_device_callback_smoke(void);
+extern "C" int zvideo_dd_run_device_enumeration_smoke(void);
+extern "C" int zvideo_dd_startup_enumerate_default_select_smoke(void);
+extern "C" int zvideo_dd3d_set_fog_enable_smoke(void);
+extern "C" int zvideo_texture_record_release_upload_surface_smoke(void);
+extern "C" int zvideo_texture_record_finalize_upload_smoke(void);
+extern "C" int zvideo_texture_record_lock_upload_surface_smoke(void);
+extern "C" int zvideo_texture_record_unlock_upload_surface_smoke(void);
+extern "C" int zvideo_texture_record_create_and_power_smoke(void);
+extern "C" int zvideo_create_texture_record_guards_smoke(void);
+extern "C" int zvideo_dd3d_create_texture_record_smoke(void);
+extern "C" int zvideo_quad_batch_depth_and_rhw_smoke(void);
+extern "C" int zvideo_dd3d_create_device_state_smoke(void);
+extern "C" int zvideo_convert_image_pixels_for_texture_smoke(void);
+extern "C" int zvideo_dd3d_upload_image_to_surface_smoke(void);
 extern "C" int zimage_texdir_find_or_create_missing_smoke(void);
 extern "C" int zimage_texdir_build_mip_chain_smoke(void);
 extern "C" int zvid_texture_pack_ensure_builtin_smoke(void);
@@ -400,6 +492,7 @@ extern "C" int zimage_texdir_find_by_name_smoke(void);
 extern "C" int zimage_texdir_write_smoke(void);
 extern "C" int zimage_init_option_fallback_smoke(void);
 extern "C" int zimage_init_texture_directory_smoke(void);
+extern "C" int zvid_image_resample_square_smoke(void);
 extern "C" int zvid_image_release_owned_buffers_smoke(void);
 extern "C" int zvid_image_destroy_smoke(void);
 extern "C" int zimg_init_smoke(void);
@@ -467,11 +560,16 @@ extern "C" int time_reset_smoke(void);
 extern "C" int time_tick_smoke(void);
 
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/include/zClass.h"
+#include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
+#include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
+#include <cstdlib>
 #include <cstdio>
 #include <cstring>
+#include <limits>
 
 extern "C" unsigned int g_HudUi_InvalidateMask;
 
@@ -486,17 +584,808 @@ int g_smokeDeviceMemoryQueryCalls;
 int g_smokeLastTextureMemoryQueryFlags;
 int g_smokeLastDeviceMemoryQueryFlags;
 void *g_smokeDirectDraw2VTable[24];
+int g_smokeDirectDraw2QueryInterfaceCalls;
+IDirectDraw2 *g_smokeDirectDraw2LastQueryInterfaceSelf;
+const GUID *g_smokeDirectDraw2LastQueryInterfaceIid;
+void **g_smokeDirectDraw2LastQueryInterfaceOut;
+HRESULT g_smokeDirectDraw2QueryInterfaceResult;
+void *g_smokeDirectDraw2QueryInterfaceValue;
 int g_smokeDirectDraw2GetAvailableVidMemCalls;
+int g_smokeDirectDraw2ReleaseCalls;
+IDirectDraw2 *g_smokeDirectDraw2ReleaseSelf;
+int g_smokeDirectDraw2SetCooperativeLevelCalls;
+IDirectDraw2 *g_smokeDirectDraw2LastSetCooperativeSelf;
+HWND g_smokeDirectDraw2LastSetCooperativeHwnd;
+DWORD g_smokeDirectDraw2LastSetCooperativeFlags;
+HRESULT g_smokeDirectDraw2SetCooperativeLevelResult;
+int g_smokeDirectDraw2SetDisplayModeCalls;
+IDirectDraw2 *g_smokeDirectDraw2LastSetDisplayModeSelf;
+DWORD g_smokeDirectDraw2LastDisplayModeWidth;
+DWORD g_smokeDirectDraw2LastDisplayModeHeight;
+DWORD g_smokeDirectDraw2LastDisplayModeBpp;
+DWORD g_smokeDirectDraw2LastDisplayModeRefreshRate;
+DWORD g_smokeDirectDraw2LastDisplayModeFlags;
+HRESULT g_smokeDirectDraw2SetDisplayModeResult;
+int g_smokeDirectDraw2CreateSurfaceCalls;
+IDirectDraw2 *g_smokeDirectDraw2LastCreateSurfaceSelf;
+DDSURFACEDESC *g_smokeDirectDraw2LastCreateSurfaceDesc;
+DDSURFACEDESC g_smokeDirectDraw2CreateSurfaceDescs[4];
+IDirectDrawSurface **g_smokeDirectDraw2LastCreateSurfaceOut;
+IUnknown *g_smokeDirectDraw2LastCreateSurfaceOuter;
+HRESULT g_smokeDirectDraw2CreateSurfaceResult;
+IDirectDrawSurface *g_smokeDirectDraw2CreateSurfaceValue;
+zVidImagePartial *g_smokeDirectDraw2MutateImageOnFirstCreateSurface;
+void *g_smokeDirectDraw2MutatedPalette;
+short g_smokeDirectDraw2MutatedPaletteMetaPacked;
+int g_smokeDirectDraw2CreatePaletteCalls;
+IDirectDraw2 *g_smokeDirectDraw2LastCreatePaletteSelf;
+DWORD g_smokeDirectDraw2LastCreatePaletteFlags;
+PALETTEENTRY *g_smokeDirectDraw2LastCreatePaletteEntries;
+IDirectDrawPalette **g_smokeDirectDraw2LastCreatePaletteOut;
+IUnknown *g_smokeDirectDraw2LastCreatePaletteOuter;
+HRESULT g_smokeDirectDraw2CreatePaletteResult;
+IDirectDrawPalette *g_smokeDirectDraw2CreatePaletteValue;
+int g_smokeDirectDraw2CreateClipperCalls;
+IDirectDraw2 *g_smokeDirectDraw2LastCreateClipperSelf;
+DWORD g_smokeDirectDraw2LastCreateClipperFlags;
+IDirectDrawClipper **g_smokeDirectDraw2LastCreateClipperOut;
+IUnknown *g_smokeDirectDraw2LastCreateClipperOuter;
+HRESULT g_smokeDirectDraw2CreateClipperResult;
+IDirectDrawClipper *g_smokeDirectDraw2CreateClipperValue;
 DDSCAPS g_smokeDirectDraw2LastAvailableVidMemCaps;
 DWORD *g_smokeDirectDraw2LastAvailableVidMemTotal;
 DWORD *g_smokeDirectDraw2LastAvailableVidMemFree;
 DWORD g_smokeDirectDraw2AvailableVidMemTotal;
 DWORD g_smokeDirectDraw2AvailableVidMemFree;
 HRESULT g_smokeDirectDraw2GetAvailableVidMemResult;
+void *g_smokeDirectDraw1VTable[3];
+int g_smokeDirectDrawCreateCalls;
+GUID *g_smokeDirectDrawCreateGuid;
+IDirectDraw **g_smokeDirectDrawCreateOut;
+IUnknown *g_smokeDirectDrawCreateOuter;
+HRESULT g_smokeDirectDrawCreateResult;
+int g_smokeDirectDrawQueryInterfaceCalls;
+IDirectDraw *g_smokeDirectDrawQueryInterfaceSelf;
+const GUID *g_smokeDirectDrawQueryInterfaceIid;
+void **g_smokeDirectDrawQueryInterfaceOut;
+HRESULT g_smokeDirectDrawQueryInterfaceResult;
+IDirectDraw2 *g_smokeDirectDrawQueryInterfaceValue;
+int g_smokeDirectDrawReleaseCalls;
+IDirectDraw *g_smokeDirectDrawReleaseSelf;
+void *g_smokeDirectDrawSurfaceVTable[32];
+int g_smokeDirectDrawSurfaceQueryInterfaceCalls;
+IDirectDrawSurface *g_smokeDirectDrawSurfaceLastQueryInterfaceSelf;
+const GUID *g_smokeDirectDrawSurfaceLastQueryInterfaceIid;
+void **g_smokeDirectDrawSurfaceLastQueryInterfaceOut;
+HRESULT g_smokeDirectDrawSurfaceQueryInterfaceResult;
+void *g_smokeDirectDrawSurfaceQueryInterfaceValue;
+void *g_smokeDirectDrawSurfaceQueryInterfaceValues[4];
+int g_smokeDirectDrawSurfaceQueryInterfaceValueCount;
+int g_smokeDirectDrawSurfaceReleaseCalls;
+IDirectDrawSurface *g_smokeDirectDrawSurfaceReleaseSelf;
+int g_smokeDirectDrawSurfaceSetPaletteCalls;
+IDirectDrawSurface *g_smokeDirectDrawSurfaceSetPaletteSurfaces[4];
+IDirectDrawPalette *g_smokeDirectDrawSurfaceSetPalettePalettes[4];
+HRESULT g_smokeDirectDrawSurfaceSetPaletteResult;
+void *g_smokeComReleaseVTable[3];
+int g_smokeComReleaseCalls;
+void *g_smokeComReleaseObjects[8];
+void *g_smokeDirectDrawSurface3VTable[39];
+int g_smokeDirectDrawSurface3ReleaseCalls;
+IDirectDrawSurface3 *g_smokeDirectDrawSurface3ReleaseSurfaces[4];
+int g_smokeDirectDrawSurface3RestoreCalls;
+IDirectDrawSurface3 *g_smokeDirectDrawSurface3RestoreSurfaces[4];
+HRESULT g_smokeDirectDrawSurface3RestoreResult;
+int g_smokeDirectDrawSurface3GetPixelFormatCalls;
+IDirectDrawSurface3 *g_smokeDirectDrawSurface3LastPixelFormatSurface;
+DWORD g_smokeDirectDrawSurface3LastPixelFormatInputSize;
+DDPIXELFORMAT g_smokeDirectDrawSurface3PixelFormat;
+HRESULT g_smokeDirectDrawSurface3GetPixelFormatResult;
+int g_smokeDirectDrawSurface3GetAttachedSurfaceCalls;
+IDirectDrawSurface3 *g_smokeDirectDrawSurface3LastAttachedSurfaceSelf;
+DDSCAPS g_smokeDirectDrawSurface3LastAttachedSurfaceCaps;
+IDirectDrawSurface3 **g_smokeDirectDrawSurface3LastAttachedSurfaceOut;
+HRESULT g_smokeDirectDrawSurface3GetAttachedSurfaceResult;
+IDirectDrawSurface3 *g_smokeDirectDrawSurface3AttachedSurfaceValue;
+int g_smokeDirectDrawSurface3LockCalls;
+IDirectDrawSurface3 *g_smokeDirectDrawSurface3LockSurfaces[4];
+RECT *g_smokeDirectDrawSurface3LastLockRect;
+DDSURFACEDESC *g_smokeDirectDrawSurface3LastLockDesc;
+DWORD g_smokeDirectDrawSurface3LastLockFlags;
+HANDLE g_smokeDirectDrawSurface3LastLockEvent;
+DWORD g_smokeDirectDrawSurface3LockDescSize;
+unsigned char g_smokeDirectDrawSurface3LockPixels[4];
+void *g_smokeDirectDrawSurface3LockPixelsValue;
+LONG g_smokeDirectDrawSurface3LockPitchValue;
+HRESULT g_smokeDirectDrawSurface3LockResults[4];
+int g_smokeDirectDrawSurface3LockResultCount;
+int g_smokeDirectDrawSurface3UnlockCalls;
+IDirectDrawSurface3 *g_smokeDirectDrawSurface3UnlockSurfaces[4];
+IDirectDrawSurface3 *g_smokeDirectDrawSurface3LastUnlockSurface;
+void *g_smokeDirectDrawSurface3LastUnlockArg;
+HRESULT g_smokeDirectDrawSurface3UnlockResults[4];
+int g_smokeDirectDrawSurface3UnlockResultCount;
+int g_smokeDirectDrawSurface3SetClipperCalls;
+IDirectDrawSurface3 *g_smokeDirectDrawSurface3LastSetClipperSelf;
+IDirectDrawClipper *g_smokeDirectDrawSurface3LastSetClipperValue;
+HRESULT g_smokeDirectDrawSurface3SetClipperResult;
+int g_smokeDirectDrawSurface3AddAttachedSurfaceCalls;
+IDirectDrawSurface3 *g_smokeDirectDrawSurface3LastAddAttachedSurfaceSelf;
+IDirectDrawSurface3 *g_smokeDirectDrawSurface3LastAttachedSurfaceArg;
+HRESULT g_smokeDirectDrawSurface3AddAttachedSurfaceResult;
+int g_smokeDirectDrawSurface3PageUnlockCalls;
+IDirectDrawSurface3 *g_smokeDirectDrawSurface3LastPageUnlockSurface;
+DWORD g_smokeDirectDrawSurface3LastPageUnlockFlags;
+HRESULT g_smokeDirectDrawSurface3PageUnlockResult;
+int g_smokeDirectDrawSurface3GetDCCalls;
+IDirectDrawSurface3 *g_smokeDirectDrawSurface3LastGetDCSurface;
+HDC *g_smokeDirectDrawSurface3LastGetDCOut;
+HDC g_smokeDirectDrawSurface3GetDCValue;
+HRESULT g_smokeDirectDrawSurface3GetDCResult;
+int g_smokeDirectDrawSurface3ReleaseDCCalls;
+IDirectDrawSurface3 *g_smokeDirectDrawSurface3LastReleaseDCSurface;
+HDC g_smokeDirectDrawSurface3LastReleaseDCHdc;
+HRESULT g_smokeDirectDrawSurface3ReleaseDCResult;
+void *g_smokeDirectDrawClipperVTable[9];
+int g_smokeDirectDrawClipperSetHWndCalls;
+IDirectDrawClipper *g_smokeDirectDrawClipperLastSetHWndSelf;
+DWORD g_smokeDirectDrawClipperLastSetHWndFlags;
+HWND g_smokeDirectDrawClipperLastSetHWndValue;
+HRESULT g_smokeDirectDrawClipperSetHWndResult;
+void *g_smokeSurfaceLockVerifierVTable[5];
+int g_smokeSurfaceLockVerifierReleaseCalls;
+int g_smokeSurfaceLockVerifierVerifyCalls;
+zVideo_SurfaceLockVerifyArgs g_smokeSurfaceLockVerifierLastArgs;
+void *g_smokeDirectDrawPaletteVTable[7];
+int g_smokeDirectDrawPaletteSetEntriesCalls;
+IDirectDrawPalette *g_smokeDirectDrawPaletteLastSetEntriesSelf;
+DWORD g_smokeDirectDrawPaletteLastSetEntriesFlags;
+DWORD g_smokeDirectDrawPaletteLastSetEntriesFirst;
+DWORD g_smokeDirectDrawPaletteLastSetEntriesCount;
+PALETTEENTRY *g_smokeDirectDrawPaletteLastSetEntriesEntries;
+HRESULT g_smokeDirectDrawPaletteSetEntriesResult;
+void *g_smokeDirect3DDevice2VTable[30];
+HRESULT g_smokeDirect3DDevice2GetCapsResult;
+int g_smokeDirect3DDevice2GetCapsCalls;
+D3DDEVICEDESC *g_smokeDirect3DDevice2LastGetCapsHalDesc;
+D3DDEVICEDESC *g_smokeDirect3DDevice2LastGetCapsHelDesc;
+int g_smokeDirect3DDevice2AddViewportCalls;
+IDirect3DViewport2 *g_smokeDirect3DDevice2LastAddViewport;
+HRESULT g_smokeDirect3DDevice2AddViewportResult;
+int g_smokeDirect3DDevice2SetCurrentViewportCalls;
+IDirect3DViewport2 *g_smokeDirect3DDevice2LastSetCurrentViewport;
+HRESULT g_smokeDirect3DDevice2SetCurrentViewportResult;
+int g_smokeDirect3DDevice2SetRenderStateCalls;
+D3DRENDERSTATETYPE g_smokeDirect3DDevice2RenderStates[16];
+DWORD g_smokeDirect3DDevice2RenderStateValues[16];
+int g_smokeDirect3DDevice2SetLightStateCalls;
+D3DLIGHTSTATETYPE g_smokeDirect3DDevice2LightStates[4];
+DWORD g_smokeDirect3DDevice2LightStateValues[4];
+void *g_smokeDirect3D2VTable[9];
+HRESULT g_smokeDirect3D2CreateDeviceResult;
+HRESULT g_smokeDirect3D2CreateViewportResult;
+HRESULT g_smokeDirect3D2CreateMaterialResult;
+int g_smokeDirect3D2CreateDeviceCalls;
+const GUID *g_smokeDirect3D2LastCreateDeviceGuid;
+IDirectDrawSurface *g_smokeDirect3D2LastCreateDeviceSurface;
+IDirect3DDevice2 **g_smokeDirect3D2LastCreateDeviceOut;
+IDirect3DDevice2 *g_smokeDirect3D2CreatedDevice;
+int g_smokeDirect3D2CreateViewportCalls;
+IDirect3DViewport2 **g_smokeDirect3D2LastCreateViewportOut;
+IUnknown *g_smokeDirect3D2LastCreateViewportOuter;
+IDirect3DViewport2 *g_smokeDirect3D2CreatedViewport;
+int g_smokeDirect3D2CreateMaterialCalls;
+IDirect3DMaterial2 **g_smokeDirect3D2LastCreateMaterialOut;
+IUnknown *g_smokeDirect3D2LastCreateMaterialOuter;
+IDirect3DMaterial2 *g_smokeDirect3D2CreatedMaterial;
+void *g_smokeDirect3DViewport2VTable[18];
+HRESULT g_smokeDirect3DViewport2SetViewport2Result;
+int g_smokeDirect3DViewport2SetViewport2Calls;
+D3DVIEWPORT2 g_smokeDirect3DViewport2LastViewportValue;
+HRESULT g_smokeDirect3DViewport2SetBackgroundResult;
+int g_smokeDirect3DViewport2SetBackgroundCalls;
+D3DMATERIALHANDLE g_smokeDirect3DViewport2LastBackground;
+void *g_smokeDirect3DMaterial2VTable[6];
+HRESULT g_smokeDirect3DMaterial2SetMaterialResult;
+int g_smokeDirect3DMaterial2SetMaterialCalls;
+D3DMATERIAL g_smokeDirect3DMaterial2LastMaterialValue;
+HRESULT g_smokeDirect3DMaterial2GetHandleResult;
+int g_smokeDirect3DMaterial2GetHandleCalls;
+IDirect3DDevice2 *g_smokeDirect3DMaterial2LastGetHandleDevice;
+D3DMATERIALHANDLE *g_smokeDirect3DMaterial2LastGetHandleOut;
+D3DMATERIALHANDLE g_smokeDirect3DMaterial2HandleValue;
+void *g_smokeDirect3DTexture2VTable[6];
+HRESULT g_smokeDirect3DTexture2LoadResult;
+int g_smokeDirect3DTexture2LoadCalls;
+IDirect3DTexture2 *g_smokeDirect3DTexture2LastLoadSelf;
+IDirect3DTexture2 *g_smokeDirect3DTexture2LastLoadSource;
+HRESULT g_smokeDirect3DTexture2GetHandleResult;
+int g_smokeDirect3DTexture2GetHandleCalls;
+IDirect3DTexture2 *g_smokeDirect3DTexture2LastGetHandleSelf;
+IDirect3DDevice2 *g_smokeDirect3DTexture2LastGetHandleDevice;
+D3DTEXTUREHANDLE *g_smokeDirect3DTexture2LastGetHandleOut;
+D3DTEXTUREHANDLE g_smokeDirect3DTexture2HandleValue;
+int g_smokeDirect3DTexture2ReleaseCalls;
+IDirect3DTexture2 *g_smokeDirect3DTexture2ReleaseObjects[8];
+int g_smokeUploadImageToSurfaceCalls;
+IDirectDrawSurface *g_smokeUploadImageToSurfaceSurface;
+zVidImagePartial *g_smokeUploadImageToSurfaceImage;
+int g_smokeUploadImageToSurfaceUseAlpha;
+int g_smokeUploadImageToSurfaceResult;
 
 struct SmokeDirectDraw2Object {
     void **vtable;
 };
+
+struct SmokeDirectDraw1Object {
+    void **vtable;
+};
+
+struct SmokeDirectDrawSurfaceObject {
+    void **vtable;
+};
+
+struct SmokeComObject {
+    void **vtable;
+};
+
+struct SmokeDirectDrawSurface3Object {
+    void **vtable;
+};
+
+struct SmokeDirectDrawClipperObject {
+    void **vtable;
+};
+
+struct SmokeSurfaceLockVerifierObject {
+    void **vtable;
+};
+
+struct SmokeDirectDrawPaletteObject {
+    void **vtable;
+};
+
+struct SmokeDirect3DDevice2Object {
+    void **vtable;
+};
+
+struct SmokeDirect3D2Object {
+    void **vtable;
+};
+
+struct SmokeDirect3DViewport2Object {
+    void **vtable;
+};
+
+struct SmokeDirect3DMaterial2Object {
+    void **vtable;
+};
+
+struct SmokeDirect3DTexture2Object {
+    void **vtable;
+};
+
+struct SmokeImportPatch {
+    ULONG_PTR *slot;
+    ULONG_PTR original;
+};
+
+struct SmokeFunctionPatch {
+    unsigned char *address;
+    unsigned char original[5];
+    int active;
+};
+
+bool PatchSmokeImportByName(
+    const char *dllName,
+    const char *functionName,
+    void *replacement,
+    SmokeImportPatch &patch
+) {
+    unsigned char *const imageBase = (unsigned char *)GetModuleHandleA(0);
+    IMAGE_DOS_HEADER *const dos = (IMAGE_DOS_HEADER *)imageBase;
+    if (dos->e_magic != IMAGE_DOS_SIGNATURE) {
+        return false;
+    }
+
+    IMAGE_NT_HEADERS *const nt = (IMAGE_NT_HEADERS *)(imageBase + dos->e_lfanew);
+    if (nt->Signature != IMAGE_NT_SIGNATURE) {
+        return false;
+    }
+
+    const IMAGE_DATA_DIRECTORY &imports =
+        nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT];
+    if (imports.VirtualAddress == 0) {
+        return false;
+    }
+
+    IMAGE_IMPORT_DESCRIPTOR *descriptor =
+        (IMAGE_IMPORT_DESCRIPTOR *)(imageBase + imports.VirtualAddress);
+    for (; descriptor->Name != 0; ++descriptor) {
+        const char *const importedDll = (const char *)(imageBase + descriptor->Name);
+        if (lstrcmpiA(importedDll, dllName) != 0) {
+            continue;
+        }
+
+        IMAGE_THUNK_DATA *nameThunk = (IMAGE_THUNK_DATA *)(imageBase +
+            (descriptor->OriginalFirstThunk != 0 ? descriptor->OriginalFirstThunk
+                                                 : descriptor->FirstThunk));
+        IMAGE_THUNK_DATA *addressThunk =
+            (IMAGE_THUNK_DATA *)(imageBase + descriptor->FirstThunk);
+        for (; nameThunk->u1.AddressOfData != 0; ++nameThunk, ++addressThunk) {
+            if (IMAGE_SNAP_BY_ORDINAL(nameThunk->u1.Ordinal)) {
+                continue;
+            }
+
+            IMAGE_IMPORT_BY_NAME *importName =
+                (IMAGE_IMPORT_BY_NAME *)(imageBase + nameThunk->u1.AddressOfData);
+            if (std::strcmp((const char *)importName->Name, functionName) != 0) {
+                continue;
+            }
+
+            DWORD oldProtect = 0;
+            patch.slot = &addressThunk->u1.Function;
+            patch.original = addressThunk->u1.Function;
+            if (VirtualProtect(
+                    patch.slot,
+                    sizeof(*patch.slot),
+                    PAGE_EXECUTE_READWRITE,
+                    &oldProtect
+                ) == 0) {
+                patch.slot = 0;
+                patch.original = 0;
+                return false;
+            }
+
+            *patch.slot = (ULONG_PTR)replacement;
+            DWORD ignored = 0;
+            VirtualProtect(patch.slot, sizeof(*patch.slot), oldProtect, &ignored);
+            FlushInstructionCache(GetCurrentProcess(), patch.slot, sizeof(*patch.slot));
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void RestoreSmokeImportPatch(
+    SmokeImportPatch &patch
+) {
+    if (patch.slot == 0) {
+        return;
+    }
+
+    DWORD oldProtect = 0;
+    if (VirtualProtect(
+            patch.slot,
+            sizeof(*patch.slot),
+            PAGE_EXECUTE_READWRITE,
+            &oldProtect
+        ) != 0) {
+        *patch.slot = patch.original;
+        DWORD ignored = 0;
+        VirtualProtect(patch.slot, sizeof(*patch.slot), oldProtect, &ignored);
+        FlushInstructionCache(GetCurrentProcess(), patch.slot, sizeof(*patch.slot));
+    }
+    patch.slot = 0;
+    patch.original = 0;
+}
+
+bool PatchSmokeFunctionJump(
+    void *target,
+    void *replacement,
+    SmokeFunctionPatch &patch
+) {
+    patch.address = (unsigned char *)(target);
+    patch.active = 0;
+    DWORD oldProtect = 0;
+    if (VirtualProtect(
+            patch.address,
+            sizeof(patch.original),
+            PAGE_EXECUTE_READWRITE,
+            &oldProtect
+        ) == 0) {
+        return false;
+    }
+
+    std::memcpy(patch.original, patch.address, sizeof(patch.original));
+    const int relative = (int)((unsigned char *)(replacement) - patch.address - 5);
+    patch.address[0] = 0xe9;
+    std::memcpy(patch.address + 1, &relative, 4);
+    FlushInstructionCache(GetCurrentProcess(), patch.address, sizeof(patch.original));
+    DWORD ignored = 0;
+    VirtualProtect(patch.address, sizeof(patch.original), oldProtect, &ignored);
+    patch.active = 1;
+    return true;
+}
+
+void RestoreSmokeFunctionPatch(
+    SmokeFunctionPatch &patch
+) {
+    if (patch.active == 0) {
+        return;
+    }
+
+    DWORD oldProtect = 0;
+    if (VirtualProtect(
+            patch.address,
+            sizeof(patch.original),
+            PAGE_EXECUTE_READWRITE,
+            &oldProtect
+        ) != 0) {
+        std::memcpy(patch.address, patch.original, sizeof(patch.original));
+        FlushInstructionCache(GetCurrentProcess(), patch.address, sizeof(patch.original));
+        DWORD ignored = 0;
+        VirtualProtect(patch.address, sizeof(patch.original), oldProtect, &ignored);
+    }
+    patch.active = 0;
+}
+
+HRESULT __stdcall SmokeDirectDrawCreate(
+    GUID *guid,
+    IDirectDraw **outDirectDraw,
+    IUnknown *outer
+) {
+    ++g_smokeDirectDrawCreateCalls;
+    g_smokeDirectDrawCreateGuid = guid;
+    g_smokeDirectDrawCreateOut = outDirectDraw;
+    g_smokeDirectDrawCreateOuter = outer;
+    if (g_smokeDirectDrawCreateResult == DD_OK) {
+        *outDirectDraw = (IDirectDraw *)g_smokeDirectDrawQueryInterfaceSelf;
+    }
+    return g_smokeDirectDrawCreateResult;
+}
+
+HRESULT __stdcall SmokeDirectDrawQueryInterface(
+    IDirectDraw *self,
+    REFIID iid,
+    void **outObject
+) {
+    ++g_smokeDirectDrawQueryInterfaceCalls;
+    g_smokeDirectDrawQueryInterfaceSelf = self;
+    g_smokeDirectDrawQueryInterfaceIid = &iid;
+    g_smokeDirectDrawQueryInterfaceOut = outObject;
+    if (g_smokeDirectDrawQueryInterfaceResult == DD_OK) {
+        *outObject = g_smokeDirectDrawQueryInterfaceValue;
+    }
+    return g_smokeDirectDrawQueryInterfaceResult;
+}
+
+ULONG __stdcall SmokeDirectDrawRelease(
+    IDirectDraw *self
+) {
+    ++g_smokeDirectDrawReleaseCalls;
+    g_smokeDirectDrawReleaseSelf = self;
+    return 0;
+}
+
+ULONG __stdcall SmokeDirectDraw2Release(
+    IDirectDraw2 *self
+) {
+    ++g_smokeDirectDraw2ReleaseCalls;
+    g_smokeDirectDraw2ReleaseSelf = self;
+    return 0;
+}
+
+HRESULT __stdcall SmokeDirectDraw2QueryInterface(
+    IDirectDraw2 *self,
+    REFIID iid,
+    void **outObject
+) {
+    ++g_smokeDirectDraw2QueryInterfaceCalls;
+    g_smokeDirectDraw2LastQueryInterfaceSelf = self;
+    g_smokeDirectDraw2LastQueryInterfaceIid = &iid;
+    g_smokeDirectDraw2LastQueryInterfaceOut = outObject;
+    if (g_smokeDirectDraw2QueryInterfaceResult == DD_OK) {
+        *outObject = g_smokeDirectDraw2QueryInterfaceValue;
+    }
+    return g_smokeDirectDraw2QueryInterfaceResult;
+}
+
+HRESULT __stdcall SmokeDirectDraw2SetCooperativeLevel(
+    IDirectDraw2 *self,
+    HWND hwnd,
+    DWORD flags
+) {
+    ++g_smokeDirectDraw2SetCooperativeLevelCalls;
+    g_smokeDirectDraw2LastSetCooperativeSelf = self;
+    g_smokeDirectDraw2LastSetCooperativeHwnd = hwnd;
+    g_smokeDirectDraw2LastSetCooperativeFlags = flags;
+    return g_smokeDirectDraw2SetCooperativeLevelResult;
+}
+
+HRESULT __stdcall SmokeDirectDraw2SetDisplayMode(
+    IDirectDraw2 *self,
+    DWORD width,
+    DWORD height,
+    DWORD bpp,
+    DWORD refreshRate,
+    DWORD flags
+) {
+    ++g_smokeDirectDraw2SetDisplayModeCalls;
+    g_smokeDirectDraw2LastSetDisplayModeSelf = self;
+    g_smokeDirectDraw2LastDisplayModeWidth = width;
+    g_smokeDirectDraw2LastDisplayModeHeight = height;
+    g_smokeDirectDraw2LastDisplayModeBpp = bpp;
+    g_smokeDirectDraw2LastDisplayModeRefreshRate = refreshRate;
+    g_smokeDirectDraw2LastDisplayModeFlags = flags;
+    return g_smokeDirectDraw2SetDisplayModeResult;
+}
+
+HRESULT __stdcall SmokeDirectDraw2CreateSurface(
+    IDirectDraw2 *self,
+    DDSURFACEDESC *desc,
+    IDirectDrawSurface **outSurface,
+    IUnknown *outer
+) {
+    const int callIndex = g_smokeDirectDraw2CreateSurfaceCalls;
+    ++g_smokeDirectDraw2CreateSurfaceCalls;
+    g_smokeDirectDraw2LastCreateSurfaceSelf = self;
+    g_smokeDirectDraw2LastCreateSurfaceDesc = desc;
+    if (callIndex < 4) {
+        g_smokeDirectDraw2CreateSurfaceDescs[callIndex] = *desc;
+    }
+    g_smokeDirectDraw2LastCreateSurfaceOut = outSurface;
+    g_smokeDirectDraw2LastCreateSurfaceOuter = outer;
+    if (g_smokeDirectDraw2CreateSurfaceResult == DD_OK) {
+        *outSurface = g_smokeDirectDraw2CreateSurfaceValue;
+    }
+    if (callIndex == 0 && g_smokeDirectDraw2MutateImageOnFirstCreateSurface != 0) {
+        g_smokeDirectDraw2MutateImageOnFirstCreateSurface->palette =
+            g_smokeDirectDraw2MutatedPalette;
+        g_smokeDirectDraw2MutateImageOnFirstCreateSurface->paletteMetaPacked =
+            g_smokeDirectDraw2MutatedPaletteMetaPacked;
+    }
+    return g_smokeDirectDraw2CreateSurfaceResult;
+}
+
+HRESULT __stdcall SmokeDirectDraw2CreatePalette(
+    IDirectDraw2 *self,
+    DWORD flags,
+    PALETTEENTRY *entries,
+    IDirectDrawPalette **outPalette,
+    IUnknown *outer
+) {
+    ++g_smokeDirectDraw2CreatePaletteCalls;
+    g_smokeDirectDraw2LastCreatePaletteSelf = self;
+    g_smokeDirectDraw2LastCreatePaletteFlags = flags;
+    g_smokeDirectDraw2LastCreatePaletteEntries = entries;
+    g_smokeDirectDraw2LastCreatePaletteOut = outPalette;
+    g_smokeDirectDraw2LastCreatePaletteOuter = outer;
+    if (g_smokeDirectDraw2CreatePaletteResult == DD_OK) {
+        *outPalette = g_smokeDirectDraw2CreatePaletteValue;
+    }
+    return g_smokeDirectDraw2CreatePaletteResult;
+}
+
+HRESULT __stdcall SmokeDirectDrawSurfaceQueryInterface(
+    IDirectDrawSurface *self,
+    REFIID iid,
+    void **outObject
+) {
+    ++g_smokeDirectDrawSurfaceQueryInterfaceCalls;
+    g_smokeDirectDrawSurfaceLastQueryInterfaceSelf = self;
+    g_smokeDirectDrawSurfaceLastQueryInterfaceIid = &iid;
+    g_smokeDirectDrawSurfaceLastQueryInterfaceOut = outObject;
+    if (g_smokeDirectDrawSurfaceQueryInterfaceResult == DD_OK) {
+        if (g_smokeDirectDrawSurfaceQueryInterfaceValueCount != 0 &&
+            g_smokeDirectDrawSurfaceQueryInterfaceCalls <=
+                g_smokeDirectDrawSurfaceQueryInterfaceValueCount) {
+            *outObject =
+                g_smokeDirectDrawSurfaceQueryInterfaceValues[
+                    g_smokeDirectDrawSurfaceQueryInterfaceCalls - 1
+                ];
+        } else {
+            *outObject = g_smokeDirectDrawSurfaceQueryInterfaceValue;
+        }
+    }
+    return g_smokeDirectDrawSurfaceQueryInterfaceResult;
+}
+
+ULONG __stdcall SmokeDirectDrawSurfaceRelease(
+    IDirectDrawSurface *self
+) {
+    ++g_smokeDirectDrawSurfaceReleaseCalls;
+    g_smokeDirectDrawSurfaceReleaseSelf = self;
+    return 0;
+}
+
+HRESULT __stdcall SmokeDirectDrawSurfaceSetPalette(
+    IDirectDrawSurface *self,
+    IDirectDrawPalette *palette
+) {
+    if (g_smokeDirectDrawSurfaceSetPaletteCalls < 4) {
+        g_smokeDirectDrawSurfaceSetPaletteSurfaces[
+            g_smokeDirectDrawSurfaceSetPaletteCalls
+        ] = self;
+        g_smokeDirectDrawSurfaceSetPalettePalettes[
+            g_smokeDirectDrawSurfaceSetPaletteCalls
+        ] = palette;
+    }
+    ++g_smokeDirectDrawSurfaceSetPaletteCalls;
+    return g_smokeDirectDrawSurfaceSetPaletteResult;
+}
+
+ULONG __stdcall SmokeComRelease(
+    void *self
+) {
+    if (g_smokeComReleaseCalls < 8) {
+        g_smokeComReleaseObjects[g_smokeComReleaseCalls] = self;
+    }
+    ++g_smokeComReleaseCalls;
+    return 0;
+}
+
+ULONG __stdcall SmokeDirectDrawSurface3Release(
+    IDirectDrawSurface3 *self
+) {
+    if (g_smokeDirectDrawSurface3ReleaseCalls < 4) {
+        g_smokeDirectDrawSurface3ReleaseSurfaces[
+            g_smokeDirectDrawSurface3ReleaseCalls
+        ] = self;
+    }
+    ++g_smokeDirectDrawSurface3ReleaseCalls;
+    return 0;
+}
+
+HRESULT __stdcall SmokeDirectDrawSurface3Restore(
+    IDirectDrawSurface3 *self
+) {
+    if (g_smokeDirectDrawSurface3RestoreCalls < 4) {
+        g_smokeDirectDrawSurface3RestoreSurfaces[
+            g_smokeDirectDrawSurface3RestoreCalls
+        ] = self;
+    }
+    ++g_smokeDirectDrawSurface3RestoreCalls;
+    return g_smokeDirectDrawSurface3RestoreResult;
+}
+
+HRESULT __stdcall SmokeDirectDrawSurface3GetPixelFormat(
+    IDirectDrawSurface3 *self,
+    DDPIXELFORMAT *pixelFormat
+) {
+    ++g_smokeDirectDrawSurface3GetPixelFormatCalls;
+    g_smokeDirectDrawSurface3LastPixelFormatSurface = self;
+    g_smokeDirectDrawSurface3LastPixelFormatInputSize = pixelFormat->dwSize;
+    if (g_smokeDirectDrawSurface3GetPixelFormatResult == DD_OK) {
+        *pixelFormat = g_smokeDirectDrawSurface3PixelFormat;
+    }
+    return g_smokeDirectDrawSurface3GetPixelFormatResult;
+}
+
+HRESULT __stdcall SmokeDirectDrawSurface3GetAttachedSurface(
+    IDirectDrawSurface3 *self,
+    DDSCAPS *caps,
+    IDirectDrawSurface3 **attachedSurface
+) {
+    ++g_smokeDirectDrawSurface3GetAttachedSurfaceCalls;
+    g_smokeDirectDrawSurface3LastAttachedSurfaceSelf = self;
+    g_smokeDirectDrawSurface3LastAttachedSurfaceCaps = *caps;
+    g_smokeDirectDrawSurface3LastAttachedSurfaceOut = attachedSurface;
+    if (g_smokeDirectDrawSurface3GetAttachedSurfaceResult == DD_OK) {
+        *attachedSurface = g_smokeDirectDrawSurface3AttachedSurfaceValue;
+    }
+    return g_smokeDirectDrawSurface3GetAttachedSurfaceResult;
+}
+
+HRESULT __stdcall SmokeDirectDrawSurface3AddAttachedSurface(
+    IDirectDrawSurface3 *self,
+    IDirectDrawSurface3 *attachedSurface
+) {
+    ++g_smokeDirectDrawSurface3AddAttachedSurfaceCalls;
+    g_smokeDirectDrawSurface3LastAddAttachedSurfaceSelf = self;
+    g_smokeDirectDrawSurface3LastAttachedSurfaceArg = attachedSurface;
+    return g_smokeDirectDrawSurface3AddAttachedSurfaceResult;
+}
+
+HRESULT __stdcall SmokeDirectDrawSurface3Lock(
+    IDirectDrawSurface3 *self,
+    RECT *rect,
+    DDSURFACEDESC *desc,
+    DWORD flags,
+    HANDLE eventHandle
+) {
+    const int resultIndex = g_smokeDirectDrawSurface3LockCalls;
+    if (g_smokeDirectDrawSurface3LockCalls < 4) {
+        g_smokeDirectDrawSurface3LockSurfaces[
+            g_smokeDirectDrawSurface3LockCalls
+        ] = self;
+    }
+    ++g_smokeDirectDrawSurface3LockCalls;
+    g_smokeDirectDrawSurface3LastLockRect = rect;
+    g_smokeDirectDrawSurface3LastLockDesc = desc;
+    g_smokeDirectDrawSurface3LastLockFlags = flags;
+    g_smokeDirectDrawSurface3LastLockEvent = eventHandle;
+    g_smokeDirectDrawSurface3LockDescSize = desc->dwSize;
+    const HRESULT result =
+        resultIndex < g_smokeDirectDrawSurface3LockResultCount
+            ? g_smokeDirectDrawSurface3LockResults[resultIndex]
+            : DD_OK;
+    if (result == DD_OK) {
+        desc->dwWidth = 640;
+        desc->dwHeight = 480;
+        desc->lPitch = g_smokeDirectDrawSurface3LockPitchValue;
+        desc->lpSurface = g_smokeDirectDrawSurface3LockPixelsValue;
+    }
+    return result;
+}
+
+HRESULT __stdcall SmokeDirectDrawSurface3GetDC(
+    IDirectDrawSurface3 *self,
+    HDC *hdc
+) {
+    ++g_smokeDirectDrawSurface3GetDCCalls;
+    g_smokeDirectDrawSurface3LastGetDCSurface = self;
+    g_smokeDirectDrawSurface3LastGetDCOut = hdc;
+    if (g_smokeDirectDrawSurface3GetDCResult == DD_OK) {
+        *hdc = g_smokeDirectDrawSurface3GetDCValue;
+    }
+    return g_smokeDirectDrawSurface3GetDCResult;
+}
+
+HRESULT __stdcall SmokeDirectDrawSurface3ReleaseDC(
+    IDirectDrawSurface3 *self,
+    HDC hdc
+) {
+    ++g_smokeDirectDrawSurface3ReleaseDCCalls;
+    g_smokeDirectDrawSurface3LastReleaseDCSurface = self;
+    g_smokeDirectDrawSurface3LastReleaseDCHdc = hdc;
+    return g_smokeDirectDrawSurface3ReleaseDCResult;
+}
+
+HRESULT __stdcall SmokeDirectDrawSurface3Unlock(
+    IDirectDrawSurface3 *self,
+    void *surfaceData
+) {
+    const int resultIndex = g_smokeDirectDrawSurface3UnlockCalls;
+    if (g_smokeDirectDrawSurface3UnlockCalls < 4) {
+        g_smokeDirectDrawSurface3UnlockSurfaces[
+            g_smokeDirectDrawSurface3UnlockCalls
+        ] = self;
+    }
+    ++g_smokeDirectDrawSurface3UnlockCalls;
+    g_smokeDirectDrawSurface3LastUnlockSurface = self;
+    g_smokeDirectDrawSurface3LastUnlockArg = surfaceData;
+    return resultIndex < g_smokeDirectDrawSurface3UnlockResultCount
+               ? g_smokeDirectDrawSurface3UnlockResults[resultIndex]
+               : DD_OK;
+}
+
+HRESULT __stdcall SmokeDirectDrawSurface3SetClipper(
+    IDirectDrawSurface3 *self,
+    IDirectDrawClipper *clipper
+) {
+    ++g_smokeDirectDrawSurface3SetClipperCalls;
+    g_smokeDirectDrawSurface3LastSetClipperSelf = self;
+    g_smokeDirectDrawSurface3LastSetClipperValue = clipper;
+    return g_smokeDirectDrawSurface3SetClipperResult;
+}
+
+HRESULT __stdcall SmokeDirectDrawSurface3PageUnlock(
+    IDirectDrawSurface3 *self,
+    DWORD flags
+) {
+    ++g_smokeDirectDrawSurface3PageUnlockCalls;
+    g_smokeDirectDrawSurface3LastPageUnlockSurface = self;
+    g_smokeDirectDrawSurface3LastPageUnlockFlags = flags;
+    return g_smokeDirectDrawSurface3PageUnlockResult;
+}
+
+ULONG __stdcall SmokeSurfaceLockVerifierRelease(
+    zVideo_SurfaceLockVerifier *
+) {
+    ++g_smokeSurfaceLockVerifierReleaseCalls;
+    return 0;
+}
+
+HRESULT __stdcall SmokeSurfaceLockVerifierVerify(
+    zVideo_SurfaceLockVerifier *,
+    zVideo_SurfaceLockVerifyArgs *args
+) {
+    ++g_smokeSurfaceLockVerifierVerifyCalls;
+    g_smokeSurfaceLockVerifierLastArgs = *args;
+    return DD_OK;
+}
 
 HRESULT __stdcall SmokeDirectDraw2GetAvailableVidMem(
     IDirectDraw2 *,
@@ -515,17 +1404,729 @@ HRESULT __stdcall SmokeDirectDraw2GetAvailableVidMem(
     return g_smokeDirectDraw2GetAvailableVidMemResult;
 }
 
+HRESULT __stdcall SmokeDirectDraw2CreateClipper(
+    IDirectDraw2 *self,
+    DWORD flags,
+    IDirectDrawClipper **clipper,
+    IUnknown *outer
+) {
+    ++g_smokeDirectDraw2CreateClipperCalls;
+    g_smokeDirectDraw2LastCreateClipperSelf = self;
+    g_smokeDirectDraw2LastCreateClipperFlags = flags;
+    g_smokeDirectDraw2LastCreateClipperOut = clipper;
+    g_smokeDirectDraw2LastCreateClipperOuter = outer;
+    if (g_smokeDirectDraw2CreateClipperResult == DD_OK) {
+        *clipper = g_smokeDirectDraw2CreateClipperValue;
+    }
+    return g_smokeDirectDraw2CreateClipperResult;
+}
+
+HRESULT __stdcall SmokeDirectDrawClipperSetHWnd(
+    IDirectDrawClipper *self,
+    DWORD flags,
+    HWND hwnd
+) {
+    ++g_smokeDirectDrawClipperSetHWndCalls;
+    g_smokeDirectDrawClipperLastSetHWndSelf = self;
+    g_smokeDirectDrawClipperLastSetHWndFlags = flags;
+    g_smokeDirectDrawClipperLastSetHWndValue = hwnd;
+    return g_smokeDirectDrawClipperSetHWndResult;
+}
+
+HRESULT __stdcall SmokeDirectDrawPaletteSetEntries(
+    IDirectDrawPalette *self,
+    DWORD flags,
+    DWORD firstEntry,
+    DWORD entryCount,
+    PALETTEENTRY *entries
+) {
+    ++g_smokeDirectDrawPaletteSetEntriesCalls;
+    g_smokeDirectDrawPaletteLastSetEntriesSelf = self;
+    g_smokeDirectDrawPaletteLastSetEntriesFlags = flags;
+    g_smokeDirectDrawPaletteLastSetEntriesFirst = firstEntry;
+    g_smokeDirectDrawPaletteLastSetEntriesCount = entryCount;
+    g_smokeDirectDrawPaletteLastSetEntriesEntries = entries;
+    return g_smokeDirectDrawPaletteSetEntriesResult;
+}
+
+HRESULT __stdcall SmokeDirect3DDevice2SetRenderState(
+    IDirect3DDevice2 *,
+    D3DRENDERSTATETYPE renderState,
+    DWORD value
+) {
+    if (g_smokeDirect3DDevice2SetRenderStateCalls < 16) {
+        g_smokeDirect3DDevice2RenderStates[
+            g_smokeDirect3DDevice2SetRenderStateCalls
+        ] = renderState;
+        g_smokeDirect3DDevice2RenderStateValues[
+            g_smokeDirect3DDevice2SetRenderStateCalls
+        ] = value;
+    }
+    ++g_smokeDirect3DDevice2SetRenderStateCalls;
+    return DD_OK;
+}
+
+HRESULT __stdcall SmokeDirect3DDevice2SetLightState(
+    IDirect3DDevice2 *,
+    D3DLIGHTSTATETYPE lightState,
+    DWORD value
+) {
+    if (g_smokeDirect3DDevice2SetLightStateCalls < 4) {
+        g_smokeDirect3DDevice2LightStates[
+            g_smokeDirect3DDevice2SetLightStateCalls
+        ] = lightState;
+        g_smokeDirect3DDevice2LightStateValues[
+            g_smokeDirect3DDevice2SetLightStateCalls
+        ] = value;
+    }
+    ++g_smokeDirect3DDevice2SetLightStateCalls;
+    return DD_OK;
+}
+
+HRESULT __stdcall SmokeDirect3DDevice2GetCaps(
+    IDirect3DDevice2 *,
+    D3DDEVICEDESC *halDesc,
+    D3DDEVICEDESC *helDesc
+) {
+    ++g_smokeDirect3DDevice2GetCapsCalls;
+    g_smokeDirect3DDevice2LastGetCapsHalDesc = halDesc;
+    g_smokeDirect3DDevice2LastGetCapsHelDesc = helDesc;
+    return g_smokeDirect3DDevice2GetCapsResult;
+}
+
+HRESULT __stdcall SmokeDirect3DDevice2AddViewport(
+    IDirect3DDevice2 *,
+    IDirect3DViewport2 *viewport
+) {
+    ++g_smokeDirect3DDevice2AddViewportCalls;
+    g_smokeDirect3DDevice2LastAddViewport = viewport;
+    return g_smokeDirect3DDevice2AddViewportResult;
+}
+
+HRESULT __stdcall SmokeDirect3DDevice2SetCurrentViewport(
+    IDirect3DDevice2 *,
+    IDirect3DViewport2 *viewport
+) {
+    ++g_smokeDirect3DDevice2SetCurrentViewportCalls;
+    g_smokeDirect3DDevice2LastSetCurrentViewport = viewport;
+    return g_smokeDirect3DDevice2SetCurrentViewportResult;
+}
+
+HRESULT __stdcall SmokeDirect3D2CreateDevice(
+    IDirect3D2 *,
+    REFCLSID deviceGuid,
+    IDirectDrawSurface *renderTarget,
+    IDirect3DDevice2 **outDevice
+) {
+    ++g_smokeDirect3D2CreateDeviceCalls;
+    g_smokeDirect3D2LastCreateDeviceGuid = &deviceGuid;
+    g_smokeDirect3D2LastCreateDeviceSurface = renderTarget;
+    g_smokeDirect3D2LastCreateDeviceOut = outDevice;
+    if (g_smokeDirect3D2CreateDeviceResult == DD_OK) {
+        *outDevice = g_smokeDirect3D2CreatedDevice;
+    }
+    return g_smokeDirect3D2CreateDeviceResult;
+}
+
+HRESULT __stdcall SmokeDirect3D2CreateViewport(
+    IDirect3D2 *,
+    IDirect3DViewport2 **outViewport,
+    IUnknown *outer
+) {
+    ++g_smokeDirect3D2CreateViewportCalls;
+    g_smokeDirect3D2LastCreateViewportOut = outViewport;
+    g_smokeDirect3D2LastCreateViewportOuter = outer;
+    if (g_smokeDirect3D2CreateViewportResult == DD_OK) {
+        *outViewport = g_smokeDirect3D2CreatedViewport;
+    }
+    return g_smokeDirect3D2CreateViewportResult;
+}
+
+HRESULT __stdcall SmokeDirect3D2CreateMaterial(
+    IDirect3D2 *,
+    IDirect3DMaterial2 **outMaterial,
+    IUnknown *outer
+) {
+    ++g_smokeDirect3D2CreateMaterialCalls;
+    g_smokeDirect3D2LastCreateMaterialOut = outMaterial;
+    g_smokeDirect3D2LastCreateMaterialOuter = outer;
+    if (g_smokeDirect3D2CreateMaterialResult == DD_OK) {
+        *outMaterial = g_smokeDirect3D2CreatedMaterial;
+    }
+    return g_smokeDirect3D2CreateMaterialResult;
+}
+
+HRESULT __stdcall SmokeDirect3DViewport2SetViewport2(
+    IDirect3DViewport2 *,
+    D3DVIEWPORT2 *viewport
+) {
+    ++g_smokeDirect3DViewport2SetViewport2Calls;
+    if (viewport != 0) {
+        g_smokeDirect3DViewport2LastViewportValue = *viewport;
+    }
+    return g_smokeDirect3DViewport2SetViewport2Result;
+}
+
+HRESULT __stdcall SmokeDirect3DViewport2SetBackground(
+    IDirect3DViewport2 *,
+    D3DMATERIALHANDLE handle
+) {
+    ++g_smokeDirect3DViewport2SetBackgroundCalls;
+    g_smokeDirect3DViewport2LastBackground = handle;
+    return g_smokeDirect3DViewport2SetBackgroundResult;
+}
+
+HRESULT __stdcall SmokeDirect3DMaterial2SetMaterial(
+    IDirect3DMaterial2 *,
+    D3DMATERIAL *material
+) {
+    ++g_smokeDirect3DMaterial2SetMaterialCalls;
+    if (material != 0) {
+        g_smokeDirect3DMaterial2LastMaterialValue = *material;
+    }
+    return g_smokeDirect3DMaterial2SetMaterialResult;
+}
+
+HRESULT __stdcall SmokeDirect3DMaterial2GetHandle(
+    IDirect3DMaterial2 *,
+    IDirect3DDevice2 *device,
+    D3DMATERIALHANDLE *outHandle
+) {
+    ++g_smokeDirect3DMaterial2GetHandleCalls;
+    g_smokeDirect3DMaterial2LastGetHandleDevice = device;
+    g_smokeDirect3DMaterial2LastGetHandleOut = outHandle;
+    if (g_smokeDirect3DMaterial2GetHandleResult == DD_OK) {
+        *outHandle = g_smokeDirect3DMaterial2HandleValue;
+    }
+    return g_smokeDirect3DMaterial2GetHandleResult;
+}
+
+ULONG __stdcall SmokeDirect3DTexture2Release(
+    IDirect3DTexture2 *texture
+) {
+    if (g_smokeDirect3DTexture2ReleaseCalls < 8) {
+        g_smokeDirect3DTexture2ReleaseObjects[
+            g_smokeDirect3DTexture2ReleaseCalls
+        ] = texture;
+    }
+    ++g_smokeDirect3DTexture2ReleaseCalls;
+    return 1;
+}
+
+HRESULT __stdcall SmokeDirect3DTexture2Load(
+    IDirect3DTexture2 *texture,
+    IDirect3DTexture2 *sourceTexture
+) {
+    ++g_smokeDirect3DTexture2LoadCalls;
+    g_smokeDirect3DTexture2LastLoadSelf = texture;
+    g_smokeDirect3DTexture2LastLoadSource = sourceTexture;
+    return g_smokeDirect3DTexture2LoadResult;
+}
+
+HRESULT __stdcall SmokeDirect3DTexture2GetHandle(
+    IDirect3DTexture2 *texture,
+    IDirect3DDevice2 *device,
+    D3DTEXTUREHANDLE *outHandle
+) {
+    ++g_smokeDirect3DTexture2GetHandleCalls;
+    g_smokeDirect3DTexture2LastGetHandleSelf = texture;
+    g_smokeDirect3DTexture2LastGetHandleDevice = device;
+    g_smokeDirect3DTexture2LastGetHandleOut = outHandle;
+    if (g_smokeDirect3DTexture2GetHandleResult == DD_OK) {
+        *outHandle = g_smokeDirect3DTexture2HandleValue;
+    }
+    return g_smokeDirect3DTexture2GetHandleResult;
+}
+
+int __fastcall SmokeUploadImageToSurface(
+    IDirectDrawSurface *uploadSurface,
+    zVidImagePartial *image,
+    int useAlpha
+) {
+    ++g_smokeUploadImageToSurfaceCalls;
+    g_smokeUploadImageToSurfaceSurface = uploadSurface;
+    g_smokeUploadImageToSurfaceImage = image;
+    g_smokeUploadImageToSurfaceUseAlpha = useAlpha;
+    return g_smokeUploadImageToSurfaceResult;
+}
+
+void InstallSmokeComReleaseObject(
+    SmokeComObject &object
+) {
+    std::memset(g_smokeComReleaseVTable, 0, sizeof(g_smokeComReleaseVTable));
+    g_smokeComReleaseVTable[2] = (void *)(&SmokeComRelease);
+    object.vtable = g_smokeComReleaseVTable;
+}
+
+void ResetSmokeComReleaseTracking() {
+    g_smokeComReleaseCalls = 0;
+    std::memset(g_smokeComReleaseObjects, 0, sizeof(g_smokeComReleaseObjects));
+}
+
 void InstallSmokeDirectDraw2(SmokeDirectDraw2Object &directDraw) {
     std::memset(g_smokeDirectDraw2VTable, 0, sizeof(g_smokeDirectDraw2VTable));
+    g_smokeDirectDraw2VTable[0] = (void *)(&SmokeDirectDraw2QueryInterface);
+    g_smokeDirectDraw2VTable[2] = (void *)(&SmokeDirectDraw2Release);
+    g_smokeDirectDraw2VTable[4] = (void *)(&SmokeDirectDraw2CreateClipper);
+    g_smokeDirectDraw2VTable[5] = (void *)(&SmokeDirectDraw2CreatePalette);
+    g_smokeDirectDraw2VTable[6] = (void *)(&SmokeDirectDraw2CreateSurface);
+    g_smokeDirectDraw2VTable[8] = (void *)(&SmokeDirectDraw2CreateClipper);
+    g_smokeDirectDraw2VTable[20] = (void *)(&SmokeDirectDraw2SetCooperativeLevel);
+    g_smokeDirectDraw2VTable[21] = (void *)(&SmokeDirectDraw2SetDisplayMode);
     g_smokeDirectDraw2VTable[23] = (void *)(&SmokeDirectDraw2GetAvailableVidMem);
     directDraw.vtable = g_smokeDirectDraw2VTable;
+    g_smokeDirectDraw2QueryInterfaceCalls = 0;
+    g_smokeDirectDraw2LastQueryInterfaceSelf = 0;
+    g_smokeDirectDraw2LastQueryInterfaceIid = 0;
+    g_smokeDirectDraw2LastQueryInterfaceOut = 0;
+    g_smokeDirectDraw2QueryInterfaceResult = DD_OK;
+    g_smokeDirectDraw2QueryInterfaceValue = 0;
     g_smokeDirectDraw2GetAvailableVidMemCalls = 0;
+    g_smokeDirectDraw2ReleaseCalls = 0;
+    g_smokeDirectDraw2ReleaseSelf = 0;
+    g_smokeDirectDraw2SetCooperativeLevelCalls = 0;
+    g_smokeDirectDraw2LastSetCooperativeSelf = 0;
+    g_smokeDirectDraw2LastSetCooperativeHwnd = 0;
+    g_smokeDirectDraw2LastSetCooperativeFlags = 0;
+    g_smokeDirectDraw2SetCooperativeLevelResult = DD_OK;
+    g_smokeDirectDraw2SetDisplayModeCalls = 0;
+    g_smokeDirectDraw2LastSetDisplayModeSelf = 0;
+    g_smokeDirectDraw2LastDisplayModeWidth = 0;
+    g_smokeDirectDraw2LastDisplayModeHeight = 0;
+    g_smokeDirectDraw2LastDisplayModeBpp = 0;
+    g_smokeDirectDraw2LastDisplayModeRefreshRate = 0;
+    g_smokeDirectDraw2LastDisplayModeFlags = 0;
+    g_smokeDirectDraw2SetDisplayModeResult = DD_OK;
+    g_smokeDirectDraw2CreateSurfaceCalls = 0;
+    g_smokeDirectDraw2LastCreateSurfaceSelf = 0;
+    g_smokeDirectDraw2LastCreateSurfaceDesc = 0;
+    std::memset(
+        g_smokeDirectDraw2CreateSurfaceDescs,
+        0,
+        sizeof(g_smokeDirectDraw2CreateSurfaceDescs)
+    );
+    g_smokeDirectDraw2LastCreateSurfaceOut = 0;
+    g_smokeDirectDraw2LastCreateSurfaceOuter = 0;
+    g_smokeDirectDraw2CreateSurfaceResult = DD_OK;
+    g_smokeDirectDraw2CreateSurfaceValue = 0;
+    g_smokeDirectDraw2MutateImageOnFirstCreateSurface = 0;
+    g_smokeDirectDraw2MutatedPalette = 0;
+    g_smokeDirectDraw2MutatedPaletteMetaPacked = 0;
+    g_smokeDirectDraw2CreatePaletteCalls = 0;
+    g_smokeDirectDraw2LastCreatePaletteSelf = 0;
+    g_smokeDirectDraw2LastCreatePaletteFlags = 0;
+    g_smokeDirectDraw2LastCreatePaletteEntries = 0;
+    g_smokeDirectDraw2LastCreatePaletteOut = 0;
+    g_smokeDirectDraw2LastCreatePaletteOuter = 0;
+    g_smokeDirectDraw2CreatePaletteResult = DD_OK;
+    g_smokeDirectDraw2CreatePaletteValue = 0;
+    g_smokeDirectDraw2CreateClipperCalls = 0;
+    g_smokeDirectDraw2LastCreateClipperSelf = 0;
+    g_smokeDirectDraw2LastCreateClipperFlags = 0;
+    g_smokeDirectDraw2LastCreateClipperOut = 0;
+    g_smokeDirectDraw2LastCreateClipperOuter = 0;
+    g_smokeDirectDraw2CreateClipperResult = DD_OK;
+    g_smokeDirectDraw2CreateClipperValue = 0;
     g_smokeDirectDraw2LastAvailableVidMemCaps = {};
     g_smokeDirectDraw2LastAvailableVidMemTotal = 0;
     g_smokeDirectDraw2LastAvailableVidMemFree = 0;
     g_smokeDirectDraw2AvailableVidMemTotal = 0;
     g_smokeDirectDraw2AvailableVidMemFree = 0;
     g_smokeDirectDraw2GetAvailableVidMemResult = DD_OK;
+}
+
+void InstallSmokeDirectDrawSurface(SmokeDirectDrawSurfaceObject &surface) {
+    std::memset(
+        g_smokeDirectDrawSurfaceVTable,
+        0,
+        sizeof(g_smokeDirectDrawSurfaceVTable)
+    );
+    g_smokeDirectDrawSurfaceVTable[0] =
+        (void *)(&SmokeDirectDrawSurfaceQueryInterface);
+    g_smokeDirectDrawSurfaceVTable[2] = (void *)(&SmokeDirectDrawSurfaceRelease);
+    g_smokeDirectDrawSurfaceVTable[31] =
+        (void *)(&SmokeDirectDrawSurfaceSetPalette);
+    surface.vtable = g_smokeDirectDrawSurfaceVTable;
+    g_smokeDirectDrawSurfaceQueryInterfaceCalls = 0;
+    g_smokeDirectDrawSurfaceLastQueryInterfaceSelf = 0;
+    g_smokeDirectDrawSurfaceLastQueryInterfaceIid = 0;
+    g_smokeDirectDrawSurfaceLastQueryInterfaceOut = 0;
+    g_smokeDirectDrawSurfaceQueryInterfaceResult = DD_OK;
+    g_smokeDirectDrawSurfaceQueryInterfaceValue = 0;
+    std::memset(
+        g_smokeDirectDrawSurfaceQueryInterfaceValues,
+        0,
+        sizeof(g_smokeDirectDrawSurfaceQueryInterfaceValues)
+    );
+    g_smokeDirectDrawSurfaceQueryInterfaceValueCount = 0;
+    g_smokeDirectDrawSurfaceReleaseCalls = 0;
+    g_smokeDirectDrawSurfaceReleaseSelf = 0;
+    g_smokeDirectDrawSurfaceSetPaletteCalls = 0;
+    std::memset(
+        g_smokeDirectDrawSurfaceSetPaletteSurfaces,
+        0,
+        sizeof(g_smokeDirectDrawSurfaceSetPaletteSurfaces)
+    );
+    std::memset(
+        g_smokeDirectDrawSurfaceSetPalettePalettes,
+        0,
+        sizeof(g_smokeDirectDrawSurfaceSetPalettePalettes)
+    );
+    g_smokeDirectDrawSurfaceSetPaletteResult = DD_OK;
+}
+
+void InstallSmokeDirectDrawSurface3(SmokeDirectDrawSurface3Object &surface) {
+    std::memset(
+        g_smokeDirectDrawSurface3VTable,
+        0,
+        sizeof(g_smokeDirectDrawSurface3VTable)
+    );
+    g_smokeDirectDrawSurface3VTable[2] = (void *)(&SmokeDirectDrawSurface3Release);
+    g_smokeDirectDrawSurface3VTable[3] =
+        (void *)(&SmokeDirectDrawSurface3AddAttachedSurface);
+    g_smokeDirectDrawSurface3VTable[12] =
+        (void *)(&SmokeDirectDrawSurface3GetAttachedSurface);
+    g_smokeDirectDrawSurface3VTable[17] = (void *)(&SmokeDirectDrawSurface3GetDC);
+    g_smokeDirectDrawSurface3VTable[21] =
+        (void *)(&SmokeDirectDrawSurface3GetPixelFormat);
+    g_smokeDirectDrawSurface3VTable[25] = (void *)(&SmokeDirectDrawSurface3Lock);
+    g_smokeDirectDrawSurface3VTable[26] = (void *)(&SmokeDirectDrawSurface3ReleaseDC);
+    g_smokeDirectDrawSurface3VTable[27] = (void *)(&SmokeDirectDrawSurface3Restore);
+    g_smokeDirectDrawSurface3VTable[28] = (void *)(&SmokeDirectDrawSurface3SetClipper);
+    g_smokeDirectDrawSurface3VTable[32] = (void *)(&SmokeDirectDrawSurface3Unlock);
+    g_smokeDirectDrawSurface3VTable[38] =
+        (void *)(&SmokeDirectDrawSurface3PageUnlock);
+    surface.vtable = g_smokeDirectDrawSurface3VTable;
+    g_smokeDirectDrawSurface3ReleaseCalls = 0;
+    std::memset(
+        g_smokeDirectDrawSurface3ReleaseSurfaces,
+        0,
+        sizeof(g_smokeDirectDrawSurface3ReleaseSurfaces)
+    );
+    g_smokeDirectDrawSurface3RestoreCalls = 0;
+    std::memset(
+        g_smokeDirectDrawSurface3RestoreSurfaces,
+        0,
+        sizeof(g_smokeDirectDrawSurface3RestoreSurfaces)
+    );
+    g_smokeDirectDrawSurface3RestoreResult = DD_OK;
+    g_smokeDirectDrawSurface3GetPixelFormatCalls = 0;
+    g_smokeDirectDrawSurface3LastPixelFormatSurface = 0;
+    g_smokeDirectDrawSurface3LastPixelFormatInputSize = 0;
+    std::memset(
+        &g_smokeDirectDrawSurface3PixelFormat,
+        0,
+        sizeof(g_smokeDirectDrawSurface3PixelFormat)
+    );
+    g_smokeDirectDrawSurface3GetPixelFormatResult = DD_OK;
+    g_smokeDirectDrawSurface3GetAttachedSurfaceCalls = 0;
+    g_smokeDirectDrawSurface3LastAttachedSurfaceSelf = 0;
+    g_smokeDirectDrawSurface3LastAttachedSurfaceCaps = {};
+    g_smokeDirectDrawSurface3LastAttachedSurfaceOut = 0;
+    g_smokeDirectDrawSurface3GetAttachedSurfaceResult = DD_OK;
+    g_smokeDirectDrawSurface3AttachedSurfaceValue = 0;
+    g_smokeDirectDrawSurface3LockCalls = 0;
+    std::memset(
+        g_smokeDirectDrawSurface3LockSurfaces,
+        0,
+        sizeof(g_smokeDirectDrawSurface3LockSurfaces)
+    );
+    g_smokeDirectDrawSurface3LastLockRect = 0;
+    g_smokeDirectDrawSurface3LastLockDesc = 0;
+    g_smokeDirectDrawSurface3LastLockFlags = 0;
+    g_smokeDirectDrawSurface3LastLockEvent = 0;
+    g_smokeDirectDrawSurface3LockDescSize = 0;
+    std::memset(
+        g_smokeDirectDrawSurface3LockPixels,
+        0x5a,
+        sizeof(g_smokeDirectDrawSurface3LockPixels)
+    );
+    g_smokeDirectDrawSurface3LockPixelsValue = g_smokeDirectDrawSurface3LockPixels;
+    g_smokeDirectDrawSurface3LockPitchValue = 1280;
+    std::memset(
+        g_smokeDirectDrawSurface3LockResults,
+        0,
+        sizeof(g_smokeDirectDrawSurface3LockResults)
+    );
+    g_smokeDirectDrawSurface3LockResultCount = 0;
+    g_smokeDirectDrawSurface3UnlockCalls = 0;
+    std::memset(
+        g_smokeDirectDrawSurface3UnlockSurfaces,
+        0,
+        sizeof(g_smokeDirectDrawSurface3UnlockSurfaces)
+    );
+    g_smokeDirectDrawSurface3LastUnlockSurface = 0;
+    g_smokeDirectDrawSurface3LastUnlockArg = 0;
+    std::memset(
+        g_smokeDirectDrawSurface3UnlockResults,
+        0,
+        sizeof(g_smokeDirectDrawSurface3UnlockResults)
+    );
+    g_smokeDirectDrawSurface3UnlockResultCount = 0;
+    g_smokeDirectDrawSurface3SetClipperCalls = 0;
+    g_smokeDirectDrawSurface3LastSetClipperSelf = 0;
+    g_smokeDirectDrawSurface3LastSetClipperValue = 0;
+    g_smokeDirectDrawSurface3SetClipperResult = DD_OK;
+    g_smokeDirectDrawSurface3AddAttachedSurfaceCalls = 0;
+    g_smokeDirectDrawSurface3LastAddAttachedSurfaceSelf = 0;
+    g_smokeDirectDrawSurface3LastAttachedSurfaceArg = 0;
+    g_smokeDirectDrawSurface3AddAttachedSurfaceResult = DD_OK;
+    g_smokeDirectDrawSurface3PageUnlockCalls = 0;
+    g_smokeDirectDrawSurface3LastPageUnlockSurface = 0;
+    g_smokeDirectDrawSurface3LastPageUnlockFlags = 0;
+    g_smokeDirectDrawSurface3PageUnlockResult = DD_OK;
+    g_smokeDirectDrawSurface3GetDCCalls = 0;
+    g_smokeDirectDrawSurface3LastGetDCSurface = 0;
+    g_smokeDirectDrawSurface3LastGetDCOut = 0;
+    g_smokeDirectDrawSurface3GetDCValue = (HDC)(0x5a5a);
+    g_smokeDirectDrawSurface3GetDCResult = DD_OK;
+    g_smokeDirectDrawSurface3ReleaseDCCalls = 0;
+    g_smokeDirectDrawSurface3LastReleaseDCSurface = 0;
+    g_smokeDirectDrawSurface3LastReleaseDCHdc = 0;
+    g_smokeDirectDrawSurface3ReleaseDCResult = DD_OK;
+}
+
+void InstallSmokeDirectDrawClipper(
+    SmokeDirectDrawClipperObject &clipper
+) {
+    std::memset(
+        g_smokeDirectDrawClipperVTable,
+        0,
+        sizeof(g_smokeDirectDrawClipperVTable)
+    );
+    g_smokeDirectDrawClipperVTable[4] =
+        (void *)(&SmokeDirectDrawClipperSetHWnd);
+    g_smokeDirectDrawClipperVTable[8] =
+        (void *)(&SmokeDirectDrawClipperSetHWnd);
+    clipper.vtable = g_smokeDirectDrawClipperVTable;
+    g_smokeDirectDrawClipperSetHWndCalls = 0;
+    g_smokeDirectDrawClipperLastSetHWndSelf = 0;
+    g_smokeDirectDrawClipperLastSetHWndFlags = 0;
+    g_smokeDirectDrawClipperLastSetHWndValue = 0;
+    g_smokeDirectDrawClipperSetHWndResult = DD_OK;
+}
+
+void InstallSmokeSurfaceLockVerifier(
+    SmokeSurfaceLockVerifierObject &verifier
+) {
+    std::memset(
+        g_smokeSurfaceLockVerifierVTable,
+        0,
+        sizeof(g_smokeSurfaceLockVerifierVTable)
+    );
+    g_smokeSurfaceLockVerifierVTable[2] = (void *)(&SmokeSurfaceLockVerifierRelease);
+    g_smokeSurfaceLockVerifierVTable[4] = (void *)(&SmokeSurfaceLockVerifierVerify);
+    verifier.vtable = g_smokeSurfaceLockVerifierVTable;
+    g_smokeSurfaceLockVerifierReleaseCalls = 0;
+    g_smokeSurfaceLockVerifierVerifyCalls = 0;
+    std::memset(
+        &g_smokeSurfaceLockVerifierLastArgs,
+        0,
+        sizeof(g_smokeSurfaceLockVerifierLastArgs)
+    );
+}
+
+void InstallSmokeDirectDraw1(
+    SmokeDirectDraw1Object &directDraw,
+    IDirectDraw2 *queryInterfaceValue
+) {
+    std::memset(g_smokeDirectDraw1VTable, 0, sizeof(g_smokeDirectDraw1VTable));
+    g_smokeDirectDraw1VTable[0] = (void *)(&SmokeDirectDrawQueryInterface);
+    g_smokeDirectDraw1VTable[2] = (void *)(&SmokeDirectDrawRelease);
+    directDraw.vtable = g_smokeDirectDraw1VTable;
+
+    g_smokeDirectDrawCreateCalls = 0;
+    g_smokeDirectDrawCreateGuid = 0;
+    g_smokeDirectDrawCreateOut = 0;
+    g_smokeDirectDrawCreateOuter = 0;
+    g_smokeDirectDrawCreateResult = DD_OK;
+    g_smokeDirectDrawQueryInterfaceCalls = 0;
+    g_smokeDirectDrawQueryInterfaceSelf = (IDirectDraw *)(&directDraw);
+    g_smokeDirectDrawQueryInterfaceIid = 0;
+    g_smokeDirectDrawQueryInterfaceOut = 0;
+    g_smokeDirectDrawQueryInterfaceResult = DD_OK;
+    g_smokeDirectDrawQueryInterfaceValue = queryInterfaceValue;
+    g_smokeDirectDrawReleaseCalls = 0;
+    g_smokeDirectDrawReleaseSelf = 0;
+}
+
+void InstallSmokeDirectDrawPalette(
+    SmokeDirectDrawPaletteObject &palette
+) {
+    std::memset(
+        g_smokeDirectDrawPaletteVTable,
+        0,
+        sizeof(g_smokeDirectDrawPaletteVTable)
+    );
+    g_smokeDirectDrawPaletteVTable[6] =
+        (void *)(&SmokeDirectDrawPaletteSetEntries);
+    palette.vtable = g_smokeDirectDrawPaletteVTable;
+    g_smokeDirectDrawPaletteSetEntriesCalls = 0;
+    g_smokeDirectDrawPaletteLastSetEntriesSelf = 0;
+    g_smokeDirectDrawPaletteLastSetEntriesFlags = 0;
+    g_smokeDirectDrawPaletteLastSetEntriesFirst = 0;
+    g_smokeDirectDrawPaletteLastSetEntriesCount = 0;
+    g_smokeDirectDrawPaletteLastSetEntriesEntries = 0;
+    g_smokeDirectDrawPaletteSetEntriesResult = DD_OK;
+}
+
+void InstallSmokeDirect3DDevice2(
+    SmokeDirect3DDevice2Object &device
+) {
+    std::memset(
+        g_smokeDirect3DDevice2VTable,
+        0,
+        sizeof(g_smokeDirect3DDevice2VTable)
+    );
+    g_smokeDirect3DDevice2VTable[3] =
+        (void *)(&SmokeDirect3DDevice2GetCaps);
+    g_smokeDirect3DDevice2VTable[6] =
+        (void *)(&SmokeDirect3DDevice2AddViewport);
+    g_smokeDirect3DDevice2VTable[13] =
+        (void *)(&SmokeDirect3DDevice2SetCurrentViewport);
+    g_smokeDirect3DDevice2VTable[23] =
+        (void *)(&SmokeDirect3DDevice2SetRenderState);
+    g_smokeDirect3DDevice2VTable[25] =
+        (void *)(&SmokeDirect3DDevice2SetLightState);
+    device.vtable = g_smokeDirect3DDevice2VTable;
+    g_zVideo_pD3DDevice = (IDirect3DDevice2 *)(&device);
+    g_smokeDirect3DDevice2GetCapsResult = DD_OK;
+    g_smokeDirect3DDevice2GetCapsCalls = 0;
+    g_smokeDirect3DDevice2LastGetCapsHalDesc = 0;
+    g_smokeDirect3DDevice2LastGetCapsHelDesc = 0;
+    g_smokeDirect3DDevice2AddViewportCalls = 0;
+    g_smokeDirect3DDevice2LastAddViewport = 0;
+    g_smokeDirect3DDevice2AddViewportResult = DD_OK;
+    g_smokeDirect3DDevice2SetCurrentViewportCalls = 0;
+    g_smokeDirect3DDevice2LastSetCurrentViewport = 0;
+    g_smokeDirect3DDevice2SetCurrentViewportResult = DD_OK;
+    g_smokeDirect3DDevice2SetRenderStateCalls = 0;
+    std::memset(
+        g_smokeDirect3DDevice2RenderStates,
+        0,
+        sizeof(g_smokeDirect3DDevice2RenderStates)
+    );
+    std::memset(
+        g_smokeDirect3DDevice2RenderStateValues,
+        0,
+        sizeof(g_smokeDirect3DDevice2RenderStateValues)
+    );
+    g_smokeDirect3DDevice2SetLightStateCalls = 0;
+    std::memset(
+        g_smokeDirect3DDevice2LightStates,
+        0,
+        sizeof(g_smokeDirect3DDevice2LightStates)
+    );
+    std::memset(
+        g_smokeDirect3DDevice2LightStateValues,
+        0,
+        sizeof(g_smokeDirect3DDevice2LightStateValues)
+    );
+}
+
+void InstallSmokeDirect3D2(
+    SmokeDirect3D2Object &d3d,
+    IDirect3DDevice2 *createdDevice,
+    IDirect3DViewport2 *createdViewport,
+    IDirect3DMaterial2 *createdMaterial
+) {
+    std::memset(g_smokeDirect3D2VTable, 0, sizeof(g_smokeDirect3D2VTable));
+    g_smokeDirect3D2VTable[5] = (void *)(&SmokeDirect3D2CreateMaterial);
+    g_smokeDirect3D2VTable[6] = (void *)(&SmokeDirect3D2CreateViewport);
+    g_smokeDirect3D2VTable[8] = (void *)(&SmokeDirect3D2CreateDevice);
+    d3d.vtable = g_smokeDirect3D2VTable;
+    g_smokeDirect3D2CreateDeviceResult = DD_OK;
+    g_smokeDirect3D2CreateViewportResult = DD_OK;
+    g_smokeDirect3D2CreateMaterialResult = DD_OK;
+    g_smokeDirect3D2CreateDeviceCalls = 0;
+    g_smokeDirect3D2LastCreateDeviceGuid = 0;
+    g_smokeDirect3D2LastCreateDeviceSurface = 0;
+    g_smokeDirect3D2LastCreateDeviceOut = 0;
+    g_smokeDirect3D2CreatedDevice = createdDevice;
+    g_smokeDirect3D2CreateViewportCalls = 0;
+    g_smokeDirect3D2LastCreateViewportOut = 0;
+    g_smokeDirect3D2LastCreateViewportOuter = 0;
+    g_smokeDirect3D2CreatedViewport = createdViewport;
+    g_smokeDirect3D2CreateMaterialCalls = 0;
+    g_smokeDirect3D2LastCreateMaterialOut = 0;
+    g_smokeDirect3D2LastCreateMaterialOuter = 0;
+    g_smokeDirect3D2CreatedMaterial = createdMaterial;
+}
+
+void InstallSmokeDirect3DViewport2(
+    SmokeDirect3DViewport2Object &viewport
+) {
+    std::memset(
+        g_smokeDirect3DViewport2VTable,
+        0,
+        sizeof(g_smokeDirect3DViewport2VTable)
+    );
+    g_smokeDirect3DViewport2VTable[8] =
+        (void *)(&SmokeDirect3DViewport2SetBackground);
+    g_smokeDirect3DViewport2VTable[17] =
+        (void *)(&SmokeDirect3DViewport2SetViewport2);
+    viewport.vtable = g_smokeDirect3DViewport2VTable;
+    g_smokeDirect3DViewport2SetViewport2Result = DD_OK;
+    g_smokeDirect3DViewport2SetViewport2Calls = 0;
+    g_smokeDirect3DViewport2LastViewportValue = {};
+    g_smokeDirect3DViewport2SetBackgroundResult = DD_OK;
+    g_smokeDirect3DViewport2SetBackgroundCalls = 0;
+    g_smokeDirect3DViewport2LastBackground = 0;
+}
+
+void InstallSmokeDirect3DMaterial2(
+    SmokeDirect3DMaterial2Object &material
+) {
+    std::memset(
+        g_smokeDirect3DMaterial2VTable,
+        0,
+        sizeof(g_smokeDirect3DMaterial2VTable)
+    );
+    g_smokeDirect3DMaterial2VTable[3] =
+        (void *)(&SmokeDirect3DMaterial2SetMaterial);
+    g_smokeDirect3DMaterial2VTable[5] =
+        (void *)(&SmokeDirect3DMaterial2GetHandle);
+    material.vtable = g_smokeDirect3DMaterial2VTable;
+    g_smokeDirect3DMaterial2SetMaterialResult = DD_OK;
+    g_smokeDirect3DMaterial2SetMaterialCalls = 0;
+    g_smokeDirect3DMaterial2LastMaterialValue = {};
+    g_smokeDirect3DMaterial2GetHandleResult = DD_OK;
+    g_smokeDirect3DMaterial2GetHandleCalls = 0;
+    g_smokeDirect3DMaterial2LastGetHandleDevice = 0;
+    g_smokeDirect3DMaterial2LastGetHandleOut = 0;
+    g_smokeDirect3DMaterial2HandleValue = 0;
+}
+
+void InstallSmokeDirect3DTexture2(
+    SmokeDirect3DTexture2Object &uploadTexture,
+    SmokeDirect3DTexture2Object &targetTexture
+) {
+    std::memset(
+        g_smokeDirect3DTexture2VTable,
+        0,
+        sizeof(g_smokeDirect3DTexture2VTable)
+    );
+    g_smokeDirect3DTexture2VTable[2] = (void *)(&SmokeDirect3DTexture2Release);
+    g_smokeDirect3DTexture2VTable[3] = (void *)(&SmokeDirect3DTexture2GetHandle);
+    g_smokeDirect3DTexture2VTable[5] = (void *)(&SmokeDirect3DTexture2Load);
+    uploadTexture.vtable = g_smokeDirect3DTexture2VTable;
+    targetTexture.vtable = g_smokeDirect3DTexture2VTable;
+    g_smokeDirect3DTexture2LoadResult = DD_OK;
+    g_smokeDirect3DTexture2LoadCalls = 0;
+    g_smokeDirect3DTexture2LastLoadSelf = 0;
+    g_smokeDirect3DTexture2LastLoadSource = 0;
+    g_smokeDirect3DTexture2GetHandleResult = DD_OK;
+    g_smokeDirect3DTexture2GetHandleCalls = 0;
+    g_smokeDirect3DTexture2LastGetHandleSelf = 0;
+    g_smokeDirect3DTexture2LastGetHandleDevice = 0;
+    g_smokeDirect3DTexture2LastGetHandleOut = 0;
+    g_smokeDirect3DTexture2HandleValue = 0;
+    g_smokeDirect3DTexture2ReleaseCalls = 0;
+    std::memset(
+        g_smokeDirect3DTexture2ReleaseObjects,
+        0,
+        sizeof(g_smokeDirect3DTexture2ReleaseObjects)
+    );
 }
 
 int __fastcall SmokeTextureMemoryQuery(
@@ -764,6 +2365,109 @@ extern "C" int zvid_query_texture_memory_bytes_smoke(void) {
     return failCode;
 }
 
+extern "C" int zvideo_dd_prepare_window_for_mode_smoke(void) {
+    const HWND oldHwnd = g_zVideo_hWnd;
+    PALETTEENTRY oldPalette[0x100];
+    PALETTEENTRY expectedPalette[0x100];
+    std::memcpy(oldPalette, g_zVideo_SystemPaletteEntries, sizeof(oldPalette));
+    std::memset(expectedPalette, 0, sizeof(expectedPalette));
+
+    HDC screenDc = GetDC(0);
+    const int palettizedDesktop =
+        screenDc != 0 && (GetDeviceCaps(screenDc, RASTERCAPS) & RC_PALETTE) != 0;
+    UINT expectedPaletteCount = 0;
+    if (palettizedDesktop != 0) {
+        expectedPaletteCount = GetSystemPaletteEntries(
+            screenDc,
+            0,
+            0x100,
+            expectedPalette
+        );
+    }
+    if (screenDc != 0) {
+        ReleaseDC(
+            0,
+            screenDc
+        );
+    }
+
+    std::memset(g_zVideo_SystemPaletteEntries, 0x44, sizeof(g_zVideo_SystemPaletteEntries));
+    HWND hwnd = CreateWindowExA(
+        0,
+        "STATIC",
+        "recoil-video-prepare-window-test",
+        WS_OVERLAPPEDWINDOW,
+        20,
+        30,
+        160,
+        120,
+        0,
+        0,
+        GetModuleHandleA(0),
+        0
+    );
+    if (hwnd == 0) {
+        std::memcpy(g_zVideo_SystemPaletteEntries, oldPalette, sizeof(oldPalette));
+        g_zVideo_hWnd = oldHwnd;
+        return 1;
+    }
+
+    HMENU menu = CreateMenu();
+    if (menu != 0) {
+        SetMenu(
+            hwnd,
+            menu
+        );
+    }
+
+    g_zVideo_hWnd = hwnd;
+    const int result = zVideo_dd::PrepareWindowForMode();
+    const LONG exStyle = GetWindowLongA(
+        hwnd,
+        GWL_EXSTYLE
+    );
+    const LONG style = GetWindowLongA(
+        hwnd,
+        GWL_STYLE
+    );
+    const int menuRemoved = GetMenu(hwnd) == 0;
+    const int exStyleOk = (exStyle & WS_EX_APPWINDOW) == WS_EX_APPWINDOW;
+    const int fullscreenStyleOk =
+        (style & (LONG)(WS_POPUP | WS_CLIPCHILDREN)) ==
+            (LONG)(WS_POPUP | WS_CLIPCHILDREN) &&
+        (style & (LONG)(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX |
+                        WS_SYSMENU)) == 0;
+    const int paletteOk =
+        palettizedDesktop != 0 && expectedPaletteCount == 0x100
+            ? std::memcmp(
+                  g_zVideo_SystemPaletteEntries,
+                  expectedPalette,
+                  sizeof(expectedPalette)
+              ) == 0
+            : g_zVideo_SystemPaletteEntries[0].peRed == 0x44 &&
+                  g_zVideo_SystemPaletteEntries[0].peGreen == 0x44 &&
+                  g_zVideo_SystemPaletteEntries[0].peBlue == 0x44 &&
+                  g_zVideo_SystemPaletteEntries[0].peFlags == 0x44;
+
+    g_zVideo_hWnd = oldHwnd;
+    std::memcpy(g_zVideo_SystemPaletteEntries, oldPalette, sizeof(oldPalette));
+    DestroyWindow(hwnd);
+    if (menu != 0) {
+        DestroyMenu(menu);
+    }
+
+    if (result != 0) {
+        return 2;
+    }
+    if (menuRemoved == 0) {
+        return 3;
+    }
+    if (exStyleOk == 0 || fullscreenStyleOk == 0) {
+        return 4;
+    }
+    return paletteOk != 0 ? 0 : 5;
+}
+
 extern "C" int zvideo_dd_report_error_smoke(void) {
     g_smokeTextureMemoryQueryCalls = 0;
     g_smokeDeviceMemoryQueryCalls = 0;
@@ -795,6 +2499,4675 @@ extern "C" int zvideo_dd_report_error_smoke(void) {
     g_zVideo_pfnQueryTextureMemoryBytes = 0;
     g_zVideo_pfnQueryDeviceVideoMemoryBytes = 0;
     return 0;
+}
+
+extern "C" int zvideo_dd_create_directdraw2_for_selected_device_smoke(void) {
+    SmokeDirectDraw1Object directDraw1{};
+    SmokeDirectDraw2Object directDraw2{};
+    SmokeImportPatch directDrawCreatePatch{};
+    InstallSmokeDirectDraw1(
+        directDraw1,
+        (IDirectDraw2 *)(&directDraw2)
+    );
+
+    if (!PatchSmokeImportByName(
+            "DDRAW.dll",
+            "DirectDrawCreate",
+            (void *)(&SmokeDirectDrawCreate),
+            directDrawCreatePatch
+        )) {
+        return 1;
+    }
+
+    zVidHwApiDeviceRecordPartial *const oldSelectedDevice =
+        g_zVideo_pSelectedHwApiDeviceRecord;
+    IDirectDraw2 *const oldDirectDraw2 = g_zVideo_pDirectDraw2;
+
+    GUID directDrawGuid = {0x12345678, 0x1111, 0x2222, {3, 4, 5, 6, 7, 8, 9, 10}};
+    zVidHwApiDeviceRecordPartial selectedDevice{};
+    selectedDevice.pDirectDrawGuid = &directDrawGuid;
+    g_zVideo_pSelectedHwApiDeviceRecord = &selectedDevice;
+    g_zVideo_pDirectDraw2 = 0;
+
+    int failCode = 0;
+    const int successResult = zVideo_dd::CreateDirectDraw2ForSelectedDevice();
+    if (successResult != 0 ||
+        g_smokeDirectDrawCreateCalls != 1 ||
+        g_smokeDirectDrawCreateGuid != &directDrawGuid ||
+        g_smokeDirectDrawCreateOut == 0 ||
+        g_smokeDirectDrawCreateOuter != 0 ||
+        g_smokeDirectDrawQueryInterfaceCalls != 1 ||
+        g_smokeDirectDrawQueryInterfaceSelf != (IDirectDraw *)(&directDraw1) ||
+        !IsEqualGUID(*g_smokeDirectDrawQueryInterfaceIid, IID_IDirectDraw2) ||
+        g_smokeDirectDrawQueryInterfaceOut != (void **)(&g_zVideo_pDirectDraw2) ||
+        g_zVideo_pDirectDraw2 != (IDirectDraw2 *)(&directDraw2) ||
+        g_smokeDirectDrawReleaseCalls != 1 ||
+        g_smokeDirectDrawReleaseSelf != (IDirectDraw *)(&directDraw1)) {
+        failCode = 2;
+    }
+
+    InstallSmokeDirectDraw1(
+        directDraw1,
+        (IDirectDraw2 *)(&directDraw2)
+    );
+    g_smokeDirectDrawCreateResult = DDERR_GENERIC;
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(0x1357);
+    const int createFailureResult = zVideo_dd::CreateDirectDraw2ForSelectedDevice();
+    if (failCode == 0 &&
+        (createFailureResult == 0 ||
+         g_smokeDirectDrawCreateCalls != 1 ||
+         g_smokeDirectDrawQueryInterfaceCalls != 0 ||
+         g_smokeDirectDrawReleaseCalls != 0 ||
+         g_zVideo_pDirectDraw2 != (IDirectDraw2 *)(0x1357))) {
+        failCode = 3;
+    }
+
+    InstallSmokeDirectDraw1(
+        directDraw1,
+        (IDirectDraw2 *)(&directDraw2)
+    );
+    g_smokeDirectDrawQueryInterfaceResult = DDERR_GENERIC;
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(0x2468);
+    const int queryFailureResult = zVideo_dd::CreateDirectDraw2ForSelectedDevice();
+    if (failCode == 0 &&
+        (queryFailureResult == 0 ||
+         g_smokeDirectDrawCreateCalls != 1 ||
+         g_smokeDirectDrawQueryInterfaceCalls != 1 ||
+         g_smokeDirectDrawReleaseCalls != 0 ||
+         g_zVideo_pDirectDraw2 != (IDirectDraw2 *)(0x2468))) {
+        failCode = 4;
+    }
+
+    g_zVideo_pSelectedHwApiDeviceRecord = oldSelectedDevice;
+    g_zVideo_pDirectDraw2 = oldDirectDraw2;
+    RestoreSmokeImportPatch(directDrawCreatePatch);
+    return failCode;
+}
+
+extern "C" int zvideo_dd_create_surface3_from_desc_smoke(void) {
+    SmokeDirectDraw2Object directDraw{};
+    SmokeDirectDrawSurfaceObject baseSurface{};
+    SmokeDirectDrawSurface3Object surface3{};
+    DDSURFACEDESC desc{};
+    desc.dwSize = sizeof(desc);
+    desc.dwFlags = DDSD_CAPS;
+
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeDirectDrawSurface(baseSurface);
+    InstallSmokeDirectDrawSurface3(surface3);
+    g_smokeDirectDraw2CreateSurfaceValue = (IDirectDrawSurface *)(&baseSurface);
+    g_smokeDirectDrawSurfaceQueryInterfaceValue = &surface3;
+
+    IDirectDrawSurface3 *outSurface = 0;
+    HRESULT result = zVideo_dd::CreateSurface3FromDesc(
+        (IDirectDraw2 *)(&directDraw),
+        &desc,
+        &outSurface
+    );
+    if (result != DD_OK ||
+        g_smokeDirectDraw2CreateSurfaceCalls != 1 ||
+        g_smokeDirectDraw2LastCreateSurfaceSelf != (IDirectDraw2 *)(&directDraw) ||
+        g_smokeDirectDraw2LastCreateSurfaceDesc != &desc ||
+        g_smokeDirectDraw2LastCreateSurfaceOut == 0 ||
+        g_smokeDirectDraw2LastCreateSurfaceOuter != 0 ||
+        g_smokeDirectDrawSurfaceQueryInterfaceCalls != 1 ||
+        g_smokeDirectDrawSurfaceLastQueryInterfaceSelf !=
+            (IDirectDrawSurface *)(&baseSurface) ||
+        !IsEqualGUID(
+            *g_smokeDirectDrawSurfaceLastQueryInterfaceIid,
+            IID_IDirectDrawSurface3
+        ) ||
+        g_smokeDirectDrawSurfaceLastQueryInterfaceOut != (void **)(&outSurface) ||
+        g_smokeDirectDrawSurfaceReleaseCalls != 1 ||
+        g_smokeDirectDrawSurfaceReleaseSelf != (IDirectDrawSurface *)(&baseSurface) ||
+        outSurface != (IDirectDrawSurface3 *)(&surface3)) {
+        return 2;
+    }
+
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeDirectDrawSurface(baseSurface);
+    g_smokeDirectDraw2CreateSurfaceValue = (IDirectDrawSurface *)(&baseSurface);
+    g_smokeDirectDraw2CreateSurfaceResult = DDERR_INVALIDPARAMS;
+    outSurface = 0;
+    result = zVideo_dd::CreateSurface3FromDesc(
+        (IDirectDraw2 *)(&directDraw),
+        &desc,
+        &outSurface
+    );
+    if (result != DDERR_INVALIDPARAMS ||
+        g_smokeDirectDraw2CreateSurfaceCalls != 1 ||
+        g_smokeDirectDrawSurfaceQueryInterfaceCalls != 0 ||
+        g_smokeDirectDrawSurfaceReleaseCalls != 0 ||
+        outSurface != 0) {
+        return 3;
+    }
+
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeDirectDrawSurface(baseSurface);
+    g_smokeDirectDraw2CreateSurfaceValue = (IDirectDrawSurface *)(&baseSurface);
+    g_smokeDirectDrawSurfaceQueryInterfaceResult = DDERR_GENERIC;
+    outSurface = 0;
+    result = zVideo_dd::CreateSurface3FromDesc(
+        (IDirectDraw2 *)(&directDraw),
+        &desc,
+        &outSurface
+    );
+    return result == DDERR_GENERIC &&
+                   g_smokeDirectDraw2CreateSurfaceCalls == 1 &&
+                   g_smokeDirectDrawSurfaceQueryInterfaceCalls == 1 &&
+                   g_smokeDirectDrawSurfaceReleaseCalls == 0 &&
+                   outSurface == 0
+               ? 0
+               : 4;
+}
+
+extern "C" int zvideo_dd_lock_directdraw_surface_smoke(void) {
+    SmokeDirectDrawSurface3Object surface{};
+    DDSURFACEDESC surfaceDesc;
+
+    InstallSmokeDirectDrawSurface3(surface);
+    std::memset(&surfaceDesc, 0xcc, sizeof(surfaceDesc));
+    if (zVideo_dd::LockDirectDrawSurface(
+            (IDirectDrawSurface3 *)(&surface),
+            &surfaceDesc
+        ) != 0 ||
+        g_smokeDirectDrawSurface3LockCalls != 1 ||
+        g_smokeDirectDrawSurface3RestoreCalls != 0 ||
+        g_smokeDirectDrawSurface3LastLockRect != 0 ||
+        g_smokeDirectDrawSurface3LastLockDesc != &surfaceDesc ||
+        g_smokeDirectDrawSurface3LastLockFlags != DDLOCK_WAIT ||
+        g_smokeDirectDrawSurface3LastLockEvent != 0 ||
+        g_smokeDirectDrawSurface3LockDescSize != sizeof(surfaceDesc) ||
+        surfaceDesc.dwSize != sizeof(surfaceDesc) ||
+        surfaceDesc.dwWidth != 640 ||
+        surfaceDesc.dwHeight != 480 ||
+        surfaceDesc.lPitch != 1280 ||
+        surfaceDesc.lpSurface != g_smokeDirectDrawSurface3LockPixels) {
+        return 1;
+    }
+
+    InstallSmokeDirectDrawSurface3(surface);
+    std::memset(&surfaceDesc, 0xcc, sizeof(surfaceDesc));
+    g_smokeDirectDrawSurface3LockResults[0] = DDERR_SURFACELOST;
+    g_smokeDirectDrawSurface3LockResults[1] = DD_OK;
+    g_smokeDirectDrawSurface3LockResultCount = 2;
+    if (zVideo_dd::LockDirectDrawSurface(
+            (IDirectDrawSurface3 *)(&surface),
+            &surfaceDesc
+        ) != 0 ||
+        g_smokeDirectDrawSurface3LockCalls != 2 ||
+        g_smokeDirectDrawSurface3RestoreCalls != 1 ||
+        g_smokeDirectDrawSurface3LockDescSize != sizeof(surfaceDesc) ||
+        surfaceDesc.dwSize != sizeof(surfaceDesc) ||
+        surfaceDesc.dwWidth != 640 ||
+        surfaceDesc.dwHeight != 480 ||
+        surfaceDesc.lPitch != 1280 ||
+        surfaceDesc.lpSurface != g_smokeDirectDrawSurface3LockPixels) {
+        return 2;
+    }
+
+    return 0;
+}
+
+extern "C" int zvideo_dd_unlock_directdraw_surface_smoke(void) {
+    SmokeDirectDrawSurface3Object surface{};
+
+    InstallSmokeDirectDrawSurface3(surface);
+    if (zVideo_dd::UnlockDirectDrawSurface(
+            (IDirectDrawSurface3 *)(&surface)
+        ) != 0 ||
+        g_smokeDirectDrawSurface3UnlockCalls != 1 ||
+        g_smokeDirectDrawSurface3RestoreCalls != 0 ||
+        g_smokeDirectDrawSurface3LastUnlockSurface !=
+            (IDirectDrawSurface3 *)(&surface) ||
+        g_smokeDirectDrawSurface3LastUnlockArg != 0) {
+        return 1;
+    }
+
+    InstallSmokeDirectDrawSurface3(surface);
+    g_smokeDirectDrawSurface3UnlockResults[0] = DDERR_SURFACELOST;
+    g_smokeDirectDrawSurface3UnlockResults[1] = DD_OK;
+    g_smokeDirectDrawSurface3UnlockResultCount = 2;
+    if (zVideo_dd::UnlockDirectDrawSurface(
+            (IDirectDrawSurface3 *)(&surface)
+        ) != 0 ||
+        g_smokeDirectDrawSurface3UnlockCalls != 2 ||
+        g_smokeDirectDrawSurface3RestoreCalls != 1 ||
+        g_smokeDirectDrawSurface3LastUnlockArg != 0) {
+        return 2;
+    }
+
+    return 0;
+}
+
+extern "C" int zvideo_surface_state_lock_skip_smoke(void) {
+    const int savedFullscreenOption = g_zVideo_FullscreenOption;
+    const zVideo_SurfaceStatePartial savedDisplayState =
+        g_zVideo_DisplayModeSurfaceState;
+
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState.surf = (IDirectDrawSurface3 *)(0x1234);
+    g_zVideo_DisplayModeSurfaceState.locked = 1;
+    g_zVideo_FullscreenOption = 0;
+
+    if (zVideo_dd::LockSurfaceState(&g_zVideo_DisplayModeSurfaceState) != 0 ||
+        g_zVideo_DisplayModeSurfaceState.locked != 1) {
+        g_zVideo_FullscreenOption = savedFullscreenOption;
+        g_zVideo_DisplayModeSurfaceState = savedDisplayState;
+        return 1;
+    }
+
+    if (zVideo_dd::UnlockSurfaceState(&g_zVideo_DisplayModeSurfaceState) != 0 ||
+        g_zVideo_DisplayModeSurfaceState.locked != 1) {
+        g_zVideo_FullscreenOption = savedFullscreenOption;
+        g_zVideo_DisplayModeSurfaceState = savedDisplayState;
+        return 2;
+    }
+
+    zVideo_SurfaceStatePartial alreadyLocked{};
+    alreadyLocked.locked = 1;
+    zVideo_SurfaceStatePartial alreadyUnlocked{};
+    g_zVideo_FullscreenOption = 1;
+    const int skipOk =
+        zVideo_dd::LockSurfaceState(&alreadyLocked) == 0 &&
+        zVideo_dd::UnlockSurfaceState(&alreadyUnlocked) == 0;
+
+    g_zVideo_FullscreenOption = savedFullscreenOption;
+    g_zVideo_DisplayModeSurfaceState = savedDisplayState;
+    return skipOk != 0 ? 0 : 3;
+}
+
+extern "C" int zvideo_dd_lock_surface_state_smoke(void) {
+    const int savedFullscreenOption = g_zVideo_FullscreenOption;
+    SmokeDirectDrawSurface3Object surface{};
+    zVideo_SurfaceStatePartial surfaceState{};
+
+    InstallSmokeDirectDrawSurface3(surface);
+    surfaceState.surf = (IDirectDrawSurface3 *)(&surface);
+    g_zVideo_FullscreenOption = 1;
+
+    const int result = zVideo_dd::LockSurfaceState(&surfaceState);
+    const int ok =
+        result == 0 &&
+        g_smokeDirectDrawSurface3LockCalls == 1 &&
+        g_smokeDirectDrawSurface3RestoreCalls == 0 &&
+        g_smokeDirectDrawSurface3LastLockRect == 0 &&
+        g_smokeDirectDrawSurface3LastLockFlags == DDLOCK_WAIT &&
+        g_smokeDirectDrawSurface3LastLockEvent == 0 &&
+        g_smokeDirectDrawSurface3LockDescSize == sizeof(DDSURFACEDESC) &&
+        surfaceState.width == 640 &&
+        surfaceState.height == 480 &&
+        surfaceState.pitch == 1280 &&
+        surfaceState.pixels == g_smokeDirectDrawSurface3LockPixels &&
+        surfaceState.locked == 1 &&
+        surfaceState.lockInfoValid == 1;
+
+    g_zVideo_FullscreenOption = savedFullscreenOption;
+    return ok != 0 ? 0 : 1;
+}
+
+extern "C" int zvideo_dd_unlock_surface_state_smoke(void) {
+    const int savedFullscreenOption = g_zVideo_FullscreenOption;
+    SmokeDirectDrawSurface3Object surface{};
+    zVideo_SurfaceStatePartial surfaceState{};
+
+    InstallSmokeDirectDrawSurface3(surface);
+    surfaceState.locked = 1;
+    surfaceState.surf = (IDirectDrawSurface3 *)(&surface);
+    g_zVideo_FullscreenOption = 1;
+
+    const int result = zVideo_dd::UnlockSurfaceState(&surfaceState);
+    const int ok =
+        result == 0 &&
+        surfaceState.locked == 0 &&
+        g_smokeDirectDrawSurface3UnlockCalls == 1 &&
+        g_smokeDirectDrawSurface3RestoreCalls == 0 &&
+        g_smokeDirectDrawSurface3LastUnlockSurface ==
+            (IDirectDrawSurface3 *)(&surface) &&
+        g_smokeDirectDrawSurface3LastUnlockArg == 0;
+
+    g_zVideo_FullscreenOption = savedFullscreenOption;
+    return ok != 0 ? 0 : 1;
+}
+
+extern "C" int zvideo_dd_verify_fullscreen_surface_locks_smoke(void) {
+    const int savedFullscreenOption = g_zVideo_FullscreenOption;
+    const zVideo_SurfaceStatePartial savedSwState = g_zVideo_SwSurfaceState;
+    const zVideo_SurfaceStatePartial savedPrimaryState =
+        g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial savedDisplayState =
+        g_zVideo_DisplayModeSurfaceState;
+
+    SmokeDirectDrawSurface3Object swSurface{};
+    SmokeDirectDrawSurface3Object primarySurface{};
+    SmokeDirectDrawSurface3Object displaySurface{};
+    InstallSmokeDirectDrawSurface3(swSurface);
+    primarySurface.vtable = g_smokeDirectDrawSurface3VTable;
+    displaySurface.vtable = g_smokeDirectDrawSurface3VTable;
+
+    IDirectDrawSurface3 *const swInterface =
+        (IDirectDrawSurface3 *)(&swSurface);
+    IDirectDrawSurface3 *const primaryInterface =
+        (IDirectDrawSurface3 *)(&primarySurface);
+    IDirectDrawSurface3 *const displayInterface =
+        (IDirectDrawSurface3 *)(&displaySurface);
+
+    g_zVideo_FullscreenOption = 1;
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_SwSurfaceState.surf = swInterface;
+    g_zVideo_PrimarySurfaceState.surf = primaryInterface;
+    g_zVideo_DisplayModeSurfaceState.surf = displayInterface;
+
+    const int successResult = zVideo_dd::VerifyFullscreenSurfaceLocks();
+    const int successOk =
+        successResult == 0 &&
+        g_smokeDirectDrawSurface3LockCalls == 3 &&
+        g_smokeDirectDrawSurface3UnlockCalls == 3 &&
+        g_smokeDirectDrawSurface3LockSurfaces[0] == swInterface &&
+        g_smokeDirectDrawSurface3UnlockSurfaces[0] == swInterface &&
+        g_smokeDirectDrawSurface3LockSurfaces[1] == primaryInterface &&
+        g_smokeDirectDrawSurface3UnlockSurfaces[1] == primaryInterface &&
+        g_smokeDirectDrawSurface3LockSurfaces[2] == displayInterface &&
+        g_smokeDirectDrawSurface3UnlockSurfaces[2] == displayInterface &&
+        g_zVideo_SwSurfaceState.locked == 0 &&
+        g_zVideo_PrimarySurfaceState.locked == 0 &&
+        g_zVideo_DisplayModeSurfaceState.locked == 0;
+
+    InstallSmokeDirectDrawSurface3(swSurface);
+    primarySurface.vtable = g_smokeDirectDrawSurface3VTable;
+    displaySurface.vtable = g_smokeDirectDrawSurface3VTable;
+    g_smokeDirectDrawSurface3LockResults[0] = DDERR_GENERIC;
+    g_smokeDirectDrawSurface3LockResultCount = 1;
+    g_zVideo_FullscreenOption = 1;
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_SwSurfaceState.surf = swInterface;
+    g_zVideo_PrimarySurfaceState.surf = primaryInterface;
+    g_zVideo_DisplayModeSurfaceState.surf = displayInterface;
+
+    const int firstLockFailureResult =
+        zVideo_dd::VerifyFullscreenSurfaceLocks();
+    const int firstLockFailureOk =
+        firstLockFailureResult == 1 &&
+        g_smokeDirectDrawSurface3LockCalls == 1 &&
+        g_smokeDirectDrawSurface3UnlockCalls == 0 &&
+        g_smokeDirectDrawSurface3LockSurfaces[0] == swInterface;
+
+    InstallSmokeDirectDrawSurface3(swSurface);
+    primarySurface.vtable = g_smokeDirectDrawSurface3VTable;
+    displaySurface.vtable = g_smokeDirectDrawSurface3VTable;
+    g_smokeDirectDrawSurface3UnlockResults[0] = DD_OK;
+    g_smokeDirectDrawSurface3UnlockResults[1] = DD_OK;
+    g_smokeDirectDrawSurface3UnlockResults[2] = DDERR_GENERIC;
+    g_smokeDirectDrawSurface3UnlockResultCount = 3;
+    g_zVideo_FullscreenOption = 1;
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_SwSurfaceState.surf = swInterface;
+    g_zVideo_PrimarySurfaceState.surf = primaryInterface;
+    g_zVideo_DisplayModeSurfaceState.surf = displayInterface;
+
+    const int finalUnlockFailureResult =
+        zVideo_dd::VerifyFullscreenSurfaceLocks();
+    const int finalUnlockFailureOk =
+        finalUnlockFailureResult == 1 &&
+        g_smokeDirectDrawSurface3LockCalls == 3 &&
+        g_smokeDirectDrawSurface3UnlockCalls == 3 &&
+        g_smokeDirectDrawSurface3UnlockSurfaces[2] == displayInterface;
+
+    g_zVideo_FullscreenOption = savedFullscreenOption;
+    g_zVideo_SwSurfaceState = savedSwState;
+    g_zVideo_PrimarySurfaceState = savedPrimaryState;
+    g_zVideo_DisplayModeSurfaceState = savedDisplayState;
+    return successOk != 0 && firstLockFailureOk != 0 &&
+                   finalUnlockFailureOk != 0
+               ? 0
+               : 1;
+}
+
+extern "C" int zvideo_dd_open_video_mode_smoke(void) {
+    SmokeDirectDraw1Object directDraw1{};
+    SmokeDirectDraw2Object directDraw2{};
+    SmokeImportPatch directDrawCreatePatch{};
+    InstallSmokeDirectDraw1(
+        directDraw1,
+        (IDirectDraw2 *)(&directDraw2)
+    );
+
+    if (!PatchSmokeImportByName(
+            "DDRAW.dll",
+            "DirectDrawCreate",
+            (void *)(&SmokeDirectDrawCreate),
+            directDrawCreatePatch
+        )) {
+        return 1;
+    }
+
+    zVidHwApiDeviceRecordPartial *const oldSelectedDevice =
+        g_zVideo_pSelectedHwApiDeviceRecord;
+    IDirectDraw2 *const oldDirectDraw2 = g_zVideo_pDirectDraw2;
+    const HWND oldHwnd = g_zVideo_hWnd;
+    PALETTEENTRY oldPalette[0x100];
+    std::memcpy(oldPalette, g_zVideo_SystemPaletteEntries, sizeof(oldPalette));
+
+    HWND hwnd = CreateWindowExA(
+        0,
+        "STATIC",
+        "recoil-video-open-mode-test",
+        WS_OVERLAPPEDWINDOW,
+        20,
+        30,
+        160,
+        120,
+        0,
+        0,
+        GetModuleHandleA(0),
+        0
+    );
+    if (hwnd == 0) {
+        g_zVideo_pSelectedHwApiDeviceRecord = oldSelectedDevice;
+        g_zVideo_pDirectDraw2 = oldDirectDraw2;
+        g_zVideo_hWnd = oldHwnd;
+        std::memcpy(g_zVideo_SystemPaletteEntries, oldPalette, sizeof(oldPalette));
+        RestoreSmokeImportPatch(directDrawCreatePatch);
+        return 2;
+    }
+
+    GUID directDrawGuid = {0x87654321, 0x3333, 0x4444, {10, 9, 8, 7, 6, 5, 4, 3}};
+    zVidHwApiDeviceRecordPartial selectedDevice{};
+    selectedDevice.pDirectDrawGuid = &directDrawGuid;
+    g_zVideo_pSelectedHwApiDeviceRecord = &selectedDevice;
+    g_zVideo_hWnd = hwnd;
+
+    g_zVideo_pDirectDraw2 = 0;
+    const int successResult = zVideo_dd::OpenVideoMode(99);
+    const int successOk =
+        successResult == 0 &&
+        g_smokeDirectDrawCreateCalls == 1 &&
+        g_smokeDirectDrawQueryInterfaceCalls == 1 &&
+        g_smokeDirectDrawReleaseCalls == 1 &&
+        g_zVideo_pDirectDraw2 == (IDirectDraw2 *)(&directDraw2);
+
+    InstallSmokeDirectDraw1(
+        directDraw1,
+        (IDirectDraw2 *)(&directDraw2)
+    );
+    g_smokeDirectDrawCreateResult = DDERR_GENERIC;
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(0x9753);
+    const int failureResult = zVideo_dd::OpenVideoMode(123);
+    const int failureOk =
+        failureResult == 1 &&
+        g_smokeDirectDrawCreateCalls == 1 &&
+        g_smokeDirectDrawQueryInterfaceCalls == 0 &&
+        g_smokeDirectDrawReleaseCalls == 0 &&
+        g_zVideo_pDirectDraw2 == (IDirectDraw2 *)(0x9753);
+
+    DestroyWindow(hwnd);
+    g_zVideo_pSelectedHwApiDeviceRecord = oldSelectedDevice;
+    g_zVideo_pDirectDraw2 = oldDirectDraw2;
+    g_zVideo_hWnd = oldHwnd;
+    std::memcpy(g_zVideo_SystemPaletteEntries, oldPalette, sizeof(oldPalette));
+    RestoreSmokeImportPatch(directDrawCreatePatch);
+
+    return successOk != 0 && failureOk != 0 ? 0 : 3;
+}
+
+extern "C" int zvideo_texture_record_destroy_smoke(void) {
+    zVideo_TextureRecordPartial *const savedDefaultRecord =
+        g_zImage_DefaultTextureRecord;
+
+    zVideo_TextureRecordPartial defaultRecord{};
+    g_zImage_DefaultTextureRecord = &defaultRecord;
+    ResetSmokeComReleaseTracking();
+    zVideo_dd3d::TextureRecord_Destroy(&defaultRecord);
+    const int defaultSkipOk = g_smokeComReleaseCalls == 0;
+
+    SmokeComObject uploadSurface{};
+    SmokeComObject textureSurface{};
+    SmokeComObject texture{};
+    InstallSmokeComReleaseObject(uploadSurface);
+    InstallSmokeComReleaseObject(textureSurface);
+    InstallSmokeComReleaseObject(texture);
+    ResetSmokeComReleaseTracking();
+
+    zVideo_TextureRecordPartial *textureRecord =
+        (zVideo_TextureRecordPartial *)std::malloc(sizeof(zVideo_TextureRecordPartial));
+    if (textureRecord == 0) {
+        g_zImage_DefaultTextureRecord = savedDefaultRecord;
+        return 1;
+    }
+
+    std::memset(textureRecord, 0, sizeof(*textureRecord));
+    textureRecord->m_uploadSurface = (IDirectDrawSurface *)(&uploadSurface);
+    textureRecord->m_textureSurface = (IDirectDrawSurface *)(&textureSurface);
+    textureRecord->m_texture = (IDirect3DTexture2 *)(&texture);
+
+    zVideo_dd3d::TextureRecord_Destroy(textureRecord);
+    const int releaseOk =
+        g_smokeComReleaseCalls == 3 &&
+        g_smokeComReleaseObjects[0] == &uploadSurface &&
+        g_smokeComReleaseObjects[1] == &textureSurface &&
+        g_smokeComReleaseObjects[2] == &texture;
+
+    g_zImage_DefaultTextureRecord = savedDefaultRecord;
+    return defaultSkipOk != 0 && releaseOk != 0 ? 0 : 2;
+}
+
+static int RunZVideoReleaseAllInterfacesAndSurfacesSmoke(int useAtExitWrapper) {
+    SmokeComObject d3dMaterial{};
+    SmokeComObject d3dViewport{};
+    SmokeComObject d3dDevice{};
+    SmokeComObject d3d{};
+    SmokeComObject clipper{};
+    SmokeComObject palette{};
+    InstallSmokeComReleaseObject(d3dMaterial);
+    InstallSmokeComReleaseObject(d3dViewport);
+    InstallSmokeComReleaseObject(d3dDevice);
+    InstallSmokeComReleaseObject(d3d);
+    InstallSmokeComReleaseObject(clipper);
+    InstallSmokeComReleaseObject(palette);
+    ResetSmokeComReleaseTracking();
+
+    SmokeDirectDrawSurface3Object zBufferSurface{};
+    SmokeDirectDrawSurface3Object swSurface{};
+    SmokeDirectDrawSurface3Object primarySurface{};
+    SmokeDirectDrawSurface3Object displaySurface{};
+    InstallSmokeDirectDrawSurface3(zBufferSurface);
+    InstallSmokeDirectDrawSurface3(swSurface);
+    InstallSmokeDirectDrawSurface3(primarySurface);
+    InstallSmokeDirectDrawSurface3(displaySurface);
+
+    IDirect3DMaterial2 *const savedMaterial = g_zVideo_pD3DMaterial2;
+    IDirect3DViewport2 *const savedViewport = g_zVideo_pD3DViewport2;
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    IDirect3D2 *const savedD3D = g_zVideo_pD3D2;
+    IDirectDrawClipper *const savedClipper = g_zVideo_pClipper;
+    IDirectDrawSurface3 *const savedZBuffer = g_zVideo_pZBufferSurface;
+    IDirectDrawPalette *const savedPalette = g_zVideo_pDDPalette;
+    const zVideo_SurfaceStatePartial savedSwState = g_zVideo_SwSurfaceState;
+    const zVideo_SurfaceStatePartial savedPrimaryState = g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial savedDisplayState = g_zVideo_DisplayModeSurfaceState;
+
+    g_zVideo_pD3DMaterial2 = (IDirect3DMaterial2 *)(&d3dMaterial);
+    g_zVideo_pD3DViewport2 = (IDirect3DViewport2 *)(&d3dViewport);
+    g_zVideo_pD3DDevice = (IDirect3DDevice2 *)(&d3dDevice);
+    g_zVideo_pD3D2 = (IDirect3D2 *)(&d3d);
+    g_zVideo_pClipper = (IDirectDrawClipper *)(&clipper);
+    g_zVideo_pZBufferSurface = (IDirectDrawSurface3 *)(&zBufferSurface);
+    g_zVideo_pDDPalette = (IDirectDrawPalette *)(&palette);
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_SwSurfaceState.surf = (IDirectDrawSurface3 *)(&swSurface);
+    g_zVideo_SwSurfaceState.pageLockActive = 1;
+    g_zVideo_PrimarySurfaceState.surf =
+        (IDirectDrawSurface3 *)(&primarySurface);
+    g_zVideo_PrimarySurfaceState.pageLockActive = 1;
+    g_zVideo_DisplayModeSurfaceState.surf =
+        (IDirectDrawSurface3 *)(&displaySurface);
+
+    int result = 0;
+    if (useAtExitWrapper != 0) {
+        zVideo::AtExitReleaseAllInterfacesAndSurfaces();
+    } else {
+        result = zVideo_dd::ReleaseAllInterfacesAndSurfaces();
+    }
+    const int ok =
+        result == 0 &&
+        g_smokeComReleaseCalls == 6 &&
+        g_smokeComReleaseObjects[0] == &d3dMaterial &&
+        g_smokeComReleaseObjects[1] == &d3dViewport &&
+        g_smokeComReleaseObjects[2] == &d3dDevice &&
+        g_smokeComReleaseObjects[3] == &d3d &&
+        g_smokeComReleaseObjects[4] == &clipper &&
+        g_smokeComReleaseObjects[5] == &palette &&
+        g_smokeDirectDrawSurface3ReleaseCalls == 4 &&
+        g_smokeDirectDrawSurface3ReleaseSurfaces[0] ==
+            (IDirectDrawSurface3 *)(&zBufferSurface) &&
+        g_smokeDirectDrawSurface3ReleaseSurfaces[1] ==
+            (IDirectDrawSurface3 *)(&swSurface) &&
+        g_smokeDirectDrawSurface3ReleaseSurfaces[2] ==
+            (IDirectDrawSurface3 *)(&primarySurface) &&
+        g_smokeDirectDrawSurface3ReleaseSurfaces[3] ==
+            (IDirectDrawSurface3 *)(&displaySurface) &&
+        g_smokeDirectDrawSurface3PageUnlockCalls == 2 &&
+        g_smokeDirectDrawSurface3LastPageUnlockSurface ==
+            (IDirectDrawSurface3 *)(&primarySurface) &&
+        g_smokeDirectDrawSurface3LastPageUnlockFlags == 0 &&
+        g_zVideo_pD3DMaterial2 == 0 &&
+        g_zVideo_pD3DViewport2 == 0 &&
+        g_zVideo_pD3DDevice == 0 &&
+        g_zVideo_pD3D2 == 0 &&
+        g_zVideo_pClipper == 0 &&
+        g_zVideo_pZBufferSurface == 0 &&
+        g_zVideo_pDDPalette == 0 &&
+        g_zVideo_SwSurfaceState.surf == 0 &&
+        g_zVideo_PrimarySurfaceState.surf == 0 &&
+        g_zVideo_DisplayModeSurfaceState.surf == 0 &&
+        g_zVideo_SwSurfaceState.pageLockActive == 0 &&
+        g_zVideo_PrimarySurfaceState.pageLockActive == 0;
+
+    g_zVideo_pD3DMaterial2 = savedMaterial;
+    g_zVideo_pD3DViewport2 = savedViewport;
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_pD3D2 = savedD3D;
+    g_zVideo_pClipper = savedClipper;
+    g_zVideo_pZBufferSurface = savedZBuffer;
+    g_zVideo_pDDPalette = savedPalette;
+    g_zVideo_SwSurfaceState = savedSwState;
+    g_zVideo_PrimarySurfaceState = savedPrimaryState;
+    g_zVideo_DisplayModeSurfaceState = savedDisplayState;
+    return ok != 0 ? 0 : 1;
+}
+
+extern "C" int zvideo_dd_release_all_interfaces_and_surfaces_smoke(void) {
+    return RunZVideoReleaseAllInterfacesAndSurfacesSmoke(0);
+}
+
+extern "C" int zvideo_at_exit_release_all_interfaces_and_surfaces_smoke(void) {
+    return RunZVideoReleaseAllInterfacesAndSurfacesSmoke(1);
+}
+
+extern "C" int zvideo_dd_verify_surface_state_locking_smoke(void) {
+    SmokeSurfaceLockVerifierObject verifier{};
+    zVideo_SurfaceLockVerifier *const savedVerifier = g_zVideo_pSurfaceLockVerifier;
+    const unsigned char savedFlags = g_zVideo_SurfaceLockVerifyFlags;
+
+    InstallSmokeSurfaceLockVerifier(verifier);
+    g_zVideo_pSurfaceLockVerifier = (zVideo_SurfaceLockVerifier *)(&verifier);
+    g_zVideo_SurfaceLockVerifyFlags = 0;
+    zVideo_dd::VerifySurfaceStateLocking(0x12345678);
+    if (g_smokeSurfaceLockVerifierVerifyCalls != 0) {
+        g_zVideo_pSurfaceLockVerifier = savedVerifier;
+        g_zVideo_SurfaceLockVerifyFlags = savedFlags;
+        return 1;
+    }
+
+    g_zVideo_SurfaceLockVerifyFlags = 0x20;
+    zVideo_dd::VerifySurfaceStateLocking(0x12345678);
+    const int ok =
+        g_smokeSurfaceLockVerifierVerifyCalls == 1 &&
+        g_smokeSurfaceLockVerifierLastArgs.size ==
+            sizeof(g_smokeSurfaceLockVerifierLastArgs) &&
+        g_smokeSurfaceLockVerifierLastArgs.callerContext == 0x12345678;
+
+    g_zVideo_pSurfaceLockVerifier = savedVerifier;
+    g_zVideo_SurfaceLockVerifyFlags = savedFlags;
+    return ok != 0 ? 0 : 2;
+}
+
+extern "C" int zvideo_dd_teardown_video_subsystem_smoke(void) {
+    SmokeDirectDrawSurface3Object pageUnlockSurface{};
+    SmokeDirectDraw2Object directDraw{};
+    SmokeSurfaceLockVerifierObject verifier{};
+    InstallSmokeDirectDrawSurface3(pageUnlockSurface);
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeSurfaceLockVerifier(verifier);
+
+    IDirect3DMaterial2 *const savedMaterial = g_zVideo_pD3DMaterial2;
+    IDirect3DViewport2 *const savedViewport = g_zVideo_pD3DViewport2;
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    IDirect3D2 *const savedD3D = g_zVideo_pD3D2;
+    IDirectDrawClipper *const savedClipper = g_zVideo_pClipper;
+    IDirectDraw2 *const savedDirectDraw = g_zVideo_pDirectDraw2;
+    IDirectDrawSurface3 *const savedZBuffer = g_zVideo_pZBufferSurface;
+    IDirectDrawSurface3 *const savedPageUnlock = g_zVideo_pPageUnlockSurface;
+    IDirectDrawPalette *const savedPalette = g_zVideo_pDDPalette;
+    zVideo_SurfaceLockVerifier *const savedVerifier = g_zVideo_pSurfaceLockVerifier;
+    const int savedVerifyContext = g_zVideo_SurfaceLockVerifyContext;
+    const unsigned char savedVerifyFlags = g_zVideo_SurfaceLockVerifyFlags;
+    const HWND savedHwnd = g_zVideo_hWnd;
+    const zVideo_SurfaceStatePartial savedSwState = g_zVideo_SwSurfaceState;
+    const zVideo_SurfaceStatePartial savedPrimaryState = g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial savedDisplayState = g_zVideo_DisplayModeSurfaceState;
+
+    g_zVideo_pD3DMaterial2 = 0;
+    g_zVideo_pD3DViewport2 = 0;
+    g_zVideo_pD3DDevice = 0;
+    g_zVideo_pD3D2 = 0;
+    g_zVideo_pClipper = 0;
+    g_zVideo_pZBufferSurface = 0;
+    g_zVideo_pDDPalette = 0;
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_pPageUnlockSurface =
+        (IDirectDrawSurface3 *)(&pageUnlockSurface);
+    g_zVideo_pSurfaceLockVerifier = (zVideo_SurfaceLockVerifier *)(&verifier);
+    g_zVideo_SurfaceLockVerifyContext = 0x13579;
+    g_zVideo_SurfaceLockVerifyFlags = 0x20;
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_zVideo_hWnd = (HWND)(0x2468);
+
+    zVideo_dd::TeardownVideoSubsystem();
+    const int ok =
+        g_smokeDirectDrawSurface3PageUnlockCalls == 1 &&
+        g_smokeDirectDrawSurface3LastPageUnlockSurface ==
+            (IDirectDrawSurface3 *)(&pageUnlockSurface) &&
+        g_smokeDirectDrawSurface3LastPageUnlockFlags == 0 &&
+        g_smokeDirectDrawSurface3ReleaseCalls == 1 &&
+        g_smokeDirectDrawSurface3ReleaseSurfaces[0] ==
+            (IDirectDrawSurface3 *)(&pageUnlockSurface) &&
+        g_smokeSurfaceLockVerifierVerifyCalls == 1 &&
+        g_smokeSurfaceLockVerifierLastArgs.callerContext == 0x13579 &&
+        g_smokeSurfaceLockVerifierReleaseCalls == 1 &&
+        g_smokeDirectDraw2SetCooperativeLevelCalls == 1 &&
+        g_smokeDirectDraw2LastSetCooperativeSelf == (IDirectDraw2 *)(&directDraw) &&
+        g_smokeDirectDraw2LastSetCooperativeHwnd == (HWND)(0x2468) &&
+        g_smokeDirectDraw2LastSetCooperativeFlags == 8 &&
+        g_smokeDirectDraw2ReleaseCalls == 1 &&
+        g_smokeDirectDraw2ReleaseSelf == (IDirectDraw2 *)(&directDraw) &&
+        g_zVideo_pPageUnlockSurface == 0 &&
+        g_zVideo_pSurfaceLockVerifier == 0 &&
+        g_zVideo_pDirectDraw2 == 0;
+
+    g_zVideo_pD3DMaterial2 = savedMaterial;
+    g_zVideo_pD3DViewport2 = savedViewport;
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_pD3D2 = savedD3D;
+    g_zVideo_pClipper = savedClipper;
+    g_zVideo_pDirectDraw2 = savedDirectDraw;
+    g_zVideo_pZBufferSurface = savedZBuffer;
+    g_zVideo_pPageUnlockSurface = savedPageUnlock;
+    g_zVideo_pDDPalette = savedPalette;
+    g_zVideo_pSurfaceLockVerifier = savedVerifier;
+    g_zVideo_SurfaceLockVerifyContext = savedVerifyContext;
+    g_zVideo_SurfaceLockVerifyFlags = savedVerifyFlags;
+    g_zVideo_hWnd = savedHwnd;
+    g_zVideo_SwSurfaceState = savedSwState;
+    g_zVideo_PrimarySurfaceState = savedPrimaryState;
+    g_zVideo_DisplayModeSurfaceState = savedDisplayState;
+    return ok != 0 ? 0 : 1;
+}
+
+extern "C" int zvideo_dd_shutdown_video_system_smoke(void) {
+    zVideo_TextureRecordPartial *const savedDefaultRecord =
+        g_zImage_DefaultTextureRecord;
+    IDirect3DMaterial2 *const savedMaterial = g_zVideo_pD3DMaterial2;
+    IDirect3DViewport2 *const savedViewport = g_zVideo_pD3DViewport2;
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    IDirect3D2 *const savedD3D = g_zVideo_pD3D2;
+    IDirectDrawClipper *const savedClipper = g_zVideo_pClipper;
+    IDirectDraw2 *const savedDirectDraw = g_zVideo_pDirectDraw2;
+    IDirectDrawSurface3 *const savedZBuffer = g_zVideo_pZBufferSurface;
+    IDirectDrawSurface3 *const savedPageUnlock = g_zVideo_pPageUnlockSurface;
+    IDirectDrawPalette *const savedPalette = g_zVideo_pDDPalette;
+    zVideo_SurfaceLockVerifier *const savedVerifier = g_zVideo_pSurfaceLockVerifier;
+    const int savedVerifyContext = g_zVideo_SurfaceLockVerifyContext;
+    const unsigned char savedVerifyFlags = g_zVideo_SurfaceLockVerifyFlags;
+    const zVideo_SurfaceStatePartial savedSwState = g_zVideo_SwSurfaceState;
+    const zVideo_SurfaceStatePartial savedPrimaryState = g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial savedDisplayState = g_zVideo_DisplayModeSurfaceState;
+
+    g_zVideo_pD3DMaterial2 = 0;
+    g_zVideo_pD3DViewport2 = 0;
+    g_zVideo_pD3DDevice = 0;
+    g_zVideo_pD3D2 = 0;
+    g_zVideo_pClipper = 0;
+    g_zVideo_pDirectDraw2 = 0;
+    g_zVideo_pZBufferSurface = 0;
+    g_zVideo_pPageUnlockSurface = 0;
+    g_zVideo_pDDPalette = 0;
+    g_zVideo_pSurfaceLockVerifier = 0;
+    g_zVideo_SurfaceLockVerifyContext = 0;
+    g_zVideo_SurfaceLockVerifyFlags = 0;
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState = {};
+
+    zVideo_TextureRecordPartial defaultRecord{};
+    g_zImage_DefaultTextureRecord = &defaultRecord;
+    ResetSmokeComReleaseTracking();
+    const int defaultResult = zVideo_dd::ShutdownVideoSystem();
+    const int defaultOk =
+        defaultResult == 0 &&
+        g_zImage_DefaultTextureRecord == 0 &&
+        g_smokeComReleaseCalls == 0;
+
+    g_zImage_DefaultTextureRecord = 0;
+    const int noDefaultResult = zVideo_dd::ShutdownVideoSystem();
+    const int noDefaultOk =
+        noDefaultResult == 0 &&
+        g_zImage_DefaultTextureRecord == 0;
+
+    g_zImage_DefaultTextureRecord = savedDefaultRecord;
+    g_zVideo_pD3DMaterial2 = savedMaterial;
+    g_zVideo_pD3DViewport2 = savedViewport;
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_pD3D2 = savedD3D;
+    g_zVideo_pClipper = savedClipper;
+    g_zVideo_pDirectDraw2 = savedDirectDraw;
+    g_zVideo_pZBufferSurface = savedZBuffer;
+    g_zVideo_pPageUnlockSurface = savedPageUnlock;
+    g_zVideo_pDDPalette = savedPalette;
+    g_zVideo_pSurfaceLockVerifier = savedVerifier;
+    g_zVideo_SurfaceLockVerifyContext = savedVerifyContext;
+    g_zVideo_SurfaceLockVerifyFlags = savedVerifyFlags;
+    g_zVideo_SwSurfaceState = savedSwState;
+    g_zVideo_PrimarySurfaceState = savedPrimaryState;
+    g_zVideo_DisplayModeSurfaceState = savedDisplayState;
+    return defaultOk != 0 && noDefaultOk != 0 ? 0 : 2;
+}
+
+extern "C" int zvideo_dd_palette_set_entries_smoke(void) {
+    const int savedBpp = g_zVideo_DisplayModeBpp;
+    IDirectDrawPalette *const savedPalette = g_zVideo_pDDPalette;
+
+    SmokeDirectDrawPaletteObject palette{};
+    PALETTEENTRY entries[3] = {};
+    entries[0].peRed = 10;
+    entries[1].peGreen = 20;
+    entries[2].peBlue = 30;
+
+    InstallSmokeDirectDrawPalette(palette);
+    g_zVideo_DisplayModeBpp = 16;
+    g_zVideo_pDDPalette = (IDirectDrawPalette *)(&palette);
+    const int non8BppOk =
+        zVideo_dd::PaletteSetEntries(1, 2, entries) == 0 &&
+        g_smokeDirectDrawPaletteSetEntriesCalls == 0;
+
+    InstallSmokeDirectDrawPalette(palette);
+    g_zVideo_DisplayModeBpp = 8;
+    g_zVideo_pDDPalette = (IDirectDrawPalette *)(&palette);
+    const int successOk =
+        zVideo_dd::PaletteSetEntries(5, 3, entries) == 0 &&
+        g_smokeDirectDrawPaletteSetEntriesCalls == 1 &&
+        g_smokeDirectDrawPaletteLastSetEntriesSelf ==
+            (IDirectDrawPalette *)(&palette) &&
+        g_smokeDirectDrawPaletteLastSetEntriesFlags == 0 &&
+        g_smokeDirectDrawPaletteLastSetEntriesFirst == 5 &&
+        g_smokeDirectDrawPaletteLastSetEntriesCount == 3 &&
+        g_smokeDirectDrawPaletteLastSetEntriesEntries == entries;
+
+    InstallSmokeDirectDrawPalette(palette);
+    g_zVideo_DisplayModeBpp = 8;
+    g_zVideo_pDDPalette = (IDirectDrawPalette *)(&palette);
+    g_smokeDirectDrawPaletteSetEntriesResult = DDERR_GENERIC;
+    const int failureOk =
+        zVideo_dd::PaletteSetEntries(7, 1, entries) == 0x5a56ffff &&
+        g_smokeDirectDrawPaletteSetEntriesCalls == 1 &&
+        g_smokeDirectDrawPaletteLastSetEntriesFlags == 0 &&
+        g_smokeDirectDrawPaletteLastSetEntriesFirst == 7 &&
+        g_smokeDirectDrawPaletteLastSetEntriesCount == 1 &&
+        g_smokeDirectDrawPaletteLastSetEntriesEntries == entries;
+
+    g_zVideo_DisplayModeBpp = savedBpp;
+    g_zVideo_pDDPalette = savedPalette;
+    return non8BppOk != 0 && successOk != 0 && failureOk != 0 ? 0 : 1;
+}
+
+extern "C" int zvideo_get_display_mode_bpp_smoke(void) {
+    const int savedBpp = g_zVideo_DisplayModeBpp;
+
+    g_zVideo_DisplayModeBpp = 16;
+    const int firstOk = zVideo::GetDisplayModeBpp() == 16;
+
+    g_zVideo_DisplayModeBpp = 8;
+    const int secondOk = zVideo::GetDisplayModeBpp() == 8;
+
+    g_zVideo_DisplayModeBpp = savedBpp;
+    return firstOk != 0 && secondOk != 0 ? 0 : 1;
+}
+
+extern "C" int zvideo_surface_accessors_smoke(void) {
+    const zVideo_SurfaceStatePartial savedSwState = g_zVideo_SwSurfaceState;
+    const zVideo_SurfaceStatePartial savedPrimaryState =
+        g_zVideo_PrimarySurfaceState;
+
+    int swPixels = 0x1234;
+    int primaryPixels = 0x5678;
+    g_zVideo_SwSurfaceState.width = 320;
+    g_zVideo_SwSurfaceState.height = 200;
+    g_zVideo_SwSurfaceState.pitch = 640;
+    g_zVideo_SwSurfaceState.locked = 1;
+    g_zVideo_SwSurfaceState.pixels = &swPixels;
+    g_zVideo_PrimarySurfaceState.width = 800;
+    g_zVideo_PrimarySurfaceState.height = 600;
+    g_zVideo_PrimarySurfaceState.pitch = 1600;
+    g_zVideo_PrimarySurfaceState.pixels = &primaryPixels;
+
+    const int ok =
+        zVideo::GetSwSurfacePixels() == &swPixels &&
+        zVideo::GetSwSurfaceWidth() == 320 &&
+        zVideo::GetSwSurfaceHeight() == 200 &&
+        zVideo::GetSwSurfacePitch() == 640 &&
+        zVideo::GetSwSurfaceLockedFlag() == 1 &&
+        zVideo::GetPrimarySurfacePixels() == &primaryPixels &&
+        zVideo::GetPrimarySurfaceWidth() == 800 &&
+        zVideo::GetPrimarySurfaceHeight() == 600 &&
+        zVideo::GetPrimarySurfacePitch() == 1600;
+
+    g_zVideo_SwSurfaceState = savedSwState;
+    g_zVideo_PrimarySurfaceState = savedPrimaryState;
+    return ok != 0 ? 0 : 1;
+}
+
+extern "C" int zvideo_primary_surface_rect_scratch_smoke(void) {
+    const zVidRect32 savedScratch = g_zVideo_PrimarySurfaceRectScratch;
+    const zVideo_SurfaceStatePartial savedPrimaryState =
+        g_zVideo_PrimarySurfaceState;
+
+    g_zVideo_PrimarySurfaceRectScratch.left = 11;
+    g_zVideo_PrimarySurfaceRectScratch.top = 22;
+    g_zVideo_PrimarySurfaceRectScratch.right = 33;
+    g_zVideo_PrimarySurfaceRectScratch.bottom = 44;
+    g_zVideo_PrimarySurfaceState.width = 640;
+    g_zVideo_PrimarySurfaceState.height = 480;
+
+    zVidRect32 *const scratch = zVideo::GetPrimarySurfaceRectScratch();
+    const int ok =
+        scratch == &g_zVideo_PrimarySurfaceRectScratch &&
+        scratch->left == 11 &&
+        scratch->top == 22 &&
+        scratch->right == 640 &&
+        scratch->bottom == 480;
+
+    g_zVideo_PrimarySurfaceRectScratch = savedScratch;
+    g_zVideo_PrimarySurfaceState = savedPrimaryState;
+    return ok != 0 ? 0 : 1;
+}
+
+extern "C" int zvideo_dd_set_display_mode_smoke(void) {
+    IDirectDraw2 *const savedDirectDraw = g_zVideo_pDirectDraw2;
+    const HWND savedHwnd = g_zVideo_hWnd;
+    const zVideo_SurfaceStatePartial savedDisplayState =
+        g_zVideo_DisplayModeSurfaceState;
+    const int savedDisplayModeBpp = g_zVideo_DisplayModeBpp;
+
+    SmokeDirectDraw2Object directDraw{};
+
+    InstallSmokeDirectDraw2(directDraw);
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_zVideo_hWnd = (HWND)(0x1357);
+    g_zVideo_DisplayModeSurfaceState.width = 800;
+    g_zVideo_DisplayModeSurfaceState.height = 600;
+    g_zVideo_DisplayModeBpp = 16;
+    const int successOk =
+        zVideo_dd::SetDisplayMode() == 1 &&
+        g_smokeDirectDraw2SetCooperativeLevelCalls == 1 &&
+        g_smokeDirectDraw2LastSetCooperativeHwnd == (HWND)(0x1357) &&
+        g_smokeDirectDraw2LastSetCooperativeFlags == 0x13 &&
+        g_smokeDirectDraw2SetDisplayModeCalls == 1 &&
+        g_smokeDirectDraw2LastSetDisplayModeSelf ==
+            (IDirectDraw2 *)(&directDraw) &&
+        g_smokeDirectDraw2LastDisplayModeWidth == 800 &&
+        g_smokeDirectDraw2LastDisplayModeHeight == 600 &&
+        g_smokeDirectDraw2LastDisplayModeBpp == 16 &&
+        g_smokeDirectDraw2LastDisplayModeRefreshRate == 0 &&
+        g_smokeDirectDraw2LastDisplayModeFlags == 0;
+
+    InstallSmokeDirectDraw2(directDraw);
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_zVideo_hWnd = (HWND)(0x2468);
+    g_smokeDirectDraw2SetCooperativeLevelResult = DDERR_GENERIC;
+    g_zVideo_DisplayModeSurfaceState.width = 1024;
+    g_zVideo_DisplayModeSurfaceState.height = 768;
+    g_zVideo_DisplayModeBpp = 32;
+    const int cooperativeFailureOk =
+        zVideo_dd::SetDisplayMode() == 0 &&
+        g_smokeDirectDraw2SetCooperativeLevelCalls == 1 &&
+        g_smokeDirectDraw2LastSetCooperativeHwnd == (HWND)(0x2468) &&
+        g_smokeDirectDraw2LastSetCooperativeFlags == 0x13 &&
+        g_smokeDirectDraw2SetDisplayModeCalls == 0;
+
+    InstallSmokeDirectDraw2(directDraw);
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_zVideo_hWnd = (HWND)(0x369c);
+    g_smokeDirectDraw2SetDisplayModeResult = DDERR_GENERIC;
+    g_zVideo_DisplayModeSurfaceState.width = 640;
+    g_zVideo_DisplayModeSurfaceState.height = 480;
+    g_zVideo_DisplayModeBpp = 8;
+    const int displayFailureOk =
+        zVideo_dd::SetDisplayMode() == 0 &&
+        g_smokeDirectDraw2SetCooperativeLevelCalls == 1 &&
+        g_smokeDirectDraw2SetDisplayModeCalls == 1 &&
+        g_smokeDirectDraw2LastDisplayModeWidth == 640 &&
+        g_smokeDirectDraw2LastDisplayModeHeight == 480 &&
+        g_smokeDirectDraw2LastDisplayModeBpp == 8 &&
+        g_smokeDirectDraw2LastDisplayModeRefreshRate == 0 &&
+        g_smokeDirectDraw2LastDisplayModeFlags == 0;
+
+    g_zVideo_pDirectDraw2 = savedDirectDraw;
+    g_zVideo_hWnd = savedHwnd;
+    g_zVideo_DisplayModeSurfaceState = savedDisplayState;
+    g_zVideo_DisplayModeBpp = savedDisplayModeBpp;
+    return successOk != 0 && cooperativeFailureOk != 0 && displayFailureOk != 0
+        ? 0
+        : 1;
+}
+
+int g_smokeSetVideoModeStepCount;
+int g_smokeSetVideoModeSteps[8];
+int g_smokeSetVideoModeRestoreCalls;
+int g_smokeSetVideoModeSetDisplayModeResult;
+int g_smokeSetVideoModeRestoreResults[2];
+int g_smokeSetVideoModeReleaseResult;
+int g_smokeSetVideoModeCreateSurfacesResult;
+int g_smokeSetVideoModeCreateDeviceResult;
+int g_smokeSetVideoModeVerifyLocksResult;
+
+void RecordSetVideoModeStep(
+    int step
+) {
+    if (g_smokeSetVideoModeStepCount < 8) {
+        g_smokeSetVideoModeSteps[g_smokeSetVideoModeStepCount] = step;
+    }
+    ++g_smokeSetVideoModeStepCount;
+}
+
+int SmokeSetVideoMode_SetDisplayMode() {
+    RecordSetVideoModeStep(1);
+    return g_smokeSetVideoModeSetDisplayModeResult;
+}
+
+int SmokeSetVideoMode_RestoreDisplaySurfaces() {
+    RecordSetVideoModeStep(2);
+    const int resultIndex = g_smokeSetVideoModeRestoreCalls;
+    ++g_smokeSetVideoModeRestoreCalls;
+    return resultIndex < 2 ? g_smokeSetVideoModeRestoreResults[resultIndex] : 0;
+}
+
+int SmokeSetVideoMode_ReleaseAllInterfacesAndSurfaces() {
+    RecordSetVideoModeStep(3);
+    return g_smokeSetVideoModeReleaseResult;
+}
+
+int SmokeSetVideoMode_CreateFullscreenSurfacesForRenderer() {
+    RecordSetVideoModeStep(4);
+    return g_smokeSetVideoModeCreateSurfacesResult;
+}
+
+int SmokeSetVideoMode_CreateDeviceState() {
+    RecordSetVideoModeStep(5);
+    return g_smokeSetVideoModeCreateDeviceResult;
+}
+
+int SmokeSetVideoMode_VerifyFullscreenSurfaceLocks() {
+    RecordSetVideoModeStep(6);
+    return g_smokeSetVideoModeVerifyLocksResult;
+}
+
+void ResetSetVideoModeCapture() {
+    g_smokeSetVideoModeStepCount = 0;
+    std::memset(
+        g_smokeSetVideoModeSteps,
+        0,
+        sizeof(g_smokeSetVideoModeSteps)
+    );
+    g_smokeSetVideoModeRestoreCalls = 0;
+    g_smokeSetVideoModeSetDisplayModeResult = 1;
+    g_smokeSetVideoModeRestoreResults[0] = 0;
+    g_smokeSetVideoModeRestoreResults[1] = 0;
+    g_smokeSetVideoModeReleaseResult = 0;
+    g_smokeSetVideoModeCreateSurfacesResult = 0;
+    g_smokeSetVideoModeCreateDeviceResult = 0;
+    g_smokeSetVideoModeVerifyLocksResult = 0;
+}
+
+extern "C" int zvideo_dd_set_video_mode_smoke(void) {
+    SmokeFunctionPatch setDisplayModePatch = {};
+    SmokeFunctionPatch restoreSurfacesPatch = {};
+    SmokeFunctionPatch releaseSurfacesPatch = {};
+    SmokeFunctionPatch createSurfacesPatch = {};
+    SmokeFunctionPatch createDevicePatch = {};
+    SmokeFunctionPatch verifyLocksPatch = {};
+    if (!PatchSmokeFunctionJump(
+            (void *)(&zVideo_dd::SetDisplayMode),
+            (void *)(&SmokeSetVideoMode_SetDisplayMode),
+            setDisplayModePatch
+        ) ||
+        !PatchSmokeFunctionJump(
+            (void *)(&zVideo_dd::RestoreDisplaySurfaces),
+            (void *)(&SmokeSetVideoMode_RestoreDisplaySurfaces),
+            restoreSurfacesPatch
+        ) ||
+        !PatchSmokeFunctionJump(
+            (void *)(&zVideo_dd::ReleaseAllInterfacesAndSurfaces),
+            (void *)(&SmokeSetVideoMode_ReleaseAllInterfacesAndSurfaces),
+            releaseSurfacesPatch
+        ) ||
+        !PatchSmokeFunctionJump(
+            (void *)(&zVideo_dd::CreateFullscreenSurfacesForRenderer),
+            (void *)(&SmokeSetVideoMode_CreateFullscreenSurfacesForRenderer),
+            createSurfacesPatch
+        ) ||
+        !PatchSmokeFunctionJump(
+            (void *)(&zVideo_dd3d::CreateDeviceState),
+            (void *)(&SmokeSetVideoMode_CreateDeviceState),
+            createDevicePatch
+        ) ||
+        !PatchSmokeFunctionJump(
+            (void *)(&zVideo_dd::VerifyFullscreenSurfaceLocks),
+            (void *)(&SmokeSetVideoMode_VerifyFullscreenSurfaceLocks),
+            verifyLocksPatch
+        )) {
+        RestoreSmokeFunctionPatch(verifyLocksPatch);
+        RestoreSmokeFunctionPatch(createDevicePatch);
+        RestoreSmokeFunctionPatch(createSurfacesPatch);
+        RestoreSmokeFunctionPatch(releaseSurfacesPatch);
+        RestoreSmokeFunctionPatch(restoreSurfacesPatch);
+        RestoreSmokeFunctionPatch(setDisplayModePatch);
+        return 1;
+    }
+
+    const int savedRendererType = g_zVideo_RendererType;
+
+    ResetSetVideoModeCapture();
+    g_zVideo_RendererType = 0;
+    const int softwareResult = zVideo_dd::SetVideoMode(77);
+    const int softwareOk =
+        softwareResult == 0 &&
+        g_smokeSetVideoModeStepCount == 6 &&
+        g_smokeSetVideoModeSteps[0] == 1 &&
+        g_smokeSetVideoModeSteps[1] == 2 &&
+        g_smokeSetVideoModeSteps[2] == 3 &&
+        g_smokeSetVideoModeSteps[3] == 4 &&
+        g_smokeSetVideoModeSteps[4] == 2 &&
+        g_smokeSetVideoModeSteps[5] == 6 &&
+        g_smokeSetVideoModeRestoreCalls == 2;
+
+    ResetSetVideoModeCapture();
+    g_zVideo_RendererType = 1;
+    const int hardwareResult = zVideo_dd::SetVideoMode(88);
+    const int hardwareOk =
+        hardwareResult == 0 &&
+        g_smokeSetVideoModeStepCount == 7 &&
+        g_smokeSetVideoModeSteps[0] == 1 &&
+        g_smokeSetVideoModeSteps[1] == 2 &&
+        g_smokeSetVideoModeSteps[2] == 3 &&
+        g_smokeSetVideoModeSteps[3] == 4 &&
+        g_smokeSetVideoModeSteps[4] == 5 &&
+        g_smokeSetVideoModeSteps[5] == 2 &&
+        g_smokeSetVideoModeSteps[6] == 6 &&
+        g_smokeSetVideoModeRestoreCalls == 2;
+
+    ResetSetVideoModeCapture();
+    g_zVideo_RendererType = 1;
+    g_smokeSetVideoModeSetDisplayModeResult = 0;
+    const int setDisplayFailureResult = zVideo_dd::SetVideoMode(99);
+    const int setDisplayFailureOk =
+        setDisplayFailureResult == 1 &&
+        g_smokeSetVideoModeStepCount == 1 &&
+        g_smokeSetVideoModeSteps[0] == 1;
+
+    ResetSetVideoModeCapture();
+    g_zVideo_RendererType = 1;
+    g_smokeSetVideoModeCreateDeviceResult = 1;
+    const int createDeviceFailureResult = zVideo_dd::SetVideoMode(100);
+    const int createDeviceFailureOk =
+        createDeviceFailureResult == 1 &&
+        g_smokeSetVideoModeStepCount == 5 &&
+        g_smokeSetVideoModeSteps[4] == 5 &&
+        g_smokeSetVideoModeRestoreCalls == 1;
+
+    g_zVideo_RendererType = savedRendererType;
+    RestoreSmokeFunctionPatch(verifyLocksPatch);
+    RestoreSmokeFunctionPatch(createDevicePatch);
+    RestoreSmokeFunctionPatch(createSurfacesPatch);
+    RestoreSmokeFunctionPatch(releaseSurfacesPatch);
+    RestoreSmokeFunctionPatch(restoreSurfacesPatch);
+    RestoreSmokeFunctionPatch(setDisplayModePatch);
+
+    return softwareOk != 0 &&
+            hardwareOk != 0 &&
+            setDisplayFailureOk != 0 &&
+            createDeviceFailureOk != 0
+        ? 0
+        : 2;
+}
+
+extern "C" int zvideo_dd_restore_display_surfaces_smoke(void) {
+    const zVideo_SurfaceStatePartial savedDisplayState =
+        g_zVideo_DisplayModeSurfaceState;
+    const zVideo_SurfaceStatePartial savedPrimaryState =
+        g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial savedSwState = g_zVideo_SwSurfaceState;
+
+    SmokeDirectDrawSurface3Object displaySurface{};
+    SmokeDirectDrawSurface3Object primarySurface{};
+    SmokeDirectDrawSurface3Object swSurface{};
+
+    InstallSmokeDirectDrawSurface3(displaySurface);
+    primarySurface.vtable = g_smokeDirectDrawSurface3VTable;
+    swSurface.vtable = g_smokeDirectDrawSurface3VTable;
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState.surf =
+        (IDirectDrawSurface3 *)(&displaySurface);
+    g_zVideo_PrimarySurfaceState.surf =
+        (IDirectDrawSurface3 *)(&primarySurface);
+    g_zVideo_SwSurfaceState.surf = (IDirectDrawSurface3 *)(&swSurface);
+    const int allPresentOk =
+        zVideo_dd::RestoreDisplaySurfaces() == 0 &&
+        g_smokeDirectDrawSurface3RestoreCalls == 3 &&
+        g_smokeDirectDrawSurface3RestoreSurfaces[0] ==
+            g_zVideo_DisplayModeSurfaceState.surf &&
+        g_smokeDirectDrawSurface3RestoreSurfaces[1] ==
+            g_zVideo_PrimarySurfaceState.surf &&
+        g_smokeDirectDrawSurface3RestoreSurfaces[2] ==
+            g_zVideo_SwSurfaceState.surf;
+
+    InstallSmokeDirectDrawSurface3(displaySurface);
+    g_smokeDirectDrawSurface3RestoreResult = DDERR_GENERIC;
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState.surf =
+        (IDirectDrawSurface3 *)(&displaySurface);
+    const int displayFailureOk =
+        zVideo_dd::RestoreDisplaySurfaces() != 0 &&
+        g_smokeDirectDrawSurface3RestoreCalls == 1 &&
+        g_smokeDirectDrawSurface3RestoreSurfaces[0] ==
+            g_zVideo_DisplayModeSurfaceState.surf;
+
+    InstallSmokeDirectDrawSurface3(primarySurface);
+    g_smokeDirectDrawSurface3RestoreResult = DDERR_GENERIC;
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_PrimarySurfaceState.surf =
+        (IDirectDrawSurface3 *)(&primarySurface);
+    const int primaryFailureOk =
+        zVideo_dd::RestoreDisplaySurfaces() != 0 &&
+        g_smokeDirectDrawSurface3RestoreCalls == 1 &&
+        g_smokeDirectDrawSurface3RestoreSurfaces[0] ==
+            g_zVideo_PrimarySurfaceState.surf;
+
+    InstallSmokeDirectDrawSurface3(swSurface);
+    g_smokeDirectDrawSurface3RestoreResult = DDERR_GENERIC;
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_SwSurfaceState.surf = (IDirectDrawSurface3 *)(&swSurface);
+    const int swFailureOk =
+        zVideo_dd::RestoreDisplaySurfaces() != 0 &&
+        g_smokeDirectDrawSurface3RestoreCalls == 1 &&
+        g_smokeDirectDrawSurface3RestoreSurfaces[0] ==
+            g_zVideo_SwSurfaceState.surf;
+
+    InstallSmokeDirectDrawSurface3(displaySurface);
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_SwSurfaceState = {};
+    const int noSurfaceOk =
+        zVideo_dd::RestoreDisplaySurfaces() == 0 &&
+        g_smokeDirectDrawSurface3RestoreCalls == 0;
+
+    g_zVideo_DisplayModeSurfaceState = savedDisplayState;
+    g_zVideo_PrimarySurfaceState = savedPrimaryState;
+    g_zVideo_SwSurfaceState = savedSwState;
+    return allPresentOk != 0 &&
+            displayFailureOk != 0 &&
+            primaryFailureOk != 0 &&
+            swFailureOk != 0 &&
+            noSurfaceOk != 0
+        ? 0
+        : 1;
+}
+
+extern "C" int zvideo_dd_init_fullscreen_software_pixel_pack_smoke(void) {
+    SmokeDirectDrawSurface3Object displaySurface{};
+    InstallSmokeDirectDrawSurface3(displaySurface);
+
+    const zVideo_PixelPackParams savedPixelPack = g_zVideo_PixelPack;
+    const zVideo_SurfaceStatePartial savedDisplayState =
+        g_zVideo_DisplayModeSurfaceState;
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState.surf =
+        (IDirectDrawSurface3 *)(&displaySurface);
+
+    g_smokeDirectDrawSurface3PixelFormat.dwRBitMask = 0xf800;
+    g_smokeDirectDrawSurface3PixelFormat.dwGBitMask = 0x07e0;
+    g_smokeDirectDrawSurface3PixelFormat.dwBBitMask = 0x001f;
+    const int firstOk =
+        zVideo_dd::InitFullscreenSoftwarePixelPack(
+            (IDirectDrawSurface3 *)(&displaySurface)
+        ) == 0 &&
+        g_smokeDirectDrawSurface3GetPixelFormatCalls == 1 &&
+        g_smokeDirectDrawSurface3LastPixelFormatSurface ==
+            (IDirectDrawSurface3 *)(&displaySurface) &&
+        g_smokeDirectDrawSurface3LastPixelFormatInputSize ==
+            sizeof(DDPIXELFORMAT) &&
+        g_zVideo_PixelPack.rBits == 5 &&
+        g_zVideo_PixelPack.gBits == 6 &&
+        g_zVideo_PixelPack.bBits == 5 &&
+        g_zVideo_PixelPack.rMask == 0xf800 &&
+        g_zVideo_PixelPack.gMask == 0x07e0 &&
+        g_zVideo_PixelPack.bMask == 0x001f;
+
+    g_smokeDirectDrawSurface3PixelFormat.dwRBitMask = 0x7c00;
+    g_smokeDirectDrawSurface3PixelFormat.dwGBitMask = 0x03e0;
+    g_smokeDirectDrawSurface3PixelFormat.dwBBitMask = 0x001f;
+    const int secondOk =
+        zVideo_dd::InitFullscreenSoftwarePixelPack(
+            (IDirectDrawSurface3 *)(&displaySurface)
+        ) == 0 &&
+        g_smokeDirectDrawSurface3GetPixelFormatCalls == 2 &&
+        g_zVideo_PixelPack.rBits == 5 &&
+        g_zVideo_PixelPack.gBits == 5 &&
+        g_zVideo_PixelPack.bBits == 5 &&
+        g_zVideo_PixelPack.rMask == 0x7c00 &&
+        g_zVideo_PixelPack.gMask == 0x03e0 &&
+        g_zVideo_PixelPack.bMask == 0x001f;
+
+    g_smokeDirectDrawSurface3PixelFormat.dwRBitMask = 0xff0000;
+    g_smokeDirectDrawSurface3PixelFormat.dwGBitMask = 0xff00;
+    g_smokeDirectDrawSurface3PixelFormat.dwBBitMask = 0x00ff;
+    const int thirdOk =
+        zVideo_dd::InitFullscreenSoftwarePixelPack(
+            (IDirectDrawSurface3 *)(&displaySurface)
+        ) == 0 &&
+        g_smokeDirectDrawSurface3GetPixelFormatCalls == 3 &&
+        g_zVideo_PixelPack.rBits == 5 &&
+        g_zVideo_PixelPack.gBits == 6 &&
+        g_zVideo_PixelPack.bBits == 5 &&
+        g_zVideo_PixelPack.rMask == 0xff0000 &&
+        g_zVideo_PixelPack.gMask == 0xff00 &&
+        g_zVideo_PixelPack.bMask == 0x00ff;
+
+    g_zVideo_PixelPack = savedPixelPack;
+    g_zVideo_DisplayModeSurfaceState = savedDisplayState;
+    return firstOk != 0 && secondOk != 0 && thirdOk != 0 ? 0 : 1;
+}
+
+int g_smokeCreateSurface3FromDescCalls;
+IDirectDraw2 *g_smokeCreateSurface3FromDescDirectDraws[4];
+DDSURFACEDESC g_smokeCreateSurface3FromDescDescs[4];
+IDirectDrawSurface3 **g_smokeCreateSurface3FromDescOuts[4];
+IDirectDrawSurface3 *g_smokeCreateSurface3FromDescResults[4];
+HRESULT g_smokeCreateSurface3FromDescResult;
+int g_smokeInitFullscreenSoftwarePixelPackCalls;
+IDirectDrawSurface3 *g_smokeInitFullscreenSoftwarePixelPackSurface;
+int g_smokeInitFullscreenSoftwarePixelPackResult;
+zOptionEntryPartial g_smokeHalfResGfxFlagsOption;
+const char *g_smokeHalfResOptionName;
+
+HRESULT __fastcall SmokeCreateSurface3FromDesc(
+    IDirectDraw2 *directDraw,
+    DDSURFACEDESC *desc,
+    IDirectDrawSurface3 **surface
+) {
+    const int callIndex = g_smokeCreateSurface3FromDescCalls;
+    if (callIndex < 4) {
+        g_smokeCreateSurface3FromDescDirectDraws[callIndex] = directDraw;
+        g_smokeCreateSurface3FromDescDescs[callIndex] = *desc;
+        g_smokeCreateSurface3FromDescOuts[callIndex] = surface;
+    }
+    ++g_smokeCreateSurface3FromDescCalls;
+    if (g_smokeCreateSurface3FromDescResult == DD_OK && callIndex < 4) {
+        *surface = g_smokeCreateSurface3FromDescResults[callIndex];
+    }
+    return g_smokeCreateSurface3FromDescResult;
+}
+
+int __fastcall SmokeInitFullscreenSoftwarePixelPack(
+    IDirectDrawSurface3 *surface
+) {
+    ++g_smokeInitFullscreenSoftwarePixelPackCalls;
+    g_smokeInitFullscreenSoftwarePixelPackSurface = surface;
+    return g_smokeInitFullscreenSoftwarePixelPackResult;
+}
+
+zOptionEntryPartial *__fastcall SmokeFindHalfResGfxFlagsOption(
+    const char *name
+) {
+    g_smokeHalfResOptionName = name;
+    return &g_smokeHalfResGfxFlagsOption;
+}
+
+void ResetHalfResSurfaceBuilderTracking() {
+    g_smokeCreateSurface3FromDescCalls = 0;
+    std::memset(
+        g_smokeCreateSurface3FromDescDirectDraws,
+        0,
+        sizeof(g_smokeCreateSurface3FromDescDirectDraws)
+    );
+    std::memset(
+        g_smokeCreateSurface3FromDescDescs,
+        0,
+        sizeof(g_smokeCreateSurface3FromDescDescs)
+    );
+    std::memset(
+        g_smokeCreateSurface3FromDescOuts,
+        0,
+        sizeof(g_smokeCreateSurface3FromDescOuts)
+    );
+    std::memset(
+        g_smokeCreateSurface3FromDescResults,
+        0,
+        sizeof(g_smokeCreateSurface3FromDescResults)
+    );
+    g_smokeCreateSurface3FromDescResult = DD_OK;
+    g_smokeInitFullscreenSoftwarePixelPackCalls = 0;
+    g_smokeInitFullscreenSoftwarePixelPackSurface = 0;
+    g_smokeInitFullscreenSoftwarePixelPackResult = 0;
+    g_smokeHalfResGfxFlagsOption = {};
+    g_smokeHalfResOptionName = 0;
+}
+
+extern "C" int zvideo_dd_create_half_res_backbuffer_surfaces_smoke(void) {
+    SmokeDirectDraw2Object directDraw{};
+    SmokeDirectDrawSurface3Object displaySurface{};
+    SmokeDirectDrawSurface3Object primarySurface{};
+    SmokeDirectDrawSurface3Object swSurface{};
+    SmokeDirectDrawClipperObject clipper{};
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeDirectDrawSurface3(displaySurface);
+    InstallSmokeDirectDrawClipper(clipper);
+    primarySurface.vtable = g_smokeDirectDrawSurface3VTable;
+    swSurface.vtable = g_smokeDirectDrawSurface3VTable;
+    ResetHalfResSurfaceBuilderTracking();
+
+    const zVideo_SurfaceStatePartial savedDisplayState =
+        g_zVideo_DisplayModeSurfaceState;
+    const zVideo_SurfaceStatePartial savedPrimaryState =
+        g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial savedSwState = g_zVideo_SwSurfaceState;
+    IDirectDraw2 *const savedDirectDraw2 = g_zVideo_pDirectDraw2;
+    IDirectDrawClipper *const savedClipper = g_zVideo_pClipper;
+    const int savedPrimaryHasAttachedBackbuffer =
+        g_zVideo_PrimaryHasAttachedBackbuffer;
+    const int savedActiveRendererPath = g_zVideo_ActiveRendererPath;
+    const int savedRendererType = g_zVideo_RendererType;
+    zVidHwApiDeviceRecordPartial *const savedSelectedDevice =
+        g_zVideo_pSelectedHwApiDeviceRecord;
+    HWND const savedHwnd = g_zVideo_hWnd;
+
+    SmokeFunctionPatch createSurfacePatch = {};
+    SmokeFunctionPatch pixelPackPatch = {};
+    SmokeFunctionPatch findOptionPatch = {};
+    if (!PatchSmokeFunctionJump(
+            (void *)(&zVideo_dd::CreateSurface3FromDesc),
+            (void *)(&SmokeCreateSurface3FromDesc),
+            createSurfacePatch
+        ) ||
+        !PatchSmokeFunctionJump(
+            (void *)(&zVideo_dd::InitFullscreenSoftwarePixelPack),
+            (void *)(&SmokeInitFullscreenSoftwarePixelPack),
+            pixelPackPatch
+        ) ||
+        !PatchSmokeFunctionJump(
+            (void *)(&zGame::Options_FindOption),
+            (void *)(&SmokeFindHalfResGfxFlagsOption),
+            findOptionPatch
+        )) {
+        RestoreSmokeFunctionPatch(findOptionPatch);
+        RestoreSmokeFunctionPatch(pixelPackPatch);
+        RestoreSmokeFunctionPatch(createSurfacePatch);
+        return 1;
+    }
+
+    zVidHwApiDeviceRecordPartial selectedDevice = {};
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_SwSurfaceState.width = 320;
+    g_zVideo_SwSurfaceState.height = 240;
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_zVideo_pClipper = 0;
+    g_zVideo_PrimaryHasAttachedBackbuffer = 0;
+    g_zVideo_ActiveRendererPath = 0;
+    g_zVideo_RendererType = 1;
+    g_zVideo_pSelectedHwApiDeviceRecord = &selectedDevice;
+    g_zVideo_hWnd = (HWND)(0x4321);
+    g_smokeCreateSurface3FromDescResults[0] =
+        (IDirectDrawSurface3 *)(&displaySurface);
+    g_smokeCreateSurface3FromDescResults[1] =
+        (IDirectDrawSurface3 *)(&swSurface);
+    g_smokeDirectDrawSurface3AttachedSurfaceValue =
+        (IDirectDrawSurface3 *)(&primarySurface);
+    g_smokeDirectDraw2CreateClipperValue =
+        (IDirectDrawClipper *)(&clipper);
+
+    const int result = zVideo_dd::CreateHalfResBackbufferSurfaces();
+
+    const int ok =
+        result == 0 &&
+        g_smokeHalfResOptionName != 0 &&
+        std::strcmp(g_smokeHalfResOptionName, "GfxFlags_SW") == 0 &&
+        g_smokeCreateSurface3FromDescCalls == 2 &&
+        g_smokeCreateSurface3FromDescDirectDraws[0] ==
+            (IDirectDraw2 *)(&directDraw) &&
+        g_smokeCreateSurface3FromDescOuts[0] ==
+            &g_zVideo_DisplayModeSurfaceState.surf &&
+        g_smokeCreateSurface3FromDescDescs[0].dwSize ==
+            sizeof(DDSURFACEDESC) &&
+        g_smokeCreateSurface3FromDescDescs[0].dwFlags == 0x21 &&
+        g_smokeCreateSurface3FromDescDescs[0].dwBackBufferCount == 1 &&
+        g_smokeCreateSurface3FromDescDescs[0].ddsCaps.dwCaps == 0x218 &&
+        g_smokeDirectDrawSurface3GetAttachedSurfaceCalls == 1 &&
+        g_smokeDirectDrawSurface3LastAttachedSurfaceSelf ==
+            (IDirectDrawSurface3 *)(&displaySurface) &&
+        g_smokeDirectDrawSurface3LastAttachedSurfaceCaps.dwCaps ==
+            DDSCAPS_BACKBUFFER &&
+        g_smokeDirectDrawSurface3LastAttachedSurfaceOut ==
+            &g_zVideo_PrimarySurfaceState.surf &&
+        g_zVideo_DisplayModeSurfaceState.surf ==
+            (IDirectDrawSurface3 *)(&displaySurface) &&
+        g_zVideo_PrimarySurfaceState.surf ==
+            (IDirectDrawSurface3 *)(&primarySurface) &&
+        g_zVideo_PrimaryHasAttachedBackbuffer == 1 &&
+        g_smokeCreateSurface3FromDescDirectDraws[1] ==
+            (IDirectDraw2 *)(&directDraw) &&
+        g_smokeCreateSurface3FromDescOuts[1] ==
+            &g_zVideo_SwSurfaceState.surf &&
+        g_smokeCreateSurface3FromDescDescs[1].dwFlags == 0x07 &&
+        g_smokeCreateSurface3FromDescDescs[1].ddsCaps.dwCaps == 0x840 &&
+        g_smokeCreateSurface3FromDescDescs[1].dwWidth == 320 &&
+        g_smokeCreateSurface3FromDescDescs[1].dwHeight == 240 &&
+        g_zVideo_SwSurfaceState.surf == (IDirectDrawSurface3 *)(&swSurface) &&
+        g_smokeInitFullscreenSoftwarePixelPackCalls == 1 &&
+        g_smokeInitFullscreenSoftwarePixelPackSurface ==
+            (IDirectDrawSurface3 *)(&displaySurface) &&
+        g_smokeDirectDraw2CreateClipperCalls == 1 &&
+        g_smokeDirectDraw2LastCreateClipperSelf ==
+            (IDirectDraw2 *)(&directDraw) &&
+        g_smokeDirectDraw2LastCreateClipperFlags == 0 &&
+        g_smokeDirectDraw2LastCreateClipperOut == &g_zVideo_pClipper &&
+        g_smokeDirectDraw2LastCreateClipperOuter == 0 &&
+        g_zVideo_pClipper == (IDirectDrawClipper *)(&clipper) &&
+        g_smokeDirectDrawClipperSetHWndCalls == 1 &&
+        g_smokeDirectDrawClipperLastSetHWndSelf ==
+            (IDirectDrawClipper *)(&clipper) &&
+        g_smokeDirectDrawClipperLastSetHWndFlags == 0 &&
+        g_smokeDirectDrawClipperLastSetHWndValue == (HWND)(0x4321) &&
+        g_smokeDirectDrawSurface3SetClipperCalls == 1 &&
+        g_smokeDirectDrawSurface3LastSetClipperSelf ==
+            (IDirectDrawSurface3 *)(&displaySurface) &&
+        g_smokeDirectDrawSurface3LastSetClipperValue ==
+            (IDirectDrawClipper *)(&clipper);
+
+    g_zVideo_DisplayModeSurfaceState = savedDisplayState;
+    g_zVideo_PrimarySurfaceState = savedPrimaryState;
+    g_zVideo_SwSurfaceState = savedSwState;
+    g_zVideo_pDirectDraw2 = savedDirectDraw2;
+    g_zVideo_pClipper = savedClipper;
+    g_zVideo_PrimaryHasAttachedBackbuffer = savedPrimaryHasAttachedBackbuffer;
+    g_zVideo_ActiveRendererPath = savedActiveRendererPath;
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_pSelectedHwApiDeviceRecord = savedSelectedDevice;
+    g_zVideo_hWnd = savedHwnd;
+    RestoreSmokeFunctionPatch(findOptionPatch);
+    RestoreSmokeFunctionPatch(pixelPackPatch);
+    RestoreSmokeFunctionPatch(createSurfacePatch);
+    return ok != 0 ? 0 : 2;
+}
+
+extern "C" int zvideo_dd_create_fullscreen_software_surfaces_smoke(void) {
+    SmokeDirectDraw2Object directDraw{};
+    SmokeDirectDrawSurface3Object displaySurface{};
+    SmokeDirectDrawSurface3Object primarySurface{};
+    SmokeDirectDrawSurface3Object swSurface{};
+    SmokeDirectDrawClipperObject clipper{};
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeDirectDrawSurface3(displaySurface);
+    InstallSmokeDirectDrawClipper(clipper);
+    primarySurface.vtable = g_smokeDirectDrawSurface3VTable;
+    swSurface.vtable = g_smokeDirectDrawSurface3VTable;
+    ResetHalfResSurfaceBuilderTracking();
+
+    const zVideo_SurfaceStatePartial savedDisplayState =
+        g_zVideo_DisplayModeSurfaceState;
+    const zVideo_SurfaceStatePartial savedPrimaryState =
+        g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial savedSwState = g_zVideo_SwSurfaceState;
+    IDirectDraw2 *const savedDirectDraw2 = g_zVideo_pDirectDraw2;
+    IDirectDrawClipper *const savedClipper = g_zVideo_pClipper;
+    const int savedPrimaryHasAttachedBackbuffer =
+        g_zVideo_PrimaryHasAttachedBackbuffer;
+    const int savedActiveRendererPath = g_zVideo_ActiveRendererPath;
+    const int savedFullscreenOption = g_zVideo_FullscreenOption;
+    zVidHwApiDeviceRecordPartial *const savedSelectedDevice =
+        g_zVideo_pSelectedHwApiDeviceRecord;
+    HWND const savedHwnd = g_zVideo_hWnd;
+    const zVideo_PixelPackParams savedPixelPack = g_zVideo_PixelPack;
+
+    SmokeFunctionPatch createSurfacePatch = {};
+    SmokeFunctionPatch findOptionPatch = {};
+    if (!PatchSmokeFunctionJump(
+            (void *)(&zVideo_dd::CreateSurface3FromDesc),
+            (void *)(&SmokeCreateSurface3FromDesc),
+            createSurfacePatch
+        ) ||
+        !PatchSmokeFunctionJump(
+            (void *)(&zGame::Options_FindOption),
+            (void *)(&SmokeFindHalfResGfxFlagsOption),
+            findOptionPatch
+        )) {
+        RestoreSmokeFunctionPatch(findOptionPatch);
+        RestoreSmokeFunctionPatch(createSurfacePatch);
+        return 1;
+    }
+
+    zVidHwApiDeviceRecordPartial selectedDevice = {};
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_zVideo_pClipper = 0;
+    g_zVideo_PrimaryHasAttachedBackbuffer = 1;
+    g_zVideo_ActiveRendererPath = 0;
+    g_zVideo_FullscreenOption = 1;
+    g_zVideo_pSelectedHwApiDeviceRecord = &selectedDevice;
+    g_zVideo_hWnd = (HWND)(0x7654);
+    g_smokeCreateSurface3FromDescResults[0] =
+        (IDirectDrawSurface3 *)(&displaySurface);
+    g_smokeCreateSurface3FromDescResults[1] =
+        (IDirectDrawSurface3 *)(&primarySurface);
+    g_smokeCreateSurface3FromDescResults[2] =
+        (IDirectDrawSurface3 *)(&swSurface);
+    g_smokeDirectDraw2CreateClipperValue =
+        (IDirectDrawClipper *)(&clipper);
+    g_smokeDirectDrawSurface3PixelFormat.dwRBitMask = 0xf800;
+    g_smokeDirectDrawSurface3PixelFormat.dwGBitMask = 0x07e0;
+    g_smokeDirectDrawSurface3PixelFormat.dwBBitMask = 0x001f;
+
+    const int result = zVideo_dd::CreateFullscreenSoftwareSurfaces();
+
+    const int ok =
+        result == 0 &&
+        g_smokeHalfResOptionName != 0 &&
+        std::strcmp(g_smokeHalfResOptionName, "GfxFlags_SW") == 0 &&
+        g_smokeCreateSurface3FromDescCalls == 3 &&
+        g_smokeCreateSurface3FromDescDirectDraws[0] ==
+            (IDirectDraw2 *)(&directDraw) &&
+        g_smokeCreateSurface3FromDescOuts[0] ==
+            &g_zVideo_DisplayModeSurfaceState.surf &&
+        g_smokeCreateSurface3FromDescDescs[0].dwSize ==
+            sizeof(DDSURFACEDESC) &&
+        g_smokeCreateSurface3FromDescDescs[0].dwFlags == 1 &&
+        g_smokeCreateSurface3FromDescDescs[0].ddsCaps.dwCaps == 0x0a00 &&
+        g_smokeCreateSurface3FromDescOuts[1] ==
+            &g_zVideo_PrimarySurfaceState.surf &&
+        g_smokeCreateSurface3FromDescDescs[1].dwFlags == 7 &&
+        g_smokeCreateSurface3FromDescDescs[1].ddsCaps.dwCaps == 0x0840 &&
+        g_smokeCreateSurface3FromDescDescs[1].dwWidth == 640 &&
+        g_smokeCreateSurface3FromDescDescs[1].dwHeight == 480 &&
+        g_smokeCreateSurface3FromDescOuts[2] ==
+            &g_zVideo_SwSurfaceState.surf &&
+        g_smokeCreateSurface3FromDescDescs[2].dwFlags == 7 &&
+        g_smokeCreateSurface3FromDescDescs[2].ddsCaps.dwCaps == 0x0840 &&
+        g_smokeCreateSurface3FromDescDescs[2].dwWidth == 640 &&
+        g_smokeCreateSurface3FromDescDescs[2].dwHeight == 480 &&
+        g_smokeDirectDrawSurface3LockCalls == 1 &&
+        g_smokeDirectDrawSurface3LastLockFlags == DDLOCK_WAIT &&
+        g_smokeDirectDrawSurface3UnlockCalls == 1 &&
+        g_smokeDirectDrawSurface3ReleaseCalls == 0 &&
+        g_smokeDirectDrawSurface3GetPixelFormatCalls == 1 &&
+        g_smokeDirectDrawSurface3LastPixelFormatSurface ==
+            (IDirectDrawSurface3 *)(&displaySurface) &&
+        g_smokeDirectDraw2CreateClipperCalls == 1 &&
+        g_smokeDirectDraw2LastCreateClipperFlags == 0 &&
+        g_smokeDirectDraw2LastCreateClipperOuter == 0 &&
+        g_zVideo_pClipper == (IDirectDrawClipper *)(&clipper) &&
+        g_smokeDirectDrawClipperSetHWndCalls == 1 &&
+        g_smokeDirectDrawClipperLastSetHWndFlags == 0 &&
+        g_smokeDirectDrawClipperLastSetHWndValue == (HWND)(0x7654) &&
+        g_smokeDirectDrawSurface3SetClipperCalls == 1 &&
+        g_smokeDirectDrawSurface3LastSetClipperSelf ==
+            (IDirectDrawSurface3 *)(&displaySurface) &&
+        g_smokeDirectDrawSurface3LastSetClipperValue ==
+            (IDirectDrawClipper *)(&clipper) &&
+        g_zVideo_DisplayModeSurfaceState.surf ==
+            (IDirectDrawSurface3 *)(&displaySurface) &&
+        g_zVideo_PrimarySurfaceState.surf ==
+            (IDirectDrawSurface3 *)(&primarySurface) &&
+        g_zVideo_SwSurfaceState.surf == (IDirectDrawSurface3 *)(&swSurface) &&
+        g_zVideo_DisplayModeSurfaceState.width == 640 &&
+        g_zVideo_DisplayModeSurfaceState.height == 480 &&
+        g_zVideo_DisplayModeSurfaceState.locked == 0 &&
+        g_zVideo_PrimaryHasAttachedBackbuffer == 0 &&
+        g_zVideo_PixelPack.rBits == 5 &&
+        g_zVideo_PixelPack.gBits == 6 &&
+        g_zVideo_PixelPack.bBits == 5 &&
+        g_zVideo_PixelPack.rMask == 0xf800 &&
+        g_zVideo_PixelPack.gMask == 0x07e0 &&
+        g_zVideo_PixelPack.bMask == 0x001f;
+
+    g_zVideo_DisplayModeSurfaceState = savedDisplayState;
+    g_zVideo_PrimarySurfaceState = savedPrimaryState;
+    g_zVideo_SwSurfaceState = savedSwState;
+    g_zVideo_pDirectDraw2 = savedDirectDraw2;
+    g_zVideo_pClipper = savedClipper;
+    g_zVideo_PrimaryHasAttachedBackbuffer = savedPrimaryHasAttachedBackbuffer;
+    g_zVideo_ActiveRendererPath = savedActiveRendererPath;
+    g_zVideo_FullscreenOption = savedFullscreenOption;
+    g_zVideo_pSelectedHwApiDeviceRecord = savedSelectedDevice;
+    g_zVideo_hWnd = savedHwnd;
+    g_zVideo_PixelPack = savedPixelPack;
+    RestoreSmokeFunctionPatch(findOptionPatch);
+    RestoreSmokeFunctionPatch(createSurfacePatch);
+    return ok != 0 ? 0 : 2;
+}
+
+extern "C" int zvideo_dd_create_fullscreen_hw_surfaces_smoke(void) {
+    SmokeDirectDraw2Object directDraw{};
+    SmokeDirectDrawSurface3Object displaySurface{};
+    SmokeDirectDrawSurface3Object primarySurface{};
+    SmokeDirectDrawSurface3Object swSurface{};
+    SmokeDirectDrawClipperObject clipper{};
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeDirectDrawSurface3(displaySurface);
+    InstallSmokeDirectDrawClipper(clipper);
+    primarySurface.vtable = g_smokeDirectDrawSurface3VTable;
+    swSurface.vtable = g_smokeDirectDrawSurface3VTable;
+    ResetHalfResSurfaceBuilderTracking();
+
+    const zVideo_SurfaceStatePartial savedDisplayState =
+        g_zVideo_DisplayModeSurfaceState;
+    const zVideo_SurfaceStatePartial savedPrimaryState =
+        g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial savedSwState = g_zVideo_SwSurfaceState;
+    IDirectDraw2 *const savedDirectDraw2 = g_zVideo_pDirectDraw2;
+    IDirectDrawClipper *const savedClipper = g_zVideo_pClipper;
+    const int savedPrimaryHasAttachedBackbuffer =
+        g_zVideo_PrimaryHasAttachedBackbuffer;
+    zVidHwApiDeviceRecordPartial *const savedSelectedDevice =
+        g_zVideo_pSelectedHwApiDeviceRecord;
+    HWND const savedHwnd = g_zVideo_hWnd;
+    const zVideo_PixelPackParams savedPixelPack = g_zVideo_PixelPack;
+
+    SmokeFunctionPatch createSurfacePatch = {};
+    if (!PatchSmokeFunctionJump(
+            (void *)(&zVideo_dd::CreateSurface3FromDesc),
+            (void *)(&SmokeCreateSurface3FromDesc),
+            createSurfacePatch
+        )) {
+        return 1;
+    }
+
+    zVidHwApiDeviceRecordPartial selectedDevice = {};
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState.width = 800;
+    g_zVideo_DisplayModeSurfaceState.height = 600;
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_zVideo_pClipper = 0;
+    g_zVideo_PrimaryHasAttachedBackbuffer = 0;
+    g_zVideo_pSelectedHwApiDeviceRecord = &selectedDevice;
+    g_zVideo_hWnd = (HWND)(0x789a);
+    g_smokeCreateSurface3FromDescResults[0] =
+        (IDirectDrawSurface3 *)(&displaySurface);
+    g_smokeCreateSurface3FromDescResults[1] =
+        (IDirectDrawSurface3 *)(&primarySurface);
+    g_smokeDirectDrawSurface3AttachedSurfaceValue =
+        (IDirectDrawSurface3 *)(&swSurface);
+    g_smokeDirectDraw2CreateClipperValue =
+        (IDirectDrawClipper *)(&clipper);
+    g_smokeDirectDrawSurface3PixelFormat.dwRBitMask = 0xf800;
+    g_smokeDirectDrawSurface3PixelFormat.dwGBitMask = 0x07e0;
+    g_smokeDirectDrawSurface3PixelFormat.dwBBitMask = 0x001f;
+
+    const int result = zVideo_dd::CreateFullscreenHardwareSurfaces();
+
+    const int ok =
+        result == 0 &&
+        g_smokeCreateSurface3FromDescCalls == 2 &&
+        g_smokeCreateSurface3FromDescDirectDraws[0] ==
+            (IDirectDraw2 *)(&directDraw) &&
+        g_smokeCreateSurface3FromDescOuts[0] ==
+            &g_zVideo_DisplayModeSurfaceState.surf &&
+        g_smokeCreateSurface3FromDescDescs[0].dwSize ==
+            sizeof(DDSURFACEDESC) &&
+        g_smokeCreateSurface3FromDescDescs[0].dwBackBufferCount == 1 &&
+        g_smokeCreateSurface3FromDescDescs[0].dwFlags == 0x21 &&
+        g_smokeCreateSurface3FromDescDescs[0].ddsCaps.dwCaps == 0x2218 &&
+        g_smokeDirectDrawSurface3GetAttachedSurfaceCalls == 1 &&
+        g_smokeDirectDrawSurface3LastAttachedSurfaceSelf ==
+            (IDirectDrawSurface3 *)(&displaySurface) &&
+        g_smokeDirectDrawSurface3LastAttachedSurfaceCaps.dwCaps ==
+            DDSCAPS_BACKBUFFER &&
+        g_smokeDirectDrawSurface3LastAttachedSurfaceOut ==
+            &g_zVideo_SwSurfaceState.surf &&
+        g_smokeCreateSurface3FromDescDirectDraws[1] ==
+            (IDirectDraw2 *)(&directDraw) &&
+        g_smokeCreateSurface3FromDescOuts[1] ==
+            &g_zVideo_PrimarySurfaceState.surf &&
+        g_smokeCreateSurface3FromDescDescs[1].dwFlags == 7 &&
+        g_smokeCreateSurface3FromDescDescs[1].ddsCaps.dwCaps == 0x0840 &&
+        g_smokeCreateSurface3FromDescDescs[1].dwWidth == 800 &&
+        g_smokeCreateSurface3FromDescDescs[1].dwHeight == 600 &&
+        g_smokeDirectDrawSurface3GetPixelFormatCalls == 1 &&
+        g_smokeDirectDrawSurface3LastPixelFormatSurface ==
+            (IDirectDrawSurface3 *)(&displaySurface) &&
+        g_smokeDirectDraw2CreateClipperCalls == 1 &&
+        g_smokeDirectDraw2LastCreateClipperFlags == 0 &&
+        g_smokeDirectDraw2LastCreateClipperOuter == 0 &&
+        g_zVideo_pClipper == (IDirectDrawClipper *)(&clipper) &&
+        g_smokeDirectDrawClipperSetHWndCalls == 1 &&
+        g_smokeDirectDrawClipperLastSetHWndFlags == 0 &&
+        g_smokeDirectDrawClipperLastSetHWndValue == (HWND)(0x789a) &&
+        g_smokeDirectDrawSurface3SetClipperCalls == 1 &&
+        g_smokeDirectDrawSurface3LastSetClipperSelf ==
+            (IDirectDrawSurface3 *)(&displaySurface) &&
+        g_smokeDirectDrawSurface3LastSetClipperValue ==
+            (IDirectDrawClipper *)(&clipper) &&
+        g_zVideo_DisplayModeSurfaceState.surf ==
+            (IDirectDrawSurface3 *)(&displaySurface) &&
+        g_zVideo_PrimarySurfaceState.surf ==
+            (IDirectDrawSurface3 *)(&primarySurface) &&
+        g_zVideo_SwSurfaceState.surf == (IDirectDrawSurface3 *)(&swSurface) &&
+        g_zVideo_DisplayModeSurfaceState.width == 800 &&
+        g_zVideo_DisplayModeSurfaceState.height == 600 &&
+        g_zVideo_PrimaryHasAttachedBackbuffer == 1 &&
+        g_zVideo_PixelPack.rBits == 5 &&
+        g_zVideo_PixelPack.gBits == 6 &&
+        g_zVideo_PixelPack.bBits == 5 &&
+        g_zVideo_PixelPack.rMask == 0xf800 &&
+        g_zVideo_PixelPack.gMask == 0x07e0 &&
+        g_zVideo_PixelPack.bMask == 0x001f;
+
+    g_zVideo_DisplayModeSurfaceState = savedDisplayState;
+    g_zVideo_PrimarySurfaceState = savedPrimaryState;
+    g_zVideo_SwSurfaceState = savedSwState;
+    g_zVideo_pDirectDraw2 = savedDirectDraw2;
+    g_zVideo_pClipper = savedClipper;
+    g_zVideo_PrimaryHasAttachedBackbuffer = savedPrimaryHasAttachedBackbuffer;
+    g_zVideo_pSelectedHwApiDeviceRecord = savedSelectedDevice;
+    g_zVideo_hWnd = savedHwnd;
+    g_zVideo_PixelPack = savedPixelPack;
+    RestoreSmokeFunctionPatch(createSurfacePatch);
+    return ok != 0 ? 0 : 2;
+}
+
+int g_smokeCreateFullscreenHalfResCalls;
+int g_smokeCreateFullscreenSoftwareCalls;
+int g_smokeCreateFullscreenHardwareCalls;
+
+int SmokeCreateFullscreenHalfResSurfaces() {
+    ++g_smokeCreateFullscreenHalfResCalls;
+    return 11;
+}
+
+int SmokeCreateFullscreenSoftwareSurfaces() {
+    ++g_smokeCreateFullscreenSoftwareCalls;
+    return 22;
+}
+
+int SmokeCreateFullscreenHardwareSurfaces() {
+    ++g_smokeCreateFullscreenHardwareCalls;
+    return 33;
+}
+
+extern "C" int zvideo_dd_create_fullscreen_surfaces_for_renderer_smoke(void) {
+    SmokeFunctionPatch halfResPatch = {};
+    SmokeFunctionPatch softwarePatch = {};
+    SmokeFunctionPatch hardwarePatch = {};
+    if (!PatchSmokeFunctionJump(
+            (void *)(&zVideo_dd::CreateHalfResBackbufferSurfaces),
+            (void *)(&SmokeCreateFullscreenHalfResSurfaces),
+            halfResPatch
+        ) ||
+        !PatchSmokeFunctionJump(
+            (void *)(&zVideo_dd::CreateFullscreenSoftwareSurfaces),
+            (void *)(&SmokeCreateFullscreenSoftwareSurfaces),
+            softwarePatch
+        ) ||
+        !PatchSmokeFunctionJump(
+            (void *)(&zVideo_dd::CreateFullscreenHardwareSurfaces),
+            (void *)(&SmokeCreateFullscreenHardwareSurfaces),
+            hardwarePatch
+        )) {
+        RestoreSmokeFunctionPatch(hardwarePatch);
+        RestoreSmokeFunctionPatch(softwarePatch);
+        RestoreSmokeFunctionPatch(halfResPatch);
+        return 1;
+    }
+
+    const int savedUseHalfRes = g_zVideo_UseHalfResBackbuffer;
+    const int savedRendererType = g_zVideo_RendererType;
+    g_smokeCreateFullscreenHalfResCalls = 0;
+    g_smokeCreateFullscreenSoftwareCalls = 0;
+    g_smokeCreateFullscreenHardwareCalls = 0;
+
+    g_zVideo_UseHalfResBackbuffer = 1;
+    g_zVideo_RendererType = 1;
+    const int halfResResult = zVideo_dd::CreateFullscreenSurfacesForRenderer();
+
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_RendererType = 1;
+    const int hardwareResult = zVideo_dd::CreateFullscreenSurfacesForRenderer();
+
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_RendererType = 0;
+    const int softwareResult = zVideo_dd::CreateFullscreenSurfacesForRenderer();
+
+    const int ok =
+        halfResResult == 11 &&
+        hardwareResult == 33 &&
+        softwareResult == 22 &&
+        g_smokeCreateFullscreenHalfResCalls == 1 &&
+        g_smokeCreateFullscreenHardwareCalls == 1 &&
+        g_smokeCreateFullscreenSoftwareCalls == 1;
+
+    g_zVideo_UseHalfResBackbuffer = savedUseHalfRes;
+    g_zVideo_RendererType = savedRendererType;
+    RestoreSmokeFunctionPatch(hardwarePatch);
+    RestoreSmokeFunctionPatch(softwarePatch);
+    RestoreSmokeFunctionPatch(halfResPatch);
+    return ok != 0 ? 0 : 2;
+}
+
+extern "C" int zvideo_image_lazy_create_backing_surface_guards_smoke(void) {
+    zVidImagePartial image = {};
+    image.width = 8;
+    image.height = 4;
+    image.pixels = (void *)(0x12345678);
+    image.alphaMap = (char *)(0x1234);
+
+    if (zVideo_dd::Image_LazyCreateBackingSurface(&image, 0) != 0) {
+        return 1;
+    }
+
+    image.alphaMap = 0;
+    image.pixels = 0;
+    if (zVideo_dd::Image_LazyCreateBackingSurface(&image, 0) != 0) {
+        return 2;
+    }
+
+    image.pixels = (void *)(0x12345678);
+    image.width = 0;
+    if (zVideo_dd::Image_LazyCreateBackingSurface(&image, 0) != 0) {
+        return 3;
+    }
+
+    image.width = 8;
+    image.height = 0;
+    return zVideo_dd::Image_LazyCreateBackingSurface(&image, 0) == 0 ? 0 : 4;
+}
+
+extern "C" int zvideo_dd_image_populate_surface_from_heap_pixels_smoke(void) {
+    SmokeDirectDrawSurface3Object surface = {};
+    unsigned char lockedPixels[24];
+    std::memset(lockedPixels, 0xcc, sizeof(lockedPixels));
+
+    unsigned char *sourcePixels = (unsigned char *)std::malloc(12);
+    if (sourcePixels == 0) {
+        return 1;
+    }
+    for (int i = 0; i < 12; ++i) {
+        sourcePixels[i] = (unsigned char)(i + 1);
+    }
+
+    InstallSmokeDirectDrawSurface3(surface);
+    g_smokeDirectDrawSurface3LockPixelsValue = lockedPixels;
+    g_smokeDirectDrawSurface3LockPitchValue = 10;
+
+    zVidImagePartial image = {};
+    image.width = 3;
+    image.height = 2;
+    image.pixels = sourcePixels;
+    image.surface = (IDirectDrawSurface3 *)(&surface);
+
+    const int successResult = zVideo_dd::Image_PopulateSurfaceFromHeapPixels(&image);
+    const int successOk =
+        successResult == 1 &&
+        g_smokeDirectDrawSurface3LockCalls == 1 &&
+        g_smokeDirectDrawSurface3LastLockRect == 0 &&
+        g_smokeDirectDrawSurface3LastLockFlags == DDLOCK_WAIT &&
+        g_smokeDirectDrawSurface3LastLockEvent == 0 &&
+        g_smokeDirectDrawSurface3LockDescSize == sizeof(DDSURFACEDESC) &&
+        g_smokeDirectDrawSurface3UnlockCalls == 1 &&
+        g_smokeDirectDrawSurface3LastUnlockArg == g_smokeDirectDrawSurface3LastLockDesc &&
+        image.pixels == lockedPixels &&
+        image.pitchWords == 5 &&
+        lockedPixels[0] == 1 &&
+        lockedPixels[1] == 2 &&
+        lockedPixels[2] == 3 &&
+        lockedPixels[3] == 4 &&
+        lockedPixels[4] == 5 &&
+        lockedPixels[5] == 6 &&
+        lockedPixels[6] == 0xcc &&
+        lockedPixels[7] == 0xcc &&
+        lockedPixels[8] == 0xcc &&
+        lockedPixels[9] == 0xcc &&
+        lockedPixels[10] == 7 &&
+        lockedPixels[11] == 8 &&
+        lockedPixels[12] == 9 &&
+        lockedPixels[13] == 10 &&
+        lockedPixels[14] == 11 &&
+        lockedPixels[15] == 12;
+
+    unsigned char retryPixels[12];
+    std::memset(retryPixels, 0xdd, sizeof(retryPixels));
+    sourcePixels = (unsigned char *)std::malloc(4);
+    if (sourcePixels == 0) {
+        return 2;
+    }
+    sourcePixels[0] = 0x31;
+    sourcePixels[1] = 0x32;
+    sourcePixels[2] = 0x33;
+    sourcePixels[3] = 0x34;
+
+    InstallSmokeDirectDrawSurface3(surface);
+    g_smokeDirectDrawSurface3LockResults[0] = DDERR_SURFACELOST;
+    g_smokeDirectDrawSurface3LockResults[1] = DD_OK;
+    g_smokeDirectDrawSurface3LockResultCount = 2;
+    g_smokeDirectDrawSurface3LockPixelsValue = retryPixels;
+    g_smokeDirectDrawSurface3LockPitchValue = 6;
+    image = {};
+    image.width = 2;
+    image.height = 1;
+    image.pixels = sourcePixels;
+    image.surface = (IDirectDrawSurface3 *)(&surface);
+
+    const int retryResult = zVideo_dd::Image_PopulateSurfaceFromHeapPixels(&image);
+    const int retryOk =
+        retryResult == 1 &&
+        g_smokeDirectDrawSurface3LockCalls == 2 &&
+        g_smokeDirectDrawSurface3RestoreCalls == 1 &&
+        g_smokeDirectDrawSurface3UnlockCalls == 1 &&
+        image.pixels == retryPixels &&
+        image.pitchWords == 3 &&
+        retryPixels[0] == 0x31 &&
+        retryPixels[1] == 0x32 &&
+        retryPixels[2] == 0x33 &&
+        retryPixels[3] == 0x34;
+
+    sourcePixels = (unsigned char *)std::malloc(4);
+    if (sourcePixels == 0) {
+        return 3;
+    }
+    InstallSmokeDirectDrawSurface3(surface);
+    g_smokeDirectDrawSurface3LockResults[0] = DDERR_GENERIC;
+    g_smokeDirectDrawSurface3LockResults[1] = DDERR_GENERIC;
+    g_smokeDirectDrawSurface3LockResultCount = 2;
+    image = {};
+    image.width = 2;
+    image.height = 1;
+    image.pixels = sourcePixels;
+    image.surface = (IDirectDrawSurface3 *)(&surface);
+    const int lockFailureResult = zVideo_dd::Image_PopulateSurfaceFromHeapPixels(&image);
+    const int lockFailureOk =
+        lockFailureResult == 0 &&
+        g_smokeDirectDrawSurface3LockCalls == 1 &&
+        g_smokeDirectDrawSurface3RestoreCalls == 0 &&
+        g_smokeDirectDrawSurface3UnlockCalls == 0 &&
+        image.pixels == sourcePixels;
+    std::free(sourcePixels);
+
+    return successOk && retryOk && lockFailureOk ? 0 : 4;
+}
+
+extern "C" int zvideo_dd_image_lazy_create_backing_surface_smoke(void) {
+    SmokeDirectDraw2Object directDraw = {};
+    SmokeDirectDrawSurfaceObject baseSurface = {};
+    SmokeDirectDrawSurface3Object surface3 = {};
+    IDirectDraw2 *const savedDirectDraw2 = g_zVideo_pDirectDraw2;
+
+    unsigned char lockedPixels[24];
+    std::memset(lockedPixels, 0xcc, sizeof(lockedPixels));
+    unsigned char *sourcePixels = (unsigned char *)std::malloc(12);
+    if (sourcePixels == 0) {
+        return 1;
+    }
+    for (int i = 0; i < 12; ++i) {
+        sourcePixels[i] = (unsigned char)(0x41 + i);
+    }
+
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeDirectDrawSurface(baseSurface);
+    InstallSmokeDirectDrawSurface3(surface3);
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_smokeDirectDraw2CreateSurfaceValue = (IDirectDrawSurface *)(&baseSurface);
+    g_smokeDirectDrawSurfaceQueryInterfaceValue = &surface3;
+    g_smokeDirectDrawSurface3LockPixelsValue = lockedPixels;
+    g_smokeDirectDrawSurface3LockPitchValue = 8;
+
+    zVidImagePartial image = {};
+    image.width = 3;
+    image.height = 2;
+    image.pixels = sourcePixels;
+    const DWORD requestedCaps = DDSCAPS_SYSTEMMEMORY;
+    IDirectDrawSurface3 *const result =
+        zVideo_dd::Image_LazyCreateBackingSurface(&image, requestedCaps);
+    const int successOk =
+        result == (IDirectDrawSurface3 *)(&surface3) &&
+        image.surface == (IDirectDrawSurface3 *)(&surface3) &&
+        image.pixels == lockedPixels &&
+        image.pitchWords == 4 &&
+        g_smokeDirectDraw2CreateSurfaceCalls == 1 &&
+        g_smokeDirectDraw2LastCreateSurfaceOut != 0 &&
+        g_smokeDirectDraw2LastCreateSurfaceOuter == 0 &&
+        g_smokeDirectDraw2CreateSurfaceDescs[0].dwSize == sizeof(DDSURFACEDESC) &&
+        g_smokeDirectDraw2CreateSurfaceDescs[0].dwFlags == 0x10007 &&
+        g_smokeDirectDraw2CreateSurfaceDescs[0].dwWidth == 3 &&
+        g_smokeDirectDraw2CreateSurfaceDescs[0].dwHeight == 2 &&
+        g_smokeDirectDraw2CreateSurfaceDescs[0].ddsCaps.dwCaps ==
+            (requestedCaps | DDSCAPS_OFFSCREENPLAIN) &&
+        g_smokeDirectDrawSurfaceQueryInterfaceCalls == 1 &&
+        IsEqualGUID(
+            *g_smokeDirectDrawSurfaceLastQueryInterfaceIid,
+            IID_IDirectDrawSurface3
+        ) &&
+        g_smokeDirectDrawSurfaceLastQueryInterfaceOut != 0 &&
+        g_smokeDirectDrawSurfaceReleaseCalls == 0 &&
+        g_smokeDirectDrawSurface3LockCalls == 1 &&
+        g_smokeDirectDrawSurface3UnlockCalls == 1 &&
+        lockedPixels[0] == 0x41 &&
+        lockedPixels[1] == 0x42 &&
+        lockedPixels[2] == 0x43 &&
+        lockedPixels[3] == 0x44 &&
+        lockedPixels[4] == 0x45 &&
+        lockedPixels[5] == 0x46 &&
+        lockedPixels[6] == 0xcc &&
+        lockedPixels[7] == 0xcc &&
+        lockedPixels[8] == 0x47 &&
+        lockedPixels[9] == 0x48 &&
+        lockedPixels[10] == 0x49 &&
+        lockedPixels[11] == 0x4a &&
+        lockedPixels[12] == 0x4b &&
+        lockedPixels[13] == 0x4c;
+
+    sourcePixels = (unsigned char *)std::malloc(4);
+    if (sourcePixels == 0) {
+        g_zVideo_pDirectDraw2 = savedDirectDraw2;
+        return 2;
+    }
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeDirectDrawSurface(baseSurface);
+    InstallSmokeDirectDrawSurface3(surface3);
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_smokeDirectDraw2CreateSurfaceValue = (IDirectDrawSurface *)(&baseSurface);
+    g_smokeDirectDraw2CreateSurfaceResult = DDERR_GENERIC;
+    image = {};
+    image.width = 2;
+    image.height = 1;
+    image.pixels = sourcePixels;
+    const int createFailureOk =
+        zVideo_dd::Image_LazyCreateBackingSurface(&image, 0) == 0 &&
+        image.surface == 0 &&
+        image.pixels == sourcePixels &&
+        g_smokeDirectDraw2CreateSurfaceCalls == 1 &&
+        g_smokeDirectDrawSurfaceQueryInterfaceCalls == 0 &&
+        g_smokeDirectDrawSurface3LockCalls == 0;
+    std::free(sourcePixels);
+
+    sourcePixels = (unsigned char *)std::malloc(4);
+    if (sourcePixels == 0) {
+        g_zVideo_pDirectDraw2 = savedDirectDraw2;
+        return 3;
+    }
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeDirectDrawSurface(baseSurface);
+    InstallSmokeDirectDrawSurface3(surface3);
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_smokeDirectDraw2CreateSurfaceValue = (IDirectDrawSurface *)(&baseSurface);
+    g_smokeDirectDrawSurfaceQueryInterfaceResult = DDERR_GENERIC;
+    image = {};
+    image.width = 2;
+    image.height = 1;
+    image.pixels = sourcePixels;
+    const int queryFailureOk =
+        zVideo_dd::Image_LazyCreateBackingSurface(&image, 0) == 0 &&
+        image.surface == 0 &&
+        image.pixels == sourcePixels &&
+        g_smokeDirectDraw2CreateSurfaceCalls == 1 &&
+        g_smokeDirectDrawSurfaceQueryInterfaceCalls == 1 &&
+        g_smokeDirectDrawSurface3LockCalls == 0;
+    std::free(sourcePixels);
+
+    g_zVideo_pDirectDraw2 = savedDirectDraw2;
+    return successOk && createFailureOk && queryFailureOk ? 0 : 4;
+}
+
+extern "C" int zvideo_dd_image_lazy_create_video_memory_surface_smoke(void) {
+    SmokeDirectDraw2Object directDraw = {};
+    SmokeDirectDrawSurfaceObject baseSurface = {};
+    SmokeDirectDrawSurface3Object surface3 = {};
+    zVidHwApiDeviceRecordPartial selectedDevice = {};
+    IDirectDraw2 *const savedDirectDraw2 = g_zVideo_pDirectDraw2;
+    zVidHwApiDeviceRecordPartial *const savedSelectedDevice =
+        g_zVideo_pSelectedHwApiDeviceRecord;
+    const int savedUseHalfRes = g_zVideo_UseHalfResBackbuffer;
+
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeDirectDrawSurface(baseSurface);
+    InstallSmokeDirectDrawSurface3(surface3);
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_smokeDirectDraw2CreateSurfaceValue = (IDirectDrawSurface *)(&baseSurface);
+    g_smokeDirectDrawSurfaceQueryInterfaceValue = &surface3;
+    g_zVideo_pSelectedHwApiDeviceRecord = &selectedDevice;
+    selectedDevice.m_deviceFeatureFlags = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+
+    zVidImagePartial image = {};
+    image.width = 2;
+    image.height = 1;
+    image.surface = (IDirectDrawSurface3 *)(0x1234);
+    image.pixels = std::malloc(4);
+    if (image.pixels == 0) {
+        return 1;
+    }
+    const int skipOk =
+        zVideo_dd::Image_LazyCreateVideoMemorySurface(&image) == 0 &&
+        g_smokeDirectDraw2CreateSurfaceCalls == 0 &&
+        image.surface == (IDirectDrawSurface3 *)(0x1234);
+    std::free(image.pixels);
+
+    unsigned char halfResPixels[8];
+    std::memset(halfResPixels, 0xcc, sizeof(halfResPixels));
+    unsigned char *sourcePixels = (unsigned char *)std::malloc(4);
+    if (sourcePixels == 0) {
+        g_zVideo_pDirectDraw2 = savedDirectDraw2;
+        g_zVideo_pSelectedHwApiDeviceRecord = savedSelectedDevice;
+        g_zVideo_UseHalfResBackbuffer = savedUseHalfRes;
+        return 2;
+    }
+    sourcePixels[0] = 0x11;
+    sourcePixels[1] = 0x12;
+    sourcePixels[2] = 0x13;
+    sourcePixels[3] = 0x14;
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeDirectDrawSurface(baseSurface);
+    InstallSmokeDirectDrawSurface3(surface3);
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_smokeDirectDraw2CreateSurfaceValue = (IDirectDrawSurface *)(&baseSurface);
+    g_smokeDirectDrawSurfaceQueryInterfaceValue = &surface3;
+    g_zVideo_pSelectedHwApiDeviceRecord = &selectedDevice;
+    selectedDevice.m_deviceFeatureFlags = 0;
+    g_zVideo_UseHalfResBackbuffer = 1;
+    g_smokeDirectDrawSurface3LockPixelsValue = halfResPixels;
+    g_smokeDirectDrawSurface3LockPitchValue = 4;
+    image = {};
+    image.width = 2;
+    image.height = 1;
+    image.pixels = sourcePixels;
+    IDirectDrawSurface3 *const halfResResult =
+        zVideo_dd::Image_LazyCreateVideoMemorySurface(&image);
+    const int halfResCapsOk =
+        halfResResult == (IDirectDrawSurface3 *)(&surface3) &&
+        g_smokeDirectDraw2CreateSurfaceCalls == 1 &&
+        g_smokeDirectDraw2CreateSurfaceDescs[0].ddsCaps.dwCaps ==
+            (DDSCAPS_VIDEOMEMORY | DDSCAPS_OFFSCREENPLAIN) &&
+        image.surface == (IDirectDrawSurface3 *)(&surface3) &&
+        image.pixels == halfResPixels &&
+        image.pitchWords == 2 &&
+        halfResPixels[0] == 0x11 &&
+        halfResPixels[1] == 0x12 &&
+        halfResPixels[2] == 0x13 &&
+        halfResPixels[3] == 0x14;
+
+    unsigned char featurePixels[8];
+    std::memset(featurePixels, 0xdd, sizeof(featurePixels));
+    sourcePixels = (unsigned char *)std::malloc(4);
+    if (sourcePixels == 0) {
+        g_zVideo_pDirectDraw2 = savedDirectDraw2;
+        g_zVideo_pSelectedHwApiDeviceRecord = savedSelectedDevice;
+        g_zVideo_UseHalfResBackbuffer = savedUseHalfRes;
+        return 3;
+    }
+    sourcePixels[0] = 0x21;
+    sourcePixels[1] = 0x22;
+    sourcePixels[2] = 0x23;
+    sourcePixels[3] = 0x24;
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeDirectDrawSurface(baseSurface);
+    InstallSmokeDirectDrawSurface3(surface3);
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_smokeDirectDraw2CreateSurfaceValue = (IDirectDrawSurface *)(&baseSurface);
+    g_smokeDirectDrawSurfaceQueryInterfaceValue = &surface3;
+    g_zVideo_pSelectedHwApiDeviceRecord = &selectedDevice;
+    selectedDevice.m_deviceFeatureFlags = 0x1357;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_smokeDirectDrawSurface3LockPixelsValue = featurePixels;
+    g_smokeDirectDrawSurface3LockPitchValue = 4;
+    image = {};
+    image.width = 2;
+    image.height = 1;
+    image.pixels = sourcePixels;
+    IDirectDrawSurface3 *const featureResult =
+        zVideo_dd::Image_LazyCreateVideoMemorySurface(&image);
+    const int featureCapsOk =
+        featureResult == (IDirectDrawSurface3 *)(&surface3) &&
+        g_smokeDirectDraw2CreateSurfaceCalls == 1 &&
+        g_smokeDirectDraw2CreateSurfaceDescs[0].ddsCaps.dwCaps ==
+            (DDSCAPS_NONLOCALVIDMEM | DDSCAPS_VIDEOMEMORY |
+             DDSCAPS_OFFSCREENPLAIN) &&
+        image.surface == (IDirectDrawSurface3 *)(&surface3) &&
+        image.pixels == featurePixels &&
+        image.pitchWords == 2 &&
+        featurePixels[0] == 0x21 &&
+        featurePixels[1] == 0x22 &&
+        featurePixels[2] == 0x23 &&
+        featurePixels[3] == 0x24;
+
+    g_zVideo_pDirectDraw2 = savedDirectDraw2;
+    g_zVideo_pSelectedHwApiDeviceRecord = savedSelectedDevice;
+    g_zVideo_UseHalfResBackbuffer = savedUseHalfRes;
+    return skipOk && halfResCapsOk && featureCapsOk ? 0 : 4;
+}
+
+extern "C" int zvideo_dd_image_upload_pixels_to_surface_smoke(void) {
+    const int savedRendererType = g_zVideo_RendererType;
+    IDirectDraw2 *const savedDirectDraw2 = g_zVideo_pDirectDraw2;
+    zVidHwApiDeviceRecordPartial *const savedSelectedDevice =
+        g_zVideo_pSelectedHwApiDeviceRecord;
+    zVidHwApiDeviceRecordPartial selectedDevice = {};
+
+    SmokeDirectDrawSurface3Object surface = {};
+    InstallSmokeDirectDrawSurface3(surface);
+    zVidImagePartial image = {};
+    HDC hdc = (HDC)(0x1111);
+    image.surface = (IDirectDrawSurface3 *)(&surface);
+    g_zVideo_RendererType = 2;
+    const int rendererSkipOk =
+        zVideo_dd::Image_UploadPixelsToSurface(&image, &hdc) == 0 &&
+        g_smokeDirectDrawSurface3GetDCCalls == 0 &&
+        hdc == (HDC)(0x1111);
+
+    InstallSmokeDirectDrawSurface3(surface);
+    hdc = 0;
+    image = {};
+    image.surface = (IDirectDrawSurface3 *)(&surface);
+    g_zVideo_RendererType = 0;
+    const int existingSurfaceOk =
+        zVideo_dd::Image_UploadPixelsToSurface(&image, &hdc) == 1 &&
+        g_smokeDirectDrawSurface3GetDCCalls == 1 &&
+        g_smokeDirectDrawSurface3LastGetDCSurface == image.surface &&
+        g_smokeDirectDrawSurface3LastGetDCOut == &hdc &&
+        hdc == g_smokeDirectDrawSurface3GetDCValue;
+
+    InstallSmokeDirectDrawSurface3(surface);
+    g_smokeDirectDrawSurface3GetDCResult = DDERR_GENERIC;
+    hdc = 0;
+    image = {};
+    image.surface = (IDirectDrawSurface3 *)(&surface);
+    const int getDcFailureOk =
+        zVideo_dd::Image_UploadPixelsToSurface(&image, &hdc) == 0 &&
+        g_smokeDirectDrawSurface3GetDCCalls == 1 &&
+        g_smokeDirectDrawSurface3LastGetDCOut == &hdc &&
+        hdc == 0;
+
+    SmokeDirectDraw2Object directDraw = {};
+    SmokeDirectDrawSurfaceObject baseSurface = {};
+    SmokeDirectDrawSurface3Object surface3 = {};
+    unsigned char systemPixels[8];
+    std::memset(systemPixels, 0xcc, sizeof(systemPixels));
+    unsigned char *sourcePixels = (unsigned char *)std::malloc(4);
+    if (sourcePixels == 0) {
+        g_zVideo_RendererType = savedRendererType;
+        g_zVideo_pDirectDraw2 = savedDirectDraw2;
+        g_zVideo_pSelectedHwApiDeviceRecord = savedSelectedDevice;
+        return 1;
+    }
+    sourcePixels[0] = 0x31;
+    sourcePixels[1] = 0x32;
+    sourcePixels[2] = 0x33;
+    sourcePixels[3] = 0x34;
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeDirectDrawSurface(baseSurface);
+    InstallSmokeDirectDrawSurface3(surface3);
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_smokeDirectDraw2CreateSurfaceValue = (IDirectDrawSurface *)(&baseSurface);
+    g_smokeDirectDrawSurfaceQueryInterfaceValue = &surface3;
+    g_zVideo_pSelectedHwApiDeviceRecord = &selectedDevice;
+    selectedDevice.m_deviceFeatureFlags = 0;
+    g_smokeDirectDrawSurface3LockPixelsValue = systemPixels;
+    g_smokeDirectDrawSurface3LockPitchValue = 4;
+    hdc = 0;
+    image = {};
+    image.width = 2;
+    image.height = 1;
+    image.pixels = sourcePixels;
+    const int lazySystemOk =
+        zVideo_dd::Image_UploadPixelsToSurface(&image, &hdc) == 1 &&
+        g_smokeDirectDraw2CreateSurfaceCalls == 1 &&
+        g_smokeDirectDraw2CreateSurfaceDescs[0].ddsCaps.dwCaps ==
+            (DDSCAPS_SYSTEMMEMORY | DDSCAPS_OFFSCREENPLAIN) &&
+        g_smokeDirectDrawSurface3LockCalls == 1 &&
+        g_smokeDirectDrawSurface3UnlockCalls == 1 &&
+        g_smokeDirectDrawSurface3GetDCCalls == 1 &&
+        image.surface == (IDirectDrawSurface3 *)(&surface3) &&
+        image.pixels == systemPixels &&
+        image.pitchWords == 2 &&
+        hdc == g_smokeDirectDrawSurface3GetDCValue &&
+        systemPixels[0] == 0x31 &&
+        systemPixels[1] == 0x32 &&
+        systemPixels[2] == 0x33 &&
+        systemPixels[3] == 0x34;
+
+    unsigned char featurePixels[8];
+    std::memset(featurePixels, 0xdd, sizeof(featurePixels));
+    sourcePixels = (unsigned char *)std::malloc(4);
+    if (sourcePixels == 0) {
+        g_zVideo_RendererType = savedRendererType;
+        g_zVideo_pDirectDraw2 = savedDirectDraw2;
+        g_zVideo_pSelectedHwApiDeviceRecord = savedSelectedDevice;
+        return 2;
+    }
+    sourcePixels[0] = 0x41;
+    sourcePixels[1] = 0x42;
+    sourcePixels[2] = 0x43;
+    sourcePixels[3] = 0x44;
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeDirectDrawSurface(baseSurface);
+    InstallSmokeDirectDrawSurface3(surface3);
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_smokeDirectDraw2CreateSurfaceValue = (IDirectDrawSurface *)(&baseSurface);
+    g_smokeDirectDrawSurfaceQueryInterfaceValue = &surface3;
+    g_zVideo_pSelectedHwApiDeviceRecord = &selectedDevice;
+    selectedDevice.m_deviceFeatureFlags = 0x2468;
+    g_smokeDirectDrawSurface3LockPixelsValue = featurePixels;
+    g_smokeDirectDrawSurface3LockPitchValue = 4;
+    hdc = 0;
+    image = {};
+    image.width = 2;
+    image.height = 1;
+    image.pixels = sourcePixels;
+    const int lazyFeatureOk =
+        zVideo_dd::Image_UploadPixelsToSurface(&image, &hdc) == 1 &&
+        g_smokeDirectDraw2CreateSurfaceCalls == 1 &&
+        g_smokeDirectDraw2CreateSurfaceDescs[0].ddsCaps.dwCaps ==
+            (DDSCAPS_NONLOCALVIDMEM | DDSCAPS_VIDEOMEMORY |
+             DDSCAPS_OFFSCREENPLAIN) &&
+        g_smokeDirectDrawSurface3GetDCCalls == 1 &&
+        image.surface == (IDirectDrawSurface3 *)(&surface3) &&
+        image.pixels == featurePixels &&
+        image.pitchWords == 2 &&
+        hdc == g_smokeDirectDrawSurface3GetDCValue &&
+        featurePixels[0] == 0x41 &&
+        featurePixels[1] == 0x42 &&
+        featurePixels[2] == 0x43 &&
+        featurePixels[3] == 0x44;
+
+    sourcePixels = (unsigned char *)std::malloc(4);
+    if (sourcePixels == 0) {
+        g_zVideo_RendererType = savedRendererType;
+        g_zVideo_pDirectDraw2 = savedDirectDraw2;
+        g_zVideo_pSelectedHwApiDeviceRecord = savedSelectedDevice;
+        return 3;
+    }
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeDirectDrawSurface(baseSurface);
+    InstallSmokeDirectDrawSurface3(surface3);
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_smokeDirectDraw2CreateSurfaceValue = (IDirectDrawSurface *)(&baseSurface);
+    g_smokeDirectDrawSurfaceQueryInterfaceValue = &surface3;
+    g_zVideo_pSelectedHwApiDeviceRecord = &selectedDevice;
+    selectedDevice.m_deviceFeatureFlags = 0;
+    hdc = 0;
+    image = {};
+    image.alphaMap = (char *)(0x1234);
+    image.width = 2;
+    image.height = 1;
+    image.pixels = sourcePixels;
+    const int lazyFailureOk =
+        zVideo_dd::Image_UploadPixelsToSurface(&image, &hdc) == 0 &&
+        g_smokeDirectDraw2CreateSurfaceCalls == 0 &&
+        g_smokeDirectDrawSurface3GetDCCalls == 0 &&
+        image.surface == 0 &&
+        image.pixels == sourcePixels;
+    std::free(sourcePixels);
+
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_pDirectDraw2 = savedDirectDraw2;
+    g_zVideo_pSelectedHwApiDeviceRecord = savedSelectedDevice;
+    return rendererSkipOk && existingSurfaceOk && getDcFailureOk && lazySystemOk &&
+                   lazyFeatureOk && lazyFailureOk
+               ? 0
+               : 4;
+}
+
+extern "C" int zvideo_dd_image_release_surface_smoke(void) {
+    zVidImagePartial image = {};
+    SmokeDirectDrawSurface3Object surface = {};
+    InstallSmokeDirectDrawSurface3(surface);
+
+    HDC hdc = (HDC)(0x2468);
+    const int nullSurfaceOk =
+        zVideo_dd::Image_ReleaseSurface(&image, hdc) == 0 &&
+        g_smokeDirectDrawSurface3ReleaseDCCalls == 0;
+
+    InstallSmokeDirectDrawSurface3(surface);
+    hdc = (HDC)(0x1357);
+    image.surface = (IDirectDrawSurface3 *)(&surface);
+    const int successOk =
+        zVideo_dd::Image_ReleaseSurface(&image, hdc) == 1 &&
+        g_smokeDirectDrawSurface3ReleaseDCCalls == 1 &&
+        g_smokeDirectDrawSurface3LastReleaseDCSurface == image.surface &&
+        g_smokeDirectDrawSurface3LastReleaseDCHdc == hdc;
+
+    InstallSmokeDirectDrawSurface3(surface);
+    g_smokeDirectDrawSurface3ReleaseDCResult = DDERR_GENERIC;
+    hdc = (HDC)(0x9753);
+    image.surface = (IDirectDrawSurface3 *)(&surface);
+    const int failureOk =
+        zVideo_dd::Image_ReleaseSurface(&image, hdc) == 0 &&
+        g_smokeDirectDrawSurface3ReleaseDCCalls == 1 &&
+        g_smokeDirectDrawSurface3LastReleaseDCSurface == image.surface &&
+        g_smokeDirectDrawSurface3LastReleaseDCHdc == hdc;
+
+    return nullSurfaceOk && successOk && failureOk ? 0 : 1;
+}
+
+extern "C" int zvideo_image_surface_helpers_guard_smoke(void) {
+    const int savedVideoInitialized = g_zVideo_IsInitialized;
+    const int savedUseHalfRes = g_zVideo_UseHalfResBackbuffer;
+    const int savedRendererType = g_zVideo_RendererType;
+    zVidHwApiDeviceRecordPartial *const savedSelectedDevice =
+        g_zVideo_pSelectedHwApiDeviceRecord;
+    zVidHwApiDeviceRecordPartial selectedDevice = {};
+
+    g_zVideo_pSelectedHwApiDeviceRecord = &selectedDevice;
+    g_zVideo_UseHalfResBackbuffer = 0;
+
+    zVidImagePartial image = {};
+    if (zVideo_dd::Image_LazyCreateVideoMemorySurface(&image) != 0) {
+        return 1;
+    }
+
+    image.surface = (IDirectDrawSurface3 *)(0x1234);
+    image.pixels = (void *)(0x5678);
+    g_zVideo_IsInitialized = 0;
+    zVideo_dd::Image_EnsureSurfaceForCurrentDevice(&image);
+    if (image.surface != 0 || image.pixels != 0) {
+        g_zVideo_IsInitialized = savedVideoInitialized;
+        g_zVideo_UseHalfResBackbuffer = savedUseHalfRes;
+        g_zVideo_RendererType = savedRendererType;
+        g_zVideo_pSelectedHwApiDeviceRecord = savedSelectedDevice;
+        return 2;
+    }
+
+    SmokeDirectDrawSurface3Object surface = {};
+    InstallSmokeDirectDrawSurface3(surface);
+    image.surface = (IDirectDrawSurface3 *)(&surface);
+    image.pixels = (void *)(0x5678);
+    g_zVideo_IsInitialized = 1;
+    zVideo_dd::Image_EnsureSurfaceForCurrentDevice(&image);
+    if (g_smokeDirectDrawSurface3ReleaseCalls != 1 || image.surface != 0 ||
+        image.pixels != 0) {
+        g_zVideo_IsInitialized = savedVideoInitialized;
+        g_zVideo_UseHalfResBackbuffer = savedUseHalfRes;
+        g_zVideo_RendererType = savedRendererType;
+        g_zVideo_pSelectedHwApiDeviceRecord = savedSelectedDevice;
+        return 3;
+    }
+
+    HDC hdc = 0;
+    g_zVideo_RendererType = 2;
+    if (zVideo_dd::Image_UploadPixelsToSurface(&image, &hdc) != 0) {
+        g_zVideo_IsInitialized = savedVideoInitialized;
+        g_zVideo_UseHalfResBackbuffer = savedUseHalfRes;
+        g_zVideo_RendererType = savedRendererType;
+        g_zVideo_pSelectedHwApiDeviceRecord = savedSelectedDevice;
+        return 4;
+    }
+
+    const int result = zVideo_dd::Image_ReleaseSurface(&image, hdc) == 0 ? 0 : 5;
+    g_zVideo_IsInitialized = savedVideoInitialized;
+    g_zVideo_UseHalfResBackbuffer = savedUseHalfRes;
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_pSelectedHwApiDeviceRecord = savedSelectedDevice;
+    return result;
+}
+
+extern "C" int zvideo_set_renderer_type_smoke(void) {
+    const int savedRendererType = g_zVideo_RendererType;
+    const int savedActiveRendererPath = g_zVideo_ActiveRendererPath;
+
+    g_zVideo_RendererType = 2;
+    g_zVideo_ActiveRendererPath = 0;
+    const int previous = zVideo::SetRendererTypeAndActivePath(1);
+    const int ok =
+        previous == 2 &&
+        g_zVideo_RendererType == 1 &&
+        g_zVideo_ActiveRendererPath == 1;
+
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_ActiveRendererPath = savedActiveRendererPath;
+    return ok != 0 ? 0 : 1;
+}
+
+extern "C" int zvid_option_accessors_smoke(void) {
+    int mode = 6;
+    int acceleration = 1;
+    int hwApi = 2;
+    int *const savedVideoMode = ZOPT_VIDEO_MODE;
+    int *const savedAcceleration = ZOPT_VIDEO_ACCELERATION;
+    int *const savedHwApi = ZOPT_HW_API;
+    const int savedHwMode = g_zOpt_HwMode;
+    const int savedAcceptedDeviceCount = g_zVideo_NumAcceptedDirectDrawDevices;
+
+    ZOPT_VIDEO_MODE = &mode;
+    ZOPT_VIDEO_ACCELERATION = &acceleration;
+    ZOPT_HW_API = &hwApi;
+
+    int result = 0;
+    if (zVid::GetVideoModeIndexFromOptions() != 6 ||
+        zVid::GetAccelerationOption() != 1 ||
+        zVid::GetHwApiOption() != 2) {
+        result = 1;
+    } else {
+        mode = 3;
+        zVid::SetAccelerationOption(0);
+        zVid::SetHwApiOption(1);
+        g_zVideo_NumAcceptedDirectDrawDevices = 3;
+        if (zVid::GetVideoModeIndexFromOptions() != 3 ||
+            zVid::GetAccelerationOption() != 0 ||
+            zVid::GetAcceptedDirectDrawDeviceCount() != 3 ||
+            g_zOpt_HwMode != 0 ||
+            hwApi != 1) {
+            result = 2;
+        }
+    }
+
+    ZOPT_VIDEO_MODE = savedVideoMode;
+    ZOPT_VIDEO_ACCELERATION = savedAcceleration;
+    ZOPT_HW_API = savedHwApi;
+    g_zOpt_HwMode = savedHwMode;
+    g_zVideo_NumAcceptedDirectDrawDevices = savedAcceptedDeviceCount;
+    return result;
+}
+
+extern "C" int zopt_fullscreen_accessors_smoke(void) {
+    int fullscreen = 0;
+    int hudSw = 1;
+    int hudHw = 0;
+    int hudTypeSw = 0;
+    int hudTypeHw = 0;
+    int gameControl = 0;
+    int difficulty = 0;
+    int effectsSw = 0;
+    int effectsHw = 0;
+    int objectLodSw = 0;
+    int objectLodHw = 0;
+    int muteSound = 0;
+    float soundVolume = 0.0f;
+    float globalVolume = 0.0f;
+    int soundLod = 0;
+    int textureMemorySw = 0;
+    int textureMemoryHw = 0;
+    int gfxFlagsSw = 0;
+    int gfxFlagsHw = 0;
+    char playerNameBuffer[8] = {0};
+    zOptionEntryPartial playerNameOption = {0};
+    int *const savedFullscreen = ZOPT_VIDEO_FULLSCREEN;
+    int *const savedHudSw = ZOPT_HUD_SW;
+    int *const savedHudHw = ZOPT_HUD_HW;
+    int *const savedHudTypeSw = ZOPT_HUD_TYPE_SW;
+    int *const savedHudTypeHw = ZOPT_HUD_TYPE_HW;
+    int *const savedGameControl = ZOPT_GAME_CONTROL_OPTIONS;
+    int *const savedDifficulty = g_zOpt_GameDifficultyOption;
+    int *const savedEffectsSw = ZOPT_EFFECTS_LEVEL_SW;
+    int *const savedEffectsHw = ZOPT_EFFECTS_LEVEL_HW;
+    int *const savedObjectLodSw = ZOPT_OBJECT_LOD_SW;
+    int *const savedObjectLodHw = ZOPT_OBJECT_LOD_HW;
+    int *const savedMuteSound = ZOPT_MUTE_SOUND;
+    float *const savedSoundVolume = ZOPT_SOUND_VOLUME;
+    void *const savedGlobalVolume = g_zSnd_GlobalVolumeScalePtr;
+    int *const savedSoundLod = ZOPT_SOUND_LOD;
+    int *const savedTextureMemorySw = ZOPT_TEXTURE_MEMORY_SW;
+    int *const savedTextureMemoryHw = ZOPT_TEXTURE_MEMORY_HW;
+    int *const savedGfxFlagsSw = ZOPT_GFX_FLAGS_SW;
+    int *const savedGfxFlagsHw = ZOPT_GFX_FLAGS_HW;
+    zOptionEntryPartial *const savedPlayerName = ZOPT_PLAYER_NAME;
+    const int savedHwMode = g_zOpt_HwMode;
+    const int savedConditionalEffectLevel = g_zEffect_ConditionalEffectLevel;
+
+    ZOPT_VIDEO_FULLSCREEN = &fullscreen;
+    ZOPT_HUD_SW = &hudSw;
+    ZOPT_HUD_HW = &hudHw;
+    ZOPT_HUD_TYPE_SW = &hudTypeSw;
+    ZOPT_HUD_TYPE_HW = &hudTypeHw;
+    ZOPT_GAME_CONTROL_OPTIONS = &gameControl;
+    g_zOpt_GameDifficultyOption = &difficulty;
+    ZOPT_EFFECTS_LEVEL_SW = &effectsSw;
+    ZOPT_EFFECTS_LEVEL_HW = &effectsHw;
+    ZOPT_OBJECT_LOD_SW = &objectLodSw;
+    ZOPT_OBJECT_LOD_HW = &objectLodHw;
+    ZOPT_MUTE_SOUND = &muteSound;
+    ZOPT_SOUND_VOLUME = &soundVolume;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolume;
+    ZOPT_SOUND_LOD = &soundLod;
+    ZOPT_TEXTURE_MEMORY_SW = &textureMemorySw;
+    ZOPT_TEXTURE_MEMORY_HW = &textureMemoryHw;
+    ZOPT_GFX_FLAGS_SW = &gfxFlagsSw;
+    ZOPT_GFX_FLAGS_HW = &gfxFlagsHw;
+    playerNameOption.payloadOrBuffer = (int)(playerNameBuffer);
+    playerNameOption.dataSize = sizeof(playerNameBuffer);
+    ZOPT_PLAYER_NAME = &playerNameOption;
+
+    int result = 0;
+    zOpt::SetFullscreenOption(1);
+    if (fullscreen != 1 || zOpt::GetFullscreenOption() != 1) {
+        result = 1;
+    }
+
+    zOpt::SetFullscreenOption(0);
+    if (result == 0 && (fullscreen != 0 || zOpt::GetFullscreenOption() != 0)) {
+        result = 2;
+    }
+
+    g_zOpt_HwMode = 0;
+    zOpt::SetHudVisibilityOption(0);
+    if (result == 0 &&
+        (hudSw != 0 || hudHw != 0 || zOpt::GetHudVisibilityOption() != 0)) {
+        result = 3;
+    }
+
+    g_zOpt_HwMode = 1;
+    zOpt::SetHudVisibilityOption(1);
+    if (result == 0 &&
+        (hudSw != 0 || hudHw != 1 || zOpt::GetHudVisibilityOption() != 1)) {
+        result = 4;
+    }
+
+    g_zOpt_HwMode = 0;
+    hudTypeSw = 2;
+    if (result == 0 && zOpt::GetHudTypeForCurrentHwMode() != 2) {
+        result = 41;
+    }
+
+    g_zOpt_HwMode = 1;
+    hudTypeHw = 3;
+    if (result == 0 && zOpt::GetHudTypeForCurrentHwMode() != 3) {
+        result = 42;
+    }
+
+    zOpt::SetGameControlOptions(0);
+    zOpt::SetThrottleMode(1);
+    zOpt::SetSteeringMode(1);
+    zOpt::SetCursorMode(1);
+    if (result == 0 &&
+        (gameControl != 7 ||
+         zOpt::GetThrottleMode() != 1 ||
+         zOpt::GetSteeringMode() != 1 ||
+         zOpt::GetCursorMode() != 1 ||
+         zOpt::GetCameraModePlayerState() != 3)) {
+        result = 5;
+    }
+
+    zOpt::SetThrottleMode(0);
+    zOpt::SetSteeringMode(0);
+    zOpt::SetCursorMode(0);
+    gameControl |= 8;
+    if (result == 0 &&
+        (gameControl != 8 ||
+         zOpt::GetThrottleMode() != 0 ||
+         zOpt::GetSteeringMode() != 0 ||
+         zOpt::GetCursorMode() != 0 ||
+         zOpt::GetCameraModePlayerState() != 1)) {
+        result = 6;
+    }
+
+    zOpt::SetGameDifficultyMode(2);
+    if (result == 0 && (difficulty != 2 || zOpt::GetGameDifficultyMode() != 2)) {
+        result = 7;
+    }
+
+    g_zOpt_HwMode = 0;
+    zOpt::SetEffectsLevelForCurrentHwMode(0);
+    if (result == 0 &&
+        (effectsSw != 0 ||
+         effectsHw != 0 ||
+         g_zEffect_ConditionalEffectLevel != 2 ||
+         zOpt::GetEffectsLevelForCurrentHwMode() != 0)) {
+        result = 8;
+    }
+
+    g_zOpt_HwMode = 1;
+    zOpt::SetEffectsLevelForCurrentHwMode(2);
+    if (result == 0 &&
+        (effectsHw != 2 ||
+         g_zEffect_ConditionalEffectLevel != 0 ||
+         zOpt::GetEffectsLevelForCurrentHwMode() != 2)) {
+        result = 9;
+    }
+
+    g_zOpt_HwMode = 0;
+    zOpt::SetObjectLODForCurrentHwMode(1);
+    if (result == 0 &&
+        (objectLodSw != 1 ||
+         objectLodHw != 0 ||
+         zOpt::GetObjectLODForCurrentHwMode() != 1)) {
+        result = 10;
+    }
+
+    g_zOpt_HwMode = 1;
+    zOpt::SetObjectLODForCurrentHwMode(2);
+    if (result == 0 &&
+        (objectLodHw != 2 || zOpt::GetObjectLODForCurrentHwMode() != 2)) {
+        result = 11;
+    }
+
+    zOpt::SetMuteSoundOption(1);
+    if (result == 0 && zOpt::GetMuteSoundOption() != 1) {
+        result = 12;
+    }
+
+    zOpt::SetSoundVolumeOption(0.625f);
+    if (result == 0 &&
+        (soundVolume != 0.625f ||
+         globalVolume != 0.625f ||
+         zOpt::GetSoundVolumeOption() != 0.625f)) {
+        result = 13;
+    }
+
+    zOpt::SetSoundLODOption(3);
+    if (result == 0 && (soundLod != 3 || zOpt::GetSoundLODOption() != 3)) {
+        result = 14;
+    }
+
+    g_zOpt_HwMode = 0;
+    zOpt::SetTextureMemoryForCurrentHwMode(16);
+    if (result == 0 &&
+        (textureMemorySw != 16 || zOpt::GetTextureMemoryForCurrentHwMode() != 16)) {
+        result = 15;
+    }
+
+    g_zOpt_HwMode = 1;
+    zOpt::SetTextureMemoryForCurrentHwMode(32);
+    if (result == 0 &&
+        (textureMemoryHw != 32 || zOpt::GetTextureMemoryForCurrentHwMode() != 32)) {
+        result = 16;
+    }
+
+    g_zOpt_HwMode = 0;
+    zOpt::SetGraphicsFlagsForCurrentHwMode(0x11);
+    if (result == 0 && zOpt::GetGraphicsFlagsForCurrentHwMode() != 0x11) {
+        result = 17;
+    }
+
+    g_zOpt_HwMode = 1;
+    zOpt::SetGraphicsFlagsForCurrentHwMode(0x22);
+    if (result == 0 && zOpt::GetGraphicsFlagsForCurrentHwMode() != 0x22) {
+        result = 18;
+    }
+
+    zOpt::SetPlayerName("Pilot");
+    if (result == 0 &&
+        (strcmp(playerNameBuffer, "Pilot") != 0 ||
+         zOpt_GetPlayerName() != playerNameBuffer)) {
+        result = 19;
+    }
+
+    zOpt::SetPlayerName("LongPlayerName");
+    if (result == 0 && strcmp(playerNameBuffer, "LongPla") != 0) {
+        result = 20;
+    }
+
+    ZOPT_VIDEO_FULLSCREEN = savedFullscreen;
+    ZOPT_HUD_SW = savedHudSw;
+    ZOPT_HUD_HW = savedHudHw;
+    ZOPT_HUD_TYPE_SW = savedHudTypeSw;
+    ZOPT_HUD_TYPE_HW = savedHudTypeHw;
+    ZOPT_GAME_CONTROL_OPTIONS = savedGameControl;
+    g_zOpt_GameDifficultyOption = savedDifficulty;
+    ZOPT_EFFECTS_LEVEL_SW = savedEffectsSw;
+    ZOPT_EFFECTS_LEVEL_HW = savedEffectsHw;
+    ZOPT_OBJECT_LOD_SW = savedObjectLodSw;
+    ZOPT_OBJECT_LOD_HW = savedObjectLodHw;
+    ZOPT_MUTE_SOUND = savedMuteSound;
+    ZOPT_SOUND_VOLUME = savedSoundVolume;
+    g_zSnd_GlobalVolumeScalePtr = savedGlobalVolume;
+    ZOPT_SOUND_LOD = savedSoundLod;
+    ZOPT_TEXTURE_MEMORY_SW = savedTextureMemorySw;
+    ZOPT_TEXTURE_MEMORY_HW = savedTextureMemoryHw;
+    ZOPT_GFX_FLAGS_SW = savedGfxFlagsSw;
+    ZOPT_GFX_FLAGS_HW = savedGfxFlagsHw;
+    ZOPT_PLAYER_NAME = savedPlayerName;
+    g_zOpt_HwMode = savedHwMode;
+    g_zEffect_ConditionalEffectLevel = savedConditionalEffectLevel;
+    return result;
+}
+
+extern "C" int zopt_view_rect_target_side_effects_smoke(void) {
+    zOpt_ViewRectSection **const savedRenderSection = g_zOpt_RenderSectionOption;
+    zOpt_ViewRectSection **const savedDisplaySection = g_zOpt_DisplaySectionOption;
+    zOpt_CameraSection **const savedCameraSection = g_zOpt_CameraSectionOption;
+    int *const savedObjectLodSw = ZOPT_OBJECT_LOD_SW;
+    int *const savedObjectLodHw = ZOPT_OBJECT_LOD_HW;
+    const int savedHwMode = g_zOpt_HwMode;
+
+    zOpt_ViewRectSection render = {};
+    zOpt_ViewRectSection display = {};
+    zOpt_CameraSection cameraSection = {};
+    zClass_WindowDataPartial windowData = {};
+    zClass_DisplayDataPartial displayData = {};
+    zClass_CameraDataPartial cameraData = {};
+    zClass_NodePartial windowNode = {};
+    zClass_NodePartial displayNode = {};
+    zClass_NodePartial cameraNode = {};
+    windowNode.classId = 3;
+    windowNode.classData = &windowData;
+    displayNode.classId = 4;
+    displayNode.classData = &displayData;
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+    render.target = &windowNode;
+    display.target = &displayNode;
+    zOpt_ViewRectSection *renderPtr = &render;
+    zOpt_ViewRectSection *displayPtr = &display;
+    zOpt_CameraSection *cameraSectionPtr = &cameraSection;
+    g_zOpt_RenderSectionOption = &renderPtr;
+    g_zOpt_DisplaySectionOption = &displayPtr;
+    g_zOpt_CameraSectionOption = &cameraSectionPtr;
+
+    int result = 0;
+    render.x = 5;
+    render.y = 6;
+    render.width = 320;
+    render.height = 240;
+    render.target = nullptr;
+    zOpt::RenderSection_SetTargetWindow(&windowNode);
+    if (zOpt::GetRenderSection() != &render || windowData.resolutionWidth != 320 ||
+        windowData.resolutionHeight != 240 || windowData.viewportWidth != 5 ||
+        windowData.viewportHeight != 6) {
+        result = 3;
+    }
+
+    display.x = 7;
+    display.y = 8;
+    display.width = 400;
+    display.height = 300;
+    display.target = nullptr;
+    zOpt::DisplaySection_SetTargetDisplay(&displayNode);
+    if (result == 0 &&
+        (displayData.width != 400 || displayData.height != 300 || displayData.x != 7 ||
+         displayData.y != 8)) {
+        result = 4;
+    }
+
+    zOpt::RenderSection_SetSize(640, 480);
+    zOpt::RenderSection_SetPosition(10, 20);
+    if (result == 0 &&
+        (windowData.resolutionWidth != 640 || windowData.resolutionHeight != 480 ||
+         windowData.viewportWidth != 10 || windowData.viewportHeight != 20)) {
+        result = 1;
+    }
+
+    zOpt::DisplaySection_SetSize(800, 600);
+    zOpt::DisplaySection_SetPosition(30, 40);
+    if (result == 0 &&
+        (displayData.width != 800 || displayData.height != 600 ||
+         displayData.x != 30 || displayData.y != 40)) {
+        result = 2;
+    }
+
+    int objectLodSw = 2;
+    int objectLodHw = 1;
+    ZOPT_OBJECT_LOD_SW = &objectLodSw;
+    ZOPT_OBJECT_LOD_HW = &objectLodHw;
+    g_zOpt_HwMode = 0;
+    render.width = 800;
+    render.height = 400;
+    cameraData.viewportWidth = 400.0f;
+    cameraData.viewportHeight = 200.0f;
+    cameraData.frustumWidth = 0.25f;
+    cameraData.frustumHeight = 0.5f;
+    zOpt::CameraSection_SetActiveCamera(&cameraNode);
+    if (result == 0 &&
+        (cameraSection.m_pCamera != &cameraNode ||
+         zOpt_CameraSection_GetActiveCamera() != &cameraNode ||
+         cameraData.frustumWidth != 1.0f ||
+         cameraData.frustumHeight != 0.5f ||
+         cameraData.fovX != 1.0f / 400.0f ||
+         cameraData.fovY != 0.5f / 200.0f ||
+         cameraData.clipDistance != 0.5f)) {
+        result = 5;
+    }
+
+    zOpt::CameraSection_SetActiveCamera(nullptr);
+    if (result == 0 &&
+        (cameraSection.m_pCamera != nullptr ||
+         zOpt_CameraSection_GetActiveCamera() != nullptr)) {
+        result = 6;
+    }
+
+    g_zOpt_RenderSectionOption = savedRenderSection;
+    g_zOpt_DisplaySectionOption = savedDisplaySection;
+    g_zOpt_CameraSectionOption = savedCameraSection;
+    ZOPT_OBJECT_LOD_SW = savedObjectLodSw;
+    ZOPT_OBJECT_LOD_HW = savedObjectLodHw;
+    g_zOpt_HwMode = savedHwMode;
+    return result;
+}
+
+extern "C" int zopt_section_accessor_smoke(void) {
+    int *const savedVideoStride = ZOPT_VIDEO_STRIDE;
+    int *const savedReplicate = ZOPT_REPLICATE;
+    zOpt_ViewRectSection **const savedDisplaySection = g_zOpt_DisplaySectionOption;
+    zOpt_ViewRectSection **const savedWindowSection = g_zOpt_WindowSectionOption;
+
+    int videoStride = 2048;
+    zOpt_ViewRectSection display = {};
+    zOpt_ViewRectSection window = {};
+    display.width = 800;
+    display.height = 600;
+    display.bitsPerPixel = 16;
+    window.height = 480;
+    int replicate = 1;
+    zOpt_ViewRectSection *displayPtr = &display;
+    zOpt_ViewRectSection *windowPtr = &window;
+    ZOPT_VIDEO_STRIDE = &videoStride;
+    ZOPT_REPLICATE = &replicate;
+    g_zOpt_DisplaySectionOption = &displayPtr;
+    g_zOpt_WindowSectionOption = &windowPtr;
+
+    zOpt_ViewRectSection clamp = {};
+    clamp.x = 10;
+    clamp.y = 20;
+    clamp.maxXInclusive = 30;
+    clamp.maxYInclusive = 40;
+
+    float belowPoint[2] = {5.0f, 15.0f};
+    zOpt::ViewRectSection_ClampPointToInclusiveBounds(&clamp, belowPoint);
+    const bool belowClamped = belowPoint[0] == 10.0f && belowPoint[1] == 20.0f;
+
+    float insidePoint[2] = {11.5f, 25.25f};
+    zOpt::ViewRectSection_ClampPointToInclusiveBounds(&clamp, insidePoint);
+    const bool insideKept = insidePoint[0] == 11.5f && insidePoint[1] == 25.25f;
+
+    float abovePoint[2] = {31.0f, 45.0f};
+    zOpt::ViewRectSection_ClampPointToInclusiveBounds(&clamp, abovePoint);
+    const bool aboveClamped = abovePoint[0] == 30.0f && abovePoint[1] == 40.0f;
+
+    float nanPoint[2] = {
+        std::numeric_limits<float>::quiet_NaN(),
+        std::numeric_limits<float>::quiet_NaN()
+    };
+    zOpt::ViewRectSection_ClampPointToInclusiveBounds(&clamp, nanPoint);
+    const bool nanClampedToMax = nanPoint[0] == 30.0f && nanPoint[1] == 40.0f;
+
+    const bool ok =
+        zOpt::GetDisplaySection() == &display &&
+        zOpt_DisplaySection_GetWidth() == 800 &&
+        zOpt_DisplaySection_GetHeight() == 600 &&
+        zOpt::GetDisplaySectionBitsPerPixel() == 16 &&
+        zOpt::GetVideoStrideValue() == 2048 &&
+        zOpt::GetReplicateMode() == 1 &&
+        zOpt::GetWindowSection() == &window &&
+        zOpt::GetWindowSectionHeight() == 480 &&
+        belowClamped &&
+        insideKept &&
+        aboveClamped &&
+        nanClampedToMax;
+
+    ZOPT_VIDEO_STRIDE = savedVideoStride;
+    ZOPT_REPLICATE = savedReplicate;
+    g_zOpt_DisplaySectionOption = savedDisplaySection;
+    g_zOpt_WindowSectionOption = savedWindowSection;
+    return ok ? 0 : 1;
+}
+
+extern "C" int zvideo_init_set_surface_geometry_from_mode_index_smoke(void) {
+    const int savedUseHalfRes = g_zVideo_UseHalfResBackbuffer;
+    const int savedResolutionMenuValid = gVideo_resolutionMenuValid;
+    const int savedDisplayModeBpp = g_zVideo_DisplayModeBpp;
+    const zVideo_SurfaceStatePartial savedDisplayState =
+        g_zVideo_DisplayModeSurfaceState;
+    const zVideo_SurfaceStatePartial savedPrimaryState =
+        g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial savedSwState = g_zVideo_SwSurfaceState;
+
+    int failCode = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_DisplayModeBpp = 0;
+    gVideo_resolutionMenuValid = 1;
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_SwSurfaceState = {};
+    zVideo::Init_SetSurfaceGeometryFromModeIndex(2);
+    if (g_zVideo_UseHalfResBackbuffer != 1 ||
+        g_zVideo_DisplayModeSurfaceState.width != 640 ||
+        g_zVideo_DisplayModeSurfaceState.height != 400 ||
+        g_zVideo_PrimarySurfaceState.width != 640 ||
+        g_zVideo_PrimarySurfaceState.height != 400 ||
+        g_zVideo_SwSurfaceState.width != 320 ||
+        g_zVideo_SwSurfaceState.height != 200 ||
+        g_zVideo_DisplayModeBpp != 16 ||
+        gVideo_resolutionMenuValid != 1) {
+        failCode = 1;
+    }
+
+    if (failCode == 0) {
+        zVideo::Init_SetSurfaceGeometryFromModeIndex(7);
+        if (g_zVideo_UseHalfResBackbuffer != 0 ||
+            g_zVideo_DisplayModeSurfaceState.width != 1024 ||
+            g_zVideo_DisplayModeSurfaceState.height != 768 ||
+            g_zVideo_PrimarySurfaceState.width != 1024 ||
+            g_zVideo_PrimarySurfaceState.height != 768 ||
+            g_zVideo_SwSurfaceState.width != 1024 ||
+            g_zVideo_SwSurfaceState.height != 768 ||
+            g_zVideo_DisplayModeBpp != 16) {
+            failCode = 2;
+        }
+    }
+
+    if (failCode == 0) {
+        gVideo_resolutionMenuValid = 1;
+        zVideo::Init_SetSurfaceGeometryFromModeIndex(1);
+        if (gVideo_resolutionMenuValid != 0) {
+            failCode = 3;
+        }
+    }
+
+    g_zVideo_UseHalfResBackbuffer = savedUseHalfRes;
+    gVideo_resolutionMenuValid = savedResolutionMenuValid;
+    g_zVideo_DisplayModeBpp = savedDisplayModeBpp;
+    g_zVideo_DisplayModeSurfaceState = savedDisplayState;
+    g_zVideo_PrimarySurfaceState = savedPrimaryState;
+    g_zVideo_SwSurfaceState = savedSwState;
+    return failCode;
+}
+
+namespace {
+int g_smokeZVideoSetVideoModeCalls;
+int g_smokeZVideoSetVideoModeResult = 0x1234;
+int g_smokeZVideoShutdownCalls;
+
+int __fastcall SmokeZVideoSetVideoModeFake(int) {
+    ++g_smokeZVideoSetVideoModeCalls;
+    return g_smokeZVideoSetVideoModeResult;
+}
+
+void SmokeZVideoShutdownFake() {
+    ++g_smokeZVideoShutdownCalls;
+}
+} // namespace
+
+extern "C" int zvideo_mode_geometry_and_set_video_mode_smoke(void) {
+    const zVideo_StatusProc savedSetVideoMode = g_zVideo_pfnSetVideoMode;
+    const int savedInitialized = g_zVideo_IsInitialized;
+
+    int result = zvideo_init_set_surface_geometry_from_mode_index_smoke();
+    if (result != 0) {
+        return result;
+    }
+
+    g_smokeZVideoSetVideoModeCalls = 0;
+    g_zVideo_pfnSetVideoMode = SmokeZVideoSetVideoModeFake;
+    g_zVideo_IsInitialized = 0;
+    if (zVideo::SetVideoMode(5) != 0x5a560000 ||
+        g_smokeZVideoSetVideoModeCalls != 0) {
+        result = 4;
+    }
+
+    if (result == 0) {
+        g_zVideo_IsInitialized = 1;
+        if (zVideo::SetVideoMode(5) != 0x1234 ||
+            g_smokeZVideoSetVideoModeCalls != 1 ||
+            g_zVideo_DisplayModeSurfaceState.height != 480) {
+            result = 5;
+        }
+    }
+
+    if (result == 0) {
+        if (zVideo::Init_ApplyModeIndex(4) != 0x1234 ||
+            g_smokeZVideoSetVideoModeCalls != 2 ||
+            g_zVideo_DisplayModeSurfaceState.height != 400) {
+            result = 6;
+        }
+    }
+
+    g_zVideo_pfnSetVideoMode = savedSetVideoMode;
+    g_zVideo_IsInitialized = savedInitialized;
+    return result;
+}
+
+extern "C" int zvideo_init_video_system_reentry_guard_smoke(void) {
+    const HWND savedHwnd = g_zVideo_hWnd;
+    const int savedInitialized = g_zVideo_IsInitialized;
+    const int savedFrameTick = g_zVideo_FrameTick;
+
+    g_zVideo_IsInitialized = 1;
+    g_zVideo_FrameTick = 77;
+
+    const int result = zVideo::InitVideoSystem((HWND)(0x1234), 1, 1, 5);
+    const int ok =
+        result == 0x5a560001 &&
+        g_zVideo_FrameTick == 77 &&
+        g_zVideo_hWnd == savedHwnd;
+
+    g_zVideo_hWnd = savedHwnd;
+    g_zVideo_IsInitialized = savedInitialized;
+    g_zVideo_FrameTick = savedFrameTick;
+    return ok != 0 ? 0 : 1;
+}
+
+extern "C" int zvideo_bind_renderer_dispatch_smoke(void) {
+    const int savedRendererType = g_zVideo_RendererType;
+    const int savedActiveRendererPath = g_zVideo_ActiveRendererPath;
+    const int savedFullscreenOption = g_zVideo_FullscreenOption;
+    zVidHwApiDeviceRecordPartial *const savedSelected =
+        g_zVideo_pSelectedHwApiDeviceRecord;
+    const zVideo_StatusProc savedOpen = g_zVideo_pfnOpenVideoMode;
+    const zVideo_StatusProc savedSet = g_zVideo_pfnSetVideoMode;
+    const zVideo_CreateTextureRecordProc savedCreate =
+        g_zVideo_pfnCreateTextureRecord;
+    const zVideo_AdjustSurfacesProc savedAdjust = g_zVideo_pfnAdjustSurfaces;
+    const zVideo_GetHwApiDeviceFeatureFlagsProc savedFeature =
+        g_zVideo_pfnGetHwApiDeviceFeatureFlags;
+    const zVideo_BltRectDirectProc savedBltSw = g_zVideo_pfnBltSwToPrimaryRectDirect;
+    const zVideo_BltRectDirectProc savedBltPrimary =
+        g_zVideo_pfnBltPrimaryToSwRectDirect;
+
+    zVidHwApiDeviceRecordPartial selectedDevice = {};
+    selectedDevice.m_deviceFeatureFlags = 0x1234;
+    g_zVideo_pSelectedHwApiDeviceRecord = &selectedDevice;
+
+    zVideo::BindRendererDispatch(1, 2);
+    int result = 0;
+    if (g_zVideo_RendererType != 1 ||
+        g_zVideo_ActiveRendererPath != 1 ||
+        g_zVideo_FullscreenOption != 2 ||
+        g_zVideo_pfnOpenVideoMode != zVideo_dd::OpenVideoMode ||
+        g_zVideo_pfnSetVideoMode != zVideo_dd::SetVideoMode ||
+        g_zVideo_pfnCreateTextureRecord != zVideo_dd3d::CreateTextureRecord ||
+        g_zVideo_pfnAdjustSurfaces != zVideo_dd3d::PresentDisplayModeSurface ||
+        g_zVideo_pfnGetHwApiDeviceFeatureFlags !=
+            zVideo_dd::GetHwApiDeviceFeatureFlags ||
+        g_zVideo_pfnBltSwToPrimaryRectDirect !=
+            zVideo_dd::BltSwToPrimaryRectDirect ||
+        g_zVideo_pfnBltPrimaryToSwRectDirect !=
+            zVideo_dd::BltPrimaryToSwRectDirect ||
+        selectedDevice.m_deviceFeatureFlags != 0) {
+        result = 1;
+    }
+
+    if (result == 0) {
+        g_zVideo_pSelectedHwApiDeviceRecord = 0;
+        zVideo::BindRendererDispatch(0, 1);
+        if (g_zVideo_RendererType != 0 ||
+            g_zVideo_ActiveRendererPath != 0 ||
+            g_zVideo_FullscreenOption != 1 ||
+            g_zVideo_pfnAdjustSurfaces != zVideo_dd::PresentDisplayModeSurface) {
+            result = 2;
+        }
+    }
+
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_ActiveRendererPath = savedActiveRendererPath;
+    g_zVideo_FullscreenOption = savedFullscreenOption;
+    g_zVideo_pSelectedHwApiDeviceRecord = savedSelected;
+    g_zVideo_pfnOpenVideoMode = savedOpen;
+    g_zVideo_pfnSetVideoMode = savedSet;
+    g_zVideo_pfnCreateTextureRecord = savedCreate;
+    g_zVideo_pfnAdjustSurfaces = savedAdjust;
+    g_zVideo_pfnGetHwApiDeviceFeatureFlags = savedFeature;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = savedBltSw;
+    g_zVideo_pfnBltPrimaryToSwRectDirect = savedBltPrimary;
+    return result;
+}
+
+extern "C" int zvideo_module_init_smoke(void) {
+    const size_t resetBytes =
+        (unsigned char *)(&g_zVideo_OverwriteQueueBase[0x180]) -
+        (unsigned char *)(&g_zVideo_RendererType);
+    unsigned char *const savedResetBlock =
+        (unsigned char *)std::malloc(resetBytes);
+    if (savedResetBlock == 0) {
+        return 99;
+    }
+    std::memcpy(savedResetBlock, &g_zVideo_RendererType, resetBytes);
+
+    const int savedRendererType = g_zVideo_RendererType;
+    const int savedActiveRendererPath = g_zVideo_ActiveRendererPath;
+    const int savedFrameTick = g_zVideo_FrameTick;
+    const int savedResolutionMenuValid = gVideo_resolutionMenuValid;
+    const int savedPaletteBrightness = g_zVideo_PaletteBrightnessLevel;
+    const int savedClearColor = g_zVideo_ClearColorPacked16;
+    const int savedFullscreen = g_zVideo_FullscreenOption;
+    const int savedPendingDither = g_zVideo_PendingDitherEnable;
+    const float savedInverseZTolerance = g_zVideo_InverseZTolerancePending;
+    const int savedD3DAppendFanCloseVertex =
+        g_zVideo_D3DAppendFanCloseVertexPending;
+    zVidHwApiDeviceRecordPartial *const savedSelected =
+        g_zVideo_pSelectedHwApiDeviceRecord;
+    zVidD3DDriverRecordPartial *const savedSelectedD3D =
+        g_zVideo_pSelectedD3DDeviceInfo;
+
+    g_zVideo_RendererType = 7;
+    g_zVideo_ActiveRendererPath = 7;
+    g_zVideo_FrameTick = 9;
+    gVideo_resolutionMenuValid = 1;
+    g_zVideo_PaletteBrightnessLevel = 2;
+    g_zVideo_ClearColorPacked16 = 0xabcd;
+    g_zVideo_pSelectedHwApiDeviceRecord = 0;
+    g_zVideo_pSelectedD3DDeviceInfo = (zVidD3DDriverRecordPartial *)(0x1);
+    g_zVideo_pfnOpenVideoMode = (zVideo_StatusProc)(0x1);
+    g_zVideo_QuadBatchItemsBase[0].vertices[0].specular = 0x11223344;
+    g_zVideo_SortedPolyQueueBase[0].vertexCount = 5;
+    g_zVideo_OverwriteQueueBase[0].type = 6;
+    g_zVideo_OverwriteQueueBase[0x17f].vertexCount = 7;
+    g_zVideo_SortedPolyQueueCount = 8;
+    g_zVideo_OverwriteQueueCount = 9;
+
+    int result = 0;
+    if (zVideo::ModuleInit() != 0) {
+        result = 1;
+    } else if (
+        g_zVideo_RendererType != 0 ||
+        g_zVideo_ActiveRendererPath != 0 ||
+        g_zVideo_FrameTick != 0 ||
+        gVideo_resolutionMenuValid != 0 ||
+        g_zVideo_PaletteBrightnessLevel != 4 ||
+        g_zVideo_ClearColorPacked16 != 0 ||
+        g_zVideo_FullscreenOption != 1 ||
+        g_zVideo_PendingDitherEnable != -1 ||
+        g_zVideo_TexturePixelPack_ABits != 4 ||
+        g_zVideo_TexturePixelPack_RMask != 0xf000 ||
+        g_zVideo_pSelectedHwApiDeviceRecord != &g_zVideo_HwApiDeviceTable[0] ||
+        g_zVideo_pSelectedD3DDeviceInfo != 0) {
+        result = 2;
+    } else if (
+        g_zVideo_pfnOpenVideoMode != zVideo_dd::OpenVideoMode ||
+        g_zVideo_QuadBatchItemsBase[0].vertices[0].specular != 0 ||
+        g_zVideo_SortedPolyQueueBase[0].vertexCount != 0 ||
+        g_zVideo_OverwriteQueueBase[0].type != 0 ||
+        g_zVideo_OverwriteQueueBase[0x17f].vertexCount != 0 ||
+        g_zVideo_SortedPolyQueueCount != 0 ||
+        g_zVideo_OverwriteQueueCount != 0) {
+        result = 3;
+    }
+
+    std::memcpy(&g_zVideo_RendererType, savedResetBlock, resetBytes);
+    std::free(savedResetBlock);
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_ActiveRendererPath = savedActiveRendererPath;
+    g_zVideo_FrameTick = savedFrameTick;
+    gVideo_resolutionMenuValid = savedResolutionMenuValid;
+    g_zVideo_PaletteBrightnessLevel = savedPaletteBrightness;
+    g_zVideo_ClearColorPacked16 = savedClearColor;
+    g_zVideo_FullscreenOption = savedFullscreen;
+    g_zVideo_PendingDitherEnable = savedPendingDither;
+    g_zVideo_InverseZTolerancePending = savedInverseZTolerance;
+    g_zVideo_D3DAppendFanCloseVertexPending = savedD3DAppendFanCloseVertex;
+    g_zVideo_pSelectedHwApiDeviceRecord = savedSelected;
+    g_zVideo_pSelectedD3DDeviceInfo = savedSelectedD3D;
+    return result;
+}
+
+extern "C" int zvideo_return_success_stub_smoke(void) {
+    return zVideo::ReturnSuccessStub();
+}
+
+extern "C" int zvid_cached_client_rect_smoke(void) {
+    const int savedActiveRendererPath = g_zVideo_ActiveRendererPath;
+    const int savedUpdateMask = g_zVid_CachedClientRectUpdateMask;
+    const HWND savedHwnd = g_zVideo_hWnd;
+    const RECT savedRect = g_zVideo_CachedClientRectScreen;
+
+    zVid::SetCachedClientRectUpdateMask(0x55);
+    g_zVideo_ActiveRendererPath = 1;
+    int result = 0;
+    if (zVid_QueryCachedClientRectUpdateMaskIf3dfx() != 0) {
+        result = 1;
+    }
+
+    if (result == 0) {
+        g_zVideo_ActiveRendererPath = 2;
+        if (zVid_QueryCachedClientRectUpdateMaskIf3dfx() != 0x55) {
+            result = 2;
+        }
+    }
+
+    HWND hwnd = 0;
+    RECT client = {};
+    if (result == 0) {
+        hwnd = CreateWindowExA(
+            0,
+            "STATIC",
+            "recoil-video-test",
+            WS_OVERLAPPEDWINDOW,
+            20,
+            30,
+            160,
+            120,
+            0,
+            0,
+            GetModuleHandleA(0),
+            0
+        );
+        if (hwnd == 0) {
+            result = 3;
+        }
+    }
+
+    if (result == 0) {
+        GetClientRect(hwnd, &client);
+        g_zVideo_hWnd = hwnd;
+        g_zVideo_CachedClientRectScreen.left = 100;
+        g_zVideo_CachedClientRectScreen.top = 100;
+        g_zVideo_CachedClientRectScreen.right = 100;
+        g_zVideo_CachedClientRectScreen.bottom = 100;
+
+        if (zVideo::UpdateCachedClientRectScreenCoords() != 0) {
+            result = 4;
+        }
+    }
+
+    if (result == 0) {
+        const LONG cachedWidth =
+            g_zVideo_CachedClientRectScreen.right -
+            g_zVideo_CachedClientRectScreen.left;
+        const LONG cachedHeight =
+            g_zVideo_CachedClientRectScreen.bottom -
+            g_zVideo_CachedClientRectScreen.top;
+
+        g_zVideo_CachedClientRectScreen.left = 7;
+        g_zVideo_CachedClientRectScreen.top = 8;
+        g_zVideo_CachedClientRectScreen.right = 9;
+        g_zVideo_CachedClientRectScreen.bottom = 10;
+        zVid::SetCachedClientRectUpdateMask(0);
+        zVid_UpdateCachedClientRectIfUpdateMaskEnabled();
+        const int noUpdateOk =
+            g_zVideo_CachedClientRectScreen.left == 7 &&
+            g_zVideo_CachedClientRectScreen.top == 8 &&
+            g_zVideo_CachedClientRectScreen.right == 9 &&
+            g_zVideo_CachedClientRectScreen.bottom == 10;
+
+        zVid::SetCachedClientRectUpdateMask(1);
+        zVid_UpdateCachedClientRectIfUpdateMaskEnabled();
+        const LONG helperWidth =
+            g_zVideo_CachedClientRectScreen.right -
+            g_zVideo_CachedClientRectScreen.left;
+        const LONG helperHeight =
+            g_zVideo_CachedClientRectScreen.bottom -
+            g_zVideo_CachedClientRectScreen.top;
+
+        if (cachedWidth != client.right - client.left ||
+            cachedHeight != client.bottom - client.top ||
+            noUpdateOk == 0 ||
+            helperWidth != client.right - client.left ||
+            helperHeight != client.bottom - client.top) {
+            result = 5;
+        }
+    }
+
+    if (hwnd != 0) {
+        DestroyWindow(hwnd);
+    }
+    g_zVideo_ActiveRendererPath = savedActiveRendererPath;
+    zVid::SetCachedClientRectUpdateMask(savedUpdateMask);
+    g_zVideo_hWnd = savedHwnd;
+    g_zVideo_CachedClientRectScreen = savedRect;
+    return result;
+}
+
+extern "C" int zvideo_shutdown_video_system_smoke(void) {
+    const int savedInitialized = g_zVideo_IsInitialized;
+    const zVideo_ShutdownVideoSystemProc savedShutdown =
+        g_zVideo_pfnShutdownVideoSystem;
+
+    g_smokeZVideoShutdownCalls = 0;
+    g_zVideo_IsInitialized = 0;
+    g_zVideo_pfnShutdownVideoSystem = SmokeZVideoShutdownFake;
+
+    int result = 0;
+    if (zVideo::ShutdownVideoSystem() != 0x5a560000 ||
+        g_smokeZVideoShutdownCalls != 0) {
+        result = 1;
+    }
+
+    if (result == 0) {
+        g_zVideo_IsInitialized = 1;
+        if (zVideo::ShutdownVideoSystem() != 0 ||
+            g_zVideo_IsInitialized != 0 ||
+            g_smokeZVideoShutdownCalls != 1) {
+            result = 2;
+        }
+    }
+
+    g_zVideo_IsInitialized = savedInitialized;
+    g_zVideo_pfnShutdownVideoSystem = savedShutdown;
+    return result;
+}
+
+extern "C" int zvideo_select_hw_api_device_smoke(void) {
+    g_zVideo_pSelectedHwApiDeviceRecord = 0;
+    g_zVideo_pSelectedD3DDeviceInfo = 0;
+
+    if (zVideo::SelectHwApiDeviceOrFallback(-1) != 0 ||
+        g_zVideo_RendererType != 0 ||
+        g_zVideo_FullscreenOption != 1 ||
+        g_zVideo_pSelectedHwApiDeviceRecord != &g_zVideo_HwApiDeviceTable[0] ||
+        g_zVideo_pSelectedD3DDeviceInfo != 0) {
+        return 1;
+    }
+
+    if (zVideo::SelectHwApiDeviceOrFallback(2) != 1 ||
+        g_zVideo_RendererType != 1 ||
+        g_zVideo_FullscreenOption != 1 ||
+        g_zVideo_pSelectedHwApiDeviceRecord != &g_zVideo_HwApiDeviceTable[2] ||
+        g_zVideo_pSelectedD3DDeviceInfo != g_zVideo_HwApiDeviceTable[2].m_d3dDrivers) {
+        return 2;
+    }
+
+    return 0;
+}
+
+extern "C" int zvideo_dd3d_set_fog_enable_smoke(void) {
+    SmokeDirect3DDevice2Object device = {};
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    const int savedFogEnable = g_zVideo_CachedFogEnableRenderState;
+    const int savedFogMode = g_zVideo_CachedFogModeLightState;
+
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_CachedFogEnableRenderState = 0;
+    g_zVideo_CachedFogModeLightState = 0;
+    zVideo_dd3d::SetFogEnable(1);
+    const int firstCallOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 1 &&
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_FOGENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == 1 &&
+        g_smokeDirect3DDevice2SetLightStateCalls == 1 &&
+        g_smokeDirect3DDevice2LightStates[0] == D3DLIGHTSTATE_FOGMODE &&
+        g_smokeDirect3DDevice2LightStateValues[0] == D3DFOG_LINEAR &&
+        g_zVideo_CachedFogEnableRenderState == 1 &&
+        g_zVideo_CachedFogModeLightState == D3DFOG_LINEAR;
+
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_CachedFogEnableRenderState = 1;
+    g_zVideo_CachedFogModeLightState = D3DFOG_LINEAR;
+    zVideo_dd3d::SetFogEnable(1);
+    const int cacheHitOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 0 &&
+        g_smokeDirect3DDevice2SetLightStateCalls == 0 &&
+        g_zVideo_CachedFogEnableRenderState == 1 &&
+        g_zVideo_CachedFogModeLightState == D3DFOG_LINEAR;
+
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_CachedFogEnableRenderState = 1;
+    g_zVideo_CachedFogModeLightState = D3DFOG_LINEAR;
+    zVideo_dd3d::SetFogEnable(0);
+    const int renderOnlyOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 1 &&
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_FOGENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == 0 &&
+        g_smokeDirect3DDevice2SetLightStateCalls == 0 &&
+        g_zVideo_CachedFogEnableRenderState == 0 &&
+        g_zVideo_CachedFogModeLightState == D3DFOG_LINEAR;
+
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_CachedFogEnableRenderState = savedFogEnable;
+    g_zVideo_CachedFogModeLightState = savedFogMode;
+    return firstCallOk && cacheHitOk && renderOnlyOk ? 0 : 1;
+}
+
+extern "C" int zvideo_texture_record_release_upload_surface_smoke(void) {
+    zVideo_TextureRecordPartial textureRecord = {};
+    zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef(&textureRecord);
+    const int nullOk =
+        textureRecord.m_uploadSurface == 0 &&
+        g_smokeComReleaseCalls == 0;
+
+    SmokeComObject uploadSurface = {};
+    InstallSmokeComReleaseObject(uploadSurface);
+    ResetSmokeComReleaseTracking();
+    textureRecord.m_uploadSurface = (IDirectDrawSurface *)(&uploadSurface);
+    zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef(&textureRecord);
+    const int releaseOk =
+        textureRecord.m_uploadSurface == 0 &&
+        g_smokeComReleaseCalls == 1 &&
+        g_smokeComReleaseObjects[0] == &uploadSurface;
+
+    return nullOk && releaseOk ? 0 : 1;
+}
+
+extern "C" int zvideo_texture_record_finalize_upload_smoke(void) {
+    SmokeFunctionPatch uploadPatch = {};
+    if (!PatchSmokeFunctionJump(
+            (void *)(&zVideo_dd3d::UploadImageToSurface),
+            (void *)(&SmokeUploadImageToSurface),
+            uploadPatch
+        )) {
+        return 1;
+    }
+
+    SmokeDirectDrawSurfaceObject uploadSurface = {};
+    SmokeDirect3DTexture2Object uploadTexture = {};
+    SmokeDirect3DTexture2Object targetTexture = {};
+    InstallSmokeDirectDrawSurface(uploadSurface);
+    InstallSmokeDirect3DTexture2(uploadTexture, targetTexture);
+
+    zVideo_TextureRecordPartial textureRecord = {};
+    zVidImagePartial image = {};
+    image.formatFlagsPacked = 3;
+    g_smokeUploadImageToSurfaceCalls = 0;
+    g_smokeUploadImageToSurfaceSurface = 0;
+    zVideo_dd3d::TextureRecord_FinalizeUpload(&textureRecord, 0, &image);
+    const int nullUploadOk =
+        g_smokeUploadImageToSurfaceCalls == 0 &&
+        g_smokeDirectDrawSurfaceQueryInterfaceCalls == 0 &&
+        g_smokeDirect3DTexture2LoadCalls == 0 &&
+        g_smokeDirect3DTexture2ReleaseCalls == 0;
+
+    textureRecord.m_uploadSurface = (IDirectDrawSurface *)(&uploadSurface);
+    textureRecord.m_texture = (IDirect3DTexture2 *)(&targetTexture);
+    g_smokeDirectDrawSurfaceQueryInterfaceValue = &uploadTexture;
+    g_smokeUploadImageToSurfaceCalls = 0;
+    g_smokeUploadImageToSurfaceSurface = 0;
+    g_smokeUploadImageToSurfaceImage = 0;
+    g_smokeUploadImageToSurfaceUseAlpha = -1;
+    g_smokeUploadImageToSurfaceResult = 1;
+    zVideo_dd3d::TextureRecord_FinalizeUpload(&textureRecord, 0, &image);
+    const int successOk =
+        g_smokeUploadImageToSurfaceCalls == 1 &&
+        g_smokeUploadImageToSurfaceSurface ==
+            (IDirectDrawSurface *)(&uploadSurface) &&
+        g_smokeUploadImageToSurfaceImage == &image &&
+        g_smokeUploadImageToSurfaceUseAlpha == 2 &&
+        g_smokeDirectDrawSurfaceQueryInterfaceCalls == 1 &&
+        g_smokeDirectDrawSurfaceLastQueryInterfaceIid != 0 &&
+        IsEqualGUID(*g_smokeDirectDrawSurfaceLastQueryInterfaceIid, IID_IDirect3DTexture2) &&
+        g_smokeDirect3DTexture2LoadCalls == 1 &&
+        g_smokeDirect3DTexture2LastLoadSelf ==
+            (IDirect3DTexture2 *)(&targetTexture) &&
+        g_smokeDirect3DTexture2LastLoadSource ==
+            (IDirect3DTexture2 *)(&uploadTexture) &&
+        g_smokeDirect3DTexture2ReleaseCalls == 1 &&
+        g_smokeDirect3DTexture2ReleaseObjects[0] ==
+            (IDirect3DTexture2 *)(&uploadTexture);
+
+    InstallSmokeDirectDrawSurface(uploadSurface);
+    InstallSmokeDirect3DTexture2(uploadTexture, targetTexture);
+    textureRecord.m_uploadSurface = (IDirectDrawSurface *)(&uploadSurface);
+    textureRecord.m_texture = (IDirect3DTexture2 *)(&targetTexture);
+    g_smokeDirectDrawSurfaceQueryInterfaceValue = &uploadTexture;
+    g_smokeDirect3DTexture2LoadResult = DDERR_GENERIC;
+    g_smokeUploadImageToSurfaceCalls = 0;
+    zVideo_dd3d::TextureRecord_FinalizeUpload(&textureRecord, 0, 0);
+    const int loadFailureOk =
+        g_smokeUploadImageToSurfaceCalls == 0 &&
+        g_smokeDirectDrawSurfaceQueryInterfaceCalls == 1 &&
+        g_smokeDirect3DTexture2LoadCalls == 1 &&
+        g_smokeDirect3DTexture2ReleaseCalls == 0;
+
+    RestoreSmokeFunctionPatch(uploadPatch);
+    return nullUploadOk && successOk && loadFailureOk ? 0 : 2;
+}
+
+extern "C" int zvideo_texture_record_create_and_power_smoke(void) {
+    if (zVideo_dd3d::FloorPowerOfTwo(1) != 1 ||
+        zVideo_dd3d::FloorPowerOfTwo(3) != 2 ||
+        zVideo_dd3d::FloorPowerOfTwo(64) != 64 ||
+        zVideo_dd3d::FloorPowerOfTwo(65) != 64) {
+        return 1;
+    }
+
+    zVideo_TextureRecordPartial *const textureRecord =
+        zVideo_dd3d::TextureRecord_Create();
+    if (textureRecord == 0) {
+        return 2;
+    }
+
+    const int zeroed =
+        textureRecord->m_uploadSurface == 0 &&
+        textureRecord->m_textureSurface == 0 &&
+        textureRecord->m_texture == 0 &&
+        textureRecord->m_textureHandle == 0 &&
+        textureRecord->m_alphaMode == 0 &&
+        textureRecord->m_uWrapMode == 0 &&
+        textureRecord->m_vWrapMode == 0;
+    std::free(textureRecord);
+    return zeroed != 0 ? 0 : 3;
+}
+
+extern "C" int zvideo_texture_record_lock_upload_surface_smoke(void) {
+    SmokeDirectDrawSurface3Object uploadSurface = {};
+    zVideo_TextureRecordPartial textureRecord = {};
+    textureRecord.m_uploadSurface = (IDirectDrawSurface *)(&uploadSurface);
+
+    unsigned char pixels[16] = {};
+    void *outPixels = (void *)(0x12345678);
+    int outPitchBytes = -1;
+    InstallSmokeDirectDrawSurface3(uploadSurface);
+    g_smokeDirectDrawSurface3LockPixelsValue = pixels;
+    g_smokeDirectDrawSurface3LockPitchValue = 32;
+    const int successOk =
+        zVideo_dd3d::TextureRecord_LockUploadSurface(
+            &textureRecord,
+            &outPixels,
+            &outPitchBytes
+        ) == 1 &&
+        g_smokeDirectDrawSurface3LockCalls == 1 &&
+        g_smokeDirectDrawSurface3LockSurfaces[0] ==
+            (IDirectDrawSurface3 *)(&uploadSurface) &&
+        g_smokeDirectDrawSurface3LockDescSize == sizeof(DDSURFACEDESC) &&
+        outPixels == pixels &&
+        outPitchBytes == 32;
+
+    outPixels = (void *)(0x12345678);
+    outPitchBytes = -1;
+    InstallSmokeDirectDrawSurface3(uploadSurface);
+    g_smokeDirectDrawSurface3LockResults[0] = DDERR_GENERIC;
+    g_smokeDirectDrawSurface3LockResultCount = 1;
+    const int failureResult =
+        zVideo_dd3d::TextureRecord_LockUploadSurface(
+            &textureRecord,
+            &outPixels,
+            &outPitchBytes
+        );
+    const int failureOk =
+        failureResult == 0 &&
+        g_smokeDirectDrawSurface3LockCalls == 1 &&
+        outPixels == (void *)(0x12345678) &&
+        outPitchBytes == -1;
+
+    if (!successOk) {
+        return 2;
+    }
+    if (!failureOk) {
+        return 3;
+    }
+    return 0;
+}
+
+extern "C" int zvideo_texture_record_unlock_upload_surface_smoke(void) {
+    SmokeDirectDrawSurface3Object uploadSurface = {};
+    zVideo_TextureRecordPartial textureRecord = {};
+    textureRecord.m_uploadSurface = (IDirectDrawSurface *)(&uploadSurface);
+
+    InstallSmokeDirectDrawSurface3(uploadSurface);
+    const int successOk =
+        zVideo_dd3d::TextureRecord_UnlockUploadSurface(&textureRecord) == 1 &&
+        g_smokeDirectDrawSurface3UnlockCalls == 1 &&
+        g_smokeDirectDrawSurface3UnlockSurfaces[0] ==
+            (IDirectDrawSurface3 *)(&uploadSurface) &&
+        g_smokeDirectDrawSurface3LastUnlockArg == 0;
+
+    InstallSmokeDirectDrawSurface3(uploadSurface);
+    g_smokeDirectDrawSurface3UnlockResults[0] = DDERR_GENERIC;
+    g_smokeDirectDrawSurface3UnlockResultCount = 1;
+    const int failureOk =
+        zVideo_dd3d::TextureRecord_UnlockUploadSurface(&textureRecord) == 0 &&
+        g_smokeDirectDrawSurface3UnlockCalls == 1 &&
+        g_smokeDirectDrawSurface3RestoreCalls == 0 &&
+        g_smokeDirectDrawSurface3LastUnlockArg == 0;
+
+    return successOk && failureOk ? 0 : 1;
+}
+
+extern "C" int zvideo_create_texture_record_guards_smoke(void) {
+    zVidD3DDriverRecordPartial *const savedSelectedD3D =
+        g_zVideo_pSelectedD3DDeviceInfo;
+    zVideo_TextureRecordPartial *const savedDefaultRecord =
+        g_zImage_DefaultTextureRecord;
+    const D3DDEVICEDESC savedHalDesc = g_zVideo_D3DHalDeviceDesc;
+
+    zVidD3DDriverRecordPartial selectedD3DDevice = {};
+    D3DDEVICEDESC *const selectedDesc = &selectedD3DDevice.m_hwDesc;
+    selectedDesc->dwMaxTextureWidth = 64;
+    selectedDesc->dwMaxTextureHeight = 64;
+    g_zVideo_pSelectedD3DDeviceInfo = &selectedD3DDevice;
+
+    zVideo_TextureRecordPartial defaultRecord = {};
+    g_zImage_DefaultTextureRecord = &defaultRecord;
+
+    zVidImagePartial image = {};
+    image.width = 128;
+    image.height = 8;
+    g_zVideo_D3DHalDeviceDesc = {};
+    const int tooLargeOk =
+        zVideo_dd3d::CreateTextureRecord("too-large", &image, 0, 0, 0) ==
+        &defaultRecord;
+
+    image.width = 10;
+    image.height = 8;
+    g_zVideo_D3DHalDeviceDesc.dpcTriCaps.dwTextureCaps = D3DPTEXTURECAPS_POW2;
+    const int nonPow2Ok =
+        zVideo_dd3d::CreateTextureRecord("non-pow2", &image, 0, 0, 0) ==
+        &defaultRecord;
+
+    image.width = 64;
+    image.height = 4;
+    g_zVideo_D3DHalDeviceDesc.dpcTriCaps.dwTextureCaps = 0;
+    const int badAspectOk =
+        zVideo_dd3d::CreateTextureRecord("bad-aspect", &image, 0, 0, 0) ==
+        &defaultRecord;
+
+    image.width = 8;
+    image.height = 8;
+    image.palette = (void *)(0x1234);
+    const int palettedOk =
+        zVideo_dd3d::CreateTextureRecord("paletted", &image, 0, 0, 0) ==
+        &defaultRecord;
+
+    g_zVideo_pSelectedD3DDeviceInfo = savedSelectedD3D;
+    g_zImage_DefaultTextureRecord = savedDefaultRecord;
+    g_zVideo_D3DHalDeviceDesc = savedHalDesc;
+    return tooLargeOk && nonPow2Ok && badAspectOk && palettedOk ? 0 : 1;
+}
+
+extern "C" int zvideo_dd3d_create_texture_record_smoke(void) {
+    SmokeFunctionPatch uploadPatch = {};
+    if (!PatchSmokeFunctionJump(
+            (void *)(&zVideo_dd3d::UploadImageToSurface),
+            (void *)(&SmokeUploadImageToSurface),
+            uploadPatch
+        )) {
+        return 1;
+    }
+
+    zVidD3DDriverRecordPartial *const savedSelectedD3D =
+        g_zVideo_pSelectedD3DDeviceInfo;
+    zVideo_TextureRecordPartial *const savedDefaultRecord =
+        g_zImage_DefaultTextureRecord;
+    IDirectDraw2 *const savedDirectDraw2 = g_zVideo_pDirectDraw2;
+    IDirect3DDevice2 *const savedD3DDevice = g_zVideo_pD3DDevice;
+    const D3DDEVICEDESC savedHalDesc = g_zVideo_D3DHalDeviceDesc;
+    const int savedTextureRBits = g_zVideo_TexturePixelPack_RBits;
+    const int savedTextureGBits = g_zVideo_TexturePixelPack_GBits;
+    const int savedTextureBBits = g_zVideo_TexturePixelPack_BBits;
+    const int savedTextureABits = g_zVideo_TexturePixelPack_ABits;
+    const unsigned int savedTextureRMask = g_zVideo_TexturePixelPack_RMask;
+    const unsigned int savedTextureGMask = g_zVideo_TexturePixelPack_GMask;
+    const unsigned int savedTextureBMask = g_zVideo_TexturePixelPack_BMask;
+    const unsigned int savedTextureAMask = g_zVideo_TexturePixelPack_AMask;
+    const int savedTextureRgbBitsTotal = g_zVideo_TexturePixelPack_RGBBitsTotal;
+    const int savedTextureRgbBitsTotalMinus8 =
+        g_zVideo_TexturePixelPack_RGBBitsTotalMinus8;
+    const int savedTextureGbBitsTotalMinus8 =
+        g_zVideo_TexturePixelPack_GBBitsTotalMinus8;
+    const int savedTextureBShiftTo8 = g_zVideo_TexturePixelPack_BShiftTo8;
+    const int savedTextureRMaskShifted = g_zVideo_TexturePixelPack_RMaskShifted;
+    const int savedTextureGMaskShifted = g_zVideo_TexturePixelPack_GMaskShifted;
+    const int savedTextureBMaskShifted = g_zVideo_TexturePixelPack_BMaskShifted;
+    const int savedTextureNonRgbMaskShifted =
+        g_zVideo_TexturePixelPack_NonRgbMaskShifted;
+
+    zVidD3DDriverRecordPartial selectedD3DDevice = {};
+    D3DDEVICEDESC *const selectedDesc = &selectedD3DDevice.m_hwDesc;
+    selectedDesc->dwMaxTextureWidth = 64;
+    selectedDesc->dwMaxTextureHeight = 64;
+    g_zVideo_pSelectedD3DDeviceInfo = &selectedD3DDevice;
+
+    zVideo_TextureRecordPartial defaultRecord = {};
+    g_zImage_DefaultTextureRecord = &defaultRecord;
+
+    SmokeDirectDraw2Object directDraw = {};
+    SmokeDirectDrawSurfaceObject createdSurface = {};
+    SmokeDirectDrawPaletteObject palette = {};
+    SmokeDirect3DDevice2Object d3dDevice = {};
+    SmokeDirect3DTexture2Object uploadTexture = {};
+    SmokeDirect3DTexture2Object texture = {};
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeDirectDrawSurface(createdSurface);
+    InstallSmokeDirectDrawPalette(palette);
+    InstallSmokeDirect3DDevice2(d3dDevice);
+    InstallSmokeDirect3DTexture2(uploadTexture, texture);
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_zVideo_pD3DDevice = (IDirect3DDevice2 *)(&d3dDevice);
+    g_smokeDirectDraw2CreateSurfaceValue = (IDirectDrawSurface *)(&createdSurface);
+    g_smokeDirectDraw2CreatePaletteValue = (IDirectDrawPalette *)(&palette);
+    g_smokeDirectDrawSurfaceQueryInterfaceValues[0] = &uploadTexture;
+    g_smokeDirectDrawSurfaceQueryInterfaceValues[1] = &texture;
+    g_smokeDirectDrawSurfaceQueryInterfaceValueCount = 2;
+    g_smokeDirect3DTexture2HandleValue = 0x3579;
+
+    zVidImagePartial image = {};
+    unsigned short pixels[32] = {};
+    unsigned char alphaMap[32] = {};
+    PALETTEENTRY deferredPalette[2] = {};
+    deferredPalette[0].peRed = 10;
+    deferredPalette[1].peBlue = 20;
+    image.width = 8;
+    image.height = 4;
+    image.pixels = pixels;
+    image.alphaMap = (char *)(alphaMap);
+    image.palette = 0;
+    image.paletteMetaPacked = (short)(2 * sizeof(PALETTEENTRY));
+
+    g_smokeDirectDraw2MutateImageOnFirstCreateSurface = &image;
+    g_smokeDirectDraw2MutatedPalette = deferredPalette;
+    g_smokeDirectDraw2MutatedPaletteMetaPacked = image.paletteMetaPacked;
+    g_zVideo_D3DHalDeviceDesc = {};
+    g_zVideo_D3DHalDeviceDesc.dwDevCaps = D3DDEVCAPS_TEXTURENONLOCALVIDMEM;
+    g_smokeUploadImageToSurfaceCalls = 0;
+    g_smokeUploadImageToSurfaceSurface = 0;
+    g_smokeUploadImageToSurfaceImage = 0;
+    g_smokeUploadImageToSurfaceUseAlpha = -1;
+    g_smokeUploadImageToSurfaceResult = 1;
+
+    zVideo_TextureRecordPartial *result =
+        zVideo_dd3d::CreateTextureRecord("success", &image, 1, 1, 0);
+    const DDSURFACEDESC &uploadDesc = g_smokeDirectDraw2CreateSurfaceDescs[0];
+    const DDSURFACEDESC &textureDesc = g_smokeDirectDraw2CreateSurfaceDescs[1];
+    const int successOk =
+        result != 0 &&
+        result != &defaultRecord &&
+        g_smokeDirectDraw2CreateSurfaceCalls == 2 &&
+        uploadDesc.dwSize == sizeof(DDSURFACEDESC) &&
+        uploadDesc.dwFlags == (DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT) &&
+        uploadDesc.dwWidth == 8 &&
+        uploadDesc.dwHeight == 4 &&
+        uploadDesc.ddsCaps.dwCaps == (DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY) &&
+        uploadDesc.ddpfPixelFormat.dwFlags == (DDPF_RGB | DDPF_ALPHAPIXELS) &&
+        uploadDesc.ddpfPixelFormat.dwRGBBitCount == 16 &&
+        uploadDesc.ddpfPixelFormat.dwRBitMask == 0x0f00 &&
+        uploadDesc.ddpfPixelFormat.dwGBitMask == 0x00f0 &&
+        uploadDesc.ddpfPixelFormat.dwBBitMask == 0x000f &&
+        uploadDesc.ddpfPixelFormat.dwRGBAlphaBitMask == 0xf000 &&
+        textureDesc.ddsCaps.dwCaps ==
+            (DDSCAPS_TEXTURE | DDSCAPS_VIDEOMEMORY | DDSCAPS_ALLOCONLOAD |
+             DDSCAPS_NONLOCALVIDMEM) &&
+        g_smokeDirectDraw2CreatePaletteCalls == 1 &&
+        g_smokeDirectDraw2LastCreatePaletteFlags ==
+            (DDPCAPS_8BIT | DDPCAPS_ALLOW256) &&
+        g_smokeDirectDraw2LastCreatePaletteEntries == deferredPalette &&
+        g_smokeDirectDrawSurfaceSetPaletteCalls == 2 &&
+        g_smokeDirectDrawSurfaceSetPalettePalettes[0] ==
+            (IDirectDrawPalette *)(&palette) &&
+        g_smokeDirectDrawSurfaceSetPalettePalettes[1] ==
+            (IDirectDrawPalette *)(&palette) &&
+        g_smokeUploadImageToSurfaceCalls == 1 &&
+        g_smokeUploadImageToSurfaceSurface ==
+            (IDirectDrawSurface *)(&createdSurface) &&
+        g_smokeUploadImageToSurfaceImage == &image &&
+        g_smokeUploadImageToSurfaceUseAlpha == 1 &&
+        g_smokeDirectDrawSurfaceQueryInterfaceCalls == 2 &&
+        g_smokeDirect3DTexture2LoadCalls == 1 &&
+        g_smokeDirect3DTexture2LastLoadSelf ==
+            (IDirect3DTexture2 *)(&texture) &&
+        g_smokeDirect3DTexture2LastLoadSource ==
+            (IDirect3DTexture2 *)(&uploadTexture) &&
+        g_smokeDirect3DTexture2GetHandleCalls == 1 &&
+        g_smokeDirect3DTexture2LastGetHandleDevice == g_zVideo_pD3DDevice &&
+        g_smokeDirect3DTexture2ReleaseCalls == 1 &&
+        g_smokeDirect3DTexture2ReleaseObjects[0] ==
+            (IDirect3DTexture2 *)(&uploadTexture) &&
+        result->m_uploadSurface == (IDirectDrawSurface *)(&createdSurface) &&
+        result->m_textureSurface == (IDirectDrawSurface *)(&createdSurface) &&
+        result->m_texture == (IDirect3DTexture2 *)(&texture) &&
+        result->m_textureHandle == 0x3579 &&
+        result->m_alphaMode == 4 &&
+        result->m_uWrapMode == D3DTADDRESS_CLAMP &&
+        result->m_vWrapMode == D3DTADDRESS_WRAP &&
+        g_zVideo_TexturePixelPack_RBits == 4 &&
+        g_zVideo_TexturePixelPack_GBits == 4 &&
+        g_zVideo_TexturePixelPack_BBits == 4 &&
+        g_zVideo_TexturePixelPack_ABits == 4;
+    if (result != 0 && result != &defaultRecord) {
+        std::free(result);
+    }
+
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeDirectDrawSurface(createdSurface);
+    InstallSmokeDirect3DTexture2(uploadTexture, texture);
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_zVideo_pD3DDevice = (IDirect3DDevice2 *)(&d3dDevice);
+    g_smokeDirectDraw2CreateSurfaceValue = (IDirectDrawSurface *)(&createdSurface);
+    g_smokeDirectDrawSurfaceQueryInterfaceValues[0] = &uploadTexture;
+    g_smokeDirectDrawSurfaceQueryInterfaceValues[1] = &texture;
+    g_smokeDirectDrawSurfaceQueryInterfaceValueCount = 2;
+    g_smokeDirect3DTexture2LoadResult = DDERR_GENERIC;
+    g_smokeUploadImageToSurfaceCalls = 0;
+    image.palette = 0;
+    image.paletteMetaPacked = 0;
+
+    zVideo_TextureRecordPartial *failureResult =
+        zVideo_dd3d::CreateTextureRecord("load-failure", &image, 1, 0, 1);
+    const int failureOk =
+        failureResult == &defaultRecord &&
+        g_smokeDirectDraw2CreateSurfaceCalls == 2 &&
+        g_smokeDirectDraw2CreatePaletteCalls == 0 &&
+        g_smokeUploadImageToSurfaceCalls == 1 &&
+        g_smokeDirect3DTexture2LoadCalls == 1 &&
+        g_smokeDirect3DTexture2ReleaseCalls == 2 &&
+        g_smokeDirect3DTexture2ReleaseObjects[0] ==
+            (IDirect3DTexture2 *)(&texture) &&
+        g_smokeDirect3DTexture2ReleaseObjects[1] ==
+            (IDirect3DTexture2 *)(&uploadTexture) &&
+        g_smokeDirectDrawSurfaceReleaseCalls == 2;
+
+    g_zVideo_pSelectedD3DDeviceInfo = savedSelectedD3D;
+    g_zImage_DefaultTextureRecord = savedDefaultRecord;
+    g_zVideo_pDirectDraw2 = savedDirectDraw2;
+    g_zVideo_pD3DDevice = savedD3DDevice;
+    g_zVideo_D3DHalDeviceDesc = savedHalDesc;
+    g_zVideo_TexturePixelPack_RBits = savedTextureRBits;
+    g_zVideo_TexturePixelPack_GBits = savedTextureGBits;
+    g_zVideo_TexturePixelPack_BBits = savedTextureBBits;
+    g_zVideo_TexturePixelPack_ABits = savedTextureABits;
+    g_zVideo_TexturePixelPack_RMask = savedTextureRMask;
+    g_zVideo_TexturePixelPack_GMask = savedTextureGMask;
+    g_zVideo_TexturePixelPack_BMask = savedTextureBMask;
+    g_zVideo_TexturePixelPack_AMask = savedTextureAMask;
+    g_zVideo_TexturePixelPack_RGBBitsTotal = savedTextureRgbBitsTotal;
+    g_zVideo_TexturePixelPack_RGBBitsTotalMinus8 =
+        savedTextureRgbBitsTotalMinus8;
+    g_zVideo_TexturePixelPack_GBBitsTotalMinus8 =
+        savedTextureGbBitsTotalMinus8;
+    g_zVideo_TexturePixelPack_BShiftTo8 = savedTextureBShiftTo8;
+    g_zVideo_TexturePixelPack_RMaskShifted = savedTextureRMaskShifted;
+    g_zVideo_TexturePixelPack_GMaskShifted = savedTextureGMaskShifted;
+    g_zVideo_TexturePixelPack_BMaskShifted = savedTextureBMaskShifted;
+    g_zVideo_TexturePixelPack_NonRgbMaskShifted =
+        savedTextureNonRgbMaskShifted;
+    RestoreSmokeFunctionPatch(uploadPatch);
+    return successOk && failureOk ? 0 : 2;
+}
+
+extern "C" int zvideo_quad_batch_depth_and_rhw_smoke(void) {
+    std::memset(g_zVideo_QuadBatchItemsBase, 0, sizeof(g_zVideo_QuadBatchItemsBase));
+
+    zVideo_dd3d::SetQuadBatchDepthAndRhw(0.25f);
+
+    for (int itemIndex = 0; itemIndex < 16; ++itemIndex) {
+        for (int vertexIndex = 0; vertexIndex < 4; ++vertexIndex) {
+            const D3DTLVERTEX &vertex =
+                g_zVideo_QuadBatchItemsBase[itemIndex].vertices[vertexIndex];
+            if (vertex.sz != 0.25f || vertex.rhw != 0.25f) {
+                return itemIndex + vertexIndex + 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+extern "C" int zvideo_dd3d_create_device_state_smoke(void) {
+    IDirectDraw2 *const savedDirectDraw = g_zVideo_pDirectDraw2;
+    IDirectDrawSurface3 *const savedZBuffer = g_zVideo_pZBufferSurface;
+    IDirectDrawSurface *const savedZBufferAttach = g_zVideo_pZBufferAttachSurface;
+    IDirect3D2 *const savedD3D = g_zVideo_pD3D2;
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    IDirect3DViewport2 *const savedViewport = g_zVideo_pD3DViewport2;
+    IDirect3DMaterial2 *const savedMaterial = g_zVideo_pD3DMaterial2;
+    zVidD3DDriverRecordPartial *const savedSelectedD3D =
+        g_zVideo_pSelectedD3DDeviceInfo;
+    const zVideo_SurfaceStatePartial savedSwState = g_zVideo_SwSurfaceState;
+    const zVideo_SurfaceStatePartial savedDisplayState =
+        g_zVideo_DisplayModeSurfaceState;
+    const int savedClearScreen = g_zVideo_ClearScreenBufferEnabled;
+    const int savedPendingWireframe = g_zVideo_PendingWireframeState;
+    const int savedCachedFogEnable = g_zVideo_CachedFogEnableRenderState;
+    const int savedCachedFogMode = g_zVideo_CachedFogModeLightState;
+    const D3DMATERIALHANDLE savedMaterialHandle = g_zVideo_D3DMaterialHandle;
+    const D3DDEVICEDESC savedHalDesc = g_zVideo_D3DHalDeviceDesc;
+    const D3DDEVICEDESC savedHelDesc = g_zVideo_D3DHelDeviceDesc;
+    zVideo_QuadBatchItemPartial savedQuadItems[16];
+    std::memcpy(
+        savedQuadItems,
+        g_zVideo_QuadBatchItemsBase,
+        sizeof(savedQuadItems)
+    );
+
+    SmokeDirectDraw2Object directDraw = {};
+    SmokeDirectDrawSurfaceObject createdSurface = {};
+    SmokeDirectDrawSurface3Object zBufferSurface3 = {};
+    SmokeDirectDrawSurface3Object swSurface = {};
+    SmokeDirect3D2Object d3d = {};
+    SmokeDirect3DDevice2Object d3dDevice = {};
+    SmokeDirect3DViewport2Object d3dViewport = {};
+    SmokeDirect3DMaterial2Object d3dMaterial = {};
+
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeDirectDrawSurface(createdSurface);
+    InstallSmokeDirectDrawSurface3(zBufferSurface3);
+    InstallSmokeDirectDrawSurface3(swSurface);
+    InstallSmokeDirect3DDevice2(d3dDevice);
+    InstallSmokeDirect3DViewport2(d3dViewport);
+    InstallSmokeDirect3DMaterial2(d3dMaterial);
+    InstallSmokeDirect3D2(
+        d3d,
+        (IDirect3DDevice2 *)(&d3dDevice),
+        (IDirect3DViewport2 *)(&d3dViewport),
+        (IDirect3DMaterial2 *)(&d3dMaterial)
+    );
+    g_smokeDirectDraw2CreateSurfaceValue =
+        (IDirectDrawSurface *)(&createdSurface);
+    g_smokeDirectDrawSurfaceQueryInterfaceValue = &zBufferSurface3;
+    g_smokeDirectDraw2QueryInterfaceValue = &d3d;
+    g_smokeDirect3DMaterial2HandleValue = 0x2468;
+
+    GUID deviceGuid = {
+        0x33445566,
+        0x7788,
+        0x99aa,
+        {1, 3, 5, 7, 9, 11, 13, 15}
+    };
+    zVidD3DDriverRecordPartial selectedD3D = {};
+    selectedD3D.pD3DDeviceGuid = &deviceGuid;
+    g_zVideo_pSelectedD3DDeviceInfo = &selectedD3D;
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_zVideo_pZBufferSurface = 0;
+    g_zVideo_pZBufferAttachSurface = 0;
+    g_zVideo_pD3D2 = 0;
+    g_zVideo_pD3DDevice = 0;
+    g_zVideo_pD3DViewport2 = 0;
+    g_zVideo_pD3DMaterial2 = 0;
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_SwSurfaceState.width = 320;
+    g_zVideo_SwSurfaceState.height = 240;
+    g_zVideo_SwSurfaceState.surf = (IDirectDrawSurface3 *)(&swSurface);
+    g_zVideo_DisplayModeSurfaceState.width = 800;
+    g_zVideo_DisplayModeSurfaceState.height = 600;
+    g_zVideo_ClearScreenBufferEnabled = 0;
+    g_zVideo_PendingWireframeState = 17;
+    g_zVideo_CachedFogEnableRenderState = 0;
+    g_zVideo_CachedFogModeLightState = 0;
+    g_zVideo_D3DMaterialHandle = 0;
+
+    const int successResult = zVideo_dd3d::CreateDeviceState();
+    const int renderStateOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 11 &&
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_CULLMODE &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == 1 &&
+        g_smokeDirect3DDevice2RenderStates[1] == D3DRENDERSTATE_ZENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[1] == 1 &&
+        g_smokeDirect3DDevice2RenderStates[2] == D3DRENDERSTATE_ZFUNC &&
+        g_smokeDirect3DDevice2RenderStateValues[2] == 7 &&
+        g_smokeDirect3DDevice2RenderStates[3] == D3DRENDERSTATE_SPECULARENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[3] == 0 &&
+        g_smokeDirect3DDevice2RenderStates[4] == D3DRENDERSTATE_SHADEMODE &&
+        g_smokeDirect3DDevice2RenderStateValues[4] == 1 &&
+        g_smokeDirect3DDevice2RenderStates[5] == D3DRENDERSTATE_TEXTUREPERSPECTIVE &&
+        g_smokeDirect3DDevice2RenderStateValues[5] == 1 &&
+        g_smokeDirect3DDevice2RenderStates[6] == D3DRENDERSTATE_TEXTUREMAG &&
+        g_smokeDirect3DDevice2RenderStateValues[6] == 2 &&
+        g_smokeDirect3DDevice2RenderStates[7] == D3DRENDERSTATE_TEXTUREMIN &&
+        g_smokeDirect3DDevice2RenderStateValues[7] == 2 &&
+        g_smokeDirect3DDevice2RenderStates[8] == D3DRENDERSTATE_SRCBLEND &&
+        g_smokeDirect3DDevice2RenderStateValues[8] == 5 &&
+        g_smokeDirect3DDevice2RenderStates[9] == D3DRENDERSTATE_DESTBLEND &&
+        g_smokeDirect3DDevice2RenderStateValues[9] == 6 &&
+        g_smokeDirect3DDevice2RenderStates[10] == D3DRENDERSTATE_FOGENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[10] == 1;
+    const int successOk =
+        successResult == 0 &&
+        g_zVideo_ClearScreenBufferEnabled == 1 &&
+        g_smokeDirectDraw2CreateSurfaceCalls == 1 &&
+        g_smokeDirectDraw2CreateSurfaceDescs[0].dwSize == sizeof(DDSURFACEDESC) &&
+        g_smokeDirectDraw2CreateSurfaceDescs[0].dwFlags == 0x47 &&
+        g_smokeDirectDraw2CreateSurfaceDescs[0].dwWidth == 320 &&
+        g_smokeDirectDraw2CreateSurfaceDescs[0].dwHeight == 240 &&
+        g_smokeDirectDraw2CreateSurfaceDescs[0].ddsCaps.dwCaps == 0x24000 &&
+        g_smokeDirectDraw2CreateSurfaceDescs[0].dwMipMapCount == 0x10 &&
+        g_smokeDirectDrawSurfaceQueryInterfaceCalls == 1 &&
+        g_smokeDirectDrawSurfaceLastQueryInterfaceOut ==
+            (void **)(&g_zVideo_pZBufferAttachSurface) &&
+        g_smokeDirectDrawSurface3AddAttachedSurfaceCalls == 1 &&
+        g_smokeDirectDrawSurface3LastAddAttachedSurfaceSelf ==
+            (IDirectDrawSurface3 *)(&swSurface) &&
+        g_smokeDirectDrawSurface3LastAttachedSurfaceArg ==
+            (IDirectDrawSurface3 *)(g_zVideo_pZBufferAttachSurface) &&
+        g_smokeDirectDraw2QueryInterfaceCalls == 1 &&
+        g_smokeDirectDraw2LastQueryInterfaceOut == (void **)(&g_zVideo_pD3D2) &&
+        g_smokeDirect3D2CreateDeviceCalls == 1 &&
+        std::memcmp(
+            g_smokeDirect3D2LastCreateDeviceGuid,
+            &deviceGuid,
+            sizeof(deviceGuid)
+        ) == 0 &&
+        g_smokeDirect3D2LastCreateDeviceSurface ==
+            (IDirectDrawSurface *)(g_zVideo_SwSurfaceState.surf) &&
+        g_smokeDirect3D2LastCreateDeviceOut == &g_zVideo_pD3DDevice &&
+        g_smokeDirect3D2CreateViewportCalls == 1 &&
+        g_smokeDirect3D2LastCreateViewportOut == &g_zVideo_pD3DViewport2 &&
+        g_smokeDirect3DDevice2AddViewportCalls == 1 &&
+        g_smokeDirect3DDevice2LastAddViewport == g_zVideo_pD3DViewport2 &&
+        g_smokeDirect3DViewport2SetViewport2Calls == 1 &&
+        g_smokeDirect3DViewport2LastViewportValue.dwWidth == 320 &&
+        g_smokeDirect3DViewport2LastViewportValue.dwHeight == 240 &&
+        g_smokeDirect3DDevice2SetCurrentViewportCalls == 1 &&
+        g_smokeDirect3DDevice2LastSetCurrentViewport == g_zVideo_pD3DViewport2 &&
+        g_smokeDirect3D2CreateMaterialCalls == 1 &&
+        g_smokeDirect3DMaterial2SetMaterialCalls == 1 &&
+        g_smokeDirect3DMaterial2LastMaterialValue.dwRampSize == 0x100 &&
+        g_smokeDirect3DMaterial2GetHandleCalls == 1 &&
+        g_smokeDirect3DMaterial2LastGetHandleDevice == g_zVideo_pD3DDevice &&
+        g_zVideo_D3DMaterialHandle == 0x2468 &&
+        g_smokeDirect3DViewport2SetBackgroundCalls == 1 &&
+        g_smokeDirect3DViewport2LastBackground == 0x2468 &&
+        g_smokeDirect3DDevice2GetCapsCalls == 1 &&
+        g_smokeDirect3DDevice2LastGetCapsHalDesc == &g_zVideo_D3DHalDeviceDesc &&
+        g_smokeDirect3DDevice2LastGetCapsHelDesc == &g_zVideo_D3DHelDeviceDesc &&
+        renderStateOk &&
+        g_smokeDirect3DDevice2SetLightStateCalls == 1 &&
+        g_smokeDirect3DDevice2LightStates[0] == D3DLIGHTSTATE_FOGMODE &&
+        g_smokeDirect3DDevice2LightStateValues[0] == D3DFOG_LINEAR &&
+        g_zVideo_PendingWireframeState == -1 &&
+        g_zVideo_CachedFogEnableRenderState == 1 &&
+        g_zVideo_CachedFogModeLightState == D3DFOG_LINEAR &&
+        g_zVideo_QuadBatchItemsBase[0].vertices[0].sz == 0.99000001f &&
+        g_zVideo_QuadBatchItemsBase[15].vertices[3].rhw == 0.99000001f;
+
+    InstallSmokeDirectDraw2(directDraw);
+    InstallSmokeDirectDrawSurface(createdSurface);
+    InstallSmokeDirectDrawSurface3(zBufferSurface3);
+    InstallSmokeDirectDrawSurface3(swSurface);
+    InstallSmokeDirect3DDevice2(d3dDevice);
+    InstallSmokeDirect3DViewport2(d3dViewport);
+    InstallSmokeDirect3DMaterial2(d3dMaterial);
+    InstallSmokeDirect3D2(
+        d3d,
+        (IDirect3DDevice2 *)(&d3dDevice),
+        (IDirect3DViewport2 *)(&d3dViewport),
+        (IDirect3DMaterial2 *)(&d3dMaterial)
+    );
+    g_smokeDirectDraw2CreateSurfaceResult = DDERR_GENERIC;
+    g_smokeDirectDraw2CreateSurfaceValue =
+        (IDirectDrawSurface *)(&createdSurface);
+    g_smokeDirectDrawSurfaceQueryInterfaceValue = &zBufferSurface3;
+    g_smokeDirectDraw2QueryInterfaceValue = &d3d;
+    g_zVideo_pDirectDraw2 = (IDirectDraw2 *)(&directDraw);
+    g_zVideo_pSelectedD3DDeviceInfo = &selectedD3D;
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_SwSurfaceState.width = 320;
+    g_zVideo_SwSurfaceState.height = 240;
+    g_zVideo_SwSurfaceState.surf = (IDirectDrawSurface3 *)(&swSurface);
+
+    const int createSurfaceFailureResult = zVideo_dd3d::CreateDeviceState();
+    const int createSurfaceFailureOk =
+        createSurfaceFailureResult != 0 &&
+        g_smokeDirectDraw2CreateSurfaceCalls == 2 &&
+        g_smokeDirectDraw2CreateSurfaceDescs[1].ddsCaps.dwCaps ==
+            (DDSCAPS_ZBUFFER | DDSCAPS_SYSTEMMEMORY) &&
+        g_smokeDirectDrawSurfaceQueryInterfaceCalls == 0 &&
+        g_smokeDirectDraw2QueryInterfaceCalls == 0 &&
+        g_smokeDirect3D2CreateDeviceCalls == 0;
+
+    g_zVideo_pDirectDraw2 = savedDirectDraw;
+    g_zVideo_pZBufferSurface = savedZBuffer;
+    g_zVideo_pZBufferAttachSurface = savedZBufferAttach;
+    g_zVideo_pD3D2 = savedD3D;
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_pD3DViewport2 = savedViewport;
+    g_zVideo_pD3DMaterial2 = savedMaterial;
+    g_zVideo_pSelectedD3DDeviceInfo = savedSelectedD3D;
+    g_zVideo_SwSurfaceState = savedSwState;
+    g_zVideo_DisplayModeSurfaceState = savedDisplayState;
+    g_zVideo_ClearScreenBufferEnabled = savedClearScreen;
+    g_zVideo_PendingWireframeState = savedPendingWireframe;
+    g_zVideo_CachedFogEnableRenderState = savedCachedFogEnable;
+    g_zVideo_CachedFogModeLightState = savedCachedFogMode;
+    g_zVideo_D3DMaterialHandle = savedMaterialHandle;
+    g_zVideo_D3DHalDeviceDesc = savedHalDesc;
+    g_zVideo_D3DHelDeviceDesc = savedHelDesc;
+    std::memcpy(
+        g_zVideo_QuadBatchItemsBase,
+        savedQuadItems,
+        sizeof(savedQuadItems)
+    );
+
+    if (!successOk) {
+        return 1;
+    }
+    if (!createSurfaceFailureOk) {
+        return 2;
+    }
+    return 0;
+}
+
+extern "C" int zvid_image_resample_square_smoke(void) {
+    unsigned short *pixels =
+        (unsigned short *)(std::malloc(8 * sizeof(unsigned short)));
+    char *alphaMap = (char *)(std::malloc(8));
+    if (pixels == 0 || alphaMap == 0) {
+        std::free(pixels);
+        std::free(alphaMap);
+        return 1;
+    }
+
+    for (int i = 0; i < 8; ++i) {
+        pixels[i] = (unsigned short)(0x10 + i);
+        alphaMap[i] = (char)(0x40 + i);
+    }
+
+    zVidImagePartial image = {};
+    image.width = 4;
+    image.height = 2;
+    image.pixels = pixels;
+    image.alphaMap = alphaMap;
+
+    zVid_Image::ResampleSquare(&image, 2);
+
+    unsigned short *const newPixels = (unsigned short *)(image.pixels);
+    char *const newAlphaMap = image.alphaMap;
+    const int ok =
+        image.width == 2 &&
+        image.height == 2 &&
+        newPixels != 0 &&
+        newAlphaMap != 0 &&
+        newPixels[0] == 0x10 &&
+        newPixels[1] == 0x12 &&
+        newPixels[2] == 0x14 &&
+        newPixels[3] == 0x16 &&
+        newAlphaMap[0] == (char)(0x40) &&
+        newAlphaMap[1] == (char)(0x42) &&
+        newAlphaMap[2] == (char)(0x44) &&
+        newAlphaMap[3] == (char)(0x46);
+
+    std::free(image.pixels);
+    std::free(image.alphaMap);
+    return ok != 0 ? 0 : 2;
+}
+
+extern "C" int zvideo_pixel_pack_setup_smoke(void) {
+    zVideo::PixelPack_SetupFromMasks(
+        5,
+        6,
+        5,
+        0xf800,
+        0x07e0,
+        0x001f
+    );
+
+    if (g_zVideo_PixelPack.rBits != 5 ||
+        g_zVideo_PixelPack.gBits != 6 ||
+        g_zVideo_PixelPack.bBits != 5 ||
+        g_zVideo_PixelPack.packedBase != 8 ||
+        g_zVideo_PixelPack.sumMinus8 != 3 ||
+        g_zVideo_PixelPack.bShiftTo8 != 3 ||
+        g_zVideo_PixelPack.rMaskShifted != 0xf8 ||
+        g_zVideo_PixelPack.gMaskShifted != 0xfc ||
+        g_zVideo_PixelPack.bMaskShifted != 0xf8) {
+        return 1;
+    }
+
+    zVideo::TexturePixelPack_SetupFromMasks(
+        4,
+        4,
+        4,
+        4,
+        0xf000,
+        0x0f00,
+        0x00f0,
+        0x000f
+    );
+    return g_zVideo_TexturePixelPack_RBits == 4 &&
+                   g_zVideo_TexturePixelPack_GBits == 4 &&
+                   g_zVideo_TexturePixelPack_BBits == 4 &&
+                   g_zVideo_TexturePixelPack_ABits == 4 &&
+                   g_zVideo_TexturePixelPack_RGBBitsTotal == 12 &&
+                   g_zVideo_TexturePixelPack_RGBBitsTotalMinus8 == 4 &&
+                   g_zVideo_TexturePixelPack_GBBitsTotalMinus8 == 0 &&
+                   g_zVideo_TexturePixelPack_BShiftTo8 == 4 &&
+                   g_zVideo_TexturePixelPack_RMaskShifted == 0xf0 &&
+                   g_zVideo_TexturePixelPack_GMaskShifted == 0xf0 &&
+                   g_zVideo_TexturePixelPack_BMaskShifted == 0xf0 &&
+                   g_zVideo_TexturePixelPack_NonRgbMaskShifted == ~0xf0
+               ? 0
+               : 2;
+}
+
+extern "C" int zvideo_dd_lock_surface_wait_restore_smoke(void) {
+    SmokeDirectDrawSurface3Object surface = {};
+    IDirectDrawSurface3 *const surfaceInterface = (IDirectDrawSurface3 *)(&surface);
+    DDSURFACEDESC surfaceDesc;
+
+    InstallSmokeDirectDrawSurface3(surface);
+    std::memset(&surfaceDesc, 0xcc, sizeof(surfaceDesc));
+    const int successOk =
+        zVideo_dd::LockSurface_WaitRestore(surfaceInterface, &surfaceDesc) == 0 &&
+        g_smokeDirectDrawSurface3LockCalls == 1 &&
+        g_smokeDirectDrawSurface3RestoreCalls == 0 &&
+        g_smokeDirectDrawSurface3LastLockRect == 0 &&
+        g_smokeDirectDrawSurface3LastLockDesc == &surfaceDesc &&
+        g_smokeDirectDrawSurface3LastLockFlags == DDLOCK_WAIT &&
+        g_smokeDirectDrawSurface3LastLockEvent == 0 &&
+        g_smokeDirectDrawSurface3LockDescSize == sizeof(surfaceDesc) &&
+        surfaceDesc.dwSize == sizeof(surfaceDesc) &&
+        surfaceDesc.dwWidth == 640 &&
+        surfaceDesc.dwHeight == 480 &&
+        surfaceDesc.lPitch == g_smokeDirectDrawSurface3LockPitchValue &&
+        surfaceDesc.lpSurface == g_smokeDirectDrawSurface3LockPixelsValue;
+
+    InstallSmokeDirectDrawSurface3(surface);
+    g_smokeDirectDrawSurface3LockResults[0] = DDERR_SURFACELOST;
+    g_smokeDirectDrawSurface3LockResults[1] = DD_OK;
+    g_smokeDirectDrawSurface3LockResultCount = 2;
+    std::memset(&surfaceDesc, 0xcc, sizeof(surfaceDesc));
+    const int retryOk =
+        zVideo_dd::LockSurface_WaitRestore(surfaceInterface, &surfaceDesc) == 0 &&
+        g_smokeDirectDrawSurface3LockCalls == 2 &&
+        g_smokeDirectDrawSurface3RestoreCalls == 1 &&
+        g_smokeDirectDrawSurface3LockDescSize == sizeof(surfaceDesc) &&
+        surfaceDesc.dwSize == sizeof(surfaceDesc) &&
+        surfaceDesc.dwWidth == 640 &&
+        surfaceDesc.dwHeight == 480 &&
+        surfaceDesc.lPitch == g_smokeDirectDrawSurface3LockPitchValue &&
+        surfaceDesc.lpSurface == g_smokeDirectDrawSurface3LockPixelsValue;
+
+    InstallSmokeDirectDrawSurface3(surface);
+    g_smokeDirectDrawSurface3LockResults[0] = DDERR_SURFACELOST;
+    g_smokeDirectDrawSurface3LockResults[1] = DD_OK;
+    g_smokeDirectDrawSurface3LockResultCount = 2;
+    g_smokeDirectDrawSurface3RestoreResult = DDERR_GENERIC;
+    std::memset(&surfaceDesc, 0xcc, sizeof(surfaceDesc));
+    const int restoreFailureOk =
+        zVideo_dd::LockSurface_WaitRestore(surfaceInterface, &surfaceDesc) ==
+            0x5a56ffff &&
+        g_smokeDirectDrawSurface3LockCalls == 1 &&
+        g_smokeDirectDrawSurface3RestoreCalls == 1;
+
+    InstallSmokeDirectDrawSurface3(surface);
+    g_smokeDirectDrawSurface3LockResults[0] = DDERR_GENERIC;
+    g_smokeDirectDrawSurface3LockResultCount = 1;
+    std::memset(&surfaceDesc, 0xcc, sizeof(surfaceDesc));
+    const int lockFailureOk =
+        zVideo_dd::LockSurface_WaitRestore(surfaceInterface, &surfaceDesc) ==
+            0x5a56ffff &&
+        g_smokeDirectDrawSurface3LockCalls == 1 &&
+        g_smokeDirectDrawSurface3RestoreCalls == 0 &&
+        surfaceDesc.dwSize == sizeof(surfaceDesc);
+
+    return successOk && retryOk && restoreFailureOk && lockFailureOk ? 0 : 1;
+}
+
+extern "C" int zvideo_dd_unlock_surface_wait_restore_smoke(void) {
+    SmokeDirectDrawSurface3Object surface = {};
+    IDirectDrawSurface3 *const surfaceInterface = (IDirectDrawSurface3 *)(&surface);
+
+    InstallSmokeDirectDrawSurface3(surface);
+    const int successOk =
+        zVideo_dd::UnlockSurface_WaitRestore(surfaceInterface) == 0 &&
+        g_smokeDirectDrawSurface3UnlockCalls == 1 &&
+        g_smokeDirectDrawSurface3RestoreCalls == 0 &&
+        g_smokeDirectDrawSurface3LastUnlockArg == 0;
+
+    InstallSmokeDirectDrawSurface3(surface);
+    g_smokeDirectDrawSurface3UnlockResults[0] = DDERR_SURFACELOST;
+    g_smokeDirectDrawSurface3UnlockResults[1] = DD_OK;
+    g_smokeDirectDrawSurface3UnlockResultCount = 2;
+    const int retryOk =
+        zVideo_dd::UnlockSurface_WaitRestore(surfaceInterface) == 0 &&
+        g_smokeDirectDrawSurface3UnlockCalls == 2 &&
+        g_smokeDirectDrawSurface3RestoreCalls == 1 &&
+        g_smokeDirectDrawSurface3LastUnlockArg == 0;
+
+    InstallSmokeDirectDrawSurface3(surface);
+    g_smokeDirectDrawSurface3UnlockResults[0] = DDERR_SURFACELOST;
+    g_smokeDirectDrawSurface3UnlockResults[1] = DD_OK;
+    g_smokeDirectDrawSurface3UnlockResultCount = 2;
+    g_smokeDirectDrawSurface3RestoreResult = DDERR_GENERIC;
+    const int restoreFailureOk =
+        zVideo_dd::UnlockSurface_WaitRestore(surfaceInterface) == 0x5a56ffff &&
+        g_smokeDirectDrawSurface3UnlockCalls == 1 &&
+        g_smokeDirectDrawSurface3RestoreCalls == 1 &&
+        g_smokeDirectDrawSurface3LastUnlockArg == 0;
+
+    InstallSmokeDirectDrawSurface3(surface);
+    g_smokeDirectDrawSurface3UnlockResults[0] = DDERR_GENERIC;
+    g_smokeDirectDrawSurface3UnlockResultCount = 1;
+    const int unlockFailureOk =
+        zVideo_dd::UnlockSurface_WaitRestore(surfaceInterface) == 0x5a56ffff &&
+        g_smokeDirectDrawSurface3UnlockCalls == 1 &&
+        g_smokeDirectDrawSurface3RestoreCalls == 0 &&
+        g_smokeDirectDrawSurface3LastUnlockArg == 0;
+
+    return successOk && retryOk && restoreFailureOk && unlockFailureOk ? 0 : 1;
+}
+
+extern "C" int zvideo_convert_image_pixels_for_texture_smoke(void) {
+    zVideo::PixelPack_SetupFromMasks(
+        5,
+        6,
+        5,
+        0xf800,
+        0x07e0,
+        0x001f
+    );
+
+    unsigned short srcPixels[4] = {0xf800, 0x07e0, 0x001f, 0};
+    unsigned short dstPixels[8] = {};
+    zVidImagePartial image = {};
+    image.width = 2;
+    image.height = 2;
+    image.pixels = srcPixels;
+
+    zVideo_dd3d::ConvertImagePixelsForTexture(dstPixels, &image, 8, 0);
+
+    if (dstPixels[0] != 0xfc00 ||
+        dstPixels[1] != 0x83f0 ||
+        dstPixels[4] != 0x801f ||
+        dstPixels[5] != 0) {
+        return 1;
+    }
+
+    unsigned char alphaMap[4] = {0xf0, 0x80, 0x10, 0};
+    std::memset(dstPixels, 0, sizeof(dstPixels));
+    image.alphaMap = (char *)(alphaMap);
+    zVideo_dd3d::ConvertImagePixelsForTexture(dstPixels, &image, 8, 1);
+
+    if (dstPixels[0] != 0xff00 ||
+        dstPixels[1] != 0x80f0 ||
+        dstPixels[4] != 0x100f ||
+        dstPixels[5] != 0) {
+        return 2;
+    }
+
+    zVideo::PixelPack_SetupFromMasks(
+        5,
+        5,
+        5,
+        0x7c00,
+        0x03e0,
+        0x001f
+    );
+
+    unsigned short src555 = 0x4210;
+    unsigned char alpha555 = 0xa0;
+    std::memset(dstPixels, 0, sizeof(dstPixels));
+    image.width = 1;
+    image.height = 1;
+    image.pixels = &src555;
+    image.alphaMap = (char *)(&alpha555);
+    zVideo_dd3d::ConvertImagePixelsForTexture(dstPixels, &image, 8, 0);
+
+    return dstPixels[0] == 0xa888 ? 0 : 3;
+}
+
+extern "C" int zvideo_dd3d_upload_image_to_surface_smoke(void) {
+    const int savedDisplayModeBpp = g_zVideo_DisplayModeBpp;
+    const int savedPackedBase = g_zVideo_PixelPack.packedBase;
+    const int savedSumMinus8 = g_zVideo_PixelPack.sumMinus8;
+    const int savedBShiftTo8 = g_zVideo_PixelPack.bShiftTo8;
+    const int savedRMaskShifted = g_zVideo_PixelPack.rMaskShifted;
+    const int savedGMaskShifted = g_zVideo_PixelPack.gMaskShifted;
+    const int savedBMaskShifted = g_zVideo_PixelPack.bMaskShifted;
+    const int savedRBits = g_zVideo_PixelPack.rBits;
+    const int savedGBits = g_zVideo_PixelPack.gBits;
+    const int savedBBits = g_zVideo_PixelPack.bBits;
+    const unsigned int savedRMask = g_zVideo_PixelPack.rMask;
+    const unsigned int savedGMask = g_zVideo_PixelPack.gMask;
+    const unsigned int savedBMask = g_zVideo_PixelPack.bMask;
+
+    SmokeDirectDrawSurface3Object uploadSurface = {};
+    IDirectDrawSurface *const uploadSurfaceInterface =
+        (IDirectDrawSurface *)(&uploadSurface);
+    zVidImagePartial image = {};
+    unsigned char srcContiguous[16];
+    unsigned char dstContiguous[24];
+    for (int i = 0; i < 16; ++i) {
+        srcContiguous[i] = (unsigned char)(0x20 + i);
+    }
+    std::memset(dstContiguous, 0xcc, sizeof(dstContiguous));
+
+    InstallSmokeDirectDrawSurface3(uploadSurface);
+    g_zVideo_DisplayModeBpp = 16;
+    g_smokeDirectDrawSurface3LockPixelsValue = dstContiguous;
+    g_smokeDirectDrawSurface3LockPitchValue = 4;
+    image.width = 4;
+    image.height = 2;
+    image.pixels = srcContiguous;
+    image.alphaMap = 0;
+    const int contiguousOk =
+        zVideo_dd3d::UploadImageToSurface(uploadSurfaceInterface, &image, 0) == 1 &&
+        g_smokeDirectDrawSurface3LockCalls == 1 &&
+        g_smokeDirectDrawSurface3UnlockCalls == 1 &&
+        g_smokeDirectDrawSurface3UnlockSurfaces[0] ==
+            (IDirectDrawSurface3 *)(&uploadSurface) &&
+        std::memcmp(dstContiguous, srcContiguous, sizeof(srcContiguous)) == 0 &&
+        dstContiguous[16] == 0xcc;
+
+    unsigned char srcRows[8];
+    unsigned char dstRows[20];
+    for (int rowByte = 0; rowByte < 8; ++rowByte) {
+        srcRows[rowByte] = (unsigned char)(0x40 + rowByte);
+    }
+    std::memset(dstRows, 0xcc, sizeof(dstRows));
+
+    InstallSmokeDirectDrawSurface3(uploadSurface);
+    g_zVideo_DisplayModeBpp = 16;
+    g_smokeDirectDrawSurface3LockPixelsValue = dstRows;
+    g_smokeDirectDrawSurface3LockPitchValue = 8;
+    image.width = 2;
+    image.height = 2;
+    image.pixels = srcRows;
+    image.alphaMap = 0;
+    const int rowCopyOk =
+        zVideo_dd3d::UploadImageToSurface(uploadSurfaceInterface, &image, 0) == 1 &&
+        std::memcmp(dstRows, srcRows, 4) == 0 &&
+        dstRows[4] == 0xcc &&
+        std::memcmp(dstRows + 8, srcRows + 4, 4) == 0 &&
+        dstRows[12] == 0xcc &&
+        g_smokeDirectDrawSurface3LockCalls == 1 &&
+        g_smokeDirectDrawSurface3UnlockCalls == 1;
+
+    zVideo::PixelPack_SetupFromMasks(
+        5,
+        6,
+        5,
+        0xf800,
+        0x07e0,
+        0x001f
+    );
+
+    unsigned short srcAlpha[4] = {0xf800, 0x07e0, 0x001f, 0};
+    unsigned char alphaMap[4] = {0xf0, 0x80, 0x10, 0};
+    unsigned short dstAlpha[8] = {};
+
+    InstallSmokeDirectDrawSurface3(uploadSurface);
+    g_smokeDirectDrawSurface3LockPixelsValue = dstAlpha;
+    g_smokeDirectDrawSurface3LockPitchValue = 8;
+    image.width = 2;
+    image.height = 2;
+    image.pixels = srcAlpha;
+    image.alphaMap = (char *)(alphaMap);
+    const int alphaConvertOk =
+        zVideo_dd3d::UploadImageToSurface(uploadSurfaceInterface, &image, 1) == 1 &&
+        dstAlpha[0] == 0xff00 &&
+        dstAlpha[1] == 0x80f0 &&
+        dstAlpha[4] == 0x100f &&
+        dstAlpha[5] == 0 &&
+        g_smokeDirectDrawSurface3LockCalls == 1 &&
+        g_smokeDirectDrawSurface3UnlockCalls == 1;
+
+    g_zVideo_DisplayModeBpp = savedDisplayModeBpp;
+    g_zVideo_PixelPack.packedBase = savedPackedBase;
+    g_zVideo_PixelPack.sumMinus8 = savedSumMinus8;
+    g_zVideo_PixelPack.bShiftTo8 = savedBShiftTo8;
+    g_zVideo_PixelPack.rMaskShifted = savedRMaskShifted;
+    g_zVideo_PixelPack.gMaskShifted = savedGMaskShifted;
+    g_zVideo_PixelPack.bMaskShifted = savedBMaskShifted;
+    g_zVideo_PixelPack.rBits = savedRBits;
+    g_zVideo_PixelPack.gBits = savedGBits;
+    g_zVideo_PixelPack.bBits = savedBBits;
+    g_zVideo_PixelPack.rMask = savedRMask;
+    g_zVideo_PixelPack.gMask = savedGMask;
+    g_zVideo_PixelPack.bMask = savedBMask;
+    return contiguousOk && rowCopyOk && alphaConvertOk ? 0 : 1;
 }
 
 extern "C" int zhud_counter_constructor_smoke(void) {
@@ -943,6 +7316,10 @@ int main(int argc, char **argv) {
         {"zinput_keyboard_wait_for_key_press_smoke", zinput_keyboard_wait_for_key_press_smoke},
         {"zinput_keyboard_poll_state_smoke", zinput_keyboard_poll_state_smoke},
         {"zinput_poll_active_devices_smoke", zinput_poll_active_devices_smoke},
+        {"zopt_fullscreen_accessors_smoke", zopt_fullscreen_accessors_smoke},
+        {"zopt_section_accessor_smoke", zopt_section_accessor_smoke},
+        {"zopt_view_rect_target_side_effects_smoke",
+         zopt_view_rect_target_side_effects_smoke},
         {"zsnd_stream_request_stop_if_active_smoke", zsnd_stream_request_stop_if_active_smoke},
         {"zsnd_play_handle_stop_if_active_smoke", zsnd_play_handle_stop_if_active_smoke},
         {"zsnd_sample_play_simple_smoke", zsnd_sample_play_simple_smoke},
@@ -964,6 +7341,14 @@ int main(int argc, char **argv) {
         {"zreader_file_exists_and_list_create_smoke", zreader_file_exists_and_list_create_smoke},
         {"hud_ui_save_load_entry_is_newer_than_smoke",
          hud_ui_save_load_entry_is_newer_than_smoke},
+        {"player_underwater_fx_pass3_ui_constructor_smoke",
+         player_underwater_fx_pass3_ui_constructor_smoke},
+        {"player_projectile_camera_fx_pass3_ui_constructor_smoke",
+         player_projectile_camera_fx_pass3_ui_constructor_smoke},
+        {"player_underwater_fx_pass3_ui_apply_blue_tint_smoke",
+         player_underwater_fx_pass3_ui_apply_blue_tint_smoke},
+        {"player_projectile_camera_fx_pass3_ui_apply_green_mask_smoke",
+         player_projectile_camera_fx_pass3_ui_apply_green_mask_smoke},
         {"hud_ui_save_load_list_item_constructor_smoke",
          hud_ui_save_load_list_item_constructor_smoke},
         {"hud_ui_save_load_list_item_draw_smoke",
@@ -1089,10 +7474,32 @@ int main(int argc, char **argv) {
         {"zhud_widget_constructor_smoke", zhud_widget_constructor_smoke},
         {"zhud_widget_invalidate_rect_smoke",
          zhud_widget_invalidate_rect_smoke},
+        {"zhud_widget_draw_smoke", zhud_widget_draw_smoke},
         {"zhud_slot_draw_smoke", zhud_slot_draw_smoke},
         {"zhud_triplet_panel_draw_smoke", zhud_triplet_panel_draw_smoke},
         {"zhud_triplet_panel_set_visible_count_smoke",
          zhud_triplet_panel_set_visible_count_smoke},
+        {"zhud_triplet_interpolate_layout_smoke",
+         zhud_triplet_interpolate_layout_smoke},
+        {"zhud_scoreboard_set_scale_and_rebuild_smoke",
+         zhud_scoreboard_set_scale_and_rebuild_smoke},
+        {"zhud_triplet_scoreboard_entry_update_smoke",
+         zhud_triplet_scoreboard_entry_update_smoke},
+        {"zhud_text_stack_constructors_smoke",
+         zhud_text_stack_constructors_smoke},
+        {"zhud_text_stack_set_font_all_smoke",
+         zhud_text_stack_set_font_all_smoke},
+        {"zhud_text_stack_push_line_smoke",
+         zhud_text_stack_push_line_smoke},
+        {"zhud_text_stack_clear_and_enable_smoke",
+         zhud_text_stack_clear_and_enable_smoke},
+        {"zhud_text_stack_clear_and_disable_smoke",
+         zhud_text_stack_clear_and_disable_smoke},
+        {"zhud_text_stack_destructor_core_smoke",
+         zhud_text_stack_destructor_core_smoke},
+        {"zhud_text_stack_layout_mutators_smoke",
+         zhud_text_stack_layout_mutators_smoke},
+        {"zhud_list_menu_entry_sort_smoke", zhud_list_menu_entry_sort_smoke},
         {"zhud_layout_hw_update_objective_dirty_rect_smoke",
          zhud_layout_hw_update_objective_dirty_rect_smoke},
         {"zhud_objective_update_meter_xpoints_smoke",
@@ -1103,6 +7510,8 @@ int main(int argc, char **argv) {
         {"zhud_bar_and_meter_constructor_smoke", zhud_bar_and_meter_constructor_smoke},
         {"zhud_widget_release_image_if_owned_smoke",
          zhud_widget_release_image_if_owned_smoke},
+        {"zhud_widget_set_image_borrowed_and_invalidate_smoke",
+         zhud_widget_set_image_borrowed_and_invalidate_smoke},
         {"zhud_widget_destructor_core_smoke",
          zhud_widget_destructor_core_smoke},
         {"zhud_fill_bitmap_core_smoke", zhud_fill_bitmap_core_smoke},
@@ -1145,6 +7554,8 @@ int main(int argc, char **argv) {
          zhud_composite_panel_constructor_with_entry_count_smoke},
         {"zhud_composite_panel_destructor_smoke", zhud_composite_panel_destructor_smoke},
         {"zhud_composite_panel_update_smoke", zhud_composite_panel_update_smoke},
+        {"zhud_transition_text_panel_update_smoke",
+         zhud_transition_text_panel_update_smoke},
         {"zhud_composite_panel_layout_entries_smoke",
          zhud_composite_panel_layout_entries_smoke},
         {"zhud_composite_panel_set_text_fmt_smoke",
@@ -1419,15 +7830,139 @@ int main(int argc, char **argv) {
         {"zvideo_image_set_pixels_smoke", zvideo_image_set_pixels_smoke},
         {"zvideo_capture_surface_to_image_smoke", zvideo_capture_surface_to_image_smoke},
         {"zvideo_fx_set_surface_state_smoke", zvideo_fx_set_surface_state_smoke},
+        {"zvideo_surface_accessors_smoke", zvideo_surface_accessors_smoke},
+        {"zvideo_primary_surface_rect_scratch_smoke",
+         zvideo_primary_surface_rect_scratch_smoke},
         {"zvideo_image_alpha_clear_smoke", zvideo_image_alpha_clear_smoke},
+        {"zvideo_mode_geometry_and_set_video_mode_smoke",
+         zvideo_mode_geometry_and_set_video_mode_smoke},
+        {"zvideo_init_video_system_reentry_guard_smoke",
+         zvideo_init_video_system_reentry_guard_smoke},
+        {"zvideo_bind_renderer_dispatch_smoke", zvideo_bind_renderer_dispatch_smoke},
+        {"zvideo_module_init_smoke", zvideo_module_init_smoke},
+        {"zvideo_at_exit_release_all_interfaces_and_surfaces_smoke",
+         zvideo_at_exit_release_all_interfaces_and_surfaces_smoke},
+        {"zvideo_return_success_stub_smoke", zvideo_return_success_stub_smoke},
+        {"zvid_cached_client_rect_smoke", zvid_cached_client_rect_smoke},
+        {"zvideo_shutdown_video_system_smoke", zvideo_shutdown_video_system_smoke},
         {"zvideo_buff_clip_coord_to_range_smoke", zvideo_buff_clip_coord_to_range_smoke},
         {"zvideo_buff_copy_surface_rect_to_image_smoke",
          zvideo_buff_copy_surface_rect_to_image_smoke},
+        {"zvideo_draw_noise_rect_smoke", zvideo_draw_noise_rect_smoke},
+        {"zvideo_blur_region_horizontal_smoke", zvideo_blur_region_horizontal_smoke},
+        {"zvideo_blur_region_vertical_smoke", zvideo_blur_region_vertical_smoke},
+        {"zvideo_blur_region_combined_smoke", zvideo_blur_region_combined_smoke},
+        {"zvideo_blur_region_by_mode_smoke", zvideo_blur_region_by_mode_smoke},
         {"zvideo_texture_pack_load_image_smoke", zvideo_texture_pack_load_image_smoke},
+        {"zvideo_dd_prepare_window_for_mode_smoke",
+         zvideo_dd_prepare_window_for_mode_smoke},
         {"zvid_query_device_video_memory_bytes_smoke",
          zvid_query_device_video_memory_bytes_smoke},
         {"zvid_query_texture_memory_bytes_smoke", zvid_query_texture_memory_bytes_smoke},
+        {"zvideo_pixel_pack_setup_smoke", zvideo_pixel_pack_setup_smoke},
         {"zvideo_dd_report_error_smoke", zvideo_dd_report_error_smoke},
+        {"zvideo_dd_create_directdraw2_for_selected_device_smoke",
+         zvideo_dd_create_directdraw2_for_selected_device_smoke},
+        {"zvideo_dd_open_video_mode_smoke", zvideo_dd_open_video_mode_smoke},
+        {"zvideo_dd_create_surface3_from_desc_smoke",
+         zvideo_dd_create_surface3_from_desc_smoke},
+        {"zvideo_dd_lock_directdraw_surface_smoke",
+         zvideo_dd_lock_directdraw_surface_smoke},
+        {"zvideo_dd_unlock_directdraw_surface_smoke",
+         zvideo_dd_unlock_directdraw_surface_smoke},
+        {"zvideo_dd_lock_surface_wait_restore_smoke",
+         zvideo_dd_lock_surface_wait_restore_smoke},
+        {"zvideo_dd_unlock_surface_wait_restore_smoke",
+         zvideo_dd_unlock_surface_wait_restore_smoke},
+        {"zvideo_surface_state_lock_skip_smoke",
+         zvideo_surface_state_lock_skip_smoke},
+        {"zvideo_dd_lock_surface_state_smoke",
+         zvideo_dd_lock_surface_state_smoke},
+        {"zvideo_dd_unlock_surface_state_smoke",
+         zvideo_dd_unlock_surface_state_smoke},
+        {"zvideo_dd_verify_fullscreen_surface_locks_smoke",
+         zvideo_dd_verify_fullscreen_surface_locks_smoke},
+        {"zvideo_texture_record_destroy_smoke", zvideo_texture_record_destroy_smoke},
+        {"zvideo_dd_release_all_interfaces_and_surfaces_smoke",
+         zvideo_dd_release_all_interfaces_and_surfaces_smoke},
+        {"zvideo_dd_verify_surface_state_locking_smoke",
+         zvideo_dd_verify_surface_state_locking_smoke},
+        {"zvideo_dd_teardown_video_subsystem_smoke",
+         zvideo_dd_teardown_video_subsystem_smoke},
+        {"zvideo_dd_shutdown_video_system_smoke",
+         zvideo_dd_shutdown_video_system_smoke},
+        {"zvideo_dd_palette_set_entries_smoke",
+         zvideo_dd_palette_set_entries_smoke},
+        {"zvideo_get_display_mode_bpp_smoke",
+         zvideo_get_display_mode_bpp_smoke},
+        {"zvideo_dd_set_display_mode_smoke",
+         zvideo_dd_set_display_mode_smoke},
+        {"zvideo_dd_set_video_mode_smoke",
+         zvideo_dd_set_video_mode_smoke},
+        {"zvideo_dd_restore_display_surfaces_smoke",
+         zvideo_dd_restore_display_surfaces_smoke},
+        {"zvideo_dd_init_fullscreen_software_pixel_pack_smoke",
+         zvideo_dd_init_fullscreen_software_pixel_pack_smoke},
+        {"zvideo_dd_create_half_res_backbuffer_surfaces_smoke",
+         zvideo_dd_create_half_res_backbuffer_surfaces_smoke},
+        {"zvideo_dd_create_fullscreen_software_surfaces_smoke",
+         zvideo_dd_create_fullscreen_software_surfaces_smoke},
+        {"zvideo_dd_create_fullscreen_hw_surfaces_smoke",
+         zvideo_dd_create_fullscreen_hw_surfaces_smoke},
+        {"zvideo_dd_create_fullscreen_surfaces_for_renderer_smoke",
+         zvideo_dd_create_fullscreen_surfaces_for_renderer_smoke},
+        {"zvideo_image_lazy_create_backing_surface_guards_smoke",
+         zvideo_image_lazy_create_backing_surface_guards_smoke},
+        {"zvideo_dd_image_populate_surface_from_heap_pixels_smoke",
+         zvideo_dd_image_populate_surface_from_heap_pixels_smoke},
+        {"zvideo_dd_image_lazy_create_backing_surface_smoke",
+         zvideo_dd_image_lazy_create_backing_surface_smoke},
+        {"zvideo_dd_image_lazy_create_video_memory_surface_smoke",
+         zvideo_dd_image_lazy_create_video_memory_surface_smoke},
+        {"zvideo_dd_image_upload_pixels_to_surface_smoke",
+         zvideo_dd_image_upload_pixels_to_surface_smoke},
+        {"zvideo_dd_image_release_surface_smoke",
+         zvideo_dd_image_release_surface_smoke},
+        {"zvideo_image_surface_helpers_guard_smoke",
+         zvideo_image_surface_helpers_guard_smoke},
+        {"zvideo_set_renderer_type_smoke", zvideo_set_renderer_type_smoke},
+        {"zvid_option_accessors_smoke", zvid_option_accessors_smoke},
+        {"zvideo_init_set_surface_geometry_from_mode_index_smoke",
+         zvideo_init_set_surface_geometry_from_mode_index_smoke},
+        {"zvideo_select_hw_api_device_smoke", zvideo_select_hw_api_device_smoke},
+        {"zvideo_dd_enum_direct3d_device_callback_smoke",
+         zvideo_dd_enum_direct3d_device_callback_smoke},
+        {"zvideo_dd_enumerate_direct3d_devices_for_record_smoke",
+         zvideo_dd_enumerate_direct3d_devices_for_record_smoke},
+        {"zvideo_dd_enum_directdraw_device_callback_smoke",
+         zvideo_dd_enum_directdraw_device_callback_smoke},
+        {"zvideo_dd_run_device_enumeration_smoke",
+         zvideo_dd_run_device_enumeration_smoke},
+        {"zvideo_dd_startup_enumerate_default_select_smoke",
+         zvideo_dd_startup_enumerate_default_select_smoke},
+        {"zvideo_dd3d_set_fog_enable_smoke", zvideo_dd3d_set_fog_enable_smoke},
+        {"zvideo_texture_record_release_upload_surface_smoke",
+         zvideo_texture_record_release_upload_surface_smoke},
+        {"zvideo_texture_record_finalize_upload_smoke",
+         zvideo_texture_record_finalize_upload_smoke},
+        {"zvideo_texture_record_create_and_power_smoke",
+         zvideo_texture_record_create_and_power_smoke},
+        {"zvideo_texture_record_lock_upload_surface_smoke",
+         zvideo_texture_record_lock_upload_surface_smoke},
+        {"zvideo_texture_record_unlock_upload_surface_smoke",
+         zvideo_texture_record_unlock_upload_surface_smoke},
+        {"zvideo_quad_batch_depth_and_rhw_smoke",
+         zvideo_quad_batch_depth_and_rhw_smoke},
+        {"zvideo_create_texture_record_guards_smoke",
+         zvideo_create_texture_record_guards_smoke},
+        {"zvideo_dd3d_create_texture_record_smoke",
+         zvideo_dd3d_create_texture_record_smoke},
+        {"zvideo_dd3d_create_device_state_smoke",
+         zvideo_dd3d_create_device_state_smoke},
+        {"zvideo_convert_image_pixels_for_texture_smoke",
+         zvideo_convert_image_pixels_for_texture_smoke},
+        {"zvideo_dd3d_upload_image_to_surface_smoke",
+         zvideo_dd3d_upload_image_to_surface_smoke},
         {"zimage_texdir_find_or_create_missing_smoke", zimage_texdir_find_or_create_missing_smoke},
         {"zimage_texdir_build_mip_chain_smoke", zimage_texdir_build_mip_chain_smoke},
         {"zvid_texture_pack_ensure_builtin_smoke", zvid_texture_pack_ensure_builtin_smoke},
@@ -1443,6 +7978,7 @@ int main(int argc, char **argv) {
         {"zimage_texdir_write_smoke", zimage_texdir_write_smoke},
         {"zimage_init_option_fallback_smoke", zimage_init_option_fallback_smoke},
         {"zimage_init_texture_directory_smoke", zimage_init_texture_directory_smoke},
+        {"zvid_image_resample_square_smoke", zvid_image_resample_square_smoke},
         {"zvid_image_release_owned_buffers_smoke", zvid_image_release_owned_buffers_smoke},
         {"zvid_image_destroy_smoke", zvid_image_destroy_smoke},
         {"zimg_init_smoke", zimg_init_smoke},

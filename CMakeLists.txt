@@ -10,7 +10,7 @@ endif()
 option(RECOIL_BUILD_NATIVE_TESTS "Build native CTest smoke and behavior tests." ON)
 option(RECOIL_BUILD_ZBD_VIEWERS "Build standalone ZBD asset viewer executables." OFF)
 option(RECOIL_REQUIRE_32BIT "Fail configure unless the selected native compiler targets 32-bit." OFF)
-option(RECOIL_EMIT_ASM "Ask MSVC to emit assembly listings for binary-safety comparison." OFF)
+option(RECOIL_EMIT_ASM "Ask MSVC to emit assembly listings for tier S byte/assembly comparison." OFF)
 
 include(cmake/RecoilCompiler.cmake)
 include(cmake/RecoilAureal.cmake)

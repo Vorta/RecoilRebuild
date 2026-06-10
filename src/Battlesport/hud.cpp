@@ -34,22 +34,6 @@ float g_Hud_LowMeterNextBeepTime = 0.0f;
 extern "C" int g_RecoilState_MainMenuSkipExitDelay;
 
 namespace {
-typedef void(__fastcall *HudWeatherFxTextureUploadProc)(
-    zVideo_TextureRecordPartial *textureRecord,
-    void *reserved,
-    zVidImagePartial *image
-);
-typedef void(__fastcall *HudWeatherFxSubmitPolyProc)(
-    zVideo_XyzVertex *vertices,
-    zVideo_TexCoord *texCoords,
-    int vertexCount,
-    zVideo_RenderClass *renderClass,
-    unsigned int renderParam,
-    float alpha,
-    int queueMode
-);
-typedef void(*HudWeatherFxFlushProc)();
-
 const float kHudWeatherFxDepthRandScale = -0.0000152592547f;
 const float kHudWeatherFxConeRandScale = -0.0000457777642f;
 const float kHudWeatherFxDepthBase = 0.5f;
@@ -217,7 +201,7 @@ void HudWeatherFx::Destructor() {
 
     if (g_zVideo_ActiveRendererPath != ZVID_RENDERER_BACKEND_SOFTWARE) {
         if (textureRecord != 0) {
-            ((zVideo_DestroyTextureRecordProc)(g_zVideo_pfnTextureRecordDestroy))(textureRecord);
+            g_zVideo_pfnTextureRecordDestroy(textureRecord);
         }
         if (softwareImage != 0) {
             zVid_Image::ReleaseIfNotDefault(softwareImage);
@@ -311,7 +295,7 @@ void HudWeatherFx::DrawParticles() {
         }
     }
 
-    ((HudWeatherFxTextureUploadProc)(g_zVideo_pfnTextureRecordFinalizeUpload))(
+    g_zVideo_pfnTextureRecordFinalizeUpload(
         textureRecord,
         0,
         softwareImage
@@ -357,7 +341,7 @@ void HudWeatherFx::DrawParticles() {
 
         if (((HudWeatherFxPointBatch *)(clipVerts))->ArePointBatchInsideRect(4, viewportRect) !=
             0) {
-            ((HudWeatherFxSubmitPolyProc)(g_zVideo_pfnSubmitPolyRenderClass))(
+            g_zVideo_pfnSubmitPolyRenderClass(
                 clipVerts,
                 texCoords,
                 4,
@@ -369,7 +353,7 @@ void HudWeatherFx::DrawParticles() {
         }
     }
 
-    ((HudWeatherFxFlushProc)(g_zVideo_pfnFlushSortedPolys))();
+    g_zVideo_pfnFlushSortedPolys();
     zVideoD3D::SceneLeave();
     if (swSurfaceWasLocked != 0) {
         zVideo::RunPostprocessOnSwBuffer();

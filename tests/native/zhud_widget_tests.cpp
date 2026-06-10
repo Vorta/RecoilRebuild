@@ -146,6 +146,15 @@ int g_widgetInvalidateRectGetCenterXCount;
 int g_widgetInvalidateRectGetCenterYCount;
 int g_widgetInvalidateRectInvalidateCount;
 void *g_widgetInvalidateRectInvalidateThis;
+int g_widgetDrawBaseCount;
+void *g_widgetDrawBaseThis;
+int g_widgetDrawBlitCount;
+zVidImagePartial *g_widgetDrawBlitImages[4];
+int g_widgetDrawBlitX[4];
+int g_widgetDrawBlitY[4];
+int g_widgetDrawBlitFlags[4];
+int g_widgetDrawBlitHasRect[4];
+zVidRect32 g_widgetDrawBlitRects[4];
 int g_elementUpdateDrawCount;
 int g_elementUpdateDrawBaseCount;
 int g_elementUpdateInvalidateCount;
@@ -162,6 +171,10 @@ struct TestWidgetInvalidateRect : HudUiWidget {
     virtual int GetCenterX();
     virtual int GetCenterY();
     virtual void Invalidate();
+};
+
+struct TestWidgetDrawOps : HudUiWidget {
+    virtual void DrawBase();
 };
 
 struct TestElementUpdateElement : HudUiElement {
@@ -206,6 +219,27 @@ void __fastcall CaptureTripletPanelBlit(
     ++g_tripletPanelBlitCount;
 }
 
+void __fastcall CaptureWidgetDrawBlit(
+    zVidImagePartial *image,
+    int dstX,
+    int dstY,
+    int clipFlags,
+    zVidRect32 *srcRect
+) {
+    const int index = g_widgetDrawBlitCount;
+    if (index < 4) {
+        g_widgetDrawBlitImages[index] = image;
+        g_widgetDrawBlitX[index] = dstX;
+        g_widgetDrawBlitY[index] = dstY;
+        g_widgetDrawBlitFlags[index] = clipFlags;
+        g_widgetDrawBlitHasRect[index] = srcRect != nullptr ? 1 : 0;
+        if (srcRect != nullptr) {
+            g_widgetDrawBlitRects[index] = *srcRect;
+        }
+    }
+    ++g_widgetDrawBlitCount;
+}
+
 void CaptureActivatedLayout::OnActivated() {
     ++g_layoutActivatedCount;
 }
@@ -223,6 +257,11 @@ int TestWidgetInvalidateRect::GetCenterY() {
 void TestWidgetInvalidateRect::Invalidate() {
     ++g_widgetInvalidateRectInvalidateCount;
     g_widgetInvalidateRectInvalidateThis = this;
+}
+
+void TestWidgetDrawOps::DrawBase() {
+    ++g_widgetDrawBaseCount;
+    g_widgetDrawBaseThis = this;
 }
 
 void TestElementUpdateElement::Draw() {
@@ -738,7 +777,7 @@ extern "C" int zhud_element_visible_smoke(void) {
 
 extern "C" int zhud_circle_constructor_and_hit_test_smoke(void) {
     HudUiCircle circle{};
-    HudUiCircle *const result = circle.Constructor(
+    HudUiCircle *const result = new (&circle) HudUiCircle(
         10,
         20,
         5,
@@ -788,7 +827,7 @@ extern "C" int zhud_circle_draw_dirty_smoke(void) {
     g_circlePointOpArgs[1] = 0;
     g_circlePointOpArgs[2] = 0;
 
-    circle.DrawDirty();
+    circle.Draw();
     const bool directOk =
         g_circleDrawBaseCount == 1 &&
         g_circlePointOpCount == 16 &&
@@ -1206,6 +1245,115 @@ extern "C" int zhud_widget_invalidate_rect_smoke(void) {
     return clipped && dispatched ? 0 : 1;
 }
 
+extern "C" int zhud_widget_draw_smoke(void) {
+    zVideo_BltSourceToPrimaryProc const oldBlit =
+        g_zVideo_pfnBltSourceToPrimary;
+    zVidImagePartial *const oldExclusiveImage =
+        g_HudUiWidget_ExclusiveDrawImage;
+
+    TestWidgetDrawOps widget{};
+    widget.x = 17;
+    widget.y = 23;
+
+    g_widgetDrawBlitCount = 0;
+    g_widgetDrawBaseCount = 0;
+    g_widgetDrawBaseThis = nullptr;
+    g_zVideo_pfnBltSourceToPrimary = CaptureWidgetDrawBlit;
+    g_HudUiWidget_ExclusiveDrawImage = nullptr;
+    widget.Draw();
+    const bool nullImageSkipped =
+        g_widgetDrawBlitCount == 0 &&
+        g_widgetDrawBaseCount == 0 &&
+        g_widgetDrawBaseThis == nullptr;
+
+    zVidImagePartial image{};
+    zVidImagePartial otherImage{};
+    widget.image = &image;
+    widget.dirtyRectCount = 0;
+    g_widgetDrawBlitCount = 0;
+    g_widgetDrawBaseCount = 0;
+    g_widgetDrawBaseThis = nullptr;
+    g_HudUiWidget_ExclusiveDrawImage = &otherImage;
+    widget.Draw();
+    const bool exclusiveSkipped =
+        g_widgetDrawBlitCount == 0 &&
+        g_widgetDrawBaseCount == 0 &&
+        g_widgetDrawBaseThis == nullptr;
+
+    HudUiRect clip = {1, 2, 7, 9};
+    widget.bltClipRectOrNull = &clip;
+    g_widgetDrawBlitCount = 0;
+    g_widgetDrawBaseCount = 0;
+    g_widgetDrawBaseThis = nullptr;
+    g_HudUiWidget_ExclusiveDrawImage = nullptr;
+    widget.Draw();
+    const bool wholeWidgetDrawn =
+        g_widgetDrawBaseCount == 1 &&
+        g_widgetDrawBaseThis == &widget &&
+        g_widgetDrawBlitCount == 1 &&
+        g_widgetDrawBlitImages[0] == &image &&
+        g_widgetDrawBlitX[0] == 17 &&
+        g_widgetDrawBlitY[0] == 23 &&
+        g_widgetDrawBlitFlags[0] == 0 &&
+        g_widgetDrawBlitHasRect[0] == 1 &&
+        g_widgetDrawBlitRects[0].left == 1 &&
+        g_widgetDrawBlitRects[0].top == 2 &&
+        g_widgetDrawBlitRects[0].right == 7 &&
+        g_widgetDrawBlitRects[0].bottom == 9;
+
+    widget.dirtyRectCount = 2;
+    widget.dirtyRects[0].framesRemaining = 2;
+    widget.dirtyRects[0].drawX = 31;
+    widget.dirtyRects[0].drawY = 41;
+    widget.dirtyRects[0].srcLeft = 3;
+    widget.dirtyRects[0].srcTop = 4;
+    widget.dirtyRects[0].srcRight = 13;
+    widget.dirtyRects[0].srcBottom = 14;
+    widget.dirtyRects[1].framesRemaining = 1;
+    widget.dirtyRects[1].drawX = 51;
+    widget.dirtyRects[1].drawY = 61;
+    widget.dirtyRects[1].srcLeft = 5;
+    widget.dirtyRects[1].srcTop = 6;
+    widget.dirtyRects[1].srcRight = 15;
+    widget.dirtyRects[1].srcBottom = 16;
+    widget.dirtyRects[2].framesRemaining = 0;
+    widget.dirtyRects[3].framesRemaining = 0;
+
+    g_widgetDrawBlitCount = 0;
+    g_widgetDrawBaseCount = 0;
+    g_widgetDrawBaseThis = nullptr;
+    widget.Draw();
+    const bool dirtyRectsDrawn =
+        g_widgetDrawBaseCount == 0 &&
+        g_widgetDrawBaseThis == nullptr &&
+        g_widgetDrawBlitCount == 2 &&
+        widget.dirtyRectCount == 1 &&
+        widget.dirtyRects[0].framesRemaining == 1 &&
+        widget.dirtyRects[1].framesRemaining == 0 &&
+        g_widgetDrawBlitImages[0] == &image &&
+        g_widgetDrawBlitX[0] == 31 &&
+        g_widgetDrawBlitY[0] == 41 &&
+        g_widgetDrawBlitHasRect[0] == 1 &&
+        g_widgetDrawBlitRects[0].left == 3 &&
+        g_widgetDrawBlitRects[0].top == 4 &&
+        g_widgetDrawBlitRects[0].right == 13 &&
+        g_widgetDrawBlitRects[0].bottom == 14 &&
+        g_widgetDrawBlitImages[1] == &image &&
+        g_widgetDrawBlitX[1] == 51 &&
+        g_widgetDrawBlitY[1] == 61 &&
+        g_widgetDrawBlitHasRect[1] == 1 &&
+        g_widgetDrawBlitRects[1].left == 5 &&
+        g_widgetDrawBlitRects[1].top == 6 &&
+        g_widgetDrawBlitRects[1].right == 15 &&
+        g_widgetDrawBlitRects[1].bottom == 16;
+
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+    g_HudUiWidget_ExclusiveDrawImage = oldExclusiveImage;
+    return nullImageSkipped && exclusiveSkipped && wholeWidgetDrawn && dirtyRectsDrawn
+               ? 0
+               : 1;
+}
+
 extern "C" int zhud_objective_update_meter_xpoints_smoke(void) {
     const HudUiWidget oldWidget = g_HudUiMgrObjectiveWidget;
     const HudUiMeter oldMeter = g_HudUiMgrObjectiveMeter;
@@ -1505,6 +1653,29 @@ extern "C" int zhud_widget_release_image_if_owned_smoke(void) {
     const bool emptyOk = empty.image == nullptr && empty.ownsImage == 0;
 
     return borrowedOk && ownedOk && emptyOk ? 0 : 1;
+}
+
+extern "C" int zhud_widget_set_image_borrowed_and_invalidate_smoke(void) {
+    const unsigned int oldMask = g_HudUi_InvalidateMask;
+
+    HudUiWidget widget{};
+    zVidImagePartial oldImage{};
+    widget.image = &oldImage;
+    widget.ownsImage = 1;
+    widget.flags = 0;
+
+    g_HudUi_InvalidateMask = 0x80;
+    zVidImagePartial *const result =
+        widget.SetImageBorrowedAndInvalidate(&zVid_Image::g_zImage_DefaultImage);
+
+    const bool setBorrowed =
+        result == &zVid_Image::g_zImage_DefaultImage &&
+        widget.image == &zVid_Image::g_zImage_DefaultImage &&
+        widget.ownsImage == 0 &&
+        (widget.flags & 0x80u) != 0;
+
+    g_HudUi_InvalidateMask = oldMask;
+    return setBorrowed ? 0 : 1;
 }
 
 extern "C" int zhud_widget_destructor_core_smoke(void) {

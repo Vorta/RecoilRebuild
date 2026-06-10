@@ -47,5 +47,5 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 4)
         "${RECOIL_MFC42_LIB_X86_DIR}/MFC42.LIB"
     )
 else()
-    message(WARNING "Legacy Recoil MFC42 import libraries are vendored for x86 only. Use an x86 MSVC environment for binary-safe builds.")
+    message(WARNING "Legacy Recoil MFC42 import libraries are vendored for x86 only. Use an x86 MSVC environment for native verification builds.")
 endif()

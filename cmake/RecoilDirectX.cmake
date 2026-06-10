@@ -33,5 +33,5 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 4)
         "${RECOIL_DXSDK6_LIB_X86_DIR}"
     )
 else()
-    message(WARNING "DirectX 6 import libraries are vendored for x86 only. Use an x86 MSVC environment for binary-safe builds.")
+    message(WARNING "DirectX 6 import libraries are vendored for x86 only. Use an x86 MSVC environment for native verification builds.")
 endif()

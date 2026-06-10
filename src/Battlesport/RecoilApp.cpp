@@ -1771,7 +1771,11 @@ int RecoilApp::EngineInit(
     return 1;
 }
 
-// Reimplements 0x42e330: RecoilApp::InitializeDisplay
+/**
+ * Reimplements 0x42e330: RecoilApp::InitializeDisplay.
+ * Original source path: D:\Proj\GameZRecoil\RecoilApp\RecoilApp.cpp.
+ * Purpose: initialize display state, frame-buffer routing, scratch buffers, and initial clears.
+ */
 int __fastcall RecoilApp::InitializeDisplay(
     HWND hwnd
 ) {

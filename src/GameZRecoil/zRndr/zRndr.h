@@ -83,6 +83,10 @@ struct ActiveRegionRectPartial {
     int bottom;
 };
 
+// Authored zRndr fog-parameter record. BN types the four adjacent zeroed BSS
+// records at 0x631dd0, 0x631e70, 0x631f10, and 0x631fb0 as
+// zRndr_FogParams, and scalar fog spans read packedColor16,
+// packedColor16Dup, and packedColorRamp from the active record.
 struct FogParamsPartial {
     float colorRgb01[3];
     int packedColorRed;
@@ -106,6 +110,28 @@ struct SpanNodePartial {
     float invDepthStep;
     float depthSlope;
 };
+
+// BN evidence: the switch-vshift span routines use gRndr_SavedEspSlot as the
+// stack-pivot scratch pointer while writing 16-bit spans backward.
+struct zRndr_SpanEspPivotSave {
+    int *savedEbp;
+    int savedEdi;
+    int savedEsi;
+    int savedEbx;
+};
+
+RECOIL_STATIC_ASSERT(sizeof(zRndr_SpanEspPivotSave) == 0x10);
+
+// BN models the MMX scratch globals as qword records; lo is the dword at the
+// symbol base used by MOVQ loads/stores.
+// BN names the MMX scratch globals as zMmxQword lo/hi records; these are
+// authored renderer data records, not provider-owned MMX intrinsic state.
+struct zMmxQword {
+    int lo;
+    int hi;
+};
+
+RECOIL_STATIC_ASSERT(sizeof(zMmxQword) == 0x08);
 
 struct LensFlareSamplePartial {
     float x;
@@ -249,54 +275,58 @@ extern unsigned int g_pixelPackBlueMask;
 extern int g_pixelPackRedShift;
 extern int g_pixelPackGreenShift;
 extern int g_pixelPackBlueShift;
-extern unsigned short g_mmxMaskRedPacked[4];
-extern unsigned short g_mmxMaskGreenPacked[4];
-extern unsigned short g_mmxMaskGreenBits[4];
-extern unsigned short g_mmxMaskBlueBits[4];
+extern char *g_spanQueuedTexAlphaMap;
+extern int g_spanActiveTexShift;
+extern int g_spanActiveTexVMask;
+extern int g_spanActiveTexUMask;
+extern unsigned char *g_spanActiveTexPixels;
+extern unsigned short *g_spanActiveTexPalette;
+extern int g_spanActiveTexUStepFixed20;
+extern int g_spanActiveTexVStepFixed20;
+extern unsigned short *g_spanCurrentSpanBaseAddr;
+extern int g_spanActiveShadeFixed16;
+extern int g_spanActiveShadeStepFixed16;
+extern char *g_spanActiveTexAlphaMap;
+extern zMmxQword g_mmxUStepDup2;
+extern zRndr_SpanEspPivotSave *g_spanSavedEspSlot;
+extern zMmxQword g_mmxUMask;
+extern int g_spanActiveConstAlphaBits;
+extern zMmxQword g_mmxVMask;
+extern zMmxQword g_mmxVStepDup2;
+extern zMmxQword g_mmxUPair;
+extern zMmxQword g_mmxVShiftCounts;
+extern zMmxQword g_mmxVPair;
 extern unsigned short g_mmxBitsBlue255[4];
 extern unsigned short g_mmxBitsGreen255[4];
 extern unsigned short g_mmxBitsRed255[4];
+extern unsigned short g_mmxMaskGreenPacked[4];
+extern unsigned short g_mmxMaskRedPacked[4];
 extern unsigned short g_mmxFogFactors[4];
-extern int g_mmxUPair[2];
-extern int g_mmxVPair[2];
-extern int g_mmxUStepDup2[2];
-extern int g_mmxVStepDup2[2];
-extern int g_mmxUMask[2];
-extern int g_mmxVMask[2];
-extern int g_mmxVShiftCounts[2];
-extern unsigned char *g_spanActiveTexels;
-extern char *g_spanActiveTexAlphaMap;
-extern unsigned short *g_spanActiveTexPalette;
-extern int g_spanTexUAdvance;
-extern int g_spanTexVAdvance;
-extern unsigned short *g_spanCurrentDst16;
-extern int g_spanActiveConstAlphaBits;
-extern int g_spanActiveTexVMask;
-extern int g_spanActiveTexUMask;
-extern int g_spanActiveShadeFixed16;
-extern int g_spanActiveShadeStepFixed16;
-extern PointOpProc g_pfnPointOpCandidate;
-extern PointOpProc g_pfnPointOpActive;
-extern SpanRoutineProc g_pfnImmediateRaster4;
-extern SpanRoutineProc g_pfnImmediateRasterReserved;
-extern SpanRoutineProc g_pfnImmediateRaster5;
+extern unsigned short g_mmxMaskGreenBits[4];
+extern unsigned short g_mmxMaskBlueBits[4];
 extern SpanRoutineProc g_pfnSelectedSpanOp;
-extern TexturedQueuedSpanProc g_pfnSelectedSpanOp_Mode0;
 extern FlatImmediateSpanProc g_pfnFlatImmediateSpanOp;
 extern TexturedQueuedSpanProc g_pfnTexturedQueuedSpanOp_Mode0;
 extern TexturedQueuedSpanProc g_pfnTexturedQueuedSpanOp_Mode1;
-extern SpanRoutineProc g_pfnTexturedQueuedFinalize;
-extern SpanRoutineProc g_pfnTexturedQueuedFinalizeAlt;
+extern TexturedQueuedSpanProc g_pfnSelectedSpanOp_Mode0;
+extern TexturedQueuedSpanProc g_pfnSelectedSpanOp_Mode1;
 extern TexturedQueuedSpanProc g_pfnFlatQueuedSpanOp_Mode0;
+extern TexturedQueuedSpanProc g_pfnFlatQueuedSpanOp_Mode1;
 extern TexturedQueuedSpanProc g_pfnFlatQueuedSpanOpAlt_Mode0;
+extern TexturedQueuedSpanProc g_pfnFlatQueuedSpanOpAlt_Mode1;
 extern TexturedQueuedSpanProc g_pfnTexturedFanTriSpanOp_Mode0;
 extern TexturedQueuedSpanProc g_pfnTexturedFanTriSpanOp_Mode1;
 extern TexturedQueuedSpanProc g_pfnPolyTlvSpanOp_Mode0;
 extern TexturedQueuedSpanProc g_pfnPolyTlvSpanOpAlt_Mode0;
 extern TexturedQueuedSpanProc g_pfnPolyTlvSpanOp_Mode1;
 extern TexturedQueuedSpanProc g_pfnPolyTlvSpanOpAlt_Mode1;
-extern TexturedQueuedSpanProc g_pfnFlatQueuedSpanOp_Mode1;
-extern TexturedQueuedSpanProc g_pfnFlatQueuedSpanOpAlt_Mode1;
+extern SpanRoutineProc g_pfnImmediateRaster4;
+extern SpanRoutineProc g_pfnImmediateRasterReserved;
+extern SpanRoutineProc g_pfnImmediateRaster5;
+extern PointOpProc g_pfnPointOpCandidate;
+extern PointOpProc g_pfnPointOpActive;
+extern SpanRoutineProc g_pfnTexturedQueuedFinalize;
+extern SpanRoutineProc g_pfnTexturedQueuedFinalizeAlt;
 extern TransparentQueuedPolyDrawCmd g_transparentQueue[0x15e];
 extern OverwriteQueuedPolyDrawCmd g_overwriteQueue[0x15e];
 extern int g_transparentQueueSortIndices[0x15e];

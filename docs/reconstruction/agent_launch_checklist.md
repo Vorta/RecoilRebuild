@@ -42,6 +42,10 @@ python tools/recoil.py issue list --status open
 Follow the `AGENTS.md` issue-ledger boundary: do not file normal
 reconstruction backlog, stale tests/code/manifests/markers, owner/data
 blockers, tier debt, or missing evidence as workspace issues.
+Unknown smoke names, missing native smoke tests, stale functional targets, and
+smoke crashes from source-model drift are verification debt for the active
+agent to repair or reroute. Use workspace issues only when the tool or
+environment prevents that work after the documented wrappers are used.
 
 Address-led launch packet for a known anchor:
 
@@ -55,6 +59,18 @@ run targeted checks instead.
 
 ## Task Selection
 
+Resume active WIP before starting new work:
+
+```powershell
+python tools/recoil.py audit groups --summary --wip-limit 4
+```
+
+If active groups exist, choose the first actionable group in
+`.agent/IMPLEMENTATION_GROUPS.md`, then follow its anchor or next action with
+focused status/frontier checks. Skip a group only when current BN, plan, or
+source evidence proves it stale, contradicted, completed, or explicitly lower
+priority than another active group.
+
 Use current plan state, not stale notes:
 
 ```powershell
@@ -62,6 +78,10 @@ python tools/recoil.py plan next --lane binary
 python tools/recoil.py plan group app.recoil_app --lane binary
 python tools/recoil.py status 0xNNNNNN
 ```
+
+Use `plan next --lane binary` only when no active group exists, active groups
+have been refreshed/pruned or proven unactionable, or the user explicitly
+directs new work.
 
 Normal binary-lane selection is owner-first after reconstruction/dependency
 readiness: unresolved `Source owner` markers come before isolated
@@ -95,7 +115,9 @@ not stage ignored, private, generated, runtime, or unrelated files.
 
 `.agent/IMPLEMENTATION_GROUPS.md` is temporary. If stale or contradicted by BN,
 `.agent/RECOIL_PLAN.md`, or `recoil.py status`, refresh or prune it. Stage it
-only with a qualifying source checkpoint.
+only with a qualifying source checkpoint. Active groups are the default
+no-address startup queue; do not start unrelated new work while actionable WIP
+remains.
 
 ## Native Build Shell
 
