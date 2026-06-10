@@ -1665,7 +1665,11 @@ void __fastcall SetNetworkListenEnabled(
     *g_zOpt_NetworkListenOption = value;
 }
 
-// Reimplements 0x408270: zOpt::GetNetworkModemEnabled
+/**
+ * Reimplements 0x408270: zOpt::GetNetworkModemEnabled.
+ * Original source path: D:\Proj\Battlesport\zopt.cpp.
+ * Purpose: return the current network modem option value.
+ */
 int GetNetworkModemEnabled() {
     return *g_zOpt_NetworkModemOption;
 }
@@ -1677,27 +1681,47 @@ void __fastcall SetWolPasswordFlag(
     *g_zOpt_WolPasswordFlagOption = value;
 }
 
-// Reimplements 0x408650: zOpt::GetDisplaySection
+/**
+ * Reimplements 0x408650: zOpt::GetDisplaySection.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the active display view-rect option record.
+ */
 zOpt_ViewRectSection *GetDisplaySection() {
     return *g_zOpt_DisplaySectionOption;
 }
 
-// Reimplements 0x408690: zOpt::GetDisplaySectionBitsPerPixel
+/**
+ * Reimplements 0x408690: zOpt::GetDisplaySectionBitsPerPixel.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the active display section bit depth.
+ */
 int GetDisplaySectionBitsPerPixel() {
     return (*g_zOpt_DisplaySectionOption)->bitsPerPixel;
 }
 
-// Reimplements 0x4086a0: zOpt::GetVideoStrideValue
+/**
+ * Reimplements 0x4086a0: zOpt::GetVideoStrideValue.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the configured video stride option value.
+ */
 int GetVideoStrideValue() {
     return *ZOPT_VIDEO_STRIDE;
 }
 
-// Reimplements 0x4086c0: zOpt::GetWindowSection
+/**
+ * Reimplements 0x4086c0: zOpt::GetWindowSection.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the active window view-rect option record.
+ */
 zOpt_ViewRectSection *GetWindowSection() {
     return *g_zOpt_WindowSectionOption;
 }
 
-// Reimplements 0x4086d0: zOpt::GetWindowSectionHeight
+/**
+ * Reimplements 0x4086d0: zOpt::GetWindowSectionHeight.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the active window section height.
+ */
 int GetWindowSectionHeight() {
     return (*g_zOpt_WindowSectionOption)->height;
 }

@@ -18,8 +18,11 @@ extern "C" HWND g_RecoilApp_hWndMain;
 
 HudUiMpExitDialog *g_HudUiMpExitDialog = 0;
 
-// Reimplements 0x419650: HudUiMpExitDialog::UnloadLayout
-// (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
+/**
+ * Reimplements 0x419650: HudUiMpExitDialog::UnloadLayout.
+ * Original source path: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
+ * Purpose: disable and unload the multiplayer exit dialog presentation state and release its captured background image.
+ */
 void HudUiMpExitDialog::UnloadLayout() {
     SetEnabled(0);
     Update(0.0f);
@@ -33,8 +36,11 @@ void HudUiMpExitDialog::UnloadLayout() {
     }
 }
 
-// Reimplements 0x419690: HudUiMpExitDialog::Update
-// (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
+/**
+ * Reimplements 0x419690: HudUiMpExitDialog::Update.
+ * Original source path: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
+ * Purpose: advance the multiplayer exit fade/update path and restore the captured background through the video postprocess pass.
+ */
 void HudUiMpExitDialog::Update(
     float deltaSeconds
 ) {
@@ -71,8 +77,11 @@ void HudUiMpExitDialog::Update(
     );
 }
 
-// Reimplements 0x419500: HudUiMpExitDialog::LoadLayout
-// (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
+/**
+ * Reimplements 0x419500: HudUiMpExitDialog::LoadLayout.
+ * Original source path: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
+ * Purpose: capture and blur the current surface, load the MPEXIT dialog layout, and configure button or network-message state.
+ */
 void HudUiMpExitDialog::LoadLayout() {
     m_mpNewGameButtonMode = HudUiMgr::IsLocalPlayerFirstInStatsList();
 
@@ -149,8 +158,11 @@ void HudUiMpExitDialog::LoadLayout() {
     SetEnabled(1);
 }
 
-// Reimplements 0x419800: HudUiMpExitDialog_MpNewGameButton::OnActivate
-// (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
+/**
+ * Reimplements 0x419800: HudUiMpExitDialog_MpNewGameButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
+ * Purpose: queue the intro FMV and multiplayer setup reconfiguration when the new-game button is activated.
+ */
 void HudUiMpExitDialog_NewGameButton::OnActivate() {
     g_RecoilApp.QueueSwitchCurrentState(
         &g_RecoilApp.m_introFmvState,
@@ -160,8 +172,11 @@ void HudUiMpExitDialog_NewGameButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x419830: HudUiMpExitDialog_MpExitButton::OnActivate
-// (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
+/**
+ * Reimplements 0x419830: HudUiMpExitDialog_MpExitButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
+ * Purpose: run the base widget activation and queue the leave-network state.
+ */
 void HudUiMpExitDialog_ExitButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
     g_RecoilApp.QueueSwitchCurrentState(
@@ -170,16 +185,22 @@ void HudUiMpExitDialog_ExitButton::OnActivate() {
     );
 }
 
-// Reimplements 0x419870: HudUiMpExitDialog::Destructor
-// (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
+/**
+ * Reimplements 0x419870: HudUiMpExitDialog::Destructor.
+ * Original source path: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
+ * Purpose: destroy the exit and new-game child widgets before tearing down the background base.
+ */
 void HudUiMpExitDialog::Destructor() {
     m_mpExitButton.DestructorCore();
     m_mpNewGameButton.DestructorCore();
     this->HudUiBackground::~HudUiBackground();
 }
 
-// Reimplements 0x419740: RecoilApp_MpExitDialogState::OnEnter
-// (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
+/**
+ * Reimplements 0x419740: RecoilApp_MpExitDialogState::OnEnter.
+ * Original source path: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
+ * Purpose: lazily construct the multiplayer exit dialog singleton and load its layout in software video mode.
+ */
 void RecoilApp_MpExitDialogState::OnEnter() {
     if (g_HudUiMpExitDialog == 0) {
         HudUiMpExitDialog *dialog = (HudUiMpExitDialog *) ::operator new(sizeof(HudUiMpExitDialog));
@@ -197,8 +218,11 @@ void RecoilApp_MpExitDialogState::OnEnter() {
     }
 }
 
-// Reimplements 0x4198d0: RecoilApp_MpExitDialogState::OnTryBecomeCurrent
-// (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
+/**
+ * Reimplements 0x4198d0: RecoilApp_MpExitDialogState::OnTryBecomeCurrent.
+ * Original source path: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
+ * Purpose: configure render, sound, and input state before entering the multiplayer exit dialog.
+ */
 int RecoilApp_MpExitDialogState::OnTryBecomeCurrent() {
     zVideo::SetHalfResAdjustMode(0);
     HudUi::SetInvalidateMode(0);
@@ -221,8 +245,11 @@ int RecoilApp_MpExitDialogState::OnTryBecomeCurrent() {
     return 1;
 }
 
-// Reimplements 0x419940: RecoilApp_MpExitDialogState::OnDeactivate
-// (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
+/**
+ * Reimplements 0x419940: RecoilApp_MpExitDialogState::OnDeactivate.
+ * Original source path: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
+ * Purpose: unload, destroy, and clear the multiplayer exit dialog and restore input, sound, and scoreboard state.
+ */
 void RecoilApp_MpExitDialogState::OnDeactivate() {
     g_HudUiMpExitDialog->UnloadLayout();
 
@@ -239,8 +266,11 @@ void RecoilApp_MpExitDialogState::OnDeactivate() {
     HudScoreboard::SetScaleAndRebuild(0.0f);
 }
 
-// Reimplements 0x419990: RecoilApp_MpExitDialogState::OnUpdateShouldQuit
-// (D:\Proj\Battlesport\HudUiMpExitDialog.cpp)
+/**
+ * Reimplements 0x419990: RecoilApp_MpExitDialogState::OnUpdateShouldQuit.
+ * Original source path: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
+ * Purpose: poll input, tick/update the dialog, and run the fatal timeout shutdown path after a long stalled fade.
+ */
 int RecoilApp_MpExitDialogState::OnUpdateShouldQuit() {
     zInput::PollActiveDevices(0);
     Time::Tick();

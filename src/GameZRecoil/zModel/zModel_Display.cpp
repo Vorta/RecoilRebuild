@@ -198,19 +198,6 @@ unsigned short BlendDamageMaskPixel555(
     return (unsigned short)(dst + red + green + blue);
 }
 
-typedef int(__fastcall *TextureRecordLockUploadSurfaceProc)(
-    zVideo_TextureRecordPartial *textureRecord,
-    void **outPixels,
-    int *outPitchBytes
-);
-typedef void(__fastcall *TextureRecordUnlockUploadSurfaceProc)(
-    zVideo_TextureRecordPartial *textureRecord
-);
-typedef void(__fastcall *TextureRecordFinalizeUploadProc)(
-    zVideo_TextureRecordPartial *textureRecord,
-    void *rectOrOffset,
-    void *reserved
-);
 } // namespace
 
 namespace zModel {
@@ -569,8 +556,8 @@ void __fastcall ApplyDamageMaskStampOnHit(
     int dstStride = dstWidth;
     const bool hasTextureRecord = dstHandle->textureRecord != 0;
     if (hasTextureRecord) {
-        TextureRecordLockUploadSurfaceProc lockUploadSurface =
-            (TextureRecordLockUploadSurfaceProc)g_zVideo_pfnTextureRecordLockUploadSurface;
+        zVideo_TextureRecordLockUploadSurfaceProc lockUploadSurface =
+            g_zVideo_pfnTextureRecordLockUploadSurface;
         if (lockUploadSurface(
             dstHandle->textureRecord,
             (void **)&dstPixels,
@@ -637,10 +624,10 @@ void __fastcall ApplyDamageMaskStampOnHit(
     }
 
     if (hasTextureRecord) {
-        TextureRecordUnlockUploadSurfaceProc unlockUploadSurface =
-            (TextureRecordUnlockUploadSurfaceProc)g_zVideo_pfnTextureRecordUnlockUploadSurface;
-        TextureRecordFinalizeUploadProc finalizeUpload =
-            (TextureRecordFinalizeUploadProc)g_zVideo_pfnTextureRecordFinalizeUpload;
+        zVideo_TextureRecordUnlockUploadSurfaceProc unlockUploadSurface =
+            g_zVideo_pfnTextureRecordUnlockUploadSurface;
+        zVideo_TextureRecordFinalizeUploadProc finalizeUpload =
+            g_zVideo_pfnTextureRecordFinalizeUpload;
         unlockUploadSurface(dstHandle->textureRecord);
         finalizeUpload(
             dstHandle->textureRecord,

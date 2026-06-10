@@ -271,7 +271,7 @@ HudUiBriefingRuntime * HudUiBriefingRuntime::Constructor(
     messagesPanel.ConstructorWithEntryCount(0x19);
     {
         for (int index = 0; index < 6; ++index) {
-            locatorPanels[index].Constructor();
+            new (&locatorPanels[index]) HudUiBriefingLocatorPanel;
         }
     }
 
@@ -439,24 +439,22 @@ void HudUiBriefingObjectivePicture::Draw() {
 }
 
 /**
- * Reimplements 0x403c10: HudUiBriefingLocatorPanel::Constructor.
+ * Reimplements 0x403c10: HudUiBriefingLocatorPanel::HudUiBriefingLocatorPanel.
  * Original file: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: construct a briefing locator circle with the original red marker style.
  */
-HudUiBriefingLocatorPanel * HudUiBriefingLocatorPanel::Constructor() {
-    const unsigned short color = (unsigned short)(zVid_PackColorRGB(
-        0xff,
-        0,
-        0
-    ));
-    HudUiCircle::Constructor(
+HudUiBriefingLocatorPanel::HudUiBriefingLocatorPanel()
+    : HudUiCircle(
         0x64,
         0x6e,
         0x1e,
-        color
-    );
+        (unsigned short)(zVid_PackColorRGB(
+            0xff,
+            0,
+            0
+        ))
+    ) {
     SetVisible(0);
-    return this;
 }
 
 /**

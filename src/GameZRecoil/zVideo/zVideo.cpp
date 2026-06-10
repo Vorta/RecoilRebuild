@@ -29,9 +29,6 @@ extern "C" void(__cdecl *__imp__free)(void *); // VC5 retail import-pointer call
 #endif
 
 namespace {
-typedef void(*zVideo_FlushProc)();
-typedef void(__fastcall *zVideo_ImageProc)(zVidImagePartial *image);
-
 const int kZVidPaletteColorCount = 256;
 const int kZVidPaletteRemapVariantCount = 32;
 const int kZVidPaletteRemapColorsPerRecipe =
@@ -108,6 +105,10 @@ int zVideo_GetAlphaSkipThreshold() {
 
 extern "C" {
 zVideo_PixelPackParams g_zVideo_PixelPack = {0};
+/*
+ * BN models the texture pixel-pack BSS block at 0x632188..0x6321c4 as the
+ * scalar field order below; TexturePixelPack_SetupFromMasks is the writer.
+ */
 int g_zVideo_TexturePixelPack_RBits = 0;
 int g_zVideo_TexturePixelPack_GBits = 0;
 int g_zVideo_TexturePixelPack_BBits = 0;
@@ -116,10 +117,10 @@ unsigned int g_zVideo_TexturePixelPack_RMask = 0;
 unsigned int g_zVideo_TexturePixelPack_GMask = 0;
 unsigned int g_zVideo_TexturePixelPack_BMask = 0;
 unsigned int g_zVideo_TexturePixelPack_AMask = 0;
-int g_zVideo_TexturePixelPack_RGBBitsTotal = 0;
 int g_zVideo_TexturePixelPack_RGBBitsTotalMinus8 = 0;
 int g_zVideo_TexturePixelPack_GBBitsTotalMinus8 = 0;
 int g_zVideo_TexturePixelPack_BShiftTo8 = 0;
+int g_zVideo_TexturePixelPack_RGBBitsTotal = 0;
 int g_zVideo_TexturePixelPack_RMaskShifted = 0;
 int g_zVideo_TexturePixelPack_GMaskShifted = 0;
 int g_zVideo_TexturePixelPack_BMaskShifted = 0;
@@ -181,6 +182,42 @@ int *ZOPT_HW_API = 0;
 DDCAPS g_zVideo_DDrawCapsHal = {0};
 DDCAPS g_zVideo_DDrawCapsHel = {0};
 zVideo_TextureRecordPartial *g_zImage_DefaultTextureRecord = 0;
+/*
+ * zVideo hardware default texture owner: BN 0x4a75f0 passes this separate
+ * 8x8 four-color checker image directly to the active texture-record callback
+ * with a null texture name and zero flags.
+ */
+unsigned short g_zVideo_DefaultTexturePixels[64] = {
+    0xf800, 0x03e0, 0x001f, 0x38e3, 0xf800, 0x03e0, 0x001f, 0x38e3,
+    0x03e0, 0x001f, 0x38e3, 0xf800, 0x03e0, 0x001f, 0x38e3, 0xf800,
+    0x001f, 0x38e3, 0xf800, 0x03e0, 0x001f, 0x38e3, 0xf800, 0x03e0,
+    0x38e3, 0xf800, 0x03e0, 0x001f, 0x38e3, 0xf800, 0x03e0, 0x001f,
+    0xf800, 0x03e0, 0x001f, 0x38e3, 0xf800, 0x03e0, 0x001f, 0x38e3,
+    0x03e0, 0x001f, 0x38e3, 0xf800, 0x03e0, 0x001f, 0x38e3, 0xf800,
+    0x001f, 0x38e3, 0xf800, 0x03e0, 0x001f, 0x38e3, 0xf800, 0x03e0,
+    0x38e3, 0xf800, 0x03e0, 0x001f, 0x38e3, 0xf800, 0x03e0, 0x001f
+};
+zVidImagePartial g_zVideo_DefaultTextureImage = {
+    64,
+    8,
+    8,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    g_zVideo_DefaultTexturePixels,
+    0,
+    0,
+    0.0f,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+};
 char g_zVideo_PalettePathBuffer[0x100] = {0};
 PALETTEENTRY g_zVideo_PaletteFileEntries[0x100] = {0};
 PALETTEENTRY g_zVideo_SystemPaletteEntries[0x100] = {0};
@@ -205,33 +242,35 @@ zVideo_QueryMemoryBytesProc g_zVideo_pfnQueryDeviceVideoMemoryBytes = 0;
 zVideo_QueryMemoryBytesProc g_zVideo_pfnQueryTextureMemoryBytes = 0;
 zVideo_BltRectDirectProc g_zVideo_pfnBltSwToPrimaryRectDirect = 0;
 zVideo_BltRectDirectProc g_zVideo_pfnBltPrimaryToSwRectDirect = 0;
-unsigned int g_zVideo_pfnBltSwToPrimaryRect = 0;
+zVideo_BltImageRectProc g_zVideo_pfnBltSwToPrimaryRect = 0;
 zVideo_GetHwApiDeviceFeatureFlagsProc g_zVideo_pfnGetHwApiDeviceFeatureFlags = 0;
-unsigned int g_zVideo_pfnImageUploadPixelsToSurface = 0;
-unsigned int g_zVideo_pfnImageReleaseSurface = 0;
+zVideo_ImageUploadPixelsProc g_zVideo_pfnImageUploadPixelsToSurface = 0;
+zVideo_ImageReleaseSurfaceProc g_zVideo_pfnImageReleaseSurface = 0;
 zVideo_CreateTextureRecordProc g_zVideo_pfnCreateTextureRecord = 0;
-unsigned int g_zVideo_pfnTextureRecordLockUploadSurface = 0;
-unsigned int g_zVideo_pfnTextureRecordUnlockUploadSurface = 0;
-unsigned int g_zVideo_pfnTextureRecordReleaseUploadSurfaceRef = 0;
-unsigned int g_zVideo_pfnTextureRecordFinalizeUpload = 0;
-unsigned int g_zVideo_pfnTextureRecordDestroy = 0;
-unsigned int g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces = 0;
-unsigned int g_zVideo_pfnImageLazyCreateVideoMemorySurface = 0;
-unsigned int g_zVideo_pfnImageEnsureSurfaceForCurrentDevice = 0;
-unsigned int g_zVideo_pfnSetFogEnable = 0;
-unsigned int g_zVideo_pfnSetFogStart = 0;
-unsigned int g_zVideo_pfnSetFogEnd = 0;
-unsigned int g_zVideo_pfnApplyFogStateFromGlobals = 0;
-unsigned int g_zVideo_pfnSubmitPolyFlatColor16 = 0;
-unsigned int g_zVideo_pfnSubmitPolyGouraudColor16 = 0;
-unsigned int g_zVideo_pfnSubmitPolyColorAttr = 0;
-unsigned int g_zVideo_pfnSubmitPolyRenderClass = 0;
-unsigned int g_zVideo_pfnSubmitPolygon = 0;
-unsigned int g_zVideo_pfnSubmitPolygonLit = 0;
-unsigned int g_zVideo_pfnDrawPointColor16 = 0;
-unsigned int g_zVideo_pfnFlushSortedPolys = 0;
-unsigned int g_zVideo_pfnFlushOverwritePolys = 0;
-unsigned int g_zVideo_pfnFlushQuadBatch = 0;
+zVideo_TextureRecordLockUploadSurfaceProc g_zVideo_pfnTextureRecordLockUploadSurface = 0;
+zVideo_TextureRecordUnlockUploadSurfaceProc g_zVideo_pfnTextureRecordUnlockUploadSurface = 0;
+zVideo_TextureRecordReleaseUploadSurfaceRefProc
+    g_zVideo_pfnTextureRecordReleaseUploadSurfaceRef = 0;
+zVideo_TextureRecordFinalizeUploadProc g_zVideo_pfnTextureRecordFinalizeUpload = 0;
+zVideo_DestroyTextureRecordProc g_zVideo_pfnTextureRecordDestroy = 0;
+zVideo_ReleaseAllTextureUploadSurfacesProc
+    g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces = 0;
+zVideo_ImageLazyCreateSurfaceProc g_zVideo_pfnImageLazyCreateVideoMemorySurface = 0;
+zVideo_ImageProc g_zVideo_pfnImageEnsureSurfaceForCurrentDevice = 0;
+zVideo_SetFogEnableProc g_zVideo_pfnSetFogEnable = 0;
+zVideo_SetFogFloatProc g_zVideo_pfnSetFogStart = 0;
+zVideo_SetFogFloatProc g_zVideo_pfnSetFogEnd = 0;
+zVideo_ApplyFogStateProc g_zVideo_pfnApplyFogStateFromGlobals = 0;
+zVideo_SubmitPolyFlatColor16Proc g_zVideo_pfnSubmitPolyFlatColor16 = 0;
+zVideo_SubmitPolyGouraudColor16Proc g_zVideo_pfnSubmitPolyGouraudColor16 = 0;
+zVideo_SubmitPolyColorAttrProc g_zVideo_pfnSubmitPolyColorAttr = 0;
+zVideo_SubmitPolyRenderClassProc g_zVideo_pfnSubmitPolyRenderClass = 0;
+zVideo_SubmitPolygonProc g_zVideo_pfnSubmitPolygon = 0;
+zVideo_SubmitPolygonProc g_zVideo_pfnSubmitPolygonLit = 0;
+zVideo_DrawPointColor16Proc g_zVideo_pfnDrawPointColor16 = 0;
+zVideo_FlushProc g_zVideo_pfnFlushSortedPolys = 0;
+zVideo_FlushProc g_zVideo_pfnFlushOverwritePolys = 0;
+zVideo_FlushProc g_zVideo_pfnFlushQuadBatch = 0;
 
 /*
  * Cached DirectDraw hardware-device owner: BN memory-query callers 0x4a9950
@@ -275,6 +314,10 @@ IDirectDrawSurface3 *g_zVideo_pPageUnlockSurface = 0;
 zVideo_SurfaceLockVerifier *g_zVideo_pSurfaceLockVerifier = 0;
 int g_zVideo_SurfaceLockVerifyContext = 0;
 unsigned char g_zVideo_SurfaceLockVerifyFlags = 0;
+/*
+ * BN models these as adjacent zero-initialized 0x20-byte zVideo_SurfaceState
+ * records at 0x632200, 0x632220, and 0x632240.
+ */
 zVideo_SurfaceStatePartial g_zVideo_SwSurfaceState = {0};
 zVideo_SurfaceStatePartial g_zVideo_PrimarySurfaceState = {0};
 zVideo_SurfaceStatePartial g_zVideo_DisplayModeSurfaceState = {0};
@@ -410,21 +453,24 @@ RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Config) == 0x1f0);
 
 zVideoFxPass3Config g_zVideo_FxPass3ConfigLocal;
 zVidRect32 g_zVideo_PrimarySurfaceRectScratch = {0};
+// BN models g_zVideo_DisplayModeBpp as the zero-initialized int32 at 0x632150.
 int g_zVideo_DisplayModeBpp = 0;
 int g_zVid_NoiseByteTableSize = 0;
 unsigned char *g_zVid_NoiseByteTable = 0;
-int g_zVideo_FxPass3_ScratchOffsetX = 0;
-int g_zVideo_FxPass3_ScratchOffsetY = 0;
-int g_zVideo_FxPass3_ClipMinX = 0;
-int g_zVideo_FxPass3_ClipMinY = 0;
-int g_zVideo_FxPass3_ClipMaxX = 0;
-int g_zVideo_FxPass3_ClipMaxY = 0;
+// BN's zVid::Noise_InitBuffers BSS writes order this scratch pointer before
+// the five active FX-surface fields it resets.
 unsigned short *g_zVideo_FxPass3_ScratchPixels16 = 0;
 unsigned short *g_zVideo_FxSurfacePixels16 = 0;
 int g_zVideo_FxSurfaceWidth = 0;
 int g_zVideo_FxSurfaceHeight = 0;
 int g_zVideo_FxSurfacePitchBytes = 0;
 int g_zVideo_FxSurfacePitchPixels16 = 0;
+int g_zVideo_FxPass3_ScratchOffsetX = 0;
+int g_zVideo_FxPass3_ScratchOffsetY = 0;
+int g_zVideo_FxPass3_ClipMinX = 0;
+int g_zVideo_FxPass3_ClipMinY = 0;
+int g_zVideo_FxPass3_ClipMaxX = 0;
+int g_zVideo_FxPass3_ClipMaxY = 0;
 IDirectDrawPalette *g_zVideo_pDDPalette = 0;
 HWND g_zVideo_hWnd = 0;
 RECT g_zVideo_CachedClientRectScreen = {0};
@@ -702,12 +748,12 @@ int __fastcall zVideo_sw_RenderFrame(
     );
     zMath::MatStackPopPtr();
 
-    ((zVideo_FlushProc)g_zVideo_pfnFlushSortedPolys)();
+    g_zVideo_pfnFlushSortedPolys();
     if (updateFxPass3Local != 0) {
         zVideo::FxPass3_UpdateLocal(g_FrameDeltaTimeSec);
     }
-    ((zVideo_FlushProc)g_zVideo_pfnFlushSortedPolys)();
-    ((zVideo_FlushProc)g_zVideo_pfnFlushOverwritePolys)();
+    g_zVideo_pfnFlushSortedPolys();
+    g_zVideo_pfnFlushOverwritePolys();
 
     const int visibleLensFlareSampleCount =
         zRndr_LensFlare_BuildVisibleSampleListFromQueue(queuedLensFlareSampleCount);
@@ -736,9 +782,9 @@ int __fastcall zVideo_sw_RenderFrame(
         }
     }
 
-    ((zVideo_FlushProc)g_zVideo_pfnFlushSortedPolys)();
-    ((zVideo_FlushProc)g_zVideo_pfnFlushOverwritePolys)();
-    ((zVideo_FlushProc)g_zVideo_pfnFlushQuadBatch)();
+    g_zVideo_pfnFlushSortedPolys();
+    g_zVideo_pfnFlushOverwritePolys();
+    g_zVideo_pfnFlushQuadBatch();
     zVideoD3D::SceneLeave();
 
     if (zClass_TypeList::CountNodes(8) > 1 && (windowData->clearPolyIndexFlags & 0x80000000) != 0) {
@@ -2143,7 +2189,17 @@ void __fastcall PixelPack_SetupFromMasks(
     g_zVideo_PixelPack.bMaskShifted = ((1 << blueBits) - 1) << (8 - blueBits);
 }
 
-// Reimplements 0x4a6db0: zVideo::TexturePixelPack_SetupFromMasks
+/**
+ * Reimplements 0x4a6db0: zVideo::TexturePixelPack_SetupFromMasks.
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: initializes the global texture pixel-pack bit counts, masks,
+ * shifted channel masks, and inverse non-RGB shifted mask.
+ *
+ * Evidence: BN assembly writes the contiguous texture pixel-pack globals at
+ * 0x632188..0x6321c4 from the RGB/A bit widths and masks; HLIL's low-byte
+ * shift rendering is a decompiler artifact, while assembly uses 32-bit shift
+ * counts.
+ */
 void __fastcall TexturePixelPack_SetupFromMasks(
     int redBits,
     int greenBits,
@@ -2177,7 +2233,16 @@ void __fastcall TexturePixelPack_SetupFromMasks(
     g_zVideo_TexturePixelPack_NonRgbMaskShifted = ~(rMaskShifted | gMaskShifted | bMaskShifted);
 }
 
-// Reimplements 0x4a6b40: zVideo::SetRendererTypeAndActivePath
+/**
+ * Reimplements 0x4a6b40: zVideo::SetRendererTypeAndActivePath.
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: updates the active renderer backend globals and returns the
+ * previous renderer type.
+ *
+ * Evidence: BN loads g_zVideo_RendererType at 0x632120, stores the requested
+ * backend to g_zVideo_RendererType and g_zVideo_ActiveRendererPath at
+ * 0x56bbe8, and returns the old renderer value.
+ */
 int __fastcall SetRendererTypeAndActivePath(
     int rendererType
 ) {
@@ -2257,34 +2322,73 @@ void __fastcall HandleSoftwareModeHotkeyCommand(
     zOpt::SetHudTypeForCurrentHwMode(previousHudType);
 }
 
-// Reimplements 0x4a7200: zVideo::GetPrimarySurfaceRectScratch
+/**
+ * Reimplements 0x4a7200: zVideo::GetPrimarySurfaceRectScratch.
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: updates the reusable primary-surface rectangle dimensions and
+ * returns its address.
+ *
+ * Evidence: BN reads g_zVideo_PrimarySurfaceState width/height at 0x632220 and
+ * 0x632224, stores them into g_zVideo_PrimarySurfaceRectScratch.right/bottom at
+ * 0x56bbd0 and 0x56bbd4, preserves left/top, and returns 0x56bbc8.
+ */
 zVidRect32 *GetPrimarySurfaceRectScratch() {
     g_zVideo_PrimarySurfaceRectScratch.right = g_zVideo_PrimarySurfaceState.width;
     g_zVideo_PrimarySurfaceRectScratch.bottom = g_zVideo_PrimarySurfaceState.height;
     return &g_zVideo_PrimarySurfaceRectScratch;
 }
 
-// Reimplements 0x4a6710: zVideo::GetSwSurfacePixels
+/**
+ * Reimplements 0x4a6710: zVideo::GetSwSurfacePixels.
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: returns the current locked software surface pixel pointer.
+ *
+ * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.pixels at 0x632210.
+ */
 void *GetSwSurfacePixels() {
     return g_zVideo_SwSurfaceState.pixels;
 }
 
-// Reimplements 0x4a6720: zVideo::GetSwSurfaceWidth
+/**
+ * Reimplements 0x4a6720: zVideo::GetSwSurfaceWidth.
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: returns the cached software surface width.
+ *
+ * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.width at 0x632200.
+ */
 int GetSwSurfaceWidth() {
     return g_zVideo_SwSurfaceState.width;
 }
 
-// Reimplements 0x4a6730: zVideo::GetSwSurfaceHeight
+/**
+ * Reimplements 0x4a6730: zVideo::GetSwSurfaceHeight.
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: returns the cached software surface height.
+ *
+ * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.height at 0x632204.
+ */
 int GetSwSurfaceHeight() {
     return g_zVideo_SwSurfaceState.height;
 }
 
-// Reimplements 0x4a6740: zVideo::GetSwSurfacePitch
+/**
+ * Reimplements 0x4a6740: zVideo::GetSwSurfacePitch.
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: returns the cached software surface pitch.
+ *
+ * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.pitch at 0x632208.
+ */
 int GetSwSurfacePitch() {
     return g_zVideo_SwSurfaceState.pitch;
 }
 
-// Reimplements 0x4a67e0: zVideo::GetSwSurfaceLockedFlag
+/**
+ * Reimplements 0x4a67e0: zVideo::GetSwSurfaceLockedFlag.
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: returns whether the software surface state currently holds a lock.
+ *
+ * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.locked at 0x632214.
+ */
 int GetSwSurfaceLockedFlag() {
     return g_zVideo_SwSurfaceState.locked;
 }
@@ -2297,22 +2401,47 @@ void *GetPrimarySurfacePixels() {
     return g_zVideo_PrimarySurfaceState.pixels;
 }
 
-// Reimplements 0x4a6800: zVideo::GetPrimarySurfaceWidth
+/**
+ * Reimplements 0x4a6800: zVideo::GetPrimarySurfaceWidth.
+ * Original source path: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
+ * Purpose: return the current primary surface width from the recovered surface-state global.
+ */
 int GetPrimarySurfaceWidth() {
     return g_zVideo_PrimarySurfaceState.width;
 }
 
-// Reimplements 0x4a6810: zVideo::GetPrimarySurfaceHeight
+/**
+ * Reimplements 0x4a6810: zVideo::GetPrimarySurfaceHeight.
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: returns the cached primary surface height.
+ *
+ * Evidence: BN is a leaf load from g_zVideo_PrimarySurfaceState.height at
+ * 0x632224.
+ */
 int GetPrimarySurfaceHeight() {
     return g_zVideo_PrimarySurfaceState.height;
 }
 
-// Reimplements 0x4a6820: zVideo::GetPrimarySurfacePitch
+/**
+ * Reimplements 0x4a6820: zVideo::GetPrimarySurfacePitch.
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: returns the cached primary surface pitch.
+ *
+ * Evidence: BN is a leaf load from g_zVideo_PrimarySurfaceState.pitch at
+ * 0x632228.
+ */
 int GetPrimarySurfacePitch() {
     return g_zVideo_PrimarySurfaceState.pitch;
 }
 
-// Reimplements 0x4a66e0: zVideo::GetDisplayModeBpp
+/**
+ * Reimplements 0x4a66e0: zVideo::GetDisplayModeBpp.
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: returns the cached display-mode bits-per-pixel value.
+ *
+ * Evidence: BN assembly is a leaf load from g_zVideo_DisplayModeBpp at
+ * 0x632150 followed by return.
+ */
 int GetDisplayModeBpp() {
     return g_zVideo_DisplayModeBpp;
 }
@@ -2404,7 +2533,17 @@ int __fastcall ApplyBrightnessToPaletteEntries(
     );
 }
 
-// Reimplements 0x4a7990: zVideo::Init_SetSurfaceGeometryFromModeIndex
+/**
+ * Reimplements 0x4a7990: zVideo::Init_SetSurfaceGeometryFromModeIndex.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Purpose: initializes cached display, primary, and software surface geometry
+ * for the selected video mode index.
+ *
+ * Evidence: BN switches over mode indices 2..7, writes
+ * g_zVideo_UseHalfResBackbuffer plus the width/height fields of the three
+ * zVideo_SurfaceState records, clears gVideo_resolutionMenuValid for invalid
+ * indices, and stores the legacy computed display bpp value at 0x632150.
+ */
 void __fastcall Init_SetSurfaceGeometryFromModeIndex(
     int modeIndex
 ) {
@@ -2479,7 +2618,16 @@ int __fastcall Init_ApplyModeIndex(
     return g_zVideo_pfnSetVideoMode(modeIndex);
 }
 
-// Reimplements 0x4a7af0: zVideo::SetVideoMode
+/**
+ * Reimplements 0x4a7af0: zVideo::SetVideoMode.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_init.c.
+ * Purpose: apply cached geometry for a requested video mode and forward the
+ * mode switch through the active renderer backend.
+ *
+ * Evidence: BN checks g_zVideo_IsInitialized, calls
+ * Init_SetSurfaceGeometryFromModeIndex, then dispatches through
+ * g_zVideo_pfnSetVideoMode with the original mode index.
+ */
 int __fastcall SetVideoMode(
     int modeIndex
 ) {
@@ -2951,8 +3099,14 @@ void __fastcall FxPass3_ApplyToCurrentSurface(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-static unsigned short __fastcall zVideoBlendBlurPixel3(
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Purpose: Blends three 16bpp pixels with 1-2-1 weighting using split RGB masks.
+ *
+ * Evidence: BN shows the same mask-preserving blend sequence in the address-backed
+ * blur leaves at 0x48e380, 0x48e670, and 0x48e870.
+ */
+static inline unsigned short __fastcall zVideoBlendBlurPixel3(
     unsigned short before,
     unsigned short center,
     unsigned short after,
@@ -2965,8 +3119,10 @@ static unsigned short __fastcall zVideoBlendBlurPixel3(
     return (unsigned short)(((rb >> 2) & rbMask) | ((green >> 2) & greenMask));
 }
 
-// Reimplements 0x48e380: zVideo::buff_BlurRegionCombined
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
+/**
+ * Reimplements 0x48e380: zVideo::buff_BlurRegionCombined.
+ * Purpose: Applies vertical then horizontal 1-2-1 blur over a 16bpp FX-surface region.
+ */
 void __fastcall buff_BlurRegionCombined(
     zVidRect32 *rectOrNull,
     int
@@ -3074,8 +3230,10 @@ void __fastcall buff_BlurRegionCombined(
     }
 }
 
-// Reimplements 0x48e670: zVideo::buff_BlurRegionVertical
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
+/**
+ * Reimplements 0x48e670: zVideo::buff_BlurRegionVertical.
+ * Purpose: Applies the vertical 1-2-1 blur pass over a 16bpp FX-surface region.
+ */
 void __fastcall buff_BlurRegionVertical(
     zVidRect32 *rectOrNull,
     int
@@ -3147,8 +3305,10 @@ void __fastcall buff_BlurRegionVertical(
     }
 }
 
-// Reimplements 0x48e870: zVideo::buff_BlurRegionHorizontal
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
+/**
+ * Reimplements 0x48e870: zVideo::buff_BlurRegionHorizontal.
+ * Purpose: Applies the horizontal 1-2-1 blur pass over a 16bpp FX-surface region.
+ */
 void __fastcall buff_BlurRegionHorizontal(
     zVidRect32 *rectOrNull,
     int
@@ -3214,8 +3374,10 @@ void __fastcall buff_BlurRegionHorizontal(
     }
 }
 
-// Reimplements 0x48ea00: zVideo::buff_BlurRegionByMode
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
+/**
+ * Reimplements 0x48ea00: zVideo::buff_BlurRegionByMode.
+ * Purpose: Dispatches a blur-region request to horizontal, vertical, or combined mode.
+ */
 void __fastcall buff_BlurRegionByMode(
     zVidRect32 *rectOrNull,
     int mode
@@ -3501,40 +3663,40 @@ void __fastcall BindRendererDispatch(
     g_zVideo_pfnQueryDeviceVideoMemoryBytes = zVid::QueryDeviceVideoMemoryBytes;
     g_zVideo_pfnBltSwToPrimaryRectDirect = zVideo_dd::BltSwToPrimaryRectDirect;
     g_zVideo_pfnBltPrimaryToSwRectDirect = zVideo_dd::BltPrimaryToSwRectDirect;
-    g_zVideo_pfnBltSwToPrimaryRect = (unsigned int)(&zVideo_dd::BltSwToPrimaryRect);
+    g_zVideo_pfnBltSwToPrimaryRect = zVideo_dd::BltSwToPrimaryRect;
     g_zVideo_pfnGetHwApiDeviceFeatureFlags = zVideo_dd::GetHwApiDeviceFeatureFlags;
     g_zVideo_pfnImageUploadPixelsToSurface =
-        (unsigned int)(&zVideo_dd::Image_UploadPixelsToSurface);
-    g_zVideo_pfnImageReleaseSurface = (unsigned int)(&zVideo_dd::Image_ReleaseSurface);
+        zVideo_dd::Image_UploadPixelsToSurface;
+    g_zVideo_pfnImageReleaseSurface = zVideo_dd::Image_ReleaseSurface;
     g_zVideo_pfnCreateTextureRecord = zVideo_dd3d::CreateTextureRecord;
     g_zVideo_pfnTextureRecordLockUploadSurface =
-        (unsigned int)(&zVideo_dd3d::TextureRecord_LockUploadSurface);
+        zVideo_dd3d::TextureRecord_LockUploadSurface;
     g_zVideo_pfnTextureRecordUnlockUploadSurface =
-        (unsigned int)(&zVideo_dd3d::TextureRecord_UnlockUploadSurface);
+        zVideo_dd3d::TextureRecord_UnlockUploadSurface;
     g_zVideo_pfnTextureRecordReleaseUploadSurfaceRef =
-        (unsigned int)(&zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef);
+        zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef;
     g_zVideo_pfnTextureRecordFinalizeUpload =
-        (unsigned int)(&zVideo_dd3d::TextureRecord_FinalizeUpload);
-    g_zVideo_pfnTextureRecordDestroy = (unsigned int)(&zVideo_dd3d::TextureRecord_Destroy);
-    g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces = (unsigned int)(&zGame::ReturnOnlyStub);
+        zVideo_dd3d::TextureRecord_FinalizeUpload;
+    g_zVideo_pfnTextureRecordDestroy = zVideo_dd3d::TextureRecord_Destroy;
+    g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces = zGame::ReturnOnlyStub;
     g_zVideo_pfnImageLazyCreateVideoMemorySurface =
-        (unsigned int)(&zVideo_dd::Image_LazyCreateVideoMemorySurface);
+        zVideo_dd::Image_LazyCreateVideoMemorySurface;
     g_zVideo_pfnImageEnsureSurfaceForCurrentDevice =
-        (unsigned int)(&zVideo_dd::Image_EnsureSurfaceForCurrentDevice);
-    g_zVideo_pfnSetFogEnable = (unsigned int)(&zVideo_dd3d::SetFogEnable);
-    g_zVideo_pfnSetFogStart = (unsigned int)(&zVideo_dd3d::SetFogStart);
-    g_zVideo_pfnSetFogEnd = (unsigned int)(&zVideo_dd3d::SetFogEnd);
-    g_zVideo_pfnApplyFogStateFromGlobals = (unsigned int)(&zVideo_dd3d::ApplyFogStateFromGlobals);
-    g_zVideo_pfnSubmitPolyFlatColor16 = (unsigned int)(&zVideo_dd3d::SubmitPolyFlatColor16);
-    g_zVideo_pfnSubmitPolyGouraudColor16 = (unsigned int)(&zVideo_dd3d::SubmitPolyGouraudColor16);
-    g_zVideo_pfnSubmitPolyColorAttr = (unsigned int)(&zVideo_dd3d::SubmitPolyColorAttr);
-    g_zVideo_pfnSubmitPolyRenderClass = (unsigned int)(&zVideo_dd3d::SubmitPolyRenderClass);
-    g_zVideo_pfnSubmitPolygon = (unsigned int)(&zVideo_dd3d::SubmitPolygon);
-    g_zVideo_pfnSubmitPolygonLit = (unsigned int)(&zVideo_dd3d::SubmitPolygonLit);
-    g_zVideo_pfnDrawPointColor16 = (unsigned int)(&zVideo_dd3d::DrawPointColor16);
-    g_zVideo_pfnFlushSortedPolys = (unsigned int)(&zVideo_dd3d::FlushSortedPolys);
-    g_zVideo_pfnFlushOverwritePolys = (unsigned int)(&zVideo_dd3d::FlushOverwritePolys);
-    g_zVideo_pfnFlushQuadBatch = (unsigned int)(&zVideo_dd3d::FlushQuadBatch);
+        zVideo_dd::Image_EnsureSurfaceForCurrentDevice;
+    g_zVideo_pfnSetFogEnable = zVideo_dd3d::SetFogEnable;
+    g_zVideo_pfnSetFogStart = zVideo_dd3d::SetFogStart;
+    g_zVideo_pfnSetFogEnd = zVideo_dd3d::SetFogEnd;
+    g_zVideo_pfnApplyFogStateFromGlobals = zVideo_dd3d::ApplyFogStateFromGlobals;
+    g_zVideo_pfnSubmitPolyFlatColor16 = zVideo_dd3d::SubmitPolyFlatColor16;
+    g_zVideo_pfnSubmitPolyGouraudColor16 = zVideo_dd3d::SubmitPolyGouraudColor16;
+    g_zVideo_pfnSubmitPolyColorAttr = zVideo_dd3d::SubmitPolyColorAttr;
+    g_zVideo_pfnSubmitPolyRenderClass = zVideo_dd3d::SubmitPolyRenderClass;
+    g_zVideo_pfnSubmitPolygon = zVideo_dd3d::SubmitPolygon;
+    g_zVideo_pfnSubmitPolygonLit = zVideo_dd3d::SubmitPolygonLit;
+    g_zVideo_pfnDrawPointColor16 = zVideo_dd3d::DrawPointColor16;
+    g_zVideo_pfnFlushSortedPolys = zVideo_dd3d::FlushSortedPolys;
+    g_zVideo_pfnFlushOverwritePolys = zVideo_dd3d::FlushOverwritePolys;
+    g_zVideo_pfnFlushQuadBatch = zVideo_dd3d::FlushQuadBatch;
 
     if (g_zVideo_pSelectedHwApiDeviceRecord != 0 &&
         g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags != 0) {
@@ -3542,7 +3704,17 @@ void __fastcall BindRendererDispatch(
     }
 }
 
-// Reimplements 0x4a8870: zVideo::CommitHwApiDeviceSelection
+/**
+ * Reimplements 0x4a8870: zVideo::CommitHwApiDeviceSelection.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Purpose: commit an accepted hardware API device as the active renderer
+ * backend.
+ *
+ * Evidence: BN calls BindRendererDispatch(1, 1), indexes
+ * g_zVideo_HwApiDeviceTable by the supplied index, stores
+ * g_zVideo_pSelectedHwApiDeviceRecord to that record, and stores
+ * g_zVideo_pSelectedD3DDeviceInfo to the record's m_d3dDrivers field.
+ */
 void __fastcall CommitHwApiDeviceSelection(
     int hwApiIndex
 ) {
@@ -3555,7 +3727,17 @@ void __fastcall CommitHwApiDeviceSelection(
     g_zVideo_pSelectedD3DDeviceInfo = selected.m_d3dDrivers;
 }
 
-// Reimplements 0x4a7490: zVideo::SelectHwApiDeviceOrFallback
+/**
+ * Reimplements 0x4a7490: zVideo::SelectHwApiDeviceOrFallback.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Purpose: select the persisted hardware API device or fall back to the
+ * software renderer path.
+ *
+ * Evidence: BN branches on hwApiIndex == -1; nonnegative indexes tail through
+ * CommitHwApiDeviceSelection and return one, while fallback binds software
+ * fullscreen dispatch, points g_zVideo_pSelectedHwApiDeviceRecord at table
+ * entry zero, clears g_zVideo_pSelectedD3DDeviceInfo, and returns zero.
+ */
 int __fastcall SelectHwApiDeviceOrFallback(
     int hwApiIndex
 ) {
@@ -3573,15 +3755,40 @@ int __fastcall SelectHwApiDeviceOrFallback(
     return 0;
 }
 
-// Reimplements 0x4a75e0: zVideo::ReturnSuccessStub
+/**
+ * Reimplements 0x4a75e0: zVideo::ReturnSuccessStub.
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: return the zVideo success status for dispatch slots that need no
+ * backend-specific action.
+ *
+ * Evidence: BN is a leaf zero-return function with no callees or globals.
+ */
 int ReturnSuccessStub() {
     return 0;
 }
 
-// Reimplements 0x4a7530: zVideo::ModuleInit
+/**
+ * Reimplements 0x4a7530: zVideo::ModuleInit.
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: initialize zVideo global defaults, software renderer dispatch,
+ * DirectDraw device enumeration, and the process-exit teardown hook.
+ *
+ * Evidence: BN clears the zVideo global state block, seeds pixel-pack defaults,
+ * binds the software fullscreen dispatch, runs DirectDraw startup enumeration,
+ * registers zVideo::AtExitReleaseAllInterfacesAndSurfaces with atexit, and
+ * returns zero.
+ */
 int ModuleInit() {
-    g_zVideo_RendererType = 0;
-    g_zVideo_ActiveRendererPath = 0;
+    /*
+     * BN emits rep stosd for 0x519fe dwords from g_zVideo_RendererType
+     * through g_zVideo_OverwriteQueueBase[0x180].
+     */
+    memset(
+        &g_zVideo_RendererType,
+        0,
+        0x1467f8
+    );
+
     g_zVideo_FrameTick = 0;
     gVideo_resolutionMenuValid = 0;
     g_zVideo_PaletteBrightnessLevel = 4;
@@ -3619,7 +3826,19 @@ int ModuleInit() {
     return 0;
 }
 
-// Reimplements 0x4a75f0: zVideo::InitVideoSystem
+/**
+ * Reimplements 0x4a75f0: zVideo::InitVideoSystem.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_init.c.
+ * Purpose: open the requested renderer video mode, initialize backend state,
+ * seed hardware texture defaults, and refresh cached client coordinates.
+ *
+ * Evidence: BN rejects double initialization, stores g_zVideo_hWnd, resets
+ * g_zVideo_FrameTick, binds renderer dispatch, opens the mode, hides the cursor,
+ * marks initialization, calls zVideo::SetVideoMode, creates the hardware
+ * default texture record with a null texture name and zero flags, seeds
+ * quad-batch specular values for hardware renderers, and calls
+ * zVideo::UpdateCachedClientRectScreenCoords.
+ */
 int __fastcall InitVideoSystem(
     HWND hWnd,
     int rendererBackend,
@@ -3663,7 +3882,13 @@ int __fastcall InitVideoSystem(
     }
 
     if (g_zVideo_RendererType != 0) {
-        zImage::CreateDefaultTextureRecord();
+        g_zImage_DefaultTextureRecord = g_zVideo_pfnCreateTextureRecord(
+            0,
+            &g_zVideo_DefaultTextureImage,
+            0,
+            0,
+            0
+        );
         g_zVideo_QuadBatchCount = 0;
         {
             for (int itemIndex = 0; itemIndex < 16; ++itemIndex) {
@@ -3680,7 +3905,15 @@ int __fastcall InitVideoSystem(
     return 0;
 }
 
-// Reimplements 0x4a7740: zVideo::ShutdownVideoSystem
+/**
+ * Reimplements 0x4a7740: zVideo::ShutdownVideoSystem.
+ * Original file: Battlesport/zVideo.cpp.
+ * Purpose: shut down the active zVideo backend and restore cursor visibility.
+ *
+ * Evidence: BN checks g_zVideo_IsInitialized, clears it on the active path,
+ * calls g_zVideo_pfnShutdownVideoSystem, calls ShowCursor(TRUE), and returns a
+ * zVideo status code.
+ */
 int ShutdownVideoSystem() {
     if (g_zVideo_IsInitialized == 0) {
         return 0x5a560000;
@@ -3692,7 +3925,16 @@ int ShutdownVideoSystem() {
     return 0;
 }
 
-// Reimplements 0x4a7700: zVideo::UpdateCachedClientRectScreenCoords
+/**
+ * Reimplements 0x4a7700: zVideo::UpdateCachedClientRectScreenCoords.
+ * Original file: Battlesport/zVideo.cpp.
+ * Purpose: cache the client rectangle in screen coordinates for the active
+ * zVideo window.
+ *
+ * Evidence: BN calls GetClientRect with g_zVideo_hWnd and
+ * g_zVideo_CachedClientRectScreen, then maps the top-left and bottom-right
+ * points with ClientToScreen.
+ */
 int UpdateCachedClientRectScreenCoords() {
     GetClientRect(
         g_zVideo_hWnd,
@@ -3709,7 +3951,15 @@ int UpdateCachedClientRectScreenCoords() {
     return 0;
 }
 
-// Reimplements 0x4a7520: zVideo::AtExitReleaseAllInterfacesAndSurfaces
+/**
+ * Reimplements 0x4a7520: zVideo::AtExitReleaseAllInterfacesAndSurfaces.
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: release tracked DirectDraw and Direct3D interfaces from the CRT
+ * atexit hook registered by zVideo::ModuleInit.
+ *
+ * Evidence: BN is a tail jump to zVideo_dd::ReleaseAllInterfacesAndSurfaces
+ * and the function is passed directly to atexit by zVideo::ModuleInit.
+ */
 void AtExitReleaseAllInterfacesAndSurfaces() {
     zVideo_dd::ReleaseAllInterfacesAndSurfaces();
 }
@@ -3831,7 +4081,11 @@ void Noise_ShutdownBuffers() {
     }
 }
 
-// Reimplements 0x48d910: zVid::DrawNoiseRect (GameZRecoil/zImage/zvid_buff.c)
+/**
+ * Reimplements 0x48d910: zVid::DrawNoiseRect.
+ * Original source path: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
+ * Purpose: overlay thresholded grayscale noise on the active FX surface rectangle.
+ */
 void __fastcall DrawNoiseRect(
     zVidRect32 *rectOrNull,
     double intensity
@@ -3884,14 +4138,22 @@ void __fastcall DrawNoiseRect(
     }
 }
 
-// Reimplements 0x48ff70: zVid::InitFrameScratchBuffers
+/**
+ * Reimplements 0x48ff70: zVid::InitFrameScratchBuffers.
+ * Original source path: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
+ * Purpose: initialize noise buffers and select the active renderer span routine table.
+ */
 int InitFrameScratchBuffers() {
     Noise_InitBuffers();
     zRndr::SelectSpanRoutines();
     return 0;
 }
 
-// Reimplements 0x48ff60: zVid::ShutdownFrameScratchBuffers
+/**
+ * Reimplements 0x48ff60: zVid::ShutdownFrameScratchBuffers.
+ * Original source path: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
+ * Purpose: release the frame scratch and noise buffers used by software video effects.
+ */
 int ShutdownFrameScratchBuffers() {
     Noise_ShutdownBuffers();
     return 0;
@@ -4433,7 +4695,7 @@ int __fastcall Destroy(
 ) {
     if (image != 0) {
         if (image->surface != 0) {
-            ((zVideo_ImageProc)(g_zVideo_pfnImageEnsureSurfaceForCurrentDevice))(image);
+            g_zVideo_pfnImageEnsureSurfaceForCurrentDevice(image);
         }
 
         ReleaseOwnedBuffers(image);
@@ -5075,7 +5337,17 @@ zVidImagePartial *__fastcall ReadFromFile(
     return image;
 }
 
-// Reimplements 0x46e9b0: zVid_Image::ResampleSquare
+/**
+ * Reimplements 0x46e9b0: zVid_Image::ResampleSquare.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Purpose: resamples an owned 16-bit zVid image into a square nearest-source
+ * pixel buffer and matching alpha map when present.
+ *
+ * Evidence: BN assembly allocates sideLength * sideLength pixels and only
+ * allocates a replacement alpha map when the old image had one, copies pixels
+ * and alpha bytes through _ftol-truncated source coordinates, frees the old
+ * buffers, and installs the square dimensions and replacement buffers.
+ */
 void __fastcall ResampleSquare(
     zVidImagePartial *image,
     int sideLength
@@ -5779,9 +6051,7 @@ int Shutdown() {
             }
 
             if (entry.texture != 0 && g_zVideo_pfnTextureRecordDestroy != 0) {
-                ((zVideo_DestroyTextureRecordProc)(g_zVideo_pfnTextureRecordDestroy))(
-                    entry.texture
-                );
+                g_zVideo_pfnTextureRecordDestroy(entry.texture);
                 entry.texture = 0;
             }
         }
@@ -5794,7 +6064,7 @@ int Shutdown() {
     g_zImage_TexDirEntryCount = 0;
 
     if (g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces != 0) {
-        ((zVideo_ReleaseAllTextureUploadSurfacesProc)(g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces))();
+        g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces();
     }
 
     for (int i_2693 = 0; i_2693 < g_zVid_PaletteRemapVariantTableCount; ++i_2693) {
@@ -6323,7 +6593,21 @@ int __fastcall PresentDisplayModeSurface(
     }
 }
 
-// Reimplements 0x4aa0f0: zVideo_dd3d::CreateTextureRecord
+/**
+ * Reimplements 0x4aa0f0: zVideo_dd3d::CreateTextureRecord.
+ * Original file: GameZRecoil/zVideo/zvid_ddd3d.c.
+ * Purpose: validates a zVid image for Direct3D texture limits, creates upload
+ * and hardware texture surfaces, loads the texture, and returns the default
+ * texture record on validation or provider failure.
+ *
+ * Evidence: BN assembly checks device texture dimensions, power-of-two and
+ * aspect-ratio caps, optionally resamples square-only textures, rejects
+ * initially paletted images, builds upload/video DDSURFACEDESC records, calls
+ * TexturePixelPack_SetupFromMasks and UploadImageToSurface, performs
+ * DirectDraw/Direct3D provider QueryInterface/Load/GetHandle calls, fills the
+ * zVideo_TextureRecordPartial fields, and releases temporary provider objects
+ * on failure.
+ */
 zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
     const char *textureName,
     zVidImagePartial *image,
@@ -6577,7 +6861,16 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
     return result != 0 ? result : g_zImage_DefaultTextureRecord;
 }
 
-// Reimplements 0x4a9c20: zVideo_dd3d::CreateDeviceState
+/**
+ * Reimplements 0x4a9c20: zVideo_dd3d::CreateDeviceState.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
+ * Purpose: creates the Direct3D z-buffer/device/viewport/material state and
+ * initializes the fixed render-state defaults for the active software surface.
+ *
+ * Evidence: BN shows z-buffer surface creation with a system-memory fallback,
+ * DirectDraw/Direct3D provider setup, material and caps initialization, ten
+ * fixed render-state writes, fog enablement, and quad-batch depth seeding.
+ */
 int CreateDeviceState() {
     DDSURFACEDESC zBufferDesc = {0};
     zBufferDesc.dwWidth = (DWORD)(g_zVideo_SwSurfaceState.width);
@@ -6827,13 +7120,23 @@ int CreateDeviceState() {
     return 0;
 }
 
-// Reimplements 0x4aa9e0: zVideo_dd3d::SetFogEnable
+/**
+ * Reimplements 0x4aa9e0: zVideo_dd3d::SetFogEnable.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
+ * Purpose: update the cached Direct3D fog-enable render state and force the
+ * fixed fog light-state mode.
+ *
+ * Evidence: BN compares g_zVideo_CachedFogEnableRenderState before calling
+ * IDirect3DDevice2::SetRenderState(D3DRENDERSTATE_FOGENABLE), stores the new
+ * enable value, then ensures D3DLIGHTSTATE_FOGMODE is D3DFOG_LINEAR through
+ * IDirect3DDevice2::SetLightState.
+ */
 void __fastcall SetFogEnable(
     int enable
 ) {
     if (g_zVideo_CachedFogEnableRenderState != enable) {
         g_zVideo_pD3DDevice->SetRenderState(
-            (D3DRENDERSTATETYPE)(0x1c),
+            D3DRENDERSTATE_FOGENABLE,
             (DWORD)(enable)
         );
         g_zVideo_CachedFogEnableRenderState = enable;
@@ -6841,8 +7144,8 @@ void __fastcall SetFogEnable(
 
     if (g_zVideo_CachedFogModeLightState != 3) {
         g_zVideo_pD3DDevice->SetLightState(
-            (D3DLIGHTSTATETYPE)(4),
-            3
+            D3DLIGHTSTATE_FOGMODE,
+            D3DFOG_LINEAR
         );
         g_zVideo_CachedFogModeLightState = 3;
     }
@@ -6921,7 +7224,11 @@ void UpdateFogColor() {
     );
 }
 
-// Reimplements 0x4accc0: zVideo_dd3d::SetQuadBatchDepthAndRhw
+/**
+ * Reimplements 0x4accc0: zVideo_dd3d::SetQuadBatchDepthAndRhw
+ * Purpose: Stamps the current Direct3D quad-batch depth and reciprocal-homogeneous
+ * weight across all cached TL vertices.
+ */
 void __stdcall SetQuadBatchDepthAndRhw(
     float depthAndRhw
 ) {
@@ -8443,7 +8750,16 @@ void FlushOverwritePolys() {
     g_zVideo_OverwriteQueueCount = 0;
 }
 
-// Reimplements 0x4ad680: zVideo_dd3d::FloorPowerOfTwo
+/**
+ * Reimplements 0x4ad680: zVideo_dd3d::FloorPowerOfTwo.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
+ * Purpose: return the largest power of two less than or equal to the supplied
+ * value.
+ *
+ * Evidence: BN starts from one, shifts left until the running power reaches or
+ * exceeds the input, returns the input on exact match, otherwise shifts once
+ * back down before returning.
+ */
 int __fastcall FloorPowerOfTwo(
     int value
 ) {
@@ -8459,7 +8775,14 @@ int __fastcall FloorPowerOfTwo(
     return powerOfTwo >> 1;
 }
 
-// Reimplements 0x4aa9d0: zVideo_dd3d::TextureRecord_Create
+/**
+ * Reimplements 0x4aa9d0: zVideo_dd3d::TextureRecord_Create.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
+ * Purpose: allocates a zeroed Direct3D texture-record structure.
+ *
+ * Evidence: BN assembly is a leaf that calls calloc(1, 0x1c) and returns the
+ * provider result directly; zVideo_TextureRecordPartial is asserted to 0x1c.
+ */
 zVideo_TextureRecordPartial *TextureRecord_Create() {
     return (zVideo_TextureRecordPartial *)(calloc(
         1,
@@ -8467,7 +8790,16 @@ zVideo_TextureRecordPartial *TextureRecord_Create() {
     ));
 }
 
-// Reimplements 0x4aa8b0: zVideo_dd3d::TextureRecord_LockUploadSurface
+/**
+ * Reimplements 0x4aa8b0: zVideo_dd3d::TextureRecord_LockUploadSurface.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
+ * Purpose: locks a texture record's upload surface and returns the provider
+ * pixel pointer and row pitch to the caller.
+ *
+ * Evidence: BN loads m_uploadSurface at offset zero, calls
+ * zVideo_dd::LockSurface_WaitRestore with a stack DDSURFACEDESC, copies lpSurface
+ * and lPitch to the output pointers only on success, and returns one or zero.
+ */
 int __fastcall TextureRecord_LockUploadSurface(
     zVideo_TextureRecordPartial *textureRecord,
     void **outPixels,
@@ -8486,7 +8818,17 @@ int __fastcall TextureRecord_LockUploadSurface(
     return 1;
 }
 
-// Reimplements 0x4aa6f0: zVideo_dd3d::ConvertImagePixelsForTexture
+/**
+ * Reimplements 0x4aa6f0: zVideo_dd3d::ConvertImagePixelsForTexture.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
+ * Purpose: converts zVid 16-bit image pixels into the active Direct3D texture
+ * upload pixel format, including alpha-map expansion when present.
+ *
+ * Evidence: BN assembly has no callees, walks image rows by destination pitch,
+ * ignores the useAlpha argument, uses g_zVideo_PixelPack masks for opaque
+ * pixels, and selects the 565 versus 555 alpha-map channel shifts from
+ * g_zVideo_PixelPack.gBits.
+ */
 void __fastcall ConvertImagePixelsForTexture(
     unsigned short *dstPixels,
     zVidImagePartial *image,
@@ -8555,7 +8897,17 @@ void __fastcall ConvertImagePixelsForTexture(
     }
 }
 
-// Reimplements 0x4aa600: zVideo_dd3d::UploadImageToSurface
+/**
+ * Reimplements 0x4aa600: zVideo_dd3d::UploadImageToSurface.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
+ * Purpose: locks a DirectDraw upload surface, copies or converts image pixels
+ * into its pitch layout, and unlocks the surface after upload.
+ *
+ * Evidence: BN assembly locks through zVideo_dd::LockSurface_WaitRestore,
+ * chooses ConvertImagePixelsForTexture only when useAlpha is nonzero, otherwise
+ * copies either one contiguous block or one row per pitch, then unlocks through
+ * zVideo_dd::UnlockSurface_WaitRestore and returns one unconditionally.
+ */
 int __fastcall UploadImageToSurface(
     IDirectDrawSurface *uploadSurface,
     zVidImagePartial *image,
@@ -8606,7 +8958,16 @@ int __fastcall UploadImageToSurface(
     return 1;
 }
 
-// Reimplements 0x4aa8f0: zVideo_dd3d::TextureRecord_UnlockUploadSurface
+/**
+ * Reimplements 0x4aa8f0: zVideo_dd3d::TextureRecord_UnlockUploadSurface.
+ * Original file: GameZRecoil/zVideo/zvid_ddd3d.c.
+ * Purpose: unlocks a texture record's upload surface and normalizes provider
+ * success to a one-or-zero result.
+ *
+ * Evidence: BN loads m_uploadSurface at offset zero, calls
+ * zVideo_dd::UnlockSurface_WaitRestore, and uses neg/sbb/inc to return one
+ * only when the unlock wrapper returns zero.
+ */
 int __fastcall TextureRecord_UnlockUploadSurface(
     zVideo_TextureRecordPartial *textureRecord
 ) {
@@ -8617,7 +8978,15 @@ int __fastcall TextureRecord_UnlockUploadSurface(
                : 0;
 }
 
-// Reimplements 0x4aa900: zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef
+/**
+ * Reimplements 0x4aa900: zVideo_dd3d::TextureRecord_ReleaseUploadSurfaceRef.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
+ * Purpose: releases and clears the upload-surface reference when one is held by
+ * a texture record.
+ *
+ * Evidence: BN tests m_uploadSurface at offset zero, calls the provider Release
+ * slot at vtable offset 8 when non-null, and stores null back to offset zero.
+ */
 void __fastcall TextureRecord_ReleaseUploadSurfaceRef(
     zVideo_TextureRecordPartial *textureRecord
 ) {
@@ -8627,9 +8996,20 @@ void __fastcall TextureRecord_ReleaseUploadSurfaceRef(
     }
 }
 
-// Reimplements 0x4aa920: zVideo_dd3d::TextureRecord_FinalizeUpload
+/**
+ * Reimplements 0x4aa920: zVideo_dd3d::TextureRecord_FinalizeUpload.
+ * Original file: GameZRecoil/zVideo/zvid_ddd3d.c.
+ * Purpose: optionally refreshes a texture-record upload surface from an image
+ * and loads the temporary upload texture into the target Direct3D texture.
+ *
+ * Evidence: BN exits when m_uploadSurface is null, optionally calls
+ * UploadImageToSurface with image->formatFlagsPacked bit 1, queries the upload
+ * surface for IDirect3DTexture2, calls targetTexture->Load(uploadTexture), and
+ * releases the temporary upload texture only when Load succeeds.
+ */
 void __fastcall TextureRecord_FinalizeUpload(
     zVideo_TextureRecordPartial *textureRecord,
+    void *,
     zVidImagePartial *image
 ) {
     IDirectDrawSurface *uploadSurface = textureRecord->m_uploadSurface;
@@ -8662,7 +9042,11 @@ void __fastcall TextureRecord_FinalizeUpload(
     }
 }
 
-// Reimplements 0x4aa980: zVideo_dd3d::TextureRecord_Destroy
+/**
+ * Reimplements 0x4aa980: zVideo_dd3d::TextureRecord_Destroy.
+ * Purpose: release non-default Direct3D texture-record provider resources and
+ * free the texture record.
+ */
 void __fastcall TextureRecord_Destroy(
     zVideo_TextureRecordPartial *textureRecord
 ) {
@@ -8727,7 +9111,16 @@ const int kPresentLinePageUnlock = 0x91;
 const int kPresentLineBltOrRestore = 0xac;
 
 template <typename InterfaceT>
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: release a DirectDraw/Direct3D COM interface pointer and clear the
+ * owning global or field.
+ *
+ * Original inline helper evidence: BN callers including 0x4a95e0 and 0x4a9300
+ * emit the same null-check, provider Release call, and zero-store pattern for
+ * temporary and subsystem-owned COM interfaces.
+ */
 void ReleaseComInterface(
     InterfaceT *&value
 ) {
@@ -8893,10 +9286,9 @@ BOOL CALLBACK EnumDirectDrawDeviceCallback(
     if ((g_zVideo_DDrawCapsHal.dwCaps & 0x200) != 0 ||
         (g_zVideo_DDrawCapsHel.dwCaps & 0x200) != 0) {
         entry.m_deviceFeatureFlags = 1;
-        strncat(
+        strcat(
             entry.m_driverName,
-            "[AGP]",
-            sizeof(entry.m_driverName) - strlen(entry.m_driverName) - 1
+            "[AGP]"
         );
     }
 
@@ -9221,14 +9613,33 @@ int __fastcall EnumerateDirect3DDevicesForRecord(
     return 1;
 }
 
-// Reimplements 0x4a7b40: zVideo_dd::StartupEnumerateAndDefaultSelect
+/**
+ * Reimplements 0x4a7b40: zVideo_dd::StartupEnumerateAndDefaultSelect.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: enumerate DirectDraw devices and select the first hardware device
+ * record as the default startup renderer.
+ *
+ * Evidence: BN calls RunDirectDrawDeviceEnumeration, stores
+ * &g_zVideo_HwApiDeviceTable[0] in g_zVideo_pSelectedHwApiDeviceRecord, clears
+ * g_zVideo_pSelectedD3DDeviceInfo, and VC5SP3 byte verification has zero
+ * unmasked mismatches for this body.
+ */
 void StartupEnumerateAndDefaultSelect() {
     RunDirectDrawDeviceEnumeration();
     g_zVideo_pSelectedHwApiDeviceRecord = &g_zVideo_HwApiDeviceTable[0];
     g_zVideo_pSelectedD3DDeviceInfo = 0;
 }
 
-// Reimplements 0x4a7d40: zVideo_dd::ShutdownVideoSystem
+/**
+ * Reimplements 0x4a7d40: zVideo_dd::ShutdownVideoSystem.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: clear the default texture record and tear down the DirectDraw
+ * backend state.
+ *
+ * Evidence: BN clears g_zImage_DefaultTextureRecord after destroying the
+ * default record when present, calls TeardownVideoSubsystem unconditionally,
+ * and returns zero.
+ */
 int ShutdownVideoSystem() {
     if (g_zImage_DefaultTextureRecord != 0) {
         zVideo_dd3d::TextureRecord_Destroy(g_zImage_DefaultTextureRecord);
@@ -9239,7 +9650,17 @@ int ShutdownVideoSystem() {
     return 0;
 }
 
-// Reimplements 0x4a8060: zVideo_dd::LockDirectDrawSurface
+/**
+ * Reimplements 0x4a8060: zVideo_dd::LockDirectDrawSurface.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: lock a DirectDraw surface descriptor, restoring and retrying when
+ * the provider reports a lost surface.
+ *
+ * Evidence: BN zeroes and sizes the DDSURFACEDESC to 0x6c bytes, calls
+ * IDirectDrawSurface3::Lock with null rect, DDLOCK_WAIT, and null event, loops
+ * through Restore on DDERR_SURFACELOST, reports line 0x1b9 on unrecovered
+ * provider errors, and returns 0x5a56ffff on failure.
+ */
 int __fastcall LockDirectDrawSurface(
     IDirectDrawSurface3 *surface,
     DDSURFACEDESC *outLockedSurfaceDesc
@@ -9278,7 +9699,17 @@ int __fastcall LockDirectDrawSurface(
     }
 }
 
-// Reimplements 0x4a80c0: zVideo_dd::UnlockDirectDrawSurface
+/**
+ * Reimplements 0x4a80c0: zVideo_dd::UnlockDirectDrawSurface.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: unlock a DirectDraw surface, restoring and retrying when the
+ * provider reports a lost surface.
+ *
+ * Evidence: BN calls IDirectDrawSurface3::Unlock with a null surface pointer,
+ * loops through Restore on DDERR_SURFACELOST, reports line 0x1d7 on
+ * unrecovered provider errors, returns zero on success, and returns
+ * 0x5a56ffff on failure.
+ */
 int __fastcall UnlockDirectDrawSurface(
     IDirectDrawSurface3 *surface
 ) {
@@ -9304,7 +9735,12 @@ int __fastcall UnlockDirectDrawSurface(
     }
 }
 
-// Reimplements 0x4a8100: zVideo_dd::LockSurface_WaitRestore
+/**
+ * Reimplements 0x4a8100: zVideo_dd::LockSurface_WaitRestore.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: locks a DirectDraw surface with DDLOCK_WAIT, retrying once the
+ * provider restores a lost surface and reporting permanent failures.
+ */
 int __fastcall LockSurface_WaitRestore(
     IDirectDrawSurface3 *surface,
     DDSURFACEDESC *lockedDescOut
@@ -9343,7 +9779,12 @@ int __fastcall LockSurface_WaitRestore(
     }
 }
 
-// Reimplements 0x4a8160: zVideo_dd::UnlockSurface_WaitRestore
+/**
+ * Reimplements 0x4a8160: zVideo_dd::UnlockSurface_WaitRestore.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: unlocks a DirectDraw surface, retrying once the provider restores a
+ * lost surface and reporting permanent failures.
+ */
 int __fastcall UnlockSurface_WaitRestore(
     IDirectDrawSurface3 *surface
 ) {
@@ -9425,7 +9866,18 @@ CheckLocked:
     return UnlockDirectDrawSurface(surfaceState->surf);
 }
 
-// Reimplements 0x4a83d0: zVideo_dd::Image_LazyCreateBackingSurface
+/**
+ * Reimplements 0x4a83d0: zVideo_dd::Image_LazyCreateBackingSurface.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: lazily create a DirectDrawSurface3 backing store for a heap-backed
+ * image and populate it from the image pixels.
+ *
+ * Evidence: BN guards alpha maps, null pixels, and zero width/height, creates
+ * an offscreen DirectDraw surface from the requested caps, queries
+ * IID_IDirectDrawSurface3, stores image->surface only after QueryInterface
+ * succeeds, calls Image_PopulateSurfaceFromHeapPixels, and reports line 0x2ed
+ * on provider failure.
+ */
 IDirectDrawSurface3 *__fastcall Image_LazyCreateBackingSurface(
     zVidImagePartial *image,
     unsigned int ddsCapsFlags
@@ -9469,7 +9921,18 @@ IDirectDrawSurface3 *__fastcall Image_LazyCreateBackingSurface(
     return image->surface;
 }
 
-// Reimplements 0x4a8500: zVideo_dd::Image_PopulateSurfaceFromHeapPixels
+/**
+ * Reimplements 0x4a8500: zVideo_dd::Image_PopulateSurfaceFromHeapPixels.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: copy an image heap pixel buffer into its locked DirectDraw surface
+ * and rebind the image pixels to the surface memory.
+ *
+ * Evidence: BN locks image->surface with DDLOCK_WAIT, retries after
+ * DDERR_SURFACELOST restores, copies width * 2 bytes per row, frees the heap
+ * buffer, stores the locked surface pointer and half-pitch, unlocks with the
+ * same lost-surface retry pattern, and reports lines 0x31b, 0x31f, 0x33b, and
+ * 0x33f on provider failures.
+ */
 int __fastcall Image_PopulateSurfaceFromHeapPixels(
     zVidImagePartial *image
 ) {
@@ -9553,7 +10016,18 @@ int __fastcall Image_PopulateSurfaceFromHeapPixels(
     }
 }
 
-// Reimplements 0x4a84c0: zVideo_dd::Image_LazyCreateVideoMemorySurface
+/**
+ * Reimplements 0x4a84c0: zVideo_dd::Image_LazyCreateVideoMemorySurface.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: create an image video-memory backing surface when the current
+ * renderer/device state requires one.
+ *
+ * Evidence: BN reads g_zVideo_UseHalfResBackbuffer and
+ * g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags, returns null
+ * when neither requests video memory, then tail-calls
+ * Image_LazyCreateBackingSurface with DDSCAPS_VIDEOMEMORY plus optional
+ * DDSCAPS_NONLOCALVIDMEM.
+ */
 IDirectDrawSurface3 *__fastcall Image_LazyCreateVideoMemorySurface(
     zVidImagePartial *image
 ) {
@@ -9571,7 +10045,16 @@ IDirectDrawSurface3 *__fastcall Image_LazyCreateVideoMemorySurface(
     );
 }
 
-// Reimplements 0x4a8650: zVideo_dd::Image_EnsureSurfaceForCurrentDevice
+/**
+ * Reimplements 0x4a8650: zVideo_dd::Image_EnsureSurfaceForCurrentDevice.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: release and clear an image-owned DirectDraw surface so it can be
+ * recreated for the current video device.
+ *
+ * Evidence: BN releases image->surface only when g_zVideo_IsInitialized is
+ * nonzero and the surface is present, then clears image->surface and
+ * image->pixels whenever a stale surface pointer remains.
+ */
 void __fastcall Image_EnsureSurfaceForCurrentDevice(
     zVidImagePartial *image
 ) {
@@ -9585,7 +10068,17 @@ void __fastcall Image_EnsureSurfaceForCurrentDevice(
     }
 }
 
-// Reimplements 0x4a8680: zVideo_dd::Image_UploadPixelsToSurface
+/**
+ * Reimplements 0x4a8680: zVideo_dd::Image_UploadPixelsToSurface.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: ensure an image has a DirectDraw surface and acquire a GDI DC for
+ * drawing into it.
+ *
+ * Evidence: BN returns zero for renderer type 2, lazily creates a backing
+ * surface from selected-device feature flags when image->surface is null,
+ * calls IDirectDrawSurface3::GetDC, returns one on DD_OK, and reports line
+ * 0x36d on provider failure.
+ */
 int __fastcall Image_UploadPixelsToSurface(
     zVidImagePartial *image,
     HDC *outHdc
@@ -9621,7 +10114,15 @@ int __fastcall Image_UploadPixelsToSurface(
     return 0;
 }
 
-// Reimplements 0x4a86f0: zVideo_dd::Image_ReleaseSurface
+/**
+ * Reimplements 0x4a86f0: zVideo_dd::Image_ReleaseSurface.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: release a GDI DC acquired from an image-backed DirectDraw surface.
+ *
+ * Evidence: BN returns zero when image->surface is null, calls
+ * IDirectDrawSurface3::ReleaseDC with the supplied HDC, returns one on DD_OK,
+ * and reports line 0x382 on provider failure.
+ */
 int __fastcall Image_ReleaseSurface(
     zVidImagePartial *image,
     HDC hdc
@@ -10003,7 +10504,17 @@ void FlipToGDIIfAttached() {
     }
 }
 
-// Reimplements 0x4a8720: zVideo_dd::SetDisplayMode
+/**
+ * Reimplements 0x4a8720: zVideo_dd::SetDisplayMode.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: enter exclusive fullscreen cooperative mode and apply the current
+ * DirectDraw display mode.
+ *
+ * Evidence: BN calls IDirectDraw2::SetCooperativeLevel with g_zVideo_hWnd and
+ * flags 0x13, reports source line 0x393 on failure, then calls SetDisplayMode
+ * with the display surface width/height, BPP, zero refresh, and zero flags,
+ * reporting line 0x39c on failure.
+ */
 int SetDisplayMode() {
     HRESULT hresult = g_zVideo_pDirectDraw2->SetCooperativeLevel(
         g_zVideo_hWnd,
@@ -10070,7 +10581,17 @@ int __fastcall SetVideoMode(
     return 0;
 }
 
-// Reimplements 0x4a9060: zVideo_dd::VerifyFullscreenSurfaceLocks
+/**
+ * Reimplements 0x4a9060: zVideo_dd::VerifyFullscreenSurfaceLocks.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: verify that the software, primary, and display-mode DirectDraw
+ * surface states can each lock and unlock.
+ *
+ * Evidence: BN calls LockSurfaceState and UnlockSurfaceState for
+ * g_zVideo_SwSurfaceState, g_zVideo_PrimarySurfaceState, and
+ * g_zVideo_DisplayModeSurfaceState in that order, returning 1 after any
+ * failed probe.
+ */
 int VerifyFullscreenSurfaceLocks() {
     if (LockSurfaceState(&g_zVideo_SwSurfaceState) != 0) {
         return 1;
@@ -10091,7 +10612,16 @@ int VerifyFullscreenSurfaceLocks() {
     return UnlockSurfaceState(&g_zVideo_DisplayModeSurfaceState) != 0 ? 1 : 0;
 }
 
-// Reimplements 0x4a90e0: zVideo_dd::RestoreDisplaySurfaces
+/**
+ * Reimplements 0x4a90e0: zVideo_dd::RestoreDisplaySurfaces.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: restore the display-mode, primary, and software DirectDraw
+ * surfaces when they are present.
+ *
+ * Evidence: BN restores g_zVideo_DisplayModeSurfaceState.surf, then
+ * g_zVideo_PrimarySurfaceState.surf, then g_zVideo_SwSurfaceState.surf, and
+ * reports DirectDraw failures at source lines 0x5e1, 0x5e8, and 0x5ef.
+ */
 int RestoreDisplaySurfaces() {
     if (g_zVideo_DisplayModeSurfaceState.surf != 0) {
         const HRESULT hresult = g_zVideo_DisplayModeSurfaceState.surf->Restore();
@@ -10129,7 +10659,17 @@ int RestoreDisplaySurfaces() {
     return 0;
 }
 
-// Reimplements 0x4a8f80: zVideo_dd::InitFullscreenSoftwarePixelPack
+/**
+ * Reimplements 0x4a8f80: zVideo_dd::InitFullscreenSoftwarePixelPack.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: read the fullscreen display pixel format and initialize the
+ * software pixel-pack masks for supported formats.
+ *
+ * Evidence: BN initializes DDPIXELFORMAT.dwSize to 0x20, calls the
+ * IDirectDrawSurface3::GetPixelFormat provider slot, reports provider failures
+ * at source line 0x597, accepts green masks 0x07e0, 0x03e0, and 0xff00, and
+ * tears down plus reports line 0x5bd for unrecognized formats.
+ */
 int __fastcall InitFullscreenSoftwarePixelPack(
     IDirectDrawSurface3 *displaySurface
 ) {
@@ -10191,7 +10731,17 @@ int __fastcall InitFullscreenSoftwarePixelPack(
     return 0x5a56ffff;
 }
 
-// Reimplements 0x4a88b0: zVideo_dd::CreateSurface3FromDesc
+/**
+ * Reimplements 0x4a88b0: zVideo_dd::CreateSurface3FromDesc.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: create a DirectDraw surface and return its DirectDrawSurface3
+ * interface.
+ *
+ * Evidence: BN shows a DirectDraw2::CreateSurface call, a successful-surface
+ * QueryInterface for IID_IDirectDrawSurface3, Release of the temporary base
+ * surface only after successful QueryInterface, and direct propagation of the
+ * current provider HRESULT.
+ */
 HRESULT __fastcall CreateSurface3FromDesc(
     IDirectDraw2 *directDraw,
     DDSURFACEDESC *desc,
@@ -10216,7 +10766,15 @@ HRESULT __fastcall CreateSurface3FromDesc(
     return result;
 }
 
-// Reimplements 0x4a88f0: zVideo_dd::CreateFullscreenSurfacesForRenderer
+/**
+ * Reimplements 0x4a88f0: zVideo_dd::CreateFullscreenSurfacesForRenderer.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: select the active fullscreen surface-creation path for the current
+ * renderer and half-resolution setting.
+ *
+ * Evidence: BN tests g_zVideo_UseHalfResBackbuffer first, then dispatches by
+ * g_zVideo_RendererType to the Direct3D hardware or software surface builders.
+ */
 int CreateFullscreenSurfacesForRenderer() {
     if (g_zVideo_UseHalfResBackbuffer != 0) {
         return CreateHalfResBackbufferSurfaces();
@@ -10229,7 +10787,18 @@ int CreateFullscreenSurfacesForRenderer() {
     return CreateFullscreenSoftwareSurfaces();
 }
 
-// Reimplements 0x4a8920: zVideo_dd::CreateHalfResBackbufferSurfaces
+/**
+ * Reimplements 0x4a8920: zVideo_dd::CreateHalfResBackbufferSurfaces.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: create the half-resolution display, primary, software, and clipper
+ * surfaces used by fullscreen rendering.
+ *
+ * Evidence: BN builds the primary/backbuffer surface desc, retrieves the
+ * attached backbuffer, reads the selected hardware-device feature flags
+ * directly when choosing software-surface caps, creates the half-resolution
+ * software surface from the current video dimensions, initializes pixel
+ * packing, then attaches a window clipper to the display-mode surface.
+ */
 int CreateHalfResBackbufferSurfaces() {
     zOptionEntryPartial defaultGfxFlags = {0};
     zOptionEntryPartial *gfxFlagsOption =
@@ -10276,14 +10845,8 @@ int CreateHalfResBackbufferSurfaces() {
     if ((gfxFlagsOption->payloadOrBuffer & 0x10000) != 0) {
         desc.ddsCaps.dwCaps = 0x4040;
     } else {
-        const int featureFlags = g_zVideo_pSelectedHwApiDeviceRecord != 0
-                                     ? g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags
-                                     : 0;
+        const int featureFlags = g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags;
         desc.ddsCaps.dwCaps = (featureFlags != 0 ? 0x20003800 : 0) + 0x840;
-    }
-    if (g_zVideo_RendererType == 1) {
-        desc.ddsCaps.dwCaps &= ~DDSCAPS_SYSTEMMEMORY;
-        desc.ddsCaps.dwCaps |= DDSCAPS_3DDEVICE | DDSCAPS_VIDEOMEMORY;
     }
     desc.dwWidth = (DWORD)(g_zVideo_SwSurfaceState.width);
     desc.dwHeight = (DWORD)(g_zVideo_SwSurfaceState.height);
@@ -10342,7 +10905,17 @@ int CreateHalfResBackbufferSurfaces() {
     );
 }
 
-// Reimplements 0x4a8b20: zVideo_dd::CreateFullscreenSoftwareSurfaces
+/**
+ * Reimplements 0x4a8b20: zVideo_dd::CreateFullscreenSoftwareSurfaces.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: create fullscreen DirectDraw display, primary, software, and
+ * clipper surfaces for the software renderer path.
+ *
+ * Evidence: BN creates the display-mode surface, probes lockability with a
+ * fallback to a plain primary surface, creates primary and software surfaces,
+ * initializes pixel packing from the display surface, and installs the window
+ * clipper.
+ */
 int CreateFullscreenSoftwareSurfaces() {
     zOptionEntryPartial defaultGfxFlags = {0};
     zOptionEntryPartial *gfxFlagsOption =
@@ -10477,7 +11050,17 @@ int CreateFullscreenSoftwareSurfaces() {
     );
 }
 
-// Reimplements 0x4a8dc0: zVideo_dd::CreateFullscreenHardwareSurfaces
+/**
+ * Reimplements 0x4a8dc0: zVideo_dd::CreateFullscreenHardwareSurfaces.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: create fullscreen DirectDraw display, attached software, primary,
+ * and clipper surfaces for the hardware renderer path.
+ *
+ * Evidence: BN creates a flipping display-mode surface, obtains the attached
+ * backbuffer as the software surface, creates the primary render surface using
+ * selected-device feature flags, initializes pixel packing, and installs the
+ * window clipper.
+ */
 int CreateFullscreenHardwareSurfaces() {
     DDSURFACEDESC desc = {0};
     desc.dwSize = sizeof(desc);
@@ -10681,7 +11264,16 @@ void TeardownVideoSubsystem() {
     }
 }
 
-// Reimplements 0x4a9890: zVideo_dd::PaletteSetEntries
+/**
+ * Reimplements 0x4a9890: zVideo_dd::PaletteSetEntries.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: forward palette updates to the active DirectDraw palette only in
+ * 8-bpp display modes.
+ *
+ * Evidence: BN gates on g_zVideo_DisplayModeBpp == 8, calls
+ * IDirectDrawPalette::SetEntries with flags zero, and reports failures at
+ * source line 0x823 before returning 0x5a56ffff.
+ */
 int __fastcall PaletteSetEntries(
     unsigned short firstEntry,
     unsigned short entryCount,

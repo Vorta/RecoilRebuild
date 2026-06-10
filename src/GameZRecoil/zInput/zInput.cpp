@@ -38,8 +38,8 @@ short g_zInputJoystickPollRefCount = 0;
 int g_zInput_JoystickAxisCount = 0;
 zInput::JoystickAxisConfig g_zInput_JoystickAxisConfig = {0};
 zInput::JoystickAxisConfig g_zInput_JoystickAxisConfig_Gameplay = {0};
-zInput::JoystickStatePartial g_zInput_JoystickCurrentState = {0};
-zInput::JoystickStatePartial g_zInput_JoystickPreviousState = {0};
+DIJOYSTATE2 g_zInput_JoystickCurrentState = {0};
+DIJOYSTATE2 g_zInput_JoystickPreviousState = {0};
 zInput::MouseDeviceState g_zInput_MouseCurrentState = {0};
 zInput::MouseDeviceState g_zInput_MousePreviousState = {0};
 zInput::MouseStateSnapshot g_zInput_MouseStateSnapshot = {0};
@@ -3578,23 +3578,32 @@ int DI_IsJoystickDeviceReady() {
     return g_zInput_JoystickInitialized == 1 ? 1 : 0;
 }
 
-// Reimplements 0x472390: zInput::DI_GetCurrentState
-JoystickStatePartial *DI_GetCurrentState() {
+/**
+ * Reimplements 0x472390: zInput::DI_GetCurrentState.
+ *
+ * Purpose: return the current DirectInput joystick state snapshot.
+ */
+DIJOYSTATE2 *DI_GetCurrentState() {
     return &g_zInput_JoystickCurrentState;
 }
 
-// Reimplements 0x4722c0: zInput::DI_PollJoystickState
-JoystickStatePartial *__fastcall DI_PollJoystickState(
+/**
+ * Reimplements 0x4722c0: zInput::DI_PollJoystickState.
+ *
+ * Purpose: poll the DirectInput joystick, normalize absent axes, and update
+ * the current/previous joystick state snapshots.
+ */
+DIJOYSTATE2 *__fastcall DI_PollJoystickState(
     int dispatchCallbacks
 ) {
     if (g_zInput_JoystickInitialized == 0) {
         return 0;
     }
 
-    JoystickStatePartial polledState = {0};
+    DIJOYSTATE2 polledState = {0};
     g_zInput_JoystickDevice->Poll();
     const int result = g_zInput_JoystickDevice->GetDeviceState(
-        sizeof(JoystickStatePartial),
+        sizeof(DIJOYSTATE2),
         &polledState
     );
 

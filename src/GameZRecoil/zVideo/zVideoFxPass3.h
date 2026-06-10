@@ -9,6 +9,30 @@
 struct zVideoFxPass3Element : HudUiElement {
     HudUiRect *clipRectOrNull;
 
+    /**
+     * Original inline helper; no standalone retail function exists. Observed
+     * in owner storage that is explicitly address-constructed later.
+     * Purpose: keep native raw-storage tests and aggregate owners from running
+     * an address-backed pass-3 constructor implicitly.
+     */
+    zVideoFxPass3Element() {}
+    /**
+     * Original inline helper; no standalone retail function exists. Observed in
+     * constructors 0x41eb30 and 0x41eb90 as HudUiElement::Constructor(0, 0)
+     * followed by clearing the pass-3 clip pointer.
+     * Purpose: construct a pass-3 HUD element while preserving derived virtual
+     * dispatch identity.
+     */
+    zVideoFxPass3Element(
+        int x,
+        int y
+    ) : HudUiElement(
+            x,
+            y
+        ) {
+        clipRectOrNull = 0;
+    }
+
     void Draw();
     virtual void ApplyPass3();
 };

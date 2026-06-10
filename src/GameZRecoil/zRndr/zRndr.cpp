@@ -1,3 +1,5 @@
+#include "Battlesport/Mfc42Abi.h"
+
 #include "GameZRecoil/zRndr/zRndr.h"
 
 #include "GameZRecoil/include/zImage.h"
@@ -32,7 +34,12 @@ const T &MaxValue(
     return lhs < rhs ? rhs : lhs;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: sort.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * address-backed zRndr scan conversion callers in this source file.
+ * Purpose: Sort scanline intersection samples in ascending order.
+ */
 void sort(
     float *first,
     float *last
@@ -93,6 +100,10 @@ FogParamsPartial g_fogColorParams = {0};
 FogParamsPartial g_fogTargetParamsDirect = {0};
 FogParamsPartial g_fogTargetParamsStaged = {0};
 FogParamsPartial g_fogParamsActive = {0};
+// zRndr span-occlusion subsystem state from zRndr_Draw.cpp. BN names these as
+// gRndr_Span* globals; g_spanIterPrevLink stores the previous node observed in
+// insertion walkers even though one BN data declaration renders it as a link
+// pointer.
 SpanOccluderPolyPartial g_spanOccluderPolys[8] = {0};
 int g_spanOccluderPolyCount = 0;
 SpanNodePartial *g_spanAllocCursor = 0;
@@ -119,54 +130,82 @@ unsigned int g_pixelPackBlueMask = 0;
 int g_pixelPackRedShift = 0;
 int g_pixelPackGreenShift = 0;
 int g_pixelPackBlueShift = 0;
-unsigned short g_mmxMaskRedPacked[4] = {0};
-unsigned short g_mmxMaskGreenPacked[4] = {0};
-unsigned short g_mmxMaskGreenBits[4] = {0};
-unsigned short g_mmxMaskBlueBits[4] = {0};
+// BN keeps queued texture alpha setup in this initialized slot at 0x4e21ec as
+// pointer value 0x00000007; the queued and fan-triangle paths overwrite it from
+// zVidImagePartial::queuedAlphaMap before queued-alpha use.
+enum {
+    kQueuedTexAlphaMapStartupSentinel = 7
+};
+char *g_spanQueuedTexAlphaMap = (char *)(kQueuedTexAlphaMapStartupSentinel);
+int g_spanActiveTexShift = 7;
+int g_spanActiveTexVMask = 0x07f00000;
+int g_spanActiveTexUMask = 0x7f;
+// BN names this BSS slot gRndr_ActiveTexPixels. Word span loops load it as
+// 16-bit texture pixels, while palettized span loops use the same buffer as
+// 8-bit texture indices.
+unsigned char *g_spanActiveTexPixels = 0;
+unsigned short *g_spanActiveTexPalette = 0;
+int g_spanActiveTexUStepFixed20 = 0;
+int g_spanActiveTexVStepFixed20 = 0;
+// BN names this BSS pointer gRndr_CurrentSpanBaseAddr. Most span leaves use it
+// as an ordinary unsigned-short destination cursor; the opaque/switch-vshift
+// push-write leaves are separate ESP-pivot source-shape debt.
+unsigned short *g_spanCurrentSpanBaseAddr = 0;
+int g_spanActiveShadeFixed16 = 0;
+int g_spanActiveShadeStepFixed16 = 0;
+char *g_spanActiveTexAlphaMap = 0;
+// BN types the zeroed span/MMX scratch vectors from gRndr_Mmx_dUDup2 through
+// gRndr_MmxMask_BlueBits as zMmxQword records. Source keeps lo/hi pairs as
+// zMmxQword and lane-indexed mask/factor vectors as unsigned short[4], which
+// preserves the same eight-byte authored zRndr span data shape.
+zMmxQword g_mmxUStepDup2 = {0};
+// BN names this BSS pointer gRndr_SavedEspSlot. The original switch-vshift
+// span loops save the real ESP here before pivoting to the destination span.
+zRndr_SpanEspPivotSave *g_spanSavedEspSlot = 0;
+zMmxQword g_mmxUMask = {0};
+int g_spanActiveConstAlphaBits = 0;
+zMmxQword g_mmxVMask = {0};
+zMmxQword g_mmxVStepDup2 = {0};
+zMmxQword g_mmxUPair = {0};
+zMmxQword g_mmxVShiftCounts = {0};
+zMmxQword g_mmxVPair = {0};
 unsigned short g_mmxBitsBlue255[4] = {0};
 unsigned short g_mmxBitsGreen255[4] = {0};
 unsigned short g_mmxBitsRed255[4] = {0};
+unsigned short g_mmxMaskGreenPacked[4] = {0};
+unsigned short g_mmxMaskRedPacked[4] = {0};
 unsigned short g_mmxFogFactors[4] = {0};
-int g_mmxUPair[2] = {0};
-int g_mmxVPair[2] = {0};
-int g_mmxUStepDup2[2] = {0};
-int g_mmxVStepDup2[2] = {0};
-int g_mmxUMask[2] = {0};
-int g_mmxVMask[2] = {0};
-int g_mmxVShiftCounts[2] = {0};
-unsigned char *g_spanActiveTexels = 0;
-char *g_spanActiveTexAlphaMap = 0;
-unsigned short *g_spanActiveTexPalette = 0;
-int g_spanTexUAdvance = 0;
-int g_spanTexVAdvance = 0;
-unsigned short *g_spanCurrentDst16 = 0;
-int g_spanActiveConstAlphaBits = 0;
-int g_spanActiveTexVMask = 0x07f00000;
-int g_spanActiveTexUMask = 0x7f;
-int g_spanActiveShadeFixed16 = 0;
-int g_spanActiveShadeStepFixed16 = 0;
-PointOpProc g_pfnPointOpCandidate = 0;
-PointOpProc g_pfnPointOpActive = 0;
-SpanRoutineProc g_pfnImmediateRaster4 = 0;
-SpanRoutineProc g_pfnImmediateRasterReserved = 0;
-SpanRoutineProc g_pfnImmediateRaster5 = 0;
+unsigned short g_mmxMaskGreenBits[4] = {0};
+unsigned short g_mmxMaskBlueBits[4] = {0};
+// BN exposes adjacent zero BSS dwords data_57dab8/data_57dabc immediately
+// after the blue mask qword. They have no code or data xrefs, so they remain
+// unmodeled until evidence proves padding versus reserved authored span/MMX
+// state.
+// Span callback dispatch bank. BN orders these as the gRndr_pfn* BSS block
+// installed by SelectSpanRoutines and caller-specific draw paths.
 SpanRoutineProc g_pfnSelectedSpanOp = 0;
-TexturedQueuedSpanProc g_pfnSelectedSpanOp_Mode0 = 0;
 FlatImmediateSpanProc g_pfnFlatImmediateSpanOp = 0;
 TexturedQueuedSpanProc g_pfnTexturedQueuedSpanOp_Mode0 = 0;
 TexturedQueuedSpanProc g_pfnTexturedQueuedSpanOp_Mode1 = 0;
-SpanRoutineProc g_pfnTexturedQueuedFinalize = 0;
-SpanRoutineProc g_pfnTexturedQueuedFinalizeAlt = 0;
+TexturedQueuedSpanProc g_pfnSelectedSpanOp_Mode0 = 0;
+TexturedQueuedSpanProc g_pfnSelectedSpanOp_Mode1 = 0;
 TexturedQueuedSpanProc g_pfnFlatQueuedSpanOp_Mode0 = 0;
+TexturedQueuedSpanProc g_pfnFlatQueuedSpanOp_Mode1 = 0;
 TexturedQueuedSpanProc g_pfnFlatQueuedSpanOpAlt_Mode0 = 0;
+TexturedQueuedSpanProc g_pfnFlatQueuedSpanOpAlt_Mode1 = 0;
 TexturedQueuedSpanProc g_pfnTexturedFanTriSpanOp_Mode0 = 0;
 TexturedQueuedSpanProc g_pfnTexturedFanTriSpanOp_Mode1 = 0;
 TexturedQueuedSpanProc g_pfnPolyTlvSpanOp_Mode0 = 0;
 TexturedQueuedSpanProc g_pfnPolyTlvSpanOpAlt_Mode0 = 0;
 TexturedQueuedSpanProc g_pfnPolyTlvSpanOp_Mode1 = 0;
 TexturedQueuedSpanProc g_pfnPolyTlvSpanOpAlt_Mode1 = 0;
-TexturedQueuedSpanProc g_pfnFlatQueuedSpanOp_Mode1 = 0;
-TexturedQueuedSpanProc g_pfnFlatQueuedSpanOpAlt_Mode1 = 0;
+SpanRoutineProc g_pfnImmediateRaster4 = 0;
+SpanRoutineProc g_pfnImmediateRasterReserved = 0;
+SpanRoutineProc g_pfnImmediateRaster5 = 0;
+PointOpProc g_pfnPointOpCandidate = 0;
+PointOpProc g_pfnPointOpActive = 0;
+SpanRoutineProc g_pfnTexturedQueuedFinalize = 0;
+SpanRoutineProc g_pfnTexturedQueuedFinalizeAlt = 0;
 TransparentQueuedPolyDrawCmd g_transparentQueue[0x15e] = {0};
 OverwriteQueuedPolyDrawCmd g_overwriteQueue[0x15e] = {0};
 int g_transparentQueueSortIndices[0x15e] = {0};
@@ -435,7 +474,12 @@ struct ScanVertex {
     float y;
 };
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: Fixed16FromFloat.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr span and scan-conversion callers that round coordinates into 16.16 fixed point.
+ * Purpose: Convert a floating-point value to signed 16.16 fixed-point with symmetric rounding.
+ */
 int Fixed16FromFloat(
     float value
 ) {
@@ -443,35 +487,60 @@ int Fixed16FromFloat(
     return (int)(scaled >= 0.0 ? scaled + 0.5 : scaled - 0.5);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: ScanlineStartFromY.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr span and polygon raster callers that bias the starting scanline from fixed-point Y.
+ * Purpose: Compute the first covered scanline for a polygon edge Y coordinate.
+ */
 int ScanlineStartFromY(
     float y
 ) {
     return (Fixed16FromFloat(y) + 0x7fff) >> 16;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: ScanlineEndFromY.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr span and polygon raster callers that bias the ending scanline from fixed-point Y.
+ * Purpose: Compute the last covered scanline for a polygon edge Y coordinate.
+ */
 int ScanlineEndFromY(
     float y
 ) {
     return (Fixed16FromFloat(y) - 0x8041) >> 16;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: SpanStartFromX.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr span builders that bias the starting pixel from fixed-point X.
+ * Purpose: Compute the first covered span sample for an edge X coordinate.
+ */
 int SpanStartFromX(
     float x
 ) {
     return (Fixed16FromFloat(x) + 0x7fff) >> 16;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: SpanEndFromX.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr span builders that bias the ending pixel from fixed-point X.
+ * Purpose: Compute the last covered span sample for an edge X coordinate.
+ */
 int SpanEndFromX(
     float x
 ) {
     return (Fixed16FromFloat(x) - 0x8001) >> 16;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: FloatFromBits.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * address-backed zRndr callers that preserve the original float bit pattern through memcpy.
+ * Purpose: Interpret a 32-bit integer bit pattern as a floating-point value.
+ */
 float FloatFromBits(
     unsigned int bits
 ) {
@@ -484,7 +553,12 @@ float FloatFromBits(
     return value;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: AppendSpanListNode.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr span-occlusion builders that coalesce adjacent visible span nodes.
+ * Purpose: Append a visible span node and merge it with the previous node when contiguous.
+ */
 void AppendSpanListNode(
     SpanNodePartial **spanList,
     int *spanCount,
@@ -507,7 +581,12 @@ void AppendSpanListNode(
     g_spanLastNode = node;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: SpanDepthAtX.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr span-occlusion comparisons using SpanNodePartial depth fields.
+ * Purpose: Evaluate a span node's inverse depth at one sample X coordinate.
+ */
 float SpanDepthAtX(
     const SpanNodePartial *span,
     int x
@@ -522,7 +601,12 @@ float SpanDepthAtX(
     return span->invDepth + (float)(x - span->sampleXMin) * span->depthSlope;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: SpanDepthAtX.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr span split paths using explicit span depth parts.
+ * Purpose: Evaluate inverse depth from a span start, base depth, and depth slope.
+ */
 float SpanDepthAtX(
     int sampleXMin,
     float invDepth,
@@ -532,7 +616,12 @@ float SpanDepthAtX(
     return invDepth + (float)(x - sampleXMin) * depthSlope;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: SpanDepthAtXByParts.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr span split paths using explicit span depth parts.
+ * Purpose: Evaluate inverse depth from a span start, base depth, and depth slope.
+ */
 float SpanDepthAtXByParts(
     int sampleXMin,
     float invDepth,
@@ -542,7 +631,12 @@ float SpanDepthAtXByParts(
     return invDepth + (float)(x - sampleXMin) * depthSlope;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: LinkSpanNode.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr span-occlusion insertion paths that update the column head/link fields.
+ * Purpose: Link a pending span node into one column and refresh the span iterator globals.
+ */
 void LinkSpanNode(
     int columnIndex,
     SpanNodePartial *previous,
@@ -560,7 +654,12 @@ void LinkSpanNode(
     g_spanIterNode = node;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: InsertPendingSpanSorted.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr span-occlusion callers that merge a pending span into sorted column coverage.
+ * Purpose: Insert the pending span into one column while coalescing neighboring coverage.
+ */
 void InsertPendingSpanSorted(
     SpanNodePartial **spanList,
     int columnIndex,
@@ -619,7 +718,12 @@ void InsertPendingSpanSorted(
     ++g_spanAllocCursor;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: InsertPendingSpanNoDepthTest.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr span-occlusion callers that clip existing column spans without a depth comparison.
+ * Purpose: Insert the pending span into one column while removing or splitting overlapped spans.
+ */
 void InsertPendingSpanNoDepthTest(
     SpanNodePartial **spanList,
     int columnIndex,
@@ -743,7 +847,12 @@ void InsertPendingSpanNoDepthTest(
     ++g_spanAllocCursor;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: BuildVisibleSpanListWithDepthTest.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr span-occlusion visibility builders that compare pending and stored span depth.
+ * Purpose: Build visible span fragments for a pending span without mutating the occluder list.
+ */
 void BuildVisibleSpanListWithDepthTest(
     SpanNodePartial **spanList,
     int columnIndex,
@@ -895,7 +1004,12 @@ void BuildVisibleSpanListWithDepthTest(
     ++g_spanAllocCursor;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: InsertPendingSpanWithDepthTest.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr span-occlusion insertion callers that compare pending and stored span depth.
+ * Purpose: Insert the pending span into one column while splitting spans by depth order.
+ */
 void InsertPendingSpanWithDepthTest(
     SpanNodePartial **spanList,
     int columnIndex,
@@ -1088,13 +1202,21 @@ void InsertPendingSpanWithDepthTest(
     ++g_spanAllocCursor;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: zRndr unavailable span callback
+ * Original-source helper evidence: No standalone plan entry was found; address-backed selector code installs this helper as a safe span callback fallback.
+ * Purpose: Preserve a no-op span callback target for unsupported selected span modes.
+ */
 void __fastcall SpanRoutineUnavailable(
     int,
     int
 ) {}
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: zRndr unavailable point callback
+ * Original-source helper evidence: No standalone plan entry was found; address-backed selector code installs this helper as a safe point callback fallback.
+ * Purpose: Preserve a no-op point callback target for unsupported point draw modes.
+ */
 void __fastcall PointOpUnavailable(
     void *,
     int,
@@ -1102,7 +1224,11 @@ void __fastcall PointOpUnavailable(
     int
 ) {}
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: zRndr unavailable textured queued span callback
+ * Original-source helper evidence: No standalone plan entry was found; address-backed selector code installs this helper as a safe queued span callback fallback.
+ * Purpose: Preserve a no-op queued textured span target for unsupported selected span modes.
+ */
 void __fastcall TexturedQueuedSpanRoutineUnavailable(
     int,
     int,
@@ -1110,14 +1236,24 @@ void __fastcall TexturedQueuedSpanRoutineUnavailable(
     int
 ) {}
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: zRndr unavailable flat immediate span callback
+ * Original-source helper evidence: No standalone plan entry was found; address-backed selector code installs this helper as a safe flat immediate callback fallback.
+ * Purpose: Preserve a no-op flat immediate span target for unsupported selected span modes.
+ */
 void __fastcall FlatImmediateSpanRoutineUnavailable(
     int,
     int,
     int
 ) {}
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr active fog comparison
+ * Original-source helper evidence: No standalone retail function is expected;
+ * observed in 0x49b4c0, 0x49b530, and 0x49b710 as the thresholded
+ * fog-parameter comparison before committing to the active record.
+ * Purpose: Detect whether the pending fog color differs enough from the active renderer fog state to commit.
+ */
 bool FogParamsDifferFromActive(
     const FogParamsPartial &params
 ) {
@@ -1127,7 +1263,13 @@ bool FogParamsDifferFromActive(
            fabs(g_fogParamsActive.colorRgb01[2] - params.colorRgb01[2]) >= kCommitThreshold;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr active fog commit
+ * Original-source helper evidence: No standalone retail function is expected;
+ * observed in 0x49b4c0, 0x49b530, and 0x49b710 as the shared comparison plus
+ * 0xa0-byte copy into the active fog-parameter record.
+ * Purpose: Copy pending fog parameters into active renderer state only when the thresholded color comparison changes.
+ */
 void CommitFogParamsIfChanged(
     const FogParamsPartial &params
 ) {
@@ -1141,8 +1283,11 @@ void CommitFogParamsIfChanged(
 }
 } // namespace
 
-// Reimplements 0x490430: zRndr::SetPerspectiveTextureDeltaX
-// (D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp)
+/**
+ * Reimplements 0x490430: zRndr::SetPerspectiveTextureDeltaX
+ * Source file evidence: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: Cache the perspective texture span chunk size and byte stride derived from delta X.
+ */
 void __fastcall SetPerspectiveTextureDeltaX(
     int deltaX
 ) {
@@ -1165,8 +1310,11 @@ void __fastcall SetPerspectiveTextureDeltaX(
     g_perspectiveTextureDeltaXBytes = g_perspectiveTextureDeltaXPow2 * g_bytesPerPixel;
 }
 
-// Reimplements 0x4904a0: zRndr::SetPerspectiveTextureFarZ
-// (D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp)
+/**
+ * Reimplements 0x4904a0: zRndr::SetPerspectiveTextureFarZ
+ * Source file evidence: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: Cache the reciprocal far-Z value used by perspective texture correction.
+ */
 void __stdcall SetPerspectiveTextureFarZ(
     float farZ
 ) {
@@ -1175,7 +1323,10 @@ void __stdcall SetPerspectiveTextureFarZ(
     }
 }
 
-// Reimplements 0x4904d0: zRndr::SetPerspectiveAdaptiveCorrection
+/**
+ * Reimplements 0x4904d0: zRndr::SetPerspectiveAdaptiveCorrection
+ * Purpose: Cache adaptive perspective depth-bias terms used by textured span subdivision.
+ */
 void __stdcall SetPerspectiveAdaptiveCorrection(
     float perspectiveAdaptiveCorrection
 ) {
@@ -1185,7 +1336,10 @@ void __stdcall SetPerspectiveAdaptiveCorrection(
     g_spanDepthBiasPlusOneInv = (plusOne == 0.0f || plusOne != plusOne) ? 0.0f : 1.0f / plusOne;
 }
 
-// Reimplements 0x490480: zRndr::SetPerspectiveAdaptiveSpanParams
+/**
+ * Reimplements 0x490480: zRndr::SetPerspectiveAdaptiveSpanParams
+ * Purpose: Store the adaptive perspective span-size thresholds selected for the renderer.
+ */
 void __fastcall SetPerspectiveAdaptiveSpanParams(
     int minSpan,
     int maxSpan,
@@ -1196,7 +1350,10 @@ void __fastcall SetPerspectiveAdaptiveSpanParams(
     g_perspectiveAdaptiveSlope = slope;
 }
 
-// Reimplements 0x48fd80: zRndr::InitGlobals
+/**
+ * Reimplements 0x48fd80: zRndr::InitGlobals
+ * Purpose: Initialize renderer span, queue, fog, and dispatch globals to their startup state.
+ */
 int InitGlobals() {
     g_spanAllocCursor = 0;
     g_spanColumnHeadTable = 0;
@@ -1279,7 +1436,10 @@ int InitGlobals() {
     return 0;
 }
 
-// Reimplements 0x48d450: zRndr::OverlayBlendRow555_Scalar
+/**
+ * Reimplements 0x48d450: zRndr::OverlayBlendRow555_Scalar
+ * Purpose: Blend one 555 overlay row using the cached software overlay alpha and premultiplied source color.
+ */
 void __fastcall OverlayBlendRow555_Scalar(
     unsigned short *rowPixels16,
     int pixelCount
@@ -1302,7 +1462,10 @@ void __fastcall OverlayBlendRow555_Scalar(
     }
 }
 
-// Reimplements 0x48d4b0: zRndr::OverlayBlendRow565_Scalar
+/**
+ * Reimplements 0x48d4b0: zRndr::OverlayBlendRow565_Scalar
+ * Purpose: Blend one 565 overlay row using the active pixel masks and cached overlay alpha.
+ */
 void __fastcall OverlayBlendRow565_Scalar(
     unsigned short *rowPixels16,
     int pixelCount
@@ -1327,9 +1490,10 @@ void __fastcall OverlayBlendRow565_Scalar(
     }
 }
 
-// Reimplements 0x48d510: zRndr::OverlayBlendRow555_Mmx
-// Original assembly uses MMX qwords and processes four pixels per iteration; this C body
-// preserves the functional row contract while binary-safe assembly remains deferred.
+/**
+ * Reimplements 0x48d510: zRndr::OverlayBlendRow555_Mmx
+ * Purpose: Preserve the MMX row-blend contract with scalar behavior while tier S byte evidence remains deferred.
+ */
 void __fastcall OverlayBlendRow555_Mmx(
     unsigned short *rowPixels16,
     int pixelCount
@@ -1340,9 +1504,10 @@ void __fastcall OverlayBlendRow555_Mmx(
     );
 }
 
-// Reimplements 0x48d5f0: zRndr::OverlayBlendRow565_Mmx
-// Original assembly uses MMX qwords and processes four pixels per iteration; this C body
-// preserves the functional row contract while binary-safe assembly remains deferred.
+/**
+ * Reimplements 0x48d5f0: zRndr::OverlayBlendRow565_Mmx
+ * Purpose: Preserve the MMX row-blend contract with scalar behavior while tier S byte evidence remains deferred.
+ */
 void __fastcall OverlayBlendRow565_Mmx(
     unsigned short *rowPixels16,
     int pixelCount
@@ -1353,7 +1518,10 @@ void __fastcall OverlayBlendRow565_Mmx(
     );
 }
 
-// Reimplements 0x49e140: zRndr::SpanMmxSetPixelFormatMasks
+/**
+ * Reimplements 0x49e140: zRndr::SpanMmxSetPixelFormatMasks
+ * Purpose: Replicate the active 555/565 pixel-format masks into the four-lane MMX span-mask globals.
+ */
 void __fastcall SpanMmxSetPixelFormatMasks(
     int greenBits
 ) {
@@ -1391,7 +1559,10 @@ void __fastcall SpanMmxSetPixelFormatMasks(
     g_mmxMaskGreenPacked[0] = redPacked;
 }
 
-// Reimplements 0x48ff80: zRndr::SelectSpanRoutines
+/**
+ * Reimplements 0x48ff80: zRndr::SelectSpanRoutines
+ * Purpose: Refresh pixel-pack state and install the active 16-bit point, line, and span routines.
+ */
 void SelectSpanRoutines() {
     zVideo::PixelPack_GetRgbBits(
         &g_pixelPackRedBits,
@@ -1506,7 +1677,10 @@ void SelectSpanRoutines() {
     g_pfnFlatQueuedSpanOpAlt_Mode1 = SpanMasked16FromPal8SwitchVShift;
 }
 
-// Reimplements 0x4903f0: zRndr::GetActiveRegionState
+/**
+ * Reimplements 0x4903f0: zRndr::GetActiveRegionState
+ * Purpose: Return the active framebuffer pointer and report the cached region dimensions, pixel depth, and pitch.
+ */
 void *__fastcall GetActiveRegionState(
     int *outWidth,
     int *outHeight,
@@ -1520,7 +1694,10 @@ void *__fastcall GetActiveRegionState(
     return g_frameBuffer;
 }
 
-// Reimplements 0x490340: zRndr::SetFrameBufferRegion
+/**
+ * Reimplements 0x490340: zRndr::SetFrameBufferRegion
+ * Purpose: Set the active framebuffer region, pixel depth, pitch, and derived perspective texture stride.
+ */
 void __fastcall SetFrameBufferRegion(
     void *pixels,
     zOpt_ViewRectSection *activeRegionRect,
@@ -1545,8 +1722,11 @@ void __fastcall SetFrameBufferRegion(
     g_perspectiveTextureDeltaXBytes = g_perspectiveTextureDeltaXPow2 * g_bytesPerPixel;
 }
 
-// Reimplements 0x4903c0: zRndr::SetActiveRegionSizeFromRect
-// (D:\Proj\GameZRecoil\zModel\zmodel.cpp)
+/**
+ * Reimplements 0x4903c0: zRndr::SetActiveRegionSizeFromRect
+ * Source file evidence: D:\Proj\GameZRecoil\zModel\zmodel.cpp.
+ * Purpose: Refresh cached active region dimensions from a HUD rectangle.
+ */
 void __fastcall SetActiveRegionSizeFromRect(
     HudUiRect *rect
 ) {
@@ -1556,7 +1736,11 @@ void __fastcall SetActiveRegionSizeFromRect(
     }
 }
 
-// Reimplements 0x4903e0: zRndr::SetVideoStrideMirrors
+/**
+ * Reimplements 0x4903e0: zRndr::SetVideoStrideMirrors.
+ * Original source path: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: copy the current video stride into the renderer span mirror globals.
+ */
 void __fastcall SetVideoStrideMirrors(
     int stride
 ) {
@@ -1564,7 +1748,16 @@ void __fastcall SetVideoStrideMirrors(
     g_videoStrideMirror0 = stride;
 }
 
-// Reimplements 0x490710: zRndr::SpanOcclusionAddPolygon
+/**
+ * Reimplements 0x490710: zRndr::SpanOcclusionAddPolygon.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: append one saved span-occluder polygon for the next column-table
+ * rebuild.
+ *
+ * Evidence: BN caps the saved polygon list at seven active entries, copies the
+ * submitted xyz vertices into gRndr_SpanOccluderPolys, clamps vertCount to
+ * eight, and increments gRndr_SpanOccluderPolyCount.
+ */
 void __fastcall SpanOcclusionAddPolygon(
     const zVec3 *vertices,
     int vertCount
@@ -1585,8 +1778,15 @@ void __fastcall SpanOcclusionAddPolygon(
     ++g_spanOccluderPolyCount;
 }
 
-// Reimplements 0x490610: zRndr::SpanOcclusionSubmitOccluderRect
-// (D:\Proj\Battlesport\zrndr_span.cpp)
+/**
+ * Reimplements 0x490610: zRndr::SpanOcclusionSubmitOccluderRect.
+ * Original file: D:\Proj\Battlesport\zrndr_span.cpp.
+ * Purpose: convert one HUD rectangle into a four-vertex span-occluder polygon.
+ *
+ * Evidence: BN converts rect bounds to four xyz vertices, optionally halves x/y
+ * coordinates for replicated rendering, assigns the uniform z value, and calls
+ * zRndr::SpanOcclusionAddPolygon(vertices, 4).
+ */
 void __fastcall SpanOcclusionSubmitOccluderRect(
     const HudUiRect *rect,
     int halveIfReplicate,
@@ -1621,7 +1821,17 @@ void __fastcall SpanOcclusionSubmitOccluderRect(
     );
 }
 
-// Reimplements 0x490520: zRndr::SpanOcclusionInit
+/**
+ * Reimplements 0x490520: zRndr::SpanOcclusionInit.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: allocate and initialize software span-occlusion column storage for
+ * the active display height.
+ *
+ * Evidence: BN stores visible and padded column counts, allocates the column
+ * head table and span-node pool with calloc, builds the initial column table,
+ * clears the saved occluder count, and installs the local and secondary
+ * span-list callback pointers.
+ */
 int __fastcall SpanOcclusionInit(
     int height
 ) {
@@ -1644,7 +1854,16 @@ int __fastcall SpanOcclusionInit(
     return 0;
 }
 
-// Reimplements 0x490590: zRndr::SpanOcclusionBuildColumnHeadTable
+/**
+ * Reimplements 0x490590: zRndr::SpanOcclusionBuildColumnHeadTable.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: clear per-column span heads and rebuild them from saved occluder
+ * polygons.
+ *
+ * Evidence: BN clears gRndr_SpanColumnHeadTable for gRndr_SpanColumnCount
+ * entries, resets allocation and iteration cursors to the span pool, then
+ * rasterizes each saved gRndr_SpanOccluderPolys entry.
+ */
 void SpanOcclusionBuildColumnHeadTable() {
     for (int i = 0; i < g_spanColumnCount; ++i) {
         g_spanColumnHeadTable[i] = 0;
@@ -1662,7 +1881,17 @@ void SpanOcclusionBuildColumnHeadTable() {
     }
 }
 
-// Reimplements 0x4927d0: zRndr::SpanOcclusionRasterizeOccluderPoly
+/**
+ * Reimplements 0x4927d0: zRndr::SpanOcclusionRasterizeOccluderPoly.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: rasterize one saved occluder polygon into span nodes for each
+ * affected screen column.
+ *
+ * Evidence: BN reduces duplicate/closing polygon vertices, computes scanline
+ * coverage, sorts x intersections, stages pending span-node min/max/depth
+ * values in gRndr_SpanAllocCursor, and dispatches through gRndr_pfnBuildSpanList
+ * or the local fallback builder.
+ */
 void __fastcall SpanOcclusionRasterizeOccluderPoly(
     SpanOccluderPolyPartial *poly,
     int vertCount
@@ -1784,12 +2013,25 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
     }
 }
 
-// Reimplements 0x490600: zRndr::SpanOcclusionResetFrame
+/**
+ * Reimplements 0x490600: zRndr::SpanOcclusionResetFrame.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: clear saved span-occluder polygons for a new rendered frame.
+ *
+ * Evidence: BN writes zero to gRndr_SpanOccluderPolyCount and returns.
+ */
 void SpanOcclusionResetFrame() {
     g_spanOccluderPolyCount = 0;
 }
 
-// Reimplements 0x490780: zRndr::SpanOcclusionShutdown
+/**
+ * Reimplements 0x490780: zRndr::SpanOcclusionShutdown.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: release the software span-occlusion column table and span-node pool.
+ *
+ * Evidence: BN frees non-null gRndr_SpanColumnHeadTable and gRndr_SpanPoolBase
+ * through the CRT free import and clears those two globals.
+ */
 void SpanOcclusionShutdown() {
     if (g_spanColumnHeadTable != 0) {
         free(g_spanColumnHeadTable);
@@ -1802,7 +2044,10 @@ void SpanOcclusionShutdown() {
     g_spanPoolBase = 0;
 }
 
-// Reimplements 0x49e0e0: zRndr::SpanAlphaBlend565_Mmx_FromPal8
+/**
+ * Reimplements 0x49e0e0: zRndr::SpanAlphaBlend565_Mmx_FromPal8
+ * Purpose: Build the packed fog color and ramp table used by 16-bit fog blending.
+ */
 void __fastcall SpanAlphaBlend565_Mmx_FromPal8(
     FogParamsPartial *params,
     int packedRed,
@@ -1826,7 +2071,7 @@ void __fastcall SpanAlphaBlend565_Mmx_FromPal8(
 }
 
 namespace {
-int SpanTex16SampleIndex(
+inline int SpanTex16SampleIndex(
     int texU,
     int texV,
     int texVShift,
@@ -1859,18 +2104,21 @@ unsigned short BlendPixel555ConstAlphaMap(
 );
 } // namespace
 
-// Reimplements 0x49c230: zRndr::SpanAlphaBlend565ConstAlphaFromPal8
+/**
+ * Reimplements 0x49c230: zRndr::SpanAlphaBlend565ConstAlphaFromPal8
+ * Purpose: Blend palettized texture samples into a 565 span using the active constant alpha.
+ */
 void __fastcall SpanAlphaBlend565ConstAlphaFromPal8(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
     for (int i = 0; i < pixelCount; ++i) {
         const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
         const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
-        const unsigned char sourceIndex = g_spanActiveTexels[vIndex + uIndex];
+        const unsigned char sourceIndex = g_spanActiveTexPixels[vIndex + uIndex];
         if (sourceIndex != 0 && g_spanActiveConstAlphaBits > 3) {
             if (g_spanActiveConstAlphaBits >= 0xfc) {
                 *dst = g_spanActiveTexPalette[(short)(sourceIndex)];
@@ -1889,13 +2137,16 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromPal8(
             }
         }
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 }
 
-// Reimplements 0x49c020: zRndr::SpanMasked16FromPal8To565
+/**
+ * Reimplements 0x49c020: zRndr::SpanMasked16FromPal8To565
+ * Purpose: Route masked palettized 565 span writes through the constant-alpha pal8 blender.
+ */
 void __fastcall SpanMasked16FromPal8To565(
     int texU,
     int texV,
@@ -1910,15 +2161,18 @@ void __fastcall SpanMasked16FromPal8To565(
     );
 }
 
-// Reimplements 0x49c150: zRndr::SpanMasked16FromTex16To565
+/**
+ * Reimplements 0x49c150: zRndr::SpanMasked16FromTex16To565
+ * Purpose: Copy nonzero 16-bit texture samples into a 565 destination span.
+ */
 void __fastcall SpanMasked16FromTex16To565(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
-    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexels);
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
+    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
     for (int i = 0; i < pixelCount; ++i) {
         const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
         const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
@@ -1929,21 +2183,24 @@ void __fastcall SpanMasked16FromTex16To565(
             }
         }
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 }
 
-// Reimplements 0x49c360: zRndr::SpanAlphaBlend565FromTex16Alpha8
+/**
+ * Reimplements 0x49c360: zRndr::SpanAlphaBlend565FromTex16Alpha8
+ * Purpose: Alpha-blend 16-bit texture samples into a 565 span using per-texel alpha.
+ */
 void __fastcall SpanAlphaBlend565FromTex16Alpha8(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
-    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexels);
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
+    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
 
     if ((pixelCount & 1) != 0) {
@@ -1967,8 +2224,8 @@ void __fastcall SpanAlphaBlend565FromTex16Alpha8(
             }
         }
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 
@@ -2008,22 +2265,25 @@ void __fastcall SpanAlphaBlend565FromTex16Alpha8(
                 );
             }
 
-            texU += g_spanTexUAdvance * 2;
-            texV += g_spanTexVAdvance * 2;
+            texU += g_spanActiveTexUStepFixed20 * 2;
+            texV += g_spanActiveTexVStepFixed20 * 2;
             dst += 2;
         }
     }
 }
 
-// Reimplements 0x49c560: zRndr::SpanAlphaBlend555FromTex16Alpha8
+/**
+ * Reimplements 0x49c560: zRndr::SpanAlphaBlend555FromTex16Alpha8
+ * Purpose: Alpha-blend 16-bit texture samples into a 555 span using per-texel alpha.
+ */
 void __fastcall SpanAlphaBlend555FromTex16Alpha8(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
-    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexels);
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
+    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
 
     if ((pixelCount & 1) != 0) {
@@ -2047,8 +2307,8 @@ void __fastcall SpanAlphaBlend555FromTex16Alpha8(
             }
         }
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 
@@ -2088,22 +2348,25 @@ void __fastcall SpanAlphaBlend555FromTex16Alpha8(
                 );
             }
 
-            texU += g_spanTexUAdvance * 2;
-            texV += g_spanTexVAdvance * 2;
+            texU += g_spanActiveTexUStepFixed20 * 2;
+            texV += g_spanActiveTexVStepFixed20 * 2;
             dst += 2;
         }
     }
 }
 
-// Reimplements 0x49c970: zRndr::SpanAlphaBlend565ConstAlphaFromTex16Alpha8
+/**
+ * Reimplements 0x49c970: zRndr::SpanAlphaBlend565ConstAlphaFromTex16Alpha8
+ * Purpose: Blend 16-bit texture samples into a 565 span using scaled alpha-map values.
+ */
 void __fastcall SpanAlphaBlend565ConstAlphaFromTex16Alpha8(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
-    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexels);
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
+    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
     float alphaScale = 0.0f;
     memcpy(
@@ -2134,21 +2397,24 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromTex16Alpha8(
             }
         }
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 }
 
-// Reimplements 0x49ca90: zRndr::SpanAlphaBlend555ConstAlphaFromTex16Alpha8
+/**
+ * Reimplements 0x49ca90: zRndr::SpanAlphaBlend555ConstAlphaFromTex16Alpha8
+ * Purpose: Blend 16-bit texture samples into a 555 span using scaled alpha-map values.
+ */
 void __fastcall SpanAlphaBlend555ConstAlphaFromTex16Alpha8(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
-    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexels);
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
+    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
     float alphaScale = 0.0f;
     memcpy(
@@ -2179,21 +2445,24 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16Alpha8(
             }
         }
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 }
 
-// Reimplements 0x49cbb0: zRndr::SpanAlphaBlend565MmxFromTex16Alpha8
+/**
+ * Reimplements 0x49cbb0: zRndr::SpanAlphaBlend565MmxFromTex16Alpha8
+ * Purpose: Blend tex16 alpha-map samples into a 565 span using the MMX-selected path shape.
+ */
 void __fastcall SpanAlphaBlend565MmxFromTex16Alpha8(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
-    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexels);
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
+    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
 
     const int quadPixels = pixelCount & ~3;
@@ -2210,8 +2479,8 @@ void __fastcall SpanAlphaBlend565MmxFromTex16Alpha8(
             alphaMap[sourceIndex]
         );
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 
@@ -2236,21 +2505,24 @@ void __fastcall SpanAlphaBlend565MmxFromTex16Alpha8(
             }
         }
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 }
 
-// Reimplements 0x49cea0: zRndr::SpanAlphaBlend555MmxFromTex16Alpha8
+/**
+ * Reimplements 0x49cea0: zRndr::SpanAlphaBlend555MmxFromTex16Alpha8
+ * Purpose: Blend tex16 alpha-map samples into a 555 span using the MMX-selected path shape.
+ */
 void __fastcall SpanAlphaBlend555MmxFromTex16Alpha8(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
-    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexels);
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
+    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
 
     const int quadPixels = pixelCount & ~3;
@@ -2267,8 +2539,8 @@ void __fastcall SpanAlphaBlend555MmxFromTex16Alpha8(
             alphaMap[sourceIndex]
         );
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 
@@ -2293,21 +2565,24 @@ void __fastcall SpanAlphaBlend555MmxFromTex16Alpha8(
             }
         }
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 }
 
-// Reimplements 0x49d1a0: zRndr::SpanAlphaBlend565FromPal8Alpha8
+/**
+ * Reimplements 0x49d1a0: zRndr::SpanAlphaBlend565FromPal8Alpha8
+ * Purpose: Alpha-blend palettized texture samples into a 565 span using per-texel alpha.
+ */
 void __fastcall SpanAlphaBlend565FromPal8Alpha8(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
-    const unsigned char *texels8 = g_spanActiveTexels;
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
+    const unsigned char *texels8 = g_spanActiveTexPixels;
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
     const unsigned short *palette = g_spanActiveTexPalette;
 
@@ -2332,8 +2607,8 @@ void __fastcall SpanAlphaBlend565FromPal8Alpha8(
             }
         }
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 
@@ -2370,21 +2645,24 @@ void __fastcall SpanAlphaBlend565FromPal8Alpha8(
             }
         }
 
-        texU += 2 * g_spanTexUAdvance;
-        texV += 2 * g_spanTexVAdvance;
+        texU += 2 * g_spanActiveTexUStepFixed20;
+        texV += 2 * g_spanActiveTexVStepFixed20;
         dst += 2;
     }
 }
 
-// Reimplements 0x49d3b0: zRndr::SpanAlphaBlend555FromPal8Alpha8
+/**
+ * Reimplements 0x49d3b0: zRndr::SpanAlphaBlend555FromPal8Alpha8
+ * Purpose: Alpha-blend palettized texture samples into a 555 span using per-texel alpha.
+ */
 void __fastcall SpanAlphaBlend555FromPal8Alpha8(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
-    const unsigned char *texels8 = g_spanActiveTexels;
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
+    const unsigned char *texels8 = g_spanActiveTexPixels;
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
     const unsigned short *palette = g_spanActiveTexPalette;
 
@@ -2409,8 +2687,8 @@ void __fastcall SpanAlphaBlend555FromPal8Alpha8(
             }
         }
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 
@@ -2447,21 +2725,24 @@ void __fastcall SpanAlphaBlend555FromPal8Alpha8(
             }
         }
 
-        texU += 2 * g_spanTexUAdvance;
-        texV += 2 * g_spanTexVAdvance;
+        texU += 2 * g_spanActiveTexUStepFixed20;
+        texV += 2 * g_spanActiveTexVStepFixed20;
         dst += 2;
     }
 }
 
-// Reimplements 0x49d810: zRndr::SpanAlphaBlend565ConstAlphaFromPal8Alpha8
+/**
+ * Reimplements 0x49d810: zRndr::SpanAlphaBlend565ConstAlphaFromPal8Alpha8
+ * Purpose: Blend palettized texture samples into a 565 span using scaled alpha-map values.
+ */
 void __fastcall SpanAlphaBlend565ConstAlphaFromPal8Alpha8(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
-    const unsigned char *texels8 = g_spanActiveTexels;
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
+    const unsigned char *texels8 = g_spanActiveTexPixels;
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
     const unsigned short *palette = g_spanActiveTexPalette;
 
@@ -2494,21 +2775,24 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromPal8Alpha8(
             }
         }
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 }
 
-// Reimplements 0x49d950: zRndr::SpanAlphaBlend555ConstAlphaFromPal8Alpha8
+/**
+ * Reimplements 0x49d950: zRndr::SpanAlphaBlend555ConstAlphaFromPal8Alpha8
+ * Purpose: Blend palettized texture samples into a 555 span using scaled alpha-map values.
+ */
 void __fastcall SpanAlphaBlend555ConstAlphaFromPal8Alpha8(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
-    const unsigned char *texels8 = g_spanActiveTexels;
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
+    const unsigned char *texels8 = g_spanActiveTexPixels;
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
     const unsigned short *palette = g_spanActiveTexPalette;
 
@@ -2541,21 +2825,24 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromPal8Alpha8(
             }
         }
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 }
 
-// Reimplements 0x49da80: zRndr::SpanAlphaBlend565MmxFromPal8Alpha8
+/**
+ * Reimplements 0x49da80: zRndr::SpanAlphaBlend565MmxFromPal8Alpha8
+ * Purpose: Blend pal8 alpha-map samples into a 565 span using the MMX-selected path shape.
+ */
 void __fastcall SpanAlphaBlend565MmxFromPal8Alpha8(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
-    const unsigned char *texels8 = g_spanActiveTexels;
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
+    const unsigned char *texels8 = g_spanActiveTexPixels;
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
     const unsigned short *palette = g_spanActiveTexPalette;
 
@@ -2573,8 +2860,8 @@ void __fastcall SpanAlphaBlend565MmxFromPal8Alpha8(
             alphaMap[sourceIndex]
         );
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 
@@ -2599,21 +2886,24 @@ void __fastcall SpanAlphaBlend565MmxFromPal8Alpha8(
             }
         }
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 }
 
-// Reimplements 0x49ddb0: zRndr::SpanAlphaBlend555MmxFromPal8Alpha8
+/**
+ * Reimplements 0x49ddb0: zRndr::SpanAlphaBlend555MmxFromPal8Alpha8
+ * Purpose: Blend pal8 alpha-map samples into a 555 span using the MMX-selected path shape.
+ */
 void __fastcall SpanAlphaBlend555MmxFromPal8Alpha8(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
-    const unsigned char *texels8 = g_spanActiveTexels;
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
+    const unsigned char *texels8 = g_spanActiveTexPixels;
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
     const unsigned short *palette = g_spanActiveTexPalette;
 
@@ -2631,8 +2921,8 @@ void __fastcall SpanAlphaBlend555MmxFromPal8Alpha8(
             alphaMap[sourceIndex]
         );
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 
@@ -2657,21 +2947,24 @@ void __fastcall SpanAlphaBlend555MmxFromPal8Alpha8(
             }
         }
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 }
 
-// Reimplements 0x49c760: zRndr::SpanAlphaBlend565ConstAlphaFromTex16
+/**
+ * Reimplements 0x49c760: zRndr::SpanAlphaBlend565ConstAlphaFromTex16
+ * Purpose: Blend 16-bit texture samples into a 565 span using the active constant alpha.
+ */
 void __fastcall SpanAlphaBlend565ConstAlphaFromTex16(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
-    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexels);
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
+    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
     for (int i = 0; i < pixelCount; ++i) {
         const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
         const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
@@ -2693,21 +2986,24 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromTex16(
             }
         }
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 }
 
-// Reimplements 0x49c860: zRndr::SpanAlphaBlend555ConstAlphaFromTex16
+/**
+ * Reimplements 0x49c860: zRndr::SpanAlphaBlend555ConstAlphaFromTex16
+ * Purpose: Blend 16-bit texture samples into a 555 span using the active constant alpha.
+ */
 void __fastcall SpanAlphaBlend555ConstAlphaFromTex16(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
-    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexels);
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
+    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
     for (int i = 0; i < pixelCount; ++i) {
         const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
         const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
@@ -2729,24 +3025,27 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16(
             }
         }
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 }
 
-// Reimplements 0x49d5c0: zRndr::SpanAlphaBlend565ConstAlphaFastFromPal8
+/**
+ * Reimplements 0x49d5c0: zRndr::SpanAlphaBlend565ConstAlphaFastFromPal8
+ * Purpose: Blend palettized texture samples into a 565 span using fast constant alpha.
+ */
 void __fastcall SpanAlphaBlend565ConstAlphaFastFromPal8(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
     for (int i = 0; i < pixelCount; ++i) {
         const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
         const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
-        const unsigned char sourceIndex = g_spanActiveTexels[vIndex + uIndex];
+        const unsigned char sourceIndex = g_spanActiveTexPixels[vIndex + uIndex];
         const int srcColor = (short)(g_spanActiveTexPalette[sourceIndex]);
         if (g_spanActiveConstAlphaBits > 3) {
             if (g_spanActiveConstAlphaBits >= 0xfc) {
@@ -2765,24 +3064,27 @@ void __fastcall SpanAlphaBlend565ConstAlphaFastFromPal8(
             }
         }
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 }
 
-// Reimplements 0x49d6e0: zRndr::SpanAlphaBlend555ConstAlphaFastFromPal8
+/**
+ * Reimplements 0x49d6e0: zRndr::SpanAlphaBlend555ConstAlphaFastFromPal8
+ * Purpose: Blend palettized texture samples into a 555 span using fast constant alpha.
+ */
 void __fastcall SpanAlphaBlend555ConstAlphaFastFromPal8(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
     for (int i = 0; i < pixelCount; ++i) {
         const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
         const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
-        const unsigned char sourceIndex = g_spanActiveTexels[vIndex + uIndex];
+        const unsigned char sourceIndex = g_spanActiveTexPixels[vIndex + uIndex];
         const int srcColor = (short)(g_spanActiveTexPalette[sourceIndex]);
         if (g_spanActiveConstAlphaBits > 7) {
             if (g_spanActiveConstAlphaBits >= 0xfc) {
@@ -2801,14 +3103,18 @@ void __fastcall SpanAlphaBlend555ConstAlphaFastFromPal8(
             }
         }
 
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
 }
 
 namespace {
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr fog packed-color rotate
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e200 and 0x49e300 fog blend callers as the rotate-right term in packed 565/555 ramp blending.
+ * Purpose: Rotate packed 32-bit color terms right by a caller-selected bit count.
+ */
 unsigned int RotateRight32(
     unsigned int value,
     int count
@@ -2816,28 +3122,44 @@ unsigned int RotateRight32(
     return (value >> count) | (value << (32 - count));
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr fog saturated-coordinate test
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e200, 0x49e300, 0x49e400, and 0x49e560 before ramp or solid-fog blending.
+ * Purpose: Detect fog coordinates that have reached the fully fogged color.
+ */
 bool FogCoordIsFullyFogged(
     unsigned int fogCoordFixed24
 ) {
     return (int)(fogCoordFixed24) >= 0x1000000;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr fog ramp-range test
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e200, 0x49e300, 0x49e400, and 0x49e560 before ramp lookup.
+ * Purpose: Detect fog coordinates that should use the packed color ramp.
+ */
 bool FogCoordUsesRamp(
     unsigned int fogCoordFixed24
 ) {
     return (int)(fogCoordFixed24) >= 0x80000;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr fog ramp index
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e200, 0x49e300, 0x49e400, and 0x49e560 as the fixed-point ramp lookup expression.
+ * Purpose: Convert a fixed-point fog coordinate into the 32-entry ramp index.
+ */
 unsigned int FogRampIndex(
     unsigned int fogCoordFixed24
 ) {
     return (0x1000000u - fogCoordFixed24) >> 19;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr 565 fog pixel blend
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e200 and through the 0x49e400 MMX-shaped fog blend tail.
+ * Purpose: Blend one 565 pixel against the active packed fog ramp.
+ */
 unsigned short FogBlendPixel565(
     unsigned short pixel,
     unsigned int fogCoordFixed24
@@ -2862,7 +3184,11 @@ unsigned short FogBlendPixel565(
     return (unsigned short)(green + redBlue);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr 555 fog pixel blend
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e300 and through the 0x49e560 MMX-shaped fog blend tail.
+ * Purpose: Blend one 555 pixel against the active packed fog ramp.
+ */
 unsigned short FogBlendPixel555(
     unsigned short pixel,
     unsigned int fogCoordFixed24
@@ -2887,7 +3213,11 @@ unsigned short FogBlendPixel555(
     return (unsigned short)(green + redBlue);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr 565 fog pair blend
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e200 paired-pixel fog loops.
+ * Purpose: Blend two packed 565 pixels against the active packed fog ramp.
+ */
 unsigned int FogBlendPair565(
     unsigned int packedPixels,
     unsigned int fogCoordFixed24
@@ -2913,7 +3243,11 @@ unsigned int FogBlendPair565(
     return green + redBlue;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr 555 fog pair blend
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e300 paired-pixel fog loops.
+ * Purpose: Blend two packed 555 pixels against the active packed fog ramp.
+ */
 unsigned int FogBlendPair555(
     unsigned int packedPixels,
     unsigned int fogCoordFixed24
@@ -2939,7 +3273,11 @@ unsigned int FogBlendPair555(
     return green + redBlue;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr signed MMX word subtract
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e400 and 0x49e560 MMX-lane fog blend reconstruction.
+ * Purpose: Emulate the saturating signed word subtract used by the MMX fog lane.
+ */
 short SaturatingSubWord(
     unsigned short minuend,
     unsigned short subtrahend
@@ -2954,7 +3292,11 @@ short SaturatingSubWord(
     return (short)(result);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr signed MMX low-word multiply
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e400 and 0x49e560 MMX-lane fog blend reconstruction.
+ * Purpose: Emulate the low-word signed multiply used by the MMX fog lane.
+ */
 unsigned short MultiplyLowWord(
     short lhs,
     short rhs
@@ -2962,7 +3304,11 @@ unsigned short MultiplyLowWord(
     return (unsigned short)((int)(lhs) * (int)(rhs));
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr MMX fog lane blend
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e400 and 0x49e560 as repeated per-lane MMX fog math.
+ * Purpose: Blend one lane of the MMX-shaped fog quad with active mask globals.
+ */
 unsigned short FogBlendMmxLane(
     unsigned short pixel,
     unsigned short fogFactor,
@@ -3007,7 +3353,11 @@ unsigned short FogBlendMmxLane(
     return (unsigned short)(pixel + redTerm + greenTerm + blueTerm);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr MMX fog quad blend
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e400 and 0x49e560 four-pixel fog blend bodies.
+ * Purpose: Blend a four-pixel MMX-shaped fog quad and advance the fixed-point fog coordinate.
+ */
 unsigned int BlendMmxQuad(
     unsigned short *pixels,
     unsigned int fogCoordFixed24,
@@ -3043,7 +3393,11 @@ unsigned int BlendMmxQuad(
     return coord;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr MMX fog span core
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e400 and 0x49e560 with only 565/555 mask and scalar-tail differences.
+ * Purpose: Handle aligned MMX-shaped fog span blending before delegating tail pixels to the scalar variant.
+ */
 void FogBlendSpanMmxCore(
     unsigned short *pixels,
     int pixelCount,
@@ -3104,8 +3458,12 @@ void FogBlendSpanMmxCore(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-int SpanTex16SampleIndex(
+/**
+ * Recovered inline helper: zRndr span texture sample index
+ * Original-source inline helper evidence: No standalone plan/source-map entry; observed in span callers including 0x49e6c0, 0x49b7e0, 0x49edc0, 0x49bbf0, and 0x49f180.
+ * Purpose: Combine fixed-point texture U and masked V coordinates into the active texture sample index.
+ */
+inline int SpanTex16SampleIndex(
     int texU,
     int texV,
     int texVShift,
@@ -3116,14 +3474,18 @@ int SpanTex16SampleIndex(
     return vIndex + uIndex;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-unsigned short SpanTex16Sample(
+/**
+ * Recovered inline helper: zRndr 16-bit texture sample
+ * Original-source inline helper evidence: No standalone plan/source-map entry; observed in span callers including 0x49e6c0, 0x49ea80, and 0x49ec20.
+ * Purpose: Read a 16-bit texel from the active texture using the recovered fixed-point sample-index helper.
+ */
+inline unsigned short SpanTex16Sample(
     int texU,
     int texV,
     int texVShift,
     int texUMask
 ) {
-    const unsigned short *texels = (const unsigned short *)(g_spanActiveTexels);
+    const unsigned short *texels = (const unsigned short *)(g_spanActiveTexPixels);
     return texels[SpanTex16SampleIndex(
         texU,
         texV,
@@ -3132,8 +3494,12 @@ unsigned short SpanTex16Sample(
     )];
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-unsigned short SpanPal8SampleExpanded(
+/**
+ * Recovered inline helper: zRndr palettized texture sample expansion
+ * Original-source inline helper evidence: No standalone plan/source-map entry; observed in 0x49edc0 with equivalent palettized alpha span expansion patterns.
+ * Purpose: Expand an 8-bit texture sample through the active span palette.
+ */
+inline unsigned short SpanPal8SampleExpanded(
     int texU,
     int texV,
     int texVShift,
@@ -3145,10 +3511,14 @@ unsigned short SpanPal8SampleExpanded(
         texVShift,
         texUMask
     );
-    return g_spanActiveTexPalette[g_spanActiveTexels[sourceIndex]];
+    return g_spanActiveTexPalette[g_spanActiveTexPixels[sourceIndex]];
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr 565 alpha pixel blend
+ * Original-source inline helper evidence: No standalone retail function is expected; observed across 0x49c360, 0x49c970, 0x49cbb0, 0x49d1a0, 0x49d810, and 0x49da80 alpha-map span callers.
+ * Purpose: Blend one 565 destination pixel toward a source pixel using an 8-bit alpha value.
+ */
 unsigned short BlendPixel565Alpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
@@ -3164,7 +3534,11 @@ unsigned short BlendPixel565Alpha8(
     return (unsigned short)(blended);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr 565 alpha pair blend
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49c360 and 0x49d1a0 paired-pixel alpha blend loops.
+ * Purpose: Blend two packed 565 destination pixels toward one source pixel using a 5-bit alpha approximation.
+ */
 unsigned int BlendPair565Alpha5(
     unsigned int dstPair,
     unsigned short srcPixel,
@@ -3182,7 +3556,11 @@ unsigned int BlendPair565Alpha5(
     return lowTerms | highTerms;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr 555 alpha pixel blend
+ * Original-source inline helper evidence: No standalone retail function is expected; observed across 0x49c560, 0x49ca90, 0x49cea0, 0x49d3b0, 0x49d950, and 0x49ddb0 alpha-map span callers.
+ * Purpose: Blend one 555 destination pixel toward a source pixel using an 8-bit alpha value.
+ */
 unsigned short BlendPixel555Alpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
@@ -3198,7 +3576,11 @@ unsigned short BlendPixel555Alpha8(
     return (unsigned short)(blended);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr 555 alpha pair blend
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49c560 and 0x49d3b0 paired-pixel alpha blend loops.
+ * Purpose: Blend two packed 555 destination pixels toward one source pixel using a 5-bit alpha approximation.
+ */
 unsigned int BlendPair555Alpha5(
     unsigned int dstPair,
     unsigned short srcPixel,
@@ -3216,7 +3598,11 @@ unsigned int BlendPair555Alpha5(
     return highTerms | lowTerms;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr 555 constant-alpha-map pixel blend
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49ca90 and 0x49d950 scaled alpha-map span callers.
+ * Purpose: Blend one 555 destination pixel toward a source pixel using a scaled alpha-map value.
+ */
 unsigned short BlendPixel555ConstAlphaMap(
     unsigned short dstPixel,
     unsigned short srcPixel,
@@ -3231,8 +3617,12 @@ unsigned short BlendPixel555ConstAlphaMap(
                             blueDelta);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-void SpanCopy16FromTex16Forward(
+/**
+ * Recovered inline helper: zRndr forward 16-bit texture span copy
+ * Original-source inline helper evidence: No standalone plan/source-map entry; observed in 0x49ea80 and 0x49ec20 after the alignment prologue.
+ * Purpose: Copy active 16-bit texture samples forward into a destination span.
+ */
+inline void SpanCopy16FromTex16Forward(
     unsigned short *dst,
     int texU,
     int texV,
@@ -3246,13 +3636,16 @@ void SpanCopy16FromTex16Forward(
             texVShift,
             g_spanActiveTexUMask
         );
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
     }
 }
 } // namespace
 
-// Reimplements 0x49e200: zRndr::FogBlendSpan565Scalar
+/**
+ * Reimplements 0x49e200: zRndr::FogBlendSpan565Scalar
+ * Purpose: Blend a 565 span with the active fog color using scalar pair processing.
+ */
 void __fastcall FogBlendSpan565Scalar(
     unsigned short *pixels,
     int pixelCount,
@@ -3289,7 +3682,10 @@ void __fastcall FogBlendSpan565Scalar(
     }
 }
 
-// Reimplements 0x49e300: zRndr::FogBlendSpan555Scalar
+/**
+ * Reimplements 0x49e300: zRndr::FogBlendSpan555Scalar
+ * Purpose: Blend a 555 span with the active fog color using scalar pair processing.
+ */
 void __fastcall FogBlendSpan555Scalar(
     unsigned short *pixels,
     int pixelCount,
@@ -3326,7 +3722,10 @@ void __fastcall FogBlendSpan555Scalar(
     }
 }
 
-// Reimplements 0x49e400: zRndr::FogBlendSpan565Mmx
+/**
+ * Reimplements 0x49e400: zRndr::FogBlendSpan565Mmx
+ * Purpose: Route 565 fog blending through the MMX-shaped span core.
+ */
 void __fastcall FogBlendSpan565Mmx(
     unsigned short *pixels,
     int pixelCount,
@@ -3344,7 +3743,10 @@ void __fastcall FogBlendSpan565Mmx(
     );
 }
 
-// Reimplements 0x49e560: zRndr::FogBlendSpan555Mmx
+/**
+ * Reimplements 0x49e560: zRndr::FogBlendSpan555Mmx
+ * Purpose: Route 555 fog blending through the MMX-shaped span core.
+ */
 void __fastcall FogBlendSpan555Mmx(
     unsigned short *pixels,
     int pixelCount,
@@ -3362,80 +3764,320 @@ void __fastcall FogBlendSpan555Mmx(
     );
 }
 
-// Reimplements 0x49e6c0: zRndr::SpanCopy16FromTex16SwitchVShift
+/**
+ * Reimplements 0x49e6c0: zRndr::SpanCopy16FromTex16SwitchVShift
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
+ * Source-shape evidence: BN assembly uses an eight-case texVShift jump table,
+ * saves real ESP in gRndr_SavedEspSlot, pivots ESP to the end of the active
+ * destination span, writes texels backward with push word, and restores ESP at
+ * case exit. This C++ body preserves behavior while the retail ESP-pivot
+ * source shape remains owner/data debt for the span-family pass; current VC5SP3
+ * /O2 output emits normal pointer stores, and production raw assembly is not an
+ * accepted span-source substitute.
+ * Purpose: Copy 16-bit texels into the active span using the variable-texVShift reverse span contract.
+ */
 void __fastcall SpanCopy16FromTex16SwitchVShift(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    if (texVShift < 10 || texVShift > 17) {
+    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
+    unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
+
+    switch (texVShift) {
+    default:
+        return;
+
+    case 10: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex =
+                ((texU >> 20) & 0x3ff) +
+                ((texV & g_spanActiveTexVMask) >> 10);
+            *dstEnd = texels16[sourceIndex];
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
         return;
     }
 
-    const int texUMask = (1 << (20 - texVShift)) - 1;
-    for (int i = 0; i < pixelCount; ++i) {
-        g_spanCurrentDst16[pixelCount - i - 1] = SpanTex16Sample(
-            texU,
-            texV,
-            texVShift,
-            texUMask
-        );
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+    case 11: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex =
+                ((texU >> 20) & 0x1ff) +
+                ((texV & g_spanActiveTexVMask) >> 11);
+            *dstEnd = texels16[sourceIndex];
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 12: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex =
+                ((texU >> 20) & 0xff) +
+                ((texV & g_spanActiveTexVMask) >> 12);
+            *dstEnd = texels16[sourceIndex];
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 13: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex =
+                ((texU >> 20) & 0x7f) +
+                ((texV & g_spanActiveTexVMask) >> 13);
+            *dstEnd = texels16[sourceIndex];
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 14: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex =
+                ((texU >> 20) & 0x3f) +
+                ((texV & g_spanActiveTexVMask) >> 14);
+            *dstEnd = texels16[sourceIndex];
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 15: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex =
+                ((texU >> 20) & 0x1f) +
+                ((texV & g_spanActiveTexVMask) >> 15);
+            *dstEnd = texels16[sourceIndex];
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 16: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex =
+                ((texU >> 20) & 0x0f) +
+                ((texV & g_spanActiveTexVMask) >> 16);
+            *dstEnd = texels16[sourceIndex];
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 17: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex =
+                ((texU >> 20) & 0x07) +
+                ((texV & g_spanActiveTexVMask) >> 17);
+            *dstEnd = texels16[sourceIndex];
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
     }
 }
 
-// Reimplements 0x49b7e0: zRndr::SpanMasked16FromTex16SwitchVShift
+/**
+ * Reimplements 0x49b7e0: zRndr::SpanMasked16FromTex16SwitchVShift
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
+ * Source-shape evidence: BN assembly uses the same ESP-pivot jump-table span
+ * pattern as 0x49e6c0, with nonzero tex16 samples conditionally pushed into the
+ * descending destination cursor. This C++ body preserves behavior while the
+ * retail ESP-pivot source shape remains owner/data debt for the span-family pass;
+ * current VC5SP3 /O2 output emits normal pointer stores, and production raw
+ * assembly is not an accepted span-source substitute.
+ * Purpose: Write nonzero 16-bit texels into the active span using the texVShift-specialized reverse span loops.
+ */
 void __fastcall SpanMasked16FromTex16SwitchVShift(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    if (texVShift < 10 || texVShift > 17) {
+    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
+    unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
+
+    switch (texVShift) {
+    default:
+        return;
+
+    case 10: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex =
+                ((texU >> 20) & 0x3ff) +
+                ((texV & g_spanActiveTexVMask) >> 10);
+            const unsigned short source = texels16[sourceIndex];
+            if (source != 0) {
+                *dstEnd = source;
+            }
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
         return;
     }
 
-    const int texUMask = (1 << (20 - texVShift)) - 1;
-    for (int i = 0; i < pixelCount; ++i) {
-        const unsigned short source = SpanTex16Sample(
-            texU,
-            texV,
-            texVShift,
-            texUMask
-        );
-        if (source != 0) {
-            g_spanCurrentDst16[pixelCount - i - 1] = source;
+    case 11: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex =
+                ((texU >> 20) & 0x1ff) +
+                ((texV & g_spanActiveTexVMask) >> 11);
+            const unsigned short source = texels16[sourceIndex];
+            if (source != 0) {
+                *dstEnd = source;
+            }
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
         }
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        return;
+    }
+
+    case 12: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex =
+                ((texU >> 20) & 0xff) +
+                ((texV & g_spanActiveTexVMask) >> 12);
+            const unsigned short source = texels16[sourceIndex];
+            if (source != 0) {
+                *dstEnd = source;
+            }
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 13: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex =
+                ((texU >> 20) & 0x7f) +
+                ((texV & g_spanActiveTexVMask) >> 13);
+            const unsigned short source = texels16[sourceIndex];
+            if (source != 0) {
+                *dstEnd = source;
+            }
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 14: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex =
+                ((texU >> 20) & 0x3f) +
+                ((texV & g_spanActiveTexVMask) >> 14);
+            const unsigned short source = texels16[sourceIndex];
+            if (source != 0) {
+                *dstEnd = source;
+            }
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 15: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex =
+                ((texU >> 20) & 0x1f) +
+                ((texV & g_spanActiveTexVMask) >> 15);
+            const unsigned short source = texels16[sourceIndex];
+            if (source != 0) {
+                *dstEnd = source;
+            }
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 16: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex =
+                ((texU >> 20) & 0x0f) +
+                ((texV & g_spanActiveTexVMask) >> 16);
+            const unsigned short source = texels16[sourceIndex];
+            if (source != 0) {
+                *dstEnd = source;
+            }
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 17: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex =
+                ((texU >> 20) & 0x07) +
+                ((texV & g_spanActiveTexVMask) >> 17);
+            const unsigned short source = texels16[sourceIndex];
+            if (source != 0) {
+                *dstEnd = source;
+            }
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
     }
 }
 
-// Reimplements 0x49ea40: zRndr::SpanMmxSetTexUvMasksAndVShift
+/**
+ * Reimplements 0x49ea40: zRndr::SpanMmxSetTexUvMasksAndVShift
+ * Purpose: Mirror the active texture U/V masks and selected V shift into the two-lane MMX span globals.
+ */
 void __fastcall SpanMmxSetTexUvMasksAndVShift(
     int texVShift
 ) {
     const int texVMask = g_spanActiveTexVMask;
-    g_mmxVShiftCounts[1] = 0;
-    g_mmxVMask[1] = texVMask;
-    g_mmxVMask[0] = texVMask;
+    g_mmxVShiftCounts.hi = 0;
+    g_mmxVMask.hi = texVMask;
+    g_mmxVMask.lo = texVMask;
 
     const int texUMask = g_spanActiveTexUMask << 20;
-    g_mmxVShiftCounts[0] = texVShift;
-    g_mmxUMask[1] = texUMask;
-    g_mmxUMask[0] = texUMask;
+    g_mmxVShiftCounts.lo = texVShift;
+    g_mmxUMask.hi = texUMask;
+    g_mmxUMask.lo = texUMask;
 }
 
-// Reimplements 0x49ea80: zRndr::SpanCopy16FromTex16
+/**
+ * Reimplements 0x49ea80: zRndr::SpanCopy16FromTex16
+ * Purpose: Copy a 16-bit textured span while priming the paired MMX U/V scratch records.
+ */
 void __fastcall SpanCopy16FromTex16(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
     if (((unsigned int)(dst) & 3u) != 0) {
         *dst = SpanTex16Sample(
             texU,
@@ -3448,18 +4090,18 @@ void __fastcall SpanCopy16FromTex16(
         if (pixelCount == 0) {
             return;
         }
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
     }
 
-    g_mmxVPair[1] = texV;
-    g_mmxVPair[0] = texV + g_spanTexVAdvance;
-    g_mmxUPair[1] = texU;
-    g_mmxUPair[0] = texU + g_spanTexUAdvance;
-    g_mmxVStepDup2[0] = g_spanTexVAdvance * 2;
-    g_mmxVStepDup2[1] = g_spanTexVAdvance * 2;
-    g_mmxUStepDup2[0] = g_spanTexUAdvance * 2;
-    g_mmxUStepDup2[1] = g_spanTexUAdvance * 2;
+    g_mmxVPair.hi = texV;
+    g_mmxVPair.lo = texV + g_spanActiveTexVStepFixed20;
+    g_mmxUPair.hi = texU;
+    g_mmxUPair.lo = texU + g_spanActiveTexUStepFixed20;
+    g_mmxVStepDup2.lo = g_spanActiveTexVStepFixed20 * 2;
+    g_mmxVStepDup2.hi = g_spanActiveTexVStepFixed20 * 2;
+    g_mmxUStepDup2.lo = g_spanActiveTexUStepFixed20 * 2;
+    g_mmxUStepDup2.hi = g_spanActiveTexUStepFixed20 * 2;
 
     SpanCopy16FromTex16Forward(
         dst,
@@ -3470,14 +4112,17 @@ void __fastcall SpanCopy16FromTex16(
     );
 }
 
-// Reimplements 0x49ec20: zRndr::SpanCopy16FromTex16ExplicitVShift
+/**
+ * Reimplements 0x49ec20: zRndr::SpanCopy16FromTex16ExplicitVShift
+ * Purpose: Copy a 16-bit textured span with the caller-supplied V shift and MMX U/V scratch records.
+ */
 void __fastcall SpanCopy16FromTex16ExplicitVShift(
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dst = g_spanCurrentDst16;
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
     if (((unsigned int)(dst) & 3u) != 0) {
         *dst = SpanTex16Sample(
             texU,
@@ -3490,18 +4135,18 @@ void __fastcall SpanCopy16FromTex16ExplicitVShift(
         if (pixelCount == 0) {
             return;
         }
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
     }
 
-    g_mmxVPair[1] = texV;
-    g_mmxVPair[0] = texV + g_spanTexVAdvance;
-    g_mmxUPair[1] = texU;
-    g_mmxUPair[0] = texU + g_spanTexUAdvance;
-    g_mmxVStepDup2[0] = g_spanTexVAdvance * 2;
-    g_mmxVStepDup2[1] = g_spanTexVAdvance * 2;
-    g_mmxUStepDup2[0] = g_spanTexUAdvance * 2;
-    g_mmxUStepDup2[1] = g_spanTexUAdvance * 2;
+    g_mmxVPair.hi = texV;
+    g_mmxVPair.lo = texV + g_spanActiveTexVStepFixed20;
+    g_mmxUPair.hi = texU;
+    g_mmxUPair.lo = texU + g_spanActiveTexUStepFixed20;
+    g_mmxVStepDup2.lo = g_spanActiveTexVStepFixed20 * 2;
+    g_mmxVStepDup2.hi = g_spanActiveTexVStepFixed20 * 2;
+    g_mmxUStepDup2.lo = g_spanActiveTexUStepFixed20 * 2;
+    g_mmxUStepDup2.hi = g_spanActiveTexUStepFixed20 * 2;
 
     SpanCopy16FromTex16Forward(
         dst,
@@ -3512,7 +4157,15 @@ void __fastcall SpanCopy16FromTex16ExplicitVShift(
     );
 }
 
-// Reimplements 0x49edc0: zRndr::SpanCopy16FromPal8SwitchVShift
+/**
+ * Reimplements 0x49edc0: zRndr::SpanCopy16FromPal8SwitchVShift
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
+ * Source-shape evidence: BN and VC5 verification classify this with the same
+ * eight-case ESP-pivot jump-table span family as the tex16 switch-vshift loops.
+ * The current C++ body preserves behavior with ordinary reverse stores until
+ * the shared retail pivot source shape is recovered.
+ * Purpose: Copy palettized texels into the active 16-bit span using the variable-texVShift reverse span contract.
+ */
 void __fastcall SpanCopy16FromPal8SwitchVShift(
     int texU,
     int texV,
@@ -3525,19 +4178,27 @@ void __fastcall SpanCopy16FromPal8SwitchVShift(
 
     const int texUMask = (1 << (20 - texVShift)) - 1;
     for (int i = 0; i < pixelCount; ++i) {
-        g_spanCurrentDst16[pixelCount - i - 1] =
+        g_spanCurrentSpanBaseAddr[pixelCount - i - 1] =
             SpanPal8SampleExpanded(
                 texU,
                 texV,
                 texVShift,
                 texUMask
             );
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
     }
 }
 
-// Reimplements 0x49bbf0: zRndr::SpanMasked16FromPal8SwitchVShift
+/**
+ * Reimplements 0x49bbf0: zRndr::SpanMasked16FromPal8SwitchVShift
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
+ * Source-shape evidence: BN and VC5 verification classify this with the same
+ * eight-case ESP-pivot jump-table span family as the tex16 switch-vshift loops.
+ * The current C++ body preserves behavior with ordinary reverse stores until
+ * the shared retail pivot source shape is recovered.
+ * Purpose: Write nonzero palettized texels into the active 16-bit span using the variable-texVShift reverse span contract.
+ */
 void __fastcall SpanMasked16FromPal8SwitchVShift(
     int texU,
     int texV,
@@ -3556,16 +4217,24 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
             texVShift,
             texUMask
         );
-        const unsigned char source = g_spanActiveTexels[sourceIndex];
+        const unsigned char source = g_spanActiveTexPixels[sourceIndex];
         if (source != 0) {
-            g_spanCurrentDst16[pixelCount - i - 1] = g_spanActiveTexPalette[source];
+            g_spanCurrentSpanBaseAddr[pixelCount - i - 1] = g_spanActiveTexPalette[source];
         }
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
     }
 }
 
-// Reimplements 0x49f180: zRndr::SpanShade16FromPal8SwitchVShift
+/**
+ * Reimplements 0x49f180: zRndr::SpanShade16FromPal8SwitchVShift
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
+ * Source-shape evidence: BN groups this with the selector-installed
+ * switch-vshift span family that uses the active texture globals and descending
+ * destination cursor. The current C++ body preserves behavior with ordinary
+ * reverse stores until the shared retail pivot source shape is recovered.
+ * Purpose: Shade palettized texels through the active palette and write them into the reverse active span.
+ */
 void __fastcall SpanShade16FromPal8SwitchVShift(
     int texU,
     int texV,
@@ -3585,16 +4254,19 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
             texUMask
         );
         const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
-        const int paletteIndex = g_spanActiveTexels[sourceIndex] + shadeBucket;
+        const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
         g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
                                          (unsigned int)(g_spanActiveShadeStepFixed16));
-        g_spanCurrentDst16[pixelCount - i - 1] = g_spanActiveTexPalette[paletteIndex];
-        texU += g_spanTexUAdvance;
-        texV += g_spanTexVAdvance;
+        g_spanCurrentSpanBaseAddr[pixelCount - i - 1] = g_spanActiveTexPalette[paletteIndex];
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
     }
 }
 
-// Reimplements 0x49b1e0: zRndr::FogColor_SetRgb01Clamped
+/**
+ * Reimplements 0x49b1e0: zRndr::FogColor_SetRgb01Clamped
+ * Purpose: Clamp and commit the active fog color, then rebuild its packed 16-bit ramp.
+ */
 void __fastcall FogColor_SetRgb01Clamped(
     zColorRgb *color
 ) {
@@ -3641,7 +4313,10 @@ void __fastcall FogColor_SetRgb01Clamped(
     );
 }
 
-// Reimplements 0x49b350: zRndr::SetFogTargetColorRgb01Clamped
+/**
+ * Reimplements 0x49b350: zRndr::SetFogTargetColorRgb01Clamped
+ * Purpose: Clamp and commit the immediate fog target color, then rebuild its packed 16-bit ramp.
+ */
 void __fastcall SetFogTargetColorRgb01Clamped(
     zColorRgb *color
 ) {
@@ -3688,22 +4363,34 @@ void __fastcall SetFogTargetColorRgb01Clamped(
     );
 }
 
-// Reimplements 0x49b4c0: zRndr::CommitDirectFogParamsIfChanged
+/**
+ * Reimplements 0x49b4c0: zRndr::CommitDirectFogParamsIfChanged
+ * Purpose: Copy direct fog target parameters into the active fog state when they differ.
+ */
 void CommitDirectFogParamsIfChanged() {
     CommitFogParamsIfChanged(g_fogTargetParamsDirect);
 }
 
-// Reimplements 0x49b530: zRndr::CommitFogColorParamsIfChanged
+/**
+ * Reimplements 0x49b530: zRndr::CommitFogColorParamsIfChanged
+ * Purpose: Copy fog color parameters into the active fog state when they differ.
+ */
 void CommitFogColorParamsIfChanged() {
     CommitFogParamsIfChanged(g_fogColorParams);
 }
 
-// Reimplements 0x49b710: zRndr::CommitStagedFogParamsIfChanged
+/**
+ * Reimplements 0x49b710: zRndr::CommitStagedFogParamsIfChanged
+ * Purpose: Copy staged fog target parameters into the active fog state when they differ.
+ */
 void CommitStagedFogParamsIfChanged() {
     CommitFogParamsIfChanged(g_fogTargetParamsStaged);
 }
 
-// Reimplements 0x49b780: zRndr::BlendPackedColor565WithFogInPlace
+/**
+ * Reimplements 0x49b780: zRndr::BlendPackedColor565WithFogInPlace
+ * Purpose: Blend a packed 565 color in place toward the active fog color.
+ */
 void __fastcall BlendPackedColor565WithFogInPlace(
     int *ioPackedColor,
     int blend255
@@ -3723,13 +4410,20 @@ void __fastcall BlendPackedColor565WithFogInPlace(
     *ioPackedColor = packedColor + (redDelta & redMask) + (greenDelta & greenMask) + blueDelta;
 }
 
-// Reimplements 0x49a910: zRndr::LensFlare_ResetSampleQueue
+/**
+ * Reimplements 0x49a910: zRndr::LensFlare_ResetSampleQueue
+ * Purpose: Reset the queued lens-flare sample count for the frame.
+ */
 void LensFlare_ResetSampleQueue() {
     g_lensFlareSampleQueueCount = 0;
 }
 
 namespace {
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr 565 lens-flare color blend
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x498cb0 as the 565 branch of the lens-flare pixel blend path.
+ * Purpose: Blend one packed 565 color toward another using an 8-bit alpha value.
+ */
 unsigned short BlendPacked565(
     unsigned short from,
     unsigned short to,
@@ -3743,7 +4437,11 @@ unsigned short BlendPacked565(
     return (unsigned short)(((red & 0x1f) << 11) | ((green & 0x3f) << 5) | (blue & 0x1f));
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr 555 lens-flare color blend
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x498cb0 as the 555 branch of the lens-flare pixel blend path.
+ * Purpose: Blend one packed 555 color toward another using an 8-bit alpha value.
+ */
 unsigned short BlendPacked555(
     unsigned short from,
     unsigned short to,
@@ -3757,7 +4455,11 @@ unsigned short BlendPacked555(
     return (unsigned short)(((red & 0x1f) << 10) | ((green & 0x1f) << 5) | (blue & 0x1f));
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zRndr lens-flare pixel blend
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x498cb0 overlay/depth-fade paths and selected by the active 555/565 pixel-pack state.
+ * Purpose: Blend a lens-flare pixel using the active 16-bit framebuffer packing.
+ */
 unsigned short BlendLensFlarePixel(
     unsigned short from,
     unsigned short to,
@@ -3791,7 +4493,10 @@ unsigned short BlendLensFlarePixel(
 }
 } // namespace
 
-// Reimplements 0x498cb0: zRndr::LensFlare_DrawQueuedSample16_ClippedFramebuffer
+/**
+ * Reimplements 0x498cb0: zRndr::LensFlare_DrawQueuedSample16_ClippedFramebuffer
+ * Purpose: Draw one queued lens-flare sample into the clipped 16-bit framebuffer.
+ */
 void __fastcall LensFlare_DrawQueuedSample16_ClippedFramebuffer(
     LensFlareSamplePartial *sample,
     int yOffsetPixels,
@@ -3861,8 +4566,11 @@ void __fastcall LensFlare_DrawQueuedSample16_ClippedFramebuffer(
     );
 }
 
-// Reimplements 0x49a8c0: zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer
-// (D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp)
+/**
+ * Reimplements 0x49a8c0: zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer
+ * Source file evidence: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: Draw every queued lens-flare sample with a shared screen scale and Y offset.
+ */
 void __fastcall LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(
     int yOffsetPixels,
     float screenScale
@@ -3881,7 +4589,12 @@ void __fastcall LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer(
     g_overlayBlendEnabled = 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: SpanOcclusionInsertPendingSpanSorted.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * address-backed zRndr span-occlusion dispatch setup that selects the sorted insertion helper.
+ * Purpose: Route span-occlusion dispatch to the sorted pending-span insertion helper.
+ */
 void SpanOcclusionInsertPendingSpanSorted(
     SpanNodePartial **spanList,
     int columnIndex,
@@ -3894,7 +4607,12 @@ void SpanOcclusionInsertPendingSpanSorted(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: SpanOcclusionInsertPendingSpanWithDepthTest.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * address-backed zRndr span-occlusion dispatch setup that selects depth-tested insertion.
+ * Purpose: Route span-occlusion dispatch to the depth-tested pending-span insertion helper.
+ */
 void SpanOcclusionInsertPendingSpanWithDepthTest(
     SpanNodePartial **spanList,
     int columnIndex,
@@ -3907,7 +4625,12 @@ void SpanOcclusionInsertPendingSpanWithDepthTest(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: SpanOcclusionInsertPendingSpanNoDepthTest.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * address-backed zRndr span-occlusion dispatch setup that selects non-depth insertion.
+ * Purpose: Route span-occlusion dispatch to the non-depth pending-span insertion helper.
+ */
 void SpanOcclusionInsertPendingSpanNoDepthTest(
     SpanNodePartial **spanList,
     int columnIndex,
@@ -3920,7 +4643,12 @@ void SpanOcclusionInsertPendingSpanNoDepthTest(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: SpanOcclusionBuildVisibleSpanListWithDepthTest.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * address-backed zRndr span-occlusion dispatch setup that selects visibility-list building.
+ * Purpose: Route span-occlusion dispatch to the depth-tested visible-span list builder.
+ */
 void SpanOcclusionBuildVisibleSpanListWithDepthTest(
     SpanNodePartial **spanList,
     int columnIndex,
@@ -3934,7 +4662,17 @@ void SpanOcclusionBuildVisibleSpanListWithDepthTest(
 }
 } // namespace zRndr
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: zRndrSpanDepthAtXByPartsLocal.
+ * Original shape: no standalone retail function is currently identified in the
+ * inspected BN/plan evidence.
+ * Purpose: evaluate a span node's interpolated inverse depth at one x sample.
+ *
+ * Original helper evidence: source-faithful helper recovered from repeated
+ * span-occlusion caller bodies including 0x4907c0 and visibility helpers,
+ * which all compute invDepth + (x - sampleXMin) * depthSlope from
+ * zRndr_SpanNode fields.
+ */
 static float zRndrSpanDepthAtXByPartsLocal(
     int sampleXMin,
     float invDepth,
@@ -3944,7 +4682,16 @@ static float zRndrSpanDepthAtXByPartsLocal(
     return invDepth + (float)(x - sampleXMin) * depthSlope;
 }
 
-// Reimplements 0x490ae0: zRndr_SpanOcclusion_InsertSpanNode_Local
+/**
+ * Reimplements 0x490ae0: zRndr_SpanOcclusion_InsertSpanNode_Local.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: insert the pending span into a column using depth-tested occlusion
+ * splitting.
+ *
+ * Evidence: BN identifies this as the callback installed in
+ * gRndr_pfnBuildSpanList; the wrapper forwards spanList, columnIndex, and
+ * spanCount into the recovered depth-tested insertion helper.
+ */
 void __fastcall zRndr_SpanOcclusion_InsertSpanNode_Local(
     zRndr::SpanNodePartial **spanList,
     int columnIndex,
@@ -3957,7 +4704,15 @@ void __fastcall zRndr_SpanOcclusion_InsertSpanNode_Local(
     );
 }
 
-// Reimplements 0x4912a0: zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest
+/**
+ * Reimplements 0x4912a0: zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: insert the pending span into a column without depth-order testing.
+ *
+ * Evidence: BN keeps the same fastcall callback shape as the local inserter and
+ * forwards into the no-depth insertion helper that preserves the column-list
+ * split/visible-span contract.
+ */
 void __fastcall zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest(
     zRndr::SpanNodePartial **spanList,
     int columnIndex,
@@ -3970,7 +4725,16 @@ void __fastcall zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest(
     );
 }
 
-// Reimplements 0x491840: zRndr_SpanOcclusion_BuildSpanList
+/**
+ * Reimplements 0x491840: zRndr_SpanOcclusion_BuildSpanList.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: build visible fragments for one pending span against the current
+ * column's occlusion list.
+ *
+ * Evidence: BN identifies this as the secondary span-list callback installed in
+ * gRndr_pfnBuildSpanListSecondary; it forwards the callback arguments into the
+ * recovered depth-tested visible-span builder.
+ */
 void __fastcall zRndr_SpanOcclusion_BuildSpanList(
     zRndr::SpanNodePartial **spanList,
     int columnIndex,
@@ -3983,7 +4747,16 @@ void __fastcall zRndr_SpanOcclusion_BuildSpanList(
     );
 }
 
-// Reimplements 0x491da0: zRndr_SpanOcclusion_BuildSpanListFast
+/**
+ * Reimplements 0x491da0: zRndr_SpanOcclusion_BuildSpanListFast.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: emit the pending span as the only visible span and advance the span
+ * allocation cursor.
+ *
+ * Evidence: BN writes null next, stores gRndr_SpanAllocCursor into spanList[0],
+ * writes spanCount = 1, increments the cursor by one zRndr_SpanNode, and
+ * returns.
+ */
 void __fastcall zRndr_SpanOcclusion_BuildSpanListFast(
     zRndr::SpanNodePartial **spanList,
     int,
@@ -3995,7 +4768,17 @@ void __fastcall zRndr_SpanOcclusion_BuildSpanListFast(
     ++zRndr::g_spanAllocCursor;
 }
 
-// Reimplements 0x491dd0: zRndr_SpanOcclusion_TestColumnVisibility
+/**
+ * Reimplements 0x491dd0: zRndr_SpanOcclusion_TestColumnVisibility.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: test whether the pending span node remains visible in one occlusion
+ * column.
+ *
+ * Evidence: BN validates null/out-of-range guards, copies
+ * gRndr_SpanAllocCursor into a local candidate span, walks the column head
+ * list, uses zRndr_SpanOcclusion_TestSpanDepthOrderPair for overlap depth
+ * decisions, trims candidate ranges, and writes the out visibility flag.
+ */
 void __fastcall zRndr_SpanOcclusion_TestColumnVisibility(
     int columnIndex,
     int *isVisible
@@ -4059,7 +4842,16 @@ void __fastcall zRndr_SpanOcclusion_TestColumnVisibility(
     *isVisible = 1;
 }
 
-// Reimplements 0x498c40: zRndr_SpanOcclusion_TestPointVisibility
+/**
+ * Reimplements 0x498c40: zRndr_SpanOcclusion_TestPointVisibility.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: stage one projected point as a single-pixel pending span and test
+ * column visibility.
+ *
+ * Evidence: BN writes samplePoint z/x fields into gRndr_SpanAllocCursor,
+ * truncates x/y through the original integer conversion path, calls
+ * zRndr_SpanOcclusion_TestColumnVisibility, and returns one only when visible.
+ */
 int __fastcall zRndr_SpanOcclusion_TestPointVisibility(
     zVec3 *samplePoint
 ) {
@@ -4081,7 +4873,16 @@ int __fastcall zRndr_SpanOcclusion_TestPointVisibility(
     return isVisible > 0 ? 1 : 0;
 }
 
-// Reimplements 0x498f90: zRndr_SpanOcclusion_TestSample
+/**
+ * Reimplements 0x498f90: zRndr_SpanOcclusion_TestSample.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: dispatch one visible sample point through the active zRndr point
+ * operation.
+ *
+ * Evidence: BN loads gRndr_pFrameBuffer and gRndr_pfnPointOpActive, passes y/x
+ * and color16 in the observed fastcall/stack shape, and performs no additional
+ * span state updates.
+ */
 void __fastcall zRndr_SpanOcclusion_TestSample(
     int x,
     int y,
@@ -4095,7 +4896,16 @@ void __fastcall zRndr_SpanOcclusion_TestSample(
     );
 }
 
-// Reimplements 0x499020: zRndr_DrawCircleOctants16_Framebuffer
+/**
+ * Reimplements 0x499020: zRndr_DrawCircleOctants16_Framebuffer.
+ * Original file: zRndr_Draw.cpp.
+ * Purpose: emit the eight symmetric framebuffer points for one circle-outline
+ * midpoint step.
+ *
+ * Evidence: BN reads g_zRndr_CircleCenterX/Y, forwards gRndr_pFrameBuffer,
+ * and calls gRndr_pfnPointOpActive for each octant using fastcall y/x inputs
+ * plus the caller-supplied packed color.
+ */
 void __fastcall zRndr_DrawCircleOctants16_Framebuffer(
     int y,
     int x,
@@ -4151,7 +4961,16 @@ void __fastcall zRndr_DrawCircleOctants16_Framebuffer(
     );
 }
 
-// Reimplements 0x498fb0: zRndr_DrawCircleOutline16_Framebuffer
+/**
+ * Reimplements 0x498fb0: zRndr_DrawCircleOutline16_Framebuffer.
+ * Original file: zRndr_Draw.cpp.
+ * Purpose: draw a 16-bit framebuffer circle outline through midpoint octant
+ * batches.
+ *
+ * Evidence: BN stores the circle center and auxiliary argument globals, skips
+ * non-positive radius values, dispatches the initial y=0 octants, then advances
+ * the midpoint decision variable until x <= y.
+ */
 void __fastcall zRndr_DrawCircleOutline16_Framebuffer(
     int centerX,
     int centerY,
@@ -4192,7 +5011,10 @@ void __fastcall zRndr_DrawCircleOutline16_Framebuffer(
     } while (x > y);
 }
 
-// Reimplements 0x4992b0: zRndr_PlotPixel16
+/**
+ * Reimplements 0x4992b0: zRndr_PlotPixel16
+ * Purpose: Plot one 16-bit pixel into the active framebuffer row pitch.
+ */
 void __fastcall zRndr_PlotPixel16(
     unsigned short *dstPixels,
     int y,
@@ -4203,7 +5025,10 @@ void __fastcall zRndr_PlotPixel16(
     dstPixels[pitchWords * y + x] = (unsigned short)(color16);
 }
 
-// Reimplements 0x4992d0: zRndr_DrawLine16
+/**
+ * Reimplements 0x4992d0: zRndr_DrawLine16
+ * Purpose: Rasterize an unclipped 16-bit Bresenham line into the active framebuffer.
+ */
 void __fastcall zRndr_DrawLine16(
     unsigned short *dstPixels,
     int x0,
@@ -4262,7 +5087,10 @@ void __fastcall zRndr_DrawLine16(
     } while (count != 0);
 }
 
-// Reimplements 0x4993a0: zRndr_DrawLine16_Segmented
+/**
+ * Reimplements 0x4993a0: zRndr_DrawLine16_Segmented
+ * Purpose: Rasterize a segmented 16-bit Bresenham line into the active framebuffer.
+ */
 void __fastcall zRndr_DrawLine16_Segmented(
     unsigned short *dstPixels,
     int x0,
@@ -4348,7 +5176,10 @@ void __fastcall zRndr_DrawLine16_Segmented(
     } while (count != 0);
 }
 
-// Reimplements 0x499500: zRndr_DrawLine16_Clipped
+/**
+ * Reimplements 0x499500: zRndr_DrawLine16_Clipped
+ * Purpose: Clip and rasterize a 16-bit line into the active framebuffer.
+ */
 void __fastcall zRndr_DrawLine16_Clipped(
     unsigned short *dstPixels,
     const zRndr_LineClipRect2I *clipRect,
@@ -4484,12 +5315,19 @@ void __fastcall zRndr_DrawLine16_Clipped(
     } while (count != 0);
 }
 
-// Reimplements 0x4997d0: zRndr_FillSpan16Opaque
+/**
+ * Reimplements 0x4997d0: zRndr_FillSpan16Opaque
+ * Purpose: Fill the active reverse span with one opaque 16-bit color.
+ *
+ * Evidence: BN pivots ESP from gRndr_CurrentSpanBaseAddr and writes the span
+ * with push ax/eax. This C++ body preserves tier C behavior while that
+ * original source shape remains unresolved.
+ */
 void __fastcall zRndr_FillSpan16Opaque(
     int packedColor16,
     int pixelCount
 ) {
-    unsigned short *cursor = zRndr::g_spanCurrentDst16 + pixelCount;
+    unsigned short *cursor = zRndr::g_spanCurrentSpanBaseAddr + pixelCount;
     const unsigned short color = (unsigned short)(packedColor16);
     while (pixelCount > 0) {
         --cursor;
@@ -4498,13 +5336,19 @@ void __fastcall zRndr_FillSpan16Opaque(
     }
 }
 
-// Reimplements 0x499810: zRndr_FillSpan555Solid
+/**
+ * Reimplements 0x499810: zRndr_FillSpan555Solid
+ * Purpose: Blend a solid color into the active 555 span using the supplied alpha.
+ *
+ * Evidence: BN uses gRndr_CurrentSpanBaseAddr as an ordinary word pointer for
+ * this solid-fill leaf; there is no ESP-pivot write shape here.
+ */
 void __fastcall zRndr_FillSpan555Solid(
     int packedColor16,
     int blendAlpha,
     int pixelCount
 ) {
-    unsigned short *cursor = zRndr::g_spanCurrentDst16;
+    unsigned short *cursor = zRndr::g_spanCurrentSpanBaseAddr;
     do {
         if (blendAlpha > 7) {
             if (blendAlpha >= 0xfc) {
@@ -4526,13 +5370,19 @@ void __fastcall zRndr_FillSpan555Solid(
     } while (pixelCount != 0);
 }
 
-// Reimplements 0x4998a0: zRndr_FillSpan565Solid
+/**
+ * Reimplements 0x4998a0: zRndr_FillSpan565Solid
+ * Purpose: Blend a solid color into the active 565 span using the supplied alpha.
+ *
+ * Evidence: BN uses gRndr_CurrentSpanBaseAddr as an ordinary word pointer here;
+ * the limited reconstruction marker records only BN's partial-register display.
+ */
 void __fastcall zRndr_FillSpan565Solid(
     int packedColor16,
     int blendAlpha,
     int pixelCount
 ) {
-    unsigned short *cursor = zRndr::g_spanCurrentDst16;
+    unsigned short *cursor = zRndr::g_spanCurrentSpanBaseAddr;
     do {
         if (blendAlpha > 3) {
             if (blendAlpha >= 0xfc) {
@@ -4555,7 +5405,17 @@ void __fastcall zRndr_FillSpan565Solid(
     } while (pixelCount != 0);
 }
 
-// Reimplements 0x4907c0: zRndr_SpanOcclusion_TestSpanDepthOrderPair
+/**
+ * Reimplements 0x4907c0: zRndr_SpanOcclusion_TestSpanDepthOrderPair.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: decide whether one overlapping span node is in front of another
+ * using the recovered inverse-depth bias thresholds.
+ *
+ * Evidence: BN evaluates interpolated inverse-depth values at endpoint and
+ * overlap samples through zRndr_SpanNode fields, compares against
+ * gRndr_SpanDepthBiasPlusOne and gRndr_SpanDepthBiasPlusOneInv, and returns the
+ * depth-order predicate used by span-occlusion insertion and visibility tests.
+ */
 int __fastcall zRndr_SpanOcclusion_TestSpanDepthOrderPair(
     zRndr::SpanNodePartial *lhs,
     zRndr::SpanNodePartial *rhs
@@ -4666,14 +5526,24 @@ struct TexturedPlanes {
     float originY;
 };
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: RoundToFixed20.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr perspective span callers that round texture and shade deltas to fixed-point steps.
+ * Purpose: Round a floating-point value to the nearest integer for fixed-point span state.
+ */
 int RoundToFixed20(
     float value
 ) {
     return (int)(value >= 0.0f ? value + 0.5f : value - 0.5f);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: Fixed16FromFloat.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr polygon scan conversion callers that round coordinates into 16.16 fixed point.
+ * Purpose: Convert a floating-point value to signed 16.16 fixed-point with symmetric rounding.
+ */
 int Fixed16FromFloat(
     float value
 ) {
@@ -4681,28 +5551,48 @@ int Fixed16FromFloat(
     return (int)(scaled >= 0.0 ? scaled + 0.5 : scaled - 0.5);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: ScanlineStartFromY.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr polygon scan conversion callers that bias the starting scanline from fixed-point Y.
+ * Purpose: Compute the first covered scanline for a polygon edge Y coordinate.
+ */
 int ScanlineStartFromY(
     float y
 ) {
     return (Fixed16FromFloat(y) + 0x7fff) >> 16;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: ScanlineEndFromY.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr polygon scan conversion callers that bias the ending scanline from fixed-point Y.
+ * Purpose: Compute the last covered scanline for a polygon edge Y coordinate.
+ */
 int ScanlineEndFromY(
     float y
 ) {
     return (Fixed16FromFloat(y) - 0x8041) >> 16;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: SpanStartFromX.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr polygon span callers that bias the starting sample from fixed-point X.
+ * Purpose: Compute the first covered span sample for an edge X coordinate.
+ */
 int SpanStartFromX(
     float x
 ) {
     return (Fixed16FromFloat(x) + 0x7fff) >> 16;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: SpanEndFromX.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr polygon span callers that bias the ending sample from fixed-point X.
+ * Purpose: Compute the last covered span sample for an edge X coordinate.
+ */
 int SpanEndFromX(
     float x
 ) {
@@ -4716,7 +5606,12 @@ struct ScanConvertEdge {
     int reserved;
 };
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: WrapPolygonIndex.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr scan-edge builders that walk polygon vertices in either direction.
+ * Purpose: Wrap a polygon vertex index by one step at either end of the vertex array.
+ */
 int WrapPolygonIndex(
     int index,
     int vertexCount
@@ -4732,7 +5627,12 @@ int WrapPolygonIndex(
     return index;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: BuildScanConvertEdges.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr rasterization callers that build left and right edge tables for scan conversion.
+ * Purpose: Build fixed-point edge-walk records for one side of a polygon.
+ */
 int BuildScanConvertEdges(
     const zVec3 *vertices,
     int vertexCount,
@@ -4779,7 +5679,12 @@ int BuildScanConvertEdges(
     return edgeCount;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: BuildPlaneFromTriangle.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr queued textured polygon callers that derive interpolation planes from triangles.
+ * Purpose: Build a screen-space interpolation plane from triangle vertices and values.
+ */
 Plane2f BuildPlaneFromTriangle(
     const zVec3 *triVerts,
     const float values[3]
@@ -4803,7 +5708,12 @@ Plane2f BuildPlaneFromTriangle(
     return plane;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: BuildScreenPlaneFromTriangle.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr queued textured polygon callers that need a screen-origin adjusted plane.
+ * Purpose: Build a screen-space interpolation plane with its base adjusted to screen origin.
+ */
 Plane2f BuildScreenPlaneFromTriangle(
     const zVec3 *triVerts,
     const float values[3]
@@ -4816,7 +5726,12 @@ Plane2f BuildScreenPlaneFromTriangle(
     return plane;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: BuildQueuedTexturePlanes.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr queued texture draw callers that share perspective-correct texture interpolation.
+ * Purpose: Build reciprocal-Z and texture-over-Z planes for queued textured polygon spans.
+ */
 TexturedPlanes BuildQueuedTexturePlanes(
     const zVec3 *clippedTriVerts,
     const zVec3 *triVerts,
@@ -4883,7 +5798,12 @@ TexturedPlanes BuildQueuedTexturePlanes(
     return planes;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: EvalPlane.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr queued texture draw callers that sample interpolation planes per span/chunk.
+ * Purpose: Evaluate a two-dimensional interpolation plane at one screen coordinate.
+ */
 float EvalPlane(
     const Plane2f &plane,
     float x,
@@ -4892,7 +5812,12 @@ float EvalPlane(
     return x * plane.gradient.x + y * plane.gradient.y + plane.base;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: SelectPerspectiveChunkPixels.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr perspective texture callers that choose adaptive per-span chunk lengths.
+ * Purpose: Select the pixel count used for one perspective-correct texture span chunk.
+ */
 int SelectPerspectiveChunkPixels(
     float minPositiveReciprocalZ,
     float reciprocalZStepX
@@ -4925,7 +5850,12 @@ int SelectPerspectiveChunkPixels(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: DispatchTexturedSpanChunks.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr queued texture draw callers that dispatch spans through selected texture callbacks.
+ * Purpose: Split one visible span into texture chunks and dispatch each chunk to the span routine.
+ */
 void DispatchTexturedSpanChunks(
     zRndr::TexturedQueuedSpanProc spanProc,
     const TexturedPlanes &planes,
@@ -4983,8 +5913,8 @@ void DispatchTexturedSpanChunks(
             sampleY
         ) / endInvZ;
 
-        zRndr::g_spanTexUAdvance = RoundToFixed20((endU - startU) * textureScale / (float)(count));
-        zRndr::g_spanTexVAdvance = RoundToFixed20((endV - startV) * textureScale / (float)(count));
+        zRndr::g_spanActiveTexUStepFixed20 = RoundToFixed20((endU - startU) * textureScale / (float)(count));
+        zRndr::g_spanActiveTexVStepFixed20 = RoundToFixed20((endV - startV) * textureScale / (float)(count));
         if (shadePlane != 0) {
             const float startShade =
                 MaxValue(
@@ -5016,14 +5946,18 @@ void DispatchTexturedSpanChunks(
             texVShift
         );
 
-        zRndr::g_spanCurrentDst16 += count;
+        zRndr::g_spanCurrentSpanBaseAddr += count;
         x += count;
         remaining -= count;
     }
 }
 } // namespace
 
-// Reimplements 0x492000: zRndr_RasterizePolyWithSpanList
+/**
+ * Reimplements 0x492000: zRndr_RasterizePolyWithSpanList
+ * Source file evidence: zRndr raster/span draw cluster in this source file.
+ * Purpose: Rasterize one polygon through the active span-occlusion list and selected span routine.
+ */
 void __fastcall zRndr_RasterizePolyWithSpanList(
     zVec3 *vertices,
     zVec3 *planeVerts,
@@ -5151,7 +6085,7 @@ void __fastcall zRndr_RasterizePolyWithSpanList(
                     }
 
                     const int byteOffset = (int)(span->sampleXMin) * zRndr::g_bytesPerPixel;
-                    zRndr::g_spanCurrentDst16 = (unsigned short *)(scanlineBase + byteOffset);
+                    zRndr::g_spanCurrentSpanBaseAddr = (unsigned short *)(scanlineBase + byteOffset);
                     if (zRndr::g_pfnSelectedSpanOp != 0) {
                         zRndr::g_pfnSelectedSpanOp(
                             spanOpContext,
@@ -5164,7 +6098,11 @@ void __fastcall zRndr_RasterizePolyWithSpanList(
     }
 }
 
-// Reimplements 0x492f00: zRndr_DrawFlatImmediate
+/**
+ * Reimplements 0x492f00: zRndr_DrawFlatImmediate
+ * Source file evidence: zRndr raster/span draw cluster in this source file.
+ * Purpose: Draw an immediate flat polygon through the flat span callback path.
+ */
 void __fastcall zRndr_DrawFlatImmediate(
     zVec3 *vertices,
     zVec3 *planeVertices,
@@ -5293,7 +6231,7 @@ void __fastcall zRndr_DrawFlatImmediate(
                         continue;
                     }
 
-                    zRndr::g_spanCurrentDst16 =
+                    zRndr::g_spanCurrentSpanBaseAddr =
                         (unsigned short *)(scanlineBase +
                                            (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
                     zRndr::g_pfnFlatImmediateSpanOp(
@@ -5307,7 +6245,11 @@ void __fastcall zRndr_DrawFlatImmediate(
     }
 }
 
-// Reimplements 0x4936d0: zRndr_RasterizePoly
+/**
+ * Reimplements 0x4936d0: zRndr_RasterizePoly
+ * Source file evidence: zRndr raster/span draw cluster in this source file.
+ * Purpose: Scan-convert a polygon and dispatch each covered span to the selected span routine.
+ */
 void __fastcall zRndr_RasterizePoly(
     zVec3 *vertices,
     int vertCount,
@@ -5438,7 +6380,7 @@ void __fastcall zRndr_RasterizePoly(
         if (xStart <= xEnd) {
             const int pixelCount = xEnd - xStart;
             if (pixelCount > 0) {
-                zRndr::g_spanCurrentDst16 =
+                zRndr::g_spanCurrentSpanBaseAddr =
                     (unsigned short *)(scanlineBase + xStart * zRndr::g_bytesPerPixel);
                 zRndr::g_pfnSelectedSpanOp(
                     spanOpContext,
@@ -5451,7 +6393,12 @@ void __fastcall zRndr_RasterizePoly(
     }
 }
 
-// Reimplements 0x499a20: zRndr_SubmitPolyWithSpanList
+/**
+ * Reimplements 0x499a20: zRndr_SubmitPolyWithSpanList
+ * Original file: D:\Proj\GameZRecoil\zRender\zrndr_draw.c.
+ * Source file evidence: embedded zError file path in this function.
+ * Purpose: Submit a flat polygon for immediate drawing or deferred transparent/overwrite queues.
+ */
 void __fastcall zRndr_SubmitPolyWithSpanList(
     zVec3 *entryVertices,
     zVec3 *entryPlaneVertices,
@@ -5542,7 +6489,12 @@ void __fastcall zRndr_SubmitPolyWithSpanList(
     ++zRndr::g_transparentQueueCount;
 }
 
-// Reimplements 0x499c40: zRndr_SubmitTexturedPolyUniformAlphaOrShade
+/**
+ * Reimplements 0x499c40: zRndr_SubmitTexturedPolyUniformAlphaOrShade
+ * Original file: D:\Proj\GameZRecoil\zRender\zrndr_draw.c.
+ * Source file evidence: embedded zError file path in this function.
+ * Purpose: Submit a textured polygon with one alpha/shade value to the immediate or queued paths.
+ */
 void __fastcall zRndr_SubmitTexturedPolyUniformAlphaOrShade(
     zVec3 *projectedPolyVerts,
     zVec3 *clippedTriVerts,
@@ -5677,7 +6629,12 @@ void __fastcall zRndr_SubmitTexturedPolyUniformAlphaOrShade(
     ++zRndr::g_transparentQueueCount;
 }
 
-// Reimplements 0x499ec0: zRndr_SubmitTexturedPolyPerVertexAlphaOrShade
+/**
+ * Reimplements 0x499ec0: zRndr_SubmitTexturedPolyPerVertexAlphaOrShade
+ * Original file: D:\Proj\GameZRecoil\zRender\zrndr_draw.c.
+ * Source file evidence: embedded zError file path in this function.
+ * Purpose: Submit a textured polygon with per-vertex alpha/shade values to draw or queue paths.
+ */
 void __fastcall zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
     zVec3 *projectedPolyVerts,
     zVec3 *clippedTriVerts,
@@ -5841,8 +6798,12 @@ void __fastcall zRndr_SubmitTexturedPolyPerVertexAlphaOrShade(
     ++zRndr::g_transparentQueueCount;
 }
 
-// Reimplements 0x48d6d0: zRndr_OverlayRect_Submit
-// (D:\Proj\GameZRecoil\zRndr\zRndr_Overlay.cpp)
+/**
+ * Reimplements 0x48d6d0: zRndr_OverlayRect_Submit
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Overlay.cpp.
+ * Source file evidence: recovered original path on the prior source label.
+ * Purpose: Submit an overlay rectangle to Direct3D or stage it for software overlay blending.
+ */
 void __fastcall zRndr_OverlayRect_Submit(
     unsigned int packedColor16,
     zVidRect32 *rectOrNull,
@@ -5881,8 +6842,12 @@ void __fastcall zRndr_OverlayRect_Submit(
     zRndr::g_overlayBlendAlpha = alpha;
 }
 
-// Reimplements 0x48d7a0: zRndr_OverlayRect_FlushSw
-// (D:\Proj\GameZRecoil\zRndr\zRndr_Overlay.cpp)
+/**
+ * Reimplements 0x48d7a0: zRndr_OverlayRect_FlushSw
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Overlay.cpp.
+ * Source file evidence: recovered original path on the prior source label.
+ * Purpose: Blend the staged software overlay rectangle into the active 16-bit video surface.
+ */
 void zRndr_OverlayRect_FlushSw() {
     if (zRndr::g_overlayBlendEnabled == 0) {
         return;
@@ -5941,7 +6906,11 @@ void zRndr_OverlayRect_FlushSw() {
     }
 }
 
-// Reimplements 0x49a2b0: zRndr_FlushTransparentQueue
+/**
+ * Reimplements 0x49a2b0: zRndr_FlushTransparentQueue
+ * Source file evidence: zRndr queued draw cluster in this source file.
+ * Purpose: Sort and draw queued transparent polygons, then reset the transparent queue.
+ */
 void zRndr_FlushTransparentQueue() {
     {
         for (int i = 0; i < zRndr::g_transparentQueueCount; ++i) {
@@ -6037,7 +7006,11 @@ void zRndr_FlushTransparentQueue() {
     zRndr::g_transparentQueueCount = 0;
 }
 
-// Reimplements 0x49a490: zRndr_FlushOverwriteQueue
+/**
+ * Reimplements 0x49a490: zRndr_FlushOverwriteQueue
+ * Source file evidence: zRndr queued draw cluster in this source file.
+ * Purpose: Draw queued overwrite polygons through the appropriate flat or textured paths.
+ */
 void zRndr_FlushOverwriteQueue() {
     zRndr::g_pfnBuildSpanListSecondary = zRndr_SpanOcclusion_BuildSpanListFast;
 
@@ -6178,7 +7151,11 @@ void zRndr_FlushOverwriteQueue() {
     zRndr::g_pfnBuildSpanListSecondary = zRndr_SpanOcclusion_BuildSpanList;
 }
 
-// Reimplements 0x499130: zRndr_TextureMip_SelectVariantImage
+/**
+ * Reimplements 0x499130: zRndr_TextureMip_SelectVariantImage
+ * Source file evidence: zRndr queued texture draw cluster in this source file.
+ * Purpose: Select a mip/variant image for a textured polygon from its projected texture metric.
+ */
 zVidImagePartial *__fastcall zRndr_TextureMip_SelectVariantImage(
     zImage_TexDirEntryPartial *entry,
     const zVec3 *triVerts,
@@ -6228,7 +7205,10 @@ zVidImagePartial *__fastcall zRndr_TextureMip_SelectVariantImage(
     return entry->GetVariantImageAtIndex(variantIndex);
 }
 
-// Reimplements 0x493df0: zRndr_DrawFlatQueued
+/**
+ * Reimplements 0x493df0: zRndr_DrawFlatQueued
+ * Purpose: Draw a queued flat/textured polygon through the active span callback path.
+ */
 void __fastcall zRndr_DrawFlatQueued(
     zImage_TexDirEntryPartial *entry,
     zVec3 *polyVerts,
@@ -6292,9 +7272,7 @@ void __fastcall zRndr_DrawFlatQueued(
         return;
     }
 
-    zRndr::g_spanActiveTexels = (unsigned char *)(selectedImage->pixels);
-    zRndr::g_spanActiveTexVMask = selectedImage->vMaskFixed20;
-    zRndr::g_spanActiveTexUMask = selectedImage->uMask;
+    zRndr::g_spanActiveTexPixels = (unsigned char *)(selectedImage->pixels);
 
     zRndr::TexturedQueuedSpanProc spanOpMode0;
     zRndr::TexturedQueuedSpanProc spanOpMode1;
@@ -6308,16 +7286,20 @@ void __fastcall zRndr_DrawFlatQueued(
         spanOpMode1 = zRndr::g_pfnFlatQueuedSpanOpAlt_Mode1;
     }
     zRndr::g_pfnSelectedSpanOp_Mode0 = spanOpMode0;
+    zRndr::g_pfnSelectedSpanOp_Mode1 = spanOpMode1;
 
-    zRndr::TexturedQueuedSpanProc spanProc = spanOpMode0;
+    zRndr::TexturedQueuedSpanProc spanProc = zRndr::g_pfnSelectedSpanOp_Mode0;
     unsigned short *palette = (unsigned short *)(selectedImage->palette);
     if (palette != 0) {
         zRndr::g_spanActiveTexPalette =
             paletteIndex == -1 ? palette : &palette[(paletteIndex + 1) * 0x100];
-        spanProc = spanOpMode1;
+        spanProc = zRndr::g_pfnSelectedSpanOp_Mode1;
     } else {
         zRndr::g_spanActiveTexPalette = 0;
     }
+    zRndr::g_spanActiveTexShift = selectedImage->uShiftFrom20;
+    zRndr::g_spanActiveTexUMask = selectedImage->uMask;
+    zRndr::g_spanActiveTexVMask = selectedImage->vMaskFixed20;
 
     if (spanProc == 0) {
         return;
@@ -6330,7 +7312,7 @@ void __fastcall zRndr_DrawFlatQueued(
             : (zRndr::g_pfnBuildSpanList != 0 ? zRndr::g_pfnBuildSpanList
                                               : zRndr_SpanOcclusion_InsertSpanNode_Local);
     unsigned char *frameBase = (unsigned char *)(zRndr::g_frameBuffer);
-    const int texVShift = selectedImage->uShiftFrom20 != 0 ? selectedImage->uShiftFrom20 : 20;
+    const int texVShift = zRndr::g_spanActiveTexShift;
 
     for (int y = firstScanline; y <= lastScanline; ++y) {
         float intersections[0x40] = {0};
@@ -6406,7 +7388,7 @@ void __fastcall zRndr_DrawFlatQueued(
                         continue;
                     }
 
-                    zRndr::g_spanCurrentDst16 =
+                    zRndr::g_spanCurrentSpanBaseAddr =
                         (unsigned short *)(scanlineBase +
                                            (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
                     DispatchTexturedSpanChunks(
@@ -6425,7 +7407,10 @@ void __fastcall zRndr_DrawFlatQueued(
     }
 }
 
-// Reimplements 0x495850: zRndr_DrawTexturedQueued
+/**
+ * Reimplements 0x495850: zRndr_DrawTexturedQueued
+ * Purpose: Draw a depth-sorted textured polygon using perspective-correct queued spans.
+ */
 void __fastcall zRndr_DrawTexturedQueued(
     zImage_TexDirEntryPartial *entry,
     zVec3 *projectedVerts,
@@ -6516,8 +7501,8 @@ void __fastcall zRndr_DrawTexturedQueued(
         return;
     }
 
-    zRndr::g_spanActiveTexels = (unsigned char *)(selectedImage->pixels);
-    zRndr::g_spanActiveTexAlphaMap = selectedImage->queuedAlphaMap;
+    zRndr::g_spanActiveTexPixels = (unsigned char *)(selectedImage->pixels);
+    zRndr::g_spanActiveTexShift = selectedImage->uShiftFrom20;
     zRndr::g_spanActiveTexVMask = selectedImage->vMaskFixed20;
     zRndr::g_spanActiveTexUMask = selectedImage->uMask;
     zRndr::TexturedQueuedSpanProc spanProc = zRndr::g_pfnTexturedQueuedSpanOp_Mode0;
@@ -6562,7 +7547,7 @@ void __fastcall zRndr_DrawTexturedQueued(
             minPositiveReciprocalZ,
             planes.reciprocalZ.gradient.x
         );
-    const int texVShift = selectedImage->uShiftFrom20 != 0 ? selectedImage->uShiftFrom20 : 20;
+    const int texVShift = zRndr::g_spanActiveTexShift;
 
     for (int y = firstScanline; y <= lastScanline; ++y) {
         float intersections[0x40] = {0};
@@ -6636,7 +7621,7 @@ void __fastcall zRndr_DrawTexturedQueued(
                         continue;
                     }
 
-                    zRndr::g_spanCurrentDst16 =
+                    zRndr::g_spanCurrentSpanBaseAddr =
                         (unsigned short *)(scanlineBase +
                                            (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
                     DispatchTexturedSpanChunks(
@@ -6655,7 +7640,10 @@ void __fastcall zRndr_DrawTexturedQueued(
     }
 }
 
-// Reimplements 0x494af0: Renderer_DrawPolyTLV
+/**
+ * Reimplements 0x494af0: Renderer_DrawPolyTLV
+ * Purpose: Draw a transformed lit polygon through the active software texture span path.
+ */
 void __fastcall Renderer_DrawPolyTLV(
     zImage_TexDirEntryPartial *entry,
     zVec3 *polyVerts,
@@ -6722,9 +7710,7 @@ void __fastcall Renderer_DrawPolyTLV(
         return;
     }
 
-    zRndr::g_spanActiveTexels = (unsigned char *)(selectedImage->pixels);
-    zRndr::g_spanActiveTexVMask = selectedImage->vMaskFixed20;
-    zRndr::g_spanActiveTexUMask = selectedImage->uMask;
+    zRndr::g_spanActiveTexPixels = (unsigned char *)(selectedImage->pixels);
 
     zRndr::TexturedQueuedSpanProc spanProc = 0;
     zRndr::TexturedQueuedSpanProc paletteSpanProc = 0;
@@ -6747,14 +7733,20 @@ void __fastcall Renderer_DrawPolyTLV(
         spanProc = zRndr::g_pfnPolyTlvSpanOp_Mode1;
         paletteSpanProc = zRndr::g_pfnPolyTlvSpanOpAlt_Mode1;
     }
+    zRndr::g_pfnSelectedSpanOp_Mode0 = spanProc;
+    zRndr::g_pfnSelectedSpanOp_Mode1 = paletteSpanProc;
+    spanProc = zRndr::g_pfnSelectedSpanOp_Mode0;
 
     unsigned short *palette = (unsigned short *)(selectedImage->palette);
     if (palette != 0) {
         zRndr::g_spanActiveTexPalette = texKey == -1 ? palette : &palette[(texKey + 1) * 0x100];
-        spanProc = paletteSpanProc;
+        spanProc = zRndr::g_pfnSelectedSpanOp_Mode1;
     } else {
         zRndr::g_spanActiveTexPalette = 0;
     }
+    zRndr::g_spanActiveTexShift = selectedImage->uShiftFrom20;
+    zRndr::g_spanActiveTexUMask = selectedImage->uMask;
+    zRndr::g_spanActiveTexVMask = selectedImage->vMaskFixed20;
 
     if (spanProc == 0) {
         return;
@@ -6767,7 +7759,7 @@ void __fastcall Renderer_DrawPolyTLV(
             : (zRndr::g_pfnBuildSpanList != 0 ? zRndr::g_pfnBuildSpanList
                                               : zRndr_SpanOcclusion_InsertSpanNode_Local);
     unsigned char *frameBase = (unsigned char *)(zRndr::g_frameBuffer);
-    const int texVShift = selectedImage->uShiftFrom20 != 0 ? selectedImage->uShiftFrom20 : 20;
+    const int texVShift = zRndr::g_spanActiveTexShift;
 
     for (int y = firstScanline; y <= lastScanline; ++y) {
         float intersections[0x40] = {0};
@@ -6843,7 +7835,7 @@ void __fastcall Renderer_DrawPolyTLV(
                         continue;
                     }
 
-                    zRndr::g_spanCurrentDst16 =
+                    zRndr::g_spanCurrentSpanBaseAddr =
                         (unsigned short *)(scanlineBase +
                                            (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
                     DispatchTexturedSpanChunks(
@@ -6862,7 +7854,10 @@ void __fastcall Renderer_DrawPolyTLV(
     }
 }
 
-// Reimplements 0x4969d0: zRndr_DrawTexturedQueuedAlpha
+/**
+ * Reimplements 0x4969d0: zRndr_DrawTexturedQueuedAlpha
+ * Purpose: Queue an alpha-blended textured polygon for deferred depth-sorted rendering.
+ */
 void __fastcall zRndr_DrawTexturedQueuedAlpha(
     zImage_TexDirEntryPartial *entry,
     zVec3 *projectedVerts,
@@ -6944,8 +7939,9 @@ void __fastcall zRndr_DrawTexturedQueuedAlpha(
         return;
     }
 
-    zRndr::g_spanActiveTexels = (unsigned char *)(selectedImage->pixels);
-    zRndr::g_spanActiveTexAlphaMap = selectedImage->queuedAlphaMap;
+    zRndr::g_spanActiveTexPixels = (unsigned char *)(selectedImage->pixels);
+    zRndr::g_spanQueuedTexAlphaMap = selectedImage->queuedAlphaMap;
+    zRndr::g_spanActiveTexShift = selectedImage->uShiftFrom20;
     zRndr::g_spanActiveTexVMask = selectedImage->vMaskFixed20;
     zRndr::g_spanActiveTexUMask = selectedImage->uMask;
     zRndr::TexturedQueuedSpanProc spanProc = zRndr::g_pfnTexturedQueuedSpanOp_Mode0;
@@ -6973,7 +7969,7 @@ void __fastcall zRndr_DrawTexturedQueuedAlpha(
             minPositiveReciprocalZ,
             planes.reciprocalZ.gradient.x
         );
-    const int texVShift = selectedImage->uShiftFrom20 != 0 ? selectedImage->uShiftFrom20 : 20;
+    const int texVShift = zRndr::g_spanActiveTexShift;
 
     for (int y = firstScanline; y <= lastScanline; ++y) {
         float intersections[0x40] = {0};
@@ -7049,7 +8045,7 @@ void __fastcall zRndr_DrawTexturedQueuedAlpha(
                         continue;
                     }
 
-                    zRndr::g_spanCurrentDst16 =
+                    zRndr::g_spanCurrentSpanBaseAddr =
                         (unsigned short *)(scanlineBase +
                                            (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
                     DispatchTexturedSpanChunks(
@@ -7068,7 +8064,10 @@ void __fastcall zRndr_DrawTexturedQueuedAlpha(
     }
 }
 
-// Reimplements 0x497ac0: zRndr_DrawTexturedFanTri
+/**
+ * Reimplements 0x497ac0: zRndr_DrawTexturedFanTri
+ * Purpose: Draw one textured triangle from a fan using the selected active span callback.
+ */
 void __fastcall zRndr_DrawTexturedFanTri(
     zImage_TexDirEntryPartial *entry,
     zVec3 *projectedVerts,
@@ -7151,8 +8150,9 @@ void __fastcall zRndr_DrawTexturedFanTri(
         return;
     }
 
-    zRndr::g_spanActiveTexels = (unsigned char *)(selectedImage->pixels);
-    zRndr::g_spanActiveTexAlphaMap = selectedImage->queuedAlphaMap;
+    zRndr::g_spanActiveTexPixels = (unsigned char *)(selectedImage->pixels);
+    zRndr::g_spanQueuedTexAlphaMap = selectedImage->queuedAlphaMap;
+    zRndr::g_spanActiveTexShift = selectedImage->uShiftFrom20;
     zRndr::g_spanActiveTexVMask = selectedImage->vMaskFixed20;
     zRndr::g_spanActiveTexUMask = selectedImage->uMask;
     zRndr::g_spanActiveConstAlphaBits = alpha255;
@@ -7183,7 +8183,7 @@ void __fastcall zRndr_DrawTexturedFanTri(
             minPositiveReciprocalZ,
             planes.reciprocalZ.gradient.x
         );
-    const int texVShift = selectedImage->uShiftFrom20 != 0 ? selectedImage->uShiftFrom20 : 20;
+    const int texVShift = zRndr::g_spanActiveTexShift;
 
     for (int y = firstScanline; y <= lastScanline; ++y) {
         float intersections[0x40] = {0};
@@ -7259,7 +8259,7 @@ void __fastcall zRndr_DrawTexturedFanTri(
                         continue;
                     }
 
-                    zRndr::g_spanCurrentDst16 =
+                    zRndr::g_spanCurrentSpanBaseAddr =
                         (unsigned short *)(scanlineBase +
                                            (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
                     DispatchTexturedSpanChunks(
@@ -7278,7 +8278,11 @@ void __fastcall zRndr_DrawTexturedFanTri(
     }
 }
 
-// Reimplements 0x498bd0: zRndr_DrawImmediateLine
+/**
+ * Reimplements 0x498bd0: zRndr_DrawImmediateLine
+ * Source file evidence: zRndr immediate line draw cluster in this source file.
+ * Purpose: Dispatch one unclipped immediate line to the selected software line raster routine.
+ */
 void __fastcall zRndr_DrawImmediateLine(
     int x0,
     int y0,
@@ -7305,7 +8309,11 @@ void __fastcall zRndr_DrawImmediateLine(
     );
 }
 
-// Reimplements 0x498c00: zRndr_DrawClippedImmediateLineStrip
+/**
+ * Reimplements 0x498c00: zRndr_DrawClippedImmediateLineStrip
+ * Source file evidence: zRndr immediate line draw cluster in this source file.
+ * Purpose: Dispatch each segment of a clipped immediate line strip to the selected raster routine.
+ */
 void __fastcall zRndr_DrawClippedImmediateLineStrip(
     const zRndr_LinePoint2I *points,
     int segmentCount,
@@ -7344,7 +8352,10 @@ void __fastcall zRndr_DrawClippedImmediateLineStrip(
     } while (segmentCount != 0);
 }
 
-// Reimplements 0x49a830: zRndr_LensFlare_QueueProjectedSample
+/**
+ * Reimplements 0x49a830: zRndr_LensFlare_QueueProjectedSample
+ * Purpose: Queue a projected lens-flare sample after applying the active inverse-depth transform.
+ */
 void __fastcall zRndr_LensFlare_QueueProjectedSample(
     zProjectedPoint *projectedPoint,
     int packedColor16,
@@ -7367,13 +8378,19 @@ void __fastcall zRndr_LensFlare_QueueProjectedSample(
     ++zRndr::g_lensFlareSampleQueueCount;
 }
 
-// Reimplements 0x49a8b0: zRndr_LensFlare_GetQueuedSampleCount
+/**
+ * Reimplements 0x49a8b0: zRndr_LensFlare_GetQueuedSampleCount
+ * Purpose: Return the number of lens-flare samples queued for the frame.
+ */
 int zRndr_LensFlare_GetQueuedSampleCount() {
     return zRndr::g_lensFlareSampleQueueCount;
 }
 
-// Reimplements 0x49a920: zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList
-// (D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp)
+/**
+ * Reimplements 0x49a920: zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList
+ * Source file evidence: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: Cull queued lens-flare samples and build the visible-sample list for 16-bit drawing.
+ */
 void __fastcall zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(
     int startIndex
 ) {
@@ -7411,8 +8428,11 @@ void __fastcall zRndr_LensFlare_DrawQueuedSamples16_AndBuildVisibleList(
     }
 }
 
-// Reimplements 0x49a9c0: zRndr_LensFlare::BuildVisibleSampleListFromQueue
-// (D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp)
+/**
+ * Reimplements 0x49a9c0: zRndr_LensFlare::BuildVisibleSampleListFromQueue
+ * Source file evidence: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: Build the visible lens-flare sample list from queued samples without visibility testing.
+ */
 int __fastcall zRndr_LensFlare_BuildVisibleSampleListFromQueue(
     int startIndex
 ) {
@@ -7440,7 +8460,10 @@ int __fastcall zRndr_LensFlare_BuildVisibleSampleListFromQueue(
     return visibleSampleCount;
 }
 
-// Reimplements 0x49aa40: zRndr_LensFlare_SetVisibleSampleStage
+/**
+ * Reimplements 0x49aa40: zRndr_LensFlare_SetVisibleSampleStage
+ * Purpose: Store one lens-flare stage texture and refresh the visibility-active flag.
+ */
 void __fastcall zRndr_LensFlare_SetVisibleSampleStage(
     int stageIndex,
     zImage_TexDirEntryPartial *stageTexDirEntry
@@ -7459,7 +8482,10 @@ void __fastcall zRndr_LensFlare_SetVisibleSampleStage(
     }
 }
 
-// Reimplements 0x49aa90: zRndr_LensFlare_DrawSampleStageClipped
+/**
+ * Reimplements 0x49aa90: zRndr_LensFlare_DrawSampleStageClipped
+ * Purpose: Draw one clipped lens-flare stage quad through hardware or software rendering.
+ */
 void __fastcall zRndr_LensFlare_DrawSampleStageClipped(
     const zVec2 *sampleCenter,
     zImage_TexDirEntryPartial *stageTexDirEntry,
@@ -7547,8 +8573,7 @@ void __fastcall zRndr_LensFlare_DrawSampleStageClipped(
             float alpha,
             int queueMode
         );
-        SubmitPolyRenderClassProc submitPoly =
-            (SubmitPolyRenderClassProc)((unsigned int)(g_zVideo_pfnSubmitPolyRenderClass));
+        SubmitPolyRenderClassProc submitPoly = g_zVideo_pfnSubmitPolyRenderClass;
         zVideo_RenderClass *renderClass =
             stageTexDirEntry != 0 ? (zVideo_RenderClass *)(stageTexDirEntry->texture) : 0;
         submitPoly(
@@ -7592,7 +8617,10 @@ void __fastcall zRndr_LensFlare_DrawSampleStageClipped(
     );
 }
 
-// Reimplements 0x49b020: zRndr_LensFlare_DrawVisibleSampleStages
+/**
+ * Reimplements 0x49b020: zRndr_LensFlare_DrawVisibleSampleStages
+ * Purpose: Draw the four staged lens-flare quads for one visible sample.
+ */
 void __fastcall zRndr_LensFlare_DrawVisibleSampleStages(
     zRndr_LensFlareVisibleSampleDef *visibleSampleDef,
     float visibilityAlpha
@@ -7644,7 +8672,10 @@ void __fastcall zRndr_LensFlare_DrawVisibleSampleStages(
     );
 }
 
-// Reimplements 0x49afb0: zRndr_LensFlare_DrawVisibleSample
+/**
+ * Reimplements 0x49afb0: zRndr_LensFlare_DrawVisibleSample
+ * Purpose: Draw one visible lens-flare sample after applying near/far fade.
+ */
 void __fastcall zRndr_LensFlare_DrawVisibleSample(
     int sampleIndex
 ) {
@@ -7676,7 +8707,10 @@ void __fastcall zRndr_LensFlare_DrawVisibleSample(
     );
 }
 
-// Reimplements 0x49b1a0: zRndr_LensFlare_DrawVisibleSamples
+/**
+ * Reimplements 0x49b1a0: zRndr_LensFlare_DrawVisibleSamples
+ * Purpose: Draw all visible lens-flare samples and clear the visible-sample list.
+ */
 void zRndr_LensFlare_DrawVisibleSamples() {
     if (zRndr::g_lensFlareVisibilityActive == 0) {
         return;
@@ -7689,7 +8723,10 @@ void zRndr_LensFlare_DrawVisibleSamples() {
     zRndr::g_lensFlareVisibleSampleCount = 0;
 }
 
-// Reimplements 0x49aa30: zRndr_SpanOcclusion_FilterSampleList
+/**
+ * Reimplements 0x49aa30: zRndr_SpanOcclusion_FilterSampleList
+ * Purpose: Unproject one visible lens-flare sample into an occlusion-test point.
+ */
 void __fastcall zRndr_SpanOcclusion_FilterSampleList(
     int visibleSampleIndex,
     zVec3 *outPoint
@@ -7703,7 +8740,10 @@ void __fastcall zRndr_SpanOcclusion_FilterSampleList(
     );
 }
 
-// Reimplements 0x49b5a0: zRndr_FogTargetColorStaged_SetRgb01Clamped
+/**
+ * Reimplements 0x49b5a0: zRndr_FogTargetColorStaged_SetRgb01Clamped
+ * Purpose: Clamp and stage the pending fog target color, then rebuild its packed 16-bit ramp.
+ */
 void __fastcall zRndr_FogTargetColorStaged_SetRgb01Clamped(
     zColorRgb *color
 ) {
@@ -7751,7 +8791,10 @@ void __fastcall zRndr_FogTargetColorStaged_SetRgb01Clamped(
     );
 }
 
-// Reimplements 0x499930: zRndr_SetPaletteRemapKey
+/**
+ * Reimplements 0x499930: zRndr_SetPaletteRemapKey
+ * Purpose: Select the active palette remap key from a recipe and shade level.
+ */
 void __fastcall zRndr_SetPaletteRemapKey(
     zVidPaletteRemapRecipe *recipe,
     float shadeLevel
@@ -7772,7 +8815,10 @@ void __fastcall zRndr_SetPaletteRemapKey(
     g_zRndr_ActivePaletteRemapKey = (recipeIndex << 5) + shadeBucket;
 }
 
-// Reimplements 0x499990: zRndr_SetPaletteRemapKeyFromRgb01
+/**
+ * Reimplements 0x499990: zRndr_SetPaletteRemapKeyFromRgb01
+ * Purpose: Build a single-color palette remap recipe from RGB values and select its remap key.
+ */
 void __fastcall zRndr_SetPaletteRemapKeyFromRgb01(
     zColorRgb *rgb01,
     float shadeLevel
@@ -7793,7 +8839,10 @@ void __fastcall zRndr_SetPaletteRemapKeyFromRgb01(
     );
 }
 
-// Reimplements 0x499a00: zRndr_SetPaletteShadeRecipeIndex
+/**
+ * Reimplements 0x499a00: zRndr_SetPaletteShadeRecipeIndex
+ * Purpose: Select the active palette shade recipe variant index.
+ */
 void __fastcall zRndr_SetPaletteShadeRecipeIndex(
     zVidPaletteRemapRecipe *recipe
 ) {

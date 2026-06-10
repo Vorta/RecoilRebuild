@@ -1,6 +1,6 @@
 #pragma once
 
-// Generated from support/Recoil.exe by tools/recoil_resource_extract.py.
+// Generated from support/Recoil.exe by python tools/recoil.py build resource.
 // Keep these IDs aligned with the original PE resource table.
 
 #define IDB_GAMEBMP "GAMEBMP"

@@ -1,7 +1,7 @@
 #include "Resource.h"
 
-// Generated from support/Recoil.exe by tools/recoil_resource_extract.py.
-// Reconstructed from the original PE resource table into normal Visual C resource source.
+// Generated from support/Recoil.exe by python tools/recoil.py build resource.
+// Reconstructed from the original PE resource table into normal VC5SP3 .rc source.
 
 LANGUAGE 9, 1
 
