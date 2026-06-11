@@ -7,6 +7,8 @@ add_executable(recoil_native_smoke
     zinput_tests.cpp
     zimage_tests.cpp
     zinterp_tests.cpp
+    zvideo_primary_blit_smokes.cpp
+    zvideo_clear_dispatch_smokes.cpp
     zvideo_dd_enum_smokes.cpp
     zvideo_noise_tests.cpp
     zvideo_blur_region_smokes.cpp
@@ -15,11 +17,15 @@ add_executable(recoil_native_smoke
     zsnd_cd_tests.cpp
     zsnd_stream_tests.cpp
     zreader_tests.cpp
+    fmv_script_core_smokes.cpp
+    fmv_action_manifest_smokes.cpp
     briefing_runtime_smokes.cpp
     zhud_composite_panel_smokes.cpp
     player_fx_pass3_smokes.cpp
     zhud_widget_tests.cpp
+    hud_tests.cpp
     hud_save_load_tests.cpp
+    recoil_state_main_menu_transition_constructor_tests.cpp
     zmath_tests.cpp
     recoil_version_tests.cpp
     zrndr_tests.cpp

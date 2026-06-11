@@ -3864,6 +3864,8 @@ extern "C" int zrndr_overlay_and_mmx_masks_smoke(void) {
     zRndr::g_overlayBlendAlpha = 1.0;
     zRndr_OverlayRect_FlushSw();
     if (zRndr::g_pfnOverlayBlendRow != zRndr::OverlayBlendRow565_Mmx ||
+        zRndr::g_swOverlayPremulRPair != 0 || zRndr::g_swOverlayPremulGPair != 0x07e007e0 ||
+        zRndr::g_swOverlayPremulBPair != 0 ||
         mmxSurface[0] != 0x07e0 || mmxSurface[1] != 0x07e0 || mmxSurface[2] != 0x07e0 ||
         mmxSurface[3] != 0x07e0) {
         return 3;
@@ -5010,6 +5012,7 @@ extern "C" int zrndr_fog_target_color_smoke(void) {
     zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
     zRndr::g_fogTargetParamsStaged = {};
     g_zVideo_RendererType = 1;
+    g_zVideo_ActiveRendererPath = 1;
     g_zVideo_D3DColorNormalizeChannelIndex = -1;
 
     zColorRgb color{1.2f, -0.5f, 0.5f};
@@ -5065,9 +5068,9 @@ extern "C" int zrndr_fog_target_color_smoke(void) {
 
     zRndr::g_fogTargetParamsStaged.packedColor16 = oldPackedColor;
     zRndr::FogParamsPartial params{};
-    zRndr::SpanAlphaBlend565_Mmx_FromPal8(&params, 0xf800, 0x0400, 0x001f);
+    zRndr::FogTarget565_SetPackedColorAndRamp(&params, 0xf800, 0x0400, 0x001f);
     const std::uint32_t step =
-        (static_cast<std::uint32_t>(0xfc00) << 11) | (static_cast<std::uint32_t>(0x001f) >> 5);
+        (static_cast<std::uint32_t>(0xf81f) << 11) | (static_cast<std::uint32_t>(0x0400) >> 5);
     return params.packedColorRed == 0xf800 && params.packedColorGreen == 0x0400 &&
                    params.packedColorBlue == 0x001f && params.packedColor16 == 0xfc1f &&
                    params.packedColorRamp[31] == 0 &&

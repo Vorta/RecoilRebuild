@@ -4905,12 +4905,12 @@ HudUiElement * HudUiElement::CopyConstructor(
     next = 0;
     parent = 0;
     flags = source->flags;
+    state = source->state;
     timer = source->timer;
     x = source->x;
     y = source->y;
     bltSource = source->bltSource;
     clipRect = source->clipRect;
-    state = source->state;
     return this;
 }
 
@@ -7017,7 +7017,10 @@ HudUiBackground::~HudUiBackground() {
 
 }
 
-// Reimplements 0x4ba380: HudUiDialogController::BlitOwnedSurfaceToPrimary
+/**
+ * Reimplements 0x4ba380: HudUiDialogController::BlitOwnedSurfaceToPrimary.
+ * Purpose: blit the captured dialog image back to the active primary target.
+ */
 void HudUiDialogController::BlitOwnedSurfaceToPrimary() {
     if (capturedImage != 0) {
         zVid_Image::BlitToActiveTarget(
@@ -8668,7 +8671,11 @@ HudUiElement * HudUiZrdWidget::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x41c480: HudUiZrdWidget::ScalarDeletingDestructorThunk
+/**
+ * Reimplements 0x41c480: HudUiZrdWidget::ScalarDeletingDestructorThunk
+ * Source file evidence: BN labels the source as HudUiZrdWidget.cpp.
+ * Purpose: Run ZRD widget destruction, optionally free storage, and return the original object pointer.
+ */
 HudUiZrdWidget * HudUiZrdWidget::ScalarDeletingDestructorThunk(
     unsigned int flags
 ) {
@@ -8936,7 +8943,11 @@ HudUiCheckToggleWidget * HudUiCheckToggleWidget::Constructor() {
     return this;
 }
 
-// Reimplements 0x4b7020: HudUiCheckToggleWidget::DestructorCore
+/**
+ * Reimplements 0x4b7020: HudUiCheckToggleWidget::DestructorCore.
+ * Original source path: D:\Proj\Battlesport\HudUiZrdWidget.cpp.
+ * Purpose: Restore the unchecked image, delete owned checked state, and tear down the ZRD widget base.
+ */
 void HudUiCheckToggleWidget::DestructorCore() {
     SetImageBorrowedAndInvalidate(uncheckedImage);
 
@@ -9256,9 +9267,12 @@ HudUiCycleSelectorWidget * HudUiCycleSelectorWidget::Constructor() {
     return this;
 }
 
-// Reimplements 0x4b7de0: HudUiCycleSelectorWidget::DestructorCore
+/**
+ * Reimplements 0x4b7de0: HudUiCycleSelectorWidget::DestructorCore.
+ * Original source path: D:\Proj\Battlesport\HudUiZrdWidget.cpp.
+ * Purpose: Delete paired selector entry widgets and tear down the ZRD widget base.
+ */
 void HudUiCycleSelectorWidget::DestructorCore() {
-
     for (int i = 0; i < 20; ++i) {
         if (entriesA[i] != 0) {
             HudUiZrdWidget::DeleteChildIfPresent(entriesA[i]);
@@ -9838,9 +9852,12 @@ HudUiFillBitmap::HudUiFillBitmap() : HudUiZrdWidget() {
     fillRect.top = 0;
 }
 
-// Reimplements 0x4b84d0: HudUiFillBitmap::DestructorCore
+/**
+ * Reimplements 0x4b84d0: HudUiFillBitmap::DestructorCore.
+ * Original source path: HudUiFillBitmap.cpp.
+ * Purpose: Release distinct preview/fill images and tear down the ZRD widget base.
+ */
 void HudUiFillBitmap::DestructorCore() {
-
     if (previewImage != 0 && previewImage != image) {
         zVid_Image::ReleaseIfNotDefault(previewImage);
         previewImage = 0;
@@ -10172,7 +10189,11 @@ int HudUiZrdWidgetEx17C_Item::LoadFromZrd(
     return 1;
 }
 
-// Reimplements 0x4b8a90: HudUiZrdWidgetEx17C_Item::SetSelected
+/**
+ * Reimplements 0x4b8a90: HudUiZrdWidgetEx17C_Item::SetSelected
+ * Source file evidence: BN labels the source as HudUiZrdWidgetEx17C_Item.cpp.
+ * Purpose: Record the option-item selected state and refresh the displayed image pair when enabled.
+ */
 void HudUiZrdWidgetEx17C_Item::SetSelected(
     int selectedValue
 ) {
@@ -10214,7 +10235,11 @@ HudUiZrdWidgetEx17C * HudUiZrdWidgetEx17C::Constructor() {
     return this;
 }
 
-// Reimplements 0x4b8b60: HudUiZrdWidgetEx17C::DestructorCore
+/**
+ * Reimplements 0x4b8b60: HudUiZrdWidgetEx17C::DestructorCore
+ * Source file evidence: BN labels the source as HudUiZrdWidgetEx17C.cpp.
+ * Purpose: Delete owned option-selector items, clear their slots, and destroy the base ZRD widget.
+ */
 void HudUiZrdWidgetEx17C::DestructorCore() {
 
     {
@@ -10231,7 +10256,11 @@ void HudUiZrdWidgetEx17C::DestructorCore() {
     HudUiZrdWidget::DestructorCore();
 }
 
-// Reimplements 0x4b8b40: HudUiZrdWidgetEx17C::ScalarDeletingDestructor
+/**
+ * Reimplements 0x4b8b40: HudUiZrdWidgetEx17C::ScalarDeletingDestructor
+ * Source file evidence: BN labels the source as HudUiZrdWidgetEx17C.cpp.
+ * Purpose: Run option-selector destruction, optionally free storage, and return the base element pointer.
+ */
 HudUiElement * HudUiZrdWidgetEx17C::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -10243,7 +10272,11 @@ HudUiElement * HudUiZrdWidgetEx17C::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x41c4c0: HudUiZrdWidgetEx17C::ScalarDeletingDestructorThunk
+/**
+ * Reimplements 0x41c4c0: HudUiZrdWidgetEx17C::ScalarDeletingDestructorThunk
+ * Source file evidence: BN labels the source as HudUiZrdWidgetEx17C.cpp.
+ * Purpose: Run option-selector destruction, optionally free storage, and return the original selector pointer.
+ */
 HudUiZrdWidgetEx17C * HudUiZrdWidgetEx17C::ScalarDeletingDestructorThunk(
     unsigned int flags
 ) {
@@ -10314,7 +10347,11 @@ void HudUiZrdWidgetEx17C::SetVisible(
     EnableChildAtIndex(childIndex);
 }
 
-// Reimplements 0x4b8cf0: HudUiZrdWidgetEx17C::SetSelectedIndex
+/**
+ * Reimplements 0x4b8cf0: HudUiZrdWidgetEx17C::SetSelectedIndex
+ * Source file evidence: BN labels the source as HudUiZrdWidgetEx17C.cpp.
+ * Purpose: Store the selected option index and update every loaded option item's selected state.
+ */
 int HudUiZrdWidgetEx17C::SetSelectedIndex(
     int index
 ) {
@@ -11571,8 +11608,11 @@ HudOptionsDialog::HudOptionsDialog() : HudUiBackground() {
     }
 }
 
-// Reimplements 0x40cf60: HudOptionsDialog::DestructorCore
-// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+/**
+ * Reimplements 0x40cf60: HudOptionsDialog::DestructorCore.
+ * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
+ * Purpose: Tear down the options dialog widgets and then destroy the background base.
+ */
 void HudOptionsDialog::DestructorCore() {
     resolutionSelector.HudUiCycleSelectorWidget::DestructorCore();
     musicVolumeWidget.HudUiFillBitmap::DestructorCore();
@@ -11590,8 +11630,11 @@ void HudOptionsDialog::DestructorCore() {
     this->HudUiBackground::~HudUiBackground();
 }
 
-// Reimplements 0x40cf00: HudOptionsDialog::ScalarDeletingDestructor
-// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+/**
+ * Reimplements 0x40cf00: HudOptionsDialog::ScalarDeletingDestructor.
+ * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
+ * Purpose: Run options dialog teardown and optionally free the dialog storage.
+ */
 HudOptionsDialog * HudOptionsDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -14532,7 +14575,11 @@ void HudUiNumericTextInput::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x4b4ac0: HudUiNumericTextInput::Destructor
+/**
+ * Reimplements 0x4b4ac0: HudUiNumericTextInput::Destructor.
+ * Purpose: Disable raw keyboard capture and destroy the embedded text-input
+ * and ZRD widget bases in retail cleanup order.
+ */
 void HudUiNumericTextInput::Destructor() {
     SetRawKeyboardCapture(0);
     textInput.HudUiOwnedTextInput::~HudUiOwnedTextInput();

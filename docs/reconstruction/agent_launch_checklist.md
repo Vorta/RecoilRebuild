@@ -79,6 +79,11 @@ python tools/recoil.py plan group app.recoil_app --lane binary
 python tools/recoil.py status 0xNNNNNN
 ```
 
+Use `plan reclassify` for existing authored/provider entries. Use
+`python tools/recoil.py plan add-provider-boundary ... --dry-run` only when BN
+proves a provider/compiler/import boundary is absent from the plan. Do not
+hand-edit provider marker blocks.
+
 Use `plan next --lane binary` only when no active group exists, active groups
 have been refreshed/pruned or proven unactionable, or the user explicitly
 directs new work.
@@ -87,6 +92,12 @@ Normal binary-lane selection is owner-first after reconstruction/dependency
 readiness: unresolved `Source owner` markers come before isolated
 implementation or tier `C` behavior work, then `Data reimplemented`, and only
 then pure tier `S` verification.
+
+For initialized table/data blockers, `python tools/recoil.py verify vc5
+0xNNNNNN` may resolve a `data_symbols` manifest entry and emit
+relocation-masked COFF data-byte evidence plus a relocation identity report.
+Use this only after the table/data owner is classified; it does not replace
+source-owner or source-shape review.
 
 Treat the address as an evidence anchor, not necessarily the implementation
 unit. Expand to the proven owner boundary: class/interface, table-shaped
@@ -149,8 +160,8 @@ python tools/recoil.py audit source-map --check docs/reconstruction/source_file_
 ```
 
 Use `source_file_map.md` plus current BN source comments and call-site evidence.
-Regenerate the map only when provenance docblocks or legacy source comments
-changed.
+If `--check` reports stale, regenerate only when current source movement,
+provenance docblocks, or legacy source comments explain the drift.
 
 For docblock checks, audit touched source files before marker work. A broad
 `python tools/recoil.py audit docblocks --path src --summary --max 20` run

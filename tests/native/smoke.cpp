@@ -69,6 +69,18 @@ extern "C" int zsnd_fade_active_list_tick_compacts_smoke(void);
 extern "C" int zsnd_tick_backend_markers_smoke(void);
 extern "C" int zsnd_report_error_helpers_smoke(void);
 extern "C" int zsnd_stream_request_queue_smoke(void);
+extern "C" int zsnd_set_use_archive_banks_flag_smoke(void);
+extern "C" int zsnd_sample_set_registry_lookup_destroy_smoke(void);
+extern "C" int zsnd_sample_set_init_by_name_empty_smoke(void);
+extern "C" int zsnd_sample_set_init_loose_file_smoke(void);
+extern "C" int zsnd_sample_set_load_samples_from_index_archive_smoke(void);
+extern "C" int zsnd_create_queued_streaming_sample_smoke(void);
+extern "C" int zsnd_sample_init_from_wave_data_directsound_smoke(void);
+extern "C" int zsnd_sample_init_from_wave_data_a3d_smoke(void);
+extern "C" int zsnd_wave_data_load_parse_reset_smoke(void);
+extern "C" int zsnd_wave_data_parse_chunks_smoke(void);
+extern "C" int zsnd_wave_data_load_parse_edges_smoke(void);
+extern "C" int zsnd_wave_data_archive_load_smoke(void);
 extern "C" int zreader_named_int_lookup_smoke(void);
 extern "C" int zreader_get_named_node_smoke(void);
 extern "C" int zreader_named_string_float_lookup_smoke(void);
@@ -76,6 +88,19 @@ extern "C" int zreader_global_string_prefix_index_smoke(void);
 extern "C" int zrndr_global_string_table_load_dynamic_entries_smoke(void);
 extern "C" int zreader_load_node_from_archive_smoke(void);
 extern "C" int zreader_file_exists_and_list_create_smoke(void);
+extern "C" int zfmv_script_reset_smoke(void);
+extern "C" int zfmv_script_cleanup_smoke(void);
+extern "C" int zfmv_script_append_action_smoke(void);
+extern "C" int zfmv_script_begin_current_action_smoke(void);
+extern "C" int zfmv_script_begin_now_smoke(void);
+extern "C" int zfmv_script_load_actions_from_zrd_smoke(void);
+extern "C" int zfmv_action_image_constructor_with_screen_rect_smoke(void);
+extern "C" int zfmv_action_image_constructor_scaled_smoke(void);
+extern "C" int zfmv_action_fade_constructor_smoke(void);
+extern "C" int zfmv_action_play_avi_constructor_existing_file_smoke(void);
+extern "C" int zfmv_action_play_avi_constructor_drive_fallback_smoke(void);
+extern "C" int zfmv_action_play_mci_constructor_smoke(void);
+extern "C" int zfmv_action_blur_constructor_smoke(void);
 extern "C" int hud_ui_save_load_entry_is_newer_than_smoke(void);
 extern "C" int player_underwater_fx_pass3_ui_constructor_smoke(void);
 extern "C" int player_projectile_camera_fx_pass3_ui_constructor_smoke(void);
@@ -93,12 +118,33 @@ extern "C" int hud_ui_load_game_dialog_constructor_smoke(void);
 extern "C" int hud_ui_load_game_primary_action_button_on_activate_smoke(void);
 extern "C" int hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke(void);
 extern "C" int hud_ui_credits_quit_button_on_activate_smoke(void);
+extern "C" int hud_cheat_clear_nanite_panel_cheat_sentinel_smoke(void);
+extern "C" int hud_ui_new_game_panel_constructor_cluster_smoke(void);
+extern "C" int hud_ui_new_game_panel_overlay_owner_queue_enter_smoke(void);
+extern "C" int hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke(void);
+extern "C" int hud_ui_options_panel_overlay_owner_constructor_smoke(void);
+extern "C" int hud_ui_options_panel_overlay_owner_destructor_core_smoke(void);
+extern "C" int hud_ui_options_panel_overlay_owner_static_init_thunks_smoke(void);
+extern "C" int hud_ui_options_panel_overlay_owner_queue_enter_smoke(void);
+extern "C" int hud_ui_options_panel_overlay_owner_on_try_become_current_smoke(void);
 extern "C" int recoil_app_state_queue_block_init_from_cursor_smoke(void);
 extern "C" int recoil_app_queue_switch_current_state_smoke(void);
+extern "C" int recoil_app_queue_push_state_smoke(void);
 extern "C" int recoil_app_queue_exit_current_state_smoke(void);
 extern "C" int recoil_app_mfc_ole_module_constructor_smoke(void);
 extern "C" int recoil_app_mfc_ole_module_destructor_smoke(void);
+extern "C" int recoil_app_constructor_destructor_smoke(void);
+extern "C" int recoil_app_fmv_state_destructor_smoke(void);
+extern "C" int recoil_app_mission_fmv_state_destructor_smoke(void);
 extern "C" int recoil_app_start_engine_and_queue_startup_state_smoke(void);
+extern "C" int recoil_state_main_menu_transition_constructor_smoke(void);
+extern "C" int recoil_state_cheat_code_constructor_smoke(void);
+extern "C" int recoil_state_controls_lifecycle_smoke(void);
+extern "C" int recoil_state_controls_activation_smoke(void);
+extern "C" int recoil_state_controls_on_resume_smoke(void);
+extern "C" int recoil_state_controls_queue_enter_smoke(void);
+extern "C" int recoil_state_confirm_quit_queue_enter_smoke(void);
+extern "C" int recoil_state_confirm_quit_destructor_smoke(void);
 extern "C" int hud_ui_load_game_dialog_on_primary_action_smoke(void);
 extern "C" int hud_ui_load_game_dialog_on_primary_action_thunk_smoke(void);
 extern "C" int hud_ui_load_game_dialog_process_dialog_result_smoke(void);
@@ -181,6 +227,7 @@ extern "C" int zhud_widget_release_image_if_owned_smoke(void);
 extern "C" int zhud_widget_set_image_borrowed_and_invalidate_smoke(void);
 extern "C" int zhud_widget_destructor_core_smoke(void);
 extern "C" int zhud_fill_bitmap_core_smoke(void);
+extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void);
 extern "C" int zhud_widget_set_image_by_path_owned_smoke(void);
 extern "C" int zhud_background_cursor_widget_member_constructor_smoke(void);
 extern "C" int zhud_background_cursor_widget_rebuild_captured_image_smoke(void);
@@ -192,6 +239,7 @@ extern "C" int zhud_background_constructor_smoke(void);
 extern "C" int zhud_background_update_input_focus_smoke(void);
 extern "C" int zhud_text_label_constructor_and_extents_smoke(void);
 extern "C" int zhud_panel_constructor_default_smoke(void);
+extern "C" int zhud_panel_draw_smoke(void);
 extern "C" int zhud_panel_set_text_fmt_smoke(void);
 extern "C" int zhud_panel_layout_entry_copy_construct_smoke(void);
 extern "C" int zhud_panel_layout_entry_copy_assign_smoke(void);
@@ -213,6 +261,8 @@ extern "C" int zhud_primitive_bind_target_set_segment_endpoints_smoke(void);
 extern "C" int zhud_container_child_list_smoke(void);
 extern "C" int zhud_zrd_widget_constructor_smoke(void);
 extern "C" int zhud_options_dialog_constructor_smoke(void);
+extern "C" int zhud_options_dialog_destructor_core_smoke(void);
+extern "C" int zhud_options_dialog_scalar_deleting_destructor_smoke(void);
 extern "C" int zhud_credits_panel_constructor_smoke(void);
 extern "C" int zhud_credits_panel_destructor_smoke(void);
 extern "C" int zhud_credits_panel_scalar_deleting_destructor_smoke(void);
@@ -234,6 +284,7 @@ extern "C" int zhud_cmd_dialog_constructor_smoke(void);
 extern "C" int zhud_cmd_dialog_destructor_smoke(void);
 extern "C" int zhud_cmd_dialog_scalar_deleting_destructor_smoke(void);
 extern "C" int zhud_text_input_constructor_smoke(void);
+extern "C" int zhud_text_input_destructor_core_smoke(void);
 extern "C" int zhud_text_input_constructor_and_alloc_smoke(void);
 extern "C" int zhud_polyline_and_slider_border_constructor_smoke(void);
 extern "C" int zhud_numeric_text_input_base_constructor_smoke(void);
@@ -410,9 +461,15 @@ extern "C" int zvideo_bind_renderer_dispatch_smoke(void);
 extern "C" int zvideo_module_init_smoke(void);
 extern "C" int zvideo_at_exit_release_all_interfaces_and_surfaces_smoke(void);
 extern "C" int zvideo_return_success_stub_smoke(void);
+extern "C" int zvideo_clear_dispatch_and_exchange_smoke(void);
 extern "C" int zvid_cached_client_rect_smoke(void);
 extern "C" int zvideo_shutdown_video_system_smoke(void);
+extern "C" int zvideo_frame_scratch_buffers_smoke(void);
+extern "C" int zvideo_noise_shutdown_buffers_smoke(void);
 extern "C" int zvideo_buff_clip_coord_to_range_smoke(void);
+extern "C" int zvideo_buff_blt_source_to_primary_clipped_smoke(void);
+extern "C" int zvid_image_blit_to_active_target_smoke(void);
+extern "C" int zvid_image_blit_to_framebuffer_clipped_smoke(void);
 extern "C" int zvideo_buff_copy_surface_rect_to_image_smoke(void);
 extern "C" int zvideo_draw_noise_rect_smoke(void);
 extern "C" int zvideo_blur_region_horizontal_smoke(void);
@@ -424,6 +481,7 @@ extern "C" int zvideo_dd_prepare_window_for_mode_smoke(void);
 extern "C" int zvid_query_device_video_memory_bytes_smoke(void);
 extern "C" int zvid_query_texture_memory_bytes_smoke(void);
 extern "C" int zvideo_pixel_pack_setup_smoke(void);
+extern "C" int zvideo_pixel_pack_getters_smoke(void);
 extern "C" int zvideo_dd_report_error_smoke(void);
 extern "C" int zvideo_dd_create_directdraw2_for_selected_device_smoke(void);
 extern "C" int zvideo_dd_open_video_mode_smoke(void);
@@ -468,6 +526,12 @@ extern "C" int zvideo_dd_enum_directdraw_device_callback_smoke(void);
 extern "C" int zvideo_dd_run_device_enumeration_smoke(void);
 extern "C" int zvideo_dd_startup_enumerate_default_select_smoke(void);
 extern "C" int zvideo_dd3d_set_fog_enable_smoke(void);
+extern "C" int zvideo_submit_poly_color_attr_smoke(void);
+extern "C" int zvideo_submit_poly_color_attr_immediate_smoke(void);
+extern "C" int zvideo_submit_polygon_queue_smoke(void);
+extern "C" int zvideo_submit_polygon_immediate_smoke(void);
+extern "C" int zvideo_submit_polygon_lit_queue_smoke(void);
+extern "C" int zvideo_submit_polygon_lit_immediate_smoke(void);
 extern "C" int zvideo_texture_record_release_upload_surface_smoke(void);
 extern "C" int zvideo_texture_record_finalize_upload_smoke(void);
 extern "C" int zvideo_texture_record_lock_upload_surface_smoke(void);
@@ -476,6 +540,13 @@ extern "C" int zvideo_texture_record_create_and_power_smoke(void);
 extern "C" int zvideo_create_texture_record_guards_smoke(void);
 extern "C" int zvideo_dd3d_create_texture_record_smoke(void);
 extern "C" int zvideo_quad_batch_depth_and_rhw_smoke(void);
+extern "C" int zvideo_queue_solid_quad_smoke(void);
+extern "C" int zvideo_flush_quad_batch_empty_smoke(void);
+extern "C" int zvideo_flush_quad_batch_smoke(void);
+extern "C" int zvideo_flush_sorted_polys_empty_smoke(void);
+extern "C" int zvideo_flush_sorted_polys_smoke(void);
+extern "C" int zvideo_flush_overwrite_polys_empty_smoke(void);
+extern "C" int zvideo_flush_overwrite_polys_smoke(void);
 extern "C" int zvideo_dd3d_create_device_state_smoke(void);
 extern "C" int zvideo_convert_image_pixels_for_texture_smoke(void);
 extern "C" int zvideo_dd3d_upload_image_to_surface_smoke(void);
@@ -761,6 +832,18 @@ DWORD g_smokeDirect3DDevice2RenderStateValues[16];
 int g_smokeDirect3DDevice2SetLightStateCalls;
 D3DLIGHTSTATETYPE g_smokeDirect3DDevice2LightStates[4];
 DWORD g_smokeDirect3DDevice2LightStateValues[4];
+int g_smokeDirect3DDevice2DrawPrimitiveCalls;
+D3DPRIMITIVETYPE g_smokeDirect3DDevice2PrimitiveTypes[8];
+D3DVERTEXTYPE g_smokeDirect3DDevice2VertexTypes[8];
+void *g_smokeDirect3DDevice2Vertices[8];
+DWORD g_smokeDirect3DDevice2VertexCounts[8];
+DWORD g_smokeDirect3DDevice2DrawFlags[8];
+D3DPRIMITIVETYPE g_smokeDirect3DDevice2LastPrimitiveType;
+D3DVERTEXTYPE g_smokeDirect3DDevice2LastVertexType;
+void *g_smokeDirect3DDevice2LastVertices;
+DWORD g_smokeDirect3DDevice2LastVertexCount;
+DWORD g_smokeDirect3DDevice2LastDrawFlags;
+HRESULT g_smokeDirect3DDevice2DrawPrimitiveResult;
 void *g_smokeDirect3D2VTable[9];
 HRESULT g_smokeDirect3D2CreateDeviceResult;
 HRESULT g_smokeDirect3D2CreateViewportResult;
@@ -1483,6 +1566,40 @@ HRESULT __stdcall SmokeDirect3DDevice2SetLightState(
     return DD_OK;
 }
 
+HRESULT __stdcall SmokeDirect3DDevice2DrawPrimitive(
+    IDirect3DDevice2 *,
+    D3DPRIMITIVETYPE primitiveType,
+    D3DVERTEXTYPE vertexType,
+    void *vertices,
+    DWORD vertexCount,
+    DWORD flags
+) {
+    if (g_smokeDirect3DDevice2DrawPrimitiveCalls < 8) {
+        g_smokeDirect3DDevice2PrimitiveTypes[
+            g_smokeDirect3DDevice2DrawPrimitiveCalls
+        ] = primitiveType;
+        g_smokeDirect3DDevice2VertexTypes[
+            g_smokeDirect3DDevice2DrawPrimitiveCalls
+        ] = vertexType;
+        g_smokeDirect3DDevice2Vertices[
+            g_smokeDirect3DDevice2DrawPrimitiveCalls
+        ] = vertices;
+        g_smokeDirect3DDevice2VertexCounts[
+            g_smokeDirect3DDevice2DrawPrimitiveCalls
+        ] = vertexCount;
+        g_smokeDirect3DDevice2DrawFlags[
+            g_smokeDirect3DDevice2DrawPrimitiveCalls
+        ] = flags;
+    }
+    ++g_smokeDirect3DDevice2DrawPrimitiveCalls;
+    g_smokeDirect3DDevice2LastPrimitiveType = primitiveType;
+    g_smokeDirect3DDevice2LastVertexType = vertexType;
+    g_smokeDirect3DDevice2LastVertices = vertices;
+    g_smokeDirect3DDevice2LastVertexCount = vertexCount;
+    g_smokeDirect3DDevice2LastDrawFlags = flags;
+    return g_smokeDirect3DDevice2DrawPrimitiveResult;
+}
+
 HRESULT __stdcall SmokeDirect3DDevice2GetCaps(
     IDirect3DDevice2 *,
     D3DDEVICEDESC *halDesc,
@@ -1988,6 +2105,8 @@ void InstallSmokeDirect3DDevice2(
         (void *)(&SmokeDirect3DDevice2SetRenderState);
     g_smokeDirect3DDevice2VTable[25] =
         (void *)(&SmokeDirect3DDevice2SetLightState);
+    g_smokeDirect3DDevice2VTable[29] =
+        (void *)(&SmokeDirect3DDevice2DrawPrimitive);
     device.vtable = g_smokeDirect3DDevice2VTable;
     g_zVideo_pD3DDevice = (IDirect3DDevice2 *)(&device);
     g_smokeDirect3DDevice2GetCapsResult = DD_OK;
@@ -2022,6 +2141,38 @@ void InstallSmokeDirect3DDevice2(
         0,
         sizeof(g_smokeDirect3DDevice2LightStateValues)
     );
+    g_smokeDirect3DDevice2DrawPrimitiveCalls = 0;
+    std::memset(
+        g_smokeDirect3DDevice2PrimitiveTypes,
+        0,
+        sizeof(g_smokeDirect3DDevice2PrimitiveTypes)
+    );
+    std::memset(
+        g_smokeDirect3DDevice2VertexTypes,
+        0,
+        sizeof(g_smokeDirect3DDevice2VertexTypes)
+    );
+    std::memset(
+        g_smokeDirect3DDevice2Vertices,
+        0,
+        sizeof(g_smokeDirect3DDevice2Vertices)
+    );
+    std::memset(
+        g_smokeDirect3DDevice2VertexCounts,
+        0,
+        sizeof(g_smokeDirect3DDevice2VertexCounts)
+    );
+    std::memset(
+        g_smokeDirect3DDevice2DrawFlags,
+        0,
+        sizeof(g_smokeDirect3DDevice2DrawFlags)
+    );
+    g_smokeDirect3DDevice2LastPrimitiveType = (D3DPRIMITIVETYPE)(0);
+    g_smokeDirect3DDevice2LastVertexType = (D3DVERTEXTYPE)(0);
+    g_smokeDirect3DDevice2LastVertices = 0;
+    g_smokeDirect3DDevice2LastVertexCount = 0;
+    g_smokeDirect3DDevice2LastDrawFlags = 0;
+    g_smokeDirect3DDevice2DrawPrimitiveResult = DD_OK;
 }
 
 void InstallSmokeDirect3D2(
@@ -2602,7 +2753,8 @@ extern "C" int zvideo_dd_create_surface3_from_desc_smoke(void) {
     HRESULT result = zVideo_dd::CreateSurface3FromDesc(
         (IDirectDraw2 *)(&directDraw),
         &desc,
-        &outSurface
+        &outSurface,
+        0
     );
     if (result != DD_OK ||
         g_smokeDirectDraw2CreateSurfaceCalls != 1 ||
@@ -2632,7 +2784,8 @@ extern "C" int zvideo_dd_create_surface3_from_desc_smoke(void) {
     result = zVideo_dd::CreateSurface3FromDesc(
         (IDirectDraw2 *)(&directDraw),
         &desc,
-        &outSurface
+        &outSurface,
+        0
     );
     if (result != DDERR_INVALIDPARAMS ||
         g_smokeDirectDraw2CreateSurfaceCalls != 1 ||
@@ -2650,7 +2803,8 @@ extern "C" int zvideo_dd_create_surface3_from_desc_smoke(void) {
     result = zVideo_dd::CreateSurface3FromDesc(
         (IDirectDraw2 *)(&directDraw),
         &desc,
-        &outSurface
+        &outSurface,
+        0
     );
     return result == DDERR_GENERIC &&
                    g_smokeDirectDraw2CreateSurfaceCalls == 1 &&
@@ -6564,6 +6718,1312 @@ extern "C" int zvideo_quad_batch_depth_and_rhw_smoke(void) {
     return 0;
 }
 
+extern "C" int zvideo_queue_solid_quad_smoke(void) {
+    zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
+    std::memset(g_zVideo_QuadBatchItemsBase, 0, sizeof(g_zVideo_QuadBatchItemsBase));
+    g_zVideo_QuadBatchCount = 0;
+    g_zVideo_PrimarySurfaceState.width = 640;
+    g_zVideo_PrimarySurfaceState.height = 480;
+
+    zVideo_dd3d::QueueSolidQuad(0xf800, nullptr, 0.5);
+    if (g_zVideo_QuadBatchCount != 1) {
+        return 1;
+    }
+
+    const zVideo_QuadBatchItemPartial &full = g_zVideo_QuadBatchItemsBase[0];
+    if (full.vertices[0].sx != 0.0f || full.vertices[0].sy != 0.0f ||
+        full.vertices[1].sx != 480.0f || full.vertices[1].sy != 0.0f ||
+        full.vertices[2].sx != 480.0f || full.vertices[2].sy != 640.0f ||
+        full.vertices[3].sx != 0.0f || full.vertices[3].sy != 640.0f ||
+        full.vertices[0].color != 0x7ff80000 || full.vertices[3].color != 0x7ff80000) {
+        return 2;
+    }
+
+    zVidRect32 rect = {10, 20, 30, 40};
+    zVideo_dd3d::QueueSolidQuad(0x07e0, &rect, 0.25);
+    if (g_zVideo_QuadBatchCount != 2) {
+        return 3;
+    }
+
+    const zVideo_QuadBatchItemPartial &clipped = g_zVideo_QuadBatchItemsBase[1];
+    if (clipped.vertices[0].sx != 10.0f || clipped.vertices[0].sy != 20.0f ||
+        clipped.vertices[1].sx != 30.0f || clipped.vertices[1].sy != 20.0f ||
+        clipped.vertices[2].sx != 30.0f || clipped.vertices[2].sy != 40.0f ||
+        clipped.vertices[3].sx != 10.0f || clipped.vertices[3].sy != 40.0f ||
+        clipped.vertices[0].color != 0x3f00fc00 ||
+        clipped.vertices[2].color != 0x3f00fc00) {
+        return 4;
+    }
+
+    g_zVideo_QuadBatchCount = 0x10;
+    zVideo_dd3d::QueueSolidQuad(0xffff, &rect, 1.0);
+    return g_zVideo_QuadBatchCount == 0x10 ? 0 : 5;
+}
+
+extern "C" int zvideo_flush_quad_batch_empty_smoke(void) {
+    g_zVideo_QuadBatchCount = 0;
+    g_zVideo_pD3DDevice = 0;
+    zVideo_dd3d::FlushQuadBatch();
+    return g_zVideo_QuadBatchCount == 0 ? 0 : 1;
+}
+
+extern "C" int zvideo_flush_quad_batch_smoke(void) {
+    SmokeDirect3DDevice2Object device = {};
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    const int savedQuadBatchCount = g_zVideo_QuadBatchCount;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
+    const int savedAlphaBlendEnable = g_zVideo_D3DRenderStateCache.alphaBlendEnable;
+    const int savedZWriteEnable = g_zVideo_D3DRenderStateCache.zWriteEnable;
+    const D3DTEXTUREHANDLE savedTextureHandle =
+        g_zVideo_D3DRenderStateCache.textureHandle;
+
+    std::memset(
+        g_zVideo_QuadBatchItemsBase,
+        0,
+        sizeof(g_zVideo_QuadBatchItemsBase[0]) * 2
+    );
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
+    g_zVideo_D3DRenderStateCache.alphaBlendEnable = 0;
+    g_zVideo_D3DRenderStateCache.zWriteEnable = 1;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x2468;
+
+    g_zVideo_QuadBatchItemsBase[0].vertices[0].sx = 10.0f;
+    g_zVideo_QuadBatchItemsBase[0].vertices[1].sx = 11.0f;
+    g_zVideo_QuadBatchItemsBase[0].vertices[2].sx = 12.0f;
+    g_zVideo_QuadBatchItemsBase[0].vertices[3].sx = 13.0f;
+    g_zVideo_QuadBatchItemsBase[1].vertices[0].sx = 20.0f;
+    g_zVideo_QuadBatchItemsBase[1].vertices[1].sx = 21.0f;
+    g_zVideo_QuadBatchItemsBase[1].vertices[2].sx = 22.0f;
+    g_zVideo_QuadBatchItemsBase[1].vertices[3].sx = 23.0f;
+    g_zVideo_QuadBatchCount = 2;
+
+    zVideo_dd3d::FlushQuadBatch();
+
+    const bool setupStateOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 8 &&
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_SHADEMODE &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == 2 &&
+        g_smokeDirect3DDevice2RenderStates[1] == D3DRENDERSTATE_ALPHABLENDENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[1] == 1 &&
+        g_smokeDirect3DDevice2RenderStates[2] == D3DRENDERSTATE_ZWRITEENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[2] == 0 &&
+        g_smokeDirect3DDevice2RenderStates[3] == D3DRENDERSTATE_TEXTUREHANDLE &&
+        g_smokeDirect3DDevice2RenderStateValues[3] == 0 &&
+        g_smokeDirect3DDevice2RenderStates[4] == D3DRENDERSTATE_ZFUNC &&
+        g_smokeDirect3DDevice2RenderStateValues[4] == D3DCMP_ALWAYS;
+
+    const bool drawOk =
+        g_smokeDirect3DDevice2DrawPrimitiveCalls == 2 &&
+        g_smokeDirect3DDevice2PrimitiveTypes[0] == D3DPT_TRIANGLEFAN &&
+        g_smokeDirect3DDevice2PrimitiveTypes[1] == D3DPT_TRIANGLEFAN &&
+        g_smokeDirect3DDevice2VertexTypes[0] == (D3DVERTEXTYPE)(3) &&
+        g_smokeDirect3DDevice2VertexTypes[1] == (D3DVERTEXTYPE)(3) &&
+        g_smokeDirect3DDevice2Vertices[0] == g_zVideo_QuadBatchItemsBase[0].vertices &&
+        g_smokeDirect3DDevice2Vertices[1] == g_zVideo_QuadBatchItemsBase[1].vertices &&
+        g_smokeDirect3DDevice2VertexCounts[0] == 4 &&
+        g_smokeDirect3DDevice2VertexCounts[1] == 4 &&
+        g_smokeDirect3DDevice2DrawFlags[0] == 0 &&
+        g_smokeDirect3DDevice2DrawFlags[1] == 0;
+
+    const bool restoreStateOk =
+        g_smokeDirect3DDevice2RenderStates[5] == D3DRENDERSTATE_ZFUNC &&
+        g_smokeDirect3DDevice2RenderStateValues[5] == D3DCMP_GREATEREQUAL &&
+        g_smokeDirect3DDevice2RenderStates[6] == D3DRENDERSTATE_ALPHABLENDENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[6] == 0 &&
+        g_smokeDirect3DDevice2RenderStates[7] == D3DRENDERSTATE_ZWRITEENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[7] == 1 &&
+        g_zVideo_QuadBatchCount == 0 &&
+        g_zVideo_D3DRenderStateCache.shadeMode == 2 &&
+        g_zVideo_D3DRenderStateCache.alphaBlendEnable == 0 &&
+        g_zVideo_D3DRenderStateCache.zWriteEnable == 1 &&
+        g_zVideo_D3DRenderStateCache.textureHandle == 0;
+
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
+    g_zVideo_D3DRenderStateCache.alphaBlendEnable = 1;
+    g_zVideo_D3DRenderStateCache.zWriteEnable = 0;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_QuadBatchCount = 1;
+    zVideo_dd3d::FlushQuadBatch();
+
+    const bool cacheHitOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 4 &&
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_ZFUNC &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == D3DCMP_ALWAYS &&
+        g_smokeDirect3DDevice2RenderStates[1] == D3DRENDERSTATE_ZFUNC &&
+        g_smokeDirect3DDevice2RenderStateValues[1] == D3DCMP_GREATEREQUAL &&
+        g_smokeDirect3DDevice2RenderStates[2] == D3DRENDERSTATE_ALPHABLENDENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[2] == 0 &&
+        g_smokeDirect3DDevice2RenderStates[3] == D3DRENDERSTATE_ZWRITEENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[3] == 1 &&
+        g_smokeDirect3DDevice2DrawPrimitiveCalls == 1 &&
+        g_zVideo_QuadBatchCount == 0 &&
+        g_zVideo_D3DRenderStateCache.zWriteEnable == 1;
+
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_QuadBatchCount = savedQuadBatchCount;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
+    g_zVideo_D3DRenderStateCache.alphaBlendEnable = savedAlphaBlendEnable;
+    g_zVideo_D3DRenderStateCache.zWriteEnable = savedZWriteEnable;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
+
+    if (!setupStateOk) {
+        return 1;
+    }
+    if (!drawOk) {
+        return 2;
+    }
+    if (!restoreStateOk) {
+        return 3;
+    }
+    return cacheHitOk ? 0 : 4;
+}
+
+extern "C" int zvideo_flush_overwrite_polys_empty_smoke(void) {
+    SmokeDirect3DDevice2Object device = {};
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    const int savedOverwriteCount = g_zVideo_OverwriteQueueCount;
+
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_OverwriteQueueCount = 0;
+    zVideo_dd3d::FlushOverwritePolys();
+
+    const bool stateOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 2 &&
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_ZFUNC &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == D3DCMP_ALWAYS &&
+        g_smokeDirect3DDevice2RenderStates[1] == D3DRENDERSTATE_ZFUNC &&
+        g_smokeDirect3DDevice2RenderStateValues[1] == D3DCMP_GREATEREQUAL &&
+        g_smokeDirect3DDevice2DrawPrimitiveCalls == 0 &&
+        g_zVideo_OverwriteQueueCount == 0;
+
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_OverwriteQueueCount = savedOverwriteCount;
+    return stateOk ? 0 : 1;
+}
+
+extern "C" int zvideo_flush_overwrite_polys_smoke(void) {
+    SmokeDirect3DDevice2Object device = {};
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    const int savedOverwriteCount = g_zVideo_OverwriteQueueCount;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
+    const int savedAlphaBlendEnable = g_zVideo_D3DRenderStateCache.alphaBlendEnable;
+    const int savedZWriteEnable = g_zVideo_D3DRenderStateCache.zWriteEnable;
+    const D3DTEXTUREHANDLE savedTextureHandle =
+        g_zVideo_D3DRenderStateCache.textureHandle;
+    const D3DTEXTUREBLEND savedTextureMapBlend =
+        g_zVideo_D3DRenderStateCache.textureMapBlend;
+    const D3DTEXTUREADDRESS savedTextureAddressU =
+        g_zVideo_D3DRenderStateCache.textureAddressU;
+    const D3DTEXTUREADDRESS savedTextureAddressV =
+        g_zVideo_D3DRenderStateCache.textureAddressV;
+
+    zVideo_RenderClass transparentClass = {};
+    transparentClass.textureHandle = 0x1111;
+    transparentClass.textureMapBlend = (D3DTEXTUREBLEND)(2);
+    transparentClass.textureAddressU = (D3DTEXTUREADDRESS)(1);
+    transparentClass.textureAddressV = (D3DTEXTUREADDRESS)(2);
+
+    std::memset(
+        g_zVideo_OverwriteQueueBase,
+        0,
+        sizeof(g_zVideo_OverwriteQueueBase[0])
+    );
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
+    g_zVideo_D3DRenderStateCache.alphaBlendEnable = 0;
+    g_zVideo_D3DRenderStateCache.zWriteEnable = 1;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(1);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(0);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(0);
+    g_zVideo_OverwriteQueueCount = 1;
+
+    zVideo_OverwriteQueueEntry &transparentEntry = g_zVideo_OverwriteQueueBase[0];
+    transparentEntry.type = 0;
+    transparentEntry.vertexCount = 4;
+    transparentEntry.renderClass = (int)(&transparentClass);
+    transparentEntry.vertices[0].sx = 10.0f;
+    transparentEntry.vertices[0].color = 0x7f112233;
+    zVideo_dd3d::FlushOverwritePolys();
+
+    const bool transparentStateOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 11 &&
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_ZFUNC &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == D3DCMP_ALWAYS &&
+        g_smokeDirect3DDevice2RenderStates[1] == D3DRENDERSTATE_SHADEMODE &&
+        g_smokeDirect3DDevice2RenderStateValues[1] == 2 &&
+        g_smokeDirect3DDevice2RenderStates[2] == D3DRENDERSTATE_ALPHABLENDENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[2] == 1 &&
+        g_smokeDirect3DDevice2RenderStates[3] == D3DRENDERSTATE_ZWRITEENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[3] == 0 &&
+        g_smokeDirect3DDevice2RenderStates[4] == D3DRENDERSTATE_TEXTUREHANDLE &&
+        g_smokeDirect3DDevice2RenderStateValues[4] == 0x1111 &&
+        g_smokeDirect3DDevice2RenderStates[5] == D3DRENDERSTATE_TEXTUREMAPBLEND &&
+        g_smokeDirect3DDevice2RenderStateValues[5] == 4 &&
+        g_smokeDirect3DDevice2RenderStates[6] == D3DRENDERSTATE_TEXTUREADDRESSU &&
+        g_smokeDirect3DDevice2RenderStateValues[6] == 1 &&
+        g_smokeDirect3DDevice2RenderStates[7] == D3DRENDERSTATE_TEXTUREADDRESSV &&
+        g_smokeDirect3DDevice2RenderStateValues[7] == 2 &&
+        g_smokeDirect3DDevice2RenderStates[8] == D3DRENDERSTATE_ALPHABLENDENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[8] == 0 &&
+        g_smokeDirect3DDevice2RenderStates[9] == D3DRENDERSTATE_ZWRITEENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[9] == 1 &&
+        g_smokeDirect3DDevice2RenderStates[10] == D3DRENDERSTATE_ZFUNC &&
+        g_smokeDirect3DDevice2RenderStateValues[10] == D3DCMP_GREATEREQUAL &&
+        g_zVideo_D3DRenderStateCache.textureMapBlend == (D3DTEXTUREBLEND)(4) &&
+        g_zVideo_OverwriteQueueCount == 0;
+
+    const bool transparentDrawOk =
+        g_smokeDirect3DDevice2DrawPrimitiveCalls == 1 &&
+        g_smokeDirect3DDevice2PrimitiveTypes[0] == D3DPT_TRIANGLEFAN &&
+        g_smokeDirect3DDevice2VertexTypes[0] == (D3DVERTEXTYPE)(3) &&
+        g_smokeDirect3DDevice2Vertices[0] == transparentEntry.vertices &&
+        g_smokeDirect3DDevice2VertexCounts[0] == 4 &&
+        g_smokeDirect3DDevice2DrawFlags[0] == 0;
+
+    zVideo_RenderClass texturedClass = {};
+    texturedClass.textureHandle = 0x4444;
+    texturedClass.textureMapBlend = (D3DTEXTUREBLEND)(3);
+    texturedClass.textureAddressU = (D3DTEXTUREADDRESS)(5);
+    texturedClass.textureAddressV = (D3DTEXTUREADDRESS)(6);
+
+    std::memset(
+        g_zVideo_OverwriteQueueBase,
+        0,
+        sizeof(g_zVideo_OverwriteQueueBase[0])
+    );
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(1);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(0);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(0);
+    g_zVideo_OverwriteQueueCount = 1;
+
+    zVideo_OverwriteQueueEntry &texturedEntry = g_zVideo_OverwriteQueueBase[0];
+    texturedEntry.type = 4;
+    texturedEntry.vertexCount = 3;
+    texturedEntry.renderClass = (int)(&texturedClass);
+    texturedEntry.vertices[0].sx = 20.0f;
+    zVideo_dd3d::FlushOverwritePolys();
+
+    const bool texturedStateOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 7 &&
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_ZFUNC &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == D3DCMP_ALWAYS &&
+        g_smokeDirect3DDevice2RenderStates[1] == D3DRENDERSTATE_SHADEMODE &&
+        g_smokeDirect3DDevice2RenderStateValues[1] == 1 &&
+        g_smokeDirect3DDevice2RenderStates[2] == D3DRENDERSTATE_TEXTUREHANDLE &&
+        g_smokeDirect3DDevice2RenderStateValues[2] == 0x4444 &&
+        g_smokeDirect3DDevice2RenderStates[3] == D3DRENDERSTATE_TEXTUREMAPBLEND &&
+        g_smokeDirect3DDevice2RenderStateValues[3] == 3 &&
+        g_smokeDirect3DDevice2RenderStates[4] == D3DRENDERSTATE_TEXTUREADDRESSU &&
+        g_smokeDirect3DDevice2RenderStateValues[4] == 5 &&
+        g_smokeDirect3DDevice2RenderStates[5] == D3DRENDERSTATE_TEXTUREADDRESSV &&
+        g_smokeDirect3DDevice2RenderStateValues[5] == 6 &&
+        g_smokeDirect3DDevice2RenderStates[6] == D3DRENDERSTATE_ZFUNC &&
+        g_smokeDirect3DDevice2RenderStateValues[6] == D3DCMP_GREATEREQUAL &&
+        g_smokeDirect3DDevice2Vertices[0] == texturedEntry.vertices &&
+        g_smokeDirect3DDevice2VertexCounts[0] == 3 &&
+        g_zVideo_OverwriteQueueCount == 0;
+
+    zVideo_RenderClass modulateClass = {};
+    modulateClass.textureHandle = 0x5555;
+    modulateClass.textureMapBlend = (D3DTEXTUREBLEND)(4);
+    modulateClass.textureAddressU = (D3DTEXTUREADDRESS)(7);
+    modulateClass.textureAddressV = (D3DTEXTUREADDRESS)(8);
+
+    std::memset(
+        g_zVideo_OverwriteQueueBase,
+        0,
+        sizeof(g_zVideo_OverwriteQueueBase[0])
+    );
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(4);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(0);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(0);
+    g_zVideo_OverwriteQueueCount = 1;
+
+    zVideo_OverwriteQueueEntry &modulateEntry = g_zVideo_OverwriteQueueBase[0];
+    modulateEntry.type = 6;
+    modulateEntry.vertexCount = 5;
+    modulateEntry.renderClass = (int)(&modulateClass);
+    modulateEntry.vertices[0].sx = 30.0f;
+    zVideo_dd3d::FlushOverwritePolys();
+
+    const bool modulateStateOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 7 &&
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_ZFUNC &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == D3DCMP_ALWAYS &&
+        g_smokeDirect3DDevice2RenderStates[1] == D3DRENDERSTATE_SHADEMODE &&
+        g_smokeDirect3DDevice2RenderStateValues[1] == 2 &&
+        g_smokeDirect3DDevice2RenderStates[2] == D3DRENDERSTATE_TEXTUREHANDLE &&
+        g_smokeDirect3DDevice2RenderStateValues[2] == 0x5555 &&
+        g_smokeDirect3DDevice2RenderStates[3] == D3DRENDERSTATE_TEXTUREMAPBLEND &&
+        g_smokeDirect3DDevice2RenderStateValues[3] == 2 &&
+        g_smokeDirect3DDevice2RenderStates[4] == D3DRENDERSTATE_TEXTUREADDRESSU &&
+        g_smokeDirect3DDevice2RenderStateValues[4] == 7 &&
+        g_smokeDirect3DDevice2RenderStates[5] == D3DRENDERSTATE_TEXTUREADDRESSV &&
+        g_smokeDirect3DDevice2RenderStateValues[5] == 8 &&
+        g_smokeDirect3DDevice2RenderStates[6] == D3DRENDERSTATE_ZFUNC &&
+        g_smokeDirect3DDevice2RenderStateValues[6] == D3DCMP_GREATEREQUAL &&
+        g_smokeDirect3DDevice2Vertices[0] == modulateEntry.vertices &&
+        g_smokeDirect3DDevice2VertexCounts[0] == 5 &&
+        g_zVideo_D3DRenderStateCache.textureMapBlend == (D3DTEXTUREBLEND)(2) &&
+        g_zVideo_OverwriteQueueCount == 0;
+
+    std::memset(
+        g_zVideo_OverwriteQueueBase,
+        0,
+        sizeof(g_zVideo_OverwriteQueueBase[0])
+    );
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x9999;
+    g_zVideo_OverwriteQueueCount = 1;
+
+    zVideo_OverwriteQueueEntry &flatEntry = g_zVideo_OverwriteQueueBase[0];
+    flatEntry.type = 2;
+    flatEntry.vertexCount = 2;
+    flatEntry.renderClass = 0;
+    flatEntry.vertices[0].sx = 40.0f;
+    zVideo_dd3d::FlushOverwritePolys();
+
+    const bool flatStateOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 4 &&
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_ZFUNC &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == D3DCMP_ALWAYS &&
+        g_smokeDirect3DDevice2RenderStates[1] == D3DRENDERSTATE_TEXTUREHANDLE &&
+        g_smokeDirect3DDevice2RenderStateValues[1] == 0 &&
+        g_smokeDirect3DDevice2RenderStates[2] == D3DRENDERSTATE_SHADEMODE &&
+        g_smokeDirect3DDevice2RenderStateValues[2] == 1 &&
+        g_smokeDirect3DDevice2RenderStates[3] == D3DRENDERSTATE_ZFUNC &&
+        g_smokeDirect3DDevice2RenderStateValues[3] == D3DCMP_GREATEREQUAL &&
+        g_smokeDirect3DDevice2Vertices[0] == flatEntry.vertices &&
+        g_smokeDirect3DDevice2VertexCounts[0] == 2 &&
+        g_zVideo_D3DRenderStateCache.textureHandle == 0 &&
+        g_zVideo_D3DRenderStateCache.shadeMode == 1 &&
+        g_zVideo_OverwriteQueueCount == 0;
+
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_OverwriteQueueCount = savedOverwriteCount;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
+    g_zVideo_D3DRenderStateCache.alphaBlendEnable = savedAlphaBlendEnable;
+    g_zVideo_D3DRenderStateCache.zWriteEnable = savedZWriteEnable;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = savedTextureMapBlend;
+    g_zVideo_D3DRenderStateCache.textureAddressU = savedTextureAddressU;
+    g_zVideo_D3DRenderStateCache.textureAddressV = savedTextureAddressV;
+
+    if (!transparentStateOk || !transparentDrawOk) {
+        return 1;
+    }
+    if (!texturedStateOk) {
+        return 2;
+    }
+    if (!modulateStateOk) {
+        return 3;
+    }
+    return flatStateOk ? 0 : 4;
+}
+
+extern "C" int zvideo_flush_sorted_polys_empty_smoke(void) {
+    g_zVideo_SortedPolyQueueCount = 0;
+    g_zVideo_pD3DDevice = 0;
+    zVideo_dd3d::FlushSortedPolys();
+    return g_zVideo_SortedPolyQueueCount == 0 ? 0 : 1;
+}
+
+extern "C" int zvideo_flush_sorted_polys_smoke(void) {
+    SmokeDirect3DDevice2Object device = {};
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    const int savedSortedCount = g_zVideo_SortedPolyQueueCount;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
+    const int savedAlphaBlendEnable = g_zVideo_D3DRenderStateCache.alphaBlendEnable;
+    const int savedZWriteEnable = g_zVideo_D3DRenderStateCache.zWriteEnable;
+    const D3DTEXTUREHANDLE savedTextureHandle =
+        g_zVideo_D3DRenderStateCache.textureHandle;
+    const D3DTEXTUREBLEND savedTextureMapBlend =
+        g_zVideo_D3DRenderStateCache.textureMapBlend;
+    const D3DTEXTUREADDRESS savedTextureAddressU =
+        g_zVideo_D3DRenderStateCache.textureAddressU;
+    const D3DTEXTUREADDRESS savedTextureAddressV =
+        g_zVideo_D3DRenderStateCache.textureAddressV;
+
+    std::memset(
+        g_zVideo_SortedPolyQueueBase,
+        0,
+        sizeof(g_zVideo_SortedPolyQueueBase[0]) * 3
+    );
+    std::memset(
+        g_zVideo_SortedPolyDrawOrder,
+        0,
+        sizeof(g_zVideo_SortedPolyDrawOrder)
+    );
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
+    g_zVideo_D3DRenderStateCache.alphaBlendEnable = 0;
+    g_zVideo_D3DRenderStateCache.zWriteEnable = 1;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x9999;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(2);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(0);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(0);
+
+    zVideo_RenderClass farClass = {};
+    farClass.textureHandle = 0x1111;
+    farClass.textureMapBlend = (D3DTEXTUREBLEND)(3);
+    farClass.textureAddressU = (D3DTEXTUREADDRESS)(1);
+    farClass.textureAddressV = (D3DTEXTUREADDRESS)(2);
+
+    zVideo_RenderClass middleClass = {};
+    middleClass.textureHandle = 0x2222;
+    middleClass.textureMapBlend = (D3DTEXTUREBLEND)(3);
+    middleClass.textureAddressU = (D3DTEXTUREADDRESS)(5);
+    middleClass.textureAddressV = (D3DTEXTUREADDRESS)(6);
+
+    zVideo_SortedPolyQueueEntry &farEntry = g_zVideo_SortedPolyQueueBase[0];
+    farEntry.vertexCount = 3;
+    farEntry.renderClass = (int)(&farClass);
+    farEntry.vertices[0].sx = 30.0f;
+    farEntry.vertices[0].sz = 30.0f;
+    farEntry.vertices[0].color = 0xff445566;
+
+    zVideo_SortedPolyQueueEntry &nearEntry = g_zVideo_SortedPolyQueueBase[1];
+    nearEntry.vertexCount = 1;
+    nearEntry.renderClass = 0;
+    nearEntry.vertices[0].sx = 10.0f;
+    nearEntry.vertices[0].sz = 10.0f;
+    nearEntry.vertices[0].color = 0xff101010;
+
+    zVideo_SortedPolyQueueEntry &middleEntry = g_zVideo_SortedPolyQueueBase[2];
+    middleEntry.vertexCount = 2;
+    middleEntry.renderClass = (int)(&middleClass);
+    middleEntry.vertices[0].sx = 20.0f;
+    middleEntry.vertices[0].sz = 20.0f;
+    middleEntry.vertices[0].color = 0x7f112233;
+
+    g_zVideo_SortedPolyQueueCount = 3;
+    zVideo_dd3d::FlushSortedPolys();
+
+    const bool initialStateOk =
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_SHADEMODE &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == 2 &&
+        g_smokeDirect3DDevice2RenderStates[1] == D3DRENDERSTATE_ALPHABLENDENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[1] == 1 &&
+        g_smokeDirect3DDevice2RenderStates[2] == D3DRENDERSTATE_ZWRITEENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[2] == 0 &&
+        g_smokeDirect3DDevice2RenderStates[3] == D3DRENDERSTATE_TEXTUREHANDLE &&
+        g_smokeDirect3DDevice2RenderStateValues[3] == 0;
+
+    const bool middleStateOk =
+        g_smokeDirect3DDevice2RenderStates[4] == D3DRENDERSTATE_TEXTUREHANDLE &&
+        g_smokeDirect3DDevice2RenderStateValues[4] == 0x2222 &&
+        g_smokeDirect3DDevice2RenderStates[5] == D3DRENDERSTATE_TEXTUREMAPBLEND &&
+        g_smokeDirect3DDevice2RenderStateValues[5] == 4 &&
+        g_smokeDirect3DDevice2RenderStates[6] == D3DRENDERSTATE_TEXTUREADDRESSU &&
+        g_smokeDirect3DDevice2RenderStateValues[6] == 5 &&
+        g_smokeDirect3DDevice2RenderStates[7] == D3DRENDERSTATE_TEXTUREADDRESSV &&
+        g_smokeDirect3DDevice2RenderStateValues[7] == 6;
+
+    const bool farStateOk =
+        g_smokeDirect3DDevice2RenderStates[8] == D3DRENDERSTATE_TEXTUREHANDLE &&
+        g_smokeDirect3DDevice2RenderStateValues[8] == 0x1111 &&
+        g_smokeDirect3DDevice2RenderStates[9] == D3DRENDERSTATE_TEXTUREMAPBLEND &&
+        g_smokeDirect3DDevice2RenderStateValues[9] == 3 &&
+        g_smokeDirect3DDevice2RenderStates[10] == D3DRENDERSTATE_TEXTUREADDRESSU &&
+        g_smokeDirect3DDevice2RenderStateValues[10] == 1 &&
+        g_smokeDirect3DDevice2RenderStates[11] == D3DRENDERSTATE_TEXTUREADDRESSV &&
+        g_smokeDirect3DDevice2RenderStateValues[11] == 2;
+
+    const bool restoreStateOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 14 &&
+        g_smokeDirect3DDevice2RenderStates[12] == D3DRENDERSTATE_ALPHABLENDENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[12] == 0 &&
+        g_smokeDirect3DDevice2RenderStates[13] == D3DRENDERSTATE_ZWRITEENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[13] == 1 &&
+        g_zVideo_D3DRenderStateCache.shadeMode == 2 &&
+        g_zVideo_D3DRenderStateCache.alphaBlendEnable == 0 &&
+        g_zVideo_D3DRenderStateCache.zWriteEnable == 1 &&
+        g_zVideo_D3DRenderStateCache.textureHandle == 0x1111 &&
+        g_zVideo_D3DRenderStateCache.textureMapBlend == (D3DTEXTUREBLEND)(3) &&
+        g_zVideo_D3DRenderStateCache.textureAddressU == (D3DTEXTUREADDRESS)(1) &&
+        g_zVideo_D3DRenderStateCache.textureAddressV == (D3DTEXTUREADDRESS)(2);
+
+    const bool drawOrderOk =
+        g_zVideo_SortedPolyDrawOrder[0] == 1 &&
+        g_zVideo_SortedPolyDrawOrder[1] == 2 &&
+        g_zVideo_SortedPolyDrawOrder[2] == 0 &&
+        g_smokeDirect3DDevice2DrawPrimitiveCalls == 3 &&
+        g_smokeDirect3DDevice2Vertices[0] == nearEntry.vertices &&
+        g_smokeDirect3DDevice2VertexCounts[0] == 1 &&
+        g_smokeDirect3DDevice2Vertices[1] == middleEntry.vertices &&
+        g_smokeDirect3DDevice2VertexCounts[1] == 2 &&
+        g_smokeDirect3DDevice2Vertices[2] == farEntry.vertices &&
+        g_smokeDirect3DDevice2VertexCounts[2] == 3;
+
+    const bool drawArgsOk =
+        g_smokeDirect3DDevice2PrimitiveTypes[0] == D3DPT_TRIANGLEFAN &&
+        g_smokeDirect3DDevice2PrimitiveTypes[1] == D3DPT_TRIANGLEFAN &&
+        g_smokeDirect3DDevice2PrimitiveTypes[2] == D3DPT_TRIANGLEFAN &&
+        g_smokeDirect3DDevice2VertexTypes[0] == (D3DVERTEXTYPE)(3) &&
+        g_smokeDirect3DDevice2VertexTypes[1] == (D3DVERTEXTYPE)(3) &&
+        g_smokeDirect3DDevice2VertexTypes[2] == (D3DVERTEXTYPE)(3) &&
+        g_smokeDirect3DDevice2DrawFlags[0] == 0 &&
+        g_smokeDirect3DDevice2DrawFlags[1] == 0 &&
+        g_smokeDirect3DDevice2DrawFlags[2] == 0 &&
+        g_zVideo_SortedPolyQueueCount == 0;
+
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_SortedPolyQueueCount = savedSortedCount;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
+    g_zVideo_D3DRenderStateCache.alphaBlendEnable = savedAlphaBlendEnable;
+    g_zVideo_D3DRenderStateCache.zWriteEnable = savedZWriteEnable;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = savedTextureMapBlend;
+    g_zVideo_D3DRenderStateCache.textureAddressU = savedTextureAddressU;
+    g_zVideo_D3DRenderStateCache.textureAddressV = savedTextureAddressV;
+
+    if (!initialStateOk) {
+        return 1;
+    }
+    if (!middleStateOk) {
+        return 2;
+    }
+    if (!farStateOk) {
+        return 3;
+    }
+    if (!restoreStateOk) {
+        return 4;
+    }
+    if (!drawOrderOk) {
+        return 5;
+    }
+    return drawArgsOk ? 0 : 6;
+}
+
+extern "C" int zvideo_submit_poly_color_attr_smoke(void) {
+    const int savedNormalizeChannel = g_zVideo_D3DColorNormalizeChannelIndex;
+    const float savedBiasR = g_zVideo_D3DColorAttrBiasR;
+    const float savedBiasG = g_zVideo_D3DColorAttrBiasG;
+    const float savedBiasB = g_zVideo_D3DColorAttrBiasB;
+
+    std::memset(g_zVideo_D3DSubmitTempVertices, 0, sizeof(g_zVideo_D3DSubmitTempVertices));
+    std::memset(g_zVideo_OverwriteQueueBase, 0, sizeof(g_zVideo_OverwriteQueueBase[0]));
+    g_zVideo_OverwriteQueueCount = 0;
+    g_zVideo_SortedPolyQueueCount = 0;
+
+    zVideo_XyzVertex vertices[3] = {
+        {1.0f, 2.0f, 3.0f},
+        {4.0f, 5.0f, 6.0f},
+        {7.0f, 8.0f, 9.0f}
+    };
+    zVideo_ColorRgbFloat baseColor = {16.0f, 32.0f, 48.0f};
+    float attr1[1] = {0.0f};
+    float attr0[3] = {0.0f, 0.5f, 1.0f};
+    float attr2[3] = {0.0f, 0.5f, 1.0f};
+
+    g_zVideo_D3DColorNormalizeChannelIndex = 2;
+    g_zVideo_D3DColorAttrBiasR = 100.0f;
+    g_zVideo_D3DColorAttrBiasG = 200.0f;
+    g_zVideo_D3DColorAttrBiasB = 300.0f;
+    zVideo_dd3d::SubmitPolyColorAttr(
+        vertices,
+        0,
+        &baseColor,
+        attr1,
+        attr0,
+        attr2,
+        0x80,
+        3,
+        0x44,
+        1
+    );
+
+    int status = 0;
+    if (g_zVideo_OverwriteQueueCount != 0 || g_zVideo_SortedPolyQueueCount != 0) {
+        status = 1;
+    } else if (g_zVideo_D3DSubmitTempVertices[0].color != 0x8055aaff ||
+               g_zVideo_D3DSubmitTempVertices[0].specular != 0x00000000 ||
+               g_zVideo_D3DSubmitTempVertices[1].color != 0x804284c6 ||
+               g_zVideo_D3DSubmitTempVertices[1].specular != 0x80000000 ||
+               g_zVideo_D3DSubmitTempVertices[2].color != 0x80102030 ||
+               g_zVideo_D3DSubmitTempVertices[2].specular != 0xff000000) {
+        status = 2;
+    } else {
+        std::memset(g_zVideo_D3DSubmitTempVertices, 0, sizeof(g_zVideo_D3DSubmitTempVertices));
+        attr1[0] = 0.0f;
+        zVideo_dd3d::SubmitPolyColorAttr(
+            vertices,
+            0,
+            &baseColor,
+            attr1,
+            0,
+            0,
+            0xff,
+            3,
+            0x55,
+            1
+        );
+
+        const D3DTLVERTEX &first = g_zVideo_OverwriteQueueBase[0].vertices[0];
+        const D3DTLVERTEX &last = g_zVideo_OverwriteQueueBase[0].vertices[2];
+        if (g_zVideo_OverwriteQueueCount != 1 ||
+            g_zVideo_OverwriteQueueBase[0].type != 3 ||
+            g_zVideo_OverwriteQueueBase[0].vertexCount != 3 ||
+            g_zVideo_OverwriteQueueBase[0].renderClass != 0 ||
+            g_zVideo_OverwriteQueueBase[0].renderParam != 0x55) {
+            status = 3;
+        } else if (first.sx != 7.0f || first.sy != 8.0f ||
+                   first.sz != 9.0f || first.rhw != 9.0f ||
+                   first.color != 0xff102030 ||
+                   first.specular != 0xff000000 ||
+                   last.sx != 1.0f || last.color != 0xff102030) {
+            status = 4;
+        }
+    }
+
+    g_zVideo_D3DColorNormalizeChannelIndex = savedNormalizeChannel;
+    g_zVideo_D3DColorAttrBiasR = savedBiasR;
+    g_zVideo_D3DColorAttrBiasG = savedBiasG;
+    g_zVideo_D3DColorAttrBiasB = savedBiasB;
+    return status;
+}
+
+extern "C" int zvideo_submit_poly_color_attr_immediate_smoke(void) {
+    SmokeDirect3DDevice2Object device = {};
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    const D3DTEXTUREHANDLE savedTextureHandle =
+        g_zVideo_D3DRenderStateCache.textureHandle;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
+
+    std::memset(g_zVideo_D3DSubmitTempVertices, 0, sizeof(g_zVideo_D3DSubmitTempVertices));
+    g_zVideo_OverwriteQueueCount = 0;
+    g_zVideo_SortedPolyQueueCount = 0;
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x2468;
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
+
+    zVideo_XyzVertex vertices[3] = {
+        {1.0f, 2.0f, 3.0f},
+        {4.0f, 5.0f, 6.0f},
+        {7.0f, 8.0f, 9.0f}
+    };
+    zVideo_ColorRgbFloat baseColor = {16.0f, 32.0f, 48.0f};
+    float attr1[1] = {0.0f};
+    float attr2[3] = {0.0f, 0.5f, 1.0f};
+
+    zVideo_dd3d::SubmitPolyColorAttr(
+        vertices,
+        0,
+        &baseColor,
+        attr1,
+        0,
+        attr2,
+        0xff,
+        3,
+        0x66,
+        0
+    );
+
+    const int renderStateOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 2 &&
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_TEXTUREHANDLE &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == 0 &&
+        g_smokeDirect3DDevice2RenderStates[1] == D3DRENDERSTATE_SHADEMODE &&
+        g_smokeDirect3DDevice2RenderStateValues[1] == 1 &&
+        g_zVideo_D3DRenderStateCache.textureHandle == 0 &&
+        g_zVideo_D3DRenderStateCache.shadeMode == 1;
+    const int drawOk =
+        g_smokeDirect3DDevice2DrawPrimitiveCalls == 1 &&
+        g_smokeDirect3DDevice2LastPrimitiveType == (D3DPRIMITIVETYPE)(6) &&
+        g_smokeDirect3DDevice2LastVertexType == (D3DVERTEXTYPE)(3) &&
+        g_smokeDirect3DDevice2LastVertices == g_zVideo_D3DSubmitTempVertices &&
+        g_smokeDirect3DDevice2LastVertexCount == 3 &&
+        g_smokeDirect3DDevice2LastDrawFlags == 0 &&
+        g_zVideo_OverwriteQueueCount == 0 &&
+        g_zVideo_SortedPolyQueueCount == 0;
+    const D3DTLVERTEX &first = g_zVideo_D3DSubmitTempVertices[0];
+    const D3DTLVERTEX &last = g_zVideo_D3DSubmitTempVertices[2];
+    const int verticesOk =
+        first.sx == 7.0f && first.sy == 8.0f && first.sz == 9.0f &&
+        first.rhw == 9.0f && first.color == 0xff102030 &&
+        first.specular == 0x00000000 && last.sx == 1.0f &&
+        last.sy == 2.0f && last.sz == 3.0f && last.rhw == 3.0f &&
+        last.color == 0xff102030 && last.specular == 0xff000000;
+
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
+    zVideo_dd3d::SubmitPolyColorAttr(
+        vertices,
+        0,
+        &baseColor,
+        attr1,
+        0,
+        0,
+        0xff,
+        2,
+        0x77,
+        0
+    );
+    const int cacheHitOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 0 &&
+        g_smokeDirect3DDevice2DrawPrimitiveCalls == 1 &&
+        g_smokeDirect3DDevice2LastVertexCount == 2 &&
+        g_zVideo_D3DSubmitTempVertices[0].sx == 4.0f &&
+        g_zVideo_D3DSubmitTempVertices[0].color == 0xff102030 &&
+        g_zVideo_D3DSubmitTempVertices[0].specular == 0xff000000;
+
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
+    return renderStateOk && drawOk && verticesOk && cacheHitOk ? 0 : 1;
+}
+
+extern "C" int zvideo_submit_polygon_queue_smoke(void) {
+    const int savedAppendFanClose = g_zVideo_D3DAppendFanCloseVertexPending;
+
+    std::memset(g_zVideo_D3DSubmitTempVertices, 0, sizeof(g_zVideo_D3DSubmitTempVertices));
+    std::memset(g_zVideo_OverwriteQueueBase, 0, sizeof(g_zVideo_OverwriteQueueBase[0]));
+    std::memset(g_zVideo_SortedPolyQueueBase, 0, sizeof(g_zVideo_SortedPolyQueueBase[0]));
+    g_zVideo_OverwriteQueueCount = 0;
+    g_zVideo_SortedPolyQueueCount = 0;
+
+    zVideo_XyzVertex vertices[3] = {
+        {1.0f, 2.0f, 3.0f},
+        {4.0f, 5.0f, 6.0f},
+        {7.0f, 8.0f, 9.0f}
+    };
+    zVideo_TexCoord uvPairs[3] = {
+        {0.1f, 0.2f},
+        {0.3f, 0.4f},
+        {0.5f, 0.6f}
+    };
+    zVideo_RenderClass renderClass = {};
+    renderClass.textureHandle = 0x2345;
+    renderClass.textureMapBlend = (D3DTEXTUREBLEND)(3);
+    renderClass.textureAddressU = (D3DTEXTUREADDRESS)(1);
+    renderClass.textureAddressV = (D3DTEXTUREADDRESS)(2);
+    float attr1[1] = {0.0f};
+
+    g_zVideo_D3DAppendFanCloseVertexPending = 1;
+    zVideo_dd3d::SubmitPolygon(
+        vertices,
+        uvPairs,
+        attr1,
+        0,
+        0,
+        3,
+        &renderClass,
+        0x66,
+        1.0f,
+        1
+    );
+
+    int status = 0;
+    const D3DTLVERTEX &opaqueFirst = g_zVideo_OverwriteQueueBase[0].vertices[0];
+    const D3DTLVERTEX &opaqueClose = g_zVideo_OverwriteQueueBase[0].vertices[3];
+    if (g_zVideo_OverwriteQueueCount != 1 ||
+        g_zVideo_OverwriteQueueBase[0].type != 5 ||
+        g_zVideo_OverwriteQueueBase[0].vertexCount != 4 ||
+        g_zVideo_OverwriteQueueBase[0].renderClass != (int)(&renderClass) ||
+        g_zVideo_OverwriteQueueBase[0].renderParam != 0x66 ||
+        g_zVideo_D3DAppendFanCloseVertexPending != 0) {
+        status = 1;
+    } else if (opaqueFirst.sx != 7.0f || opaqueFirst.color != 0xffffffff ||
+               opaqueFirst.specular != 0xff000000 || opaqueFirst.tu != 0.5f ||
+               opaqueClose.sx != 4.0f || opaqueClose.tu != 0.3f) {
+        status = 2;
+    } else {
+        renderClass.textureMapBlend = (D3DTEXTUREBLEND)(4);
+        attr1[0] = 0.5f;
+        float attr2[2] = {0.0f, 1.0f};
+        zVideo_dd3d::SubmitPolygon(
+            vertices,
+            uvPairs,
+            attr1,
+            0,
+            attr2,
+            2,
+            &renderClass,
+            0x77,
+            0.5f,
+            0
+        );
+
+        const D3DTLVERTEX &transparentFirst =
+            g_zVideo_SortedPolyQueueBase[0].vertices[0];
+        const D3DTLVERTEX &transparentLast =
+            g_zVideo_SortedPolyQueueBase[0].vertices[1];
+        if (g_zVideo_SortedPolyQueueCount != 1 ||
+            g_zVideo_SortedPolyQueueBase[0].vertexCount != 2 ||
+            g_zVideo_SortedPolyQueueBase[0].renderClass != (int)(&renderClass) ||
+            g_zVideo_SortedPolyQueueBase[0].renderParam != 0x77) {
+            status = 3;
+        } else if (transparentFirst.sx != 4.0f ||
+                   transparentFirst.color != 0x7f7f7f7f ||
+                   transparentFirst.specular != 0x00000000 ||
+                   transparentFirst.tu != 0.3f ||
+                   transparentLast.sx != 1.0f ||
+                   transparentLast.color != 0x7f7f7f7f ||
+                   transparentLast.specular != 0xff000000) {
+            status = 4;
+        }
+    }
+
+    g_zVideo_D3DAppendFanCloseVertexPending = savedAppendFanClose;
+    return status;
+}
+
+extern "C" int zvideo_submit_polygon_immediate_smoke(void) {
+    SmokeDirect3DDevice2Object device = {};
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
+    const D3DTEXTUREHANDLE savedTextureHandle =
+        g_zVideo_D3DRenderStateCache.textureHandle;
+    const D3DTEXTUREBLEND savedTextureMapBlend =
+        g_zVideo_D3DRenderStateCache.textureMapBlend;
+    const D3DTEXTUREADDRESS savedTextureAddressU =
+        g_zVideo_D3DRenderStateCache.textureAddressU;
+    const D3DTEXTUREADDRESS savedTextureAddressV =
+        g_zVideo_D3DRenderStateCache.textureAddressV;
+    const int savedAppendFanClose = g_zVideo_D3DAppendFanCloseVertexPending;
+    const int savedNormalizeChannel = g_zVideo_D3DColorNormalizeChannelIndex;
+    const float savedBiasR = g_zVideo_D3DColorAttrBiasR;
+    const float savedBiasG = g_zVideo_D3DColorAttrBiasG;
+    const float savedBiasB = g_zVideo_D3DColorAttrBiasB;
+
+    std::memset(g_zVideo_D3DSubmitTempVertices, 0, sizeof(g_zVideo_D3DSubmitTempVertices));
+    std::memset(g_zVideo_OverwriteQueueBase, 0, sizeof(g_zVideo_OverwriteQueueBase[0]));
+    g_zVideo_OverwriteQueueCount = 0;
+    g_zVideo_SortedPolyQueueCount = 0;
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(1);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(3);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(3);
+    g_zVideo_D3DAppendFanCloseVertexPending = 1;
+
+    zVideo_XyzVertex vertices[3] = {
+        {1.0f, 2.0f, 3.0f},
+        {4.0f, 5.0f, 6.0f},
+        {7.0f, 8.0f, 9.0f}
+    };
+    zVideo_TexCoord uvPairs[3] = {
+        {0.1f, 0.2f},
+        {0.3f, 0.4f},
+        {0.5f, 0.6f}
+    };
+    zVideo_RenderClass renderClass = {};
+    renderClass.textureHandle = 0x2345;
+    renderClass.textureMapBlend = (D3DTEXTUREBLEND)(3);
+    renderClass.textureAddressU = (D3DTEXTUREADDRESS)(1);
+    renderClass.textureAddressV = (D3DTEXTUREADDRESS)(2);
+    float attr1[1] = {0.0f};
+
+    zVideo_dd3d::SubmitPolygon(
+        vertices,
+        uvPairs,
+        attr1,
+        0,
+        0,
+        3,
+        &renderClass,
+        0x66,
+        1.0f,
+        0
+    );
+
+    const int renderStateOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 5 &&
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_SHADEMODE &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == 2 &&
+        g_smokeDirect3DDevice2RenderStates[1] == D3DRENDERSTATE_TEXTUREHANDLE &&
+        g_smokeDirect3DDevice2RenderStateValues[1] == 0x2345 &&
+        g_smokeDirect3DDevice2RenderStates[2] == D3DRENDERSTATE_TEXTUREMAPBLEND &&
+        g_smokeDirect3DDevice2RenderStateValues[2] == 2 &&
+        g_smokeDirect3DDevice2RenderStates[3] == D3DRENDERSTATE_TEXTUREADDRESSU &&
+        g_smokeDirect3DDevice2RenderStateValues[3] == 1 &&
+        g_smokeDirect3DDevice2RenderStates[4] == D3DRENDERSTATE_TEXTUREADDRESSV &&
+        g_smokeDirect3DDevice2RenderStateValues[4] == 2;
+    const int drawOk =
+        g_smokeDirect3DDevice2DrawPrimitiveCalls == 1 &&
+        g_smokeDirect3DDevice2LastPrimitiveType == (D3DPRIMITIVETYPE)(6) &&
+        g_smokeDirect3DDevice2LastVertexType == (D3DVERTEXTYPE)(3) &&
+        g_smokeDirect3DDevice2LastVertices == g_zVideo_D3DSubmitTempVertices &&
+        g_smokeDirect3DDevice2LastVertexCount == 4 &&
+        g_smokeDirect3DDevice2LastDrawFlags == 0 &&
+        g_zVideo_OverwriteQueueCount == 0 &&
+        g_zVideo_SortedPolyQueueCount == 0 &&
+        g_zVideo_D3DAppendFanCloseVertexPending == 0;
+    const D3DTLVERTEX &first = g_zVideo_D3DSubmitTempVertices[0];
+    const D3DTLVERTEX &close = g_zVideo_D3DSubmitTempVertices[3];
+    const int verticesOk =
+        first.sx == 7.0f && first.sy == 8.0f && first.sz == 9.0f &&
+        first.rhw == 9.0f && first.color == 0xffffffff &&
+        first.specular == 0xff000000 && first.tu == 0.5f &&
+        first.tv == 0.6f && close.sx == 4.0f && close.sy == 5.0f &&
+        close.sz == 6.0f && close.rhw == 6.0f &&
+        close.color == 0xffffffff && close.specular == 0xff000000 &&
+        close.tu == 0.3f && close.tv == 0.4f;
+
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x2345;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(2);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(1);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(2);
+    g_zVideo_D3DAppendFanCloseVertexPending = 0;
+    zVideo_dd3d::SubmitPolygon(
+        vertices,
+        uvPairs,
+        attr1,
+        0,
+        0,
+        2,
+        &renderClass,
+        0x77,
+        1.0f,
+        0
+    );
+    const int cacheHitOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 0 &&
+        g_smokeDirect3DDevice2DrawPrimitiveCalls == 1 &&
+        g_smokeDirect3DDevice2LastVertexCount == 2 &&
+        g_zVideo_D3DSubmitTempVertices[0].sx == 4.0f &&
+        g_zVideo_D3DSubmitTempVertices[0].tu == 0.3f &&
+        g_zVideo_D3DSubmitTempVertices[0].tv == 0.4f;
+
+    std::memset(g_zVideo_OverwriteQueueBase, 0, sizeof(g_zVideo_OverwriteQueueBase[0]));
+    g_zVideo_OverwriteQueueCount = 0;
+    g_zVideo_SortedPolyQueueCount = 0;
+    g_zVideo_D3DAppendFanCloseVertexPending = 1;
+    renderClass.textureMapBlend = (D3DTEXTUREBLEND)(4);
+    attr1[0] = 0.5f;
+    float attr0[2] = {0.0f, 0.5f};
+    float attr2[2] = {0.0f, 1.0f};
+    g_zVideo_D3DColorNormalizeChannelIndex = 2;
+    g_zVideo_D3DColorAttrBiasR = 100.0f;
+    g_zVideo_D3DColorAttrBiasG = 200.0f;
+    g_zVideo_D3DColorAttrBiasB = 300.0f;
+    zVideo_dd3d::SubmitPolygon(
+        vertices,
+        uvPairs,
+        attr1,
+        attr0,
+        attr2,
+        2,
+        &renderClass,
+        0x88,
+        0.5f,
+        1
+    );
+    const D3DTLVERTEX &transparentFirst = g_zVideo_OverwriteQueueBase[0].vertices[0];
+    const D3DTLVERTEX &transparentClose = g_zVideo_OverwriteQueueBase[0].vertices[2];
+    const int transparentOk =
+        g_zVideo_OverwriteQueueCount == 1 &&
+        g_zVideo_OverwriteQueueBase[0].type == 0 &&
+        g_zVideo_OverwriteQueueBase[0].vertexCount == 3 &&
+        g_zVideo_OverwriteQueueBase[0].renderClass == (int)(&renderClass) &&
+        g_zVideo_OverwriteQueueBase[0].renderParam == 0x88 &&
+        g_zVideo_SortedPolyQueueCount == 0 &&
+        g_zVideo_D3DAppendFanCloseVertexPending == 0 &&
+        transparentFirst.sx == 4.0f &&
+        transparentFirst.color == 0x7fa3d1ff &&
+        transparentFirst.specular == 0x00000000 &&
+        transparentFirst.tu == 0.3f &&
+        transparentClose.sx == 1.0f &&
+        transparentClose.color == 0x7f7f7f7f &&
+        transparentClose.specular == 0xff000000 &&
+        transparentClose.tu == 0.1f;
+
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = savedTextureMapBlend;
+    g_zVideo_D3DRenderStateCache.textureAddressU = savedTextureAddressU;
+    g_zVideo_D3DRenderStateCache.textureAddressV = savedTextureAddressV;
+    g_zVideo_D3DAppendFanCloseVertexPending = savedAppendFanClose;
+    g_zVideo_D3DColorNormalizeChannelIndex = savedNormalizeChannel;
+    g_zVideo_D3DColorAttrBiasR = savedBiasR;
+    g_zVideo_D3DColorAttrBiasG = savedBiasG;
+    g_zVideo_D3DColorAttrBiasB = savedBiasB;
+    return renderStateOk && drawOk && verticesOk && cacheHitOk && transparentOk
+               ? 0
+               : 1;
+}
+
+extern "C" int zvideo_submit_polygon_lit_queue_smoke(void) {
+    const int savedAppendFanClose = g_zVideo_D3DAppendFanCloseVertexPending;
+
+    std::memset(g_zVideo_D3DSubmitTempVertices, 0, sizeof(g_zVideo_D3DSubmitTempVertices));
+    std::memset(g_zVideo_OverwriteQueueBase, 0, sizeof(g_zVideo_OverwriteQueueBase[0]));
+    std::memset(g_zVideo_SortedPolyQueueBase, 0, sizeof(g_zVideo_SortedPolyQueueBase[0]));
+    g_zVideo_OverwriteQueueCount = 0;
+    g_zVideo_SortedPolyQueueCount = 0;
+
+    zVideo_XyzVertex vertices[3] = {
+        {1.0f, 2.0f, 3.0f},
+        {4.0f, 5.0f, 6.0f},
+        {7.0f, 8.0f, 9.0f}
+    };
+    zVideo_TexCoord uvPairs[3] = {
+        {0.1f, 0.2f},
+        {0.3f, 0.4f},
+        {0.5f, 0.6f}
+    };
+    zVideo_RenderClass renderClass = {};
+    renderClass.textureMapBlend = (D3DTEXTUREBLEND)(3);
+    float attr1[3] = {0.0f, 0.5f, 1.0f};
+
+    g_zVideo_D3DAppendFanCloseVertexPending = 1;
+    zVideo_dd3d::SubmitPolygonLit(
+        vertices,
+        uvPairs,
+        attr1,
+        0,
+        0,
+        3,
+        &renderClass,
+        0x44,
+        1.0f,
+        1
+    );
+
+    int status = 0;
+    if (g_zVideo_OverwriteQueueCount != 1 ||
+        g_zVideo_OverwriteQueueBase[0].type != 6 ||
+        g_zVideo_OverwriteQueueBase[0].vertexCount != 4 ||
+        g_zVideo_OverwriteQueueBase[0].renderClass != (int)(&renderClass) ||
+        g_zVideo_D3DAppendFanCloseVertexPending != 0) {
+        status = 1;
+    } else if (g_zVideo_OverwriteQueueBase[0].vertices[0].sx != 7.0f ||
+               g_zVideo_OverwriteQueueBase[0].vertices[0].color != 0xff000000 ||
+               g_zVideo_OverwriteQueueBase[0].vertices[1].color != 0xff7f7f7f ||
+               g_zVideo_OverwriteQueueBase[0].vertices[2].color != 0xffffffff ||
+               g_zVideo_OverwriteQueueBase[0].vertices[3].sx != 4.0f) {
+        status = 2;
+    } else {
+        renderClass.textureMapBlend = (D3DTEXTUREBLEND)(4);
+        float attr2[2] = {0.0f, 1.0f};
+        zVideo_dd3d::SubmitPolygonLit(
+            vertices,
+            uvPairs,
+            attr1,
+            0,
+            attr2,
+            2,
+            &renderClass,
+            0x55,
+            0.5f,
+            0
+        );
+
+        if (g_zVideo_SortedPolyQueueCount != 1 ||
+            g_zVideo_SortedPolyQueueBase[0].vertexCount != 2 ||
+            g_zVideo_SortedPolyQueueBase[0].renderClass != (int)(&renderClass) ||
+            g_zVideo_SortedPolyQueueBase[0].renderParam != 0x55) {
+            status = 3;
+        } else if (g_zVideo_SortedPolyQueueBase[0].vertices[0].sx != 4.0f ||
+                   g_zVideo_SortedPolyQueueBase[0].vertices[0].color != 0x7f7f7f7f ||
+                   g_zVideo_SortedPolyQueueBase[0].vertices[0].specular != 0x00000000 ||
+                   g_zVideo_SortedPolyQueueBase[0].vertices[1].sx != 1.0f ||
+                   g_zVideo_SortedPolyQueueBase[0].vertices[1].color != 0x7fffffff ||
+                   g_zVideo_SortedPolyQueueBase[0].vertices[1].specular != 0xff000000) {
+            status = 4;
+        }
+    }
+
+    g_zVideo_D3DAppendFanCloseVertexPending = savedAppendFanClose;
+    return status;
+}
+
+extern "C" int zvideo_submit_polygon_lit_immediate_smoke(void) {
+    SmokeDirect3DDevice2Object device = {};
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
+    const D3DTEXTUREHANDLE savedTextureHandle =
+        g_zVideo_D3DRenderStateCache.textureHandle;
+    const D3DTEXTUREBLEND savedTextureMapBlend =
+        g_zVideo_D3DRenderStateCache.textureMapBlend;
+    const D3DTEXTUREADDRESS savedTextureAddressU =
+        g_zVideo_D3DRenderStateCache.textureAddressU;
+    const D3DTEXTUREADDRESS savedTextureAddressV =
+        g_zVideo_D3DRenderStateCache.textureAddressV;
+    const int savedAppendFanClose = g_zVideo_D3DAppendFanCloseVertexPending;
+    const int savedNormalizeChannel = g_zVideo_D3DColorNormalizeChannelIndex;
+    const float savedBiasR = g_zVideo_D3DColorAttrBiasR;
+    const float savedBiasG = g_zVideo_D3DColorAttrBiasG;
+    const float savedBiasB = g_zVideo_D3DColorAttrBiasB;
+
+    std::memset(g_zVideo_D3DSubmitTempVertices, 0, sizeof(g_zVideo_D3DSubmitTempVertices));
+    std::memset(g_zVideo_OverwriteQueueBase, 0, sizeof(g_zVideo_OverwriteQueueBase[0]));
+    g_zVideo_OverwriteQueueCount = 0;
+    g_zVideo_SortedPolyQueueCount = 0;
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(1);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(3);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(3);
+    g_zVideo_D3DAppendFanCloseVertexPending = 1;
+
+    zVideo_XyzVertex vertices[3] = {
+        {1.0f, 2.0f, 3.0f},
+        {4.0f, 5.0f, 6.0f},
+        {7.0f, 8.0f, 9.0f}
+    };
+    zVideo_TexCoord uvPairs[3] = {
+        {0.1f, 0.2f},
+        {0.3f, 0.4f},
+        {0.5f, 0.6f}
+    };
+    zVideo_RenderClass renderClass = {};
+    renderClass.textureHandle = 0x3456;
+    renderClass.textureMapBlend = (D3DTEXTUREBLEND)(3);
+    renderClass.textureAddressU = (D3DTEXTUREADDRESS)(1);
+    renderClass.textureAddressV = (D3DTEXTUREADDRESS)(2);
+    float attr1[3] = {0.0f, 0.5f, 1.0f};
+
+    zVideo_dd3d::SubmitPolygonLit(
+        vertices,
+        uvPairs,
+        attr1,
+        0,
+        0,
+        3,
+        &renderClass,
+        0x66,
+        1.0f,
+        0
+    );
+
+    const int renderStateOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 5 &&
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_SHADEMODE &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == 2 &&
+        g_smokeDirect3DDevice2RenderStates[1] == D3DRENDERSTATE_TEXTUREHANDLE &&
+        g_smokeDirect3DDevice2RenderStateValues[1] == 0x3456 &&
+        g_smokeDirect3DDevice2RenderStates[2] == D3DRENDERSTATE_TEXTUREMAPBLEND &&
+        g_smokeDirect3DDevice2RenderStateValues[2] == 2 &&
+        g_smokeDirect3DDevice2RenderStates[3] == D3DRENDERSTATE_TEXTUREADDRESSU &&
+        g_smokeDirect3DDevice2RenderStateValues[3] == 1 &&
+        g_smokeDirect3DDevice2RenderStates[4] == D3DRENDERSTATE_TEXTUREADDRESSV &&
+        g_smokeDirect3DDevice2RenderStateValues[4] == 2;
+    const int drawOk =
+        g_smokeDirect3DDevice2DrawPrimitiveCalls == 1 &&
+        g_smokeDirect3DDevice2LastPrimitiveType == (D3DPRIMITIVETYPE)(6) &&
+        g_smokeDirect3DDevice2LastVertexType == (D3DVERTEXTYPE)(3) &&
+        g_smokeDirect3DDevice2LastVertices == g_zVideo_D3DSubmitTempVertices &&
+        g_smokeDirect3DDevice2LastVertexCount == 4 &&
+        g_smokeDirect3DDevice2LastDrawFlags == 0 &&
+        g_zVideo_OverwriteQueueCount == 0 &&
+        g_zVideo_SortedPolyQueueCount == 0 &&
+        g_zVideo_D3DAppendFanCloseVertexPending == 0;
+    const D3DTLVERTEX &first = g_zVideo_D3DSubmitTempVertices[0];
+    const D3DTLVERTEX &close = g_zVideo_D3DSubmitTempVertices[3];
+    const int verticesOk =
+        first.sx == 7.0f && first.sy == 8.0f && first.sz == 9.0f &&
+        first.rhw == 9.0f && first.color == 0xff000000 &&
+        first.specular == 0xff000000 && first.tu == 0.5f &&
+        first.tv == 0.6f && close.sx == 4.0f && close.sy == 5.0f &&
+        close.sz == 6.0f && close.rhw == 6.0f &&
+        close.color == 0xff7f7f7f && close.specular == 0xff000000 &&
+        close.tu == 0.3f && close.tv == 0.4f;
+
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x3456;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(2);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(1);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(2);
+    g_zVideo_D3DAppendFanCloseVertexPending = 0;
+    zVideo_dd3d::SubmitPolygonLit(
+        vertices,
+        uvPairs,
+        attr1,
+        0,
+        0,
+        2,
+        &renderClass,
+        0x77,
+        1.0f,
+        0
+    );
+    const int cacheHitOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 0 &&
+        g_smokeDirect3DDevice2DrawPrimitiveCalls == 1 &&
+        g_smokeDirect3DDevice2LastVertexCount == 2 &&
+        g_zVideo_D3DSubmitTempVertices[0].sx == 4.0f &&
+        g_zVideo_D3DSubmitTempVertices[0].color == 0xff7f7f7f &&
+        g_zVideo_D3DSubmitTempVertices[0].tu == 0.3f &&
+        g_zVideo_D3DSubmitTempVertices[0].tv == 0.4f;
+
+    std::memset(g_zVideo_OverwriteQueueBase, 0, sizeof(g_zVideo_OverwriteQueueBase[0]));
+    g_zVideo_OverwriteQueueCount = 0;
+    g_zVideo_SortedPolyQueueCount = 0;
+    g_zVideo_D3DAppendFanCloseVertexPending = 1;
+    renderClass.textureMapBlend = (D3DTEXTUREBLEND)(4);
+    float attr0[2] = {0.0f, 0.5f};
+    float attr2[2] = {0.0f, 1.0f};
+    g_zVideo_D3DColorNormalizeChannelIndex = 2;
+    g_zVideo_D3DColorAttrBiasR = 100.0f;
+    g_zVideo_D3DColorAttrBiasG = 200.0f;
+    g_zVideo_D3DColorAttrBiasB = 300.0f;
+    zVideo_dd3d::SubmitPolygonLit(
+        vertices,
+        uvPairs,
+        attr1,
+        attr0,
+        attr2,
+        2,
+        &renderClass,
+        0x88,
+        0.5f,
+        1
+    );
+    const D3DTLVERTEX &transparentFirst = g_zVideo_OverwriteQueueBase[0].vertices[0];
+    const D3DTLVERTEX &transparentClose = g_zVideo_OverwriteQueueBase[0].vertices[2];
+    const int transparentOk =
+        g_zVideo_OverwriteQueueCount == 1 &&
+        g_zVideo_OverwriteQueueBase[0].type == 0 &&
+        g_zVideo_OverwriteQueueBase[0].vertexCount == 3 &&
+        g_zVideo_OverwriteQueueBase[0].renderClass == (int)(&renderClass) &&
+        g_zVideo_OverwriteQueueBase[0].renderParam == 0x88 &&
+        g_zVideo_SortedPolyQueueCount == 0 &&
+        g_zVideo_D3DAppendFanCloseVertexPending == 0 &&
+        transparentFirst.sx == 4.0f &&
+        transparentFirst.color == 0x7fa3d1ff &&
+        transparentFirst.specular == 0x00000000 &&
+        transparentFirst.tu == 0.3f &&
+        transparentFirst.tv == 0.4f &&
+        transparentClose.sx == 1.0f &&
+        transparentClose.color == 0x7fffffff &&
+        transparentClose.specular == 0xff000000 &&
+        transparentClose.tu == 0.1f &&
+        transparentClose.tv == 0.2f;
+
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = savedTextureMapBlend;
+    g_zVideo_D3DRenderStateCache.textureAddressU = savedTextureAddressU;
+    g_zVideo_D3DRenderStateCache.textureAddressV = savedTextureAddressV;
+    g_zVideo_D3DAppendFanCloseVertexPending = savedAppendFanClose;
+    g_zVideo_D3DColorNormalizeChannelIndex = savedNormalizeChannel;
+    g_zVideo_D3DColorAttrBiasR = savedBiasR;
+    g_zVideo_D3DColorAttrBiasG = savedBiasG;
+    g_zVideo_D3DColorAttrBiasB = savedBiasB;
+    return renderStateOk && drawOk && verticesOk && cacheHitOk && transparentOk
+               ? 0
+               : 1;
+}
+
 extern "C" int zvideo_dd3d_create_device_state_smoke(void) {
     IDirectDraw2 *const savedDirectDraw = g_zVideo_pDirectDraw2;
     IDirectDrawSurface3 *const savedZBuffer = g_zVideo_pZBufferSurface;
@@ -6889,6 +8349,47 @@ extern "C" int zvideo_pixel_pack_setup_smoke(void) {
                    g_zVideo_TexturePixelPack_NonRgbMaskShifted == ~0xf0
                ? 0
                : 2;
+}
+
+extern "C" int zvideo_pixel_pack_getters_smoke(void) {
+    const zVideo_PixelPackParams savedPixelPack = g_zVideo_PixelPack;
+
+    zVideo::PixelPack_SetupFromMasks(
+        5,
+        5,
+        5,
+        0x7c00,
+        0x03e0,
+        0x001f
+    );
+
+    int rBits = 0;
+    int gBits = 0;
+    int bBits = 0;
+    unsigned int rMask = 0;
+    unsigned int gMask = 0;
+    unsigned int bMask = 0;
+    int packedBase = 0;
+    int sumMinus8 = 0;
+    int bShiftTo8 = 0;
+
+    zVideo::PixelPack_GetRgbBits(&rBits, &gBits, &bBits);
+    zVideo::PixelPack_GetRgbMasks(&rMask, &gMask, &bMask);
+    zVideo::PixelPack_GetPackingParams(&packedBase, &sumMinus8, &bShiftTo8);
+
+    const int ok =
+        rBits == 5 &&
+        gBits == 5 &&
+        bBits == 5 &&
+        rMask == 0x7c00 &&
+        gMask == 0x03e0 &&
+        bMask == 0x001f &&
+        packedBase == 7 &&
+        sumMinus8 == 2 &&
+        bShiftTo8 == 3;
+
+    g_zVideo_PixelPack = savedPixelPack;
+    return ok != 0 ? 0 : 1;
 }
 
 extern "C" int zvideo_dd_lock_surface_wait_restore_smoke(void) {
@@ -7331,6 +8832,28 @@ int main(int argc, char **argv) {
         {"zsnd_tick_backend_markers_smoke", zsnd_tick_backend_markers_smoke},
         {"zsnd_report_error_helpers_smoke", zsnd_report_error_helpers_smoke},
         {"zsnd_stream_request_queue_smoke", zsnd_stream_request_queue_smoke},
+        {"zsnd_set_use_archive_banks_flag_smoke",
+         zsnd_set_use_archive_banks_flag_smoke},
+        {"zsnd_sample_set_registry_lookup_destroy_smoke",
+         zsnd_sample_set_registry_lookup_destroy_smoke},
+        {"zsnd_sample_set_init_by_name_empty_smoke",
+         zsnd_sample_set_init_by_name_empty_smoke},
+        {"zsnd_sample_set_init_loose_file_smoke",
+         zsnd_sample_set_init_loose_file_smoke},
+        {"zsnd_sample_set_load_samples_from_index_archive_smoke",
+         zsnd_sample_set_load_samples_from_index_archive_smoke},
+        {"zsnd_create_queued_streaming_sample_smoke",
+         zsnd_create_queued_streaming_sample_smoke},
+        {"zsnd_sample_init_from_wave_data_directsound_smoke",
+         zsnd_sample_init_from_wave_data_directsound_smoke},
+        {"zsnd_sample_init_from_wave_data_a3d_smoke",
+         zsnd_sample_init_from_wave_data_a3d_smoke},
+        {"zsnd_wave_data_load_parse_reset_smoke",
+         zsnd_wave_data_load_parse_reset_smoke},
+        {"zsnd_wave_data_parse_chunks_smoke", zsnd_wave_data_parse_chunks_smoke},
+        {"zsnd_wave_data_load_parse_edges_smoke",
+         zsnd_wave_data_load_parse_edges_smoke},
+        {"zsnd_wave_data_archive_load_smoke", zsnd_wave_data_archive_load_smoke},
         {"zreader_named_int_lookup_smoke", zreader_named_int_lookup_smoke},
         {"zreader_get_named_node_smoke", zreader_get_named_node_smoke},
         {"zreader_named_string_float_lookup_smoke", zreader_named_string_float_lookup_smoke},
@@ -7339,6 +8862,28 @@ int main(int argc, char **argv) {
          zrndr_global_string_table_load_dynamic_entries_smoke},
         {"zreader_load_node_from_archive_smoke", zreader_load_node_from_archive_smoke},
         {"zreader_file_exists_and_list_create_smoke", zreader_file_exists_and_list_create_smoke},
+        {"zfmv_script_reset_smoke", zfmv_script_reset_smoke},
+        {"zfmv_script_cleanup_smoke", zfmv_script_cleanup_smoke},
+        {"zfmv_script_append_action_smoke", zfmv_script_append_action_smoke},
+        {"zfmv_script_begin_current_action_smoke",
+         zfmv_script_begin_current_action_smoke},
+        {"zfmv_script_begin_now_smoke", zfmv_script_begin_now_smoke},
+        {"zfmv_script_load_actions_from_zrd_smoke",
+         zfmv_script_load_actions_from_zrd_smoke},
+        {"zfmv_action_image_constructor_with_screen_rect_smoke",
+         zfmv_action_image_constructor_with_screen_rect_smoke},
+        {"zfmv_action_image_constructor_scaled_smoke",
+         zfmv_action_image_constructor_scaled_smoke},
+        {"zfmv_action_fade_constructor_smoke",
+         zfmv_action_fade_constructor_smoke},
+        {"zfmv_action_play_avi_constructor_existing_file_smoke",
+         zfmv_action_play_avi_constructor_existing_file_smoke},
+        {"zfmv_action_play_avi_constructor_drive_fallback_smoke",
+         zfmv_action_play_avi_constructor_drive_fallback_smoke},
+        {"zfmv_action_play_mci_constructor_smoke",
+         zfmv_action_play_mci_constructor_smoke},
+        {"zfmv_action_blur_constructor_smoke",
+         zfmv_action_blur_constructor_smoke},
         {"hud_ui_save_load_entry_is_newer_than_smoke",
          hud_ui_save_load_entry_is_newer_than_smoke},
         {"player_underwater_fx_pass3_ui_constructor_smoke",
@@ -7373,18 +8918,60 @@ int main(int argc, char **argv) {
          hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke},
         {"hud_ui_credits_quit_button_on_activate_smoke",
          hud_ui_credits_quit_button_on_activate_smoke},
+        {"hud_cheat_clear_nanite_panel_cheat_sentinel_smoke",
+         hud_cheat_clear_nanite_panel_cheat_sentinel_smoke},
+        {"hud_ui_new_game_panel_constructor_cluster_smoke",
+         hud_ui_new_game_panel_constructor_cluster_smoke},
+        {"hud_ui_new_game_panel_overlay_owner_queue_enter_smoke",
+         hud_ui_new_game_panel_overlay_owner_queue_enter_smoke},
+        {"hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke",
+         hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke},
+        {"hud_ui_options_panel_overlay_owner_constructor_smoke",
+         hud_ui_options_panel_overlay_owner_constructor_smoke},
+        {"hud_ui_options_panel_overlay_owner_destructor_core_smoke",
+         hud_ui_options_panel_overlay_owner_destructor_core_smoke},
+        {"hud_ui_options_panel_overlay_owner_static_init_thunks_smoke",
+         hud_ui_options_panel_overlay_owner_static_init_thunks_smoke},
+        {"hud_ui_options_panel_overlay_owner_queue_enter_smoke",
+         hud_ui_options_panel_overlay_owner_queue_enter_smoke},
+        {"hud_ui_options_panel_overlay_owner_on_try_become_current_smoke",
+         hud_ui_options_panel_overlay_owner_on_try_become_current_smoke},
         {"recoil_app_state_queue_block_init_from_cursor_smoke",
          recoil_app_state_queue_block_init_from_cursor_smoke},
         {"recoil_app_queue_switch_current_state_smoke",
          recoil_app_queue_switch_current_state_smoke},
+        {"recoil_app_queue_push_state_smoke",
+         recoil_app_queue_push_state_smoke},
         {"recoil_app_queue_exit_current_state_smoke",
          recoil_app_queue_exit_current_state_smoke},
         {"recoil_app_mfc_ole_module_constructor_smoke",
          recoil_app_mfc_ole_module_constructor_smoke},
         {"recoil_app_mfc_ole_module_destructor_smoke",
          recoil_app_mfc_ole_module_destructor_smoke},
+        {"recoil_app_constructor_destructor_smoke",
+         recoil_app_constructor_destructor_smoke},
+        {"recoil_app_fmv_state_destructor_smoke",
+         recoil_app_fmv_state_destructor_smoke},
+        {"recoil_app_mission_fmv_state_destructor_smoke",
+         recoil_app_mission_fmv_state_destructor_smoke},
         {"recoil_app_start_engine_and_queue_startup_state_smoke",
          recoil_app_start_engine_and_queue_startup_state_smoke},
+        {"recoil_state_main_menu_transition_constructor_smoke",
+         recoil_state_main_menu_transition_constructor_smoke},
+        {"recoil_state_cheat_code_constructor_smoke",
+         recoil_state_cheat_code_constructor_smoke},
+        {"recoil_state_controls_lifecycle_smoke",
+         recoil_state_controls_lifecycle_smoke},
+        {"recoil_state_controls_activation_smoke",
+         recoil_state_controls_activation_smoke},
+        {"recoil_state_controls_on_resume_smoke",
+         recoil_state_controls_on_resume_smoke},
+        {"recoil_state_controls_queue_enter_smoke",
+         recoil_state_controls_queue_enter_smoke},
+        {"recoil_state_confirm_quit_queue_enter_smoke",
+         recoil_state_confirm_quit_queue_enter_smoke},
+        {"recoil_state_confirm_quit_destructor_smoke",
+         recoil_state_confirm_quit_destructor_smoke},
         {"hud_ui_load_game_dialog_on_primary_action_smoke",
          hud_ui_load_game_dialog_on_primary_action_smoke},
         {"hud_ui_load_game_dialog_on_primary_action_thunk_smoke",
@@ -7515,6 +9102,8 @@ int main(int argc, char **argv) {
         {"zhud_widget_destructor_core_smoke",
          zhud_widget_destructor_core_smoke},
         {"zhud_fill_bitmap_core_smoke", zhud_fill_bitmap_core_smoke},
+        {"zhud_zrd_widget_ex17c_item_core_smoke",
+         zhud_zrd_widget_ex17c_item_core_smoke},
         {"zhud_widget_set_image_by_path_owned_smoke",
          zhud_widget_set_image_by_path_owned_smoke},
         {"zhud_background_cursor_widget_member_constructor_smoke",
@@ -7535,6 +9124,7 @@ int main(int argc, char **argv) {
         {"zhud_text_label_constructor_and_extents_smoke",
          zhud_text_label_constructor_and_extents_smoke},
         {"zhud_panel_constructor_default_smoke", zhud_panel_constructor_default_smoke},
+        {"zhud_panel_draw_smoke", zhud_panel_draw_smoke},
         {"zhud_panel_set_text_fmt_smoke", zhud_panel_set_text_fmt_smoke},
         {"zhud_panel_layout_entry_copy_construct_smoke",
          zhud_panel_layout_entry_copy_construct_smoke},
@@ -7570,6 +9160,10 @@ int main(int argc, char **argv) {
         {"zhud_container_child_list_smoke", zhud_container_child_list_smoke},
         {"zhud_zrd_widget_constructor_smoke", zhud_zrd_widget_constructor_smoke},
         {"zhud_options_dialog_constructor_smoke", zhud_options_dialog_constructor_smoke},
+        {"zhud_options_dialog_destructor_core_smoke",
+         zhud_options_dialog_destructor_core_smoke},
+        {"zhud_options_dialog_scalar_deleting_destructor_smoke",
+         zhud_options_dialog_scalar_deleting_destructor_smoke},
         {"zhud_credits_panel_constructor_smoke", zhud_credits_panel_constructor_smoke},
         {"zhud_credits_panel_destructor_smoke", zhud_credits_panel_destructor_smoke},
         {"zhud_credits_panel_scalar_deleting_destructor_smoke",
@@ -7606,6 +9200,8 @@ int main(int argc, char **argv) {
         {"zhud_cmd_dialog_scalar_deleting_destructor_smoke",
          zhud_cmd_dialog_scalar_deleting_destructor_smoke},
         {"zhud_text_input_constructor_smoke", zhud_text_input_constructor_smoke},
+        {"zhud_text_input_destructor_core_smoke",
+         zhud_text_input_destructor_core_smoke},
         {"zhud_text_input_constructor_and_alloc_smoke",
          zhud_text_input_constructor_and_alloc_smoke},
         {"zhud_polyline_and_slider_border_constructor_smoke",
@@ -7843,9 +9439,19 @@ int main(int argc, char **argv) {
         {"zvideo_at_exit_release_all_interfaces_and_surfaces_smoke",
          zvideo_at_exit_release_all_interfaces_and_surfaces_smoke},
         {"zvideo_return_success_stub_smoke", zvideo_return_success_stub_smoke},
+        {"zvideo_clear_dispatch_and_exchange_smoke",
+         zvideo_clear_dispatch_and_exchange_smoke},
         {"zvid_cached_client_rect_smoke", zvid_cached_client_rect_smoke},
         {"zvideo_shutdown_video_system_smoke", zvideo_shutdown_video_system_smoke},
+        {"zvideo_frame_scratch_buffers_smoke", zvideo_frame_scratch_buffers_smoke},
+        {"zvideo_noise_shutdown_buffers_smoke", zvideo_noise_shutdown_buffers_smoke},
         {"zvideo_buff_clip_coord_to_range_smoke", zvideo_buff_clip_coord_to_range_smoke},
+        {"zvideo_buff_blt_source_to_primary_clipped_smoke",
+         zvideo_buff_blt_source_to_primary_clipped_smoke},
+        {"zvid_image_blit_to_active_target_smoke",
+         zvid_image_blit_to_active_target_smoke},
+        {"zvid_image_blit_to_framebuffer_clipped_smoke",
+         zvid_image_blit_to_framebuffer_clipped_smoke},
         {"zvideo_buff_copy_surface_rect_to_image_smoke",
          zvideo_buff_copy_surface_rect_to_image_smoke},
         {"zvideo_draw_noise_rect_smoke", zvideo_draw_noise_rect_smoke},
@@ -7860,6 +9466,7 @@ int main(int argc, char **argv) {
          zvid_query_device_video_memory_bytes_smoke},
         {"zvid_query_texture_memory_bytes_smoke", zvid_query_texture_memory_bytes_smoke},
         {"zvideo_pixel_pack_setup_smoke", zvideo_pixel_pack_setup_smoke},
+        {"zvideo_pixel_pack_getters_smoke", zvideo_pixel_pack_getters_smoke},
         {"zvideo_dd_report_error_smoke", zvideo_dd_report_error_smoke},
         {"zvideo_dd_create_directdraw2_for_selected_device_smoke",
          zvideo_dd_create_directdraw2_for_selected_device_smoke},
@@ -7941,6 +9548,18 @@ int main(int argc, char **argv) {
         {"zvideo_dd_startup_enumerate_default_select_smoke",
          zvideo_dd_startup_enumerate_default_select_smoke},
         {"zvideo_dd3d_set_fog_enable_smoke", zvideo_dd3d_set_fog_enable_smoke},
+        {"zvideo_submit_poly_color_attr_smoke",
+         zvideo_submit_poly_color_attr_smoke},
+        {"zvideo_submit_poly_color_attr_immediate_smoke",
+         zvideo_submit_poly_color_attr_immediate_smoke},
+        {"zvideo_submit_polygon_queue_smoke",
+         zvideo_submit_polygon_queue_smoke},
+        {"zvideo_submit_polygon_immediate_smoke",
+         zvideo_submit_polygon_immediate_smoke},
+        {"zvideo_submit_polygon_lit_queue_smoke",
+         zvideo_submit_polygon_lit_queue_smoke},
+        {"zvideo_submit_polygon_lit_immediate_smoke",
+         zvideo_submit_polygon_lit_immediate_smoke},
         {"zvideo_texture_record_release_upload_surface_smoke",
          zvideo_texture_record_release_upload_surface_smoke},
         {"zvideo_texture_record_finalize_upload_smoke",
@@ -7953,6 +9572,20 @@ int main(int argc, char **argv) {
          zvideo_texture_record_unlock_upload_surface_smoke},
         {"zvideo_quad_batch_depth_and_rhw_smoke",
          zvideo_quad_batch_depth_and_rhw_smoke},
+        {"zvideo_queue_solid_quad_smoke",
+         zvideo_queue_solid_quad_smoke},
+        {"zvideo_flush_quad_batch_empty_smoke",
+         zvideo_flush_quad_batch_empty_smoke},
+        {"zvideo_flush_quad_batch_smoke",
+         zvideo_flush_quad_batch_smoke},
+        {"zvideo_flush_sorted_polys_empty_smoke",
+         zvideo_flush_sorted_polys_empty_smoke},
+        {"zvideo_flush_sorted_polys_smoke",
+         zvideo_flush_sorted_polys_smoke},
+        {"zvideo_flush_overwrite_polys_empty_smoke",
+         zvideo_flush_overwrite_polys_empty_smoke},
+        {"zvideo_flush_overwrite_polys_smoke",
+         zvideo_flush_overwrite_polys_smoke},
         {"zvideo_create_texture_record_guards_smoke",
          zvideo_create_texture_record_guards_smoke},
         {"zvideo_dd3d_create_texture_record_smoke",

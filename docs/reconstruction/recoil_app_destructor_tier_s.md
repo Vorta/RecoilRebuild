@@ -12,6 +12,16 @@
 - The main body resets embedded state vtables in reverse construction order,
   calls `zFMV_Script::Cleanup` for mission, intro, and attract FMV states, and
   finishes with `RecoilApp_MfcOleModule::Destructor`.
+- Accepted source model: no explicit authored `RecoilApp::~RecoilApp` body.
+  VC5SP3 emits the retail destructor from the implicit C++ destructor over the
+  embedded state members and the MFC/OLE base once `RecoilApp_FmvScript` owns
+  the embedded `zFMV_Script::Cleanup` call through an original inline member
+  destructor.
+- Current byte evidence: `python tools/recoil.py verify vc5 0x42de60
+  --build-root build/vc5-final-implicit-recoilapp-dtor-42de60` passes under
+  `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs` with zero unmasked mismatches
+  after 36 relocation-masked bytes. BN body size is 168 bytes; the VC object
+  symbol is 176 bytes with 8 trailing VC NOP bytes trimmed.
 
 ## 0x42dfa0 RecoilApp::Constructor
 
@@ -25,9 +35,14 @@
   state, MP exit state vtable, RecoilApp vtable, and transition timer.
 - Current byte evidence:
   `python tools/recoil.py verify vc5 0x42dfa0 --build-root
-  build/vc5-verify-smoke-42dfa0-owner-call` fails under
-  `vc5_o2_ob1_facs` with 164 unmasked mismatches after 20 relocation-masked
-  bytes. BN body size is 194 bytes and the VC object symbol is 128 bytes.
+  build/vc5-verify-recoilapp-dfa0-inline-intro-body-timer` passes under
+  `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs` with zero unmasked mismatches
+  after COFF relocation masking. BN body size is 194 bytes; the VC object
+  symbol is 208 bytes with 14 trailing VC NOP bytes trimmed. The accepted source
+  shape keeps `RecoilApp_IntroFmvState` construction as an inline embedded-member
+  helper observed in `0x42dfa0`, does not emit a constructor write for the
+  BSS-zeroed `m_skipIntroFmv`, and assigns `m_transitionFadeTimer` in the
+  constructor body so VC5 writes it after the derived RecoilApp vptr install.
 - The former constructor owner dependency, 0x442c70
   `RecoilApp_MfcOleModuleOwner::RecoilApp_MfcOleModuleOwner`, is now tier S
   under `recoil_app_mfc_ole_module_constructor_s`; the accepted VC5SP3
@@ -109,10 +124,30 @@
 ## Current Byte Evidence
 
 - `python tools/recoil.py verify vc5 0x42de60` resolves to
-  `recoil_app_register_at_exit` and currently fails under
-  `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs` with 109 unmasked mismatches
-  after 48 relocation-masked bytes. BN body size is 168 bytes, the VC object
-  symbol is 192 bytes, and 11 trailing VC NOP bytes are trimmed.
+  `recoil_app_register_at_exit` and now passes under
+  `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs` with zero unmasked mismatches
+  after 36 relocation-masked bytes. BN body size is 168 bytes, the VC object
+  symbol is 176 bytes, and 8 trailing VC NOP bytes are trimmed. The accepted
+  shape comes from removing the explicit root destructor and letting VC5SP3
+  synthesize the owner cleanup over embedded members.
+- `python tools/recoil.py verify vc5 recoil_app_fmv_state_destructors` covers
+  the direct FMV-state destructors 0x42df10, 0x42df50, and 0x42e070. Each now
+  passes with zero unmasked mismatches under
+  `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs` after 24 relocation-masked bytes.
+  BN body size is 62 bytes, the VC object body is 64 bytes, and 2 trailing VC
+  NOP bytes are trimmed. The accepted source moves cleanup into the embedded
+  `RecoilApp_FmvScript` member destructor and lets the three containing state
+  destructors remain implicit.
+- `python tools/recoil.py verify vc5 0x42dfa0 --build-root
+  build/vc5-final-implicit-recoilapp-dtor-42dfa0` supplies the constructor
+  half of the owner byte evidence: zero unmasked mismatches after 60
+  relocation-masked bytes. BN body size is 194 bytes, the VC object body is 208
+  bytes, and 14 trailing VC NOP bytes are trimmed.
+- `python tools/recoil.py verify vc5 0x4f3ca8 --build-root
+  build/vc5-final-recoilapp-g_recoilapp-data` compares the authored
+  `g_RecoilApp` singleton data symbol `?g_RecoilApp@@3VRecoilApp@@A` against
+  BN's `struct RecoilApp g_RecoilApp` at `0x4f3ca8`. The 552-byte BSS record
+  passes with zero unmasked data-byte mismatches and no relocation bytes.
 - A focused profile sweep over `vc5_o2_ob0_facs`, `vc5_o2_ob1_gx_facs`,
   `vc5_o2_ob1_md_gx_facs`, and `vc5_o2_ob2_gx_facs` produced the same
   146-mismatch, 96-byte non-EH object body. `Mfc42Abi.h` now guards the
@@ -176,23 +211,15 @@
   allocator byte at `0x118`, dword zeroing through `0x144`, then the late vptr
   install, `m_currentStateIndex = -1`, and the state-stack `rep stosd`.
 
-## Source-Model Blocker
+## Resolved Source Model
 
-The current authored implementation is behavior-correct tier C but models the
-owner teardown as a hand-written `RecoilApp::Destructor()` body over raw
-embedded-state storage. The retail body has the shape of an MSVC-generated C++
-destructor cleanup chain for embedded member/base destruction. Tier S likely
-requires recovering the RecoilApp owner boundary so the compiler sees the
-embedded state destructors and final MFC/OLE base destructor as real C++
-destructor cleanup, rather than attempting more isolated edits to the manual
-body.
-
-The full destructor unwind map narrows that blocker: states 0-4 are ordinary
-member/base cleanups from parent-frame `this`, but states 5-7 are separate
-parent-frame `IState*` locals. That pattern is not explained by the current
-manual destructor body or by merely enabling C++ EH on the function. A credible
-next source-model probe should account for those three pointer-local cleanups
-without adding unrelated synthetic locals or catch handling.
+The former blocker was the hand-written `RecoilApp::Destructor()` body over
+embedded-state storage. Current source removes that explicit body and lets
+VC5SP3 synthesize the owner destructor. Cleanup of the embedded FMV scripts is
+source-owned by `RecoilApp_FmvScript::~RecoilApp_FmvScript`, an original inline
+member helper observed through the direct FMV-state destructors. This preserves
+the real class/member owner model and explains the retail C++ EH cleanup-state
+frame without raw storage shells or synthetic guard locals.
 
 ## Rejected Probes
 
@@ -285,6 +312,45 @@ without adding unrelated synthetic locals or catch handling.
   attract cleanup. Retail has no guard-pointer stores in the normal body and
   keeps the vtable constant in `edi` from the start. The probe source and local
   manifest were reverted.
+- Moving the real FMV-state destructor definitions above `RecoilApp::~RecoilApp`
+  and marking them `inline` was rejected in production source. It preserved the
+  improved 45-mismatch direct-destructor baseline and did not regress the
+  accepted FMV-state constructor target, but it made the root
+  `0x42de60 RecoilApp::Destructor` comparison worse: 152 unmasked mismatches
+  after 42 relocation-masked bytes, BN size 168, VC object size 208, and 3
+  trailing VC NOP bytes trimmed. VC5 inlined the wrong cleanup ordering and grew
+  the owner destructor, so the definitions were restored after the root
+  destructor while keeping the beneficial inline base-state destructor.
+- Making the three FMV-state destructors class-body inline definitions in
+  `RecoilApp.h` was also rejected. The root `0x42de60` comparison reproduced
+  the same 152 unmasked mismatches, 42 relocation-masked bytes, BN size 168,
+  VC object size 208, and 3 trimmed VC NOP bytes; the grouped
+  `recoil_app_fmv_state_destructors` target stayed at 45 unmasked mismatches for
+  0x42df10, 0x42df50, and 0x42e070. This confirms that merely making the real
+  virtual destructors visible for inlining does not remove the direct-destructor
+  derived-vptr entry store or recover the root sparse cleanup-state order.
+- Adding `__declspec(novtable)` to the three concrete FMV-state classes was
+  rejected. It reduced the direct FMV destructor target from 45 to 38 unmasked
+  mismatches by removing the derived-vptr entry store, but it broke the
+  accepted RecoilApp constructor shape: `verify vc5 0x42dfa0` regressed from
+  zero to 116 unmasked mismatches, while `verify vc5 0x42de60` stayed at 92.
+  The concrete state classes therefore cannot use `novtable` as the source
+  model for the retail direct-destructor body.
+- Adding `__declspec(novtable)` only to the intermediate `RecoilApp_FmvState`
+  base was neutral and rejected. It preserved the accepted
+  `verify vc5 0x42dfa0` constructor match at zero unmasked mismatches, but
+  `verify vc5 recoil_app_fmv_state_destructors` stayed at 45 unmasked
+  mismatches for all three direct FMV destructors and `verify vc5 0x42de60`
+  stayed at 92 unmasked mismatches. This proves that suppressing only the
+  intermediate-base vtable construction does not remove the derived direct
+  destructor entry store or recover the root sparse cleanup-state order.
+- Adding an explicit empty class-body `RecoilApp_FmvState::~RecoilApp_FmvState`
+  was also neutral and rejected. It preserved the accepted
+  `verify vc5 0x42dfa0` constructor match, but left
+  `recoil_app_fmv_state_destructors` at 45 mismatches for all three direct
+  destructors and left `verify vc5 0x42de60` at 92 mismatches. Making the
+  intermediate base destructor explicit therefore does not make VC5 inline the
+  FMV cleanup funclets down to the retail `RecoilApp_IState` cleanup shape.
 - Before the accepted 0x442c70 owner-constructor model, the flat-mirror
   placement construction source stayed at 113 unmasked mismatches, 8
   relocation-masked bytes, BN size 138, and VC object size 112. Qualifying the

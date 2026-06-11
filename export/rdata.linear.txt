@@ -555,9 +555,9 @@
 0x4cc884 void* data_4cc884 = 0x0
 0x4cc888 struct HudUiBriefingRuntime_VTable g_HudUiBriefingRuntime_Vtbl =
 0x4cc888 {
-0x4cc888     int32_t (__thiscall* Update)(struct HudUiBriefingRuntime* self, float deltaTimeSec) = HudUiBriefingRuntime::Update
-0x4cc88c     int32_t (__thiscall* SetEnabled)(struct HudUiBriefingRuntime* self, int32_t enabled) = HudUiBackground::SetEnabled
-0x4cc890     struct HudUiBriefingRuntime* (__thiscall* ScalarDeletingDtor)(struct HudUiBriefingRuntime* self, uint32_t flags) = HudUiBriefingRuntime::ScalarDeletingDestructor
+0x4cc888     void (* Update)(struct HudUiBriefingRuntime* self, float deltaTimeSec) = HudUiBriefingRuntime::Update
+0x4cc88c     int32_t (* SetEnabled)(struct HudUiBriefingRuntime* self, int32_t enabled) = HudUiBackground::SetEnabled
+0x4cc890     struct HudUiBriefingRuntime* (* ScalarDeletingDtor)(struct HudUiBriefingRuntime* self, uint32_t flags) = HudUiBriefingRuntime::ScalarDeletingDestructor
 0x4cc894 }
 0x4cc894 void* data_4cc894 = 0x0
 0x4cc898 struct HudUiBriefingObjectivePicture_FTable g_HudUiBriefingObjectivePicture_Vtbl =
@@ -590,7 +590,7 @@
 0x4cc8fc     int32_t (__thiscall* GetX)(struct HudUiWidget const* self) = HudUiWidget::GetCenterX
 0x4cc900     int32_t (__thiscall* GetY)(struct HudUiWidget const* self) = HudUiWidget::GetCenterY
 0x4cc904     void* function_6c = zStub::NoOp1Arg
-0x4cc908     void* function_70 = HudUiElement::GetRect
+0x4cc908     void* function_70 = HudUiElement::GetTextRect
 0x4cc90c     void* function_74 = HudUiWidget::RebuildBltRectFromImage
 0x4cc910 }
 0x4cc910 struct HudUiBriefingTransportProgress_FTable g_HudUiBriefingTransportProgress_Vtbl =
@@ -623,7 +623,7 @@
 0x4cc974     int32_t (* GetX)(void* self) = HudUiWidget::GetCenterX
 0x4cc978     int32_t (* GetY)(void* self) = HudUiWidget::GetCenterY
 0x4cc97c     void* function_6c = zStub::NoOp1Arg
-0x4cc980     void* function_70 = HudUiElement::GetRect
+0x4cc980     void* function_70 = HudUiElement::GetTextRect
 0x4cc984     void* function_74 = HudUiWidget::RebuildBltRectFromImage
 0x4cc988     void* function_78 = HudUiZrdWidget::RefreshState
 0x4cc98c     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiFillBitmap::LoadFromZrd
@@ -660,7 +660,7 @@
 0x4cc9fc     HudUiElement_VT_GetCoord GetX = HudUiElement::GetX
 0x4cca00     HudUiElement_VT_GetCoord GetY = HudUiElement::GetY
 0x4cca04     void* function = zStub::NoOp1Arg
-0x4cca08     HudUiElement_VT_GetRect GetRect = HudUiElement::GetRect
+0x4cca08     HudUiElement_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4cca0c }
 0x4cca0c void* data_4cca0c = 0x0
 0x4cca10 struct HudUiCommon_FTable g_HudUiCommon_FTable =
@@ -693,7 +693,7 @@
 0x4cca74     HudUiElement_VT_GetCoord GetX = HudUiElement::GetX
 0x4cca78     HudUiElement_VT_GetCoord GetY = HudUiElement::GetY
 0x4cca7c     void* function = zStub::NoOp1Arg
-0x4cca80     HudUiElement_VT_GetRect GetRect = HudUiElement::GetRect
+0x4cca80     HudUiElement_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4cca84 }
 0x4cca84 struct HudUiBriefingActionVtable g_HudUiBriefingAction_Hide_Vtbl =
 0x4cca84 {
@@ -884,7 +884,7 @@
 0x4ccc74     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4ccc78     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4ccc7c     void* function_6c = zStub::NoOp1Arg
-0x4ccc80     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4ccc80     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4ccc84     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4ccc88     HudUiZrdWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4ccc8c     HudUiZrdWidget_VT_LoadFromZrd LoadFromZrd = HudUiZrdWidget::LoadFromZrd
@@ -923,7 +923,7 @@
 0x4ccd04     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4ccd08     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4ccd0c     void* function_6c = zStub::NoOp1Arg
-0x4ccd10     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4ccd10     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4ccd14     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4ccd18     HudUiWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4ccd1c     HudUiWidget_VT_LoadFromZrd LoadFromZrd = HudUiZrdWidget::LoadFromZrd
@@ -1041,7 +1041,7 @@
 0x4cceac     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4cceb0     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4cceb4     void* function_6c = zStub::NoOp1Arg
-0x4cceb8     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4cceb8     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4ccebc     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4ccec0     HudUiWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4ccec4     HudUiWidget_VT_LoadFromZrd LoadFromZrd = HudUiOptionSelectorWidget::LoadFromZrd
@@ -1078,7 +1078,7 @@
 0x4ccf34     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4ccf38     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4ccf3c     void* function_6c = zStub::NoOp1Arg
-0x4ccf40     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4ccf40     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4ccf44     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4ccf48     HudUiWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4ccf4c     HudUiWidget_VT_LoadFromZrd LoadFromZrd = HudUiOptionSelectorWidget::LoadFromZrd
@@ -1115,7 +1115,7 @@
 0x4ccfbc     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4ccfc0     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4ccfc4     void* function_6c = zStub::NoOp1Arg
-0x4ccfc8     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4ccfc8     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4ccfcc     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4ccfd0     HudUiWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4ccfd4     HudUiWidget_VT_LoadFromZrd LoadFromZrd = HudUiOptionSelectorWidget::LoadFromZrd
@@ -1154,7 +1154,7 @@
 0x4cd044     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4cd048     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4cd04c     void* function_6c = zStub::NoOp1Arg
-0x4cd050     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4cd050     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4cd054     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4cd058     HudUiWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4cd05c     HudUiWidget_VT_LoadFromZrd LoadFromZrd = HudUiOptionSelectorWidget::LoadFromZrd
@@ -1191,7 +1191,7 @@
 0x4cd0cc     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4cd0d0     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4cd0d4     void* function_6c = zStub::NoOp1Arg
-0x4cd0d8     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4cd0d8     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4cd0dc     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4cd0e0     HudUiWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4cd0e4     HudUiWidget_VT_LoadFromZrd LoadFromZrd = HudUiZrdWidget::LoadFromZrd
@@ -1228,7 +1228,7 @@
 0x4cd154     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4cd158     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4cd15c     void* function_6c = zStub::NoOp1Arg
-0x4cd160     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4cd160     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4cd164     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4cd168     HudUiWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4cd16c     HudUiWidget_VT_LoadFromZrd LoadFromZrd = HudUiZrdWidget::LoadFromZrd
@@ -1328,7 +1328,7 @@
 0x4cd29c     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4cd2a0     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4cd2a4     void* function_6c = zStub::NoOp1Arg
-0x4cd2a8     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4cd2a8     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4cd2ac     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4cd2b0     HudUiWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4cd2b4     HudUiWidget_VT_LoadFromZrd LoadFromZrd = HudUiZrdWidget::LoadFromZrd
@@ -1365,7 +1365,7 @@
 0x4cd324     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4cd328     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4cd32c     void* function_6c = zStub::NoOp1Arg
-0x4cd330     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4cd330     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4cd334     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4cd338     HudUiWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4cd33c     HudUiWidget_VT_LoadFromZrd LoadFromZrd = HudUiZrdWidget::LoadFromZrd
@@ -1387,54 +1387,52 @@
 0x4cd374     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
 // HudCmdDialog background-panel header: UpdateCaptureState, HudUiBackground_SetEnabled, HudCmdDialog_ScalarDeletingDtor.
 0x4cd378 }
-0x4cd378 struct HudUiBackgroundPanel_FTableHeader g_HudCmdDialog_BackgroundPanelFTableHeader =
-0x4cd378 {
-0x4cd378     struct HudUiContainer_FTable container =
-0x4cd378     {
-        // HudCmdDialog background-panel header: UpdateCaptureState,
-        // HudUiBackground_SetEnabled, HudCmdDialog_ScalarDeletingDtor.
-0x4cd378         HudUiContainer_VT_UpdateAll UpdateAll = HudCmdDialog::UpdateCaptureState
-0x4cd37c         HudUiContainer_VT_SetEnabled SetEnabled = HudUiBackground::SetEnabled
-0x4cd380     }
-0x4cd380     HudUiBackgroundPanel_VT_ScalarDeletingDtor scalarDeletingDtor = HudCmdDialog::ScalarDeletingDestructor
-0x4cd384     HudUiBackgroundPanel_VT_Action PrimaryAction = 0x0
-0x4cd388     HudUiBackgroundPanel_VT_Action SecondaryAction = HudUiPanel::ScalarDeletingDestructor
-0x4cd38c }
-0x4cd38c                                     60 b4 4b 00 b0 4c 40 00                                                  `.K..L@.
-0x4cd394                                                             d0 4c 40 00                                              .L@.
-0x4cd398                                                                         f0 4c 40 00                                      .L@.
-0x4cd39c                                                                                     00 4d 40 00                              .M@.
-0x4cd3a0 40 cd 4b 00                                                                                      @.K.
-0x4cd3a4             b0 41 4b 00                                                                              .AK.
-0x4cd3a8                         90 be 40 00                                                                      ..@.
-0x4cd3ac                                     f0 c9 4b 00                                                              ..K.
-0x4cd3b0                                                 50 71 40 00                                                      Pq@.
-0x4cd3b4                                                             40 71 40 00                                              @q@.
-0x4cd3b8                                                                         80 4e 40 00                                      .N@.
-0x4cd3bc                                                                                     80 4e 40 00                              .N@.
-0x4cd3c0 80 4e 40 00                                                                                      .N@.
-0x4cd3c4             80 4e 40 00                                                                              .N@.
-0x4cd3c8                         80 4e 40 00                                                                      .N@.
-0x4cd3cc                                     80 4e 40 00                                                              .N@.
-0x4cd3d0                                                 80 4e 40 00                                                      .N@.
-0x4cd3d4                                                             f0 bd 40 00                                              ..@.
-0x4cd3d8                                                                         80 4e 40 00                                      .N@.
-0x4cd3dc                                                                                     10 4d 40 00                              .M@.
-0x4cd3e0 f0 bd 40 00                                                                                      ..@.
-0x4cd3e4             d0 b3 4b 00                                                                              ..K.
-0x4cd3e8                         20 4d 40 00                                                                       M@.
-0x4cd3ec                                     50 4d 40 00                                                              PM@.
-0x4cd3f0                                                 60 4d 40 00                                                      `M@.
-0x4cd3f4                                                             c0 be 40 00                                              ..@.
-0x4cd3f8                                                                         40 b7 4b 00                                      @.K.
-0x4cd3fc                                                                                     40 b5 4b 00                              @.K.
-0x4cd400 a0 b2 4b 00                                                                                      ..K.
-0x4cd404             a0 be 40 00                                                                              ..@.
-0x4cd408                         b0 ab 4b 00                                                                      ..K.
-0x4cd40c                                     b0 be 40 00                                                              ..@.
-0x4cd410                                                 e0 b5 4b 00                                                      ..K.
-0x4cd414                                                             80 b6 4b 00                                              ..K.
-0x4cd418                                                                         10 ac 4b 00                                      ..K.
+// HudCmdDialog background-panel header: UpdateCaptureState,
+// HudUiBackground_SetEnabled, HudCmdDialog_ScalarDeletingDtor.
+0x4cd378 void* g_HudCmdDialog_BackgroundPanelFTableHeader = HudCmdDialog::UpdateCaptureState
+0x4cd37c void* data_4cd37c = HudUiBackground::SetEnabled
+0x4cd380 void* data_4cd380 = HudCmdDialog::ScalarDeletingDestructor
+0x4cd384             00 00 00 00                                                                              ....
+0x4cd388 struct HudUiPanel_FTable g_HudUiTransitionTextPanel_FTable =
+0x4cd388 {
+0x4cd388     HudUiPanel_VT_Dtor dtor = HudUiPanel::ScalarDeletingDestructor
+0x4cd38c     HudUiPanel_VT_Noarg Draw = HudUiPanel::Draw
+0x4cd390     HudUiPanel_VT_Noarg DrawBase = HudUiElement::DrawBase
+0x4cd394     HudUiPanel_VT_SetPos SetPos = HudUiElement::SetPos
+0x4cd398     HudUiPanel_VT_SetCoord SetX = HudUiElement::SetX
+0x4cd39c     HudUiPanel_VT_SetCoord SetY = HudUiElement::SetY
+0x4cd3a0     HudUiPanel_VT_SetClip SetClip = HudUiPanel::SetClip
+0x4cd3a4     HudUiPanel_VT_SetClipRect SetClipRect = HudUiElement::SetClipRect
+0x4cd3a8     HudUiPanel_VT_Noarg Invalidate = HudUiPanel::Invalidate
+0x4cd3ac     HudUiPanel_VT_Update Update = HudUiTransitionTextPanel::Update
+0x4cd3b0     void* field_28 = zStub::NoOp1Arg
+0x4cd3b4     HudUiPanel_VT_GetTextBufferPtrOrNull GetTextBufferPtrOrNull = zStub::ReturnZeroNoArgs
+0x4cd3b8     HudUiPanel_VT_OnActivate OnActivate = zError::ReportOldNoOp
+0x4cd3bc     void* field_34 = zError::ReportOldNoOp
+0x4cd3c0     void* field_38 = zError::ReportOldNoOp
+0x4cd3c4     void* field_3c = zError::ReportOldNoOp
+0x4cd3c8     void* field_40 = zError::ReportOldNoOp
+0x4cd3cc     void* field_44 = zError::ReportOldNoOp
+0x4cd3d0     void* field_48 = zError::ReportOldNoOp
+0x4cd3d4     void* field_4c = StdPtrVector::ClearNoOpDestroy
+0x4cd3d8     void* field_50 = zError::ReportOldNoOp
+0x4cd3dc     HudUiPanel_VT_HitTest HitTest = HudUiElement::HitTestTrue
+0x4cd3e0     void* field_58 = StdPtrVector::ClearNoOpDestroy
+0x4cd3e4     void* field_5c = HudUiPanel::HitTest
+0x4cd3e8     HudUiPanel_VT_SetVisible SetVisible = HudUiElement::SetVisible
+0x4cd3ec     HudUiPanel_VT_GetCoord GetX = HudUiElement::GetX
+0x4cd3f0     HudUiPanel_VT_GetCoord GetY = HudUiElement::GetY
+0x4cd3f4     HudUiPanel_VT_EnableWordWrap EnableWordWrapWithRect = HudUiPanel::EnableWordWrapWithRect
+0x4cd3f8     HudUiPanel_VT_GetTextRect GetTextRect = HudUiPanel::GetTextRect
+0x4cd3fc     HudUiPanel_VT_SetTextFmt SetTextFmt = HudUiPanel::SetTextFmt
+0x4cd400     HudUiPanel_VT_Noarg UpdateTextBoundsFromContent = HudUiPanel::UpdateTextBoundsFromContent
+0x4cd404     HudUiPanel_VT_GetFont GetFont = HudUiPanel::GetFont
+0x4cd408     HudUiPanel_VT_SetFont SetFont = HudUiPanel::SetFont
+0x4cd40c     HudUiPanel_VT_SetFontHandle SetFontHandle = HudUiPanel::SetFontHandle
+0x4cd410     HudUiPanel_VT_SetTextFmtV SetTextFmtV = HudUiPanel::SetTextFmtV
+0x4cd414     HudUiPanel_VT_SetText SetText = HudUiPanel::SetText
+0x4cd418     HudUiPanel_VT_Noarg RebuildTextRect = HudUiPanel::RebuildTextRect
+0x4cd41c }
 0x4cd41c void* data_4cd41c = 0x0
 0x4cd420 struct HudUiWidget_FTable g_HudCmdPrevCommandButton_FTable =
 0x4cd420 {
@@ -1466,7 +1464,7 @@
 0x4cd484     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4cd488     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4cd48c     void* function_6c = zStub::NoOp1Arg
-0x4cd490     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4cd490     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4cd494     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4cd498     HudUiWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4cd49c     HudUiWidget_VT_LoadFromZrd LoadFromZrd = HudUiZrdWidget::LoadFromZrd
@@ -1503,7 +1501,7 @@
 0x4cd50c     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4cd510     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4cd514     void* function_6c = zStub::NoOp1Arg
-0x4cd518     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4cd518     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4cd51c     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4cd520     HudUiWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4cd524     HudUiWidget_VT_LoadFromZrd LoadFromZrd = HudUiZrdWidget::LoadFromZrd
@@ -1540,7 +1538,7 @@
 0x4cd594     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4cd598     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4cd59c     void* function_6c = zStub::NoOp1Arg
-0x4cd5a0     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4cd5a0     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4cd5a4     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4cd5a8     HudUiWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4cd5ac     HudUiWidget_VT_LoadFromZrd LoadFromZrd = HudUiZrdWidget::LoadFromZrd
@@ -1577,7 +1575,7 @@
 0x4cd61c     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4cd620     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4cd624     void* function_6c = zStub::NoOp1Arg
-0x4cd628     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4cd628     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4cd62c     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4cd630     HudUiWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4cd634     HudUiWidget_VT_LoadFromZrd LoadFromZrd = HudUiZrdWidget::LoadFromZrd
@@ -1614,7 +1612,7 @@
 0x4cd6a4     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4cd6a8     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4cd6ac     void* function_6c = zStub::NoOp1Arg
-0x4cd6b0     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4cd6b0     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4cd6b4     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4cd6b8     HudUiWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4cd6bc     HudUiWidget_VT_LoadFromZrd LoadFromZrd = HudUiCycleSelectorWidget::LoadFromZrd
@@ -1654,7 +1652,7 @@
 0x4cd72c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cd730     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cd734     void* function_6c = zStub::NoOp1Arg
-0x4cd738     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cd738     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cd73c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cd740     void (* RefreshState)(struct HudUiCheckToggleWidget* self) = HudUiCheckToggleWidget::RefreshState
 0x4cd744     int32_t (* LoadFromZrd)(struct HudCmdBindButton* self, struct zReader_Node* node, struct HudUiZrdDialog* owner) = HudCmdBindButtonBase::LoadFromZrd
@@ -1694,7 +1692,7 @@
 0x4cd7b4     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cd7b8     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cd7bc     void* function_6c = zStub::NoOp1Arg
-0x4cd7c0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cd7c0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cd7c4     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cd7c8     void (* RefreshState)(struct HudUiCheckToggleWidget* self) = HudUiCheckToggleWidget::RefreshState
 0x4cd7cc     int32_t (* LoadFromZrd)(struct HudCmdBindButton* self, struct zReader_Node* node, struct HudUiZrdDialog* owner) = HudCmdBindButtonBase::LoadFromZrd
@@ -1734,7 +1732,7 @@
 0x4cd83c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cd840     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cd844     void* function_6c = zStub::NoOp1Arg
-0x4cd848     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cd848     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cd84c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cd850     void (* RefreshState)(struct HudUiCheckToggleWidget* self) = HudUiCheckToggleWidget::RefreshState
 0x4cd854     int32_t (* LoadFromZrd)(struct HudCmdBindButton* self, struct zReader_Node* node, struct HudUiZrdDialog* owner) = HudCmdBindButtonBase::LoadFromZrd
@@ -1771,7 +1769,7 @@
 0x4cd8c4     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cd8c8     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cd8cc     void* function_6c = zStub::NoOp1Arg
-0x4cd8d0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cd8d0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cd8d4     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cd8d8     void (* RefreshState)(struct HudUiCheckToggleWidget* self) = HudUiCheckToggleWidget::RefreshState
 0x4cd8dc     int32_t (* LoadFromZrd)(struct HudCmdBindButton* self, struct zReader_Node* node, struct HudUiZrdDialog* owner) = HudCmdBindButtonBase::LoadFromZrd
@@ -1811,7 +1809,7 @@
 0x4cd94c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cd950     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cd954     void* function_6c = zStub::NoOp1Arg
-0x4cd958     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cd958     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cd95c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cd960     void (* RefreshState)(struct HudUiCheckToggleWidget* self) = HudUiCheckToggleWidget::RefreshState
 0x4cd964     int32_t (* LoadFromZrd)(struct HudCmdBindButton* self, struct zReader_Node* node, struct HudUiZrdDialog* owner) = HudCmdBindButtonBase::LoadFromZrd
@@ -1848,7 +1846,7 @@
 0x4cd9d4     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4cd9d8     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4cd9dc     void* function_6c = zStub::NoOp1Arg
-0x4cd9e0     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4cd9e0     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4cd9e4     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4cd9e8     HudUiWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4cd9ec     HudUiWidget_VT_LoadFromZrd LoadFromZrd = HudUiZrdWidget::LoadFromZrd
@@ -1885,7 +1883,7 @@
 0x4cda5c     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4cda60     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4cda64     void* function_6c = zStub::NoOp1Arg
-0x4cda68     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4cda68     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4cda6c     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4cda70     HudUiWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4cda74     HudUiWidget_VT_LoadFromZrd LoadFromZrd = HudUiZrdWidget::LoadFromZrd
@@ -1922,7 +1920,7 @@
 0x4cdae4     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cdae8     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cdaec     void* function_6c = zStub::NoOp1Arg
-0x4cdaf0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cdaf0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cdaf4     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cdaf8     void (* RefreshState)(struct HudUiCheckToggleWidget* self) = HudUiCheckToggleWidget::RefreshState
 0x4cdafc     int32_t (* LoadFromZrd)(struct HudCmdBindButton* self, struct zReader_Node* node, struct HudUiZrdDialog* owner) = HudCmdBindButtonBase::LoadFromZrd
@@ -2014,7 +2012,7 @@
 0x4cdc2c     int32_t (* GetX)(void* self) = HudUiWidget::GetCenterX
 0x4cdc30     int32_t (* GetY)(void* self) = HudUiWidget::GetCenterY
 0x4cdc34     void* function_6c = zStub::NoOp1Arg
-0x4cdc38     void* function_70 = HudUiElement::GetRect
+0x4cdc38     void* function_70 = HudUiElement::GetTextRect
 0x4cdc3c     void* function_74 = HudUiWidget::RebuildBltRectFromImage
 0x4cdc40     void* function_78 = HudUiZrdWidget::RefreshState
 0x4cdc44     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiFillBitmap::LoadFromZrd
@@ -2051,7 +2049,7 @@
 0x4cdcb4     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cdcb8     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cdcbc     void* function_6c = zStub::NoOp1Arg
-0x4cdcc0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cdcc0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cdcc4     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cdcc8     void (* RefreshState)(struct HudUiCheckToggleWidget* self) = HudUiCheckToggleWidget::RefreshState
 0x4cdccc     int32_t (* LoadFromZrd)(struct HudUiCheckToggleWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiCheckToggleWidget::LoadFromZrd
@@ -2088,7 +2086,7 @@
 0x4cdd3c     int32_t (* GetX)(void* self) = HudUiWidget::GetCenterX
 0x4cdd40     int32_t (* GetY)(void* self) = HudUiWidget::GetCenterY
 0x4cdd44     void* function_6c = zStub::NoOp1Arg
-0x4cdd48     void* function_70 = HudUiElement::GetRect
+0x4cdd48     void* function_70 = HudUiElement::GetTextRect
 0x4cdd4c     void* function_74 = HudUiWidget::RebuildBltRectFromImage
 0x4cdd50     void* function_78 = HudUiZrdWidget::RefreshState
 0x4cdd54     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiFillBitmap::LoadFromZrd
@@ -2125,7 +2123,7 @@
 0x4cddc4     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cddc8     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cddcc     void* function_6c = zStub::NoOp1Arg
-0x4cddd0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cddd0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cddd4     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cddd8     void (* RefreshState)(struct HudUiCycleSelectorWidget* self) = HudUiZrdWidget::RefreshState
 0x4cdddc     int32_t (* LoadFromZrd)(struct HudUiCycleSelectorWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiCycleSelectorWidget::LoadFromZrd
@@ -2162,7 +2160,7 @@
 0x4cde4c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cde50     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cde54     void* function_6c = zStub::NoOp1Arg
-0x4cde58     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cde58     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cde5c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cde60     void (* RefreshState)(struct HudUiCheckToggleWidget* self) = HudUiCheckToggleWidget::RefreshState
 0x4cde64     int32_t (* LoadFromZrd)(struct HudUiCheckToggleWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiCheckToggleWidget::LoadFromZrd
@@ -2199,7 +2197,7 @@
 0x4cded4     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cded8     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cdedc     void* function_6c = zStub::NoOp1Arg
-0x4cdee0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cdee0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cdee4     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cdee8     void (* RefreshState)(struct HudUiCycleSelectorWidget* self) = HudUiZrdWidget::RefreshState
 0x4cdeec     int32_t (* LoadFromZrd)(struct HudUiCycleSelectorWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiCycleSelectorWidget::LoadFromZrd
@@ -2236,7 +2234,7 @@
 0x4cdf5c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cdf60     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cdf64     void* function_6c = zStub::NoOp1Arg
-0x4cdf68     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cdf68     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cdf6c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cdf70     void (* RefreshState)(struct HudUiCycleSelectorWidget* self) = HudUiZrdWidget::RefreshState
 0x4cdf74     int32_t (* LoadFromZrd)(struct HudUiCycleSelectorWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiCycleSelectorWidget::LoadFromZrd
@@ -2273,7 +2271,7 @@
 0x4cdfe4     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cdfe8     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cdfec     void* function_6c = zStub::NoOp1Arg
-0x4cdff0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cdff0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cdff4     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cdff8     void (* RefreshState)(struct HudUiCycleSelectorWidget* self) = HudUiZrdWidget::RefreshState
 0x4cdffc     int32_t (* LoadFromZrd)(struct HudUiCycleSelectorWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiCycleSelectorWidget::LoadFromZrd
@@ -2310,7 +2308,7 @@
 0x4ce06c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4ce070     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4ce074     void* function_6c = zStub::NoOp1Arg
-0x4ce078     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4ce078     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4ce07c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4ce080     void (* RefreshState)(struct HudUiCheckToggleWidget* self) = HudUiCheckToggleWidget::RefreshState
 0x4ce084     int32_t (* LoadFromZrd)(struct HudUiCheckToggleWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiCheckToggleWidget::LoadFromZrd
@@ -2347,7 +2345,7 @@
 0x4ce0f4     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4ce0f8     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4ce0fc     void* function_6c = zStub::NoOp1Arg
-0x4ce100     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4ce100     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4ce104     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4ce108     void (* RefreshState)(struct HudUiCheckToggleWidget* self) = HudUiCheckToggleWidget::RefreshState
 0x4ce10c     int32_t (* LoadFromZrd)(struct HudUiCheckToggleWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiCheckToggleWidget::LoadFromZrd
@@ -2384,7 +2382,7 @@
 0x4ce17c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4ce180     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4ce184     void* function_6c = zStub::NoOp1Arg
-0x4ce188     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4ce188     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4ce18c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4ce190     void (* RefreshState)(struct HudUiCheckToggleWidget* self) = HudUiCheckToggleWidget::RefreshState
 0x4ce194     int32_t (* LoadFromZrd)(struct HudUiCheckToggleWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiCheckToggleWidget::LoadFromZrd
@@ -2421,7 +2419,7 @@
 0x4ce204     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4ce208     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4ce20c     void* function_6c = zStub::NoOp1Arg
-0x4ce210     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4ce210     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4ce214     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4ce218     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4ce21c     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -2488,7 +2486,7 @@
 0x4ce2e4         HudUiElement_VT_GetCoord GetX = HudUiElement::GetX
 0x4ce2e8         HudUiElement_VT_GetCoord GetY = HudUiElement::GetY
 0x4ce2ec         void* function = zStub::NoOp1Arg
-0x4ce2f0         HudUiElement_VT_GetRect GetRect = HudUiElement::GetRect
+0x4ce2f0         HudUiElement_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4ce2f4     }
 0x4ce2f4 }
 0x4ce2f4 void* data_4ce2f4 = 0x0
@@ -2541,7 +2539,7 @@
 0x4ce384         HudUiElement_VT_GetCoord GetX = HudUiElement::GetX
 0x4ce388         HudUiElement_VT_GetCoord GetY = HudUiElement::GetY
 0x4ce38c         void* function = zStub::NoOp1Arg
-0x4ce390         HudUiElement_VT_GetRect GetRect = HudUiElement::GetRect
+0x4ce390         HudUiElement_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4ce394     }
 0x4ce394 }
 0x4ce394 void* data_4ce394 = 0x0
@@ -2577,7 +2575,7 @@
 0x4ce3fc         HudUiElement_VT_GetCoord GetX = HudUiElement::GetX
 0x4ce400         HudUiElement_VT_GetCoord GetY = HudUiElement::GetY
 0x4ce404         void* function = zStub::NoOp1Arg
-0x4ce408         HudUiElement_VT_GetRect GetRect = HudUiElement::GetRect
+0x4ce408         HudUiElement_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4ce40c     }
 0x4ce40c }
 0x4ce40c void* data_4ce40c = 0x0
@@ -2611,7 +2609,7 @@
 0x4ce474     int32_t (__thiscall* GetCenterX)(struct HudUiMessage* self) = HudUiWidget::GetCenterX
 0x4ce478     int32_t (__thiscall* GetCenterY)(struct HudUiMessage* self) = HudUiWidget::GetCenterY
 0x4ce47c     void* function_6c = zStub::NoOp1Arg
-0x4ce480     int32_t (__thiscall* GetRect)(struct HudUiMessage* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4ce480     int32_t (__thiscall* GetRect)(struct HudUiMessage* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4ce484     void (__thiscall* RebuildBltRectFromImage)(struct HudUiMessage* self) = HudUiWidget::RebuildBltRectFromImage
 0x4ce488 }
 0x4ce488 struct HudUiCounter_FTable g_HudUiCounter_FTable =
@@ -2644,7 +2642,7 @@
 0x4ce4ec     void* function_64 = HudUiWidget::GetCenterX
 0x4ce4f0     void* function_68 = HudUiWidget::GetCenterY
 0x4ce4f4     void* function_6c = zStub::NoOp1Arg
-0x4ce4f8     void* function_70 = HudUiElement::GetRect
+0x4ce4f8     void* function_70 = HudUiElement::GetTextRect
 0x4ce4fc     void* function_74 = HudUiWidget::RebuildBltRectFromImage
 0x4ce500 }
 0x4ce500 struct HudUiSlot_FTable g_HudUiSlot_FTable =
@@ -2677,7 +2675,7 @@
 0x4ce564     int32_t (__thiscall* GetX)(struct HudUiSlot const* self) = HudUiElement::GetX
 0x4ce568     int32_t (__thiscall* GetY)(struct HudUiSlot const* self) = HudUiElement::GetY
 0x4ce56c     void* function_6c = zStub::NoOp1Arg
-0x4ce570     void* function_70 = HudUiElement::GetRect
+0x4ce570     void* function_70 = HudUiElement::GetTextRect
 0x4ce574 }
 0x4ce574 void* data_4ce574 = 0x0
 0x4ce578 struct HudUiPanel_FTable g_HudUiCounterTextPanel_FTable =
@@ -2921,7 +2919,7 @@
 0x4ce8d4     HudUiElement_VT_GetCoord GetX = HudUiElement::GetX
 0x4ce8d8     HudUiElement_VT_GetCoord GetY = HudUiElement::GetY
 0x4ce8dc     void* field_6c = zStub::NoOp1Arg
-0x4ce8e0     void* field_70 = HudUiElement::GetRect
+0x4ce8e0     void* field_70 = HudUiElement::GetTextRect
 0x4ce8e4 }
 0x4ce8e4 void* data_4ce8e4 = 0x0
 0x4ce8e8 struct HudUiCommon_FTable g_HudUiStatsListElement_FTable =
@@ -2954,7 +2952,7 @@
 0x4ce94c     HudUiElement_VT_GetCoord GetX = HudUiElement::GetX
 0x4ce950     HudUiElement_VT_GetCoord GetY = HudUiElement::GetY
 0x4ce954     void* function = zStub::NoOp1Arg
-0x4ce958     HudUiElement_VT_GetRect GetRect = HudUiElement::GetRect
+0x4ce958     HudUiElement_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4ce95c }
 0x4ce95c void* data_4ce95c = 0x0
 0x4ce960 struct HudUiListMenu_FTable g_HudUiStringMenu_FTable =
@@ -3045,7 +3043,7 @@
 0x4cea4c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cea50     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cea54     void* function_6c = zStub::NoOp1Arg
-0x4cea58     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cea58     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cea5c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cea60     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4cea64     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3082,7 +3080,7 @@
 0x4cead4     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cead8     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4ceadc     void* function_6c = zStub::NoOp1Arg
-0x4ceae0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4ceae0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4ceae4     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4ceae8     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4ceaec     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3119,7 +3117,7 @@
 0x4ceb5c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4ceb60     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4ceb64     void* function_6c = zStub::NoOp1Arg
-0x4ceb68     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4ceb68     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4ceb6c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4ceb70     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4ceb74     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3156,7 +3154,7 @@
 0x4cebe4     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cebe8     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cebec     void* function_6c = zStub::NoOp1Arg
-0x4cebf0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cebf0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cebf4     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cebf8     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4cebfc     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3193,7 +3191,7 @@
 0x4cec6c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cec70     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cec74     void* function_6c = zStub::NoOp1Arg
-0x4cec78     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cec78     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cec7c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cec80     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4cec84     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3230,7 +3228,7 @@
 0x4cecf4     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cecf8     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cecfc     void* function_6c = zStub::NoOp1Arg
-0x4ced00     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4ced00     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4ced04     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4ced08     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4ced0c     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3267,7 +3265,7 @@
 0x4ced7c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4ced80     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4ced84     void* function_6c = zStub::NoOp1Arg
-0x4ced88     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4ced88     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4ced8c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4ced90     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4ced94     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3304,7 +3302,7 @@
 0x4cee04     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cee08     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cee0c     void* function_6c = zStub::NoOp1Arg
-0x4cee10     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cee10     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cee14     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cee18     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4cee1c     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3372,7 +3370,7 @@
 0x4ceedc     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4ceee0     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4ceee4     void* function_6c = zStub::NoOp1Arg
-0x4ceee8     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4ceee8     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4ceeec     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4ceef0     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4ceef4     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3409,7 +3407,7 @@
 0x4cef64     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cef68     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cef6c     void* function_6c = zStub::NoOp1Arg
-0x4cef70     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cef70     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cef74     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cef78     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4cef7c     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3495,7 +3493,7 @@
 0x4cf08c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cf090     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cf094     void* function_6c = zStub::NoOp1Arg
-0x4cf098     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cf098     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cf09c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cf0a0     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4cf0a4     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3532,7 +3530,7 @@
 0x4cf114     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cf118     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cf11c     void* function_6c = zStub::NoOp1Arg
-0x4cf120     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cf120     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cf124     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cf128     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4cf12c     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3578,7 +3576,7 @@
 0x4cf1ac     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cf1b0     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cf1b4     void* function_6c = zStub::NoOp1Arg
-0x4cf1b8     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cf1b8     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cf1bc     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cf1c0     void (* RefreshState)(struct HudUiCheckToggleWidget* self) = HudUiCheckToggleWidget::RefreshState
 0x4cf1c4     int32_t (* LoadFromZrd)(struct HudUiCheckToggleWidget* self, struct zReader_Node* zrdSection, struct HudUiZrdDialog* owner) = HudUiCheckToggleWidget::LoadFromZrd
@@ -3615,7 +3613,7 @@
 0x4cf234     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cf238     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cf23c     void* function_6c = zStub::NoOp1Arg
-0x4cf240     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cf240     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cf244     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cf248     void (* RefreshState)(struct HudUiCheckToggleWidget* self) = HudUiCheckToggleWidget::RefreshState
 0x4cf24c     int32_t (* LoadFromZrd)(struct HudUiCheckToggleWidget* self, struct zReader_Node* zrdSection, struct HudUiZrdDialog* owner) = HudUiCheckToggleWidget::LoadFromZrd
@@ -3652,7 +3650,7 @@
 0x4cf2bc     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cf2c0     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cf2c4     void* function_6c = zStub::NoOp1Arg
-0x4cf2c8     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cf2c8     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cf2cc     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cf2d0     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4cf2d4     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3689,7 +3687,7 @@
 0x4cf344     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cf348     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cf34c     void* function_6c = zStub::NoOp1Arg
-0x4cf350     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cf350     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cf354     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cf358     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4cf35c     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3726,7 +3724,7 @@
 0x4cf3cc     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cf3d0     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cf3d4     void* function_6c = zStub::NoOp1Arg
-0x4cf3d8     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cf3d8     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cf3dc     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cf3e0     void (* RefreshState)(struct HudUiNumericTextInputWidget* self) = HudUiZrdWidget::RefreshState
 0x4cf3e4     int32_t (* LoadFromZrd)(struct HudUiNumericTextInputWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3765,7 +3763,7 @@
 0x4cf45c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cf460     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cf464     void* function_6c = zStub::NoOp1Arg
-0x4cf468     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cf468     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cf46c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cf470     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4cf474     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3802,7 +3800,7 @@
 0x4cf4e4     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cf4e8     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cf4ec     void* function_6c = zStub::NoOp1Arg
-0x4cf4f0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cf4f0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cf4f4     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cf4f8     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4cf4fc     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3839,7 +3837,7 @@
 0x4cf56c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cf570     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cf574     void* function_6c = zStub::NoOp1Arg
-0x4cf578     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cf578     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cf57c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cf580     void (* RefreshState)(struct HudUiNumericTextInputWidget* self) = HudUiZrdWidget::RefreshState
 0x4cf584     int32_t (* LoadFromZrd)(struct HudUiNumericTextInputWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3878,7 +3876,7 @@
 0x4cf5fc     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cf600     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cf604     void* function_6c = zStub::NoOp1Arg
-0x4cf608     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cf608     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cf60c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cf610     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4cf614     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3915,7 +3913,7 @@
 0x4cf684     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cf688     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cf68c     void* function_6c = zStub::NoOp1Arg
-0x4cf690     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cf690     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cf694     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cf698     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4cf69c     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3952,7 +3950,7 @@
 0x4cf70c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cf710     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cf714     void* function_6c = zStub::NoOp1Arg
-0x4cf718     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cf718     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cf71c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cf720     void (* RefreshState)(struct HudUiNumericTextInputWidget* self) = HudUiZrdWidget::RefreshState
 0x4cf724     int32_t (* LoadFromZrd)(struct HudUiNumericTextInputWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -3991,7 +3989,7 @@
 0x4cf79c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cf7a0     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cf7a4     void* function_6c = zStub::NoOp1Arg
-0x4cf7a8     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cf7a8     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cf7ac     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cf7b0     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4cf7b4     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -4028,7 +4026,7 @@
 0x4cf824     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cf828     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cf82c     void* function_6c = zStub::NoOp1Arg
-0x4cf830     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cf830     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cf834     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cf838     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4cf83c     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -4065,7 +4063,7 @@
 0x4cf8ac     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cf8b0     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cf8b4     void* function_6c = zStub::NoOp1Arg
-0x4cf8b8     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cf8b8     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cf8bc     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cf8c0     void (* RefreshState)(struct HudUiCycleSelectorWidget* self) = HudUiZrdWidget::RefreshState
 0x4cf8c4     int32_t (* LoadFromZrd)(struct HudUiCycleSelectorWidget* self, struct zReader_Node* zrdSection, struct HudUiZrdDialog* owner) = HudUiCycleSelectorWidget::LoadFromZrd
@@ -4102,7 +4100,7 @@
 0x4cf934     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cf938     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cf93c     void* function_6c = zStub::NoOp1Arg
-0x4cf940     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cf940     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cf944     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cf948     void (* RefreshState)(struct HudUiNumericTextInputWidget* self) = HudUiZrdWidget::RefreshState
 0x4cf94c     int32_t (* LoadFromZrd)(struct HudUiNumericTextInputWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -4141,7 +4139,7 @@
 0x4cf9c4     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cf9c8     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cf9cc     void* function_6c = zStub::NoOp1Arg
-0x4cf9d0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cf9d0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cf9d4     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cf9d8     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4cf9dc     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -4178,7 +4176,7 @@
 0x4cfa4c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cfa50     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cfa54     void* function_6c = zStub::NoOp1Arg
-0x4cfa58     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cfa58     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cfa5c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cfa60     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4cfa64     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -4215,7 +4213,7 @@
 0x4cfad4     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cfad8     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cfadc     void* function_6c = zStub::NoOp1Arg
-0x4cfae0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cfae0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cfae4     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cfae8     void (* RefreshState)(struct HudUiNumericTextInputWidget* self) = HudUiZrdWidget::RefreshState
 0x4cfaec     int32_t (* LoadFromZrd)(struct HudUiNumericTextInputWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -4254,7 +4252,7 @@
 0x4cfb64     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4cfb68     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4cfb6c     void* function_6c = zStub::NoOp1Arg
-0x4cfb70     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4cfb70     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4cfb74     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4cfb78     void (* RefreshState)(struct HudUiNumericTextInputWidget* self) = HudUiZrdWidget::RefreshState
 0x4cfb7c     int32_t (* LoadFromZrd)(struct HudUiNumericTextInputWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -4715,7 +4713,7 @@
 0x4d0184     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4d0188     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4d018c     void* function_6c = zStub::NoOp1Arg
-0x4d0190     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4d0190     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4d0194     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4d0198     HudUiWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4d019c     HudUiWidget_VT_LoadFromZrd LoadFromZrd = HudUiZrdWidget::LoadFromZrd
@@ -4831,7 +4829,7 @@
 0x4d02f4     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4d02f8     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4d02fc     void* function_6c = zStub::NoOp1Arg
-0x4d0300     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4d0300     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4d0304     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4d0308     void (* RefreshState)(struct HudUiNumericTextInputWidget* self) = HudUiZrdWidget::RefreshState
 0x4d030c     int32_t (* LoadFromZrd)(struct HudUiNumericTextInputWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -4870,7 +4868,7 @@
 0x4d0384     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4d0388     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4d038c     void* function_6c = zStub::NoOp1Arg
-0x4d0390     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4d0390     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4d0394     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4d0398     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4d039c     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -5083,7 +5081,7 @@
 0x4d0624         HudUiElement_VT_GetCoord GetX = HudUiElement::GetX
 0x4d0628         HudUiElement_VT_GetCoord GetY = HudUiElement::GetY
 0x4d062c         void* function = zStub::NoOp1Arg
-0x4d0630         HudUiElement_VT_GetRect GetRect = HudUiElement::GetRect
+0x4d0630         HudUiElement_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4d0634     }
 0x4d0634     Player_UnderwaterFxPass3Ui_VT_ApplyBlueTint ApplyBlueTint = Player_UnderwaterFxPass3Ui::ApplyBlueTint
 // Player underwater/state7 FX pass-3 function table. This table ends at 0x4d06ac; scalar constants start at 0x4d06b0.
@@ -5122,7 +5120,7 @@
 0x4d069c         HudUiElement_VT_GetCoord GetX = HudUiElement::GetX
 0x4d06a0         HudUiElement_VT_GetCoord GetY = HudUiElement::GetY
 0x4d06a4         void* function = zStub::NoOp1Arg
-0x4d06a8         HudUiElement_VT_GetRect GetRect = HudUiElement::GetRect
+0x4d06a8         HudUiElement_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4d06ac     }
 0x4d06ac     Player_State7FxPass3Ui_VT_ApplyGreenMask ApplyGreenMask = Player_ProjectileCameraFxPass3Ui::ApplyGreenMask
 // Player and shared scalar-constant lane.
@@ -6213,7 +6211,7 @@
 0x4d133c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4d1340     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4d1344     void* function_6c = zStub::NoOp1Arg
-0x4d1348     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4d1348     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4d134c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4d1350     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4d1354     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -6257,7 +6255,7 @@
 0x4d13d4     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4d13d8     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4d13dc     void* function_6c = zStub::NoOp1Arg
-0x4d13e0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4d13e0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4d13e4     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4d13e8     void (* RefreshState)(struct HudUiNumericTextInputWidget* self) = HudUiZrdWidget::RefreshState
 0x4d13ec     int32_t (* LoadFromZrd)(struct HudUiNumericTextInputWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -6296,7 +6294,7 @@
 0x4d1464     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4d1468     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4d146c     void* function_6c = zStub::NoOp1Arg
-0x4d1470     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4d1470     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4d1474     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4d1478     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4d147c     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -6333,7 +6331,7 @@
 0x4d14ec     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4d14f0     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4d14f4     void* function_6c = zStub::NoOp1Arg
-0x4d14f8     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4d14f8     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4d14fc     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4d1500     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4d1504     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -6370,7 +6368,7 @@
 0x4d1574     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4d1578     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4d157c     void* function_6c = zStub::NoOp1Arg
-0x4d1580     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4d1580     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4d1584     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4d1588     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4d158c     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -6457,7 +6455,7 @@
 0x4d16ec     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4d16f0     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4d16f4     void* function_6c = zStub::NoOp1Arg
-0x4d16f8     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4d16f8     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4d16fc     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4d1700     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4d1704     int32_t (* LoadFromZrd)(struct HudUiZrdWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -8473,7 +8471,7 @@
 0x4d348c     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4d3490     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4d3494     void* function_6c = zStub::NoOp1Arg
-0x4d3498     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4d3498     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4d349c     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4d34a0     HudUiWidget_VT_Noarg RefreshState = 0x0
 0x4d34a4     HudUiWidget_VT_LoadFromZrd LoadFromZrd = 0x0
@@ -8535,7 +8533,7 @@
 0x4d3564     HudUiElement_VT_GetCoord GetX = HudUiElement::GetX
 0x4d3568     HudUiElement_VT_GetCoord GetY = HudUiElement::GetY
 0x4d356c     void* function = zStub::NoOp1Arg
-0x4d3570     HudUiElement_VT_GetRect GetRect = HudUiElement::GetRect
+0x4d3570     HudUiElement_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4d3574 }
 0x4d3574 int32_t data_4d3574 = 0x0
 // HudUiNumericTextInput base vtable restored; the adjacent 0x4d3608 packet is the paired text-input method table used by the numeric widget ctor/update flow.
@@ -8572,7 +8570,7 @@
 0x4d35dc     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4d35e0     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4d35e4     void* function_6c = zStub::NoOp1Arg
-0x4d35e8     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4d35e8     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4d35ec     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4d35f0     void (* RefreshState)(struct HudUiNumericTextInputWidget* self) = HudUiZrdWidget::RefreshState
 0x4d35f4     int32_t (* LoadFromZrd)(struct HudUiNumericTextInputWidget* self, struct HudUiZrdDialog* owner, float uiScale) = HudUiZrdWidget::LoadFromZrd
@@ -8585,7 +8583,7 @@
 0x4d3608 {
 0x4d3608     void (__thiscall* InsertChar)(struct HudUiTextInput* self, int32_t key) = HudUiTextInput::InsertCharAtCursor
 0x4d360c     void (__thiscall* IgnoreKey)(struct HudUiTextInput* self, int32_t key) = MFC::NoOpVirtualOneArg
-0x4d3610     void (__thiscall* OnAccept)(struct HudUiTextInput* self) = HudUiOwnedTextInput::OnAcceptNotifyOwner
+0x4d3610     void (__thiscall* OnAccept)(struct HudUiTextInput* self) = HudUiOwnedTextInput::OnAccept
 0x4d3614     void (__thiscall* OnCancel)(struct HudUiTextInput* self) = zGame::ReturnOnlyStub
 0x4d3618     void (__thiscall* Backspace)(struct HudUiTextInput* self) = HudUiTextInput::BackspaceDeleteChar
 0x4d361c     void (__thiscall* DeleteAtCursor)(struct HudUiTextInput* self) = HudUiTextInput::DeleteCharForward
@@ -8627,7 +8625,7 @@
 0x4d3694     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4d3698     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4d369c     void* function_6c = zStub::NoOp1Arg
-0x4d36a0     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4d36a0     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4d36a4     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4d36a8     HudUiZrdWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4d36ac     HudUiZrdWidget_VT_LoadFromZrd LoadFromZrd = HudUiZrdWidget::LoadFromZrd
@@ -8667,7 +8665,7 @@
 0x4d371c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4d3720     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4d3724     void* function_6c = zStub::NoOp1Arg
-0x4d3728     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4d3728     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4d372c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4d3730     void (* RefreshState)(struct HudUiCheckToggleWidget* self) = HudUiCheckToggleWidget::RefreshState
 0x4d3734     int32_t (* LoadFromZrd)(struct HudUiCheckToggleWidget* self, struct zReader_Node* zrdSection, struct HudUiZrdDialog* owner) = HudUiCheckToggleWidget::LoadFromZrd
@@ -8704,7 +8702,7 @@
 0x4d37a4     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4d37a8     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4d37ac     void* function_6c = zStub::NoOp1Arg
-0x4d37b0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4d37b0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4d37b4     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4d37b8     void (* RefreshState)(struct HudUiCycleSelectorWidget* self) = HudUiZrdWidget::RefreshState
 0x4d37bc     int32_t (* LoadFromZrd)(struct HudUiCycleSelectorWidget* self, struct zReader_Node* zrdSection, struct HudUiZrdDialog* owner) = HudUiCycleSelectorWidget::LoadFromZrd
@@ -8741,7 +8739,7 @@
 0x4d382c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4d3830     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4d3834     void* function_6c = zStub::NoOp1Arg
-0x4d3838     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4d3838     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4d383c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4d3840     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4d3844     int32_t (* LoadFromZrd)(struct HudUiFillBitmap* self, struct zReader_Node* zrdSection, struct HudUiZrdDialog* owner) = HudUiFillBitmap::LoadFromZrd
@@ -8781,7 +8779,7 @@
 0x4d38b4     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4d38b8     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4d38bc     void* function_6c = zStub::NoOp1Arg
-0x4d38c0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4d38c0     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4d38c4     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4d38c8     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4d38cc     int32_t (* LoadFromZrd)(struct HudUiZrdWidgetEx17C_Item* self, struct zReader_Node* zrdSection, struct HudUiZrdDialog* owner) = HudUiZrdWidgetEx17C_Item::LoadFromZrd
@@ -8818,7 +8816,7 @@
 0x4d393c     int32_t (* GetCenterX)(struct HudUiWidget* self) = HudUiWidget::GetCenterX
 0x4d3940     int32_t (* GetCenterY)(struct HudUiWidget* self) = HudUiWidget::GetCenterY
 0x4d3944     void* function_6c = zStub::NoOp1Arg
-0x4d3948     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4d3948     int32_t (* GetRect)(struct HudUiWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4d394c     void (* RebuildBltRectFromImage)(struct HudUiWidget* self) = HudUiWidget::RebuildBltRectFromImage
 0x4d3950     void (* RefreshState)(struct HudUiZrdWidget* self) = HudUiZrdWidget::RefreshState
 0x4d3954     int32_t (* LoadFromZrd)(struct HudUiZrdWidgetEx17C* self, struct zReader_Node* zrdSection, struct HudUiZrdDialog* owner) = HudUiOptionSelectorWidget::LoadFromZrd
@@ -8911,7 +8909,7 @@
 0x4d3a6c     int32_t (__thiscall* GetCenterX)(struct HudUiBackgroundCursorWidget* self) = HudUiWidget::GetCenterX
 0x4d3a70     int32_t (__thiscall* GetCenterY)(struct HudUiBackgroundCursorWidget* self) = HudUiWidget::GetCenterY
 0x4d3a74     void* function_6c = zStub::NoOp1Arg
-0x4d3a78     int32_t (__thiscall* GetRect)(struct HudUiBackgroundCursorWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4d3a78     int32_t (__thiscall* GetRect)(struct HudUiBackgroundCursorWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4d3a7c     void* function_74 = HudUiWidget::RebuildBltRectFromImage
 0x4d3a80     void (__thiscall* SetImageBorrowedAndRefreshIfChanged)(struct HudUiBackgroundCursorWidget* self, struct zVid_Image* image) = HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged
 0x4d3a84     void (__thiscall* SetImageByPathOwnedAndRefresh)(struct HudUiBackgroundCursorWidget* self, char const* imagePath) = HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh
@@ -8973,49 +8971,49 @@
 0x4d3b3c int32_t data_4d3b3c = 0x0
 0x4d3b40 struct HudUiCompositePanel_FTable g_HudUiCompositePanel_FTable =
 0x4d3b40 {
-0x4d3b40     struct HudUiFlashPanel* (* dtor)(struct HudUiFlashPanel* self, uint32_t flags) = HudUiCompositePanel::ScalarDeletingDestructor
-0x4d3b44     int32_t (* Draw)(struct HudUiFlashPanel* self) = HudUiPanel::Draw
-0x4d3b48     int32_t (* DrawBase)(struct HudUiElement* self) = HudUiElement::DrawBase
-0x4d3b4c     int32_t (* SetPos)(struct HudUiElement* self, int32_t x, int32_t y) = HudUiCompositePanel::LayoutEntries
-0x4d3b50     int32_t (* SetX)(struct HudUiElement* self, int32_t x) = HudUiElement::SetX
-0x4d3b54     int32_t (* SetY)(struct HudUiElement* self, int32_t y) = HudUiElement::SetY
-0x4d3b58     void (* SetClip)(struct HudUiElement* self, struct zVideo_BltSourceHead* bltSourceOrNull, struct HudUiRect const* rectOrNull) = HudUiPanel::SetClip
-0x4d3b5c     void (* SetClipRect)(struct HudUiElement* self, struct HudUiRect const* rectOrNull) = HudUiElement::SetClipRect
-0x4d3b60     int32_t (* Invalidate)(struct HudUiElement* self) = HudUiPanel::Invalidate
+0x4d3b40     HudUiPanel_VT_Dtor dtor = HudUiCompositePanel::ScalarDeletingDestructor
+0x4d3b44     HudUiPanel_VT_Noarg Draw = HudUiPanel::Draw
+0x4d3b48     HudUiPanel_VT_Noarg DrawBase = HudUiElement::DrawBase
+0x4d3b4c     HudUiPanel_VT_SetPos SetPos = HudUiCompositePanel::SetPos
+0x4d3b50     HudUiPanel_VT_SetCoord SetX = HudUiElement::SetX
+0x4d3b54     HudUiPanel_VT_SetCoord SetY = HudUiElement::SetY
+0x4d3b58     HudUiPanel_VT_SetClip SetClip = HudUiPanel::SetClip
+0x4d3b5c     HudUiPanel_VT_SetClipRect SetClipRect = HudUiElement::SetClipRect
+0x4d3b60     HudUiPanel_VT_Noarg Invalidate = HudUiPanel::Invalidate
 0x4d3b64     void (* Update)(struct HudUiCompositePanel* self, float deltaTime) = HudUiCompositePanel::Update
 0x4d3b68     void* field_28 = zStub::NoOp1Arg
-0x4d3b6c     void* field_2c = zStub::ReturnZeroNoArgs
-0x4d3b70     void* noOp = zError::ReportOldNoOp
-0x4d3b74     void* noOp1 = zError::ReportOldNoOp
-0x4d3b78     void* noOp2 = zError::ReportOldNoOp
-0x4d3b7c     void* noOp3 = zError::ReportOldNoOp
-0x4d3b80     void* noOp4 = zError::ReportOldNoOp
-0x4d3b84     void* noOp5 = zError::ReportOldNoOp
-0x4d3b88     void* noOp6 = zError::ReportOldNoOp
+0x4d3b6c     HudUiPanel_VT_GetTextBufferPtrOrNull GetTextBufferPtrOrNull = zStub::ReturnZeroNoArgs
+0x4d3b70     HudUiPanel_VT_OnActivate OnActivate = zError::ReportOldNoOp
+0x4d3b74     void* field_34 = zError::ReportOldNoOp
+0x4d3b78     void* field_38 = zError::ReportOldNoOp
+0x4d3b7c     void* field_3c = zError::ReportOldNoOp
+0x4d3b80     void* field_40 = zError::ReportOldNoOp
+0x4d3b84     void* field_44 = zError::ReportOldNoOp
+0x4d3b88     void* field_48 = zError::ReportOldNoOp
 0x4d3b8c     void* field_4c = StdPtrVector::ClearNoOpDestroy
-0x4d3b90     void* noOp7 = zError::ReportOldNoOp
-0x4d3b94     void* field_58 = HudUiElement::HitTestTrue
-0x4d3b98     void* field_5c = StdPtrVector::ClearNoOpDestroy
-0x4d3b9c     void (* SetVisible)(struct HudUiElement* self, int32_t visible) = HudUiPanel::HitTest
-0x4d3ba0     int32_t (* GetX)(struct HudUiElement* self) = HudUiElement::SetVisible
-0x4d3ba4     int32_t (* GetY)(struct HudUiElement* self) = HudUiElement::GetX
-0x4d3ba8     void* field_6c = HudUiElement::GetY
-0x4d3bac     int32_t (* GetRect)(struct HudUiFlashPanel* self, struct HudUiRect* outRect) = HudUiPanel::EnableWordWrapWithRect
-0x4d3bb0     void (* SetTextFmt)(struct HudUiCompositePanel* self, char const* format, ...) = HudUiPanel::GetTextRect
-0x4d3bb4     void (* UpdateTextBoundsFromContent)(struct HudUiFlashPanel* self) = HudUiCompositePanel::SetTextFmt
-0x4d3bb8     void* (* GetFont)(struct HudUiFlashPanel* self) = HudUiPanel::UpdateTextBoundsFromContent
-0x4d3bbc     void (* SetFont)(struct HudUiCompositePanel* self, char* pszFaceName, int32_t cHeight, int32_t cWidth, int32_t cWeight, uint32_t bItalic, uint32_t iCharSet, uint32_t iPitchAndFamily) = HudUiPanel::GetFont
-0x4d3bc0     void* (* SetFontHandle)(struct HudUiFlashPanel* self, void* hFont) = HudUiCompositePanel::SetFont
-0x4d3bc4     void (* SetTextFmtV)(struct HudUiCompositePanel* self, char const* format, char* argList) = HudUiPanel::SetFontHandle
-0x4d3bc8     char (* SetText)(struct HudUiFlashPanel* self, char const* text) = HudUiCompositePanel::SetTextFmtV
-0x4d3bcc     int32_t (* RebuildTextRect)(struct HudUiFlashPanel* self) = HudUiPanel::SetText
-0x4d3bd0     void* field_90 = HudUiPanel::RebuildTextRect
+0x4d3b90     void* field_50 = zError::ReportOldNoOp
+0x4d3b94     HudUiPanel_VT_HitTest HitTest = HudUiElement::HitTestTrue
+0x4d3b98     void* field_58 = StdPtrVector::ClearNoOpDestroy
+0x4d3b9c     void* field_5c = HudUiPanel::HitTest
+0x4d3ba0     HudUiPanel_VT_SetVisible SetVisible = HudUiElement::SetVisible
+0x4d3ba4     HudUiPanel_VT_GetCoord GetX = HudUiElement::GetX
+0x4d3ba8     HudUiPanel_VT_GetCoord GetY = HudUiElement::GetY
+0x4d3bac     HudUiPanel_VT_EnableWordWrap EnableWordWrapWithRect = HudUiPanel::EnableWordWrapWithRect
+0x4d3bb0     HudUiPanel_VT_GetTextRect GetTextRect = HudUiPanel::GetTextRect
+0x4d3bb4     void (* SetTextFmt)(struct HudUiCompositePanel* self, char const* format, ...) = HudUiCompositePanel::SetTextFmt
+0x4d3bb8     HudUiPanel_VT_Noarg UpdateTextBoundsFromContent = HudUiPanel::UpdateTextBoundsFromContent
+0x4d3bbc     HudUiPanel_VT_GetFont GetFont = HudUiPanel::GetFont
+0x4d3bc0     void (* SetFont)(struct HudUiCompositePanel* self, char* pszFaceName, int32_t cHeight, int32_t cWidth, int32_t cWeight, uint32_t bItalic, uint32_t iCharSet, uint32_t iPitchAndFamily) = HudUiCompositePanel::SetFont
+0x4d3bc4     HudUiPanel_VT_SetFontHandle SetFontHandle = HudUiPanel::SetFontHandle
+0x4d3bc8     void (* SetTextFmtV)(struct HudUiCompositePanel* self, char const* format, char* argList) = HudUiCompositePanel::SetTextFmtV
+0x4d3bcc     HudUiPanel_VT_SetText SetText = HudUiPanel::SetText
+0x4d3bd0     HudUiPanel_VT_Noarg RebuildTextRect = HudUiPanel::RebuildTextRect
 0x4d3bd4     void (* ScrollHistory)(struct HudUiCompositePanel* self) = HudUiCompositePanel::ScrollHistory
 0x4d3bd8 }
 0x4d3bd8 struct HudUiCommon_FTable g_HudUiCircle_FTable =
 0x4d3bd8 {
 0x4d3bd8     HudUiElement_VT_Dtor dtor = HudUiElement::SharedScalarDeletingDestructorThunk
-0x4d3bdc     HudUiElement_VT_Noarg Draw = HudUiCircle::DrawDirty
+0x4d3bdc     HudUiElement_VT_Noarg Draw = HudUiCircle::Draw
 0x4d3be0     HudUiElement_VT_Noarg DrawBase = HudUiElement::DrawBase
 0x4d3be4     HudUiElement_VT_SetPos SetPos = HudUiElement::SetPos
 0x4d3be8     HudUiElement_VT_SetCoord SetX = HudUiElement::SetX
@@ -9042,7 +9040,7 @@
 0x4d3c3c     HudUiElement_VT_GetCoord GetX = HudUiElement::GetX
 0x4d3c40     HudUiElement_VT_GetCoord GetY = HudUiElement::GetY
 0x4d3c44     void* function = zStub::NoOp1Arg
-0x4d3c48     HudUiElement_VT_GetRect GetRect = HudUiElement::GetRect
+0x4d3c48     HudUiElement_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4d3c4c }
 0x4d3c4c int32_t data_4d3c4c = 0x0
 // Tiny container ftable seam: background-container prefix, generic two-slot container table, then the text-label vtable anchor at 0x4d3c70.
@@ -9091,7 +9089,7 @@
 0x4d3cd4     HudUiElement_VT_GetCoord GetX = HudUiElement::GetX
 0x4d3cd8     HudUiElement_VT_GetCoord GetY = HudUiElement::GetY
 0x4d3cdc     void* function = zStub::NoOp1Arg
-0x4d3ce0     HudUiElement_VT_GetRect GetRect = HudUiElement::GetRect
+0x4d3ce0     HudUiElement_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4d3ce4 }
 0x4d3ce4 void* g_HudUiPanel_SetTextFmtV2_Ptr = HudUiTextLabel::SetTextFmt
 // HudUiBar ftable restored at the real 0x4d3ce8 head; the preceding 0x4d3ce4 dword stays split as the standalone HudUiPanel_SetTextFmtV2 pointer.
@@ -9130,7 +9128,7 @@
 0x4d3d4c         HudUiElement_VT_GetCoord GetX = HudUiElement::GetX
 0x4d3d50         HudUiElement_VT_GetCoord GetY = HudUiElement::GetY
 0x4d3d54         void* function = zStub::NoOp1Arg
-0x4d3d58         HudUiElement_VT_GetRect GetRect = HudUiElement::GetRect
+0x4d3d58         HudUiElement_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4d3d5c     }
 0x4d3d5c }
 0x4d3d5c int32_t data_4d3d5c = 0x0
@@ -9182,7 +9180,7 @@
 0x4d3ddc         HudUiElement_VT_GetCoord GetX = HudUiElement::GetX
 0x4d3de0         HudUiElement_VT_GetCoord GetY = HudUiElement::GetY
 0x4d3de4         void* function = zStub::NoOp1Arg
-0x4d3de8         HudUiElement_VT_GetRect GetRect = HudUiElement::GetRect
+0x4d3de8         HudUiElement_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4d3dec     }
 0x4d3dec     void (__thiscall* ApplyToCurrentSurface)(struct zVideoFxPass3Slot* self) = zVideoFxPass3Slot::ApplyToCurrentSurface
 // Base weather emitter vtable head. The extra widget-tail slots after +0x40 stay split until a longer stable weather-fTable type is proven.
@@ -9221,7 +9219,7 @@
 0x4d3e54         HudUiElement_VT_GetCoord GetX = HudUiElement::GetX
 0x4d3e58         HudUiElement_VT_GetCoord GetY = HudUiElement::GetY
 0x4d3e5c         void* function = zStub::NoOp1Arg
-0x4d3e60         HudUiElement_VT_GetRect GetRect = HudUiElement::GetRect
+0x4d3e60         HudUiElement_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4d3e64     }
 0x4d3e64     void (* DrawParticles)(struct HudWeatherFx* self) = HudWeatherFx::DrawParticles
 // Weather random/clamp scalar pack used by the snow and rain particle update paths.
@@ -9279,7 +9277,7 @@
 0x4d3f1c         HudUiElement_VT_GetCoord GetX = HudUiElement::GetX
 0x4d3f20         HudUiElement_VT_GetCoord GetY = HudUiElement::GetY
 0x4d3f24         void* function = zStub::NoOp1Arg
-0x4d3f28         HudUiElement_VT_GetRect GetRect = HudUiElement::GetRect
+0x4d3f28         HudUiElement_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4d3f2c     }
 0x4d3f2c     void (* DrawParticles)(struct HudWeatherFx* self) = HudWeatherFx::DrawParticles
 0x4d3f30 }
@@ -9315,7 +9313,7 @@
 0x4d3f94         HudUiElement_VT_GetCoord GetX = HudUiElement::GetX
 0x4d3f98         HudUiElement_VT_GetCoord GetY = HudUiElement::GetY
 0x4d3f9c         void* function = zStub::NoOp1Arg
-0x4d3fa0         HudUiElement_VT_GetRect GetRect = HudUiElement::GetRect
+0x4d3fa0         HudUiElement_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4d3fa4     }
 0x4d3fa4     void (* DrawParticles)(struct HudWeatherFx* self) = HudWeatherFx::DrawParticles
 // Compact pass-3 config vtable: Update / SetEnabled.
@@ -9361,7 +9359,7 @@
 0x4d4014         HudUiElement_VT_GetCoord GetX = HudUiElement::GetX
 0x4d4018         HudUiElement_VT_GetCoord GetY = HudUiElement::GetY
 0x4d401c         void* function = zStub::NoOp1Arg
-0x4d4020         HudUiElement_VT_GetRect GetRect = HudUiElement::GetRect
+0x4d4020         HudUiElement_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4d4024     }
 0x4d4024     void (* ApplyOverlayRect)(struct zVideoFxPass3RootElement* self) = zVideoFxPass3RootElement::ApplyOverlayRect
 // Message-box dialog vtable head restored from ctor xref at 0x4bf57e.
@@ -9406,7 +9404,7 @@
 0x4d40a4     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4d40a8     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4d40ac     void* function_6c = zStub::NoOp1Arg
-0x4d40b0     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4d40b0     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4d40b4     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4d40b8     HudUiZrdWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4d40bc     HudUiZrdWidget_VT_LoadFromZrd LoadFromZrd = HudUiZrdWidget::LoadFromZrd
@@ -9443,7 +9441,7 @@
 0x4d412c     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
 0x4d4130     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
 0x4d4134     void* function_6c = zStub::NoOp1Arg
-0x4d4138     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetRect
+0x4d4138     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4d413c     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4d4140     HudUiZrdWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4d4144     HudUiZrdWidget_VT_LoadFromZrd LoadFromZrd = HudUiZrdWidget::LoadFromZrd
@@ -9480,7 +9478,7 @@
 0x4d41b4     HudUiElement_VT_GetCoord GetX = HudUiElement::GetX
 0x4d41b8     HudUiElement_VT_GetCoord GetY = HudUiElement::GetY
 0x4d41bc     void* function = zStub::NoOp1Arg
-0x4d41c0     HudUiElement_VT_GetRect GetRect = HudUiElement::GetRect
+0x4d41c0     HudUiElement_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4d41c4 }
 0x4d41c4 int32_t data_4d41c4 = 0x0
 // Standalone background cursor widget vtable with the cursor-image refresh tail at +0x78/+0x7c.
@@ -9516,7 +9514,7 @@
 0x4d422c     int32_t (__thiscall* GetCenterX)(struct HudUiBackgroundCursorWidget* self) = HudUiWidget::GetCenterX
 0x4d4230     int32_t (__thiscall* GetCenterY)(struct HudUiBackgroundCursorWidget* self) = HudUiWidget::GetCenterY
 0x4d4234     void* function_6c = zStub::NoOp1Arg
-0x4d4238     int32_t (__thiscall* GetRect)(struct HudUiBackgroundCursorWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4d4238     int32_t (__thiscall* GetRect)(struct HudUiBackgroundCursorWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4d423c     void* function_74 = HudUiWidget::RebuildBltRectFromImage
 0x4d4240     void (__thiscall* SetImageBorrowedAndRefreshIfChanged)(struct HudUiBackgroundCursorWidget* self, struct zVid_Image* image) = HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged
 0x4d4244     void (__thiscall* SetImageByPathOwnedAndRefresh)(struct HudUiBackgroundCursorWidget* self, char const* imagePath) = HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh
@@ -9554,7 +9552,7 @@
 0x4d42ac     int32_t (__thiscall* GetX)(struct HudUiBackgroundVideoWidget* self) = HudUiElement::GetX
 0x4d42b0     int32_t (__thiscall* GetY)(struct HudUiBackgroundVideoWidget* self) = HudUiElement::GetY
 0x4d42b4     void* function_6c = zStub::NoOp1Arg
-0x4d42b8     int32_t (__thiscall* GetRect)(struct HudUiBackgroundVideoWidget* self, struct HudUiRect* outRect) = HudUiElement::GetRect
+0x4d42b8     int32_t (__thiscall* GetRect)(struct HudUiBackgroundVideoWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
 0x4d42bc     void (__thiscall* RebuildBltRect)(struct HudUiBackgroundVideoWidget* self) = HudUiBackgroundVideoWidget::RebuildBltRect
 // Base interpreter context vtable restored after the background-video widget family.
 0x4d42c0 }

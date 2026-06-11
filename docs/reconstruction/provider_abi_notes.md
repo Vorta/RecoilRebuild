@@ -47,6 +47,10 @@ per-target VC verification evidence.
   providers, not fake production stand-ins or local ABI shims. Use repo-local
   provider headers where available; otherwise leave the provider detail as a
   blocker.
+- Use `plan reclassify` for existing authored/provider entries. Use
+  `plan add-provider-boundary ... --dry-run` only after focused plan lookup
+  proves a BN-visible provider boundary is absent and current BN/provider
+  evidence proves no authored body exists.
 - Production source must preserve 32-bit pointer, alignment, calling convention,
   message-map, vtable, import, and cleanup behavior when those affect generated
   code or ABI.

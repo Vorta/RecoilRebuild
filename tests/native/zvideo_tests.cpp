@@ -9860,10 +9860,10 @@ extern "C" int zvideo_flush_quad_batch_smoke(void) {
     FakeD3DDevice2Object fakeDevice = {};
     IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
     const int savedQuadBatchCount = g_zVideo_QuadBatchCount;
-    const int savedShadeMode = g_zVideo_D3DRenderState_ShadeMode;
-    const int savedAlphaBlendEnable = g_zVideo_D3DRenderState_AlphaBlendEnable;
-    const int savedZWriteEnable = g_zVideo_D3DRenderState_ZWriteEnable;
-    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderState_TextureHandle;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
+    const int savedAlphaBlendEnable = g_zVideo_D3DRenderStateCache.alphaBlendEnable;
+    const int savedZWriteEnable = g_zVideo_D3DRenderStateCache.zWriteEnable;
+    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderStateCache.textureHandle;
 
     std::memset(
         g_zVideo_QuadBatchItemsBase,
@@ -9871,10 +9871,10 @@ extern "C" int zvideo_flush_quad_batch_smoke(void) {
         sizeof(g_zVideo_QuadBatchItemsBase[0]) * 2
     );
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_ShadeMode = 1;
-    g_zVideo_D3DRenderState_AlphaBlendEnable = 0;
-    g_zVideo_D3DRenderState_ZWriteEnable = 1;
-    g_zVideo_D3DRenderState_TextureHandle = 0x2468;
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
+    g_zVideo_D3DRenderStateCache.alphaBlendEnable = 0;
+    g_zVideo_D3DRenderStateCache.zWriteEnable = 1;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x2468;
 
     g_zVideo_QuadBatchItemsBase[0].vertices[0].sx = 10.0f;
     g_zVideo_QuadBatchItemsBase[0].vertices[1].sx = 11.0f;
@@ -9922,16 +9922,16 @@ extern "C" int zvideo_flush_quad_batch_smoke(void) {
         gFakeD3DRenderStates[7] == D3DRENDERSTATE_ZWRITEENABLE &&
         gFakeD3DRenderStateValues[7] == 1 &&
         g_zVideo_QuadBatchCount == 0 &&
-        g_zVideo_D3DRenderState_ShadeMode == 2 &&
-        g_zVideo_D3DRenderState_AlphaBlendEnable == 0 &&
-        g_zVideo_D3DRenderState_ZWriteEnable == 1 &&
-        g_zVideo_D3DRenderState_TextureHandle == 0;
+        g_zVideo_D3DRenderStateCache.shadeMode == 2 &&
+        g_zVideo_D3DRenderStateCache.alphaBlendEnable == 0 &&
+        g_zVideo_D3DRenderStateCache.zWriteEnable == 1 &&
+        g_zVideo_D3DRenderStateCache.textureHandle == 0;
 
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_ShadeMode = 2;
-    g_zVideo_D3DRenderState_AlphaBlendEnable = 1;
-    g_zVideo_D3DRenderState_ZWriteEnable = 0;
-    g_zVideo_D3DRenderState_TextureHandle = 0;
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
+    g_zVideo_D3DRenderStateCache.alphaBlendEnable = 1;
+    g_zVideo_D3DRenderStateCache.zWriteEnable = 0;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
     g_zVideo_QuadBatchCount = 1;
     zVideo_dd3d::FlushQuadBatch();
     const bool cacheHitOk =
@@ -9946,14 +9946,14 @@ extern "C" int zvideo_flush_quad_batch_smoke(void) {
         gFakeD3DRenderStateValues[3] == 1 &&
         gFakeD3DDrawPrimitiveCalls == 1 &&
         g_zVideo_QuadBatchCount == 0 &&
-        g_zVideo_D3DRenderState_ZWriteEnable == 1;
+        g_zVideo_D3DRenderStateCache.zWriteEnable == 1;
 
     g_zVideo_pD3DDevice = savedDevice;
     g_zVideo_QuadBatchCount = savedQuadBatchCount;
-    g_zVideo_D3DRenderState_ShadeMode = savedShadeMode;
-    g_zVideo_D3DRenderState_AlphaBlendEnable = savedAlphaBlendEnable;
-    g_zVideo_D3DRenderState_ZWriteEnable = savedZWriteEnable;
-    g_zVideo_D3DRenderState_TextureHandle = savedTextureHandle;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
+    g_zVideo_D3DRenderStateCache.alphaBlendEnable = savedAlphaBlendEnable;
+    g_zVideo_D3DRenderStateCache.zWriteEnable = savedZWriteEnable;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
 
     if (!setupStateOk) {
         return 1;
@@ -9994,16 +9994,16 @@ extern "C" int zvideo_flush_overwrite_polys_smoke(void) {
     FakeD3DDevice2Object fakeDevice = {};
     IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
     const int savedOverwriteCount = g_zVideo_OverwriteQueueCount;
-    const int savedShadeMode = g_zVideo_D3DRenderState_ShadeMode;
-    const int savedAlphaBlendEnable = g_zVideo_D3DRenderState_AlphaBlendEnable;
-    const int savedZWriteEnable = g_zVideo_D3DRenderState_ZWriteEnable;
-    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderState_TextureHandle;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
+    const int savedAlphaBlendEnable = g_zVideo_D3DRenderStateCache.alphaBlendEnable;
+    const int savedZWriteEnable = g_zVideo_D3DRenderStateCache.zWriteEnable;
+    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderStateCache.textureHandle;
     const D3DTEXTUREBLEND savedTextureMapBlend =
-        g_zVideo_D3DRenderState_TextureMapBlend;
+        g_zVideo_D3DRenderStateCache.textureMapBlend;
     const D3DTEXTUREADDRESS savedTextureAddressU =
-        g_zVideo_D3DRenderState_TextureAddressU;
+        g_zVideo_D3DRenderStateCache.textureAddressU;
     const D3DTEXTUREADDRESS savedTextureAddressV =
-        g_zVideo_D3DRenderState_TextureAddressV;
+        g_zVideo_D3DRenderStateCache.textureAddressV;
 
     zVideo_RenderClass transparentClass{};
     transparentClass.textureHandle = 0x1111;
@@ -10017,13 +10017,13 @@ extern "C" int zvideo_flush_overwrite_polys_smoke(void) {
         sizeof(g_zVideo_OverwriteQueueBase[0])
     );
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_ShadeMode = 1;
-    g_zVideo_D3DRenderState_AlphaBlendEnable = 0;
-    g_zVideo_D3DRenderState_ZWriteEnable = 1;
-    g_zVideo_D3DRenderState_TextureHandle = 0;
-    g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(1);
-    g_zVideo_D3DRenderState_TextureAddressU = (D3DTEXTUREADDRESS)(0);
-    g_zVideo_D3DRenderState_TextureAddressV = (D3DTEXTUREADDRESS)(0);
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
+    g_zVideo_D3DRenderStateCache.alphaBlendEnable = 0;
+    g_zVideo_D3DRenderStateCache.zWriteEnable = 1;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(1);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(0);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(0);
     g_zVideo_OverwriteQueueCount = 1;
 
     zVideo_OverwriteQueueEntry &transparentEntry = g_zVideo_OverwriteQueueBase[0];
@@ -10058,7 +10058,7 @@ extern "C" int zvideo_flush_overwrite_polys_smoke(void) {
         gFakeD3DRenderStateValues[9] == 1 &&
         gFakeD3DRenderStates[10] == D3DRENDERSTATE_ZFUNC &&
         gFakeD3DRenderStateValues[10] == D3DCMP_GREATEREQUAL &&
-        g_zVideo_D3DRenderState_TextureMapBlend == (D3DTEXTUREBLEND)(4) &&
+        g_zVideo_D3DRenderStateCache.textureMapBlend == (D3DTEXTUREBLEND)(4) &&
         g_zVideo_OverwriteQueueCount == 0;
 
     const bool transparentDrawOk =
@@ -10081,11 +10081,11 @@ extern "C" int zvideo_flush_overwrite_polys_smoke(void) {
         sizeof(g_zVideo_OverwriteQueueBase[0])
     );
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_ShadeMode = 2;
-    g_zVideo_D3DRenderState_TextureHandle = 0;
-    g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(1);
-    g_zVideo_D3DRenderState_TextureAddressU = (D3DTEXTUREADDRESS)(0);
-    g_zVideo_D3DRenderState_TextureAddressV = (D3DTEXTUREADDRESS)(0);
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(1);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(0);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(0);
     g_zVideo_OverwriteQueueCount = 1;
 
     zVideo_OverwriteQueueEntry &texturedEntry = g_zVideo_OverwriteQueueBase[0];
@@ -10127,11 +10127,11 @@ extern "C" int zvideo_flush_overwrite_polys_smoke(void) {
         sizeof(g_zVideo_OverwriteQueueBase[0])
     );
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_ShadeMode = 1;
-    g_zVideo_D3DRenderState_TextureHandle = 0;
-    g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(4);
-    g_zVideo_D3DRenderState_TextureAddressU = (D3DTEXTUREADDRESS)(0);
-    g_zVideo_D3DRenderState_TextureAddressV = (D3DTEXTUREADDRESS)(0);
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(4);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(0);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(0);
     g_zVideo_OverwriteQueueCount = 1;
 
     zVideo_OverwriteQueueEntry &modulateEntry = g_zVideo_OverwriteQueueBase[0];
@@ -10159,7 +10159,7 @@ extern "C" int zvideo_flush_overwrite_polys_smoke(void) {
         gFakeD3DRenderStateValues[6] == D3DCMP_GREATEREQUAL &&
         gFakeD3DDrawPrimitiveVertices[0] == modulateEntry.vertices &&
         gFakeD3DDrawPrimitiveVertexCounts[0] == 5 &&
-        g_zVideo_D3DRenderState_TextureMapBlend == (D3DTEXTUREBLEND)(2) &&
+        g_zVideo_D3DRenderStateCache.textureMapBlend == (D3DTEXTUREBLEND)(2) &&
         g_zVideo_OverwriteQueueCount == 0;
 
     std::memset(
@@ -10168,8 +10168,8 @@ extern "C" int zvideo_flush_overwrite_polys_smoke(void) {
         sizeof(g_zVideo_OverwriteQueueBase[0])
     );
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_ShadeMode = 2;
-    g_zVideo_D3DRenderState_TextureHandle = 0x9999;
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x9999;
     g_zVideo_OverwriteQueueCount = 1;
 
     zVideo_OverwriteQueueEntry &flatEntry = g_zVideo_OverwriteQueueBase[0];
@@ -10191,19 +10191,19 @@ extern "C" int zvideo_flush_overwrite_polys_smoke(void) {
         gFakeD3DRenderStateValues[3] == D3DCMP_GREATEREQUAL &&
         gFakeD3DDrawPrimitiveVertices[0] == flatEntry.vertices &&
         gFakeD3DDrawPrimitiveVertexCounts[0] == 2 &&
-        g_zVideo_D3DRenderState_TextureHandle == 0 &&
-        g_zVideo_D3DRenderState_ShadeMode == 1 &&
+        g_zVideo_D3DRenderStateCache.textureHandle == 0 &&
+        g_zVideo_D3DRenderStateCache.shadeMode == 1 &&
         g_zVideo_OverwriteQueueCount == 0;
 
     g_zVideo_pD3DDevice = savedDevice;
     g_zVideo_OverwriteQueueCount = savedOverwriteCount;
-    g_zVideo_D3DRenderState_ShadeMode = savedShadeMode;
-    g_zVideo_D3DRenderState_AlphaBlendEnable = savedAlphaBlendEnable;
-    g_zVideo_D3DRenderState_ZWriteEnable = savedZWriteEnable;
-    g_zVideo_D3DRenderState_TextureHandle = savedTextureHandle;
-    g_zVideo_D3DRenderState_TextureMapBlend = savedTextureMapBlend;
-    g_zVideo_D3DRenderState_TextureAddressU = savedTextureAddressU;
-    g_zVideo_D3DRenderState_TextureAddressV = savedTextureAddressV;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
+    g_zVideo_D3DRenderStateCache.alphaBlendEnable = savedAlphaBlendEnable;
+    g_zVideo_D3DRenderStateCache.zWriteEnable = savedZWriteEnable;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = savedTextureMapBlend;
+    g_zVideo_D3DRenderStateCache.textureAddressU = savedTextureAddressU;
+    g_zVideo_D3DRenderStateCache.textureAddressV = savedTextureAddressV;
 
     if (!transparentStateOk || !transparentDrawOk) {
         return 1;
@@ -10228,16 +10228,16 @@ extern "C" int zvideo_flush_sorted_polys_smoke(void) {
     FakeD3DDevice2Object fakeDevice = {};
     IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
     const int savedSortedCount = g_zVideo_SortedPolyQueueCount;
-    const int savedShadeMode = g_zVideo_D3DRenderState_ShadeMode;
-    const int savedAlphaBlendEnable = g_zVideo_D3DRenderState_AlphaBlendEnable;
-    const int savedZWriteEnable = g_zVideo_D3DRenderState_ZWriteEnable;
-    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderState_TextureHandle;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
+    const int savedAlphaBlendEnable = g_zVideo_D3DRenderStateCache.alphaBlendEnable;
+    const int savedZWriteEnable = g_zVideo_D3DRenderStateCache.zWriteEnable;
+    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderStateCache.textureHandle;
     const D3DTEXTUREBLEND savedTextureMapBlend =
-        g_zVideo_D3DRenderState_TextureMapBlend;
+        g_zVideo_D3DRenderStateCache.textureMapBlend;
     const D3DTEXTUREADDRESS savedTextureAddressU =
-        g_zVideo_D3DRenderState_TextureAddressU;
+        g_zVideo_D3DRenderStateCache.textureAddressU;
     const D3DTEXTUREADDRESS savedTextureAddressV =
-        g_zVideo_D3DRenderState_TextureAddressV;
+        g_zVideo_D3DRenderStateCache.textureAddressV;
 
     std::memset(
         g_zVideo_SortedPolyQueueBase,
@@ -10246,13 +10246,13 @@ extern "C" int zvideo_flush_sorted_polys_smoke(void) {
     );
     std::memset(g_zVideo_SortedPolyDrawOrder, 0, sizeof(g_zVideo_SortedPolyDrawOrder));
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_ShadeMode = 1;
-    g_zVideo_D3DRenderState_AlphaBlendEnable = 0;
-    g_zVideo_D3DRenderState_ZWriteEnable = 1;
-    g_zVideo_D3DRenderState_TextureHandle = 0x9999;
-    g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(2);
-    g_zVideo_D3DRenderState_TextureAddressU = (D3DTEXTUREADDRESS)(0);
-    g_zVideo_D3DRenderState_TextureAddressV = (D3DTEXTUREADDRESS)(0);
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
+    g_zVideo_D3DRenderStateCache.alphaBlendEnable = 0;
+    g_zVideo_D3DRenderStateCache.zWriteEnable = 1;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x9999;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(2);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(0);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(0);
 
     zVideo_RenderClass farClass{};
     farClass.textureHandle = 0x1111;
@@ -10325,13 +10325,13 @@ extern "C" int zvideo_flush_sorted_polys_smoke(void) {
         gFakeD3DRenderStateValues[12] == 0 &&
         gFakeD3DRenderStates[13] == D3DRENDERSTATE_ZWRITEENABLE &&
         gFakeD3DRenderStateValues[13] == 1 &&
-        g_zVideo_D3DRenderState_ShadeMode == 2 &&
-        g_zVideo_D3DRenderState_AlphaBlendEnable == 0 &&
-        g_zVideo_D3DRenderState_ZWriteEnable == 1 &&
-        g_zVideo_D3DRenderState_TextureHandle == 0x1111 &&
-        g_zVideo_D3DRenderState_TextureMapBlend == (D3DTEXTUREBLEND)(3) &&
-        g_zVideo_D3DRenderState_TextureAddressU == (D3DTEXTUREADDRESS)(1) &&
-        g_zVideo_D3DRenderState_TextureAddressV == (D3DTEXTUREADDRESS)(2);
+        g_zVideo_D3DRenderStateCache.shadeMode == 2 &&
+        g_zVideo_D3DRenderStateCache.alphaBlendEnable == 0 &&
+        g_zVideo_D3DRenderStateCache.zWriteEnable == 1 &&
+        g_zVideo_D3DRenderStateCache.textureHandle == 0x1111 &&
+        g_zVideo_D3DRenderStateCache.textureMapBlend == (D3DTEXTUREBLEND)(3) &&
+        g_zVideo_D3DRenderStateCache.textureAddressU == (D3DTEXTUREADDRESS)(1) &&
+        g_zVideo_D3DRenderStateCache.textureAddressV == (D3DTEXTUREADDRESS)(2);
 
     const bool drawOrderOk =
         g_zVideo_SortedPolyDrawOrder[0] == 1 &&
@@ -10359,13 +10359,13 @@ extern "C" int zvideo_flush_sorted_polys_smoke(void) {
 
     g_zVideo_pD3DDevice = savedDevice;
     g_zVideo_SortedPolyQueueCount = savedSortedCount;
-    g_zVideo_D3DRenderState_ShadeMode = savedShadeMode;
-    g_zVideo_D3DRenderState_AlphaBlendEnable = savedAlphaBlendEnable;
-    g_zVideo_D3DRenderState_ZWriteEnable = savedZWriteEnable;
-    g_zVideo_D3DRenderState_TextureHandle = savedTextureHandle;
-    g_zVideo_D3DRenderState_TextureMapBlend = savedTextureMapBlend;
-    g_zVideo_D3DRenderState_TextureAddressU = savedTextureAddressU;
-    g_zVideo_D3DRenderState_TextureAddressV = savedTextureAddressV;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
+    g_zVideo_D3DRenderStateCache.alphaBlendEnable = savedAlphaBlendEnable;
+    g_zVideo_D3DRenderStateCache.zWriteEnable = savedZWriteEnable;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = savedTextureMapBlend;
+    g_zVideo_D3DRenderStateCache.textureAddressU = savedTextureAddressU;
+    g_zVideo_D3DRenderStateCache.textureAddressV = savedTextureAddressV;
 
     if (!initialStateOk) {
         return 1;
@@ -10432,14 +10432,14 @@ extern "C" int zvideo_submit_poly_flat_color16_queue_smoke(void) {
 extern "C" int zvideo_submit_poly_flat_color16_immediate_smoke(void) {
     FakeD3DDevice2Object fakeDevice = {};
     IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
-    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderState_TextureHandle;
-    const int savedShadeMode = g_zVideo_D3DRenderState_ShadeMode;
+    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderStateCache.textureHandle;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
 
     zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
     std::memset(g_zVideo_D3DSubmitTempVertices, 0, sizeof(g_zVideo_D3DSubmitTempVertices));
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_TextureHandle = 0x2468;
-    g_zVideo_D3DRenderState_ShadeMode = 2;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x2468;
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
 
     zVideo_XyzVertex vertices[3] = {
         {1.0f, 2.0f, 3.0f},
@@ -10455,8 +10455,8 @@ extern "C" int zvideo_submit_poly_flat_color16_immediate_smoke(void) {
         gFakeD3DRenderStateValues[0] == 0 &&
         gFakeD3DRenderStates[1] == D3DRENDERSTATE_SHADEMODE &&
         gFakeD3DRenderStateValues[1] == 1 &&
-        g_zVideo_D3DRenderState_TextureHandle == 0 &&
-        g_zVideo_D3DRenderState_ShadeMode == 1;
+        g_zVideo_D3DRenderStateCache.textureHandle == 0 &&
+        g_zVideo_D3DRenderStateCache.shadeMode == 1;
 
     const bool drawOk =
         gFakeD3DDrawPrimitiveCalls == 1 &&
@@ -10483,8 +10483,8 @@ extern "C" int zvideo_submit_poly_flat_color16_immediate_smoke(void) {
         last.specular == 0xff000000;
 
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_TextureHandle = 0;
-    g_zVideo_D3DRenderState_ShadeMode = 1;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
     zVideo_dd3d::SubmitPolyFlatColor16(vertices, 0x07e0, 0xff, 0x2222, 2, 0);
     const bool cacheHitOk =
         gFakeD3DSetRenderStateCalls == 0 &&
@@ -10493,8 +10493,8 @@ extern "C" int zvideo_submit_poly_flat_color16_immediate_smoke(void) {
         g_zVideo_D3DSubmitTempVertices[0].color == 0xff00fc00;
 
     g_zVideo_pD3DDevice = savedDevice;
-    g_zVideo_D3DRenderState_TextureHandle = savedTextureHandle;
-    g_zVideo_D3DRenderState_ShadeMode = savedShadeMode;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
     return renderStateOk && drawOk && verticesOk && cacheHitOk ? 0 : 1;
 }
 
@@ -10543,14 +10543,14 @@ extern "C" int zvideo_submit_poly_gouraud_color16_queue_smoke(void) {
 extern "C" int zvideo_submit_poly_gouraud_color16_immediate_smoke(void) {
     FakeD3DDevice2Object fakeDevice = {};
     IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
-    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderState_TextureHandle;
-    const int savedShadeMode = g_zVideo_D3DRenderState_ShadeMode;
+    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderStateCache.textureHandle;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
 
     zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
     std::memset(g_zVideo_D3DSubmitTempVertices, 0, sizeof(g_zVideo_D3DSubmitTempVertices));
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_TextureHandle = 0x2468;
-    g_zVideo_D3DRenderState_ShadeMode = 2;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x2468;
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
 
     zVideo_XyzVertex vertices[3] = {
         {1.0f, 2.0f, 3.0f},
@@ -10567,8 +10567,8 @@ extern "C" int zvideo_submit_poly_gouraud_color16_immediate_smoke(void) {
         gFakeD3DRenderStateValues[0] == 0 &&
         gFakeD3DRenderStates[1] == D3DRENDERSTATE_SHADEMODE &&
         gFakeD3DRenderStateValues[1] == 1 &&
-        g_zVideo_D3DRenderState_TextureHandle == 0 &&
-        g_zVideo_D3DRenderState_ShadeMode == 1;
+        g_zVideo_D3DRenderStateCache.textureHandle == 0 &&
+        g_zVideo_D3DRenderStateCache.shadeMode == 1;
 
     const bool drawOk =
         gFakeD3DDrawPrimitiveCalls == 1 &&
@@ -10595,8 +10595,8 @@ extern "C" int zvideo_submit_poly_gouraud_color16_immediate_smoke(void) {
         last.specular == 0xff000000;
 
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_TextureHandle = 0;
-    g_zVideo_D3DRenderState_ShadeMode = 1;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
     zVideo_dd3d::SubmitPolyGouraudColor16(vertices, colors, 0xff, 0x2222, 2, 0);
     const bool cacheHitOk =
         gFakeD3DSetRenderStateCalls == 0 &&
@@ -10605,8 +10605,8 @@ extern "C" int zvideo_submit_poly_gouraud_color16_immediate_smoke(void) {
         g_zVideo_D3DSubmitTempVertices[0].color == 0xff00fc00;
 
     g_zVideo_pD3DDevice = savedDevice;
-    g_zVideo_D3DRenderState_TextureHandle = savedTextureHandle;
-    g_zVideo_D3DRenderState_ShadeMode = savedShadeMode;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
     return renderStateOk && drawOk && verticesOk && cacheHitOk ? 0 : 1;
 }
 
@@ -10671,15 +10671,15 @@ extern "C" int zvideo_submit_poly_color_attr_smoke(void) {
 extern "C" int zvideo_submit_poly_color_attr_immediate_smoke(void) {
     FakeD3DDevice2Object fakeDevice = {};
     IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
-    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderState_TextureHandle;
-    const int savedShadeMode = g_zVideo_D3DRenderState_ShadeMode;
+    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderStateCache.textureHandle;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
 
     std::memset(g_zVideo_D3DSubmitTempVertices, 0, sizeof(g_zVideo_D3DSubmitTempVertices));
     g_zVideo_OverwriteQueueCount = 0;
     g_zVideo_SortedPolyQueueCount = 0;
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_TextureHandle = 0x2468;
-    g_zVideo_D3DRenderState_ShadeMode = 2;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x2468;
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
 
     zVideo_XyzVertex vertices[3] = {
         {1.0f, 2.0f, 3.0f},
@@ -10709,8 +10709,8 @@ extern "C" int zvideo_submit_poly_color_attr_immediate_smoke(void) {
         gFakeD3DRenderStateValues[0] == 0 &&
         gFakeD3DRenderStates[1] == D3DRENDERSTATE_SHADEMODE &&
         gFakeD3DRenderStateValues[1] == 1 &&
-        g_zVideo_D3DRenderState_TextureHandle == 0 &&
-        g_zVideo_D3DRenderState_ShadeMode == 1;
+        g_zVideo_D3DRenderStateCache.textureHandle == 0 &&
+        g_zVideo_D3DRenderStateCache.shadeMode == 1;
 
     const bool drawOk =
         gFakeD3DDrawPrimitiveCalls == 1 &&
@@ -10739,8 +10739,8 @@ extern "C" int zvideo_submit_poly_color_attr_immediate_smoke(void) {
         last.specular == 0xff000000;
 
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_TextureHandle = 0;
-    g_zVideo_D3DRenderState_ShadeMode = 1;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
     zVideo_dd3d::SubmitPolyColorAttr(
         vertices,
         0,
@@ -10762,8 +10762,8 @@ extern "C" int zvideo_submit_poly_color_attr_immediate_smoke(void) {
         g_zVideo_D3DSubmitTempVertices[0].specular == 0xff000000;
 
     g_zVideo_pD3DDevice = savedDevice;
-    g_zVideo_D3DRenderState_TextureHandle = savedTextureHandle;
-    g_zVideo_D3DRenderState_ShadeMode = savedShadeMode;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
     return renderStateOk && drawOk && verticesOk && cacheHitOk ? 0 : 1;
 }
 
@@ -10839,24 +10839,24 @@ extern "C" int zvideo_submit_poly_render_class_queue_smoke(void) {
 extern "C" int zvideo_submit_poly_render_class_immediate_smoke(void) {
     FakeD3DDevice2Object fakeDevice = {};
     IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
-    const int savedShadeMode = g_zVideo_D3DRenderState_ShadeMode;
-    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderState_TextureHandle;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
+    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderStateCache.textureHandle;
     const D3DTEXTUREBLEND savedTextureMapBlend =
-        g_zVideo_D3DRenderState_TextureMapBlend;
+        g_zVideo_D3DRenderStateCache.textureMapBlend;
     const D3DTEXTUREADDRESS savedTextureAddressU =
-        g_zVideo_D3DRenderState_TextureAddressU;
+        g_zVideo_D3DRenderStateCache.textureAddressU;
     const D3DTEXTUREADDRESS savedTextureAddressV =
-        g_zVideo_D3DRenderState_TextureAddressV;
+        g_zVideo_D3DRenderStateCache.textureAddressV;
 
     std::memset(g_zVideo_D3DSubmitTempVertices, 0, sizeof(g_zVideo_D3DSubmitTempVertices));
     g_zVideo_OverwriteQueueCount = 0;
     g_zVideo_SortedPolyQueueCount = 0;
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_ShadeMode = 2;
-    g_zVideo_D3DRenderState_TextureHandle = 0;
-    g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(1);
-    g_zVideo_D3DRenderState_TextureAddressU = (D3DTEXTUREADDRESS)(3);
-    g_zVideo_D3DRenderState_TextureAddressV = (D3DTEXTUREADDRESS)(3);
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(1);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(3);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(3);
 
     zVideo_XyzVertex vertices[3] = {
         {1.0f, 2.0f, 3.0f},
@@ -10896,11 +10896,11 @@ extern "C" int zvideo_submit_poly_render_class_immediate_smoke(void) {
         gFakeD3DRenderStateValues[3] == 1 &&
         gFakeD3DRenderStates[4] == D3DRENDERSTATE_TEXTUREADDRESSV &&
         gFakeD3DRenderStateValues[4] == 2 &&
-        g_zVideo_D3DRenderState_ShadeMode == 1 &&
-        g_zVideo_D3DRenderState_TextureHandle == 0x1234 &&
-        g_zVideo_D3DRenderState_TextureMapBlend == (D3DTEXTUREBLEND)(3) &&
-        g_zVideo_D3DRenderState_TextureAddressU == (D3DTEXTUREADDRESS)(1) &&
-        g_zVideo_D3DRenderState_TextureAddressV == (D3DTEXTUREADDRESS)(2);
+        g_zVideo_D3DRenderStateCache.shadeMode == 1 &&
+        g_zVideo_D3DRenderStateCache.textureHandle == 0x1234 &&
+        g_zVideo_D3DRenderStateCache.textureMapBlend == (D3DTEXTUREBLEND)(3) &&
+        g_zVideo_D3DRenderStateCache.textureAddressU == (D3DTEXTUREADDRESS)(1) &&
+        g_zVideo_D3DRenderStateCache.textureAddressV == (D3DTEXTUREADDRESS)(2);
 
     const bool drawOk =
         gFakeD3DDrawPrimitiveCalls == 1 &&
@@ -10933,11 +10933,11 @@ extern "C" int zvideo_submit_poly_render_class_immediate_smoke(void) {
         last.tv == 0.2f;
 
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_ShadeMode = 1;
-    g_zVideo_D3DRenderState_TextureHandle = 0x1234;
-    g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(3);
-    g_zVideo_D3DRenderState_TextureAddressU = (D3DTEXTUREADDRESS)(1);
-    g_zVideo_D3DRenderState_TextureAddressV = (D3DTEXTUREADDRESS)(2);
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x1234;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(3);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(1);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(2);
     zVideo_dd3d::SubmitPolyRenderClass(
         vertices,
         texCoords,
@@ -10956,11 +10956,11 @@ extern "C" int zvideo_submit_poly_render_class_immediate_smoke(void) {
         g_zVideo_D3DSubmitTempVertices[0].tv == 0.4f;
 
     g_zVideo_pD3DDevice = savedDevice;
-    g_zVideo_D3DRenderState_ShadeMode = savedShadeMode;
-    g_zVideo_D3DRenderState_TextureHandle = savedTextureHandle;
-    g_zVideo_D3DRenderState_TextureMapBlend = savedTextureMapBlend;
-    g_zVideo_D3DRenderState_TextureAddressU = savedTextureAddressU;
-    g_zVideo_D3DRenderState_TextureAddressV = savedTextureAddressV;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = savedTextureMapBlend;
+    g_zVideo_D3DRenderStateCache.textureAddressU = savedTextureAddressU;
+    g_zVideo_D3DRenderStateCache.textureAddressV = savedTextureAddressV;
     return renderStateOk && drawOk && verticesOk && cacheHitOk ? 0 : 1;
 }
 
@@ -11034,14 +11034,14 @@ extern "C" int zvideo_submit_polygon_queue_smoke(void) {
 extern "C" int zvideo_submit_polygon_immediate_smoke(void) {
     FakeD3DDevice2Object fakeDevice = {};
     IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
-    const int savedShadeMode = g_zVideo_D3DRenderState_ShadeMode;
-    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderState_TextureHandle;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
+    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderStateCache.textureHandle;
     const D3DTEXTUREBLEND savedTextureMapBlend =
-        g_zVideo_D3DRenderState_TextureMapBlend;
+        g_zVideo_D3DRenderStateCache.textureMapBlend;
     const D3DTEXTUREADDRESS savedTextureAddressU =
-        g_zVideo_D3DRenderState_TextureAddressU;
+        g_zVideo_D3DRenderStateCache.textureAddressU;
     const D3DTEXTUREADDRESS savedTextureAddressV =
-        g_zVideo_D3DRenderState_TextureAddressV;
+        g_zVideo_D3DRenderStateCache.textureAddressV;
     const int savedAppendFanClose = g_zVideo_D3DAppendFanCloseVertexPending;
     const int savedNormalizeChannel = g_zVideo_D3DColorNormalizeChannelIndex;
     const float savedBiasR = g_zVideo_D3DColorAttrBiasR;
@@ -11053,11 +11053,11 @@ extern "C" int zvideo_submit_polygon_immediate_smoke(void) {
     g_zVideo_OverwriteQueueCount = 0;
     g_zVideo_SortedPolyQueueCount = 0;
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_ShadeMode = 1;
-    g_zVideo_D3DRenderState_TextureHandle = 0;
-    g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(1);
-    g_zVideo_D3DRenderState_TextureAddressU = (D3DTEXTUREADDRESS)(3);
-    g_zVideo_D3DRenderState_TextureAddressV = (D3DTEXTUREADDRESS)(3);
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(1);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(3);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(3);
     g_zVideo_D3DAppendFanCloseVertexPending = 1;
 
     zVideo_XyzVertex vertices[3] = {
@@ -11102,11 +11102,11 @@ extern "C" int zvideo_submit_polygon_immediate_smoke(void) {
         gFakeD3DRenderStateValues[3] == 1 &&
         gFakeD3DRenderStates[4] == D3DRENDERSTATE_TEXTUREADDRESSV &&
         gFakeD3DRenderStateValues[4] == 2 &&
-        g_zVideo_D3DRenderState_ShadeMode == 2 &&
-        g_zVideo_D3DRenderState_TextureHandle == 0x2345 &&
-        g_zVideo_D3DRenderState_TextureMapBlend == (D3DTEXTUREBLEND)(2) &&
-        g_zVideo_D3DRenderState_TextureAddressU == (D3DTEXTUREADDRESS)(1) &&
-        g_zVideo_D3DRenderState_TextureAddressV == (D3DTEXTUREADDRESS)(2);
+        g_zVideo_D3DRenderStateCache.shadeMode == 2 &&
+        g_zVideo_D3DRenderStateCache.textureHandle == 0x2345 &&
+        g_zVideo_D3DRenderStateCache.textureMapBlend == (D3DTEXTUREBLEND)(2) &&
+        g_zVideo_D3DRenderStateCache.textureAddressU == (D3DTEXTUREADDRESS)(1) &&
+        g_zVideo_D3DRenderStateCache.textureAddressV == (D3DTEXTUREADDRESS)(2);
 
     const bool drawOk =
         gFakeD3DDrawPrimitiveCalls == 1 &&
@@ -11140,11 +11140,11 @@ extern "C" int zvideo_submit_polygon_immediate_smoke(void) {
         close.tv == 0.4f;
 
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_ShadeMode = 2;
-    g_zVideo_D3DRenderState_TextureHandle = 0x2345;
-    g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(2);
-    g_zVideo_D3DRenderState_TextureAddressU = (D3DTEXTUREADDRESS)(1);
-    g_zVideo_D3DRenderState_TextureAddressV = (D3DTEXTUREADDRESS)(2);
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x2345;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(2);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(1);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(2);
     g_zVideo_D3DAppendFanCloseVertexPending = 0;
     zVideo_dd3d::SubmitPolygon(
         vertices,
@@ -11213,11 +11213,11 @@ extern "C" int zvideo_submit_polygon_immediate_smoke(void) {
         transparentClose.tu == 0.1f;
 
     g_zVideo_pD3DDevice = savedDevice;
-    g_zVideo_D3DRenderState_ShadeMode = savedShadeMode;
-    g_zVideo_D3DRenderState_TextureHandle = savedTextureHandle;
-    g_zVideo_D3DRenderState_TextureMapBlend = savedTextureMapBlend;
-    g_zVideo_D3DRenderState_TextureAddressU = savedTextureAddressU;
-    g_zVideo_D3DRenderState_TextureAddressV = savedTextureAddressV;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = savedTextureMapBlend;
+    g_zVideo_D3DRenderStateCache.textureAddressU = savedTextureAddressU;
+    g_zVideo_D3DRenderStateCache.textureAddressV = savedTextureAddressV;
     g_zVideo_D3DAppendFanCloseVertexPending = savedAppendFanClose;
     g_zVideo_D3DColorNormalizeChannelIndex = savedNormalizeChannel;
     g_zVideo_D3DColorAttrBiasR = savedBiasR;
@@ -11319,14 +11319,14 @@ extern "C" int zvideo_submit_polygon_lit_queue_smoke(void) {
 extern "C" int zvideo_submit_polygon_lit_immediate_smoke(void) {
     FakeD3DDevice2Object fakeDevice = {};
     IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
-    const int savedShadeMode = g_zVideo_D3DRenderState_ShadeMode;
-    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderState_TextureHandle;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
+    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderStateCache.textureHandle;
     const D3DTEXTUREBLEND savedTextureMapBlend =
-        g_zVideo_D3DRenderState_TextureMapBlend;
+        g_zVideo_D3DRenderStateCache.textureMapBlend;
     const D3DTEXTUREADDRESS savedTextureAddressU =
-        g_zVideo_D3DRenderState_TextureAddressU;
+        g_zVideo_D3DRenderStateCache.textureAddressU;
     const D3DTEXTUREADDRESS savedTextureAddressV =
-        g_zVideo_D3DRenderState_TextureAddressV;
+        g_zVideo_D3DRenderStateCache.textureAddressV;
     const int savedAppendFanClose = g_zVideo_D3DAppendFanCloseVertexPending;
     const int savedNormalizeChannel = g_zVideo_D3DColorNormalizeChannelIndex;
     const float savedBiasR = g_zVideo_D3DColorAttrBiasR;
@@ -11338,11 +11338,11 @@ extern "C" int zvideo_submit_polygon_lit_immediate_smoke(void) {
     g_zVideo_OverwriteQueueCount = 0;
     g_zVideo_SortedPolyQueueCount = 0;
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_ShadeMode = 1;
-    g_zVideo_D3DRenderState_TextureHandle = 0;
-    g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(1);
-    g_zVideo_D3DRenderState_TextureAddressU = (D3DTEXTUREADDRESS)(3);
-    g_zVideo_D3DRenderState_TextureAddressV = (D3DTEXTUREADDRESS)(3);
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(1);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(3);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(3);
     g_zVideo_D3DAppendFanCloseVertexPending = 1;
 
     zVideo_XyzVertex vertices[3] = {
@@ -11387,11 +11387,11 @@ extern "C" int zvideo_submit_polygon_lit_immediate_smoke(void) {
         gFakeD3DRenderStateValues[3] == 1 &&
         gFakeD3DRenderStates[4] == D3DRENDERSTATE_TEXTUREADDRESSV &&
         gFakeD3DRenderStateValues[4] == 2 &&
-        g_zVideo_D3DRenderState_ShadeMode == 2 &&
-        g_zVideo_D3DRenderState_TextureHandle == 0x3456 &&
-        g_zVideo_D3DRenderState_TextureMapBlend == (D3DTEXTUREBLEND)(2) &&
-        g_zVideo_D3DRenderState_TextureAddressU == (D3DTEXTUREADDRESS)(1) &&
-        g_zVideo_D3DRenderState_TextureAddressV == (D3DTEXTUREADDRESS)(2);
+        g_zVideo_D3DRenderStateCache.shadeMode == 2 &&
+        g_zVideo_D3DRenderStateCache.textureHandle == 0x3456 &&
+        g_zVideo_D3DRenderStateCache.textureMapBlend == (D3DTEXTUREBLEND)(2) &&
+        g_zVideo_D3DRenderStateCache.textureAddressU == (D3DTEXTUREADDRESS)(1) &&
+        g_zVideo_D3DRenderStateCache.textureAddressV == (D3DTEXTUREADDRESS)(2);
 
     const bool drawOk =
         gFakeD3DDrawPrimitiveCalls == 1 &&
@@ -11425,11 +11425,11 @@ extern "C" int zvideo_submit_polygon_lit_immediate_smoke(void) {
         close.tv == 0.4f;
 
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_ShadeMode = 2;
-    g_zVideo_D3DRenderState_TextureHandle = 0x3456;
-    g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(2);
-    g_zVideo_D3DRenderState_TextureAddressU = (D3DTEXTUREADDRESS)(1);
-    g_zVideo_D3DRenderState_TextureAddressV = (D3DTEXTUREADDRESS)(2);
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x3456;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(2);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(1);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(2);
     g_zVideo_D3DAppendFanCloseVertexPending = 0;
     zVideo_dd3d::SubmitPolygonLit(
         vertices,
@@ -11501,11 +11501,11 @@ extern "C" int zvideo_submit_polygon_lit_immediate_smoke(void) {
         transparentClose.tv == 0.2f;
 
     g_zVideo_pD3DDevice = savedDevice;
-    g_zVideo_D3DRenderState_ShadeMode = savedShadeMode;
-    g_zVideo_D3DRenderState_TextureHandle = savedTextureHandle;
-    g_zVideo_D3DRenderState_TextureMapBlend = savedTextureMapBlend;
-    g_zVideo_D3DRenderState_TextureAddressU = savedTextureAddressU;
-    g_zVideo_D3DRenderState_TextureAddressV = savedTextureAddressV;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = savedTextureMapBlend;
+    g_zVideo_D3DRenderStateCache.textureAddressU = savedTextureAddressU;
+    g_zVideo_D3DRenderStateCache.textureAddressV = savedTextureAddressV;
     g_zVideo_D3DAppendFanCloseVertexPending = savedAppendFanClose;
     g_zVideo_D3DColorNormalizeChannelIndex = savedNormalizeChannel;
     g_zVideo_D3DColorAttrBiasR = savedBiasR;
@@ -11535,8 +11535,8 @@ extern "C" int zvideo_submit_polygon_lit_immediate_smoke(void) {
 extern "C" int zvideo_draw_point_color16_smoke(void) {
     FakeD3DDevice2Object fakeDevice = {};
     IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
-    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderState_TextureHandle;
-    const int savedShadeMode = g_zVideo_D3DRenderState_ShadeMode;
+    const D3DTEXTUREHANDLE savedTextureHandle = g_zVideo_D3DRenderStateCache.textureHandle;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
     const int savedRShift = g_zVideo_PixelPack.packedBase;
     const int savedGShift = g_zVideo_PixelPack.sumMinus8;
     const int savedBShiftTo8 = g_zVideo_PixelPack.bShiftTo8;
@@ -11560,8 +11560,8 @@ extern "C" int zvideo_draw_point_color16_smoke(void) {
     );
     std::memset(g_zVideo_D3DSubmitTempVertices, 0, sizeof(g_zVideo_D3DSubmitTempVertices));
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_TextureHandle = 0x2468;
-    g_zVideo_D3DRenderState_ShadeMode = 2;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x2468;
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
 
     zVideo_XyzVertex point = {1.0f, 2.0f, 3.0f};
     zVideo_dd3d::DrawPointColor16(
@@ -11576,8 +11576,8 @@ extern "C" int zvideo_draw_point_color16_smoke(void) {
         gFakeD3DRenderStateValues[0] == 0 &&
         gFakeD3DRenderStates[1] == D3DRENDERSTATE_SHADEMODE &&
         gFakeD3DRenderStateValues[1] == 1 &&
-        g_zVideo_D3DRenderState_TextureHandle == 0 &&
-        g_zVideo_D3DRenderState_ShadeMode == 1;
+        g_zVideo_D3DRenderStateCache.textureHandle == 0 &&
+        g_zVideo_D3DRenderStateCache.shadeMode == 1;
 
     const bool drawOk =
         gFakeD3DDrawPrimitiveCalls == 1 &&
@@ -11597,8 +11597,8 @@ extern "C" int zvideo_draw_point_color16_smoke(void) {
         vertex.specular == 0xff000000;
 
     InstallFakeD3DDevice2(fakeDevice);
-    g_zVideo_D3DRenderState_TextureHandle = 0;
-    g_zVideo_D3DRenderState_ShadeMode = 1;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
     point.x = 4.0f;
     point.y = 5.0f;
     point.z = 6.0f;
@@ -11616,8 +11616,8 @@ extern "C" int zvideo_draw_point_color16_smoke(void) {
         g_zVideo_D3DSubmitTempVertices[0].color == 0xfff80000;
 
     g_zVideo_pD3DDevice = savedDevice;
-    g_zVideo_D3DRenderState_TextureHandle = savedTextureHandle;
-    g_zVideo_D3DRenderState_ShadeMode = savedShadeMode;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
     g_zVideo_PixelPack.packedBase = savedRShift;
     g_zVideo_PixelPack.sumMinus8 = savedGShift;
     g_zVideo_PixelPack.bShiftTo8 = savedBShiftTo8;

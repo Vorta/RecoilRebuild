@@ -1,0 +1,172 @@
+#include "GameZRecoil/zFMV/fmv.h"
+#include "GameZRecoil/zInput/zInput.h"
+#include "GameZRecoil/zSound/zSound.h"
+#include "GameZRecoil/zVideo/zVideo.h"
+
+#include <cstdlib>
+
+namespace {
+
+int g_deletedCount;
+int g_beginCallCount;
+double g_lastBeginTimeSec;
+
+struct BeginCurrentActionTestAction : zFMV_Action {
+    void Begin(
+        double timeSec
+    ) {
+        ++g_beginCallCount;
+        g_lastBeginTimeSec = timeSec;
+    }
+};
+
+struct TestFmvAction : zFMV_Action {
+    ~TestFmvAction() {
+        ++g_deletedCount;
+    }
+};
+
+TestFmvAction *NewLinkedAction(
+    TestFmvAction *next
+) {
+    TestFmvAction *action = new TestFmvAction;
+    action->next = next;
+    return action;
+}
+
+} // namespace
+
+extern "C" int zfmv_script_reset_smoke(void) {
+    g_deletedCount = 0;
+
+    TestFmvAction *action2 = NewLinkedAction(0);
+    TestFmvAction *action1 = NewLinkedAction(action2);
+
+    zFMV_Script script = {};
+    script.m_head = action1;
+    script.m_tail = action2;
+    script.m_cur = 0;
+
+    script.Reset(0);
+    if (script.m_head != action1 || script.m_tail != action2 || script.m_cur != action1 ||
+        g_deletedCount != 0) {
+        delete action1;
+        delete action2;
+        return 1;
+    }
+
+    script.Reset(1);
+    return script.m_head == 0 && script.m_tail == 0 && script.m_cur == 0 && g_deletedCount == 2
+               ? 0
+               : 2;
+}
+
+extern "C" int zfmv_script_cleanup_smoke(void) {
+    g_deletedCount = 0;
+
+    TestFmvAction *action = NewLinkedAction(0);
+
+    zFMV_Script script = {};
+    script.m_fmvPath = (char *)(std::malloc(4));
+    script.m_head = action;
+    script.m_tail = action;
+    script.m_cur = action;
+
+    if (script.m_fmvPath == 0) {
+        delete action;
+        return 1;
+    }
+
+    script.Cleanup();
+    return script.m_fmvPath == 0 && script.m_head == 0 && script.m_tail == 0 &&
+                   script.m_cur == 0 && g_deletedCount == 1
+               ? 0
+               : 2;
+}
+
+extern "C" int zfmv_script_begin_now_smoke(void) {
+    g_deletedCount = 0;
+
+    TestFmvAction *action2 = NewLinkedAction(0);
+    TestFmvAction *action1 = NewLinkedAction(action2);
+
+    zFMV_Script script = {};
+    script.m_head = action1;
+    script.m_tail = action2;
+    script.m_cur = 0;
+
+    script.BeginNow(0);
+    if (script.m_head != action1 || script.m_tail != action2 || script.m_cur != action1 ||
+        g_deletedCount != 0) {
+        delete action1;
+        delete action2;
+        return 1;
+    }
+
+    script.BeginNow(1);
+    return script.m_head == 0 && script.m_tail == 0 && script.m_cur == 0 && g_deletedCount == 2
+               ? 0
+               : 2;
+}
+
+extern "C" int zfmv_script_begin_current_action_smoke(void) {
+    zFMV_Script emptyScript = {};
+    if (emptyScript.BeginCurrentAction(12.5) != 0) {
+        return 1;
+    }
+
+    const zSndSampleSetRegistry oldRegistry = g_zSnd_SampleSetRegistry;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    unsigned short *const oldFxPixels = g_zVideo_FxSurfacePixels16;
+    const int oldFxWidth = g_zVideo_FxSurfaceWidth;
+    const int oldFxHeight = g_zVideo_FxSurfaceHeight;
+    const int oldFxPitchBytes = g_zVideo_FxSurfacePitchBytes;
+    const int oldFxPitchPixels16 = g_zVideo_FxSurfacePitchPixels16;
+    const int oldKbdReady = g_zInput_KbdSystemReady;
+
+    zSndSampleSet *sampleSetSlots[1] = {};
+    zSndSampleSet fmvSet = {};
+    fmvSet.setName = const_cast<char *>("FMV");
+    sampleSetSlots[0] = &fmvSet;
+    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
+    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.useArchiveBanksFlag = 0;
+
+    g_zVideo_PrimarySurfaceState.pixels = reinterpret_cast<void *>(0x12340000);
+    g_zVideo_PrimarySurfaceState.width = 320;
+    g_zVideo_PrimarySurfaceState.height = 200;
+    g_zVideo_PrimarySurfaceState.pitch = 640;
+    g_zVideo_FxSurfacePixels16 = 0;
+    g_zVideo_FxSurfaceWidth = 0;
+    g_zVideo_FxSurfaceHeight = 0;
+    g_zVideo_FxSurfacePitchBytes = 0;
+    g_zVideo_FxSurfacePitchPixels16 = 0;
+    g_zInput_KbdSystemReady = 0;
+    g_beginCallCount = 0;
+    g_lastBeginTimeSec = -1.0;
+
+    BeginCurrentActionTestAction action;
+    zFMV_Script script = {};
+    script.m_cur = &action;
+    const int result = script.BeginCurrentAction(42.25);
+
+    const bool ok = result == 1 && script.m_startTimeSec == 42.25 && g_beginCallCount == 1 &&
+                    g_lastBeginTimeSec == 0.0 &&
+                    g_zVideo_FxSurfacePixels16 ==
+                        reinterpret_cast<unsigned short *>(0x12340000) &&
+                    g_zVideo_FxSurfaceWidth == 320 && g_zVideo_FxSurfaceHeight == 200 &&
+                    g_zVideo_FxSurfacePitchBytes == 640 &&
+                    g_zVideo_FxSurfacePitchPixels16 == 320 && fmvSet.resourcesLoaded == 1;
+
+    g_zSnd_SampleSetRegistry = oldRegistry;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_FxSurfacePixels16 = oldFxPixels;
+    g_zVideo_FxSurfaceWidth = oldFxWidth;
+    g_zVideo_FxSurfaceHeight = oldFxHeight;
+    g_zVideo_FxSurfacePitchBytes = oldFxPitchBytes;
+    g_zVideo_FxSurfacePitchPixels16 = oldFxPitchPixels16;
+    g_zInput_KbdSystemReady = oldKbdReady;
+
+    return ok ? 0 : 2;
+}

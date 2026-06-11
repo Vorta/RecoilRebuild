@@ -86,13 +86,16 @@ struct ActiveRegionRectPartial {
 // Authored zRndr fog-parameter record. BN types the four adjacent zeroed BSS
 // records at 0x631dd0, 0x631e70, 0x631f10, and 0x631fb0 as
 // zRndr_FogParams, and scalar fog spans read packedColor16,
-// packedColor16Dup, and packedColorRamp from the active record.
+// packedColor16Dup, and packedColorRamp from the active record. BN shows the
+// 0x49e0e0 helper stores packedColor16 as a word and leaves the following word
+// as padding before packedColor16Dup.
 struct FogParamsPartial {
     float colorRgb01[3];
     int packedColorRed;
     int packedColorGreen;
     int packedColorBlue;
-    int packedColor16;
+    unsigned short packedColor16;
+    unsigned short packedColor16Padding;
     int packedColor16Dup;
     int packedColorRamp[32];
 };
@@ -266,6 +269,9 @@ extern OverlayBlendRowProc g_pfnOverlayBlendRow;
 extern unsigned int g_swOverlayPremulPacked;
 extern unsigned int g_swOverlayPremulPackedRot16;
 extern int g_swOverlayDstScale5;
+extern unsigned int g_swOverlayPremulRPair;
+extern unsigned int g_swOverlayPremulBPair;
+extern unsigned int g_swOverlayPremulGPair;
 extern int g_pixelPackRedBits;
 extern int g_pixelPackGreenBits;
 extern int g_pixelPackBlueBits;
@@ -419,7 +425,7 @@ void __fastcall OverlayBlendRow565_Mmx(
 );
 void __fastcall SpanMmxSetPixelFormatMasks(int greenBits);
 void SelectSpanRoutines();
-void __fastcall SpanAlphaBlend565_Mmx_FromPal8(
+void __fastcall FogTarget565_SetPackedColorAndRamp(
     FogParamsPartial *params,
     int packedRed,
     int packedGreen,

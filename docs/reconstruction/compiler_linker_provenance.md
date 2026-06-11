@@ -7,7 +7,7 @@ This ledger records the current compiler/linker assumptions used for source-fait
 - VC5SP3 `cl` 11.00.7022 is the only tier `S` compiler for authored production source.
 - Current executable provenance points to VS97 SP3: VS97 SP3 `cvtres` produced 1 object and VS97 SP3 `link` 5.10.7303 linked the executable.
 - Modern MSVC/CMake builds are smoke and guard builds only. They prove compile/link/test health, not tier `S` equivalence.
-- Tier `S` acceptance normally requires relocation-masked COFF byte comparison. Listings and normalized text diffs are triage aids, not acceptance modes.
+- Tier `S` acceptance normally requires relocation-masked COFF byte comparison. VC5 manifests can also compare generated `.data`/`.rdata` data symbols for data-gate evidence. Listings, normalized text diffs, and relocation identity reports are triage/review aids, not source-shape acceptance modes.
 
 ## Final Candidate Build Assumptions
 
@@ -38,6 +38,12 @@ New VC verification manifests should use `"compiler_profile": "<profile-name>"`.
 Adding a new compiler environment or flag tuple requires updating this ledger
 and `tools/_recoil/config/compiler_linker_profiles.json` with the reason and expected compiler
 version. Do not silently add one-off flags to a VC manifest.
+
+VC verification manifests may contain `functions`, `data_symbols`, or both.
+`data_symbols` entries compare a BN data address and byte length against a VC5
+COFF symbol with relocation masking, and write a relocation identity report for
+pointer/symbol review. Passing data-symbol bytes can support initialized-data
+evidence only after the normal source-owner and data-gate criteria are met.
 
 ## Required Checks
 

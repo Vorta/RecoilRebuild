@@ -36,7 +36,8 @@ extern "C" int *ZOPT_SOUND_CDAUDIO = 0;
 extern "C" int g_zSnd_IsInitialized = 0;
 extern "C" int g_zSnd_ActiveBackend = 0;
 extern "C" unsigned int g_zSnd_WindowHandle = 0;
-extern "C" int g_zSnd_UseArchiveBanksFlag = 0;
+// BN 0x4e2234: initialized .data archive-bank selector defaults to enabled.
+extern "C" int g_zSnd_UseArchiveBanksFlag = 1;
 extern "C" float g_zSndSpeedOfSoundMps = 345.0f;
 extern "C" float g_zSndInvSpeedOfSoundMps = 1.0f / 345.0f;
 

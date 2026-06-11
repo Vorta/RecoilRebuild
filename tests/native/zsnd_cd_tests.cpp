@@ -394,9 +394,10 @@ struct TestA3dSourceVTable {
     void *slotac;
     TestBackendSetFloatFn SetDopplerScale;
     void *slotsb4_cc[7];
-    TestBackendSetIntFn SetSpatializationEnabled;
-    void *slotsd4_dc[3];
+    void *slotsd0_dc[4];
     TestBackendGetStatusFn GetStatus;
+    void *slotse4_f0[4];
+    TestBackendSetIntFn SetSpatializationEnabled;
 };
 
 struct TestA3dSource {
@@ -4680,8 +4681,7 @@ extern "C" int zsnd_wave_data_load_parse_reset_smoke(void) {
     std::fwrite(wavBytes, sizeof(wavBytes), 1, file);
     std::fclose(file);
 
-    zSndWaveData wave{};
-    wave.ConstructorFromPath(fileName, 1);
+    zSndWaveData wave(fileName, 1);
 
     const bool loaded = wave.parsedOk == 1 &&
                         wave.fileSize == static_cast<std::int32_t>(sizeof(wavBytes)) &&
@@ -4693,29 +4693,32 @@ extern "C" int zsnd_wave_data_load_parse_reset_smoke(void) {
     const bool reset = wave.parsedOk == 0 && wave.fileData == nullptr && wave.fileSize == 0 &&
                        wave.fmt == nullptr && wave.pcmData == nullptr && wave.pcmByteCount == 0;
 
-    wave.Destructor();
     std::remove(fileName);
     return loaded && reset ? 0 : 2;
 }
 
 extern "C" int zsnd_wave_data_parse_chunks_smoke(void) {
-    zSndWaveData wave = {};
-    if (wave.ParseLoadedWaveFile() != 0) {
-        return 1;
-    }
-
     std::uint8_t badMagic[] = {
         'N', 'O', 'P', 'E', 4, 0, 0, 0, 'W', 'A', 'V', 'E',
     };
     WAVEFORMATEX staleFmt = {};
     std::uint8_t stalePcm = 0;
-    wave.fileData = badMagic;
-    wave.fmt = &staleFmt;
-    wave.pcmData = &stalePcm;
-    wave.pcmByteCount = 123;
-    if (wave.ParseLoadedWaveFile() != 1 || wave.fmt != nullptr || wave.pcmData != nullptr ||
-        wave.pcmByteCount != 0) {
-        return 2;
+    {
+        zSndWaveData wave("", 0);
+        if (wave.ParseLoadedWaveFile() != 0) {
+            return 1;
+        }
+    }
+    {
+        zSndWaveData wave("", 0);
+        wave.fileData = badMagic;
+        wave.fmt = &staleFmt;
+        wave.pcmData = &stalePcm;
+        wave.pcmByteCount = 123;
+        if (wave.ParseLoadedWaveFile() != 1 || wave.fmt != nullptr || wave.pcmData != nullptr ||
+            wave.pcmByteCount != 0) {
+            return 2;
+        }
     }
 
     std::uint8_t riffBytes[] = {
@@ -4728,20 +4731,24 @@ extern "C" int zsnd_wave_data_parse_chunks_smoke(void) {
         0x22, 0x56, 0, 0, 0x88, 0x58, 1, 0, 4, 0, 16, 0,
         'd', 'a', 't', 'a', 4, 0, 0, 0, 1, 2, 3, 4,
     };
-    wave = {};
-    wave.fileData = riffBytes;
-    if (wave.ParseLoadedWaveFile() != 1) {
-        return 3;
-    }
-    if (wave.cuePointCount != 1 || wave.cuePoints != reinterpret_cast<zSndCuePoint *>(riffBytes + 34) ||
-        wave.cuePoints->identifier != 7) {
-        return 4;
-    }
-    if (wave.fmt != reinterpret_cast<WAVEFORMATEX *>(riffBytes + 66) || wave.fmt->nChannels != 2) {
-        return 5;
-    }
-    if (wave.pcmData != riffBytes + 90 || wave.pcmByteCount != 4) {
-        return 6;
+    {
+        zSndWaveData wave("", 0);
+        wave.fileData = riffBytes;
+        if (wave.ParseLoadedWaveFile() != 1) {
+            return 3;
+        }
+        if (wave.cuePointCount != 1 ||
+            wave.cuePoints != reinterpret_cast<zSndCuePoint *>(riffBytes + 34) ||
+            wave.cuePoints->identifier != 7) {
+            return 4;
+        }
+        if (wave.fmt != reinterpret_cast<WAVEFORMATEX *>(riffBytes + 66) ||
+            wave.fmt->nChannels != 2) {
+            return 5;
+        }
+        if (wave.pcmData != riffBytes + 90 || wave.pcmByteCount != 4) {
+            return 6;
+        }
     }
 
     std::uint8_t shortFmt[] = {
@@ -4750,60 +4757,63 @@ extern "C" int zsnd_wave_data_parse_chunks_smoke(void) {
         0x40, 0x1f, 0, 0, 0x80, 0x3e, 0, 0,
         'd', 'a', 't', 'a', 4, 0, 0, 0, 1, 2, 3, 4,
     };
-    wave = {};
-    wave.fileData = shortFmt;
-    if (wave.ParseLoadedWaveFile() != 1 || wave.fmt != nullptr || wave.pcmData != nullptr ||
-        wave.pcmByteCount != 0) {
-        return 7;
+    {
+        zSndWaveData wave("", 0);
+        wave.fileData = shortFmt;
+        if (wave.ParseLoadedWaveFile() != 1 || wave.fmt != nullptr || wave.pcmData != nullptr ||
+            wave.pcmByteCount != 0) {
+            return 7;
+        }
     }
 
     return 0;
 }
 
 extern "C" int zsnd_wave_data_load_parse_edges_smoke(void) {
-    zSndWaveData wave = {};
-    if (wave.LoadAndParseIfNeeded() != 0 || wave.parsedOk != 0 || wave.fileData != nullptr) {
-        return 1;
+    {
+        zSndWaveData wave("", 0);
+        if (wave.LoadAndParseIfNeeded() != 0 || wave.parsedOk != 0 || wave.fileData != nullptr) {
+            return 1;
+        }
     }
-
-    wave.nameOrPath = const_cast<char *>("recoil_missing_wave_data_smoke.wav");
-    if (wave.LoadAndParseIfNeeded() != 0 || wave.parsedOk != 0 || wave.fileData != nullptr) {
-        return 2;
+    {
+        zSndWaveData wave("recoil_missing_wave_data_smoke.wav", 0);
+        if (wave.LoadAndParseIfNeeded() != 0 || wave.parsedOk != 0 || wave.fileData != nullptr) {
+            return 2;
+        }
     }
-
-    wave = {};
-    wave.parsedOk = 1;
-    if (wave.LoadAndParseIfNeeded() != 1) {
-        return 3;
+    {
+        zSndWaveData wave("", 0);
+        wave.parsedOk = 1;
+        if (wave.LoadAndParseIfNeeded() != 1) {
+            return 3;
+        }
     }
-
-    wave = {};
-    wave.ConstructorFromPath("missing_arch.wav", 0);
-    zIndexArchive archive = {};
-    if (wave.LoadAndParseFromIndexArchiveIfNeeded(&archive) != 0 || wave.fileSize != 0 ||
-        wave.fileData != nullptr || wave.parsedOk != 0) {
-        wave.Destructor();
-        return 4;
+    {
+        zSndWaveData wave("missing_arch.wav", 0);
+        zIndexArchive archive = {};
+        if (wave.LoadAndParseFromIndexArchiveIfNeeded(&archive) != 0 || wave.fileSize != 0 ||
+            wave.fileData != nullptr || wave.parsedOk != 0) {
+            return 4;
+        }
     }
-    wave.Destructor();
-
-    wave = {};
-    wave.parsedOk = 1;
-    if (wave.LoadAndParseFromIndexArchiveIfNeeded(nullptr) != 1) {
-        return 5;
+    {
+        zSndWaveData wave("", 0);
+        wave.parsedOk = 1;
+        if (wave.LoadAndParseFromIndexArchiveIfNeeded(nullptr) != 1) {
+            return 5;
+        }
     }
-
-    wave = {};
-    if (wave.ConstructorFromPath("constructor.wav", 0) != &wave || wave.nameOrPath == nullptr ||
-        std::strcmp(wave.nameOrPath, "constructor.wav") != 0 ||
-        wave.nameOrPath == static_cast<const char *>("constructor.wav") || wave.parsedOk != 0 ||
-        wave.fileSize != 0 || wave.fileData != nullptr || wave.fmt != nullptr ||
-        wave.pcmData != nullptr || wave.pcmByteCount != 0 || wave.cuePointCount != 0 ||
-        wave.cuePoints != nullptr) {
-        wave.Destructor();
-        return 6;
+    {
+        zSndWaveData wave("constructor.wav", 0);
+        if (wave.nameOrPath == nullptr || std::strcmp(wave.nameOrPath, "constructor.wav") != 0 ||
+            wave.nameOrPath == static_cast<const char *>("constructor.wav") || wave.parsedOk != 0 ||
+            wave.fileSize != 0 || wave.fileData != nullptr || wave.fmt != nullptr ||
+            wave.pcmData != nullptr || wave.pcmByteCount != 0 || wave.cuePointCount != 0 ||
+            wave.cuePoints != nullptr) {
+            return 6;
+        }
     }
-    wave.Destructor();
 
     return 0;
 }
@@ -4858,14 +4868,11 @@ extern "C" int zsnd_wave_data_archive_load_smoke(void) {
         return 4;
     }
 
-    zSndWaveData wave = {};
-    wave.ConstructorFromPath("arch.wav", 0);
+    zSndWaveData wave("arch.wav", 0);
     const bool archiveLoadOk =
         wave.LoadAndParseFromIndexArchiveIfNeeded(&archive) == 1 && wave.parsedOk == 1 &&
         wave.fileSize == static_cast<std::int32_t>(sizeof(wavBytes)) && wave.fmt != nullptr &&
         wave.pcmData != nullptr && wave.pcmByteCount == 4;
-    wave.Destructor();
-
     CloseHandle(handle);
     std::remove(fileName);
     return archiveLoadOk ? 0 : 5;
@@ -5099,8 +5106,7 @@ extern "C" int zsnd_sample_init_from_wave_data_directsound_smoke(void) {
     zSndCuePoint cue = {};
     cue.position = 1;
 
-    zSndWaveData wave = {};
-    wave.nameOrPath = const_cast<char *>("inline");
+    zSndWaveData wave("inline", 0);
     wave.pcmByteCount = sizeof(pcmData);
     wave.fmt = &fmt;
     wave.cuePointCount = 1;
@@ -5240,8 +5246,7 @@ extern "C" int zsnd_sample_init_from_wave_data_a3d_smoke(void) {
     zSndCuePoint cue = {};
     cue.position = 1;
 
-    zSndWaveData wave = {};
-    wave.nameOrPath = const_cast<char *>("inline");
+    zSndWaveData wave("inline", 0);
     wave.pcmByteCount = sizeof(pcmData);
     wave.fmt = &fmt;
     wave.cuePointCount = 1;

@@ -155,10 +155,11 @@ struct zSndWaveData {
     zSndCuePoint *cuePoints;
     void *pcmData;
 
-    zSndWaveData * ConstructorFromPath(
+    zSndWaveData(
         const char *path,
         int loadNow
     );
+    ~zSndWaveData();
     void Destructor();
     int ParseLoadedWaveFile();
     int LoadAndParseIfNeeded();
@@ -167,6 +168,17 @@ struct zSndWaveData {
     );
     int Reset();
 };
+
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in caller 0x4a0fb0.
+ * Evidence: BN emits delete-shaped cleanup through the address-backed 0x4a5440
+ * cleanup routine.
+ * Purpose: release wave-data storage through the recovered cleanup body.
+ */
+inline zSndWaveData::~zSndWaveData() {
+    Destructor();
+}
 
 struct zSndSample {
     int createGuard;

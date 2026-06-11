@@ -1,5 +1,6 @@
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "Battlesport/RecoilApp.h"
+#include "Battlesport/hud.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/include/zImage.h"
 #include "GameZRecoil/zInput/zInput.h"
@@ -155,6 +156,10 @@ int g_widgetDrawBlitY[4];
 int g_widgetDrawBlitFlags[4];
 int g_widgetDrawBlitHasRect[4];
 zVidRect32 g_widgetDrawBlitRects[4];
+int g_panelDrawBaseCount;
+void *g_panelDrawBaseThis;
+int g_panelRebuildTextRectCount;
+void *g_panelRebuildTextRectThis;
 int g_elementUpdateDrawCount;
 int g_elementUpdateDrawBaseCount;
 int g_elementUpdateInvalidateCount;
@@ -175,6 +180,11 @@ struct TestWidgetInvalidateRect : HudUiWidget {
 
 struct TestWidgetDrawOps : HudUiWidget {
     virtual void DrawBase();
+};
+
+struct TestPanelDrawOps : HudUiPanel {
+    void DrawBase();
+    void RebuildTextRect();
 };
 
 struct TestElementUpdateElement : HudUiElement {
@@ -264,6 +274,17 @@ void TestWidgetDrawOps::DrawBase() {
     g_widgetDrawBaseThis = this;
 }
 
+void TestPanelDrawOps::DrawBase() {
+    ++g_panelDrawBaseCount;
+    g_panelDrawBaseThis = this;
+}
+
+void TestPanelDrawOps::RebuildTextRect() {
+    ++g_panelRebuildTextRectCount;
+    g_panelRebuildTextRectThis = this;
+    HudUiPanel::RebuildTextRect();
+}
+
 void TestElementUpdateElement::Draw() {
     ++g_elementUpdateDrawCount;
 }
@@ -330,6 +351,30 @@ void *HudUiBackgroundLoadFromZrdAddress() {
 
 void *OptionsDialogLoadProbeAddress() {
     return MethodAddress(&OptionsDialogLoadProbe::LoadFromZrd);
+}
+
+HudOptionsDialog *CreateOptionsDialogForSmoke(
+    int &result
+) {
+    CodeFunctionPatch loadPatch{};
+    g_optionsDialogLoadCalls = 0;
+    g_optionsDialogLoadArgsOk = false;
+    if (!PatchFunctionJump(
+            HudUiBackgroundLoadFromZrdAddress(),
+            OptionsDialogLoadProbeAddress(),
+            loadPatch
+        )) {
+        result = 1;
+        return nullptr;
+    }
+
+    void *const storage = ::operator new(sizeof(HudOptionsDialog));
+    HudOptionsDialog *const dialog = new (storage) HudOptionsDialog;
+    RestoreFunctionPatch(loadPatch);
+    if (g_optionsDialogLoadCalls != 1 || !g_optionsDialogLoadArgsOk) {
+        result = 2;
+    }
+    return dialog;
 }
 
 struct CreditsPanelLoadProbe {
@@ -1742,6 +1787,80 @@ extern "C" int zhud_fill_bitmap_core_smoke(void) {
     return coreDestructed && scalarDestructed && thunkDestructed ? 0 : 1;
 }
 
+extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void) {
+    zVidImagePartial selectedImage{};
+    zVidImagePartial unselectedImage{};
+    zVidImagePartial selectedRollover{};
+    zVidImagePartial unselectedRollover{};
+
+    HudUiZrdWidgetEx17C_Item item{};
+    item.Constructor();
+    item.modeOrEnabled = 0;
+    item.defaultImage = reinterpret_cast<zVidImagePartial *>(0x3333);
+    item.rolloverImage = reinterpret_cast<zVidImagePartial *>(0x4444);
+    item.image = reinterpret_cast<zVidImagePartial *>(0x5555);
+    item.SetSelected(1);
+    const bool disabledPath =
+        item.selected == 1 &&
+        item.defaultImage == reinterpret_cast<zVidImagePartial *>(0x3333) &&
+        item.rolloverImage == reinterpret_cast<zVidImagePartial *>(0x4444) &&
+        item.image == reinterpret_cast<zVidImagePartial *>(0x5555);
+
+    item.modeOrEnabled = 1;
+    item.selectedImage = &selectedImage;
+    item.unselectedImage = &unselectedImage;
+    item.selectedRolloverImage = &selectedRollover;
+    item.unselectedRolloverImage = &unselectedRollover;
+    item.defaultImage = nullptr;
+    item.rolloverImage = nullptr;
+    item.image = nullptr;
+
+    item.SetSelected(1);
+    const bool selectedPath =
+        item.selected == 1 &&
+        item.defaultImage == &selectedImage &&
+        item.rolloverImage == &selectedRollover &&
+        item.image == &selectedImage;
+
+    item.SetSelected(0);
+    const bool unselectedPath =
+        item.selected == 0 &&
+        item.defaultImage == &unselectedImage &&
+        item.rolloverImage == &unselectedRollover &&
+        item.image == &unselectedImage;
+
+    HudUiZrdWidgetEx17C selector{};
+    HudUiZrdWidgetEx17C_Item firstOption{};
+    HudUiZrdWidgetEx17C_Item secondOption{};
+    selector.Constructor();
+    firstOption.Constructor();
+    secondOption.Constructor();
+    firstOption.modeOrEnabled = 0;
+    secondOption.modeOrEnabled = 0;
+    selector.options[0] = &firstOption;
+    selector.options[1] = &secondOption;
+
+    const bool selectorPath =
+        selector.SetSelectedIndex(1) == 1 &&
+        selector.selectedIndex == 1 &&
+        firstOption.selected == 0 &&
+        secondOption.selected == 1;
+
+    const bool passed = disabledPath && selectedPath && unselectedPath && selectorPath;
+
+    selector.options[0] = nullptr;
+    selector.options[1] = nullptr;
+    item.defaultImage = nullptr;
+    item.rolloverImage = nullptr;
+    item.image = nullptr;
+    item.selectedImage = nullptr;
+    item.unselectedImage = nullptr;
+    item.selectedRolloverImage = nullptr;
+    item.unselectedRolloverImage = nullptr;
+
+    return passed ? 0 : 1;
+}
+
 extern "C" int zhud_widget_set_image_by_path_owned_smoke(void) {
     const unsigned int oldMask = g_HudUi_InvalidateMask;
 
@@ -2227,6 +2346,118 @@ extern "C" int zhud_panel_constructor_default_smoke(void) {
         thunkPanel.textDirty == 1;
 
     return defaultCtor && thunkCtor ? 0 : 1;
+}
+
+extern "C" int zhud_panel_draw_smoke(void) {
+    zVideo_BltSourceToPrimaryProc const oldBlit =
+        g_zVideo_pfnBltSourceToPrimary;
+
+    TestPanelDrawOps panel{};
+    zVidImagePartial image{};
+    zVidImagePartial baseImage{};
+
+    panel.ConstructorDefault("TXT", 100, 20);
+    panel.textPick = nullptr;
+    panel.textBuffer[0] = '\0';
+    panel.textDirty = 1;
+    g_widgetDrawBlitCount = 0;
+    g_panelDrawBaseCount = 0;
+    g_panelDrawBaseThis = nullptr;
+    g_panelRebuildTextRectCount = 0;
+    g_panelRebuildTextRectThis = nullptr;
+    g_zVideo_pfnBltSourceToPrimary = CaptureWidgetDrawBlit;
+    panel.Draw();
+    const bool dirtyNullTextPick =
+        g_panelDrawBaseCount == 0 &&
+        g_widgetDrawBlitCount == 0 &&
+        panel.textDirty == 0;
+
+    panel.textPick = &image;
+    panel.bltSource = &baseImage;
+    panel.textBuffer[0] = '\0';
+    panel.textDirty = 0;
+    g_widgetDrawBlitCount = 0;
+    g_panelDrawBaseCount = 0;
+    g_panelDrawBaseThis = nullptr;
+    panel.Draw();
+    const bool emptyTextDrawBase =
+        g_widgetDrawBlitCount == 1 &&
+        g_widgetDrawBlitImages[0] == &baseImage &&
+        g_widgetDrawBlitX[0] == 100 &&
+        g_widgetDrawBlitY[0] == 20;
+
+    std::strcpy(
+        panel.textBuffer,
+        "TXT"
+    );
+    panel.bltSource = nullptr;
+    panel.textRect.left = 1;
+    panel.textRect.top = 2;
+    panel.textRect.right = 9;
+    panel.textRect.bottom = 10;
+    panel.alignMode = 0;
+    panel.x = 100;
+    panel.y = 20;
+    panel.textDirty = 0;
+    g_widgetDrawBlitCount = 0;
+    g_panelDrawBaseCount = 0;
+    g_panelDrawBaseThis = nullptr;
+    panel.Draw();
+    const bool leftAligned =
+        g_widgetDrawBlitCount == 1 &&
+        g_widgetDrawBlitImages[0] == &image &&
+        g_widgetDrawBlitX[0] == 100 &&
+        g_widgetDrawBlitY[0] == 20 &&
+        g_widgetDrawBlitFlags[0] == 0 &&
+        g_widgetDrawBlitHasRect[0] == 1 &&
+        g_widgetDrawBlitRects[0].left == 1 &&
+        g_widgetDrawBlitRects[0].right == 9 &&
+        panel.x == 100;
+
+    panel.alignMode = 1;
+    panel.clipRect.left = 10;
+    panel.clipRect.right = 70;
+    panel.textWidthPx = 20;
+    panel.x = 100;
+    g_widgetDrawBlitCount = 0;
+    g_panelDrawBaseCount = 0;
+    panel.Draw();
+    const bool centerAligned =
+        g_widgetDrawBlitCount == 1 &&
+        g_widgetDrawBlitX[0] == 90 &&
+        g_widgetDrawBlitY[0] == 20 &&
+        panel.x == 100;
+
+    panel.alignMode = 2;
+    panel.x = 100;
+    g_widgetDrawBlitCount = 0;
+    g_panelDrawBaseCount = 0;
+    panel.Draw();
+    const bool rightAligned =
+        g_widgetDrawBlitCount == 1 &&
+        g_widgetDrawBlitX[0] == 80 &&
+        g_widgetDrawBlitY[0] == 20 &&
+        panel.x == 100;
+
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+    panel.textPick = nullptr;
+
+    if (!dirtyNullTextPick) {
+        return 10;
+    }
+    if (!emptyTextDrawBase) {
+        return 11;
+    }
+    if (!leftAligned) {
+        return 12;
+    }
+    if (!centerAligned) {
+        return 13;
+    }
+    if (!rightAligned) {
+        return 14;
+    }
+    return 0;
 }
 
 extern "C" int zhud_panel_layout_entry_copy_construct_smoke(void) {
@@ -2798,6 +3029,140 @@ extern "C" int zhud_options_dialog_constructor_smoke(void) {
     dialog->DestructorCore();
     ::operator delete(storage);
     return constructed ? 0 : 1;
+}
+
+extern "C" int zhud_options_dialog_destructor_core_smoke(void) {
+    int createResult = 0;
+    HudOptionsDialog *const dialog = CreateOptionsDialogForSmoke(createResult);
+    if (createResult != 0 || dialog == nullptr) {
+        return 1;
+    }
+
+    dialog->DestructorCore();
+
+    ::operator delete(dialog);
+    return 0;
+}
+
+extern "C" int zhud_options_dialog_scalar_deleting_destructor_smoke(void) {
+    int createResult = 0;
+    HudOptionsDialog *const dialog = CreateOptionsDialogForSmoke(createResult);
+    if (createResult != 0 || dialog == nullptr) {
+        return 1;
+    }
+
+    HudOptionsDialog *const returned = dialog->ScalarDeletingDestructor(0);
+    const bool noDeletePath = returned == dialog;
+    ::operator delete(dialog);
+    if (!noDeletePath) {
+        return 2;
+    }
+
+    createResult = 0;
+    HudOptionsDialog *const deletingDialog = CreateOptionsDialogForSmoke(createResult);
+    if (createResult != 0 || deletingDialog == nullptr) {
+        return 3;
+    }
+
+    deletingDialog->ScalarDeletingDestructor(1);
+    return 0;
+}
+
+extern "C" int hud_ui_options_panel_overlay_owner_constructor_smoke(void) {
+    void *const stateStorage = ::operator new(sizeof(HudUiOptionsPanelOverlayOwner));
+    std::memset(
+        stateStorage,
+        0xcc,
+        sizeof(HudUiOptionsPanelOverlayOwner)
+    );
+
+    HudUiOptionsPanelOverlayOwner *const state =
+        new (stateStorage) HudUiOptionsPanelOverlayOwner;
+    const bool constructed = state->m_panel == nullptr;
+
+    state->~HudUiOptionsPanelOverlayOwner();
+    ::operator delete(stateStorage);
+    return constructed ? 0 : 1;
+}
+
+extern "C" int hud_ui_options_panel_overlay_owner_destructor_core_smoke(void) {
+    int createResult = 0;
+    HudOptionsDialog *const dialog = CreateOptionsDialogForSmoke(createResult);
+    if (createResult != 0 || dialog == nullptr) {
+        return 1;
+    }
+
+    void *const stateStorage = ::operator new(sizeof(HudUiOptionsPanelOverlayOwner));
+    HudUiOptionsPanelOverlayOwner *const state =
+        new (stateStorage) HudUiOptionsPanelOverlayOwner;
+    state->m_panel = dialog;
+    state->~HudUiOptionsPanelOverlayOwner();
+
+    const bool cleared = state->m_panel == nullptr;
+    ::operator delete(stateStorage);
+    return cleared ? 0 : 2;
+}
+
+extern "C" int hud_ui_options_panel_overlay_owner_static_init_thunks_smoke(void) {
+    HudUiOptionsPanelOverlayOwner *const staticInitReturned =
+        HudUiOptionsPanelOverlayOwner::StaticInit();
+    if (staticInitReturned != &g_HudUiOptionsPanelOverlayOwner ||
+        g_HudUiOptionsPanelOverlayOwner.m_panel != nullptr) {
+        return 1;
+    }
+
+    int createResult = 0;
+    HudOptionsDialog *const dialog = CreateOptionsDialogForSmoke(createResult);
+    if (createResult != 0 || dialog == nullptr) {
+        return 2;
+    }
+
+    g_HudUiOptionsPanelOverlayOwner.m_panel = dialog;
+    HudUiOptionsPanelOverlayOwner::AtExitDestructor();
+    if (g_HudUiOptionsPanelOverlayOwner.m_panel != nullptr) {
+        return 3;
+    }
+
+    HudUiOptionsPanelOverlayOwner::RegisterAtExit();
+    HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit();
+    return g_HudUiOptionsPanelOverlayOwner.m_panel == nullptr ? 0 : 4;
+}
+
+extern "C" int hud_ui_options_panel_overlay_owner_queue_enter_smoke(void) {
+    const int oldCount = g_RecoilApp.m_stateQueue.m_itemCount;
+    HudUiOptionsPanelOverlayOwner::QueueEnter();
+    return g_RecoilApp.m_stateQueue.m_itemCount == oldCount + 1 ? 0 : 1;
+}
+
+extern "C" int hud_ui_options_panel_overlay_owner_on_try_become_current_smoke(void) {
+    CodeFunctionPatch loadPatch{};
+    g_optionsDialogLoadCalls = 0;
+    g_optionsDialogLoadArgsOk = false;
+    if (!PatchFunctionJump(
+            HudUiBackgroundLoadFromZrdAddress(),
+            OptionsDialogLoadProbeAddress(),
+            loadPatch
+        )) {
+        return 1;
+    }
+
+    void *const stateStorage = ::operator new(sizeof(HudUiOptionsPanelOverlayOwner));
+    HudUiOptionsPanelOverlayOwner *const state =
+        new (stateStorage) HudUiOptionsPanelOverlayOwner;
+    const int accepted = state->OnTryBecomeCurrent();
+    HudOptionsDialog *const dialog = state->m_panel;
+
+    const bool becameCurrent =
+        accepted == 1 &&
+        dialog != nullptr &&
+        g_optionsDialogLoadCalls == 1 &&
+        g_optionsDialogLoadArgsOk &&
+        dialog->enabled == 1;
+
+    state->~HudUiOptionsPanelOverlayOwner();
+    ::operator delete(stateStorage);
+    RestoreFunctionPatch(loadPatch);
+    return becameCurrent ? 0 : 2;
 }
 
 extern "C" int zhud_credits_panel_constructor_smoke(void) {
@@ -3935,6 +4300,40 @@ extern "C" int zhud_text_input_constructor_smoke(void) {
     input->DestructorCore();
     ::operator delete(storage);
     return constructed && contents ? 0 : 1;
+}
+
+extern "C" int zhud_text_input_destructor_core_smoke(void) {
+    HudUiTextInput baseProbe{};
+    baseProbe.buffer = nullptr;
+    void *const baseVptr = *reinterpret_cast<void **>(&baseProbe);
+
+    HudUiTextInput input{};
+    *reinterpret_cast<void **>(&input) = nullptr;
+    input.buffer = static_cast<char *>(::operator new(16));
+    input.capacity = 16;
+    input.cursor = 4;
+
+    input.DestructorCore();
+    const bool destructed =
+        *reinterpret_cast<void **>(&input) == baseVptr &&
+        input.capacity == 16 &&
+        input.cursor == 4;
+    input.buffer = nullptr;
+
+    HudUiTextInput directInput{};
+    *reinterpret_cast<void **>(&directInput) = nullptr;
+    directInput.buffer = static_cast<char *>(::operator new(8));
+    directInput.capacity = 8;
+    directInput.cursor = 2;
+
+    directInput.HudUiTextInput::~HudUiTextInput();
+    const bool directDestructed =
+        *reinterpret_cast<void **>(&directInput) == baseVptr &&
+        directInput.capacity == 8 &&
+        directInput.cursor == 2;
+    directInput.buffer = nullptr;
+
+    return destructed && directDestructed ? 0 : 1;
 }
 
 extern "C" int zhud_text_input_constructor_and_alloc_smoke(void) {

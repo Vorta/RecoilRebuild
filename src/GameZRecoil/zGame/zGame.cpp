@@ -1582,7 +1582,11 @@ int GetTextureMemoryForCurrentHwMode() {
     return *(g_zOpt_HwMode != 0 ? ZOPT_TEXTURE_MEMORY_HW : ZOPT_TEXTURE_MEMORY_SW);
 }
 
-// Reimplements 0x408120: zOpt::SetPlayerName
+/**
+ * Reimplements 0x408120: zOpt::SetPlayerName.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: copy the supplied player name into the configured option buffer.
+ */
 void __fastcall SetPlayerName(
     const char *name
 ) {
@@ -2022,7 +2026,11 @@ zClass_NodePartial *zOpt_CameraSection_GetActiveCamera() {
     return (*g_zOpt_CameraSectionOption)->m_pCamera;
 }
 
-// Reimplements 0x408190: zOpt_GetPlayerName
+/**
+ * Reimplements 0x408190: zOpt::GetPlayerName.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the configured player-name option buffer.
+ */
 char *zOpt_GetPlayerName() {
     return (char *)(ZOPT_PLAYER_NAME->payloadOrBuffer);
 }

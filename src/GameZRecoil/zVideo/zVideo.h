@@ -352,6 +352,23 @@ struct zVideo_OverwriteQueueEntry {
     D3DTLVERTEX vertices[64];
 };
 
+/*
+ * BN models the Direct3D render-state cache at 0x633408 as one 0x28-byte BSS
+ * record shared by the sorted, overwrite, and solid-quad flush paths.
+ */
+struct zVideo_D3DRenderStateCacheLive {
+    int alphaBlendEnable;
+    int shadeMode;
+    D3DTEXTUREBLEND textureMapBlend;
+    D3DTEXTUREADDRESS textureAddressU;
+    D3DTEXTUREADDRESS textureAddressV;
+    int unknown_14;
+    int unknown_18;
+    D3DTEXTUREHANDLE textureHandle;
+    int zWriteEnable;
+    int unknown_24;
+};
+
 struct zVideo_PixelPackParams {
     int rBits;
     int gBits;
@@ -493,13 +510,7 @@ extern zVideo_SortedPolyQueueEntry g_zVideo_SortedPolyQueueBase[256];
 extern zVideo_OverwriteQueueEntry g_zVideo_OverwriteQueueBase[0x180];
 extern int g_zVideo_SortedPolyQueueCount;
 extern int g_zVideo_OverwriteQueueCount;
-extern D3DTEXTUREHANDLE g_zVideo_D3DRenderState_TextureHandle;
-extern int g_zVideo_D3DRenderState_ShadeMode;
-extern int g_zVideo_D3DRenderState_AlphaBlendEnable;
-extern int g_zVideo_D3DRenderState_ZWriteEnable;
-extern D3DTEXTUREBLEND g_zVideo_D3DRenderState_TextureMapBlend;
-extern D3DTEXTUREADDRESS g_zVideo_D3DRenderState_TextureAddressU;
-extern D3DTEXTUREADDRESS g_zVideo_D3DRenderState_TextureAddressV;
+extern zVideo_D3DRenderStateCacheLive g_zVideo_D3DRenderStateCache;
 extern int g_zVideo_D3DColorNormalizeChannelIndex;
 extern float g_zVideo_D3DColorAttrBiasR;
 extern float g_zVideo_D3DColorAttrBiasG;
@@ -1019,7 +1030,8 @@ int __fastcall InitFullscreenSoftwarePixelPack(
 HRESULT __fastcall CreateSurface3FromDesc(
     IDirectDraw2 *directDraw,
     DDSURFACEDESC *desc,
-    IDirectDrawSurface3 **outSurface
+    IDirectDrawSurface3 **outSurface,
+    int reserved
 );
 int CreateFullscreenSurfacesForRenderer();
 int CreateHalfResBackbufferSurfaces();

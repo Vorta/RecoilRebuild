@@ -22,7 +22,7 @@ extern "C" int g_zUtil_ZRDR_FreeCount = 0;
 extern "C" int g_zUtil_ZRDR_GrowCount = 0;
 extern "C" char g_zReader_FileExtBuf[0x100] = {0};
 extern "C" char g_zReader_FileNameBuf[0x100] = {0};
-extern "C" char g_zRdr_SplitDriveBuf[0x100] = {0};
+extern "C" char g_zRdr_SplitDriveBuf[4] = {0};
 extern "C" char g_zRdr_SplitDirBuf[0x100] = {0};
 extern "C" char g_zRdr_SplitFileNameBuf[0x100] = {0};
 extern "C" char g_zRdr_SplitExtBuf[0x100] = {0};
@@ -442,7 +442,10 @@ extern "C" int __fastcall zUtil_ZRDR_StrCmpPredicate(
     );
 }
 
-// Reimplements 0x4a5f20: zUtil_ZRDR_SearchPathContainsFilePredicate
+/**
+ * Reimplements 0x4a5f20: zUtil_ZRDR_SearchPathContainsFilePredicate.
+ * Purpose: join a search directory with a filename and report whether it exists.
+ */
 extern "C" int __fastcall zUtil_ZRDR_SearchPathContainsFilePredicate(
     void *searchDir,
     void *filename
@@ -482,8 +485,10 @@ int __fastcall ZRDR_GetFileSize(
 }
 } // namespace zUtil
 
-// Reimplements 0x4a5e50: zUtil_ZRDR_ResolvePathInSearchPathList
-// Resolves a filename through the active or scratch ZRDR search-path list.
+/**
+ * Reimplements 0x4a5e50: zUtil_ZRDR_ResolvePathInSearchPathList.
+ * Purpose: resolve a filename through the supplied or scratch ZRDR search path.
+ */
 extern "C" char *__fastcall zUtil_ZRDR_ResolvePathInSearchPathList(
     zArchiveList *searchPathList,
     const char *filename
@@ -895,7 +900,10 @@ int __fastcall SetMissionZrdrPathsAndMountZbd(
 }
 } // namespace zUtil
 
-// Reimplements 0x4a6190: zIndexArchive::Reset
+/**
+ * Reimplements 0x4a6190: zIndexArchive::Reset.
+ * Purpose: initialize archive fields to the closed empty state.
+ */
 zIndexArchive * zIndexArchive::Reset() {
     reservedFree = 0;
     hFile = INVALID_HANDLE_VALUE;
@@ -906,7 +914,10 @@ zIndexArchive * zIndexArchive::Reset() {
     return this;
 }
 
-// Reimplements 0x4a61b0: zIndexArchive::Destroy
+/**
+ * Reimplements 0x4a61b0: zIndexArchive::Destroy.
+ * Purpose: close/free archive records and release the auxiliary reserved buffer.
+ */
 void zIndexArchive::Destroy() {
     CloseAndFreeRecords();
     if (reservedFree != 0) {
@@ -914,7 +925,10 @@ void zIndexArchive::Destroy() {
     }
 }
 
-// Reimplements 0x4a61d0: zIndexArchive::Init
+/**
+ * Reimplements 0x4a61d0: zIndexArchive::Init.
+ * Purpose: open an archive file for reading and load its trailing index.
+ */
 int zIndexArchive::Init(
     const char *filepath
 ) {
@@ -979,7 +993,10 @@ int zIndexArchive::OpenCreateWrite(
     return file != INVALID_HANDLE_VALUE ? 1 : 0;
 }
 
-// Reimplements 0x4a62b0: zIndexArchive::CloseAndFreeRecords
+/**
+ * Reimplements 0x4a62b0: zIndexArchive::CloseAndFreeRecords.
+ * Purpose: flush dirty records, close the file handle, and reset record storage.
+ */
 int zIndexArchive::CloseAndFreeRecords() {
     if (dirty != 0) {
         FlushIndexToTail();
@@ -995,7 +1012,10 @@ int zIndexArchive::CloseAndFreeRecords() {
     return 1;
 }
 
-// Reimplements 0x4a6330: zIndexArchive::FreeRecordsAndReset
+/**
+ * Reimplements 0x4a6330: zIndexArchive::FreeRecordsAndReset.
+ * Purpose: free the archive record table and restore the closed empty fields.
+ */
 void zIndexArchive::FreeRecordsAndReset() {
     if (records == 0) {
         return;
@@ -1010,7 +1030,10 @@ void zIndexArchive::FreeRecordsAndReset() {
     dirty = 0;
 }
 
-// Reimplements 0x4a6360: zIndexArchive::FlushIndexToTail
+/**
+ * Reimplements 0x4a6360: zIndexArchive::FlushIndexToTail.
+ * Purpose: append the record table and tail metadata to the archive file.
+ */
 void zIndexArchive::FlushIndexToTail() {
     DWORD numberOfBytesWritten = 0;
     const unsigned int footerMagic = 1;
@@ -1044,7 +1067,10 @@ void zIndexArchive::FlushIndexToTail() {
     dirty = 0;
 }
 
-// Reimplements 0x4a63f0: zIndexArchive::LoadIndexFromTail
+/**
+ * Reimplements 0x4a63f0: zIndexArchive::LoadIndexFromTail.
+ * Purpose: read and validate the archive index footer and record table.
+ */
 int zIndexArchive::LoadIndexFromTail() {
     if (GetFileSize(
         (HANDLE)(hFile),
@@ -1107,7 +1133,10 @@ int zIndexArchive::LoadIndexFromTail() {
     return 1;
 }
 
-// Reimplements 0x4a62f0: zIndexArchive::EnsureCapacity
+/**
+ * Reimplements 0x4a62f0: zIndexArchive::EnsureCapacity.
+ * Purpose: grow the record table capacity to hold the requested record count.
+ */
 void zIndexArchive::EnsureCapacity(
     unsigned int requiredCount
 ) {

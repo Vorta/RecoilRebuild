@@ -372,6 +372,44 @@ extern "C" int recoil_app_queue_switch_current_state_smoke(void) {
     return result;
 }
 
+extern "C" int recoil_app_queue_push_state_smoke(void) {
+    g_saveLoadStateEnterCount = 0;
+    g_saveLoadStateExitCount = 0;
+
+    RecoilApp app;
+    SaveLoadTestAppState oldState;
+    SaveLoadTestAppState newState;
+    app.m_currentStateIndex = 0;
+    app.m_stateStack[0] = &oldState;
+
+    RecoilApp_IState *const returned = app.QueuePushState(
+        &newState,
+        23
+    );
+    RecoilApp_StateQueue &queue = app.m_stateQueue;
+    RecoilApp_StateQueueItem *const item = SaveLoadQueueItemAt(
+        queue,
+        0
+    );
+
+    int result = 0;
+    if (returned != &oldState ||
+        g_saveLoadStateExitCount != 0 ||
+        g_saveLoadStateEnterCount != 1 ||
+        queue.m_itemCount != 1) {
+        result = 1;
+    } else if (item == nullptr ||
+               item->m_type != 0 ||
+               item->m_kind != RecoilApp_StateQueueKind_PushState ||
+               item->m_stateObj != &newState ||
+               item->m_param != 23) {
+        result = 2;
+    }
+
+    CleanupSaveLoadQueue(queue);
+    return result;
+}
+
 extern "C" int recoil_app_queue_exit_current_state_smoke(void) {
     g_saveLoadStateEnterCount = 0;
     g_saveLoadStateExitCount = 0;
@@ -461,6 +499,117 @@ extern "C" int recoil_app_mfc_ole_module_destructor_smoke(void) {
 
     ::operator delete(storage);
     return result;
+}
+
+extern "C" int recoil_app_constructor_destructor_smoke(void) {
+    void *const storage = ::operator new(sizeof(RecoilApp));
+    std::memset(
+        storage,
+        0,
+        sizeof(RecoilApp)
+    );
+
+    RecoilApp *const app = new (storage) RecoilApp;
+
+    int result = 0;
+    if (app->m_pendingState != nullptr ||
+        app->m_currentStateIndex != -1 ||
+        app->m_skipWait != 0 ||
+        app->m_skipIntroFmv != 0 ||
+        app->m_transitionFadeTimer != 0.0f) {
+        result = 1;
+    } else if (app->m_stateQueue.m_itemCount != 0 ||
+               app->m_stateQueue.m_chunkBaseList != nullptr) {
+        result = 2;
+    } else if (app->m_attractFmvState.m_fmv.m_fmvPath != nullptr ||
+               app->m_introFmvState.m_fmv.m_fmvPath != nullptr ||
+               app->m_missionFmvState.m_fmv.m_fmvPath != nullptr) {
+        result = 3;
+    }
+
+    char *const attractPath = static_cast<char *>(std::malloc(4));
+    char *const introPath = static_cast<char *>(std::malloc(4));
+    char *const missionPath = static_cast<char *>(std::malloc(4));
+    if (attractPath == nullptr || introPath == nullptr || missionPath == nullptr) {
+        std::free(attractPath);
+        std::free(introPath);
+        std::free(missionPath);
+        app->~RecoilApp();
+        ::operator delete(storage);
+        return 4;
+    }
+
+    app->m_attractFmvState.m_fmv.m_fmvPath = attractPath;
+    app->m_introFmvState.m_fmv.m_fmvPath = introPath;
+    app->m_missionFmvState.m_fmv.m_fmvPath = missionPath;
+
+    app->~RecoilApp();
+
+    if (result == 0 &&
+        (app->m_attractFmvState.m_fmv.m_fmvPath != nullptr ||
+         app->m_introFmvState.m_fmv.m_fmvPath != nullptr ||
+         app->m_missionFmvState.m_fmv.m_fmvPath != nullptr)) {
+        result = 5;
+    }
+
+    ::operator delete(storage);
+    return result;
+}
+
+extern "C" int recoil_app_fmv_state_destructor_smoke(void) {
+    void *const attractStorage = ::operator new(sizeof(RecoilApp_AttractFmvState));
+    RecoilApp_AttractFmvState *const attract =
+        new (attractStorage) RecoilApp_AttractFmvState;
+    char *const attractPath = static_cast<char *>(std::malloc(4));
+    if (attractPath == nullptr) {
+        attract->~RecoilApp_AttractFmvState();
+        ::operator delete(attractStorage);
+        return 1;
+    }
+
+    attract->m_fmv.m_fmvPath = attractPath;
+    attract->~RecoilApp_AttractFmvState();
+    const bool attractCleared = attract->m_fmv.m_fmvPath == nullptr;
+    ::operator delete(attractStorage);
+    if (!attractCleared) {
+        return 2;
+    }
+
+    void *const introStorage = ::operator new(sizeof(RecoilApp_IntroFmvState));
+    RecoilApp_IntroFmvState *const intro =
+        new (introStorage) RecoilApp_IntroFmvState;
+    char *const introPath = static_cast<char *>(std::malloc(4));
+    if (introPath == nullptr) {
+        intro->~RecoilApp_IntroFmvState();
+        ::operator delete(introStorage);
+        return 3;
+    }
+
+    intro->m_fmv.m_fmvPath = introPath;
+    intro->~RecoilApp_IntroFmvState();
+    const bool introCleared = intro->m_fmv.m_fmvPath == nullptr;
+    ::operator delete(introStorage);
+
+    return introCleared ? 0 : 4;
+}
+
+extern "C" int recoil_app_mission_fmv_state_destructor_smoke(void) {
+    void *const storage = ::operator new(sizeof(RecoilApp_MissionFmvState));
+    RecoilApp_MissionFmvState *const mission =
+        new (storage) RecoilApp_MissionFmvState;
+    char *const missionPath = static_cast<char *>(std::malloc(4));
+    if (missionPath == nullptr) {
+        mission->~RecoilApp_MissionFmvState();
+        ::operator delete(storage);
+        return 1;
+    }
+
+    mission->m_fmv.m_fmvPath = missionPath;
+    mission->~RecoilApp_MissionFmvState();
+    const bool missionCleared = mission->m_fmv.m_fmvPath == nullptr;
+    ::operator delete(storage);
+
+    return missionCleared ? 0 : 2;
 }
 
 extern "C" int recoil_app_start_engine_and_queue_startup_state_smoke(void) {

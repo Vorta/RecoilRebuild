@@ -1,4 +1,5 @@
 #include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zRndr/zRndr.h"
 
 #include <cstdlib>
 
@@ -7,6 +8,83 @@ unsigned short PackNoiseGray565(unsigned char value) {
     const unsigned short level = static_cast<unsigned short>(value & 0x1f);
     return static_cast<unsigned short>((level << 11) | (level << 6) | level);
 }
+}
+
+extern "C" int zvideo_frame_scratch_buffers_smoke(void) {
+    std::free(g_zVid_NoiseByteTable);
+    std::free(g_zVideo_FxPass3_ScratchPixels16);
+    g_zVid_NoiseByteTable = 0;
+    g_zVideo_FxPass3_ScratchPixels16 = 0;
+
+    g_zVideo_PrimarySurfaceState.width = 4;
+    g_zVideo_PrimarySurfaceState.height = 3;
+    unsigned short staleFxPixel = 0;
+    g_zVideo_FxSurfacePixels16 = &staleFxPixel;
+    g_zVideo_FxSurfaceWidth = 1;
+    g_zVideo_FxSurfaceHeight = 1;
+    g_zVideo_FxSurfacePitchBytes = 2;
+    g_zVideo_FxSurfacePitchPixels16 = 1;
+
+    zVideo::PixelPack_SetupFromMasks(
+        5,
+        6,
+        5,
+        0xf800,
+        0x07e0,
+        0x001f
+    );
+    zRndr::g_bytesPerPixel = 1;
+    zRndr::g_defaultGraphicsFlags = 8;
+    zRndr::g_graphicsFlags = &zRndr::g_defaultGraphicsFlags;
+    zRndr::g_pfnOverlayBlendRow = 0;
+
+    zVid::InitFrameScratchBuffers();
+
+    const bool result =
+        g_zVid_NoiseByteTableSize == 100 && g_zVid_NoiseByteTable != 0 &&
+        g_zVideo_FxPass3_ScratchPixels16 != 0 && g_zVideo_FxSurfacePixels16 == 0 &&
+        g_zVideo_FxSurfaceWidth == 0 && g_zVideo_FxSurfaceHeight == 0 &&
+        g_zVideo_FxSurfacePitchBytes == 0 && g_zVideo_FxSurfacePitchPixels16 == 0 &&
+        zRndr::g_pfnOverlayBlendRow == zRndr::OverlayBlendRow555_Scalar &&
+        zRndr::g_pixelPackGreenBits == 6 && zRndr::g_perspectiveAdaptiveMinSpan == 0x10 &&
+        zRndr::g_perspectiveAdaptiveMaxSpan == 0x40 && (zRndr::g_defaultGraphicsFlags & 4) == 0;
+
+    std::free(g_zVid_NoiseByteTable);
+    std::free(g_zVideo_FxPass3_ScratchPixels16);
+    g_zVid_NoiseByteTable = 0;
+    g_zVideo_FxPass3_ScratchPixels16 = 0;
+    return result ? 0 : 1;
+}
+
+extern "C" int zvideo_noise_shutdown_buffers_smoke(void) {
+    unsigned char *const savedNoiseTable = g_zVid_NoiseByteTable;
+    unsigned short *const savedScratchPixels = g_zVideo_FxPass3_ScratchPixels16;
+
+    unsigned char *const noiseTable = (unsigned char *)(std::malloc(8));
+    unsigned short *const scratchPixels = (unsigned short *)(std::malloc(8));
+    if (noiseTable == 0 || scratchPixels == 0) {
+        std::free(noiseTable);
+        std::free(scratchPixels);
+        return 1;
+    }
+
+    noiseTable[0] = 0x5a;
+    scratchPixels[0] = 0xa55a;
+    g_zVid_NoiseByteTable = noiseTable;
+    g_zVideo_FxPass3_ScratchPixels16 = scratchPixels;
+    zVid::Noise_ShutdownBuffers();
+    const bool allocatedShutdownOk =
+        g_zVid_NoiseByteTable == 0 &&
+        g_zVideo_FxPass3_ScratchPixels16 == 0;
+
+    zVid::Noise_ShutdownBuffers();
+    const bool nullShutdownOk =
+        g_zVid_NoiseByteTable == 0 &&
+        g_zVideo_FxPass3_ScratchPixels16 == 0;
+
+    g_zVid_NoiseByteTable = savedNoiseTable;
+    g_zVideo_FxPass3_ScratchPixels16 = savedScratchPixels;
+    return allocatedShutdownOk && nullShutdownOk ? 0 : 1;
 }
 
 extern "C" int zvideo_draw_noise_rect_smoke(void) {

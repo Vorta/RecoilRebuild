@@ -3295,9 +3295,9 @@ struct HudUiBriefingRuntime
 // "HudUiBriefingRuntime_VTable"
 struct HudUiBriefingRuntime_VTable
 {
-	int32_t (__thiscall* Update)(struct HudUiBriefingRuntime* self, float deltaTimeSec);
-	int32_t (__thiscall* SetEnabled)(struct HudUiBriefingRuntime* self, int32_t enabled);
-	struct HudUiBriefingRuntime* (__thiscall* ScalarDeletingDtor)(struct HudUiBriefingRuntime* self, uint32_t flags);
+	void (* Update)(struct HudUiBriefingRuntime* self, float deltaTimeSec);
+	int32_t (* SetEnabled)(struct HudUiBriefingRuntime* self, int32_t enabled);
+	struct HudUiBriefingRuntime* (* ScalarDeletingDtor)(struct HudUiBriefingRuntime* self, uint32_t flags);
 };
 
 // "HudUiBriefingTransportProgress"
@@ -3595,43 +3595,43 @@ struct HudUiCompositePanelVector
 // "HudUiCompositePanel_FTable"
 struct HudUiCompositePanel_FTable
 {
-	struct HudUiFlashPanel* (* dtor)(struct HudUiFlashPanel* self, uint32_t flags);
-	int32_t (* Draw)(struct HudUiFlashPanel* self);
-	int32_t (* DrawBase)(struct HudUiElement* self);
-	int32_t (* SetPos)(struct HudUiElement* self, int32_t x, int32_t y);
-	int32_t (* SetX)(struct HudUiElement* self, int32_t x);
-	int32_t (* SetY)(struct HudUiElement* self, int32_t y);
-	void (* SetClip)(struct HudUiElement* self, struct zVideo_BltSourceHead* bltSourceOrNull, struct HudUiRect const* rectOrNull);
-	void (* SetClipRect)(struct HudUiElement* self, struct HudUiRect const* rectOrNull);
-	int32_t (* Invalidate)(struct HudUiElement* self);
+	HudUiPanel_VT_Dtor dtor;
+	HudUiPanel_VT_Noarg Draw;
+	HudUiPanel_VT_Noarg DrawBase;
+	HudUiPanel_VT_SetPos SetPos;
+	HudUiPanel_VT_SetCoord SetX;
+	HudUiPanel_VT_SetCoord SetY;
+	HudUiPanel_VT_SetClip SetClip;
+	HudUiPanel_VT_SetClipRect SetClipRect;
+	HudUiPanel_VT_Noarg Invalidate;
 	void (* Update)(struct HudUiCompositePanel* self, float deltaTime);
 	void* field_28;
-	void* field_2c;
-	void* noOp;
-	void* noOp1;
-	void* noOp2;
-	void* noOp3;
-	void* noOp4;
-	void* noOp5;
-	void* noOp6;
+	HudUiPanel_VT_GetTextBufferPtrOrNull GetTextBufferPtrOrNull;
+	HudUiPanel_VT_OnActivate OnActivate;
+	void* field_34;
+	void* field_38;
+	void* field_3c;
+	void* field_40;
+	void* field_44;
+	void* field_48;
 	void* field_4c;
-	void* noOp7;
+	void* field_50;
+	HudUiPanel_VT_HitTest HitTest;
 	void* field_58;
 	void* field_5c;
-	void (* SetVisible)(struct HudUiElement* self, int32_t visible);
-	int32_t (* GetX)(struct HudUiElement* self);
-	int32_t (* GetY)(struct HudUiElement* self);
-	void* field_6c;
-	int32_t (* GetRect)(struct HudUiFlashPanel* self, struct HudUiRect* outRect);
+	HudUiPanel_VT_SetVisible SetVisible;
+	HudUiPanel_VT_GetCoord GetX;
+	HudUiPanel_VT_GetCoord GetY;
+	HudUiPanel_VT_EnableWordWrap EnableWordWrapWithRect;
+	HudUiPanel_VT_GetTextRect GetTextRect;
 	void (* SetTextFmt)(struct HudUiCompositePanel* self, char const* format, ...);
-	void (* UpdateTextBoundsFromContent)(struct HudUiFlashPanel* self);
-	void* (* GetFont)(struct HudUiFlashPanel* self);
+	HudUiPanel_VT_Noarg UpdateTextBoundsFromContent;
+	HudUiPanel_VT_GetFont GetFont;
 	void (* SetFont)(struct HudUiCompositePanel* self, char* pszFaceName, int32_t cHeight, int32_t cWidth, int32_t cWeight, uint32_t bItalic, uint32_t iCharSet, uint32_t iPitchAndFamily);
-	void* (* SetFontHandle)(struct HudUiFlashPanel* self, void* hFont);
+	HudUiPanel_VT_SetFontHandle SetFontHandle;
 	void (* SetTextFmtV)(struct HudUiCompositePanel* self, char const* format, char* argList);
-	char (* SetText)(struct HudUiFlashPanel* self, char const* text);
-	int32_t (* RebuildTextRect)(struct HudUiFlashPanel* self);
-	void* field_90;
+	HudUiPanel_VT_SetText SetText;
+	HudUiPanel_VT_Noarg RebuildTextRect;
 	void (* ScrollHistory)(struct HudUiCompositePanel* self);
 };
 
