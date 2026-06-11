@@ -543,8 +543,7 @@ extern "C" zSndSample *__fastcall zSndSample_CreateQueuedStreamingSample(
         return 0;
     }
 
-    zSndWaveData waveData = {0};
-    waveData.ConstructorFromPath(
+    zSndWaveData waveData(
         "",
         0
     );
@@ -561,17 +560,16 @@ extern "C" zSndSample *__fastcall zSndSample_CreateQueuedStreamingSample(
         sample = 0;
     }
 
-    waveData.Destructor();
     return sample;
 }
 
 /**
- * Reimplements 0x4a53f0: zSndWaveData::ConstructorFromPath.
+ * Reimplements 0x4a53f0: zSndWaveData::zSndWaveData.
  *
  * Purpose: initialize a WAV data record from a path and optionally load and
  * parse it immediately.
  */
-zSndWaveData * zSndWaveData::ConstructorFromPath(
+zSndWaveData::zSndWaveData(
     const char *path,
     int loadNow
 ) {
@@ -588,8 +586,6 @@ zSndWaveData * zSndWaveData::ConstructorFromPath(
     if (loadNow != 0) {
         LoadAndParseIfNeeded();
     }
-
-    return this;
 }
 
 /**

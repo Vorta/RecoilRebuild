@@ -72,16 +72,20 @@ void ClearSampleLoadedFlag(
     sample->replayFields.flags &= ~0x08;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper observed in caller 0x4a0c40.
+ *
+ * Purpose: load one sample from a resolved WAV path and mirror initialization
+ * success into the sample loaded flag.
+ */
 void LoadSampleFromWavePath(
     zSndSample *sample,
     const char *path
 ) {
-    zSndWaveData *waveData = (zSndWaveData *)(::operator new(sizeof(zSndWaveData)));
-    waveData = waveData != 0 ? waveData->ConstructorFromPath(
+    zSndWaveData *waveData = new zSndWaveData(
         path,
         1
-    ) : 0;
+    );
 
     if (waveData != 0 && waveData->parsedOk != 0) {
         UpdateSampleLoadedFlag(
@@ -93,8 +97,7 @@ void LoadSampleFromWavePath(
     }
 
     if (waveData != 0) {
-        waveData->Destructor();
-        ::operator delete(waveData);
+        delete waveData;
     }
 }
 } // namespace
@@ -154,7 +157,11 @@ extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistry_GetByIndex(
     return 0;
 }
 
-// Reimplements 0x4a0920: zSndSampleSetRegistry_FindByName
+/**
+ * Reimplements 0x4a0920: zSndSampleSetRegistry_FindByName.
+ * Purpose: return the registered sample set whose stored name exactly matches
+ * the requested name.
+ */
 extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistry_FindByName(
     const char *setName
 ) {
@@ -178,7 +185,11 @@ extern "C" int __fastcall zSndSampleSet_DestroyByName(
     return zSndSampleSetRegistry_FindByName(setName)->Destroy();
 }
 
-// Reimplements 0x4a0860: zSndSampleSet_InitByName
+/**
+ * Reimplements 0x4a0860: zSndSampleSet_InitByName.
+ * Purpose: find a registered sample set by name and dispatch its
+ * initialization routine.
+ */
 extern "C" int __fastcall zSndSampleSet_InitByName(
     const char *setName
 ) {
@@ -237,46 +248,57 @@ zSndSample * zSndSampleSet::FindSampleByName(
     return 0;
 }
 
-// Reimplements 0x4a0fb0: zSndSampleSet::LoadSamplesFromIndexArchive
+/**
+ * Reimplements 0x4a0fb0: zSndSampleSet::LoadSamplesFromIndexArchive.
+ * Purpose: load still-unloaded samples from the supplied index archive and
+ * mirror each load result into the sample loaded flag.
+ */
 int zSndSampleSet::LoadSamplesFromIndexArchive(
     zIndexArchive *archive
 ) {
-    {
-        for (int index = 0; index < sampleCount; ++index) {
-            zSndSample *const sample = &samples[index];
-            if ((sample->replayFields.flags & 0x08) != 0) {
-                continue;
-            }
-
-            zSndWaveData *waveData = (zSndWaveData *)(::operator new(sizeof(zSndWaveData)));
-            waveData = waveData != 0
-                           ? waveData->ConstructorFromPath(sample->replayFields.resourceName, 0)
-                           : 0;
-
-            if (waveData != 0) {
-                waveData->LoadAndParseFromIndexArchiveIfNeeded(archive);
-            }
-
-            if (waveData != 0 && waveData->parsedOk != 0) {
-                UpdateSampleLoadedFlag(
-                    sample,
-                    sample->InitFromWaveData(waveData)
+    zSndSample *sample = samples;
+    int index = 0;
+    if (sampleCount > 0) {
+        do {
+            zSndSampleReplayFields *replayFields = &sample->replayFields;
+            if ((replayFields->flags & 0x08) == 0) {
+                zSndWaveData *waveData = new zSndWaveData(
+                    replayFields->resourceName,
+                    0
                 );
-            } else {
-                ClearSampleLoadedFlag(sample);
+
+                waveData->LoadAndParseFromIndexArchiveIfNeeded(archive);
+
+                if (waveData->parsedOk != 0) {
+                    int initResult = sample->InitFromWaveData(waveData);
+                    int flags = replayFields->flags;
+                    initResult &= 1;
+                    flags &= ~0x08;
+                    initResult <<= 3;
+                    flags |= initResult;
+                    replayFields->flags = flags;
+                } else {
+                    replayFields->flags &= ~0x08;
+                }
+
+                if (waveData != 0) {
+                    delete waveData;
+                }
             }
 
-            if (waveData != 0) {
-                waveData->Destructor();
-                ::operator delete(waveData);
-            }
-        }
+            ++index;
+            ++sample;
+        } while (index < sampleCount);
     }
 
     return 1;
 }
 
-// Reimplements 0x4a0c40: zSndSampleSet::Init
+/**
+ * Reimplements 0x4a0c40: zSndSampleSet::Init.
+ * Purpose: initialize an unloaded sample set from archive banks first, then
+ * from loose sample paths, and mark the set loaded.
+ */
 int zSndSampleSet::Init() {
     zIndexArchive archive;
     archive.Reset();

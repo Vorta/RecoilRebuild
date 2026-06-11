@@ -44,7 +44,12 @@ size_t zVidPaletteRemapTableBytesForRecipeCount(
     ) * sizeof(unsigned short);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: zVideo_BlendPixel565Alpha8.
+ * Original-source helper evidence: no standalone retail function is present; recovered from
+ * address-backed framebuffer blit callers in this source file.
+ * Purpose: Blend one 565 destination/source pixel pair using an 8-bit alpha value.
+ */
 unsigned short zVideo_BlendPixel565Alpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
@@ -60,7 +65,12 @@ unsigned short zVideo_BlendPixel565Alpha8(
     return (unsigned short)(blended);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: zVideo_BlendPixel555Alpha8.
+ * Original-source helper evidence: no standalone retail function is present; recovered from
+ * address-backed framebuffer blit callers in this source file.
+ * Purpose: Blend one 555 destination/source pixel pair using an 8-bit alpha value.
+ */
 unsigned short zVideo_BlendPixel555Alpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
@@ -76,7 +86,12 @@ unsigned short zVideo_BlendPixel555Alpha8(
     return (unsigned short)(blended);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: zVideo_BlendFramebufferPixelAlpha8.
+ * Original-source helper evidence: no standalone retail function is present; recovered from
+ * address-backed framebuffer blit callers in this source file.
+ * Purpose: Select the current framebuffer pixel format and blend one alpha-scaled pixel.
+ */
 unsigned short zVideo_BlendFramebufferPixelAlpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
@@ -97,7 +112,12 @@ unsigned short zVideo_BlendFramebufferPixelAlpha8(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: zVideo_GetAlphaSkipThreshold.
+ * Original-source helper evidence: no standalone retail function is present; recovered from
+ * address-backed framebuffer blit callers in this source file.
+ * Purpose: Return the alpha-map threshold below which framebuffer pixels are skipped.
+ */
 int zVideo_GetAlphaSkipThreshold() {
     return zRndr::g_pixelPackGreenBits == 6 ? 3 : 7;
 }
@@ -291,13 +311,7 @@ zVideo_SortedPolyQueueEntry g_zVideo_SortedPolyQueueBase[256] = {0};
 zVideo_OverwriteQueueEntry g_zVideo_OverwriteQueueBase[0x180] = {0};
 int g_zVideo_SortedPolyQueueCount = 0;
 int g_zVideo_OverwriteQueueCount = 0;
-D3DTEXTUREHANDLE g_zVideo_D3DRenderState_TextureHandle = 0;
-int g_zVideo_D3DRenderState_ShadeMode = 0;
-int g_zVideo_D3DRenderState_AlphaBlendEnable = 0;
-int g_zVideo_D3DRenderState_ZWriteEnable = 0;
-D3DTEXTUREBLEND g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(0);
-D3DTEXTUREADDRESS g_zVideo_D3DRenderState_TextureAddressU = (D3DTEXTUREADDRESS)(0);
-D3DTEXTUREADDRESS g_zVideo_D3DRenderState_TextureAddressV = (D3DTEXTUREADDRESS)(0);
+zVideo_D3DRenderStateCacheLive g_zVideo_D3DRenderStateCache = {0};
 int g_zVideo_D3DColorNormalizeChannelIndex = 0;
 float g_zVideo_D3DColorAttrBiasR = 0.0f;
 float g_zVideo_D3DColorAttrBiasG = 0.0f;
@@ -526,7 +540,14 @@ void __fastcall zVideo_SetClearColorPacked16(
     g_zVideo_ClearColorPacked16 = packedColor16;
 }
 
-// Reimplements 0x4a7250: zVideo_SetPendingFogTargetColorFromRgb01
+/**
+ * Reimplements 0x4a7250: zVideo_SetPendingFogTargetColorFromRgb01
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Data evidence: writes the D3D color-attribute bias globals at
+ * 0x6321dc-0x6321e4 and, for non-software renderers, the normalize-channel
+ * index at 0x632140.
+ * Purpose: scale a normalized fog target color into D3D color-bias globals.
+ */
 void __fastcall zVideo_SetPendingFogTargetColorFromRgb01(
     zVideo_ColorRgbFloat *color
 ) {
@@ -1131,6 +1152,49 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(sizeof(zVideo_RenderClass) == 0x1c);
 RECOIL_STATIC_ASSERT(sizeof(zVideo_SortedPolyQueueEntry) == 0x80c);
 RECOIL_STATIC_ASSERT(sizeof(zVideo_OverwriteQueueEntry) == 0x810);
+RECOIL_STATIC_ASSERT(sizeof(zVideo_D3DRenderStateCacheLive) == 0x28);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_D3DRenderStateCacheLive,
+        alphaBlendEnable
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_D3DRenderStateCacheLive,
+        shadeMode
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_D3DRenderStateCacheLive,
+        textureMapBlend
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_D3DRenderStateCacheLive,
+        textureAddressU
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_D3DRenderStateCacheLive,
+        textureAddressV
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_D3DRenderStateCacheLive,
+        textureHandle
+    ) == 0x1c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zVideo_D3DRenderStateCacheLive,
+        zWriteEnable
+    ) == 0x20
+);
 RECOIL_STATIC_ASSERT(
     offsetof(
         zVideo_SortedPolyQueueEntry,
@@ -2163,7 +2227,12 @@ int MakeShiftedMask(
 }
 } // namespace
 
-// Reimplements 0x4a6bf0: zVideo::PixelPack_SetupFromMasks
+/**
+ * Reimplements 0x4a6bf0: zVideo::PixelPack_SetupFromMasks.
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: initialize the global display pixel-pack bit counts, masks, and
+ * shifted channel masks from DirectDraw pixel-format masks.
+ */
 void __fastcall PixelPack_SetupFromMasks(
     int redBits,
     int greenBits,
@@ -2639,7 +2708,11 @@ int __fastcall SetVideoMode(
     return g_zVideo_pfnSetVideoMode(modeIndex);
 }
 
-// Reimplements 0x4a6760: zVideo::CallClearSwSurfaceAndZBuffer
+/**
+ * Reimplements 0x4a6760: zVideo::CallClearSwSurfaceAndZBuffer.
+ * Purpose: Tail-dispatches the installed software clear callback with surface
+ * and Z-buffer rectangles.
+ */
 void __fastcall CallClearSwSurfaceAndZBuffer(
     zVidRect32 *surfaceRect,
     zVidRect32 *zRect
@@ -2650,7 +2723,11 @@ void __fastcall CallClearSwSurfaceAndZBuffer(
     );
 }
 
-// Reimplements 0x4a6830: zVideo::CallClearPrimarySurfaceAndZBuffer
+/**
+ * Reimplements 0x4a6830: zVideo::CallClearPrimarySurfaceAndZBuffer.
+ * Purpose: Tail-dispatches the installed primary clear callback with the
+ * primary surface state.
+ */
 void __fastcall CallClearPrimarySurfaceAndZBuffer(
     zVidRect32 *rect
 ) {
@@ -2660,7 +2737,10 @@ void __fastcall CallClearPrimarySurfaceAndZBuffer(
     );
 }
 
-// Reimplements 0x4a7b20: zVideo::ExchangeClearScreenBufferEnabled
+/**
+ * Reimplements 0x4a7b20: zVideo::ExchangeClearScreenBufferEnabled.
+ * Purpose: Swaps the clear-screen-buffer flag and returns the previous value.
+ */
 int __fastcall ExchangeClearScreenBufferEnabled(
     int enable
 ) {
@@ -2669,7 +2749,10 @@ int __fastcall ExchangeClearScreenBufferEnabled(
     return previous;
 }
 
-// Reimplements 0x4a7b30: zVideo::GetClearScreenBufferEnabled
+/**
+ * Reimplements 0x4a7b30: zVideo::GetClearScreenBufferEnabled.
+ * Purpose: Returns the current clear-screen-buffer flag.
+ */
 int GetClearScreenBufferEnabled() {
     return g_zVideo_ClearScreenBufferEnabled;
 }
@@ -3100,26 +3183,6 @@ void __fastcall FxPass3_ApplyToCurrentSurface(
 }
 
 /**
- * Original inline helper; no standalone retail function exists.
- * Purpose: Blends three 16bpp pixels with 1-2-1 weighting using split RGB masks.
- *
- * Evidence: BN shows the same mask-preserving blend sequence in the address-backed
- * blur leaves at 0x48e380, 0x48e670, and 0x48e870.
- */
-static inline unsigned short __fastcall zVideoBlendBlurPixel3(
-    unsigned short before,
-    unsigned short center,
-    unsigned short after,
-    unsigned int rbMask,
-    unsigned int greenMask
-) {
-    const unsigned int rb = (before & rbMask) + ((center & rbMask) << 1) + (after & rbMask);
-    const unsigned int green =
-        (before & greenMask) + ((center & greenMask) << 1) + (after & greenMask);
-    return (unsigned short)(((rb >> 2) & rbMask) | ((green >> 2) & greenMask));
-}
-
-/**
  * Reimplements 0x48e380: zVideo::buff_BlurRegionCombined.
  * Purpose: Applies vertical then horizontal 1-2-1 blur over a 16bpp FX-surface region.
  */
@@ -3127,8 +3190,8 @@ void __fastcall buff_BlurRegionCombined(
     zVidRect32 *rectOrNull,
     int
 ) {
-    int left;
     int top;
+    int left;
     int right;
     int bottom;
     if (rectOrNull != 0) {
@@ -3155,78 +3218,112 @@ void __fastcall buff_BlurRegionCombined(
         bottom = g_zVideo_FxSurfaceHeight - 1;
     }
 
-    const int columnCount = right - left + 1;
+    int savedLeft = left;
+    int savedTop = top;
+    int savedBottom = bottom;
+    int columnCount = right - savedLeft + 1;
+    unsigned int blueMask;
     unsigned int redMask;
     unsigned int greenMask;
-    unsigned int blueMask;
+    unsigned int rbMask;
     PixelPack_GetRgbMasks(
         &redMask,
         &greenMask,
         &blueMask
     );
-    const unsigned int rbMask = redMask | blueMask;
+    rbMask = redMask | blueMask;
+
+    int rowDelta = g_zVideo_FxSurfaceWidth - g_zVideo_FxSurfacePitchPixels16;
+    unsigned short *src =
+        g_zVideo_FxSurfacePixels16 + savedTop * g_zVideo_FxSurfacePitchPixels16 + savedLeft -
+        g_zVideo_FxSurfaceWidth;
+    unsigned short *scratch =
+        g_zVideo_FxPass3_ScratchPixels16 + savedTop * g_zVideo_FxSurfaceWidth + savedLeft -
+        g_zVideo_FxSurfaceWidth;
 
     if (columnCount > 0) {
-        unsigned short *src =
-            g_zVideo_FxSurfacePixels16 + (top - 1) * g_zVideo_FxSurfacePitchPixels16 + left;
-        unsigned short *dst =
-            g_zVideo_FxPass3_ScratchPixels16 + (top - 1) * g_zVideo_FxSurfaceWidth + left;
         int count = columnCount;
-        while (count != 0) {
-            *dst++ = *src++;
+        do {
+            *scratch = *src;
+            ++src;
+            ++scratch;
             --count;
-        }
+        } while (count != 0);
     }
 
-    int y;
-    for (y = top; y < bottom; ++y) {
-        unsigned short *dst = g_zVideo_FxPass3_ScratchPixels16 + y * g_zVideo_FxSurfaceWidth + left;
-        unsigned short *src =
-            g_zVideo_FxSurfacePixels16 + y * g_zVideo_FxSurfacePitchPixels16 + left;
-        int x;
-        for (x = 0; x < columnCount; ++x) {
-            dst[x] = zVideoBlendBlurPixel3(
-                src[x - g_zVideo_FxSurfacePitchPixels16],
-                src[x],
-                src[x + g_zVideo_FxSurfacePitchPixels16],
-                rbMask,
-                greenMask
-            );
-        }
+    src = src + rowDelta;
+    scratch = scratch + rowDelta;
+    if (savedTop < savedBottom) {
+        int rowCount = savedBottom - savedTop;
+        do {
+            if (columnCount > 0) {
+                int count = columnCount;
+                do {
+                    const unsigned int rb =
+                        (src[-g_zVideo_FxSurfaceWidth] & rbMask) +
+                        ((*src & rbMask) << 1) +
+                        (src[g_zVideo_FxSurfaceWidth] & rbMask);
+                    const unsigned int green =
+                        (src[-g_zVideo_FxSurfaceWidth] & greenMask) +
+                        ((*src & greenMask) << 1) +
+                        (src[g_zVideo_FxSurfaceWidth] & greenMask);
+                    *scratch = (unsigned short)(((rb >> 2) & rbMask) | ((green >> 2) & greenMask));
+                    ++src;
+                    ++scratch;
+                    --count;
+                } while (count != 0);
+            }
+
+            src = src + rowDelta;
+            scratch = scratch + rowDelta;
+            --rowCount;
+        } while (rowCount != 0);
     }
 
     if (columnCount > 0) {
-        unsigned short *src =
-            g_zVideo_FxSurfacePixels16 + bottom * g_zVideo_FxSurfacePitchPixels16 + left;
-        unsigned short *dst =
-            g_zVideo_FxPass3_ScratchPixels16 + bottom * g_zVideo_FxSurfaceWidth + left;
         int count = columnCount;
-        while (count != 0) {
-            *dst++ = *src++;
+        do {
+            *scratch = *src;
+            ++src;
+            ++scratch;
             --count;
-        }
+        } while (count != 0);
     }
 
-    for (y = top - 1; y <= bottom; ++y) {
-        unsigned short *src = g_zVideo_FxPass3_ScratchPixels16 + y * g_zVideo_FxSurfaceWidth + left;
-        unsigned short *dst =
-            g_zVideo_FxSurfacePixels16 + y * g_zVideo_FxSurfacePitchPixels16 + left;
-        if (columnCount > 0) {
-            dst[0] = src[0];
-        }
-        int x;
-        for (x = 1; x < columnCount - 1; ++x) {
-            dst[x] = zVideoBlendBlurPixel3(
-                src[x - 1],
-                src[x],
-                src[x + 1],
-                rbMask,
-                greenMask
-            );
-        }
-        if (columnCount > 1) {
-            dst[columnCount - 1] = src[columnCount - 1];
-        }
+    top = savedTop - 1;
+    bottom = savedBottom + 1;
+    left = savedLeft + 1;
+    columnCount -= 2;
+    src = g_zVideo_FxSurfacePixels16 + top * g_zVideo_FxSurfacePitchPixels16 + left;
+    scratch = g_zVideo_FxPass3_ScratchPixels16 + top * g_zVideo_FxSurfaceWidth + left;
+    if (top < bottom) {
+        int horizontalRowDelta = rowDelta + 2;
+        int rowCount = bottom - top;
+        do {
+            src[-1] = scratch[-1];
+            if (columnCount > 0) {
+                int count = columnCount;
+                do {
+                    const unsigned int rb =
+                        (scratch[-1] & rbMask) +
+                        ((*scratch & rbMask) << 1) +
+                        (scratch[1] & rbMask);
+                    const unsigned int green =
+                        (scratch[-1] & greenMask) +
+                        ((*scratch & greenMask) << 1) +
+                        (scratch[1] & greenMask);
+                    *src = (unsigned short)(((rb >> 2) & rbMask) | ((green >> 2) & greenMask));
+                    ++src;
+                    ++scratch;
+                    --count;
+                } while (count != 0);
+            }
+
+            *src = *scratch;
+            src = src + horizontalRowDelta;
+            scratch = scratch + horizontalRowDelta;
+            --rowCount;
+        } while (rowCount != 0);
     }
 }
 
@@ -3238,8 +3335,8 @@ void __fastcall buff_BlurRegionVertical(
     zVidRect32 *rectOrNull,
     int
 ) {
-    int left;
     int top;
+    int left;
     int right;
     int bottom;
     if (rectOrNull != 0) {
@@ -3266,42 +3363,74 @@ void __fastcall buff_BlurRegionVertical(
         bottom = g_zVideo_FxSurfaceHeight - 1;
     }
 
-    const int columnCount = right - left + 1;
+    int columnCount = right - left + 1;
     unsigned int redMask;
     unsigned int greenMask;
     unsigned int blueMask;
+    unsigned int rbMask;
     PixelPack_GetRgbMasks(
         &redMask,
         &greenMask,
         &blueMask
     );
-    const unsigned int rbMask = redMask | blueMask;
+    rbMask = redMask | blueMask;
 
-    int y;
-    for (y = top; y < bottom; ++y) {
-        unsigned short *dst = g_zVideo_FxPass3_ScratchPixels16 + y * g_zVideo_FxSurfaceWidth + left;
-        unsigned short *src =
-            g_zVideo_FxSurfacePixels16 + y * g_zVideo_FxSurfacePitchPixels16 + left;
-        int x;
-        for (x = 0; x < columnCount; ++x) {
-            dst[x] = zVideoBlendBlurPixel3(
-                src[x - g_zVideo_FxSurfacePitchPixels16],
-                src[x],
-                src[x + g_zVideo_FxSurfacePitchPixels16],
-                rbMask,
-                greenMask
-            );
-        }
+    unsigned short *srcRow =
+        g_zVideo_FxSurfacePixels16 + top * g_zVideo_FxSurfacePitchPixels16 + left;
+    unsigned short *scratchRow =
+        g_zVideo_FxPass3_ScratchPixels16 + top * g_zVideo_FxSurfaceWidth + left;
+    const int rowDelta = g_zVideo_FxSurfaceWidth - g_zVideo_FxSurfacePitchPixels16;
+
+    if (top < bottom) {
+        int rowCount = bottom - top;
+        do {
+            unsigned short *src = srcRow;
+            unsigned short *scratch = scratchRow;
+            if (columnCount > 0) {
+                int count = columnCount;
+                do {
+                    const unsigned int rb =
+                        (src[-g_zVideo_FxSurfaceWidth] & rbMask) +
+                        ((*src & rbMask) << 1) +
+                        (src[g_zVideo_FxSurfaceWidth] & rbMask);
+                    const unsigned int green =
+                        (src[-g_zVideo_FxSurfaceWidth] & greenMask) +
+                        ((*src & greenMask) << 1) +
+                        (src[g_zVideo_FxSurfaceWidth] & greenMask);
+                    *scratch = (unsigned short)(((rb >> 2) & rbMask) | ((green >> 2) & greenMask));
+                    ++src;
+                    ++scratch;
+                    --count;
+                } while (count != 0);
+            }
+
+            srcRow = src + rowDelta;
+            scratchRow = scratch + rowDelta;
+            --rowCount;
+        } while (rowCount != 0);
     }
 
-    for (y = top; y < bottom; ++y) {
-        unsigned short *src = g_zVideo_FxPass3_ScratchPixels16 + y * g_zVideo_FxSurfaceWidth + left;
-        unsigned short *dst =
-            g_zVideo_FxSurfacePixels16 + y * g_zVideo_FxSurfacePitchPixels16 + left;
-        int x;
-        for (x = 0; x < columnCount; ++x) {
-            dst[x] = src[x];
-        }
+    srcRow = g_zVideo_FxSurfacePixels16 + top * g_zVideo_FxSurfacePitchPixels16 + left;
+    scratchRow = g_zVideo_FxPass3_ScratchPixels16 + top * g_zVideo_FxSurfaceWidth + left;
+    if (top < bottom) {
+        int rowCount = bottom - top;
+        do {
+            unsigned short *src = srcRow;
+            unsigned short *scratch = scratchRow;
+            if (columnCount > 0) {
+                int count = columnCount;
+                do {
+                    *src = *scratch;
+                    ++src;
+                    ++scratch;
+                    --count;
+                } while (count != 0);
+            }
+
+            srcRow = src + rowDelta;
+            scratchRow = scratch + rowDelta;
+            --rowCount;
+        } while (rowCount != 0);
     }
 }
 
@@ -3313,13 +3442,13 @@ void __fastcall buff_BlurRegionHorizontal(
     zVidRect32 *rectOrNull,
     int
 ) {
-    int left;
     int top;
+    int left;
     int right;
     int bottom;
     if (rectOrNull != 0) {
-        left = rectOrNull->left;
         top = rectOrNull->top;
+        left = rectOrNull->left;
         right = rectOrNull->right;
         bottom = rectOrNull->bottom;
         if (top < 0) {
@@ -3335,43 +3464,72 @@ void __fastcall buff_BlurRegionHorizontal(
             right = g_zVideo_FxSurfaceWidth - 1;
         }
     } else {
-        left = 1;
         top = 0;
-        right = g_zVideo_FxSurfaceWidth - 1;
+        left = 1;
         bottom = g_zVideo_FxSurfaceHeight - 1;
+        right = g_zVideo_FxSurfaceWidth - 1;
     }
 
-    const int columnCount = right - left;
     unsigned int redMask;
     unsigned int greenMask;
     unsigned int blueMask;
+    unsigned int rbMask;
+    ++bottom;
+    int columnCount = right - left;
     PixelPack_GetRgbMasks(
         &redMask,
         &greenMask,
         &blueMask
     );
-    const unsigned int rbMask = redMask | blueMask;
+    rbMask = redMask | blueMask;
 
-    int y;
-    for (y = top; y <= bottom; ++y) {
-        unsigned short *src =
-            g_zVideo_FxSurfacePixels16 + y * g_zVideo_FxSurfacePitchPixels16 + left;
-        unsigned short *scratch =
-            g_zVideo_FxPass3_ScratchPixels16 + y * g_zVideo_FxSurfaceWidth + left;
-        int x;
-        for (x = 0; x < columnCount; ++x) {
-            scratch[x] = zVideoBlendBlurPixel3(
-                src[x - 1],
-                src[x],
-                src[x + 1],
-                rbMask,
-                greenMask
-            );
-        }
-        for (x = 0; x < columnCount; ++x) {
-            src[x] = scratch[x];
-        }
+    unsigned short *src =
+        g_zVideo_FxSurfacePixels16 + top * g_zVideo_FxSurfacePitchPixels16 + left;
+    unsigned short *scratchRow =
+        g_zVideo_FxPass3_ScratchPixels16 + top * g_zVideo_FxSurfaceWidth + left;
+    const int rowDelta = g_zVideo_FxSurfaceWidth - g_zVideo_FxSurfacePitchPixels16;
+    if (top >= bottom) {
+        return;
     }
+
+    int y = bottom - top;
+    do {
+        unsigned short *srcStart = src;
+        unsigned short *scratch = scratchRow;
+        if (columnCount > 0) {
+            int count = columnCount;
+            do {
+                const unsigned int rb =
+                    (src[-1] & rbMask) +
+                    ((src[0] & rbMask) << 1) +
+                    (src[1] & rbMask);
+                const unsigned int green =
+                    (src[-1] & greenMask) +
+                    ((src[0] & greenMask) << 1) +
+                    (src[1] & greenMask);
+                ++src;
+                ++scratch;
+                scratch[-1] = (unsigned short)(
+                    ((rb >> 2) & rbMask) | ((green >> 2) & greenMask)
+                );
+                --count;
+            } while (count != 0);
+        }
+
+        src = srcStart;
+        scratch = scratchRow;
+        if (columnCount > 0) {
+            int count = columnCount;
+            do {
+                *src++ = *scratch++;
+                --count;
+            } while (count != 0);
+        }
+
+        src = src + rowDelta;
+        scratchRow = scratch + rowDelta;
+        --y;
+    } while (y != 0);
 }
 
 /**
@@ -3966,7 +4124,13 @@ void AtExitReleaseAllInterfacesAndSurfaces() {
 } // namespace zVideo
 
 namespace zVideo {
-// Reimplements 0x4a7220: zVideo::SetFogColorFromRgb01
+/**
+ * Reimplements 0x4a7220: zVideo::SetFogColorFromRgb01
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Data evidence: writes the pending fog-color RGB255 globals at
+ * 0x6321d0-0x6321d8.
+ * Purpose: scale a normalized fog color into pending 255-space video globals.
+ */
 void __fastcall SetFogColorFromRgb01(
     zVideo_ColorRgbFloat *color
 ) {
@@ -3975,7 +4139,13 @@ void __fastcall SetFogColorFromRgb01(
     g_zVideo_FogColorPendingB255 = color->b * 255.0f;
 }
 
-// Reimplements 0x4a7300: zVideo::SetFogTargetColorFromRgb01
+/**
+ * Reimplements 0x4a7300: zVideo::SetFogTargetColorFromRgb01
+ * Original file: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Data evidence: writes the target fog-color RGB255 globals at
+ * 0x6321e8-0x6321f0.
+ * Purpose: scale a normalized fog target color into target 255-space video globals.
+ */
 void __fastcall SetFogTargetColorFromRgb01(
     zVideo_ColorRgbFloat *color
 ) {
@@ -3984,7 +4154,14 @@ void __fastcall SetFogTargetColorFromRgb01(
     g_zVideo_FogTargetColorB255 = color->b * 255.0f;
 }
 
-// Reimplements 0x4a7330: zVideo::CommitFogColorIfChanged
+/**
+ * Reimplements 0x4a7330: zVideo::CommitFogColorIfChanged
+ * Source file evidence: zVideo.cpp.
+ * Data evidence: compares pending fog RGB255 globals at 0x6321d0-0x6321d8
+ * with applied fog RGB255 globals at 0x6321f4-0x6321fc, copies pending to
+ * applied on change, then tail-jumps through g_zVideo_pfnUpdateFogColor.
+ * Purpose: apply pending fog color values and notify the renderer only when they change.
+ */
 void CommitFogColorIfChanged() {
     if (g_zVideo_FogColorAppliedR255 == g_zVideo_FogColorPendingR255 &&
         g_zVideo_FogColorAppliedG255 == g_zVideo_FogColorPendingG255 &&
@@ -3998,7 +4175,14 @@ void CommitFogColorIfChanged() {
     g_zVideo_pfnUpdateFogColor();
 }
 
-// Reimplements 0x4a73a0: zVideo::CommitFogTargetColorIfChanged
+/**
+ * Reimplements 0x4a73a0: zVideo::CommitFogTargetColorIfChanged
+ * Source file evidence: zVideo.cpp.
+ * Data evidence: compares target fog RGB255 globals at 0x6321e8-0x6321f0
+ * with applied fog RGB255 globals at 0x6321f4-0x6321fc, copies target to
+ * applied on change, then tail-jumps through g_zVideo_pfnUpdateFogColor.
+ * Purpose: apply target fog color values and notify the renderer only when they change.
+ */
 void CommitFogTargetColorIfChanged() {
     if (g_zVideo_FogColorAppliedR255 == g_zVideo_FogTargetColorR255 &&
         g_zVideo_FogColorAppliedG255 == g_zVideo_FogTargetColorG255 &&
@@ -4012,7 +4196,11 @@ void CommitFogTargetColorIfChanged() {
     g_zVideo_pfnUpdateFogColor();
 }
 
-// Reimplements 0x4a6b90: zVideo::PixelPack_GetRgbBits
+/**
+ * Reimplements 0x4a6b90: zVideo::PixelPack_GetRgbBits.
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: return the cached display RGB channel bit counts.
+ */
 void __fastcall PixelPack_GetRgbBits(
     int *outRBits,
     int *outGBits,
@@ -4023,7 +4211,10 @@ void __fastcall PixelPack_GetRgbBits(
     *outBBits = g_zVideo_PixelPack.bBits;
 }
 
-// Reimplements 0x4a6bb0: zVideo::PixelPack_GetRgbMasks
+/**
+ * Reimplements 0x4a6bb0: zVideo::PixelPack_GetRgbMasks
+ * Purpose: Return the cached RGB bit masks from the active pixel-pack record.
+ */
 void __fastcall PixelPack_GetRgbMasks(
     unsigned int *outRMask,
     unsigned int *outGMask,
@@ -4034,7 +4225,11 @@ void __fastcall PixelPack_GetRgbMasks(
     *outBMask = g_zVideo_PixelPack.bMask;
 }
 
-// Reimplements 0x4a6bd0: zVideo::PixelPack_GetPackingParams
+/**
+ * Reimplements 0x4a6bd0: zVideo::PixelPack_GetPackingParams.
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: return the cached packed RGB shift parameters.
+ */
 void __fastcall PixelPack_GetPackingParams(
     int *outPackedBase,
     int *outSumMinus8,
@@ -4047,7 +4242,13 @@ void __fastcall PixelPack_GetPackingParams(
 } // namespace zVideo
 
 namespace zVid {
-// Reimplements 0x48d340: zVid::Noise_InitBuffers
+/**
+ * Reimplements 0x48d340: zVid::Noise_InitBuffers
+ * Data-gate evidence: BN writes gRndr_pfnOverlayBlendRow to
+ * zRndr::OverlayBlendRow555_Scalar after allocating the noise and FX scratch
+ * buffers, so data acceptance waits on the zRndr overlay callback owner.
+ * Purpose: Allocate the software-noise byte table and FX pass scratch buffer.
+ */
 void Noise_InitBuffers() {
     const int width = zVideo::GetPrimarySurfaceWidth();
     const int height = zVideo::GetPrimarySurfaceHeight();
@@ -4725,7 +4926,11 @@ int __fastcall ReleaseIfNotDefault(
     return 0;
 }
 
-// Reimplements 0x48f500: zVid_Image::BlitToActiveTarget
+/**
+ * Reimplements 0x48f500: zVid_Image::BlitToActiveTarget.
+ * Source file evidence: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
+ * Purpose: Route an image blit to the primary DirectDraw surface when active, otherwise dispatch through the selected source-to-primary blitter.
+ */
 void __fastcall BlitToActiveTarget(
     zVidImagePartial *image,
     int dstX,
@@ -4753,10 +4958,15 @@ void __fastcall BlitToActiveTarget(
     );
 }
 
-// Reimplements 0x48f560: zVid_Image::BlitToFramebufferClipped.
-// (D:\Proj\GameZRecoil\zImage\zvid_buff.c)
-// Software target callback: clips the source image to zRndr's active 16-bit framebuffer and
-// preserves the original 565/555 alpha-map and color-key branch contracts.
+/**
+ * Reimplements 0x48f560: zVid_Image::BlitToFramebufferClipped.
+ * Source file evidence: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
+ * Purpose: Clip and blit a zVid image into zRndr's active 16-bit framebuffer.
+ *
+ * The 565/555 alpha-map and color-key branches follow BN's zvid_buff.c
+ * assembly-visible contracts; BN loses some row-cursor identities in the long
+ * memcpy and paletted paths, so source keeps explicit typed row cursors.
+ */
 void __fastcall BlitToFramebufferClipped(
     zVidImagePartial *image,
     int dstX,
@@ -6238,7 +6448,11 @@ void CopyGouraudVerticesReverse(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source static helper evidence: source-faithful helper for D3D color-attribute submitters.
+ * Purpose: Pack a constant RGB color and alpha for address-backed callers 0x4ab320,
+ * 0x4abb20, and 0x4ac370; BN has no standalone retail function for this body.
+ */
 DWORD PackColorAttrConstant(
     const zVideo_ColorRgbFloat &baseColor,
     float attr1Scale,
@@ -6250,7 +6464,11 @@ DWORD PackColorAttrConstant(
     return alphaBits | (((red << 8) | green) << 8) | blue;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source static helper evidence: source-faithful helper for D3D color-attribute submitters.
+ * Purpose: Apply the pending fog color bias and normalize channel for address-backed
+ * callers 0x4ab320, 0x4abb20, and 0x4ac370; BN has no standalone retail function.
+ */
 DWORD PackColorAttrBiased(
     const zVideo_ColorRgbFloat &baseColor,
     float attr1Scale,
@@ -6276,7 +6494,11 @@ DWORD PackColorAttrBiased(
     return alphaBits | (((redByte << 8) | greenByte) << 8) | blueByte;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source static helper evidence: source-faithful helper for D3D color-attribute submitters.
+ * Purpose: Fill reversed specular alpha values for address-backed callers 0x4ab320,
+ * 0x4abb20, and 0x4ac370; BN has no standalone retail function for this body.
+ */
 void FillColorAttrSpecularReverse(
     const float *attr2,
     int vertexCount
@@ -6291,7 +6513,11 @@ void FillColorAttrSpecularReverse(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source static helper evidence: source-faithful helper for zVideo_dd3d::SubmitPolyColorAttr.
+ * Purpose: Fill reversed D3D colors for caller 0x4ab320, including the optional
+ * fog-color bias path; BN has no standalone retail function for this body.
+ */
 void FillColorAttrColorsReverse(
     const zVideo_ColorRgbFloat &baseColor,
     const float *attr0,
@@ -6379,7 +6605,11 @@ void CopyTexturedVerticesReverse(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source static helper evidence: source-faithful helper for polygon submitters.
+ * Purpose: Pack a gray polygon color with optional high clamp for address-backed
+ * callers 0x4abb20 and 0x4ac370; BN has no standalone retail function.
+ */
 DWORD PackGrayColor(
     float gray,
     DWORD alphaBits,
@@ -6392,7 +6622,11 @@ DWORD PackGrayColor(
     return alphaBits | (((grayByte << 8) | grayByte) << 8) | grayByte;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source static helper evidence: source-faithful helper for polygon submitters.
+ * Purpose: Apply the pending fog color bias and normalize channel for address-backed
+ * callers 0x4abb20 and 0x4ac370; BN has no standalone retail function.
+ */
 DWORD PackPolygonBiasedColor(
     float grayBase,
     float attr0Value,
@@ -6417,7 +6651,11 @@ DWORD PackPolygonBiasedColor(
     return alphaBits | (((redByte << 8) | greenByte) << 8) | blueByte;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source static helper evidence: source-faithful helper for zVideo_dd3d::SubmitPolygon.
+ * Purpose: Fill reversed polygon colors for caller 0x4abb20, including the
+ * optional fog-color bias path; BN has no standalone retail function.
+ */
 void FillPolygonColorsReverse(
     const float *attr0,
     float grayBase,
@@ -6456,7 +6694,11 @@ void FillPolygonColorsReverse(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source static helper evidence: source-faithful helper for zVideo_dd3d::SubmitPolygonLit.
+ * Purpose: Fill reversed lit polygon colors for caller 0x4ac370, including the
+ * optional fog-color bias path; BN has no standalone retail function.
+ */
 void FillPolygonLitColorsReverse(
     const float *attr1,
     const float *attr0,
@@ -7296,19 +7538,19 @@ void __fastcall SubmitPolyFlatColor16(
             return;
         }
 
-        if (g_zVideo_D3DRenderState_TextureHandle != 0) {
+        if (g_zVideo_D3DRenderStateCache.textureHandle != 0) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_TEXTUREHANDLE,
                 0
             );
-            g_zVideo_D3DRenderState_TextureHandle = 0;
+            g_zVideo_D3DRenderStateCache.textureHandle = 0;
         }
-        if (g_zVideo_D3DRenderState_ShadeMode != 1) {
+        if (g_zVideo_D3DRenderStateCache.shadeMode != 1) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_SHADEMODE,
                 1
             );
-            g_zVideo_D3DRenderState_ShadeMode = 1;
+            g_zVideo_D3DRenderStateCache.shadeMode = 1;
         }
 
         const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
@@ -7432,19 +7674,19 @@ void __fastcall SubmitPolyGouraudColor16(
             return;
         }
 
-        if (g_zVideo_D3DRenderState_TextureHandle != 0) {
+        if (g_zVideo_D3DRenderStateCache.textureHandle != 0) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_TEXTUREHANDLE,
                 0
             );
-            g_zVideo_D3DRenderState_TextureHandle = 0;
+            g_zVideo_D3DRenderStateCache.textureHandle = 0;
         }
-        if (g_zVideo_D3DRenderState_ShadeMode != 1) {
+        if (g_zVideo_D3DRenderStateCache.shadeMode != 1) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_SHADEMODE,
                 1
             );
-            g_zVideo_D3DRenderState_ShadeMode = 1;
+            g_zVideo_D3DRenderStateCache.shadeMode = 1;
         }
 
         const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
@@ -7523,7 +7765,11 @@ void __fastcall SubmitPolyGouraudColor16(
     ++g_zVideo_SortedPolyQueueCount;
 }
 
-// Reimplements 0x4ab320: zVideo_dd3d::SubmitPolyColorAttr
+/**
+ * Reimplements 0x4ab320: zVideo_dd3d::SubmitPolyColorAttr.
+ * Purpose: Build color-attribute TL vertices and either draw immediately or queue
+ * the overwrite polygon path.
+ */
 void __fastcall SubmitPolyColorAttr(
     zVideo_XyzVertex *vertices,
     unsigned int packedColor16,
@@ -7592,19 +7838,19 @@ void __fastcall SubmitPolyColorAttr(
         return;
     }
 
-    if (g_zVideo_D3DRenderState_TextureHandle != 0) {
+    if (g_zVideo_D3DRenderStateCache.textureHandle != 0) {
         g_zVideo_pD3DDevice->SetRenderState(
             D3DRENDERSTATE_TEXTUREHANDLE,
             0
         );
-        g_zVideo_D3DRenderState_TextureHandle = 0;
+        g_zVideo_D3DRenderStateCache.textureHandle = 0;
     }
-    if (g_zVideo_D3DRenderState_ShadeMode != 1) {
+    if (g_zVideo_D3DRenderStateCache.shadeMode != 1) {
         g_zVideo_pD3DDevice->SetRenderState(
             D3DRENDERSTATE_SHADEMODE,
             1
         );
-        g_zVideo_D3DRenderState_ShadeMode = 1;
+        g_zVideo_D3DRenderStateCache.shadeMode = 1;
     }
 
     const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
@@ -7679,40 +7925,40 @@ void __fastcall SubmitPolyRenderClass(
             return;
         }
 
-        if (g_zVideo_D3DRenderState_ShadeMode != 1) {
+        if (g_zVideo_D3DRenderStateCache.shadeMode != 1) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_SHADEMODE,
                 1
             );
-            g_zVideo_D3DRenderState_ShadeMode = 1;
+            g_zVideo_D3DRenderStateCache.shadeMode = 1;
         }
-        if (g_zVideo_D3DRenderState_TextureHandle != renderClass->textureHandle) {
+        if (g_zVideo_D3DRenderStateCache.textureHandle != renderClass->textureHandle) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_TEXTUREHANDLE,
                 renderClass->textureHandle
             );
-            g_zVideo_D3DRenderState_TextureHandle = renderClass->textureHandle;
+            g_zVideo_D3DRenderStateCache.textureHandle = renderClass->textureHandle;
         }
-        if (g_zVideo_D3DRenderState_TextureMapBlend != renderClass->textureMapBlend) {
+        if (g_zVideo_D3DRenderStateCache.textureMapBlend != renderClass->textureMapBlend) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_TEXTUREMAPBLEND,
                 renderClass->textureMapBlend
             );
-            g_zVideo_D3DRenderState_TextureMapBlend = renderClass->textureMapBlend;
+            g_zVideo_D3DRenderStateCache.textureMapBlend = renderClass->textureMapBlend;
         }
-        if (g_zVideo_D3DRenderState_TextureAddressU != renderClass->textureAddressU) {
+        if (g_zVideo_D3DRenderStateCache.textureAddressU != renderClass->textureAddressU) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_TEXTUREADDRESSU,
                 renderClass->textureAddressU
             );
-            g_zVideo_D3DRenderState_TextureAddressU = renderClass->textureAddressU;
+            g_zVideo_D3DRenderStateCache.textureAddressU = renderClass->textureAddressU;
         }
-        if (g_zVideo_D3DRenderState_TextureAddressV != renderClass->textureAddressV) {
+        if (g_zVideo_D3DRenderStateCache.textureAddressV != renderClass->textureAddressV) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_TEXTUREADDRESSV,
                 renderClass->textureAddressV
             );
-            g_zVideo_D3DRenderState_TextureAddressV = renderClass->textureAddressV;
+            g_zVideo_D3DRenderStateCache.textureAddressV = renderClass->textureAddressV;
         }
 
         const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
@@ -7792,7 +8038,11 @@ void __fastcall SubmitPolyRenderClass(
     ++g_zVideo_SortedPolyQueueCount;
 }
 
-// Reimplements 0x4abb20: zVideo_dd3d::SubmitPolygon
+/**
+ * Reimplements 0x4abb20: zVideo_dd3d::SubmitPolygon.
+ * Purpose: Build textured polygon TL vertices with fog color-attribute bias and
+ * route them to immediate, overwrite, or sorted transparent submission.
+ */
 void __fastcall SubmitPolygon(
     zVideo_XyzVertex *vertices,
     zVideo_TexCoord *uvPairs,
@@ -7864,40 +8114,40 @@ void __fastcall SubmitPolygon(
             return;
         }
 
-        if (g_zVideo_D3DRenderState_ShadeMode != 2) {
+        if (g_zVideo_D3DRenderStateCache.shadeMode != 2) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_SHADEMODE,
                 2
             );
-            g_zVideo_D3DRenderState_ShadeMode = 2;
+            g_zVideo_D3DRenderStateCache.shadeMode = 2;
         }
-        if (g_zVideo_D3DRenderState_TextureHandle != renderClass->textureHandle) {
+        if (g_zVideo_D3DRenderStateCache.textureHandle != renderClass->textureHandle) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_TEXTUREHANDLE,
                 renderClass->textureHandle
             );
-            g_zVideo_D3DRenderState_TextureHandle = renderClass->textureHandle;
+            g_zVideo_D3DRenderStateCache.textureHandle = renderClass->textureHandle;
         }
-        if (g_zVideo_D3DRenderState_TextureMapBlend != (D3DTEXTUREBLEND)(2)) {
+        if (g_zVideo_D3DRenderStateCache.textureMapBlend != (D3DTEXTUREBLEND)(2)) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_TEXTUREMAPBLEND,
                 2
             );
-            g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(2);
+            g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(2);
         }
-        if (g_zVideo_D3DRenderState_TextureAddressU != renderClass->textureAddressU) {
+        if (g_zVideo_D3DRenderStateCache.textureAddressU != renderClass->textureAddressU) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_TEXTUREADDRESSU,
                 renderClass->textureAddressU
             );
-            g_zVideo_D3DRenderState_TextureAddressU = renderClass->textureAddressU;
+            g_zVideo_D3DRenderStateCache.textureAddressU = renderClass->textureAddressU;
         }
-        if (g_zVideo_D3DRenderState_TextureAddressV != renderClass->textureAddressV) {
+        if (g_zVideo_D3DRenderStateCache.textureAddressV != renderClass->textureAddressV) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_TEXTUREADDRESSV,
                 renderClass->textureAddressV
             );
-            g_zVideo_D3DRenderState_TextureAddressV = renderClass->textureAddressV;
+            g_zVideo_D3DRenderStateCache.textureAddressV = renderClass->textureAddressV;
         }
 
         const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
@@ -7986,7 +8236,11 @@ void __fastcall SubmitPolygon(
     ++g_zVideo_SortedPolyQueueCount;
 }
 
-// Reimplements 0x4ac370: zVideo_dd3d::SubmitPolygonLit
+/**
+ * Reimplements 0x4ac370: zVideo_dd3d::SubmitPolygonLit.
+ * Purpose: Build lit textured polygon TL vertices with fog color-attribute bias
+ * and route them to immediate, overwrite, or sorted transparent submission.
+ */
 void __fastcall SubmitPolygonLit(
     zVideo_XyzVertex *vertices,
     zVideo_TexCoord *uvPairs,
@@ -8056,40 +8310,40 @@ void __fastcall SubmitPolygonLit(
             return;
         }
 
-        if (g_zVideo_D3DRenderState_ShadeMode != 2) {
+        if (g_zVideo_D3DRenderStateCache.shadeMode != 2) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_SHADEMODE,
                 2
             );
-            g_zVideo_D3DRenderState_ShadeMode = 2;
+            g_zVideo_D3DRenderStateCache.shadeMode = 2;
         }
-        if (g_zVideo_D3DRenderState_TextureHandle != renderClass->textureHandle) {
+        if (g_zVideo_D3DRenderStateCache.textureHandle != renderClass->textureHandle) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_TEXTUREHANDLE,
                 renderClass->textureHandle
             );
-            g_zVideo_D3DRenderState_TextureHandle = renderClass->textureHandle;
+            g_zVideo_D3DRenderStateCache.textureHandle = renderClass->textureHandle;
         }
-        if (g_zVideo_D3DRenderState_TextureMapBlend != (D3DTEXTUREBLEND)(2)) {
+        if (g_zVideo_D3DRenderStateCache.textureMapBlend != (D3DTEXTUREBLEND)(2)) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_TEXTUREMAPBLEND,
                 2
             );
-            g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(2);
+            g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(2);
         }
-        if (g_zVideo_D3DRenderState_TextureAddressU != renderClass->textureAddressU) {
+        if (g_zVideo_D3DRenderStateCache.textureAddressU != renderClass->textureAddressU) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_TEXTUREADDRESSU,
                 renderClass->textureAddressU
             );
-            g_zVideo_D3DRenderState_TextureAddressU = renderClass->textureAddressU;
+            g_zVideo_D3DRenderStateCache.textureAddressU = renderClass->textureAddressU;
         }
-        if (g_zVideo_D3DRenderState_TextureAddressV != renderClass->textureAddressV) {
+        if (g_zVideo_D3DRenderStateCache.textureAddressV != renderClass->textureAddressV) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_TEXTUREADDRESSV,
                 renderClass->textureAddressV
             );
-            g_zVideo_D3DRenderState_TextureAddressV = renderClass->textureAddressV;
+            g_zVideo_D3DRenderStateCache.textureAddressV = renderClass->textureAddressV;
         }
 
         const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
@@ -8197,19 +8451,19 @@ void __fastcall DrawPointColor16(
     );
     vertex.specular = 0xff000000;
 
-    if (g_zVideo_D3DRenderState_TextureHandle != 0) {
+    if (g_zVideo_D3DRenderStateCache.textureHandle != 0) {
         g_zVideo_pD3DDevice->SetRenderState(
             D3DRENDERSTATE_TEXTUREHANDLE,
             0
         );
-        g_zVideo_D3DRenderState_TextureHandle = 0;
+        g_zVideo_D3DRenderStateCache.textureHandle = 0;
     }
-    if (g_zVideo_D3DRenderState_ShadeMode != 1) {
+    if (g_zVideo_D3DRenderStateCache.shadeMode != 1) {
         g_zVideo_pD3DDevice->SetRenderState(
             D3DRENDERSTATE_SHADEMODE,
             1
         );
-        g_zVideo_D3DRenderState_ShadeMode = 1;
+        g_zVideo_D3DRenderStateCache.shadeMode = 1;
     }
 
     const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
@@ -8228,7 +8482,11 @@ void __fastcall DrawPointColor16(
     }
 }
 
-// Reimplements 0x4acd00: zVideo_dd3d::QueueSolidQuad
+/**
+ * Reimplements 0x4acd00: zVideo_dd3d::QueueSolidQuad
+ * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
+ * Purpose: Queue one alpha-blended solid screen-space quad for the Direct3D batch flush.
+ */
 void __fastcall QueueSolidQuad(
     unsigned int packedColor16,
     zVidRect32 *clipRect,
@@ -8278,36 +8536,40 @@ void __fastcall QueueSolidQuad(
     ++g_zVideo_QuadBatchCount;
 }
 
-// Reimplements 0x4ace30: zVideo_dd3d::FlushSortedPolys
+/**
+ * Reimplements 0x4ace30: zVideo_dd3d::FlushSortedPolys
+ * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
+ * Purpose: Sort and draw queued Direct3D polys while maintaining the shared render-state cache.
+ */
 void FlushSortedPolys() {
     int queueCount = g_zVideo_SortedPolyQueueCount;
     if (queueCount == 0) {
         return;
     }
 
-    if (g_zVideo_D3DRenderState_ShadeMode != 2) {
+    if (g_zVideo_D3DRenderStateCache.shadeMode != 2) {
         g_zVideo_pD3DDevice->SetRenderState(
             D3DRENDERSTATE_SHADEMODE,
             2
         );
         queueCount = g_zVideo_SortedPolyQueueCount;
-        g_zVideo_D3DRenderState_ShadeMode = 2;
+        g_zVideo_D3DRenderStateCache.shadeMode = 2;
     }
-    if (g_zVideo_D3DRenderState_AlphaBlendEnable != 1) {
+    if (g_zVideo_D3DRenderStateCache.alphaBlendEnable != 1) {
         g_zVideo_pD3DDevice->SetRenderState(
             D3DRENDERSTATE_ALPHABLENDENABLE,
             1
         );
         queueCount = g_zVideo_SortedPolyQueueCount;
-        g_zVideo_D3DRenderState_AlphaBlendEnable = 1;
+        g_zVideo_D3DRenderStateCache.alphaBlendEnable = 1;
     }
-    if (g_zVideo_D3DRenderState_ZWriteEnable != 0) {
+    if (g_zVideo_D3DRenderStateCache.zWriteEnable != 0) {
         g_zVideo_pD3DDevice->SetRenderState(
             D3DRENDERSTATE_ZWRITEENABLE,
             0
         );
         queueCount = g_zVideo_SortedPolyQueueCount;
-        g_zVideo_D3DRenderState_ZWriteEnable = 0;
+        g_zVideo_D3DRenderStateCache.zWriteEnable = 0;
     }
 
     for (unsigned int i = 0; i < (unsigned int)(queueCount); ++i) {
@@ -8338,12 +8600,12 @@ void FlushSortedPolys() {
         zVideo_RenderClass *renderClass = (zVideo_RenderClass *)(entry.renderClass);
 
         if (renderClass != 0) {
-            if (g_zVideo_D3DRenderState_TextureHandle != renderClass->textureHandle) {
+            if (g_zVideo_D3DRenderStateCache.textureHandle != renderClass->textureHandle) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_TEXTUREHANDLE,
                     renderClass->textureHandle
                 );
-                g_zVideo_D3DRenderState_TextureHandle = renderClass->textureHandle;
+                g_zVideo_D3DRenderStateCache.textureHandle = renderClass->textureHandle;
             }
 
             const D3DTEXTUREBLEND textureMapBlend = renderClass->textureMapBlend;
@@ -8351,41 +8613,41 @@ void FlushSortedPolys() {
                 textureMapBlend != (D3DTEXTUREBLEND)(4) &&
                 (entry.vertices[0].color & 0xff000000) != 0xff000000;
             if (forceTransparentTextureBlend) {
-                if (g_zVideo_D3DRenderState_TextureMapBlend != (D3DTEXTUREBLEND)(4)) {
+                if (g_zVideo_D3DRenderStateCache.textureMapBlend != (D3DTEXTUREBLEND)(4)) {
                     g_zVideo_pD3DDevice->SetRenderState(
                         D3DRENDERSTATE_TEXTUREMAPBLEND,
                         4
                     );
-                    g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(4);
+                    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(4);
                 }
-            } else if (g_zVideo_D3DRenderState_TextureMapBlend != textureMapBlend) {
+            } else if (g_zVideo_D3DRenderStateCache.textureMapBlend != textureMapBlend) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_TEXTUREMAPBLEND,
                     textureMapBlend
                 );
-                g_zVideo_D3DRenderState_TextureMapBlend = textureMapBlend;
+                g_zVideo_D3DRenderStateCache.textureMapBlend = textureMapBlend;
             }
 
-            if (g_zVideo_D3DRenderState_TextureAddressU != renderClass->textureAddressU) {
+            if (g_zVideo_D3DRenderStateCache.textureAddressU != renderClass->textureAddressU) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_TEXTUREADDRESSU,
                     renderClass->textureAddressU
                 );
-                g_zVideo_D3DRenderState_TextureAddressU = renderClass->textureAddressU;
+                g_zVideo_D3DRenderStateCache.textureAddressU = renderClass->textureAddressU;
             }
-            if (g_zVideo_D3DRenderState_TextureAddressV != renderClass->textureAddressV) {
+            if (g_zVideo_D3DRenderStateCache.textureAddressV != renderClass->textureAddressV) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_TEXTUREADDRESSV,
                     renderClass->textureAddressV
                 );
-                g_zVideo_D3DRenderState_TextureAddressV = renderClass->textureAddressV;
+                g_zVideo_D3DRenderStateCache.textureAddressV = renderClass->textureAddressV;
             }
-        } else if (g_zVideo_D3DRenderState_TextureHandle != 0) {
+        } else if (g_zVideo_D3DRenderStateCache.textureHandle != 0) {
             g_zVideo_pD3DDevice->SetRenderState(
                 D3DRENDERSTATE_TEXTUREHANDLE,
                 0
             );
-            g_zVideo_D3DRenderState_TextureHandle = 0;
+            g_zVideo_D3DRenderStateCache.textureHandle = 0;
         }
 
         const HRESULT hresult = g_zVideo_pD3DDevice->DrawPrimitive(
@@ -8404,56 +8666,60 @@ void FlushSortedPolys() {
         }
     }
 
-    if (g_zVideo_D3DRenderState_AlphaBlendEnable != 0) {
+    if (g_zVideo_D3DRenderStateCache.alphaBlendEnable != 0) {
         g_zVideo_pD3DDevice->SetRenderState(
             D3DRENDERSTATE_ALPHABLENDENABLE,
             0
         );
-        g_zVideo_D3DRenderState_AlphaBlendEnable = 0;
+        g_zVideo_D3DRenderStateCache.alphaBlendEnable = 0;
     }
-    if (g_zVideo_D3DRenderState_ZWriteEnable != 1) {
+    if (g_zVideo_D3DRenderStateCache.zWriteEnable != 1) {
         g_zVideo_pD3DDevice->SetRenderState(
             D3DRENDERSTATE_ZWRITEENABLE,
             1
         );
-        g_zVideo_D3DRenderState_ZWriteEnable = 1;
+        g_zVideo_D3DRenderStateCache.zWriteEnable = 1;
     }
     g_zVideo_SortedPolyQueueCount = 0;
 }
 
-// Reimplements 0x4ad120: zVideo_dd3d::FlushQuadBatch
+/**
+ * Reimplements 0x4ad120: zVideo_dd3d::FlushQuadBatch
+ * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
+ * Purpose: Draw and clear the Direct3D solid-quad batch with cached render-state setup and restoration.
+ */
 void FlushQuadBatch() {
     if (g_zVideo_QuadBatchCount == 0) {
         return;
     }
 
-    if (g_zVideo_D3DRenderState_ShadeMode != 2) {
+    if (g_zVideo_D3DRenderStateCache.shadeMode != 2) {
         g_zVideo_pD3DDevice->SetRenderState(
             D3DRENDERSTATE_SHADEMODE,
             2
         );
-        g_zVideo_D3DRenderState_ShadeMode = 2;
+        g_zVideo_D3DRenderStateCache.shadeMode = 2;
     }
-    if (g_zVideo_D3DRenderState_AlphaBlendEnable != 1) {
+    if (g_zVideo_D3DRenderStateCache.alphaBlendEnable != 1) {
         g_zVideo_pD3DDevice->SetRenderState(
             D3DRENDERSTATE_ALPHABLENDENABLE,
             1
         );
-        g_zVideo_D3DRenderState_AlphaBlendEnable = 1;
+        g_zVideo_D3DRenderStateCache.alphaBlendEnable = 1;
     }
-    if (g_zVideo_D3DRenderState_ZWriteEnable != 0) {
+    if (g_zVideo_D3DRenderStateCache.zWriteEnable != 0) {
         g_zVideo_pD3DDevice->SetRenderState(
             D3DRENDERSTATE_ZWRITEENABLE,
             0
         );
-        g_zVideo_D3DRenderState_ZWriteEnable = 0;
+        g_zVideo_D3DRenderStateCache.zWriteEnable = 0;
     }
-    if (g_zVideo_D3DRenderState_TextureHandle != 0) {
+    if (g_zVideo_D3DRenderStateCache.textureHandle != 0) {
         g_zVideo_pD3DDevice->SetRenderState(
             D3DRENDERSTATE_TEXTUREHANDLE,
             0
         );
-        g_zVideo_D3DRenderState_TextureHandle = 0;
+        g_zVideo_D3DRenderStateCache.textureHandle = 0;
     }
 
     g_zVideo_pD3DDevice->SetRenderState(
@@ -8477,23 +8743,27 @@ void FlushQuadBatch() {
         D3DCMP_GREATEREQUAL
     );
 
-    if (g_zVideo_D3DRenderState_AlphaBlendEnable != 0) {
+    if (g_zVideo_D3DRenderStateCache.alphaBlendEnable != 0) {
         g_zVideo_pD3DDevice->SetRenderState(
             D3DRENDERSTATE_ALPHABLENDENABLE,
             0
         );
-        g_zVideo_D3DRenderState_AlphaBlendEnable = 0;
+        g_zVideo_D3DRenderStateCache.alphaBlendEnable = 0;
     }
-    if (g_zVideo_D3DRenderState_ZWriteEnable != 1) {
+    if (g_zVideo_D3DRenderStateCache.zWriteEnable != 1) {
         g_zVideo_pD3DDevice->SetRenderState(
             D3DRENDERSTATE_ZWRITEENABLE,
             1
         );
-        g_zVideo_D3DRenderState_ZWriteEnable = 1;
+        g_zVideo_D3DRenderStateCache.zWriteEnable = 1;
     }
 }
 
-// Reimplements 0x4ad250: zVideo_dd3d::FlushOverwritePolys
+/**
+ * Reimplements 0x4ad250: zVideo_dd3d::FlushOverwritePolys
+ * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
+ * Purpose: Draw overwrite-queue primitives with the Direct3D render-state cache and restore depth testing.
+ */
 void FlushOverwritePolys() {
     g_zVideo_pD3DDevice->SetRenderState(
         D3DRENDERSTATE_ZFUNC,
@@ -8506,36 +8776,36 @@ void FlushOverwritePolys() {
 
         switch (entry.type) {
         case 0: {
-            if (g_zVideo_D3DRenderState_ShadeMode != 2) {
+            if (g_zVideo_D3DRenderStateCache.shadeMode != 2) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_SHADEMODE,
                     2
                 );
-                g_zVideo_D3DRenderState_ShadeMode = 2;
+                g_zVideo_D3DRenderStateCache.shadeMode = 2;
             }
-            if (g_zVideo_D3DRenderState_AlphaBlendEnable != 1) {
+            if (g_zVideo_D3DRenderStateCache.alphaBlendEnable != 1) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_ALPHABLENDENABLE,
                     1
                 );
-                g_zVideo_D3DRenderState_AlphaBlendEnable = 1;
+                g_zVideo_D3DRenderStateCache.alphaBlendEnable = 1;
             }
-            if (g_zVideo_D3DRenderState_ZWriteEnable != 0) {
+            if (g_zVideo_D3DRenderStateCache.zWriteEnable != 0) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_ZWRITEENABLE,
                     0
                 );
-                g_zVideo_D3DRenderState_ZWriteEnable = 0;
+                g_zVideo_D3DRenderStateCache.zWriteEnable = 0;
             }
 
             zVideo_RenderClass *renderClass = (zVideo_RenderClass *)(entry.renderClass);
             if (renderClass != 0) {
-                if (g_zVideo_D3DRenderState_TextureHandle != renderClass->textureHandle) {
+                if (g_zVideo_D3DRenderStateCache.textureHandle != renderClass->textureHandle) {
                     g_zVideo_pD3DDevice->SetRenderState(
                         D3DRENDERSTATE_TEXTUREHANDLE,
                         renderClass->textureHandle
                     );
-                    g_zVideo_D3DRenderState_TextureHandle = renderClass->textureHandle;
+                    g_zVideo_D3DRenderStateCache.textureHandle = renderClass->textureHandle;
                 }
 
                 const D3DTEXTUREBLEND textureMapBlend = renderClass->textureMapBlend;
@@ -8543,41 +8813,41 @@ void FlushOverwritePolys() {
                     textureMapBlend != (D3DTEXTUREBLEND)(4) &&
                     (entry.vertices[0].color & 0xff000000) != 0xff000000;
                 if (forceTransparentTextureBlend) {
-                    if (g_zVideo_D3DRenderState_TextureMapBlend != (D3DTEXTUREBLEND)(4)) {
+                    if (g_zVideo_D3DRenderStateCache.textureMapBlend != (D3DTEXTUREBLEND)(4)) {
                         g_zVideo_pD3DDevice->SetRenderState(
                             D3DRENDERSTATE_TEXTUREMAPBLEND,
                             4
                         );
-                        g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(4);
+                        g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(4);
                     }
-                } else if (g_zVideo_D3DRenderState_TextureMapBlend != textureMapBlend) {
+                } else if (g_zVideo_D3DRenderStateCache.textureMapBlend != textureMapBlend) {
                     g_zVideo_pD3DDevice->SetRenderState(
                         D3DRENDERSTATE_TEXTUREMAPBLEND,
                         textureMapBlend
                     );
-                    g_zVideo_D3DRenderState_TextureMapBlend = textureMapBlend;
+                    g_zVideo_D3DRenderStateCache.textureMapBlend = textureMapBlend;
                 }
 
-                if (g_zVideo_D3DRenderState_TextureAddressU != renderClass->textureAddressU) {
+                if (g_zVideo_D3DRenderStateCache.textureAddressU != renderClass->textureAddressU) {
                     g_zVideo_pD3DDevice->SetRenderState(
                         D3DRENDERSTATE_TEXTUREADDRESSU,
                         renderClass->textureAddressU
                     );
-                    g_zVideo_D3DRenderState_TextureAddressU = renderClass->textureAddressU;
+                    g_zVideo_D3DRenderStateCache.textureAddressU = renderClass->textureAddressU;
                 }
-                if (g_zVideo_D3DRenderState_TextureAddressV != renderClass->textureAddressV) {
+                if (g_zVideo_D3DRenderStateCache.textureAddressV != renderClass->textureAddressV) {
                     g_zVideo_pD3DDevice->SetRenderState(
                         D3DRENDERSTATE_TEXTUREADDRESSV,
                         renderClass->textureAddressV
                     );
-                    g_zVideo_D3DRenderState_TextureAddressV = renderClass->textureAddressV;
+                    g_zVideo_D3DRenderStateCache.textureAddressV = renderClass->textureAddressV;
                 }
-            } else if (g_zVideo_D3DRenderState_TextureHandle != 0) {
+            } else if (g_zVideo_D3DRenderStateCache.textureHandle != 0) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_TEXTUREHANDLE,
                     0
                 );
-                g_zVideo_D3DRenderState_TextureHandle = 0;
+                g_zVideo_D3DRenderStateCache.textureHandle = 0;
             }
 
             hresult = g_zVideo_pD3DDevice->DrawPrimitive(
@@ -8588,19 +8858,19 @@ void FlushOverwritePolys() {
                 0
             );
 
-            if (g_zVideo_D3DRenderState_AlphaBlendEnable != 0) {
+            if (g_zVideo_D3DRenderStateCache.alphaBlendEnable != 0) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_ALPHABLENDENABLE,
                     0
                 );
-                g_zVideo_D3DRenderState_AlphaBlendEnable = 0;
+                g_zVideo_D3DRenderStateCache.alphaBlendEnable = 0;
             }
-            if (g_zVideo_D3DRenderState_ZWriteEnable != 1) {
+            if (g_zVideo_D3DRenderStateCache.zWriteEnable != 1) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_ZWRITEENABLE,
                     1
                 );
-                g_zVideo_D3DRenderState_ZWriteEnable = 1;
+                g_zVideo_D3DRenderStateCache.zWriteEnable = 1;
             }
             break;
         }
@@ -8608,19 +8878,19 @@ void FlushOverwritePolys() {
         case 1:
         case 2:
         case 3:
-            if (g_zVideo_D3DRenderState_TextureHandle != 0) {
+            if (g_zVideo_D3DRenderStateCache.textureHandle != 0) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_TEXTUREHANDLE,
                     0
                 );
-                g_zVideo_D3DRenderState_TextureHandle = 0;
+                g_zVideo_D3DRenderStateCache.textureHandle = 0;
             }
-            if (g_zVideo_D3DRenderState_ShadeMode != 1) {
+            if (g_zVideo_D3DRenderStateCache.shadeMode != 1) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_SHADEMODE,
                     1
                 );
-                g_zVideo_D3DRenderState_ShadeMode = 1;
+                g_zVideo_D3DRenderStateCache.shadeMode = 1;
             }
             hresult = g_zVideo_pD3DDevice->DrawPrimitive(
                 D3DPT_TRIANGLEFAN,
@@ -8632,42 +8902,42 @@ void FlushOverwritePolys() {
             break;
 
         case 4: {
-            if (g_zVideo_D3DRenderState_ShadeMode != 1) {
+            if (g_zVideo_D3DRenderStateCache.shadeMode != 1) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_SHADEMODE,
                     1
                 );
-                g_zVideo_D3DRenderState_ShadeMode = 1;
+                g_zVideo_D3DRenderStateCache.shadeMode = 1;
             }
 
             zVideo_RenderClass *renderClass = (zVideo_RenderClass *)(entry.renderClass);
-            if (g_zVideo_D3DRenderState_TextureHandle != renderClass->textureHandle) {
+            if (g_zVideo_D3DRenderStateCache.textureHandle != renderClass->textureHandle) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_TEXTUREHANDLE,
                     renderClass->textureHandle
                 );
-                g_zVideo_D3DRenderState_TextureHandle = renderClass->textureHandle;
+                g_zVideo_D3DRenderStateCache.textureHandle = renderClass->textureHandle;
             }
-            if (g_zVideo_D3DRenderState_TextureMapBlend != renderClass->textureMapBlend) {
+            if (g_zVideo_D3DRenderStateCache.textureMapBlend != renderClass->textureMapBlend) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_TEXTUREMAPBLEND,
                     renderClass->textureMapBlend
                 );
-                g_zVideo_D3DRenderState_TextureMapBlend = renderClass->textureMapBlend;
+                g_zVideo_D3DRenderStateCache.textureMapBlend = renderClass->textureMapBlend;
             }
-            if (g_zVideo_D3DRenderState_TextureAddressU != renderClass->textureAddressU) {
+            if (g_zVideo_D3DRenderStateCache.textureAddressU != renderClass->textureAddressU) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_TEXTUREADDRESSU,
                     renderClass->textureAddressU
                 );
-                g_zVideo_D3DRenderState_TextureAddressU = renderClass->textureAddressU;
+                g_zVideo_D3DRenderStateCache.textureAddressU = renderClass->textureAddressU;
             }
-            if (g_zVideo_D3DRenderState_TextureAddressV != renderClass->textureAddressV) {
+            if (g_zVideo_D3DRenderStateCache.textureAddressV != renderClass->textureAddressV) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_TEXTUREADDRESSV,
                     renderClass->textureAddressV
                 );
-                g_zVideo_D3DRenderState_TextureAddressV = renderClass->textureAddressV;
+                g_zVideo_D3DRenderStateCache.textureAddressV = renderClass->textureAddressV;
             }
 
             hresult = g_zVideo_pD3DDevice->DrawPrimitive(
@@ -8682,42 +8952,42 @@ void FlushOverwritePolys() {
 
         case 5:
         case 6: {
-            if (g_zVideo_D3DRenderState_ShadeMode != 2) {
+            if (g_zVideo_D3DRenderStateCache.shadeMode != 2) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_SHADEMODE,
                     2
                 );
-                g_zVideo_D3DRenderState_ShadeMode = 2;
+                g_zVideo_D3DRenderStateCache.shadeMode = 2;
             }
 
             zVideo_RenderClass *renderClass = (zVideo_RenderClass *)(entry.renderClass);
-            if (g_zVideo_D3DRenderState_TextureHandle != renderClass->textureHandle) {
+            if (g_zVideo_D3DRenderStateCache.textureHandle != renderClass->textureHandle) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_TEXTUREHANDLE,
                     renderClass->textureHandle
                 );
-                g_zVideo_D3DRenderState_TextureHandle = renderClass->textureHandle;
+                g_zVideo_D3DRenderStateCache.textureHandle = renderClass->textureHandle;
             }
-            if (g_zVideo_D3DRenderState_TextureMapBlend != (D3DTEXTUREBLEND)(2)) {
+            if (g_zVideo_D3DRenderStateCache.textureMapBlend != (D3DTEXTUREBLEND)(2)) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_TEXTUREMAPBLEND,
                     2
                 );
-                g_zVideo_D3DRenderState_TextureMapBlend = (D3DTEXTUREBLEND)(2);
+                g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(2);
             }
-            if (g_zVideo_D3DRenderState_TextureAddressU != renderClass->textureAddressU) {
+            if (g_zVideo_D3DRenderStateCache.textureAddressU != renderClass->textureAddressU) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_TEXTUREADDRESSU,
                     renderClass->textureAddressU
                 );
-                g_zVideo_D3DRenderState_TextureAddressU = renderClass->textureAddressU;
+                g_zVideo_D3DRenderStateCache.textureAddressU = renderClass->textureAddressU;
             }
-            if (g_zVideo_D3DRenderState_TextureAddressV != renderClass->textureAddressV) {
+            if (g_zVideo_D3DRenderStateCache.textureAddressV != renderClass->textureAddressV) {
                 g_zVideo_pD3DDevice->SetRenderState(
                     D3DRENDERSTATE_TEXTUREADDRESSV,
                     renderClass->textureAddressV
                 );
-                g_zVideo_D3DRenderState_TextureAddressV = renderClass->textureAddressV;
+                g_zVideo_D3DRenderStateCache.textureAddressV = renderClass->textureAddressV;
             }
 
             hresult = g_zVideo_pD3DDevice->DrawPrimitive(
@@ -10740,14 +11010,17 @@ int __fastcall InitFullscreenSoftwarePixelPack(
  * Evidence: BN shows a DirectDraw2::CreateSurface call, a successful-surface
  * QueryInterface for IID_IDirectDrawSurface3, Release of the temporary base
  * surface only after successful QueryInterface, and direct propagation of the
- * current provider HRESULT.
+ * current provider HRESULT. BN callers pass one unused zero stack argument and
+ * the callee returns with ret 8.
  */
 HRESULT __fastcall CreateSurface3FromDesc(
     IDirectDraw2 *directDraw,
     DDSURFACEDESC *desc,
-    IDirectDrawSurface3 **outSurface
+    IDirectDrawSurface3 **outSurface,
+    int reserved
 ) {
-    IDirectDrawSurface *createdSurface = 0;
+    IDirectDrawSurface *createdSurface;
+    reserved;
     HRESULT result = directDraw->CreateSurface(
         desc,
         &createdSurface,
@@ -10816,7 +11089,8 @@ int CreateHalfResBackbufferSurfaces() {
     HRESULT hresult = CreateSurface3FromDesc(
         g_zVideo_pDirectDraw2,
         &desc,
-        &g_zVideo_DisplayModeSurfaceState.surf
+        &g_zVideo_DisplayModeSurfaceState.surf,
+        0
     );
     if (hresult != DD_OK) {
         return ReportError(
@@ -10854,7 +11128,8 @@ int CreateHalfResBackbufferSurfaces() {
     hresult = CreateSurface3FromDesc(
         g_zVideo_pDirectDraw2,
         &desc,
-        &g_zVideo_SwSurfaceState.surf
+        &g_zVideo_SwSurfaceState.surf,
+        0
     );
     if (hresult != DD_OK) {
         return ReportError(
@@ -10932,7 +11207,8 @@ int CreateFullscreenSoftwareSurfaces() {
     HRESULT hresult = CreateSurface3FromDesc(
         g_zVideo_pDirectDraw2,
         &desc,
-        &g_zVideo_DisplayModeSurfaceState.surf
+        &g_zVideo_DisplayModeSurfaceState.surf,
+        0
     );
     if (hresult != DD_OK) {
         return ReportError(
@@ -10950,7 +11226,8 @@ int CreateFullscreenSoftwareSurfaces() {
         hresult = CreateSurface3FromDesc(
             g_zVideo_pDirectDraw2,
             &desc,
-            &g_zVideo_DisplayModeSurfaceState.surf
+            &g_zVideo_DisplayModeSurfaceState.surf,
+            0
         );
         if (hresult != DD_OK) {
             return ReportError(
@@ -10976,7 +11253,8 @@ int CreateFullscreenSoftwareSurfaces() {
         CreateSurface3FromDesc(
             g_zVideo_pDirectDraw2,
             &desc,
-            &g_zVideo_PrimarySurfaceState.surf
+            &g_zVideo_PrimarySurfaceState.surf,
+            0
         );
     if (hresult != DD_OK) {
         return ReportError(
@@ -10999,7 +11277,8 @@ int CreateFullscreenSoftwareSurfaces() {
     hresult = CreateSurface3FromDesc(
         g_zVideo_pDirectDraw2,
         &desc,
-        &g_zVideo_SwSurfaceState.surf
+        &g_zVideo_SwSurfaceState.surf,
+        0
     );
     if (hresult != DD_OK) {
         return ReportError(
@@ -11071,7 +11350,8 @@ int CreateFullscreenHardwareSurfaces() {
     HRESULT hresult = CreateSurface3FromDesc(
         g_zVideo_pDirectDraw2,
         &desc,
-        &g_zVideo_DisplayModeSurfaceState.surf
+        &g_zVideo_DisplayModeSurfaceState.surf,
+        0
     );
     if (hresult != DD_OK) {
         return ReportError(
@@ -11106,7 +11386,8 @@ int CreateFullscreenHardwareSurfaces() {
         CreateSurface3FromDesc(
             g_zVideo_pDirectDraw2,
             &desc,
-            &g_zVideo_PrimarySurfaceState.surf
+            &g_zVideo_PrimarySurfaceState.surf,
+            0
         );
     if (hresult != DD_OK) {
         return ReportError(

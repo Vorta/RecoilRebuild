@@ -117,10 +117,16 @@ int g_spanColumnCount = 0;
 int g_spanColumnCountPadded = 0;
 SpanBuildProc g_pfnBuildSpanList = 0;
 SpanBuildProc g_pfnBuildSpanListSecondary = 0;
+// Overlay row callback and row-blend factors from zRndr_Overlay.cpp. The
+// software flush path rewrites the callback for 555/565 and scalar/MMX rows,
+// then row leaves consume the premultiplied packed color and destination scale.
 OverlayBlendRowProc g_pfnOverlayBlendRow = 0;
 unsigned int g_swOverlayPremulPacked = 0;
 unsigned int g_swOverlayPremulPackedRot16 = 0;
 int g_swOverlayDstScale5 = 0;
+unsigned int g_swOverlayPremulRPair = 0;
+unsigned int g_swOverlayPremulBPair = 0;
+unsigned int g_swOverlayPremulGPair = 0;
 int g_pixelPackRedBits = 0;
 int g_pixelPackGreenBits = 0;
 int g_pixelPackBlueBits = 0;
@@ -153,6 +159,9 @@ int g_spanActiveTexVStepFixed20 = 0;
 unsigned short *g_spanCurrentSpanBaseAddr = 0;
 int g_spanActiveShadeFixed16 = 0;
 int g_spanActiveShadeStepFixed16 = 0;
+// BN names 0x56b27c gRndr_ActiveTexAlphaMap. Alpha-map span leaves including
+// 0x49c360, 0x49c560, 0x49d1a0, and 0x49d3b0 sample it in lockstep with
+// gRndr_ActiveTexPixels using the same U/V masks and fixed-point steps.
 char *g_spanActiveTexAlphaMap = 0;
 // BN types the zeroed span/MMX scratch vectors from gRndr_Mmx_dUDup2 through
 // gRndr_MmxMask_BlueBits as zMmxQword records. Source keeps lo/hi pairs as
@@ -178,8 +187,8 @@ unsigned short g_mmxFogFactors[4] = {0};
 unsigned short g_mmxMaskGreenBits[4] = {0};
 unsigned short g_mmxMaskBlueBits[4] = {0};
 // BN exposes adjacent zero BSS dwords data_57dab8/data_57dabc immediately
-// after the blue mask qword. They have no code or data xrefs, so they remain
-// unmodeled until evidence proves padding versus reserved authored span/MMX
+// after the blue mask qword. Same-session BN xrefs show no code or data users,
+// so source leaves them as an unmodeled BSS gap instead of authored span/MMX
 // state.
 // Span callback dispatch bank. BN orders these as the gRndr_pfn* BSS block
 // installed by SelectSpanRoutines and caller-specific draw paths.
@@ -261,6 +270,12 @@ RECOIL_STATIC_ASSERT(
         FogParamsPartial,
         packedColor16
     ) == 0x18
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        FogParamsPartial,
+        packedColor16Padding
+    ) == 0x1a
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -1203,58 +1218,13 @@ void InsertPendingSpanWithDepthTest(
 }
 
 /**
- * Recovered helper: zRndr unavailable span callback
- * Original-source helper evidence: No standalone plan entry was found; address-backed selector code installs this helper as a safe span callback fallback.
- * Purpose: Preserve a no-op span callback target for unsupported selected span modes.
- */
-void __fastcall SpanRoutineUnavailable(
-    int,
-    int
-) {}
-
-/**
- * Recovered helper: zRndr unavailable point callback
- * Original-source helper evidence: No standalone plan entry was found; address-backed selector code installs this helper as a safe point callback fallback.
- * Purpose: Preserve a no-op point callback target for unsupported point draw modes.
- */
-void __fastcall PointOpUnavailable(
-    void *,
-    int,
-    int,
-    int
-) {}
-
-/**
- * Recovered helper: zRndr unavailable textured queued span callback
- * Original-source helper evidence: No standalone plan entry was found; address-backed selector code installs this helper as a safe queued span callback fallback.
- * Purpose: Preserve a no-op queued textured span target for unsupported selected span modes.
- */
-void __fastcall TexturedQueuedSpanRoutineUnavailable(
-    int,
-    int,
-    int,
-    int
-) {}
-
-/**
- * Recovered helper: zRndr unavailable flat immediate span callback
- * Original-source helper evidence: No standalone plan entry was found; address-backed selector code installs this helper as a safe flat immediate callback fallback.
- * Purpose: Preserve a no-op flat immediate span target for unsupported selected span modes.
- */
-void __fastcall FlatImmediateSpanRoutineUnavailable(
-    int,
-    int,
-    int
-) {}
-
-/**
  * Recovered inline helper: zRndr active fog comparison
  * Original-source helper evidence: No standalone retail function is expected;
  * observed in 0x49b4c0, 0x49b530, and 0x49b710 as the thresholded
  * fog-parameter comparison before committing to the active record.
  * Purpose: Detect whether the pending fog color differs enough from the active renderer fog state to commit.
  */
-bool FogParamsDifferFromActive(
+static inline bool FogParamsDifferFromActive(
     const FogParamsPartial &params
 ) {
     const float kCommitThreshold = 0.01f;
@@ -1270,7 +1240,7 @@ bool FogParamsDifferFromActive(
  * 0xa0-byte copy into the active fog-parameter record.
  * Purpose: Copy pending fog parameters into active renderer state only when the thresholded color comparison changes.
  */
-void CommitFogParamsIfChanged(
+static inline void CommitFogParamsIfChanged(
     const FogParamsPartial &params
 ) {
     if (FogParamsDifferFromActive(params)) {
@@ -1363,19 +1333,6 @@ int InitGlobals() {
     g_spanIterPrevLink = 0;
     g_spanReservedWriteOnly = 0;
     g_spanColumnCount = 0;
-    g_spanColumnCountPadded = 0;
-    g_pfnBuildSpanList = 0;
-    g_pfnBuildSpanListSecondary = 0;
-    g_pfnOverlayBlendRow = 0;
-    g_pixelPackRedBits = 0;
-    g_pixelPackGreenBits = 0;
-    g_pixelPackBlueBits = 0;
-    g_pixelPackRedMask = 0;
-    g_pixelPackGreenMask = 0;
-    g_pixelPackBlueMask = 0;
-    g_pixelPackRedShift = 0;
-    g_pixelPackGreenShift = 0;
-    g_pixelPackBlueShift = 0;
 
     SetPerspectiveAdaptiveCorrection(FloatFromBits(0x38d1b717));
 
@@ -1385,8 +1342,6 @@ int InitGlobals() {
     g_perspectiveTextureDeltaXPow2F = 32.0f;
     g_perspectiveTextureFarZInv = FloatFromBits(0x3b5a3c21);
     g_perspectiveAdaptiveMinSpan = 0;
-    g_perspectiveAdaptiveMaxSpan = 0;
-    g_perspectiveAdaptiveSlope = 0.0f;
     g_inverseDepthBias = 0.0f;
     g_inverseDepthScale = 1.0f;
     g_scanConvertMode = 1;
@@ -1438,6 +1393,8 @@ int InitGlobals() {
 
 /**
  * Reimplements 0x48d450: zRndr::OverlayBlendRow555_Scalar
+ * Source-shape evidence: BN zRndr_Overlay.cpp loads and stores two 555 pixels
+ * per uint32_t using the precomputed overlay premul and destination-scale globals.
  * Purpose: Blend one 555 overlay row using the cached software overlay alpha and premultiplied source color.
  */
 void __fastcall OverlayBlendRow555_Scalar(
@@ -1446,7 +1403,7 @@ void __fastcall OverlayBlendRow555_Scalar(
 ) {
     int pairCount = pixelCount >> 1;
     unsigned int *rowPairs = (unsigned int *)(rowPixels16);
-    while (pairCount > 0) {
+    do {
         const unsigned int packedPair = *rowPairs;
         const unsigned int loLanes =
             ((((packedPair & 0x03e07c1fU) * (unsigned int)(g_swOverlayDstScale5)) >> 5) +
@@ -1459,63 +1416,105 @@ void __fastcall OverlayBlendRow555_Scalar(
         *rowPairs = hiLanes | loLanes;
         ++rowPairs;
         --pairCount;
-    }
+    } while (pairCount != 0);
 }
 
 /**
  * Reimplements 0x48d4b0: zRndr::OverlayBlendRow565_Scalar
+ * Source-shape evidence: BN zRndr_Overlay.cpp matches the 555 row shape with
+ * two 565 pixels per uint32_t and the precomputed overlay premul globals.
  * Purpose: Blend one 565 overlay row using the active pixel masks and cached overlay alpha.
  */
 void __fastcall OverlayBlendRow565_Scalar(
     unsigned short *rowPixels16,
     int pixelCount
 ) {
-    const int srcScale5 = (int)(g_overlayBlendAlpha * 32.0);
-    const unsigned int src = g_overlayBlendPackedColor16;
-    const unsigned int redMask = g_pixelPackRedMask;
-    const unsigned int greenMask = g_pixelPackGreenMask;
-    const unsigned int blueMask = g_pixelPackBlueMask;
-
-    for (int i = 0; i < pixelCount; ++i) {
-        const unsigned int dst = rowPixels16[i];
-        const unsigned int red =
-            (((dst & redMask) * g_swOverlayDstScale5 + (src & redMask) * srcScale5) >> 5) & redMask;
-        const unsigned int green =
-            (((dst & greenMask) * g_swOverlayDstScale5 + (src & greenMask) * srcScale5) >> 5) &
-            greenMask;
-        const unsigned int blue =
-            (((dst & blueMask) * g_swOverlayDstScale5 + (src & blueMask) * srcScale5) >> 5) &
-            blueMask;
-        rowPixels16[i] = (unsigned short)(red | green | blue);
-    }
+    int pairCount = pixelCount >> 1;
+    unsigned int *rowPairs = (unsigned int *)(rowPixels16);
+    do {
+        const unsigned int packedPair = *rowPairs;
+        const unsigned int loLanes =
+            ((((packedPair & 0x07e0f81fU) * (unsigned int)(g_swOverlayDstScale5)) >> 5) +
+                g_swOverlayPremulPackedRot16);
+        const unsigned int hiLanes =
+            (((packedPair >> 5) & 0x07c0f83fU) * (unsigned int)(g_swOverlayDstScale5)) +
+            g_swOverlayPremulPacked;
+        *rowPairs = ((loLanes ^ hiLanes) & 0x07e0f81fU) ^ hiLanes;
+        ++rowPairs;
+        --pairCount;
+    } while (pairCount != 0);
 }
 
 /**
  * Reimplements 0x48d510: zRndr::OverlayBlendRow555_Mmx
- * Purpose: Preserve the MMX row-blend contract with scalar behavior while tier S byte evidence remains deferred.
+ * Source-shape evidence: BN zRndr_Overlay.cpp builds replicated 555 masks,
+ * premul RGB pairs, and destination-scale words on the stack, then processes
+ * four 16-bit pixels per MMX qword before emms. The current C++ preserves
+ * tier C behavior with the same four-pixel grouping and premul-pair globals
+ * while the retail MMX instruction source shape remains pending.
+ * Purpose: Preserve the MMX row-blend contract with scalar behavior while the retail MMX source shape remains pending.
  */
 void __fastcall OverlayBlendRow555_Mmx(
     unsigned short *rowPixels16,
     int pixelCount
 ) {
-    OverlayBlendRow555_Scalar(
-        rowPixels16,
-        pixelCount & ~0x3
-    );
+    int groupCount = pixelCount >> 2;
+    unsigned short *row = rowPixels16;
+    while (groupCount > 0) {
+        for (int lane = 0; lane < 4; ++lane) {
+            const unsigned int dst = row[lane];
+            const unsigned int red =
+                (((dst & 0x7c00U) >> 5) * (unsigned int)(g_swOverlayDstScale5) +
+                    (g_swOverlayPremulRPair & 0xffffU)) &
+                0x7c00U;
+            const unsigned int green =
+                (((dst & 0x03e0U) >> 5) * (unsigned int)(g_swOverlayDstScale5) +
+                    (g_swOverlayPremulGPair & 0xffffU)) &
+                0x03e0U;
+            const unsigned int blue =
+                (((dst & 0x001fU) * (unsigned int)(g_swOverlayDstScale5)) >> 5) +
+                (g_swOverlayPremulBPair & 0xffffU);
+            row[lane] = (unsigned short)(red | green | (blue & 0x001fU));
+        }
+        row += 4;
+        --groupCount;
+    }
 }
 
 /**
  * Reimplements 0x48d5f0: zRndr::OverlayBlendRow565_Mmx
- * Purpose: Preserve the MMX row-blend contract with scalar behavior while tier S byte evidence remains deferred.
+ * Source-shape evidence: BN zRndr_Overlay.cpp mirrors the 555 MMX row loop
+ * with 565 masks, replicated premul RGB pairs, and four 16-bit pixels per MMX
+ * qword before emms. The current C++ preserves tier C behavior with the same
+ * four-pixel grouping and premul-pair globals while the retail MMX instruction
+ * source shape remains pending.
+ * Purpose: Preserve the MMX row-blend contract with scalar behavior while the retail MMX source shape remains pending.
  */
 void __fastcall OverlayBlendRow565_Mmx(
     unsigned short *rowPixels16,
     int pixelCount
 ) {
-    OverlayBlendRow565_Scalar(
-        rowPixels16,
-        pixelCount & ~0x3
-    );
+    int groupCount = pixelCount >> 2;
+    unsigned short *row = rowPixels16;
+    while (groupCount > 0) {
+        for (int lane = 0; lane < 4; ++lane) {
+            const unsigned int dst = row[lane];
+            const unsigned int red =
+                (((dst & 0xf800U) >> 5) * (unsigned int)(g_swOverlayDstScale5) +
+                    (g_swOverlayPremulRPair & 0xffffU)) &
+                0xf800U;
+            const unsigned int green =
+                (((dst & 0x07e0U) >> 5) * (unsigned int)(g_swOverlayDstScale5) +
+                    (g_swOverlayPremulGPair & 0xffffU)) &
+                0x07e0U;
+            const unsigned int blue =
+                (((dst & 0x001fU) * (unsigned int)(g_swOverlayDstScale5)) >> 5) +
+                (g_swOverlayPremulBPair & 0xffffU);
+            row[lane] = (unsigned short)(red | green | (blue & 0x001fU));
+        }
+        row += 4;
+        --groupCount;
+    }
 }
 
 /**
@@ -1679,6 +1678,9 @@ void SelectSpanRoutines() {
 
 /**
  * Reimplements 0x4903f0: zRndr::GetActiveRegionState
+ * Source file evidence: GameZRecoil/zRndr/zRndr_Draw.cpp.
+ * Data evidence: reads the active-region framebuffer, width, height,
+ * bytes-per-pixel, and pitch globals at 0x632050-0x632060.
  * Purpose: Return the active framebuffer pointer and report the cached region dimensions, pixel depth, and pitch.
  */
 void *__fastcall GetActiveRegionState(
@@ -1725,6 +1727,8 @@ void __fastcall SetFrameBufferRegion(
 /**
  * Reimplements 0x4903c0: zRndr::SetActiveRegionSizeFromRect
  * Source file evidence: D:\Proj\GameZRecoil\zModel\zmodel.cpp.
+ * Data evidence: writes the active-region width and height globals at
+ * 0x632054 and 0x632058 from the HudUiRect extents.
  * Purpose: Refresh cached active region dimensions from a HUD rectangle.
  */
 void __fastcall SetActiveRegionSizeFromRect(
@@ -2035,20 +2039,23 @@ void SpanOcclusionResetFrame() {
 void SpanOcclusionShutdown() {
     if (g_spanColumnHeadTable != 0) {
         free(g_spanColumnHeadTable);
+        g_spanColumnHeadTable = 0;
     }
-    g_spanColumnHeadTable = 0;
 
     if (g_spanPoolBase != 0) {
         free(g_spanPoolBase);
+        g_spanPoolBase = 0;
     }
-    g_spanPoolBase = 0;
 }
 
 /**
- * Reimplements 0x49e0e0: zRndr::SpanAlphaBlend565_Mmx_FromPal8
+ * Reimplements 0x49e0e0: zRndr::FogTarget565_SetPackedColorAndRamp
+ * Source file evidence: GameZRecoil/zRndr/zRndr_Span.cpp.
+ * Data evidence: stores RGB565 component fields, writes packedColor16 as a
+ * 16-bit field, replicates the packed 565 color, and fills packedColorRamp[31..0].
  * Purpose: Build the packed fog color and ramp table used by 16-bit fog blending.
  */
-void __fastcall SpanAlphaBlend565_Mmx_FromPal8(
+void __fastcall FogTarget565_SetPackedColorAndRamp(
     FogParamsPartial *params,
     int packedRed,
     int packedGreen,
@@ -2058,11 +2065,11 @@ void __fastcall SpanAlphaBlend565_Mmx_FromPal8(
     params->packedColorRed = packedRed;
     params->packedColorGreen = packedGreen;
     params->packedColorBlue = packedBlue;
-    params->packedColor16 = (int)(packedColor16);
+    params->packedColor16 = (unsigned short)(packedColor16);
     params->packedColor16Dup = (int)(packedColor16 | (packedColor16 << 16));
 
     const unsigned int rampStep =
-        ((unsigned int)(packedRed | packedGreen) << 11) | ((unsigned int)(packedBlue) >> 5);
+        ((unsigned int)(packedRed | packedBlue) << 11) | ((unsigned int)(packedGreen) >> 5);
     unsigned int rampValue = 0;
     for (int i = 31; i >= 0; --i) {
         params->packedColorRamp[i] = (int)(rampValue);
@@ -2071,33 +2078,33 @@ void __fastcall SpanAlphaBlend565_Mmx_FromPal8(
 }
 
 namespace {
-inline int SpanTex16SampleIndex(
+static inline int SpanTex16SampleIndex(
     int texU,
     int texV,
     int texVShift,
     int texUMask
 );
-unsigned short BlendPixel565Alpha8(
+static inline unsigned short BlendPixel565Alpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
     int alpha
 );
-unsigned int BlendPair565Alpha5(
+static inline unsigned int BlendPair565Alpha5(
     unsigned int dstPair,
     unsigned short srcPixel,
     int alpha
 );
-unsigned short BlendPixel555Alpha8(
+static inline unsigned short BlendPixel555Alpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
     int alpha
 );
-unsigned int BlendPair555Alpha5(
+static inline unsigned int BlendPair555Alpha5(
     unsigned int dstPair,
     unsigned short srcPixel,
     int alpha
 );
-unsigned short BlendPixel555ConstAlphaMap(
+static inline unsigned short BlendPixel555ConstAlphaMap(
     unsigned short dstPixel,
     unsigned short srcPixel,
     int alpha
@@ -2106,6 +2113,9 @@ unsigned short BlendPixel555ConstAlphaMap(
 
 /**
  * Reimplements 0x49c230: zRndr::SpanAlphaBlend565ConstAlphaFromPal8
+ * Source-shape evidence: BN uses the sampled pal8 texel for the high-alpha
+ * palette copy path, but the partial-alpha path reloads the current destination
+ * word and uses that word as the palette index before blending 565 channels.
  * Purpose: Blend palettized texture samples into a 565 span using the active constant alpha.
  */
 void __fastcall SpanAlphaBlend565ConstAlphaFromPal8(
@@ -2124,6 +2134,8 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromPal8(
                 *dst = g_spanActiveTexPalette[(short)(sourceIndex)];
             } else {
                 const int dstColor = (short)(*dst);
+                // BN 0x49c2ba intentionally uses the current destination word
+                // as the palette index in this partial-alpha path.
                 const int srcColor = g_spanActiveTexPalette[dstColor];
                 const int greenDelta =
                     (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * g_spanActiveConstAlphaBits) >> 8;
@@ -2145,7 +2157,11 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromPal8(
 
 /**
  * Reimplements 0x49c020: zRndr::SpanMasked16FromPal8To565
- * Purpose: Route masked palettized 565 span writes through the constant-alpha pal8 blender.
+ * Source-shape evidence: BN's retail body owns the same generic V-shift pal8
+ * 565 loop as 0x49c230, including the nonzero source gate, alpha > 3 gate,
+ * alpha >= 0xfc palette copy, and destination-word palette lookup in the
+ * partial-alpha path.
+ * Purpose: Write nonzero palettized texture samples into a 565 span using the active constant alpha.
  */
 void __fastcall SpanMasked16FromPal8To565(
     int texU,
@@ -2153,16 +2169,42 @@ void __fastcall SpanMasked16FromPal8To565(
     int pixelCount,
     int texVShift
 ) {
-    SpanAlphaBlend565ConstAlphaFromPal8(
-        texU,
-        texV,
-        pixelCount,
-        texVShift
-    );
+    unsigned short *dst = g_spanCurrentSpanBaseAddr;
+    for (int i = 0; i < pixelCount; ++i) {
+        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
+        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
+        const unsigned char sourceIndex = g_spanActiveTexPixels[vIndex + uIndex];
+        if (sourceIndex != 0 && g_spanActiveConstAlphaBits > 3) {
+            if (g_spanActiveConstAlphaBits >= 0xfc) {
+                *dst = g_spanActiveTexPalette[(short)(sourceIndex)];
+            } else {
+                const int dstColor = (short)(*dst);
+                // BN 0x49c0aa intentionally uses the current destination word
+                // as the palette index in this partial-alpha path.
+                const int srcColor = g_spanActiveTexPalette[dstColor];
+                const int greenDelta =
+                    (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * g_spanActiveConstAlphaBits) >> 8;
+                const int redDelta =
+                    (((srcColor & 0xf800) - (dstColor & 0xf800)) * g_spanActiveConstAlphaBits) >> 8;
+                int blended = dstColor + (redDelta & 0xfffff800);
+                const int blueDelta =
+                    (((srcColor & 0x001f) - (blended & 0x001f)) * g_spanActiveConstAlphaBits) >> 8;
+                blended += (greenDelta & 0xffffffe0) + blueDelta;
+                *dst = (unsigned short)(blended);
+            }
+        }
+
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
+        ++dst;
+    }
 }
 
 /**
  * Reimplements 0x49c150: zRndr::SpanMasked16FromTex16To565
+ * Source-shape evidence: BN samples a nonzero tex16 mask and copies it only
+ * for alpha >= 0xfc; the partial-alpha branch emits channel math that collapses
+ * to preserving the current destination word.
  * Purpose: Copy nonzero 16-bit texture samples into a 565 destination span.
  */
 void __fastcall SpanMasked16FromTex16To565(
@@ -2180,6 +2222,9 @@ void __fastcall SpanMasked16FromTex16To565(
         if (sourceTexel != 0 && g_spanActiveConstAlphaBits > 3) {
             if (g_spanActiveConstAlphaBits >= 0xfc) {
                 *dst = sourceTexel;
+            } else {
+                // BN 0x49c1f2 reaches the partial-alpha branch but adds zero,
+                // preserving the destination after the source/nonzero gate.
             }
         }
 
@@ -2191,6 +2236,9 @@ void __fastcall SpanMasked16FromTex16To565(
 
 /**
  * Reimplements 0x49c360: zRndr::SpanAlphaBlend565FromTex16Alpha8
+ * Source-shape evidence: BN inlines the odd tex16 alpha-map scalar path,
+ * duplicates one sampled texel into a packed pair, reduces alpha to five bits,
+ * and blends the two-pixel 565 lanes with packed masks.
  * Purpose: Alpha-blend 16-bit texture samples into a 565 span using per-texel alpha.
  */
 void __fastcall SpanAlphaBlend565FromTex16Alpha8(
@@ -2274,6 +2322,8 @@ void __fastcall SpanAlphaBlend565FromTex16Alpha8(
 
 /**
  * Reimplements 0x49c560: zRndr::SpanAlphaBlend555FromTex16Alpha8
+ * Source-shape evidence: BN matches the tex16 alpha-map odd/pair loop with
+ * 555-specific red and green masks in the packed two-pixel blend.
  * Purpose: Alpha-blend 16-bit texture samples into a 555 span using per-texel alpha.
  */
 void __fastcall SpanAlphaBlend555FromTex16Alpha8(
@@ -2357,6 +2407,10 @@ void __fastcall SpanAlphaBlend555FromTex16Alpha8(
 
 /**
  * Reimplements 0x49c970: zRndr::SpanAlphaBlend565ConstAlphaFromTex16Alpha8
+ * Source-shape evidence: BN uses the same active U/V index for tex16 and
+ * alpha-map reads, scales the alpha byte by the float stored in
+ * gRndr_ActiveConstAlphaBits, skips alpha <= 3, copies for alpha >= 0xfc, and
+ * otherwise blends 565 channels.
  * Purpose: Blend 16-bit texture samples into a 565 span using scaled alpha-map values.
  */
 void __fastcall SpanAlphaBlend565ConstAlphaFromTex16Alpha8(
@@ -2405,6 +2459,8 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromTex16Alpha8(
 
 /**
  * Reimplements 0x49ca90: zRndr::SpanAlphaBlend555ConstAlphaFromTex16Alpha8
+ * Source-shape evidence: BN matches the tex16 alpha-map scaling loop with a
+ * 555-specific alpha > 7 gate and 555 channel masks.
  * Purpose: Blend 16-bit texture samples into a 555 span using scaled alpha-map values.
  */
 void __fastcall SpanAlphaBlend555ConstAlphaFromTex16Alpha8(
@@ -2453,6 +2509,9 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16Alpha8(
 
 /**
  * Reimplements 0x49cbb0: zRndr::SpanAlphaBlend565MmxFromTex16Alpha8
+ * Source-shape evidence: BN builds paired U/V indices with the MMX mask and
+ * step globals, stages sampled tex16 pixels and alpha bytes in a stack scratch
+ * area, blends packed groups, then runs a scalar tail with the 565 gates.
  * Purpose: Blend tex16 alpha-map samples into a 565 span using the MMX-selected path shape.
  */
 void __fastcall SpanAlphaBlend565MmxFromTex16Alpha8(
@@ -2513,6 +2572,8 @@ void __fastcall SpanAlphaBlend565MmxFromTex16Alpha8(
 
 /**
  * Reimplements 0x49cea0: zRndr::SpanAlphaBlend555MmxFromTex16Alpha8
+ * Source-shape evidence: BN matches the 565 MMX alpha-map staging loop but
+ * uses the 555 red/green masks and an alpha > 7 scalar-tail gate.
  * Purpose: Blend tex16 alpha-map samples into a 555 span using the MMX-selected path shape.
  */
 void __fastcall SpanAlphaBlend555MmxFromTex16Alpha8(
@@ -2573,6 +2634,8 @@ void __fastcall SpanAlphaBlend555MmxFromTex16Alpha8(
 
 /**
  * Reimplements 0x49d1a0: zRndr::SpanAlphaBlend565FromPal8Alpha8
+ * Source-shape evidence: BN expands each sampled pal8 texel through the active
+ * palette before the odd scalar and packed two-pixel 565 alpha-map blend.
  * Purpose: Alpha-blend palettized texture samples into a 565 span using per-texel alpha.
  */
 void __fastcall SpanAlphaBlend565FromPal8Alpha8(
@@ -2653,6 +2716,8 @@ void __fastcall SpanAlphaBlend565FromPal8Alpha8(
 
 /**
  * Reimplements 0x49d3b0: zRndr::SpanAlphaBlend555FromPal8Alpha8
+ * Source-shape evidence: BN matches the pal8 alpha-map odd/pair loop with
+ * active-palette expansion and 555-specific packed blend masks.
  * Purpose: Alpha-blend palettized texture samples into a 555 span using per-texel alpha.
  */
 void __fastcall SpanAlphaBlend555FromPal8Alpha8(
@@ -2733,6 +2798,9 @@ void __fastcall SpanAlphaBlend555FromPal8Alpha8(
 
 /**
  * Reimplements 0x49d810: zRndr::SpanAlphaBlend565ConstAlphaFromPal8Alpha8
+ * Source-shape evidence: BN samples pal8 texels and the alpha map through the
+ * same active U/V index, expands the texel through the active palette, scales
+ * alpha by the float constant-alpha value, and applies the 565 alpha gates.
  * Purpose: Blend palettized texture samples into a 565 span using scaled alpha-map values.
  */
 void __fastcall SpanAlphaBlend565ConstAlphaFromPal8Alpha8(
@@ -2783,6 +2851,8 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromPal8Alpha8(
 
 /**
  * Reimplements 0x49d950: zRndr::SpanAlphaBlend555ConstAlphaFromPal8Alpha8
+ * Source-shape evidence: BN matches the pal8 alpha-map scaling loop with the
+ * active palette expansion and 555-specific alpha > 7 gate.
  * Purpose: Blend palettized texture samples into a 555 span using scaled alpha-map values.
  */
 void __fastcall SpanAlphaBlend555ConstAlphaFromPal8Alpha8(
@@ -2833,6 +2903,9 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromPal8Alpha8(
 
 /**
  * Reimplements 0x49da80: zRndr::SpanAlphaBlend565MmxFromPal8Alpha8
+ * Source-shape evidence: BN stages paired pal8 samples through the active
+ * palette, alpha bytes through the active alpha map, and packed 565 blends
+ * through the same MMX U/V index body before the scalar tail.
  * Purpose: Blend pal8 alpha-map samples into a 565 span using the MMX-selected path shape.
  */
 void __fastcall SpanAlphaBlend565MmxFromPal8Alpha8(
@@ -2894,6 +2967,8 @@ void __fastcall SpanAlphaBlend565MmxFromPal8Alpha8(
 
 /**
  * Reimplements 0x49ddb0: zRndr::SpanAlphaBlend555MmxFromPal8Alpha8
+ * Source-shape evidence: BN matches the pal8 MMX alpha-map staging loop but
+ * uses the 555 red/green masks and an alpha > 7 scalar-tail gate.
  * Purpose: Blend pal8 alpha-map samples into a 555 span using the MMX-selected path shape.
  */
 void __fastcall SpanAlphaBlend555MmxFromPal8Alpha8(
@@ -2955,6 +3030,9 @@ void __fastcall SpanAlphaBlend555MmxFromPal8Alpha8(
 
 /**
  * Reimplements 0x49c760: zRndr::SpanAlphaBlend565ConstAlphaFromTex16
+ * Source-shape evidence: BN samples a 16-bit texel through the active U/V
+ * masks, skips only when gRndr_ActiveConstAlphaBits <= 3, copies for alpha
+ * >= 0xfc, and otherwise blends 565 channels toward the texel.
  * Purpose: Blend 16-bit texture samples into a 565 span using the active constant alpha.
  */
 void __fastcall SpanAlphaBlend565ConstAlphaFromTex16(
@@ -2994,6 +3072,8 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromTex16(
 
 /**
  * Reimplements 0x49c860: zRndr::SpanAlphaBlend555ConstAlphaFromTex16
+ * Source-shape evidence: BN matches the tex16 constant-alpha loop shape with a
+ * stricter alpha > 7 gate and 555 red/green/blue channel masks.
  * Purpose: Blend 16-bit texture samples into a 555 span using the active constant alpha.
  */
 void __fastcall SpanAlphaBlend555ConstAlphaFromTex16(
@@ -3033,6 +3113,9 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16(
 
 /**
  * Reimplements 0x49d5c0: zRndr::SpanAlphaBlend565ConstAlphaFastFromPal8
+ * Source-shape evidence: BN samples an 8-bit texel, expands it through the
+ * active palette before the alpha gate, skips only when alpha <= 3, copies for
+ * alpha >= 0xfc, and otherwise blends 565 channels toward the palette color.
  * Purpose: Blend palettized texture samples into a 565 span using fast constant alpha.
  */
 void __fastcall SpanAlphaBlend565ConstAlphaFastFromPal8(
@@ -3072,6 +3155,8 @@ void __fastcall SpanAlphaBlend565ConstAlphaFastFromPal8(
 
 /**
  * Reimplements 0x49d6e0: zRndr::SpanAlphaBlend555ConstAlphaFastFromPal8
+ * Source-shape evidence: BN matches the fast pal8 constant-alpha loop shape
+ * with alpha <= 7 skip behavior and 555 channel masks.
  * Purpose: Blend palettized texture samples into a 555 span using fast constant alpha.
  */
 void __fastcall SpanAlphaBlend555ConstAlphaFastFromPal8(
@@ -3115,7 +3200,7 @@ namespace {
  * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e200 and 0x49e300 fog blend callers as the rotate-right term in packed 565/555 ramp blending.
  * Purpose: Rotate packed 32-bit color terms right by a caller-selected bit count.
  */
-unsigned int RotateRight32(
+static inline unsigned int RotateRight32(
     unsigned int value,
     int count
 ) {
@@ -3127,7 +3212,7 @@ unsigned int RotateRight32(
  * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e200, 0x49e300, 0x49e400, and 0x49e560 before ramp or solid-fog blending.
  * Purpose: Detect fog coordinates that have reached the fully fogged color.
  */
-bool FogCoordIsFullyFogged(
+static inline bool FogCoordIsFullyFogged(
     unsigned int fogCoordFixed24
 ) {
     return (int)(fogCoordFixed24) >= 0x1000000;
@@ -3138,7 +3223,7 @@ bool FogCoordIsFullyFogged(
  * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e200, 0x49e300, 0x49e400, and 0x49e560 before ramp lookup.
  * Purpose: Detect fog coordinates that should use the packed color ramp.
  */
-bool FogCoordUsesRamp(
+static inline bool FogCoordUsesRamp(
     unsigned int fogCoordFixed24
 ) {
     return (int)(fogCoordFixed24) >= 0x80000;
@@ -3149,7 +3234,7 @@ bool FogCoordUsesRamp(
  * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e200, 0x49e300, 0x49e400, and 0x49e560 as the fixed-point ramp lookup expression.
  * Purpose: Convert a fixed-point fog coordinate into the 32-entry ramp index.
  */
-unsigned int FogRampIndex(
+static inline unsigned int FogRampIndex(
     unsigned int fogCoordFixed24
 ) {
     return (0x1000000u - fogCoordFixed24) >> 19;
@@ -3160,7 +3245,7 @@ unsigned int FogRampIndex(
  * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e200 and through the 0x49e400 MMX-shaped fog blend tail.
  * Purpose: Blend one 565 pixel against the active packed fog ramp.
  */
-unsigned short FogBlendPixel565(
+static inline unsigned short FogBlendPixel565(
     unsigned short pixel,
     unsigned int fogCoordFixed24
 ) {
@@ -3189,7 +3274,7 @@ unsigned short FogBlendPixel565(
  * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e300 and through the 0x49e560 MMX-shaped fog blend tail.
  * Purpose: Blend one 555 pixel against the active packed fog ramp.
  */
-unsigned short FogBlendPixel555(
+static inline unsigned short FogBlendPixel555(
     unsigned short pixel,
     unsigned int fogCoordFixed24
 ) {
@@ -3218,7 +3303,7 @@ unsigned short FogBlendPixel555(
  * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e200 paired-pixel fog loops.
  * Purpose: Blend two packed 565 pixels against the active packed fog ramp.
  */
-unsigned int FogBlendPair565(
+static inline unsigned int FogBlendPair565(
     unsigned int packedPixels,
     unsigned int fogCoordFixed24
 ) {
@@ -3248,7 +3333,7 @@ unsigned int FogBlendPair565(
  * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e300 paired-pixel fog loops.
  * Purpose: Blend two packed 555 pixels against the active packed fog ramp.
  */
-unsigned int FogBlendPair555(
+static inline unsigned int FogBlendPair555(
     unsigned int packedPixels,
     unsigned int fogCoordFixed24
 ) {
@@ -3278,7 +3363,7 @@ unsigned int FogBlendPair555(
  * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e400 and 0x49e560 MMX-lane fog blend reconstruction.
  * Purpose: Emulate the saturating signed word subtract used by the MMX fog lane.
  */
-short SaturatingSubWord(
+static inline short SaturatingSubWord(
     unsigned short minuend,
     unsigned short subtrahend
 ) {
@@ -3297,7 +3382,7 @@ short SaturatingSubWord(
  * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e400 and 0x49e560 MMX-lane fog blend reconstruction.
  * Purpose: Emulate the low-word signed multiply used by the MMX fog lane.
  */
-unsigned short MultiplyLowWord(
+static inline unsigned short MultiplyLowWord(
     short lhs,
     short rhs
 ) {
@@ -3309,7 +3394,7 @@ unsigned short MultiplyLowWord(
  * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e400 and 0x49e560 as repeated per-lane MMX fog math.
  * Purpose: Blend one lane of the MMX-shaped fog quad with active mask globals.
  */
-unsigned short FogBlendMmxLane(
+static inline unsigned short FogBlendMmxLane(
     unsigned short pixel,
     unsigned short fogFactor,
     int lane,
@@ -3358,7 +3443,7 @@ unsigned short FogBlendMmxLane(
  * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e400 and 0x49e560 four-pixel fog blend bodies.
  * Purpose: Blend a four-pixel MMX-shaped fog quad and advance the fixed-point fog coordinate.
  */
-unsigned int BlendMmxQuad(
+static inline unsigned int BlendMmxQuad(
     unsigned short *pixels,
     unsigned int fogCoordFixed24,
     unsigned int fogCoordStepFixed24,
@@ -3398,7 +3483,7 @@ unsigned int BlendMmxQuad(
  * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e400 and 0x49e560 with only 565/555 mask and scalar-tail differences.
  * Purpose: Handle aligned MMX-shaped fog span blending before delegating tail pixels to the scalar variant.
  */
-void FogBlendSpanMmxCore(
+static inline void FogBlendSpanMmxCore(
     unsigned short *pixels,
     int pixelCount,
     int fogCoordFixed24,
@@ -3460,10 +3545,10 @@ void FogBlendSpanMmxCore(
 
 /**
  * Recovered inline helper: zRndr span texture sample index
- * Original-source inline helper evidence: No standalone plan/source-map entry; observed in span callers including 0x49e6c0, 0x49b7e0, 0x49edc0, 0x49bbf0, and 0x49f180.
+ * Original-source inline helper evidence: No standalone retail function is expected; observed in span callers including 0x49e6c0, 0x49b7e0, 0x49edc0, 0x49bbf0, and 0x49f180.
  * Purpose: Combine fixed-point texture U and masked V coordinates into the active texture sample index.
  */
-inline int SpanTex16SampleIndex(
+static inline int SpanTex16SampleIndex(
     int texU,
     int texV,
     int texVShift,
@@ -3479,7 +3564,7 @@ inline int SpanTex16SampleIndex(
  * Original-source inline helper evidence: No standalone plan/source-map entry; observed in span callers including 0x49e6c0, 0x49ea80, and 0x49ec20.
  * Purpose: Read a 16-bit texel from the active texture using the recovered fixed-point sample-index helper.
  */
-inline unsigned short SpanTex16Sample(
+static inline unsigned short SpanTex16Sample(
     int texU,
     int texV,
     int texVShift,
@@ -3496,10 +3581,10 @@ inline unsigned short SpanTex16Sample(
 
 /**
  * Recovered inline helper: zRndr palettized texture sample expansion
- * Original-source inline helper evidence: No standalone plan/source-map entry; observed in 0x49edc0 with equivalent palettized alpha span expansion patterns.
+ * Original-source inline helper evidence: No standalone plan/source-map entry; observed in 0x49edc0, 0x49bbf0, and 0x49f180 palettized texture span patterns.
  * Purpose: Expand an 8-bit texture sample through the active span palette.
  */
-inline unsigned short SpanPal8SampleExpanded(
+static inline unsigned short SpanPal8SampleExpanded(
     int texU,
     int texV,
     int texVShift,
@@ -3519,7 +3604,7 @@ inline unsigned short SpanPal8SampleExpanded(
  * Original-source inline helper evidence: No standalone retail function is expected; observed across 0x49c360, 0x49c970, 0x49cbb0, 0x49d1a0, 0x49d810, and 0x49da80 alpha-map span callers.
  * Purpose: Blend one 565 destination pixel toward a source pixel using an 8-bit alpha value.
  */
-unsigned short BlendPixel565Alpha8(
+static inline unsigned short BlendPixel565Alpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
     int alpha
@@ -3539,7 +3624,7 @@ unsigned short BlendPixel565Alpha8(
  * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49c360 and 0x49d1a0 paired-pixel alpha blend loops.
  * Purpose: Blend two packed 565 destination pixels toward one source pixel using a 5-bit alpha approximation.
  */
-unsigned int BlendPair565Alpha5(
+static inline unsigned int BlendPair565Alpha5(
     unsigned int dstPair,
     unsigned short srcPixel,
     int alpha
@@ -3561,7 +3646,7 @@ unsigned int BlendPair565Alpha5(
  * Original-source inline helper evidence: No standalone retail function is expected; observed across 0x49c560, 0x49ca90, 0x49cea0, 0x49d3b0, 0x49d950, and 0x49ddb0 alpha-map span callers.
  * Purpose: Blend one 555 destination pixel toward a source pixel using an 8-bit alpha value.
  */
-unsigned short BlendPixel555Alpha8(
+static inline unsigned short BlendPixel555Alpha8(
     unsigned short dstPixel,
     unsigned short srcPixel,
     int alpha
@@ -3581,7 +3666,7 @@ unsigned short BlendPixel555Alpha8(
  * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49c560 and 0x49d3b0 paired-pixel alpha blend loops.
  * Purpose: Blend two packed 555 destination pixels toward one source pixel using a 5-bit alpha approximation.
  */
-unsigned int BlendPair555Alpha5(
+static inline unsigned int BlendPair555Alpha5(
     unsigned int dstPair,
     unsigned short srcPixel,
     int alpha
@@ -3603,7 +3688,7 @@ unsigned int BlendPair555Alpha5(
  * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49ca90 and 0x49d950 scaled alpha-map span callers.
  * Purpose: Blend one 555 destination pixel toward a source pixel using a scaled alpha-map value.
  */
-unsigned short BlendPixel555ConstAlphaMap(
+static inline unsigned short BlendPixel555ConstAlphaMap(
     unsigned short dstPixel,
     unsigned short srcPixel,
     int alpha
@@ -3619,18 +3704,19 @@ unsigned short BlendPixel555ConstAlphaMap(
 
 /**
  * Recovered inline helper: zRndr forward 16-bit texture span copy
- * Original-source inline helper evidence: No standalone plan/source-map entry; observed in 0x49ea80 and 0x49ec20 after the alignment prologue.
- * Purpose: Copy active 16-bit texture samples forward into a destination span.
+ * Original-source inline helper evidence: No standalone plan/source-map entry; observed in 0x49ea80 and 0x49ec20 after the alignment prologue with packed two-pixel stores.
+ * Purpose: Copy active 16-bit texture samples forward into an aligned destination span.
  */
-inline void SpanCopy16FromTex16Forward(
+static inline void SpanCopy16FromTex16Forward(
     unsigned short *dst,
     int texU,
     int texV,
     int pixelCount,
     int texVShift
 ) {
-    for (int i = 0; i < pixelCount; ++i) {
-        dst[i] = SpanTex16Sample(
+    int pairCount = pixelCount >> 1;
+    while (pairCount != 0) {
+        const unsigned short first = SpanTex16Sample(
             texU,
             texV,
             texVShift,
@@ -3638,6 +3724,27 @@ inline void SpanCopy16FromTex16Forward(
         );
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
+
+        const unsigned short second = SpanTex16Sample(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
+        *((unsigned int *)(dst)) = ((unsigned int)(second) << 16) | first;
+        dst += 2;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
+        --pairCount;
+    }
+
+    if ((pixelCount & 1) != 0) {
+        *dst = SpanTex16Sample(
+            texU,
+            texV,
+            texVShift,
+            g_spanActiveTexUMask
+        );
     }
 }
 } // namespace
@@ -3767,13 +3874,13 @@ void __fastcall FogBlendSpan555Mmx(
 /**
  * Reimplements 0x49e6c0: zRndr::SpanCopy16FromTex16SwitchVShift
  * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
- * Source-shape evidence: BN assembly uses an eight-case texVShift jump table,
- * saves real ESP in gRndr_SavedEspSlot, pivots ESP to the end of the active
- * destination span, writes texels backward with push word, and restores ESP at
- * case exit. This C++ body preserves behavior while the retail ESP-pivot
- * source shape remains owner/data debt for the span-family pass; current VC5SP3
- * /O2 output emits normal pointer stores, and production raw assembly is not an
- * accepted span-source substitute.
+ * Source-shape evidence: BN assembly uses a texVShift 10..17 jump table, saves
+ * real ESP in gRndr_SavedEspSlot, pivots ESP to gRndr_CurrentSpanBaseAddr +
+ * count, samples gRndr_ActiveTexPixels as 16-bit texels, pushes every sampled
+ * word backward, and restores ESP at case exit. This C++ body preserves
+ * behavior while the retail ESP-pivot source shape remains owner/data debt for
+ * the span-family pass; current VC5SP3 /O2 output emits normal pointer stores,
+ * and production raw assembly is not an accepted span-source substitute.
  * Purpose: Copy 16-bit texels into the active span using the variable-texVShift reverse span contract.
  */
 void __fastcall SpanCopy16FromTex16SwitchVShift(
@@ -3898,12 +4005,14 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
 /**
  * Reimplements 0x49b7e0: zRndr::SpanMasked16FromTex16SwitchVShift
  * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
- * Source-shape evidence: BN assembly uses the same ESP-pivot jump-table span
- * pattern as 0x49e6c0, with nonzero tex16 samples conditionally pushed into the
- * descending destination cursor. This C++ body preserves behavior while the
- * retail ESP-pivot source shape remains owner/data debt for the span-family pass;
- * current VC5SP3 /O2 output emits normal pointer stores, and production raw
- * assembly is not an accepted span-source substitute.
+ * Source-shape evidence: BN assembly uses a texVShift 10..17 jump table, saves
+ * through gRndr_SavedEspSlot, pivots ESP to gRndr_CurrentSpanBaseAddr + count,
+ * samples gRndr_ActiveTexPixels as 16-bit texels, and either pushes a nonzero
+ * word or subtracts two bytes so zero texels leave the destination transparent.
+ * This C++ body preserves behavior while the retail ESP-pivot source shape
+ * remains owner/data debt for the span-family pass; current VC5SP3 /O2 output
+ * emits normal pointer stores, and production raw assembly is not an accepted
+ * span-source substitute.
  * Purpose: Write nonzero 16-bit texels into the active span using the texVShift-specialized reverse span loops.
  */
 void __fastcall SpanMasked16FromTex16SwitchVShift(
@@ -4069,6 +4178,9 @@ void __fastcall SpanMmxSetTexUvMasksAndVShift(
 
 /**
  * Reimplements 0x49ea80: zRndr::SpanCopy16FromTex16
+ * Source-shape evidence: BN handles an optional unaligned leading texel, sets
+ * paired MMX U/V and doubled-step scratch globals, samples two tex16 indices
+ * per packed loop through the active MMX masks, then writes an odd tail texel.
  * Purpose: Copy a 16-bit textured span while priming the paired MMX U/V scratch records.
  */
 void __fastcall SpanCopy16FromTex16(
@@ -4114,6 +4226,8 @@ void __fastcall SpanCopy16FromTex16(
 
 /**
  * Reimplements 0x49ec20: zRndr::SpanCopy16FromTex16ExplicitVShift
+ * Source-shape evidence: BN matches the generic tex16 copy body with the
+ * caller-supplied V shift feeding the MMX packed-index loop and odd tail.
  * Purpose: Copy a 16-bit textured span with the caller-supplied V shift and MMX U/V scratch records.
  */
 void __fastcall SpanCopy16FromTex16ExplicitVShift(
@@ -4160,10 +4274,13 @@ void __fastcall SpanCopy16FromTex16ExplicitVShift(
 /**
  * Reimplements 0x49edc0: zRndr::SpanCopy16FromPal8SwitchVShift
  * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
- * Source-shape evidence: BN and VC5 verification classify this with the same
- * eight-case ESP-pivot jump-table span family as the tex16 switch-vshift loops.
- * The current C++ body preserves behavior with ordinary reverse stores until
- * the shared retail pivot source shape is recovered.
+ * Source-shape evidence: BN assembly/HLIL shows a texVShift 10..17 jump table;
+ * each case saves through gRndr_SavedEspSlot, pivots ESP to
+ * gRndr_CurrentSpanBaseAddr + count, samples an 8-bit texel from
+ * gRndr_ActiveTexPixels, expands it through gRndr_ActiveTexPalette, then pushes
+ * the 16-bit palette word backward into the span. This C++ body models the same
+ * case dispatch and descending writes while the shared retail pivot source shape
+ * remains unresolved.
  * Purpose: Copy palettized texels into the active 16-bit span using the variable-texVShift reverse span contract.
  */
 void __fastcall SpanCopy16FromPal8SwitchVShift(
@@ -4172,31 +4289,145 @@ void __fastcall SpanCopy16FromPal8SwitchVShift(
     int pixelCount,
     int texVShift
 ) {
-    if (texVShift < 10 || texVShift > 17) {
+    unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
+
+    switch (texVShift) {
+    default:
+        return;
+
+    case 10: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            *dstEnd = SpanPal8SampleExpanded(
+                texU,
+                texV,
+                10,
+                0x3ff
+            );
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
         return;
     }
 
-    const int texUMask = (1 << (20 - texVShift)) - 1;
-    for (int i = 0; i < pixelCount; ++i) {
-        g_spanCurrentSpanBaseAddr[pixelCount - i - 1] =
-            SpanPal8SampleExpanded(
+    case 11: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            *dstEnd = SpanPal8SampleExpanded(
                 texU,
                 texV,
-                texVShift,
-                texUMask
+                11,
+                0x1ff
             );
-        texU += g_spanActiveTexUStepFixed20;
-        texV += g_spanActiveTexVStepFixed20;
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 12: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            *dstEnd = SpanPal8SampleExpanded(
+                texU,
+                texV,
+                12,
+                0xff
+            );
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 13: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            *dstEnd = SpanPal8SampleExpanded(
+                texU,
+                texV,
+                13,
+                0x7f
+            );
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 14: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            *dstEnd = SpanPal8SampleExpanded(
+                texU,
+                texV,
+                14,
+                0x3f
+            );
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 15: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            *dstEnd = SpanPal8SampleExpanded(
+                texU,
+                texV,
+                15,
+                0x1f
+            );
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 16: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            *dstEnd = SpanPal8SampleExpanded(
+                texU,
+                texV,
+                16,
+                0x0f
+            );
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 17: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            *dstEnd = SpanPal8SampleExpanded(
+                texU,
+                texV,
+                17,
+                0x07
+            );
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
     }
 }
 
 /**
  * Reimplements 0x49bbf0: zRndr::SpanMasked16FromPal8SwitchVShift
  * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
- * Source-shape evidence: BN and VC5 verification classify this with the same
- * eight-case ESP-pivot jump-table span family as the tex16 switch-vshift loops.
- * The current C++ body preserves behavior with ordinary reverse stores until
- * the shared retail pivot source shape is recovered.
+ * Source-shape evidence: BN assembly/HLIL shows a texVShift 10..17 jump table;
+ * each case saves through gRndr_SavedEspSlot, pivots ESP to
+ * gRndr_CurrentSpanBaseAddr + count, samples an 8-bit texel from
+ * gRndr_ActiveTexPixels, skips zero texels by reserving the destination word,
+ * and expands nonzero texels through gRndr_ActiveTexPalette before pushing the
+ * 16-bit palette word backward into the span. This C++ body models the same
+ * case dispatch, transparent-zero skip, and descending writes while the shared
+ * retail pivot source shape remains unresolved.
  * Purpose: Write nonzero palettized texels into the active 16-bit span using the variable-texVShift reverse span contract.
  */
 void __fastcall SpanMasked16FromPal8SwitchVShift(
@@ -4205,34 +4436,177 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
     int pixelCount,
     int texVShift
 ) {
-    if (texVShift < 10 || texVShift > 17) {
+    unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
+
+    switch (texVShift) {
+    default:
+        return;
+
+    case 10: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex = SpanTex16SampleIndex(
+                texU,
+                texV,
+                10,
+                0x3ff
+            );
+            const unsigned char source = g_spanActiveTexPixels[sourceIndex];
+            if (source != 0) {
+                *dstEnd = g_spanActiveTexPalette[source];
+            }
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
         return;
     }
 
-    const int texUMask = (1 << (20 - texVShift)) - 1;
-    for (int i = 0; i < pixelCount; ++i) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            texUMask
-        );
-        const unsigned char source = g_spanActiveTexPixels[sourceIndex];
-        if (source != 0) {
-            g_spanCurrentSpanBaseAddr[pixelCount - i - 1] = g_spanActiveTexPalette[source];
+    case 11: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex = SpanTex16SampleIndex(
+                texU,
+                texV,
+                11,
+                0x1ff
+            );
+            const unsigned char source = g_spanActiveTexPixels[sourceIndex];
+            if (source != 0) {
+                *dstEnd = g_spanActiveTexPalette[source];
+            }
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
         }
-        texU += g_spanActiveTexUStepFixed20;
-        texV += g_spanActiveTexVStepFixed20;
+        return;
+    }
+
+    case 12: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex = SpanTex16SampleIndex(
+                texU,
+                texV,
+                12,
+                0xff
+            );
+            const unsigned char source = g_spanActiveTexPixels[sourceIndex];
+            if (source != 0) {
+                *dstEnd = g_spanActiveTexPalette[source];
+            }
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 13: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex = SpanTex16SampleIndex(
+                texU,
+                texV,
+                13,
+                0x7f
+            );
+            const unsigned char source = g_spanActiveTexPixels[sourceIndex];
+            if (source != 0) {
+                *dstEnd = g_spanActiveTexPalette[source];
+            }
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 14: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex = SpanTex16SampleIndex(
+                texU,
+                texV,
+                14,
+                0x3f
+            );
+            const unsigned char source = g_spanActiveTexPixels[sourceIndex];
+            if (source != 0) {
+                *dstEnd = g_spanActiveTexPalette[source];
+            }
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 15: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex = SpanTex16SampleIndex(
+                texU,
+                texV,
+                15,
+                0x1f
+            );
+            const unsigned char source = g_spanActiveTexPixels[sourceIndex];
+            if (source != 0) {
+                *dstEnd = g_spanActiveTexPalette[source];
+            }
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 16: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex = SpanTex16SampleIndex(
+                texU,
+                texV,
+                16,
+                0x0f
+            );
+            const unsigned char source = g_spanActiveTexPixels[sourceIndex];
+            if (source != 0) {
+                *dstEnd = g_spanActiveTexPalette[source];
+            }
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 17: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex = SpanTex16SampleIndex(
+                texU,
+                texV,
+                17,
+                0x07
+            );
+            const unsigned char source = g_spanActiveTexPixels[sourceIndex];
+            if (source != 0) {
+                *dstEnd = g_spanActiveTexPalette[source];
+            }
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
     }
 }
 
 /**
  * Reimplements 0x49f180: zRndr::SpanShade16FromPal8SwitchVShift
  * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
- * Source-shape evidence: BN groups this with the selector-installed
- * switch-vshift span family that uses the active texture globals and descending
- * destination cursor. The current C++ body preserves behavior with ordinary
- * reverse stores until the shared retail pivot source shape is recovered.
+ * Source-shape evidence: BN assembly/HLIL shows a texVShift 10..17 jump table;
+ * each case saves through gRndr_SavedEspSlot, pivots ESP to
+ * gRndr_CurrentSpanBaseAddr + count, samples an 8-bit texel from
+ * gRndr_ActiveTexPixels, adds the current shade bucket from
+ * gRndr_ActiveShadeFixed16, advances by gRndr_ActiveShadeStepFixed16, then
+ * pushes the shade-adjusted 16-bit palette word backward into the span. This
+ * C++ body models the same case dispatch and descending writes while the shared
+ * retail pivot source shape remains unresolved.
  * Purpose: Shade palettized texels through the active palette and write them into the reverse active span.
  */
 void __fastcall SpanShade16FromPal8SwitchVShift(
@@ -4241,25 +4615,171 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
     int pixelCount,
     int texVShift
 ) {
-    if (texVShift < 10 || texVShift > 17) {
+    unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
+
+    switch (texVShift) {
+    default:
+        return;
+
+    case 10: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex = SpanTex16SampleIndex(
+                texU,
+                texV,
+                10,
+                0x3ff
+            );
+            const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
+            const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
+            g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
+                                             (unsigned int)(g_spanActiveShadeStepFixed16));
+            *dstEnd = g_spanActiveTexPalette[paletteIndex];
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
         return;
     }
 
-    const int texUMask = (1 << (20 - texVShift)) - 1;
-    for (int i = 0; i < pixelCount; ++i) {
-        const int sourceIndex = SpanTex16SampleIndex(
-            texU,
-            texV,
-            texVShift,
-            texUMask
-        );
-        const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
-        const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
-        g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
-                                         (unsigned int)(g_spanActiveShadeStepFixed16));
-        g_spanCurrentSpanBaseAddr[pixelCount - i - 1] = g_spanActiveTexPalette[paletteIndex];
-        texU += g_spanActiveTexUStepFixed20;
-        texV += g_spanActiveTexVStepFixed20;
+    case 11: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex = SpanTex16SampleIndex(
+                texU,
+                texV,
+                11,
+                0x1ff
+            );
+            const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
+            const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
+            g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
+                                             (unsigned int)(g_spanActiveShadeStepFixed16));
+            *dstEnd = g_spanActiveTexPalette[paletteIndex];
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 12: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex = SpanTex16SampleIndex(
+                texU,
+                texV,
+                12,
+                0xff
+            );
+            const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
+            const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
+            g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
+                                             (unsigned int)(g_spanActiveShadeStepFixed16));
+            *dstEnd = g_spanActiveTexPalette[paletteIndex];
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 13: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex = SpanTex16SampleIndex(
+                texU,
+                texV,
+                13,
+                0x7f
+            );
+            const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
+            const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
+            g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
+                                             (unsigned int)(g_spanActiveShadeStepFixed16));
+            *dstEnd = g_spanActiveTexPalette[paletteIndex];
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 14: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex = SpanTex16SampleIndex(
+                texU,
+                texV,
+                14,
+                0x3f
+            );
+            const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
+            const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
+            g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
+                                             (unsigned int)(g_spanActiveShadeStepFixed16));
+            *dstEnd = g_spanActiveTexPalette[paletteIndex];
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 15: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex = SpanTex16SampleIndex(
+                texU,
+                texV,
+                15,
+                0x1f
+            );
+            const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
+            const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
+            g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
+                                             (unsigned int)(g_spanActiveShadeStepFixed16));
+            *dstEnd = g_spanActiveTexPalette[paletteIndex];
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 16: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex = SpanTex16SampleIndex(
+                texU,
+                texV,
+                16,
+                0x0f
+            );
+            const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
+            const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
+            g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
+                                             (unsigned int)(g_spanActiveShadeStepFixed16));
+            *dstEnd = g_spanActiveTexPalette[paletteIndex];
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
+
+    case 17: {
+        for (int i = 0; i < pixelCount; ++i) {
+            --dstEnd;
+            const int sourceIndex = SpanTex16SampleIndex(
+                texU,
+                texV,
+                17,
+                0x07
+            );
+            const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
+            const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
+            g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
+                                             (unsigned int)(g_spanActiveShadeStepFixed16));
+            *dstEnd = g_spanActiveTexPalette[paletteIndex];
+            texU += g_spanActiveTexUStepFixed20;
+            texV += g_spanActiveTexVStepFixed20;
+        }
+        return;
+    }
     }
 }
 
@@ -4305,7 +4825,7 @@ void __fastcall FogColor_SetRgb01Clamped(
     const int red = (int)(color->red * 255.0f + 0.5f);
     const int green = (int)(color->green * 255.0f + 0.5f);
     const int blue = (int)(color->blue * 255.0f + 0.5f);
-    SpanAlphaBlend565_Mmx_FromPal8(
+    FogTarget565_SetPackedColorAndRamp(
         &g_fogColorParams,
         (red << g_zVideo_PixelPack.packedBase) & (int)(g_zVideo_PixelPack.rMask),
         (green << g_zVideo_PixelPack.sumMinus8) & (int)(g_zVideo_PixelPack.gMask),
@@ -4355,7 +4875,7 @@ void __fastcall SetFogTargetColorRgb01Clamped(
     const int red = (int)(color->red * 255.0f + 0.5f);
     const int green = (int)(color->green * 255.0f + 0.5f);
     const int blue = (int)(color->blue * 255.0f + 0.5f);
-    SpanAlphaBlend565_Mmx_FromPal8(
+    FogTarget565_SetPackedColorAndRamp(
         &g_fogParamsActive,
         (red << g_zVideo_PixelPack.packedBase) & (int)(g_zVideo_PixelPack.rMask),
         (green << g_zVideo_PixelPack.sumMinus8) & (int)(g_zVideo_PixelPack.gMask),
@@ -4424,7 +4944,7 @@ namespace {
  * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x498cb0 as the 565 branch of the lens-flare pixel blend path.
  * Purpose: Blend one packed 565 color toward another using an 8-bit alpha value.
  */
-unsigned short BlendPacked565(
+static inline unsigned short BlendPacked565(
     unsigned short from,
     unsigned short to,
     int alpha
@@ -4442,7 +4962,7 @@ unsigned short BlendPacked565(
  * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x498cb0 as the 555 branch of the lens-flare pixel blend path.
  * Purpose: Blend one packed 555 color toward another using an 8-bit alpha value.
  */
-unsigned short BlendPacked555(
+static inline unsigned short BlendPacked555(
     unsigned short from,
     unsigned short to,
     int alpha
@@ -4460,7 +4980,7 @@ unsigned short BlendPacked555(
  * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x498cb0 overlay/depth-fade paths and selected by the active 555/565 pixel-pack state.
  * Purpose: Blend a lens-flare pixel using the active 16-bit framebuffer packing.
  */
-unsigned short BlendLensFlarePixel(
+static inline unsigned short BlendLensFlarePixel(
     unsigned short from,
     unsigned short to,
     int alpha
@@ -5320,19 +5840,36 @@ void __fastcall zRndr_DrawLine16_Clipped(
  * Purpose: Fill the active reverse span with one opaque 16-bit color.
  *
  * Evidence: BN pivots ESP from gRndr_CurrentSpanBaseAddr and writes the span
- * with push ax/eax. This C++ body preserves tier C behavior while that
- * original source shape remains unresolved.
+ * backward with push ax/eax after forming a packed two-pixel value. This C++
+ * body models the odd-word and paired-dword write order while the retail
+ * ESP-pivot source-family shape remains unresolved.
  */
 void __fastcall zRndr_FillSpan16Opaque(
     int packedColor16,
     int pixelCount
 ) {
-    unsigned short *cursor = zRndr::g_spanCurrentSpanBaseAddr + pixelCount;
     const unsigned short color = (unsigned short)(packedColor16);
-    while (pixelCount > 0) {
+    const unsigned int packedPair = ((unsigned int)(color) << 16) | color;
+    unsigned short *cursor = zRndr::g_spanCurrentSpanBaseAddr + pixelCount;
+
+    if ((pixelCount & 1) != 0) {
         --cursor;
         *cursor = color;
-        --pixelCount;
+    }
+
+    int pairCount = pixelCount >> 1;
+    if ((pairCount & 1) != 0) {
+        cursor -= 2;
+        *((unsigned int *)(cursor)) = packedPair;
+    }
+
+    pairCount >>= 1;
+    while (pairCount != 0) {
+        cursor -= 2;
+        *((unsigned int *)(cursor)) = packedPair;
+        cursor -= 2;
+        *((unsigned int *)(cursor)) = packedPair;
+        --pairCount;
     }
 }
 
@@ -6846,6 +7383,9 @@ void __fastcall zRndr_OverlayRect_Submit(
  * Reimplements 0x48d7a0: zRndr_OverlayRect_FlushSw
  * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Overlay.cpp.
  * Source file evidence: recovered original path on the prior source label.
+ * Source-shape evidence: BN selects the 555/565 scalar or MMX row callback,
+ * computes packed premul and destination-scale globals through x87/_ftol, then
+ * calls the selected row callback for each FX-surface row.
  * Purpose: Blend the staged software overlay rectangle into the active 16-bit video surface.
  */
 void zRndr_OverlayRect_FlushSw() {
@@ -6885,6 +7425,9 @@ void zRndr_OverlayRect_FlushSw() {
     const unsigned int premulRPair = premulR | (premulR << 16);
     const unsigned int premulGPair = premulG | (premulG << 16);
     const unsigned int premulBPair = premulB | (premulB << 16);
+    zRndr::g_swOverlayPremulRPair = premulRPair;
+    zRndr::g_swOverlayPremulGPair = premulGPair;
+    zRndr::g_swOverlayPremulBPair = premulBPair;
     zRndr::g_swOverlayPremulPacked =
         (((blueMask & premulBPair) | (redMask & premulRPair)) << 16) | (greenMask & premulGPair);
     zRndr::g_swOverlayPremulPackedRot16 =
@@ -8776,14 +9319,14 @@ void __fastcall zRndr_FogTargetColorStaged_SetRgb01Clamped(
     staged->colorRgb01[1] = color->green;
     staged->colorRgb01[2] = color->blue;
 
-    if (g_zVideo_RendererType != 0) {
+    if (g_zVideo_ActiveRendererPath != 0) {
         zVideo_SetPendingFogTargetColorFromRgb01((zVideo_ColorRgbFloat *)(color));
     }
 
     const int red = (int)(color->red * 255.0f + 0.5f);
     const int green = (int)(color->green * 255.0f + 0.5f);
     const int blue = (int)(color->blue * 255.0f + 0.5f);
-    zRndr::SpanAlphaBlend565_Mmx_FromPal8(
+    zRndr::FogTarget565_SetPackedColorAndRamp(
         staged,
         (red << g_zVideo_PixelPack.packedBase) & (int)(g_zVideo_PixelPack.rMask),
         (green << g_zVideo_PixelPack.sumMinus8) & (int)(g_zVideo_PixelPack.gMask),

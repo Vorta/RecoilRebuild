@@ -1,3 +1,4 @@
+#include "Battlesport/RecoilApp.h"
 #include "GameZRecoil/include/zImage.h"
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zFMV/fmv.h"
@@ -159,10 +160,25 @@ int zFMV_Action::Update(
     return 0;
 }
 
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in the zFMV_Action virtual slot contract.
+ * Purpose: provide the default no-op action start hook.
+ */
 void zFMV_Action::Begin(double) {}
 
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in the zFMV_Action virtual slot contract.
+ * Purpose: provide the default no-op action finish hook.
+ */
 void zFMV_Action::End() {}
 
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in the zFMV_Action virtual slot contract.
+ * Purpose: dispatch the default timed blocking action runner.
+ */
 void zFMV_Action::RunBlocking() {
     RunBlockingTimed();
 }
@@ -227,6 +243,11 @@ int zFMV_ActionWait::Update(
     return timeSec < (double)(startSec + durationSec) ? 1 : 0;
 }
 
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in the zFMV_ActionWait virtual slot contract.
+ * Purpose: restore FMV surfaces when a wait action completes.
+ */
 void zFMV_ActionWait::End() {
     FlipSurfaces();
 }
@@ -2059,6 +2080,11 @@ void zFMV_ActionBlur::End() {
     );
 }
 
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in the zFMV_ActionBlur virtual slot contract.
+ * Purpose: run blur actions immediately without timed polling.
+ */
 void zFMV_ActionBlur::RunBlocking() {
     RunBlockingImmediate();
 }

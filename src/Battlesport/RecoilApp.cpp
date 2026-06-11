@@ -2354,16 +2354,18 @@ RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule() {
 #endif
 }
 
-// Reimplements 0x42dfa0: RecoilApp::RecoilApp
+/**
+ * Reimplements 0x42dfa0: RecoilApp::RecoilApp.
+ * Purpose: Construct the app shell and embedded startup/gameplay states.
+ */
 RecoilApp::RecoilApp()
-    : RecoilApp_MfcOleModule(),
-      m_skipIntroFmv(0),
-      m_transitionFadeTimer(0.0f) {
+    : RecoilApp_MfcOleModule() {
+    m_transitionFadeTimer = 0.0f;
 }
 
-// Reimplements 0x42de60: RecoilApp::~RecoilApp
-RecoilApp::~RecoilApp() {
-}
+// Reimplements 0x42de60: RecoilApp::~RecoilApp.
+// The implementation is the implicit VC5 destructor over embedded state
+// members and the MFC/OLE base.
 
 // Source-faithful helper recovered from address-backed callers in this source file.
 const AFX_MSGMAP *__stdcall RecoilApp::GetBaseMessageMapForMfc() {
@@ -2956,11 +2958,6 @@ int RecoilApp_LeaveNetworkState::OnTryBecomeCurrent() {
 RecoilApp_AttractFmvState::RecoilApp_AttractFmvState() {
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-RecoilApp_IntroFmvState::RecoilApp_IntroFmvState() {
-    m_stateData04 = 0;
-}
-
 // Reimplements 0x42ea20: RecoilApp_IntroFmvState::OnTryBecomeCurrent
 int RecoilApp_IntroFmvState::OnTryBecomeCurrent() {
     zRndr::SetFrameBufferRegion(
@@ -3168,8 +3165,11 @@ int RecoilApp_MissionFmvState::OnUpdateShouldQuit() {
     return 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-RecoilApp_IState::~RecoilApp_IState() {
+/**
+ * Reimplements 0x42df90: RecoilApp_IState::~RecoilApp_IState.
+ * Purpose: Tear down the common app-state interface base.
+ */
+inline RecoilApp_IState::~RecoilApp_IState() {
 }
 
 void RecoilApp_IState::OnWndActivate(
@@ -3208,17 +3208,9 @@ int RecoilApp_IState::OnIdleOrDispatch(
     return 1;
 }
 
-// Reimplements 0x42df10: RecoilApp_AttractFmvState::~RecoilApp_AttractFmvState
-RecoilApp_AttractFmvState::~RecoilApp_AttractFmvState() {
-    m_fmv.Cleanup();
-}
-
-// Reimplements 0x42df50: RecoilApp_IntroFmvState::~RecoilApp_IntroFmvState
-RecoilApp_IntroFmvState::~RecoilApp_IntroFmvState() {
-    m_fmv.Cleanup();
-}
-
-// Reimplements 0x42e070: RecoilApp_MissionFmvState::~RecoilApp_MissionFmvState
-RecoilApp_MissionFmvState::~RecoilApp_MissionFmvState() {
-    m_fmv.Cleanup();
-}
+// Reimplements 0x42df10: RecoilApp_AttractFmvState::~RecoilApp_AttractFmvState.
+// through the implicit VC5 destructor and RecoilApp_FmvScript member cleanup.
+// Reimplements 0x42df50: RecoilApp_IntroFmvState::~RecoilApp_IntroFmvState.
+// through the implicit VC5 destructor and RecoilApp_FmvScript member cleanup.
+// Reimplements 0x42e070: RecoilApp_MissionFmvState::~RecoilApp_MissionFmvState.
+// through the implicit VC5 destructor and RecoilApp_FmvScript member cleanup.

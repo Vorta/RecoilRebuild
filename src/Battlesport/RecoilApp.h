@@ -177,6 +177,17 @@ struct RecoilApp_FmvScript : zFMV_Script {
             0
         );
     }
+
+    /**
+     * Original inline helper; no standalone retail function exists.
+     * Observed in RecoilApp FMV-state destructor cleanup at 0x42df10,
+     * 0x42df50, and 0x42e070.
+     *
+     * Purpose: clean up the embedded zFMV_Script member when an FMV state is destroyed.
+     */
+    ~RecoilApp_FmvScript() {
+        Cleanup();
+    }
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_FmvScript) == 0x20);
 
@@ -186,7 +197,6 @@ struct RecoilApp_AttractFmvState : RecoilApp_FmvState {
     int m_clientRect[4];
 
     RecoilApp_AttractFmvState();
-    ~RecoilApp_AttractFmvState();
     int OnTryBecomeCurrent();
     int OnUpdateShouldQuit();
     void OnDeactivate();
@@ -197,8 +207,15 @@ struct RecoilApp_IntroFmvState : RecoilApp_FmvState {
     int m_stateData04;
     RecoilApp_FmvScript m_fmv; // Embedded 0x20-byte FMV script subobject at retail offset 0x08.
 
-    RecoilApp_IntroFmvState();
-    ~RecoilApp_IntroFmvState();
+    /**
+     * No standalone retail function; original inline helper observed in caller
+     * 0x42dfa0, where VC5 emits the base-state vptr store and embedded FMV
+     * script initialization directly in RecoilApp construction.
+     *
+     * Purpose: construct the intro FMV state as an embedded RecoilApp member.
+     */
+    RecoilApp_IntroFmvState() {
+    }
     int OnTryBecomeCurrent();
     int OnUpdateShouldQuit();
     void OnDeactivate();
@@ -227,7 +244,6 @@ struct RecoilApp_MissionFmvState : RecoilApp_FmvState {
     int m_reserved2c;
 
     RecoilApp_MissionFmvState();
-    ~RecoilApp_MissionFmvState();
     int OnTryBecomeCurrent();
     void OnDeactivate();
     int OnUpdateShouldQuit();
@@ -300,7 +316,6 @@ class RecoilApp : public RecoilApp_MfcOleModule {
     RecoilApp_MpExitDialogState m_mpExitDialogState;
 
     RecoilApp();
-    ~RecoilApp();
     RECOIL_NO_GS static void __fastcall InitStdLogFiles(const char *exePath);
     RECOIL_NO_GS static void __fastcall FatalErrorAndExit(int errorCode);
 

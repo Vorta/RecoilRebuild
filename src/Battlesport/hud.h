@@ -584,13 +584,17 @@ struct HudUiNewGamePanel_NameInput : HudUiNumericTextInput {
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel_NameInput) == 0x374);
 
+// BN 0x41c313 installs the panel-owned option selector table after the shared base constructor.
+struct HudUiNewGamePanel_Intensity : HudUiZrdWidgetEx17C {};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel_Intensity) == 0x17c);
+
 struct HudUiNewGamePanel : HudUiBackground {
-    HudUiZrdWidget backWidget;
+    HudUiMenuBackButton backWidget;
     HudUiNewGamePanel_StartButton startWidget;
     HudUiNewGamePanel_NameInput nameInput;
-    HudUiZrdWidgetEx17C intensity;
+    HudUiNewGamePanel_Intensity intensity;
 
-    HudUiNewGamePanel * Constructor();
+    HudUiNewGamePanel();
     void Destructor();
     HudUiNewGamePanel * ScalarDeletingDestructor(unsigned int flags);
     void SyncIntensityFromDifficulty();

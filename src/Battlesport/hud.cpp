@@ -733,8 +733,11 @@ void HudWeatherFxRain::Update(
     destBufferIndex = oldSourceBufferIndex;
 }
 
-// Reimplements 0x41c6c0: HudUiNewGamePanelOverlayOwner::QueueEnter
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x41c6c0: HudUiNewGamePanelOverlayOwner::QueueEnter.
+ * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
+ * Purpose: Queue the global new-game panel overlay owner as the next app state.
+ */
 void HudUiNewGamePanelOverlayOwner::QueueEnter() {
     g_RecoilApp.QueuePushState(
         &g_HudUiNewGamePanelOverlayOwner,
@@ -742,42 +745,57 @@ void HudUiNewGamePanelOverlayOwner::QueueEnter() {
     );
 }
 
-// Reimplements 0x41c5e0: HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit
-// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+/**
+ * Reimplements 0x41c5e0: HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
+ * Purpose: Construct the global new-game panel overlay owner and register its shutdown cleanup.
+ */
 void HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
 
-// Reimplements 0x41c5f0: HudUiNewGamePanelOverlayOwner::StaticInit
-// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+/**
+ * Reimplements 0x41c5f0: HudUiNewGamePanelOverlayOwner::StaticInit.
+ * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
+ * Purpose: Placement-construct the global new-game panel overlay owner.
+ */
 HudUiNewGamePanelOverlayOwner *HudUiNewGamePanelOverlayOwner::StaticInit() {
     return new (&g_HudUiNewGamePanelOverlayOwner) HudUiNewGamePanelOverlayOwner;
 }
 
-// Reimplements 0x41c6a0: HudUiNewGamePanelOverlayOwner::RegisterAtExit
-// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+/**
+ * Reimplements 0x41c6a0: HudUiNewGamePanelOverlayOwner::RegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
+ * Purpose: Register the global new-game panel overlay owner destructor with CRT exit cleanup.
+ */
 void HudUiNewGamePanelOverlayOwner::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
-// Reimplements 0x41c6b0: HudUiNewGamePanelOverlayOwner::AtExitDestructor
-// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+/**
+ * Reimplements 0x41c6b0: HudUiNewGamePanelOverlayOwner::AtExitDestructor.
+ * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
+ * Purpose: Run global new-game panel overlay owner cleanup during CRT exit.
+ */
 void HudUiNewGamePanelOverlayOwner::AtExitDestructor() {
     g_HudUiNewGamePanelOverlayOwner.~HudUiNewGamePanelOverlayOwner();
 }
 
 /**
- * No standalone retail function; the constructor body is inlined into
- * 0x41c5f0 HudUiNewGamePanelOverlayOwner::StaticInit.
+ * Original-source inline helper evidence: No standalone retail function is
+ * expected; the constructor body is inlined into 0x41c5f0
+ * HudUiNewGamePanelOverlayOwner::StaticInit.
  *
  * Purpose: initialize the typed new-game overlay app-state owner.
  */
-// Source-faithful helper recovered from address-backed callers in this source file.
 HudUiNewGamePanelOverlayOwner::HudUiNewGamePanelOverlayOwner() : m_panel(0) {}
 
-// Reimplements 0x41c630: HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner
-// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+/**
+ * Reimplements 0x41c630: HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner.
+ * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
+ * Purpose: Disable and destroy the active new-game panel owned by this app state.
+ */
 HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner() {
     HudUiNewGamePanel *panel = m_panel;
     if (panel != 0) {
@@ -792,30 +810,26 @@ HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner() {
     }
 }
 
-// Reimplements 0x41c560: HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent
-// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+/**
+ * Reimplements 0x41c560: HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent.
+ * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
+ * Purpose: Create, enable, and retain the new-game panel for the overlay state.
+ */
 int HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent() {
-    HudUiNewGamePanel *panel = (HudUiNewGamePanel *) ::operator new(sizeof(HudUiNewGamePanel));
-    if (panel != 0) {
-        panel = panel->Constructor();
-    }
-
+    HudUiNewGamePanel *panel = new HudUiNewGamePanel;
     m_panel = panel;
     panel->SyncIntensityFromDifficulty();
     panel->SetEnabled(1);
     return 1;
 }
 
-// Reimplements 0x41c290: HudUiNewGamePanel::Constructor
-// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
-HudUiNewGamePanel * HudUiNewGamePanel::Constructor() {
-    new ((HudUiBackground *)this) HudUiBackground;
-
-    backWidget.Constructor();
-    startWidget.Constructor();
-    nameInput.BaseConstructor();
-    intensity.Constructor();
-
+/**
+ * Reimplements 0x41c290: HudUiNewGamePanel::HudUiNewGamePanel.
+ * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
+ * Purpose: Construct the new-game panel, bind its ZRD widgets, and load the saved player name.
+ */
+HudUiNewGamePanel::HudUiNewGamePanel()
+    : HudUiBackground() {
     zReader::Node *const loadedSection =
         HudUiBackground::LoadFromZrd(
             "dialog.zrd",
@@ -847,11 +861,13 @@ HudUiNewGamePanel * HudUiNewGamePanel::Constructor() {
     }
 
     nameInput.Update(zOpt_GetPlayerName());
-    return this;
 }
 
-// Reimplements 0x41c3b0: HudUiNewGamePanel_NameInput::OnActivate
-// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+/**
+ * Reimplements 0x41c3b0: HudUiNewGamePanel_NameInput::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
+ * Purpose: Refresh and activate the player-name input with raw keyboard capture.
+ */
 void HudUiNewGamePanel_NameInput::OnActivate() {
     HudUiNumericTextInput::AllocTextBuffer(21);
     HudUiNumericTextInput::Update(zOpt_GetPlayerName());
@@ -859,8 +875,11 @@ void HudUiNewGamePanel_NameInput::OnActivate() {
     HudUiNumericTextInput::SetRawKeyboardCapture(1);
 }
 
-// Reimplements 0x41c400: HudUiNewGamePanel::Destructor
-// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+/**
+ * Reimplements 0x41c400: HudUiNewGamePanel::Destructor.
+ * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
+ * Purpose: Destroy the new-game panel child widgets and background base in reverse construction order.
+ */
 void HudUiNewGamePanel::Destructor() {
     intensity.DestructorCore();
     nameInput.Destructor();
@@ -869,8 +888,11 @@ void HudUiNewGamePanel::Destructor() {
     this->HudUiBackground::~HudUiBackground();
 }
 
-// Reimplements 0x41c3e0: HudUiNewGamePanel::ScalarDeletingDestructor
-// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+/**
+ * Reimplements 0x41c3e0: HudUiNewGamePanel::ScalarDeletingDestructor.
+ * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
+ * Purpose: Run new-game panel destruction and optionally free the panel storage.
+ */
 HudUiNewGamePanel * HudUiNewGamePanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -882,14 +904,20 @@ HudUiNewGamePanel * HudUiNewGamePanel::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x41c4e0: HudUiNewGamePanel::SyncIntensityFromDifficulty
-// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+/**
+ * Reimplements 0x41c4e0: HudUiNewGamePanel::SyncIntensityFromDifficulty.
+ * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
+ * Purpose: Reflect the saved game difficulty option in the panel intensity selector.
+ */
 void HudUiNewGamePanel::SyncIntensityFromDifficulty() {
     intensity.SetSelectedIndex(zOpt::GetGameDifficultyMode());
 }
 
-// Reimplements 0x41c500: HudUiNewGamePanel::StartGameFromFields
-// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+/**
+ * Reimplements 0x41c500: HudUiNewGamePanel::StartGameFromFields.
+ * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
+ * Purpose: Commit new-game options and queue the transition into mission FMV startup.
+ */
 void HudUiNewGamePanel::StartGameFromFields() {
     HudCheat::ClearNanitePanelCheatSentinel();
     zOpt::SetPlayerName(nameInput.GetBuffer());
@@ -903,8 +931,11 @@ void HudUiNewGamePanel::StartGameFromFields() {
     );
 }
 
-// Reimplements 0x41c270: HudUiNewGamePanel_StartButton::OnActivate
-// (D:\Proj\Battlesport\HudUiNewGamePanel.cpp)
+/**
+ * Reimplements 0x41c270: HudUiNewGamePanel_StartButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
+ * Purpose: Start the new game through the owning panel before running normal widget activation.
+ */
 void HudUiNewGamePanel_StartButton::OnActivate() {
     HudUiNewGamePanel *const panel = (HudUiNewGamePanel *)(owner);
     if (panel != 0) {
@@ -914,8 +945,11 @@ void HudUiNewGamePanel_StartButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x40d1c0: HudUiOptionsPanelOverlayOwner::QueueEnter
-// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+/**
+ * Reimplements 0x40d1c0: HudUiOptionsPanelOverlayOwner::QueueEnter.
+ * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
+ * Purpose: Queue the global options-panel overlay owner as the next app state.
+ */
 void HudUiOptionsPanelOverlayOwner::QueueEnter() {
     g_RecoilApp.QueuePushState(
         &g_HudUiOptionsPanelOverlayOwner,
@@ -923,37 +957,55 @@ void HudUiOptionsPanelOverlayOwner::QueueEnter() {
     );
 }
 
-// Reimplements 0x40d070: HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit
-// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+/**
+ * Reimplements 0x40d070: HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
+ * Purpose: Construct the global options overlay owner and register its exit cleanup.
+ */
 void HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
 
-// Reimplements 0x40d080: HudUiOptionsPanelOverlayOwner::StaticInit
-// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+/**
+ * Reimplements 0x40d080: HudUiOptionsPanelOverlayOwner::StaticInit.
+ * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
+ * Purpose: Placement-construct the global options overlay owner.
+ */
 HudUiOptionsPanelOverlayOwner *HudUiOptionsPanelOverlayOwner::StaticInit() {
     return new (&g_HudUiOptionsPanelOverlayOwner) HudUiOptionsPanelOverlayOwner;
 }
 
-// Reimplements 0x40d090: HudUiOptionsPanelOverlayOwner::RegisterAtExit
-// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+/**
+ * Reimplements 0x40d090: HudUiOptionsPanelOverlayOwner::RegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
+ * Purpose: Register the global options overlay owner destructor for process exit.
+ */
 void HudUiOptionsPanelOverlayOwner::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
-// Reimplements 0x40d0a0: HudUiOptionsPanelOverlayOwner::AtExitDestructor
-// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+/**
+ * Reimplements 0x40d0a0: HudUiOptionsPanelOverlayOwner::AtExitDestructor.
+ * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
+ * Purpose: Run process-exit cleanup for the global options overlay owner.
+ */
 void HudUiOptionsPanelOverlayOwner::AtExitDestructor() {
     g_HudUiOptionsPanelOverlayOwner.~HudUiOptionsPanelOverlayOwner();
 }
 
-// Reimplements 0x40d0b0: HudUiOptionsPanelOverlayOwner::HudUiOptionsPanelOverlayOwner
-// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+/**
+ * Reimplements 0x40d0b0: HudUiOptionsPanelOverlayOwner::HudUiOptionsPanelOverlayOwner.
+ * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
+ * Purpose: Initialize the options overlay owner with no active panel.
+ */
 HudUiOptionsPanelOverlayOwner::HudUiOptionsPanelOverlayOwner() : m_panel(0) {}
 
-// Reimplements 0x40d0e0: HudUiOptionsPanelOverlayOwner::~HudUiOptionsPanelOverlayOwner
-// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+/**
+ * Reimplements 0x40d0e0: HudUiOptionsPanelOverlayOwner::~HudUiOptionsPanelOverlayOwner.
+ * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
+ * Purpose: Disable and destroy the active options dialog panel during owner teardown.
+ */
 HudUiOptionsPanelOverlayOwner::~HudUiOptionsPanelOverlayOwner() {
     HudOptionsDialog *panel = m_panel;
     if (panel != 0) {
@@ -968,8 +1020,11 @@ HudUiOptionsPanelOverlayOwner::~HudUiOptionsPanelOverlayOwner() {
     }
 }
 
-// Reimplements 0x40d150: HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent
-// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+/**
+ * Reimplements 0x40d150: HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent.
+ * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
+ * Purpose: Create and enable the options dialog panel when the overlay owner becomes current.
+ */
 int HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent() {
     HudOptionsDialog *panel = (HudOptionsDialog *) ::operator new(sizeof(HudOptionsDialog));
     if (panel != 0) {
@@ -1206,8 +1261,11 @@ void RecoilStateCheatCode::AtExitDestructor() {
     g_RecoilStateCheatCode.~RecoilStateCheatCode();
 }
 
-// Reimplements 0x406ed0: RecoilStateCheatCode::RecoilStateCheatCode
-// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+/**
+ * Reimplements 0x406ed0: RecoilStateCheatCode::RecoilStateCheatCode.
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: initialize the cheat-code app state and clear its dialog pointer.
+ */
 RecoilStateCheatCode::RecoilStateCheatCode() : m_dialog(0) {}
 
 // Reimplements 0x406f60: RecoilStateCheatCode::OnTryBecomeCurrent
@@ -1290,8 +1348,11 @@ RecoilStateCheatCode::~RecoilStateCheatCode() {
     m_dialog = 0;
 }
 
-// Reimplements 0x415850: RecoilStateConfirmQuit::RecoilStateConfirmQuit
-// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+/**
+ * Reimplements 0x415850: RecoilStateConfirmQuit::RecoilStateConfirmQuit.
+ * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
+ * Purpose: initialize the confirm-quit app state and clear its dialog pointer.
+ */
 RecoilStateConfirmQuit::RecoilStateConfirmQuit() : m_dialog(0) {}
 
 // Reimplements 0x4158f0: RecoilStateConfirmQuit::OnTryBecomeCurrent
@@ -1374,8 +1435,11 @@ void RecoilStateControls::AtExitDestructor() {
     g_RecoilStateControls.~RecoilStateControls();
 }
 
-// Reimplements 0x408d60: RecoilStateControls::RecoilStateControls
-// (D:\Proj\Battlesport\recoil_state.cpp)
+/**
+ * Reimplements 0x408d60: RecoilStateControls::RecoilStateControls.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: initialize the controls app state and clear its dialog pointer.
+ */
 RecoilStateControls::RecoilStateControls() : m_dialog(0) {}
 
 // Reimplements 0x408d90: RecoilStateControls::Destructor
@@ -1741,8 +1805,11 @@ int __fastcall ExecuteCommandString(
     return 0;
 }
 
-// Reimplements 0x406cf0: HudCheat::ClearNanitePanelCheatSentinel
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x406cf0: HudCheat::ClearNanitePanelCheatSentinel.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Clear the local player's nanite-panel cheat sentinel after it has been consumed.
+ */
 void ClearNanitePanelCheatSentinel() {
     if (g_GameStateOrMapTable == 0) {
         return;

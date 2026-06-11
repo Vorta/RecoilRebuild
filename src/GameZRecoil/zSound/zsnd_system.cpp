@@ -471,11 +471,13 @@ void __fastcall PushBack(
 int zSndFadeEntry::TickAndMaybeDispatch(
     float deltaTime
 ) {
-    const float direction = (targetValue - currentValue) < 0.0f ? -1.0f : 1.0f;
-    currentValue += direction * deltaTime * 2500.0f;
+    const float direction = (targetValue - currentValue) < 0.0 ? -1.0f : 1.0f;
+    const float step = direction * deltaTime * 2500.0f;
+    currentValue = currentValue + step;
 
-    if (g_zSnd_ActiveBackend == 0) {
-        if (currentValue >= 0.0f) {
+    switch (g_zSnd_ActiveBackend) {
+    case 0: {
+        if (currentValue > 0.0f) {
             currentValue = 0.0f;
         } else if (currentValue < -10000.0f) {
             currentValue = -10000.0f;
@@ -483,29 +485,43 @@ int zSndFadeEntry::TickAndMaybeDispatch(
 
         LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(handle->backendBuffer);
         buffer->SetVolume((int)(currentValue));
-    } else if (g_zSnd_ActiveBackend == 1) {
-        if (currentValue > 1.0f) {
+        break;
+    }
+    case 1: {
+        if (currentValue > 1.0) {
             currentValue = 1.0f;
-        } else if (currentValue < 0.0f) {
+        } else if (currentValue < 0.0) {
             currentValue = 0.0f;
         }
 
-        zA3dProviderSource *const source = (zA3dProviderSource *)(handle->backendBuffer);
-        source->SetGain(
+        ((zA3dProviderSource *)(handle->backendBuffer))->SetGain(
             zSndSample_PlaySimple(currentValue)
         );
+        break;
+    }
     }
 
-    if (currentValue != targetValue) {
-        return 0;
-    }
+    if (currentValue == targetValue) {
+        if (stopOnComplete != 0) {
+            handle->StopIfActive();
+        }
 
-    if (stopOnComplete != 0) {
-        handle->StopIfActive();
-    }
+        zSndFadeListNode *const sentinel = g_zSndFadeDispatchListSentinel;
+        zSndFadeListNode *const previous = sentinel->prev;
+        zSndFadeListNode *const node = (zSndFadeListNode *)(::operator new(sizeof(*node)));
 
-    zSndFadeDispatchList::PushBack(this);
-    return 1;
+        node->next = sentinel != 0 ? sentinel : node;
+        node->prev = previous != 0 ? previous : node;
+        sentinel->prev = node;
+        node->prev->next = node;
+        zSndFadeEntry **const payloadSlot = &node->fadeEntry;
+        if (payloadSlot != 0) {
+            *payloadSlot = this;
+        }
+        ++g_zSndFadeDispatchListCount;
+        return 1;
+    }
+    return 0;
 }
 
 /**
@@ -516,34 +532,53 @@ int zSndFadeEntry::TickAndMaybeDispatch(
 extern "C" void __stdcall zSndFadeActiveList_TickAll(
     float deltaTime
 ) {
-    if (g_zSndFadeActiveListCount == 0) {
-        return;
-    }
-
-    zSndFadeListNode *const sentinel = g_zSndFadeActiveListSentinel;
-    zSndFadeListNode *node = sentinel->next;
-    while (node != sentinel && node->fadeEntry->TickAndMaybeDispatch(deltaTime) == 0) {
-        node = node->next;
-    }
-
-    if (node != sentinel) {
-        zSndFadeListNode *write = node;
-        zSndFadeListNode *read = node->next;
-        while (read != sentinel) {
-            if (read->fadeEntry->TickAndMaybeDispatch(deltaTime) == 0) {
-                write->fadeEntry = read->fadeEntry;
-                write = write->next;
+    bool listIsEmpty = (g_zSndFadeActiveListCount == 0);
+    if (!listIsEmpty) {
+        zSndFadeListNode *const sentinel = g_zSndFadeActiveListSentinel;
+        zSndFadeListNode *node = sentinel->next;
+        int nodeIsActive = (node == sentinel);
+        nodeIsActive = !nodeIsActive;
+        while (nodeIsActive != 0) {
+            if (node->fadeEntry->TickAndMaybeDispatch(deltaTime) != 0) {
+                break;
             }
-            read = read->next;
+            node = node->next;
+            nodeIsActive = (node == sentinel);
+            nodeIsActive = !nodeIsActive;
         }
-        node = write;
-    }
 
-    while (node != sentinel) {
-        zSndFadeListNode *const next = node->next;
-        UnlinkAndDeleteFadeNode(node);
-        --g_zSndFadeActiveListCount;
-        node = next;
+        bool nodeIsSentinel = (node == sentinel);
+        if (!nodeIsSentinel) {
+            zSndFadeListNode *write = node;
+            zSndFadeListNode *read = node->next;
+            int readIsActive = (read == sentinel);
+            readIsActive = !readIsActive;
+            while (readIsActive != 0) {
+                if (read->fadeEntry->TickAndMaybeDispatch(deltaTime) == 0) {
+                    zSndFadeEntry *const fadeEntry = read->fadeEntry;
+                    zSndFadeListNode *const savedWrite = write;
+                    write = write->next;
+                    savedWrite->fadeEntry = fadeEntry;
+                }
+                read = read->next;
+                readIsActive = (read == sentinel);
+                readIsActive = !readIsActive;
+            }
+            node = write;
+        }
+
+        int deleteNode = (node == sentinel);
+        deleteNode = !deleteNode;
+        while (deleteNode != 0) {
+            zSndFadeListNode *const deadNode = node;
+            node = node->next;
+            deadNode->prev->next = deadNode->next;
+            deadNode->next->prev = deadNode->prev;
+            ::operator delete(deadNode);
+            --g_zSndFadeActiveListCount;
+            deleteNode = (node == sentinel);
+            deleteNode = !deleteNode;
+        }
     }
 }
 
@@ -588,9 +623,8 @@ extern "C" void __fastcall zSnd_Tick(
     int skipA3dCommit
 ) {
     if (g_zSnd_ActiveBackend == 1 && skipA3dCommit == 0) {
-        zA3dProviderDevice *const device = (zA3dProviderDevice *)(g_zSnd_BackendDevice);
-        device->Flush();
-        device->Clear();
+        ((zA3dProviderDevice *)(g_zSnd_BackendDevice))->Flush();
+        ((zA3dProviderDevice *)(g_zSnd_BackendDevice))->Clear();
     }
 
     zSndFadeActiveList_TickAll(g_FrameDeltaTimeSec);
