@@ -34,7 +34,16 @@ struct zFMV_Playback {
     zFMV_Rect destinationRect;
     char *mediaPathDup;
 
-    zFMV_Playback * Init(
+    /**
+     * Original inline helper evidence: default local setup construction has no standalone retail body.
+     * Purpose: let tests and stack setup create playback records before explicit field initialization.
+     */
+    zFMV_Playback() {}
+    /**
+     * Reimplements 0x462330: zFMV_Playback::Constructor.
+     * Purpose: initialize playback state with duplicated media path and notify window.
+     */
+    zFMV_Playback(
         const char *mediaPath,
         HWND notifyHwnd
     );
@@ -52,6 +61,14 @@ struct zFMV_Playback {
 struct zFMV_Action {
     zFMV_Action *next;
 
+    /**
+     * Original inline helper evidence: derived action constructors store the
+     * base next pointer before installing their concrete action vtable.
+     * Purpose: initialize the action-list link for all FMV action records.
+     */
+    zFMV_Action() {
+        next = 0;
+    }
     virtual ~zFMV_Action();
     virtual int Update(double timeSec);
     virtual void Begin(double timeSec);
@@ -67,15 +84,28 @@ struct zFMV_ActionImage : zFMV_Action {
     void *image;
     int doAdjustSurfaces;
     int forcePrimaryPostprocess;
-    int blitRect[4];
+    zVidRect32 blitRect;
 
-    zFMV_ActionImage * ConstructorWithScreenRect(
+    /**
+     * Original inline helper evidence: No standalone retail function is expected for default test/setup construction.
+     * Purpose: let compiler-generated construction install the image-action vtable for local setup.
+     */
+    zFMV_ActionImage() {}
+    /**
+     * Reimplements 0x463130: zFMV_ActionImage::ConstructorWithScreenRect.
+     * Purpose: initialize an image action with an explicit screen blit origin.
+     */
+    zFMV_ActionImage(
         const char *imagePath,
         int doAdjustSurfaces,
         int blitX,
         int blitY
     );
-    zFMV_ActionImage * ConstructorScaled(
+    /**
+     * Reimplements 0x4631f0: zFMV_ActionImage::ConstructorScaled.
+     * Purpose: initialize an image action sized to the active render region.
+     */
+    zFMV_ActionImage(
         const char *imagePath,
         int doAdjustSurfaces
     );
@@ -95,7 +125,16 @@ struct zFMV_ActionFade : zFMV_Action {
     void *capturedFrame;
     int maxAlpha;
 
-    zFMV_ActionFade * Constructor(
+    /**
+     * Original inline helper evidence: No standalone retail function is expected for default test/setup construction.
+     * Purpose: let compiler-generated construction install the fade-action vtable for local setup.
+     */
+    zFMV_ActionFade() {}
+    /**
+     * Reimplements 0x4633c0: zFMV_ActionFade::Constructor.
+     * Purpose: initialize fade color, duration, direction, and alpha settings.
+     */
+    zFMV_ActionFade(
         int red,
         int green,
         int blue,
@@ -118,7 +157,16 @@ struct zFMV_ActionPlayAvi : zFMV_Action {
     zFMV_Rect destRect;
     int reserved34;
 
-    zFMV_ActionPlayAvi * Constructor(
+    /**
+     * Original inline helper evidence: No standalone retail function is expected for default test/setup construction.
+     * Purpose: let compiler-generated construction install the PlayAvi-action vtable for local setup.
+     */
+    zFMV_ActionPlayAvi() {}
+    /**
+     * Reimplements 0x463570: zFMV_ActionPlayAvi::Constructor.
+     * Purpose: build the AVI media path, resolve CD-ROM fallback, and store mode flags.
+     */
+    zFMV_ActionPlayAvi(
         const char *mediaRootPath,
         const char *mediaFileName,
         int modeFlags
@@ -133,10 +181,19 @@ struct zFMV_ActionPlayMci : zFMV_Action {
     char *mediaPath;
     zFMV_Playback *playback;
 
+    /**
+     * Original inline helper evidence: No standalone retail function is expected for default test/setup construction.
+     * Purpose: let compiler-generated construction install the PlayMci-action vtable for local setup.
+     */
+    zFMV_ActionPlayMci() {}
     void Begin(double timeSec);
     int Update(double timeSec);
     void End();
-    zFMV_ActionPlayMci * Constructor(
+    /**
+     * Reimplements 0x463b00: zFMV_ActionPlayMci::Constructor.
+     * Purpose: build the MCI media path, create playback state, and set its destination rect.
+     */
+    zFMV_ActionPlayMci(
         const char *mediaRootPath,
         const char *playbackTitle,
         HWND notifyHwnd
@@ -159,7 +216,16 @@ struct zFMV_ActionBlur : zFMV_Action {
     zFMV_Rect swSurfaceRect;
     zFMV_Rect primarySurfaceRect;
 
-    zFMV_ActionBlur * Constructor(
+    /**
+     * Original inline helper evidence: No standalone retail function is expected for default test/setup construction.
+     * Purpose: let compiler-generated construction install the blur-action vtable for local setup.
+     */
+    zFMV_ActionBlur() {}
+    /**
+     * Reimplements 0x463850: zFMV_ActionBlur::Constructor.
+     * Purpose: initialize a blur action's frame count and pass count.
+     */
+    zFMV_ActionBlur(
         int framesRemaining,
         int blurPassCount
     );
@@ -170,10 +236,42 @@ struct zFMV_ActionBlur : zFMV_Action {
 };
 
 struct zFMV_ActionBlurH : zFMV_ActionBlur {
+    /**
+     * Original inline helper evidence: No standalone retail function is expected for default test/setup construction.
+     * Purpose: let compiler-generated construction install the horizontal-blur vtable for local setup.
+     */
+    zFMV_ActionBlurH() {}
+    /**
+     * Original inline helper evidence: Retail constructs horizontal blur actions through the blur constructor body plus the derived vtable.
+     * Purpose: initialize horizontal blur action state while preserving the derived update dispatch.
+     */
+    zFMV_ActionBlurH(
+        int framesRemaining,
+        int blurPassCount
+    ) : zFMV_ActionBlur(
+            framesRemaining,
+            blurPassCount
+        ) {}
     int Update(double timeSec);
 };
 
 struct zFMV_ActionBlurV : zFMV_ActionBlur {
+    /**
+     * Original inline helper evidence: No standalone retail function is expected for default test/setup construction.
+     * Purpose: let compiler-generated construction install the vertical-blur vtable for local setup.
+     */
+    zFMV_ActionBlurV() {}
+    /**
+     * Original inline helper evidence: Retail constructs vertical blur actions through the blur constructor body plus the derived vtable.
+     * Purpose: initialize vertical blur action state while preserving the derived update dispatch.
+     */
+    zFMV_ActionBlurV(
+        int framesRemaining,
+        int blurPassCount
+    ) : zFMV_ActionBlur(
+            framesRemaining,
+            blurPassCount
+        ) {}
     int Update(double timeSec);
 };
 

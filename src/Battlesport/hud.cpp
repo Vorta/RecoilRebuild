@@ -893,7 +893,7 @@ void HudUiNewGamePanel::Destructor() {
  * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Run new-game panel destruction and optionally free the panel storage.
  */
-HudUiNewGamePanel * HudUiNewGamePanel::ScalarDeletingDestructor(
+HudUiBackground * HudUiNewGamePanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -1159,7 +1159,7 @@ void HudUiBackgroundConfirmQuit::Destructor() {
  * Original source path: D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp.
  * Purpose: Run confirm-quit dialog cleanup and optionally free the object for VC5 scalar delete.
  */
-HudUiBackgroundConfirmQuit * HudUiBackgroundConfirmQuit::ScalarDeletingDestructor(
+HudUiBackground * HudUiBackgroundConfirmQuit::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -1224,7 +1224,7 @@ void HudUiCheatCodeDialog::Destructor() {
 
 // Reimplements 0x406e10: HudUiCheatCodeDialog::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\HudUiCheatCode.cpp)
-HudUiCheatCodeDialog * HudUiCheatCodeDialog::ScalarDeletingDestructor(
+HudUiBackground * HudUiCheatCodeDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -1266,7 +1266,9 @@ void RecoilStateCheatCode::AtExitDestructor() {
  * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
  * Purpose: initialize the cheat-code app state and clear its dialog pointer.
  */
-RecoilStateCheatCode::RecoilStateCheatCode() : m_dialog(0) {}
+RecoilStateCheatCode::RecoilStateCheatCode() {
+    m_dialog = 0;
+}
 
 // Reimplements 0x406f60: RecoilStateCheatCode::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\RecoilStateCheatCode.cpp)
@@ -1353,7 +1355,9 @@ RecoilStateCheatCode::~RecoilStateCheatCode() {
  * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
  * Purpose: initialize the confirm-quit app state and clear its dialog pointer.
  */
-RecoilStateConfirmQuit::RecoilStateConfirmQuit() : m_dialog(0) {}
+RecoilStateConfirmQuit::RecoilStateConfirmQuit() {
+    m_dialog = 0;
+}
 
 // Reimplements 0x4158f0: RecoilStateConfirmQuit::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
@@ -1440,7 +1444,9 @@ void RecoilStateControls::AtExitDestructor() {
  * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
  * Purpose: initialize the controls app state and clear its dialog pointer.
  */
-RecoilStateControls::RecoilStateControls() : m_dialog(0) {}
+RecoilStateControls::RecoilStateControls() {
+    m_dialog = 0;
+}
 
 // Reimplements 0x408d90: RecoilStateControls::Destructor
 // (D:\Proj\Battlesport\recoil_state.cpp)
@@ -1637,7 +1643,7 @@ void HudUiControlsDialog::Destructor() {
 
 // Reimplements 0x408c40: HudUiControlsDialog::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\hud_ui_dialogs.cpp)
-HudUiControlsDialog * HudUiControlsDialog::ScalarDeletingDestructor(
+HudUiBackground * HudUiControlsDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();

@@ -305,7 +305,7 @@ extern zMmxQword g_mmxVPair;
 extern unsigned short g_mmxBitsBlue255[4];
 extern unsigned short g_mmxBitsGreen255[4];
 extern unsigned short g_mmxBitsRed255[4];
-extern unsigned short g_mmxMaskGreenPacked[4];
+extern short g_mmxMaskGreenPacked[4];
 extern unsigned short g_mmxMaskRedPacked[4];
 extern unsigned short g_mmxFogFactors[4];
 extern unsigned short g_mmxMaskGreenBits[4];

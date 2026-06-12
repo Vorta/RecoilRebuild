@@ -2071,6 +2071,7 @@ struct HudUiBackground : HudUiBackgroundContainer {
         const char *name
     );
     void FreeLoadedTreeRoots(int unused);
+    virtual HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
     virtual void Update(float deltaSeconds);
 };
 
@@ -2132,7 +2133,7 @@ struct HudCmdDialog : HudUiBackground {
 
     HudCmdDialog * Constructor();
     void Destructor();
-    HudCmdDialog * ScalarDeletingDestructor(unsigned int flags);
+    HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
     void UpdateCaptureState(float deltaTime);
     int SelectGroupRelative(int delta);
     int SelectCommandRelative(int delta);
@@ -2309,7 +2310,7 @@ struct HudOptionsDialog : HudUiBackground {
 
     HudOptionsDialog();
     void DestructorCore();
-    HudOptionsDialog * ScalarDeletingDestructor(unsigned int flags);
+    HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
 };
 
 struct HudCmdDialogState : RecoilApp_IState {
@@ -2354,7 +2355,7 @@ struct HudUiMessageBoxDialog : HudUiBackground {
         const char *zrdPath,
         const char *sectionName
     );
-    HudUiMessageBoxDialog * ScalarDeletingDestructor(unsigned int flags);
+    HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
     void Destructor();
     int RunModal(
         const char *messageText,
@@ -2469,7 +2470,7 @@ struct HudUiCreditsPanel : HudUiBackground {
     void Update(float deltaSeconds);
     void UpdateFadeAndExit(float deltaSeconds);
     void Destructor();
-    HudUiCreditsPanel * ScalarDeletingDestructor(unsigned int flags);
+    HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
 };
 
 struct HudUiPanelSimple : HudUiPanel {

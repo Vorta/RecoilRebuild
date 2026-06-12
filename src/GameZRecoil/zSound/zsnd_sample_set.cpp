@@ -8,7 +8,11 @@
 extern "C" zSndSampleSetRegistry g_zSnd_SampleSetRegistry = {0};
 
 namespace {
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in callers 0x4a0900 and 0x4a08d0.
+ * Purpose: Returns the active registry entry count from begin/end, or zero for an empty registry.
+ */
 int RegistrySize() {
     if (g_zSnd_SampleSetRegistry.begin == 0) {
         return 0;
@@ -136,12 +140,18 @@ extern "C" void __fastcall zSnd_SetUseArchiveBanksAndRegisterAtExit(
     zSndSampleSetRegistry_RegisterAtExit();
 }
 
-// Reimplements 0x4a0900: zSndSampleSetRegistry_GetCount
+/**
+ * Reimplements 0x4a0900: zSndSampleSetRegistry_GetCount.
+ * Purpose: Returns the number of active sample-set registry entries.
+ */
 extern "C" int zSndSampleSetRegistry_GetCount() {
     return RegistrySize();
 }
 
-// Reimplements 0x4a08d0: zSndSampleSetRegistry_GetByIndex
+/**
+ * Reimplements 0x4a08d0: zSndSampleSetRegistry_GetByIndex.
+ * Purpose: Returns the registry entry at a non-negative in-range index.
+ */
 extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistry_GetByIndex(
     int index
 ) {
@@ -178,7 +188,10 @@ extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistry_FindByName(
     return 0;
 }
 
-// Reimplements 0x4a0870: zSndSampleSet_DestroyByName
+/**
+ * Reimplements 0x4a0870: zSndSampleSet_DestroyByName.
+ * Purpose: find a registered sample set by name and dispatch its destroy routine.
+ */
 extern "C" int __fastcall zSndSampleSet_DestroyByName(
     const char *setName
 ) {
@@ -216,7 +229,10 @@ zSndSampleSet * zSndSampleSet::RegistryAddEntry(
     return this;
 }
 
-// Reimplements 0x4a0e90: zSndSampleSet::GetSampleAt
+/**
+ * Reimplements 0x4a0e90: zSndSampleSet::GetSampleAt.
+ * Purpose: Returns the indexed sample pointer when the signed upper-bound check passes.
+ */
 zSndSample * zSndSampleSet::GetSampleAt(
     int index
 ) {
@@ -381,7 +397,10 @@ int zSndSampleSet::Init() {
     return 1;
 }
 
-// Reimplements 0x4a0e40: zSndSampleSet::Destroy
+/**
+ * Reimplements 0x4a0e40: zSndSampleSet::Destroy.
+ * Purpose: release loaded sample resources and clear the sample-set loaded flag.
+ */
 int zSndSampleSet::Destroy() {
     if (this == 0 || resourcesLoaded == 0) {
         return 0;
@@ -394,7 +413,10 @@ int zSndSampleSet::Destroy() {
     return 1;
 }
 
-// Reimplements 0x4a0c00: zSndSampleSet::DestroyOwnedData
+/**
+ * Reimplements 0x4a0c00: zSndSampleSet::DestroyOwnedData.
+ * Purpose: release owned sample storage and reset the sample count.
+ */
 void zSndSampleSet::DestroyOwnedData() {
     Destroy();
     if (samples != 0) {
@@ -406,7 +428,10 @@ void zSndSampleSet::DestroyOwnedData() {
     sampleCount = 0;
 }
 
-// Reimplements 0x4a0880: zSndSampleSetRegistry_DestroyAll
+/**
+ * Reimplements 0x4a0880: zSndSampleSetRegistry_DestroyAll.
+ * Purpose: destroy registered sample sets, clear their slots, and reset the active range.
+ */
 extern "C" void zSndSampleSetRegistry_DestroyAll() {
     for (zSndSampleSet **it = g_zSnd_SampleSetRegistry.begin; it != g_zSnd_SampleSetRegistry.end;
         ++it) {

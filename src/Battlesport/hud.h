@@ -220,7 +220,7 @@ struct HudUiBackgroundConfirmQuit : HudUiBackground {
 
     HudUiBackgroundConfirmQuit * Constructor();
     void Destructor();
-    HudUiBackgroundConfirmQuit * ScalarDeletingDestructor(
+    HudUiBackground * ScalarDeletingDestructor(
         unsigned int flags
     );
 };
@@ -596,7 +596,7 @@ struct HudUiNewGamePanel : HudUiBackground {
 
     HudUiNewGamePanel();
     void Destructor();
-    HudUiNewGamePanel * ScalarDeletingDestructor(unsigned int flags);
+    HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
     void SyncIntensityFromDifficulty();
     void StartGameFromFields();
 };
@@ -718,7 +718,7 @@ struct HudUiControlsDialog : HudUiBackground {
 
     HudUiControlsDialog * Constructor();
     void Destructor();
-    HudUiControlsDialog * ScalarDeletingDestructor(
+    HudUiBackground * ScalarDeletingDestructor(
         unsigned int flags
     );
 };
@@ -780,7 +780,7 @@ struct HudUiCheatCodeDialog : HudUiBackground {
 
     HudUiCheatCodeDialog * Constructor();
     void Destructor();
-    HudUiCheatCodeDialog * ScalarDeletingDestructor(
+    HudUiBackground * ScalarDeletingDestructor(
         unsigned int flags
     );
 };

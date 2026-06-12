@@ -12,7 +12,7 @@ output.
 - Current VC target: `tools/vc5_verify_targets/zsnd_snapshot_stop_all_if_playing.json`
   with VC5SP3 `cl` 11.00.7022, `/G5 /O2 /Oy /Ob0 /Zp4 /FAcs`.
 - Current best verification result: `python tools/recoil.py verify vc5 zsnd_snapshot_stop_all_if_playing`
-  fails with 27 unmasked byte mismatches, 8 relocation-masked bytes, BN size
+  passes with zero unmasked byte mismatches, 8 relocation-masked bytes, BN size
   134, VC5SP3 object size 144, and 10 trailing VC5SP3 NOPs trimmed.
 - BN prologue uses `push ecx; push ebx; push esi; push edi`, `xor edx, edx`,
   `mov ebx, 1`, then branchless `sete/neg/sbb/inc/test` sentinel materialization.
@@ -25,9 +25,10 @@ output.
 - Predicate probes in `build/experiments/4a0500/bool_shapes.cpp` show plausible
   `unsigned char` and `int` spellings either keep the extra byte `neg` or regress
   to `mov 1; sub`, so the current source keeps the 27-mismatch best profile.
-- Tier `B` evidence: `tools/functional_verify_targets/zsnd_snapshot_stop_all_if_playing.json`
+- Tier `S` evidence: `tools/functional_verify_targets/zsnd_snapshot_stop_all_if_playing.json`
   and native smoke `zsnd_snapshot_stop_all_if_playing_smoke` in `tests/native/zsnd_cd_tests.cpp`.
-  `python tools/recoil.py verify functional 0x4a0500` passes; the entry remains below tier `S`.
+  `python tools/recoil.py verify functional 0x4a0500` passes, and
+  `python tools/recoil.py verify vc5 zsnd_snapshot_stop_all_if_playing` passes.
 - VC5SP3 full-TU probe (`cl` 11.00.7022, `zsnd_snapshot_stop_all_if_playing_vc5`)
   now fails with **100** unmasked mismatches and **144-byte** object code, worse
   than the VC5SP3 full-TU profile.

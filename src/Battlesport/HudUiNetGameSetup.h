@@ -51,7 +51,7 @@ struct HudUiNetGameSetupPanel : HudUiBackground {
 
     HudUiNetGameSetupPanel * Constructor(int reconfigureExistingSessionValue);
     void Destructor();
-    HudUiNetGameSetupPanel * ScalarDeletingDestructor(
+    HudUiBackground * ScalarDeletingDestructor(
         unsigned int flags
     );
 };

@@ -1181,15 +1181,15 @@ extern "C" int zfmv_action_image_constructor_with_screen_rect_smoke(void) {
     action.next = reinterpret_cast<zFMV_Action *>(0x11111111);
     action.image = reinterpret_cast<void *>(0x22222222);
 
-    zFMV_ActionImage *returned = action.ConstructorWithScreenRect("screen.raw", 7, 32, 48);
+    zFMV_ActionImage *returned = new (&action) zFMV_ActionImage("screen.raw", 7, 32, 48);
 
     const bool ok =
         returned == &action && action.vftable == &g_zFMV_ActionImage_Vtable &&
         action.next == nullptr && action.image == nullptr && action.imagePath != nullptr &&
         std::strcmp(action.imagePath, "screen.raw") == 0 && action.doAdjustSurfaces == 7 &&
         action.forcePrimaryPostprocess == 1 && g_zFMV_ActionImage_BlitRectX == 32 &&
-        g_zFMV_ActionImage_BlitRectY == 48 && action.blitRect[0] == 32 &&
-        action.blitRect[1] == 48 && action.blitRect[2] == 640 && action.blitRect[3] == 480;
+        g_zFMV_ActionImage_BlitRectY == 48 && action.blitRect.left == 32 &&
+        action.blitRect.top == 48 && action.blitRect.right == 640 && action.blitRect.bottom == 480;
 
     std::free(action.imagePath);
     return ok ? 0 : 1;
@@ -1205,13 +1205,13 @@ extern "C" int zfmv_action_image_constructor_scaled_smoke(void) {
     action.next = reinterpret_cast<zFMV_Action *>(0x11111111);
     action.image = reinterpret_cast<void *>(0x22222222);
 
-    zFMV_ActionImage *returned = action.ConstructorScaled("scaled.raw", 3);
+    zFMV_ActionImage *returned = new (&action) zFMV_ActionImage("scaled.raw", 3);
     const bool ok =
         returned == &action && action.vftable == &g_zFMV_ActionImage_Vtable &&
         action.next == nullptr && action.image == nullptr && action.imagePath != nullptr &&
         std::strcmp(action.imagePath, "scaled.raw") == 0 && action.doAdjustSurfaces == 3 &&
-        action.forcePrimaryPostprocess == 0 && action.blitRect[0] == 0 && action.blitRect[1] == 0 &&
-        action.blitRect[2] == 800 && action.blitRect[3] == 600;
+        action.forcePrimaryPostprocess == 0 && action.blitRect.left == 0 && action.blitRect.top == 0 &&
+        action.blitRect.right == 800 && action.blitRect.bottom == 600;
 
     std::free(action.imagePath);
     return ok ? 0 : 1;
@@ -1300,10 +1300,10 @@ extern "C" int zfmv_action_image_update_smoke(void) {
     action.image = &image;
     action.forcePrimaryPostprocess = 0;
     action.doAdjustSurfaces = 1;
-    action.blitRect[0] = 10;
-    action.blitRect[1] = 20;
-    action.blitRect[2] = 300;
-    action.blitRect[3] = 400;
+    action.blitRect.left = 10;
+    action.blitRect.top = 20;
+    action.blitRect.right = 300;
+    action.blitRect.bottom = 400;
     g_zVideo_ActiveRendererPath = 0;
     g_fakeFmvSwBltCount = 0;
     g_fakeFmvSwBltImage = nullptr;
@@ -1322,7 +1322,7 @@ extern "C" int zfmv_action_image_update_smoke(void) {
         action.Update(2.5) == 0 && g_fakeFmvSwBltCount == 1 &&
         g_fakeFmvSwBltImage == &image && g_fakeFmvSwBltColorKeyEnable == 0 &&
         g_fakeFmvSwBltSrcRect == nullptr &&
-        g_fakeFmvSwBltDstRect == reinterpret_cast<zVidRect32 *>(&action.blitRect[0]) &&
+        g_fakeFmvSwBltDstRect == &action.blitRect &&
         g_fakeFmvAdjustSurfacesCount == 1 &&
         g_fakeFmvAdjustSurfacesSrcRect == nullptr &&
         g_fakeFmvAdjustSurfacesDstRect == nullptr &&
@@ -1333,8 +1333,8 @@ extern "C" int zfmv_action_image_update_smoke(void) {
 
     action.doAdjustSurfaces = 0;
     action.forcePrimaryPostprocess = 0;
-    action.blitRect[0] = 33;
-    action.blitRect[1] = 44;
+    action.blitRect.left = 33;
+    action.blitRect.top = 44;
     g_zVideo_ActiveRendererPath = 2;
     g_fakeFmvPostprocessCount = 0;
     g_fakeFmvBlitToActiveTargetCount = 0;
@@ -1461,7 +1461,14 @@ extern "C" int zfmv_action_fade_constructor_smoke(void) {
     action.startSec = 123.0;
     action.capturedFrame = reinterpret_cast<void *>(0x22222222);
 
-    zFMV_ActionFade *returned = action.Constructor(0xff, 0x80, 0x20, 0x3fc00000, -1, 128);
+    zFMV_ActionFade *returned = new (&action) zFMV_ActionFade(
+        0xff,
+        0x80,
+        0x20,
+        0x3fc00000,
+        -1,
+        128
+    );
 
     return returned == &action && action.vftable == &g_zFMV_ActionFade_Vtable &&
                    action.next == nullptr && action.fadeDirectionSign == -1 &&
@@ -1743,23 +1750,6 @@ extern "C" int zfmv_action_fade_end_smoke(void) {
 
     RestoreFunctionPatch(releasePatch);
     return nullOk && releaseOk ? 0 : 2;
-}
-
-extern "C" int zfmv_playback_init_smoke(void) {
-    zFMV_Playback playback{};
-    playback.mciPutFlags = 0x77777777;
-    playback.notifyHwnd = reinterpret_cast<HWND>(0x11111111);
-    playback.mediaPathDup = reinterpret_cast<char *>(0x22222222);
-
-    zFMV_Playback *returned = playback.Init("movie.avi", reinterpret_cast<HWND>(0x12345678));
-
-    const bool ok = returned == &playback && playback.mediaPathDup != nullptr &&
-                    std::strcmp(playback.mediaPathDup, "movie.avi") == 0 &&
-                    playback.notifyHwnd == reinterpret_cast<HWND>(0x12345678) &&
-                    playback.mciPutFlags == 0;
-
-    std::free(playback.mediaPathDup);
-    return ok ? 0 : 1;
 }
 
 extern "C" int zfmv_playback_set_dest_rect_smoke(void) {
@@ -2366,7 +2356,7 @@ extern "C" int zfmv_action_play_avi_constructor_existing_file_smoke(void) {
     zFMV_ActionPlayAvi action{};
     action.next = reinterpret_cast<zFMV_Action *>(0x11111111);
 
-    zFMV_ActionPlayAvi *returned = action.Constructor(".", fileName, 5);
+    zFMV_ActionPlayAvi *returned = new (&action) zFMV_ActionPlayAvi(".", fileName, 5);
     const bool ok = returned == &action &&
                     action.vftable == &g_zFMV_ActionPlayAvi_Vtable &&
                     action.next == nullptr && action.mediaPath != nullptr &&
@@ -2396,7 +2386,11 @@ extern "C" int zfmv_action_play_avi_constructor_drive_fallback_smoke(void) {
     g_fakeFmvFindFileResult = resolvedPath;
 
     zFMV_ActionPlayAvi *returned =
-        action.Constructor("missingroot", "__recoil_missing_playavi_ctor__.avi", 7);
+        new (&action) zFMV_ActionPlayAvi(
+            "missingroot",
+            "__recoil_missing_playavi_ctor__.avi",
+            7
+        );
 
     const bool ok =
         returned == &action && action.vftable == &g_zFMV_ActionPlayAvi_Vtable &&
@@ -2661,7 +2655,11 @@ extern "C" int zfmv_action_play_mci_constructor_smoke(void) {
     action.next = reinterpret_cast<zFMV_Action *>(0x11111111);
 
     zFMV_ActionPlayMci *returned =
-        action.Constructor("movies", "intro.mci", reinterpret_cast<HWND>(0x2468ace0));
+        new (&action) zFMV_ActionPlayMci(
+            "movies",
+            "intro.mci",
+            reinterpret_cast<HWND>(0x2468ace0)
+        );
 
     const bool ok =
         returned == &action && action.vftable == &g_zFMV_ActionPlayMci_Vtable &&
@@ -2991,7 +2989,7 @@ extern "C" int zfmv_action_blur_constructor_smoke(void) {
     action.swSurfaceRect = {1, 2, 3, 4};
     action.primarySurfaceRect = {5, 6, 7, 8};
 
-    zFMV_ActionBlur *returned = action.Constructor(12, 3);
+    zFMV_ActionBlur *returned = new (&action) zFMV_ActionBlur(12, 3);
 
     return returned == &action && action.vftable == &g_zFMV_ActionBlur_Vtable &&
                    action.next == nullptr && action.framesRemaining == 12 &&

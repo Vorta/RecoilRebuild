@@ -421,7 +421,7 @@ void HudUiNetGameSetupPanel::Destructor() {
 }
 
 // Source-faithful helper recovered from address-backed callers in this source file.
-HudUiNetGameSetupPanel * HudUiNetGameSetupPanel::ScalarDeletingDestructor(
+HudUiBackground * HudUiNetGameSetupPanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();

@@ -197,6 +197,22 @@ void HudUiMpExitDialog::Destructor() {
 }
 
 /**
+ * Reimplements 0x419850: HudUiMpExitDialog::ScalarDeletingDestructorThunk.
+ * Original source path: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
+ * Purpose: run dialog destruction and optionally release the dialog storage.
+ */
+HudUiBackground * HudUiMpExitDialog::ScalarDeletingDestructor(
+    unsigned int flags
+) {
+    Destructor();
+    if ((flags & 1u) != 0) {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+/**
  * Reimplements 0x419740: RecoilApp_MpExitDialogState::OnEnter.
  * Original source path: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: lazily construct the multiplayer exit dialog singleton and load its layout in software video mode.
@@ -205,9 +221,7 @@ void RecoilApp_MpExitDialogState::OnEnter() {
     if (g_HudUiMpExitDialog == 0) {
         HudUiMpExitDialog *dialog = (HudUiMpExitDialog *) ::operator new(sizeof(HudUiMpExitDialog));
         if (dialog != 0) {
-            new ((HudUiBackground *)dialog) HudUiBackground;
-            dialog->m_mpNewGameButton.Constructor();
-            dialog->m_mpExitButton.Constructor();
+            new (dialog) HudUiMpExitDialog;
         }
 
         g_HudUiMpExitDialog = dialog;
@@ -255,8 +269,7 @@ void RecoilApp_MpExitDialogState::OnDeactivate() {
 
     HudUiMpExitDialog *const dialog = g_HudUiMpExitDialog;
     if (dialog != 0) {
-        dialog->Destructor();
-        ::operator delete(dialog);
+        dialog->ScalarDeletingDestructor(1);
     }
 
     g_HudUiMpExitDialog = 0;

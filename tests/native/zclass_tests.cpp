@@ -1,6 +1,7 @@
 #include "zClass.h"
 
 #include <cstdlib>
+#include <cstring>
 
 namespace {
 void ResetTypeListsForTest() {
@@ -198,6 +199,154 @@ extern "C" int zclass_type_list_alloc_and_insert_smoke() {
     g_zClass_TypeList_FreeLinkHead = freeA;
     zClass_TypeList::FreeAll();
     return g_zClass_TypeList_FreeLinkHead == nullptr ? 0 : 12;
+}
+
+extern "C" int zclass_alloc_node_from_free_list_smoke() {
+    ResetTypeListsForTest();
+
+    zClass_NodeFreeListSlot slots[2] = {};
+    slots[1].freeTag = 0x00ffffff;
+    slots[1].node.flags = 0xffffffff;
+    slots[1].damageHandler = &slots[0];
+    g_zClass_NodeArray = slots;
+    g_zClass_NodeFreeHeadIndex = 1;
+    g_zClass_ActiveNodeCount = 0;
+
+    zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
+    if (node != &slots[1].node || g_zClass_NodeFreeHeadIndex != -1 ||
+        g_zClass_ActiveNodeCount != 1 || zClass_TypeList::Head(6) == nullptr ||
+        zClass_TypeList::Head(6)->node != node) {
+        FreeTypeListsForTest();
+        return 1;
+    }
+
+    if (node->flags != 0x0108001c || node->callbackPriority != 1 || node->gridCol != -1 ||
+        node->gridRow != -1 || node->nodeType != 0xff ||
+        std::strcmp(
+            node->name,
+            "Default_node_name"
+        ) != 0 ||
+        slots[1].damageHandler != nullptr) {
+        FreeTypeListsForTest();
+        return 2;
+    }
+
+    zClass_List::DeleteNodeFromLists(node);
+    zClass::ProcessDeferredWork();
+    zClass_Class::FreeNodeToFreeList(node);
+    zClass_TypeList::FreeAll();
+
+    g_zClass_NodeFreeHeadIndex = -1;
+    const int result = zClass_Class::AllocNodeFromFreeList() == nullptr ? 0 : 3;
+    FreeTypeListsForTest();
+    return result;
+}
+
+extern "C" int zclass_node_propagate_transform_dirty_smoke() {
+    int parentObjectFlags = 0;
+    int childObjectFlags = 0;
+    zClass_NodePartial parent = {};
+    zClass_NodePartial child = {};
+    zClass_NodePartial skippedChild = {};
+    zClass_NodePartial *children[2] = {&child, &skippedChild};
+    parent.classId = 5;
+    parent.classData = &parentObjectFlags;
+    parent.listCountB = 2;
+    parent.listB = children;
+    child.classId = 5;
+    child.classData = &childObjectFlags;
+    skippedChild.flags = 0x02000000;
+
+    zClass_Node::PropagateTransformDirtyRecursive(&parent);
+
+    return (parentObjectFlags & 0x20) != 0 && (childObjectFlags & 0x20) != 0 &&
+                   (parent.boundsFlags & 4) != 0 && (parent.flags & 0x02000000) != 0 &&
+                   (child.flags & 0x02000000) != 0 && skippedChild.boundsFlags == 0
+               ? 0
+               : 1;
+}
+
+extern "C" int zclass_object3d_reset_transform_dirty_smoke() {
+    ResetTypeListsForTest();
+
+    zClass_Object3DDataPartial data = {};
+    data.flags = 0x10;
+    data.rotation.x = 1.0f;
+    data.rotation.y = 2.0f;
+    data.rotation.z = 3.0f;
+    data.scale.x = 4.0f;
+    data.scale.y = 5.0f;
+    data.scale.z = 6.0f;
+    for (int i = 0; i < 12; ++i) {
+        data.localMatrix[i] = (float)(i + 1);
+    }
+
+    zClass_NodePartial node = {};
+    node.classId = 5;
+    node.classData = &data;
+
+    if (zClass_Object3D::PropagateTransformDirty(&node) != 0) {
+        FreeTypeListsForTest();
+        return 1;
+    }
+
+    bool matrixOk = true;
+    for (int i = 0; i < 12; ++i) {
+        const float expected = i == 0 || i == 4 || i == 8 ? 1.0f : 0.0f;
+        matrixOk = matrixOk && data.localMatrix[i] == expected;
+    }
+
+    const bool ok = data.rotation.x == 0.0f && data.rotation.y == 0.0f &&
+                    data.rotation.z == 0.0f && data.scale.x == 1.0f &&
+                    data.scale.y == 1.0f && data.scale.z == 1.0f && matrixOk &&
+                    (data.flags & 0x39) == 0x29 && (data.flags & 0x10) == 0 &&
+                    (node.flags & 0x02000003) == 0x02000003 &&
+                    (node.boundsFlags & 0x04) != 0 && zClass_TypeList::Head(7) != nullptr &&
+                    zClass_TypeList::Head(7)->node == &node;
+
+    FreeTypeListsForTest();
+
+    zClass_NodePartial noData = {};
+    return ok && zClass_Object3D::PropagateTransformDirty(nullptr) == 5 &&
+                   zClass_Object3D::PropagateTransformDirty(&noData) == 5
+               ? 0
+               : 2;
+}
+
+extern "C" int zclass_object3d_init_smoke() {
+    ResetTypeListsForTest();
+
+    zClass_NodeFreeListSlot slot = {};
+    slot.freeTag = 0x00ffffff;
+    g_zClass_NodeArray = &slot;
+    g_zClass_NodeFreeHeadIndex = 0;
+    g_zClass_ActiveNodeCount = 0;
+    g_zClass_DeferredProcessingEnabled = 1;
+
+    zClass_NodePartial *node = zClass_Object3D::gwObject3DInit();
+    if (node != &slot.node || node->classId != 5 || node->classData == nullptr ||
+        g_zClass_NodeFreeHeadIndex != -1 || g_zClass_ActiveNodeCount != 1) {
+        FreeTypeListsForTest();
+        return 1;
+    }
+
+    zClass_Object3DDataPartial *data = (zClass_Object3DDataPartial *)(node->classData);
+    if (data->flags != 0x29 || data->scale.x != 1.0f || data->scale.y != 1.0f ||
+        data->scale.z != 1.0f || data->localMatrix[0] != 1.0f ||
+        data->localMatrix[4] != 1.0f || data->localMatrix[8] != 1.0f ||
+        (node->boundsFlags & 4) == 0 || (node->flags & 0x02000003) != 0x02000003) {
+        zClass_Object3D::DeleteNode(node);
+        FreeTypeListsForTest();
+        return 2;
+    }
+
+    zClass_Object3D::DeleteNode(node);
+    zClass_TypeList::FreeAll();
+
+    g_zClass_NodeFreeHeadIndex = -1;
+    const int result = zClass_Object3D::gwObject3DInit() == nullptr ? 0 : 3;
+    FreeTypeListsForTest();
+    return result;
 }
 
 extern "C" int zclass_node_action_callback_smoke() {

@@ -497,7 +497,11 @@ namespace zClass_List {
 }
 
 namespace zClass_TypeList {
-    // Reimplements 0x44e630: zClass_TypeList::AllocLink
+    /**
+     * Reimplements 0x44e630: zClass_TypeList::AllocLink.
+     * Purpose: allocate or recycle a type-list link while maintaining live
+     * link accounting.
+     */
     zClass_TypeListLink *AllocLink() {
         const int liveCount = g_zClass_TypeList_LiveLinkCount + 1;
         g_zClass_TypeList_LiveLinkCount = liveCount;
@@ -633,7 +637,11 @@ namespace zClass_TypeList {
         return zClass_TypeList::Head(bucket);
     }
 
-    // Reimplements 0x44eed0: zClass_TypeList::MarkPendingRemoval
+    /**
+     * Reimplements 0x44eed0: zClass_TypeList::MarkPendingRemoval.
+     * Purpose: mark a matching type-list link for deferred removal and set
+     * the bucket dirty flag.
+     */
     int __fastcall MarkPendingRemoval(
         int bucket,
         zClass_NodePartial *node
@@ -660,7 +668,11 @@ namespace zClass_TypeList {
         return 0;
     }
 
-    // Reimplements 0x44ed90: zClass_TypeList::Insert
+    /**
+     * Reimplements 0x44ed90: zClass_TypeList::Insert.
+     * Purpose: insert a node at the head of a type-list bucket and queue
+     * eligible child nodes.
+     */
     int __fastcall Insert(
         int bucket,
         zClass_NodePartial *node
@@ -695,7 +707,11 @@ namespace zClass_TypeList {
         return 0;
     }
 
-    // Reimplements 0x44ee10: zClass_TypeList::InsertChildNodes
+    /**
+     * Reimplements 0x44ee10: zClass_TypeList::InsertChildNodes.
+     * Purpose: append a node to a type-list bucket and queue eligible child
+     * nodes.
+     */
     int __fastcall InsertChildNodes(
         int bucket,
         zClass_NodePartial *node

@@ -40,10 +40,12 @@ zInput::JoystickAxisConfig g_zInput_JoystickAxisConfig = {0};
 zInput::JoystickAxisConfig g_zInput_JoystickAxisConfig_Gameplay = {0};
 DIJOYSTATE2 g_zInput_JoystickCurrentState = {0};
 DIJOYSTATE2 g_zInput_JoystickPreviousState = {0};
+DIJOYSTATE2 g_zInput_JoystickRawDIState = {0};
+zInput::MouseDeviceState g_zInput_MouseRawDIState = {0};
 zInput::MouseDeviceState g_zInput_MouseCurrentState = {0};
 zInput::MouseDeviceState g_zInput_MousePreviousState = {0};
 zInput::MouseStateSnapshot g_zInput_MouseStateSnapshot = {0};
-int g_zInputMouseLastPollResult = 0;
+int g_zInputMouseLastPollResult = 1;
 int g_zInput_MouseClientWidth = 0;
 int g_zInput_MouseClientHeight = 0;
 int g_zInput_MouseClientCenterX = 0;
@@ -54,6 +56,9 @@ float g_zInput_MouseSensitivityX = 1.3f;
 float g_zInput_MouseSensitivityY = 1.3f;
 int g_zInput_MouseWrapModeFlag = 0;
 HWND g_zInput_hWnd = 0;
+// zin_kbd.cpp keyboard source-state globals; BN 0x46f690/0x46f450 uses the
+// typed DirectInput event buffer, modifier bitfield, dispatch slots, and raw
+// callback storage as one keyboard polling owner.
 int g_zInput_KbdSystemReady = 0;
 zInput::DIDevice *g_zInput_KbdDevice = 0;
 zInput::DIDeviceObjectData *g_zInput_KbdEventBuffer = 0;
@@ -152,18 +157,24 @@ void __fastcall BindMapOverlay_DeleteNodeList(
 
 } // namespace
 
-// Reimplements 0x470e80: zInput_BindMapContext_DispatchFromKeyboardEvent
+/**
+ * Reimplements 0x470e80: zInput_BindMapContext_DispatchFromKeyboardEvent.
+ * Purpose: Dispatches a raw keyboard event through the active bind-map command callback.
+ */
 extern "C" void __fastcall zInput_BindMapContext_DispatchFromKeyboardEvent(
     int dikCode
 ) {
     const int commandId = g_zInput_BindMap_Current->GetCommandByAnyKeyboardKey(dikCode);
     zInputCommandCallbackFn callback = g_zInput_BindMap_Current->m_commandCallbacks[commandId];
     if (callback != 0) {
-        callback();
+        callback(commandId);
     }
 }
 
-// Reimplements 0x4706c0: zInput_BindMapContext::InitFromTemplate
+/**
+ * Reimplements 0x4706c0: zInput_BindMapContext::InitFromTemplate.
+ * Purpose: deep-copy an optional bind-map template and rebuild reverse lookup tables.
+ */
 zInput_BindMapContext * zInput_BindMapContext::InitFromTemplate(
     const zInput_BindMapContext *tmpl
 ) {
@@ -214,7 +225,10 @@ zInput_BindMapContext * zInput_BindMapContext::InitFromTemplate(
     return this;
 }
 
-// Reimplements 0x4707a0: zInput_BindMapContext::FreeAllBuffers
+/**
+ * Reimplements 0x4707a0: zInput_BindMapContext::FreeAllBuffers.
+ * Purpose: release owned binding, callback, and label buffers from a bind-map context.
+ */
 void zInput_BindMapContext::FreeAllBuffers() {
     if (m_commandCallbacks != 0) {
         free(m_commandCallbacks);
@@ -238,7 +252,10 @@ void zInput_BindMapContext::FreeAllBuffers() {
     m_packedBindings = 0;
 }
 
-// Reimplements 0x470820: zInput_BindMapContext::RebuildLookupIndices
+/**
+ * Reimplements 0x470820: zInput_BindMapContext::RebuildLookupIndices.
+ * Purpose: rebuild keyboard, joystick, and mouse reverse lookup tables from packed bindings.
+ */
 void zInput_BindMapContext::RebuildLookupIndices() {
     for (int i = 0; i < 0x7de; ++i) {
         m_primaryKeyToCommand[i] = 0;
@@ -323,7 +340,10 @@ void zInput_BindMapContext::FreeNonOwnedBuffers() {
     m_packedBindings = 0;
 }
 
-// Reimplements 0x4709d0: zInput_BindMapContext::ResetAllBindings
+/**
+ * Reimplements 0x4709d0: zInput_BindMapContext::ResetAllBindings.
+ * Purpose: clear every command binding/callback and rebuild reverse lookup indices.
+ */
 void zInput_BindMapContext::ResetAllBindings() {
     for (int i = 0; i < m_commandCount; ++i) {
         m_packedBindings[i] = zInput::BindMap_PackBindingCode(
@@ -338,14 +358,20 @@ void zInput_BindMapContext::ResetAllBindings() {
     RebuildLookupIndices();
 }
 
-// Reimplements 0x470a40: zInput_BindMapContext::GetPrimaryKeyboardKey
+/**
+ * Reimplements 0x470a40: zInput_BindMapContext::GetPrimaryKeyboardKey.
+ * Purpose: return the primary DIK key packed for a command binding.
+ */
 int zInput_BindMapContext::GetPrimaryKeyboardKey(
     int commandIndex
 ) {
     return m_packedBindings[commandIndex] & 0x7ff;
 }
 
-// Reimplements 0x470a60: zInput_BindMapContext::GetSecondaryKeyboardKey
+/**
+ * Reimplements 0x470a60: zInput_BindMapContext::GetSecondaryKeyboardKey.
+ * Purpose: return the secondary DIK key packed for a command binding.
+ */
 int zInput_BindMapContext::GetSecondaryKeyboardKey(
     int commandIndex
 ) {
@@ -399,7 +425,10 @@ int zInput_BindMapContext::GetCommandByJoystickSlot(
     return m_joystickToCommand[joystickSlot];
 }
 
-// Reimplements 0x470b10: zInput_BindMapContext::GetCommandByMouseSlot
+/**
+ * Reimplements 0x470b10: zInput_BindMapContext::GetCommandByMouseSlot.
+ * Purpose: Return the command id stored for one bind-map mouse slot.
+ */
 int zInput_BindMapContext::GetCommandByMouseSlot(
     int mouseSlot
 ) {
@@ -513,48 +542,57 @@ void zInput_BindMapContext::SetBindingRecord(
     );
 }
 
-// Reimplements 0x470d40: zInput_BindMapContext::DispatchMouseButtonCallbacks
+/**
+ * Reimplements 0x470d40: zInput_BindMapContext::DispatchMouseButtonCallbacks.
+ * Purpose: Dispatches pressed mouse-button transitions through bind-map command callbacks.
+ */
 void zInput_BindMapContext::DispatchMouseButtonCallbacks() {
     zInput::MouseStateSnapshot *const state = zInput::Mouse_GetStateSnapshotPtr();
     if (state->button1Transition == 1) {
         const int commandId = GetCommandByMouseSlot(1);
         zInputCommandCallbackFn callback = m_commandCallbacks[commandId];
         if (callback != 0) {
-            callback();
+            callback(commandId);
         }
     }
     if (state->button2Transition == 1) {
         const int commandId = GetCommandByMouseSlot(2);
         zInputCommandCallbackFn callback = m_commandCallbacks[commandId];
         if (callback != 0) {
-            callback();
+            callback(commandId);
         }
     }
     if (state->button3Transition == 1) {
         const int commandId = GetCommandByMouseSlot(3);
         zInputCommandCallbackFn callback = m_commandCallbacks[commandId];
         if (callback != 0) {
-            callback();
+            callback(commandId);
         }
     }
 }
 
-// Reimplements 0x470db0: zInput_BindMapContext::DispatchJoystickButtonCallbacks
+/**
+ * Reimplements 0x470db0: zInput_BindMapContext::DispatchJoystickButtonCallbacks.
+ * Purpose: Dispatches pressed joystick-button transitions through bind-map command callbacks.
+ */
 void zInput_BindMapContext::DispatchJoystickButtonCallbacks() {
     {
-        for (int slot = 1; slot < 0x0b; ++slot) {
+        for (unsigned int slot = 1; slot < 0x0b; ++slot) {
             if (zInput::DI_GetButtonTransitionState(slot) == 1) {
                 const int commandId = zInput::BindMapCurrent_GetCommandByJoystickSlot(slot);
                 zInputCommandCallbackFn callback = m_commandCallbacks[commandId];
                 if (callback != 0) {
-                    callback();
+                    callback(commandId);
                 }
             }
         }
     }
 }
 
-// Reimplements 0x470df0: zInput_BindMapContext::SetCommandCallback
+/**
+ * Reimplements 0x470df0: zInput_BindMapContext::SetCommandCallback.
+ * Purpose: store a command callback and register keyboard bridge callbacks for its keys.
+ */
 int zInput_BindMapContext::SetCommandCallback(
     int commandId,
     zInputCommandCallbackFn callback
@@ -1200,224 +1238,19 @@ struct DipropDwordInit {
     unsigned int dwData;
 };
 
-struct DirectInputErrorName {
-    int hresult;
-    const char *name;
-};
-
-const DirectInputErrorName kDirectInputErrorNames[] = {
-    {(int)(0x80040110), "DIERR_NOAGGREGATION"},
-    {(int)(0x80004001), "DIERR_UNSUPPORTED"},
-    {(int)(0x80004002), "DIERR_NOINTERFACE"},
-    {(int)(0x80004005), "DIERR_GENERIC"},
-    {(int)(0x80070002), "DIERR_OBJECTNOTFOUND"},
-    {(int)(0x80040154), "DIERR_DEVICENOTREG"},
-    {(int)(0x8007000c), "DIERR_NOTACQUIRED"},
-    {(int)(0x80070005), "DIERR_READONLY"},
-    {(int)(0x80070015), "DIERR_NOTINITIALIZED"},
-    {(int)(0x8007000e), "DIERR_OUTOFMEMORY"},
-    {(int)(0x80070057), "DIERR_INVALIDPARAM"},
-    {(int)(0x8007001e), "DIERR_INPUTLOST"},
-    {(int)(0x800700aa), "DIERR_ACQUIRED"},
-    {(int)(0x80070077), "DIERR_BADDRIVERVER"},
-    {(int)(0x80070481), "DIERR_BETADIRECTINPUTVERSION"},
-    {(int)(0x8007047e), "DIERR_OLDDIRECTINPUTVERSION"},
-    {(int)(0x800704df), "DIERR_ALREADYINITIALIZED"},
-};
-
-const unsigned char kKeyboardModifierClasses[0x9c] = {
-    0,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    1,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    2,
-    6,
-    3,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    4,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    6,
-    5,
-};
-
 int IsUnsuspended(
     unsigned char flags
 ) {
     return (~flags & kSuspendFlag) >> 1;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-const char *GetDirectInputErrorName(
-    int hresult
-) {
-    {
-        int entryIndex1;
-        for (entryIndex1 = 0; entryIndex1 < (int)(sizeof(kDirectInputErrorNames) /
-                                                  sizeof((kDirectInputErrorNames)[0]));
-            ++entryIndex1) {
-            const DirectInputErrorName &entry = (kDirectInputErrorNames)[entryIndex1];
-            if (entry.hresult == hresult) {
-                return entry.name;
-            }
-        }
-    }
-
-    return "Unknown Error";
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
-unsigned char ClassifyKeyboardOffset(
-    unsigned int dwOfs
-) {
-    const unsigned int tableIndex = dwOfs - 0x1d;
-    if (tableIndex > 0x9b) {
-        return 6;
-    }
-
-    return kKeyboardModifierClasses[tableIndex];
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zInput keyboard modifier state update.
+ * Original-source helper evidence: No standalone retail function exists;
+ * observed inline in 0x46fa10 and 0x46f690 where the keyboard wait/poll paths
+ * set or clear the shared modifier mask for shift/control/alt DIK events.
+ * Purpose: Apply a pressed/released transition to one keyboard modifier bit.
+ */
 void UpdateKeyboardModifierState(
     int mask,
     bool pressed
@@ -1429,89 +1262,19 @@ void UpdateKeyboardModifierState(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-void ApplyKeyboardKeyEvent(
-    DIDeviceObjectData &event
-) {
-    if ((g_zInput_KbdModifierState & 0x100) != 0) {
-        event.dwData |= 0x40;
-    }
-    if ((g_zInput_KbdModifierState & 0x200) != 0) {
-        event.dwData |= 0x20;
-    }
-    if ((g_zInput_KbdModifierState & 0x400) != 0) {
-        event.dwData |= 0x10;
-    }
-
-    const unsigned int dwOfs = event.dwOfs | (unsigned int)(g_zInput_KbdModifierState);
-    KbdKeyDispatchEntry &dispatch = g_zInputKbdKeyDispatchTable[dwOfs];
-    if ((event.dwData & 0x80) != 0) {
-        dispatch.state = dispatch.state == 1 ? 3 : 1;
-    } else {
-        dispatch.state |= 4;
-    }
-}
-
 typedef int(__fastcall *KeyboardRawEventCallbackFn)(
     int ascii,
     void *context
 );
 typedef void(__fastcall *KeyboardComboCallbackFn)(int comboIdx);
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-int ApplyKeyboardWaitEvent(
-    DIDeviceObjectData &event
-) {
-    unsigned int dispatchIndex = event.dwOfs;
-    bool returnPressedKey = false;
-    switch (event.dwOfs) {
-    case 0x38:
-    case 0xb8:
-        UpdateKeyboardModifierState(
-            0x100,
-            (event.dwData & 0x80) != 0
-        );
-        break;
-    case 0x1d:
-    case 0x9d:
-        UpdateKeyboardModifierState(
-            0x200,
-            (event.dwData & 0x80) != 0
-        );
-        break;
-    case 0x2a:
-    case 0x36:
-        UpdateKeyboardModifierState(
-            0x400,
-            (event.dwData & 0x80) != 0
-        );
-        break;
-    default:
-        returnPressedKey = true;
-        if ((g_zInput_KbdModifierState & 0x100) != 0) {
-            event.dwData |= 0x40;
-        }
-        if ((g_zInput_KbdModifierState & 0x200) != 0) {
-            event.dwData |= 0x20;
-        }
-        if ((g_zInput_KbdModifierState & 0x400) != 0) {
-            event.dwData |= 0x10;
-        }
-        dispatchIndex |= (unsigned int)(g_zInput_KbdModifierState);
-        break;
-    }
-
-    KbdKeyDispatchEntry &dispatch = g_zInputKbdKeyDispatchTable[dispatchIndex];
-    if ((event.dwData & 0x80) != 0) {
-        dispatch.state = dispatch.state == 1 ? 3 : 1;
-        return returnPressedKey ? (int)(dispatchIndex) : 0;
-    }
-
-    dispatch.state |= 4;
-    return 0;
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zInput keyboard poll event application.
+ * Original-source helper evidence: No standalone retail function exists;
+ * observed inline in 0x46f690 where the frame poll path updates modifier
+ * state, dispatch-state slots, and optional raw ASCII callbacks.
+ * Purpose: Apply one buffered keyboard poll event and return its dispatch index.
+ */
 int ApplyKeyboardPollEvent(
     DIDeviceObjectData &event
 ) {
@@ -1573,7 +1336,13 @@ int ApplyKeyboardPollEvent(
     return (int)(dispatchIndex);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zInput keyboard callback dispatch index builder.
+ * Original-source helper evidence: No standalone retail function exists;
+ * observed inline in 0x46f690's second pass where processed dwData modifier
+ * bits are folded back into a keyboard combo index before callback dispatch.
+ * Purpose: Rebuild a modifier-aware keyboard combo index from a processed event.
+ */
 int KeyboardEventDispatchIndex(
     const DIDeviceObjectData &event
 ) {
@@ -1592,21 +1361,199 @@ int KeyboardEventDispatchIndex(
 }
 } // namespace
 
-// Reimplements 0x472490: zInput::DI_ReportError
+/**
+ * Reimplements 0x472490: zInput::DI_ReportError.
+ * Binary Ninja shows the original zin_joystick.cpp routine inlining the
+ * ordered DirectInput HRESULT compare tree before the shared sprintf/report
+ * tail; there is no standalone retail error-name helper.
+ * Purpose: Report failing DirectInput HRESULTs through the legacy zError path.
+ */
 RECOIL_NO_GS int __fastcall DI_ReportError(
     int hresult,
     const char *sourceFile,
     int sourceLine
 ) {
-    if (hresult == 0) {
-        return 1;
-    }
-
     char errorNameBuffer[0x100];
+    if (hresult <= (int)(0x80040110)) {
+        if (hresult != (int)(0x80040110)) {
+            if (hresult != (int)(0x80004001)) {
+                if (hresult != (int)(0x80004002)) {
+                    if (hresult != (int)(0x80004005)) {
+                        goto unknownError;
+                    }
+                    goto dierrGeneric;
+                }
+                goto dierrNoInterface;
+            }
+            goto dierrUnsupported;
+        }
+        goto dierrNoAggregation;
+    } else if (hresult <= (int)(0x80070002)) {
+        if (hresult != (int)(0x80070002)) {
+            if (hresult != (int)(0x80040154)) {
+                goto unknownError;
+            }
+            goto dierrDeviceNotReg;
+        }
+        goto dierrObjectNotFound;
+    } else if (hresult <= (int)(0x8007000c)) {
+        if (hresult != (int)(0x8007000c)) {
+            if (hresult != (int)(0x80070005)) {
+                goto unknownError;
+            }
+            goto dierrReadOnly;
+        }
+        goto dierrNotAcquired;
+    } else if (hresult <= (int)(0x80070015)) {
+        if (hresult != (int)(0x80070015)) {
+            if (hresult != (int)(0x8007000e)) {
+                goto unknownError;
+            }
+            goto dierrOutOfMemory;
+        }
+        goto dierrNotInitialized;
+    } else if (hresult <= (int)(0x80070057)) {
+        if (hresult != (int)(0x80070057)) {
+            if (hresult != (int)(0x8007001e)) {
+                goto unknownError;
+            }
+            goto dierrInputLost;
+        }
+        goto dierrInvalidParam;
+    } else if (hresult <= (int)(0x800700aa)) {
+        if (hresult != (int)(0x800700aa)) {
+            if (hresult != (int)(0x80070077)) {
+                goto unknownError;
+            }
+            goto dierrBadDriverVer;
+        }
+        goto dierrAcquired;
+    } else if (hresult <= (int)(0x80070481)) {
+        if (hresult != (int)(0x80070481)) {
+            if (hresult != (int)(0x8007047e)) {
+                goto unknownError;
+            }
+            goto dierrOldDirectInputVersion;
+        }
+        goto dierrBetaDirectInputVersion;
+    } else if (hresult == (int)(0x800704df)) {
+        goto unknownError;
+    } else if (hresult == kDiOk) {
+        goto diOk;
+    }
+    goto dierrAlreadyInitialized;
+
+dierrGeneric:
     sprintf(
         errorNameBuffer,
-        GetDirectInputErrorName(hresult)
+        "DIERR_GENERIC"
     );
+    goto reportError;
+dierrNoInterface:
+    sprintf(
+        errorNameBuffer,
+        "DIERR_NOINTERFACE"
+    );
+    goto reportError;
+dierrUnsupported:
+    sprintf(
+        errorNameBuffer,
+        "DIERR_UNSUPPORTED"
+    );
+    goto reportError;
+dierrNoAggregation:
+    sprintf(
+        errorNameBuffer,
+        "DIERR_NOAGGREGATION"
+    );
+    goto reportError;
+dierrDeviceNotReg:
+    sprintf(
+        errorNameBuffer,
+        "DIERR_DEVICENOTREG"
+    );
+    goto reportError;
+dierrObjectNotFound:
+    sprintf(
+        errorNameBuffer,
+        "DIERR_OBJECTNOTFOUND"
+    );
+    goto reportError;
+dierrReadOnly:
+    sprintf(
+        errorNameBuffer,
+        "DIERR_READONLY"
+    );
+    goto reportError;
+dierrNotAcquired:
+    sprintf(
+        errorNameBuffer,
+        "DIERR_NOTACQUIRED"
+    );
+    goto reportError;
+dierrOutOfMemory:
+    sprintf(
+        errorNameBuffer,
+        "DIERR_OUTOFMEMORY"
+    );
+    goto reportError;
+dierrNotInitialized:
+    sprintf(
+        errorNameBuffer,
+        "DIERR_NOTINITIALIZED"
+    );
+    goto reportError;
+dierrInputLost:
+    sprintf(
+        errorNameBuffer,
+        "DIERR_INPUTLOST"
+    );
+    goto reportError;
+dierrInvalidParam:
+    sprintf(
+        errorNameBuffer,
+        "DIERR_INVALIDPARAM"
+    );
+    goto reportError;
+dierrBadDriverVer:
+    sprintf(
+        errorNameBuffer,
+        "DIERR_BADDRIVERVER"
+    );
+    goto reportError;
+dierrAcquired:
+    sprintf(
+        errorNameBuffer,
+        "DIERR_ACQUIRED"
+    );
+    goto reportError;
+dierrOldDirectInputVersion:
+    sprintf(
+        errorNameBuffer,
+        "DIERR_OLDDIRECTINPUTVERSION"
+    );
+    goto reportError;
+dierrBetaDirectInputVersion:
+    sprintf(
+        errorNameBuffer,
+        "DIERR_BETADIRECTINPUTVERSION"
+    );
+    goto reportError;
+unknownError:
+    sprintf(
+        errorNameBuffer,
+        "Unknown Error"
+    );
+    goto reportError;
+diOk:
+    return 1;
+dierrAlreadyInitialized:
+    sprintf(
+        errorNameBuffer,
+        "DIERR_ALREADYINITIALIZED"
+    );
+
+reportError:
     zError::ReportOld(
         0x800,
         sourceFile,
@@ -1775,7 +1722,10 @@ void BindMap_InitMouseButtonNameTable() {
     g_zInput_MouseButtonNames[3] = "Middle";
 }
 
-// Reimplements 0x470a10: zInput::BindMap_PackBindingCode
+/**
+ * Reimplements 0x470a10: zInput::BindMap_PackBindingCode.
+ * Purpose: pack keyboard, joystick, and mouse binding slots into the bind-map record format.
+ */
 int __fastcall BindMap_PackBindingCode(
     int primary,
     int secondary,
@@ -2112,7 +2062,10 @@ void __fastcall BindMapSystem_Init(
     BindMap_InitMouseButtonNameTable();
 }
 
-// Reimplements 0x471860: zInput::BindMapContext_Push
+/**
+ * Reimplements 0x471860: zInput::BindMapContext_Push.
+ * Purpose: push a bind-map overlay context and rebuild the active command lookup tables.
+ */
 void __fastcall BindMapContext_Push(
     zInput_BindMapContext *bindMapOrNull
 ) {
@@ -2155,7 +2108,10 @@ void __fastcall BindMapContext_Push(
     bindMap->RebuildLookupIndices();
 }
 
-// Reimplements 0x471950: zInput::BindMapContext_Pop
+/**
+ * Reimplements 0x471950: zInput::BindMapContext_Pop.
+ * Purpose: pop the active bind-map overlay, recycle its stack node, and rebuild command lookup tables.
+ */
 void BindMapContext_Pop() {
     zInput_BindMapContext *current = g_zInput_BindMap_Current;
     if (current->m_isOverlay != 0 && current != 0) {
@@ -2222,7 +2178,10 @@ void BindMap_Current_RebuildLookupIndices() {
     g_zInput_BindMap_Current->RebuildLookupIndices();
 }
 
-// Reimplements 0x4716c0: zInput::BindMapCurrent_ResetAllBindings
+/**
+ * Reimplements 0x4716c0: zInput::BindMapCurrent_ResetAllBindings.
+ * Purpose: reset all bindings on the current global bind-map context.
+ */
 void BindMapCurrent_ResetAllBindings() {
     g_zInput_BindMap_Current->ResetAllBindings();
 }
@@ -2701,21 +2660,34 @@ int __fastcall Mouse_SetCooperativeLevelFlags(
     return previousFlags;
 }
 
-// Reimplements 0x4702e0: zInput::Mouse_GetButtonTransitionState
+/**
+ * Reimplements 0x4702e0: zInput::Mouse_GetButtonTransitionState.
+ *
+ * Purpose: compare the current and previous mouse button byte and return the
+ * transition mask for a 1-based mouse button number.
+ *
+ * Evidence: BN assembly at 0x4702e0 reads from the rgbButtons byte in the
+ * typed current and previous mouse device states at 0x565e80/0x565e90,
+ * treats button numbers as 1-based, returns 1 or 2 for down transitions and
+ * held buttons, and uses the release-path neg/sbb idiom for result 4.
+ */
 int __fastcall Mouse_GetButtonTransitionState(
     int buttonNumber
 ) {
     const unsigned char *currentButtons =
         (const unsigned char *)(&g_zInput_MouseCurrentState.rgbButtons);
-    const unsigned char *previousButtons =
-        (const unsigned char *)(&g_zInput_MousePreviousState.rgbButtons);
 
     const unsigned char current = currentButtons[buttonNumber - 1];
-    const unsigned char previous = previousButtons[buttonNumber - 1];
     if (current != 0) {
+        const unsigned char *previousButtons =
+            (const unsigned char *)(&g_zInput_MousePreviousState.rgbButtons);
+        const unsigned char previous = previousButtons[buttonNumber - 1];
         return (previous != 0 ? 1 : 0) + 1;
     }
 
+    const unsigned char *previousButtons =
+        (const unsigned char *)(&g_zInput_MousePreviousState.rgbButtons);
+    const unsigned char previous = previousButtons[buttonNumber - 1];
     return previous != 0 ? 4 : 0;
 }
 
@@ -2957,7 +2929,10 @@ int Keyboard_InitDevice() {
     return 0;
 }
 
-// Reimplements 0x46f9f0: zInput::Keyboard_ClearKeyCallbackTable
+/**
+ * Reimplements 0x46f9f0: zInput::Keyboard_ClearKeyCallbackTable.
+ * Purpose: clear all keyboard dispatch callback slots while preserving key states.
+ */
 void Keyboard_ClearKeyCallbackTable() {
     int entryIndex3;
     for (entryIndex3 = 0; entryIndex3 < (int)(sizeof(g_zInputKbdKeyDispatchTable) /
@@ -2968,7 +2943,10 @@ void Keyboard_ClearKeyCallbackTable() {
     }
 }
 
-// Reimplements 0x46fd20: zInput::Keyboard_InitDikToAsciiTable
+/**
+ * Reimplements 0x46fd20: zInput::Keyboard_InitDikToAsciiTable.
+ * Purpose: Initialize the DIK scan-code to ASCII/control-code lookup table.
+ */
 void Keyboard_InitDikToAsciiTable() {
     memset(
         g_zInput_KbdDikToAsciiTable,
@@ -3028,14 +3006,14 @@ void Keyboard_InitDikToAsciiTable() {
     g_zInput_KbdDikToAsciiTable[0x35] = '/';
     g_zInput_KbdDikToAsciiTable[0x37] = '*';
     g_zInput_KbdDikToAsciiTable[0x39] = ' ';
+    g_zInput_KbdDikToAsciiTable[0x4a] = '-';
+    g_zInput_KbdDikToAsciiTable[0x4e] = '+';
     g_zInput_KbdDikToAsciiTable[0x47] = '7';
     g_zInput_KbdDikToAsciiTable[0x48] = '8';
     g_zInput_KbdDikToAsciiTable[0x49] = '9';
-    g_zInput_KbdDikToAsciiTable[0x4a] = '-';
     g_zInput_KbdDikToAsciiTable[0x4b] = '4';
     g_zInput_KbdDikToAsciiTable[0x4c] = '5';
     g_zInput_KbdDikToAsciiTable[0x4d] = '6';
-    g_zInput_KbdDikToAsciiTable[0x4e] = '+';
     g_zInput_KbdDikToAsciiTable[0x4f] = '1';
     g_zInput_KbdDikToAsciiTable[0x50] = '2';
     g_zInput_KbdDikToAsciiTable[0x51] = '3';
@@ -3054,7 +3032,10 @@ void Keyboard_InitDikToAsciiTable() {
     g_zInput_KbdDikToAsciiTable[0xd3] = 0x7f;
 }
 
-// Reimplements 0x46fba0: zInput::Keyboard_TranslateDikToAscii
+/**
+ * Reimplements 0x46fba0: zInput::Keyboard_TranslateDikToAscii.
+ * Purpose: Translate a modifier-combined DIK scan code to an ASCII/control code.
+ */
 int __fastcall Keyboard_TranslateDikToAscii(
     int comboIdx
 ) {
@@ -3068,52 +3049,53 @@ int __fastcall Keyboard_TranslateDikToAscii(
         result -= 0x20;
     }
 
-    if ((unsigned int)(comboIdx - 0x402) > 0x33) {
+    const unsigned int shiftedOffset = (unsigned int)(comboIdx - 0x402);
+    if (shiftedOffset > 0x33) {
         return result;
     }
 
-    switch (comboIdx & 0xff) {
-    case 0x02:
+    switch (shiftedOffset) {
+    case 0x00:
         return '!';
-    case 0x03:
+    case 0x01:
         return '@';
-    case 0x04:
+    case 0x02:
         return '#';
-    case 0x05:
+    case 0x03:
         return '$';
-    case 0x06:
+    case 0x04:
         return '%';
-    case 0x07:
+    case 0x05:
         return '^';
-    case 0x08:
+    case 0x06:
         return '&';
-    case 0x09:
+    case 0x07:
         return '*';
-    case 0x0a:
+    case 0x08:
         return '(';
-    case 0x0b:
+    case 0x09:
         return ')';
-    case 0x0c:
-        return '_';
-    case 0x0d:
-        return '+';
-    case 0x1a:
-        return '{';
-    case 0x1b:
-        return '}';
     case 0x27:
-        return ':';
-    case 0x28:
-        return '"';
-    case 0x29:
         return '~';
-    case 0x2b:
+    case 0x0a:
+        return '_';
+    case 0x0b:
+        return '+';
+    case 0x29:
         return '|';
-    case 0x33:
+    case 0x18:
+        return '{';
+    case 0x19:
+        return '}';
+    case 0x25:
+        return ':';
+    case 0x26:
+        return '"';
+    case 0x31:
         return '<';
-    case 0x34:
+    case 0x32:
         return '>';
-    case 0x35:
+    case 0x33:
         return '?';
     default:
         return result;
@@ -3136,7 +3118,10 @@ int __fastcall Keyboard_GetKeyTransitionState(
     return state;
 }
 
-// Reimplements 0x46f9b0: zInput::Keyboard_RegisterKeyCallback
+/**
+ * Reimplements 0x46f9b0: zInput::Keyboard_RegisterKeyCallback.
+ * Purpose: install a keyboard dispatch callback for an unused modifier-aware key slot.
+ */
 int __fastcall Keyboard_RegisterKeyCallback(
     int comboIdx,
     void *callback,
@@ -3150,7 +3135,10 @@ int __fastcall Keyboard_RegisterKeyCallback(
     return 0;
 }
 
-// Reimplements 0x46f9d0: zInput::Keyboard_UnregisterKeyCallback
+/**
+ * Reimplements 0x46f9d0: zInput::Keyboard_UnregisterKeyCallback.
+ * Purpose: clear a keyboard dispatch callback slot while preserving its key state.
+ */
 void __fastcall Keyboard_UnregisterKeyCallback(
     int comboIdx
 ) {
@@ -3159,7 +3147,10 @@ void __fastcall Keyboard_UnregisterKeyCallback(
     }
 }
 
-// Reimplements 0x46f970: zInput::Keyboard_SetRawEventCallback
+/**
+ * Reimplements 0x46f970: zInput::Keyboard_SetRawEventCallback.
+ * Purpose: install the raw keyboard event callback and caller context.
+ */
 void __fastcall Keyboard_SetRawEventCallback(
     void *callback,
     void *context
@@ -3180,7 +3171,13 @@ int Keyboard_AddRef() {
     return (unsigned short)(g_zInputKeyboardPollRefCount);
 }
 
-// Reimplements 0x46f690: zInput::Keyboard_PollState
+/**
+ * Reimplements 0x46f690: zInput::Keyboard_PollState.
+ * BN zin_kbd.cpp evidence shows a 0x80-event DirectInput GetDeviceData pump,
+ * DIERR_INPUTLOST reacquire handling, modifier-aware transition updates, raw
+ * ASCII callback dispatch, and an optional second pass for combo callbacks.
+ * Purpose: Poll keyboard events for one frame and update or dispatch key state.
+ */
 void __fastcall Keyboard_PollState(
     int dispatchCallbacks
 ) {
@@ -3226,13 +3223,18 @@ void __fastcall Keyboard_PollState(
     }
 }
 
-// Reimplements 0x46fa10: zInput::Keyboard_WaitForAnyKeyPress
+/**
+ * Reimplements 0x46fa10: zInput::Keyboard_WaitForAnyKeyPress.
+ * BN zin_kbd.cpp evidence shows a one-event DirectInput GetDeviceData loop,
+ * DIERR_INPUTLOST reacquire handling, and inline keyboard transition updates.
+ * Purpose: Wait for or poll one keyboard press and return its modifier-combined key index.
+ */
 int __fastcall Keyboard_WaitForAnyKeyPress(
     int keepWaiting
 ) {
+    DWORD inOutCount = 1;
     int result = 0;
     do {
-        DWORD inOutCount = 1;
         const int hresult = g_zInput_KbdDevice->GetDeviceData(
             sizeof(DIDeviceObjectData),
             g_zInput_KbdEventBuffer,
@@ -3252,15 +3254,61 @@ int __fastcall Keyboard_WaitForAnyKeyPress(
             g_zInput_KbdDevice->Acquire();
         }
 
-        for (unsigned int i = 0; i < inOutCount; ++i) {
-            result = ApplyKeyboardWaitEvent(g_zInput_KbdEventBuffer[i]);
-            if (result != 0) {
-                return result;
+        DIDeviceObjectData *event = g_zInput_KbdEventBuffer;
+        for (unsigned int i = 0; i < inOutCount; ++i, ++event) {
+            KbdKeyDispatchEntry *dispatch;
+            result = (int)(event->dwOfs);
+            if (result == 0x38 || result == 0xb8) {
+                if ((event->dwData & 0x80) != 0) {
+                    g_zInput_KbdModifierState |= 0x100;
+                } else {
+                    g_zInput_KbdModifierState &= ~0x100;
+                }
+                dispatch = &g_zInputKbdKeyDispatchTable[result];
+                result = 0;
+            } else if (result == 0x1d || result == 0x9d) {
+                if ((event->dwData & 0x80) != 0) {
+                    g_zInput_KbdModifierState |= 0x200;
+                } else {
+                    g_zInput_KbdModifierState &= ~0x200;
+                }
+                dispatch = &g_zInputKbdKeyDispatchTable[result];
+                result = 0;
+            } else if (result == 0x2a || result == 0x36) {
+                if ((event->dwData & 0x80) != 0) {
+                    g_zInput_KbdModifierState |= 0x400;
+                } else {
+                    g_zInput_KbdModifierState &= ~0x400;
+                }
+                dispatch = &g_zInputKbdKeyDispatchTable[result];
+                result = 0;
+            } else {
+                if ((g_zInput_KbdModifierState & 0x100) != 0) {
+                    event->dwData |= 0x40;
+                }
+                if ((g_zInput_KbdModifierState & 0x200) != 0) {
+                    event->dwData |= 0x20;
+                }
+                if ((g_zInput_KbdModifierState & 0x400) != 0) {
+                    event->dwData |= 0x10;
+                }
+                result |= (int)(g_zInput_KbdModifierState);
+                dispatch = &g_zInputKbdKeyDispatchTable[result];
             }
+
+            if ((event->dwData & 0x80) != 0) {
+                dispatch->state = dispatch->state == 1 ? 3 : 1;
+            } else {
+                dispatch->state |= 4;
+                result = 0;
+            }
+        }
+        if (result != 0) {
+            break;
         }
     } while (keepWaiting != 0);
 
-    return 0;
+    return result;
 }
 
 // Reimplements 0x404140: zInput_WaitForAnyKeyPressWithTimeoutMs
@@ -3347,7 +3395,10 @@ int __stdcall DI_EnumDevicesCallback_SelectFirstJoystick(
     return 0;
 }
 
-// Reimplements 0x471fb0: zInput::DI_AcquireJoystickDevice
+/**
+ * Reimplements 0x471fb0: zInput::DI_AcquireJoystickDevice.
+ * Purpose: Acquire the DirectInput joystick device when one is available.
+ */
 int DI_AcquireJoystickDevice() {
     if (g_zInput_JoystickDevice == 0) {
         return 0;
@@ -3600,24 +3651,23 @@ DIJOYSTATE2 *__fastcall DI_PollJoystickState(
         return 0;
     }
 
-    DIJOYSTATE2 polledState = {0};
     g_zInput_JoystickDevice->Poll();
     const int result = g_zInput_JoystickDevice->GetDeviceState(
         sizeof(DIJOYSTATE2),
-        &polledState
+        &g_zInput_JoystickRawDIState
     );
 
     if (g_zInput_JoystickAxisCount < 3) {
-        polledState.lZ = 0;
-        polledState.lVZ = 0;
-        polledState.lAZ = 0;
-        polledState.lFZ = 0;
+        g_zInput_JoystickRawDIState.lZ = 0;
+        g_zInput_JoystickRawDIState.lVZ = 0;
+        g_zInput_JoystickRawDIState.lAZ = 0;
+        g_zInput_JoystickRawDIState.lFZ = 0;
     }
     if (g_zInput_JoystickAxisCount < 4) {
-        polledState.lRz = 0;
-        polledState.lVRz = 0;
-        polledState.lARz = 0;
-        polledState.lFRz = 0;
+        g_zInput_JoystickRawDIState.lRz = 0;
+        g_zInput_JoystickRawDIState.lVRz = 0;
+        g_zInput_JoystickRawDIState.lARz = 0;
+        g_zInput_JoystickRawDIState.lFRz = 0;
     }
 
     if (result == kDiInputLost) {
@@ -3629,7 +3679,7 @@ DIJOYSTATE2 *__fastcall DI_PollJoystickState(
     }
 
     g_zInput_JoystickPreviousState = g_zInput_JoystickCurrentState;
-    g_zInput_JoystickCurrentState = polledState;
+    g_zInput_JoystickCurrentState = g_zInput_JoystickRawDIState;
     if (dispatchCallbacks != 0) {
         g_zInput_BindMap_Current->DispatchJoystickButtonCallbacks();
     }
@@ -3637,7 +3687,11 @@ DIJOYSTATE2 *__fastcall DI_PollJoystickState(
     return DI_GetCurrentState();
 }
 
-// Reimplements 0x4723a0: zInput::DI_GetButtonTransitionState
+/**
+ * Reimplements 0x4723a0: zInput::DI_GetButtonTransitionState.
+ * Purpose: Return the pressed, held, released, or idle transition state for a
+ * 1-based joystick button slot from the paired DirectInput state snapshots.
+ */
 int __fastcall DI_GetButtonTransitionState(
     int buttonIndex
 ) {
@@ -3650,7 +3704,11 @@ int __fastcall DI_GetButtonTransitionState(
     return previous != 0 ? 4 : 0;
 }
 
-// Reimplements 0x4723d0: zInput::DI_WaitForButtonPress
+/**
+ * Reimplements 0x4723d0: zInput::DI_WaitForButtonPress.
+ * Purpose: Poll joystick state until a newly pressed button is found or the
+ * caller requests a single scan.
+ */
 int __fastcall DI_WaitForButtonPress(
     int loopUntilPressed
 ) {
@@ -3704,11 +3762,14 @@ int __fastcall DI_SetJoystickEnabled(
     return 0;
 }
 
-// Reimplements 0x470310: zInput::Mouse_UpdateAcquireState
+/**
+ * Reimplements 0x470310: zInput::Mouse_UpdateAcquireState.
+ * Purpose: Applies the current mouse-active flag to the DirectInput device
+ * acquisition state and flips the flag only on real provider failures.
+ */
 void Mouse_UpdateAcquireState() {
-    DIDevice *device = g_zInput_MouseDevice;
-
     if (g_zInput_MouseActive != 0) {
+        DIDevice *device = g_zInput_MouseDevice;
         if (device != 0) {
             const int result = device->Acquire();
             if (result != kDiOk && result != kDiFalse) {
@@ -3716,6 +3777,7 @@ void Mouse_UpdateAcquireState() {
             }
         }
     } else {
+        DIDevice *device = g_zInput_MouseDevice;
         if (device != 0) {
             const int result = device->Unacquire();
             if (result != kDiOk && result != kDiFalse) {
@@ -3740,14 +3802,20 @@ int Mouse_ShutdownDevice() {
     return 1;
 }
 
-// Reimplements 0x4703b0: zInput::Mouse_PollAndStoreState
+/**
+ * Reimplements 0x4703b0: zInput::Mouse_PollAndStoreState.
+ * Purpose: Poll the mouse and store the latest DirectInput-style result code.
+ */
 void __fastcall Mouse_PollAndStoreState(
     int dispatchCallbacks
 ) {
     g_zInputMouseLastPollResult = Mouse_PollState(dispatchCallbacks);
 }
 
-// Reimplements 0x471de0: zInput::PollActiveDevices
+/**
+ * Reimplements 0x471de0: zInput::PollActiveDevices.
+ * Purpose: Poll enabled mouse, joystick, and keyboard devices with the caller's dispatch mode.
+ */
 void __fastcall PollActiveDevices(
     int dispatchCallbacks
 ) {
@@ -3765,7 +3833,10 @@ void __fastcall PollActiveDevices(
     }
 }
 
-// Reimplements 0x4703c0: zInput::Mouse_PollState
+/**
+ * Reimplements 0x4703c0: zInput::Mouse_PollState.
+ * Purpose: Poll the DirectInput mouse state and update the zInput mouse snapshots.
+ */
 int __fastcall Mouse_PollState(
     int dispatchCallbacks
 ) {
@@ -3780,11 +3851,10 @@ int __fastcall Mouse_PollState(
         }
     }
 
-    MouseDeviceState deviceState = {0};
     g_zInput_MouseDevice->Poll();
     const int result = g_zInput_MouseDevice->GetDeviceState(
         sizeof(MouseDeviceState),
-        &deviceState
+        &g_zInput_MouseRawDIState
     );
     if (result == kDiInputLost) {
         Mouse_UpdateAcquireState();
@@ -3795,7 +3865,7 @@ int __fastcall Mouse_PollState(
     }
 
     g_zInput_MousePreviousState = g_zInput_MouseCurrentState;
-    g_zInput_MouseCurrentState = deviceState;
+    g_zInput_MouseCurrentState = g_zInput_MouseRawDIState;
     g_zInput_MouseStateSnapshot.deltaX = g_zInput_MouseCurrentState.lX;
     g_zInput_MouseStateSnapshot.deltaY = g_zInput_MouseCurrentState.lY;
     Mouse_ApplyAccumulatedDelta();

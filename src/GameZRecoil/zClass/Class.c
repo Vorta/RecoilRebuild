@@ -329,45 +329,50 @@ namespace {
 }
 
 namespace zClass_Class {
-    // Reimplements 0x4478c0: zClass_Class::AllocNodeFromFreeList
+    /**
+     * Reimplements 0x4478c0: zClass_Class::AllocNodeFromFreeList.
+     * Purpose: pop a node from the global free list, clear it, and install
+     * default active-node state.
+     */
     zClass_NodePartial *AllocNodeFromFreeList() {
         const int index = g_zClass_NodeFreeHeadIndex;
-        if (index == -1) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x1ed,
-                "gwNodeNew() : GameZ node buffer is full:\n"
+        if (index != -1) {
+            zClass_NodeFreeListSlot *slot = &g_zClass_NodeArray[index];
+            zClass_NodePartial *node = &slot->node;
+            g_zClass_NodeFreeHeadIndex = (int)(slot->freeTag << 8) >> 8;
+
+            memset(
+                node,
+                0,
+                0xc0
             );
-            return 0;
+            ++g_zClass_ActiveNodeCount;
+            zClass_TypeList::Insert(
+                6,
+                node
+            );
+
+            node->flags = 0x0108001c;
+            node->callbackPriority = 1;
+            node->gridCol = -1;
+            node->gridRow = -1;
+            node->nodeType = 0xff;
+            sprintf(
+                node->name,
+                "%s",
+                "Default_node_name"
+            );
+            slot->damageHandler = 0;
+            return node;
         }
 
-        zClass_NodeFreeListSlot *slot = &g_zClass_NodeArray[index];
-        g_zClass_NodeFreeHeadIndex = (int)(slot->freeTag << 8) >> 8;
-
-        memset(
-            &slot->node,
-            0,
-            0xc0
+        zError::ReportOld(
+            0x400,
+            "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
+            0x1ed,
+            "gwNodeNew() : GameZ node buffer is full:\n"
         );
-        ++g_zClass_ActiveNodeCount;
-        zClass_TypeList::Insert(
-            6,
-            &slot->node
-        );
-
-        slot->node.flags = 0x0108001c;
-        slot->node.callbackPriority = 1;
-        slot->node.gridCol = -1;
-        slot->node.gridRow = -1;
-        slot->node.nodeType = 0xff;
-        sprintf(
-            slot->node.name,
-            "%s",
-            "Default_node_name"
-        );
-        slot->damageHandler = 0;
-        return &slot->node;
+        return 0;
     }
 
     // Reimplements 0x448cc0: zClass_Class::gwNodeUpdate
@@ -1139,7 +1144,11 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x447fe0: zClass_Class::gwNodeSetActionCallbackTail
+    /**
+     * Reimplements 0x447fe0: zClass_Class::gwNodeSetActionCallbackTail.
+     * Purpose: install or clear a node action callback using tail insertion
+     * for newly active callback buckets.
+     */
     int __fastcall
     gwNodeSetActionCallbackTail(
         zClass_NodePartial * node,

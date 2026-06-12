@@ -8,7 +8,9 @@
 #include <new>
 
 namespace {
-void BindMapContextDummyCallback() {}
+void __fastcall BindMapContextDummyCallback(int commandId) {
+    (void)(commandId);
+}
 
 bool CursorCanRoundTripTo(const POINT &target, const POINT &restore) {
     if (SetCursorPos(target.x, target.y) == 0) {
@@ -32,7 +34,8 @@ int g_keyboardRawCallbackCount = 0;
 int g_keyboardLastRawAscii = 0;
 void *g_keyboardLastRawContext = nullptr;
 
-void BindMapContextCountingCallback() {
+void __fastcall BindMapContextCountingCallback(int commandId) {
+    (void)(commandId);
     ++g_bindMapDispatchCallbackCount;
 }
 

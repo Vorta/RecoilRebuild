@@ -1471,6 +1471,19 @@ extern "C" int zsnd_cd_playback_mci_commands_smoke(void) {
         return 9;
     }
 
+    g_fakeMciSendCommandCount = 0;
+    g_zSndCdCurrentTrack = 22;
+    g_zSndCdPlayFromTrack = 23;
+    g_zSndCdPlayToTrack = 24;
+    g_zSndCdLastPlayMode = 5;
+    if (zSndCd::Stop() != 1 || g_fakeMciSendCommandCount != 1 ||
+        g_fakeMciLastMessage != 0x808 || g_fakeMciLastFlags != 0x02 ||
+        g_zSndCdCurrentTrack != 1 || g_zSndCdPlayFromTrack != 1 ||
+        g_zSndCdPlayToTrack != 1 || g_zSndCdLastPlayMode != 0) {
+        RestoreFunctionPatch(mciPatch);
+        return 10;
+    }
+
     RestoreFunctionPatch(mciPatch);
     return 0;
 }
@@ -3035,9 +3048,15 @@ extern "C" int zsnd_backend_shutdown_release_smoke(void) {
     listenerVTable.slots00_0c[2] = reinterpret_cast<void *>(&TestRelease);
     auxVTable.slots00_2c[2] = reinterpret_cast<void *>(&TestRelease);
 
+    ClearCdTrackListWithEntriesForTest();
+    zSndCdTrackList::StaticConstructor();
+    g_zSndCdFlags = 0;
+    g_zSndCdDeviceId = 0;
+
     g_zSnd_IsInitialized = 0;
     g_zSnd_PreInitialized = 1;
     if (zSndBackend::Shutdown() != 0) {
+        ClearCdTrackListWithEntriesForTest();
         return 1;
     }
 
@@ -3052,6 +3071,7 @@ extern "C" int zsnd_backend_shutdown_release_smoke(void) {
     if (zSndBackend::Shutdown() != 1 || g_testReleaseCount != 2 ||
         g_zSnd_BackendDevice != nullptr || g_zSnd_BackendListenerHandle != nullptr ||
         g_zSnd_IsInitialized != 0) {
+        ClearCdTrackListWithEntriesForTest();
         return 2;
     }
 
@@ -3069,6 +3089,7 @@ extern "C" int zsnd_backend_shutdown_release_smoke(void) {
                        g_zSnd_IsInitialized == 0;
 
     std::memset(&g_zSnd_BackendAuxHandleOrConfig, 0, sizeof(g_zSnd_BackendAuxHandleOrConfig));
+    ClearCdTrackListWithEntriesForTest();
     return a3dOk ? 0 : 3;
 }
 

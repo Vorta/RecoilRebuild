@@ -10,6 +10,10 @@ namespace {
 int g_deletedCount;
 int g_beginCallCount;
 double g_lastBeginTimeSec;
+int g_updateCallCount;
+int g_endCallCount;
+int g_nextUpdateResult;
+double g_lastUpdateTimeSec;
 
 struct BeginCurrentActionTestAction : zFMV_Action {
     void Begin(
@@ -23,6 +27,27 @@ struct BeginCurrentActionTestAction : zFMV_Action {
 struct TestFmvAction : zFMV_Action {
     ~TestFmvAction() {
         ++g_deletedCount;
+    }
+};
+
+struct UpdateTestAction : zFMV_Action {
+    int Update(
+        double timeSec
+    ) {
+        ++g_updateCallCount;
+        g_lastUpdateTimeSec = timeSec;
+        return g_nextUpdateResult;
+    }
+
+    void Begin(
+        double timeSec
+    ) {
+        ++g_beginCallCount;
+        g_lastBeginTimeSec = timeSec;
+    }
+
+    void End() {
+        ++g_endCallCount;
     }
 };
 
@@ -169,4 +194,112 @@ extern "C" int zfmv_script_begin_current_action_smoke(void) {
     g_zInput_KbdSystemReady = oldKbdReady;
 
     return ok ? 0 : 2;
+}
+
+extern "C" int zfmv_script_begin_at_time_smoke(void) {
+    const zSndSampleSetRegistry oldRegistry = g_zSnd_SampleSetRegistry;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    unsigned short *const oldFxPixels = g_zVideo_FxSurfacePixels16;
+    const int oldFxWidth = g_zVideo_FxSurfaceWidth;
+    const int oldFxHeight = g_zVideo_FxSurfaceHeight;
+    const int oldFxPitchBytes = g_zVideo_FxSurfacePitchBytes;
+    const int oldFxPitchPixels16 = g_zVideo_FxSurfacePitchPixels16;
+    const int oldKbdReady = g_zInput_KbdSystemReady;
+
+    zSndSampleSet *sampleSetSlots[1] = {};
+    zSndSampleSet fmvSet = {};
+    fmvSet.setName = const_cast<char *>("FMV");
+    sampleSetSlots[0] = &fmvSet;
+    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
+    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.useArchiveBanksFlag = 0;
+
+    g_zVideo_PrimarySurfaceState.pixels = reinterpret_cast<void *>(0x12340000);
+    g_zVideo_PrimarySurfaceState.width = 320;
+    g_zVideo_PrimarySurfaceState.height = 200;
+    g_zVideo_PrimarySurfaceState.pitch = 640;
+    g_zVideo_FxSurfacePixels16 = 0;
+    g_zVideo_FxSurfaceWidth = 0;
+    g_zVideo_FxSurfaceHeight = 0;
+    g_zVideo_FxSurfacePitchBytes = 0;
+    g_zVideo_FxSurfacePitchPixels16 = 0;
+    g_zInput_KbdSystemReady = 0;
+    g_beginCallCount = 0;
+    g_lastBeginTimeSec = -1.0;
+
+    BeginCurrentActionTestAction action;
+    zFMV_Script script = {};
+    script.m_cur = &action;
+    const int result = script.BeginAtTime();
+
+    const bool ok = result == 1 && script.m_startTimeSec >= 0.0 && g_beginCallCount == 1 &&
+                    g_lastBeginTimeSec == 0.0 && fmvSet.resourcesLoaded == 1;
+
+    g_zSnd_SampleSetRegistry = oldRegistry;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_FxSurfacePixels16 = oldFxPixels;
+    g_zVideo_FxSurfaceWidth = oldFxWidth;
+    g_zVideo_FxSurfaceHeight = oldFxHeight;
+    g_zVideo_FxSurfacePitchBytes = oldFxPitchBytes;
+    g_zVideo_FxSurfacePitchPixels16 = oldFxPitchPixels16;
+    g_zInput_KbdSystemReady = oldKbdReady;
+
+    return ok ? 0 : 1;
+}
+
+extern "C" int zfmv_script_update_smoke(void) {
+    zFMV_Script emptyScript = {};
+    if (emptyScript.Update(12.0) != 0) {
+        return 1;
+    }
+
+    g_updateCallCount = 0;
+    g_endCallCount = 0;
+    g_beginCallCount = 0;
+    g_lastUpdateTimeSec = -1.0;
+    g_lastBeginTimeSec = -1.0;
+    g_nextUpdateResult = 1;
+
+    UpdateTestAction action1;
+    UpdateTestAction action2;
+    action1.next = &action2;
+
+    zFMV_Script script = {};
+    script.m_startTimeSec = 10.0;
+    script.m_abortOnKey = 0;
+    script.m_cur = &action1;
+
+    if (script.Update(12.5) != 1 || script.m_cur != &action1 || g_updateCallCount != 1 ||
+        g_lastUpdateTimeSec != 2.5 || g_endCallCount != 0 || g_beginCallCount != 0) {
+        return 2;
+    }
+
+    g_nextUpdateResult = 0;
+    if (script.Update(14.0) != 1 || script.m_cur != &action2 || g_updateCallCount != 2 ||
+        g_lastUpdateTimeSec != 4.0 || g_endCallCount != 1 || g_beginCallCount != 1 ||
+        g_lastBeginTimeSec != 4.0) {
+        return 3;
+    }
+
+    return 0;
+}
+
+extern "C" int zfmv_script_update_at_time_smoke(void) {
+    g_updateCallCount = 0;
+    g_endCallCount = 0;
+    g_nextUpdateResult = 1;
+    g_lastUpdateTimeSec = -1.0;
+
+    UpdateTestAction action;
+    zFMV_Script script = {};
+    script.m_startTimeSec = 0.0;
+    script.m_abortOnKey = 0;
+    script.m_cur = &action;
+
+    const int result = script.UpdateAtTime();
+    return result == 1 && script.m_cur == &action && g_updateCallCount == 1 &&
+                   g_lastUpdateTimeSec >= 0.0 && g_endCallCount == 0
+               ? 0
+               : 1;
 }

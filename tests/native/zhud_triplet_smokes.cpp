@@ -1,6 +1,7 @@
 #include "Battlesport/GameNet.h"
 #include "Battlesport/HudSensorTracker.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
+#include "GameZRecoil/zNetwork/zNetwork.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -750,6 +751,62 @@ extern "C" int zhud_text_stack_destructor_core_smoke(void) {
     }
 
     return topDestroyed && chatDestroyed ? 0 : 1;
+}
+
+extern "C" int zhud_triplet_is_local_player_first_entry_smoke(void) {
+    const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+
+    HudUiTriplet triplet = {};
+    HudUiScoreboardEntry entries[2] = {};
+    entries[0].playerKey = 1001;
+    entries[1].playerKey = 2002;
+
+    const bool emptyNull = triplet.IsLocalPlayerFirstEntry() == -1;
+
+    triplet.entries.begin = entries;
+    triplet.entries.end = entries;
+    triplet.entries.cap = entries + 2;
+    const bool emptyRange = triplet.IsLocalPlayerFirstEntry() == -1;
+
+    triplet.entries.end = entries + 2;
+    g_zNetwork_LocalPlayerKey = 1001;
+    const bool matchFirst = triplet.IsLocalPlayerFirstEntry() == 1;
+
+    g_zNetwork_LocalPlayerKey = 2002;
+    const bool otherEntryDoesNotMatch = triplet.IsLocalPlayerFirstEntry() == 0;
+
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    return emptyNull && emptyRange && matchFirst && otherEntryDoesNotMatch ? 0 : 1;
+}
+
+extern "C" int zhud_mgr_is_local_player_first_in_stats_list_smoke(void) {
+    HudUiStatsListElement *const oldStatsList = g_HudUiMgrStatsList;
+    const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+
+    HudUiStatsListElement statsList = {};
+    HudUiTriplet triplet = {};
+    HudUiScoreboardEntry entries[2] = {};
+    entries[0].playerKey = 1001;
+    entries[1].playerKey = 2002;
+
+    statsList.triplet = &triplet;
+    g_HudUiMgrStatsList = &statsList;
+
+    const bool emptyNull = HudUiMgr::IsLocalPlayerFirstInStatsList() == -1;
+
+    triplet.entries.begin = entries;
+    triplet.entries.end = entries + 2;
+    triplet.entries.cap = entries + 2;
+
+    g_zNetwork_LocalPlayerKey = 1001;
+    const bool matchFirst = HudUiMgr::IsLocalPlayerFirstInStatsList() == 1;
+
+    g_zNetwork_LocalPlayerKey = 2002;
+    const bool otherEntryDoesNotMatch = HudUiMgr::IsLocalPlayerFirstInStatsList() == 0;
+
+    g_HudUiMgrStatsList = oldStatsList;
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    return emptyNull && matchFirst && otherEntryDoesNotMatch ? 0 : 1;
 }
 
 extern "C" int zhud_text_stack_layout_mutators_smoke(void) {

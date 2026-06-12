@@ -13,7 +13,7 @@
 #endif
 #include <dinput.h>
 
-typedef void(*zInputCommandCallbackFn)();
+typedef void(__fastcall *zInputCommandCallbackFn)(int commandId);
 
 struct zVec3;
 
@@ -761,6 +761,8 @@ extern zInput::JoystickAxisConfig g_zInput_JoystickAxisConfig;
 extern zInput::JoystickAxisConfig g_zInput_JoystickAxisConfig_Gameplay;
 extern DIJOYSTATE2 g_zInput_JoystickCurrentState;
 extern DIJOYSTATE2 g_zInput_JoystickPreviousState;
+extern DIJOYSTATE2 g_zInput_JoystickRawDIState;
+extern zInput::MouseDeviceState g_zInput_MouseRawDIState;
 extern zInput::MouseDeviceState g_zInput_MouseCurrentState;
 extern zInput::MouseDeviceState g_zInput_MousePreviousState;
 extern zInput::MouseStateSnapshot g_zInput_MouseStateSnapshot;

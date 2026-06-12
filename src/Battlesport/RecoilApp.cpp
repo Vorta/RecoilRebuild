@@ -122,8 +122,7 @@ inline void ExtendPlayStateTransitionTimer(
 
 // Source-faithful helper recovered from address-backed callers in this source file.
 void RunGrandPrizeBlurAction() {
-    zFMV_ActionBlur blurAction;
-    blurAction.Constructor(
+    zFMV_ActionBlur blurAction(
         12,
         1
     );
@@ -1263,8 +1262,7 @@ int RecoilStateSaveLoadTransition::OnTryBecomeCurrent() {
         m_pausedAudioSnapshot = (RecoilPtr32)(unsigned int)audioSnapshot;
         audioSnapshot->StopAllIfPlaying();
 
-        zFMV_ActionBlur blurAction;
-        blurAction.Constructor(
+        zFMV_ActionBlur blurAction(
             4,
             1
         );

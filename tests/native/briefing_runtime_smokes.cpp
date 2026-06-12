@@ -598,6 +598,84 @@ extern "C" int briefing_runtime_update_smoke(void) {
     return sentinelComplete && tickAdvanced ? 0 : 1;
 }
 
+extern "C" int hud_sensor_tracker_get_objective_briefing_strings_smoke(void) {
+    HudSensorTracker tracker = {};
+    zVidImagePartial image = {};
+
+    std::strcpy(tracker.objectiveSlots[2].objectiveTitle, "brief summary");
+    std::strcpy(tracker.objectiveSlots[2].objectiveDesc, "brief description");
+    tracker.objectiveSlots[2].objectiveImage = &image;
+
+    char *summary = 0;
+    char *description = 0;
+    zVidImagePartial *imageRef = 0;
+    const int result = tracker.GetObjectiveBriefingStringsAndImageRef(
+        2,
+        &summary,
+        &description,
+        &imageRef
+    );
+
+    return result == 1 && summary == tracker.objectiveSlots[2].objectiveTitle &&
+                   description == tracker.objectiveSlots[2].objectiveDesc && imageRef == &image
+               ? 0
+               : 1;
+}
+
+extern "C" int zopt_network_enabled_accessor_smoke(void) {
+    int networkEnabled = 0;
+    int networkModem = 0;
+    int networkListen = 0;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldNetworkModem = g_zOpt_NetworkModemOption;
+    int *const oldNetworkListen = g_zOpt_NetworkListenOption;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zOpt_NetworkModemOption = &networkModem;
+    g_zOpt_NetworkListenOption = &networkListen;
+
+    const bool disabled = zOpt::GetNetworkEnabled() == 0;
+    zOpt::SetNetworkEnabled(1);
+    zOpt::SetNetworkModemEnabled(1);
+    zOpt::SetNetworkListenEnabled(1);
+    const bool enabled = zOpt::GetNetworkEnabled() == 1;
+    const bool modemEnabled = networkModem == 1 && zOpt::GetNetworkModemEnabled() == 1;
+    const bool listenEnabled = networkListen == 1;
+
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zOpt_NetworkModemOption = oldNetworkModem;
+    g_zOpt_NetworkListenOption = oldNetworkListen;
+    return disabled && enabled && modemEnabled && listenEnabled ? 0 : 1;
+}
+
+extern "C" int hud_sensor_mission_identity_smoke(void) {
+    HudSensorTracker tracker = {};
+    if (tracker.SetZbdPath("missions\\m01.zbd") != 1 ||
+        std::strcmp((const char *)tracker.zbdPath, "missions\\m01.zbd") != 0) {
+        return 1;
+    }
+
+    const bool initOk =
+        tracker.InitMissionIdAndFlags(7, 0x55) == 1 &&
+        tracker.missionId == 7 &&
+        tracker.GetMissionId() == 7 &&
+        tracker.missionFlags == 0x55 &&
+        ((const char *)tracker.zbdPath)[0] == '\0';
+
+    const bool clearOk =
+        tracker.SetZbdPath("alternate.zbd") == 1 &&
+        std::strcmp((const char *)tracker.zbdPath, "alternate.zbd") == 0 &&
+        tracker.SetZbdPath(0) == 1 &&
+        ((const char *)tracker.zbdPath)[0] == '\0';
+
+    const bool setIdOk =
+        tracker.SetZbdPath("pending.zbd") == 1 &&
+        tracker.SetMissionId(12) == 1 &&
+        tracker.GetMissionId() == 12 &&
+        ((const char *)tracker.zbdPath)[0] == '\0';
+
+    return initOk && clearOk && setIdOk ? 0 : 2;
+}
+
 extern "C" int briefing_build_objective_actions_smoke(void) {
     int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
     const int oldMissionId = g_HudSensorTracker.missionId;

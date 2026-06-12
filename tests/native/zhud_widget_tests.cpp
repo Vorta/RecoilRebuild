@@ -1,10 +1,16 @@
 #include "GameZRecoil/zHud/zhud_ui.h"
+#include "Battlesport/HudUiMpExitDialog.h"
 #include "Battlesport/RecoilApp.h"
 #include "Battlesport/hud.h"
+#include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/include/zImage.h"
 #include "GameZRecoil/zInput/zInput.h"
+#include "GameZRecoil/zLoc/zLoc.h"
+#include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zRndr/zRndr.h"
+#include "GameZRecoil/zSound/zSound.h"
+#include "GameZRecoil/zSys/zSys.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
 #include <cstdint>
@@ -15,7 +21,12 @@
 
 extern "C" unsigned int g_HudUi_InvalidateMask;
 extern "C" int g_RecoilApp_QuitAfterCredits;
+extern "C" HWND g_RecoilApp_hWndMain;
 extern RecoilApp g_RecoilApp;
+
+namespace zOpt {
+int GetNetworkModemEnabled();
+}
 
 namespace {
 struct CodeFunctionPatch {
@@ -111,6 +122,448 @@ void RestoreFunctionPatch(CodeFunctionPatch &patch) {
     );
     patch.address = nullptr;
 }
+
+int g_mpExitLocalPlayerFirst;
+int g_mpExitCaptureSelector;
+zVidImagePartial *g_mpExitCaptureImage;
+void *g_mpExitFxPixels;
+int g_mpExitFxWidth;
+int g_mpExitFxHeight;
+int g_mpExitFxPitch;
+int g_mpExitBlurCount;
+int g_mpExitBlurModes[4];
+zVidRect32 *g_mpExitBlurRects[4];
+float g_mpExitScale;
+const char *g_mpExitLoadPath;
+const char *g_mpExitLoadSection;
+int g_mpExitLoadCapture;
+zReader::Node *g_mpExitLoadResult;
+int g_mpExitBindCount;
+const char *g_mpExitBindNames[4];
+HudUiWidget *g_mpExitBindWidgets[4];
+int g_mpExitFreeCount;
+int g_mpExitFreeArg;
+int g_mpExitChildFlags;
+int g_mpExitRefreshCount;
+HudUiZrdWidget *g_mpExitRefreshThis;
+int g_mpExitEnableTopCount;
+int g_mpExitPrimaryWidth;
+int g_mpExitTextStackX;
+HudUiTextStack4 *g_mpExitTextStackThis;
+int g_mpExitNetworkModem;
+unsigned int g_mpExitLocIds[4];
+int g_mpExitLocCount;
+char g_mpExitMessages[4][16];
+const char *g_mpExitShownMessages[4];
+float g_mpExitShownDurations[4];
+int g_mpExitShowCount;
+int g_mpExitBackgroundEnabled;
+HudUiBackground *g_mpExitBackgroundThis;
+
+void ResetMpExitLayoutProbe() {
+    g_mpExitCaptureSelector = -1;
+    g_mpExitFxPixels = nullptr;
+    g_mpExitFxWidth = -1;
+    g_mpExitFxHeight = -1;
+    g_mpExitFxPitch = -1;
+    g_mpExitBlurCount = 0;
+    for (int index = 0; index < 4; ++index) {
+        g_mpExitBlurModes[index] = -1;
+        g_mpExitBlurRects[index] = reinterpret_cast<zVidRect32 *>(1);
+        g_mpExitBindNames[index] = nullptr;
+        g_mpExitBindWidgets[index] = nullptr;
+        g_mpExitLocIds[index] = 0;
+        g_mpExitShownMessages[index] = nullptr;
+        g_mpExitShownDurations[index] = -1.0f;
+        std::sprintf(
+            g_mpExitMessages[index],
+            "msg%d",
+            index
+        );
+    }
+    g_mpExitScale = -1.0f;
+    g_mpExitLoadPath = nullptr;
+    g_mpExitLoadSection = nullptr;
+    g_mpExitLoadCapture = -1;
+    g_mpExitBindCount = 0;
+    g_mpExitFreeCount = 0;
+    g_mpExitFreeArg = 0;
+    g_mpExitChildFlags = -1;
+    g_mpExitRefreshCount = 0;
+    g_mpExitRefreshThis = nullptr;
+    g_mpExitEnableTopCount = 0;
+    g_mpExitTextStackX = -1;
+    g_mpExitTextStackThis = nullptr;
+    g_mpExitLocCount = 0;
+    g_mpExitShowCount = 0;
+    g_mpExitBackgroundEnabled = -1;
+    g_mpExitBackgroundThis = nullptr;
+}
+
+int FakeMpExitIsLocalPlayerFirstInStatsList() {
+    return g_mpExitLocalPlayerFirst;
+}
+
+zVidImagePartial *__fastcall FakeMpExitCaptureSurfaceToImage(
+    int selector
+) {
+    g_mpExitCaptureSelector = selector;
+    return g_mpExitCaptureImage;
+}
+
+void __fastcall FakeMpExitFxSetSurfaceState(
+    void *pixels,
+    int width,
+    int height,
+    int pitchBytes
+) {
+    g_mpExitFxPixels = pixels;
+    g_mpExitFxWidth = width;
+    g_mpExitFxHeight = height;
+    g_mpExitFxPitch = pitchBytes;
+}
+
+void __fastcall FakeMpExitBlurRegionByMode(
+    zVidRect32 *rectOrNull,
+    int mode
+) {
+    const int index = g_mpExitBlurCount;
+    if (index < 4) {
+        g_mpExitBlurRects[index] = rectOrNull;
+        g_mpExitBlurModes[index] = mode;
+    }
+    ++g_mpExitBlurCount;
+}
+
+void __stdcall FakeMpExitSetScaleAndRebuild(
+    float scale
+) {
+    g_mpExitScale = scale;
+}
+
+void FakeMpExitEnableTopAndChatStacks() {
+    ++g_mpExitEnableTopCount;
+}
+
+int FakeMpExitGetPrimarySurfaceWidth() {
+    return g_mpExitPrimaryWidth;
+}
+
+int FakeMpExitGetNetworkModemEnabled() {
+    return g_mpExitNetworkModem;
+}
+
+char *__fastcall FakeMpExitGetMessageString(
+    unsigned int messageId
+) {
+    const int index = g_mpExitLocCount;
+    if (index < 4) {
+        g_mpExitLocIds[index] = messageId;
+    }
+    ++g_mpExitLocCount;
+    return index < 4 ? g_mpExitMessages[index] : g_mpExitMessages[3];
+}
+
+void __fastcall FakeMpExitShowTopMessageLine(
+    const char *message,
+    float duration
+) {
+    const int index = g_mpExitShowCount;
+    if (index < 4) {
+        g_mpExitShownMessages[index] = message;
+        g_mpExitShownDurations[index] = duration;
+    }
+    ++g_mpExitShowCount;
+}
+
+struct MpExitDialogPatchOps {
+    zReader::Node *LoadFromZrd(
+        const char *path,
+        const char *section,
+        int capturePrimary
+    ) {
+        g_mpExitLoadPath = path;
+        g_mpExitLoadSection = section;
+        g_mpExitLoadCapture = capturePrimary;
+        return g_mpExitLoadResult;
+    }
+
+    int BindWidgetByName(
+        zReader::Node *,
+        HudUiWidget *widget,
+        const char *name
+    ) {
+        const int index = g_mpExitBindCount;
+        if (index < 4) {
+            g_mpExitBindNames[index] = name;
+            g_mpExitBindWidgets[index] = widget;
+        }
+        ++g_mpExitBindCount;
+        return 1;
+    }
+
+    void FreeLoadedTreeRoots(
+        int rootArg
+    ) {
+        ++g_mpExitFreeCount;
+        g_mpExitFreeArg = rootArg;
+    }
+
+    void SetChildFlags(
+        unsigned int flags
+    ) {
+        g_mpExitChildFlags = static_cast<int>(flags);
+    }
+
+    void RefreshState() {
+        ++g_mpExitRefreshCount;
+        g_mpExitRefreshThis = reinterpret_cast<HudUiZrdWidget *>(this);
+    }
+
+    void SetXAll(
+        int x
+    ) {
+        g_mpExitTextStackX = x;
+        g_mpExitTextStackThis = reinterpret_cast<HudUiTextStack4 *>(this);
+    }
+
+    void SetEnabled(
+        int enabled
+    ) {
+        g_mpExitBackgroundEnabled = enabled;
+        g_mpExitBackgroundThis = reinterpret_cast<HudUiBackground *>(this);
+    }
+};
+
+float g_mpExitClusterSetScales[4];
+int g_mpExitClusterSetScaleCount;
+float g_mpExitClusterDispatchScales[4];
+int g_mpExitClusterDispatchCount;
+int g_mpExitClusterRunPostCount;
+zVidImagePartial *g_mpExitClusterBlitImage;
+int g_mpExitClusterBlitDstX;
+int g_mpExitClusterBlitDstY;
+int g_mpExitClusterBlitClipFlags;
+zVidRect32 *g_mpExitClusterBlitRect;
+HudUiBackground *g_mpExitClusterUpdateThis;
+float g_mpExitClusterUpdateDelta;
+int g_mpExitClusterUpdateCount;
+int g_mpExitClusterTopUpdateCount;
+float g_mpExitClusterTopUpdateDelta;
+int g_mpExitClusterUnlockCount;
+int g_mpExitClusterGetWindowCount;
+zOpt_ViewRectSection g_mpExitClusterWindowA;
+zOpt_ViewRectSection g_mpExitClusterWindowB;
+zVidRect32 *g_mpExitClusterAdjustSrc;
+zVidRect32 *g_mpExitClusterAdjustDst;
+int g_mpExitClusterAdjustWait;
+int g_mpExitClusterAdjustBlit;
+int g_mpExitClusterAdjustCount;
+HudUiBackground *g_mpExitClusterSetEnabledThis;
+int g_mpExitClusterSetEnabledValue;
+int g_mpExitClusterUnloadUpdateCount;
+float g_mpExitClusterUnloadUpdateDelta;
+HudUiMpExitDialog *g_mpExitClusterUnloadUpdateThis;
+HudUiTextStack4 *g_mpExitClusterClearThis;
+int g_mpExitClusterClearCount;
+zVidImagePartial *g_mpExitClusterReleaseImage;
+int g_mpExitClusterQueueSwitchCount;
+RecoilApp_IState *g_mpExitClusterSwitchStates[4];
+int g_mpExitClusterSwitchParams[4];
+int g_mpExitClusterQueueEnterFlag;
+int g_mpExitClusterQueueEnterCount;
+HudUiZrdWidget *g_mpExitClusterActivateThis[4];
+int g_mpExitClusterActivateCount;
+HudUiZrdWidget *g_mpExitClusterDestroyedWidgets[4];
+int g_mpExitClusterWidgetDtorCount;
+int g_mpExitOnEnterAccelerationMode;
+HudUiMpExitDialog *g_mpExitOnEnterLoadThis;
+int g_mpExitOnEnterLoadCount;
+
+void ResetMpExitClusterProbe() {
+    g_mpExitClusterSetScaleCount = 0;
+    g_mpExitClusterDispatchCount = 0;
+    g_mpExitClusterRunPostCount = 0;
+    g_mpExitClusterBlitImage = nullptr;
+    g_mpExitClusterBlitDstX = -1;
+    g_mpExitClusterBlitDstY = -1;
+    g_mpExitClusterBlitClipFlags = -1;
+    g_mpExitClusterBlitRect = reinterpret_cast<zVidRect32 *>(1);
+    g_mpExitClusterUpdateThis = nullptr;
+    g_mpExitClusterUpdateDelta = -1.0f;
+    g_mpExitClusterUpdateCount = 0;
+    g_mpExitClusterTopUpdateCount = 0;
+    g_mpExitClusterTopUpdateDelta = -1.0f;
+    g_mpExitClusterUnlockCount = 0;
+    g_mpExitClusterGetWindowCount = 0;
+    g_mpExitClusterAdjustSrc = nullptr;
+    g_mpExitClusterAdjustDst = nullptr;
+    g_mpExitClusterAdjustWait = -1;
+    g_mpExitClusterAdjustBlit = -1;
+    g_mpExitClusterAdjustCount = 0;
+    g_mpExitClusterSetEnabledThis = nullptr;
+    g_mpExitClusterSetEnabledValue = -1;
+    g_mpExitClusterUnloadUpdateCount = 0;
+    g_mpExitClusterUnloadUpdateDelta = -1.0f;
+    g_mpExitClusterUnloadUpdateThis = nullptr;
+    g_mpExitClusterClearThis = nullptr;
+    g_mpExitClusterClearCount = 0;
+    g_mpExitClusterReleaseImage = nullptr;
+    g_mpExitClusterQueueSwitchCount = 0;
+    g_mpExitClusterQueueEnterFlag = -1;
+    g_mpExitClusterQueueEnterCount = 0;
+    g_mpExitClusterActivateCount = 0;
+    g_mpExitClusterWidgetDtorCount = 0;
+    for (int index = 0; index < 4; ++index) {
+        g_mpExitClusterSetScales[index] = -1.0f;
+        g_mpExitClusterDispatchScales[index] = -1.0f;
+        g_mpExitClusterSwitchStates[index] = nullptr;
+        g_mpExitClusterSwitchParams[index] = -1;
+        g_mpExitClusterActivateThis[index] = nullptr;
+        g_mpExitClusterDestroyedWidgets[index] = nullptr;
+    }
+}
+
+void ResetMpExitOnEnterProbe() {
+    g_mpExitOnEnterLoadThis = nullptr;
+    g_mpExitOnEnterLoadCount = 0;
+}
+
+void __stdcall FakeMpExitClusterSetScaleAndRebuild(float scale) {
+    if (g_mpExitClusterSetScaleCount < 4) {
+        g_mpExitClusterSetScales[g_mpExitClusterSetScaleCount] = scale;
+    }
+    ++g_mpExitClusterSetScaleCount;
+}
+
+void __stdcall FakeMpExitClusterDispatchSetScale(float deltaSeconds) {
+    if (g_mpExitClusterDispatchCount < 4) {
+        g_mpExitClusterDispatchScales[g_mpExitClusterDispatchCount] = deltaSeconds;
+    }
+    ++g_mpExitClusterDispatchCount;
+}
+
+int FakeMpExitClusterRunPostprocessOnPrimaryBuffer() {
+    ++g_mpExitClusterRunPostCount;
+    return 1;
+}
+
+void __fastcall FakeMpExitClusterBlitToActiveTarget(
+    zVidImagePartial *image,
+    int dstX,
+    int dstY,
+    int clipFlags,
+    zVidRect32 *srcRect
+) {
+    g_mpExitClusterBlitImage = image;
+    g_mpExitClusterBlitDstX = dstX;
+    g_mpExitClusterBlitDstY = dstY;
+    g_mpExitClusterBlitClipFlags = clipFlags;
+    g_mpExitClusterBlitRect = srcRect;
+}
+
+int FakeMpExitClusterDispatchUnlockPrimarySurfaceState() {
+    ++g_mpExitClusterUnlockCount;
+    return 1;
+}
+
+zOpt_ViewRectSection *FakeMpExitClusterGetWindowSection() {
+    ++g_mpExitClusterGetWindowCount;
+    return g_mpExitClusterGetWindowCount == 1 ? &g_mpExitClusterWindowA
+                                              : &g_mpExitClusterWindowB;
+}
+
+int __fastcall FakeMpExitClusterAdjustSurfacesIfEnabled(
+    zVidRect32 *srcRect,
+    zVidRect32 *dstRect,
+    int waitForPresent,
+    int blitPrimaryToSwFirst
+) {
+    ++g_mpExitClusterAdjustCount;
+    g_mpExitClusterAdjustSrc = srcRect;
+    g_mpExitClusterAdjustDst = dstRect;
+    g_mpExitClusterAdjustWait = waitForPresent;
+    g_mpExitClusterAdjustBlit = blitPrimaryToSwFirst;
+    return 1;
+}
+
+void FakeMpExitClusterQueueEnterWithReconfigureFlag(int flag) {
+    ++g_mpExitClusterQueueEnterCount;
+    g_mpExitClusterQueueEnterFlag = flag;
+}
+
+int FakeMpExitOnEnterGetAccelerationOption() {
+    return g_mpExitOnEnterAccelerationMode;
+}
+
+int __fastcall FakeMpExitClusterReleaseIfNotDefault(zVidImagePartial *image) {
+    g_mpExitClusterReleaseImage = image;
+    return 0;
+}
+
+struct MpExitClusterPatchOps {
+    void BackgroundUpdate(float deltaSeconds) {
+        ++g_mpExitClusterUpdateCount;
+        g_mpExitClusterUpdateThis = reinterpret_cast<HudUiBackground *>(this);
+        g_mpExitClusterUpdateDelta = deltaSeconds;
+    }
+
+    void ContainerUpdateAll(float deltaSeconds) {
+        ++g_mpExitClusterTopUpdateCount;
+        g_mpExitClusterTopUpdateDelta = deltaSeconds;
+    }
+
+    void BackgroundSetEnabled(int enabled) {
+        g_mpExitClusterSetEnabledThis = reinterpret_cast<HudUiBackground *>(this);
+        g_mpExitClusterSetEnabledValue = enabled;
+    }
+
+    void MpDialogUpdate(float deltaSeconds) {
+        ++g_mpExitClusterUnloadUpdateCount;
+        g_mpExitClusterUnloadUpdateThis = reinterpret_cast<HudUiMpExitDialog *>(this);
+        g_mpExitClusterUnloadUpdateDelta = deltaSeconds;
+    }
+
+    void TextStackClear() {
+        ++g_mpExitClusterClearCount;
+        g_mpExitClusterClearThis = reinterpret_cast<HudUiTextStack4 *>(this);
+    }
+
+    RecoilPtr32 QueueSwitchCurrentState(
+        RecoilApp_IState *state,
+        int stateParam
+    ) {
+        const int index = g_mpExitClusterQueueSwitchCount;
+        if (index < 4) {
+            g_mpExitClusterSwitchStates[index] = state;
+            g_mpExitClusterSwitchParams[index] = stateParam;
+        }
+        ++g_mpExitClusterQueueSwitchCount;
+        return 0;
+    }
+
+    void ZrdWidgetOnActivate() {
+        const int index = g_mpExitClusterActivateCount;
+        if (index < 4) {
+            g_mpExitClusterActivateThis[index] = reinterpret_cast<HudUiZrdWidget *>(this);
+        }
+        ++g_mpExitClusterActivateCount;
+    }
+
+    void ZrdWidgetDestructorCore() {
+        const int index = g_mpExitClusterWidgetDtorCount;
+        if (index < 4) {
+            g_mpExitClusterDestroyedWidgets[index] = reinterpret_cast<HudUiZrdWidget *>(this);
+        }
+        ++g_mpExitClusterWidgetDtorCount;
+    }
+
+    void MpExitLoadLayout() {
+        ++g_mpExitOnEnterLoadCount;
+        g_mpExitOnEnterLoadThis = reinterpret_cast<HudUiMpExitDialog *>(this);
+    }
+
+};
 
 void DestroyHudCmdDialogDescriptionPanelForSmoke(
     HudCmdDialog &dialog
@@ -791,6 +1244,1163 @@ void SetHudElementVptr(
     *reinterpret_cast<const void **>(&element) = vptr;
 }
 } // namespace
+
+extern "C" int hud_ui_mp_exit_dialog_load_layout_smoke(void) {
+    CodeFunctionPatch patches[15] = {};
+    int patchCount = 0;
+    bool installed = true;
+
+    installed = installed &&
+                PatchFunctionJump(
+                    reinterpret_cast<void *>(&HudUiMgr::IsLocalPlayerFirstInStatsList),
+                    reinterpret_cast<void *>(&FakeMpExitIsLocalPlayerFirstInStatsList),
+                    patches[patchCount++]
+                );
+    installed = installed &&
+                PatchFunctionJump(
+                    reinterpret_cast<void *>(&zVideo_buff_CaptureSurfaceToImage),
+                    reinterpret_cast<void *>(&FakeMpExitCaptureSurfaceToImage),
+                    patches[patchCount++]
+                );
+    installed = installed &&
+                PatchFunctionJump(
+                    reinterpret_cast<void *>(&zVideo::Fx_SetSurfaceState),
+                    reinterpret_cast<void *>(&FakeMpExitFxSetSurfaceState),
+                    patches[patchCount++]
+                );
+    installed = installed &&
+                PatchFunctionJump(
+                    reinterpret_cast<void *>(&zVideo::buff_BlurRegionByMode),
+                    reinterpret_cast<void *>(&FakeMpExitBlurRegionByMode),
+                    patches[patchCount++]
+                );
+    installed = installed &&
+                PatchFunctionJump(
+                    reinterpret_cast<void *>(&HudScoreboard::SetScaleAndRebuild),
+                    reinterpret_cast<void *>(&FakeMpExitSetScaleAndRebuild),
+                    patches[patchCount++]
+                );
+    installed = installed &&
+                PatchFunctionJump(
+                    MethodAddress(&HudUiBackground::LoadFromZrd),
+                    MethodAddress(&MpExitDialogPatchOps::LoadFromZrd),
+                    patches[patchCount++]
+                );
+    installed = installed &&
+                PatchFunctionJump(
+                    MethodAddress(&HudUiBackground::BindWidgetByName),
+                    MethodAddress(&MpExitDialogPatchOps::BindWidgetByName),
+                    patches[patchCount++]
+                );
+    installed = installed &&
+                PatchFunctionJump(
+                    MethodAddress(&HudUiBackground::FreeLoadedTreeRoots),
+                    MethodAddress(&MpExitDialogPatchOps::FreeLoadedTreeRoots),
+                    patches[patchCount++]
+                );
+    installed = installed &&
+                PatchFunctionJump(
+                    MethodAddress(&HudUiContainer::SetChildFlags),
+                    MethodAddress(&MpExitDialogPatchOps::SetChildFlags),
+                    patches[patchCount++]
+                );
+    installed = installed &&
+                PatchFunctionJump(
+                    MethodAddress(&HudUiZrdWidget::RefreshState),
+                    MethodAddress(&MpExitDialogPatchOps::RefreshState),
+                    patches[patchCount++]
+                );
+    installed = installed &&
+                PatchFunctionJump(
+                    reinterpret_cast<void *>(&HudUiMgr::EnableTopAndChatStacks),
+                    reinterpret_cast<void *>(&FakeMpExitEnableTopAndChatStacks),
+                    patches[patchCount++]
+                );
+    installed = installed &&
+                PatchFunctionJump(
+                    reinterpret_cast<void *>(&zVideo::GetPrimarySurfaceWidth),
+                    reinterpret_cast<void *>(&FakeMpExitGetPrimarySurfaceWidth),
+                    patches[patchCount++]
+                );
+    installed = installed &&
+                PatchFunctionJump(
+                    MethodAddress(&HudUiTextStack4::SetXAll),
+                    MethodAddress(&MpExitDialogPatchOps::SetXAll),
+                    patches[patchCount++]
+                );
+    installed = installed &&
+                PatchFunctionJump(
+                    reinterpret_cast<void *>(&zOpt::GetNetworkModemEnabled),
+                    reinterpret_cast<void *>(&FakeMpExitGetNetworkModemEnabled),
+                    patches[patchCount++]
+                );
+    installed = installed &&
+                PatchFunctionJump(
+                    reinterpret_cast<void *>(&zLoc::GetMessageString),
+                    reinterpret_cast<void *>(&FakeMpExitGetMessageString),
+                    patches[patchCount++]
+                );
+
+    CodeFunctionPatch showPatch = {};
+    installed = installed &&
+                PatchFunctionJump(
+                    reinterpret_cast<void *>(&HudUi::ShowTopMessageLine),
+                    reinterpret_cast<void *>(&FakeMpExitShowTopMessageLine),
+                    showPatch
+                );
+
+    void *dispatchTable[3] = {};
+    dispatchTable[1] = MethodAddress(&MpExitDialogPatchOps::SetEnabled);
+    void *newGameButtonTable[64] = {};
+    for (int index = 0; index < 64; ++index) {
+        newGameButtonTable[index] = MethodAddress(&MpExitDialogPatchOps::RefreshState);
+    }
+
+    zVidImagePartial image = {};
+    unsigned short pixels[12] = {};
+    image.width = 4;
+    image.height = 3;
+    image.pixels = pixels;
+    g_mpExitCaptureImage = &image;
+
+    char fakeNodeStorage = 0;
+    g_mpExitLoadResult = reinterpret_cast<zReader::Node *>(&fakeNodeStorage);
+
+    HudUiTextStack4 savedTopStack = {};
+    HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
+    g_HudUiTopMessageStack = &savedTopStack;
+
+    HudUiMpExitDialog newGameDialog = {};
+    *reinterpret_cast<void **>(&newGameDialog) = dispatchTable;
+    *reinterpret_cast<void **>(&newGameDialog.m_mpNewGameButton) = newGameButtonTable;
+    ResetMpExitLayoutProbe();
+    g_mpExitLocalPlayerFirst = 1;
+    g_mpExitNetworkModem = 1;
+    g_mpExitPrimaryWidth = 640;
+    if (installed) {
+        newGameDialog.LoadLayout();
+    }
+
+    const bool newGamePath =
+        installed &&
+        newGameDialog.m_mpNewGameButtonMode == 1 &&
+        newGameDialog.m_capturedBackgroundImage == &image &&
+        newGameDialog.m_fadeElapsedSeconds == 0.0f &&
+        g_mpExitCaptureSelector == 1 &&
+        g_mpExitFxPixels == pixels &&
+        g_mpExitFxWidth == 4 &&
+        g_mpExitFxHeight == 3 &&
+        g_mpExitFxPitch == 8 &&
+        g_mpExitBlurCount == 3 &&
+        g_mpExitBlurRects[0] == nullptr &&
+        g_mpExitBlurModes[0] == 3 &&
+        g_mpExitBlurRects[1] == nullptr &&
+        g_mpExitBlurModes[1] == 3 &&
+        g_mpExitBlurRects[2] == nullptr &&
+        g_mpExitBlurModes[2] == 3 &&
+        g_mpExitScale == 0.0f &&
+        std::strcmp(
+            g_mpExitLoadPath,
+            "dialog.zrd"
+        ) == 0 &&
+        std::strcmp(
+            g_mpExitLoadSection,
+            "MPEXIT"
+        ) == 0 &&
+        g_mpExitLoadCapture == 1 &&
+        g_mpExitBindCount == 2 &&
+        std::strcmp(
+            g_mpExitBindNames[0],
+            "MPNEWGAME"
+        ) == 0 &&
+        g_mpExitBindWidgets[0] ==
+            static_cast<HudUiWidget *>(&newGameDialog.m_mpNewGameButton) &&
+        std::strcmp(
+            g_mpExitBindNames[1],
+            "MPEXITBTN"
+        ) == 0 &&
+        g_mpExitBindWidgets[1] ==
+            static_cast<HudUiWidget *>(&newGameDialog.m_mpExitButton) &&
+        g_mpExitFreeCount == 1 &&
+        g_mpExitChildFlags == 0 &&
+        newGameDialog.m_mpNewGameButton.modeOrEnabled == 1 &&
+        g_mpExitRefreshCount == 1 &&
+        g_mpExitRefreshThis == &newGameDialog.m_mpNewGameButton &&
+        g_mpExitEnableTopCount == 0 &&
+        g_mpExitShowCount == 0 &&
+        g_mpExitBackgroundEnabled == 1 &&
+        g_mpExitBackgroundThis == static_cast<HudUiBackground *>(&newGameDialog);
+
+    HudUiMpExitDialog messageDialog = {};
+    *reinterpret_cast<void **>(&messageDialog) = dispatchTable;
+    ResetMpExitLayoutProbe();
+    g_mpExitLocalPlayerFirst = -1;
+    g_mpExitNetworkModem = 0;
+    g_mpExitPrimaryWidth = 641;
+    if (installed) {
+        messageDialog.LoadLayout();
+    }
+
+    const bool messagePath =
+        installed &&
+        messageDialog.m_mpNewGameButtonMode == -1 &&
+        messageDialog.m_capturedBackgroundImage == &image &&
+        g_mpExitBindCount == 1 &&
+        std::strcmp(
+            g_mpExitBindNames[0],
+            "MPEXITBTN"
+        ) == 0 &&
+        g_mpExitBindWidgets[0] ==
+            static_cast<HudUiWidget *>(&messageDialog.m_mpExitButton) &&
+        g_mpExitRefreshCount == 0 &&
+        g_mpExitEnableTopCount == 1 &&
+        g_mpExitTextStackThis == &savedTopStack &&
+        g_mpExitTextStackX == 320 &&
+        g_mpExitLocCount == 2 &&
+        g_mpExitLocIds[0] == 0x39 &&
+        g_mpExitLocIds[1] == 0x40 &&
+        g_mpExitShowCount == 2 &&
+        g_mpExitShownMessages[0] == g_mpExitMessages[0] &&
+        g_mpExitShownMessages[1] == g_mpExitMessages[1] &&
+        g_mpExitShownDurations[0] == 300.0f &&
+        g_mpExitShownDurations[1] == 300.0f &&
+        g_mpExitBackgroundEnabled == 1 &&
+        g_mpExitBackgroundThis == static_cast<HudUiBackground *>(&messageDialog);
+
+    RestoreFunctionPatch(showPatch);
+    while (patchCount > 0) {
+        --patchCount;
+        RestoreFunctionPatch(patches[patchCount]);
+    }
+
+    g_HudUiTopMessageStack = oldTopStack;
+    return newGamePath && messagePath ? 0 : 1;
+}
+
+extern "C" int hud_ui_mp_exit_dialog_table_cluster_smoke(void) {
+    CodeFunctionPatch updatePatches[8] = {};
+    bool installed =
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&HudScoreboard::SetScaleAndRebuild),
+            reinterpret_cast<void *>(&FakeMpExitClusterSetScaleAndRebuild),
+            updatePatches[0]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&HudScoreboard::DispatchSetScale),
+            reinterpret_cast<void *>(&FakeMpExitClusterDispatchSetScale),
+            updatePatches[1]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+            reinterpret_cast<void *>(&FakeMpExitClusterRunPostprocessOnPrimaryBuffer),
+            updatePatches[2]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zVid_Image::BlitToActiveTarget),
+            reinterpret_cast<void *>(&FakeMpExitClusterBlitToActiveTarget),
+            updatePatches[3]
+        ) &&
+        PatchFunctionJump(
+            MethodAddress(&HudUiBackground::Update),
+            MethodAddress(&MpExitClusterPatchOps::BackgroundUpdate),
+            updatePatches[4]
+        ) &&
+        PatchFunctionJump(
+            MethodAddress(&HudUiContainer::UpdateAll),
+            MethodAddress(&MpExitClusterPatchOps::ContainerUpdateAll),
+            updatePatches[5]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::Dispatch_UnlockPrimarySurfaceState),
+            reinterpret_cast<void *>(&FakeMpExitClusterDispatchUnlockPrimarySurfaceState),
+            updatePatches[6]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zOpt::GetWindowSection),
+            reinterpret_cast<void *>(&FakeMpExitClusterGetWindowSection),
+            updatePatches[7]
+        );
+    CodeFunctionPatch adjustPatch{};
+    installed = installed &&
+                PatchFunctionJump(
+                    reinterpret_cast<void *>(&zVideo::AdjustSurfacesIfEnabled),
+                    reinterpret_cast<void *>(&FakeMpExitClusterAdjustSurfacesIfEnabled),
+                    adjustPatch
+                );
+
+    zVidImagePartial updateImage{};
+    HudUiTextStack4 savedTopStack{};
+    void *topStackDispatchTable[1] = {};
+    topStackDispatchTable[0] = MethodAddress(&MpExitClusterPatchOps::ContainerUpdateAll);
+    *reinterpret_cast<void **>(&savedTopStack) = topStackDispatchTable;
+    HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
+    g_HudUiTopMessageStack = &savedTopStack;
+
+    HudUiMpExitDialog fadeDialog{};
+    fadeDialog.m_mpNewGameButtonMode = 1;
+    fadeDialog.m_fadeElapsedSeconds = 0.25f;
+    fadeDialog.m_capturedBackgroundImage = &updateImage;
+    ResetMpExitClusterProbe();
+    if (installed) {
+        fadeDialog.Update(0.5f);
+    }
+    const bool updateFadeOk =
+        installed &&
+        fadeDialog.m_fadeElapsedSeconds == 0.75f &&
+        g_mpExitClusterRunPostCount == 1 &&
+        g_mpExitClusterBlitImage == &updateImage &&
+        g_mpExitClusterBlitDstX == 0 &&
+        g_mpExitClusterBlitDstY == 0 &&
+        g_mpExitClusterBlitClipFlags == 0 &&
+        g_mpExitClusterBlitRect == nullptr &&
+        g_mpExitClusterTopUpdateCount == 0 &&
+        g_mpExitClusterUnlockCount == 1 &&
+        g_mpExitClusterGetWindowCount == 2 &&
+        g_mpExitClusterAdjustCount == 1 &&
+        g_mpExitClusterAdjustSrc == reinterpret_cast<zVidRect32 *>(&g_mpExitClusterWindowB) &&
+        g_mpExitClusterAdjustDst == reinterpret_cast<zVidRect32 *>(&g_mpExitClusterWindowA) &&
+        g_mpExitClusterAdjustWait == 0 &&
+        g_mpExitClusterAdjustBlit == 1;
+
+    HudUiMpExitDialog messageDialog{};
+    messageDialog.m_mpNewGameButtonMode = -1;
+    messageDialog.m_capturedBackgroundImage = &updateImage;
+    g_Time_UnscaledDeltaTimeSec = 0.125f;
+    ResetMpExitClusterProbe();
+    if (installed) {
+        messageDialog.Update(0.25f);
+    }
+    const bool updateMessageOk =
+        installed &&
+        g_mpExitClusterTopUpdateCount == 1 &&
+        g_mpExitClusterTopUpdateDelta == 0.125f &&
+        g_mpExitClusterRunPostCount == 1;
+
+    RestoreFunctionPatch(adjustPatch);
+    for (int index = 7; index >= 0; --index) {
+        RestoreFunctionPatch(updatePatches[index]);
+    }
+
+    CodeFunctionPatch unloadPatches[3] = {};
+    installed =
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&HudScoreboard::SetScaleAndRebuild),
+            reinterpret_cast<void *>(&FakeMpExitClusterSetScaleAndRebuild),
+            unloadPatches[0]
+        ) &&
+        PatchFunctionJump(
+            MethodAddress(&HudUiTextStack4::Clear),
+            MethodAddress(&MpExitClusterPatchOps::TextStackClear),
+            unloadPatches[1]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zVid_Image::ReleaseIfNotDefault),
+            reinterpret_cast<void *>(&FakeMpExitClusterReleaseIfNotDefault),
+            unloadPatches[2]
+        );
+
+    HudUiMpExitDialog unloadDialog{};
+    void *unloadDispatchTable[4] = {};
+    unloadDispatchTable[1] = MethodAddress(&MpExitClusterPatchOps::BackgroundSetEnabled);
+    unloadDispatchTable[3] = MethodAddress(&MpExitClusterPatchOps::MpDialogUpdate);
+    *reinterpret_cast<void **>(&unloadDialog) = unloadDispatchTable;
+    zVidImagePartial unloadImage{};
+    unloadDialog.m_capturedBackgroundImage = &unloadImage;
+    ResetMpExitClusterProbe();
+    if (installed) {
+        unloadDialog.UnloadLayout();
+    }
+    const bool unloadOk =
+        installed &&
+        g_mpExitClusterSetEnabledThis == static_cast<HudUiBackground *>(&unloadDialog) &&
+        g_mpExitClusterSetEnabledValue == 0 &&
+        g_mpExitClusterUnloadUpdateThis == &unloadDialog &&
+        g_mpExitClusterUnloadUpdateDelta == 0.0f &&
+        g_mpExitClusterSetScaleCount == 1 &&
+        g_mpExitClusterSetScales[0] == 0.0f &&
+        g_mpExitClusterClearThis == &savedTopStack &&
+        g_mpExitClusterClearCount == 1 &&
+        g_mpExitClusterReleaseImage == &unloadImage &&
+        unloadDialog.m_capturedBackgroundImage == nullptr;
+
+    for (int index = 2; index >= 0; --index) {
+        RestoreFunctionPatch(unloadPatches[index]);
+    }
+
+    CodeFunctionPatch activatePatches[3] = {};
+    installed =
+        PatchFunctionJump(
+            MethodAddress(&RecoilApp::QueueSwitchCurrentState),
+            MethodAddress(&MpExitClusterPatchOps::QueueSwitchCurrentState),
+            activatePatches[0]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag),
+            reinterpret_cast<void *>(&FakeMpExitClusterQueueEnterWithReconfigureFlag),
+            activatePatches[1]
+        ) &&
+        PatchFunctionJump(
+            MethodAddress(&HudUiZrdWidget::OnActivate),
+            MethodAddress(&MpExitClusterPatchOps::ZrdWidgetOnActivate),
+            activatePatches[2]
+        );
+
+    HudUiMpExitDialog_NewGameButton newGameButton{};
+    HudUiMpExitDialog_ExitButton exitButton{};
+    ResetMpExitClusterProbe();
+    if (installed) {
+        newGameButton.OnActivate();
+        exitButton.OnActivate();
+    }
+    const bool activateOk =
+        installed &&
+        g_mpExitClusterQueueSwitchCount == 2 &&
+        g_mpExitClusterSwitchStates[0] ==
+            static_cast<RecoilApp_IState *>(&g_RecoilApp.m_introFmvState) &&
+        g_mpExitClusterSwitchParams[0] == 0 &&
+        g_mpExitClusterQueueEnterCount == 1 &&
+        g_mpExitClusterQueueEnterFlag == 1 &&
+        g_mpExitClusterSwitchStates[1] ==
+            static_cast<RecoilApp_IState *>(&g_RecoilApp.m_leaveNetworkState) &&
+        g_mpExitClusterSwitchParams[1] == 0;
+
+    for (int index = 2; index >= 0; --index) {
+        RestoreFunctionPatch(activatePatches[index]);
+    }
+
+    CodeFunctionPatch destructorPatch{};
+    installed = PatchFunctionJump(
+        MethodAddress(&HudUiZrdWidget::DestructorCore),
+        MethodAddress(&MpExitClusterPatchOps::ZrdWidgetDestructorCore),
+        destructorPatch
+    );
+
+    void *const destructorStorage = ::operator new(sizeof(HudUiMpExitDialog));
+    std::memset(
+        destructorStorage,
+        0,
+        sizeof(HudUiMpExitDialog)
+    );
+    HudUiMpExitDialog *const destructorDialog =
+        new (destructorStorage) HudUiMpExitDialog;
+    ResetMpExitClusterProbe();
+    if (installed) {
+        destructorDialog->Destructor();
+    }
+    const bool destructorOk =
+        installed &&
+        g_mpExitClusterWidgetDtorCount == 2 &&
+        g_mpExitClusterDestroyedWidgets[0] == &destructorDialog->m_mpExitButton &&
+        g_mpExitClusterDestroyedWidgets[1] == &destructorDialog->m_mpNewGameButton;
+
+    RestoreFunctionPatch(destructorPatch);
+    ::operator delete(destructorStorage);
+
+    g_HudUiTopMessageStack = oldTopStack;
+
+    return updateFadeOk && updateMessageOk && unloadOk && activateOk && destructorOk ? 0 : 1;
+}
+
+extern "C" int recoil_app_mp_exit_dialog_state_on_enter_smoke(void) {
+    CodeFunctionPatch patches[2] = {};
+    const bool installed =
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zVid::GetAccelerationOption),
+            reinterpret_cast<void *>(&FakeMpExitOnEnterGetAccelerationOption),
+            patches[0]
+        ) &&
+        PatchFunctionJump(
+            MethodAddress(&HudUiMpExitDialog::LoadLayout),
+            MethodAddress(&MpExitClusterPatchOps::MpExitLoadLayout),
+            patches[1]
+        );
+
+    HudUiMpExitDialog *const oldDialog = g_HudUiMpExitDialog;
+    RecoilApp_MpExitDialogState state{};
+
+    HudUiMpExitDialog dispatchProbe{};
+    HudUiMpExitDialog_NewGameButton newGameButtonProbe{};
+    HudUiMpExitDialog_ExitButton exitButtonProbe{};
+    void *const dialogDispatch = *reinterpret_cast<void **>(&dispatchProbe);
+    void *const newGameDispatch = *reinterpret_cast<void **>(&newGameButtonProbe);
+    void *const exitDispatch = *reinterpret_cast<void **>(&exitButtonProbe);
+
+    g_HudUiMpExitDialog = nullptr;
+    g_mpExitOnEnterAccelerationMode = 0;
+    ResetMpExitOnEnterProbe();
+    if (installed) {
+        state.OnEnter();
+    }
+    HudUiMpExitDialog *const createdDialog = g_HudUiMpExitDialog;
+    const bool createdOk =
+        installed &&
+        createdDialog != nullptr &&
+        *reinterpret_cast<void **>(createdDialog) == dialogDispatch &&
+        *reinterpret_cast<void **>(&createdDialog->m_mpNewGameButton) == newGameDispatch &&
+        *reinterpret_cast<void **>(&createdDialog->m_mpExitButton) == exitDispatch &&
+        g_mpExitOnEnterLoadCount == 1 &&
+        g_mpExitOnEnterLoadThis == createdDialog;
+
+    HudUiMpExitDialog existingDialog{};
+    g_HudUiMpExitDialog = &existingDialog;
+    g_mpExitOnEnterAccelerationMode = 1;
+    ResetMpExitOnEnterProbe();
+    if (installed) {
+        state.OnEnter();
+    }
+    const bool existingHardwareOk =
+        installed &&
+        g_HudUiMpExitDialog == &existingDialog &&
+        g_mpExitOnEnterLoadCount == 0;
+
+    g_mpExitOnEnterAccelerationMode = 0;
+    ResetMpExitOnEnterProbe();
+    if (installed) {
+        state.OnEnter();
+    }
+    const bool existingSoftwareOk =
+        installed &&
+        g_HudUiMpExitDialog == &existingDialog &&
+        g_mpExitOnEnterLoadCount == 1 &&
+        g_mpExitOnEnterLoadThis == &existingDialog;
+
+    g_HudUiMpExitDialog = oldDialog;
+    if (createdDialog != nullptr) {
+        createdDialog->Destructor();
+        ::operator delete(createdDialog);
+    }
+    for (int index = 1; index >= 0; --index) {
+        RestoreFunctionPatch(patches[index]);
+    }
+
+    return createdOk && existingHardwareOk && existingSoftwareOk ? 0 : 1;
+}
+
+namespace {
+HudUiMpExitDialog *g_mpExitDeactivateUnloadThis;
+int g_mpExitDeactivateUnloadCount;
+HudUiMpExitDialog *g_mpExitDeactivateDtorThis;
+unsigned int g_mpExitDeactivateDtorFlags;
+int g_mpExitDeactivateDtorCount;
+int g_mpExitDeactivatePopCount;
+DWORD g_mpExitDeactivateSleepMs;
+int g_mpExitDeactivateSoundCount;
+const char *g_mpExitDeactivateSoundName;
+float g_mpExitDeactivateScale;
+int g_mpExitDeactivateScaleCount;
+
+void ResetMpExitDeactivateProbe() {
+    g_mpExitDeactivateUnloadThis = nullptr;
+    g_mpExitDeactivateUnloadCount = 0;
+    g_mpExitDeactivateDtorThis = nullptr;
+    g_mpExitDeactivateDtorFlags = 0;
+    g_mpExitDeactivateDtorCount = 0;
+    g_mpExitDeactivatePopCount = 0;
+    g_mpExitDeactivateSleepMs = 0;
+    g_mpExitDeactivateSoundCount = 0;
+    g_mpExitDeactivateSoundName = nullptr;
+    g_mpExitDeactivateScale = -1.0f;
+    g_mpExitDeactivateScaleCount = 0;
+}
+
+void FakeMpExitDeactivateBindMapContextPop() {
+    ++g_mpExitDeactivatePopCount;
+}
+
+void WINAPI FakeMpExitDeactivateSleep(DWORD milliseconds) {
+    g_mpExitDeactivateSleepMs = milliseconds;
+}
+
+int __fastcall FakeMpExitDeactivateSampleSetDestroyByName(
+    const char *setName
+) {
+    ++g_mpExitDeactivateSoundCount;
+    g_mpExitDeactivateSoundName = setName;
+    return 1;
+}
+
+void __stdcall FakeMpExitDeactivateSetScaleAndRebuild(float scale) {
+    ++g_mpExitDeactivateScaleCount;
+    g_mpExitDeactivateScale = scale;
+}
+
+struct MpExitDeactivatePatchOps {
+    void UnloadLayout() {
+        ++g_mpExitDeactivateUnloadCount;
+        g_mpExitDeactivateUnloadThis = (HudUiMpExitDialog *)this;
+    }
+
+    HudUiMpExitDialog * ScalarDeletingDtor(unsigned int flags) {
+        ++g_mpExitDeactivateDtorCount;
+        g_mpExitDeactivateDtorThis = (HudUiMpExitDialog *)this;
+        g_mpExitDeactivateDtorFlags = flags;
+        return (HudUiMpExitDialog *)this;
+    }
+};
+
+struct MpExitDeactivateTable {
+    unsigned int slots[3];
+};
+} // namespace
+
+extern "C" int recoil_app_mp_exit_dialog_state_on_deactivate_smoke(void) {
+    CodeFunctionPatch patches[5] = {};
+    const bool installed =
+        PatchFunctionJump(
+            reinterpret_cast<void *>(MethodAddress(&HudUiMpExitDialog::UnloadLayout)),
+            reinterpret_cast<void *>(MethodAddress(&MpExitDeactivatePatchOps::UnloadLayout)),
+            patches[0]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zInput::BindMapContext_Pop),
+            reinterpret_cast<void *>(&FakeMpExitDeactivateBindMapContextPop),
+            patches[1]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&Sleep),
+            reinterpret_cast<void *>(&FakeMpExitDeactivateSleep),
+            patches[2]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zSndSampleSet_DestroyByName),
+            reinterpret_cast<void *>(&FakeMpExitDeactivateSampleSetDestroyByName),
+            patches[3]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&HudScoreboard::SetScaleAndRebuild),
+            reinterpret_cast<void *>(&FakeMpExitDeactivateSetScaleAndRebuild),
+            patches[4]
+        );
+
+    MpExitDeactivateTable table = {};
+    table.slots[2] =
+        (unsigned int)MethodAddress(&MpExitDeactivatePatchOps::ScalarDeletingDtor);
+    HudUiMpExitDialog dialog = {};
+    *reinterpret_cast<const void **>(&dialog) = &table;
+    HudUiMpExitDialog *const oldDialog = g_HudUiMpExitDialog;
+    g_HudUiMpExitDialog = &dialog;
+
+    RecoilApp_MpExitDialogState state{};
+    ResetMpExitDeactivateProbe();
+    if (installed) {
+        state.OnDeactivate();
+    }
+
+    const bool ok =
+        installed &&
+        g_mpExitDeactivateUnloadCount == 1 &&
+        g_mpExitDeactivateUnloadThis == &dialog &&
+        g_mpExitDeactivateDtorCount == 1 &&
+        g_mpExitDeactivateDtorThis == &dialog &&
+        g_mpExitDeactivateDtorFlags == 1 &&
+        g_HudUiMpExitDialog == nullptr &&
+        g_mpExitDeactivatePopCount == 1 &&
+        g_mpExitDeactivateSleepMs == 1000 &&
+        g_mpExitDeactivateSoundCount == 1 &&
+        std::strcmp(g_mpExitDeactivateSoundName, "DIALOG") == 0 &&
+        g_mpExitDeactivateScaleCount == 1 &&
+        g_mpExitDeactivateScale == 0.0f;
+
+    g_HudUiMpExitDialog = oldDialog;
+    for (int index = 4; index >= 0; --index) {
+        RestoreFunctionPatch(patches[index]);
+    }
+
+    return ok ? 0 : 1;
+}
+
+namespace {
+int g_mpExitTryHalfResMode;
+int g_mpExitTryInvalidateMode;
+int g_mpExitTryPitch = 1536;
+int g_mpExitTryBitsPerPixel = 16;
+zOpt_ViewRectSection g_mpExitTryRect;
+void *g_mpExitTryPixels = reinterpret_cast<void *>(0x12345678);
+void *g_mpExitTryFramePixels;
+zOpt_ViewRectSection *g_mpExitTryFrameRect;
+int g_mpExitTryFrameBitsPerPixel;
+int g_mpExitTryFramePitch;
+int g_mpExitTrySoundCount;
+const char *g_mpExitTrySoundName;
+zInput_BindMapContext *g_mpExitTryPushContext;
+int g_mpExitTryPushCount;
+int g_mpExitTryResetCount;
+int g_mpExitTryAccelerationMode;
+HudUiMpExitDialog *g_mpExitTryLoadThis;
+int g_mpExitTryLoadCount;
+
+void ResetMpExitTryProbe() {
+    g_mpExitTryHalfResMode = -1;
+    g_mpExitTryInvalidateMode = -1;
+    g_mpExitTryFramePixels = nullptr;
+    g_mpExitTryFrameRect = nullptr;
+    g_mpExitTryFrameBitsPerPixel = -1;
+    g_mpExitTryFramePitch = -1;
+    g_mpExitTrySoundCount = 0;
+    g_mpExitTrySoundName = nullptr;
+    g_mpExitTryPushContext = reinterpret_cast<zInput_BindMapContext *>(0x1);
+    g_mpExitTryPushCount = 0;
+    g_mpExitTryResetCount = 0;
+    g_mpExitTryLoadThis = nullptr;
+    g_mpExitTryLoadCount = 0;
+}
+
+int __fastcall FakeMpExitTrySetHalfResAdjustMode(int mode) {
+    g_mpExitTryHalfResMode = mode;
+    return 0;
+}
+
+void __fastcall FakeMpExitTrySetInvalidateMode(int mode) {
+    g_mpExitTryInvalidateMode = mode;
+}
+
+int FakeMpExitTryGetPrimarySurfacePitch() {
+    return g_mpExitTryPitch;
+}
+
+int FakeMpExitTryGetDisplaySectionBitsPerPixel() {
+    return g_mpExitTryBitsPerPixel;
+}
+
+zOpt_ViewRectSection *FakeMpExitTryGetWindowSection() {
+    return &g_mpExitTryRect;
+}
+
+void *FakeMpExitTryGetPrimarySurfacePixels() {
+    return g_mpExitTryPixels;
+}
+
+void __fastcall FakeMpExitTrySetFrameBufferRegion(
+    void *pixels,
+    zOpt_ViewRectSection *activeRegionRect,
+    int bitsPerPixel,
+    int pitchBytes
+) {
+    g_mpExitTryFramePixels = pixels;
+    g_mpExitTryFrameRect = activeRegionRect;
+    g_mpExitTryFrameBitsPerPixel = bitsPerPixel;
+    g_mpExitTryFramePitch = pitchBytes;
+}
+
+int __fastcall FakeMpExitTrySampleSetInitByName(const char *setName) {
+    ++g_mpExitTrySoundCount;
+    g_mpExitTrySoundName = setName;
+    return 1;
+}
+
+void __fastcall FakeMpExitTryBindMapContextPush(
+    zInput_BindMapContext *bindMapOrNull
+) {
+    ++g_mpExitTryPushCount;
+    g_mpExitTryPushContext = bindMapOrNull;
+}
+
+void FakeMpExitTryBindMapCurrentResetAllBindings() {
+    ++g_mpExitTryResetCount;
+}
+
+int FakeMpExitTryGetAccelerationOption() {
+    return g_mpExitTryAccelerationMode;
+}
+
+struct MpExitTryPatchOps {
+    void LoadLayout() {
+        ++g_mpExitTryLoadCount;
+        g_mpExitTryLoadThis = (HudUiMpExitDialog *)this;
+    }
+};
+} // namespace
+
+extern "C" int recoil_app_mp_exit_dialog_state_on_try_become_current_smoke(void) {
+    CodeFunctionPatch patches[12] = {};
+    const bool installed =
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::SetHalfResAdjustMode),
+            reinterpret_cast<void *>(&FakeMpExitTrySetHalfResAdjustMode),
+            patches[0]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&HudUi::SetInvalidateMode),
+            reinterpret_cast<void *>(&FakeMpExitTrySetInvalidateMode),
+            patches[1]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::GetPrimarySurfacePitch),
+            reinterpret_cast<void *>(&FakeMpExitTryGetPrimarySurfacePitch),
+            patches[2]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zOpt::GetDisplaySectionBitsPerPixel),
+            reinterpret_cast<void *>(&FakeMpExitTryGetDisplaySectionBitsPerPixel),
+            patches[3]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zOpt::GetWindowSection),
+            reinterpret_cast<void *>(&FakeMpExitTryGetWindowSection),
+            patches[4]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::GetPrimarySurfacePixels),
+            reinterpret_cast<void *>(&FakeMpExitTryGetPrimarySurfacePixels),
+            patches[5]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zRndr::SetFrameBufferRegion),
+            reinterpret_cast<void *>(&FakeMpExitTrySetFrameBufferRegion),
+            patches[6]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zSndSampleSet_InitByName),
+            reinterpret_cast<void *>(&FakeMpExitTrySampleSetInitByName),
+            patches[7]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zInput::BindMapContext_Push),
+            reinterpret_cast<void *>(&FakeMpExitTryBindMapContextPush),
+            patches[8]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zInput::BindMapCurrent_ResetAllBindings),
+            reinterpret_cast<void *>(&FakeMpExitTryBindMapCurrentResetAllBindings),
+            patches[9]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zVid::GetAccelerationOption),
+            reinterpret_cast<void *>(&FakeMpExitTryGetAccelerationOption),
+            patches[10]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(MethodAddress(&HudUiMpExitDialog::LoadLayout)),
+            reinterpret_cast<void *>(MethodAddress(&MpExitTryPatchOps::LoadLayout)),
+            patches[11]
+        );
+
+    HudUiMpExitDialog dialog{};
+    HudUiMpExitDialog *const oldDialog = g_HudUiMpExitDialog;
+    g_HudUiMpExitDialog = &dialog;
+    RecoilApp_MpExitDialogState state{};
+
+    g_mpExitTryAccelerationMode = 1;
+    ResetMpExitTryProbe();
+    int resultHardware = 0;
+    if (installed) {
+        resultHardware = state.OnTryBecomeCurrent();
+    }
+    const bool hardwareOk =
+        installed && resultHardware == 1 && g_mpExitTryHalfResMode == 0 &&
+        g_mpExitTryInvalidateMode == 0 && g_mpExitTryFramePixels == g_mpExitTryPixels &&
+        g_mpExitTryFrameRect == &g_mpExitTryRect &&
+        g_mpExitTryFrameBitsPerPixel == g_mpExitTryBitsPerPixel &&
+        g_mpExitTryFramePitch == g_mpExitTryPitch && g_mpExitTrySoundCount == 1 &&
+        std::strcmp(g_mpExitTrySoundName, "DIALOG") == 0 &&
+        g_mpExitTryPushCount == 1 && g_mpExitTryPushContext == nullptr &&
+        g_mpExitTryResetCount == 1 && g_mpExitTryLoadCount == 1 &&
+        g_mpExitTryLoadThis == &dialog;
+
+    g_mpExitTryAccelerationMode = 0;
+    ResetMpExitTryProbe();
+    int resultSoftware = 0;
+    if (installed) {
+        resultSoftware = state.OnTryBecomeCurrent();
+    }
+    const bool softwareOk =
+        installed && resultSoftware == 1 && g_mpExitTryHalfResMode == 0 &&
+        g_mpExitTryInvalidateMode == 0 && g_mpExitTryFramePixels == g_mpExitTryPixels &&
+        g_mpExitTryFrameRect == &g_mpExitTryRect &&
+        g_mpExitTryFrameBitsPerPixel == g_mpExitTryBitsPerPixel &&
+        g_mpExitTryFramePitch == g_mpExitTryPitch && g_mpExitTrySoundCount == 1 &&
+        std::strcmp(g_mpExitTrySoundName, "DIALOG") == 0 &&
+        g_mpExitTryPushCount == 1 && g_mpExitTryPushContext == nullptr &&
+        g_mpExitTryResetCount == 1 && g_mpExitTryLoadCount == 0 &&
+        g_mpExitTryLoadThis == nullptr;
+
+    g_HudUiMpExitDialog = oldDialog;
+    for (int i = 11; i >= 0; --i) {
+        RestoreFunctionPatch(patches[i]);
+    }
+
+    return hardwareOk && softwareOk ? 0 : 1;
+}
+
+namespace {
+int g_mpExitUpdatePollDispatch;
+int g_mpExitUpdatePollCount;
+int g_mpExitUpdateTickCount;
+HudUiMpExitDialog *g_mpExitUpdateThis;
+float g_mpExitUpdateDelta;
+int g_mpExitUpdateCount;
+int g_mpExitUpdateLocIds[2];
+int g_mpExitUpdateLocCount;
+int g_mpExitUpdateStep;
+int g_mpExitUpdateStepError;
+DWORD g_mpExitUpdateSleepMs;
+UINT g_mpExitUpdateBeepType;
+HWND g_mpExitUpdateMessageHwnd;
+char g_mpExitUpdateMessageText[64];
+char g_mpExitUpdateMessageCaption[64];
+UINT g_mpExitUpdateMessageType;
+int g_mpExitUpdateExitCode;
+char g_mpExitUpdatePrintfCaption[64];
+char g_mpExitUpdatePrintfText[64];
+
+void ResetMpExitUpdateProbe() {
+    g_mpExitUpdatePollDispatch = -1;
+    g_mpExitUpdatePollCount = 0;
+    g_mpExitUpdateTickCount = 0;
+    g_mpExitUpdateThis = nullptr;
+    g_mpExitUpdateDelta = -1.0f;
+    g_mpExitUpdateCount = 0;
+    g_mpExitUpdateLocCount = 0;
+    g_mpExitUpdateStep = 0;
+    g_mpExitUpdateStepError = 0;
+    g_mpExitUpdateSleepMs = 0;
+    g_mpExitUpdateBeepType = 0;
+    g_mpExitUpdateMessageHwnd = 0;
+    g_mpExitUpdateMessageText[0] = 0;
+    g_mpExitUpdateMessageCaption[0] = 0;
+    g_mpExitUpdateMessageType = 0;
+    g_mpExitUpdateExitCode = -1;
+    g_mpExitUpdatePrintfCaption[0] = 0;
+    g_mpExitUpdatePrintfText[0] = 0;
+}
+
+void ExpectMpExitUpdateStep(int expected) {
+    ++g_mpExitUpdateStep;
+    if (g_mpExitUpdateStep != expected) {
+        g_mpExitUpdateStepError = 1;
+    }
+}
+
+void __fastcall FakeMpExitUpdatePollActiveDevices(int dispatchCallbacks) {
+    g_mpExitUpdatePollDispatch = dispatchCallbacks;
+    ++g_mpExitUpdatePollCount;
+}
+
+void FakeMpExitUpdateTimeTick() {
+    ++g_mpExitUpdateTickCount;
+}
+
+char *__fastcall FakeMpExitUpdateGetMessageString(int messageId) {
+    if (g_mpExitUpdateLocCount < 2) {
+        g_mpExitUpdateLocIds[g_mpExitUpdateLocCount] = messageId;
+    }
+    ++g_mpExitUpdateLocCount;
+    return messageId == 28 ? const_cast<char *>("Fatal caption")
+                           : const_cast<char *>("Fatal text");
+}
+
+void FakeMpExitUpdateFlipToGDI() {
+    ExpectMpExitUpdateStep(1);
+}
+
+int FakeMpExitUpdateSndShutdown() {
+    ExpectMpExitUpdateStep(2);
+    return 1;
+}
+
+int FakeMpExitUpdateNetworkShutdown() {
+    ExpectMpExitUpdateStep(3);
+    return 1;
+}
+
+int FakeMpExitUpdateVideoShutdown() {
+    ExpectMpExitUpdateStep(4);
+    return 1;
+}
+
+int FakeMpExitUpdatePrintf(const char *, const char *caption, const char *text) {
+    ExpectMpExitUpdateStep(5);
+    std::strncpy(
+        g_mpExitUpdatePrintfCaption,
+        caption,
+        sizeof(g_mpExitUpdatePrintfCaption) - 1
+    );
+    std::strncpy(
+        g_mpExitUpdatePrintfText,
+        text,
+        sizeof(g_mpExitUpdatePrintfText) - 1
+    );
+    return 0;
+}
+
+void WINAPI FakeMpExitUpdateSleep(DWORD milliseconds) {
+    ExpectMpExitUpdateStep(6);
+    g_mpExitUpdateSleepMs = milliseconds;
+}
+
+BOOL WINAPI FakeMpExitUpdateMessageBeep(UINT type) {
+    ExpectMpExitUpdateStep(7);
+    g_mpExitUpdateBeepType = type;
+    return TRUE;
+}
+
+int WINAPI FakeMpExitUpdateMessageBoxA(
+    HWND hwnd,
+    LPCSTR text,
+    LPCSTR caption,
+    UINT type
+) {
+    ExpectMpExitUpdateStep(8);
+    g_mpExitUpdateMessageHwnd = hwnd;
+    std::strncpy(
+        g_mpExitUpdateMessageText,
+        text,
+        sizeof(g_mpExitUpdateMessageText) - 1
+    );
+    std::strncpy(
+        g_mpExitUpdateMessageCaption,
+        caption,
+        sizeof(g_mpExitUpdateMessageCaption) - 1
+    );
+    g_mpExitUpdateMessageType = type;
+    return IDOK;
+}
+
+void __fastcall FakeMpExitUpdateExitProcessWithCleanup(int exitCode) {
+    ExpectMpExitUpdateStep(9);
+    g_mpExitUpdateExitCode = exitCode;
+}
+
+struct MpExitUpdatePatchOps {
+    void Update(float deltaSeconds) {
+        ++g_mpExitUpdateCount;
+        g_mpExitUpdateThis = (HudUiMpExitDialog *)this;
+        g_mpExitUpdateDelta = deltaSeconds;
+    }
+};
+} // namespace
+
+extern "C" int recoil_app_mp_exit_dialog_state_on_update_should_quit_smoke(void) {
+    CodeFunctionPatch patches[12] = {};
+    const bool installed =
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zInput::PollActiveDevices),
+            reinterpret_cast<void *>(&FakeMpExitUpdatePollActiveDevices),
+            patches[0]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&Time::Tick),
+            reinterpret_cast<void *>(&FakeMpExitUpdateTimeTick),
+            patches[1]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zLoc::GetMessageString),
+            reinterpret_cast<void *>(&FakeMpExitUpdateGetMessageString),
+            patches[2]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo_dd::FlipToGDIIfAttached),
+            reinterpret_cast<void *>(&FakeMpExitUpdateFlipToGDI),
+            patches[3]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zSndSystem::Shutdown),
+            reinterpret_cast<void *>(&FakeMpExitUpdateSndShutdown),
+            patches[4]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zNetwork::ShutdownSessionRuntime),
+            reinterpret_cast<void *>(&FakeMpExitUpdateNetworkShutdown),
+            patches[5]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::ShutdownVideoSystem),
+            reinterpret_cast<void *>(&FakeMpExitUpdateVideoShutdown),
+            patches[6]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&printf),
+            reinterpret_cast<void *>(&FakeMpExitUpdatePrintf),
+            patches[7]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&Sleep),
+            reinterpret_cast<void *>(&FakeMpExitUpdateSleep),
+            patches[8]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&MessageBeep),
+            reinterpret_cast<void *>(&FakeMpExitUpdateMessageBeep),
+            patches[9]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&MessageBoxA),
+            reinterpret_cast<void *>(&FakeMpExitUpdateMessageBoxA),
+            patches[10]
+        ) &&
+        PatchFunctionJump(
+            reinterpret_cast<void *>(&zSys::ExitProcessWithCleanup),
+            reinterpret_cast<void *>(&FakeMpExitUpdateExitProcessWithCleanup),
+            patches[11]
+        );
+
+    alignas(HudUiMpExitDialog) unsigned char dialogStorage[sizeof(HudUiMpExitDialog)] = {};
+    HudUiMpExitDialog *const dialog = reinterpret_cast<HudUiMpExitDialog *>(dialogStorage);
+    void *dialogTable[4] = {};
+    dialogTable[3] = MethodAddress(&MpExitUpdatePatchOps::Update);
+    *reinterpret_cast<void ***>(dialog) = dialogTable;
+    HudUiMpExitDialog *const oldDialog = g_HudUiMpExitDialog;
+    const float oldFrameDelta = g_FrameDeltaTimeSec;
+    const HWND oldMainHwnd = g_RecoilApp_hWndMain;
+    g_HudUiMpExitDialog = dialog;
+    g_FrameDeltaTimeSec = 0.375f;
+    g_RecoilApp_hWndMain = (HWND)0x1234;
+
+    RecoilApp_MpExitDialogState state{};
+    if (!installed) {
+        g_HudUiMpExitDialog = oldDialog;
+        g_FrameDeltaTimeSec = oldFrameDelta;
+        g_RecoilApp_hWndMain = oldMainHwnd;
+        for (int i = 11; i >= 0; --i) {
+            RestoreFunctionPatch(patches[i]);
+        }
+        return 2;
+    }
+
+    dialog->m_fadeElapsedSeconds = 600.0f;
+    ResetMpExitUpdateProbe();
+    int resultNormal = 1;
+    resultNormal = state.OnUpdateShouldQuit();
+    const bool normalOk =
+        installed && resultNormal == 0 && g_mpExitUpdatePollCount == 1 &&
+        g_mpExitUpdatePollDispatch == 0 && g_mpExitUpdateTickCount == 1 &&
+        g_mpExitUpdateCount == 1 && g_mpExitUpdateThis == dialog &&
+        g_mpExitUpdateDelta == g_FrameDeltaTimeSec && g_mpExitUpdateStep == 0 &&
+        g_mpExitUpdateLocCount == 0;
+
+    dialog->m_fadeElapsedSeconds = 600.25f;
+    ResetMpExitUpdateProbe();
+    int resultFatal = 1;
+    resultFatal = state.OnUpdateShouldQuit();
+    const bool fatalOk =
+        installed && resultFatal == 0 && g_mpExitUpdatePollCount == 1 &&
+        g_mpExitUpdatePollDispatch == 0 && g_mpExitUpdateTickCount == 1 &&
+        g_mpExitUpdateCount == 1 && g_mpExitUpdateLocCount == 2 &&
+        g_mpExitUpdateLocIds[0] == 28 && g_mpExitUpdateLocIds[1] == 29 &&
+        g_mpExitUpdateStep == 9 && g_mpExitUpdateStepError == 0 &&
+        std::strcmp(g_mpExitUpdatePrintfCaption, "Fatal caption") == 0 &&
+        std::strcmp(g_mpExitUpdatePrintfText, "Fatal text") == 0 &&
+        g_mpExitUpdateSleepMs == 1000 && g_mpExitUpdateBeepType == MB_ICONHAND &&
+        g_mpExitUpdateMessageHwnd == (HWND)0x1234 &&
+        std::strcmp(g_mpExitUpdateMessageText, "Fatal text") == 0 &&
+        std::strcmp(g_mpExitUpdateMessageCaption, "Fatal caption") == 0 &&
+        g_mpExitUpdateMessageType == MB_ICONHAND && g_mpExitUpdateExitCode == 0;
+
+    g_HudUiMpExitDialog = oldDialog;
+    g_FrameDeltaTimeSec = oldFrameDelta;
+    g_RecoilApp_hWndMain = oldMainHwnd;
+    for (int i = 11; i >= 0; --i) {
+        RestoreFunctionPatch(patches[i]);
+    }
+
+    if (!normalOk) {
+        return 3;
+    }
+    if (!fatalOk) {
+        return 4;
+    }
+    return 0;
+}
 
 extern "C" int zhud_element_invalidate_smoke(void) {
     const unsigned int oldMask = g_HudUi_InvalidateMask;
@@ -3001,6 +4611,190 @@ extern "C" int zhud_zrd_widget_constructor_smoke(void) {
     return initialized ? 0 : 1;
 }
 
+extern "C" int zhud_zrd_widget_helpers_smoke(void) {
+    struct TestZrdChildWidget : HudUiElement {
+        std::uint32_t deleteFlags;
+
+        HudUiElement * ScalarDeletingDestructor(unsigned int flags) {
+            deleteFlags = flags;
+            return this;
+        }
+    };
+
+    HudUiPanel *panels[] = {
+        reinterpret_cast<HudUiPanel *>(0x1000),
+        reinterpret_cast<HudUiPanel *>(0x2000),
+        reinterpret_cast<HudUiPanel *>(0x3000),
+        reinterpret_cast<HudUiPanel *>(0x4000),
+    };
+    HudUiPanelPtrVector vector{};
+    vector.begin = panels;
+    vector.end = panels + 4;
+    vector.capacityEnd = panels + 4;
+
+    HudUiPanel **const result = vector.EraseRange(panels + 1, panels + 3);
+    const bool erased =
+        result == panels + 1 &&
+        vector.end == panels + 2 &&
+        panels[0] == reinterpret_cast<HudUiPanel *>(0x1000) &&
+        panels[1] == reinterpret_cast<HudUiPanel *>(0x4000);
+    vector.begin = nullptr;
+    vector.end = nullptr;
+    vector.capacityEnd = nullptr;
+
+    HudUiPanelPtrVector insertVector{};
+    HudUiPanel *insertA = reinterpret_cast<HudUiPanel *>(0x1110);
+    HudUiPanel *insertB = reinterpret_cast<HudUiPanel *>(0x2220);
+    insertVector.InsertN(nullptr, 1, &insertA);
+    insertVector.InsertN(insertVector.begin, 2, &insertB);
+    const bool inserted =
+        insertVector.begin != nullptr &&
+        insertVector.end == insertVector.begin + 3 &&
+        insertVector.capacityEnd >= insertVector.end &&
+        insertVector.begin[0] == reinterpret_cast<HudUiPanel *>(0x2220) &&
+        insertVector.begin[1] == reinterpret_cast<HudUiPanel *>(0x2220) &&
+        insertVector.begin[2] == reinterpret_cast<HudUiPanel *>(0x1110);
+
+    TestZrdChildWidget child{};
+    child.deleteFlags = 0;
+    const bool nullDelete = HudUiZrdWidget::DeleteChildIfPresent(nullptr) == nullptr;
+    const bool childDelete =
+        HudUiZrdWidget::DeleteChildIfPresent(&child) == nullptr && child.deleteFlags == 1;
+
+    TestZrdChildWidget labelChild{};
+    TestZrdChildWidget rolloverChild{};
+    TestZrdChildWidget activateChild{};
+    HudUiPanel **const labelPanels =
+        static_cast<HudUiPanel **>(::operator new(sizeof(HudUiPanel *)));
+    HudUiPanel **const rolloverPanels =
+        static_cast<HudUiPanel **>(::operator new(sizeof(HudUiPanel *)));
+    HudUiPanel **const activatePanels =
+        static_cast<HudUiPanel **>(::operator new(sizeof(HudUiPanel *)));
+    labelPanels[0] = reinterpret_cast<HudUiPanel *>(&labelChild);
+    rolloverPanels[0] = reinterpret_cast<HudUiPanel *>(&rolloverChild);
+    activatePanels[0] = reinterpret_cast<HudUiPanel *>(&activateChild);
+
+    void *const widgetStorage = ::operator new(sizeof(HudUiZrdWidget));
+    std::memset(widgetStorage, 0, sizeof(HudUiZrdWidget));
+    HudUiZrdWidget *const widget = new (widgetStorage) HudUiZrdWidget;
+    widget->labelPanels.begin = labelPanels;
+    widget->labelPanels.end = labelPanels + 1;
+    widget->labelPanels.capacityEnd = labelPanels + 1;
+    widget->rolloverLabelPanels.begin = rolloverPanels;
+    widget->rolloverLabelPanels.end = rolloverPanels + 1;
+    widget->rolloverLabelPanels.capacityEnd = rolloverPanels + 1;
+    widget->activateLabelPanels.begin = activatePanels;
+    widget->activateLabelPanels.end = activatePanels + 1;
+    widget->activateLabelPanels.capacityEnd = activatePanels + 1;
+
+    widget->DestructorCore();
+    const bool destructed =
+        labelChild.deleteFlags == 1 &&
+        rolloverChild.deleteFlags == 1 &&
+        activateChild.deleteFlags == 1;
+    ::operator delete(widgetStorage);
+
+    void *const scalarStorage = ::operator new(sizeof(HudUiZrdWidget));
+    std::memset(scalarStorage, 0, sizeof(HudUiZrdWidget));
+    HudUiZrdWidget *const scalarWidget = new (scalarStorage) HudUiZrdWidget;
+    HudUiElement *const scalarResult = scalarWidget->ScalarDeletingDestructor(0);
+    const bool scalarDestroyed = scalarResult == scalarWidget;
+    ::operator delete(scalarStorage);
+
+    HudUiZrdWidget invalidateWidget{};
+    void *const labelAStorage = ::operator new(sizeof(HudUiPanel));
+    void *const labelBStorage = ::operator new(sizeof(HudUiPanel));
+    std::memset(labelAStorage, 0, sizeof(HudUiPanel));
+    std::memset(labelBStorage, 0, sizeof(HudUiPanel));
+    HudUiPanel *const labelA = new (labelAStorage) HudUiPanel;
+    HudUiPanel *const labelB = new (labelBStorage) HudUiPanel;
+    HudUiPanel *invalidateLabels[] = {labelA, labelB};
+    invalidateWidget.labelPanels.begin = invalidateLabels;
+    invalidateWidget.labelPanels.end = invalidateLabels + 2;
+    g_HudUi_InvalidateMask = 0x80;
+    invalidateWidget.Invalidate();
+    const bool invalidated =
+        (invalidateWidget.flags & 0x80) != 0 &&
+        (labelA->flags & 0x80) != 0 &&
+        (labelB->flags & 0x80) != 0;
+    g_HudUi_InvalidateMask = 0;
+    invalidateWidget.labelPanels.begin = nullptr;
+    invalidateWidget.labelPanels.end = nullptr;
+    ::operator delete(labelAStorage);
+    ::operator delete(labelBStorage);
+
+    HudUiZrdWidget boundsWidget{};
+    const bool disabledBounds = boundsWidget.GetBoundsRectOrNull() == nullptr;
+
+    zVidImagePartial boundsImage{};
+    boundsImage.width = 11;
+    boundsImage.height = 13;
+    boundsWidget.modeOrEnabled = 1;
+    boundsWidget.x = 3;
+    boundsWidget.y = 4;
+    boundsWidget.image = &boundsImage;
+    HudUiRect *const imageBounds = boundsWidget.GetBoundsRectOrNull();
+    const bool imageBoundsOk =
+        imageBounds == &boundsWidget.boundsRect &&
+        imageBounds->left == 3 &&
+        imageBounds->top == 4 &&
+        imageBounds->right == 14 &&
+        imageBounds->bottom == 17;
+
+    void *const boundsLabelAStorage = ::operator new(sizeof(HudUiPanel));
+    void *const boundsLabelBStorage = ::operator new(sizeof(HudUiPanel));
+    std::memset(boundsLabelAStorage, 0, sizeof(HudUiPanel));
+    std::memset(boundsLabelBStorage, 0, sizeof(HudUiPanel));
+    HudUiPanel *const boundsLabelA = new (boundsLabelAStorage) HudUiPanel;
+    HudUiPanel *const boundsLabelB = new (boundsLabelBStorage) HudUiPanel;
+    boundsLabelA->x = 10;
+    boundsLabelA->y = 20;
+    boundsLabelA->textWidthPx = 10;
+    boundsLabelA->textHeightPx = 5;
+    boundsLabelA->unknown274 = 0;
+    boundsLabelA->textDirty = 0;
+    boundsLabelB->x = 12;
+    boundsLabelB->y = 25;
+    boundsLabelB->textWidthPx = 30;
+    boundsLabelB->textHeightPx = 7;
+    boundsLabelB->unknown274 = 0;
+    boundsLabelB->textDirty = 0;
+    HudUiPanel *boundsLabels[] = {boundsLabelA, boundsLabelB};
+    boundsWidget.image = nullptr;
+    boundsWidget.boundsRect.left = 0;
+    boundsWidget.boundsRect.top = 0;
+    boundsWidget.boundsRect.right = 0;
+    boundsWidget.boundsRect.bottom = 0;
+    boundsWidget.labelPanels.begin = boundsLabels;
+    boundsWidget.labelPanels.end = boundsLabels + 2;
+    HudUiRect *const labelBounds = boundsWidget.GetBoundsRectOrNull();
+    const bool labelBoundsOk =
+        labelBounds == &boundsWidget.boundsRect &&
+        labelBounds->left == 10 &&
+        labelBounds->top == 20 &&
+        labelBounds->right == 42 &&
+        labelBounds->bottom == 32;
+
+    g_HudUi_InvalidateMask = 0;
+
+    invalidateWidget.labelPanels.begin = nullptr;
+    invalidateWidget.labelPanels.end = nullptr;
+    boundsWidget.labelPanels.begin = nullptr;
+    boundsWidget.labelPanels.end = nullptr;
+    boundsWidget.image = nullptr;
+    boundsWidget.defaultImage = nullptr;
+    boundsWidget.disabledImage = nullptr;
+    boundsWidget.rolloverImage = nullptr;
+    boundsWidget.activateImage = nullptr;
+    ::operator delete(boundsLabelAStorage);
+    ::operator delete(boundsLabelBStorage);
+
+    return erased && inserted && nullDelete && childDelete && destructed && scalarDestroyed &&
+                   invalidated && disabledBounds && imageBoundsOk && labelBoundsOk
+               ? 0
+               : 1;
+}
+
 extern "C" int zhud_options_dialog_constructor_smoke(void) {
     CodeFunctionPatch loadPatch{};
     g_optionsDialogLoadCalls = 0;
@@ -3051,7 +4845,7 @@ extern "C" int zhud_options_dialog_scalar_deleting_destructor_smoke(void) {
         return 1;
     }
 
-    HudOptionsDialog *const returned = dialog->ScalarDeletingDestructor(0);
+    HudUiBackground *const returned = dialog->ScalarDeletingDestructor(0);
     const bool noDeletePath = returned == dialog;
     ::operator delete(dialog);
     if (!noDeletePath) {
@@ -3228,7 +5022,7 @@ extern "C" int zhud_credits_panel_scalar_deleting_destructor_smoke(void) {
     );
     HudUiCreditsPanel *const panel = static_cast<HudUiCreditsPanel *>(storage);
     InitCreditsPanelForDestructor(panel);
-    HudUiCreditsPanel *const result = panel->ScalarDeletingDestructor(0);
+    HudUiBackground *const result = panel->HudUiCreditsPanel::ScalarDeletingDestructor(0);
 
     int failure = result == panel ? 0 : 1;
     failure |= CreditsPanelDestructorFailureBits(*panel) << 1;
@@ -4248,7 +6042,7 @@ extern "C" int zhud_cmd_dialog_scalar_deleting_destructor_smoke(void) {
     dialog->Constructor();
     InstallHudCmdDialogBinding(dialog->commandList, "Command");
 
-    HudCmdDialog *const returned = dialog->ScalarDeletingDestructor(0);
+    HudUiBackground *const returned = dialog->HudCmdDialog::ScalarDeletingDestructor(0);
     const bool noDeletePath =
         returned == dialog &&
         dialog->commandList.bindingVec.begin == nullptr &&
@@ -4261,7 +6055,7 @@ extern "C" int zhud_cmd_dialog_scalar_deleting_destructor_smoke(void) {
     std::memset(deletingDialog, 0, sizeof(HudCmdDialog));
     deletingDialog->Constructor();
     InstallHudCmdDialogBinding(deletingDialog->commandList, "DeleteCommand");
-    deletingDialog->ScalarDeletingDestructor(1);
+    deletingDialog->HudCmdDialog::ScalarDeletingDestructor(1);
 
     RestoreFunctionPatch(loadPatch);
     RestoreFunctionPatch(rebuildPatch);

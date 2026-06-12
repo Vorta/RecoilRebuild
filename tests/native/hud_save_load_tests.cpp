@@ -5,6 +5,7 @@
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zUtil/zSaveGame.h"
 #include "GameZRecoil/zUtil/zZbd.h"
+#include "GameZRecoil/zVideo/zVideo.h"
 
 #include <cstdint>
 #include <cstdio>
@@ -610,6 +611,36 @@ extern "C" int recoil_app_mission_fmv_state_destructor_smoke(void) {
     ::operator delete(storage);
 
     return missionCleared ? 0 : 2;
+}
+
+extern "C" int recoil_app_initialize_display_failure_smoke(void) {
+    static std::int32_t modeIndex = 3;
+    static std::int32_t fullscreen = 1;
+    static std::int32_t hwApi = 0;
+    static std::int32_t acceleration = 1;
+
+    int *const oldVideoMode = ZOPT_VIDEO_MODE;
+    int *const oldFullscreen = ZOPT_VIDEO_FULLSCREEN;
+    int *const oldHwApi = ZOPT_HW_API;
+    int *const oldAcceleration = ZOPT_VIDEO_ACCELERATION;
+    const int oldVideoInitialized = g_zVideo_IsInitialized;
+
+    ZOPT_VIDEO_MODE = &modeIndex;
+    ZOPT_VIDEO_FULLSCREEN = &fullscreen;
+    ZOPT_HW_API = &hwApi;
+    ZOPT_VIDEO_ACCELERATION = &acceleration;
+    g_zVideo_IsInitialized = 1;
+
+    const std::int32_t result = RecoilApp::InitializeDisplay(
+        reinterpret_cast<HWND>(0x12345678)
+    );
+
+    ZOPT_VIDEO_MODE = oldVideoMode;
+    ZOPT_VIDEO_FULLSCREEN = oldFullscreen;
+    ZOPT_HW_API = oldHwApi;
+    ZOPT_VIDEO_ACCELERATION = oldAcceleration;
+    g_zVideo_IsInitialized = oldVideoInitialized;
+    return result == 0 ? 0 : 1;
 }
 
 extern "C" int recoil_app_start_engine_and_queue_startup_state_smoke(void) {

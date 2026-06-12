@@ -32,7 +32,11 @@ int __fastcall MatchStreamRequestPredicate(
 } // namespace
 
 namespace zSndStreamMgr {
-// Reimplements 0x4a4c40: zSndStreamMgr::UpdateActiveRequestPredicate
+/**
+ * Reimplements 0x4a4c40: zSndStreamMgr::UpdateActiveRequestPredicate.
+ * Purpose: advance one active stream request and record finished requests for
+ * recycling.
+ */
 int __fastcall UpdateActiveRequestPredicate(
     void *payload,
     void *
@@ -186,7 +190,11 @@ extern "C" int __fastcall zSndStreamRequest_StopIfActive(
     return 0;
 }
 
-// Reimplements 0x4a5220: zSndStreamRequest_MatchGroupPredicate
+/**
+ * Reimplements 0x4a5220: zSndStreamRequest_MatchGroupPredicate.
+ * Purpose: compare a queued stream request with a sound group while searching
+ * active request lists.
+ */
 extern "C" int __fastcall zSndStreamRequest_MatchGroupPredicate(
     void *payload,
     void *group
@@ -277,8 +285,11 @@ zSndGroupConfigBlock * zSndGroup::SelectWeightedEntry() {
     return result;
 }
 
-// Reimplements 0x4a5020: zSndStreamRequest::StateWaitTerminationDelay
-// (D:\Proj\GameZRecoil\zSound\zsnd_grp.cpp) x87 elapsed timer vs group delayTerminationSec.
+/**
+ * Reimplements 0x4a5020: zSndStreamRequest::StateWaitTerminationDelay.
+ * Purpose: wait for the termination delay before marking a stream request
+ * finished.
+ */
 void zSndStreamRequest::StateWaitTerminationDelay() {
     elapsedSec = elapsedSec + g_FrameDeltaTimeSec;
     if (elapsedSec < group->delayTerminationSec) {
@@ -289,7 +300,11 @@ void zSndStreamRequest::StateWaitTerminationDelay() {
     streamState = 4;
 }
 
-// Reimplements 0x4a4cb0: zSndStreamRequest::StateBeginGroup
+/**
+ * Reimplements 0x4a4cb0: zSndStreamRequest::StateBeginGroup.
+ * Purpose: initialize stream-request playback state and select the first
+ * playable group entry.
+ */
 int zSndStreamRequest::StateBeginGroup() {
     elapsedSec = 0.0f;
     playIndex = 0;
@@ -306,8 +321,14 @@ int zSndStreamRequest::StateBeginGroup() {
     return 1;
 }
 
-// Reimplements 0x4a4ea0: zSndStreamRequest::StatePlayCurrentEntry
-// Uses signed play-count decrement so 0xffff remains the original infinite-play sentinel.
+/**
+ * Reimplements 0x4a4ea0: zSndStreamRequest::StatePlayCurrentEntry.
+ * Purpose: play due stream entries, advance child entries, and transition to
+ * repeat or termination delay.
+ *
+ * Uses signed play-count decrement so 0xffff remains the original infinite-play
+ * sentinel.
+ */
 void zSndStreamRequest::StatePlayCurrentEntry() {
     elapsedSec = elapsedSec + g_FrameDeltaTimeSec;
 
@@ -370,7 +391,11 @@ void zSndStreamRequest::StatePlayCurrentEntry() {
     }
 }
 
-// Reimplements 0x4a4fd0: zSndStreamRequest::StateWaitRepeatDelay
+/**
+ * Reimplements 0x4a4fd0: zSndStreamRequest::StateWaitRepeatDelay.
+ * Purpose: wait for the repeat delay before selecting the next playable group
+ * entry.
+ */
 void zSndStreamRequest::StateWaitRepeatDelay() {
     elapsedSec = elapsedSec + g_FrameDeltaTimeSec;
     if (elapsedSec < group->delayRepeatSec) {
@@ -382,7 +407,10 @@ void zSndStreamRequest::StateWaitRepeatDelay() {
     streamState = currentEntry != 0 ? 1 : 4;
 }
 
-// Reimplements 0x4a5350: zSndStreamMgr_EnsureInit
+/**
+ * Reimplements 0x4a5350: zSndStreamMgr_EnsureInit.
+ * Purpose: lazily create the stream-manager root node and request lists.
+ */
 extern "C" int zSndStreamMgr_EnsureInit() {
     if (g_zSndStream_RootNode == 0) {
         g_zSndStream_RootNode = zClass_Object3D::gwObject3DInit();
@@ -479,7 +507,11 @@ void FreePendingList(
 }
 } // namespace
 
-// Reimplements 0x4a50a0: zSndStreamMgr::Shutdown
+/**
+ * Reimplements 0x4a50a0: zSndStreamMgr::Shutdown.
+ * Purpose: drain stream-manager lists, release pending stream configs, clear
+ * stream-manager globals, and return success.
+ */
 int Shutdown() {
     if (g_zSndStream_RootNode != 0 && zClass::IsInitialized() != 0) {
         zClass_Class::gwNodeSetActionCallback(
@@ -586,7 +618,11 @@ zSndPlayHandle *__fastcall zSndGroup::QueueStreamRequestWithWorldPos(
     );
 }
 
-// Reimplements 0x4a5050: zSndStreamMgr::RecycleFinishedRequest
+/**
+ * Reimplements 0x4a5050: zSndStreamMgr::RecycleFinishedRequest.
+ * Purpose: run active stream-request updates and recycle the first finished
+ * request back to the free list.
+ */
 extern "C" void zSndStreamMgr_RecycleFinishedRequest() {
     zArchiveList_FindPayloadByPredicate(
         g_zSndStream_ActiveList,

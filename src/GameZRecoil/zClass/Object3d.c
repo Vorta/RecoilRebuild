@@ -602,25 +602,36 @@ namespace zClass_Object3D {
      * queue a transform/bounds dirty update for the node subtree.
      */
     int __fastcall PropagateTransformDirty(zClass_NodePartial * node) {
-        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
-            node,
-            0xe8,
-            0xe9
-        );
-        if (data == 0) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
+                0xe8,
+                "Null node pointer."
+            );
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
+                0xe9,
+                "Null class data pointer"
+            );
             return 5;
         }
 
-        data->rotation = zVec3_Make(
-            0.0f,
-            0.0f,
-            0.0f
-        );
-        data->scale = zVec3_Make(
-            1.0f,
-            1.0f,
-            1.0f
-        );
+        zClass_Object3DDataPartial *data = (zClass_Object3DDataPartial *)(node->classData);
+        /* Retail keeps the rotation-zero and scale-one dword stores paired. */
+        volatile unsigned int *scaleBits = (volatile unsigned int *)(&data->scale.x);
+        int count = 3;
+        do {
+            scaleBits[-3] = 0;
+            *scaleBits = 0x3f800000;
+            ++scaleBits;
+            --count;
+        } while (count != 0);
+
         memset(
             data->localMatrix,
             0,
@@ -631,10 +642,15 @@ namespace zClass_Object3D {
         data->localMatrix[8] = 1.0f;
         data->flags = (data->flags & ~0x10) | 0x09;
 
-        QueueTransformUpdate(
-            node,
-            data
-        );
+        zClass_Node::PropagateTransformDirtyRecursive(node);
+        if ((node->flags & 0x01) == 0) {
+            zClass_TypeList::Insert(
+                7,
+                node
+            );
+            node->flags |= 0x01;
+        }
+        node->flags |= 0x02;
         return 0;
     }
 

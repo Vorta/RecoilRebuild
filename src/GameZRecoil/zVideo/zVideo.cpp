@@ -494,16 +494,15 @@ RECT g_zVideo_CachedClientRectScreen = {0};
  * Purpose: Pack 8-bit RGB components into the active framebuffer pixel format.
  */
 unsigned int __fastcall zVid_PackColorRGB(
-    int red,
-    int green,
-    int blue
+    unsigned int red,
+    unsigned int green,
+    unsigned int blue
 ) {
     const unsigned int greenPacked =
-        (g_zVideo_PixelPack.gMaskShifted & green) << g_zVideo_PixelPack.sumMinus8;
+        (g_zVideo_PixelPack.gMaskShifted & (unsigned char)(green)) << g_zVideo_PixelPack.sumMinus8;
     const unsigned int redPacked =
-        (g_zVideo_PixelPack.rMaskShifted & red) << g_zVideo_PixelPack.packedBase;
-    return greenPacked | redPacked |
-           ((unsigned char)(blue) >> g_zVideo_PixelPack.bShiftTo8);
+        (g_zVideo_PixelPack.rMaskShifted & (unsigned char)(red)) << g_zVideo_PixelPack.packedBase;
+    return greenPacked | redPacked | ((unsigned char)(blue) >> g_zVideo_PixelPack.bShiftTo8);
 }
 
 // Reimplements 0x4a6ca0: zVid_PackColor00RRGGBB
@@ -2241,19 +2240,20 @@ void __fastcall PixelPack_SetupFromMasks(
     unsigned int greenMask,
     unsigned int blueMask
 ) {
+    const int redMaskShifted = ((1 << redBits) - 1) << (8 - redBits);
+    const int greenBlueBits = greenBits + blueBits;
     g_zVideo_PixelPack.rMask = redMask;
     g_zVideo_PixelPack.gMask = greenMask;
     g_zVideo_PixelPack.bMask = blueMask;
-    const int greenBlueBits = greenBits + blueBits;
     const int packedBase = redBits + greenBlueBits - 8;
     const int sumMinus8 = greenBlueBits - 8;
     g_zVideo_PixelPack.rBits = redBits;
-    g_zVideo_PixelPack.packedBase = packedBase;
     g_zVideo_PixelPack.sumMinus8 = sumMinus8;
+    g_zVideo_PixelPack.packedBase = packedBase;
     g_zVideo_PixelPack.gBits = greenBits;
     g_zVideo_PixelPack.bShiftTo8 = 8 - blueBits;
     g_zVideo_PixelPack.bBits = blueBits;
-    g_zVideo_PixelPack.rMaskShifted = ((1 << redBits) - 1) << (8 - redBits);
+    g_zVideo_PixelPack.rMaskShifted = redMaskShifted;
     g_zVideo_PixelPack.gMaskShifted = ((1 << greenBits) - 1) << (8 - greenBits);
     g_zVideo_PixelPack.bMaskShifted = ((1 << blueBits) - 1) << (8 - blueBits);
 }
@@ -2321,7 +2321,12 @@ int __fastcall SetRendererTypeAndActivePath(
     return previousRendererType;
 }
 
-// Reimplements 0x4a71c0: zVideo::SetHalfResAdjustMode
+/**
+ * Reimplements 0x4a71c0: zVideo::SetHalfResAdjustMode.
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: update the half-resolution adjustment mode when the current
+ * surface configuration allows it.
+ */
 int __fastcall SetHalfResAdjustMode(
     int mode
 ) {
@@ -10257,7 +10262,7 @@ int __fastcall Image_PopulateSurfaceFromHeapPixels(
 
     free(image->pixels);
     image->pixels = lockedSurfaceDesc.lpSurface;
-    image->pitchWords = lockedSurfaceDesc.lPitch >> 1;
+    image->pitchWords = (int)((unsigned int)(lockedSurfaceDesc.lPitch) >> 1);
 
     for (;;) {
         HRESULT hresult = image->surface->Unlock(&lockedSurfaceDesc);
@@ -10767,7 +10772,12 @@ void __fastcall ClearSwBackbufferAndZBufferRects(
     );
 }
 
-// Reimplements 0x4a7d70: zVideo_dd::FlipToGDIIfAttached
+/**
+ * Reimplements 0x4a7d70: zVideo_dd::FlipToGDIIfAttached.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: flip the attached primary DirectDraw surface back to GDI when the
+ * fullscreen primary owns an attached backbuffer.
+ */
 void FlipToGDIIfAttached() {
     if (g_zVideo_pDirectDraw2 != 0 && g_zVideo_PrimaryHasAttachedBackbuffer != 0) {
         g_zVideo_pDirectDraw2->FlipToGDISurface();
@@ -10950,7 +10960,7 @@ int __fastcall InitFullscreenSoftwarePixelPack(
     if (hresult != DD_OK) {
         return ReportError(
             (int)(hresult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x597
         );
     }
@@ -10994,7 +11004,7 @@ int __fastcall InitFullscreenSoftwarePixelPack(
     TeardownVideoSubsystem();
     zError::ReportOld(
         0x800,
-        kZVideoDirectDrawSourceFile,
+        "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
         0x5bd,
         "Unrecognized pixel format"
     );
@@ -11073,14 +11083,15 @@ int CreateFullscreenSurfacesForRenderer() {
  * packing, then attaches a window clipper to the display-mode surface.
  */
 int CreateHalfResBackbufferSurfaces() {
-    zOptionEntryPartial defaultGfxFlags = {0};
+    DDSURFACEDESC desc = {0};
+    DDSCAPS attachedCaps = {0};
+    int defaultGfxFlagsPayload = 0;
     zOptionEntryPartial *gfxFlagsOption =
         zGame::Options_FindOption(g_zVideo_ActiveRendererPath != 0 ? "GfxFlags_HW" : "GfxFlags_SW");
     if (gfxFlagsOption == 0) {
-        gfxFlagsOption = &defaultGfxFlags;
+        gfxFlagsOption = (zOptionEntryPartial *)(&defaultGfxFlagsPayload);
     }
 
-    DDSURFACEDESC desc = {0};
     desc.dwSize = sizeof(desc);
     desc.dwBackBufferCount = 1;
     desc.dwFlags = 0x21;
@@ -11095,14 +11106,13 @@ int CreateHalfResBackbufferSurfaces() {
     if (hresult != DD_OK) {
         return ReportError(
             (int)(hresult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x41f
         );
     }
 
-    DDSCAPS attachedCaps = {0};
-    attachedCaps.dwCaps = DDSCAPS_BACKBUFFER;
     g_zVideo_PrimaryHasAttachedBackbuffer = 1;
+    attachedCaps.dwCaps = DDSCAPS_BACKBUFFER;
     hresult = g_zVideo_DisplayModeSurfaceState.surf->GetAttachedSurface(
         &attachedCaps,
         &g_zVideo_PrimarySurfaceState.surf
@@ -11110,7 +11120,7 @@ int CreateHalfResBackbufferSurfaces() {
     if (hresult != DD_OK) {
         return ReportError(
             (int)(hresult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x429
         );
     }
@@ -11134,7 +11144,7 @@ int CreateHalfResBackbufferSurfaces() {
     if (hresult != DD_OK) {
         return ReportError(
             (int)(hresult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x43f
         );
     }
@@ -11151,7 +11161,7 @@ int CreateHalfResBackbufferSurfaces() {
     if (hresult != DD_OK) {
         return ReportError(
             (int)(hresult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x447
         );
     }
@@ -11163,21 +11173,21 @@ int CreateHalfResBackbufferSurfaces() {
     if (hresult != DD_OK) {
         return ReportError(
             (int)(hresult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x44b
         );
     }
 
     hresult = g_zVideo_DisplayModeSurfaceState.surf->SetClipper(g_zVideo_pClipper);
-    if (hresult == DD_OK) {
-        return 0;
+    if (hresult != DD_OK) {
+        return ReportError(
+            (int)(hresult),
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
+            0x450
+        );
     }
 
-    return ReportError(
-        (int)(hresult),
-        kZVideoDirectDrawSourceFile,
-        0x450
-    );
+    return 0;
 }
 
 /**
@@ -11192,14 +11202,14 @@ int CreateHalfResBackbufferSurfaces() {
  * clipper.
  */
 int CreateFullscreenSoftwareSurfaces() {
-    zOptionEntryPartial defaultGfxFlags = {0};
+    DDSURFACEDESC desc = {0};
+    int defaultGfxFlagsPayload = 0;
     zOptionEntryPartial *gfxFlagsOption =
         zGame::Options_FindOption(g_zVideo_ActiveRendererPath != 0 ? "GfxFlags_HW" : "GfxFlags_SW");
     if (gfxFlagsOption == 0) {
-        gfxFlagsOption = &defaultGfxFlags;
+        gfxFlagsOption = (zOptionEntryPartial *)(&defaultGfxFlagsPayload);
     }
 
-    DDSURFACEDESC desc = {0};
     desc.dwSize = sizeof(desc);
     desc.dwFlags = 1;
     desc.ddsCaps.dwCaps = 0xa00;
@@ -11213,14 +11223,12 @@ int CreateFullscreenSoftwareSurfaces() {
     if (hresult != DD_OK) {
         return ReportError(
             (int)(hresult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x4cc
         );
     }
 
-    if (LockSurfaceState(&g_zVideo_DisplayModeSurfaceState) == 0) {
-        UnlockSurfaceState(&g_zVideo_DisplayModeSurfaceState);
-    } else {
+    if (LockSurfaceState(&g_zVideo_DisplayModeSurfaceState) != 0) {
         g_zVideo_DisplayModeSurfaceState.surf->Release();
         desc.ddsCaps.dwCaps = 0x200;
         hresult = CreateSurface3FromDesc(
@@ -11232,10 +11240,12 @@ int CreateFullscreenSoftwareSurfaces() {
         if (hresult != DD_OK) {
             return ReportError(
                 (int)(hresult),
-                kZVideoDirectDrawSourceFile,
+                "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
                 0x4da
             );
         }
+    } else {
+        UnlockSurfaceState(&g_zVideo_DisplayModeSurfaceState);
     }
 
     g_zVideo_PrimaryHasAttachedBackbuffer = 0;
@@ -11259,7 +11269,7 @@ int CreateFullscreenSoftwareSurfaces() {
     if (hresult != DD_OK) {
         return ReportError(
             (int)(hresult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x4f7
         );
     }
@@ -11283,7 +11293,7 @@ int CreateFullscreenSoftwareSurfaces() {
     if (hresult != DD_OK) {
         return ReportError(
             (int)(hresult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x50d
         );
     }
@@ -11300,7 +11310,7 @@ int CreateFullscreenSoftwareSurfaces() {
     if (hresult != DD_OK) {
         return ReportError(
             (int)(hresult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x515
         );
     }
@@ -11312,21 +11322,21 @@ int CreateFullscreenSoftwareSurfaces() {
     if (hresult != DD_OK) {
         return ReportError(
             (int)(hresult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x519
         );
     }
 
     hresult = g_zVideo_DisplayModeSurfaceState.surf->SetClipper(g_zVideo_pClipper);
-    if (hresult == DD_OK) {
-        return 0;
+    if (hresult != DD_OK) {
+        return ReportError(
+            (int)(hresult),
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
+            0x51d
+        );
     }
 
-    return ReportError(
-        (int)(hresult),
-        kZVideoDirectDrawSourceFile,
-        0x51d
-    );
+    return 0;
 }
 
 /**
@@ -11342,6 +11352,7 @@ int CreateFullscreenSoftwareSurfaces() {
  */
 int CreateFullscreenHardwareSurfaces() {
     DDSURFACEDESC desc = {0};
+    DDSCAPS attachedCaps = {0};
     desc.dwSize = sizeof(desc);
     desc.dwBackBufferCount = 1;
     desc.dwFlags = 0x21;
@@ -11356,13 +11367,12 @@ int CreateFullscreenHardwareSurfaces() {
     if (hresult != DD_OK) {
         return ReportError(
             (int)(hresult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x53b
         );
     }
 
     g_zVideo_PrimaryHasAttachedBackbuffer = 1;
-    DDSCAPS attachedCaps = {0};
     attachedCaps.dwCaps = DDSCAPS_BACKBUFFER;
     hresult = g_zVideo_DisplayModeSurfaceState.surf->GetAttachedSurface(
         &attachedCaps,
@@ -11371,7 +11381,7 @@ int CreateFullscreenHardwareSurfaces() {
     if (hresult != DD_OK) {
         return ReportError(
             (int)(hresult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x546
         );
     }
@@ -11392,7 +11402,7 @@ int CreateFullscreenHardwareSurfaces() {
     if (hresult != DD_OK) {
         return ReportError(
             (int)(hresult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x557
         );
     }
@@ -11409,7 +11419,7 @@ int CreateFullscreenHardwareSurfaces() {
     if (hresult != DD_OK) {
         return ReportError(
             (int)(hresult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x55f
         );
     }
@@ -11421,21 +11431,21 @@ int CreateFullscreenHardwareSurfaces() {
     if (hresult != DD_OK) {
         return ReportError(
             (int)(hresult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x563
         );
     }
 
     hresult = g_zVideo_DisplayModeSurfaceState.surf->SetClipper(g_zVideo_pClipper);
-    if (hresult == DD_OK) {
-        return 0;
+    if (hresult != DD_OK) {
+        return ReportError(
+            (int)(hresult),
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
+            0x567
+        );
     }
 
-    return ReportError(
-        (int)(hresult),
-        kZVideoDirectDrawSourceFile,
-        0x567
-    );
+    return 0;
 }
 
 /**
@@ -11599,457 +11609,459 @@ RECOIL_NO_GS int __fastcall ReportError(
     const char *sourceFile,
     int sourceLine
 ) {
-    if (hresult == DD_OK) {
-        return 0;
-    }
+    char errorNameBuffer[0x100];
 
-    const char *errorNameFormat;
+#define ZVIDEO_DD_REPORT_ERROR_NAME(nameText) \
+    sprintf( \
+        errorNameBuffer, \
+        nameText \
+    )
+
     switch (hresult) {
     case DDERR_GENERIC:
-        errorNameFormat = "DDERR_GENERIC";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_GENERIC");
         break;
     case DDERR_UNSUPPORTED:
-        errorNameFormat = "DDERR_UNSUPPORTED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_UNSUPPORTED");
         break;
     case DDERR_OUTOFMEMORY:
-        errorNameFormat = "DDERR_OUTOFMEMORY";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_OUTOFMEMORY");
         break;
     case DDERR_NOTINITIALIZED:
-        errorNameFormat = "DDERR_NOTINITIALIZED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOTINITIALIZED");
         break;
     case DDERR_INVALIDPARAMS:
-        errorNameFormat = "DDERR_INVALIDPARAMS";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_INVALIDPARAMS");
         break;
     case DDERR_ALREADYINITIALIZED:
-        errorNameFormat = "DDERR_ALREADYINITIALIZED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_ALREADYINITIALIZED");
         break;
     case DDERR_CANNOTATTACHSURFACE:
-        errorNameFormat = "DDERR_CANNOTATTACHSURFACE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_CANNOTATTACHSURFACE");
         break;
     case DDERR_CANNOTDETACHSURFACE:
-        errorNameFormat = "DDERR_CANNOTDETACHSURFACE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_CANNOTDETACHSURFACE");
         break;
     case DDERR_CURRENTLYNOTAVAIL:
-        errorNameFormat = "DDERR_CURRENTLYNOTAVAIL";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_CURRENTLYNOTAVAIL");
         break;
     case DDERR_EXCEPTION:
-        errorNameFormat = "DDERR_EXCEPTION";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_EXCEPTION");
         break;
     case DDERR_HEIGHTALIGN:
-        errorNameFormat = "DDERR_HEIGHTALIGN";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_HEIGHTALIGN");
         break;
     case DDERR_INVALIDCAPS:
-        errorNameFormat = "DDERR_INVALIDCAPS";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_INVALIDCAPS");
         break;
     case DDERR_INVALIDCLIPLIST:
-        errorNameFormat = "DDERR_INVALIDCLIPLIST";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_INVALIDCLIPLIST");
         break;
     case DDERR_INVALIDMODE:
-        errorNameFormat = "DDERR_INVALIDMODE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_INVALIDMODE");
         break;
     case DDERR_INVALIDOBJECT:
-        errorNameFormat = "DDERR_INVALIDOBJECT";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_INVALIDOBJECT");
         break;
     case DDERR_INVALIDPIXELFORMAT:
-        errorNameFormat = "DDERR_INVALIDPIXELFORMAT";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_INVALIDPIXELFORMAT");
         break;
     case DDERR_INVALIDRECT:
-        errorNameFormat = "DDERR_INVALIDRECT";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_INVALIDRECT");
         break;
     case DDERR_LOCKEDSURFACES:
-        errorNameFormat = "DDERR_LOCKEDSURFACES";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_LOCKEDSURFACES");
         break;
     case DDERR_NO3D:
-        errorNameFormat = "DDERR_NO3D";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NO3D");
         break;
     case DDERR_NOALPHAHW:
-        errorNameFormat = "DDERR_NOALPHAHW";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOALPHAHW");
         break;
     case DDERR_NOCLIPLIST:
-        errorNameFormat = "DDERR_NOCLIPLIST";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOCLIPLIST");
         break;
     case DDERR_NOCOLORCONVHW:
-        errorNameFormat = "DDERR_NOCOLORCONVHW";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOCOLORCONVHW");
         break;
     case DDERR_NOCOOPERATIVELEVELSET:
-        errorNameFormat = "DDERR_NOCOOPERATIVELEVELSET";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOCOOPERATIVELEVELSET");
         break;
     case DDERR_NOCOLORKEY:
-        errorNameFormat = "DDERR_NOCOLORKEY";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOCOLORKEY");
         break;
     case DDERR_NOCOLORKEYHW:
-        errorNameFormat = "DDERR_NOCOLORKEYHW";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOCOLORKEYHW");
         break;
     case DDERR_NODIRECTDRAWSUPPORT:
-        errorNameFormat = "DDERR_NODIRECTDRAWSUPPORT";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NODIRECTDRAWSUPPORT");
         break;
     case DDERR_NOEXCLUSIVEMODE:
-        errorNameFormat = "DDERR_NOEXCLUSIVEMODE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOEXCLUSIVEMODE");
         break;
     case DDERR_NOFLIPHW:
-        errorNameFormat = "DDERR_NOFLIPHW";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOFLIPHW");
         break;
     case DDERR_NOGDI:
-        errorNameFormat = "DDERR_NOGDI";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOGDI");
         break;
     case DDERR_NOMIRRORHW:
-        errorNameFormat = "DDERR_NOMIRRORHW";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOMIRRORHW");
         break;
     case DDERR_NOTFOUND:
-        errorNameFormat = "DDERR_NOTFOUND";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOTFOUND");
         break;
     case DDERR_NOOVERLAYHW:
-        errorNameFormat = "DDERR_NOOVERLAYHW";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOOVERLAYHW");
         break;
     case DDERR_NORASTEROPHW:
-        errorNameFormat = "DDERR_NORASTEROPHW";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NORASTEROPHW");
         break;
     case DDERR_NOROTATIONHW:
-        errorNameFormat = "DDERR_NOROTATIONHW";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOROTATIONHW");
         break;
     case DDERR_NOSTRETCHHW:
-        errorNameFormat = "DDERR_NOSTRETCHHW";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOSTRETCHHW");
         break;
     case DDERR_NOT4BITCOLOR:
-        errorNameFormat = "DDERR_NOT4BITCOLOR";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOT4BITCOLOR");
         break;
     case DDERR_NOT4BITCOLORINDEX:
-        errorNameFormat = "DDERR_NOT4BITCOLORINDEX";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOT4BITCOLORINDEX");
         break;
     case DDERR_NOT8BITCOLOR:
-        errorNameFormat = "DDERR_NOT8BITCOLOR";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOT8BITCOLOR");
         break;
     case DDERR_NOTEXTUREHW:
-        errorNameFormat = "DDERR_NOTEXTUREHW";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOTEXTUREHW");
         break;
     case DDERR_NOVSYNCHW:
-        errorNameFormat = "DDERR_NOVSYNCHW";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOVSYNCHW");
         break;
     case DDERR_NOZBUFFERHW:
-        errorNameFormat = "DDERR_NOZBUFFERHW";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOZBUFFERHW");
         break;
     case DDERR_NOZOVERLAYHW:
-        errorNameFormat = "DDERR_NOZOVERLAYHW";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOZOVERLAYHW");
         break;
     case DDERR_OUTOFCAPS:
-        errorNameFormat = "DDERR_OUTOFCAPS";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_OUTOFCAPS");
         break;
     case DDERR_OUTOFVIDEOMEMORY:
-        errorNameFormat = "DDERR_OUTOFVIDEOMEMORY";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_OUTOFVIDEOMEMORY");
         break;
     case DDERR_OVERLAYCANTCLIP:
-        errorNameFormat = "DDERR_OVERLAYCANTCLIP";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_OVERLAYCANTCLIP");
         break;
     case DDERR_OVERLAYCOLORKEYONLYONEACTIVE:
-        errorNameFormat = "DDERR_OVERLAYCOLORKEYONLYONEACTIVE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_OVERLAYCOLORKEYONLYONEACTIVE");
         break;
     case DDERR_PALETTEBUSY:
-        errorNameFormat = "DDERR_PALETTEBUSY";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_PALETTEBUSY");
         break;
     case DDERR_COLORKEYNOTSET:
-        errorNameFormat = "DDERR_COLORKEYNOTSET";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_COLORKEYNOTSET");
         break;
     case DDERR_SURFACEALREADYATTACHED:
-        errorNameFormat = "DDERR_SURFACEALREADYATTACHED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_SURFACEALREADYATTACHED");
         break;
     case DDERR_SURFACEALREADYDEPENDENT:
-        errorNameFormat = "DDERR_SURFACEALREADYDEPENDENT";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_SURFACEALREADYDEPENDENT");
         break;
     case DDERR_SURFACEBUSY:
-        errorNameFormat = "DDERR_SURFACEBUSY";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_SURFACEBUSY");
         break;
     case DDERR_CANTLOCKSURFACE:
-        errorNameFormat = "DDERR_CANTLOCKSURFACE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_CANTLOCKSURFACE");
         break;
     case DDERR_SURFACEISOBSCURED:
-        errorNameFormat = "DDERR_SURFACEISOBSCURED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_SURFACEISOBSCURED");
         break;
     case DDERR_SURFACELOST:
-        errorNameFormat = "DDERR_SURFACELOST";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_SURFACELOST");
         break;
     case DDERR_SURFACENOTATTACHED:
-        errorNameFormat = "DDERR_SURFACENOTATTACHED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_SURFACENOTATTACHED");
         break;
     case DDERR_TOOBIGHEIGHT:
-        errorNameFormat = "DDERR_TOOBIGHEIGHT";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_TOOBIGHEIGHT");
         break;
     case DDERR_TOOBIGSIZE:
-        errorNameFormat = "DDERR_TOOBIGSIZE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_TOOBIGSIZE");
         break;
     case DDERR_TOOBIGWIDTH:
-        errorNameFormat = "DDERR_TOOBIGWIDTH";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_TOOBIGWIDTH");
         break;
     case DDERR_UNSUPPORTEDFORMAT:
-        errorNameFormat = "DDERR_UNSUPPORTEDFORMAT";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_UNSUPPORTEDFORMAT");
         break;
     case DDERR_UNSUPPORTEDMASK:
-        errorNameFormat = "DDERR_UNSUPPORTEDMASK";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_UNSUPPORTEDMASK");
         break;
     case DDERR_VERTICALBLANKINPROGRESS:
-        errorNameFormat = "DDERR_VERTICALBLANKINPROGRESS";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_VERTICALBLANKINPROGRESS");
         break;
     case DDERR_WASSTILLDRAWING:
-        errorNameFormat = "DDERR_WASSTILLDRAWING";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_WASSTILLDRAWING");
         break;
     case DDERR_CANTPAGELOCK:
-        errorNameFormat = "DDERR_CANTPAGELOCK";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_CANTPAGELOCK");
         break;
     case DDERR_CANTPAGEUNLOCK:
-        errorNameFormat = "DDERR_CANTPAGEUNLOCK";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_CANTPAGEUNLOCK");
         break;
     case DDERR_NOTPAGELOCKED:
-        errorNameFormat = "DDERR_NOTPAGELOCKED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOTPAGELOCKED");
         break;
     case DDERR_XALIGN:
-        errorNameFormat = "DDERR_XALIGN";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_XALIGN");
         break;
     case DDERR_INVALIDDIRECTDRAWGUID:
-        errorNameFormat = "DDERR_INVALIDDIRECTDRAWGUID";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_INVALIDDIRECTDRAWGUID");
         break;
     case DDERR_DIRECTDRAWALREADYCREATED:
-        errorNameFormat = "DDERR_DIRECTDRAWALREADYCREATED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_DIRECTDRAWALREADYCREATED");
         break;
     case DDERR_NODIRECTDRAWHW:
-        errorNameFormat = "DDERR_NODIRECTDRAWHW";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NODIRECTDRAWHW");
         break;
     case DDERR_PRIMARYSURFACEALREADYEXISTS:
-        errorNameFormat = "DDERR_PRIMARYSURFACEALREADYEXISTS";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_PRIMARYSURFACEALREADYEXISTS");
         break;
     case DDERR_NOEMULATION:
-        errorNameFormat = "DDERR_NOEMULATION";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOEMULATION");
         break;
     case DDERR_REGIONTOOSMALL:
-        errorNameFormat = "DDERR_REGIONTOOSMALL";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_REGIONTOOSMALL");
         break;
     case DDERR_CLIPPERISUSINGHWND:
-        errorNameFormat = "DDERR_CLIPPERISUSINGHWND";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_CLIPPERISUSINGHWND");
         break;
     case DDERR_NOCLIPPERATTACHED:
-        errorNameFormat = "DDERR_NOCLIPPERATTACHED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOCLIPPERATTACHED");
         break;
     case DDERR_NOHWND:
-        errorNameFormat = "DDERR_NOHWND";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOHWND");
         break;
     case DDERR_HWNDSUBCLASSED:
-        errorNameFormat = "DDERR_HWNDSUBCLASSED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_HWNDSUBCLASSED");
         break;
     case DDERR_HWNDALREADYSET:
-        errorNameFormat = "DDERR_HWNDALREADYSET";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_HWNDALREADYSET");
         break;
     case DDERR_NOPALETTEATTACHED:
-        errorNameFormat = "DDERR_NOPALETTEATTACHED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOPALETTEATTACHED");
         break;
     case DDERR_NOPALETTEHW:
-        errorNameFormat = "DDERR_NOPALETTEHW";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOPALETTEHW");
         break;
     case DDERR_BLTFASTCANTCLIP:
-        errorNameFormat = "DDERR_BLTFASTCANTCLIP";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_BLTFASTCANTCLIP");
         break;
     case DDERR_NOBLTHW:
-        errorNameFormat = "DDERR_NOBLTHW";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOBLTHW");
         break;
     case DDERR_NODDROPSHW:
-        errorNameFormat = "DDERR_NODDROPSHW";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NODDROPSHW");
         break;
     case DDERR_OVERLAYNOTVISIBLE:
-        errorNameFormat = "DDERR_OVERLAYNOTVISIBLE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_OVERLAYNOTVISIBLE");
         break;
     case DDERR_INVALIDPOSITION:
-        errorNameFormat = "DDERR_INVALIDPOSITION";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_INVALIDPOSITION");
         break;
     case DDERR_NOTAOVERLAYSURFACE:
-        errorNameFormat = "DDERR_NOAOVERLAYSURFACE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOAOVERLAYSURFACE");
         break;
     case DDERR_EXCLUSIVEMODEALREADYSET:
-        errorNameFormat = "DDERR_EXCLUSIVEMODEALREADYSET";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_EXCLUSIVEMODEALREADYSET");
         break;
     case DDERR_NOTFLIPPABLE:
-        errorNameFormat = "DDERR_NOTFLIPPABLE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOTFLIPPABLE");
         break;
     case DDERR_CANTDUPLICATE:
-        errorNameFormat = "DDERR_CANTDUPLICATE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_CANTDUPLICATE");
         break;
     case DDERR_NOTLOCKED:
-        errorNameFormat = "DDERR_NOTLOCKED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOTLOCKED");
         break;
     case DDERR_CANTCREATEDC:
-        errorNameFormat = "DDERR_CANTCREATEDC";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_CANTCREATEDC");
         break;
     case DDERR_NODC:
-        errorNameFormat = "DDERR_NODIRECTDC";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NODIRECTDC");
         break;
     case DDERR_WRONGMODE:
-        errorNameFormat = "DDERR_WRONGMODE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_WRONGMODE");
         break;
     case DDERR_IMPLICITLYCREATED:
-        errorNameFormat = "DDERR_IMPLICITLYCREATED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_IMPLICITLYCREATED");
         break;
     case DDERR_NOTPALETTIZED:
-        errorNameFormat = "DDERR_NOTPALETTIZED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOTPALETTIZED");
         break;
     case DDERR_UNSUPPORTEDMODE:
-        errorNameFormat = "DDERR_UNSUPPORTEDMODE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_UNSUPPORTEDMODE");
         break;
     case DDERR_NOMIPMAPHW:
-        errorNameFormat = "DDERR_NOMIPMAPHW";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_NOMIPMAPHW");
         break;
     case DDERR_INVALIDSURFACETYPE:
-        errorNameFormat = "DDERR_INVALIDSURFACETYPE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_INVALIDSURFACETYPE");
         break;
     case DDERR_DCALREADYCREATED:
-        errorNameFormat = "DDERR_DCALREADYCREATED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("DDERR_DCALREADYCREATED");
         break;
     case D3DERR_BADMAJORVERSION:
-        errorNameFormat = "D3DERR_BADMAJORVERSION";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_BADMAJORVERSION");
         break;
     case D3DERR_BADMINORVERSION:
-        errorNameFormat = "D3DERR_BADMINORVERSION";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_BADMINORVERSION");
         break;
     case D3DERR_INVALID_DEVICE:
-        errorNameFormat = "D3DERR_INVALID_DEVICE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_INVALID_DEVICE");
         break;
     case D3DERR_EXECUTE_CREATE_FAILED:
-        errorNameFormat = "D3DERR_EXECUTE_CREATE_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_EXECUTE_CREATE_FAILED");
         break;
     case D3DERR_EXECUTE_DESTROY_FAILED:
-        errorNameFormat = "D3DERR_EXECUTE_DESTROY_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_EXECUTE_DESTROY_FAILED");
         break;
     case D3DERR_EXECUTE_LOCK_FAILED:
-        errorNameFormat = "D3DERR_EXECUTE_LOCK_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_EXECUTE_LOCK_FAILED");
         break;
     case D3DERR_EXECUTE_UNLOCK_FAILED:
-        errorNameFormat = "D3DERR_EXECUTE_UNLOCK_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_EXECUTE_UNLOCK_FAILED");
         break;
     case D3DERR_EXECUTE_LOCKED:
-        errorNameFormat = "D3DERR_EXECUTE_LOCKED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_EXECUTE_LOCKED");
         break;
     case D3DERR_EXECUTE_NOT_LOCKED:
-        errorNameFormat = "D3DERR_EXECUTE_NOT_LOCKED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_EXECUTE_NOT_LOCKED");
         break;
     case D3DERR_EXECUTE_FAILED:
-        errorNameFormat = "D3DERR_EXECUTE_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_EXECUTE_FAILED");
         break;
     case D3DERR_EXECUTE_CLIPPED_FAILED:
-        errorNameFormat = "D3DERR_EXECUTE_CLIPPED_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_EXECUTE_CLIPPED_FAILED");
         break;
     case D3DERR_TEXTURE_NO_SUPPORT:
-        errorNameFormat = "D3DERR_TEXTURE_NO_SUPPORT";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_TEXTURE_NO_SUPPORT");
         break;
     case D3DERR_TEXTURE_CREATE_FAILED:
-        errorNameFormat = "D3DERR_TEXTURE_CREATE_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_TEXTURE_CREATE_FAILED");
         break;
     case D3DERR_TEXTURE_DESTROY_FAILED:
-        errorNameFormat = "D3DERR_TEXTURE_DESTROY_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_TEXTURE_DESTROY_FAILED");
         break;
     case D3DERR_TEXTURE_LOCK_FAILED:
-        errorNameFormat = "D3DERR_TEXTURE_LOCK_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_TEXTURE_LOCK_FAILED");
         break;
     case D3DERR_TEXTURE_UNLOCK_FAILED:
-        errorNameFormat = "D3DERR_TEXTURE_UNLOCK_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_TEXTURE_UNLOCK_FAILED");
         break;
     case D3DERR_TEXTURE_LOAD_FAILED:
-        errorNameFormat = "D3DERR_TEXTURE_LOAD_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_TEXTURE_LOAD_FAILED");
         break;
     case D3DERR_TEXTURE_SWAP_FAILED:
-        errorNameFormat = "D3DERR_TEXTURE_SWAP_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_TEXTURE_SWAP_FAILED");
         break;
     case D3DERR_TEXTURE_LOCKED:
-        errorNameFormat = "D3DERR_TEXTURE_LOCKED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_TEXTURE_LOCKED");
         break;
     case D3DERR_TEXTURE_NOT_LOCKED:
-        errorNameFormat = "D3DERR_TEXTURE_NOT_LOCKED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_TEXTURE_NOT_LOCKED");
         break;
     case D3DERR_TEXTURE_GETSURF_FAILED:
-        errorNameFormat = "D3DERR_TEXTURE_GETSURF_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_TEXTURE_GETSURF_FAILED");
         break;
     case D3DERR_MATRIX_CREATE_FAILED:
-        errorNameFormat = "D3DERR_MATRIX_CREATE_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_MATRIX_CREATE_FAILED");
         break;
     case D3DERR_MATRIX_DESTROY_FAILED:
-        errorNameFormat = "D3DERR_MATRIX_DESTROY_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_MATRIX_DESTROY_FAILED");
         break;
     case D3DERR_MATRIX_SETDATA_FAILED:
-        errorNameFormat = "D3DERR_MATRIX_SETDATA_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_MATRIX_SETDATA_FAILED");
         break;
     case D3DERR_MATRIX_GETDATA_FAILED:
-        errorNameFormat = "D3DERR_MATRIX_GETDATA_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_MATRIX_GETDATA_FAILED");
         break;
     case D3DERR_SETVIEWPORTDATA_FAILED:
-        errorNameFormat = "D3DERR_SETVIEWPORTDATA_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_SETVIEWPORTDATA_FAILED");
         break;
     case D3DERR_INVALIDCURRENTVIEWPORT:
-        errorNameFormat = "D3DERR_INVALIDCURRENTVIEWPORT";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_INVALIDCURRENTVIEWPORT");
         break;
     case D3DERR_INVALIDPRIMITIVETYPE:
-        errorNameFormat = "D3DERR_INVALIDPRIMITIVETYPE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_INVALIDPRIMITIVETYPE");
         break;
     case D3DERR_INVALIDVERTEXTYPE:
-        errorNameFormat = "D3DERR_INVALIDVERTEXTYPE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_INVALIDVERTEXTYPE");
         break;
     case D3DERR_TEXTURE_BADSIZE:
-        errorNameFormat = "D3DERR_TEXTURE_BADSIZE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_TEXTURE_BADSIZE");
         break;
     case D3DERR_MATERIAL_CREATE_FAILED:
-        errorNameFormat = "D3DERR_MATERIAL_CREATE_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_MATERIAL_CREATE_FAILED");
         break;
     case D3DERR_MATERIAL_DESTROY_FAILED:
-        errorNameFormat = "D3DERR_MATERIAL_DESTROY_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_MATERIAL_DESTROY_FAILED");
         break;
     case D3DERR_MATERIAL_SETDATA_FAILED:
-        errorNameFormat = "D3DERR_MATERIAL_SETDATA_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_MATERIAL_SETDATA_FAILED");
         break;
     case D3DERR_MATERIAL_GETDATA_FAILED:
-        errorNameFormat = "D3DERR_MATERIAL_GETDATA_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_MATERIAL_GETDATA_FAILED");
         break;
     case D3DERR_ZBUFF_NEEDS_SYSTEMMEMORY:
-        errorNameFormat = "D3DERR_ZBUFF_NEEDS_SYSTEMMEMORY";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_ZBUFF_NEEDS_SYSTEMMEMORY");
         break;
     case D3DERR_ZBUFF_NEEDS_VIDEOMEMORY:
-        errorNameFormat = "D3DERR_ZBUFF_NEEDS_VIDEOMEMORY";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_ZBUFF_NEEDS_VIDEOMEMORY");
         break;
     case D3DERR_LIGHT_SET_FAILED:
-        errorNameFormat = "D3DERR_LIGHT_SET_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_LIGHT_SET_FAILED");
         break;
     case D3DERR_SCENE_IN_SCENE:
-        errorNameFormat = "D3DERR_SCENE_IN_SCENE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_SCENE_IN_SCENE");
         break;
     case D3DERR_SCENE_NOT_IN_SCENE:
-        errorNameFormat = "D3DERR_SCENE_NOT_IN_SCENE";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_SCENE_NOT_IN_SCENE");
         break;
     case D3DERR_SCENE_BEGIN_FAILED:
-        errorNameFormat = "D3DERR_SCENE_BEGIN_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_SCENE_BEGIN_FAILED");
         break;
     case D3DERR_SCENE_END_FAILED:
-        errorNameFormat = "D3DERR_SCENE_END_FAILED";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_SCENE_END_FAILED");
         break;
     case D3DERR_INBEGIN:
-        errorNameFormat = "D3DERR_INBEGIN";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_INBEGIN");
         break;
     case D3DERR_NOTINBEGIN:
-        errorNameFormat = "D3DERR_NOTINBEGIN";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_NOTINBEGIN");
         break;
     case D3DERR_NOVIEWPORTS:
-        errorNameFormat = "D3DERR_NOVIEWPORTS";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_NOVIEWPORTS");
         break;
     case D3DERR_VIEWPORTDATANOTSET:
-        errorNameFormat = "D3DERR_VIEWPORTDATANOTSET";
+        ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_VIEWPORTDATANOTSET");
         break;
     default:
-        errorNameFormat = "Unknown Error";
+        if (hresult == DD_OK) {
+            return 0;
+        }
+        ZVIDEO_DD_REPORT_ERROR_NAME("Unknown Error");
         break;
     }
 
-    char errorNameBuffer[0x100];
-    sprintf(
-        errorNameBuffer,
-        errorNameFormat
-    );
+#undef ZVIDEO_DD_REPORT_ERROR_NAME
 
     if (hresult == DDERR_OUTOFVIDEOMEMORY) {
-        int textureMemTotalBytes = 0;
-        int textureMemFreeBytes = 0;
-        int videoMemTotalBytes = 0;
-        int videoMemFreeBytes = 0;
+        int textureMemTotalBytes;
+        int textureMemFreeBytes;
+        int videoMemTotalBytes;
+        int videoMemFreeBytes;
 
         g_zVideo_pfnQueryTextureMemoryBytes(
             -1,

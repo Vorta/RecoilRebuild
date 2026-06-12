@@ -150,13 +150,13 @@ extern "C" int hud_ui_new_game_panel_constructor_cluster_smoke(void) {
     }
     panel->nameInput.SetRawKeyboardCapture(0);
 
-    HudUiNewGamePanel *const noDeleteResult = panel->ScalarDeletingDestructor(0);
+    HudUiBackground *const noDeleteResult = panel->ScalarDeletingDestructor(0);
     const bool noDeleteScalar = noDeleteResult == panel;
 
     HudUiNewGamePanel *const heapPanel =
         (HudUiNewGamePanel *)(::operator new(sizeof(HudUiNewGamePanel)));
     new (heapPanel) HudUiNewGamePanel;
-    HudUiNewGamePanel *const heapScalarResult = heapPanel->ScalarDeletingDestructor(1);
+    HudUiBackground *const heapScalarResult = heapPanel->ScalarDeletingDestructor(1);
     const bool heapScalar = heapScalarResult == heapPanel;
 
     HudUiZrdWidget *const zrdWidget =

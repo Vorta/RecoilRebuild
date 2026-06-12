@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <new>
 
 extern "C" int g_zFMV_ActionImage_BlitRectX;
 extern "C" int g_zFMV_ActionImage_BlitRectY;
@@ -178,7 +179,7 @@ extern "C" int zfmv_action_image_constructor_with_screen_rect_smoke(void) {
     action.next = (zFMV_Action *)(0x11111111);
     action.image = (void *)(0x22222222);
 
-    zFMV_ActionImage *const returned = action.ConstructorWithScreenRect(
+    zFMV_ActionImage *const returned = new (&action) zFMV_ActionImage(
         "screen.raw",
         7,
         32,
@@ -196,10 +197,10 @@ extern "C" int zfmv_action_image_constructor_with_screen_rect_smoke(void) {
                    action.forcePrimaryPostprocess == 1 &&
                    g_zFMV_ActionImage_BlitRectX == 32 &&
                    g_zFMV_ActionImage_BlitRectY == 48 &&
-                   action.blitRect[0] == 32 &&
-                   action.blitRect[1] == 48 &&
-                   action.blitRect[2] == 640 &&
-                   action.blitRect[3] == 480
+                   action.blitRect.left == 32 &&
+                   action.blitRect.top == 48 &&
+                   action.blitRect.right == 640 &&
+                   action.blitRect.bottom == 480
                ? 0
                : 1;
 }
@@ -214,7 +215,7 @@ extern "C" int zfmv_action_image_constructor_scaled_smoke(void) {
     action.next = (zFMV_Action *)(0x11111111);
     action.image = (void *)(0x22222222);
 
-    zFMV_ActionImage *const returned = action.ConstructorScaled(
+    zFMV_ActionImage *const returned = new (&action) zFMV_ActionImage(
         "scaled.raw",
         3
     );
@@ -228,10 +229,10 @@ extern "C" int zfmv_action_image_constructor_scaled_smoke(void) {
                    ) &&
                    action.doAdjustSurfaces == 3 &&
                    action.forcePrimaryPostprocess == 0 &&
-                   action.blitRect[0] == 0 &&
-                   action.blitRect[1] == 0 &&
-                   action.blitRect[2] == 800 &&
-                   action.blitRect[3] == 600
+                   action.blitRect.left == 0 &&
+                   action.blitRect.top == 0 &&
+                   action.blitRect.right == 800 &&
+                   action.blitRect.bottom == 600
                ? 0
                : 1;
 }
@@ -242,7 +243,7 @@ extern "C" int zfmv_action_fade_constructor_smoke(void) {
     action.capturedFrame = (void *)(0x22222222);
     action.startSec = 12.5;
 
-    zFMV_ActionFade *const returned = action.Constructor(
+    zFMV_ActionFade *const returned = new (&action) zFMV_ActionFade(
         0xff,
         0x80,
         0x20,
@@ -286,7 +287,7 @@ extern "C" int zfmv_action_play_avi_constructor_existing_file_smoke(void) {
 
     zFMV_ActionPlayAvi action = {};
     action.next = (zFMV_Action *)(0x11111111);
-    zFMV_ActionPlayAvi *const returned = action.Constructor(
+    zFMV_ActionPlayAvi *const returned = new (&action) zFMV_ActionPlayAvi(
         ".",
         fileName,
         5
@@ -314,7 +315,7 @@ extern "C" int zfmv_action_play_avi_constructor_drive_fallback_smoke(void) {
     zFMV_ActionPlayAvi action = {};
     action.next = (zFMV_Action *)(0x11111111);
 
-    zFMV_ActionPlayAvi *const returned = action.Constructor(
+    zFMV_ActionPlayAvi *const returned = new (&action) zFMV_ActionPlayAvi(
         ".",
         "__recoil_missing_fmv_constructor_file__.avi",
         9
@@ -332,6 +333,29 @@ extern "C" int zfmv_action_play_avi_constructor_drive_fallback_smoke(void) {
                : 1;
 }
 
+extern "C" int zfmv_playback_constructor_smoke(void) {
+    zFMV_Playback playback = {};
+    playback.mciPutFlags = 0x77777777;
+    playback.notifyHwnd = (HWND)(0x11111111);
+    playback.mediaPathDup = (char *)(0x22222222);
+
+    zFMV_Playback *const returned = new (&playback) zFMV_Playback(
+        "movie.avi",
+        (HWND)(0x12345678)
+    );
+
+    const bool ok =
+        returned == &playback && playback.mediaPathDup != 0 &&
+        strcmp(
+            playback.mediaPathDup,
+            "movie.avi"
+        ) == 0 &&
+        playback.notifyHwnd == (HWND)(0x12345678) && playback.mciPutFlags == 0;
+
+    free(playback.mediaPathDup);
+    return ok ? 0 : 1;
+}
+
 extern "C" int zfmv_action_play_mci_constructor_smoke(void) {
     SetActiveRegion(
         1024,
@@ -340,7 +364,7 @@ extern "C" int zfmv_action_play_mci_constructor_smoke(void) {
 
     zFMV_ActionPlayMci action = {};
     action.next = (zFMV_Action *)(0x11111111);
-    zFMV_ActionPlayMci *const returned = action.Constructor(
+    zFMV_ActionPlayMci *const returned = new (&action) zFMV_ActionPlayMci(
         "movies",
         "intro.mpg",
         (HWND)(0x1234)
@@ -370,7 +394,7 @@ extern "C" int zfmv_action_blur_constructor_smoke(void) {
     zFMV_ActionBlur action = {};
     action.next = (zFMV_Action *)(0x11111111);
 
-    zFMV_ActionBlur *const returned = action.Constructor(
+    zFMV_ActionBlur *const returned = new (&action) zFMV_ActionBlur(
         12,
         3
     );
