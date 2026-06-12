@@ -261,7 +261,11 @@ void AppendServiceProviderInfo(
 }
 } // namespace
 
-// Reimplements 0x489f70: zNetwork_GetLocalPlayerKey (D:\Proj\Battlesport\zNetwork\zNetwork.cpp)
+/**
+ * Reimplements 0x489f70: zNetwork_GetLocalPlayerKey.
+ * Original source path: D:\Proj\Battlesport\zNetwork\zNetwork.cpp.
+ * Purpose: Return the cached DirectPlay local-player key.
+ */
 extern "C" int zNetwork_GetLocalPlayerKey() {
     return g_zNetwork_LocalPlayerKey;
 }
@@ -578,19 +582,19 @@ extern "C" int zNetwork_DPlay_DestroyCachedLocalPlayer() {
     return 1;
 }
 
-// Reimplements 0x48ba60: zNetwork_FindPlayerRecordByKey
+/**
+ * Reimplements 0x48ba60: zNetwork_FindPlayerRecordByKey.
+ * Purpose: find a player record in the runtime player list by DirectPlay
+ * player key.
+ */
 extern "C" zNetwork_PlayerRecord *__fastcall zNetwork_FindPlayerRecordByKey(
     int playerKey
 ) {
     zNetworkPlayerRecordList *const list = g_zNetwork_PlayerRecordList;
-    if (list == 0 || list->sentinelNode == 0) {
-        return 0;
-    }
-
     zNetworkPlayerRecordListNode *const sentinel = list->sentinelNode;
     for (zNetworkPlayerRecordListNode *node = sentinel->next; node != sentinel; node = node->next) {
         zNetwork_PlayerRecord *const playerRecord = node->playerRecord;
-        if (playerRecord != 0 && playerRecord->playerKey == (unsigned int)(playerKey)) {
+        if (playerRecord->playerKey == (unsigned int)(playerKey)) {
             return playerRecord;
         }
     }
@@ -1702,7 +1706,11 @@ extern "C" void zNetwork_InitMessageHandlers() {
     zNetwork_RegisterDispatchHandlerListShutdown();
 }
 
-// Reimplements 0x48b820: zNetwork_ApplyPkt01_PlayerColorAssignments
+/**
+ * Reimplements 0x48b820: zNetwork_ApplyPkt01_PlayerColorAssignments.
+ * Purpose: apply host-provided player color assignments to matching player
+ * records.
+ */
 extern "C" int __fastcall zNetwork_ApplyPkt01_PlayerColorAssignments(
     int,
     zNetworkPacketHeader *packet
@@ -1777,7 +1785,11 @@ int __fastcall CreateInterfaceAndCoInitialize(
     return hresult;
 }
 
-// Reimplements 0x48b7f0: zNetwork_DPlay::CloseReleaseAndCoUninitialize
+/**
+ * Reimplements 0x48b7f0: zNetwork_DPlay::CloseReleaseAndCoUninitialize.
+ * Purpose: close and release an optional DirectPlay interface before
+ * uninitializing COM.
+ */
 int __fastcall CloseReleaseAndCoUninitialize(
     zNetwork_DPlay4 *directPlay4
 ) {
@@ -1862,28 +1874,48 @@ zNetworkDispatchHandlerRecord *__fastcall RegisterPacketHandler(
     return record;
 }
 
-// Reimplements 0x48c120: zNetwork::UnregisterPacketHandler
+/**
+ * Reimplements 0x48c120: zNetwork::UnregisterPacketHandler.
+ * Purpose: remove packet-handler registrations matching a packet type and
+ * handler procedure from the dispatch list.
+ */
 int __fastcall UnregisterPacketHandler(
     int packetType,
     zNetworkPacketHandler handlerProc
 ) {
     zNetworkDispatchHandlerListNode *const sentinel = g_zNetwork_DispatchHandlerListSentinel;
-    if (sentinel == 0) {
-        return 1;
-    }
-
     zNetworkDispatchHandlerListNode *node = sentinel->next;
     while (node != sentinel) {
-        zNetworkDispatchHandlerListNode *const next = node->next;
         zNetworkDispatchHandlerRecord *const record = node->record;
-        if (record != 0 && record->packetType == packetType && record->handler == handlerProc) {
-            node->prev->next = node->next;
-            node->next->prev = node->prev;
-            ::operator delete(node);
-            --g_zNetwork_DispatchHandlerListCount;
+        if (record->packetType == packetType && record->handler == handlerProc) {
+            break;
         }
 
-        node = next;
+        node = node->next;
+    }
+
+    if (node != sentinel) {
+        zNetworkDispatchHandlerListNode *write = node;
+        node = node->next;
+        while (node != sentinel) {
+            zNetworkDispatchHandlerRecord *const record = node->record;
+            if (record->packetType != packetType || record->handler != handlerProc) {
+                write->record = record;
+                write = write->next;
+            }
+
+            node = node->next;
+        }
+
+        node = write;
+        while (node != sentinel) {
+            zNetworkDispatchHandlerListNode *const next = node->next;
+            node->prev->next = next;
+            next->prev = node->prev;
+            ::operator delete(node);
+            --g_zNetwork_DispatchHandlerListCount;
+            node = next;
+        }
     }
 
     return 1;
@@ -1913,7 +1945,11 @@ void __fastcall DispatchPacketToHandlers(
 } // namespace zNetwork_DPlay
 
 namespace zNetwork {
-// Reimplements 0x489f30: zNetwork::ClearEnumeratedSessionList
+/**
+ * Reimplements 0x489f30: zNetwork::ClearEnumeratedSessionList.
+ * Purpose: free cached enumerated DirectPlay session descriptors and their
+ * reserved-data buffers.
+ */
 void ClearEnumeratedSessionList() {
     zNetworkDPlaySessionDesc *desc = (zNetworkDPlaySessionDesc *)(zArchiveList_PopFrontPayload(
         g_zNetwork_EnumeratedSessionList
@@ -1927,13 +1963,13 @@ void ClearEnumeratedSessionList() {
     }
 }
 
-// Reimplements 0x489fa0: zNetwork::ClearServiceProviderList
+/**
+ * Reimplements 0x489fa0: zNetwork::ClearServiceProviderList.
+ * Purpose: release DirectPlay service-provider entries and clear the provider
+ * vector range.
+ */
 void ClearServiceProviderList() {
     zNetworkServiceProviderListVec *const list = g_zNetwork_ServiceProviderList;
-    if (list == 0) {
-        return;
-    }
-
     for (zNetworkDPlayServiceProviderInfo **it = list->begin; it != list->end; ++it) {
         FreeServiceProviderInfo(*it);
         *it = 0;
@@ -1942,24 +1978,35 @@ void ClearServiceProviderList() {
     list->end = list->begin;
 }
 
-// Reimplements 0x48a030: zNetwork::ClearPlayerRecordList
+/**
+ * Reimplements 0x48a030: zNetwork::ClearPlayerRecordList.
+ * Purpose: release player-record payloads and delete all player-record list
+ * nodes while preserving the sentinel.
+ */
 void ClearPlayerRecordList() {
     zNetworkPlayerRecordList *const list = g_zNetwork_PlayerRecordList;
-    if (list == 0 || list->sentinelNode == 0) {
-        return;
+    zNetworkPlayerRecordListNode *const sentinel = list->sentinelNode;
+    zNetworkPlayerRecordListNode *node;
+
+    node = sentinel->next;
+    while (node != sentinel) {
+        if (node->playerRecord != 0) {
+            ::operator delete(node->playerRecord);
+            node->playerRecord = 0;
+        }
+
+        node = node->next;
     }
 
-    zNetworkPlayerRecordListNode *const sentinel = list->sentinelNode;
-    zNetworkPlayerRecordListNode *node = sentinel->next;
+    node = sentinel->next;
     while (node != sentinel) {
         zNetworkPlayerRecordListNode *const next = node->next;
-        DeletePlayerRecordNode(node);
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+        ::operator delete(node);
+        --list->count;
         node = next;
     }
-
-    sentinel->next = sentinel;
-    sentinel->prev = sentinel;
-    list->count = 0;
 }
 
 // Reimplements 0x489f90: zNetwork::SetFatalDisconnectCallback
@@ -2026,7 +2073,11 @@ int __fastcall InitSessionRuntime(
     return 0;
 }
 
-// Reimplements 0x489e10: zNetwork::ShutdownSessionRuntime
+/**
+ * Reimplements 0x489e10: zNetwork::ShutdownSessionRuntime.
+ * Purpose: close DirectPlay and release all session-runtime network lists and
+ * buffers.
+ */
 int ShutdownSessionRuntime() {
     zNetwork_DPlay::CloseReleaseAndCoUninitialize(g_zNetwork_pDirectPlay4);
     g_zNetwork_SessionRuntimeInitialized = 0;

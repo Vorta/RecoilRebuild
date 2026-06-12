@@ -6514,7 +6514,7 @@ void HudUiCreditsPanel::Destructor() {
  * Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
  * Purpose: perform VC++ scalar deleting destructor cleanup for credits panel objects.
  */
-HudUiCreditsPanel * HudUiCreditsPanel::ScalarDeletingDestructor(
+HudUiBackground * HudUiCreditsPanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     HudUiCreditsPanel *self = this;
@@ -7015,6 +7015,22 @@ HudUiBackground::~HudUiBackground() {
             );
     }
 
+}
+
+/**
+ * Reimplements 0x4b9740: HudUiBackground::ScalarDeletingDestructor.
+ * Original source path: D:\Proj\Battlesport\hudui_background.cpp.
+ * Purpose: Runs background destruction and optionally releases the background storage.
+ */
+HudUiBackground * HudUiBackground::ScalarDeletingDestructor(
+    unsigned int flags
+) {
+    this->HudUiBackground::~HudUiBackground();
+    if ((flags & 1u) != 0) {
+        ::operator delete(this);
+    }
+
+    return this;
 }
 
 /**
@@ -8659,7 +8675,11 @@ void HudUiZrdWidget::DestructorCore() {
     this->~HudUiZrdWidget();
 }
 
-// Reimplements 0x4b50a0: HudUiZrdWidget::ScalarDeletingDestructor
+/**
+ * Reimplements 0x4b50a0: HudUiZrdWidget::ScalarDeletingDestructor
+ * Source: D:\Proj\Battlesport\hud.cpp
+ * Purpose: run ZRD widget destruction, optionally free storage, and return the original object pointer.
+ */
 HudUiElement * HudUiZrdWidget::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -11140,7 +11160,7 @@ void HudCmdDialog::Destructor() {
 
 // Reimplements 0x40a920: HudCmdDialog::ScalarDeletingDestructor
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)
-HudCmdDialog * HudCmdDialog::ScalarDeletingDestructor(
+HudUiBackground * HudCmdDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();
@@ -11635,7 +11655,7 @@ void HudOptionsDialog::DestructorCore() {
  * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
  * Purpose: Run options dialog teardown and optionally free the dialog storage.
  */
-HudOptionsDialog * HudOptionsDialog::ScalarDeletingDestructor(
+HudUiBackground * HudOptionsDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     DestructorCore();
@@ -12711,7 +12731,7 @@ HudUiMessageBoxDialog * HudUiMessageBoxDialog::Constructor(
 }
 
 // Reimplements 0x4bf540: HudUiMessageBoxDialog::ScalarDeletingDestructor
-HudUiMessageBoxDialog * HudUiMessageBoxDialog::ScalarDeletingDestructor(
+HudUiBackground * HudUiMessageBoxDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
     Destructor();

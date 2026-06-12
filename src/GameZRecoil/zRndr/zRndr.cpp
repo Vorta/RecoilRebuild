@@ -165,7 +165,7 @@ int g_spanActiveShadeStepFixed16 = 0;
 char *g_spanActiveTexAlphaMap = 0;
 // BN types the zeroed span/MMX scratch vectors from gRndr_Mmx_dUDup2 through
 // gRndr_MmxMask_BlueBits as zMmxQword records. Source keeps lo/hi pairs as
-// zMmxQword and lane-indexed mask/factor vectors as unsigned short[4], which
+// zMmxQword and lane-indexed mask/factor vectors as four 16-bit lanes, which
 // preserves the same eight-byte authored zRndr span data shape.
 zMmxQword g_mmxUStepDup2 = {0};
 // BN names this BSS pointer gRndr_SavedEspSlot. The original switch-vshift
@@ -181,7 +181,7 @@ zMmxQword g_mmxVPair = {0};
 unsigned short g_mmxBitsBlue255[4] = {0};
 unsigned short g_mmxBitsGreen255[4] = {0};
 unsigned short g_mmxBitsRed255[4] = {0};
-unsigned short g_mmxMaskGreenPacked[4] = {0};
+short g_mmxMaskGreenPacked[4] = {0};
 unsigned short g_mmxMaskRedPacked[4] = {0};
 unsigned short g_mmxFogFactors[4] = {0};
 unsigned short g_mmxMaskGreenBits[4] = {0};
@@ -488,6 +488,21 @@ struct ScanVertex {
     float x;
     float y;
 };
+
+struct ScanConvertEdge {
+    int xStepFixed;
+    int yStart;
+    int currentXFixed;
+    int reserved;
+};
+
+/* BN 0x4927d0 uses the original VC5 double-bias fixed-point conversion inline. */
+#define ZRNDR_SET_FIXED16_FROM_FLOAT(dst, value)                         \
+    do {                                                                 \
+        double zRndrFixed16Bits =                                         \
+            6755399441055744.0 - (double)((value) * -65536.0f);          \
+        (dst) = *(int *)(&zRndrFixed16Bits);                              \
+    } while (0)
 
 /**
  * Recovered helper: Fixed16FromFloat.
@@ -1551,11 +1566,11 @@ void __fastcall SpanMmxSetPixelFormatMasks(
     g_mmxMaskRedPacked[2] = (unsigned short)(redPacked);
     g_mmxMaskRedPacked[1] = (unsigned short)(redPacked);
     g_mmxMaskRedPacked[0] = (unsigned short)(redPacked);
-    redPacked = -32;
-    g_mmxMaskGreenPacked[3] = redPacked;
-    g_mmxMaskGreenPacked[2] = redPacked;
-    g_mmxMaskGreenPacked[1] = redPacked;
-    g_mmxMaskGreenPacked[0] = redPacked;
+    int greenPacked = -32;
+    g_mmxMaskGreenPacked[3] = greenPacked;
+    g_mmxMaskGreenPacked[2] = greenPacked;
+    g_mmxMaskGreenPacked[1] = greenPacked;
+    g_mmxMaskGreenPacked[0] = greenPacked;
 }
 
 /**
@@ -1891,40 +1906,31 @@ void SpanOcclusionBuildColumnHeadTable() {
  * Purpose: rasterize one saved occluder polygon into span nodes for each
  * affected screen column.
  *
- * Evidence: BN reduces duplicate/closing polygon vertices, computes scanline
- * coverage, sorts x intersections, stages pending span-node min/max/depth
- * values in gRndr_SpanAllocCursor, and dispatches through gRndr_pfnBuildSpanList
- * or the local fallback builder.
+ * Evidence: BN reduces duplicate/closing polygon vertices, builds two
+ * fixed-point scan-conversion edge tables, stages pending span-node
+ * min/max/depth values in gRndr_SpanAllocCursor, and dispatches through
+ * gRndr_pfnBuildSpanList.
  */
 void __fastcall SpanOcclusionRasterizeOccluderPoly(
     SpanOccluderPolyPartial *poly,
     int vertCount
 ) {
-    if (poly == 0 || vertCount <= 0) {
-        return;
-    }
-
-    ScanVertex vertices[8] = {0};
+    zVec3 reducedVerts[8];
     int reducedCount = 1;
-    vertices[0].x = poly->vertices[0][0];
-    vertices[0].y = poly->vertices[0][1];
+    reducedVerts[0].x = poly->vertices[0][0];
+    reducedVerts[0].y = poly->vertices[0][1];
 
-    const int sourceCount = MinValue(
-        vertCount,
-        8
-    );
-    for (int i = 1; i < sourceCount; ++i) {
-        const float x = poly->vertices[i][0];
-        const float y = poly->vertices[i][1];
-        if (x != vertices[reducedCount - 1].x || y != vertices[reducedCount - 1].y) {
-            vertices[reducedCount].x = x;
-            vertices[reducedCount].y = y;
+    for (int i = 1; i < vertCount; ++i) {
+        reducedVerts[reducedCount].x = poly->vertices[i][0];
+        reducedVerts[reducedCount].y = poly->vertices[i][1];
+        if (reducedVerts[reducedCount].x != reducedVerts[reducedCount - 1].x ||
+            reducedVerts[reducedCount].y != reducedVerts[reducedCount - 1].y) {
             ++reducedCount;
         }
     }
 
-    if (reducedCount > 1 && vertices[reducedCount - 1].x == vertices[0].x &&
-        vertices[reducedCount - 1].y == vertices[0].y) {
+    if (reducedCount > 1 && reducedVerts[reducedCount - 1].x == reducedVerts[0].x &&
+        reducedVerts[reducedCount - 1].y == reducedVerts[0].y) {
         --reducedCount;
     }
 
@@ -1932,72 +1938,182 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
         return;
     }
 
-    float minY = vertices[0].y;
-    float maxY = vertices[0].y;
-    for (int i_1121 = 1; i_1121 < reducedCount; ++i_1121) {
-        minY = MinValue(
-            minY,
-            vertices[i_1121].y
-        );
-        maxY = MaxValue(
-            maxY,
-            vertices[i_1121].y
-        );
+    int topVertexIndex = 0;
+    int bottomVertexIndex = 0;
+    for (int scanIndex = 1; scanIndex < reducedCount; ++scanIndex) {
+        if (reducedVerts[scanIndex].y < reducedVerts[topVertexIndex].y) {
+            topVertexIndex = scanIndex;
+        }
+        if (reducedVerts[scanIndex].y >= reducedVerts[bottomVertexIndex].y) {
+            bottomVertexIndex = scanIndex;
+        }
     }
 
-    const int yStart = ScanlineStartFromY(minY);
-    const int yEnd = ScanlineEndFromY(maxY);
-    if (yStart > yEnd) {
+    ScanConvertEdge edgeTableA[0x40];
+    ScanConvertEdge edgeTableB[0x40];
+    int edgeCountA = 0;
+    int edgeCountB = 0;
+    int fixed16Value;
+    int edgeVertexIndex;
+    int edgeYStart;
+    float edgeSampleY;
+
+    edgeVertexIndex = topVertexIndex;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        reducedVerts[edgeVertexIndex].y
+    );
+    edgeYStart = (fixed16Value + 0x7fff) >> 16;
+    edgeSampleY = (float)(edgeYStart) + 0.5f;
+    const int edgeStepA = g_scanConvertMode != 0 ? 1 : -1;
+    while (edgeVertexIndex != bottomVertexIndex && edgeCountA < 0x40) {
+        int nextIndex = edgeVertexIndex + edgeStepA;
+        if (nextIndex < 0) {
+            nextIndex += reducedCount;
+        } else if (nextIndex >= reducedCount) {
+            nextIndex -= reducedCount;
+        }
+        const zVec3 &start = reducedVerts[edgeVertexIndex];
+        const zVec3 &end = reducedVerts[nextIndex];
+        if (edgeSampleY <= end.y) {
+            const float dy = end.y - start.y;
+            edgeTableA[edgeCountA].yStart = edgeYStart;
+            edgeTableA[edgeCountA].reserved = 0;
+            if (dy != 0.0f) {
+                const float xSlope = (end.x - start.x) / dy;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].xStepFixed,
+                    xSlope
+                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].currentXFixed,
+                    start.x + (edgeSampleY - start.y) * xSlope
+                );
+            } else {
+                edgeTableA[edgeCountA].xStepFixed = 0;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].currentXFixed,
+                    start.x
+                );
+            }
+
+            ++edgeCountA;
+            ZRNDR_SET_FIXED16_FROM_FLOAT(
+                fixed16Value,
+                end.y
+            );
+            edgeYStart = (fixed16Value + 0x7fff) >> 16;
+            edgeSampleY = (float)(edgeYStart) + 0.5f;
+        }
+        edgeVertexIndex = nextIndex;
+    }
+
+    edgeVertexIndex = topVertexIndex;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        reducedVerts[edgeVertexIndex].y
+    );
+    edgeYStart = (fixed16Value + 0x7fff) >> 16;
+    edgeSampleY = (float)(edgeYStart) + 0.5f;
+    const int edgeStepB = g_scanConvertMode != 0 ? -1 : 1;
+    while (edgeVertexIndex != bottomVertexIndex && edgeCountB < 0x40) {
+        int nextIndex = edgeVertexIndex + edgeStepB;
+        if (nextIndex < 0) {
+            nextIndex += reducedCount;
+        } else if (nextIndex >= reducedCount) {
+            nextIndex -= reducedCount;
+        }
+        const zVec3 &start = reducedVerts[edgeVertexIndex];
+        const zVec3 &end = reducedVerts[nextIndex];
+        if (edgeSampleY <= end.y) {
+            const float dy = end.y - start.y;
+            edgeTableB[edgeCountB].yStart = edgeYStart;
+            edgeTableB[edgeCountB].reserved = 0;
+            if (dy != 0.0f) {
+                const float xSlope = (end.x - start.x) / dy;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].xStepFixed,
+                    xSlope
+                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].currentXFixed,
+                    start.x + (edgeSampleY - start.y) * xSlope
+                );
+            } else {
+                edgeTableB[edgeCountB].xStepFixed = 0;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].currentXFixed,
+                    start.x
+                );
+            }
+
+            ++edgeCountB;
+            ZRNDR_SET_FIXED16_FROM_FLOAT(
+                fixed16Value,
+                end.y
+            );
+            edgeYStart = (fixed16Value + 0x7fff) >> 16;
+            edgeSampleY = (float)(edgeYStart) + 0.5f;
+        }
+        edgeVertexIndex = nextIndex;
+    }
+
+    if (edgeCountA == 0 || edgeCountB == 0) {
         return;
     }
 
-    SpanNodePartial *spanList[64] = {0};
-    for (int y = yStart; y <= yEnd; ++y) {
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        reducedVerts[topVertexIndex].y
+    );
+    const int firstScanline = (fixed16Value + 0x7fff) >> 16;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        reducedVerts[bottomVertexIndex].y
+    );
+    const int lastScanline = (fixed16Value - 0x8041) >> 16;
+    if (firstScanline > lastScanline) {
+        return;
+    }
+
+    SpanNodePartial **spanList = (SpanNodePartial **)(reducedVerts);
+    int edgeIndexA = 0;
+    int edgeIndexB = 0;
+    int currentXFixedA = edgeTableA[0].currentXFixed;
+    int currentXFixedB = edgeTableB[0].currentXFixed;
+    int xStepFixedA = edgeTableA[0].xStepFixed;
+    int xStepFixedB = edgeTableB[0].xStepFixed;
+
+    for (int y = firstScanline; y <= lastScanline; ++y) {
         if (y < 0 || y >= g_spanColumnCountPadded) {
             continue;
         }
 
-        float intersections[16] = {0};
-        int intersectionCount = 0;
-        const float sampleY = (float)(y) + 0.5f;
-        for (int i = 0; i < reducedCount; ++i) {
-            const ScanVertex &a = vertices[i];
-            const ScanVertex &b = vertices[(i + 1) % reducedCount];
-            if (a.y == b.y) {
-                continue;
-            }
-
-            const float edgeMinY = MinValue(
-                a.y,
-                b.y
-            );
-            const float edgeMaxY = MaxValue(
-                a.y,
-                b.y
-            );
-            if (sampleY < edgeMinY || sampleY >= edgeMaxY) {
-                continue;
-            }
-
-            const float t = (sampleY - a.y) / (b.y - a.y);
-            intersections[intersectionCount++] = a.x + (b.x - a.x) * t;
+        while (edgeIndexA < edgeCountA && y >= edgeTableA[edgeIndexA].yStart) {
+            xStepFixedA = edgeTableA[edgeIndexA].xStepFixed;
+            currentXFixedA = edgeTableA[edgeIndexA].currentXFixed;
+            ++edgeIndexA;
         }
 
-        if (intersectionCount < 2) {
-            continue;
+        while (edgeIndexB < edgeCountB && y >= edgeTableB[edgeIndexB].yStart) {
+            xStepFixedB = edgeTableB[edgeIndexB].xStepFixed;
+            currentXFixedB = edgeTableB[edgeIndexB].currentXFixed;
+            ++edgeIndexB;
         }
 
-        sort(
-            intersections,
-            intersections + intersectionCount
-        );
-        for (int i_1163 = 0; i_1163 + 1 < intersectionCount; i_1163 += 2) {
-            const int xMin = SpanStartFromX(intersections[i_1163]);
-            const int xMax = SpanEndFromX(intersections[i_1163 + 1]);
-            if (xMin > xMax) {
-                continue;
-            }
+        int xMin;
+        int xMax;
+        if (currentXFixedA > currentXFixedB) {
+            xMin = (currentXFixedB + 0x7fff) >> 16;
+            xMax = (currentXFixedA - 0x8001) >> 16;
+        } else {
+            xMin = (currentXFixedA + 0x7fff) >> 16;
+            xMax = (currentXFixedB - 0x8001) >> 16;
+        }
 
+        currentXFixedA += xStepFixedA;
+        currentXFixedB += xStepFixedB;
+        if (xMin <= xMax) {
             g_spanAllocCursor->sampleXMin = xMin;
             g_spanAllocCursor->sampleXMax = xMax;
             g_spanAllocCursor->invDepth = poly->vertices[0][2];
@@ -2005,10 +2121,7 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
             g_spanAllocCursor->depthSlope = 0.0f;
 
             int spanCount = 0;
-            SpanBuildProc buildProc = g_pfnBuildSpanList != 0
-                                          ? g_pfnBuildSpanList
-                                          : zRndr_SpanOcclusion_InsertSpanNode_Local;
-            buildProc(
+            g_pfnBuildSpanList(
                 spanList,
                 y,
                 &spanCount
@@ -4824,7 +4937,7 @@ void __fastcall FogColor_SetRgb01Clamped(
 
     const int red = (int)(color->red * 255.0f + 0.5f);
     const int green = (int)(color->green * 255.0f + 0.5f);
-    const int blue = (int)(color->blue * 255.0f + 0.5f);
+    const unsigned int blue = (unsigned int)(color->blue * 255.0f + 0.5f);
     FogTarget565_SetPackedColorAndRamp(
         &g_fogColorParams,
         (red << g_zVideo_PixelPack.packedBase) & (int)(g_zVideo_PixelPack.rMask),
@@ -5574,10 +5687,9 @@ void __fastcall zRndr_DrawLine16(
         xStep = -1;
     }
 
-    unsigned short *cursor = &dstPixels[startIndex];
-    const unsigned short packedColor = (unsigned short)(color16);
-
     if (dx > dy) {
+        unsigned short *cursor = &dstPixels[startIndex];
+        const unsigned short packedColor = (unsigned short)(color16);
         int error = dx >> 1;
         int count = dx + 1;
         do {
@@ -5593,6 +5705,8 @@ void __fastcall zRndr_DrawLine16(
         return;
     }
 
+    unsigned short *cursor = &dstPixels[startIndex];
+    const unsigned short packedColor = (unsigned short)(color16);
     int error = dy >> 1;
     int count = dy + 1;
     do {
@@ -5926,14 +6040,17 @@ void __fastcall zRndr_FillSpan565Solid(
                 *cursor = (unsigned short)(packedColor16);
             } else {
                 const int dst = (short)(*cursor);
-                const int greenDelta =
-                    ((((packedColor16 & 0x07e0) - (dst & 0x07e0)) * blendAlpha) >> 8) & 0xffffffe0;
-                const int redDelta =
-                    ((((packedColor16 & 0xf800) - (dst & 0xf800)) * blendAlpha) >> 8) & 0xfffff800;
+                int greenDelta = (packedColor16 & 0x07e0) - (dst & 0x07e0);
+                greenDelta *= blendAlpha;
+                int redDelta = (packedColor16 & 0xf800) - (dst & 0xf800);
+                redDelta *= blendAlpha;
+                redDelta = (redDelta >> 8) & 0xfffff800;
                 const int redAdjusted = dst + redDelta;
-                const int blueDelta =
-                    (((packedColor16 & 0x001f) - (redAdjusted & 0x001f)) * blendAlpha) >> 8;
-                *cursor = (unsigned short)(redAdjusted + greenDelta + blueDelta);
+                int blueDelta = (packedColor16 & 0x001f) - (redAdjusted & 0x001f);
+                blueDelta *= blendAlpha;
+                greenDelta = (greenDelta >> 8) & 0xffffffe0;
+                blueDelta >>= 8;
+                *cursor = (unsigned short)(redAdjusted + blueDelta + greenDelta);
             }
         }
 
@@ -6492,8 +6609,8 @@ void DispatchTexturedSpanChunks(
 
 /**
  * Reimplements 0x492000: zRndr_RasterizePolyWithSpanList
- * Source file evidence: zRndr raster/span draw cluster in this source file.
- * Purpose: Rasterize one polygon through the active span-occlusion list and selected span routine.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: Rasterize one polygon through the active span-list builder and selected span routine.
  */
 void __fastcall zRndr_RasterizePolyWithSpanList(
     zVec3 *vertices,
@@ -6501,11 +6618,6 @@ void __fastcall zRndr_RasterizePolyWithSpanList(
     int vertCount,
     int spanOpContext
 ) {
-    if (vertices == 0 || planeVerts == 0 || vertCount <= 0 || zRndr::g_spanAllocCursor == 0 ||
-        zRndr::g_frameBuffer == 0) {
-        return;
-    }
-
     const float dx10 = planeVerts[0].x - planeVerts[1].x;
     const float dx12 = planeVerts[2].x - planeVerts[1].x;
     const float dy10 = planeVerts[0].y - planeVerts[1].y;
@@ -6535,103 +6647,123 @@ void __fastcall zRndr_RasterizePolyWithSpanList(
         }
     }
 
-    const int firstScanline = (int)(floor(vertices[topVertexIndex].y + 0.5f));
-    const int lastScanline = (int)(floor(vertices[bottomVertexIndex].y - 0.5f));
+    ScanConvertEdge edgeTableA[0x40] = {0};
+    ScanConvertEdge edgeTableB[0x40] = {0};
+    int edgeCountA;
+    int edgeCountB;
+    if (zRndr::g_scanConvertMode != 0) {
+        edgeCountA = BuildScanConvertEdges(
+            vertices,
+            vertCount,
+            topVertexIndex,
+            bottomVertexIndex,
+            1,
+            edgeTableA
+        );
+        edgeCountB = BuildScanConvertEdges(
+            vertices,
+            vertCount,
+            topVertexIndex,
+            bottomVertexIndex,
+            -1,
+            edgeTableB
+        );
+    } else {
+        edgeCountA = BuildScanConvertEdges(
+            vertices,
+            vertCount,
+            topVertexIndex,
+            bottomVertexIndex,
+            -1,
+            edgeTableA
+        );
+        edgeCountB = BuildScanConvertEdges(
+            vertices,
+            vertCount,
+            topVertexIndex,
+            bottomVertexIndex,
+            1,
+            edgeTableB
+        );
+    }
+
+    if (edgeCountA == 0 || edgeCountB == 0) {
+        return;
+    }
+
+    const int firstScanline = ScanlineStartFromY(vertices[topVertexIndex].y);
+    const int lastScanline = ScanlineEndFromY(vertices[bottomVertexIndex].y);
     if (firstScanline > lastScanline) {
         return;
     }
 
-    zRndr::SpanNodePartial *visibleSpans[0x40] = {0};
-    zRndr::SpanBuildProc buildProc = zRndr::g_pfnBuildSpanList != 0
-                                         ? zRndr::g_pfnBuildSpanList
-                                         : zRndr_SpanOcclusion_InsertSpanNode_Local;
+    zRndr::SpanNodePartial *visibleSpans[0x40];
+    int edgeIndexA = 0;
+    int edgeIndexB = 0;
+    int currentXFixedA = edgeTableA[0].currentXFixed;
+    int currentXFixedB = edgeTableB[0].currentXFixed;
+    int xStepFixedA = edgeTableA[0].xStepFixed;
+    int xStepFixedB = edgeTableB[0].xStepFixed;
+    unsigned char *scanlineBase =
+        (unsigned char *)(zRndr::g_frameBuffer) + firstScanline * zRndr::g_pitchBytes;
 
-    unsigned char *frameBase = (unsigned char *)(zRndr::g_frameBuffer);
     for (int y = firstScanline; y <= lastScanline; ++y) {
-        float intersections[0x40] = {0};
-        int intersectionCount = 0;
-        const float sampleY = (float)(y) + 0.5f;
-
-        for (int i = 0; i < vertCount; ++i) {
-            const zVec3 &a = vertices[i];
-            const zVec3 &b = vertices[(i + 1) % vertCount];
-            if (a.y == b.y) {
-                continue;
-            }
-
-            const float minY = MinValue(
-                a.y,
-                b.y
-            );
-            const float maxY = MaxValue(
-                a.y,
-                b.y
-            );
-            if (sampleY < minY || sampleY >= maxY) {
-                continue;
-            }
-
-            const float t = (sampleY - a.y) / (b.y - a.y);
-            intersections[intersectionCount++] = a.x + (b.x - a.x) * t;
-            if (intersectionCount == 0x40) {
-                break;
-            }
+        while (edgeIndexA < edgeCountA && y >= edgeTableA[edgeIndexA].yStart) {
+            xStepFixedA = edgeTableA[edgeIndexA].xStepFixed;
+            currentXFixedA = edgeTableA[edgeIndexA].currentXFixed;
+            ++edgeIndexA;
         }
 
-        if (intersectionCount < 2) {
-            continue;
+        while (edgeIndexB < edgeCountB && y >= edgeTableB[edgeIndexB].yStart) {
+            xStepFixedB = edgeTableB[edgeIndexB].xStepFixed;
+            currentXFixedB = edgeTableB[edgeIndexB].currentXFixed;
+            ++edgeIndexB;
         }
 
-        sort(
-            intersections,
-            intersections + intersectionCount
-        );
-        const int pairCount = intersectionCount & ~1;
-        unsigned char *scanlineBase = frameBase + y * zRndr::g_pitchBytes;
-        for (int i_3517 = 0; i_3517 < pairCount; i_3517 += 2) {
-            const int xMin = (int)(floor(intersections[i_3517] + 0.5f));
-            const int xMax = (int)(ceil(intersections[i_3517 + 1] - 0.5f)) - 1;
-            if (xMin > xMax) {
-                continue;
-            }
+        int xMin;
+        int xMax;
+        if (currentXFixedA > currentXFixedB) {
+            xMin = (currentXFixedB + 0x7fff) >> 16;
+            xMax = (currentXFixedA - 0x8001) >> 16;
+        } else {
+            xMin = (currentXFixedA + 0x7fff) >> 16;
+            xMax = (currentXFixedB - 0x8001) >> 16;
+        }
 
-            const float rowDepthBase = (float)(y)*invDepthSlopeY + invDepthBiasBase;
+        currentXFixedA += xStepFixedA;
+        currentXFixedB += xStepFixedB;
+        if (xMin <= xMax) {
+            const float rowDepthBase = (float)(y) * invDepthSlopeY + invDepthBiasBase;
             zRndr::g_spanAllocCursor->sampleXMin = xMin;
             zRndr::g_spanAllocCursor->sampleXMax = xMax;
             zRndr::g_spanAllocCursor->invDepth =
-                ((float)(xMin)*invDepthSlopeX + rowDepthBase) * zRndr::g_inverseDepthScale +
+                ((float)(xMin) * invDepthSlopeX + rowDepthBase) * zRndr::g_inverseDepthScale +
                 zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->invDepthStep =
-                ((float)(xMax)*invDepthSlopeX + rowDepthBase) * zRndr::g_inverseDepthScale +
+                ((float)(xMax) * invDepthSlopeX + rowDepthBase) * zRndr::g_inverseDepthScale +
                 zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->depthSlope = invDepthSlopeX;
 
             int spanCount = 0;
-            buildProc(
+            zRndr::g_pfnBuildSpanList(
                 visibleSpans,
                 y,
                 &spanCount
             );
 
-            {
-                for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
-                    zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
-                    const int pixelCount = span->sampleXMax - span->sampleXMin + 1;
-                    if (pixelCount <= 0) {
-                        continue;
-                    }
-
-                    const int byteOffset = (int)(span->sampleXMin) * zRndr::g_bytesPerPixel;
-                    zRndr::g_spanCurrentSpanBaseAddr = (unsigned short *)(scanlineBase + byteOffset);
-                    if (zRndr::g_pfnSelectedSpanOp != 0) {
-                        zRndr::g_pfnSelectedSpanOp(
-                            spanOpContext,
-                            pixelCount
-                        );
-                    }
-                }
+            for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
+                zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
+                const int pixelCount = span->sampleXMax - span->sampleXMin + 1;
+                const int byteOffset = (int)(span->sampleXMin) * zRndr::g_bytesPerPixel;
+                zRndr::g_spanCurrentSpanBaseAddr = (unsigned short *)(scanlineBase + byteOffset);
+                zRndr::g_pfnSelectedSpanOp(
+                    spanOpContext,
+                    pixelCount
+                );
             }
         }
+
+        scanlineBase += zRndr::g_pitchBytes;
     }
 }
 

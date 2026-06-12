@@ -738,7 +738,11 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
 }
 
 namespace zSndFadeLists {
-// Reimplements 0x4a3d20: zSndFadeLists::StopAllAndShutdown
+/**
+ * Reimplements 0x4a3d20: zSndFadeLists::StopAllAndShutdown.
+ * Purpose: stop active fade handles and drain both recovered fade-list records
+ * during sound-system shutdown.
+ */
 void StopAllAndShutdown() {
     zSndFadeListNode *activeSentinel = g_zSndFadeActiveListSentinel;
     zSndFadeListNode *node = activeSentinel->next;
@@ -785,7 +789,11 @@ void StopAllAndShutdown() {
 } // namespace zSndFadeLists
 
 namespace zSndSystem {
-// Reimplements 0x4a13d0: zSndSystem::Shutdown
+/**
+ * Reimplements 0x4a13d0: zSndSystem::Shutdown.
+ * Purpose: shut down sound subsystems and release sound config/search-path
+ * resources.
+ */
 int Shutdown() {
     zSndStreamMgr::Shutdown();
     zSndBackend::Shutdown();

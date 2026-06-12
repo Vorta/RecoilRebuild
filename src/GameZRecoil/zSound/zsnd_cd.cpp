@@ -21,9 +21,9 @@ extern "C" int g_zSndCdLastPlayMode = 0;
 extern "C" int g_zSndCdDeviceId = 0;
 extern "C" int g_zSndCdAuxDeviceId = -1;
 extern "C" int g_zSndCdTrackCountCached = 0;
-extern "C" zSndCdTrackState g_zSndCdPlayFrom = {1, 0, 0};
-extern "C" zSndCdTrackState g_zSndCdCurrent = {1, 0, 0};
-extern "C" zSndCdTrackState g_zSndCdPlayTo = {1, 0, 0};
+extern "C" zSndCdTrackState g_zSndCdPlayFrom = {0};
+extern "C" zSndCdTrackState g_zSndCdCurrent = {0};
+extern "C" zSndCdTrackState g_zSndCdPlayTo = {0};
 extern "C" unsigned char g_zSndCd_TrackListCtorGuard = 0;
 extern "C" zSndCdTrackNode *g_zSndCd_TrackListHead = 0;
 extern "C" int g_zSndCd_TrackCount = 0;
@@ -587,7 +587,10 @@ void __fastcall OnMciNotify(
     );
 }
 
-// Reimplements 0x4a26f0: zSndCd::Stop
+/**
+ * Reimplements 0x4a26f0: zSndCd::Stop.
+ * Purpose: stop the current MCI CD playback and reset the cached track state.
+ */
 RECOIL_NO_GS int Stop() {
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
@@ -613,7 +616,11 @@ RECOIL_NO_GS int Stop() {
     return 1;
 }
 
-// Reimplements 0x4a24d0: zSndCd::Shutdown
+/**
+ * Reimplements 0x4a24d0: zSndCd::Shutdown.
+ * Purpose: stop CD playback, close the MCI CD device, clear ready state, and
+ * release configured track-list entries.
+ */
 int Shutdown() {
     Stop();
 
@@ -631,28 +638,26 @@ int Shutdown() {
     g_zSndCdFlags &= ~ZSND_CD_FLAG_READY;
 
     zSndCdTrackNode *head = g_zSndCd_TrackListHead;
-    if (head != 0) {
-        for (zSndCdTrackNode *node = head->next; node != head; node = node->next) {
-            zSndCdTrackEntry *entry = node->entry;
-            if (entry != 0) {
-                if (entry->archiveName != 0) {
-                    free(entry->archiveName);
-                    entry->archiveName = 0;
-                }
-                ::operator delete(entry);
-                node->entry = 0;
+    for (zSndCdTrackNode *node = head->next; node != head; node = node->next) {
+        zSndCdTrackEntry *entry = node->entry;
+        if (entry != 0) {
+            if (entry->archiveName != 0) {
+                free(entry->archiveName);
+                entry->archiveName = 0;
             }
+            ::operator delete(entry);
+            node->entry = 0;
         }
+    }
 
-        zSndCdTrackNode *deleteNode = head->next;
-        while (deleteNode != head) {
-            zSndCdTrackNode *next = deleteNode->next;
-            deleteNode->prev->next = deleteNode->next;
-            deleteNode->next->prev = deleteNode->prev;
-            ::operator delete(deleteNode);
-            --g_zSndCd_TrackCount;
-            deleteNode = next;
-        }
+    zSndCdTrackNode *deleteNode = head->next;
+    while (deleteNode != head) {
+        zSndCdTrackNode *next = deleteNode->next;
+        deleteNode->prev->next = deleteNode->next;
+        deleteNode->next->prev = deleteNode->prev;
+        ::operator delete(deleteNode);
+        --g_zSndCd_TrackCount;
+        deleteNode = next;
     }
 
     return 1;

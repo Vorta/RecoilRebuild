@@ -223,7 +223,10 @@ inline void zSndPlayHandleSnapshot::AppendPayload(
     ++itemCount;
 }
 
-// Reimplements 0x4a3690: zSndSample::DestroyOwnedData
+/**
+ * Reimplements 0x4a3690: zSndSample::DestroyOwnedData.
+ * Purpose: release runtime-owned sample buffers, voices, and loaded-state flags.
+ */
 int zSndSample::DestroyOwnedData() {
     if (this == 0 || createGuard != 0) {
         return 0;
@@ -266,7 +269,10 @@ int zSndSample::DestroyOwnedData() {
     return 1;
 }
 
-// Reimplements 0x4a3910: zSndSample::Destroy
+/**
+ * Reimplements 0x4a3910: zSndSample::Destroy.
+ * Purpose: release owned sample data and free the sample record itself.
+ */
 void zSndSample::Destroy() {
     DestroyOwnedData();
     free(this);
@@ -557,7 +563,11 @@ extern "C" float __stdcall zSndSample_PlaySimple(
     return value;
 }
 
-// Reimplements 0x4a0500: zSndPlayHandleSnapshot::StopAllIfPlaying
+/**
+ * Reimplements 0x4a0500: zSndPlayHandleSnapshot::StopAllIfPlaying.
+ * Purpose: Stops every captured backend play handle whose provider reports it
+ * is still playing.
+ */
 int zSndPlayHandleSnapshot::StopAllIfPlaying() {
     int result = 1;
     int status;
@@ -597,9 +607,13 @@ int zSndPlayHandleSnapshot::StopAllIfPlaying() {
     return result;
 }
 
-// Reimplements 0x4a07c0: zSndPlayHandleSnapshot::NewNode
-// Callers seed ECX with the owning snapshot, while the helper only uses its
-// two stack arguments and returns with ret 8.
+/**
+ * Reimplements 0x4a07c0: zSndPlayHandleSnapshot::NewNode.
+ * Purpose: Allocates a snapshot list node and initializes its next/previous links.
+ *
+ * Callers seed ECX with the owning snapshot, while the helper only uses its
+ * two stack arguments and returns with ret 8.
+ */
 zSndPlayHandleSnapshotItem * zSndPlayHandleSnapshot::NewNode(
     zSndPlayHandleSnapshotItem *listHead,
     zSndPlayHandleSnapshotItem *prev
@@ -611,7 +625,10 @@ zSndPlayHandleSnapshotItem * zSndPlayHandleSnapshot::NewNode(
     return result;
 }
 
-// Reimplements 0x4a0300: zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle
+/**
+ * Reimplements 0x4a0300: zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle.
+ * Purpose: Captures backend play-handle state into a snapshot payload.
+ */
 void __fastcall zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(
     zSndPlayHandle *playHandle
 ) {
@@ -662,12 +679,15 @@ inline zSndPlayHandleSnapshot::zSndPlayHandleSnapshot(
     itemCount = 0;
 }
 
-// Reimplements 0x49fff0: zSndPlayHandleSnapshot::CreateFromActiveSamples
 // Modern MSVC /RTC traps the recovered uninitialized backendTag stack byte;
 // keep the retail source shape and disable that debug-only check here.
 #if defined(_MSC_VER)
 #pragma runtime_checks("", off)
 #endif
+/**
+ * Reimplements 0x49fff0: zSndPlayHandleSnapshot::CreateFromActiveSamples.
+ * Purpose: Builds a snapshot of the global volume anchor and active sample voices.
+ */
 zSndPlayHandleSnapshot *
     zSndPlayHandleSnapshot::CreateFromActiveSamples() {
     zSndPlayHandleSnapshotPayload payload = {0};

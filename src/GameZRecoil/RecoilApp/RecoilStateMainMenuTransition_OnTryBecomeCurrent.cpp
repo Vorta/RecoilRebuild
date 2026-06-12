@@ -28,12 +28,10 @@ struct zFMV_ActionBlurStack : zFMV_ActionBlur {
     zFMV_ActionBlurStack(
         int framesRemaining,
         int blurPassCount
-    ) {
-        Constructor(
+    ) : zFMV_ActionBlur(
             framesRemaining,
             blurPassCount
-        );
-    }
+        ) {}
 
 };
 } // namespace

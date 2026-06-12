@@ -1906,7 +1906,11 @@ int HudSensorTracker::SetMissionId(
     return 1;
 }
 
-// Reimplements 0x417800: HudSensorTracker::GetMissionId
+/**
+ * Reimplements 0x417800: HudSensorTracker::GetMissionId
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Return the mission id currently owned by the HUD sensor tracker.
+ */
 int HudSensorTracker::GetMissionId() {
     return missionId;
 }
@@ -2707,8 +2711,11 @@ void HudSensorTracker::SaveAndQueueMissionState() {
     QueueMissionFmvStateForMissionId(missionId + 1);
 }
 
-// Reimplements 0x4186f0: HudSensorTracker::GetObjectiveBriefingStringsAndImageRef
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x4186f0: HudSensorTracker::GetObjectiveBriefingStringsAndImageRef
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Return the briefing text buffers and image pointer for one objective slot.
+ */
 int HudSensorTracker::GetObjectiveBriefingStringsAndImageRef(
     int objectiveIndex,
     char **outSummary,

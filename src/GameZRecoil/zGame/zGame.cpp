@@ -1771,7 +1771,11 @@ int GetReplicateMode() {
     return *ZOPT_REPLICATE;
 }
 
-// Reimplements 0x408260: zOpt::GetNetworkEnabled
+/**
+ * Reimplements 0x408260: zOpt::GetNetworkEnabled
+ * Source: D:\Proj\Battlesport\zOpt.cpp
+ * Purpose: Return the current network-enabled option value.
+ */
 int GetNetworkEnabled() {
     return *ZOPT_NETWORK_ENABLED;
 }

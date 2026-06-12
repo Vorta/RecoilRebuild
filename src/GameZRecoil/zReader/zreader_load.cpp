@@ -57,7 +57,10 @@ extern "C" zArchiveList *zArchiveList_CreateEmpty() {
     return result;
 }
 
-// Reimplements 0x48c970: zArchiveList_Destroy
+/**
+ * Reimplements 0x48c970: zArchiveList_Destroy.
+ * Purpose: drain an archive-list container and release the list allocation.
+ */
 extern "C" int __fastcall zArchiveList_Destroy(
     zArchiveList *list
 ) {
@@ -216,8 +219,11 @@ extern "C" int __fastcall zArchiveList_PushBackPayload(
     return list->count;
 }
 
-// Reimplements 0x48ca70: zArchiveList_RemovePayload
-// (GameZRecoil/zUtil/zutl_zar.cpp)
+/**
+ * Reimplements 0x48ca70: zArchiveList_RemovePayload.
+ * Purpose: remove a matching payload node from a circular archive list and
+ * return the remaining node count.
+ */
 extern "C" int __fastcall zArchiveList_RemovePayload(
     zArchiveList *list,
     void *payload
@@ -252,7 +258,11 @@ extern "C" int __fastcall zArchiveList_RemovePayload(
     return list->count;
 }
 
-// Reimplements 0x48cae0: zArchiveList_FreeNode
+/**
+ * Reimplements 0x48cae0: zArchiveList_FreeNode.
+ * Purpose: return one archive-list node to the shared node pool and return its
+ * payload pointer.
+ */
 extern "C" void *__fastcall zArchiveList_FreeNode(
     zArchiveListNode *node
 ) {
@@ -265,8 +275,10 @@ extern "C" void *__fastcall zArchiveList_FreeNode(
     return payload;
 }
 
-// Reimplements 0x48cb00: zArchiveList_FindNodeByPayload
-// (GameZRecoil/zUtil/zutl_zar.cpp)
+/**
+ * Reimplements 0x48cb00: zArchiveList_FindNodeByPayload.
+ * Purpose: find the circular-list node that owns a specific payload pointer.
+ */
 extern "C" zArchiveListNode *__fastcall zArchiveList_FindNodeByPayload(
     zArchiveList *list,
     void *payload
@@ -293,7 +305,10 @@ extern "C" zArchiveListNode *__fastcall zArchiveList_FindNodeByPayload(
     }
 }
 
-// Reimplements 0x48cb70: zArchiveList_PopFrontPayload
+/**
+ * Reimplements 0x48cb70: zArchiveList_PopFrontPayload.
+ * Purpose: unlink the head node from an archive list and return its payload.
+ */
 extern "C" void *__fastcall zArchiveList_PopFrontPayload(
     zArchiveList *list
 ) {
@@ -386,8 +401,11 @@ found:
     return node->payload;
 }
 
-// Reimplements 0x48cc20: zArchiveList_FindPayloadByValue
-// (GameZRecoil/zUtil/zutl_zar.cpp)
+/**
+ * Reimplements 0x48cc20: zArchiveList_FindPayloadByValue.
+ * Purpose: find the first payload whose leading dword equals the requested
+ * value.
+ */
 extern "C" void *__fastcall zArchiveList_FindPayloadByValue(
     zArchiveList *list,
     unsigned int value
@@ -703,7 +721,10 @@ extern "C" zArchiveList *__fastcall zUtil_ZRDR_CreateSearchPathList(
     return list;
 }
 
-// Reimplements 0x4a5e10: zUtil_ZRDR_FreePathList
+/**
+ * Reimplements 0x4a5e10: zUtil_ZRDR_FreePathList.
+ * Purpose: free every search-path string payload from a search-path list.
+ */
 extern "C" int __fastcall zUtil_ZRDR_FreePathList(
     zArchiveList *list
 ) {
@@ -721,7 +742,10 @@ extern "C" int __fastcall zUtil_ZRDR_FreePathList(
     return 0;
 }
 
-// Reimplements 0x4a5cc0: zUtil_ZRDR_FreeSearchPathList
+/**
+ * Reimplements 0x4a5cc0: zUtil_ZRDR_FreeSearchPathList.
+ * Purpose: free search-path payload strings and destroy the list container.
+ */
 extern "C" int __fastcall zUtil_ZRDR_FreeSearchPathList(
     zArchiveList *list
 ) {
@@ -1383,7 +1407,7 @@ extern "C" int __fastcall zReader_ReadNode(
     void *hFile,
     zReader::Node *outNode
 ) {
-    DWORD bytesRead = 0;
+    DWORD bytesRead;
     ReadFile(
         (HANDLE)(hFile),
         outNode,
@@ -1394,25 +1418,8 @@ extern "C" int __fastcall zReader_ReadNode(
     int result = (int)(bytesRead);
 
     switch (outNode->type) {
-    case zReader::ZRDR_NODE_INT:
-    case zReader::ZRDR_NODE_FLOAT:
-        ReadFile(
-            (HANDLE)(hFile),
-            &outNode->value,
-            4,
-            &bytesRead,
-            0
-        );
-        return result + (int)(bytesRead);
-
-    case zReader::ZRDR_NODE_STRING:
-        return result + zReader_ReadString(
-            hFile,
-            &outNode->value
-        );
-
     case zReader::ZRDR_NODE_ARRAY: {
-        int nodeCount = 0;
+        int nodeCount;
         ReadFile(
             (HANDLE)(hFile),
             &nodeCount,
@@ -1422,21 +1429,54 @@ extern "C" int __fastcall zReader_ReadNode(
         );
         result += (int)(bytesRead);
 
-        zReader::Node *arrayBase =
+        outNode->value.nodes =
             (zReader::Node *)(malloc((size_t)(nodeCount) * sizeof(zReader::Node)));
-        outNode->value.nodes = arrayBase;
-        arrayBase[0].type = zReader::ZRDR_NODE_INT;
-        arrayBase[0].value.i32 = nodeCount;
+        outNode->value.nodes[0].value.i32 = nodeCount;
+        outNode->value.nodes[0].type = zReader::ZRDR_NODE_INT;
 
-        for (int i = 1; i < nodeCount; ++i) {
-            result += zReader_ReadNode(
-                hFile,
-                &arrayBase[i]
-            );
+        nodeCount = 1;
+        if (outNode->value.nodes[0].value.i32 > nodeCount) {
+            do {
+                result += zReader_ReadNode(
+                    hFile,
+                    &outNode->value.nodes[nodeCount]
+                );
+                ++nodeCount;
+            } while (nodeCount < outNode->value.nodes[0].value.i32);
+            return result;
         }
 
-        return result;
+        break;
     }
+
+    case zReader::ZRDR_NODE_INT:
+        ReadFile(
+            (HANDLE)(hFile),
+            &outNode->value,
+            4,
+            &bytesRead,
+            0
+        );
+        result += (int)(bytesRead);
+        break;
+
+    case zReader::ZRDR_NODE_FLOAT:
+        ReadFile(
+            (HANDLE)(hFile),
+            &outNode->value,
+            4,
+            &bytesRead,
+            0
+        );
+        result += (int)(bytesRead);
+        break;
+
+    case zReader::ZRDR_NODE_STRING:
+        result += zReader_ReadString(
+            hFile,
+            &outNode->value
+        );
+        return result;
 
     default:
         zError::ReportOld(
@@ -1445,8 +1485,11 @@ extern "C" int __fastcall zReader_ReadNode(
             0x40c,
             "Invalid reader node type in zRdrRead()"
         );
-        return 0;
+        result = 0;
+        break;
     }
+
+    return result;
 }
 
 /**
