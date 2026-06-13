@@ -11,6 +11,7 @@
 #include "GameZRecoil/zVideo/zVideo.h"
 
 #include <mmsystem.h>
+#include <digitalv.h>
 #include <vfw.h>
 
 #include <stdio.h>
@@ -24,14 +25,10 @@ extern "C" void(__cdecl *__imp__free)(void *); // VC5 retail import-pointer call
 
 extern "C" HWND g_RecoilApp_hWndMain = 0;
 
-extern "C" int g_zFMV_ActionImage_BlitRectX = 0;
-extern "C" int g_zFMV_ActionImage_BlitRectY = 0;
-extern "C" int g_zFMV_ActionImage_BlitRectW = 0;
-extern "C" int g_zFMV_ActionImage_BlitRectH = 0;
-extern "C" int g_zFMV_ActionImage_ActiveRegionX = 0;
-extern "C" int g_zFMV_ActionImage_ActiveRegionY = 0;
-extern "C" int g_zFMV_ActionImage_ActiveRegionW = 0;
-extern "C" int g_zFMV_ActionImage_ActiveRegionH = 0;
+// BN 0x53a728 and 0x53a708 are four-int rect-shaped state records used by
+// zFMV_ActionImage constructors before copying into the action instance.
+extern "C" zVidRect32 g_zFMV_ActionImage_BlitRect = {0};
+extern "C" zVidRect32 g_zFMV_ActionImage_ActiveRegion = {0};
 extern "C" zFMV_Rect g_zFMV_ActionPlayMci_DestRect = {0};
 // BN 0x4d2580 is a single float consumed by the multimedia-timer wrappers.
 extern "C" const float g_zFMV_ScriptTimeGetTimeToSecondsScale = 0.00100000005f;
@@ -42,10 +39,10 @@ const int k_zFMV_RendererBackend3dfx = 2;
 const int k_zFMV_BlurModeHorizontal = 1;
 const int k_zFMV_BlurModeVertical = 2;
 const int k_zFMV_BlurModeCombined = 3;
-const char *kFMVMainSourceFile = "D:\\Proj\\GameZRecoil\\zFMV\\fmv_main.cpp";
+const char kFMVMainSourceFile[] = "D:\\Proj\\GameZRecoil\\zFMV\\fmv_main.cpp";
 const char *kFMVStreamSourceFile = "D:\\Proj\\GameZRecoil\\zFMV\\fmv_stream.cpp";
-const char *kMpegVideoDeviceType = "MPEGVideo";
-const char *kUnknownMciErrorText = "Unknown Error ID";
+const char kMpegVideoDeviceType[] = "MPEGVideo";
+const char kUnknownMciErrorText[] = "Unknown Error ID";
 const char *kCannotOpenAviFile = "Cannot Open AVI File";
 const char *kCannotReadAviFormatSize = "Cannot Read AVI Format Size";
 const char *kCannotReadAviFormat = "Cannot Read AVI Format";
@@ -57,17 +54,11 @@ const char *kCannotReadAviSoundStream = "Cannot Read AVI Sound Stream";
 const char *kCannotReadAviVideoStream = "Cannot Read AVI Video Stream";
 const char *kCannotDecompressAviVideoStream = "Cannot Decompress AVI Video Stream";
 
-struct zFMV_MciOpenParams {
-    DWORD_PTR callback;
-    unsigned int deviceId;
-    const char *deviceType;
-    const char *elementName;
-    const char *alias;
-};
-
 struct zFMV_MciWindowParams {
     DWORD_PTR callback;
     HWND hwnd;
+    unsigned int commandShow;
+    const char *text;
 };
 
 struct zFMV_MciRectParams {
@@ -91,17 +82,14 @@ struct zFMV_MciPlayParams {
 };
 
 /**
- * Original inline helper evidence: BN 0x4631f0 copies the active-region
- * globals through a destination rect pointer after zRndr::GetActiveRegionState.
+ * Original inline helper evidence: BN 0x4631f0 copies the active-region rect
+ * state through a destination rect pointer after zRndr::GetActiveRegionState.
  * Purpose: transfer the recovered active render region into an FMV blit rect.
  */
 static inline void CopyActionImageActiveRegionRect(
     zVidRect32 *rect
 ) {
-    rect->left = g_zFMV_ActionImage_ActiveRegionX;
-    rect->top = g_zFMV_ActionImage_ActiveRegionY;
-    rect->right = g_zFMV_ActionImage_ActiveRegionW;
-    rect->bottom = g_zFMV_ActionImage_ActiveRegionH;
+    *rect = g_zFMV_ActionImage_ActiveRegion;
 }
 
 /**
@@ -421,9 +409,15 @@ void zFMV_Playback::OpenAndPlay(
 ) {
     zVideo_dd::FlipToGDIIfAttached();
 
-    zFMV_MciOpenParams openParams = {0};
-    openParams.deviceType = kMpegVideoDeviceType;
-    openParams.elementName = mediaPathDup;
+    // Retail writes only the MCI fields consumed by each command.
+    zFMV_MciPlayParams playParams;
+    zFMV_MciSetParams setParams;
+    zFMV_MciWindowParams windowParams;
+    zFMV_MciRectParams rectParams;
+    MCI_DGV_OPEN_PARMSA openParams;
+
+    openParams.lpstrDeviceType = (LPSTR)(kMpegVideoDeviceType);
+    openParams.lpstrElementName = mediaPathDup;
     DWORD mciError = mciSendCommandA(
         0,
         0x803,
@@ -434,9 +428,8 @@ void zFMV_Playback::OpenAndPlay(
         ReportMciError(mciError);
     }
 
-    mciDeviceId = (unsigned short)(openParams.deviceId);
+    mciDeviceId = (unsigned short)(openParams.wDeviceID);
 
-    zFMV_MciWindowParams windowParams = {0};
     windowParams.hwnd = notifyHwnd;
     mciError = mciSendCommandA(
         mciDeviceId,
@@ -450,16 +443,15 @@ void zFMV_Playback::OpenAndPlay(
     }
 
     if ((mciPutFlags & 0x40000) != 0) {
-        zFMV_MciRectParams destParams = {0};
-        destParams.left = destinationRect.left;
-        destParams.top = destinationRect.top;
-        destParams.width = destinationRect.right - destinationRect.left;
-        destParams.height = destinationRect.bottom - destinationRect.top;
+        rectParams.left = destinationRect.left;
+        rectParams.width = destinationRect.right - destinationRect.left;
+        rectParams.top = destinationRect.top;
+        rectParams.height = destinationRect.bottom - destinationRect.top;
         mciError = mciSendCommandA(
             mciDeviceId,
             0x842,
             0x50002,
-            (DWORD_PTR)(&destParams)
+            (DWORD_PTR)(&rectParams)
         );
         if (mciError != 0) {
             ReportMciError(mciError);
@@ -468,16 +460,15 @@ void zFMV_Playback::OpenAndPlay(
     }
 
     if ((mciPutFlags & 0x20000) != 0) {
-        zFMV_MciRectParams sourceParams = {0};
-        sourceParams.left = sourceRect.left;
-        sourceParams.top = sourceRect.top;
-        sourceParams.width = sourceRect.right - sourceRect.left;
-        sourceParams.height = sourceRect.bottom - sourceRect.top;
+        rectParams.left = sourceRect.left;
+        rectParams.width = sourceRect.right - sourceRect.left;
+        rectParams.top = sourceRect.top;
+        rectParams.height = sourceRect.bottom - sourceRect.top;
         mciError = mciSendCommandA(
             mciDeviceId,
             0x842,
             0x30002,
-            (DWORD_PTR)(&sourceParams)
+            (DWORD_PTR)(&rectParams)
         );
         if (mciError != 0) {
             ReportMciError(mciError);
@@ -485,7 +476,6 @@ void zFMV_Playback::OpenAndPlay(
         }
     }
 
-    zFMV_MciSetParams setParams = {0};
     setParams.timeFormat = 0x1b;
     setParams.audio = (DWORD)((unsigned int)(notifyHwnd));
     mciError = mciSendCommandA(
@@ -499,10 +489,9 @@ void zFMV_Playback::OpenAndPlay(
         return;
     }
 
-    zFMV_MciPlayParams playParams = {0};
+    DWORD playFlags = 0x6;
     playParams.callback = (DWORD_PTR)(notifyHwnd);
     playParams.from = startMs;
-    DWORD playFlags = 0x6;
     if (endMs >= 0) {
         playParams.to = (DWORD)(endMs);
         playFlags = 0xe;
@@ -534,12 +523,12 @@ void zFMV_Playback::StopAndClose() {
         0
     );
     if (mciError == 0) {
-        zFMV_Playback *self = this;
+        MCI_GENERIC_PARMS closeParams;
         mciError = mciSendCommandA(
             mciDeviceId,
             0x804,
             0x2,
-            (DWORD_PTR)(&self)
+            (DWORD_PTR)(&closeParams)
         );
     }
 
@@ -555,10 +544,7 @@ void zFMV_Playback::StopAndClose() {
 int zFMV_Playback::SetDestRect(
     const zFMV_Rect *rect
 ) {
-    destinationRect.left = rect->left;
-    destinationRect.top = rect->top;
-    destinationRect.right = rect->right;
-    destinationRect.bottom = rect->bottom;
+    destinationRect = *rect;
     const int result = mciPutFlags | 0x40000;
     mciPutFlags = result;
     return result;
@@ -1222,7 +1208,7 @@ int zFMV_Script::LoadActionsFromZrd(
         return -1;
     }
 
-    m_fmvPath = DuplicateCString(zReader::ReadNamedString(
+    m_fmvPath = _strdup(zReader::ReadNamedString(
         root,
         "FMV_PATH"
     ));
@@ -1240,10 +1226,12 @@ int zFMV_Script::LoadActionsFromZrd(
     }
 
     const int sequenceActionCount = sequenceNode->value.nodes[0].value.i32;
+    int i = 0;
+    int actionIndex = 1;
     int result = sequenceActionCount - 1;
     if (result > 0) {
-        for (int i = 1; i < sequenceActionCount; ++i) {
-            zReader::Node *actionNode = &sequenceNode->value.nodes[i];
+        do {
+            zReader::Node *actionNode = &sequenceNode->value.nodes[actionIndex];
             if (actionNode->type != zReader::ZRDR_NODE_ARRAY) {
                 result = 0;
                 zError::ReportOld(
@@ -1257,44 +1245,34 @@ int zFMV_Script::LoadActionsFromZrd(
                 break;
             }
 
-            const char *actionTag = ArrayBase(actionNode)[1].value.str;
-            zFMV_Action *action = 0;
+            const char *actionTag = actionNode->value.nodes[1].value.str;
 
             if (strcmp(
                     actionTag,
                     "SHOWIMAGE"
                 ) == 0) {
-                action = new zFMV_ActionImage(
-                    StringArg(
-                        actionNode,
-                        2
-                    ),
+                AppendAction(new zFMV_ActionImage(
+                    actionNode->value.nodes[2].value.str,
                     1
-                );
+                ));
             } else if (strcmp(
                            actionTag,
                            "BLITIMAGE"
                        ) == 0) {
-                action = new zFMV_ActionImage(
-                    StringArg(
-                        actionNode,
-                        2
-                    ),
+                AppendAction(new zFMV_ActionImage(
+                    actionNode->value.nodes[2].value.str,
                     1,
                     actionNode->value.nodes[3].value.i32,
                     actionNode->value.nodes[4].value.i32
-                );
+                ));
             } else if (strcmp(
                            actionTag,
                            "LOADIMAGE"
                        ) == 0) {
-                action = new zFMV_ActionImage(
-                    StringArg(
-                        actionNode,
-                        2
-                    ),
+                AppendAction(new zFMV_ActionImage(
+                    actionNode->value.nodes[2].value.str,
                     0
-                );
+                ));
             } else if (strcmp(
                            actionTag,
                            "WAIT"
@@ -1303,117 +1281,105 @@ int zFMV_Script::LoadActionsFromZrd(
                 if (waitAction != 0) {
                     zReader::Node *durationArg = &actionNode->value.nodes[2];
                     waitAction->next = 0;
-                    waitAction->durationSec =
-                        durationArg->type == zReader::ZRDR_NODE_INT
-                            ? (float)(durationArg->value.i32)
-                            : durationArg->value.f32;
-                    action = waitAction;
+                    waitAction->durationSec = durationArg->value.f32;
                 }
+                AppendAction(waitAction);
             } else if (strcmp(
                            actionTag,
                            "FADEIN"
-                       ) == 0 || strcmp(
+                       ) == 0) {
+                zReader::Node *colorValues = actionNode->value.nodes[2].value.nodes;
+                AppendAction(new zFMV_ActionFade(
+                    colorValues[1].value.i32,
+                    colorValues[2].value.i32,
+                    colorValues[3].value.i32,
+                    actionNode->value.nodes[3].value.u32,
+                    -1,
+                    actionNode->value.nodes[4].value.i32
+                ));
+            } else if (strcmp(
                            actionTag,
                            "FADEOUT"
                        ) == 0) {
-                zReader::Node *color = ArrayItem(
-                    actionNode,
-                    2
-                );
-                const int direction = strcmp(
-                    actionTag,
-                    "FADEIN"
-                ) == 0 ? -1 : 1;
-                action = new zFMV_ActionFade(
-                    ArrayBase(color)[1].value.i32,
-                    ArrayBase(color)[2].value.i32,
-                    ArrayBase(color)[3].value.i32,
+                zReader::Node *colorValues = actionNode->value.nodes[2].value.nodes;
+                AppendAction(new zFMV_ActionFade(
+                    colorValues[1].value.i32,
+                    colorValues[2].value.i32,
+                    colorValues[3].value.i32,
                     actionNode->value.nodes[3].value.u32,
-                    direction,
+                    1,
                     actionNode->value.nodes[4].value.i32
-                );
+                ));
             } else if (strcmp(
                            actionTag,
                            "PLAYAVI"
                        ) == 0) {
                 const int actionArgCount = actionNode->value.nodes[0].value.i32;
-                const int modeFlags =
-                    actionArgCount > 3 ? actionNode->value.nodes[3].value.i32 : 0;
-                action = new zFMV_ActionPlayAvi(
-                    m_fmvPath,
-                    StringArg(
-                        actionNode,
-                        2
-                    ),
-                    modeFlags
-                );
+                if (actionArgCount > 3) {
+                    AppendAction(new zFMV_ActionPlayAvi(
+                        m_fmvPath,
+                        actionNode->value.nodes[2].value.str,
+                        actionNode->value.nodes[3].value.i32
+                    ));
+                } else {
+                    AppendAction(new zFMV_ActionPlayAvi(
+                        m_fmvPath,
+                        actionNode->value.nodes[2].value.str,
+                        0
+                    ));
+                }
             } else if (strcmp(
                            actionTag,
                            "PLAYMCI"
                        ) == 0) {
-                action = new zFMV_ActionPlayMci(
+                AppendAction(new zFMV_ActionPlayMci(
+                    m_hWnd,
                     m_fmvPath,
-                    StringArg(
-                        actionNode,
-                        2
-                    ),
-                    m_hWnd
-                );
+                    actionNode->value.nodes[2].value.str
+                ));
             } else if (strcmp(
                            actionTag,
                            "BLUR"
-                       ) == 0 || strcmp(
+                       ) == 0) {
+                AppendAction(new zFMV_ActionBlur(
+                    1,
+                    actionNode->value.nodes[2].value.i32
+                ));
+            } else if (strcmp(
                            actionTag,
                            "BLURH"
-                       ) == 0 || strcmp(
+                       ) == 0) {
+                AppendAction(new zFMV_ActionBlurH(
+                    1,
+                    actionNode->value.nodes[2].value.i32
+                ));
+            } else if (strcmp(
                            actionTag,
                            "BLURV"
                        ) == 0) {
-                const int blurPassCount = actionNode->value.nodes[2].value.i32;
-                if (strcmp(
-                        actionTag,
-                        "BLURH"
-                    ) == 0) {
-                    action = new zFMV_ActionBlurH(
-                        1,
-                        blurPassCount
-                    );
-                } else if (strcmp(
-                               actionTag,
-                               "BLURV"
-                           ) == 0) {
-                    action = new zFMV_ActionBlurV(
-                        1,
-                        blurPassCount
-                    );
-                } else {
-                    action = new zFMV_ActionBlur(
-                        1,
-                        blurPassCount
-                    );
-                }
+                AppendAction(new zFMV_ActionBlurV(
+                    1,
+                    actionNode->value.nodes[2].value.i32
+                ));
             } else if (strcmp(
                            actionTag,
                            "PLAYSOUND"
-                       ) == 0) {
+                ) == 0) {
                 zFMV_ActionPlaySound *soundAction = new zFMV_ActionPlaySound;
                 if (soundAction != 0) {
                     soundAction->next = 0;
                     strncpy(
                         soundAction->sampleName,
-                        StringArg(
-                            actionNode,
-                            2
-                        ),
+                        actionNode->value.nodes[2].value.str,
                         0x32
                     );
                     soundAction->voice = 0;
-                    action = soundAction;
                 }
+                AppendAction(soundAction);
             }
-
-            AppendAction(action);
-        }
+            ++i;
+            ++actionIndex;
+        } while (i < result);
     }
 
     zReader::FreeLoadedTree(root);
@@ -1455,14 +1421,11 @@ int zFMV_Script::BeginCurrentAction(
         return 0;
     }
 
-    const int pitchBytes = zVideo::GetPrimarySurfacePitch();
-    const int height = zVideo::GetPrimarySurfaceHeight();
-    const int width = zVideo::GetPrimarySurfaceWidth();
     zVideo::Fx_SetSurfaceState(
         zVideo::GetPrimarySurfacePixels(),
-        width,
-        height,
-        pitchBytes
+        zVideo::GetPrimarySurfaceWidth(),
+        zVideo::GetPrimarySurfaceHeight(),
+        zVideo::GetPrimarySurfacePitch()
     );
     zSndSampleSet_InitByName("FMV");
     zInput::Keyboard_ResetTransitionState();
@@ -1561,15 +1524,16 @@ zFMV_ActionImage::zFMV_ActionImage(
     int blitY
 ) {
     image = 0;
-    imagePath = DuplicateCString(path);
+#if defined(_MSC_VER)
+    imagePath = _strdup(path);
+#else
+    imagePath = strdup(path);
+#endif
     doAdjustSurfaces = adjustSurfaces;
-    g_zFMV_ActionImage_BlitRectY = blitY;
-    g_zFMV_ActionImage_BlitRectX = blitX;
+    g_zFMV_ActionImage_BlitRect.top = blitY;
+    g_zFMV_ActionImage_BlitRect.left = blitX;
     forcePrimaryPostprocess = 1;
-    blitRect.left = g_zFMV_ActionImage_BlitRectX;
-    blitRect.top = g_zFMV_ActionImage_BlitRectY;
-    blitRect.right = g_zFMV_ActionImage_BlitRectW;
-    blitRect.bottom = g_zFMV_ActionImage_BlitRectH;
+    blitRect = g_zFMV_ActionImage_BlitRect;
 }
 
 /**
@@ -1581,16 +1545,20 @@ zFMV_ActionImage::zFMV_ActionImage(
     int adjustSurfaces
 ) {
     image = 0;
-    imagePath = DuplicateCString(path);
+#if defined(_MSC_VER)
+    imagePath = _strdup(path);
+#else
+    imagePath = strdup(path);
+#endif
     doAdjustSurfaces = adjustSurfaces;
-    g_zFMV_ActionImage_ActiveRegionY = 0;
-    g_zFMV_ActionImage_ActiveRegionX = 0;
+    g_zFMV_ActionImage_ActiveRegion.top = 0;
+    g_zFMV_ActionImage_ActiveRegion.left = 0;
     forcePrimaryPostprocess = 0;
 
     int discard;
     zRndr::GetActiveRegionState(
-        &g_zFMV_ActionImage_ActiveRegionW,
-        &g_zFMV_ActionImage_ActiveRegionH,
+        &g_zFMV_ActionImage_ActiveRegion.right,
+        &g_zFMV_ActionImage_ActiveRegion.bottom,
         &discard,
         &discard
     );
@@ -1797,10 +1765,8 @@ zFMV_ActionPlayAvi::zFMV_ActionPlayAvi(
     const char *mediaFileName,
     int flags
 ) {
-    const int rootLen = strlen(mediaRootPath);
-    const int fileLen = strlen(mediaFileName);
     mediaPath = (char *)(calloc(
-        rootLen + fileLen + 0x1b,
+        strlen(mediaRootPath) + strlen(mediaFileName) + 0x1b,
         1
     ));
     sprintf(
@@ -1939,14 +1905,12 @@ void zFMV_ActionPlayAvi::End() {
  * Purpose: build the MCI media path, create playback state, and set its destination rect.
  */
 zFMV_ActionPlayMci::zFMV_ActionPlayMci(
+    HWND hwnd,
     const char *mediaRootPath,
-    const char *playbackTitle,
-    HWND hwnd
+    const char *playbackTitle
 ) {
-    const int rootLen = strlen(mediaRootPath);
-    const int titleLen = strlen(playbackTitle);
     mediaPath = (char *)(calloc(
-        rootLen + titleLen + 0x1b,
+        strlen(mediaRootPath) + strlen(playbackTitle) + 0x1b,
         1
     ));
     sprintf(
@@ -2079,7 +2043,8 @@ int zFMV_ActionBlur::Update(
 
     if (g_zVideo_ActiveRendererPath != k_zFMV_RendererBackendSoftware) {
         zVideo::RunPostprocessOnPrimaryBuffer();
-        if (passes != 0) {
+        if (passes-- != 0) {
+            ++passes;
             do {
                 zVideo::buff_BlurRegionByMode(
                     0,
@@ -2091,7 +2056,8 @@ int zFMV_ActionBlur::Update(
         zVideo::Dispatch_UnlockPrimarySurfaceState();
     } else {
         zVideo::RunPostprocessOnSwBuffer();
-        if (passes != 0) {
+        if (passes-- != 0) {
+            ++passes;
             do {
                 zVideo::buff_BlurRegionByMode(
                     0,
@@ -2128,7 +2094,8 @@ int zFMV_ActionBlurH::Update(
 
     if (g_zVideo_ActiveRendererPath != k_zFMV_RendererBackendSoftware) {
         zVideo::RunPostprocessOnPrimaryBuffer();
-        if (passes != 0) {
+        if (passes-- != 0) {
+            ++passes;
             do {
                 zVideo::buff_BlurRegionByMode(
                     0,
@@ -2140,7 +2107,8 @@ int zFMV_ActionBlurH::Update(
         zVideo::Dispatch_UnlockPrimarySurfaceState();
     } else {
         zVideo::RunPostprocessOnSwBuffer();
-        if (passes != 0) {
+        if (passes-- != 0) {
+            ++passes;
             do {
                 zVideo::buff_BlurRegionByMode(
                     0,
@@ -2177,7 +2145,8 @@ int zFMV_ActionBlurV::Update(
 
     if (g_zVideo_ActiveRendererPath != k_zFMV_RendererBackendSoftware) {
         zVideo::RunPostprocessOnPrimaryBuffer();
-        if (passes != 0) {
+        if (passes-- != 0) {
+            ++passes;
             do {
                 zVideo::buff_BlurRegionByMode(
                     0,
@@ -2189,7 +2158,8 @@ int zFMV_ActionBlurV::Update(
         zVideo::Dispatch_UnlockPrimarySurfaceState();
     } else {
         zVideo::RunPostprocessOnSwBuffer();
-        if (passes != 0) {
+        if (passes-- != 0) {
+            ++passes;
             do {
                 zVideo::buff_BlurRegionByMode(
                     0,

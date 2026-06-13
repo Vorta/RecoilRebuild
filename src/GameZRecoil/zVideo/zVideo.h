@@ -555,8 +555,8 @@ extern HWND g_zVideo_hWnd;
 extern RECT g_zVideo_CachedClientRectScreen;
 
 unsigned int __fastcall zVid_PackColorRGB(
-    unsigned int red,
-    unsigned int green,
+    unsigned char red,
+    unsigned char green,
     unsigned int blue
 );
 unsigned int __fastcall zVid_PackColor00RRGGBB(unsigned int color00RRGGBB);

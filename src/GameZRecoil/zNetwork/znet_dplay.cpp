@@ -1818,18 +1818,6 @@ void __fastcall FreeServiceProviderInfoBuffers(
 
 namespace {
 // Source-faithful helper recovered from address-backed callers in this source file.
-void FreeServiceProviderInfo(
-    zNetworkDPlayServiceProviderInfo *info
-) {
-    if (info == 0) {
-        return;
-    }
-
-    zNetworkDPlay::FreeServiceProviderInfoBuffers(info);
-    ::operator delete(info);
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
 void DeletePlayerRecordNode(
     zNetworkPlayerRecordListNode *node
 ) {
@@ -1955,7 +1943,9 @@ void ClearEnumeratedSessionList() {
         g_zNetwork_EnumeratedSessionList
     ));
     while (desc != 0) {
-        free(desc->reservedData);
+        if (desc->reservedData != 0) {
+            free(desc->reservedData);
+        }
         free(desc);
         desc = (zNetworkDPlaySessionDesc *)(zArchiveList_PopFrontPayload(
             g_zNetwork_EnumeratedSessionList
@@ -1971,11 +1961,28 @@ void ClearEnumeratedSessionList() {
 void ClearServiceProviderList() {
     zNetworkServiceProviderListVec *const list = g_zNetwork_ServiceProviderList;
     for (zNetworkDPlayServiceProviderInfo **it = list->begin; it != list->end; ++it) {
-        FreeServiceProviderInfo(*it);
+        zNetworkDPlayServiceProviderInfo *const info = *it;
+        if (info != 0) {
+            free(info->displayName);
+            info->displayName = 0;
+            free(info->connectionData);
+            info->connectionData = 0;
+            ::operator delete(info);
+        }
+
         *it = 0;
     }
 
-    list->end = list->begin;
+    zNetworkDPlayServiceProviderInfo **first = list->begin;
+    zNetworkDPlayServiceProviderInfo **last = list->end;
+    zNetworkDPlayServiceProviderInfo **finish = list->end;
+    while (last != finish) {
+        *first = *last;
+        ++first;
+        ++last;
+    }
+
+    list->end = first;
 }
 
 /**
@@ -1984,28 +1991,37 @@ void ClearServiceProviderList() {
  * nodes while preserving the sentinel.
  */
 void ClearPlayerRecordList() {
-    zNetworkPlayerRecordList *const list = g_zNetwork_PlayerRecordList;
+    zNetworkPlayerRecordList *list = g_zNetwork_PlayerRecordList;
     zNetworkPlayerRecordListNode *const sentinel = list->sentinelNode;
-    zNetworkPlayerRecordListNode *node;
-
-    node = sentinel->next;
-    while (node != sentinel) {
+    zNetworkPlayerRecordListNode *node = sentinel->next;
+    zNetworkPlayerRecordListNode *clearNode = node;
+    int hasNode = node != sentinel;
+    while (hasNode != 0) {
         if (node->playerRecord != 0) {
             ::operator delete(node->playerRecord);
-            node->playerRecord = 0;
         }
 
+        clearNode->playerRecord = 0;
         node = node->next;
+        clearNode = clearNode->next;
+        hasNode = node != sentinel;
     }
 
-    node = sentinel->next;
-    while (node != sentinel) {
-        zNetworkPlayerRecordListNode *const next = node->next;
-        node->prev->next = node->next;
-        node->next->prev = node->prev;
-        ::operator delete(node);
-        --list->count;
-        node = next;
+    list = g_zNetwork_PlayerRecordList;
+    zNetworkPlayerRecordListNode *const deleteSentinel = list->sentinelNode;
+    node = deleteSentinel->next;
+    hasNode = node != deleteSentinel;
+    if (hasNode != 0) {
+        int *const count = &list->count;
+        do {
+            zNetworkPlayerRecordListNode *const deleteNode = node;
+            node = node->next;
+            deleteNode->prev->next = deleteNode->next;
+            deleteNode->next->prev = deleteNode->prev;
+            ::operator delete(deleteNode);
+            --*count;
+            hasNode = node != deleteSentinel;
+        } while (hasNode != 0);
     }
 }
 
@@ -2102,11 +2118,23 @@ int ShutdownSessionRuntime() {
     }
 
     ClearPlayerRecordList();
-    if (g_zNetwork_PlayerRecordList != 0) {
-        ::operator delete(g_zNetwork_PlayerRecordList->sentinelNode);
-        g_zNetwork_PlayerRecordList->sentinelNode = 0;
-        g_zNetwork_PlayerRecordList->count = 0;
-        ::operator delete(g_zNetwork_PlayerRecordList);
+    zNetworkPlayerRecordList *const playerRecordList = g_zNetwork_PlayerRecordList;
+    if (playerRecordList != 0) {
+        zNetworkPlayerRecordListNode *const sentinel = playerRecordList->sentinelNode;
+        zNetworkPlayerRecordListNode *node = sentinel->next;
+        while (node != sentinel) {
+            zNetworkPlayerRecordListNode *const next = node->next;
+            node->prev->next = node->next;
+            node->next->prev = node->prev;
+            ::operator delete(node);
+            --playerRecordList->count;
+            node = next;
+        }
+
+        ::operator delete(playerRecordList->sentinelNode);
+        playerRecordList->sentinelNode = 0;
+        playerRecordList->count = 0;
+        ::operator delete(playerRecordList);
         g_zNetwork_PlayerRecordList = 0;
     }
 

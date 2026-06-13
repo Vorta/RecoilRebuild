@@ -406,14 +406,14 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
     int vertCount
 );
 void SpanOcclusionResetFrame();
-void SpanOcclusionShutdown();
+int SpanOcclusionShutdown();
 void __fastcall OverlayBlendRow555_Scalar(
     unsigned short *rowPixels16,
-    int pixelCount
+    int rightDelta
 );
 void __fastcall OverlayBlendRow565_Scalar(
     unsigned short *rowPixels16,
-    int pixelCount
+    int rightDelta
 );
 void __fastcall OverlayBlendRow555_Mmx(
     unsigned short *rowPixels16,

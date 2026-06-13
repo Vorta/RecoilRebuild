@@ -746,7 +746,7 @@ extern "C" int __fastcall zUtil_ZRDR_FreePathList(
  * Reimplements 0x4a5cc0: zUtil_ZRDR_FreeSearchPathList.
  * Purpose: free search-path payload strings and destroy the list container.
  */
-extern "C" int __fastcall zUtil_ZRDR_FreeSearchPathList(
+extern "C" zArchiveList *__fastcall zUtil_ZRDR_FreeSearchPathList(
     zArchiveList *list
 ) {
     zUtil_ZRDR_FreePathList(list);
@@ -1061,6 +1061,8 @@ void zIndexArchive::FreeRecordsAndReset() {
 void zIndexArchive::FlushIndexToTail() {
     DWORD numberOfBytesWritten = 0;
     const unsigned int footerMagic = 1;
+    const unsigned int recordBytes = recordCount * sizeof(zZarFileRecord);
+    unsigned int *const recordCountFooter = &recordCount;
     SetFilePointer(
         (HANDLE)(hFile),
         0,
@@ -1070,7 +1072,7 @@ void zIndexArchive::FlushIndexToTail() {
     WriteFile(
         (HANDLE)(hFile),
         records,
-        recordCount * sizeof(zZarFileRecord),
+        recordBytes,
         &numberOfBytesWritten,
         0
     );
@@ -1083,8 +1085,8 @@ void zIndexArchive::FlushIndexToTail() {
     );
     WriteFile(
         (HANDLE)(hFile),
-        &recordCount,
-        sizeof(recordCount),
+        recordCountFooter,
+        sizeof(*recordCountFooter),
         &numberOfBytesWritten,
         0
     );

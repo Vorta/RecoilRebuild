@@ -378,14 +378,20 @@ int zInput_BindMapContext::GetSecondaryKeyboardKey(
     return ((unsigned int)(m_packedBindings[commandIndex]) >> 0x0b) & 0x7ff;
 }
 
-// Reimplements 0x470a80: zInput_BindMapContext::GetJoystickButtonSlot
+/**
+ * Reimplements 0x470a80: zInput_BindMapContext::GetJoystickButtonSlot.
+ * Purpose: return the joystick button slot packed for a command binding.
+ */
 int zInput_BindMapContext::GetJoystickButtonSlot(
     int commandIndex
 ) {
     return ((unsigned int)(m_packedBindings[commandIndex]) >> 0x16) & 0x0f;
 }
 
-// Reimplements 0x470aa0: zInput_BindMapContext::GetMouseButtonSlot
+/**
+ * Reimplements 0x470aa0: zInput_BindMapContext::GetMouseButtonSlot.
+ * Purpose: return the mouse button slot packed for a command binding.
+ */
 int zInput_BindMapContext::GetMouseButtonSlot(
     int commandIndex
 ) {
@@ -3179,7 +3185,7 @@ int Keyboard_AddRef() {
  * Purpose: Poll keyboard events for one frame and update or dispatch key state.
  */
 void __fastcall Keyboard_PollState(
-    int dispatchCallbacks
+    unsigned char dispatchCallbacks
 ) {
     DWORD inOutCount = 0x80;
     const int hresult = g_zInput_KbdDevice->GetDeviceData(
@@ -3400,11 +3406,12 @@ int __stdcall DI_EnumDevicesCallback_SelectFirstJoystick(
  * Purpose: Acquire the DirectInput joystick device when one is available.
  */
 int DI_AcquireJoystickDevice() {
-    if (g_zInput_JoystickDevice == 0) {
-        return 0;
+    if (g_zInput_JoystickDevice != 0) {
+        const int result = g_zInput_JoystickDevice->Acquire();
+        const int success = (result == 0);
+        return success;
     }
-
-    return g_zInput_JoystickDevice->Acquire() == 0 ? 1 : 0;
+    return 0;
 }
 
 // Reimplements 0x471e40: zInput::DI_InitJoystickDevice
@@ -3645,14 +3652,15 @@ DIJOYSTATE2 *DI_GetCurrentState() {
  * the current/previous joystick state snapshots.
  */
 DIJOYSTATE2 *__fastcall DI_PollJoystickState(
-    int dispatchCallbacks
+    unsigned char dispatchCallbacks
 ) {
     if (g_zInput_JoystickInitialized == 0) {
         return 0;
     }
 
-    g_zInput_JoystickDevice->Poll();
-    const int result = g_zInput_JoystickDevice->GetDeviceState(
+    DIDevice *device = g_zInput_JoystickDevice;
+    device->Poll();
+    const int result = device->GetDeviceState(
         sizeof(DIJOYSTATE2),
         &g_zInput_JoystickRawDIState
     );
@@ -3695,13 +3703,11 @@ DIJOYSTATE2 *__fastcall DI_PollJoystickState(
 int __fastcall DI_GetButtonTransitionState(
     int buttonIndex
 ) {
-    const unsigned char current = g_zInput_JoystickCurrentState.rgbButtons[buttonIndex - 1];
-    const unsigned char previous = g_zInput_JoystickPreviousState.rgbButtons[buttonIndex - 1];
-    if (current != 0) {
-        return (previous != 0 ? 1 : 0) + 1;
+    if (g_zInput_JoystickCurrentState.rgbButtons[buttonIndex - 1] != 0) {
+        return (g_zInput_JoystickPreviousState.rgbButtons[buttonIndex - 1] != 0 ? 1 : 0) + 1;
     }
 
-    return previous != 0 ? 4 : 0;
+    return g_zInput_JoystickPreviousState.rgbButtons[buttonIndex - 1] != 0 ? 4 : 0;
 }
 
 /**
@@ -3807,7 +3813,7 @@ int Mouse_ShutdownDevice() {
  * Purpose: Poll the mouse and store the latest DirectInput-style result code.
  */
 void __fastcall Mouse_PollAndStoreState(
-    int dispatchCallbacks
+    unsigned char dispatchCallbacks
 ) {
     g_zInputMouseLastPollResult = Mouse_PollState(dispatchCallbacks);
 }
@@ -3817,9 +3823,9 @@ void __fastcall Mouse_PollAndStoreState(
  * Purpose: Poll enabled mouse, joystick, and keyboard devices with the caller's dispatch mode.
  */
 void __fastcall PollActiveDevices(
-    int dispatchCallbacks
+    unsigned char dispatchCallbacks
 ) {
-    const int savedDispatchCallbacks = dispatchCallbacks;
+    const unsigned char savedDispatchCallbacks = dispatchCallbacks;
     if (g_zInputMouseFlags == 1 && (unsigned short)(g_zInputMousePollRefCount) > 0) {
         Mouse_PollAndStoreState(savedDispatchCallbacks);
     }
@@ -3838,7 +3844,7 @@ void __fastcall PollActiveDevices(
  * Purpose: Poll the DirectInput mouse state and update the zInput mouse snapshots.
  */
 int __fastcall Mouse_PollState(
-    int dispatchCallbacks
+    unsigned char dispatchCallbacks
 ) {
     g_zInput_MouseStateSnapshot.deltaX = 0;
     g_zInput_MouseStateSnapshot.deltaY = 0;
@@ -3851,8 +3857,9 @@ int __fastcall Mouse_PollState(
         }
     }
 
-    g_zInput_MouseDevice->Poll();
-    const int result = g_zInput_MouseDevice->GetDeviceState(
+    DIDevice *device = g_zInput_MouseDevice;
+    device->Poll();
+    int result = device->GetDeviceState(
         sizeof(MouseDeviceState),
         &g_zInput_MouseRawDIState
     );
@@ -3860,21 +3867,20 @@ int __fastcall Mouse_PollState(
         Mouse_UpdateAcquireState();
         return result;
     }
-    if (result != kDiOk) {
-        return result;
-    }
 
-    g_zInput_MousePreviousState = g_zInput_MouseCurrentState;
-    g_zInput_MouseCurrentState = g_zInput_MouseRawDIState;
-    g_zInput_MouseStateSnapshot.deltaX = g_zInput_MouseCurrentState.lX;
-    g_zInput_MouseStateSnapshot.deltaY = g_zInput_MouseCurrentState.lY;
-    Mouse_ApplyAccumulatedDelta();
-    g_zInput_MouseStateSnapshot.button1Transition = Mouse_GetButtonTransitionState(1);
-    g_zInput_MouseStateSnapshot.button2Transition = Mouse_GetButtonTransitionState(2);
-    g_zInput_MouseStateSnapshot.button3Transition = Mouse_GetButtonTransitionState(3);
+    if (result == kDiOk) {
+        g_zInput_MousePreviousState = g_zInput_MouseCurrentState;
+        g_zInput_MouseCurrentState = g_zInput_MouseRawDIState;
+        g_zInput_MouseStateSnapshot.deltaX = g_zInput_MouseCurrentState.lX;
+        g_zInput_MouseStateSnapshot.deltaY = g_zInput_MouseCurrentState.lY;
+        Mouse_ApplyAccumulatedDelta();
+        g_zInput_MouseStateSnapshot.button1Transition = Mouse_GetButtonTransitionState(1);
+        g_zInput_MouseStateSnapshot.button2Transition = Mouse_GetButtonTransitionState(2);
+        g_zInput_MouseStateSnapshot.button3Transition = Mouse_GetButtonTransitionState(3);
 
-    if (g_zInput_BindMap_Current != 0 && dispatchCallbacks != 0) {
-        g_zInput_BindMap_Current->DispatchMouseButtonCallbacks();
+        if (g_zInput_BindMap_Current != 0 && dispatchCallbacks != 0) {
+            g_zInput_BindMap_Current->DispatchMouseButtonCallbacks();
+        }
     }
 
     return result;

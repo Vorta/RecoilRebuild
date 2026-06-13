@@ -164,8 +164,8 @@ struct HudUiElement {
         int py
     );
     virtual void SetVisible(int visible);
-    virtual int GetX();
-    virtual int GetY();
+    virtual int GetCenterX();
+    virtual int GetCenterY();
     virtual void EnableWordWrapWithRect(const HudUiRect *rect);
     virtual void GetTextRect(HudUiRect *outRect);
     void SetTimer(float duration);
@@ -922,6 +922,7 @@ struct HudUiCheckToggleWidget : HudUiZrdWidget {
     HudUiPanel *checkedLabelPanel;
 
     HudUiCheckToggleWidget();
+    ~HudUiCheckToggleWidget();
     HudUiCheckToggleWidget * Constructor();
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     HudUiCheckToggleWidget * ScalarDeletingDestructorThunk(unsigned int flags);
@@ -952,6 +953,7 @@ struct HudUiCycleSelectorWidget : HudUiZrdWidget {
     HudUiWidget *entriesB[20];
 
     HudUiCycleSelectorWidget();
+    ~HudUiCycleSelectorWidget();
     HudUiCycleSelectorWidget * Constructor();
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     HudUiCycleSelectorWidget * ScalarDeletingDestructorThunk(unsigned int flags);
@@ -998,6 +1000,7 @@ struct HudUiFillBitmap : HudUiZrdWidget {
     int previewOffsetY;
 
     HudUiFillBitmap();
+    ~HudUiFillBitmap();
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     void DestructorCore();
     void DestructorCoreThunk();

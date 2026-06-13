@@ -2271,7 +2271,7 @@ int __fastcall PlaceTrackCounterWidget(
         counterWidget->SetImageBorrowedAndInvalidate(g_HudUiMgrSensorTargetMarkerImages[1]);
 
         const int halfHeight = counterWidget->image->height / 2;
-        int top = slot->GetY() - halfHeight;
+        int top = slot->GetCenterY() - halfHeight;
         if (top <= g_HudUiMgrHudRect.top + halfHeight) {
             top = g_HudUiMgrHudRect.top;
         } else if (top > g_HudUiMgrSensorBlock.sensorViewportRect.top - halfHeight) {
@@ -2291,14 +2291,14 @@ int __fastcall PlaceTrackCounterWidget(
 
         const zVidImagePartial *const image = counterWidget->image;
         const int height = image->height;
-        int top = slot->GetY() - height;
+        int top = slot->GetCenterY() - height;
         if (top <= g_HudUiMgrHudRect.top + height) {
             top = g_HudUiMgrHudRect.top;
         } else if (top > g_HudUiMgrHudRect.bottom - height) {
             top = g_HudUiMgrHudRect.bottom - height * 2;
         }
 
-        const int left = slot->GetX() + 1 - image->width;
+        const int left = slot->GetCenterX() + 1 - image->width;
         counterWidget->SetPos(
             left,
             top
@@ -2312,8 +2312,8 @@ int __fastcall PlaceTrackCounterWidget(
         counterWidget->SetImageBorrowedAndInvalidate(g_HudUiMgrSensorTargetMarkerImages[3]);
 
         const zVidImagePartial *const image = counterWidget->image;
-        const int top = slot->GetY() + 1;
-        const int left = slot->GetX() - image->width / 2;
+        const int top = slot->GetCenterY() + 1;
+        const int left = slot->GetCenterX() - image->width / 2;
         counterWidget->SetPos(
             left,
             top
@@ -2326,8 +2326,8 @@ int __fastcall PlaceTrackCounterWidget(
         counterWidget->SetVisible(1);
         counterWidget->SetImageBorrowedAndInvalidate(g_HudUiMgrSensorTargetMarkerImages[4]);
 
-        int left = slot->GetX();
-        int top = slot->GetY();
+        int left = slot->GetCenterX();
+        int top = slot->GetCenterY();
         if (left < g_HudUiMgrObjectiveWidgetRightX) {
             top = g_HudUiMgrSensorBlock.sensorViewportRect.top;
         }
@@ -2386,8 +2386,8 @@ int __fastcall PlaceTrackMarker(
                 }
             }
 
-            const int dx = slot->GetX() - g_HudUiMgrReticleProjectedX;
-            const int dy = slot->GetY() - g_HudUiMgrReticleProjectedY;
+            const int dx = slot->GetCenterX() - g_HudUiMgrReticleProjectedX;
+            const int dy = slot->GetCenterY() - g_HudUiMgrReticleProjectedY;
             const int distSq = dx * dx + dy * dy;
             if (distSq < nearestDistSq) {
                 g_HudUiMgrSensorTrackedProgressSlot = slot;
@@ -2411,8 +2411,8 @@ int __fastcall PlaceTrackMarker(
     );
 
     const zVidImagePartial *const image = trackedProgressSlot->trackMarkerWidget.image;
-    const int markerY = ((HudUiElement *)(trackedProgressSlot))->GetY() - image->height / 2;
-    const int markerX = ((HudUiElement *)(trackedProgressSlot))->GetX() - image->width / 2;
+    const int markerY = ((HudUiElement *)(trackedProgressSlot))->GetCenterY() - image->height / 2;
+    const int markerX = ((HudUiElement *)(trackedProgressSlot))->GetCenterX() - image->width / 2;
     trackedProgressSlot->trackMarkerWidget.SetPos(
         markerX,
         markerY
@@ -5140,18 +5140,18 @@ void HudUiPanel::SetClip(
 /**
  * Reimplements 0x4b42c0: HudUiElement::GetTextRect.
  * Purpose: fill a degenerate rectangle from the element position.
- * Binary Ninja: 0x4b42c0 dispatches the HudUiElement virtual GetX and GetY
+ * Binary Ninja: 0x4b42c0 dispatches the HudUiElement virtual GetCenterX and GetCenterY
  * methods from the base text-rectangle slot, then writes right/left and
  * bottom/top in that order.
  */
 void HudUiElement::GetTextRect(
     HudUiRect *outRect
 ) {
-    const int rectX = GetX();
+    const int rectX = GetCenterX();
     outRect->right = rectX;
     outRect->left = rectX;
 
-    const int rectY = GetY();
+    const int rectY = GetCenterY();
     outRect->bottom = rectY;
     outRect->top = rectY;
 }
@@ -5167,13 +5167,19 @@ unsigned char HudUiElement::HitTestTrue(
     return 1;
 }
 
-// Reimplements 0x404d50: HudUiElement::GetX
-int HudUiElement::GetX() {
+/**
+ * Reimplements 0x404d50: HudUiElement::GetX.
+ * Purpose: return the base element x-coordinate from the recovered center-position virtual slot.
+ */
+int HudUiElement::GetCenterX() {
     return x;
 }
 
-// Reimplements 0x404d60: HudUiElement::GetY
-int HudUiElement::GetY() {
+/**
+ * Reimplements 0x404d60: HudUiElement::GetY.
+ * Purpose: return the base element y-coordinate from the recovered center-position virtual slot.
+ */
+int HudUiElement::GetCenterY() {
     return y;
 }
 
@@ -5644,8 +5650,8 @@ void HudUiCompositePanel::SetPos(
     int yOffset = 0;
     for (HudUiCompositePanelEntry *entry = entryVector.begin; entry != entryVector.end; ++entry) {
         entry->panel.SetPos(
-            GetX(),
-            GetY() + yOffset
+            GetCenterX(),
+            GetCenterY() + yOffset
         );
         yOffset += entryHeight;
     }
@@ -5797,8 +5803,8 @@ void HudUiCompositePanel::SetFont(
 
     HudUiPanel *const panel = this;
     void (HudUiPanel::*const setPosFn)(int, int) = &HudUiPanel::SetPos;
-    int (HudUiPanel::*const getXFn)() = &HudUiPanel::GetX;
-    int (HudUiPanel::*const getYFn)() = &HudUiPanel::GetY;
+    int (HudUiPanel::*const getXFn)() = &HudUiPanel::GetCenterX;
+    int (HudUiPanel::*const getYFn)() = &HudUiPanel::GetCenterY;
     (panel->*setPosFn)(
         (panel->*getXFn)(),
         (panel->*getYFn)()
@@ -5842,8 +5848,8 @@ void HudUiCompositePanel::ResizeEntryVectorAndRelayout(
 
     HudUiPanel *const panel = this;
     void (HudUiPanel::*const setPosFn)(int, int) = &HudUiPanel::SetPos;
-    int (HudUiPanel::*const getXFn)() = &HudUiPanel::GetX;
-    int (HudUiPanel::*const getYFn)() = &HudUiPanel::GetY;
+    int (HudUiPanel::*const getXFn)() = &HudUiPanel::GetCenterX;
+    int (HudUiPanel::*const getYFn)() = &HudUiPanel::GetCenterY;
     (panel->*setPosFn)(
         (panel->*getXFn)(),
         (panel->*getYFn)()
@@ -6373,8 +6379,11 @@ int HudUiZrdScrollingText::LoadFromZrd(
     return 1;
 }
 
-// Reimplements 0x409410: HudUiZrdScrollingText::Update
-// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+/**
+ * Reimplements 0x409410: HudUiZrdScrollingText::Update
+ * Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
+ * Purpose: update the scrolling credits widget and each row panel.
+ */
 void HudUiZrdScrollingText::Update(
     float deltaSeconds
 ) {
@@ -6554,8 +6563,11 @@ HudUiPanelLayoutEntry * HudUiPanelLayoutEntry::CopyAssign(
     return this;
 }
 
-// Reimplements 0x40a170: HudUiPanelLayoutEntry::CopyAssignRange
-// (D:\Proj\Battlesport\HudUiPanel.cpp)
+/**
+ * Reimplements 0x40a170: HudUiPanelLayoutEntry::CopyAssignRange.
+ * Original source path: D:\Proj\Battlesport\HudUiPanel.cpp.
+ * Purpose: Copy-assign a half-open range of panel layout entries.
+ */
 HudUiPanelLayoutEntry *__fastcall HudUiPanelLayoutEntry::CopyAssignRange(
     const HudUiPanelLayoutEntry *sourceStart,
     const HudUiPanelLayoutEntry *sourceEnd,
@@ -7486,7 +7498,11 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
     return result;
 }
 
-// Reimplements 0x4b9850: HudUiBackground::SetEnabled
+/**
+ * Reimplements 0x4b9850: HudUiBackground::SetEnabled.
+ * Original source path: D:\Proj\GameZRecoil\zHud\HudUiBackground.cpp.
+ * Purpose: start or stop configured background sounds and update background visibility state.
+ */
 void HudUiBackground::SetEnabled(
     int enabled
 ) {
@@ -7684,8 +7700,8 @@ int HudUiBackground::BindPrimitiveNodeToElement(
     );
     if (relativeEndNode != 0) {
         zReader::Node *const relativeEndBase = relativeEndNode->value.nodes;
-        const int startX = element->GetX();
-        const int startY = element->GetY();
+        const int startX = element->GetCenterX();
+        const int startY = element->GetCenterY();
         ((HudUiPrimitiveBindTarget *)(element))
             ->SetSegmentEndpoints(
                 startX,
@@ -7703,18 +7719,18 @@ int HudUiBackground::BindPrimitiveNodeToElement(
         zReader::Node *const absoluteEndBase = absoluteEndNode->value.nodes;
         ((HudUiPrimitiveBindTarget *)(element))
             ->SetSegmentEndpoints(
-                element->GetX(),
-                element->GetY(),
+                element->GetCenterX(),
+                element->GetCenterY(),
                 absoluteEndBase[1].value.i32,
                 absoluteEndBase[2].value.i32
             );
     }
 
     HudUiRect clipRect;
-    clipRect.left = element->GetX();
-    clipRect.top = element->GetY();
-    clipRect.right = element->GetX();
-    clipRect.bottom = element->GetY();
+    clipRect.left = element->GetCenterX();
+    clipRect.top = element->GetCenterY();
+    clipRect.right = element->GetCenterX();
+    clipRect.bottom = element->GetCenterY();
     element->SetBltSourceAndClipRect(
         capturedCompositeImage,
         &clipRect
@@ -8054,8 +8070,8 @@ void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh() {
     );
     capturedImage->formatFlagsPacked = (unsigned char)(capturedImage->formatFlagsPacked | 0x20u);
 
-    const int y = HudUiElement::GetY();
-    const int x = HudUiElement::GetX();
+    const int y = HudUiElement::GetCenterY();
+    const int x = HudUiElement::GetCenterX();
     RebuildCapturedImage(
         x,
         y
@@ -8273,8 +8289,8 @@ void HudUiBackgroundVideoWidget::DrawBase() {
 // (D:\Proj\Battlesport\hudui_background.cpp)
 void HudUiBackgroundVideoWidget::RebuildBltRect() {
     HudUiRect rect;
-    rect.left = GetX() > 0 ? GetX() : 0;
-    rect.top = GetY() > 0 ? GetY() : 0;
+    rect.left = GetCenterX() > 0 ? GetCenterX() : 0;
+    rect.top = GetCenterY() > 0 ? GetCenterY() : 0;
 
     if (stream == 0) {
         return;
@@ -8339,7 +8355,12 @@ HudUiZrdWidget * HudUiZrdWidget::Constructor() {
     return this;
 }
 
-// Reimplements 0x4b59f0: HudUiZrdWidget::LoadFromZrd
+/**
+ * Reimplements 0x4b59f0: HudUiZrdWidget::LoadFromZrd.
+ * Source: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: bind a ZRD widget to its owner background, load images, sounds,
+ * labels, flash settings, and initial clipping from the recovered ZRD section.
+ */
 int HudUiZrdWidget::LoadFromZrd(
     zReader::Node *zrdSection,
     HudUiBackground *ownerDialog
@@ -8530,6 +8551,7 @@ HudUiPanel ** HudUiPanelPtrVector::EraseRange(
  * Binary Ninja shows the matching VC5 std::vector-style insert helper for
  * HudUiPanel pointers, including in-place tail movement and reallocation when
  * the current capacity cannot hold the requested insertion count.
+ * Purpose: insert repeated panel pointers into the recovered panel pointer vector.
  */
 void HudUiPanelPtrVector::InsertN(
     HudUiPanel **position,
@@ -8707,7 +8729,10 @@ HudUiZrdWidget * HudUiZrdWidget::ScalarDeletingDestructorThunk(
     return this;
 }
 
-// Reimplements 0x4b5310: HudUiZrdWidget::Invalidate
+/**
+ * Reimplements 0x4b5310: HudUiZrdWidget::Invalidate.
+ * Purpose: invalidate the widget and every base label panel owned by the ZRD widget.
+ */
 void HudUiZrdWidget::Invalidate() {
     HudUiElement::Invalidate();
 
@@ -8743,7 +8768,7 @@ HudUiRect * HudUiZrdWidget::GetBoundsRectOrNull() {
     }
 
     HudUiPanel *const firstPanel = *panelIt;
-    boundsRect.top = firstPanel->GetY();
+    boundsRect.top = firstPanel->GetCenterY();
     boundsRect.bottom = boundsRect.top + firstPanel->QueryTextHeight();
 
     while (panelIt != labelPanels.end) {
@@ -8751,14 +8776,14 @@ HudUiRect * HudUiZrdWidget::GetBoundsRectOrNull() {
         boundsRect.bottom += panel->QueryTextHeight();
 
         const int alignMode = panel->alignMode;
-        const int panelX = panel->GetX();
+        const int panelX = panel->GetCenterX();
         if (panel->textDirty != 0) {
             panel->RebuildTextRect();
         }
 
         const int width = panel->textWidthPx;
         if (alignMode == 0) {
-            boundsRect.left = firstPanel->GetX();
+            boundsRect.left = firstPanel->GetCenterX();
             const int right = panelX + width;
             if (right > boundsRect.right) {
                 boundsRect.right = right;
@@ -8775,7 +8800,7 @@ HudUiRect * HudUiZrdWidget::GetBoundsRectOrNull() {
                 boundsRect.right = right;
             }
         } else if (alignMode == 2) {
-            boundsRect.right = firstPanel->GetX();
+            boundsRect.right = firstPanel->GetCenterX();
             const int left = panelX - width;
             if (left > boundsRect.left) {
                 boundsRect.left = boundsRect.left;
@@ -8791,7 +8816,10 @@ HudUiRect * HudUiZrdWidget::GetBoundsRectOrNull() {
     return &boundsRect;
 }
 
-// Reimplements 0x4b5740: HudUiZrdWidget::RefreshState
+/**
+ * Reimplements 0x4b5740: HudUiZrdWidget::RefreshState.
+ * Purpose: switch the widget between normal and disabled image/label state.
+ */
 void HudUiZrdWidget::RefreshState() {
     for (HudUiPanel **rolloverIt = rolloverLabelPanels.begin; rolloverIt != rolloverLabelPanels.end;
         ++rolloverIt) {
@@ -8879,7 +8907,11 @@ void HudUiZrdWidget::ShowPreview() {
     );
 }
 
-// Reimplements 0x4b5900: HudUiZrdWidget::OnActivate
+/**
+ * Reimplements 0x4b5900: HudUiZrdWidget::OnActivate.
+ * Purpose: reset transition input and switch the widget from rollover to
+ * activation visuals, labels, and sound.
+ */
 void HudUiZrdWidget::OnActivate() {
     zInput::ResetAllTransitionState();
 
@@ -8919,7 +8951,10 @@ void HudUiZrdWidget::OnActivate() {
     );
 }
 
-// Reimplements 0x4b5860: HudUiZrdWidget::HidePreview
+/**
+ * Reimplements 0x4b5860: HudUiZrdWidget::HidePreview.
+ * Purpose: restore the widget's default image and normal label visibility after rollover preview.
+ */
 void HudUiZrdWidget::HidePreview() {
     if (defaultImage != 0) {
         SetImageBorrowedAndInvalidate(defaultImage);
@@ -8964,11 +8999,11 @@ HudUiCheckToggleWidget * HudUiCheckToggleWidget::Constructor() {
 }
 
 /**
- * Reimplements 0x4b7020: HudUiCheckToggleWidget::DestructorCore.
+ * Reimplements 0x4b7020: HudUiCheckToggleWidget::~HudUiCheckToggleWidget.
  * Original source path: D:\Proj\Battlesport\HudUiZrdWidget.cpp.
  * Purpose: Restore the unchecked image, delete owned checked state, and tear down the ZRD widget base.
  */
-void HudUiCheckToggleWidget::DestructorCore() {
+HudUiCheckToggleWidget::~HudUiCheckToggleWidget() {
     SetImageBorrowedAndInvalidate(uncheckedImage);
 
     if (checkedImage != 0) {
@@ -8980,8 +9015,16 @@ void HudUiCheckToggleWidget::DestructorCore() {
         checkedLabelPanel->ScalarDeletingDestructor(1);
         checkedLabelPanel = 0;
     }
+}
 
-    HudUiZrdWidget::DestructorCore();
+/**
+ * No standalone retail function; source compatibility wrapper for recovered
+ * callers that historically named the destructor body DestructorCore.
+ * Original source path: D:\Proj\Battlesport\HudUiZrdWidget.cpp.
+ * Purpose: Run the check-toggle destructor body.
+ */
+void HudUiCheckToggleWidget::DestructorCore() {
+    this->HudUiCheckToggleWidget::~HudUiCheckToggleWidget();
 }
 
 // Reimplements 0x40cf30: HudUiCheckToggleWidget::DestructorCoreThunk
@@ -9208,8 +9251,8 @@ int HudUiCheckToggleWidget::LoadFromZrd(
     } else if (labelPanels.begin != 0) {
         HudUiPanel **panelIt = labelPanels.begin;
         HudUiPanel *const firstPanel = *panelIt;
-        boundsRect.top = firstPanel->GetY();
-        boundsRect.left = firstPanel->GetX();
+        boundsRect.top = firstPanel->GetCenterY();
+        boundsRect.left = firstPanel->GetCenterX();
         boundsRect.bottom = firstPanel->QueryTextHeight() + boundsRect.top;
 
         while (panelIt != labelPanels.end) {
@@ -9288,24 +9331,32 @@ HudUiCycleSelectorWidget * HudUiCycleSelectorWidget::Constructor() {
 }
 
 /**
- * Reimplements 0x4b7de0: HudUiCycleSelectorWidget::DestructorCore.
+ * Reimplements 0x4b7de0: HudUiCycleSelectorWidget::~HudUiCycleSelectorWidget.
  * Original source path: D:\Proj\Battlesport\HudUiZrdWidget.cpp.
  * Purpose: Delete paired selector entry widgets and tear down the ZRD widget base.
  */
-void HudUiCycleSelectorWidget::DestructorCore() {
+HudUiCycleSelectorWidget::~HudUiCycleSelectorWidget() {
     for (int i = 0; i < 20; ++i) {
         if (entriesA[i] != 0) {
-            HudUiZrdWidget::DeleteChildIfPresent(entriesA[i]);
+            entriesA[i]->ScalarDeletingDestructor(1);
             entriesA[i] = 0;
         }
 
         if (entriesB[i] != 0) {
-            HudUiZrdWidget::DeleteChildIfPresent(entriesB[i]);
+            entriesB[i]->ScalarDeletingDestructor(1);
             entriesB[i] = 0;
         }
     }
+}
 
-    HudUiZrdWidget::DestructorCore();
+/**
+ * No standalone retail function; source compatibility wrapper for recovered
+ * callers that historically named the destructor body DestructorCore.
+ * Original source path: D:\Proj\Battlesport\HudUiZrdWidget.cpp.
+ * Purpose: Run the cycle-selector destructor body.
+ */
+void HudUiCycleSelectorWidget::DestructorCore() {
+    this->HudUiCycleSelectorWidget::~HudUiCycleSelectorWidget();
 }
 
 // Reimplements 0x40cf40: HudUiCycleSelectorWidget::DestructorCoreThunk
@@ -9873,22 +9924,34 @@ HudUiFillBitmap::HudUiFillBitmap() : HudUiZrdWidget() {
 }
 
 /**
- * Reimplements 0x4b84d0: HudUiFillBitmap::DestructorCore.
+ * Reimplements 0x4b84d0: HudUiFillBitmap::~HudUiFillBitmap.
  * Original source path: HudUiFillBitmap.cpp.
  * Purpose: Release distinct preview/fill images and tear down the ZRD widget base.
  */
-void HudUiFillBitmap::DestructorCore() {
+HudUiFillBitmap::~HudUiFillBitmap() {
     if (previewImage != 0 && previewImage != image) {
-        zVid_Image::ReleaseIfNotDefault(previewImage);
-        previewImage = 0;
+        previewImage =
+            (zVidImagePartial *)(unsigned int)zVid_Image::ReleaseIfNotDefault(
+                previewImage
+            );
     }
 
     if (fillImage != 0 && fillImage != image) {
-        zVid_Image::ReleaseIfNotDefault(fillImage);
-        fillImage = 0;
+        fillImage =
+            (zVidImagePartial *)(unsigned int)zVid_Image::ReleaseIfNotDefault(
+                fillImage
+            );
     }
+}
 
-    HudUiZrdWidget::DestructorCore();
+/**
+ * No standalone retail function; source compatibility wrapper for recovered
+ * callers that historically named the destructor body DestructorCore.
+ * Original source path: HudUiFillBitmap.cpp.
+ * Purpose: Run the fill-bitmap destructor body.
+ */
+void HudUiFillBitmap::DestructorCore() {
+    this->HudUiFillBitmap::~HudUiFillBitmap();
 }
 
 // Reimplements 0x40cf50: HudUiFillBitmap::DestructorCoreThunk
@@ -10152,8 +10215,8 @@ int HudUiZrdWidgetEx17C_Item::LoadFromZrd(
     } else if (labelPanels.begin != 0) {
         HudUiPanel **panelIt = labelPanels.begin;
         HudUiPanel *const firstPanel = *panelIt;
-        boundsRect.top = firstPanel->GetY();
-        boundsRect.left = firstPanel->GetX();
+        boundsRect.top = firstPanel->GetCenterY();
+        boundsRect.left = firstPanel->GetCenterX();
         boundsRect.bottom = firstPanel->QueryTextHeight() + boundsRect.top;
 
         while (panelIt != labelPanels.end) {
@@ -10412,15 +10475,15 @@ void HudUiListSelectorItem::OnActivate() {
 void HudUiListSelectorItem::Draw() {
     HudUiPanel::Draw();
 
-    clipRect.left = GetX();
+    clipRect.left = GetCenterX();
     if (textDirty != 0) {
         RebuildTextRect();
     }
 
-    clipRect.right = GetX() + textWidthPx;
-    clipRect.top = GetY();
+    clipRect.right = GetCenterX() + textWidthPx;
+    clipRect.top = GetCenterY();
     const int textHeight = QueryTextHeight();
-    clipRect.bottom = textHeight + GetY();
+    clipRect.bottom = textHeight + GetCenterY();
 }
 
 // Reimplements 0x4b8d30: HudCmdBindButtonBase::HudCmdBindButtonBase
@@ -12887,7 +12950,10 @@ HudUiWidget::~HudUiWidget() {
     ReleaseImageIfOwned();
 }
 
-// Reimplements 0x404d90: HudUiWidget::GetCenterX
+/**
+ * Reimplements 0x404d90: HudUiWidget::GetCenterX.
+ * Purpose: return x directly or the aligned image center x when widget alignment is active.
+ */
 int HudUiWidget::GetCenterX() {
     if (alignFlags != 0) {
         const int width = image != 0 ? image->width : 0;
@@ -12897,7 +12963,10 @@ int HudUiWidget::GetCenterX() {
     return x;
 }
 
-// Reimplements 0x404dd0: HudUiWidget::GetCenterY
+/**
+ * Reimplements 0x404dd0: HudUiWidget::GetCenterY.
+ * Purpose: return y directly or the aligned image center y when widget alignment is active.
+ */
 int HudUiWidget::GetCenterY() {
     if (alignFlags != 0) {
         const int height = image != 0 ? image->height : 0;
@@ -14065,8 +14134,8 @@ int __stdcall HudUiShieldMessageWidget::ApplyLayout(
     );
 
     HudUiRect clipRect;
-    clipRect.left = percentTextPanel->GetX() - offsetXY[0];
-    clipRect.top = percentTextPanel->GetY() - offsetXY[1];
+    clipRect.left = percentTextPanel->GetCenterX() - offsetXY[0];
+    clipRect.top = percentTextPanel->GetCenterY() - offsetXY[1];
     percentTextPanel->SetClip(
         shieldMessageWidget->widget.image,
         &clipRect
@@ -14531,10 +14600,10 @@ RECOIL_NO_GS void HudUiNumericTextInput::UpdateCaptureUiAndClip(
         }
 
         RECT textRect = {0};
-        textRect.left = firstPanel->GetX();
-        textRect.top = firstPanel->GetY();
-        textRect.right = firstPanel->GetX();
-        textRect.bottom = firstPanel->GetY();
+        textRect.left = firstPanel->GetCenterX();
+        textRect.top = firstPanel->GetCenterY();
+        textRect.right = firstPanel->GetCenterX();
+        textRect.bottom = firstPanel->GetCenterY();
 
         if (firstPanel->MeasureTextPrefixRect(
             (int)(textInput.cursor),
@@ -15564,7 +15633,11 @@ unsigned int HudUiPanel::SetShadow(
     return previous;
 }
 
-// Reimplements 0x4babb0: HudUiPanel::SetFont
+/**
+ * Reimplements 0x4babb0: HudUiPanel::SetFont.
+ * Original source path: D:\Proj\Battlesport\HudUiPanel.cpp.
+ * Purpose: Replace the panel font handle and mark text layout dirty.
+ */
 void HudUiPanel::SetFont(
     const char *faceName,
     int height,

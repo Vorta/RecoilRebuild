@@ -492,17 +492,23 @@ RECT g_zVideo_CachedClientRectScreen = {0};
 /**
  * Reimplements 0x4a6cf0: zVid_PackColorRGB.
  * Purpose: Pack 8-bit RGB components into the active framebuffer pixel format.
+ * BN passes red and green as low-byte fastcall registers and consumes the low
+ * byte of the stack blue argument.
  */
 unsigned int __fastcall zVid_PackColorRGB(
-    unsigned int red,
-    unsigned int green,
+    unsigned char red,
+    unsigned char green,
     unsigned int blue
 ) {
-    const unsigned int greenPacked =
-        (g_zVideo_PixelPack.gMaskShifted & (unsigned char)(green)) << g_zVideo_PixelPack.sumMinus8;
-    const unsigned int redPacked =
-        (g_zVideo_PixelPack.rMaskShifted & (unsigned char)(red)) << g_zVideo_PixelPack.packedBase;
-    return greenPacked | redPacked | ((unsigned char)(blue) >> g_zVideo_PixelPack.bShiftTo8);
+    unsigned int greenPart = g_zVideo_PixelPack.gMaskShifted;
+    unsigned int redPart = g_zVideo_PixelPack.rMaskShifted;
+
+    greenPart &= green;
+    greenPart <<= g_zVideo_PixelPack.sumMinus8;
+    redPart &= red;
+    redPart <<= g_zVideo_PixelPack.packedBase;
+
+    return greenPart | redPart | ((unsigned char)blue >> g_zVideo_PixelPack.bShiftTo8);
 }
 
 // Reimplements 0x4a6ca0: zVid_PackColor00RRGGBB
@@ -9072,25 +9078,27 @@ zVideo_TextureRecordPartial *TextureRecord_Create() {
  * pixel pointer and row pitch to the caller.
  *
  * Evidence: BN loads m_uploadSurface at offset zero, calls
- * zVideo_dd::LockSurface_WaitRestore with a stack DDSURFACEDESC, copies lpSurface
- * and lPitch to the output pointers only on success, and returns one or zero.
+ * zVideo_dd::LockSurface_WaitRestore with an uninitialized stack
+ * DDSURFACEDESC, copies lpSurface and lPitch to the output pointers only on
+ * success, and returns one or zero. The callee owns descriptor clearing and
+ * dwSize initialization.
  */
 int __fastcall TextureRecord_LockUploadSurface(
     zVideo_TextureRecordPartial *textureRecord,
     void **outPixels,
     int *outPitchBytes
 ) {
-    DDSURFACEDESC lockedDescOut = {0};
+    DDSURFACEDESC lockedDescOut;
     if (zVideo_dd::LockSurface_WaitRestore(
             (IDirectDrawSurface3 *)(textureRecord->m_uploadSurface),
             &lockedDescOut
-        ) != 0) {
-        return 0;
+        ) == 0) {
+        *outPitchBytes = lockedDescOut.lPitch;
+        *outPixels = lockedDescOut.lpSurface;
+        return 1;
     }
 
-    *outPitchBytes = lockedDescOut.lPitch;
-    *outPixels = lockedDescOut.lpSurface;
-    return 1;
+    return 0;
 }
 
 /**
@@ -9112,18 +9120,17 @@ void __fastcall ConvertImagePixelsForTexture(
 ) {
     (void)useAlpha;
 
-    const int width = image->width;
-    const int height = image->height;
+    char *alphaMap = image->alphaMap;
     unsigned short *srcPixels = (unsigned short *)(image->pixels);
     unsigned char *dstRowBytes = (unsigned char *)(dstPixels);
 
-    if (image->alphaMap == 0) {
+    if (alphaMap == 0) {
         const unsigned int redGreenMask = g_zVideo_PixelPack.rMask | g_zVideo_PixelPack.gMask;
         {
-            for (int row = 0; row < height; ++row) {
+            for (int row = 0; row < image->height; ++row) {
                 unsigned short *dstCursor = (unsigned short *)(dstRowBytes);
                 {
-                    for (int column = 0; column < width; ++column) {
+                    for (int column = 0; column < image->width; ++column) {
                         const unsigned short src = *srcPixels++;
                         const unsigned short alphaBit = src != 0 ? 0x8000 : 0;
                         *dstCursor++ =
@@ -9137,7 +9144,7 @@ void __fastcall ConvertImagePixelsForTexture(
         return;
     }
 
-    unsigned char *alphaCursor = (unsigned char *)(image->alphaMap);
+    unsigned char *alphaCursor = (unsigned char *)(alphaMap);
     unsigned int redAlphaMask;
     int redAlphaShift;
     unsigned int greenAlphaMask;
@@ -9155,10 +9162,10 @@ void __fastcall ConvertImagePixelsForTexture(
     }
 
     {
-        for (int row = 0; row < height; ++row) {
+        for (int row = 0; row < image->height; ++row) {
             unsigned short *dstCursor = (unsigned short *)(dstRowBytes);
             {
-                for (int column = 0; column < width; ++column) {
+                for (int column = 0; column < image->width; ++column) {
                     const unsigned short src = *srcPixels++;
                     const unsigned int alpha = (*alphaCursor++ & 0xf0) << 8;
                     *dstCursor++ =
@@ -9319,24 +9326,33 @@ void __fastcall TextureRecord_FinalizeUpload(
 
 /**
  * Reimplements 0x4aa980: zVideo_dd3d::TextureRecord_Destroy.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: release non-default Direct3D texture-record provider resources and
  * free the texture record.
+ *
+ * Evidence: BN hoists the upload surface, texture surface, and texture fields
+ * before checking the default texture record, then releases each provider
+ * reference in field order before freeing the record.
  */
 void __fastcall TextureRecord_Destroy(
     zVideo_TextureRecordPartial *textureRecord
 ) {
+    IDirectDrawSurface *uploadSurface = textureRecord->m_uploadSurface;
+    IDirectDrawSurface *textureSurface = textureRecord->m_textureSurface;
+    IDirect3DTexture2 *texture = textureRecord->m_texture;
+
     if (textureRecord == g_zImage_DefaultTextureRecord) {
         return;
     }
 
-    if (textureRecord->m_uploadSurface != 0) {
-        textureRecord->m_uploadSurface->Release();
+    if (uploadSurface != 0) {
+        uploadSurface->Release();
     }
-    if (textureRecord->m_textureSurface != 0) {
-        textureRecord->m_textureSurface->Release();
+    if (textureSurface != 0) {
+        textureSurface->Release();
     }
-    if (textureRecord->m_texture != 0) {
-        textureRecord->m_texture->Release();
+    if (texture != 0) {
+        texture->Release();
     }
 
     free(textureRecord);
@@ -9487,9 +9503,9 @@ BOOL CALLBACK EnumDirectDrawDeviceCallback(
 ) {
     (void)context;
 
-    const int acceptedIndex = g_zVideo_NumAcceptedDirectDrawDevices;
-    const int ordinal = g_zVideo_DirectDrawEnumOrdinal;
-    g_zVideo_DirectDrawEnumOrdinal = ordinal + 1;
+    zVidHwApiDeviceRecordPartial *entry =
+        &g_zVideo_HwApiDeviceTable[g_zVideo_NumAcceptedDirectDrawDevices];
+    const int ordinal = g_zVideo_DirectDrawEnumOrdinal++;
 
     printf(
         "\n%d: Device [%s] - %s\n",
@@ -9504,30 +9520,29 @@ BOOL CALLBACK EnumDirectDrawDeviceCallback(
         return FALSE;
     }
 
-    zVidHwApiDeviceRecordPartial &entry = g_zVideo_HwApiDeviceTable[acceptedIndex];
     memset(
-        &entry,
+        entry,
         0,
-        sizeof(entry)
+        sizeof(*entry)
     );
-    if (guid != 0) {
-        entry.pDirectDrawGuid = &entry.m_directDrawGuidStorage;
-        entry.m_directDrawGuidStorage = *guid;
+    if (guid == 0) {
+        entry->pDirectDrawGuid = 0;
     } else {
-        entry.pDirectDrawGuid = 0;
+        entry->pDirectDrawGuid = &entry->m_directDrawGuidStorage;
+        entry->m_directDrawGuidStorage = *guid;
     }
 
     strncpy(
-        entry.m_driverName,
+        entry->m_driverName,
         driverName,
-        sizeof(entry.m_driverName)
+        sizeof(entry->m_driverName)
     );
     strncpy(
-        entry.m_driverDescription,
+        entry->m_driverDescription,
         driverDescription,
-        sizeof(entry.m_driverDescription)
+        sizeof(entry->m_driverDescription)
     );
-    g_zVideo_pSelectedHwApiDeviceRecord = &entry;
+    g_zVideo_pSelectedHwApiDeviceRecord = entry;
 
     CreateDirectDraw2ForSelectedDevice();
 
@@ -9552,7 +9567,7 @@ BOOL CALLBACK EnumDirectDrawDeviceCallback(
     if (capsResult != DD_OK) {
         ReportError(
             (int)(capsResult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x739
         );
         return FALSE;
@@ -9560,36 +9575,35 @@ BOOL CALLBACK EnumDirectDrawDeviceCallback(
 
     if ((g_zVideo_DDrawCapsHal.dwCaps & 0x200) != 0 ||
         (g_zVideo_DDrawCapsHel.dwCaps & 0x200) != 0) {
-        entry.m_deviceFeatureFlags = 1;
+        entry->m_deviceFeatureFlags = 1;
         strcat(
-            entry.m_driverName,
+            entry->m_driverName,
             "[AGP]"
         );
     }
 
-    DDSCAPS videoMemCaps = {0};
-    videoMemCaps.dwCaps = DDSCAPS_VIDEOMEMORY;
+    DDSCAPS memoryCaps;
+    memoryCaps.dwCaps = DDSCAPS_VIDEOMEMORY;
     if (g_zVideo_pDirectDraw2->GetAvailableVidMem(
-            &videoMemCaps,
-            (DWORD *)(&entry.m_videoMemTotalBytes),
-            (DWORD *)(&entry.m_videoMemFreeBytes)
+            &memoryCaps,
+            (DWORD *)(&entry->m_videoMemTotalBytes),
+            (DWORD *)(&entry->m_videoMemFreeBytes)
         ) != DD_OK) {
-        entry.m_videoMemFreeBytes = 0;
-        entry.m_videoMemTotalBytes = 0;
+        entry->m_videoMemFreeBytes = 0;
+        entry->m_videoMemTotalBytes = 0;
     }
 
-    DDSCAPS textureMemCaps = {0};
-    textureMemCaps.dwCaps = DDSCAPS_TEXTURE;
+    memoryCaps.dwCaps = DDSCAPS_TEXTURE;
     if (g_zVideo_pDirectDraw2->GetAvailableVidMem(
-            &textureMemCaps,
-            (DWORD *)(&entry.m_textureMemTotalBytes),
-            (DWORD *)(&entry.m_textureMemFreeBytes)
+            &memoryCaps,
+            (DWORD *)(&entry->m_textureMemTotalBytes),
+            (DWORD *)(&entry->m_textureMemFreeBytes)
         ) != DD_OK) {
-        entry.m_textureMemFreeBytes = 0;
-        entry.m_textureMemTotalBytes = 0;
+        entry->m_textureMemFreeBytes = 0;
+        entry->m_textureMemTotalBytes = 0;
     }
 
-    if (EnumerateDirect3DDevicesForRecord(&entry) != 0) {
+    if (EnumerateDirect3DDevicesForRecord(entry) != 0) {
         g_zVideo_NumAcceptedDirectDrawDevices += 1;
     }
 
@@ -9651,18 +9665,18 @@ HRESULT CALLBACK EnumDirect3DDeviceCallback(
         TeardownVideoSubsystem();
         zError::ReportOld(
             0x800,
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x7d3,
             "Maximum number of Direct3D drivers exceeded"
         );
         return 0;
     }
 
-    if (guid != 0) {
+    if (guid == 0) {
+        driver.pD3DDeviceGuid = 0;
+    } else {
         driver.pD3DDeviceGuid = &driver.m_d3dDeviceGuidStorage;
         driver.m_d3dDeviceGuidStorage = *guid;
-    } else {
-        driver.pD3DDeviceGuid = 0;
     }
 
     memcpy(
@@ -9803,7 +9817,7 @@ int RunDirectDrawDeviceEnumeration() {
  * routes the two HRESULT failures through ReportError.
  */
 int CreateDirectDraw2ForSelectedDevice() {
-    IDirectDraw *directDraw1 = 0;
+    IDirectDraw *directDraw1;
     const HRESULT createResult =
         DirectDrawCreate(
             g_zVideo_pSelectedHwApiDeviceRecord->pDirectDrawGuid,
@@ -9813,7 +9827,7 @@ int CreateDirectDraw2ForSelectedDevice() {
     if (createResult != DD_OK) {
         return ReportError(
             (int)(createResult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x3c4
         );
     }
@@ -9826,7 +9840,7 @@ int CreateDirectDraw2ForSelectedDevice() {
     if (queryResult != DD_OK) {
         return ReportError(
             (int)(queryResult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x3cb
         );
     }
@@ -9850,8 +9864,12 @@ int CreateDirectDraw2ForSelectedDevice() {
 int __fastcall EnumerateDirect3DDevicesForRecord(
     zVidHwApiDeviceRecordPartial *entry
 ) {
-    unsigned char unusedStackZeroing[0x68] = {0};
-    (void)unusedStackZeroing;
+    unsigned int unusedStackScratch[0x1b];
+    memset(
+        &unusedStackScratch[1],
+        0,
+        0x68
+    );
 
     printf(
         "\nENUMERATE DRIVERS (%s)...\n",
@@ -9867,7 +9885,7 @@ int __fastcall EnumerateDirect3DDevicesForRecord(
     if (queryResult != DD_OK) {
         ReportError(
             (int)(queryResult),
-            kZVideoDirectDrawSourceFile,
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
             0x781
         );
         return 0;
@@ -9878,7 +9896,10 @@ int __fastcall EnumerateDirect3DDevicesForRecord(
         EnumDirect3DDeviceCallback,
         entry
     );
-    ReleaseComInterface(g_zVideo_pD3D2);
+    if (g_zVideo_pD3D2 != 0) {
+        g_zVideo_pD3D2->Release();
+        g_zVideo_pD3D2 = 0;
+    }
 
     if (entry->m_acceptedD3DDeviceCount == 0) {
         printf("No useable drivers\n");
@@ -10085,19 +10106,19 @@ int __fastcall UnlockSurface_WaitRestore(
     }
 }
 
-// Reimplements 0x4a7fc0: zVideo_dd::LockSurfaceState
+/**
+ * Reimplements 0x4a7fc0: zVideo_dd::LockSurfaceState.
+ * Purpose: lock a tracked DirectDraw surface state and cache the surface
+ * descriptor fields used by software rendering paths.
+ */
 int __fastcall LockSurfaceState(
     zVideo_SurfaceStatePartial *surfaceState
 ) {
-    if (g_zVideo_FullscreenOption != 0) {
-        goto CheckLocked;
+    if (g_zVideo_FullscreenOption == 0 &&
+        surfaceState == &g_zVideo_DisplayModeSurfaceState) {
+        return 0;
     }
-    if (surfaceState != &g_zVideo_DisplayModeSurfaceState) {
-        goto CheckLocked;
-    }
-    return 0;
 
-CheckLocked:
     if (surfaceState->locked != 0) {
         return 0;
     }
@@ -10108,31 +10129,30 @@ CheckLocked:
         &lockedSurfaceDesc
     );
     if (result == 0) {
-        const int locked = 1;
+        surfaceState->locked = 1;
         surfaceState->width = (int)(lockedSurfaceDesc.dwWidth);
-        surfaceState->locked = locked;
         surfaceState->height = (int)(lockedSurfaceDesc.dwHeight);
-        surfaceState->lockInfoValid = locked;
-        surfaceState->pitch = (int)(lockedSurfaceDesc.lPitch);
+        surfaceState->lockInfoValid = 1;
         surfaceState->pixels = lockedSurfaceDesc.lpSurface;
+        surfaceState->pitch = (int)(lockedSurfaceDesc.lPitch);
     }
 
     return result;
 }
 
-// Reimplements 0x4a8030: zVideo_dd::UnlockSurfaceState
+/**
+ * Reimplements 0x4a8030: zVideo_dd::UnlockSurfaceState.
+ * Purpose: unlock a tracked DirectDraw surface state when the runtime policy
+ * and lock flag require it.
+ */
 int __fastcall UnlockSurfaceState(
     zVideo_SurfaceStatePartial *surfaceState
 ) {
-    if (g_zVideo_FullscreenOption != 0) {
-        goto CheckLocked;
+    if (g_zVideo_FullscreenOption == 0 &&
+        surfaceState == &g_zVideo_DisplayModeSurfaceState) {
+        return 0;
     }
-    if (surfaceState != &g_zVideo_DisplayModeSurfaceState) {
-        goto CheckLocked;
-    }
-    return 0;
 
-CheckLocked:
     if (surfaceState->locked == 0) {
         return 0;
     }
@@ -10306,14 +10326,15 @@ int __fastcall Image_PopulateSurfaceFromHeapPixels(
 IDirectDrawSurface3 *__fastcall Image_LazyCreateVideoMemorySurface(
     zVidImagePartial *image
 ) {
-    // Original code assumes device selection is complete and reads the feature flags unconditionally.
-    const int featureFlags = g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags;
-    if (g_zVideo_UseHalfResBackbuffer == 0 && featureFlags == 0) {
+    if (g_zVideo_UseHalfResBackbuffer == 0 &&
+        g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags == 0) {
         return 0;
     }
 
     const unsigned int caps =
-        (featureFlags != 0 ? DDSCAPS_NONLOCALVIDMEM : 0) + DDSCAPS_VIDEOMEMORY;
+        (g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags != 0
+            ? DDSCAPS_NONLOCALVIDMEM
+            : 0) + DDSCAPS_VIDEOMEMORY;
     return Image_LazyCreateBackingSurface(
         image,
         caps
@@ -10402,21 +10423,22 @@ int __fastcall Image_ReleaseSurface(
     zVidImagePartial *image,
     HDC hdc
 ) {
-    if (image->surface == 0) {
+    IDirectDrawSurface3 *surface = image->surface;
+    if (surface == 0) {
+        return (int)(surface);
+    }
+
+    const HRESULT hresult = surface->ReleaseDC(hdc);
+    if (hresult != DD_OK) {
+        ReportError(
+            (int)(hresult),
+            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
+            0x382
+        );
         return 0;
     }
 
-    const HRESULT hresult = image->surface->ReleaseDC(hdc);
-    if (hresult == DD_OK) {
-        return 1;
-    }
-
-    ReportError(
-        (int)(hresult),
-        kZVideoDirectDrawSourceFile,
-        0x382
-    );
-    return 0;
+    return 1;
 }
 
 // Reimplements 0x4a7d90: zVideo_dd::BltSwToPrimaryRectDirect

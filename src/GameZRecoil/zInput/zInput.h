@@ -507,8 +507,8 @@ void __stdcall Mouse_SetNormalizedCursorPos(
 );
 int Mouse_IsInitialized();
 int Mouse_InitDevice();
-void __fastcall Mouse_PollAndStoreState(int dispatchCallbacks);
-int __fastcall Mouse_PollState(int dispatchCallbacks);
+void __fastcall Mouse_PollAndStoreState(unsigned char dispatchCallbacks);
+int __fastcall Mouse_PollState(unsigned char dispatchCallbacks);
 int Mouse_AddRef();
 int __fastcall Mouse_GetButtonTransitionState(int buttonNumber);
 int __fastcall Mouse_WaitForButtonPress(int pollUntilFound);
@@ -529,7 +529,7 @@ void Mouse_ResumeFromSuspend();
 void Keyboard_ResetTransitionState();
 void Keyboard_ResumeFromSuspend();
 void Keyboard_ClearKeyCallbackTable();
-void __fastcall Keyboard_PollState(int dispatchCallbacks);
+void __fastcall Keyboard_PollState(unsigned char dispatchCallbacks);
 int __fastcall Keyboard_WaitForAnyKeyPress(int keepWaiting);
 void Keyboard_InitDikToAsciiTable();
 int __fastcall Keyboard_TranslateDikToAscii(int comboIdx);
@@ -583,7 +583,7 @@ int __fastcall DI_GetAxisRange(
 );
 int DI_IsJoystickDeviceReady();
 DIJOYSTATE2 *DI_GetCurrentState();
-DIJOYSTATE2 *__fastcall DI_PollJoystickState(int dispatchCallbacks);
+DIJOYSTATE2 *__fastcall DI_PollJoystickState(unsigned char dispatchCallbacks);
 int __fastcall DI_SetJoystickEnabled(int enable);
 int __fastcall DI_WaitForButtonPress(int loopUntilPressed);
 int __fastcall DI_ReportError(
@@ -714,7 +714,7 @@ void __fastcall Mouse_SetClientSizeAndCenter(
     int width,
     int height
 );
-void __fastcall PollActiveDevices(int dispatchCallbacks);
+void __fastcall PollActiveDevices(unsigned char dispatchCallbacks);
 void OnAppActivate();
 void OnAppDeactivate();
 } // namespace zInput

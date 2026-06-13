@@ -132,23 +132,24 @@ void HudUiMpExitDialog::LoadLayout() {
 
     SetChildFlags(0);
     if (m_mpNewGameButtonMode >= 0) {
-        m_mpNewGameButton.modeOrEnabled = m_mpNewGameButtonMode;
-        m_mpNewGameButton.RefreshState();
+        HudUiZrdWidget *const newGameButton = &m_mpNewGameButton;
+        newGameButton->modeOrEnabled = m_mpNewGameButtonMode;
+        newGameButton->RefreshState();
     } else {
         HudUiMgr::EnableTopAndChatStacks();
         g_HudUiTopMessageStack->SetXAll(zVideo::GetPrimarySurfaceWidth() / 2);
-        if (zOpt::GetNetworkModemEnabled() == 0) {
+        if (zOpt::GetNetworkModemEnabled() != 0) {
+            HudUi::ShowTopMessageLine(
+                zLoc::GetMessageString(0x25),
+                300.0f
+            );
+        } else {
             HudUi::ShowTopMessageLine(
                 zLoc::GetMessageString(0x39),
                 300.0f
             );
             HudUi::ShowTopMessageLine(
                 zLoc::GetMessageString(0x40),
-                300.0f
-            );
-        } else {
-            HudUi::ShowTopMessageLine(
-                zLoc::GetMessageString(0x25),
                 300.0f
             );
         }
@@ -289,7 +290,7 @@ int RecoilApp_MpExitDialogState::OnUpdateShouldQuit() {
     Time::Tick();
 
     HudUiMpExitDialog *const dialog = g_HudUiMpExitDialog;
-    dialog->Update(g_FrameDeltaTimeSec);
+    ((HudUiContainer *)dialog)->UpdateAll(g_FrameDeltaTimeSec);
 
     if (g_HudUiMpExitDialog->m_fadeElapsedSeconds > 600.0f) {
         char caption[128];

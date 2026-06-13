@@ -807,8 +807,7 @@ int Shutdown() {
     }
 
     if (g_zSnd_SearchPathList != 0) {
-        zUtil_ZRDR_FreeSearchPathList(g_zSnd_SearchPathList);
-        g_zSnd_SearchPathList = 0;
+        g_zSnd_SearchPathList = zUtil_ZRDR_FreeSearchPathList(g_zSnd_SearchPathList);
     }
 
     return 1;

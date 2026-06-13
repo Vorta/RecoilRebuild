@@ -755,10 +755,10 @@ int zSndWaveData::Reset() {
 
         fileSize = 0;
         pcmData = 0;
-        pcmByteCount = 0;
         fmt = 0;
-        cuePointCount = 0;
+        pcmByteCount = 0;
         cuePoints = 0;
+        cuePointCount = 0;
         parsedOk = 0;
     }
 
