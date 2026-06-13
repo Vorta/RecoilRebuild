@@ -117,12 +117,15 @@ python tools/recoil.py handoff 0xNNNNNN --include-artifacts
 
 ## Git And Groups
 
-Commit only completed batches with tracked production source under `src/`. Do
-not commit plan-only, docs-only, tools-only, manifest-only, or test-only
-changes. If a qualifying source commit is being made and `.agent/RECOIL_PLAN.md`
-is dirty, stage it with that checkpoint. Do not push. Do not use `git add .`.
-Never `git add -f` ignored paths. Stage only the agent's related changes; do
-not stage ignored, private, generated, runtime, or unrelated files.
+After verified qualifying source progress, create a local commit before final
+handoff unless a blocking rule applies. Commit only completed batches with
+tracked production source under `src/`. Do not commit plan-only, docs-only,
+tools-only, manifest-only, or test-only changes. If a qualifying source commit
+is being made and `.agent/RECOIL_PLAN.md` is dirty, stage it with that
+checkpoint. Do not push. Do not use `git add .`. Never `git add -f` ignored
+paths. Stage only the agent's related changes; do not stage ignored, private,
+generated, runtime, or unrelated files. Final reports include the commit hash
+and subject, or the exact no-commit blocker.
 
 `.agent/IMPLEMENTATION_GROUPS.md` is temporary. If stale or contradicted by BN,
 `.agent/RECOIL_PLAN.md`, or `recoil.py status`, refresh or prune it. Stage it

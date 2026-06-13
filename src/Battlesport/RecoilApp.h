@@ -29,7 +29,11 @@ enum RecoilAppMissionShutdownMode {
 // objects with a common vptr at offset zero and lifecycle calls through that
 // table; the source model is a VC-era virtual interface, not copied table data.
 struct RecoilApp_IState {
-    virtual ~RecoilApp_IState();
+    /**
+     * Reimplements 0x42df90: RecoilApp_IState::~RecoilApp_IState.
+     * Purpose: Tear down the common app-state interface base.
+     */
+    virtual ~RecoilApp_IState() {}
     virtual void OnWndActivate(int activateCode);
     virtual void OnEnter();
     virtual int OnTryBecomeCurrent();

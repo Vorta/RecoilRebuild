@@ -496,6 +496,13 @@ struct ScanConvertEdge {
     int reserved;
 };
 
+union SpanOcclusionRasterScratch {
+    zVec3 reducedVerts[8];
+    SpanNodePartial *spanList[0x141];
+};
+
+RECOIL_STATIC_ASSERT(sizeof(SpanOcclusionRasterScratch) == 0x504);
+
 /* BN 0x4927d0 uses the original VC5 double-bias fixed-point conversion inline. */
 #define ZRNDR_SET_FIXED16_FROM_FLOAT(dst, value)                         \
     do {                                                                 \
@@ -563,24 +570,6 @@ int SpanEndFromX(
     float x
 ) {
     return (Fixed16FromFloat(x) - 0x8001) >> 16;
-}
-
-/**
- * Recovered helper: FloatFromBits.
- * Original-source helper evidence: No standalone plan entry was found; recovered from
- * address-backed zRndr callers that preserve the original float bit pattern through memcpy.
- * Purpose: Interpret a 32-bit integer bit pattern as a floating-point value.
- */
-float FloatFromBits(
-    unsigned int bits
-) {
-    float value = 0.0f;
-    memcpy(
-        &value,
-        &bits,
-        sizeof(value)
-    );
-    return value;
 }
 
 /**
@@ -1270,7 +1259,7 @@ static inline void CommitFogParamsIfChanged(
 
 /**
  * Reimplements 0x490430: zRndr::SetPerspectiveTextureDeltaX
- * Source file evidence: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Cache the perspective texture span chunk size and byte stride derived from delta X.
  */
 void __fastcall SetPerspectiveTextureDeltaX(
@@ -1284,26 +1273,31 @@ void __fastcall SetPerspectiveTextureDeltaX(
     }
 
     int shift = -1;
-    do {
-        ++shift;
-        clampedDeltaX >>= 1;
-    } while (clampedDeltaX != 0);
-
     g_perspectiveTextureDeltaXShift = shift;
+    if (clampedDeltaX != 0) {
+        do {
+            ++shift;
+            clampedDeltaX >>= 1;
+        } while (clampedDeltaX != 0);
+
+        g_perspectiveTextureDeltaXShift = shift;
+    }
+
     g_perspectiveTextureDeltaXPow2 = 1 << shift;
+    const int byteStride = g_perspectiveTextureDeltaXPow2 * g_bytesPerPixel;
     g_perspectiveTextureDeltaXPow2F = (float)(g_perspectiveTextureDeltaXPow2);
-    g_perspectiveTextureDeltaXBytes = g_perspectiveTextureDeltaXPow2 * g_bytesPerPixel;
+    g_perspectiveTextureDeltaXBytes = byteStride;
 }
 
 /**
  * Reimplements 0x4904a0: zRndr::SetPerspectiveTextureFarZ
- * Source file evidence: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Cache the reciprocal far-Z value used by perspective texture correction.
  */
 void __stdcall SetPerspectiveTextureFarZ(
     float farZ
 ) {
-    if (farZ != 0.0f) {
+    if (farZ != 0.0) {
         g_perspectiveTextureFarZInv = 1.0f / farZ;
     }
 }
@@ -1318,7 +1312,11 @@ void __stdcall SetPerspectiveAdaptiveCorrection(
     const float plusOne = perspectiveAdaptiveCorrection + 1.0f;
     g_spanDepthBias = perspectiveAdaptiveCorrection;
     g_spanDepthBiasPlusOne = plusOne;
-    g_spanDepthBiasPlusOneInv = (plusOne == 0.0f || plusOne != plusOne) ? 0.0f : 1.0f / plusOne;
+    if (plusOne == 0.0f) {
+        g_spanDepthBiasPlusOneInv = 0.0f;
+    } else {
+        g_spanDepthBiasPlusOneInv = 1.0f / plusOne;
+    }
 }
 
 /**
@@ -1349,13 +1347,13 @@ int InitGlobals() {
     g_spanReservedWriteOnly = 0;
     g_spanColumnCount = 0;
 
-    SetPerspectiveAdaptiveCorrection(FloatFromBits(0x38d1b717));
+    SetPerspectiveAdaptiveCorrection(0.0001f);
 
     g_perspectiveTextureDeltaXInput = 0x20;
     g_perspectiveTextureDeltaXPow2 = 0x20;
     g_perspectiveTextureDeltaXShift = 5;
     g_perspectiveTextureDeltaXPow2F = 32.0f;
-    g_perspectiveTextureFarZInv = FloatFromBits(0x3b5a3c21);
+    g_perspectiveTextureFarZInv = 0.00333f;
     g_perspectiveAdaptiveMinSpan = 0;
     g_inverseDepthBias = 0.0f;
     g_inverseDepthScale = 1.0f;
@@ -1367,9 +1365,10 @@ int InitGlobals() {
     g_lensFlareSampleQueueCount = 0;
     g_lensFlareVisibleSampleCount = 0;
 
-    zColorRgb color = {FloatFromBits(0x3d23d70a),
-        FloatFromBits(0x3d23d70a),
-        FloatFromBits(0x3d23d70a)};
+    zColorRgb color;
+    color.blue = 0.04f;
+    color.green = 0.04f;
+    color.red = 0.04f;
     FogColor_SetRgb01Clamped(&color);
     FogColor_SetRgb01Clamped((zColorRgb *)(g_fogColorParams.colorRgb01));
     g_fogTargetParamsStaged = g_fogColorParams;
@@ -1409,14 +1408,15 @@ int InitGlobals() {
 /**
  * Reimplements 0x48d450: zRndr::OverlayBlendRow555_Scalar
  * Source-shape evidence: BN zRndr_Overlay.cpp loads and stores two 555 pixels
- * per uint32_t using the precomputed overlay premul and destination-scale globals.
+ * per uint32_t using the precomputed overlay premul and destination-scale globals;
+ * the row extent is the inclusive right-left delta passed by FlushSw.
  * Purpose: Blend one 555 overlay row using the cached software overlay alpha and premultiplied source color.
  */
 void __fastcall OverlayBlendRow555_Scalar(
     unsigned short *rowPixels16,
-    int pixelCount
+    int rightDelta
 ) {
-    int pairCount = pixelCount >> 1;
+    int pairCount = rightDelta >> 1;
     unsigned int *rowPairs = (unsigned int *)(rowPixels16);
     do {
         const unsigned int packedPair = *rowPairs;
@@ -1430,21 +1430,20 @@ void __fastcall OverlayBlendRow555_Scalar(
             0x7c1f03e0U;
         *rowPairs = hiLanes | loLanes;
         ++rowPairs;
-        --pairCount;
-    } while (pairCount != 0);
+    } while (pairCount-- != 0);
 }
 
 /**
  * Reimplements 0x48d4b0: zRndr::OverlayBlendRow565_Scalar
  * Source-shape evidence: BN zRndr_Overlay.cpp matches the 555 row shape with
- * two 565 pixels per uint32_t and the precomputed overlay premul globals.
+ * two 565 pixels per uint32_t and the inclusive right-left delta row extent.
  * Purpose: Blend one 565 overlay row using the active pixel masks and cached overlay alpha.
  */
 void __fastcall OverlayBlendRow565_Scalar(
     unsigned short *rowPixels16,
-    int pixelCount
+    int rightDelta
 ) {
-    int pairCount = pixelCount >> 1;
+    int pairCount = rightDelta >> 1;
     unsigned int *rowPairs = (unsigned int *)(rowPixels16);
     do {
         const unsigned int packedPair = *rowPairs;
@@ -1456,8 +1455,7 @@ void __fastcall OverlayBlendRow565_Scalar(
             g_swOverlayPremulPacked;
         *rowPairs = ((loLanes ^ hiLanes) & 0x07e0f81fU) ^ hiLanes;
         ++rowPairs;
-        --pairCount;
-    } while (pairCount != 0);
+    } while (pairCount-- != 0);
 }
 
 /**
@@ -1884,19 +1882,29 @@ int __fastcall SpanOcclusionInit(
  * rasterizes each saved gRndr_SpanOccluderPolys entry.
  */
 void SpanOcclusionBuildColumnHeadTable() {
-    for (int i = 0; i < g_spanColumnCount; ++i) {
-        g_spanColumnHeadTable[i] = 0;
+    SpanNodePartial **columnHead = g_spanColumnHeadTable;
+    int columnIndex = 0;
+    while (columnIndex < g_spanColumnCount) {
+        *columnHead = 0;
+        ++columnHead;
+        ++columnIndex;
     }
 
     g_spanIterNode = 0;
     g_spanAllocCursor = g_spanPoolBase;
     g_spanIterPrevLink = 0;
 
-    for (int i_1084 = 0; i_1084 < g_spanOccluderPolyCount; ++i_1084) {
-        SpanOcclusionRasterizeOccluderPoly(
-            &g_spanOccluderPolys[i_1084],
-            g_spanOccluderPolys[i_1084].vertCount
-        );
+    int polyIndex = 0;
+    if (polyIndex < g_spanOccluderPolyCount) {
+        SpanOccluderPolyPartial *poly = g_spanOccluderPolys;
+        do {
+            SpanOcclusionRasterizeOccluderPoly(
+                poly,
+                poly->vertCount
+            );
+            ++polyIndex;
+            ++poly;
+        } while (polyIndex < g_spanOccluderPolyCount);
     }
 }
 
@@ -1906,31 +1914,38 @@ void SpanOcclusionBuildColumnHeadTable() {
  * Purpose: rasterize one saved occluder polygon into span nodes for each
  * affected screen column.
  *
- * Evidence: BN reduces duplicate/closing polygon vertices, builds two
- * fixed-point scan-conversion edge tables, stages pending span-node
- * min/max/depth values in gRndr_SpanAllocCursor, and dispatches through
- * gRndr_pfnBuildSpanList.
+ * Evidence: BN reduces duplicate/closing polygon vertices into the same
+ * scratch base later passed as the span-list pointer array, builds two
+ * fixed-point scan-conversion edge tables through duplicated scan-mode
+ * branches, stages pending span-node min/max/depth values in
+ * gRndr_SpanAllocCursor, and dispatches through gRndr_pfnBuildSpanList.
  */
 void __fastcall SpanOcclusionRasterizeOccluderPoly(
     SpanOccluderPolyPartial *poly,
     int vertCount
 ) {
-    zVec3 reducedVerts[8];
+    SpanOcclusionRasterScratch scratch;
     int reducedCount = 1;
-    reducedVerts[0].x = poly->vertices[0][0];
-    reducedVerts[0].y = poly->vertices[0][1];
+    scratch.reducedVerts[0].x = poly->vertices[0][0];
+    scratch.reducedVerts[0].y = poly->vertices[0][1];
 
-    for (int i = 1; i < vertCount; ++i) {
-        reducedVerts[reducedCount].x = poly->vertices[i][0];
-        reducedVerts[reducedCount].y = poly->vertices[i][1];
-        if (reducedVerts[reducedCount].x != reducedVerts[reducedCount - 1].x ||
-            reducedVerts[reducedCount].y != reducedVerts[reducedCount - 1].y) {
+    const float (*sourceVertex)[3] = &poly->vertices[1];
+    zVec3 *reducedVertex = &scratch.reducedVerts[1];
+    int remainingVertices = vertCount - 1;
+    while (remainingVertices > 0) {
+        reducedVertex->x = (*sourceVertex)[0];
+        reducedVertex->y = (*sourceVertex)[1];
+        if (reducedVertex->x != (reducedVertex - 1)->x ||
+            reducedVertex->y != (reducedVertex - 1)->y) {
             ++reducedCount;
+            ++reducedVertex;
         }
+        ++sourceVertex;
+        --remainingVertices;
     }
 
-    if (reducedCount > 1 && reducedVerts[reducedCount - 1].x == reducedVerts[0].x &&
-        reducedVerts[reducedCount - 1].y == reducedVerts[0].y) {
+    if (reducedCount > 1 && scratch.reducedVerts[reducedCount - 1].x == scratch.reducedVerts[0].x &&
+        scratch.reducedVerts[reducedCount - 1].y == scratch.reducedVerts[0].y) {
         --reducedCount;
     }
 
@@ -1941,10 +1956,10 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
     int topVertexIndex = 0;
     int bottomVertexIndex = 0;
     for (int scanIndex = 1; scanIndex < reducedCount; ++scanIndex) {
-        if (reducedVerts[scanIndex].y < reducedVerts[topVertexIndex].y) {
+        if (scratch.reducedVerts[scanIndex].y < scratch.reducedVerts[topVertexIndex].y) {
             topVertexIndex = scanIndex;
         }
-        if (reducedVerts[scanIndex].y >= reducedVerts[bottomVertexIndex].y) {
+        if (scratch.reducedVerts[scanIndex].y >= scratch.reducedVerts[bottomVertexIndex].y) {
             bottomVertexIndex = scanIndex;
         }
     }
@@ -1958,125 +1973,211 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
     int edgeYStart;
     float edgeSampleY;
 
-    edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        reducedVerts[edgeVertexIndex].y
-    );
-    edgeYStart = (fixed16Value + 0x7fff) >> 16;
-    edgeSampleY = (float)(edgeYStart) + 0.5f;
-    const int edgeStepA = g_scanConvertMode != 0 ? 1 : -1;
-    while (edgeVertexIndex != bottomVertexIndex && edgeCountA < 0x40) {
-        int nextIndex = edgeVertexIndex + edgeStepA;
-        if (nextIndex < 0) {
-            nextIndex += reducedCount;
-        } else if (nextIndex >= reducedCount) {
-            nextIndex -= reducedCount;
-        }
-        const zVec3 &start = reducedVerts[edgeVertexIndex];
-        const zVec3 &end = reducedVerts[nextIndex];
-        if (edgeSampleY <= end.y) {
-            const float dy = end.y - start.y;
-            edgeTableA[edgeCountA].yStart = edgeYStart;
-            edgeTableA[edgeCountA].reserved = 0;
-            if (dy != 0.0f) {
-                const float xSlope = (end.x - start.x) / dy;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableA[edgeCountA].xStepFixed,
-                    xSlope
-                );
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableA[edgeCountA].currentXFixed,
-                    start.x + (edgeSampleY - start.y) * xSlope
-                );
-            } else {
-                edgeTableA[edgeCountA].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableA[edgeCountA].currentXFixed,
-                    start.x
-                );
+    if (g_scanConvertMode != 0) {
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(
+            fixed16Value,
+            scratch.reducedVerts[edgeVertexIndex].y
+        );
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        while (edgeVertexIndex != bottomVertexIndex) {
+            int nextIndex = edgeVertexIndex + 1;
+            if (nextIndex >= reducedCount) {
+                nextIndex -= reducedCount;
             }
+            const zVec3 &start = scratch.reducedVerts[edgeVertexIndex];
+            const zVec3 &end = scratch.reducedVerts[nextIndex];
+            if (edgeSampleY <= end.y) {
+                const float dy = end.y - start.y;
+                edgeTableA[edgeCountA].yStart = edgeYStart;
+                edgeTableA[edgeCountA].reserved = 0;
+                if (dy != 0.0f) {
+                    const float xSlope = (end.x - start.x) / dy;
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edgeTableA[edgeCountA].xStepFixed,
+                        xSlope
+                    );
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edgeTableA[edgeCountA].currentXFixed,
+                        start.x + (edgeSampleY - start.y) * xSlope
+                    );
+                } else {
+                    edgeTableA[edgeCountA].xStepFixed = 0;
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edgeTableA[edgeCountA].currentXFixed,
+                        start.x
+                    );
+                }
 
-            ++edgeCountA;
-            ZRNDR_SET_FIXED16_FROM_FLOAT(
-                fixed16Value,
-                end.y
-            );
-            edgeYStart = (fixed16Value + 0x7fff) >> 16;
-            edgeSampleY = (float)(edgeYStart) + 0.5f;
-        }
-        edgeVertexIndex = nextIndex;
-    }
-
-    edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(
-        fixed16Value,
-        reducedVerts[edgeVertexIndex].y
-    );
-    edgeYStart = (fixed16Value + 0x7fff) >> 16;
-    edgeSampleY = (float)(edgeYStart) + 0.5f;
-    const int edgeStepB = g_scanConvertMode != 0 ? -1 : 1;
-    while (edgeVertexIndex != bottomVertexIndex && edgeCountB < 0x40) {
-        int nextIndex = edgeVertexIndex + edgeStepB;
-        if (nextIndex < 0) {
-            nextIndex += reducedCount;
-        } else if (nextIndex >= reducedCount) {
-            nextIndex -= reducedCount;
-        }
-        const zVec3 &start = reducedVerts[edgeVertexIndex];
-        const zVec3 &end = reducedVerts[nextIndex];
-        if (edgeSampleY <= end.y) {
-            const float dy = end.y - start.y;
-            edgeTableB[edgeCountB].yStart = edgeYStart;
-            edgeTableB[edgeCountB].reserved = 0;
-            if (dy != 0.0f) {
-                const float xSlope = (end.x - start.x) / dy;
+                ++edgeCountA;
                 ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableB[edgeCountB].xStepFixed,
-                    xSlope
+                    fixed16Value,
+                    end.y
                 );
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableB[edgeCountB].currentXFixed,
-                    start.x + (edgeSampleY - start.y) * xSlope
-                );
-            } else {
-                edgeTableB[edgeCountB].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableB[edgeCountB].currentXFixed,
-                    start.x
-                );
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
             }
-
-            ++edgeCountB;
-            ZRNDR_SET_FIXED16_FROM_FLOAT(
-                fixed16Value,
-                end.y
-            );
-            edgeYStart = (fixed16Value + 0x7fff) >> 16;
-            edgeSampleY = (float)(edgeYStart) + 0.5f;
+            edgeVertexIndex = nextIndex;
         }
-        edgeVertexIndex = nextIndex;
-    }
 
-    if (edgeCountA == 0 || edgeCountB == 0) {
-        return;
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(
+            fixed16Value,
+            scratch.reducedVerts[edgeVertexIndex].y
+        );
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        while (edgeVertexIndex != bottomVertexIndex) {
+            int nextIndex = edgeVertexIndex - 1;
+            if (nextIndex < 0) {
+                nextIndex += reducedCount;
+            }
+            const zVec3 &start = scratch.reducedVerts[edgeVertexIndex];
+            const zVec3 &end = scratch.reducedVerts[nextIndex];
+            if (edgeSampleY <= end.y) {
+                const float dy = end.y - start.y;
+                edgeTableB[edgeCountB].yStart = edgeYStart;
+                edgeTableB[edgeCountB].reserved = 0;
+                if (dy != 0.0f) {
+                    const float xSlope = (end.x - start.x) / dy;
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edgeTableB[edgeCountB].xStepFixed,
+                        xSlope
+                    );
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edgeTableB[edgeCountB].currentXFixed,
+                        start.x + (edgeSampleY - start.y) * xSlope
+                    );
+                } else {
+                    edgeTableB[edgeCountB].xStepFixed = 0;
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edgeTableB[edgeCountB].currentXFixed,
+                        start.x
+                    );
+                }
+
+                ++edgeCountB;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    fixed16Value,
+                    end.y
+                );
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
+            }
+            edgeVertexIndex = nextIndex;
+        }
+    } else {
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(
+            fixed16Value,
+            scratch.reducedVerts[edgeVertexIndex].y
+        );
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        while (edgeVertexIndex != bottomVertexIndex) {
+            int nextIndex = edgeVertexIndex + 1;
+            if (nextIndex >= reducedCount) {
+                nextIndex -= reducedCount;
+            }
+            const zVec3 &start = scratch.reducedVerts[edgeVertexIndex];
+            const zVec3 &end = scratch.reducedVerts[nextIndex];
+            if (edgeSampleY <= end.y) {
+                const float dy = end.y - start.y;
+                edgeTableB[edgeCountB].yStart = edgeYStart;
+                edgeTableB[edgeCountB].reserved = 0;
+                if (dy != 0.0f) {
+                    const float xSlope = (end.x - start.x) / dy;
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edgeTableB[edgeCountB].xStepFixed,
+                        xSlope
+                    );
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edgeTableB[edgeCountB].currentXFixed,
+                        start.x + (edgeSampleY - start.y) * xSlope
+                    );
+                } else {
+                    edgeTableB[edgeCountB].xStepFixed = 0;
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edgeTableB[edgeCountB].currentXFixed,
+                        start.x
+                    );
+                }
+
+                ++edgeCountB;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    fixed16Value,
+                    end.y
+                );
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
+            }
+            edgeVertexIndex = nextIndex;
+        }
+
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(
+            fixed16Value,
+            scratch.reducedVerts[edgeVertexIndex].y
+        );
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        while (edgeVertexIndex != bottomVertexIndex) {
+            int nextIndex = edgeVertexIndex - 1;
+            if (nextIndex < 0) {
+                nextIndex += reducedCount;
+            }
+            const zVec3 &start = scratch.reducedVerts[edgeVertexIndex];
+            const zVec3 &end = scratch.reducedVerts[nextIndex];
+            if (edgeSampleY <= end.y) {
+                const float dy = end.y - start.y;
+                edgeTableA[edgeCountA].yStart = edgeYStart;
+                edgeTableA[edgeCountA].reserved = 0;
+                if (dy != 0.0f) {
+                    const float xSlope = (end.x - start.x) / dy;
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edgeTableA[edgeCountA].xStepFixed,
+                        xSlope
+                    );
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edgeTableA[edgeCountA].currentXFixed,
+                        start.x + (edgeSampleY - start.y) * xSlope
+                    );
+                } else {
+                    edgeTableA[edgeCountA].xStepFixed = 0;
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edgeTableA[edgeCountA].currentXFixed,
+                        start.x
+                    );
+                }
+
+                ++edgeCountA;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    fixed16Value,
+                    end.y
+                );
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
+            }
+            edgeVertexIndex = nextIndex;
+        }
     }
 
     ZRNDR_SET_FIXED16_FROM_FLOAT(
         fixed16Value,
-        reducedVerts[topVertexIndex].y
+        scratch.reducedVerts[topVertexIndex].y
     );
     const int firstScanline = (fixed16Value + 0x7fff) >> 16;
     ZRNDR_SET_FIXED16_FROM_FLOAT(
         fixed16Value,
-        reducedVerts[bottomVertexIndex].y
+        scratch.reducedVerts[bottomVertexIndex].y
     );
     const int lastScanline = (fixed16Value - 0x8041) >> 16;
     if (firstScanline > lastScanline) {
         return;
     }
 
-    SpanNodePartial **spanList = (SpanNodePartial **)(reducedVerts);
+    SpanNodePartial **spanList = scratch.spanList;
     int edgeIndexA = 0;
     int edgeIndexB = 0;
     int currentXFixedA = edgeTableA[0].currentXFixed;
@@ -2085,10 +2186,6 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(
     int xStepFixedB = edgeTableB[0].xStepFixed;
 
     for (int y = firstScanline; y <= lastScanline; ++y) {
-        if (y < 0 || y >= g_spanColumnCountPadded) {
-            continue;
-        }
-
         while (edgeIndexA < edgeCountA && y >= edgeTableA[edgeIndexA].yStart) {
             xStepFixedA = edgeTableA[edgeIndexA].xStepFixed;
             currentXFixedA = edgeTableA[edgeIndexA].currentXFixed;
@@ -2147,9 +2244,10 @@ void SpanOcclusionResetFrame() {
  * Purpose: release the software span-occlusion column table and span-node pool.
  *
  * Evidence: BN frees non-null gRndr_SpanColumnHeadTable and gRndr_SpanPoolBase
- * through the CRT free import and clears those two globals.
+ * through the CRT free import, clears those two globals, and returns zero in
+ * eax before the epilogue.
  */
-void SpanOcclusionShutdown() {
+int SpanOcclusionShutdown() {
     if (g_spanColumnHeadTable != 0) {
         free(g_spanColumnHeadTable);
         g_spanColumnHeadTable = 0;
@@ -2159,6 +2257,8 @@ void SpanOcclusionShutdown() {
         free(g_spanPoolBase);
         g_spanPoolBase = 0;
     }
+
+    return 0;
 }
 
 /**
@@ -3592,71 +3692,6 @@ static inline unsigned int BlendMmxQuad(
 }
 
 /**
- * Recovered inline helper: zRndr MMX fog span core
- * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e400 and 0x49e560 with only 565/555 mask and scalar-tail differences.
- * Purpose: Handle aligned MMX-shaped fog span blending before delegating tail pixels to the scalar variant.
- */
-static inline void FogBlendSpanMmxCore(
-    unsigned short *pixels,
-    int pixelCount,
-    int fogCoordFixed24,
-    int fogCoordStepFixed24,
-    int redShift,
-    int redTermShift,
-    void(__fastcall *tailScalar)(
-        unsigned short *,
-        int,
-        int,
-        int
-    )
-) {
-    unsigned short *cursor = pixels;
-    int remaining = pixelCount;
-    unsigned int fogCoord = (unsigned int)(fogCoordFixed24);
-    const unsigned int fogStep = (unsigned int)(fogCoordStepFixed24);
-
-    int headPixels = (int)((unsigned int)(pixels) & 3u);
-    if ((unsigned int)(headPixels) >= (unsigned int)(remaining)) {
-        headPixels = remaining;
-    }
-
-    if (headPixels != 0) {
-        tailScalar(
-            cursor,
-            headPixels,
-            (int)(fogCoord),
-            fogCoordStepFixed24
-        );
-        cursor += headPixels;
-        fogCoord += (unsigned int)(headPixels)*fogStep;
-        remaining -= headPixels;
-    }
-
-    const int tailPixels = remaining & 3;
-    unsigned int quadCount = (unsigned int)(remaining) >> 2;
-    while (quadCount != 0) {
-        fogCoord = BlendMmxQuad(
-            cursor,
-            fogCoord,
-            fogStep,
-            redShift,
-            redTermShift
-        );
-        cursor += 4;
-        --quadCount;
-    }
-
-    if (tailPixels != 0) {
-        tailScalar(
-            cursor,
-            tailPixels,
-            (int)(fogCoord),
-            fogCoordStepFixed24
-        );
-    }
-}
-
-/**
  * Recovered inline helper: zRndr span texture sample index
  * Original-source inline helper evidence: No standalone retail function is expected; observed in span callers including 0x49e6c0, 0x49b7e0, 0x49edc0, 0x49bbf0, and 0x49f180.
  * Purpose: Combine fixed-point texture U and masked V coordinates into the active texture sample index.
@@ -3815,51 +3850,6 @@ static inline unsigned short BlendPixel555ConstAlphaMap(
                             blueDelta);
 }
 
-/**
- * Recovered inline helper: zRndr forward 16-bit texture span copy
- * Original-source inline helper evidence: No standalone plan/source-map entry; observed in 0x49ea80 and 0x49ec20 after the alignment prologue with packed two-pixel stores.
- * Purpose: Copy active 16-bit texture samples forward into an aligned destination span.
- */
-static inline void SpanCopy16FromTex16Forward(
-    unsigned short *dst,
-    int texU,
-    int texV,
-    int pixelCount,
-    int texVShift
-) {
-    int pairCount = pixelCount >> 1;
-    while (pairCount != 0) {
-        const unsigned short first = SpanTex16Sample(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
-        texU += g_spanActiveTexUStepFixed20;
-        texV += g_spanActiveTexVStepFixed20;
-
-        const unsigned short second = SpanTex16Sample(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
-        *((unsigned int *)(dst)) = ((unsigned int)(second) << 16) | first;
-        dst += 2;
-        texU += g_spanActiveTexUStepFixed20;
-        texV += g_spanActiveTexVStepFixed20;
-        --pairCount;
-    }
-
-    if ((pixelCount & 1) != 0) {
-        *dst = SpanTex16Sample(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
-    }
-}
 } // namespace
 
 /**
@@ -3944,7 +3934,7 @@ void __fastcall FogBlendSpan555Scalar(
 
 /**
  * Reimplements 0x49e400: zRndr::FogBlendSpan565Mmx
- * Purpose: Route 565 fog blending through the MMX-shaped span core.
+ * Purpose: Blend a 565 span through scalar edge handling and the MMX-shaped quad body.
  */
 void __fastcall FogBlendSpan565Mmx(
     unsigned short *pixels,
@@ -3952,20 +3942,55 @@ void __fastcall FogBlendSpan565Mmx(
     int fogCoordFixed24,
     int fogCoordStepFixed24
 ) {
-    FogBlendSpanMmxCore(
-        pixels,
-        pixelCount,
-        fogCoordFixed24,
-        fogCoordStepFixed24,
-        11,
-        3,
-        FogBlendSpan565Scalar
-    );
+    unsigned short *cursor = pixels;
+    int remaining = pixelCount;
+    unsigned int fogCoord = (unsigned int)(fogCoordFixed24);
+    const unsigned int fogStep = (unsigned int)(fogCoordStepFixed24);
+
+    int headPixels = (int)((unsigned int)(pixels) & 3u);
+    if ((unsigned int)(headPixels) >= (unsigned int)(remaining)) {
+        headPixels = remaining;
+    }
+
+    if (headPixels != 0) {
+        FogBlendSpan565Scalar(
+            cursor,
+            headPixels,
+            (int)(fogCoord),
+            fogCoordStepFixed24
+        );
+        cursor += headPixels;
+        fogCoord += (unsigned int)(headPixels)*fogStep;
+        remaining -= headPixels;
+    }
+
+    const int tailPixels = remaining & 3;
+    unsigned int quadCount = (unsigned int)(remaining) >> 2;
+    while (quadCount != 0) {
+        fogCoord = BlendMmxQuad(
+            cursor,
+            fogCoord,
+            fogStep,
+            11,
+            3
+        );
+        cursor += 4;
+        --quadCount;
+    }
+
+    if (tailPixels != 0) {
+        FogBlendSpan565Scalar(
+            cursor,
+            tailPixels,
+            (int)(fogCoord),
+            fogCoordStepFixed24
+        );
+    }
 }
 
 /**
  * Reimplements 0x49e560: zRndr::FogBlendSpan555Mmx
- * Purpose: Route 555 fog blending through the MMX-shaped span core.
+ * Purpose: Blend a 555 span through scalar edge handling and the MMX-shaped quad body.
  */
 void __fastcall FogBlendSpan555Mmx(
     unsigned short *pixels,
@@ -3973,15 +3998,50 @@ void __fastcall FogBlendSpan555Mmx(
     int fogCoordFixed24,
     int fogCoordStepFixed24
 ) {
-    FogBlendSpanMmxCore(
-        pixels,
-        pixelCount,
-        fogCoordFixed24,
-        fogCoordStepFixed24,
-        10,
-        2,
-        FogBlendSpan555Scalar
-    );
+    unsigned short *cursor = pixels;
+    int remaining = pixelCount;
+    unsigned int fogCoord = (unsigned int)(fogCoordFixed24);
+    const unsigned int fogStep = (unsigned int)(fogCoordStepFixed24);
+
+    int headPixels = (int)((unsigned int)(pixels) & 3u);
+    if ((unsigned int)(headPixels) >= (unsigned int)(remaining)) {
+        headPixels = remaining;
+    }
+
+    if (headPixels != 0) {
+        FogBlendSpan555Scalar(
+            cursor,
+            headPixels,
+            (int)(fogCoord),
+            fogCoordStepFixed24
+        );
+        cursor += headPixels;
+        fogCoord += (unsigned int)(headPixels)*fogStep;
+        remaining -= headPixels;
+    }
+
+    const int tailPixels = remaining & 3;
+    unsigned int quadCount = (unsigned int)(remaining) >> 2;
+    while (quadCount != 0) {
+        fogCoord = BlendMmxQuad(
+            cursor,
+            fogCoord,
+            fogStep,
+            10,
+            2
+        );
+        cursor += 4;
+        --quadCount;
+    }
+
+    if (tailPixels != 0) {
+        FogBlendSpan555Scalar(
+            cursor,
+            tailPixels,
+            (int)(fogCoord),
+            fogCoordStepFixed24
+        );
+    }
 }
 
 /**
@@ -4002,14 +4062,13 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
     int pixelCount,
     int texVShift
 ) {
-    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
-    unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
-
     switch (texVShift) {
     default:
         return;
 
     case 10: {
+        const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
             const int sourceIndex =
@@ -4023,6 +4082,8 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
     }
 
     case 11: {
+        const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
             const int sourceIndex =
@@ -4036,6 +4097,8 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
     }
 
     case 12: {
+        const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
             const int sourceIndex =
@@ -4049,6 +4112,8 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
     }
 
     case 13: {
+        const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
             const int sourceIndex =
@@ -4062,6 +4127,8 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
     }
 
     case 14: {
+        const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
             const int sourceIndex =
@@ -4075,6 +4142,8 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
     }
 
     case 15: {
+        const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
             const int sourceIndex =
@@ -4088,6 +4157,8 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
     }
 
     case 16: {
+        const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
             const int sourceIndex =
@@ -4101,6 +4172,8 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
     }
 
     case 17: {
+        const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
             const int sourceIndex =
@@ -4123,7 +4196,8 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
  * samples gRndr_ActiveTexPixels as 16-bit texels, and either pushes a nonzero
  * word or subtracts two bytes so zero texels leave the destination transparent.
  * This C++ body preserves behavior while the retail ESP-pivot source shape
- * remains owner/data debt for the span-family pass; current VC5SP3 /O2 output
+ * remains owner/data debt for the span-family pass; the retained negative-byte
+ * countdown mirrors BN's loop counter, but current VC5SP3 /O2 output still
  * emits normal pointer stores, and production raw assembly is not an accepted
  * span-source substitute.
  * Purpose: Write nonzero 16-bit texels into the active span using the texVShift-specialized reverse span loops.
@@ -4134,15 +4208,15 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
     int pixelCount,
     int texVShift
 ) {
-    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
-    unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
-
     switch (texVShift) {
     default:
         return;
 
     case 10: {
-        for (int i = 0; i < pixelCount; ++i) {
+        const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
+        int remainingBytes = -pixelCount * 2;
+        do {
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x3ff) +
@@ -4153,12 +4227,16 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
             }
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
-        }
+            remainingBytes += 2;
+        } while (remainingBytes != 0);
         return;
     }
 
     case 11: {
-        for (int i = 0; i < pixelCount; ++i) {
+        const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
+        int remainingBytes = -pixelCount * 2;
+        do {
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x1ff) +
@@ -4169,12 +4247,16 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
             }
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
-        }
+            remainingBytes += 2;
+        } while (remainingBytes != 0);
         return;
     }
 
     case 12: {
-        for (int i = 0; i < pixelCount; ++i) {
+        const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
+        int remainingBytes = -pixelCount * 2;
+        do {
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0xff) +
@@ -4185,12 +4267,16 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
             }
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
-        }
+            remainingBytes += 2;
+        } while (remainingBytes != 0);
         return;
     }
 
     case 13: {
-        for (int i = 0; i < pixelCount; ++i) {
+        const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
+        int remainingBytes = -pixelCount * 2;
+        do {
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x7f) +
@@ -4201,12 +4287,16 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
             }
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
-        }
+            remainingBytes += 2;
+        } while (remainingBytes != 0);
         return;
     }
 
     case 14: {
-        for (int i = 0; i < pixelCount; ++i) {
+        const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
+        int remainingBytes = -pixelCount * 2;
+        do {
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x3f) +
@@ -4217,12 +4307,16 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
             }
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
-        }
+            remainingBytes += 2;
+        } while (remainingBytes != 0);
         return;
     }
 
     case 15: {
-        for (int i = 0; i < pixelCount; ++i) {
+        const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
+        int remainingBytes = -pixelCount * 2;
+        do {
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x1f) +
@@ -4233,12 +4327,16 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
             }
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
-        }
+            remainingBytes += 2;
+        } while (remainingBytes != 0);
         return;
     }
 
     case 16: {
-        for (int i = 0; i < pixelCount; ++i) {
+        const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
+        int remainingBytes = -pixelCount * 2;
+        do {
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x0f) +
@@ -4249,12 +4347,16 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
             }
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
-        }
+            remainingBytes += 2;
+        } while (remainingBytes != 0);
         return;
     }
 
     case 17: {
-        for (int i = 0; i < pixelCount; ++i) {
+        const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
+        int remainingBytes = -pixelCount * 2;
+        do {
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x07) +
@@ -4265,7 +4367,8 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
             }
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
-        }
+            remainingBytes += 2;
+        } while (remainingBytes != 0);
         return;
     }
     }
@@ -4294,6 +4397,8 @@ void __fastcall SpanMmxSetTexUvMasksAndVShift(
  * Source-shape evidence: BN handles an optional unaligned leading texel, sets
  * paired MMX U/V and doubled-step scratch globals, samples two tex16 indices
  * per packed loop through the active MMX masks, then writes an odd tail texel.
+ * This C++ body keeps the scalar edge samples and inlines the packed two-pixel
+ * scalar loop while the retail MMX packed-index source model remains blocked.
  * Purpose: Copy a 16-bit textured span while priming the paired MMX U/V scratch records.
  */
 void __fastcall SpanCopy16FromTex16(
@@ -4303,13 +4408,12 @@ void __fastcall SpanCopy16FromTex16(
     int texVShift
 ) {
     unsigned short *dst = g_spanCurrentSpanBaseAddr;
+    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
     if (((unsigned int)(dst) & 3u) != 0) {
-        *dst = SpanTex16Sample(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
+        const int sourceIndex =
+            ((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) +
+            ((texU >> 20) & g_spanActiveTexUMask);
+        *dst = texels16[sourceIndex];
         ++dst;
         --pixelCount;
         if (pixelCount == 0) {
@@ -4328,19 +4432,40 @@ void __fastcall SpanCopy16FromTex16(
     g_mmxUStepDup2.lo = g_spanActiveTexUStepFixed20 * 2;
     g_mmxUStepDup2.hi = g_spanActiveTexUStepFixed20 * 2;
 
-    SpanCopy16FromTex16Forward(
-        dst,
-        texU,
-        texV,
-        pixelCount,
-        texVShift
-    );
+    int pairCount = pixelCount >> 1;
+    while (pairCount != 0) {
+        const int firstIndex =
+            ((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) +
+            ((texU >> 20) & g_spanActiveTexUMask);
+        const unsigned short first = texels16[firstIndex];
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
+
+        const int secondIndex =
+            ((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) +
+            ((texU >> 20) & g_spanActiveTexUMask);
+        const unsigned short second = texels16[secondIndex];
+        *((unsigned int *)(dst)) = ((unsigned int)(second) << 16) | first;
+        dst += 2;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
+        --pairCount;
+    }
+
+    if ((pixelCount & 1) != 0) {
+        const int sourceIndex =
+            ((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) +
+            ((texU >> 20) & g_spanActiveTexUMask);
+        *dst = texels16[sourceIndex];
+    }
 }
 
 /**
  * Reimplements 0x49ec20: zRndr::SpanCopy16FromTex16ExplicitVShift
  * Source-shape evidence: BN matches the generic tex16 copy body with the
- * caller-supplied V shift feeding the MMX packed-index loop and odd tail.
+ * caller-supplied V shift feeding the MMX packed-index loop and odd tail. This
+ * C++ body keeps the scalar edge samples and inlines the packed two-pixel
+ * scalar loop while the retail MMX packed-index source model remains blocked.
  * Purpose: Copy a 16-bit textured span with the caller-supplied V shift and MMX U/V scratch records.
  */
 void __fastcall SpanCopy16FromTex16ExplicitVShift(
@@ -4350,13 +4475,12 @@ void __fastcall SpanCopy16FromTex16ExplicitVShift(
     int texVShift
 ) {
     unsigned short *dst = g_spanCurrentSpanBaseAddr;
+    const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
     if (((unsigned int)(dst) & 3u) != 0) {
-        *dst = SpanTex16Sample(
-            texU,
-            texV,
-            texVShift,
-            g_spanActiveTexUMask
-        );
+        const int sourceIndex =
+            ((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) +
+            ((texU >> 20) & g_spanActiveTexUMask);
+        *dst = texels16[sourceIndex];
         ++dst;
         --pixelCount;
         if (pixelCount == 0) {
@@ -4375,13 +4499,32 @@ void __fastcall SpanCopy16FromTex16ExplicitVShift(
     g_mmxUStepDup2.lo = g_spanActiveTexUStepFixed20 * 2;
     g_mmxUStepDup2.hi = g_spanActiveTexUStepFixed20 * 2;
 
-    SpanCopy16FromTex16Forward(
-        dst,
-        texU,
-        texV,
-        pixelCount,
-        texVShift
-    );
+    int pairCount = pixelCount >> 1;
+    while (pairCount != 0) {
+        const int firstIndex =
+            ((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) +
+            ((texU >> 20) & g_spanActiveTexUMask);
+        const unsigned short first = texels16[firstIndex];
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
+
+        const int secondIndex =
+            ((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) +
+            ((texU >> 20) & g_spanActiveTexUMask);
+        const unsigned short second = texels16[secondIndex];
+        *((unsigned int *)(dst)) = ((unsigned int)(second) << 16) | first;
+        dst += 2;
+        texU += g_spanActiveTexUStepFixed20;
+        texV += g_spanActiveTexVStepFixed20;
+        --pairCount;
+    }
+
+    if ((pixelCount & 1) != 0) {
+        const int sourceIndex =
+            ((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) +
+            ((texU >> 20) & g_spanActiveTexUMask);
+        *dst = texels16[sourceIndex];
+    }
 }
 
 /**
@@ -4402,21 +4545,19 @@ void __fastcall SpanCopy16FromPal8SwitchVShift(
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
-
     switch (texVShift) {
     default:
         return;
 
     case 10: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            *dstEnd = SpanPal8SampleExpanded(
-                texU,
-                texV,
-                10,
-                0x3ff
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x3ff) +
+                ((texV & g_spanActiveTexVMask) >> 10);
+            const unsigned char source = g_spanActiveTexPixels[sourceIndex];
+            *dstEnd = g_spanActiveTexPalette[source];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
         }
@@ -4424,14 +4565,14 @@ void __fastcall SpanCopy16FromPal8SwitchVShift(
     }
 
     case 11: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            *dstEnd = SpanPal8SampleExpanded(
-                texU,
-                texV,
-                11,
-                0x1ff
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x1ff) +
+                ((texV & g_spanActiveTexVMask) >> 11);
+            const unsigned char source = g_spanActiveTexPixels[sourceIndex];
+            *dstEnd = g_spanActiveTexPalette[source];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
         }
@@ -4439,14 +4580,14 @@ void __fastcall SpanCopy16FromPal8SwitchVShift(
     }
 
     case 12: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            *dstEnd = SpanPal8SampleExpanded(
-                texU,
-                texV,
-                12,
-                0xff
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0xff) +
+                ((texV & g_spanActiveTexVMask) >> 12);
+            const unsigned char source = g_spanActiveTexPixels[sourceIndex];
+            *dstEnd = g_spanActiveTexPalette[source];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
         }
@@ -4454,14 +4595,14 @@ void __fastcall SpanCopy16FromPal8SwitchVShift(
     }
 
     case 13: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            *dstEnd = SpanPal8SampleExpanded(
-                texU,
-                texV,
-                13,
-                0x7f
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x7f) +
+                ((texV & g_spanActiveTexVMask) >> 13);
+            const unsigned char source = g_spanActiveTexPixels[sourceIndex];
+            *dstEnd = g_spanActiveTexPalette[source];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
         }
@@ -4469,14 +4610,14 @@ void __fastcall SpanCopy16FromPal8SwitchVShift(
     }
 
     case 14: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            *dstEnd = SpanPal8SampleExpanded(
-                texU,
-                texV,
-                14,
-                0x3f
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x3f) +
+                ((texV & g_spanActiveTexVMask) >> 14);
+            const unsigned char source = g_spanActiveTexPixels[sourceIndex];
+            *dstEnd = g_spanActiveTexPalette[source];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
         }
@@ -4484,14 +4625,14 @@ void __fastcall SpanCopy16FromPal8SwitchVShift(
     }
 
     case 15: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            *dstEnd = SpanPal8SampleExpanded(
-                texU,
-                texV,
-                15,
-                0x1f
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x1f) +
+                ((texV & g_spanActiveTexVMask) >> 15);
+            const unsigned char source = g_spanActiveTexPixels[sourceIndex];
+            *dstEnd = g_spanActiveTexPalette[source];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
         }
@@ -4499,14 +4640,14 @@ void __fastcall SpanCopy16FromPal8SwitchVShift(
     }
 
     case 16: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            *dstEnd = SpanPal8SampleExpanded(
-                texU,
-                texV,
-                16,
-                0x0f
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x0f) +
+                ((texV & g_spanActiveTexVMask) >> 16);
+            const unsigned char source = g_spanActiveTexPixels[sourceIndex];
+            *dstEnd = g_spanActiveTexPalette[source];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
         }
@@ -4514,14 +4655,14 @@ void __fastcall SpanCopy16FromPal8SwitchVShift(
     }
 
     case 17: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            *dstEnd = SpanPal8SampleExpanded(
-                texU,
-                texV,
-                17,
-                0x07
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x07) +
+                ((texV & g_spanActiveTexVMask) >> 17);
+            const unsigned char source = g_spanActiveTexPixels[sourceIndex];
+            *dstEnd = g_spanActiveTexPalette[source];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
         }
@@ -4549,21 +4690,17 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
-
     switch (texVShift) {
     default:
         return;
 
     case 10: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            const int sourceIndex = SpanTex16SampleIndex(
-                texU,
-                texV,
-                10,
-                0x3ff
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x3ff) +
+                ((texV & g_spanActiveTexVMask) >> 10);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             if (source != 0) {
                 *dstEnd = g_spanActiveTexPalette[source];
@@ -4575,14 +4712,12 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
     }
 
     case 11: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            const int sourceIndex = SpanTex16SampleIndex(
-                texU,
-                texV,
-                11,
-                0x1ff
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x1ff) +
+                ((texV & g_spanActiveTexVMask) >> 11);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             if (source != 0) {
                 *dstEnd = g_spanActiveTexPalette[source];
@@ -4594,14 +4729,12 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
     }
 
     case 12: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            const int sourceIndex = SpanTex16SampleIndex(
-                texU,
-                texV,
-                12,
-                0xff
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0xff) +
+                ((texV & g_spanActiveTexVMask) >> 12);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             if (source != 0) {
                 *dstEnd = g_spanActiveTexPalette[source];
@@ -4613,14 +4746,12 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
     }
 
     case 13: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            const int sourceIndex = SpanTex16SampleIndex(
-                texU,
-                texV,
-                13,
-                0x7f
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x7f) +
+                ((texV & g_spanActiveTexVMask) >> 13);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             if (source != 0) {
                 *dstEnd = g_spanActiveTexPalette[source];
@@ -4632,14 +4763,12 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
     }
 
     case 14: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            const int sourceIndex = SpanTex16SampleIndex(
-                texU,
-                texV,
-                14,
-                0x3f
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x3f) +
+                ((texV & g_spanActiveTexVMask) >> 14);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             if (source != 0) {
                 *dstEnd = g_spanActiveTexPalette[source];
@@ -4651,14 +4780,12 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
     }
 
     case 15: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            const int sourceIndex = SpanTex16SampleIndex(
-                texU,
-                texV,
-                15,
-                0x1f
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x1f) +
+                ((texV & g_spanActiveTexVMask) >> 15);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             if (source != 0) {
                 *dstEnd = g_spanActiveTexPalette[source];
@@ -4670,14 +4797,12 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
     }
 
     case 16: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            const int sourceIndex = SpanTex16SampleIndex(
-                texU,
-                texV,
-                16,
-                0x0f
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x0f) +
+                ((texV & g_spanActiveTexVMask) >> 16);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             if (source != 0) {
                 *dstEnd = g_spanActiveTexPalette[source];
@@ -4689,14 +4814,12 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
     }
 
     case 17: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            const int sourceIndex = SpanTex16SampleIndex(
-                texU,
-                texV,
-                17,
-                0x07
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x07) +
+                ((texV & g_spanActiveTexVMask) >> 17);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             if (source != 0) {
                 *dstEnd = g_spanActiveTexPalette[source];
@@ -4728,21 +4851,17 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
     int pixelCount,
     int texVShift
 ) {
-    unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
-
     switch (texVShift) {
     default:
         return;
 
     case 10: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            const int sourceIndex = SpanTex16SampleIndex(
-                texU,
-                texV,
-                10,
-                0x3ff
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x3ff) +
+                ((texV & g_spanActiveTexVMask) >> 10);
             const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
             const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
             g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
@@ -4755,14 +4874,12 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
     }
 
     case 11: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            const int sourceIndex = SpanTex16SampleIndex(
-                texU,
-                texV,
-                11,
-                0x1ff
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x1ff) +
+                ((texV & g_spanActiveTexVMask) >> 11);
             const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
             const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
             g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
@@ -4775,14 +4892,12 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
     }
 
     case 12: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            const int sourceIndex = SpanTex16SampleIndex(
-                texU,
-                texV,
-                12,
-                0xff
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0xff) +
+                ((texV & g_spanActiveTexVMask) >> 12);
             const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
             const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
             g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
@@ -4795,14 +4910,12 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
     }
 
     case 13: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            const int sourceIndex = SpanTex16SampleIndex(
-                texU,
-                texV,
-                13,
-                0x7f
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x7f) +
+                ((texV & g_spanActiveTexVMask) >> 13);
             const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
             const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
             g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
@@ -4815,14 +4928,12 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
     }
 
     case 14: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            const int sourceIndex = SpanTex16SampleIndex(
-                texU,
-                texV,
-                14,
-                0x3f
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x3f) +
+                ((texV & g_spanActiveTexVMask) >> 14);
             const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
             const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
             g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
@@ -4835,14 +4946,12 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
     }
 
     case 15: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            const int sourceIndex = SpanTex16SampleIndex(
-                texU,
-                texV,
-                15,
-                0x1f
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x1f) +
+                ((texV & g_spanActiveTexVMask) >> 15);
             const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
             const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
             g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
@@ -4855,14 +4964,12 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
     }
 
     case 16: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            const int sourceIndex = SpanTex16SampleIndex(
-                texU,
-                texV,
-                16,
-                0x0f
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x0f) +
+                ((texV & g_spanActiveTexVMask) >> 16);
             const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
             const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
             g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
@@ -4875,14 +4982,12 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
     }
 
     case 17: {
+        unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
         for (int i = 0; i < pixelCount; ++i) {
             --dstEnd;
-            const int sourceIndex = SpanTex16SampleIndex(
-                texU,
-                texV,
-                17,
-                0x07
-            );
+            const int sourceIndex =
+                ((texU >> 20) & 0x07) +
+                ((texV & g_spanActiveTexVMask) >> 17);
             const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
             const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
             g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
@@ -5736,6 +5841,7 @@ void __fastcall zRndr_DrawLine16_Segmented(
 ) {
     const unsigned int pitchWordsUnsigned = (unsigned int)(zRndr::g_pitchBytes) >> 1;
     int rowStep = (int)(pitchWordsUnsigned);
+    int drawSegment = 1;
     int startIndex = (int)(pitchWordsUnsigned * y0 + x0);
 
     int dy = y1 - y0;
@@ -5751,15 +5857,15 @@ void __fastcall zRndr_DrawLine16_Segmented(
         xStep = -1;
     }
 
-    unsigned short *cursor = &dstPixels[startIndex];
     const unsigned short packedColor = (unsigned short)(color16);
-    int drawSegment = 1;
     int segmentCounter = 0;
 
+    // Retail VC5 reuses the consumed segmentCount argument slot for the branch segment limit.
     if (dx > dy) {
-        const int segmentLimit = (dx + 1) / segmentCount;
+        segmentCount = (dx + 1) / segmentCount;
         int error = dx >> 1;
         int count = dx + 1;
+        unsigned short *cursor = &dstPixels[startIndex];
         do {
             if (drawSegment != 0) {
                 *cursor = packedColor;
@@ -5772,9 +5878,7 @@ void __fastcall zRndr_DrawLine16_Segmented(
                 cursor += rowStep;
             }
 
-            const int previousCounter = segmentCounter;
-            ++segmentCounter;
-            if (previousCounter >= segmentLimit) {
+            if (segmentCounter++ >= segmentCount) {
                 segmentCounter = 0;
                 drawSegment = drawSegment == 0 ? 1 : 0;
             }
@@ -5784,9 +5888,10 @@ void __fastcall zRndr_DrawLine16_Segmented(
         return;
     }
 
-    const int segmentLimit = (dy + 1) / segmentCount;
+    segmentCount = (dy + 1) / segmentCount;
     int error = dy >> 1;
     int count = dy + 1;
+    unsigned short *cursor = &dstPixels[startIndex];
     do {
         if (drawSegment != 0) {
             *cursor = packedColor;
@@ -5799,9 +5904,7 @@ void __fastcall zRndr_DrawLine16_Segmented(
             cursor += xStep;
         }
 
-        const int previousCounter = segmentCounter;
-        ++segmentCounter;
-        if (previousCounter >= segmentLimit) {
+        if (segmentCounter++ >= segmentCount) {
             segmentCounter = 0;
             drawSegment = drawSegment == 0 ? 1 : 0;
         }
@@ -5962,16 +6065,15 @@ void __fastcall zRndr_FillSpan16Opaque(
     int packedColor16,
     int pixelCount
 ) {
-    const unsigned short color = (unsigned short)(packedColor16);
-    const unsigned int packedPair = ((unsigned int)(color) << 16) | color;
+    const unsigned int packedPair = ((unsigned int)(packedColor16) << 16) | (unsigned int)(packedColor16);
     unsigned short *cursor = zRndr::g_spanCurrentSpanBaseAddr + pixelCount;
 
     if ((pixelCount & 1) != 0) {
         --cursor;
-        *cursor = color;
+        *cursor = (unsigned short)(packedColor16);
     }
 
-    int pairCount = pixelCount >> 1;
+    unsigned int pairCount = (unsigned int)(pixelCount) >> 1;
     if ((pairCount & 1) != 0) {
         cursor -= 2;
         *((unsigned int *)(cursor)) = packedPair;
@@ -6005,14 +6107,18 @@ void __fastcall zRndr_FillSpan555Solid(
             if (blendAlpha >= 0xfc) {
                 *cursor = (unsigned short)(packedColor16);
             } else {
-                const int dst = (short)(*cursor);
-                const int redDelta =
-                    ((((packedColor16 & 0x7c00) - (dst & 0x7c00)) * blendAlpha) >> 8) & 0xfffffc00;
-                const int greenDelta =
-                    ((((packedColor16 & 0x03e0) - (dst & 0x03e0)) * blendAlpha) >> 8) & 0xffffffe0;
-                const int blueDelta =
-                    (((packedColor16 & 0x001f) - (dst & 0x001f)) * blendAlpha) >> 8;
-                *cursor = (unsigned short)(*cursor + redDelta + greenDelta + blueDelta);
+                int dst = (short)(*cursor);
+                int greenDelta = (packedColor16 & 0x03e0) - (dst & 0x03e0);
+                greenDelta *= blendAlpha;
+                int redDelta = (packedColor16 & 0x7c00) - (dst & 0x7c00);
+                redDelta *= blendAlpha;
+                redDelta = (redDelta >> 8) & 0xfffffc00;
+                const int redAdjusted = dst + redDelta;
+                int blueDelta = (packedColor16 & 0x001f) - (dst & 0x001f);
+                blueDelta *= blendAlpha;
+                greenDelta = (greenDelta >> 8) & 0xffffffe0;
+                blueDelta >>= 8;
+                *cursor = (unsigned short)(redAdjusted + blueDelta + greenDelta);
             }
         }
 
@@ -6769,7 +6875,7 @@ void __fastcall zRndr_RasterizePolyWithSpanList(
 
 /**
  * Reimplements 0x492f00: zRndr_DrawFlatImmediate
- * Source file evidence: zRndr raster/span draw cluster in this source file.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Draw an immediate flat polygon through the flat span callback path.
  */
 void __fastcall zRndr_DrawFlatImmediate(
@@ -6779,11 +6885,6 @@ void __fastcall zRndr_DrawFlatImmediate(
     int flatSpanOpEdxArg,
     int flatSpanOpEcxArg
 ) {
-    if (vertices == 0 || planeVertices == 0 || vertCount <= 0 || zRndr::g_spanAllocCursor == 0 ||
-        zRndr::g_frameBuffer == 0 || zRndr::g_pfnFlatImmediateSpanOp == 0) {
-        return;
-    }
-
     const float dx10 = planeVertices[0].x - planeVertices[1].x;
     const float dx12 = planeVertices[2].x - planeVertices[1].x;
     const float dy10 = planeVertices[0].y - planeVertices[1].y;
@@ -6814,66 +6915,92 @@ void __fastcall zRndr_DrawFlatImmediate(
         }
     }
 
-    const int firstScanline = (int)(floor(vertices[topVertexIndex].y + 0.5f));
-    const int lastScanline = (int)(floor(vertices[bottomVertexIndex].y - 0.5f));
+    ScanConvertEdge edgeTableA[0x40] = {0};
+    ScanConvertEdge edgeTableB[0x40] = {0};
+    int edgeCountA;
+    int edgeCountB;
+    if (zRndr::g_scanConvertMode != 0) {
+        edgeCountA = BuildScanConvertEdges(
+            vertices,
+            vertCount,
+            topVertexIndex,
+            bottomVertexIndex,
+            1,
+            edgeTableA
+        );
+        edgeCountB = BuildScanConvertEdges(
+            vertices,
+            vertCount,
+            topVertexIndex,
+            bottomVertexIndex,
+            -1,
+            edgeTableB
+        );
+    } else {
+        edgeCountA = BuildScanConvertEdges(
+            vertices,
+            vertCount,
+            topVertexIndex,
+            bottomVertexIndex,
+            -1,
+            edgeTableA
+        );
+        edgeCountB = BuildScanConvertEdges(
+            vertices,
+            vertCount,
+            topVertexIndex,
+            bottomVertexIndex,
+            1,
+            edgeTableB
+        );
+    }
+
+    if (edgeCountA == 0 || edgeCountB == 0) {
+        return;
+    }
+
+    const int firstScanline = ScanlineStartFromY(vertices[topVertexIndex].y);
+    const int lastScanline = ScanlineEndFromY(vertices[bottomVertexIndex].y);
     if (firstScanline > lastScanline) {
         return;
     }
 
-    zRndr::SpanNodePartial *visibleSpans[0x40] = {0};
-    zRndr::SpanBuildProc buildProc = zRndr::g_pfnBuildSpanListSecondary != 0
-                                         ? zRndr::g_pfnBuildSpanListSecondary
-                                         : zRndr_SpanOcclusion_InsertSpanNode_Local;
+    zRndr::SpanNodePartial *visibleSpans[0x40];
+    int edgeIndexA = 0;
+    int edgeIndexB = 0;
+    int currentXFixedA = edgeTableA[0].currentXFixed;
+    int currentXFixedB = edgeTableB[0].currentXFixed;
+    int xStepFixedA = edgeTableA[0].xStepFixed;
+    int xStepFixedB = edgeTableB[0].xStepFixed;
+    unsigned char *scanlineBase =
+        (unsigned char *)(zRndr::g_frameBuffer) + firstScanline * zRndr::g_pitchBytes;
 
-    unsigned char *frameBase = (unsigned char *)(zRndr::g_frameBuffer);
     for (int y = firstScanline; y <= lastScanline; ++y) {
-        float intersections[0x40] = {0};
-        int intersectionCount = 0;
-        const float sampleY = (float)(y) + 0.5f;
-
-        for (int i = 0; i < vertCount; ++i) {
-            const zVec3 &a = vertices[i];
-            const zVec3 &b = vertices[(i + 1) % vertCount];
-            if (a.y == b.y) {
-                continue;
-            }
-
-            const float minY = MinValue(
-                a.y,
-                b.y
-            );
-            const float maxY = MaxValue(
-                a.y,
-                b.y
-            );
-            if (sampleY < minY || sampleY >= maxY) {
-                continue;
-            }
-
-            const float t = (sampleY - a.y) / (b.y - a.y);
-            intersections[intersectionCount++] = a.x + (b.x - a.x) * t;
-            if (intersectionCount == 0x40) {
-                break;
-            }
+        while (edgeIndexA < edgeCountA && y >= edgeTableA[edgeIndexA].yStart) {
+            xStepFixedA = edgeTableA[edgeIndexA].xStepFixed;
+            currentXFixedA = edgeTableA[edgeIndexA].currentXFixed;
+            ++edgeIndexA;
         }
 
-        if (intersectionCount < 2) {
-            continue;
+        while (edgeIndexB < edgeCountB && y >= edgeTableB[edgeIndexB].yStart) {
+            xStepFixedB = edgeTableB[edgeIndexB].xStepFixed;
+            currentXFixedB = edgeTableB[edgeIndexB].currentXFixed;
+            ++edgeIndexB;
         }
 
-        sort(
-            intersections,
-            intersections + intersectionCount
-        );
-        unsigned char *scanlineBase = frameBase + y * zRndr::g_pitchBytes;
-        const int pairCount = intersectionCount & ~1;
-        for (int i_3650 = 0; i_3650 < pairCount; i_3650 += 2) {
-            const int xMin = (int)(floor(intersections[i_3650] + 0.5f));
-            const int xMax = (int)(ceil(intersections[i_3650 + 1] - 0.5f)) - 1;
-            if (xMin > xMax) {
-                continue;
-            }
+        int xMin;
+        int xMax;
+        if (currentXFixedA > currentXFixedB) {
+            xMin = (currentXFixedB + 0x7fff) >> 16;
+            xMax = (currentXFixedA - 0x8001) >> 16;
+        } else {
+            xMin = (currentXFixedA + 0x7fff) >> 16;
+            xMax = (currentXFixedB - 0x8001) >> 16;
+        }
 
+        currentXFixedA += xStepFixedA;
+        currentXFixedB += xStepFixedB;
+        if (xMin <= xMax) {
             const float rowDepthBase = (float)(y)*invDepthSlopeY + invDepthBiasBase;
             zRndr::g_spanAllocCursor->sampleXMin = xMin;
             zRndr::g_spanAllocCursor->sampleXMax = xMax;
@@ -6886,37 +7013,32 @@ void __fastcall zRndr_DrawFlatImmediate(
             zRndr::g_spanAllocCursor->depthSlope = invDepthSlopeX;
 
             int spanCount = 0;
-            buildProc(
+            zRndr::g_pfnBuildSpanListSecondary(
                 visibleSpans,
                 y,
                 &spanCount
             );
 
-            {
-                for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
-                    zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
-                    const int pixelCount = span->sampleXMax - span->sampleXMin + 1;
-                    if (pixelCount <= 0) {
-                        continue;
-                    }
-
-                    zRndr::g_spanCurrentSpanBaseAddr =
-                        (unsigned short *)(scanlineBase +
-                                           (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
-                    zRndr::g_pfnFlatImmediateSpanOp(
-                        flatSpanOpEcxArg,
-                        flatSpanOpEdxArg,
-                        pixelCount
-                    );
-                }
+            for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
+                zRndr::SpanNodePartial *span = visibleSpans[spanIndex];
+                const int pixelCount = span->sampleXMax - span->sampleXMin + 1;
+                const int byteOffset = (int)(span->sampleXMin) * zRndr::g_bytesPerPixel;
+                zRndr::g_spanCurrentSpanBaseAddr = (unsigned short *)(scanlineBase + byteOffset);
+                zRndr::g_pfnFlatImmediateSpanOp(
+                    flatSpanOpEcxArg,
+                    flatSpanOpEdxArg,
+                    pixelCount
+                );
             }
         }
+
+        scanlineBase += zRndr::g_pitchBytes;
     }
 }
 
 /**
  * Reimplements 0x4936d0: zRndr_RasterizePoly
- * Source file evidence: zRndr raster/span draw cluster in this source file.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Scan-convert a polygon and dispatch each covered span to the selected span routine.
  */
 void __fastcall zRndr_RasterizePoly(
@@ -6924,21 +7046,20 @@ void __fastcall zRndr_RasterizePoly(
     int vertCount,
     int spanOpContext
 ) {
-    if (vertices == 0 || vertCount <= 0 || zRndr::g_frameBuffer == 0 ||
-        zRndr::g_pfnSelectedSpanOp == 0) {
-        return;
-    }
-
-    zVec3 reducedVerts[0x40] = {0};
+    zVec3 reducedVerts[0x40];
     int reducedCount = 1;
-    reducedVerts[0] = vertices[0];
+    reducedVerts[0].x = vertices[0].x;
+    reducedVerts[0].y = vertices[0].y;
     for (int reduceIndex = 1; reduceIndex < vertCount && reducedCount < 0x40; ++reduceIndex) {
         const zVec3 &previous = reducedVerts[reducedCount - 1];
-        if (vertices[reduceIndex].x == previous.x && vertices[reduceIndex].y == previous.y) {
+        reducedVerts[reducedCount].x = vertices[reduceIndex].x;
+        reducedVerts[reducedCount].y = vertices[reduceIndex].y;
+        if (reducedVerts[reducedCount].x == previous.x &&
+            reducedVerts[reducedCount].y == previous.y) {
             continue;
         }
 
-        reducedVerts[reducedCount++] = vertices[reduceIndex];
+        ++reducedCount;
     }
 
     if (reducedCount > 1 && reducedVerts[reducedCount - 1].x == reducedVerts[0].x &&
@@ -7828,7 +7949,7 @@ void zRndr_FlushOverwriteQueue() {
 
 /**
  * Reimplements 0x499130: zRndr_TextureMip_SelectVariantImage
- * Source file evidence: zRndr queued texture draw cluster in this source file.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Select a mip/variant image for a textured polygon from its projected texture metric.
  */
 zVidImagePartial *__fastcall zRndr_TextureMip_SelectVariantImage(
@@ -7882,6 +8003,7 @@ zVidImagePartial *__fastcall zRndr_TextureMip_SelectVariantImage(
 
 /**
  * Reimplements 0x493df0: zRndr_DrawFlatQueued
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Draw a queued flat/textured polygon through the active span callback path.
  */
 void __fastcall zRndr_DrawFlatQueued(
@@ -7892,11 +8014,6 @@ void __fastcall zRndr_DrawFlatQueued(
     int vertCount,
     int paletteIndex
 ) {
-    if (entry == 0 || entry->image == 0 || polyVerts == 0 || triVerts == 0 || triUVs == 0 ||
-        vertCount <= 0 || zRndr::g_spanAllocCursor == 0 || zRndr::g_frameBuffer == 0) {
-        return;
-    }
-
     zVidImagePartial *selectedImage = entry->image;
     const float imageWidth = (float)(selectedImage->width);
     const float imageHeight = (float)(selectedImage->height);
@@ -7925,9 +8042,6 @@ void __fastcall zRndr_DrawFlatQueued(
             &planes.uOverZ.gradient,
             &planes.vOverZ.gradient
         );
-        if (selectedImage == 0) {
-            return;
-        }
     }
 
     int topVertexIndex = 0;
@@ -7941,8 +8055,52 @@ void __fastcall zRndr_DrawFlatQueued(
         }
     }
 
-    const int firstScanline = (int)(floor(polyVerts[topVertexIndex].y + 0.5f));
-    const int lastScanline = (int)(floor(polyVerts[bottomVertexIndex].y - 0.5f));
+    ScanConvertEdge edgeTableA[0x40] = {0};
+    ScanConvertEdge edgeTableB[0x40] = {0};
+    int edgeCountA;
+    int edgeCountB;
+    if (zRndr::g_scanConvertMode != 0) {
+        edgeCountA = BuildScanConvertEdges(
+            polyVerts,
+            vertCount,
+            topVertexIndex,
+            bottomVertexIndex,
+            1,
+            edgeTableA
+        );
+        edgeCountB = BuildScanConvertEdges(
+            polyVerts,
+            vertCount,
+            topVertexIndex,
+            bottomVertexIndex,
+            -1,
+            edgeTableB
+        );
+    } else {
+        edgeCountA = BuildScanConvertEdges(
+            polyVerts,
+            vertCount,
+            topVertexIndex,
+            bottomVertexIndex,
+            -1,
+            edgeTableA
+        );
+        edgeCountB = BuildScanConvertEdges(
+            polyVerts,
+            vertCount,
+            topVertexIndex,
+            bottomVertexIndex,
+            1,
+            edgeTableB
+        );
+    }
+
+    if (edgeCountA == 0 || edgeCountB == 0) {
+        return;
+    }
+
+    const int firstScanline = ScanlineStartFromY(polyVerts[topVertexIndex].y);
+    const int lastScanline = ScanlineEndFromY(polyVerts[bottomVertexIndex].y);
     if (firstScanline > lastScanline) {
         return;
     }
@@ -7976,66 +8134,43 @@ void __fastcall zRndr_DrawFlatQueued(
     zRndr::g_spanActiveTexUMask = selectedImage->uMask;
     zRndr::g_spanActiveTexVMask = selectedImage->vMaskFixed20;
 
-    if (spanProc == 0) {
-        return;
-    }
-
     zRndr::SpanNodePartial *visibleSpans[0x40] = {0};
-    zRndr::SpanBuildProc buildProc =
-        zRndr::g_pfnBuildSpanListSecondary != 0
-            ? zRndr::g_pfnBuildSpanListSecondary
-            : (zRndr::g_pfnBuildSpanList != 0 ? zRndr::g_pfnBuildSpanList
-                                              : zRndr_SpanOcclusion_InsertSpanNode_Local);
-    unsigned char *frameBase = (unsigned char *)(zRndr::g_frameBuffer);
+    int edgeIndexA = 0;
+    int edgeIndexB = 0;
+    int currentXFixedA = edgeTableA[0].currentXFixed;
+    int currentXFixedB = edgeTableB[0].currentXFixed;
+    int xStepFixedA = edgeTableA[0].xStepFixed;
+    int xStepFixedB = edgeTableB[0].xStepFixed;
+    unsigned char *scanlineBase =
+        (unsigned char *)(zRndr::g_frameBuffer) + firstScanline * zRndr::g_pitchBytes;
     const int texVShift = zRndr::g_spanActiveTexShift;
 
     for (int y = firstScanline; y <= lastScanline; ++y) {
-        float intersections[0x40] = {0};
-        int intersectionCount = 0;
-        const float sampleY = (float)(y) + 0.5f;
-        for (int i = 0; i < vertCount; ++i) {
-            const zVec3 &a = polyVerts[i];
-            const zVec3 &b = polyVerts[(i + 1) % vertCount];
-            if (a.y == b.y) {
-                continue;
-            }
-
-            const float minY = MinValue(
-                a.y,
-                b.y
-            );
-            const float maxY = MaxValue(
-                a.y,
-                b.y
-            );
-            if (sampleY < minY || sampleY >= maxY) {
-                continue;
-            }
-
-            const float t = (sampleY - a.y) / (b.y - a.y);
-            intersections[intersectionCount++] = a.x + (b.x - a.x) * t;
-            if (intersectionCount == 0x40) {
-                break;
-            }
+        while (edgeIndexA < edgeCountA && y >= edgeTableA[edgeIndexA].yStart) {
+            xStepFixedA = edgeTableA[edgeIndexA].xStepFixed;
+            currentXFixedA = edgeTableA[edgeIndexA].currentXFixed;
+            ++edgeIndexA;
         }
 
-        if (intersectionCount < 2) {
-            continue;
+        while (edgeIndexB < edgeCountB && y >= edgeTableB[edgeIndexB].yStart) {
+            xStepFixedB = edgeTableB[edgeIndexB].xStepFixed;
+            currentXFixedB = edgeTableB[edgeIndexB].currentXFixed;
+            ++edgeIndexB;
         }
 
-        sort(
-            intersections,
-            intersections + intersectionCount
-        );
-        unsigned char *scanlineBase = frameBase + y * zRndr::g_pitchBytes;
-        const int pairCount = intersectionCount & ~1;
-        for (int i_4455 = 0; i_4455 < pairCount; i_4455 += 2) {
-            const int xMin = (int)(floor(intersections[i_4455] + 0.5f));
-            const int xMax = (int)(ceil(intersections[i_4455 + 1] - 0.5f)) - 1;
-            if (xMin > xMax) {
-                continue;
-            }
+        int xMin;
+        int xMax;
+        if (currentXFixedA > currentXFixedB) {
+            xMin = (currentXFixedB + 0x7fff) >> 16;
+            xMax = (currentXFixedA - 0x8001) >> 16;
+        } else {
+            xMin = (currentXFixedA + 0x7fff) >> 16;
+            xMax = (currentXFixedB - 0x8001) >> 16;
+        }
 
+        currentXFixedA += xStepFixedA;
+        currentXFixedB += xStepFixedB;
+        if (xMin <= xMax) {
             const float rowReciprocalZ =
                 (float)(y)*planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
             zRndr::g_spanAllocCursor->sampleXMin = xMin;
@@ -8051,7 +8186,7 @@ void __fastcall zRndr_DrawFlatQueued(
             zRndr::g_spanAllocCursor->depthSlope = planes.reciprocalZ.gradient.x;
 
             int spanCount = 0;
-            buildProc(
+            zRndr::g_pfnBuildSpanListSecondary(
                 visibleSpans,
                 y,
                 &spanCount
@@ -8079,6 +8214,8 @@ void __fastcall zRndr_DrawFlatQueued(
                 }
             }
         }
+
+        scanlineBase += zRndr::g_pitchBytes;
     }
 }
 

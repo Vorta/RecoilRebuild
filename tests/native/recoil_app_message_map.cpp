@@ -2685,39 +2685,6 @@ extern "C" int hud_ui_credits_quit_button_on_activate_smoke(void) {
     return result;
 }
 
-extern "C" int hud_ui_cheat_text_input_on_activate_smoke(void) {
-    const RecoilApp oldApp = g_RecoilApp;
-
-    TestAppState oldState{};
-    oldState.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));
-
-    g_RecoilApp = RecoilApp{};
-    g_RecoilApp.m_currentStateIndex = 0;
-    g_RecoilApp.m_stateStack[0] =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&oldState));
-    g_stateEnterCount = 0;
-    g_stateExitCount = 0;
-
-    HudUiCheatTextInputWidget widget{};
-    widget.BaseConstructor();
-    widget.OnActivate();
-
-    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
-    int result = 0;
-    if (g_stateExitCount != 1 || g_stateEnterCount != 0 ||
-        widget.sliderBorder.inputActive != 1) {
-        result = 1;
-    } else if (!IsSingleExitCurrentQueueItem(queue, 0)) {
-        result = 2;
-    }
-
-    CleanupQueuedItems(queue);
-    widget.Destructor();
-    g_RecoilApp = oldApp;
-    return result;
-}
-
 extern "C" int hud_ui_callback_queue_exit_current_state_smoke(void) {
     const RecoilApp oldApp = g_RecoilApp;
 

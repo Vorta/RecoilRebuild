@@ -2171,7 +2171,7 @@ void ExpectMpExitUpdateStep(int expected) {
     }
 }
 
-void __fastcall FakeMpExitUpdatePollActiveDevices(int dispatchCallbacks) {
+void __fastcall FakeMpExitUpdatePollActiveDevices(unsigned char dispatchCallbacks) {
     g_mpExitUpdatePollDispatch = dispatchCallbacks;
     ++g_mpExitUpdatePollCount;
 }
@@ -2262,7 +2262,7 @@ void __fastcall FakeMpExitUpdateExitProcessWithCleanup(int exitCode) {
 }
 
 struct MpExitUpdatePatchOps {
-    void Update(float deltaSeconds) {
+    void UpdateAll(float deltaSeconds) {
         ++g_mpExitUpdateCount;
         g_mpExitUpdateThis = (HudUiMpExitDialog *)this;
         g_mpExitUpdateDelta = deltaSeconds;
@@ -2336,8 +2336,8 @@ extern "C" int recoil_app_mp_exit_dialog_state_on_update_should_quit_smoke(void)
 
     alignas(HudUiMpExitDialog) unsigned char dialogStorage[sizeof(HudUiMpExitDialog)] = {};
     HudUiMpExitDialog *const dialog = reinterpret_cast<HudUiMpExitDialog *>(dialogStorage);
-    void *dialogTable[4] = {};
-    dialogTable[3] = MethodAddress(&MpExitUpdatePatchOps::Update);
+    void *dialogTable[1] = {};
+    dialogTable[0] = MethodAddress(&MpExitUpdatePatchOps::UpdateAll);
     *reinterpret_cast<void ***>(dialog) = dialogTable;
     HudUiMpExitDialog *const oldDialog = g_HudUiMpExitDialog;
     const float oldFrameDelta = g_FrameDeltaTimeSec;
@@ -2619,8 +2619,8 @@ extern "C" int zhud_element_copy_constructor_smoke(void) {
     HudUiElement *const copiedResult = copied.CopyConstructor(&source);
     copiedResult->GetTextRect(&copiedRect);
     const bool copiedCoords =
-        copiedResult->GetX() == source.x &&
-        copiedResult->GetY() == source.y;
+        copiedResult->GetCenterX() == source.x &&
+        copiedResult->GetCenterY() == source.y;
 
     HudUiElement assigned{};
     SetHudElementVptr(
@@ -3823,6 +3823,61 @@ extern "C" int zhud_background_constructor_smoke(void) {
     return constructed ? 0 : 1;
 }
 
+extern "C" int zhud_background_set_enabled_smoke(void) {
+    const unsigned int oldMask = g_HudUi_InvalidateMask;
+    const int oldSndInitialized = g_zSnd_IsInitialized;
+    const int oldSndPreInitialized = g_zSnd_PreInitialized;
+
+    g_HudUi_InvalidateMask = 0x80;
+    g_zSnd_IsInitialized = 0;
+    g_zSnd_PreInitialized = 0;
+    g_elementUpdateInvalidateCount = 0;
+
+    TestElementUpdateElement first{};
+    TestElementUpdateElement second{};
+    first.next = &second;
+    second.next = nullptr;
+
+    HudUiBackground background{};
+    background.childHead = &first;
+    background.childTail = &second;
+    background.enabled = 0;
+
+    zSndSample sample{};
+    background.backgroundSounds[0].sample = &sample;
+    background.backgroundSounds[0].volume = 0.5f;
+    background.backgroundSounds[1].playHandle =
+        reinterpret_cast<zSndPlayHandle *>(0x1234);
+
+    background.SetEnabled(1);
+    const bool enabled =
+        background.enabled == 1 &&
+        background.backgroundSounds[0].playHandle == nullptr &&
+        background.backgroundSounds[1].playHandle ==
+            reinterpret_cast<zSndPlayHandle *>(0x1234) &&
+        g_elementUpdateInvalidateCount == 2 &&
+        (first.flags & 0x80) != 0 &&
+        (second.flags & 0x80) != 0;
+
+    zSndPlayHandle handle{};
+    background.backgroundSounds[0].playHandle = &handle;
+    background.backgroundSounds[1].playHandle =
+        reinterpret_cast<zSndPlayHandle *>(0x5678);
+
+    background.SetEnabled(0);
+    const bool disabled =
+        background.enabled == 0 &&
+        background.backgroundSounds[0].playHandle == nullptr &&
+        background.backgroundSounds[1].playHandle == nullptr &&
+        g_elementUpdateInvalidateCount == 2;
+
+    g_HudUi_InvalidateMask = oldMask;
+    g_zSnd_IsInitialized = oldSndInitialized;
+    g_zSnd_PreInitialized = oldSndPreInitialized;
+
+    return enabled && disabled ? 0 : 1;
+}
+
 extern "C" int zhud_text_label_constructor_and_extents_smoke(void) {
     const unsigned int oldMask = g_HudUi_InvalidateMask;
     zImage_Font *const oldFont1 = g_zImage_FontTable[1];
@@ -4795,6 +4850,154 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
                : 1;
 }
 
+extern "C" int zhud_zrd_widget_load_from_zrd_smoke(void) {
+    const unsigned int oldMask = g_HudUi_InvalidateMask;
+    g_HudUi_InvalidateMask = 0x80;
+    g_zLoc_GetIdProc = nullptr;
+
+    HudUiBackground owner{};
+    owner.uiOriginX = 10;
+    owner.uiOriginY = 20;
+    owner.fontStyles[2].validMarker = 1;
+    owner.fontStyles[2].fontName = "Arial";
+    owner.fontStyles[2].fontSize = 10;
+    owner.fontStyles[2].textColor = 0x00112233;
+    owner.fontStyles[2].bkColor = 0x00040506;
+    owner.fontStyles[2].bkMode = 2;
+    owner.fontStyles[2].shadowEnabled = 1;
+    owner.fontStyles[2].fontWeight = FW_NORMAL;
+    owner.fontStyles[2].alignMode = 1;
+
+    zReader::Node positionItems[3] = {};
+    positionItems[0].value.i32 = 3;
+    positionItems[1].type = zReader::ZRDR_NODE_INT;
+    positionItems[1].value.i32 = 5;
+    positionItems[2].type = zReader::ZRDR_NODE_INT;
+    positionItems[2].value.i32 = 7;
+
+    zReader::Node labelItems[5] = {};
+    labelItems[0].value.i32 = 5;
+    labelItems[1].type = zReader::ZRDR_NODE_STRING;
+    labelItems[1].value.str = const_cast<char *>("HELLO");
+    labelItems[2].type = zReader::ZRDR_NODE_INT;
+    labelItems[2].value.i32 = 2;
+    labelItems[3].type = zReader::ZRDR_NODE_INT;
+    labelItems[3].value.i32 = 3;
+    labelItems[4].type = zReader::ZRDR_NODE_INT;
+    labelItems[4].value.i32 = 2;
+
+    zReader::Node rateItems[2] = {};
+    rateItems[0].value.i32 = 2;
+    rateItems[1].type = zReader::ZRDR_NODE_FLOAT;
+    rateItems[1].value.f32 = 0.5f;
+
+    zReader::Node colorItems[4] = {};
+    colorItems[0].value.i32 = 4;
+    colorItems[1].type = zReader::ZRDR_NODE_INT;
+    colorItems[1].value.i32 = 0x11;
+    colorItems[2].type = zReader::ZRDR_NODE_INT;
+    colorItems[2].value.i32 = 0x22;
+    colorItems[3].type = zReader::ZRDR_NODE_INT;
+    colorItems[3].value.i32 = 0x33;
+
+    zReader::Node flashItems[5] = {};
+    flashItems[0].value.i32 = 5;
+    flashItems[1].type = zReader::ZRDR_NODE_STRING;
+    flashItems[1].value.str = const_cast<char *>("RATE");
+    flashItems[2].type = zReader::ZRDR_NODE_ARRAY;
+    flashItems[2].value.nodes = rateItems;
+    flashItems[3].type = zReader::ZRDR_NODE_STRING;
+    flashItems[3].value.str = const_cast<char *>("COLOR");
+    flashItems[4].type = zReader::ZRDR_NODE_ARRAY;
+    flashItems[4].value.nodes = colorItems;
+
+    zReader::Node rootItems[7] = {};
+    rootItems[0].value.i32 = 7;
+    rootItems[1].type = zReader::ZRDR_NODE_STRING;
+    rootItems[1].value.str = const_cast<char *>("POSITION");
+    rootItems[2].type = zReader::ZRDR_NODE_ARRAY;
+    rootItems[2].value.nodes = positionItems;
+    rootItems[3].type = zReader::ZRDR_NODE_STRING;
+    rootItems[3].value.str = const_cast<char *>("LABEL");
+    rootItems[4].type = zReader::ZRDR_NODE_ARRAY;
+    rootItems[4].value.nodes = labelItems;
+    rootItems[5].type = zReader::ZRDR_NODE_STRING;
+    rootItems[5].value.str = const_cast<char *>("FLASH");
+    rootItems[6].type = zReader::ZRDR_NODE_ARRAY;
+    rootItems[6].value.nodes = flashItems;
+
+    zReader::Node root{};
+    root.type = zReader::ZRDR_NODE_ARRAY;
+    root.value.nodes = rootItems;
+
+    HudUiZrdWidget widget{};
+    widget.Constructor();
+    const int result = widget.LoadFromZrd(
+        &root,
+        &owner
+    );
+
+    HudUiTransitionTextPanel *const labelPanel =
+        widget.labelPanels.begin != nullptr
+            ? reinterpret_cast<HudUiTransitionTextPanel *>(widget.labelPanels.begin[0])
+            : nullptr;
+    HudUiPanel *const panel = labelPanel;
+    HudUiElement *const element = labelPanel;
+
+    unsigned int expectedCountdownBits = 0;
+    float expectedCountdown = 0.25f;
+    std::memcpy(
+        &expectedCountdownBits,
+        &expectedCountdown,
+        sizeof(expectedCountdownBits)
+    );
+    unsigned int actualCountdownBits = 0;
+    if (labelPanel != nullptr) {
+        std::memcpy(
+            &actualCountdownBits,
+            &labelPanel->flashCountdown,
+            sizeof(actualCountdownBits)
+        );
+    }
+
+    const bool loaded =
+        result == 1 &&
+        widget.owner == &owner &&
+        widget.originX == 15 &&
+        widget.originY == 27 &&
+        widget.x == 15 &&
+        widget.y == 27 &&
+        owner.childHead == reinterpret_cast<HudUiElement *>(&widget) &&
+        widget.labelPanels.end == widget.labelPanels.begin + 1 &&
+        labelPanel != nullptr &&
+        std::strcmp(panel->cachedText, "HELLO") == 0 &&
+        element->x == 17 &&
+        element->y == 30 &&
+        panel->alignMode == 1 &&
+        panel->textColor0 == 0x00112233 &&
+        panel->bkMode == 2 &&
+        panel->bkColor == 0x00040506 &&
+        labelPanel->flashEnabled == 1 &&
+        labelPanel->flashMode == 2 &&
+        labelPanel->flashAltColor0 == 0x00332211 &&
+        labelPanel->flashAltColor1 == 0x00332211 &&
+        actualCountdownBits == expectedCountdownBits;
+
+    if (panel != nullptr) {
+        DeleteObject(panel->hFont);
+        panel->hFont = nullptr;
+        ::operator delete(panel);
+    }
+    ::operator delete(widget.labelPanels.begin);
+    widget.labelPanels.begin = nullptr;
+    widget.labelPanels.end = nullptr;
+    widget.labelPanels.capacityEnd = nullptr;
+    owner.childHead = nullptr;
+    owner.childTail = nullptr;
+    g_HudUi_InvalidateMask = oldMask;
+    return loaded ? 0 : 1;
+}
+
 extern "C" int zhud_options_dialog_constructor_smoke(void) {
     CodeFunctionPatch loadPatch{};
     g_optionsDialogLoadCalls = 0;
@@ -5060,6 +5263,65 @@ extern "C" int zhud_scrolling_text_scalar_deleting_destructor_smoke(void) {
     failure |= ScrollingCreditsTextDestructorFailureBits(*text) << 1;
     ::operator delete(storage);
     return failure;
+}
+
+int g_scrollingTextUpdateDispatchCount = 0;
+float g_scrollingTextUpdateLastDelta = 0.0f;
+void *g_scrollingTextUpdateFirstSelf = nullptr;
+void *g_scrollingTextUpdateSecondSelf = nullptr;
+
+struct TestScrollingTextUpdatePanel : HudUiPanel {
+    void Update(float deltaSeconds) {
+        ++g_scrollingTextUpdateDispatchCount;
+        g_scrollingTextUpdateLastDelta = deltaSeconds;
+        if (g_scrollingTextUpdateDispatchCount == 1) {
+            g_scrollingTextUpdateFirstSelf = this;
+        } else if (g_scrollingTextUpdateDispatchCount == 2) {
+            g_scrollingTextUpdateSecondSelf = this;
+        }
+    }
+};
+
+extern "C" int zhud_scrolling_text_update_smoke(void) {
+    void *const storage = ::operator new(sizeof(HudUiZrdScrollingText));
+    std::memset(
+        storage,
+        0,
+        sizeof(HudUiZrdScrollingText)
+    );
+    HudUiZrdScrollingText *const text = new (storage) HudUiZrdScrollingText;
+    text->flags = 0x10u;
+
+    HudUiPanelSpan row{};
+    HudUiPanelLayoutEntry entries[2]{};
+    TestScrollingTextUpdatePanel *const firstPanel =
+        new (&entries[0].panel) TestScrollingTextUpdatePanel;
+    TestScrollingTextUpdatePanel *const secondPanel =
+        new (&entries[1].panel) TestScrollingTextUpdatePanel;
+    row.begin = entries;
+    row.end = entries + 2;
+    row.cap = row.end;
+    text->rows.begin = &row;
+    text->rows.end = &row + 1;
+    text->rows.cap = text->rows.end;
+
+    g_scrollingTextUpdateDispatchCount = 0;
+    g_scrollingTextUpdateLastDelta = 0.0f;
+    g_scrollingTextUpdateFirstSelf = nullptr;
+    g_scrollingTextUpdateSecondSelf = nullptr;
+
+    text->Update(0.25f);
+
+    const bool passed =
+        g_scrollingTextUpdateDispatchCount == 2 &&
+        ZhudFloatNear(
+            g_scrollingTextUpdateLastDelta,
+            0.25f
+        ) &&
+        g_scrollingTextUpdateFirstSelf == firstPanel &&
+        g_scrollingTextUpdateSecondSelf == secondPanel;
+    ::operator delete(storage);
+    return passed ? 0 : 1;
 }
 
 extern "C" int zhud_scrolling_text_on_activate_reset_owner_fade_smoke(void) {

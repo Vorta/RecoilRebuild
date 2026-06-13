@@ -816,10 +816,9 @@ HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner() {
  * Purpose: Create, enable, and retain the new-game panel for the overlay state.
  */
 int HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent() {
-    HudUiNewGamePanel *panel = new HudUiNewGamePanel;
-    m_panel = panel;
-    panel->SyncIntensityFromDifficulty();
-    panel->SetEnabled(1);
+    m_panel = new HudUiNewGamePanel;
+    m_panel->SyncIntensityFromDifficulty();
+    m_panel->SetEnabled(1);
     return 1;
 }
 
@@ -869,7 +868,7 @@ HudUiNewGamePanel::HudUiNewGamePanel()
  * Purpose: Refresh and activate the player-name input with raw keyboard capture.
  */
 void HudUiNewGamePanel_NameInput::OnActivate() {
-    HudUiNumericTextInput::AllocTextBuffer(21);
+    textInput.AllocTextBuffer(21);
     HudUiNumericTextInput::Update(zOpt_GetPlayerName());
     HudUiNumericTextInput::OnActivate();
     HudUiNumericTextInput::SetRawKeyboardCapture(1);
@@ -999,7 +998,9 @@ void HudUiOptionsPanelOverlayOwner::AtExitDestructor() {
  * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
  * Purpose: Initialize the options overlay owner with no active panel.
  */
-HudUiOptionsPanelOverlayOwner::HudUiOptionsPanelOverlayOwner() : m_panel(0) {}
+HudUiOptionsPanelOverlayOwner::HudUiOptionsPanelOverlayOwner() {
+    m_panel = 0;
+}
 
 /**
  * Reimplements 0x40d0e0: HudUiOptionsPanelOverlayOwner::~HudUiOptionsPanelOverlayOwner.
@@ -1026,14 +1027,8 @@ HudUiOptionsPanelOverlayOwner::~HudUiOptionsPanelOverlayOwner() {
  * Purpose: Create and enable the options dialog panel when the overlay owner becomes current.
  */
 int HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent() {
-    HudOptionsDialog *panel = (HudOptionsDialog *) ::operator new(sizeof(HudOptionsDialog));
-    if (panel != 0) {
-        panel = new (panel) HudOptionsDialog;
-    }
-
-    m_panel = panel;
-
-    panel->SetEnabled(1);
+    m_panel = new HudOptionsDialog;
+    m_panel->SetEnabled(1);
     return 1;
 }
 
@@ -1171,21 +1166,23 @@ HudUiBackground * HudUiBackgroundConfirmQuit::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x4070e0: HudUiCheatTextInputWidget::OnActivate
-// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
-void HudUiCheatTextInputWidget::OnActivate() {
+/**
+ * Reimplements 0x4070e0: HudUiCheatCodeTitleWidget::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: Queue the cheat-code state exit when the GO widget is activated.
+ */
+void HudUiCheatCodeTitleWidget::OnActivate() {
     g_RecoilApp.QueueExitCurrentState(0);
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x406d20: HudUiCheatCodeDialog::Constructor
-// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
-HudUiCheatCodeDialog * HudUiCheatCodeDialog::Constructor() {
-    new ((HudUiBackground *)this) HudUiBackground;
-
-    titleWidget.Constructor();
-
-    cheatInputWidget.BaseConstructor();
+/**
+ * Reimplements 0x406d20: HudUiCheatCodeDialog::HudUiCheatCodeDialog.
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: Construct the cheat-code dialog, configure the input widget, and bind the ZRD widgets.
+ */
+HudUiCheatCodeDialog::HudUiCheatCodeDialog()
+    : HudUiBackground() {
     cheatInputWidget.textInput.AllocTextBuffer(80);
     cheatInputWidget.Update("");
     cheatInputWidget.SetInputActive(1);
@@ -1210,20 +1207,24 @@ HudUiCheatCodeDialog * HudUiCheatCodeDialog::Constructor() {
         );
         HudUiBackground::FreeLoadedTreeRoots((int)dialogRoot);
     }
-
-    return this;
 }
 
-// Reimplements 0x406e30: HudUiCheatCodeDialog::Destructor
-// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+/**
+ * Reimplements 0x406e30: HudUiCheatCodeDialog::Destructor.
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: Destroy the cheat-code input and title widgets before background cleanup.
+ */
 void HudUiCheatCodeDialog::Destructor() {
     cheatInputWidget.Destructor();
     titleWidget.DestructorCore();
     this->HudUiBackground::~HudUiBackground();
 }
 
-// Reimplements 0x406e10: HudUiCheatCodeDialog::ScalarDeletingDestructor
-// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+/**
+ * Reimplements 0x406e10: HudUiCheatCodeDialog::ScalarDeletingDestructor.
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: Run cheat-code dialog cleanup and optionally free the object for VC5 scalar delete.
+ */
 HudUiBackground * HudUiCheatCodeDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -1290,14 +1291,9 @@ int RecoilStateCheatCode::OnTryBecomeCurrent() {
 
     zSndSampleSet_InitByName("DIALOG");
 
-    HudUiCheatCodeDialog *dialog =
-        (HudUiCheatCodeDialog *) ::operator new(sizeof(HudUiCheatCodeDialog));
-    if (dialog != 0) {
-        dialog = dialog->Constructor();
-    }
-    m_dialog = dialog;
+    m_dialog = new HudUiCheatCodeDialog;
 
-    dialog->SetEnabled(1);
+    m_dialog->SetEnabled(1);
     return 1;
 }
 

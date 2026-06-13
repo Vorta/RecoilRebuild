@@ -81,6 +81,7 @@ extern "C" int zsnd_sample_set_registry_lookup_destroy_smoke(void);
 extern "C" int zsnd_sample_destroy_owned_data_smoke(void);
 extern "C" int zsnd_sample_set_destroy_owned_data_smoke(void);
 extern "C" int zsnd_sample_set_get_sample_at_smoke(void);
+extern "C" int zsnd_find_sample_by_name_smoke(void);
 extern "C" int zsnd_sample_set_init_by_name_empty_smoke(void);
 extern "C" int zsnd_sample_set_init_loose_file_smoke(void);
 extern "C" int zsnd_sample_set_load_samples_from_index_archive_smoke(void);
@@ -128,6 +129,7 @@ extern "C" int znetwork_clear_player_record_list_smoke(void);
 extern "C" int znetwork_player_record_accessors_smoke(void);
 extern "C" int znetwork_apply_pkt01_player_color_assignments_smoke(void);
 extern "C" int znetwork_shutdown_session_runtime_smoke(void);
+extern "C" int zfmv_script_init_null_path_smoke(void);
 extern "C" int zfmv_script_reset_smoke(void);
 extern "C" int zfmv_script_cleanup_smoke(void);
 extern "C" int zfmv_script_append_action_smoke(void);
@@ -143,8 +145,14 @@ extern "C" int zfmv_action_fade_constructor_smoke(void);
 extern "C" int zfmv_action_play_avi_constructor_existing_file_smoke(void);
 extern "C" int zfmv_action_play_avi_constructor_drive_fallback_smoke(void);
 extern "C" int zfmv_playback_constructor_smoke(void);
+extern "C" int zfmv_playback_destructor_smoke(void);
+extern "C" int zfmv_playback_report_mci_error_smoke(void);
+extern "C" int zfmv_playback_open_and_play_smoke(void);
+extern "C" int zfmv_playback_stop_and_close_smoke(void);
+extern "C" int zfmv_playback_set_dest_rect_smoke(void);
 extern "C" int zfmv_action_play_mci_constructor_smoke(void);
 extern "C" int zfmv_action_blur_constructor_smoke(void);
+extern "C" int zfmv_action_blur_update_smoke(void);
 extern "C" int hud_ui_save_load_entry_is_newer_than_smoke(void);
 extern "C" int player_underwater_fx_pass3_ui_constructor_smoke(void);
 extern "C" int player_projectile_camera_fx_pass3_ui_constructor_smoke(void);
@@ -163,9 +171,14 @@ extern "C" int hud_ui_load_game_primary_action_button_on_activate_smoke(void);
 extern "C" int hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke(void);
 extern "C" int hud_ui_credits_quit_button_on_activate_smoke(void);
 extern "C" int hud_cheat_clear_nanite_panel_cheat_sentinel_smoke(void);
+extern "C" int hud_ui_cheat_code_title_widget_on_activate_smoke(void);
+extern "C" int hud_ui_cheat_code_dialog_constructor_smoke(void);
+extern "C" int hud_ui_cheat_code_dialog_destructor_smoke(void);
+extern "C" int hud_ui_cheat_code_dialog_scalar_deleting_destructor_smoke(void);
 extern "C" int hud_ui_new_game_panel_constructor_cluster_smoke(void);
 extern "C" int hud_ui_new_game_panel_overlay_owner_queue_enter_smoke(void);
 extern "C" int hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke(void);
+extern "C" int hud_ui_new_game_panel_overlay_owner_lifecycle_smoke(void);
 extern "C" int hud_ui_options_panel_overlay_owner_constructor_smoke(void);
 extern "C" int hud_ui_options_panel_overlay_owner_destructor_core_smoke(void);
 extern "C" int hud_ui_options_panel_overlay_owner_static_init_thunks_smoke(void);
@@ -179,6 +192,7 @@ extern "C" int recoil_app_mfc_ole_module_constructor_smoke(void);
 extern "C" int recoil_app_mfc_ole_module_destructor_smoke(void);
 extern "C" int recoil_app_constructor_destructor_smoke(void);
 extern "C" int recoil_app_fmv_state_destructor_smoke(void);
+extern "C" int recoil_app_scalar_deleting_destructor_smoke(void);
 extern "C" int recoil_app_mission_fmv_state_destructor_smoke(void);
 extern "C" int recoil_app_initialize_display_failure_smoke(void);
 extern "C" int recoil_app_start_engine_and_queue_startup_state_smoke(void);
@@ -229,6 +243,7 @@ extern "C" int zreader_free_loaded_tree_smoke(void);
 extern "C" int zreader_load_movers_from_zrd_smoke(void);
 extern "C" int zreader_resolve_and_open_file_smoke(void);
 extern "C" int briefing_runtime_constructor_smoke(void);
+extern "C" int briefing_runtime_destructor_smoke(void);
 extern "C" int briefing_locator_panel_constructor_smoke(void);
 extern "C" int briefing_locator_panel_blit_dirty_rect_smoke(void);
 extern "C" int briefing_locator_panel_update_smoke(void);
@@ -286,9 +301,11 @@ extern "C" int zhud_background_video_widget_constructor_smoke(void);
 extern "C" int zhud_background_video_widget_destructor_smoke(void);
 extern "C" int zhud_background_constructor_smoke(void);
 extern "C" int zhud_background_update_input_focus_smoke(void);
+extern "C" int zhud_background_set_enabled_smoke(void);
 extern "C" int zhud_text_label_constructor_and_extents_smoke(void);
 extern "C" int zhud_panel_constructor_default_smoke(void);
 extern "C" int zhud_panel_draw_smoke(void);
+extern "C" int zhud_panel_set_font_smoke(void);
 extern "C" int zhud_panel_set_text_fmt_smoke(void);
 extern "C" int zhud_panel_layout_entry_copy_construct_smoke(void);
 extern "C" int zhud_panel_layout_entry_copy_assign_smoke(void);
@@ -301,6 +318,7 @@ extern "C" int zhud_composite_panel_constructor_with_entry_count_smoke(void);
 extern "C" int zhud_composite_panel_destructor_smoke(void);
 extern "C" int zhud_composite_panel_update_smoke(void);
 extern "C" int zhud_transition_text_panel_update_smoke(void);
+extern "C" int zhud_transition_text_panel_flash_rate_smoke(void);
 extern "C" int zhud_composite_panel_layout_entries_smoke(void);
 extern "C" int zhud_composite_panel_set_text_fmt_smoke(void);
 extern "C" int zhud_composite_panel_set_font_smoke(void);
@@ -310,6 +328,7 @@ extern "C" int zhud_primitive_bind_target_set_segment_endpoints_smoke(void);
 extern "C" int zhud_container_child_list_smoke(void);
 extern "C" int zhud_zrd_widget_constructor_smoke(void);
 extern "C" int zhud_zrd_widget_helpers_smoke(void);
+extern "C" int zhud_zrd_widget_load_from_zrd_smoke(void);
 extern "C" int hud_ui_mp_exit_dialog_table_cluster_smoke(void);
 extern "C" int recoil_app_mp_exit_dialog_state_on_enter_smoke(void);
 extern "C" int recoil_app_mp_exit_dialog_state_on_deactivate_smoke(void);
@@ -323,6 +342,7 @@ extern "C" int zhud_credits_panel_destructor_smoke(void);
 extern "C" int zhud_credits_panel_scalar_deleting_destructor_smoke(void);
 extern "C" int zhud_scrolling_text_destructor_smoke(void);
 extern "C" int zhud_scrolling_text_scalar_deleting_destructor_smoke(void);
+extern "C" int zhud_scrolling_text_update_smoke(void);
 extern "C" int zhud_scrolling_text_on_activate_reset_owner_fade_smoke(void);
 extern "C" int zhud_scrolling_text_update_scroll_positions_smoke(void);
 extern "C" int zhud_credits_panel_update_fade_and_exit_smoke(void);
@@ -9016,6 +9036,7 @@ int main(int argc, char **argv) {
         {"zsnd_sample_set_destroy_owned_data_smoke",
          zsnd_sample_set_destroy_owned_data_smoke},
         {"zsnd_sample_set_get_sample_at_smoke", zsnd_sample_set_get_sample_at_smoke},
+        {"zsnd_find_sample_by_name_smoke", zsnd_find_sample_by_name_smoke},
         {"zsnd_sample_set_init_by_name_empty_smoke",
          zsnd_sample_set_init_by_name_empty_smoke},
         {"zsnd_sample_set_init_loose_file_smoke",
@@ -9084,6 +9105,7 @@ int main(int argc, char **argv) {
         {"znetwork_apply_pkt01_player_color_assignments_smoke",
          znetwork_apply_pkt01_player_color_assignments_smoke},
         {"znetwork_shutdown_session_runtime_smoke", znetwork_shutdown_session_runtime_smoke},
+        {"zfmv_script_init_null_path_smoke", zfmv_script_init_null_path_smoke},
         {"zfmv_script_reset_smoke", zfmv_script_reset_smoke},
         {"zfmv_script_cleanup_smoke", zfmv_script_cleanup_smoke},
         {"zfmv_script_append_action_smoke", zfmv_script_append_action_smoke},
@@ -9106,10 +9128,18 @@ int main(int argc, char **argv) {
         {"zfmv_action_play_avi_constructor_drive_fallback_smoke",
          zfmv_action_play_avi_constructor_drive_fallback_smoke},
         {"zfmv_playback_constructor_smoke", zfmv_playback_constructor_smoke},
+        {"zfmv_playback_destructor_smoke", zfmv_playback_destructor_smoke},
+        {"zfmv_playback_report_mci_error_smoke",
+         zfmv_playback_report_mci_error_smoke},
+        {"zfmv_playback_open_and_play_smoke", zfmv_playback_open_and_play_smoke},
+        {"zfmv_playback_stop_and_close_smoke", zfmv_playback_stop_and_close_smoke},
+        {"zfmv_playback_set_dest_rect_smoke", zfmv_playback_set_dest_rect_smoke},
         {"zfmv_action_play_mci_constructor_smoke",
          zfmv_action_play_mci_constructor_smoke},
         {"zfmv_action_blur_constructor_smoke",
          zfmv_action_blur_constructor_smoke},
+        {"zfmv_action_blur_update_smoke",
+         zfmv_action_blur_update_smoke},
         {"hud_ui_save_load_entry_is_newer_than_smoke",
          hud_ui_save_load_entry_is_newer_than_smoke},
         {"player_underwater_fx_pass3_ui_constructor_smoke",
@@ -9146,12 +9176,22 @@ int main(int argc, char **argv) {
          hud_ui_credits_quit_button_on_activate_smoke},
         {"hud_cheat_clear_nanite_panel_cheat_sentinel_smoke",
          hud_cheat_clear_nanite_panel_cheat_sentinel_smoke},
+        {"hud_ui_cheat_code_title_widget_on_activate_smoke",
+         hud_ui_cheat_code_title_widget_on_activate_smoke},
+        {"hud_ui_cheat_code_dialog_constructor_smoke",
+         hud_ui_cheat_code_dialog_constructor_smoke},
+        {"hud_ui_cheat_code_dialog_destructor_smoke",
+         hud_ui_cheat_code_dialog_destructor_smoke},
+        {"hud_ui_cheat_code_dialog_scalar_deleting_destructor_smoke",
+         hud_ui_cheat_code_dialog_scalar_deleting_destructor_smoke},
         {"hud_ui_new_game_panel_constructor_cluster_smoke",
          hud_ui_new_game_panel_constructor_cluster_smoke},
         {"hud_ui_new_game_panel_overlay_owner_queue_enter_smoke",
          hud_ui_new_game_panel_overlay_owner_queue_enter_smoke},
         {"hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke",
          hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke},
+        {"hud_ui_new_game_panel_overlay_owner_lifecycle_smoke",
+         hud_ui_new_game_panel_overlay_owner_lifecycle_smoke},
         {"hud_ui_options_panel_overlay_owner_constructor_smoke",
          hud_ui_options_panel_overlay_owner_constructor_smoke},
         {"hud_ui_options_panel_overlay_owner_destructor_core_smoke",
@@ -9178,6 +9218,8 @@ int main(int argc, char **argv) {
          recoil_app_constructor_destructor_smoke},
         {"recoil_app_fmv_state_destructor_smoke",
          recoil_app_fmv_state_destructor_smoke},
+        {"recoil_app_scalar_deleting_destructor_smoke",
+         recoil_app_scalar_deleting_destructor_smoke},
         {"recoil_app_mission_fmv_state_destructor_smoke",
          recoil_app_mission_fmv_state_destructor_smoke},
         {"recoil_app_initialize_display_failure_smoke",
@@ -9261,6 +9303,8 @@ int main(int argc, char **argv) {
         {"zreader_resolve_and_open_file_smoke", zreader_resolve_and_open_file_smoke},
         {"briefing_runtime_constructor_smoke",
          briefing_runtime_constructor_smoke},
+        {"briefing_runtime_destructor_smoke",
+         briefing_runtime_destructor_smoke},
         {"briefing_locator_panel_constructor_smoke",
          briefing_locator_panel_constructor_smoke},
         {"briefing_locator_panel_blit_dirty_rect_smoke",
@@ -9356,10 +9400,12 @@ int main(int argc, char **argv) {
         {"zhud_background_constructor_smoke", zhud_background_constructor_smoke},
         {"zhud_background_update_input_focus_smoke",
          zhud_background_update_input_focus_smoke},
+        {"zhud_background_set_enabled_smoke", zhud_background_set_enabled_smoke},
         {"zhud_text_label_constructor_and_extents_smoke",
          zhud_text_label_constructor_and_extents_smoke},
         {"zhud_panel_constructor_default_smoke", zhud_panel_constructor_default_smoke},
         {"zhud_panel_draw_smoke", zhud_panel_draw_smoke},
+        {"zhud_panel_set_font_smoke", zhud_panel_set_font_smoke},
         {"zhud_panel_set_text_fmt_smoke", zhud_panel_set_text_fmt_smoke},
         {"zhud_panel_layout_entry_copy_construct_smoke",
          zhud_panel_layout_entry_copy_construct_smoke},
@@ -9381,6 +9427,8 @@ int main(int argc, char **argv) {
         {"zhud_composite_panel_update_smoke", zhud_composite_panel_update_smoke},
         {"zhud_transition_text_panel_update_smoke",
          zhud_transition_text_panel_update_smoke},
+        {"zhud_transition_text_panel_flash_rate_smoke",
+         zhud_transition_text_panel_flash_rate_smoke},
         {"zhud_composite_panel_layout_entries_smoke",
          zhud_composite_panel_layout_entries_smoke},
         {"zhud_composite_panel_set_text_fmt_smoke",
@@ -9395,6 +9443,8 @@ int main(int argc, char **argv) {
         {"zhud_container_child_list_smoke", zhud_container_child_list_smoke},
         {"zhud_zrd_widget_constructor_smoke", zhud_zrd_widget_constructor_smoke},
         {"zhud_zrd_widget_helpers_smoke", zhud_zrd_widget_helpers_smoke},
+        {"zhud_zrd_widget_load_from_zrd_smoke",
+         zhud_zrd_widget_load_from_zrd_smoke},
         {"hud_ui_mp_exit_dialog_table_cluster_smoke",
          hud_ui_mp_exit_dialog_table_cluster_smoke},
         {"recoil_app_mp_exit_dialog_state_on_enter_smoke",
@@ -9417,6 +9467,7 @@ int main(int argc, char **argv) {
         {"zhud_scrolling_text_destructor_smoke", zhud_scrolling_text_destructor_smoke},
         {"zhud_scrolling_text_scalar_deleting_destructor_smoke",
          zhud_scrolling_text_scalar_deleting_destructor_smoke},
+        {"zhud_scrolling_text_update_smoke", zhud_scrolling_text_update_smoke},
         {"zhud_scrolling_text_on_activate_reset_owner_fade_smoke",
          zhud_scrolling_text_on_activate_reset_owner_fade_smoke},
         {"zhud_scrolling_text_update_scroll_positions_smoke",

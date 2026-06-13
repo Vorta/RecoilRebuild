@@ -53,21 +53,21 @@ Generated from `.agent/RECOIL_PLAN.md`.
 
 | Plan marker | Scope | ✅ | ☑️ | ❎ | ❌ | ❓ | Total |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Reconstructed | all entries | 2783 | 1135 | 0 | 0 | 0 | 3918 |
-| Source dependencies satisfied | authored entries | 3430 | 0 | 0 | 97 | 0 | 3527 |
-| Source owner | authored entries | 966 | 0 | 0 | 2561 | 0 | 3527 |
-| Data reimplemented | authored entries | 420 | 0 | 275 | 2832 | 0 | 3527 |
-| Reimplemented | authored entries | 3355 | 0 | 0 | 172 | 0 | 3527 |
-| Provider-boundary | provider entries | 390 | 1 | 0 | 0 | 0 | 391 |
+| Reconstructed | all entries | 2786 | 1133 | 0 | 0 | 0 | 3919 |
+| Source dependencies satisfied | authored entries | 3432 | 0 | 0 | 89 | 0 | 3521 |
+| Source owner | authored entries | 1057 | 0 | 0 | 2464 | 0 | 3521 |
+| Data reimplemented | authored entries | 483 | 0 | 330 | 2708 | 0 | 3521 |
+| Reimplemented | authored entries | 3357 | 0 | 0 | 164 | 0 | 3521 |
+| Provider-boundary | provider entries | 397 | 1 | 0 | 0 | 0 | 398 |
 
 | Reimplementation tier | Count | Percent of authored |
 | --- | ---: | ---: |
-| X | 172 | 4.9% |
+| X | 164 | 4.7% |
 | F | 3 | 0.1% |
-| C | 2720 | 77.1% |
-| B | 344 | 9.8% |
-| A | 2 | 0.1% |
-| S | 286 | 8.1% |
+| C | 2604 | 74.0% |
+| B | 351 | 10.0% |
+| A | 1 | 0.0% |
+| S | 398 | 11.3% |
 <!-- RECOIL_PROGRESS:END -->
 
 Reconstruction is ongoing. Some subsystems have source-level implementations

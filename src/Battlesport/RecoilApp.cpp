@@ -3163,13 +3163,9 @@ int RecoilApp_MissionFmvState::OnUpdateShouldQuit() {
     return 0;
 }
 
-/**
- * Reimplements 0x42df90: RecoilApp_IState::~RecoilApp_IState.
- * Purpose: Tear down the common app-state interface base.
- */
-inline RecoilApp_IState::~RecoilApp_IState() {
-}
-
+// Reimplements 0x42df90: RecoilApp_IState::~RecoilApp_IState is
+// header-visible in RecoilApp.h so VC5 can inline base vptr restoration into
+// derived app-state destructors outside this translation unit.
 void RecoilApp_IState::OnWndActivate(
     int
 ) {}

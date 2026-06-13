@@ -202,7 +202,11 @@ extern "C" int __fastcall zSndStreamRequest_MatchGroupPredicate(
     return ((zSndStreamRequest *)(payload))->group != group ? 1 : 0;
 }
 
-// Reimplements 0x4a44e0: zSndPendingList_MatchNamePredicate
+/**
+ * Reimplements 0x4a44e0: zSndPendingList_MatchNamePredicate.
+ * Original file: D:\Proj\GameZRecoil\zSound\zsnd_grp.cpp.
+ * Purpose: compare a pending sound group name with the requested sample name.
+ */
 extern "C" int __fastcall zSndPendingList_MatchNamePredicate(
     void *payload,
     void *sampleName
@@ -213,7 +217,11 @@ extern "C" int __fastcall zSndPendingList_MatchNamePredicate(
     ) != 0 ? 1 : 0;
 }
 
-// Reimplements 0x4a44c0: zSndPendingList_FindByName
+/**
+ * Reimplements 0x4a44c0: zSndPendingList_FindByName.
+ * Original file: D:\Proj\GameZRecoil\zSound\zsnd_grp.cpp.
+ * Purpose: search the pending stream group list for a group with the requested sample name.
+ */
 extern "C" zSndSample *__fastcall zSndPendingList_FindByName(
     const char *sampleName
 ) {

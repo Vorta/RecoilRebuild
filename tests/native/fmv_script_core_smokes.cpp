@@ -5,6 +5,8 @@
 
 #include <cstdlib>
 
+extern "C" HWND g_RecoilApp_hWndMain;
+
 namespace {
 
 int g_deletedCount;
@@ -60,6 +62,35 @@ TestFmvAction *NewLinkedAction(
 }
 
 } // namespace
+
+extern "C" int zfmv_script_init_null_path_smoke(void) {
+    g_RecoilApp_hWndMain = reinterpret_cast<HWND>(0x12345678);
+
+    zFMV_Script script = {};
+    script.m_fmvPath = reinterpret_cast<char *>(0x11111111);
+    script.m_hWnd = reinterpret_cast<HWND>(0x22222222);
+    script.m_abortOnKey = 0;
+    script.m_head = reinterpret_cast<zFMV_Action *>(0x33333333);
+    script.m_tail = reinterpret_cast<zFMV_Action *>(0x44444444);
+    script.m_cur = reinterpret_cast<zFMV_Action *>(0x55555555);
+
+    zFMV_Script *returned = script.Init(0, 0, 0);
+    if (returned != &script) {
+        return 1;
+    }
+
+    if (script.m_hWnd != reinterpret_cast<HWND>(0x12345678) || script.m_abortOnKey != 1 ||
+        script.m_fmvPath != 0 || script.m_head != 0 || script.m_tail != 0 || script.m_cur != 0) {
+        return 2;
+    }
+
+    returned = script.Init(
+        0,
+        0,
+        reinterpret_cast<HWND>(0x87654321)
+    );
+    return returned == &script && script.m_hWnd == reinterpret_cast<HWND>(0x87654321) ? 0 : 3;
+}
 
 extern "C" int zfmv_script_reset_smoke(void) {
     g_deletedCount = 0;

@@ -112,7 +112,16 @@ int Init() {
 }
 } // namespace zImg
 
-// Reimplements 0x46e290: zImage_TexDirEntryPartial::GetVariantImageAtIndex
+/**
+ * Reimplements 0x46e290: zImage_TexDirEntryPartial::GetVariantImageAtIndex.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Purpose: return the requested image from a texture-directory variant chain.
+ *
+ * Evidence: BN treats this as a zImage_TexDirEntry member leaf: null self
+ * returns g_zImage_DefaultImage, non-positive indexes return this->image,
+ * and positive indexes walk nextVariant at offset 0x20 until the index or
+ * chain tail is reached.
+ */
 zVidImagePartial *__fastcall zImage_TexDirEntryPartial::GetVariantImageAtIndex(
     int variantIndex
 ) {

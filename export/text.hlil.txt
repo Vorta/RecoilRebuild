@@ -5032,7 +5032,7 @@
 }
 
 // Source: D:\Proj\Battlesport\hud.cpp
-0x4070e0 void __thiscall HudUiCheatTextInputWidget::OnActivate(struct HudUiCheatTextInputWidget* self)
+0x4070e0 void __thiscall HudUiCheatCodeTitleWidget::OnActivate(struct HudUiCheatTextInputWidget* self)
 {
     RecoilApp::QueueExitCurrentState(&g_RecoilApp, 0)
     HudUiZrdWidget::OnActivate(self)
@@ -79823,8 +79823,8 @@
 }
 
 // Original file: GameZRecoil/zFMV/fmv_main.cpp
-// In-place initializer for zFMV_Playback; duplicates mediaPath, stores notifyHwnd, clears mciPutFlags, and returns self.
-0x462330 struct zFMV_Playback* __thiscall zFMV_Playback::Init(struct zFMV_Playback* self, char* mediaPath, void* notifyHwnd)
+// Constructor for zFMV_Playback; duplicates mediaPath, stores notifyHwnd, clears mciPutFlags, and returns self. Call site 0x463b95 is emitted by VC5 as new zFMV_Playback(mediaPath, hwnd) with constructor-new EH cleanup state.
+0x462330 struct zFMV_Playback* __thiscall zFMV_Playback::Constructor(struct zFMV_Playback* self, char* mediaPath, void* notifyHwnd)
 {
     self->mediaPathDup = _strdup(mediaPath)
     self->notifyHwnd = notifyHwnd
@@ -81879,7 +81879,7 @@
     if (playback == 0)
         eax_2 = nullptr
     else
-        eax_2 = zFMV_Playback::Init(playback, self->mediaPath, notifyHwnd)
+        eax_2 = zFMV_Playback::Constructor(playback, self->mediaPath, notifyHwnd)
 
     self->playback = eax_2
     var_4.b = 0
@@ -98416,8 +98416,8 @@
                 zMath::MatTransformPointBatchInPlace(gTransformedVerts, di->vertCount)
 
             int32_t vertIndex = 0
-            uint32_t edi_2
-            edi_2.w = di->entries->materialRef->packedColor
+            int32_t packedColor
+            packedColor.w = di->entries->materialRef->packedColor
 
             if (di->vertCount s> 0)
                 int32_t var_c = 0
@@ -98463,10 +98463,10 @@
 
                                     if ((((x87_r7_12 < temp19_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_12, temp19_1) ? 1 : 0) << 0xa | (x87_r7_12 == temp19_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
                                         if (zVideo_ActiveRendererPath_1 == ZVID_RENDERER_BACKEND_SOFTWARE)
-                                            zRndr_LensFlare::QueueProjectedSample(&var_3c, edi_2, nullptr)
+                                            zRndr_LensFlare::QueueProjectedSample(&var_3c, packedColor, nullptr)
                                         else
     // Indirect fastcall: ECX=&projectedPoint, EDX=packedColor16, stack pointCount=1; DD3D callee ignores pointCount.
-                                            g_zVideo_pfnDrawPointColor16(&var_3c, edi_2, 1)
+                                            g_zVideo_pfnDrawPointColor16(1)
 
                     int32_t vertIndex = &di_1->mode + 1
                     int32_t var_c_1 = gTransformedVerts_1 + 0xc
@@ -98521,11 +98521,11 @@
                     while (i_1 != 1)
                     di = di_1
                 else
-                    int32_t ecx_20 = vertCount_1 * 0xc
+                    int32_t ecx_19 = vertCount_1 * 0xc
                     int32_t esi_2
-                    int32_t edi_3
-                    edi_3, esi_2 = __builtin_memcpy(gTransformedVerts_4, verts_1, ecx_20 & 0xfffffffc)
-                    __builtin_memcpy(edi_3, esi_2, ecx_20 & 3)
+                    int32_t edi_2
+                    edi_2, esi_2 = __builtin_memcpy(gTransformedVerts_4, verts_1, ecx_19 & 0xfffffffc)
+                    __builtin_memcpy(edi_2, esi_2, ecx_19 & 3)
         else
             long double x87_r7_13 = di->blendScale
             gTransformedVerts_1 = x87_r7_13
@@ -98625,13 +98625,13 @@
                 int32_t eax_32 = *vertexIndices
                 vertexIndices = &vertexIndices[1]
                 int32_t eax_34 = gTransformedVerts_1 + eax_32 * 0xc
-                struct zClipVert* edi_7 = edx_24
+                struct zClipVert* edi_6 = edx_24
                 edx_24 = &edx_24[1]
                 i_2 = i_13
                 i_13 -= 1
-                edi_7->x = *eax_34
-                edi_7->y = *(eax_34 + 4)
-                edi_7->z = *(eax_34 + 8)
+                edi_6->x = *eax_34
+                edi_6->y = *(eax_34 + 4)
+                edi_6->z = *(eax_34 + 8)
             while (i_2 != 1)
             long double x87_r7_28 = g_Clip_PolyVertsScratch[2].x - g_Clip_PolyVertsScratch[1].x
             long double x87_r6_14 = g_Clip_PolyVertsScratch[2].y - g_Clip_PolyVertsScratch[1].y
@@ -98669,11 +98669,11 @@
                 struct zClipVert triClipVerts[0x3]
 
                 if ((outActiveLightState_1:1.b & 1) == 0)
-                    int32_t ecx_58
-                    ecx_58.w = materialRef->packedColor
+                    int32_t ecx_57
+                    ecx_57.w = materialRef->packedColor
                     int32_t esi_13 = 0
                     float outFade = 0f
-                    int32_t var_c_2 = ecx_58
+                    int32_t var_c_2 = ecx_57
 
                     if (outDepthFade != 0)
                         int32_t eax_78
@@ -98709,13 +98709,13 @@
                         struct zClipVert* eax_83 = &g_Clip_PolyVerts
                         long double x87_r7_80 = 0f
                         int32_t i_20 = i_23
-                        float* ecx_64 = &g_Clip_PolyVertsScratch[0x3f + i_23]
+                        float* ecx_63 = &g_Clip_PolyVertsScratch[0x3f + i_23]
                         int32_t i_3
 
                         do
-                            long double x87_r6_26 = eax_83->y * *ecx_64
-                            long double x87_r5_36 = ecx_64[1] * eax_83->x
-                            ecx_64 = eax_83
+                            long double x87_r6_26 = eax_83->y * *ecx_63
+                            long double x87_r5_36 = ecx_63[1] * eax_83->x
+                            ecx_63 = eax_83
                             eax_83 = &eax_83[1]
                             i_3 = i_20
                             i_20 -= 1
@@ -98821,15 +98821,15 @@
                         if (vertexCount_2 s> 0)
     // Attribute clear loop zeros g_Clip_PolyAttr0[i] and the adjacent g_Clip_PolyAttr1[i] array in one stride.
                             float* eax_38 = &g_Clip_PolyAttr0
-                            uint32_t ecx_33 = vertexCount_2
+                            uint32_t ecx_32 = vertexCount_2
                             uint32_t i_6
 
                             do
                                 eax_38[0x40] = 0
                                 *eax_38 = 0f
                                 eax_38 = &eax_38[1]
-                                i_6 = ecx_33
-                                ecx_33 -= 1
+                                i_6 = ecx_32
+                                ecx_32 -= 1
                             while (i_6 != 1)
 
                         int32_t outDepthFade_1 = outDepthFade
@@ -98864,12 +98864,12 @@
                             zRndr::CommitFogColorParamsIfChanged()
                             vertexCount_2 = var_8
 
-                    uint32_t ecx_40 = vertexCount_2 << 3
+                    uint32_t ecx_39 = vertexCount_2 << 3
                     materialRef.b = clipMask.b
                     int32_t esi_9
-                    int32_t edi_9
-                    edi_9, esi_9 = __builtin_memcpy(g_Clip_PolyUvs, entries_1->uvPairs, ecx_40 & 0xfffffffc)
-                    __builtin_memcpy(edi_9, esi_9, ecx_40 & 3)
+                    int32_t edi_8
+                    edi_8, esi_9 = __builtin_memcpy(g_Clip_PolyUvs, entries_1->uvPairs, ecx_39 & 0xfffffffc)
+                    __builtin_memcpy(edi_8, esi_9, ecx_39 & 3)
 
                     if (lightFlags == 0)
                         int32_t eax_65
@@ -98886,13 +98886,13 @@
                             struct zClipVert* eax_67 = &g_Clip_PolyVerts
                             long double x87_r7_60 = 0f
                             int32_t esi_11 = vertexCount
-                            float* ecx_51 = &g_Clip_PolyVertsScratch[0x3f + vertexCount]
+                            float* ecx_50 = &g_Clip_PolyVertsScratch[0x3f + vertexCount]
                             int32_t i_7
 
                             do
-                                long double x87_r6_23 = eax_67->y * *ecx_51
-                                long double x87_r5_34 = ecx_51[1] * eax_67->x
-                                ecx_51 = eax_67
+                                long double x87_r6_23 = eax_67->y * *ecx_50
+                                long double x87_r5_34 = ecx_50[1] * eax_67->x
+                                ecx_50 = eax_67
                                 eax_67 = &eax_67[1]
                                 i_7 = esi_11
                                 esi_11 -= 1
@@ -98942,14 +98942,14 @@
                                         if (vertexCount_1 s> 0)
     // Alt-clip remap loop walks zClipVert triplets as float x/y pairs; pointer arithmetic is the compiler's tight-loop form.
                                             float* eax_74 = &g_Clip_PolyVerts[0].y
-                                            int32_t ecx_54 = vertexCount_1
+                                            int32_t ecx_53 = vertexCount_1
                                             int32_t i_9
 
                                             do
                                                 long double x87_r7_72 = g_zClipAlt_RemapScaleX * eax_74[-1]
                                                 eax_74 = &eax_74[3]
-                                                i_9 = ecx_54
-                                                ecx_54 -= 1
+                                                i_9 = ecx_53
+                                                ecx_53 -= 1
                                                 eax_74[-4] = x87_r7_72 + g_zClipAlt_RemapBiasX
                                                 eax_74[-3] = g_zClipAlt_RemapScaleY * eax_74[-3] + g_zClipAlt_RemapBiasY
                                             while (i_9 != 1)
@@ -98974,13 +98974,13 @@
                             struct zClipVert* eax_50 = &g_Clip_PolyVerts
                             long double x87_r7_43 = 0f
                             int32_t i_19 = i_22
-                            float* ecx_46 = &g_Clip_PolyVertsScratch[0x3f + i_22]
+                            float* ecx_45 = &g_Clip_PolyVertsScratch[0x3f + i_22]
                             int32_t i_10
 
                             do
-                                long double x87_r6_20 = eax_50->y * *ecx_46
-                                long double x87_r5_32 = ecx_46[1] * eax_50->x
-                                ecx_46 = eax_50
+                                long double x87_r6_20 = eax_50->y * *ecx_45
+                                long double x87_r5_32 = ecx_45[1] * eax_50->x
+                                ecx_45 = eax_50
                                 eax_50 = &eax_50[1]
                                 i_10 = i_19
                                 i_19 -= 1
@@ -133943,7 +133943,7 @@
                     if (waveDataAlloc == 0)
                         waveData = nullptr
                     else
-                        waveData = zSndWaveData::ConstructorFromPath(waveDataAlloc, path, 1)
+                        waveData = zSndWaveData::zSndWaveData(waveDataAlloc, path, 1)
 
                     var_4.b = 0
 
@@ -134146,7 +134146,7 @@
                 int32_t var_4 = 0
 
                 if (waveDataAlloc != 0)
-                    waveData = zSndWaveData::ConstructorFromPath(waveDataAlloc, (edi_1 - 0xc)->replayFields.resourceName, 0)
+                    waveData = zSndWaveData::zSndWaveData(waveDataAlloc, (edi_1 - 0xc)->replayFields.resourceName, 0)
 
                 int32_t var_4_1 = 0xffffffff
     // Archive-backed load path: read the sample's wave data from the supplied zIndexArchive before zSndSample::InitFromWaveData.
@@ -136347,7 +136347,7 @@
     // Allocates zSndSample.
     struct zSndSample* result = calloc(1, 0xb8)
     struct zSndWaveData waveData
-    zSndWaveData::ConstructorFromPath(&waveData, &k_EmptyString, 0)
+    zSndWaveData::zSndWaveData(&waveData, &k_EmptyString, 0)
     waveData.fmt = audioFormat
     waveData.pcmData = audioBuffer
     waveData.pcmByteCount = bufferBytes
@@ -138238,7 +138238,7 @@
 }
 
 // Source: D:\Proj\GameZRecoil\zSound\zSound.cpp
-0x4a53f0 struct zSndWaveData* __thiscall zSndWaveData::ConstructorFromPath(struct zSndWaveData* self, char const* path, int32_t loadNow)
+0x4a53f0 struct zSndWaveData* __thiscall zSndWaveData::zSndWaveData(struct zSndWaveData* self, char const* path, int32_t loadNow)
 {
     self->nameOrPath = _strdup(path)
     __builtin_memset(&self->fileSize, 0, 0x1c)
@@ -152979,7 +152979,7 @@
     struct HudUiZrdDialog* owner_30 = arg3
     struct HudUiWidget_FTable* ftable = self->base.ftable
     self->owner = owner_30
-    ftable->SetVisible(self, 1)
+    ftable->SetVisible(1)
     HudUiContainer::AddChild(owner_30, self)
     self->originX = owner_30->originX
     self->originY = owner_30->originY
@@ -153006,19 +153006,19 @@
             originX += u32_15->x.i32
             originY_8 += u32_15->y.i32
 
-    self->base.ftable->SetPos(self, originX, originY_8)
+    self->base.ftable->SetPos(originX, originY_8)
     struct zVideo_BltSourceHead* clipSource = arg3->clipSource
 
     if (clipSource != 0)
-        struct HudUiRect* eax_10 = self->base.ftable->GetBoundsRectOrNull(self)
+        int32_t* eax_10 = self->base.ftable->GetBoundsRectOrNull()
 
         if (eax_10 != 0)
-            int32_t top = eax_10->top
-            int32_t left = eax_10->left
-            int32_t right = eax_10->right
-            int32_t top_1 = top
-            int32_t bottom = eax_10->bottom
-            self->base.ftable->SetClip(self, clipSource, &left)
+            int32_t edx_5 = eax_10[1]
+            int32_t bltSourceOrNull = *eax_10
+            int32_t var_14_1 = eax_10[2]
+            int32_t var_18_1 = edx_5
+            int32_t var_10_1 = eax_10[3]
+            self->base.ftable->SetClip(clipSource, &bltSourceOrNull)
 
     struct zReader_Node* parentNode = zReader::GetNamedNode(zrdSection, "ROLLOVER")
 
@@ -153067,23 +153067,20 @@
                     owner_29->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* owner_16 = owner_29
-                int32_t edx_14
-                edx_14.b = owner_29->base.elementFlags.b
+                int32_t edx_15
+                edx_15.b = owner_29->base.elementFlags.b
                 int32_t var_4_4 = 0xffffffff
-                owner_29->base.elementFlags = (edx_14 & 0x10) | 2
+                owner_29->base.elementFlags = (edx_15 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_1 = arg3->base.vptr
                 char* fmt_1 = zLoc::ResolveMessageKeyOrFallback(eax_17->list->items[0].payload)
                 vptr_1->SetTextFmt(arg3, fmt_1)
                 struct zReader_NodeArray_HudTextLabelSpec* u32_2 = eax_17->list
-                struct HudUiZrdDialog* ecx_42 = arg3
-                int32_t var_44_9 = u32_2->y.i32 + originY_1
-                int32_t var_48_5 = u32_2->x.i32 + originX_2
-                ecx_42->base.vptr->PrimaryAction(ecx_42)
+                arg3->base.vptr->PrimaryAction(u32_2->x.i32 + originX_2, u32_2->y.i32 + originY_1)
                 struct HudUiZrdDialog* owner_1 = self->owner
-                int32_t edx_19 = eax_17->list->__offset(0x24).d * 9
-                int32_t esi_10 = *(&owner_1->fontStyles + (edx_19 << 2))
+                int32_t edx_20 = eax_17->list->__offset(0x24).d * 9
+                int32_t esi_10 = *(&owner_1->fontStyles + (edx_20 << 2))
                 int32_t esi_11 = neg.d(esi_10)
-                struct HudFontStyle* esi_13 = sbb.d(esi_11, esi_11, esi_10 != 0) & (&owner_1->fontStyles + (edx_19 << 2))
+                struct HudFontStyle* esi_13 = sbb.d(esi_11, esi_11, esi_10 != 0) & (&owner_1->fontStyles + (edx_20 << 2))
 
                 if (esi_13 != 0)
                     struct HudUiZrdDialog* ecx_44 = arg3
@@ -153174,15 +153171,12 @@
                         char* fmt = zLoc::ResolveMessageKeyOrFallback(*((&eax_17->list->count)[var_30_1 * 2] + 0xc))
                         vptr->SetTextFmt(arg3, fmt)
                         struct zReader_NodeArray_HudTextLabelSpec* eax_25 = (&eax_17->list->count)[var_30_1 * 2]
-                        struct HudUiZrdDialog* ecx_28 = arg3
-                        int32_t var_44_5 = eax_25->y.i32 + originY_7
-                        int32_t var_48_3 = eax_25->x.i32 + originX_1
-                        ecx_28->base.vptr->PrimaryAction(ecx_28)
+                        arg3->base.vptr->PrimaryAction(eax_25->x.i32 + originX_1, eax_25->y.i32 + originY_7)
                         struct HudUiZrdDialog* owner = self->owner
-                        int32_t edx_12 = *((&eax_17->list->count)[var_30_1 * 2] + 0x24) * 9
-                        int32_t esi_4 = *(&owner->fontStyles + (edx_12 << 2))
+                        int32_t edx_13 = *((&eax_17->list->count)[var_30_1 * 2] + 0x24) * 9
+                        int32_t esi_4 = *(&owner->fontStyles + (edx_13 << 2))
                         int32_t esi_5 = neg.d(esi_4)
-                        struct HudFontStyle* esi_7 = sbb.d(esi_5, esi_5, esi_4 != 0) & (&owner->fontStyles + (edx_12 << 2))
+                        struct HudFontStyle* esi_7 = sbb.d(esi_5, esi_5, esi_4 != 0) & (&owner->fontStyles + (edx_13 << 2))
 
                         if (esi_7 != 0)
                             struct HudUiZrdDialog* ecx_30 = arg3
@@ -153320,23 +153314,20 @@
                     owner_33->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* owner_18 = owner_33
-                int32_t edx_34
-                edx_34.b = owner_33->base.elementFlags.b
+                int32_t edx_35
+                edx_35.b = owner_33->base.elementFlags.b
                 int32_t var_4_8 = 0xffffffff
-                owner_33->base.elementFlags = (edx_34 & 0x10) | 2
+                owner_33->base.elementFlags = (edx_35 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_3 = arg3->base.vptr
                 char* fmt_3 = zLoc::ResolveMessageKeyOrFallback(eax_63->list->items[0].payload)
                 vptr_3->SetTextFmt(arg3, fmt_3)
                 struct zReader_NodeArray_HudTextLabelSpec* list_04_1 = eax_63->list
-                struct HudUiZrdDialog* ecx_82 = arg3
-                int32_t var_44_18 = list_04_1->y.i32 + originY_3
-                int32_t var_48_10 = list_04_1->x.i32 + originX_4
-                ecx_82->base.vptr->PrimaryAction(ecx_82)
+                arg3->base.vptr->PrimaryAction(list_04_1->x.i32 + originX_4, list_04_1->y.i32 + originY_3)
                 struct HudUiZrdDialog* owner_3 = self->owner
-                int32_t edx_39 = eax_63->list->__offset(0x24).d * 9
-                int32_t esi_24 = *(&owner_3->fontStyles + (edx_39 << 2))
+                int32_t edx_40 = eax_63->list->__offset(0x24).d * 9
+                int32_t esi_24 = *(&owner_3->fontStyles + (edx_40 << 2))
                 int32_t esi_25 = neg.d(esi_24)
-                struct HudFontStyle* esi_27 = sbb.d(esi_25, esi_25, esi_24 != 0) & (&owner_3->fontStyles + (edx_39 << 2))
+                struct HudFontStyle* esi_27 = sbb.d(esi_25, esi_25, esi_24 != 0) & (&owner_3->fontStyles + (edx_40 << 2))
 
                 if (esi_27 != 0)
                     struct HudUiZrdDialog* ecx_84 = arg3
@@ -153416,23 +153407,20 @@
                             owner_31->base.flash.flashDirectionSign = 1
 
                         struct HudUiTransitionTextPanel* owner_17 = owner_31
-                        int32_t edx_25
-                        edx_25.b = owner_31->base.elementFlags.b
+                        int32_t edx_26
+                        edx_26.b = owner_31->base.elementFlags.b
                         int32_t var_4_6 = 0xffffffff
-                        owner_31->base.elementFlags = (edx_25 & 0x10) | 2
+                        owner_31->base.elementFlags = (edx_26 & 0x10) | 2
                         struct HudUiTransitionTextPanel_FTable* vptr_2 = arg3->base.vptr
                         char* fmt_2 = zLoc::ResolveMessageKeyOrFallback(*((&eax_63->list->count)[var_30_2 * 2] + 0xc))
                         vptr_2->SetTextFmt(arg3, fmt_2)
-                        struct HudUiZrdDialog* ecx_68 = arg3
                         struct zReader_NodeArray_HudTextLabelSpec* eax_70 = (&eax_63->list->count)[var_30_2 * 2]
-                        int32_t var_44_14 = eax_70->y.i32 + originY_2
-                        int32_t var_48_8 = eax_70->x.i32 + originX_3
-                        ecx_68->base.vptr->PrimaryAction(ecx_68)
+                        arg3->base.vptr->PrimaryAction(eax_70->x.i32 + originX_3, eax_70->y.i32 + originY_2)
                         struct HudUiZrdDialog* owner_2 = self->owner
-                        int32_t edx_32 = *((&eax_63->list->count)[var_30_2 * 2] + 0x24) * 9
-                        int32_t esi_18 = *(&owner_2->fontStyles + (edx_32 << 2))
+                        int32_t edx_33 = *((&eax_63->list->count)[var_30_2 * 2] + 0x24) * 9
+                        int32_t esi_18 = *(&owner_2->fontStyles + (edx_33 << 2))
                         int32_t esi_19 = neg.d(esi_18)
-                        struct HudFontStyle* esi_21 = sbb.d(esi_19, esi_19, esi_18 != 0) & (&owner_2->fontStyles + (edx_32 << 2))
+                        struct HudFontStyle* esi_21 = sbb.d(esi_19, esi_19, esi_18 != 0) & (&owner_2->fontStyles + (edx_33 << 2))
 
                         if (esi_21 != 0)
                             struct HudUiZrdDialog* ecx_70 = arg3
@@ -153570,23 +153558,20 @@
                     owner_39->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* owner_20 = owner_39
-                int32_t edx_54
-                edx_54.b = owner_39->base.elementFlags.b
+                int32_t edx_55
+                edx_55.b = owner_39->base.elementFlags.b
                 int32_t var_4_12 = 0xffffffff
-                owner_39->base.elementFlags = (edx_54 & 0x10) | 2
+                owner_39->base.elementFlags = (edx_55 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_5 = arg3->base.vptr
                 char* fmt_5 = zLoc::ResolveMessageKeyOrFallback(eax_110->list->items[0].payload)
                 vptr_5->SetTextFmt(arg3, fmt_5)
                 struct zReader_NodeArray_HudTextLabelSpec* u32_7 = eax_110->list
-                struct HudUiZrdDialog* ecx_122 = arg3
-                int32_t var_44_27 = u32_7->y.i32 + originY_5
-                int32_t var_48_15 = u32_7->x.i32 + originX_6
-                ecx_122->base.vptr->PrimaryAction(ecx_122)
+                arg3->base.vptr->PrimaryAction(u32_7->x.i32 + originX_6, u32_7->y.i32 + originY_5)
                 struct HudUiZrdDialog* owner_5 = self->owner
-                int32_t edx_59 = eax_110->list->__offset(0x24).d * 9
-                int32_t esi_38 = *(&owner_5->fontStyles + (edx_59 << 2))
+                int32_t edx_60 = eax_110->list->__offset(0x24).d * 9
+                int32_t esi_38 = *(&owner_5->fontStyles + (edx_60 << 2))
                 int32_t esi_39 = neg.d(esi_38)
-                struct HudFontStyle* esi_41 = sbb.d(esi_39, esi_39, esi_38 != 0) & (&owner_5->fontStyles + (edx_59 << 2))
+                struct HudFontStyle* esi_41 = sbb.d(esi_39, esi_39, esi_38 != 0) & (&owner_5->fontStyles + (edx_60 << 2))
 
                 if (esi_41 != 0)
                     struct HudUiZrdDialog* ecx_124 = arg3
@@ -153666,23 +153651,20 @@
                             owner_35->base.flash.flashDirectionSign = 1
 
                         struct HudUiTransitionTextPanel* owner_19 = owner_35
-                        int32_t edx_45
-                        edx_45.b = owner_35->base.elementFlags.b
+                        int32_t edx_46
+                        edx_46.b = owner_35->base.elementFlags.b
                         int32_t var_4_10 = 0xffffffff
-                        owner_35->base.elementFlags = (edx_45 & 0x10) | 2
+                        owner_35->base.elementFlags = (edx_46 & 0x10) | 2
                         struct HudUiTransitionTextPanel_FTable* vptr_4 = arg3->base.vptr
                         char* fmt_4 = zLoc::ResolveMessageKeyOrFallback(*((&eax_110->list->count)[var_30_3 * 2] + 0xc))
                         vptr_4->SetTextFmt(arg3, fmt_4)
-                        struct HudUiZrdDialog* ecx_108 = arg3
                         struct zReader_NodeArray_HudTextLabelSpec* eax_117 = (&eax_110->list->count)[var_30_3 * 2]
-                        int32_t var_44_23 = eax_117->y.i32 + originY_4
-                        int32_t var_48_13 = eax_117->x.i32 + originX_5
-                        ecx_108->base.vptr->PrimaryAction(ecx_108)
+                        arg3->base.vptr->PrimaryAction(eax_117->x.i32 + originX_5, eax_117->y.i32 + originY_4)
                         struct HudUiZrdDialog* owner_4 = self->owner
-                        int32_t edx_52 = *((&eax_110->list->count)[var_30_3 * 2] + 0x24) * 9
-                        int32_t esi_32 = *(&owner_4->fontStyles + (edx_52 << 2))
+                        int32_t edx_53 = *((&eax_110->list->count)[var_30_3 * 2] + 0x24) * 9
+                        int32_t esi_32 = *(&owner_4->fontStyles + (edx_53 << 2))
                         int32_t esi_33 = neg.d(esi_32)
-                        struct HudFontStyle* esi_35 = sbb.d(esi_33, esi_33, esi_32 != 0) & (&owner_4->fontStyles + (edx_52 << 2))
+                        struct HudFontStyle* esi_35 = sbb.d(esi_33, esi_33, esi_32 != 0) & (&owner_4->fontStyles + (edx_53 << 2))
 
                         if (esi_35 != 0)
                             struct HudUiZrdDialog* ecx_110 = arg3
@@ -153799,23 +153781,20 @@
                 owner_41->base.flash.flashDirectionSign = 1
 
             struct HudUiTransitionTextPanel* owner_22 = owner_41
-            int32_t edx_70
-            edx_70.b = owner_41->base.elementFlags.b
+            int32_t edx_71
+            edx_71.b = owner_41->base.elementFlags.b
             int32_t var_4_16 = 0xffffffff
-            owner_41->base.elementFlags = (edx_70 & 0x10) | 2
+            owner_41->base.elementFlags = (edx_71 & 0x10) | 2
             struct HudUiTransitionTextPanel_FTable* vptr_7 = arg3->base.vptr
             char* fmt_7 = zLoc::ResolveMessageKeyOrFallback(eax_142->list->items[0].payload)
             vptr_7->SetTextFmt(arg3, fmt_7)
             struct zReader_NodeArray_HudTextLabelSpec* u32_9 = eax_142->list
-            struct HudUiZrdDialog* ecx_161 = arg3
-            int32_t var_44_36 = u32_9->y.i32 + originY_6
-            int32_t var_48_20 = u32_9->x.i32 + originX_8
-            ecx_161->base.vptr->PrimaryAction(ecx_161)
+            arg3->base.vptr->PrimaryAction(u32_9->x.i32 + originX_8, u32_9->y.i32 + originY_6)
             struct HudUiZrdDialog* owner_7 = self->owner
-            int32_t edx_75 = eax_142->list->__offset(0x24).d * 9
-            int32_t esi_51 = *(&owner_7->fontStyles + (edx_75 << 2))
+            int32_t edx_76 = eax_142->list->__offset(0x24).d * 9
+            int32_t esi_51 = *(&owner_7->fontStyles + (edx_76 << 2))
             int32_t esi_52 = neg.d(esi_51)
-            struct HudFontStyle* esi_54 = sbb.d(esi_52, esi_52, esi_51 != 0) & (&owner_7->fontStyles + (edx_75 << 2))
+            struct HudFontStyle* esi_54 = sbb.d(esi_52, esi_52, esi_51 != 0) & (&owner_7->fontStyles + (edx_76 << 2))
 
             if (esi_54 != 0)
                 struct HudUiZrdDialog* ecx_163 = arg3
@@ -153885,10 +153864,10 @@
 
                     if (i != eax_192)
                         do
-                            struct HudUiFlashPanel* edx_90 = *(eax_192 - 4)
+                            struct HudUiFlashPanel* edx_91 = *(eax_192 - 4)
                             eax_192 -= 4
                             end_1 -= 4
-                            *end_1 = edx_90
+                            *end_1 = edx_91
                         while (eax_192 != i)
 
                     for (; i != &i[1]; i = &i[1])
@@ -154026,15 +154005,12 @@
                     char* fmt_6 = zLoc::ResolveMessageKeyOrFallback(*((&eax_142->list->count)[var_30_4 * 2] + 0xc))
                     vptr_6->SetTextFmt(arg3, fmt_6)
                     struct zReader_NodeArray_HudTextLabelSpec* eax_148 = (&eax_142->list->count)[var_30_4 * 2]
-                    struct HudUiZrdDialog* ecx_147 = arg3
-                    int32_t var_44_32 = eax_148->y.i32 + originY
-                    int32_t var_48_18 = eax_148->x.i32 + originX_7
-                    ecx_147->base.vptr->PrimaryAction(ecx_147)
+                    arg3->base.vptr->PrimaryAction(eax_148->x.i32 + originX_7, eax_148->y.i32 + originY)
                     struct HudUiZrdDialog* owner_6 = self->owner
-                    int32_t edx_68 = *((&eax_142->list->count)[var_30_4 * 2] + 0x24) * 9
-                    int32_t esi_45 = *(&owner_6->fontStyles + (edx_68 << 2))
+                    int32_t edx_69 = *((&eax_142->list->count)[var_30_4 * 2] + 0x24) * 9
+                    int32_t esi_45 = *(&owner_6->fontStyles + (edx_69 << 2))
                     int32_t esi_46 = neg.d(esi_45)
-                    struct HudFontStyle* esi_48 = sbb.d(esi_46, esi_46, esi_45 != 0) & (&owner_6->fontStyles + (edx_68 << 2))
+                    struct HudFontStyle* esi_48 = sbb.d(esi_46, esi_46, esi_45 != 0) & (&owner_6->fontStyles + (edx_69 << 2))
 
                     if (esi_48 != 0)
                         struct HudUiZrdDialog* ecx_149 = arg3

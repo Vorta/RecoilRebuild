@@ -380,6 +380,10 @@ HudUiBriefingRuntime * HudUiBriefingRuntime::Constructor(
  */
 void HudUiBriefingRuntime::Destructor() {
     SetEnabled(0);
+    for (int index = 5; index >= 0; --index) {
+        locatorPanels[index].~HudUiBriefingLocatorPanel();
+    }
+
     messagesPanel.entryVector.Clear();
 
     ((HudUiPanel *)(&messagesPanel))->~HudUiPanel();
@@ -495,10 +499,10 @@ void HudUiBriefingLocatorPanel::Update(
         return;
     }
 
-    clipRect.left = GetX() - radius;
-    clipRect.top = GetY() - radius;
-    clipRect.right = GetX() + radius + 1;
-    clipRect.bottom = GetY() + radius + 1;
+    clipRect.left = GetCenterX() - radius;
+    clipRect.top = GetCenterY() - radius;
+    clipRect.right = GetCenterX() + radius + 1;
+    clipRect.bottom = GetCenterY() + radius + 1;
 
     if (radius > 3) {
         float radiusStep = deltaSec * 20.0;

@@ -61,49 +61,6 @@ inline void RegistryAppend(
     ++g_zSnd_SampleSetRegistry.end;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-void UpdateSampleLoadedFlag(
-    zSndSample *sample,
-    int initResult
-) {
-    sample->replayFields.flags = (sample->replayFields.flags & ~0x08) | ((initResult & 1) << 3);
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
-void ClearSampleLoadedFlag(
-    zSndSample *sample
-) {
-    sample->replayFields.flags &= ~0x08;
-}
-
-/**
- * Original static helper observed in caller 0x4a0c40.
- *
- * Purpose: load one sample from a resolved WAV path and mirror initialization
- * success into the sample loaded flag.
- */
-void LoadSampleFromWavePath(
-    zSndSample *sample,
-    const char *path
-) {
-    zSndWaveData *waveData = new zSndWaveData(
-        path,
-        1
-    );
-
-    if (waveData != 0 && waveData->parsedOk != 0) {
-        UpdateSampleLoadedFlag(
-            sample,
-            sample->InitFromWaveData(waveData)
-        );
-    } else {
-        ClearSampleLoadedFlag(sample);
-    }
-
-    if (waveData != 0) {
-        delete waveData;
-    }
-}
 } // namespace
 
 // Reimplements 0x4a0810: zSnd_SetUseArchiveBanks
@@ -243,7 +200,11 @@ zSndSample * zSndSampleSet::GetSampleAt(
     return 0;
 }
 
-// Reimplements 0x4a0ec0: zSndSampleSet::FindSampleByName
+/**
+ * Reimplements 0x4a0ec0: zSndSampleSet::FindSampleByName.
+ * Original file: GameZRecoil/zSound/zSound.cpp.
+ * Purpose: find a loaded sample in this sample set by source sample id for the active backend.
+ */
 zSndSample * zSndSampleSet::FindSampleByName(
     const char *sampleName
 ) {
@@ -375,19 +336,36 @@ int zSndSampleSet::Init() {
     {
         for (int index = 0; index < sampleCount; ++index) {
             zSndSample *const sample = &samples[index];
-            if ((sample->replayFields.flags & 0x08) != 0) {
+            zSndSampleReplayFields *replayFields = &sample->replayFields;
+            if ((replayFields->flags & 0x08) != 0) {
                 continue;
             }
 
             const char *const path = zUtil_ZRDR_ResolvePathInSearchPathList(
                 g_zSnd_SearchPathList,
-                sample->replayFields.resourceName
+                replayFields->resourceName
             );
             if (path != 0) {
-                LoadSampleFromWavePath(
-                    sample,
-                    path
+                zSndWaveData *waveData = new zSndWaveData(
+                    path,
+                    1
                 );
+
+                if (waveData != 0 && waveData->parsedOk != 0) {
+                    int initResult = sample->InitFromWaveData(waveData);
+                    int flags = replayFields->flags;
+                    initResult &= 1;
+                    flags &= ~0x08;
+                    initResult <<= 3;
+                    flags |= initResult;
+                    replayFields->flags = flags;
+                } else {
+                    replayFields->flags &= ~0x08;
+                }
+
+                if (waveData != 0) {
+                    delete waveData;
+                }
             }
         }
     }
@@ -446,7 +424,11 @@ extern "C" void zSndSampleSetRegistry_DestroyAll() {
     g_zSnd_SampleSetRegistry.end = g_zSnd_SampleSetRegistry.begin;
 }
 
-// Reimplements 0x4a0990: zSnd::FindSampleByName
+/**
+ * Reimplements 0x4a0990: zSnd::FindSampleByName.
+ * Original file: GameZRecoil/zSound/zSound.cpp.
+ * Purpose: find a loaded sample by name across registered sample sets and pending stream groups.
+ */
 zSndSample *__fastcall zSnd::FindSampleByName(
     const char *sampleName
 ) {

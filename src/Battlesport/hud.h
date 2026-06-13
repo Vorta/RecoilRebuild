@@ -766,19 +766,19 @@ RECOIL_STATIC_ASSERT(
     ) == 0xb1d4
 );
 
-struct HudUiCheatCodeTitleWidget : HudUiZrdWidget {};
-RECOIL_STATIC_ASSERT(sizeof(HudUiCheatCodeTitleWidget) == 0x14c);
-
-struct HudUiCheatTextInputWidget : HudUiNumericTextInput {
+struct HudUiCheatCodeTitleWidget : HudUiZrdWidget {
     void OnActivate();
 };
+RECOIL_STATIC_ASSERT(sizeof(HudUiCheatCodeTitleWidget) == 0x14c);
+
+struct HudUiCheatTextInputWidget : HudUiNumericTextInput {};
 RECOIL_STATIC_ASSERT(sizeof(HudUiCheatTextInputWidget) == 0x374);
 
 struct HudUiCheatCodeDialog : HudUiBackground {
     HudUiCheatCodeTitleWidget titleWidget;
     HudUiCheatTextInputWidget cheatInputWidget;
 
-    HudUiCheatCodeDialog * Constructor();
+    HudUiCheatCodeDialog();
     void Destructor();
     HudUiBackground * ScalarDeletingDestructor(
         unsigned int flags

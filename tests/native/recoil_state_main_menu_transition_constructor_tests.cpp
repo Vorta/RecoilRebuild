@@ -282,6 +282,88 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke(v
     return ok ? 0 : 1;
 }
 
+extern "C" int hud_ui_new_game_panel_overlay_owner_lifecycle_smoke(void) {
+    zOptionEntryPartial *const oldPlayerNameOption = ZOPT_PLAYER_NAME;
+    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zOptionEntryPartial *const oldOptionListHead = g_zGame_Options_OptionListHead;
+    void *const oldRawCallback = g_zInput_KbdRawEventCallback;
+    void *const oldRawCallbackCtx = g_zInput_KbdRawEventCallbackCtx;
+    const int oldRendererType = g_zVideo_RendererType;
+    const int oldHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
+    unsigned short pixels[4] = {};
+    char vmodeName[] = "VMode";
+    zOptionEntryPartial vmodeOption = {};
+    vmodeOption.payloadOrBuffer = 5;
+    vmodeOption.name = vmodeName;
+    vmodeOption.next = 0;
+    char playerName[32] = "Ace";
+    zOptionEntryPartial playerNameOption = {};
+    playerNameOption.payloadOrBuffer = (int)(unsigned int)(playerName);
+    playerNameOption.dataSize = sizeof(playerName);
+    int difficulty = 1;
+    g_zGame_Options_OptionListHead = &vmodeOption;
+    ZOPT_PLAYER_NAME = &playerNameOption;
+    g_zOpt_GameDifficultyOption = &difficulty;
+    g_zInput_KbdRawEventCallback = 0;
+    g_zInput_KbdRawEventCallbackCtx = 0;
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestNewGamePanelVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestNewGamePanelVideoSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = zVideo_SurfaceStatePartial();
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(unsigned short) * 2;
+
+    g_HudUiNewGamePanelOverlayOwner.m_panel = (HudUiNewGamePanel *)0x22222222;
+    HudUiNewGamePanelOverlayOwner *const staticInitReturned =
+        HudUiNewGamePanelOverlayOwner::StaticInit();
+    const bool staticInitOk =
+        staticInitReturned == &g_HudUiNewGamePanelOverlayOwner &&
+        g_HudUiNewGamePanelOverlayOwner.m_panel == 0;
+
+    HudUiNewGamePanel *const atExitPanel =
+        (HudUiNewGamePanel *)(::operator new(sizeof(HudUiNewGamePanel)));
+    new (atExitPanel) HudUiNewGamePanel;
+    atExitPanel->SetEnabled(1);
+    g_HudUiNewGamePanelOverlayOwner.m_panel = atExitPanel;
+    HudUiNewGamePanelOverlayOwner::AtExitDestructor();
+    const bool atExitOk = g_HudUiNewGamePanelOverlayOwner.m_panel == 0;
+
+    HudUiNewGamePanel *const destructorPanel =
+        (HudUiNewGamePanel *)(::operator new(sizeof(HudUiNewGamePanel)));
+    new (destructorPanel) HudUiNewGamePanel;
+    destructorPanel->SetEnabled(1);
+    HudUiNewGamePanelOverlayOwner state;
+    state.m_panel = destructorPanel;
+    state.~HudUiNewGamePanelOverlayOwner();
+    const bool destructorOk = state.m_panel == 0;
+
+    HudUiNewGamePanelOverlayOwner::RegisterAtExit();
+
+    g_HudUiNewGamePanelOverlayOwner.m_panel = (HudUiNewGamePanel *)0x77777777;
+    HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit();
+    const bool staticInitRegisterOk = g_HudUiNewGamePanelOverlayOwner.m_panel == 0;
+
+    ZOPT_PLAYER_NAME = oldPlayerNameOption;
+    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zGame_Options_OptionListHead = oldOptionListHead;
+    g_zInput_KbdRawEventCallback = oldRawCallback;
+    g_zInput_KbdRawEventCallbackCtx = oldRawCallbackCtx;
+    g_zVideo_RendererType = oldRendererType;
+    g_zVideo_UseHalfResBackbuffer = oldHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+
+    return staticInitOk && atExitOk && destructorOk && staticInitRegisterOk ? 0 : 1;
+}
+
 extern "C" int recoil_state_cheat_code_constructor_smoke(void) {
     char storage[sizeof(RecoilStateCheatCode)];
     memset(storage, 0xcc, sizeof(storage));

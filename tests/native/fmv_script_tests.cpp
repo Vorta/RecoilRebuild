@@ -14,10 +14,6 @@
 #include <vfw.h>
 
 extern "C" HWND g_RecoilApp_hWndMain;
-extern "C" std::int32_t g_zFMV_ActionImage_BlitRectW;
-extern "C" std::int32_t g_zFMV_ActionImage_BlitRectH;
-extern "C" int g_zFMV_ActionImage_BlitRectX;
-extern "C" int g_zFMV_ActionImage_BlitRectY;
 
 namespace {
 struct CodeFunctionPatch {
@@ -1172,10 +1168,10 @@ extern "C" int zfmv_script_begin_now_smoke(void) {
 }
 
 extern "C" int zfmv_action_image_constructor_with_screen_rect_smoke(void) {
-    g_zFMV_ActionImage_BlitRectX = -1;
-    g_zFMV_ActionImage_BlitRectY = -1;
-    g_zFMV_ActionImage_BlitRectW = 640;
-    g_zFMV_ActionImage_BlitRectH = 480;
+    g_zFMV_ActionImage_BlitRect.left = -1;
+    g_zFMV_ActionImage_BlitRect.top = -1;
+    g_zFMV_ActionImage_BlitRect.right = 640;
+    g_zFMV_ActionImage_BlitRect.bottom = 480;
 
     zFMV_ActionImage action{};
     action.next = reinterpret_cast<zFMV_Action *>(0x11111111);
@@ -1187,8 +1183,8 @@ extern "C" int zfmv_action_image_constructor_with_screen_rect_smoke(void) {
         returned == &action && action.vftable == &g_zFMV_ActionImage_Vtable &&
         action.next == nullptr && action.image == nullptr && action.imagePath != nullptr &&
         std::strcmp(action.imagePath, "screen.raw") == 0 && action.doAdjustSurfaces == 7 &&
-        action.forcePrimaryPostprocess == 1 && g_zFMV_ActionImage_BlitRectX == 32 &&
-        g_zFMV_ActionImage_BlitRectY == 48 && action.blitRect.left == 32 &&
+        action.forcePrimaryPostprocess == 1 && g_zFMV_ActionImage_BlitRect.left == 32 &&
+        g_zFMV_ActionImage_BlitRect.top == 48 && action.blitRect.left == 32 &&
         action.blitRect.top == 48 && action.blitRect.right == 640 && action.blitRect.bottom == 480;
 
     std::free(action.imagePath);
@@ -2656,9 +2652,9 @@ extern "C" int zfmv_action_play_mci_constructor_smoke(void) {
 
     zFMV_ActionPlayMci *returned =
         new (&action) zFMV_ActionPlayMci(
+            reinterpret_cast<HWND>(0x2468ace0),
             "movies",
-            "intro.mci",
-            reinterpret_cast<HWND>(0x2468ace0)
+            "intro.mci"
         );
 
     const bool ok =

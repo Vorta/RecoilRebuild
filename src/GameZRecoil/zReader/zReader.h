@@ -192,7 +192,7 @@ zArchiveListNode *__fastcall zUtil_ZRDR_AllocNodeWithPayload(void *payload);
 int __fastcall zUtil_ZRDR_SetSearchPath(const char *pathText);
 int __fastcall zUtil_ZRDR_AppendSearchPath(const char *pathText);
 int __fastcall zUtil_ZRDR_FreePathList(zArchiveList *list);
-int __fastcall zUtil_ZRDR_FreeSearchPathList(zArchiveList *list);
+zArchiveList *__fastcall zUtil_ZRDR_FreeSearchPathList(zArchiveList *list);
 void zUtil_ZRDR_FreeScratchSearchPathList();
 int zUtil_ZRDR_ShutdownWildcardPath();
 int __fastcall zUtil_ZRDR_UnloadMountedArchives(int destroyCurrentToo);

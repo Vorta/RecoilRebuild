@@ -552,6 +552,85 @@ extern "C" int briefing_locator_panel_update_smoke(void) {
     return 0;
 }
 
+extern "C" int briefing_runtime_destructor_smoke(void) {
+    alignas(4) unsigned char storage[sizeof(HudUiBriefingRuntime)] = {};
+    HudUiBriefingRuntime *const runtime =
+        reinterpret_cast<HudUiBriefingRuntime *>(storage);
+
+    new ((HudUiBackground *)runtime) HudUiBackground;
+    new (&runtime->transportProgress) HudUiBriefingTransportProgress;
+    new (&runtime->missionName) HudUiPanel;
+    new (&runtime->objectiveSummary) HudUiPanel;
+    new (&runtime->objectiveDesc) HudUiPanel;
+    new (&runtime->objectivePicture) HudUiBriefingObjectivePicture;
+    new (&runtime->transmissionHalted) HudUiPanel;
+    runtime->messagesPanel.ConstructorWithEntryCount(2);
+
+    void *locatorInitialVptr[6] = {};
+    for (std::size_t index = 0; index < 6; ++index) {
+        new (&runtime->locatorPanels[index]) HudUiBriefingLocatorPanel;
+        locatorInitialVptr[index] =
+            *reinterpret_cast<void **>(&runtime->locatorPanels[index]);
+    }
+
+    BriefingActionNode *const sentinel =
+        static_cast<BriefingActionNode *>(::operator new(sizeof(BriefingActionNode)));
+    BriefingActionNode *const first =
+        static_cast<BriefingActionNode *>(::operator new(sizeof(BriefingActionNode)));
+    BriefingActionNode *const second =
+        static_cast<BriefingActionNode *>(::operator new(sizeof(BriefingActionNode)));
+    sentinel->prev = second;
+    sentinel->next = first;
+    sentinel->action = 0;
+    first->prev = sentinel;
+    first->next = second;
+    first->action = 0;
+    second->prev = first;
+    second->next = sentinel;
+    second->action = 0;
+    runtime->actionQueue.headSentinel = sentinel;
+    runtime->actionQueue.nodeCount = 2;
+
+    runtime->Destructor();
+
+    bool locatorsReset = true;
+    for (std::size_t index = 0; index < 6; ++index) {
+        locatorsReset =
+            locatorsReset &&
+            *reinterpret_cast<void **>(&runtime->locatorPanels[index]) !=
+                locatorInitialVptr[index] &&
+            *reinterpret_cast<void **>(&runtime->locatorPanels[index]) != 0;
+    }
+
+    const bool messageEntriesDestroyed =
+        runtime->messagesPanel.entryVector.begin == 0 &&
+        runtime->messagesPanel.entryVector.end == 0 &&
+        runtime->messagesPanel.entryVector.capacityEnd == 0;
+    const bool actionQueueReset =
+        runtime->actionQueue.headSentinel == 0 &&
+        runtime->actionQueue.nodeCount == 0;
+    const bool transportDestructed =
+        runtime->transportProgress.image == 0;
+    const bool baseDestructed = runtime->enabled == 0;
+
+    if (!locatorsReset) {
+        return 2;
+    }
+    if (!messageEntriesDestroyed) {
+        return 3;
+    }
+    if (!actionQueueReset) {
+        return 4;
+    }
+    if (!transportDestructed) {
+        return 5;
+    }
+    if (!baseDestructed) {
+        return 6;
+    }
+    return 0;
+}
+
 extern "C" int briefing_runtime_update_smoke(void) {
     alignas(4) static unsigned char storage[sizeof(HudUiBriefingRuntime)];
     HudUiBriefingRuntime *const runtime =

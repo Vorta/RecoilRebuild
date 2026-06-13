@@ -613,6 +613,46 @@ extern "C" int recoil_app_mission_fmv_state_destructor_smoke(void) {
     return missionCleared ? 0 : 2;
 }
 
+extern "C" int recoil_app_scalar_deleting_destructor_smoke(void) {
+    void *const stateStorage = ::operator new(sizeof(RecoilApp_IState));
+    RecoilApp_IState *const state = new (stateStorage) RecoilApp_IState;
+    RecoilApp_IState baseProbe;
+    SaveLoadTestAppState derivedProbe;
+    InstallSaveLoadStateVptr(
+        *state,
+        derivedProbe
+    );
+
+    state->~RecoilApp_IState();
+    const bool baseVptrRestored =
+        *reinterpret_cast<void **>(state) ==
+        *reinterpret_cast<void **>(&baseProbe);
+    ::operator delete(stateStorage);
+    if (!baseVptrRestored) {
+        return 1;
+    }
+
+    RecoilApp_IState *const deletingState = new RecoilApp_IState;
+    delete deletingState;
+
+    RecoilApp *const deletingApp = new RecoilApp;
+    delete deletingApp;
+
+    RecoilApp_AttractFmvState *const deletingAttract =
+        new RecoilApp_AttractFmvState;
+    delete deletingAttract;
+
+    RecoilApp_IntroFmvState *const deletingIntro =
+        new RecoilApp_IntroFmvState;
+    delete deletingIntro;
+
+    RecoilApp_MissionFmvState *const deletingMission =
+        new RecoilApp_MissionFmvState;
+    delete deletingMission;
+
+    return 0;
+}
+
 extern "C" int recoil_app_initialize_display_failure_smoke(void) {
     static std::int32_t modeIndex = 3;
     static std::int32_t fullscreen = 1;

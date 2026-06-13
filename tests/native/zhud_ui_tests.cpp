@@ -950,13 +950,13 @@ void *g_shieldApplyUpdateBoundsThis = nullptr;
 int g_shieldApplyInvalidateCount = 0;
 
 struct TestShieldApplyLayoutOps {
-    int GetX() {
+    int GetCenterX() {
         ++g_shieldApplyGetXCount;
         return this == g_shieldApplyWidgetThis ? g_shieldApplyWidgetCenterX
                                                : g_shieldApplyPanelX;
     }
 
-    int GetY() {
+    int GetCenterY() {
         ++g_shieldApplyGetYCount;
         return this == g_shieldApplyWidgetThis ? g_shieldApplyWidgetCenterY
                                                : g_shieldApplyPanelY;
@@ -1371,11 +1371,11 @@ struct TestCompositePanelDispatch {
         g_compositeScrollHistoryThis = this;
     }
 
-    int GetX() {
+    int GetCenterX() {
         return 123;
     }
 
-    int GetY() {
+    int GetCenterY() {
         return 456;
     }
 
@@ -6201,7 +6201,7 @@ extern "C" int zhud_element_copy_constructor_smoke(void) {
     HudUiRect copiedRect{-1, -1, -1, -1};
     HudUiElement *const copiedResult = copied.CopyConstructor(&source);
     copiedResult->GetTextRect(&copiedRect);
-    const bool copiedCoords = copiedResult->GetX() == source.x && copiedResult->GetY() == source.y;
+    const bool copiedCoords = copiedResult->GetCenterX() == source.x && copiedResult->GetCenterY() == source.y;
 
     HudUiElement assigned{};
     assigned.ftable = &g_HudUiCircle_FTable;
@@ -7583,8 +7583,8 @@ extern "C" int zhud_composite_panel_set_font_smoke(void) {
 
     HudUiCompositePanel_FTable compositeTable{};
     compositeTable.slots[3] = MethodAddress(&TestCompositePanelDispatch::SetPos);
-    compositeTable.slots[25] = MethodAddress(&TestCompositePanelDispatch::GetX);
-    compositeTable.slots[26] = MethodAddress(&TestCompositePanelDispatch::GetY);
+    compositeTable.slots[25] = MethodAddress(&TestCompositePanelDispatch::GetCenterX);
+    compositeTable.slots[26] = MethodAddress(&TestCompositePanelDispatch::GetCenterY);
 
     g_compositeEntrySetFontCount = 0;
     std::memset(g_compositeEntrySetFontThis, 0, sizeof(g_compositeEntrySetFontThis));
@@ -8202,14 +8202,14 @@ extern "C" int zhud_element_get_xy_smoke(void) {
     HudUiElement element{};
     element.Constructor(-12, 345);
 
-    const bool initial = element.GetX() == -12 && element.GetY() == 345;
+    const bool initial = element.GetCenterX() == -12 && element.GetCenterY() == 345;
     element.SetPos(78, -90);
     HudUiRect rect = {};
     element.GetTextRect(&rect);
     const bool rectMatches = rect.left == 78 && rect.right == 78 && rect.top == -90 &&
                              rect.bottom == -90;
 
-    return initial && element.GetX() == 78 && element.GetY() == -90 && rectMatches ? 0 : 1;
+    return initial && element.GetCenterX() == 78 && element.GetCenterY() == -90 && rectMatches ? 0 : 1;
 }
 
 extern "C" int zhud_element_scalar_deleting_destructor_smoke(void) {
@@ -14127,12 +14127,12 @@ void *g_backgroundVideoRebuildSetClipThis = nullptr;
 HudUiRect g_backgroundVideoRebuildSetClipRect = {};
 
 struct TestBackgroundVideoRebuildDispatch {
-    int GetX() {
+    int GetCenterX() {
         ++g_backgroundVideoRebuildGetXCount;
         return g_backgroundVideoRebuildGetXValue;
     }
 
-    int GetY() {
+    int GetCenterY() {
         ++g_backgroundVideoRebuildGetYCount;
         return g_backgroundVideoRebuildGetYValue;
     }
@@ -14157,8 +14157,8 @@ void ResetBackgroundVideoRebuildProbe(int x, int y) {
 extern "C" int zhud_background_video_widget_rebuild_blt_rect_smoke(void) {
     HudUiBackgroundVideoWidget_FTable table = {};
     table.slots[7] = MethodAddress(&TestBackgroundVideoRebuildDispatch::SetClipRect);
-    table.slots[25] = MethodAddress(&TestBackgroundVideoRebuildDispatch::GetX);
-    table.slots[26] = MethodAddress(&TestBackgroundVideoRebuildDispatch::GetY);
+    table.slots[25] = MethodAddress(&TestBackgroundVideoRebuildDispatch::GetCenterX);
+    table.slots[26] = MethodAddress(&TestBackgroundVideoRebuildDispatch::GetCenterY);
 
     zVidImagePartial source{};
     source.width = 25;
@@ -14547,20 +14547,20 @@ extern "C" int hud_ui_cheat_code_dialog_constructor_smoke(void) {
     g_zVideo_PrimarySurfaceState.height = 2;
     g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
 
-    HudUiCheatCodeDialog dialog{};
-    HudUiCheatCodeDialog *const result = dialog.Constructor();
+    void *const storage = ::operator new(sizeof(HudUiCheatCodeDialog));
+    HudUiCheatCodeDialog *const dialog = new (storage) HudUiCheatCodeDialog;
+    HudUiCheatCodeDialog *const result = dialog;
     const bool constructed =
-        result == &dialog &&
-        dialog.titleWidget.base.ftable ==
-            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCheatCodeTitleWidget_FTable) &&
-        dialog.cheatInputWidget.base.base.ftable ==
-            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCheatCodeInputWidget_FTable) &&
-        dialog.cheatInputWidget.textInput.capacity == 80 &&
-        dialog.cheatInputWidget.textInput.buffer != nullptr &&
-        std::strcmp(dialog.cheatInputWidget.textInput.buffer, "") == 0 &&
-        dialog.primaryClipImage != nullptr && dialog.cfgRoot == nullptr;
+        result == dialog &&
+        dialog->cheatInputWidget.textInput.capacity == 80 &&
+        dialog->cheatInputWidget.textInput.buffer != nullptr &&
+        std::strcmp(dialog->cheatInputWidget.textInput.buffer, "") == 0 &&
+        dialog->cheatInputWidget.sliderBorder.inputActive == 1 &&
+        dialog->cheatInputWidget.sliderBorder.sliderVisibleWhenInputActive == 1 &&
+        dialog->primaryClipImage != nullptr && dialog->cfgRoot == nullptr;
 
-    dialog.Destructor();
+    dialog->Destructor();
+    ::operator delete(storage);
 
     g_zGame_Options_OptionListHead = savedOptionsHead;
     g_zVideo_RendererType = savedRendererType;
@@ -14597,18 +14597,19 @@ extern "C" int hud_ui_cheat_code_dialog_destructor_smoke(void) {
     g_zVideo_PrimarySurfaceState.height = 2;
     g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
 
-    HudUiCheatCodeDialog dialog{};
-    dialog.Constructor();
-    dialog.Destructor();
+    void *const storage = ::operator new(sizeof(HudUiCheatCodeDialog));
+    HudUiCheatCodeDialog *const dialog = new (storage) HudUiCheatCodeDialog;
+    dialog->Destructor();
 
     const bool destructed =
-        dialog.base.base.vptr == &g_HudUiContainer_FTable &&
-        dialog.titleWidget.base.ftable ==
+        dialog->base.base.vptr == &g_HudUiContainer_FTable &&
+        dialog->titleWidget.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
-        dialog.cheatInputWidget.base.base.ftable ==
+        dialog->cheatInputWidget.base.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
-        dialog.cheatInputWidget.textInput.ftable == &g_HudUiTextInput_FTable &&
-        dialog.primaryClipImage == nullptr && dialog.capturedCompositeImage == nullptr;
+        dialog->cheatInputWidget.textInput.ftable == &g_HudUiTextInput_FTable &&
+        dialog->primaryClipImage == nullptr && dialog->capturedCompositeImage == nullptr;
+    ::operator delete(storage);
 
     g_zGame_Options_OptionListHead = savedOptionsHead;
     g_zVideo_RendererType = savedRendererType;
@@ -14646,8 +14647,7 @@ extern "C" int hud_ui_cheat_code_dialog_scalar_deleting_destructor_smoke(void) {
     g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
 
     void *const storage = ::operator new(sizeof(HudUiCheatCodeDialog));
-    HudUiCheatCodeDialog *const dialog = static_cast<HudUiCheatCodeDialog *>(storage);
-    dialog->Constructor();
+    HudUiCheatCodeDialog *const dialog = new (storage) HudUiCheatCodeDialog;
     HudUiCheatCodeDialog *const returned = dialog->ScalarDeletingDestructor(0);
     const bool ok = returned == dialog && dialog->base.base.vptr == &g_HudUiContainer_FTable &&
                     dialog->primaryClipImage == nullptr &&
@@ -15650,8 +15650,8 @@ extern "C" int zhud_message_rebuild_weapon_layout_smoke(void) {
     const HudUiWidget_FTable *const oldLayoutWidget2FTable = layoutWidget2->ftable;
 
     HudUiWidget_FTable layoutWidgetTable{};
-    layoutWidgetTable.slots[0x64 / 4] = MethodAddress(&TestShieldApplyLayoutOps::GetX);
-    layoutWidgetTable.slots[0x68 / 4] = MethodAddress(&TestShieldApplyLayoutOps::GetY);
+    layoutWidgetTable.slots[0x64 / 4] = MethodAddress(&TestShieldApplyLayoutOps::GetCenterX);
+    layoutWidgetTable.slots[0x68 / 4] = MethodAddress(&TestShieldApplyLayoutOps::GetCenterY);
 
     HudUiWidget_FTable messageWidgetTable{};
     messageWidgetTable.slots[0x0c / 4] = MethodAddress(&TestApplyTextLabelPanel::SetPos);
@@ -15813,8 +15813,8 @@ extern "C" int zhud_message_load_weapon_layout_from_node_smoke(void) {
     g_zVid_TexturePackCount = 1;
 
     HudUiWidget_FTable layoutWidgetTable{};
-    layoutWidgetTable.slots[0x64 / 4] = MethodAddress(&TestShieldApplyLayoutOps::GetX);
-    layoutWidgetTable.slots[0x68 / 4] = MethodAddress(&TestShieldApplyLayoutOps::GetY);
+    layoutWidgetTable.slots[0x64 / 4] = MethodAddress(&TestShieldApplyLayoutOps::GetCenterX);
+    layoutWidgetTable.slots[0x68 / 4] = MethodAddress(&TestShieldApplyLayoutOps::GetCenterY);
     HudUiWidget_FTable messageWidgetTable{};
     messageWidgetTable.slots[0x0c / 4] = MethodAddress(&TestApplyTextLabelPanel::SetPos);
     messageWidgetTable.slots[0x18 / 4] = MethodAddress(&TestShieldApplyLayoutOps::SetClip);
@@ -16048,15 +16048,15 @@ extern "C" int zhud_shield_message_widget_apply_layout_smoke(void) {
     const int oldHudOriginY = g_HudUiMgrHudOriginY;
 
     HudUiWidget_FTable widgetTable{};
-    widgetTable.slots[0x64 / 4] = MethodAddress(&TestShieldApplyLayoutOps::GetX);
-    widgetTable.slots[0x68 / 4] = MethodAddress(&TestShieldApplyLayoutOps::GetY);
+    widgetTable.slots[0x64 / 4] = MethodAddress(&TestShieldApplyLayoutOps::GetCenterX);
+    widgetTable.slots[0x68 / 4] = MethodAddress(&TestShieldApplyLayoutOps::GetCenterY);
     widgetTable.slots[8] = MethodAddress(&TestShieldApplyLayoutOps::Invalidate);
 
     HudUiPanel_FTable panelTable{};
     panelTable.slots[0x0c / 4] = MethodAddress(&TestApplyTextLabelPanel::SetPos);
     panelTable.slots[0x18 / 4] = MethodAddress(&TestShieldApplyLayoutOps::SetClip);
-    panelTable.slots[0x64 / 4] = MethodAddress(&TestShieldApplyLayoutOps::GetX);
-    panelTable.slots[0x68 / 4] = MethodAddress(&TestShieldApplyLayoutOps::GetY);
+    panelTable.slots[0x64 / 4] = MethodAddress(&TestShieldApplyLayoutOps::GetCenterX);
+    panelTable.slots[0x68 / 4] = MethodAddress(&TestShieldApplyLayoutOps::GetCenterY);
     panelTable.slots[0x74 / 4] = reinterpret_cast<std::uintptr_t>(&TestApplyTextLabelSetTextFmt);
     panelTable.slots[0x78 / 4] =
         MethodAddress(&TestShieldApplyLayoutOps::UpdateTextBoundsFromContent);
@@ -19054,8 +19054,8 @@ extern "C" int zhud_panel_ftable_global_smoke(void) {
         table.field_58 == reportOld &&
         table.field_5c == MethodAddress(&HudUiElement::HitTestTrue) &&
         table.SetVisible == MethodAddress(&HudUiElement::SetVisible) &&
-        table.GetX == MethodAddress(&HudUiElement::GetX) &&
-        table.GetY == MethodAddress(&HudUiElement::GetY) &&
+        table.GetX == MethodAddress(&HudUiElement::GetCenterX) &&
+        table.GetY == MethodAddress(&HudUiElement::GetCenterY) &&
         table.EnableWordWrapWithRect == MethodAddress(&HudUiPanel::EnableWordWrapWithRect) &&
         table.GetTextRect == MethodAddress(&HudUiPanel::GetTextRect) &&
         table.SetTextFmt == MethodAddress(&HudUiPanel::SetTextFmt) &&

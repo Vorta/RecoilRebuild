@@ -198,6 +198,102 @@ extern "C" int zhud_transition_text_panel_update_smoke(void) {
     return failure;
 }
 
+extern "C" int zhud_transition_text_panel_flash_rate_smoke(void) {
+    HudUiTransitionTextPanel resetPanel;
+    resetPanel.flashEnabled = 0;
+    resetPanel.flashResetValue = 0.25f;
+    resetPanel.flashCountdown = 0.125f;
+    resetPanel.flashDirectionSign = -1;
+    resetPanel.ResetFlashState(6.0f);
+
+    float expectedHalfRate = 3.0f;
+    unsigned int expectedHalfRateBits = 0;
+    unsigned int actualCountdownBits = 0;
+    std::memcpy(
+        &expectedHalfRateBits,
+        &expectedHalfRate,
+        sizeof(expectedHalfRateBits)
+    );
+    std::memcpy(
+        &actualCountdownBits,
+        &resetPanel.flashCountdown,
+        sizeof(actualCountdownBits)
+    );
+    const bool resetState =
+        resetPanel.flashEnabled == 1 &&
+        resetPanel.flashResetValue == 3.0f &&
+        actualCountdownBits == expectedHalfRateBits &&
+        resetPanel.flashDirectionSign == 1;
+
+    HudUiTransitionTextPanel ratePanel;
+    ratePanel.flashMode = 0;
+    ratePanel.SetFlashRate(4.0f);
+    expectedHalfRate = 2.0f;
+    std::memcpy(
+        &expectedHalfRateBits,
+        &expectedHalfRate,
+        sizeof(expectedHalfRateBits)
+    );
+    std::memcpy(
+        &actualCountdownBits,
+        &ratePanel.flashCountdown,
+        sizeof(actualCountdownBits)
+    );
+    const bool rateSet =
+        ratePanel.flashEnabled == 1 &&
+        ratePanel.flashMode == 1 &&
+        ratePanel.flashResetValue == 2.0f &&
+        actualCountdownBits == expectedHalfRateBits &&
+        ratePanel.flashDirectionSign == 1;
+
+    ratePanel.flashResetValue = 0.25f;
+    ratePanel.flashCountdown = 0.5f;
+    ratePanel.flashDirectionSign = -1;
+    ratePanel.flashMode = 1;
+    ratePanel.SetFlashRate(8.0f);
+    const bool rateAlreadySet =
+        ratePanel.flashMode == 1 &&
+        ratePanel.flashResetValue == 0.25f &&
+        ratePanel.flashCountdown == 0.5f &&
+        ratePanel.flashDirectionSign == -1;
+
+    HudUiTransitionTextPanel colorPanel;
+    colorPanel.flashMode = 0;
+    colorPanel.SetFlashColorAndRate(0x00112233, 6.0f);
+    expectedHalfRate = 3.0f;
+    std::memcpy(
+        &expectedHalfRateBits,
+        &expectedHalfRate,
+        sizeof(expectedHalfRateBits)
+    );
+    std::memcpy(
+        &actualCountdownBits,
+        &colorPanel.flashCountdown,
+        sizeof(actualCountdownBits)
+    );
+    const bool colorSet =
+        colorPanel.flashEnabled == 1 &&
+        colorPanel.flashMode == 2 &&
+        colorPanel.flashResetValue == 3.0f &&
+        actualCountdownBits == expectedHalfRateBits &&
+        colorPanel.flashDirectionSign == 1 &&
+        colorPanel.flashAltColor0 == 0x00112233 &&
+        colorPanel.flashAltColor1 == 0x00112233;
+
+    colorPanel.flashAltColor0 = 1;
+    colorPanel.flashAltColor1 = 2;
+    colorPanel.flashResetValue = 0.75f;
+    colorPanel.flashMode = 2;
+    colorPanel.SetFlashColorAndRate(0x00445566, 8.0f);
+    const bool colorAlreadySet =
+        colorPanel.flashMode == 2 &&
+        colorPanel.flashAltColor0 == 1 &&
+        colorPanel.flashAltColor1 == 2 &&
+        colorPanel.flashResetValue == 0.75f;
+
+    return resetState && rateSet && rateAlreadySet && colorSet && colorAlreadySet ? 0 : 1;
+}
+
 extern "C" int zhud_composite_panel_entry_copy_smoke(void) {
     HudUiCompositePanelEntry source;
     InitCompositeEntry(
@@ -700,4 +796,28 @@ extern "C" int zhud_panel_set_text_fmt_smoke(void) {
     panel.HudUiPanel::~HudUiPanel();
     return firstUpdate && unchangedSkipped && cleared && setText && setTextUnchanged &&
         setTextCleared && fmtV ? 0 : 1;
+}
+
+extern "C" int zhud_panel_set_font_smoke(void) {
+    HudUiPanel panel;
+    panel.ConstructorDefault(
+        "",
+        4,
+        5
+    );
+
+    panel.textDirty = 0;
+    panel.SetFont(
+        "Arial",
+        10,
+        FW_NORMAL,
+        6,
+        0,
+        ANSI_CHARSET,
+        DEFAULT_PITCH
+    );
+
+    const bool updated = panel.hFont != 0 && panel.textDirty == 1;
+    panel.HudUiPanel::~HudUiPanel();
+    return updated ? 0 : 1;
 }

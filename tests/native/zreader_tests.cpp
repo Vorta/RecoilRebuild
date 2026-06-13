@@ -592,8 +592,8 @@ extern "C" int zreader_zrdr_free_search_path_list_smoke(void) {
         return 2;
     }
 
-    const int result = zUtil_ZRDR_FreeSearchPathList(list);
-    const bool ok = result == 0 && g_zUtil_ZRDR_FreePool != nullptr &&
+    zArchiveList *const result = zUtil_ZRDR_FreeSearchPathList(list);
+    const bool ok = result == nullptr && g_zUtil_ZRDR_FreePool != nullptr &&
                     g_zUtil_ZRDR_FreePool->count >= oldFreeCount + 2;
 
     DeleteFileA(tempPathA);

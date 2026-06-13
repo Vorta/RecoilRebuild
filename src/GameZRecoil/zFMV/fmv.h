@@ -25,6 +25,9 @@ struct zFMV_Rect {
     int bottom;
 };
 
+extern "C" zVidRect32 g_zFMV_ActionImage_BlitRect;
+extern "C" zVidRect32 g_zFMV_ActionImage_ActiveRegion;
+
 struct zFMV_Playback {
     int mciPutFlags;
     unsigned short mciDeviceId;
@@ -194,9 +197,9 @@ struct zFMV_ActionPlayMci : zFMV_Action {
      * Purpose: build the MCI media path, create playback state, and set its destination rect.
      */
     zFMV_ActionPlayMci(
+        HWND notifyHwnd,
         const char *mediaRootPath,
-        const char *playbackTitle,
-        HWND notifyHwnd
+        const char *playbackTitle
     );
     ~zFMV_ActionPlayMci();
 };

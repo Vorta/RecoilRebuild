@@ -41,17 +41,20 @@ void Reset() {
  */
 void Tick() {
     const __int64 tickCountMillis = GetTickCount();
+    const float unscaledAccumulatedTimeSec = g_Time_UnscaledAccumulatedTimeSec;
     const float newTimeSec = (float)(tickCountMillis) * g_Time_MillisecondsToSecondsScale;
-    const float unscaledDeltaTimeSec = newTimeSec - g_Time_CurrentTimeSec;
-    const float timeScaleFactor = g_Time_TimeScaleFactor;
+    const int deltaTimeClampEnabled = g_Time_DeltaTimeClampEnabled;
 
-    g_Time_TimeScaleFactor = 1.0f;
     g_Time_NewTimeSec = newTimeSec;
-    g_Time_UnscaledDeltaTimeSec = unscaledDeltaTimeSec;
-    g_Time_UnscaledAccumulatedTimeSec += unscaledDeltaTimeSec;
-    g_FrameDeltaTimeSec = timeScaleFactor * unscaledDeltaTimeSec;
+    g_Time_UnscaledDeltaTimeSec = newTimeSec - g_Time_CurrentTimeSec;
+    const float frameDeltaTimeSec = g_Time_TimeScaleFactor * g_Time_UnscaledDeltaTimeSec;
 
-    if (g_Time_DeltaTimeClampEnabled != 0 && g_FrameDeltaTimeSec > g_Time_MaximumDeltaTimeSec) {
+    g_Time_UnscaledAccumulatedTimeSec =
+        unscaledAccumulatedTimeSec + g_Time_UnscaledDeltaTimeSec;
+    g_FrameDeltaTimeSec = frameDeltaTimeSec;
+    g_Time_TimeScaleFactor = 1.0f;
+
+    if (deltaTimeClampEnabled != 0 && g_FrameDeltaTimeSec > g_Time_MaximumDeltaTimeSec) {
         g_FrameDeltaTimeSec = g_Time_MaximumDeltaTimeSec;
     }
 

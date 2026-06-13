@@ -9,6 +9,7 @@
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zLoc/zLoc.h"
+#include "GameZRecoil/zVideo/zVideo.h"
 
 #include <cstring>
 #include <windows.h>
@@ -47,10 +48,75 @@ struct HudCheatFakeState {
 };
 
 HudCheatFakeState g_hudCheatFakeState;
+int g_hudCheatAppStateExitCount;
+
+struct HudCheatTestAppState : RecoilApp_IState
+{
+    void OnExit()
+    {
+        ++g_hudCheatAppStateExitCount;
+    }
+};
 
 void ResetHudCheatFakeState()
 {
     std::memset(&g_hudCheatFakeState, 0, sizeof(g_hudCheatFakeState));
+}
+
+RecoilApp_StateQueueItem *HudCheatQueueItemAt(
+    RecoilApp_StateQueue &queue,
+    int index
+) {
+    if (index < 0 || index >= queue.m_itemCount ||
+        queue.m_readBlock.m_cursor == 0) {
+        return 0;
+    }
+
+    return queue.m_readBlock.m_cursor[index];
+}
+
+bool HudCheatQueueHasSingleExit(
+    RecoilApp_StateQueue &queue,
+    int param
+) {
+    RecoilApp_StateQueueItem *const item = HudCheatQueueItemAt(
+        queue,
+        0
+    );
+    return queue.m_itemCount == 1 && item != 0 &&
+           item->m_kind == RecoilApp_StateQueueKind_ExitCurrent &&
+           item->m_param == param;
+}
+
+void CleanupHudCheatQueue(
+    RecoilApp_StateQueue &queue
+) {
+    const int itemCount = queue.m_itemCount;
+    for (int index = 0; index < itemCount; ++index) {
+        ::operator delete(HudCheatQueueItemAt(
+            queue,
+            index
+        ));
+    }
+
+    if (queue.m_chunkBaseList != 0) {
+        if (queue.m_readBlock.m_chunkBaseSlot != 0 &&
+            queue.m_writeBlock.m_chunkBaseSlot != 0) {
+            for (RecoilApp_StateQueueItem ***slot =
+                     queue.m_readBlock.m_chunkBaseSlot;
+                 slot <= queue.m_writeBlock.m_chunkBaseSlot;
+                 ++slot) {
+                ::operator delete(*slot);
+            }
+        }
+        ::operator delete(queue.m_chunkBaseList);
+    }
+
+    std::memset(
+        &queue,
+        0,
+        sizeof(queue)
+    );
 }
 
 bool InstallFunctionJump(void *target, void *replacement, FunctionJumpPatch *patch)
@@ -214,7 +280,165 @@ int __fastcall FakeHudCheatTransitionHover(zUtil_SaveGameState *, int flags)
     RecordHudCheatTransition(4, flags);
     return 1;
 }
+
+int __fastcall TestHudCheatVideoSurfaceStateNoOp(zVideo_SurfaceStatePartial *)
+{
+    return 0;
+}
+
+struct HudCheatDialogSmokeEnv
+{
+    char vmodeName[6];
+    zOptionEntryPartial vmodeOption;
+    zOptionEntryPartial *savedOptionsHead;
+    int savedRendererType;
+    int savedHalfResBackbuffer;
+    zVideo_SurfaceStatePartial savedPrimarySurface;
+    zVideo_SurfaceStateProc savedLockSurfaceState;
+    zVideo_SurfaceStateProc savedUnlockSurfaceState;
+    unsigned short pixels[4];
+
+    HudCheatDialogSmokeEnv()
+    {
+        std::memset(this, 0, sizeof(*this));
+        std::memcpy(vmodeName, "VMode", sizeof(vmodeName));
+        vmodeOption.payloadOrBuffer = 6;
+        vmodeOption.name = vmodeName;
+        savedOptionsHead = g_zGame_Options_OptionListHead;
+        savedRendererType = g_zVideo_RendererType;
+        savedHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+        savedPrimarySurface = g_zVideo_PrimarySurfaceState;
+        savedLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+        savedUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
+        g_zGame_Options_OptionListHead = &vmodeOption;
+        g_zVideo_RendererType = 0;
+        g_zVideo_UseHalfResBackbuffer = 0;
+        g_zVideo_pfnLockSurfaceState = TestHudCheatVideoSurfaceStateNoOp;
+        g_zVideo_pfnUnlockSurfaceState = TestHudCheatVideoSurfaceStateNoOp;
+        g_zVideo_PrimarySurfaceState = zVideo_SurfaceStatePartial();
+        g_zVideo_PrimarySurfaceState.pixels = pixels;
+        g_zVideo_PrimarySurfaceState.width = 2;
+        g_zVideo_PrimarySurfaceState.height = 2;
+        g_zVideo_PrimarySurfaceState.pitch = sizeof(unsigned short) * 2;
+    }
+
+    ~HudCheatDialogSmokeEnv()
+    {
+        g_zGame_Options_OptionListHead = savedOptionsHead;
+        g_zVideo_RendererType = savedRendererType;
+        g_zVideo_UseHalfResBackbuffer = savedHalfResBackbuffer;
+        g_zVideo_PrimarySurfaceState = savedPrimarySurface;
+        g_zVideo_pfnLockSurfaceState = savedLockSurfaceState;
+        g_zVideo_pfnUnlockSurfaceState = savedUnlockSurfaceState;
+    }
+};
 } // namespace
+
+extern "C" int hud_ui_cheat_code_title_widget_on_activate_smoke(void)
+{
+    const int oldCurrentStateIndex = g_RecoilApp.m_currentStateIndex;
+    RecoilApp_IState *const oldState0 = g_RecoilApp.m_stateStack[0];
+    RecoilApp_StateQueue oldQueue;
+    std::memcpy(
+        &oldQueue,
+        &g_RecoilApp.m_stateQueue,
+        sizeof(oldQueue)
+    );
+
+    HudCheatTestAppState oldState;
+    std::memset(
+        &g_RecoilApp.m_stateQueue,
+        0,
+        sizeof(g_RecoilApp.m_stateQueue)
+    );
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] = &oldState;
+    g_hudCheatAppStateExitCount = 0;
+
+    HudUiCheatCodeTitleWidget widget;
+    widget.Constructor();
+    widget.OnActivate();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
+    int result = 0;
+    if (g_hudCheatAppStateExitCount != 1) {
+        result = 1;
+    } else if (!HudCheatQueueHasSingleExit(
+                   queue,
+                   0
+               )) {
+        result = 2;
+    }
+
+    widget.DestructorCore();
+    CleanupHudCheatQueue(queue);
+    std::memcpy(
+        &g_RecoilApp.m_stateQueue,
+        &oldQueue,
+        sizeof(g_RecoilApp.m_stateQueue)
+    );
+    g_RecoilApp.m_stateStack[0] = oldState0;
+    g_RecoilApp.m_currentStateIndex = oldCurrentStateIndex;
+    return result;
+}
+
+extern "C" int hud_ui_cheat_code_dialog_constructor_smoke(void)
+{
+    HudCheatDialogSmokeEnv env;
+
+    void *const storage = ::operator new(sizeof(HudUiCheatCodeDialog));
+    HudUiCheatCodeDialog *const dialog = new (storage) HudUiCheatCodeDialog;
+    HudUiCheatCodeDialog *const result = dialog;
+    int failure = 0;
+    failure |= result == dialog ? 0 : 1;
+    failure |= dialog->cheatInputWidget.textInput.capacity == 80 ? 0 : 2;
+    failure |= dialog->cheatInputWidget.textInput.buffer != 0 ? 0 : 4;
+    failure |= std::strcmp(dialog->cheatInputWidget.textInput.buffer, "") == 0 ? 0 : 8;
+    failure |= dialog->cheatInputWidget.sliderBorder.inputActive == 1 ? 0 : 16;
+    failure |= dialog->cheatInputWidget.sliderBorder.sliderVisibleWhenInputActive == 1 ? 0 : 32;
+    failure |= dialog->primaryClipImage != 0 ? 0 : 64;
+    failure |= dialog->cfgRoot == 0 ? 0 : 128;
+
+    dialog->Destructor();
+    ::operator delete(storage);
+
+    return failure;
+}
+
+extern "C" int hud_ui_cheat_code_dialog_destructor_smoke(void)
+{
+    HudCheatDialogSmokeEnv env;
+
+    void *const storage = ::operator new(sizeof(HudUiCheatCodeDialog));
+    HudUiCheatCodeDialog *const dialog = new (storage) HudUiCheatCodeDialog;
+    dialog->Destructor();
+
+    const bool destructed =
+        dialog->primaryClipImage == 0 &&
+        dialog->capturedCompositeImage == 0 &&
+        dialog->loadedRoot == 0 &&
+        dialog->cfgRoot == 0;
+    ::operator delete(storage);
+
+    return destructed ? 0 : 1;
+}
+
+extern "C" int hud_ui_cheat_code_dialog_scalar_deleting_destructor_smoke(void)
+{
+    HudCheatDialogSmokeEnv env;
+
+    void *const storage = ::operator new(sizeof(HudUiCheatCodeDialog));
+    HudUiCheatCodeDialog *const dialog = new (storage) HudUiCheatCodeDialog;
+    HudUiBackground *const returned = dialog->ScalarDeletingDestructor(0);
+    const bool kept =
+        returned == dialog &&
+        dialog->primaryClipImage == 0 &&
+        dialog->capturedCompositeImage == 0;
+    ::operator delete(storage);
+
+    return kept ? 0 : 1;
+}
 
 extern "C" int hud_low_meter_loop_sound_set_loop_active_smoke(void)
 {

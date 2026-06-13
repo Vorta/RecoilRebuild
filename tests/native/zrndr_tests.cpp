@@ -3819,12 +3819,12 @@ extern "C" int zrndr_overlay_and_mmx_masks_smoke(void) {
     zRndr::g_swOverlayPremulPacked = 0x00200100;
     zRndr::g_swOverlayPremulPackedRot16 = 0x00010002;
 
-    std::uint32_t pair = 0x7c1f03e0;
+    std::uint32_t pairs[2] = {0x7c1f03e0, 0};
     const std::uint32_t expected =
-        (((((pair >> 5) & 0x03e0f81fU) * 3U) + 0x00200100U) & 0x7c1f03e0U) |
-        (((((pair & 0x03e07c1fU) * 3U) >> 5) + 0x00010002U) & 0x03e07c1fU);
-    zRndr::OverlayBlendRow555_Scalar(reinterpret_cast<std::uint16_t *>(&pair), 2);
-    if (pair != expected) {
+        (((((pairs[0] >> 5) & 0x03e0f81fU) * 3U) + 0x00200100U) & 0x7c1f03e0U) |
+        (((((pairs[0] & 0x03e07c1fU) * 3U) >> 5) + 0x00010002U) & 0x03e07c1fU);
+    zRndr::OverlayBlendRow555_Scalar(reinterpret_cast<std::uint16_t *>(pairs), 1);
+    if (pairs[0] != expected || pairs[1] != 0) {
         return 1;
     }
 
@@ -3841,7 +3841,7 @@ extern "C" int zrndr_overlay_and_mmx_masks_smoke(void) {
     zRndr::g_overlayBlendEnabled = 1;
     zRndr::g_overlayBlendRectLeft = 1;
     zRndr::g_overlayBlendRectTop = 1;
-    zRndr::g_overlayBlendRectRight = 3;
+    zRndr::g_overlayBlendRectRight = 2;
     zRndr::g_overlayBlendRectBottom = 3;
     zRndr::g_overlayBlendPackedColor16 = 0xf800;
     zRndr::g_overlayBlendAlpha = 1.0;
@@ -3873,7 +3873,8 @@ extern "C" int zrndr_overlay_and_mmx_masks_smoke(void) {
 
     zRndr::SpanMmxSetPixelFormatMasks(5);
     if (zRndr::g_mmxMaskGreenBits[0] != 0x03e0 || zRndr::g_mmxMaskRedPacked[3] != 0xfc00 ||
-        zRndr::g_mmxMaskGreenPacked[2] != 0xffe0 || zRndr::g_mmxMaskBlueBits[1] != 0x001f) {
+        (unsigned short)(zRndr::g_mmxMaskGreenPacked[2]) != 0xffe0 ||
+        zRndr::g_mmxMaskBlueBits[1] != 0x001f) {
         return 4;
     }
 
