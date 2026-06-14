@@ -181,7 +181,12 @@ float Dot(
     return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from address-backed callers in zsnd_play.cpp.
+ * Evidence: retail callers inline the marker-time refresh and last-voice global
+ * stores in zSndSample::PlayOnA3D and zSndSample::PlayOnDirectSound.
+ * Purpose: refresh playback marker deadlines and remember the active voice.
+ */
 void RefreshPlaybackMarkers(
     zSndSample *sample,
     zSndPlayHandle *handle
@@ -283,7 +288,10 @@ extern "C" zSndListenerState g_zSnd_ListenerState = {0};
 extern "C" zVec3 g_zSnd_ListenerVelocity = {0};
 extern "C" zVec3 g_zSnd_PreviousListenerPos = {0};
 
-// Reimplements 0x49f6d0: zSndSample::AcquirePlayHandleDispatch
+/**
+ * Reimplements 0x49f6d0: zSndSample::AcquirePlayHandleDispatch.
+ * Purpose: select the active backend-specific play-handle acquisition path.
+ */
 zSndPlayHandle * zSndSample::AcquirePlayHandleDispatch() {
     if (g_zSnd_ActiveBackend == 0) {
         return AcquireVoice();
@@ -296,9 +304,10 @@ zSndPlayHandle * zSndSample::AcquirePlayHandleDispatch() {
     return 0;
 }
 
-// Reimplements 0x49f830: zSndSample::AcquireVoice
-// Selects an idle primary or duplicate DirectSound play handle, or duplicates
-// the primary buffer when the original five-duplicate cap permits it.
+/**
+ * Reimplements 0x49f830: zSndSample::AcquireVoice.
+ * Purpose: select or duplicate a DirectSound play handle for playback.
+ */
 zSndPlayHandle * zSndSample::AcquireVoice() {
     zSndPlayHandle *voice = 0;
     if (this == 0) {
@@ -366,9 +375,10 @@ zSndPlayHandle * zSndSample::AcquireVoice() {
     return voice;
 }
 
-// Reimplements 0x49f6f0: zSndSample::AcquireA3dVoice
-// Selects an idle primary or duplicate A3D play handle, or duplicates the
-// primary provider source when the original five-duplicate cap permits it.
+/**
+ * Reimplements 0x49f6f0: zSndSample::AcquireA3dVoice.
+ * Purpose: select or duplicate an A3D provider play handle for playback.
+ */
 zSndPlayHandle * zSndSample::AcquireA3dVoice() {
     zSndPlayHandle *voice = 0;
     if (this == 0) {
@@ -448,7 +458,10 @@ zSndPlayHandle * zSndSample::AcquireA3dVoice() {
     return voice;
 }
 
-// Reimplements 0x49f9a0: zSnd::GainScaleToDirectSoundAttenuation
+/**
+ * Reimplements 0x49f9a0: zSnd::GainScaleToDirectSoundAttenuation.
+ * Purpose: convert linear gain into DirectSound attenuation units.
+ */
 int __stdcall zSnd::GainScaleToDirectSoundAttenuation(
     float gainScale
 ) {
@@ -465,7 +478,10 @@ int __stdcall zSnd::GainScaleToDirectSoundAttenuation(
     return (int)(attenuation - 0.5f);
 }
 
-// Reimplements 0x4a07a0: zSnd::IsMuted
+/**
+ * Reimplements 0x4a07a0: zSnd::IsMuted.
+ * Purpose: report active mute state after sound initialization.
+ */
 int zSnd::IsMuted() {
     if (g_zSnd_IsInitialized == 0) {
         return 0;
@@ -474,7 +490,10 @@ int zSnd::IsMuted() {
     return g_zSnd_MuteDepth > 0 ? 1 : 0;
 }
 
-// Reimplements 0x4a1090: zSnd::SetGlobalVolumeScale
+/**
+ * Reimplements 0x4a1090: zSnd::SetGlobalVolumeScale.
+ * Purpose: store and return the global sound-volume scale.
+ */
 float __stdcall zSnd::SetGlobalVolumeScale(
     float scale
 ) {
@@ -485,8 +504,10 @@ float __stdcall zSnd::SetGlobalVolumeScale(
     return scale;
 }
 
-// Reimplements 0x4a10b0: zSnd::MulGlobalVolumeScaleAndGetPrev
-// (D:\Proj\GameZRecoil\zSound\zSound.cpp)
+/**
+ * Reimplements 0x4a10b0: zSnd::MulGlobalVolumeScaleAndGetPrev.
+ * Purpose: multiply the global sound-volume scale and return its previous value.
+ */
 float __stdcall zSnd::MulGlobalVolumeScaleAndGetPrev(
     float scale
 ) {
@@ -496,8 +517,10 @@ float __stdcall zSnd::MulGlobalVolumeScaleAndGetPrev(
     return previousScale;
 }
 
-// Reimplements 0x4a10d0: zSnd::SetFlag10PlaybackEnabled
-// (D:\Proj\GameZRecoil\zSound\zsnd_parm.cpp)
+/**
+ * Reimplements 0x4a10d0: zSnd::SetFlag10PlaybackEnabled.
+ * Purpose: set the zSound flag-gated playback enable value.
+ */
 void __fastcall zSnd::SetFlag10PlaybackEnabled(
     int enabled
 ) {
@@ -1161,7 +1184,10 @@ unsigned int zSndSample::GetPlayCursorBytes() {
     return result == 0 ? playCursorBytes : 0;
 }
 
-// Reimplements 0x4a2950: zSnd_UpdateListenerState
+/**
+ * Reimplements 0x4a2950: zSnd_UpdateListenerState.
+ * Purpose: update cached listener state or forward it to the A3D listener.
+ */
 extern "C" int __fastcall zSnd_UpdateListenerState(
     zSndListenerState *listenerState,
     zVec3 *listenerVelocity
@@ -1219,13 +1245,18 @@ extern "C" int __fastcall zSnd_UpdateListenerState(
     return 1;
 }
 
-// Reimplements 0x4a2e70: zSnd_GetSpeedOfSoundMps
-// (D:\Proj\GameZRecoil\zSound\zsnd_3d.cpp)
+/**
+ * Reimplements 0x4a2e70: zSnd_GetSpeedOfSoundMps.
+ * Purpose: return the current 3D-audio speed-of-sound setting.
+ */
 extern "C" float zSnd_GetSpeedOfSoundMps() {
     return g_zSndSpeedOfSoundMps;
 }
 
-// Reimplements 0x4a2a30: zSndPlayHandle::Update3DDispatch
+/**
+ * Reimplements 0x4a2a30: zSndPlayHandle::Update3DDispatch.
+ * Purpose: route play-handle 3D updates to the active sound backend.
+ */
 int __fastcall zSndPlayHandle::Update3DDispatch(
     zVec3 *worldPos,
     zVec3 *velocity,
@@ -1250,7 +1281,10 @@ int __fastcall zSndPlayHandle::Update3DDispatch(
     return 0;
 }
 
-// Reimplements 0x4a2b40: zSndPlayHandle::Update3D
+/**
+ * Reimplements 0x4a2b40: zSndPlayHandle::Update3D.
+ * Purpose: update DirectSound spatial pan, volume, and Doppler state.
+ */
 int __fastcall zSndPlayHandle::Update3D(
     zVec3 *worldPos,
     zVec3 *velocity,
@@ -1364,7 +1398,10 @@ int __fastcall zSndPlayHandle::Update3D(
     return 1;
 }
 
-// Reimplements 0x4a2a70: zSndPlayHandle::Update3D_A3D
+/**
+ * Reimplements 0x4a2a70: zSndPlayHandle::Update3D_A3D.
+ * Purpose: update A3D provider position, velocity, gain, and Doppler state.
+ */
 int __fastcall zSndPlayHandle::Update3D_A3D(
     zVec3 *worldPos,
     zVec3 *velocity,
@@ -1413,7 +1450,10 @@ int __fastcall zSndPlayHandle::Update3D_A3D(
     return 1;
 }
 
-// Reimplements 0x49fa10: zSndSample::PlayOnActiveBackend
+/**
+ * Reimplements 0x49fa10: zSndSample::PlayOnActiveBackend.
+ * Purpose: dispatch sample playback to the active sound backend.
+ */
 zSndPlayHandle *__fastcall zSndSample::PlayOnActiveBackend(
     zVec3 *worldPos,
     float gainScale,
@@ -1441,7 +1481,10 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnActiveBackend(
     return 0;
 }
 
-// Reimplements 0x49fa60: zSndSample::PlayOnA3D
+/**
+ * Reimplements 0x49fa60: zSndSample::PlayOnA3D.
+ * Purpose: start sample playback on the A3D backend.
+ */
 zSndPlayHandle *__fastcall zSndSample::PlayOnA3D(
     zVec3 *worldPos,
     float gainScale,
@@ -1513,7 +1556,10 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnA3D(
     return result;
 }
 
-// Reimplements 0x49fbb0: zSndSample::PlayOnDirectSound
+/**
+ * Reimplements 0x49fbb0: zSndSample::PlayOnDirectSound.
+ * Purpose: start sample playback on the DirectSound backend.
+ */
 zSndPlayHandle *__fastcall zSndSample::PlayOnDirectSound(
     int attenuation,
     zVec3 *worldPos,
@@ -1578,7 +1624,10 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnDirectSound(
     return result;
 }
 
-// Reimplements 0x49fcf0: zSndSample::PlayA3D
+/**
+ * Reimplements 0x49fcf0: zSndSample::PlayA3D.
+ * Purpose: play a 3D-capable sample through a queued group or active backend.
+ */
 zSndPlayHandle *__fastcall zSndSample::PlayA3D(
     zVec3 *worldPos,
     float gainScale,
@@ -1611,7 +1660,10 @@ zSndPlayHandle *__fastcall zSndSample::PlayA3D(
     );
 }
 
-// Reimplements 0x49fd50: zSndSample::PlayDirectSound
+/**
+ * Reimplements 0x49fd50: zSndSample::PlayDirectSound.
+ * Purpose: play a DirectSound sample variant with gain scaling and marker state.
+ */
 zSndPlayHandle *__fastcall zSndSample::PlayDirectSound(
     int variantIndex,
     float gainScale,
@@ -1638,7 +1690,10 @@ zSndPlayHandle *__fastcall zSndSample::PlayDirectSound(
     );
 }
 
-// Reimplements 0x49f960: zSndSample::PlayA3DSimple
+/**
+ * Reimplements 0x49f960: zSndSample::PlayA3DSimple.
+ * Purpose: play a non-positional A3D-capable sample or queue a stream group.
+ */
 zSndPlayHandle * zSndSample::PlayA3DSimple(
     float gainScale
 ) {

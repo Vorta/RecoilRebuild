@@ -1277,13 +1277,7 @@ int zFMV_Script::LoadActionsFromZrd(
                            actionTag,
                            "WAIT"
                        ) == 0) {
-                zFMV_ActionWait *waitAction = new zFMV_ActionWait;
-                if (waitAction != 0) {
-                    zReader::Node *durationArg = &actionNode->value.nodes[2];
-                    waitAction->next = 0;
-                    waitAction->durationSec = durationArg->value.f32;
-                }
-                AppendAction(waitAction);
+                AppendAction(new zFMV_ActionWait(actionNode->value.nodes[2].value.f32));
             } else if (strcmp(
                            actionTag,
                            "FADEIN"
@@ -1349,33 +1343,25 @@ int zFMV_Script::LoadActionsFromZrd(
                            actionTag,
                            "BLURH"
                        ) == 0) {
+                const int blurPassCount = actionNode->value.nodes[2].value.i32;
                 AppendAction(new zFMV_ActionBlurH(
                     1,
-                    actionNode->value.nodes[2].value.i32
+                    blurPassCount
                 ));
             } else if (strcmp(
                            actionTag,
                            "BLURV"
                        ) == 0) {
+                const int blurPassCount = actionNode->value.nodes[2].value.i32;
                 AppendAction(new zFMV_ActionBlurV(
                     1,
-                    actionNode->value.nodes[2].value.i32
+                    blurPassCount
                 ));
             } else if (strcmp(
                            actionTag,
                            "PLAYSOUND"
                 ) == 0) {
-                zFMV_ActionPlaySound *soundAction = new zFMV_ActionPlaySound;
-                if (soundAction != 0) {
-                    soundAction->next = 0;
-                    strncpy(
-                        soundAction->sampleName,
-                        actionNode->value.nodes[2].value.str,
-                        0x32
-                    );
-                    soundAction->voice = 0;
-                }
-                AppendAction(soundAction);
+                AppendAction(new zFMV_ActionPlaySound(actionNode->value.nodes[2].value.str));
             }
             ++i;
             ++actionIndex;

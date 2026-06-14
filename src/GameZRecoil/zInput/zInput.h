@@ -739,7 +739,7 @@ extern int g_zInput_BindMapOverlayReserved;
 extern int g_zInput_BindMapOverlayDepth;
 extern zInput_BindGroupInfoList g_zInput_BindGroupInfoList;
 extern int g_zInput_CurrentBindGroupIndex;
-extern int g_zInput_CommandLocIdTable[0x100];
+extern int g_zInput_CommandLocIdTable[0x30];
 extern zInput::DIDirectInput *g_zInput_GlobalState;
 extern unsigned char g_zInput_DeviceRegistry;
 extern short g_zInputKeyboardPollRefCount;

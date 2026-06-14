@@ -580,8 +580,6 @@ int __fastcall zVideo_FrustumTestSphereClipMask(
     int *clipMaskInOut,
     float radius
 );
-int zVid_QueryCachedClientRectUpdateMaskIf3dfx();
-void zVid_UpdateCachedClientRectIfUpdateMaskEnabled();
 void zVideo_RestoreIconicFullscreenWindowIfNeeded();
 }
 
@@ -607,6 +605,8 @@ int __fastcall QueryTextureMemoryBytes(
     int *totalBytes,
     int *freeBytes
 );
+int QueryCachedClientRectUpdateMaskIf3dfx();
+void UpdateCachedClientRectIfUpdateMaskEnabled();
 void __fastcall SetCachedClientRectUpdateMask(int mask);
 char *GetSelectedHwApiDescriptionOrDefault();
 char *GetSelectedD3DDeviceNameOrDefault();

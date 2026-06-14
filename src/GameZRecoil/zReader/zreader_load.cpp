@@ -560,7 +560,10 @@ extern "C" char *__fastcall zUtil_ZRDR_ResolvePathInSearchPathList(
     }
 }
 
-// Reimplements 0x4a5f50: zUtil_ZRDR_OpenFileResolved
+/**
+ * Reimplements 0x4a5f50: zUtil_ZRDR_OpenFileResolved.
+ * Purpose: open the resolved ZRDR search-path match, or fall back to the raw filename.
+ */
 extern "C" FILE *__fastcall zUtil_ZRDR_OpenFileResolved(
     zArchiveList *searchPathList,
     const char *filename,

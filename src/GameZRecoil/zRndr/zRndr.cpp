@@ -17,7 +17,11 @@
 
 namespace {
 template <class T>
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: MinValue
+ * Original-source helper evidence: No standalone plan entry was found; recovered from zRndr span, polygon, and scan-conversion callers in this source file.
+ * Purpose: Return the smaller of two values without changing caller-owned storage.
+ */
 const T &MinValue(
     const T &lhs,
     const T &rhs
@@ -26,7 +30,11 @@ const T &MinValue(
 }
 
 template <class T>
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: MaxValue
+ * Original-source helper evidence: No standalone plan entry was found; recovered from zRndr span, polygon, and scan-conversion callers in this source file.
+ * Purpose: Return the larger of two values without changing caller-owned storage.
+ */
 const T &MaxValue(
     const T &lhs,
     const T &rhs
@@ -2382,35 +2390,50 @@ void __fastcall SpanMasked16FromPal8To565(
     int pixelCount,
     int texVShift
 ) {
+    const unsigned char *texels = g_spanActiveTexPixels;
+    int activeAlpha = g_spanActiveConstAlphaBits;
     unsigned short *dst = g_spanCurrentSpanBaseAddr;
-    for (int i = 0; i < pixelCount; ++i) {
-        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
+    const unsigned short *palette = g_spanActiveTexPalette;
+
+    do {
+        const int vIndex = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift);
         const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
-        const unsigned char sourceIndex = g_spanActiveTexPixels[vIndex + uIndex];
-        if (sourceIndex != 0 && g_spanActiveConstAlphaBits > 3) {
-            if (g_spanActiveConstAlphaBits >= 0xfc) {
-                *dst = g_spanActiveTexPalette[(short)(sourceIndex)];
+        const unsigned short sourceIndex = texels[vIndex + uIndex];
+        if (sourceIndex != 0 && (unsigned int)(activeAlpha) > 3) {
+            if ((unsigned int)(activeAlpha) >= 0xfc) {
+                *dst = palette[(short)(sourceIndex)];
+                activeAlpha = g_spanActiveConstAlphaBits;
             } else {
                 const int dstColor = (short)(*dst);
                 // BN 0x49c0aa intentionally uses the current destination word
                 // as the palette index in this partial-alpha path.
-                const int srcColor = g_spanActiveTexPalette[dstColor];
+                const int srcColor = palette[dstColor];
+                const int dstGreen = dstColor & 0x07e0;
+                const int srcGreen = srcColor & 0x07e0;
                 const int greenDelta =
-                    (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * g_spanActiveConstAlphaBits) >> 8;
+                    (srcGreen - dstGreen) * activeAlpha;
+                const int dstRed = dstColor & 0xf800;
+                const int srcRed = srcColor & 0xf800;
                 const int redDelta =
-                    (((srcColor & 0xf800) - (dstColor & 0xf800)) * g_spanActiveConstAlphaBits) >> 8;
-                int blended = dstColor + (redDelta & 0xfffff800);
+                    (srcRed - dstRed) * activeAlpha;
+                int blended = dstColor +
+                    ((int)((unsigned int)(redDelta) >> 8) & 0xfffff800);
+                const int srcBlue = srcColor & 0x001f;
+                const int blendedBlue = blended & 0x001f;
                 const int blueDelta =
-                    (((srcColor & 0x001f) - (blended & 0x001f)) * g_spanActiveConstAlphaBits) >> 8;
-                blended += (greenDelta & 0xffffffe0) + blueDelta;
+                    (srcBlue - blendedBlue) * activeAlpha;
+                blended +=
+                    ((int)((unsigned int)(greenDelta) >> 8) & 0xffffffe0) +
+                    (int)((unsigned int)(blueDelta) >> 8);
                 *dst = (unsigned short)(blended);
+                activeAlpha = g_spanActiveConstAlphaBits;
             }
         }
 
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
         ++dst;
-    }
+    } while (--pixelCount != 0);
 }
 
 /**
@@ -7967,19 +7990,21 @@ zVidImagePartial *__fastcall zRndr_TextureMip_SelectVariantImage(
 
     int selectedVertex = 0;
     float selectedZ = triVerts[0].z;
-    for (int i = 1; i < vertCount; ++i) {
-        if (selectedZ < triVerts[i].z) {
-            selectedZ = triVerts[i].z;
+    const zVec3 *candidateVertex = triVerts + 1;
+    for (int i = 1; i < vertCount; ++i, ++candidateVertex) {
+        if (selectedZ < candidateVertex->z) {
+            selectedZ = candidateVertex->z;
             selectedVertex = i;
         }
     }
 
     const zVec2 &selectedUv = vertexUvPairs[selectedVertex];
-    const float invZ = 1.0f / selectedZ;
+    const float selectedVertexZ = triVerts[selectedVertex].z;
+    const float invZ = 1.0f / selectedVertexZ;
     const float uOverZ = selectedUv.x * invZ;
     const float vOverZ = selectedUv.y * invZ;
-    const float invZAtX = 1.0f / (selectedZ + mipParamsA->x);
-    const float invZAtY = 1.0f / (selectedZ + mipParamsA->y);
+    const float invZAtX = 1.0f / (selectedVertexZ + mipParamsA->x);
+    const float invZAtY = 1.0f / (selectedVertexZ + mipParamsA->y);
 
     const float uDeltaX = (selectedUv.x + mipParamsB->x) * invZAtX - uOverZ;
     const float uDeltaY = (selectedUv.x + mipParamsB->y) * invZAtY - uOverZ;
@@ -7997,7 +8022,8 @@ zVidImagePartial *__fastcall zRndr_TextureMip_SelectVariantImage(
         mipMetric = vDeltaY;
     }
 
-    const int variantIndex = (int)(mipMetric) >> 1;
+    const double variantIndexBits = (double)(mipMetric) - -6755399441055744.0;
+    const int variantIndex = (*(int *)(&variantIndexBits)) >> 1;
     return entry->GetVariantImageAtIndex(variantIndex);
 }
 
@@ -8984,11 +9010,6 @@ void __fastcall zRndr_DrawTexturedFanTri(
     }
 
     zRndr::SpanNodePartial *visibleSpans[0x40] = {0};
-    zRndr::SpanBuildProc buildProc =
-        zRndr::g_pfnBuildSpanListSecondary != 0
-            ? zRndr::g_pfnBuildSpanListSecondary
-            : (zRndr::g_pfnBuildSpanList != 0 ? zRndr::g_pfnBuildSpanList
-                                              : zRndr_SpanOcclusion_InsertSpanNode_Local);
     unsigned char *frameBase = (unsigned char *)(zRndr::g_frameBuffer);
     const int chunkPixels =
         SelectPerspectiveChunkPixels(
@@ -9059,7 +9080,7 @@ void __fastcall zRndr_DrawTexturedFanTri(
             zRndr::g_spanAllocCursor->depthSlope = planes.reciprocalZ.gradient.x;
 
             int spanCount = 0;
-            buildProc(
+            zRndr::g_pfnBuildSpanListSecondary(
                 visibleSpans,
                 y,
                 &spanCount
