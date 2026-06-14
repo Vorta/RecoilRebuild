@@ -64,10 +64,135 @@ available even when no groups are active.
   by memory-query, surface, palette, mode-setting, restore, and teardown
   callers.
 - Current blockers:
+  - Cached-client-rect update-mask mini-owner covers 0x4a59a0, 0x4a59b0,
+    and 0x443a40 plus `g_zVid_CachedClientRectUpdateMask` (data 56b564h). BN shows
+    only the setter and query touch the zero-initialized mask. The namespace
+    source shape is restored for 0x4a59b0/0x443a40, old comments are converted
+    to docblocks, and the functional smoke passes. 0x4a59a0 and 0x443a40 are
+    tier S after the existing/local VC5SP3 targets pass zero unmasked byte
+    mismatches. 0x4a59b0 is also tier S after the direct renderer-path
+    predicate restores BN's `sub eax, 2` source shape and the grouped
+    VC5SP3 target passes for 0x4a59b0/0x443a40 with zero unmasked
+    mismatches.
   - The renderer dispatch/global owner is accepted for 0x4a77a0, and many
     DirectDraw/video helpers are tier B or tier S-ready for callers. The
     fullscreen surface-builder data pass is accepted; image-surface and later
     teardown/restore/mode-setting data clusters remain pending.
+    A follow-up source-file owner/data pass accepted
+    0x4a8790 zVideo_dd::SetVideoMode and
+    0x4a9b70 zVideo_dd3d::PresentDisplayModeSurface at tier B after current
+    functional smoke evidence and zVideo surface-state global review. A
+    same-session pass registered and passed the
+    `zvideo_dd_present_display_mode_surface` smoke, converted
+    0x4a7b60 zVideo_dd::PresentDisplayModeSurface to source-faithful namespace
+    ownership, and left the touched surface-state/half-res globals plus
+    coherent zVideo DirectDraw source-cluster tier S verification pending. A
+    follow-up data pass accepted 0x4a7b60 to tier B after current BN data
+    decls confirmed the two half-res flags, the three zVideo surface-state
+    BSS records, and g_zVideo_SurfaceStateSwapScratch, and local VC5SP3 data
+    target `zvideo_dd_present_display_mode_surface_data` reported zero
+    unmasked data-byte mismatches for all six symbols. 0x4a7b60 now remains
+    blocked only on coherent DirectDraw present-cluster tier S verification.
+    A follow-up function-byte target
+    `zvideo_dd_present_display_mode_surface` now covers 0x4a7b60; the source
+    shape was adjusted to compute the present flags before null-surface checks,
+    use the additive DDBLT_WAIT/DDBLT_ASYNC spelling matching BN's mask/add
+    sequence, and reload DirectDraw surface globals around swap/restore paths.
+    `verify vc5 0x4a7b60` improves from the initial 351 unmasked mismatches to
+    270 unmasked mismatches after 100 relocation-masked bytes (BN 446 bytes,
+    VC5 416 bytes), leaving broad DirectDraw branch/control-flow and
+    provider-call scheduling drift.
+    A follow-up clear-cluster pass registered and passed the missing
+    functional smokes for 0x4a81a0 zVideo_dd::ZBuffer_DepthFillRect,
+    0x4a8220 zVideo_dd::ClearScreenAndZBufferRect, and 0x4a82f0
+    zVideo_dd::ClearSwBackbufferAndZBufferRects, documented the repeated
+    Blt/Restore loop as an original inline helper, and accepted their
+    namespace source ownership. Their touched clear/Z-buffer globals remain
+    data-gate blockers before tier B or coherent clear-cluster tier S work.
+    A later data pass accepted 0x4a6b80 zVideo::SetClearColorPacked16 to tier
+    B after current BN confirmed the leaf store into zero-initialized
+    g_zVideo_ClearColorPacked16 (6321cch), and a follow-up local VC5SP3 target
+    `zvideo_set_clear_color_packed16` promotes it to tier S with zero unmasked
+    byte mismatches after 4 relocation-masked bytes. It also accepted data for
+    0x4a81a0/0x4a8220/0x4a82f0 after BN/source review of
+    g_zVideo_pZBufferSurface (6333f4h), g_zVideo_ClearScreenBufferEnabled
+    (632130h), g_zVideo_ClearColorPacked16 (6321cch), and
+    g_zVideo_SwSurfaceState (632200h); the clear cluster is now tier B and
+    remains blocked only on coherent VC5SP3 tier S verification.
+    A follow-up clear-cluster VC pass corrected the local `DDBLTFX` source
+    shape to BN-visible field-only initialization instead of full provider
+    record zeroing and kept the recovered Blt/Restore helper as an inline
+    retry-label helper. A later 0x4a81a0 pass inlined the BN-shaped
+    Z-buffer Blt/Restore retry loop and moved DDBLTFX size initialization
+    before the null-surface branch, improving `verify vc5 0x4a81a0` from
+    115 to 102 unmasked mismatches after 12 relocation-masked bytes and
+    9 trimmed VC NOPs (BN 114, VC5 144). The local VC5SP3 `/Ob1` clear
+    targets still remain below tier S:
+    `verify vc5 0x4a8220` fails with 203 after 20 relocation-masked bytes
+    (BN 208, VC5 256), and `verify vc5 0x4a82f0` fails with 215 after 24
+    relocation-masked bytes (BN 212, VC5 256). Functional smokes for all three
+    still pass.
+    A fresh
+    local VC5SP3 target for 0x4a9b70 previously failed with 108 unmasked
+    mismatches after 28 relocation-masked bytes and 6 trimmed VC NOP bytes; a
+    display-surface local/retry-label probe worsened to 115 mismatches, and a
+    tail-return success epilogue probe was byte-neutral. A display-surface
+    local/reload source shape now improves the compare to 94 unmasked
+    mismatches after 36 relocation-masked bytes and 10 trimmed VC NOP bytes,
+    but remains below tier S because the VC5 symbol grows to 192 bytes and the
+    initial retry-loop jump/reload layout plus provider-call scheduling still
+    drift. A post-restore no-reload variant regressed to 146 unmasked
+    mismatches and was reverted.
+    A later mode-setting byte pass promoted 0x4a8720
+    zVideo_dd::SetDisplayMode, 0x4a90e0
+    zVideo_dd::RestoreDisplaySurfaces, 0x4a91b0
+    zVideo_dd::ReleaseAllInterfacesAndSurfaces, and 0x4a9060
+    zVideo_dd::VerifyFullscreenSurfaceLocks to tier S with focused VC5SP3
+    zero-mismatch targets. The shared zvid_dd.c source-file string is now a
+    `const char[]` so VC5 passes the direct string address, and
+    ReleaseAllInterfacesAndSurfaces now spells the BN-observed inline COM
+    release/page-unlock sequence. 0x4a8790 remains B because 0x4a9c20
+    zVideo_dd3d::CreateDeviceState remains tier B. Same-session BN-backed
+    source-shape repair removed the absent system-memory z-buffer retry,
+    removed the absent AddAttachedSurface z-buffer fallback, changed the
+    viewport to use g_zVideo_DisplayModeSurfaceState width/height, recovered
+    the direct zvid_ddd3d.c source-file string array, hoisted provider-record
+    declarations, matched the second zBufferDesc memset, used DWORD viewport
+    dimensions for VC5's unsigned float-conversion path, and matched material
+    b/g/r store order. The functional smoke passes with coverage for the
+    single CreateSurface attempt, single AddAttachedSurface attempt, and
+    display-mode viewport dimensions, but `verify vc5 0x4a9c20` still fails
+    with 30 unmasked mismatches after 320 relocation-masked bytes and 9
+    trimmed VC NOP bytes, BN size 1223 and VC size 1232. Remaining tier S
+    drift is SetRenderState this/vtable-load scheduling plus final xor/pop
+    scheduling; declaration-order, zero-sentinel, direct-dereference, and
+    scoped-device-pointer source-shape probes that did not improve the compare
+    were reverted. A fresh scoped `IDirect3DDevice2 *const` probe preserved
+    behavior but regressed the compare to 837 unmasked mismatches; a
+    `(*g_zVideo_pD3DDevice).SetRenderState` probe and a final `hresult = DD_OK`
+    return spelling were byte-neutral at 30 mismatches. All three were reverted.
+    A later official `IDirect3DDevice2_SetRenderState` macro spelling for the
+    nine drifted calls, assigning those HRESULT results to the existing local,
+    and `return DD_OK` were each byte-neutral at 30 mismatches and reverted.
+    A same-session render-state mini-owner pass accepted
+    0x4a6b60 zVideo_dd3d::SetPendingWireframeState,
+    0x4a6b70 zVideo_dd3d::SetPendingDitherEnable,
+    0x4a9ac0 zVideo_dd3d::BeginSceneAndFlushPendingRenderStates, and
+    0x4a9b40 zVideo_dd3d::EndScene at tier B. BN confirms
+    g_zVideo_PendingWireframeState (632138h) and
+    g_zVideo_PendingDitherEnable (63213ch) are int32 BSS globals whose xrefs
+    are limited to the setter/init/flush/reset paths; ModuleInit already
+    carries accepted data evidence for the dither sentinel initialization.
+    The stale local functional target smokes are now registered in
+    tests/native/smoke.cpp, and `verify functional` passes for the two
+    setters, BeginSceneAndFlushPendingRenderStates, and EndScene.
+    Local VC5SP3 target `zvideo_dd3d_render_state_scene` now covers
+    0x4a6b60, 0x4a6b70, 0x4a9ac0, and 0x4a9b40. It proves zero-unmasked-byte
+    tier S evidence for 0x4a6b60, 0x4a6b70, 0x4a9ac0, and 0x4a9b40 after COFF
+    relocation masking; those entries are promoted to tier S. The remaining
+    0x4a9ac0 SetRenderState mismatch was closed by using the pending dither
+    BSS global directly as the second render-state argument, matching BN's
+    register choice without introducing provider shims or raw slot dispatch.
   - Fullscreen surface-builder source ownership is accepted for 0x4a8f80,
     0x4a88f0, 0x4a8920, 0x4a8b20, and 0x4a8dc0. The shared surface-state BSS
     records g_zVideo_SwSurfaceState (632200h), g_zVideo_PrimarySurfaceState
@@ -88,8 +213,16 @@ available even when no groups are active.
     with 200 relocation-masked bytes, 11 trimmed VC NOP bytes, and the
     functional smoke still passing. Remaining 0x4a8b20 tier S drift is the
     fallback CreateSurface3FromDesc edx-load versus push scheduling; local
-    fallbackDesc/fallbackSurface pointer probes were byte-neutral at the same 7
-    mismatches and were reverted. Same-session follow-up recovered
+    fallbackDesc/fallbackSurface pointer probes, including a register
+    fallbackDesc variant, were byte-neutral at the same 7 mismatches and were
+    reverted. A later focused pass confirmed
+    assignment-in-condition, fallback directDraw local, function-level desc
+    pointer, display-surface output-slot alias, and comma-expression
+    source-shape probes were also byte-neutral at 7 mismatches; moving the
+    fallback caps assignment before Release worsened the compare to 23
+    mismatches and was reverted. A temporary VC5 profile sweep found
+    vc5_o2_ob0_md_facs and vc5_o2_ob1_md_gx_facs both remain at 7 mismatches,
+    while non-/MD profiles do not compile this MFC-dependent source. Same-session follow-up recovered
     0x4a8030 zVideo_dd::UnlockSurfaceState as the direct early-return guard
     shape; `verify vc5 0x4a8030` now passes with zero unmasked mismatches after
     12 relocation-masked bytes and 3 trimmed VC NOP bytes, `verify functional
@@ -107,15 +240,20 @@ available even when no groups are active.
     0x4a9300 zVideo_dd::TeardownVideoSubsystem is now tier S after adding a
     local VC5SP3 target and passing zero-mismatch COFF bytes for
     ?TeardownVideoSubsystem@zVideo_dd@@YAXXZ. The refreshed 0x4a8f80 frontier
-    now leaves 0x4ad6a0 zVideo_dd::ReportError and 0x4a6bf0
-    zVideo_PixelPack::SetupFromMasks as its visible tier S blockers.
+    left 0x4ad6a0 zVideo_dd::ReportError and 0x4a6bf0
+    zVideo_PixelPack::SetupFromMasks as visible tier S blockers before
+    ReportError was resolved.
     A same-session ReportError source-shape probe split the monolithic HRESULT
     switch into numeric DDERR/D3DERR range switches to try to match the retail
     compare-chain/table boundaries; it worsened the VC5SP3 COFF compare from
     1610 to 2645 unmasked mismatches and grew the VC body from 3360 to 3552
-    bytes, so the probe was reverted. The restored baseline is again 1610
-    unmasked mismatches after 929 relocation-masked bytes and 4 trimmed VC NOP
-    bytes, with the functional smoke passing.
+    bytes, so the broad split was reverted. A narrower explicit `case DD_OK`
+    repair matches the retail zero-return tail shape, and the local VC5
+    manifest now uses `bn_byte_length` 3296 to include the compiler switch
+    tables that BN keeps outside the function body. `verify vc5 0x4ad6a0`
+    now passes with zero unmasked byte mismatches after 952 relocation-masked
+    bytes, no trimmed VC NOPs, BN size 3296, and VC size 3296; the functional
+    smoke still passes, and 0x4ad6a0 is tier S.
     A same-session source-order experiment for 0x4a6bf0 that moved the mask
     stores before the shifted-mask temporaries worsened the VC5SP3 COFF compare
     from 109 to 113 unmasked mismatches and increased trimmed VC NOPs from 9
@@ -126,7 +264,11 @@ available even when no groups are active.
     source-order variants; both were byte-neutral at 109 mismatches, so the
     original source body remains the accepted source-faithful shape for now. A
     delayed redMaskShifted computation plus blueBits-plus-greenBits source
-    spelling was also byte-neutral at 109 mismatches and was reverted.
+    spelling was also byte-neutral at 109 mismatches and was reverted. A
+    MakeShiftedMask inline-helper spelling for all shifted-mask writes preserved
+    the functional smoke but stayed byte-neutral at 109 mismatches; the unused
+    anonymous helper left behind by that probe was removed, with the functional
+    smoke still passing and the VC5SP3 compare unchanged at 109 mismatches.
     0x4a8f80 now has a local VC5SP3 target
     `zvideo_dd_init_fullscreen_software_pixel_pack`: changing its two
     zvid_dd.c report call sites from the shared source-file pointer to the
@@ -139,7 +281,14 @@ available even when no groups are active.
     worsened the compare to 174 unmasked mismatches / 36 relocation-masked
     bytes / 5 trimmed VC NOP bytes, and changing DDPIXELFORMAT initialization
     to a first-member aggregate worsened it to 162 unmasked mismatches; both
-    probes were reverted. A follow-up source-shape check confirmed the
+    were reverted. A later pass retained the BN-backed literal 0x03e0
+    green-mask argument in the 5-5-5 branch; it is byte-neutral at 161
+    mismatches but matches current BN HLIL. The same pass rechecked 0x4a8b20
+    after a fallbackDirectDraw/fallbackDesc retry-call source probe; the probe
+    was byte-neutral at the same 7 mismatches and was reverted, leaving the
+    known fallback CreateSurface3FromDesc edx-load versus push scheduling
+    blocker unchanged.
+    A follow-up source-shape check confirmed the
     restored baseline at 161 unmasked mismatches; introducing a local
     DDPIXELFORMAT pointer and then introducing branch-invariant red/green/blue
     mask locals were both byte-neutral at the same 161 mismatches, so the
@@ -186,20 +335,34 @@ available even when no groups are active.
     recovering the null-surface return/source-file literal shape and adding
     local VC5SP3 target `zvideo_dd_image_release_surface`; `verify vc5
     0x4a86f0` passes zero unmasked mismatches after 8 relocation-masked bytes
-    and 3 trimmed VC NOPs, and `verify functional 0x4a86f0` passes. A local
+    and 3 trimmed VC NOPs, and `verify functional 0x4a86f0` passes. 0x4a8680
+    now has local VC5SP3 target `zvideo_dd_image_upload_pixels_to_surface`;
+    matching BN's branchy selected-device caps selection, null lazy-create
+    return, and literal zvid_dd.c ReportError argument leaves `verify vc5
+    0x4a8680` blocked at 69 unmasked mismatches after 20 relocation-masked
+    bytes and 9 trimmed VC NOP bytes, with the functional smoke passing.
+    Remaining drift is return-block layout around renderer/lazy-create zero
+    returns and GetDC success/error epilogue ordering. A local
     VC5SP3 target also covers 0x4a8500
     `zvideo_dd_image_populate_surface_from_heap_pixels`; `verify functional
-    0x4a8500` passes, but `verify vc5
-    zvideo_dd_image_populate_surface_from_heap_pixels` remains blocked at 173
-    unmasked mismatches after 20 relocation-masked bytes and 8 trimmed VC NOP
-    bytes, with remaining drift in DirectDraw Lock/Unlock lost-surface retry
-    control-flow/scheduling and descriptor/pitch-store ordering. Tier S remains
-    deferred to a coherent DirectDraw image/surface source-cluster pass.
-    Replacing the four local ReportError source-file arguments with retail
-    literal strings preserved behavior but regressed the compare to 290
-    unmasked mismatches with 11 trimmed VC NOPs, and spelling descriptor
-    initialization as a dwFlags-tail memset plus dwSize store was byte-neutral
-    at 173 mismatches; both probes were reverted.
+    0x4a8500` passes, and explicit C retry labels improved `verify vc5
+    zvideo_dd_image_populate_surface_from_heap_pixels` to 287 unmasked
+    mismatches after 23 relocation-masked bytes and 11 trimmed VC NOP bytes.
+    Remaining drift is DirectDraw Lock/Unlock lost-surface retry call
+    scheduling, descriptor dwSize store scheduling, row-copy local scheduling,
+    and descriptor/pitch-store ordering. Tier S remains deferred to a coherent
+    DirectDraw image/surface source-cluster pass. A full DDSURFACEDESC memset
+    plus dwSize store worsened the compare to 292 mismatches, and spelling
+    descriptor initialization as a dwFlags-tail memset plus dwSize store was
+    byte-neutral at 290 mismatches; both probes were reverted. A later
+    lost-surface-first branch spelling preserved behavior but regressed the
+    compare to 290 unmasked mismatches after 20 relocation-masked bytes and 7
+    trimmed VC NOP bytes, so it was reverted. Explicit Restore-success
+    `goto retryLock`/`goto retryUnlock` branches were byte-neutral at the
+    287-mismatch baseline and were reverted. A `while (hresult != DD_OK)`
+    retry-loop spelling for both Lock and Unlock preserved behavior but regressed
+    the compare to 320 unmasked mismatches with a 400-byte VC body, so it was
+    reverted.
   - The hardware-device table/selection and renderer-flag cluster is no longer
     a data-owner blocker for 0x4a6b40, 0x4a7990, 0x4a7490, 0x4a8870, 0x4a7b40,
     0x4a93d0, 0x4a95e0, and 0x4a96b0. 0x4a7b40 is tier S after the VC5SP3
@@ -233,6 +396,18 @@ available even when no groups are active.
     accepting the typed DirectDraw/Direct3D provider pointers, z-buffer attach
     state, selected-device pointer, viewport/material handles, caps records,
     render-state/fog caches, wireframe state, and quad-batch BSS data.
+    0x4aa9e0 zVideo_dd3d::SetFogEnable is now tier S after adding local target
+    `zvideo_dd3d_set_fog_enable`; `verify vc5 0x4aa9e0` passes with zero
+    unmasked mismatches after 24 relocation-masked bytes and 12 trimmed VC
+    NOPs, and `verify functional 0x4aa9e0` passes. 0x4accc0
+    zVideo_dd3d::SetQuadBatchDepthAndRhw is now tier S after restoring the
+    BN-observed per-item bottom-left, bottom-right, top-right, top-left store
+    order for z and rhw while staying on typed TL vertex fields; `verify vc5
+    0x4accc0` passes with zero unmasked mismatches after 8 relocation-masked
+    bytes and 15 trimmed VC NOPs, and `verify functional 0x4accc0` passes.
+    Current status shows 0x4ad6a0 zVideo_dd::ReportError is now tier S, so
+    0x4a9c20's remaining blocker is its own SetRenderState provider-call
+    scheduling and final xor/pop byte drift.
     0x4ad680 is tier S/no-globals after adding local target
     `zvideo_dd3d_floor_power_of_two`; `verify vc5 0x4ad680` passes zero
     unmasked mismatches with no relocation-masked bytes and 13 trimmed VC NOPs,
@@ -262,7 +437,10 @@ available even when no groups are active.
     marker stays tier B because direct callee 0x4a8100
     zVideo_dd::LockSurface_WaitRestore remains tier B; 0x4aa8f0 stays tier B
     because direct callee 0x4a8160 zVideo_dd::UnlockSurface_WaitRestore remains
-    tier B. 0x4aa6f0 has local target
+    tier B. A same-session 0x4a8160 pass confirmed behavior but found that a
+    do-while shared-tail spelling only improved 46 to 45 VC5 mismatches and an
+    explicit retry-label spelling stayed at 46; both loop-shape probes were
+    reverted because VC5 still duplicated the Unlock retry block. 0x4aa6f0 has local target
     `zvideo_dd3d_convert_image_pixels_for_texture`; recovering field-based
     width/height loop bounds improved the VC5SP3 compare, but it still fails
     with 362 unmasked byte mismatches, 20 relocation-masked bytes, and 5
@@ -593,6 +771,14 @@ available even when no groups are active.
     its own generic-V-shift pal8 565 loop; BN confirms the nonzero texel gate,
     alpha >3/>=0xfc gates, high-alpha palette copy, and destination-word palette
     lookup partial-alpha path.
+    A later 0x49c020 source-shape pass restored BN's do-style loop, cached
+    active texture/palette/alpha globals, unsigned V-shift, and unsigned alpha
+    gates; `verify vc5 0x49c020` improves from 243 to 110 unmasked mismatches
+    after 40 relocation-masked bytes, with functional still passing. The
+    remaining blocker is partial-alpha channel-math register ordering and
+    loop-tail scheduling drift, so 0x49c020 stays tier B. A same-session
+    green-contribution precompute probe preserved behavior but regressed the
+    compare from 110 to 117 unmasked mismatches, so it was reverted.
     Fresh tier S checks for 0x49c230 and 0x49c150 remain blocked: 0x49c230
     reports 243 unmasked mismatches after 44 relocation-masked bytes and 15
     trimmed VC NOP bytes, while 0x49c150 reports 193 unmasked mismatches after
@@ -734,9 +920,14 @@ available even when no groups are active.
     zRndr_Draw.cpp owner: `verify functional 0x499130` passes, local data target
     `zrndr_texture_mip_select_variant_data` passes for
     gRndr_TextureMipSelectionEnabled (63209ch), and `verify vc5 0x499130`
-    remains the tier S blocker with 328 unmasked function-byte mismatches after
-    24 relocation-masked bytes and 5 trimmed VC NOP bytes (BN 372 bytes,
-    VC5 336 bytes) from x87 mip-metric max-reduction/codegen shape.
+    remains the tier S blocker with 272 unmasked function-byte mismatches after
+    24 relocation-masked bytes and 14 trimmed VC NOP bytes (BN 372 bytes,
+    VC5 384 bytes) after the BN-backed candidate-vertex cursor/reloaded
+    selected-Z repair and VC5 double-bias variant-index extraction; remaining
+    debt is coherent x87 mip-metric stack/codegen plus stack-frame/register
+    allocation shape. Same-session invZ/source-order and selected-loop spelling
+    probes preserved behavior but stayed byte-neutral at 272 mismatches, so both
+    were reverted.
     Same-session 0x493df0 zRndr_DrawFlatQueued source-shape pass removed the
     behavior-only intersection/sort scanline body and unsupported fallback
     span-builder guards, added the BN-backed zRndr_Draw.cpp source-file
@@ -750,12 +941,13 @@ available even when no groups are active.
     gRndr_ActiveTexUStepFixed20, gRndr_ActiveTexVStepFixed20,
     gRndr_CurrentSpanBaseAddr, gRndr_ActiveTexAlphaMap,
     gRndr_ActiveTexShift, gRndr_ActiveTexVMask, and
-    gRndr_ActiveTexUMask. Shared raster and flat queued callback globals are
-    also covered by current zero-mismatch data targets, but 0x493df0 stays
-    owner/data-pending because the broader queued draw/span global owner is
-    not yet accepted; `verify vc5 0x493df0` still fails with 3111 unmasked
-    function-byte mismatches after 160 relocation-masked bytes and 13 trimmed
-    VC NOP bytes (BN 3314 bytes, VC5 1376 bytes).
+    gRndr_ActiveTexUMask. Same-session refresh of the shared raster and flat
+    queued callback data targets accepted the remaining touched globals, so
+    0x493df0 is now tier B/source-faithful under the zRndr_Draw.cpp owner.
+    `verify vc5 0x493df0` still fails with 3111 unmasked function-byte
+    mismatches after 160 relocation-masked bytes and 13 trimmed VC NOP bytes
+    (BN 3314 bytes, VC5 1376 bytes), leaving only coherent zRndr_Draw.cpp
+    scan-conversion/x87/codegen tier S debt for this entry.
     Same-session 0x4927d0 zRndr::SpanOcclusionRasterizeOccluderPoly source-
     shape pass retained an explicit source/destination cursor spelling for the
     duplicate-filter reduced-vertex loop. This matches BN's polygon cursor and
@@ -792,9 +984,15 @@ available even when no groups are active.
     bytes, 2 trimmed VC NOP bytes, BN size 342, and VC size 352; `verify
     functional 0x4993a0` still passes. A branch-local segmentCounter probe
     regressed to 323 unmasked mismatches, and consumed-y0 loop-counter reuse
-    was byte-neutral at 304, so both were reverted. The remaining drift is
-    register/stack-shape across the segmented Bresenham loops and toggle
-    counter.
+    was byte-neutral at 304, so both were reverted. A segmented-only saved
+    dstPixels/basePixels local also stayed byte-neutral at 304 and was
+    reverted. The remaining drift is register/stack-shape across the segmented
+    Bresenham loops and toggle counter.
+    Same-session 0x4992d0 zRndr_DrawLine16 startIndex-before-rowStep
+    initialization-order probe kept the functional smoke passing but regressed
+    `verify vc5 0x4992d0` from the restored 189-mismatch baseline to 193
+    unmasked mismatches with VC size 208 and 11 trimmed VC NOP bytes, so it
+    was reverted.
     Same-session 0x499810 zRndr_FillSpan555Solid source-shape pass retained the
     565-style red-adjusted staging because it preserves behavior and improves
     `verify vc5 0x499810` from 132 to 104 unmasked mismatches, with 4
@@ -815,7 +1013,17 @@ available even when no groups are active.
     a final-expression-order probe preserved behavior but stayed byte-neutral
     at the 93-mismatch state and was reverted. The remaining drift is
     cursor/register allocation and
-    channel-order/partial-register shape in the solid span loops.
+    channel-order/partial-register shape in the solid span loops. Current
+    same-session refresh reports 0x499810 at 92 unmasked mismatches and
+    0x4998a0 at 87 unmasked mismatches; a 0x4998a0 green-before-red
+    contribution-order probe preserved behavior but regressed the compare to 89
+    mismatches, so it was reverted.
+    The stale circle-helper VC5 compile blocker is resolved: the grouped
+    `zrndr_draw_circle_helpers` target now compiles and passes zero-unmasked-byte
+    COFF comparison for 0x498fb0 and 0x499020. Functional smokes for
+    `zrndr_draw_circle_outline16_framebuffer` and
+    `zrndr_draw_circle_octants16_framebuffer` pass, and both entries are now
+    tier S.
     Same-session 0x499500 zRndr_DrawLine16_Clipped tier-S pass did not retain
     a source edit: the VC5SP3 compare remains at 649 unmasked mismatches with
     40 relocation-masked bytes and 13 trimmed VC NOP bytes (BN size 717, VC5
@@ -1002,6 +1210,20 @@ available even when no groups are active.
     predeclared `sequenceNode` local-lifetime probe was also byte-neutral at
     867 mismatches and was reverted; the root/sequence stack-slot swap remains
     downstream of the unresolved loop/action construction shape.
+    Current follow-up retained branch-local BLURH/BLURV blur pass-count
+    temporaries, narrowing the current VC5SP3 `zfmv_script_cleanup_reset`
+    compare from 1515 to 1509 unmasked mismatches after 244 relocation-masked
+    bytes, BN size 1912, VC5 size 1904, and 2 trimmed VC NOP bytes. Same-session
+    rejected probes: direct `result` computation was byte-neutral, predeclared
+    `actionNode` lifetime was byte-neutral, a named BLURH pointer temporary was
+    byte-neutral, plain-BLUR/WAIT/PLAYSOUND branch argument temporaries
+    regressed, result-before-`i` declaration order was byte-neutral, tag-only
+    `actionFields` was byte-neutral, and a full typed action-field base
+    regressed to 1527 mismatches and a too-short 1824-byte VC body.
+    Additional same-session rejected probes: combined `sequenceNode`/`root`
+    plus `result`/`i` local declaration ordering was byte-neutral at 1509
+    mismatches, and splitting `result = sequenceActionCount - 1` into
+    assignment plus predecrement was also byte-neutral at 1509 mismatches.
     Remaining source-faithful probes are exact loop cursor scheduling plus
     action construction/EH cleanup windows for inline WAIT, PLAYSOUND, BlurH,
     and BlurV.
@@ -1226,23 +1448,21 @@ available even when no groups are active.
     docblocks, removing stale unused keyboard helper/table artifacts, and
     passing the focused functional target. The local VC5SP3 target
     `zinput_keyboard_poll_state` verifies those six BSS data symbols with zero
-    unmasked mismatches. The direct callee 0x472490 zInput::DI_ReportError is
-    now accepted through tier B from source-owner and DirectInput HRESULT rdata
-    evidence; its remaining tier S debt is a VC5SP3 compare failure with 170
-    unmasked mismatches after 84 relocation-masked bytes and 7 trimmed VC NOPs.
-    Therefore 0x46f690's remaining blocker is tier S function-byte drift, not
-    owner/data coverage. 0x471de0 zInput::PollActiveDevices is now accepted
+    unmasked mismatches. Follow-up accepted the direct callee 0x472490
+    zInput::DI_ReportError through tier S by restoring BN's final HRESULT tail:
+    HRESULT 800704dfh branches to DIERR_ALREADYINITIALIZED, DI_OK returns success,
+    and all other high-range fallthrough values report `"Unknown Error"`. The
+    source keeps the `hresult != 800704dfh` outer branch plus inverted inner
+    DI_OK test so VC5SP3 emits the retail `je`/`test`/unknown-block layout;
+    `verify vc5 0x472490` now passes with zero unmasked mismatches after 84
+    relocation-masked bytes and 11 trimmed VC NOP bytes, and
+    `verify functional 0x472490` passes. Therefore 0x46f690's remaining blocker
+    is its own tier S function-byte drift, not DI_ReportError, owner, or data
+    coverage. 0x471de0 zInput::PollActiveDevices is now accepted
     through tier A after adding a VC5 target for the dispatcher and its six
     active-device flag/refcount globals; the data symbols are byte-identical
     and the remaining function-byte drift is only EBX versus ESI register
-    allocation for saving/reloading dispatchCallbacks. A follow-up probe that
-    inverted only the final
-    DIERR_ALREADYINITIALIZED/DI_OK/unknown branch to force the
-    already-initialized case out of line worsened the 0x472490 VC5SP3 compare
-    to 175 unmasked mismatches and was reverted. A second probe that made the
-    high-range S_OK test fall through directly before the unknownError label
-    matched the retail `je`/`test` order but forced a larger tail reshuffle,
-    worsening the compare to 347 unmasked mismatches; it was also reverted.
+    allocation for saving/reloading dispatchCallbacks.
   - MpExit lifecycle dependency follow-up routes 0x4198d0/0x419940 through
     zInput bind-map overlay push/pop. Current BN/source review classifies the
     lower dependency slice as the authored `zInput_BindMapContext` record/class
@@ -1518,7 +1738,13 @@ available even when no groups are active.
     HudUiPanelPtrVector storage plus provider new/delete, source-shape guard is
     clean, and 0x4ba510 is now tier B with `Source owner ✅` for
     `HudUiPanelPtrVector`, `Data reimplemented ❎`, and `Model:
-    source-faithful`. Tier S remains open pending a VC5 byte target/compare.
+    source-faithful`. Follow-up VC5 target
+    `hud_ui_panel_ptr_vector_insert_n` now runs; after recovering allocator-style
+    guarded construction checks and the fuller in-place/reallocation split,
+    `verify vc5 0x4ba510` improves from 526 unmasked mismatches / 336-byte VC
+    body to 516 unmasked mismatches / 480-byte VC body, but still fails against
+    the 547-byte retail body. Tier S remains open on residual VC5 vector-template
+    branch/local scheduling.
   - Same-session flash-panel cleanup repaired the missing compiled
     `zhud_transition_text_panel_flash_rate_smoke` registration and retargeted
     `hud_ui_flash_panel_set_flash_color_and_rate` to that direct smoke.
@@ -1570,13 +1796,28 @@ available even when no groups are active.
     as tier B with `Source owner ✅` for `HudUiPanel`, `Data reimplemented ❎`,
     and `Model: source-faithful`. Tier S remains open because no VC5 COFF target
     covers 0x4babb0 yet.
+  - Same-session 0x409570 HudUiZrdScrollingText::LoadFromZrd pass registered
+    `zhud_scrolling_text_load_from_zrd_smoke` in the compiled native runner,
+    repaired `HudUiPanel::CopyConstructCore` so raw vector-storage copies get the
+    BN-proven HudUiPanel dispatch identity, and registered
+    `zhud_panel_copy_construct_core_smoke` for the panel copy manifests. Native
+    x86 build passes, direct smokes pass, `verify functional 0x409570`,
+    `0x40a170`, `0x4ba850`, and `0x4ba9e0` pass, and the current VC5 compares
+    leave 0x4ba850 at 343 unmasked mismatches/24 relocation bytes/10 trimmed NOPs
+    and 0x4ba9e0 at 316/16/9. The plan now records 0x409570 as tier B with
+    `Source owner ✅` for `HudUiCreditsPanel`, `Data reimplemented ❎`, and
+    `Model: source-faithful`; tier S remains open because no VC5 COFF target
+    covers 0x409570 yet.
+  - Same-session HudCmd bind-button pass accepted 0x40ba60
+    HudCmdKeyAButton::OnClearBinding at tier S. BN shows a typed
+    selected-index clear through HudCmdDialog::ApplyPrimaryKeyRebind followed by
+    HudCmdBindButtonBase::SetSelectedEntry; both direct callees already have
+    accepted tier B owner/data gates. The stale FTable/table-factory blocker is
+    clear for this method through the recovered HudCmdBindButtonBase/
+    HudCmdKeyAButton class model, the repaired
+    `zhud_cmd_key_a_button_on_clear_binding_smoke` target passes, and the
+    VC5SP3 compare has zero unmasked byte mismatches.
 - Next action:
-  - Resume 0x409570 HudUiZrdScrollingText::LoadFromZrd after the 0x40a170 and
-    0x4babb0 dependency cleanups. The refreshed frontier shows no remaining
-    direct owner/data blockers; direct dependencies are B/S/provider. The local
-    functional target is stale because `zhud_scrolling_text_load_from_zrd_smoke`
-    is not registered in the compiled native runner, so repair that smoke path
-    before promoting 0x409570.
   - Continue class-first cleanup on the remaining MpExit lifecycle entries:
     0x4198d0, 0x419940, and 0x419990 are tier S with owner/data accepted.
     Refreshed `0x419990` frontier now routes through 0x4a56d0 Time::Tick and

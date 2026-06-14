@@ -92,7 +92,7 @@ int g_zInput_BindMapOverlayReserved = 0;
 int g_zInput_BindMapOverlayDepth = 0;
 zInput_BindGroupInfoList g_zInput_BindGroupInfoList = {0};
 int g_zInput_CurrentBindGroupIndex = 0;
-int g_zInput_CommandLocIdTable[0x100] = {0};
+int g_zInput_CommandLocIdTable[0x30] = {0};
 
 // Reimplements 0x471c80: zInput_Keyboard_IsUnsuspended
 int zInput_Keyboard_IsUnsuspended() {
@@ -101,7 +101,7 @@ int zInput_Keyboard_IsUnsuspended() {
 }
 
 namespace {
-char g_zInput_EmptyName[] = "";
+char k_EmptyString[] = "";
 
 struct BindMapDefaultBindingSpec {
     int commandId;
@@ -1257,7 +1257,7 @@ int IsUnsuspended(
  * set or clear the shared modifier mask for shift/control/alt DIK events.
  * Purpose: Apply a pressed/released transition to one keyboard modifier bit.
  */
-void UpdateKeyboardModifierState(
+inline void UpdateKeyboardModifierState(
     int mask,
     bool pressed
 ) {
@@ -1281,7 +1281,7 @@ typedef void(__fastcall *KeyboardComboCallbackFn)(int comboIdx);
  * state, dispatch-state slots, and optional raw ASCII callbacks.
  * Purpose: Apply one buffered keyboard poll event and return its dispatch index.
  */
-int ApplyKeyboardPollEvent(
+inline int ApplyKeyboardPollEvent(
     DIDeviceObjectData &event
 ) {
     unsigned int dispatchIndex = event.dwOfs;
@@ -1349,7 +1349,7 @@ int ApplyKeyboardPollEvent(
  * bits are folded back into a keyboard combo index before callback dispatch.
  * Purpose: Rebuild a modifier-aware keyboard combo index from a processed event.
  */
-int KeyboardEventDispatchIndex(
+inline int KeyboardEventDispatchIndex(
     const DIDeviceObjectData &event
 ) {
     int dispatchIndex = (int)(event.dwOfs);
@@ -1442,9 +1442,10 @@ RECOIL_NO_GS int __fastcall DI_ReportError(
             goto dierrOldDirectInputVersion;
         }
         goto dierrBetaDirectInputVersion;
-    } else if (hresult == (int)(0x800704df)) {
-        goto unknownError;
-    } else if (hresult == kDiOk) {
+    } else if (hresult != (int)(0x800704df)) {
+        if (hresult != kDiOk) {
+            goto unknownError;
+        }
         goto diOk;
     }
     goto dierrAlreadyInitialized;
@@ -2374,7 +2375,7 @@ char *__fastcall BindMapCurrent_CopyCommandLabel(
  * Reimplements 0x470f80: zInput::BindMap_FormatKeyComboName.
  * Binary Ninja shows the zinput.cpp helper reading g_zInput_DikKeyNames,
  * appending Ctrl/Alt/Shift prefixes in retail order, and returning
- * g_zInput_EmptyName when the DIK slot has no name.
+ * k_EmptyString when the DIK slot has no name.
  * Purpose: Format a packed keyboard binding into the user-visible key name.
  */
 char *__stdcall BindMap_FormatKeyComboName(
@@ -2384,7 +2385,7 @@ char *__stdcall BindMap_FormatKeyComboName(
 ) {
     const char *keyName = g_zInput_DikKeyNames[packedKey & 0xff];
     if (keyName == 0) {
-        return g_zInput_EmptyName;
+        return k_EmptyString;
     }
 
     int remaining = maxBytes;
@@ -2424,7 +2425,7 @@ char *__stdcall BindMap_FormatKeyComboName(
 /**
  * Reimplements 0x471040: zInput::BindMap_CopyJoystickButtonName.
  * Binary Ninja reads the one-based g_zInput_JoystickButtonNames table, returns
- * g_zInput_EmptyName for an empty slot, or copies the selected literal.
+ * k_EmptyString for an empty slot, or copies the selected literal.
  * Purpose: Copy a joystick button name for bind-map display.
  */
 char *__stdcall BindMap_CopyJoystickButtonName(
@@ -2434,7 +2435,7 @@ char *__stdcall BindMap_CopyJoystickButtonName(
 ) {
     const char *source = g_zInput_JoystickButtonNames[joystickSlot];
     if (source == 0) {
-        return g_zInput_EmptyName;
+        return k_EmptyString;
     }
 
     return strncpy(
@@ -2447,7 +2448,7 @@ char *__stdcall BindMap_CopyJoystickButtonName(
 /**
  * Reimplements 0x471070: zInput::BindMap_CopyMouseButtonName.
  * Binary Ninja reads the one-based g_zInput_MouseButtonNames table, returns
- * g_zInput_EmptyName for an empty slot, or copies the selected literal.
+ * k_EmptyString for an empty slot, or copies the selected literal.
  * Purpose: Copy a mouse button name for bind-map display.
  */
 char *__stdcall BindMap_CopyMouseButtonName(
@@ -2457,7 +2458,7 @@ char *__stdcall BindMap_CopyMouseButtonName(
 ) {
     const char *source = g_zInput_MouseButtonNames[mouseSlot];
     if (source == 0) {
-        return g_zInput_EmptyName;
+        return k_EmptyString;
     }
 
     return strncpy(

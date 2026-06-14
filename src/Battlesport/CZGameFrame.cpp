@@ -268,7 +268,7 @@ void CZGameFrame::OnClose() {
  */
 void CZGameFrame::OnPaint() {
     CPaintDC paintDc((CWnd *)(void *)this);
-    if (zVid_QueryCachedClientRectUpdateMaskIf3dfx() != 0) {
+    if (zVid::QueryCachedClientRectUpdateMaskIf3dfx() != 0) {
         return;
     }
 
@@ -377,7 +377,7 @@ void CZGameFrame::OnSize(
         cx,
         cy
     );
-    zVid_UpdateCachedClientRectIfUpdateMaskEnabled();
+    zVid::UpdateCachedClientRectIfUpdateMaskEnabled();
 }
 
 /**
@@ -391,7 +391,7 @@ void CZGameFrame::OnMove(
     int
 ) {
     Default();
-    zVid_UpdateCachedClientRectIfUpdateMaskEnabled();
+    zVid::UpdateCachedClientRectIfUpdateMaskEnabled();
 }
 
 /**

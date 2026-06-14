@@ -5081,21 +5081,15 @@ void HudUiElement::OnUpdateIdle(
     float
 ) {}
 
-// Reimplements 0x4b4280: HudUiElement::SetTimer
+/**
+ * Reimplements 0x4b4280: HudUiElement::SetTimer.
+ * Original file: D:\Proj\Battlesport\HudUiElement.cpp.
+ * Purpose: set the element timer and update the timed-visible flag state.
+ */
 void HudUiElement::SetTimer(
     float duration
 ) {
-    unsigned int durationBits = 0;
-    memcpy(
-        &durationBits,
-        &duration,
-        sizeof(durationBits)
-    );
-    memcpy(
-        &timer,
-        &durationBits,
-        sizeof(timer)
-    );
+    timer = duration;
 
     if (duration >= 0.0f) {
         flags |= 0x01u;
@@ -6210,8 +6204,11 @@ void HudUiZrdScrollingText::OnActivate() {
     OnActivateResetOwnerFade();
 }
 
-// Reimplements 0x409570: HudUiZrdScrollingText::LoadFromZrd
-// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+/**
+ * Reimplements 0x409570: HudUiZrdScrollingText::LoadFromZrd.
+ * Original source path: D:\Proj\Battlesport\HudUiCreditsPanel.cpp.
+ * Purpose: load scrolling credits rows from ZRD layout data and compute stacked row heights.
+ */
 int HudUiZrdScrollingText::LoadFromZrd(
     zReader::Node *zrdSection,
     HudUiBackground *ownerDialog
@@ -8550,7 +8547,9 @@ HudUiPanel ** HudUiPanelPtrVector::EraseRange(
  * Reimplements 0x4ba510: HudUiPanelPtrVector::InsertN.
  * Binary Ninja shows the matching VC5 std::vector-style insert helper for
  * HudUiPanel pointers, including in-place tail movement and reallocation when
- * the current capacity cannot hold the requested insertion count.
+ * the current capacity cannot hold the requested insertion count. The retail
+ * template body keeps allocator-style guarded construction checks before each
+ * pointer copy.
  * Purpose: insert repeated panel pointers into the recovered panel pointer vector.
  */
 void HudUiPanelPtrVector::InsertN(
@@ -8558,52 +8557,113 @@ void HudUiPanelPtrVector::InsertN(
     unsigned int count,
     HudUiPanel **valueSource
 ) {
-    if (count == 0) {
+    HudUiPanel **oldEnd = end;
+    const int spareCount = (int)(capacityEnd - oldEnd);
+    if ((unsigned int)spareCount >= count) {
+        int tailCount = (int)(oldEnd - position);
+        if ((unsigned int)tailCount < count) {
+            HudUiPanel **dest = position + count;
+            HudUiPanel **source = position;
+            while (source != oldEnd) {
+                if (dest != 0) {
+                    *dest = *source;
+                }
+                ++source;
+                ++dest;
+            }
+
+            unsigned int fillCount = count - (unsigned int)tailCount;
+            dest = oldEnd;
+            while (fillCount != 0) {
+                if (dest != 0) {
+                    *dest = *valueSource;
+                }
+                ++dest;
+                --fillCount;
+            }
+
+            dest = position;
+            while (dest != oldEnd) {
+                *dest = *valueSource;
+                ++dest;
+            }
+            end += count;
+            return;
+        }
+
+        if (count != 0) {
+            HudUiPanel **source = oldEnd - count;
+            HudUiPanel **dest = oldEnd;
+            while (source != oldEnd) {
+                if (dest != 0) {
+                    *dest = *source;
+                }
+                ++source;
+                ++dest;
+            }
+
+            source = oldEnd - count;
+            dest = oldEnd;
+            while (source != position) {
+                --source;
+                --dest;
+                *dest = *source;
+            }
+
+            dest = position;
+            HudUiPanel **const fillEnd = position + count;
+            while (dest != fillEnd) {
+                *dest = *valueSource;
+                ++dest;
+            }
+
+            end += count;
+        }
         return;
     }
 
-    const size_t size = begin != 0 ? (size_t)(end - begin) : 0;
-    const size_t positionIndex = begin != 0 && position != 0 ? (size_t)(position - begin) : 0;
-    const size_t capacity = begin != 0 ? (size_t)(capacityEnd - begin) : 0;
-
-    if (size + count <= capacity) {
-        HudUiPanel **read = end;
-        HudUiPanel **write = end + count;
-        while (read != begin + positionIndex) {
-            --read;
-            --write;
-            *write = *read;
-        }
-
-        for (unsigned int i = 0; i < count; ++i) {
-            begin[positionIndex + i] = *valueSource;
-        }
-
-        end += count;
-        return;
+    HudUiPanel **oldBegin = begin;
+    const int oldSize = oldBegin != 0 ? (int)(oldEnd - oldBegin) : 0;
+    const int growBy = count < (unsigned int)oldSize ? oldSize : (int)count;
+    int newCapacity = oldSize + growBy;
+    if (newCapacity < 0) {
+        newCapacity = 0;
     }
 
-    const size_t growBy = count < size ? size : count;
-    const size_t newCapacity = size + growBy;
     HudUiPanel **const newBegin =
         (HudUiPanel **)(::operator new(newCapacity * sizeof(HudUiPanel *)));
     HudUiPanel **write = newBegin;
 
-    for (size_t prefixIndex = 0; prefixIndex < positionIndex; ++prefixIndex) {
-        *write++ = begin[prefixIndex];
+    HudUiPanel **read = oldBegin;
+    while (read != position) {
+        if (write != 0) {
+            *write = *read;
+        }
+        ++read;
+        ++write;
     }
 
-    for (unsigned int insertIndex = 0; insertIndex < count; ++insertIndex) {
-        *write++ = *valueSource;
+    unsigned int insertCount = count;
+    while (insertCount != 0) {
+        if (write != 0) {
+            *write = *valueSource;
+        }
+        ++write;
+        --insertCount;
     }
 
-    for (size_t suffixIndex = positionIndex; suffixIndex < size; ++suffixIndex) {
-        *write++ = begin[suffixIndex];
+    read = position;
+    while (read != oldEnd) {
+        if (write != 0) {
+            *write = *read;
+        }
+        ++read;
+        ++write;
     }
 
-    ::operator delete(begin);
+    ::operator delete(oldBegin);
     begin = newBegin;
-    end = newBegin + size + count;
+    end = newBegin + oldSize + count;
     capacityEnd = newBegin + newCapacity;
 }
 
@@ -9388,7 +9448,12 @@ HudUiCycleSelectorWidget * HudUiCycleSelectorWidget::ScalarDeletingDestructorThu
     return this;
 }
 
-// Reimplements 0x4b7ee0: HudUiCycleSelectorWidget::AdvanceSelectionAndActivate
+/**
+ * Reimplements 0x4b7ee0: HudUiCycleSelectorWidget::AdvanceSelectionAndActivate.
+ * Original source file: HudUiCycleSelectorWidget.cpp.
+ * Purpose: Advance the selected cycle entry, wrap at the visible/item limit,
+ * and run the base ZRD activation path.
+ */
 void HudUiCycleSelectorWidget::AdvanceSelectionAndActivate() {
     const int nextIndex = selectedIndex + 1;
     selectedIndex = nextIndex;
@@ -10521,8 +10586,12 @@ void StdPtrVector::FreeBufferAndReset() {
     capacityEnd = 0;
 }
 
-// Reimplements 0x40be60: HudCmdBindingEntry::CopyRange
-// (D:\Proj\Battlesport\HudCmdBindButton.cpp)
+/**
+ * Reimplements 0x40be60: HudCmdBindingEntry::CopyRange.
+ * Original file: D:\Proj\Battlesport\HudCmdBindButton.cpp.
+ * Purpose: copy a range of command-binding entry pointers and return the
+ * advanced destination cursor.
+ */
 HudCmdBindingEntry **__fastcall HudCmdBindingEntry::CopyRange(
     HudCmdBindingEntry **sourceBegin,
     HudCmdBindingEntry **sourceEnd,
@@ -10635,8 +10704,12 @@ void HudCmdBindButtonBase::SetSelectedEntry(
     selectedBindingIndex = selectedIndex;
 }
 
-// Reimplements 0x40be00: HudCmdBinding::DestroyRange
-// (HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40be00: HudCmdBinding::DestroyRange.
+ * Original file: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: destroy binding display records over a vector range and clear the
+ * caller-provided destination slots.
+ */
 HudCmdBinding **__fastcall HudCmdBinding::DestroyRange(
     HudCmdBinding **first,
     HudCmdBinding **last,
@@ -10765,8 +10838,12 @@ void HudCmdBindButtonBase::DestructorCore() {
     HudUiCheckToggleWidget::DestructorCore();
 }
 
-// Reimplements 0x40a940: HudCmdCommandList::Destructor
-// (D:\Proj\Battlesport\HudCmdBindButton.cpp)
+/**
+ * Reimplements 0x40a940: HudCmdCommandList::Destructor.
+ * Original file: D:\Proj\Battlesport\HudCmdBindButton.cpp.
+ * Purpose: release command-list binding entries, vector storage, embedded
+ * panel state, and inherited widget state.
+ */
 void HudCmdCommandList::Destructor() {
 
     HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(bindingVec.begin);
@@ -10804,10 +10881,15 @@ void HudCmdCommandList::Destructor() {
     bindingVec.capacity = 0;
 
     ((HudUiPanel *)(&bindPanel))->~HudUiPanel();
-    DestructorCore();
+    HudUiCheckToggleWidget::DestructorCore();
 }
 
-// Reimplements 0x40b0a0: HudCmdCommandList::ScalarDeletingDestructor
+/**
+ * Provider-boundary 0x40b0a0: HudCmdCommandList::ScalarDeletingDestructor.
+ * BN shows VC++ scalar-deleting destructor glue: call the class destructor,
+ * optionally delete storage when flags bit 0 is set, return this.
+ * Purpose: preserve the compiler-generated virtual table target for command-list buttons.
+ */
 HudUiElement * HudCmdCommandList::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -10819,8 +10901,12 @@ HudUiElement * HudCmdCommandList::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x40aa30: HudCmdKeyAButton::Destructor
-// (D:\Proj\Battlesport\HudCmdBindButton.cpp)
+/**
+ * Reimplements 0x40aa30: HudCmdKeyAButton::Destructor.
+ * Original file: D:\Proj\Battlesport\HudCmdBindButton.cpp.
+ * Purpose: release key-A binding entries, vector storage, embedded panel
+ * state, and inherited widget state.
+ */
 void HudCmdKeyAButton::Destructor() {
 
     HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(bindingVec.begin);
@@ -10858,10 +10944,15 @@ void HudCmdKeyAButton::Destructor() {
     bindingVec.capacity = 0;
 
     ((HudUiPanel *)(&bindPanel))->~HudUiPanel();
-    DestructorCore();
+    HudUiCheckToggleWidget::DestructorCore();
 }
 
-// Reimplements 0x40b0c0: HudCmdKeyAButton::ScalarDeletingDestructor
+/**
+ * Provider-boundary 0x40b0c0: HudCmdKeyAButton::ScalarDeletingDestructor.
+ * BN shows VC++ scalar-deleting destructor glue: call the class destructor,
+ * optionally delete storage when flags bit 0 is set, return this.
+ * Purpose: preserve the compiler-generated virtual table target for primary-key buttons.
+ */
 HudUiElement * HudCmdKeyAButton::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -10873,8 +10964,12 @@ HudUiElement * HudCmdKeyAButton::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x40ab20: HudCmdKeyBButton::Destructor
-// (D:\Proj\Battlesport\HudCmdBindButton.cpp)
+/**
+ * Reimplements 0x40ab20: HudCmdKeyBButton::Destructor.
+ * Original file: D:\Proj\Battlesport\HudCmdBindButton.cpp.
+ * Purpose: release key-B binding entries, vector storage, embedded panel
+ * state, and inherited widget state.
+ */
 void HudCmdKeyBButton::Destructor() {
 
     HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(bindingVec.begin);
@@ -10912,10 +11007,15 @@ void HudCmdKeyBButton::Destructor() {
     bindingVec.capacity = 0;
 
     ((HudUiPanel *)(&bindPanel))->~HudUiPanel();
-    DestructorCore();
+    HudUiCheckToggleWidget::DestructorCore();
 }
 
-// Reimplements 0x40b0e0: HudCmdKeyBButton::ScalarDeletingDestructor
+/**
+ * Provider-boundary 0x40b0e0: HudCmdKeyBButton::ScalarDeletingDestructor.
+ * BN shows VC++ scalar-deleting destructor glue: call the class destructor,
+ * optionally delete storage when flags bit 0 is set, return this.
+ * Purpose: preserve the compiler-generated virtual table target for secondary-key buttons.
+ */
 HudUiElement * HudCmdKeyBButton::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -10927,8 +11027,12 @@ HudUiElement * HudCmdKeyBButton::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x40ac10: HudCmdJoyButton::Destructor
-// (D:\Proj\Battlesport\HudCmdBindButton.cpp)
+/**
+ * Reimplements 0x40ac10: HudCmdJoyButton::Destructor.
+ * Original file: D:\Proj\Battlesport\HudCmdBindButton.cpp.
+ * Purpose: release joystick binding entries, vector storage, embedded panel
+ * state, and inherited widget state.
+ */
 void HudCmdJoyButton::Destructor() {
 
     HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(bindingVec.begin);
@@ -10966,10 +11070,15 @@ void HudCmdJoyButton::Destructor() {
     bindingVec.capacity = 0;
 
     ((HudUiPanel *)(&bindPanel))->~HudUiPanel();
-    DestructorCore();
+    HudUiCheckToggleWidget::DestructorCore();
 }
 
-// Reimplements 0x40b100: HudCmdJoyButton::ScalarDeletingDestructor
+/**
+ * Provider-boundary 0x40b100: HudCmdJoyButton::ScalarDeletingDestructor.
+ * BN shows VC++ scalar-deleting destructor glue: call the class destructor,
+ * optionally delete storage when flags bit 0 is set, return this.
+ * Purpose: preserve the compiler-generated virtual table target for joystick buttons.
+ */
 HudUiElement * HudCmdJoyButton::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -10981,8 +11090,12 @@ HudUiElement * HudCmdJoyButton::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x40ad00: HudCmdMouseButton::Destructor
-// (D:\Proj\Battlesport\HudCmdBindButton.cpp)
+/**
+ * Reimplements 0x40ad00: HudCmdMouseButton::Destructor.
+ * Original file: D:\Proj\Battlesport\HudCmdBindButton.cpp.
+ * Purpose: release mouse binding entries, vector storage, embedded panel
+ * state, and inherited widget state.
+ */
 void HudCmdMouseButton::Destructor() {
 
     HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(bindingVec.begin);
@@ -11020,10 +11133,15 @@ void HudCmdMouseButton::Destructor() {
     bindingVec.capacity = 0;
 
     ((HudUiPanel *)(&bindPanel))->~HudUiPanel();
-    DestructorCore();
+    HudUiCheckToggleWidget::DestructorCore();
 }
 
-// Reimplements 0x40b120: HudCmdMouseButton::ScalarDeletingDestructor
+/**
+ * Provider-boundary 0x40b120: HudCmdMouseButton::ScalarDeletingDestructor.
+ * BN shows VC++ scalar-deleting destructor glue: call the class destructor,
+ * optionally delete storage when flags bit 0 is set, return this.
+ * Purpose: preserve the compiler-generated virtual table target for mouse buttons.
+ */
 HudUiElement * HudCmdMouseButton::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -11035,9 +11153,13 @@ HudUiElement * HudCmdMouseButton::ScalarDeletingDestructor(
     return this;
 }
 
-// Restores repeated inline bind-button cleanup observed in 0x40adf0; no
-// standalone helper exists in the retail executable.
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper evidence: no standalone retail function exists; BN
+ * 0x40adf0 repeats this embedded bind-button cleanup after resetting each
+ * derived subobject table to HudCmdBindButtonBase.
+ * Purpose: destroy a non-mouse embedded bind-button subobject owned by
+ * HudCmdDialog.
+ */
 static void HudCmdDialog_DestroyBindButtonRange(
     HudCmdBindButtonBase *button
 ) {
@@ -11056,9 +11178,13 @@ static void HudCmdDialog_DestroyBindButtonRange(
     button->HudUiCheckToggleWidget::DestructorCore();
 }
 
-// Restores the mouse-button cleanup variant observed in 0x40adf0; no
-// standalone helper exists in the retail executable.
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper evidence: no standalone retail function exists; BN
+ * 0x40adf0 uses this mouse-button variant before the shared panel and
+ * inherited-widget cleanup.
+ * Purpose: destroy the embedded mouse bind-button subobject owned by
+ * HudCmdDialog.
+ */
 static void HudCmdDialog_DestroyMouseButton(
     HudCmdBindButtonBase *button
 ) {
@@ -11867,8 +11993,12 @@ void HudCmdResetButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x40b960: HudCmdSetListWidget::OnActivate
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40b960: HudCmdSetListWidget::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: Advance the set-list selector and rebuild command bindings for the
+ * selected group.
+ */
 void HudCmdSetListWidget::OnActivate() {
     AdvanceSelectionAndActivate();
     ((HudCmdDialog *)(owner))->RebuildCommandBindingListsForGroup(selectedIndex);
@@ -11882,8 +12012,11 @@ void HudCmdKeyAButton::OnBeginCapture() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x40ba60: HudCmdKeyAButton::OnClearBinding
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40ba60: HudCmdKeyAButton::OnClearBinding.
+ * Original file: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: clear the primary-key binding for the selected command row.
+ */
 void HudCmdKeyAButton::OnClearBinding() {
     const int selectedIndex = selectedBindingIndex;
     ((HudCmdDialog *)(owner))->ApplyPrimaryKeyRebind(
@@ -11893,8 +12026,11 @@ void HudCmdKeyAButton::OnClearBinding() {
     SetSelectedEntry(selectedIndex);
 }
 
-// Reimplements 0x40ba90: HudCmdBindButtonBase::OnSelectionChangedRefresh
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40ba90: HudCmdBindButtonBase::OnSelectionChangedRefresh.
+ * Original file: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: forward a bind-button selection change to the owning command dialog.
+ */
 void HudCmdBindButtonBase::OnSelectionChangedRefresh(
     int selectedIndex
 ) {
@@ -14665,14 +14801,23 @@ void HudUiNumericTextInput::OnActivate() {
 }
 
 /**
- * Reimplements 0x4b4ac0: HudUiNumericTextInput::Destructor.
- * Purpose: Disable raw keyboard capture and destroy the embedded text-input
- * and ZRD widget bases in retail cleanup order.
+ * Reimplements 0x4b4ac0: HudUiNumericTextInput::~HudUiNumericTextInput.
+ * Binary Ninja shows VC5 destructor codegen: derived vtable restore, raw
+ * keyboard capture release, embedded HudUiOwnedTextInput teardown, then
+ * HudUiZrdWidget cleanup with EH state transitions.
+ * Purpose: Disable raw keyboard capture before C++ member/base destruction.
+ */
+HudUiNumericTextInput::~HudUiNumericTextInput() {
+    SetRawKeyboardCapture(0);
+}
+
+/**
+ * Source-faithful helper wrapper for legacy native smoke call sites; the
+ * address-backed retail body is the C++ destructor above.
+ * Purpose: route compatibility calls through the recovered C++ destructor.
  */
 void HudUiNumericTextInput::Destructor() {
-    SetRawKeyboardCapture(0);
-    textInput.HudUiOwnedTextInput::~HudUiOwnedTextInput();
-    HudUiZrdWidget::DestructorCore();
+    this->HudUiNumericTextInput::~HudUiNumericTextInput();
 }
 
 // Reimplements 0x41a3f0: HudUiNumericTextInput::DestructorThunk
@@ -15316,6 +15461,9 @@ HudUiPanel * HudUiPanel::ConstructorDefaultThunk() {
 HudUiPanel * HudUiPanel::CopyConstructCore(
     const HudUiPanel *source
 ) {
+    // BN 0x4ba87c installs HudUiPanel dispatch identity during copy
+    // construction into vector storage.
+    new (this) HudUiPanel;
     HudUiTextLabel::CopyConstructor(source);
 
     textPick = 0;
@@ -15513,6 +15661,7 @@ int HudUiPanel::HitTest(
 
 /**
  * Reimplements 0x4bb440: HudUiPanel::GetLastTextPtr.
+ * Original file: D:\Proj\Battlesport\HudUiPanel.cpp.
  * Purpose: return the cached panel text after ensuring dirty text rendering state is rebuilt.
  */
 char * HudUiPanel::GetLastTextPtr() {
@@ -15566,7 +15715,11 @@ void HudUiPanel::EnableWordWrapWithRect(
     wrapRect = *rect;
 }
 
-// Reimplements 0x40bf00: HudUtil::FreeFieldPtr
+/**
+ * Reimplements 0x40bf00: HudUtil::FreeFieldPtr.
+ * Original file: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: free the owned field pointer when present and clear it.
+ */
 void HudUtil::FreeFieldPtr() {
     if (fieldPtr != 0) {
         free(fieldPtr);

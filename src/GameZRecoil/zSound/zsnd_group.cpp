@@ -539,7 +539,11 @@ int Shutdown() {
 }
 } // namespace zSndStreamMgr
 
-// Reimplements 0x4a5250: zSndGroup::QueueStreamRequest
+/**
+ * Reimplements 0x4a5250: zSndGroup::QueueStreamRequest.
+ * Purpose: allocate or recycle a stream request, fill its group playback state,
+ * and begin queued stream playback.
+ */
 zSndPlayHandle *__fastcall zSndGroup::QueueStreamRequest(
     int hasWorldPos,
     float gain,
@@ -600,7 +604,10 @@ zSndPlayHandle *__fastcall zSndGroup::QueueStreamRequest(
     return request->StateBeginGroup() != 0 ? (zSndPlayHandle *)(request) : 0;
 }
 
-// Reimplements 0x4a5230: zSndGroup::QueueStreamRequestSimple
+/**
+ * Reimplements 0x4a5230: zSndGroup::QueueStreamRequestSimple.
+ * Purpose: queue a non-positional stream request for this sound group.
+ */
 zSndPlayHandle * zSndGroup::QueueStreamRequestSimple(
     float gain
 ) {
@@ -612,7 +619,10 @@ zSndPlayHandle * zSndGroup::QueueStreamRequestSimple(
     );
 }
 
-// Reimplements 0x4a53d0: zSndGroup::QueueStreamRequestWithWorldPos
+/**
+ * Reimplements 0x4a53d0: zSndGroup::QueueStreamRequestWithWorldPos.
+ * Purpose: queue a positional stream request for this sound group.
+ */
 zSndPlayHandle *__fastcall zSndGroup::QueueStreamRequestWithWorldPos(
     zVec3 *worldPos,
     float gain,

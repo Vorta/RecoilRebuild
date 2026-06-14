@@ -7106,6 +7106,55 @@ extern "C" int zvideo_dd3d_create_device_state_smoke(void) {
         gFakeDirectDraw2QueryInterfaceCalls == 0 &&
         gFakeD3D2CreateDeviceCalls == 0;
 
+    InstallFakeDirectDraw2(
+        directDraw,
+        createdSurface,
+        zBufferSurface3
+    );
+    InstallFakeDirectDrawSurface3(
+        zBufferSurface3,
+        DD_OK,
+        DD_OK,
+        DD_OK
+    );
+    swSurface.vtable = gFakeDirectDrawSurface3VTable;
+    InstallFakeD3DDevice2(d3dDevice);
+    InstallFakeD3DViewport2(d3dViewport);
+    InstallFakeD3DMaterial2(d3dMaterial);
+    InstallFakeD3D2(
+        d3d,
+        reinterpret_cast<IDirect3DDevice2 *>(&d3dDevice),
+        reinterpret_cast<IDirect3DViewport2 *>(&d3dViewport),
+        reinterpret_cast<IDirect3DMaterial2 *>(&d3dMaterial)
+    );
+    gFakeDirectDrawSurface3AddAttachedSurfaceResult = DDERR_GENERIC;
+    gFakeDirectDraw2QueryInterfaceValue = reinterpret_cast<void *>(&d3d);
+    g_zVideo_pDirectDraw2 = reinterpret_cast<IDirectDraw2 *>(&directDraw);
+    g_zVideo_pSelectedD3DDeviceInfo = &selectedD3D;
+    g_zVideo_pZBufferSurface = nullptr;
+    g_zVideo_pZBufferAttachSurface = nullptr;
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_DisplayModeSurfaceState = {};
+    g_zVideo_SwSurfaceState.width = 320;
+    g_zVideo_SwSurfaceState.height = 240;
+    g_zVideo_SwSurfaceState.surf =
+        reinterpret_cast<IDirectDrawSurface3 *>(&swSurface);
+    g_zVideo_DisplayModeSurfaceState.width = 800;
+    g_zVideo_DisplayModeSurfaceState.height = 600;
+
+    const int addAttachedFailureResult = zVideo_dd3d::CreateDeviceState();
+    const bool addAttachedFailureOk =
+        addAttachedFailureResult != 0 &&
+        gFakeDirectDraw2CreateSurfaceCalls == 1 &&
+        gFakeDirectDrawSurfaceQueryInterfaceCalls == 1 &&
+        gFakeDirectDrawSurface3AddAttachedSurfaceCalls == 1 &&
+        gFakeDirectDrawSurface3LastAddAttachedSelf ==
+            reinterpret_cast<IDirectDrawSurface3 *>(&swSurface) &&
+        gFakeDirectDrawSurface3LastAttachedSurfaceArg ==
+            reinterpret_cast<IDirectDrawSurface3 *>(g_zVideo_pZBufferAttachSurface) &&
+        gFakeDirectDraw2QueryInterfaceCalls == 0 &&
+        gFakeD3D2CreateDeviceCalls == 0;
+
     g_zVideo_pDirectDraw2 = savedDirectDraw;
     g_zVideo_pZBufferSurface = savedZBuffer;
     g_zVideo_pZBufferAttachSurface = savedZBufferAttach;
@@ -7129,7 +7178,7 @@ extern "C" int zvideo_dd3d_create_device_state_smoke(void) {
         sizeof(savedQuadItems)
     );
 
-    return successOk && createSurfaceFailureOk ? 0 : 1;
+    return successOk && createSurfaceFailureOk && addAttachedFailureOk ? 0 : 1;
 }
 
 extern "C" int zvideo_dd_verify_surface_state_locking_smoke(void) {
@@ -13052,12 +13101,12 @@ extern "C" int zvideo_return_success_stub_smoke(void) {
 extern "C" int zvid_cached_client_rect_smoke(void) {
     zVid::SetCachedClientRectUpdateMask(0x55);
     g_zVideo_ActiveRendererPath = 1;
-    if (zVid_QueryCachedClientRectUpdateMaskIf3dfx() != 0) {
+    if (zVid::QueryCachedClientRectUpdateMaskIf3dfx() != 0x55) {
         return 1;
     }
 
     g_zVideo_ActiveRendererPath = 2;
-    if (zVid_QueryCachedClientRectUpdateMaskIf3dfx() != 0x55) {
+    if (zVid::QueryCachedClientRectUpdateMaskIf3dfx() != 0) {
         return 2;
     }
 
@@ -13080,13 +13129,14 @@ extern "C" int zvid_cached_client_rect_smoke(void) {
 
     g_zVideo_CachedClientRectScreen = {7, 8, 9, 10};
     zVid::SetCachedClientRectUpdateMask(0);
-    zVid_UpdateCachedClientRectIfUpdateMaskEnabled();
+    zVid::UpdateCachedClientRectIfUpdateMaskEnabled();
     const bool noUpdateOk =
         g_zVideo_CachedClientRectScreen.left == 7 && g_zVideo_CachedClientRectScreen.top == 8 &&
         g_zVideo_CachedClientRectScreen.right == 9 && g_zVideo_CachedClientRectScreen.bottom == 10;
 
+    g_zVideo_ActiveRendererPath = 1;
     zVid::SetCachedClientRectUpdateMask(1);
-    zVid_UpdateCachedClientRectIfUpdateMaskEnabled();
+    zVid::UpdateCachedClientRectIfUpdateMaskEnabled();
     const LONG helperWidth =
         g_zVideo_CachedClientRectScreen.right - g_zVideo_CachedClientRectScreen.left;
     const LONG helperHeight =

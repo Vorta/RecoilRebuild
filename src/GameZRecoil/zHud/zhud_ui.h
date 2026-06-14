@@ -1172,6 +1172,22 @@ struct HudUiListSelectorItem : HudUiPanel {
     void Draw();
 };
 
+/*
+ * HudCmd binding owner evidence: BN function 0x40be00 destroys only the
+ * display-text field at offset zero, while command-list entries extend that
+ * prefix with the command id consumed by HudCmdDialog selection logic.
+ */
+struct HudCmdBinding {
+    char *displayText;
+
+    static HudCmdBinding **__fastcall DestroyRange(
+        HudCmdBinding **first,
+        HudCmdBinding **last,
+        HudCmdBinding **dest,
+        void *unusedAlloc
+    );
+};
+
 struct HudCmdBindingEntry;
 
 struct HudCmdBindingVector {
@@ -1202,8 +1218,7 @@ struct HudCmdBindingVector {
     void PushBack(HudCmdBindingEntry *entry);
 };
 
-struct HudCmdBindingEntry {
-    char *displayText;
+struct HudCmdBindingEntry : HudCmdBinding {
     int commandId;
 
     /**
@@ -1226,9 +1241,10 @@ struct HudCmdBindingEntry {
     HudCmdBindingEntry(
         const char *text,
         int id
-    ) : displayText(_strdup(text)),
-        commandId(id)
+    )
     {
+        displayText = _strdup(text);
+        commandId = id;
     }
 
     /**
@@ -1310,17 +1326,10 @@ inline void HudCmdBindingVector::PushBack(
     end = insertPos + 1;
 }
 
-struct HudCmdBinding {
-    char *displayText;
-
-    static HudCmdBinding **__fastcall DestroyRange(
-        HudCmdBinding **first,
-        HudCmdBinding **last,
-        HudCmdBinding **dest,
-        void *unusedAlloc
-    );
-};
-
+// HudCmd bind buttons are authored C++ UI classes: BN table evidence places
+// OnSelectionChangedRefresh in the final generated vtable slot after
+// HudUiZrdWidget::PostLoadFromZrd, so keep it virtual instead of modeling a
+// copied FTable.
 struct HudCmdBindButtonBase : HudUiCheckToggleWidget {
     int bindingSlotTotalCount;
     int visibleBindingSlotCount;
@@ -1343,7 +1352,8 @@ struct HudCmdBindButtonBase : HudUiCheckToggleWidget {
     );
     void OnSelectedIndexChanged(int selectedIndex);
     void SetSelectedEntry(int selectedIndex);
-    void OnSelectionChangedRefresh(int selectedIndex);
+    // Final HudCmd bind-button vtable slot at 0x84 in BN.
+    virtual void OnSelectionChangedRefresh(int selectedIndex);
     void ClearBindingEntries();
     void DestructorCore();
     int LoadFromZrd(
@@ -1642,9 +1652,6 @@ struct HudUiOwnedTextInput : HudUiTextInput {
     HudUiOwnedTextInput() {
     }
     // Source-faithful helper recovered from address-backed callers in this source file.
-    ~HudUiOwnedTextInput() {
-    }
-    // Source-faithful helper recovered from address-backed callers in this source file.
     HudUiOwnedTextInput(int bufferSize) : HudUiTextInput(bufferSize),
         owner(0) {
     }
@@ -1660,6 +1667,7 @@ struct HudUiNumericTextInput : HudUiZrdWidget {
     HudUiSliderBorder sliderBorder;
 
     HudUiNumericTextInput();
+    ~HudUiNumericTextInput();
     HudUiNumericTextInput * Constructor(unsigned int maxDigits);
     HudUiNumericTextInput * BaseConstructor();
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);

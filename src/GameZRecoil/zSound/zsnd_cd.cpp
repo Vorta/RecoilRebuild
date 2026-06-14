@@ -183,7 +183,10 @@ void __fastcall SetUseArchiveBanksFlag(
     g_zSnd_UseArchiveBanksFlag = useArchiveBanks;
 }
 
-// Reimplements 0x4a2e80: zSnd::SetSpeedOfSoundMps
+/**
+ * Reimplements 0x4a2e80: zSnd::SetSpeedOfSoundMps.
+ * Purpose: store the speed of sound and its reciprocal for 3D audio.
+ */
 void __fastcall SetSpeedOfSoundMps(
     float speedOfSoundMps
 ) {

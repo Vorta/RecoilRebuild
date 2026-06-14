@@ -34,7 +34,12 @@ const int kZVidPaletteRemapVariantCount = 32;
 const int kZVidPaletteRemapColorsPerRecipe =
     kZVidPaletteColorCount * kZVidPaletteRemapVariantCount;
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: zVidPaletteRemapTableBytesForRecipeCount.
+ * Original-source helper evidence: no standalone retail function is present; callers inline
+ * the recipe-count scaling as recipeCount * 0x4000 + 0x200 bytes of 16-bit palette data.
+ * Purpose: compute the palette-remap table byte count for the current recipe count.
+ */
 size_t zVidPaletteRemapTableBytesForRecipeCount(
     int recipeCount
 ) {
@@ -160,6 +165,8 @@ int gVideo_resolutionMenuValid = 0;
 unsigned char g_zVideo_PaletteBrightnessLevel = 0;
 unsigned int g_zVideo_ClearColorPacked16 = 0;
 int g_zVideo_ClearScreenBufferEnabled = 0;
+// BN data owner 0x56b564 is a zero-initialized int32 touched only by the
+// cached-client-rect update-mask setter and renderer-path query helpers.
 int g_zVid_CachedClientRectUpdateMask = 0;
 int g_zVideo_IsInitialized = 0;
 int g_zVideo_AdjustSurfacesDisableGate = 0;
@@ -189,7 +196,8 @@ int g_zVideo_D3DSceneDepth = 0;
 int g_zVid_AcceptedHardwareRendererCount = 0;
 int g_zVideo_NumAcceptedDirectDrawDevices = 0;
 int g_zVideo_DirectDrawEnumOrdinal = 0;
-int g_zVid_TexturePackLoadState = 0;
+// Retail starts with texture-pack loading enabled; zVid accessors toggle this between 0 and 1.
+int g_zVid_TexturePackLoadState = 1;
 int g_zVid_BuiltinTexturePackCount = 0;
 zVidTexturePackEntry *g_zVid_BuiltinTexturePacks = 0;
 int g_zVid_TexturePackCount = 0;
@@ -329,8 +337,10 @@ zVideo_SurfaceLockVerifier *g_zVideo_pSurfaceLockVerifier = 0;
 int g_zVideo_SurfaceLockVerifyContext = 0;
 unsigned char g_zVideo_SurfaceLockVerifyFlags = 0;
 /*
- * BN models these as adjacent zero-initialized 0x20-byte zVideo_SurfaceState
- * records at 0x632200, 0x632220, and 0x632240.
+ * BN models these as zero-initialized 0x20-byte zVideo_SurfaceState records:
+ * the software, primary, and display-mode globals are adjacent at 0x632200,
+ * 0x632220, and 0x632240; the swap scratch record is the same shape at
+ * 0x56bc78 and is used only by the software present adjustment path.
  */
 zVideo_SurfaceStatePartial g_zVideo_SwSurfaceState = {0};
 zVideo_SurfaceStatePartial g_zVideo_PrimarySurfaceState = {0};
@@ -524,7 +534,10 @@ unsigned int __fastcall zVid_PackColor00RRGGBB(
            (blue >> g_zVideo_PixelPack.bShiftTo8);
 }
 
-// Reimplements 0x4a6d40: zVid_PackColorRgbFloats
+/**
+ * Reimplements 0x4a6d40: zVid_PackColorRgbFloats.
+ * Purpose: round RGB float channels and pack them through the active 16-bit pixel format.
+ */
 unsigned short __fastcall zVid_PackColorRgbFloats(
     zVideo_ColorRgbFloat *color
 ) {
@@ -538,7 +551,13 @@ unsigned short __fastcall zVid_PackColorRgbFloats(
     return (unsigned short)(packed);
 }
 
-// Reimplements 0x4a6b80: zVideo_SetClearColorPacked16
+/**
+ * Reimplements 0x4a6b80: zVideo::SetClearColorPacked16.
+ * Purpose: store the packed 16-bit clear color used by zVideo clear paths.
+ *
+ * Evidence: BN source file zVideo.cpp is a leaf fastcall store of ECX into
+ * zero-initialized g_zVideo_ClearColorPacked16 at 0x6321cc.
+ */
 void __fastcall zVideo_SetClearColorPacked16(
     unsigned int packedColor16
 ) {
@@ -902,7 +921,13 @@ void __fastcall zVideo_UpdateProjectionStateFromCameraData(
     cameraData->localFrustumFarNormal.z = 1.0f;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: zVideo_SubtractVec3.
+ * Original-source helper evidence: no standalone retail function is present;
+ * 0x478c70 inlines this zVec3 subtraction pattern for near, camera, and far
+ * frustum-center deltas.
+ * Purpose: subtract one zVec3 from another and return the delta.
+ */
 static zVec3 zVideo_SubtractVec3(
     zVec3 *lhs,
     zVec3 *rhs
@@ -914,7 +939,13 @@ static zVec3 zVideo_SubtractVec3(
     return delta;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: zVideo_DotVec3.
+ * Original-source helper evidence: no standalone retail function is present;
+ * 0x478c70 inlines this x/y/z multiply-add dot-product pattern for every
+ * frustum plane comparison.
+ * Purpose: compute the dot product of two zVec3 values.
+ */
 static float zVideo_DotVec3(
     zVec3 *lhs,
     zVec3 *rhs
@@ -922,7 +953,13 @@ static float zVideo_DotVec3(
     return lhs->x * rhs->x + lhs->y * rhs->y + lhs->z * rhs->z;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: zVideo_TestSpherePlane.
+ * Original-source helper evidence: no standalone retail function is present;
+ * 0x478c70 inlines this sphere/plane reject-or-clip test for the side and far
+ * frustum planes.
+ * Purpose: test one sphere against one frustum plane and update the clip mask.
+ */
 static int zVideo_TestSpherePlane(
     zVec3 *delta,
     zVec3 *normal,
@@ -945,8 +982,15 @@ static int zVideo_TestSpherePlane(
     return 0;
 }
 
-// Reimplements 0x478c70: zVideo_FrustumTestSphereClipMask
-// (GameZRecoil/zModel/zModel_Display.cpp)
+/**
+ * Reimplements 0x478c70: zVideo_FrustumTestSphereClipMask.
+ * Original file: GameZRecoil/zModel/zModel_Display.cpp.
+ * Purpose: reject or clip a sphere against the active view frustum planes.
+ *
+ * Evidence: BN reads the active view-context global, clears the incoming clip
+ * mask, tests near and far centers separately, and tests side planes against
+ * camera-position deltas while accumulating clip bits.
+ */
 int __fastcall zVideo_FrustumTestSphereClipMask(
     zVec3 *sphereCenter,
     int *clipMaskInOut,
@@ -1055,18 +1099,6 @@ int __fastcall zVideo_FrustumTestSphereClipMask(
     return 0;
 }
 
-// Reimplements 0x4a59b0: zVid_QueryCachedClientRectUpdateMaskIf3dfx
-int zVid_QueryCachedClientRectUpdateMaskIf3dfx() {
-    return g_zVideo_ActiveRendererPath == 2 ? g_zVid_CachedClientRectUpdateMask : 0;
-}
-
-// Reimplements 0x443a40: zVid_UpdateCachedClientRectIfUpdateMaskEnabled
-void zVid_UpdateCachedClientRectIfUpdateMaskEnabled() {
-    if (zVid_QueryCachedClientRectUpdateMaskIf3dfx() != 0) {
-        zVideo::UpdateCachedClientRectScreenCoords();
-    }
-}
-
 // Reimplements 0x4a7770: zVideo_RestoreIconicFullscreenWindowIfNeeded
 void zVideo_RestoreIconicFullscreenWindowIfNeeded() {
     if (g_zVideo_IsInitialized != 0 && g_zVideo_FullscreenOption != 0 &&
@@ -1075,6 +1107,44 @@ void zVideo_RestoreIconicFullscreenWindowIfNeeded() {
     }
 }
 }
+
+namespace zVid {
+
+/**
+ * Reimplements 0x4a59b0: zVid::QueryCachedClientRectUpdateMaskIf3dfx.
+ * Original file: Battlesport/zVideo.cpp.
+ * Purpose: return the cached client-rect update mask unless the path-2
+ * renderer is active.
+ *
+ * Data evidence: BN reads g_zVideo_ActiveRendererPath at 0x56bbe8 and
+ * g_zVid_CachedClientRectUpdateMask at 0x56b564; the branchless predicate
+ * subtracts renderer path 2, negates it, and uses sbb as a nonzero mask.
+ */
+int QueryCachedClientRectUpdateMaskIf3dfx() {
+    if (g_zVideo_ActiveRendererPath != 2) {
+        return g_zVid_CachedClientRectUpdateMask;
+    }
+    return 0;
+}
+
+/**
+ * Reimplements 0x443a40: zVid::UpdateCachedClientRectIfUpdateMaskEnabled.
+ * Original file evidence: BN function comment names Battlesport/RecoilApp.cpp;
+ * this reconstruction keeps the helper with the zVid video namespace cluster
+ * while source-file mapping is stale.
+ * Purpose: refresh the cached client rectangle when the renderer-path update
+ * mask is set.
+ *
+ * Evidence: BN calls zVid::QueryCachedClientRectUpdateMaskIf3dfx and tail-jumps
+ * to zVideo::UpdateCachedClientRectScreenCoords only when the query is nonzero.
+ */
+void UpdateCachedClientRectIfUpdateMaskEnabled() {
+    if (QueryCachedClientRectUpdateMaskIf3dfx() != 0) {
+        zVideo::UpdateCachedClientRectScreenCoords();
+    }
+}
+
+} // namespace zVid
 
 RECOIL_STATIC_ASSERT(sizeof(zVidHwApiDeviceRecordPartial) == 0x6ec);
 RECOIL_STATIC_ASSERT(sizeof(zVidD3DDriverRecordPartial) == 0x190);
@@ -1759,7 +1829,14 @@ int __fastcall QueryTextureMemoryBytes(
     return 1;
 }
 
-// Reimplements 0x4a59a0: zVid::SetCachedClientRectUpdateMask
+/**
+ * Reimplements 0x4a59a0: zVid::SetCachedClientRectUpdateMask.
+ * Original file: Battlesport/zVideo.cpp.
+ * Purpose: store the client-rect update mask used by cached rect refresh helpers.
+ *
+ * Data evidence: BN stores the fastcall mask argument into the zero-initialized
+ * g_zVid_CachedClientRectUpdateMask int32 global at 0x56b564.
+ */
 void __fastcall SetCachedClientRectUpdateMask(
     int mask
 ) {
@@ -2223,14 +2300,6 @@ void __fastcall BltSourceToPrimaryClipped(
 } // namespace zVideo_buff
 
 namespace zVideo {
-namespace {
-// Source-faithful helper recovered from address-backed callers in this source file.
-int MakeShiftedMask(
-    int bits
-) {
-    return ((1 << bits) - 1) << (8 - bits);
-}
-} // namespace
 
 /**
  * Reimplements 0x4a6bf0: zVideo::PixelPack_SetupFromMasks.
@@ -5619,16 +5688,24 @@ void __fastcall ResampleSquare(
 } // namespace zVid_Image
 
 namespace zVid_PaletteRemap {
-// Reimplements 0x46e680: zVid_PaletteRemap::FindRecipeIndex
+/**
+ * Reimplements 0x46e680: zVid_PaletteRemap::FindRecipeIndex.
+ * Purpose: find an existing palette-remap recipe with the same endpoint colors and strengths.
+ *
+ * Evidence: BN scans g_zVid_PaletteRemapRecipes and compares the eight
+ * zVidPaletteRemapRecipe float fields in retail field order, including the
+ * color0Strength check before the color1 RGB fields.
+ */
 int __fastcall FindRecipeIndex(
     zVidPaletteRemapRecipe *recipe
 ) {
     for (int i = 0; i < g_zVid_PaletteRemapRecipeCount; ++i) {
         zVidPaletteRemapRecipe *candidate = &g_zVid_PaletteRemapRecipes[i];
         if (recipe->color0R == candidate->color0R && recipe->color0G == candidate->color0G &&
-            recipe->color0B == candidate->color0B && recipe->color1B == candidate->color1B &&
-            recipe->color1R == candidate->color1R && recipe->color1G == candidate->color1G &&
+            recipe->color0B == candidate->color0B &&
             recipe->color0Strength == candidate->color0Strength &&
+            recipe->color1R == candidate->color1R && recipe->color1G == candidate->color1G &&
+            recipe->color1B == candidate->color1B &&
             recipe->color1Strength == candidate->color1Strength) {
             return i;
         }
@@ -5637,7 +5714,10 @@ int __fastcall FindRecipeIndex(
     return -1;
 }
 
-// Reimplements 0x46e4e0: zVid_PaletteRemap::ApplyRecipeToPaletteVariant
+/**
+ * Reimplements 0x46e4e0: zVid_PaletteRemap::ApplyRecipeToPaletteVariant.
+ * Purpose: blend one source palette toward a recipe endpoint variant and pack 16-bit colors.
+ */
 void __fastcall ApplyRecipeToPaletteVariant(
     zVidPaletteRemapRecipe *recipe,
     unsigned short *sourceColors,
@@ -5771,7 +5851,10 @@ extern "C" int __fastcall zVid_PaletteRemap_BuildPaletteVariant(
     return g_zVid_PaletteRemapRecipeCount - 1;
 }
 
-// Reimplements 0x46e8d0: zVid_PaletteRemap_BuildAllRecipeVariantsForPalette
+/**
+ * Reimplements 0x46e8d0: zVid_PaletteRemap_BuildAllRecipeVariantsForPalette.
+ * Purpose: expand a palette with all variants for every active palette-remap recipe.
+ */
 extern "C" unsigned short *__fastcall
 zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
     unsigned short *palette,
@@ -5807,7 +5890,14 @@ zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
     return result;
 }
 
-// Reimplements 0x46e960: zVid_PaletteRemap_FindRecipeIndexFromRgb
+/**
+ * Reimplements 0x46e960: zVid_PaletteRemap_FindRecipeIndexFromRgb.
+ * Purpose: Build the black-to-RGB palette-remap recipe used by renderer shade lookups and find its existing recipe index.
+ *
+ * Evidence: BN constructs a stack zVidPaletteRemapRecipe with zero color0
+ * endpoint fields, RGB color1 fields copied from the input, color0Strength
+ * zero, and color1Strength 1.0f before delegating to FindRecipeIndex.
+ */
 extern "C" int __fastcall zVid_PaletteRemap_FindRecipeIndexFromRgb(
     zColorRgb *rgb
 ) {
@@ -5819,7 +5909,10 @@ extern "C" int __fastcall zVid_PaletteRemap_FindRecipeIndexFromRgb(
     return zVid_PaletteRemap::FindRecipeIndex(&recipe);
 }
 
-// Reimplements 0x46dae0: zVid_TexturePackEntry_LoadFromFile
+/**
+ * Reimplements 0x46dae0: zVid_TexturePackEntry_LoadFromFile.
+ * Purpose: load one texture-pack ZBD entry table and any palette-remap variant tables.
+ */
 extern "C" FILE *__fastcall zVid_TexturePackEntry_LoadFromFile(
     zVidTexturePackEntry *entry
 ) {
@@ -5921,7 +6014,10 @@ extern "C" FILE *__fastcall zVid_TexturePackEntry_LoadFromFile(
     return entry->fileHandle;
 }
 
-// Reimplements 0x46da40: zVid_TexturePack_EnsureDefaultImagePackLoaded
+/**
+ * Reimplements 0x46da40: zVid_TexturePack_EnsureDefaultImagePackLoaded.
+ * Purpose: allocate and load the default image texture pack, with retail fallback path.
+ */
 extern "C" void zVid_TexturePack_EnsureDefaultImagePackLoaded() {
     if (g_zVid_TexturePackCount > 0) {
         return;
@@ -6319,21 +6415,43 @@ void __fastcall CallClearZBufferRect(
     g_zVideo_pfnClearZBufferRect(rect);
 }
 
-// Reimplements 0x4a6b60: zVideo_dd3d::SetPendingWireframeState
+/**
+ * Reimplements 0x4a6b60: zVideo_dd3d::SetPendingWireframeState.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: store the deferred Direct3D wireframe fill-mode request.
+ *
+ * Evidence: BN stores ecx directly into g_zVideo_PendingWireframeState, which
+ * BeginSceneAndFlushPendingRenderStates later consumes and resets.
+ */
 void __fastcall SetPendingWireframeState(
     int pendingWireframeState
 ) {
     g_zVideo_PendingWireframeState = pendingWireframeState;
 }
 
-// Reimplements 0x4a6b70: zVideo_dd3d::SetPendingDitherEnable
+/**
+ * Reimplements 0x4a6b70: zVideo_dd3d::SetPendingDitherEnable.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
+ * Purpose: store the deferred Direct3D dither-enable render-state request.
+ *
+ * Evidence: BN stores ecx directly into g_zVideo_PendingDitherEnable, which
+ * BeginSceneAndFlushPendingRenderStates applies to D3DRENDERSTATE_DITHERENABLE.
+ */
 void __fastcall SetPendingDitherEnable(
     int enabled
 ) {
     g_zVideo_PendingDitherEnable = enabled;
 }
 
-// Reimplements 0x4a9ac0: zVideo_dd3d::BeginSceneAndFlushPendingRenderStates
+/**
+ * Reimplements 0x4a9ac0: zVideo_dd3d::BeginSceneAndFlushPendingRenderStates.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
+ * Purpose: begin the Direct3D scene and flush deferred wireframe and dither states.
+ *
+ * Evidence: BN calls IDirect3DDevice2::BeginScene, reports zvid_ddd3d.c line 76
+ * on failure, maps pending wireframe 0/1 to solid/wireframe fill mode, resets
+ * applied pending states to -1, and returns zero on success.
+ */
 int BeginSceneAndFlushPendingRenderStates() {
     const HRESULT hresult = g_zVideo_pD3DDevice->BeginScene();
     if (hresult != DD_OK) {
@@ -6359,11 +6477,11 @@ int BeginSceneAndFlushPendingRenderStates() {
         g_zVideo_PendingWireframeState = -1;
     }
 
-    const int pendingDitherEnable = g_zVideo_PendingDitherEnable;
-    if (pendingDitherEnable != -1) {
+    // VC5 matches BN when the dither global is reloaded at the call site.
+    if (g_zVideo_PendingDitherEnable != -1) {
         g_zVideo_pD3DDevice->SetRenderState(
             D3DRENDERSTATE_DITHERENABLE,
-            (DWORD)(pendingDitherEnable)
+            (DWORD)(g_zVideo_PendingDitherEnable)
         );
         g_zVideo_PendingDitherEnable = -1;
     }
@@ -6371,7 +6489,14 @@ int BeginSceneAndFlushPendingRenderStates() {
     return 0;
 }
 
-// Reimplements 0x4a9b40: zVideo_dd3d::EndScene
+/**
+ * Reimplements 0x4a9b40: zVideo_dd3d::EndScene.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
+ * Purpose: end the active Direct3D scene and report provider failures.
+ *
+ * Evidence: BN calls IDirect3DDevice2::EndScene, reports zvid_ddd3d.c line 115
+ * on nonzero HRESULT, and returns zero on success.
+ */
 int EndScene() {
     const HRESULT hresult = g_zVideo_pD3DDevice->EndScene();
     if (hresult != DD_OK) {
@@ -6386,7 +6511,7 @@ int EndScene() {
 }
 
 namespace {
-const char *kZVideoDirect3DSourceFile = "D:\\Proj\\GameZRecoil\\zVideo\\zvid_ddd3d.c";
+const char kZVideoDirect3DSourceFile[] = "D:\\Proj\\GameZRecoil\\zVideo\\zvid_ddd3d.c";
 
 // Source-faithful helper recovered from address-backed callers in this source file.
 DWORD PackFogColorFrom255Floats(
@@ -6793,14 +6918,28 @@ void AppendFanCloseVertexIfNeeded(
 }
 } // namespace
 
-// Reimplements 0x4a9b70: zVideo_dd3d::PresentDisplayModeSurface
+/**
+ * Reimplements 0x4a9b70: zVideo_dd3d::PresentDisplayModeSurface.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
+ * Purpose: flips the Direct3D display-mode surface, optionally blits the
+ * primary surface back to software first, and retries lost or busy surfaces.
+ *
+ * Evidence: BN uses ECX/EDX for source/destination rects, stack arguments for
+ * wait/blit flags, checks g_zVideo_DisplayModeSurfaceState.surf for the 0x400
+ * no-surface return, issues DirectDraw Blt and Flip provider calls with
+ * DDBLT_WAIT/DDFLIP_WAIT flag construction, retries DDERR_WASSTILLDRAWING,
+ * restores and retries DDERR_SURFACELOST, and reports zvid_ddd3d.c line 0xae
+ * before returning 0x5a56ffff on unrecoverable provider failure.
+ */
 int __fastcall PresentDisplayModeSurface(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect,
     int waitForPresent,
     int blitPrimaryToSwFirst
 ) {
-    if (g_zVideo_DisplayModeSurfaceState.surf == 0) {
+    // BN keeps the checked display surface live, then reloads it after Blt/retry paths.
+    IDirectDrawSurface3 *displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
+    if (displaySurface == 0) {
         return 0x400;
     }
 
@@ -6814,26 +6953,29 @@ int __fastcall PresentDisplayModeSurface(
                 bltFlags,
                 0
             );
+            displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
         }
 
-        HRESULT hresult =
-            g_zVideo_DisplayModeSurfaceState.surf->Flip(
-                0,
-                waitForPresent != 0 ? DDFLIP_WAIT : 0
-            );
+        HRESULT hresult = displaySurface->Flip(
+            0,
+            waitForPresent != 0 ? DDFLIP_WAIT : 0
+        );
         if (hresult == DD_OK) {
             return 0;
         }
 
         if (hresult == DDERR_WASSTILLDRAWING) {
+            displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
             continue;
         }
 
         if (hresult == DDERR_SURFACELOST) {
-            hresult = g_zVideo_DisplayModeSurfaceState.surf->Restore();
+            displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
+            hresult = displaySurface->Restore();
         }
 
         if (hresult == DD_OK) {
+            displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
             continue;
         }
 
@@ -7120,12 +7262,20 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
  * Purpose: creates the Direct3D z-buffer/device/viewport/material state and
  * initializes the fixed render-state defaults for the active software surface.
  *
- * Evidence: BN shows z-buffer surface creation with a system-memory fallback,
- * DirectDraw/Direct3D provider setup, material and caps initialization, ten
+ * Evidence: BN shows z-buffer surface creation, DirectDraw/Direct3D provider
+ * setup, material and caps initialization, ten
  * fixed render-state writes, fog enablement, and quad-batch depth seeding.
  */
 int CreateDeviceState() {
     DDSURFACEDESC zBufferDesc = {0};
+    D3DVIEWPORT2 viewport2 = {0};
+    D3DMATERIAL mat = {0};
+    // VC5/BN evidence shows the original C source zeroed this provider record again here.
+    memset(
+        &zBufferDesc,
+        0,
+        sizeof(zBufferDesc)
+    );
     zBufferDesc.dwWidth = (DWORD)(g_zVideo_SwSurfaceState.width);
     zBufferDesc.dwHeight = (DWORD)(g_zVideo_SwSurfaceState.height);
     g_zVideo_ClearScreenBufferEnabled = 1;
@@ -7140,19 +7290,11 @@ int CreateDeviceState() {
         0
     );
     if (hresult != DD_OK) {
-        zBufferDesc.ddsCaps.dwCaps = DDSCAPS_ZBUFFER | DDSCAPS_SYSTEMMEMORY;
-        hresult = g_zVideo_pDirectDraw2->CreateSurface(
-            &zBufferDesc,
-            (IDirectDrawSurface **)(&g_zVideo_pZBufferSurface),
-            0
+        return zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0xd3
         );
-        if (hresult != DD_OK) {
-            return zVideo_dd::ReportError(
-                (int)(hresult),
-                kZVideoDirect3DSourceFile,
-                0xd3
-            );
-        }
     }
 
     hresult = g_zVideo_pZBufferSurface->QueryInterface(
@@ -7171,14 +7313,11 @@ int CreateDeviceState() {
         (IDirectDrawSurface3 *)(g_zVideo_pZBufferAttachSurface)
     );
     if (hresult != DD_OK) {
-        hresult = g_zVideo_SwSurfaceState.surf->AddAttachedSurface(g_zVideo_pZBufferSurface);
-        if (hresult != DD_OK) {
-            return zVideo_dd::ReportError(
-                (int)(hresult),
-                kZVideoDirect3DSourceFile,
-                0xde
-            );
-        }
+        return zVideo_dd::ReportError(
+            (int)(hresult),
+            kZVideoDirect3DSourceFile,
+            0xde
+        );
     }
 
     hresult = g_zVideo_pDirectDraw2->QueryInterface(
@@ -7227,14 +7366,13 @@ int CreateDeviceState() {
         );
     }
 
-    const int width = g_zVideo_SwSurfaceState.width;
-    const int height = g_zVideo_SwSurfaceState.height;
-    D3DVIEWPORT2 viewport2 = {0};
+    const DWORD width = (DWORD)(g_zVideo_DisplayModeSurfaceState.width);
+    const DWORD height = (DWORD)(g_zVideo_DisplayModeSurfaceState.height);
     viewport2.dwSize = sizeof(viewport2);
     viewport2.dwX = 0;
     viewport2.dwY = 0;
-    viewport2.dwWidth = (DWORD)(width);
-    viewport2.dwHeight = (DWORD)(height);
+    viewport2.dwWidth = width;
+    viewport2.dwHeight = height;
     viewport2.dvClipX = 0.0f;
     viewport2.dvClipY = 0.0f;
     viewport2.dvClipWidth = (D3DVALUE)(width);
@@ -7272,14 +7410,13 @@ int CreateDeviceState() {
         );
     }
 
-    D3DMATERIAL mat = {0};
     mat.dwSize = sizeof(mat);
-    mat.diffuse.r = 0.0f;
-    mat.diffuse.g = 0.0f;
     mat.diffuse.b = 0.0f;
-    mat.ambient.r = 1.0f;
-    mat.ambient.g = 1.0f;
+    mat.diffuse.g = 0.0f;
+    mat.diffuse.r = 0.0f;
     mat.ambient.b = 1.0f;
+    mat.ambient.g = 1.0f;
+    mat.ambient.r = 1.0f;
     mat.dwRampSize = 0x100;
 
     hresult = g_zVideo_pD3DMaterial2->SetMaterial(&mat);
@@ -7478,23 +7615,29 @@ void UpdateFogColor() {
 }
 
 /**
- * Reimplements 0x4accc0: zVideo_dd3d::SetQuadBatchDepthAndRhw
- * Purpose: Stamps the current Direct3D quad-batch depth and reciprocal-homogeneous
- * weight across all cached TL vertices.
+ * Reimplements 0x4accc0: zVideo_dd3d::SetQuadBatchDepthAndRhw.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
+ * Purpose: stamp the current Direct3D quad-batch depth and reciprocal
+ * homogeneous weight across all cached TL vertices.
+ *
+ * Evidence: BN uses a bottomRight.z cursor and writes each item's TL vertices
+ * in bottom-left, bottom-right, top-right, top-left order for z, then the
+ * same order for rhw.
  */
 void __stdcall SetQuadBatchDepthAndRhw(
     float depthAndRhw
 ) {
-    {
-        for (int itemIndex = 0; itemIndex < 16; ++itemIndex) {
-            zVideo_QuadBatchItemPartial &item = g_zVideo_QuadBatchItemsBase[itemIndex];
-            {
-                for (int vertexIndex = 0; vertexIndex < 4; ++vertexIndex) {
-                    item.vertices[vertexIndex].sz = depthAndRhw;
-                    item.vertices[vertexIndex].rhw = depthAndRhw;
-                }
-            }
-        }
+    for (int itemIndex = 0; itemIndex < 16; ++itemIndex) {
+        zVideo_QuadBatchItemPartial &item = g_zVideo_QuadBatchItemsBase[itemIndex];
+
+        item.vertices[3].sz = depthAndRhw;
+        item.vertices[2].sz = depthAndRhw;
+        item.vertices[1].sz = depthAndRhw;
+        item.vertices[0].sz = depthAndRhw;
+        item.vertices[3].rhw = depthAndRhw;
+        item.vertices[2].rhw = depthAndRhw;
+        item.vertices[1].rhw = depthAndRhw;
+        item.vertices[0].rhw = depthAndRhw;
     }
 }
 
@@ -9394,7 +9537,7 @@ int GetAcceptedDirectDrawDeviceCountCached() {
 }
 
 namespace {
-const char *kZVideoDirectDrawSourceFile = "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c";
+const char kZVideoDirectDrawSourceFile[] = "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c";
 const int kPresentMissingSurfaceResult = 0x400;
 const int kPresentFailureResult = 0x5a56ffff;
 const int kPresentLinePageLock = 0x6c;
@@ -9443,40 +9586,48 @@ bool PageUnlockBeforeRelease(
     return true;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-bool BltFillWithRestore(
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: issue a DirectDraw Blt fill, restore a lost surface, and retry.
+ *
+ * Original inline helper evidence: BN callers at 0x4a81a0, 0x4a8220, and
+ * 0x4a82f0 each emit the same provider Blt loop, DDERR_SURFACELOST Restore
+ * retry, zvid_dd.c ReportError call, and boolean success/failure branch shape
+ * around caller-specific surfaces, flags, fill values, and source line numbers.
+ */
+inline bool BltFillWithRestore(
     IDirectDrawSurface3 *surface,
     zVidRect32 *rect,
     DWORD flags,
     DDBLTFX *bltFx,
     int reportLine
 ) {
-    for (;;) {
-        HRESULT hresult = surface->Blt(
-            (RECT *)(rect),
-            0,
-            0,
-            flags,
-            bltFx
-        );
-        if (hresult == DD_OK) {
-            return true;
-        }
-
-        if (hresult == DDERR_SURFACELOST) {
-            hresult = surface->Restore();
-            if (hresult == DD_OK) {
-                continue;
-            }
-        }
-
-        ReportError(
-            (int)(hresult),
-            kZVideoDirectDrawSourceFile,
-            reportLine
-        );
-        return false;
+retry:
+    HRESULT hresult = surface->Blt(
+        (RECT *)(rect),
+        0,
+        0,
+        flags,
+        bltFx
+    );
+    if (hresult == DD_OK) {
+        return true;
     }
+
+    if (hresult == DDERR_SURFACELOST) {
+        hresult = surface->Restore();
+        if (hresult == DD_OK) {
+            goto retry;
+        }
+    }
+
+    ReportError(
+        (int)(hresult),
+        kZVideoDirectDrawSourceFile,
+        reportLine
+    );
+    return false;
 }
 
 } // namespace
@@ -10233,36 +10384,34 @@ int __fastcall Image_PopulateSurfaceFromHeapPixels(
 ) {
     DDSURFACEDESC lockedSurfaceDesc = {0};
     lockedSurfaceDesc.dwSize = sizeof(lockedSurfaceDesc);
+    HRESULT hresult;
 
-    for (;;) {
-        HRESULT hresult = image->surface->Lock(
-            0,
-            &lockedSurfaceDesc,
-            DDLOCK_WAIT,
-            0
-        );
-        if (hresult == DD_OK) {
-            break;
+retryLock:
+    hresult = image->surface->Lock(
+        0,
+        &lockedSurfaceDesc,
+        DDLOCK_WAIT,
+        0
+    );
+    if (hresult != DD_OK) {
+        if (hresult != DDERR_SURFACELOST) {
+            ReportError(
+                (int)(hresult),
+                kZVideoDirectDrawSourceFile,
+                0x31f
+            );
+            return 0;
         }
 
-        if (hresult == DDERR_SURFACELOST) {
-            const HRESULT restoreResult = image->surface->Restore();
-            if (restoreResult != DD_OK) {
-                ReportError(
-                    (int)(restoreResult),
-                    kZVideoDirectDrawSourceFile,
-                    0x31b
-                );
-            }
-            continue;
+        hresult = image->surface->Restore();
+        if (hresult != DD_OK) {
+            ReportError(
+                (int)(hresult),
+                kZVideoDirectDrawSourceFile,
+                0x31b
+            );
         }
-
-        ReportError(
-            (int)(hresult),
-            kZVideoDirectDrawSourceFile,
-            0x31f
-        );
-        return 0;
+        goto retryLock;
     }
 
     const int rowBytes = (int)(image->width) << 1;
@@ -10284,31 +10433,30 @@ int __fastcall Image_PopulateSurfaceFromHeapPixels(
     image->pixels = lockedSurfaceDesc.lpSurface;
     image->pitchWords = (int)((unsigned int)(lockedSurfaceDesc.lPitch) >> 1);
 
-    for (;;) {
-        HRESULT hresult = image->surface->Unlock(&lockedSurfaceDesc);
-        if (hresult == DD_OK) {
-            return 1;
-        }
-
-        if (hresult == DDERR_SURFACELOST) {
-            const HRESULT restoreResult = image->surface->Restore();
-            if (restoreResult != DD_OK) {
-                ReportError(
-                    (int)(restoreResult),
-                    kZVideoDirectDrawSourceFile,
-                    0x33b
-                );
-            }
-            continue;
-        }
-
-        ReportError(
-            (int)(hresult),
-            kZVideoDirectDrawSourceFile,
-            0x33f
-        );
-        return 0;
+retryUnlock:
+    hresult = image->surface->Unlock(&lockedSurfaceDesc);
+    if (hresult == DD_OK) {
+        return 1;
     }
+
+    if (hresult == DDERR_SURFACELOST) {
+        hresult = image->surface->Restore();
+        if (hresult != DD_OK) {
+            ReportError(
+                (int)(hresult),
+                kZVideoDirectDrawSourceFile,
+                0x33b
+            );
+        }
+        goto retryUnlock;
+    }
+
+    ReportError(
+        (int)(hresult),
+        kZVideoDirectDrawSourceFile,
+        0x33f
+    );
+    return 0;
 }
 
 /**
@@ -10385,15 +10533,17 @@ int __fastcall Image_UploadPixelsToSurface(
 
     if (image->surface == 0) {
         // Original upload path assumes device selection is complete before lazy creation.
-        const unsigned int caps =
-            g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags != 0
-                ? DDSCAPS_NONLOCALVIDMEM | DDSCAPS_VIDEOMEMORY
-                : DDSCAPS_SYSTEMMEMORY;
-        if (Image_LazyCreateBackingSurface(
+        unsigned int caps = DDSCAPS_NONLOCALVIDMEM | DDSCAPS_VIDEOMEMORY;
+        if (g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags == 0) {
+            caps = DDSCAPS_SYSTEMMEMORY;
+        }
+
+        IDirectDrawSurface3 *surface = Image_LazyCreateBackingSurface(
             image,
             caps
-        ) == 0) {
-            return 0;
+        );
+        if (surface == 0) {
+            return (int)(surface);
         }
     }
 
@@ -10404,7 +10554,7 @@ int __fastcall Image_UploadPixelsToSurface(
 
     ReportError(
         (int)(hresult),
-        kZVideoDirectDrawSourceFile,
+        "D:\\Proj\\GameZRecoil\\zVideo\\zvid_dd.c",
         0x36d
     );
     return 0;
@@ -10483,36 +10633,43 @@ void __fastcall BltPrimaryToSwRectDirect(
     }
 }
 
-// Reimplements 0x4a7b60: zVideo_dd::PresentDisplayModeSurface
-// Presents the software/display-mode surface through DirectDraw, including the
-// original page-lock state swap used by fullscreen software adjustment.
+/**
+ * Reimplements 0x4a7b60: zVideo_dd::PresentDisplayModeSurface.
+ * Purpose: Present the software/display-mode surface through DirectDraw.
+ *
+ * Evidence: BN source file zvid_dd.c page-locks the primary surface for the
+ * fullscreen software adjustment path, copies the 0x20-byte primary and
+ * software surface records through g_zVideo_SurfaceStateSwapScratch when the
+ * swap is enabled, unlocks the active primary record when it remains locked,
+ * and retries a failed Blt after DDERR_SURFACELOST Restore succeeds.
+ */
 int __fastcall PresentDisplayModeSurface(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect,
     int waitForPresent,
     int skipSurfaceStateSwap
 ) {
-    IDirectDrawSurface3 *const displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
-    IDirectDrawSurface3 *const primarySurface = g_zVideo_PrimarySurfaceState.surf;
-    if (displaySurface == 0 || primarySurface == 0) {
+    DWORD presentBltFlags =
+        DDBLT_WAIT + (waitForPresent != 0 ? 0 : DDBLT_ASYNC);
+
+    if (g_zVideo_DisplayModeSurfaceState.surf == 0 ||
+        g_zVideo_PrimarySurfaceState.surf == 0) {
         return kPresentMissingSurfaceResult;
     }
 
-    const DWORD presentBltFlags =
-        DDBLT_WAIT | (waitForPresent != 0 ? 0 : DDBLT_ASYNC);
     HRESULT hresult;
 
     for (;;) {
         if (g_zVideo_UseHalfResBackbuffer != 0 || g_zVideo_HalfResAdjustMode == 0) {
-            hresult = displaySurface->Blt(
+            hresult = g_zVideo_DisplayModeSurfaceState.surf->Blt(
                 (RECT *)(dstRect),
-                primarySurface,
+                g_zVideo_PrimarySurfaceState.surf,
                 (RECT *)(srcRect),
                 presentBltFlags,
                 0
             );
         } else {
-            hresult = primarySurface->PageLock(0);
+            hresult = g_zVideo_PrimarySurfaceState.surf->PageLock(0);
             if (hresult != DD_OK) {
                 ReportError(
                     (int)(hresult),
@@ -10522,9 +10679,9 @@ int __fastcall PresentDisplayModeSurface(
                 return 0;
             }
 
-            hresult = displaySurface->Blt(
+            hresult = g_zVideo_DisplayModeSurfaceState.surf->Blt(
                 (RECT *)(dstRect),
-                primarySurface,
+                g_zVideo_PrimarySurfaceState.surf,
                 (RECT *)(srcRect),
                 DDBLT_ASYNC,
                 0
@@ -10570,7 +10727,7 @@ int __fastcall PresentDisplayModeSurface(
         }
 
         if (hresult == DDERR_SURFACELOST) {
-            hresult = displaySurface->Restore();
+            hresult = g_zVideo_DisplayModeSurfaceState.surf->Restore();
             if (hresult == DD_OK) {
                 continue;
             }
@@ -10704,32 +10861,70 @@ void __fastcall BltSwToPrimaryRect(
     }
 }
 
-// Reimplements 0x4a81a0: zVideo_dd::ZBuffer_DepthFillRect
+/**
+ * Reimplements 0x4a81a0: zVideo_dd::ZBuffer_DepthFillRect.
+ * Purpose: clear the current DirectDraw Z-buffer rectangle to depth zero.
+ *
+ * Evidence: BN source file zvid_dd.c tests g_zVideo_pZBufferSurface, builds a
+ * DDBLTFX with dwSize 0x64 and dwFillDepth zero, calls DirectDrawSurface3::Blt
+ * with DDBLT_DEPTHFILL, and reports line 0x242 after a failed Restore retry.
+ */
 void __fastcall ZBuffer_DepthFillRect(
     zVidRect32 *dstRect
 ) {
+    // BN writes only the DirectDraw fields consumed by the selected fill mode.
+    DDBLTFX bltFx;
+    bltFx.dwSize = sizeof(bltFx);
     if (g_zVideo_pZBufferSurface == 0) {
         return;
     }
 
-    DDBLTFX bltFx = {0};
-    bltFx.dwSize = sizeof(bltFx);
     bltFx.dwFillDepth = 0;
-    BltFillWithRestore(
-        g_zVideo_pZBufferSurface,
-        dstRect,
-        DDBLT_DEPTHFILL,
-        &bltFx,
+    HRESULT hresult;
+    for (;;) {
+        hresult = g_zVideo_pZBufferSurface->Blt(
+            (RECT *)(dstRect),
+            0,
+            0,
+            DDBLT_DEPTHFILL,
+            &bltFx
+        );
+        if (hresult == DD_OK) {
+            return;
+        }
+
+        if (hresult != DDERR_SURFACELOST) {
+            break;
+        }
+
+        hresult = g_zVideo_pZBufferSurface->Restore();
+        if (hresult != DD_OK) {
+            break;
+        }
+    }
+
+    ReportError(
+        (int)(hresult),
+        kZVideoDirectDrawSourceFile,
         0x242
     );
 }
 
-// Reimplements 0x4a8220: zVideo_dd::ClearScreenAndZBufferRect
+/**
+ * Reimplements 0x4a8220: zVideo_dd::ClearScreenAndZBufferRect.
+ * Purpose: clear a color surface rectangle and then the matching Z-buffer.
+ *
+ * Evidence: BN source file zvid_dd.c gates the color fill with
+ * g_zVideo_ClearScreenBufferEnabled, uses g_zVideo_ClearColorPacked16 for
+ * DDBLT_COLORFILL|DDBLT_WAIT, then optionally clears g_zVideo_pZBufferSurface
+ * with DDBLT_DEPTHFILL and report lines 0x267 and 0x27f.
+ */
 void __fastcall ClearScreenAndZBufferRect(
     zVidRect32 *dstRect,
     zVideo_SurfaceStatePartial *colorSurfaceState
 ) {
-    DDBLTFX bltFx = {0};
+    // BN writes only the DirectDraw fields consumed by the selected fill mode.
+    DDBLTFX bltFx;
     bltFx.dwSize = sizeof(bltFx);
 
     if (g_zVideo_ClearScreenBufferEnabled != 0) {
@@ -10759,12 +10954,21 @@ void __fastcall ClearScreenAndZBufferRect(
     );
 }
 
-// Reimplements 0x4a82f0: zVideo_dd::ClearSwBackbufferAndZBufferRects
+/**
+ * Reimplements 0x4a82f0: zVideo_dd::ClearSwBackbufferAndZBufferRects.
+ * Purpose: clear the software backbuffer rectangle and a separate Z rectangle.
+ *
+ * Evidence: BN source file zvid_dd.c fills g_zVideo_SwSurfaceState.surf when
+ * screen-buffer clearing is enabled, then optionally clears
+ * g_zVideo_pZBufferSurface with the supplied Z rectangle and reports lines
+ * 0x2a5 and 0x2bd on permanent provider failures.
+ */
 void __fastcall ClearSwBackbufferAndZBufferRects(
     zVidRect32 *colorRect,
     zVidRect32 *zRect
 ) {
-    DDBLTFX bltFx = {0};
+    // BN writes only the DirectDraw fields consumed by the selected fill mode.
+    DDBLTFX bltFx;
     bltFx.dwSize = sizeof(bltFx);
 
     if (g_zVideo_ClearScreenBufferEnabled != 0) {
@@ -10838,18 +11042,29 @@ int SetDisplayMode() {
         0,
         0
     );
-    if (hresult == DD_OK) {
-        return 1;
+    if (hresult != DD_OK) {
+        ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x39c
+        );
+        return 0;
     }
 
-    ReportError(
-        (int)(hresult),
-        kZVideoDirectDrawSourceFile,
-        0x39c
-    );
-    return 0;
+    return 1;
 }
 
+/**
+ * Reimplements 0x4a8790: zVideo_dd::SetVideoMode.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: rebuild fullscreen DirectDraw surfaces for the active renderer and
+ * verify the restored display surfaces.
+ *
+ * Evidence: BN uses the mode-independent backend path after zVideo has already
+ * applied geometry, gates each DirectDraw setup step on nonzero failure, tests
+ * g_zVideo_RendererType for the hardware-only Direct3D device creation, and
+ * normalizes the final surface-lock verification result to 0 or 1.
+ */
 int __fastcall SetVideoMode(
     int
 ) {
@@ -11005,7 +11220,7 @@ int __fastcall InitFullscreenSoftwarePixelPack(
             5,
             5,
             pixelFormat.dwRBitMask,
-            pixelFormat.dwGBitMask,
+            0x03e0,
             pixelFormat.dwBBitMask
         );
         return 0;
@@ -11482,31 +11697,74 @@ int CreateFullscreenHardwareSurfaces() {
  * through ReportError and stop the remaining release pass.
  */
 int ReleaseAllInterfacesAndSurfaces() {
-    ReleaseComInterface(g_zVideo_pD3DMaterial2);
-    ReleaseComInterface(g_zVideo_pD3DViewport2);
-    ReleaseComInterface(g_zVideo_pD3DDevice);
-    ReleaseComInterface(g_zVideo_pD3D2);
-    ReleaseComInterface(g_zVideo_pClipper);
-    ReleaseComInterface(g_zVideo_pZBufferSurface);
-
-    if (!PageUnlockBeforeRelease(
-        g_zVideo_SwSurfaceState,
-        0x652
-    )) {
-        return 0;
+    if (g_zVideo_pD3DMaterial2 != 0) {
+        g_zVideo_pD3DMaterial2->Release();
+        g_zVideo_pD3DMaterial2 = 0;
     }
-    ReleaseComInterface(g_zVideo_SwSurfaceState.surf);
-
-    if (!PageUnlockBeforeRelease(
-        g_zVideo_PrimarySurfaceState,
-        0x662
-    )) {
-        return 0;
+    if (g_zVideo_pD3DViewport2 != 0) {
+        g_zVideo_pD3DViewport2->Release();
+        g_zVideo_pD3DViewport2 = 0;
     }
-    ReleaseComInterface(g_zVideo_PrimarySurfaceState.surf);
+    if (g_zVideo_pD3DDevice != 0) {
+        g_zVideo_pD3DDevice->Release();
+        g_zVideo_pD3DDevice = 0;
+    }
+    if (g_zVideo_pD3D2 != 0) {
+        g_zVideo_pD3D2->Release();
+        g_zVideo_pD3D2 = 0;
+    }
+    if (g_zVideo_pClipper != 0) {
+        g_zVideo_pClipper->Release();
+        g_zVideo_pClipper = 0;
+    }
+    if (g_zVideo_pZBufferSurface != 0) {
+        g_zVideo_pZBufferSurface->Release();
+        g_zVideo_pZBufferSurface = 0;
+    }
 
-    ReleaseComInterface(g_zVideo_DisplayModeSurfaceState.surf);
-    ReleaseComInterface(g_zVideo_pDDPalette);
+    if (g_zVideo_SwSurfaceState.surf != 0) {
+        if (g_zVideo_SwSurfaceState.pageLockActive != 0) {
+            const HRESULT hresult = g_zVideo_SwSurfaceState.surf->PageUnlock(0);
+            if (hresult != DD_OK) {
+                ReportError(
+                    (int)(hresult),
+                    kZVideoDirectDrawSourceFile,
+                    0x652
+                );
+                return 0;
+            }
+            g_zVideo_SwSurfaceState.pageLockActive = 0;
+        }
+        g_zVideo_SwSurfaceState.surf->Release();
+        g_zVideo_SwSurfaceState.surf = 0;
+    }
+
+    if (g_zVideo_PrimarySurfaceState.surf != 0) {
+        if (g_zVideo_PrimarySurfaceState.pageLockActive != 0) {
+            const HRESULT hresult = g_zVideo_PrimarySurfaceState.surf->PageUnlock(0);
+            if (hresult != DD_OK) {
+                ReportError(
+                    (int)(hresult),
+                    kZVideoDirectDrawSourceFile,
+                    0x662
+                );
+                return 0;
+            }
+            g_zVideo_PrimarySurfaceState.pageLockActive = 0;
+        }
+        g_zVideo_PrimarySurfaceState.surf->Release();
+        g_zVideo_PrimarySurfaceState.surf = 0;
+    }
+
+    if (g_zVideo_DisplayModeSurfaceState.surf != 0) {
+        g_zVideo_DisplayModeSurfaceState.surf->Release();
+        g_zVideo_DisplayModeSurfaceState.surf = 0;
+    }
+    if (g_zVideo_pDDPalette != 0) {
+        g_zVideo_pDDPalette->Release();
+        g_zVideo_pDDPalette = 0;
+    }
+
     return 0;
 }
 
@@ -12069,10 +12327,9 @@ RECOIL_NO_GS int __fastcall ReportError(
     case D3DERR_VIEWPORTDATANOTSET:
         ZVIDEO_DD_REPORT_ERROR_NAME("D3DERR_VIEWPORTDATANOTSET");
         break;
+    case DD_OK:
+        return 0;
     default:
-        if (hresult == DD_OK) {
-            return 0;
-        }
         ZVIDEO_DD_REPORT_ERROR_NAME("Unknown Error");
         break;
     }

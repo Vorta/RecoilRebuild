@@ -2,6 +2,7 @@
 
 #include "recoil/recoil_types.h"
 #include <stddef.h>
+#include <string.h>
 
 #include "GameZRecoil/zVideo/zVideo.h"
 #include "recoil/recoil_callconv.h"
@@ -208,6 +209,20 @@ struct zFMV_ActionWait : zFMV_Action {
     float durationSec;
     float startSec;
 
+    /**
+     * Original inline helper evidence: No standalone retail function is expected for default test/setup construction.
+     * Purpose: let compiler-generated construction install the wait-action vtable for local setup.
+     */
+    zFMV_ActionWait() {}
+    /**
+     * Original inline helper evidence: Retail LoadActionsFromZrd inlines wait-action construction.
+     * Purpose: initialize a wait action duration before Begin records the start time.
+     */
+    zFMV_ActionWait(
+        float durationSecParam
+    ) {
+        durationSec = durationSecParam;
+    }
     void Begin(double timeSec);
     int Update(double timeSec);
     void End();
@@ -284,6 +299,25 @@ struct zFMV_ActionPlaySound : zFMV_Action {
     char sampleName[0x32];
     unsigned char reserved42[2];
 
+    /**
+     * Original inline helper evidence: No standalone retail function is expected for default test/setup construction.
+     * Purpose: let compiler-generated construction install the sound-action vtable for local setup.
+     */
+    zFMV_ActionPlaySound() {}
+    /**
+     * Original inline helper evidence: Retail LoadActionsFromZrd inlines sound-action construction.
+     * Purpose: copy the sample name and clear the playback voice before action start.
+     */
+    zFMV_ActionPlaySound(
+        const char *sampleNameParam
+    ) {
+        strncpy(
+            sampleName,
+            sampleNameParam,
+            0x32
+        );
+        voice = 0;
+    }
     void Begin(double timeSec);
 };
 

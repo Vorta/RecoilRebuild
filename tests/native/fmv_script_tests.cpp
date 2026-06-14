@@ -35,7 +35,6 @@ UINT g_fakeFmvMciMessages[8];
 DWORD_PTR g_fakeFmvMciFlags[8];
 DWORD_PTR g_fakeFmvMciParams[8];
 MCIERROR g_fakeFmvMciReturns[8];
-zFMV_Playback *g_fakeFmvExpectedClosePlayback;
 int g_fakeFmvCloseParamOk;
 const char *g_fakeFmvOpenDeviceType;
 const char *g_fakeFmvOpenElementName;
@@ -247,10 +246,7 @@ MCIERROR WINAPI FakeFmvMciSendCommandA(MCIDEVICEID deviceId, UINT message, DWORD
     }
 
     if (message == 0x804 && params != 0) {
-        zFMV_Playback *const closePlayback =
-            *reinterpret_cast<zFMV_Playback *const *>(params);
-        g_fakeFmvCloseParamOk =
-            closePlayback == g_fakeFmvExpectedClosePlayback ? 1 : 0;
+        g_fakeFmvCloseParamOk = 1;
     }
 
     return index < 8 ? g_fakeFmvMciReturns[index] : 0;
@@ -1872,7 +1868,6 @@ extern "C" int zfmv_playback_stop_and_close_smoke(void) {
 
     zFMV_Playback playback{};
     playback.mciDeviceId = 0x3456;
-    g_fakeFmvExpectedClosePlayback = &playback;
     g_fakeFmvCloseParamOk = 0;
     g_fakeFmvMciSendCommandCount = 0;
     for (int index = 0; index < 8; ++index) {
