@@ -28,6 +28,25 @@ struct zInput_BindMapContext {
     int m_joystickToCommand[0x10];
     int m_mouseToCommand[4];
 
+    /**
+     * Original inline constructor evidence: no standalone retail function
+     * exists; default allocation sites immediately initialize the context
+     * through InitFromTemplate.
+     * Purpose: preserve the recovered bind-map context construction identity.
+     */
+    zInput_BindMapContext() {}
+    /**
+     * Original inline constructor evidence: no standalone retail function
+     * exists; BN 0x471860 emits VC5 EH setup for allocation construction and
+     * inlines the body as InitFromTemplate(g_zInput_BindMap_Current).
+     * Purpose: construct a bind-map context clone with the recovered C++
+     * allocation shape.
+     */
+    zInput_BindMapContext(
+        const zInput_BindMapContext *tmpl
+    ) {
+        InitFromTemplate(tmpl);
+    }
     zInput_BindMapContext * InitFromTemplate(
         const zInput_BindMapContext *tmpl
     );

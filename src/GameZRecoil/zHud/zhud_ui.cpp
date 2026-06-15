@@ -11195,8 +11195,12 @@ static void HudCmdDialog_DestroyMouseButton(
     button->HudUiCheckToggleWidget::DestructorCore();
 }
 
-// Reimplements 0x40a5b0: HudCmdDialog::Constructor
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40a5b0: HudCmdDialog::Constructor.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: construct the command-binding dialog, bind its ZRD widgets, and
+ * populate command groups before enabling the container children.
+ */
 HudCmdDialog * HudCmdDialog::Constructor() {
     new ((HudUiBackground *)this) HudUiBackground;
 
@@ -11304,8 +11308,7 @@ HudCmdDialog * HudCmdDialog::Constructor() {
 
     promptPanel.SetVisible(0);
 
-    const int groupCount = zInput::BindGroupList_GetCount();
-    for (int groupIndex = 0; groupIndex < groupCount; ++groupIndex) {
+    for (int groupIndex = 0; groupIndex < zInput::BindGroupList_GetCount(); ++groupIndex) {
         setList.AddTextEntry(
             groupIndex,
             zInput::BindGroupList_GetGroupTitle(groupIndex),
@@ -12045,8 +12048,11 @@ void HudCmdKeyBButton::OnBeginCapture() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x40bae0: HudCmdKeyBButton::OnClearBinding
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40bae0: HudCmdKeyBButton::OnClearBinding.
+ * Original file: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: clear the secondary-key binding for the selected command row.
+ */
 void HudCmdKeyBButton::OnClearBinding() {
     ((HudCmdDialog *)(owner))->ApplySecondaryKeyRebind(
         0,
@@ -12062,8 +12068,11 @@ void HudCmdJoyButton::OnBeginCapture() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x40bb30: HudCmdJoyButton::OnClearBinding
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40bb30: HudCmdJoyButton::OnClearBinding.
+ * Original file: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: clear the joystick binding for the selected command row.
+ */
 void HudCmdJoyButton::OnClearBinding() {
     ((HudCmdDialog *)(owner))
         ->ApplyJoystickButtonRebind(
@@ -12084,8 +12093,11 @@ void HudCmdMouseButton::OnBeginCapture() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x40bb80: HudCmdMouseButton::OnClearBinding
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40bb80: HudCmdMouseButton::OnClearBinding.
+ * Original file: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: clear the mouse binding for the selected command row when debounce is inactive.
+ */
 void HudCmdMouseButton::OnClearBinding() {
     if (g_HudCmdMouseDebounceFrames > 0) {
         return;

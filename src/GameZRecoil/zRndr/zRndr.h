@@ -14,6 +14,9 @@ struct zVidRect32;
 struct zOpt_ViewRectSection;
 struct zImage_TexDirEntryPartial;
 struct HudUiRect;
+
+// Authored zRndr lens-flare descriptor. BN xrefs from the queue and visible
+// sample paths use the enable flag at +0x0c and fade window at +0x14/+0x18.
 struct zRndr_LensFlareSource {
     float depthFadeInvZMin;
     float depthFadeInvZMax;
@@ -26,6 +29,8 @@ struct zRndr_LensFlareSource {
 
 RECOIL_STATIC_ASSERT(sizeof(zRndr_LensFlareSource) == 0x1c);
 
+// Authored visible lens-flare sample record. Queue entries share this first
+// 0x14-byte layout when promoted into the visible-sample pointer list.
 struct zRndr_LensFlareVisibleSampleDef {
     float sampleCenterX;
     float sampleCenterY;
@@ -206,6 +211,32 @@ typedef void(__fastcall *SpanRoutineProc)(
     int spanOpContext,
     int pixelCount
 );
+typedef void(__fastcall *ImmediateRaster4Proc)(
+    unsigned short *dstPixels,
+    int x0,
+    int y0,
+    int x1,
+    int y1,
+    int color16
+);
+typedef void(__fastcall *ImmediateRasterSegmentedProc)(
+    unsigned short *dstPixels,
+    int x0,
+    int y0,
+    int x1,
+    int y1,
+    int color16,
+    int segmentCount
+);
+typedef void(__fastcall *ImmediateRaster5Proc)(
+    unsigned short *dstPixels,
+    const zRndr_LineClipRect2I *clipRect,
+    int x0,
+    int y0,
+    int x1,
+    int y1,
+    int color16
+);
 typedef void(__fastcall *PointOpProc)(
     void *frameBuffer,
     int y,
@@ -326,9 +357,9 @@ extern TexturedQueuedSpanProc g_pfnPolyTlvSpanOp_Mode0;
 extern TexturedQueuedSpanProc g_pfnPolyTlvSpanOpAlt_Mode0;
 extern TexturedQueuedSpanProc g_pfnPolyTlvSpanOp_Mode1;
 extern TexturedQueuedSpanProc g_pfnPolyTlvSpanOpAlt_Mode1;
-extern SpanRoutineProc g_pfnImmediateRaster4;
-extern SpanRoutineProc g_pfnImmediateRasterReserved;
-extern SpanRoutineProc g_pfnImmediateRaster5;
+extern ImmediateRaster4Proc g_pfnImmediateRaster4;
+extern ImmediateRasterSegmentedProc g_pfnImmediateRasterReserved;
+extern ImmediateRaster5Proc g_pfnImmediateRaster5;
 extern PointOpProc g_pfnPointOpCandidate;
 extern PointOpProc g_pfnPointOpActive;
 extern SpanRoutineProc g_pfnTexturedQueuedFinalize;

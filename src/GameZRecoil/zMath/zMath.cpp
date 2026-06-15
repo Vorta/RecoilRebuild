@@ -445,38 +445,38 @@ void __fastcall zMath_BuildPerspectiveTextureInterpolants(
 
     const float invGram = 1.0f / gramDeterminant;
     const float edgeDotScaled = edgeDot * invGram;
-    BuildUvOverZPlane(
-        triVerts,
-        edge21,
-        edge01,
-        edge21LenSq,
-        edge01LenSq,
-        edgeDotScaled,
-        invGram,
-        *outRecipZGrad,
-        *outRecipZBase,
-        triUVs[0].x,
-        triUVs[1].x,
-        triUVs[2].x,
-        outUOverZGrad,
-        outUOverZBase
+
+    const float uDelta21 = triUVs[2].x - triUVs[1].x;
+    const float uDelta01 = triUVs[0].x - triUVs[1].x;
+    const float uScale21 = uDelta21 * edge01LenSq * invGram - uDelta01 * edgeDotScaled;
+    const float uScale01 = uDelta01 * edge21LenSq * invGram - uDelta21 * edgeDotScaled;
+    const zVec3 uPlane = {edge21.x * uScale21 + edge01.x * uScale01,
+        edge21.y * uScale21 + edge01.y * uScale01,
+        edge21.z * uScale21 + edge01.z * uScale01};
+    const float uOriginDelta = triUVs[0].x - Dot(
+        uPlane,
+        triVerts[0]
     );
-    BuildUvOverZPlane(
-        triVerts,
-        edge21,
-        edge01,
-        edge21LenSq,
-        edge01LenSq,
-        edgeDotScaled,
-        invGram,
-        *outRecipZGrad,
-        *outRecipZBase,
-        triUVs[0].y,
-        triUVs[1].y,
-        triUVs[2].y,
-        outVOverZGrad,
-        outVOverZBase
+
+    outUOverZGrad->x = uOriginDelta * outRecipZGrad->x + uPlane.x * g_zMath_InvProjScaleX;
+    outUOverZGrad->y = uOriginDelta * outRecipZGrad->y + uPlane.y * g_zMath_InvProjScaleY;
+    *outUOverZBase = uOriginDelta * *outRecipZBase + uPlane.z;
+
+    const float vDelta21 = triUVs[2].y - triUVs[1].y;
+    const float vDelta01 = triUVs[0].y - triUVs[1].y;
+    const float vScale21 = vDelta21 * edge01LenSq * invGram - vDelta01 * edgeDotScaled;
+    const float vScale01 = vDelta01 * edge21LenSq * invGram - vDelta21 * edgeDotScaled;
+    const zVec3 vPlane = {edge21.x * vScale21 + edge01.x * vScale01,
+        edge21.y * vScale21 + edge01.y * vScale01,
+        edge21.z * vScale21 + edge01.z * vScale01};
+    const float vOriginDelta = triUVs[0].y - Dot(
+        vPlane,
+        triVerts[0]
     );
+
+    outVOverZGrad->x = vOriginDelta * outRecipZGrad->x + vPlane.x * g_zMath_InvProjScaleX;
+    outVOverZGrad->y = vOriginDelta * outRecipZGrad->y + vPlane.y * g_zMath_InvProjScaleY;
+    *outVOverZBase = vOriginDelta * *outRecipZBase + vPlane.z;
 }
 
 namespace zMath {

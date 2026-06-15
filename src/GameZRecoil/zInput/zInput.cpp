@@ -113,19 +113,6 @@ struct BindMapDefaultBindingSpec {
 };
 
 // Source-faithful helper recovered from address-backed callers in this source file.
-inline void CopyCommandSlots(
-    void *dest,
-    const void *src,
-    int count
-) {
-    memcpy(
-        dest,
-        src,
-        (size_t)(count) * sizeof(int)
-    );
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
 zInput_BindMapOverlayStackNode *__fastcall BindMapOverlay_DetachHead(
     zInput_BindMapOverlayStackNode **head
 ) {
@@ -179,49 +166,47 @@ zInput_BindMapContext * zInput_BindMapContext::InitFromTemplate(
     const zInput_BindMapContext *tmpl
 ) {
     m_isOverlay = 0;
-    if (tmpl == 0) {
-        return this;
-    }
-
-    m_commandCount = tmpl->m_commandCount;
-    m_packedBindings = (int *)(calloc(
-        tmpl->m_commandCount,
-        sizeof(int)
-    ));
-    CopyCommandSlots(
-        m_packedBindings,
-        tmpl->m_packedBindings,
-        tmpl->m_commandCount
-    );
-
-    m_commandCallbacks =
-        (zInputCommandCallbackFn *)(calloc(
-            m_commandCount,
-            sizeof(zInputCommandCallbackFn)
+    if (tmpl != 0) {
+        m_commandCount = tmpl->m_commandCount;
+        m_packedBindings = (int *)(calloc(
+            tmpl->m_commandCount,
+            sizeof(int)
         ));
-    CopyCommandSlots(
-        m_commandCallbacks,
-        tmpl->m_commandCallbacks,
-        m_commandCount
-    );
-
-    m_commandLabels = (char **)(calloc(
-        m_commandCount,
-        sizeof(char *)
-    ));
-    for (int i = 0; i < m_commandCount; ++i) {
-        m_commandLabels[i] = (char *)(calloc(
-            1,
-            0x50
-        ));
-        strncpy(
-            m_commandLabels[i],
-            tmpl->m_commandLabels[i],
-            0x50
+        memcpy(
+            m_packedBindings,
+            tmpl->m_packedBindings,
+            (size_t)(tmpl->m_commandCount) * sizeof(int)
         );
-    }
 
-    RebuildLookupIndices();
+        m_commandCallbacks =
+            (zInputCommandCallbackFn *)(calloc(
+                m_commandCount,
+                sizeof(zInputCommandCallbackFn)
+            ));
+        memcpy(
+            m_commandCallbacks,
+            tmpl->m_commandCallbacks,
+            (size_t)(m_commandCount) * sizeof(zInputCommandCallbackFn)
+        );
+
+        m_commandLabels = (char **)(calloc(
+            m_commandCount,
+            sizeof(char *)
+        ));
+        for (int i = 0; i < m_commandCount; ++i) {
+            m_commandLabels[i] = (char *)(calloc(
+                1,
+                0x50
+            ));
+            strncpy(
+                m_commandLabels[i],
+                tmpl->m_commandLabels[i],
+                0x50
+            );
+        }
+
+        RebuildLookupIndices();
+    }
     return this;
 }
 
@@ -243,13 +228,13 @@ void zInput_BindMapContext::FreeAllBuffers() {
             m_commandLabels[i] = 0;
         }
         free(m_commandLabels);
+        m_commandLabels = 0;
     }
-    m_commandLabels = 0;
 
     if (m_packedBindings != 0) {
         free(m_packedBindings);
+        m_packedBindings = 0;
     }
-    m_packedBindings = 0;
 }
 
 /**
@@ -271,11 +256,16 @@ void zInput_BindMapContext::RebuildLookupIndices() {
     zInput::Keyboard_ClearKeyCallbackTable();
     {
         for (int commandId = 1; commandId < m_commandCount; ++commandId) {
-            const unsigned int packed = (unsigned int)(m_packedBindings[commandId]);
-            m_primaryKeyToCommand[packed & 0x7ff] = commandId;
-            m_secondaryKeyToCommand[(packed >> 0x0b) & 0x7ff] = commandId;
-            m_joystickToCommand[(packed >> 0x16) & 0x0f] = commandId;
-            m_mouseToCommand[(packed >> 0x1a) & 0x03] = commandId;
+            m_primaryKeyToCommand[m_packedBindings[commandId] & 0x7ff] = commandId;
+            m_secondaryKeyToCommand[
+                ((unsigned int)(m_packedBindings[commandId]) >> 0x0b) & 0x7ff
+            ] = commandId;
+            m_joystickToCommand[
+                ((unsigned int)(m_packedBindings[commandId]) >> 0x16) & 0x0f
+            ] = commandId;
+            m_mouseToCommand[
+                ((unsigned int)(m_packedBindings[commandId]) >> 0x1a) & 0x03
+            ] = commandId;
 
             zInputCommandCallbackFn callback = m_commandCallbacks[commandId];
             if (callback != 0) {
@@ -2078,10 +2068,7 @@ void __fastcall BindMapContext_Push(
 ) {
     zInput_BindMapContext *bindMap = bindMapOrNull;
     if (bindMap == 0) {
-        bindMap = new zInput_BindMapContext;
-        if (bindMap != 0) {
-            bindMap = bindMap->InitFromTemplate(g_zInput_BindMap_Current);
-        }
+        bindMap = new zInput_BindMapContext(g_zInput_BindMap_Current);
         bindMap->m_isOverlay = 1;
     }
 
@@ -2093,6 +2080,8 @@ void __fastcall BindMapContext_Push(
             node->prev = 0;
             node->next = 0;
             node->bindMap = 0;
+        } else {
+            node = 0;
         }
     } else {
         zInput_BindMapOverlayStackNode *next = node->next;
@@ -2127,7 +2116,9 @@ void BindMapContext_Pop() {
     }
 
     zInput_BindMapOverlayStackNode *node = g_zInput_BindMapOverlayNodeStackHead;
-    if (node != 0) {
+    if (node == 0) {
+        node = 0;
+    } else {
         zInput_BindMapOverlayStackNode *next = node->next;
         g_zInput_BindMapOverlayNodeStackHead = next;
         if (next != 0) {
@@ -2135,23 +2126,21 @@ void BindMapContext_Pop() {
         }
         node->prev = 0;
         node->next = 0;
-    } else {
-        node = 0;
     }
 
     zInput_BindMapContext *bindMap = 0;
     if (node != 0) {
         bindMap = node->bindMap;
         node->bindMap = 0;
-        if (g_zInput_BindMapOverlayNodeFreeList != 0) {
+        if (g_zInput_BindMapOverlayNodeFreeList == 0) {
+            g_zInput_BindMapOverlayNodeFreeList = node;
+            node->next = 0;
+            node->prev = 0;
+        } else {
             node->next = g_zInput_BindMapOverlayNodeFreeList;
             node->prev = 0;
             g_zInput_BindMapOverlayNodeFreeList->prev = node;
             g_zInput_BindMapOverlayNodeFreeList = node;
-        } else {
-            g_zInput_BindMapOverlayNodeFreeList = node;
-            node->next = 0;
-            node->prev = 0;
         }
         --g_zInput_BindMapOverlayDepth;
     }
@@ -3923,9 +3912,9 @@ int __fastcall Mouse_WaitForButtonPress(
  */
 void Mouse_ApplyAccumulatedDelta() {
     g_zInput_MouseStateSnapshot.deltaX =
-        (int)((double)(g_zInput_MouseStateSnapshot.deltaX) * g_zInput_MouseSensitivityX);
+        (int)((float)(g_zInput_MouseStateSnapshot.deltaX) * g_zInput_MouseSensitivityX);
     g_zInput_MouseStateSnapshot.deltaY =
-        (int)((double)(g_zInput_MouseStateSnapshot.deltaY) * g_zInput_MouseSensitivityY);
+        (int)((float)(g_zInput_MouseStateSnapshot.deltaY) * g_zInput_MouseSensitivityY);
 
     int cursorX = g_zInput_MouseStateSnapshot.cursorClientX + g_zInput_MouseStateSnapshot.deltaX;
     int cursorY = g_zInput_MouseStateSnapshot.cursorClientY + g_zInput_MouseStateSnapshot.deltaY;
