@@ -22976,7 +22976,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_occlusion_add_polygon;
     - Group: engine.zrndr;
     - Model: source-faithful;
-    - Blocker: tier S blocked by VC5SP3 compare for zrndr_span_occlusion_add_polygon with 86 unmasked mismatches after 16 relocation masked bytes and 2 trimmed VC NOP bytes; functional target passes
+    - Blocker: tier S blocked: retained SpanOcclusionAddPolygon source reworks the vertex-copy loop to recompute the polygon slot per iteration and improves zrndr_span_occlusion_add_polygon from 86 to 55 unmasked mismatches after 20 relocation-masked bytes and 3 trimmed VC NOP bytes (BN 109 bytes, VC5 112 bytes). Functional target passes; owner/data remain accepted. Remaining drift is register/prologue and loop-addressing shape versus retail.
 
 - 0x49a8c0:
   - [✅] Reconstructed (Name: zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer)
