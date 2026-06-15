@@ -615,6 +615,7 @@ extern "C" int zvideo_dd_report_error_smoke(void);
 extern "C" int zvideo_dd_create_directdraw2_for_selected_device_smoke(void);
 extern "C" int zvideo_dd_open_video_mode_smoke(void);
 extern "C" int zvideo_dd_create_surface3_from_desc_smoke(void);
+extern "C" int zvideo_dispatch_wrappers_smoke(void);
 extern "C" int zvideo_dd_lock_directdraw_surface_smoke(void);
 extern "C" int zvideo_dd_unlock_directdraw_surface_smoke(void);
 extern "C" int zvideo_dd_lock_surface_wait_restore_smoke(void);
@@ -10960,6 +10961,7 @@ int main(int argc, char **argv) {
         {"zvideo_dd_open_video_mode_smoke", zvideo_dd_open_video_mode_smoke},
         {"zvideo_dd_create_surface3_from_desc_smoke",
          zvideo_dd_create_surface3_from_desc_smoke},
+        {"zvideo_dispatch_wrappers_smoke", zvideo_dispatch_wrappers_smoke},
         {"zvideo_dd_lock_directdraw_surface_smoke",
          zvideo_dd_lock_directdraw_surface_smoke},
         {"zvideo_dd_unlock_directdraw_surface_smoke",

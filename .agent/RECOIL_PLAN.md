@@ -19309,7 +19309,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zVideo/zVideo.cpp; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zVideo::Dispatch_UnlockSwSurfaceState;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dispatch_unlock_sw_surface_state;
@@ -20063,7 +20063,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zVideo/zVideo.cpp; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zVideo::Dispatch_LockDisplayModeSurfaceState;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dispatch_lock_display_mode_surface_state;
@@ -20076,7 +20076,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zVideo/zVideo.cpp; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zVideo::Dispatch_UnlockDisplayModeSurfaceState;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dispatch_unlock_display_mode_surface_state;
@@ -21434,7 +21434,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zvideo_capture_surface_to_image;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked: local VC5 target zvideo_capture_surface_to_image covers @zVideo_buff_CaptureSurfaceToImage@4 at 0x4a6e80 but fails 285 unmasked mismatches after 40 relocation-masked bytes and 9 trimmed NOP bytes under vc5_o2_ob0_md_facs; vc5_o2_ob1_md_facs and vc5_o2_ob1_md_gx_facs produce the same mismatch count, and vc5_o2_ob1_gx_facs does not compile because the MFC _AFXDLL build requires /MD. Functional target zvideo_capture_surface_to_image remains the accepted behavior evidence.
 
 - 0x4a6fe0:
   - [☑️] Reconstructed (Name: zVideo_buff::CopySurfaceRectToImage)
@@ -39985,7 +39985,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudUiWidget; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: HudUiWidget::Draw;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_widget_draw;
