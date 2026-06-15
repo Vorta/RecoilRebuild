@@ -40,6 +40,37 @@ Open limits:
 
 ## Current Entries
 
+## zInput_BindMapContext constructors
+
+Evidence:
+- Caller addresses: `0x471860` `zInput::BindMapContext_Push` and
+  `0x4710a0` `zInput::BindMapSystem_Init`.
+- Repeated instruction/source pattern: bind-map context allocations are followed
+  by `zInput_BindMapContext::InitFromTemplate`; `0x471860` has VC5 EH
+  allocation state around construction and the constructor body is recovered as
+  the template initializer call.
+- Likely original owner/source file: `GameZRecoil/zInput/zInput.h` with call
+  sites in `GameZRecoil/zInput/zInput.cpp`.
+- Why no standalone retail function is expected: BN has no separate retail
+  constructor body for these context allocations; the observed construction
+  work is inlined into the allocation callers.
+
+Restored source form:
+- class-body constructors on `zInput_BindMapContext`.
+- Callers using it: bind-map system initialization and overlay push allocation.
+
+Verification notes:
+- Native tests: `zinput_bindmap_context_smoke` covers the overlay push path.
+- VC byte/source-cluster attempt: `0x471860` under
+  `vc5_o2_ob1_md_gx_facs` still has 124 unmasked mismatches; best observed
+  profile `vc5_o2_ob0_md_gx_gr_facs` has 62 mismatches but calls the
+  constructor symbol instead of the retail direct `InitFromTemplate` target.
+- Known tier `S` limits: accepted only as recovered inline source shape until
+  the remaining overlay-stack branch and constructor inlining drift is resolved.
+
+Open limits:
+- `0x471860` remains tier `B`; the plan blocker records the current byte drift.
+
 ## zRndrSpanDepthAtXByPartsLocal
 
 Evidence:

@@ -17185,8 +17185,8 @@ extern "C" int zhud_polyline_draw_and_slider_update_smoke(void) {
     table.slots[2] = reinterpret_cast<std::uintptr_t>(TestElementBaseDraw);
 
     zRndr::g_frameBuffer = &table;
-    zRndr::g_pfnImmediateRaster4 = reinterpret_cast<zRndr::SpanRoutineProc>(TestPolylineRaster4);
-    zRndr::g_pfnImmediateRaster5 = reinterpret_cast<zRndr::SpanRoutineProc>(TestPolylineRaster5);
+    zRndr::g_pfnImmediateRaster4 = reinterpret_cast<zRndr::ImmediateRaster4Proc>(TestPolylineRaster4);
+    zRndr::g_pfnImmediateRaster5 = reinterpret_cast<zRndr::ImmediateRaster5Proc>(TestPolylineRaster5);
 
     HudUiPolyline polyline{};
     polyline.base.ftable = &table;
@@ -22170,11 +22170,11 @@ extern "C" int zhud_timed_task_remove_from_active_list_smoke(void) {
 
 extern "C" int zhud_timed_task_run_immediate_action_smoke(void) {
     void *const oldFrameBuffer = zRndr::g_frameBuffer;
-    zRndr::SpanRoutineProc const oldRaster4 = zRndr::g_pfnImmediateRaster4;
+    zRndr::ImmediateRaster4Proc const oldRaster4 = zRndr::g_pfnImmediateRaster4;
 
     zRndr::g_frameBuffer = reinterpret_cast<void *>(0x12345678);
     zRndr::g_pfnImmediateRaster4 =
-        reinterpret_cast<zRndr::SpanRoutineProc>(TestTimedTaskRaster4);
+        reinterpret_cast<zRndr::ImmediateRaster4Proc>(TestTimedTaskRaster4);
     g_timedTaskRasterCount = 0;
     g_timedTaskRasterFrameBuffer = nullptr;
     for (int &arg : g_timedTaskRasterArgs) {
@@ -23939,12 +23939,12 @@ extern "C" int hud_recti_clip_segment_helpers_smoke(void) {
 
 extern "C" int hud_sensor_tracker_draw_diamond_marker_smoke(void) {
     void *const oldFrameBuffer = zRndr::g_frameBuffer;
-    zRndr::SpanRoutineProc const oldRaster5 = zRndr::g_pfnImmediateRaster5;
+    zRndr::ImmediateRaster5Proc const oldRaster5 = zRndr::g_pfnImmediateRaster5;
 
     HudSensorTracker tracker{};
     zRndr::g_frameBuffer = reinterpret_cast<void *>(0x13572468);
     zRndr::g_pfnImmediateRaster5 =
-        reinterpret_cast<zRndr::SpanRoutineProc>(HudTestImmediateRaster5);
+        reinterpret_cast<zRndr::ImmediateRaster5Proc>(HudTestImmediateRaster5);
     g_HudTestLine5Count = 0;
     g_HudTestLineFrameBuffer = nullptr;
     g_HudTestLineClipRect = nullptr;
@@ -23977,7 +23977,7 @@ extern "C" int hud_sensor_tracker_draw_diamond_marker_smoke(void) {
 
 extern "C" int hud_sensor_tracker_save_marker_leaf_smoke(void) {
     void *const oldFrameBuffer = zRndr::g_frameBuffer;
-    zRndr::SpanRoutineProc const oldRaster5 = zRndr::g_pfnImmediateRaster5;
+    zRndr::ImmediateRaster5Proc const oldRaster5 = zRndr::g_pfnImmediateRaster5;
 
     HudSensorTracker tracker{};
     zVec3 trackedOrigin{10.0f, 20.0f, 30.0f};
@@ -23997,7 +23997,7 @@ extern "C" int hud_sensor_tracker_save_marker_leaf_smoke(void) {
 
     zRndr::g_frameBuffer = reinterpret_cast<void *>(0x27182818);
     zRndr::g_pfnImmediateRaster5 =
-        reinterpret_cast<zRndr::SpanRoutineProc>(HudTestImmediateRaster5);
+        reinterpret_cast<zRndr::ImmediateRaster5Proc>(HudTestImmediateRaster5);
     g_HudTestLine5Count = 0;
     g_HudTestLineFrameBuffer = nullptr;
     g_HudTestLineClipRect = nullptr;
@@ -24023,7 +24023,7 @@ extern "C" int hud_sensor_tracker_save_marker_leaf_smoke(void) {
 
 extern "C" int hud_sensor_tracker_save_state_marker_smoke(void) {
     void *const oldFrameBuffer = zRndr::g_frameBuffer;
-    zRndr::SpanRoutineProc const oldRaster5 = zRndr::g_pfnImmediateRaster5;
+    zRndr::ImmediateRaster5Proc const oldRaster5 = zRndr::g_pfnImmediateRaster5;
     zRndr::PointOpProc const oldPointOp = zRndr::g_pfnPointOpActive;
     int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
     const int oldRMaskShifted = g_zVideo_PixelPack.rMaskShifted;
@@ -24062,7 +24062,7 @@ extern "C" int hud_sensor_tracker_save_state_marker_smoke(void) {
 
     zRndr::g_frameBuffer = reinterpret_cast<void *>(0x16180339);
     zRndr::g_pfnImmediateRaster5 =
-        reinterpret_cast<zRndr::SpanRoutineProc>(HudTestImmediateRaster5);
+        reinterpret_cast<zRndr::ImmediateRaster5Proc>(HudTestImmediateRaster5);
     g_HudTestLine5Count = 0;
     g_HudTestLineFrameBuffer = nullptr;
     g_HudTestLineClipRect = nullptr;
@@ -24118,8 +24118,8 @@ extern "C" int hud_sensor_tracker_save_state_marker_smoke(void) {
 
 extern "C" int hud_sensor_tracker_update_smoke(void) {
     void *const oldFrameBuffer = zRndr::g_frameBuffer;
-    zRndr::SpanRoutineProc const oldRaster4 = zRndr::g_pfnImmediateRaster4;
-    zRndr::SpanRoutineProc const oldRaster5 = zRndr::g_pfnImmediateRaster5;
+    zRndr::ImmediateRaster4Proc const oldRaster4 = zRndr::g_pfnImmediateRaster4;
+    zRndr::ImmediateRaster5Proc const oldRaster5 = zRndr::g_pfnImmediateRaster5;
     int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
     zUtil_SaveGameState *const oldSaveStateListHead = g_PlayerSaveStateListHead;
 
@@ -24157,9 +24157,9 @@ extern "C" int hud_sensor_tracker_update_smoke(void) {
 
     zRndr::g_frameBuffer = reinterpret_cast<void *>(0x42424242);
     zRndr::g_pfnImmediateRaster4 =
-        reinterpret_cast<zRndr::SpanRoutineProc>(HudTestImmediateRaster4);
+        reinterpret_cast<zRndr::ImmediateRaster4Proc>(HudTestImmediateRaster4);
     zRndr::g_pfnImmediateRaster5 =
-        reinterpret_cast<zRndr::SpanRoutineProc>(HudTestImmediateRaster5);
+        reinterpret_cast<zRndr::ImmediateRaster5Proc>(HudTestImmediateRaster5);
     g_HudTestLine4Count = 0;
     g_HudTestLine4FrameBuffer = nullptr;
     std::memset(g_HudTestLine4Args, 0, sizeof(g_HudTestLine4Args));
@@ -24188,7 +24188,7 @@ extern "C" int hud_sensor_tracker_update_smoke(void) {
 
 extern "C" int hud_sensor_map_node_draw_projected_path_smoke(void) {
     void *const oldFrameBuffer = zRndr::g_frameBuffer;
-    zRndr::SpanRoutineProc const oldRaster5 = zRndr::g_pfnImmediateRaster5;
+    zRndr::ImmediateRaster5Proc const oldRaster5 = zRndr::g_pfnImmediateRaster5;
     const float oldProjScaleX = g_zMath_ProjScaleX;
     const float oldProjScaleY = g_zMath_ProjScaleY;
     const float oldProjOffsetX = g_zMath_ProjOffsetX;
@@ -24218,7 +24218,7 @@ extern "C" int hud_sensor_map_node_draw_projected_path_smoke(void) {
 
     zRndr::g_frameBuffer = reinterpret_cast<void *>(0x24681357);
     zRndr::g_pfnImmediateRaster5 =
-        reinterpret_cast<zRndr::SpanRoutineProc>(HudTestImmediateRaster5);
+        reinterpret_cast<zRndr::ImmediateRaster5Proc>(HudTestImmediateRaster5);
     g_HudTestLine5Count = 0;
     g_HudTestLineFrameBuffer = nullptr;
     g_HudTestLineClipRect = nullptr;
@@ -24264,8 +24264,8 @@ extern "C" int hud_sensor_map_node_draw_projected_path_smoke(void) {
 
 extern "C" int hud_sensor_map_node_draw_on_tracker_smoke(void) {
     void *const oldFrameBuffer = zRndr::g_frameBuffer;
-    zRndr::SpanRoutineProc const oldRaster4 = zRndr::g_pfnImmediateRaster4;
-    zRndr::SpanRoutineProc const oldRaster5 = zRndr::g_pfnImmediateRaster5;
+    zRndr::ImmediateRaster4Proc const oldRaster4 = zRndr::g_pfnImmediateRaster4;
+    zRndr::ImmediateRaster5Proc const oldRaster5 = zRndr::g_pfnImmediateRaster5;
 
     HudSensorTracker tracker{};
     zVec3 trackedOrigin{0.0f, 0.0f, 0.0f};
@@ -24291,9 +24291,9 @@ extern "C" int hud_sensor_map_node_draw_on_tracker_smoke(void) {
 
     zRndr::g_frameBuffer = reinterpret_cast<void *>(0x31415926);
     zRndr::g_pfnImmediateRaster4 =
-        reinterpret_cast<zRndr::SpanRoutineProc>(HudTestImmediateRaster4);
+        reinterpret_cast<zRndr::ImmediateRaster4Proc>(HudTestImmediateRaster4);
     zRndr::g_pfnImmediateRaster5 =
-        reinterpret_cast<zRndr::SpanRoutineProc>(HudTestImmediateRaster5);
+        reinterpret_cast<zRndr::ImmediateRaster5Proc>(HudTestImmediateRaster5);
     g_HudTestLine4Count = 0;
     g_HudTestLine4FrameBuffer = nullptr;
     std::memset(g_HudTestLine4Args, 0, sizeof(g_HudTestLine4Args));

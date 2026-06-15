@@ -73,6 +73,9 @@ int CheckCpuSignatureMask();
 }
 
 float g_zRndr_InverseZTolerance = 0.0f;
+// Palette-remap selection globals: BN identifies the active packed remap key at
+// 0x4e21fc and active shade recipe index at 0x4e2200; both retail values start
+// disabled at -1 and are written by the zRndr palette setter cluster.
 int g_zRndr_ActivePaletteRemapKey = -1;
 int g_zRndr_ActivePaletteShadeRecipeIndex = -1;
 int g_zRndr_CircleCenterX = 0;
@@ -80,6 +83,9 @@ int g_zRndr_CircleCenterY = 0;
 int g_zRndr_CircleDrawAuxArg = 0;
 
 namespace zRndr {
+// Default software render target bank from zRndr_Draw.cpp. BN names the
+// clipped-framebuffer globals at 0x632050, 0x632054, 0x632058, and 0x63205c;
+// lens-flare and span leaves consume them as the active 16-bit framebuffer.
 void *g_frameBuffer = 0;
 int g_activeRegionWidth = 0;
 int g_activeRegionHeight = 0;
@@ -138,6 +144,8 @@ unsigned int g_swOverlayPremulGPair = 0;
 int g_pixelPackRedBits = 0;
 int g_pixelPackGreenBits = 0;
 int g_pixelPackBlueBits = 0;
+// Pixel-pack masks consumed by fog and span color math: red 0x57de40,
+// green 0x57de44, and blue 0x57de48.
 unsigned int g_pixelPackRedMask = 0;
 unsigned int g_pixelPackGreenMask = 0;
 unsigned int g_pixelPackBlueMask = 0;
@@ -216,31 +224,43 @@ TexturedQueuedSpanProc g_pfnPolyTlvSpanOp_Mode0 = 0;
 TexturedQueuedSpanProc g_pfnPolyTlvSpanOpAlt_Mode0 = 0;
 TexturedQueuedSpanProc g_pfnPolyTlvSpanOp_Mode1 = 0;
 TexturedQueuedSpanProc g_pfnPolyTlvSpanOpAlt_Mode1 = 0;
-SpanRoutineProc g_pfnImmediateRaster4 = 0;
-SpanRoutineProc g_pfnImmediateRasterReserved = 0;
-SpanRoutineProc g_pfnImmediateRaster5 = 0;
+ImmediateRaster4Proc g_pfnImmediateRaster4 = 0;
+ImmediateRasterSegmentedProc g_pfnImmediateRasterReserved = 0;
+ImmediateRaster5Proc g_pfnImmediateRaster5 = 0;
 PointOpProc g_pfnPointOpCandidate = 0;
 PointOpProc g_pfnPointOpActive = 0;
 SpanRoutineProc g_pfnTexturedQueuedFinalize = 0;
 SpanRoutineProc g_pfnTexturedQueuedFinalizeAlt = 0;
+// Queued polygon banks from zrndr_draw.c. BN identifies the transparent count
+// at 0x57de7c, the transparent records at 0x57de80, the sort index bank at
+// 0x5cacf8, the overwrite count at 0x5cb270, and overwrite records at
+// 0x5cb274.
 TransparentQueuedPolyDrawCmd g_transparentQueue[0x15e] = {0};
 OverwriteQueuedPolyDrawCmd g_overwriteQueue[0x15e] = {0};
 int g_transparentQueueSortIndices[0x15e] = {0};
 int g_transparentQueueCount = 0;
 int g_overwriteQueueCount = 0;
+// Overlay blend state shared by zRndr_Overlay.cpp setup and the lens-flare
+// clipped-framebuffer leaf: enable flag 0x62e9dc, packed color 0x62e9f0, and
+// alpha double 0x62e9f8.
 int g_overlayBlendEnabled = 0;
 int g_overlayBlendRectLeft = 0;
 int g_overlayBlendRectTop = 0;
 int g_overlayBlendRectRight = 0;
 int g_overlayBlendRectBottom = 0;
-int g_lensFlareSampleQueueCount = 0;
-int g_lensFlareVisibleSampleCount = 0;
-int g_lensFlareVisibilityActive = 0;
 unsigned int g_overlayBlendPackedColor16 = 0;
 double g_overlayBlendAlpha = 0.0;
+// zRndr lens-flare frame-state bank. BN identifies the zero-initialized queue
+// count at 0x62ea00, the 0x28a-entry sample queue at 0x62ea04, the visible
+// count at 0x631ccc, the 64-entry visible pointer list at 0x631cd0, the
+// visibility-active flag at 0x56b248, and four stage texture pointers at
+// 0x56b250.
+int g_lensFlareSampleQueueCount = 0;
+LensFlareSamplePartial g_lensFlareSampleQueue[0x28a] = {0};
+int g_lensFlareVisibleSampleCount = 0;
+int g_lensFlareVisibilityActive = 0;
 zImage_TexDirEntryPartial *g_lensFlareVisibleSampleStages[4] = {0};
 zRndr_LensFlareVisibleSampleDef *g_lensFlareVisibleSampleDefs[0x40] = {0};
-LensFlareSamplePartial g_lensFlareSampleQueue[0x28a] = {0};
 int g_textureMipSelectionEnabled = 0;
 int g_textureMipReservedWriteOnly = 0;
 int g_renderStateReadyWriteOnlyFlag = 0;
@@ -300,6 +320,66 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(sizeof(SpanOccluderPolyPartial) == 0x64);
 RECOIL_STATIC_ASSERT(sizeof(SpanNodePartial) == 0x18);
 RECOIL_STATIC_ASSERT(sizeof(LensFlareSamplePartial) == 0x14);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        LensFlareSamplePartial,
+        x
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        LensFlareSamplePartial,
+        y
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        LensFlareSamplePartial,
+        reciprocalZ
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        LensFlareSamplePartial,
+        packedColor16
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        LensFlareSamplePartial,
+        lensFlareSource
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zRndr_LensFlareSource,
+        lensFlareEnabled
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zRndr_LensFlareSource,
+        fadeNear
+    ) == 0x14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zRndr_LensFlareSource,
+        fadeFar
+    ) == 0x18
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zRndr_LensFlareVisibleSampleDef,
+        depthDivisor
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zRndr_LensFlareVisibleSampleDef,
+        lensFlareSource
+    ) == 0x10
+);
 RECOIL_STATIC_ASSERT(sizeof(QueuedVec3) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(QueuedPolyClipOverlay) == 0x324);
 RECOIL_STATIC_ASSERT(
@@ -309,6 +389,18 @@ RECOIL_STATIC_ASSERT(
     ) == 0x300
 );
 RECOIL_STATIC_ASSERT(sizeof(TransparentQueuedPolyDrawCmd) == 0x384);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        TransparentQueuedPolyDrawCmd,
+        materialRef
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        TransparentQueuedPolyDrawCmd,
+        vertexCount
+    ) == 0x04
+);
 RECOIL_STATIC_ASSERT(
     offsetof(
         TransparentQueuedPolyDrawCmd,
@@ -354,6 +446,12 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         TransparentQueuedPolyDrawCmd,
+        savedInvDepthScale
+    ) == 0x374
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        TransparentQueuedPolyDrawCmd,
         alphaOrShadeBits
     ) == 0x378
 );
@@ -363,7 +461,19 @@ RECOIL_STATIC_ASSERT(
         shadeOrSpanMode
     ) == 0x37c
 );
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        TransparentQueuedPolyDrawCmd,
+        texKey
+    ) == 0x380
+);
 RECOIL_STATIC_ASSERT(sizeof(OverwriteQueuedPolyDrawCmd) == 0x48c);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        OverwriteQueuedPolyDrawCmd,
+        commandTag
+    ) == 0x00
+);
 RECOIL_STATIC_ASSERT(
     offsetof(
         OverwriteQueuedPolyDrawCmd,
@@ -435,6 +545,12 @@ RECOIL_STATIC_ASSERT(
         OverwriteQueuedPolyDrawCmd,
         savedInvDepthBias
     ) == 0x480
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        OverwriteQueuedPolyDrawCmd,
+        savedInvDepthScale
+    ) == 0x484
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -1618,9 +1734,9 @@ void SelectSpanRoutines() {
 
     g_pfnPointOpCandidate = (PointOpProc)zRndr_PlotPixel16;
     g_pfnPointOpActive = (PointOpProc)zRndr_PlotPixel16;
-    g_pfnImmediateRaster4 = (SpanRoutineProc)zRndr_DrawLine16;
-    g_pfnImmediateRasterReserved = (SpanRoutineProc)zRndr_DrawLine16_Segmented;
-    g_pfnImmediateRaster5 = (SpanRoutineProc)zRndr_DrawLine16_Clipped;
+    g_pfnImmediateRaster4 = zRndr_DrawLine16;
+    g_pfnImmediateRasterReserved = zRndr_DrawLine16_Segmented;
+    g_pfnImmediateRaster5 = zRndr_DrawLine16_Clipped;
     g_pfnSelectedSpanOp = (SpanRoutineProc)zRndr_FillSpan16Opaque;
     g_pfnSelectedSpanOp_Mode0 = SpanMasked16FromTex16SwitchVShift;
     g_pfnFlatImmediateSpanOp = g_pixelPackGreenBits == 5
@@ -4096,7 +4212,7 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x3ff) +
-                ((texV & g_spanActiveTexVMask) >> 10);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 10);
             *dstEnd = texels16[sourceIndex];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
@@ -4111,7 +4227,7 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x1ff) +
-                ((texV & g_spanActiveTexVMask) >> 11);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 11);
             *dstEnd = texels16[sourceIndex];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
@@ -4126,7 +4242,7 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0xff) +
-                ((texV & g_spanActiveTexVMask) >> 12);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 12);
             *dstEnd = texels16[sourceIndex];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
@@ -4141,7 +4257,7 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x7f) +
-                ((texV & g_spanActiveTexVMask) >> 13);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 13);
             *dstEnd = texels16[sourceIndex];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
@@ -4156,7 +4272,7 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x3f) +
-                ((texV & g_spanActiveTexVMask) >> 14);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 14);
             *dstEnd = texels16[sourceIndex];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
@@ -4171,7 +4287,7 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x1f) +
-                ((texV & g_spanActiveTexVMask) >> 15);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 15);
             *dstEnd = texels16[sourceIndex];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
@@ -4186,7 +4302,7 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x0f) +
-                ((texV & g_spanActiveTexVMask) >> 16);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 16);
             *dstEnd = texels16[sourceIndex];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
@@ -4201,7 +4317,7 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x07) +
-                ((texV & g_spanActiveTexVMask) >> 17);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 17);
             *dstEnd = texels16[sourceIndex];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
@@ -4243,7 +4359,7 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x3ff) +
-                ((texV & g_spanActiveTexVMask) >> 10);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 10);
             const unsigned short source = texels16[sourceIndex];
             if (source != 0) {
                 *dstEnd = source;
@@ -4263,7 +4379,7 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x1ff) +
-                ((texV & g_spanActiveTexVMask) >> 11);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 11);
             const unsigned short source = texels16[sourceIndex];
             if (source != 0) {
                 *dstEnd = source;
@@ -4283,7 +4399,7 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0xff) +
-                ((texV & g_spanActiveTexVMask) >> 12);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 12);
             const unsigned short source = texels16[sourceIndex];
             if (source != 0) {
                 *dstEnd = source;
@@ -4303,7 +4419,7 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x7f) +
-                ((texV & g_spanActiveTexVMask) >> 13);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 13);
             const unsigned short source = texels16[sourceIndex];
             if (source != 0) {
                 *dstEnd = source;
@@ -4323,7 +4439,7 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x3f) +
-                ((texV & g_spanActiveTexVMask) >> 14);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 14);
             const unsigned short source = texels16[sourceIndex];
             if (source != 0) {
                 *dstEnd = source;
@@ -4343,7 +4459,7 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x1f) +
-                ((texV & g_spanActiveTexVMask) >> 15);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 15);
             const unsigned short source = texels16[sourceIndex];
             if (source != 0) {
                 *dstEnd = source;
@@ -4363,7 +4479,7 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x0f) +
-                ((texV & g_spanActiveTexVMask) >> 16);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 16);
             const unsigned short source = texels16[sourceIndex];
             if (source != 0) {
                 *dstEnd = source;
@@ -4383,7 +4499,7 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x07) +
-                ((texV & g_spanActiveTexVMask) >> 17);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 17);
             const unsigned short source = texels16[sourceIndex];
             if (source != 0) {
                 *dstEnd = source;
@@ -4574,121 +4690,137 @@ void __fastcall SpanCopy16FromPal8SwitchVShift(
 
     case 10: {
         unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
-        for (int i = 0; i < pixelCount; ++i) {
+        int remainingBytes = -pixelCount * 2;
+        do {
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x3ff) +
-                ((texV & g_spanActiveTexVMask) >> 10);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 10);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             *dstEnd = g_spanActiveTexPalette[source];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
-        }
+            remainingBytes += 2;
+        } while (remainingBytes != 0);
         return;
     }
 
     case 11: {
         unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
-        for (int i = 0; i < pixelCount; ++i) {
+        int remainingBytes = -pixelCount * 2;
+        do {
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x1ff) +
-                ((texV & g_spanActiveTexVMask) >> 11);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 11);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             *dstEnd = g_spanActiveTexPalette[source];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
-        }
+            remainingBytes += 2;
+        } while (remainingBytes != 0);
         return;
     }
 
     case 12: {
         unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
-        for (int i = 0; i < pixelCount; ++i) {
+        int remainingBytes = -pixelCount * 2;
+        do {
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0xff) +
-                ((texV & g_spanActiveTexVMask) >> 12);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 12);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             *dstEnd = g_spanActiveTexPalette[source];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
-        }
+            remainingBytes += 2;
+        } while (remainingBytes != 0);
         return;
     }
 
     case 13: {
         unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
-        for (int i = 0; i < pixelCount; ++i) {
+        int remainingBytes = -pixelCount * 2;
+        do {
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x7f) +
-                ((texV & g_spanActiveTexVMask) >> 13);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 13);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             *dstEnd = g_spanActiveTexPalette[source];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
-        }
+            remainingBytes += 2;
+        } while (remainingBytes != 0);
         return;
     }
 
     case 14: {
         unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
-        for (int i = 0; i < pixelCount; ++i) {
+        int remainingBytes = -pixelCount * 2;
+        do {
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x3f) +
-                ((texV & g_spanActiveTexVMask) >> 14);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 14);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             *dstEnd = g_spanActiveTexPalette[source];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
-        }
+            remainingBytes += 2;
+        } while (remainingBytes != 0);
         return;
     }
 
     case 15: {
         unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
-        for (int i = 0; i < pixelCount; ++i) {
+        int remainingBytes = -pixelCount * 2;
+        do {
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x1f) +
-                ((texV & g_spanActiveTexVMask) >> 15);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 15);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             *dstEnd = g_spanActiveTexPalette[source];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
-        }
+            remainingBytes += 2;
+        } while (remainingBytes != 0);
         return;
     }
 
     case 16: {
         unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
-        for (int i = 0; i < pixelCount; ++i) {
+        int remainingBytes = -pixelCount * 2;
+        do {
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x0f) +
-                ((texV & g_spanActiveTexVMask) >> 16);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 16);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             *dstEnd = g_spanActiveTexPalette[source];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
-        }
+            remainingBytes += 2;
+        } while (remainingBytes != 0);
         return;
     }
 
     case 17: {
         unsigned short *dstEnd = g_spanCurrentSpanBaseAddr + pixelCount;
-        for (int i = 0; i < pixelCount; ++i) {
+        int remainingBytes = -pixelCount * 2;
+        do {
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x07) +
-                ((texV & g_spanActiveTexVMask) >> 17);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 17);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             *dstEnd = g_spanActiveTexPalette[source];
             texU += g_spanActiveTexUStepFixed20;
             texV += g_spanActiveTexVStepFixed20;
-        }
+            remainingBytes += 2;
+        } while (remainingBytes != 0);
         return;
     }
     }
@@ -4723,7 +4855,7 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x3ff) +
-                ((texV & g_spanActiveTexVMask) >> 10);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 10);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             if (source != 0) {
                 *dstEnd = g_spanActiveTexPalette[source];
@@ -4740,7 +4872,7 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x1ff) +
-                ((texV & g_spanActiveTexVMask) >> 11);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 11);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             if (source != 0) {
                 *dstEnd = g_spanActiveTexPalette[source];
@@ -4757,7 +4889,7 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0xff) +
-                ((texV & g_spanActiveTexVMask) >> 12);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 12);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             if (source != 0) {
                 *dstEnd = g_spanActiveTexPalette[source];
@@ -4774,7 +4906,7 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x7f) +
-                ((texV & g_spanActiveTexVMask) >> 13);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 13);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             if (source != 0) {
                 *dstEnd = g_spanActiveTexPalette[source];
@@ -4791,7 +4923,7 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x3f) +
-                ((texV & g_spanActiveTexVMask) >> 14);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 14);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             if (source != 0) {
                 *dstEnd = g_spanActiveTexPalette[source];
@@ -4808,7 +4940,7 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x1f) +
-                ((texV & g_spanActiveTexVMask) >> 15);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 15);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             if (source != 0) {
                 *dstEnd = g_spanActiveTexPalette[source];
@@ -4825,7 +4957,7 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x0f) +
-                ((texV & g_spanActiveTexVMask) >> 16);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 16);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             if (source != 0) {
                 *dstEnd = g_spanActiveTexPalette[source];
@@ -4842,7 +4974,7 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x07) +
-                ((texV & g_spanActiveTexVMask) >> 17);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 17);
             const unsigned char source = g_spanActiveTexPixels[sourceIndex];
             if (source != 0) {
                 *dstEnd = g_spanActiveTexPalette[source];
@@ -4884,7 +5016,7 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x3ff) +
-                ((texV & g_spanActiveTexVMask) >> 10);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 10);
             const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
             const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
             g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
@@ -4902,7 +5034,7 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x1ff) +
-                ((texV & g_spanActiveTexVMask) >> 11);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 11);
             const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
             const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
             g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
@@ -4920,7 +5052,7 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0xff) +
-                ((texV & g_spanActiveTexVMask) >> 12);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 12);
             const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
             const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
             g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
@@ -4938,7 +5070,7 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x7f) +
-                ((texV & g_spanActiveTexVMask) >> 13);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 13);
             const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
             const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
             g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
@@ -4956,7 +5088,7 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x3f) +
-                ((texV & g_spanActiveTexVMask) >> 14);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 14);
             const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
             const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
             g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
@@ -4974,7 +5106,7 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x1f) +
-                ((texV & g_spanActiveTexVMask) >> 15);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 15);
             const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
             const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
             g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
@@ -4992,7 +5124,7 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x0f) +
-                ((texV & g_spanActiveTexVMask) >> 16);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 16);
             const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
             const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
             g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
@@ -5010,7 +5142,7 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
             --dstEnd;
             const int sourceIndex =
                 ((texU >> 20) & 0x07) +
-                ((texV & g_spanActiveTexVMask) >> 17);
+                ((unsigned int)(texV & g_spanActiveTexVMask) >> 17);
             const int shadeBucket = (g_spanActiveShadeFixed16 & 0x00f80000) >> 11;
             const int paletteIndex = g_spanActiveTexPixels[sourceIndex] + shadeBucket;
             g_spanActiveShadeFixed16 = (int)((unsigned int)(g_spanActiveShadeFixed16) +
@@ -5150,6 +5282,8 @@ void CommitStagedFogParamsIfChanged() {
 
 /**
  * Reimplements 0x49b780: zRndr::BlendPackedColor565WithFogInPlace
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Fog.cpp.
+ * Source file evidence: Binary Ninja function source comment.
  * Purpose: Blend a packed 565 color in place toward the active fog color.
  */
 void __fastcall BlendPackedColor565WithFogInPlace(
@@ -6776,8 +6910,8 @@ void __fastcall zRndr_RasterizePolyWithSpanList(
         }
     }
 
-    ScanConvertEdge edgeTableA[0x40] = {0};
-    ScanConvertEdge edgeTableB[0x40] = {0};
+    ScanConvertEdge edgeTableA[0x40];
+    ScanConvertEdge edgeTableB[0x40];
     int edgeCountA;
     int edgeCountB;
     if (zRndr::g_scanConvertMode != 0) {
@@ -6826,7 +6960,7 @@ void __fastcall zRndr_RasterizePolyWithSpanList(
         return;
     }
 
-    zRndr::SpanNodePartial *visibleSpans[0x40];
+    zRndr::SpanNodePartial *visibleSpans[0x141];
     int edgeIndexA = 0;
     int edgeIndexB = 0;
     int currentXFixedA = edgeTableA[0].currentXFixed;
@@ -7988,38 +8122,40 @@ zVidImagePartial *__fastcall zRndr_TextureMip_SelectVariantImage(
         return entry != 0 ? entry->image : 0;
     }
 
-    int selectedVertex = 0;
     float selectedZ = triVerts[0].z;
     const zVec3 *candidateVertex = triVerts + 1;
-    for (int i = 1; i < vertCount; ++i, ++candidateVertex) {
+    int selectedVertex = 0;
+    int i = 1;
+    for (; i < vertCount; ++i, ++candidateVertex) {
         if (selectedZ < candidateVertex->z) {
             selectedZ = candidateVertex->z;
             selectedVertex = i;
         }
     }
 
-    const zVec2 &selectedUv = vertexUvPairs[selectedVertex];
     const float selectedVertexZ = triVerts[selectedVertex].z;
     const float invZ = 1.0f / selectedVertexZ;
-    const float uOverZ = selectedUv.x * invZ;
-    const float vOverZ = selectedUv.y * invZ;
     const float invZAtX = 1.0f / (selectedVertexZ + mipParamsA->x);
     const float invZAtY = 1.0f / (selectedVertexZ + mipParamsA->y);
+    const float uOverZ = vertexUvPairs[selectedVertex].x * invZ;
+    const float vOverZ = vertexUvPairs[selectedVertex].y * invZ;
 
-    const float uDeltaX = (selectedUv.x + mipParamsB->x) * invZAtX - uOverZ;
-    const float uDeltaY = (selectedUv.x + mipParamsB->y) * invZAtY - uOverZ;
-    const float vDeltaX = (selectedUv.y + mipParamsC->x) * invZAtX - vOverZ;
-    const float vDeltaY = (selectedUv.y + mipParamsC->y) * invZAtY - vOverZ;
+    const float mipDeltas[4] = {
+        (vertexUvPairs[selectedVertex].x + mipParamsB->x) * invZAtX - uOverZ,
+        (vertexUvPairs[selectedVertex].x + mipParamsB->y) * invZAtY - uOverZ,
+        (vertexUvPairs[selectedVertex].y + mipParamsC->x) * invZAtX - vOverZ,
+        (vertexUvPairs[selectedVertex].y + mipParamsC->y) * invZAtY - vOverZ
+    };
 
-    float mipMetric = uDeltaX;
-    if (uDeltaY > mipMetric) {
-        mipMetric = uDeltaY;
+    float mipMetric = mipDeltas[0];
+    if (mipMetric < mipDeltas[1]) {
+        mipMetric = mipDeltas[1];
     }
-    if (vDeltaX > mipMetric) {
-        mipMetric = vDeltaX;
+    if (mipMetric < mipDeltas[2]) {
+        mipMetric = mipDeltas[2];
     }
-    if (vDeltaY > mipMetric) {
-        mipMetric = vDeltaY;
+    if (mipMetric < mipDeltas[3]) {
+        mipMetric = mipDeltas[3];
     }
 
     const double variantIndexBits = (double)(mipMetric) - -6755399441055744.0;
@@ -9123,17 +9259,8 @@ void __fastcall zRndr_DrawImmediateLine(
     int y1,
     int color16
 ) {
-    typedef void(__fastcall * ImmediateRaster4Proc)(
-        void *frameBuffer,
-        int x0,
-        int y0,
-        int x1,
-        int y1,
-        int color16
-    );
-
-    ((ImmediateRaster4Proc)(zRndr::g_pfnImmediateRaster4))(
-        zRndr::g_frameBuffer,
+    zRndr::g_pfnImmediateRaster4(
+        (unsigned short *)(zRndr::g_frameBuffer),
         x0,
         y0,
         x1,
@@ -9157,23 +9284,13 @@ void __fastcall zRndr_DrawClippedImmediateLineStrip(
         return;
     }
 
-    typedef void(__fastcall * ImmediateRaster5Proc)(
-        void *frameBuffer,
-        const void *clipRect,
-        int x0,
-        int y0,
-        int x1,
-        int y1,
-        int color16
-    );
-
-    ImmediateRaster5Proc const drawClipped = (ImmediateRaster5Proc)(zRndr::g_pfnImmediateRaster5);
-
+    const zRndr_LineClipRect2I *clip = (const zRndr_LineClipRect2I *)(clipRect);
     const zRndr_LinePoint2I *point = points + 1;
+    int remaining = segmentCount;
     do {
-        drawClipped(
-            zRndr::g_frameBuffer,
-            clipRect,
+        zRndr::g_pfnImmediateRaster5(
+            (unsigned short *)(zRndr::g_frameBuffer),
+            clip,
             point[-1].x,
             point[-1].y,
             point[0].x,
@@ -9181,8 +9298,8 @@ void __fastcall zRndr_DrawClippedImmediateLineStrip(
             color16
         );
         ++point;
-        --segmentCount;
-    } while (segmentCount != 0);
+        --remaining;
+    } while (remaining != 0);
 }
 
 /**
@@ -9317,6 +9434,8 @@ void __fastcall zRndr_LensFlare_SetVisibleSampleStage(
 
 /**
  * Reimplements 0x49aa90: zRndr_LensFlare_DrawSampleStageClipped
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_LensFlare.cpp.
+ * Source file evidence: Binary Ninja function source comment.
  * Purpose: Draw one clipped lens-flare stage quad through hardware or software rendering.
  */
 void __fastcall zRndr_LensFlare_DrawSampleStageClipped(
@@ -9397,16 +9516,7 @@ void __fastcall zRndr_LensFlare_DrawSampleStageClipped(
     };
 
     if (g_zVideo_ActiveRendererPath != 0) {
-        typedef void(__fastcall * SubmitPolyRenderClassProc)(
-            zVideo_XyzVertex * vertices,
-            zVideo_TexCoord * texCoords,
-            int vertexCount,
-            zVideo_RenderClass *renderClass,
-            unsigned int renderParam,
-            float alpha,
-            int queueMode
-        );
-        SubmitPolyRenderClassProc submitPoly = g_zVideo_pfnSubmitPolyRenderClass;
+        zVideo_SubmitPolyRenderClassProc submitPoly = g_zVideo_pfnSubmitPolyRenderClass;
         zVideo_RenderClass *renderClass =
             stageTexDirEntry != 0 ? (zVideo_RenderClass *)(stageTexDirEntry->texture) : 0;
         submitPoly(
@@ -9452,6 +9562,8 @@ void __fastcall zRndr_LensFlare_DrawSampleStageClipped(
 
 /**
  * Reimplements 0x49b020: zRndr_LensFlare_DrawVisibleSampleStages
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_LensFlare.cpp.
+ * Source file evidence: Binary Ninja function source comment.
  * Purpose: Draw the four staged lens-flare quads for one visible sample.
  */
 void __fastcall zRndr_LensFlare_DrawVisibleSampleStages(
@@ -9625,7 +9737,9 @@ void __fastcall zRndr_FogTargetColorStaged_SetRgb01Clamped(
 }
 
 /**
- * Reimplements 0x499930: zRndr_SetPaletteRemapKey
+ * Reimplements 0x499930: zRndr_SetPaletteRemapKey.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
+ * Source file evidence: Binary Ninja function source comment.
  * Purpose: Select the active palette remap key from a recipe and shade level.
  */
 void __fastcall zRndr_SetPaletteRemapKey(
@@ -9649,7 +9763,9 @@ void __fastcall zRndr_SetPaletteRemapKey(
 }
 
 /**
- * Reimplements 0x499990: zRndr_SetPaletteRemapKeyFromRgb01
+ * Reimplements 0x499990: zRndr_SetPaletteRemapKeyFromRgb01.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
+ * Source file evidence: Binary Ninja function source comment.
  * Purpose: Build a single-color palette remap recipe from RGB values and select its remap key.
  */
 void __fastcall zRndr_SetPaletteRemapKeyFromRgb01(
@@ -9673,7 +9789,9 @@ void __fastcall zRndr_SetPaletteRemapKeyFromRgb01(
 }
 
 /**
- * Reimplements 0x499a00: zRndr_SetPaletteShadeRecipeIndex
+ * Reimplements 0x499a00: zRndr_SetPaletteShadeRecipeIndex.
+ * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
+ * Source file evidence: Binary Ninja function source comment.
  * Purpose: Select the active palette shade recipe variant index.
  */
 void __fastcall zRndr_SetPaletteShadeRecipeIndex(

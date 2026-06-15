@@ -583,6 +583,18 @@ int g_cmdDialogRebuildCalls;
 int g_cmdDialogRebuildGroup;
 int g_cmdDialogSetChildFlagsCalls;
 int g_cmdDialogSetChildFlagsValue;
+int g_cmdDialogApplySecondaryProbeCalls;
+void *g_cmdDialogApplySecondaryProbeThis;
+int g_cmdDialogApplySecondaryProbeKeyCode;
+int g_cmdDialogApplySecondaryProbeCommandIndex;
+int g_cmdDialogApplyJoystickProbeCalls;
+void *g_cmdDialogApplyJoystickProbeThis;
+int g_cmdDialogApplyJoystickProbeButtonCode;
+int g_cmdDialogApplyJoystickProbeCommandIndex;
+int g_cmdDialogApplyMouseProbeCalls;
+void *g_cmdDialogApplyMouseProbeThis;
+int g_cmdDialogApplyMouseProbeButtonCode;
+int g_cmdDialogApplyMouseProbeCommandIndex;
 int g_cmdResetDefaultBindingCalls;
 int g_cmdResetLookupRebuildCalls;
 int g_cmdResetBaseActivateCalls;
@@ -1125,12 +1137,78 @@ struct HudCmdZrdActivateProbe {
     void OnActivate();
 };
 
+struct HudCmdDialogApplySecondaryProbe {
+    int ApplySecondaryKeyRebind(
+        int keyCode,
+        int commandIndex
+    );
+};
+
+struct HudCmdDialogApplyJoystickProbe {
+    int ApplyJoystickButtonRebind(
+        int buttonCode,
+        int commandIndex
+    );
+};
+
+struct HudCmdDialogApplyMouseProbe {
+    int ApplyMouseButtonRebind(
+        int buttonCode,
+        int commandIndex
+    );
+};
+
 void HudCmdZrdActivateProbe::OnActivate() {
     ++g_cmdResetBaseActivateCalls;
 }
 
+int HudCmdDialogApplySecondaryProbe::ApplySecondaryKeyRebind(
+    int keyCode,
+    int commandIndex
+) {
+    ++g_cmdDialogApplySecondaryProbeCalls;
+    g_cmdDialogApplySecondaryProbeThis = this;
+    g_cmdDialogApplySecondaryProbeKeyCode = keyCode;
+    g_cmdDialogApplySecondaryProbeCommandIndex = commandIndex;
+    return 1;
+}
+
+int HudCmdDialogApplyJoystickProbe::ApplyJoystickButtonRebind(
+    int buttonCode,
+    int commandIndex
+) {
+    ++g_cmdDialogApplyJoystickProbeCalls;
+    g_cmdDialogApplyJoystickProbeThis = this;
+    g_cmdDialogApplyJoystickProbeButtonCode = buttonCode;
+    g_cmdDialogApplyJoystickProbeCommandIndex = commandIndex;
+    return 1;
+}
+
+int HudCmdDialogApplyMouseProbe::ApplyMouseButtonRebind(
+    int buttonCode,
+    int commandIndex
+) {
+    ++g_cmdDialogApplyMouseProbeCalls;
+    g_cmdDialogApplyMouseProbeThis = this;
+    g_cmdDialogApplyMouseProbeButtonCode = buttonCode;
+    g_cmdDialogApplyMouseProbeCommandIndex = commandIndex;
+    return 1;
+}
+
 void *HudCmdZrdActivateProbeAddress() {
     return MethodAddress(&HudCmdZrdActivateProbe::OnActivate);
+}
+
+void *HudCmdDialogApplySecondaryProbeAddress() {
+    return MethodAddress(&HudCmdDialogApplySecondaryProbe::ApplySecondaryKeyRebind);
+}
+
+void *HudCmdDialogApplyJoystickProbeAddress() {
+    return MethodAddress(&HudCmdDialogApplyJoystickProbe::ApplyJoystickButtonRebind);
+}
+
+void *HudCmdDialogApplyMouseProbeAddress() {
+    return MethodAddress(&HudCmdDialogApplyMouseProbe::ApplyMouseButtonRebind);
 }
 
 char *__fastcall FakeHudCmdCommandLabel(int commandId) {
@@ -4983,6 +5061,81 @@ extern "C" int zhud_cycle_selector_widget_constructor_smoke(void) {
     return constructed && advanceWrap && advanceInside ? 0 : 1;
 }
 
+extern "C" int zhud_cycle_selector_text_entry_smoke(void) {
+    HudUiBackground owner{};
+    owner.fontStyles[1].validMarker = 1;
+    owner.fontStyles[1].fontName = "Arial";
+    owner.fontStyles[1].fontSize = 12;
+    owner.fontStyles[1].fontWeight = FW_BOLD;
+    owner.fontStyles[1].textColor = 0x00112233;
+    owner.fontStyles[1].shadowEnabled = 1;
+    owner.fontStyles[1].alignMode = 2;
+    owner.fontStyles[1].bkMode = 3;
+    owner.fontStyles[1].bkColor = 0x00445566;
+
+    HudUiCycleSelectorWidget widget{};
+    widget.Constructor();
+    widget.owner = &owner;
+    widget.itemCount = 0;
+    widget.visibleCount = 1;
+    widget.textOffsetX = 11;
+    widget.textOffsetY = -2;
+
+    widget.AddTextEntry(
+        3,
+        "Bravo",
+        7,
+        9
+    );
+    widget.ApplyFontStyleForEntry(
+        3,
+        1
+    );
+
+    HudUiTransitionTextPanel *const textEntry =
+        reinterpret_cast<HudUiTransitionTextPanel *>(widget.entriesA[3]);
+    HudUiElement *const textElement = textEntry;
+    HudUiPanel *const textPanel = textEntry;
+
+    const bool added =
+        widget.itemCount == 4 &&
+        widget.visibleCount == 4 &&
+        textEntry != nullptr &&
+        std::strcmp(textPanel->cachedText, "Bravo") == 0 &&
+        textElement->x == 18 &&
+        textElement->y == 7 &&
+        (textElement->flags & 0x10u) != 0 &&
+        textEntry->flashEnabled == 0 &&
+        ZhudFloatNear(
+            textEntry->flashResetValue,
+            0.349999994f
+        ) &&
+        textEntry->flashAltColor0 == 0 &&
+        textEntry->flashMode == 0 &&
+        textEntry->flashDirectionSign == 1 &&
+        textPanel->textColor0 == 0x00112233 &&
+        textPanel->textColor1 == 0x00112233 &&
+        textPanel->textDirty == 1 &&
+        textPanel->shadowEnabled == 1 &&
+        textPanel->shadowOffsetX == 1 &&
+        textPanel->shadowOffsetY == 1 &&
+        textPanel->alignMode == 2 &&
+        textPanel->bkMode == 3 &&
+        textPanel->bkColor == 0x00445566 &&
+        owner.childHead == textElement &&
+        owner.childTail == textElement &&
+        textElement->parent == &owner;
+
+    if (textEntry != nullptr) {
+        textEntry->ScalarDeletingDestructor(1);
+        widget.entriesA[3] = nullptr;
+    }
+    owner.childHead = nullptr;
+    owner.childTail = nullptr;
+    widget.DestructorCore();
+    return added ? 0 : 1;
+}
+
 extern "C" int zhud_zrd_widget_helpers_smoke(void) {
     struct TestZrdChildWidget : HudUiElement {
         std::uint32_t deleteFlags;
@@ -6683,6 +6836,116 @@ extern "C" int zhud_cmd_key_a_button_on_begin_capture_smoke(void) {
     return failureCode;
 }
 
+extern "C" int zhud_cmd_key_b_button_on_begin_capture_smoke(void) {
+    CodeFunctionPatch resetPatch{};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zInput::ResetAllTransitionState),
+            reinterpret_cast<void *>(&FakeHudCmdRebuildLookupIndices),
+            resetPatch
+        )) {
+        RestoreFunctionPatch(resetPatch);
+        return 2;
+    }
+
+    HudCmdDialog dialog{};
+    dialog.descriptionPanel.captureState = 0;
+    dialog.keyBButton.owner = &dialog;
+    g_cmdResetLookupRebuildCalls = 0;
+
+    dialog.keyBButton.OnBeginCapture();
+
+    int failureCode = 0;
+    if (dialog.descriptionPanel.captureState != 2) {
+        failureCode = 3;
+    }
+
+    RestoreFunctionPatch(resetPatch);
+    return failureCode;
+}
+
+extern "C" int zhud_cmd_joy_button_on_begin_capture_smoke(void) {
+    CodeFunctionPatch resetPatch{};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zInput::ResetAllTransitionState),
+            reinterpret_cast<void *>(&FakeHudCmdRebuildLookupIndices),
+            resetPatch
+        )) {
+        RestoreFunctionPatch(resetPatch);
+        return 2;
+    }
+
+    HudCmdDialog dialog{};
+    dialog.descriptionPanel.captureState = 0;
+    dialog.joyButton.owner = &dialog;
+    g_cmdResetLookupRebuildCalls = 0;
+
+    dialog.joyButton.OnBeginCapture();
+
+    int failureCode = 0;
+    if (dialog.descriptionPanel.captureState != 3) {
+        failureCode = 3;
+    }
+
+    RestoreFunctionPatch(resetPatch);
+    return failureCode;
+}
+
+extern "C" int zhud_cmd_mouse_button_on_begin_capture_smoke(void) {
+    CodeFunctionPatch resetPatch{};
+    CodeFunctionPatch activatePatch{};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zInput::ResetAllTransitionState),
+            reinterpret_cast<void *>(&FakeHudCmdRebuildLookupIndices),
+            resetPatch
+        ) ||
+        !PatchFunctionJump(
+            MethodAddress(&HudUiZrdWidget::OnActivate),
+            HudCmdZrdActivateProbeAddress(),
+            activatePatch
+        )) {
+        RestoreFunctionPatch(resetPatch);
+        RestoreFunctionPatch(activatePatch);
+        return 2;
+    }
+
+    HudCmdDialog dialog{};
+    dialog.descriptionPanel.captureState = 77;
+
+    HudCmdMouseButton button{};
+    button.owner = &dialog;
+
+    const int oldMouseDebounceFrames = g_HudCmdMouseDebounceFrames;
+    g_HudUi_InvalidateMask = 0x80;
+
+    g_HudCmdMouseDebounceFrames = 2;
+    g_cmdResetLookupRebuildCalls = 0;
+    g_zInput_MouseStateSnapshot.button1Transition = 7;
+    g_zInput_MouseStateSnapshot.button2Transition = 8;
+    g_zInput_MouseStateSnapshot.button3Transition = 9;
+    button.OnBeginCapture();
+    const bool debounced =
+        dialog.descriptionPanel.captureState == 77 &&
+        g_zInput_MouseStateSnapshot.button1Transition == 7 &&
+        g_zInput_MouseStateSnapshot.button2Transition == 8 &&
+        g_zInput_MouseStateSnapshot.button3Transition == 9;
+
+    g_HudCmdMouseDebounceFrames = 0;
+    button.OnBeginCapture();
+
+    int failure = 0;
+    if (!debounced) {
+        failure = 9;
+    } else if (dialog.descriptionPanel.captureState != 4) {
+        failure = 10;
+    }
+
+    g_HudUi_InvalidateMask = 0;
+    g_HudCmdMouseDebounceFrames = oldMouseDebounceFrames;
+    RestoreFunctionPatch(resetPatch);
+    RestoreFunctionPatch(activatePatch);
+    return failure;
+}
+
 extern "C" int zhud_cmd_key_a_button_on_clear_binding_smoke(void) {
     CodeFunctionPatch labelPatch{};
     CodeFunctionPatch hintPatch{};
@@ -6767,6 +7030,114 @@ extern "C" int zhud_cmd_key_a_button_on_clear_binding_smoke(void) {
     RestoreFunctionPatch(labelPatch);
     RestoreFunctionPatch(hintPatch);
     return cleared ? 0 : 1;
+}
+
+extern "C" int zhud_cmd_key_b_button_on_clear_binding_smoke(void) {
+    CodeFunctionPatch rebindPatch{};
+    if (!PatchFunctionJump(
+            MethodAddress(&HudCmdDialog::ApplySecondaryKeyRebind),
+            HudCmdDialogApplySecondaryProbeAddress(),
+            rebindPatch
+        )) {
+        RestoreFunctionPatch(rebindPatch);
+        return 2;
+    }
+
+    HudCmdDialog dialog{};
+    HudCmdKeyBButton button{};
+    button.owner = &dialog;
+    button.selectedBindingIndex = 7;
+    g_cmdDialogApplySecondaryProbeCalls = 0;
+    g_cmdDialogApplySecondaryProbeThis = 0;
+    g_cmdDialogApplySecondaryProbeKeyCode = -1;
+    g_cmdDialogApplySecondaryProbeCommandIndex = -1;
+
+    button.OnClearBinding();
+
+    const bool forwarded =
+        g_cmdDialogApplySecondaryProbeCalls == 1 &&
+        g_cmdDialogApplySecondaryProbeThis == &dialog &&
+        g_cmdDialogApplySecondaryProbeKeyCode == 0 &&
+        g_cmdDialogApplySecondaryProbeCommandIndex == 7;
+
+    RestoreFunctionPatch(rebindPatch);
+    return forwarded ? 0 : 1;
+}
+
+extern "C" int zhud_cmd_joy_button_on_clear_binding_smoke(void) {
+    CodeFunctionPatch rebindPatch{};
+    if (!PatchFunctionJump(
+            MethodAddress(&HudCmdDialog::ApplyJoystickButtonRebind),
+            HudCmdDialogApplyJoystickProbeAddress(),
+            rebindPatch
+        )) {
+        RestoreFunctionPatch(rebindPatch);
+        return 2;
+    }
+
+    HudCmdDialog dialog{};
+    HudCmdJoyButton button{};
+    button.owner = &dialog;
+    button.selectedBindingIndex = 7;
+    g_cmdDialogApplyJoystickProbeCalls = 0;
+    g_cmdDialogApplyJoystickProbeThis = 0;
+    g_cmdDialogApplyJoystickProbeButtonCode = -1;
+    g_cmdDialogApplyJoystickProbeCommandIndex = -1;
+
+    button.OnClearBinding();
+
+    const bool forwarded =
+        g_cmdDialogApplyJoystickProbeCalls == 1 &&
+        g_cmdDialogApplyJoystickProbeThis == &dialog &&
+        g_cmdDialogApplyJoystickProbeButtonCode == 0 &&
+        g_cmdDialogApplyJoystickProbeCommandIndex == 7;
+
+    RestoreFunctionPatch(rebindPatch);
+    return forwarded ? 0 : 1;
+}
+
+extern "C" int zhud_cmd_mouse_button_on_clear_binding_smoke(void) {
+    CodeFunctionPatch rebindPatch{};
+    if (!PatchFunctionJump(
+            MethodAddress(&HudCmdDialog::ApplyMouseButtonRebind),
+            HudCmdDialogApplyMouseProbeAddress(),
+            rebindPatch
+        )) {
+        RestoreFunctionPatch(rebindPatch);
+        return 2;
+    }
+
+    HudCmdDialog dialog{};
+    HudCmdMouseButton button{};
+    button.owner = &dialog;
+    button.selectedBindingIndex = 7;
+
+    const int oldMouseDebounceFrames = g_HudCmdMouseDebounceFrames;
+    g_HudCmdMouseDebounceFrames = 2;
+    g_cmdDialogApplyMouseProbeCalls = 0;
+    g_cmdDialogApplyMouseProbeThis = 0;
+    g_cmdDialogApplyMouseProbeButtonCode = -1;
+    g_cmdDialogApplyMouseProbeCommandIndex = -1;
+
+    button.OnClearBinding();
+    const bool debounced =
+        g_cmdDialogApplyMouseProbeCalls == 0 &&
+        g_cmdDialogApplyMouseProbeThis == 0 &&
+        g_cmdDialogApplyMouseProbeButtonCode == -1 &&
+        g_cmdDialogApplyMouseProbeCommandIndex == -1;
+
+    g_HudCmdMouseDebounceFrames = 0;
+    button.OnClearBinding();
+
+    const bool forwarded =
+        g_cmdDialogApplyMouseProbeCalls == 1 &&
+        g_cmdDialogApplyMouseProbeThis == &dialog &&
+        g_cmdDialogApplyMouseProbeButtonCode == 0 &&
+        g_cmdDialogApplyMouseProbeCommandIndex == 7;
+
+    g_HudCmdMouseDebounceFrames = oldMouseDebounceFrames;
+    RestoreFunctionPatch(rebindPatch);
+    return debounced && forwarded ? 0 : 1;
 }
 
 extern "C" int zhud_cmd_dialog_rebuild_command_binding_lists_smoke(void) {
@@ -7567,6 +7938,11 @@ extern "C" int zhud_cmd_dialog_constructor_smoke(void) {
     InitHudCmdInputTables();
 
     zInput_BindMapContext context{};
+    std::memset(
+        &context,
+        0,
+        sizeof(context)
+    );
     int packedBindings[16] = {};
     zInputCommandCallbackFn callbacks[16] = {};
     char commandFiveLabel[0x50] = {};

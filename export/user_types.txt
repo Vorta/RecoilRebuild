@@ -10607,7 +10607,7 @@ typedef int32_t (* RndrPointTestFn)(int32_t, int32_t);
 typedef void (* RndrSpanLenFn)(int32_t);
 
 // "RndrSpanLenShiftFn"
-typedef void (* RndrSpanLenShiftFn)(int32_t, int32_t);
+typedef void (__fastcall* RndrSpanLenShiftFn)(int32_t texU, int32_t texV, int32_t pixelCount, int32_t texVShift);
 
 // "SaveGameFindDataA"
 struct SaveGameFindDataA

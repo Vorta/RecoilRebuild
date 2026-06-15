@@ -29347,14 +29347,14 @@
     TEB* fsbase
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
-    int32_t __saved_esi
-    int32_t* esp = &__saved_esi
+    struct CString __saved_esi
+    struct CString* esp = &__saved_esi
 
     if ((node->flags & 0x200000) != 0)
-        char* callbackContext = node->callbackContext
+        struct CString callbackContext = node->callbackContext
 
-        if ((callbackContext[0x28] & 2) != 0)
-            char* callbackContext_1 = callbackContext
+        if ((*(callbackContext + 0x28) & 2) != 0)
+            struct CString callbackContext_1 = callbackContext
             struct CString _String_1
             CString::CString(&_String_1, callbackContext_1)
             int32_t var_4_1 = 0
@@ -29384,8 +29384,8 @@
             int32_t var_8_1 = 0xffffffff
             CString::~CString(&__saved_esi)
 
-    fsbase->NtTib.ExceptionList = esp[3]
-    *esp
+    fsbase->NtTib.ExceptionList = esp->__offset(0xc).d
+    esp->m_pchData
     return 0
 
     // [comments not attached to rendered lines]
@@ -50881,7 +50881,7 @@
     TEB* fsbase
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
-    struct CWnd* var_13c = nullptr
+    struct CString var_13c = 0
     struct WestwoodOnlineUpgradeConfigDialog configDialog
     WestwoodOnlineUpgradeConfigDialog::Constructor(&configDialog, var_13c)
     int32_t var_4 = 0
@@ -50917,17 +50917,17 @@
     // GetSelectedProfileValues returns void and fills outPlayerName/outConnectString/selectedProfileConnectStringMode by pointer. HLIL's ecx_3 return capture is a stack-temp artifact.
     char* outPlayerName
     char* outConnectString
-    struct CWnd* ecx_3 = WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(&configDialog, &outPlayerName, &outConnectString, var_13c)
+    struct CString ecx_3 = WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(&configDialog, &outPlayerName, &outConnectString, var_13c)
     char* outPlayerName_1 = outPlayerName
     // BN models the stack CString temporary slot as var_13c/ecx_*; assembly is reserving and constructing CString temporaries for the two selected-profile setter calls.
     var_13c = ecx_3
-    struct CWnd** var_130 = &var_13c
+    struct CString* var_130 = &var_13c
     // Constructs a temporary CString from outPlayerName for SetSelectedProfilePlayerName; this is not a CWnd* var_13c semantic local.
     CString::CString(&var_13c, outPlayerName_1)
-    struct CWnd* ecx_6 = WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName(g_pWestwoodOnlineUpgradeDialog, var_13c)
+    struct CString ecx_6 = WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName(g_pWestwoodOnlineUpgradeDialog, var_13c)
     char* outConnectString_1 = outConnectString
     var_13c = ecx_6
-    struct CWnd** var_130_1 = &var_13c
+    struct CString* var_130_1 = &var_13c
     // Constructs a temporary CString from outConnectString for SetSelectedProfileConnectString; this reuses the caller's transient stack argument slot.
     CString::CString(&var_13c, outConnectString_1)
     WestwoodOnlineUpgradeDialog::SetSelectedProfileConnectString(g_pWestwoodOnlineUpgradeDialog, var_13c)
@@ -124167,8 +124167,8 @@
 
     gRndr_ActiveTexPixels = image_2->pixels
     char* alphaMap = image_2->alphaMap
-    void (* edx_1)(int32_t, int32_t)
-    void (* ebx_14)(int32_t, int32_t)
+    void (__fastcall* edx_1)(int32_t texU, int32_t texV, int32_t pixelCount, int32_t texVShift)
+    void (__fastcall* ebx_14)(int32_t texU, int32_t texV, int32_t pixelCount, int32_t texVShift)
 
     if (alphaMap == 0)
         edx_1 = gRndr_pfnFlatQueuedSpanOp_Mode1
@@ -124183,7 +124183,7 @@
 
     gRndr_pfnSelectedSpanOp_Mode1 = ebx_14
     uint16_t* palette = image_2->palette
-    void (* var_d5c_1)(int32_t, int32_t)
+    void (__fastcall* var_d5c_1)(int32_t texU, int32_t texV, int32_t pixelCount, int32_t texVShift)
 
     if (palette != 0)
         if (paletteIndex != 0xffffffff)
@@ -124283,18 +124283,18 @@
                     do
                         struct zRndr_SpanNode* eax_58 = *edi_9
                         int32_t sampleXMin = eax_58->sampleXMin
-                        int32_t ecx_30 = eax_58->sampleXMax - sampleXMin + 1
+                        int32_t pixelCount = eax_58->sampleXMax - sampleXMin + 1
                         gRndr_CurrentSpanBaseAddr = gRndr_BytesPerPixel * sampleXMin + var_db4_5
                         long double x87_r4_101 = eax_58->sampleXMin - var_db0_17.d
                         long double x87_r4_103 = eax_58->sampleXMax - var_db0_17.d
-                        float var_d88_2 = 1048576f / ecx_30
+                        float var_d88_2 = 1048576f / pixelCount
                         float var_d9c_2 = x87_r4_103
                         long double x87_r2_35 = 1f / x87_r4_101 * mipParamsA.x + var_d94_3
                         long double x87_r2_36 = x87_r2_35 * x87_r4_101 * mipParamsB.x + var_d3c_1
                         long double x87_r2_43 = x87_r2_35 * x87_r4_101 * mipParamsC.x + var_d44_1
                         float var_d8c_2 = 1f / (x87_r4_103 * mipParamsA.x + var_d94_3)
-                        int32_t var_d18_1 = (6755399441055744.0 - x87_r2_36 * -1048576f).d
-                        int32_t var_d20_1 = (6755399441055744.0 - x87_r2_43 * -1048576f).d
+                        int32_t texU = (6755399441055744.0 - x87_r2_36 * -1048576f).d
+                        int32_t texV = (6755399441055744.0 - x87_r2_43 * -1048576f).d
                         long double x87_r5_56 = (var_d9c_2 * mipParamsB.x + var_d3c_1) * var_d8c_2
                         long double x87_r5_58 = (var_d9c_2 * mipParamsC.x + var_d44_1) * var_d8c_2
                         float var_d8c_3 = x87_r5_56
@@ -124306,7 +124306,7 @@
                         gRndr_ActiveTexUStepFixed20 = edx_16
                         int32_t gRndr_ActiveTexShift_1 = gRndr_ActiveTexShift
                         gRndr_ActiveTexVStepFixed20 = var_d88_2
-                        var_d5c_1(ecx_30, gRndr_ActiveTexShift_1)
+                        var_d5c_1(texU, texV, pixelCount, gRndr_ActiveTexShift_1)
                         esi_13 += 1
                         edi_9 = &edi_9[1]
                     while (esi_13 s< height)
@@ -124651,8 +124651,8 @@
 
     gRndr_ActiveTexPixels = image_2->pixels
     char* alphaMap = image_2->alphaMap
-    void (* edx_2)(int32_t, int32_t)
-    void (* ebx_14)(int32_t, int32_t)
+    void (__fastcall* edx_2)(int32_t texU, int32_t texV, int32_t pixelCount, int32_t texVShift)
+    void (__fastcall* ebx_14)(int32_t texU, int32_t texV, int32_t pixelCount, int32_t texVShift)
 
     if (alphaMap == 0)
         edx_2 = gRndr_pfnPolyTlvSpanOp_Mode1
@@ -124672,7 +124672,7 @@
         gRndr_pfnSelectedSpanOp_Mode1 = ebx_14
 
     uint16_t* palette = image_2->palette
-    void (* var_d70_1)(int32_t, int32_t)
+    void (__fastcall* var_d70_1)(int32_t texU, int32_t texV, int32_t pixelCount, int32_t texVShift)
 
     if (palette != 0)
         if (texKey != 0xffffffff)
@@ -124791,8 +124791,8 @@
                             long double x87_r2_36 = x87_r2_35 * x87_r5_58 * mipParamsB.x + var_d40_1
                             long double x87_r2_43 = x87_r2_35 * x87_r5_58 * mipParamsC.x + var_d48_1
                             float var_d80_2 = 1f / (x87_r5_55 * mipParamsA.x + var_d94_2)
-                            int32_t var_d20_1 = (6755399441055744.0 - x87_r2_36 * -1048576f).d
-                            int32_t var_d18_1 = (6755399441055744.0 - x87_r2_43 * -1048576f).d
+                            int32_t texU = (6755399441055744.0 - x87_r2_36 * -1048576f).d
+                            int32_t texV = (6755399441055744.0 - x87_r2_43 * -1048576f).d
                             long double x87_r5_66 = (var_da0_2 * mipParamsB.x + var_d40_1) * var_d80_2
                             long double x87_r5_68 = (var_da0_2 * mipParamsC.x + var_d48_1) * var_d80_2
                             float var_d80_3 = x87_r5_66
@@ -124805,7 +124805,7 @@
                             var_d90_5.q = 6755399441055744.0 - (x87_r5_68 - x87_r2_43) * -1048576f
                             gRndr_ActiveTexUStepFixed20 = divs.dp.d(edx_16:eax_61, sampleXMax - sampleXMin + 1)
                             gRndr_ActiveTexVStepFixed20 = divs.dp.d(var_d90_5, sampleXMax - sampleXMin + 1)
-                            var_d70_1(sampleXMax - sampleXMin + 1, gRndr_ActiveTexShift)
+                            var_d70_1(texU, texV, sampleXMax - sampleXMin + 1, gRndr_ActiveTexShift)
                             spanNodeCount = entry_2
 
                         cond:15_1 = var_d74_2 + 1 s< spanNodeCount
@@ -125247,11 +125247,11 @@
     int32_t var_60_1 = ((6755399441055744.0 - projectedVerts[clippedTriVerts].y * -65536f).d - 0x8041) s>> 0x10
     // Choose the perspective chunk width from inverse-depth slope, clamped between g_zRndr_PerspAdaptiveMinSpan and g_zRndr_PerspAdaptiveMaxSpan; zero slope falls back to the fixed pow2 step.
     int32_t zRndr_PerspTextureDeltaXBytes_1
-    int32_t edi_12
+    int32_t texV_1
     long double x87_r7_53
 
     if (zRndr_PerspAdaptiveMinSpan_1 == 0)
-        edi_12 = g_zRndr_PerspTextureDeltaXPow2
+        texV_1 = g_zRndr_PerspTextureDeltaXPow2
         zRndr_PerspTextureDeltaXBytes_1 = g_zRndr_PerspTextureDeltaXBytes
         x87_r7_53 = g_zRndr_PerspTextureDeltaXPow2F
     else
@@ -125263,22 +125263,22 @@
 
         if ((eax_51:1.b & 0x40) == 0)
             int32_t zRndr_PerspAdaptiveMaxSpan_1 = g_zRndr_PerspAdaptiveMaxSpan
-            int32_t var_c_18 = (fabs(x87_r7_48 * g_zRndr_PerspAdaptiveSlope / gRndr_PerspInvDepthStepX) - -6755399441055744.0).d
-            edi_12 = var_c_18
-            vertCount = edi_12
+            int32_t texV_3 = (fabs(x87_r7_48 * g_zRndr_PerspAdaptiveSlope / gRndr_PerspInvDepthStepX) - -6755399441055744.0).d
+            texV_1 = texV_3
+            vertCount = texV_1
 
-            if (var_c_18 s> zRndr_PerspAdaptiveMaxSpan_1)
-                edi_12 = zRndr_PerspAdaptiveMaxSpan_1
-                vertCount = edi_12
-            else if (var_c_18 s< zRndr_PerspAdaptiveMinSpan_1)
-                edi_12 = zRndr_PerspAdaptiveMinSpan_1
-                vertCount = edi_12
+            if (texV_3 s> zRndr_PerspAdaptiveMaxSpan_1)
+                texV_1 = zRndr_PerspAdaptiveMaxSpan_1
+                vertCount = texV_1
+            else if (texV_3 s< zRndr_PerspAdaptiveMinSpan_1)
+                texV_1 = zRndr_PerspAdaptiveMinSpan_1
+                vertCount = texV_1
         else
-            edi_12 = g_zRndr_PerspAdaptiveMaxSpan
-            vertCount = edi_12
+            texV_1 = g_zRndr_PerspAdaptiveMaxSpan
+            vertCount = texV_1
 
         x87_r7_53 = vertCount
-        zRndr_PerspTextureDeltaXBytes_1 = edi_12 * gRndr_BytesPerPixel
+        zRndr_PerspTextureDeltaXBytes_1 = texV_1 * gRndr_BytesPerPixel
 
     long double x87_r6_46 = 1f / x87_r7_53
     int32_t var_64 = 0
@@ -125415,8 +125415,8 @@
                         long double x87_r7_79 = sampleXMin - -0.5f
                         float var_30_2 = sampleXMax - -0.5f
                         long double x87_r6_66 = x87_r7_79 - gRndr_PerspPlaneOriginX
-                        int32_t ebx_12 = sampleXMax - sampleXMin + 1
-                        int32_t var_28_1 = ebx_12
+                        int32_t texV = sampleXMax - sampleXMin + 1
+                        int32_t texV_2 = texV
                         long double x87_r5_60 = x87_r6_66 * gRndr_PerspInvDepthStepX
                         gRndr_CurrentSpanBaseAddr = gRndr_BytesPerPixel * sampleXMin i+ var_40_1
                         float var_2c = x87_r5_60 + var_10_5
@@ -125444,7 +125444,7 @@
                         else
                             x87_r7_86 = 255f
 
-                        while (ebx_12 s> edi_12)
+                        while (texV s> texV_1)
                             var_2c = var_2c + var_9c
                             var_34_1 = var_34_1 + var_a4
                             var_18_2 = var_18_2 + var_a0
@@ -125452,7 +125452,7 @@
                             long double x87_r6_82 = 1f / var_2c
                             int32_t vertCount_1 = vertCount
                             float var_3c_1 = x87_r6_82 * var_34_1
-                            float var_28_2 = x87_r6_82 * var_18_2
+                            float var_28_1 = x87_r6_82 * var_18_2
                             long double x87_r6_84 = vertCount
                             long double temp22_1 = 255f
                             x87_r6_84 - temp22_1
@@ -125470,40 +125470,39 @@
                             else
                                 vertCount_1 = 0x437f0000
 
-                            int32_t var_c_19 = (var_3c_1 * triUVs - -6755399441055744.0).d
-                            int32_t var_88_1 = (var_28_2 * triUVs - -6755399441055744.0).d
+                            int32_t var_c_18 = (var_3c_1 * triUVs - -6755399441055744.0).d
+                            int32_t var_88_1 = (var_28_1 * triUVs - -6755399441055744.0).d
                             gRndr_ActiveTexUStepFixed20 = ((var_68_1 - var_3c_1) * var_8c - -6755399441055744.0).d
-                            gRndr_ActiveTexVStepFixed20 = ((var_48_2 - var_28_2) * var_8c - -6755399441055744.0).d
+                            gRndr_ActiveTexVStepFixed20 = ((var_48_2 - var_28_1) * var_8c - -6755399441055744.0).d
 
                             if (fanTriIndex == zRndr::SpanShade16FromPal8SwitchVShift)
                                 int32_t gRndr_ActiveTexShift_2 = gRndr_ActiveTexShift
                                 gRndr_ActiveShadeFixed16 = (6755399441055744.0 - vertCount_1 * -65536f).d
                                 gRndr_ActiveShadeStepFixed16 = ((x87_r7_86 - vertCount_1) * var_74 - -6755399441055744.0).d
-                                fanTriIndex(edi_12, gRndr_ActiveTexShift_2)
+                                fanTriIndex(texV_1, gRndr_ActiveTexShift_2)
                             else
                                 int32_t gRndr_ActiveTexShift_3 = gRndr_ActiveTexShift
                                 gRndr_ActiveShadeFixed16 = (6755399441055744.0 - x87_r7_86 * -65536f).d
                                 gRndr_ActiveShadeStepFixed16 = ((vertCount_1 - x87_r7_86) * var_74 - -6755399441055744.0).d
-                                fanTriIndex(edi_12, gRndr_ActiveTexShift_3)
-                                gRndr_CurrentSpanBaseAddr
-                                gRndr_pfnTexturedQueuedFinalize(gRndr_ActiveShadeFixed16, gRndr_ActiveShadeStepFixed16)
+                                fanTriIndex(texV_1, gRndr_ActiveTexShift_3)
+                                gRndr_pfnTexturedQueuedFinalize(gRndr_CurrentSpanBaseAddr, texV_1, gRndr_ActiveShadeFixed16, gRndr_ActiveShadeStepFixed16)
 
                             x87_r7_86 = vertCount_1
                             gRndr_CurrentSpanBaseAddr += zRndr_PerspTextureDeltaXBytes_1
-                            ebx_12 -= edi_12
+                            texV -= texV_1
                             var_68_1 = var_3c_1
-                            var_48_2 = var_28_2
-                            var_28_1 = ebx_12
+                            var_48_2 = var_28_1
+                            texV_2 = texV
 
-                        long double x87_r6_111 = 1f / var_28_1
+                        long double x87_r6_111 = 1f / texV_2
                         float var_34_2 = x87_r6_111 * 65536f
                         float var_18_3 = x87_r6_111 * triUVs
-                        float var_28_3 = var_30_2 - gRndr_PerspPlaneOriginX
+                        float var_28_2 = var_30_2 - gRndr_PerspPlaneOriginX
                         long double x87_r6_118 = (var_30_2 - projectedVerts->x) * var_54 + var_7c_1
                         vertCount = x87_r6_118
-                        float var_30_3 = 1f / (var_28_3 * gRndr_PerspInvDepthStepX + var_10_5)
-                        float var_3c_2 = (var_28_3 * gRndr_PerspTexScaledUOverZStepX + var_98_1) * var_30_3
-                        float var_30_4 = (var_28_3 * gRndr_PerspTexScaledVOverZStepX + var_94_1) * var_30_3
+                        float var_30_3 = 1f / (var_28_2 * gRndr_PerspInvDepthStepX + var_10_5)
+                        float var_3c_2 = (var_28_2 * gRndr_PerspTexScaledUOverZStepX + var_98_1) * var_30_3
+                        float var_30_4 = (var_28_2 * gRndr_PerspTexScaledVOverZStepX + var_94_1) * var_30_3
                         long double x87_r5_81 = vertCount
                         long double temp21_1 = 255f
                         x87_r5_81 - temp21_1
@@ -125523,7 +125522,7 @@
                             x87_r6_118 = 255f
 
                         int32_t var_88_2 = (var_3c_2 * triUVs - -6755399441055744.0).d
-                        int32_t var_c_20 = (var_30_4 * triUVs - -6755399441055744.0).d
+                        int32_t var_c_19 = (var_30_4 * triUVs - -6755399441055744.0).d
                         gRndr_ActiveTexUStepFixed20 = ((var_68_1 - var_3c_2) * var_18_3 - -6755399441055744.0).d
                         gRndr_ActiveTexVStepFixed20 = ((var_48_2 - var_30_4) * var_18_3 - -6755399441055744.0).d
 
@@ -125531,14 +125530,13 @@
                             int32_t gRndr_ActiveTexShift_4 = gRndr_ActiveTexShift
                             gRndr_ActiveShadeFixed16 = (6755399441055744.0 - x87_r6_118 * -65536f).d
                             gRndr_ActiveShadeStepFixed16 = ((x87_r7_86 - x87_r6_118) * var_34_2 - -6755399441055744.0).d
-                            fanTriIndex(ebx_12, gRndr_ActiveTexShift_4)
+                            fanTriIndex(texV, gRndr_ActiveTexShift_4)
                         else
                             int32_t gRndr_ActiveTexShift_1 = gRndr_ActiveTexShift
                             gRndr_ActiveShadeFixed16 = (6755399441055744.0 - x87_r7_86 * -65536f).d
                             gRndr_ActiveShadeStepFixed16 = ((x87_r6_118 - x87_r7_86) * var_34_2 - -6755399441055744.0).d
-                            fanTriIndex(ebx_12, gRndr_ActiveTexShift_1)
-                            gRndr_CurrentSpanBaseAddr
-                            gRndr_pfnTexturedQueuedFinalize(gRndr_ActiveShadeFixed16, gRndr_ActiveShadeStepFixed16)
+                            fanTriIndex(texV, gRndr_ActiveTexShift_1)
+                            gRndr_pfnTexturedQueuedFinalize(gRndr_CurrentSpanBaseAddr, texV, gRndr_ActiveShadeFixed16, gRndr_ActiveShadeStepFixed16)
 
                         cond:18_1 = var_44_2 + 1 s< var_5c
                         var_44_2 += 1
@@ -125580,7 +125578,7 @@
     vertexUvPairs.y = x87_r7 * triVerts->z * triUVs->v
     float var_d58 = var_de0 * triVerts->__offset(0x14).d * triUVs->__offset(0x8).d
     float var_d54 = var_df8 * triVerts->__offset(0x14).d * triUVs->__offset(0xc).d
-    float x_2
+    float var_df0
     float y_2
     struct zVec2 var_dd4
     struct zVec2 var_dbc
@@ -125596,9 +125594,9 @@
         long double x87_r4_20 = triVerts->__offset(0x1c).d - triVerts->__offset(0x10).d
         var_dd4.x = x87_r4_16
         var_dd4.y = x87_r4_20
-        float var_df0 = triVerts->x - triVerts->__offset(0xc).d
+        float var_df0_1 = triVerts->x - triVerts->__offset(0xc).d
         float var_dec = triVerts->y - triVerts->__offset(0x10).d
-        long double x87_r7_18 = x87_r4_20 * var_df0 - x87_r4_16 * var_dec
+        long double x87_r7_18 = x87_r4_20 * var_df0_1 - x87_r4_16 * var_dec
         long double temp1_1 = 0.0
         x87_r7_18 - temp1_1
         image.w = (x87_r7_18 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_18, temp1_1) ? 1 : 0) << 0xa | (x87_r7_18 == temp1_1 ? 1 : 0) << 0xe
@@ -125616,11 +125614,11 @@
             long double x87_r2_23 = vertexUvPairs.y - var_d54
             long double x87_r2_25 = var_df8 * triVerts->__offset(0x20).d * triUVs->__offset(0x14).d - var_d54
             var_dbc.x = (x87_r2_17 * var_dec - x87_r2_15 * var_dd4.y) * var_df8_2
-            var_dbc.y = (x87_r2_15 * var_dd4.x - x87_r2_17 * var_df0) * var_df8_2
+            var_dbc.y = (x87_r2_15 * var_dd4.x - x87_r2_17 * var_df0_1) * var_df8_2
             var_db0.x = (x87_r2_21 * var_dec - x87_r2_19 * var_dd4.y) * var_df8_2
-            var_db0.y = (x87_r2_19 * var_dd4.x - x87_r2_21 * var_df0) * var_df8_2
+            var_db0.y = (x87_r2_19 * var_dd4.x - x87_r2_21 * var_df0_1) * var_df8_2
             var_dd4.x = (x87_r2_25 * var_dec - x87_r2_23 * var_dd4.y) * var_df8_2
-            var_dd4.y = (x87_r2_23 * var_dd4.x - x87_r2_25 * var_df0) * var_df8_2
+            var_dd4.y = (x87_r2_23 * var_dd4.x - x87_r2_25 * var_df0_1) * var_df8_2
 
         float x_1 = vertexUvPairs.x
         float y = vertexUvPairs.y
@@ -125629,7 +125627,7 @@
         outUOverZBase = x_1
         float y_1 = triVerts->y
         outVOverZBase = y
-        x_2 = x
+        var_df0 = x
         y_2 = y_1
     else
         long double x87_r7_6 = clippedTriVerts->z
@@ -125664,7 +125662,7 @@
         var_db0.y = var_de0 * var_db0.y
         long double x87_r2_9 = g_zMath_ProjOffsetY
         outUOverZBase = var_de0 * outUOverZBase
-        x_2 = x87_r2_7
+        var_df0 = x87_r2_7
         y_2 = x87_r2_9
         var_dd4.x = var_df8 * var_dd4.x
         var_dd4.y = var_df8 * var_dd4.y
@@ -125689,7 +125687,7 @@
         int32_t i
 
         do
-            long double x87_r6_29 = (projectedVerts_1->x - x_2) * var_dbc.x + z
+            long double x87_r6_29 = (projectedVerts_1->x - var_df0) * var_dbc.x + z
             float var_ddc_1 = x87_r6_29
             long double temp5_1 = 0f
             x87_r6_29 - temp5_1
@@ -125739,7 +125737,7 @@
             edi_2 += 0xc
         while (ecx_3 s< vertCount)
 
-    long double x87_r5_26 = x_2 - 0.5f
+    long double x87_r5_26 = var_df0 - 0.5f
     long double x87_r5_28 = y_2 - 0.5f
     int32_t edx_5 = var_dcc
     float var_dec_1 = x87_r5_28
@@ -125762,8 +125760,8 @@
         int32_t ebx_5 = ebx_2 << 2
         int32_t var_df4_3 = ebx_5
         int32_t* var_de8_4 = &var_d2c
-        x_2.q = 6755399441055744.0 - *(&projectedVerts->y + ebx_5) * -65536f
-        int32_t edi_10 = (x_2 i+ 0x7fff) s>> 0x10
+        var_df0.q = 6755399441055744.0 - *(&projectedVerts->y + ebx_5) * -65536f
+        int32_t edi_10 = (var_df0 i+ 0x7fff) s>> 0x10
         int32_t eax_26 = vertCount * 0xc
         long double x87_r4_59 = edi_10 - -0.5f
 
@@ -125795,25 +125793,25 @@
 
                 if ((eax_31:1.b & 0x40) == 0)
                     long double x87_r3_75 = (*(projectedVerts + ecx_10) - *(projectedVerts + ebx_5)) / x87_r4_61
-                    x_2.q = 6755399441055744.0 - x87_r3_75 * -65536f
+                    var_df0.q = 6755399441055744.0 - x87_r3_75 * -65536f
                     long double x87_r4_63 = 6755399441055744.0 - ((x87_r4_59 - *(&projectedVerts->y + ebx_5)) * x87_r3_75 + *(projectedVerts + ebx_5)) * -65536f
-                    *edx_11 = x_2
-                    x_2.q = x87_r4_63
-                    edx_11[2] = x_2
+                    *edx_11 = var_df0
+                    var_df0.q = x87_r4_63
+                    edx_11[2] = var_df0
 
-                x_2.q = 6755399441055744.0 - *(&projectedVerts->y + ecx_10) * -65536f
+                var_df0.q = 6755399441055744.0 - *(&projectedVerts->y + ecx_10) * -65536f
                 edx_5 = var_df8_5
-                edi_10 = (x_2 i+ 0x7fff) s>> 0x10
+                edi_10 = (var_df0 i+ 0x7fff) s>> 0x10
                 x87_r4_59 = edi_10 - -0.5f
 
             ebx_5 = ecx_10
         while (edx_5 != var_de0_1)
 
-        x_2.q = x87_r4_59
+        var_df0.q = x87_r4_59
         int32_t ebx_6 = var_df4_3
         int32_t eax_35 = var_dcc
         int32_t* var_df4_4 = &var_91c
-        int32_t edi_13 = (x_2 i+ 0x7fff) s>> 0x10
+        int32_t edi_13 = (var_df0 i+ 0x7fff) s>> 0x10
         x87_r4_54 = edi_13 - -0.5f
         int32_t edx_13
 
@@ -125844,15 +125842,15 @@
 
                 if ((eax_40:1.b & 0x40) == 0)
                     long double x87_r3_92 = (*(projectedVerts + ecx_12) - *(projectedVerts + ebx_6)) / x87_r4_65
-                    x_2.q = 6755399441055744.0 - x87_r3_92 * -65536f
+                    var_df0.q = 6755399441055744.0 - x87_r3_92 * -65536f
                     long double x87_r4_67 = 6755399441055744.0 - ((x87_r4_54 - *(&projectedVerts->y + ebx_6)) * x87_r3_92 + *(projectedVerts + ebx_6)) * -65536f
-                    *edx_14 = x_2
-                    x_2.q = x87_r4_67
-                    edx_14[2] = x_2
+                    *edx_14 = var_df0
+                    var_df0.q = x87_r4_67
+                    edx_14[2] = var_df0
 
-                x_2.q = 6755399441055744.0 - *(&projectedVerts->y + ecx_12) * -65536f
+                var_df0.q = 6755399441055744.0 - *(&projectedVerts->y + ecx_12) * -65536f
                 edx_13 = var_df8_6
-                edi_13 = (x_2 i+ 0x7fff) s>> 0x10
+                edi_13 = (var_df0 i+ 0x7fff) s>> 0x10
                 x87_r4_54 = edi_13 - -0.5f
 
             ebx_6 = ecx_12
@@ -125861,8 +125859,8 @@
     else
         int32_t ebx_3 = ebx_2 << 2
         int32_t var_df4_2 = ebx_3
-        x_2.q = 6755399441055744.0 - *(&projectedVerts->y + ebx_3) * -65536f
-        int32_t edi_4 = (x_2 i+ 0x7fff) s>> 0x10
+        var_df0.q = 6755399441055744.0 - *(&projectedVerts->y + ebx_3) * -65536f
+        int32_t edi_4 = (var_df0 i+ 0x7fff) s>> 0x10
         int32_t eax_6 = vertCount * 0xc
         int32_t* var_de8_2 = &var_91c
         long double x87_r4_49 = edi_4 - -0.5f
@@ -125895,25 +125893,25 @@
 
                 if ((eax_11:1.b & 0x40) == 0)
                     long double x87_r3_41 = (*(projectedVerts + ecx_6) - *(projectedVerts + ebx_3)) / x87_r4_51
-                    x_2.q = 6755399441055744.0 - x87_r3_41 * -65536f
+                    var_df0.q = 6755399441055744.0 - x87_r3_41 * -65536f
                     long double x87_r4_53 = 6755399441055744.0 - ((x87_r4_49 - *(&projectedVerts->y + ebx_3)) * x87_r3_41 + *(projectedVerts + ebx_3)) * -65536f
-                    *edx_6 = x_2
-                    x_2.q = x87_r4_53
-                    edx_6[2] = x_2
+                    *edx_6 = var_df0
+                    var_df0.q = x87_r4_53
+                    edx_6[2] = var_df0
 
-                x_2.q = 6755399441055744.0 - *(&projectedVerts->y + ecx_6) * -65536f
+                var_df0.q = 6755399441055744.0 - *(&projectedVerts->y + ecx_6) * -65536f
                 edx_5 = var_df8_3
-                edi_4 = (x_2 i+ 0x7fff) s>> 0x10
+                edi_4 = (var_df0 i+ 0x7fff) s>> 0x10
                 x87_r4_49 = edi_4 - -0.5f
 
             ebx_3 = ecx_6
         while (edx_5 != var_de0_1)
 
-        x_2.q = x87_r4_49
+        var_df0.q = x87_r4_49
         int32_t eax_15 = var_dcc
         int32_t ebx_4 = var_df4_2
         int32_t* var_de8_3 = &var_d2c
-        int32_t edi_7 = (x_2 i+ 0x7fff) s>> 0x10
+        int32_t edi_7 = (var_df0 i+ 0x7fff) s>> 0x10
         x87_r4_54 = edi_7 - -0.5f
         int32_t edx_8
 
@@ -125944,15 +125942,15 @@
 
                 if ((eax_20:1.b & 0x40) == 0)
                     long double x87_r3_58 = (*(projectedVerts + ecx_8) - *(projectedVerts + ebx_4)) / x87_r4_56
-                    x_2.q = 6755399441055744.0 - x87_r3_58 * -65536f
+                    var_df0.q = 6755399441055744.0 - x87_r3_58 * -65536f
                     long double x87_r4_58 = 6755399441055744.0 - ((x87_r4_54 - *(&projectedVerts->y + ebx_4)) * x87_r3_58 + *(projectedVerts + ebx_4)) * -65536f
-                    *edx_9 = x_2
-                    x_2.q = x87_r4_58
-                    edx_9[2] = x_2
+                    *edx_9 = var_df0
+                    var_df0.q = x87_r4_58
+                    edx_9[2] = var_df0
 
-                x_2.q = 6755399441055744.0 - *(&projectedVerts->y + ecx_8) * -65536f
+                var_df0.q = 6755399441055744.0 - *(&projectedVerts->y + ecx_8) * -65536f
                 edx_8 = var_df8_4
-                edi_7 = (x_2 i+ 0x7fff) s>> 0x10
+                edi_7 = (var_df0 i+ 0x7fff) s>> 0x10
                 x87_r4_54 = edi_7 - -0.5f
 
             ebx_4 = ecx_8
@@ -125961,22 +125959,22 @@
 
     void var_918
     *(&var_918 + (var_dd8 << 4)) = 0x270f
-    x_2.q = x87_r4_54
+    var_df0.q = x87_r4_54
     void var_d28
     *(&var_d28 + (var_ddc_2 << 4)) = 0x270f
-    int32_t ecx_15 = (x_2 i+ 0x7fff) s>> 0x10
+    int32_t ecx_15 = (var_df0 i+ 0x7fff) s>> 0x10
     int32_t var_ddc_3 = ecx_15
-    x_2.q = 6755399441055744.0 - projectedVerts[var_de0_1].y * -65536f
-    int32_t eax_51 = (x_2 - 0x8041) s>> 0x10
+    var_df0.q = 6755399441055744.0 - projectedVerts[var_de0_1].y * -65536f
+    int32_t eax_51 = (var_df0 - 0x8041) s>> 0x10
     // Choose the perspective chunk width from inverse-depth slope, clamped between g_zRndr_PerspAdaptiveMinSpan and g_zRndr_PerspAdaptiveMaxSpan; zero slope falls back to the fixed pow2 step.
     int32_t zRndr_PerspAdaptiveMinSpan_1 = g_zRndr_PerspAdaptiveMinSpan
     void* var_dc0_3 = ecx_15 * gRndr_PitchBytes + gRndr_pFrameBuffer
     int32_t zRndr_PerspTextureDeltaXBytes_1
-    int32_t ebx_7
+    int32_t pixelCount_1
     long double x87_r7_38
 
     if (zRndr_PerspAdaptiveMinSpan_1 == 0)
-        ebx_7 = g_zRndr_PerspTextureDeltaXPow2
+        pixelCount_1 = g_zRndr_PerspTextureDeltaXPow2
         x87_r7_38 = g_zRndr_PerspTextureDeltaXPow2F
         zRndr_PerspTextureDeltaXBytes_1 = g_zRndr_PerspTextureDeltaXBytes
     else
@@ -125985,26 +125983,26 @@
         x87_r6_60 - temp17_1
         void* eax_54
         eax_54.w = (x87_r6_60 < temp17_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_60, temp17_1) ? 1 : 0) << 0xa | (x87_r6_60 == temp17_1 ? 1 : 0) << 0xe | 0x3800
-        int32_t var_dd8_1
+        int32_t pixelCount_3
 
         if ((eax_54:1.b & 0x40) == 0)
             int32_t zRndr_PerspAdaptiveMaxSpan_1 = g_zRndr_PerspAdaptiveMaxSpan
-            x_2.q = fabs(x87_r7_33 * g_zRndr_PerspAdaptiveSlope / var_dbc.x) - -6755399441055744.0
-            ebx_7 = x_2
-            var_dd8_1 = ebx_7
+            var_df0.q = fabs(x87_r7_33 * g_zRndr_PerspAdaptiveSlope / var_dbc.x) - -6755399441055744.0
+            pixelCount_1 = var_df0
+            pixelCount_3 = pixelCount_1
 
-            if (ebx_7 s> zRndr_PerspAdaptiveMaxSpan_1)
-                ebx_7 = zRndr_PerspAdaptiveMaxSpan_1
-                var_dd8_1 = ebx_7
-            else if (ebx_7 s< zRndr_PerspAdaptiveMinSpan_1)
-                ebx_7 = zRndr_PerspAdaptiveMinSpan_1
-                var_dd8_1 = ebx_7
+            if (pixelCount_1 s> zRndr_PerspAdaptiveMaxSpan_1)
+                pixelCount_1 = zRndr_PerspAdaptiveMaxSpan_1
+                pixelCount_3 = pixelCount_1
+            else if (pixelCount_1 s< zRndr_PerspAdaptiveMinSpan_1)
+                pixelCount_1 = zRndr_PerspAdaptiveMinSpan_1
+                pixelCount_3 = pixelCount_1
         else
-            ebx_7 = g_zRndr_PerspAdaptiveMaxSpan
-            var_dd8_1 = ebx_7
+            pixelCount_1 = g_zRndr_PerspAdaptiveMaxSpan
+            pixelCount_3 = pixelCount_1
 
-        x87_r7_38 = var_dd8_1
-        zRndr_PerspTextureDeltaXBytes_1 = ebx_7 * gRndr_BytesPerPixel
+        x87_r7_38 = pixelCount_3
+        zRndr_PerspTextureDeltaXBytes_1 = pixelCount_1 * gRndr_BytesPerPixel
 
     gRndr_ActiveTexPixels = image_1->pixels
     gRndr_QueuedTexAlphaMap = image_1->queuedAlphaMap
@@ -126017,7 +126015,7 @@
     float var_d48 = x87_r7_38 * var_db0.x
     float var_d40 = x87_r7_38 * var_dd4.x
     // Select the alpha-textured queued span op from palette availability and variant remap state before scanline dispatch.
-    void (* var_da0_2)(int32_t, int32_t)
+    void (__fastcall* var_da0_2)(int32_t texU, int32_t texV, int32_t pixelCount, int32_t texVShift)
 
     if (palette != 0)
         if (variantIndex != 0xffffffff)
@@ -126035,30 +126033,30 @@
     int32_t edi_15 = var_d24
     int32_t var_d70 = var_91c
     int32_t var_d64 = var_d2c
-    int32_t pixelCount_8
-    int32_t pixelCount_4 = pixelCount_8
-    int32_t pixelCount_1 = eax_51 + 1
-    int32_t pixelCount_3 = pixelCount_1
-    int32_t pixelCount_2 = pixelCount_1
+    int32_t pixelCount_11
+    int32_t pixelCount_7 = pixelCount_11
+    int32_t pixelCount_4 = eax_51 + 1
+    int32_t pixelCount_6 = pixelCount_4
+    int32_t pixelCount_5 = pixelCount_4
 
-    if (pixelCount_4 s< pixelCount_1)
-        pixelCount_1 = pixelCount_4
-        pixelCount_2 = pixelCount_1
+    if (pixelCount_7 s< pixelCount_4)
+        pixelCount_4 = pixelCount_7
+        pixelCount_5 = pixelCount_4
 
-    int32_t pixelCount_7
-    int32_t pixelCount_5 = pixelCount_7
+    int32_t pixelCount_10
+    int32_t pixelCount_8 = pixelCount_10
 
-    if (pixelCount_5 s< pixelCount_1)
-        pixelCount_1 = pixelCount_5
-        pixelCount_2 = pixelCount_1
+    if (pixelCount_8 s< pixelCount_4)
+        pixelCount_4 = pixelCount_8
+        pixelCount_5 = pixelCount_4
 
-    int32_t* eax_60 = &pixelCount_8
-    struct zVid_Image* const var_db4 = &pixelCount_7
-    int32_t* var_d8c_1 = &pixelCount_8
+    int32_t* eax_60 = &pixelCount_11
+    struct zVid_Image* const var_db4 = &pixelCount_10
+    int32_t* var_d8c_1 = &pixelCount_11
 
     while (true)
-        if (var_ddc_3 s>= pixelCount_1)
-            if (var_ddc_3 s>= pixelCount_3)
+        if (var_ddc_3 s>= pixelCount_4)
+            if (var_ddc_3 s>= pixelCount_6)
                 return
 
             if (var_ddc_3 s>= *eax_60)
@@ -126075,19 +126073,19 @@
                 var_d64 = var_db4_1[-1]
                 var_db4 = &var_db4_1[4]
 
-            pixelCount_1 = pixelCount_3
-            int32_t pixelCount_6 = *eax_60
-            pixelCount_2 = pixelCount_1
+            pixelCount_4 = pixelCount_6
+            int32_t pixelCount_9 = *eax_60
+            pixelCount_5 = pixelCount_4
 
-            if (pixelCount_6 s< pixelCount_1)
-                pixelCount_1 = pixelCount_6
-                pixelCount_2 = pixelCount_1
+            if (pixelCount_9 s< pixelCount_4)
+                pixelCount_4 = pixelCount_9
+                pixelCount_5 = pixelCount_4
 
             int32_t pixelCount = var_db4->pixelCount
 
-            if (pixelCount s< pixelCount_1)
-                pixelCount_1 = pixelCount
-                pixelCount_2 = pixelCount_1
+            if (pixelCount s< pixelCount_4)
+                pixelCount_4 = pixelCount
+                pixelCount_5 = pixelCount_4
 
         int32_t var_dc4_2
         int32_t eax_63
@@ -126111,9 +126109,9 @@
             gRndr_SpanAllocCursor->sampleXMin = eax_63
             float var_df4_5 = x87_r7_41
             gRndr_SpanAllocCursor->sampleXMax = ecx_28
-            float var_dd8_2 = x87_r7_41 * var_dbc.y + z
-            gRndr_SpanAllocCursor->invDepth = (var_dc4_2 * var_dbc.x + var_dd8_2) * g_zRndr_InvDepthScale + g_zRndr_InvDepthBias
-            gRndr_SpanAllocCursor->invDepthStep = (ecx_28 * var_dbc.x + var_dd8_2) * g_zRndr_InvDepthScale + g_zRndr_InvDepthBias
+            float var_dd8_1 = x87_r7_41 * var_dbc.y + z
+            gRndr_SpanAllocCursor->invDepth = (var_dc4_2 * var_dbc.x + var_dd8_1) * g_zRndr_InvDepthScale + g_zRndr_InvDepthBias
+            gRndr_SpanAllocCursor->invDepthStep = (ecx_28 * var_dbc.x + var_dd8_1) * g_zRndr_InvDepthScale + g_zRndr_InvDepthBias
             gRndr_SpanAllocCursor->depthSlope = var_dbc.x
     // Build the visible span list for this scanline, then evaluate perspective-correct UV state for each visible run.
             struct zRndr_SpanNode* var_50c
@@ -126134,17 +126132,17 @@
                         int32_t sampleXMin = edi_16->sampleXMin
                         int32_t esi_3 = edi_16->sampleXMax - sampleXMin
                         gRndr_CurrentSpanBaseAddr = gRndr_BytesPerPixel * sampleXMin + var_dc0_3
-                        int32_t esi_4 = esi_3 + 1
+                        int32_t pixelCount_2 = esi_3 + 1
                         long double x87_r6_87 = edi_16->sampleXMin
-                        float var_df8_7 = x87_r6_87 * var_dbc.x + var_dd8_2
+                        float var_df8_7 = x87_r6_87 * var_dbc.x + var_dd8_1
                         long double x87_r5_125 = 1f / var_df8_7
-                        int32_t var_d80_1 = esi_4
+                        int32_t texV_1 = pixelCount_2
                         float var_de4_8 = x87_r6_87 * var_db0.x + var_d6c_1
                         float var_de0_2 = x87_r6_87 * var_dd4.x + var_d68_1
                         float var_df4_7 = x87_r5_125 * var_de4_8
                         float var_de8_6 = x87_r5_125 * var_de0_2
 
-                        while (esi_4 s> ebx_7)
+                        while (pixelCount_2 s> pixelCount_1)
                             var_df8_7 = var_df8_7 + var_d44
                             long double x87_r5_135 = 1f / var_df8_7
                             int32_t gRndr_ActiveTexShift_1 = gRndr_ActiveTexShift
@@ -126152,38 +126150,38 @@
                             var_de0_2 = var_de0_2 + var_d40
                             float var_df4_8 = x87_r5_135 * var_de4_8
                             float var_de8_7 = x87_r5_135 * var_de0_2
-                            int32_t var_d38_1 = (var_df4_8 * var_d98 - -6755399441055744.0).d
-                            var_d80_1.q = var_de8_7 * var_d98 - -6755399441055744.0
-                            int32_t var_d38_2 = ((var_de8_6 - var_de8_7) * var_d74 - -6755399441055744.0).d
+                            int32_t texU_1 = (var_df4_8 * var_d98 - -6755399441055744.0).d
+                            texV_1.q = var_de8_7 * var_d98 - -6755399441055744.0
+                            int32_t var_d38_1 = ((var_de8_6 - var_de8_7) * var_d74 - -6755399441055744.0).d
                             gRndr_ActiveTexUStepFixed20 = ((var_df4_7 - var_df4_8) * var_d74 - -6755399441055744.0).d
-                            gRndr_ActiveTexVStepFixed20 = var_d38_2
-                            var_da0_2(ebx_7, gRndr_ActiveTexShift_1)
+                            gRndr_ActiveTexVStepFixed20 = var_d38_1
+                            var_da0_2(texU_1, texV_1, pixelCount_1, gRndr_ActiveTexShift_1)
                             var_df4_7 = var_df4_8
-                            esi_4 -= ebx_7
+                            pixelCount_2 -= pixelCount_1
                             var_de8_6 = var_de8_7
-                            var_d80_1 = esi_4
+                            texV_1 = pixelCount_2
                             gRndr_CurrentSpanBaseAddr += zRndr_PerspTextureDeltaXBytes_1
 
                         long double x87_r7_75 = edi_16->sampleXMax
-                        long double x87_r6_99 = var_d80_1
+                        long double x87_r6_99 = texV_1
                         float var_df4_9 = x87_r7_75
-                        float var_df8_8 = x87_r7_75 * var_dbc.x + var_dd8_2
+                        float var_df8_8 = x87_r7_75 * var_dbc.x + var_dd8_1
                         int32_t gRndr_ActiveTexShift_2 = gRndr_ActiveTexShift
                         float var_df4_10 = var_d98 / (x87_r6_99 * var_df8_8)
                         long double x87_r3_127 = x87_r6_99 * var_df4_10
                         float var_de4_9 = var_df4_9 * var_db0.x + var_d6c_1
                         float var_de0_3 = var_df4_9 * var_dd4.x + var_d68_1
-                        int32_t var_d88_2 = (x87_r3_127 * var_de4_9 - -6755399441055744.0).d
-                        int32_t var_d88_3 = (x87_r3_127 * var_de0_3 - -6755399441055744.0).d
+                        int32_t texU = (x87_r3_127 * var_de4_9 - -6755399441055744.0).d
+                        int32_t texV = (x87_r3_127 * var_de0_3 - -6755399441055744.0).d
                         gRndr_ActiveTexUStepFixed20 = ((var_df4_7 * var_df8_8 - var_de4_9) * var_df4_10 - -6755399441055744.0).d
                         gRndr_ActiveTexVStepFixed20 = ((var_de8_6 * var_df8_8 - var_de0_3) * var_df4_10 - -6755399441055744.0).d
-                        var_da0_2(esi_4, gRndr_ActiveTexShift_2)
+                        var_da0_2(texU, texV, pixelCount_2, gRndr_ActiveTexShift_2)
                         eax_74 = var_d90_1 + 1
                         var_d90_1 = eax_74
                         var_dc4_3 = &var_dc4_3[1]
                     while (eax_74 s< height)
 
-            pixelCount_1 = pixelCount_2
+            pixelCount_4 = pixelCount_5
 
         var_dc0_3 += gRndr_PitchBytes
         var_ddc_3 += 1
@@ -126214,7 +126212,7 @@
     vertexUvPairs.y = x87_r7 * triVerts->z * triUVs->v
     float var_d4c = var_de8 * triVerts->__offset(0x14).d * triUVs->__offset(0x8).d
     float var_d48 = var_e00 * triVerts->__offset(0x14).d * triUVs->__offset(0xc).d
-    float x_2
+    float var_df8
     float y_2
     struct zVec2 var_de0
     struct zVec2 var_db8
@@ -126230,9 +126228,9 @@
         long double x87_r4_20 = triVerts->__offset(0x1c).d - triVerts->__offset(0x10).d
         var_de0.x = x87_r4_16
         var_de0.y = x87_r4_20
-        float var_df8 = triVerts->x - triVerts->__offset(0xc).d
+        float var_df8_1 = triVerts->x - triVerts->__offset(0xc).d
         float var_df4 = triVerts->y - triVerts->__offset(0x10).d
-        long double x87_r7_18 = x87_r4_20 * var_df8 - x87_r4_16 * var_df4
+        long double x87_r7_18 = x87_r4_20 * var_df8_1 - x87_r4_16 * var_df4
         long double temp1_1 = 0.0
         x87_r7_18 - temp1_1
         image.w = (x87_r7_18 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_18, temp1_1) ? 1 : 0) << 0xa | (x87_r7_18 == temp1_1 ? 1 : 0) << 0xe
@@ -126250,11 +126248,11 @@
             long double x87_r2_23 = vertexUvPairs.y - var_d48
             long double x87_r2_25 = var_e00 * triVerts->__offset(0x20).d * triUVs->__offset(0x14).d - var_d48
             var_db8.x = (x87_r2_17 * var_df4 - x87_r2_15 * var_de0.y) * var_e00_2
-            var_db8.y = (x87_r2_15 * var_de0.x - x87_r2_17 * var_df8) * var_e00_2
+            var_db8.y = (x87_r2_15 * var_de0.x - x87_r2_17 * var_df8_1) * var_e00_2
             var_dac.x = (x87_r2_21 * var_df4 - x87_r2_19 * var_de0.y) * var_e00_2
-            var_dac.y = (x87_r2_19 * var_de0.x - x87_r2_21 * var_df8) * var_e00_2
+            var_dac.y = (x87_r2_19 * var_de0.x - x87_r2_21 * var_df8_1) * var_e00_2
             var_de0.x = (x87_r2_25 * var_df4 - x87_r2_23 * var_de0.y) * var_e00_2
-            var_de0.y = (x87_r2_23 * var_de0.x - x87_r2_25 * var_df8) * var_e00_2
+            var_de0.y = (x87_r2_23 * var_de0.x - x87_r2_25 * var_df8_1) * var_e00_2
 
         float x_1 = vertexUvPairs.x
         float y = vertexUvPairs.y
@@ -126263,7 +126261,7 @@
         outUOverZBase = x_1
         float y_1 = triVerts->y
         outVOverZBase = y
-        x_2 = x
+        var_df8 = x
         y_2 = y_1
     else
         long double x87_r7_6 = clippedTriVerts->z
@@ -126298,7 +126296,7 @@
         var_dac.y = var_de8 * var_dac.y
         long double x87_r2_9 = g_zMath_ProjOffsetY
         outUOverZBase = var_de8 * outUOverZBase
-        x_2 = x87_r2_7
+        var_df8 = x87_r2_7
         y_2 = x87_r2_9
         var_de0.x = var_e00 * var_de0.x
         var_de0.y = var_e00 * var_de0.y
@@ -126323,7 +126321,7 @@
         int32_t i
 
         do
-            long double x87_r6_29 = (projectedVerts_1->x - x_2) * var_db8.x + z
+            long double x87_r6_29 = (projectedVerts_1->x - var_df8) * var_db8.x + z
             float var_dfc_3 = x87_r6_29
             long double temp5_1 = 0f
             x87_r6_29 - temp5_1
@@ -126373,7 +126371,7 @@
             edi_2 += 0xc
         while (ecx_3 s< vertCount)
 
-    long double x87_r5_26 = x_2 - 0.5f
+    long double x87_r5_26 = var_df8 - 0.5f
     long double x87_r5_28 = y_2 - 0.5f
     int32_t edx_5 = var_dd4
     float var_df4_1 = x87_r5_28
@@ -126396,8 +126394,8 @@
         int32_t ebx_5 = ebx_2 << 2
         int32_t var_dec_3 = ebx_5
         struct zRndr_ScanConvertEdge (* var_dfc_6)[0x41] = &edgeTableA
-        x_2.q = 6755399441055744.0 - *(&projectedVerts->y + ebx_5) * -65536f
-        int32_t edi_10 = (x_2 i+ 0x7fff) s>> 0x10
+        var_df8.q = 6755399441055744.0 - *(&projectedVerts->y + ebx_5) * -65536f
+        int32_t edi_10 = (var_df8 i+ 0x7fff) s>> 0x10
         int32_t eax_26 = vertCount * 0xc
         long double x87_r4_59 = edi_10 - -0.5f
 
@@ -126429,25 +126427,25 @@
 
                 if ((eax_31:1.b & 0x40) == 0)
                     long double x87_r3_75 = (*(projectedVerts + ecx_10) - *(projectedVerts + ebx_5)) / x87_r4_61
-                    x_2.q = 6755399441055744.0 - x87_r3_75 * -65536f
+                    var_df8.q = 6755399441055744.0 - x87_r3_75 * -65536f
                     long double x87_r4_63 = 6755399441055744.0 - ((x87_r4_59 - *(&projectedVerts->y + ebx_5)) * x87_r3_75 + *(projectedVerts + ebx_5)) * -65536f
-                    *edx_11 = x_2
-                    x_2.q = x87_r4_63
-                    *(edx_11 + 8) = x_2
+                    *edx_11 = var_df8
+                    var_df8.q = x87_r4_63
+                    *(edx_11 + 8) = var_df8
 
-                x_2.q = 6755399441055744.0 - *(&projectedVerts->y + ecx_10) * -65536f
+                var_df8.q = 6755399441055744.0 - *(&projectedVerts->y + ecx_10) * -65536f
                 edx_5 = var_e00_5
-                edi_10 = (x_2 i+ 0x7fff) s>> 0x10
+                edi_10 = (var_df8 i+ 0x7fff) s>> 0x10
                 x87_r4_59 = edi_10 - -0.5f
 
             ebx_5 = ecx_10
         while (edx_5 != var_de4)
 
-        x_2.q = x87_r4_59
+        var_df8.q = x87_r4_59
         int32_t eax_35 = var_dd4
         int32_t ebx_6 = var_dec_3
         struct zRndr_ScanConvertEdge* var_dfc_7 = &edgeTableB
-        int32_t edi_13 = (x_2 i+ 0x7fff) s>> 0x10
+        int32_t edi_13 = (var_df8 i+ 0x7fff) s>> 0x10
         x87_r4_54 = edi_13 - -0.5f
         int32_t edx_13
 
@@ -126478,15 +126476,15 @@
 
                 if ((eax_40:1.b & 0x40) == 0)
                     long double x87_r3_92 = (*(projectedVerts + ecx_12) - *(projectedVerts + ebx_6)) / x87_r4_65
-                    x_2.q = 6755399441055744.0 - x87_r3_92 * -65536f
+                    var_df8.q = 6755399441055744.0 - x87_r3_92 * -65536f
                     long double x87_r4_67 = 6755399441055744.0 - ((x87_r4_54 - *(&projectedVerts->y + ebx_6)) * x87_r3_92 + *(projectedVerts + ebx_6)) * -65536f
-                    *var_dfc = x_2
-                    x_2.q = x87_r4_67
-                    var_dfc[2] = x_2
+                    *var_dfc = var_df8
+                    var_df8.q = x87_r4_67
+                    var_dfc[2] = var_df8
 
-                x_2.q = 6755399441055744.0 - *(&projectedVerts->y + ecx_12) * -65536f
+                var_df8.q = 6755399441055744.0 - *(&projectedVerts->y + ecx_12) * -65536f
                 edx_13 = var_e00_6
-                edi_13 = (x_2 i+ 0x7fff) s>> 0x10
+                edi_13 = (var_df8 i+ 0x7fff) s>> 0x10
                 x87_r4_54 = edi_13 - -0.5f
 
             ebx_6 = ecx_12
@@ -126495,8 +126493,8 @@
     else
         int32_t ebx_3 = ebx_2 << 2
         int32_t var_dec_2 = ebx_3
-        x_2.q = 6755399441055744.0 - *(&projectedVerts->y + ebx_3) * -65536f
-        int32_t edi_4 = (x_2 i+ 0x7fff) s>> 0x10
+        var_df8.q = 6755399441055744.0 - *(&projectedVerts->y + ebx_3) * -65536f
+        int32_t edi_4 = (var_df8 i+ 0x7fff) s>> 0x10
         int32_t eax_6 = vertCount * 0xc
         struct zRndr_ScanConvertEdge (* var_dfc_4)[0x41] = &edgeTableB
         long double x87_r4_49 = edi_4 - -0.5f
@@ -126529,25 +126527,25 @@
 
                 if ((eax_11:1.b & 0x40) == 0)
                     long double x87_r3_41 = (*(projectedVerts + ecx_6) - *(projectedVerts + ebx_3)) / x87_r4_51
-                    x_2.q = 6755399441055744.0 - x87_r3_41 * -65536f
+                    var_df8.q = 6755399441055744.0 - x87_r3_41 * -65536f
                     long double x87_r4_53 = 6755399441055744.0 - ((x87_r4_49 - *(&projectedVerts->y + ebx_3)) * x87_r3_41 + *(projectedVerts + ebx_3)) * -65536f
-                    *edx_6 = x_2
-                    x_2.q = x87_r4_53
-                    *(edx_6 + 8) = x_2
+                    *edx_6 = var_df8
+                    var_df8.q = x87_r4_53
+                    *(edx_6 + 8) = var_df8
 
-                x_2.q = 6755399441055744.0 - *(&projectedVerts->y + ecx_6) * -65536f
+                var_df8.q = 6755399441055744.0 - *(&projectedVerts->y + ecx_6) * -65536f
                 edx_5 = var_e00_3
-                edi_4 = (x_2 i+ 0x7fff) s>> 0x10
+                edi_4 = (var_df8 i+ 0x7fff) s>> 0x10
                 x87_r4_49 = edi_4 - -0.5f
 
             ebx_3 = ecx_6
         while (edx_5 != var_de4)
 
-        x_2.q = x87_r4_49
+        var_df8.q = x87_r4_49
         int32_t eax_15 = var_dd4
         int32_t ebx_4 = var_dec_2
         struct zRndr_ScanConvertEdge (* var_dfc_5)[0x41] = &edgeTableA
-        int32_t edi_7 = (x_2 i+ 0x7fff) s>> 0x10
+        int32_t edi_7 = (var_df8 i+ 0x7fff) s>> 0x10
         x87_r4_54 = edi_7 - -0.5f
         int32_t edx_8
 
@@ -126578,15 +126576,15 @@
 
                 if ((eax_20:1.b & 0x40) == 0)
                     long double x87_r3_58 = (*(projectedVerts + ecx_8) - *(projectedVerts + ebx_4)) / x87_r4_56
-                    x_2.q = 6755399441055744.0 - x87_r3_58 * -65536f
+                    var_df8.q = 6755399441055744.0 - x87_r3_58 * -65536f
                     long double x87_r4_58 = 6755399441055744.0 - ((x87_r4_54 - *(&projectedVerts->y + ebx_4)) * x87_r3_58 + *(projectedVerts + ebx_4)) * -65536f
-                    *edx_9 = x_2
-                    x_2.q = x87_r4_58
-                    *(edx_9 + 8) = x_2
+                    *edx_9 = var_df8
+                    var_df8.q = x87_r4_58
+                    *(edx_9 + 8) = var_df8
 
-                x_2.q = 6755399441055744.0 - *(&projectedVerts->y + ecx_8) * -65536f
+                var_df8.q = 6755399441055744.0 - *(&projectedVerts->y + ecx_8) * -65536f
                 edx_8 = var_e00_4
-                edi_7 = (x_2 i+ 0x7fff) s>> 0x10
+                edi_7 = (var_df8 i+ 0x7fff) s>> 0x10
                 x87_r4_54 = edi_7 - -0.5f
 
             ebx_4 = ecx_8
@@ -126594,21 +126592,21 @@
         while (edx_8 != var_de4)
 
     edgeTableB[var_da0].yEnd = 0x270f
-    x_2.q = x87_r4_54
+    var_df8.q = x87_r4_54
     edgeTableA[var_dd0].yEnd = 0x270f
-    int32_t ecx_15 = (x_2 i+ 0x7fff) s>> 0x10
+    int32_t ecx_15 = (var_df8 i+ 0x7fff) s>> 0x10
     int32_t var_dd8_2 = ecx_15
-    x_2.q = 6755399441055744.0 - projectedVerts[var_de4].y * -65536f
-    int32_t eax_51 = (x_2 - 0x8041) s>> 0x10
+    var_df8.q = 6755399441055744.0 - projectedVerts[var_de4].y * -65536f
+    int32_t eax_51 = (var_df8 - 0x8041) s>> 0x10
     // Choose the perspective chunk width from inverse-depth slope, clamped between g_zRndr_PerspAdaptiveMinSpan and g_zRndr_PerspAdaptiveMaxSpan; zero slope falls back to the fixed pow2 step.
     int32_t zRndr_PerspAdaptiveMinSpan_1 = g_zRndr_PerspAdaptiveMinSpan
     void* var_dc4_3 = ecx_15 * gRndr_PitchBytes + gRndr_pFrameBuffer
     int32_t zRndr_PerspTextureDeltaXBytes_1
-    int32_t ebx_7
+    int32_t pixelCount
     long double x87_r7_38
 
     if (zRndr_PerspAdaptiveMinSpan_1 == 0)
-        ebx_7 = g_zRndr_PerspTextureDeltaXPow2
+        pixelCount = g_zRndr_PerspTextureDeltaXPow2
         x87_r7_38 = g_zRndr_PerspTextureDeltaXPow2F
         zRndr_PerspTextureDeltaXBytes_1 = g_zRndr_PerspTextureDeltaXBytes
     else
@@ -126617,26 +126615,26 @@
         x87_r6_60 - temp17_1
         void* eax_54
         eax_54.w = (x87_r6_60 < temp17_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_60, temp17_1) ? 1 : 0) << 0xa | (x87_r6_60 == temp17_1 ? 1 : 0) << 0xe | 0x3800
-        int32_t var_dd0_1
+        int32_t pixelCount_2
 
         if ((eax_54:1.b & 0x40) == 0)
             int32_t zRndr_PerspAdaptiveMaxSpan_1 = g_zRndr_PerspAdaptiveMaxSpan
-            x_2.q = fabs(x87_r7_33 * g_zRndr_PerspAdaptiveSlope / var_db8.x) - -6755399441055744.0
-            ebx_7 = x_2
-            var_dd0_1 = ebx_7
+            var_df8.q = fabs(x87_r7_33 * g_zRndr_PerspAdaptiveSlope / var_db8.x) - -6755399441055744.0
+            pixelCount = var_df8
+            pixelCount_2 = pixelCount
 
-            if (ebx_7 s> zRndr_PerspAdaptiveMaxSpan_1)
-                ebx_7 = zRndr_PerspAdaptiveMaxSpan_1
-                var_dd0_1 = ebx_7
-            else if (ebx_7 s< zRndr_PerspAdaptiveMinSpan_1)
-                ebx_7 = zRndr_PerspAdaptiveMinSpan_1
-                var_dd0_1 = ebx_7
+            if (pixelCount s> zRndr_PerspAdaptiveMaxSpan_1)
+                pixelCount = zRndr_PerspAdaptiveMaxSpan_1
+                pixelCount_2 = pixelCount
+            else if (pixelCount s< zRndr_PerspAdaptiveMinSpan_1)
+                pixelCount = zRndr_PerspAdaptiveMinSpan_1
+                pixelCount_2 = pixelCount
         else
-            ebx_7 = g_zRndr_PerspAdaptiveMaxSpan
-            var_dd0_1 = ebx_7
+            pixelCount = g_zRndr_PerspAdaptiveMaxSpan
+            pixelCount_2 = pixelCount
 
-        x87_r7_38 = var_dd0_1
-        zRndr_PerspTextureDeltaXBytes_1 = ebx_7 * gRndr_BytesPerPixel
+        x87_r7_38 = pixelCount_2
+        zRndr_PerspTextureDeltaXBytes_1 = pixelCount * gRndr_BytesPerPixel
 
     gRndr_ActiveTexPixels = image_1->pixels
     gRndr_QueuedTexAlphaMap = image_1->queuedAlphaMap
@@ -126651,7 +126649,7 @@
     float var_d38 = x87_r7_38 * var_dac.x
     float var_d30 = x87_r7_38 * var_de0.x
     // Select the textured fan-triangle span op from palette availability and variant remap state, while keeping gRndr_ConstAlpha255 as the constant alpha source.
-    void (* var_d90_2)(int32_t, int32_t)
+    void (__fastcall* var_d90_2)(int32_t texU, int32_t texV, int32_t pixelCount, int32_t texVShift)
 
     if (palette != 0)
         if (variantIndex != 0xffffffff)
@@ -126764,17 +126762,17 @@
                         int32_t sampleXMin = edi_15->sampleXMin
                         int32_t esi_2 = edi_15->sampleXMax - sampleXMin
                         gRndr_CurrentSpanBaseAddr = gRndr_BytesPerPixel * sampleXMin + var_dc4_3
-                        int32_t esi_3 = esi_2 + 1
+                        int32_t pixelCount_1 = esi_2 + 1
                         long double x87_r6_87 = edi_15->sampleXMin
                         float var_e00_7 = x87_r6_87 * var_db8.x + var_dfc_9
                         long double x87_r5_125 = 1f / var_e00_7
-                        int32_t var_dbc_1 = esi_3
+                        int32_t pixelCount_3 = pixelCount_1
                         float var_df0_8 = x87_r6_87 * var_dac.x + var_d6c_1
                         float var_dec_6 = x87_r6_87 * var_de0.x + var_d68_1
-                        float var_dd0_2 = x87_r5_125 * var_df0_8
-                        float var_da0_1 = x87_r5_125 * var_dec_6
+                        float texV_2 = x87_r5_125 * var_df0_8
+                        float texU = x87_r5_125 * var_dec_6
 
-                        while (esi_3 s> ebx_7)
+                        while (pixelCount_1 s> pixelCount)
                             var_e00_7 = var_e00_7 + var_d3c
                             long double x87_r5_135 = 1f / var_e00_7
                             int32_t gRndr_ActiveTexShift_1 = gRndr_ActiveTexShift
@@ -126783,32 +126781,33 @@
                             var_dec_6 = var_dec_6 + var_d30
                             long double x87_r6_97 = x87_r5_135 * var_dec_6
                             float var_d70_1 = x87_r5_141
-                            float var_dbc_2 = x87_r6_97
-                            long double x87_r4_96 = var_da0_1 * var_de8_1 - -6755399441055744.0
-                            long double x87_r4_98 = (x87_r6_97 - var_da0_1) * var_d58
-                            long double x87_r4_100 = (x87_r5_141 - var_dd0_2) * var_d58 - -6755399441055744.0
-                            var_da0_1.q = var_dd0_2 * var_de8_1 - -6755399441055744.0
-                            var_dd0_2.q = x87_r4_96
-                            var_dd0_2.q = x87_r4_98 - -6755399441055744.0
+                            float var_dbc_1 = x87_r6_97
+                            long double x87_r4_96 = texU * var_de8_1 - -6755399441055744.0
+                            long double x87_r4_98 = (x87_r6_97 - texU) * var_d58
+                            long double x87_r4_100 = (x87_r5_141 - texV_2) * var_d58 - -6755399441055744.0
+                            texU.q = texV_2 * var_de8_1 - -6755399441055744.0
+                            texV_2.q = x87_r4_96
+                            int32_t texV_1 = texV_2
+                            texV_2.q = x87_r4_98 - -6755399441055744.0
                             gRndr_ActiveTexUStepFixed20 = (x87_r4_100).d
-                            gRndr_ActiveTexVStepFixed20 = var_dd0_2
-                            var_d90_2(ebx_7, gRndr_ActiveTexShift_1)
-                            var_dd0_2 = var_d70_1
-                            esi_3 -= ebx_7
-                            var_da0_1 = var_dbc_2
-                            var_dbc_1 = esi_3
+                            gRndr_ActiveTexVStepFixed20 = texV_2
+                            var_d90_2(texU, texV_1, pixelCount, gRndr_ActiveTexShift_1)
+                            texV_2 = var_d70_1
+                            pixelCount_1 -= pixelCount
+                            texU = var_dbc_1
+                            pixelCount_3 = pixelCount_1
                             gRndr_CurrentSpanBaseAddr += zRndr_PerspTextureDeltaXBytes_1
 
                         long double x87_r7_79 = edi_15->sampleXMax
                         float var_e00_8 = x87_r7_79 * var_db8.x + var_dfc_9
                         int32_t gRndr_ActiveTexShift_2 = gRndr_ActiveTexShift
-                        float var_dbc_3 = var_de8_1 / (var_dbc_1 * var_e00_8)
-                        int32_t var_d80_2 = (var_dd0_2 * var_de8_1 - -6755399441055744.0).d
-                        int32_t var_d80_3 = (var_da0_1 * var_de8_1 - -6755399441055744.0).d
-                        long double x87_r6_113 = (x87_r7_79 * var_de0.x + var_d68_1 - var_da0_1 * var_e00_8) * var_dbc_3 - -6755399441055744.0
-                        gRndr_ActiveTexUStepFixed20 = ((x87_r7_79 * var_dac.x + var_d6c_1 - var_dd0_2 * var_e00_8) * var_dbc_3 - -6755399441055744.0).d
+                        float var_dbc_2 = var_de8_1 / (pixelCount_3 * var_e00_8)
+                        int32_t texU_1 = (texV_2 * var_de8_1 - -6755399441055744.0).d
+                        int32_t texV = (texU * var_de8_1 - -6755399441055744.0).d
+                        long double x87_r6_113 = (x87_r7_79 * var_de0.x + var_d68_1 - texU * var_e00_8) * var_dbc_2 - -6755399441055744.0
+                        gRndr_ActiveTexUStepFixed20 = ((x87_r7_79 * var_dac.x + var_d6c_1 - texV_2 * var_e00_8) * var_dbc_2 - -6755399441055744.0).d
                         gRndr_ActiveTexVStepFixed20 = (x87_r6_113).d
-                        var_d90_2(esi_3, gRndr_ActiveTexShift_2)
+                        var_d90_2(texU_1, texV, pixelCount_1, gRndr_ActiveTexShift_2)
                         cond:17_1 = var_d74_1 + 1 s< height
                         var_d74_1 += 1
                         var_dc0_3 = &var_dc0_3[1]
@@ -129365,20 +129364,20 @@
     int32_t ebp
     int32_t var_4 = ebp
     int32_t* savedEbp = &var_4
-    int32_t ebx
-    int32_t var_10 = ebx
-    int32_t esi
-    int32_t var_14 = esi
-    int32_t edi
-    int32_t var_18 = edi
-    int32_t* esp = &var_18
-    // Select the specialized inner loop for texVShift values 0x0a..0x11; each case indexes the paletted source texture, skips texel 0 as transparent, and expands nonzero texels through gRndr_ActiveTexPalette.
-    int32_t* var_1c
+    struct zRndr_SpanEspPivotSave var_1c
+    int32_t entry_ebx
+    var_1c.savedEbx = entry_ebx
+    int32_t entry_esi
+    var_1c.savedEsi = entry_esi
+    int32_t entry_edi
+    var_1c.savedEdi = entry_edi
+    int32_t* esp = &var_1c.savedEdi
 
+    // Select the specialized inner loop for texVShift values 0x0a..0x11; each case indexes the paletted source texture, skips texel 0 as transparent, and expands nonzero texels through gRndr_ActiveTexPalette.
     if (texVShift - 0xa u<= 7)
         switch (texVShift)
             case 0xa
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_1 = texUFixed20
                 int32_t texVFixed20_1 = texVFixed20
@@ -129386,27 +129385,27 @@
                 void* esp_2 = &gRndr_CurrentSpanBaseAddr[pixelCount]
                 int32_t gRndr_ActiveTexVMask_1 = gRndr_ActiveTexVMask
                 uint16_t* gRndr_ActiveTexPalette_1 = gRndr_ActiveTexPalette
-                int32_t edi_3 = neg.d(pixelCount * 2)
+                int32_t edi_2 = neg.d(pixelCount * 2)
 
                 while (true)
                     int32_t eax_3 = texUFixed20_1 s>> 0x14
                     texUFixed20_1 += gRndr_ActiveTexUStepFixed20
-                    int32_t esi_3 = ((gRndr_ActiveTexVMask_1 & texVFixed20_1) u>> 0xa) + (eax_3 & 0x3ff)
+                    int32_t esi_2 = ((gRndr_ActiveTexVMask_1 & texVFixed20_1) u>> 0xa) + (eax_3 & 0x3ff)
                     texVFixed20_1 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_5
-                    eax_5.b = *(gRndr_ActiveTexPixels_1 + esi_3)
+                    eax_5.b = *(gRndr_ActiveTexPixels_1 + esi_2)
                     gRndr_ActiveTexVMask_1 = gRndr_ActiveTexVMask
 
                     if (eax_5 == 0)
                         esp_2 -= 2
-                        int32_t temp1_1 = edi_3
-                        edi_3 += 2
+                        int32_t temp1_1 = edi_2
+                        edi_2 += 2
 
                         if (temp1_1 == 0xfffffffe)
                             break
                     else
-                        int32_t temp2_1 = edi_3
-                        edi_3 += 2
+                        int32_t temp2_1 = edi_2
+                        edi_2 += 2
                         *(esp_2 - 2) = gRndr_ActiveTexPalette_1[eax_5]
                         esp_2 -= 2
 
@@ -129420,7 +129419,7 @@
                 *gRndr_SavedEspSlot_1->savedEbp
                 return
             case 0xb
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_2 = texUFixed20
                 int32_t texVFixed20_2 = texVFixed20
@@ -129428,27 +129427,27 @@
                 void* esp_10 = &gRndr_CurrentSpanBaseAddr[pixelCount]
                 int32_t gRndr_ActiveTexVMask_2 = gRndr_ActiveTexVMask
                 uint16_t* gRndr_ActiveTexPalette_2 = gRndr_ActiveTexPalette
-                int32_t edi_7 = neg.d(pixelCount * 2)
+                int32_t edi_6 = neg.d(pixelCount * 2)
 
                 while (true)
                     int32_t eax_8 = texUFixed20_2 s>> 0x14
                     texUFixed20_2 += gRndr_ActiveTexUStepFixed20
-                    int32_t esi_7 = ((gRndr_ActiveTexVMask_2 & texVFixed20_2) u>> 0xb) + (eax_8 & 0x1ff)
+                    int32_t esi_6 = ((gRndr_ActiveTexVMask_2 & texVFixed20_2) u>> 0xb) + (eax_8 & 0x1ff)
                     texVFixed20_2 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_10
-                    eax_10.b = *(gRndr_ActiveTexPixels_2 + esi_7)
+                    eax_10.b = *(gRndr_ActiveTexPixels_2 + esi_6)
                     gRndr_ActiveTexVMask_2 = gRndr_ActiveTexVMask
 
                     if (eax_10 == 0)
                         esp_10 -= 2
-                        int32_t temp3_1 = edi_7
-                        edi_7 += 2
+                        int32_t temp3_1 = edi_6
+                        edi_6 += 2
 
                         if (temp3_1 == 0xfffffffe)
                             break
                     else
-                        int32_t temp4_1 = edi_7
-                        edi_7 += 2
+                        int32_t temp4_1 = edi_6
+                        edi_6 += 2
                         *(esp_10 - 2) = gRndr_ActiveTexPalette_2[eax_10]
                         esp_10 -= 2
 
@@ -129462,7 +129461,7 @@
                 *gRndr_SavedEspSlot_2->savedEbp
                 return
             case 0xc
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_3 = texUFixed20
                 int32_t texVFixed20_3 = texVFixed20
@@ -129470,27 +129469,27 @@
                 void* esp_18 = &gRndr_CurrentSpanBaseAddr[pixelCount]
                 int32_t gRndr_ActiveTexVMask_3 = gRndr_ActiveTexVMask
                 uint16_t* gRndr_ActiveTexPalette_3 = gRndr_ActiveTexPalette
-                int32_t edi_11 = neg.d(pixelCount * 2)
+                int32_t edi_10 = neg.d(pixelCount * 2)
 
                 while (true)
                     char eax_13 = (texUFixed20_3 s>> 0x14).b
                     texUFixed20_3 += gRndr_ActiveTexUStepFixed20
-                    uint32_t esi_11 = ((gRndr_ActiveTexVMask_3 & texVFixed20_3) u>> 0xc) + eax_13
+                    uint32_t esi_10 = ((gRndr_ActiveTexVMask_3 & texVFixed20_3) u>> 0xc) + eax_13
                     texVFixed20_3 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_15
-                    eax_15.b = *(gRndr_ActiveTexPixels_3 + esi_11)
+                    eax_15.b = *(gRndr_ActiveTexPixels_3 + esi_10)
                     gRndr_ActiveTexVMask_3 = gRndr_ActiveTexVMask
 
                     if (eax_15 == 0)
                         esp_18 -= 2
-                        int32_t temp5_1 = edi_11
-                        edi_11 += 2
+                        int32_t temp5_1 = edi_10
+                        edi_10 += 2
 
                         if (temp5_1 == 0xfffffffe)
                             break
                     else
-                        int32_t temp6_1 = edi_11
-                        edi_11 += 2
+                        int32_t temp6_1 = edi_10
+                        edi_10 += 2
                         *(esp_18 - 2) = gRndr_ActiveTexPalette_3[eax_15]
                         esp_18 -= 2
 
@@ -129504,7 +129503,7 @@
                 *gRndr_SavedEspSlot_3->savedEbp
                 return
             case 0xd
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_4 = texUFixed20
                 int32_t texVFixed20_4 = texVFixed20
@@ -129512,27 +129511,27 @@
                 void* esp_26 = &gRndr_CurrentSpanBaseAddr[pixelCount]
                 int32_t gRndr_ActiveTexVMask_4 = gRndr_ActiveTexVMask
                 uint16_t* gRndr_ActiveTexPalette_4 = gRndr_ActiveTexPalette
-                int32_t edi_15 = neg.d(pixelCount * 2)
+                int32_t edi_14 = neg.d(pixelCount * 2)
 
                 while (true)
                     int32_t eax_18 = texUFixed20_4 s>> 0x14
                     texUFixed20_4 += gRndr_ActiveTexUStepFixed20
-                    int32_t esi_15 = ((gRndr_ActiveTexVMask_4 & texVFixed20_4) u>> 0xd) + (eax_18 & 0x7f)
+                    int32_t esi_14 = ((gRndr_ActiveTexVMask_4 & texVFixed20_4) u>> 0xd) + (eax_18 & 0x7f)
                     texVFixed20_4 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_20
-                    eax_20.b = *(gRndr_ActiveTexPixels_4 + esi_15)
+                    eax_20.b = *(gRndr_ActiveTexPixels_4 + esi_14)
                     gRndr_ActiveTexVMask_4 = gRndr_ActiveTexVMask
 
                     if (eax_20 == 0)
                         esp_26 -= 2
-                        int32_t temp7_1 = edi_15
-                        edi_15 += 2
+                        int32_t temp7_1 = edi_14
+                        edi_14 += 2
 
                         if (temp7_1 == 0xfffffffe)
                             break
                     else
-                        int32_t temp8_1 = edi_15
-                        edi_15 += 2
+                        int32_t temp8_1 = edi_14
+                        edi_14 += 2
                         *(esp_26 - 2) = gRndr_ActiveTexPalette_4[eax_20]
                         esp_26 -= 2
 
@@ -129546,7 +129545,7 @@
                 *gRndr_SavedEspSlot_4->savedEbp
                 return
             case 0xe
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_5 = texUFixed20
                 int32_t texVFixed20_5 = texVFixed20
@@ -129554,27 +129553,27 @@
                 void* esp_34 = &gRndr_CurrentSpanBaseAddr[pixelCount]
                 int32_t gRndr_ActiveTexVMask_5 = gRndr_ActiveTexVMask
                 uint16_t* gRndr_ActiveTexPalette_5 = gRndr_ActiveTexPalette
-                int32_t edi_19 = neg.d(pixelCount * 2)
+                int32_t edi_18 = neg.d(pixelCount * 2)
 
                 while (true)
                     int32_t eax_23 = texUFixed20_5 s>> 0x14
                     texUFixed20_5 += gRndr_ActiveTexUStepFixed20
-                    int32_t esi_19 = ((gRndr_ActiveTexVMask_5 & texVFixed20_5) u>> 0xe) + (eax_23 & 0x3f)
+                    int32_t esi_18 = ((gRndr_ActiveTexVMask_5 & texVFixed20_5) u>> 0xe) + (eax_23 & 0x3f)
                     texVFixed20_5 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_25
-                    eax_25.b = *(gRndr_ActiveTexPixels_5 + esi_19)
+                    eax_25.b = *(gRndr_ActiveTexPixels_5 + esi_18)
                     gRndr_ActiveTexVMask_5 = gRndr_ActiveTexVMask
 
                     if (eax_25 == 0)
                         esp_34 -= 2
-                        int32_t temp9_1 = edi_19
-                        edi_19 += 2
+                        int32_t temp9_1 = edi_18
+                        edi_18 += 2
 
                         if (temp9_1 == 0xfffffffe)
                             break
                     else
-                        int32_t temp10_1 = edi_19
-                        edi_19 += 2
+                        int32_t temp10_1 = edi_18
+                        edi_18 += 2
                         *(esp_34 - 2) = gRndr_ActiveTexPalette_5[eax_25]
                         esp_34 -= 2
 
@@ -129588,7 +129587,7 @@
                 *gRndr_SavedEspSlot_5->savedEbp
                 return
             case 0xf
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_6 = texUFixed20
                 int32_t texVFixed20_6 = texVFixed20
@@ -129596,27 +129595,27 @@
                 void* esp_42 = &gRndr_CurrentSpanBaseAddr[pixelCount]
                 int32_t gRndr_ActiveTexVMask_6 = gRndr_ActiveTexVMask
                 uint16_t* gRndr_ActiveTexPalette_6 = gRndr_ActiveTexPalette
-                int32_t edi_23 = neg.d(pixelCount * 2)
+                int32_t edi_22 = neg.d(pixelCount * 2)
 
                 while (true)
                     int32_t eax_28 = texUFixed20_6 s>> 0x14
                     texUFixed20_6 += gRndr_ActiveTexUStepFixed20
-                    int32_t esi_23 = ((gRndr_ActiveTexVMask_6 & texVFixed20_6) u>> 0xf) + (eax_28 & 0x1f)
+                    int32_t esi_22 = ((gRndr_ActiveTexVMask_6 & texVFixed20_6) u>> 0xf) + (eax_28 & 0x1f)
                     texVFixed20_6 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_30
-                    eax_30.b = *(gRndr_ActiveTexPixels_6 + esi_23)
+                    eax_30.b = *(gRndr_ActiveTexPixels_6 + esi_22)
                     gRndr_ActiveTexVMask_6 = gRndr_ActiveTexVMask
 
                     if (eax_30 == 0)
                         esp_42 -= 2
-                        int32_t temp11_1 = edi_23
-                        edi_23 += 2
+                        int32_t temp11_1 = edi_22
+                        edi_22 += 2
 
                         if (temp11_1 == 0xfffffffe)
                             break
                     else
-                        int32_t temp12_1 = edi_23
-                        edi_23 += 2
+                        int32_t temp12_1 = edi_22
+                        edi_22 += 2
                         *(esp_42 - 2) = gRndr_ActiveTexPalette_6[eax_30]
                         esp_42 -= 2
 
@@ -129630,7 +129629,7 @@
                 *gRndr_SavedEspSlot_6->savedEbp
                 return
             case 0x10
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_7 = texUFixed20
                 int32_t texVFixed20_7 = texVFixed20
@@ -129638,27 +129637,27 @@
                 void* esp_50 = &gRndr_CurrentSpanBaseAddr[pixelCount]
                 int32_t gRndr_ActiveTexVMask_7 = gRndr_ActiveTexVMask
                 uint16_t* gRndr_ActiveTexPalette_7 = gRndr_ActiveTexPalette
-                int32_t edi_27 = neg.d(pixelCount * 2)
+                int32_t edi_26 = neg.d(pixelCount * 2)
 
                 while (true)
                     int32_t eax_33 = texUFixed20_7 s>> 0x14
                     texUFixed20_7 += gRndr_ActiveTexUStepFixed20
-                    int32_t esi_27 = ((gRndr_ActiveTexVMask_7 & texVFixed20_7) u>> 0x10) + (eax_33 & 0xf)
+                    int32_t esi_26 = ((gRndr_ActiveTexVMask_7 & texVFixed20_7) u>> 0x10) + (eax_33 & 0xf)
                     texVFixed20_7 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_35
-                    eax_35.b = *(gRndr_ActiveTexPixels_7 + esi_27)
+                    eax_35.b = *(gRndr_ActiveTexPixels_7 + esi_26)
                     gRndr_ActiveTexVMask_7 = gRndr_ActiveTexVMask
 
                     if (eax_35 == 0)
                         esp_50 -= 2
-                        int32_t temp13_1 = edi_27
-                        edi_27 += 2
+                        int32_t temp13_1 = edi_26
+                        edi_26 += 2
 
                         if (temp13_1 == 0xfffffffe)
                             break
                     else
-                        int32_t temp14_1 = edi_27
-                        edi_27 += 2
+                        int32_t temp14_1 = edi_26
+                        edi_26 += 2
                         *(esp_50 - 2) = gRndr_ActiveTexPalette_7[eax_35]
                         esp_50 -= 2
 
@@ -129672,7 +129671,7 @@
                 *gRndr_SavedEspSlot_7->savedEbp
                 return
             case 0x11
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_8 = texUFixed20
                 int32_t texVFixed20_8 = texVFixed20
@@ -129680,27 +129679,27 @@
                 void* esp_58 = &gRndr_CurrentSpanBaseAddr[pixelCount]
                 int32_t gRndr_ActiveTexVMask_8 = gRndr_ActiveTexVMask
                 uint16_t* gRndr_ActiveTexPalette_8 = gRndr_ActiveTexPalette
-                int32_t edi_31 = neg.d(pixelCount * 2)
+                int32_t edi_30 = neg.d(pixelCount * 2)
 
                 while (true)
                     int32_t eax_38 = texUFixed20_8 s>> 0x14
                     texUFixed20_8 += gRndr_ActiveTexUStepFixed20
-                    int32_t esi_31 = ((gRndr_ActiveTexVMask_8 & texVFixed20_8) u>> 0x11) + (eax_38 & 7)
+                    int32_t esi_30 = ((gRndr_ActiveTexVMask_8 & texVFixed20_8) u>> 0x11) + (eax_38 & 7)
                     texVFixed20_8 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_40
-                    eax_40.b = *(gRndr_ActiveTexPixels_8 + esi_31)
+                    eax_40.b = *(gRndr_ActiveTexPixels_8 + esi_30)
                     gRndr_ActiveTexVMask_8 = gRndr_ActiveTexVMask
 
                     if (eax_40 == 0)
                         esp_58 -= 2
-                        int32_t temp15_1 = edi_31
-                        edi_31 += 2
+                        int32_t temp15_1 = edi_30
+                        edi_30 += 2
 
                         if (temp15_1 == 0xfffffffe)
                             break
                     else
-                        int32_t temp16_1 = edi_31
-                        edi_31 += 2
+                        int32_t temp16_1 = edi_30
+                        edi_30 += 2
                         *(esp_58 - 2) = gRndr_ActiveTexPalette_8[eax_40]
                         esp_58 -= 2
 
@@ -129710,6 +129709,7 @@
                 struct zRndr_SpanEspPivotSave* gRndr_SavedEspSlot_8 = gRndr_SavedEspSlot
                 savedEbp = gRndr_SavedEspSlot_8->savedEbp
                 esp = &gRndr_SavedEspSlot_8->savedEdi
+
     *esp
     esp[1]
     esp[2]
@@ -131450,19 +131450,19 @@
     int32_t ebp
     int32_t var_4 = ebp
     int32_t* savedEbp = &var_4
-    int32_t ebx
-    int32_t var_10 = ebx
-    int32_t esi
-    int32_t var_14 = esi
-    int32_t edi
-    int32_t var_18 = edi
-    int32_t* esp = &var_18
-    int32_t* var_1c
+    struct zRndr_SpanEspPivotSave var_1c
+    int32_t entry_ebx
+    var_1c.savedEbx = entry_ebx
+    int32_t entry_esi
+    var_1c.savedEsi = entry_esi
+    int32_t entry_edi
+    var_1c.savedEdi = entry_edi
+    int32_t* esp = &var_1c.savedEdi
 
     if (texVShift - 0xa u<= 7)
         switch (texVShift)
             case 0xa
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
     // BN limitation: each switch case saves the real ESP, uses ESP as a descending uint16_t destination cursor, then restores ESP before returning.
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_1 = texUFixed20
@@ -131492,7 +131492,7 @@
                 *gRndr_SavedEspSlot_1->savedEbp
                 return
             case 0xb
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_2 = texUFixed20
                 int32_t texVFixed20_2 = texVFixed20
@@ -131521,7 +131521,7 @@
                 *gRndr_SavedEspSlot_2->savedEbp
                 return
             case 0xc
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_3 = texUFixed20
                 int32_t texVFixed20_3 = texVFixed20
@@ -131550,7 +131550,7 @@
                 *gRndr_SavedEspSlot_3->savedEbp
                 return
             case 0xd
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_4 = texUFixed20
                 int32_t texVFixed20_4 = texVFixed20
@@ -131579,7 +131579,7 @@
                 *gRndr_SavedEspSlot_4->savedEbp
                 return
             case 0xe
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_5 = texUFixed20
                 int32_t texVFixed20_5 = texVFixed20
@@ -131608,7 +131608,7 @@
                 *gRndr_SavedEspSlot_5->savedEbp
                 return
             case 0xf
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_6 = texUFixed20
                 int32_t texVFixed20_6 = texVFixed20
@@ -131637,7 +131637,7 @@
                 *gRndr_SavedEspSlot_6->savedEbp
                 return
             case 0x10
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_7 = texUFixed20
                 int32_t texVFixed20_7 = texVFixed20
@@ -131666,7 +131666,7 @@
                 *gRndr_SavedEspSlot_7->savedEbp
                 return
             case 0x11
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_8 = texUFixed20
                 int32_t texVFixed20_8 = texVFixed20
@@ -131691,6 +131691,7 @@
                 struct zRndr_SpanEspPivotSave* gRndr_SavedEspSlot_8 = gRndr_SavedEspSlot
                 savedEbp = gRndr_SavedEspSlot_8->savedEbp
                 esp = &gRndr_SavedEspSlot_8->savedEdi
+
     *esp
     esp[1]
     esp[2]
@@ -131912,19 +131913,19 @@
     int32_t ebp
     int32_t var_4 = ebp
     int32_t* savedEbp = &var_4
-    int32_t ebx
-    int32_t var_10 = ebx
-    int32_t esi
-    int32_t var_14 = esi
-    int32_t edi
-    int32_t var_18 = edi
-    int32_t* esp = &var_18
-    int32_t* var_1c
+    struct zRndr_SpanEspPivotSave var_1c
+    int32_t entry_ebx
+    var_1c.savedEbx = entry_ebx
+    int32_t entry_esi
+    var_1c.savedEsi = entry_esi
+    int32_t entry_edi
+    var_1c.savedEdi = entry_edi
+    int32_t* esp = &var_1c.savedEdi
 
     if (texVShift - 0xa u<= 7)
         switch (texVShift)
             case 0xa
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_1 = texUFixed20
                 int32_t texVFixed20_1 = texVFixed20
@@ -131939,10 +131940,10 @@
     // Each switch case hardcodes texVShift 10..17 so the paletted inner loop can derive the texel index without a variable MMX shift.
                     int32_t eax_3 = texUFixed20_1 s>> 0x14
                     texUFixed20_1 += gRndr_ActiveTexUStepFixed20
-                    int32_t esi_3 = ((gRndr_ActiveTexVMask_1 & texVFixed20_1) u>> 0xa) + (eax_3 & 0x3ff)
+                    int32_t esi_2 = ((gRndr_ActiveTexVMask_1 & texVFixed20_1) u>> 0xa) + (eax_3 & 0x3ff)
                     texVFixed20_1 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_5
-                    eax_5.b = *(gRndr_ActiveTexPixels_1 + esi_3)
+                    eax_5.b = *(gRndr_ActiveTexPixels_1 + esi_2)
                     gRndr_ActiveTexVMask_1 = gRndr_ActiveTexVMask
                     i = i_8
                     i_8 += 2
@@ -131957,7 +131958,7 @@
                 *gRndr_SavedEspSlot_1->savedEbp
                 return
             case 0xb
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_2 = texUFixed20
                 int32_t texVFixed20_2 = texVFixed20
@@ -131971,10 +131972,10 @@
                 do
                     int32_t eax_7 = texUFixed20_2 s>> 0x14
                     texUFixed20_2 += gRndr_ActiveTexUStepFixed20
-                    int32_t esi_7 = ((gRndr_ActiveTexVMask_2 & texVFixed20_2) u>> 0xb) + (eax_7 & 0x1ff)
+                    int32_t esi_6 = ((gRndr_ActiveTexVMask_2 & texVFixed20_2) u>> 0xb) + (eax_7 & 0x1ff)
                     texVFixed20_2 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_9
-                    eax_9.b = *(gRndr_ActiveTexPixels_2 + esi_7)
+                    eax_9.b = *(gRndr_ActiveTexPixels_2 + esi_6)
                     gRndr_ActiveTexVMask_2 = gRndr_ActiveTexVMask
                     i_1 = i_9
                     i_9 += 2
@@ -131988,7 +131989,7 @@
                 *gRndr_SavedEspSlot_2->savedEbp
                 return
             case 0xc
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_3 = texUFixed20
                 int32_t texVFixed20_3 = texVFixed20
@@ -132002,10 +132003,10 @@
                 do
                     char eax_11 = (texUFixed20_3 s>> 0x14).b
                     texUFixed20_3 += gRndr_ActiveTexUStepFixed20
-                    uint32_t esi_11 = ((gRndr_ActiveTexVMask_3 & texVFixed20_3) u>> 0xc) + eax_11
+                    uint32_t esi_10 = ((gRndr_ActiveTexVMask_3 & texVFixed20_3) u>> 0xc) + eax_11
                     texVFixed20_3 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_13
-                    eax_13.b = *(gRndr_ActiveTexPixels_3 + esi_11)
+                    eax_13.b = *(gRndr_ActiveTexPixels_3 + esi_10)
                     gRndr_ActiveTexVMask_3 = gRndr_ActiveTexVMask
                     i_2 = i_10
                     i_10 += 2
@@ -132019,7 +132020,7 @@
                 *gRndr_SavedEspSlot_3->savedEbp
                 return
             case 0xd
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_4 = texUFixed20
                 int32_t texVFixed20_4 = texVFixed20
@@ -132033,10 +132034,10 @@
                 do
                     int32_t eax_15 = texUFixed20_4 s>> 0x14
                     texUFixed20_4 += gRndr_ActiveTexUStepFixed20
-                    int32_t esi_15 = ((gRndr_ActiveTexVMask_4 & texVFixed20_4) u>> 0xd) + (eax_15 & 0x7f)
+                    int32_t esi_14 = ((gRndr_ActiveTexVMask_4 & texVFixed20_4) u>> 0xd) + (eax_15 & 0x7f)
                     texVFixed20_4 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_17
-                    eax_17.b = *(gRndr_ActiveTexPixels_4 + esi_15)
+                    eax_17.b = *(gRndr_ActiveTexPixels_4 + esi_14)
                     gRndr_ActiveTexVMask_4 = gRndr_ActiveTexVMask
                     i_3 = i_11
                     i_11 += 2
@@ -132050,7 +132051,7 @@
                 *gRndr_SavedEspSlot_4->savedEbp
                 return
             case 0xe
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_5 = texUFixed20
                 int32_t texVFixed20_5 = texVFixed20
@@ -132064,10 +132065,10 @@
                 do
                     int32_t eax_19 = texUFixed20_5 s>> 0x14
                     texUFixed20_5 += gRndr_ActiveTexUStepFixed20
-                    int32_t esi_19 = ((gRndr_ActiveTexVMask_5 & texVFixed20_5) u>> 0xe) + (eax_19 & 0x3f)
+                    int32_t esi_18 = ((gRndr_ActiveTexVMask_5 & texVFixed20_5) u>> 0xe) + (eax_19 & 0x3f)
                     texVFixed20_5 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_21
-                    eax_21.b = *(gRndr_ActiveTexPixels_5 + esi_19)
+                    eax_21.b = *(gRndr_ActiveTexPixels_5 + esi_18)
                     gRndr_ActiveTexVMask_5 = gRndr_ActiveTexVMask
                     i_4 = i_12
                     i_12 += 2
@@ -132081,7 +132082,7 @@
                 *gRndr_SavedEspSlot_5->savedEbp
                 return
             case 0xf
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_6 = texUFixed20
                 int32_t texVFixed20_6 = texVFixed20
@@ -132095,10 +132096,10 @@
                 do
                     int32_t eax_23 = texUFixed20_6 s>> 0x14
                     texUFixed20_6 += gRndr_ActiveTexUStepFixed20
-                    int32_t esi_23 = ((gRndr_ActiveTexVMask_6 & texVFixed20_6) u>> 0xf) + (eax_23 & 0x1f)
+                    int32_t esi_22 = ((gRndr_ActiveTexVMask_6 & texVFixed20_6) u>> 0xf) + (eax_23 & 0x1f)
                     texVFixed20_6 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_25
-                    eax_25.b = *(gRndr_ActiveTexPixels_6 + esi_23)
+                    eax_25.b = *(gRndr_ActiveTexPixels_6 + esi_22)
                     gRndr_ActiveTexVMask_6 = gRndr_ActiveTexVMask
                     i_5 = i_13
                     i_13 += 2
@@ -132112,7 +132113,7 @@
                 *gRndr_SavedEspSlot_6->savedEbp
                 return
             case 0x10
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_7 = texUFixed20
                 int32_t texVFixed20_7 = texVFixed20
@@ -132126,10 +132127,10 @@
                 do
                     int32_t eax_27 = texUFixed20_7 s>> 0x14
                     texUFixed20_7 += gRndr_ActiveTexUStepFixed20
-                    int32_t esi_27 = ((gRndr_ActiveTexVMask_7 & texVFixed20_7) u>> 0x10) + (eax_27 & 0xf)
+                    int32_t esi_26 = ((gRndr_ActiveTexVMask_7 & texVFixed20_7) u>> 0x10) + (eax_27 & 0xf)
                     texVFixed20_7 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_29
-                    eax_29.b = *(gRndr_ActiveTexPixels_7 + esi_27)
+                    eax_29.b = *(gRndr_ActiveTexPixels_7 + esi_26)
                     gRndr_ActiveTexVMask_7 = gRndr_ActiveTexVMask
                     i_6 = i_14
                     i_14 += 2
@@ -132143,7 +132144,7 @@
                 *gRndr_SavedEspSlot_7->savedEbp
                 return
             case 0x11
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_8 = texUFixed20
                 int32_t texVFixed20_8 = texVFixed20
@@ -132157,10 +132158,10 @@
                 do
                     int32_t eax_31 = texUFixed20_8 s>> 0x14
                     texUFixed20_8 += gRndr_ActiveTexUStepFixed20
-                    int32_t esi_31 = ((gRndr_ActiveTexVMask_8 & texVFixed20_8) u>> 0x11) + (eax_31 & 7)
+                    int32_t esi_30 = ((gRndr_ActiveTexVMask_8 & texVFixed20_8) u>> 0x11) + (eax_31 & 7)
                     texVFixed20_8 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_33
-                    eax_33.b = *(gRndr_ActiveTexPixels_8 + esi_31)
+                    eax_33.b = *(gRndr_ActiveTexPixels_8 + esi_30)
                     gRndr_ActiveTexVMask_8 = gRndr_ActiveTexVMask
                     i_7 = i_15
                     i_15 += 2
@@ -132170,6 +132171,7 @@
                 struct zRndr_SpanEspPivotSave* gRndr_SavedEspSlot_8 = gRndr_SavedEspSlot
                 savedEbp = gRndr_SavedEspSlot_8->savedEbp
                 esp = &gRndr_SavedEspSlot_8->savedEdi
+
     *esp
     esp[1]
     esp[2]
@@ -132183,39 +132185,39 @@
     int32_t ebp
     int32_t var_4 = ebp
     int32_t* savedEbp = &var_4
-    int32_t ebx
-    int32_t var_10 = ebx
-    int32_t esi
-    int32_t var_14 = esi
-    int32_t edi
-    int32_t var_18 = edi
-    int32_t* esp = &var_18
-    int32_t* var_1c
+    struct zRndr_SpanEspPivotSave var_1c
+    int32_t entry_ebx
+    var_1c.savedEbx = entry_ebx
+    int32_t entry_esi
+    var_1c.savedEsi = entry_esi
+    int32_t entry_edi
+    var_1c.savedEdi = entry_edi
+    int32_t* esp = &var_1c.savedEdi
 
     if (texVShift - 0xa u<= 7)
         switch (texVShift)
             case 0xa
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_1 = texUFixed20
                 int32_t texVFixed20_1 = texVFixed20
-                int32_t edi_1 = pixelCount
+                int32_t edi = pixelCount
                 gRndr_ActiveTexVMask
                 uint16_t* gRndr_ActiveTexPalette_1 = gRndr_ActiveTexPalette
-                void* esp_3 = &gRndr_CurrentSpanBaseAddr[edi_1]
+                void* esp_3 = &gRndr_CurrentSpanBaseAddr[edi]
                 int32_t i
 
                 do
-                    int32_t esi_5 = ((gRndr_ActiveTexVMask & texVFixed20_1) u>> 0xa) + (texUFixed20_1 s>> 0x14 & 0x3ff)
+                    int32_t esi_4 = ((gRndr_ActiveTexVMask & texVFixed20_1) u>> 0xa) + (texUFixed20_1 s>> 0x14 & 0x3ff)
                     texVFixed20_1 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_5
-                    eax_5.b = *(gRndr_ActiveTexPixels + esi_5)
+                    eax_5.b = *(gRndr_ActiveTexPixels + esi_4)
     // Per-pixel shade contribution: the high 5 bits of gRndr_ActiveShadeFixed16 select the palette shade bucket, then gRndr_ActiveShadeStepFixed16 advances the next pixel.
                     int32_t gRndr_ActiveShadeFixed16_1 = gRndr_ActiveShadeFixed16
                     gRndr_ActiveShadeFixed16 = gRndr_ActiveShadeFixed16_1 + gRndr_ActiveShadeStepFixed16
                     texUFixed20_1 += gRndr_ActiveTexUStepFixed20
-                    i = edi_1
-                    edi_1 -= 1
+                    i = edi
+                    edi -= 1
     // Raw ESP push writes one shade-adjusted 16-bit palette texel into the descending destination span.
                     *(esp_3 - 2) = gRndr_ActiveTexPalette_1[eax_5 + ((gRndr_ActiveShadeFixed16_1 & 0xf80000) u>> 0xb)]
                     esp_3 -= 2
@@ -132227,26 +132229,26 @@
                 *gRndr_SavedEspSlot_1->savedEbp
                 return
             case 0xb
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_2 = texUFixed20
                 int32_t texVFixed20_2 = texVFixed20
-                int32_t edi_3 = pixelCount
+                int32_t edi_2 = pixelCount
                 gRndr_ActiveTexVMask
                 uint16_t* gRndr_ActiveTexPalette_2 = gRndr_ActiveTexPalette
-                void* esp_12 = &gRndr_CurrentSpanBaseAddr[edi_3]
+                void* esp_12 = &gRndr_CurrentSpanBaseAddr[edi_2]
                 int32_t i_1
 
                 do
-                    int32_t esi_13 = ((gRndr_ActiveTexVMask & texVFixed20_2) u>> 0xb) + (texUFixed20_2 s>> 0x14 & 0x1ff)
+                    int32_t esi_12 = ((gRndr_ActiveTexVMask & texVFixed20_2) u>> 0xb) + (texUFixed20_2 s>> 0x14 & 0x1ff)
                     texVFixed20_2 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_10
-                    eax_10.b = *(gRndr_ActiveTexPixels + esi_13)
+                    eax_10.b = *(gRndr_ActiveTexPixels + esi_12)
                     int32_t gRndr_ActiveShadeFixed16_2 = gRndr_ActiveShadeFixed16
                     gRndr_ActiveShadeFixed16 = gRndr_ActiveShadeFixed16_2 + gRndr_ActiveShadeStepFixed16
                     texUFixed20_2 += gRndr_ActiveTexUStepFixed20
-                    i_1 = edi_3
-                    edi_3 -= 1
+                    i_1 = edi_2
+                    edi_2 -= 1
                     *(esp_12 - 2) = gRndr_ActiveTexPalette_2[eax_10 + ((gRndr_ActiveShadeFixed16_2 & 0xf80000) u>> 0xb)]
                     esp_12 -= 2
                 while (i_1 != 1)
@@ -132257,26 +132259,26 @@
                 *gRndr_SavedEspSlot_2->savedEbp
                 return
             case 0xc
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_3 = texUFixed20
                 int32_t texVFixed20_3 = texVFixed20
-                int32_t edi_5 = pixelCount
+                int32_t edi_4 = pixelCount
                 gRndr_ActiveTexVMask
                 uint16_t* gRndr_ActiveTexPalette_3 = gRndr_ActiveTexPalette
-                void* esp_21 = &gRndr_CurrentSpanBaseAddr[edi_5]
+                void* esp_21 = &gRndr_CurrentSpanBaseAddr[edi_4]
                 int32_t i_2
 
                 do
-                    uint32_t esi_21 = ((gRndr_ActiveTexVMask & texVFixed20_3) u>> 0xc) + (texUFixed20_3 s>> 0x14).b
+                    uint32_t esi_20 = ((gRndr_ActiveTexVMask & texVFixed20_3) u>> 0xc) + (texUFixed20_3 s>> 0x14).b
                     texVFixed20_3 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_15
-                    eax_15.b = *(gRndr_ActiveTexPixels + esi_21)
+                    eax_15.b = *(gRndr_ActiveTexPixels + esi_20)
                     int32_t gRndr_ActiveShadeFixed16_3 = gRndr_ActiveShadeFixed16
                     gRndr_ActiveShadeFixed16 = gRndr_ActiveShadeFixed16_3 + gRndr_ActiveShadeStepFixed16
                     texUFixed20_3 += gRndr_ActiveTexUStepFixed20
-                    i_2 = edi_5
-                    edi_5 -= 1
+                    i_2 = edi_4
+                    edi_4 -= 1
                     *(esp_21 - 2) = gRndr_ActiveTexPalette_3[eax_15 + ((gRndr_ActiveShadeFixed16_3 & 0xf80000) u>> 0xb)]
                     esp_21 -= 2
                 while (i_2 != 1)
@@ -132287,26 +132289,26 @@
                 *gRndr_SavedEspSlot_3->savedEbp
                 return
             case 0xd
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_4 = texUFixed20
                 int32_t texVFixed20_4 = texVFixed20
-                int32_t edi_7 = pixelCount
+                int32_t edi_6 = pixelCount
                 gRndr_ActiveTexVMask
                 uint16_t* gRndr_ActiveTexPalette_4 = gRndr_ActiveTexPalette
-                void* esp_30 = &gRndr_CurrentSpanBaseAddr[edi_7]
+                void* esp_30 = &gRndr_CurrentSpanBaseAddr[edi_6]
                 int32_t i_3
 
                 do
-                    int32_t esi_29 = ((gRndr_ActiveTexVMask & texVFixed20_4) u>> 0xd) + (texUFixed20_4 s>> 0x14 & 0x7f)
+                    int32_t esi_28 = ((gRndr_ActiveTexVMask & texVFixed20_4) u>> 0xd) + (texUFixed20_4 s>> 0x14 & 0x7f)
                     texVFixed20_4 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_20
-                    eax_20.b = *(gRndr_ActiveTexPixels + esi_29)
+                    eax_20.b = *(gRndr_ActiveTexPixels + esi_28)
                     int32_t gRndr_ActiveShadeFixed16_4 = gRndr_ActiveShadeFixed16
                     gRndr_ActiveShadeFixed16 = gRndr_ActiveShadeFixed16_4 + gRndr_ActiveShadeStepFixed16
                     texUFixed20_4 += gRndr_ActiveTexUStepFixed20
-                    i_3 = edi_7
-                    edi_7 -= 1
+                    i_3 = edi_6
+                    edi_6 -= 1
                     *(esp_30 - 2) = gRndr_ActiveTexPalette_4[eax_20 + ((gRndr_ActiveShadeFixed16_4 & 0xf80000) u>> 0xb)]
                     esp_30 -= 2
                 while (i_3 != 1)
@@ -132317,26 +132319,26 @@
                 *gRndr_SavedEspSlot_4->savedEbp
                 return
             case 0xe
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_5 = texUFixed20
                 int32_t texVFixed20_5 = texVFixed20
-                int32_t edi_9 = pixelCount
+                int32_t edi_8 = pixelCount
                 gRndr_ActiveTexVMask
                 uint16_t* gRndr_ActiveTexPalette_5 = gRndr_ActiveTexPalette
-                void* esp_39 = &gRndr_CurrentSpanBaseAddr[edi_9]
+                void* esp_39 = &gRndr_CurrentSpanBaseAddr[edi_8]
                 int32_t i_4
 
                 do
-                    int32_t esi_37 = ((gRndr_ActiveTexVMask & texVFixed20_5) u>> 0xe) + (texUFixed20_5 s>> 0x14 & 0x3f)
+                    int32_t esi_36 = ((gRndr_ActiveTexVMask & texVFixed20_5) u>> 0xe) + (texUFixed20_5 s>> 0x14 & 0x3f)
                     texVFixed20_5 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_25
-                    eax_25.b = *(gRndr_ActiveTexPixels + esi_37)
+                    eax_25.b = *(gRndr_ActiveTexPixels + esi_36)
                     int32_t gRndr_ActiveShadeFixed16_5 = gRndr_ActiveShadeFixed16
                     gRndr_ActiveShadeFixed16 = gRndr_ActiveShadeFixed16_5 + gRndr_ActiveShadeStepFixed16
                     texUFixed20_5 += gRndr_ActiveTexUStepFixed20
-                    i_4 = edi_9
-                    edi_9 -= 1
+                    i_4 = edi_8
+                    edi_8 -= 1
                     *(esp_39 - 2) = gRndr_ActiveTexPalette_5[eax_25 + ((gRndr_ActiveShadeFixed16_5 & 0xf80000) u>> 0xb)]
                     esp_39 -= 2
                 while (i_4 != 1)
@@ -132347,26 +132349,26 @@
                 *gRndr_SavedEspSlot_5->savedEbp
                 return
             case 0xf
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_6 = texUFixed20
                 int32_t texVFixed20_6 = texVFixed20
-                int32_t edi_11 = pixelCount
+                int32_t edi_10 = pixelCount
                 gRndr_ActiveTexVMask
                 uint16_t* gRndr_ActiveTexPalette_6 = gRndr_ActiveTexPalette
-                void* esp_48 = &gRndr_CurrentSpanBaseAddr[edi_11]
+                void* esp_48 = &gRndr_CurrentSpanBaseAddr[edi_10]
                 int32_t i_5
 
                 do
-                    int32_t esi_45 = ((gRndr_ActiveTexVMask & texVFixed20_6) u>> 0xf) + (texUFixed20_6 s>> 0x14 & 0x1f)
+                    int32_t esi_44 = ((gRndr_ActiveTexVMask & texVFixed20_6) u>> 0xf) + (texUFixed20_6 s>> 0x14 & 0x1f)
                     texVFixed20_6 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_30
-                    eax_30.b = *(gRndr_ActiveTexPixels + esi_45)
+                    eax_30.b = *(gRndr_ActiveTexPixels + esi_44)
                     int32_t gRndr_ActiveShadeFixed16_6 = gRndr_ActiveShadeFixed16
                     gRndr_ActiveShadeFixed16 = gRndr_ActiveShadeFixed16_6 + gRndr_ActiveShadeStepFixed16
                     texUFixed20_6 += gRndr_ActiveTexUStepFixed20
-                    i_5 = edi_11
-                    edi_11 -= 1
+                    i_5 = edi_10
+                    edi_10 -= 1
                     *(esp_48 - 2) = gRndr_ActiveTexPalette_6[eax_30 + ((gRndr_ActiveShadeFixed16_6 & 0xf80000) u>> 0xb)]
                     esp_48 -= 2
                 while (i_5 != 1)
@@ -132377,26 +132379,26 @@
                 *gRndr_SavedEspSlot_6->savedEbp
                 return
             case 0x10
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_7 = texUFixed20
                 int32_t texVFixed20_7 = texVFixed20
-                int32_t edi_13 = pixelCount
+                int32_t edi_12 = pixelCount
                 gRndr_ActiveTexVMask
                 uint16_t* gRndr_ActiveTexPalette_7 = gRndr_ActiveTexPalette
-                void* esp_57 = &gRndr_CurrentSpanBaseAddr[edi_13]
+                void* esp_57 = &gRndr_CurrentSpanBaseAddr[edi_12]
                 int32_t i_6
 
                 do
-                    int32_t esi_53 = ((gRndr_ActiveTexVMask & texVFixed20_7) u>> 0x10) + (texUFixed20_7 s>> 0x14 & 0xf)
+                    int32_t esi_52 = ((gRndr_ActiveTexVMask & texVFixed20_7) u>> 0x10) + (texUFixed20_7 s>> 0x14 & 0xf)
                     texVFixed20_7 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_35
-                    eax_35.b = *(gRndr_ActiveTexPixels + esi_53)
+                    eax_35.b = *(gRndr_ActiveTexPixels + esi_52)
                     int32_t gRndr_ActiveShadeFixed16_7 = gRndr_ActiveShadeFixed16
                     gRndr_ActiveShadeFixed16 = gRndr_ActiveShadeFixed16_7 + gRndr_ActiveShadeStepFixed16
                     texUFixed20_7 += gRndr_ActiveTexUStepFixed20
-                    i_6 = edi_13
-                    edi_13 -= 1
+                    i_6 = edi_12
+                    edi_12 -= 1
                     *(esp_57 - 2) = gRndr_ActiveTexPalette_7[eax_35 + ((gRndr_ActiveShadeFixed16_7 & 0xf80000) u>> 0xb)]
                     esp_57 -= 2
                 while (i_6 != 1)
@@ -132407,32 +132409,33 @@
                 *gRndr_SavedEspSlot_7->savedEbp
                 return
             case 0x11
-                var_1c = &var_4
+                var_1c.savedEbp = &var_4
                 gRndr_SavedEspSlot = &var_1c
                 int32_t texUFixed20_8 = texUFixed20
                 int32_t texVFixed20_8 = texVFixed20
-                int32_t edi_15 = pixelCount
+                int32_t edi_14 = pixelCount
                 gRndr_ActiveTexVMask
                 uint16_t* gRndr_ActiveTexPalette_8 = gRndr_ActiveTexPalette
-                uint16_t* esp_66 = &gRndr_CurrentSpanBaseAddr[edi_15]
+                uint16_t* esp_66 = &gRndr_CurrentSpanBaseAddr[edi_14]
                 int32_t i_7
 
                 do
-                    int32_t esi_61 = ((gRndr_ActiveTexVMask & texVFixed20_8) u>> 0x11) + (texUFixed20_8 s>> 0x14 & 7)
+                    int32_t esi_60 = ((gRndr_ActiveTexVMask & texVFixed20_8) u>> 0x11) + (texUFixed20_8 s>> 0x14 & 7)
                     texVFixed20_8 += gRndr_ActiveTexVStepFixed20
                     int32_t eax_40
-                    eax_40.b = *(gRndr_ActiveTexPixels + esi_61)
+                    eax_40.b = *(gRndr_ActiveTexPixels + esi_60)
                     int32_t gRndr_ActiveShadeFixed16_8 = gRndr_ActiveShadeFixed16
                     gRndr_ActiveShadeFixed16 = gRndr_ActiveShadeFixed16_8 + gRndr_ActiveShadeStepFixed16
                     texUFixed20_8 += gRndr_ActiveTexUStepFixed20
-                    i_7 = edi_15
-                    edi_15 -= 1
+                    i_7 = edi_14
+                    edi_14 -= 1
                     *(esp_66 - 2) = gRndr_ActiveTexPalette_8[eax_40 + ((gRndr_ActiveShadeFixed16_8 & 0xf80000) u>> 0xb)]
                     esp_66 -= 2
                 while (i_7 != 1)
                 struct zRndr_SpanEspPivotSave* gRndr_SavedEspSlot_8 = gRndr_SavedEspSlot
                 savedEbp = gRndr_SavedEspSlot_8->savedEbp
                 esp = &gRndr_SavedEspSlot_8->savedEdi
+
     *esp
     esp[1]
     esp[2]

@@ -64,6 +64,33 @@ available even when no groups are active.
   by memory-query, surface, palette, mode-setting, restore, and teardown
   callers.
 - Current blockers:
+  - Same-session zRndr queued submit/flush owner-data slice accepted
+    0x499a20, 0x499c40, and 0x49a2b0 to tier B in the same `zrndr_draw.c`
+    source-file cluster. Current BN evidence confirmed the transparent and
+    overwrite queue records/counts, transparent sort-index bank, saved
+    inverse-depth/scan-convert globals, active palette remap key, and CRT
+    `memcpy` provider; source now carries queue-bank address notes and offset
+    guards for the touched record fields.
+  - Same-session zRndr lens-stage owner-data slice accepted 0x49aa90 and
+    0x49b020 to tier B in `zRndr_LensFlare.cpp`. Current BN evidence confirmed
+    the active-region width/height/rect globals, four visible-stage texture
+    pointers, hardware renderer dispatch globals, and the accepted software
+    textured-submit dependency; source now records the BN source-file evidence
+    in both docblocks and uses the recovered zVideo submit-proc typedef.
+  - Same-session zRndr fog-color leaf pass accepted 0x49b780 to tier B in
+    `zRndr_Fog.cpp`. Current BN evidence confirmed the active fog record,
+    packed channel fields, and pixel-pack masks; source now records the BN
+    source-file evidence and mask-bank addresses.
+  - Same-session zVideo palette-remap owner/data slice accepted 0x46e720 to
+    tier B. Current BN evidence confirmed the recipe count/array, variant
+    table count/array, image texture-directory table, CRT `realloc` provider,
+    and accepted palette-variant helpers; the zRndr palette setters 0x499930,
+    0x499990, and 0x499a00 remain the next palette bridge blockers.
+  - Same-session zRndr palette bridge owner/data slice accepted 0x499930,
+    0x499990, and 0x499a00 to tier B in the zRndr span source-file cluster.
+    Current BN evidence confirmed active remap-key globals, the accepted zVideo
+    palette-remap builder, and `_ftol` provider; source now records the
+    original zRndr_Span.cpp evidence and global addresses.
   - Cached-client-rect update-mask mini-owner covers 0x4a59a0, 0x4a59b0,
     and 0x443a40 plus `g_zVid_CachedClientRectUpdateMask` (data 56b564h). BN shows
     only the setter and query touch the zero-initialized mask. The namespace
@@ -565,12 +592,15 @@ available even when no groups are active.
     sample plus palette expansion and keeping the destination end case-local;
     functional still passes and VC5SP3 COFF drift improves from 779 to 680
     unmasked mismatches after 228 relocation-masked bytes and 8 trimmed VC
-    NOPs. A case-local texture/palette/V-mask local probe regressed to 895
-    mismatches and was reverted. A 0x49bbf0 source-shape pass inlined the
-    pal8 source-index expression inside each switch case and kept the
-    destination-end load case-local; functional still passes and VC5SP3 COFF
-    drift improves from 819 to 782 unmasked mismatches after 228
-    relocation-masked bytes and 8 trimmed VC NOPs. A positive-count do-while
+    NOPs. A later BN-shaped negative-byte-countdown loop spelling preserves
+    behavior, keeps the same zero-mismatch data-symbol evidence, and improves
+    0x49edc0 again to 676 unmasked mismatches after 228 relocation-masked
+    bytes and 4 trimmed VC NOPs. A case-local texture/palette/V-mask local
+    probe regressed to 895 mismatches and was reverted. A 0x49bbf0
+    source-shape pass inlined the pal8 source-index expression inside each
+    switch case and kept the destination-end load case-local; functional still
+    passes and VC5SP3 COFF drift improves from 819 to 782 unmasked mismatches
+    after 228 relocation-masked bytes and 8 trimmed VC NOPs. A positive-count do-while
     probe regressed to 790 mismatches and a negative-byte-countdown probe
     regressed to 792 mismatches with 4 trimmed VC NOPs, so both were reverted.
     0x49bbf0 remains
@@ -735,8 +765,18 @@ available even when no groups are active.
     scalar loop into both retail functions; functional still passes, and
     VC5SP3 COFF drift improves further to 308 unmasked mismatches for 0x49ea80
     and 312 for 0x49ec20 after 96 relocation-masked bytes and 9 trimmed VC NOPs
-    each. The remaining blocker is still the retail MMX packed-index loop and
-    packed destination write, not behavior coverage.
+    each. Same-session parent BN cleanup applied explicit fastcall prototypes
+    for 0x49ea80, 0x49ec20, 0x49e400, and 0x49e560, refreshed analysis, and
+    saved the database; decompilation still carries local stack artifacts, but
+    call cleanup/prototype evidence is now explicit. The remaining blocker is
+    still the retail MMX packed-index loop and packed destination write, not
+    behavior coverage.
+    A same-session source-worker probe for 0x49b7e0 left source unchanged:
+    functional still passes, `verify vc5 0x49b7e0` remains at 779 unmasked
+    mismatches after 196 relocation-masked bytes and 4 trimmed VC NOPs, and no
+    safe VC5-era C++ spelling was found for the retail ESP-pivot
+    push-word/sub-esp write loop without forbidden raw assembly, naked code, or
+    ESP-manipulation scaffolding.
     The scalar alpha-map callback slice
     0x49c360, 0x49c560, 0x49d1a0, and 0x49d3b0 is now tier B after accepting
     the recovered inline/static-inline helper provenance, the authored active
@@ -876,6 +916,13 @@ available even when no groups are active.
     with zero unmasked data-byte mismatches. Tier S remains blocked by
     `verify vc5 0x492000` with 1872 unmasked function-byte mismatches after
     104 relocation-masked bytes (BN 1990 bytes, VC5 1072 bytes).
+    A same-session 0x492000 source-shape pass removed non-BN edge-table
+    zeroing and widened the local visible-span pointer scratch to match BN's
+    0x504-byte stack region. Functional still passes and `verify vc5 0x492000`
+    improves slightly to 1867 unmasked mismatches after 104 relocation-masked
+    bytes, BN size 1990, VC5 size 1008, and 3 trimmed VC NOPs. The remaining
+    blocker is still the in-function duplicated edge-builder/codegen shape;
+    BN confirms four physical edge-builder loops and no direct helper calls.
     Same-session 0x492f00 zRndr_DrawFlatImmediate owner/data pass replaced the
     behavior-only intersection/sort body with the recovered zRndr_Draw.cpp
     fixed-point ScanConvertEdge table model: scan-convert-mode side selection,
@@ -920,14 +967,46 @@ available even when no groups are active.
     zRndr_Draw.cpp owner: `verify functional 0x499130` passes, local data target
     `zrndr_texture_mip_select_variant_data` passes for
     gRndr_TextureMipSelectionEnabled (63209ch), and `verify vc5 0x499130`
-    remains the tier S blocker with 272 unmasked function-byte mismatches after
-    24 relocation-masked bytes and 14 trimmed VC NOP bytes (BN 372 bytes,
-    VC5 384 bytes) after the BN-backed candidate-vertex cursor/reloaded
-    selected-Z repair and VC5 double-bias variant-index extraction; remaining
-    debt is coherent x87 mip-metric stack/codegen plus stack-frame/register
-    allocation shape. Same-session invZ/source-order and selected-loop spelling
+    remains the tier S blocker after selected-vertex loop and local mip-delta
+    scratch source-shape passes improve the compare from 272 to 239 unmasked
+    mismatches after 24 relocation-masked bytes and 15 trimmed VC NOP bytes
+    (BN 372 bytes, VC5 384 bytes). Remaining debt is post-loop x87
+    mip-metric expression scheduling/reduction versus BN's stack-slot reuse.
+    Same-session invZ/source-order and selected-loop spelling
     probes preserved behavior but stayed byte-neutral at 272 mismatches, so both
     were reverted.
+    Same-session immediate-line callback-bank pass typed
+    gRndr_pfnImmediateRaster4, gRndr_pfnImmediateRasterReserved, and
+    gRndr_pfnImmediateRaster5 as distinct zRndr_Draw.cpp raster callbacks
+    instead of generic span callbacks. BN confirms 0x498bd0 dispatches through
+    gRndr_pfnImmediateRaster4 with gRndr_pFrameBuffer and scalar endpoints, and
+    0x498c00 dispatches adjacent clipped line-strip segments through
+    gRndr_pfnImmediateRaster5. Functional smokes pass for both wrappers, and
+    current VC5SP3 data-symbol checks pass with zero unmasked bytes for
+    gRndr_pFrameBuffer plus the three immediate raster callback globals, so
+    0x498bd0 and 0x498c00 are now source-file zRndr_Draw.cpp owner/data
+    accepted at tier B. Their remaining debt is coherent immediate-line
+    dispatch function-byte VC5 coverage before tier S.
+    Same-session lens-flare queue/visible-list owner pass added source evidence
+    comments and offset guards for zRndr_LensFlareSource,
+    zRndr_LensFlareVisibleSampleDef, and LensFlareSamplePartial plus the
+    lens-flare frame-state globals. BN confirms the zero-initialized queue
+    count at 62ea00h, the 0x28a-entry sample queue at 62ea04h, visible count at
+    631ccch, visible pointer list at 631cd0h, visibility-active flag at
+    56b248h, and four stage texture pointers at 56b250h. Functional targets
+    pass for 0x49a830, 0x49a8b0, 0x49a920, 0x49a9c0, 0x49aa40, 0x49afb0, and
+    0x49b1a0, so these entries are now source-file owner/data accepted under
+    src/GameZRecoil/zRndr/zRndr.cpp; 0x49a8b0 is tier S after VC5 COFF byte
+    verification reports zero unmasked mismatches. The same pass accepted
+    0x49aa30 data and tier S after functional and VC5 COFF byte verification.
+    Follow-up clipped-framebuffer owner/data pass accepted 0x498cb0 and
+    0x49a8c0 at tier B after BN confirmed the active framebuffer bank
+    (632050h/632054h/632058h/63205ch), pixel-pack selector (57de38h),
+    overlay blend state (62e9dch/62e9f0h/62e9f8h), and lens sample
+    count/queue (62ea00h/62ea04h); functional smokes pass and no VC5 COFF
+    byte target exists yet. Broader stage-submit entries 0x49aa90 and
+    0x49b020 intentionally remain below tier B until their
+    provider-dispatch/active-region data gates are audited.
     Same-session 0x493df0 zRndr_DrawFlatQueued source-shape pass removed the
     behavior-only intersection/sort scanline body and unsupported fallback
     span-builder guards, added the BN-backed zRndr_Draw.cpp source-file
@@ -1065,458 +1144,29 @@ available even when no groups are active.
 - Anchor: 0x42de60 RecoilApp::Destructor and 0x42dfa0 RecoilApp::Constructor
 - Reason: class owner and VC5SP3 constructor/destructor cleanup-state model.
 - Current status:
-  - The RecoilApp lifecycle owner blocker is resolved for 0x42de60, 0x42dfa0,
-    0x42df10, 0x42df50, and 0x42e070. Current source removes the explicit root
-    `RecoilApp::~RecoilApp` body and the three explicit FMV-state destructor
-    bodies, adds `RecoilApp_FmvScript::~RecoilApp_FmvScript` as the original
-    inline member cleanup helper, and lets VC5SP3 synthesize the owner
-    destructors over embedded state members and the MFC/OLE base.
-  - `python tools/recoil.py verify vc5 0x42de60 --build-root
-    build/vc5-final-implicit-recoilapp-dtor-42de60` passes with zero unmasked
-    mismatches under `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`; 36
-    relocation bytes masked, 8 trailing VC NOP bytes trimmed, BN size 168,
-    VC5 size 176.
-  - `python tools/recoil.py verify vc5 0x42dfa0 --build-root
-    build/vc5-final-implicit-recoilapp-dtor-42dfa0` passes with zero unmasked
-    mismatches under the same profile; 60 relocation bytes masked, 14 trailing
-    VC NOP bytes trimmed, BN size 194, VC5 size 208.
-  - `python tools/recoil.py verify vc5 recoil_app_fmv_state_destructors
-    --build-root build/vc5-probe-implicit-recoilapp-dtor-fmv-dtors` passes for
-    0x42df10, 0x42df50, and 0x42e070 with zero unmasked mismatches; each masks
-    24 relocation bytes, trims 2 trailing VC NOP bytes, and compares BN size 62
-    to VC5 size 64.
-  - The local `g_RecoilApp` BSS data-symbol VC5 check accepts the authored
-    singleton data gate: BN types the symbol as `struct RecoilApp`, size 552,
-    all-zero BSS; COFF symbol
-    `?g_RecoilApp@@3VRecoilApp@@A` compares zero unmasked data-byte
-    mismatches. The three direct FMV-state destructors touch no authored
-    mutable globals beyond object fields and provider/compiler EH/vtable data,
-    so their data gate is `❎`.
-  - `python tools/recoil.py verify functional 0x42de60`, `0x42dfa0`,
-    `0x42df10`, `0x42df50`, and `0x42e070` pass against the registered native
-    smokes. Plan entries for these five addresses are now `Reimplemented [S]`
-    with `Model: source-faithful`.
-  - Reclassified the FMV scalar deleting destructors at 0x42ebd0, 0x42e0d0,
-    and 0x42ed90 as accepted MSVC compiler provider-boundary glue. The authored
-    source targets remain the direct destructors at 0x42df10, 0x42df50, and
-    0x42e070.
-  - Lower zFMV action-script blocker refreshed: the stale
-    `0x4626b0` manual-vtable/scalar-deleting scaffold blocker was cleared after
-    BN/source owner review, `guard source-shape --root src/GameZRecoil/zFMV`
-    reported zero scaffold occurrences, and native functional targets passed.
-    Same-session BN/data review accepted 0x48cf80 zReader::ReadNamedString as
-    tier S/no-globals, then accepted 0x4626b0
-    zFMV_Script::LoadActionsFromZrd as tier B/data `✅` from its matched
-    FMV_PATH/IMAGE_PATH/action-tag/source-path/error string `.rdata` and
-    accepted action-script owner. Same-session include-order cleanup now
-    includes `Battlesport/RecoilApp.h` before Win32/DirectX-bearing zFMV/video
-    headers in `fmv_script.cpp`, repairing the MFC42 `WINDOWS.H already
-    included` VC5 diagnostic for `zfmv_script_cleanup_reset`.
-    `python tools/recoil.py verify vc5 zfmv_script_cleanup_reset --build-root
-    build/vc5-verify-fmv-cleanup-reset-include-fixed` now reaches byte
-    comparison; 0x462f10 zFMV_Script::AppendAction and 0x463120
-    zFMV_Script::BeginNow are tier S with zero unmasked mismatches. Later
-    focused verification accepts 0x463000 zFMV_Script::Update as tier S; the
-    broader cleanup target still reports real byte drift for 0x4626b0 and
-    0x462f90. The
-    former 0x4630a0/0x4630e0 time-scale drift is cleared by the narrower
-    `zfmv_script_time_wrappers` VC5SP3 target after recovering the named
-    float global. 0x462630 and 0x462660 were already tier S.
-    0x463130, 0x4631f0, and 0x4633c0 remain `Reimplemented [B]`; later
-    grouped constructor evidence accepts 0x463570, 0x463b00, and 0x463850 as
-    tier S.
-    A later VC5SP3 source-shape pass made `DuplicateCString` a true
-    `static inline` no-standalone helper and changed the two
-    zFMV_ActionImage constructors to emit direct CRT `_strdup` calls; the
-    scaled constructor also leaves the dummy active-region output uninitialized,
-    matching BN. This improves `zfmv_script_cleanup_reset` 0x4626b0 from 1821
-    to 1630 unmasked mismatches, `zfmv_action_constructors` 0x463130 from 87
-    to 60, and 0x4631f0 from 94 to 59. Functional smokes still pass, but tier S
-    remains blocked by constructor vtable/next store order and copy scheduling.
-    A follow-up owner pass recovered the inline zFMV_Action base constructor
-    that clears `next` before derived constructors install their concrete
-    action vtable. This promotes 0x463850 zFMV_ActionBlur::Constructor to
-    tier S via `zfmv_action_constructors` zero-mismatch VC5SP3 evidence and
-    improved 0x463130 to 38 mismatches, 0x4631f0 to 36, and 0x463570 to
-    one commutative LEA mismatch in that earlier pass.
-    Current follow-up recovered `zFMV_ActionImage::blitRect` as the existing
-    `zVidRect32` source type. Fresh `zfmv_action_constructors` VC5SP3 evidence
-    now accepts 0x463570 zFMV_ActionPlayAvi::Constructor, 0x463b00
-    zFMV_ActionPlayMci::Constructor, and 0x463850
-    zFMV_ActionBlur::Constructor with zero unmasked function-byte mismatches
-    after relocation masking. 0x463130 and 0x4631f0 remain tier B with 38 and
-    36 unmasked mismatches in constructor EH/vtable scheduling and blitRect copy
-    scheduling; an explicit destination-rect pointer source probe was byte
-    neutral and reverted. Follow-up recovered `zVid_PackColorRGB` as a
-    byte-channel fastcall source contract for red/green with explicit low-byte
-    blue consumption, and reordered the fade constructor stores to match retail
-    scheduling. 0x4633c0 zFMV_ActionFade::Constructor is now tier S through
-    `zfmv_action_constructors` zero-unmasked VC5SP3 evidence. 0x4a6cf0
-    zVid_PackColorRGB itself remains tier B and now records 72 unmasked
-    S-drift bytes under its standalone VC target because VC5 homes byte
-    register arguments and emits a larger callee body; functional coverage
-    still passes. An explicit constructor-local unsigned-char cast probe
-    worsened the grouped compare to 48 unmasked mismatches and was reverted.
-    A later source-shape probe widened zVid_PackColorRGB red/green parameters
-    to 32-bit words with explicit low-byte masking; it improved the standalone
-    zvid_pack_color_rgb compare to 49 unmasked mismatches but broke the already
-    tier-S 0x4633c0 fade-constructor call shape, so it was reverted.
-    Same-session follow-up restored direct VC5-visible CRT `_strdup` calls in
-    the two zFMV_ActionImage constructors, matching BN import-call shape and
-    removing the out-of-line recovered-helper call from those constructor
-    bodies. The grouped VC5 target still reports 0x463130 at 38 unmasked and
-    0x4631f0 at 36 unmasked; tier S remains blocked by constructor EH/vtable
-    scheduling plus the image blitRect copy scheduling.
-    Same-session MCI follow-up recovered 0x462330 as
-    zFMV_Playback::Constructor instead of Init, updated BN/source/functional
-    target naming, and changed 0x463b00 to use
-    `new zFMV_Playback(mediaPath, hwnd)` with an uninitialized dummy
-    active-region output. The current `zfmv_action_constructors` target now
-    accepts 0x463b00 with zero unmasked mismatches after 68 relocation-masked
-    bytes and 1 trimmed VC NOP.
-    Current cleanup-target refresh updates local
-    `zfmv_script_cleanup_reset` to `vc5_o2_ob1_md_gx_facs` and fixes the
-    stale 0x4625e0 `HWND` decorated symbol. The target now verifies 0x4625e0,
-    0x462630, 0x462660, 0x462f10, 0x462f90, 0x4630a0, 0x463000, 0x4630e0,
-    and 0x463120 with zero unmasked mismatches. BN data review confirms
-    `g_RecoilApp_hWndMain` is a 4-byte zero-initialized `HWND` matching
-    source. Follow-up repaired the stale `zfmv_script_init_null_path_smoke`
-    registration in the compiled native smoke runner, so 0x4625e0 is now tier
-    S/data `✅`. Coherent zFMV script owner tier S remains blocked by
-    0x4626b0, which now uses BN's count-minus-one/action-index bottom-tested
-    loop shape and splits PLAYAVI into the two BN-backed allocation/EH branches,
-    improving the refreshed target to 867 unmasked mismatches after 240
-    relocation-masked bytes with no trimmed VC NOPs. The current blocker is
-    parser/action-construction body shape drift. A typed action-node cursor
-    probe preserved behavior but worsened the compare to 1553 unmasked
-    mismatches and was reverted; after the PLAYAVI split the equivalent typed
-    pointer-cursor probe worsened the compare to 1548 unmasked mismatches and
-    was reverted. A result-before-index declaration-order probe was
-    byte-neutral at 867 and was reverted as noise; a WAIT-only inline
-    constructor probe worsened the compare to 1465; a top-tested `while` loop
-    probe worsened the compare to 1133. An inline WAIT/PLAYSOUND constructor
-    probe preserved behavior but worsened the compare to 1554 unmasked
-    mismatches and was reverted. A later explicit infinite-loop/tail-break
-    spelling was byte-neutral at 867 and was reverted. Removing the explicit
-    WAIT/PLAYSOUND `next = 0` writes regressed to 1503 unmasked mismatches
-    and was reverted. A typed action-array base spelling worsened the compare
-    to 1480 unmasked mismatches; an explicit `sizeof(zReader::Node)` cursor
-    spelling worsened it to 881 unmasked mismatches and introduced 13 trimmed
-    VC NOPs, so both were reverted. A direct WAIT duration expression
-    (`actionNode->value.nodes[2].value.f32`) worsened the compare to 1509
-    unmasked mismatches and was reverted; the current node-pointer duration
-    spelling remains the best-known WAIT shape. A typed `i + 1` action-node
-    index spelling was byte-neutral at 867 mismatches and was reverted. A
-    predeclared `sequenceNode` local-lifetime probe was also byte-neutral at
-    867 mismatches and was reverted; the root/sequence stack-slot swap remains
-    downstream of the unresolved loop/action construction shape.
-    Current follow-up retained branch-local BLURH/BLURV blur pass-count
-    temporaries, narrowing the current VC5SP3 `zfmv_script_cleanup_reset`
-    compare from 1515 to 1509 unmasked mismatches after 244 relocation-masked
-    bytes, BN size 1912, VC5 size 1904, and 2 trimmed VC NOP bytes. Same-session
-    rejected probes: direct `result` computation was byte-neutral, predeclared
-    `actionNode` lifetime was byte-neutral, a named BLURH pointer temporary was
-    byte-neutral, plain-BLUR/WAIT/PLAYSOUND branch argument temporaries
-    regressed, result-before-`i` declaration order was byte-neutral, tag-only
-    `actionFields` was byte-neutral, and a full typed action-field base
-    regressed to 1527 mismatches and a too-short 1824-byte VC body.
-    Additional same-session rejected probes: combined `sequenceNode`/`root`
-    plus `result`/`i` local declaration ordering was byte-neutral at 1509
-    mismatches, and splitting `result = sequenceActionCount - 1` into
-    assignment plus predecrement was also byte-neutral at 1509 mismatches.
-    Remaining source-faithful probes are exact loop cursor scheduling plus
-    action construction/EH cleanup windows for inline WAIT, PLAYSOUND, BlurH,
-    and BlurV.
-    Follow-up blur-update verification repaired the stale
-    `zfmv_action_blur_update_smoke` registration by moving the existing
-    horizontal/vertical/combined blur behavior smoke into the compiled
-    `fmv_action_manifest_smokes.cpp` runner and registering it in `smoke.cpp`.
-    The rebuilt debug and release native smoke executables link, and
-    `verify functional` now passes for 0x463950 zFMV_ActionBlur::Update,
-    0x4639e0 zFMV_ActionBlurH::Update, and 0x463a70
-    zFMV_ActionBlurV::Update. Same-session BN assembly/source review accepts
-    these as the source-faithful zFMV action-script blur class slice with
-    zVideo renderer-path/callback data gates satisfied. Follow-up recovered
-    the VC5 counted-loop entry shape for the blur pass loops and added local
-    target `zfmv_action_blur_updates`; `python tools/recoil.py verify vc5
-    zfmv_action_blur_updates` now accepts 0x463950, 0x4639e0, and 0x463a70
-    with zero unmasked function-byte mismatches after COFF relocation masking,
-    and the plan records all three as tier S/source-faithful.
-    Same-session follow-up tested a LoadActionsFromZrd loop-cursor source probe
-    that used a `sizeof(zReader::Node)` byte-offset cursor to mirror BN's
-    `[nodes + offset]` action-node computation. The probe regressed 0x4626b0
-    from 867 to 872 unmasked mismatches, changed relocation masking from 240
-    to 239 bytes, and introduced 14 trimmed VC NOP bytes, so it was reverted;
-    the current best remains the existing indexed-node loop shape.
-    Follow-up playback-owner audit accepted the `zFMV_Playback` class method
-    cluster as source-faithful. 0x462330 Constructor, 0x462360 Destructor, and
-    0x462540 SetDestRect are tier S. Follow-up recovered direct character-array
-    storage for the ReportMciError source file/error fallback strings and
-    recovered StopAndClose's close call as an uninitialized `MCI_GENERIC_PARMS`
-    record, so 0x462570 ReportMciError and 0x4624f0 StopAndClose are also tier
-    S under `zfmv_playback_methods`. 0x462370 OpenAndPlay now uses the
-    recovered direct character-array MCI device string, uninitialized DGV open
-    record, shared MCI rect record, retail field-write ordering, and final
-    MCI_PLAY setup order that matches VC5SP3 with zero unmasked bytes after 20
-    relocation-masked bytes and 2 trimmed VC NOP bytes. The pure
-    object/provider methods are data `❎`; OpenAndPlay and ReportMciError are
-    data `✅` for exact recovered MCI/source-file/error strings.
-    Same-session tier-S audit of 0x4a6cf0 zVid_PackColorRGB confirmed the
-    retained byte-channel signature is still the caller-safe source model:
-    unsigned-short byte-temporary staging was byte-neutral at 72 mismatches,
-    while the earlier widened-parameter probe remains rejected because it broke
-    the tier-S zFMV fade-constructor call shape. A refreshed widened
-    red/green formal probe improved zVid_PackColorRGB to 50 unmasked
-    mismatches, and removing explicit caller byte casts narrowed the
-    zFMV_ActionFade constructor regression to two unmasked byte-width load
-    differences, but it still failed the accepted tier-S caller; the probe was
-    reverted. Same-session 16-bit red/green formal probe was also rejected: it
-    regressed 0x4a6cf0 from 72 to 76 unmasked mismatches and reproduced the
-    0x4633c0 fade-constructor caller failure with 2 unmasked mismatches; after
-    revert, 0x4a6cf0 returned to the 72-mismatch baseline and 0x4633c0 returned
-    to zero unmasked mismatches.
-  - Follow-up on 0x462f90 zFMV_Script::BeginCurrentAction routed through
-    zSndSampleSet::InitByName. Same-session zSound sample-set review registered
-    the existing native smokes and accepted 0x4a0920
-    zSndSampleSetRegistry::FindByName as tier B/data `✅`,
-    0x4a0fb0 zSndSampleSet::LoadSamplesFromIndexArchive as tier B/data `❎`,
-    and the source-owner/no-direct-globals gates for 0x4a0860
-    zSndSampleSet::InitByName. Follow-up data review accepted the 0x4a0c40
-    zSndSampleSet::Init authored globals: BN's initialized archive-bank
-    selector is matched by source initializing `g_zSnd_UseArchiveBanksFlag` to
-    1, BN's SoundLOD pointer/default pair is matched, and BN's search-path
-    list pointer lifecycle through preinit/config/shutdown is matched.
-    0x4a0c40 is now tier B/data
-    `✅`; 0x4a07f0 zSnd::SetUseArchiveBanksFlag is tier S from focused
-    functional and zero-mismatch VC5 evidence. Follow-up zero-mismatch VC5
-    checks promoted 0x4a0860 zSndSampleSet::InitByName and 0x46f450
-    zInput::Keyboard_ResetTransitionState to tier S, then restored
-    zFMV_Script::BeginCurrentAction's original right-to-left
-    zVideo::Fx_SetSurfaceState argument-evaluation shape, so 0x462f90 now
-    passes VC5SP3 byte verification and is tier S.
-  - Same-session zReader/zUtil dependency cleanup for 0x4a0c40 accepted the
-    zIndexArchive helper chain and ZRDR path resolver. 0x4a6190 Reset,
-    0x4a61b0 Destroy, 0x4a61d0 Init, 0x4a62b0 CloseAndFreeRecords, 0x4a62f0
-    EnsureCapacity, 0x4a6330 FreeRecordsAndReset, and 0x4a63f0
-    LoadIndexFromTail are now tier S/source-faithful; 0x4a6360
-    FlushIndexToTail is tier B with 50 unmasked VC5 byte mismatches remaining.
-    0x4a5e50 zUtil_ZRDR_ResolvePathInSearchPathList and 0x4a5f20
-    zUtil_ZRDR_SearchPathContainsFilePredicate are tier S/data `✅` after
-    correcting `g_zRdr_SplitDriveBuf` to BN's 4-byte BSS shape.
-  - Same-session zSound wave-data follow-up registered the existing native
-    wave-data and sample-init smokes, corrected the test A3D fake-provider
-    vtable so `SetTransformMode` lands at the SDK slot, and promoted
-    0x4a53f0, 0x4a5440, 0x4a5540, 0x4a5460, 0x4a5c50, and 0x4a2ea0 to tier S
-    from focused functional and VC5 evidence. 0x4a55c0 Reset is tier B/data
-    `❎` with no VC5 byte target. A follow-up zReader/archive dependency pass
-    promoted 0x4a65d0 zIndexArchive::FindRecordByNameCI, 0x4a6670
-    zIndexArchive::ReadFileByName, and 0x4a5600
-    zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded to tier S from focused
-    functional and VC5 evidence. A follow-up lifetime recovery added inline
-    0x4a53f0 as the real zSndWaveData constructor, converted the queued
-    streaming stack wrapper and tests to automatic lifetime, registered the
-    queued streaming smoke, and kept 0x4a53f0/0x4a5440 tier S. The refreshed
-    0x4a0c40 frontier still exposes 0x4a0fb0
-    zSndSampleSet::LoadSamplesFromIndexArchive as the direct tier S blocker.
-    Same-session tier-S audit of 0x4a0920
-    zSndSampleSetRegistry::FindByName tested explicit `it`/`end` locals plus a
-    `while` loop; it was byte-neutral at 94 mismatches and was reverted.
-    A prechecked-empty `do` loop with the same locals worsened the compare to
-    136 unmasked mismatches with 8 relocation-masked bytes and 15 trimmed VC
-    NOP bytes, matching the rejected explicit-empty branch family; it was also
-    reverted.
-    The local VC5 target for 0x4a0fb0 still fails, but the source now carries
-    the retail EH frame, constructor new-expression, and EBX/EDI sample/flag
-    cursor shape; current best remains 74 unmasked mismatches, 40
-    relocation-masked bytes, BN size 223, VC5 size 224. Same-session
-    flag-update expression probes did not improve that byte shape, including a
-    branch-local explicit clear/store spelling that stayed byte-neutral at 74
-    mismatches and a cleared-flags-as-destination expression that also stayed
-    byte-neutral at 74 mismatches. A later arithmetic-order probe that moved
-    the clear before the initializer-result mask was also byte-neutral at 74
-    mismatches, and a plain `delete waveData;` spelling was likewise
-    byte-neutral at 74 mismatches; both were reverted, and the remaining drift is
-    flag-update/store scheduling around the delete cleanup path. Current
-    branch-local delete cleanup probe preserved behavior but regressed the VC5
-    compare to 81 unmasked mismatches, 40 relocation-masked bytes, 12 trimmed
-    VC NOP bytes, and a 240-byte VC body, so it was reverted to the 74-mismatch
-    baseline.
-    The zFMV LoadActionsFromZrd zReader callee frontier is now narrower:
-    0x48d1c0 zReader::OpenFileFromMountedArchives and 0x48cda0
-    zReader::AllocateNode are tier S after current zreader_load_node_from_path
-    functional evidence and zero-mismatch VC5SP3 COFF bytes. Follow-up VC5
-    range repair set the local 0x48d080 zReader::ReadNode target to compare
-    BN's full 320-byte range through the post-ret npad, four-entry switch jump
-    table, and trailing NOP padding; `verify vc5 0x48d080` now passes with
-    zero unmasked mismatches, and 0x48d080 is tier S. The unblocked
-    0x48cdc0 zReader::LoadNodeFromPath and 0x48ce40
-    zReader::FreeLoadedTree targets also pass zero-mismatch VC5SP3 COFF byte
-    verification and are tier S.
-  - Same-session zFMV action-constructor source-shape follow-up replaced the
-    scaffold-style `Constructor*` methods for 0x463130, 0x4631f0, 0x4633c0,
-    0x463570, 0x463b00, and 0x463850 with real C++ constructors and converted
-    LoadActionsFromZrd/RecoilApp/tests to constructor new-expressions or
-    placement construction. Native build and all focused constructor
-    functional targets pass. The local `zfmv_action_constructors` VC5SP3
-    target now uses `vc5_o2_ob1_md_gx_facs`; tier S remains blocked by real
-    byte drift, with 0x463850 narrowed to 7 unmasked mismatches caused by
-    retail storing `next` before the action vtable while VC5 C++ constructors
-    emit the vtable store first. Do not promote the action constructors above
-    tier B from this attempt.
-  - Same-session FMV caller follow-up registered the missing
-    `zfmv_script_begin_current_action_smoke` in the native smoke binary,
-    reran the focused functional target, and accepted 0x462f90
-    zFMV_Script::BeginCurrentAction to tier B/source-faithful with class owner
-    `zFMV_Script` and the authored `"FMV"` string data gate accepted. Tier S
-    remains deferred: `python tools/recoil.py verify vc5 0x462f90` still reports
-    60 unmasked mismatches in the FMV script cluster virtual-call/codegen shape.
-  - Follow-up on 0x463000 zFMV_Script::Update cleared the zSound snapshot stop
-    dependency: 0x4a0500 zSndPlayHandleSnapshot::StopAllIfPlaying is now tier S
-    after source-owner/data review, accepted g_zSnd_ActiveBackend data, focused
-    functional evidence, and zero-mismatch VC5SP3 COFF verification. The
-    refreshed frontier now routes through zInput::PollActiveDevices into the
-    zInput polling/source-state owner. A source-owner packet classifies this as
-    the static zInput subsystem/source-file cluster rather than a C++ class or
-    isolated dispatcher. The first true mouse leaf, 0x470310
-    zInput::Mouse_UpdateAcquireState, is now tier B after accepting the
-    zin_mouse.cpp acquire-state leaf owner and the g_zInput_MouseActive /
-    g_zInput_MouseDevice BSS data-symbol checks; tier S remains blocked by the
-    known 54 unmasked VC5SP3 byte mismatches in global-load/branch scheduling.
-  - zInput mouse-state leaf follow-up accepted 0x4704f0
-    zInput::Mouse_ApplyAccumulatedDelta to tier B after BN review of the
-    sensitivity/client/snapshot globals and zero-mismatch VC5SP3 data-symbol
-    checks for every touched mouse-state global; tier S remains blocked by the
-    known 93 unmasked function-byte mismatches. Same-session source-shape
-    probes did not improve it: computing/storing cursorY before cursorX
-    regressed to 103 unmasked mismatches with a 272-byte VC body, and local
-    normalized-value temporaries regressed to 115 unmasked mismatches with a
-    272-byte VC body; both were reverted. A later narrower declaration-order
-    probe that computed cursorY before cursorX but kept the X/Y store order
-    also reproduced the 103-mismatch, 272-byte-body regression and was
-    reverted. 0x4702e0
-    zInput::Mouse_GetButtonTransitionState is now tier S after restoring the
-    BN-observed current-first button byte-load shape, adding the function
-    docblock, and passing VC5SP3 COFF bytes plus current/previous state data
-    symbols.
-  - zInput bind-map callback ABI follow-up recovered `zInputCommandCallbackFn`
-    as `__fastcall (int commandId)`. 0x470b10, 0x470d40, 0x470db0, and
-    0x470e80 are now source-faithful/tier S after focused functional smokes
-    and zero-mismatch VC5SP3 COFF verification; 0x470d40 and 0x470e80 keep
-    `Reconstructed ☑️` only for BN's documented indirect-call/tail-jump
-    limitations.
-  - zInput mouse polling owner/data follow-up accepted 0x4703c0
-    zInput::Mouse_PollState and 0x4703b0
-    zInput::Mouse_PollAndStoreState to tier B after restoring the BN-observed
-    global raw mouse DI state buffer, correcting
-    g_zInputMouseLastPollResult's initialized value, accepting the
-    zin_mouse.cpp mouse polling source-state owner, and passing focused
-    functional/data-symbol checks. Same-session source-shape follow-up kept a
-    local mouse device pointer across Poll/GetDeviceState and used an
-    explicit success block with a common `return result`, matching BN's ESI
-    device/result lifetime. `verify vc5 0x4703c0` now passes with zero
-    unmasked bytes after 144 relocation-masked bytes and 3 trimmed VC NOP
-    bytes, so 0x4703c0 is tier S. Tier S remains blocked for 0x4703b0, which
-    has no VC function-byte target yet.
-  - zInput joystick polling owner/data follow-up promoted 0x471fb0
-    zInput::DI_AcquireJoystickDevice and 0x472390
-    zInput::DI_GetCurrentState to tier S, and accepted 0x4722c0
-    zInput::DI_PollJoystickState to tier S after preserving the local
-    joystick device pointer across Poll/GetDeviceState, matching BN's ESI
-    device lifetime, and passing focused functional, data-symbol, and
-    VC5SP3 byte checks. The follow-up joystick
-    transition consumers 0x4723a0
-    zInput::DI_GetButtonTransitionState and 0x4723d0
-    zInput::DI_WaitForButtonPress are now tier S/source-faithful under the
-    same zin_joystick.cpp owner. 0x4723a0 now keeps BN's branch-local
-    previous-state loads while retaining VC5's `setne` return idiom; the
-    narrow local `zinput_joystick_transition_wait` VC5SP3 target accepts both
-    transition functions with zero unmasked mismatches and verifies the
-    current/previous joystick state data symbols byte-exact.
-  - zInput keyboard DIK ASCII-table follow-up accepted 0x46fd20
-    zInput::Keyboard_InitDikToAsciiTable to tier S and 0x46fba0
-    zInput::Keyboard_TranslateDikToAscii to tier B after matching the
-    BN-observed numpad store order, adding required docblocks, and passing
-    focused functional plus table/ready-flag data-symbol checks. Tier S remains
-    blocked for 0x46fba0 by shifted-punctuation switch-layout codegen drift.
-  - zInput keyboard polling owner/data follow-up is active for 0x46f690
-    zInput::Keyboard_PollState. Same-session BN evidence identifies the owner
-    as the zin_kbd.cpp keyboard source-state slice and the touched BSS globals
-    as g_zInput_KbdDevice, g_zInput_KbdEventBuffer,
-    g_zInput_KbdModifierState, g_zInputKbdKeyDispatchTable,
-    g_zInput_KbdRawEventCallback, and g_zInput_KbdRawEventCallbackCtx.
-    Source owner/model are now accepted after adding recovered-helper
-    docblocks, removing stale unused keyboard helper/table artifacts, and
-    passing the focused functional target. The local VC5SP3 target
-    `zinput_keyboard_poll_state` verifies those six BSS data symbols with zero
-    unmasked mismatches. Follow-up accepted the direct callee 0x472490
-    zInput::DI_ReportError through tier S by restoring BN's final HRESULT tail:
-    HRESULT 800704dfh branches to DIERR_ALREADYINITIALIZED, DI_OK returns success,
-    and all other high-range fallthrough values report `"Unknown Error"`. The
-    source keeps the `hresult != 800704dfh` outer branch plus inverted inner
-    DI_OK test so VC5SP3 emits the retail `je`/`test`/unknown-block layout;
-    `verify vc5 0x472490` now passes with zero unmasked mismatches after 84
-    relocation-masked bytes and 11 trimmed VC NOP bytes, and
-    `verify functional 0x472490` passes. Therefore 0x46f690's remaining blocker
-    is its own tier S function-byte drift, not DI_ReportError, owner, or data
-    coverage. 0x471de0 zInput::PollActiveDevices is now accepted
-    through tier A after adding a VC5 target for the dispatcher and its six
-    active-device flag/refcount globals; the data symbols are byte-identical
-    and the remaining function-byte drift is only EBX versus ESI register
-    allocation for saving/reloading dispatchCallbacks.
-  - MpExit lifecycle dependency follow-up routes 0x4198d0/0x419940 through
-    zInput bind-map overlay push/pop. Current BN/source review classifies the
-    lower dependency slice as the authored `zInput_BindMapContext` record/class
-    owner plus the zin_kbd.cpp keyboard callback table helper. The typed
-    bind-map context layout is already recovered in `zInput.h`, and same-session
-    BN assembly confirms `InitFromTemplate`, `FreeAllBuffers`,
-    `RebuildLookupIndices`, `GetPrimaryKeyboardKey`, `GetSecondaryKeyboardKey`,
-    `SetCommandCallback`, and `Keyboard_RegisterKeyCallback` match that owner.
-    The current `zinput_keyboard_poll_state` VC5SP3 data-symbol check keeps
-    `g_zInputKbdKeyDispatchTable` byte-identical; the broader keyboard polling
-    function still has tier-S byte drift and is not promoted from that target.
-    Follow-up review accepted the push/pop overlay globals
-    (`g_zInput_BindMap_Current`, free list, stack head, depth) through
-    `zinput_bindmap_overlay_globals`, promoted 0x471860/0x471950 to tier B,
-    and later accepted the reset chain 0x470a10/0x4709d0/0x4716c0 as tier S
-    from zero-unmasked-byte VC5SP3 checks plus passing functional targets.
-    Follow-up accepted the member/current keyboard-key accessors
-    0x470a40/0x470a60/0x4716d0/0x4716e0 as tier S from the same VC5SP3
-    bind-map helper targets and `g_zInput_BindMap_Current` data-symbol evidence.
-    Follow-up accepted the member/current joystick and mouse slot accessors
-    0x470a80/0x470aa0/0x4716f0/0x471700 as tier S from zero-unmasked-byte
-    VC5SP3 checks, passing `zinput_bindmap_context_smoke`, and the same
-    `g_zInput_BindMap_Current` data-symbol evidence for the current wrappers.
-    It also repaired the
-    `recoil_app_mp_exit_dialog_state_on_try_become_current` smoke registration
-    by migrating the existing smoke into `zhud_widget_tests.cpp`. 0x4198d0 is
-    now dependency-ready and tier C; owner/data remain blocked at the broader
-    MpExit lifecycle source-file/class gate.
-  - Historical EH probes and rejected source shapes are captured in
-    `docs/reconstruction/recoil_app_destructor_tier_s.md`.
+  - The RecoilApp lifecycle owner cluster is accepted at tier S for 0x42de60,
+    0x42dfa0, 0x42df10, 0x42df50, and 0x42e070. The FMV scalar deleting
+    destructors are provider-boundary glue, and the g_RecoilApp singleton data
+    gate is accepted.
+  - zFMV, zSound, and zInput dependency cleanup has closed the owner/data
+    blockers needed by the original RecoilApp EH pass. Historical EH/source-
+    shape details are captured in `docs/reconstruction/recoil_app_destructor_tier_s.md`.
+  - 2026-06-15: `0x4626b0` `zFMV_Script::LoadActionsFromZrd` is promoted to
+    tier S after a typed loop/argument-scheduling source pass in
+    `src/GameZRecoil/zFMV/fmv_script.cpp`; VC5 byte verification reports zero
+    unmasked mismatches after 244 relocation-masked bytes, and the functional
+    smoke plus docblock audit pass.
+  - Remaining active value is caller-path tier S verification only; no broad
+    RecoilApp owner/data cleanup is currently pending in this group.
 - Next action:
-  - Continue the RecoilApp/zFMV caller path after the 0x463000 follow-up:
-    0x46fa10 zInput::Keyboard_WaitForAnyKeyPress is now source-faithful tier S
-    after replacing the helper-call wait-event body with the recovered inline
-    zin_kbd.cpp loop shape; `python tools/recoil.py verify functional
-    zinput_keyboard_wait_for_any_key_press` passes and `python tools/recoil.py
-    verify vc5 zinput_keyboard_wait_for_any_key_press` reports zero unmasked
-    function-byte mismatches plus zero unmasked data-byte mismatches for the
-    keyboard device, event-buffer, modifier-state, and dispatch-table globals.
-    `python tools/recoil.py verify functional 0x463000` passes, and current
-    plan/frontier evidence records 0x463000 zFMV_Script::Update as tier S with
-    no authored globals touched. The former data/tier S blockers for 0x4630a0
-    zFMV_Script::BeginAtTime and 0x4630e0 zFMV_Script::UpdateAtTime are now
-    cleared: BN confirms the named float
-    g_zFMV_ScriptTimeGetTimeToSecondsScale at data RVA 4d2580h with xrefs only from
-    those wrappers, and the narrow `zfmv_script_time_wrappers` VC5SP3 target
-    reports zero unmasked function-byte mismatches for both wrappers plus zero
-    unmasked data-byte mismatches for the float. A refreshed 0x463000 binary
-    frontier now routes through 0x49fff0
-    zSndPlayHandleSnapshot::CreateFromActiveSamples. The focused functional
-    target for 0x49fff0 passes, but the current VC5SP3 target still fails with
-    317 unmasked bytes after 80 relocation-masked bytes and 10 trimmed VC NOPs;
-    its functional manifest records a full profile sweep and many rejected
-    source-shape probes around backend GetStatus and append-path scheduling.
+  - Work the remaining tier B verification blockers only after refreshing
+    focused status/frontier: 0x4a6cf0 zVid_PackColorRGB, 0x4a0fb0
+    zSndSampleSet::LoadSamplesFromIndexArchive, 0x4a0c40 zSndSampleSet::Init,
+    0x4704f0 zInput::Mouse_ApplyAccumulatedDelta, 0x46f690
+    zInput::Keyboard_PollState, and 0x49fff0
+    zSndPlayHandleSnapshot::CreateFromActiveSamples.
+  - Delegate source-worker tasks from this group only when the refreshed
+    frontier proves non-overlapping source files and owner scopes.
 
 ### Group: HUD app-state class cleanup
 
@@ -1817,6 +1467,76 @@ available even when no groups are active.
     HudCmdKeyAButton class model, the repaired
     `zhud_cmd_key_a_button_on_clear_binding_smoke` target passes, and the
     VC5SP3 compare has zero unmasked byte mismatches.
+  - Follow-up same-session HudCmd bind-button pass accepted 0x40bae0
+    HudCmdKeyBButton::OnClearBinding at tier S. The compiled native smoke now
+    registers `zhud_cmd_key_b_button_on_clear_binding_smoke`, which patches the
+    owner rebind method and verifies the leaf forwards key code zero plus the
+    selected index to HudCmdDialog::ApplySecondaryKeyRebind. `verify functional
+    0x40bae0` passes, and `verify vc5 0x40bae0` reports zero unmasked bytes
+    after 4 relocation-masked bytes and 11 trimmed VC NOPs.
+  - Same bind-button leaf cleanup accepted 0x40bb30
+    HudCmdJoyButton::OnClearBinding at tier S. The compiled native smoke now
+    registers `zhud_cmd_joy_button_on_clear_binding_smoke`, which patches the
+    owner rebind method and verifies forwarding of button code zero plus the
+    selected index to HudCmdDialog::ApplyJoystickButtonRebind. `verify
+    functional 0x40bb30` passes, and `verify vc5 0x40bb30` reports zero
+    unmasked bytes after 4 relocation-masked bytes and 11 trimmed VC NOPs.
+  - Same bind-button leaf cleanup accepted 0x40bb80
+    HudCmdMouseButton::OnClearBinding at tier S. The compiled native smoke now
+    registers `zhud_cmd_mouse_button_on_clear_binding_smoke`, verifies the
+    debounce no-op path, and verifies forwarding of button code zero plus the
+    selected index to HudCmdDialog::ApplyMouseButtonRebind when debounce is
+    inactive. `verify functional 0x40bb80` passes, and `verify vc5 0x40bb80`
+    reports zero unmasked bytes after 8 relocation-masked bytes and 2 trimmed
+    VC NOPs.
+  - Current HudCmdDialog dependency cleanup is auditing
+    0x4b8100 HudUiCycleSelectorWidget::ApplyFontStyleForEntry as a tier-S
+    blocker for 0x40a5b0 HudCmdDialog::Constructor and downstream
+    HudCmdDialogState entries. BN shows a branchless font-style valid-marker
+    mask and a fixed SetFont/field-copy order; same-session VC5 refresh starts
+    at 146 unmasked mismatches with no relocation masking. An explicit
+    `validMarker` local preserved behavior but was byte-neutral at the same
+    146 mismatches and was reverted; the remaining drift is the missing
+    post-mask `test esi,esi` plus downstream alignment/register scheduling.
+  - Current HudCmdDialog dependency cleanup is also auditing
+    0x4ba740 HudUiPanel::ConstructorDefault because 0x4b7fd0 and the
+    HudCmdDialog constructor frontier route through this panel constructor.
+    Owner/data are accepted and direct base constructor dependency
+    0x4bcb50 is tier S; refreshed VC5SP3 compare starts at 121 unmasked
+    mismatches after 24 relocation-masked bytes and one trimmed VC NOP, with
+    remaining drift local to the post-font textRect/wrapRect/shadow/metric
+    zero-store schedule. A `RECT *` text-bounds view preserved source behavior
+    but was byte-neutral at the same 121 mismatches and was reverted.
+  - Same-session 0x40a5b0 HudCmdDialog::Constructor source-shape pass added
+    the required constructor docblock and matched BN's command-group population
+    loop by calling zInput::BindGroupList_GetCount at loop entry and backedge.
+    `verify functional 0x40a5b0` still passes, and `verify vc5 0x40a5b0`
+    improves from 640 to 636 unmasked mismatches after 224 relocation-masked
+    bytes and 12 trimmed VC NOPs (BN 878 bytes, VC5 672 bytes). Data/B/S remain
+    blocked by the constructor-cluster codegen gap: BN emits inline generated
+    table stores for the HudCmdDialog/HudCmd* subobjects while current source
+    still compiles as placement-new/member construction.
+  - Follow-up focused 0x40a5b0 worker and BN fact passes found no safe
+    source-faithful edit inside `zhud_ui.cpp`/`zhud_ui.h`: BN confirms the
+    exact construction order and generated table stores for resume/reset,
+    command-list, bind-button, set-list, navigation, prompt, and final dialog
+    identities, while the current source already matches member order and loop
+    behavior. Replacing the current spelling with explicit table stores,
+    helper factories, raw addresses, or fake construction shims remains
+    forbidden; keep 0x40a5b0 at C/data blocked unless a new source-faithful C++
+    constructor spelling is proven.
+  - 0x4038a0 `HudUiBriefingObjectivePicture::DrawWithNoiseOverlay` owner/data
+    cleanup is now tier B: source now models BN's slot target as the
+    `HudUiBriefingObjectivePicture::Draw` override, and
+    `HudUiBriefingRuntime::Constructor` constructs the embedded
+    `objectivePicture` as the derived C++ class instead of calling the base
+    widget constructor directly. Functional smoke
+    `briefing_objective_picture_draw_noise_overlay_smoke` is registered and
+    passes. Data is accepted as `❎` because the only BN data read is a shared
+    `.rdata` +0.0 literal pool constant, not authored Briefing global data.
+    Tier S remains blocked by the refreshed VC5SP3
+    compare: 74 unmasked mismatches after 12 relocation-masked bytes and
+    5 trimmed VC NOPs.
 - Next action:
   - Continue class-first cleanup on the remaining MpExit lifecycle entries:
     0x4198d0, 0x419940, and 0x419990 are tier S with owner/data accepted.

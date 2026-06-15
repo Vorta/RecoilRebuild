@@ -259,7 +259,7 @@ HudUiBriefingRuntime * HudUiBriefingRuntime::Constructor(
         0
     );
 
-    objectivePicture.Constructor(0);
+    new (&objectivePicture) HudUiBriefingObjectivePicture;
     objectivePicture.noiseAlpha = 0.0f;
     objectivePicture.Invalidate();
 
@@ -413,9 +413,11 @@ void HudUiBriefingRuntime::Destructor() {
 
 /**
  * Reimplements 0x4038a0: HudUiBriefingObjectivePicture::DrawWithNoiseOverlay.
+ * BN names this slot target DrawWithNoiseOverlay; the vtable slot is the
+ * HudUiWidget::Draw override for the briefing objective picture.
  * Purpose: draw the objective picture and overlay transition noise while active.
  */
-void HudUiBriefingObjectivePicture::DrawWithNoiseOverlay() {
+void HudUiBriefingObjectivePicture::Draw() {
     HudUiWidget::Draw();
     if (noiseAlpha <= 0.0) {
         return;
@@ -431,15 +433,6 @@ void HudUiBriefingObjectivePicture::DrawWithNoiseOverlay() {
         &rect,
         noiseAlpha
     );
-}
-
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed as the objective picture draw target reached through briefing UI dispatch.
- * Purpose: route objective picture drawing through the recovered noise overlay helper.
- */
-void HudUiBriefingObjectivePicture::Draw() {
-    DrawWithNoiseOverlay();
 }
 
 /**

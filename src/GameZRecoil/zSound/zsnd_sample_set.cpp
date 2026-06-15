@@ -132,8 +132,9 @@ extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistry_GetByIndex(
 extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistry_FindByName(
     const char *setName
 ) {
-    for (zSndSampleSet **it = g_zSnd_SampleSetRegistry.begin; it != g_zSnd_SampleSetRegistry.end;
-        ++it) {
+    zSndSampleSet **begin = g_zSnd_SampleSetRegistry.begin;
+    zSndSampleSet **end = g_zSnd_SampleSetRegistry.end;
+    for (zSndSampleSet **it = begin; it != end; ++it) {
         if (strcmp(
             (*it)->setName,
             setName
@@ -277,6 +278,9 @@ int zSndSampleSet::LoadSamplesFromIndexArchive(
  * from loose sample paths, and mark the set loaded.
  */
 int zSndSampleSet::Init() {
+    const char *const archiveNames[3] = {"soundsH.zbd", "soundsM.zbd", "soundsL.zbd"};
+    int archiveBankIndex = 0;
+    int archiveInitialized = 0;
     zIndexArchive archive;
     archive.Reset();
 
@@ -286,8 +290,6 @@ int zSndSampleSet::Init() {
     }
 
     if (g_zSnd_UseArchiveBanksFlag != 0) {
-        const char *const archiveNames[3] = {"soundsH.zbd", "soundsM.zbd", "soundsL.zbd"};
-        int archiveBankIndex = 0;
         if (g_zSnd_SoundLodValuePtr != 0) {
             const int soundLod = *(int *)(g_zSnd_SoundLodValuePtr);
             if (soundLod == 1) {
@@ -297,7 +299,6 @@ int zSndSampleSet::Init() {
             }
         }
 
-        int archiveInitialized = 0;
         {
             for (int attempt = 0; attempt < 3 && archiveInitialized == 0; ++attempt) {
                 const char *archivePath = archiveNames[archiveBankIndex];

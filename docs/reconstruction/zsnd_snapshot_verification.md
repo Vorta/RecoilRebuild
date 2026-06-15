@@ -249,6 +249,10 @@ output.
 - Adding a `register` hint to the inlined DirectSound backend-status helper's
   COM buffer local was also neutral at the 317 mismatch profile, so the normal
   `LPDIRECTSOUNDBUFFER const buffer` spelling was restored.
+- Removing the local provider/buffer variables from the inline
+  `DirectSoundBufferIsPlaying` and `A3dSourceIsPlaying` helpers and calling
+  `GetStatus` through direct casts was neutral at the 317 mismatch profile, so
+  the named local source spelling was restored.
 - Writing the manual A3D duplicate splice through the saved predecessor local
   (`prev->next = node`) worsened the target from 317 to 337 mismatches, so the
   source was restored to `node->prev->next = node`.

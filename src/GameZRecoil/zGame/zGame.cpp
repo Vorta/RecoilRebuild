@@ -1759,7 +1759,15 @@ int GetHudTypeForCurrentHwMode() {
     return *(g_zOpt_HwMode != 0 ? ZOPT_HUD_TYPE_HW : ZOPT_HUD_TYPE_SW);
 }
 
-// Reimplements 0x408300: zOpt::SetReplicateMode
+/**
+ * Reimplements 0x408300: zOpt::SetReplicateMode.
+ * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: store the active video replicate-mode option.
+ *
+ * Evidence: BN writes ecx through ZOPT_REPLICATE and returns; the shared
+ * zopt_video_section_setters VC5SP3 target byte-matches after relocation
+ * masking.
+ */
 void __fastcall SetReplicateMode(
     int replicateMode
 ) {
@@ -1826,7 +1834,18 @@ void __fastcall ViewRectSection_ClampPointToInclusiveBounds(
     }
 }
 
-// Reimplements 0x408530: zOpt::RenderSection_SetPosition
+/**
+ * Reimplements 0x408530: zOpt::RenderSection_SetPosition.
+ * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: set the render-section origin and push the new viewport rectangle
+ * to the attached window target.
+ *
+ * Evidence: BN forwards g_zOpt_RenderSectionOption->value to
+ * zOpt_ViewRectSection::SetPosition, then calls gwWindowSetResolution and
+ * gwWindowSetSize when the section target is non-null; the shared
+ * zopt_video_section_setters VC5SP3 target byte-matches after relocation
+ * masking.
+ */
 void __fastcall RenderSection_SetPosition(
     int x,
     int y
@@ -1851,7 +1870,17 @@ void __fastcall RenderSection_SetPosition(
     }
 }
 
-// Reimplements 0x408500: zOpt::RenderSection_SetSize
+/**
+ * Reimplements 0x408500: zOpt::RenderSection_SetSize.
+ * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: set the render-section dimensions and push the new resolution to
+ * the attached window target.
+ *
+ * Evidence: BN forwards g_zOpt_RenderSectionOption->value to
+ * zOpt_ViewRectSection::SetSize, then calls gwWindowSetResolution when the
+ * section target is non-null; the shared zopt_video_section_setters VC5SP3
+ * target byte-matches after relocation masking.
+ */
 void __fastcall RenderSection_SetSize(
     int width,
     int height
@@ -1896,7 +1925,18 @@ zOpt_ViewRectSection *GetRenderSection() {
     return *g_zOpt_RenderSectionOption;
 }
 
-// Reimplements 0x4085e0: zOpt::DisplaySection_SetPosition
+/**
+ * Reimplements 0x4085e0: zOpt::DisplaySection_SetPosition.
+ * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: set the display-section origin and push the new display rectangle
+ * to the attached display target.
+ *
+ * Evidence: BN forwards g_zOpt_DisplaySectionOption->value to
+ * zOpt_ViewRectSection::SetPosition, then calls gwDisplaySetSize and
+ * gwDisplaySetPosition when the section target is non-null; the shared
+ * zopt_video_section_setters VC5SP3 target byte-matches after relocation
+ * masking.
+ */
 void __fastcall DisplaySection_SetPosition(
     int x,
     int y
@@ -1921,7 +1961,17 @@ void __fastcall DisplaySection_SetPosition(
     }
 }
 
-// Reimplements 0x408620: zOpt::DisplaySection_SetSize
+/**
+ * Reimplements 0x408620: zOpt::DisplaySection_SetSize.
+ * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: set the display-section dimensions and push the new size to the
+ * attached display target.
+ *
+ * Evidence: BN forwards g_zOpt_DisplaySectionOption->value to
+ * zOpt_ViewRectSection::SetSize, then calls gwDisplaySetSize when the section
+ * target is non-null; the shared zopt_video_section_setters VC5SP3 target
+ * byte-matches after relocation masking.
+ */
 void __fastcall DisplaySection_SetSize(
     int width,
     int height
@@ -1961,14 +2011,30 @@ void __fastcall DisplaySection_SetTargetDisplay(
     }
 }
 
-// Reimplements 0x408680: zOpt::DisplaySection_SetBitsPerPixel
+/**
+ * Reimplements 0x408680: zOpt::DisplaySection_SetBitsPerPixel.
+ * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: store the active display-section bit depth.
+ *
+ * Evidence: BN writes ecx to g_zOpt_DisplaySectionOption->value->bitsPerPixel;
+ * the shared zopt_video_section_setters VC5SP3 target byte-matches after
+ * relocation masking.
+ */
 void __fastcall DisplaySection_SetBitsPerPixel(
     int bitsPerPixel
 ) {
     (*g_zOpt_DisplaySectionOption)->bitsPerPixel = bitsPerPixel;
 }
 
-// Reimplements 0x408700: zOpt::WindowSection_SetPosition
+/**
+ * Reimplements 0x408700: zOpt::WindowSection_SetPosition.
+ * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: set the window-section origin.
+ *
+ * Evidence: BN forwards g_zOpt_WindowSectionOption->value to
+ * zOpt_ViewRectSection::SetPosition; the shared zopt_video_section_setters
+ * VC5SP3 target byte-matches after relocation masking.
+ */
 void __fastcall WindowSection_SetPosition(
     int x,
     int y
@@ -1980,7 +2046,15 @@ void __fastcall WindowSection_SetPosition(
     );
 }
 
-// Reimplements 0x4086e0: zOpt::WindowSection_SetSize
+/**
+ * Reimplements 0x4086e0: zOpt::WindowSection_SetSize.
+ * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: set the window-section dimensions.
+ *
+ * Evidence: BN forwards g_zOpt_WindowSectionOption->value to
+ * zOpt_ViewRectSection::SetSize; the shared zopt_video_section_setters VC5SP3
+ * target byte-matches after relocation masking.
+ */
 void __fastcall WindowSection_SetSize(
     int width,
     int height

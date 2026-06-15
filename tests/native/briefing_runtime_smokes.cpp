@@ -9,6 +9,7 @@
 #include "GameZRecoil/zVideo/zVideo.h"
 
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
 #include <new>
 
@@ -182,6 +183,13 @@ void __fastcall TestLocatorBltSourceToPrimary(
     if (srcRect != 0) {
         g_locatorBlitRect = *srcRect;
     }
+}
+
+unsigned short BriefingSmokeGray565(
+    unsigned char value
+) {
+    const unsigned short level = (unsigned short)(value & 0x1f);
+    return (unsigned short)((level << 11) | (level << 6) | level);
 }
 
 struct ConstructorGlobalState {
@@ -550,6 +558,113 @@ extern "C" int briefing_locator_panel_update_smoke(void) {
         return 7;
     }
     return 0;
+}
+
+extern "C" int briefing_objective_picture_draw_noise_overlay_smoke(void) {
+    zVideo_BltSourceToPrimaryProc const oldBlit = g_zVideo_pfnBltSourceToPrimary;
+    zVidImagePartial *const oldExclusiveImage = g_HudUiWidget_ExclusiveDrawImage;
+    unsigned char *const oldNoiseTable = g_zVid_NoiseByteTable;
+    const int oldNoiseTableSize = g_zVid_NoiseByteTableSize;
+    unsigned short *const oldFxPixels = g_zVideo_FxSurfacePixels16;
+    const int oldFxWidth = g_zVideo_FxSurfaceWidth;
+    const int oldFxHeight = g_zVideo_FxSurfaceHeight;
+    const int oldFxPitchBytes = g_zVideo_FxSurfacePitchBytes;
+    const int oldFxPitchPixels16 = g_zVideo_FxSurfacePitchPixels16;
+
+    HudUiBriefingObjectivePicture picture;
+    zVidImagePartial image = {};
+    image.width = 3;
+    image.height = 2;
+    picture.image = &image;
+    picture.x = 2;
+    picture.y = 1;
+    picture.dirtyRectCount = 0;
+    picture.bltClipRectOrNull = 0;
+
+    unsigned char noiseTable[32] = {};
+    for (int index = 0; index < 32; ++index) {
+        noiseTable[index] = (unsigned char)(index);
+    }
+
+    unsigned short pixels[64] = {};
+    for (int index = 0; index < 64; ++index) {
+        pixels[index] = 0xaaaa;
+    }
+
+    g_zVideo_pfnBltSourceToPrimary = TestLocatorBltSourceToPrimary;
+    g_HudUiWidget_ExclusiveDrawImage = 0;
+    g_zVid_NoiseByteTable = noiseTable;
+    g_zVid_NoiseByteTableSize = 32;
+    g_zVideo_FxSurfacePixels16 = pixels;
+    g_zVideo_FxSurfaceWidth = 8;
+    g_zVideo_FxSurfaceHeight = 8;
+    g_zVideo_FxSurfacePitchBytes = 16;
+    g_zVideo_FxSurfacePitchPixels16 = 8;
+    zVideo::PixelPack_SetupFromMasks(
+        5,
+        6,
+        5,
+        0xf800,
+        0x07e0,
+        0x001f
+    );
+
+    g_locatorBlitCount = 0;
+    g_locatorBlitImage = 0;
+    picture.noiseAlpha = 0.0f;
+    picture.Draw();
+
+    bool lowAlphaOk =
+        g_locatorBlitCount == 1 &&
+        g_locatorBlitImage == &image &&
+        g_locatorBlitX == 2 &&
+        g_locatorBlitY == 1 &&
+        g_locatorBlitFlags == 0 &&
+        g_locatorBlitHasRect == 0;
+    for (int index = 0; index < 64; ++index) {
+        lowAlphaOk = lowAlphaOk && pixels[index] == 0xaaaa;
+    }
+
+    for (int index = 0; index < 64; ++index) {
+        pixels[index] = 0xaaaa;
+    }
+
+    std::srand(11);
+    const int rowWidth = image.width;
+    const int firstOffset =
+        (std::rand() * (g_zVid_NoiseByteTableSize - rowWidth)) / 0x7fff;
+    const int secondOffset =
+        (std::rand() * (g_zVid_NoiseByteTableSize - rowWidth)) / 0x7fff;
+    std::srand(11);
+    g_locatorBlitCount = 0;
+    picture.noiseAlpha = 1.0f;
+    picture.Draw();
+
+    const bool noiseOk =
+        g_locatorBlitCount == 1 &&
+        g_locatorBlitImage == &image &&
+        pixels[2 + 1 * 8] == BriefingSmokeGray565(noiseTable[firstOffset]) &&
+        pixels[3 + 1 * 8] == BriefingSmokeGray565(noiseTable[firstOffset + 1]) &&
+        pixels[4 + 1 * 8] == BriefingSmokeGray565(noiseTable[firstOffset + 2]) &&
+        pixels[2 + 2 * 8] == BriefingSmokeGray565(noiseTable[secondOffset]) &&
+        pixels[3 + 2 * 8] == BriefingSmokeGray565(noiseTable[secondOffset + 1]) &&
+        pixels[4 + 2 * 8] == BriefingSmokeGray565(noiseTable[secondOffset + 2]) &&
+        pixels[0] == 0xaaaa &&
+        pixels[1 + 1 * 8] == 0xaaaa &&
+        pixels[5 + 1 * 8] == 0xaaaa &&
+        pixels[2 + 3 * 8] == 0xaaaa;
+
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+    g_HudUiWidget_ExclusiveDrawImage = oldExclusiveImage;
+    g_zVid_NoiseByteTable = oldNoiseTable;
+    g_zVid_NoiseByteTableSize = oldNoiseTableSize;
+    g_zVideo_FxSurfacePixels16 = oldFxPixels;
+    g_zVideo_FxSurfaceWidth = oldFxWidth;
+    g_zVideo_FxSurfaceHeight = oldFxHeight;
+    g_zVideo_FxSurfacePitchBytes = oldFxPitchBytes;
+    g_zVideo_FxSurfacePitchPixels16 = oldFxPitchPixels16;
+
+    return lowAlphaOk && noiseOk ? 0 : 1;
 }
 
 extern "C" int briefing_runtime_destructor_smoke(void) {

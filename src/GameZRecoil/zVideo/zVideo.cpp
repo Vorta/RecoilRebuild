@@ -150,6 +150,9 @@ int g_zVideo_TexturePixelPack_RMaskShifted = 0;
 int g_zVideo_TexturePixelPack_GMaskShifted = 0;
 int g_zVideo_TexturePixelPack_BMaskShifted = 0;
 int g_zVideo_TexturePixelPack_NonRgbMaskShifted = 0;
+// Palette-remap recipe owner: BN identifies the recipe count/array at
+// 0x53d780/0x53d784 and BuildPaletteVariant grows this bank before rebuilding
+// per-image and standalone palette variant tables.
 int g_zVid_PaletteRemapRecipeCount = 0;
 zVidPaletteRemapRecipe *g_zVid_PaletteRemapRecipes = 0;
 int g_zVideo_RendererType = 0;
@@ -202,6 +205,8 @@ int g_zVid_BuiltinTexturePackCount = 0;
 zVidTexturePackEntry *g_zVid_BuiltinTexturePacks = 0;
 int g_zVid_TexturePackCount = 0;
 zVidTexturePackEntry *g_zVid_TexturePacks = 0;
+// Standalone palette-remap variant table owner: BN identifies the table count
+// and pointer array at 0x53d778/0x53d77c.
 int g_zVid_PaletteRemapVariantTableCount = 0;
 unsigned short **g_zVid_PaletteRemapVariantTables = 0;
 int *ZOPT_VIDEO_MODE = 0;
@@ -510,15 +515,9 @@ unsigned int __fastcall zVid_PackColorRGB(
     unsigned char green,
     unsigned int blue
 ) {
-    unsigned int greenPart = g_zVideo_PixelPack.gMaskShifted;
-    unsigned int redPart = g_zVideo_PixelPack.rMaskShifted;
-
-    greenPart &= green;
-    greenPart <<= g_zVideo_PixelPack.sumMinus8;
-    redPart &= red;
-    redPart <<= g_zVideo_PixelPack.packedBase;
-
-    return greenPart | redPart | ((unsigned char)blue >> g_zVideo_PixelPack.bShiftTo8);
+    return ((g_zVideo_PixelPack.gMaskShifted & green) << g_zVideo_PixelPack.sumMinus8) |
+        ((g_zVideo_PixelPack.rMaskShifted & red) << g_zVideo_PixelPack.packedBase) |
+        ((unsigned char)blue >> g_zVideo_PixelPack.bShiftTo8);
 }
 
 // Reimplements 0x4a6ca0: zVid_PackColor00RRGGBB
@@ -1502,7 +1501,16 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(sizeof(zVidRect32) == sizeof(RECT));
 
 namespace zVid {
-// Reimplements 0x408280: zVid::SetAccelerationOption
+/**
+ * Reimplements 0x408280: zVid::SetAccelerationOption.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zVid.cpp.
+ * Purpose: store the selected video acceleration option and mirror the active
+ * hardware-mode option used by zOpt accessors.
+ *
+ * Evidence: BN writes ecx through ZOPT_VIDEO_ACCELERATION, then stores the same
+ * value into g_zOpt_HwMode; VC5SP3 zvid_option_getters byte verification is
+ * exact after relocation masking.
+ */
 void __fastcall SetAccelerationOption(
     int accelerationOption
 ) {
@@ -1510,7 +1518,15 @@ void __fastcall SetAccelerationOption(
     g_zOpt_HwMode = accelerationOption;
 }
 
-// Reimplements 0x408290: zVid::SetHwApiOption
+/**
+ * Reimplements 0x408290: zVid::SetHwApiOption.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zVid.cpp.
+ * Purpose: store the selected hardware API/backend option.
+ *
+ * Evidence: BN writes ecx through ZOPT_HW_API and returns without touching
+ * other state; VC5SP3 zvid_option_getters byte verification is exact after
+ * relocation masking.
+ */
 void __fastcall SetHwApiOption(
     int hwApiOption
 ) {
@@ -1542,12 +1558,18 @@ int HasAcceptedHardwareRenderer() {
     return GetAcceptedHardwareRendererCount_Cached() > 0 ? 1 : 0;
 }
 
-// Reimplements 0x46d5c0: zVid::GetTexturePackLoadState
+/**
+ * Reimplements 0x46d5c0: zVid::GetTexturePackLoadState
+ * Purpose: Return the current texture-pack loading enable state.
+ */
 int GetTexturePackLoadState() {
     return g_zVid_TexturePackLoadState;
 }
 
-// Reimplements 0x46d5b0: zVid::SetTexturePackLoadState
+/**
+ * Reimplements 0x46d5b0: zVid::SetTexturePackLoadState
+ * Purpose: Store the texture-pack loading enable state.
+ */
 void __fastcall SetTexturePackLoadState(
     int texturePackLoadState
 ) {
@@ -1559,7 +1581,19 @@ int GetVideoModeIndexFromOptions() {
     return *ZOPT_VIDEO_MODE;
 }
 
-// Reimplements 0x408720: zVid::SetVideoModeIndex
+/**
+ * Reimplements 0x408720: zVid::SetVideoModeIndex.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zVid.cpp.
+ * Purpose: apply a persisted shell video-mode preset to the render, window,
+ * display, and replicate options.
+ *
+ * Evidence: BN selects modes 2 through 7 through the jump table, writes
+ * ZOPT_VIDEO_MODE, updates the zOpt render/window/display sections, sets
+ * display bits-per-pixel to 16, and tail-calls zOpt::SetReplicateMode for
+ * valid presets; invalid values write ZVID_MODE_INVALID. VC5SP3
+ * zvid_set_video_mode_index byte verification is exact after relocation
+ * masking.
+ */
 void __fastcall SetVideoModeIndex(
     int modeIndex
 ) {
@@ -5767,7 +5801,12 @@ void __fastcall ApplyRecipeToPaletteVariant(
 }
 } // namespace zVid_PaletteRemap
 
-// Reimplements 0x46e720: zVid_PaletteRemap_BuildPaletteVariant
+/**
+ * Reimplements 0x46e720: zVid_PaletteRemap_BuildPaletteVariant.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Source file evidence: Binary Ninja function source comment.
+ * Purpose: Add a palette-remap recipe and rebuild existing palette variant tables.
+ */
 extern "C" int __fastcall zVid_PaletteRemap_BuildPaletteVariant(
     zVidPaletteRemapRecipe *recipe
 ) {

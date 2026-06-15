@@ -64,12 +64,11 @@ struct HudUiBriefingLocatorPanel : HudUiCircle {
     void Update(float deltaSec);
 };
 
-// Briefing objective picture widget; derived dispatch adds the noise-overlay draw behavior.
+// Briefing objective picture widget; derived dispatch overrides Draw with the noise-overlay pass.
 struct HudUiBriefingObjectivePicture : HudUiWidget {
     float noiseAlpha;
 
     void Draw();
-    void DrawWithNoiseOverlay();
 };
 RECOIL_STATIC_ASSERT(offsetof(HudUiBriefingObjectivePicture, noiseAlpha) == 0xbc);
 

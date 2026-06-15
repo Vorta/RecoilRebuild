@@ -23,9 +23,11 @@ add_executable(recoil_native_smoke
     briefing_runtime_smokes.cpp
     zhud_composite_panel_smokes.cpp
     player_fx_pass3_smokes.cpp
+    zhud_cmd_dialog_state_smokes.cpp
     zhud_widget_tests.cpp
     hud_tests.cpp
     hud_save_load_tests.cpp
+    czframe_constructor_smokes.cpp
     recoil_state_main_menu_transition_constructor_tests.cpp
     zmath_tests.cpp
     recoil_version_tests.cpp

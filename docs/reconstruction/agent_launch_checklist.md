@@ -88,6 +88,34 @@ Use `plan next --lane binary` only when no active group exists, active groups
 have been refreshed/pruned or proven unactionable, or the user explicitly
 directs new work.
 
+## Parent Orchestration Loop
+
+The parent agent is an orchestrator, not the default implementer. After
+selecting active WIP or binary-lane work, partition non-overlapping owner/source
+scopes and spawn `recoil_source_worker` agents for source/test edits.
+
+Source-worker handoffs must name the owner/source scope, address or group
+anchor, allowed and forbidden paths, evidence inputs, expected source model, and
+narrow validation commands. Do not assign overlapping production source files,
+verification manifests, generated outputs, BN database state, or `.agent`
+ledgers.
+
+Workers may inspect BN and edit only assigned source/test files. They must not
+change BN names/types/comments, save BN, update plan markers, file workspace
+issues, commit, or select follow-up work. They return changed paths, evidence,
+checks, blockers, and non-authoritative marker recommendations. The parent
+reviews diffs, reruns checks, performs BN/plan/issue/checkpoint work, and owns
+final claims.
+
+Parent source edits are limited to small integration/conflict fixes after worker
+return, or cases where delegation is impossible; record the exception before
+editing.
+
+Quiet mode: do not send routine progress reports. Message the user only for
+required user input, true blockers, worker handoff decisions, validation
+failures, or final results. Any unavoidable interim update must be one short
+sentence with no evidence dump or command output unless requested.
+
 Normal binary-lane selection is owner-first after reconstruction/dependency
 readiness: unresolved `Source owner` markers come before isolated
 implementation or tier `C` behavior work, then `Data reimplemented`, and only

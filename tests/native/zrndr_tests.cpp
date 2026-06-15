@@ -388,8 +388,8 @@ extern "C" int zrndr_framebuffer_and_stride_cache_smoke(void) {
 
 extern "C" int zrndr_immediate_line_dispatch_smoke(void) {
     zRndr::g_frameBuffer = reinterpret_cast<void *>(0x1234);
-    zRndr::g_pfnImmediateRaster4 = reinterpret_cast<zRndr::SpanRoutineProc>(TestImmediateRaster4);
-    zRndr::g_pfnImmediateRaster5 = reinterpret_cast<zRndr::SpanRoutineProc>(TestImmediateRaster5);
+    zRndr::g_pfnImmediateRaster4 = reinterpret_cast<zRndr::ImmediateRaster4Proc>(TestImmediateRaster4);
+    zRndr::g_pfnImmediateRaster5 = reinterpret_cast<zRndr::ImmediateRaster5Proc>(TestImmediateRaster5);
 
     g_line4Count = 0;
     g_line5Count = 0;

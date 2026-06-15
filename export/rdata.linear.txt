@@ -907,7 +907,7 @@
 0x4cccc4     HudUiElement_VT_Update Update = HudUiElement::Update
 0x4cccc8     void* function_28 = zStub::NoOp1Arg
 0x4ccccc     HudUiWidget_VT_GetBoundsRectOrNull GetBoundsRectOrNull = HudUiZrdWidget::GetBoundsRectOrNull
-0x4cccd0     HudUiWidget_VT_Noarg OnActivate = HudUiCheatTextInputWidget::OnActivate
+0x4cccd0     HudUiWidget_VT_Noarg OnActivate = HudUiCheatCodeTitleWidget::OnActivate
 0x4cccd4     void* function_34 = zError::ReportOldNoOp
 0x4cccd8     void* function_38 = zError::ReportOldNoOp
 0x4cccdc     void* function_3c = HudUiZrdWidget::ShowPreview

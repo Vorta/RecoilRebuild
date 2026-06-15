@@ -1225,147 +1225,138 @@ int zFMV_Script::LoadActionsFromZrd(
         return 0;
     }
 
-    const int sequenceActionCount = sequenceNode->value.nodes[0].value.i32;
     int i = 0;
+    int result = sequenceNode->value.nodes[0].value.i32 - 1;
     int actionIndex = 1;
-    int result = sequenceActionCount - 1;
-    if (result > 0) {
-        do {
-            zReader::Node *actionNode = &sequenceNode->value.nodes[actionIndex];
-            if (actionNode->type != zReader::ZRDR_NODE_ARRAY) {
-                result = 0;
-                zError::ReportOld(
-                    0x200,
-                    "D:\\Proj\\GameZRecoil\\zFMV\\fmv_script.cpp",
-                    0x69,
-                    "Error in parsing fmv actions:  file=%s, tag=%s",
-                    zrdPath,
-                    tagPrefix
-                );
-                break;
-            }
+    for (; i < result; ++i, ++actionIndex) {
+        zReader::Node *actionNode = &sequenceNode->value.nodes[actionIndex];
+        if (actionNode->type != zReader::ZRDR_NODE_ARRAY) {
+            result = 0;
+            zError::ReportOld(
+                0x200,
+                "D:\\Proj\\GameZRecoil\\zFMV\\fmv_script.cpp",
+                0x69,
+                "Error in parsing fmv actions:  file=%s, tag=%s",
+                zrdPath,
+                tagPrefix
+            );
+            break;
+        }
 
-            const char *actionTag = actionNode->value.nodes[1].value.str;
+        const char *actionTag = actionNode->value.nodes[1].value.str;
 
-            if (strcmp(
-                    actionTag,
-                    "SHOWIMAGE"
-                ) == 0) {
-                AppendAction(new zFMV_ActionImage(
+        if (strcmp(
+                actionTag,
+                "SHOWIMAGE"
+            ) == 0) {
+            AppendAction(new zFMV_ActionImage(
+                actionNode->value.nodes[2].value.str,
+                1
+            ));
+        } else if (strcmp(
+                       actionTag,
+                       "BLITIMAGE"
+                   ) == 0) {
+            AppendAction(new zFMV_ActionImage(
+                actionNode->value.nodes[2].value.str,
+                1,
+                actionNode->value.nodes[3].value.i32,
+                actionNode->value.nodes[4].value.i32
+            ));
+        } else if (strcmp(
+                       actionTag,
+                       "LOADIMAGE"
+                   ) == 0) {
+            AppendAction(new zFMV_ActionImage(
+                actionNode->value.nodes[2].value.str,
+                0
+            ));
+        } else if (strcmp(
+                       actionTag,
+                       "WAIT"
+                   ) == 0) {
+            AppendAction(new zFMV_ActionWait(actionNode->value.nodes[2].value.f32));
+        } else if (strcmp(
+                       actionTag,
+                       "FADEIN"
+                   ) == 0) {
+            AppendAction(new zFMV_ActionFade(
+                actionNode->value.nodes[2].value.nodes[1].value.i32,
+                actionNode->value.nodes[2].value.nodes[2].value.i32,
+                actionNode->value.nodes[2].value.nodes[3].value.i32,
+                actionNode->value.nodes[3].value.u32,
+                -1,
+                actionNode->value.nodes[4].value.i32
+            ));
+        } else if (strcmp(
+                       actionTag,
+                       "FADEOUT"
+                   ) == 0) {
+            AppendAction(new zFMV_ActionFade(
+                actionNode->value.nodes[2].value.nodes[1].value.i32,
+                actionNode->value.nodes[2].value.nodes[2].value.i32,
+                actionNode->value.nodes[2].value.nodes[3].value.i32,
+                actionNode->value.nodes[3].value.u32,
+                1,
+                actionNode->value.nodes[4].value.i32
+            ));
+        } else if (strcmp(
+                       actionTag,
+                       "PLAYAVI"
+                   ) == 0) {
+            const int actionArgCount = actionNode->value.nodes[0].value.i32;
+            if (actionArgCount > 3) {
+                AppendAction(new zFMV_ActionPlayAvi(
+                    m_fmvPath,
                     actionNode->value.nodes[2].value.str,
-                    1
+                    actionNode->value.nodes[3].value.i32
                 ));
-            } else if (strcmp(
-                           actionTag,
-                           "BLITIMAGE"
-                       ) == 0) {
-                AppendAction(new zFMV_ActionImage(
-                    actionNode->value.nodes[2].value.str,
-                    1,
-                    actionNode->value.nodes[3].value.i32,
-                    actionNode->value.nodes[4].value.i32
-                ));
-            } else if (strcmp(
-                           actionTag,
-                           "LOADIMAGE"
-                       ) == 0) {
-                AppendAction(new zFMV_ActionImage(
+            } else {
+                AppendAction(new zFMV_ActionPlayAvi(
+                    m_fmvPath,
                     actionNode->value.nodes[2].value.str,
                     0
                 ));
-            } else if (strcmp(
-                           actionTag,
-                           "WAIT"
-                       ) == 0) {
-                AppendAction(new zFMV_ActionWait(actionNode->value.nodes[2].value.f32));
-            } else if (strcmp(
-                           actionTag,
-                           "FADEIN"
-                       ) == 0) {
-                zReader::Node *colorValues = actionNode->value.nodes[2].value.nodes;
-                AppendAction(new zFMV_ActionFade(
-                    colorValues[1].value.i32,
-                    colorValues[2].value.i32,
-                    colorValues[3].value.i32,
-                    actionNode->value.nodes[3].value.u32,
-                    -1,
-                    actionNode->value.nodes[4].value.i32
-                ));
-            } else if (strcmp(
-                           actionTag,
-                           "FADEOUT"
-                       ) == 0) {
-                zReader::Node *colorValues = actionNode->value.nodes[2].value.nodes;
-                AppendAction(new zFMV_ActionFade(
-                    colorValues[1].value.i32,
-                    colorValues[2].value.i32,
-                    colorValues[3].value.i32,
-                    actionNode->value.nodes[3].value.u32,
-                    1,
-                    actionNode->value.nodes[4].value.i32
-                ));
-            } else if (strcmp(
-                           actionTag,
-                           "PLAYAVI"
-                       ) == 0) {
-                const int actionArgCount = actionNode->value.nodes[0].value.i32;
-                if (actionArgCount > 3) {
-                    AppendAction(new zFMV_ActionPlayAvi(
-                        m_fmvPath,
-                        actionNode->value.nodes[2].value.str,
-                        actionNode->value.nodes[3].value.i32
-                    ));
-                } else {
-                    AppendAction(new zFMV_ActionPlayAvi(
-                        m_fmvPath,
-                        actionNode->value.nodes[2].value.str,
-                        0
-                    ));
-                }
-            } else if (strcmp(
-                           actionTag,
-                           "PLAYMCI"
-                       ) == 0) {
-                AppendAction(new zFMV_ActionPlayMci(
-                    m_hWnd,
-                    m_fmvPath,
-                    actionNode->value.nodes[2].value.str
-                ));
-            } else if (strcmp(
-                           actionTag,
-                           "BLUR"
-                       ) == 0) {
-                AppendAction(new zFMV_ActionBlur(
-                    1,
-                    actionNode->value.nodes[2].value.i32
-                ));
-            } else if (strcmp(
-                           actionTag,
-                           "BLURH"
-                       ) == 0) {
-                const int blurPassCount = actionNode->value.nodes[2].value.i32;
-                AppendAction(new zFMV_ActionBlurH(
-                    1,
-                    blurPassCount
-                ));
-            } else if (strcmp(
-                           actionTag,
-                           "BLURV"
-                       ) == 0) {
-                const int blurPassCount = actionNode->value.nodes[2].value.i32;
-                AppendAction(new zFMV_ActionBlurV(
-                    1,
-                    blurPassCount
-                ));
-            } else if (strcmp(
-                           actionTag,
-                           "PLAYSOUND"
-                ) == 0) {
-                AppendAction(new zFMV_ActionPlaySound(actionNode->value.nodes[2].value.str));
             }
-            ++i;
-            ++actionIndex;
-        } while (i < result);
+        } else if (strcmp(
+                       actionTag,
+                       "PLAYMCI"
+                   ) == 0) {
+            AppendAction(new zFMV_ActionPlayMci(
+                m_hWnd,
+                m_fmvPath,
+                actionNode->value.nodes[2].value.str
+            ));
+        } else if (strcmp(
+                       actionTag,
+                       "BLUR"
+                   ) == 0) {
+            AppendAction(new zFMV_ActionBlur(
+                1,
+                actionNode->value.nodes[2].value.i32
+            ));
+        } else if (strcmp(
+                       actionTag,
+                       "BLURH"
+                   ) == 0) {
+            AppendAction(new zFMV_ActionBlurH(
+                1,
+                actionNode->value.nodes[2].value.i32
+            ));
+        } else if (strcmp(
+                       actionTag,
+                       "BLURV"
+                   ) == 0) {
+            AppendAction(new zFMV_ActionBlurV(
+                1,
+                actionNode->value.nodes[2].value.i32
+            ));
+        } else if (strcmp(
+                       actionTag,
+                       "PLAYSOUND"
+            ) == 0) {
+            AppendAction(new zFMV_ActionPlaySound(actionNode->value.nodes[2].value.str));
+        }
     }
 
     zReader::FreeLoadedTree(root);
