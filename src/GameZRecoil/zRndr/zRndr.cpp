@@ -1908,14 +1908,21 @@ void __fastcall SpanOcclusionAddPolygon(
         return;
     }
 
-    SpanOccluderPolyPartial *slot = &g_spanOccluderPolys[slotIndex];
-    for (int i = 0; i < vertCount; ++i) {
-        slot->vertices[i][0] = vertices[i].x;
-        slot->vertices[i][1] = vertices[i].y;
-        slot->vertices[i][2] = vertices[i].z;
+    int i = 0;
+    int remaining = vertCount;
+    const zVec3 *vertex = vertices;
+    while (remaining > 0) {
+        SpanOccluderPolyPartial *slot = &g_spanOccluderPolys[slotIndex];
+        slot->vertices[i][0] = vertex->x;
+        slot->vertices[i][1] = vertex->y;
+        slot->vertices[i][2] = vertex->z;
+        ++i;
+        ++vertex;
+        --remaining;
     }
 
-    slot->vertCount = vertCount > 8 ? 8 : vertCount;
+    g_spanOccluderPolys[slotIndex].vertCount =
+        vertCount > 8 ? 8 : vertCount;
     ++g_spanOccluderPolyCount;
 }
 
