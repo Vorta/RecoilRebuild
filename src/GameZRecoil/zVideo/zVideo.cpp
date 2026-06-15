@@ -10930,8 +10930,8 @@ void __fastcall ZBuffer_DepthFillRect(
     }
 
     bltFx.dwFillDepth = 0;
-    HRESULT hresult;
-    for (;;) {
+    HRESULT hresult = DD_OK;
+    while (hresult == DD_OK) {
         hresult = g_zVideo_pZBufferSurface->Blt(
             (RECT *)(dstRect),
             0,
@@ -10948,9 +10948,6 @@ void __fastcall ZBuffer_DepthFillRect(
         }
 
         hresult = g_zVideo_pZBufferSurface->Restore();
-        if (hresult != DD_OK) {
-            break;
-        }
     }
 
     ReportError(

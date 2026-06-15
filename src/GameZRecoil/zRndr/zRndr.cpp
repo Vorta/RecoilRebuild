@@ -5605,11 +5605,211 @@ void __fastcall zRndr_SpanOcclusion_InsertSpanNode_Local(
     int columnIndex,
     int *spanCount
 ) {
-    zRndr::SpanOcclusionInsertPendingSpanWithDepthTest(
-        spanList,
+    using namespace zRndr;
+
+    SpanNodePartial **columnHeadTable = g_spanColumnHeadTable;
+    SpanNodePartial *current = columnHeadTable[columnIndex];
+    SpanNodePartial *pending = g_spanAllocCursor;
+    *spanCount = 0;
+
+    if (current == 0 || pending->sampleXMax < current->sampleXMin) {
+        pending->next = current;
+        columnHeadTable[columnIndex] = pending;
+        spanList[*spanCount] = pending;
+        ++*spanCount;
+        ++g_spanAllocCursor;
+        return;
+    }
+
+    pending->next = 0;
+    g_spanIterNode = current;
+    g_spanIterPrevLink = 0;
+
+    SpanNodePartial *previous = 0;
+    while (current != 0) {
+        previous = g_spanIterPrevLink;
+        current = g_spanIterNode;
+        while (current != 0 && pending->sampleXMin > current->sampleXMax) {
+            previous = current;
+            current = current->next;
+        }
+
+        if (current == 0) {
+            g_spanIterNode = current;
+            g_spanIterPrevLink = previous;
+            break;
+        }
+
+        if (pending->sampleXMax < current->sampleXMin) {
+            g_spanIterNode = current;
+            g_spanIterPrevLink = previous;
+            break;
+        }
+
+        const bool pendingInFront =
+            zRndr_SpanOcclusion_TestSpanDepthOrderPair(
+                pending,
+                current
+            ) != 0;
+
+        const int pendingMin = pending->sampleXMin;
+        const int pendingMax = pending->sampleXMax;
+        const float pendingInvDepth = pending->invDepth;
+        const float pendingInvDepthStep = pending->invDepthStep;
+        const float pendingDepthSlope = pending->depthSlope;
+
+        if (pendingInFront) {
+            const int currentMin = current->sampleXMin;
+            const int currentMax = current->sampleXMax;
+            const float currentInvDepth = current->invDepth;
+            const float currentInvDepthStep = current->invDepthStep;
+            const float currentDepthSlope = current->depthSlope;
+
+            if (currentMin < pendingMin) {
+                current->sampleXMax = pendingMin - 1;
+                current->invDepthStep = SpanDepthAtX(
+                    currentMin,
+                    currentInvDepth,
+                    currentDepthSlope,
+                    current->sampleXMax
+                );
+
+                if (currentMax > pendingMax) {
+                    SpanNodePartial *rightSplit = pending + 1;
+                    rightSplit->sampleXMin = pendingMax + 1;
+                    rightSplit->sampleXMax = currentMax;
+                    rightSplit->invDepth = SpanDepthAtX(
+                        currentMin,
+                        currentInvDepth,
+                        currentDepthSlope,
+                        rightSplit->sampleXMin
+                    );
+                    rightSplit->invDepthStep = currentInvDepthStep;
+                    rightSplit->depthSlope = currentDepthSlope;
+                    rightSplit->next = current->next;
+
+                    pending->next = rightSplit;
+                    current->next = pending;
+                    AppendSpanListNode(
+                        spanList,
+                        spanCount,
+                        pending
+                    );
+                    g_spanIterPrevLink = current;
+                    g_spanIterNode = pending;
+                    g_spanLastNode = rightSplit;
+                    g_spanAllocCursor += 2;
+                    return;
+                }
+
+                previous = current;
+                current = current->next;
+                continue;
+            }
+
+            if (currentMax <= pendingMax) {
+                SpanNodePartial *next = current->next;
+                if (previous != 0) {
+                    previous->next = next;
+                } else {
+                    g_spanColumnHeadTable[columnIndex] = next;
+                }
+                current = next;
+                continue;
+            }
+
+            current->sampleXMin = pendingMax + 1;
+            current->invDepth =
+                SpanDepthAtX(
+                    currentMin,
+                    currentInvDepth,
+                    currentDepthSlope,
+                    current->sampleXMin
+                );
+            break;
+        }
+
+        if (current->sampleXMin <= pendingMin) {
+            if (current->sampleXMax >= pendingMax) {
+                return;
+            }
+
+            if (current->sampleXMax >= pendingMin) {
+                pending->sampleXMin = current->sampleXMax + 1;
+                pending->invDepth = SpanDepthAtX(
+                    pendingMin,
+                    pendingInvDepth,
+                    pendingDepthSlope,
+                    pending->sampleXMin
+                );
+            }
+
+            previous = current;
+            current = current->next;
+            continue;
+        }
+
+        if (current->sampleXMin <= pendingMax) {
+            const int leftMax = current->sampleXMin - 1;
+            pending->sampleXMax = leftMax;
+            pending->invDepthStep =
+                SpanDepthAtX(
+                    pendingMin,
+                    pendingInvDepth,
+                    pendingDepthSlope,
+                    leftMax
+                );
+            LinkSpanNode(
+                columnIndex,
+                previous,
+                pending,
+                current
+            );
+            AppendSpanListNode(
+                spanList,
+                spanCount,
+                pending
+            );
+            ++g_spanAllocCursor;
+
+            if (current->sampleXMax >= pendingMax) {
+                return;
+            }
+
+            previous = current;
+            pending = g_spanAllocCursor;
+            pending->next = 0;
+            pending->sampleXMin = current->sampleXMax + 1;
+            pending->sampleXMax = pendingMax;
+            pending->invDepth =
+                SpanDepthAtX(
+                    pendingMin,
+                    pendingInvDepth,
+                    pendingDepthSlope,
+                    pending->sampleXMin
+                );
+            pending->invDepthStep = pendingInvDepthStep;
+            pending->depthSlope = pendingDepthSlope;
+            current = current->next;
+            continue;
+        }
+
+        previous = current;
+        current = current->next;
+    }
+
+    LinkSpanNode(
         columnIndex,
-        spanCount
+        previous,
+        pending,
+        current
     );
+    AppendSpanListNode(
+        spanList,
+        spanCount,
+        pending
+    );
+    ++g_spanAllocCursor;
 }
 
 /**
