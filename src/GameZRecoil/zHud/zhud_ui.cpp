@@ -5536,11 +5536,11 @@ inline HudUiTransitionTextPanel::HudUiTransitionTextPanel()
         0,
         0
     ) {
+    flashResetValue = 0.349999994f;
     flashCountdown = 0;
     flashAltColor0 = 0;
     flashEnabled = 0;
     flashMode = 0;
-    flashResetValue = 0.349999994f;
     flashDirectionSign = 1;
 }
 
@@ -9578,19 +9578,17 @@ void HudUiCycleSelectorWidget::AddTextEntry(
         return;
     }
 
-    HudUiTransitionTextPanel *const transitionPanel =
-        (HudUiTransitionTextPanel *)(::operator new(sizeof(HudUiTransitionTextPanel)));
-    new (transitionPanel) HudUiTransitionTextPanel;
+    HudUiTransitionTextPanel *const transitionPanel = new HudUiTransitionTextPanel;
 
     entriesA[index] = (HudUiWidget *)(transitionPanel);
-    transitionPanel->SetTextFmt(text);
+    ((HudUiPanel *)(entriesA[index]))->SetTextFmt(text);
 
-    transitionPanel->SetPos(
+    entriesA[index]->SetPos(
         textOffsetX + posX,
         textOffsetY + posY
     );
-    transitionPanel->SetVisible(0);
-    ((HudUiContainer *)(owner))->AddChild(transitionPanel);
+    entriesA[index]->SetVisible(0);
+    ((HudUiContainer *)(owner))->AddChild(entriesA[index]);
 }
 
 /**

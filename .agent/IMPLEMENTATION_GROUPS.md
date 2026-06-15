@@ -159,6 +159,12 @@ available even when no groups are active.
     (BN 208, VC5 256), and `verify vc5 0x4a82f0` fails with 215 after 24
     relocation-masked bytes (BN 212, VC5 256). Functional smokes for all three
     still pass.
+    A later 0x4a81a0 byte-shape pass changed the Z-buffer clear retry loop to
+    a VC5-shaped `HRESULT hresult = DD_OK; while (hresult == DD_OK)` spelling,
+    reducing `verify vc5 0x4a81a0` from 102 to 10 unmasked mismatches after
+    20 relocation-masked bytes and 5 trimmed VC NOPs (BN 114, VC5 112).
+    `verify functional 0x4a81a0` still passes; tier S remains blocked by
+    branch displacement and success-epilogue drift.
     A fresh
     local VC5SP3 target for 0x4a9b70 previously failed with 108 unmasked
     mismatches after 28 relocation-masked bytes and 6 trimmed VC NOP bytes; a
@@ -506,6 +512,16 @@ available even when no groups are active.
     current caller ignores the return value; `verify functional 0x490780`
     passes and `verify vc5 0x490780` reports zero unmasked mismatches after
     20 relocation-masked bytes and 3 trimmed VC NOP bytes.
+    A later span-occlusion insertion pass expanded 0x490ae0
+    `zRndr_SpanOcclusion_InsertSpanNode_Local` from a collapsed forwarding
+    wrapper into the BN-visible insertion body. `verify functional 0x490ae0`
+    still passes and `verify vc5 0x490ae0` improves from 1967 to 1822
+    unmasked mismatches after 124 relocation-masked bytes and 14 trimmed VC
+    NOPs (BN 1971, VC5 832). A local ignored VC5 target now covers 0x4907c0
+    `zRndr_SpanOcclusion_TestSpanDepthOrderPair`; it fails with 726 unmasked
+    mismatches after 60 relocation-masked bytes and 11 trimmed VC NOPs (BN
+    793, VC5 528), leaving dense x87 depth-order source-shape drift as the
+    direct blocker for the insertion body.
   - Tier S remains pending for the broader teardown, restore, palette,
     mode-setting, and surface-helper source clusters after the owner/data pass.
 - Next action:
@@ -1507,6 +1523,14 @@ available even when no groups are active.
     remaining drift local to the post-font textRect/wrapRect/shadow/metric
     zero-store schedule. A `RECT *` text-bounds view preserved source behavior
     but was byte-neutral at the same 121 mismatches and was reverted.
+  - Same-session HudUiCycleSelectorWidget::AddTextEntry pass promoted
+    0x4b7fd0 to tier S. Source now uses normal VC5-era
+    `new HudUiTransitionTextPanel`, reloads calls through `entriesA[index]`,
+    and orders the inlined HudUiTransitionTextPanel constructor stores to match
+    BN. `verify functional 0x4b7fd0` passes, and `verify vc5 0x4b7fd0`
+    reports zero unmasked mismatches after 32 relocation-masked bytes and
+    5 trimmed VC NOPs (BN 299, VC5 304). 0x4ba740 remains a separate
+    constructor-default tier-S blocker for the HudCmdDialog constructor chain.
   - Same-session 0x40a5b0 HudCmdDialog::Constructor source-shape pass added
     the required constructor docblock and matched BN's command-group population
     loop by calling zInput::BindGroupList_GetCount at loop entry and backedge.

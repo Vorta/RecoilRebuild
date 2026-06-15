@@ -20394,7 +20394,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zvideo_dd_zbuffer_depth_fill_rect;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: tier S blocked: local VC5SP3 target zvideo_dd_zbuffer_depth_fill_rect with vc5_o2_ob1_md_facs fails after inlining the BN-shaped Z-buffer Blt/Restore retry loop and moving DDBLTFX size initialization before the null-surface branch; verify vc5 0x4a81a0 now reports 102 unmasked mismatches after 12 relocation-masked bytes and 9 trimmed VC NOP bytes, BN size 114 and VC5 size 144; functional target still passes.
+    - Blocker: tier S blocked: retained ZBuffer_DepthFillRect while-loop retry spelling improves zvideo_dd_zbuffer_depth_fill_rect from 102 to 10 unmasked mismatches after 20 relocation-masked bytes and 5 trimmed VC NOP bytes (BN 114 bytes, VC5 112 bytes). Functional target passes; owner/data remain accepted. Remaining drift is branch displacement and success-epilogue shape.
 
 - 0x4a8220:
   - [✅] Reconstructed (Name: zVideo_dd::ClearScreenAndZBufferRect)
@@ -21806,7 +21806,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_occlusion_test_span_depth_order_pair;
     - Group: engine.zrndr;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked: local ignored VC5SP3 target zrndr_span_occlusion_test_span_depth_order_pair now covers this depth-order helper and fails with 726 unmasked mismatches after 60 relocation-masked bytes and 11 trimmed VC NOP bytes (BN 793 bytes, VC5 528 bytes). Functional target passes; remaining drift is dense x87 depth interpolation and bias-comparison source shape.
 
 - 0x490ae0:
   - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::InsertSpanNodeIntoColumn)
@@ -21819,7 +21819,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_span_occlusion_insert_span_node_local;
     - Group: engine.zrndr;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked: retained zRndr span-occlusion pass expands InsertSpanNode_Local from a collapsed forwarding wrapper into the insertion body, improving zrndr_span_occlusion_insert_span_node_local from 1967 to 1822 unmasked mismatches after 124 relocation-masked bytes and 14 trimmed VC NOP bytes (BN 1971 bytes, VC5 832 bytes). Functional target passes; remaining drift is helper calls/high-level control flow versus retail inlined append/link/depth-extrema logic and the 0x4907c0 depth-order helper.
 
 - 0x4912a0:
   - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::InsertSpanNodeNoDepthTest)
@@ -37360,13 +37360,13 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudUiCycleSelectorWidget; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: HudUiCycleSelectorWidget::AddTextEntry;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_cycle_selector_widget_add_text_entry;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S remains open: VC5 AddTextEntry byte diff retains EH/null-allocation and virtual-call shape drift
+    - Blocker: none
 
 - 0x4b8100:
   - [☑️] Reconstructed (Name: HudUiCycleSelectorWidget::ApplyFontStyleForEntry)

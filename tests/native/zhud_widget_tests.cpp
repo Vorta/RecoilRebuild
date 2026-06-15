@@ -6977,6 +6977,11 @@ extern "C" int zhud_cmd_key_a_button_on_clear_binding_smoke(void) {
     InitHudCmdInputTables();
 
     zInput_BindMapContext context{};
+    std::memset(
+        &context,
+        0,
+        sizeof(context)
+    );
     int packedBindings[16] = {};
     zInputCommandCallbackFn callbacks[16] = {};
     char commandFiveLabel[0x50] = {};
@@ -7168,6 +7173,11 @@ extern "C" int zhud_cmd_dialog_rebuild_command_binding_lists_smoke(void) {
     InitHudCmdInputTables();
 
     zInput_BindMapContext context{};
+    std::memset(
+        &context,
+        0,
+        sizeof(context)
+    );
     int packedBindings[16] = {};
     zInputCommandCallbackFn callbacks[16] = {};
     char commandLabel[0x50] = {};
@@ -7270,6 +7280,11 @@ extern "C" int zhud_cmd_dialog_apply_primary_key_rebind_smoke(void) {
     InitHudCmdInputTables();
 
     zInput_BindMapContext context{};
+    std::memset(
+        &context,
+        0,
+        sizeof(context)
+    );
     int packedBindings[16] = {};
     zInputCommandCallbackFn callbacks[16] = {};
     char commandFiveLabel[0x50] = {};
@@ -7369,6 +7384,11 @@ extern "C" int zhud_cmd_dialog_apply_secondary_key_rebind_smoke(void) {
     InitHudCmdInputTables();
 
     zInput_BindMapContext context{};
+    std::memset(
+        &context,
+        0,
+        sizeof(context)
+    );
     int packedBindings[16] = {};
     zInputCommandCallbackFn callbacks[16] = {};
     char commandFiveLabel[0x50] = {};
@@ -7468,6 +7488,11 @@ extern "C" int zhud_cmd_dialog_apply_joystick_button_rebind_smoke(void) {
     InitHudCmdInputTables();
 
     zInput_BindMapContext context{};
+    std::memset(
+        &context,
+        0,
+        sizeof(context)
+    );
     int packedBindings[16] = {};
     zInputCommandCallbackFn callbacks[16] = {};
     char commandFiveLabel[0x50] = {};
@@ -7551,6 +7576,11 @@ extern "C" int zhud_cmd_dialog_apply_mouse_button_rebind_smoke(void) {
     InitHudCmdInputTables();
 
     zInput_BindMapContext context{};
+    std::memset(
+        &context,
+        0,
+        sizeof(context)
+    );
     int packedBindings[16] = {};
     zInputCommandCallbackFn callbacks[16] = {};
     char commandFiveLabel[0x50] = {};
@@ -7652,6 +7682,11 @@ extern "C" int zhud_cmd_dialog_select_group_relative_smoke(void) {
     InitHudCmdInputTables();
 
     zInput_BindMapContext context{};
+    std::memset(
+        &context,
+        0,
+        sizeof(context)
+    );
     int packedBindings[16] = {};
     zInputCommandCallbackFn callbacks[16] = {};
     char commandFiveLabel[0x50] = {};
@@ -7807,6 +7842,11 @@ extern "C" int zhud_cmd_dialog_callback_navigation_smoke(void) {
     InitHudCmdInputTables();
 
     zInput_BindMapContext context{};
+    std::memset(
+        &context,
+        0,
+        sizeof(context)
+    );
     int packedBindings[16] = {};
     zInputCommandCallbackFn callbacks[16] = {};
     char commandFiveLabel[0x50] = {};
