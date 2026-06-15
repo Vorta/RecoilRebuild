@@ -5290,19 +5290,25 @@ void __fastcall BlendPackedColor565WithFogInPlace(
     int *ioPackedColor,
     int blend255
 ) {
+    const int fogGreen = g_fogParamsActive.packedColorGreen;
     const int packedColor = *ioPackedColor;
-    const int redMask = (int)(g_pixelPackRedMask);
     const int greenMask = (int)(g_pixelPackGreenMask);
     const int blueMask = (int)(g_pixelPackBlueMask);
 
-    const int redDelta =
-        ((g_fogParamsActive.packedColorRed - (redMask & packedColor)) * blend255) >> 8;
     const int greenDelta =
-        ((g_fogParamsActive.packedColorGreen - (greenMask & packedColor)) * blend255) >> 8;
+        ((fogGreen - (greenMask & packedColor)) * blend255) >> 8;
     const int blueDelta =
         ((g_fogParamsActive.packedColorBlue - (blueMask & packedColor)) * blend255) >> 8;
+    const int redMask = (int)(g_pixelPackRedMask);
+    const int redDelta =
+        ((g_fogParamsActive.packedColorRed - (redMask & packedColor)) * blend255) >> 8;
 
-    *ioPackedColor = packedColor + (redDelta & redMask) + (greenDelta & greenMask) + blueDelta;
+    int blendedColor = redDelta & redMask;
+    blendedColor += blueDelta;
+    blendedColor += greenDelta & greenMask;
+    blendedColor += packedColor;
+
+    *ioPackedColor = blendedColor;
 }
 
 /**

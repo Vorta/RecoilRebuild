@@ -2793,7 +2793,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zmath_build_perspective_texture_interpolants;
     - Group: engine.zmath;
     - Model: source-faithful;
-    - Blocker: tier S blocked: retained source inlines the U/V over-Z plane construction inside zMath_BuildPerspectiveTextureInterpolants, matching BN's no-call U/V plane regions and improving local VC5SP3 zmath_build_perspective_texture_interpolants from 910 to 874 unmasked mismatches after 76 relocation-masked bytes and 1 trimmed VC NOP byte (BN 978 bytes, VC5 912 bytes). Remaining drift is the entry/prologue, initial Subtract/Cross/Dot helper-call shape, stack layout, and x87 scheduling versus BN's fully inlined vector math body.
+    - Blocker: tier S blocked: retained source inlines the U/V over-Z plane construction inside zMath_BuildPerspectiveTextureInterpolants, matching BN's no-call U/V plane regions, but VC5SP3 zmath_build_perspective_texture_interpolants still fails with 874 unmasked mismatches after 76 relocation-masked bytes and 1 trimmed VC NOP byte (BN 978 bytes, VC5 912 bytes). Same-session source-worker probe directly inlining the remaining vector helper math regressed to 963 mismatches and a 1040-byte VC5 body, so it was reverted. Remaining drift is entry/prologue, stack layout, helper/inlining source-shape tension, and x87 scheduling.
 
 - 0x4757c0:
   - [☑️] Reconstructed (Name: zMath::QuatFromEuler)
@@ -18046,7 +18046,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: znetwork_shutdown_session_runtime;
     - Group: engine.znetwork;
     - Model: source-faithful;
-    - Blocker: tier S byte comparison remains blocked after dependency cleanup refinements: 152 unmasked mismatches, 112 relocation bytes masked, 7 trailing VC NOP bytes trimmed, BN size 275, VC5 size 272; direct B blockers remain 0x489fa0, 0x48a030, and 0x48c120
+    - Blocker: tier S blocked: zNetwork::ShutdownSessionRuntime remains at 152 unmasked mismatches after 112 relocation-masked bytes and 7 trimmed VC NOP bytes (BN 275 bytes, VC5 272 bytes), and its lower helper blockers remain 0x48c120 at 193 mismatches, 0x489fa0 at 98 mismatches, and 0x48a030 at 132 mismatches under znetwork_shutdown_runtime. Same-session zNetwork helper source-worker found no retained source-faithful improvement.
 
 - 0x489f30:
   - [✅] Reconstructed (Name: zNetwork::ClearEnumeratedSessionList)
@@ -18124,7 +18124,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: znetwork_clear_player_record_list;
     - Group: engine.znetwork;
     - Model: source-faithful;
-    - Blocker: tier S byte comparison remains blocked after two-pass list cleanup recovery: 132 unmasked mismatches, 16 relocation bytes masked, 4 trailing VC NOP bytes trimmed, BN size 156, VC5 size 112
+    - Blocker: tier S blocked: VC5SP3 znetwork_shutdown_runtime compare for zNetwork::ClearPlayerRecordList remains at 132 unmasked mismatches after 16 relocation-masked bytes and 4 trimmed VC NOP bytes (BN 156 bytes, VC5 112 bytes). Same-session zNetwork helper source-worker rechecked this sibling after 0x48c120 probes; no retained source-faithful improvement was found.
 
 - 0x48a0d0:
   - [✅] Reconstructed (Name: zNetwork_DPlay::RefreshServiceProviderList)
@@ -22092,7 +22092,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_texture_mip_select_variant_image;
     - Group: engine.zrndr;
     - Model: source-faithful;
-    - Blocker: tier S blocked: current VC5SP3 target zrndr_texture_mip_select_variant_image improves from 272 to 239 unmasked function-byte mismatches after the selected-vertex loop register/lifetime pass plus local mip-delta scratch array, with 24 relocation-masked bytes and 15 trimmed VC NOP bytes (BN 372 bytes, VC5 384 bytes). Remaining drift is post-loop x87 mip-metric expression scheduling/reduction versus BN's stack-slot reuse.
+    - Blocker: tier S blocked: current VC5SP3 target zrndr_texture_mip_select_variant_image remains at 239 unmasked mismatches after 24 relocation-masked bytes and 15 trimmed VC NOP bytes (BN 372 bytes, VC5 384 bytes) after the selected-vertex loop register/lifetime pass plus local mip-delta scratch array. Same-session source-worker probes for denominator scratch temps, reordered invZ temps, mutable denominator temps, direct division formula, and reversed max comparison operands were byte-neutral or regressed up to 342 mismatches and were reverted. Remaining drift is post-loop x87 mip-metric expression scheduling/reduction versus BN stack-slot reuse.
 
 - 0x4992b0:
   - [✅] Reconstructed (Name: zRndr::PlotPixel16)
@@ -22495,7 +22495,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_blend_packed_color_565_with_fog_in_place;
     - Group: engine.zrndr;
     - Model: source-faithful;
-    - Blocker: tier S blocked: local VC5SP3 target zrndr_blend_packed_color_565_with_fog_in_place now covers this leaf and fails with 66 unmasked function-byte mismatches after 28 relocation-masked bytes; BN and VC5 bodies are both 96 bytes, but current /MD /O2 /Ob0 source evaluates packed-color/mask channels in a different register/order shape than retail. Owner/data remain accepted and functional target still passes; remaining debt is focused zRndr_Fog.cpp packed-565 fog blend codegen shape.
+    - Blocker: tier S blocked: retained zRndr_Fog.cpp source reorders BlendPackedColor565WithFogInPlace green/blue/red channel locals to better match retail VC5 shape and improves zrndr_blend_packed_color_565_with_fog_in_place from 66 to 48 unmasked mismatches after 28 relocation-masked bytes (BN 96 bytes, VC5 96 bytes). Functional target passes, owner/data remain accepted, and rejected same-session variants either regressed up to 77 mismatches, grew code to 112 bytes, or required non-source-faithful volatile forcing. Remaining drift is packed-color/mask channel register allocation and instruction ordering versus retail.
 
 - 0x49b7e0:
   - [☑️] Reconstructed (Name: zRndr::SpanMasked16FromTex16SwitchVShift)
@@ -47688,5 +47688,5 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: time_tick;
     - Group: misc.authored_stubs;
     - Model: source-faithful;
-    - Blocker: Tier B accepted for Time::Tick; tier S remains open because same-session VC5SP3 time_tick now fails with 85 unmasked mismatches after 84 relocation-masked bytes and 1 trimmed VC NOP byte (BN 174 bytes, VC5 176 bytes). Remaining drift is x87 scheduling, import thunk call shape, reset-store placement, and stack/register-temporary ordering around delta accumulation and clamp stores.
+    - Blocker: tier S blocked: VC5SP3 time_tick remains at 85 unmasked mismatches after 84 relocation-masked bytes and 1 trimmed VC NOP byte (BN 174 bytes, VC5 176 bytes). Same-session source-worker probes for saved time-scale local plus early reset, frame store before unscaled accumulation/reset, integer-literal reset, unscaled accumulation then reset then frame store, and direct frame after unscaled accumulation either regressed or produced only a non-source-faithful 84-mismatch variant, so all were reverted. Remaining drift is x87 scheduling, import thunk call shape, reset-store placement, and stack/register temporary ordering around delta accumulation and clamp stores.
 
