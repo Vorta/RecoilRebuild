@@ -2871,18 +2871,26 @@ int GetClearScreenBufferEnabled() {
     return g_zVideo_ClearScreenBufferEnabled;
 }
 
-// Reimplements 0x4a68e0: zVideo::Dispatch_LockDisplayModeSurfaceState
+/**
+ * Reimplements 0x4a68e0: zVideo::Dispatch_LockDisplayModeSurfaceState.
+ * Purpose: Dispatches the configured surface lock provider for the display-mode surface state.
+ */
 int Dispatch_LockDisplayModeSurfaceState() {
     return g_zVideo_pfnLockSurfaceState(&g_zVideo_DisplayModeSurfaceState);
 }
 
-// Reimplements 0x4a68f0: zVideo::Dispatch_UnlockDisplayModeSurfaceState
+/**
+ * Reimplements 0x4a68f0: zVideo::Dispatch_UnlockDisplayModeSurfaceState.
+ * Purpose: Dispatches the configured surface unlock provider for the display-mode surface state.
+ */
 int Dispatch_UnlockDisplayModeSurfaceState() {
     return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_DisplayModeSurfaceState);
 }
 
-// Reimplements 0x4a67d0: zVideo::Dispatch_UnlockSwSurfaceState
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
+/**
+ * Reimplements 0x4a67d0: zVideo::Dispatch_UnlockSwSurfaceState.
+ * Purpose: Dispatches the configured surface unlock provider for the software surface state.
+ */
 int Dispatch_UnlockSwSurfaceState() {
     return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_SwSurfaceState);
 }
@@ -5378,7 +5386,10 @@ extern "C" int __fastcall zVid_Image_SetPixels(
     return 0;
 }
 
-// Reimplements 0x4a6e80: zVideo_buff_CaptureSurfaceToImage
+/**
+ * Reimplements 0x4a6e80: zVideo_buff_CaptureSurfaceToImage.
+ * Purpose: Captures a selected 16-bit video surface into an owned zVid image.
+ */
 extern "C" zVidImagePartial *__fastcall zVideo_buff_CaptureSurfaceToImage(
     int sourceSelector
 ) {
