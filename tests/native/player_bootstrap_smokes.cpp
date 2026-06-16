@@ -47,6 +47,33 @@ extern "C" int player_get_save_state_list_head_smoke(void) {
     return nullOk && valueOk ? 0 : 1;
 }
 
+extern "C" int player_init_save_state_list_smoke(void) {
+    zUtil_SaveGameState *const oldHead = g_PlayerSaveStateListHead;
+    zUtil_SaveGameState *const oldTail = g_PlayerSaveStateListTail;
+    const int oldAux = g_PlayerSaveStateListAux;
+    const int oldCount = g_PlayerSaveStateCount;
+
+    zUtil_SaveGameState head = {};
+    zUtil_SaveGameState tail = {};
+    g_PlayerSaveStateListAux = 1;
+    g_PlayerSaveStateListHead = &head;
+    g_PlayerSaveStateListTail = &tail;
+    g_PlayerSaveStateCount = 2;
+
+    Player::InitSaveStateList();
+
+    const bool ok = g_PlayerSaveStateListAux == 0 &&
+                    g_PlayerSaveStateListHead == 0 &&
+                    g_PlayerSaveStateListTail == 0 &&
+                    g_PlayerSaveStateCount == 0;
+
+    g_PlayerSaveStateListHead = oldHead;
+    g_PlayerSaveStateListTail = oldTail;
+    g_PlayerSaveStateListAux = oldAux;
+    g_PlayerSaveStateCount = oldCount;
+    return ok ? 0 : 1;
+}
+
 extern "C" int player_clone_type6_node_from_template_and_rename_smoke(void) {
     zClass_TypeListLink *const oldType6Head = zClass_TypeList::Head(6);
     zClass_TypeListLink *const oldType6Tail = zClass_TypeList::Tail(6);

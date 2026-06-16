@@ -28728,15 +28728,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x41ec00:
   - [✅] Reconstructed (Name: Player::InitSaveStateList)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: Player; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: Player save-state/bootstrap record-global subsystem; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Player::InitSaveStateList;
     - File: src/Battlesport/player.cpp;
     - Target: player_init_save_state_list;
     - Group: battlesport.player;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41ec30:
   - [✅] Reconstructed (Name: Player::InitAndRegisterTopMsgPanel1)
@@ -29365,15 +29365,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x42aa40:
   - [✅] Reconstructed (Name: Player::GetSaveStateListHead)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: Player save-state/bootstrap record-global subsystem; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: Player save-state/bootstrap record-global subsystem; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Player::GetSaveStateListHead;
     - File: src/Battlesport/player.cpp;
     - Target: player_get_save_state_list_head;
     - Group: battlesport.player;
-    - Model: pending;
-    - Blocker: Player save-state global data owner gate pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x42aa50:
   - [☑️] Reconstructed (Name: Player::UpdateDebugOverlayHud)

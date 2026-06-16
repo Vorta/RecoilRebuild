@@ -67,10 +67,10 @@ float g_Player_GameplayInputStepScale = 0.03f;
 float g_Player_CameraHeadingDotAbs = 1.0f;
 float g_Player_CameraHeadingLerpBaseWhenFlagClear = 3.0f;
 float g_Player_CameraHeadingLerpBaseWhenFlagSet = 2.0f;
+int g_PlayerSaveStateListAux = 0;
 zUtil_SaveGameState *g_PlayerSaveStateListHead = 0;
 zUtil_SaveGameState *g_PlayerSaveStateListTail = 0;
 int g_PlayerSaveStateCount = 0;
-int g_PlayerSaveStateListAux = 0;
 zUtil_SaveGameState *g_LocalPlayerSaveState = 0;
 zUtil_SaveGameState *g_Player2SaveState = 0;
 zUtil_SaveGameState *g_CurrentPlayerSaveState = 0;
@@ -2142,8 +2142,13 @@ void RegisterProjectileCameraFxPass3UiCleanup() {
 void ResetProjectileCameraFxPass3UiSingleton() {
 }
 
-// Reimplements 0x41ec00: Player::InitSaveStateList
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x41ec00: Player::InitSaveStateList
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: clear the player save-state list bootstrap globals.
+ * Source owner/evidence: Player save-state/bootstrap record-global subsystem;
+ * resets the authored head, tail, count, and auxiliary list globals.
+ */
 void InitSaveStateList() {
     g_PlayerSaveStateListAux = 0;
     g_PlayerSaveStateListTail = 0;

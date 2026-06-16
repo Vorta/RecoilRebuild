@@ -363,7 +363,13 @@ Active queue sections:
   - Route the remaining 0x4143c0/0x40e880 data gates through the HUD
     stats-list and `HudUiTriplet::RebuildDisplay` owner/data slices. Do not
     broaden into the unrelated `zhud_ui.cpp` docblock backlog.
+  - The Player bootstrap frontier routes through 0x420d10 to 0x42aa40
+    `Player::GetSaveStateListHead`; treat the save-state list globals as a
+    Player save-state/bootstrap record-global subsystem before promoting the
+    launch caller. 0x41ec00 and 0x42aa40 are now accepted at tier B after
+    source-order, functional-smoke, and VC5 data-symbol evidence for the
+    save-state list globals.
 - Next action:
   - Refresh the launch-panel frontier from the HudUiNetGameSetupPanel group,
     then follow the lowest visible blocker from the Player bootstrap frontier,
-    currently 0x420d10 `Player::InitStateFromNameAndMasterCommonData`.
+    currently 0x44e270 `zClass_Object3D::gwObject3DGetPosition`.

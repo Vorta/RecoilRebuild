@@ -165,6 +165,7 @@ extern "C" int gamenet_apply_pkt06_player_state_snapshot_smoke(void);
 extern "C" int gamenet_handle_pkt06_player_state_snapshot_smoke(void);
 extern "C" int gamenet_spawn_remote_player_missing_template_smoke(void);
 extern "C" int player_get_save_state_list_head_smoke(void);
+extern "C" int player_init_save_state_list_smoke(void);
 extern "C" int player_clone_type6_node_from_template_and_rename_smoke(void);
 extern "C" int player_create_from_names_at_pose_smoke(void);
 extern "C" int zutil_save_game_state_list_smoke(void);
@@ -10456,6 +10457,8 @@ int main(int argc, char **argv) {
          gamenet_spawn_remote_player_missing_template_smoke},
         {"player_get_save_state_list_head_smoke",
          player_get_save_state_list_head_smoke},
+        {"player_init_save_state_list_smoke",
+         player_init_save_state_list_smoke},
         {"player_clone_type6_node_from_template_and_rename_smoke",
          player_clone_type6_node_from_template_and_rename_smoke},
         {"player_create_from_names_at_pose_smoke",
