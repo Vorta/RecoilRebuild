@@ -44,6 +44,8 @@ available even when no groups are active.
   clear.
 - Use `python tools/recoil.py audit groups --summary --wip-limit 4` to check
   for stale, completed, or overgrown groups.
+- Use `python tools/recoil.py audit handoff --path .agent/IMPLEMENTATION_GROUPS.md
+  --strict` before launching workers from live handoff blocks.
 
 ## Active Group Template
 
@@ -51,6 +53,7 @@ available even when no groups are active.
 ### Group: short descriptive name
 
 - Anchor: 0xNNNNNN Name
+- Queue: ready owner/data work / blocked pending evidence or policy / shared blocker / deferred verify-only debt
 - Reason: dependency closure / class cluster / recursive cycle / shared ABI layout / source file cluster
 - Source blockers:
   - 0xNNNNNN Name
@@ -58,11 +61,81 @@ available even when no groups are active.
   - python tools/recoil.py status 0xNNNNNN
 ```
 
+## Source Worker Handoff Template
+
+```text
+### Parent batch card: short batch name
+
+- Task kind: active WIP / address-led owner-data work / validation handoff
+- Active group or address:
+- Evidence packets required:
+- Evidence packets received:
+- Worker allocation:
+- Validation scope:
+- Exit criteria:
+
+### Source-worker handoff: short scope name
+
+- Owner/source scope:
+- Anchor addresses/groups:
+- Allowed write paths:
+- Forbidden paths:
+- Evidence inputs:
+  - BN fact packet:
+  - source-owner packet:
+  - provider/data packet:
+  - scaffold audit packet:
+  - workspace/librarian packet:
+- Expected source model:
+- Validation commands:
+- Return packet:
+  - changed files
+  - evidence used and caveats
+  - commands run with pass/fail
+  - blockers and overlap warnings
+  - non-authoritative marker recommendations only
+```
+
+## Verifier Handoff Template
+
+```text
+### Verifier handoff: short scope name
+
+- Validation scope:
+- Anchor addresses/groups:
+- Exact commands:
+- Evidence inputs:
+  - source worker packet:
+  - BN fact packet:
+  - provider/data packet:
+- Forbidden paths:
+- Return packet:
+  - exact command lines
+  - pass/fail results
+  - key output lines
+  - failure category
+  - next narrow verification command
+```
+
 ## Active Groups
+
+Active queue sections:
+
+- Ready owner/data work: HUD app-state class cleanup remains actionable through
+  the HudCmdDialog/HudCmd* table/source-shape data blocker.
+- Blocked pending evidence or policy: zVideo/zRndr renderer dispatch remains
+  blocked on the ESP-pivot span-family source model unless new evidence or
+  explicit policy direction appears.
+- Shared blockers: the former zVideo adjust-surfaces cleanup is folded into
+  the renderer dispatch/global owner audit because both route through 0x48ff70
+  and the 0x42e330 caller/data path.
+- Deferred verify-only debt: keep tier S-only zVideo/zRndr and HUD addresses
+  in plan/VC manifests, not as active groups, while `tier_s_priority_ready=false`.
 
 ### Group: zVideo renderer dispatch/global owner audit
 
 - Anchor: 0x4a77a0 zVideo::BindRendererDispatch
+- Queue: blocked pending evidence or policy; shared blocker.
 - Reason: renderer dispatch globals and DirectDraw hardware-device data shared
   by memory-query, surface, palette, mode-setting, restore, and teardown
   callers.
@@ -78,6 +151,11 @@ available even when no groups are active.
     and 0x48d340. The 0x42e330 caller path currently routes through 0x48ff70,
     and 0x48ff70 remains data-blocked by downstream zRndr
     SelectSpanRoutines callback/global ownership.
+  - Folded adjust-surfaces status: 0x4a6900 has accepted direct renderer
+    adjust-helper source and VC5 byte evidence, and `verify functional`
+    evidence for 0x42e330 and 0x48ff70 has been repaired. The remaining
+    reason to keep that path active is this shared 0x48ff70 data gate, so it
+    should not live as a separate group.
   - Same-session BN/source-worker packets for the 0x49b7e0-led switch-vshift
     span family confirm the retail source shape intentionally pivots ESP
     through gRndr_SavedEspSlot and writes destination words with push/sub-esp.
@@ -98,33 +176,12 @@ available even when no groups are active.
     BN/source-model evidence or explicit user approval for a lower-level
     implementation strategy. Prefer another active owner/data WIP while this
     group remains blocked by the current source rules.
+  - If the caller/data path is resumed, start with
+    `python tools/recoil.py status 0x42e330 --lane binary`, then route through
+    the 0x48ff70 data blocker before assigning any source worker.
   - Re-run `python tools/recoil.py audit groups --summary --wip-limit 4` after
     each owner/data update and prune this group again when it becomes
     verify-only.
-
-### Group: zVideo adjust-surfaces dispatch cleanup
-
-- Anchor: 0x4a6900 zVideo::PresentOrAdjustSurfacesIfEnabled
-- Reason: source-file owner/data readiness for renderer-present dispatch used
-  by display initialization and per-frame callers.
-- Current blockers:
-  - The obsolete production adapter was removed and RecoilApp display
-    initialization now calls the direct renderer adjust helper.
-  - Renderer dispatch globals are accepted through the typed renderer dispatch
-    owner, and VC5SP3 verification for 0x4a6900 has zero unmasked byte
-    mismatches.
-  - Remaining group value is caller/data propagation, especially around
-    0x42e330.
-- Next action:
-  - Recheck `python tools/recoil.py status 0x42e330 --lane binary` before any
-    further source or marker work. Same-session refresh found the
-    `recoil_app_initialize_display` functional manifest's smoke was implemented
-    but not registered in the native smoke table; the registry was repaired and
-    `python tools/recoil.py verify functional 0x42e330` now passes again. The
-    binary frontier still routes the data gate through 0x48ff70, and
-    `python tools/recoil.py verify functional 0x48ff70` passes; 0x48ff70 remains
-    data-blocked only by the downstream zRndr SelectSpanRoutines
-    callback/global owner.
 
 ### Group: HUD app-state class cleanup
 
@@ -133,6 +190,7 @@ available even when no groups are active.
   RecoilStateConfirmQuit::RecoilStateConfirmQuit, 0x41c560
   HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent, and 0x40d150
   HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent
+- Queue: ready owner/data work.
 - Reason: HUD app-state, overlay, and dialog class source-shape cleanup.
 - Current blockers:
   - Selected app-state and overlay owners no longer rely on local

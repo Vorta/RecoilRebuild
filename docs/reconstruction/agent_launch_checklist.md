@@ -22,12 +22,24 @@ irrelevant. For documentation or tooling cleanup, inspect target files and run
 targeted checks instead of selecting an address. For active implementation or
 verification handoff, also run the address-specific doctor command from
 `AGENTS.md`.
+The quick doctor includes temporary group WIP hygiene and fails if checks
+introduce new tracked dirty paths. Use `--allow-dirty-delta` only when a
+tooling-maintenance task intentionally changes tracked files.
 
 For agent-facing command, doc, skill, or role drift:
 
 ```powershell
 python tools/recoil.py audit agent-surface --strict
 ```
+
+For generated local artifact inventory and cleanup planning:
+
+```powershell
+python tools/recoil.py audit artifacts
+```
+
+`audit artifacts` is dry-run by default. Review the selected stale roots before
+rerunning with `--delete`.
 
 If a tool, instruction, environment, or workspace setup blocks work or forces a
 workaround, record it for a future agent instead of burying it in the final
@@ -99,11 +111,48 @@ The parent agent is an orchestrator, not the default implementer. After
 selecting active WIP or binary-lane work, partition non-overlapping owner/source
 scopes and spawn `recoil_source_worker` agents for source/test edits.
 
+Use the role pipeline deliberately: the parent schedules and integrates;
+workspace/BN/owner/provider/scaffold roles return evidence packets only; source
+workers edit one assigned slice; verifier agents run targeted checks after the
+parent fixes the validation scope.
+
+Create a short parent batch card before any implementation or verification
+handoff. It should record the task kind, active group or address, evidence
+packets required and received, worker allocation, validation scope, and exit
+criteria.
+
 Source-worker handoffs must name the owner/source scope, address or group
 anchor, allowed and forbidden paths, evidence inputs, expected source model, and
 narrow validation commands. Do not assign overlapping production source files,
 verification manifests, generated outputs, BN database state, or `.agent`
 ledgers.
+
+Minimum source-worker handoff fields:
+
+- Owner/source scope.
+- Anchor addresses or group.
+- Allowed write paths and forbidden paths.
+- Evidence packet inputs.
+- Expected source model.
+- Exact validation commands.
+- Return packet fields: changed files, evidence used, checks run, blockers,
+  overlap warnings, and non-authoritative marker recommendations.
+
+Minimum verifier handoff fields:
+
+- Validation scope.
+- Anchor addresses or group.
+- Exact commands.
+- Evidence packet inputs.
+- Forbidden paths.
+- Return packet fields: exact command lines, pass/fail results, key output
+  lines, failure category, and next narrow verification command.
+
+Before launching live markdown handoff blocks, run:
+
+```powershell
+python tools/recoil.py audit handoff --path .agent/IMPLEMENTATION_GROUPS.md --strict
+```
 
 Workers may inspect BN and edit only assigned source/test files. They must not
 change BN names/types/comments, save BN, update plan markers, file workspace
@@ -200,11 +249,21 @@ python tools/recoil.py audit source-map --check docs/reconstruction/source_file_
 Use `source_file_map.md` plus current BN source comments and call-site evidence.
 If `--check` reports stale, regenerate only when current source movement,
 provenance docblocks, or legacy source comments explain the drift.
+Regenerate explicitly:
 
-For docblock checks, audit touched source files before marker work. A broad
-`python tools/recoil.py audit docblocks --path src --summary --max 20` run
-currently reports legacy backlog and should be treated as status debt, not as a
-reason to block unrelated non-address workspace cleanup.
+```powershell
+python tools/recoil.py audit source-map --update --output docs/reconstruction/source_file_map.md
+```
+
+For docblock checks, audit changed source files before marker work:
+
+```powershell
+python tools/recoil.py audit docblocks --changed --summary --max 50
+```
+
+A broad `python tools/recoil.py audit docblocks --path src --summary --max 20`
+run currently reports legacy backlog and should be treated as status debt, not
+as a reason to block unrelated non-address workspace cleanup.
 
 Check:
 
