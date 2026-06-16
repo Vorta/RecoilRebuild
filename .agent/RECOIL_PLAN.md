@@ -21611,7 +21611,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_overlay_blend_row555_mmx;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: BN zRndr_Overlay.cpp 555 MMX row leaf uses true MMX movq/pand/psrlw/pmullw/paddw/emms qword loop and stack mask vectors. Functional target zrndr_overlay_blend_row555_mmx passes, but current VC5SP3 byte compare fails with 207 unmasked bytes, 16 relocation-masked bytes, 3 trimmed VC NOPs, BN size 223, VC size 128 because production source is a portable C equivalent. Source owner/Data remain blocked under shared zRndr overlay/span callback-global owner until an approved source-faithful MMX strategy exists.
+    - Blocker: BN zRndr_Overlay.cpp 555 MMX row leaf uses true MMX movq/pand/psrlw/pmullw/paddw/emms qword loop and stack mask vectors. Same-session source pass reshaped the portable C equivalent to the BN-observed reverse-indexed group loop, so functional target zrndr_overlay_blend_row555_mmx still passes and VC5SP3 drift improves from 207 to 204 unmasked mismatches after 16 relocation-masked bytes and 11 trailing VC NOPs, BN size 223, VC5 size 144. Source owner/Data remain blocked under shared zRndr overlay/span callback-global owner until an approved source-faithful MMX strategy exists.
 
 - 0x48d5f0:
   - [✅] Reconstructed (Name: zRndr::OverlayBlendRow565_Mmx)
@@ -21624,7 +21624,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_overlay_blend_row565_mmx;
     - Group: engine.zrndr;
     - Model: pending;
-    - Blocker: BN zRndr_Overlay.cpp 565 MMX row leaf builds replicated 565 masks, premul RGB-pair vectors, and destination-scale words on the stack, processes four 16-bit pixels per MMX qword, and finishes with emms. Source now models the four-pixel grouping and BN premul-pair globals for tier C behavior, but Source owner/Data remain pending under the shared zRndr overlay/span callback-global owner because the retail MMX instruction source shape is not recovered.
+    - Blocker: BN zRndr_Overlay.cpp 565 MMX row leaf uses true MMX movq/pand/psrlw/pmullw/paddw/emms qword loop and stack mask vectors. Same-session source pass reshaped the portable C equivalent to the BN-observed reverse-indexed group loop, so functional target zrndr_overlay_blend_row565_mmx still passes and VC5SP3 drift improves from 207 to 205 unmasked mismatches after 16 relocation-masked bytes and 11 trailing VC NOPs, BN size 223, VC5 size 144. Source owner/Data remain blocked under shared zRndr overlay/span callback-global owner until an approved source-faithful MMX strategy exists.
 
 - 0x48d6d0:
   - [☑️] Reconstructed (Name: zRndr_OverlayRect::Submit)
@@ -35777,7 +35777,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_options_dialog_destructor_core;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S blocked: same-session frontier for HudOptionsDialog::DestructorCore shows lower direct callee 0x4b50c0 HudUiZrdWidget::DestructorCore remains tier B. Its direct helper 0x4ba4d0 HudUiPanelPtrVector::EraseRange is now tier S, but current VC5SP3 target hud_ui_zrd_widget_destructor_core still fails with 423 unmasked mismatches after 76 relocation-masked bytes and 13 trailing VC NOPs; do not add caller-level HudOptionsDialog VC5 coverage or promote this destructor until the ZRD destructor codegen blocker is resolved.
+    - Blocker: tier S blocked: same-session frontier for HudOptionsDialog::DestructorCore shows lower direct callee 0x4b50c0 HudUiZrdWidget::DestructorCore remains tier B. Its direct helper 0x4ba4d0 HudUiPanelPtrVector::EraseRange is tier S, but current VC5SP3 target hud_ui_zrd_widget_destructor_core still fails with 162 unmasked mismatches after 76 relocation-masked bytes and 10 trailing VC NOPs; do not add caller-level HudOptionsDialog VC5 coverage or promote this destructor until the ZRD destructor codegen blocker is resolved.
 
 - 0x40d070:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit)
@@ -37028,7 +37028,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_ui_zrd_widget_destructor_core;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S blocked: same-session VC5SP3 target hud_ui_zrd_widget_destructor_core still fails with 423 unmasked mismatches after 76 relocation-masked bytes and 13 trailing VC NOPs, BN size 546, VC5 size 528. Direct helper 0x4ba4d0 HudUiPanelPtrVector::EraseRange is now tier S; remaining drift is local HudUiZrdWidget destructor codegen around the first label-panel helper call convention/stack local shape, iterator register lifetimes, EH stack-frame offsets, and final base-cleanup epilogue.
+    - Blocker: tier S blocked: same-session source pass reshaped HudUiZrdWidget destructor cleanup with a one-byte local unary functor copy, separate input/output iterators for label-panel cleanup, and retained ReleaseIfNotDefault return assignments. Functional target hud_ui_zrd_widget_destructor_core passes, but VC5SP3 target still fails with 162 unmasked mismatches after 76 relocation-masked bytes and 10 trailing VC NOPs, BN size 546, VC5 size 544. Direct helper 0x4ba4d0 HudUiPanelPtrVector::EraseRange is tier S; remaining drift is local destructor EH/cleanup codegen around vector erase register choices, image/base cleanup register lifetime, generated local functor call target versus address-backed helper call, and final vector/base cleanup epilogue.
 
 - 0x4b52f0:
   - [✅] Reconstructed (Name: HudUiZrdWidget::DeleteChildIfPresent)

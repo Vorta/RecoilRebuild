@@ -1596,8 +1596,10 @@ void __fastcall OverlayBlendRow555_Mmx(
     int pixelCount
 ) {
     int groupCount = pixelCount >> 2;
-    unsigned short *row = rowPixels16;
-    while (groupCount > 0) {
+    unsigned short *rowEnd = rowPixels16 + (groupCount << 2);
+    int groupIndex = -groupCount;
+    while (groupIndex < 0) {
+        unsigned short *row = rowEnd + (groupIndex << 2);
         for (int lane = 0; lane < 4; ++lane) {
             const unsigned int dst = row[lane];
             const unsigned int red =
@@ -1613,8 +1615,7 @@ void __fastcall OverlayBlendRow555_Mmx(
                 (g_swOverlayPremulBPair & 0xffffU);
             row[lane] = (unsigned short)(red | green | (blue & 0x001fU));
         }
-        row += 4;
-        --groupCount;
+        ++groupIndex;
     }
 }
 
@@ -1632,8 +1633,10 @@ void __fastcall OverlayBlendRow565_Mmx(
     int pixelCount
 ) {
     int groupCount = pixelCount >> 2;
-    unsigned short *row = rowPixels16;
-    while (groupCount > 0) {
+    unsigned short *rowEnd = rowPixels16 + (groupCount << 2);
+    int groupIndex = -groupCount;
+    while (groupIndex < 0) {
+        unsigned short *row = rowEnd + (groupIndex << 2);
         for (int lane = 0; lane < 4; ++lane) {
             const unsigned int dst = row[lane];
             const unsigned int red =
@@ -1649,8 +1652,7 @@ void __fastcall OverlayBlendRow565_Mmx(
                 (g_swOverlayPremulBPair & 0xffffU);
             row[lane] = (unsigned short)(red | green | (blue & 0x001fU));
         }
-        row += 4;
-        --groupCount;
+        ++groupIndex;
     }
 }
 

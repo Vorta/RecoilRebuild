@@ -704,12 +704,17 @@ available even when no groups are active.
     rightDelta pre-shift/pairCount copy spelling preserved behavior but was
     byte-neutral at 67 unmasked mismatches and was reverted; BN still shifts
     EDX before copying the pair count while VC5 keeps the shifted local in ESI.
-    0x48d510/0x48d5f0 still report 207 unmasked mismatches
-    with BN's MMX prologue/stack-vector body versus the portable C row loop.
-    The VC5SP3 include tree still exposes no MMX intrinsic header, and adding
-    non-CPU-probe raw assembly remains forbidden without explicit approval, so
-    the overlay row callback/global owner should not be reselected for B/S
-    promotion until new approved MMX source evidence exists.
+    A same-session MMX row source-shape pass replaced the portable forward
+    group loop with BN's reverse-indexed group shape. Functional still passes,
+    while `verify vc5 zrndr_overlay_blend_rows` now reports 204 unmasked
+    mismatches for 0x48d510 and 205 for 0x48d5f0 after 16 relocation-masked
+    bytes and 11 trailing VC NOPs, BN size 223 and VC5 size 144. The remaining
+    blocker is still BN's true MMX prologue/stack-vector instruction body
+    versus the portable C row loop. The VC5SP3 include tree still exposes no
+    MMX intrinsic header, and adding non-CPU-probe raw assembly remains
+    forbidden without explicit approval, so the overlay row callback/global
+    owner should not be reselected for B/S promotion until new approved MMX
+    source evidence exists.
     0x4997d0
     zRndr::FillSpan16Opaque is another same-family push-write span blocker from
     the 0x48ff80 frontier even though older group membership output did not
@@ -1409,8 +1414,12 @@ available even when no groups are active.
     cursor walk between tail copy and `_Last` update, `verify functional
     0x4ba4d0` passes, and `verify vc5 0x4ba4d0` reports zero unmasked
     mismatches, zero relocation bytes, BN size 50, VC5 size 64, and 14 trailing
-    VC NOPs trimmed. The 0x4b50c0 HudUiZrdWidget destructor remains tier B on
-    its own local EH/cleanup codegen drift.
+    VC NOPs trimmed. A follow-up 0x4b50c0 HudUiZrdWidget destructor pass
+    reshaped the first label-panel cleanup into a one-byte local unary functor
+    copy with separate input/output iterators and retained image-release return
+    assignments; `verify functional hud_ui_zrd_widget_destructor_core` passes
+    and `verify vc5 0x4b50c0` improves from 423 to 162 unmasked mismatches,
+    but the destructor remains tier B on local EH/cleanup codegen drift.
   - Same-session HudUiPanelPtrVector::InsertN refresh closed the sibling owner
     blocker: `python tools/recoil.py verify functional 0x4ba510` passes, BN
     HLIL/MLIL shows the recovered VC5 vector insert only touches
