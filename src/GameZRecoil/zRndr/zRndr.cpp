@@ -9789,10 +9789,10 @@ void __fastcall zRndr_LensFlare_DrawSampleStageClipped(
     float right = sampleCenter->x + sampleRadius;
     float bottom = sampleCenter->y + sampleRadius;
 
-    float clipLeft = 0.0f;
-    float clipTop = 0.0f;
-    float clipRight = 0.0f;
-    float clipBottom = 0.0f;
+    float clipLeft;
+    float clipTop;
+    float clipRight;
+    float clipBottom;
     if (clipRect != 0) {
         clipLeft = (float)(clipRect->left);
         clipTop = (float)(clipRect->top);
@@ -9803,8 +9803,10 @@ void __fastcall zRndr_LensFlare_DrawSampleStageClipped(
             return;
         }
     } else {
-        clipRight = (float)(zRndr::g_activeRegionWidth);
-        clipBottom = (float)(zRndr::g_activeRegionHeight);
+        clipLeft = 0.0f;
+        clipTop = 0.0f;
+        clipRight = (float)((unsigned int)(zRndr::g_activeRegionWidth));
+        clipBottom = (float)((unsigned int)(zRndr::g_activeRegionHeight));
         if (left > clipRight - 2.0f || top > clipBottom - 2.0f || right < 1.0f || bottom < 1.0f) {
             return;
         }
@@ -9906,8 +9908,8 @@ void __fastcall zRndr_LensFlare_DrawVisibleSampleStages(
     zRndr_LensFlareVisibleSampleDef *visibleSampleDef,
     float visibilityAlpha
 ) {
-    const float activeWidth = (float)(zRndr::g_activeRegionWidth);
-    const float activeHeight = (float)(zRndr::g_activeRegionHeight);
+    const float activeWidth = (float)((unsigned int)(zRndr::g_activeRegionWidth));
+    const float activeHeight = (float)((unsigned int)(zRndr::g_activeRegionHeight));
     const float baseRadius = visibilityAlpha * activeWidth * 0.03125f;
     const float largeRadius = baseRadius + baseRadius;
     const float halfClipWidth = activeWidth * 0.5f;

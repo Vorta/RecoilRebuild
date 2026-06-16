@@ -77,6 +77,13 @@ available even when no groups are active.
     pointers, hardware renderer dispatch globals, and the accepted software
     textured-submit dependency; source now records the BN source-file evidence
     in both docblocks and uses the recovered zVideo submit-proc typedef.
+    Follow-up local VC5SP3 coverage remains below tier S but improves:
+    0x49aa90 now branch-assigns clip locals and uses unsigned active-region
+    conversions, reducing the byte compare from 1108 to 1075 unmasked
+    mismatches; 0x49b020 uses unsigned active-region conversions, reducing the
+    byte compare from 270 to 221 unmasked mismatches. Functional targets pass;
+    remaining debt is FPU expression ordering plus stack/local/control-flow
+    shape.
   - Same-session zRndr fog-color leaf pass accepted 0x49b780 to tier B in
     `zRndr_Fog.cpp`. Current BN evidence confirmed the active fog record,
     packed channel fields, and pixel-pack masks; source now records the BN
@@ -1041,8 +1048,9 @@ available even when no groups are active.
     overlay blend state (62e9dch/62e9f0h/62e9f8h), and lens sample
     count/queue (62ea00h/62ea04h); functional smokes pass and no VC5 COFF
     byte target exists yet. Broader stage-submit entries 0x49aa90 and
-    0x49b020 intentionally remain below tier B until their
-    provider-dispatch/active-region data gates are audited.
+    0x49b020 have since passed owner/data gates to tier B and remain tier S
+    debt because their VC5 COFF compares still have lens-stage FPU/local-shape
+    drift.
     Same-session 0x493df0 zRndr_DrawFlatQueued source-shape pass removed the
     behavior-only intersection/sort scanline body and unsupported fallback
     span-builder guards, added the BN-backed zRndr_Draw.cpp source-file
