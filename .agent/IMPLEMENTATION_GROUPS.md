@@ -341,6 +341,12 @@ Active queue sections:
     adding a CRT `malloc` provider-boundary entry, and confirming both helpers
     touch only caller-owned/heap-owned save-state storage with no authored
     globals.
+  - The HudUiContainer removal dependency through 0x4bc810/0x4bc860 is
+    accepted at tier B after adding immediate provenance docblocks, confirming
+    no authored globals are touched, and rerunning the existing
+    `zhud_container_child_list_smoke` functional targets. The remaining
+    0x4320f0 caller blocker is now the scoreboard removal wrapper/triplet data
+    chain, not the container detach helper.
   - The Object3D transform setters 0x44e300/0x44e030 are accepted at tier B
     after wiring the existing transform setter smoke into
     `recoil_native_smoke` and confirming both mutate caller-owned Object3D
@@ -354,6 +360,9 @@ Active queue sections:
   - Route zNetwork send/session-desc helpers and HUD row-removal/container
     dependencies as separate owner/data blockers; do not fold them into the
     GameNet owner.
+  - Route the remaining 0x4143c0/0x40e880 data gates through the HUD
+    stats-list and `HudUiTriplet::RebuildDisplay` owner/data slices. Do not
+    broaden into the unrelated `zhud_ui.cpp` docblock backlog.
 - Next action:
   - Refresh the launch-panel frontier from the HudUiNetGameSetupPanel group,
     then follow the lowest visible blocker from the Player bootstrap frontier,

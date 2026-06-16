@@ -5997,7 +5997,12 @@ int HudUiContainer::AddChild(
     return 1;
 }
 
-// Reimplements 0x4bc810: HudUiContainer::FindChildWithPrev
+/**
+ * Reimplements 0x4bc810: HudUiContainer::FindChildWithPrev.
+ * Original source path: D:\Proj\Battlesport\HudUi.cpp.
+ * Purpose: find a child in the container list and optionally report the
+ * previous sibling.
+ */
 int HudUiContainer::FindChildWithPrev(
     HudUiElement *child,
     HudUiElement **previousOut
@@ -6028,7 +6033,12 @@ int HudUiContainer::FindChildWithPrev(
     return 0;
 }
 
-// Reimplements 0x4bc860: HudUiContainer::RemoveChild
+/**
+ * Reimplements 0x4bc860: HudUiContainer::RemoveChild.
+ * Original source path: D:\Proj\Battlesport\HudUi.cpp.
+ * Purpose: unlink a child from this container and clear the child's owner
+ * links.
+ */
 int HudUiContainer::RemoveChild(
     HudUiElement *child
 ) {
@@ -17518,7 +17528,11 @@ void __fastcall RefreshScoreboardEntryRow(
     g_HudUiMgrStatsList->triplet->UpdateEntryData(entryData);
 }
 
-// Reimplements 0x4143c0: HudUi::RemoveScoreboardEntryRow (D:\Proj\Battlesport\HudUi.cpp)
+/**
+ * Reimplements 0x4143c0: HudUi::RemoveScoreboardEntryRow.
+ * Original source path: D:\Proj\Battlesport\HudUi.cpp.
+ * Purpose: forward a multiplayer row removal to the active scoreboard triplet.
+ */
 void __fastcall RemoveScoreboardEntryRow(
     GameNetPlayerRow *entryKey
 ) {

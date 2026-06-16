@@ -36012,7 +36012,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_ui_triplet_remove_entry;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUiTriplet::RemoveEntry functional evidence passes and owner maps to class HudUiTriplet, but tier B remains blocked by transitive HudUiTriplet::RebuildDisplay / g_HudSensorTracker data gate
 
 - 0x40e910:
   - [✅] Reconstructed (Name: HudUiTriplet::InterpolateLayout)
@@ -40972,28 +40972,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bc810:
   - [✅] Reconstructed (Name: HudUiContainer::FindChildWithPrev)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiContainer; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiContainer::FindChildWithPrev;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_container_find_child_with_prev;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bc860:
   - [✅] Reconstructed (Name: HudUiContainer::RemoveChild)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiContainer; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiContainer::RemoveChild;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_container_remove_child;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4bc8d0:
   - [☑️] Reconstructed (Name: HudUiContainer::SetChildFlags)
@@ -42579,7 +42579,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_ui_remove_scoreboard_entry_row;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: HudUi::RemoveScoreboardEntryRow functional evidence passes and wrapper source is documented, but data remains blocked by g_HudUiMgrStatsList / HudUiStatsListElement::triplet global-owner data gate at 0x4ed4e0
 
 - 0x4143b0:
   - [✅] Reconstructed (Name: HudUi::RefreshScoreboardEntryRow)
