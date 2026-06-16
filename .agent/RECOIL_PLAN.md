@@ -25779,15 +25779,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x408230:
   - [✅] Reconstructed (Name: zOpt::SetNetworkEnabled)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGame; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zGame; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zOpt::SetNetworkEnabled;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_set_network_enabled;
     - Group: engine.zgame;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408240:
   - [✅] Reconstructed (Name: zOpt::SetNetworkModemEnabled)

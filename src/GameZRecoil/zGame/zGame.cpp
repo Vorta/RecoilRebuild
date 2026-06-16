@@ -1693,7 +1693,11 @@ int __fastcall SetHudTypeForCurrentHwMode(
     return previous;
 }
 
-// Reimplements 0x408230: zOpt::SetNetworkEnabled
+/**
+ * Reimplements 0x408230: zOpt::SetNetworkEnabled.
+ * Original source path: D:\Proj\Battlesport\zOpt.cpp.
+ * Purpose: store the persisted network-enabled option value.
+ */
 void __fastcall SetNetworkEnabled(
     int value
 ) {
