@@ -9775,10 +9775,10 @@ void HudUiCycleSelectorWidget::ApplyFontStyleForEntry(
         return;
     }
 
-    const HudFontStyle *style = &owner->fontStyles[styleIndex];
-    if (style->validMarker == 0) {
-        style = 0;
-    }
+    const HudFontStyle *const style =
+        owner->fontStyles[styleIndex].validMarker != 0 ?
+        &owner->fontStyles[styleIndex] :
+        0;
     if (style == 0) {
         return;
     }
