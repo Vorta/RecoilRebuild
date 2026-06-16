@@ -40,8 +40,10 @@ namespace {
 
     zClass_Object3DDataPartial *
     /**
-     * Original static helper observed in Object3D setter/getter callers
-     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Original static helper; no standalone retail function exists.
+     * Observed in Object3D transform accessors/mutators at 0x44e270, 0x44e3d0,
+     * 0x44e4f0, and 0x44e5b0 through the repeated validation/error-report
+     * pattern in Object3d.c.
      * Purpose: validate node, class-data, and Object3D class id before returning
      * the node's Object3D data.
      */
@@ -87,8 +89,10 @@ namespace {
     }
 
     /**
-     * Original static helper observed in Object3D transform callers
-     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Original static helper; no standalone retail function exists.
+     * Observed in Object3D transform accessors/mutators at 0x44dfd0, 0x44e030,
+     * 0x44e110, and 0x44e300 through the repeated validation/error-report
+     * pattern in Object3d.c.
      * Purpose: validate node and class-data pointers before returning Object3D
      * data for callers that do not perform a class-id check.
      */
