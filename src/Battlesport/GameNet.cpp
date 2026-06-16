@@ -2464,8 +2464,11 @@ void UnregisterGameplayPacketHandlers() {
     g_GameNet_HandlersRegistered = 0;
 }
 
-// Reimplements 0x431c50: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x431c50: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Register gameplay packet handlers and option catalog callbacks once.
+ */
 void RegisterGameplayHandlersAndOptCatalogCallbacks() {
     if (g_GameNet_HandlersRegistered == 0) {
         zNetwork::RegisterPacketHandler(
