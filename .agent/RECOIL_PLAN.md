@@ -12323,15 +12323,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4716b0:
   - [✅] Reconstructed (Name: zInput::BindMap_Current_RebuildLookupIndices)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::BindMap_Current_RebuildLookupIndices;
     - File: src/GameZRecoil/zInput/zInput.cpp;
-    - Target: zinput_bindmap_current_rebuild_lookup_indices;
+    - Target: zinput_bindmap_context;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S byte evidence exists via zinput_bindmap_context, but pure tier S promotion is deferred until global authored owner/data gates are clear
 
 - 0x4716c0:
   - [✅] Reconstructed (Name: zInput::BindMapCurrent_ResetAllBindings)
@@ -12687,15 +12687,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x471cd0:
   - [✅] Reconstructed (Name: zInput::Keyboard_ResumeFromSuspend)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zInput; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zInput; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zInput::Keyboard_ResumeFromSuspend;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_keyboard_resume_from_suspend;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S remains open: no VC5 verification manifest currently covers 0x471cd0
 
 - 0x471cf0:
   - [✅] Reconstructed (Name: zInput::Mouse_Suspend)
@@ -35357,16 +35357,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x40bd60:
   - [✅] Reconstructed (Name: HudCmdDialogState::OnDeactivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
-  - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Source dependencies satisfied
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudCmdDialogState::OnDeactivate;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_cmd_dialog_state_on_deactivate;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudCmdDialogState lifecycle depends on HudCmdDialog constructor/destructor source-shape debt
+    - Model: source-faithful;
+    - Blocker: tier S remains open: no VC5 verification manifest currently covers 0x40bd60
 
 - 0x40bda0:
   - [✅] Reconstructed (Name: HudCmdDialogState::QueueEnter)
@@ -37937,42 +37937,42 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x404cd0:
   - [✅] Reconstructed (Name: HudUiElement::SetPos)
-  - [❌] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
-  - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Source dependencies satisfied
+  - [✅] Source owner (Kind: class; Parent: HudUiElement; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiElement::SetPos;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_element_set_pos;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
+    - Model: source-faithful;
+    - Blocker: tier S open: grouped VC5 target hud_ui_element_position_setters currently does not compare 0x404cd0; global S verification deferred
 
 - 0x404cf0:
   - [✅] Reconstructed (Name: HudUiElement::SetX)
-  - [❌] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
-  - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Source dependencies satisfied
+  - [✅] Source owner (Kind: class; Parent: HudUiElement; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiElement::SetX;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_element_set_x;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
+    - Model: source-faithful;
+    - Blocker: tier S open: grouped VC5 target hud_ui_element_position_setters currently does not compare 0x404cf0; global S verification deferred
 
 - 0x404d00:
   - [✅] Reconstructed (Name: HudUiElement::SetY)
-  - [❌] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
-  - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Source dependencies satisfied
+  - [✅] Source owner (Kind: class; Parent: HudUiElement; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiElement::SetY;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_element_set_y;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
+    - Model: source-faithful;
+    - Blocker: tier S open: grouped VC5 target hud_ui_element_position_setters currently does not compare 0x404d00; global S verification deferred
 
 - 0x404d10:
   - [✅] Reconstructed (Name: HudUiElement::HitTestTrue)

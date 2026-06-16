@@ -277,6 +277,7 @@ extern "C" int zhud_element_draw_dispatch_smoke(void);
 extern "C" int zhud_element_draw_base_smoke(void);
 extern "C" int zhud_element_update_smoke(void);
 extern "C" int zhud_element_visible_smoke(void);
+extern "C" int zhud_element_position_mutators_smoke(void);
 extern "C" int zhud_circle_constructor_and_hit_test_smoke(void);
 extern "C" int zhud_circle_draw_dirty_smoke(void);
 extern "C" int zhud_widget_constructor_smoke(void);
@@ -428,6 +429,7 @@ extern "C" int zhud_cmd_dialog_destructor_smoke(void);
 extern "C" int zhud_cmd_dialog_scalar_deleting_destructor_smoke(void);
 extern "C" int zhud_cmd_dialog_state_lifecycle_smoke(void);
 extern "C" int zhud_cmd_dialog_state_on_try_become_current_smoke(void);
+extern "C" int zhud_cmd_dialog_state_on_deactivate_smoke(void);
 extern "C" int zhud_text_input_constructor_smoke(void);
 extern "C" int zhud_text_input_destructor_core_smoke(void);
 extern "C" int zhud_text_input_constructor_and_alloc_smoke(void);
@@ -10005,6 +10007,29 @@ extern "C" int zhud_counter_constructor_smoke(void) {
     return result == &counter && counterFieldsCleared && inheritedWidgetDefaults ? 0 : 1;
 }
 
+extern "C" int zhud_element_position_mutators_smoke(void) {
+    const unsigned int oldMask = g_HudUi_InvalidateMask;
+    g_HudUi_InvalidateMask = 0x40;
+
+    HudUiElement element{};
+    element.Constructor(1, 2);
+    element.flags = 0;
+
+    element.SetPos(3, 4);
+    const bool pos = element.x == 3 && element.y == 4 && element.flags == 0x40;
+
+    element.flags = 0;
+    element.SetX(5);
+    const bool xOnly = element.x == 5 && element.y == 4 && element.flags == 0x40;
+
+    element.flags = 0;
+    element.SetY(6);
+    const bool yOnly = element.x == 5 && element.y == 6 && element.flags == 0x40;
+
+    g_HudUi_InvalidateMask = oldMask;
+    return pos && xOnly && yOnly ? 0 : 1;
+}
+
 extern "C" int zhud_bar_and_meter_constructor_smoke(void) {
     const unsigned int oldMask = g_HudUi_InvalidateMask;
     g_HudUi_InvalidateMask = 0x40;
@@ -10480,6 +10505,8 @@ int main(int argc, char **argv) {
         {"zhud_element_draw_base_smoke", zhud_element_draw_base_smoke},
         {"zhud_element_update_smoke", zhud_element_update_smoke},
         {"zhud_element_visible_smoke", zhud_element_visible_smoke},
+        {"zhud_element_position_mutators_smoke",
+         zhud_element_position_mutators_smoke},
         {"zhud_circle_constructor_and_hit_test_smoke",
          zhud_circle_constructor_and_hit_test_smoke},
         {"zhud_circle_draw_dirty_smoke", zhud_circle_draw_dirty_smoke},
@@ -10751,6 +10778,8 @@ int main(int argc, char **argv) {
          zhud_cmd_dialog_state_lifecycle_smoke},
         {"zhud_cmd_dialog_state_on_try_become_current_smoke",
          zhud_cmd_dialog_state_on_try_become_current_smoke},
+        {"zhud_cmd_dialog_state_on_deactivate_smoke",
+         zhud_cmd_dialog_state_on_deactivate_smoke},
         {"zhud_text_input_constructor_smoke", zhud_text_input_constructor_smoke},
         {"zhud_text_input_destructor_core_smoke",
          zhud_text_input_destructor_core_smoke},
