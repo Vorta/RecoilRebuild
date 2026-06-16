@@ -368,8 +368,10 @@ Active queue sections:
     Player save-state/bootstrap record-global subsystem before promoting the
     launch caller. 0x41ec00 and 0x42aa40 are now accepted at tier B after
     source-order, functional-smoke, and VC5 data-symbol evidence for the
-    save-state list globals.
+    save-state list globals. The Object3D getter/accessor blockers
+    0x44dfd0/0x44e110/0x44e270/0x44e5b0 are accepted at tier B after helper
+    provenance, getter-smoke, and no-authored-globals review.
 - Next action:
   - Refresh the launch-panel frontier from the HudUiNetGameSetupPanel group,
     then follow the lowest visible blocker from the Player bootstrap frontier,
-    currently 0x44e270 `zClass_Object3D::gwObject3DGetPosition`.
+    currently 0x452770 `zClass_Class::FindSubNodeByName`.

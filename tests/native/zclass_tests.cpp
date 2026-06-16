@@ -353,6 +353,56 @@ extern "C" int zclass_object3d_init_smoke() {
     return result;
 }
 
+extern "C" int zclass_object3d_transform_getters_smoke() {
+    zClass_Object3DDataPartial data{};
+    data.rotation = {1.0f, 2.0f, 3.0f};
+    data.scale = {4.0f, 5.0f, 6.0f};
+    data.localMatrix[9] = 7.0f;
+    data.localMatrix[10] = 8.0f;
+    data.localMatrix[11] = 9.0f;
+
+    zClass_NodePartial node{};
+    node.classId = 5;
+    node.classData = &data;
+
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+    if (zClass_Object3D::gwObject3DGetScale(&node, &x, &y, &z) != 0 ||
+        x != 4.0f ||
+        y != 5.0f ||
+        z != 6.0f) {
+        return 1;
+    }
+
+    if (zClass_Object3D::gwObject3DGetRotation(&node, &x, &y, &z) != 0 ||
+        x != 1.0f ||
+        y != 2.0f ||
+        z != 3.0f) {
+        return 2;
+    }
+
+    if (zClass_Object3D::gwObject3DGetPosition(&node, &x, &y, &z) != 0 ||
+        x != 7.0f ||
+        y != 8.0f ||
+        z != 9.0f) {
+        return 3;
+    }
+    if (zClass_Object3D::gwObject3DGetMatrixPtr(&node) != data.localMatrix) {
+        return 4;
+    }
+
+    zClass_NodePartial wrongClass{};
+    wrongClass.classId = 4;
+    wrongClass.classData = &data;
+    if (zClass_Object3D::gwObject3DGetScale(&wrongClass, &x, &y, &z) != 0 ||
+        zClass_Object3D::gwObject3DGetPosition(&wrongClass, &x, &y, &z) != 3) {
+        return 5;
+    }
+
+    return zClass_Object3D::gwObject3DGetRotation(nullptr, &x, &y, &z) == 5 ? 0 : 6;
+}
+
 extern "C" int zclass_object3d_transform_setters_smoke() {
     ResetTypeListsForTest();
 

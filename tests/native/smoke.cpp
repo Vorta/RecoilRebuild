@@ -631,6 +631,7 @@ extern "C" int zclass_alloc_node_from_free_list_smoke(void);
 extern "C" int zclass_node_propagate_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_reset_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_init_smoke(void);
+extern "C" int zclass_object3d_transform_getters_smoke(void);
 extern "C" int zclass_object3d_transform_setters_smoke(void);
 extern "C" int zclass_child_generic_link_smoke(void);
 extern "C" int zclass_remove_dispatch_smoke(void);
@@ -11213,6 +11214,8 @@ int main(int argc, char **argv) {
         {"zclass_object3d_reset_transform_dirty_smoke",
          zclass_object3d_reset_transform_dirty_smoke},
         {"zclass_object3d_init_smoke", zclass_object3d_init_smoke},
+        {"zclass_object3d_transform_getters_smoke",
+         zclass_object3d_transform_getters_smoke},
         {"zclass_object3d_transform_setters_smoke",
          zclass_object3d_transform_setters_smoke},
         {"zclass_child_generic_link_smoke", zclass_child_generic_link_smoke},

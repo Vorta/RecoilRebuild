@@ -5198,15 +5198,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x44dfd0:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DGetScale)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zClass/Object3d.c Object3D transform getter/accessor cluster; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Object3D::gwObject3DGetScale;
     - File: src/GameZRecoil/zClass/Object3d.c;
     - Target: zclass_object3d_get_scale;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x44e030:
   - [☑️] Reconstructed (Name: zClass_Object3D::gwObject3DSetRotation)
@@ -5224,15 +5224,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x44e110:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DGetRotation)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zClass/Object3d.c Object3D transform getter/accessor cluster; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Object3D::gwObject3DGetRotation;
     - File: src/GameZRecoil/zClass/Object3d.c;
     - Target: zclass_object3d_get_rotation;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x44e170:
   - [☑️] Reconstructed (Name: zClass_Object3D::gwObject3DTranslateRotation)
@@ -5250,15 +5250,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x44e270:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DGetPosition)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zClass/Object3d.c Object3D transform getter/accessor cluster; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Object3D::gwObject3DGetPosition;
     - File: src/GameZRecoil/zClass/Object3d.c;
     - Target: zclass_object3d_get_position;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x44e300:
   - [☑️] Reconstructed (Name: zClass_Object3D::gwObject3DSetPosition)
@@ -5302,15 +5302,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x44e5b0:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DGetMatrixPtr)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zClass/Object3d.c Object3D transform getter/accessor cluster; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Object3D::gwObject3DGetMatrixPtr;
     - File: src/GameZRecoil/zClass/Object3d.c;
     - Target: zclass_object3d_get_matrix_ptr;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x44e630:
   - [✅] Reconstructed (Name: zClass_TypeList::AllocLink)
