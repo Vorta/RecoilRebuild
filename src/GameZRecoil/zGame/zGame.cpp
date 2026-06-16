@@ -1763,7 +1763,11 @@ int GetHudVisibilityOption() {
     return *(g_zOpt_HwMode != 0 ? ZOPT_HUD_HW : ZOPT_HUD_SW);
 }
 
-// Reimplements 0x408360: zOpt::GetHudTypeForCurrentHwMode
+/**
+ * Reimplements 0x408360: zOpt::GetHudTypeForCurrentHwMode.
+ * Original source path: D:\Proj\Battlesport\zopt.cpp.
+ * Purpose: return the HUD type option for the active hardware mode.
+ */
 int GetHudTypeForCurrentHwMode() {
     return *(g_zOpt_HwMode != 0 ? ZOPT_HUD_TYPE_HW : ZOPT_HUD_TYPE_SW);
 }
