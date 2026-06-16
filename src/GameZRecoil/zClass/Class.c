@@ -905,7 +905,12 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x447c60: zClass_Class::gwNodeSetActive
+    /**
+     * Reimplements 0x447c60: zClass_Class::gwNodeSetActive.
+     *
+     * Purpose: toggle the active flag for supported node classes and delegate
+     * sound-node activity changes to the sound owner.
+     */
     int __fastcall gwNodeSetActive(
         zClass_NodePartial * node,
         int active
