@@ -152,6 +152,11 @@ available even when no groups are active.
     calls and improved VC5 drift from 636 to 633 mismatches, but Data/B/S stay
     blocked because VC5 still emits out-of-line concrete constructor calls
     instead of BN's inline base-constructor plus generated table-store sequence.
+  - The HudCmdBindButtonBase class pass is no longer active owner/data WIP:
+    0x40c280, 0x4b90e0, and 0x4b8de0 are accepted at tier B with
+    HudCmdBindButtonBase class ownership and generated/table string data
+    classified; remaining work there is verify-only and deferred by the global
+    owner/data gate.
   - Deferred verify-only addresses reported by `audit groups --summary`
     include 0x40cf60, 0x443310, 0x4b8b60, 0x41c400, 0x406d20, 0x4b5900,
     0x4138d0, and 0x4a6e80. Do not route those ahead of 0x40a5b0 or other
@@ -170,35 +175,3 @@ available even when no groups are active.
   - Defer the Time::Tick and zNetwork::ShutdownSessionRuntime tier S blockers
     discovered through the MpExit frontier until `tier_s_priority_ready=true`
     or until the user explicitly directs tier S work.
-
-### Group: HudCmdBindButtonBase class/source-model pass
-
-- Anchor: 0x40c280 HudCmdBindButtonBase::DestructorCore, with sibling
-  addresses 0x4b90e0 HudCmdBindButtonBase::RebuildBindingSlotWidgets,
-  0x4b8de0 HudCmdBindButtonBase::LoadFromZrd, and 0x40bdc0
-  zUtil_StdPtrVector_Clear.
-- Reason: binary-lane selection and source-owner mapping show this is a
-  class/source-model dependency under HudCmdDialog, not an isolated leaf. The
-  production source already models HudCmd bind buttons as C++ classes and no
-  production HudCmd FTable/table factory was found, so the prior blocker needs
-  a focused class-pass audit rather than another constructor probe.
-- Current blockers:
-  - 0x40c280 now has registered functional coverage and is accepted at tier C.
-    Source owner/Data remain blocked pending the wider class/source-model pass.
-  - 0x4b90e0 and 0x4b8de0 now have registered functional coverage and are
-    accepted at tier C. Source owner/Data remain blocked pending the wider
-    class/source-model pass.
-  - 0x4b7340 HudUiCheckToggleWidget::LoadFromZrd is accepted at tier B with
-    source-faithful HudUi cluster ownership and no directly touched authored
-    globals; it remains below tier S until owner-level VC5 evidence exists.
-  - 0x40bdc0 is accepted at tier B as a source-faithful StdPtrVector helper
-    with no touched authored globals; tier S remains blocked by the known
-    dead [end,end) copy-path/epilogue codegen drift.
-  - 0x40a920 was reclassified as provider/compiler glue; the remaining data
-    blocker is generated HudCmd C++ vtable data classification plus the broader
-    HudCmdDialog generated table-emission gap.
-- Next action:
-  - Continue the HudCmdBindButtonBase class pass at the owner/data gate:
-    inspect the generated HudCmd C++ table/data evidence and re-evaluate
-    whether it still blocks 0x40c280, 0x4b90e0, and 0x4b8de0 now that the
-    HudUiCheckToggleWidget dependency is owner/data-ready.

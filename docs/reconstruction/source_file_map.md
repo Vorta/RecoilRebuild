@@ -924,7 +924,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## Battlesport/zopt.cpp
 
-- `0x408270` `zOpt::GetNetworkModemEnabled` -> `src/GameZRecoil/zGame/zGame.cpp:1673`
+- `0x408270` `zOpt::GetNetworkModemEnabled` -> `src/GameZRecoil/zGame/zGame.cpp:1677`
 
 ## Battlesport/zWeapon.cpp
 
@@ -1341,6 +1341,10 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 - `0x439990` `Player::ResetDamageStateAndTimedHitStatus` -> `src/Battlesport/player.cpp:13276`
 
+## GameZRecoil/zGame/zGame_Options.cpp
+
+- `0x4081f0` `zOpt::GetGraphicsFlagsForCurrentHwMode` -> `src/GameZRecoil/zGame/zGame.cpp:1614`
+
 ## GameZRecoil/zGame/zopt.c
 
 - `0x407190` `zOpt::LookupNamedValueAsInt` -> `src/GameZRecoil/zGame/zGame.cpp:1216`
@@ -1661,12 +1665,12 @@ These original-source labels differ only by case on Windows; confirm placement a
 ## GameZRecoil/zOptions/zopt.cpp
 
 - `0x408120` `zOpt::SetPlayerName` -> `src/GameZRecoil/zGame/zGame.cpp:1586`
-- `0x408190` `zOpt::GetPlayerName` -> `src/GameZRecoil/zGame/zGame.cpp:2108`
-- `0x408650` `zOpt::GetDisplaySection` -> `src/GameZRecoil/zGame/zGame.cpp:1689`
-- `0x408690` `zOpt::GetDisplaySectionBitsPerPixel` -> `src/GameZRecoil/zGame/zGame.cpp:1698`
-- `0x4086a0` `zOpt::GetVideoStrideValue` -> `src/GameZRecoil/zGame/zGame.cpp:1707`
-- `0x4086c0` `zOpt::GetWindowSection` -> `src/GameZRecoil/zGame/zGame.cpp:1716`
-- `0x4086d0` `zOpt::GetWindowSectionHeight` -> `src/GameZRecoil/zGame/zGame.cpp:1725`
+- `0x408190` `zOpt::GetPlayerName` -> `src/GameZRecoil/zGame/zGame.cpp:2112`
+- `0x408650` `zOpt::GetDisplaySection` -> `src/GameZRecoil/zGame/zGame.cpp:1693`
+- `0x408690` `zOpt::GetDisplaySectionBitsPerPixel` -> `src/GameZRecoil/zGame/zGame.cpp:1702`
+- `0x4086a0` `zOpt::GetVideoStrideValue` -> `src/GameZRecoil/zGame/zGame.cpp:1711`
+- `0x4086c0` `zOpt::GetWindowSection` -> `src/GameZRecoil/zGame/zGame.cpp:1720`
+- `0x4086d0` `zOpt::GetWindowSectionHeight` -> `src/GameZRecoil/zGame/zGame.cpp:1729`
 
 ## GameZRecoil/zReader/zreader.cpp
 
@@ -2060,52 +2064,51 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4080d0` `zOpt::GetSoundLODOption` -> `src/GameZRecoil/zGame/zGame.cpp:1568`
 - `0x4080e0` `zOpt::SetTextureMemoryForCurrentHwMode` -> `src/GameZRecoil/zGame/zGame.cpp:1573`
 - `0x408100` `zOpt::GetTextureMemoryForCurrentHwMode` -> `src/GameZRecoil/zGame/zGame.cpp:1580`
-- `0x4081a0` `zOpt::SetGraphicsFlagsForCurrentHwMode` -> `src/GameZRecoil/zGame/zGame.cpp:1618`
-- `0x4081f0` `zOpt::GetGraphicsFlagsForCurrentHwMode` -> `src/GameZRecoil/zGame/zGame.cpp:1613`
+- `0x4081a0` `zOpt::SetGraphicsFlagsForCurrentHwMode` -> `src/GameZRecoil/zGame/zGame.cpp:1622`
 - `0x408210` `zSnd::SetCDAudioOption` -> `src/GameZRecoil/zSound/zsnd_cd.cpp:167`
 - `0x408220` `zSnd::GetCDAudioOption` -> `src/GameZRecoil/zSound/zsnd_cd.cpp:174`
-- `0x408230` `zOpt::SetNetworkEnabled` -> `src/GameZRecoil/zGame/zGame.cpp:1651`
-- `0x408240` `zOpt::SetNetworkModemEnabled` -> `src/GameZRecoil/zGame/zGame.cpp:1658`
-- `0x408250` `zOpt::SetNetworkListenEnabled` -> `src/GameZRecoil/zGame/zGame.cpp:1665`
-- `0x408260` `zOpt::GetNetworkEnabled` -> `src/GameZRecoil/zGame/zGame.cpp:1783`
+- `0x408230` `zOpt::SetNetworkEnabled` -> `src/GameZRecoil/zGame/zGame.cpp:1655`
+- `0x408240` `zOpt::SetNetworkModemEnabled` -> `src/GameZRecoil/zGame/zGame.cpp:1662`
+- `0x408250` `zOpt::SetNetworkListenEnabled` -> `src/GameZRecoil/zGame/zGame.cpp:1669`
+- `0x408260` `zOpt::GetNetworkEnabled` -> `src/GameZRecoil/zGame/zGame.cpp:1787`
 - `0x408280` `zVid::SetAccelerationOption` -> `src/GameZRecoil/zVideo/zVideo.cpp:1512`
 - `0x408290` `zVid::SetHwApiOption` -> `src/GameZRecoil/zVideo/zVideo.cpp:1529`
-- `0x4082a0` `zOpt::SetFullscreenOption` -> `src/GameZRecoil/zGame/zGame.cpp:1733`
-- `0x4082b0` `zOpt::SetHudVisibilityOption` -> `src/GameZRecoil/zGame/zGame.cpp:1745`
-- `0x4082d0` `zOpt::SetHudTypeForCurrentHwMode` -> `src/GameZRecoil/zGame/zGame.cpp:1636`
-- `0x408300` `zOpt::SetReplicateMode` -> `src/GameZRecoil/zGame/zGame.cpp:1763`
+- `0x4082a0` `zOpt::SetFullscreenOption` -> `src/GameZRecoil/zGame/zGame.cpp:1737`
+- `0x4082b0` `zOpt::SetHudVisibilityOption` -> `src/GameZRecoil/zGame/zGame.cpp:1749`
+- `0x4082d0` `zOpt::SetHudTypeForCurrentHwMode` -> `src/GameZRecoil/zGame/zGame.cpp:1640`
+- `0x408300` `zOpt::SetReplicateMode` -> `src/GameZRecoil/zGame/zGame.cpp:1767`
 - `0x408310` `zVid::GetAccelerationOption` -> `src/GameZRecoil/zVideo/zVideo.cpp:1543`
 - `0x408320` `zVid::GetHwApiOption` -> `src/GameZRecoil/zVideo/zVideo.cpp:1548`
-- `0x408330` `zOpt::GetFullscreenOption` -> `src/GameZRecoil/zGame/zGame.cpp:1740`
-- `0x408340` `zOpt::GetHudVisibilityOption` -> `src/GameZRecoil/zGame/zGame.cpp:1752`
-- `0x408360` `zOpt::GetHudTypeForCurrentHwMode` -> `src/GameZRecoil/zGame/zGame.cpp:1757`
-- `0x408380` `zOpt::GetReplicateMode` -> `src/GameZRecoil/zGame/zGame.cpp:1777`
+- `0x408330` `zOpt::GetFullscreenOption` -> `src/GameZRecoil/zGame/zGame.cpp:1744`
+- `0x408340` `zOpt::GetHudVisibilityOption` -> `src/GameZRecoil/zGame/zGame.cpp:1756`
+- `0x408360` `zOpt::GetHudTypeForCurrentHwMode` -> `src/GameZRecoil/zGame/zGame.cpp:1761`
+- `0x408380` `zOpt::GetReplicateMode` -> `src/GameZRecoil/zGame/zGame.cpp:1781`
 - `0x408390` `zInp::SetJoystickOption` -> `src/GameZRecoil/zInput/zInput.cpp:746`
 - `0x4083a0` `zInp::SetJoystickAxesCountOption` -> `src/GameZRecoil/zInput/zInput.cpp:755`
 - `0x4083b0` `zInp::SetJoystickButtonCountOption` -> `src/GameZRecoil/zInput/zInput.cpp:762`
 - `0x4083c0` `zInp::GetJoystickOption` -> `src/GameZRecoil/zInput/zInput.cpp:769`
-- `0x4083d0` `zOpt_ViewRectSection::SetPosition` -> `src/GameZRecoil/zGame/zGame.cpp:1791`
-- `0x408400` `zOpt_ViewRectSection::SetSize` -> `src/GameZRecoil/zGame/zGame.cpp:1805`
-- `0x408430` `zOpt::ViewRectSection_ClampPointToInclusiveBounds` -> `src/GameZRecoil/zGame/zGame.cpp:1819`
-- `0x408480` `zOpt::CameraSection_SetActiveCamera` -> `src/GameZRecoil/zGame/zGame.cpp:2069`
-- `0x4084e0` `zOpt_CameraSection_GetActiveCamera` -> `src/GameZRecoil/zGame/zGame.cpp:2098`
-- `0x408500` `zOpt::RenderSection_SetSize` -> `src/GameZRecoil/zGame/zGame.cpp:1874`
-- `0x408530` `zOpt::RenderSection_SetPosition` -> `src/GameZRecoil/zGame/zGame.cpp:1838`
-- `0x408570` `zOpt::RenderSection_SetTargetWindow` -> `src/GameZRecoil/zGame/zGame.cpp:1903`
-- `0x4085a0` `zOpt::GetRenderSection` -> `src/GameZRecoil/zGame/zGame.cpp:1923`
-- `0x4085b0` `zOpt::DisplaySection_SetTargetDisplay` -> `src/GameZRecoil/zGame/zGame.cpp:1994`
-- `0x4085e0` `zOpt::DisplaySection_SetPosition` -> `src/GameZRecoil/zGame/zGame.cpp:1929`
-- `0x408620` `zOpt::DisplaySection_SetSize` -> `src/GameZRecoil/zGame/zGame.cpp:1965`
-- `0x408660` `zOpt_DisplaySection_GetWidth` -> `src/GameZRecoil/zGame/zGame.cpp:2121`
-- `0x408670` `zOpt_DisplaySection_GetHeight` -> `src/GameZRecoil/zGame/zGame.cpp:2126`
-- `0x408680` `zOpt::DisplaySection_SetBitsPerPixel` -> `src/GameZRecoil/zGame/zGame.cpp:2015`
+- `0x4083d0` `zOpt_ViewRectSection::SetPosition` -> `src/GameZRecoil/zGame/zGame.cpp:1795`
+- `0x408400` `zOpt_ViewRectSection::SetSize` -> `src/GameZRecoil/zGame/zGame.cpp:1809`
+- `0x408430` `zOpt::ViewRectSection_ClampPointToInclusiveBounds` -> `src/GameZRecoil/zGame/zGame.cpp:1823`
+- `0x408480` `zOpt::CameraSection_SetActiveCamera` -> `src/GameZRecoil/zGame/zGame.cpp:2073`
+- `0x4084e0` `zOpt_CameraSection_GetActiveCamera` -> `src/GameZRecoil/zGame/zGame.cpp:2102`
+- `0x408500` `zOpt::RenderSection_SetSize` -> `src/GameZRecoil/zGame/zGame.cpp:1878`
+- `0x408530` `zOpt::RenderSection_SetPosition` -> `src/GameZRecoil/zGame/zGame.cpp:1842`
+- `0x408570` `zOpt::RenderSection_SetTargetWindow` -> `src/GameZRecoil/zGame/zGame.cpp:1907`
+- `0x4085a0` `zOpt::GetRenderSection` -> `src/GameZRecoil/zGame/zGame.cpp:1927`
+- `0x4085b0` `zOpt::DisplaySection_SetTargetDisplay` -> `src/GameZRecoil/zGame/zGame.cpp:1998`
+- `0x4085e0` `zOpt::DisplaySection_SetPosition` -> `src/GameZRecoil/zGame/zGame.cpp:1933`
+- `0x408620` `zOpt::DisplaySection_SetSize` -> `src/GameZRecoil/zGame/zGame.cpp:1969`
+- `0x408660` `zOpt_DisplaySection_GetWidth` -> `src/GameZRecoil/zGame/zGame.cpp:2125`
+- `0x408670` `zOpt_DisplaySection_GetHeight` -> `src/GameZRecoil/zGame/zGame.cpp:2130`
+- `0x408680` `zOpt::DisplaySection_SetBitsPerPixel` -> `src/GameZRecoil/zGame/zGame.cpp:2019`
 - `0x4086b0` `zVid::GetVideoModeIndexFromOptions` -> `src/GameZRecoil/zVideo/zVideo.cpp:1586`
-- `0x4086e0` `zOpt::WindowSection_SetSize` -> `src/GameZRecoil/zGame/zGame.cpp:2050`
-- `0x408700` `zOpt::WindowSection_SetPosition` -> `src/GameZRecoil/zGame/zGame.cpp:2030`
+- `0x4086e0` `zOpt::WindowSection_SetSize` -> `src/GameZRecoil/zGame/zGame.cpp:2054`
+- `0x408700` `zOpt::WindowSection_SetPosition` -> `src/GameZRecoil/zGame/zGame.cpp:2034`
 - `0x408720` `zVid::SetVideoModeIndex` -> `src/GameZRecoil/zVideo/zVideo.cpp:1592`
 - `0x4089c0` `HudUiMgr::ScreenToWorld` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4515`
-- `0x408a10` `zOpt::SetWolPasswordFlag` -> `src/GameZRecoil/zGame/zGame.cpp:1681`
-- `0x408a20` `zOpt_GetWolPasswordFlagValue` -> `src/GameZRecoil/zGame/zGame.cpp:2116`
+- `0x408a10` `zOpt::SetWolPasswordFlag` -> `src/GameZRecoil/zGame/zGame.cpp:1685`
+- `0x408a20` `zOpt_GetWolPasswordFlagValue` -> `src/GameZRecoil/zGame/zGame.cpp:2120`
 - `0x408f50` `RecoilStateDialogHost::OnWndActivate` -> `src/GameZRecoil/RecoilApp/RecoilStateDialogHost.cpp:4`
 - `0x409010` `HudUiZrdWidgetEx17C::EnableChildAtIndex` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10538`
 - `0x409160` `HudUiCreditsBackButton::OnActivate` -> `src/Battlesport/hud.cpp:1045`

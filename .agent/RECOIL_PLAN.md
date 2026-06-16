@@ -25766,15 +25766,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4081f0:
   - [✅] Reconstructed (Name: zOpt::GetGraphicsFlagsForCurrentHwMode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGame; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zOpt current-hardware-mode option cluster; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zOpt::GetGraphicsFlagsForCurrentHwMode;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_get_graphics_flags_for_current_hw_mode;
     - Group: engine.zgame;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408230:
   - [✅] Reconstructed (Name: zOpt::SetNetworkEnabled)
@@ -35440,15 +35440,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40c280:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::DestructorCore)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudCmdDialog; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudCmdBindButtonBase; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudCmdBindButtonBase::DestructorCore;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_bind_button_base_destructor_core;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudCmdBindButtonBase::DestructorCore source and functional tier C are accepted, but Source owner/Data remain blocked pending the wider HudCmdBindButtonBase class/source-model pass: sibling methods 0x4b90e0 and 0x4b8de0 still have pending dependency/implementation markers, 0x40bdc0 still has owner/data audit debt, and generated HudCmd C++ vtable data remains data-classification debt. Same-session source audit found no production HudCmd FTable/table factory scaffold.
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40c720:
   - [☑️] Reconstructed (Name: HudOptionsDialog::Constructor)
@@ -37709,28 +37709,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b8de0:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::LoadFromZrd)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudCmdDialog; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudCmdBindButtonBase; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudCmdBindButtonBase::LoadFromZrd;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_bind_button_base_load_from_zrd;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudCmdDialog/HudCmd* FTable globals and table factories remain unresolved source-shape debt
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b90e0:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::RebuildBindingSlotWidgets)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudCmdDialog; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudCmdBindButtonBase; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudCmdBindButtonBase::RebuildBindingSlotWidgets;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_bind_button_base_rebuild_binding_slot_widgets;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudCmdDialog/HudCmd* FTable globals and table factories remain unresolved source-shape debt
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b92a0:
   - [✅] Reconstructed (Name: HudUiListSelectorItem::HudUiListSelectorItem)
