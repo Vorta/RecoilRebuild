@@ -37379,7 +37379,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_ui_cycle_selector_widget_apply_font_style_for_entry;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S blocked: same-session VC5SP3 compare for hud_ui_cycle_selector_widget_apply_font_style_for_entry fails with 146 unmasked mismatches, no relocation-masked bytes, and 10 trimmed VC NOP bytes, BN size 248 and VC5 size 256. BN assembly matches source semantics but retains an explicit test esi/esi after the branchless font-style valid-marker mask, while VC5 reuses the flags from and esi,eax; the rest of the drift is alignment from that missing test plus SetFont argument/register scheduling and final field-copy/epilogue shape. Same-session explicit validMarker local probe was byte-neutral at 146 mismatches and was reverted.
+    - Blocker: tier S blocked: same-session VC5SP3 compare for hud_ui_cycle_selector_widget_apply_font_style_for_entry now fails with 8 unmasked mismatches, no relocation-masked bytes, and 8 trimmed VC NOP bytes, BN size 248 and VC5 size 256. Source now uses an explicit valid-marker zero check after selecting fontStyles[styleIndex], matching BN's retained post-mask test shape more closely; functional target passes. Remaining drift is local to the valid-style selection sequence plus final alignment/register scheduling.
 
 - 0x4b8200:
   - [✅] Reconstructed (Name: HudUiCycleSelectorWidget::AddBitmapEntry)
@@ -47688,5 +47688,5 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: time_tick;
     - Group: misc.authored_stubs;
     - Model: source-faithful;
-    - Blocker: tier S blocked: VC5SP3 time_tick remains at 85 unmasked mismatches after 84 relocation-masked bytes and 1 trimmed VC NOP byte (BN 174 bytes, VC5 176 bytes). Same-session source-worker probes for saved time-scale local plus early reset, frame store before unscaled accumulation/reset, integer-literal reset, unscaled accumulation then reset then frame store, and direct frame after unscaled accumulation either regressed or produced only a non-source-faithful 84-mismatch variant, so all were reverted. Remaining drift is x87 scheduling, import thunk call shape, reset-store placement, and stack/register temporary ordering around delta accumulation and clamp stores.
+    - Blocker: tier S blocked: VC5SP3 time_tick now fails with 24 unmasked mismatches after 84 relocation-masked bytes and 2 trimmed VC NOP bytes (BN 174 bytes, VC5 176 bytes). Source now declares GetTickCount directly for VC5 so the generated call uses the retail direct import-thunk relocation shape instead of an indirect __imp__ load; functional time_tick passes. Remaining drift is x87 scheduling, reset-store placement, and stack/register-temporary ordering around delta accumulation and clamp stores.
 

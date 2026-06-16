@@ -2,7 +2,11 @@
 
 #include "recoil/recoil_types.h"
 
+#if defined(_MSC_VER) && _MSC_VER <= 1100
+extern "C" unsigned long __stdcall GetTickCount();
+#else
 #include <windows.h>
+#endif
 
 extern "C" {
 float g_Time_MaximumDeltaTimeSec = 0.125f;

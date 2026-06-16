@@ -1516,11 +1516,12 @@ available even when no groups are active.
     0x4b8100 HudUiCycleSelectorWidget::ApplyFontStyleForEntry as a tier-S
     blocker for 0x40a5b0 HudCmdDialog::Constructor and downstream
     HudCmdDialogState entries. BN shows a branchless font-style valid-marker
-    mask and a fixed SetFont/field-copy order; same-session VC5 refresh starts
-    at 146 unmasked mismatches with no relocation masking. An explicit
-    `validMarker` local preserved behavior but was byte-neutral at the same
-    146 mismatches and was reverted; the remaining drift is the missing
-    post-mask `test esi,esi` plus downstream alignment/register scheduling.
+    mask and a fixed SetFont/field-copy order; restoring the explicit
+    `if (style->validMarker == 0) style = 0;` source check improves the
+    same-session VC5SP3 compare from 146 to 8 unmasked mismatches with no
+    relocation masking, 8 trimmed VC NOP bytes, BN size 248, and VC5 size
+    256. The remaining drift is local to the valid-style selection sequence
+    plus final alignment/register scheduling, so 0x4b8100 remains below S.
   - Current HudCmdDialog dependency cleanup is also auditing
     0x4ba740 HudUiPanel::ConstructorDefault because 0x4b7fd0 and the
     HudCmdDialog constructor frontier route through this panel constructor.
@@ -1591,12 +1592,12 @@ available even when no groups are active.
     0x4198d0, 0x419940, and 0x419990 are tier S with owner/data accepted.
     Refreshed `0x419990` frontier now routes through 0x4a56d0 Time::Tick and
     0x489e10 zNetwork::ShutdownSessionRuntime as direct tier-S blockers.
-    Time::Tick remains tier B/data `✅`: `verify vc5 0x4a56d0` still fails
-    with 85 unmasked mismatches after 84 relocation-masked bytes and one
-    trimmed VC NOP byte. A source-order probe that kept the old time-scale
-    factor in a local and reset `g_Time_TimeScaleFactor` before derived stores
-    preserved behavior but regressed the compare to 101 unmasked mismatches,
-    80 relocation-masked bytes, and a 192-byte VC body, so it was reverted.
+    Time::Tick remains tier B/data `✅`: source now declares `GetTickCount`
+    directly for VC5, matching the retail direct import-thunk relocation shape
+    and improving `verify vc5 0x4a56d0` from 85 to 24 unmasked mismatches after
+    84 relocation-masked bytes and 2 trimmed VC NOP bytes. Remaining drift is
+    x87 scheduling, reset-store placement, and stack/register-temporary ordering
+    around delta accumulation and clamp stores.
     zNetwork::ShutdownSessionRuntime remains tier B/data `✅`: refreshed
     status/frontier shows direct tier-S blockers 0x48c120
     `zNetwork::UnregisterPacketHandler`, 0x489fa0
