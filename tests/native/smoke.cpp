@@ -163,6 +163,7 @@ extern "C" int gamenet_handle_pkt06_player_state_snapshot_smoke(void);
 extern "C" int gamenet_spawn_remote_player_missing_template_smoke(void);
 extern "C" int player_clone_type6_node_from_template_and_rename_smoke(void);
 extern "C" int player_create_from_names_at_pose_smoke(void);
+extern "C" int zutil_save_game_state_list_smoke(void);
 extern "C" int zfmv_script_init_null_path_smoke(void);
 extern "C" int zfmv_script_reset_smoke(void);
 extern "C" int zfmv_script_cleanup_smoke(void);
@@ -625,6 +626,11 @@ extern "C" int zclass_alloc_node_from_free_list_smoke(void);
 extern "C" int zclass_node_propagate_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_reset_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_init_smoke(void);
+extern "C" int zclass_object3d_transform_setters_smoke(void);
+extern "C" int zclass_child_generic_link_smoke(void);
+extern "C" int zclass_remove_dispatch_smoke(void);
+extern "C" int zclass_node_world_child_smoke(void);
+extern "C" int zclass_world_add_child_at_grid_smoke(void);
 extern "C" int zclass_node_metadata_accessors_smoke(void);
 extern "C" int zclass_copy_node_display_instance_smoke(void);
 extern "C" int zclass_copy_node_base_data_smoke(void);
@@ -10443,6 +10449,7 @@ int main(int argc, char **argv) {
          player_clone_type6_node_from_template_and_rename_smoke},
         {"player_create_from_names_at_pose_smoke",
          player_create_from_names_at_pose_smoke},
+        {"zutil_save_game_state_list_smoke", zutil_save_game_state_list_smoke},
         {"zfmv_script_init_null_path_smoke", zfmv_script_init_null_path_smoke},
         {"zfmv_script_reset_smoke", zfmv_script_reset_smoke},
         {"zfmv_script_cleanup_smoke", zfmv_script_cleanup_smoke},
@@ -11192,6 +11199,13 @@ int main(int argc, char **argv) {
         {"zclass_object3d_reset_transform_dirty_smoke",
          zclass_object3d_reset_transform_dirty_smoke},
         {"zclass_object3d_init_smoke", zclass_object3d_init_smoke},
+        {"zclass_object3d_transform_setters_smoke",
+         zclass_object3d_transform_setters_smoke},
+        {"zclass_child_generic_link_smoke", zclass_child_generic_link_smoke},
+        {"zclass_remove_dispatch_smoke", zclass_remove_dispatch_smoke},
+        {"zclass_node_world_child_smoke", zclass_node_world_child_smoke},
+        {"zclass_world_add_child_at_grid_smoke",
+         zclass_world_add_child_at_grid_smoke},
         {"zclass_node_metadata_accessors_smoke",
          zclass_node_metadata_accessors_smoke},
         {"zclass_copy_node_display_instance_smoke",

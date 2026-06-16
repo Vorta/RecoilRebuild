@@ -323,10 +323,25 @@ Active queue sections:
     provenance docblocks, adding a CRT `strstr` provider-boundary entry, wiring
     the existing Player bootstrap smokes into `recoil_native_smoke`, and
     confirming the direct data touch is only `g_Player_RuntimeDiScene`.
+  - The zUtil save-state-list helpers 0x4383e0/0x4384e0 are accepted at tier B
+    after wiring the existing save-state-list smoke into `recoil_native_smoke`,
+    adding a CRT `malloc` provider-boundary entry, and confirming both helpers
+    touch only caller-owned/heap-owned save-state storage with no authored
+    globals.
+  - The Object3D transform setters 0x44e300/0x44e030 are accepted at tier B
+    after wiring the existing transform setter smoke into
+    `recoil_native_smoke` and confirming both mutate caller-owned Object3D
+    state with no authored globals.
+  - The zClass child-link dispatcher dependency through 0x4483f0 is accepted at
+    tier B after documenting the data-driven child-link subsystem owner,
+    wiring the existing add-child smokes into `recoil_native_smoke`, adding CRT
+    provider-boundary entries for `realloc` and `calloc`, accepting
+    `g_zError_DebugMsgBuffer` through zError::EmitDebugBuffer data evidence,
+    and clearing the AddChildGeneric/SetSingleParentFlagRecursive data gates.
   - Route zNetwork send/session-desc helpers and HUD row-removal/container
     dependencies as separate owner/data blockers; do not fold them into the
     GameNet owner.
 - Next action:
   - Refresh the launch-panel frontier from the HudUiNetGameSetupPanel group,
     then follow the lowest visible blocker from the Player bootstrap frontier,
-    currently 0x4383e0 `zUtil_SaveGameStateList::Constructor`.
+    currently 0x420d10 `Player::InitStateFromNameAndMasterCommonData`.

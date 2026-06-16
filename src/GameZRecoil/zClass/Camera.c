@@ -355,9 +355,13 @@ namespace zClass_Camera {
         return node;
     }
 
-    // Reimplements 0x449c90: zClass_Camera::gwCameraAddChild
-    int __fastcall
-    gwCameraAddChild(
+    /**
+     * Reimplements 0x449c90: zClass_Camera::gwCameraAddChild.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Camera.c.
+     * Purpose: validate camera parent/child inputs before using the generic
+     * zClass listA/listB child-link routine.
+     */
+    int __fastcall gwCameraAddChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
     ){
@@ -382,9 +386,13 @@ namespace zClass_Camera {
         );
     }
 
-    // Reimplements 0x449cd0: zClass_Camera::gwCameraRemoveChild
-    int __fastcall
-    gwCameraRemoveChild(
+    /**
+     * Reimplements 0x449cd0: zClass_Camera::gwCameraRemoveChild.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Camera.c.
+     * Purpose: validate camera parent/child inputs before using the generic
+     * zClass listA/listB child-unlink routine.
+     */
+    int __fastcall gwCameraRemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
     ){

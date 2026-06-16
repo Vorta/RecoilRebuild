@@ -1087,10 +1087,13 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x4510e0: zClass_World::AddChildAtGrid
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
-    int __fastcall
-    AddChildAtGrid(
+    /**
+     * Reimplements 0x4510e0: zClass_World::AddChildAtGrid.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: derive the child's world grid cell from bounds or world extent
+     * and route insertion into the world child-link storage.
+     */
+    int __fastcall AddChildAtGrid(
         zClass_NodePartial * world,
         zClass_NodePartial * child
     ){
@@ -1156,7 +1159,12 @@ namespace zClass_World {
         );
     }
 
-    // Reimplements 0x450f60: zClass_World::AddChildToGridCell
+    /**
+     * Reimplements 0x450f60: zClass_World::AddChildToGridCell.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: add a child to either the overflow world list or a grid area
+     * list while maintaining the child's listA parent ownership.
+     */
     int __fastcall AddChildToGridCell(
         zClass_NodePartial * world,
         zClass_NodePartial * child,
@@ -1234,9 +1242,13 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x451240: zClass_World::RemoveChildAtGrid
-    int __fastcall
-    RemoveChildAtGrid(
+    /**
+     * Reimplements 0x451240: zClass_World::RemoveChildAtGrid.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: remove a child from the world overflow list or its grid area
+     * list while clearing the child's parent/grid ownership state.
+     */
+    int __fastcall RemoveChildAtGrid(
         zClass_NodePartial * world,
         zClass_NodePartial * child
     ){

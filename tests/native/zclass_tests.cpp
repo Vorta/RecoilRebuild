@@ -353,6 +353,328 @@ extern "C" int zclass_object3d_init_smoke() {
     return result;
 }
 
+extern "C" int zclass_object3d_transform_setters_smoke() {
+    ResetTypeListsForTest();
+
+    zClass_Object3DDataPartial data = {};
+    zClass_NodePartial node = {};
+    node.classId = 5;
+    node.classData = &data;
+
+    data.flags = 0x18;
+    if (zClass_Object3D::gwObject3DSetScale(&node, 2.0f, 1.0f, 1.0f) != 0 ||
+        data.scale.x != 2.0f ||
+        data.scale.y != 1.0f ||
+        data.scale.z != 1.0f ||
+        (data.flags & 0x18) != 0 ||
+        (data.flags & 0x21) != 0x21 ||
+        (node.flags & 0x02000003) != 0x02000003) {
+        FreeTypeListsForTest();
+        return 1;
+    }
+
+    data.flags = 0x18;
+    if (zClass_Object3D::gwObject3DSetRotation(&node, 0.0f, 0.0f, 0.0f) != 0 ||
+        (data.flags & 0x08) == 0 ||
+        (data.flags & 0x10) != 0) {
+        FreeTypeListsForTest();
+        return 2;
+    }
+    if (zClass_Object3D::gwObject3DTranslateRotation(&node, 0.5f, 1.0f, 1.5f) != 0 ||
+        data.rotation.x != 0.5f ||
+        data.rotation.y != 1.0f ||
+        data.rotation.z != 1.5f ||
+        (data.flags & 0x08) != 0) {
+        FreeTypeListsForTest();
+        return 3;
+    }
+
+    data.flags = 0x08;
+    if (zClass_Object3D::gwObject3DSetPosition(&node, 0.0f, 0.0f, 0.0f) != 0 ||
+        (data.flags & 0x08) == 0) {
+        FreeTypeListsForTest();
+        return 4;
+    }
+    if (zClass_Object3D::gwObject3DTranslatePosition(&node, 3.0f, 4.0f, 5.0f) != 0 ||
+        data.localMatrix[9] != 3.0f ||
+        data.localMatrix[10] != 4.0f ||
+        data.localMatrix[11] != 5.0f ||
+        (data.flags & 0x08) != 0) {
+        FreeTypeListsForTest();
+        return 5;
+    }
+
+    zClass_NodePartial wrongClass = {};
+    wrongClass.classId = 4;
+    wrongClass.classData = &data;
+    if (zClass_Object3D::gwObject3DTranslatePosition(&wrongClass, 1.0f, 2.0f, 3.0f) != 3) {
+        FreeTypeListsForTest();
+        return 6;
+    }
+
+    FreeTypeListsForTest();
+    return zClass_Object3D::gwObject3DSetScale(0, 1.0f, 1.0f, 1.0f) == 5 &&
+                   zClass_Object3D::gwObject3DSetRotation(0, 0.0f, 0.0f, 0.0f) == 5 &&
+                   zClass_Object3D::gwObject3DSetPosition(0, 0.0f, 0.0f, 0.0f) == 5
+               ? 0
+               : 7;
+}
+
+extern "C" int zclass_child_generic_link_smoke() {
+    ResetTypeListsForTest();
+
+    int result = 0;
+    zClass_NodePartial parent{};
+    zClass_NodePartial otherParent{};
+    zClass_NodePartial child{};
+    zClass_NodePartial grandchild{};
+    zClass_NodePartial *childChildren[] = {&grandchild};
+    child.flags = 0x00080000;
+    grandchild.flags = 0x00080000;
+    child.listCountB = 1;
+    child.listB = childChildren;
+
+    if (zClass_Class::AddChildGeneric(&parent, &child) != 0 || parent.listCountB != 1 ||
+        parent.listB[0] != &child || child.listCountA != 1 || child.listA[0] != &parent ||
+        (parent.boundsFlags & 2) == 0 || (parent.flags & 3) != 3 ||
+        zClass_TypeList::Head(7) == nullptr || zClass_TypeList::Head(7)->node != &parent) {
+        result = 1;
+    }
+
+    if (result == 0 &&
+        (zClass_Class::AddChildGeneric(&otherParent, &child) != 0 || child.listCountA != 2 ||
+         child.listA[1] != &otherParent || (child.flags & 0x00080000) != 0 ||
+         (grandchild.flags & 0x00080000) != 0)) {
+        result = 2;
+    }
+
+    int validatedClassData = 0;
+    zClass_NodePartial validatedParent{};
+    zClass_NodePartial validatedChild{};
+    validatedParent.classData = &validatedClassData;
+    if (result == 0 &&
+        (zClass_Class::AddChildValidated(&validatedParent, &validatedChild) != 0 ||
+         validatedParent.listCountB != 1 || validatedParent.listB[0] != &validatedChild ||
+         validatedChild.listCountA != 1 || validatedChild.listA[0] != &validatedParent)) {
+        result = 3;
+    }
+    if (result == 0 &&
+        (zClass_Class::AddChildValidated(nullptr, &validatedChild) != 5 ||
+         zClass_Class::AddChildValidated(&validatedParent, nullptr) != 5)) {
+        result = 4;
+    }
+    validatedParent.classData = nullptr;
+    if (result == 0 && zClass_Class::AddChildValidated(&validatedParent, &validatedChild) != 5) {
+        result = 5;
+    }
+
+    zClass_NodePartial dispatchParent{};
+    zClass_NodePartial dispatchChild{};
+    dispatchParent.classId = 3;
+    if (result == 0 &&
+        (zClass_Class::AddChild(&dispatchParent, &dispatchChild) != 0 ||
+         dispatchParent.listCountB != 1 || dispatchParent.listB[0] != &dispatchChild ||
+         dispatchChild.listCountA != 1 || dispatchChild.listA[0] != &dispatchParent)) {
+        result = 6;
+    }
+
+    zClass_NodePartial animateParent{};
+    zClass_NodePartial animateChild{};
+    animateParent.classId = 8;
+    if (result == 0 &&
+        (zClass_Class::AddChild(&animateParent, &animateChild) != 0 ||
+         animateParent.listCountB != 1 || animateChild.listCountA != 1 ||
+         zClass_Animate::AddChild(nullptr, &animateChild) != 5 ||
+         zClass_Animate::AddChild(&animateParent, nullptr) != 5)) {
+        result = 7;
+    }
+
+    zClass_NodePartial sequenceParent{};
+    zClass_NodePartial sequenceChild{};
+    sequenceParent.classId = 7;
+    if (result == 0 &&
+        (zClass_Class::AddChild(&sequenceParent, &sequenceChild) != 1 ||
+         zClass_Class::AddChild(nullptr, &sequenceChild) != 5 ||
+         zClass_Class::AddChild(&sequenceParent, nullptr) != 5)) {
+        result = 8;
+    }
+
+    std::free(parent.listB);
+    std::free(otherParent.listB);
+    std::free(child.listA);
+    std::free(validatedParent.listB);
+    std::free(validatedChild.listA);
+    std::free(dispatchParent.listB);
+    std::free(dispatchChild.listA);
+    std::free(animateParent.listB);
+    std::free(animateChild.listA);
+    FreeTypeListsForTest();
+    return result;
+}
+
+extern "C" int zclass_remove_dispatch_smoke() {
+    ResetTypeListsForTest();
+
+    int result = 0;
+    zClass_NodePartial parent{};
+    zClass_NodePartial child{};
+    zClass_Object3DDataPartial parentData{};
+    parent.classId = 5;
+    parent.classData = &parentData;
+
+    if (zClass_Class::AddChildGeneric(&parent, &child) != 0 ||
+        zClass_Class::RemoveChild(&parent, &child) != 0 || parent.listCountB != 0 ||
+        child.listCountA != 0) {
+        result = 1;
+    }
+
+    parent.classId = 99;
+    if (result == 0 &&
+        (zClass_Class::RemoveChild(&parent, &child) != 1 ||
+         zClass_Class::RemoveChild(nullptr, &child) != 5 ||
+         zClass_Class::RemoveChild(&parent, nullptr) != 5)) {
+        result = 2;
+    }
+
+    std::free(parent.listB);
+    std::free(child.listA);
+    FreeTypeListsForTest();
+    return result;
+}
+
+extern "C" int zclass_node_world_child_smoke() {
+    zClass_NodePartial world{};
+    zClass_NodePartial mid{};
+    zClass_NodePartial child{};
+    zClass_NodePartial *midParents[] = {&world};
+    zClass_NodePartial *childParents[] = {&mid};
+    world.classId = 2;
+    mid.listCountA = 1;
+    mid.listA = midParents;
+    child.listCountA = 1;
+    child.listA = childParents;
+
+    if (zClass_Class::gwNodeGetWorldChild(&child) != &mid ||
+        zClass_Class::gwNodeGetWorldChild(&world) != nullptr ||
+        zClass_Class::gwNodeGetWorldChild(nullptr) != nullptr) {
+        return 1;
+    }
+
+    zClass_NodePartial otherParent{};
+    zClass_NodePartial *multiParents[] = {&world, &otherParent};
+    child.listCountA = 2;
+    child.listA = multiParents;
+    if (zClass_Class::gwNodeGetWorldChild(&child) != nullptr) {
+        return 2;
+    }
+
+    zClass_NodePartial flagParent{};
+    zClass_NodePartial flagChild{};
+    zClass_NodePartial flagGrandchild{};
+    zClass_NodePartial *flagChildren[] = {&flagChild};
+    zClass_NodePartial *flagGrandchildren[] = {&flagGrandchild};
+    flagParent.listCountB = 1;
+    flagParent.listB = flagChildren;
+    flagChild.listCountB = 1;
+    flagChild.listB = flagGrandchildren;
+
+    if (zClass_Class::SetSingleParentFlagRecursive(&flagParent, 1) != 0 ||
+        (flagParent.flags & 0x00080000) == 0 || (flagChild.flags & 0x00080000) == 0 ||
+        (flagGrandchild.flags & 0x00080000) == 0) {
+        return 3;
+    }
+    if (zClass_Class::SetSingleParentFlagRecursive(&flagParent, 0) != 0 ||
+        (flagParent.flags & 0x00080000) != 0 || (flagChild.flags & 0x00080000) != 0 ||
+        (flagGrandchild.flags & 0x00080000) != 0) {
+        return 4;
+    }
+
+    return 0;
+}
+
+extern "C" int zclass_world_add_child_at_grid_smoke() {
+    ResetTypeListsForTest();
+
+    zWorldAreaPartial row0[2]{};
+    zWorldAreaPartial row1[2]{};
+    row0[0].areaFlags = 1;
+    row0[0].cellMinX = 0.0f;
+    row0[0].cellMinZ = 100.0f;
+    row0[1].areaFlags = 1;
+    row0[1].cellMinX = 50.0f;
+    row0[1].cellMinZ = 100.0f;
+    row1[0].areaFlags = 1;
+    row1[0].cellMinX = 0.0f;
+    row1[0].cellMinZ = 50.0f;
+    row1[1].areaFlags = 1;
+    row1[1].cellMinX = 50.0f;
+    row1[1].cellMinZ = 50.0f;
+    zWorldAreaPartial *rows[] = {row0, row1};
+
+    zClass_WorldDataPartial worldData{};
+    worldData.originX = 0.0f;
+    worldData.originZ = 100.0f;
+    worldData.worldSizeX = 100.0f;
+    worldData.worldSizeZ = -100.0f;
+    worldData.worldMaxX = 100.0f;
+    worldData.worldMaxZ = 0.0f;
+    worldData.areaCellSizeX = 50.0f;
+    worldData.areaCellSizeZ = -50.0f;
+    worldData.areaInvSizeX = 0.02f;
+    worldData.areaInvSizeZ = -0.02f;
+    worldData.partitionInclusionTolX = 2.0f;
+    worldData.partitionInclusionTolZ = 2.0f;
+    worldData.areaGridColCount = 2;
+    worldData.areaGridRowCount = 2;
+    worldData.areaGridRows = rows;
+
+    zClass_NodePartial world{};
+    world.flags = 1;
+    world.classData = &worldData;
+
+    int result = 0;
+    zClass_NodePartial wholeWorldChild{};
+    if (zClass_World::AddChildAtGrid(&world, &wholeWorldChild) != 0 || world.listCountB != 1 ||
+        world.listB[0] != &wholeWorldChild || wholeWorldChild.gridCol != -1 ||
+        wholeWorldChild.gridRow != -1) {
+        result = 1;
+    }
+
+    zClass_NodePartial outsideChild{};
+    outsideChild.flags = 0x80;
+    if (result == 0 &&
+        (zClass_World::AddChildAtGrid(&world, &outsideChild) != 0 || world.listCountB != 2 ||
+         world.listB[1] != &outsideChild || outsideChild.gridCol != -1 ||
+         outsideChild.gridRow != -1)) {
+        result = 2;
+    }
+
+    std::int32_t classData = 0;
+    zClass_NodePartial bboxChild{};
+    bboxChild.flags = 0x100;
+    bboxChild.classData = &classData;
+    bboxChild.cachedBounds[0] = 10.0f;
+    bboxChild.cachedBounds[1] = 0.0f;
+    bboxChild.cachedBounds[2] = 70.0f;
+    bboxChild.cachedBounds[3] = 20.0f;
+    bboxChild.cachedBounds[4] = 1.0f;
+    bboxChild.cachedBounds[5] = 80.0f;
+    if (result == 0 &&
+        (zClass_World::AddChildAtGrid(&world, &bboxChild) != 0 || row0[0].childCount != 1 ||
+         row0[0].childList[0] != &bboxChild || bboxChild.gridCol != 0 ||
+         bboxChild.gridRow != 0)) {
+        result = 3;
+    }
+
+    std::free(row0[0].childList);
+    std::free(wholeWorldChild.listA);
+    std::free(outsideChild.listA);
+    std::free(bboxChild.listA);
+    std::free(world.listB);
+    FreeTypeListsForTest();
+    return result;
+}
+
 extern "C" int zclass_node_metadata_accessors_smoke() {
     zClass_NodePartial node = {};
     node.userDataOrDiRef = 0x12345678;
