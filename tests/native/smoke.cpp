@@ -158,6 +158,9 @@ extern "C" int gamenet_send_pkt14_hud_timer_and_flags_sync_smoke(void);
 extern "C" int gamenet_host_update_session_status_fields_smoke(void);
 extern "C" int gamenet_unregister_gameplay_packet_handlers_smoke(void);
 extern "C" int gamenet_reset_remote_players_and_spawn_lists_smoke(void);
+extern "C" int gamenet_player_row_append_smoke(void);
+extern "C" int gamenet_player_row_apply_color_tint_smoke(void);
+extern "C" int gamenet_player_row_destroy_embedded_panel_smoke(void);
 extern "C" int gamenet_apply_pkt06_player_state_snapshot_smoke(void);
 extern "C" int gamenet_handle_pkt06_player_state_snapshot_smoke(void);
 extern "C" int gamenet_spawn_remote_player_missing_template_smoke(void);
@@ -10440,6 +10443,11 @@ int main(int argc, char **argv) {
          gamenet_unregister_gameplay_packet_handlers_smoke},
         {"gamenet_reset_remote_players_and_spawn_lists_smoke",
          gamenet_reset_remote_players_and_spawn_lists_smoke},
+        {"gamenet_player_row_append_smoke", gamenet_player_row_append_smoke},
+        {"gamenet_player_row_apply_color_tint_smoke",
+         gamenet_player_row_apply_color_tint_smoke},
+        {"gamenet_player_row_destroy_embedded_panel_smoke",
+         gamenet_player_row_destroy_embedded_panel_smoke},
         {"gamenet_apply_pkt06_player_state_snapshot_smoke",
          gamenet_apply_pkt06_player_state_snapshot_smoke},
         {"gamenet_handle_pkt06_player_state_snapshot_smoke",

@@ -385,6 +385,13 @@ struct GameNetSpawnPoint {
     GameNetSpawnPoint *next;
 };
 
+struct GameNetSpawnPointListState {
+    unsigned int flags;
+    GameNetSpawnPoint *head;
+    GameNetSpawnPoint *tail;
+    unsigned int count;
+};
+
 struct HudTimerPanelNetState {
     float timerSeconds;
     float timeWarningThresholdSec;
@@ -428,7 +435,7 @@ struct NetPkt06_PlayerStateSnapshot {
     zVec3 vehicleRotationAngles;
     float statusMeterValue;
     int progressTargetCount;
-    zVec3 progressTargetPoints[26];
+    zVec3 progressTargetPoints[10];
 };
 
 struct NetPkt0A_RemoveRuntimeRelay {
@@ -662,14 +669,8 @@ GameNetPlayerRow *__fastcall AppendNewRow(
 } // namespace GameNetPlayerRowList
 
 extern "C" {
-extern unsigned int g_GameNetPlayerRowList;
-extern GameNetPlayerRow *g_GameNetPlayerRowHead;
-extern GameNetPlayerRow *g_GameNetPlayerRowTail;
-extern unsigned int g_GameNetPlayerRowCount;
-extern unsigned int g_GameNetSpawnPointList;
-extern GameNetSpawnPoint *g_GameNetSpawnPointHead;
-extern GameNetSpawnPoint *g_GameNetSpawnPointTail;
-extern unsigned int g_GameNetSpawnPointCount;
+extern GameNetPlayerRowListState g_GameNetPlayerRowList;
+extern GameNetSpawnPointListState g_GameNetSpawnPointList;
 extern unsigned int g_GameNetPlayerRowStyleColors_00RRGGBB[9];
 extern HudTimerPanelNetState g_HudTimerPanelNetState;
 extern NetPkt0C_HudTimerStatusBits g_NetPkt0C_HudTimerStatusBitsBuf;
@@ -694,6 +695,13 @@ extern NetPkt06_PlayerStateSnapshot g_NetPkt06_PlayerStateSnapshotBuf;
 extern NetPkt0F_CraterEvent g_NetPkt0F_CraterEventSendBuf;
 extern NetPkt10_QSandEvent g_NetPkt10_QSandEventSendBuf;
 }
+
+#define g_GameNetPlayerRowHead (g_GameNetPlayerRowList.head)
+#define g_GameNetPlayerRowTail (g_GameNetPlayerRowList.tail)
+#define g_GameNetPlayerRowCount (g_GameNetPlayerRowList.count)
+#define g_GameNetSpawnPointHead (g_GameNetSpawnPointList.head)
+#define g_GameNetSpawnPointTail (g_GameNetSpawnPointList.tail)
+#define g_GameNetSpawnPointCount (g_GameNetSpawnPointList.count)
 
 #if defined(_M_IX86) || defined(__i386__)
 RECOIL_STATIC_ASSERT(
@@ -816,6 +824,7 @@ RECOIL_STATIC_ASSERT(
         count
     ) == 0x0c
 );
+RECOIL_STATIC_ASSERT(sizeof(GameNetPlayerRowListState) == 0x10);
 RECOIL_STATIC_ASSERT(
     offsetof(
         GameNetSpawnPoint,
@@ -828,6 +837,25 @@ RECOIL_STATIC_ASSERT(
         next
     ) == 0x10
 );
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        GameNetSpawnPointListState,
+        head
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        GameNetSpawnPointListState,
+        tail
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        GameNetSpawnPointListState,
+        count
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(sizeof(GameNetSpawnPointListState) == 0x10);
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudTimerPanelNetState,
@@ -926,6 +954,13 @@ RECOIL_STATIC_ASSERT(
         progressTargetCount
     ) == 0x44
 );
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        NetPkt06_PlayerStateSnapshot,
+        progressTargetPoints
+    ) == 0x48
+);
+RECOIL_STATIC_ASSERT(sizeof(NetPkt06_PlayerStateSnapshot) == 0xc0);
 RECOIL_STATIC_ASSERT(sizeof(NetPkt0D_HudTimerPanelState) == 0x10);
 RECOIL_STATIC_ASSERT(
     offsetof(

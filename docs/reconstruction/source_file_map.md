@@ -27,14 +27,14 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x403530` `AINet::FindNodeByIndex` -> `src/Battlesport/ainet.cpp:390`
 - `0x403550` `AINet::ResolveNeighborLinksAndBuildProbeFans` -> `src/Battlesport/ainet.cpp:448`
 - `0x403620` `AINetPathProbeFan::InitFromSegment` -> `src/Battlesport/ainet.cpp:409`
-- `0x414390` `GameNet::RefreshPlayerListMenu` -> `src/Battlesport/GameNet.cpp:2877`
-- `0x4143d0` `GameNet::BeginChatCompose` -> `src/Battlesport/GameNet.cpp:1584`
-- `0x414550` `GameNet::ChatComposeKeyCallback` -> `src/Battlesport/GameNet.cpp:1568`
-- `0x414590` `GameNet::EndChatComposeAndSend` -> `src/Battlesport/GameNet.cpp:1620`
-- `0x433000` `GameNet::SendPkt08_PlayerKillEvent` -> `src/Battlesport/GameNet.cpp:3084`
-- `0x433060` `GameNet::HandlePkt08_PlayerKillEvent` -> `src/Battlesport/GameNet.cpp:3044`
+- `0x414390` `GameNet::RefreshPlayerListMenu` -> `src/Battlesport/GameNet.cpp:2862`
+- `0x4143d0` `GameNet::BeginChatCompose` -> `src/Battlesport/GameNet.cpp:1570`
+- `0x414550` `GameNet::ChatComposeKeyCallback` -> `src/Battlesport/GameNet.cpp:1554`
+- `0x414590` `GameNet::EndChatComposeAndSend` -> `src/Battlesport/GameNet.cpp:1606`
+- `0x433000` `GameNet::SendPkt08_PlayerKillEvent` -> `src/Battlesport/GameNet.cpp:3069`
+- `0x433060` `GameNet::HandlePkt08_PlayerKillEvent` -> `src/Battlesport/GameNet.cpp:3029`
 - `0x4340c0` `OptCatalog::AltGunDispatchAllocRuntimeGateCallback` -> `src/GameZRecoil/zWeapon/OptCatalog.c:1286`
-- `0x434130` `GameNet::SendPkt07_AltGunDispatch` -> `src/Battlesport/GameNet.cpp:2320`
+- `0x434130` `GameNet::SendPkt07_AltGunDispatch` -> `src/Battlesport/GameNet.cpp:2305`
 
 ## Battlesport/ainet.cpp
 
@@ -66,31 +66,31 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## Battlesport/GameNet.cpp
 
-- `0x41ada0` `NetSessionBrowserDialog::Constructor` -> `src/Battlesport/GameNet.cpp:806`
-- `0x41ae90` `NetSessionBrowserDialog::ScalarDeletingDtor` -> `src/Battlesport/GameNet.cpp:828`
-- `0x41aeb0` `NetSessionBrowserDialog::Destructor` -> `src/Battlesport/GameNet.cpp:840`
-- `0x41af50` `NetSessionBrowserDialog::DoDataExchange` -> `src/Battlesport/GameNet.cpp:852`
-- `0x41afd0` `NetSessionBrowserDialog::GetMessageMap` -> `src/Battlesport/GameNet.cpp:513`
-- `0x41afe0` `NetSessionBrowserDialog::OnInitDialog` -> `src/Battlesport/GameNet.cpp:519`
-- `0x41b2f0` `NetSessionBrowserDialog::ConnectSelectedProvider` -> `src/Battlesport/GameNet.cpp:984`
-- `0x41b510` `NetSessionBrowserDialog::OnOK` -> `src/Battlesport/GameNet.cpp:1130`
-- `0x41b5a0` `NetSessionBrowserDialog::OnCreateSession` -> `src/Battlesport/GameNet.cpp:1175`
-- `0x41b660` `NetSessionBrowserDialog::OnTimer` -> `src/Battlesport/GameNet.cpp:1088`
-- `0x41b680` `NetSessionBrowserDialog::OnDestroy` -> `src/Battlesport/GameNet.cpp:1213`
-- `0x41b6a0` `NetSessionBrowserDialog::ValidatePlayerName` -> `src/Battlesport/GameNet.cpp:1097`
-- `0x41b780` `NetSessionBrowserDialog::OnHelpDocs` -> `src/Battlesport/GameNet.cpp:1223`
-- `0x41b8ac` `NetSessionBrowserDialog::kHelpDocsFindExecutableErrorClassTable` -> `src/Battlesport/GameNet.cpp:268`
-- `0x41c6e0` `NetSessionConfigDialog::Constructor` -> `src/Battlesport/GameNet.cpp:1292`
-- `0x41c7f0` `NetSessionConfigDialog::Destructor` -> `src/Battlesport/GameNet.cpp:1316`
-- `0x41c880` `NetSessionConfigDialog::DoDataExchange` -> `src/Battlesport/GameNet.cpp:1327`
-- `0x41c970` `NetSessionConfigDialog::GetMessageMap` -> `src/Battlesport/GameNet.cpp:1402`
-- `0x41c980` `Mission::RegisterMultiplayerMaps` -> `src/Battlesport/GameNet.cpp:1533`
-- `0x41c990` `NetSessionConfigDialog::InitMapNameStrings` -> `src/Battlesport/GameNet.cpp:1541`
-- `0x41ca00` `NetSessionConfigDialog::RegisterMapNameCleanup` -> `src/Battlesport/GameNet.cpp:1553`
-- `0x41ca10` `NetSessionConfigDialog::CleanupMapNameStringsOnExit` -> `src/Battlesport/GameNet.cpp:1559`
-- `0x41ca30` `NetSessionConfigDialog::OnInitDialog` -> `src/Battlesport/GameNet.cpp:1408`
-- `0x41cb50` `NetSessionConfigDialog::OnDestroy` -> `src/Battlesport/GameNet.cpp:1484`
-- `0x41cb90` `NetSessionConfigDialog::OnMapChanged` -> `src/Battlesport/GameNet.cpp:1503`
+- `0x41ada0` `NetSessionBrowserDialog::Constructor` -> `src/Battlesport/GameNet.cpp:792`
+- `0x41ae90` `NetSessionBrowserDialog::ScalarDeletingDtor` -> `src/Battlesport/GameNet.cpp:814`
+- `0x41aeb0` `NetSessionBrowserDialog::Destructor` -> `src/Battlesport/GameNet.cpp:826`
+- `0x41af50` `NetSessionBrowserDialog::DoDataExchange` -> `src/Battlesport/GameNet.cpp:838`
+- `0x41afd0` `NetSessionBrowserDialog::GetMessageMap` -> `src/Battlesport/GameNet.cpp:498`
+- `0x41afe0` `NetSessionBrowserDialog::OnInitDialog` -> `src/Battlesport/GameNet.cpp:504`
+- `0x41b2f0` `NetSessionBrowserDialog::ConnectSelectedProvider` -> `src/Battlesport/GameNet.cpp:970`
+- `0x41b510` `NetSessionBrowserDialog::OnOK` -> `src/Battlesport/GameNet.cpp:1116`
+- `0x41b5a0` `NetSessionBrowserDialog::OnCreateSession` -> `src/Battlesport/GameNet.cpp:1161`
+- `0x41b660` `NetSessionBrowserDialog::OnTimer` -> `src/Battlesport/GameNet.cpp:1074`
+- `0x41b680` `NetSessionBrowserDialog::OnDestroy` -> `src/Battlesport/GameNet.cpp:1199`
+- `0x41b6a0` `NetSessionBrowserDialog::ValidatePlayerName` -> `src/Battlesport/GameNet.cpp:1083`
+- `0x41b780` `NetSessionBrowserDialog::OnHelpDocs` -> `src/Battlesport/GameNet.cpp:1209`
+- `0x41b8ac` `NetSessionBrowserDialog::kHelpDocsFindExecutableErrorClassTable` -> `src/Battlesport/GameNet.cpp:262`
+- `0x41c6e0` `NetSessionConfigDialog::Constructor` -> `src/Battlesport/GameNet.cpp:1278`
+- `0x41c7f0` `NetSessionConfigDialog::Destructor` -> `src/Battlesport/GameNet.cpp:1302`
+- `0x41c880` `NetSessionConfigDialog::DoDataExchange` -> `src/Battlesport/GameNet.cpp:1313`
+- `0x41c970` `NetSessionConfigDialog::GetMessageMap` -> `src/Battlesport/GameNet.cpp:1388`
+- `0x41c980` `Mission::RegisterMultiplayerMaps` -> `src/Battlesport/GameNet.cpp:1519`
+- `0x41c990` `NetSessionConfigDialog::InitMapNameStrings` -> `src/Battlesport/GameNet.cpp:1527`
+- `0x41ca00` `NetSessionConfigDialog::RegisterMapNameCleanup` -> `src/Battlesport/GameNet.cpp:1539`
+- `0x41ca10` `NetSessionConfigDialog::CleanupMapNameStringsOnExit` -> `src/Battlesport/GameNet.cpp:1545`
+- `0x41ca30` `NetSessionConfigDialog::OnInitDialog` -> `src/Battlesport/GameNet.cpp:1394`
+- `0x41cb50` `NetSessionConfigDialog::OnDestroy` -> `src/Battlesport/GameNet.cpp:1470`
+- `0x41cb90` `NetSessionConfigDialog::OnMapChanged` -> `src/Battlesport/GameNet.cpp:1489`
 
 ## Battlesport/hud.cpp
 
@@ -289,7 +289,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## Battlesport/HudUi.cpp
 
-- `0x414330` `GameNet::ShowPlayerKillMessage` -> `src/Battlesport/GameNet.cpp:2752`
+- `0x414330` `GameNet::ShowPlayerKillMessage` -> `src/Battlesport/GameNet.cpp:2737`
 - `0x4143a0` `HudUiMgr::IsLocalPlayerFirstInStatsList` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3450`
 - `0x4143b0` `HudUi::RefreshScoreboardEntryRow` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17514`
 - `0x4143c0` `HudUi::RemoveScoreboardEntryRow` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17521`
@@ -577,11 +577,11 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## Battlesport/net.cpp
 
-- `0x4339d0` `GameNet::GetNearestOtherPlayerDistanceToSpawnPoint` -> `src/Battlesport/GameNet.cpp:1699`
+- `0x4339d0` `GameNet::GetNearestOtherPlayerDistanceToSpawnPoint` -> `src/Battlesport/GameNet.cpp:1685`
 
 ## Battlesport/Net.cpp
 
-- `0x43cf40` `Net::FormatIpv4Address` -> `src/Battlesport/GameNet.cpp:782`
+- `0x43cf40` `Net::FormatIpv4Address` -> `src/Battlesport/GameNet.cpp:768`
 
 ## Battlesport/OptCatalog.cpp
 
@@ -929,9 +929,9 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 - `0x434240` `OptCatalog::SendPkt0A_RemoveRuntimeRelay` -> `src/GameZRecoil/zWeapon/OptCatalog.c:1323`
 - `0x4342d0` `OptCatalog::HandlePkt0A_RemoveRuntimeRelay` -> `src/GameZRecoil/zWeapon/OptCatalog.c:1355`
-- `0x434370` `GameNet::SendPkt13_EffectAnimActivationRecord` -> `src/Battlesport/GameNet.cpp:3314`
-- `0x4343f0` `GameNet::HandlePkt13_EffectAnimActivationRecord` -> `src/Battlesport/GameNet.cpp:3358`
-- `0x434430` `GameNet::SendAllPkt13_EffectAnimActivationRecords` -> `src/Battlesport/GameNet.cpp:3345`
+- `0x434370` `GameNet::SendPkt13_EffectAnimActivationRecord` -> `src/Battlesport/GameNet.cpp:3299`
+- `0x4343f0` `GameNet::HandlePkt13_EffectAnimActivationRecord` -> `src/Battlesport/GameNet.cpp:3343`
+- `0x434430` `GameNet::SendAllPkt13_EffectAnimActivationRecords` -> `src/Battlesport/GameNet.cpp:3330`
 
 ## GameZRecoil/mission.cpp
 
@@ -992,29 +992,29 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## GameZRecoil/RecoilApp/GameNet.cpp
 
-- `0x431c50` `GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks` -> `src/Battlesport/GameNet.cpp:2482`
-- `0x432300` `GameNet::TickLocalPlayerPkt06ReplicationAndHudTimer` -> `src/Battlesport/GameNet.cpp:1823`
-- `0x432e70` `GameNet::ReassignPlayerColorsAndRefreshRows` -> `src/Battlesport/GameNet.cpp:2779`
-- `0x432ed0` `GameNet::HandlePkt03_RemoveRemotePlayer` -> `src/Battlesport/GameNet.cpp:2805`
-- `0x4330f0` `GameNet::SendPkt0E_PlayerLapProgress` -> `src/Battlesport/GameNet.cpp:3108`
-- `0x433170` `GameNet::HandlePkt0E_PlayerLapProgress` -> `src/Battlesport/GameNet.cpp:3281`
-- `0x433200` `GameNet::AreAllPlayersAtLapTarget` -> `src/Battlesport/GameNet.cpp:1727`
-- `0x433250` `GameNet::HandlePkt0D_HudTimerPanelState` -> `src/Battlesport/GameNet.cpp:2994`
-- `0x433310` `GameNet::SendPkt0D_HudTimerPanelState` -> `src/Battlesport/GameNet.cpp:3244`
-- `0x433390` `GameNet::SendPkt0C_HudTimerStatusBits` -> `src/Battlesport/GameNet.cpp:3375`
-- `0x433410` `GameNet::HandlePkt0C_HudTimerStatusBits` -> `src/Battlesport/GameNet.cpp:2884`
-- `0x4334f0` `GameNet::SendPkt09_PlayerScoreboardSnapshot` -> `src/Battlesport/GameNet.cpp:3135`
-- `0x4335b0` `GameNet::HandlePkt09_PlayerScoreboardSnapshot` -> `src/Battlesport/GameNet.cpp:3179`
-- `0x4336f0` `GameNet::GetLocalPlayerColorIndexOrZero` -> `src/Battlesport/GameNet.cpp:1683`
-- `0x433750` `GameNet::SendPkt0B_ChatMessage` -> `src/Battlesport/GameNet.cpp:2964`
-- `0x4337e0` `GameNet::HandlePkt0B_ChatMessage` -> `src/Battlesport/GameNet.cpp:2936`
-- `0x433840` `GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed` -> `src/Battlesport/GameNet.cpp:1746`
-- `0x433c30` `GameNet::HostSendPkt0F_CraterFeature` -> `src/Battlesport/GameNet.cpp:2394`
-- `0x433ca0` `GameNet::SendPkt10_QSandEvent` -> `src/Battlesport/GameNet.cpp:2345`
-- `0x433de0` `GameNet::HostSendPkt10_QSandFeature` -> `src/Battlesport/GameNet.cpp:2377`
-- `0x434190` `GameNet::HandlePkt07_AltGunDispatch` -> `src/Battlesport/GameNet.cpp:2280`
-- `0x434230` `GameNet::AltGunDispatchNoOpCallback` -> `src/Battlesport/GameNet.cpp:2336`
-- `0x4344b0` `GameNet::HandlePkt14_HudTimerAndFlagsSync` -> `src/Battlesport/GameNet.cpp:3427`
+- `0x431c50` `GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks` -> `src/Battlesport/GameNet.cpp:2467`
+- `0x432300` `GameNet::TickLocalPlayerPkt06ReplicationAndHudTimer` -> `src/Battlesport/GameNet.cpp:1809`
+- `0x432e70` `GameNet::ReassignPlayerColorsAndRefreshRows` -> `src/Battlesport/GameNet.cpp:2764`
+- `0x432ed0` `GameNet::HandlePkt03_RemoveRemotePlayer` -> `src/Battlesport/GameNet.cpp:2790`
+- `0x4330f0` `GameNet::SendPkt0E_PlayerLapProgress` -> `src/Battlesport/GameNet.cpp:3093`
+- `0x433170` `GameNet::HandlePkt0E_PlayerLapProgress` -> `src/Battlesport/GameNet.cpp:3266`
+- `0x433200` `GameNet::AreAllPlayersAtLapTarget` -> `src/Battlesport/GameNet.cpp:1713`
+- `0x433250` `GameNet::HandlePkt0D_HudTimerPanelState` -> `src/Battlesport/GameNet.cpp:2979`
+- `0x433310` `GameNet::SendPkt0D_HudTimerPanelState` -> `src/Battlesport/GameNet.cpp:3229`
+- `0x433390` `GameNet::SendPkt0C_HudTimerStatusBits` -> `src/Battlesport/GameNet.cpp:3360`
+- `0x433410` `GameNet::HandlePkt0C_HudTimerStatusBits` -> `src/Battlesport/GameNet.cpp:2869`
+- `0x4334f0` `GameNet::SendPkt09_PlayerScoreboardSnapshot` -> `src/Battlesport/GameNet.cpp:3120`
+- `0x4335b0` `GameNet::HandlePkt09_PlayerScoreboardSnapshot` -> `src/Battlesport/GameNet.cpp:3164`
+- `0x4336f0` `GameNet::GetLocalPlayerColorIndexOrZero` -> `src/Battlesport/GameNet.cpp:1669`
+- `0x433750` `GameNet::SendPkt0B_ChatMessage` -> `src/Battlesport/GameNet.cpp:2949`
+- `0x4337e0` `GameNet::HandlePkt0B_ChatMessage` -> `src/Battlesport/GameNet.cpp:2921`
+- `0x433840` `GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed` -> `src/Battlesport/GameNet.cpp:1732`
+- `0x433c30` `GameNet::HostSendPkt0F_CraterFeature` -> `src/Battlesport/GameNet.cpp:2379`
+- `0x433ca0` `GameNet::SendPkt10_QSandEvent` -> `src/Battlesport/GameNet.cpp:2330`
+- `0x433de0` `GameNet::HostSendPkt10_QSandFeature` -> `src/Battlesport/GameNet.cpp:2362`
+- `0x434190` `GameNet::HandlePkt07_AltGunDispatch` -> `src/Battlesport/GameNet.cpp:2265`
+- `0x434230` `GameNet::AltGunDispatchNoOpCallback` -> `src/Battlesport/GameNet.cpp:2321`
+- `0x4344b0` `GameNet::HandlePkt14_HudTimerAndFlagsSync` -> `src/Battlesport/GameNet.cpp:3412`
 
 ## GameZRecoil/RecoilApp/RecoilApp.cpp
 
@@ -1858,7 +1858,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## src/Battlesport/gamenet.cpp
 
-- `0x432d60` `GameNet::UpdateRemotePlayerHudWidgetScreenPos` -> `src/Battlesport/GameNet.cpp:2692`
+- `0x432d60` `GameNet::UpdateRemotePlayerHudWidgetScreenPos` -> `src/Battlesport/GameNet.cpp:2677`
 
 ## src/Battlesport/pickup.cpp
 
@@ -2248,7 +2248,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x413ff0` `HudUiMessage::ReleaseImages` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14273`
 - `0x414180` `HudUiLoadingCheckpoint::AdvanceAndLog` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3036`
 - `0x414210` `HudUiLoadingCheckpoint::InitTable` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3067`
-- `0x414660` `GameNet::EndChatComposeAndSendThunk` -> `src/Battlesport/GameNet.cpp:1657`
+- `0x414660` `GameNet::EndChatComposeAndSendThunk` -> `src/Battlesport/GameNet.cpp:1643`
 - `0x414670` `HudUiTripletEntries::GetCount` -> `src/GameZRecoil/zHud/zhud_ui.cpp:1418`
 - `0x4146a0` `HudUiTripletEntries::CopyRange` -> `src/GameZRecoil/zHud/zhud_ui.cpp:1427`
 - `0x4146e0` `HudUiTripletEntries::FillN` -> `src/GameZRecoil/zHud/zhud_ui.cpp:1445`
@@ -2296,7 +2296,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x41a7b0` `HudUiNetGameSetupTextInput::OnActivateFocusAndCursor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15250`
 - `0x41a820` `HudUiNetGameSetupPanel_NextWorldButton::OnActivate` -> `src/Battlesport/HudUiNetGameSetup.cpp:569`
 - `0x41a9c0` `HudUiNetGameSetupPanel_PrevWorldButton::OnActivate` -> `src/Battlesport/HudUiNetGameSetup.cpp:583`
-- `0x41b150` `NetSessionBrowserDialog::RefreshSessionList` -> `src/Battlesport/GameNet.cpp:894`
+- `0x41b150` `NetSessionBrowserDialog::RefreshSessionList` -> `src/Battlesport/GameNet.cpp:880`
 - `0x41be70` `HudUiNetExitPanel_ExitButton::OnActivate` -> `src/Battlesport/HudUiNetExitPanel.cpp:76`
 - `0x41bf10` `HudUiNetExitPanel_ResumeWidget::OnActivate` -> `src/Battlesport/HudUiNetExitPanel.cpp:84`
 - `0x41bf40` `HudUiNetExitPanel_ResumeWidget::OnShowPreview` -> `src/Battlesport/HudUiNetExitPanel.cpp:92`
@@ -2442,26 +2442,26 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x431ad0` `CZRecoilFrame::OnMenuSelectA3D` -> `src/Battlesport/CZRecoilFrame.cpp:1098`
 - `0x431ae0` `CZRecoilFrame::OnUpdateA3DCmdUI` -> `src/Battlesport/CZRecoilFrame.cpp:1103`
 - `0x431b10` `CZRecoilFrame::OnSize` -> `src/Battlesport/CZRecoilFrame.cpp:1111`
-- `0x431bf0` `GameNetSpawnPointList::InitGlobals` -> `src/Battlesport/GameNet.cpp:3501`
-- `0x431c20` `GameNetPlayerRowList::Reset` -> `src/Battlesport/GameNet.cpp:3511`
-- `0x431dd0` `Net::InitFromZrd` -> `src/Battlesport/GameNet.cpp:620`
-- `0x4320b0` `GameNet::WaitForLocalPlayerColorIndex` -> `src/Battlesport/GameNet.cpp:2624`
-- `0x4320f0` `GameNet::ResetRemotePlayersAndSpawnLists` -> `src/Battlesport/GameNet.cpp:2586`
-- `0x4321b0` `GameNet::UnregisterGameplayPacketHandlers` -> `src/Battlesport/GameNet.cpp:2414`
-- `0x4322a0` `GameNet::ResetHudTimerPanelNetStateLongCountdown` -> `src/Battlesport/GameNet.cpp:2644`
-- `0x4327e0` `GameNet::HandlePkt06_PlayerStateSnapshot` -> `src/Battlesport/GameNet.cpp:2244`
-- `0x432830` `GameNet::FindPlayerRowByKey` -> `src/Battlesport/GameNet.cpp:1664`
-- `0x432860` `GameNet::SpawnRemotePlayerFromPkt06_PlayerStateSnapshot` -> `src/Battlesport/GameNet.cpp:2084`
-- `0x432ae0` `GameNet::ApplyPkt06_PlayerStateSnapshotToRow` -> `src/Battlesport/GameNet.cpp:1989`
-- `0x433710` `GameNet::SetStatusBitsFromFlags` -> `src/Battlesport/GameNet.cpp:2663`
-- `0x433730` `GameNet::GetStatusBitAllowMaps` -> `src/Battlesport/GameNet.cpp:2675`
-- `0x433740` `GameNet::GetStatusBitNameTags` -> `src/Battlesport/GameNet.cpp:2684`
-- `0x433a40` `HudTimerPanelNetState::ClearTailFlagsLocal` -> `src/Battlesport/GameNet.cpp:610`
-- `0x433a50` `GameNetPlayerRow::ApplyPlayerColorTint` -> `src/Battlesport/GameNet.cpp:584`
-- `0x434460` `GameNet::SendPkt14_HudTimerAndFlagsSync` -> `src/Battlesport/GameNet.cpp:3409`
-- `0x434550` `GameNet::HostUpdateSessionDescStatusFields` -> `src/Battlesport/GameNet.cpp:3473`
-- `0x4345a0` `GameNetPlayerRowList::AppendNewRow` -> `src/Battlesport/GameNet.cpp:3519`
-- `0x434650` `GameNetPlayerRow::DestroyEmbeddedPanel` -> `src/Battlesport/GameNet.cpp:605`
+- `0x431bf0` `GameNetSpawnPointList::InitGlobals` -> `src/Battlesport/GameNet.cpp:3487`
+- `0x431c20` `GameNetPlayerRowList::Reset` -> `src/Battlesport/GameNet.cpp:3501`
+- `0x431dd0` `Net::InitFromZrd` -> `src/Battlesport/GameNet.cpp:614`
+- `0x4320b0` `GameNet::WaitForLocalPlayerColorIndex` -> `src/Battlesport/GameNet.cpp:2609`
+- `0x4320f0` `GameNet::ResetRemotePlayersAndSpawnLists` -> `src/Battlesport/GameNet.cpp:2571`
+- `0x4321b0` `GameNet::UnregisterGameplayPacketHandlers` -> `src/Battlesport/GameNet.cpp:2399`
+- `0x4322a0` `GameNet::ResetHudTimerPanelNetStateLongCountdown` -> `src/Battlesport/GameNet.cpp:2629`
+- `0x4327e0` `GameNet::HandlePkt06_PlayerStateSnapshot` -> `src/Battlesport/GameNet.cpp:2229`
+- `0x432830` `GameNet::FindPlayerRowByKey` -> `src/Battlesport/GameNet.cpp:1650`
+- `0x432860` `GameNet::SpawnRemotePlayerFromPkt06_PlayerStateSnapshot` -> `src/Battlesport/GameNet.cpp:2070`
+- `0x432ae0` `GameNet::ApplyPkt06_PlayerStateSnapshotToRow` -> `src/Battlesport/GameNet.cpp:1975`
+- `0x433710` `GameNet::SetStatusBitsFromFlags` -> `src/Battlesport/GameNet.cpp:2648`
+- `0x433730` `GameNet::GetStatusBitAllowMaps` -> `src/Battlesport/GameNet.cpp:2660`
+- `0x433740` `GameNet::GetStatusBitNameTags` -> `src/Battlesport/GameNet.cpp:2669`
+- `0x433a40` `HudTimerPanelNetState::ClearTailFlagsLocal` -> `src/Battlesport/GameNet.cpp:604`
+- `0x433a50` `GameNetPlayerRow::ApplyPlayerColorTint` -> `src/Battlesport/GameNet.cpp:570`
+- `0x434460` `GameNet::SendPkt14_HudTimerAndFlagsSync` -> `src/Battlesport/GameNet.cpp:3394`
+- `0x434550` `GameNet::HostUpdateSessionDescStatusFields` -> `src/Battlesport/GameNet.cpp:3458`
+- `0x4345a0` `GameNetPlayerRowList::AppendNewRow` -> `src/Battlesport/GameNet.cpp:3513`
+- `0x434650` `GameNetPlayerRow::DestroyEmbeddedPanel` -> `src/Battlesport/GameNet.cpp:596`
 - `0x436e00` `zTurret_Runtime::Shutdown` -> `src/GameZRecoil/zTurret/zTurret.cpp:1296`
 - `0x437aa0` `zTurret_System::ResetIterationState` -> `src/GameZRecoil/zTurret/zTurret.cpp:1316`
 - `0x437ab0` `zTurret_System::Shutdown` -> `src/GameZRecoil/zTurret/zTurret.cpp:1507`

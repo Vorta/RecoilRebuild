@@ -295,19 +295,32 @@ Active queue sections:
     functional targets. Ignored local VC5 data-symbol target
     `gamenet_launch_session_globals` passes for the GameNet status, packet,
     handler, row-list, and spawn-list globals with zero unmasked mismatches.
+  - GameNet row/spawn list source shape is now typed as
+    `GameNetPlayerRowListState` and `GameNetSpawnPointListState`, and the
+    pkt06 snapshot model is narrowed to the BN-backed 0xc0-byte packet with ten
+    progress target points. The player-row methods 0x4345a0, 0x433a50, and
+    0x434650 are accepted at tier B after row-method native smokes,
+    source-owner review, and data/no-globals gates; BN still records a limited
+    EH-decompilation note on 0x4345a0, but its typed row/list contract is
+    verified by assembly.
+  - The compiler intrinsic provider-boundary entry for BN symbolic
+    `__builtin_memset` at 0x7c8ed4 is accepted for the inline `rep stos`
+    zero/fill pattern used by 0x4320f0 and 0x4345a0.
 - Current blockers:
   - 0x4321b0 and 0x4320f0 remain owner/data blocked even though their
     functional targets pass; after the session-status sender promotion,
     HudUiNetGameSetupPanel_LaunchButton now reports 0x4321b0 as the next
     lowest visible GameNet blocker, but its function-pointer callback frontier
     currently routes into 0x4327e0. 0x432830 is accepted at tier B after
-    row-list data-symbol evidence; 0x4327e0 remains blocked on the broader
-    pkt06 owner callees 0x432860 and 0x432ae0.
+    row-list data-symbol evidence; 0x4327e0, 0x432860, and 0x432ae0 still need
+    broader pkt06/player/HUD/zVideo owner-data routing before tier B.
   - The pkt06 data correction sets `g_GameNetPkt06InitialSyncGate` to the BN
     initial value 1. Ignored local VC5 target `gamenet_pkt06_globals` now
     covers `g_GameNetPlayerRowStyleColors_00RRGGBB`,
     `g_GameNetPkt06InitialSyncGate`, and `g_HudTimerPanelNetState` with zero
-    unmasked mismatches.
+    unmasked mismatches, but callers that touch `g_HudUiTopMessageStack`,
+    `g_Player_RuntimeDiScene`, `g_HudSensorTracker`, or `g_zVideo_FrameTick`
+    remain cross-owner data blocked.
   - The zClass copy-node dependency through 0x452500 is accepted at tier B
     after correcting `g_zClass_CopyNodeCloneDiMode` to the BN initial value 1,
     wiring the existing zClass copy smokes into `recoil_native_smoke`, and

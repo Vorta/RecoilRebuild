@@ -411,11 +411,11 @@ extern "C" int gamenet_send_pkt14_hud_timer_and_flags_sync_smoke(void) {
 extern "C" int gamenet_reset_remote_players_and_spawn_lists_smoke(void) {
     HudUiStatsListElement *const oldStatsList = g_HudUiMgrStatsList;
     HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
-    const unsigned int oldSpawnList = g_GameNetSpawnPointList;
+    const unsigned int oldSpawnListFlags = g_GameNetSpawnPointList.flags;
     GameNetSpawnPoint *const oldSpawnHead = g_GameNetSpawnPointHead;
     GameNetSpawnPoint *const oldSpawnTail = g_GameNetSpawnPointTail;
     const unsigned int oldSpawnCount = g_GameNetSpawnPointCount;
-    const unsigned int oldRowList = g_GameNetPlayerRowList;
+    const unsigned int oldRowListFlags = g_GameNetPlayerRowList.flags;
     GameNetPlayerRow *const oldRowHead = g_GameNetPlayerRowHead;
     GameNetPlayerRow *const oldRowTail = g_GameNetPlayerRowTail;
     const unsigned int oldRowCount = g_GameNetPlayerRowCount;
@@ -482,11 +482,11 @@ extern "C" int gamenet_reset_remote_players_and_spawn_lists_smoke(void) {
 
     firstSpawn->next = secondSpawn;
 
-    g_GameNetPlayerRowList = 1;
+    g_GameNetPlayerRowList.flags = 1;
     g_GameNetPlayerRowHead = firstRow;
     g_GameNetPlayerRowTail = secondRow;
     g_GameNetPlayerRowCount = 2;
-    g_GameNetSpawnPointList = 1;
+    g_GameNetSpawnPointList.flags = 1;
     g_GameNetSpawnPointHead = firstSpawn;
     g_GameNetSpawnPointTail = secondSpawn;
     g_GameNetSpawnPointCount = 2;
@@ -499,9 +499,9 @@ extern "C" int gamenet_reset_remote_players_and_spawn_lists_smoke(void) {
     GameNet::ResetRemotePlayersAndSpawnLists();
 
     const bool listsCleared =
-        g_GameNetPlayerRowList == 0 && g_GameNetPlayerRowHead == 0 &&
+        g_GameNetPlayerRowList.flags == 0 && g_GameNetPlayerRowHead == 0 &&
         g_GameNetPlayerRowTail == 0 && g_GameNetPlayerRowCount == 0 &&
-        g_GameNetSpawnPointList == 0 && g_GameNetSpawnPointHead == 0 &&
+        g_GameNetSpawnPointList.flags == 0 && g_GameNetSpawnPointHead == 0 &&
         g_GameNetSpawnPointTail == 0 && g_GameNetSpawnPointCount == 0;
     const bool hudCleared =
         !ContainerHasChild(topStack, (const HudUiElement *)(&firstRow->hudWidget)) &&
@@ -510,11 +510,11 @@ extern "C" int gamenet_reset_remote_players_and_spawn_lists_smoke(void) {
 
     g_HudUiMgrStatsList = oldStatsList;
     g_HudUiTopMessageStack = oldTopStack;
-    g_GameNetSpawnPointList = oldSpawnList;
+    g_GameNetSpawnPointList.flags = oldSpawnListFlags;
     g_GameNetSpawnPointHead = oldSpawnHead;
     g_GameNetSpawnPointTail = oldSpawnTail;
     g_GameNetSpawnPointCount = oldSpawnCount;
-    g_GameNetPlayerRowList = oldRowList;
+    g_GameNetPlayerRowList.flags = oldRowListFlags;
     g_GameNetPlayerRowHead = oldRowHead;
     g_GameNetPlayerRowTail = oldRowTail;
     g_GameNetPlayerRowCount = oldRowCount;
@@ -522,6 +522,91 @@ extern "C" int gamenet_reset_remote_players_and_spawn_lists_smoke(void) {
     triplet.DestructorCore();
 
     return listsCleared && hudCleared ? 0 : 1;
+}
+
+extern "C" int gamenet_player_row_append_smoke(void) {
+    const unsigned int oldFlags = g_GameNetPlayerRowList.flags;
+    GameNetPlayerRow *const oldHead = g_GameNetPlayerRowHead;
+    GameNetPlayerRow *const oldTail = g_GameNetPlayerRowTail;
+    const unsigned int oldCount = g_GameNetPlayerRowCount;
+
+    g_GameNetPlayerRowList.flags = 0;
+    g_GameNetPlayerRowHead = 0;
+    g_GameNetPlayerRowTail = 0;
+    g_GameNetPlayerRowCount = 0;
+
+    GameNetPlayerRow *const first =
+        GameNetPlayerRowList::AppendNewRow(
+            &g_GameNetPlayerRowList,
+            0
+        );
+    GameNetPlayerRow *const second =
+        GameNetPlayerRowList::AppendNewRow(
+            &g_GameNetPlayerRowList,
+            1
+        );
+    const bool ok =
+        first != 0 && second != 0 && first != second &&
+        g_GameNetPlayerRowHead == first &&
+        g_GameNetPlayerRowTail == second &&
+        g_GameNetPlayerRowCount == 2 &&
+        first->next == second &&
+        second->next == 0 &&
+        second->playerKey == 0 &&
+        second->displayName[0] == 0;
+
+    ::operator delete(second);
+    ::operator delete(first);
+    g_GameNetPlayerRowList.flags = oldFlags;
+    g_GameNetPlayerRowHead = oldHead;
+    g_GameNetPlayerRowTail = oldTail;
+    g_GameNetPlayerRowCount = oldCount;
+    return ok ? 0 : 1;
+}
+
+extern "C" int gamenet_player_row_apply_color_tint_smoke(void) {
+    zClass_Object3DDataPartial objectData = {};
+    zClass_NodePartial objectNode = {};
+    objectNode.classId = 5;
+    objectNode.classData = &objectData;
+
+    PlayerMasterModalData modalData = {};
+    modalData.masterType = 5;
+    PlayerModalState modalState = {};
+    modalState.masterModalData = &modalData;
+    modalState.modalNode = &objectNode;
+    GameNetPlayerSaveState saveState = {};
+    saveState.primaryModalState = &modalState;
+    GameNetPlayerRow *const row =
+        (GameNetPlayerRow *)(::operator new(sizeof(GameNetPlayerRow)));
+    std::memset(
+        row,
+        0,
+        sizeof(*row)
+    );
+    row->playerColorIndex = 8;
+    row->saveState = &saveState;
+
+    row->ApplyPlayerColorTint();
+    const bool ok = objectData.color.red == 1.0f &&
+                    objectData.color.green == 1.0f &&
+                    objectData.color.blue == 0.0f &&
+                    objectData.colorAlpha == 0.2f &&
+                    (objectData.flags & 4) != 0;
+    ::operator delete(row);
+    return ok ? 0 : 1;
+}
+
+extern "C" int gamenet_player_row_destroy_embedded_panel_smoke(void) {
+    GameNetPlayerRow row = {};
+    row.hudWidget.textPick = 0;
+    row.hudWidget.textDirty = 123;
+
+    row.DestroyEmbeddedPanel();
+    return row.hudWidget.textPick == 0 &&
+                   row.hudWidget.textDirty == 123
+               ? 0
+               : 1;
 }
 
 extern "C" int gamenet_apply_pkt06_player_state_snapshot_smoke(void) {

@@ -1205,6 +1205,10 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: __builtin_memcpy)
   - [✅] Provider-boundary (Kind: compiler intrinsic; Name: __builtin_memcpy; Origin: BN symbolic function for inline rep movsd/movsb copies; 0x420d10 uses rep movsd at 0x420ec7; no declared function body; File: external; Target: pending; Group: provider.compiler)
 
+- 0x7c8ed4:
+  - [✅] Reconstructed (Name: __builtin_memset)
+  - [✅] Provider-boundary (Kind: compiler intrinsic; Name: __builtin_memset; Origin: BN symbolic function for inline rep stos zero/fill; no declared function body; 0x4320f0 clears g_GameNetPlayerRowList with rep stos; File: external; Target: pending; Group: provider.compiler)
+
 - 0x48bf10:
   - [✅] Reconstructed (Name: zUtil::CopyDwordRange)
   - [✅] Provider-boundary (Kind: compiler/template instantiation; Name: zUtil_CopyDwordRange; Origin: compiler-generated; File: external; Target: pending; Group: provider.compiler)
@@ -32042,28 +32046,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x433a50:
   - [✅] Reconstructed (Name: GameNetPlayerRow::ApplyPlayerColorTint)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: GameNetPlayerRow; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNetPlayerRow::ApplyPlayerColorTint;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_player_row_apply_color_tint;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x434650:
   - [✅] Reconstructed (Name: GameNetPlayerRow::DestroyEmbeddedPanel)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: GameNetPlayerRow; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNetPlayerRow::DestroyEmbeddedPanel;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_player_row_destroy_embedded_panel;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41ada0:
   - [✅] Reconstructed (Name: NetSessionBrowserDialog::Constructor)
@@ -32557,7 +32561,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: gamenet_reset_remote_players_and_spawn_lists;
     - Group: battlesport.network_game;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: GameNet row/spawn list globals are typed and VC5 data-verified; tier B remains blocked by HudUiTopMessageStack and HudUi row-removal owner/data gates
 
 - 0x4321b0:
   - [✅] Reconstructed (Name: GameNet::UnregisterGameplayPacketHandlers)
@@ -32570,7 +32574,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: gamenet_unregister_gameplay_packet_handlers;
     - Group: battlesport.network_game;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: handler registration functional evidence and g_GameNet_HandlersRegistered data are verified, but source owner/data remain blocked by the paired 0x431c50 registration callback cluster and non-GameNet packet callback owners
 
 - 0x4322a0:
   - [✅] Reconstructed (Name: GameNet::ResetHudTimerPanelNetStateLongCountdown)
@@ -32609,7 +32613,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: gamenet_handle_pkt06_player_state_snapshot;
     - Group: battlesport.network_game;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: pkt06 handler has functional evidence and GameNet globals verified, but tier B remains blocked by 0x432860/0x432ae0 player/HUD/zVideo owner-data gates
 
 - 0x432830:
   - [✅] Reconstructed (Name: GameNet::FindPlayerRowByKey)
@@ -32635,7 +32639,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: gamenet_spawn_remote_player_from_pkt06_player_state_snapshot;
     - Group: battlesport.network_game;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: GameNet row-list/pkt06 source shape improved; owner/data remain blocked by cross-owner g_HudUiTopMessageStack, g_Player_RuntimeDiScene, g_HudSensorTracker and external Player/HUD/zClass owner gates
 
 - 0x432ae0:
   - [☑️] Reconstructed (Name: GameNet::ApplyPkt06_PlayerStateSnapshotToRow)
@@ -32648,7 +32652,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: gamenet_apply_pkt06_player_state_snapshot_to_row;
     - Group: battlesport.network_game;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: pkt06 packet and GameNet color data verified; tier B remains blocked by Player/HUD owner gates and cross-owner g_zVideo_FrameTick data
 
 - 0x432d60:
   - [☑️] Reconstructed (Name: GameNet::UpdateRemotePlayerHudWidgetScreenPos)
@@ -33069,15 +33073,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4345a0:
   - [☑️] Reconstructed (Name: GameNetPlayerRowList::AppendNewRow)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: GameNetPlayerRowList; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNetPlayerRowList::AppendNewRow;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_player_row_list_append_new_row;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 ## G028. Gameplay HUD overlays, map tracker, sensors, and messages
 
