@@ -65,88 +65,6 @@ const int kDPlayPending = (int)(0x8000000a);
 const int kDPlayBufferTooSmall = (int)(0x8877001e);
 const int kDPlayConnecting = (int)(0x8877015e);
 
-struct DPlayErrorName {
-    int hresult;
-    const char *name;
-};
-
-const DPlayErrorName kDPlayErrorNames[] = {
-    {(int)(0x8000000a), "DPERR_PENDING"},
-    {(int)(0x80004001), "DPERR_UNSUPPORTED"},
-    {(int)(0x80004005), "DPERR_GENERIC"},
-    {(int)(0x8007000e), "DPERR_OUTOFMEMORY"},
-    {(int)(0x80070057), "DPERR_INVALIDPARAMS"},
-    {(int)(0x88770005), "DPERR_ALREADYINITIALIZED"},
-    {(int)(0x8877000a), "DPERR_ACCESSDENIED"},
-    {(int)(0x88770014), "DPERR_ACTIVEPLAYERS"},
-    {(int)(0x8877001e), "DPERR_BUFFERTOOSMALL"},
-    {(int)(0x88770028), "DPERR_CANTADDPLAYER"},
-    {(int)(0x88770032), "DPERR_CANTCREATEGROUP:"},
-    {(int)(0x8877003c), "DPERR_CANTCREATEPLAYER"},
-    {(int)(0x88770046), "DPERR_CANTCREATESESSION"},
-    {(int)(0x88770050), "DPERR_CAPSNOTAVAILABLEYET"},
-    {(int)(0x8877005a), "DPERR_EXCEPTION"},
-    {(int)(0x88770078), "DPERR_INVALIDFLAGS"},
-    {(int)(0x88770082), "DPERR_INVALIDOBJECT"},
-    {(int)(0x88770096), "DPERR_INVALIDPLAYER"},
-    {(int)(0x8877009b), "DPERR_INVALIDGROUP"},
-    {(int)(0x887700a0), "DPERR_NOCAPS"},
-    {(int)(0x887700aa), "DPERR_NOCONNECTION"},
-    {(int)(0x887700be), "DPERR_NOMESSAGES "},
-    {(int)(0x887700c8), "DPERR_NONAMESERVERFOUND"},
-    {(int)(0x887700d2), "DPERR_NOPLAYERS"},
-    {(int)(0x887700dc), "DPERR_NOSESSIONS"},
-    {(int)(0x887700e6), "DPERR_SENDTOOBIG"},
-    {(int)(0x887700f0), "DPERR_TIMEOUT"},
-    {(int)(0x887700fa), "DPERR_UNAVAILABLE"},
-    {(int)(0x8877010e), "DPERR_BUSY"},
-    {(int)(0x88770118), "DPERR_USERCANCEL"},
-    {(int)(0x88770122), "DPERR_CANNOTCREATESERVER"},
-    {(int)(0x8877012c), "DPERR_PLAYERLOST "},
-    {(int)(0x88770136), "DPERR_SESSIONLOST"},
-    {(int)(0x88770140), "DPERR_UNINITIALIZED "},
-    {(int)(0x8877014a), "DPERR_NONEWPLAYERS"},
-    {(int)(0x8877015e), "DPERR_CONNECTING"},
-    {(int)(0x88770168), "DPERR_CONNECTIONLOST"},
-    {(int)(0x88770172), "DPERR_UNKNOWNMESSAGE"},
-    {(int)(0x8877017c), "DPERR_CANCELFAILED"},
-    {(int)(0x88770186), "DPERR_INVALIDPRIORITY"},
-    {(int)(0x887703e8), "DPERR_BUFFERTOOLARGE"},
-    {(int)(0x887703f2), "DPERR_CANTCREATEPROCESS"},
-    {(int)(0x887703fc), "DPERR_APPNOTSTARTED"},
-    {(int)(0x88770406), "DPERR_INVALIDINTERFACE "},
-    {(int)(0x8877041a), "DPERR_UNKNOWNAPPLICATION"},
-    {(int)(0x8877042e), "DPERR_NOTLOBBIED"},
-    {(int)(0x887707d0), "DPERR_AUTHENTICATIONFAILED"},
-    {(int)(0x887707da), "DPERR_CANTLOADSSPI"},
-    {(int)(0x887707e4), "DPERR_ENCRYPTIONFAILED"},
-    {(int)(0x887707ee), "DPERR_SIGNFAILED"},
-    {(int)(0x887707f8), "DPERR_CANTLOADSECURITYPACKAGE"},
-    {(int)(0x88770802), "DPERR_ENCRYPTIONNOTSUPPORTED"},
-    {(int)(0x8877080c), "DPERR_CANTLOADCAPI"},
-    {(int)(0x88770816), "DPERR_NOTLOGGEDIN"},
-    {(int)(0x88770820), "DPERR_LOGONDENIED "},
-};
-
-// Source-faithful helper recovered from address-backed callers in this source file.
-const char *GetDPlayErrorName(
-    int hresult
-) {
-    {
-        int entryIndex1;
-        for (entryIndex1 = 0;
-            entryIndex1 < (int)(sizeof(kDPlayErrorNames) / sizeof((kDPlayErrorNames)[0]));
-            ++entryIndex1) {
-            const DPlayErrorName &entry = (kDPlayErrorNames)[entryIndex1];
-            if (entry.hresult == hresult) {
-                return entry.name;
-            }
-        }
-    }
-
-    return "UNKNOWN";
-}
-
 // Source-faithful helper recovered from address-backed callers in this source file.
 int ReportDPlayOpenFailure(
     int hresult
@@ -536,7 +454,11 @@ extern "C" int __fastcall zNetwork_SendPacketReliable(
     );
 }
 
-// Reimplements 0x48c250: zNetwork_DPlay_ReportError
+/**
+ * Reimplements 0x48c250: zNetwork_DPlay_ReportError.
+ * Purpose: report a DirectPlay HRESULT with the original inline error-name
+ * comparisons and message format.
+ */
 extern "C" RECOIL_NO_GS int __fastcall zNetwork_DPlay_ReportError(
     int hresult,
     const char *sourceFile,
@@ -546,10 +468,179 @@ extern "C" RECOIL_NO_GS int __fastcall zNetwork_DPlay_ReportError(
         return 1;
     }
 
+    const char *errorName = "UNKNOWN";
+    switch (hresult) {
+    case (int)(0x8000000a) :
+        errorName = "DPERR_PENDING";
+        break;
+    case (int)(0x80004001) :
+        errorName = "DPERR_UNSUPPORTED";
+        break;
+    case (int)(0x80004005) :
+        errorName = "DPERR_GENERIC";
+        break;
+    case (int)(0x8007000e) :
+        errorName = "DPERR_OUTOFMEMORY";
+        break;
+    case (int)(0x80070057) :
+        errorName = "DPERR_INVALIDPARAMS";
+        break;
+    case (int)(0x88770005) :
+        errorName = "DPERR_ALREADYINITIALIZED";
+        break;
+    case (int)(0x8877000a) :
+        errorName = "DPERR_ACCESSDENIED";
+        break;
+    case (int)(0x88770014) :
+        errorName = "DPERR_ACTIVEPLAYERS";
+        break;
+    case (int)(0x8877001e) :
+        errorName = "DPERR_BUFFERTOOSMALL";
+        break;
+    case (int)(0x88770028) :
+        errorName = "DPERR_CANTADDPLAYER";
+        break;
+    case (int)(0x88770032) :
+        errorName = "DPERR_CANTCREATEGROUP:";
+        break;
+    case (int)(0x8877003c) :
+        errorName = "DPERR_CANTCREATEPLAYER";
+        break;
+    case (int)(0x88770046) :
+        errorName = "DPERR_CANTCREATESESSION";
+        break;
+    case (int)(0x88770050) :
+        errorName = "DPERR_CAPSNOTAVAILABLEYET";
+        break;
+    case (int)(0x8877005a) :
+        errorName = "DPERR_EXCEPTION";
+        break;
+    case (int)(0x88770078) :
+        errorName = "DPERR_INVALIDFLAGS";
+        break;
+    case (int)(0x88770082) :
+        errorName = "DPERR_INVALIDOBJECT";
+        break;
+    case (int)(0x88770096) :
+        errorName = "DPERR_INVALIDPLAYER";
+        break;
+    case (int)(0x8877009b) :
+        errorName = "DPERR_INVALIDGROUP";
+        break;
+    case (int)(0x887700a0) :
+        errorName = "DPERR_NOCAPS";
+        break;
+    case (int)(0x887700aa) :
+        errorName = "DPERR_NOCONNECTION";
+        break;
+    case (int)(0x887700be) :
+        errorName = "DPERR_NOMESSAGES ";
+        break;
+    case (int)(0x887700c8) :
+        errorName = "DPERR_NONAMESERVERFOUND";
+        break;
+    case (int)(0x887700d2) :
+        errorName = "DPERR_NOPLAYERS";
+        break;
+    case (int)(0x887700dc) :
+        errorName = "DPERR_NOSESSIONS";
+        break;
+    case (int)(0x887700e6) :
+        errorName = "DPERR_SENDTOOBIG";
+        break;
+    case (int)(0x887700f0) :
+        errorName = "DPERR_TIMEOUT";
+        break;
+    case (int)(0x887700fa) :
+        errorName = "DPERR_UNAVAILABLE";
+        break;
+    case (int)(0x8877010e) :
+        errorName = "DPERR_BUSY";
+        break;
+    case (int)(0x88770118) :
+        errorName = "DPERR_USERCANCEL";
+        break;
+    case (int)(0x88770122) :
+        errorName = "DPERR_CANNOTCREATESERVER";
+        break;
+    case (int)(0x8877012c) :
+        errorName = "DPERR_PLAYERLOST ";
+        break;
+    case (int)(0x88770136) :
+        errorName = "DPERR_SESSIONLOST";
+        break;
+    case (int)(0x88770140) :
+        errorName = "DPERR_UNINITIALIZED ";
+        break;
+    case (int)(0x8877014a) :
+        errorName = "DPERR_NONEWPLAYERS";
+        break;
+    case (int)(0x8877015e) :
+        errorName = "DPERR_CONNECTING";
+        break;
+    case (int)(0x88770168) :
+        errorName = "DPERR_CONNECTIONLOST";
+        break;
+    case (int)(0x88770172) :
+        errorName = "DPERR_UNKNOWNMESSAGE";
+        break;
+    case (int)(0x8877017c) :
+        errorName = "DPERR_CANCELFAILED";
+        break;
+    case (int)(0x88770186) :
+        errorName = "DPERR_INVALIDPRIORITY";
+        break;
+    case (int)(0x887703e8) :
+        errorName = "DPERR_BUFFERTOOLARGE";
+        break;
+    case (int)(0x887703f2) :
+        errorName = "DPERR_CANTCREATEPROCESS";
+        break;
+    case (int)(0x887703fc) :
+        errorName = "DPERR_APPNOTSTARTED";
+        break;
+    case (int)(0x88770406) :
+        errorName = "DPERR_INVALIDINTERFACE ";
+        break;
+    case (int)(0x8877041a) :
+        errorName = "DPERR_UNKNOWNAPPLICATION";
+        break;
+    case (int)(0x8877042e) :
+        errorName = "DPERR_NOTLOBBIED";
+        break;
+    case (int)(0x887707d0) :
+        errorName = "DPERR_AUTHENTICATIONFAILED";
+        break;
+    case (int)(0x887707da) :
+        errorName = "DPERR_CANTLOADSSPI";
+        break;
+    case (int)(0x887707e4) :
+        errorName = "DPERR_ENCRYPTIONFAILED";
+        break;
+    case (int)(0x887707ee) :
+        errorName = "DPERR_SIGNFAILED";
+        break;
+    case (int)(0x887707f8) :
+        errorName = "DPERR_CANTLOADSECURITYPACKAGE";
+        break;
+    case (int)(0x88770802) :
+        errorName = "DPERR_ENCRYPTIONNOTSUPPORTED";
+        break;
+    case (int)(0x8877080c) :
+        errorName = "DPERR_CANTLOADCAPI";
+        break;
+    case (int)(0x88770816) :
+        errorName = "DPERR_NOTLOGGEDIN";
+        break;
+    case (int)(0x88770820) :
+        errorName = "DPERR_LOGONDENIED ";
+        break;
+    }
+
     char errorNameBuffer[0x100];
     sprintf(
         errorNameBuffer,
-        GetDPlayErrorName(hresult)
+        errorName
     );
     zError::ReportOld(
         0x400,
