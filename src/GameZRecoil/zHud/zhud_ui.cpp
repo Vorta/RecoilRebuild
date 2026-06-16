@@ -49,7 +49,6 @@ const int ZOPT_GRAPHICS_GLOBAL_LIGHT = 0x10;
 const int ZVID_HW_MODE_SOFTWARE = 0;
 const float ZSND_CD_VOLUME_TO_NORMALIZED = 1.52590219e-05f;
 const float ZSND_CD_NORMALIZED_TO_VOLUME = 65535.0f;
-const unsigned int HUD_UI_NET_GAME_SETUP_FOCUS_TEXT_INPUT_OFFSET = 0xa94c;
 
 /**
  * Provider boundary for 0x413eb0: NoOp::MethodStub.
@@ -14869,7 +14868,11 @@ HudUiNumericTextInput * HudUiNumericTextInput::BaseConstructor() {
     return this;
 }
 
-// Reimplements 0x41a190: HudUiNumericTextInput::Constructor
+/**
+ * Reimplements 0x41a190: HudUiNumericTextInput::Constructor.
+ * Purpose: Run typed numeric-input construction, allocate the requested digit
+ * buffer, clear the display text, and leave keyboard input inactive.
+ */
 HudUiNumericTextInput * HudUiNumericTextInput::Constructor(
     unsigned int maxDigits
 ) {
@@ -15037,7 +15040,11 @@ void HudUiNumericTextInput::Destructor() {
     this->HudUiNumericTextInput::~HudUiNumericTextInput();
 }
 
-// Reimplements 0x41a3f0: HudUiNumericTextInput::DestructorThunk
+/**
+ * Reimplements 0x41a3f0: HudUiNumericTextInput::DestructorThunk.
+ * Purpose: Route the ftable destructor closure through the recovered typed
+ * numeric-input destructor wrapper.
+ */
 void HudUiNumericTextInput::DestructorThunk() {
     Destructor();
 }
@@ -15054,7 +15061,11 @@ HudUiElement * HudUiNumericTextInput::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x41c4a0: HudUiNumericTextInput::ScalarDeletingDestructorThunk
+/**
+ * Reimplements 0x41c4a0: HudUiNumericTextInput::ScalarDeletingDestructorThunk.
+ * Purpose: Apply the scalar-deleting destructor closure while preserving the
+ * caller's delete flag handling.
+ */
 HudUiNumericTextInput * HudUiNumericTextInput::ScalarDeletingDestructorThunk(
     unsigned int flags
 ) {
@@ -15235,19 +15246,16 @@ void HudUiClampedIntStepButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-static HudUiNumericTextInput **HudUiNetGameSetupFocusTextInputSlot(
-    void *owner
-) {
-    // BN shows the current network setup text input focus pointer at owner + 0xa94c.
-    return (HudUiNumericTextInput **)((unsigned char *)(owner) +
-                                      HUD_UI_NET_GAME_SETUP_FOCUS_TEXT_INPUT_OFFSET);
-}
-
-// Reimplements 0x41a7b0: HudUiNetGameSetupTextInput::OnActivateFocusAndCursor
+/**
+ * Reimplements 0x41a7b0: HudUiNetGameSetupTextInput::OnActivateFocusAndCursor.
+ * Purpose: Move network setup text focus to this numeric input, release the
+ * previous raw-keyboard capture, refresh text and cursor state, then activate.
+ */
 void HudUiNetGameSetupTextInput::OnActivateFocusAndCursor() {
+    HudUiNetGameSetupPanel *const ownerPanel =
+        (HudUiNetGameSetupPanel *)HudUiZrdWidget::owner;
     HudUiNumericTextInput **const focusTextInputSlot =
-        HudUiNetGameSetupFocusTextInputSlot(HudUiZrdWidget::owner);
+        &ownerPanel->currentFocusWidget;
     HudUiNumericTextInput *const previousFocusTextInput = *focusTextInputSlot;
 
     if (previousFocusTextInput != 0) {
