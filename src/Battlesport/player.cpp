@@ -69,8 +69,8 @@ float g_Player_CameraHeadingLerpBaseWhenFlagClear = 3.0f;
 float g_Player_CameraHeadingLerpBaseWhenFlagSet = 2.0f;
 zUtil_SaveGameState *g_PlayerSaveStateListHead = 0;
 zUtil_SaveGameState *g_PlayerSaveStateListTail = 0;
-int g_PlayerSaveStateListAux = 0;
 int g_PlayerSaveStateCount = 0;
+int g_PlayerSaveStateListAux = 0;
 zUtil_SaveGameState *g_LocalPlayerSaveState = 0;
 zUtil_SaveGameState *g_Player2SaveState = 0;
 zUtil_SaveGameState *g_CurrentPlayerSaveState = 0;
@@ -2208,8 +2208,18 @@ void __fastcall ExtractVehicleNameFromAivName(
     } while (*cursor != '\0');
 }
 
-// Reimplements 0x421a40: Player::CloneType6NodeFromTemplateAndRename
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x421a40: Player::CloneType6NodeFromTemplateAndRename
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: clone a type-6 template node into the runtime scene and give it a
+ * new active runtime name.
+ * Source owner: Player namespace bootstrap/save-state node creation cluster.
+ * BN evidence: finds a type-6 template by name, uses network-enabled for both
+ * clone options, clones the node, inserts it into g_Player_RuntimeDiScene,
+ * renames it, activates it, and returns the clone or null. BN HLIL currently
+ * folds the AddChildAtGrid status branch because the callee decompiles as
+ * returning zero; assembly keeps the failure gate before rename.
+ */
 zClass_NodePartial *__fastcall CloneType6NodeFromTemplateAndRename(
     const char *templateName,
     const char *newName
@@ -2254,8 +2264,20 @@ zClass_NodePartial *__fastcall CloneType6NodeFromTemplateAndRename(
     return child;
 }
 
-// Reimplements 0x421ab0: Player::CreateFromNamesAtPose
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x421ab0: Player::CreateFromNamesAtPose
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: create and link a player save state from template/object names at
+ * the requested spawn pose.
+ * Source owner: Player namespace bootstrap/save-state node creation cluster.
+ * BN evidence: handles the network bft_00 special clone/rename path, sets the
+ * 0x400000 clone-source node flag, allocates and appends a zUtil save state,
+ * applies pose/yaw and aiNetId, links the root node, initializes common data,
+ * registers local/net hit callbacks, binds modal states, fills destroyed
+ * respawn FX, initializes spawn state, and increments the HUD mission stat for
+ * non-local states. BN shows the object-name strcmp as an MSVC sbb/sbb idiom
+ * and may render the 0x400000 flag as the image base symbol in HLIL.
+ */
 int __fastcall CreateFromNamesAtPose(
     const zVec3 *spawnPos,
     int aiNetId,
@@ -2332,7 +2354,7 @@ int __fastcall CreateFromNamesAtPose(
         zClass_Object3D::gwObject3DSetRotation(
             rootNode,
             0.0f,
-            yawDeg * 0.01745329251994f,
+            (float)(yawDeg * 0.017453292519943295),
             0.0f
         );
         playerState->aiNetId = aiNetId;
@@ -2354,9 +2376,9 @@ int __fastcall CreateFromNamesAtPose(
 
     if (objectIsBft00 != 0) {
         zClass_Node::SetDamageHitCallback(
-            (void *)(&EnterDestroyedState),
+            saveState,
             playerState->rootNode,
-            saveState
+            (void *)(&EnterDestroyedState)
         );
         g_OptCatalogDamageFeedbackTrackedNode = playerState->rootNode;
         g_Player_LocalFxOffsetWorldPtr = &playerState->fxOffsetWorld;
@@ -2377,9 +2399,9 @@ int __fastcall CreateFromNamesAtPose(
             callback = (void *)(&HitCallback_RecordNetContextAndTimedStatus);
         }
         zClass_Node::SetDamageHitCallback(
-            callback,
+            saveState,
             playerState->rootNode,
-            saveState
+            callback
         );
     }
 
@@ -2390,8 +2412,8 @@ int __fastcall CreateFromNamesAtPose(
         BindModalStateFromMasterModalData(
             saveState,
             modalState,
-            commonData->modalNames[i],
-            objectName
+            objectName,
+            commonData->modalNames[i]
         );
     }
 
@@ -2407,7 +2429,16 @@ int __fastcall CreateFromNamesAtPose(
     return 1;
 }
 
-// Reimplements 0x421ea0: Player::CreateFromNamesAtPoseGetState
+/**
+ * Reimplements 0x421ea0: Player::CreateFromNamesAtPoseGetState
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: create a player from names and return the newly appended save-state
+ * tail.
+ * Source owner: Player namespace bootstrap/save-state node creation cluster.
+ * BN evidence: calls CreateFromNamesAtPose(spawnPos, 0, yawDeg, templateName,
+ * objectName), then returns g_PlayerSaveStateListTail on success and null on
+ * failure. BN leaves the MSVC neg/sbb/and success-mask expression.
+ */
 zUtil_SaveGameState *__fastcall CreateFromNamesAtPoseGetState(
     const zVec3 *spawnPos,
     const char *templateName,
@@ -3219,8 +3250,8 @@ void BuildAiPeerRingsByAiNetId() {
 void __fastcall BindModalStateFromMasterModalData(
     zUtil_SaveGameState *saveState,
     PlayerModalState *modalState,
-    const char *modalName,
-    const char *objectName
+    const char *objectName,
+    const char *modalName
 ) {
     GetSaveStateListHead();
     GetSaveStateListHead();

@@ -2756,9 +2756,9 @@ void __fastcall ClearDamageHandlerRecursive(
     OptCatalogDamageHandlerPartial *handler
 );
 int __fastcall SetDamageHitCallback(
-    void *callback,
+    void *context,
     zClass_NodePartial *node,
-    void *context
+    void *callback
 );
 int __fastcall ClearDamageHandler(zClass_NodePartial *node);
 int __fastcall SetDamageTimerCallback(
