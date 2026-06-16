@@ -1563,7 +1563,10 @@ void __fastcall SetMuteSoundOption(
     zSnd::ApplyMuteStateToActiveVoices(value);
 }
 
-// Reimplements 0x408070: zOpt::SetSoundVolumeOption
+/**
+ * Reimplements 0x408070: zOpt::SetSoundVolumeOption.
+ * Purpose: store the sound-volume option and apply the global sound scale.
+ */
 void __fastcall SetSoundVolumeOption(
     float volume
 ) {
@@ -1571,19 +1574,28 @@ void __fastcall SetSoundVolumeOption(
     zSnd::SetGlobalVolumeScale(volume);
 }
 
-// Reimplements 0x408090: zOpt::GetSoundVolumeOption
+/**
+ * Reimplements 0x408090: zOpt::GetSoundVolumeOption.
+ * Purpose: return the current sound-volume option value.
+ */
 float GetSoundVolumeOption() {
     return *ZOPT_SOUND_VOLUME;
 }
 
-// Reimplements 0x4080c0: zOpt::SetSoundLODOption
+/**
+ * Reimplements 0x4080c0: zOpt::SetSoundLODOption.
+ * Purpose: store the sound LOD option value.
+ */
 void __fastcall SetSoundLODOption(
     int value
 ) {
     *ZOPT_SOUND_LOD = value;
 }
 
-// Reimplements 0x4080d0: zOpt::GetSoundLODOption
+/**
+ * Reimplements 0x4080d0: zOpt::GetSoundLODOption.
+ * Purpose: return the current sound LOD option value.
+ */
 int GetSoundLODOption() {
     return *ZOPT_SOUND_LOD;
 }

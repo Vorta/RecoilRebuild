@@ -10177,7 +10177,10 @@ int HudUiFillBitmap::LoadFromZrd(
     return 1;
 }
 
-// Reimplements 0x4b8650: HudUiFillBitmap::UpdateNormalizedFromCursor
+/**
+ * Reimplements 0x4b8650: HudUiFillBitmap::UpdateNormalizedFromCursor.
+ * Purpose: update the normalized fill value from the owner cursor and activate the widget.
+ */
 void HudUiFillBitmap::UpdateNormalizedFromCursor() {
     const int cursorX = owner->mouseState.cursorClientX;
     const int relativeX = cursorX - GetCenterX();
