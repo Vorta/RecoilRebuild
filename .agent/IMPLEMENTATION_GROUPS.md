@@ -1561,19 +1561,24 @@ available even when no groups are active.
     Tier S remains blocked by the refreshed VC5SP3
     compare: 74 unmasked mismatches after 12 relocation-masked bytes and
     5 trimmed VC NOPs.
-  - HudCmdDialogState static lifecycle data gate is now accepted for
+  - HudCmdDialogState static lifecycle data gate is accepted for
     `g_HudCmdDialogState`: BN/source/VC5SP3 data-symbol evidence identifies
     the BSS object as an 8-byte typed HudCmdDialogState with zero
     data-byte mismatches and no relocations. 0x40bc20 StaticInitAndRegisterAtExit,
-    0x40bc40 RegisterAtExit, and 0x40bc50 AtExitDestructor are tier S with
-    zero unmasked VC5 mismatches. 0x40bc30 StaticInit and 0x40bc60 Constructor
-    are tier B and remain tier-S blocked by the placement-new tail-jump and
-    constructor vptr/member store-order byte drift respectively.
+    0x40bc30 StaticInit, 0x40bc40 RegisterAtExit, 0x40bc50 AtExitDestructor,
+    0x40bc60 Constructor, and 0x40bc90 Destructor are all tier S with
+    zero unmasked VC5 mismatches. The constructor now uses body assignment for
+    `m_dialog`, which makes VC5 emit the BN vptr-then-member store order;
+    0x40bc30 matches the compiler-generated `_$E260` global-object init thunk
+    emitted from `HudCmdDialogState g_HudCmdDialogState`.
   - 0x443700 RecoilApp_StateQueueBlock::InitFromCursor is now tier S: source
     assigns `m_cursor` before `m_chunkBaseSlot`, matching the nearby recovered
     inline queue-block assignment shape, and VC5SP3 now reports zero unmasked
-    mismatches after 14 trimmed VC NOP bytes. 0x443310 QueuePushState remains
-    a separate tier-S blocker at 351 unmasked mismatches.
+    mismatches after 14 trimmed VC NOP bytes. The queue entrypoints now use a
+    recovered inline `RecoilApp_StateQueueItem` constructor and inline
+    queue-block copy shape, improving but not closing tier S: 0x443310
+    QueuePushState remains blocked at 266 unmasked mismatches, 0x443160
+    QueueSwitchCurrentState at 208, and 0x4434b0 QueueExitCurrentState at 236.
 - Next action:
   - Continue class-first cleanup on the remaining MpExit lifecycle entries:
     0x4198d0, 0x419940, and 0x419990 are tier S with owner/data accepted.

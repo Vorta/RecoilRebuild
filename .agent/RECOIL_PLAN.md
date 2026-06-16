@@ -35282,13 +35282,13 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: HudCmdDialogState::StaticInit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_static_init;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S blocked: data gate accepted for typed BSS g_HudCmdDialogState at 0x4e5df0, so entry is tier B; VC5SP3 hud_cmd_dialog_state_lifecycle still fails StaticInit with 16 unmasked mismatches after 4 relocation-masked bytes and 12 trimmed VC NOP bytes because VC5 emits placement-new null-check/call shape while BN tail-jumps to the constructor.
+    - Blocker: none
 
 - 0x40bc40:
   - [✅] Reconstructed (Name: HudCmdDialogState::RegisterAtExit)
@@ -35321,13 +35321,13 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: HudCmdDialogState::Constructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_constructor;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S blocked: data gate accepted for typed BSS g_HudCmdDialogState at 0x4e5df0, so entry is tier B; VC5SP3 hud_cmd_dialog_state_lifecycle still fails HudCmdDialogState::Constructor with 7 unmasked mismatches after 4 relocation-masked bytes because VC5 stores m_dialog before the vptr while BN writes the vptr first, then zeros m_dialog.
+    - Blocker: none
 
 - 0x40bc90:
   - [☑️] Reconstructed (Name: HudCmdDialogState::DestructorCore)
@@ -46937,7 +46937,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: recoil_app_queue_switch_current_state;
     - Group: app.recoil_app.state_queue;
     - Model: source-faithful;
-    - Blocker: tier B accepted from current RecoilApp_StateQueue owner/data evidence and functional evidence; tier S remains blocked by the existing recoil_app_state_queue VC5 byte drift for QueueSwitchCurrentState and InitFromCursor.
+    - Blocker: tier S blocked: all covering VC5 compares for 0x443160 still fail after inline RecoilApp_StateQueueItem constructor recovery with 208 unmasked mismatches, 24 relocation-masked bytes, 14 trimmed VC NOP bytes, BN size 431, VC5 symbol size 432; functional recoil_app_queue_switch_current_state and startup-state smokes passed.
 
 - 0x443310:
   - [✅] Reconstructed (Name: RecoilApp::QueuePushState)
@@ -46950,7 +46950,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: recoil_app_queue_push_state;
     - Group: app.recoil_app.state_queue;
     - Model: source-faithful;
-    - Blocker: tier S blocked: recoil_app_state_queue VC5 compare for 0x443310 still fails with 351 unmasked mismatches under vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs; queue owner/data accepted from current BN/source/functional evidence
+    - Blocker: tier S blocked: recoil_app_state_queue VC5 compare for 0x443310 still fails after inline RecoilApp_StateQueueItem constructor recovery with 266 unmasked mismatches, 24 relocation-masked bytes, 15 trimmed VC NOP bytes, BN size 414, VC5 symbol size 416; functional recoil_app_queue_push_state passed.
 
 - 0x4434b0:
   - [✅] Reconstructed (Name: RecoilApp::QueueExitCurrentState)
@@ -46963,7 +46963,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: recoil_app_queue_exit_current_state;
     - Group: app.recoil_app.state_queue;
     - Model: source-faithful;
-    - Blocker: tier B accepted from current RecoilApp_StateQueue owner/data evidence and functional evidence; tier S next step is coherent RecoilApp state-queue VC5 byte acceptance including QueueExitCurrentState.
+    - Blocker: tier S blocked: recoil_app_state_queue VC5 compare for 0x4434b0 still fails after inline RecoilApp_StateQueueItem constructor recovery with 236 unmasked mismatches, 24 relocation-masked bytes, 4 trimmed VC NOP bytes, BN size 412, VC5 symbol size 400; functional recoil_app_queue_exit_current_state passed.
 
 - 0x443650:
   - [✅] Reconstructed (Name: RecoilApp::OnIdleOrDispatch)
