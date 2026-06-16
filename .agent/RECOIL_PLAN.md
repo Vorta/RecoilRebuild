@@ -21408,7 +21408,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zvid_pack_color_rgb_floats;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: tier S blocked: local VC5SP3 target zvid_pack_color_rgb_floats now covers this helper and fails with 45 unmasked function-byte mismatches after 44 relocation-masked bytes and 1 trimmed VC NOP byte; BN body is 98 bytes and current /MD /O2 /Ob1 source emits 96 bytes. Drift is focused zVideo pixel-pack float rounding/packing codegen: retail rounds red first with 16-bit SI/AX accumulator and byte-count shifts, while current source compiles green-first and 32-bit shift operations. Owner/data remain accepted and functional target passes.
+    - Blocker: tier S blocked: local VC5SP3 target zvid_pack_color_rgb_floats now fails with 7 unmasked function-byte mismatches after 44 relocation-masked bytes and 14 trimmed VC NOP bytes; BN size 98, VC5 size 112. Source now uses a VC5-era unsigned short accumulator matching retail 16-bit red packing and blue shift shape, improving the previous 45-mismatch baseline. Functional target passes. Remaining drift is focused first-channel scheduling: VC5 still loads color->g before color->r while retail loads color->r first.
 
 - 0x4a6db0:
   - [☑️] Reconstructed (Name: zVideo_TexturePixelPack::SetupFromMasks)

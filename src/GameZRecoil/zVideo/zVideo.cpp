@@ -540,14 +540,15 @@ unsigned int __fastcall zVid_PackColor00RRGGBB(
 unsigned short __fastcall zVid_PackColorRgbFloats(
     zVideo_ColorRgbFloat *color
 ) {
-    const int red = (int)(color->r + 0.5f);
-    const int green = (int)(color->g + 0.5f);
-    const int blue = (int)(color->b + 0.5f);
-    const unsigned int packed =
-        ((g_zVideo_PixelPack.rMaskShifted & red) << g_zVideo_PixelPack.packedBase) |
-        ((g_zVideo_PixelPack.gMaskShifted & green) << g_zVideo_PixelPack.sumMinus8) |
-        ((unsigned int)(blue) >> g_zVideo_PixelPack.bShiftTo8);
-    return (unsigned short)(packed);
+    unsigned short packed;
+
+    packed = (unsigned short)(int)(color->r + 0.5f);
+    packed = (unsigned short)((packed & g_zVideo_PixelPack.rMaskShifted) << g_zVideo_PixelPack.packedBase);
+    packed = (unsigned short)(packed |
+        (((int)(color->g + 0.5f) & g_zVideo_PixelPack.gMaskShifted) << g_zVideo_PixelPack.sumMinus8));
+    packed = (unsigned short)(packed |
+        ((unsigned short)(int)(color->b + 0.5f) >> g_zVideo_PixelPack.bShiftTo8));
+    return packed;
 }
 
 /**
