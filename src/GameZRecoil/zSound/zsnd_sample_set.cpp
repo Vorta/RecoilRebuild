@@ -21,7 +21,11 @@ int RegistrySize() {
     return (int)(g_zSnd_SampleSetRegistry.end - g_zSnd_SampleSetRegistry.begin);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in caller 0x4a09e0.
+ * Purpose: Returns the active registry pointer capacity from begin/capacityEnd.
+ */
 int RegistryCapacity() {
     if (g_zSnd_SampleSetRegistry.begin == 0) {
         return 0;
@@ -30,8 +34,11 @@ int RegistryCapacity() {
     return (int)(g_zSnd_SampleSetRegistry.capacityEnd - g_zSnd_SampleSetRegistry.begin);
 }
 
-// Restores likely inlined registry append helper observed in caller 0x4a09e0.
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in caller 0x4a09e0.
+ * Purpose: Appends a sample-set entry, growing the registry pointer array when full.
+ */
 inline void RegistryAppend(
     zSndSampleSet *set
 ) {
@@ -63,7 +70,10 @@ inline void RegistryAppend(
 
 } // namespace
 
-// Reimplements 0x4a0810: zSnd_SetUseArchiveBanks
+/**
+ * Reimplements 0x4a0810: zSnd_SetUseArchiveBanks.
+ * Purpose: Stores the archive-bank selector flag and clears the sample-set registry range.
+ */
 extern "C" void __fastcall zSnd_SetUseArchiveBanks(
     int enabled
 ) {
@@ -76,7 +86,10 @@ extern "C" void __fastcall zSnd_SetUseArchiveBanks(
     g_zSnd_SampleSetRegistry.capacityEnd = 0;
 }
 
-// Reimplements 0x4a0840: zSndSampleSetRegistry_Shutdown
+/**
+ * Reimplements 0x4a0840: zSndSampleSetRegistry_Shutdown.
+ * Purpose: Releases the sample-set registry storage and clears its pointer range.
+ */
 extern "C" void zSndSampleSetRegistry_Shutdown() {
     ::operator delete(g_zSnd_SampleSetRegistry.begin);
     g_zSnd_SampleSetRegistry.begin = 0;
@@ -84,12 +97,18 @@ extern "C" void zSndSampleSetRegistry_Shutdown() {
     g_zSnd_SampleSetRegistry.capacityEnd = 0;
 }
 
-// Reimplements 0x4a0830: zSndSampleSetRegistry_RegisterAtExit
+/**
+ * Reimplements 0x4a0830: zSndSampleSetRegistry_RegisterAtExit.
+ * Purpose: Registers the sample-set registry shutdown routine with the CRT exit list.
+ */
 extern "C" void zSndSampleSetRegistry_RegisterAtExit() {
     atexit(zSndSampleSetRegistry_Shutdown);
 }
 
-// Reimplements 0x4a0800: zSnd_SetUseArchiveBanksAndRegisterAtExit
+/**
+ * Reimplements 0x4a0800: zSnd_SetUseArchiveBanksAndRegisterAtExit.
+ * Purpose: Applies the archive-bank setting and registers sample-set registry cleanup.
+ */
 extern "C" void __fastcall zSnd_SetUseArchiveBanksAndRegisterAtExit(
     int enabled
 ) {
@@ -167,7 +186,10 @@ extern "C" int __fastcall zSndSampleSet_InitByName(
     return zSndSampleSetRegistry_FindByName(setName)->Init();
 }
 
-// Reimplements 0x4a09e0: zSndSampleSet::RegistryAddEntry
+/**
+ * Reimplements 0x4a09e0: zSndSampleSet::RegistryAddEntry.
+ * Purpose: Allocates sample entries, stores the set name, and appends this set to the registry.
+ */
 zSndSampleSet * zSndSampleSet::RegistryAddEntry(
     const char *name,
     int count
@@ -290,13 +312,11 @@ int zSndSampleSet::Init() {
     }
 
     if (g_zSnd_UseArchiveBanksFlag != 0) {
-        if (g_zSnd_SoundLodValuePtr != 0) {
-            const int soundLod = *(int *)(g_zSnd_SoundLodValuePtr);
-            if (soundLod == 1) {
-                archiveBankIndex = 1;
-            } else if (soundLod == 2) {
-                archiveBankIndex = 2;
-            }
+        const int soundLod = *(int *)(g_zSnd_SoundLodValuePtr);
+        if (soundLod == 1) {
+            archiveBankIndex = 1;
+        } else if (soundLod == 2) {
+            archiveBankIndex = 2;
         }
 
         {
@@ -335,39 +355,43 @@ int zSndSampleSet::Init() {
     }
 
     {
-        for (int index = 0; index < sampleCount; ++index) {
-            zSndSample *const sample = &samples[index];
-            zSndSampleReplayFields *replayFields = &sample->replayFields;
-            if ((replayFields->flags & 0x08) != 0) {
-                continue;
-            }
+        zSndSample *sample = samples;
+        int index = 0;
+        if (sampleCount > 0) {
+            do {
+                zSndSampleReplayFields *replayFields = &sample->replayFields;
+                if ((replayFields->flags & 0x08) == 0) {
+                    const char *const path = zUtil_ZRDR_ResolvePathInSearchPathList(
+                        g_zSnd_SearchPathList,
+                        replayFields->resourceName
+                    );
+                    if (path != 0) {
+                        zSndWaveData *waveData = new zSndWaveData(
+                            path,
+                            1
+                        );
 
-            const char *const path = zUtil_ZRDR_ResolvePathInSearchPathList(
-                g_zSnd_SearchPathList,
-                replayFields->resourceName
-            );
-            if (path != 0) {
-                zSndWaveData *waveData = new zSndWaveData(
-                    path,
-                    1
-                );
+                        if (waveData != 0 && waveData->parsedOk != 0) {
+                            int initResult = sample->InitFromWaveData(waveData);
+                            int flags = replayFields->flags;
+                            initResult &= 1;
+                            flags &= ~0x08;
+                            initResult <<= 3;
+                            flags |= initResult;
+                            replayFields->flags = flags;
+                        } else {
+                            replayFields->flags &= ~0x08;
+                        }
 
-                if (waveData != 0 && waveData->parsedOk != 0) {
-                    int initResult = sample->InitFromWaveData(waveData);
-                    int flags = replayFields->flags;
-                    initResult &= 1;
-                    flags &= ~0x08;
-                    initResult <<= 3;
-                    flags |= initResult;
-                    replayFields->flags = flags;
-                } else {
-                    replayFields->flags &= ~0x08;
+                        if (waveData != 0) {
+                            delete waveData;
+                        }
+                    }
                 }
 
-                if (waveData != 0) {
-                    delete waveData;
-                }
-            }
+                ++index;
+                ++sample;
+            } while (index < sampleCount);
         }
     }
 
