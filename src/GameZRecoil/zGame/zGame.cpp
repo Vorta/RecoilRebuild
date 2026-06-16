@@ -1483,7 +1483,10 @@ int GetGameDifficultyMode() {
     return *g_zOpt_GameDifficultyOption;
 }
 
-// Reimplements 0x407f30: zOpt::SetEffectsLevelForCurrentHwMode
+/**
+ * Reimplements 0x407f30: zOpt::SetEffectsLevelForCurrentHwMode.
+ * Purpose: store the active hardware-mode effects level and apply the matching conditional effect level.
+ */
 void __fastcall SetEffectsLevelForCurrentHwMode(
     int level
 ) {
@@ -1498,7 +1501,10 @@ void __fastcall SetEffectsLevelForCurrentHwMode(
     }
 }
 
-// Reimplements 0x407f80: zOpt::GetEffectsLevelForCurrentHwMode
+/**
+ * Reimplements 0x407f80: zOpt::GetEffectsLevelForCurrentHwMode.
+ * Purpose: return the effects level stored for the active hardware mode.
+ */
 int GetEffectsLevelForCurrentHwMode() {
     return *(g_zOpt_HwMode != 0 ? ZOPT_EFFECTS_LEVEL_HW : ZOPT_EFFECTS_LEVEL_SW);
 }
@@ -1538,12 +1544,18 @@ int GetObjectLODForCurrentHwMode() {
     return *(g_zOpt_HwMode != 0 ? ZOPT_OBJECT_LOD_HW : ZOPT_OBJECT_LOD_SW);
 }
 
-// Reimplements 0x408060: zOpt::GetMuteSoundOption
+/**
+ * Reimplements 0x408060: zOpt::GetMuteSoundOption.
+ * Purpose: return the current mute-sound option value.
+ */
 int GetMuteSoundOption() {
     return *ZOPT_MUTE_SOUND;
 }
 
-// Reimplements 0x408050: zOpt::SetMuteSoundOption
+/**
+ * Reimplements 0x408050: zOpt::SetMuteSoundOption.
+ * Purpose: store the mute-sound option and apply it to active sound voices.
+ */
 void __fastcall SetMuteSoundOption(
     int value
 ) {

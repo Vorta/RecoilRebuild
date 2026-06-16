@@ -9565,7 +9565,10 @@ int HudUiCycleSelectorWidget::SetIndexClamped(
     return previousIndex;
 }
 
-// Reimplements 0x4b7f80: HudUiCycleSelectorWidget::SetVisibleRange
+/**
+ * Reimplements 0x4b7f80: HudUiCycleSelectorWidget::SetVisibleRange.
+ * Purpose: set the visible selector range and clamp the selected entry into it.
+ */
 void HudUiCycleSelectorWidget::SetVisibleRange(
     int first,
     int last
