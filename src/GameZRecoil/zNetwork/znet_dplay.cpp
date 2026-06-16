@@ -55,7 +55,13 @@ const int kDPlayPending = (int)(0x8000000a);
 const int kDPlayBufferTooSmall = (int)(0x8877001e);
 const int kDPlayConnecting = (int)(0x8877015e);
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered local helper: ReportDPlayOpenFailure.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
+ * Original helper evidence: no standalone retail address; used by address-backed caller
+ * zNetworkDPlay::OpenSelectedSessionAndReadStatusFields at 0x48a520.
+ * Purpose: display the DirectPlay Open failure message for selected HRESULTs.
+ */
 int ReportDPlayOpenFailure(
     int hresult
 ) {
@@ -138,7 +144,13 @@ int ReportDPlayOpenFailure(
     return 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered local helper: AppendServiceProviderInfo.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
+ * Original helper evidence: no standalone retail address; used by address-backed callback
+ * zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo at 0x48b3a0.
+ * Purpose: append a DirectPlay service-provider record to the recovered vector.
+ */
 void AppendServiceProviderInfo(
     zNetworkDPlayServiceProviderInfo *info
 ) {
@@ -178,7 +190,11 @@ extern "C" int zNetwork_GetLocalPlayerKey() {
     return g_zNetwork_LocalPlayerKey;
 }
 
-// Reimplements 0x48b980: zNetwork_GetLocalPlayerColorIndex (D:\Proj\GameZRecoil\zNetwork.cpp)
+/**
+ * Reimplements 0x48b980: zNetwork_GetLocalPlayerColorIndex.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork.cpp.
+ * Purpose: return the local player record's assigned color index.
+ */
 extern "C" int zNetwork_GetLocalPlayerColorIndex() {
     if (g_zNetwork_LocalPlayerRecord == 0) {
         return 0;
@@ -187,7 +203,12 @@ extern "C" int zNetwork_GetLocalPlayerColorIndex() {
     return g_zNetwork_LocalPlayerRecord->colorIndex;
 }
 
-// Reimplements 0x48b9a0: zNetwork_GetPlayerColorIndexByKey (D:\Proj\GameZRecoil\zNetwork.cpp)
+/**
+ * Reimplements 0x48b9a0: zNetwork_GetPlayerColorIndexByKey.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork.cpp.
+ * Purpose: look up a player color index and reject values outside the session
+ * player range.
+ */
 extern "C" int __fastcall zNetwork_GetPlayerColorIndexByKey(
     int playerKey
 ) {
@@ -205,13 +226,20 @@ extern "C" int __fastcall zNetwork_GetPlayerColorIndexByKey(
     return colorIndex;
 }
 
-// Reimplements 0x48b9d0: zNetwork_GetPlayerRecordCount (D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp)
+/**
+ * Reimplements 0x48b9d0: zNetwork_GetPlayerRecordCount.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
+ * Purpose: return the current DirectPlay player-record list count.
+ */
 extern "C" int zNetwork_GetPlayerRecordCount() {
     return g_zNetwork_PlayerRecordList->count;
 }
 
-// Reimplements 0x48bab0: zNetwork_ExtractStatusFieldsFromSessionDesc
-// (D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp)
+/**
+ * Reimplements 0x48bab0: zNetwork_ExtractStatusFieldsFromSessionDesc.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
+ * Purpose: copy session status fields from the current DirectPlay descriptor.
+ */
 extern "C" int __fastcall zNetwork_ExtractStatusFieldsFromSessionDesc(
     zNetworkSessionDescStatusFields *outFields
 ) {
@@ -233,8 +261,11 @@ extern "C" int __fastcall zNetwork_ExtractStatusFieldsFromSessionDesc(
     return 1;
 }
 
-// Reimplements 0x48bb20: zNetwork_ApplyStatusFieldsToSessionDesc
-// (D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp)
+/**
+ * Reimplements 0x48bb20: zNetwork_ApplyStatusFieldsToSessionDesc.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
+ * Purpose: apply status fields to the current DirectPlay session descriptor.
+ */
 extern "C" int __fastcall zNetwork_ApplyStatusFieldsToSessionDesc(
     zNetworkSessionDescStatusFields *statusFields
 ) {
@@ -267,12 +298,19 @@ extern "C" int __fastcall zNetwork_ApplyStatusFieldsToSessionDesc(
 }
 
 namespace zNetwork {
-// Reimplements 0x489f80: zNetwork::IsHost (D:\Proj\Battlesport\zNetwork\zNetwork.cpp)
+/**
+ * Reimplements 0x489f80: zNetwork::IsHost.
+ * Original source path: D:\Proj\Battlesport\zNetwork\zNetwork.cpp.
+ * Purpose: return the cached local-host flag.
+ */
 int IsHost() {
     return g_zNetwork_IsHostFlag;
 }
 
-// Reimplements 0x48afa0: zNetwork::GetPlayerNameByKey
+/**
+ * Reimplements 0x48afa0: zNetwork::GetPlayerNameByKey.
+ * Purpose: copy a player name from the player-record list by DirectPlay key.
+ */
 int __fastcall GetPlayerNameByKey(
     int playerKey,
     char *destination,
@@ -292,7 +330,11 @@ int __fastcall GetPlayerNameByKey(
 }
 } // namespace zNetwork
 
-// Reimplements 0x48acf0: zNetwork_DPlay_SendUnreliable (GameZRecoil/zNetwork/znet_dplay.cpp)
+/**
+ * Reimplements 0x48acf0: zNetwork_DPlay_SendUnreliable.
+ * Original source path: GameZRecoil/zNetwork/znet_dplay.cpp.
+ * Purpose: send a packet through DirectPlay without reliable delivery flags.
+ */
 extern "C" int __fastcall zNetwork_DPlay_SendUnreliable(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes
@@ -315,7 +357,11 @@ extern "C" int __fastcall zNetwork_DPlay_SendUnreliable(
     return 0;
 }
 
-// Reimplements 0x48ad30: zNetwork_DPlay_SendReliable (D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp)
+/**
+ * Reimplements 0x48ad30: zNetwork_DPlay_SendReliable.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
+ * Purpose: send a packet through DirectPlay with reliable delivery.
+ */
 extern "C" int __fastcall zNetwork_DPlay_SendReliable(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes
@@ -338,8 +384,12 @@ extern "C" int __fastcall zNetwork_DPlay_SendReliable(
     return 0;
 }
 
-// Reimplements 0x48ad70: zNetwork_DPlay_SendExUnreliableTracked
-// (GameZRecoil/zNetwork/znet_dplay.cpp)
+/**
+ * Reimplements 0x48ad70: zNetwork_DPlay_SendExUnreliableTracked.
+ * Original source path: GameZRecoil/zNetwork/znet_dplay.cpp.
+ * Purpose: send an asynchronous unreliable packet and track the DirectPlay
+ * message handle for packet type 6.
+ */
 extern "C" int __fastcall zNetwork_DPlay_SendExUnreliableTracked(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes
@@ -379,8 +429,11 @@ extern "C" int __fastcall zNetwork_DPlay_SendExUnreliableTracked(
     return 0;
 }
 
-// Reimplements 0x48ae10: zNetwork_DPlay_SendExReliable
-// (D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp)
+/**
+ * Reimplements 0x48ae10: zNetwork_DPlay_SendExReliable.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
+ * Purpose: send an asynchronous reliable packet through DirectPlay.
+ */
 extern "C" int __fastcall zNetwork_DPlay_SendExReliable(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes
@@ -408,7 +461,11 @@ extern "C" int __fastcall zNetwork_DPlay_SendExReliable(
     return 0;
 }
 
-// Reimplements 0x48c060: zNetwork_SendPacketUnreliable (GameZRecoil/zNetwork/znet_dplay.cpp)
+/**
+ * Reimplements 0x48c060: zNetwork_SendPacketUnreliable.
+ * Original source path: GameZRecoil/zNetwork/znet_dplay.cpp.
+ * Purpose: route an unreliable packet to the sync or async DirectPlay send path.
+ */
 extern "C" int __fastcall zNetwork_SendPacketUnreliable(
     zNetworkPacketHeader *packet
 ) {
@@ -426,7 +483,11 @@ extern "C" int __fastcall zNetwork_SendPacketUnreliable(
     );
 }
 
-// Reimplements 0x48c080: zNetwork_SendPacketReliable (D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp)
+/**
+ * Reimplements 0x48c080: zNetwork_SendPacketReliable.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
+ * Purpose: route a reliable packet to the sync or async DirectPlay send path.
+ */
 extern "C" int __fastcall zNetwork_SendPacketReliable(
     zNetworkPacketHeader *packet
 ) {
@@ -643,7 +704,10 @@ extern "C" RECOIL_NO_GS int __fastcall zNetwork_DPlay_ReportError(
     return 0;
 }
 
-// Reimplements 0x48a980: zNetwork_DPlay_DestroyCachedLocalPlayer
+/**
+ * Reimplements 0x48a980: zNetwork_DPlay_DestroyCachedLocalPlayer.
+ * Purpose: destroy the cached local DirectPlay player if one is registered.
+ */
 extern "C" int zNetwork_DPlay_DestroyCachedLocalPlayer() {
     zNetwork_PlayerRecord *localPlayer = g_zNetwork_LocalPlayerRecord;
     if (localPlayer == 0) {
@@ -684,7 +748,10 @@ extern "C" zNetwork_PlayerRecord *__fastcall zNetwork_FindPlayerRecordByKey(
 }
 
 namespace zNetwork {
-// Reimplements 0x48b940: zNetwork::AllocFreePlayerColorIndex
+/**
+ * Reimplements 0x48b940: zNetwork::AllocFreePlayerColorIndex.
+ * Purpose: reserve and return the first unused player color index.
+ */
 int AllocFreePlayerColorIndex() {
     const int maxPlayers = g_zNetwork_CurrentSessionDescCache->desc.dwMaxPlayers;
     for (int colorIndex = 1; (unsigned int)(colorIndex) <= (unsigned int)(maxPlayers);
@@ -698,7 +765,10 @@ int AllocFreePlayerColorIndex() {
     return 0;
 }
 
-// Reimplements 0x48b860: zNetwork::HostSendPlayerColorAssignmentsPacket
+/**
+ * Reimplements 0x48b860: zNetwork::HostSendPlayerColorAssignmentsPacket.
+ * Purpose: host-build and send the player color-assignment packet.
+ */
 void __fastcall HostSendPlayerColorAssignmentsPacket(
     int joiningPlayerKey
 ) {
@@ -746,8 +816,11 @@ void __fastcall HostSendPlayerColorAssignmentsPacket(
 } // namespace zNetwork
 
 namespace zNetworkDPlay {
-// Reimplements 0x48b3a0: zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo
-// (D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp)
+/**
+ * Reimplements 0x48b3a0: zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
+ * Purpose: copy an enumerated DirectPlay provider record into the provider list.
+ */
 int __stdcall EnumConnectionsCallback_AddServiceProviderInfo(
     const GUID *serviceProviderGuid,
     void *connectionData,
@@ -786,8 +859,11 @@ int __stdcall EnumConnectionsCallback_AddServiceProviderInfo(
 } // namespace zNetworkDPlay
 
 namespace zNetwork_DPlay {
-// Reimplements 0x48a0d0: zNetwork_DPlay::RefreshServiceProviderList
-// (D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp)
+/**
+ * Reimplements 0x48a0d0: zNetwork_DPlay::RefreshServiceProviderList.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
+ * Purpose: clear and rebuild the DirectPlay service-provider list.
+ */
 int RefreshServiceProviderList() {
     zNetwork::ClearServiceProviderList();
 
@@ -824,7 +900,10 @@ zNetworkServiceProviderListVec *RefreshAndGetServiceProviderList() {
     return g_zNetwork_ServiceProviderList;
 }
 
-// Reimplements 0x48a180: zNetworkDPlay::SelectServiceProviderAndInitConnection
+/**
+ * Reimplements 0x48a180: zNetworkDPlay::SelectServiceProviderAndInitConnection.
+ * Purpose: switch to an enumerated DirectPlay provider and initialize it.
+ */
 int __fastcall SelectServiceProviderAndInitConnection(
     zNetworkDPlayServiceProviderInfo *providerInfo
 ) {
@@ -861,7 +940,10 @@ int __fastcall SelectServiceProviderAndInitConnection(
     return InitializeConnectionFromProviderInfo(providerInfo);
 }
 
-// Reimplements 0x48a140: zNetworkDPlay::InitializeConnectionFromProviderInfo
+/**
+ * Reimplements 0x48a140: zNetworkDPlay::InitializeConnectionFromProviderInfo.
+ * Purpose: pass provider connection data to DirectPlay and report failures.
+ */
 int __fastcall InitializeConnectionFromProviderInfo(
     zNetworkDPlayServiceProviderInfo *providerInfo
 ) {
@@ -887,7 +969,10 @@ int __fastcall InitializeConnectionFromProviderInfo(
     );
 }
 
-// Reimplements 0x48a2c0: zNetworkDPlay::GetEnumeratedSessionNameByIndex
+/**
+ * Reimplements 0x48a2c0: zNetworkDPlay::GetEnumeratedSessionNameByIndex.
+ * Purpose: return the cached session name for an enumerated session index.
+ */
 char *__fastcall GetEnumeratedSessionNameByIndex(
     int entryIndex
 ) {
@@ -903,7 +988,10 @@ char *__fastcall GetEnumeratedSessionNameByIndex(
     return entry->desc.lpszSessionNameA;
 }
 
-// Reimplements 0x48a2e0: zNetworkDPlay::GetEnumeratedSessionPlayerCountsByIndex
+/**
+ * Reimplements 0x48a2e0: zNetworkDPlay::GetEnumeratedSessionPlayerCountsByIndex.
+ * Purpose: return current and maximum player counts for an enumerated session.
+ */
 void __fastcall GetEnumeratedSessionPlayerCountsByIndex(
     int entryIndex,
     int *currentPlayersOut,
@@ -920,7 +1008,10 @@ void __fastcall GetEnumeratedSessionPlayerCountsByIndex(
     }
 }
 
-// Reimplements 0x48b5e0: zNetworkDPlay::EnumSessionCallback_AddSessionDescCache
+/**
+ * Reimplements 0x48b5e0: zNetworkDPlay::EnumSessionCallback_AddSessionDescCache.
+ * Purpose: cache a DirectPlay session descriptor during session enumeration.
+ */
 int __stdcall EnumSessionCallback_AddSessionDescCache(
     const zNetworkDPlaySessionDesc *sessionDesc,
     DWORD *,
@@ -990,7 +1081,10 @@ int QueryCapsAndConfigureSendMode() {
     return 1;
 }
 
-// Reimplements 0x48afe0: zNetworkDPlay::PumpIncomingMessages
+/**
+ * Reimplements 0x48afe0: zNetworkDPlay::PumpIncomingMessages.
+ * Purpose: handle DirectPlay system messages and dispatch synthesized packets.
+ */
 int __fastcall PumpIncomingMessages(
     zNetworkDPlaySystemMessage *systemMessage
 ) {
@@ -1130,7 +1224,10 @@ int __fastcall PumpIncomingMessages(
 } // namespace zNetworkDPlay
 
 namespace zNetwork {
-// Reimplements 0x48b9e0: zNetwork::RemovePlayerRecordByKey
+/**
+ * Reimplements 0x48b9e0: zNetwork::RemovePlayerRecordByKey.
+ * Purpose: remove a player record by DirectPlay key and release its color slot.
+ */
 void __fastcall RemovePlayerRecordByKey(
     int playerKey
 ) {
@@ -1163,7 +1260,11 @@ void __fastcall RemovePlayerRecordByKey(
 } // namespace zNetwork
 
 namespace zNetworkDPlay {
-// Reimplements 0x48ae70: zNetworkDPlay::ReceivePendingMessages
+/**
+ * Reimplements 0x48ae70: zNetworkDPlay::ReceivePendingMessages.
+ * Purpose: receive pending DirectPlay messages, grow the receive buffer, and
+ * dispatch player or system packets.
+ */
 int __fastcall ReceivePendingMessages(
     int messageBudget
 ) {
@@ -1233,7 +1334,10 @@ int __fastcall ReceivePendingMessages(
     return processedCount;
 }
 
-// Reimplements 0x48b660: zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord
+/**
+ * Reimplements 0x48b660: zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord.
+ * Purpose: append an enumerated DirectPlay player record if it is not cached.
+ */
 int __stdcall EnumPlayerCallback_AddPlayerRecord(
     DPID playerId,
     DWORD,
@@ -1275,7 +1379,10 @@ int __stdcall EnumPlayerCallback_AddPlayerRecord(
 } // namespace zNetworkDPlay
 
 namespace zNetwork_DPlay {
-// Reimplements 0x48a220: zNetwork_DPlay::EnumSessions
+/**
+ * Reimplements 0x48a220: zNetwork_DPlay::EnumSessions.
+ * Purpose: enumerate current-app DirectPlay sessions into the session cache.
+ */
 int EnumSessions() {
     zNetwork::ClearEnumeratedSessionList();
 
@@ -1316,7 +1423,10 @@ int EnumSessions() {
     return zArchiveList_GetCount(g_zNetwork_EnumeratedSessionList);
 }
 
-// Reimplements 0x48a310: zNetwork_DPlay::EnumPlayers
+/**
+ * Reimplements 0x48a310: zNetwork_DPlay::EnumPlayers.
+ * Purpose: enumerate DirectPlay players into the recovered player-record list.
+ */
 int EnumPlayers() {
     zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
     const int hresult = directPlay->EnumPlayers(
@@ -1337,8 +1447,12 @@ int EnumPlayers() {
     return g_zNetwork_PlayerRecordList->count;
 }
 
-// Reimplements 0x48a9c0: zNetwork_DPlay::CreateLocalPlayerRecordAndRegister
-// (D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp)
+/**
+ * Reimplements 0x48a9c0: zNetwork_DPlay::CreateLocalPlayerRecordAndRegister.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
+ * Purpose: create the local player record, register it with DirectPlay, and
+ * insert it into the player list.
+ */
 int __fastcall CreateLocalPlayerRecordAndRegister(
     char *playerName
 ) {
@@ -1538,8 +1652,11 @@ int __fastcall CreateSessionFromStatusFields(
 } // namespace zNetwork_DPlay
 
 namespace zNetworkDPlay {
-// Reimplements 0x48a520: zNetworkDPlay::OpenSelectedSessionAndReadStatusFields
-// (D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp)
+/**
+ * Reimplements 0x48a520: zNetworkDPlay::OpenSelectedSessionAndReadStatusFields.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
+ * Purpose: open an enumerated DirectPlay session and copy its status fields.
+ */
 int __fastcall OpenSelectedSessionAndReadStatusFields(
     zNetworkSessionDescStatusFields *statusFields
 ) {
@@ -1585,8 +1702,11 @@ int __fastcall OpenSelectedSessionAndReadStatusFields(
 } // namespace zNetworkDPlay
 
 namespace zNetwork {
-// Reimplements 0x48bf40: zNetwork::DeleteAllDispatchHandlers
-// (D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp)
+/**
+ * Reimplements 0x48bf40: zNetwork::DeleteAllDispatchHandlers.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
+ * Purpose: remove all packet-dispatch handler list nodes.
+ */
 void DeleteAllDispatchHandlers() {
     zNetworkDispatchHandlerListNode *const sentinel = g_zNetwork_DispatchHandlerListSentinel;
     zNetworkDispatchHandlerListNode *node = sentinel->next;
@@ -1602,8 +1722,12 @@ void DeleteAllDispatchHandlers() {
 } // namespace zNetwork
 
 namespace zNetworkDPlay {
-// Reimplements 0x48bbe0: zNetworkDPlay::SelectTcpIpProviderAndEnumSessions
-// (D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp)
+/**
+ * Reimplements 0x48bbe0: zNetworkDPlay::SelectTcpIpProviderAndEnumSessions.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
+ * Purpose: build a forced TCP/IP DirectPlay address and optionally enumerate
+ * sessions through it.
+ */
 int __fastcall SelectTcpIpProviderAndEnumSessions(
     char *addressString,
     int skipSessionEnumeration
@@ -1667,8 +1791,11 @@ int __fastcall SelectTcpIpProviderAndEnumSessions(
     return enumResult == 0;
 }
 
-// Reimplements 0x48be10: zNetworkDPlay::CreateLobby3AInterface
-// (D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp)
+/**
+ * Reimplements 0x48be10: zNetworkDPlay::CreateLobby3AInterface.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
+ * Purpose: create a DirectPlayLobby interface and query IDirectPlayLobby3A.
+ */
 int __fastcall CreateLobby3AInterface(
     IDirectPlayLobby3A **outLobby3A
 ) {
@@ -1696,8 +1823,11 @@ int __fastcall CreateLobby3AInterface(
     return result;
 }
 
-// Reimplements 0x48be70: zNetworkDPlay::EnumSessionsForCurrentApp
-// (D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp)
+/**
+ * Reimplements 0x48be70: zNetworkDPlay::EnumSessionsForCurrentApp.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
+ * Purpose: enumerate sessions for the configured application GUID.
+ */
 int EnumSessionsForCurrentApp() {
     zNetwork::ClearEnumeratedSessionList();
 
@@ -1725,7 +1855,10 @@ int EnumSessionsForCurrentApp() {
 }
 } // namespace zNetworkDPlay
 
-// Reimplements 0x48bff0: zNetwork_DestroyDispatchHandlerList
+/**
+ * Reimplements 0x48bff0: zNetwork_DestroyDispatchHandlerList.
+ * Purpose: delete the packet-dispatch handler sentinel and all list nodes.
+ */
 extern "C" void zNetwork_DestroyDispatchHandlerList() {
     zNetworkDispatchHandlerListNode *const sentinel = g_zNetwork_DispatchHandlerListSentinel;
     if (sentinel == 0) {
@@ -1748,12 +1881,18 @@ extern "C" void zNetwork_DestroyDispatchHandlerList() {
     g_zNetwork_DispatchHandlerListCount = 0;
 }
 
-// Reimplements 0x48bfe0: zNetwork_RegisterDispatchHandlerListShutdown
+/**
+ * Reimplements 0x48bfe0: zNetwork_RegisterDispatchHandlerListShutdown.
+ * Purpose: register packet-dispatch handler list destruction with atexit.
+ */
 extern "C" void zNetwork_RegisterDispatchHandlerListShutdown() {
     atexit(zNetwork_DestroyDispatchHandlerList);
 }
 
-// Reimplements 0x48bfb0: zNetwork_CreateEmptyDispatchHandlerList
+/**
+ * Reimplements 0x48bfb0: zNetwork_CreateEmptyDispatchHandlerList.
+ * Purpose: allocate and initialize an empty packet-dispatch handler list.
+ */
 extern "C" void zNetwork_CreateEmptyDispatchHandlerList() {
     g_zNetwork_DispatchHandlerListFlags = 0;
     zNetworkDispatchHandlerListNode *const sentinel =
@@ -1766,7 +1905,10 @@ extern "C" void zNetwork_CreateEmptyDispatchHandlerList() {
     g_zNetwork_DispatchHandlerListCount = 0;
 }
 
-// Reimplements 0x48bfa0: zNetwork_InitMessageHandlers
+/**
+ * Reimplements 0x48bfa0: zNetwork_InitMessageHandlers.
+ * Purpose: initialize packet-dispatch handlers and register shutdown cleanup.
+ */
 extern "C" void zNetwork_InitMessageHandlers() {
     zNetwork_CreateEmptyDispatchHandlerList();
     zNetwork_RegisterDispatchHandlerListShutdown();
@@ -1796,7 +1938,10 @@ extern "C" int __fastcall zNetwork_ApplyPkt01_PlayerColorAssignments(
 }
 
 namespace zNetwork_DPlay {
-// Reimplements 0x48b730: zNetwork_DPlay::CreateInterfaceAndCoInitialize
+/**
+ * Reimplements 0x48b730: zNetwork_DPlay::CreateInterfaceAndCoInitialize.
+ * Purpose: initialize COM and create the DirectPlay4A interface.
+ */
 int __fastcall CreateInterfaceAndCoInitialize(
     zNetwork_DPlay4 **outDirectPlay4
 ) {
@@ -1871,7 +2016,10 @@ int __fastcall CloseReleaseAndCoUninitialize(
 } // namespace zNetwork_DPlay
 
 namespace zNetworkDPlay {
-// Reimplements 0x48bee0: zNetworkDPlay::FreeServiceProviderInfoBuffers
+/**
+ * Reimplements 0x48bee0: zNetworkDPlay::FreeServiceProviderInfoBuffers.
+ * Purpose: release duplicated provider display-name and connection buffers.
+ */
 void __fastcall FreeServiceProviderInfoBuffers(
     zNetworkDPlayServiceProviderInfo *providerInfo
 ) {
@@ -1883,7 +2031,13 @@ void __fastcall FreeServiceProviderInfoBuffers(
 } // namespace zNetworkDPlay
 
 namespace {
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered local helper: DeletePlayerRecordNode.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
+ * Original helper evidence: no standalone retail address; recovered with the surrounding
+ * player-list cleanup functions in this source file.
+ * Purpose: release a player-record list node and its optional player payload.
+ */
 void DeletePlayerRecordNode(
     zNetworkPlayerRecordListNode *node
 ) {
@@ -1897,8 +2051,11 @@ void DeletePlayerRecordNode(
 } // namespace
 
 namespace zNetwork {
-// Reimplements 0x48c0a0: zNetwork::RegisterPacketHandler
-// (D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp)
+/**
+ * Reimplements 0x48c0a0: zNetwork::RegisterPacketHandler.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
+ * Purpose: allocate a packet-handler record and append it to the dispatch list.
+ */
 zNetworkDispatchHandlerRecord *__fastcall RegisterPacketHandler(
     int packetType,
     zNetworkPacketHandler handlerProc,
@@ -1977,7 +2134,10 @@ int __fastcall UnregisterPacketHandler(
 } // namespace zNetwork
 
 namespace zNetwork_DPlay {
-// Reimplements 0x48c200: zNetwork_DPlay::DispatchPacketToHandlers
+/**
+ * Reimplements 0x48c200: zNetwork_DPlay::DispatchPacketToHandlers.
+ * Purpose: call every registered handler matching the incoming packet type.
+ */
 void __fastcall DispatchPacketToHandlers(
     int senderPlayerId,
     zNetworkPacketHeader *packet
@@ -2091,16 +2251,22 @@ void ClearPlayerRecordList() {
     }
 }
 
-// Reimplements 0x489f90: zNetwork::SetFatalDisconnectCallback
-// (D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp)
+/**
+ * Reimplements 0x489f90: zNetwork::SetFatalDisconnectCallback.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
+ * Purpose: set the callback invoked on fatal DirectPlay disconnect.
+ */
 void __fastcall SetFatalDisconnectCallback(
     zNetworkFatalDisconnectCallback callback
 ) {
     g_zNetwork_FatalDisconnectCallback = callback;
 }
 
-// Reimplements 0x489d00: zNetwork::InitSessionRuntime
-// (D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp)
+/**
+ * Reimplements 0x489d00: zNetwork::InitSessionRuntime.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
+ * Purpose: initialize DirectPlay session globals, lists, and default handlers.
+ */
 int __fastcall InitSessionRuntime(
     GUID *appGuid
 ) {

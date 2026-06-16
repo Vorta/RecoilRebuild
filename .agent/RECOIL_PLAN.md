@@ -18233,28 +18233,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48a350:
   - [✅] Reconstructed (Name: zNetworkDPlay::QueryCapsAndConfigureSendMode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zNetwork/znet_dplay.cpp; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetworkDPlay::QueryCapsAndConfigureSendMode;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_query_caps_configure_send_mode;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: DirectPlay SDK type/GUID source-shape cleanup complete; broad zNetwork/znet_dplay.cpp source-owner and touched global data evidence remain pending before owner/data promotion.
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48a410:
   - [☑️] Reconstructed (Name: zNetwork_DPlay::CreateSessionFromStatusFields)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zNetwork/znet_dplay.cpp; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork_DPlay::CreateSessionFromStatusFields;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_create_session_from_status_fields;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: DirectPlay SDK type/GUID source-shape cleanup complete; broad zNetwork/znet_dplay.cpp source-owner and touched global data evidence remain pending before owner/data promotion.
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48a520:
   - [☑️] Reconstructed (Name: zNetworkDPlay::OpenSelectedSessionAndReadStatusFields)
@@ -18740,15 +18740,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48c250:
   - [✅] Reconstructed (Name: zNetwork_DPlay::ReportError)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zNetwork/znet_dplay.cpp; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork_DPlay_ReportError;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_report_error;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: DirectPlay error-name table source-shape debt resolved; broad zNetwork source-owner and touched .rdata/data evidence remain pending before owner/data promotion.
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48bfa0:
   - [✅] Reconstructed (Name: zNetwork::InitMessageHandlers)
