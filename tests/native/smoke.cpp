@@ -213,6 +213,7 @@ extern "C" int recoil_app_initialize_display_failure_smoke(void);
 extern "C" int recoil_app_start_engine_and_queue_startup_state_smoke(void);
 extern "C" int recoil_state_main_menu_transition_constructor_smoke(void);
 extern "C" int recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke(void);
+extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void);
 extern "C" int recoil_state_cheat_code_constructor_smoke(void);
 extern "C" int recoil_state_controls_lifecycle_smoke(void);
 extern "C" int recoil_state_controls_activation_smoke(void);
@@ -10376,6 +10377,8 @@ int main(int argc, char **argv) {
          recoil_state_main_menu_transition_constructor_smoke},
         {"recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke",
          recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke},
+        {"hud_ui_main_menu_dialog_constructor_smoke",
+         hud_ui_main_menu_dialog_constructor_smoke},
         {"recoil_state_cheat_code_constructor_smoke",
          recoil_state_cheat_code_constructor_smoke},
         {"recoil_state_controls_lifecycle_smoke",

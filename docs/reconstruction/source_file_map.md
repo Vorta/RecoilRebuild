@@ -408,18 +408,18 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## Battlesport/HudUiMainMenuDialog.cpp
 
-- `0x414b60` `HudUiMainMenuDialog::CanLoadGame` -> `src/Battlesport/HudUiMainMenuDialog.cpp:344`
-- `0x414b90` `HudUiMainMenuDialog::CanSaveGame` -> `src/Battlesport/HudUiMainMenuDialog.cpp:369`
-- `0x414bc0` `HudUiMainMenuDialog::HudUiMainMenuDialog` -> `src/Battlesport/HudUiMainMenuDialog.cpp:393`
-- `0x414f40` `HudUiMainMenuDialog_CreditsButton::OnActivate` -> `src/Battlesport/HudUiMainMenuDialog.cpp:14`
-- `0x414f60` `HudUiMainMenuDialog_SaveButton::OnActivate` -> `src/Battlesport/HudUiMainMenuDialog.cpp:29`
-- `0x414f80` `HudUiMainMenuDialog_NewGameButton::OnActivate` -> `src/Battlesport/HudUiMainMenuDialog.cpp:51`
-- `0x414fa0` `HudUiMenuBackButton::OnActivate` -> `src/Battlesport/HudUiMainMenuDialog.cpp:21`
-- `0x414fc0` `HudUiMainMenuDialog_OptionsButton::OnActivate` -> `src/Battlesport/HudUiMainMenuDialog.cpp:58`
-- `0x414fe0` `HudUiMainMenuDialog_QuitButton::OnActivate` -> `src/Battlesport/HudUiMainMenuDialog.cpp:65`
-- `0x415000` `HudUiMainMenuDialog_ControlsButton::OnActivate` -> `src/Battlesport/HudUiMainMenuDialog.cpp:72`
-- `0x415040` `HudUiMainMenuDialog::~HudUiMainMenuDialog` -> `src/Battlesport/HudUiMainMenuDialog.cpp:592`
-- `0x415140` `HudUiMainMenuDialog_LoadButton::OnActivate` -> `src/Battlesport/HudUiMainMenuDialog.cpp:38`
+- `0x414b60` `HudUiMainMenuDialog::CanLoadGame` -> `src/Battlesport/HudUiMainMenuDialog.cpp:473`
+- `0x414b90` `HudUiMainMenuDialog::CanSaveGame` -> `src/Battlesport/HudUiMainMenuDialog.cpp:498`
+- `0x414bc0` `HudUiMainMenuDialog::HudUiMainMenuDialog` -> `src/Battlesport/HudUiMainMenuDialog.cpp:523`
+- `0x414f40` `HudUiMainMenuDialog_CreditsButton::OnActivate` -> `src/Battlesport/HudUiMainMenuDialog.cpp:15`
+- `0x414f60` `HudUiMainMenuDialog_SaveButton::OnActivate` -> `src/Battlesport/HudUiMainMenuDialog.cpp:36`
+- `0x414f80` `HudUiMainMenuDialog_NewGameButton::OnActivate` -> `src/Battlesport/HudUiMainMenuDialog.cpp:64`
+- `0x414fa0` `HudUiMenuBackButton::OnActivate` -> `src/Battlesport/HudUiMainMenuDialog.cpp:25`
+- `0x414fc0` `HudUiMainMenuDialog_OptionsButton::OnActivate` -> `src/Battlesport/HudUiMainMenuDialog.cpp:74`
+- `0x414fe0` `HudUiMainMenuDialog_QuitButton::OnActivate` -> `src/Battlesport/HudUiMainMenuDialog.cpp:84`
+- `0x415000` `HudUiMainMenuDialog_ControlsButton::OnActivate` -> `src/Battlesport/HudUiMainMenuDialog.cpp:94`
+- `0x415040` `HudUiMainMenuDialog::~HudUiMainMenuDialog` -> `src/Battlesport/HudUiMainMenuDialog.cpp:725`
+- `0x415140` `HudUiMainMenuDialog_LoadButton::OnActivate` -> `src/Battlesport/HudUiMainMenuDialog.cpp:48`
 
 ## Battlesport/HudUiMessageBoxDialog.cpp
 

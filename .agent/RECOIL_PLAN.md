@@ -36175,16 +36175,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x414bc0:
   - [✅] Reconstructed (Name: HudUiMainMenuDialog::Constructor)
-  - [❌] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Source dependencies satisfied
+  - [✅] Source owner (Kind: class; Parent: HudUiMainMenuDialog; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiMainMenuDialog::HudUiMainMenuDialog;
+    - File: src/Battlesport/HudUiMainMenuDialog.cpp;
+    - Target: hud_ui_main_menu_dialog_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: Main-menu dialog/button FTable factories/globals, dialog table install, and raw refresh slot dispatch were removed from production source. BN proves class-shaped dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement C++ dispatch owner before retiering.
+    - Model: source-faithful;
+    - Blocker: tier S remains open: VC5SP3 hud_ui_main_menu_dialog_constructor byte comparison still has unmasked codegen/scheduling mismatches after class-owner recovery
 
 - 0x414f40:
   - [✅] Reconstructed (Name: HudUiMainMenuDialog_CreditsButton::OnActivate)

@@ -11,23 +11,32 @@ struct RecoilStateCredits {
     static void QueuePush();
 };
 
-// Reimplements 0x414f40: HudUiMainMenuDialog_CreditsButton::OnActivate
-// (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
+/**
+ * Reimplements 0x414f40: HudUiMainMenuDialog_CreditsButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Queue the credits state and complete the standard ZRD widget activation.
+ */
 void HudUiMainMenuDialog_CreditsButton::OnActivate() {
     RecoilStateCredits::QueuePush();
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x414fa0: HudUiMenuBackButton::OnActivate
-// (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
+/**
+ * Reimplements 0x414fa0: HudUiMenuBackButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Exit the current state and refresh the active HUD layout.
+ */
 void HudUiMenuBackButton::OnActivate() {
     g_RecoilApp.QueueExitCurrentState(0);
     HudUiZrdWidget::OnActivate();
     HudUiMgr::TriggerCurrentLayoutOnActivated();
 }
 
-// Reimplements 0x414f60: HudUiMainMenuDialog_SaveButton::OnActivate
-// (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
+/**
+ * Reimplements 0x414f60: HudUiMainMenuDialog_SaveButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Open the save dialog and complete the standard ZRD widget activation.
+ */
 void HudUiMainMenuDialog_SaveButton::OnActivate() {
     RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
         RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED
@@ -35,8 +44,11 @@ void HudUiMainMenuDialog_SaveButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x415140: HudUiMainMenuDialog_LoadButton::OnActivate
-// (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
+/**
+ * Reimplements 0x415140: HudUiMainMenuDialog_LoadButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Open the load dialog using the frontend or in-game transition mode.
+ */
 void HudUiMainMenuDialog_LoadButton::OnActivate() {
     if (g_RecoilState_MainMenuTransition.m_entryRoute != RECOIL_MAINMENU_ROUTE_FRONTEND) {
         RecoilStateSaveLoadTransition::QueueOpenLoadDialog(RECOIL_SAVELOAD_MODE_FADE);
@@ -48,29 +60,41 @@ void HudUiMainMenuDialog_LoadButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x414f80: HudUiMainMenuDialog_NewGameButton::OnActivate
-// (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
+/**
+ * Reimplements 0x414f80: HudUiMainMenuDialog_NewGameButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Enter the new-game overlay and complete the standard ZRD widget activation.
+ */
 void HudUiMainMenuDialog_NewGameButton::OnActivate() {
     HudUiNewGamePanelOverlayOwner::QueueEnter();
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x414fc0: HudUiMainMenuDialog_OptionsButton::OnActivate
-// (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
+/**
+ * Reimplements 0x414fc0: HudUiMainMenuDialog_OptionsButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Enter the options overlay and complete the standard ZRD widget activation.
+ */
 void HudUiMainMenuDialog_OptionsButton::OnActivate() {
     HudUiOptionsPanelOverlayOwner::QueueEnter();
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x414fe0: HudUiMainMenuDialog_QuitButton::OnActivate
-// (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
+/**
+ * Reimplements 0x414fe0: HudUiMainMenuDialog_QuitButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Enter the quit confirmation state and complete the standard ZRD widget activation.
+ */
 void HudUiMainMenuDialog_QuitButton::OnActivate() {
     RecoilStateConfirmQuit::QueueEnter();
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x415000: HudUiMainMenuDialog_ControlsButton::OnActivate
-// (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
+/**
+ * Reimplements 0x415000: HudUiMainMenuDialog_ControlsButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Enter the controls state and complete the standard ZRD widget activation.
+ */
 void HudUiMainMenuDialog_ControlsButton::OnActivate() {
     RecoilStateControls::QueueEnter();
     HudUiZrdWidget::OnActivate();
@@ -90,7 +114,12 @@ inline int PlayerMenuSaveLoadBlocked(
     return playerState->environmentAttachmentActive;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline source helper: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog binds each member widget
+ * by name through this repeated call shape.
+ * Purpose: Bind one named ZRD widget node to a main-menu dialog member.
+ */
 inline void BindButton(
     HudUiMainMenuDialog *dialog,
     zReader::Node *loadedSection,
@@ -104,7 +133,12 @@ inline void BindButton(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original static helper: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog uses this MAINMENU3
+ * binding sequence for in-game lifecycle state 4.
+ * Purpose: Bind the reduced new/load/quit button set.
+ */
 void BindNewLoadQuit(
     HudUiMainMenuDialog *dialog,
     zReader::Node *loadedSection
@@ -129,7 +163,12 @@ void BindNewLoadQuit(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original static helper: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog uses this MAINMENU0
+ * binding sequence for frontend entry.
+ * Purpose: Bind the frontend main-menu button set.
+ */
 void BindFrontendButtons(
     HudUiMainMenuDialog *dialog,
     zReader::Node *loadedSection
@@ -172,7 +211,12 @@ void BindFrontendButtons(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original static helper: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog uses this MAINMENU1
+ * binding sequence for full in-game entry.
+ * Purpose: Bind the full in-game main-menu button set.
+ */
 void BindFullInGameButtons(
     HudUiMainMenuDialog *dialog,
     zReader::Node *loadedSection
@@ -227,7 +271,12 @@ void BindFullInGameButtons(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original static helper: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog uses this MAINMENU2
+ * binding sequence when network play is enabled.
+ * Purpose: Bind the network-enabled main-menu button set.
+ */
 void BindNetworkButtons(
     HudUiMainMenuDialog *dialog,
     zReader::Node *loadedSection
@@ -265,77 +314,157 @@ void BindNetworkButtons(
 }
 } // namespace
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline constructor: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog constructs the background
+ * member with a HudUiBackground base subobject.
+ * Purpose: Initialize the dialog background member.
+ */
 inline HudUiMainMenuDialogBackground::HudUiMainMenuDialogBackground() : HudUiBackground() {
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline destructor: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::~HudUiMainMenuDialog destroys the background
+ * member without additional body work.
+ * Purpose: Tear down the dialog background member.
+ */
 inline HudUiMainMenuDialogBackground::~HudUiMainMenuDialogBackground() {
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline constructor: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog constructs the credits
+ * button member as a HudUiZrdWidget-derived subobject.
+ * Purpose: Initialize the credits button member.
+ */
 inline HudUiMainMenuDialog_CreditsButton::HudUiMainMenuDialog_CreditsButton() :
     HudUiZrdWidget() {
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline destructor: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::~HudUiMainMenuDialog destroys the credits
+ * button member through HudUiZrdWidget::DestructorCore.
+ * Purpose: Tear down the credits button member.
+ */
 inline HudUiMainMenuDialog_CreditsButton::~HudUiMainMenuDialog_CreditsButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline constructor: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog constructs the save
+ * button member as a HudUiZrdWidget-derived subobject.
+ * Purpose: Initialize the save button member.
+ */
 inline HudUiMainMenuDialog_SaveButton::HudUiMainMenuDialog_SaveButton() : HudUiZrdWidget() {
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline destructor: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::~HudUiMainMenuDialog destroys the save
+ * button member through HudUiZrdWidget::DestructorCore.
+ * Purpose: Tear down the save button member.
+ */
 inline HudUiMainMenuDialog_SaveButton::~HudUiMainMenuDialog_SaveButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline constructor: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog constructs the load
+ * button member as a HudUiZrdWidget-derived subobject.
+ * Purpose: Initialize the load button member.
+ */
 inline HudUiMainMenuDialog_LoadButton::HudUiMainMenuDialog_LoadButton() : HudUiZrdWidget() {
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline destructor: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::~HudUiMainMenuDialog destroys the load
+ * button member through HudUiZrdWidget::DestructorCore.
+ * Purpose: Tear down the load button member.
+ */
 inline HudUiMainMenuDialog_LoadButton::~HudUiMainMenuDialog_LoadButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline constructor: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog constructs the new-game
+ * button member as a HudUiZrdWidget-derived subobject.
+ * Purpose: Initialize the new-game button member.
+ */
 inline HudUiMainMenuDialog_NewGameButton::HudUiMainMenuDialog_NewGameButton() :
     HudUiZrdWidget() {
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline destructor: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::~HudUiMainMenuDialog destroys the new-game
+ * button member through HudUiZrdWidget::DestructorCore.
+ * Purpose: Tear down the new-game button member.
+ */
 inline HudUiMainMenuDialog_NewGameButton::~HudUiMainMenuDialog_NewGameButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline constructor: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog constructs the options
+ * button member as a HudUiZrdWidget-derived subobject.
+ * Purpose: Initialize the options button member.
+ */
 inline HudUiMainMenuDialog_OptionsButton::HudUiMainMenuDialog_OptionsButton() :
     HudUiZrdWidget() {
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline destructor: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::~HudUiMainMenuDialog destroys the options
+ * button member through HudUiZrdWidget::DestructorCore.
+ * Purpose: Tear down the options button member.
+ */
 inline HudUiMainMenuDialog_OptionsButton::~HudUiMainMenuDialog_OptionsButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline constructor: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog constructs the quit
+ * button member as a HudUiZrdWidget-derived subobject.
+ * Purpose: Initialize the quit button member.
+ */
 inline HudUiMainMenuDialog_QuitButton::HudUiMainMenuDialog_QuitButton() : HudUiZrdWidget() {
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline destructor: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::~HudUiMainMenuDialog destroys the quit
+ * button member through HudUiZrdWidget::DestructorCore.
+ * Purpose: Tear down the quit button member.
+ */
 inline HudUiMainMenuDialog_QuitButton::~HudUiMainMenuDialog_QuitButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline constructor: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog constructs the controls
+ * button member as a HudUiZrdWidget-derived subobject.
+ * Purpose: Initialize the controls button member.
+ */
 inline HudUiMainMenuDialog_ControlsButton::HudUiMainMenuDialog_ControlsButton() :
     HudUiZrdWidget() {
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline destructor: no standalone retail function.
+ * Evidence: HudUiMainMenuDialog::~HudUiMainMenuDialog destroys the controls
+ * button member through HudUiZrdWidget::DestructorCore.
+ * Purpose: Tear down the controls button member.
+ */
 inline HudUiMainMenuDialog_ControlsButton::~HudUiMainMenuDialog_ControlsButton() {
     HudUiZrdWidget::DestructorCore();
 }
@@ -390,8 +519,11 @@ canSave:
     return 1;
 }
 
-// Reimplements 0x414bc0: HudUiMainMenuDialog::HudUiMainMenuDialog
-// (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
+/**
+ * Reimplements 0x414bc0: HudUiMainMenuDialog::HudUiMainMenuDialog.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Load the route-specific main-menu layout and bind its child buttons.
+ */
 HudUiMainMenuDialog::HudUiMainMenuDialog(
     RecoilMainMenuEntryRoute route
 ) {
@@ -589,6 +721,9 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(
     loadButton->RefreshState();
 }
 
-// Reimplements 0x415040: HudUiMainMenuDialog::~HudUiMainMenuDialog
-// (D:\Proj\Battlesport\HudUiMainMenuDialog.cpp)
+/**
+ * Reimplements 0x415040: HudUiMainMenuDialog::~HudUiMainMenuDialog.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Provide the owner-level destructor body for member teardown.
+ */
 HudUiMainMenuDialog::~HudUiMainMenuDialog() {}

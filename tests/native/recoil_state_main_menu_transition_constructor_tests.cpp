@@ -2,6 +2,7 @@
 #include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zInput/zInput.h"
+#include "GameZRecoil/zUtil/zSaveGame.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
 #include <new>
@@ -56,6 +57,82 @@ extern "C" int recoil_state_main_menu_transition_set_deferred_video_mode_index_s
                    static_cast<zVidModeIndex>(5)
                ? 0
                : 1;
+}
+
+extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void) {
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const zVideo_BltRectDirectProc oldBltDirect =
+        g_zVideo_pfnBltSwToPrimaryRectDirect;
+    const zVideo_SurfaceStatePartial oldSwSurface = g_zVideo_SwSurfaceState;
+    const zVideo_SurfaceStatePartial oldPrimarySurface =
+        g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial oldDisplaySurface =
+        g_zVideo_DisplayModeSurfaceState;
+    zVideo_SurfaceStateProc const oldLockSurfaceState =
+        g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const oldUnlockSurfaceState =
+        g_zVideo_pfnUnlockSurfaceState;
+
+    g_zVideo_ActiveRendererPath = 0;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = 0;
+    g_zVideo_pfnLockSurfaceState = TestNewGamePanelVideoSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestNewGamePanelVideoSurfaceStateNoOp;
+    g_zVideo_SwSurfaceState = zVideo_SurfaceStatePartial();
+    g_zVideo_PrimarySurfaceState = zVideo_SurfaceStatePartial();
+    g_zVideo_DisplayModeSurfaceState = zVideo_SurfaceStatePartial();
+
+    int networkEnabled = 0;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    zInput_GameStateOrMapTablePartial *const oldGameState =
+        g_GameStateOrMapTable;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_GameStateOrMapTable = 0;
+
+    HudUiMainMenuDialog frontendDialog(RECOIL_MAINMENU_ROUTE_FRONTEND);
+    const bool frontendConstructed =
+        frontendDialog.enabled == 0 &&
+        frontendDialog.captureTransitionMask == 1 &&
+        frontendDialog.loadGameButton.modeOrEnabled == 1;
+
+    zUtil_PlayerStateStorage playerState = zUtil_PlayerStateStorage();
+    zInput_GameStateOrMapTablePartial gameState = zInput_GameStateOrMapTablePartial();
+    gameState.playerState =
+        reinterpret_cast<zInput_PlayerStatePartial *>(&playerState);
+    g_GameStateOrMapTable = &gameState;
+
+    playerState.lifecycleState = 4;
+    HudUiMainMenuDialog resumeDialog(RECOIL_MAINMENU_ROUTE_INGAME);
+    const bool resumeConstructed =
+        resumeDialog.saveGameButton.modeOrEnabled == 1 &&
+        resumeDialog.loadGameButton.modeOrEnabled == 1 &&
+        resumeDialog.captureTransitionMask == 1;
+
+    playerState.lifecycleState = 3;
+    playerState.environmentAttachmentActive = 1;
+    HudUiMainMenuDialog blockedDialog(RECOIL_MAINMENU_ROUTE_INGAME);
+    const bool blockedConstructed =
+        blockedDialog.saveGameButton.modeOrEnabled == 0 &&
+        blockedDialog.loadGameButton.modeOrEnabled == 0;
+
+    g_GameStateOrMapTable = oldGameState;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+    g_zVideo_SwSurfaceState = oldSwSurface;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_DisplayModeSurfaceState = oldDisplaySurface;
+    if (!frontendConstructed) {
+        return 1;
+    }
+    if (!resumeConstructed) {
+        return 2;
+    }
+    if (!blockedConstructed) {
+        return 3;
+    }
+    return 0;
 }
 
 extern "C" int hud_ui_new_game_panel_constructor_cluster_smoke(void) {
