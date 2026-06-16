@@ -15,7 +15,12 @@
 #include <string.h>
 
 namespace {
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed in
+ * callers 0x419aa0, 0x41a820, and 0x41a9c0.
+ * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
+ * Purpose: Clamp integer setup values to the active input bounds.
+ */
 int ClampInt(
     int value,
     int minValue,
@@ -30,7 +35,12 @@ int ClampInt(
     return value;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed in
+ * callers 0x419aa0, 0x41a820, and 0x41a9c0.
+ * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
+ * Purpose: Store the enabled flag and refresh the ZRD widget state.
+ */
 void SetZrdWidgetEnabled(
     HudUiZrdWidget *widget,
     int enabled
@@ -39,7 +49,12 @@ void SetZrdWidgetEnabled(
     widget->RefreshState();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed in
+ * caller 0x419aa0.
+ * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
+ * Purpose: Initialize clamped integer text input bounds and visible text.
+ */
 void InitClampedInput(
     HudUiClampedIntTextInput *input,
     int minValue,
@@ -58,7 +73,12 @@ void InitClampedInput(
     input->Update(valueText);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed in
+ * caller 0x419aa0.
+ * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
+ * Purpose: Bind a step button to its target clamped integer input.
+ */
 void ConfigureStepButton(
     HudUiClampedIntStepButton *button,
     HudUiClampedIntTextInput *targetInput,
@@ -68,7 +88,12 @@ void ConfigureStepButton(
     button->stepDelta = stepDelta;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed in
+ * callers 0x419aa0, 0x41a820, and 0x41a9c0.
+ * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
+ * Purpose: Dispatch a widget visibility change through its installed table.
+ */
 void SetWidgetVisible(
     HudUiWidget *widget,
     int visible
@@ -76,7 +101,12 @@ void SetWidgetVisible(
     ((HudUiElement *)(widget))->SetVisible(visible);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed in
+ * callers 0x41a820 and 0x41a9c0.
+ * Source: D:\Proj\Battlesport\HudUi.cpp
+ * Purpose: Apply world selection changes to goal, timer, and refresh state.
+ */
 void ApplyWorldSelectionSideEffects(
     HudUiNetGameSetupPanel *panel,
     int selectedIndex
@@ -139,8 +169,11 @@ void ApplyWorldSelectionSideEffects(
 }
 } // namespace
 
-// Reimplements 0x419aa0: HudUiNetGameSetupPanel::Constructor
-// (D:\Proj\Battlesport\HudUiNetGameSetup.cpp)
+/**
+ * Reimplements 0x419aa0: HudUiNetGameSetupPanel::Constructor
+ * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
+ * Purpose: Initialize the network game setup panel controls and default session options.
+ */
 HudUiNetGameSetupPanel * HudUiNetGameSetupPanel::Constructor(
     int reconfigureExistingSessionValue
 ) {
@@ -395,8 +428,11 @@ HudUiNetGameSetupPanel * HudUiNetGameSetupPanel::Constructor(
     return this;
 }
 
-// Reimplements 0x41a400: HudUiNetGameSetupPanel::Destructor
-// (D:\Proj\Battlesport\HudUiNetGameSetup.cpp)
+/**
+ * Reimplements 0x41a400: HudUiNetGameSetupPanel::Destructor
+ * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
+ * Purpose: Tear down the panel-owned controls before destroying the background base.
+ */
 void HudUiNetGameSetupPanel::Destructor() {
     lapsSwitch.DestructorCore();
     killsSwitch.DestructorCore();
@@ -420,7 +456,12 @@ void HudUiNetGameSetupPanel::Destructor() {
     this->HudUiBackground::~HudUiBackground();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed in
+ * the HudUiNetGameSetupOverlayOwner panel delete path.
+ * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
+ * Purpose: Run the panel destructor and optionally free the panel storage.
+ */
 HudUiBackground * HudUiNetGameSetupPanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -432,7 +473,11 @@ HudUiBackground * HudUiNetGameSetupPanel::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x41a160: HudUiNetGameSetupPanel_CancelButton::OnActivate
+/**
+ * Reimplements 0x41a160: HudUiNetGameSetupPanel_CancelButton::OnActivate
+ * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
+ * Purpose: Leave the network setup state when the cancel button is activated.
+ */
 void HudUiNetGameSetupPanel_CancelButton::OnActivate() {
     g_RecoilApp.QueueExitCurrentState(0);
     g_RecoilApp.QueueSwitchCurrentState(
@@ -442,7 +487,11 @@ void HudUiNetGameSetupPanel_CancelButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x41a5b0: HudUiNetGameSetupPanel_LaunchButton::OnActivate
+/**
+ * Reimplements 0x41a5b0: HudUiNetGameSetupPanel_LaunchButton::OnActivate
+ * Source: D:\Proj\Battlesport\HudUi.cpp
+ * Purpose: Commit setup values and start or reconfigure the network game session.
+ */
 void HudUiNetGameSetupPanel_LaunchButton::OnActivate() {
     HudUiNetGameSetupPanel *const ownerPanel = (HudUiNetGameSetupPanel *)(owner);
     int statusFlags = 0;
@@ -516,7 +565,11 @@ void HudUiNetGameSetupPanel_LaunchButton::OnActivate() {
     g_RecoilApp.QueueExitCurrentState(0);
 }
 
-// Reimplements 0x41a820: HudUiNetGameSetupPanel_NextWorldButton::OnActivate
+/**
+ * Reimplements 0x41a820: HudUiNetGameSetupPanel_NextWorldButton::OnActivate
+ * Source: D:\Proj\Battlesport\HudUi.cpp
+ * Purpose: Advance the selected world and apply the related setup side effects.
+ */
 void HudUiNetGameSetupPanel_NextWorldButton::OnActivate() {
     HudUiNetGameSetupPanel *const ownerPanel = (HudUiNetGameSetupPanel *)(owner);
     ApplyWorldSelectionSideEffects(
@@ -526,7 +579,11 @@ void HudUiNetGameSetupPanel_NextWorldButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x41a9c0: HudUiNetGameSetupPanel_PrevWorldButton::OnActivate
+/**
+ * Reimplements 0x41a9c0: HudUiNetGameSetupPanel_PrevWorldButton::OnActivate
+ * Source: D:\Proj\Battlesport\HudUi.cpp
+ * Purpose: Move to the previous world and apply the related setup side effects.
+ */
 void HudUiNetGameSetupPanel_PrevWorldButton::OnActivate() {
     HudUiNetGameSetupPanel *const ownerPanel = (HudUiNetGameSetupPanel *)(owner);
     ApplyWorldSelectionSideEffects(
