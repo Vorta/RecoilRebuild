@@ -21884,7 +21884,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_rasterize_poly_with_span_list;
     - Group: engine.zrndr;
     - Model: source-faithful;
-    - Blocker: tier S blocked: same-session source pass replaced the two out-of-line BuildScanConvertEdges calls in zRndr_RasterizePolyWithSpanList with typed in-function edge walks and inlined fixed-point scanline conversion, preserving functional behavior and improving VC5SP3 evidence from 1867 to 1773 unmasked mismatches. Current VC5SP3 vc5_o2_ob0_md_facs target still fails with 1773 unmasked mismatches after 188 relocation-masked bytes and 1 trailing VC NOP, BN size 1990, VC5 size 1792. Remaining debt is the coherent zRndr_Draw.cpp scan-conversion source/codegen shape, especially prologue/frame and residual control-flow/codegen drift versus the BN 0xd48 EBP-frame body.
+    - Blocker: tier S blocked: same-session source pass added a narrow VC5-era frame-pointer-omission pragma around zRndr_RasterizePolyWithSpanList and explicit planeZ0/planeZ1/planeZ2 locals, matching the BN EBP-frame prologue shape and improving the VC5SP3 vc5_o2_ob0_md_facs compare from 1773 to 1741 unmasked mismatches. Current verify vc5 0x492000 still fails with 1741 unmasked mismatches after 188 relocation-masked bytes and 8 trailing VC NOPs, BN size 1990, VC5 size 1744. Remaining debt is coherent zRndr_Draw.cpp scan-conversion FPU/control-flow/codegen scheduling drift versus the BN EBP-frame body.
 
 - 0x4927d0:
   - [☑️] Reconstructed (Name: zRndr::SpanOcclusionRasterizeOccluderPoly)
@@ -22235,7 +22235,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_submit_poly_with_span_list;
     - Group: engine.zrndr;
     - Model: source-faithful;
-    - Blocker: tier S blocked by direct callee 0x492000 zRndr_RasterizePolyWithSpanList: same-session frontier for 0x499a20 recommends 0x492000, and same-session VC5SP3 checks show 0x499a20 still fails with 415 unmasked mismatches while 0x492000 remains tier B with 1872 unmasked mismatches from the zRndr_Draw.cpp scan-conversion codegen gap; owner/data for 0x499a20 remain accepted.
+    - Blocker: tier S blocked by direct callee 0x492000 zRndr_RasterizePolyWithSpanList: same-session frontier for 0x499a20 recommends 0x492000. Current VC5SP3 checks show 0x499a20 still fails with 415 unmasked mismatches after 76 relocation-masked bytes and 1 trailing VC NOP, while 0x492000 remains tier B with 1741 unmasked mismatches after the EBP-frame source-shape improvement; owner/data for 0x499a20 remain accepted.
 
 - 0x499c40:
   - [☑️] Reconstructed (Name: zRndr::SubmitTexturedPolyUniformAlphaOrShade)

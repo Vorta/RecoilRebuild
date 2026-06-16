@@ -961,12 +961,15 @@ available even when no groups are active.
     with zero unmasked data-byte mismatches. Tier S remains blocked, but a
     same-session 0x492000 source-shape pass replaced the two out-of-line
     `BuildScanConvertEdges` calls with typed in-function edge walks and
-    inlined fixed-point scanline conversion. Functional still passes and
-    `verify vc5 0x492000` improves from 1867 to 1773 unmasked mismatches after
-    188 relocation-masked bytes, BN size 1990, VC5 size 1792, and 1 trimmed VC
-    NOP. The remaining blocker is still the coherent zRndr_Draw.cpp
-    scan-conversion source/codegen shape, especially prologue/frame and
-    residual control-flow drift versus BN's 0xd48 EBP-frame body.
+    inlined fixed-point scanline conversion. A later focused source-shape pass
+    added a narrow VC5-era frame-pointer-omission pragma around this large
+    scan-conversion body and explicit plane-Z locals, matching the BN
+    EBP-frame prologue shape. Functional still passes and `verify vc5
+    0x492000` improves to 1741 unmasked mismatches after 188
+    relocation-masked bytes, BN size 1990, VC5 size 1744, and 8 trimmed VC
+    NOPs. The remaining blocker is still the coherent zRndr_Draw.cpp
+    scan-conversion FPU/control-flow/codegen scheduling drift versus BN's EBP
+    frame body.
     Same-session 0x492f00 zRndr_DrawFlatImmediate owner/data pass replaced the
     behavior-only intersection/sort body with the recovered zRndr_Draw.cpp
     fixed-point ScanConvertEdge table model: scan-convert-mode side selection,
