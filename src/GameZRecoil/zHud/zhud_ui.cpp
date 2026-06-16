@@ -15423,7 +15423,10 @@ void HudUiTextLabel::UpdateTextExtents() {
     }
 }
 
-// Reimplements 0x4ba740: HudUiPanel::HudUiPanel
+/**
+ * Reimplements 0x4ba740: HudUiPanel::HudUiPanel.
+ * Purpose: Construct a text panel with default font, color, wrapping, and bounds state.
+ */
 HudUiPanel::HudUiPanel(
     const char *text,
     int initX,
@@ -15439,26 +15442,18 @@ HudUiPanel::HudUiPanel(
     textColor1 = 0x00ffffff;
     textDirty = 1;
     hFont = GetStockObject(OEM_FIXED_FONT);
-    HudUiRect *const bounds = &textRect;
-    int zeroLeft = 0;
-    int zeroTop = 0;
-    bounds->left = zeroLeft;
     cachedText[0] = '\0';
     shadowEnabled = 0;
     textDirty = 1;
-    bounds->top = zeroTop;
     alignMode = 0;
     bkMode = TRANSPARENT;
     wrapRect.right = 0;
-    bounds->right = zeroLeft;
     wrapRect.left = 0;
     wrapRect.bottom = 0;
-    bounds->bottom = zeroTop;
     wrapRect.top = 0;
+    textRect = wrapRect;
     wordWrapEnabled = 0;
     unknown274 = 0;
-    shadowOffsetX = 0;
-    shadowOffsetY = 0;
     textHeightPx = 0;
     textWidthPx = 0;
 }
