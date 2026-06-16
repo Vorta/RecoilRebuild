@@ -141,7 +141,11 @@ available even when no groups are active.
     owners.
   - Current data blocker reported by `audit groups --summary`: 0x40a5b0.
     HudCmdDialog/HudCmd* table emission remains the known source-shape/data
-    blocker for dependent HudCmd dialog state entries.
+    blocker for dependent HudCmd dialog state entries. The latest pass replaced
+    placement-new member construction with explicit concrete/base constructor
+    calls and improved VC5 drift from 636 to 633 mismatches, but Data/B/S stay
+    blocked because VC5 still emits out-of-line concrete constructor calls
+    instead of BN's inline base-constructor plus generated table-store sequence.
   - Deferred verify-only addresses reported by `audit groups --summary`
     include 0x40cf60, 0x443310, 0x4b8b60, 0x41c400, 0x406d20, 0x4b5900,
     0x4138d0, and 0x4a6e80. Do not route those ahead of 0x40a5b0 or other
@@ -150,10 +154,11 @@ available even when no groups are active.
     captured in functional manifests, VC5 manifests, source docblocks, and plan
     markers; this temporary group should stay focused on current routing.
 - Next action:
-  - Run `python tools/recoil.py status 0x40a5b0 --lane binary` and
+  - Do not reselect 0x40a5b0 for another isolated constructor-shape probe
+    without new BN/source evidence for the larger real C++ constructor body.
+    Recheck `python tools/recoil.py status 0x40a5b0 --lane binary` and
     `python tools/recoil.py frontier 0x40a5b0 --depth 1 --lane binary` before
-    editing. Expand to the HudCmdDialog/HudCmd* owner/data slice rather than an
-    isolated dependent caller.
+    any future HudCmdDialog work.
   - Use focused status/frontier checks for the current owner/data anchor and
     source-shape guards over touched HUD files before editing.
   - Defer the Time::Tick and zNetwork::ShutdownSessionRuntime tier S blockers
