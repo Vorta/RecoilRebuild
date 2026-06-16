@@ -89,14 +89,16 @@ available even when no groups are active.
     texture-directory scans and inline recipe-count palette byte expression,
     improving the initial local compare from 303 to 302 unmasked mismatches
     after 108 relocation-masked bytes and 5 trimmed VC NOPs. Tier S remains
-    blocked by prologue/register/stack allocation drift. The zRndr palette
-    setters 0x499930, 0x499990, and 0x499a00 remain the next palette bridge
-    blockers.
+    blocked by prologue/register/stack allocation drift.
   - Same-session zRndr palette bridge owner/data slice accepted 0x499930,
-    0x499990, and 0x499a00 to tier B in the zRndr span source-file cluster.
+    0x499990, and 0x499a00 to tier S in the zRndr span source-file cluster.
     Current BN evidence confirmed active remap-key globals, the accepted zVideo
     palette-remap builder, and `_ftol` provider; source now records the
-    original zRndr_Span.cpp evidence and global addresses.
+    original zRndr_Span.cpp evidence and global addresses. Follow-up local
+    VC5SP3 coverage through `zrndr_palette_remap_key_selectors` passes all
+    three selectors with zero unmasked byte mismatches; 0x499990 now spells the
+    temporary recipe stores explicitly, and 0x499a00 uses the retail null
+    branch/early-return shape.
   - Cached-client-rect update-mask mini-owner covers 0x4a59a0, 0x4a59b0,
     and 0x443a40 plus `g_zVid_CachedClientRectUpdateMask` (data 56b564h). BN shows
     only the setter and query touch the zero-initialized mask. The namespace

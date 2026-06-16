@@ -3352,7 +3352,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4998a0` `zRndr_FillSpan565Solid` -> `src/GameZRecoil/zRndr/zRndr.cpp:6537`
 - `0x499930` `zRndr_SetPaletteRemapKey` -> `src/GameZRecoil/zRndr/zRndr.cpp:10076`
 - `0x499990` `zRndr_SetPaletteRemapKeyFromRgb01` -> `src/GameZRecoil/zRndr/zRndr.cpp:10102`
-- `0x499a00` `zRndr_SetPaletteShadeRecipeIndex` -> `src/GameZRecoil/zRndr/zRndr.cpp:10128`
+- `0x499a00` `zRndr_SetPaletteShadeRecipeIndex` -> `src/GameZRecoil/zRndr/zRndr.cpp:10132`
 - `0x499a20` `zRndr_SubmitPolyWithSpanList` -> `src/GameZRecoil/zRndr/zRndr.cpp:7680`
 - `0x499c40` `zRndr_SubmitTexturedPolyUniformAlphaOrShade` -> `src/GameZRecoil/zRndr/zRndr.cpp:7776`
 - `0x499ec0` `zRndr_SubmitTexturedPolyPerVertexAlphaOrShade` -> `src/GameZRecoil/zRndr/zRndr.cpp:7916`

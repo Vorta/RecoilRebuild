@@ -22190,7 +22190,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zRndr/zRndr_Span.cpp; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zRndr_SetPaletteRemapKey;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_set_palette_remap_key;
@@ -22203,7 +22203,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zRndr/zRndr_Span.cpp; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zRndr_SetPaletteRemapKeyFromRgb01;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_set_palette_remap_key_from_rgb01;
@@ -22216,7 +22216,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: GameZRecoil/zRndr/zRndr_Span.cpp; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zRndr_SetPaletteShadeRecipeIndex;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_set_palette_shade_recipe_index;
