@@ -35268,8 +35268,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: HudCmdDialogState::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudCmdDialogState::StaticInitAndRegisterAtExit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_static_init_and_register_at_exit;
@@ -35281,21 +35281,21 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: HudCmdDialogState::StaticInit)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudCmdDialogState::StaticInit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_static_init;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked: data gate accepted for typed BSS g_HudCmdDialogState at 0x4e5df0, so entry is tier B; VC5SP3 hud_cmd_dialog_state_lifecycle still fails StaticInit with 16 unmasked mismatches after 4 relocation-masked bytes and 12 trimmed VC NOP bytes because VC5 emits placement-new null-check/call shape while BN tail-jumps to the constructor.
 
 - 0x40bc40:
   - [✅] Reconstructed (Name: HudCmdDialogState::RegisterAtExit)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudCmdDialogState::RegisterAtExit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_register_at_exit;
@@ -35307,27 +35307,27 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: HudCmdDialogState::AtExitDestructor)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudCmdDialogState::AtExitDestructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_at_exit_destructor;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: Data reimplemented remains ❌ for touched global g_HudCmdDialogState; B/S promotion waits for accepted global data shape despite clean VC5 bytes for 0x40bc50
+    - Blocker: none
 
 - 0x40bc60:
   - [✅] Reconstructed (Name: HudCmdDialogState::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudCmdDialogState::Constructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_constructor;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked: data gate accepted for typed BSS g_HudCmdDialogState at 0x4e5df0, so entry is tier B; VC5SP3 hud_cmd_dialog_state_lifecycle still fails HudCmdDialogState::Constructor with 7 unmasked mismatches after 4 relocation-masked bytes because VC5 stores m_dialog before the vptr while BN writes the vptr first, then zeros m_dialog.
 
 - 0x40bc90:
   - [☑️] Reconstructed (Name: HudCmdDialogState::DestructorCore)
@@ -46996,13 +46996,13 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: RecoilApp_StateQueue; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: RecoilApp_StateQueueBlock::InitFromCursor;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_app_state_queue_block_init_from_cursor;
     - Group: app.recoil_app.state_queue;
     - Model: source-faithful;
-    - Blocker: tier S blocked: VC5SP3 recoil_app_state_queue compare for RecoilApp_StateQueueBlock::InitFromCursor remains at 17 unmasked mismatches, 0 relocation-masked bytes, and 14 trimmed VC NOPs. Same-session profile sweep across compiling /MD profiles vc5_o2_ob0_md_facs, vc5_o2_ob1_md_facs, vc5_o2_ob1_md_gx_facs, vc5_o2_ob2_md_facs, and vc5_o2_ob2_md_gx_facs all stayed at the same mismatch count; non-/MD profiles fail because _AFXDLL requires /MD. Source-order trials worsened output and were reverted; remaining drift is stable field-store scheduling/register lifetime around chunkBaseSlot, computed chunk end, and cursor assignment.
+    - Blocker: none
 
 ## G036. RecoilApp intro, attract, mission, and leave-network states
 
