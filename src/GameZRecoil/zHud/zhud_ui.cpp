@@ -8698,24 +8698,62 @@ void *__stdcall HudUiZrdWidget::DeleteChildIfPresent(
  * Purpose: release owned ZRD widget panels and alternate images before compiler-generated member cleanup.
  */
 HudUiZrdWidget::~HudUiZrdWidget() {
-    for (HudUiPanel **labelIt = labelPanels.begin; labelIt != labelPanels.end; ++labelIt) {
-        *labelIt = (HudUiPanel *)(DeleteChildIfPresent(*labelIt));
+    {
+        class DeleteChildIfPresentFunctor {
+        public:
+            char value;
+
+            /**
+             * Recovered from 0x4b50c0: VC5 keeps a one-byte local unary functor
+             * around the first label-panel cleanup loop and delegates the child
+             * deletion to the address-backed helper at 0x4b52f0.
+             * Purpose: preserve the original first label-panel cleanup source shape.
+             */
+            void * operator()(void *childWidgetOrNull) {
+                return HudUiZrdWidget::DeleteChildIfPresent(childWidgetOrNull);
+            }
+        };
+
+        DeleteChildIfPresentFunctor deleteChildIfPresent;
+        DeleteChildIfPresentFunctor deleteChildIfPresentCopy(deleteChildIfPresent);
+        HudUiPanel **labelIt = labelPanels.begin;
+        HudUiPanel **labelOut = labelPanels.begin;
+        HudUiPanel **labelEnd = labelPanels.end;
+        while (labelIt != labelEnd) {
+            *labelOut = (HudUiPanel *)(deleteChildIfPresentCopy(*labelIt));
+            ++labelIt;
+            ++labelOut;
+        }
     }
 
-    for (HudUiPanel **rolloverIt = rolloverLabelPanels.begin; rolloverIt != rolloverLabelPanels.end; ++rolloverIt) {
-        if (*rolloverIt != 0) {
-            (*rolloverIt)->ScalarDeletingDestructor(1);
-        }
+    {
+        HudUiPanel **rolloverIt = rolloverLabelPanels.begin;
+        HudUiPanel **rolloverOut = rolloverLabelPanels.begin;
+        HudUiPanel **rolloverEnd = rolloverLabelPanels.end;
+        while (rolloverIt != rolloverEnd) {
+            if (*rolloverIt != 0) {
+                (*rolloverIt)->ScalarDeletingDestructor(1);
+            }
 
-        *rolloverIt = 0;
+            *rolloverOut = 0;
+            ++rolloverIt;
+            ++rolloverOut;
+        }
     }
 
-    for (HudUiPanel **activateIt = activateLabelPanels.begin; activateIt != activateLabelPanels.end; ++activateIt) {
-        if (*activateIt != 0) {
-            (*activateIt)->ScalarDeletingDestructor(1);
-        }
+    {
+        HudUiPanel **activateIt = activateLabelPanels.begin;
+        HudUiPanel **activateOut = activateLabelPanels.begin;
+        HudUiPanel **activateEnd = activateLabelPanels.end;
+        while (activateIt != activateEnd) {
+            if (*activateIt != 0) {
+                (*activateIt)->ScalarDeletingDestructor(1);
+            }
 
-        *activateIt = 0;
+            *activateOut = 0;
+            ++activateIt;
+            ++activateOut;
+        }
     }
 
     labelPanels.EraseRange(
@@ -8732,23 +8770,31 @@ HudUiZrdWidget::~HudUiZrdWidget() {
     );
 
     if (defaultImage != 0 && defaultImage != image) {
-        zVid_Image::ReleaseIfNotDefault(defaultImage);
-        defaultImage = 0;
+        defaultImage =
+            (zVidImagePartial *)(unsigned int)zVid_Image::ReleaseIfNotDefault(
+                defaultImage
+            );
     }
 
     if (activateImage != 0 && activateImage != image) {
-        zVid_Image::ReleaseIfNotDefault(activateImage);
-        activateImage = 0;
+        activateImage =
+            (zVidImagePartial *)(unsigned int)zVid_Image::ReleaseIfNotDefault(
+                activateImage
+            );
     }
 
     if (rolloverImage != 0 && rolloverImage != image) {
-        zVid_Image::ReleaseIfNotDefault(rolloverImage);
-        rolloverImage = 0;
+        rolloverImage =
+            (zVidImagePartial *)(unsigned int)zVid_Image::ReleaseIfNotDefault(
+                rolloverImage
+            );
     }
 
     if (disabledImage != 0 && disabledImage != image) {
-        zVid_Image::ReleaseIfNotDefault(disabledImage);
-        disabledImage = 0;
+        disabledImage =
+            (zVidImagePartial *)(unsigned int)zVid_Image::ReleaseIfNotDefault(
+                disabledImage
+            );
     }
 
     if (image != 0 && ownsImage == 0) {
