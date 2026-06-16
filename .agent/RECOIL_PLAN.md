@@ -35465,13 +35465,13 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x40c9c0:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Lighting::InitFromOptions)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Reimplemented [C]
+    - Name: HudUiOptionsPanel_Lighting::InitFromOptions;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_options_panel_lighting_init_from_options;
     - Group: ui.zhud;
     - Model: pending;
     - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt

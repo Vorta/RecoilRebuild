@@ -361,6 +361,7 @@ extern "C" int recoil_app_mp_exit_dialog_state_on_enter_smoke(void);
 extern "C" int recoil_app_mp_exit_dialog_state_on_deactivate_smoke(void);
 extern "C" int recoil_app_mp_exit_dialog_state_on_try_become_current_smoke(void);
 extern "C" int recoil_app_mp_exit_dialog_state_on_update_should_quit_smoke(void);
+extern "C" int zhud_options_panel_lighting_init_from_options_smoke(void);
 extern "C" int zhud_options_dialog_constructor_smoke(void);
 extern "C" int zhud_options_dialog_destructor_core_smoke(void);
 extern "C" int zhud_options_dialog_scalar_deleting_destructor_smoke(void);
@@ -10600,6 +10601,8 @@ int main(int argc, char **argv) {
          recoil_app_mp_exit_dialog_state_on_try_become_current_smoke},
         {"recoil_app_mp_exit_dialog_state_on_update_should_quit_smoke",
          recoil_app_mp_exit_dialog_state_on_update_should_quit_smoke},
+        {"zhud_options_panel_lighting_init_from_options_smoke",
+         zhud_options_panel_lighting_init_from_options_smoke},
         {"zhud_options_dialog_constructor_smoke", zhud_options_dialog_constructor_smoke},
         {"zhud_options_dialog_destructor_core_smoke",
          zhud_options_dialog_destructor_core_smoke},
