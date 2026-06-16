@@ -9793,20 +9793,31 @@ void __fastcall zRndr_LensFlare_DrawSampleStageClipped(
 
     float left = sampleCenter->x - sampleRadius;
     float top = sampleCenter->y - sampleRadius;
-    float right = sampleCenter->x + sampleRadius;
-    float bottom = sampleCenter->y + sampleRadius;
+    float right = sampleRadius + sampleCenter->x;
+    float bottom = sampleRadius + sampleCenter->y;
 
     float clipLeft;
     float clipTop;
     float clipRight;
     float clipBottom;
     if (clipRect != 0) {
-        clipLeft = (float)(clipRect->left);
-        clipTop = (float)(clipRect->top);
         clipRight = (float)(clipRect->right);
+        if (left > clipRight - 2.0f) {
+            return;
+        }
+
         clipBottom = (float)(clipRect->bottom);
-        if (left > clipRight - 2.0f || top > clipBottom - 2.0f || right < clipLeft + 1.0f ||
-            bottom < clipTop + 1.0f) {
+        if (top > clipBottom - 2.0f) {
+            return;
+        }
+
+        clipLeft = (float)(clipRect->left);
+        if (right < clipLeft + 1.0f) {
+            return;
+        }
+
+        clipTop = (float)(clipRect->top);
+        if (bottom < clipTop + 1.0f) {
             return;
         }
     } else {
@@ -9814,7 +9825,19 @@ void __fastcall zRndr_LensFlare_DrawSampleStageClipped(
         clipTop = 0.0f;
         clipRight = (float)((unsigned int)(zRndr::g_activeRegionWidth));
         clipBottom = (float)((unsigned int)(zRndr::g_activeRegionHeight));
-        if (left > clipRight - 2.0f || top > clipBottom - 2.0f || right < 1.0f || bottom < 1.0f) {
+        if (left > clipRight - 2.0f) {
+            return;
+        }
+
+        if (top > clipBottom - 2.0f) {
+            return;
+        }
+
+        if (right < 1.0f) {
+            return;
+        }
+
+        if (bottom < 1.0f) {
             return;
         }
     }
@@ -9847,24 +9870,35 @@ void __fastcall zRndr_LensFlare_DrawSampleStageClipped(
         bottom = bottomMax;
     }
 
-    zVec3 projectedVerts[4] = {
-        {right, bottom, 0.5f},
-        {right, top, 0.5f},
-        {left, top, 0.5f},
-        {left, bottom, 0.5f},
-    };
-    zVec2 triUVs[4] = {
-        {uRight, vBottom},
-        {uRight, vTop},
-        {uLeft, vTop},
-        {uLeft, vBottom},
-    };
+    zVec3 projectedVerts[4];
+    projectedVerts[0].x = right;
+    projectedVerts[0].y = bottom;
+    projectedVerts[1].x = right;
+    projectedVerts[1].y = top;
+    projectedVerts[2].x = left;
+    projectedVerts[2].y = top;
+    projectedVerts[3].x = left;
+    projectedVerts[3].y = bottom;
+
+    zVec2 triUVs[4];
+    triUVs[0].x = uRight;
+    triUVs[0].y = vBottom;
+    triUVs[1].x = uRight;
+    triUVs[1].y = vTop;
+    triUVs[2].x = uLeft;
+    triUVs[2].y = vTop;
+    triUVs[3].x = uLeft;
+    triUVs[3].y = vBottom;
 
     if (g_zVideo_ActiveRendererPath != 0) {
-        zVideo_SubmitPolyRenderClassProc submitPoly = g_zVideo_pfnSubmitPolyRenderClass;
+        projectedVerts[0].z = 0.5f;
+        projectedVerts[1].z = 0.5f;
+        projectedVerts[2].z = 0.5f;
+        projectedVerts[3].z = 0.5f;
+
         zVideo_RenderClass *renderClass =
             stageTexDirEntry != 0 ? (zVideo_RenderClass *)(stageTexDirEntry->texture) : 0;
-        submitPoly(
+        g_zVideo_pfnSubmitPolyRenderClass(
             (zVideo_XyzVertex *)(projectedVerts),
             (zVideo_TexCoord *)(triUVs),
             4,
