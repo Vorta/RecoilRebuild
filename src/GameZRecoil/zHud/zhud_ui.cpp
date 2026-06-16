@@ -5162,8 +5162,11 @@ void HudUiElement::GetTextRect(
     outRect->top = rectY;
 }
 
-// Reimplements 0x404d10: HudUiElement::HitTestTrue (D:\Proj\Battlesport\hud.cpp)
-// BN returns via AL only (`mov al, 1`); ignore hit-test coordinates.
+/**
+ * Reimplements 0x404d10: HudUiElement::HitTestTrue.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: accept all coordinates for default HUD elements.
+ */
 unsigned char HudUiElement::HitTestTrue(
     int px,
     int py

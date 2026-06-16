@@ -37976,16 +37976,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x404d10:
   - [✅] Reconstructed (Name: HudUiElement::HitTestTrue)
-  - [❌] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
-  - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Source dependencies satisfied
+  - [✅] Source owner (Kind: class; Parent: HudUiElement; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiElement::HitTestTrue;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_element_hit_test_true;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
+    - Model: source-faithful;
+    - Blocker: tier S byte evidence exists via hud_ui_p0_leaves with zero unmasked mismatches, but pure tier S promotion is deferred until global authored owner/data gates are clear
 
 - 0x404d20:
   - [✅] Reconstructed (Name: HudUiElement::SetVisible)

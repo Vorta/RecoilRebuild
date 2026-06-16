@@ -278,6 +278,7 @@ extern "C" int zhud_element_draw_base_smoke(void);
 extern "C" int zhud_element_update_smoke(void);
 extern "C" int zhud_element_visible_smoke(void);
 extern "C" int zhud_element_position_mutators_smoke(void);
+extern "C" int zhud_element_hit_test_true_smoke(void);
 extern "C" int zhud_circle_constructor_and_hit_test_smoke(void);
 extern "C" int zhud_circle_draw_dirty_smoke(void);
 extern "C" int zhud_widget_constructor_smoke(void);
@@ -10030,6 +10031,15 @@ extern "C" int zhud_element_position_mutators_smoke(void) {
     return pos && xOnly && yOnly ? 0 : 1;
 }
 
+extern "C" int zhud_element_hit_test_true_smoke(void) {
+    HudUiElement element{};
+
+    return element.HitTestTrue(-100, 200) == 1 &&
+                   element.HitTestTrue(999, -999) == 1
+               ? 0
+               : 1;
+}
+
 extern "C" int zhud_bar_and_meter_constructor_smoke(void) {
     const unsigned int oldMask = g_HudUi_InvalidateMask;
     g_HudUi_InvalidateMask = 0x40;
@@ -10507,6 +10517,8 @@ int main(int argc, char **argv) {
         {"zhud_element_visible_smoke", zhud_element_visible_smoke},
         {"zhud_element_position_mutators_smoke",
          zhud_element_position_mutators_smoke},
+        {"zhud_element_hit_test_true_smoke",
+         zhud_element_hit_test_true_smoke},
         {"zhud_circle_constructor_and_hit_test_smoke",
          zhud_circle_constructor_and_hit_test_smoke},
         {"zhud_circle_draw_dirty_smoke", zhud_circle_draw_dirty_smoke},
