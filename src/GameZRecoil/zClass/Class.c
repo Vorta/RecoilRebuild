@@ -72,7 +72,13 @@ namespace {
         return priority >= 0 && priority < 6;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original static helper observed in BN Switch.c callers 0x452920 and
+     * 0x452970; no standalone retail function is known.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Switch.c.
+     * Purpose: share the Switch.c null parent, child, and class-data checks
+     * before routing through the data-driven zClass child-link lists.
+     */
     int ValidateParentChildForSwitch(
         zClass_NodePartial * parent,
         zClass_NodePartial * child,
@@ -1590,7 +1596,12 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x449af0: zClass_Class::gwNodeGetWorldChild
+    /**
+     * Reimplements 0x449af0: zClass_Class::gwNodeGetWorldChild.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
+     * Purpose: walk a node's single-parent chain through listA links and
+     * return the child directly owned by the world node.
+     */
     zClass_NodePartial *__fastcall gwNodeGetWorldChild(
         zClass_NodePartial * node
     ) {
@@ -1620,9 +1631,13 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x449b40: zClass_Class::SetSingleParentFlagRecursive
-    int __fastcall
-    SetSingleParentFlagRecursive(
+    /**
+     * Reimplements 0x449b40: zClass_Class::SetSingleParentFlagRecursive.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
+     * Purpose: propagate the single-parent flag through a data-driven zClass
+     * child subtree when listA ownership count changes.
+     */
+    int __fastcall SetSingleParentFlagRecursive(
         zClass_NodePartial * node,
         int setFlag
     ){
@@ -1649,9 +1664,14 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x452920: zClass_Class::AddChildValidated
-    int __fastcall
-    AddChildValidated(
+    /**
+     * Reimplements 0x452920: zClass_Class::AddChildValidated.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Switch.c; current
+     * source location remains zClass/Class.c for this cleanup-only slice.
+     * Purpose: validate Switch.c parent/child node state, then link the child
+     * through the generic zClass listA/listB ownership routine.
+     */
+    int __fastcall AddChildValidated(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
     ){
@@ -1671,9 +1691,14 @@ namespace zClass_Class {
         );
     }
 
-    // Reimplements 0x452970: zClass_Class::RemoveChildValidated
-    int __fastcall
-    RemoveChildValidated(
+    /**
+     * Reimplements 0x452970: zClass_Class::RemoveChildValidated.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Switch.c; current
+     * source location remains zClass/Class.c for this cleanup-only slice.
+     * Purpose: validate Switch.c parent/child node state, then unlink the child
+     * through the generic zClass listA/listB ownership routine.
+     */
+    int __fastcall RemoveChildValidated(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
     ){
@@ -1693,10 +1718,13 @@ namespace zClass_Class {
         );
     }
 
-    // Reimplements 0x4483f0: zClass_Class::AddChild
-    // (GameZRecoil/zClass/Class.c)
-    int __fastcall
-    AddChild(
+    /**
+     * Reimplements 0x4483f0: zClass_Class::AddChild.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
+     * Purpose: dispatch child attachment by parent classId across the
+     * data-driven zClass node subsystem.
+     */
+    int __fastcall AddChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
     ){
@@ -1782,9 +1810,13 @@ namespace zClass_Class {
         }
     }
 
-    // Reimplements 0x448570: zClass_Class::RemoveChild
-    int __fastcall
-    RemoveChild(
+    /**
+     * Reimplements 0x448570: zClass_Class::RemoveChild.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
+     * Purpose: dispatch child removal by parent classId across the data-driven
+     * zClass node subsystem.
+     */
+    int __fastcall RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
     ){
@@ -1876,9 +1908,13 @@ namespace zClass_Class {
         }
     }
 
-    // Reimplements 0x4484d0: zClass_Class::AddChildGeneric
-    int __fastcall
-    AddChildGeneric(
+    /**
+     * Reimplements 0x4484d0: zClass_Class::AddChildGeneric.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
+     * Purpose: append child and parent references to the generic listB/listA
+     * node-link arrays and queue parent transform/bounds updates.
+     */
+    int __fastcall AddChildGeneric(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
     ){
@@ -1917,9 +1953,13 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x448660: zClass_Class::RemoveChildGeneric
-    int __fastcall
-    RemoveChildGeneric(
+    /**
+     * Reimplements 0x448660: zClass_Class::RemoveChildGeneric.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
+     * Purpose: remove matching child and parent references from generic
+     * listB/listA node-link arrays and queue parent transform/bounds updates.
+     */
+    int __fastcall RemoveChildGeneric(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
     ){
