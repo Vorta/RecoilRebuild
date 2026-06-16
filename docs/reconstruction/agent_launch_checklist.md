@@ -79,6 +79,11 @@ python tools/recoil.py plan group app.recoil_app --lane binary
 python tools/recoil.py status 0xNNNNNN
 ```
 
+`plan next --lane binary` prints `primary`, `secondary`, and `tertiary`
+ranked owner/work scopes. The parent agent should use those sections to
+schedule non-overlapping subagent handoffs after checking active WIP and
+allowed/forbidden paths.
+
 Use `plan reclassify` for existing authored/provider entries. Use
 `python tools/recoil.py plan add-provider-boundary ... --dry-run` only when BN
 proves a provider/compiler/import boundary is absent from the plan. Do not
@@ -118,8 +123,10 @@ sentence with no evidence dump or command output unless requested.
 
 Normal binary-lane selection is owner-first after reconstruction/dependency
 readiness: unresolved `Source owner` markers come before isolated
-implementation or tier `C` behavior work, then `Data reimplemented`, and only
-then pure tier `S` verification.
+implementation or tier `C` behavior work, then `Data reimplemented`. Pure tier
+`S` verification is globally deferred until every authored `Source owner`
+marker is `✅` and every authored `Data reimplemented` marker is `✅` or `❎`,
+unless the user explicitly directs tier `S` work.
 
 For initialized table/data blockers, `python tools/recoil.py verify vc5
 0xNNNNNN` may resolve a `data_symbols` manifest entry and emit
