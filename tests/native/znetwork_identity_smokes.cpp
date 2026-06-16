@@ -7,6 +7,14 @@
 namespace {
 int g_closeCalls;
 int g_releaseCalls;
+int g_getCapsCalls;
+DWORD g_getCapsFlags;
+HRESULT g_getCapsResult;
+DWORD g_getCapsReturnedFlags;
+int g_openCalls;
+zNetworkDPlaySessionDesc *g_openDescPtr;
+DWORD g_openFlags;
+HRESULT g_openResult;
 
 HRESULT __stdcall FakeDirectPlayClose(
     zNetwork_DPlay4 *
@@ -22,6 +30,30 @@ ULONG __stdcall FakeDirectPlayRelease(
     return 17;
 }
 
+HRESULT __stdcall FakeDirectPlayGetCaps(
+    zNetwork_DPlay4 *,
+    zNetworkDPlayCaps *caps,
+    DWORD flags
+) {
+    ++g_getCapsCalls;
+    g_getCapsFlags = flags;
+    if (caps != 0) {
+        caps->dwFlags = g_getCapsReturnedFlags;
+    }
+    return g_getCapsResult;
+}
+
+HRESULT __stdcall FakeDirectPlayOpen(
+    zNetwork_DPlay4 *,
+    zNetworkDPlaySessionDesc *sessionDesc,
+    DWORD flags
+) {
+    ++g_openCalls;
+    g_openDescPtr = sessionDesc;
+    g_openFlags = flags;
+    return g_openResult;
+}
+
 int __fastcall TestPacketHandlerA(
     int,
     zNetworkPacketHeader *
@@ -34,6 +66,44 @@ int __fastcall TestPacketHandlerB(
     zNetworkPacketHeader *
 ) {
     return 0;
+}
+
+void ResetDirectPlayScenarioState() {
+    g_closeCalls = 0;
+    g_releaseCalls = 0;
+    g_getCapsCalls = 0;
+    g_getCapsFlags = 0;
+    g_getCapsResult = 0;
+    g_getCapsReturnedFlags = 0;
+    g_openCalls = 0;
+    g_openDescPtr = 0;
+    g_openFlags = 0;
+    g_openResult = 0;
+    g_zNetwork_pDirectPlay4 = 0;
+    g_zNetwork_ActiveProviderIsTcpIp = 0;
+    g_zNetwork_TcpIpAsyncSendEnabled = 0;
+    g_zNetwork_DPlayCaps = zNetworkDPlayCaps();
+    g_zNetwork_AppGuid = 0;
+    g_zNetwork_CurrentSessionDescCache = 0;
+    memset(
+        g_zNetwork_SessionNameCache,
+        0,
+        sizeof(g_zNetwork_SessionNameCache)
+    );
+}
+
+void BuildMinimalDirectPlayVtable(
+    void **vtable
+) {
+    memset(
+        vtable,
+        0,
+        sizeof(void *) * 25
+    );
+    vtable[2] = (void *)(&FakeDirectPlayRelease);
+    vtable[4] = (void *)(&FakeDirectPlayClose);
+    vtable[14] = (void *)(&FakeDirectPlayGetCaps);
+    vtable[24] = (void *)(&FakeDirectPlayOpen);
 }
 } // namespace
 
@@ -117,6 +187,170 @@ extern "C" int znetwork_dplay_report_error_smoke(void) {
                : 2;
 }
 
+extern "C" int znetwork_dplay_query_caps_configure_send_mode_smoke(void) {
+    void *vtable[25];
+    BuildMinimalDirectPlayVtable(vtable);
+    struct FakeDirectPlay {
+        void **vtable;
+    } fake = {vtable};
+
+    ResetDirectPlayScenarioState();
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&fake);
+    if (zNetworkDPlay::QueryCapsAndConfigureSendMode() != 1 ||
+        g_getCapsCalls != 1 ||
+        g_getCapsFlags != 1 ||
+        g_zNetwork_DPlayCaps.dwSize != sizeof(zNetworkDPlayCaps)) {
+        return 1;
+    }
+
+    ResetDirectPlayScenarioState();
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&fake);
+    g_zNetwork_ActiveProviderIsTcpIp = 1;
+    g_zNetwork_TcpIpAsyncSendEnabled = 1;
+    g_getCapsReturnedFlags = 0x40;
+    if (zNetworkDPlay::QueryCapsAndConfigureSendMode() != 1 ||
+        g_zNetwork_TcpIpAsyncSendEnabled != 0) {
+        return 2;
+    }
+
+    ResetDirectPlayScenarioState();
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&fake);
+    g_zNetwork_ActiveProviderIsTcpIp = 1;
+    g_zNetwork_TcpIpAsyncSendEnabled = 1;
+    g_getCapsReturnedFlags = 0x10040;
+    if (zNetworkDPlay::QueryCapsAndConfigureSendMode() != 1 ||
+        g_zNetwork_TcpIpAsyncSendEnabled != 1) {
+        return 3;
+    }
+
+    ResetDirectPlayScenarioState();
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&fake);
+    g_zNetwork_ActiveProviderIsTcpIp = 1;
+    g_getCapsReturnedFlags = 0;
+    if (zNetworkDPlay::QueryCapsAndConfigureSendMode() != 0) {
+        return 4;
+    }
+
+    ResetDirectPlayScenarioState();
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&fake);
+    g_getCapsResult = -1;
+    return zNetworkDPlay::QueryCapsAndConfigureSendMode() == 0 ? 0 : 5;
+}
+
+extern "C" int znetwork_dplay_create_session_from_status_fields_smoke(void) {
+    void *vtable[25];
+    BuildMinimalDirectPlayVtable(vtable);
+    struct FakeDirectPlay {
+        void **vtable;
+    } fake = {vtable};
+
+    GUID appGuid = {
+        0x76543210,
+        0xba98,
+        0xfedc,
+        {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef}
+    };
+
+    ResetDirectPlayScenarioState();
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&fake);
+    g_zNetwork_AppGuid = &appGuid;
+
+    zNetworkDPlaySessionDescCache *const oldCache =
+        (zNetworkDPlaySessionDescCache *)(malloc(sizeof(zNetworkDPlaySessionDescCache)));
+    memset(
+        oldCache,
+        0,
+        sizeof(zNetworkDPlaySessionDescCache)
+    );
+    g_zNetwork_CurrentSessionDescCache = oldCache;
+
+    zNetworkSessionDescStatusFields fields = {};
+    fields.eventCode = 3;
+    fields.statusFlags = 5;
+    fields.valueOrTime = 7;
+    fields.auxParam = 11;
+    fields.maxPlayers = 8;
+    strcpy(
+        fields.sessionNameBuf,
+        "Arena"
+    );
+
+    g_getCapsReturnedFlags = 0x10040;
+    const int success = zNetwork_DPlay::CreateSessionFromStatusFields(&fields);
+    zNetworkDPlaySessionDescCache *const cache = g_zNetwork_CurrentSessionDescCache;
+    const int successOk =
+        success == 1 &&
+        cache != 0 &&
+        cache != oldCache &&
+        g_openCalls == 1 &&
+        g_openDescPtr == &cache->desc &&
+        g_openFlags == 2 &&
+        strcmp(g_zNetwork_SessionNameCache, "Arena") == 0 &&
+        cache->desc.dwSize == sizeof(zNetworkDPlaySessionDesc) &&
+        cache->desc.dwFlags == 0x44 &&
+        memcmp(
+            &cache->desc.guidApplication,
+            &appGuid,
+            sizeof(cache->desc.guidApplication)
+        ) == 0 &&
+        cache->desc.dwMaxPlayers == 8 &&
+        cache->desc.dwUser1 == 3 &&
+        cache->desc.dwUser2 == 5 &&
+        cache->desc.dwUser3 == 7 &&
+        cache->desc.dwUser4 == 11 &&
+        strcmp(cache->desc.lpszSessionNameA, "Arena") == 0;
+
+    free(cache->desc.lpszSessionNameA);
+    free(cache);
+    g_zNetwork_CurrentSessionDescCache = 0;
+
+    ResetDirectPlayScenarioState();
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&fake);
+    g_zNetwork_AppGuid = &appGuid;
+    g_openResult = (HRESULT)(0x88770118);
+    strcpy(
+        fields.sessionNameBuf,
+        "Cancel"
+    );
+    const int cancelResult = zNetwork_DPlay::CreateSessionFromStatusFields(&fields);
+    zNetworkDPlaySessionDescCache *leakedCache =
+        (zNetworkDPlaySessionDescCache *)(
+            (unsigned char *)(g_openDescPtr) -
+            offsetof(zNetworkDPlaySessionDescCache, desc)
+        );
+    free(g_openDescPtr->lpszSessionNameA);
+    free(leakedCache);
+
+    ResetDirectPlayScenarioState();
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&fake);
+    g_zNetwork_AppGuid = &appGuid;
+    g_zNetwork_ActiveProviderIsTcpIp = 1;
+    g_getCapsReturnedFlags = 0;
+    g_openResult = 0;
+    const int capsRejected = zNetwork_DPlay::CreateSessionFromStatusFields(&fields);
+    leakedCache =
+        (zNetworkDPlaySessionDescCache *)(
+            (unsigned char *)(g_openDescPtr) -
+            offsetof(zNetworkDPlaySessionDescCache, desc)
+        );
+    free(g_openDescPtr->lpszSessionNameA);
+    free(leakedCache);
+
+    if (!successOk) {
+        return 2;
+    }
+    if (cancelResult != 0) {
+        return 3;
+    }
+    if (capsRejected != 0) {
+        return 4;
+    }
+    if (g_closeCalls != 1) {
+        return 5;
+    }
+    return 0;
+}
+
 extern "C" int znetwork_unregister_packet_handler_smoke(void) {
     zNetworkDispatchHandlerListNode sentinel = {};
     zNetworkDispatchHandlerListNode first = {};
@@ -185,7 +419,7 @@ extern "C" int znetwork_clear_enumerated_session_list_smoke(void) {
     std::memset(second, 0, sizeof(zArchiveListNode));
     std::memset(firstDesc, 0, sizeof(zNetworkDPlaySessionDesc));
     std::memset(secondDesc, 0, sizeof(zNetworkDPlaySessionDesc));
-    firstDesc->reservedData = std::malloc(4);
+    firstDesc->dwReserved1 = (DWORD)(std::malloc(4));
 
     first->payload = firstDesc;
     first->next = second;
@@ -390,7 +624,7 @@ extern "C" int znetwork_shutdown_session_runtime_smoke(void) {
     std::memset(enumeratedList, 0, sizeof(zArchiveList));
     std::memset(sessionNode, 0, sizeof(zArchiveListNode));
     std::memset(sessionDesc, 0, sizeof(zNetworkDPlaySessionDesc));
-    sessionDesc->reservedData = std::malloc(4);
+    sessionDesc->dwReserved1 = (DWORD)(std::malloc(4));
     sessionNode->payload = sessionDesc;
     sessionNode->next = sessionNode;
     sessionNode->prev = sessionNode;

@@ -2768,12 +2768,12 @@ extern "C" int net_session_browser_dialog_refresh_session_list_smoke(void) {
 
     zNetworkDPlaySessionDescCache session0 = {};
     zNetworkDPlaySessionDescCache session1 = {};
-    session0.desc.maxPlayers = 8;
-    session0.desc.currentPlayers = 2;
-    session0.desc.sessionName = const_cast<char *>("alpha");
-    session1.desc.maxPlayers = 12;
-    session1.desc.currentPlayers = 5;
-    session1.desc.sessionName = const_cast<char *>("bravo");
+    session0.desc.dwMaxPlayers = 8;
+    session0.desc.dwCurrentPlayers = 2;
+    session0.desc.lpszSessionNameA = const_cast<char *>("alpha");
+    session1.desc.dwMaxPlayers = 12;
+    session1.desc.dwCurrentPlayers = 5;
+    session1.desc.lpszSessionNameA = const_cast<char *>("bravo");
 
     zArchiveListNode node0 = {};
     zArchiveListNode node1 = {};
@@ -4895,7 +4895,7 @@ extern "C" int net_init_from_zrd_smoke(void) {
     playerList.sentinelNode = &sentinel;
     playerList.count = 1;
     zNetworkDPlaySessionDescCache session{};
-    session.desc.maxPlayers = 8;
+    session.desc.dwMaxPlayers = 8;
 
     HudUiTriplet triplet{};
     triplet.Constructor();
@@ -5063,12 +5063,12 @@ extern "C" int gamenet_host_update_session_status_fields_smoke(void) {
     zNetwork_DPlay4 dplay{&kDPlayVtable};
     zNetworkDPlaySessionDescCache session{};
     char sessionName[0x5c] = "mission";
-    session.desc.sessionName = sessionName;
-    session.desc.maxPlayers = 8;
-    session.desc.customEventCode = 1;
-    session.desc.customStatusFlags = 2;
-    session.desc.customValueOrTime = 3;
-    session.desc.customAuxParam = 4;
+    session.desc.lpszSessionNameA = sessionName;
+    session.desc.dwMaxPlayers = 8;
+    session.desc.dwUser1 = 1;
+    session.desc.dwUser2 = 2;
+    session.desc.dwUser3 = 3;
+    session.desc.dwUser4 = 4;
     g_zNetwork_pDirectPlay4 = &dplay;
     g_zNetwork_CurrentSessionDescCache = &session;
     g_zNetwork_IsHostFlag = 0;
@@ -5076,22 +5076,22 @@ extern "C" int gamenet_host_update_session_status_fields_smoke(void) {
     g_setSessionDescResult = 0;
 
     if (GameNet::HostUpdateSessionDescStatusFields(10, 13, 12, 11) != 0 ||
-        g_setSessionDescCalls != 0 || session.desc.customEventCode != 1) {
+        g_setSessionDescCalls != 0 || session.desc.dwUser1 != 1) {
         return 1;
     }
 
     g_zNetwork_IsHostFlag = 1;
     if (GameNet::HostUpdateSessionDescStatusFields(10, 13, 12, 11) != 1 ||
-        g_setSessionDescCalls != 1 || session.desc.customEventCode != 10 ||
-        session.desc.customStatusFlags != 11 || session.desc.customValueOrTime != 12 ||
-        session.desc.customAuxParam != 13 || session.desc.maxPlayers != 8 ||
+        g_setSessionDescCalls != 1 || session.desc.dwUser1 != 10 ||
+        session.desc.dwUser2 != 11 || session.desc.dwUser3 != 12 ||
+        session.desc.dwUser4 != 13 || session.desc.dwMaxPlayers != 8 ||
         std::strcmp(sessionName, "mission") != 0) {
         return 2;
     }
 
     g_setSessionDescResult = static_cast<std::int32_t>(0x88770014);
     if (GameNet::HostUpdateSessionDescStatusFields(20, 23, 22, 21) != 0 ||
-        session.desc.customEventCode != 20) {
+        session.desc.dwUser1 != 20) {
         return 3;
     }
 
@@ -5949,7 +5949,7 @@ extern "C" int gamenet_reassign_player_colors_smoke(void) {
     g_zNetwork_PlayerRecordList = &playerList;
 
     zNetworkDPlaySessionDescCache session{};
-    session.desc.maxPlayers = 8;
+    session.desc.dwMaxPlayers = 8;
     g_zNetwork_CurrentSessionDescCache = &session;
 
     HudUiTriplet triplet{};
@@ -7161,8 +7161,8 @@ extern "C" int gamenet_handle_pkt14_hud_timer_and_flags_sync_smoke(void) {
     zNetwork_DPlay4 dplay{&kDPlayVtable};
     zNetworkDPlaySessionDescCache session{};
     char sessionName[0x5c] = "pkt14";
-    session.desc.sessionName = sessionName;
-    session.desc.maxPlayers = 8;
+    session.desc.lpszSessionNameA = sessionName;
+    session.desc.dwMaxPlayers = 8;
     g_zNetwork_pDirectPlay4 = &dplay;
     g_zNetwork_CurrentSessionDescCache = &session;
     g_zNetwork_IsHostFlag = 1;
@@ -7214,11 +7214,11 @@ extern "C" int gamenet_handle_pkt14_hud_timer_and_flags_sync_smoke(void) {
     } else if (g_RecoilApp.m_missionFmvState.m_missionId != 0 ||
                g_pkt14StateEnterCount != 1 || !queuedIntro) {
         failure = 6;
-    } else if (g_setSessionDescCalls != 1 || session.desc.customEventCode != 4 ||
-               session.desc.customAuxParam != 12 || session.desc.customValueOrTime != 3 ||
-               session.desc.customStatusFlags != 3) {
+    } else if (g_setSessionDescCalls != 1 || session.desc.dwUser1 != 4 ||
+               session.desc.dwUser4 != 12 || session.desc.dwUser3 != 3 ||
+               session.desc.dwUser2 != 3) {
         failure = 7;
-    } else if (session.desc.maxPlayers != 8 || std::strcmp(sessionName, "pkt14") != 0) {
+    } else if (session.desc.dwMaxPlayers != 8 || std::strcmp(sessionName, "pkt14") != 0) {
         failure = 8;
     }
 

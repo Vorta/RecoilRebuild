@@ -977,7 +977,7 @@ std::int32_t g_wolMenuLoadMissionFlags;
 std::int32_t g_mpMenuCoInitializeCalls;
 HRESULT g_mpMenuCoInitializeResult;
 std::int32_t g_mpMenuInitRuntimeCalls;
-unsigned char *g_mpMenuInitRuntimeGuid;
+GUID *g_mpMenuInitRuntimeGuid;
 std::int32_t g_mpMenuShutdownRuntimeCalls;
 std::int32_t g_mpMenuDoModalCalls;
 std::int32_t g_mpMenuDoModalResult;
@@ -1306,7 +1306,7 @@ HRESULT __stdcall FakeMpMenuCoInitialize(LPVOID) {
     return g_mpMenuCoInitializeResult;
 }
 
-int __fastcall FakeMpMenuInitSessionRuntime(unsigned char *appGuid) {
+int __fastcall FakeMpMenuInitSessionRuntime(GUID *appGuid) {
     ++g_mpMenuInitRuntimeCalls;
     g_mpMenuInitRuntimeGuid = appGuid;
     return 0;
@@ -1890,7 +1890,7 @@ extern "C" int czrecoil_frame_open_multiplayer_session_browser_smoke(void) {
     g_mpMenuDialogPlayerName = "HostPilot";
     frame.OnMenuOpenMultiplayerSessionBrowser();
     if (result == 0 &&
-        (g_mpMenuInitRuntimeGuid != g_zNetwork_RecoilAppGuid ||
+        (g_mpMenuInitRuntimeGuid != &g_zNetwork_RecoilAppGuid ||
          g_mpMenuSetPlayerNameCalls != 1 ||
          std::strcmp(g_mpMenuLastPlayerName, "HostPilot") != 0 ||
          g_mpMenuSetNetworkEnabledCalls != 1 || g_mpMenuLastNetworkEnabled != 1 ||

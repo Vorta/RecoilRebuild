@@ -136,6 +136,8 @@ extern "C" int zreader_file_exists_and_list_create_smoke(void);
 extern "C" int znetwork_local_identity_smoke(void);
 extern "C" int znetwork_dplay_close_release_smoke(void);
 extern "C" int znetwork_dplay_report_error_smoke(void);
+extern "C" int znetwork_dplay_query_caps_configure_send_mode_smoke(void);
+extern "C" int znetwork_dplay_create_session_from_status_fields_smoke(void);
 extern "C" int znetwork_unregister_packet_handler_smoke(void);
 extern "C" int znetwork_clear_enumerated_session_list_smoke(void);
 extern "C" int znetwork_clear_service_provider_list_smoke(void);
@@ -10368,6 +10370,10 @@ int main(int argc, char **argv) {
         {"znetwork_local_identity_smoke", znetwork_local_identity_smoke},
         {"znetwork_dplay_close_release_smoke", znetwork_dplay_close_release_smoke},
         {"znetwork_dplay_report_error_smoke", znetwork_dplay_report_error_smoke},
+        {"znetwork_dplay_query_caps_configure_send_mode_smoke",
+         znetwork_dplay_query_caps_configure_send_mode_smoke},
+        {"znetwork_dplay_create_session_from_status_fields_smoke",
+         znetwork_dplay_create_session_from_status_fields_smoke},
         {"znetwork_unregister_packet_handler_smoke", znetwork_unregister_packet_handler_smoke},
         {"znetwork_clear_enumerated_session_list_smoke",
          znetwork_clear_enumerated_session_list_smoke},

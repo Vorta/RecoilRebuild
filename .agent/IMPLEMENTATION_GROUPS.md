@@ -288,6 +288,14 @@ Active queue sections:
     immediate DirectPlay error-name string literals; source now removes the
     stale `kDPlayErrorNames` / `GetDPlayErrorName` table shape and keeps the
     `sprintf(errorNameBuffer, errorName)` report path.
+  - Source now uses DirectPlay SDK provider types for `DPNAME`, `DPCAPS`,
+    `DPSESSIONDESC2`, and typed `GUID` app/service-provider data instead of
+    local provider ABI mirrors or raw GUID byte arrays along the 0x48a350 /
+    0x48a410 paths.
+  - Functional targets `znetwork_dplay_query_caps_configure_send_mode`,
+    `znetwork_dplay_create_session_from_status_fields`, and
+    `znetwork_dplay_report_error` pass after registering the two existing
+    zNetwork smoke scenarios in the native smoke runner.
 - Current blockers:
   - G016 owner boundary is broad; do not set isolated owner markers for
     0x48a410, 0x48c250, or 0x48a350.
@@ -297,6 +305,7 @@ Active queue sections:
     `g_zNetwork_ActiveProviderIsTcpIp`, and
     `g_zNetwork_TcpIpAsyncSendEnabled` need focused data evidence.
 - Next action:
-  - Reassess G016 data evidence for 0x48c250/0x48a350/0x48a410, including
-    VC data-symbol checks where manifests exist, before any owner/data marker
-    promotions.
+  - Continue G016 owner-boundary cleanup for the broader znet_dplay.cpp
+    source-file/runtime-global cluster; then reassess data evidence for
+    0x48c250/0x48a350/0x48a410, including VC data-symbol checks where
+    manifests exist, before any owner/data marker promotions.

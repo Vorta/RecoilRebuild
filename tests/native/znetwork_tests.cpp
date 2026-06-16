@@ -43,7 +43,7 @@ int g_releaseCalls;
 int g_enumPlayersCalls;
 std::int32_t g_enumPlayersResult;
 int g_enumConnectionsCalls;
-unsigned char *g_enumConnectionsApplicationGuid;
+const GUID *g_enumConnectionsApplicationGuid;
 zNetworkDPlayEnumConnectionsCallback g_enumConnectionsCallback;
 void *g_enumConnectionsContext;
 std::uint32_t g_enumConnectionsFlags;
@@ -124,6 +124,13 @@ void *g_fakeLobbyVtable[3];
 void *g_fakeLobbyObject[1];
 void *g_fakeLobby3AVtable[15];
 void *g_fakeLobby3AObject[1];
+
+void FillGuidBytes(GUID &guid, unsigned char firstByte) {
+    unsigned char *const bytes = reinterpret_cast<unsigned char *>(&guid);
+    for (int index = 0; index < 16; ++index) {
+        bytes[index] = static_cast<unsigned char>(firstByte + index);
+    }
+}
 
 struct CodeFunctionPatch {
     void *target;
@@ -368,7 +375,7 @@ std::int32_t __stdcall EnumPlayersFake(zNetwork_DPlay4 *, void *,
 }
 
 std::int32_t __stdcall EnumConnectionsFake(
-    zNetwork_DPlay4 *, unsigned char *applicationGuid,
+    zNetwork_DPlay4 *, const GUID *applicationGuid,
     zNetworkDPlayEnumConnectionsCallback callback, void *context, std::uint32_t flags) {
     ++g_enumConnectionsCalls;
     g_enumConnectionsApplicationGuid = applicationGuid;
@@ -377,16 +384,14 @@ std::int32_t __stdcall EnumConnectionsFake(
     g_enumConnectionsFlags = flags;
 
     if (g_enumConnectionsResult >= 0 && callback != nullptr) {
-        unsigned char serviceProviderGuid[16] = {
-            1, 2, 3, 4, 5, 6, 7, 8,
-            9, 10, 11, 12, 13, 14, 15, 16,
-        };
+        GUID serviceProviderGuid = {};
+        FillGuidBytes(serviceProviderGuid, 1);
         unsigned char connectionData[5] = {10, 20, 30, 40, 50};
         char providerShortName[] = "TCP/IP Provider";
         char providerLongName[] = "TCP/IP Provider Long";
         zNetworkDPlayName providerName = {
             sizeof(zNetworkDPlayName), 0, providerShortName, providerLongName};
-        callback(serviceProviderGuid, connectionData, sizeof(connectionData),
+        callback(&serviceProviderGuid, connectionData, sizeof(connectionData),
                  &providerName, 0x55, context);
     }
 
@@ -413,10 +418,10 @@ std::int32_t __stdcall EnumSessionsFake(zNetwork_DPlay4 *,
     if (g_enumSessionsResult >= 0 && callback != nullptr && !g_enumSessionsSuppressCallback) {
         char sessionName[] = "listed";
         zNetworkDPlaySessionDesc listed{};
-        listed.size = sizeof(zNetworkDPlaySessionDesc);
-        listed.maxPlayers = 8;
-        listed.currentPlayers = 2;
-        listed.sessionName = sessionName;
+        listed.dwSize = sizeof(zNetworkDPlaySessionDesc);
+        listed.dwMaxPlayers = 8;
+        listed.dwCurrentPlayers = 2;
+        listed.lpszSessionNameA = sessionName;
         callback(&listed, nullptr, 0, context);
     }
 
@@ -445,7 +450,7 @@ std::int32_t __stdcall GetCapsFake(zNetwork_DPlay4 *, zNetworkDPlayCaps *caps,
     ++g_getCapsCalls;
     g_getCapsFlags = flags;
     if (caps != nullptr) {
-        caps->flags = g_getCapsReturnedFlags;
+        caps->dwFlags = g_getCapsReturnedFlags;
     }
     return g_getCapsResult;
 }
@@ -456,7 +461,7 @@ std::int32_t __stdcall GetPlayerCapsFake(zNetwork_DPlay4 *, std::uint32_t player
     g_getPlayerCapsPlayerId = playerId;
     g_getPlayerCapsFlags = flags;
     if (caps != nullptr) {
-        caps->flags = g_getPlayerCapsReturnedFlags;
+        caps->dwFlags = g_getPlayerCapsReturnedFlags;
     }
     return g_getPlayerCapsResult;
 }
@@ -791,10 +796,12 @@ extern "C" int znetwork_dplay_initialize_connection_from_provider_info_smoke() {
 extern "C" int znetwork_dplay_service_provider_refresh_smoke() {
     ResetNetwork();
 
-    unsigned char serviceProviderGuid[16] = {
-        16, 15, 14, 13, 12, 11, 10, 9,
-        8, 7, 6, 5, 4, 3, 2, 1,
-    };
+    GUID serviceProviderGuid = {};
+    unsigned char *const providerGuidBytes =
+        reinterpret_cast<unsigned char *>(&serviceProviderGuid);
+    for (int index = 0; index < 16; ++index) {
+        providerGuidBytes[index] = static_cast<unsigned char>(16 - index);
+    }
     unsigned char connectionData[5] = {1, 3, 5, 7, 9};
     char providerShortName[] = "IPX Provider";
     char providerLongName[] = "IPX Provider Long";
@@ -806,14 +813,14 @@ extern "C" int znetwork_dplay_service_provider_refresh_smoke() {
 
     const int callbackResult =
         zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo(
-            serviceProviderGuid, connectionData, sizeof(connectionData),
+            &serviceProviderGuid, connectionData, sizeof(connectionData),
             &providerName, 0x77, nullptr);
     zNetworkDPlayServiceProviderInfo *const callbackInfo =
         list.begin != nullptr && list.end == list.begin + 1 ? list.begin[0] : nullptr;
     const bool callbackOk =
         callbackResult == TRUE &&
         callbackInfo != nullptr &&
-        std::memcmp(callbackInfo->serviceProviderGuid, serviceProviderGuid,
+        std::memcmp(&callbackInfo->serviceProviderGuid, &serviceProviderGuid,
                     sizeof(serviceProviderGuid)) == 0 &&
         callbackInfo->displayName != providerShortName &&
         std::strcmp(callbackInfo->displayName, "IPX Provider") == 0 &&
@@ -830,9 +837,9 @@ extern "C" int znetwork_dplay_service_provider_refresh_smoke() {
 
     zNetwork_DPlay4 directPlay = {};
     directPlay.vtbl_00 = &kDPlayVtable;
-    unsigned char appGuid[16] = {};
+    GUID appGuid = {};
     g_zNetwork_pDirectPlay4 = &directPlay;
-    g_zNetwork_AppGuid = appGuid;
+    g_zNetwork_AppGuid = &appGuid;
     g_enumConnectionsResult = 0;
 
     const int refreshCount = zNetwork_DPlay::RefreshServiceProviderList();
@@ -841,7 +848,7 @@ extern "C" int znetwork_dplay_service_provider_refresh_smoke() {
     const bool refreshOk =
         refreshCount == 1 &&
         g_enumConnectionsCalls == 1 &&
-        g_enumConnectionsApplicationGuid == appGuid &&
+        g_enumConnectionsApplicationGuid == &appGuid &&
         g_enumConnectionsCallback ==
             zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo &&
         g_enumConnectionsFlags == 0 &&
@@ -1022,7 +1029,7 @@ extern "C" int znetwork_player_record_accessors_smoke() {
     g_zNetwork_PlayerRecordList = playerList;
 
     zNetworkDPlaySessionDescCache session{};
-    session.desc.maxPlayers = 8;
+    session.desc.dwMaxPlayers = 8;
     g_zNetwork_CurrentSessionDescCache = &session;
 
     const bool valid = zNetwork_GetPlayerRecordCount() == 1 &&
@@ -1110,7 +1117,7 @@ extern "C" int znetwork_alloc_free_player_color_index_smoke() {
     ResetNetwork();
 
     zNetworkDPlaySessionDescCache session{};
-    session.desc.maxPlayers = 4;
+    session.desc.dwMaxPlayers = 4;
     g_zNetwork_CurrentSessionDescCache = &session;
     g_zNetwork_PlayerColorInUseFlags[1] = 1;
     g_zNetwork_PlayerColorInUseFlags[2] = 1;
@@ -1122,7 +1129,7 @@ extern "C" int znetwork_alloc_free_player_color_index_smoke() {
     const int noneFree = zNetwork::AllocFreePlayerColorIndex();
     const bool fullOk = noneFree == 0;
 
-    session.desc.maxPlayers = 0;
+    session.desc.dwMaxPlayers = 0;
     g_zNetwork_PlayerColorInUseFlags[1] = 0;
     const bool emptyOk = zNetwork::AllocFreePlayerColorIndex() == 0 &&
                          g_zNetwork_PlayerColorInUseFlags[1] == 0;
@@ -1214,7 +1221,7 @@ extern "C" int znetwork_host_send_player_color_assignments_packet_smoke() {
     g_zNetwork_IsHostFlag = 1;
 
     zNetworkDPlaySessionDescCache session{};
-    session.desc.maxPlayers = 4;
+    session.desc.dwMaxPlayers = 4;
     g_zNetwork_CurrentSessionDescCache = &session;
     g_zNetwork_PlayerColorInUseFlags[1] = 1;
 
@@ -1319,10 +1326,10 @@ extern "C" int znetwork_dplay_pump_incoming_messages_smoke() {
     const bool createOk =
         createResult == 0 && createdRecord != nullptr && playerList->count == 1 &&
         g_zNetworkCurrentPlayerCountCached == 1 && createdRecord->playerKey == 0x11112222 &&
-        createdRecord->playerNameInfo.size == sizeof(zNetworkDPlayName) &&
-        createdRecord->playerNameInfo.flags == 7 &&
-        createdRecord->playerNameInfo.shortName == shortName &&
-        createdRecord->playerNameInfo.longName == longName &&
+        createdRecord->playerNameInfo.dwSize == sizeof(zNetworkDPlayName) &&
+        createdRecord->playerNameInfo.dwFlags == 7 &&
+        createdRecord->playerNameInfo.lpszShortNameA == shortName &&
+        createdRecord->playerNameInfo.lpszLongNameA == longName &&
         std::strcmp(createdRecord->playerName, "Ace Pilot") == 0 &&
         std::strcmp(createdRecord->altName, "Ace") == 0 && createdRecord->colorIndex == 0 &&
         g_dispatchCallsA == 1 && g_dispatchSenderA == 0x11112222 &&
@@ -1352,18 +1359,18 @@ extern "C" int znetwork_dplay_pump_incoming_messages_smoke() {
     const bool sessionLeaveOk = g_dispatchCallsB == 1 && g_dispatchPacketTypeB == 5;
 
     zNetworkDPlaySessionDesc desc{};
-    desc.maxPlayers = 6;
-    desc.customEventCode = 10;
-    desc.customStatusFlags = 11;
-    desc.customValueOrTime = 12;
-    desc.customAuxParam = 13;
+    desc.dwMaxPlayers = 6;
+    desc.dwUser1 = 10;
+    desc.dwUser2 = 11;
+    desc.dwUser3 = 12;
+    desc.dwUser4 = 13;
     std::memcpy(message.payload_004, &desc, sizeof(desc));
     message.msgType = 0x104;
     zNetworkDPlay::PumpIncomingMessages(&message);
-    const bool descOk = session.desc.maxPlayers == 6 && session.desc.customEventCode == 10 &&
-                        session.desc.customStatusFlags == 11 &&
-                        session.desc.customValueOrTime == 12 &&
-                        session.desc.customAuxParam == 13;
+    const bool descOk = session.desc.dwMaxPlayers == 6 && session.desc.dwUser1 == 10 &&
+                        session.desc.dwUser2 == 11 &&
+                        session.desc.dwUser3 == 12 &&
+                        session.desc.dwUser4 == 13;
 
     message.msgType = 0x10d;
     message.fields.nameShortOrAsyncHandle = 0x55aa;
@@ -1507,7 +1514,7 @@ extern "C" int znetwork_dplay_query_caps_configure_send_mode_smoke() {
     g_zNetwork_pDirectPlay4 = &dplay;
 
     if (zNetworkDPlay::QueryCapsAndConfigureSendMode() != 1 || g_getCapsCalls != 1 ||
-        g_getCapsFlags != 1 || g_zNetwork_DPlayCaps.size != sizeof(zNetworkDPlayCaps)) {
+        g_getCapsFlags != 1 || g_zNetwork_DPlayCaps.dwSize != sizeof(zNetworkDPlayCaps)) {
         return 1;
     }
 
@@ -1558,8 +1565,8 @@ extern "C" int znetwork_dplay_create_local_player_record_smoke() {
     g_zNetwork_PlayerRecordList = playerList;
 
     zNetworkDPlaySessionDescCache session{};
-    session.desc.currentPlayers = 2;
-    session.desc.maxPlayers = 8;
+    session.desc.dwCurrentPlayers = 2;
+    session.desc.dwMaxPlayers = 8;
     g_zNetwork_CurrentSessionDescCache = &session;
     g_getPlayerCapsReturnedFlags = 2;
 
@@ -1574,18 +1581,18 @@ extern "C" int znetwork_dplay_create_local_player_record_smoke() {
         g_createPlayerNameInfo == &localPlayer->playerNameInfo &&
         g_createPlayerEventHandle == nullptr && g_createPlayerData == nullptr &&
         g_createPlayerDataSize == 0 && g_createPlayerFlags == 0 &&
-        localPlayer->playerNameInfo.size == sizeof(zNetworkDPlayName) &&
-        localPlayer->playerNameInfo.flags == 0 &&
-        localPlayer->playerNameInfo.shortName == g_zNetwork_LocalPlayerNameScratch &&
-        localPlayer->playerNameInfo.longName == g_zNetwork_LocalPlayerNameScratch &&
+        localPlayer->playerNameInfo.dwSize == sizeof(zNetworkDPlayName) &&
+        localPlayer->playerNameInfo.dwFlags == 0 &&
+        localPlayer->playerNameInfo.lpszShortNameA == g_zNetwork_LocalPlayerNameScratch &&
+        localPlayer->playerNameInfo.lpszLongNameA == g_zNetwork_LocalPlayerNameScratch &&
         std::strcmp(g_zNetwork_LocalPlayerNameScratch, "Pilot") == 0 &&
         std::strcmp(localPlayer->playerName, "Pilot") == 0 &&
         std::strcmp(localPlayer->altName, "Pilot") == 0;
 
     const bool capsOk =
         g_getPlayerCapsCalls == 1 && g_getPlayerCapsPlayerId == g_createPlayerAssignedId &&
-        g_getPlayerCapsFlags == 0 && localPlayer->playerCaps.size == sizeof(zNetworkDPlayCaps) &&
-        localPlayer->playerCaps.flags == 2 && g_zNetwork_IsHostFlag == 2;
+        g_getPlayerCapsFlags == 0 && localPlayer->playerCaps.dwSize == sizeof(zNetworkDPlayCaps) &&
+        localPlayer->playerCaps.dwFlags == 2 && g_zNetwork_IsHostFlag == 2;
 
     const bool listOk =
         playerList->count == 2 && sentinel->prev->playerRecord == localPlayer &&
@@ -1623,10 +1630,13 @@ extern "C" int znetwork_dplay_create_session_from_status_fields_smoke() {
     zNetwork_DPlay4 dplay{&kDPlayVtable};
     g_zNetwork_pDirectPlay4 = &dplay;
 
-    unsigned char appGuid[16] = {
-        0x10, 0x32, 0x54, 0x76, 0x98, 0xba, 0xdc, 0xfe,
-        0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
-    g_zNetwork_AppGuid = appGuid;
+    GUID appGuid = {
+        0x76543210,
+        0xba98,
+        0xfedc,
+        {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef}
+    };
+    g_zNetwork_AppGuid = &appGuid;
 
     zNetworkDPlaySessionDescCache *const oldCache =
         static_cast<zNetworkDPlaySessionDescCache *>(
@@ -1649,19 +1659,20 @@ extern "C" int znetwork_dplay_create_session_from_status_fields_smoke() {
         success && cache != nullptr && cache != oldCache && g_openCalls == 1 &&
         g_openDescPtr == &cache->desc && g_openFlags == 2 &&
         std::strcmp(g_zNetwork_SessionNameCache, "Arena") == 0 &&
-        cache->desc.size == sizeof(zNetworkDPlaySessionDesc) && cache->desc.flags == 0x44 &&
-        std::memcmp(cache->desc.appGuid, appGuid, sizeof(cache->desc.appGuid)) == 0 &&
-        cache->desc.maxPlayers == 8 && cache->desc.customEventCode == 3 &&
-        cache->desc.customStatusFlags == 5 && cache->desc.customValueOrTime == 7 &&
-        cache->desc.customAuxParam == 11 && std::strcmp(cache->desc.sessionName, "Arena") == 0;
+        cache->desc.dwSize == sizeof(zNetworkDPlaySessionDesc) && cache->desc.dwFlags == 0x44 &&
+        std::memcmp(&cache->desc.guidApplication, &appGuid,
+                    sizeof(cache->desc.guidApplication)) == 0 &&
+        cache->desc.dwMaxPlayers == 8 && cache->desc.dwUser1 == 3 &&
+        cache->desc.dwUser2 == 5 && cache->desc.dwUser3 == 7 &&
+        cache->desc.dwUser4 == 11 && std::strcmp(cache->desc.lpszSessionNameA, "Arena") == 0;
 
-    std::free(cache->desc.sessionName);
+    std::free(cache->desc.lpszSessionNameA);
     std::free(cache);
     g_zNetwork_CurrentSessionDescCache = nullptr;
 
     ResetNetwork();
     g_zNetwork_pDirectPlay4 = &dplay;
-    g_zNetwork_AppGuid = appGuid;
+    g_zNetwork_AppGuid = &appGuid;
     g_openResult = static_cast<std::int32_t>(0x88770118);
     std::strcpy(fields.sessionNameBuf, "Cancel");
     const int cancelResult = zNetwork_DPlay::CreateSessionFromStatusFields(&fields);
@@ -1669,12 +1680,12 @@ extern "C" int znetwork_dplay_create_session_from_status_fields_smoke() {
         reinterpret_cast<zNetworkDPlaySessionDescCache *>(
             reinterpret_cast<unsigned char *>(g_openDescPtr) -
             offsetof(zNetworkDPlaySessionDescCache, desc));
-    std::free(g_openDescPtr->sessionName);
+    std::free(g_openDescPtr->lpszSessionNameA);
     std::free(leakedCache);
 
     ResetNetwork();
     g_zNetwork_pDirectPlay4 = &dplay;
-    g_zNetwork_AppGuid = appGuid;
+    g_zNetwork_AppGuid = &appGuid;
     g_zNetwork_ActiveProviderIsTcpIp = 1;
     g_getCapsReturnedFlags = 0;
     g_openResult = 0;
@@ -1682,7 +1693,7 @@ extern "C" int znetwork_dplay_create_session_from_status_fields_smoke() {
     leakedCache = reinterpret_cast<zNetworkDPlaySessionDescCache *>(
         reinterpret_cast<unsigned char *>(g_openDescPtr) -
         offsetof(zNetworkDPlaySessionDescCache, desc));
-    std::free(g_openDescPtr->sessionName);
+    std::free(g_openDescPtr->lpszSessionNameA);
     std::free(leakedCache);
 
     if (!successOk) {
@@ -1990,12 +2001,12 @@ extern "C" int znetwork_session_status_fields_smoke() {
     zNetwork_DPlay4 dplay{&kDPlayVtable};
     zNetworkDPlaySessionDescCache session{};
     char sessionName[0x5c] = "original";
-    session.desc.maxPlayers = 8;
-    session.desc.sessionName = sessionName;
-    session.desc.customEventCode = 1;
-    session.desc.customStatusFlags = 2;
-    session.desc.customValueOrTime = 3;
-    session.desc.customAuxParam = 4;
+    session.desc.dwMaxPlayers = 8;
+    session.desc.lpszSessionNameA = sessionName;
+    session.desc.dwUser1 = 1;
+    session.desc.dwUser2 = 2;
+    session.desc.dwUser3 = 3;
+    session.desc.dwUser4 = 4;
     g_zNetwork_pDirectPlay4 = &dplay;
     g_zNetwork_CurrentSessionDescCache = &session;
 
@@ -2015,9 +2026,9 @@ extern "C" int znetwork_session_status_fields_smoke() {
     std::strcpy(fields.sessionNameBuf, "updated");
     if (zNetwork_ApplyStatusFieldsToSessionDesc(&fields) != 1 || g_setSessionDescCalls != 1 ||
         g_setSessionDescPtr != &session.desc || g_setSessionDescFlags != 0 ||
-        session.desc.customEventCode != 10 || session.desc.customStatusFlags != 11 ||
-        session.desc.customValueOrTime != 12 || session.desc.customAuxParam != 13 ||
-        session.desc.maxPlayers != 6 || std::strcmp(sessionName, "updated") != 0 ||
+        session.desc.dwUser1 != 10 || session.desc.dwUser2 != 11 ||
+        session.desc.dwUser3 != 12 || session.desc.dwUser4 != 13 ||
+        session.desc.dwMaxPlayers != 6 || std::strcmp(sessionName, "updated") != 0 ||
         std::strcmp(g_zNetwork_SessionNameCache, "updated") != 0) {
         return 2;
     }
@@ -2042,12 +2053,12 @@ extern "C" int znetwork_enumerated_session_accessors_smoke() {
     char sessionName1[] = "bravo";
     zNetworkDPlaySessionDescCache session0{};
     zNetworkDPlaySessionDescCache session1{};
-    session0.desc.maxPlayers = 8;
-    session0.desc.currentPlayers = 3;
-    session0.desc.sessionName = sessionName0;
-    session1.desc.maxPlayers = 12;
-    session1.desc.currentPlayers = 5;
-    session1.desc.sessionName = sessionName1;
+    session0.desc.dwMaxPlayers = 8;
+    session0.desc.dwCurrentPlayers = 3;
+    session0.desc.lpszSessionNameA = sessionName0;
+    session1.desc.dwMaxPlayers = 12;
+    session1.desc.dwCurrentPlayers = 5;
+    session1.desc.lpszSessionNameA = sessionName1;
 
     zArchiveListNode node0{};
     zArchiveListNode node1{};
@@ -2105,22 +2116,26 @@ extern "C" int znetwork_dplay_enum_session_callback_smoke() {
     char password[] = "secret";
     int reservedData = 0x1357;
     zNetworkDPlaySessionDesc desc{};
-    desc.size = sizeof(zNetworkDPlaySessionDesc);
-    desc.flags = 0x44;
+    desc.dwSize = sizeof(zNetworkDPlaySessionDesc);
+    desc.dwFlags = 0x44;
+    unsigned char *const instanceGuidBytes =
+        reinterpret_cast<unsigned char *>(&desc.guidInstance);
+    unsigned char *const applicationGuidBytes =
+        reinterpret_cast<unsigned char *>(&desc.guidApplication);
     for (int i = 0; i < 16; ++i) {
-        desc.instanceGuid[i] = static_cast<unsigned char>(0xa0 + i);
-        desc.appGuid[i] = static_cast<unsigned char>(0xc0 + i);
+        instanceGuidBytes[i] = static_cast<unsigned char>(0xa0 + i);
+        applicationGuidBytes[i] = static_cast<unsigned char>(0xc0 + i);
     }
-    desc.maxPlayers = 8;
-    desc.currentPlayers = 2;
-    desc.sessionName = sessionName;
-    desc.sessionPassword = password;
-    desc.reservedData = &reservedData;
-    desc.reservedDataSize = sizeof(reservedData);
-    desc.customEventCode = 3;
-    desc.customStatusFlags = 4;
-    desc.customValueOrTime = 5;
-    desc.customAuxParam = 6;
+    desc.dwMaxPlayers = 8;
+    desc.dwCurrentPlayers = 2;
+    desc.lpszSessionNameA = sessionName;
+    desc.lpszPasswordA = password;
+    desc.dwReserved1 = (DWORD)(&reservedData);
+    desc.dwReserved2 = sizeof(reservedData);
+    desc.dwUser1 = 3;
+    desc.dwUser2 = 4;
+    desc.dwUser3 = 5;
+    desc.dwUser4 = 6;
 
     if (zNetworkDPlay::EnumSessionCallback_AddSessionDescCache(nullptr, nullptr, 0, nullptr) != 0 ||
         list.count != 0) {
@@ -2134,20 +2149,23 @@ extern "C" int znetwork_dplay_enum_session_callback_smoke() {
 
     zNetworkDPlaySessionDescCache *const cache =
         static_cast<zNetworkDPlaySessionDescCache *>(list.head->payload);
-    if (cache == nullptr || cache->desc.size != desc.size || cache->desc.flags != desc.flags ||
-        std::memcmp(cache->desc.instanceGuid, desc.instanceGuid, sizeof(desc.instanceGuid)) != 0 ||
-        std::memcmp(cache->desc.appGuid, desc.appGuid, sizeof(desc.appGuid)) != 0 ||
-        cache->desc.maxPlayers != 8 || cache->desc.currentPlayers != 2 ||
-        cache->desc.sessionName == desc.sessionName ||
-        std::strcmp(cache->desc.sessionName, desc.sessionName) != 0 ||
-        cache->desc.sessionPassword != password || cache->desc.reservedData != &reservedData ||
-        cache->desc.reservedDataSize != sizeof(reservedData) ||
-        cache->desc.customEventCode != 3 || cache->desc.customStatusFlags != 4 ||
-        cache->desc.customValueOrTime != 5 || cache->desc.customAuxParam != 6) {
+    if (cache == nullptr || cache->desc.dwSize != desc.dwSize || cache->desc.dwFlags != desc.dwFlags ||
+        std::memcmp(&cache->desc.guidInstance, &desc.guidInstance,
+                    sizeof(desc.guidInstance)) != 0 ||
+        std::memcmp(&cache->desc.guidApplication, &desc.guidApplication,
+                    sizeof(desc.guidApplication)) != 0 ||
+        cache->desc.dwMaxPlayers != 8 || cache->desc.dwCurrentPlayers != 2 ||
+        cache->desc.lpszSessionNameA == desc.lpszSessionNameA ||
+        std::strcmp(cache->desc.lpszSessionNameA, desc.lpszSessionNameA) != 0 ||
+        cache->desc.lpszPasswordA != password ||
+        cache->desc.dwReserved1 != (DWORD)(&reservedData) ||
+        cache->desc.dwReserved2 != sizeof(reservedData) ||
+        cache->desc.dwUser1 != 3 || cache->desc.dwUser2 != 4 ||
+        cache->desc.dwUser3 != 5 || cache->desc.dwUser4 != 6) {
         return 3;
     }
 
-    std::free(cache->desc.sessionName);
+    std::free(cache->desc.lpszSessionNameA);
     std::free(cache);
     zUtil_ZRDR_PushFreeNode(list.head);
     g_zNetwork_EnumeratedSessionList = nullptr;
@@ -2161,11 +2179,9 @@ extern "C" int znetwork_dplay_enum_sessions_smoke() {
         zUtil::ZRDR_PreallocNodePool(2);
     }
 
-    unsigned char appGuid[16] = {};
-    for (int i = 0; i < 16; ++i) {
-        appGuid[i] = static_cast<unsigned char>(0x40 + i);
-    }
-    g_zNetwork_AppGuid = appGuid;
+    GUID appGuid = {};
+    FillGuidBytes(appGuid, 0x40);
+    g_zNetwork_AppGuid = &appGuid;
 
     zArchiveList list{};
     g_zNetwork_EnumeratedSessionList = &list;
@@ -2177,8 +2193,8 @@ extern "C" int znetwork_dplay_enum_sessions_smoke() {
 
     g_zNetwork_pDirectPlay4 = &directPlay;
     if (zNetwork_DPlay::EnumSessions() != 1 || g_enumSessionsCalls != 1 ||
-        g_enumSessionsDesc.size != sizeof(zNetworkDPlaySessionDesc) ||
-        std::memcmp(g_enumSessionsDesc.appGuid, appGuid, sizeof(appGuid)) != 0 ||
+        g_enumSessionsDesc.dwSize != sizeof(zNetworkDPlaySessionDesc) ||
+        std::memcmp(&g_enumSessionsDesc.guidApplication, &appGuid, sizeof(appGuid)) != 0 ||
         g_enumSessionsTimeoutMs != 0 ||
         g_enumSessionsCallback != zNetworkDPlay::EnumSessionCallback_AddSessionDescCache ||
         g_enumSessionsContext != nullptr || g_enumSessionsFlags != 2 || list.count != 1) {
@@ -2282,21 +2298,19 @@ extern "C" int znetwork_dplay_enum_sessions_for_current_app_smoke() {
     zArchiveList_Destroy(g_zNetwork_EnumeratedSessionList);
     g_zNetwork_EnumeratedSessionList = nullptr;
 
-    unsigned char appGuid[16] = {};
-    for (int index = 0; index < 16; ++index) {
-        appGuid[index] = (unsigned char)(0x70 + index);
-    }
+    GUID appGuid = {};
+    FillGuidBytes(appGuid, 0x70);
 
     zNetwork_DPlay4 directPlay{&kDPlayVtable};
     g_zNetwork_EnumeratedSessionList = zArchiveList_CreateEmpty();
     g_zNetwork_pDirectPlay4 = &directPlay;
-    g_zNetwork_AppGuid = appGuid;
+    g_zNetwork_AppGuid = &appGuid;
     g_enumSessionsResult = -33;
 
     if (zNetworkDPlay::EnumSessionsForCurrentApp() != -33 ||
         g_enumSessionsCalls != 1 ||
-        g_enumSessionsDesc.size != sizeof(zNetworkDPlaySessionDesc) ||
-        std::memcmp(g_enumSessionsDesc.appGuid, appGuid, sizeof(appGuid)) != 0 ||
+        g_enumSessionsDesc.dwSize != sizeof(zNetworkDPlaySessionDesc) ||
+        std::memcmp(&g_enumSessionsDesc.guidApplication, &appGuid, sizeof(appGuid)) != 0 ||
         g_enumSessionsTimeoutMs != 0 ||
         g_enumSessionsCallback != zNetworkDPlay::EnumSessionCallback_AddSessionDescCache ||
         g_enumSessionsContext != nullptr ||
@@ -2334,14 +2348,14 @@ extern "C" int znetwork_dplay_select_tcp_ip_provider_and_enum_sessions_smoke() {
     int failure = 0;
     zNetwork_DPlay4 directPlay{&kDPlayVtable};
     char addressString[] = "127.0.0.1";
-    unsigned char appGuid[16] = {};
+    GUID appGuid = {};
 
     ResetNetwork();
     ResetLobbyFakes();
     g_createInterfaceDirectPlay4 = &directPlay;
     g_createInterfaceResult = 0;
     g_initializeConnectionResult = 0;
-    g_zNetwork_AppGuid = appGuid;
+    g_zNetwork_AppGuid = &appGuid;
 
     if (zNetworkDPlay::SelectTcpIpProviderAndEnumSessions(addressString, 1) != 1 ||
         g_lobbyCreateCalls != 1 ||
@@ -2372,7 +2386,7 @@ extern "C" int znetwork_dplay_select_tcp_ip_provider_and_enum_sessions_smoke() {
         ResetLobbyFakes();
         g_createInterfaceDirectPlay4 = &directPlay;
         g_createInterfaceResult = 0;
-        g_zNetwork_AppGuid = appGuid;
+        g_zNetwork_AppGuid = &appGuid;
         g_zNetwork_EnumeratedSessionList = zArchiveList_CreateEmpty();
         g_enumSessionsSuppressCallback = true;
         g_enumSessionsConnectingRepeats = 2;
@@ -2403,12 +2417,12 @@ extern "C" int znetwork_dplay_open_selected_session_and_read_status_fields_smoke
     zNetwork_DPlay4 directPlay{&kDPlayVtable};
     char sessionName[] = "selected";
     zNetworkDPlaySessionDescCache session{};
-    session.desc.sessionName = sessionName;
-    session.desc.customEventCode = 12;
-    session.desc.customStatusFlags = 34;
-    session.desc.customValueOrTime = 56;
-    session.desc.customAuxParam = 78;
-    session.desc.maxPlayers = 10;
+    session.desc.lpszSessionNameA = sessionName;
+    session.desc.dwUser1 = 12;
+    session.desc.dwUser2 = 34;
+    session.desc.dwUser3 = 56;
+    session.desc.dwUser4 = 78;
+    session.desc.dwMaxPlayers = 10;
 
     zArchiveListNode node{};
     node.payload = &session;
@@ -2426,7 +2440,7 @@ extern "C" int znetwork_dplay_open_selected_session_and_read_status_fields_smoke
     if (zNetworkDPlay::OpenSelectedSessionAndReadStatusFields(&fields) != 1 ||
         g_zNetwork_CurrentSessionDescCache != &session ||
         session.openMode != 1 ||
-        session.desc.size != sizeof(zNetworkDPlaySessionDesc) ||
+        session.desc.dwSize != sizeof(zNetworkDPlaySessionDesc) ||
         g_openCalls != 1 ||
         g_openDescPtr != &session.desc ||
         g_openFlags != 1 ||
@@ -2474,7 +2488,7 @@ extern "C" int znetwork_init_session_runtime_smoke() {
 
     int failure = 0;
     zNetwork_DPlay4 directPlay{};
-    unsigned char appGuid[16] = {};
+    GUID appGuid = {};
     zNetworkDispatchHandlerRecord *handlerRecord = nullptr;
     zNetworkDispatchHandlerListNode *handlerNode = nullptr;
 
@@ -2488,12 +2502,12 @@ extern "C" int znetwork_init_session_runtime_smoke() {
     g_createInterfaceDirectPlay4 = &directPlay;
     g_createInterfaceResult = 0;
 
-    if (zNetwork::InitSessionRuntime(appGuid) != 0 ||
+    if (zNetwork::InitSessionRuntime(&appGuid) != 0 ||
         g_createInterfaceCalls != 1 ||
         g_createInterfaceOut == nullptr ||
         g_zNetwork_SessionRuntimeInitialized != 1 ||
         g_zNetwork_FatalDisconnectTriggered != 0 ||
-        g_zNetwork_AppGuid != appGuid ||
+        g_zNetwork_AppGuid != &appGuid ||
         g_zNetwork_pDirectPlay4 != &directPlay ||
         g_zNetwork_CurrentSessionDescCache != nullptr ||
         g_zNetwork_LocalPlayerRecord != nullptr ||
@@ -2533,10 +2547,10 @@ extern "C" int znetwork_init_session_runtime_smoke() {
     zNetwork_DPlay4 oldDirectPlay{};
     zNetworkDPlaySessionDescCache oldCache{};
     zNetwork_PlayerRecord oldPlayer{};
-    unsigned char oldGuid[16] = {};
+    GUID oldGuid = {};
     g_zNetwork_SessionRuntimeInitialized = 17;
     g_zNetwork_FatalDisconnectTriggered = 23;
-    g_zNetwork_AppGuid = oldGuid;
+    g_zNetwork_AppGuid = &oldGuid;
     g_zNetwork_pDirectPlay4 = &oldDirectPlay;
     g_zNetwork_CurrentSessionDescCache = &oldCache;
     g_zNetwork_LocalPlayerRecord = &oldPlayer;
@@ -2548,11 +2562,11 @@ extern "C" int znetwork_init_session_runtime_smoke() {
     g_createInterfaceResult = -1;
 
     if (failure == 0 &&
-        (zNetwork::InitSessionRuntime(appGuid) != 0 ||
+        (zNetwork::InitSessionRuntime(&appGuid) != 0 ||
          g_createInterfaceCalls != 1 ||
          g_zNetwork_SessionRuntimeInitialized != 17 ||
          g_zNetwork_FatalDisconnectTriggered != 23 ||
-         g_zNetwork_AppGuid != oldGuid ||
+         g_zNetwork_AppGuid != &oldGuid ||
          g_zNetwork_pDirectPlay4 != &oldDirectPlay ||
          g_zNetwork_CurrentSessionDescCache != &oldCache ||
          g_zNetwork_LocalPlayerRecord != &oldPlayer ||
@@ -2603,7 +2617,7 @@ extern "C" int znetwork_shutdown_session_runtime_smoke() {
     auto *desc =
         static_cast<zNetworkDPlaySessionDesc *>(std::malloc(sizeof(zNetworkDPlaySessionDesc)));
     std::memset(desc, 0, sizeof(zNetworkDPlaySessionDesc));
-    desc->reservedData = std::malloc(4);
+    desc->dwReserved1 = (DWORD)(std::malloc(4));
     auto *sessionNode = static_cast<zArchiveListNode *>(std::malloc(sizeof(zArchiveListNode)));
     sessionNode->payload = desc;
     sessionNode->next = sessionNode;

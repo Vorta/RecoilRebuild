@@ -18241,7 +18241,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: znetwork_dplay_query_caps_configure_send_mode;
     - Group: engine.znetwork;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: DirectPlay SDK type/GUID source-shape cleanup complete; broad zNetwork/znet_dplay.cpp source-owner and touched global data evidence remain pending before owner/data promotion.
 
 - 0x48a410:
   - [☑️] Reconstructed (Name: zNetwork_DPlay::CreateSessionFromStatusFields)
@@ -18254,7 +18254,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: znetwork_dplay_create_session_from_status_fields;
     - Group: engine.znetwork;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: DirectPlay SDK type/GUID source-shape cleanup complete; broad zNetwork/znet_dplay.cpp source-owner and touched global data evidence remain pending before owner/data promotion.
 
 - 0x48a520:
   - [☑️] Reconstructed (Name: zNetworkDPlay::OpenSelectedSessionAndReadStatusFields)

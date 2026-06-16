@@ -640,7 +640,7 @@ int g_sessionFinishedAppendConnectCalls;
 WestwoodOnlineUpgradeDialog *g_sessionFinishedAppendConnectThis;
 const char *g_sessionFinishedAppendConnectSessionName;
 int g_launchInitSessionCalls;
-unsigned char *g_launchInitSessionGuid;
+GUID *g_launchInitSessionGuid;
 int g_launchFormatIpv4Calls;
 unsigned int g_launchFormatIpv4Packed;
 char g_launchFormattedHost[20];
@@ -1562,7 +1562,7 @@ void __fastcall FakeSessionFinishedAppendConnectStatusAndRefreshList(
     g_sessionFinishedAppendConnectSessionName = sessionName;
 }
 
-int __fastcall FakeLaunchInitSessionRuntime(unsigned char *appGuid)
+int __fastcall FakeLaunchInitSessionRuntime(GUID *appGuid)
 {
     ++g_launchInitSessionCalls;
     g_launchInitSessionGuid = appGuid;
@@ -7216,7 +7216,7 @@ westwood_online_upgrade_api_event_sink_launch_selected_session_smoke(void)
         g_threeFloatUpdateDataCount != 1 ||
         g_threeFloatUpdateDataSaveValue[0] != 1 ||
         g_launchInitSessionCalls != 1 ||
-        g_launchInitSessionGuid != g_zNetwork_RecoilAppGuid ||
+        g_launchInitSessionGuid != &g_zNetwork_RecoilAppGuid ||
         g_launchFormatIpv4Calls != 1 ||
         g_launchFormatIpv4Packed != 0x01020304 ||
         g_launchSelectTcpCalls != 1 ||
