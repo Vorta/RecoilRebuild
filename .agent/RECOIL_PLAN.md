@@ -40427,13 +40427,13 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudUiPanel; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: HudUiPanel::ConstructorDefault;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_panel_constructor_default;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S blocked: VC5SP3 hud_ui_text_label_panel_helpers still fails for HudUiPanel::ConstructorDefault with 121 unmasked mismatches after 24 relocation-masked bytes and 1 trimmed VC NOP (BN 240 bytes, VC5 256 bytes). Current-session frontier confirms direct dependency 0x4bcb50 HudUiTextLabel::ConstructorWithPosAndFlags is already tier S, so the remaining blocker is local to HudUiPanel constructor scheduling. Current-session direct-field post-GetStockObject initialization-order probe preserved functional behavior but regressed the compare to 129 mismatches and was reverted; current-session RECT text-bounds view preserved behavior but was byte-neutral at 121 mismatches and was reverted. Remaining drift is post-font initialization scheduling around textRect/wrapRect/shadow/text metric zero stores, especially BN's retained textRect pointer in eax and zero copies through ecx/edx versus VC5 direct member stores.
+    - Blocker: tier S accepted: functional target hud_ui_panel_constructor_default passes and VC5SP3 vc5_o2_ob1_md_gx_facs for ??0HudUiPanel@@QAE@PBDHH@Z reports zero unmasked byte mismatches after 28 relocation-masked bytes; BN size 240, VC5 size 240. Source owner HudUiPanel and data markers are accepted, and the constructor now carries the required provenance/Purpose docblock.
 
 - 0x4ba850:
   - [✅] Reconstructed (Name: HudUiPanel::CopyConstructCore)

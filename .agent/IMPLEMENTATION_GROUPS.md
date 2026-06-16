@@ -1530,23 +1530,20 @@ available even when no groups are active.
     relocation masking, 8 trimmed VC NOP bytes, BN size 248, and VC5 size
     256. The remaining drift is local to the valid-style selection sequence
     plus final alignment/register scheduling, so 0x4b8100 remains below S.
-  - Current HudCmdDialog dependency cleanup is also auditing
-    0x4ba740 HudUiPanel::ConstructorDefault because 0x4b7fd0 and the
-    HudCmdDialog constructor frontier route through this panel constructor.
-    Owner/data are accepted and direct base constructor dependency
-    0x4bcb50 is tier S; refreshed VC5SP3 compare starts at 121 unmasked
-    mismatches after 24 relocation-masked bytes and one trimmed VC NOP, with
-    remaining drift local to the post-font textRect/wrapRect/shadow/metric
-    zero-store schedule. A `RECT *` text-bounds view preserved source behavior
-    but was byte-neutral at the same 121 mismatches and was reverted.
+  - Same-session HudUiPanel::ConstructorDefault cleanup promoted 0x4ba740 to
+    tier S. The constructor now has the required provenance docblock, copies
+    the zeroed wrap rect into textRect, and omits the shadow-offset stores that
+    retail does not emit. `verify functional 0x4ba740` passes, and
+    `verify vc5 0x4ba740` reports zero unmasked mismatches after 28
+    relocation-masked bytes (BN 240, VC5 240).
   - Same-session HudUiCycleSelectorWidget::AddTextEntry pass promoted
     0x4b7fd0 to tier S. Source now uses normal VC5-era
     `new HudUiTransitionTextPanel`, reloads calls through `entriesA[index]`,
     and orders the inlined HudUiTransitionTextPanel constructor stores to match
     BN. `verify functional 0x4b7fd0` passes, and `verify vc5 0x4b7fd0`
     reports zero unmasked mismatches after 32 relocation-masked bytes and
-    5 trimmed VC NOPs (BN 299, VC5 304). 0x4ba740 remains a separate
-    constructor-default tier-S blocker for the HudCmdDialog constructor chain.
+    5 trimmed VC NOPs (BN 299, VC5 304). The direct constructor-default
+    dependency 0x4ba740 is now tier S for the HudCmdDialog constructor chain.
   - Same-session 0x40a5b0 HudCmdDialog::Constructor source-shape pass added
     the required constructor docblock and matched BN's command-group population
     loop by calling zInput::BindGroupList_GetCount at loop entry and backedge.
