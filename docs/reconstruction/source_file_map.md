@@ -115,9 +115,9 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x40d430` `HudUiMgr::AtExitDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3345`
 - `0x40d440` `HudUiMgr::StaticDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3350`
 - `0x40d7e0` `HudUiMgr::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3265`
-- `0x40dcd0` `HudUiTriplet::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16680`
-- `0x40eb00` `HudUiShieldMessageWidget::ApplyLayout` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14424`
-- `0x40f2e0` `HudUiNanitePanel::InitLayout` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13558`
+- `0x40dcd0` `HudUiTriplet::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16683`
+- `0x40eb00` `HudUiShieldMessageWidget::ApplyLayout` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14427`
+- `0x40f2e0` `HudUiNanitePanel::InitLayout` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13561`
 - `0x410160` `HudUiMgr::EnsureHudLoaded` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3457`
 - `0x410e90` `HudUiMgr::EnableHud` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4301`
 - `0x410fe0` `HudUiMgr::UpdateFrame` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4370`
@@ -132,8 +132,8 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x412050` `HudUiMgrObjective::RefreshCounterText` -> `src/GameZRecoil/zHud/zhud_ui.cpp:2744`
 - `0x4124b0` `HudUiMgrTarget::UpdateSelectedProgressMeter` -> `src/GameZRecoil/zHud/zhud_ui.cpp:2679`
 - `0x412620` `HudUiMgr::HideTrackedProgressMeterIfOwnerMatches` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4473`
-- `0x412650` `HudUiMessage::SetValueIfOwnerMatches` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14312`
-- `0x412820` `HudUiMessage::UpdateSelectedWeaponDisplay` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14336`
+- `0x412650` `HudUiMessage::SetValueIfOwnerMatches` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14315`
+- `0x412820` `HudUiMessage::UpdateSelectedWeaponDisplay` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14339`
 - `0x412b60` `HudLayoutSW::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:204`
 - `0x412c10` `HudLayoutSW::LoadTypeIFromZarRoot` -> `src/GameZRecoil/zHud/zhud_ui.cpp:393`
 - `0x412c60` `HudLayoutSW::SetActive` -> `src/GameZRecoil/zHud/zhud_ui.cpp:328`
@@ -143,7 +143,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4130d0` `HudLayoutHW::SetActive` -> `src/GameZRecoil/zHud/zhud_ui.cpp:593`
 - `0x4132b0` `HudLayoutHW::UpdateObjectiveDirtyRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:570`
 - `0x413340` `HudLayoutHW::OnActivated` -> `src/GameZRecoil/zHud/zhud_ui.cpp:502`
-- `0x4134e0` `HudUiMessage::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14133`
+- `0x4134e0` `HudUiMessage::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14136`
 - `0x413500` `HudLayoutHW::UpdateAll` -> `src/GameZRecoil/zHud/zhud_ui.cpp:313`
 - `0x413540` `HudLayoutHW::Enable` -> `src/GameZRecoil/zHud/zhud_ui.cpp:763`
 - `0x4135f0` `HudLayoutHW::Disable` -> `src/GameZRecoil/zHud/zhud_ui.cpp:795`
@@ -153,8 +153,8 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4136b0` `HudUiMgr::ApplyHudModeSwitch` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4498`
 - `0x413770` `HudUiMgr::SetFloatTimerVisible` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4461`
 - `0x4137a0` `HudUiMgr::SetAuxOverlayVisible` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4490`
-- `0x4138d0` `HudUi::ShowTopMessageLine` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17430`
-- `0x4138f0` `HudUi::ShowChatLine` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17448`
+- `0x4138d0` `HudUi::ShowTopMessageLine` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17433`
+- `0x4138f0` `HudUi::ShowChatLine` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17451`
 - `0x413990` `HudUiLayoutNode::ApplyTextLabel` -> `src/GameZRecoil/zHud/zhud_ui.cpp:1673`
 - `0x413a10` `HudUiLayoutNode::ReadRectOffsetAndSize` -> `src/GameZRecoil/zHud/zhud_ui.cpp:1636`
 - `0x413aa0` `HudUiLayoutNode::ReadRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:1463`
@@ -162,7 +162,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x413b10` `HudUiLayoutNode::ApplyCornerTextQuad` -> `src/GameZRecoil/zHud/zhud_ui.cpp:1509`
 - `0x413c10` `HudUiLayoutNode::ApplyMeterQuad` -> `src/GameZRecoil/zHud/zhud_ui.cpp:1569`
 - `0x413d30` `HudUiLayoutNode::ApplyImageWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:1705`
-- `0x414070` `HudUiMessage::RebuildWeaponLayout` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14140`
+- `0x414070` `HudUiMessage::RebuildWeaponLayout` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14143`
 - `0x414300` `HudUiMgrSensor::GetFxRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:2670`
 - `0x415fb0` `HudRectI::ClipOrSplitSegment` -> `src/Battlesport/HudSensorTracker.cpp:492`
 - `0x416240` `HudRectI::CalcOutcode` -> `src/Battlesport/HudSensorTracker.cpp:392`
@@ -173,18 +173,18 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x418620` `HudSensorTracker::SetObjectiveReviewVisible` -> `src/Battlesport/HudSensorTracker.cpp:2802`
 - `0x418760` `HudSensorTracker::SetObjectivePanelVisible` -> `src/Battlesport/HudSensorTracker.cpp:2997`
 - `0x419380` `HudSensorTracker::OnObjectiveReadSoundEvent` -> `src/Battlesport/HudSensorTracker.cpp:2838`
-- `0x42bf40` `HudUi::PlayPowerupSfx` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17409`
+- `0x42bf40` `HudUi::PlayPowerupSfx` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17412`
 - `0x4348b0` `HudUiSaveLoadGameNameInput::OnActivate` -> `src/Battlesport/RecoilApp.cpp:343`
 - `0x4348f0` `HudUiSaveLoadGameNameInput::OnRawKeyboardEvent` -> `src/Battlesport/RecoilApp.cpp:354`
 - `0x434950` `HudUiSaveLoadListItem::Draw` -> `src/Battlesport/RecoilApp.cpp:260`
 - `0x4349a0` `HudUiSaveLoadDialog::Destructor` -> `src/Battlesport/RecoilApp.cpp:1194`
 - `0x434a80` `HudUiSaveGameDialog::Destructor` -> `src/Battlesport/RecoilApp.cpp:1105`
 - `0x435220` `HudUiSaveGamePrimaryActionButton::OnActivate` -> `src/Battlesport/RecoilApp.cpp:413`
-- `0x4bcf80` `HudUiBar::SetPointXY` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14521`
-- `0x4bd280` `HudUi::PushTopMessageLine` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17480`
-- `0x4bd470` `zTimedTask::RemoveFromActiveList` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17116`
-- `0x4bd4d0` `zTimedTask::RunImmediateAction` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17146`
-- `0x4bd660` `zTimedTask::TickActiveList` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17254`
+- `0x4bcf80` `HudUiBar::SetPointXY` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14524`
+- `0x4bd280` `HudUi::PushTopMessageLine` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17483`
+- `0x4bd470` `zTimedTask::RemoveFromActiveList` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17119`
+- `0x4bd4d0` `zTimedTask::RunImmediateAction` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17149`
+- `0x4bd660` `zTimedTask::TickActiveList` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17257`
 - `0x4bd6f0` `HudLineClip::SetCurrentBoundsFromRectI` -> `src/Battlesport/HudSensorTracker.cpp:247`
 - `0x4bd840` `HudLineClip::ClipSegmentToCurrentBounds` -> `src/Battlesport/HudSensorTracker.cpp:366`
 - `0x4bd880` `HudLineClip::ClipSegmentToCurrentXBounds` -> `src/Battlesport/HudSensorTracker.cpp:258`
@@ -216,46 +216,46 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## Battlesport/HudCmdBindButton.cpp
 
-- `0x40bdc0` `zUtil_StdPtrVector_Clear` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10807`
-- `0x40c280` `HudCmdBindButtonBase::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10871`
-- `0x4b8de0` `HudCmdBindButtonBase::LoadFromZrd` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12774`
-- `0x4b90e0` `HudCmdBindButtonBase::RebuildBindingSlotWidgets` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12713`
-- `0x4b9320` `HudCmdBindButtonBase::OnSelectedIndexChanged` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10711`
-- `0x4b9330` `HudCmdBindButtonBase::SetSelectedEntry` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10719`
+- `0x40bdc0` `zUtil_StdPtrVector_Clear` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10810`
+- `0x40c280` `HudCmdBindButtonBase::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10874`
+- `0x4b8de0` `HudCmdBindButtonBase::LoadFromZrd` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12777`
+- `0x4b90e0` `HudCmdBindButtonBase::RebuildBindingSlotWidgets` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12716`
+- `0x4b9320` `HudCmdBindButtonBase::OnSelectedIndexChanged` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10714`
+- `0x4b9330` `HudCmdBindButtonBase::SetSelectedEntry` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10722`
 
 ## Battlesport/HudCmdDialog.cpp
 
-- `0x40a5b0` `HudCmdDialog::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11273`
-- `0x40a920` `HudCmdDialog::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11427`
-- `0x40adf0` `HudCmdDialog::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11405`
-- `0x40b140` `HudCmdDialog::UpdateCaptureState` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12481`
-- `0x40b3e0` `HudCmdDialog::ApplyPrimaryKeyRebind` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12586`
-- `0x40b460` `HudCmdDialog::ApplySecondaryKeyRebind` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12619`
-- `0x40b4e0` `HudCmdDialog::ApplyJoystickButtonRebind` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12652`
-- `0x40b560` `HudCmdDialog::ApplyMouseButtonRebind` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12682`
-- `0x40b5e0` `HudCmdDialog::SelectGroupRelative` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12106`
-- `0x40b630` `HudCmdDialog::SelectCommandRelative` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12124`
-- `0x40b680` `HudCmdDialog::RebuildCommandBindingListsForGroup` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12301`
-- `0x40b930` `HudCmdResetButton::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12150`
-- `0x40b960` `HudCmdSetListWidget::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12161`
-- `0x40b980` `HudCmdDialog::OnCommandSelectionChanged` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12449`
-- `0x40ba30` `HudCmdKeyAButton::OnBeginCapture` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12171`
-- `0x40bab0` `HudCmdKeyBButton::OnBeginCapture` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12204`
-- `0x40bb00` `HudCmdJoyButton::OnBeginCapture` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12224`
-- `0x40bb50` `HudCmdMouseButton::OnBeginCapture` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12245`
-- `0x40bba0` `HudCmdNextSetButton::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12273`
-- `0x40bbc0` `HudCmdPrevSetButton::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12280`
-- `0x40bbe0` `HudCmdNextCommandButton::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12287`
-- `0x40bc00` `HudCmdPrevCommandButton::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12294`
-- `0x40bc20` `HudCmdDialogState::StaticInitAndRegisterAtExit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12006`
-- `0x40bc30` `HudCmdDialogState::StaticInit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12016`
-- `0x40bc40` `HudCmdDialogState::RegisterAtExit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12025`
-- `0x40bc50` `HudCmdDialogState::AtExitDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12034`
-- `0x40bc60` `HudCmdDialogState::HudCmdDialogState` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12052`
-- `0x40bc90` `HudCmdDialogState::~HudCmdDialogState` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12096`
-- `0x40bcf0` `HudCmdDialogState::OnTryBecomeCurrent` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12060`
-- `0x40bd60` `HudCmdDialogState::OnDeactivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12074`
-- `0x40bda0` `HudCmdDialogState::QueueEnter` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12042`
+- `0x40a5b0` `HudCmdDialog::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11276`
+- `0x40a920` `HudCmdDialog::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11430`
+- `0x40adf0` `HudCmdDialog::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11408`
+- `0x40b140` `HudCmdDialog::UpdateCaptureState` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12484`
+- `0x40b3e0` `HudCmdDialog::ApplyPrimaryKeyRebind` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12589`
+- `0x40b460` `HudCmdDialog::ApplySecondaryKeyRebind` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12622`
+- `0x40b4e0` `HudCmdDialog::ApplyJoystickButtonRebind` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12655`
+- `0x40b560` `HudCmdDialog::ApplyMouseButtonRebind` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12685`
+- `0x40b5e0` `HudCmdDialog::SelectGroupRelative` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12109`
+- `0x40b630` `HudCmdDialog::SelectCommandRelative` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12127`
+- `0x40b680` `HudCmdDialog::RebuildCommandBindingListsForGroup` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12304`
+- `0x40b930` `HudCmdResetButton::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12153`
+- `0x40b960` `HudCmdSetListWidget::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12164`
+- `0x40b980` `HudCmdDialog::OnCommandSelectionChanged` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12452`
+- `0x40ba30` `HudCmdKeyAButton::OnBeginCapture` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12174`
+- `0x40bab0` `HudCmdKeyBButton::OnBeginCapture` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12207`
+- `0x40bb00` `HudCmdJoyButton::OnBeginCapture` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12227`
+- `0x40bb50` `HudCmdMouseButton::OnBeginCapture` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12248`
+- `0x40bba0` `HudCmdNextSetButton::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12276`
+- `0x40bbc0` `HudCmdPrevSetButton::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12283`
+- `0x40bbe0` `HudCmdNextCommandButton::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12290`
+- `0x40bc00` `HudCmdPrevCommandButton::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12297`
+- `0x40bc20` `HudCmdDialogState::StaticInitAndRegisterAtExit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12009`
+- `0x40bc30` `HudCmdDialogState::StaticInit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12019`
+- `0x40bc40` `HudCmdDialogState::RegisterAtExit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12028`
+- `0x40bc50` `HudCmdDialogState::AtExitDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12037`
+- `0x40bc60` `HudCmdDialogState::HudCmdDialogState` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12055`
+- `0x40bc90` `HudCmdDialogState::~HudCmdDialogState` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12099`
+- `0x40bcf0` `HudCmdDialogState::OnTryBecomeCurrent` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12063`
+- `0x40bd60` `HudCmdDialogState::OnDeactivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12077`
+- `0x40bda0` `HudCmdDialogState::QueueEnter` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12045`
 
 ## Battlesport/HudConfirmQuitDialog.cpp
 
@@ -271,10 +271,10 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## Battlesport/HudOptionsDialog.cpp
 
-- `0x40c6e0` `HudUiOptionsPanelBackButton::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11441`
-- `0x40c720` `HudOptionsDialog::HudOptionsDialog` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11889`
-- `0x40cf00` `HudOptionsDialog::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11990`
-- `0x40cf60` `HudOptionsDialog::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11968`
+- `0x40c6e0` `HudUiOptionsPanelBackButton::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11444`
+- `0x40c720` `HudOptionsDialog::HudOptionsDialog` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11892`
+- `0x40cf00` `HudOptionsDialog::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11993`
+- `0x40cf60` `HudOptionsDialog::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11971`
 - `0x40d070` `HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit` -> `src/Battlesport/hud.cpp:960`
 - `0x40d080` `HudUiOptionsPanelOverlayOwner::StaticInit` -> `src/Battlesport/hud.cpp:970`
 - `0x40d090` `HudUiOptionsPanelOverlayOwner::RegisterAtExit` -> `src/Battlesport/hud.cpp:979`
@@ -286,8 +286,8 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## Battlesport/HudScoreboard.cpp
 
-- `0x40eab0` `HudScoreboard::SetScaleAndRebuild` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17048`
-- `0x40eae0` `HudScoreboard::DispatchSetScale` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17060`
+- `0x40eab0` `HudScoreboard::SetScaleAndRebuild` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17051`
+- `0x40eae0` `HudScoreboard::DispatchSetScale` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17063`
 
 ## Battlesport/HudSensor.cpp
 
@@ -303,49 +303,49 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 - `0x414330` `GameNet::ShowPlayerKillMessage` -> `src/Battlesport/GameNet.cpp:2718`
 - `0x4143a0` `HudUiMgr::IsLocalPlayerFirstInStatsList` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3451`
-- `0x4143b0` `HudUi::RefreshScoreboardEntryRow` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17465`
-- `0x4143c0` `HudUi::RemoveScoreboardEntryRow` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17472`
-- `0x41ab60` `HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15228`
-- `0x41ab70` `HudUiNetGameSetupOverlayOwner::StaticInit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15235`
-- `0x41ab80` `HudUiNetGameSetupOverlayOwner::RegisterAtExit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15241`
-- `0x41ab90` `HudUiNetGameSetupOverlayOwner::AtExitDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15247`
-- `0x41aba0` `HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15253`
-- `0x41abe0` `HudUiNetGameSetupOverlayOwner::~HudUiNetGameSetupOverlayOwner` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15259`
-- `0x41ac50` `HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15275`
-- `0x41ad20` `HudUiNetGameSetupOverlayOwner::OnDeactivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15312`
+- `0x4143b0` `HudUi::RefreshScoreboardEntryRow` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17468`
+- `0x4143c0` `HudUi::RemoveScoreboardEntryRow` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17475`
+- `0x41ab60` `HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15231`
+- `0x41ab70` `HudUiNetGameSetupOverlayOwner::StaticInit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15238`
+- `0x41ab80` `HudUiNetGameSetupOverlayOwner::RegisterAtExit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15244`
+- `0x41ab90` `HudUiNetGameSetupOverlayOwner::AtExitDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15250`
+- `0x41aba0` `HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15256`
+- `0x41abe0` `HudUiNetGameSetupOverlayOwner::~HudUiNetGameSetupOverlayOwner` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15262`
+- `0x41ac50` `HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15278`
+- `0x41ad20` `HudUiNetGameSetupOverlayOwner::OnDeactivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15315`
 
 ## Battlesport/hudui.cpp
 
-- `0x426150` `HudUi::HandleHotkeyCommand` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17309`
-- `0x4b3e90` `HudUiWidget::InvalidateRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7912`
-- `0x4b3fb0` `HudUiWidget::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13335`
-- `0x4bc760` `HudUi::SetInvalidateMode` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17281`
+- `0x426150` `HudUi::HandleHotkeyCommand` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17312`
+- `0x4b3e90` `HudUiWidget::InvalidateRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7915`
+- `0x4b3fb0` `HudUiWidget::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13338`
+- `0x4bc760` `HudUi::SetInvalidateMode` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17284`
 
 ## Battlesport/hudui_background.cpp
 
-- `0x4b9540` `HudUiBackground::HudUiBackground` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6965`
-- `0x4b9740` `HudUiBackground::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7033`
-- `0x4b9760` `HudUiBackground::~HudUiBackground` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7011`
-- `0x4b98d0` `HudUiBackground::LoadFromZrd` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7095`
-- `0x4b9900` `HudUiBackground::LoadZrdAndSection` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7115`
+- `0x4b9540` `HudUiBackground::HudUiBackground` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6968`
+- `0x4b9740` `HudUiBackground::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7036`
+- `0x4b9760` `HudUiBackground::~HudUiBackground` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7014`
+- `0x4b98d0` `HudUiBackground::LoadFromZrd` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7098`
+- `0x4b9900` `HudUiBackground::LoadZrdAndSection` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7118`
 - `0x4ba020` `HudUiTransitionTextPanel::HudUiTransitionTextPanel` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5527`
-- `0x4bf980` `HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7975`
-- `0x4bfa20` `HudUiBackgroundCursorWidget::~HudUiBackgroundCursorWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7993`
-- `0x4bfa50` `HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8003`
-- `0x4bfa70` `HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8013`
-- `0x4bfa90` `HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8023`
-- `0x4bfae0` `HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8044`
-- `0x4bfb70` `HudUiBackgroundCursorWidget::SetPos` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8081`
-- `0x4bfba0` `HudUiBackgroundCursorWidget::RebuildCapturedImage` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8097`
-- `0x4bfc50` `HudUiBackgroundCursorWidget::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8132`
-- `0x4bfc60` `HudUiBackgroundCursorWidget::DrawBase` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8138`
-- `0x4bfc80` `HudUiBackgroundVideoWidget::HudUiBackgroundVideoWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8152`
-- `0x4bfcd0` `HudUiBackgroundVideoWidget::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8170`
-- `0x4bfd40` `HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8176`
-- `0x4bfe40` `HudUiBackgroundVideoWidget::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8237`
-- `0x4bfe90` `HudUiBackgroundVideoWidget::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8255`
-- `0x4bfec0` `HudUiBackgroundVideoWidget::DrawBase` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8271`
-- `0x4bff00` `HudUiBackgroundVideoWidget::RebuildBltRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8288`
+- `0x4bf980` `HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7978`
+- `0x4bfa20` `HudUiBackgroundCursorWidget::~HudUiBackgroundCursorWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7996`
+- `0x4bfa50` `HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8006`
+- `0x4bfa70` `HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8016`
+- `0x4bfa90` `HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8026`
+- `0x4bfae0` `HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8047`
+- `0x4bfb70` `HudUiBackgroundCursorWidget::SetPos` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8084`
+- `0x4bfba0` `HudUiBackgroundCursorWidget::RebuildCapturedImage` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8100`
+- `0x4bfc50` `HudUiBackgroundCursorWidget::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8135`
+- `0x4bfc60` `HudUiBackgroundCursorWidget::DrawBase` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8141`
+- `0x4bfc80` `HudUiBackgroundVideoWidget::HudUiBackgroundVideoWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8155`
+- `0x4bfcd0` `HudUiBackgroundVideoWidget::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8173`
+- `0x4bfd40` `HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8179`
+- `0x4bfe40` `HudUiBackgroundVideoWidget::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8240`
+- `0x4bfe90` `HudUiBackgroundVideoWidget::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8258`
+- `0x4bfec0` `HudUiBackgroundVideoWidget::DrawBase` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8274`
+- `0x4bff00` `HudUiBackgroundVideoWidget::RebuildBltRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8291`
 
 ## Battlesport/hudui_element.cpp
 
@@ -390,10 +390,9 @@ These original-source labels differ only by case on Windows; confirm placement a
 ## Battlesport/HudUiCreditsPanel.cpp
 
 - `0x409040` `HudUiCreditsPanel::HudUiCreditsPanel` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6157`
-- `0x409380` `HudUiCreditsPanel::UpdateFadeAndExit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6466`
 - `0x409570` `HudUiZrdScrollingText::LoadFromZrd` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6211`
-- `0x409b90` `HudUiPanelSpan::InsertN` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6732`
-- `0x409f00` `HudUiPanelSpanVec::InsertN` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6823`
+- `0x409b90` `HudUiPanelSpan::InsertN` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6735`
+- `0x409f00` `HudUiPanelSpanVec::InsertN` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6826`
 
 ## Battlesport/HudUiListMenu.cpp
 
@@ -424,7 +423,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## Battlesport/HudUiMessageBoxDialog.cpp
 
-- `0x438350` `HudUi::ShowMessageBox` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17288`
+- `0x438350` `HudUi::ShowMessageBox` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17291`
 
 ## Battlesport/HudUiMgrSensor.cpp
 
@@ -472,17 +471,17 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## Battlesport/HudUiPanel.cpp
 
-- `0x409910` `HudUiPanelSpan::Clear` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6606`
-- `0x409b60` `HudUiPanelLayoutEntry::DestroyRange` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6590`
-- `0x40a170` `HudUiPanelLayoutEntry::CopyAssignRange` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6567`
-- `0x40a1e0` `HudUiPanelLayoutEntry::CopyAssign` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6553`
-- `0x40a210` `HudUiPanelLayoutEntry::CopyConstruct` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6539`
-- `0x40a240` `HudUiPanelSpan::CopyInit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6624`
-- `0x40a300` `HudUiPanelSpan::CopyFrom` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6654`
-- `0x4ba850` `HudUiPanel::CopyConstructCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15635`
-- `0x4ba9e0` `HudUiPanel::ConstructorCopy` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15684`
-- `0x4babb0` `HudUiPanel::SetFont` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15968`
-- `0x4bc9b0` `HudUiTransitionTextPanel::SetFlashColorAndRate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9785`
+- `0x409910` `HudUiPanelSpan::Clear` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6609`
+- `0x409b60` `HudUiPanelLayoutEntry::DestroyRange` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6593`
+- `0x40a170` `HudUiPanelLayoutEntry::CopyAssignRange` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6570`
+- `0x40a1e0` `HudUiPanelLayoutEntry::CopyAssign` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6556`
+- `0x40a210` `HudUiPanelLayoutEntry::CopyConstruct` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6542`
+- `0x40a240` `HudUiPanelSpan::CopyInit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6627`
+- `0x40a300` `HudUiPanelSpan::CopyFrom` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6657`
+- `0x4ba850` `HudUiPanel::CopyConstructCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15638`
+- `0x4ba9e0` `HudUiPanel::ConstructorCopy` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15687`
+- `0x4babb0` `HudUiPanel::SetFont` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15971`
+- `0x4bc9b0` `HudUiTransitionTextPanel::SetFlashColorAndRate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9788`
 
 ## Battlesport/HudUiSaveLoadDialog.cpp
 
@@ -499,33 +498,33 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## Battlesport/HudUiTextLabel.cpp
 
-- `0x4bcbe0` `HudUiTextLabel::CopyConstructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15404`
-- `0x4bcc80` `HudUiTextLabel::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15426`
+- `0x4bcbe0` `HudUiTextLabel::CopyConstructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15407`
+- `0x4bcc80` `HudUiTextLabel::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15429`
 
 ## Battlesport/HudUiTextStack4.cpp
 
-- `0x4bd110` `HudUiTextStack4::SetFontAll` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17524`
-- `0x4bd160` `HudUiTextStack4::PushLine` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17074`
+- `0x4bd110` `HudUiTextStack4::SetFontAll` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17527`
+- `0x4bd160` `HudUiTextStack4::PushLine` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17077`
 
 ## Battlesport/HudUiTransitionTextPanel.cpp
 
-- `0x4bc9f0` `HudUiTransitionTextPanel::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9669`
+- `0x4bc9f0` `HudUiTransitionTextPanel::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9672`
 
 ## Battlesport/HudUiTriplet.cpp
 
-- `0x40e070` `HudUiTriplet::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16738`
-- `0x40e140` `HudUiTriplet::RebuildDisplay` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16776`
-- `0x40e590` `HudUiTriplet::AddEntry` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16941`
-- `0x40e800` `HudUiTriplet::UpdateEntryData` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16974`
-- `0x40e880` `HudUiTriplet::RemoveEntry` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16997`
-- `0x40e910` `HudUiTriplet::InterpolateLayout` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13647`
-- `0x40ea60` `HudUiTriplet::IsLocalPlayerFirstEntry` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17027`
+- `0x40e070` `HudUiTriplet::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16741`
+- `0x40e140` `HudUiTriplet::RebuildDisplay` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16779`
+- `0x40e590` `HudUiTriplet::AddEntry` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16944`
+- `0x40e800` `HudUiTriplet::UpdateEntryData` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16977`
+- `0x40e880` `HudUiTriplet::RemoveEntry` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17000`
+- `0x40e910` `HudUiTriplet::InterpolateLayout` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13650`
+- `0x40ea60` `HudUiTriplet::IsLocalPlayerFirstEntry` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17030`
 
 ## Battlesport/HudUiZrdWidget.cpp
 
-- `0x4b7020` `HudUiCheckToggleWidget::~HudUiCheckToggleWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9118`
-- `0x4b7340` `HudUiCheckToggleWidget::LoadFromZrd` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9277`
-- `0x4b7de0` `HudUiCycleSelectorWidget::~HudUiCycleSelectorWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9454`
+- `0x4b7020` `HudUiCheckToggleWidget::~HudUiCheckToggleWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9121`
+- `0x4b7340` `HudUiCheckToggleWidget::LoadFromZrd` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9280`
+- `0x4b7de0` `HudUiCycleSelectorWidget::~HudUiCycleSelectorWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9457`
 
 ## Battlesport/map.cpp
 
@@ -1449,11 +1448,11 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## GameZRecoil/zHud/HudUiBackground.cpp
 
-- `0x4b9850` `HudUiBackground::SetEnabled` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7502`
+- `0x4b9850` `HudUiBackground::SetEnabled` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7505`
 
 ## GameZRecoil/zHud/HudUiNetGameSetup.cpp
 
-- `0x41ad80` `HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15339`
+- `0x41ad80` `HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15342`
 
 ## GameZRecoil/zImage/zimg_fonts.cpp
 
@@ -1874,12 +1873,12 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## HudUiBackground.cpp
 
-- `0x4ba350` `HudUiBackground::FreeLoadedTreeRoots` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7743`
+- `0x4ba350` `HudUiBackground::FreeLoadedTreeRoots` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7746`
 - `0x4bffb0` `HudUiPrimitiveBindTarget::SetSegmentEndpoints` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5316`
 
 ## HudUiFillBitmap.cpp
 
-- `0x4b84d0` `HudUiFillBitmap::~HudUiFillBitmap` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10055`
+- `0x4b84d0` `HudUiFillBitmap::~HudUiFillBitmap` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10058`
 
 ## src/Battlesport/gamenet.cpp
 
@@ -2024,9 +2023,9 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x404d50` `HudUiElement::GetX` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5168`
 - `0x404d60` `HudUiElement::GetY` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5176`
 - `0x404d70` `HudUiElement::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4949`
-- `0x404d90` `HudUiWidget::GetCenterX` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13273`
-- `0x404dd0` `HudUiWidget::GetCenterY` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13286`
-- `0x404e10` `HudUiWidget::RebuildBltRectFromImage` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13317`
+- `0x404d90` `HudUiWidget::GetCenterX` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13276`
+- `0x404dd0` `HudUiWidget::GetCenterY` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13289`
+- `0x404e10` `HudUiWidget::RebuildBltRectFromImage` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13320`
 - `0x404e60` `HudUiCircle::HitTest` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5382`
 - `0x404e80` `zError::ReportOldNoOp` -> `src/GameZRecoil/zError/zerr_old.c:25`
 - `0x406a00` `zStr::ContainsCaseInsensitive` -> `src/Battlesport/zStr.cpp:11`
@@ -2110,13 +2109,14 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x408a10` `zOpt::SetWolPasswordFlag` -> `src/GameZRecoil/zGame/zGame.cpp:1726`
 - `0x408a20` `zOpt_GetWolPasswordFlagValue` -> `src/GameZRecoil/zGame/zGame.cpp:2165`
 - `0x408f50` `RecoilStateDialogHost::OnWndActivate` -> `src/GameZRecoil/RecoilApp/RecoilStateDialogHost.cpp:4`
-- `0x409010` `HudUiZrdWidgetEx17C::EnableChildAtIndex` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10544`
+- `0x409010` `HudUiZrdWidgetEx17C::EnableChildAtIndex` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10547`
 - `0x409160` `HudUiCreditsBackButton::OnActivate` -> `src/Battlesport/hud.cpp:1045`
 - `0x409180` `HudUiCreditsQuitButton::OnActivate` -> `src/Battlesport/hud.cpp:1054`
-- `0x4091c0` `HudUiCreditsPanel::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6522`
+- `0x4091c0` `HudUiCreditsPanel::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6525`
 - `0x4091e0` `HudUiZrdScrollingText::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6129`
-- `0x4092a0` `HudUiCreditsPanel::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6499`
+- `0x4092a0` `HudUiCreditsPanel::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6502`
 - `0x409360` `HudUiZrdScrollingText::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6450`
+- `0x409380` `HudUiCreditsPanel::UpdateFadeAndExit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6467`
 - `0x409410` `HudUiZrdScrollingText::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6383`
 - `0x409470` `HudUiZrdScrollingText::UpdateScrollPositions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6405`
 - `0x409550` `HudUiZrdScrollingText::OnActivateResetOwnerFade` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6198`
@@ -2129,59 +2129,59 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x409a60` `RecoilStateCredits::OnTryBecomeCurrent` -> `src/Battlesport/RecoilStateCredits.cpp:69`
 - `0x409ad0` `RecoilStateCredits::OnDeactivate` -> `src/Battlesport/RecoilStateCredits.cpp:87`
 - `0x409b00` `RecoilStateCredits::QueuePush` -> `src/Battlesport/RecoilStateCredits.cpp:129`
-- `0x409b20` `HudUiPanelSpan::DestroyAndFree` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6913`
+- `0x409b20` `HudUiPanelSpan::DestroyAndFree` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6916`
 - `0x409ef0` `HudUiPanel::DestructorCallback` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6439`
-- `0x40a590` `HudUiPanel::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15909`
-- `0x40a940` `HudCmdCommandList::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10916`
-- `0x40aa30` `HudCmdKeyAButton::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10979`
-- `0x40ab20` `HudCmdKeyBButton::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11042`
-- `0x40ac10` `HudCmdJoyButton::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11105`
-- `0x40ad00` `HudCmdMouseButton::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11168`
-- `0x40ba60` `HudCmdKeyAButton::OnClearBinding` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12180`
-- `0x40ba90` `HudCmdBindButtonBase::OnSelectionChangedRefresh` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12194`
-- `0x40bae0` `HudCmdKeyBButton::OnClearBinding` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12213`
-- `0x40bb30` `HudCmdJoyButton::OnClearBinding` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12233`
-- `0x40bb80` `HudCmdMouseButton::OnClearBinding` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12258`
-- `0x40bdf0` `StdPtrVector::ClearNoOpDestroy` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10634`
-- `0x40be00` `HudCmdBinding::DestroyRange` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10774`
-- `0x40be60` `HudCmdBindingEntry::CopyRange` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10656`
-- `0x40be90` `HudUiPanel::Invalidate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15870`
-- `0x40bea0` `HudUiPanel::GetFont` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15876`
-- `0x40beb0` `HudUiPanel::SetFontHandle` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15881`
-- `0x40bec0` `HudUiPanel::EnableWordWrapWithRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15888`
-- `0x40bef0` `HudUiPanel::DestructorThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15744`
-- `0x40bf00` `HudUtil::FreeFieldPtr` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15897`
-- `0x40bf20` `HudCmdBindingEntry::DeleteAndReturnNull` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10678`
-- `0x40bf80` `HudCmdBindButtonBase::AddBindingEntry` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10693`
-- `0x40c1d0` `HudCmdBindButtonBase::ClearBindingEntries` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10847`
+- `0x40a590` `HudUiPanel::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15912`
+- `0x40a940` `HudCmdCommandList::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10919`
+- `0x40aa30` `HudCmdKeyAButton::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10982`
+- `0x40ab20` `HudCmdKeyBButton::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11045`
+- `0x40ac10` `HudCmdJoyButton::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11108`
+- `0x40ad00` `HudCmdMouseButton::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11171`
+- `0x40ba60` `HudCmdKeyAButton::OnClearBinding` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12183`
+- `0x40ba90` `HudCmdBindButtonBase::OnSelectionChangedRefresh` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12197`
+- `0x40bae0` `HudCmdKeyBButton::OnClearBinding` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12216`
+- `0x40bb30` `HudCmdJoyButton::OnClearBinding` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12236`
+- `0x40bb80` `HudCmdMouseButton::OnClearBinding` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12261`
+- `0x40bdf0` `StdPtrVector::ClearNoOpDestroy` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10637`
+- `0x40be00` `HudCmdBinding::DestroyRange` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10777`
+- `0x40be60` `HudCmdBindingEntry::CopyRange` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10659`
+- `0x40be90` `HudUiPanel::Invalidate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15873`
+- `0x40bea0` `HudUiPanel::GetFont` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15879`
+- `0x40beb0` `HudUiPanel::SetFontHandle` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15884`
+- `0x40bec0` `HudUiPanel::EnableWordWrapWithRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15891`
+- `0x40bef0` `HudUiPanel::DestructorThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15747`
+- `0x40bf00` `HudUtil::FreeFieldPtr` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15900`
+- `0x40bf20` `HudCmdBindingEntry::DeleteAndReturnNull` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10681`
+- `0x40bf80` `HudCmdBindButtonBase::AddBindingEntry` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10696`
+- `0x40c1d0` `HudCmdBindButtonBase::ClearBindingEntries` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10850`
 - `0x40c370` `zSys::ProbePlatformAndVideoCaps` -> `src/GameZRecoil/zSys/zSys_probe_platform.inl:2`
-- `0x40c9c0` `HudUiOptionsPanel_Lighting::InitFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11463`
-- `0x40c9e0` `HudUiOptionsPanel_Lighting::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11471`
-- `0x40ca20` `HudUiOptionsPanel_Perspective::InitFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11492`
-- `0x40ca40` `HudUiOptionsPanel_Perspective::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11500`
-- `0x40ca80` `HudUiOptionsPanel_FullHud::InitFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11518`
-- `0x40caa0` `HudUiCheckToggleWidget::OnActivateThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9271`
-- `0x40cab0` `HudUiOptionsPanel_ObjectDetail::InitFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11535`
-- `0x40cad0` `HudUiOptionsPanel_ObjectDetail::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11543`
-- `0x40caf0` `HudUiOptionsPanel_TextureMemory::InitFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11561`
-- `0x40cb10` `HudUiOptionsPanel_TextureMemory::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11569`
-- `0x40cb30` `HudUiOptionsPanel_Effects::InitFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11587`
-- `0x40cb70` `HudUiOptionsPanel_Effects::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11606`
-- `0x40cb90` `HudUiOptionsPanel_SoundActive::InitFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11624`
-- `0x40cbb0` `HudUiOptionsPanel_SoundActive::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11632`
-- `0x40cbd0` `HudUiOptionsPanel_SoundQuality::InitFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11650`
-- `0x40cbf0` `HudUiOptionsPanel_SoundQuality::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11658`
-- `0x40cc10` `HudUiOptionsPanel_SoundVolume::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11672`
-- `0x40cc30` `HudUiOptionsPanel_SoundVolume::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11680`
-- `0x40cc60` `HudUiOptionsPanel_MusicEnable::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11695`
-- `0x40cc80` `HudUiOptionsPanel_MusicEnable::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11703`
-- `0x40ccc0` `HudUiOptionsPanel_MusicVolume::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11726`
-- `0x40cd00` `HudUiOptionsPanel_MusicVolume::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11740`
-- `0x40cd30` `HudUiOptionsPanel_Resolution::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11758`
-- `0x40ce80` `HudUiOptionsPanel_Resolution::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11862`
-- `0x40cf30` `HudUiCheckToggleWidget::DestructorCoreThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9146`
-- `0x40cf40` `HudUiCycleSelectorWidget::DestructorCoreThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9482`
-- `0x40cf50` `HudUiFillBitmap::DestructorCoreThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10085`
+- `0x40c9c0` `HudUiOptionsPanel_Lighting::InitFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11466`
+- `0x40c9e0` `HudUiOptionsPanel_Lighting::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11474`
+- `0x40ca20` `HudUiOptionsPanel_Perspective::InitFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11495`
+- `0x40ca40` `HudUiOptionsPanel_Perspective::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11503`
+- `0x40ca80` `HudUiOptionsPanel_FullHud::InitFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11521`
+- `0x40caa0` `HudUiCheckToggleWidget::OnActivateThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9274`
+- `0x40cab0` `HudUiOptionsPanel_ObjectDetail::InitFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11538`
+- `0x40cad0` `HudUiOptionsPanel_ObjectDetail::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11546`
+- `0x40caf0` `HudUiOptionsPanel_TextureMemory::InitFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11564`
+- `0x40cb10` `HudUiOptionsPanel_TextureMemory::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11572`
+- `0x40cb30` `HudUiOptionsPanel_Effects::InitFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11590`
+- `0x40cb70` `HudUiOptionsPanel_Effects::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11609`
+- `0x40cb90` `HudUiOptionsPanel_SoundActive::InitFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11627`
+- `0x40cbb0` `HudUiOptionsPanel_SoundActive::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11635`
+- `0x40cbd0` `HudUiOptionsPanel_SoundQuality::InitFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11653`
+- `0x40cbf0` `HudUiOptionsPanel_SoundQuality::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11661`
+- `0x40cc10` `HudUiOptionsPanel_SoundVolume::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11675`
+- `0x40cc30` `HudUiOptionsPanel_SoundVolume::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11683`
+- `0x40cc60` `HudUiOptionsPanel_MusicEnable::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11698`
+- `0x40cc80` `HudUiOptionsPanel_MusicEnable::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11706`
+- `0x40ccc0` `HudUiOptionsPanel_MusicVolume::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11729`
+- `0x40cd00` `HudUiOptionsPanel_MusicVolume::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11743`
+- `0x40cd30` `HudUiOptionsPanel_Resolution::SyncFromOptions` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11761`
+- `0x40ce80` `HudUiOptionsPanel_Resolution::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:11865`
+- `0x40cf30` `HudUiCheckToggleWidget::DestructorCoreThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9149`
+- `0x40cf40` `HudUiCycleSelectorWidget::DestructorCoreThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9485`
+- `0x40cf50` `HudUiFillBitmap::DestructorCoreThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10088`
 - `0x40d270` `HudLayoutSW::GlobalInit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:214`
 - `0x40d280` `HudLayoutSW::RegisterAtExit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:219`
 - `0x40d290` `HudLayoutSW::AtExitDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:224`
@@ -2190,59 +2190,59 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x40d310` `HudLayoutHW::RegisterAtExit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:262`
 - `0x40d320` `HudLayoutHW::AtExitDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:267`
 - `0x40d3b0` `HudLayoutBase::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:191`
-- `0x40d590` `HudUiMessage::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14405`
-- `0x40d600` `HudUiTripletPanel::UnwindDestructFirstItem` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13631`
-- `0x40d610` `HudUiTripletPanel::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13636`
-- `0x40d660` `HudUiMgrObjectiveBlock::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13954`
-- `0x40d6e0` `HudUiMgrSensorBlock::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13961`
-- `0x40d780` `HudUiSlot::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13972`
+- `0x40d590` `HudUiMessage::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14408`
+- `0x40d600` `HudUiTripletPanel::UnwindDestructFirstItem` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13634`
+- `0x40d610` `HudUiTripletPanel::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13639`
+- `0x40d660` `HudUiMgrObjectiveBlock::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13957`
+- `0x40d6e0` `HudUiMgrSensorBlock::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13964`
+- `0x40d780` `HudUiSlot::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13975`
 - `0x40d9d0` `HudUiContainer::SetEnabled` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5960`
-- `0x40d9e0` `HudUiMeter::ConstructorEx` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15360`
-- `0x40da00` `HudUiMessage::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14386`
-- `0x40daa0` `HudUiMessage::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14412`
-- `0x40dac0` `HudUiCounter::HudUiCounter` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14067`
-- `0x40db20` `HudUiSlot::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13981`
-- `0x40db90` `HudUiSlot::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13995`
-- `0x40dbd0` `HudUiSlot::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14009`
-- `0x40dbf0` `HudUiCounterTextPanel::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16646`
-- `0x40e010` `HudUiPanel::SetTextColorsAndMarkDirty` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15939`
-- `0x40e040` `HudUiPanel::SetShadow` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15952`
+- `0x40d9e0` `HudUiMeter::ConstructorEx` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15363`
+- `0x40da00` `HudUiMessage::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14389`
+- `0x40daa0` `HudUiMessage::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14415`
+- `0x40dac0` `HudUiCounter::HudUiCounter` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14070`
+- `0x40db20` `HudUiSlot::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13984`
+- `0x40db90` `HudUiSlot::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13998`
+- `0x40dbd0` `HudUiSlot::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14012`
+- `0x40dbf0` `HudUiCounterTextPanel::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16649`
+- `0x40e010` `HudUiPanel::SetTextColorsAndMarkDirty` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15942`
+- `0x40e040` `HudUiPanel::SetShadow` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15955`
 - `0x40ec90` `HudLayoutBase::Shutdown_Stub` -> `src/GameZRecoil/zHud/zhud_ui.cpp:186`
-- `0x40eca0` `HudUiTimerPanel::SetRunning` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16541`
-- `0x40ecc0` `HudUiTimerPanel::SetElapsedSeconds` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16548`
-- `0x40ece0` `HudUiTimerPanel::SetSeconds` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16555`
-- `0x40ed10` `HudUiTimerPanel::GetSeconds` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16564`
-- `0x40ed20` `HudUiTimerPanel::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16569`
-- `0x40ed80` `HudUiTimerPanel::ConstructorDefault` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16610`
-- `0x40ee60` `HudUiTimerPanel::UpdateHMSFromSeconds` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16523`
-- `0x40ef00` `HudUiTimerPanel::SetTimeSeconds` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16503`
-- `0x40ef60` `HudUiTimerPanelFloat::ConstructorDefault` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17676`
-- `0x40f040` `HudUiTimerPanelFloat::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17666`
-- `0x40f070` `HudUiCounter::ApplyFromLayoutNode` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14091`
-- `0x40f0f0` `HudUiCounter::ReleaseStateImages` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14077`
-- `0x40f130` `HudUiCounter::UpdateLayoutPosition` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14115`
+- `0x40eca0` `HudUiTimerPanel::SetRunning` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16544`
+- `0x40ecc0` `HudUiTimerPanel::SetElapsedSeconds` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16551`
+- `0x40ece0` `HudUiTimerPanel::SetSeconds` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16558`
+- `0x40ed10` `HudUiTimerPanel::GetSeconds` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16567`
+- `0x40ed20` `HudUiTimerPanel::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16572`
+- `0x40ed80` `HudUiTimerPanel::ConstructorDefault` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16613`
+- `0x40ee60` `HudUiTimerPanel::UpdateHMSFromSeconds` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16526`
+- `0x40ef00` `HudUiTimerPanel::SetTimeSeconds` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16506`
+- `0x40ef60` `HudUiTimerPanelFloat::ConstructorDefault` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17679`
+- `0x40f040` `HudUiTimerPanelFloat::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17669`
+- `0x40f070` `HudUiCounter::ApplyFromLayoutNode` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14094`
+- `0x40f0f0` `HudUiCounter::ReleaseStateImages` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14080`
+- `0x40f130` `HudUiCounter::UpdateLayoutPosition` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14118`
 - `0x40f1a0` `HudUiMgr::SetModeCounterState` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4057`
-- `0x40f200` `HudUiTripletPanel::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13469`
-- `0x40f2b0` `HudUiTripletPanel::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13490`
-- `0x40f2d0` `HudUiWidget::HudUiWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13263`
-- `0x40f3e0` `HudUiTripletPanel::ShutdownItems_Stub` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13624`
-- `0x40f400` `HudUiTripletPanel::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13503`
-- `0x40f460` `HudUiTripletPanel::SetVisibleCount` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13523`
+- `0x40f200` `HudUiTripletPanel::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13472`
+- `0x40f2b0` `HudUiTripletPanel::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13493`
+- `0x40f2d0` `HudUiWidget::HudUiWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13266`
+- `0x40f3e0` `HudUiTripletPanel::ShutdownItems_Stub` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13627`
+- `0x40f400` `HudUiTripletPanel::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13506`
+- `0x40f460` `HudUiTripletPanel::SetVisibleCount` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13526`
 - `0x40f4c0` `HudUiMgr::InitHudLayouts` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4634`
-- `0x40f9e0` `HudUiPanel::SetTextColor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15925`
-- `0x40fa10` `HudUiStatsListElement::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14023`
-- `0x40fa20` `HudUiStatsListElement::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14042`
-- `0x40fa40` `HudUiStatsListElement::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14030`
-- `0x40fab0` `HudUiPanelSimple::ConstructorDefaultThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16494`
-- `0x40fac0` `HudUiPanelSimple::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16465`
-- `0x40fb70` `HudUiMeter::HudUiMeter` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15352`
-- `0x40fb90` `HudUiTimerPanel::ZarWriteTimerDataCallback` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16597`
-- `0x40fbb0` `HudUiTimerPanel::ZarReadTimerData` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16585`
+- `0x40f9e0` `HudUiPanel::SetTextColor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15928`
+- `0x40fa10` `HudUiStatsListElement::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14026`
+- `0x40fa20` `HudUiStatsListElement::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14045`
+- `0x40fa40` `HudUiStatsListElement::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14033`
+- `0x40fab0` `HudUiPanelSimple::ConstructorDefaultThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16497`
+- `0x40fac0` `HudUiPanelSimple::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16468`
+- `0x40fb70` `HudUiMeter::HudUiMeter` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15355`
+- `0x40fb90` `HudUiTimerPanel::ZarWriteTimerDataCallback` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16600`
+- `0x40fbb0` `HudUiTimerPanel::ZarReadTimerData` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16588`
 - `0x40fbd0` `HudUiMgr::ShutdownResources` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4769`
-- `0x40fdd0` `HudUiStringMenu::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14054`
-- `0x40fe30` `HudUiShieldMessageWidget::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14486`
-- `0x40fe90` `HudUiTopMessageStack::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17612`
-- `0x40fef0` `HudUiChatMessageStack::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17659`
+- `0x40fdd0` `HudUiStringMenu::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14057`
+- `0x40fe30` `HudUiShieldMessageWidget::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14489`
+- `0x40fe90` `HudUiTopMessageStack::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17615`
+- `0x40fef0` `HudUiChatMessageStack::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17662`
 - `0x40ff50` `HudUiMgr::ActivateHud` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4598`
 - `0x40ff80` `HudUiMgr::OnViewportChanged` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4534`
 - `0x410140` `HudUiMgr::TickLayoutDelay` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3441`
@@ -2254,9 +2254,9 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x411750` `HudUiMgr::SetNanitePanelCount` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4050`
 - `0x411a20` `HudUiMgrObjective::Begin` -> `src/GameZRecoil/zHud/zhud_ui.cpp:2907`
 - `0x411eb0` `HudUiMgrObjective::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3012`
-- `0x4126e0` `HudUiMessage::SelectVariantDisplay` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14259`
-- `0x412790` `HudUiMessage::ApplySideImageSwap` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14288`
-- `0x4127d0` `HudUiMessage::ClearDisplay` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14300`
+- `0x4126e0` `HudUiMessage::SelectVariantDisplay` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14262`
+- `0x412790` `HudUiMessage::ApplySideImageSwap` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14291`
+- `0x4127d0` `HudUiMessage::ClearDisplay` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14303`
 - `0x412bd0` `HudLayoutBase::SetActive` -> `src/GameZRecoil/zHud/zhud_ui.cpp:197`
 - `0x412be0` `HudLayoutBase::UpdateAll` -> `src/GameZRecoil/zHud/zhud_ui.cpp:288`
 - `0x412bf0` `HudLayoutBase::Enable` -> `src/GameZRecoil/zHud/zhud_ui.cpp:295`
@@ -2269,8 +2269,8 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4137f0` `HudUiAuxOverlay::UpdateTextLine` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3105`
 - `0x413910` `HudUiMgr::EnableTopAndChatStacks` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4613`
 - `0x413950` `HudUiMgr::DisableTopAndChatStacks` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4624`
-- `0x413ec0` `HudUiMessage::LoadWeaponLayoutFromNode` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14189`
-- `0x413ff0` `HudUiMessage::ReleaseImages` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14240`
+- `0x413ec0` `HudUiMessage::LoadWeaponLayoutFromNode` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14192`
+- `0x413ff0` `HudUiMessage::ReleaseImages` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14243`
 - `0x414180` `HudUiLoadingCheckpoint::AdvanceAndLog` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3037`
 - `0x414210` `HudUiLoadingCheckpoint::InitTable` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3068`
 - `0x414660` `GameNet::EndChatComposeAndSendThunk` -> `src/Battlesport/GameNet.cpp:1657`
@@ -2305,17 +2305,17 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x417f60` `HudSensorObjectiveSlot::Reset` -> `src/Battlesport/HudSensorTracker.cpp:1733`
 - `0x4186f0` `HudSensorTracker::GetObjectiveBriefingStringsAndImageRef` -> `src/Battlesport/HudSensorTracker.cpp:2715`
 - `0x41a160` `HudUiNetGameSetupPanel_CancelButton::OnActivate` -> `src/Battlesport/HudUiNetGameSetup.cpp:435`
-- `0x41a190` `HudUiNumericTextInput::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14838`
-- `0x41a200` `HudUiClampedIntTextInput::HudUiClampedIntTextInput` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14850`
-- `0x41a290` `HudUiNumericTextInput::OnAcceptForwardToCommit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15101`
-- `0x41a2a0` `HudUiClampedIntTextInput::OnRawKeyboardChar` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15116`
-- `0x41a2d0` `HudUiClampedIntTextInput::CommitAndGetValue` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15130`
-- `0x41a350` `HudUiClampedIntStepButton::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15168`
-- `0x41a3f0` `HudUiNumericTextInput::DestructorThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15006`
-- `0x41a570` `HudUiCycleSelectorWidget::ScalarDeletingDestructorThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9499`
-- `0x41a590` `HudUiCheckToggleWidget::ScalarDeletingDestructorThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9163`
+- `0x41a190` `HudUiNumericTextInput::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14841`
+- `0x41a200` `HudUiClampedIntTextInput::HudUiClampedIntTextInput` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14853`
+- `0x41a290` `HudUiNumericTextInput::OnAcceptForwardToCommit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15104`
+- `0x41a2a0` `HudUiClampedIntTextInput::OnRawKeyboardChar` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15119`
+- `0x41a2d0` `HudUiClampedIntTextInput::CommitAndGetValue` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15133`
+- `0x41a350` `HudUiClampedIntStepButton::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15171`
+- `0x41a3f0` `HudUiNumericTextInput::DestructorThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15009`
+- `0x41a570` `HudUiCycleSelectorWidget::ScalarDeletingDestructorThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9502`
+- `0x41a590` `HudUiCheckToggleWidget::ScalarDeletingDestructorThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9166`
 - `0x41a5b0` `HudUiNetGameSetupPanel_LaunchButton::OnActivate` -> `src/Battlesport/HudUiNetGameSetup.cpp:445`
-- `0x41a7b0` `HudUiNetGameSetupTextInput::OnActivateFocusAndCursor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15206`
+- `0x41a7b0` `HudUiNetGameSetupTextInput::OnActivateFocusAndCursor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15209`
 - `0x41a820` `HudUiNetGameSetupPanel_NextWorldButton::OnActivate` -> `src/Battlesport/HudUiNetGameSetup.cpp:519`
 - `0x41a9c0` `HudUiNetGameSetupPanel_PrevWorldButton::OnActivate` -> `src/Battlesport/HudUiNetGameSetup.cpp:529`
 - `0x41b150` `NetSessionBrowserDialog::RefreshSessionList` -> `src/Battlesport/GameNet.cpp:894`
@@ -2326,9 +2326,9 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x41c070` `HudUiNetExitPanel::Show` -> `src/Battlesport/HudUiNetExitPanel.cpp:158`
 - `0x41c080` `HudUiNetExitPanel::Tick` -> `src/Battlesport/HudUiNetExitPanel.cpp:163`
 - `0x41c0a0` `HudUiNetExitPanel::DestroyGlobal` -> `src/Battlesport/HudUiNetExitPanel.cpp:169`
-- `0x41c480` `HudUiZrdWidget::ScalarDeletingDestructorThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8833`
-- `0x41c4a0` `HudUiNumericTextInput::ScalarDeletingDestructorThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15023`
-- `0x41c4c0` `HudUiZrdWidgetEx17C::ScalarDeletingDestructorThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10490`
+- `0x41c480` `HudUiZrdWidget::ScalarDeletingDestructorThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8836`
+- `0x41c4a0` `HudUiNumericTextInput::ScalarDeletingDestructorThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15026`
+- `0x41c4c0` `HudUiZrdWidgetEx17C::ScalarDeletingDestructorThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10493`
 - `0x41cca0` `PickupTypeTable::FreeOptMeta` -> `src/Battlesport/pickup.cpp:2301`
 - `0x41eb30` `Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui` -> `src/Battlesport/player.cpp:1927`
 - `0x41eb90` `Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui` -> `src/Battlesport/player.cpp:1943`
@@ -3773,14 +3773,14 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4b3b20` `zSys::ReadTsc64` -> `src/GameZRecoil/zSys/zSys.cpp:303`
 - `0x4b3b50` `CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc` -> `src/GameZRecoil/zSys/zSys.cpp:948`
 - `0x4b3ca0` `zSys::Sub64` -> `src/GameZRecoil/zSys/zSys.cpp:323`
-- `0x4b3ce0` `HudUiWidget::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13441`
-- `0x4b3d00` `HudUiWidget::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7886`
-- `0x4b3d50` `HudUiWidget::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13436`
-- `0x4b3da0` `HudUiWidget::ReleaseImageIfOwned` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13384`
-- `0x4b3dd0` `HudUiWidget::SetPos` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13453`
-- `0x4b3e30` `HudUiWidget::SetImageByPathOwned` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13416`
-- `0x4b3e70` `HudUiWidget::SetImageBorrowedAndInvalidate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13397`
-- `0x4b4030` `HudUiWidget::HitTest` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13298`
+- `0x4b3ce0` `HudUiWidget::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13444`
+- `0x4b3d00` `HudUiWidget::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7889`
+- `0x4b3d50` `HudUiWidget::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13439`
+- `0x4b3da0` `HudUiWidget::ReleaseImageIfOwned` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13387`
+- `0x4b3dd0` `HudUiWidget::SetPos` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13456`
+- `0x4b3e30` `HudUiWidget::SetImageByPathOwned` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13419`
+- `0x4b3e70` `HudUiWidget::SetImageBorrowedAndInvalidate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13400`
+- `0x4b4030` `HudUiWidget::HitTest` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13301`
 - `0x4b40c0` `HudUiElement::CopyConstructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4902`
 - `0x4b4120` `HudUiElement::CopyFrom` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4921`
 - `0x4b4180` `HudUiElement::Invalidate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4986`
@@ -3789,121 +3789,121 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4b41e0` `HudUiElement::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5036`
 - `0x4b4280` `HudUiElement::SetTimer` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5088`
 - `0x4b42c0` `HudUiElement::GetTextRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5138`
-- `0x4b42f0` `HudUiTextInput::HudUiTextInput` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13757`
-- `0x4b4370` `HudUiTextInput::~HudUiTextInput` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13712`
-- `0x4b4390` `HudUiTextInput::AllocTextBuffer` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13734`
-- `0x4b43d0` `HudUiTextInput::SetContents` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13804`
-- `0x4b4410` `HudUiTextInput::GetBuffer` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13817`
-- `0x4b4420` `HudUiTextInput::SetCursorPosition` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13794`
-- `0x4b4460` `HudUiTextInput::DispatchKeyAction` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13907`
-- `0x4b44e0` `HudUiTextInput::InsertCharAtCursor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13889`
-- `0x4b4530` `HudUiTextInput::BackspaceDeleteChar` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13878`
-- `0x4b4550` `HudUiTextInput::DeleteCharForward` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13855`
-- `0x4b4560` `HudUiTextInput::MoveCursorLeft` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13863`
-- `0x4b4570` `HudUiTextInput::MoveCursorRight` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13870`
-- `0x4b4590` `HudUiTextInput::ShiftTextRight` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13822`
-- `0x4b45e0` `HudUiTextInput::ShiftTextLeft` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13840`
-- `0x4b4620` `HudUiSliderBorder::HudUiSliderBorder` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14625`
+- `0x4b42f0` `HudUiTextInput::HudUiTextInput` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13760`
+- `0x4b4370` `HudUiTextInput::~HudUiTextInput` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13715`
+- `0x4b4390` `HudUiTextInput::AllocTextBuffer` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13737`
+- `0x4b43d0` `HudUiTextInput::SetContents` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13807`
+- `0x4b4410` `HudUiTextInput::GetBuffer` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13820`
+- `0x4b4420` `HudUiTextInput::SetCursorPosition` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13797`
+- `0x4b4460` `HudUiTextInput::DispatchKeyAction` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13910`
+- `0x4b44e0` `HudUiTextInput::InsertCharAtCursor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13892`
+- `0x4b4530` `HudUiTextInput::BackspaceDeleteChar` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13881`
+- `0x4b4550` `HudUiTextInput::DeleteCharForward` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13858`
+- `0x4b4560` `HudUiTextInput::MoveCursorLeft` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13866`
+- `0x4b4570` `HudUiTextInput::MoveCursorRight` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13873`
+- `0x4b4590` `HudUiTextInput::ShiftTextRight` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13825`
+- `0x4b45e0` `HudUiTextInput::ShiftTextLeft` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13843`
+- `0x4b4620` `HudUiSliderBorder::HudUiSliderBorder` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14628`
 - `0x4b47a0` `HudUiElement::~HudUiElement` -> `src/GameZRecoil/zHud/zhud_ui.cpp:4940`
 - `0x4b47a0` `HudUiElement::~HudUiElement` -> `src/GameZRecoil/zHud/zhud_ui.h:114`
-- `0x4b47b0` `HudUiSliderBorder::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14708`
-- `0x4b4810` `HudUiSliderBorder::SetBounds` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14731`
-- `0x4b49e0` `HudUiNumericTextInput::HudUiNumericTextInput` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14813`
-- `0x4b4a90` `HudUiNumericTextInput::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15011`
-- `0x4b4ac0` `HudUiNumericTextInput::~HudUiNumericTextInput` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14987`
-- `0x4b4b30` `HudUiNumericTextInput::RawKeyboardCallback` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15035`
-- `0x4b4b50` `HudUiNumericTextInput::OnRawKeyboardChar` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15082`
-- `0x4b4ba0` `HudUiNumericTextInput::SetInputActive` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15048`
-- `0x4b4c50` `HudUiNumericTextInput::SetRawKeyboardCapture` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14957`
-- `0x4b4c90` `HudUiNumericTextInput::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14980`
-- `0x4b4ca0` `HudUiNumericTextInput::UpdateCaptureUiAndClip` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14895`
-- `0x4b4e40` `HudUiNumericTextInput::AllocTextBuffer` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14864`
-- `0x4b4e60` `HudUiNumericTextInput::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14877`
-- `0x4b4ed0` `HudUiNumericTextInput::GetBuffer` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14871`
-- `0x4b4ee0` `HudUiZrdWidget::HudUiZrdWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8315`
-- `0x4b4ee0` `HudUiZrdWidget::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8352`
-- `0x4b50a0` `HudUiZrdWidget::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8817`
-- `0x4b50c0` `HudUiZrdWidget::~HudUiZrdWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8696`
-- `0x4b52f0` `HudUiZrdWidget::DeleteChildIfPresent` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8681`
-- `0x4b5310` `HudUiZrdWidget::Invalidate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8849`
-- `0x4b5350` `HudUiZrdWidget::GetBoundsRectOrNull` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8867`
-- `0x4b5630` `HudUiZrdWidget::ShowPreview` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8986`
-- `0x4b5740` `HudUiZrdWidget::RefreshState` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8936`
-- `0x4b5860` `HudUiZrdWidget::HidePreview` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9071`
-- `0x4b5900` `HudUiZrdWidget::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9027`
-- `0x4b59f0` `HudUiZrdWidget::LoadFromZrd` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8359`
-- `0x4b6fc0` `HudUiCheckToggleWidget::HudUiCheckToggleWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9101`
-- `0x4b6fc0` `HudUiCheckToggleWidget::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9111`
-- `0x4b7000` `HudUiCheckToggleWidget::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9151`
-- `0x4b70b0` `HudUiCheckToggleWidget::GetBoundsRectOrNull` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9175`
-- `0x4b70c0` `HudUiCheckToggleWidget::RefreshState` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9180`
-- `0x4b7210` `HudUiCheckToggleWidget::ShowPreview` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9234`
-- `0x4b7250` `HudUiCheckToggleWidget::HidePreview` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9247`
-- `0x4b7290` `HudUiCheckToggleWidget::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9261`
-- `0x4b72c0` `HudUiCheckToggleWidget::SetChecked` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9400`
-- `0x4b7d60` `HudUiCycleSelectorWidget::HudUiCycleSelectorWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9431`
-- `0x4b7d60` `HudUiCycleSelectorWidget::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9447`
-- `0x4b7dc0` `HudUiCycleSelectorWidget::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9487`
-- `0x4b7e60` `HudUiCycleSelectorWidget::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9593`
-- `0x4b7ee0` `HudUiCycleSelectorWidget::AdvanceSelectionAndActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9512`
-- `0x4b7f20` `HudUiCycleSelectorWidget::SetIndexClamped` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9534`
-- `0x4b7f80` `HudUiCycleSelectorWidget::SetVisibleRange` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9569`
-- `0x4b7fd0` `HudUiCycleSelectorWidget::AddTextEntry` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9613`
-- `0x4b8100` `HudUiCycleSelectorWidget::ApplyFontStyleForEntry` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9808`
-- `0x4b8200` `HudUiCycleSelectorWidget::AddBitmapEntry` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9878`
-- `0x4b82e0` `HudUiCycleSelectorWidget::LoadFromZrd` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9913`
-- `0x4b8450` `HudUiFillBitmap::HudUiFillBitmap` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10039`
-- `0x4b84b0` `HudUiFillBitmap::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10090`
-- `0x4b8520` `HudUiFillBitmap::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10102`
-- `0x4b85c0` `HudUiFillBitmap::LoadFromZrd` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10131`
-- `0x4b8650` `HudUiFillBitmap::UpdateNormalizedFromCursor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10181`
-- `0x4b86b0` `HudUiFillBitmap::SetNormalizedValueAndRebuild` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10210`
-- `0x4b8760` `HudUiZrdWidgetEx17C_Item::HudUiZrdWidgetEx17C_Item` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10244`
-- `0x4b87a0` `HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10263`
-- `0x4b87c0` `HudUiZrdWidgetEx17C_Item::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10258`
-- `0x4b87d0` `HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10275`
-- `0x4b87e0` `HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10286`
-- `0x4b87f0` `HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10297`
-- `0x4b8850` `HudUiZrdWidgetEx17C_Item::LoadFromZrd` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10315`
-- `0x4b8a90` `HudUiZrdWidgetEx17C_Item::SetSelected` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10407`
-- `0x4b8af0` `HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10430`
-- `0x4b8b10` `HudUiZrdWidgetEx17C::HudUiZrdWidgetEx17C` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10435`
-- `0x4b8b40` `HudUiZrdWidgetEx17C::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10474`
-- `0x4b8b60` `HudUiZrdWidgetEx17C::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10453`
-- `0x4b8be0` `HudUiZrdWidgetEx17C::LoadFromZrd` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10505`
-- `0x4b8cf0` `HudUiZrdWidgetEx17C::SetSelectedIndex` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10565`
-- `0x4b8d30` `HudCmdBindButtonBase::HudCmdBindButtonBase` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10620`
-- `0x4b92a0` `HudUiListSelectorItem::HudUiListSelectorItem` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10585`
+- `0x4b47b0` `HudUiSliderBorder::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14711`
+- `0x4b4810` `HudUiSliderBorder::SetBounds` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14734`
+- `0x4b49e0` `HudUiNumericTextInput::HudUiNumericTextInput` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14816`
+- `0x4b4a90` `HudUiNumericTextInput::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15014`
+- `0x4b4ac0` `HudUiNumericTextInput::~HudUiNumericTextInput` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14990`
+- `0x4b4b30` `HudUiNumericTextInput::RawKeyboardCallback` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15038`
+- `0x4b4b50` `HudUiNumericTextInput::OnRawKeyboardChar` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15085`
+- `0x4b4ba0` `HudUiNumericTextInput::SetInputActive` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15051`
+- `0x4b4c50` `HudUiNumericTextInput::SetRawKeyboardCapture` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14960`
+- `0x4b4c90` `HudUiNumericTextInput::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14983`
+- `0x4b4ca0` `HudUiNumericTextInput::UpdateCaptureUiAndClip` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14898`
+- `0x4b4e40` `HudUiNumericTextInput::AllocTextBuffer` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14867`
+- `0x4b4e60` `HudUiNumericTextInput::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14880`
+- `0x4b4ed0` `HudUiNumericTextInput::GetBuffer` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14874`
+- `0x4b4ee0` `HudUiZrdWidget::HudUiZrdWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8318`
+- `0x4b4ee0` `HudUiZrdWidget::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8355`
+- `0x4b50a0` `HudUiZrdWidget::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8820`
+- `0x4b50c0` `HudUiZrdWidget::~HudUiZrdWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8699`
+- `0x4b52f0` `HudUiZrdWidget::DeleteChildIfPresent` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8684`
+- `0x4b5310` `HudUiZrdWidget::Invalidate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8852`
+- `0x4b5350` `HudUiZrdWidget::GetBoundsRectOrNull` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8870`
+- `0x4b5630` `HudUiZrdWidget::ShowPreview` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8989`
+- `0x4b5740` `HudUiZrdWidget::RefreshState` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8939`
+- `0x4b5860` `HudUiZrdWidget::HidePreview` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9074`
+- `0x4b5900` `HudUiZrdWidget::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9030`
+- `0x4b59f0` `HudUiZrdWidget::LoadFromZrd` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8362`
+- `0x4b6fc0` `HudUiCheckToggleWidget::HudUiCheckToggleWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9104`
+- `0x4b6fc0` `HudUiCheckToggleWidget::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9114`
+- `0x4b7000` `HudUiCheckToggleWidget::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9154`
+- `0x4b70b0` `HudUiCheckToggleWidget::GetBoundsRectOrNull` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9178`
+- `0x4b70c0` `HudUiCheckToggleWidget::RefreshState` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9183`
+- `0x4b7210` `HudUiCheckToggleWidget::ShowPreview` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9237`
+- `0x4b7250` `HudUiCheckToggleWidget::HidePreview` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9250`
+- `0x4b7290` `HudUiCheckToggleWidget::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9264`
+- `0x4b72c0` `HudUiCheckToggleWidget::SetChecked` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9403`
+- `0x4b7d60` `HudUiCycleSelectorWidget::HudUiCycleSelectorWidget` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9434`
+- `0x4b7d60` `HudUiCycleSelectorWidget::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9450`
+- `0x4b7dc0` `HudUiCycleSelectorWidget::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9490`
+- `0x4b7e60` `HudUiCycleSelectorWidget::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9596`
+- `0x4b7ee0` `HudUiCycleSelectorWidget::AdvanceSelectionAndActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9515`
+- `0x4b7f20` `HudUiCycleSelectorWidget::SetIndexClamped` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9537`
+- `0x4b7f80` `HudUiCycleSelectorWidget::SetVisibleRange` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9572`
+- `0x4b7fd0` `HudUiCycleSelectorWidget::AddTextEntry` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9616`
+- `0x4b8100` `HudUiCycleSelectorWidget::ApplyFontStyleForEntry` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9811`
+- `0x4b8200` `HudUiCycleSelectorWidget::AddBitmapEntry` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9881`
+- `0x4b82e0` `HudUiCycleSelectorWidget::LoadFromZrd` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9916`
+- `0x4b8450` `HudUiFillBitmap::HudUiFillBitmap` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10042`
+- `0x4b84b0` `HudUiFillBitmap::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10093`
+- `0x4b8520` `HudUiFillBitmap::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10105`
+- `0x4b85c0` `HudUiFillBitmap::LoadFromZrd` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10134`
+- `0x4b8650` `HudUiFillBitmap::UpdateNormalizedFromCursor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10184`
+- `0x4b86b0` `HudUiFillBitmap::SetNormalizedValueAndRebuild` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10213`
+- `0x4b8760` `HudUiZrdWidgetEx17C_Item::HudUiZrdWidgetEx17C_Item` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10247`
+- `0x4b87a0` `HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10266`
+- `0x4b87c0` `HudUiZrdWidgetEx17C_Item::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10261`
+- `0x4b87d0` `HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10278`
+- `0x4b87e0` `HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10289`
+- `0x4b87f0` `HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10300`
+- `0x4b8850` `HudUiZrdWidgetEx17C_Item::LoadFromZrd` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10318`
+- `0x4b8a90` `HudUiZrdWidgetEx17C_Item::SetSelected` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10410`
+- `0x4b8af0` `HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10433`
+- `0x4b8b10` `HudUiZrdWidgetEx17C::HudUiZrdWidgetEx17C` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10438`
+- `0x4b8b40` `HudUiZrdWidgetEx17C::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10477`
+- `0x4b8b60` `HudUiZrdWidgetEx17C::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10456`
+- `0x4b8be0` `HudUiZrdWidgetEx17C::LoadFromZrd` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10508`
+- `0x4b8cf0` `HudUiZrdWidgetEx17C::SetSelectedIndex` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10568`
+- `0x4b8d30` `HudCmdBindButtonBase::HudCmdBindButtonBase` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10623`
+- `0x4b92a0` `HudUiListSelectorItem::HudUiListSelectorItem` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10588`
 - `0x4b92a0` `HudUiListSelectorItem::HudUiListSelectorItem` -> `src/GameZRecoil/zHud/zhud_ui.h:1162`
-- `0x4b9520` `HudUiListSelectorItem::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10587`
-- `0x4ba070` `HudUiBackground::BindButtonsNodeToWidgetByName` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7542`
-- `0x4ba0c0` `HudUiBackground::BindWidgetByName` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7569`
-- `0x4ba0e0` `HudUiBackground::BindPrimitiveNodeToElement` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7583`
-- `0x4ba380` `HudUiDialogController::BlitOwnedSurfaceToPrimary` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7049`
+- `0x4b9520` `HudUiListSelectorItem::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10590`
+- `0x4ba070` `HudUiBackground::BindButtonsNodeToWidgetByName` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7545`
+- `0x4ba0c0` `HudUiBackground::BindWidgetByName` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7572`
+- `0x4ba0e0` `HudUiBackground::BindPrimitiveNodeToElement` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7586`
+- `0x4ba380` `HudUiDialogController::BlitOwnedSurfaceToPrimary` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7052`
 - `0x4ba3a0` `HudUiContainer::InvalidateChildren` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6083`
-- `0x4ba3c0` `HudUiFillBitmap::SetNormalizedValue` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10192`
-- `0x4ba3e0` `HudUiOwnedTextInput::OnAccept` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13944`
-- `0x4ba400` `HudUiPanel::GetWrapRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15810`
-- `0x4ba410` `HudUiListSelectorItem::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10605`
-- `0x4ba470` `StdPtrVector::FreeBufferAndReset` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10644`
-- `0x4ba4a0` `HudFontStyle::HudFontStyle` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7865`
-- `0x4ba4c0` `HudFontStyle::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7881`
-- `0x4ba4d0` `HudUiPanelPtrVector::EraseRange` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8526`
-- `0x4ba510` `HudUiPanelPtrVector::InsertN` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8557`
-- `0x4ba740` `HudUiPanel::HudUiPanel` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15578`
-- `0x4bab40` `HudUiPanel::~HudUiPanel` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15730`
-- `0x4bac10` `HudUiPanel::RebuildTextRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16115`
+- `0x4ba3c0` `HudUiFillBitmap::SetNormalizedValue` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10195`
+- `0x4ba3e0` `HudUiOwnedTextInput::OnAccept` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13947`
+- `0x4ba400` `HudUiPanel::GetWrapRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15813`
+- `0x4ba410` `HudUiListSelectorItem::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10608`
+- `0x4ba470` `StdPtrVector::FreeBufferAndReset` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10647`
+- `0x4ba4a0` `HudFontStyle::HudFontStyle` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7868`
+- `0x4ba4c0` `HudFontStyle::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7884`
+- `0x4ba4d0` `HudUiPanelPtrVector::EraseRange` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8529`
+- `0x4ba510` `HudUiPanelPtrVector::InsertN` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8560`
+- `0x4ba740` `HudUiPanel::HudUiPanel` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15581`
+- `0x4bab40` `HudUiPanel::~HudUiPanel` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15733`
+- `0x4bac10` `HudUiPanel::RebuildTextRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16118`
 - `0x4bb0c0` `HudUiFlashPanel::ComputeFlashBlendColor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5921`
-- `0x4bb1c0` `HudUiPanel::MeasureTextPrefixRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16403`
-- `0x4bb2a0` `HudUiPanel::UpdateTextBoundsFromContent` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16342`
-- `0x4bb3d0` `HudUiPanel::HitTest` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15818`
-- `0x4bb440` `HudUiPanel::GetLastTextPtr` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15841`
-- `0x4bb460` `HudUiPanel::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15754`
-- `0x4bb540` `HudUiPanel::SetTextFmt` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16002`
-- `0x4bb5e0` `HudUiPanel::SetTextFmtV` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16023`
-- `0x4bb680` `HudUiPanel::SetText` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16071`
-- `0x4bb710` `HudUiPanel::QueryTextHeight` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16454`
-- `0x4bb740` `HudUiPanel::GetTextRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15854`
+- `0x4bb1c0` `HudUiPanel::MeasureTextPrefixRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16406`
+- `0x4bb2a0` `HudUiPanel::UpdateTextBoundsFromContent` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16345`
+- `0x4bb3d0` `HudUiPanel::HitTest` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15821`
+- `0x4bb440` `HudUiPanel::GetLastTextPtr` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15844`
+- `0x4bb460` `HudUiPanel::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15757`
+- `0x4bb540` `HudUiPanel::SetTextFmt` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16005`
+- `0x4bb5e0` `HudUiPanel::SetTextFmtV` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16026`
+- `0x4bb680` `HudUiPanel::SetText` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16074`
+- `0x4bb710` `HudUiPanel::QueryTextHeight` -> `src/GameZRecoil/zHud/zhud_ui.cpp:16457`
+- `0x4bb740` `HudUiPanel::GetTextRect` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15857`
 - `0x4bb790` `HudUiCompositePanel::ConstructorWithEntryCount` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5551`
 - `0x4bb960` `HudUiCompositePanel::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5595`
 - `0x4bb980` `HudUiCompositePanel::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5611`
@@ -3924,11 +3924,11 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4bc480` `HudUiCircle::HudUiCircle` -> `src/GameZRecoil/zHud/zhud_ui.h:632`
 - `0x4bc4c0` `HudUiCircle::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5359`
 - `0x4bc4e0` `HudUiCircle::HitTestCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5396`
-- `0x4bc510` `HudUiBackgroundContainer::HudUiBackgroundContainer` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6931`
-- `0x4bc540` `HudUiBackgroundContainer::~HudUiBackgroundContainer` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6940`
-- `0x4bc550` `HudUiBackgroundContainer::SetInputFocus` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6948`
-- `0x4bc560` `HudUiBackgroundContainer::GetInputFocus` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6958`
-- `0x4bc570` `HudUiBackground::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7757`
+- `0x4bc510` `HudUiBackgroundContainer::HudUiBackgroundContainer` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6934`
+- `0x4bc540` `HudUiBackgroundContainer::~HudUiBackgroundContainer` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6943`
+- `0x4bc550` `HudUiBackgroundContainer::SetInputFocus` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6951`
+- `0x4bc560` `HudUiBackgroundContainer::GetInputFocus` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6961`
+- `0x4bc570` `HudUiBackground::Update` -> `src/GameZRecoil/zHud/zhud_ui.cpp:7760`
 - `0x4bc780` `HudUiContainer::HudUiContainer` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5948`
 - `0x4bc7b0` `HudUiContainer::DestructorCore` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5956`
 - `0x4bc7c0` `HudUiContainer::AddChild` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5967`
@@ -3936,25 +3936,25 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4bc860` `HudUiContainer::RemoveChild` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6015`
 - `0x4bc8d0` `HudUiContainer::SetChildFlags` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6045`
 - `0x4bc900` `HudUiContainer::UpdateAll` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6068`
-- `0x4bc930` `HudUiTransitionTextPanel::ResetFlashState` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9739`
-- `0x4bc980` `HudUiTransitionTextPanel::SetFlashRate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9765`
-- `0x4bcb50` `HudUiTextLabel::HudUiTextLabel` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15368`
-- `0x4bccf0` `HudUiTextLabel::SetTextFmt` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15447`
+- `0x4bc930` `HudUiTransitionTextPanel::ResetFlashState` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9742`
+- `0x4bc980` `HudUiTransitionTextPanel::SetFlashRate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9768`
+- `0x4bcb50` `HudUiTextLabel::HudUiTextLabel` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15371`
+- `0x4bccf0` `HudUiTextLabel::SetTextFmt` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15450`
 - `0x4bcd40` `HudUiPanel::SetClip` -> `src/GameZRecoil/zHud/zhud_ui.cpp:5124`
-- `0x4bcd80` `HudUiTextLabel::RebuildTextBounds` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15480`
-- `0x4bcdc0` `HudUiTextLabel::MeasureTextWidth` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15494`
-- `0x4bcdf0` `HudUiTextLabel::UpdateTextExtents` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15565`
-- `0x4bce30` `HudUiTextLabel::OnDraw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15507`
-- `0x4bcea0` `HudUiTextLabel::HitTest` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15540`
-- `0x4bcf20` `HudUiBar::HudUiBar` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14493`
-- `0x4bcff0` `HudUiBar::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14509`
-- `0x4bd020` `HudUiTopMessageStack::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17577`
-- `0x4bd100` `HudUiPanel::ConstructorDefaultThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15625`
-- `0x4bd2a0` `HudUiTextStack4::Clear` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17512`
-- `0x4bd2d0` `HudUiChatMessageStack::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17620`
-- `0x4bd3d0` `HudUiTextStack4::SetTextColors` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17496`
-- `0x4bd410` `HudUiTextStack4::SetXAll` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17549`
-- `0x4bd440` `HudUiTextStack4::SetYDescending` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17562`
+- `0x4bcd80` `HudUiTextLabel::RebuildTextBounds` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15483`
+- `0x4bcdc0` `HudUiTextLabel::MeasureTextWidth` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15497`
+- `0x4bcdf0` `HudUiTextLabel::UpdateTextExtents` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15568`
+- `0x4bce30` `HudUiTextLabel::OnDraw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15510`
+- `0x4bcea0` `HudUiTextLabel::HitTest` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15543`
+- `0x4bcf20` `HudUiBar::HudUiBar` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14496`
+- `0x4bcff0` `HudUiBar::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14512`
+- `0x4bd020` `HudUiTopMessageStack::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17580`
+- `0x4bd100` `HudUiPanel::ConstructorDefaultThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15628`
+- `0x4bd2a0` `HudUiTextStack4::Clear` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17515`
+- `0x4bd2d0` `HudUiChatMessageStack::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17623`
+- `0x4bd3d0` `HudUiTextStack4::SetTextColors` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17499`
+- `0x4bd410` `HudUiTextStack4::SetXAll` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17552`
+- `0x4bd440` `HudUiTextStack4::SetYDescending` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17565`
 - `0x4bdb60` `zVideoFxPass3Element::Draw` -> `src/GameZRecoil/zVideo/zVideo.cpp:1915`
 - `0x4bdbc0` `zVideoFxPass3RootElement::ApplyPass3` -> `src/GameZRecoil/zVideo/zVideo.cpp:1952`
 - `0x4bdbe0` `zVideoFxPass3Slot::Constructor` -> `src/GameZRecoil/zVideo/zVideo.cpp:1963`
@@ -3975,18 +3975,18 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4bef10` `zVideo::FxPass3_QueueElementLocal` -> `src/GameZRecoil/zVideo/zVideo.cpp:3776`
 - `0x4bef50` `zVideo::FxPass3_QueuePrimitive` -> `src/GameZRecoil/zVideo/zVideo.cpp:3799`
 - `0x4bef90` `zVideoFxPass3Config::Constructor` -> `src/GameZRecoil/zVideo/zVideo.cpp:2015`
-- `0x4bf060` `HudUiMessageBoxDialog::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12958`
-- `0x4bf540` `HudUiMessageBoxDialog::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13115`
-- `0x4bf560` `HudUiMessageBoxDialog::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13127`
-- `0x4bf630` `HudUiMessageBoxDialog::RunModal` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13147`
-- `0x4bf7c0` `HudUiMessageBoxDialog::OnOk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13235`
-- `0x4bf7e0` `HudUiMessageBoxDialog::OnCancel` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13241`
-- `0x4bf800` `HudUiMessageBoxOkButton::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13247`
-- `0x4bf820` `HudUiMessageBoxCancelButton::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13255`
-- `0x4bf840` `HudUiPolyline::HudUiPolyline` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14547`
-- `0x4bf8b0` `HudUiPolyline::SetPoint` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14602`
-- `0x4bf900` `HudUiPolyline::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14568`
-- `0x4bfe20` `HudUiBackgroundVideoWidget::SetColorKey565` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8224`
+- `0x4bf060` `HudUiMessageBoxDialog::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:12961`
+- `0x4bf540` `HudUiMessageBoxDialog::ScalarDeletingDestructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13118`
+- `0x4bf560` `HudUiMessageBoxDialog::Destructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13130`
+- `0x4bf630` `HudUiMessageBoxDialog::RunModal` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13150`
+- `0x4bf7c0` `HudUiMessageBoxDialog::OnOk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13238`
+- `0x4bf7e0` `HudUiMessageBoxDialog::OnCancel` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13244`
+- `0x4bf800` `HudUiMessageBoxOkButton::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13250`
+- `0x4bf820` `HudUiMessageBoxCancelButton::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:13258`
+- `0x4bf840` `HudUiPolyline::HudUiPolyline` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14550`
+- `0x4bf8b0` `HudUiPolyline::SetPoint` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14605`
+- `0x4bf900` `HudUiPolyline::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14571`
+- `0x4bfe20` `HudUiBackgroundVideoWidget::SetColorKey565` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8227`
 - `0x4bffe0` `zUtil_ZAR::RegisterSectionHandler` -> `src/GameZRecoil/zUtil/zZbd.cpp:544`
 - `0x4c0010` `zUtil_ZAR::WriteSectionBlob` -> `src/GameZRecoil/zUtil/zZbd.cpp:564`
 - `0x4c0100` `zUtil::ZBD_Init` -> `src/GameZRecoil/zUtil/zZbd.cpp:47`

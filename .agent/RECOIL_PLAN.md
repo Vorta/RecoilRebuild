@@ -17170,28 +17170,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x408210:
   - [✅] Reconstructed (Name: zSnd::SetCDAudioOption)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zSound; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zSound; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zSnd::SetCDAudioOption;
     - File: src/GameZRecoil/zSound/zsnd_cd.cpp;
     - Target: zsnd_set_cd_audio_option;
     - Group: engine.zsound;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408220:
   - [✅] Reconstructed (Name: zSnd::GetCDAudioOption)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: source-file; Parent: src/GameZRecoil/zSound/zsnd_cd.cpp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zSound; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zSnd::GetCDAudioOption;
     - File: src/GameZRecoil/zSound/zsnd_cd.cpp;
     - Target: zsnd_get_cd_audio_option;
     - Group: engine.zsound;
-    - Model: pending;
-    - Blocker: VC5SP3 tier S verification pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b2f50:
   - [✅] Reconstructed (Name: zSnd::AcquireCachedDirectSound)
@@ -34656,15 +34656,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x409380:
   - [✅] Reconstructed (Name: HudUiCreditsPanel::UpdateFadeAndExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiCreditsPanel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiCreditsPanel; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiCreditsPanel::UpdateFadeAndExit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_credits_panel_update_fade_and_exit;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: tier C behavior evidence passed; Source owner and Data reimplemented gates are not yet accepted for the HudUiCreditsPanel owner cluster, and no local VC5 byte target covers 0x409380.
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x409410:
   - [✅] Reconstructed (Name: HudUiZrdScrollingText::Update)

@@ -6463,8 +6463,11 @@ HudUiElement * HudUiZrdScrollingText::ScalarDeletingDestructor(
     return self;
 }
 
-// Reimplements 0x409380: HudUiCreditsPanel::UpdateFadeAndExit
-// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+/**
+ * Reimplements 0x409380: HudUiCreditsPanel::UpdateFadeAndExit
+ * Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
+ * Purpose: advance the credits fade, update the panel, and queue the post-credits transition.
+ */
 void HudUiCreditsPanel::UpdateFadeAndExit(
     float deltaSeconds
 ) {
