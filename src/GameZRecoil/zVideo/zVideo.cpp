@@ -6470,7 +6470,12 @@ int Shutdown() {
 } // namespace zVid_TexDir
 
 namespace zVideo_dd3d {
-// Reimplements 0x4a6750: zVideo_dd3d::CallClearZBufferRect
+/**
+ * Reimplements 0x4a6750: zVideo_dd3d::CallClearZBufferRect.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Source file evidence: Binary Ninja function source comment.
+ * Purpose: Tail-dispatch the active Z-buffer clear callback.
+ */
 void __fastcall CallClearZBufferRect(
     zVidRect32 *rect
 ) {
@@ -10887,18 +10892,19 @@ void __fastcall BltSwToPrimaryRect(
  * DDBLTFX with dwSize 0x64 and dwFillDepth zero, calls DirectDrawSurface3::Blt
  * with DDBLT_DEPTHFILL, and reports line 0x242 after a failed Restore retry.
  */
-void __fastcall ZBuffer_DepthFillRect(
+int __fastcall ZBuffer_DepthFillRect(
     zVidRect32 *dstRect
 ) {
     // BN writes only the DirectDraw fields consumed by the selected fill mode.
     DDBLTFX bltFx;
+    HRESULT hresult;
     bltFx.dwSize = sizeof(bltFx);
     if (g_zVideo_pZBufferSurface == 0) {
-        return;
+        goto done;
     }
 
     bltFx.dwFillDepth = 0;
-    HRESULT hresult = DD_OK;
+    hresult = DD_OK;
     while (hresult == DD_OK) {
         hresult = g_zVideo_pZBufferSurface->Blt(
             (RECT *)(dstRect),
@@ -10908,7 +10914,7 @@ void __fastcall ZBuffer_DepthFillRect(
             &bltFx
         );
         if (hresult == DD_OK) {
-            return;
+            goto done;
         }
 
         if (hresult == DDERR_SURFACELOST) {
@@ -10916,11 +10922,14 @@ void __fastcall ZBuffer_DepthFillRect(
         }
     }
 
-    ReportError(
+    return ReportError(
         (int)(hresult),
         kZVideoDirectDrawSourceFile,
         0x242
     );
+
+done:
+    return 0;
 }
 
 /**
@@ -10932,7 +10941,7 @@ void __fastcall ZBuffer_DepthFillRect(
  * DDBLT_COLORFILL|DDBLT_WAIT, then optionally clears g_zVideo_pZBufferSurface
  * with DDBLT_DEPTHFILL and report lines 0x267 and 0x27f.
  */
-void __fastcall ClearScreenAndZBufferRect(
+int __fastcall ClearScreenAndZBufferRect(
     zVidRect32 *dstRect,
     zVideo_SurfaceStatePartial *colorSurfaceState
 ) {
@@ -10959,21 +10968,21 @@ void __fastcall ClearScreenAndZBufferRect(
                 hresult = colorSurfaceState->surf->Restore();
             }
         }
-        ReportError(
+        return ReportError(
             (int)(hresult),
             kZVideoDirectDrawSourceFile,
             0x267
         );
-        return;
     }
 
 clearZBuffer:
     if (g_zVideo_pZBufferSurface == 0) {
-        return;
+        goto done;
     }
 
     bltFx.dwFillDepth = 0;
-    HRESULT hresult = DD_OK;
+    HRESULT hresult;
+    hresult = DD_OK;
     while (hresult == DD_OK) {
         hresult = g_zVideo_pZBufferSurface->Blt(
             (RECT *)(dstRect),
@@ -10983,7 +10992,7 @@ clearZBuffer:
             &bltFx
         );
         if (hresult == DD_OK) {
-            return;
+            goto done;
         }
 
         if (hresult == DDERR_SURFACELOST) {
@@ -10991,11 +11000,14 @@ clearZBuffer:
         }
     }
 
-    ReportError(
+    return ReportError(
         (int)(hresult),
         kZVideoDirectDrawSourceFile,
         0x27f
     );
+
+done:
+    return 0;
 }
 
 /**
@@ -11007,7 +11019,7 @@ clearZBuffer:
  * g_zVideo_pZBufferSurface with the supplied Z rectangle and reports lines
  * 0x2a5 and 0x2bd on permanent provider failures.
  */
-void __fastcall ClearSwBackbufferAndZBufferRects(
+int __fastcall ClearSwBackbufferAndZBufferRects(
     zVidRect32 *colorRect,
     zVidRect32 *zRect
 ) {
@@ -11034,21 +11046,21 @@ void __fastcall ClearSwBackbufferAndZBufferRects(
                 hresult = g_zVideo_SwSurfaceState.surf->Restore();
             }
         }
-        ReportError(
+        return ReportError(
             (int)(hresult),
             kZVideoDirectDrawSourceFile,
             0x2a5
         );
-        return;
     }
 
 clearZBuffer:
     if (g_zVideo_pZBufferSurface == 0) {
-        return;
+        goto done;
     }
 
     bltFx.dwFillDepth = 0;
-    HRESULT hresult = DD_OK;
+    HRESULT hresult;
+    hresult = DD_OK;
     while (hresult == DD_OK) {
         hresult = g_zVideo_pZBufferSurface->Blt(
             (RECT *)(zRect),
@@ -11058,7 +11070,7 @@ clearZBuffer:
             &bltFx
         );
         if (hresult == DD_OK) {
-            return;
+            goto done;
         }
 
         if (hresult == DDERR_SURFACELOST) {
@@ -11066,11 +11078,14 @@ clearZBuffer:
         }
     }
 
-    ReportError(
+    return ReportError(
         (int)(hresult),
         kZVideoDirectDrawSourceFile,
         0x2bd
     );
+
+done:
+    return 0;
 }
 
 /**

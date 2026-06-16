@@ -165,21 +165,22 @@ available even when no groups are active.
     shape to BN-visible field-only initialization instead of full provider
     record zeroing. A later 0x4a81a0 pass inlined the BN-shaped Z-buffer
     Blt/Restore retry loop and moved DDBLTFX size initialization before the
-    null-surface branch, improving `verify vc5 0x4a81a0` from 115 to 102
-    unmasked mismatches after 12 relocation-masked bytes and 9 trimmed VC NOPs
-    (BN 114, VC5 144). A later clear-cluster byte-shape pass removed the
+    null-surface branch. A later clear-cluster byte-shape pass removed the
     shared `BltFillWithRestore` helper because VC5 emitted boolean-return
     scaffolding that did not match BN, and expanded all three paths into direct
     `HRESULT hresult = DD_OK; while (hresult == DD_OK)` Blt/Restore retry
-    loops with BN-shaped DDERR_SURFACELOST restore handling. Functional smokes
-    for all three still pass. Current VC5SP3 `/Ob1` clear targets remain below
-    tier S only on residual epilogue/branch-displacement drift:
-    `verify vc5 0x4a81a0` fails with 9 unmasked mismatches after 20
-    relocation-masked bytes and 5 trimmed VC NOPs (BN 114, VC5 112);
-    `verify vc5 0x4a8220` fails with 10 after 36 relocation-masked bytes and
-    8 trimmed VC NOPs (BN 208, VC5 208); and `verify vc5 0x4a82f0` fails with
-    10 after 44 relocation-masked bytes and 4 trimmed VC NOPs (BN 212, VC5
-    208).
+    loops with BN-shaped DDERR_SURFACELOST restore handling. A final callback
+    ABI pass changed the DD clear callbacks to return the BN-visible
+    `ReportError`/zero-success status value. `verify vc5 0x4a81a0` now passes
+    with zero unmasked mismatches after 20 relocation-masked bytes and 14
+    trimmed VC NOPs (BN 114, VC5 128); `verify vc5 0x4a8220` passes with zero
+    after 36 relocation-masked bytes and no trimmed VC NOPs (BN 208, VC5 208);
+    and `verify vc5 0x4a82f0` passes with zero after 44 relocation-masked
+    bytes and 12 trimmed VC NOPs (BN 212, VC5 224). The adjacent
+    0x4a6750 zVideo_dd3d::CallClearZBufferRect dispatch wrapper also has
+    accepted zVideo ownership/data gates and tier S evidence with zero
+    unmasked mismatches after 4 relocation-masked bytes and 10 trimmed VC NOPs
+    (BN 6, VC5 16). All four functional smokes pass.
     A fresh
     local VC5SP3 target for 0x4a9b70 previously failed with 108 unmasked
     mismatches after 28 relocation-masked bytes and 6 trimmed VC NOP bytes; a

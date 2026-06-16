@@ -50,12 +50,12 @@ typedef void(__fastcall *zVideo_BltRectDirectProc)(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect
 );
-typedef void(__fastcall *zVideo_ClearZBufferRectProc)(zVidRect32 *rect);
-typedef void(__fastcall *zVideo_ClearSwSurfaceAndZBufferProc)(
+typedef int(__fastcall *zVideo_ClearZBufferRectProc)(zVidRect32 *rect);
+typedef int(__fastcall *zVideo_ClearSwSurfaceAndZBufferProc)(
     zVidRect32 *surfaceRect,
     zVidRect32 *zRect
 );
-typedef void(__fastcall *zVideo_ClearStateSurfaceAndZBufferProc)(
+typedef int(__fastcall *zVideo_ClearStateSurfaceAndZBufferProc)(
     zVidRect32 *rect,
     zVideo_SurfaceStatePartial *surfaceState
 );
@@ -1010,12 +1010,12 @@ void __fastcall BltSwToPrimaryRect(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect
 );
-void __fastcall ZBuffer_DepthFillRect(zVidRect32 *dstRect);
-void __fastcall ClearScreenAndZBufferRect(
+int __fastcall ZBuffer_DepthFillRect(zVidRect32 *dstRect);
+int __fastcall ClearScreenAndZBufferRect(
     zVidRect32 *dstRect,
     zVideo_SurfaceStatePartial *colorSurfaceState
 );
-void __fastcall ClearSwBackbufferAndZBufferRects(
+int __fastcall ClearSwBackbufferAndZBufferRects(
     zVidRect32 *colorRect,
     zVidRect32 *zRect
 );

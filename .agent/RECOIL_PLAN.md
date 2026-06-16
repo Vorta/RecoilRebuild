@@ -19983,15 +19983,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a6750:
   - [✅] Reconstructed (Name: zVideo_dd3d::CallClearZBufferRect)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zVideo_dd3d::CallClearZBufferRect;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd3d_call_clear_zbuffer_rect;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a67e0:
   - [✅] Reconstructed (Name: zVideo::GetSwSurfaceLockedFlag)
@@ -20388,39 +20388,39 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zVideo_dd::ZBuffer_DepthFillRect;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_zbuffer_depth_fill_rect;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: tier S blocked: same-session VC5SP3 clear-cluster compare now fails with 9 unmasked mismatches after 20 relocation-masked bytes and 5 trimmed VC NOP bytes (BN 114 bytes, VC5 112 bytes). Source expands the former BltFillWithRestore helper into the BN-shaped direct DDBLT_DEPTHFILL Blt/Restore retry loop with field-only DDBLTFX initialization; functional target passes. Remaining drift is success/empty epilogue shape and branch displacement.
+    - Blocker: none
 
 - 0x4a8220:
   - [✅] Reconstructed (Name: zVideo_dd::ClearScreenAndZBufferRect)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zVideo_dd::ClearScreenAndZBufferRect;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_clear_screen_and_zbuffer_rect;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: tier S blocked: same-session VC5SP3 clear-cluster compare now fails with 10 unmasked mismatches after 36 relocation-masked bytes and 8 trimmed VC NOP bytes (BN 208 bytes, VC5 208 bytes). Source expands the former BltFillWithRestore helper into direct color/Z Blt/Restore retry loops with field-only DDBLTFX initialization and report lines 0x267/0x27f; functional target passes. Remaining drift is success/empty epilogue shape and branch displacement.
+    - Blocker: none
 
 - 0x4a82f0:
   - [✅] Reconstructed (Name: zVideo_dd::ClearSwBackbufferAndZBufferRects)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zVideo_dd::ClearSwBackbufferAndZBufferRects;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_clear_sw_backbuffer_and_zbuffer_rects;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: tier S blocked: same-session VC5SP3 clear-cluster compare now fails with 10 unmasked mismatches after 44 relocation-masked bytes and 4 trimmed VC NOP bytes (BN 212 bytes, VC5 208 bytes). Source expands the former BltFillWithRestore helper into direct software-backbuffer/Z Blt/Restore retry loops with field-only DDBLTFX initialization and report lines 0x2a5/0x2bd; functional target passes. Remaining drift is success/empty epilogue shape and branch displacement.
+    - Blocker: none
 
 - 0x4a83d0:
   - [✅] Reconstructed (Name: zVideo_dd::Image_LazyCreateBackingSurface)
