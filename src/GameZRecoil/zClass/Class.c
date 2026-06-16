@@ -43,7 +43,13 @@ namespace {
     const int kNodeTransformDirtyPropagatedFlag = 0x02000000;
     const char *kSwitchSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Switch.c";
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in Class.c callers including 0x447dc0, 0x447e30,
+     * 0x447f00, and 0x448180 as the repeated null-node ReportOld pattern.
+     * Purpose: report a null zClass node pointer and let the caller return
+     * its address-specific failure value.
+     */
     bool ReportNullNode(
         int sourceLine,
         zClass_NodePartial *node
@@ -1039,7 +1045,12 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x447dc0: zClass_Class::gwNodeSetName
+    /**
+     * Reimplements 0x447dc0: zClass_Class::gwNodeSetName
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: copy or truncate a caller-supplied name into a zClass node's
+     * fixed-size name buffer.
+     */
     int __fastcall gwNodeSetName(
         zClass_NodePartial * node,
         const char *name
@@ -1069,7 +1080,11 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x447e30: zClass_Class::gwNodeGetName
+    /**
+     * Reimplements 0x447e30: zClass_Class::gwNodeGetName
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: return the fixed-size name buffer for a zClass node.
+     */
     char *__fastcall gwNodeGetName(zClass_NodePartial * node) {
         if (ReportNullNode(
             0x40d,
@@ -1081,9 +1096,13 @@ namespace zClass_Class {
         return node->name;
     }
 
-    // Reimplements 0x447f00: zClass_Class::gwNodeGetUserData
-    int __fastcall
-    gwNodeGetUserData(
+    /**
+     * Reimplements 0x447f00: zClass_Class::gwNodeGetUserData
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: read the user-data or display-instance reference stored on a
+     * zClass node.
+     */
+    int __fastcall gwNodeGetUserData(
         zClass_NodePartial * node,
         unsigned int *outData
     ){
@@ -1274,9 +1293,12 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x448180: zClass_Class::gwNodeGetNodeType
-    int __fastcall
-    gwNodeGetNodeType(
+    /**
+     * Reimplements 0x448180: zClass_Class::gwNodeGetNodeType
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: read the byte-sized node type metadata value.
+     */
+    int __fastcall gwNodeGetNodeType(
         zClass_NodePartial * node,
         int *outValue
     ){
@@ -1411,7 +1433,12 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x448330: zClass_Class::gwNodeSetNodeType
+    /**
+     * Reimplements 0x448330: zClass_Class::gwNodeSetNodeType
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: store the low byte of the caller-supplied node type metadata
+     * value.
+     */
     int __fastcall gwNodeSetNodeType(
         zClass_NodePartial * node,
         int nodeType

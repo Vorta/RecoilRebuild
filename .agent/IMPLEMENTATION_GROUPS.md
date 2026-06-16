@@ -313,10 +313,16 @@ Active queue sections:
     wiring the existing zClass copy smokes into `recoil_native_smoke`, and
     verifying ignored local VC5 target `zclass_copy_node_globals` with zero
     unmasked data mismatches.
+  - The zClass metadata/name accessor dependency through 0x447dc0 is accepted
+    at tier B after adding CRT provider-boundary entries for `strncpy` and
+    `sprintf`, adding `zClass_NodePartial::name` layout asserts, documenting
+    `ReportNullNode` helper provenance plus accessor docblocks, and wiring the
+    existing metadata accessor smoke into `recoil_native_smoke`.
   - Route zNetwork send/session-desc helpers and HUD row-removal/container
     dependencies as separate owner/data blockers; do not fold them into the
     GameNet owner.
 - Next action:
   - Refresh the launch-panel frontier from the HudUiNetGameSetupPanel group,
     then follow the lowest visible GameNet blocker from 0x432860's direct
-    frontier, currently 0x447dc0 `zClass_Class::gwNodeSetName`.
+    frontier, currently 0x421ea0
+    `Player::CreateFromNamesAtPoseGetState`.

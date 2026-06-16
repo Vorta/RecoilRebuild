@@ -353,6 +353,49 @@ extern "C" int zclass_object3d_init_smoke() {
     return result;
 }
 
+extern "C" int zclass_node_metadata_accessors_smoke() {
+    zClass_NodePartial node = {};
+    node.userDataOrDiRef = 0x12345678;
+    node.nodeType = 0xab;
+
+    std::uint32_t userData = 0;
+    std::int32_t value = 0;
+    if (zClass_Class::gwNodeGetUserData(&node, &userData) != 0 || userData != 0x12345678) {
+        return 1;
+    }
+    if (zClass_Class::gwNodeGetNodeType(&node, &value) != 0 || value != 0xab) {
+        return 2;
+    }
+    if (zClass_Class::gwNodeSetNodeType(&node, 0x135) != 0 || node.nodeType != 0x35) {
+        return 3;
+    }
+    if (zClass_Class::gwNodeSetName(&node, "short_name") != 0 ||
+        std::strcmp(node.name, "short_name") != 0 ||
+        zClass_Class::gwNodeGetName(&node) != node.name) {
+        return 4;
+    }
+
+    std::memset(
+        node.name,
+        'Z',
+        sizeof(node.name)
+    );
+    const char *longName = "abcdefghijklmnopqrstuvwxyz0123456789LONG";
+    if (zClass_Class::gwNodeSetName(&node, longName) != 0 ||
+        std::strncmp(node.name, longName, 0x22) != 0 || node.name[0x22] != 'Z' ||
+        node.name[0x23] != '\0') {
+        return 5;
+    }
+
+    return zClass_Class::gwNodeGetUserData(nullptr, &userData) == 5 &&
+                   zClass_Class::gwNodeGetNodeType(nullptr, &value) == 5 &&
+                   zClass_Class::gwNodeSetNodeType(nullptr, 0) == 5 &&
+                   zClass_Class::gwNodeSetName(nullptr, "name") == 5 &&
+                   zClass_Class::gwNodeGetName(nullptr) == nullptr
+               ? 0
+               : 6;
+}
+
 extern "C" int zclass_copy_node_display_instance_smoke() {
     ResetTypeListsForTest();
 

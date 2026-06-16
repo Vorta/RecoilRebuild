@@ -439,6 +439,13 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         zClass_NodePartial,
+        name
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(sizeof(((zClass_NodePartial *)0)->name) == 0x24);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_NodePartial,
         nodeType
     ) == 0x30
 );

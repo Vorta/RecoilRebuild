@@ -1429,6 +1429,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: CRT::SetDefaultPrecision)
   - [✅] Provider-boundary (Kind: CRT/MFC/framework; Name: CRT_SetDefaultPrecision; Origin: CRT/MFC provider; File: external; Target: pending; Group: provider.imports)
 
+- 0x4cc5a0:
+  - [✅] Reconstructed (Name: strncpy)
+  - [✅] Provider-boundary (Kind: CRT; Name: strncpy; Origin: VC5 CRT import/IAT provider; BN data 0x4cc5a0 is import function pointer used by zClass_Class::gwNodeSetName and many callers; File: external; Target: pending; Group: provider.imports)
+
+- 0x4cc5c4:
+  - [✅] Reconstructed (Name: sprintf)
+  - [✅] Provider-boundary (Kind: CRT; Name: sprintf; Origin: VC5 CRT import/IAT provider; BN data 0x4cc5c4 is import function pointer used by zClass_Class::gwNodeSetName and many callers; File: external; Target: pending; Group: provider.imports)
+
 - 0x4c81d8:
   - [✅] Reconstructed (Name: MFC_ModuleState::SetMbcpData)
   - [✅] Provider-boundary (Kind: CRT/MFC/framework; Name: MFC_ModuleState_SetMbcpData; Origin: CRT/MFC provider; File: external; Target: pending; Group: provider.imports)
@@ -4503,28 +4511,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x447dc0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetName)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::gwNodeSetName;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_set_name;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x447e30:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetName)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::gwNodeGetName;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_get_name;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x447e60:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetDisplayInstance)
@@ -4542,15 +4550,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x447f00:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetUserData)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::gwNodeGetUserData;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_get_user_data;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x447f30:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetActionCallback)
@@ -4620,15 +4628,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x448180:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetNodeType)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::gwNodeGetNodeType;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_get_node_type;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4481b0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetRaycastable)
@@ -4712,8 +4720,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetNodeType)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::gwNodeSetNodeType;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_set_node_type;

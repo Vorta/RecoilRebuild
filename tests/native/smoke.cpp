@@ -623,6 +623,7 @@ extern "C" int zclass_alloc_node_from_free_list_smoke(void);
 extern "C" int zclass_node_propagate_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_reset_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_init_smoke(void);
+extern "C" int zclass_node_metadata_accessors_smoke(void);
 extern "C" int zclass_copy_node_display_instance_smoke(void);
 extern "C" int zclass_copy_node_base_data_smoke(void);
 extern "C" int zclass_copy_node_unimplemented_stubs_smoke(void);
@@ -11185,6 +11186,8 @@ int main(int argc, char **argv) {
         {"zclass_object3d_reset_transform_dirty_smoke",
          zclass_object3d_reset_transform_dirty_smoke},
         {"zclass_object3d_init_smoke", zclass_object3d_init_smoke},
+        {"zclass_node_metadata_accessors_smoke",
+         zclass_node_metadata_accessors_smoke},
         {"zclass_copy_node_display_instance_smoke",
          zclass_copy_node_display_instance_smoke},
         {"zclass_copy_node_base_data_smoke", zclass_copy_node_base_data_smoke},
