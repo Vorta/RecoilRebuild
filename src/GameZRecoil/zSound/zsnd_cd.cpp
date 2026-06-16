@@ -164,14 +164,20 @@ int GetAudioApiOption() {
     return *ZOPT_AUDIO_API;
 }
 
-// Reimplements 0x408210: zSnd::SetCDAudioOption
+/**
+ * Reimplements 0x408210: zSnd::SetCDAudioOption
+ * Purpose: store the CD-audio option value used by sound and options code.
+ */
 void __fastcall SetCDAudioOption(
     int cdAudioOption
 ) {
     *ZOPT_SOUND_CDAUDIO = cdAudioOption;
 }
 
-// Reimplements 0x408220: zSnd::GetCDAudioOption
+/**
+ * Reimplements 0x408220: zSnd::GetCDAudioOption
+ * Purpose: return the current CD-audio option value.
+ */
 int GetCDAudioOption() {
     return *ZOPT_SOUND_CDAUDIO;
 }
