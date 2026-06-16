@@ -365,6 +365,8 @@ extern "C" int recoil_app_mp_exit_dialog_state_on_try_become_current_smoke(void)
 extern "C" int recoil_app_mp_exit_dialog_state_on_update_should_quit_smoke(void);
 extern "C" int zhud_options_panel_lighting_init_from_options_smoke(void);
 extern "C" int zhud_options_panel_lighting_sync_from_options_smoke(void);
+extern "C" int zhud_options_panel_perspective_init_from_options_smoke(void);
+extern "C" int zhud_options_panel_full_hud_init_from_options_smoke(void);
 extern "C" int zhud_options_panel_resolution_on_activate_smoke(void);
 extern "C" int zhud_options_dialog_constructor_smoke(void);
 extern "C" int zhud_options_dialog_destructor_core_smoke(void);
@@ -10616,6 +10618,10 @@ int main(int argc, char **argv) {
          zhud_options_panel_lighting_init_from_options_smoke},
         {"zhud_options_panel_lighting_sync_from_options_smoke",
          zhud_options_panel_lighting_sync_from_options_smoke},
+        {"zhud_options_panel_perspective_init_from_options_smoke",
+         zhud_options_panel_perspective_init_from_options_smoke},
+        {"zhud_options_panel_full_hud_init_from_options_smoke",
+         zhud_options_panel_full_hud_init_from_options_smoke},
         {"zhud_options_panel_resolution_on_activate_smoke",
          zhud_options_panel_resolution_on_activate_smoke},
         {"zhud_options_dialog_constructor_smoke", zhud_options_dialog_constructor_smoke},

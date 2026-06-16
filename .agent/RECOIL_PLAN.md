@@ -25922,15 +25922,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x408360:
   - [✅] Reconstructed (Name: zOpt::GetHudTypeForCurrentHwMode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGame; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zOpt; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zOpt::GetHudTypeForCurrentHwMode;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_get_hud_type_for_current_hw_mode;
     - Group: engine.zgame;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408380:
   - [✅] Reconstructed (Name: zOpt::GetReplicateMode)
@@ -35491,13 +35491,13 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x40ca20:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Perspective::InitFromOptions)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Reimplemented [C]
+    - Name: HudUiOptionsPanel_Perspective::InitFromOptions;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_options_panel_perspective_init_from_options;
     - Group: ui.zhud;
     - Model: pending;
     - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
@@ -35517,13 +35517,13 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x40ca80:
   - [☑️] Reconstructed (Name: HudUiOptionsPanel_FullHud::InitFromOptions)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Reimplemented [C]
+    - Name: HudUiOptionsPanel_FullHud::InitFromOptions;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_options_panel_full_hud_init_from_options;
     - Group: ui.zhud;
     - Model: pending;
     - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
