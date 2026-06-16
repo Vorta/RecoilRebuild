@@ -10793,7 +10793,11 @@ HudCmdBinding **__fastcall HudCmdBinding::DestroyRange(
     return dest;
 }
 
-// Reimplements 0x40bdc0: zUtil_StdPtrVector_Clear
+ /**
+ * Reimplements 0x40bdc0: zUtil_StdPtrVector_Clear.
+ * Original source path: D:\Proj\Battlesport\HudCmdBindButton.cpp.
+ * Purpose: reset a typed command-binding vector to empty and return its old end.
+ */
 void **__fastcall zUtil_StdPtrVector_Clear(
     HudCmdBindingVector *self
 ) {
@@ -10853,8 +10857,12 @@ void HudCmdBindButtonBase::ClearBindingEntries() {
     zUtil_StdPtrVector_Clear(&bindingVec);
 }
 
-// Reimplements 0x40c280: HudCmdBindButtonBase::DestructorCore
-// (D:\Proj\Battlesport\HudCmdBindButton.cpp)
+ /**
+ * Reimplements 0x40c280: HudCmdBindButtonBase::DestructorCore.
+ * Original source path: D:\Proj\Battlesport\HudCmdBindButton.cpp.
+ * Purpose: destroy owned command-binding entries, release vector storage, and
+ * tear down embedded and inherited widget state.
+ */
 void HudCmdBindButtonBase::DestructorCore() {
 
     HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(bindingVec.begin);
@@ -12621,7 +12629,12 @@ int HudCmdDialog::ApplyMouseButtonRebind(
     return 1;
 }
 
-// Reimplements 0x4b90e0: HudCmdBindButtonBase::RebuildBindingSlotWidgets
+ /**
+ * Reimplements 0x4b90e0: HudCmdBindButtonBase::RebuildBindingSlotWidgets.
+ * Original source path: D:\Proj\Battlesport\HudCmdBindButton.cpp.
+ * Purpose: recreate the binding-slot panel array and lay out visible and
+ * overflow slots around the selected binding panel.
+ */
 void HudCmdBindButtonBase::RebuildBindingSlotWidgets(
     int totalCount,
     int visibleCount
@@ -12677,7 +12690,12 @@ void HudCmdBindButtonBase::RebuildBindingSlotWidgets(
     }
 }
 
-// Reimplements 0x4b8de0: HudCmdBindButtonBase::LoadFromZrd
+ /**
+ * Reimplements 0x4b8de0: HudCmdBindButtonBase::LoadFromZrd.
+ * Original source path: D:\Proj\Battlesport\HudCmdBindButton.cpp.
+ * Purpose: load binding button fonts, spacing, offsets, slot counts, and
+ * child panel setup from a ZRD node.
+ */
 int HudCmdBindButtonBase::LoadFromZrd(
     zReader::Node *zrdSection,
     HudUiBackground *ownerDialog
