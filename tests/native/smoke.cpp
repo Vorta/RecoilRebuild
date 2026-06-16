@@ -66,6 +66,7 @@ extern "C" int zsnd_stream_mgr_recycle_finished_request_smoke(void);
 extern "C" int zsnd_stream_mgr_shutdown_lists_smoke(void);
 extern "C" int zsnd_backend_shutdown_release_smoke(void);
 extern "C" int zsnd_play_handle_stop_if_active_smoke(void);
+extern "C" int zsnd_play_handle_try_disable_managed_smoke(void);
 extern "C" int zsnd_play_handle_update3d_a3d_smoke(void);
 extern "C" int zsnd_play_handle_update3d_directsound_smoke(void);
 extern "C" int zsnd_update_listener_state_smoke(void);
@@ -572,6 +573,8 @@ extern "C" int zclass_object3d_reset_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_init_smoke(void);
 extern "C" int zclass_node_action_callback_smoke(void);
 extern "C" int zclass_node_priority_smoke(void);
+extern "C" int zclass_sound_leaf_smoke(void);
+extern "C" int zclass_sound_get_position_smoke(void);
 extern "C" int zloc_message_lookup_failure_smoke(void);
 extern "C" int zloc_load_unload_messages_dll_smoke(void);
 extern "C" int zimage_font_glyph_scan_smoke(void);
@@ -10116,6 +10119,8 @@ int main(int argc, char **argv) {
         {"zsnd_stream_mgr_shutdown_lists_smoke", zsnd_stream_mgr_shutdown_lists_smoke},
         {"zsnd_backend_shutdown_release_smoke", zsnd_backend_shutdown_release_smoke},
         {"zsnd_play_handle_stop_if_active_smoke", zsnd_play_handle_stop_if_active_smoke},
+        {"zsnd_play_handle_try_disable_managed_smoke",
+         zsnd_play_handle_try_disable_managed_smoke},
         {"zsnd_play_handle_update3d_a3d_smoke", zsnd_play_handle_update3d_a3d_smoke},
         {"zsnd_play_handle_update3d_directsound_smoke",
          zsnd_play_handle_update3d_directsound_smoke},
@@ -10912,6 +10917,8 @@ int main(int argc, char **argv) {
         {"zclass_object3d_init_smoke", zclass_object3d_init_smoke},
         {"zclass_node_action_callback_smoke", zclass_node_action_callback_smoke},
         {"zclass_node_priority_smoke", zclass_node_priority_smoke},
+        {"zclass_sound_leaf_smoke", zclass_sound_leaf_smoke},
+        {"zclass_sound_get_position_smoke", zclass_sound_get_position_smoke},
         {"zloc_message_lookup_failure_smoke", zloc_message_lookup_failure_smoke},
         {"zloc_load_unload_messages_dll_smoke", zloc_load_unload_messages_dll_smoke},
         {"zimage_font_glyph_scan_smoke", zimage_font_glyph_scan_smoke},

@@ -1,4 +1,5 @@
 #include "zClass.h"
+#include "GameZRecoil/zSound/zSound.h"
 
 #include <cstdlib>
 #include <cstring>
@@ -424,4 +425,168 @@ extern "C" int zclass_node_priority_smoke() {
     zClass_TypeList::FreeAll();
 
     return zClass_Class::gwNodeSetPriority(nullptr, 0) == 5 ? 0 : 4;
+}
+
+extern "C" int zclass_sound_leaf_smoke() {
+    ResetTypeListsForTest();
+
+    zClass_NodeFreeListSlot slot{};
+    slot.freeTag = 0x00ffffff;
+    g_zClass_NodeArray = &slot;
+    g_zClass_NodeFreeHeadIndex = 0;
+    g_zClass_ActiveNodeCount = 0;
+    g_zClass_DeferredProcessingEnabled = 1;
+
+    zClass_NodePartial *const node = zClass_Sound::gwSoundNew();
+    if (node != &slot.node || node->classId != 10 || node->classData == nullptr ||
+        (node->flags & 0x104) != 0x104 || g_zClass_NodeFreeHeadIndex != -1 ||
+        g_zClass_ActiveNodeCount != 1 || zClass_TypeList::Head(10) == nullptr ||
+        zClass_TypeList::Head(10)->node != node) {
+        return 1;
+    }
+
+    const float expectedBounds[6] = {1.0f, 1.0f, -2.0f, 2.0f, 2.0f, -1.0f};
+    for (int i = 0; i < 6; ++i) {
+        if (node->cachedBounds[i] != expectedBounds[i]) {
+            return 2;
+        }
+    }
+
+    zClass_SoundDataPartial *const newData =
+        static_cast<zClass_SoundDataPartial *>(node->classData);
+    if (newData->runtimeFlags != 1 || newData->falloffMode != 1 || newData->rangeMin != 32.0f ||
+        newData->rangeMax != 64.0f || newData->rangeMaxSq != 4096.0f ||
+        newData->invRangeSpan != 0.03125f || newData->attachedWorldCount != 0 ||
+        newData->attachedWorlds != nullptr) {
+        return 3;
+    }
+
+    if (zClass_Sound::DeleteNode(node) != 0 || slot.node.classData != nullptr ||
+        g_zClass_ActiveNodeCount != 0) {
+        zClass_TypeList::FreeAll();
+        return 4;
+    }
+
+    zClass_TypeList::FreeAll();
+
+    zClass_NodePartial stackNode = {};
+    zClass_SoundDataPartial data = {};
+    zSndPlayHandle playHandle = {};
+    stackNode.classData = &data;
+    data.playHandle = &playHandle;
+    data.runtimeFlags = 0x10;
+    g_zSnd_IsInitialized = 0;
+    if (zClass_Sound::SetSampleSetByName(&stackNode, "short") != 0 ||
+        std::strcmp(data.sampleSetName, "short") != 0 || data.sample != nullptr ||
+        data.playHandle != nullptr || data.runtimeFlags != 0x11) {
+        return 5;
+    }
+
+    char longName[0x30] = {};
+    std::memset(longName, 'a', sizeof(longName) - 1);
+    data.sampleSetName[0x22] = 'Z';
+    if (zClass_Sound::SetSampleSetByName(&stackNode, longName) != 0 ||
+        std::strncmp(data.sampleSetName, longName, 0x22) != 0 || data.sampleSetName[0x22] != 'Z' ||
+        data.sampleSetName[0x23] != '\0') {
+        return 6;
+    }
+
+    data.runtimeFlags = 0;
+    if (zClass_Sound::gwSoundSetPosition(&stackNode, 1.0f, 2.0f, 3.0f) != 0 ||
+        data.localPosition.x != 1.0f || data.localPosition.y != 2.0f ||
+        data.localPosition.z != 3.0f || data.runtimeFlags != 3) {
+        return 61;
+    }
+
+    zSndPlayHandle managedHandle = {};
+    managedHandle.isActive = 1;
+    data.playHandle = &managedHandle;
+    data.runtimeFlags = 0x08;
+    stackNode.flags = 0x04;
+    if (zClass_Sound::gwSoundSetActive(&stackNode, 0) != 0 || data.playHandle != nullptr ||
+        (data.runtimeFlags & 0x08) != 0 || managedHandle.isActive != 0 ||
+        (stackNode.flags & 0x04) != 0) {
+        return 62;
+    }
+    if (zClass_Sound::gwSoundSetActive(&stackNode, 1) != 0 || (stackNode.flags & 0x04) == 0) {
+        return 63;
+    }
+    stackNode.classId = 10;
+    stackNode.flags = 0x04;
+    if (zClass_Class::gwNodeSetActive(&stackNode, 0) != 0 || (stackNode.flags & 0x04) != 0) {
+        return 64;
+    }
+
+    stackNode.classId = 10;
+    stackNode.classData = &data;
+    data.localPosition = {4.0f, 5.0f, 6.0f};
+    data.worldPos = {};
+    if (zClass_Sound::ComputeWorldTransform(&stackNode, &data) != 0 ||
+        data.worldPos.x != 4.0f || data.worldPos.y != 5.0f || data.worldPos.z != 6.0f) {
+        return 65;
+    }
+
+    data.runtimeFlags = 0x01;
+    stackNode.flags = 0;
+    if (zClass_Sound::UpdatePlayback(&stackNode) != 0 || data.runtimeFlags != 0x01) {
+        return 66;
+    }
+
+    stackNode.flags = 0x04;
+    data.playHandle = nullptr;
+    data.sample = nullptr;
+    data.runtimeFlags = 0x03;
+    data.localPosition = {7.0f, 8.0f, 9.0f};
+    data.worldPos = {};
+    if (zClass_Sound::UpdatePlayback(&stackNode) != 0 || data.runtimeFlags != 0x06 ||
+        data.worldPos.x != 7.0f || data.worldPos.y != 8.0f || data.worldPos.z != 9.0f) {
+        return 67;
+    }
+
+    data.runtimeFlags = 0x01;
+    data.worldPos = {1.0f, 2.0f, 3.0f};
+    if (zClass_Sound::UpdatePlayback(&stackNode) != 0 || data.runtimeFlags != 0 ||
+        data.worldPos.x != 1.0f || data.worldPos.y != 2.0f || data.worldPos.z != 3.0f) {
+        return 68;
+    }
+
+    stackNode.classData = nullptr;
+    if (zClass_Sound::UpdatePlayback(nullptr) != 5 ||
+        zClass_Sound::UpdatePlayback(&stackNode) != 5 ||
+        zClass_Sound::SetSampleSetByName(nullptr, "x") != 5 ||
+        zClass_Sound::SetSampleSetByName(&stackNode, "x") != 5 ||
+        zClass_Sound::gwSoundSetPosition(nullptr, 1.0f, 2.0f, 3.0f) != 5 ||
+        zClass_Sound::gwSoundSetPosition(&stackNode, 1.0f, 2.0f, 3.0f) != 5 ||
+        zClass_Sound::gwSoundSetActive(nullptr, 0) != 5 ||
+        zClass_Sound::gwSoundSetActive(&stackNode, 0) != 5) {
+        return 7;
+    }
+
+    g_zClass_NodeFreeHeadIndex = -1;
+    return zClass_Sound::gwSoundNew() == nullptr ? 0 : 8;
+}
+
+extern "C" int zclass_sound_get_position_smoke() {
+    zClass_NodePartial node{};
+    zClass_SoundDataPartial data{};
+    node.classData = &data;
+    data.localPosition = {7.0f, 8.0f, 9.0f};
+
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+    if (zClass_Sound::gwSoundGetPosition(&node, &x, &y, &z) != 0 ||
+        x != 7.0f ||
+        y != 8.0f ||
+        z != 9.0f) {
+        return 1;
+    }
+
+    node.classData = nullptr;
+    if (zClass_Sound::gwSoundGetPosition(nullptr, &x, &y, &z) != 5 ||
+        zClass_Sound::gwSoundGetPosition(&node, &x, &y, &z) != 5) {
+        return 2;
+    }
+
+    return 0;
 }

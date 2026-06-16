@@ -175,3 +175,32 @@ available even when no groups are active.
   - Defer the Time::Tick and zNetwork::ShutdownSessionRuntime tier S blockers
     discovered through the MpExit frontier until `tier_s_priority_ready=true`
     or until the user explicitly directs tier S work.
+
+### Group: HudOptionsDialog option-panel owner cleanup
+
+- Anchor: 0x40c9c0 HudUiOptionsPanel_Lighting::InitFromOptions and
+  0x40c9e0 HudUiOptionsPanel_Lighting::SyncFromOptions
+- Reason: class owner/source-shape pass for HudOptionsDialog embedded
+  option-panel widgets. The constructor/destructor owner is accepted, but
+  panel methods remain blocked on HudOptionsDialog/HudUiOptionsPanel_* source
+  owner and data markers.
+- Current blockers:
+  - `python tools/recoil.py status 0x40c9c0 --lane binary` shows direct
+    callees are tier B/accepted and no lower blocking callee is visible; the
+    next blocker is Source owner for class:HudOptionsDialog.
+  - `python tools/recoil.py plan group ui.zhud --lane binary` shows the
+    affected option-panel method cluster spans 0x40c9c0 through 0x40ce80,
+    with several entries still `Reimplemented [X]` because the broader
+    HudOptionsDialog/HudUiOptionsPanel_* source-shape debt has not been
+    resolved.
+  - Production source already models concrete embedded option-panel C++
+    classes in `src/GameZRecoil/zHud/zhud_ui.h`, but method bodies in
+    `src/GameZRecoil/zHud/zhud_ui.cpp` need focused BN/source review before
+    any owner/data marker promotion.
+- Next action:
+  - Source worker owns only `src/GameZRecoil/zHud/zhud_ui.cpp` and
+    `src/GameZRecoil/zHud/zhud_ui.h` for this slice, plus an optional focused
+    native smoke file if needed. Do not touch plan markers or existing zClass
+    smoke repair files from the parent slice.
+  - After worker return, run targeted zHud guards, native smoke build if source
+    changed, and focused functional verification for any implemented methods.

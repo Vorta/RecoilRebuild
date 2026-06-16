@@ -16274,8 +16274,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zSndPlayHandle::TryDisableManaged)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zSound; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zSndPlayHandle_TryDisableManaged;
     - File: src/GameZRecoil/zSound/zsnd_parm.cpp;
     - Target: zsnd_play_handle_try_disable_managed;
