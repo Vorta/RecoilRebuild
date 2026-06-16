@@ -377,6 +377,9 @@ void __stdcall zMath_Setup_Projection(
     g_zMath_ProjDepth = projDepth;
 }
 
+// Retail code keeps an EBP frame for this perspective-gradient helper under the
+// VC5SP3 /O2 profile; disable only frame-pointer omission for the function.
+#pragma optimize("y", off)
 /**
  * Reimplements 0x4753e0: zMath_BuildPerspectiveTextureInterpolants
  * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
@@ -478,6 +481,7 @@ void __fastcall zMath_BuildPerspectiveTextureInterpolants(
     outVOverZGrad->y = vOriginDelta * outRecipZGrad->y + vPlane.y * g_zMath_InvProjScaleY;
     *outVOverZBase = vOriginDelta * *outRecipZBase + vPlane.z;
 }
+#pragma optimize("y", on)
 
 namespace zMath {
 zMat4x3 g_zMath_CameraScratchB = {0};

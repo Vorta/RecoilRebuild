@@ -2793,7 +2793,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zmath_build_perspective_texture_interpolants;
     - Group: engine.zmath;
     - Model: source-faithful;
-    - Blocker: tier S blocked: retained source inlines the U/V over-Z plane construction inside zMath_BuildPerspectiveTextureInterpolants, matching BN's no-call U/V plane regions, but VC5SP3 zmath_build_perspective_texture_interpolants still fails with 874 unmasked mismatches after 76 relocation-masked bytes and 1 trimmed VC NOP byte (BN 978 bytes, VC5 912 bytes). Same-session source-worker probe directly inlining the remaining vector helper math regressed to 963 mismatches and a 1040-byte VC5 body, so it was reverted. Remaining drift is entry/prologue, stack layout, helper/inlining source-shape tension, and x87 scheduling.
+    - Blocker: tier S blocked: same-session source pass added a narrow VC5-era frame-pointer-omission pragma around zMath_BuildPerspectiveTextureInterpolants, matching the BN EBP-frame entry through the initial prologue and improving the VC5SP3 vc5_o2_ob0_md_facs compare from 874 to 865 unmasked mismatches. Current verify vc5 0x4753e0 still fails with 865 unmasked mismatches after 76 relocation-masked bytes and 12 trailing VC NOPs, BN size 978, VC5 size 816. Remaining debt is helper-call/inlining shape, stack layout, function-size drift, and x87 scheduling.
 
 - 0x4757c0:
   - [☑️] Reconstructed (Name: zMath::QuatFromEuler)
@@ -22092,7 +22092,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_texture_mip_select_variant_image;
     - Group: engine.zrndr;
     - Model: source-faithful;
-    - Blocker: tier S blocked: current VC5SP3 target zrndr_texture_mip_select_variant_image remains at 239 unmasked mismatches after 24 relocation-masked bytes and 15 trimmed VC NOP bytes (BN 372 bytes, VC5 384 bytes) after the selected-vertex loop register/lifetime pass plus local mip-delta scratch array. Same-session source-worker probes for denominator scratch temps, reordered invZ temps, mutable denominator temps, direct division formula, and reversed max comparison operands were byte-neutral or regressed up to 342 mismatches and were reverted. Remaining drift is post-loop x87 mip-metric expression scheduling/reduction versus BN stack-slot reuse.
+    - Blocker: tier S blocked: current VC5SP3 target zrndr_texture_mip_select_variant_image now reports 250 unmasked mismatches after 24 relocation-masked bytes and 15 trimmed VC NOP bytes (BN 372 bytes, VC5 384 bytes). Same-session source-worker probes for denominator scratch/mutable ordering, early U-delta reduction, selectedUv/selectedTri pointers, mipDeltas order, and variantIndexBits layout were byte-neutral, regressed, or moved drift into the already-matched selected-vertex loop and were reverted. Remaining drift is post-loop x87 mip-metric expression scheduling/reduction versus BN stack-slot reuse.
 
 - 0x4992b0:
   - [✅] Reconstructed (Name: zRndr::PlotPixel16)

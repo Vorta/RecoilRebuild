@@ -1015,13 +1015,14 @@ available even when no groups are active.
     `zrndr_texture_mip_select_variant_data` passes for
     gRndr_TextureMipSelectionEnabled (63209ch), and `verify vc5 0x499130`
     remains the tier S blocker after selected-vertex loop and local mip-delta
-    scratch source-shape passes improve the compare from 272 to 239 unmasked
-    mismatches after 24 relocation-masked bytes and 15 trimmed VC NOP bytes
-    (BN 372 bytes, VC5 384 bytes). Remaining debt is post-loop x87
-    mip-metric expression scheduling/reduction versus BN's stack-slot reuse.
-    Same-session invZ/source-order and selected-loop spelling
-    probes preserved behavior but stayed byte-neutral at 272 mismatches, so both
-    were reverted.
+    scratch source-shape passes. A refreshed same-session compare now reports
+    250 unmasked mismatches after 24 relocation-masked bytes and 15 trimmed VC
+    NOP bytes (BN 372 bytes, VC5 384 bytes). Same-session denominator scratch,
+    early U-delta reduction, selectedUv/selectedTri pointer, mipDeltas order,
+    and variantIndexBits layout probes were byte-neutral, regressed, or moved
+    drift into the already-matched selected-vertex loop and were reverted.
+    Remaining debt is post-loop x87 mip-metric expression scheduling/reduction
+    versus BN's stack-slot reuse.
     Same-session immediate-line callback-bank pass typed
     gRndr_pfnImmediateRaster4, gRndr_pfnImmediateRasterReserved, and
     gRndr_pfnImmediateRaster5 as distinct zRndr_Draw.cpp raster callbacks
