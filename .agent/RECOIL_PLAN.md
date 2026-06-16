@@ -8026,9 +8026,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x451b20:
   - [☑️] Reconstructed (Name: zClass_cls_util::CopyNodeDisplayInstance)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopyNodeDisplayInstance;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_node_display_instance;
@@ -8039,9 +8039,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x451bd0:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyNodeBaseData)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopyNodeBaseData;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_node_base_data;
@@ -8052,9 +8052,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x451f70:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyCameraNode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopyCameraNode;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_camera_node;
@@ -8065,9 +8065,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4520c0:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyLightNode_Unimplemented)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopyLightNode_Unimplemented;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_light_node_unimplemented;
@@ -8078,9 +8078,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4520e0:
   - [✅] Reconstructed (Name: zClass_cls_util::CopySoundNode_Unimplemented)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopySoundNode_Unimplemented;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_sound_node_unimplemented;
@@ -8091,9 +8091,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x452100:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyObject3DNode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopyObject3DNode;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_object3d_node;
@@ -8104,9 +8104,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x452230:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyAnimateNode_Unimplemented)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopyAnimateNode_Unimplemented;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_animate_node_unimplemented;
@@ -8117,9 +8117,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x452250:
   - [☑️] Reconstructed (Name: zClass_cls_util::CopyLodNode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopyLodNode;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_lod_node;
@@ -8130,9 +8130,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4523c0:
   - [✅] Reconstructed (Name: zClass_cls_util::CopySequenceNode_Unimplemented)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopySequenceNode_Unimplemented;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_sequence_node_unimplemented;
@@ -8143,9 +8143,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4523e0:
   - [✅] Reconstructed (Name: zClass_cls_util::CopySwitchNode_Unimplemented)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopySwitchNode_Stub;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_switch_node_stub;
@@ -8156,9 +8156,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x452400:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyNodeDispatch)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopyNodeDispatch;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_node_dispatch;
@@ -8169,9 +8169,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x452500:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyNodeWithCloneOptions)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopyNodeWithCloneOptions;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_node_with_clone_options;
@@ -8182,9 +8182,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x452560:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyNode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopyNode;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_node;

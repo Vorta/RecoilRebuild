@@ -308,11 +308,15 @@ Active queue sections:
     covers `g_GameNetPlayerRowStyleColors_00RRGGBB`,
     `g_GameNetPkt06InitialSyncGate`, and `g_HudTimerPanelNetState` with zero
     unmasked mismatches.
+  - The zClass copy-node dependency through 0x452500 is accepted at tier B
+    after correcting `g_zClass_CopyNodeCloneDiMode` to the BN initial value 1,
+    wiring the existing zClass copy smokes into `recoil_native_smoke`, and
+    verifying ignored local VC5 target `zclass_copy_node_globals` with zero
+    unmasked data mismatches.
   - Route zNetwork send/session-desc helpers and HUD row-removal/container
     dependencies as separate owner/data blockers; do not fold them into the
     GameNet owner.
 - Next action:
   - Refresh the launch-panel frontier from the HudUiNetGameSetupPanel group,
-    then follow the lowest visible GameNet blocker from 0x4327e0's callback
-    frontier, currently 0x432860
-    GameNet::SpawnRemotePlayerFromPkt06_PlayerStateSnapshot.
+    then follow the lowest visible GameNet blocker from 0x432860's direct
+    frontier, currently 0x447dc0 `zClass_Class::gwNodeSetName`.

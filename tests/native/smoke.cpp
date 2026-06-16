@@ -623,6 +623,12 @@ extern "C" int zclass_alloc_node_from_free_list_smoke(void);
 extern "C" int zclass_node_propagate_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_reset_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_init_smoke(void);
+extern "C" int zclass_copy_node_display_instance_smoke(void);
+extern "C" int zclass_copy_node_base_data_smoke(void);
+extern "C" int zclass_copy_node_unimplemented_stubs_smoke(void);
+extern "C" int zclass_copy_camera_node_smoke(void);
+extern "C" int zclass_copy_object3d_and_lod_smoke(void);
+extern "C" int zclass_copy_node_dispatch_and_wrappers_smoke(void);
 extern "C" int zclass_node_action_callback_smoke(void);
 extern "C" int zclass_node_priority_smoke(void);
 extern "C" int zclass_find_by_name_and_filtered_iter_smoke(void);
@@ -11179,6 +11185,15 @@ int main(int argc, char **argv) {
         {"zclass_object3d_reset_transform_dirty_smoke",
          zclass_object3d_reset_transform_dirty_smoke},
         {"zclass_object3d_init_smoke", zclass_object3d_init_smoke},
+        {"zclass_copy_node_display_instance_smoke",
+         zclass_copy_node_display_instance_smoke},
+        {"zclass_copy_node_base_data_smoke", zclass_copy_node_base_data_smoke},
+        {"zclass_copy_node_unimplemented_stubs_smoke",
+         zclass_copy_node_unimplemented_stubs_smoke},
+        {"zclass_copy_camera_node_smoke", zclass_copy_camera_node_smoke},
+        {"zclass_copy_object3d_and_lod_smoke", zclass_copy_object3d_and_lod_smoke},
+        {"zclass_copy_node_dispatch_and_wrappers_smoke",
+         zclass_copy_node_dispatch_and_wrappers_smoke},
         {"zclass_node_action_callback_smoke", zclass_node_action_callback_smoke},
         {"zclass_node_priority_smoke", zclass_node_priority_smoke},
         {"zclass_find_by_name_and_filtered_iter_smoke",

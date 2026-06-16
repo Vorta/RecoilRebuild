@@ -11,7 +11,7 @@
 extern "C" {
 int g_zClass_NodeArraySize = 0;
 int g_zClass_IsInitialized = 0;
-int g_zClass_CopyNodeCloneDiMode = 0;
+int g_zClass_CopyNodeCloneDiMode = 1;
 int g_zClass_CopyNodeDiArg0 = 0;
 int g_zClass_CopyNodeDiArg1 = 0;
 int g_zClass_RebuildGwWorldBltRectOnShutdown = 1;

@@ -1,6 +1,9 @@
 #include "zClass.h"
+#include "zDi.h"
+#include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zSound/zSound.h"
 
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 
@@ -348,6 +351,322 @@ extern "C" int zclass_object3d_init_smoke() {
     const int result = zClass_Object3D::gwObject3DInit() == nullptr ? 0 : 3;
     FreeTypeListsForTest();
     return result;
+}
+
+extern "C" int zclass_copy_node_display_instance_smoke() {
+    ResetTypeListsForTest();
+
+    zVec3 verts[1] = {{1.0f, 2.0f, 3.0f}};
+    zDiPartial displayInstance = {};
+    displayInstance.mode = 0;
+    displayInstance.vertCount = 1;
+    displayInstance.verts = verts;
+
+    zClass_NodeFreeListSlot sourceSlot = {};
+    zClass_NodeFreeListSlot destSlot = {};
+    sourceSlot.node.userDataOrDiRef =
+        static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&displayInstance));
+
+    g_zClass_CopyNodeCloneDiMode = 0;
+    g_zClass_CopyNodeDiArg0 = 0;
+    g_zClass_CopyNodeDiArg1 = 0;
+    if (zClass_cls_util::CopyNodeDisplayInstance(&sourceSlot.node, &destSlot.node) != 0 ||
+        destSlot.node.userDataOrDiRef != sourceSlot.node.userDataOrDiRef ||
+        displayInstance.refCount != 1) {
+        FreeTypeListsForTest();
+        return 1;
+    }
+
+    zClass_Class::gwNodeSetDisplayInstance(&destSlot.node, nullptr);
+    std::memset(&destSlot, 0, sizeof(destSlot));
+    displayInstance.refCount = 0;
+
+    g_zClass_CopyNodeCloneDiMode = 1;
+    g_zClass_CopyNodeDiArg0 = 1;
+    g_zClass_CopyNodeDiArg1 = 1;
+    if (zClass_cls_util::CopyNodeDisplayInstance(&sourceSlot.node, &destSlot.node) != 0 ||
+        destSlot.node.userDataOrDiRef != sourceSlot.node.userDataOrDiRef ||
+        displayInstance.refCount != 1) {
+        FreeTypeListsForTest();
+        return 2;
+    }
+
+    zClass_Class::gwNodeSetDisplayInstance(&destSlot.node, nullptr);
+    std::memset(&destSlot, 0, sizeof(destSlot));
+    displayInstance.refCount = 0;
+    displayInstance.flags = 0x04;
+
+    zDiPartial clonePool[1] = {};
+    clonePool[0].nextFreeIndex = -1;
+    g_zModel_DiPoolBase = clonePool;
+    g_zModel_DiPoolFreeHeadIndex = 0;
+    g_zModel_DiPoolInUseCount = 0;
+    g_zClass_CopyNodeCloneDiMode = 1;
+    g_zClass_CopyNodeDiArg0 = 0;
+    g_zClass_CopyNodeDiArg1 = 1;
+    if (zClass_cls_util::CopyNodeDisplayInstance(&sourceSlot.node, &destSlot.node) != 0 ||
+        destSlot.node.userDataOrDiRef !=
+            static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&clonePool[0])) ||
+        clonePool[0].refCount != 1 || clonePool[0].verts == verts) {
+        zDi::FreeContents(&clonePool[0]);
+        FreeTypeListsForTest();
+        return 3;
+    }
+
+    zClass_Class::gwNodeSetDisplayInstance(&destSlot.node, nullptr);
+    zDi::FreeContents(&clonePool[0]);
+    g_zModel_DiPoolBase = nullptr;
+    FreeTypeListsForTest();
+    g_zClass_CopyNodeCloneDiMode = 0;
+    g_zClass_CopyNodeDiArg0 = 0;
+    g_zClass_CopyNodeDiArg1 = 0;
+    return 0;
+}
+
+extern "C" int zclass_copy_node_base_data_smoke() {
+    ResetTypeListsForTest();
+
+    zVec3 verts[1] = {{-1.0f, 2.0f, 5.0f}};
+    zDiPartial displayInstance = {};
+    displayInstance.mode = 0;
+    displayInstance.vertCount = 1;
+    displayInstance.verts = verts;
+
+    zClass_NodeFreeListSlot sourceSlot = {};
+    zClass_NodeFreeListSlot destSlot = {};
+    std::strcpy(sourceSlot.node.name, "copy_source");
+    sourceSlot.node.flags = 0x70000000 | 0x00800000 | 0x00030000 | 0x000000fc;
+    sourceSlot.node.auxFlags = 0x76543210;
+    sourceSlot.node.userDataOrDiRef =
+        static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&displayInstance));
+    sourceSlot.node.callbackContext = &sourceSlot.node;
+    sourceSlot.node.callbackPriority = 2;
+    sourceSlot.node.actionCallback = &sourceSlot.node;
+    sourceSlot.node.nodeType = 0x5a;
+
+    destSlot.node.classId = 5;
+    destSlot.node.flags = 0x01000000;
+    g_zClass_CopyNodeCloneDiMode = 0;
+    g_zClass_CopyNodeDiArg0 = 0;
+    g_zClass_CopyNodeDiArg1 = 0;
+
+    if (zClass_cls_util::CopyNodeBaseData(&sourceSlot.node, &destSlot.node) != 0) {
+        FreeTypeListsForTest();
+        return 1;
+    }
+
+    const std::int32_t expectedCopiedFlags = 0x70000000 | 0x00800000 | 0x00030000 | 0x000000fc;
+    const bool ok =
+        std::strcmp(destSlot.node.name, "copy_source") == 0 &&
+        (destSlot.node.flags & expectedCopiedFlags) == expectedCopiedFlags &&
+        (destSlot.node.flags & 0x01000000) == 0 && (destSlot.node.flags & 0x203) == 0x203 &&
+        destSlot.node.auxFlags == sourceSlot.node.auxFlags &&
+        destSlot.node.userDataOrDiRef == sourceSlot.node.userDataOrDiRef &&
+        displayInstance.refCount == 1 && destSlot.node.callbackContext == nullptr &&
+        destSlot.node.callbackPriority == 2 && destSlot.node.actionCallback == &sourceSlot.node &&
+        destSlot.node.nodeType == 0x5a && zClass_TypeList::Head(2) != nullptr &&
+        zClass_TypeList::Head(2)->node == &destSlot.node && zClass_TypeList::Head(7) != nullptr &&
+        zClass_TypeList::Head(7)->node == &destSlot.node;
+
+    zClass_Class::gwNodeSetDisplayInstance(&destSlot.node, nullptr);
+    FreeTypeListsForTest();
+    return ok ? 0 : 2;
+}
+
+extern "C" int zclass_copy_node_unimplemented_stubs_smoke() {
+    zClass_NodePartial node = {};
+    return zClass_cls_util::CopyLightNode_Unimplemented(&node) == nullptr &&
+                   zClass_cls_util::CopySoundNode_Unimplemented(&node) == nullptr &&
+                   zClass_cls_util::CopyAnimateNode_Unimplemented(&node) == nullptr &&
+                   zClass_cls_util::CopySequenceNode_Unimplemented(&node) == nullptr &&
+                   zClass_cls_util::CopySwitchNode_Stub(&node) == nullptr
+               ? 0
+               : 1;
+}
+
+extern "C" int zclass_copy_camera_node_smoke() {
+    ResetTypeListsForTest();
+
+    zClass_NodeFreeListSlot cameraPool[1] = {};
+    cameraPool[0].freeTag = 0x00ffffff;
+    g_zClass_NodeArray = cameraPool;
+    g_zClass_NodeFreeHeadIndex = 0;
+    g_zClass_ActiveNodeCount = 0;
+
+    zClass_NodeFreeListSlot sourceCameraSlot = {};
+    zClass_CameraDataPartial sourceCameraData = {};
+    zClass_NodePartial worldNode = {};
+    zClass_NodePartial windowNode = {};
+    int worldData = 0;
+
+    std::strcpy(sourceCameraSlot.node.name, "source_camera");
+    sourceCameraSlot.node.classId = 1;
+    sourceCameraSlot.node.classData = &sourceCameraData;
+    worldNode.classId = 2;
+    worldNode.classData = &worldData;
+    sourceCameraData.worldNode = &worldNode;
+    sourceCameraData.windowNode = &windowNode;
+    sourceCameraData.targetOrEuler = {4.0f, 5.0f, 6.0f};
+    sourceCameraData.posOffset = {1.0f, 2.0f, 3.0f};
+    sourceCameraData.nearClip = 0.25f;
+    sourceCameraData.farClip = 500.0f;
+    sourceCameraData.clipDistance = 10.0f;
+    sourceCameraData.fovX = 1.0f;
+    sourceCameraData.fovY = 0.5f;
+
+    zClass_NodePartial *const cameraCopy =
+        zClass_cls_util::CopyCameraNode(&sourceCameraSlot.node);
+    if (cameraCopy != &cameraPool[0].node || cameraCopy->classId != 1 ||
+        std::strcmp(cameraCopy->name, "source_camera") != 0) {
+        FreeTypeListsForTest();
+        return 1;
+    }
+
+    zClass_CameraDataPartial *const cameraCopyData =
+        static_cast<zClass_CameraDataPartial *>(cameraCopy->classData);
+    const bool cameraOk =
+        cameraCopyData->worldNode == &worldNode && cameraCopyData->windowNode == &windowNode &&
+        cameraCopyData->targetOrEuler.x == 4.0f && cameraCopyData->targetOrEuler.y == 5.0f &&
+        cameraCopyData->targetOrEuler.z == 6.0f && cameraCopyData->posOffset.x == 1.0f &&
+        cameraCopyData->posOffset.y == 2.0f && cameraCopyData->posOffset.z == 3.0f &&
+        cameraCopyData->nearClip == 0.25f && cameraCopyData->farClip == 500.0f &&
+        cameraCopyData->clipDistance == 10.0f &&
+        cameraCopyData->invClipDistanceSq == 0.01f &&
+        cameraCopyData->frustumWidth == 1.0f && cameraCopyData->frustumHeight == 0.5f;
+
+    std::free(cameraCopyData);
+    g_zClass_NodeArray = nullptr;
+    FreeTypeListsForTest();
+    return cameraOk ? 0 : 2;
+}
+
+extern "C" int zclass_copy_object3d_and_lod_smoke() {
+    ResetTypeListsForTest();
+
+    zClass_NodeFreeListSlot objectPool[1] = {};
+    objectPool[0].freeTag = 0x00ffffff;
+    g_zClass_NodeArray = objectPool;
+    g_zClass_NodeFreeHeadIndex = 0;
+    g_zClass_ActiveNodeCount = 0;
+
+    zClass_NodeFreeListSlot sourceObjectSlot = {};
+    zClass_Object3DDataPartial sourceObjectData = {};
+    std::strcpy(sourceObjectSlot.node.name, "source_object");
+    sourceObjectSlot.node.classId = 5;
+    sourceObjectSlot.node.classData = &sourceObjectData;
+    sourceObjectData.alphaScale = 0.75f;
+    sourceObjectData.flags = 0;
+    sourceObjectData.rotation = {4.0f, 5.0f, 6.0f};
+    sourceObjectData.scale = {7.0f, 8.0f, 9.0f};
+    sourceObjectData.localMatrix[9] = 1.0f;
+    sourceObjectData.localMatrix[10] = 2.0f;
+    sourceObjectData.localMatrix[11] = 3.0f;
+
+    zClass_NodePartial *const objectCopy =
+        zClass_cls_util::CopyObject3DNode(&sourceObjectSlot.node);
+    if (objectCopy != &objectPool[0].node || objectCopy->classId != 5 ||
+        std::strcmp(objectCopy->name, "source_object") != 0) {
+        FreeTypeListsForTest();
+        return 1;
+    }
+
+    zClass_Object3DDataPartial *const objectCopyData =
+        static_cast<zClass_Object3DDataPartial *>(objectCopy->classData);
+    if (objectCopyData->alphaScale != 0.75f || objectCopyData->localMatrix[9] != 1.0f ||
+        objectCopyData->localMatrix[10] != 2.0f || objectCopyData->localMatrix[11] != 3.0f ||
+        objectCopyData->rotation.x != 4.0f || objectCopyData->rotation.y != 5.0f ||
+        objectCopyData->rotation.z != 6.0f || objectCopyData->scale.x != 7.0f ||
+        objectCopyData->scale.y != 8.0f || objectCopyData->scale.z != 9.0f) {
+        std::free(objectCopyData);
+        FreeTypeListsForTest();
+        return 2;
+    }
+    std::free(objectCopyData);
+    FreeTypeListsForTest();
+
+    zClass_NodeFreeListSlot lodPool[1] = {};
+    lodPool[0].freeTag = 0x00ffffff;
+    g_zClass_NodeArray = lodPool;
+    g_zClass_NodeFreeHeadIndex = 0;
+    g_zClass_ActiveNodeCount = 0;
+    ResetTypeListsForTest();
+
+    zClass_NodeFreeListSlot sourceLodSlot = {};
+    zClass_NodePartial rangeNode = {};
+    zClass_LodDataPartial sourceLodData = {};
+    sourceLodSlot.node.classId = 6;
+    sourceLodSlot.node.classData = &sourceLodData;
+    sourceLodData.computeOwnDistance = 0;
+    sourceLodData.nearRangeSq = 25.0f;
+    sourceLodData.nearRange = 5.0f;
+    sourceLodData.farRangeSq = 100.0f;
+    sourceLodData.fadeWidth = {1.0f, 2.0f, 3.0f};
+    sourceLodData.fadeAmount = {4.0f, 5.0f, 6.0f};
+    sourceLodData.fadeEndScale = {7.0f, 8.0f, 9.0f};
+    sourceLodData.fogFadeWidth = 10.0f;
+    sourceLodData.fogFadeAmount = 11.0f;
+    sourceLodData.fogStartDist = 12.0f;
+    sourceLodData.vertexShadingAmount = 13.0f;
+    sourceLodData.active = 0x44;
+    sourceLodData.rangeNode = &rangeNode;
+    sourceLodData.rangeSq = 16.0f;
+
+    zClass_NodePartial *const lodCopy = zClass_cls_util::CopyLodNode(&sourceLodSlot.node);
+    if (lodCopy != &lodPool[0].node || lodCopy->classId != 6) {
+        FreeTypeListsForTest();
+        return 3;
+    }
+
+    zClass_LodDataPartial *const lodCopyData =
+        static_cast<zClass_LodDataPartial *>(lodCopy->classData);
+    const bool lodOk = lodCopyData->computeOwnDistance == 0 && lodCopyData->nearRangeSq == 25.0f &&
+                       lodCopyData->nearRange == 5.0f && lodCopyData->farRangeSq == 100.0f &&
+                       lodCopyData->fadeWidth.y == 2.0f && lodCopyData->fadeAmount.z == 6.0f &&
+                       lodCopyData->fadeEndScale.x == 7.0f && lodCopyData->fogFadeWidth == 10.0f &&
+                       lodCopyData->fogFadeAmount == 11.0f && lodCopyData->fogStartDist == 12.0f &&
+                       lodCopyData->vertexShadingAmount == 13.0f && lodCopyData->active == 0x44 &&
+                       lodCopyData->rangeNode == &rangeNode && lodCopyData->rangeSq == 16.0f;
+
+    std::free(lodCopyData);
+    g_zClass_NodeArray = nullptr;
+    FreeTypeListsForTest();
+    return lodOk ? 0 : 4;
+}
+
+extern "C" int zclass_copy_node_dispatch_and_wrappers_smoke() {
+    zClass_NodePartial sharedNode = {};
+    sharedNode.flags = 0x04000000;
+    g_zClass_CopyNodeCloneDiMode = 0x11;
+    g_zClass_CopyNodeDiArg0 = 0x22;
+    g_zClass_CopyNodeDiArg1 = 0x33;
+
+    if (zClass_cls_util::CopyNodeDispatch(nullptr) != nullptr ||
+        zClass_cls_util::CopyNodeDispatch(&sharedNode) != &sharedNode) {
+        return 1;
+    }
+
+    if (zClass_cls_util::CopyNodeWithCloneOptions(&sharedNode, 0x44, 0x55) != &sharedNode ||
+        g_zClass_CopyNodeCloneDiMode != 0x11 || g_zClass_CopyNodeDiArg0 != 0x22 ||
+        g_zClass_CopyNodeDiArg1 != 0x33) {
+        return 2;
+    }
+
+    if (zClass_cls_util::CopyNode(&sharedNode, 0x66, 0x77, 0x88) != &sharedNode ||
+        g_zClass_CopyNodeCloneDiMode != 0x11 || g_zClass_CopyNodeDiArg0 != 0x22 ||
+        g_zClass_CopyNodeDiArg1 != 0x33) {
+        return 3;
+    }
+
+    zClass_NodePartial worldNode = {};
+    worldNode.classId = 2;
+    zClass_NodePartial unknownNode = {};
+    unknownNode.classId = 99;
+    return zClass_cls_util::CopyNodeDispatch(&worldNode) == nullptr &&
+                   zClass_cls_util::CopyNodeDispatch(&unknownNode) == nullptr &&
+                   zClass_cls_util::CopyNodeWithCloneOptions(nullptr, 1, 2) == nullptr &&
+                   zClass_cls_util::CopyNode(nullptr, 1, 2, 3) == nullptr
+               ? 0
+               : 4;
 }
 
 extern "C" int zclass_node_action_callback_smoke() {
