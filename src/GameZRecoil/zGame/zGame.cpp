@@ -1610,7 +1610,11 @@ void __fastcall SetPlayerName(
     }
 }
 
-// Reimplements 0x4081f0: zOpt::GetGraphicsFlagsForCurrentHwMode
+/**
+ * Reimplements 0x4081f0: zOpt::GetGraphicsFlagsForCurrentHwMode.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: return the graphics option bitmask for the active hardware mode.
+ */
 int GetGraphicsFlagsForCurrentHwMode() {
     return *(g_zOpt_HwMode != 0 ? ZOPT_GFX_FLAGS_HW : ZOPT_GFX_FLAGS_SW);
 }
