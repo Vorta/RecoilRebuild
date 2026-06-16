@@ -35738,13 +35738,13 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x40cd30:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Resolution::SyncFromOptions)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Reimplemented [C]
+    - Name: HudUiOptionsPanel_Resolution::SyncFromOptions;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_options_panel_resolution_sync_from_options;
     - Group: ui.zhud;
     - Model: pending;
     - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt

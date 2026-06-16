@@ -11759,12 +11759,13 @@ void HudUiOptionsPanel_Resolution::PostLoadFromZrd() {
  * Purpose: synchronize and constrain the resolution selector for the active renderer.
  */
 void HudUiOptionsPanel_Resolution::SyncFromOptions() {
+    const int accelerationOption = zVid::GetAccelerationOption();
     const int modeCase = zVid::GetVideoModeIndexFromOptions() - 2;
     if ((unsigned int)(modeCase) > 5u) {
         return;
     }
 
-    if (zVid::GetAccelerationOption() == ZVID_HW_MODE_SOFTWARE) {
+    if (accelerationOption == ZVID_HW_MODE_SOFTWARE) {
         switch (modeCase) {
         case 0:
             SetIndexClamped(3);

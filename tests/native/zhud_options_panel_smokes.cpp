@@ -524,6 +524,93 @@ extern "C" int zhud_options_panel_sound_volume_on_activate_smoke(void) {
     return activated ? 0 : 1;
 }
 
+extern "C" int zhud_options_panel_resolution_sync_from_options_smoke(void) {
+    static const int hardwareCases[6][4] = {
+        {2, 3, 3, 4},
+        {3, 1, 1, 2},
+        {4, 2, 2, 3},
+        {5, 0, 0, 1},
+        {6, 4, 4, 5},
+        {7, 5, 5, 6}
+    };
+    static const int softwareCases[6][4] = {
+        {2, 3, 2, 4},
+        {3, 1, 0, 2},
+        {4, 2, 2, 4},
+        {5, 0, 0, 2},
+        {6, 4, 4, 5},
+        {7, 5, 5, 6}
+    };
+    int videoMode = 2;
+    int videoAcceleration = 1;
+    int *const oldVideoMode = ZOPT_VIDEO_MODE;
+    int *const oldVideoAcceleration = ZOPT_VIDEO_ACCELERATION;
+
+    ZOPT_VIDEO_MODE = &videoMode;
+    ZOPT_VIDEO_ACCELERATION = &videoAcceleration;
+
+    HudUiOptionsPanel_Resolution resolution;
+    resolution.Constructor();
+    resolution.itemCount = 20;
+
+    int index;
+    bool hardwareOk = true;
+    videoAcceleration = 1;
+    for (index = 0; index < 6; ++index) {
+        videoMode = hardwareCases[index][0];
+        resolution.selectedIndex = 19;
+        resolution.firstIndex = 0;
+        resolution.visibleCount = 20;
+        resolution.SyncFromOptions();
+        if (resolution.selectedIndex != hardwareCases[index][1] ||
+            resolution.firstIndex != hardwareCases[index][2] ||
+            resolution.visibleCount != hardwareCases[index][3]) {
+            hardwareOk = false;
+        }
+    }
+
+    bool softwareOk = true;
+    videoAcceleration = 0;
+    for (index = 0; index < 6; ++index) {
+        videoMode = softwareCases[index][0];
+        resolution.selectedIndex = 19;
+        resolution.firstIndex = 0;
+        resolution.visibleCount = 20;
+        resolution.SyncFromOptions();
+        if (resolution.selectedIndex != softwareCases[index][1] ||
+            resolution.firstIndex != softwareCases[index][2] ||
+            resolution.visibleCount != softwareCases[index][3]) {
+            softwareOk = false;
+        }
+    }
+
+    videoMode = 1;
+    videoAcceleration = 1;
+    resolution.selectedIndex = 2;
+    resolution.firstIndex = 1;
+    resolution.visibleCount = 3;
+    resolution.SyncFromOptions();
+    const bool lowOutOfRangeOk =
+        resolution.selectedIndex == 2 &&
+        resolution.firstIndex == 1 &&
+        resolution.visibleCount == 3;
+
+    videoMode = 99;
+    resolution.SyncFromOptions();
+    const bool highOutOfRangeOk =
+        resolution.selectedIndex == 2 &&
+        resolution.firstIndex == 1 &&
+        resolution.visibleCount == 3;
+
+    resolution.DestructorCore();
+    ZOPT_VIDEO_MODE = oldVideoMode;
+    ZOPT_VIDEO_ACCELERATION = oldVideoAcceleration;
+
+    return hardwareOk && softwareOk && lowOutOfRangeOk && highOutOfRangeOk
+               ? 0
+               : 1;
+}
+
 extern "C" int zhud_options_panel_resolution_on_activate_smoke(void) {
     const zVidModeIndex oldDeferredMode =
         g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex;
