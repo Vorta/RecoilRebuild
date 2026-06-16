@@ -18077,15 +18077,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x489f80:
   - [✅] Reconstructed (Name: zNetwork::IsHost)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork::IsHost;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_is_host;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x489f90:
   - [✅] Reconstructed (Name: zNetwork::SetFatalDisconnectCallback)
@@ -18220,15 +18220,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48a310:
   - [✅] Reconstructed (Name: zNetwork_DPlay::EnumPlayers)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork_DPlay::EnumPlayers;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_enum_players;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48a350:
   - [✅] Reconstructed (Name: zNetworkDPlay::QueryCapsAndConfigureSendMode)
@@ -18285,15 +18285,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48a9c0:
   - [☑️] Reconstructed (Name: zNetwork_DPlay::CreateLocalPlayerRecordAndRegister)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork_DPlay::CreateLocalPlayerRecordAndRegister;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_create_local_player_record;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48acf0:
   - [✅] Reconstructed (Name: zNetworkDPlay::SendUnreliable)
@@ -18350,15 +18350,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48ae70:
   - [☑️] Reconstructed (Name: zNetworkDPlay::ReceivePendingMessages)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetworkDPlay::ReceivePendingMessages;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_receive_pending_messages;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48afa0:
   - [☑️] Reconstructed (Name: zNetwork::GetPlayerNameByKey)
@@ -18376,15 +18376,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48afe0:
   - [☑️] Reconstructed (Name: zNetworkDPlay::PumpIncomingMessages)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetworkDPlay::PumpIncomingMessages;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_pump_incoming_messages;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48b3a0:
   - [✅] Reconstructed (Name: zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo)
@@ -18415,15 +18415,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48b660:
   - [☑️] Reconstructed (Name: zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_enum_player_callback_add_player_record;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48b730:
   - [✅] Reconstructed (Name: zNetwork_DPlay::CreateInterfaceAndCoInitialize)
@@ -18480,15 +18480,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48b940:
   - [✅] Reconstructed (Name: zNetwork::AllocFreePlayerColorIndex)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork::AllocFreePlayerColorIndex;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_alloc_free_player_color_index;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48b980:
   - [✅] Reconstructed (Name: zNetwork::GetLocalPlayerColorIndex)
@@ -18727,15 +18727,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48c200:
   - [☑️] Reconstructed (Name: zNetwork_DPlay::DispatchPacketToHandlers)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork_DPlay::DispatchPacketToHandlers;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_dispatch_packet_to_handlers;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48c250:
   - [✅] Reconstructed (Name: zNetwork_DPlay::ReportError)

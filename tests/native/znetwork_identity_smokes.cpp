@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <new>
 
 namespace {
 int g_closeCalls;
@@ -15,6 +16,40 @@ int g_openCalls;
 zNetworkDPlaySessionDesc *g_openDescPtr;
 DWORD g_openFlags;
 HRESULT g_openResult;
+int g_enumPlayersCalls;
+HRESULT g_enumPlayersResult;
+int g_createPlayerCalls;
+DWORD *g_createPlayerIdPtr;
+zNetworkDPlayName *g_createPlayerNameInfo;
+void *g_createPlayerEventHandle;
+void *g_createPlayerData;
+DWORD g_createPlayerDataSize;
+DWORD g_createPlayerFlags;
+DWORD g_createPlayerAssignedId;
+HRESULT g_createPlayerResult;
+int g_getPlayerCapsCalls;
+DWORD g_getPlayerCapsPlayerId;
+DWORD g_getPlayerCapsFlags;
+HRESULT g_getPlayerCapsResult;
+DWORD g_getPlayerCapsReturnedFlags;
+int g_receiveCalls;
+HRESULT g_receiveResults[4];
+DWORD g_receiveFrom[4];
+DWORD g_receiveTo[4];
+DWORD g_receiveSizes[4];
+unsigned char g_receivePayloads[4][128];
+int g_dispatchCallsA;
+int g_dispatchCallsB;
+int g_dispatchSenderA;
+int g_dispatchSenderB;
+zNetworkPacketHeader *g_dispatchPacketA;
+zNetworkPacketHeader *g_dispatchPacketB;
+int g_dispatchPacketTypeA;
+int g_dispatchPacketTypeB;
+int g_dispatchPacketPayloadA;
+int g_dispatchPacketPayloadB;
+int g_fatalDisconnectCalls;
+int g_fatalDisconnectReason;
 
 HRESULT __stdcall FakeDirectPlayClose(
     zNetwork_DPlay4 *
@@ -54,6 +89,111 @@ HRESULT __stdcall FakeDirectPlayOpen(
     return g_openResult;
 }
 
+HRESULT __stdcall FakeDirectPlayEnumPlayers(
+    zNetwork_DPlay4 *,
+    void *,
+    zNetworkDPlayEnumPlayersCallback callback,
+    void *,
+    DWORD
+) {
+    ++g_enumPlayersCalls;
+    if (g_enumPlayersResult < 0) {
+        return g_enumPlayersResult;
+    }
+
+    char aceName[] = "Ace";
+    char duplicateName[] = "Duplicate";
+    char longName[] = "Long";
+    zNetworkDPlayName ace = {};
+    ace.dwSize = sizeof(zNetworkDPlayName);
+    ace.lpszShortNameA = aceName;
+    ace.lpszLongNameA = longName;
+    zNetworkDPlayName duplicate = {};
+    duplicate.dwSize = sizeof(zNetworkDPlayName);
+    duplicate.lpszShortNameA = duplicateName;
+    duplicate.lpszLongNameA = longName;
+    callback(
+        0x101,
+        0,
+        &ace,
+        0,
+        0
+    );
+    callback(
+        0x101,
+        0,
+        &duplicate,
+        0,
+        0
+    );
+    return g_enumPlayersResult;
+}
+
+HRESULT __stdcall FakeDirectPlayCreatePlayer(
+    zNetwork_DPlay4 *,
+    DWORD *playerId,
+    zNetworkDPlayName *playerNameInfo,
+    void *eventHandle,
+    void *data,
+    DWORD dataSize,
+    DWORD flags
+) {
+    ++g_createPlayerCalls;
+    g_createPlayerIdPtr = playerId;
+    g_createPlayerNameInfo = playerNameInfo;
+    g_createPlayerEventHandle = eventHandle;
+    g_createPlayerData = data;
+    g_createPlayerDataSize = dataSize;
+    g_createPlayerFlags = flags;
+    if (playerId != 0 && g_createPlayerResult >= 0) {
+        *playerId = g_createPlayerAssignedId;
+    }
+    return g_createPlayerResult;
+}
+
+HRESULT __stdcall FakeDirectPlayGetPlayerCaps(
+    zNetwork_DPlay4 *,
+    DWORD playerId,
+    zNetworkDPlayCaps *caps,
+    DWORD flags
+) {
+    ++g_getPlayerCapsCalls;
+    g_getPlayerCapsPlayerId = playerId;
+    g_getPlayerCapsFlags = flags;
+    if (caps != 0) {
+        caps->dwFlags = g_getPlayerCapsReturnedFlags;
+    }
+    return g_getPlayerCapsResult;
+}
+
+HRESULT __stdcall FakeDirectPlayReceive(
+    zNetwork_DPlay4 *,
+    DWORD *fromPlayer,
+    DWORD *toPlayer,
+    DWORD,
+    void *packet,
+    DWORD *packetSizeBytes
+) {
+    const int index = g_receiveCalls++;
+    if (fromPlayer != 0) {
+        *fromPlayer = g_receiveFrom[index];
+    }
+    if (toPlayer != 0) {
+        *toPlayer = g_receiveTo[index];
+    }
+    if (packetSizeBytes != 0) {
+        *packetSizeBytes = g_receiveSizes[index];
+    }
+    if (packet != 0 && g_receiveResults[index] >= 0) {
+        memcpy(
+            packet,
+            g_receivePayloads[index],
+            g_receiveSizes[index]
+        );
+    }
+    return g_receiveResults[index];
+}
+
 int __fastcall TestPacketHandlerA(
     int,
     zNetworkPacketHeader *
@@ -68,6 +208,48 @@ int __fastcall TestPacketHandlerB(
     return 0;
 }
 
+int __fastcall TestDispatchHandlerA(
+    int senderPlayerId,
+    zNetworkPacketHeader *packet
+) {
+    ++g_dispatchCallsA;
+    g_dispatchSenderA = senderPlayerId;
+    g_dispatchPacketA = packet;
+    g_dispatchPacketTypeA = packet != 0 ? packet->packetType : 0;
+    g_dispatchPacketPayloadA = packet != 0 ? packet->payloadDword0 : 0;
+    return 0;
+}
+
+int __fastcall TestDispatchHandlerB(
+    int senderPlayerId,
+    zNetworkPacketHeader *packet
+) {
+    ++g_dispatchCallsB;
+    g_dispatchSenderB = senderPlayerId;
+    g_dispatchPacketB = packet;
+    g_dispatchPacketTypeB = packet != 0 ? packet->packetType : 0;
+    g_dispatchPacketPayloadB = packet != 0 ? packet->payloadDword0 : 0;
+    return 0;
+}
+
+void __fastcall TestFatalDisconnect(
+    int reason
+) {
+    ++g_fatalDisconnectCalls;
+    g_fatalDisconnectReason = reason;
+}
+
+template <typename T>
+T *AllocZeroedObject() {
+    T *const object = (T *)(::operator new(sizeof(T)));
+    memset(
+        object,
+        0,
+        sizeof(T)
+    );
+    return object;
+}
+
 void ResetDirectPlayScenarioState() {
     g_closeCalls = 0;
     g_releaseCalls = 0;
@@ -79,12 +261,88 @@ void ResetDirectPlayScenarioState() {
     g_openDescPtr = 0;
     g_openFlags = 0;
     g_openResult = 0;
+    g_enumPlayersCalls = 0;
+    g_enumPlayersResult = 0;
+    g_createPlayerCalls = 0;
+    g_createPlayerIdPtr = 0;
+    g_createPlayerNameInfo = 0;
+    g_createPlayerEventHandle = 0;
+    g_createPlayerData = 0;
+    g_createPlayerDataSize = 0;
+    g_createPlayerFlags = 0;
+    g_createPlayerAssignedId = 0x33334444;
+    g_createPlayerResult = 0;
+    g_getPlayerCapsCalls = 0;
+    g_getPlayerCapsPlayerId = 0;
+    g_getPlayerCapsFlags = 0;
+    g_getPlayerCapsResult = 0;
+    g_getPlayerCapsReturnedFlags = 0;
+    g_receiveCalls = 0;
+    memset(
+        g_receiveResults,
+        0,
+        sizeof(g_receiveResults)
+    );
+    memset(
+        g_receiveFrom,
+        0,
+        sizeof(g_receiveFrom)
+    );
+    memset(
+        g_receiveTo,
+        0,
+        sizeof(g_receiveTo)
+    );
+    memset(
+        g_receiveSizes,
+        0,
+        sizeof(g_receiveSizes)
+    );
+    memset(
+        g_receivePayloads,
+        0,
+        sizeof(g_receivePayloads)
+    );
+    g_dispatchCallsA = 0;
+    g_dispatchCallsB = 0;
+    g_dispatchSenderA = 0;
+    g_dispatchSenderB = 0;
+    g_dispatchPacketA = 0;
+    g_dispatchPacketB = 0;
+    g_dispatchPacketTypeA = 0;
+    g_dispatchPacketTypeB = 0;
+    g_dispatchPacketPayloadA = 0;
+    g_dispatchPacketPayloadB = 0;
+    g_fatalDisconnectCalls = 0;
+    g_fatalDisconnectReason = 0;
     g_zNetwork_pDirectPlay4 = 0;
+    g_zNetwork_LocalPlayerRecord = 0;
+    g_zNetwork_IsHostFlag = 0;
+    g_zNetwork_LocalPlayerKey = 0;
     g_zNetwork_ActiveProviderIsTcpIp = 0;
+    g_zNetwork_ActiveProviderIsModem = 0;
     g_zNetwork_TcpIpAsyncSendEnabled = 0;
     g_zNetwork_DPlayCaps = zNetworkDPlayCaps();
     g_zNetwork_AppGuid = 0;
+    g_zNetwork_LastSendExHandle = 0;
+    g_zNetwork_LastSendExCompleted = 0;
+    g_zNetwork_SessionRuntimeInitialized = 0;
     g_zNetwork_CurrentSessionDescCache = 0;
+    g_zNetwork_FatalDisconnectCallback = 0;
+    g_zNetwork_FatalDisconnectTriggered = 0;
+    g_zNetworkCurrentPlayerCountCached = 0;
+    g_zNetwork_EnumeratedSessionList = 0;
+    g_zNetwork_ServiceProviderList = 0;
+    g_zNetwork_PlayerRecordList = 0;
+    g_zNetwork_ReceiveBuffer = 0;
+    g_zNetwork_ReceiveBufferCapacity = 0;
+    g_zNetwork_DispatchHandlerListSentinel = 0;
+    g_zNetwork_DispatchHandlerListCount = 0;
+    memset(
+        g_zNetwork_PlayerColorInUseFlags,
+        0,
+        sizeof(g_zNetwork_PlayerColorInUseFlags)
+    );
     memset(
         g_zNetwork_SessionNameCache,
         0,
@@ -98,12 +356,16 @@ void BuildMinimalDirectPlayVtable(
     memset(
         vtable,
         0,
-        sizeof(void *) * 25
+        sizeof(void *) * 26
     );
     vtable[2] = (void *)(&FakeDirectPlayRelease);
     vtable[4] = (void *)(&FakeDirectPlayClose);
+    vtable[6] = (void *)(&FakeDirectPlayCreatePlayer);
+    vtable[12] = (void *)(&FakeDirectPlayEnumPlayers);
     vtable[14] = (void *)(&FakeDirectPlayGetCaps);
+    vtable[19] = (void *)(&FakeDirectPlayGetPlayerCaps);
     vtable[24] = (void *)(&FakeDirectPlayOpen);
+    vtable[25] = (void *)(&FakeDirectPlayReceive);
 }
 } // namespace
 
@@ -239,7 +501,7 @@ extern "C" int znetwork_dplay_report_error_smoke(void) {
 }
 
 extern "C" int znetwork_dplay_query_caps_configure_send_mode_smoke(void) {
-    void *vtable[25];
+    void *vtable[26];
     BuildMinimalDirectPlayVtable(vtable);
     struct FakeDirectPlay {
         void **vtable;
@@ -289,7 +551,7 @@ extern "C" int znetwork_dplay_query_caps_configure_send_mode_smoke(void) {
 }
 
 extern "C" int znetwork_dplay_create_session_from_status_fields_smoke(void) {
-    void *vtable[25];
+    void *vtable[26];
     BuildMinimalDirectPlayVtable(vtable);
     struct FakeDirectPlay {
         void **vtable;
@@ -642,6 +904,460 @@ extern "C" int znetwork_apply_pkt01_player_color_assignments_smoke(void) {
     g_zNetwork_PlayerRecordList = oldList;
     g_zNetwork_PlayerColorInUseFlags[6] = oldColorFlag;
     return ok ? 0 : 1;
+}
+
+extern "C" int znetwork_dispatch_packet_to_handlers_smoke(void) {
+    ResetDirectPlayScenarioState();
+    zNetwork_InitMessageHandlers();
+
+    zNetworkDispatchHandlerRecord *const recordA =
+        zNetwork::RegisterPacketHandler(
+            0x77,
+            TestDispatchHandlerA,
+            3
+        );
+    zNetworkDispatchHandlerRecord *const recordSkip =
+        zNetwork::RegisterPacketHandler(
+            0x78,
+            TestPacketHandlerA,
+            4
+        );
+    zNetworkDispatchHandlerRecord *const recordB =
+        zNetwork::RegisterPacketHandler(
+            0x77,
+            TestDispatchHandlerB,
+            5
+        );
+
+    zNetworkPacketHeader packet = {};
+    packet.packetType = 0x77;
+    packet.packetSizeBytes = sizeof(packet);
+    packet.payloadDword0 = 0x12345678;
+    zNetwork_DPlay::DispatchPacketToHandlers(
+        0x1234,
+        &packet
+    );
+
+    const int dispatchOk =
+        g_dispatchCallsA == 1 &&
+        g_dispatchCallsB == 1 &&
+        g_dispatchSenderA == 0x1234 &&
+        g_dispatchSenderB == 0x1234 &&
+        g_dispatchPacketA == &packet &&
+        g_dispatchPacketB == &packet &&
+        g_dispatchPacketPayloadA == 0x12345678 &&
+        g_dispatchPacketPayloadB == 0x12345678;
+
+    packet.packetType = 0x79;
+    zNetwork_DPlay::DispatchPacketToHandlers(
+        0x5678,
+        &packet
+    );
+
+    const int skipOk = g_dispatchCallsA == 1 && g_dispatchCallsB == 1;
+
+    ::operator delete(recordA);
+    ::operator delete(recordSkip);
+    ::operator delete(recordB);
+    zNetwork_DestroyDispatchHandlerList();
+    return dispatchOk != 0 && skipOk != 0 ? 0 : 1;
+}
+
+extern "C" int znetwork_dplay_pump_incoming_messages_smoke(void) {
+    ResetDirectPlayScenarioState();
+    zNetwork_InitMessageHandlers();
+
+    zNetworkDispatchHandlerRecord *const joinRecord =
+        zNetwork::RegisterPacketHandler(
+            2,
+            TestDispatchHandlerA,
+            0
+        );
+    zNetworkDispatchHandlerRecord *const leaveRecord =
+        zNetwork::RegisterPacketHandler(
+            3,
+            TestDispatchHandlerB,
+            0
+        );
+    zNetworkDispatchHandlerRecord *const sessionJoinRecord =
+        zNetwork::RegisterPacketHandler(
+            4,
+            TestDispatchHandlerA,
+            0
+        );
+    zNetworkDispatchHandlerRecord *const sessionLeaveRecord =
+        zNetwork::RegisterPacketHandler(
+            5,
+            TestDispatchHandlerB,
+            0
+        );
+
+    zNetworkPlayerRecordList *playerList = AllocZeroedObject<zNetworkPlayerRecordList>();
+    zNetworkPlayerRecordListNode *sentinel =
+        AllocZeroedObject<zNetworkPlayerRecordListNode>();
+    sentinel->next = sentinel;
+    sentinel->prev = sentinel;
+    playerList->sentinelNode = sentinel;
+    playerList->count = 0;
+    g_zNetwork_PlayerRecordList = playerList;
+
+    zNetworkDPlaySessionDescCache session = {};
+    g_zNetwork_CurrentSessionDescCache = &session;
+
+    char shortName[] = "Ace";
+    char longName[] = "Ace Pilot";
+    zNetworkDPlaySystemMessage message = {};
+    message.msgType = 3;
+    message.fields.playerId = 0x11112222;
+    message.fields.createFlagsOrPlayerType = sizeof(zNetworkDPlayName);
+    message.fields.nameShortOrAsyncHandle = 7;
+    message.fields.nameLong = shortName;
+    message.fields.nameDisplay = longName;
+
+    const int createResult = zNetworkDPlay::PumpIncomingMessages(&message);
+    zNetwork_PlayerRecord *const createdRecord =
+        zNetwork_FindPlayerRecordByKey(0x11112222);
+    const int createOk =
+        createResult == 0 &&
+        createdRecord != 0 &&
+        playerList->count == 1 &&
+        g_zNetworkCurrentPlayerCountCached == 1 &&
+        createdRecord->playerKey == 0x11112222 &&
+        createdRecord->playerNameInfo.dwSize == sizeof(zNetworkDPlayName) &&
+        createdRecord->playerNameInfo.dwFlags == 7 &&
+        createdRecord->playerNameInfo.lpszShortNameA == shortName &&
+        createdRecord->playerNameInfo.lpszLongNameA == longName &&
+        strcmp(createdRecord->playerName, "Ace Pilot") == 0 &&
+        strcmp(createdRecord->altName, "Ace") == 0 &&
+        createdRecord->colorIndex == 0 &&
+        g_dispatchCallsA == 1 &&
+        g_dispatchSenderA == 0x11112222 &&
+        g_dispatchPacketTypeA == 2 &&
+        g_dispatchPacketPayloadA == 0;
+
+    message.msgType = 5;
+    g_dispatchCallsB = 0;
+    zNetworkDPlay::PumpIncomingMessages(&message);
+    const int leaveOk =
+        playerList->count == 0 &&
+        g_zNetworkCurrentPlayerCountCached == 0 &&
+        g_dispatchCallsB == 1 &&
+        g_dispatchSenderB == 0x11112222 &&
+        g_dispatchPacketTypeB == 3 &&
+        zNetwork_FindPlayerRecordByKey(0x11112222) == 0;
+
+    message.msgType = 0x101;
+    g_zNetwork_IsHostFlag = 0;
+    zNetworkDPlay::PumpIncomingMessages(&message);
+    const int hostOk = g_zNetwork_IsHostFlag == 1;
+
+    message.msgType = 0x102;
+    g_dispatchCallsA = 0;
+    zNetworkDPlay::PumpIncomingMessages(&message);
+    const int sessionJoinOk = g_dispatchCallsA == 1 && g_dispatchPacketTypeA == 4;
+
+    message.msgType = 0x103;
+    g_dispatchCallsB = 0;
+    zNetworkDPlay::PumpIncomingMessages(&message);
+    const int sessionLeaveOk = g_dispatchCallsB == 1 && g_dispatchPacketTypeB == 5;
+
+    zNetworkDPlaySessionDesc desc = {};
+    desc.dwMaxPlayers = 6;
+    desc.dwUser1 = 10;
+    desc.dwUser2 = 11;
+    desc.dwUser3 = 12;
+    desc.dwUser4 = 13;
+    memcpy(
+        message.payload_004,
+        &desc,
+        sizeof(desc)
+    );
+    message.msgType = 0x104;
+    zNetworkDPlay::PumpIncomingMessages(&message);
+    const int descOk =
+        session.desc.dwMaxPlayers == 6 &&
+        session.desc.dwUser1 == 10 &&
+        session.desc.dwUser2 == 11 &&
+        session.desc.dwUser3 == 12 &&
+        session.desc.dwUser4 == 13;
+
+    message.msgType = 0x10d;
+    message.fields.nameShortOrAsyncHandle = 0x55aa;
+    g_zNetwork_LastSendExHandle = 0x55aa;
+    g_zNetwork_LastSendExCompleted = 0;
+    zNetworkDPlay::PumpIncomingMessages(&message);
+    const int sendCompleteOk = g_zNetwork_LastSendExCompleted == 1;
+
+    message.msgType = 0x31;
+    g_zNetwork_FatalDisconnectCallback = TestFatalDisconnect;
+    const int fatalResult = zNetworkDPlay::PumpIncomingMessages(&message);
+    const int fatalOk =
+        fatalResult == -1 &&
+        g_zNetwork_FatalDisconnectTriggered == 1 &&
+        g_fatalDisconnectCalls == 1 &&
+        g_fatalDisconnectReason == -1;
+
+    ::operator delete(createdRecord);
+    ::operator delete(joinRecord);
+    ::operator delete(leaveRecord);
+    ::operator delete(sessionJoinRecord);
+    ::operator delete(sessionLeaveRecord);
+    zNetwork_DestroyDispatchHandlerList();
+    ::operator delete(sentinel);
+    ::operator delete(playerList);
+    g_zNetwork_PlayerRecordList = 0;
+    g_zNetwork_CurrentSessionDescCache = 0;
+    return createOk != 0 &&
+                   leaveOk != 0 &&
+                   hostOk != 0 &&
+                   sessionJoinOk != 0 &&
+                   sessionLeaveOk != 0 &&
+                   descOk != 0 &&
+                   sendCompleteOk != 0 &&
+                   fatalOk != 0
+               ? 0
+               : 1;
+}
+
+extern "C" int znetwork_dplay_receive_pending_messages_smoke(void) {
+    ResetDirectPlayScenarioState();
+    zNetwork_InitMessageHandlers();
+
+    void *vtable[26];
+    BuildMinimalDirectPlayVtable(vtable);
+    struct FakeDirectPlay {
+        void **vtable;
+    } fake = {vtable};
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&fake);
+
+    g_zNetwork_SessionRuntimeInitialized = 0;
+    if (zNetworkDPlay::ReceivePendingMessages(1) != 0 || g_receiveCalls != 0) {
+        zNetwork_DestroyDispatchHandlerList();
+        return 1;
+    }
+
+    g_zNetwork_SessionRuntimeInitialized = 1;
+    g_zNetwork_FatalDisconnectTriggered = 1;
+    if (zNetworkDPlay::ReceivePendingMessages(1) != -1 || g_receiveCalls != 0) {
+        zNetwork_DestroyDispatchHandlerList();
+        return 2;
+    }
+
+    g_zNetwork_FatalDisconnectTriggered = 0;
+    zNetworkDispatchHandlerRecord *const sessionRecord =
+        zNetwork::RegisterPacketHandler(
+            4,
+            TestDispatchHandlerA,
+            0
+        );
+    zNetworkDispatchHandlerRecord *const playerRecord =
+        zNetwork::RegisterPacketHandler(
+            7,
+            TestDispatchHandlerB,
+            0
+        );
+
+    g_zNetwork_ReceiveBufferCapacity = 8;
+    g_zNetwork_ReceiveBuffer = malloc(g_zNetwork_ReceiveBufferCapacity);
+
+    g_receiveResults[0] = (HRESULT)(0x8877001e);
+    g_receiveSizes[0] = sizeof(zNetworkDPlaySystemMessage);
+
+    zNetworkDPlaySystemMessage systemMessage = {};
+    systemMessage.msgType = 0x102;
+    systemMessage.fields.playerId = 0x11112222;
+    memcpy(
+        g_receivePayloads[1],
+        &systemMessage,
+        sizeof(systemMessage)
+    );
+    g_receiveResults[1] = 0;
+    g_receiveFrom[1] = 0;
+    g_receiveSizes[1] = sizeof(systemMessage);
+
+    zNetworkPacketHeader playerPacket = {};
+    playerPacket.packetType = 7;
+    playerPacket.packetSizeBytes = sizeof(playerPacket);
+    playerPacket.payloadDword0 = 0x12345678;
+    memcpy(
+        g_receivePayloads[2],
+        &playerPacket,
+        sizeof(playerPacket)
+    );
+    g_receiveResults[2] = 0;
+    g_receiveFrom[2] = 0x33334444;
+    g_receiveSizes[2] = sizeof(playerPacket);
+
+    const int processed = zNetworkDPlay::ReceivePendingMessages(2);
+    const int receiveOk =
+        processed == 2 &&
+        g_receiveCalls == 3 &&
+        g_zNetwork_ReceiveBufferCapacity == sizeof(zNetworkDPlaySystemMessage) &&
+        g_zNetwork_ReceiveBuffer != 0 &&
+        g_dispatchCallsA == 1 &&
+        g_dispatchPacketTypeA == 4 &&
+        g_dispatchSenderA == 0x11112222 &&
+        g_dispatchCallsB == 1 &&
+        g_dispatchPacketTypeB == 7 &&
+        g_dispatchSenderB == 0x33334444 &&
+        g_dispatchPacketPayloadB == 0x12345678;
+
+    free(g_zNetwork_ReceiveBuffer);
+    g_zNetwork_ReceiveBuffer = 0;
+    g_zNetwork_ReceiveBufferCapacity = 0;
+    ::operator delete(sessionRecord);
+    ::operator delete(playerRecord);
+    zNetwork_DestroyDispatchHandlerList();
+    g_zNetwork_pDirectPlay4 = 0;
+    return receiveOk != 0 ? 0 : 3;
+}
+
+extern "C" int znetwork_dplay_enum_players_smoke(void) {
+    ResetDirectPlayScenarioState();
+
+    zNetworkPlayerRecordList *playerList = AllocZeroedObject<zNetworkPlayerRecordList>();
+    zNetworkPlayerRecordListNode *sentinel =
+        AllocZeroedObject<zNetworkPlayerRecordListNode>();
+    sentinel->next = sentinel;
+    sentinel->prev = sentinel;
+    playerList->sentinelNode = sentinel;
+    playerList->count = 0;
+    g_zNetwork_PlayerRecordList = playerList;
+
+    void *vtable[26];
+    BuildMinimalDirectPlayVtable(vtable);
+    struct FakeDirectPlay {
+        void **vtable;
+    } fake = {vtable};
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&fake);
+
+    const int count = zNetwork_DPlay::EnumPlayers();
+    zNetworkPlayerRecordListNode *const node = sentinel->next;
+    const int ok =
+        count == 1 &&
+        g_enumPlayersCalls == 1 &&
+        playerList->count == 1 &&
+        node != sentinel &&
+        node->next == sentinel &&
+        node->prev == sentinel &&
+        sentinel->prev == node &&
+        node->playerRecord != 0 &&
+        node->playerRecord->playerKey == 0x101 &&
+        strcmp(node->playerRecord->playerName, "Ace") == 0;
+
+    zNetwork::ClearPlayerRecordList();
+    ::operator delete(sentinel);
+    ::operator delete(playerList);
+    g_zNetwork_PlayerRecordList = 0;
+    g_zNetwork_pDirectPlay4 = 0;
+    return ok != 0 ? 0 : 1;
+}
+
+extern "C" int znetwork_dplay_create_local_player_record_smoke(void) {
+    ResetDirectPlayScenarioState();
+    void *vtable[26];
+    BuildMinimalDirectPlayVtable(vtable);
+    struct FakeDirectPlay {
+        void **vtable;
+    } fake = {vtable};
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&fake);
+
+    zNetworkPlayerRecordList *playerList = AllocZeroedObject<zNetworkPlayerRecordList>();
+    zNetworkPlayerRecordListNode *sentinel =
+        AllocZeroedObject<zNetworkPlayerRecordListNode>();
+    sentinel->next = sentinel;
+    sentinel->prev = sentinel;
+    playerList->sentinelNode = sentinel;
+    playerList->count = 0;
+    g_zNetwork_PlayerRecordList = playerList;
+
+    zNetworkDPlaySessionDescCache session = {};
+    session.desc.dwCurrentPlayers = 2;
+    session.desc.dwMaxPlayers = 8;
+    g_zNetwork_CurrentSessionDescCache = &session;
+    g_getPlayerCapsReturnedFlags = 2;
+
+    char playerName[] = "Pilot";
+    const int playerKey =
+        zNetwork_DPlay::CreateLocalPlayerRecordAndRegister(playerName);
+    zNetwork_PlayerRecord *const localPlayer = g_zNetwork_LocalPlayerRecord;
+
+    const int localOk =
+        playerKey == (int)(g_createPlayerAssignedId) &&
+        localPlayer != 0 &&
+        localPlayer->playerKey == g_createPlayerAssignedId &&
+        g_createPlayerCalls == 1 &&
+        g_createPlayerIdPtr == (DWORD *)(&localPlayer->playerKey) &&
+        g_createPlayerNameInfo == &localPlayer->playerNameInfo &&
+        g_createPlayerEventHandle == 0 &&
+        g_createPlayerData == 0 &&
+        g_createPlayerDataSize == 0 &&
+        g_createPlayerFlags == 0 &&
+        localPlayer->playerNameInfo.dwSize == sizeof(zNetworkDPlayName) &&
+        localPlayer->playerNameInfo.dwFlags == 0 &&
+        localPlayer->playerNameInfo.lpszShortNameA == g_zNetwork_LocalPlayerNameScratch &&
+        localPlayer->playerNameInfo.lpszLongNameA == g_zNetwork_LocalPlayerNameScratch &&
+        strcmp(g_zNetwork_LocalPlayerNameScratch, "Pilot") == 0 &&
+        strcmp(localPlayer->playerName, "Pilot") == 0 &&
+        strcmp(localPlayer->altName, "Pilot") == 0;
+
+    const int capsOk =
+        g_getPlayerCapsCalls == 1 &&
+        g_getPlayerCapsPlayerId == g_createPlayerAssignedId &&
+        g_getPlayerCapsFlags == 0 &&
+        localPlayer->playerCaps.dwSize == sizeof(zNetworkDPlayCaps) &&
+        localPlayer->playerCaps.dwFlags == 2 &&
+        g_zNetwork_IsHostFlag == 2;
+
+    const int listOk =
+        playerList->count == 2 &&
+        sentinel->prev->playerRecord == localPlayer &&
+        g_zNetwork_LocalPlayerKey == (int)(g_createPlayerAssignedId) &&
+        g_zNetworkCurrentPlayerCountCached == 3 &&
+        localPlayer->colorIndex == 1 &&
+        g_zNetwork_PlayerColorInUseFlags[1] == 1;
+
+    zNetwork::ClearPlayerRecordList();
+    ::operator delete(sentinel);
+    ::operator delete(playerList);
+    g_zNetwork_PlayerRecordList = 0;
+    g_zNetwork_LocalPlayerRecord = 0;
+
+    if (localOk == 0) {
+        return 1;
+    }
+    if (capsOk == 0) {
+        return 2;
+    }
+    if (listOk == 0) {
+        return 3;
+    }
+
+    ResetDirectPlayScenarioState();
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&fake);
+    playerList = AllocZeroedObject<zNetworkPlayerRecordList>();
+    sentinel = AllocZeroedObject<zNetworkPlayerRecordListNode>();
+    sentinel->next = sentinel;
+    sentinel->prev = sentinel;
+    playerList->sentinelNode = sentinel;
+    playerList->count = 0;
+    g_zNetwork_PlayerRecordList = playerList;
+    g_zNetwork_CurrentSessionDescCache = &session;
+    g_getPlayerCapsResult = -1;
+    g_getPlayerCapsReturnedFlags = 0;
+    strcpy(
+        playerName,
+        "Fail"
+    );
+    const int failResult =
+        zNetwork_DPlay::CreateLocalPlayerRecordAndRegister(playerName);
+    ::operator delete(g_zNetwork_LocalPlayerRecord);
+    g_zNetwork_LocalPlayerRecord = 0;
+    zNetwork::ClearPlayerRecordList();
+    ::operator delete(sentinel);
+    ::operator delete(playerList);
+    g_zNetwork_PlayerRecordList = 0;
+    return failResult == 0 ? 0 : 4;
 }
 
 extern "C" int znetwork_shutdown_session_runtime_smoke(void) {
