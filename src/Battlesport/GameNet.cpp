@@ -186,7 +186,7 @@ int g_GameNetStatus_AllowMaps = 0;
 int g_GameNetStatus_NameTags = 0;
 int g_GameNetAllPlayersLapTargetCheckStarted = 0;
 int g_GameNetSuppressPkt13ActivationEcho = 0;
-int g_GameNetPkt06InitialSyncGate = 0;
+int g_GameNetPkt06InitialSyncGate = 1;
 int g_GameNetPkt06InputBit17Latch = 0;
 int g_GameNetPkt06InputBit16Latch = 0;
 float g_GameNetPkt06NextSendTimeSec = 0.0f;
@@ -1660,7 +1660,11 @@ void EndChatComposeAndSendThunk() {
     EndChatComposeAndSend();
 }
 
-// Reimplements 0x432830: GameNet::FindPlayerRowByKey (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x432830: GameNet::FindPlayerRowByKey
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Find the active GameNet remote-player row for a network player key.
+ */
 GameNetPlayerRow *__fastcall FindPlayerRowByKey(
     int playerKey
 ) {
@@ -1981,8 +1985,12 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(
     return sendResult;
 }
 
-// Reimplements 0x432ae0: GameNet::ApplyPkt06_PlayerStateSnapshotToRow
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x432ae0: GameNet::ApplyPkt06_PlayerStateSnapshotToRow
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Apply a replicated player-state snapshot packet to an existing
+ * remote-player row and its save-state storage.
+ */
 int __fastcall ApplyPkt06_PlayerStateSnapshotToRow(
     GameNetPlayerRow *row,
     NetPkt06_PlayerStateSnapshot *packet
@@ -2072,8 +2080,12 @@ int __fastcall ApplyPkt06_PlayerStateSnapshotToRow(
     return 1;
 }
 
-// Reimplements 0x432860: GameNet::SpawnRemotePlayerFromPkt06_PlayerStateSnapshot
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x432860: GameNet::SpawnRemotePlayerFromPkt06_PlayerStateSnapshot
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Create a remote player row and cloned player node from an incoming
+ * player-state snapshot packet.
+ */
 int __fastcall SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
     int senderPlayerId,
     NetPkt06_PlayerStateSnapshot *packet
@@ -2228,8 +2240,12 @@ int __fastcall SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
     return 1;
 }
 
-// Reimplements 0x4327e0: GameNet::HandlePkt06_PlayerStateSnapshot
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x4327e0: GameNet::HandlePkt06_PlayerStateSnapshot
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Dispatch an incoming player-state snapshot to row creation or
+ * existing-row update handling.
+ */
 int __fastcall HandlePkt06_PlayerStateSnapshot(
     int senderPlayerId,
     NetPkt06_PlayerStateSnapshot *packet
