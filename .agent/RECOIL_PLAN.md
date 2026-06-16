@@ -5809,15 +5809,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x452770:
   - [☑️] Reconstructed (Name: zClass_Class::FindSubNodeByName)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::FindSubNodeByName;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_find_sub_node_by_name;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4527f0:
   - [✅] Reconstructed (Name: zClass_Node::HasRenderableDiPredicate)

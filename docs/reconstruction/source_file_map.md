@@ -1077,15 +1077,15 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## GameZRecoil/zClass/Class.c
 
-- `0x421d60` `zClass_Node::MaskExtraFlagsRecursive` -> `src/GameZRecoil/zClass/Class.c:2537`
-- `0x421de0` `zClass_Node::PropagateFlagsRecursive` -> `src/GameZRecoil/zClass/Class.c:2570`
-- `0x437ea0` `zClass_Node::SetDiFlagBit0Recursive` -> `src/GameZRecoil/zClass/Class.c:2606`
-- `0x447bc0` `zClass_Class::FindNodeRecursiveByName` -> `src/GameZRecoil/zClass/Class.c:1565`
+- `0x421d60` `zClass_Node::MaskExtraFlagsRecursive` -> `src/GameZRecoil/zClass/Class.c:2542`
+- `0x421de0` `zClass_Node::PropagateFlagsRecursive` -> `src/GameZRecoil/zClass/Class.c:2575`
+- `0x437ea0` `zClass_Node::SetDiFlagBit0Recursive` -> `src/GameZRecoil/zClass/Class.c:2611`
+- `0x447bc0` `zClass_Class::FindNodeRecursiveByName` -> `src/GameZRecoil/zClass/Class.c:1570`
 - `0x448760` `zClass_Class::gwNodeGetBBox` -> `src/GameZRecoil/zClass/Class.c:518`
-- `0x4497b0` `gwNode::GetWorldPosition` -> `src/GameZRecoil/zClass/Class.c:2323`
-- `0x449850` `gwNode::TransformPoint` -> `src/GameZRecoil/zClass/Class.c:2363`
-- `0x4498e0` `gwNode::GetWorldPosAndOrientation` -> `src/GameZRecoil/zClass/Class.c:2396`
-- `0x44c0e0` `zClass_Class::gwNodeRenderDispatch` -> `src/GameZRecoil/zClass/Class.c:2464`
+- `0x4497b0` `gwNode::GetWorldPosition` -> `src/GameZRecoil/zClass/Class.c:2328`
+- `0x449850` `gwNode::TransformPoint` -> `src/GameZRecoil/zClass/Class.c:2368`
+- `0x4498e0` `gwNode::GetWorldPosAndOrientation` -> `src/GameZRecoil/zClass/Class.c:2401`
+- `0x44c0e0` `zClass_Class::gwNodeRenderDispatch` -> `src/GameZRecoil/zClass/Class.c:2469`
 
 ## GameZRecoil/zClass/cls_di.c
 
@@ -2314,7 +2314,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x41ec00` `Player::InitSaveStateList` -> `src/Battlesport/player.cpp:2146`
 - `0x420be0` `zReader::LoadMoversFromZrd` -> `src/GameZRecoil/zReader/zreader_load.cpp:1688`
 - `0x420d10` `Player::InitStateFromNameAndMasterCommonData` -> `src/Battlesport/player.cpp:2942`
-- `0x421da0` `zClass_Node::PropagateExtraFlagsRecursive` -> `src/GameZRecoil/zClass/Class.c:2554`
+- `0x421da0` `zClass_Node::PropagateExtraFlagsRecursive` -> `src/GameZRecoil/zClass/Class.c:2559`
 - `0x421e20` `zReader::BuildResolvedParentDir` -> `src/GameZRecoil/zReader/zreader_load.cpp:1601`
 - `0x423440` `Player_UnderwaterFxPass3Ui::ApplyBlueTint` -> `src/Battlesport/player.cpp:1959`
 - `0x423450` `Player_ProjectileCameraFxPass3Ui::ApplyGreenMask` -> `src/Battlesport/player.cpp:1968`
@@ -2468,7 +2468,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x437aa0` `zTurret_System::ResetIterationState` -> `src/GameZRecoil/zTurret/zTurret.cpp:1316`
 - `0x437ab0` `zTurret_System::Shutdown` -> `src/GameZRecoil/zTurret/zTurret.cpp:1507`
 - `0x437dc0` `zTurret_System::FreeAllRuntimes` -> `src/GameZRecoil/zTurret/zTurret.cpp:1480`
-- `0x437e60` `zClass_Node::SetContextRecursive` -> `src/GameZRecoil/zClass/Class.c:2587`
+- `0x437e60` `zClass_Node::SetContextRecursive` -> `src/GameZRecoil/zClass/Class.c:2592`
 - `0x437fe4` `zClass_Object3D_ModelRefLerpQueue::ClearGlobalState` -> `src/GameZRecoil/zClass/Object3d.c:1145`
 - `0x438020` `zClass_Object3D_ModelRefLerpQueue::Add` -> `src/GameZRecoil/zClass/Object3d.c:1158`
 - `0x438180` `zClass_Object3D_ModelRefLerpQueue::Reset` -> `src/GameZRecoil/zClass/Object3d.c:1303`
@@ -2559,9 +2559,9 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x443ae0` `CZGameFrame::OnActivate` -> `src/Battlesport/CZGameFrame.cpp:332`
 - `0x443b50` `CZGameFrame::OnAppIdleDispatchMessage` -> `src/Battlesport/CZGameFrame.cpp:398`
 - `0x4478c0` `zClass_Class::AllocNodeFromFreeList` -> `src/GameZRecoil/zClass/Class.c:345`
-- `0x447980` `zClass_Class::DeleteNodeByType` -> `src/GameZRecoil/zClass/Class.c:2091`
-- `0x447a70` `zClass_Class::FreeNodeToFreeList` -> `src/GameZRecoil/zClass/Class.c:2024`
-- `0x447b60` `zClass_Class::TryFreeNode` -> `src/GameZRecoil/zClass/Class.c:2069`
+- `0x447980` `zClass_Class::DeleteNodeByType` -> `src/GameZRecoil/zClass/Class.c:2096`
+- `0x447a70` `zClass_Class::FreeNodeToFreeList` -> `src/GameZRecoil/zClass/Class.c:2029`
+- `0x447b60` `zClass_Class::TryFreeNode` -> `src/GameZRecoil/zClass/Class.c:2074`
 - `0x447c60` `zClass_Class::gwNodeSetActive` -> `src/GameZRecoil/zClass/Class.c:921`
 - `0x447d20` `zClass_Class::gwNodeSetFlag16` -> `src/GameZRecoil/zClass/Class.c:968`
 - `0x447d70` `zClass_Class::gwNodeSetFlag17` -> `src/GameZRecoil/zClass/Class.c:989`
@@ -2584,20 +2584,20 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x448330` `zClass_Class::gwNodeSetNodeType` -> `src/GameZRecoil/zClass/Class.c:1443`
 - `0x448360` `zClass_Class::gwNodeClearVariantGate` -> `src/GameZRecoil/zClass/Class.c:1466`
 - `0x4483a0` `zClass_Class::gwNodeSetVertexAlphaOverride` -> `src/GameZRecoil/zClass/Class.c:1486`
-- `0x4483f0` `zClass_Class::AddChild` -> `src/GameZRecoil/zClass/Class.c:1722`
-- `0x4484d0` `zClass_Class::AddChildGeneric` -> `src/GameZRecoil/zClass/Class.c:1912`
-- `0x448570` `zClass_Class::RemoveChild` -> `src/GameZRecoil/zClass/Class.c:1814`
-- `0x448660` `zClass_Class::RemoveChildGeneric` -> `src/GameZRecoil/zClass/Class.c:1957`
+- `0x4483f0` `zClass_Class::AddChild` -> `src/GameZRecoil/zClass/Class.c:1727`
+- `0x4484d0` `zClass_Class::AddChildGeneric` -> `src/GameZRecoil/zClass/Class.c:1917`
+- `0x448570` `zClass_Class::RemoveChild` -> `src/GameZRecoil/zClass/Class.c:1819`
+- `0x448660` `zClass_Class::RemoveChildGeneric` -> `src/GameZRecoil/zClass/Class.c:1962`
 - `0x4487c0` `zClass_Class::gwNodeGetWorldBBoxCorners` -> `src/GameZRecoil/zClass/Class.c:552`
 - `0x448920` `zClass_Class::gwNodeGetViewBBoxCorners` -> `src/GameZRecoil/zClass/Class.c:619`
 - `0x448cc0` `zClass_Class::gwNodeUpdate` -> `src/GameZRecoil/zClass/Class.c:390`
 - `0x448e90` `zClass_Class::gwNodeRecalcBBox` -> `src/GameZRecoil/zClass/Class.c:812`
 - `0x4491b0` `zClass_Class::gwNodeComputeChildBBox` -> `src/GameZRecoil/zClass/Class.c:737`
 - `0x449420` `zClass_Class::gwNodeUpdateDisplayInstance` -> `src/GameZRecoil/zClass/Class.c:495`
-- `0x449480` `gwNode::BuildNodeToAncestorMatrix` -> `src/GameZRecoil/zClass/Class.c:2138`
+- `0x449480` `gwNode::BuildNodeToAncestorMatrix` -> `src/GameZRecoil/zClass/Class.c:2143`
 - `0x449ab0` `zClass_Class::gwNodeGetRoot` -> `src/GameZRecoil/zClass/Class.c:1508`
-- `0x449af0` `zClass_Class::gwNodeGetWorldChild` -> `src/GameZRecoil/zClass/Class.c:1600`
-- `0x449b40` `zClass_Class::SetSingleParentFlagRecursive` -> `src/GameZRecoil/zClass/Class.c:1635`
+- `0x449af0` `zClass_Class::gwNodeGetWorldChild` -> `src/GameZRecoil/zClass/Class.c:1605`
+- `0x449b40` `zClass_Class::SetSingleParentFlagRecursive` -> `src/GameZRecoil/zClass/Class.c:1640`
 - `0x449ba0` `zClass_Camera::SetViewDistance` -> `src/GameZRecoil/zClass/Camera.c:1033`
 - `0x449be0` `zClass_Camera::gwCameraNew` -> `src/GameZRecoil/zClass/Camera.c:326`
 - `0x449c90` `zClass_Camera::gwCameraAddChild` -> `src/GameZRecoil/zClass/Camera.c:359`
@@ -2716,15 +2716,15 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4518f0` `zClass::IsInitialized` -> `src/GameZRecoil/zClass/cls_util.c:118`
 - `0x451a00` `zClass::ShutdownCore` -> `src/GameZRecoil/zClass/cls_util.c:171`
 - `0x451a60` `zClass_Util::DestroyNodeRecursive` -> `src/GameZRecoil/zClass/cls_util.c:200`
-- `0x452770` `zClass_Class::FindSubNodeByName` -> `src/GameZRecoil/zClass/Class.c:1536`
+- `0x452770` `zClass_Class::FindSubNodeByName` -> `src/GameZRecoil/zClass/Class.c:1538`
 - `0x4527f0` `zClass_Node::HasRenderableDiPredicate` -> `src/GameZRecoil/zClass/Object3d.c:1333`
 - `0x452810` `zClass::AnyNodeMatchesPredicateRecursive` -> `src/GameZRecoil/zClass/List.c:992`
-- `0x452860` `zClass_Node::SetMaterialFlagBit9ForFlagBit0EntriesRecursive` -> `src/GameZRecoil/zClass/Class.c:2634`
-- `0x4528a0` `zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack` -> `src/GameZRecoil/zClass/Class.c:2670`
-- `0x4528b0` `zClass_Node::InvalidateFlagBit8MaterialImagesRecursive` -> `src/GameZRecoil/zClass/Class.c:2656`
-- `0x4528e0` `zClass_Node::AssignInt32ToDiRecursive` -> `src/GameZRecoil/zClass/Class.c:2682`
-- `0x452920` `zClass_Class::AddChildValidated` -> `src/GameZRecoil/zClass/Class.c:1668`
-- `0x452970` `zClass_Class::RemoveChildValidated` -> `src/GameZRecoil/zClass/Class.c:1695`
+- `0x452860` `zClass_Node::SetMaterialFlagBit9ForFlagBit0EntriesRecursive` -> `src/GameZRecoil/zClass/Class.c:2639`
+- `0x4528a0` `zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack` -> `src/GameZRecoil/zClass/Class.c:2675`
+- `0x4528b0` `zClass_Node::InvalidateFlagBit8MaterialImagesRecursive` -> `src/GameZRecoil/zClass/Class.c:2661`
+- `0x4528e0` `zClass_Node::AssignInt32ToDiRecursive` -> `src/GameZRecoil/zClass/Class.c:2687`
+- `0x452920` `zClass_Class::AddChildValidated` -> `src/GameZRecoil/zClass/Class.c:1673`
+- `0x452970` `zClass_Class::RemoveChildValidated` -> `src/GameZRecoil/zClass/Class.c:1700`
 - `0x4529c0` `zClass_Sound::gwSoundNew` -> `src/GameZRecoil/zClass/Sound.c:97`
 - `0x452ab0` `zClass_Sound::DeleteNode` -> `src/GameZRecoil/zClass/Sound.c:154`
 - `0x452b80` `zClass_Sound::RemoveChild` -> `src/GameZRecoil/zClass/Sound.c:214`
@@ -3730,11 +3730,11 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4b2300` `PlayerTimedHitStatus::TickAndUpdateLight` -> `src/GameZRecoil/zWeapon/zWeapon.cpp:169`
 - `0x4b2520` `Light::AllocFromFreeListAndAttach` -> `src/GameZRecoil/zClass/Light.c:198`
 - `0x4b2570` `Light::ReturnToFreeList` -> `src/GameZRecoil/zClass/Light.c:231`
-- `0x4b25a0` `zClass_Node::SetDamageHitCallback` -> `src/GameZRecoil/zClass/Class.c:2740`
-- `0x4b25f0` `zClass_Node::AssignDamageHandlerRecursiveIfMissing` -> `src/GameZRecoil/zClass/Class.c:2704`
-- `0x4b2630` `zClass_Node::ClearDamageHandler` -> `src/GameZRecoil/zClass/Class.c:2770`
-- `0x4b2670` `zClass_Node::ClearDamageHandlerRecursive` -> `src/GameZRecoil/zClass/Class.c:2723`
-- `0x4b26b0` `zClass_Node::SetDamageTimerCallback` -> `src/GameZRecoil/zClass/Class.c:2794`
+- `0x4b25a0` `zClass_Node::SetDamageHitCallback` -> `src/GameZRecoil/zClass/Class.c:2745`
+- `0x4b25f0` `zClass_Node::AssignDamageHandlerRecursiveIfMissing` -> `src/GameZRecoil/zClass/Class.c:2709`
+- `0x4b2630` `zClass_Node::ClearDamageHandler` -> `src/GameZRecoil/zClass/Class.c:2775`
+- `0x4b2670` `zClass_Node::ClearDamageHandlerRecursive` -> `src/GameZRecoil/zClass/Class.c:2728`
+- `0x4b26b0` `zClass_Node::SetDamageTimerCallback` -> `src/GameZRecoil/zClass/Class.c:2799`
 - `0x4b2880` `OptCatalog::CaptureHitSnapshotAndInvokeDamageTimerCallback` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2406`
 - `0x4b2960` `zGame::Options_LoadFromRegistry` -> `src/GameZRecoil/zGame/zGame.cpp:465`
 - `0x4b2bf0` `zGame::Options_SaveToRegistry` -> `src/GameZRecoil/zGame/zGame.cpp:579`

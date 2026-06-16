@@ -1533,8 +1533,13 @@ namespace zClass_Class {
         return current;
     }
 
-    // Reimplements 0x452770: zClass_Class::FindSubNodeByName
     zClass_NodePartial *__fastcall
+    /**
+     * Reimplements 0x452770: zClass_Class::FindSubNodeByName
+     * (D:\Proj\GameZRecoil\zClass\Class.c).
+     * Purpose: recursively search a node subtree by name, checking the root
+     * first and then visiting child-list entries from tail to head.
+     */
     FindSubNodeByName(
         zClass_NodePartial * root,
         const char *name
