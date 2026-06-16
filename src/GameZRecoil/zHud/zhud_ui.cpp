@@ -177,6 +177,8 @@ HudUiWidget g_HudUiMgrSensorOverlay;
 HudUiMeter g_HudUiMgrSensorMeter;
 HudUiBar g_HudUiMgrTailBar;
 int g_HudUi_AuxOverlayEnabled = 0;
+// BN identifies 0x4e5df0 as an eight-byte BSS HudCmdDialogState object.
+// StaticInit constructs it in place; AtExitDestructor tears down the same object.
 HudCmdDialogState g_HudCmdDialogState;
 CString g_HudUiTripletWndClassName("");
 
@@ -11856,27 +11858,39 @@ HudUiBackground * HudOptionsDialog::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x40bc20: HudCmdDialogState::StaticInitAndRegisterAtExit
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40bc20: HudCmdDialogState::StaticInitAndRegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: Construct the global command-dialog state and register its at-exit teardown.
+ */
 void HudCmdDialogState::StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
 
-// Reimplements 0x40bc30: HudCmdDialogState::StaticInit
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40bc30: HudCmdDialogState::StaticInit.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: Construct the command-dialog state in its static storage.
+ */
 HudCmdDialogState *HudCmdDialogState::StaticInit() {
     return new (&g_HudCmdDialogState) HudCmdDialogState;
 }
 
-// Reimplements 0x40bc40: HudCmdDialogState::RegisterAtExit
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40bc40: HudCmdDialogState::RegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: Register the command-dialog state static destructor with the CRT.
+ */
 void HudCmdDialogState::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
-// Reimplements 0x40bc50: HudCmdDialogState::AtExitDestructor
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40bc50: HudCmdDialogState::AtExitDestructor.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: Destroy the global command-dialog state during CRT at-exit cleanup.
+ */
 void HudCmdDialogState::AtExitDestructor() {
     g_HudCmdDialogState.~HudCmdDialogState();
 }
@@ -11890,8 +11904,11 @@ void HudCmdDialogState::QueueEnter() {
     );
 }
 
-// Reimplements 0x40bc60: HudCmdDialogState::HudCmdDialogState
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40bc60: HudCmdDialogState::HudCmdDialogState.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: Initialize the command-dialog app state with no active dialog.
+ */
 HudCmdDialogState::HudCmdDialogState() : m_dialog(0) {}
 
 // Reimplements 0x40bcf0: HudCmdDialogState::OnTryBecomeCurrent

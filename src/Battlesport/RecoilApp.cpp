@@ -2102,8 +2102,8 @@ RecoilApp_StateQueueBlock * RecoilApp_StateQueueBlock::InitFromCursor(
 ) {
     m_chunkBegin = *chunkBaseSlot;
     m_chunkEnd = *chunkBaseSlot + 1024;
-    m_chunkBaseSlot = chunkBaseSlot;
     m_cursor = cursor;
+    m_chunkBaseSlot = chunkBaseSlot;
     return this;
 }
 
