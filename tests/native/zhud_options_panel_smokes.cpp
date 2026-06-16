@@ -1,6 +1,9 @@
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zSound/zSound.h"
+
+extern "C" unsigned int g_HudUi_InvalidateMask;
 
 extern "C" int zhud_options_panel_lighting_init_from_options_smoke(void) {
     int swFlags = 0x10;
@@ -384,6 +387,141 @@ extern "C" int zhud_options_panel_sound_active_init_from_options_smoke(void) {
     ZOPT_MUTE_SOUND = oldMuteSound;
 
     return unmutedOk && mutedOk ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_sound_quality_init_from_options_smoke(void) {
+    int soundLod = 2;
+    int *const oldSoundLod = ZOPT_SOUND_LOD;
+
+    ZOPT_SOUND_LOD = &soundLod;
+
+    HudUiOptionsPanel_SoundQuality soundQuality;
+    soundQuality.Constructor();
+    soundQuality.itemCount = 4;
+    soundQuality.firstIndex = 1;
+    soundQuality.visibleCount = 3;
+
+    soundLod = 0;
+    soundQuality.selectedIndex = 9;
+    soundQuality.InitFromOptions();
+    const bool lowClampOk = soundQuality.selectedIndex == 1;
+
+    soundLod = 2;
+    soundQuality.selectedIndex = 9;
+    soundQuality.InitFromOptions();
+    const bool selectionOk = soundQuality.selectedIndex == 2;
+
+    soundLod = 3;
+    soundQuality.InitFromOptions();
+    const bool visibleClampOk = soundQuality.selectedIndex == 2;
+
+    soundQuality.DestructorCore();
+    ZOPT_SOUND_LOD = oldSoundLod;
+
+    return lowClampOk && selectionOk && visibleClampOk ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_sound_quality_sync_from_options_smoke(void) {
+    int soundLod = 0;
+    int *const oldSoundLod = ZOPT_SOUND_LOD;
+
+    ZOPT_SOUND_LOD = &soundLod;
+
+    HudUiOptionsPanel_SoundQuality soundQuality;
+    soundQuality.Constructor();
+    soundQuality.itemCount = 3;
+    soundQuality.firstIndex = 0;
+    soundQuality.visibleCount = 3;
+
+    soundQuality.selectedIndex = 0;
+    soundQuality.SyncFromOptions();
+    const bool advanceOk =
+        soundQuality.selectedIndex == 1 && soundLod == 1;
+
+    soundQuality.selectedIndex = 2;
+    soundQuality.SyncFromOptions();
+    const bool wrapOk =
+        soundQuality.selectedIndex == 0 && soundLod == 0;
+
+    soundQuality.DestructorCore();
+    ZOPT_SOUND_LOD = oldSoundLod;
+
+    return advanceOk && wrapOk ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_sound_volume_sync_from_options_smoke(void) {
+    float soundVolume = 0.625f;
+    float *const oldSoundVolume = ZOPT_SOUND_VOLUME;
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+
+    ZOPT_SOUND_VOLUME = &soundVolume;
+    g_HudUi_InvalidateMask = 0x80;
+
+    HudUiOptionsPanel_SoundVolume soundVolumeWidget;
+    soundVolumeWidget.Constructor();
+    soundVolumeWidget.flags = 0;
+    soundVolumeWidget.SyncFromOptions();
+
+    const bool synced =
+        soundVolumeWidget.normalizedValue == 0.625f &&
+        (soundVolumeWidget.flags & 0x80u) != 0;
+
+    soundVolumeWidget.DestructorCore();
+    ZOPT_SOUND_VOLUME = oldSoundVolume;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+
+    return synced ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_sound_volume_on_activate_smoke(void) {
+    float soundVolume = 0.0f;
+    float globalVolume = 1.0f;
+    float *const oldSoundVolume = ZOPT_SOUND_VOLUME;
+    void *const oldGlobalVolumeScalePtr = g_zSnd_GlobalVolumeScalePtr;
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+    __declspec(align(4)) unsigned char ownerStorage[sizeof(HudUiBackground)] = {0};
+
+    ZOPT_SOUND_VOLUME = &soundVolume;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolume;
+    g_HudUi_InvalidateMask = 0x80;
+
+    zInput::MouseStateSnapshot *const mouseState =
+        (zInput::MouseStateSnapshot *)(ownerStorage + 0x14);
+    mouseState->cursorClientX = 35;
+
+    zVidImagePartial baseImage = {0};
+    baseImage.width = 100;
+    zVidImagePartial fillImage = {0};
+    fillImage.width = 100;
+    fillImage.height = 8;
+
+    HudUiOptionsPanel_SoundVolume soundVolumeWidget;
+    soundVolumeWidget.Constructor();
+    soundVolumeWidget.owner = (HudUiBackground *)ownerStorage;
+    soundVolumeWidget.x = 10;
+    soundVolumeWidget.image = &baseImage;
+    soundVolumeWidget.fillImage = &fillImage;
+    soundVolumeWidget.flags = 0;
+
+    soundVolumeWidget.OnActivate();
+
+    const bool activated =
+        soundVolumeWidget.normalizedValue == 0.25f &&
+        soundVolume == 0.25f &&
+        globalVolume == 0.25f &&
+        soundVolumeWidget.fillRect.right == 25 &&
+        soundVolumeWidget.fillRect.bottom == 8 &&
+        (soundVolumeWidget.flags & 0x80u) != 0;
+
+    soundVolumeWidget.fillImage = 0;
+    soundVolumeWidget.previewImage = 0;
+    soundVolumeWidget.image = 0;
+    soundVolumeWidget.DestructorCore();
+    ZOPT_SOUND_VOLUME = oldSoundVolume;
+    g_zSnd_GlobalVolumeScalePtr = oldGlobalVolumeScalePtr;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+
+    return activated ? 0 : 1;
 }
 
 extern "C" int zhud_options_panel_resolution_on_activate_smoke(void) {
