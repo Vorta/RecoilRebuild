@@ -11461,7 +11461,10 @@ void HudUiOptionsPanel_Lighting::InitFromOptions() {
     SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_GLOBAL_LIGHT);
 }
 
-// Reimplements 0x40c9e0: HudUiOptionsPanel_Lighting::SyncFromOptions
+/**
+ * Reimplements 0x40c9e0: HudUiOptionsPanel_Lighting::SyncFromOptions.
+ * Purpose: toggle the global lighting graphics flag from the lighting checkbox.
+ */
 void HudUiOptionsPanel_Lighting::SyncFromOptions() {
     const int flags = zOpt::GetGraphicsFlagsForCurrentHwMode();
     HudUiCheckToggleWidget::OnActivate();
@@ -11479,12 +11482,18 @@ void HudUiOptionsPanel_Perspective::PostLoadFromZrd() {
     InitFromOptions();
 }
 
-// Reimplements 0x40ca20: HudUiOptionsPanel_Perspective::InitFromOptions
+/**
+ * Reimplements 0x40ca20: HudUiOptionsPanel_Perspective::InitFromOptions.
+ * Purpose: synchronize the perspective toggle from the active hardware-mode graphics flags.
+ */
 void HudUiOptionsPanel_Perspective::InitFromOptions() {
     SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_PERSPECTIVE);
 }
 
-// Reimplements 0x40ca40: HudUiOptionsPanel_Perspective::SyncFromOptions
+/**
+ * Reimplements 0x40ca40: HudUiOptionsPanel_Perspective::SyncFromOptions.
+ * Purpose: toggle the perspective graphics flag and refresh span routine selection.
+ */
 void HudUiOptionsPanel_Perspective::SyncFromOptions() {
     const int flags = zOpt::GetGraphicsFlagsForCurrentHwMode();
     HudUiCheckToggleWidget::OnActivate();
@@ -11499,7 +11508,10 @@ void HudUiOptionsPanel_FullHud::PostLoadFromZrd() {
     InitFromOptions();
 }
 
-// Reimplements 0x40ca80: HudUiOptionsPanel_FullHud::InitFromOptions
+/**
+ * Reimplements 0x40ca80: HudUiOptionsPanel_FullHud::InitFromOptions.
+ * Purpose: synchronize the full-HUD toggle from the active hardware-mode HUD type.
+ */
 void HudUiOptionsPanel_FullHud::InitFromOptions() {
     SetChecked(zOpt::GetHudTypeForCurrentHwMode() == ZOPT_HUD_TYPE_PERSPECTIVE);
 }
@@ -11513,12 +11525,18 @@ void HudUiOptionsPanel_ObjectDetail::PostLoadFromZrd() {
     InitFromOptions();
 }
 
-// Reimplements 0x40cab0: HudUiOptionsPanel_ObjectDetail::InitFromOptions
+/**
+ * Reimplements 0x40cab0: HudUiOptionsPanel_ObjectDetail::InitFromOptions.
+ * Purpose: synchronize the object detail selector from the active hardware-mode object LOD.
+ */
 void HudUiOptionsPanel_ObjectDetail::InitFromOptions() {
     SetIndexClamped(zOpt::GetObjectLODForCurrentHwMode());
 }
 
-// Reimplements 0x40cad0: HudUiOptionsPanel_ObjectDetail::SyncFromOptions
+/**
+ * Reimplements 0x40cad0: HudUiOptionsPanel_ObjectDetail::SyncFromOptions.
+ * Purpose: advance the object detail selector and store its object LOD option.
+ */
 void HudUiOptionsPanel_ObjectDetail::SyncFromOptions() {
     AdvanceSelectionAndActivate();
     zOpt::SetObjectLODForCurrentHwMode(selectedIndex);
@@ -11533,12 +11551,18 @@ void HudUiOptionsPanel_TextureMemory::PostLoadFromZrd() {
     InitFromOptions();
 }
 
-// Reimplements 0x40caf0: HudUiOptionsPanel_TextureMemory::InitFromOptions
+/**
+ * Reimplements 0x40caf0: HudUiOptionsPanel_TextureMemory::InitFromOptions.
+ * Purpose: synchronize the texture memory selector from the active hardware-mode option.
+ */
 void HudUiOptionsPanel_TextureMemory::InitFromOptions() {
     SetIndexClamped(zOpt::GetTextureMemoryForCurrentHwMode());
 }
 
-// Reimplements 0x40cb10: HudUiOptionsPanel_TextureMemory::SyncFromOptions
+/**
+ * Reimplements 0x40cb10: HudUiOptionsPanel_TextureMemory::SyncFromOptions.
+ * Purpose: advance the texture memory selector and store its option.
+ */
 void HudUiOptionsPanel_TextureMemory::SyncFromOptions() {
     AdvanceSelectionAndActivate();
     zOpt::SetTextureMemoryForCurrentHwMode(selectedIndex);
@@ -11553,7 +11577,10 @@ void HudUiOptionsPanel_Effects::PostLoadFromZrd() {
     InitFromOptions();
 }
 
-// Reimplements 0x40cb30: HudUiOptionsPanel_Effects::InitFromOptions
+/**
+ * Reimplements 0x40cb30: HudUiOptionsPanel_Effects::InitFromOptions.
+ * Purpose: synchronize the effects selector and constrain software-renderer choices.
+ */
 void HudUiOptionsPanel_Effects::InitFromOptions() {
     int level = zOpt::GetEffectsLevelForCurrentHwMode();
     if (zVid::GetAccelerationOption() == ZVID_HW_MODE_SOFTWARE) {
@@ -11569,7 +11596,10 @@ void HudUiOptionsPanel_Effects::InitFromOptions() {
     SetIndexClamped(level);
 }
 
-// Reimplements 0x40cb70: HudUiOptionsPanel_Effects::SyncFromOptions
+/**
+ * Reimplements 0x40cb70: HudUiOptionsPanel_Effects::SyncFromOptions.
+ * Purpose: advance the effects selector and store its effects-level option.
+ */
 void HudUiOptionsPanel_Effects::SyncFromOptions() {
     AdvanceSelectionAndActivate();
     zOpt::SetEffectsLevelForCurrentHwMode(selectedIndex);
@@ -11584,12 +11614,18 @@ void HudUiOptionsPanel_SoundActive::PostLoadFromZrd() {
     InitFromOptions();
 }
 
-// Reimplements 0x40cb90: HudUiOptionsPanel_SoundActive::InitFromOptions
+/**
+ * Reimplements 0x40cb90: HudUiOptionsPanel_SoundActive::InitFromOptions.
+ * Purpose: synchronize the sound-active toggle from the mute-sound option.
+ */
 void HudUiOptionsPanel_SoundActive::InitFromOptions() {
     SetChecked(zOpt::GetMuteSoundOption() == 0);
 }
 
-// Reimplements 0x40cbb0: HudUiOptionsPanel_SoundActive::SyncFromOptions
+/**
+ * Reimplements 0x40cbb0: HudUiOptionsPanel_SoundActive::SyncFromOptions.
+ * Purpose: toggle sound activity and store the inverse mute-sound option.
+ */
 void HudUiOptionsPanel_SoundActive::SyncFromOptions() {
     HudUiCheckToggleWidget::OnActivate();
     zOpt::SetMuteSoundOption(checked == 0);
@@ -11604,12 +11640,18 @@ void HudUiOptionsPanel_SoundQuality::PostLoadFromZrd() {
     InitFromOptions();
 }
 
-// Reimplements 0x40cbd0: HudUiOptionsPanel_SoundQuality::InitFromOptions
+/**
+ * Reimplements 0x40cbd0: HudUiOptionsPanel_SoundQuality::InitFromOptions.
+ * Purpose: synchronize the sound quality selector from the sound LOD option.
+ */
 void HudUiOptionsPanel_SoundQuality::InitFromOptions() {
     SetIndexClamped(zOpt::GetSoundLODOption());
 }
 
-// Reimplements 0x40cbf0: HudUiOptionsPanel_SoundQuality::SyncFromOptions
+/**
+ * Reimplements 0x40cbf0: HudUiOptionsPanel_SoundQuality::SyncFromOptions.
+ * Purpose: advance the sound quality selector and store its sound LOD option.
+ */
 void HudUiOptionsPanel_SoundQuality::SyncFromOptions() {
     AdvanceSelectionAndActivate();
     zOpt::SetSoundLODOption(selectedIndex);
@@ -11620,12 +11662,18 @@ void HudUiOptionsPanel_SoundVolume::PostLoadFromZrd() {
     SyncFromOptions();
 }
 
-// Reimplements 0x40cc10: HudUiOptionsPanel_SoundVolume::SyncFromOptions
+/**
+ * Reimplements 0x40cc10: HudUiOptionsPanel_SoundVolume::SyncFromOptions.
+ * Purpose: synchronize the sound volume fill widget from the stored sound volume option.
+ */
 void HudUiOptionsPanel_SoundVolume::SyncFromOptions() {
     SetNormalizedValue(zOpt::GetSoundVolumeOption());
 }
 
-// Reimplements 0x40cc30: HudUiOptionsPanel_SoundVolume::OnActivate
+/**
+ * Reimplements 0x40cc30: HudUiOptionsPanel_SoundVolume::OnActivate.
+ * Purpose: update and store sound volume from the fill-widget cursor position.
+ */
 void HudUiOptionsPanel_SoundVolume::OnActivate() {
     UpdateNormalizedFromCursor();
     zOpt::SetSoundVolumeOption(normalizedValue);
@@ -11637,12 +11685,18 @@ void HudUiOptionsPanel_MusicEnable::PostLoadFromZrd() {
     SyncFromOptions();
 }
 
-// Reimplements 0x40cc60: HudUiOptionsPanel_MusicEnable::SyncFromOptions
+/**
+ * Reimplements 0x40cc60: HudUiOptionsPanel_MusicEnable::SyncFromOptions.
+ * Purpose: synchronize the CD-audio toggle from the stored music-enable option.
+ */
 void HudUiOptionsPanel_MusicEnable::SyncFromOptions() {
     SetChecked(zSnd::GetCDAudioOption());
 }
 
-// Reimplements 0x40cc80: HudUiOptionsPanel_MusicEnable::OnActivate
+/**
+ * Reimplements 0x40cc80: HudUiOptionsPanel_MusicEnable::OnActivate.
+ * Purpose: toggle CD audio playback and store the music-enable option.
+ */
 void HudUiOptionsPanel_MusicEnable::OnActivate() {
     HudUiCheckToggleWidget::OnActivate();
     if (checked == 0) {
@@ -11662,7 +11716,10 @@ void HudUiOptionsPanel_MusicVolume::PostLoadFromZrd() {
     SyncFromOptions();
 }
 
-// Reimplements 0x40ccc0: HudUiOptionsPanel_MusicVolume::SyncFromOptions
+/**
+ * Reimplements 0x40ccc0: HudUiOptionsPanel_MusicVolume::SyncFromOptions.
+ * Purpose: synchronize the music volume fill widget from the current CD volume.
+ */
 void HudUiOptionsPanel_MusicVolume::SyncFromOptions() {
     unsigned short primaryVolume = 0;
     unsigned short secondaryVolume = 0;
@@ -11673,7 +11730,10 @@ void HudUiOptionsPanel_MusicVolume::SyncFromOptions() {
     SetNormalizedValue((float)(primaryVolume)*ZSND_CD_VOLUME_TO_NORMALIZED);
 }
 
-// Reimplements 0x40cd00: HudUiOptionsPanel_MusicVolume::OnActivate
+/**
+ * Reimplements 0x40cd00: HudUiOptionsPanel_MusicVolume::OnActivate.
+ * Purpose: update and store CD volume from the fill-widget cursor position.
+ */
 void HudUiOptionsPanel_MusicVolume::OnActivate() {
     UpdateNormalizedFromCursor();
     const unsigned short volume = (unsigned short)(normalizedValue * ZSND_CD_NORMALIZED_TO_VOLUME);
@@ -11688,7 +11748,10 @@ void HudUiOptionsPanel_Resolution::PostLoadFromZrd() {
     SyncFromOptions();
 }
 
-// Reimplements 0x40cd30: HudUiOptionsPanel_Resolution::SyncFromOptions
+/**
+ * Reimplements 0x40cd30: HudUiOptionsPanel_Resolution::SyncFromOptions.
+ * Purpose: synchronize and constrain the resolution selector for the active renderer.
+ */
 void HudUiOptionsPanel_Resolution::SyncFromOptions() {
     const int modeCase = zVid::GetVideoModeIndexFromOptions() - 2;
     if ((unsigned int)(modeCase) > 5u) {
@@ -11788,7 +11851,10 @@ void HudUiOptionsPanel_Resolution::SyncFromOptions() {
     }
 }
 
-// Reimplements 0x40ce80: HudUiOptionsPanel_Resolution::OnActivate
+/**
+ * Reimplements 0x40ce80: HudUiOptionsPanel_Resolution::OnActivate.
+ * Purpose: advance the resolution selector and queue the corresponding video mode.
+ */
 void HudUiOptionsPanel_Resolution::OnActivate() {
     AdvanceSelectionAndActivate();
     switch (selectedIndex) {
