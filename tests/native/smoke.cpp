@@ -143,6 +143,7 @@ extern "C" int znetwork_clear_enumerated_session_list_smoke(void);
 extern "C" int znetwork_clear_service_provider_list_smoke(void);
 extern "C" int znetwork_clear_player_record_list_smoke(void);
 extern "C" int znetwork_player_record_accessors_smoke(void);
+extern "C" int znetwork_alloc_free_player_color_index_smoke(void);
 extern "C" int znetwork_apply_pkt01_player_color_assignments_smoke(void);
 extern "C" int znetwork_shutdown_session_runtime_smoke(void);
 extern "C" int zfmv_script_init_null_path_smoke(void);
@@ -10381,6 +10382,8 @@ int main(int argc, char **argv) {
          znetwork_clear_service_provider_list_smoke},
         {"znetwork_clear_player_record_list_smoke", znetwork_clear_player_record_list_smoke},
         {"znetwork_player_record_accessors_smoke", znetwork_player_record_accessors_smoke},
+        {"znetwork_alloc_free_player_color_index_smoke",
+         znetwork_alloc_free_player_color_index_smoke},
         {"znetwork_apply_pkt01_player_color_assignments_smoke",
          znetwork_apply_pkt01_player_color_assignments_smoke},
         {"znetwork_shutdown_session_runtime_smoke", znetwork_shutdown_session_runtime_smoke},

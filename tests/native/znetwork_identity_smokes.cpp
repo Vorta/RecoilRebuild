@@ -142,6 +142,57 @@ extern "C" int znetwork_local_identity_smoke(void) {
     return result;
 }
 
+extern "C" int znetwork_alloc_free_player_color_index_smoke(void) {
+    zNetworkDPlaySessionDescCache *const oldCurrentSessionDescCache =
+        g_zNetwork_CurrentSessionDescCache;
+    int oldColorFlags[16];
+    memcpy(
+        oldColorFlags,
+        g_zNetwork_PlayerColorInUseFlags,
+        sizeof(oldColorFlags)
+    );
+
+    memset(
+        g_zNetwork_PlayerColorInUseFlags,
+        0,
+        sizeof(g_zNetwork_PlayerColorInUseFlags)
+    );
+
+    zNetworkDPlaySessionDescCache session = {};
+    session.desc.dwMaxPlayers = 4;
+    g_zNetwork_CurrentSessionDescCache = &session;
+    g_zNetwork_PlayerColorInUseFlags[1] = 1;
+    g_zNetwork_PlayerColorInUseFlags[2] = 1;
+    g_zNetwork_PlayerColorInUseFlags[4] = 1;
+
+    int result = 0;
+    const int firstFree = zNetwork::AllocFreePlayerColorIndex();
+    if (firstFree != 3 || g_zNetwork_PlayerColorInUseFlags[3] != 1) {
+        result = 1;
+    }
+
+    const int noneFree = zNetwork::AllocFreePlayerColorIndex();
+    if (result == 0 && noneFree != 0) {
+        result = 2;
+    }
+
+    session.desc.dwMaxPlayers = 0;
+    g_zNetwork_PlayerColorInUseFlags[1] = 0;
+    if (result == 0 &&
+        (zNetwork::AllocFreePlayerColorIndex() != 0 ||
+         g_zNetwork_PlayerColorInUseFlags[1] != 0)) {
+        result = 3;
+    }
+
+    g_zNetwork_CurrentSessionDescCache = oldCurrentSessionDescCache;
+    memcpy(
+        g_zNetwork_PlayerColorInUseFlags,
+        oldColorFlags,
+        sizeof(g_zNetwork_PlayerColorInUseFlags)
+    );
+    return result;
+}
+
 extern "C" int znetwork_dplay_close_release_smoke(void) {
     g_closeCalls = 0;
     g_releaseCalls = 0;
