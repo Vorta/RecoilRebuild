@@ -143,6 +143,164 @@ extern "C" int zhud_options_panel_full_hud_init_from_options_smoke(void) {
     return swPerspectiveOk && hwStandardOk && hwPerspectiveOk ? 0 : 1;
 }
 
+extern "C" int zhud_options_panel_object_detail_init_from_options_smoke(void) {
+    int swObjectLod = 0;
+    int hwObjectLod = 2;
+    int *const oldSwObjectLod = ZOPT_OBJECT_LOD_SW;
+    int *const oldHwObjectLod = ZOPT_OBJECT_LOD_HW;
+    const int oldHwMode = g_zOpt_HwMode;
+
+    ZOPT_OBJECT_LOD_SW = &swObjectLod;
+    ZOPT_OBJECT_LOD_HW = &hwObjectLod;
+
+    HudUiOptionsPanel_ObjectDetail objectDetail;
+    objectDetail.Constructor();
+    objectDetail.itemCount = 4;
+    objectDetail.firstIndex = 1;
+    objectDetail.visibleCount = 3;
+
+    g_zOpt_HwMode = 0;
+    objectDetail.selectedIndex = 9;
+    objectDetail.InitFromOptions();
+    const bool swClampLowOk = objectDetail.selectedIndex == 1;
+
+    g_zOpt_HwMode = 1;
+    objectDetail.selectedIndex = 9;
+    objectDetail.InitFromOptions();
+    const bool hwSelectionOk = objectDetail.selectedIndex == 2;
+
+    hwObjectLod = 3;
+    objectDetail.InitFromOptions();
+    const bool hwVisibleClampOk = objectDetail.selectedIndex == 2;
+
+    objectDetail.DestructorCore();
+    ZOPT_OBJECT_LOD_SW = oldSwObjectLod;
+    ZOPT_OBJECT_LOD_HW = oldHwObjectLod;
+    g_zOpt_HwMode = oldHwMode;
+
+    return swClampLowOk && hwSelectionOk && hwVisibleClampOk ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_object_detail_sync_from_options_smoke(void) {
+    int swObjectLod = 0;
+    int hwObjectLod = 0;
+    int *const oldSwObjectLod = ZOPT_OBJECT_LOD_SW;
+    int *const oldHwObjectLod = ZOPT_OBJECT_LOD_HW;
+    zOpt_CameraSection **const oldCameraSection = g_zOpt_CameraSectionOption;
+    const int oldHwMode = g_zOpt_HwMode;
+
+    ZOPT_OBJECT_LOD_SW = &swObjectLod;
+    ZOPT_OBJECT_LOD_HW = &hwObjectLod;
+    g_zOpt_CameraSectionOption = 0;
+
+    HudUiOptionsPanel_ObjectDetail objectDetail;
+    objectDetail.Constructor();
+    objectDetail.itemCount = 3;
+    objectDetail.firstIndex = 0;
+    objectDetail.visibleCount = 3;
+
+    g_zOpt_HwMode = 0;
+    objectDetail.selectedIndex = 0;
+    objectDetail.SyncFromOptions();
+    const bool swAdvanceOk = objectDetail.selectedIndex == 1 && swObjectLod == 1;
+
+    objectDetail.selectedIndex = 2;
+    objectDetail.SyncFromOptions();
+    const bool swWrapOk = objectDetail.selectedIndex == 0 && swObjectLod == 0;
+
+    g_zOpt_HwMode = 1;
+    objectDetail.selectedIndex = 1;
+    objectDetail.SyncFromOptions();
+    const bool hwAdvanceOk = objectDetail.selectedIndex == 2 && hwObjectLod == 2;
+
+    objectDetail.DestructorCore();
+    ZOPT_OBJECT_LOD_SW = oldSwObjectLod;
+    ZOPT_OBJECT_LOD_HW = oldHwObjectLod;
+    g_zOpt_CameraSectionOption = oldCameraSection;
+    g_zOpt_HwMode = oldHwMode;
+
+    return swAdvanceOk && swWrapOk && hwAdvanceOk ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_texture_memory_init_from_options_smoke(void) {
+    int swTextureMemory = 0;
+    int hwTextureMemory = 2;
+    int *const oldSwTextureMemory = ZOPT_TEXTURE_MEMORY_SW;
+    int *const oldHwTextureMemory = ZOPT_TEXTURE_MEMORY_HW;
+    const int oldHwMode = g_zOpt_HwMode;
+
+    ZOPT_TEXTURE_MEMORY_SW = &swTextureMemory;
+    ZOPT_TEXTURE_MEMORY_HW = &hwTextureMemory;
+
+    HudUiOptionsPanel_TextureMemory textureMemory;
+    textureMemory.Constructor();
+    textureMemory.itemCount = 4;
+    textureMemory.firstIndex = 1;
+    textureMemory.visibleCount = 3;
+
+    g_zOpt_HwMode = 0;
+    textureMemory.selectedIndex = 9;
+    textureMemory.InitFromOptions();
+    const bool swClampLowOk = textureMemory.selectedIndex == 1;
+
+    g_zOpt_HwMode = 1;
+    textureMemory.selectedIndex = 9;
+    textureMemory.InitFromOptions();
+    const bool hwSelectionOk = textureMemory.selectedIndex == 2;
+
+    hwTextureMemory = 3;
+    textureMemory.InitFromOptions();
+    const bool hwVisibleClampOk = textureMemory.selectedIndex == 2;
+
+    textureMemory.DestructorCore();
+    ZOPT_TEXTURE_MEMORY_SW = oldSwTextureMemory;
+    ZOPT_TEXTURE_MEMORY_HW = oldHwTextureMemory;
+    g_zOpt_HwMode = oldHwMode;
+
+    return swClampLowOk && hwSelectionOk && hwVisibleClampOk ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_texture_memory_sync_from_options_smoke(void) {
+    int swTextureMemory = 0;
+    int hwTextureMemory = 0;
+    int *const oldSwTextureMemory = ZOPT_TEXTURE_MEMORY_SW;
+    int *const oldHwTextureMemory = ZOPT_TEXTURE_MEMORY_HW;
+    const int oldHwMode = g_zOpt_HwMode;
+
+    ZOPT_TEXTURE_MEMORY_SW = &swTextureMemory;
+    ZOPT_TEXTURE_MEMORY_HW = &hwTextureMemory;
+
+    HudUiOptionsPanel_TextureMemory textureMemory;
+    textureMemory.Constructor();
+    textureMemory.itemCount = 3;
+    textureMemory.firstIndex = 0;
+    textureMemory.visibleCount = 3;
+
+    g_zOpt_HwMode = 0;
+    textureMemory.selectedIndex = 0;
+    textureMemory.SyncFromOptions();
+    const bool swAdvanceOk =
+        textureMemory.selectedIndex == 1 && swTextureMemory == 1;
+
+    textureMemory.selectedIndex = 2;
+    textureMemory.SyncFromOptions();
+    const bool swWrapOk =
+        textureMemory.selectedIndex == 0 && swTextureMemory == 0;
+
+    g_zOpt_HwMode = 1;
+    textureMemory.selectedIndex = 1;
+    textureMemory.SyncFromOptions();
+    const bool hwAdvanceOk =
+        textureMemory.selectedIndex == 2 && hwTextureMemory == 2;
+
+    textureMemory.DestructorCore();
+    ZOPT_TEXTURE_MEMORY_SW = oldSwTextureMemory;
+    ZOPT_TEXTURE_MEMORY_HW = oldHwTextureMemory;
+    g_zOpt_HwMode = oldHwMode;
+
+    return swAdvanceOk && swWrapOk && hwAdvanceOk ? 0 : 1;
+}
+
 extern "C" int zhud_options_panel_resolution_on_activate_smoke(void) {
     const zVidModeIndex oldDeferredMode =
         g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex;

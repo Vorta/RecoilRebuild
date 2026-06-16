@@ -25610,15 +25610,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x408030:
   - [✅] Reconstructed (Name: zOpt::GetObjectLODForCurrentHwMode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGame; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zGame; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zOpt::GetObjectLODForCurrentHwMode;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_get_object_lod_for_current_hw_mode;
     - Group: engine.zgame;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408050:
   - [✅] Reconstructed (Name: zOpt::SetMuteSoundOption)
@@ -25701,28 +25701,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4080e0:
   - [✅] Reconstructed (Name: zOpt::SetTextureMemoryForCurrentHwMode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGame; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zGame; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zOpt::SetTextureMemoryForCurrentHwMode;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_set_texture_memory_for_current_hw_mode;
     - Group: engine.zgame;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408100:
   - [✅] Reconstructed (Name: zOpt::GetTextureMemoryForCurrentHwMode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGame; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zGame; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zOpt::GetTextureMemoryForCurrentHwMode;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_get_texture_memory_for_current_hw_mode;
     - Group: engine.zgame;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408120:
   - [☑️] Reconstructed (Name: zOpt::SetPlayerName)
@@ -35466,41 +35466,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40c9c0:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Lighting::InitFromOptions)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudOptionsDialog; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiOptionsPanel_Lighting::InitFromOptions;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_options_panel_lighting_init_from_options;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40c9e0:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Lighting::SyncFromOptions)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudOptionsDialog; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiOptionsPanel_Lighting::SyncFromOptions;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_options_panel_lighting_sync_from_options;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40ca20:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Perspective::InitFromOptions)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudOptionsDialog; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiOptionsPanel_Perspective::InitFromOptions;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_options_panel_perspective_init_from_options;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40ca40:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Perspective::SyncFromOptions)
@@ -35518,28 +35518,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40ca80:
   - [☑️] Reconstructed (Name: HudUiOptionsPanel_FullHud::InitFromOptions)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudOptionsDialog; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiOptionsPanel_FullHud::InitFromOptions;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_options_panel_full_hud_init_from_options;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40cab0:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_ObjectDetail::InitFromOptions)
-  - [❌] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
-  - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Source dependencies satisfied
+  - [✅] Source owner (Kind: class; Parent: HudOptionsDialog; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiOptionsPanel_ObjectDetail::InitFromOptions;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_options_panel_object_detail_init_from_options;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40cad0:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_ObjectDetail::SyncFromOptions)
@@ -35556,29 +35556,29 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x40caf0:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_TextureMemory::InitFromOptions)
-  - [❌] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
-  - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Source dependencies satisfied
+  - [✅] Source owner (Kind: class; Parent: HudOptionsDialog; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiOptionsPanel_TextureMemory::InitFromOptions;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_options_panel_texture_memory_init_from_options;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40cb10:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_TextureMemory::SyncFromOptions)
-  - [❌] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
-  - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Source dependencies satisfied
+  - [✅] Source owner (Kind: class; Parent: HudOptionsDialog; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiOptionsPanel_TextureMemory::SyncFromOptions;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_options_panel_texture_memory_sync_from_options;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40cb30:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Effects::InitFromOptions)
@@ -35752,15 +35752,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40ce80:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Resolution::OnActivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudOptionsDialog; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiOptionsPanel_Resolution::OnActivate;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_options_panel_resolution_on_activate;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40cf00:
   - [✅] Reconstructed (Name: HudOptionsDialog::ScalarDeletingDestructor)
@@ -37332,15 +37332,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b7f20:
   - [✅] Reconstructed (Name: HudUiCycleSelectorWidget::SetIndexClamped)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiCycleSelectorWidget::SetIndexClamped;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_cycle_selector_widget_set_index_clamped;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b7f80:
   - [✅] Reconstructed (Name: HudUiCycleSelectorWidget::SetVisibleRange)

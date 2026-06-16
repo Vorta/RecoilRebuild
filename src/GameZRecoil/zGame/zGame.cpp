@@ -1503,7 +1503,10 @@ int GetEffectsLevelForCurrentHwMode() {
     return *(g_zOpt_HwMode != 0 ? ZOPT_EFFECTS_LEVEL_HW : ZOPT_EFFECTS_LEVEL_SW);
 }
 
-// Reimplements 0x407fa0: zOpt::SetObjectLODForCurrentHwMode
+/**
+ * Reimplements 0x407fa0: zOpt::SetObjectLODForCurrentHwMode.
+ * Purpose: store the object LOD value for the active hardware mode and apply its camera clip distance.
+ */
 void __fastcall SetObjectLODForCurrentHwMode(
     int level
 ) {
@@ -1527,7 +1530,10 @@ void __fastcall SetObjectLODForCurrentHwMode(
     );
 }
 
-// Reimplements 0x408030: zOpt::GetObjectLODForCurrentHwMode
+/**
+ * Reimplements 0x408030: zOpt::GetObjectLODForCurrentHwMode.
+ * Purpose: return the object LOD value for the active hardware mode.
+ */
 int GetObjectLODForCurrentHwMode() {
     return *(g_zOpt_HwMode != 0 ? ZOPT_OBJECT_LOD_HW : ZOPT_OBJECT_LOD_SW);
 }
@@ -1570,14 +1576,20 @@ int GetSoundLODOption() {
     return *ZOPT_SOUND_LOD;
 }
 
-// Reimplements 0x4080e0: zOpt::SetTextureMemoryForCurrentHwMode
+/**
+ * Reimplements 0x4080e0: zOpt::SetTextureMemoryForCurrentHwMode.
+ * Purpose: store the texture memory value for the active hardware mode.
+ */
 void __fastcall SetTextureMemoryForCurrentHwMode(
     int value
 ) {
     *(g_zOpt_HwMode != 0 ? ZOPT_TEXTURE_MEMORY_HW : ZOPT_TEXTURE_MEMORY_SW) = value;
 }
 
-// Reimplements 0x408100: zOpt::GetTextureMemoryForCurrentHwMode
+/**
+ * Reimplements 0x408100: zOpt::GetTextureMemoryForCurrentHwMode.
+ * Purpose: return the texture memory value for the active hardware mode.
+ */
 int GetTextureMemoryForCurrentHwMode() {
     return *(g_zOpt_HwMode != 0 ? ZOPT_TEXTURE_MEMORY_HW : ZOPT_TEXTURE_MEMORY_SW);
 }

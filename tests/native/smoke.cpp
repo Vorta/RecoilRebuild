@@ -367,6 +367,10 @@ extern "C" int zhud_options_panel_lighting_init_from_options_smoke(void);
 extern "C" int zhud_options_panel_lighting_sync_from_options_smoke(void);
 extern "C" int zhud_options_panel_perspective_init_from_options_smoke(void);
 extern "C" int zhud_options_panel_full_hud_init_from_options_smoke(void);
+extern "C" int zhud_options_panel_object_detail_init_from_options_smoke(void);
+extern "C" int zhud_options_panel_object_detail_sync_from_options_smoke(void);
+extern "C" int zhud_options_panel_texture_memory_init_from_options_smoke(void);
+extern "C" int zhud_options_panel_texture_memory_sync_from_options_smoke(void);
 extern "C" int zhud_options_panel_resolution_on_activate_smoke(void);
 extern "C" int zhud_options_dialog_constructor_smoke(void);
 extern "C" int zhud_options_dialog_destructor_core_smoke(void);
@@ -10622,6 +10626,14 @@ int main(int argc, char **argv) {
          zhud_options_panel_perspective_init_from_options_smoke},
         {"zhud_options_panel_full_hud_init_from_options_smoke",
          zhud_options_panel_full_hud_init_from_options_smoke},
+        {"zhud_options_panel_object_detail_init_from_options_smoke",
+         zhud_options_panel_object_detail_init_from_options_smoke},
+        {"zhud_options_panel_object_detail_sync_from_options_smoke",
+         zhud_options_panel_object_detail_sync_from_options_smoke},
+        {"zhud_options_panel_texture_memory_init_from_options_smoke",
+         zhud_options_panel_texture_memory_init_from_options_smoke},
+        {"zhud_options_panel_texture_memory_sync_from_options_smoke",
+         zhud_options_panel_texture_memory_sync_from_options_smoke},
         {"zhud_options_panel_resolution_on_activate_smoke",
          zhud_options_panel_resolution_on_activate_smoke},
         {"zhud_options_dialog_constructor_smoke", zhud_options_dialog_constructor_smoke},
