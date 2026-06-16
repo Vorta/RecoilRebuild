@@ -5770,9 +5770,9 @@ void __fastcall ApplyRecipeToPaletteVariant(
     int variantIndex,
     unsigned short *destColors
 ) {
-    int rBits = 0;
-    int gBits = 0;
-    int bBits = 0;
+    int rBits;
+    int gBits;
+    int bBits;
     zVideo::PixelPack_GetRgbBits(
         &rBits,
         &gBits,
@@ -5783,7 +5783,7 @@ void __fastcall ApplyRecipeToPaletteVariant(
     const float inverseVariantWeight = 1.0f - variantWeight;
 
     while (colorCount > 0) {
-        const unsigned short packed = *sourceColors++;
+        const int packed = *sourceColors;
         float r = 0.0f;
         float g = 0.0f;
         if (gBits == 5) {
@@ -5795,7 +5795,7 @@ void __fastcall ApplyRecipeToPaletteVariant(
         }
         const float b = (float)(packed & 0x001f) * 0.0322580636f;
 
-        zVideo_ColorRgbFloat color = {0};
+        zVideo_ColorRgbFloat color;
         color.r = ((recipe->color0R - r) * inverseVariantWeight * recipe->color0Strength +
                       (recipe->color1R - r) * variantWeight * recipe->color1Strength + r) *
                   255.0f;
@@ -5807,6 +5807,7 @@ void __fastcall ApplyRecipeToPaletteVariant(
                   255.0f;
 
         *destColors++ = zVid_PackColorRgbFloats(&color);
+        ++sourceColors;
         --colorCount;
     }
 }
