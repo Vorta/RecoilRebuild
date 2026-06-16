@@ -22365,7 +22365,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_lens_flare_draw_sample_stage_clipped;
     - Group: engine.zrndr;
     - Model: source-faithful;
-    - Blocker: tier S blocked: retained zRndr_LensFlare_DrawSampleStageClipped source now branch-assigns clip locals and uses unsigned active-region conversions, preserving functional behavior and improving VC5SP3 vc5_o2_ob0_md_facs COFF compare from 1108 to 1075 unmasked mismatches after 140 relocation-masked bytes and 5 trailing VC NOPs trimmed (BN 1310 bytes, VC5 1152 bytes). Functional target passes; remaining drift is early FPU expression ordering, stack/local layout, and clipping/submit setup control flow.
+    - Blocker: tier S blocked: retained zRndr_LensFlare_DrawSampleStageClipped source now stages clip rejection checks in BN-observed order, delays projected z writes until the hardware path, calls g_zVideo_pfnSubmitPolyRenderClass directly, and uses explicit quad/UV field assignments. Functional target passes. Same-session VC5SP3 vc5_o2_ob0_md_facs COFF compare now fails with 957 unmasked mismatches after 140 relocation-masked bytes and 4 trailing VC NOPs trimmed (BN 1310 bytes, VC5 1136 bytes), improved from the prior 1075-mismatch baseline. Remaining drift is early x87 expression ordering, stack/local layout, and clipping/submit setup control flow.
 
 - 0x49afb0:
   - [☑️] Reconstructed (Name: zRndr_LensFlare::DrawVisibleSample)
