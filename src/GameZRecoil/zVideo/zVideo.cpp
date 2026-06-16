@@ -9636,50 +9636,6 @@ bool PageUnlockBeforeRelease(
     return true;
 }
 
-/**
- * Original inline helper; no standalone retail function exists.
- * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
- * Purpose: issue a DirectDraw Blt fill, restore a lost surface, and retry.
- *
- * Original inline helper evidence: BN callers at 0x4a81a0, 0x4a8220, and
- * 0x4a82f0 each emit the same provider Blt loop, DDERR_SURFACELOST Restore
- * retry, zvid_dd.c ReportError call, and boolean success/failure branch shape
- * around caller-specific surfaces, flags, fill values, and source line numbers.
- */
-inline bool BltFillWithRestore(
-    IDirectDrawSurface3 *surface,
-    zVidRect32 *rect,
-    DWORD flags,
-    DDBLTFX *bltFx,
-    int reportLine
-) {
-retry:
-    HRESULT hresult = surface->Blt(
-        (RECT *)(rect),
-        0,
-        0,
-        flags,
-        bltFx
-    );
-    if (hresult == DD_OK) {
-        return true;
-    }
-
-    if (hresult == DDERR_SURFACELOST) {
-        hresult = surface->Restore();
-        if (hresult == DD_OK) {
-            goto retry;
-        }
-    }
-
-    ReportError(
-        (int)(hresult),
-        kZVideoDirectDrawSourceFile,
-        reportLine
-    );
-    return false;
-}
-
 } // namespace
 
 /**
@@ -10943,11 +10899,9 @@ void __fastcall ZBuffer_DepthFillRect(
             return;
         }
 
-        if (hresult != DDERR_SURFACELOST) {
-            break;
+        if (hresult == DDERR_SURFACELOST) {
+            hresult = g_zVideo_pZBufferSurface->Restore();
         }
-
-        hresult = g_zVideo_pZBufferSurface->Restore();
     }
 
     ReportError(
@@ -10976,27 +10930,58 @@ void __fastcall ClearScreenAndZBufferRect(
 
     if (g_zVideo_ClearScreenBufferEnabled != 0) {
         bltFx.dwFillColor = g_zVideo_ClearColorPacked16;
-        if (!BltFillWithRestore(
-                colorSurfaceState->surf,
-                dstRect,
+        HRESULT hresult = DD_OK;
+        while (hresult == DD_OK) {
+            hresult = colorSurfaceState->surf->Blt(
+                (RECT *)(dstRect),
+                0,
+                0,
                 DDBLT_COLORFILL | DDBLT_WAIT,
-                &bltFx,
-                0x267
-            )) {
-            return;
+                &bltFx
+            );
+            if (hresult == DD_OK) {
+                goto clearZBuffer;
+            }
+
+            if (hresult == DDERR_SURFACELOST) {
+                hresult = colorSurfaceState->surf->Restore();
+            }
         }
+        ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x267
+        );
+        return;
     }
 
+clearZBuffer:
     if (g_zVideo_pZBufferSurface == 0) {
         return;
     }
 
     bltFx.dwFillDepth = 0;
-    BltFillWithRestore(
-        g_zVideo_pZBufferSurface,
-        dstRect,
-        DDBLT_DEPTHFILL,
-        &bltFx,
+    HRESULT hresult = DD_OK;
+    while (hresult == DD_OK) {
+        hresult = g_zVideo_pZBufferSurface->Blt(
+            (RECT *)(dstRect),
+            0,
+            0,
+            DDBLT_DEPTHFILL,
+            &bltFx
+        );
+        if (hresult == DD_OK) {
+            return;
+        }
+
+        if (hresult == DDERR_SURFACELOST) {
+            hresult = g_zVideo_pZBufferSurface->Restore();
+        }
+    }
+
+    ReportError(
+        (int)(hresult),
+        kZVideoDirectDrawSourceFile,
         0x27f
     );
 }
@@ -11020,27 +11005,58 @@ void __fastcall ClearSwBackbufferAndZBufferRects(
 
     if (g_zVideo_ClearScreenBufferEnabled != 0) {
         bltFx.dwFillColor = g_zVideo_ClearColorPacked16;
-        if (!BltFillWithRestore(
-                g_zVideo_SwSurfaceState.surf,
-                colorRect,
+        HRESULT hresult = DD_OK;
+        while (hresult == DD_OK) {
+            hresult = g_zVideo_SwSurfaceState.surf->Blt(
+                (RECT *)(colorRect),
+                0,
+                0,
                 DDBLT_COLORFILL | DDBLT_WAIT,
-                &bltFx,
-                0x2a5
-            )) {
-            return;
+                &bltFx
+            );
+            if (hresult == DD_OK) {
+                goto clearZBuffer;
+            }
+
+            if (hresult == DDERR_SURFACELOST) {
+                hresult = g_zVideo_SwSurfaceState.surf->Restore();
+            }
         }
+        ReportError(
+            (int)(hresult),
+            kZVideoDirectDrawSourceFile,
+            0x2a5
+        );
+        return;
     }
 
+clearZBuffer:
     if (g_zVideo_pZBufferSurface == 0) {
         return;
     }
 
     bltFx.dwFillDepth = 0;
-    BltFillWithRestore(
-        g_zVideo_pZBufferSurface,
-        zRect,
-        DDBLT_DEPTHFILL,
-        &bltFx,
+    HRESULT hresult = DD_OK;
+    while (hresult == DD_OK) {
+        hresult = g_zVideo_pZBufferSurface->Blt(
+            (RECT *)(zRect),
+            0,
+            0,
+            DDBLT_DEPTHFILL,
+            &bltFx
+        );
+        if (hresult == DD_OK) {
+            return;
+        }
+
+        if (hresult == DDERR_SURFACELOST) {
+            hresult = g_zVideo_pZBufferSurface->Restore();
+        }
+    }
+
+    ReportError(
+        (int)(hresult),
+        kZVideoDirectDrawSourceFile,
         0x2bd
     );
 }
