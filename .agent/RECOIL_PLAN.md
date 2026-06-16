@@ -35712,26 +35712,26 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x40ccc0:
   - [☑️] Reconstructed (Name: HudUiOptionsPanel_MusicVolume::SyncFromOptions)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Reimplemented [C]
+    - Name: HudUiOptionsPanel_MusicVolume::SyncFromOptions;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_options_panel_music_volume_sync_from_options;
     - Group: ui.zhud;
     - Model: pending;
     - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x40cd00:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_MusicVolume::OnActivate)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Reimplemented [C]
+    - Name: HudUiOptionsPanel_MusicVolume::OnActivate;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_options_panel_music_volume_on_activate;
     - Group: ui.zhud;
     - Model: pending;
     - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt

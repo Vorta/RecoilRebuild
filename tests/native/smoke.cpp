@@ -60,6 +60,7 @@ extern "C" int zinput_poll_active_devices_smoke(void);
 extern "C" int zopt_fullscreen_accessors_smoke(void);
 extern "C" int zopt_section_accessor_smoke(void);
 extern "C" int zopt_view_rect_target_side_effects_smoke(void);
+extern "C" int zsnd_option_accessors_smoke(void);
 extern "C" int zsnd_stream_request_stop_if_active_smoke(void);
 extern "C" int zsnd_stream_mgr_ensure_init_smoke(void);
 extern "C" int zsnd_stream_mgr_recycle_finished_request_smoke(void);
@@ -377,6 +378,8 @@ extern "C" int zhud_options_panel_sound_quality_init_from_options_smoke(void);
 extern "C" int zhud_options_panel_sound_quality_sync_from_options_smoke(void);
 extern "C" int zhud_options_panel_sound_volume_sync_from_options_smoke(void);
 extern "C" int zhud_options_panel_sound_volume_on_activate_smoke(void);
+extern "C" int zhud_options_panel_music_volume_sync_from_options_smoke(void);
+extern "C" int zhud_options_panel_music_volume_on_activate_smoke(void);
 extern "C" int zhud_options_panel_resolution_sync_from_options_smoke(void);
 extern "C" int zhud_options_panel_resolution_on_activate_smoke(void);
 extern "C" int zhud_options_dialog_constructor_smoke(void);
@@ -10129,6 +10132,7 @@ int main(int argc, char **argv) {
         {"zopt_section_accessor_smoke", zopt_section_accessor_smoke},
         {"zopt_view_rect_target_side_effects_smoke",
          zopt_view_rect_target_side_effects_smoke},
+        {"zsnd_option_accessors_smoke", zsnd_option_accessors_smoke},
         {"zsnd_stream_request_stop_if_active_smoke", zsnd_stream_request_stop_if_active_smoke},
         {"zsnd_stream_mgr_ensure_init_smoke", zsnd_stream_mgr_ensure_init_smoke},
         {"zsnd_stream_mgr_recycle_finished_request_smoke",
@@ -10653,6 +10657,10 @@ int main(int argc, char **argv) {
          zhud_options_panel_sound_volume_sync_from_options_smoke},
         {"zhud_options_panel_sound_volume_on_activate_smoke",
          zhud_options_panel_sound_volume_on_activate_smoke},
+        {"zhud_options_panel_music_volume_sync_from_options_smoke",
+         zhud_options_panel_music_volume_sync_from_options_smoke},
+        {"zhud_options_panel_music_volume_on_activate_smoke",
+         zhud_options_panel_music_volume_on_activate_smoke},
         {"zhud_options_panel_resolution_sync_from_options_smoke",
          zhud_options_panel_resolution_sync_from_options_smoke},
         {"zhud_options_panel_resolution_on_activate_smoke",

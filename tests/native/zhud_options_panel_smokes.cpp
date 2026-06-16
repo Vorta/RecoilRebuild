@@ -2,8 +2,92 @@
 #include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zSound/zSound.h"
+#include <string.h>
 
 extern "C" unsigned int g_HudUi_InvalidateMask;
+
+static int g_musicVolumeGetVolumeCount;
+static unsigned short g_musicVolumePrimary;
+static unsigned short g_musicVolumeSecondary;
+static int g_musicVolumeSetVolumeCount;
+static unsigned short g_musicVolumeSetPrimary;
+static unsigned short g_musicVolumeSetSecondary;
+
+struct OptionsPanelFunctionPatch {
+    void *target;
+    unsigned char original[5];
+    int active;
+};
+
+static bool OptionsPanelFloatNear(
+    float actual,
+    float expected
+) {
+    const float diff = actual - expected;
+    return diff > -0.0001f && diff < 0.0001f;
+}
+
+static bool PatchOptionsPanelFunctionJump(
+    void *target,
+    void *replacement,
+    OptionsPanelFunctionPatch &patch
+) {
+    DWORD oldProtect = 0;
+    if (!VirtualProtect(target, sizeof(patch.original), PAGE_EXECUTE_READWRITE, &oldProtect)) {
+        return false;
+    }
+
+    patch.target = target;
+    memcpy(patch.original, target, sizeof(patch.original));
+
+    unsigned char *const bytes = (unsigned char *)(target);
+    bytes[0] = 0xe9;
+    *(int *)(bytes + 1) =
+        (int)((unsigned char *)(replacement) - ((unsigned char *)(target) + 5));
+
+    DWORD ignored = 0;
+    VirtualProtect(target, sizeof(patch.original), oldProtect, &ignored);
+    patch.active = 1;
+    return true;
+}
+
+static void RestoreOptionsPanelFunctionPatch(
+    OptionsPanelFunctionPatch &patch
+) {
+    if (patch.active == 0) {
+        return;
+    }
+
+    DWORD oldProtect = 0;
+    DWORD ignored = 0;
+    if (VirtualProtect(patch.target, sizeof(patch.original), PAGE_EXECUTE_READWRITE,
+                       &oldProtect)) {
+        memcpy(patch.target, patch.original, sizeof(patch.original));
+        VirtualProtect(patch.target, sizeof(patch.original), oldProtect, &ignored);
+    }
+
+    patch.active = 0;
+}
+
+static int __fastcall FakeMusicVolumeGetVolume(
+    unsigned short *primaryVolumeOut,
+    unsigned short *secondaryVolumeOut
+) {
+    ++g_musicVolumeGetVolumeCount;
+    *primaryVolumeOut = g_musicVolumePrimary;
+    *secondaryVolumeOut = g_musicVolumeSecondary;
+    return 1;
+}
+
+static int __fastcall FakeMusicVolumeSetVolume(
+    unsigned short primaryVolume,
+    unsigned short secondaryVolume
+) {
+    ++g_musicVolumeSetVolumeCount;
+    g_musicVolumeSetPrimary = primaryVolume;
+    g_musicVolumeSetSecondary = secondaryVolume;
+    return 1;
+}
 
 extern "C" int zhud_options_panel_lighting_init_from_options_smoke(void) {
     int swFlags = 0x10;
@@ -519,6 +603,95 @@ extern "C" int zhud_options_panel_sound_volume_on_activate_smoke(void) {
     soundVolumeWidget.DestructorCore();
     ZOPT_SOUND_VOLUME = oldSoundVolume;
     g_zSnd_GlobalVolumeScalePtr = oldGlobalVolumeScalePtr;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+
+    return activated ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_music_volume_sync_from_options_smoke(void) {
+    OptionsPanelFunctionPatch getVolumePatch = {0};
+    if (!PatchOptionsPanelFunctionJump(
+            (void *)(&zSndCd::GetVolume),
+            (void *)(&FakeMusicVolumeGetVolume),
+            getVolumePatch
+        )) {
+        return 1;
+    }
+
+    g_musicVolumeGetVolumeCount = 0;
+    g_musicVolumePrimary = 32768;
+    g_musicVolumeSecondary = 1234;
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+    g_HudUi_InvalidateMask = 0x80;
+
+    HudUiOptionsPanel_MusicVolume musicVolume;
+    musicVolume.Constructor();
+    musicVolume.flags = 0;
+    musicVolume.SyncFromOptions();
+
+    const float expected = (float)(g_musicVolumePrimary) * 1.52590219e-05f;
+    const bool synced =
+        g_musicVolumeGetVolumeCount == 1 &&
+        OptionsPanelFloatNear(musicVolume.normalizedValue, expected) &&
+        (musicVolume.flags & 0x80u) != 0;
+
+    musicVolume.DestructorCore();
+    RestoreOptionsPanelFunctionPatch(getVolumePatch);
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+
+    return synced ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_music_volume_on_activate_smoke(void) {
+    OptionsPanelFunctionPatch setVolumePatch = {0};
+    if (!PatchOptionsPanelFunctionJump(
+            (void *)(&zSndCd::SetVolume),
+            (void *)(&FakeMusicVolumeSetVolume),
+            setVolumePatch
+        )) {
+        return 1;
+    }
+
+    __declspec(align(4)) unsigned char ownerStorage[sizeof(HudUiBackground)] = {0};
+    HudUiBackground *const owner = (HudUiBackground *)(ownerStorage);
+    owner->mouseState.cursorClientX = 35;
+
+    zVidImagePartial baseImage = {0};
+    baseImage.width = 100;
+    zVidImagePartial fillImage = {0};
+    fillImage.width = 100;
+    fillImage.height = 8;
+
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+    g_HudUi_InvalidateMask = 0x80;
+    g_musicVolumeSetVolumeCount = 0;
+    g_musicVolumeSetPrimary = 0;
+    g_musicVolumeSetSecondary = 0;
+
+    HudUiOptionsPanel_MusicVolume musicVolume;
+    musicVolume.Constructor();
+    musicVolume.owner = owner;
+    musicVolume.x = 10;
+    musicVolume.image = &baseImage;
+    musicVolume.fillImage = &fillImage;
+    musicVolume.flags = 0;
+    musicVolume.OnActivate();
+
+    const unsigned short expectedVolume = (unsigned short)(0.25f * 65535.0f);
+    const bool activated =
+        OptionsPanelFloatNear(musicVolume.normalizedValue, 0.25f) &&
+        g_musicVolumeSetVolumeCount == 1 &&
+        g_musicVolumeSetPrimary == expectedVolume &&
+        g_musicVolumeSetSecondary == expectedVolume &&
+        musicVolume.fillRect.right == 25 &&
+        musicVolume.fillRect.bottom == 8 &&
+        (musicVolume.flags & 0x80u) != 0;
+
+    musicVolume.fillImage = 0;
+    musicVolume.previewImage = 0;
+    musicVolume.image = 0;
+    musicVolume.DestructorCore();
+    RestoreOptionsPanelFunctionPatch(setVolumePatch);
     g_HudUi_InvalidateMask = oldInvalidateMask;
 
     return activated ? 0 : 1;
