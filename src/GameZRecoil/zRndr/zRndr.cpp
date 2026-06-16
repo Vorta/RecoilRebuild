@@ -3798,46 +3798,6 @@ static inline unsigned short FogBlendMmxLane(
 }
 
 /**
- * Recovered inline helper: zRndr MMX fog quad blend
- * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e400 and 0x49e560 four-pixel fog blend bodies.
- * Purpose: Blend a four-pixel MMX-shaped fog quad and advance the fixed-point fog coordinate.
- */
-static inline unsigned int BlendMmxQuad(
-    unsigned short *pixels,
-    unsigned int fogCoordFixed24,
-    unsigned int fogCoordStepFixed24,
-    int redShift,
-    int redTermShift
-) {
-    unsigned int coord = fogCoordFixed24;
-    coord += fogCoordStepFixed24;
-    g_mmxFogFactors[0] = (unsigned short)(coord >> 16);
-    coord += fogCoordStepFixed24;
-    g_mmxFogFactors[1] = (unsigned short)(coord >> 16);
-    coord += fogCoordStepFixed24;
-    g_mmxFogFactors[2] = (unsigned short)(coord >> 16);
-    coord += fogCoordStepFixed24;
-    g_mmxFogFactors[3] = (unsigned short)(coord >> 16);
-
-    {
-        for (int lane = 0; lane < 4; ++lane) {
-            pixels[lane] =
-                FogBlendMmxLane(
-                    pixels[lane],
-                    g_mmxFogFactors[lane],
-                    lane,
-                    redShift,
-                    redTermShift
-                );
-        }
-    }
-
-    coord += fogCoordStepFixed24;
-    coord += fogCoordStepFixed24;
-    return coord;
-}
-
-/**
  * Recovered inline helper: zRndr span texture sample index
  * Original-source inline helper evidence: No standalone retail function is expected; observed in span callers including 0x49e6c0, 0x49b7e0, 0x49edc0, 0x49bbf0, and 0x49f180.
  * Purpose: Combine fixed-point texture U and masked V coordinates into the active texture sample index.
@@ -4113,13 +4073,50 @@ void __fastcall FogBlendSpan565Mmx(
     const int tailPixels = remaining & 3;
     unsigned int quadCount = (unsigned int)(remaining) >> 2;
     while (quadCount != 0) {
-        fogCoord = BlendMmxQuad(
-            cursor,
-            fogCoord,
-            fogStep,
-            11,
-            3
-        );
+        fogCoord += fogStep;
+        g_mmxFogFactors[0] = (unsigned short)(fogCoord >> 16);
+        fogCoord += fogStep;
+        g_mmxFogFactors[1] = (unsigned short)(fogCoord >> 16);
+        fogCoord += fogStep;
+        g_mmxFogFactors[2] = (unsigned short)(fogCoord >> 16);
+        fogCoord += fogStep;
+        g_mmxFogFactors[3] = (unsigned short)(fogCoord >> 16);
+
+        cursor[0] =
+            FogBlendMmxLane(
+                cursor[0],
+                g_mmxFogFactors[0],
+                0,
+                11,
+                3
+            );
+        cursor[1] =
+            FogBlendMmxLane(
+                cursor[1],
+                g_mmxFogFactors[1],
+                1,
+                11,
+                3
+            );
+        cursor[2] =
+            FogBlendMmxLane(
+                cursor[2],
+                g_mmxFogFactors[2],
+                2,
+                11,
+                3
+            );
+        cursor[3] =
+            FogBlendMmxLane(
+                cursor[3],
+                g_mmxFogFactors[3],
+                3,
+                11,
+                3
+            );
+
+        fogCoord += fogStep;
+        fogCoord += fogStep;
         cursor += 4;
         --quadCount;
     }
@@ -4169,13 +4166,50 @@ void __fastcall FogBlendSpan555Mmx(
     const int tailPixels = remaining & 3;
     unsigned int quadCount = (unsigned int)(remaining) >> 2;
     while (quadCount != 0) {
-        fogCoord = BlendMmxQuad(
-            cursor,
-            fogCoord,
-            fogStep,
-            10,
-            2
-        );
+        fogCoord += fogStep;
+        g_mmxFogFactors[0] = (unsigned short)(fogCoord >> 16);
+        fogCoord += fogStep;
+        g_mmxFogFactors[1] = (unsigned short)(fogCoord >> 16);
+        fogCoord += fogStep;
+        g_mmxFogFactors[2] = (unsigned short)(fogCoord >> 16);
+        fogCoord += fogStep;
+        g_mmxFogFactors[3] = (unsigned short)(fogCoord >> 16);
+
+        cursor[0] =
+            FogBlendMmxLane(
+                cursor[0],
+                g_mmxFogFactors[0],
+                0,
+                10,
+                2
+            );
+        cursor[1] =
+            FogBlendMmxLane(
+                cursor[1],
+                g_mmxFogFactors[1],
+                1,
+                10,
+                2
+            );
+        cursor[2] =
+            FogBlendMmxLane(
+                cursor[2],
+                g_mmxFogFactors[2],
+                2,
+                10,
+                2
+            );
+        cursor[3] =
+            FogBlendMmxLane(
+                cursor[3],
+                g_mmxFogFactors[3],
+                3,
+                10,
+                2
+            );
+
+        fogCoord += fogStep;
+        fogCoord += fogStep;
         cursor += 4;
         --quadCount;
     }
