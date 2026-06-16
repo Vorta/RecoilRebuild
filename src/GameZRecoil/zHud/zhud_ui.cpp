@@ -4990,7 +4990,10 @@ void HudUiElement::Invalidate() {
     flags |= g_HudUi_InvalidateMask;
 }
 
-// Reimplements 0x404cd0: HudUiElement::SetPos
+/**
+ * Reimplements 0x404cd0: HudUiElement::SetPos.
+ * Purpose: update both element position coordinates and invalidate the element.
+ */
 void HudUiElement::SetPos(
     int newX,
     int newY
@@ -5000,7 +5003,10 @@ void HudUiElement::SetPos(
     Invalidate();
 }
 
-// Reimplements 0x404cf0: HudUiElement::SetX
+/**
+ * Reimplements 0x404cf0: HudUiElement::SetX.
+ * Purpose: update the horizontal element position and invalidate the element.
+ */
 void HudUiElement::SetX(
     int newX
 ) {
@@ -5008,7 +5014,10 @@ void HudUiElement::SetX(
     Invalidate();
 }
 
-// Reimplements 0x404d00: HudUiElement::SetY
+/**
+ * Reimplements 0x404d00: HudUiElement::SetY.
+ * Purpose: update the vertical element position and invalidate the element.
+ */
 void HudUiElement::SetY(
     int newY
 ) {
