@@ -2394,8 +2394,11 @@ int __fastcall HostSendPkt0F_CraterFeature(
     return 1;
 }
 
-// Reimplements 0x4321b0: GameNet::UnregisterGameplayPacketHandlers
-// (D:\Proj\Battlesport\gamenet.cpp)
+/**
+ * Reimplements 0x4321b0: GameNet::UnregisterGameplayPacketHandlers
+ * Source: D:\Proj\Battlesport\gamenet.cpp
+ * Purpose: Remove all gameplay packet handlers registered with zNetwork.
+ */
 void UnregisterGameplayPacketHandlers() {
     zNetwork::UnregisterPacketHandler(
         6,
@@ -2563,8 +2566,11 @@ void RegisterGameplayHandlersAndOptCatalogCallbacks() {
     );
 }
 
-// Reimplements 0x4320f0: GameNet::ResetRemotePlayersAndSpawnLists
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x4320f0: GameNet::ResetRemotePlayersAndSpawnLists
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Clear remote player HUD rows and network spawn-point lists.
+ */
 void ResetRemotePlayersAndSpawnLists() {
     GameNetPlayerRow *row = g_GameNetPlayerRowHead;
     while (row != 0) {
@@ -2637,7 +2643,11 @@ void ResetHudTimerPanelNetStateLongCountdown() {
     g_GameNetOneLapLeftMessageShown = 0;
 }
 
-// Reimplements 0x433710: GameNet::SetStatusBitsFromFlags (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x433710: GameNet::SetStatusBitsFromFlags
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Decode host status flags into the cached allow-map and name-tag bits.
+ */
 void __fastcall SetStatusBitsFromFlags(
     unsigned int statusFlags
 ) {
@@ -2645,12 +2655,20 @@ void __fastcall SetStatusBitsFromFlags(
     g_GameNetStatus_NameTags = (statusFlags >> 1) & 1u;
 }
 
-// Reimplements 0x433730: GameNet::GetStatusBitAllowMaps (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x433730: GameNet::GetStatusBitAllowMaps
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Return the cached status bit controlling map availability.
+ */
 int GetStatusBitAllowMaps() {
     return g_GameNetStatus_AllowMaps;
 }
 
-// Reimplements 0x433740: GameNet::GetStatusBitNameTags (src/Battlesport/gamenet.cpp)
+/**
+ * Reimplements 0x433740: GameNet::GetStatusBitNameTags
+ * Source: src/Battlesport/gamenet.cpp
+ * Purpose: Return the cached status bit controlling remote player name tags.
+ */
 int GetStatusBitNameTags() {
     return g_GameNetStatus_NameTags;
 }
@@ -3371,8 +3389,11 @@ int __fastcall SendPkt0C_HudTimerStatusBits(
     );
 }
 
-// Reimplements 0x434460: GameNet::SendPkt14_HudTimerAndFlagsSync
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x434460: GameNet::SendPkt14_HudTimerAndFlagsSync
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Send the reliable packet that synchronizes HUD timer and status flags.
+ */
 int __fastcall SendPkt14_HudTimerAndFlagsSync(
     int eventCode,
     unsigned int statusFlags,
@@ -3432,8 +3453,11 @@ int __fastcall HandlePkt14_HudTimerAndFlagsSync(
     return 1;
 }
 
-// Reimplements 0x434550: GameNet::HostUpdateSessionDescStatusFields
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x434550: GameNet::HostUpdateSessionDescStatusFields
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Let the host mirror timer and status fields into the session descriptor.
+ */
 int __fastcall HostUpdateSessionDescStatusFields(
     int eventCode,
     int auxParam,

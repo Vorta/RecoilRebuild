@@ -1417,6 +1417,10 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: CString::ConstructorDefault)
   - [✅] Provider-boundary (Kind: CRT/MFC/framework; Name: CString_CtorDefault; Origin: CRT/MFC provider; File: external; Target: mfc_cstring_default_ctor_provider; Group: provider.imports)
 
+- 0x4c5bc4:
+  - [✅] Reconstructed (Name: CString::Empty)
+  - [✅] Provider-boundary (Kind: MFC42; Name: CString::Empty; Origin: MFC42 import; BN ImportedFunctionSymbol CString::Empty(CString* this); File: external; Target: pending; Group: provider.imports)
+
 - 0x4c5b76:
   - [✅] Reconstructed (Name: operator new(uint32_t))
   - [✅] Provider-boundary (Kind: CRT operator new import thunk; Name: operator new(uint32_t); Origin: Binary Ninja marks 0x4c5b76 as ImportedFunctionSymbol ??2@YAPAXI@Z; assembly is a single import jmp through IAT dword [0x4cc2ac], with no authored Recoil body.; File: external; Target: pending; Group: provider.imports)
@@ -32816,41 +32820,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x433710:
   - [✅] Reconstructed (Name: GameNet::SetStatusBitsFromFlags)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: GameNet; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::SetStatusBitsFromFlags;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_set_status_bits_from_flags;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x433730:
   - [✅] Reconstructed (Name: GameNet::GetStatusBitAllowMaps)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: GameNet; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::GetStatusBitAllowMaps;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_get_status_bit_allow_maps;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x433740:
   - [✅] Reconstructed (Name: GameNet::GetStatusBitNameTags)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: GameNet; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::GetStatusBitNameTags;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_get_status_bit_name_tags;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x433750:
   - [☑️] Reconstructed (Name: GameNet::SendPkt0B_ChatMessage)
@@ -33956,8 +33960,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: HudSensorTracker::InitMissionIdAndFlags)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: HUD; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudSensorTracker::InitMissionIdAndFlags;
     - File: src/Battlesport/HudSensorTracker.cpp;
     - Target: hud_sensor_init_mission_id_and_flags;
@@ -34306,15 +34310,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x419470:
   - [✅] Reconstructed (Name: HudSensorTracker::SetRuntimeTimerSecAndGoalValue)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: HUD; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: HUD; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudSensorTracker::SetRuntimeTimerSecAndGoalValue;
     - File: src/Battlesport/HudSensorTracker.cpp;
     - Target: hud_sensor_tracker_set_runtime_timer_sec_and_goal_value;
     - Group: ui.hud_runtime;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x419490:
   - [☑️] Reconstructed (Name: HudSensorTracker::Shutdown)

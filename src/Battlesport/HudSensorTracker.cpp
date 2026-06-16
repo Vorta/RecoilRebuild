@@ -2789,8 +2789,11 @@ int HudSensorTracker::FindAndHighlightFirstIncompleteObjective() {
     return objectiveIndex;
 }
 
-// Reimplements 0x419470: HudSensorTracker::SetRuntimeTimerSecAndGoalValue
-// (D:\Proj\Battlesport\HudSensor.cpp)
+/**
+ * Reimplements 0x419470: HudSensorTracker::SetRuntimeTimerSecAndGoalValue
+ * Source: D:\Proj\Battlesport\HudSensor.cpp
+ * Purpose: Store the runtime timer seconds payload and mission goal value.
+ */
 void HudSensorTracker::SetRuntimeTimerSecAndGoalValue(
     int timerSecRaw,
     int goalValue

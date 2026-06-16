@@ -151,6 +151,11 @@ extern "C" int znetwork_player_record_accessors_smoke(void);
 extern "C" int znetwork_alloc_free_player_color_index_smoke(void);
 extern "C" int znetwork_apply_pkt01_player_color_assignments_smoke(void);
 extern "C" int znetwork_shutdown_session_runtime_smoke(void);
+extern "C" int gamenet_find_player_row_and_status_bits_smoke(void);
+extern "C" int gamenet_send_pkt14_hud_timer_and_flags_sync_smoke(void);
+extern "C" int gamenet_host_update_session_status_fields_smoke(void);
+extern "C" int gamenet_unregister_gameplay_packet_handlers_smoke(void);
+extern "C" int gamenet_reset_remote_players_and_spawn_lists_smoke(void);
 extern "C" int zfmv_script_init_null_path_smoke(void);
 extern "C" int zfmv_script_reset_smoke(void);
 extern "C" int zfmv_script_cleanup_smoke(void);
@@ -606,6 +611,7 @@ extern "C" int zturret_shutdown_leaf_smoke(void);
 extern "C" int zgame_return_only_stub_smoke(void);
 extern "C" int zopt_network_enabled_accessor_smoke(void);
 extern "C" int hud_sensor_mission_identity_smoke(void);
+extern "C" int hud_sensor_tracker_set_runtime_timer_sec_and_goal_value_smoke(void);
 extern "C" int hud_sensor_tracker_get_objective_briefing_strings_smoke(void);
 extern "C" int zclass_type_list_alloc_and_insert_smoke(void);
 extern "C" int zclass_alloc_node_from_free_list_smoke(void);
@@ -10401,6 +10407,16 @@ int main(int argc, char **argv) {
         {"znetwork_apply_pkt01_player_color_assignments_smoke",
          znetwork_apply_pkt01_player_color_assignments_smoke},
         {"znetwork_shutdown_session_runtime_smoke", znetwork_shutdown_session_runtime_smoke},
+        {"gamenet_find_player_row_and_status_bits_smoke",
+         gamenet_find_player_row_and_status_bits_smoke},
+        {"gamenet_send_pkt14_hud_timer_and_flags_sync_smoke",
+         gamenet_send_pkt14_hud_timer_and_flags_sync_smoke},
+        {"gamenet_host_update_session_status_fields_smoke",
+         gamenet_host_update_session_status_fields_smoke},
+        {"gamenet_unregister_gameplay_packet_handlers_smoke",
+         gamenet_unregister_gameplay_packet_handlers_smoke},
+        {"gamenet_reset_remote_players_and_spawn_lists_smoke",
+         gamenet_reset_remote_players_and_spawn_lists_smoke},
         {"zfmv_script_init_null_path_smoke", zfmv_script_init_null_path_smoke},
         {"zfmv_script_reset_smoke", zfmv_script_reset_smoke},
         {"zfmv_script_cleanup_smoke", zfmv_script_cleanup_smoke},
@@ -11137,6 +11153,8 @@ int main(int argc, char **argv) {
         {"zgame_return_only_stub_smoke", zgame_return_only_stub_smoke},
         {"zopt_network_enabled_accessor_smoke", zopt_network_enabled_accessor_smoke},
         {"hud_sensor_mission_identity_smoke", hud_sensor_mission_identity_smoke},
+        {"hud_sensor_tracker_set_runtime_timer_sec_and_goal_value_smoke",
+         hud_sensor_tracker_set_runtime_timer_sec_and_goal_value_smoke},
         {"hud_sensor_tracker_get_objective_briefing_strings_smoke",
          hud_sensor_tracker_get_objective_briefing_strings_smoke},
         {"zclass_type_list_alloc_and_insert_smoke",

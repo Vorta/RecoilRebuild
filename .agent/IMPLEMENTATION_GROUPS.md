@@ -264,3 +264,44 @@ Active queue sections:
 - Next action:
   - Resolve the launch dependency blockers, then resolve HudUiNetGameSetupPanel
     source-owner and per-method data gates for the tier C methods.
+
+### Group: GameNet launch/session-sync owner-data cleanup
+
+- Anchor: 0x433710 GameNet::SetStatusBitsFromFlags, with launch-path
+  dependencies 0x434460, 0x434550, 0x4321b0, 0x4320f0, 0x419470, and
+  0x417770.
+- Queue: active owner/data cleanup for the GameNet launch/session-start
+  dependency cluster under HudUiNetGameSetupPanel.
+- Reason: HudUiNetGameSetupPanel_LaunchButton now routes past zOpt and
+  zNetwork session-runtime blockers; the current lowest visible authored
+  blocker is GameNet/HUD launch status, packet, handler, row-list, and
+  mission-timer state.
+- Current evidence:
+  - Source-owner mapper classifies the GameNet launch blockers as a narrow
+    `GameNet` source-file/subsystem owner in `src/Battlesport/GameNet.cpp` and
+    `GameNet.h`, not standalone leaves. The status-bit subowner
+    0x433710/0x433730/0x433740 is accepted at tier B after functional,
+    source-owner, and data-symbol evidence.
+  - Data classifier reports 0x433710 touches `g_GameNetStatus_AllowMaps` and
+    `g_GameNetStatus_NameTags`; 0x434460 touches
+    `g_NetPkt14_HudTimerAndFlagsSyncBuf`; 0x4321b0 touches
+    `g_GameNet_HandlersRegistered`; 0x4320f0 touches GameNet player-row and
+    spawn-point list globals and reads `g_HudUiTopMessageStack`.
+  - 0x419470 and 0x417770 are accepted at tier B after no-authored-globals
+    review; 0x417770 also exposed and resolved a missing MFC42
+    provider-boundary entry for `CString::Empty` at 0x4c5bc4.
+  - Minimal linked native smokes now cover the existing GameNet/HUD launch
+    functional targets. Ignored local VC5 data-symbol target
+    `gamenet_launch_session_globals` passes for the GameNet status, packet,
+    handler, row-list, and spawn-list globals with zero unmasked mismatches.
+- Current blockers:
+  - 0x434460, 0x434550, 0x4321b0, and 0x4320f0 remain owner/data blocked even
+    though their functional targets pass; 0x434460 currently appears as the
+    lowest visible blocker under HudUiNetGameSetupPanel_LaunchButton.
+  - Route zNetwork send/session-desc helpers and HUD row-removal/container
+    dependencies as separate owner/data blockers; do not fold them into the
+    GameNet owner.
+- Next action:
+  - Start with `python tools/recoil.py status 0x434460 --lane binary` and
+    route through the zNetwork::SendPacketReliable owner/data blocker before
+    promoting the GameNet packet-14 sender.

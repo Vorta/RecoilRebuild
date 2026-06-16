@@ -11,7 +11,6 @@ Entries: 3563
 
 These original-source labels differ only by case on Windows; confirm placement against Binary Ninja before adding new code.
 
-- `Battlesport/GameNet.cpp`, `Battlesport/gamenet.cpp`
 - `Battlesport/Hud.cpp`, `Battlesport/hud.cpp`
 - `Battlesport/HudUi.cpp`, `Battlesport/hudui.cpp`
 - `Battlesport/Net.cpp`, `Battlesport/net.cpp`
@@ -28,12 +27,12 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x403530` `AINet::FindNodeByIndex` -> `src/Battlesport/ainet.cpp:390`
 - `0x403550` `AINet::ResolveNeighborLinksAndBuildProbeFans` -> `src/Battlesport/ainet.cpp:448`
 - `0x403620` `AINetPathProbeFan::InitFromSegment` -> `src/Battlesport/ainet.cpp:409`
-- `0x414390` `GameNet::RefreshPlayerListMenu` -> `src/Battlesport/GameNet.cpp:2843`
+- `0x414390` `GameNet::RefreshPlayerListMenu` -> `src/Battlesport/GameNet.cpp:2861`
 - `0x4143d0` `GameNet::BeginChatCompose` -> `src/Battlesport/GameNet.cpp:1584`
 - `0x414550` `GameNet::ChatComposeKeyCallback` -> `src/Battlesport/GameNet.cpp:1568`
 - `0x414590` `GameNet::EndChatComposeAndSend` -> `src/Battlesport/GameNet.cpp:1620`
-- `0x433000` `GameNet::SendPkt08_PlayerKillEvent` -> `src/Battlesport/GameNet.cpp:3050`
-- `0x433060` `GameNet::HandlePkt08_PlayerKillEvent` -> `src/Battlesport/GameNet.cpp:3010`
+- `0x433000` `GameNet::SendPkt08_PlayerKillEvent` -> `src/Battlesport/GameNet.cpp:3068`
+- `0x433060` `GameNet::HandlePkt08_PlayerKillEvent` -> `src/Battlesport/GameNet.cpp:3028`
 - `0x4340c0` `OptCatalog::AltGunDispatchAllocRuntimeGateCallback` -> `src/GameZRecoil/zWeapon/OptCatalog.c:1286`
 - `0x434130` `GameNet::SendPkt07_AltGunDispatch` -> `src/Battlesport/GameNet.cpp:2304`
 
@@ -92,14 +91,6 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x41ca30` `NetSessionConfigDialog::OnInitDialog` -> `src/Battlesport/GameNet.cpp:1408`
 - `0x41cb50` `NetSessionConfigDialog::OnDestroy` -> `src/Battlesport/GameNet.cpp:1484`
 - `0x41cb90` `NetSessionConfigDialog::OnMapChanged` -> `src/Battlesport/GameNet.cpp:1503`
-- `0x4320f0` `GameNet::ResetRemotePlayersAndSpawnLists` -> `src/Battlesport/GameNet.cpp:2566`
-- `0x433710` `GameNet::SetStatusBitsFromFlags` -> `src/Battlesport/GameNet.cpp:2640`
-- `0x434460` `GameNet::SendPkt14_HudTimerAndFlagsSync` -> `src/Battlesport/GameNet.cpp:3374`
-- `0x434550` `GameNet::HostUpdateSessionDescStatusFields` -> `src/Battlesport/GameNet.cpp:3435`
-
-## Battlesport/gamenet.cpp
-
-- `0x4321b0` `GameNet::UnregisterGameplayPacketHandlers` -> `src/Battlesport/GameNet.cpp:2397`
 
 ## Battlesport/hud.cpp
 
@@ -170,10 +161,10 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x416290` `HudRectI::IsCornerOutcode` -> `src/Battlesport/HudSensorTracker.cpp:413`
 - `0x4162b0` `HudRectI::SegmentIntersectsEdge` -> `src/Battlesport/HudSensorTracker.cpp:421`
 - `0x416390` `HudGeom2D::ClassifyPointAgainstSegment` -> `src/Battlesport/HudSensorTracker.cpp:192`
-- `0x4184e0` `HudSensorTracker::AdvanceObjectiveState` -> `src/Battlesport/HudSensorTracker.cpp:2853`
-- `0x418620` `HudSensorTracker::SetObjectiveReviewVisible` -> `src/Battlesport/HudSensorTracker.cpp:2802`
-- `0x418760` `HudSensorTracker::SetObjectivePanelVisible` -> `src/Battlesport/HudSensorTracker.cpp:2997`
-- `0x419380` `HudSensorTracker::OnObjectiveReadSoundEvent` -> `src/Battlesport/HudSensorTracker.cpp:2838`
+- `0x4184e0` `HudSensorTracker::AdvanceObjectiveState` -> `src/Battlesport/HudSensorTracker.cpp:2856`
+- `0x418620` `HudSensorTracker::SetObjectiveReviewVisible` -> `src/Battlesport/HudSensorTracker.cpp:2805`
+- `0x418760` `HudSensorTracker::SetObjectivePanelVisible` -> `src/Battlesport/HudSensorTracker.cpp:3000`
+- `0x419380` `HudSensorTracker::OnObjectiveReadSoundEvent` -> `src/Battlesport/HudSensorTracker.cpp:2841`
 - `0x42bf40` `HudUi::PlayPowerupSfx` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17458`
 - `0x4348b0` `HudUiSaveLoadGameNameInput::OnActivate` -> `src/Battlesport/RecoilApp.cpp:343`
 - `0x4348f0` `HudUiSaveLoadGameNameInput::OnRawKeyboardEvent` -> `src/Battlesport/RecoilApp.cpp:354`
@@ -290,10 +281,6 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x40eab0` `HudScoreboard::SetScaleAndRebuild` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17097`
 - `0x40eae0` `HudScoreboard::DispatchSetScale` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17109`
 
-## Battlesport/HudSensor.cpp
-
-- `0x419470` `HudSensorTracker::SetRuntimeTimerSecAndGoalValue` -> `src/Battlesport/HudSensorTracker.cpp:2792`
-
 ## Battlesport/HudSensorTracker.cpp
 
 - `0x416650` `HudSensorTracker::InitNoBounds` -> `src/Battlesport/HudSensorTracker.cpp:861`
@@ -302,7 +289,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## Battlesport/HudUi.cpp
 
-- `0x414330` `GameNet::ShowPlayerKillMessage` -> `src/Battlesport/GameNet.cpp:2718`
+- `0x414330` `GameNet::ShowPlayerKillMessage` -> `src/Battlesport/GameNet.cpp:2736`
 - `0x4143a0` `HudUiMgr::IsLocalPlayerFirstInStatsList` -> `src/GameZRecoil/zHud/zhud_ui.cpp:3450`
 - `0x4143b0` `HudUi::RefreshScoreboardEntryRow` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17514`
 - `0x4143c0` `HudUi::RemoveScoreboardEntryRow` -> `src/GameZRecoil/zHud/zhud_ui.cpp:17521`
@@ -554,18 +541,18 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x417380` `HudSensorTracker::ShutdownGlobal` -> `src/Battlesport/HudSensorTracker.cpp:896`
 - `0x417390` `HudSensorTracker::Constructor` -> `src/Battlesport/HudSensorTracker.cpp:868`
 - `0x4174f0` `HudSensorTracker::ApplyMissionDataAndReload` -> `src/Battlesport/HudSensorTracker.cpp:1779`
-- `0x417690` `HudSensorTracker::ZarMission_RestoreCallback` -> `src/Battlesport/HudSensorTracker.cpp:3330`
-- `0x4176d0` `HudSensorTracker::ZarMissionLate_RestoreCallback` -> `src/Battlesport/HudSensorTracker.cpp:3362`
+- `0x417690` `HudSensorTracker::ZarMission_RestoreCallback` -> `src/Battlesport/HudSensorTracker.cpp:3333`
+- `0x4176d0` `HudSensorTracker::ZarMissionLate_RestoreCallback` -> `src/Battlesport/HudSensorTracker.cpp:3365`
 - `0x4176f0` `HudSensorTracker::ResetMissionState` -> `src/Battlesport/HudSensorTracker.cpp:1706`
 - `0x417810` `HudSensorTracker::LoadMissionCoreResources` -> `src/Battlesport/HudSensorTracker.cpp:1918`
 - `0x417a00` `HudSensorTracker::InitMissionGameplaySystems` -> `src/Battlesport/HudSensorTracker.cpp:1994`
-- `0x417ca0` `HudSensorTracker::OnObjectiveCommand` -> `src/Battlesport/HudSensorTracker.cpp:2900`
+- `0x417ca0` `HudSensorTracker::OnObjectiveCommand` -> `src/Battlesport/HudSensorTracker.cpp:2903`
 - `0x417d40` `HudSensorTracker::ShutdownMissionGameplaySystems` -> `src/Battlesport/HudSensorTracker.cpp:2114`
-- `0x418730` `HudSensorTracker::Command_ToggleObjectivePanel` -> `src/Battlesport/HudSensorTracker.cpp:2990`
-- `0x4188f0` `HudSensorTracker::Command_ShowObjectivePickupInfo` -> `src/Battlesport/HudSensorTracker.cpp:3081`
-- `0x418940` `HudSensorTracker::ShowObjectivePickupInfo` -> `src/Battlesport/HudSensorTracker.cpp:3096`
-- `0x418c70` `HudSensorTracker::ResetHudForMissionStart` -> `src/Battlesport/HudSensorTracker.cpp:2945`
-- `0x418d40` `HudSensorTracker::UpdateObjectiveFlow` -> `src/Battlesport/HudSensorTracker.cpp:3210`
+- `0x418730` `HudSensorTracker::Command_ToggleObjectivePanel` -> `src/Battlesport/HudSensorTracker.cpp:2993`
+- `0x4188f0` `HudSensorTracker::Command_ShowObjectivePickupInfo` -> `src/Battlesport/HudSensorTracker.cpp:3084`
+- `0x418940` `HudSensorTracker::ShowObjectivePickupInfo` -> `src/Battlesport/HudSensorTracker.cpp:3099`
+- `0x418c70` `HudSensorTracker::ResetHudForMissionStart` -> `src/Battlesport/HudSensorTracker.cpp:2948`
+- `0x418d40` `HudSensorTracker::UpdateObjectiveFlow` -> `src/Battlesport/HudSensorTracker.cpp:3213`
 - `0x418fb0` `HudSensorTracker::SaveAndQueueMissionState` -> `src/Battlesport/HudSensorTracker.cpp:2699`
 - `0x419050` `HudSensorTracker::LoadMissionWeatherFx` -> `src/Battlesport/HudSensorTracker.cpp:2199`
 - `0x4193c0` `HudSensorTracker::LoadRaceCheckpointMeta` -> `src/Battlesport/HudSensorTracker.cpp:2598`
@@ -944,9 +931,9 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 - `0x434240` `OptCatalog::SendPkt0A_RemoveRuntimeRelay` -> `src/GameZRecoil/zWeapon/OptCatalog.c:1323`
 - `0x4342d0` `OptCatalog::HandlePkt0A_RemoveRuntimeRelay` -> `src/GameZRecoil/zWeapon/OptCatalog.c:1355`
-- `0x434370` `GameNet::SendPkt13_EffectAnimActivationRecord` -> `src/Battlesport/GameNet.cpp:3280`
-- `0x4343f0` `GameNet::HandlePkt13_EffectAnimActivationRecord` -> `src/Battlesport/GameNet.cpp:3324`
-- `0x434430` `GameNet::SendAllPkt13_EffectAnimActivationRecords` -> `src/Battlesport/GameNet.cpp:3311`
+- `0x434370` `GameNet::SendPkt13_EffectAnimActivationRecord` -> `src/Battlesport/GameNet.cpp:3298`
+- `0x4343f0` `GameNet::HandlePkt13_EffectAnimActivationRecord` -> `src/Battlesport/GameNet.cpp:3342`
+- `0x434430` `GameNet::SendAllPkt13_EffectAnimActivationRecords` -> `src/Battlesport/GameNet.cpp:3329`
 
 ## GameZRecoil/mission.cpp
 
@@ -1007,34 +994,33 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## GameZRecoil/RecoilApp/GameNet.cpp
 
-- `0x431c50` `GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks` -> `src/Battlesport/GameNet.cpp:2463`
+- `0x431c50` `GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks` -> `src/Battlesport/GameNet.cpp:2466`
 - `0x432300` `GameNet::TickLocalPlayerPkt06ReplicationAndHudTimer` -> `src/Battlesport/GameNet.cpp:1819`
 - `0x4327e0` `GameNet::HandlePkt06_PlayerStateSnapshot` -> `src/Battlesport/GameNet.cpp:2231`
 - `0x432830` `GameNet::FindPlayerRowByKey` -> `src/Battlesport/GameNet.cpp:1663`
 - `0x432860` `GameNet::SpawnRemotePlayerFromPkt06_PlayerStateSnapshot` -> `src/Battlesport/GameNet.cpp:2075`
 - `0x432ae0` `GameNet::ApplyPkt06_PlayerStateSnapshotToRow` -> `src/Battlesport/GameNet.cpp:1984`
-- `0x432e70` `GameNet::ReassignPlayerColorsAndRefreshRows` -> `src/Battlesport/GameNet.cpp:2745`
-- `0x432ed0` `GameNet::HandlePkt03_RemoveRemotePlayer` -> `src/Battlesport/GameNet.cpp:2771`
-- `0x4330f0` `GameNet::SendPkt0E_PlayerLapProgress` -> `src/Battlesport/GameNet.cpp:3074`
-- `0x433170` `GameNet::HandlePkt0E_PlayerLapProgress` -> `src/Battlesport/GameNet.cpp:3247`
+- `0x432e70` `GameNet::ReassignPlayerColorsAndRefreshRows` -> `src/Battlesport/GameNet.cpp:2763`
+- `0x432ed0` `GameNet::HandlePkt03_RemoveRemotePlayer` -> `src/Battlesport/GameNet.cpp:2789`
+- `0x4330f0` `GameNet::SendPkt0E_PlayerLapProgress` -> `src/Battlesport/GameNet.cpp:3092`
+- `0x433170` `GameNet::HandlePkt0E_PlayerLapProgress` -> `src/Battlesport/GameNet.cpp:3265`
 - `0x433200` `GameNet::AreAllPlayersAtLapTarget` -> `src/Battlesport/GameNet.cpp:1723`
-- `0x433250` `GameNet::HandlePkt0D_HudTimerPanelState` -> `src/Battlesport/GameNet.cpp:2960`
-- `0x433310` `GameNet::SendPkt0D_HudTimerPanelState` -> `src/Battlesport/GameNet.cpp:3210`
-- `0x433390` `GameNet::SendPkt0C_HudTimerStatusBits` -> `src/Battlesport/GameNet.cpp:3341`
-- `0x433410` `GameNet::HandlePkt0C_HudTimerStatusBits` -> `src/Battlesport/GameNet.cpp:2850`
-- `0x4334f0` `GameNet::SendPkt09_PlayerScoreboardSnapshot` -> `src/Battlesport/GameNet.cpp:3101`
-- `0x4335b0` `GameNet::HandlePkt09_PlayerScoreboardSnapshot` -> `src/Battlesport/GameNet.cpp:3145`
+- `0x433250` `GameNet::HandlePkt0D_HudTimerPanelState` -> `src/Battlesport/GameNet.cpp:2978`
+- `0x433310` `GameNet::SendPkt0D_HudTimerPanelState` -> `src/Battlesport/GameNet.cpp:3228`
+- `0x433390` `GameNet::SendPkt0C_HudTimerStatusBits` -> `src/Battlesport/GameNet.cpp:3359`
+- `0x433410` `GameNet::HandlePkt0C_HudTimerStatusBits` -> `src/Battlesport/GameNet.cpp:2868`
+- `0x4334f0` `GameNet::SendPkt09_PlayerScoreboardSnapshot` -> `src/Battlesport/GameNet.cpp:3119`
+- `0x4335b0` `GameNet::HandlePkt09_PlayerScoreboardSnapshot` -> `src/Battlesport/GameNet.cpp:3163`
 - `0x4336f0` `GameNet::GetLocalPlayerColorIndexOrZero` -> `src/Battlesport/GameNet.cpp:1679`
-- `0x433730` `GameNet::GetStatusBitAllowMaps` -> `src/Battlesport/GameNet.cpp:2648`
-- `0x433750` `GameNet::SendPkt0B_ChatMessage` -> `src/Battlesport/GameNet.cpp:2930`
-- `0x4337e0` `GameNet::HandlePkt0B_ChatMessage` -> `src/Battlesport/GameNet.cpp:2902`
+- `0x433750` `GameNet::SendPkt0B_ChatMessage` -> `src/Battlesport/GameNet.cpp:2948`
+- `0x4337e0` `GameNet::HandlePkt0B_ChatMessage` -> `src/Battlesport/GameNet.cpp:2920`
 - `0x433840` `GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed` -> `src/Battlesport/GameNet.cpp:1742`
 - `0x433c30` `GameNet::HostSendPkt0F_CraterFeature` -> `src/Battlesport/GameNet.cpp:2378`
 - `0x433ca0` `GameNet::SendPkt10_QSandEvent` -> `src/Battlesport/GameNet.cpp:2329`
 - `0x433de0` `GameNet::HostSendPkt10_QSandFeature` -> `src/Battlesport/GameNet.cpp:2361`
 - `0x434190` `GameNet::HandlePkt07_AltGunDispatch` -> `src/Battlesport/GameNet.cpp:2264`
 - `0x434230` `GameNet::AltGunDispatchNoOpCallback` -> `src/Battlesport/GameNet.cpp:2320`
-- `0x4344b0` `GameNet::HandlePkt14_HudTimerAndFlagsSync` -> `src/Battlesport/GameNet.cpp:3390`
+- `0x4344b0` `GameNet::HandlePkt14_HudTimerAndFlagsSync` -> `src/Battlesport/GameNet.cpp:3411`
 
 ## GameZRecoil/RecoilApp/RecoilApp.cpp
 
@@ -1880,8 +1866,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## src/Battlesport/gamenet.cpp
 
-- `0x432d60` `GameNet::UpdateRemotePlayerHudWidgetScreenPos` -> `src/Battlesport/GameNet.cpp:2658`
-- `0x433740` `GameNet::GetStatusBitNameTags` -> `src/Battlesport/GameNet.cpp:2653`
+- `0x432d60` `GameNet::UpdateRemotePlayerHudWidgetScreenPos` -> `src/Battlesport/GameNet.cpp:2676`
 
 ## src/Battlesport/pickup.cpp
 
@@ -2292,8 +2277,8 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x415aa0` `zFMV_Action::~zFMV_Action` -> `src/GameZRecoil/zFMV/fmv_script.cpp:152`
 - `0x417430` `HudSensorTracker::WriteMissionDataSection` -> `src/Battlesport/HudSensorTracker.cpp:1746`
 - `0x417640` `HudSensorTracker::RegisterMissionSectionHandlers` -> `src/Battlesport/HudSensorTracker.cpp:1852`
-- `0x417680` `HudSensorTracker::ZarMission_SaveCallback` -> `src/Battlesport/HudSensorTracker.cpp:3322`
-- `0x4176b0` `HudSensorTracker::ZarMissionLate_SaveCallback` -> `src/Battlesport/HudSensorTracker.cpp:3348`
+- `0x417680` `HudSensorTracker::ZarMission_SaveCallback` -> `src/Battlesport/HudSensorTracker.cpp:3325`
+- `0x4176b0` `HudSensorTracker::ZarMissionLate_SaveCallback` -> `src/Battlesport/HudSensorTracker.cpp:3351`
 - `0x417770` `HudSensorTracker::InitMissionIdAndFlags` -> `src/Battlesport/HudSensorTracker.cpp:1870`
 - `0x4177a0` `HudSensorTracker::SetMissionId` -> `src/Battlesport/HudSensorTracker.cpp:1897`
 - `0x4177d0` `HudSensorTracker::SetZbdPath` -> `src/Battlesport/HudSensorTracker.cpp:1884`
@@ -2301,6 +2286,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x417ee0` `HudSensorTracker::UnloadObjectives` -> `src/Battlesport/HudSensorTracker.cpp:2320`
 - `0x417f60` `HudSensorObjectiveSlot::Reset` -> `src/Battlesport/HudSensorTracker.cpp:1733`
 - `0x4186f0` `HudSensorTracker::GetObjectiveBriefingStringsAndImageRef` -> `src/Battlesport/HudSensorTracker.cpp:2715`
+- `0x419470` `HudSensorTracker::SetRuntimeTimerSecAndGoalValue` -> `src/Battlesport/HudSensorTracker.cpp:2793`
 - `0x419aa0` `HudUiNetGameSetupPanel::Constructor` -> `src/Battlesport/HudUiNetGameSetup.cpp:173`
 - `0x41a160` `HudUiNetGameSetupPanel_CancelButton::OnActivate` -> `src/Battlesport/HudUiNetGameSetup.cpp:477`
 - `0x41a190` `HudUiNumericTextInput::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14872`
@@ -2462,14 +2448,21 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x431ad0` `CZRecoilFrame::OnMenuSelectA3D` -> `src/Battlesport/CZRecoilFrame.cpp:1098`
 - `0x431ae0` `CZRecoilFrame::OnUpdateA3DCmdUI` -> `src/Battlesport/CZRecoilFrame.cpp:1103`
 - `0x431b10` `CZRecoilFrame::OnSize` -> `src/Battlesport/CZRecoilFrame.cpp:1111`
-- `0x431bf0` `GameNetSpawnPointList::InitGlobals` -> `src/Battlesport/GameNet.cpp:3461`
-- `0x431c20` `GameNetPlayerRowList::Reset` -> `src/Battlesport/GameNet.cpp:3471`
+- `0x431bf0` `GameNetSpawnPointList::InitGlobals` -> `src/Battlesport/GameNet.cpp:3485`
+- `0x431c20` `GameNetPlayerRowList::Reset` -> `src/Battlesport/GameNet.cpp:3495`
 - `0x431dd0` `Net::InitFromZrd` -> `src/Battlesport/GameNet.cpp:620`
-- `0x4320b0` `GameNet::WaitForLocalPlayerColorIndex` -> `src/Battlesport/GameNet.cpp:2602`
-- `0x4322a0` `GameNet::ResetHudTimerPanelNetStateLongCountdown` -> `src/Battlesport/GameNet.cpp:2622`
+- `0x4320b0` `GameNet::WaitForLocalPlayerColorIndex` -> `src/Battlesport/GameNet.cpp:2608`
+- `0x4320f0` `GameNet::ResetRemotePlayersAndSpawnLists` -> `src/Battlesport/GameNet.cpp:2570`
+- `0x4321b0` `GameNet::UnregisterGameplayPacketHandlers` -> `src/Battlesport/GameNet.cpp:2398`
+- `0x4322a0` `GameNet::ResetHudTimerPanelNetStateLongCountdown` -> `src/Battlesport/GameNet.cpp:2628`
+- `0x433710` `GameNet::SetStatusBitsFromFlags` -> `src/Battlesport/GameNet.cpp:2647`
+- `0x433730` `GameNet::GetStatusBitAllowMaps` -> `src/Battlesport/GameNet.cpp:2659`
+- `0x433740` `GameNet::GetStatusBitNameTags` -> `src/Battlesport/GameNet.cpp:2668`
 - `0x433a40` `HudTimerPanelNetState::ClearTailFlagsLocal` -> `src/Battlesport/GameNet.cpp:610`
 - `0x433a50` `GameNetPlayerRow::ApplyPlayerColorTint` -> `src/Battlesport/GameNet.cpp:584`
-- `0x4345a0` `GameNetPlayerRowList::AppendNewRow` -> `src/Battlesport/GameNet.cpp:3479`
+- `0x434460` `GameNet::SendPkt14_HudTimerAndFlagsSync` -> `src/Battlesport/GameNet.cpp:3393`
+- `0x434550` `GameNet::HostUpdateSessionDescStatusFields` -> `src/Battlesport/GameNet.cpp:3457`
+- `0x4345a0` `GameNetPlayerRowList::AppendNewRow` -> `src/Battlesport/GameNet.cpp:3503`
 - `0x434650` `GameNetPlayerRow::DestroyEmbeddedPanel` -> `src/Battlesport/GameNet.cpp:605`
 - `0x436e00` `zTurret_Runtime::Shutdown` -> `src/GameZRecoil/zTurret/zTurret.cpp:1296`
 - `0x437aa0` `zTurret_System::ResetIterationState` -> `src/GameZRecoil/zTurret/zTurret.cpp:1316`
