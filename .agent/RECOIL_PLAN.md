@@ -19068,7 +19068,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zvid_palette_remap_build_palette_variant;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked: local VC5SP3 target zvid_palette_remap_build_palette_variant now covers production source and fails with 302 unmasked mismatches after 108 relocation-masked bytes and 5 trimmed VC NOP bytes (BN size 420, VC5 size 400). Source now matches BN's no-image-null texture-directory scans and inline recipe-count palette byte expression, improving the initial local compare from 303 mismatches. Remaining drift is function entry/prologue plus register/stack allocation around loop/index storage; functional zvid_palette_remap_build_palette_variant passes.
 
 - 0x46e8d0:
   - [✅] Reconstructed (Name: zVid_PaletteRemap::BuildAllRecipeVariantsForPalette)
@@ -21395,7 +21395,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zvid_pack_color_rgb;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: Tier S verification blocked by callee/caller prototype-codegen tension: same-session BN assembly confirms retail zVid_PackColorRGB consumes red/green from CL/DL low bytes, saves red in BL, packs green via g_zVideo_PixelPack.gMaskShifted and red via rMaskShifted, then shifts the stack blue byte by bShiftTo8; current VC5SP3 zvid_pack_color_rgb compare remains 69 unmasked mismatches after 20 relocation-masked bytes and 6 trimmed VC NOP bytes (BN 71, VC5 96). Same-session zfmv_action_constructors verification keeps accepted caller 0x4633c0 at zero unmasked mismatches with the current byte-parameter fastcall contract, so do not widen the public signature unless the caller and callee can be solved together.
+    - Blocker: Tier S verification blocked by byte fastcall codegen shape: current zvid_pack_color_rgb VC5SP3 compare remains 69 unmasked mismatches after 20 relocation-masked bytes and 6 trimmed VC NOP bytes (BN 71, VC5 96). Source-worker probes found unsigned int red/green improves callee to 50 mismatches but regresses accepted caller 0x4633c0 to 2 mismatches; signed char keeps caller passing and improves callee to 51 but introduces movsx/sign-extension instead of BN low-byte zero-extension. Keep the current unsigned-char fastcall contract until caller and callee can be solved source-faithfully together.
 
 - 0x4a6d40:
   - [✅] Reconstructed (Name: zVid::PackColorRgbFloats)
@@ -22183,7 +22183,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_fill_span565_solid;
     - Group: engine.zrndr;
     - Model: source-faithful;
-    - Blocker: tier S blocked: current VC5SP3 COFF refresh for zrndr_fill_span565_solid fails with 93 unmasked mismatches after 4 relocation-masked bytes and 12 trimmed VC NOP bytes, BN size 134 and VC5 size 144. Functional smoke still passes from prior/current target coverage. Fresh asm diff shows the same arithmetic register-ordering and BN partial-register green-mask shape drift around the 5:6:5 solid span loop; same-session verification supersedes the stale 87-mismatch blocker text. Prior green-scaled-before-red, redAdjusted update-local, raw green/red delta lifetime, split green shift/mask, final-expression-order, and green-before-red contribution-order probes were byte-neutral or worse and remain reverted.
+    - Blocker: tier S blocked: current VC5SP3 COFF refresh for zrndr_fill_span565_solid fails with 87 unmasked mismatches after 4 relocation-masked bytes and 12 trimmed VC NOP bytes, BN size 134 and VC5 size 144. Functional smoke passes; source-worker probes for delayed green multiply, final expression order, and split green/red mask locals were byte-neutral at 87 mismatches, while prior green/red ordering and lifetime probes were neutral or worse. Remaining drift is cursor/register allocation and green-first partial-register channel shape in the 5:6:5 solid span loop.
 
 - 0x499930:
   - [☑️] Reconstructed (Name: zRndr::SetPaletteRemapKey)

@@ -84,8 +84,14 @@ available even when no groups are active.
   - Same-session zVideo palette-remap owner/data slice accepted 0x46e720 to
     tier B. Current BN evidence confirmed the recipe count/array, variant
     table count/array, image texture-directory table, CRT `realloc` provider,
-    and accepted palette-variant helpers; the zRndr palette setters 0x499930,
-    0x499990, and 0x499a00 remain the next palette bridge blockers.
+    and accepted palette-variant helpers. Follow-up local VC5SP3 coverage now
+    compares 0x46e720 from production source; source matches BN's no-image-null
+    texture-directory scans and inline recipe-count palette byte expression,
+    improving the initial local compare from 303 to 302 unmasked mismatches
+    after 108 relocation-masked bytes and 5 trimmed VC NOPs. Tier S remains
+    blocked by prologue/register/stack allocation drift. The zRndr palette
+    setters 0x499930, 0x499990, and 0x499a00 remain the next palette bridge
+    blockers.
   - Same-session zRndr palette bridge owner/data slice accepted 0x499930,
     0x499990, and 0x499a00 to tier B in the zRndr span source-file cluster.
     Current BN evidence confirmed active remap-key globals, the accepted zVideo
@@ -1527,16 +1533,13 @@ available even when no groups are active.
     inactive. `verify functional 0x40bb80` passes, and `verify vc5 0x40bb80`
     reports zero unmasked bytes after 8 relocation-masked bytes and 2 trimmed
     VC NOPs.
-  - Current HudCmdDialog dependency cleanup is auditing
-    0x4b8100 HudUiCycleSelectorWidget::ApplyFontStyleForEntry as a tier-S
-    blocker for 0x40a5b0 HudCmdDialog::Constructor and downstream
-    HudCmdDialogState entries. BN shows a branchless font-style valid-marker
-    mask and a fixed SetFont/field-copy order; restoring the explicit
-    `if (style->validMarker == 0) style = 0;` source check improves the
-    same-session VC5SP3 compare from 146 to 8 unmasked mismatches with no
-    relocation masking, 8 trimmed VC NOP bytes, BN size 248, and VC5 size
-    256. The remaining drift is local to the valid-style selection sequence
-    plus final alignment/register scheduling, so 0x4b8100 remains below S.
+  - HudCmdDialog dependency cleanup closed 0x4b8100
+    HudUiCycleSelectorWidget::ApplyFontStyleForEntry as a tier-S blocker for
+    0x40a5b0 HudCmdDialog::Constructor and downstream HudCmdDialogState
+    entries. BN shows a branchless font-style valid-marker mask and fixed
+    SetFont/field-copy order; current `verify functional 0x4b8100` passes and
+    `verify vc5 0x4b8100` reports zero unmasked mismatches after 8 trimmed VC
+    NOP bytes (BN size 248, VC5 size 256).
   - Same-session HudUiPanel::ConstructorDefault cleanup promoted 0x4ba740 to
     tier S. The constructor now has the required provenance docblock, copies
     the zeroed wrap rect into textRect, and omits the shadow-offset stores that

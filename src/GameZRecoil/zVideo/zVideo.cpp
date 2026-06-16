@@ -5841,17 +5841,18 @@ extern "C" int __fastcall zVid_PaletteRemap_BuildPaletteVariant(
     ));
     g_zVid_PaletteRemapRecipes[g_zVid_PaletteRemapRecipeCount - 1] = *recipe;
 
-    const size_t expandedPaletteBytes =
-        zVidPaletteRemapTableBytesForRecipeCount(g_zVid_PaletteRemapRecipeCount);
     for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
         zVidImagePartial *image = g_zImage_TexDirEntries[i].image;
-        if (image == 0 || image->paletteMetaPacked == 0 || (image->formatFlagsPacked & 0x10) != 0) {
+        if (image->paletteMetaPacked == 0 || (image->formatFlagsPacked & 0x10) != 0) {
             continue;
         }
 
         image->palette = realloc(
             image->palette,
-            expandedPaletteBytes
+            (size_t)(
+                (g_zVid_PaletteRemapRecipeCount * kZVidPaletteRemapColorsPerRecipe) +
+                kZVidPaletteColorCount
+            ) * sizeof(unsigned short)
         );
         unsigned short *palette = (unsigned short *)(image->palette);
         {
@@ -5877,7 +5878,10 @@ extern "C" int __fastcall zVid_PaletteRemap_BuildPaletteVariant(
         g_zVid_PaletteRemapVariantTables[tableIndex] =
             (unsigned short *)(realloc(
                 oldTable,
-                expandedPaletteBytes
+                (size_t)(
+                    (g_zVid_PaletteRemapRecipeCount * kZVidPaletteRemapColorsPerRecipe) +
+                    kZVidPaletteColorCount
+                ) * sizeof(unsigned short)
             ));
         unsigned short *table = g_zVid_PaletteRemapVariantTables[tableIndex];
 
@@ -5900,7 +5904,7 @@ extern "C" int __fastcall zVid_PaletteRemap_BuildPaletteVariant(
 
         for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
             zVidImagePartial *image = g_zImage_TexDirEntries[i].image;
-            if (image != 0 && image->palette == oldTable) {
+            if (image->palette == oldTable) {
                 image->palette = table;
             }
         }
