@@ -1425,6 +1425,10 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: operator new(uint32_t))
   - [✅] Provider-boundary (Kind: CRT operator new import thunk; Name: operator new(uint32_t); Origin: Binary Ninja marks 0x4c5b76 as ImportedFunctionSymbol ??2@YAPAXI@Z; assembly is a single import jmp through IAT dword [0x4cc2ac], with no authored Recoil body.; File: external; Target: pending; Group: provider.imports)
 
+- 0x4cc59c:
+  - [✅] Reconstructed (Name: strstr)
+  - [✅] Provider-boundary (Kind: CRT import pointer; Name: strstr; Origin: BN data symbol strstr @ 0x4cc59c is a const function pointer in .rdata/IAT; Player::CreateFromNamesAtPose at 0x421cbc calls dword [strstr] directly, resolving to external CRT strstr with no authored Recoil body.; File: external; Target: pending; Group: provider.imports)
+
 - 0x4c6350:
   - [✅] Reconstructed (Name: CRT::SetDefaultPrecision)
   - [✅] Provider-boundary (Kind: CRT/MFC/framework; Name: CRT_SetDefaultPrecision; Origin: CRT/MFC provider; File: external; Target: pending; Group: provider.imports)
@@ -29107,15 +29111,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x421a40:
   - [☑️] Reconstructed (Name: Player::CloneType6NodeFromTemplateAndRename)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: Player; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/Battlesport/player.cpp Player bootstrap/save-state node creation; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Player::CloneType6NodeFromTemplateAndRename;
     - File: src/Battlesport/player.cpp;
     - Target: player_clone_type6_node_from_template_and_rename;
     - Group: battlesport.player;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x421ab0:
   - [☑️] Reconstructed (Name: Player::CreateFromNamesAtPose)
@@ -29141,7 +29145,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: player_create_from_names_at_pose_get_state;
     - Group: battlesport.player;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: wrapper remains blocked on 0x421ab0 Player::CreateFromNamesAtPose owner/data gates
 
 - 0x422170:
   - [☑️] Reconstructed (Name: Player::LoadMasterCommonDataFromNode)

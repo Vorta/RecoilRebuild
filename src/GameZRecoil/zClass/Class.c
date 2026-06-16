@@ -2700,9 +2700,9 @@ namespace zClass_Node {
     // Reimplements 0x4b25a0: zClass_Node::SetDamageHitCallback
     int __fastcall
     SetDamageHitCallback(
-        void *callback,
+        void *context,
         zClass_NodePartial *node,
-        void *context
+        void *callback
     ){
         OptCatalogDamageHandlerPartial *handler = DamageHandlerRef(node);
         if (handler == 0) {

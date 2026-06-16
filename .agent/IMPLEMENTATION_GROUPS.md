@@ -318,11 +318,15 @@ Active queue sections:
     `sprintf`, adding `zClass_NodePartial::name` layout asserts, documenting
     `ReportNullNode` helper provenance plus accessor docblocks, and wiring the
     existing metadata accessor smoke into `recoil_native_smoke`.
+  - The Player clone helper dependency 0x421a40 is accepted at tier B after
+    correcting the Player bootstrap source shape, adding Player bootstrap
+    provenance docblocks, adding a CRT `strstr` provider-boundary entry, wiring
+    the existing Player bootstrap smokes into `recoil_native_smoke`, and
+    confirming the direct data touch is only `g_Player_RuntimeDiScene`.
   - Route zNetwork send/session-desc helpers and HUD row-removal/container
     dependencies as separate owner/data blockers; do not fold them into the
     GameNet owner.
 - Next action:
   - Refresh the launch-panel frontier from the HudUiNetGameSetupPanel group,
-    then follow the lowest visible GameNet blocker from 0x432860's direct
-    frontier, currently 0x421ea0
-    `Player::CreateFromNamesAtPoseGetState`.
+    then follow the lowest visible blocker from the Player bootstrap frontier,
+    currently 0x4383e0 `zUtil_SaveGameStateList::Constructor`.

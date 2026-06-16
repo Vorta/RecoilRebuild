@@ -30,8 +30,8 @@ extern "C" {
 extern int g_Player_HudCounterValue;
 extern zUtil_SaveGameState *g_PlayerSaveStateListHead;
 extern zUtil_SaveGameState *g_PlayerSaveStateListTail;
-extern int g_PlayerSaveStateListAux;
 extern int g_PlayerSaveStateCount;
+extern int g_PlayerSaveStateListAux;
 extern zVec3 *g_Player_LocalFxOffsetWorldPtr;
 extern zUtil_SaveGameState *g_LocalPlayerSaveState;
 extern zUtil_SaveGameState *g_Player2SaveState;
@@ -820,8 +820,8 @@ int __fastcall BuildSupportPointsFromModel(
 void __fastcall BindModalStateFromMasterModalData(
     zUtil_SaveGameState *saveState,
     PlayerModalState *modalState,
-    const char *modalName,
-    const char *objectName
+    const char *objectName,
+    const char *modalName
 );
 void __fastcall InitSpawnStateFromPrimaryModalData(
     zUtil_SaveGameState *saveState

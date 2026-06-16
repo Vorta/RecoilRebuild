@@ -19,6 +19,7 @@ add_executable(recoil_native_smoke
     zreader_tests.cpp
     znetwork_identity_smokes.cpp
     gamenet_launch_smokes.cpp
+    player_bootstrap_smokes.cpp
     fmv_script_core_smokes.cpp
     fmv_action_manifest_smokes.cpp
     briefing_runtime_smokes.cpp

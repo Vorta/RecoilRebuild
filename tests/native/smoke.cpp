@@ -161,6 +161,8 @@ extern "C" int gamenet_reset_remote_players_and_spawn_lists_smoke(void);
 extern "C" int gamenet_apply_pkt06_player_state_snapshot_smoke(void);
 extern "C" int gamenet_handle_pkt06_player_state_snapshot_smoke(void);
 extern "C" int gamenet_spawn_remote_player_missing_template_smoke(void);
+extern "C" int player_clone_type6_node_from_template_and_rename_smoke(void);
+extern "C" int player_create_from_names_at_pose_smoke(void);
 extern "C" int zfmv_script_init_null_path_smoke(void);
 extern "C" int zfmv_script_reset_smoke(void);
 extern "C" int zfmv_script_cleanup_smoke(void);
@@ -10437,6 +10439,10 @@ int main(int argc, char **argv) {
          gamenet_handle_pkt06_player_state_snapshot_smoke},
         {"gamenet_spawn_remote_player_missing_template_smoke",
          gamenet_spawn_remote_player_missing_template_smoke},
+        {"player_clone_type6_node_from_template_and_rename_smoke",
+         player_clone_type6_node_from_template_and_rename_smoke},
+        {"player_create_from_names_at_pose_smoke",
+         player_create_from_names_at_pose_smoke},
         {"zfmv_script_init_null_path_smoke", zfmv_script_init_null_path_smoke},
         {"zfmv_script_reset_smoke", zfmv_script_reset_smoke},
         {"zfmv_script_cleanup_smoke", zfmv_script_cleanup_smoke},

@@ -3582,8 +3582,8 @@ extern "C" int player_bind_modal_state_from_master_modal_data_smoke(void) {
     g_PlayerMasterModalDataListAux = 1;
     g_PlayerMasterModalDataCount = 2;
 
-    Player::BindModalStateFromMasterModalData(&saveState, &modalState, "track",
-                                              "tank_object");
+    Player::BindModalStateFromMasterModalData(&saveState, &modalState, "tank_object",
+                                              "track");
 
     int result = 0;
     if (modalState.masterModalData != &modalData ||

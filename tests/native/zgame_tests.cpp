@@ -16841,7 +16841,7 @@ extern "C" int zclass_damage_handler_smoke() {
 
     void *hitCallback = reinterpret_cast<void *>(0x11111111);
     void *hitContext = reinterpret_cast<void *>(0x22222222);
-    if (zClass_Node::SetDamageHitCallback(hitCallback, &rootSlot.node, hitContext) != 0 ||
+    if (zClass_Node::SetDamageHitCallback(hitContext, &rootSlot.node, hitCallback) != 0 ||
         rootSlot.damageHandler == nullptr || childSlot.damageHandler != rootSlot.damageHandler ||
         grandchildSlot.damageHandler != rootSlot.damageHandler ||
         (rootSlot.node.flags & 0x40) == 0) {
