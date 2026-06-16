@@ -940,7 +940,11 @@ namespace zClass {
         return 0;
     }
 
-    // Reimplements 0x44ecf0: zClass::FindByTypeAndName
+    /**
+     * Reimplements 0x44ecf0: zClass::FindByTypeAndName.
+     *
+     * Purpose: find the first node in a type-list bucket whose name matches.
+     */
     zClass_NodePartial *__fastcall
     FindByTypeAndName(
         int bucket,

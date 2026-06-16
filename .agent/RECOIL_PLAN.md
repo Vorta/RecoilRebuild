@@ -4460,15 +4460,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x447c60:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetActive)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: zClass_Class; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::gwNodeSetActive;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_set_active;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x447d20:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetFlag16)
@@ -5474,15 +5474,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x44ecf0:
   - [☑️] Reconstructed (Name: zClass::FindByTypeAndName)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass_TypeList; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass::FindByTypeAndName;
     - File: src/GameZRecoil/zClass/List.c;
     - Target: zclass_find_by_type_and_name;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x44ed50:
   - [✅] Reconstructed (Name: zClass_TypeList::GetBucketHead)
@@ -8243,15 +8243,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x452c60:
   - [✅] Reconstructed (Name: zClass_Sound::gwSoundSetActive)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: zClass_Sound; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Sound::gwSoundSetActive;
     - File: src/GameZRecoil/zClass/Sound.c;
     - Target: zclass_sound_set_active;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x452d00:
   - [✅] Reconstructed (Name: zClass_Sound::gwSoundSetPosition)
@@ -25753,15 +25753,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4081a0:
   - [✅] Reconstructed (Name: zOpt::SetGraphicsFlagsForCurrentHwMode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGame; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zOpt; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zOpt::SetGraphicsFlagsForCurrentHwMode;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_set_graphics_flags_for_current_hw_mode;
     - Group: engine.zgame;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4081f0:
   - [✅] Reconstructed (Name: zOpt::GetGraphicsFlagsForCurrentHwMode)
@@ -35478,13 +35478,13 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x40c9e0:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Lighting::SyncFromOptions)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Reimplemented [C]
+    - Name: HudUiOptionsPanel_Lighting::SyncFromOptions;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_options_panel_lighting_sync_from_options;
     - Group: ui.zhud;
     - Model: pending;
     - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
@@ -35751,13 +35751,13 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x40ce80:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Resolution::OnActivate)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Reimplemented [C]
+    - Name: HudUiOptionsPanel_Resolution::OnActivate;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_options_panel_resolution_on_activate;
     - Group: ui.zhud;
     - Model: pending;
     - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
@@ -44900,15 +44900,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x415670:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::SetDeferredVideoModeIndex)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: source-file; Parent: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_SetDeferredVideoModeIndex.cpp; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: RecoilStateMainMenuTransition; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: RecoilStateMainMenuTransition::SetDeferredVideoModeIndex;
     - File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_SetDeferredVideoModeIndex.cpp;
     - Target: recoil_state_main_menu_transition_set_deferred_video_mode_index;
     - Group: app.main_menu_transition;
-    - Model: pending;
-    - Blocker: source owner and data gates pending; standalone owner marker is not accepted
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x415190:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::ScalarDeletingDestructor)

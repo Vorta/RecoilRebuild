@@ -427,6 +427,39 @@ extern "C" int zclass_node_priority_smoke() {
     return zClass_Class::gwNodeSetPriority(nullptr, 0) == 5 ? 0 : 4;
 }
 
+extern "C" int zclass_find_by_name_and_filtered_iter_smoke() {
+    ResetTypeListsForTest();
+
+    zClass_NodePartial first{};
+    zClass_NodePartial second{};
+    zClass_TypeListLink firstLink{};
+    zClass_TypeListLink secondLink{};
+
+    std::strcpy(first.name, "sunlight");
+    std::strcpy(second.name, "sunlight");
+    first.classId = 6;
+    second.classId = 6;
+    firstLink.node = &first;
+    firstLink.next = &secondLink;
+    secondLink.node = &second;
+    secondLink.prev = &firstLink;
+    zClass_TypeList::Head(6) = &firstLink;
+    zClass_TypeList::Tail(6) = &secondLink;
+
+    zClass_NodePartial *const found =
+        zClass::FindByTypeAndName(6, "sunlight");
+    zClass_NodePartial *const missing =
+        zClass::FindByTypeAndName(6, "moonlight");
+
+    zClass_TypeList::Head(6) = nullptr;
+    zClass_TypeList::Tail(6) = nullptr;
+    zClass_NodePartial *const empty =
+        zClass::FindByTypeAndName(6, "sunlight");
+
+    FreeTypeListsForTest();
+    return found == &first && missing == nullptr && empty == nullptr ? 0 : 1;
+}
+
 extern "C" int zclass_sound_leaf_smoke() {
     ResetTypeListsForTest();
 

@@ -1619,7 +1619,12 @@ int GetGraphicsFlagsForCurrentHwMode() {
     return *(g_zOpt_HwMode != 0 ? ZOPT_GFX_FLAGS_HW : ZOPT_GFX_FLAGS_SW);
 }
 
-// Reimplements 0x4081a0: zOpt::SetGraphicsFlagsForCurrentHwMode
+/**
+ * Reimplements 0x4081a0: zOpt::SetGraphicsFlagsForCurrentHwMode.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: store the graphics option bitmask for the active hardware mode and
+ * mirror its lighting bit to the sunlight node.
+ */
 void __fastcall SetGraphicsFlagsForCurrentHwMode(
     int flags
 ) {

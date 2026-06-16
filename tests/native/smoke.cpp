@@ -211,6 +211,7 @@ extern "C" int recoil_app_mission_fmv_state_destructor_smoke(void);
 extern "C" int recoil_app_initialize_display_failure_smoke(void);
 extern "C" int recoil_app_start_engine_and_queue_startup_state_smoke(void);
 extern "C" int recoil_state_main_menu_transition_constructor_smoke(void);
+extern "C" int recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke(void);
 extern "C" int recoil_state_cheat_code_constructor_smoke(void);
 extern "C" int recoil_state_controls_lifecycle_smoke(void);
 extern "C" int recoil_state_controls_activation_smoke(void);
@@ -363,6 +364,8 @@ extern "C" int recoil_app_mp_exit_dialog_state_on_deactivate_smoke(void);
 extern "C" int recoil_app_mp_exit_dialog_state_on_try_become_current_smoke(void);
 extern "C" int recoil_app_mp_exit_dialog_state_on_update_should_quit_smoke(void);
 extern "C" int zhud_options_panel_lighting_init_from_options_smoke(void);
+extern "C" int zhud_options_panel_lighting_sync_from_options_smoke(void);
+extern "C" int zhud_options_panel_resolution_on_activate_smoke(void);
 extern "C" int zhud_options_dialog_constructor_smoke(void);
 extern "C" int zhud_options_dialog_destructor_core_smoke(void);
 extern "C" int zhud_options_dialog_scalar_deleting_destructor_smoke(void);
@@ -573,6 +576,7 @@ extern "C" int zclass_object3d_reset_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_init_smoke(void);
 extern "C" int zclass_node_action_callback_smoke(void);
 extern "C" int zclass_node_priority_smoke(void);
+extern "C" int zclass_find_by_name_and_filtered_iter_smoke(void);
 extern "C" int zclass_sound_leaf_smoke(void);
 extern "C" int zclass_sound_get_position_smoke(void);
 extern "C" int zloc_message_lookup_failure_smoke(void);
@@ -10353,6 +10357,8 @@ int main(int argc, char **argv) {
          recoil_app_start_engine_and_queue_startup_state_smoke},
         {"recoil_state_main_menu_transition_constructor_smoke",
          recoil_state_main_menu_transition_constructor_smoke},
+        {"recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke",
+         recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke},
         {"recoil_state_cheat_code_constructor_smoke",
          recoil_state_cheat_code_constructor_smoke},
         {"recoil_state_controls_lifecycle_smoke",
@@ -10608,6 +10614,10 @@ int main(int argc, char **argv) {
          recoil_app_mp_exit_dialog_state_on_update_should_quit_smoke},
         {"zhud_options_panel_lighting_init_from_options_smoke",
          zhud_options_panel_lighting_init_from_options_smoke},
+        {"zhud_options_panel_lighting_sync_from_options_smoke",
+         zhud_options_panel_lighting_sync_from_options_smoke},
+        {"zhud_options_panel_resolution_on_activate_smoke",
+         zhud_options_panel_resolution_on_activate_smoke},
         {"zhud_options_dialog_constructor_smoke", zhud_options_dialog_constructor_smoke},
         {"zhud_options_dialog_destructor_core_smoke",
          zhud_options_dialog_destructor_core_smoke},
@@ -10917,6 +10927,8 @@ int main(int argc, char **argv) {
         {"zclass_object3d_init_smoke", zclass_object3d_init_smoke},
         {"zclass_node_action_callback_smoke", zclass_node_action_callback_smoke},
         {"zclass_node_priority_smoke", zclass_node_priority_smoke},
+        {"zclass_find_by_name_and_filtered_iter_smoke",
+         zclass_find_by_name_and_filtered_iter_smoke},
         {"zclass_sound_leaf_smoke", zclass_sound_leaf_smoke},
         {"zclass_sound_get_position_smoke", zclass_sound_get_position_smoke},
         {"zloc_message_lookup_failure_smoke", zloc_message_lookup_failure_smoke},

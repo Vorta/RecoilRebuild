@@ -45,6 +45,19 @@ extern "C" int recoil_state_main_menu_transition_constructor_smoke(void) {
     return 0;
 }
 
+extern "C" int recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke(void) {
+    g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex = ZVID_MODE_INVALID_COMPLEMENT;
+
+    RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(
+        static_cast<zVidModeIndex>(5)
+    );
+
+    return g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex ==
+                   static_cast<zVidModeIndex>(5)
+               ? 0
+               : 1;
+}
+
 extern "C" int hud_ui_new_game_panel_constructor_cluster_smoke(void) {
     zOptionEntryPartial *const oldPlayerNameOption = ZOPT_PLAYER_NAME;
     int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
