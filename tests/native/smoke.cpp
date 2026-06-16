@@ -156,6 +156,7 @@ extern "C" int znetwork_shutdown_session_runtime_smoke(void);
 extern "C" int gamenet_find_player_row_and_status_bits_smoke(void);
 extern "C" int gamenet_send_pkt14_hud_timer_and_flags_sync_smoke(void);
 extern "C" int gamenet_host_update_session_status_fields_smoke(void);
+extern "C" int gamenet_register_gameplay_handlers_and_callbacks_smoke(void);
 extern "C" int gamenet_unregister_gameplay_packet_handlers_smoke(void);
 extern "C" int gamenet_reset_remote_players_and_spawn_lists_smoke(void);
 extern "C" int gamenet_player_row_append_smoke(void);
@@ -10442,6 +10443,8 @@ int main(int argc, char **argv) {
          gamenet_send_pkt14_hud_timer_and_flags_sync_smoke},
         {"gamenet_host_update_session_status_fields_smoke",
          gamenet_host_update_session_status_fields_smoke},
+        {"gamenet_register_gameplay_handlers_and_callbacks_smoke",
+         gamenet_register_gameplay_handlers_and_callbacks_smoke},
         {"gamenet_unregister_gameplay_packet_handlers_smoke",
          gamenet_unregister_gameplay_packet_handlers_smoke},
         {"gamenet_reset_remote_players_and_spawn_lists_smoke",

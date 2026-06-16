@@ -4,6 +4,7 @@
 #include "Battlesport/pickup.h"
 #include "GameZRecoil/include/OptCatalog.h"
 #include "GameZRecoil/zDEClient/zdec.h"
+#include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zUtil/zSaveGame.h"
 #include "GameZRecoil/zVideo/zVideo.h"
@@ -290,6 +291,91 @@ extern "C" int gamenet_unregister_gameplay_packet_handlers_smoke(void) {
     g_GameNet_HandlersRegistered = oldRegistered;
 
     return ok ? 0 : 1;
+}
+
+extern "C" int gamenet_register_gameplay_handlers_and_callbacks_smoke(void) {
+    zNetworkDispatchHandlerListNode *const oldSentinel = g_zNetwork_DispatchHandlerListSentinel;
+    const int oldCount = g_zNetwork_DispatchHandlerListCount;
+    const int oldRegistered = g_GameNet_HandlersRegistered;
+    zDEClient_NetRelayCallback const oldCraterRelay = g_zDEClientCraterNetRelayCallback;
+    zDEClient_NetRelayCallback const oldQSandRelay = g_zDEClientQSandNetRelayCallback;
+    OptCatalogAllocRuntimeGateCallback const oldAllocGate =
+        g_OptCatalog_AllocRuntimeGateCallback;
+    OptCatalogAllocRuntimeGateCallback const oldNoOpGate =
+        g_OptCatalog_AltGunDispatchNoOpCallback;
+    OptCatalogRemoveRuntimeRelayCallback const oldRemoveRelay =
+        g_OptCatalog_RemoveRuntimeRelayCallback;
+    void(__fastcall *oldEffectDispatch)(
+        zEffectAnimActivationRecord *record
+    ) = g_zEffectAnim_ActivationDispatchCallback;
+    const unsigned int oldEffectDispatchTag = g_zEffectAnim_ActivationDispatchTagHigh;
+
+    zNetworkDispatchHandlerListNode sentinel = {};
+    sentinel.next = &sentinel;
+    sentinel.prev = &sentinel;
+    g_zNetwork_DispatchHandlerListSentinel = &sentinel;
+    g_zNetwork_DispatchHandlerListCount = 0;
+    g_GameNet_HandlersRegistered = 0;
+    g_zDEClientCraterNetRelayCallback = 0;
+    g_zDEClientQSandNetRelayCallback = 0;
+    g_OptCatalog_AllocRuntimeGateCallback = 0;
+    g_OptCatalog_AltGunDispatchNoOpCallback = 0;
+    g_OptCatalog_RemoveRuntimeRelayCallback = 0;
+    g_zEffectAnim_ActivationDispatchCallback = 0;
+    g_zEffectAnim_ActivationDispatchTagHigh = 0;
+
+    GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks();
+
+    unsigned int packetMask = 0;
+    bool modesOk = true;
+    for (zNetworkDispatchHandlerListNode *node = sentinel.next; node != &sentinel;
+         node = node->next) {
+        if (node->record == 0 || node->record->mode != 2) {
+            modesOk = false;
+            break;
+        }
+        if (node->record->packetType >= 0 && node->record->packetType < 32) {
+            packetMask |= 1u << (unsigned int)(node->record->packetType);
+        }
+    }
+
+    const unsigned int expectedMask =
+        (1u << 1) | (1u << 3) | (1u << 6) | (1u << 7) | (1u << 8) |
+        (1u << 9) | (1u << 0x0a) | (1u << 0x0b) | (1u << 0x0c) |
+        (1u << 0x0d) | (1u << 0x0e) | (1u << 0x0f) | (1u << 0x10) |
+        (1u << 0x11) | (1u << 0x12) | (1u << 0x13) | (1u << 0x14);
+    const bool registeredOk = g_GameNet_HandlersRegistered == 1 &&
+                              g_zNetwork_DispatchHandlerListCount == 17 && modesOk &&
+                              packetMask == expectedMask;
+    const bool callbacksOk =
+        g_zDEClientCraterNetRelayCallback ==
+            (zDEClient_NetRelayCallback)&zDEClient_Crater::Execute &&
+        g_zDEClientQSandNetRelayCallback ==
+            (zDEClient_NetRelayCallback)&GameNet::SendPkt10_QSandEvent &&
+        g_OptCatalog_AllocRuntimeGateCallback ==
+            &OptCatalog::AltGunDispatchAllocRuntimeGateCallback &&
+        g_OptCatalog_AltGunDispatchNoOpCallback == &GameNet::AltGunDispatchNoOpCallback &&
+        g_OptCatalog_RemoveRuntimeRelayCallback == &OptCatalog::SendPkt0A_RemoveRuntimeRelay &&
+        g_zEffectAnim_ActivationDispatchCallback ==
+            &GameNet::SendPkt13_EffectAnimActivationRecord &&
+        g_zEffectAnim_ActivationDispatchTagHigh == 0x0c000000u;
+
+    GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks();
+    const bool noDuplicateOk = g_zNetwork_DispatchHandlerListCount == 17;
+
+    ClearDispatchHandlerListForTest(sentinel);
+    g_zNetwork_DispatchHandlerListSentinel = oldSentinel;
+    g_zNetwork_DispatchHandlerListCount = oldCount;
+    g_GameNet_HandlersRegistered = oldRegistered;
+    g_zDEClientCraterNetRelayCallback = oldCraterRelay;
+    g_zDEClientQSandNetRelayCallback = oldQSandRelay;
+    g_OptCatalog_AllocRuntimeGateCallback = oldAllocGate;
+    g_OptCatalog_AltGunDispatchNoOpCallback = oldNoOpGate;
+    g_OptCatalog_RemoveRuntimeRelayCallback = oldRemoveRelay;
+    g_zEffectAnim_ActivationDispatchCallback = oldEffectDispatch;
+    g_zEffectAnim_ActivationDispatchTagHigh = oldEffectDispatchTag;
+
+    return registeredOk && callbacksOk && noDuplicateOk ? 0 : 1;
 }
 
 extern "C" int gamenet_host_update_session_status_fields_smoke(void) {

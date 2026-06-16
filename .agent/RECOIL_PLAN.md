@@ -32566,15 +32566,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4321b0:
   - [✅] Reconstructed (Name: GameNet::UnregisterGameplayPacketHandlers)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: GameNet; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::UnregisterGameplayPacketHandlers;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_unregister_gameplay_packet_handlers;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: handler registration functional evidence and g_GameNet_HandlersRegistered data are verified, but source owner/data remain blocked by the paired 0x431c50 registration callback cluster and non-GameNet packet callback owners
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4322a0:
   - [✅] Reconstructed (Name: GameNet::ResetHudTimerPanelNetStateLongCountdown)

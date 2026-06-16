@@ -307,13 +307,17 @@ Active queue sections:
     `__builtin_memset` at 0x7c8ed4 is accepted for the inline `rep stos`
     zero/fill pattern used by 0x4320f0 and 0x4345a0.
 - Current blockers:
-  - 0x4321b0 and 0x4320f0 remain owner/data blocked even though their
-    functional targets pass; after the session-status sender promotion,
-    HudUiNetGameSetupPanel_LaunchButton now reports 0x4321b0 as the next
-    lowest visible GameNet blocker, but its function-pointer callback frontier
-    currently routes into 0x4327e0. 0x432830 is accepted at tier B after
-    row-list data-symbol evidence; 0x4327e0, 0x432860, and 0x432ae0 still need
-    broader pkt06/player/HUD/zVideo owner-data routing before tier B.
+  - 0x4321b0 is accepted at tier B after registering/rerunning the existing
+    packet-handler unregister smoke, documenting the paired 0x431c50
+    registration function, accepting the GameNet registration subsystem owner
+    for unregister, and reusing `gamenet_launch_session_globals` VC5
+    data-symbol evidence for `g_GameNet_HandlersRegistered`. 0x431c50 remains
+    data-blocked by zDEClient/OptCatalog/zEffect callback-slot globals and
+    source-blocked by zNetwork/zEffect registration helpers. 0x4320f0 remains
+    the launch-panel caller's lowest visible GameNet owner/data blocker.
+    0x432830 is accepted at tier B after row-list data-symbol evidence;
+    0x4327e0, 0x432860, and 0x432ae0 still need broader pkt06/player/HUD/zVideo
+    owner-data routing before tier B.
   - The pkt06 data correction sets `g_GameNetPkt06InitialSyncGate` to the BN
     initial value 1. Ignored local VC5 target `gamenet_pkt06_globals` now
     covers `g_GameNetPlayerRowStyleColors_00RRGGBB`,
@@ -381,6 +385,6 @@ Active queue sections:
     `zclass_node_pick_flag_accessors_smoke`, and accepting the shared Class.c
     null-node/source-file string data with local VC5 data-symbol evidence.
 - Next action:
-  - Refresh the launch-panel frontier from the HudUiNetGameSetupPanel group,
-    then follow the lowest visible blocker from the Player bootstrap frontier,
-    currently 0x45ff10 `zEffectAnim::FindEntryByName`.
+  - Refresh 0x4320f0 `GameNet::ResetRemotePlayersAndSpawnLists`, then route
+    the scoreboard-removal/triplet data chain before returning to
+    HudUiNetGameSetupPanel_LaunchButton.
