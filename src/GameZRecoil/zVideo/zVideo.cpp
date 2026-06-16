@@ -325,6 +325,12 @@ zVideo_OverwriteQueueEntry g_zVideo_OverwriteQueueBase[0x180] = {0};
 int g_zVideo_SortedPolyQueueCount = 0;
 int g_zVideo_OverwriteQueueCount = 0;
 zVideo_D3DRenderStateCacheLive g_zVideo_D3DRenderStateCache = {0};
+/*
+ * D3D fog/color-attribute bias owner data. Current BN models the channel index
+ * at 0x632140 separately from the adjacent RGB bias floats at 0x6321dc-0x6321e4;
+ * 0x4a7250 writes them and the submitters at 0x4ab320, 0x4abb20, and 0x4ac370
+ * consume them while packing D3D TLVERTEX colors.
+ */
 int g_zVideo_D3DColorNormalizeChannelIndex = 0;
 float g_zVideo_D3DColorAttrBiasR = 0.0f;
 float g_zVideo_D3DColorAttrBiasG = 0.0f;
