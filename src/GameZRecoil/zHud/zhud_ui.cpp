@@ -9273,7 +9273,11 @@ void HudUiCheckToggleWidget::OnActivateThunk() {
     OnActivate();
 }
 
-// Reimplements 0x4b7340: HudUiCheckToggleWidget::LoadFromZrd
+/**
+ * Reimplements 0x4b7340: HudUiCheckToggleWidget::LoadFromZrd.
+ * Original source path: D:\Proj\Battlesport\HudUiZrdWidget.cpp.
+ * Purpose: load check-toggle bitmap/text variants and rebuild bounds from a ZRD node.
+ */
 int HudUiCheckToggleWidget::LoadFromZrd(
     zReader::Node *zrdSection,
     HudUiBackground *ownerDialog

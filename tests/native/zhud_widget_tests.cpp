@@ -1242,6 +1242,26 @@ void CleanupHudCmdButton(HudCmdBindButtonBase &button) {
     button.DestructorCore();
 }
 
+void DeleteHudCmdButtonBindingSlotPanels(HudCmdBindButtonBase &button) {
+    if (button.bindingSlotPanels == nullptr) {
+        return;
+    }
+
+    int *const header = reinterpret_cast<int *>(button.bindingSlotPanels) - 1;
+    const int count = *header;
+    for (int index = count - 1; index >= 0; --index) {
+        button.bindingSlotPanels[index].~HudUiListSelectorItem();
+    }
+
+    ::operator delete(header);
+    button.bindingSlotPanels = nullptr;
+}
+
+void DestroyHudCmdButtonForSmoke(HudCmdBindButtonBase *button) {
+    DeleteHudCmdButtonBindingSlotPanels(*button);
+    button->DestructorCore();
+}
+
 void InstallHudCmdDialogBinding(
     HudCmdBindButtonBase &button,
     const char *text
@@ -6537,6 +6557,160 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
     return failureCode;
 }
 
+extern "C" int zhud_check_toggle_widget_load_from_zrd_smoke(void) {
+    const unsigned int oldMask = g_HudUi_InvalidateMask;
+    g_HudUi_InvalidateMask = 0x80;
+    g_zLoc_GetIdProc = nullptr;
+
+    HudUiBackground owner{};
+    owner.uiOriginX = 30;
+    owner.uiOriginY = 40;
+    owner.fontStyles[1].validMarker = 1;
+    owner.fontStyles[1].fontName = "Arial";
+    owner.fontStyles[1].fontSize = 10;
+    owner.fontStyles[1].textColor = 0x00010203;
+    owner.fontStyles[1].bkColor = 0x00040506;
+    owner.fontStyles[1].bkMode = 2;
+    owner.fontStyles[1].shadowEnabled = 1;
+    owner.fontStyles[1].fontWeight = FW_NORMAL;
+    owner.fontStyles[1].alignMode = 2;
+
+    zReader::Node checkedTextItems[5] = {};
+    checkedTextItems[0].value.i32 = 5;
+    checkedTextItems[1].type = zReader::ZRDR_NODE_STRING;
+    checkedTextItems[1].value.str = const_cast<char *>("ON");
+    checkedTextItems[2].type = zReader::ZRDR_NODE_INT;
+    checkedTextItems[2].value.i32 = 4;
+    checkedTextItems[3].type = zReader::ZRDR_NODE_INT;
+    checkedTextItems[3].value.i32 = 5;
+    checkedTextItems[4].type = zReader::ZRDR_NODE_INT;
+    checkedTextItems[4].value.i32 = 1;
+
+    zReader::Node checkedItems[3] = {};
+    checkedItems[0].value.i32 = 3;
+    checkedItems[1].type = zReader::ZRDR_NODE_STRING;
+    checkedItems[1].value.str = const_cast<char *>("TEXT");
+    checkedItems[2].type = zReader::ZRDR_NODE_ARRAY;
+    checkedItems[2].value.nodes = checkedTextItems;
+
+    zReader::Node disabledLabelItems[5] = {};
+    disabledLabelItems[0].value.i32 = 5;
+    disabledLabelItems[1].type = zReader::ZRDR_NODE_STRING;
+    disabledLabelItems[1].value.str = const_cast<char *>("DISABLED");
+    disabledLabelItems[2].type = zReader::ZRDR_NODE_INT;
+    disabledLabelItems[2].value.i32 = 7;
+    disabledLabelItems[3].type = zReader::ZRDR_NODE_INT;
+    disabledLabelItems[3].value.i32 = 8;
+    disabledLabelItems[4].type = zReader::ZRDR_NODE_INT;
+    disabledLabelItems[4].value.i32 = 1;
+
+    zReader::Node disabledItems[1] = {};
+    disabledItems[0].value.i32 = 1;
+
+    zReader::Node rootItems[7] = {};
+    rootItems[0].value.i32 = 7;
+    rootItems[1].type = zReader::ZRDR_NODE_STRING;
+    rootItems[1].value.str = const_cast<char *>("CHECKED");
+    rootItems[2].type = zReader::ZRDR_NODE_ARRAY;
+    rootItems[2].value.nodes = checkedItems;
+    rootItems[3].type = zReader::ZRDR_NODE_STRING;
+    rootItems[3].value.str = const_cast<char *>("DISABLE_UNSEL");
+    rootItems[4].type = zReader::ZRDR_NODE_ARRAY;
+    rootItems[4].value.nodes = disabledItems;
+    rootItems[5].type = zReader::ZRDR_NODE_STRING;
+    rootItems[5].value.str = const_cast<char *>("LABEL");
+    rootItems[6].type = zReader::ZRDR_NODE_ARRAY;
+    rootItems[6].value.nodes = disabledLabelItems;
+
+    zReader::Node root{};
+    root.type = zReader::ZRDR_NODE_ARRAY;
+    root.value.nodes = rootItems;
+
+    HudUiCheckToggleWidget widget{};
+    widget.Constructor();
+    const int result = widget.LoadFromZrd(
+        &root,
+        &owner
+    );
+
+    HudUiPanel *const checkedPanel = widget.checkedLabelPanel;
+    HudUiPanel *const baseLabelPanel =
+        widget.labelPanels.begin != nullptr ? widget.labelPanels.begin[0] : nullptr;
+    HudUiPanel *const disabledPanel =
+        widget.disabledLabelPanels.begin != nullptr ? widget.disabledLabelPanels.begin[0] : nullptr;
+    HudUiElement *const checkedElement = checkedPanel;
+    HudUiElement *const baseLabelElement = baseLabelPanel;
+    HudUiElement *const disabledElement = disabledPanel;
+    const int baseLabelHeight =
+        baseLabelPanel != nullptr ? baseLabelPanel->QueryTextHeight() : 0;
+    const int baseLabelWidth =
+        baseLabelPanel != nullptr ? baseLabelPanel->textWidthPx : 0;
+
+    int failureCode = 0;
+    if (result != 1) {
+        failureCode = 2;
+    } else if (widget.originX != 30 || widget.originY != 40) {
+        failureCode = 3;
+    } else if (widget.uncheckedImage != nullptr) {
+        failureCode = 4;
+    } else if (checkedPanel == nullptr) {
+        failureCode = 5;
+    } else if (std::strcmp(
+            checkedPanel->cachedText,
+            "ON"
+        ) != 0) {
+        failureCode = 6;
+    } else if (checkedElement->x != 34 || checkedElement->y != 45) {
+        failureCode = 7;
+    } else if ((checkedElement->flags & 0x10u) == 0) {
+        failureCode = 8;
+    } else if (checkedPanel->textColor0 != 0x00010203) {
+        failureCode = 9;
+    } else if (widget.labelPanels.end != widget.labelPanels.begin + 1) {
+        failureCode = 10;
+    } else if (baseLabelPanel == nullptr) {
+        failureCode = 11;
+    } else if (std::strcmp(
+            baseLabelPanel->cachedText,
+            "DISABLED"
+        ) != 0) {
+        failureCode = 12;
+    } else if (baseLabelElement->x != 37 || baseLabelElement->y != 48) {
+        failureCode = 13;
+    } else if (baseLabelPanel->alignMode != 2) {
+        failureCode = 14;
+    } else if (baseLabelWidth <= 0) {
+        failureCode = 15;
+    } else if (
+        widget.boundsRect.left != 37 ||
+        widget.boundsRect.top != 48 ||
+        widget.boundsRect.right != 37 + baseLabelWidth ||
+        widget.boundsRect.bottom != 48 + baseLabelHeight
+    ) {
+        failureCode = 16;
+    } else if (widget.disabledLabelPanels.end != widget.disabledLabelPanels.begin + 1) {
+        failureCode = 17;
+    } else if (disabledPanel == nullptr) {
+        failureCode = 18;
+    } else if (std::strcmp(
+            disabledPanel->cachedText,
+            "DISABLED"
+        ) != 0) {
+        failureCode = 19;
+    } else if (disabledElement->x != 37 || disabledElement->y != 48) {
+        failureCode = 20;
+    } else if ((disabledElement->flags & 0x10u) != 0) {
+        failureCode = 21;
+    } else if (disabledPanel->alignMode != 2) {
+        failureCode = 22;
+    }
+
+    owner.childHead = nullptr;
+    owner.childTail = nullptr;
+    g_HudUi_InvalidateMask = oldMask;
+    return failureCode;
+}
+
 extern "C" int zhud_util_free_field_ptr_smoke(void) {
     HudUtil field{std::malloc(4)};
     field.FreeFieldPtr();
@@ -6716,6 +6890,212 @@ extern "C" int zhud_cmd_bind_button_base_on_selection_changed_refresh_smoke(void
     RestoreFunctionPatch(labelPatch);
     RestoreFunctionPatch(hintPatch);
     return selected ? 0 : 1;
+}
+
+extern "C" int zhud_cmd_bind_button_base_rebuild_binding_slot_widgets_smoke(void) {
+    const unsigned int oldMask = g_HudUi_InvalidateMask;
+    g_HudUi_InvalidateMask = 0x80;
+
+    void *const storage = ::operator new(sizeof(HudCmdBindButtonBase));
+    std::memset(
+        storage,
+        0,
+        sizeof(HudCmdBindButtonBase)
+    );
+    HudCmdBindButtonBase *const button = new (storage) HudCmdBindButtonBase;
+    button->originX = 100;
+    button->originY = 200;
+    button->visibleListOffsetX = 3.0f;
+    button->visibleListOffsetY = 4.0f;
+    button->overflowListOffsetX = 7.0f;
+    button->overflowListOffsetY = 8.0f;
+    button->bindingSlotSpacing = 10;
+
+    button->RebuildBindingSlotWidgets(
+        4,
+        2
+    );
+
+    int failureCode = 0;
+    if (button->bindingSlotPanels == nullptr) {
+        failureCode = 3;
+    } else if (button->bindingSlotTotalCount != 4 ||
+               button->visibleBindingSlotCount != 2) {
+        failureCode = 4;
+    } else if (*(reinterpret_cast<int *>(button->bindingSlotPanels) - 1) != 4) {
+        failureCode = 5;
+    } else if (button->bindingSlotPanels[0].x != 103 ||
+               button->bindingSlotPanels[0].y != 184 ||
+               button->bindingSlotPanels[1].x != 103 ||
+               button->bindingSlotPanels[1].y != 194) {
+        failureCode = 6;
+    } else if (button->bindPanel.x != 100 || button->bindPanel.y != 200) {
+        failureCode = 7;
+    } else if (button->bindingSlotPanels[2].x != 107 ||
+               button->bindingSlotPanels[2].y != 218 ||
+               button->bindingSlotPanels[3].x != 107 ||
+               button->bindingSlotPanels[3].y != 228) {
+        failureCode = 8;
+    } else if (button->bindingSlotPanels[0].textBuffer[0] != '\0' ||
+               button->bindingSlotPanels[3].textBuffer[0] != '\0' ||
+               button->bindingSlotPanels[0].textColor0 != 0x00ffffff ||
+               button->bindingSlotPanels[3].textColor1 != 0x00ffffff) {
+        failureCode = 9;
+    } else if ((button->bindingSlotPanels[0].flags & 0x80) == 0 ||
+               (button->bindingSlotPanels[3].flags & 0x80) == 0 ||
+               (button->bindPanel.flags & 0x80) == 0) {
+        failureCode = 10;
+    }
+
+    DestroyHudCmdButtonForSmoke(button);
+    ::operator delete(storage);
+    g_HudUi_InvalidateMask = oldMask;
+    return failureCode;
+}
+
+extern "C" int zhud_cmd_bind_button_base_load_from_zrd_smoke(void) {
+    const unsigned int oldMask = g_HudUi_InvalidateMask;
+    g_HudUi_InvalidateMask = 0x80;
+
+    HudUiBackground owner{};
+    owner.uiOriginX = 20;
+    owner.uiOriginY = 30;
+    owner.fontStyles[1].validMarker = 1;
+    owner.fontStyles[1].fontName = "Arial";
+    owner.fontStyles[1].fontSize = 8;
+    owner.fontStyles[1].fontWeight = FW_NORMAL;
+    owner.fontStyles[1].textColor = 0x00112233;
+    owner.fontStyles[1].shadowEnabled = 1;
+    owner.fontStyles[2].validMarker = 1;
+    owner.fontStyles[2].fontName = "Arial";
+    owner.fontStyles[2].fontSize = 9;
+    owner.fontStyles[2].fontWeight = FW_NORMAL;
+    owner.fontStyles[2].textColor = 0x00445566;
+    owner.fontStyles[2].shadowEnabled = 0;
+
+    zReader::Node visiblePair[3] = {};
+    visiblePair[0].value.i32 = 3;
+    visiblePair[1].type = zReader::ZRDR_NODE_INT;
+    visiblePair[1].value.i32 = 5;
+    visiblePair[2].type = zReader::ZRDR_NODE_INT;
+    visiblePair[2].value.i32 = 6;
+
+    zReader::Node overflowPair[3] = {};
+    overflowPair[0].value.i32 = 3;
+    overflowPair[1].type = zReader::ZRDR_NODE_INT;
+    overflowPair[1].value.i32 = 7;
+    overflowPair[2].type = zReader::ZRDR_NODE_INT;
+    overflowPair[2].value.i32 = 8;
+
+    zReader::Node listOffsetItems[3] = {};
+    listOffsetItems[0].value.i32 = 3;
+    listOffsetItems[1].type = zReader::ZRDR_NODE_ARRAY;
+    listOffsetItems[1].value.nodes = visiblePair;
+    listOffsetItems[2].type = zReader::ZRDR_NODE_ARRAY;
+    listOffsetItems[2].value.nodes = overflowPair;
+
+    zReader::Node listSizeItems[3] = {};
+    listSizeItems[0].value.i32 = 3;
+    listSizeItems[1].type = zReader::ZRDR_NODE_INT;
+    listSizeItems[1].value.i32 = 3;
+    listSizeItems[2].type = zReader::ZRDR_NODE_INT;
+    listSizeItems[2].value.i32 = 2;
+
+    zReader::Node loadItems[11] = {};
+    loadItems[0].value.i32 = 11;
+    loadItems[1].type = zReader::ZRDR_NODE_STRING;
+    loadItems[1].value.str = const_cast<char *>("SELECTED_FONT");
+    loadItems[2].type = zReader::ZRDR_NODE_INT;
+    loadItems[2].value.i32 = 1;
+    loadItems[3].type = zReader::ZRDR_NODE_STRING;
+    loadItems[3].value.str = const_cast<char *>("LIST_FONT");
+    loadItems[4].type = zReader::ZRDR_NODE_INT;
+    loadItems[4].value.i32 = 2;
+    loadItems[5].type = zReader::ZRDR_NODE_STRING;
+    loadItems[5].value.str = const_cast<char *>("SPACING");
+    loadItems[6].type = zReader::ZRDR_NODE_INT;
+    loadItems[6].value.i32 = 12;
+    loadItems[7].type = zReader::ZRDR_NODE_STRING;
+    loadItems[7].value.str = const_cast<char *>("LIST_OFFSET");
+    loadItems[8].type = zReader::ZRDR_NODE_ARRAY;
+    loadItems[8].value.nodes = listOffsetItems;
+    loadItems[9].type = zReader::ZRDR_NODE_STRING;
+    loadItems[9].value.str = const_cast<char *>("LISTSIZE");
+    loadItems[10].type = zReader::ZRDR_NODE_ARRAY;
+    loadItems[10].value.nodes = listSizeItems;
+
+    zReader::Node loadRoot = {};
+    loadRoot.type = zReader::ZRDR_NODE_ARRAY;
+    loadRoot.value.nodes = loadItems;
+
+    void *const storage = ::operator new(sizeof(HudCmdBindButtonBase));
+    std::memset(
+        storage,
+        0,
+        sizeof(HudCmdBindButtonBase)
+    );
+    HudCmdBindButtonBase *const button = new (storage) HudCmdBindButtonBase;
+    const int result = button->LoadFromZrd(
+        &loadRoot,
+        &owner
+    );
+
+    HudUiListSelectorItem *const items = button->bindingSlotPanels;
+    int failureCode = 0;
+    if (result != 1 || items == nullptr) {
+        failureCode = 3;
+    } else if (button->originX != 20 || button->originY != 30 ||
+               button->selectedFontStyleRef != 1 ||
+               button->listFontStyleRef != 2 ||
+               button->bindingSlotSpacing != 12) {
+        failureCode = 4;
+    } else if (button->visibleListOffsetX != 5.0f ||
+               button->visibleListOffsetY != 6.0f ||
+               button->overflowListOffsetX != 7.0f ||
+               button->overflowListOffsetY != 8.0f) {
+        failureCode = 5;
+    } else if (button->bindingSlotTotalCount != 3 ||
+               button->visibleBindingSlotCount != 2) {
+        failureCode = 6;
+    } else if (items[0].x != 25 || items[0].y != 12 ||
+               items[1].x != 25 || items[1].y != 24 ||
+               items[2].x != 27 || items[2].y != 50 ||
+               button->bindPanel.x != 20 || button->bindPanel.y != 30) {
+        failureCode = 7;
+    } else if (owner.childHead != button ||
+               button->next != &items[0] ||
+               items[0].next != &items[1] ||
+               items[1].next != &items[2] ||
+               items[2].next != &button->bindPanel ||
+               button->bindPanel.next != nullptr ||
+               owner.childTail != &button->bindPanel) {
+        failureCode = 8;
+    } else if (items[0].parent != &owner ||
+               items[1].parent != &owner ||
+               items[2].parent != &owner ||
+               button->bindPanel.parent != &owner ||
+               items[0].owner != button ||
+               items[1].owner != button ||
+               items[2].owner != button ||
+               button->bindPanel.owner != button) {
+        failureCode = 9;
+    } else if ((items[0].flags & 0x10) != 0 ||
+               (items[1].flags & 0x10) != 0 ||
+               (items[2].flags & 0x10) != 0 ||
+               (button->bindPanel.flags & 0x10) != 0) {
+        failureCode = 10;
+    } else if (button->bindPanel.textColor0 != 0x00112233 ||
+               items[0].textColor0 != 0x00445566 ||
+               items[2].textColor1 != 0x00445566) {
+        failureCode = 11;
+    }
+
+    owner.childHead = nullptr;
+    owner.childTail = nullptr;
+    DestroyHudCmdButtonForSmoke(button);
+    ::operator delete(storage);
+    g_HudUi_InvalidateMask = oldMask;
+    return failureCode;
 }
 
 extern "C" int zhud_cmd_reset_button_on_activate_smoke(void) {

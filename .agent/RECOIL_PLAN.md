@@ -37254,15 +37254,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b7340:
   - [☑️] Reconstructed (Name: HudUiCheckToggleWidget::LoadFromZrd)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiCheckToggleWidget::LoadFromZrd;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_check_toggle_widget_load_from_zrd;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S blocked: no VC5 byte target recorded for this EH/new label loader; keep below tier S until owner-level VC5 evidence is added
 
 - 0x4b7d60:
   - [☑️] Reconstructed (Name: HudUiCycleSelectorWidget::Constructor)
@@ -37708,26 +37708,26 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x4b8de0:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::LoadFromZrd)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [❌] Source owner (Kind: class; Parent: HudCmdDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Reimplemented [C]
+    - Name: HudCmdBindButtonBase::LoadFromZrd;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_cmd_bind_button_base_load_from_zrd;
     - Group: ui.zhud;
     - Model: pending;
     - Blocker: HudCmdDialog/HudCmd* FTable globals and table factories remain unresolved source-shape debt
 
 - 0x4b90e0:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::RebuildBindingSlotWidgets)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [❌] Source owner (Kind: class; Parent: HudCmdDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Reimplemented [C]
+    - Name: HudCmdBindButtonBase::RebuildBindingSlotWidgets;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_cmd_bind_button_base_rebuild_binding_slot_widgets;
     - Group: ui.zhud;
     - Model: pending;
     - Blocker: HudCmdDialog/HudCmd* FTable globals and table factories remain unresolved source-shape debt
@@ -42626,15 +42626,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40bdc0:
   - [☑️] Reconstructed (Name: StdPtrVector::Clear)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: struct; Parent: StdPtrVector; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zUtil_StdPtrVector_Clear;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: std_ptr_vector_clear;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S blocked: VC5SP3 hud_cmd_binding_vector_helpers compare for StdPtrVector::Clear still fails with 43 unmasked mismatches after 0 relocation-masked bytes and 6 trimmed VC NOPs; remaining drift is the BN-visible dead [end,end) copy path and epilogue shape around the old-end return.
 
 - 0x40c1d0:
   - [✅] Reconstructed (Name: HudCmdBindButtonBase::ClearBindingEntries)

@@ -377,8 +377,11 @@ extern "C" int zhud_credits_panel_update_fade_and_exit_smoke(void);
 extern "C" int zhud_cmd_bind_button_base_constructor_smoke(void);
 extern "C" int zhud_cmd_bind_button_base_destructor_core_smoke(void);
 extern "C" int zhud_check_toggle_widget_helpers_smoke(void);
+extern "C" int zhud_check_toggle_widget_load_from_zrd_smoke(void);
 extern "C" int zhud_cmd_dialog_on_command_selection_changed_smoke(void);
 extern "C" int zhud_cmd_bind_button_base_on_selection_changed_refresh_smoke(void);
+extern "C" int zhud_cmd_bind_button_base_rebuild_binding_slot_widgets_smoke(void);
+extern "C" int zhud_cmd_bind_button_base_load_from_zrd_smoke(void);
 extern "C" int zhud_cmd_reset_button_on_activate_smoke(void);
 extern "C" int zhud_cmd_set_list_widget_on_activate_smoke(void);
 extern "C" int zhud_cmd_key_a_button_on_begin_capture_smoke(void);
@@ -10624,10 +10627,16 @@ int main(int argc, char **argv) {
          zhud_cmd_bind_button_base_destructor_core_smoke},
         {"zhud_check_toggle_widget_helpers_smoke",
          zhud_check_toggle_widget_helpers_smoke},
+        {"zhud_check_toggle_widget_load_from_zrd_smoke",
+         zhud_check_toggle_widget_load_from_zrd_smoke},
         {"zhud_cmd_dialog_on_command_selection_changed_smoke",
          zhud_cmd_dialog_on_command_selection_changed_smoke},
         {"zhud_cmd_bind_button_base_on_selection_changed_refresh_smoke",
          zhud_cmd_bind_button_base_on_selection_changed_refresh_smoke},
+        {"zhud_cmd_bind_button_base_rebuild_binding_slot_widgets_smoke",
+         zhud_cmd_bind_button_base_rebuild_binding_slot_widgets_smoke},
+        {"zhud_cmd_bind_button_base_load_from_zrd_smoke",
+         zhud_cmd_bind_button_base_load_from_zrd_smoke},
         {"zhud_cmd_reset_button_on_activate_smoke",
          zhud_cmd_reset_button_on_activate_smoke},
         {"zhud_cmd_set_list_widget_on_activate_smoke",

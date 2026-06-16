@@ -78,6 +78,13 @@ available even when no groups are active.
     and 0x48d340. The 0x42e330 caller path currently routes through 0x48ff70,
     and 0x48ff70 remains data-blocked by downstream zRndr
     SelectSpanRoutines callback/global ownership.
+  - Same-session BN/source-worker packets for the 0x49b7e0-led switch-vshift
+    span family confirm the retail source shape intentionally pivots ESP
+    through gRndr_SavedEspSlot and writes destination words with push/sub-esp.
+    No safe VC5-era production C++ model was found under the current no raw
+    assembly/scaffold rules, so this owner/data gate remains blocked until a
+    policy-approved source model is identified or the raw-assembly prohibition
+    is explicitly changed.
   - Accepted recent work is durable elsewhere: zRndr queue/lens/fog/palette
     slices, cached-client-rect mask helpers, DirectDraw present/clear/data
     passes, and circle helpers have source/plan/verification evidence. Keep
@@ -87,11 +94,10 @@ available even when no groups are active.
     0x49b020, 0x49b780, 0x46e720, and 0x4a8790; revisit them only after the
     global owner/data gate opens or explicit user direction.
 - Next action:
-  - Run `python tools/recoil.py status 0x48ff70 --lane binary` and
-    `python tools/recoil.py frontier 0x48ff70 --depth 1 --lane binary` before
-    editing. If current evidence still routes into zRndr SelectSpanRoutines,
-    hand off that callback/global owner as the next non-overlapping worker
-    slice.
+  - Do not reassign the 0x49b7e0-led ESP-pivot span-family slice without new
+    BN/source-model evidence or explicit user approval for a lower-level
+    implementation strategy. Prefer another active owner/data WIP while this
+    group remains blocked by the current source rules.
   - Re-run `python tools/recoil.py audit groups --summary --wip-limit 4` after
     each owner/data update and prune this group again when it becomes
     verify-only.
@@ -179,16 +185,20 @@ available even when no groups are active.
 - Current blockers:
   - 0x40c280 now has registered functional coverage and is accepted at tier C.
     Source owner/Data remain blocked pending the wider class/source-model pass.
-  - 0x4b90e0 and 0x4b8de0 still have source bodies and fresh docblocks, but
-    plan metadata remains pending implementation/functional evidence for those
-    sibling methods.
-  - 0x40bdc0 has a fresh docblock and tier C source, but still has Source
-    owner/Data audit debt for the typed HudCmdBindingVector helper model.
+  - 0x4b90e0 and 0x4b8de0 now have registered functional coverage and are
+    accepted at tier C. Source owner/Data remain blocked pending the wider
+    class/source-model pass.
+  - 0x4b7340 HudUiCheckToggleWidget::LoadFromZrd is accepted at tier B with
+    source-faithful HudUi cluster ownership and no directly touched authored
+    globals; it remains below tier S until owner-level VC5 evidence exists.
+  - 0x40bdc0 is accepted at tier B as a source-faithful StdPtrVector helper
+    with no touched authored globals; tier S remains blocked by the known
+    dead [end,end) copy-path/epilogue codegen drift.
   - 0x40a920 was reclassified as provider/compiler glue; the remaining data
     blocker is generated HudCmd C++ vtable data classification plus the broader
     HudCmdDialog generated table-emission gap.
 - Next action:
-  - Continue the HudCmdBindButtonBase class pass through 0x4b90e0 and
-    0x4b8de0: refresh their frontiers, register or add narrow functional
-    coverage if missing, then update plan markers only after same-session
-    source/build evidence.
+  - Continue the HudCmdBindButtonBase class pass at the owner/data gate:
+    inspect the generated HudCmd C++ table/data evidence and re-evaluate
+    whether it still blocks 0x40c280, 0x4b90e0, and 0x4b8de0 now that the
+    HudUiCheckToggleWidget dependency is owner/data-ready.
