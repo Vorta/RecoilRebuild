@@ -2215,11 +2215,10 @@ inline void RecoilApp_StateQueue::PushBack(
             m_readBlock.m_cursor = oldReadCursor;
             m_readBlock.m_chunkBaseSlot = centeredSlot;
             RecoilApp_StateQueueBlock writeBlock;
-            writeBlock.InitFromCursor(
+            m_writeBlock = *writeBlock.InitFromCursor(
                 chunk,
                 newWriteSlot
             );
-            m_writeBlock = writeBlock;
         }
     }
 

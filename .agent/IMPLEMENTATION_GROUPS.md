@@ -1597,7 +1597,8 @@ available even when no groups are active.
     mismatches after 14 trimmed VC NOP bytes. The queue entrypoints now use a
     recovered inline `RecoilApp_StateQueueItem` constructor and inline
     queue-block copy shape, improving but not closing tier S: 0x443310
-    QueuePushState remains blocked at 266 unmasked mismatches, 0x443160
+    QueuePushState remains blocked at 265 unmasked mismatches after the
+    InitFromCursor-return grow-path copy recovery, 0x443160
     QueueSwitchCurrentState at 208, and 0x4434b0 QueueExitCurrentState at 236.
 - Next action:
   - Continue class-first cleanup on the remaining MpExit lifecycle entries:

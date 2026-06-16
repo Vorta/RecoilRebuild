@@ -46950,7 +46950,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: recoil_app_queue_push_state;
     - Group: app.recoil_app.state_queue;
     - Model: source-faithful;
-    - Blocker: tier S blocked: recoil_app_state_queue VC5 compare for 0x443310 still fails after inline RecoilApp_StateQueueItem constructor recovery with 266 unmasked mismatches, 24 relocation-masked bytes, 15 trimmed VC NOP bytes, BN size 414, VC5 symbol size 416; functional recoil_app_queue_push_state passed.
+    - Blocker: tier S blocked: recoil_app_state_queue VC5 compare for 0x443310 still fails after InitFromCursor-return grow-path copy recovery with 265 unmasked mismatches, 24 relocation-masked bytes, 4 trimmed VC NOP bytes, BN size 414, VC5 symbol size 400; functional recoil_app_queue_push_state passed.
 
 - 0x4434b0:
   - [✅] Reconstructed (Name: RecoilApp::QueueExitCurrentState)
