@@ -103,6 +103,20 @@ extern "C" int znetwork_dplay_close_release_smoke(void) {
     return 0;
 }
 
+extern "C" int znetwork_dplay_report_error_smoke(void) {
+    if (zNetwork_DPlay_ReportError(0, __FILE__, __LINE__) != 1) {
+        return 1;
+    }
+
+    return zNetwork_DPlay_ReportError(
+               (int)(0x88770014),
+               __FILE__,
+               __LINE__
+           ) == 0
+               ? 0
+               : 2;
+}
+
 extern "C" int znetwork_unregister_packet_handler_smoke(void) {
     zNetworkDispatchHandlerListNode sentinel = {};
     zNetworkDispatchHandlerListNode first = {};

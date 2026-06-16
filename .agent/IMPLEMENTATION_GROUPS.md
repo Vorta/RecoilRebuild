@@ -264,3 +264,39 @@ Active queue sections:
 - Next action:
   - Resolve the launch dependency blockers, then resolve HudUiNetGameSetupPanel
     source-owner and per-method data gates for the tier C methods.
+
+### Group: zNetwork DirectPlay source-owner/data cleanup
+
+- Anchor: 0x48a410 zNetwork_DPlay::CreateSessionFromStatusFields, with
+  immediate blockers 0x48c250 zNetwork_DPlay::ReportError and 0x48a350
+  zNetworkDPlay::QueryCapsAndConfigureSendMode.
+- Queue: active source-owner/data cleanup for the G016 DirectPlay
+  networking/session runtime cluster.
+- Reason: HudUiNetGameSetupPanel_LaunchButton remains below tier C because its
+  launch path depends on zNetwork/GameNet/HUD callees with open source-owner or
+  data gates; frontier identifies 0x48a410 as the lowest visible zNetwork
+  blocker.
+- Current evidence:
+  - Source-owner packet says 0x48a410, 0x48c250, and 0x48a350 cannot be
+    accepted in isolation; they belong to the broader authored zNetwork /
+    zNetworkDPlay / zNetwork_DPlay source-file plus runtime-global cluster in
+    `src/GameZRecoil/zNetwork/znet_dplay.cpp` and `zNetwork.h`.
+  - Data packet says 0x48a410 and 0x48a350 touch authored `g_zNetwork_*`
+    globals and cannot be `Data ❎`; global placement/order still needs
+    evidence before `Data ✅`.
+  - BN fact packet confirmed 0x48c250 uses in-function HRESULT comparisons and
+    immediate DirectPlay error-name string literals; source now removes the
+    stale `kDPlayErrorNames` / `GetDPlayErrorName` table shape and keeps the
+    `sprintf(errorNameBuffer, errorName)` report path.
+- Current blockers:
+  - G016 owner boundary is broad; do not set isolated owner markers for
+    0x48a410, 0x48c250, or 0x48a350.
+  - zNetwork globals such as `g_zNetwork_DPlayCaps`,
+    `g_zNetwork_SessionNameCache`, `g_zNetwork_AppGuid`,
+    `g_zNetwork_pDirectPlay4`, `g_zNetwork_CurrentSessionDescCache`,
+    `g_zNetwork_ActiveProviderIsTcpIp`, and
+    `g_zNetwork_TcpIpAsyncSendEnabled` need focused data evidence.
+- Next action:
+  - Reassess G016 data evidence for 0x48c250/0x48a350/0x48a410, including
+    VC data-symbol checks where manifests exist, before any owner/data marker
+    promotions.

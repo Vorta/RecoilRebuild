@@ -913,8 +913,8 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## Battlesport/zNetwork/zNetwork.cpp
 
-- `0x489f70` `zNetwork_GetLocalPlayerKey` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:265`
-- `0x489f80` `zNetwork::IsHost` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:362`
+- `0x489f70` `zNetwork_GetLocalPlayerKey` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:183`
+- `0x489f80` `zNetwork::IsHost` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:280`
 
 ## Battlesport/zopt.cpp
 
@@ -1626,37 +1626,37 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## GameZRecoil/zNetwork.cpp
 
-- `0x48b980` `zNetwork_GetLocalPlayerColorIndex` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:273`
-- `0x48b9a0` `zNetwork_GetPlayerColorIndexByKey` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:282`
+- `0x48b980` `zNetwork_GetLocalPlayerColorIndex` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:191`
+- `0x48b9a0` `zNetwork_GetPlayerColorIndexByKey` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:200`
 
 ## GameZRecoil/zNetwork/znet_dplay.cpp
 
-- `0x489f90` `zNetwork::SetFatalDisconnectCallback` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:2028`
-- `0x48a0d0` `zNetwork_DPlay::RefreshServiceProviderList` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:708`
-- `0x48a130` `zNetworkDPlay::RefreshAndGetServiceProviderList` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:739`
-- `0x48a350` `zNetworkDPlay::QueryCapsAndConfigureSendMode` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:873`
-- `0x48a410` `zNetwork_DPlay::CreateSessionFromStatusFields` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1403`
-- `0x48a520` `zNetworkDPlay::OpenSelectedSessionAndReadStatusFields` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1467`
-- `0x48a9c0` `zNetwork_DPlay::CreateLocalPlayerRecordAndRegister` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1265`
-- `0x48acf0` `zNetwork_DPlay_SendUnreliable` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:387`
-- `0x48ad30` `zNetwork_DPlay_SendReliable` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:410`
-- `0x48ad70` `zNetwork_DPlay_SendExUnreliableTracked` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:433`
-- `0x48ae10` `zNetwork_DPlay_SendExReliable` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:474`
-- `0x48b3a0` `zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:668`
-- `0x48bbe0` `zNetworkDPlay::SelectTcpIpProviderAndEnumSessions` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1531`
-- `0x48be10` `zNetworkDPlay::CreateLobby3AInterface` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1600`
-- `0x48be70` `zNetworkDPlay::EnumSessionsForCurrentApp` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1629`
-- `0x48c060` `zNetwork_SendPacketUnreliable` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:503`
-- `0x48c080` `zNetwork_SendPacketReliable` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:521`
+- `0x489f90` `zNetwork::SetFatalDisconnectCallback` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:2119`
+- `0x48a0d0` `zNetwork_DPlay::RefreshServiceProviderList` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:799`
+- `0x48a130` `zNetworkDPlay::RefreshAndGetServiceProviderList` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:830`
+- `0x48a350` `zNetworkDPlay::QueryCapsAndConfigureSendMode` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:964`
+- `0x48a410` `zNetwork_DPlay::CreateSessionFromStatusFields` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1494`
+- `0x48a520` `zNetworkDPlay::OpenSelectedSessionAndReadStatusFields` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1558`
+- `0x48a9c0` `zNetwork_DPlay::CreateLocalPlayerRecordAndRegister` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1356`
+- `0x48acf0` `zNetwork_DPlay_SendUnreliable` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:305`
+- `0x48ad30` `zNetwork_DPlay_SendReliable` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:328`
+- `0x48ad70` `zNetwork_DPlay_SendExUnreliableTracked` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:351`
+- `0x48ae10` `zNetwork_DPlay_SendExReliable` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:392`
+- `0x48b3a0` `zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:759`
+- `0x48bbe0` `zNetworkDPlay::SelectTcpIpProviderAndEnumSessions` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1622`
+- `0x48be10` `zNetworkDPlay::CreateLobby3AInterface` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1691`
+- `0x48be70` `zNetworkDPlay::EnumSessionsForCurrentApp` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1720`
+- `0x48c060` `zNetwork_SendPacketUnreliable` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:421`
+- `0x48c080` `zNetwork_SendPacketReliable` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:439`
 
 ## GameZRecoil/zNetwork/zNetwork.cpp
 
-- `0x489d00` `zNetwork::InitSessionRuntime` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:2036`
-- `0x48b9d0` `zNetwork_GetPlayerRecordCount` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:300`
-- `0x48bab0` `zNetwork_ExtractStatusFieldsFromSessionDesc` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:305`
-- `0x48bb20` `zNetwork_ApplyStatusFieldsToSessionDesc` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:328`
-- `0x48bf40` `zNetwork::DeleteAllDispatchHandlers` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1514`
-- `0x48c0a0` `zNetwork::RegisterPacketHandler` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1834`
+- `0x489d00` `zNetwork::InitSessionRuntime` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:2127`
+- `0x48b9d0` `zNetwork_GetPlayerRecordCount` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:218`
+- `0x48bab0` `zNetwork_ExtractStatusFieldsFromSessionDesc` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:223`
+- `0x48bb20` `zNetwork_ApplyStatusFieldsToSessionDesc` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:246`
+- `0x48bf40` `zNetwork::DeleteAllDispatchHandlers` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1605`
+- `0x48c0a0` `zNetwork::RegisterPacketHandler` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1925`
 
 ## GameZRecoil/zOptions/zopt.cpp
 
@@ -3229,37 +3229,37 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4896d0` `zModel_Light::BuildAttr0DepthFade` -> `src/GameZRecoil/zModel/gmod_light.c:438`
 - `0x489920` `zModel_Light::EvalBatchSphereFade` -> `src/GameZRecoil/zModel/gmod_light.c:609`
 - `0x489a90` `zModel_Light::BuildAttr1Falloff` -> `src/GameZRecoil/zModel/gmod_light.c:526`
-- `0x489e10` `zNetwork::ShutdownSessionRuntime` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:2093`
-- `0x489f30` `zNetwork::ClearEnumeratedSessionList` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1937`
-- `0x489fa0` `zNetwork::ClearServiceProviderList` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1957`
-- `0x48a030` `zNetwork::ClearPlayerRecordList` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1989`
-- `0x48a140` `zNetworkDPlay::InitializeConnectionFromProviderInfo` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:783`
-- `0x48a180` `zNetworkDPlay::SelectServiceProviderAndInitConnection` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:746`
-- `0x48a220` `zNetwork_DPlay::EnumSessions` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1199`
-- `0x48a2c0` `zNetworkDPlay::GetEnumeratedSessionNameByIndex` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:809`
-- `0x48a2e0` `zNetworkDPlay::GetEnumeratedSessionPlayerCountsByIndex` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:825`
-- `0x48a310` `zNetwork_DPlay::EnumPlayers` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1244`
-- `0x48a980` `zNetwork_DPlay_DestroyCachedLocalPlayer` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:565`
-- `0x48ae70` `zNetworkDPlay::ReceivePendingMessages` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1087`
-- `0x48afa0` `zNetwork::GetPlayerNameByKey` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:367`
-- `0x48afe0` `zNetworkDPlay::PumpIncomingMessages` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:914`
-- `0x48b5e0` `zNetworkDPlay::EnumSessionCallback_AddSessionDescCache` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:842`
-- `0x48b660` `zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1157`
-- `0x48b730` `zNetwork_DPlay::CreateInterfaceAndCoInitialize` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1733`
-- `0x48b7f0` `zNetwork_DPlay::CloseReleaseAndCoUninitialize` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1789`
-- `0x48b820` `zNetwork_ApplyPkt01_PlayerColorAssignments` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1710`
-- `0x48b860` `zNetwork::HostSendPlayerColorAssignmentsPacket` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:620`
-- `0x48b940` `zNetwork::AllocFreePlayerColorIndex` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:606`
-- `0x48b9e0` `zNetwork::RemovePlayerRecordByKey` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1054`
-- `0x48ba60` `zNetwork_FindPlayerRecordByKey` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:586`
-- `0x48bee0` `zNetworkDPlay::FreeServiceProviderInfoBuffers` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1808`
-- `0x48bfa0` `zNetwork_InitMessageHandlers` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1703`
-- `0x48bfb0` `zNetwork_CreateEmptyDispatchHandlerList` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1690`
-- `0x48bfe0` `zNetwork_RegisterDispatchHandlerListShutdown` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1685`
-- `0x48bff0` `zNetwork_DestroyDispatchHandlerList` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1662`
-- `0x48c120` `zNetwork::UnregisterPacketHandler` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1866`
-- `0x48c200` `zNetwork_DPlay::DispatchPacketToHandlers` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1914`
-- `0x48c250` `zNetwork_DPlay_ReportError` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:539`
+- `0x489e10` `zNetwork::ShutdownSessionRuntime` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:2184`
+- `0x489f30` `zNetwork::ClearEnumeratedSessionList` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:2028`
+- `0x489fa0` `zNetwork::ClearServiceProviderList` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:2048`
+- `0x48a030` `zNetwork::ClearPlayerRecordList` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:2080`
+- `0x48a140` `zNetworkDPlay::InitializeConnectionFromProviderInfo` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:874`
+- `0x48a180` `zNetworkDPlay::SelectServiceProviderAndInitConnection` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:837`
+- `0x48a220` `zNetwork_DPlay::EnumSessions` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1290`
+- `0x48a2c0` `zNetworkDPlay::GetEnumeratedSessionNameByIndex` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:900`
+- `0x48a2e0` `zNetworkDPlay::GetEnumeratedSessionPlayerCountsByIndex` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:916`
+- `0x48a310` `zNetwork_DPlay::EnumPlayers` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1335`
+- `0x48a980` `zNetwork_DPlay_DestroyCachedLocalPlayer` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:656`
+- `0x48ae70` `zNetworkDPlay::ReceivePendingMessages` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1178`
+- `0x48afa0` `zNetwork::GetPlayerNameByKey` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:285`
+- `0x48afe0` `zNetworkDPlay::PumpIncomingMessages` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1005`
+- `0x48b5e0` `zNetworkDPlay::EnumSessionCallback_AddSessionDescCache` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:933`
+- `0x48b660` `zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1248`
+- `0x48b730` `zNetwork_DPlay::CreateInterfaceAndCoInitialize` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1824`
+- `0x48b7f0` `zNetwork_DPlay::CloseReleaseAndCoUninitialize` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1880`
+- `0x48b820` `zNetwork_ApplyPkt01_PlayerColorAssignments` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1801`
+- `0x48b860` `zNetwork::HostSendPlayerColorAssignmentsPacket` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:711`
+- `0x48b940` `zNetwork::AllocFreePlayerColorIndex` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:697`
+- `0x48b9e0` `zNetwork::RemovePlayerRecordByKey` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1145`
+- `0x48ba60` `zNetwork_FindPlayerRecordByKey` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:677`
+- `0x48bee0` `zNetworkDPlay::FreeServiceProviderInfoBuffers` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1899`
+- `0x48bfa0` `zNetwork_InitMessageHandlers` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1794`
+- `0x48bfb0` `zNetwork_CreateEmptyDispatchHandlerList` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1781`
+- `0x48bfe0` `zNetwork_RegisterDispatchHandlerListShutdown` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1776`
+- `0x48bff0` `zNetwork_DestroyDispatchHandlerList` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1753`
+- `0x48c120` `zNetwork::UnregisterPacketHandler` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:1957`
+- `0x48c200` `zNetwork_DPlay::DispatchPacketToHandlers` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:2005`
+- `0x48c250` `zNetwork_DPlay_ReportError` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:458`
 - `0x48c7d0` `zUtil::ZRDR_PreallocNodePool` -> `src/GameZRecoil/zReader/zreader_load.cpp:111`
 - `0x48c800` `zUtil_ZRDR_GrowFreePool` -> `src/GameZRecoil/zReader/zreader_load.cpp:103`
 - `0x48c820` `zUtil_ZRDR_PushFreeNode` -> `src/GameZRecoil/zReader/zreader_load.cpp:77`

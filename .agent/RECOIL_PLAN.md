@@ -18748,7 +18748,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: znetwork_dplay_report_error;
     - Group: engine.znetwork;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: DirectPlay error-name table source-shape debt resolved; broad zNetwork source-owner and touched .rdata/data evidence remain pending before owner/data promotion.
 
 - 0x48bfa0:
   - [✅] Reconstructed (Name: zNetwork::InitMessageHandlers)
