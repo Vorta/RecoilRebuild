@@ -37373,13 +37373,13 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudUiCycleSelectorWidget; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: HudUiCycleSelectorWidget::ApplyFontStyleForEntry;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_cycle_selector_widget_apply_font_style_for_entry;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S blocked: same-session VC5SP3 compare for hud_ui_cycle_selector_widget_apply_font_style_for_entry now fails with 8 unmasked mismatches, no relocation-masked bytes, and 8 trimmed VC NOP bytes, BN size 248 and VC5 size 256. Source now uses an explicit valid-marker zero check after selecting fontStyles[styleIndex], matching BN's retained post-mask test shape more closely; functional target passes. Remaining drift is local to the valid-style selection sequence plus final alignment/register scheduling.
+    - Blocker: none
 
 - 0x4b8200:
   - [✅] Reconstructed (Name: HudUiCycleSelectorWidget::AddBitmapEntry)
