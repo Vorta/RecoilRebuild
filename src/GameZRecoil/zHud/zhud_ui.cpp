@@ -16983,40 +16983,36 @@ HudUiPanel * HudUiTextStack4::PushLine(
 ) {
     SetEnabled(1);
 
-    HudUiPanel *const firstLine = &lines[0];
-    if ((((HudUiElement *)(firstLine))->flags & 0x10u) == 0 &&
+    if (((~((HudUiElement *)(&lines[0]))->flags) & 0x10u) != 0 &&
         strcmp(
             message,
-            firstLine->GetLastTextPtr()
+            lines[0].GetLastTextPtr()
         ) != 0) {
-        {
-            for (int sourceIndex = 2; sourceIndex >= 0; --sourceIndex) {
-                HudUiPanel *const source = &lines[sourceIndex];
-                HudUiPanel *const dest = &lines[sourceIndex + 1];
-                HudUiElement *const sourceElement = (HudUiElement *)(source);
+        for (HudUiPanel *source = &lines[2]; source >= &lines[0]; --source) {
+            HudUiPanel *const dest = source + 1;
+            HudUiElement *const sourceElement = (HudUiElement *)(source);
 
-                if ((sourceElement->flags & 0x10u) == 0) {
-                    source->SetVisible(0);
-                    ((HudUiElement *)(dest))->SetTimer(
-                        ((HudUiElement *)(source))->timer
-                    );
-                    dest->SetTextFmt(source->GetLastTextPtr());
-                    dest->textColor0 = source->textColor0;
-                    dest->textColor1 = source->textColor1;
-                    dest->textDirty = 1;
-                    dest->SetVisible(1);
-                }
+            if (((~sourceElement->flags) & 0x10u) != 0) {
+                source->SetVisible(0);
+                ((HudUiElement *)(dest))->SetTimer(
+                    ((HudUiElement *)(source))->timer
+                );
+                dest->SetTextFmt(source->GetLastTextPtr());
+                dest->textColor0 = source->textColor0;
+                dest->textColor1 = source->textColor1;
+                dest->textDirty = 1;
+                ((HudUiElement *)(dest))->SetVisible(1);
             }
         }
     }
 
-    ((HudUiElement *)(firstLine))->SetTimer(duration);
-    firstLine->SetTextFmt(
+    ((HudUiElement *)(&lines[0]))->SetTimer(duration);
+    lines[0].SetTextFmt(
         "%s",
         message
     );
-    firstLine->SetVisible(1);
-    return firstLine;
+    ((HudUiElement *)(&lines[0]))->SetVisible(1);
+    return &lines[0];
 }
 
 // Reimplements 0x4bd470: zTimedTask::RemoveFromActiveList (D:\Proj\Battlesport\hud.cpp)

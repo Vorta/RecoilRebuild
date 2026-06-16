@@ -41252,7 +41252,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_ui_text_stack_push_line;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S blocked: VC5SP3 profile vc5_o2_ob1_md_gx_facs emits 226 unmasked byte mismatches; source-shape drift in prologue register lifetime, inlined strcmp register allocation, and row-shift loop/codegen after current-session byte attempt
+    - Blocker: tier S blocked: VC5SP3 profile vc5_o2_ob1_md_gx_facs now emits 130 unmasked byte mismatches after PushLine source-shape tightening from the prior 226-mismatch baseline. Source now uses the BN-observed top-line visible test form, direct line0 access, and pointer-cursor row shift from lines[2] down to lines[0]. Functional target hud_ui_text_stack_push_line passes; caller 0x4138d0 functional target passes and its VC5 blocker remains unchanged at 21 mismatches. Remaining drift is row-shift SetTimer float argument emission, post-SetTextFmt scheduling/register lifetime for text-color/vtable loads, branch displacement fallout, and final line0 call scheduling.
 
 - 0x4bd280:
   - [✅] Reconstructed (Name: HudUi::PushTopMessageLine)
