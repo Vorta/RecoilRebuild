@@ -104,14 +104,8 @@ RECOIL_STATIC_ASSERT(sizeof(CComboBox) == 0x40);
 RECOIL_STATIC_ASSERT(sizeof(CSpinButtonCtrl) == 0x40);
 
 extern "C" {
-unsigned int g_GameNetPlayerRowList = 0;
-GameNetPlayerRow *g_GameNetPlayerRowHead = 0;
-GameNetPlayerRow *g_GameNetPlayerRowTail = 0;
-unsigned int g_GameNetPlayerRowCount = 0;
-unsigned int g_GameNetSpawnPointList = 0;
-GameNetSpawnPoint *g_GameNetSpawnPointHead = 0;
-GameNetSpawnPoint *g_GameNetSpawnPointTail = 0;
-unsigned int g_GameNetSpawnPointCount = 0;
+GameNetPlayerRowListState g_GameNetPlayerRowList = {0, 0, 0, 0};
+GameNetSpawnPointListState g_GameNetSpawnPointList = {0, 0, 0, 0};
 unsigned int g_GameNetPlayerRowStyleColors_00RRGGBB[9] = {
     0x00000000,
     0x000000ff,
@@ -309,34 +303,20 @@ struct GameNetReaderArray {
     zReader::Node nodes[1];
 };
 
-template <typename T>
-// Source-faithful helper recovered from address-backed callers in this source file.
-T &EmbeddedHudPanelField(
-    HudUiPanel &panel,
-    size_t offset
-) {
-    return *(T *)((unsigned char *)(&panel) + offset);
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Original helper evidence: no standalone retail function; callers 0x432ae0,
+ * 0x432860, and 0x432e70 share the same HudUiPanel text-color writes.
+ * Purpose: Apply a row style color to the embedded scoreboard HUD text
+ * panel and mark its cached text image dirty.
+ */
 void SetEmbeddedHudPanelColor(
     GameNetPlayerRow *row,
     unsigned int color
 ) {
-    // The GameNet row embeds a full 0x2a4-byte panel; HudUiPanel is still
-    // partial, so keep these BN offsets local to the row-color refresh path.
-    EmbeddedHudPanelField<unsigned int>(
-        row->hudWidget,
-        0x14c
-    ) = color;
-    EmbeddedHudPanelField<unsigned int>(
-        row->hudWidget,
-        0x150
-    ) = color;
-    EmbeddedHudPanelField<int>(
-        row->hudWidget,
-        0x270
-    ) = 1;
+    row->hudWidget.textColor0 = color;
+    row->hudWidget.textColor1 = color;
+    row->hudWidget.textDirty = 1;
 }
 
 // Source-faithful helper recovered from address-backed callers in this source file.
@@ -410,7 +390,12 @@ void GameNetShowPairedTimerMessages(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper recovered from address-backed pkt06 caller 0x432300 in this
+ * source file; no standalone retail function is present.
+ * Purpose: Copy the active progress target positions into the outgoing pkt06
+ * player-state snapshot payload.
+ */
 void GameNetCopyPkt06ProgressTargets(
     NetPkt06_PlayerStateSnapshot *packet,
     zUtil_PlayerStateStorage *playerState
@@ -581,7 +566,12 @@ BOOL NetSessionBrowserDialog::OnInitDialog() {
     return TRUE;
 }
 
-// Reimplements 0x433a50: GameNetPlayerRow::ApplyPlayerColorTint
+/**
+ * Reimplements 0x433a50: GameNetPlayerRow::ApplyPlayerColorTint
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Apply the row's packed multiplayer color to the remote player's
+ * primary modal object and force that object visible.
+ */
 void GameNetPlayerRow::ApplyPlayerColorTint() {
     PlayerModalState *primaryModalState = saveState->primaryModalState;
     const unsigned int packedColor = g_GameNetPlayerRowStyleColors_00RRGGBB[playerColorIndex];
@@ -602,7 +592,11 @@ void GameNetPlayerRow::ApplyPlayerColorTint() {
     );
 }
 
-// Reimplements 0x434650: GameNetPlayerRow::DestroyEmbeddedPanel
+/**
+ * Reimplements 0x434650: GameNetPlayerRow::DestroyEmbeddedPanel
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Destroy the embedded HUD panel owned by a multiplayer player row.
+ */
 void GameNetPlayerRow::DestroyEmbeddedPanel() {
     hudWidget.~HudUiPanel();
 }
@@ -677,7 +671,7 @@ void InitFromZrd() {
 
     zUtil_SaveGameState *const localSaveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
     GameNetPlayerRow *const playerRow = GameNetPlayerRowList::AppendNewRow(
-        (GameNetPlayerRowListState *)(&g_GameNetPlayerRowList),
+        &g_GameNetPlayerRowList,
         1
     );
     playerRow->saveState = (GameNetPlayerSaveState *)(localSaveState);
@@ -732,18 +726,10 @@ void InitFromZrd() {
         const unsigned int styleColor =
             g_GameNetPlayerRowStyleColors_00RRGGBB[playerRow->playerColorIndex];
         playerRow->playerColorPackedRgb = styleColor;
-        EmbeddedHudPanelField<unsigned int>(
-            playerRow->hudWidget,
-            0x14c
-        ) = styleColor;
-        EmbeddedHudPanelField<unsigned int>(
-            playerRow->hudWidget,
-            0x150
-        ) = styleColor;
-        EmbeddedHudPanelField<int>(
-            playerRow->hudWidget,
-            0x270
-        ) = 1;
+        SetEmbeddedHudPanelColor(
+            playerRow,
+            styleColor
+        );
         playerRow->ApplyPlayerColorTint();
 
         if (g_HudSensorTracker.raceCheckpointMode == 0) {
@@ -2148,8 +2134,7 @@ int __fastcall SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
         GameNetUnlockRemotePlayerWeaponBanks(playerState);
     }
 
-    GameNetPlayerRowListState *const rowList =
-        (GameNetPlayerRowListState *)(&g_GameNetPlayerRowList);
+    GameNetPlayerRowListState *const rowList = &g_GameNetPlayerRowList;
     GameNetPlayerRow *const row = GameNetPlayerRowList::AppendNewRow(
         rowList,
         0
@@ -2602,7 +2587,7 @@ void ResetRemotePlayersAndSpawnLists() {
         spawnPoint = next;
     }
 
-    g_GameNetSpawnPointList = 0;
+    g_GameNetSpawnPointList.flags = 0;
     g_GameNetSpawnPointTail = 0;
     g_GameNetSpawnPointHead = 0;
     g_GameNetSpawnPointCount = 0;
@@ -2615,7 +2600,7 @@ void ResetRemotePlayersAndSpawnLists() {
         row = next;
     }
 
-    g_GameNetPlayerRowList = 0;
+    g_GameNetPlayerRowList.flags = 0;
     g_GameNetPlayerRowTail = 0;
     g_GameNetPlayerRowHead = 0;
     g_GameNetPlayerRowCount = 0;
@@ -2849,7 +2834,7 @@ int __fastcall HandlePkt03_RemoveRemotePlayer(
         GameNetPlayerRow *const next = row->next;
         g_GameNetPlayerRowHead = next;
         if (next == 0) {
-            g_GameNetPlayerRowList = 0;
+            g_GameNetPlayerRowList.flags = 0;
             g_GameNetPlayerRowTail = 0;
         }
     } else {
@@ -3498,9 +3483,13 @@ int __fastcall HostUpdateSessionDescStatusFields(
 } // namespace GameNet
 
 namespace GameNetSpawnPointList {
-// Reimplements 0x431bf0: GameNetSpawnPointList::InitGlobals
+/**
+ * Reimplements 0x431bf0: GameNetSpawnPointList::InitGlobals
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Reset the GameNet-owned spawn-point list header to an empty state.
+ */
 void InitGlobals() {
-    g_GameNetSpawnPointList = 0;
+    g_GameNetSpawnPointList.flags = 0;
     g_GameNetSpawnPointTail = 0;
     g_GameNetSpawnPointHead = 0;
     g_GameNetSpawnPointCount = 0;
@@ -3508,15 +3497,24 @@ void InitGlobals() {
 } // namespace GameNetSpawnPointList
 
 namespace GameNetPlayerRowList {
-// Reimplements 0x431c20: GameNetPlayerRowList::Reset
+/**
+ * Reimplements 0x431c20: GameNetPlayerRowList::Reset
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Reset the GameNet-owned player-row list header to an empty state.
+ */
 void Reset() {
-    g_GameNetPlayerRowList = 0;
+    g_GameNetPlayerRowList.flags = 0;
     g_GameNetPlayerRowTail = 0;
     g_GameNetPlayerRowHead = 0;
     g_GameNetPlayerRowCount = 0;
 }
 
-// Reimplements 0x4345a0: GameNetPlayerRowList::AppendNewRow
+/**
+ * Reimplements 0x4345a0: GameNetPlayerRowList::AppendNewRow
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Allocate a scoreboard player row and append it to the supplied
+ * GameNet player-row list header.
+ */
 GameNetPlayerRow *__fastcall AppendNewRow(
     GameNetPlayerRowListState *self,
     int zeroInitializeRow
