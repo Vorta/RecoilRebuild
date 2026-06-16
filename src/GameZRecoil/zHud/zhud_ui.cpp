@@ -12042,8 +12042,11 @@ void HudCmdDialogState::AtExitDestructor() {
     g_HudCmdDialogState.~HudCmdDialogState();
 }
 
-// Reimplements 0x40bda0: HudCmdDialogState::QueueEnter
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40bda0: HudCmdDialogState::QueueEnter.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: Queue the global command-dialog app state for entry.
+ */
 void HudCmdDialogState::QueueEnter() {
     g_RecoilApp.QueuePushState(
         &g_HudCmdDialogState,
@@ -12060,8 +12063,12 @@ HudCmdDialogState::HudCmdDialogState() {
     m_dialog = 0;
 }
 
-// Reimplements 0x40bcf0: HudCmdDialogState::OnTryBecomeCurrent
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40bcf0: HudCmdDialogState::OnTryBecomeCurrent.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: Allocate the 0xce00-byte command dialog, construct and store it,
+ * enable it, suspend keyboard input, and accept the state transition.
+ */
 int HudCmdDialogState::OnTryBecomeCurrent() {
     HudCmdDialog *dialog = (HudCmdDialog *) ::operator new(sizeof(HudCmdDialog));
     if (dialog != 0) {
@@ -12074,8 +12081,12 @@ int HudCmdDialogState::OnTryBecomeCurrent() {
     return 1;
 }
 
-// Reimplements 0x40bd60: HudCmdDialogState::OnDeactivate
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40bd60: HudCmdDialogState::OnDeactivate.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: Resume keyboard input, disable and dispose the active command
+ * dialog, clear it, and rebuild current input-map lookup indices.
+ */
 void HudCmdDialogState::OnDeactivate() {
     zInput::Keyboard_ResumeFromSuspend();
 
@@ -12096,8 +12107,11 @@ void HudCmdDialogState::OnDeactivate() {
     zInput::BindMap_Current_RebuildLookupIndices();
 }
 
-// Reimplements 0x40bc90: HudCmdDialogState::~HudCmdDialogState
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40bc90: HudCmdDialogState::~HudCmdDialogState.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: Delete any active command dialog owned by the state during teardown.
+ */
 HudCmdDialogState::~HudCmdDialogState() {
     HudCmdDialog *const dialog = m_dialog;
     if (dialog != 0) {
