@@ -699,7 +699,7 @@ void CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser() {
         browserDialog->Constructor(0);
         configDialog->Constructor(0);
 
-        zNetwork::InitSessionRuntime(g_zNetwork_RecoilAppGuid);
+        zNetwork::InitSessionRuntime(&g_zNetwork_RecoilAppGuid);
         zNetwork::SetFatalDisconnectCallback(&RecoilApp::FatalErrorAndExit);
         g_RecoilApp.m_skipIntroFmv = kFmvSkipEnabled;
         g_RecoilApp.m_missionFmvState.m_skipMissionFmv = kFmvSkipEnabled;

@@ -11,9 +11,9 @@ struct zArchiveList;
 struct IDirectPlayLobby3;
 typedef IDirectPlayLobby3 IDirectPlayLobby3A;
 typedef IDirectPlay4A zNetwork_DPlay4;
-struct zNetworkDPlayName;
-struct zNetworkDPlayCaps;
-struct zNetworkDPlaySessionDesc;
+typedef DPNAME zNetworkDPlayName;
+typedef DPCAPS zNetworkDPlayCaps;
+typedef DPSESSIONDESC2 zNetworkDPlaySessionDesc;
 struct zNetworkPacketHeader;
 
 typedef int(__fastcall *zNetworkPacketHandler)(
@@ -21,47 +21,9 @@ typedef int(__fastcall *zNetworkPacketHandler)(
     zNetworkPacketHeader *packet
 );
 typedef void(__fastcall *zNetworkFatalDisconnectCallback)(int reason);
-typedef int(__stdcall *zNetworkDPlayEnumPlayersCallback)(
-    unsigned int playerId,
-    unsigned int playerType,
-    zNetworkDPlayName *playerNameInfo,
-    unsigned int flags,
-    void *context
-);
-typedef int(__stdcall *zNetworkDPlayEnumSessionsCallback)(
-    zNetworkDPlaySessionDesc *sessionDesc,
-    unsigned int *timeoutMs,
-    unsigned int flags,
-    void *context
-);
-typedef int(__stdcall *zNetworkDPlayEnumConnectionsCallback)(
-    unsigned char *serviceProviderGuid,
-    void *connectionData,
-    unsigned int connectionDataSize,
-    zNetworkDPlayName *providerName,
-    unsigned int providerFlags,
-    void *context
-);
-
-struct zNetworkDPlayName {
-    unsigned int size;
-    unsigned int flags;
-    char *shortName;
-    char *longName;
-};
-
-struct zNetworkDPlayCaps {
-    int size;
-    int flags;
-    int maxBufferSize;
-    int maxQueueSize;
-    int maxPlayers;
-    int hundredBaud;
-    int latency;
-    int maxLocalPlayers;
-    int headerLength;
-    int timeout;
-};
+typedef LPDPENUMPLAYERSCALLBACK2 zNetworkDPlayEnumPlayersCallback;
+typedef LPDPENUMSESSIONSCALLBACK2 zNetworkDPlayEnumSessionsCallback;
+typedef LPDPENUMCONNECTIONSCALLBACK zNetworkDPlayEnumConnectionsCallback;
 
 struct zNetwork_PlayerRecord {
     unsigned int playerKey;
@@ -183,23 +145,6 @@ struct NetPkt01_PlayerColorAssignments {
     zNetworkPlayerColorPair pairs[1];
 };
 
-struct zNetworkDPlaySessionDesc {
-    int size;
-    int flags;
-    unsigned char instanceGuid[0x10];
-    unsigned char appGuid[0x10];
-    int maxPlayers;
-    int currentPlayers;
-    char *sessionName;
-    char *sessionPassword;
-    void *reservedData;
-    int reservedDataSize;
-    int customEventCode;
-    int customStatusFlags;
-    int customValueOrTime;
-    int customAuxParam;
-};
-
 struct zNetworkDPlaySessionDescCache {
     int openMode;
     int reserved_04;
@@ -217,7 +162,7 @@ struct zNetworkSessionDescStatusFields {
 };
 
 struct zNetworkDPlayServiceProviderInfo {
-    unsigned char serviceProviderGuid[0x10];
+    GUID serviceProviderGuid;
     char *displayName;
     void *connectionData;
     int providerFlags;
@@ -265,8 +210,8 @@ extern int g_zNetwork_TcpIpAsyncSendEnabled;
 extern int g_zNetwork_ActiveProviderIsModem;
 extern int g_zNetwork_ActiveProviderIsTcpIp;
 extern zNetworkDPlayCaps g_zNetwork_DPlayCaps;
-extern unsigned char *g_zNetwork_AppGuid;
-extern unsigned char g_zNetwork_RecoilAppGuid[16];
+extern GUID *g_zNetwork_AppGuid;
+extern GUID g_zNetwork_RecoilAppGuid;
 extern unsigned int g_zNetwork_LastSendExHandle;
 extern int g_zNetwork_LastSendExCompleted;
 extern int g_zNetwork_SessionRuntimeInitialized;
@@ -352,11 +297,11 @@ namespace zNetworkDPlay {
 int __fastcall CreateLobby3AInterface(IDirectPlayLobby3A **outLobby3A);
 zNetworkServiceProviderListVec *RefreshAndGetServiceProviderList();
 int __stdcall EnumConnectionsCallback_AddServiceProviderInfo(
-    unsigned char *serviceProviderGuid,
+    const GUID *serviceProviderGuid,
     void *connectionData,
-    unsigned int connectionDataSize,
-    zNetworkDPlayName *providerName,
-    unsigned int providerFlags,
+    DWORD connectionDataSize,
+    const zNetworkDPlayName *providerName,
+    DWORD providerFlags,
     void *context
 );
 char *__fastcall GetEnumeratedSessionNameByIndex(int entryIndex);
@@ -367,16 +312,16 @@ void __fastcall GetEnumeratedSessionPlayerCountsByIndex(
 );
 int QueryCapsAndConfigureSendMode();
 int __stdcall EnumSessionCallback_AddSessionDescCache(
-    zNetworkDPlaySessionDesc *sessionDesc,
-    unsigned int *timeoutMs,
-    unsigned int flags,
+    const zNetworkDPlaySessionDesc *sessionDesc,
+    DWORD *timeoutMs,
+    DWORD flags,
     void *context
 );
 int __stdcall EnumPlayerCallback_AddPlayerRecord(
-    unsigned int playerId,
-    unsigned int playerType,
-    zNetworkDPlayName *playerNameInfo,
-    unsigned int flags,
+    DPID playerId,
+    DWORD playerType,
+    const zNetworkDPlayName *playerNameInfo,
+    DWORD flags,
     void *context
 );
 void __fastcall FreeServiceProviderInfoBuffers(
@@ -426,7 +371,7 @@ void ClearPlayerRecordList();
 void __fastcall SetFatalDisconnectCallback(
     zNetworkFatalDisconnectCallback callback
 );
-int __fastcall InitSessionRuntime(unsigned char *appGuid);
+int __fastcall InitSessionRuntime(GUID *appGuid);
 int ShutdownSessionRuntime();
 } // namespace zNetwork
 
@@ -435,26 +380,26 @@ RECOIL_STATIC_ASSERT(sizeof(zNetworkDPlayCaps) == 0x28);
 RECOIL_STATIC_ASSERT(
     offsetof(
         zNetworkDPlayCaps,
-        flags
+        dwFlags
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(sizeof(zNetworkDPlaySessionDesc) == 0x50);
 RECOIL_STATIC_ASSERT(
     offsetof(
         zNetworkDPlaySessionDesc,
-        maxPlayers
+        dwMaxPlayers
     ) == 0x28
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         zNetworkDPlaySessionDesc,
-        sessionName
+        lpszSessionNameA
     ) == 0x30
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         zNetworkDPlaySessionDesc,
-        customEventCode
+        dwUser1
     ) == 0x40
 );
 RECOIL_STATIC_ASSERT(
