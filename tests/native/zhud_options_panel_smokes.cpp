@@ -301,6 +301,91 @@ extern "C" int zhud_options_panel_texture_memory_sync_from_options_smoke(void) {
     return swAdvanceOk && swWrapOk && hwAdvanceOk ? 0 : 1;
 }
 
+extern "C" int zhud_options_panel_effects_init_from_options_smoke(void) {
+    int swEffectsLevel = 0;
+    int hwEffectsLevel = 0;
+    int videoAcceleration = 0;
+    int *const oldSwEffectsLevel = ZOPT_EFFECTS_LEVEL_SW;
+    int *const oldHwEffectsLevel = ZOPT_EFFECTS_LEVEL_HW;
+    int *const oldVideoAcceleration = ZOPT_VIDEO_ACCELERATION;
+    const int oldHwMode = g_zOpt_HwMode;
+
+    ZOPT_EFFECTS_LEVEL_SW = &swEffectsLevel;
+    ZOPT_EFFECTS_LEVEL_HW = &hwEffectsLevel;
+    ZOPT_VIDEO_ACCELERATION = &videoAcceleration;
+
+    HudUiOptionsPanel_Effects effects;
+    effects.Constructor();
+    effects.itemCount = 4;
+    effects.firstIndex = 0;
+    effects.visibleCount = 4;
+
+    g_zOpt_HwMode = 0;
+    videoAcceleration = 0;
+    swEffectsLevel = 0;
+    effects.selectedIndex = 0;
+    effects.InitFromOptions();
+    const bool swZeroForcedOk =
+        effects.firstIndex == 1 &&
+        effects.visibleCount == 3 &&
+        effects.selectedIndex == 1;
+
+    swEffectsLevel = 2;
+    effects.firstIndex = 0;
+    effects.visibleCount = 4;
+    effects.selectedIndex = 0;
+    effects.InitFromOptions();
+    const bool swRangeOk =
+        effects.firstIndex == 1 &&
+        effects.visibleCount == 3 &&
+        effects.selectedIndex == 2;
+
+    g_zOpt_HwMode = 1;
+    videoAcceleration = 1;
+    hwEffectsLevel = 0;
+    effects.firstIndex = 0;
+    effects.visibleCount = 4;
+    effects.selectedIndex = 9;
+    effects.InitFromOptions();
+    const bool hwDirectOk =
+        effects.firstIndex == 0 &&
+        effects.visibleCount == 4 &&
+        effects.selectedIndex == 0;
+
+    effects.DestructorCore();
+    ZOPT_EFFECTS_LEVEL_SW = oldSwEffectsLevel;
+    ZOPT_EFFECTS_LEVEL_HW = oldHwEffectsLevel;
+    ZOPT_VIDEO_ACCELERATION = oldVideoAcceleration;
+    g_zOpt_HwMode = oldHwMode;
+
+    return swZeroForcedOk && swRangeOk && hwDirectOk ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_sound_active_init_from_options_smoke(void) {
+    int muteSound = 0;
+    int *const oldMuteSound = ZOPT_MUTE_SOUND;
+
+    ZOPT_MUTE_SOUND = &muteSound;
+
+    HudUiOptionsPanel_SoundActive soundActive;
+    soundActive.Constructor();
+
+    muteSound = 0;
+    soundActive.checked = 0;
+    soundActive.InitFromOptions();
+    const bool unmutedOk = soundActive.checked == 1;
+
+    muteSound = 1;
+    soundActive.checked = 9;
+    soundActive.InitFromOptions();
+    const bool mutedOk = soundActive.checked == 0;
+
+    soundActive.DestructorCore();
+    ZOPT_MUTE_SOUND = oldMuteSound;
+
+    return unmutedOk && mutedOk ? 0 : 1;
+}
+
 extern "C" int zhud_options_panel_resolution_on_activate_smoke(void) {
     const zVidModeIndex oldDeferredMode =
         g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex;

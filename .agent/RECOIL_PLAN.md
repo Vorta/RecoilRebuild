@@ -25584,15 +25584,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x407f80:
   - [✅] Reconstructed (Name: zOpt::GetEffectsLevelForCurrentHwMode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGame; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zGame; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zOpt::GetEffectsLevelForCurrentHwMode;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_get_effects_level_for_current_hw_mode;
     - Group: engine.zgame;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x407fa0:
   - [☑️] Reconstructed (Name: zOpt::SetObjectLODForCurrentHwMode)
@@ -25636,15 +25636,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x408060:
   - [✅] Reconstructed (Name: zOpt::GetMuteSoundOption)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGame; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zGame; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zOpt::GetMuteSoundOption;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_get_mute_sound_option;
     - Group: engine.zgame;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408070:
   - [☑️] Reconstructed (Name: zOpt::SetSoundVolumeOption)
@@ -35582,16 +35582,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x40cb30:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Effects::InitFromOptions)
-  - [❌] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
-  - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Source dependencies satisfied
+  - [✅] Source owner (Kind: class; Parent: HudOptionsDialog; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiOptionsPanel_Effects::InitFromOptions;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_options_panel_effects_init_from_options;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40cb70:
   - [✅] Reconstructed (Name: HudUiOptionsPanel_Effects::SyncFromOptions)
@@ -35608,16 +35608,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x40cb90:
   - [☑️] Reconstructed (Name: HudUiOptionsPanel_SoundActive::InitFromOptions)
-  - [❌] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudOptionsDialog; State: parent-pending)
-  - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Source dependencies satisfied
+  - [✅] Source owner (Kind: class; Parent: HudOptionsDialog; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiOptionsPanel_SoundActive::InitFromOptions;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_options_panel_sound_active_init_from_options;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudOptionsDialog/HudUiOptionsPanel_* FTable globals and table factories remain unresolved source-shape debt
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40cbb0:
   - [☑️] Reconstructed (Name: HudUiOptionsPanel_SoundActive::SyncFromOptions)
@@ -37345,15 +37345,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b7f80:
   - [✅] Reconstructed (Name: HudUiCycleSelectorWidget::SetVisibleRange)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: HudUi; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiCycleSelectorWidget::SetVisibleRange;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_cycle_selector_widget_set_visible_range;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b7fd0:
   - [☑️] Reconstructed (Name: HudUiCycleSelectorWidget::AddTextEntry)
