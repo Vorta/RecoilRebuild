@@ -28,10 +28,10 @@ struct Node;
 
 extern "C" {
 extern int g_Player_HudCounterValue;
+extern int g_PlayerSaveStateListAux;
 extern zUtil_SaveGameState *g_PlayerSaveStateListHead;
 extern zUtil_SaveGameState *g_PlayerSaveStateListTail;
 extern int g_PlayerSaveStateCount;
-extern int g_PlayerSaveStateListAux;
 extern zVec3 *g_Player_LocalFxOffsetWorldPtr;
 extern zUtil_SaveGameState *g_LocalPlayerSaveState;
 extern zUtil_SaveGameState *g_Player2SaveState;
