@@ -20394,7 +20394,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zvideo_dd_zbuffer_depth_fill_rect;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: tier S blocked: retained ZBuffer_DepthFillRect while-loop retry spelling improves zvideo_dd_zbuffer_depth_fill_rect from 102 to 10 unmasked mismatches after 20 relocation-masked bytes and 5 trimmed VC NOP bytes (BN 114 bytes, VC5 112 bytes). Functional target passes; owner/data remain accepted. Remaining drift is branch displacement and success-epilogue shape.
+    - Blocker: tier S blocked: same-session VC5SP3 clear-cluster compare now fails with 9 unmasked mismatches after 20 relocation-masked bytes and 5 trimmed VC NOP bytes (BN 114 bytes, VC5 112 bytes). Source expands the former BltFillWithRestore helper into the BN-shaped direct DDBLT_DEPTHFILL Blt/Restore retry loop with field-only DDBLTFX initialization; functional target passes. Remaining drift is success/empty epilogue shape and branch displacement.
 
 - 0x4a8220:
   - [✅] Reconstructed (Name: zVideo_dd::ClearScreenAndZBufferRect)
@@ -20407,7 +20407,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zvideo_dd_clear_screen_and_zbuffer_rect;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: tier S blocked: local VC5SP3 target zvideo_dd_clear_screen_and_zbuffer_rect with vc5_o2_ob1_md_facs fails after BN-visible DDBLTFX field-only source-shape correction; verify vc5 0x4a8220 reports 203 unmasked mismatches after 20 relocation-masked bytes and 14 trimmed VC NOP bytes, BN size 208 and VC5 size 256; functional target still passes.
+    - Blocker: tier S blocked: same-session VC5SP3 clear-cluster compare now fails with 10 unmasked mismatches after 36 relocation-masked bytes and 8 trimmed VC NOP bytes (BN 208 bytes, VC5 208 bytes). Source expands the former BltFillWithRestore helper into direct color/Z Blt/Restore retry loops with field-only DDBLTFX initialization and report lines 0x267/0x27f; functional target passes. Remaining drift is success/empty epilogue shape and branch displacement.
 
 - 0x4a82f0:
   - [✅] Reconstructed (Name: zVideo_dd::ClearSwBackbufferAndZBufferRects)
@@ -20420,7 +20420,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zvideo_dd_clear_sw_backbuffer_and_zbuffer_rects;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: tier S blocked: local VC5SP3 target zvideo_dd_clear_sw_backbuffer_and_zbuffer_rects with vc5_o2_ob1_md_facs fails after BN-visible DDBLTFX field-only source-shape correction; verify vc5 0x4a82f0 reports 215 unmasked mismatches after 24 relocation-masked bytes and 6 trimmed VC NOP bytes, BN size 212 and VC5 size 256; functional target still passes.
+    - Blocker: tier S blocked: same-session VC5SP3 clear-cluster compare now fails with 10 unmasked mismatches after 44 relocation-masked bytes and 4 trimmed VC NOP bytes (BN 212 bytes, VC5 208 bytes). Source expands the former BltFillWithRestore helper into direct software-backbuffer/Z Blt/Restore retry loops with field-only DDBLTFX initialization and report lines 0x2a5/0x2bd; functional target passes. Remaining drift is success/empty epilogue shape and branch displacement.
 
 - 0x4a83d0:
   - [✅] Reconstructed (Name: zVideo_dd::Image_LazyCreateBackingSurface)

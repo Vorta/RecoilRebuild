@@ -133,9 +133,9 @@ available even when no groups are active.
     functional smokes for 0x4a81a0 zVideo_dd::ZBuffer_DepthFillRect,
     0x4a8220 zVideo_dd::ClearScreenAndZBufferRect, and 0x4a82f0
     zVideo_dd::ClearSwBackbufferAndZBufferRects, documented the repeated
-    Blt/Restore loop as an original inline helper, and accepted their
-    namespace source ownership. Their touched clear/Z-buffer globals remain
-    data-gate blockers before tier B or coherent clear-cluster tier S work.
+    Blt/Restore loop source shape, and accepted their namespace source
+    ownership. Their touched clear/Z-buffer globals remain data-gate blockers
+    before tier B or coherent clear-cluster tier S work.
     A later data pass accepted 0x4a6b80 zVideo::SetClearColorPacked16 to tier
     B after current BN confirmed the leaf store into zero-initialized
     g_zVideo_ClearColorPacked16 (6321cch), and a follow-up local VC5SP3 target
@@ -148,23 +148,23 @@ available even when no groups are active.
     remains blocked only on coherent VC5SP3 tier S verification.
     A follow-up clear-cluster VC pass corrected the local `DDBLTFX` source
     shape to BN-visible field-only initialization instead of full provider
-    record zeroing and kept the recovered Blt/Restore helper as an inline
-    retry-label helper. A later 0x4a81a0 pass inlined the BN-shaped
-    Z-buffer Blt/Restore retry loop and moved DDBLTFX size initialization
-    before the null-surface branch, improving `verify vc5 0x4a81a0` from
-    115 to 102 unmasked mismatches after 12 relocation-masked bytes and
-    9 trimmed VC NOPs (BN 114, VC5 144). The local VC5SP3 `/Ob1` clear
-    targets still remain below tier S:
-    `verify vc5 0x4a8220` fails with 203 after 20 relocation-masked bytes
-    (BN 208, VC5 256), and `verify vc5 0x4a82f0` fails with 215 after 24
-    relocation-masked bytes (BN 212, VC5 256). Functional smokes for all three
-    still pass.
-    A later 0x4a81a0 byte-shape pass changed the Z-buffer clear retry loop to
-    a VC5-shaped `HRESULT hresult = DD_OK; while (hresult == DD_OK)` spelling,
-    reducing `verify vc5 0x4a81a0` from 102 to 10 unmasked mismatches after
-    20 relocation-masked bytes and 5 trimmed VC NOPs (BN 114, VC5 112).
-    `verify functional 0x4a81a0` still passes; tier S remains blocked by
-    branch displacement and success-epilogue drift.
+    record zeroing. A later 0x4a81a0 pass inlined the BN-shaped Z-buffer
+    Blt/Restore retry loop and moved DDBLTFX size initialization before the
+    null-surface branch, improving `verify vc5 0x4a81a0` from 115 to 102
+    unmasked mismatches after 12 relocation-masked bytes and 9 trimmed VC NOPs
+    (BN 114, VC5 144). A later clear-cluster byte-shape pass removed the
+    shared `BltFillWithRestore` helper because VC5 emitted boolean-return
+    scaffolding that did not match BN, and expanded all three paths into direct
+    `HRESULT hresult = DD_OK; while (hresult == DD_OK)` Blt/Restore retry
+    loops with BN-shaped DDERR_SURFACELOST restore handling. Functional smokes
+    for all three still pass. Current VC5SP3 `/Ob1` clear targets remain below
+    tier S only on residual epilogue/branch-displacement drift:
+    `verify vc5 0x4a81a0` fails with 9 unmasked mismatches after 20
+    relocation-masked bytes and 5 trimmed VC NOPs (BN 114, VC5 112);
+    `verify vc5 0x4a8220` fails with 10 after 36 relocation-masked bytes and
+    8 trimmed VC NOPs (BN 208, VC5 208); and `verify vc5 0x4a82f0` fails with
+    10 after 44 relocation-masked bytes and 4 trimmed VC NOPs (BN 212, VC5
+    208).
     A fresh
     local VC5SP3 target for 0x4a9b70 previously failed with 108 unmasked
     mismatches after 28 relocation-masked bytes and 6 trimmed VC NOP bytes; a
