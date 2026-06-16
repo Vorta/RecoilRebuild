@@ -7119,6 +7119,9 @@ void DispatchTexturedSpanChunks(
 }
 } // namespace
 
+// Retail code keeps an EBP frame for this large scan-conversion body under the
+// VC5SP3 /O2 profile; disable only frame-pointer omission for the function.
+#pragma optimize("y", off)
 /**
  * Reimplements 0x492000: zRndr_RasterizePolyWithSpanList
  * Original file: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
@@ -7130,6 +7133,9 @@ void __fastcall zRndr_RasterizePolyWithSpanList(
     int vertCount,
     int spanOpContext
 ) {
+    const float planeZ0 = planeVerts[0].z;
+    const float planeZ1 = planeVerts[1].z;
+    const float planeZ2 = planeVerts[2].z;
     const float dx10 = planeVerts[0].x - planeVerts[1].x;
     const float dx12 = planeVerts[2].x - planeVerts[1].x;
     const float dy10 = planeVerts[0].y - planeVerts[1].y;
@@ -7138,14 +7144,14 @@ void __fastcall zRndr_RasterizePolyWithSpanList(
     float invDepthSlopeX = determinant;
     float invDepthSlopeY = determinant;
     if (determinant != 0.0f) {
-        const float dz10 = planeVerts[0].z - planeVerts[1].z;
-        const float dz12 = planeVerts[2].z - planeVerts[1].z;
+        const float dz10 = planeZ0 - planeZ1;
+        const float dz12 = planeZ2 - planeZ1;
         const float inverseDeterminant = 1.0f / determinant;
         invDepthSlopeX = (dy12 * dz10 - dy10 * dz12) * inverseDeterminant;
         invDepthSlopeY = (dx10 * dz12 - dx12 * dz10) * inverseDeterminant;
     }
 
-    const float invDepthBiasBase = planeVerts[0].z - (planeVerts[0].x - 0.5f) * invDepthSlopeX -
+    const float invDepthBiasBase = planeZ0 - (planeVerts[0].x - 0.5f) * invDepthSlopeX -
                                    (planeVerts[0].y - 0.5f) * invDepthSlopeY;
 
     int topVertexIndex = 0;
@@ -7365,6 +7371,7 @@ void __fastcall zRndr_RasterizePolyWithSpanList(
         scanlineBase += zRndr::g_pitchBytes;
     }
 }
+#pragma optimize("y", on)
 
 /**
  * Reimplements 0x492f00: zRndr_DrawFlatImmediate
