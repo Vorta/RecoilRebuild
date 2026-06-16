@@ -11453,7 +11453,10 @@ void HudUiOptionsPanel_Lighting::PostLoadFromZrd() {
     InitFromOptions();
 }
 
-// Reimplements 0x40c9c0: HudUiOptionsPanel_Lighting::InitFromOptions
+/**
+ * Reimplements 0x40c9c0: HudUiOptionsPanel_Lighting::InitFromOptions.
+ * Purpose: synchronize the lighting toggle from the active hardware-mode graphics flags.
+ */
 void HudUiOptionsPanel_Lighting::InitFromOptions() {
     SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_GLOBAL_LIGHT);
 }
