@@ -18315,15 +18315,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48ad30:
   - [✅] Reconstructed (Name: zNetworkDPlay::SendReliable)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork_DPlay_SendReliable;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_send_reliable;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48ad70:
   - [✅] Reconstructed (Name: zNetworkDPlay::SendExUnreliableTracked)
@@ -18341,15 +18341,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48ae10:
   - [☑️] Reconstructed (Name: zNetworkDPlay::SendExReliable)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork_DPlay_SendExReliable;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_send_ex_reliable;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48ae70:
   - [☑️] Reconstructed (Name: zNetworkDPlay::ReceivePendingMessages)
@@ -18367,15 +18367,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48afa0:
   - [☑️] Reconstructed (Name: zNetwork::GetPlayerNameByKey)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork::GetPlayerNameByKey;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_get_player_name_by_key;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48afe0:
   - [☑️] Reconstructed (Name: zNetworkDPlay::PumpIncomingMessages)
@@ -18562,28 +18562,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48bab0:
   - [✅] Reconstructed (Name: zNetwork::ExtractStatusFieldsFromSessionDesc)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork_ExtractStatusFieldsFromSessionDesc;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_extract_status_fields_from_session_desc;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48bb20:
   - [☑️] Reconstructed (Name: zNetwork::ApplyStatusFieldsToSessionDesc)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork_ApplyStatusFieldsToSessionDesc;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_apply_status_fields_to_session_desc;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48bbe0:
   - [☑️] Reconstructed (Name: zNetworkDPlay::SelectTcpIpProviderAndEnumSessions)
@@ -18692,15 +18692,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48c080:
   - [✅] Reconstructed (Name: zNetwork::SendPacketReliable)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork_SendPacketReliable;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_send_packet_reliable;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48c0a0:
   - [☑️] Reconstructed (Name: zNetwork::RegisterPacketHandler)
@@ -32586,15 +32586,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x432830:
   - [✅] Reconstructed (Name: GameNet::FindPlayerRowByKey)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: GameNet; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::FindPlayerRowByKey;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_find_player_row_by_key;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x432860:
   - [☑️] Reconstructed (Name: GameNet::SpawnRemotePlayerFromPkt06_PlayerStateSnapshot)
@@ -33002,15 +33002,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x434460:
   - [☑️] Reconstructed (Name: GameNet::SendPkt14_HudTimerAndFlagsSync)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: GameNet; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::SendPkt14_HudTimerAndFlagsSync;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_send_pkt14_hud_timer_and_flags_sync;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4344b0:
   - [☑️] Reconstructed (Name: GameNet::HandlePkt14_HudTimerAndFlagsSync)
@@ -33028,15 +33028,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x434550:
   - [✅] Reconstructed (Name: GameNet::HostUpdateSessionDescStatusFields)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: GameNet; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::HostUpdateSessionDescStatusFields;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_host_update_session_desc_status_fields;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4345a0:
   - [☑️] Reconstructed (Name: GameNetPlayerRowList::AppendNewRow)

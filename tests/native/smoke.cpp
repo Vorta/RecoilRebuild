@@ -142,6 +142,8 @@ extern "C" int znetwork_dplay_create_local_player_record_smoke(void);
 extern "C" int znetwork_dplay_enum_players_smoke(void);
 extern "C" int znetwork_dplay_receive_pending_messages_smoke(void);
 extern "C" int znetwork_dplay_pump_incoming_messages_smoke(void);
+extern "C" int znetwork_packet_send_wrappers_smoke(void);
+extern "C" int znetwork_session_status_fields_smoke(void);
 extern "C" int znetwork_unregister_packet_handler_smoke(void);
 extern "C" int znetwork_dispatch_packet_to_handlers_smoke(void);
 extern "C" int znetwork_clear_enumerated_session_list_smoke(void);
@@ -156,6 +158,9 @@ extern "C" int gamenet_send_pkt14_hud_timer_and_flags_sync_smoke(void);
 extern "C" int gamenet_host_update_session_status_fields_smoke(void);
 extern "C" int gamenet_unregister_gameplay_packet_handlers_smoke(void);
 extern "C" int gamenet_reset_remote_players_and_spawn_lists_smoke(void);
+extern "C" int gamenet_apply_pkt06_player_state_snapshot_smoke(void);
+extern "C" int gamenet_handle_pkt06_player_state_snapshot_smoke(void);
+extern "C" int gamenet_spawn_remote_player_missing_template_smoke(void);
 extern "C" int zfmv_script_init_null_path_smoke(void);
 extern "C" int zfmv_script_reset_smoke(void);
 extern "C" int zfmv_script_cleanup_smoke(void);
@@ -10393,6 +10398,8 @@ int main(int argc, char **argv) {
          znetwork_dplay_receive_pending_messages_smoke},
         {"znetwork_dplay_pump_incoming_messages_smoke",
          znetwork_dplay_pump_incoming_messages_smoke},
+        {"znetwork_packet_send_wrappers_smoke", znetwork_packet_send_wrappers_smoke},
+        {"znetwork_session_status_fields_smoke", znetwork_session_status_fields_smoke},
         {"znetwork_unregister_packet_handler_smoke", znetwork_unregister_packet_handler_smoke},
         {"znetwork_dispatch_packet_to_handlers_smoke",
          znetwork_dispatch_packet_to_handlers_smoke},
@@ -10417,6 +10424,12 @@ int main(int argc, char **argv) {
          gamenet_unregister_gameplay_packet_handlers_smoke},
         {"gamenet_reset_remote_players_and_spawn_lists_smoke",
          gamenet_reset_remote_players_and_spawn_lists_smoke},
+        {"gamenet_apply_pkt06_player_state_snapshot_smoke",
+         gamenet_apply_pkt06_player_state_snapshot_smoke},
+        {"gamenet_handle_pkt06_player_state_snapshot_smoke",
+         gamenet_handle_pkt06_player_state_snapshot_smoke},
+        {"gamenet_spawn_remote_player_missing_template_smoke",
+         gamenet_spawn_remote_player_missing_template_smoke},
         {"zfmv_script_init_null_path_smoke", zfmv_script_init_null_path_smoke},
         {"zfmv_script_reset_smoke", zfmv_script_reset_smoke},
         {"zfmv_script_cleanup_smoke", zfmv_script_cleanup_smoke},

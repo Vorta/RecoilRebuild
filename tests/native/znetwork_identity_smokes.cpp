@@ -16,6 +16,10 @@ int g_openCalls;
 zNetworkDPlaySessionDesc *g_openDescPtr;
 DWORD g_openFlags;
 HRESULT g_openResult;
+int g_setSessionDescCalls;
+zNetworkDPlaySessionDesc *g_setSessionDescPtr;
+DWORD g_setSessionDescFlags;
+HRESULT g_setSessionDescResult;
 int g_enumPlayersCalls;
 HRESULT g_enumPlayersResult;
 int g_createPlayerCalls;
@@ -38,6 +42,18 @@ DWORD g_receiveFrom[4];
 DWORD g_receiveTo[4];
 DWORD g_receiveSizes[4];
 unsigned char g_receivePayloads[4][128];
+int g_sendCalls;
+DWORD g_sendFromPlayer;
+DWORD g_sendFlags;
+void *g_sendPacket;
+DWORD g_sendPacketSize;
+HRESULT g_sendResult;
+int g_sendExCalls;
+DWORD g_sendExFlags;
+DWORD g_sendExAsyncValue;
+int g_cancelCalls;
+DWORD g_cancelHandle;
+DWORD g_cancelFlags;
 int g_dispatchCallsA;
 int g_dispatchCallsB;
 int g_dispatchSenderA;
@@ -87,6 +103,17 @@ HRESULT __stdcall FakeDirectPlayOpen(
     g_openDescPtr = sessionDesc;
     g_openFlags = flags;
     return g_openResult;
+}
+
+HRESULT __stdcall FakeDirectPlaySetSessionDesc(
+    zNetwork_DPlay4 *,
+    zNetworkDPlaySessionDesc *sessionDesc,
+    DWORD flags
+) {
+    ++g_setSessionDescCalls;
+    g_setSessionDescPtr = sessionDesc;
+    g_setSessionDescFlags = flags;
+    return g_setSessionDescResult;
 }
 
 HRESULT __stdcall FakeDirectPlayEnumPlayers(
@@ -194,6 +221,56 @@ HRESULT __stdcall FakeDirectPlayReceive(
     return g_receiveResults[index];
 }
 
+HRESULT __stdcall FakeDirectPlaySend(
+    zNetwork_DPlay4 *,
+    DWORD fromPlayer,
+    DWORD,
+    DWORD flags,
+    void *packet,
+    DWORD packetSizeBytes
+) {
+    ++g_sendCalls;
+    g_sendFromPlayer = fromPlayer;
+    g_sendFlags = flags;
+    g_sendPacket = packet;
+    g_sendPacketSize = packetSizeBytes;
+    return g_sendResult;
+}
+
+HRESULT __stdcall FakeDirectPlaySendEx(
+    zNetwork_DPlay4 *,
+    DWORD fromPlayer,
+    DWORD,
+    DWORD flags,
+    void *packet,
+    DWORD packetSizeBytes,
+    DWORD,
+    DWORD,
+    void *,
+    DWORD *asyncHandle
+) {
+    ++g_sendExCalls;
+    g_sendFromPlayer = fromPlayer;
+    g_sendExFlags = flags;
+    g_sendPacket = packet;
+    g_sendPacketSize = packetSizeBytes;
+    if (asyncHandle != 0) {
+        *asyncHandle = g_sendExAsyncValue;
+    }
+    return g_sendResult;
+}
+
+HRESULT __stdcall FakeDirectPlayCancelMessage(
+    zNetwork_DPlay4 *,
+    DWORD asyncHandle,
+    DWORD flags
+) {
+    ++g_cancelCalls;
+    g_cancelHandle = asyncHandle;
+    g_cancelFlags = flags;
+    return 0;
+}
+
 int __fastcall TestPacketHandlerA(
     int,
     zNetworkPacketHeader *
@@ -261,6 +338,10 @@ void ResetDirectPlayScenarioState() {
     g_openDescPtr = 0;
     g_openFlags = 0;
     g_openResult = 0;
+    g_setSessionDescCalls = 0;
+    g_setSessionDescPtr = 0;
+    g_setSessionDescFlags = 0;
+    g_setSessionDescResult = 0;
     g_enumPlayersCalls = 0;
     g_enumPlayersResult = 0;
     g_createPlayerCalls = 0;
@@ -303,6 +384,18 @@ void ResetDirectPlayScenarioState() {
         0,
         sizeof(g_receivePayloads)
     );
+    g_sendCalls = 0;
+    g_sendFromPlayer = 0;
+    g_sendFlags = 0;
+    g_sendPacket = 0;
+    g_sendPacketSize = 0;
+    g_sendResult = 0;
+    g_sendExCalls = 0;
+    g_sendExFlags = 0;
+    g_sendExAsyncValue = 0xabcdef01;
+    g_cancelCalls = 0;
+    g_cancelHandle = 0;
+    g_cancelFlags = 0;
     g_dispatchCallsA = 0;
     g_dispatchCallsB = 0;
     g_dispatchSenderA = 0;
@@ -366,6 +459,30 @@ void BuildMinimalDirectPlayVtable(
     vtable[19] = (void *)(&FakeDirectPlayGetPlayerCaps);
     vtable[24] = (void *)(&FakeDirectPlayOpen);
     vtable[25] = (void *)(&FakeDirectPlayReceive);
+}
+
+void BuildPacketSendDirectPlayVtable(
+    void **vtable
+) {
+    memset(
+        vtable,
+        0,
+        sizeof(void *) * 52
+    );
+    vtable[26] = (void *)(&FakeDirectPlaySend);
+    vtable[49] = (void *)(&FakeDirectPlaySendEx);
+    vtable[51] = (void *)(&FakeDirectPlayCancelMessage);
+}
+
+void BuildSessionStatusDirectPlayVtable(
+    void **vtable
+) {
+    memset(
+        vtable,
+        0,
+        sizeof(void *) * 52
+    );
+    vtable[31] = (void *)(&FakeDirectPlaySetSessionDesc);
 }
 } // namespace
 
@@ -453,6 +570,146 @@ extern "C" int znetwork_alloc_free_player_color_index_smoke(void) {
         sizeof(g_zNetwork_PlayerColorInUseFlags)
     );
     return result;
+}
+
+extern "C" int znetwork_packet_send_wrappers_smoke(void) {
+    ResetDirectPlayScenarioState();
+
+    void *vtable[52];
+    BuildPacketSendDirectPlayVtable(vtable);
+
+    void **fakeDirectPlay = vtable;
+    zNetwork_DPlay4 *const dplay = (zNetwork_DPlay4 *)(&fakeDirectPlay);
+    zNetwork_PlayerRecord localPlayer = {};
+    localPlayer.playerKey = 0x10203040;
+    g_zNetwork_pDirectPlay4 = dplay;
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = 0x10203040;
+
+    zNetworkPacketHeader packet = {};
+    packet.packetType = 6;
+    packet.packetSizeBytes = 12;
+
+    if (zNetwork_SendPacketReliable(&packet) != 0 ||
+        g_sendCalls != 1 ||
+        g_sendFromPlayer != 0x10203040 ||
+        g_sendFlags != 1 ||
+        g_sendPacket != &packet ||
+        g_sendPacketSize != 12) {
+        return 1;
+    }
+
+    g_sendCalls = 0;
+    if (zNetwork_SendPacketUnreliable(&packet) != 0 ||
+        g_sendCalls != 1 ||
+        g_sendFlags != 0) {
+        return 2;
+    }
+
+    g_zNetwork_TcpIpAsyncSendEnabled = 1;
+    g_zNetwork_LastSendExHandle = 0x55aa;
+    g_zNetwork_LastSendExCompleted = 0;
+    if (zNetwork_SendPacketUnreliable(&packet) != 0 ||
+        g_cancelCalls != 1 ||
+        g_cancelHandle != 0x55aa ||
+        g_cancelFlags != 0 ||
+        g_sendExCalls != 1 ||
+        g_sendExFlags != 0x200 ||
+        g_zNetwork_LastSendExHandle != g_sendExAsyncValue) {
+        return 3;
+    }
+
+    packet.packetType = 7;
+    g_sendExCalls = 0;
+    g_cancelCalls = 0;
+    g_zNetwork_LastSendExCompleted = 1;
+    if (zNetwork_SendPacketUnreliable(&packet) != 0 ||
+        g_cancelCalls != 0 ||
+        g_zNetwork_LastSendExCompleted != 1 ||
+        g_sendExCalls != 1 ||
+        g_sendExFlags != 0x600) {
+        return 4;
+    }
+
+    g_sendExCalls = 0;
+    if (zNetwork_SendPacketReliable(&packet) != 0 ||
+        g_sendExCalls != 1 ||
+        g_sendExFlags != 0x601) {
+        return 5;
+    }
+
+    g_sendResult = (HRESULT)(0x8000000a);
+    return zNetwork_SendPacketReliable(&packet) == 0 ? 0 : 6;
+}
+
+extern "C" int znetwork_session_status_fields_smoke(void) {
+    ResetDirectPlayScenarioState();
+
+    void *vtable[52];
+    BuildSessionStatusDirectPlayVtable(vtable);
+
+    void **fakeDirectPlay = vtable;
+    zNetworkDPlaySessionDescCache session = {};
+    char sessionName[0x5c] = "original";
+    session.desc.dwMaxPlayers = 8;
+    session.desc.lpszSessionNameA = sessionName;
+    session.desc.dwUser1 = 1;
+    session.desc.dwUser2 = 2;
+    session.desc.dwUser3 = 3;
+    session.desc.dwUser4 = 4;
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&fakeDirectPlay);
+    g_zNetwork_CurrentSessionDescCache = &session;
+
+    zNetworkSessionDescStatusFields fields = {};
+    if (zNetwork_ExtractStatusFieldsFromSessionDesc(&fields) != 1 ||
+        fields.eventCode != 1 ||
+        fields.statusFlags != 2 ||
+        fields.valueOrTime != 3 ||
+        fields.auxParam != 4 ||
+        fields.maxPlayers != 8 ||
+        fields.selectedSessionIndex != -1 ||
+        strcmp(fields.sessionNameBuf, "original") != 0) {
+        return 1;
+    }
+
+    fields.eventCode = 10;
+    fields.statusFlags = 11;
+    fields.valueOrTime = 12;
+    fields.auxParam = 13;
+    fields.maxPlayers = 6;
+    strcpy(
+        fields.sessionNameBuf,
+        "updated"
+    );
+    if (zNetwork_ApplyStatusFieldsToSessionDesc(&fields) != 1 ||
+        g_setSessionDescCalls != 1 ||
+        g_setSessionDescPtr != &session.desc ||
+        g_setSessionDescFlags != 0 ||
+        session.desc.dwUser1 != 10 ||
+        session.desc.dwUser2 != 11 ||
+        session.desc.dwUser3 != 12 ||
+        session.desc.dwUser4 != 13 ||
+        session.desc.dwMaxPlayers != 6 ||
+        strcmp(sessionName, "updated") != 0 ||
+        strcmp(g_zNetwork_SessionNameCache, "updated") != 0) {
+        return 2;
+    }
+
+    g_setSessionDescResult = (HRESULT)(0x88770014);
+    strcpy(
+        fields.sessionNameBuf,
+        "failed"
+    );
+    strcpy(
+        g_zNetwork_SessionNameCache,
+        "updated"
+    );
+    if (zNetwork_ApplyStatusFieldsToSessionDesc(&fields) != 0 ||
+        strcmp(g_zNetwork_SessionNameCache, "updated") != 0) {
+        return 3;
+    }
+
+    return 0;
 }
 
 extern "C" int znetwork_dplay_close_release_smoke(void) {

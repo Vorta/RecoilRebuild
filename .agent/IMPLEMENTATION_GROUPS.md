@@ -283,8 +283,9 @@ Active queue sections:
     0x433710/0x433730/0x433740 is accepted at tier B after functional,
     source-owner, and data-symbol evidence.
   - Data classifier reports 0x433710 touches `g_GameNetStatus_AllowMaps` and
-    `g_GameNetStatus_NameTags`; 0x434460 touches
-    `g_NetPkt14_HudTimerAndFlagsSyncBuf`; 0x4321b0 touches
+    `g_GameNetStatus_NameTags`; 0x434460 is accepted at tier B after
+    `g_NetPkt14_HudTimerAndFlagsSyncBuf` data-symbol and zNetwork reliable-send
+    owner evidence; 0x4321b0 touches
     `g_GameNet_HandlersRegistered`; 0x4320f0 touches GameNet player-row and
     spawn-point list globals and reads `g_HudUiTopMessageStack`.
   - 0x419470 and 0x417770 are accepted at tier B after no-authored-globals
@@ -295,13 +296,23 @@ Active queue sections:
     `gamenet_launch_session_globals` passes for the GameNet status, packet,
     handler, row-list, and spawn-list globals with zero unmasked mismatches.
 - Current blockers:
-  - 0x434460, 0x434550, 0x4321b0, and 0x4320f0 remain owner/data blocked even
-    though their functional targets pass; 0x434460 currently appears as the
-    lowest visible blocker under HudUiNetGameSetupPanel_LaunchButton.
+  - 0x4321b0 and 0x4320f0 remain owner/data blocked even though their
+    functional targets pass; after the session-status sender promotion,
+    HudUiNetGameSetupPanel_LaunchButton now reports 0x4321b0 as the next
+    lowest visible GameNet blocker, but its function-pointer callback frontier
+    currently routes into 0x4327e0. 0x432830 is accepted at tier B after
+    row-list data-symbol evidence; 0x4327e0 remains blocked on the broader
+    pkt06 owner callees 0x432860 and 0x432ae0.
+  - The pkt06 data correction sets `g_GameNetPkt06InitialSyncGate` to the BN
+    initial value 1. Ignored local VC5 target `gamenet_pkt06_globals` now
+    covers `g_GameNetPlayerRowStyleColors_00RRGGBB`,
+    `g_GameNetPkt06InitialSyncGate`, and `g_HudTimerPanelNetState` with zero
+    unmasked mismatches.
   - Route zNetwork send/session-desc helpers and HUD row-removal/container
     dependencies as separate owner/data blockers; do not fold them into the
     GameNet owner.
 - Next action:
-  - Start with `python tools/recoil.py status 0x434460 --lane binary` and
-    route through the zNetwork::SendPacketReliable owner/data blocker before
-    promoting the GameNet packet-14 sender.
+  - Refresh the launch-panel frontier from the HudUiNetGameSetupPanel group,
+    then follow the lowest visible GameNet blocker from 0x4327e0's callback
+    frontier, currently 0x432860
+    GameNet::SpawnRemotePlayerFromPkt06_PlayerStateSnapshot.

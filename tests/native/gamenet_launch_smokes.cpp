@@ -1,10 +1,14 @@
 #include "Battlesport/GameNet.h"
 #include "Battlesport/HudSensorTracker.h"
+#include "Battlesport/player.h"
 #include "Battlesport/pickup.h"
 #include "GameZRecoil/include/OptCatalog.h"
 #include "GameZRecoil/zDEClient/zdec.h"
 #include "GameZRecoil/zNetwork/zNetwork.h"
+#include "GameZRecoil/zUtil/zSaveGame.h"
+#include "GameZRecoil/zVideo/zVideo.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 
@@ -91,6 +95,38 @@ bool ContainerHasChild(
         node = node->next;
     }
     return false;
+}
+
+template <typename T> T &FieldAt(
+    void *object,
+    std::size_t offset
+) {
+    return *(T *)((unsigned char *)object + offset);
+}
+
+bool FloatNear(
+    float actual,
+    float expected
+) {
+    return actual >= expected - 0.0001f && actual <= expected + 0.0001f;
+}
+
+bool Vec3Equals(
+    const zVec3 &value,
+    const zVec3 &expected
+) {
+    return FloatNear(
+               value.x,
+               expected.x
+           ) &&
+           FloatNear(
+               value.y,
+               expected.y
+           ) &&
+           FloatNear(
+               value.z,
+               expected.z
+           );
 }
 } // namespace
 
@@ -486,6 +522,327 @@ extern "C" int gamenet_reset_remote_players_and_spawn_lists_smoke(void) {
     triplet.DestructorCore();
 
     return listsCleared && hudCleared ? 0 : 1;
+}
+
+extern "C" int gamenet_apply_pkt06_player_state_snapshot_smoke(void) {
+    HudUiStatsListElement *const oldStatsList = g_HudUiMgrStatsList;
+    GameNetPlayerRow *const oldHead = g_GameNetPlayerRowHead;
+    GameNetPlayerRow *const oldTail = g_GameNetPlayerRowTail;
+    const unsigned int oldCount = g_GameNetPlayerRowCount;
+    const int oldFrameTick = g_zVideo_FrameTick;
+
+    HudUiTriplet triplet;
+    triplet.Constructor();
+    HudUiStatsListElement statsList = {};
+    statsList.triplet = &triplet;
+    g_HudUiMgrStatsList = &statsList;
+
+    zClass_Object3DDataPartial objectData = {};
+    zClass_NodePartial objectNode = {};
+    objectNode.classId = 5;
+    objectNode.classData = &objectData;
+
+    PlayerMasterModalData modalData = {};
+    modalData.masterType = 5;
+    PlayerModalState modalState = {};
+    modalState.masterModalData = &modalData;
+    modalState.modalNode = &objectNode;
+
+    zUtil_PlayerStateStorage playerState = {};
+    GameNetPlayerSaveState saveState = {};
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+
+    GameNetPlayerRow *const row = (GameNetPlayerRow *)(::operator new(sizeof(GameNetPlayerRow)));
+    std::memset(
+        row,
+        0,
+        sizeof(*row)
+    );
+    row->playerKey = 0x2468;
+    row->playerColorIndex = 1;
+    row->saveState = &saveState;
+    std::strcpy(
+        row->displayName,
+        "Pkt06"
+    );
+    g_GameNetPlayerRowHead = row;
+    g_GameNetPlayerRowTail = row;
+    g_GameNetPlayerRowCount = 1;
+    GameNet::RefreshPlayerListMenu(row);
+
+    zVec3 staleTargets[10] = {};
+    for (int index = 0; index < 10; ++index) {
+        playerState.progressTargetRuntimeSlots[index].targetPos = &staleTargets[index];
+    }
+    playerState.cachedAltSelectionCode = 301;
+    playerState.cachedPrimarySelectionCode = 201;
+    playerState.netLastUpdateFrameTick = oldFrameTick - 1;
+    g_zVideo_FrameTick = oldFrameTick + 17;
+
+    NetPkt06_PlayerStateSnapshot packet = {};
+    packet.cachedAltSelectionCode = 301;
+    packet.cachedPrimarySelectionCode = 201;
+    packet.packedMasterTypeColorFlags = 5u | (8u << 8) | 0x10000u;
+    packet.storedTargetPos = zVec3_Make(
+        1.0f,
+        2.0f,
+        3.0f
+    );
+    packet.worldPos = zVec3_Make(
+        4.0f,
+        5.0f,
+        6.0f
+    );
+    packet.vehicleRotationAngles = zVec3_Make(
+        0.25f,
+        0.5f,
+        0.75f
+    );
+    packet.statusMeterValue = 77.0f;
+
+    const int clearResult = GameNet::ApplyPkt06_PlayerStateSnapshotToRow(
+        row,
+        &packet
+    );
+    bool clearedSlots = true;
+    for (int index = 0; index < 10; ++index) {
+        clearedSlots =
+            clearedSlots && playerState.progressTargetRuntimeSlots[index].targetPos == 0;
+    }
+    const bool firstOk =
+        clearResult == 1 && playerState.netUpdateReceived == 1 &&
+        row->playerColorIndex == 8 && row->playerColorPackedRgb == 0x000040ff &&
+        FieldAt<unsigned int>(
+            &row->hudWidget,
+            0x14c
+        ) == 0x000040ff &&
+        FieldAt<unsigned int>(
+            &row->hudWidget,
+            0x150
+        ) == 0x000040ff &&
+        FieldAt<int>(
+            &row->hudWidget,
+            0x270
+        ) == 1 &&
+        objectData.color.red == 1.0f && objectData.color.green == 1.0f &&
+        objectData.color.blue == 0.0f && objectData.colorAlpha == 0.2f &&
+        Vec3Equals(
+            playerState.netReceivedPos,
+            packet.worldPos
+        ) &&
+        Vec3Equals(
+            playerState.netReceivedAngles,
+            packet.vehicleRotationAngles
+        ) &&
+        Vec3Equals(
+            playerState.storedTargetPos,
+            packet.storedTargetPos
+        ) &&
+        playerState.netInputBit16Latch == 1 && playerState.netInputBit17Latch == 0 &&
+        playerState.netLastUpdateFrameTick == g_zVideo_FrameTick &&
+        FloatNear(
+            playerState.statusMeterValue,
+            77.0f
+        ) &&
+        playerState.progressTargetCount == 0 && clearedSlots;
+
+    packet.packedMasterTypeColorFlags = 5u | (8u << 8) | 0x20000u | 0x40000u;
+    packet.statusMeterValue = 88.0f;
+    packet.progressTargetCount = 2;
+    packet.progressTargetPoints[0] = zVec3_Make(
+        10.0f,
+        11.0f,
+        12.0f
+    );
+    packet.progressTargetPoints[1] = zVec3_Make(
+        20.0f,
+        21.0f,
+        22.0f
+    );
+
+    const int targetResult = GameNet::ApplyPkt06_PlayerStateSnapshotToRow(
+        row,
+        &packet
+    );
+    const bool secondOk =
+        targetResult == 1 && playerState.netInputBit16Latch == 1 &&
+        playerState.netInputBit17Latch == 1 &&
+        FloatNear(
+            playerState.statusMeterValue,
+            88.0f
+        ) &&
+        playerState.progressTargetCount == 2 &&
+        playerState.progressTargetRuntimeSlots[0].targetPos ==
+            &playerState.progressTargetPointStorage[0] &&
+        playerState.progressTargetRuntimeSlots[1].targetPos ==
+            &playerState.progressTargetPointStorage[1] &&
+        Vec3Equals(
+            playerState.progressTargetPointStorage[0],
+            packet.progressTargetPoints[0]
+        ) &&
+        Vec3Equals(
+            playerState.progressTargetPointStorage[1],
+            packet.progressTargetPoints[1]
+        );
+
+    g_HudUiMgrStatsList = oldStatsList;
+    g_GameNetPlayerRowHead = oldHead;
+    g_GameNetPlayerRowTail = oldTail;
+    g_GameNetPlayerRowCount = oldCount;
+    g_zVideo_FrameTick = oldFrameTick;
+    ::operator delete(row);
+    triplet.DestructorCore();
+
+    return firstOk && secondOk ? 0 : 1;
+}
+
+extern "C" int gamenet_handle_pkt06_player_state_snapshot_smoke(void) {
+    GameNetPlayerRow *const oldHead = g_GameNetPlayerRowHead;
+    GameNetPlayerRow *const oldTail = g_GameNetPlayerRowTail;
+    const unsigned int oldCount = g_GameNetPlayerRowCount;
+    const int oldInitialSyncGate = g_GameNetPkt06InitialSyncGate;
+    const int oldFrameTick = g_zVideo_FrameTick;
+
+    const int nullResult = GameNet::HandlePkt06_PlayerStateSnapshot(
+        0x1111,
+        0
+    );
+
+    zClass_Object3DDataPartial objectData = {};
+    zClass_NodePartial objectNode = {};
+    objectNode.classId = 5;
+    objectNode.classData = &objectData;
+
+    PlayerMasterModalData modalData = {};
+    modalData.masterType = 5;
+    PlayerModalState modalState = {};
+    modalState.masterModalData = &modalData;
+    modalState.modalNode = &objectNode;
+
+    zUtil_PlayerStateStorage playerState = {};
+    GameNetPlayerSaveState saveState = {};
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+
+    GameNetPlayerRow *const row = (GameNetPlayerRow *)(::operator new(sizeof(GameNetPlayerRow)));
+    std::memset(
+        row,
+        0,
+        sizeof(*row)
+    );
+    row->playerKey = 0x2468;
+    row->playerColorIndex = 1;
+    row->saveState = &saveState;
+    g_GameNetPlayerRowHead = row;
+    g_GameNetPlayerRowTail = row;
+    g_GameNetPlayerRowCount = 1;
+
+    NetPkt06_PlayerStateSnapshot ignoredPacket = {};
+    ignoredPacket.header.packetType = 5;
+    ignoredPacket.header.payloadDword0 = row->playerKey;
+    g_GameNetPkt06InitialSyncGate = 1;
+    const int ignoredResult = GameNet::HandlePkt06_PlayerStateSnapshot(
+        0x1111,
+        &ignoredPacket
+    );
+    const bool ignoredOk =
+        ignoredResult == 0 && g_GameNetPkt06InitialSyncGate == 0 &&
+        playerState.netUpdateReceived == 0;
+
+    NetPkt06_PlayerStateSnapshot packet = {};
+    packet.header.packetType = 6;
+    packet.header.payloadDword0 = row->playerKey;
+    packet.packedMasterTypeColorFlags = 5u | (1u << 8);
+    packet.worldPos = zVec3_Make(
+        8.0f,
+        9.0f,
+        10.0f
+    );
+    packet.vehicleRotationAngles = zVec3_Make(
+        0.125f,
+        0.25f,
+        0.5f
+    );
+    g_zVideo_FrameTick = oldFrameTick + 3;
+
+    const int handledResult = GameNet::HandlePkt06_PlayerStateSnapshot(
+        0x1111,
+        &packet
+    );
+    const bool handledOk =
+        handledResult == 0 && playerState.netUpdateReceived == 1 &&
+        row->playerColorIndex == 1 &&
+        Vec3Equals(
+            playerState.netReceivedPos,
+            packet.worldPos
+        ) &&
+        Vec3Equals(
+            playerState.netReceivedAngles,
+            packet.vehicleRotationAngles
+        );
+
+    g_GameNetPlayerRowHead = oldHead;
+    g_GameNetPlayerRowTail = oldTail;
+    g_GameNetPlayerRowCount = oldCount;
+    g_GameNetPkt06InitialSyncGate = oldInitialSyncGate;
+    g_zVideo_FrameTick = oldFrameTick;
+    ::operator delete(row);
+
+    return nullResult == -1 && ignoredOk && handledOk ? 0 : 1;
+}
+
+extern "C" int gamenet_spawn_remote_player_missing_template_smoke(void) {
+    HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
+    zNetworkPlayerRecordList *const oldPlayerRecordList = g_zNetwork_PlayerRecordList;
+    GameNetPlayerRow *const oldHead = g_GameNetPlayerRowHead;
+    GameNetPlayerRow *const oldTail = g_GameNetPlayerRowTail;
+    const unsigned int oldCount = g_GameNetPlayerRowCount;
+
+    zNetwork_PlayerRecord playerRecord = {};
+    playerRecord.playerKey = 0x1111;
+    std::strcpy(
+        playerRecord.playerName,
+        "Remote"
+    );
+    zNetworkPlayerRecordListNode sentinel = {};
+    zNetworkPlayerRecordListNode playerNode = {};
+    sentinel.next = &playerNode;
+    sentinel.prev = &playerNode;
+    playerNode.next = &sentinel;
+    playerNode.prev = &sentinel;
+    playerNode.playerRecord = &playerRecord;
+    zNetworkPlayerRecordList playerList = {};
+    playerList.sentinelNode = &sentinel;
+    playerList.count = 1;
+    g_zNetwork_PlayerRecordList = &playerList;
+
+    HudUiTopMessageStack topStack = {};
+    topStack.enabled = 0;
+    g_HudUiTopMessageStack = &topStack;
+
+    g_GameNetPlayerRowHead = 0;
+    g_GameNetPlayerRowTail = 0;
+    g_GameNetPlayerRowCount = 0;
+
+    NetPkt06_PlayerStateSnapshot packet = {};
+    packet.header.packetType = 6;
+    packet.header.payloadDword0 = 0x2222;
+
+    const int result = GameNet::SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
+        (int)playerRecord.playerKey,
+        &packet
+    );
+    const bool ok = result == 0 && g_GameNetPlayerRowHead == 0 &&
+                    g_GameNetPlayerRowTail == 0 && g_GameNetPlayerRowCount == 0;
+
+    g_HudUiTopMessageStack = oldTopStack;
+    g_zNetwork_PlayerRecordList = oldPlayerRecordList;
+    g_GameNetPlayerRowHead = oldHead;
+    g_GameNetPlayerRowTail = oldTail;
+    g_GameNetPlayerRowCount = oldCount;
+
+    return ok ? 0 : 1;
 }
 
 extern "C" int hud_sensor_tracker_set_runtime_timer_sec_and_goal_value_smoke(void) {
