@@ -233,3 +233,34 @@ Active queue sections:
   - Defer the Time::Tick and zNetwork::ShutdownSessionRuntime tier S blockers
     discovered through the MpExit frontier until `tier_s_priority_ready=true`
     or until the user explicitly directs tier S work.
+
+### Group: HudUiNetGameSetupPanel class owner cleanup
+
+- Anchor: 0x419aa0 HudUiNetGameSetupPanel::Constructor, plus panel-local
+  methods 0x41a160, 0x41a400, 0x41a5b0, 0x41a820, and 0x41a9c0.
+- Queue: active owner/data and tier C/B cleanup.
+- Reason: Binary-lane tertiary scope now has direct dependencies ready after
+  HudUiNumericTextInput constructor/text-input work; remaining debt is the
+  class-shaped HudUiNetGameSetupPanel owner pass and stale functional smoke
+  registration/docblock evidence after owner-local table factories were
+  removed from production source.
+- Current evidence:
+  - `src/Battlesport/HudUiNetGameSetup.cpp` now has immediate provenance
+    docblocks with `Purpose:` for the six address-backed methods and recovered
+    local helpers.
+  - `tests/native/zhud_net_game_setup_smokes.cpp` registers focused native
+    smokes for the constructor, destructor, cancel, launch, next-world, and
+    prev-world methods through `tests/native/smoke.cpp`.
+  - The six functional targets pass locally after the x86 native smoke build.
+  - 0x419aa0, 0x41a160, 0x41a400, 0x41a820, and 0x41a9c0 now have accepted
+    dependency gates and `Reimplemented [C]` functional markers.
+- Current blockers:
+  - 0x41a5b0 remains below tier C because its launch path depends on upstream
+    zNetwork/GameNet/HUD functions with open source-owner or data gates.
+  - Data acceptance remains per-method: constructor/launch/cancel touch app,
+    network, HUD tracker, option, or ZRD/provider globals and cannot be
+    treated as no-authored-globals by default; next/prev world side-effect
+    buttons may still require focused touched-global review.
+- Next action:
+  - Resolve the launch dependency blockers, then resolve HudUiNetGameSetupPanel
+    source-owner and per-method data gates for the tier C methods.

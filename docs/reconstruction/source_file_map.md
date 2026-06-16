@@ -447,11 +447,6 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x419940` `RecoilApp_MpExitDialogState::OnDeactivate` -> `src/Battlesport/HudUiMpExitDialog.cpp:264`
 - `0x419990` `RecoilApp_MpExitDialogState::OnUpdateShouldQuit` -> `src/Battlesport/HudUiMpExitDialog.cpp:284`
 
-## Battlesport/HudUiNetGameSetup.cpp
-
-- `0x419aa0` `HudUiNetGameSetupPanel::Constructor` -> `src/Battlesport/HudUiNetGameSetup.cpp:142`
-- `0x41a400` `HudUiNetGameSetupPanel::Destructor` -> `src/Battlesport/HudUiNetGameSetup.cpp:398`
-
 ## Battlesport/HudUiNewGamePanel.cpp
 
 - `0x41c270` `HudUiNewGamePanel_StartButton::OnActivate` -> `src/Battlesport/hud.cpp:934`
@@ -2304,7 +2299,8 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x417ee0` `HudSensorTracker::UnloadObjectives` -> `src/Battlesport/HudSensorTracker.cpp:2320`
 - `0x417f60` `HudSensorObjectiveSlot::Reset` -> `src/Battlesport/HudSensorTracker.cpp:1733`
 - `0x4186f0` `HudSensorTracker::GetObjectiveBriefingStringsAndImageRef` -> `src/Battlesport/HudSensorTracker.cpp:2715`
-- `0x41a160` `HudUiNetGameSetupPanel_CancelButton::OnActivate` -> `src/Battlesport/HudUiNetGameSetup.cpp:435`
+- `0x419aa0` `HudUiNetGameSetupPanel::Constructor` -> `src/Battlesport/HudUiNetGameSetup.cpp:173`
+- `0x41a160` `HudUiNetGameSetupPanel_CancelButton::OnActivate` -> `src/Battlesport/HudUiNetGameSetup.cpp:477`
 - `0x41a190` `HudUiNumericTextInput::Constructor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14872`
 - `0x41a200` `HudUiClampedIntTextInput::HudUiClampedIntTextInput` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14887`
 - `0x41a290` `HudUiNumericTextInput::OnAcceptForwardToCommit` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15146`
@@ -2312,12 +2308,13 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x41a2d0` `HudUiClampedIntTextInput::CommitAndGetValue` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15175`
 - `0x41a350` `HudUiClampedIntStepButton::OnActivate` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15214`
 - `0x41a3f0` `HudUiNumericTextInput::DestructorThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15044`
+- `0x41a400` `HudUiNetGameSetupPanel::Destructor` -> `src/Battlesport/HudUiNetGameSetup.cpp:432`
 - `0x41a570` `HudUiCycleSelectorWidget::ScalarDeletingDestructorThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9518`
 - `0x41a590` `HudUiCheckToggleWidget::ScalarDeletingDestructorThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:9182`
-- `0x41a5b0` `HudUiNetGameSetupPanel_LaunchButton::OnActivate` -> `src/Battlesport/HudUiNetGameSetup.cpp:445`
+- `0x41a5b0` `HudUiNetGameSetupPanel_LaunchButton::OnActivate` -> `src/Battlesport/HudUiNetGameSetup.cpp:491`
 - `0x41a7b0` `HudUiNetGameSetupTextInput::OnActivateFocusAndCursor` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15250`
-- `0x41a820` `HudUiNetGameSetupPanel_NextWorldButton::OnActivate` -> `src/Battlesport/HudUiNetGameSetup.cpp:519`
-- `0x41a9c0` `HudUiNetGameSetupPanel_PrevWorldButton::OnActivate` -> `src/Battlesport/HudUiNetGameSetup.cpp:529`
+- `0x41a820` `HudUiNetGameSetupPanel_NextWorldButton::OnActivate` -> `src/Battlesport/HudUiNetGameSetup.cpp:569`
+- `0x41a9c0` `HudUiNetGameSetupPanel_PrevWorldButton::OnActivate` -> `src/Battlesport/HudUiNetGameSetup.cpp:583`
 - `0x41b150` `NetSessionBrowserDialog::RefreshSessionList` -> `src/Battlesport/GameNet.cpp:894`
 - `0x41be70` `HudUiNetExitPanel_ExitButton::OnActivate` -> `src/Battlesport/HudUiNetExitPanel.cpp:76`
 - `0x41bf10` `HudUiNetExitPanel_ResumeWidget::OnActivate` -> `src/Battlesport/HudUiNetExitPanel.cpp:84`

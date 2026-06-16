@@ -288,6 +288,12 @@ extern "C" int zhud_widget_invalidate_rect_smoke(void);
 extern "C" int zhud_widget_draw_smoke(void);
 extern "C" int zhud_clamped_int_step_button_on_activate_smoke(void);
 extern "C" int hud_ui_mp_exit_dialog_load_layout_smoke(void);
+extern "C" int hud_ui_net_game_setup_panel_constructor_smoke(void);
+extern "C" int hud_ui_net_game_setup_panel_destructor_smoke(void);
+extern "C" int hud_ui_net_game_setup_cancel_button_smoke(void);
+extern "C" int hud_ui_net_game_setup_launch_button_smoke(void);
+extern "C" int hud_ui_net_game_setup_next_world_button_smoke(void);
+extern "C" int hud_ui_net_game_setup_prev_world_button_smoke(void);
 extern "C" int zhud_slot_draw_smoke(void);
 extern "C" int zhud_triplet_panel_draw_smoke(void);
 extern "C" int zhud_triplet_panel_set_visible_count_smoke(void);
@@ -10617,6 +10623,18 @@ int main(int argc, char **argv) {
          zhud_clamped_int_step_button_on_activate_smoke},
         {"hud_ui_mp_exit_dialog_load_layout_smoke",
          hud_ui_mp_exit_dialog_load_layout_smoke},
+        {"hud_ui_net_game_setup_panel_constructor_smoke",
+         hud_ui_net_game_setup_panel_constructor_smoke},
+        {"hud_ui_net_game_setup_panel_destructor_smoke",
+         hud_ui_net_game_setup_panel_destructor_smoke},
+        {"hud_ui_net_game_setup_cancel_button_smoke",
+         hud_ui_net_game_setup_cancel_button_smoke},
+        {"hud_ui_net_game_setup_launch_button_smoke",
+         hud_ui_net_game_setup_launch_button_smoke},
+        {"hud_ui_net_game_setup_next_world_button_smoke",
+         hud_ui_net_game_setup_next_world_button_smoke},
+        {"hud_ui_net_game_setup_prev_world_button_smoke",
+         hud_ui_net_game_setup_prev_world_button_smoke},
         {"zhud_slot_draw_smoke", zhud_slot_draw_smoke},
         {"zhud_triplet_panel_draw_smoke", zhud_triplet_panel_draw_smoke},
         {"zhud_triplet_panel_set_visible_count_smoke",
