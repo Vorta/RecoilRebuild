@@ -1161,6 +1161,45 @@ extern "C" int zclass_node_priority_smoke() {
     return zClass_Class::gwNodeSetPriority(nullptr, 0) == 5 ? 0 : 4;
 }
 
+extern "C" int zclass_node_pick_flag_accessors_smoke() {
+    zClass_NodePartial node{};
+    std::int32_t value = 0;
+
+    if (zClass_Class::gwNodeSetCellPickable(&node, 1) != 0 ||
+        zClass_Class::gwNodeGetCellPickable(&node, &value) != 0 || value != 1) {
+        return 1;
+    }
+    if (zClass_Class::gwNodeSetCellPickable(&node, 0) != 0 ||
+        zClass_Class::gwNodeGetCellPickable(&node, &value) != 0 || value != 0) {
+        return 2;
+    }
+    if (zClass_Class::gwNodeSetRaycastable(&node, 1) != 0 ||
+        zClass_Class::gwNodeGetRaycastable(&node, &value) != 0 || value != 1) {
+        return 3;
+    }
+    if (zClass_Class::gwNodeSetRaycastable(&node, 0) != 0 ||
+        zClass_Class::gwNodeGetRaycastable(&node, &value) != 0 || value != 0) {
+        return 4;
+    }
+    if (zClass_Class::gwNodeSetPickable(&node, 1) != 0 ||
+        zClass_Class::gwNodeGetPickable(&node, &value) != 0 || value != 1) {
+        return 5;
+    }
+    if (zClass_Class::gwNodeSetPickable(&node, 0) != 0 ||
+        zClass_Class::gwNodeGetPickable(&node, &value) != 0 || value != 0) {
+        return 6;
+    }
+
+    return zClass_Class::gwNodeSetCellPickable(nullptr, 1) == 5 &&
+                   zClass_Class::gwNodeGetCellPickable(nullptr, &value) == 5 &&
+                   zClass_Class::gwNodeSetRaycastable(nullptr, 1) == 5 &&
+                   zClass_Class::gwNodeGetRaycastable(nullptr, &value) == 5 &&
+                   zClass_Class::gwNodeSetPickable(nullptr, 1) == 5 &&
+                   zClass_Class::gwNodeGetPickable(nullptr, &value) == 5
+               ? 0
+               : 7;
+}
+
 extern "C" int zclass_find_by_name_and_filtered_iter_smoke() {
     ResetTypeListsForTest();
 

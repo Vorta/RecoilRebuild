@@ -646,6 +646,7 @@ extern "C" int zclass_copy_object3d_and_lod_smoke(void);
 extern "C" int zclass_copy_node_dispatch_and_wrappers_smoke(void);
 extern "C" int zclass_node_action_callback_smoke(void);
 extern "C" int zclass_node_priority_smoke(void);
+extern "C" int zclass_node_pick_flag_accessors_smoke(void);
 extern "C" int zclass_find_by_name_and_filtered_iter_smoke(void);
 extern "C" int zclass_sound_leaf_smoke(void);
 extern "C" int zclass_sound_get_position_smoke(void);
@@ -11236,6 +11237,8 @@ int main(int argc, char **argv) {
          zclass_copy_node_dispatch_and_wrappers_smoke},
         {"zclass_node_action_callback_smoke", zclass_node_action_callback_smoke},
         {"zclass_node_priority_smoke", zclass_node_priority_smoke},
+        {"zclass_node_pick_flag_accessors_smoke",
+         zclass_node_pick_flag_accessors_smoke},
         {"zclass_find_by_name_and_filtered_iter_smoke",
          zclass_find_by_name_and_filtered_iter_smoke},
         {"zclass_sound_leaf_smoke", zclass_sound_leaf_smoke},

@@ -4626,28 +4626,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x448100:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetCellPickable)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::gwNodeSetCellPickable;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_set_cell_pickable;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x448140:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetCellPickable)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::gwNodeGetCellPickable;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_get_cell_pickable;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x448180:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetNodeType)
@@ -4665,54 +4665,54 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4481b0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetRaycastable)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::gwNodeSetRaycastable;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_set_raycastable;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4481f0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetRaycastable)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::gwNodeGetRaycastable;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_get_raycastable;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x448230:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetPickable)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::gwNodeSetPickable;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_set_pickable;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x448270:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetPickable)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::gwNodeGetPickable;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_get_pickable;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4482b0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetHasHitCallback)

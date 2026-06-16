@@ -374,8 +374,13 @@ Active queue sections:
     recursive name traversal blocker 0x452770 is accepted at tier B after
     documenting the source-faithful zClass traversal cluster owner, confirming
     no authored globals are touched, and rerunning the existing
-    `zclass_find_sub_node_by_name` functional target.
+    `zclass_find_sub_node_by_name` functional target. The zClass node
+    pick-flag accessor mini-cluster 0x448100/0x448140/0x4481b0/0x4481f0/
+    0x448230/0x448270 is accepted at tier B after documenting the typed
+    zClass flag-accessor owner, registering and running
+    `zclass_node_pick_flag_accessors_smoke`, and accepting the shared Class.c
+    null-node/source-file string data with local VC5 data-symbol evidence.
 - Next action:
   - Refresh the launch-panel frontier from the HudUiNetGameSetupPanel group,
     then follow the lowest visible blocker from the Player bootstrap frontier,
-    currently 0x448100 `zClass_Class::gwNodeSetCellPickable`.
+    currently 0x45ff10 `zEffectAnim::FindEntryByName`.
