@@ -2831,8 +2831,13 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     }
 }
 
-// Reimplements 0x42aa40: Player::GetSaveStateListHead
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42aa40: Player::GetSaveStateListHead
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: return the global head of the player save-state list.
+ * Source owner: Player save-state/bootstrap record-global subsystem, not a
+ * C++ Player class.
+ */
 zUtil_SaveGameState *GetSaveStateListHead() {
     return g_PlayerSaveStateListHead;
 }
@@ -2928,8 +2933,14 @@ void __fastcall CacheGunHardpointsAndDetachDisplays(
     );
 }
 
-// Reimplements 0x420d10: Player::InitStateFromNameAndMasterCommonData
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x420d10: Player::InitStateFromNameAndMasterCommonData
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: bind a save-state record to master common data by name and
+ * initialize the player's common bootstrap state.
+ * Source owner: Player save-state/bootstrap record-global subsystem, not a
+ * C++ Player class.
+ */
 void __fastcall InitStateFromNameAndMasterCommonData(
     zUtil_SaveGameState *saveState,
     const char *objectName,

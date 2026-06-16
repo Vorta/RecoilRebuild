@@ -1201,6 +1201,10 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zUtil::CopySingleDword)
   - [✅] Provider-boundary (Kind: compiler/template instantiation; Name: zUtil_CopySingleDword; Origin: compiler-generated; File: external; Target: compiler_template_copy_single_dword; Group: provider.compiler)
 
+- 0x7c8ed0:
+  - [✅] Reconstructed (Name: __builtin_memcpy)
+  - [✅] Provider-boundary (Kind: compiler intrinsic; Name: __builtin_memcpy; Origin: BN symbolic function for inline rep movsd/movsb copies; 0x420d10 uses rep movsd at 0x420ec7; no declared function body; File: external; Target: pending; Group: provider.compiler)
+
 - 0x48bf10:
   - [✅] Reconstructed (Name: zUtil::CopyDwordRange)
   - [✅] Provider-boundary (Kind: compiler/template instantiation; Name: zUtil_CopyDwordRange; Origin: compiler-generated; File: external; Target: pending; Group: provider.compiler)
@@ -29357,7 +29361,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x42aa40:
   - [✅] Reconstructed (Name: Player::GetSaveStateListHead)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: Player; State: parent-pending)
+  - [❌] Source owner (Kind: subsystem; Parent: Player save-state/bootstrap record-global subsystem; State: parent-pending)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: Player::GetSaveStateListHead;
@@ -29365,7 +29369,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: player_get_save_state_list_head;
     - Group: battlesport.player;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: Player save-state global data owner gate pending
 
 - 0x42aa50:
   - [☑️] Reconstructed (Name: Player::UpdateDebugOverlayHud)

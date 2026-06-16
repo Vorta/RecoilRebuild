@@ -33,6 +33,20 @@ bool Vec3Equals(
 }
 } // namespace
 
+extern "C" int player_get_save_state_list_head_smoke(void) {
+    zUtil_SaveGameState *const oldHead = g_PlayerSaveStateListHead;
+    zUtil_SaveGameState saveState = {};
+
+    g_PlayerSaveStateListHead = 0;
+    const bool nullOk = Player::GetSaveStateListHead() == 0;
+
+    g_PlayerSaveStateListHead = &saveState;
+    const bool valueOk = Player::GetSaveStateListHead() == &saveState;
+
+    g_PlayerSaveStateListHead = oldHead;
+    return nullOk && valueOk ? 0 : 1;
+}
+
 extern "C" int player_clone_type6_node_from_template_and_rename_smoke(void) {
     zClass_TypeListLink *const oldType6Head = zClass_TypeList::Head(6);
     zClass_TypeListLink *const oldType6Tail = zClass_TypeList::Tail(6);
