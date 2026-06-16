@@ -21884,7 +21884,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_rasterize_poly_with_span_list;
     - Group: engine.zrndr;
     - Model: source-faithful;
-    - Blocker: tier S blocked: current VC5SP3 target zrndr_rasterize_poly_with_span_list fails with 1872 unmasked function-byte mismatches after 104 relocation-masked bytes, BN body 1990 bytes with a 0xd48-byte EBP frame and inlined scan-edge table builders while current VC5 /Ob0 source emits a 1072-byte body with out-of-line BuildScanConvertEdges calls and a 0x938-byte frame. Same-session BuildScanConvertEdges inline probe was byte-neutral under /Ob0 (still 1872 mismatches, VC5 size 1072) and was reverted. Owner/data remain accepted; remaining debt is coherent zRndr_Draw.cpp scan-conversion source/codegen shape, likely replacing the recovered callable helper with original duplicated edge-builder source where BN proves inlined bodies.
+    - Blocker: tier S blocked: same-session source pass replaced the two out-of-line BuildScanConvertEdges calls in zRndr_RasterizePolyWithSpanList with typed in-function edge walks and inlined fixed-point scanline conversion, preserving functional behavior and improving VC5SP3 evidence from 1867 to 1773 unmasked mismatches. Current VC5SP3 vc5_o2_ob0_md_facs target still fails with 1773 unmasked mismatches after 188 relocation-masked bytes and 1 trailing VC NOP, BN size 1990, VC5 size 1792. Remaining debt is the coherent zRndr_Draw.cpp scan-conversion source/codegen shape, especially prologue/frame and residual control-flow/codegen drift versus the BN 0xd48 EBP-frame body.
 
 - 0x4927d0:
   - [☑️] Reconstructed (Name: zRndr::SpanOcclusionRasterizeOccluderPoly)
@@ -35777,7 +35777,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_options_dialog_destructor_core;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S blocked: same-session frontier for HudOptionsDialog::DestructorCore shows no direct source dependency blocker except lower direct callee 0x4b50c0 HudUiZrdWidget::DestructorCore, which remains tier B. That ZRD destructor is itself blocked by 0x4ba4d0 HudUiPanelPtrVector::EraseRange tier B; focused VC5SP3 check for 0x4ba4d0 still fails with 14 unmasked epilogue mismatches after 5 trimmed VC NOPs. Do not add caller-level HudOptionsDialog VC5 coverage or promote this destructor until the ZRD/vector destructor dependency is resolved.
+    - Blocker: tier S blocked: same-session frontier for HudOptionsDialog::DestructorCore shows lower direct callee 0x4b50c0 HudUiZrdWidget::DestructorCore remains tier B. Its direct helper 0x4ba4d0 HudUiPanelPtrVector::EraseRange is now tier S, but current VC5SP3 target hud_ui_zrd_widget_destructor_core still fails with 423 unmasked mismatches after 76 relocation-masked bytes and 13 trailing VC NOPs; do not add caller-level HudOptionsDialog VC5 coverage or promote this destructor until the ZRD destructor codegen blocker is resolved.
 
 - 0x40d070:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit)
@@ -37028,7 +37028,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_ui_zrd_widget_destructor_core;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S blocked: local VC5 target hud_ui_zrd_widget_destructor_core now compares destructor symbol ??1HudUiZrdWidget@@QAE@XZ and fails with 423 unmasked mismatches after 76 relocation-masked bytes and 13 trailing VC NOPs; source now emits EH setup and inlined panel-vector member cleanup but still differs in the first label-panel helper call convention/stack local shape, iterator register lifetimes, EH stack-frame offsets, and final base-cleanup epilogue. Direct helper 0x4ba4d0 HudUiPanelPtrVector::EraseRange remains B with stable 14-mismatch epilogue drift across /MD profile sweep.
+    - Blocker: tier S blocked: same-session VC5SP3 target hud_ui_zrd_widget_destructor_core still fails with 423 unmasked mismatches after 76 relocation-masked bytes and 13 trailing VC NOPs, BN size 546, VC5 size 528. Direct helper 0x4ba4d0 HudUiPanelPtrVector::EraseRange is now tier S; remaining drift is local HudUiZrdWidget destructor codegen around the first label-panel helper call convention/stack local shape, iterator register lifetimes, EH stack-frame offsets, and final base-cleanup epilogue.
 
 - 0x4b52f0:
   - [✅] Reconstructed (Name: HudUiZrdWidget::DeleteChildIfPresent)
@@ -40401,13 +40401,13 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: struct; Parent: HudUiPanelPtrVector; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: HudUiPanelPtrVector::EraseRange;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_panel_ptr_vector_erase_range;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S blocked: VC5SP3 hud_ui_panel_ptr_vector_erase_range compare for HudUiPanelPtrVector::EraseRange still fails with 14 unmasked mismatches after 5 trailing VC NOPs; remaining drift is the BN-retained dead end reload/stack write in the epilogue. Same-session probes found plain first/oldEnd endpoint assignments and address-taken locals are optimized away; a volatile local-parameter store reproduces the epilogue but introduces prologue/register drift, grows VC5 output to 64 bytes with 6 mismatches after 14 trimmed NOPs, and is a source-shape probe, not admissible production evidence. Typed owner/data gates remain accepted.
+    - Blocker: none
 
 - 0x4ba510:
   - [✅] Reconstructed (Name: HudUiPanelPtrVector::InsertN)

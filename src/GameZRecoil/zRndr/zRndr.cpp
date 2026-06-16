@@ -7159,50 +7159,137 @@ void __fastcall zRndr_RasterizePolyWithSpanList(
 
     ScanConvertEdge edgeTableA[0x40];
     ScanConvertEdge edgeTableB[0x40];
-    int edgeCountA;
-    int edgeCountB;
+    int edgeCountA = 0;
+    int edgeCountB = 0;
+    int fixed16Value;
+    int edgeVertexIndex;
+    int edgeYStart;
+    float edgeSampleY;
+
+    int edgeStepA;
+    int edgeStepB;
     if (zRndr::g_scanConvertMode != 0) {
-        edgeCountA = BuildScanConvertEdges(
-            vertices,
-            vertCount,
-            topVertexIndex,
-            bottomVertexIndex,
-            1,
-            edgeTableA
-        );
-        edgeCountB = BuildScanConvertEdges(
-            vertices,
-            vertCount,
-            topVertexIndex,
-            bottomVertexIndex,
-            -1,
-            edgeTableB
-        );
+        edgeStepA = 1;
+        edgeStepB = -1;
     } else {
-        edgeCountA = BuildScanConvertEdges(
-            vertices,
-            vertCount,
-            topVertexIndex,
-            bottomVertexIndex,
-            -1,
-            edgeTableA
-        );
-        edgeCountB = BuildScanConvertEdges(
-            vertices,
-            vertCount,
-            topVertexIndex,
-            bottomVertexIndex,
-            1,
-            edgeTableB
-        );
+        edgeStepA = -1;
+        edgeStepB = 1;
+    }
+
+    edgeVertexIndex = topVertexIndex;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        vertices[edgeVertexIndex].y
+    );
+    edgeYStart = (fixed16Value + 0x7fff) >> 16;
+    edgeSampleY = (float)(edgeYStart) + 0.5f;
+    while (edgeVertexIndex != bottomVertexIndex) {
+        int nextIndex = edgeVertexIndex + edgeStepA;
+        if (nextIndex < 0) {
+            nextIndex += vertCount;
+        }
+        if (nextIndex >= vertCount) {
+            nextIndex -= vertCount;
+        }
+        const zVec3 &start = vertices[edgeVertexIndex];
+        const zVec3 &end = vertices[nextIndex];
+        if (edgeSampleY <= end.y) {
+            const float dy = end.y - start.y;
+            edgeTableA[edgeCountA].yStart = edgeYStart;
+            edgeTableA[edgeCountA].reserved = 0;
+            if (dy != 0.0f) {
+                const float xSlope = (end.x - start.x) / dy;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].xStepFixed,
+                    xSlope
+                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].currentXFixed,
+                    start.x + (edgeSampleY - start.y) * xSlope
+                );
+            } else {
+                edgeTableA[edgeCountA].xStepFixed = 0;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableA[edgeCountA].currentXFixed,
+                    start.x
+                );
+            }
+
+            ++edgeCountA;
+            ZRNDR_SET_FIXED16_FROM_FLOAT(
+                fixed16Value,
+                end.y
+            );
+            edgeYStart = (fixed16Value + 0x7fff) >> 16;
+            edgeSampleY = (float)(edgeYStart) + 0.5f;
+        }
+        edgeVertexIndex = nextIndex;
+    }
+
+    edgeVertexIndex = topVertexIndex;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        vertices[edgeVertexIndex].y
+    );
+    edgeYStart = (fixed16Value + 0x7fff) >> 16;
+    edgeSampleY = (float)(edgeYStart) + 0.5f;
+    while (edgeVertexIndex != bottomVertexIndex) {
+        int nextIndex = edgeVertexIndex + edgeStepB;
+        if (nextIndex < 0) {
+            nextIndex += vertCount;
+        }
+        if (nextIndex >= vertCount) {
+            nextIndex -= vertCount;
+        }
+        const zVec3 &start = vertices[edgeVertexIndex];
+        const zVec3 &end = vertices[nextIndex];
+        if (edgeSampleY <= end.y) {
+            const float dy = end.y - start.y;
+            edgeTableB[edgeCountB].yStart = edgeYStart;
+            edgeTableB[edgeCountB].reserved = 0;
+            if (dy != 0.0f) {
+                const float xSlope = (end.x - start.x) / dy;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].xStepFixed,
+                    xSlope
+                );
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].currentXFixed,
+                    start.x + (edgeSampleY - start.y) * xSlope
+                );
+            } else {
+                edgeTableB[edgeCountB].xStepFixed = 0;
+                ZRNDR_SET_FIXED16_FROM_FLOAT(
+                    edgeTableB[edgeCountB].currentXFixed,
+                    start.x
+                );
+            }
+
+            ++edgeCountB;
+            ZRNDR_SET_FIXED16_FROM_FLOAT(
+                fixed16Value,
+                end.y
+            );
+            edgeYStart = (fixed16Value + 0x7fff) >> 16;
+            edgeSampleY = (float)(edgeYStart) + 0.5f;
+        }
+        edgeVertexIndex = nextIndex;
     }
 
     if (edgeCountA == 0 || edgeCountB == 0) {
         return;
     }
 
-    const int firstScanline = ScanlineStartFromY(vertices[topVertexIndex].y);
-    const int lastScanline = ScanlineEndFromY(vertices[bottomVertexIndex].y);
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        vertices[topVertexIndex].y
+    );
+    const int firstScanline = (fixed16Value + 0x7fff) >> 16;
+    ZRNDR_SET_FIXED16_FROM_FLOAT(
+        fixed16Value,
+        vertices[bottomVertexIndex].y
+    );
+    const int lastScanline = (fixed16Value - 0x8041) >> 16;
     if (firstScanline > lastScanline) {
         return;
     }

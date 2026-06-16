@@ -8526,7 +8526,8 @@ int HudUiZrdWidget::LoadFromZrd(
  * Reimplements 0x4ba4d0: HudUiPanelPtrVector::EraseRange.
  * Binary Ninja identifies the body as a VC5 std::vector-style erase helper
  * over the recovered HudUiPanelPtrVector storage: shift [last, end) over
- * first, update end, and return the original first iterator.
+ * first, retain the pointer-specialized _Destroy cursor walk, update end, and
+ * return the original first iterator.
  * Purpose: erase a contiguous range from the recovered panel pointer vector.
  */
 HudUiPanel ** HudUiPanelPtrVector::EraseRange(
@@ -8540,6 +8541,12 @@ HudUiPanel ** HudUiPanelPtrVector::EraseRange(
         *write = *read;
         ++write;
         ++read;
+    }
+
+    HudUiPanel **destroyIt = write;
+    HudUiPanel **const destroyEnd = end;
+    while (destroyIt != destroyEnd) {
+        ++destroyIt;
     }
 
     end = write;

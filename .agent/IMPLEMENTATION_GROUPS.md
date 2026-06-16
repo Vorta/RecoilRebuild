@@ -937,16 +937,15 @@ available even when no groups are active.
     (57dac8h), g_inverseDepthBias (57dac0h), g_inverseDepthScale (57dac4h),
     g_spanAllocCursor (57dae0h), g_pfnBuildSpanList (6320a4h),
     g_pfnSelectedSpanOp (6320b0h), and g_spanCurrentSpanBaseAddr (56b270h)
-    with zero unmasked data-byte mismatches. Tier S remains blocked by
-    `verify vc5 0x492000` with 1872 unmasked function-byte mismatches after
-    104 relocation-masked bytes (BN 1990 bytes, VC5 1072 bytes).
-    A same-session 0x492000 source-shape pass removed non-BN edge-table
-    zeroing and widened the local visible-span pointer scratch to match BN's
-    0x504-byte stack region. Functional still passes and `verify vc5 0x492000`
-    improves slightly to 1867 unmasked mismatches after 104 relocation-masked
-    bytes, BN size 1990, VC5 size 1008, and 3 trimmed VC NOPs. The remaining
-    blocker is still the in-function duplicated edge-builder/codegen shape;
-    BN confirms four physical edge-builder loops and no direct helper calls.
+    with zero unmasked data-byte mismatches. Tier S remains blocked, but a
+    same-session 0x492000 source-shape pass replaced the two out-of-line
+    `BuildScanConvertEdges` calls with typed in-function edge walks and
+    inlined fixed-point scanline conversion. Functional still passes and
+    `verify vc5 0x492000` improves from 1867 to 1773 unmasked mismatches after
+    188 relocation-masked bytes, BN size 1990, VC5 size 1792, and 1 trimmed VC
+    NOP. The remaining blocker is still the coherent zRndr_Draw.cpp
+    scan-conversion source/codegen shape, especially prologue/frame and
+    residual control-flow drift versus BN's 0xd48 EBP-frame body.
     Same-session 0x492f00 zRndr_DrawFlatImmediate owner/data pass replaced the
     behavior-only intersection/sort body with the recovered zRndr_Draw.cpp
     fixed-point ScanConvertEdge table model: scan-convert-mode side selection,
@@ -1405,14 +1404,13 @@ available even when no groups are active.
     `HudUiWidget::GetCenterX` as tier S/data `❎`; 0x404dd0
     `HudUiWidget::GetCenterY` remains tier-S debt with a 29-byte arithmetic
     scheduling drift around the signed half-height computation.
-  - Same-session HudUiPanelPtrVector::EraseRange refresh confirmed 0x4ba4d0
-    remains a tier-S-only leaf blocker: `verify functional 0x4ba4d0` passes,
-    while `verify vc5 0x4ba4d0` still fails with 14 unmasked epilogue bytes,
-    zero relocation bytes, BN size 50, VC5 size 48, and 5 trailing VC NOPs
-    trimmed. A source-level dead endpoint assignment probe that preserved the
-    return iterator was byte-neutral at the same 14 mismatches and was
-    reverted; the remaining drift is still BN's retained reload of the old
-    end iterator and dead stack-parameter write after `end = write`.
+  - Same-session HudUiPanelPtrVector::EraseRange refresh closed 0x4ba4d0 as a
+    tier-S leaf: source now retains the VC5 pointer-specialized `_Destroy`
+    cursor walk between tail copy and `_Last` update, `verify functional
+    0x4ba4d0` passes, and `verify vc5 0x4ba4d0` reports zero unmasked
+    mismatches, zero relocation bytes, BN size 50, VC5 size 64, and 14 trailing
+    VC NOPs trimmed. The 0x4b50c0 HudUiZrdWidget destructor remains tier B on
+    its own local EH/cleanup codegen drift.
   - Same-session HudUiPanelPtrVector::InsertN refresh closed the sibling owner
     blocker: `python tools/recoil.py verify functional 0x4ba510` passes, BN
     HLIL/MLIL shows the recovered VC5 vector insert only touches
