@@ -178,7 +178,8 @@ HudUiMeter g_HudUiMgrSensorMeter;
 HudUiBar g_HudUiMgrTailBar;
 int g_HudUi_AuxOverlayEnabled = 0;
 // BN identifies 0x4e5df0 as an eight-byte BSS HudCmdDialogState object.
-// StaticInit constructs it in place; AtExitDestructor tears down the same object.
+// VC5 emits the 0x40bc20/0x40bc30/0x40bc40/0x40bc50 static init and at-exit
+// thunks from this global object.
 HudCmdDialogState g_HudCmdDialogState;
 CString g_HudUiTripletWndClassName("");
 
@@ -11909,7 +11910,9 @@ void HudCmdDialogState::QueueEnter() {
  * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
  * Purpose: Initialize the command-dialog app state with no active dialog.
  */
-HudCmdDialogState::HudCmdDialogState() : m_dialog(0) {}
+HudCmdDialogState::HudCmdDialogState() {
+    m_dialog = 0;
+}
 
 // Reimplements 0x40bcf0: HudCmdDialogState::OnTryBecomeCurrent
 // (D:\Proj\Battlesport\HudCmdDialog.cpp)

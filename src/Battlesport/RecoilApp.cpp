@@ -2151,18 +2151,6 @@ inline RecoilApp_StateQueueItem *RecoilApp_StateQueue::Front() const {
 }
 
 // Source-faithful helper recovered from address-backed callers in this source file.
-inline void RecoilAppQueueBlockAssignFromCursor(
-    RecoilApp_StateQueueBlock *block,
-    RecoilApp_StateQueueItem **cursor,
-    RecoilApp_StateQueueItem ***chunkBaseSlot
-) {
-    block->m_chunkBegin = *chunkBaseSlot;
-    block->m_chunkEnd = *chunkBaseSlot + 1024;
-    block->m_cursor = cursor;
-    block->m_chunkBaseSlot = chunkBaseSlot;
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
 inline void RecoilApp_StateQueue::PopFront() {
     ++m_readBlock.m_cursor;
     --m_itemCount;
@@ -2176,7 +2164,12 @@ inline void RecoilApp_StateQueue::PopFront() {
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in queue entrypoint callers 0x443160, 0x443310, and 0x4434b0.
+ *
+ * Purpose: append one pending app-state transition item to the recovered queue.
+ */
 inline void RecoilApp_StateQueue::PushBack(
     RecoilApp_StateQueueItem *const &item
 ) {
@@ -2192,26 +2185,22 @@ inline void RecoilApp_StateQueue::PushBack(
             m_chunkBaseList[1] = chunk;
 
             RecoilApp_StateQueueItem ***const chunkBaseSlot = m_chunkBaseList + 1;
-            RecoilApp_StateQueueItem **const cursor = chunk + 512;
-            RecoilAppQueueBlockAssignFromCursor(
-                &m_readBlock,
-                cursor,
-                chunkBaseSlot
-            );
-            RecoilAppQueueBlockAssignFromCursor(
-                &m_writeBlock,
-                cursor,
-                chunkBaseSlot
-            );
+            chunk += 512;
+            m_readBlock.m_chunkBegin = *chunkBaseSlot;
+            m_readBlock.m_chunkEnd = m_readBlock.m_chunkBegin + 1024;
+            m_readBlock.m_cursor = chunk;
+            m_readBlock.m_chunkBaseSlot = chunkBaseSlot;
+            m_writeBlock.m_chunkBegin = m_readBlock.m_chunkBegin;
+            m_writeBlock.m_chunkEnd = m_readBlock.m_chunkEnd;
+            m_writeBlock.m_cursor = chunk;
+            m_writeBlock.m_chunkBaseSlot = chunkBaseSlot;
         } else if (m_writeBlock.m_chunkBaseSlot <
                    m_chunkBaseList + m_chunkBaseCapacity - 1) {
             ++m_writeBlock.m_chunkBaseSlot;
             *m_writeBlock.m_chunkBaseSlot = chunk;
-            RecoilAppQueueBlockAssignFromCursor(
-                &m_writeBlock,
-                chunk,
-                m_writeBlock.m_chunkBaseSlot
-            );
+            m_writeBlock.m_chunkBegin = *m_writeBlock.m_chunkBaseSlot;
+            m_writeBlock.m_chunkEnd = m_writeBlock.m_chunkBegin + 1024;
+            m_writeBlock.m_cursor = chunk;
         } else {
             const int activeChunkCount =
                 (int)(m_writeBlock.m_chunkBaseSlot - m_readBlock.m_chunkBaseSlot) + 1;
@@ -2221,11 +2210,10 @@ inline void RecoilApp_StateQueue::PushBack(
             RecoilApp_StateQueueItem ***const newWriteSlot =
                 centeredSlot + activeChunkCount;
             *newWriteSlot = chunk;
-            RecoilAppQueueBlockAssignFromCursor(
-                &m_readBlock,
-                oldReadCursor,
-                centeredSlot
-            );
+            m_readBlock.m_chunkBegin = *centeredSlot;
+            m_readBlock.m_chunkEnd = m_readBlock.m_chunkBegin + 1024;
+            m_readBlock.m_cursor = oldReadCursor;
+            m_readBlock.m_chunkBaseSlot = centeredSlot;
             RecoilApp_StateQueueBlock writeBlock;
             writeBlock.InitFromCursor(
                 chunk,
@@ -2402,13 +2390,12 @@ RecoilApp_IState * RecoilApp::QueueSwitchCurrentState(
     int stateParam
 ) {
     RecoilApp_IState *const currentState = GetCurrentState();
-    RecoilApp_StateQueueItem *item = new RecoilApp_StateQueueItem;
-    if (item != 0) {
-        item->m_type = 0;
-        item->m_kind = RecoilApp_StateQueueKind_SwitchCurrent;
-        item->m_stateObj = state;
-        item->m_param = stateParam;
-    }
+    RecoilApp_StateQueueItem *item =
+        new RecoilApp_StateQueueItem(
+            RecoilApp_StateQueueKind_SwitchCurrent,
+            state,
+            stateParam
+        );
     m_stateQueue.PushBack(item);
 
     if (currentState != 0) {
@@ -2419,19 +2406,21 @@ RecoilApp_IState * RecoilApp::QueueSwitchCurrentState(
     return currentState;
 }
 
-// Reimplements 0x443310: RecoilApp::QueuePushState
+/**
+ * Reimplements 0x443310: RecoilApp::QueuePushState.
+ * Purpose: enqueue a push-state request and run the pushed state's enter callback.
+ */
 RecoilApp_IState * RecoilApp::QueuePushState(
     RecoilApp_IState *state,
     int suspendParam
 ) {
     RecoilApp_IState *const currentState = GetCurrentState();
-    RecoilApp_StateQueueItem *item = new RecoilApp_StateQueueItem;
-    if (item != 0) {
-        item->m_type = 0;
-        item->m_kind = RecoilApp_StateQueueKind_PushState;
-        item->m_stateObj = state;
-        item->m_param = suspendParam;
-    }
+    RecoilApp_StateQueueItem *item =
+        new RecoilApp_StateQueueItem(
+            RecoilApp_StateQueueKind_PushState,
+            state,
+            suspendParam
+        );
     m_stateQueue.PushBack(item);
 
     state->OnEnter();
@@ -2446,13 +2435,12 @@ RecoilApp_IState * RecoilApp::QueueExitCurrentState(
     int stateParam
 ) {
     RecoilApp_IState *const currentState = GetCurrentState();
-    RecoilApp_StateQueueItem *item = new RecoilApp_StateQueueItem;
-    if (item != 0) {
-        item->m_type = 0;
-        item->m_kind = RecoilApp_StateQueueKind_ExitCurrent;
-        item->m_stateObj = 0;
-        item->m_param = stateParam;
-    }
+    RecoilApp_StateQueueItem *item =
+        new RecoilApp_StateQueueItem(
+            RecoilApp_StateQueueKind_ExitCurrent,
+            0,
+            stateParam
+        );
     m_stateQueue.PushBack(item);
 
     if (currentState != 0) {

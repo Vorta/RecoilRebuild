@@ -54,6 +54,22 @@ struct RecoilApp_StateQueueItem {
     RecoilApp_StateQueueKind m_kind;
     RecoilApp_IState *m_stateObj;
     int m_param;
+
+    /**
+     * Original inline helper; no standalone retail function exists.
+     * Observed in queue entrypoint callers 0x443160, 0x443310, and 0x4434b0.
+     *
+     * Purpose: initialize one queued app-state transition request.
+     */
+    RecoilApp_StateQueueItem(
+        RecoilApp_StateQueueKind kind,
+        RecoilApp_IState *stateObj,
+        int param
+    ) : m_type(0),
+        m_kind(kind),
+        m_stateObj(stateObj),
+        m_param(param) {
+    }
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_StateQueueItem) == 0x10);
 RECOIL_STATIC_ASSERT(
