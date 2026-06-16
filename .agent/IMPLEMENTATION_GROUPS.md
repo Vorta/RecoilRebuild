@@ -1174,6 +1174,13 @@ available even when no groups are active.
     smoke plus docblock audit pass.
   - Remaining active value is caller-path tier S verification only; no broad
     RecoilApp owner/data cleanup is currently pending in this group.
+  - Same-session zSndSampleSet::Init source-shape pass retained a direct
+    `g_zSnd_SoundLodValuePtr` dereference, matching BN's no-null-check
+    archive-bank path, and rewrote the loose-file fallback as a sample-cursor
+    do-while loop. Functional evidence still passes, and `verify vc5 0x4a0c40`
+    improves from 344 to 333 unmasked mismatches after 104 relocation-masked
+    bytes and 12 trimmed VC NOP bytes. 0x4a0fb0 remains unchanged at
+    74 unmasked mismatches, so both entries stay tier B.
 - Next action:
   - Work the remaining tier B verification blockers only after refreshing
     focused status/frontier: 0x4a6cf0 zVid_PackColorRGB, 0x4a0fb0

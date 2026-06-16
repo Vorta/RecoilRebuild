@@ -179,6 +179,7 @@ extern "C" int zfmv_script_begin_current_action_smoke(void) {
     const int oldFxPitchBytes = g_zVideo_FxSurfacePitchBytes;
     const int oldFxPitchPixels16 = g_zVideo_FxSurfacePitchPixels16;
     const int oldKbdReady = g_zInput_KbdSystemReady;
+    const int oldUseArchiveBanksFlag = g_zSnd_UseArchiveBanksFlag;
 
     zSndSampleSet *sampleSetSlots[1] = {};
     zSndSampleSet fmvSet = {};
@@ -188,6 +189,7 @@ extern "C" int zfmv_script_begin_current_action_smoke(void) {
     g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
     g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
     g_zSnd_SampleSetRegistry.useArchiveBanksFlag = 0;
+    g_zSnd_UseArchiveBanksFlag = 0;
 
     g_zVideo_PrimarySurfaceState.pixels = reinterpret_cast<void *>(0x12340000);
     g_zVideo_PrimarySurfaceState.width = 320;
@@ -223,6 +225,7 @@ extern "C" int zfmv_script_begin_current_action_smoke(void) {
     g_zVideo_FxSurfacePitchBytes = oldFxPitchBytes;
     g_zVideo_FxSurfacePitchPixels16 = oldFxPitchPixels16;
     g_zInput_KbdSystemReady = oldKbdReady;
+    g_zSnd_UseArchiveBanksFlag = oldUseArchiveBanksFlag;
 
     return ok ? 0 : 2;
 }
@@ -236,6 +239,7 @@ extern "C" int zfmv_script_begin_at_time_smoke(void) {
     const int oldFxPitchBytes = g_zVideo_FxSurfacePitchBytes;
     const int oldFxPitchPixels16 = g_zVideo_FxSurfacePitchPixels16;
     const int oldKbdReady = g_zInput_KbdSystemReady;
+    const int oldUseArchiveBanksFlag = g_zSnd_UseArchiveBanksFlag;
 
     zSndSampleSet *sampleSetSlots[1] = {};
     zSndSampleSet fmvSet = {};
@@ -245,6 +249,7 @@ extern "C" int zfmv_script_begin_at_time_smoke(void) {
     g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
     g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
     g_zSnd_SampleSetRegistry.useArchiveBanksFlag = 0;
+    g_zSnd_UseArchiveBanksFlag = 0;
 
     g_zVideo_PrimarySurfaceState.pixels = reinterpret_cast<void *>(0x12340000);
     g_zVideo_PrimarySurfaceState.width = 320;
@@ -275,6 +280,7 @@ extern "C" int zfmv_script_begin_at_time_smoke(void) {
     g_zVideo_FxSurfacePitchBytes = oldFxPitchBytes;
     g_zVideo_FxSurfacePitchPixels16 = oldFxPitchPixels16;
     g_zInput_KbdSystemReady = oldKbdReady;
+    g_zSnd_UseArchiveBanksFlag = oldUseArchiveBanksFlag;
 
     return ok ? 0 : 1;
 }
