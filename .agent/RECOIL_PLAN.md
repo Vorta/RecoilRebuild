@@ -22833,7 +22833,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_fog_blend_span_565_mmx;
     - Group: engine.zrndr;
     - Model: data-equivalent-only;
-    - Blocker: Fog/MMX source-family unresolved: same-session functional evidence passes after removing the shared FogBlendSpanMmxCore wrapper and spelling scalar edge handling, aligned quad loop, and scalar tail directly in the function; VC5SP3 vc5_o2_ob0_md_facs improves from 332 to 324 unmasked mismatches with a 128-byte compiled body, 12 relocation-masked bytes, and 11 trimmed VC NOPs. Retail still inlines MMX channel math and quad stores, while current source preserves that body through scalar MMX-emulation helpers, so source owner/data remain blocked.
+    - Blocker: Fog/MMX source-family unresolved: functional target zrndr_fog_blend_span_565_mmx passes after removing the shared BlendMmxQuad helper and spelling the four fog-factor stores plus four scalar lane calls directly in the function. VC5SP3 vc5_o2_ob0_md_facs now fails with 278 unmasked mismatches after 52 relocation-masked bytes and 8 trimmed VC NOPs; BN size 340, VC5 size 304. This improves the previous 324-mismatch scalar-emulation baseline, but retail still uses inline MMX channel math and quad stores, so Source owner/Data remain blocked by the zRndr_Span.cpp MMX source model.
 
 - 0x49e560:
   - [☑️] Reconstructed (Name: zRndr::FogBlendSpan555Mmx)
@@ -22846,7 +22846,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zrndr_fog_blend_span_555_mmx;
     - Group: engine.zrndr;
     - Model: data-equivalent-only;
-    - Blocker: Fog/MMX 555 source-family unresolved: same-session functional evidence passes after removing the shared FogBlendSpanMmxCore wrapper and spelling scalar edge handling, aligned quad loop, and scalar tail directly in the function; VC5SP3 vc5_o2_ob0_md_facs improves from 332 to 324 unmasked mismatches with a 128-byte compiled body, 12 relocation-masked bytes, and 11 trimmed VC NOPs. Retail still inlines MMX channel math and quad stores, while current source preserves that body through scalar MMX-emulation helpers, so source owner/data remain blocked.
+    - Blocker: Fog/MMX 555 source-family unresolved: functional target zrndr_fog_blend_span_555_mmx passes after removing the shared BlendMmxQuad helper and spelling the four fog-factor stores plus four scalar lane calls directly in the function. VC5SP3 vc5_o2_ob0_md_facs now fails with 279 unmasked mismatches after 52 relocation-masked bytes and 8 trimmed VC NOPs; BN size 340, VC5 size 304. This improves the previous 324-mismatch scalar-emulation baseline, but retail still uses inline MMX channel math and quad stores, so Source owner/Data remain blocked by the zRndr_Span.cpp MMX source model.
 
 - 0x49e6c0:
   - [☑️] Reconstructed (Name: zRndr::SpanCopy16FromTex16SwitchVShift)

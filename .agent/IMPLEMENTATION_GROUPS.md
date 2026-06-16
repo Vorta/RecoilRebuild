@@ -888,6 +888,14 @@ available even when no groups are active.
     non-ESP-pivot zRndr route is therefore the consumer source-shape audit for
     0x49ea80, 0x49ec20, 0x49e400, 0x49e560, 0x49cbb0, 0x49cea0, 0x49da80,
     and 0x49ddb0.
+    A focused fog/MMX source-shape pass removed the shared `BlendMmxQuad`
+    helper and spelled the four fog-factor stores plus scalar lane calls
+    directly inside 0x49e400 and 0x49e560. Functional targets still pass, and
+    VC5SP3 improves from 324 unmasked mismatches for each body to 278
+    mismatches for 0x49e400 and 279 for 0x49e560 after 52 relocation-masked
+    bytes and 8 trimmed VC NOPs each (BN 340, VC5 304). The pair remains tier
+    C/source-owner/data blocked because retail still uses inline MMX channel
+    math and quad stores rather than the scalar-emulated source body.
     Same-session status refresh for that consumer slice still reports all eight
     anchors as `Model: data-equivalent-only` with Source owner/Data blocked by
     retail MMX scratch, packed-index, packed-blend, or fog quad source shape;
