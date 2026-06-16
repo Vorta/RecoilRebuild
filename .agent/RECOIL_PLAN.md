@@ -36319,15 +36319,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x41a190:
   - [☑️] Reconstructed (Name: HudUiNumericTextInput::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiNumericTextInput; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiNumericTextInput::Constructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_numeric_text_input_constructor_ftable;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S open: no VC5 verification target currently covers 0x41a190; global S verification deferred
 
 - 0x41a200:
   - [☑️] Reconstructed (Name: HudUiClampedIntTextInput::Constructor)
@@ -36384,15 +36384,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x41a3f0:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::DestructorThunk)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiNumericTextInput; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiNumericTextInput::DestructorThunk;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_numeric_text_input_constructor_ftable;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S open: no VC5 verification target currently covers 0x41a3f0; global S verification deferred
 
 - 0x41a570:
   - [✅] Reconstructed (Name: HudUiCycleSelectorWidget::ScalarDeletingDestructorThunk)
@@ -36436,15 +36436,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x41a7b0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupTextInput::OnActivateFocusAndCursor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupTextInput; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiNetGameSetupTextInput::OnActivateFocusAndCursor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_numeric_text_input_constructor_ftable;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S open: no VC5 verification target currently covers 0x41a7b0; global S verification deferred
 
 - 0x41c270:
   - [✅] Reconstructed (Name: HudUiNewGamePanel_StartButton::OnActivate)
@@ -36505,15 +36505,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x41c4a0:
   - [✅] Reconstructed (Name: HudUiNumericTextInput::ScalarDeletingDestructorThunk)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiNumericTextInput; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiNumericTextInput::ScalarDeletingDestructorThunk;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_numeric_text_input_constructor_ftable;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S open: no VC5 verification target currently covers 0x41c4a0; global S verification deferred
 
 - 0x41c4c0:
   - [✅] Reconstructed (Name: HudUiOptionSelectorWidget::ScalarDeletingDestructorThunk)
