@@ -164,3 +164,31 @@ available even when no groups are active.
   - Defer the Time::Tick and zNetwork::ShutdownSessionRuntime tier S blockers
     discovered through the MpExit frontier until `tier_s_priority_ready=true`
     or until the user explicitly directs tier S work.
+
+### Group: HudCmdBindButtonBase class/source-model pass
+
+- Anchor: 0x40c280 HudCmdBindButtonBase::DestructorCore, with sibling
+  addresses 0x4b90e0 HudCmdBindButtonBase::RebuildBindingSlotWidgets,
+  0x4b8de0 HudCmdBindButtonBase::LoadFromZrd, and 0x40bdc0
+  zUtil_StdPtrVector_Clear.
+- Reason: binary-lane selection and source-owner mapping show this is a
+  class/source-model dependency under HudCmdDialog, not an isolated leaf. The
+  production source already models HudCmd bind buttons as C++ classes and no
+  production HudCmd FTable/table factory was found, so the prior blocker needs
+  a focused class-pass audit rather than another constructor probe.
+- Current blockers:
+  - 0x40c280 now has registered functional coverage and is accepted at tier C.
+    Source owner/Data remain blocked pending the wider class/source-model pass.
+  - 0x4b90e0 and 0x4b8de0 still have source bodies and fresh docblocks, but
+    plan metadata remains pending implementation/functional evidence for those
+    sibling methods.
+  - 0x40bdc0 has a fresh docblock and tier C source, but still has Source
+    owner/Data audit debt for the typed HudCmdBindingVector helper model.
+  - 0x40a920 was reclassified as provider/compiler glue; the remaining data
+    blocker is generated HudCmd C++ vtable data classification plus the broader
+    HudCmdDialog generated table-emission gap.
+- Next action:
+  - Continue the HudCmdBindButtonBase class pass through 0x4b90e0 and
+    0x4b8de0: refresh their frontiers, register or add narrow functional
+    coverage if missing, then update plan markers only after same-session
+    source/build evidence.

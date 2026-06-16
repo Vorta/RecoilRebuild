@@ -6199,6 +6199,26 @@ extern "C" int zhud_cmd_bind_button_base_constructor_smoke(void) {
     return listItemConstructed && buttonConstructed ? 0 : 1;
 }
 
+extern "C" int zhud_cmd_bind_button_base_destructor_core_smoke(void) {
+    void *const buttonStorage = ::operator new(sizeof(HudCmdBindButtonBase));
+    std::memset(buttonStorage, 0, sizeof(HudCmdBindButtonBase));
+    HudCmdBindButtonBase *const button = new (buttonStorage) HudCmdBindButtonBase;
+    InstallHudCmdDialogBinding(
+        *button,
+        "Command"
+    );
+
+    button->DestructorCore();
+
+    const bool vectorReset =
+        button->bindingVec.begin == nullptr &&
+        button->bindingVec.end == nullptr &&
+        button->bindingVec.capacity == nullptr;
+
+    ::operator delete(buttonStorage);
+    return vectorReset ? 0 : 1;
+}
+
 extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
     g_HudUi_InvalidateMask = 0x80;
 

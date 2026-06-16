@@ -35439,16 +35439,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x40c280:
   - [☑️] Reconstructed (Name: HudCmdBindButtonBase::DestructorCore)
-  - [❌] Source dependencies satisfied
+  - [✅] Source dependencies satisfied
   - [❌] Source owner (Kind: class; Parent: HudCmdDialog; State: parent-pending)
   - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Reimplemented [C]
+    - Name: HudCmdBindButtonBase::DestructorCore;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_cmd_bind_button_base_destructor_core;
     - Group: ui.zhud;
     - Model: pending;
-    - Blocker: HudCmdDialog/HudCmd* FTable globals and table factories remain unresolved source-shape debt
+    - Blocker: HudCmdBindButtonBase::DestructorCore source and functional tier C are accepted, but Source owner/Data remain blocked pending the wider HudCmdBindButtonBase class/source-model pass: sibling methods 0x4b90e0 and 0x4b8de0 still have pending dependency/implementation markers, 0x40bdc0 still has owner/data audit debt, and generated HudCmd C++ vtable data remains data-classification debt. Same-session source audit found no production HudCmd FTable/table factory scaffold.
 
 - 0x40c720:
   - [☑️] Reconstructed (Name: HudOptionsDialog::Constructor)
@@ -37903,16 +37903,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x40a920:
   - [✅] Reconstructed (Name: HudCmdDialog::ScalarDeletingDestructor)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudCmdDialog; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HudCmdDialog::ScalarDeletingDestructor;
-    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
-    - Target: hud_cmd_dialog_scalar_deleting_destructor;
-    - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: tier S evidence exists locally, but tier B/S plan promotion is blocked by data gate through HudCmdDialog::Destructor
+  - [✅] Provider-boundary (Kind: compiler-generated glue; Name: HudCmdDialog::ScalarDeletingDestructor; Origin: VC++ scalar deleting destructor; calls HudCmdDialog::Destructor, conditionally calls imported operator delete when flags & 1, returns self, and retn 4; File: external; Target: pending; Group: ui.zhud)
 
 - 0x40bc70:
   - [☑️] Reconstructed (Name: HudCmdDialogState::ScalarDeletingDestructor)

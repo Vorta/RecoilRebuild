@@ -375,6 +375,7 @@ extern "C" int zhud_scrolling_text_on_activate_reset_owner_fade_smoke(void);
 extern "C" int zhud_scrolling_text_update_scroll_positions_smoke(void);
 extern "C" int zhud_credits_panel_update_fade_and_exit_smoke(void);
 extern "C" int zhud_cmd_bind_button_base_constructor_smoke(void);
+extern "C" int zhud_cmd_bind_button_base_destructor_core_smoke(void);
 extern "C" int zhud_check_toggle_widget_helpers_smoke(void);
 extern "C" int zhud_cmd_dialog_on_command_selection_changed_smoke(void);
 extern "C" int zhud_cmd_bind_button_base_on_selection_changed_refresh_smoke(void);
@@ -10619,6 +10620,8 @@ int main(int argc, char **argv) {
          zhud_credits_panel_update_fade_and_exit_smoke},
         {"zhud_cmd_bind_button_base_constructor_smoke",
          zhud_cmd_bind_button_base_constructor_smoke},
+        {"zhud_cmd_bind_button_base_destructor_core_smoke",
+         zhud_cmd_bind_button_base_destructor_core_smoke},
         {"zhud_check_toggle_widget_helpers_smoke",
          zhud_check_toggle_widget_helpers_smoke},
         {"zhud_cmd_dialog_on_command_selection_changed_smoke",

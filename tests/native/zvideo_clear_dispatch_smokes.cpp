@@ -14,19 +14,21 @@ int g_unlockSurfaceCalls;
 zVideo_SurfaceStatePartial *g_lastLockSurfaceState;
 zVideo_SurfaceStatePartial *g_lastUnlockSurfaceState;
 
-void __fastcall ClearSwFake(zVidRect32 *surfaceRect, zVidRect32 *zRect) {
+int __fastcall ClearSwFake(zVidRect32 *surfaceRect, zVidRect32 *zRect) {
     ++g_clearSwCalls;
     g_lastClearSwSurfaceRect = surfaceRect;
     g_lastClearSwZRect = zRect;
+    return 0;
 }
 
-void __fastcall ClearStateFake(
+int __fastcall ClearStateFake(
     zVidRect32 *rect,
     zVideo_SurfaceStatePartial *surfaceState
 ) {
     ++g_clearPrimaryCalls;
     g_lastClearPrimaryRect = rect;
     g_lastClearPrimaryState = surfaceState;
+    return 0;
 }
 
 int __fastcall LockSurfaceStateFake(zVideo_SurfaceStatePartial *surfaceState) {
