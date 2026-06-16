@@ -10113,7 +10113,11 @@ void __fastcall zRndr_SetPaletteRemapKeyFromRgb01(
         return;
     }
 
-    zVidPaletteRemapRecipe recipe = {0};
+    zVidPaletteRemapRecipe recipe;
+    recipe.color0R = 0.0f;
+    recipe.color0G = 0.0f;
+    recipe.color0B = 0.0f;
+    recipe.color0Strength = 0.0f;
     recipe.color1R = rgb01->red;
     recipe.color1G = rgb01->green;
     recipe.color1B = rgb01->blue;
@@ -10133,6 +10137,10 @@ void __fastcall zRndr_SetPaletteRemapKeyFromRgb01(
 void __fastcall zRndr_SetPaletteShadeRecipeIndex(
     zVidPaletteRemapRecipe *recipe
 ) {
-    g_zRndr_ActivePaletteShadeRecipeIndex =
-        recipe != 0 ? zVid_PaletteRemap_BuildPaletteVariant(recipe) : -1;
+    if (recipe == 0) {
+        g_zRndr_ActivePaletteShadeRecipeIndex = -1;
+        return;
+    }
+
+    g_zRndr_ActivePaletteShadeRecipeIndex = zVid_PaletteRemap_BuildPaletteVariant(recipe);
 }
