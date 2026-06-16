@@ -18821,7 +18821,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zvid_palette_remap_apply_recipe_to_palette_variant;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked: local VC5SP3 target zvid_palette_remap_apply_recipe_to_palette_variant now covers this source-faithful palette-remap helper and fails with 33 unmasked function-byte mismatches after 48 relocation-masked bytes, BN size 416 and VC5 size 416. Source was adjusted to match BN output-only rgb-bit locals, zero-extended source-color load, tail cursor advance, and fully assigned color local before zVid_PackColorRgbFloats; functional target passes. Remaining blocker includes direct lower tier-S debt in 0x4a6d40 zVid_PackColorRgbFloats plus residual stack/layout and relocation-sensitive scheduling drift.
 
 - 0x46e680:
   - [☑️] Reconstructed (Name: zVid_PaletteRemap::FindRecipeIndex)
