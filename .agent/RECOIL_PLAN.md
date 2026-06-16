@@ -35343,17 +35343,17 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Blocker: none
 
 - 0x40bcf0:
-  - [☑️] Reconstructed (Name: HudCmdDialogState::OnTryBecomeCurrent)
-  - [❌] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
-  - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Reconstructed (Name: HudCmdDialogState::OnTryBecomeCurrent)
+  - [✅] Source dependencies satisfied
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudCmdDialogState::OnTryBecomeCurrent;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_cmd_dialog_state_on_try_become_current;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: functional target hud_cmd_dialog_state_on_try_become_current passes in this session, but Source dependencies remain blocked by 0x40a5b0 HudCmdDialog::Constructor Data reimplemented ❌; constructor data/tier S is blocked by missing generated HudCmdDialog/HudCmd* table emission in current Constructor() source shape. Do not promote OnTryBecomeCurrent until 0x40a5b0 data is accepted.
+    - Model: source-faithful;
+    - Blocker: tier S remains open: no VC5 verification manifest currently covers 0x40bcf0
 
 - 0x40bd60:
   - [✅] Reconstructed (Name: HudCmdDialogState::OnDeactivate)
@@ -41769,14 +41769,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: HudCmdDialog::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudCmdDialog; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudCmdDialog::Constructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_constructor;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: data/tier S blocked: BN assembly for 0x40a5b0 installs generated read-only C++ table pointers for HudCmdDialog/HudCmd* subobjects after base construction. Same-session BN/source/VC5 evidence classifies these as compiler-generated table stores, not mutable authored data or provider tables. Source now uses concrete HudCmd* classes and explicit base/concrete constructor calls in HudCmdDialog::Constructor, avoiding placement-new null-test codegen in the caller; functional target hud_cmd_dialog_constructor passes, and VC5SP3 now fails with 633 unmasked mismatches after 224 relocation-masked bytes and 0 trimmed VC NOPs (BN 878 bytes, VC5 608 bytes). Data/B/S remain blocked by the constructor-cluster codegen gap: VC5 still emits out-of-line concrete constructor calls instead of BN's inline base-constructor plus generated table-store sequence.
+    - Blocker: tier S remains open: VC5SP3 hud_cmd_dialog_constructor byte comparison still has 633 unmasked codegen/scheduling mismatches after class-owner recovery
 
 - 0x4b9320:
   - [✅] Reconstructed (Name: HudCmdBindButtonBase::OnSelectedIndexChanged)
