@@ -39869,16 +39869,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x41a350:
   - [✅] Reconstructed (Name: HudUiClampedIntStepButton::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Source dependencies satisfied
+  - [✅] Source owner (Kind: class; Parent: HudUiClampedIntStepButton; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiClampedIntStepButton::OnActivate;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_clamped_int_step_button_on_activate;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudUiNetGameSetupPanel owner-local table factories/globals and constructor table overwrites were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
+    - Model: source-faithful;
+    - Blocker: tier S open: current VC5 target hud_ui_clamped_int_step_button_on_activate has stale symbol/byte evidence and global S verification is deferred
 
 - 0x4b3ce0:
   - [☑️] Reconstructed (Name: HudUiWidget::ScalarDeletingDestructor)

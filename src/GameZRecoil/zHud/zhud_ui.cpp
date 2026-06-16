@@ -15199,7 +15199,14 @@ int HudUiClampedIntTextInput::CommitAndGetValue() {
     return value;
 }
 
-// Reimplements 0x41a350: HudUiClampedIntStepButton::OnActivate
+/**
+ * Reimplements 0x41a350: HudUiClampedIntStepButton::OnActivate.
+ * Binary Ninja source file D:\Proj\Battlesport\hud.cpp shows the target-input
+ * guard, virtual commit slot, signed step/clamp, numeric text update, target
+ * invalidate slot, then HudUiZrdWidget activation.
+ * Purpose: commit the linked clamped integer input, apply this button's step,
+ * clamp/display the result, invalidate the input, and run base activation.
+ */
 void HudUiClampedIntStepButton::OnActivate() {
     if (targetInput != 0) {
         HudUiClampedIntTextInput *input = targetInput;

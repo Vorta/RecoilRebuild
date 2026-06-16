@@ -286,6 +286,7 @@ extern "C" int zhud_circle_draw_dirty_smoke(void);
 extern "C" int zhud_widget_constructor_smoke(void);
 extern "C" int zhud_widget_invalidate_rect_smoke(void);
 extern "C" int zhud_widget_draw_smoke(void);
+extern "C" int zhud_clamped_int_step_button_on_activate_smoke(void);
 extern "C" int hud_ui_mp_exit_dialog_load_layout_smoke(void);
 extern "C" int zhud_slot_draw_smoke(void);
 extern "C" int zhud_triplet_panel_draw_smoke(void);
@@ -9973,6 +9974,46 @@ extern "C" int zvideo_dd3d_upload_image_to_surface_smoke(void) {
     return contiguousOk && rowCopyOk && alphaConvertOk ? 0 : 1;
 }
 
+extern "C" int zhud_clamped_int_step_button_on_activate_smoke(void) {
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+    g_HudUi_InvalidateMask = 0x80;
+
+    HudUiClampedIntTextInput input(6);
+    input.minValue = 5;
+    input.maxValue = 10;
+
+    HudUiClampedIntStepButton button = {};
+    button.targetInput = &input;
+
+    input.Update("7");
+    input.flags = 0;
+    button.stepDelta = 4;
+    button.OnActivate();
+    const bool clampedHigh = std::strcmp(input.textInput.buffer, "10") == 0 &&
+                             input.textInput.cursor == 2 &&
+                             (input.flags & 0x80) != 0;
+
+    input.Update("6");
+    input.flags = 0;
+    button.stepDelta = -4;
+    button.OnActivate();
+    const bool clampedLow = std::strcmp(input.textInput.buffer, "5") == 0 &&
+                            input.textInput.cursor == 1 &&
+                            (input.flags & 0x80) != 0;
+
+    input.Update("8");
+    input.flags = 0x20;
+    button.targetInput = 0;
+    button.OnActivate();
+    const bool nullTarget =
+        std::strcmp(input.textInput.buffer, "8") == 0 &&
+        input.textInput.cursor == 1 &&
+        input.flags == 0x20;
+
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    return clampedHigh && clampedLow && nullTarget ? 0 : 1;
+}
+
 extern "C" int zhud_counter_constructor_smoke(void) {
     HudUiCounter counter{};
     zVidImagePartial state0{};
@@ -10572,6 +10613,8 @@ int main(int argc, char **argv) {
         {"zhud_widget_invalidate_rect_smoke",
          zhud_widget_invalidate_rect_smoke},
         {"zhud_widget_draw_smoke", zhud_widget_draw_smoke},
+        {"zhud_clamped_int_step_button_on_activate_smoke",
+         zhud_clamped_int_step_button_on_activate_smoke},
         {"hud_ui_mp_exit_dialog_load_layout_smoke",
          hud_ui_mp_exit_dialog_load_layout_smoke},
         {"zhud_slot_draw_smoke", zhud_slot_draw_smoke},
