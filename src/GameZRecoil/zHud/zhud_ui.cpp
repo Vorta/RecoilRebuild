@@ -11258,24 +11258,24 @@ static void HudCmdDialog_DestroyMouseButton(
  * populate command groups before enabling the container children.
  */
 HudCmdDialog * HudCmdDialog::Constructor() {
-    new ((HudUiBackground *)this) HudUiBackground;
+    this->HudUiBackground::HudUiBackground();
 
-    new (&resumeButton) HudCmdSimpleWidget;
-    new (&resetButton) HudCmdResetButton;
+    resumeButton.HudCmdSimpleWidget::HudCmdSimpleWidget();
+    resetButton.HudCmdResetButton::HudCmdResetButton();
 
-    new (&commandList) HudCmdCommandList;
-    new (&keyAButton) HudCmdKeyAButton;
-    new (&keyBButton) HudCmdKeyBButton;
-    new (&joyButton) HudCmdJoyButton;
-    new (&mouseButton) HudCmdMouseButton;
+    commandList.HudCmdCommandList::HudCmdCommandList();
+    keyAButton.HudCmdKeyAButton::HudCmdKeyAButton();
+    keyBButton.HudCmdKeyBButton::HudCmdKeyBButton();
+    joyButton.HudCmdJoyButton::HudCmdJoyButton();
+    mouseButton.HudCmdMouseButton::HudCmdMouseButton();
 
-    setList.HudUiCycleSelectorWidget::Constructor();
-    new (&nextSetButton) HudCmdNextSetButton;
-    new (&prevSetButton) HudCmdPrevSetButton;
-    new (&nextCommandButton) HudCmdNextCommandButton;
-    new (&prevCommandButton) HudCmdPrevCommandButton;
+    setList.HudCmdSetListWidget::HudCmdSetListWidget();
+    nextSetButton.HudCmdNextSetButton::HudCmdNextSetButton();
+    prevSetButton.HudCmdPrevSetButton::HudCmdPrevSetButton();
+    nextCommandButton.HudCmdNextCommandButton::HudCmdNextCommandButton();
+    prevCommandButton.HudCmdPrevCommandButton::HudCmdPrevCommandButton();
 
-    new ((HudUiTransitionTextPanel *)(&promptPanel)) HudUiTransitionTextPanel;
+    ((HudUiTransitionTextPanel *)(&promptPanel))->HudUiTransitionTextPanel::HudUiTransitionTextPanel();
     descriptionPanel.HudUiPanel::ConstructorDefault(
         0,
         0,

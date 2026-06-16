@@ -1368,12 +1368,26 @@ struct HudCmdBindButtonBase : HudUiCheckToggleWidget {
 
 struct HudCmdCommandList : HudCmdBindButtonBase {
 
+    /**
+     * Original inline constructor evidence: BN 0x40a5b0 embeds this concrete
+     * command-list construction as HudCmdBindButtonBase construction followed
+     * by compiler-generated table emission.
+     * Purpose: construct the command-list bind-button subobject.
+     */
+    HudCmdCommandList() : HudCmdBindButtonBase() {}
     void Destructor();
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
 };
 
 struct HudCmdKeyAButton : HudCmdBindButtonBase {
 
+    /**
+     * Original inline constructor evidence: BN 0x40a5b0 embeds this concrete
+     * key-A button construction as HudCmdBindButtonBase construction followed
+     * by compiler-generated table emission.
+     * Purpose: construct the primary-key bind-button subobject.
+     */
+    HudCmdKeyAButton() : HudCmdBindButtonBase() {}
     void Destructor();
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     void OnBeginCapture();
@@ -1382,6 +1396,13 @@ struct HudCmdKeyAButton : HudCmdBindButtonBase {
 
 struct HudCmdKeyBButton : HudCmdBindButtonBase {
 
+    /**
+     * Original inline constructor evidence: BN 0x40a5b0 embeds this concrete
+     * key-B button construction as HudCmdBindButtonBase construction followed
+     * by compiler-generated table emission.
+     * Purpose: construct the secondary-key bind-button subobject.
+     */
+    HudCmdKeyBButton() : HudCmdBindButtonBase() {}
     void Destructor();
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     void OnBeginCapture();
@@ -1390,6 +1411,13 @@ struct HudCmdKeyBButton : HudCmdBindButtonBase {
 
 struct HudCmdJoyButton : HudCmdBindButtonBase {
 
+    /**
+     * Original inline constructor evidence: BN 0x40a5b0 embeds this concrete
+     * joystick button construction as HudCmdBindButtonBase construction
+     * followed by compiler-generated table emission.
+     * Purpose: construct the joystick bind-button subobject.
+     */
+    HudCmdJoyButton() : HudCmdBindButtonBase() {}
     void Destructor();
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     void OnBeginCapture();
@@ -1398,6 +1426,13 @@ struct HudCmdJoyButton : HudCmdBindButtonBase {
 
 struct HudCmdMouseButton : HudCmdBindButtonBase {
 
+    /**
+     * Original inline constructor evidence: BN 0x40a5b0 embeds this concrete
+     * mouse button construction as HudCmdBindButtonBase construction followed
+     * by compiler-generated table emission.
+     * Purpose: construct the mouse bind-button subobject.
+     */
+    HudCmdMouseButton() : HudCmdBindButtonBase() {}
     void Destructor();
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     void OnBeginCapture();
@@ -2087,35 +2122,84 @@ struct HudUiBackground : HudUiBackgroundContainer {
 };
 
 struct HudCmdSimpleWidget : HudUiZrdWidget {
+    /**
+     * Original inline constructor evidence: BN 0x40a5b0 embeds this simple
+     * command-widget construction as HudUiZrdWidget construction followed by
+     * compiler-generated table emission.
+     * Purpose: construct a simple command-dialog ZRD widget subobject.
+     */
+    HudCmdSimpleWidget() : HudUiZrdWidget() {}
 };
 
 struct HudCmdNextSetButton : HudUiZrdWidget {
 
+    /**
+     * Original inline constructor evidence: BN 0x40a5b0 embeds this concrete
+     * next-set button construction as HudUiZrdWidget construction followed by
+     * compiler-generated table emission.
+     * Purpose: construct the next-set navigation subobject.
+     */
+    HudCmdNextSetButton() : HudUiZrdWidget() {}
     void OnActivate();
 };
 
 struct HudCmdPrevSetButton : HudUiZrdWidget {
 
+    /**
+     * Original inline constructor evidence: BN 0x40a5b0 embeds this concrete
+     * previous-set button construction as HudUiZrdWidget construction followed
+     * by compiler-generated table emission.
+     * Purpose: construct the previous-set navigation subobject.
+     */
+    HudCmdPrevSetButton() : HudUiZrdWidget() {}
     void OnActivate();
 };
 
 struct HudCmdNextCommandButton : HudUiZrdWidget {
 
+    /**
+     * Original inline constructor evidence: BN 0x40a5b0 embeds this concrete
+     * next-command button construction as HudUiZrdWidget construction followed
+     * by compiler-generated table emission.
+     * Purpose: construct the next-command navigation subobject.
+     */
+    HudCmdNextCommandButton() : HudUiZrdWidget() {}
     void OnActivate();
 };
 
 struct HudCmdPrevCommandButton : HudUiZrdWidget {
 
+    /**
+     * Original inline constructor evidence: BN 0x40a5b0 embeds this concrete
+     * previous-command button construction as HudUiZrdWidget construction
+     * followed by compiler-generated table emission.
+     * Purpose: construct the previous-command navigation subobject.
+     */
+    HudCmdPrevCommandButton() : HudUiZrdWidget() {}
     void OnActivate();
 };
 
 struct HudCmdResetButton : HudUiZrdWidget {
 
+    /**
+     * Original inline constructor evidence: BN 0x40a5b0 embeds this concrete
+     * reset button construction as HudUiZrdWidget construction followed by
+     * compiler-generated table emission.
+     * Purpose: construct the reset command-dialog subobject.
+     */
+    HudCmdResetButton() : HudUiZrdWidget() {}
     void OnActivate();
 };
 
 struct HudCmdSetListWidget : HudUiCycleSelectorWidget {
 
+    /**
+     * Original inline constructor evidence: BN 0x40a5b0 embeds this concrete
+     * set-list construction as HudUiCycleSelectorWidget construction followed
+     * by compiler-generated table emission.
+     * Purpose: construct the command-group selector subobject.
+     */
+    HudCmdSetListWidget() : HudUiCycleSelectorWidget() {}
     void OnActivate();
 };
 
