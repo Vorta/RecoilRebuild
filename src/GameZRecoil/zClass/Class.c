@@ -1260,7 +1260,11 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x448100: zClass_Class::gwNodeSetCellPickable
+    /**
+     * Reimplements 0x448100: zClass_Class::gwNodeSetCellPickable
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: set or clear the cell-pickable flag on a node.
+     */
     int __fastcall
     gwNodeSetCellPickable(
         zClass_NodePartial * node,
@@ -1282,7 +1286,11 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x448140: zClass_Class::gwNodeGetCellPickable
+    /**
+     * Reimplements 0x448140: zClass_Class::gwNodeGetCellPickable
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: read the cell-pickable flag from a node.
+     */
     int __fastcall
     gwNodeGetCellPickable(
         zClass_NodePartial * node,
@@ -1319,7 +1327,11 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x4481b0: zClass_Class::gwNodeSetRaycastable
+    /**
+     * Reimplements 0x4481b0: zClass_Class::gwNodeSetRaycastable
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: set or clear the raycastable flag on a node.
+     */
     int __fastcall gwNodeSetRaycastable(
         zClass_NodePartial * node,
         int value
@@ -1340,7 +1352,11 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x4481f0: zClass_Class::gwNodeGetRaycastable
+    /**
+     * Reimplements 0x4481f0: zClass_Class::gwNodeGetRaycastable
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: read the raycastable flag from a node.
+     */
     int __fastcall
     gwNodeGetRaycastable(
         zClass_NodePartial * node,
@@ -1357,7 +1373,11 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x448230: zClass_Class::gwNodeSetPickable
+    /**
+     * Reimplements 0x448230: zClass_Class::gwNodeSetPickable
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: set or clear the pickable flag on a node.
+     */
     int __fastcall gwNodeSetPickable(
         zClass_NodePartial * node,
         int value
@@ -1378,7 +1398,11 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x448270: zClass_Class::gwNodeGetPickable
+    /**
+     * Reimplements 0x448270: zClass_Class::gwNodeGetPickable
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: read the pickable flag from a node.
+     */
     int __fastcall
     gwNodeGetPickable(
         zClass_NodePartial * node,
