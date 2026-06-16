@@ -16560,8 +16560,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zSnd::ReportMciError)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zSound; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zSnd::ReportMciError;
     - File: src/GameZRecoil/zSound/zsnd_cd.cpp;
     - Target: zsnd_report_mci_error;
@@ -17053,41 +17053,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a27d0:
   - [✅] Reconstructed (Name: zSndCd::IsStereoAuxEnabled)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zSound; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zSndCd; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zSndCd::IsStereoAuxEnabled;
     - File: src/GameZRecoil/zSound/zsnd_cd.cpp;
     - Target: zsnd_cd_is_stereo_aux_enabled;
     - Group: engine.zsound;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a27f0:
   - [☑️] Reconstructed (Name: zSndCd::GetVolume)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zSound; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zSndCd; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zSndCd::GetVolume;
     - File: src/GameZRecoil/zSound/zsnd_cd.cpp;
     - Target: zsnd_cd_get_volume;
     - Group: engine.zsound;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a2880:
   - [☑️] Reconstructed (Name: zSndCd::SetVolume)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zSound; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zSndCd; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zSndCd::SetVolume;
     - File: src/GameZRecoil/zSound/zsnd_cd.cpp;
     - Target: zsnd_cd_set_volume;
     - Group: engine.zsound;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a2930:
   - [✅] Reconstructed (Name: zSndCd::GetTrackCount)

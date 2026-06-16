@@ -19,7 +19,7 @@ struct zSndCdTrackState {
 extern "C" int g_zSndCdFlags = 0;
 extern "C" int g_zSndCdLastPlayMode = 0;
 extern "C" int g_zSndCdDeviceId = 0;
-extern "C" int g_zSndCdAuxDeviceId = -1;
+extern "C" int g_zSndCdAuxDeviceId = 0;
 extern "C" int g_zSndCdTrackCountCached = 0;
 extern "C" zSndCdTrackState g_zSndCdPlayFrom = {0};
 extern "C" zSndCdTrackState g_zSndCdCurrent = {0};
@@ -194,7 +194,10 @@ void __fastcall SetSpeedOfSoundMps(
     g_zSndInvSpeedOfSoundMps = 1.0f / speedOfSoundMps;
 }
 
-// Reimplements 0x4a3ea0: zSnd::ReportMciError
+/**
+ * Reimplements 0x4a3ea0: zSnd::ReportMciError.
+ * Purpose: print a formatted MCI error message for a source-file line.
+ */
 RECOIL_NO_GS int __fastcall ReportMciError(
     unsigned int mciError,
     const char *sourceFile,
@@ -208,7 +211,7 @@ RECOIL_NO_GS int __fastcall ReportMciError(
     );
     fprintf(
         stderr,
-        "%s(%d) : MCIError [%s]\n",
+        "%s(%d): MCIError [%s]\n",
         sourceFile,
         lineNumber,
         errorText
@@ -382,7 +385,10 @@ int ResetTrackState() {
     return state.track;
 }
 
-// Reimplements 0x4a27d0: zSndCd::IsStereoAuxEnabled
+/**
+ * Reimplements 0x4a27d0: zSndCd::IsStereoAuxEnabled.
+ * Purpose: report whether CD audio has an initialized stereo AUX mixer.
+ */
 int IsStereoAuxEnabled() {
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
@@ -395,7 +401,10 @@ int IsStereoAuxEnabled() {
     return g_zSndCdFlags & ZSND_CD_FLAG_STEREO_AUX;
 }
 
-// Reimplements 0x4a27f0: zSndCd::GetVolume
+/**
+ * Reimplements 0x4a27f0: zSndCd::GetVolume.
+ * Purpose: read the AUX mixer volume into mono or stereo output channels.
+ */
 int __fastcall GetVolume(
     unsigned short *primaryVolumeOut,
     unsigned short *secondaryVolumeOut
@@ -435,7 +444,10 @@ int __fastcall GetVolume(
     return 1;
 }
 
-// Reimplements 0x4a2880: zSndCd::SetVolume
+/**
+ * Reimplements 0x4a2880: zSndCd::SetVolume.
+ * Purpose: write mono or stereo AUX mixer volume from requested channel values.
+ */
 int __fastcall SetVolume(
     unsigned short primaryVolume,
     unsigned short secondaryVolume
