@@ -278,6 +278,8 @@ extern "C" int zhud_element_draw_base_smoke(void);
 extern "C" int zhud_element_update_smoke(void);
 extern "C" int zhud_element_visible_smoke(void);
 extern "C" int zhud_element_position_mutators_smoke(void);
+extern "C" int zhud_element_get_xy_smoke(void);
+extern "C" int zhud_element_get_rect_smoke(void);
 extern "C" int zhud_element_hit_test_true_smoke(void);
 extern "C" int zhud_circle_constructor_and_hit_test_smoke(void);
 extern "C" int zhud_circle_draw_dirty_smoke(void);
@@ -10031,6 +10033,48 @@ extern "C" int zhud_element_position_mutators_smoke(void) {
     return pos && xOnly && yOnly ? 0 : 1;
 }
 
+extern "C" int zhud_element_get_xy_smoke(void) {
+    HudUiElement element{};
+    element.Constructor(-12, 345);
+
+    const bool initial = element.GetCenterX() == -12 && element.GetCenterY() == 345;
+    element.SetPos(78, -90);
+
+    HudUiRect textRect{};
+    element.GetTextRect(&textRect);
+    const bool moved = element.GetCenterX() == 78 && element.GetCenterY() == -90;
+    const bool rectMatches =
+        textRect.left == 78 &&
+        textRect.right == 78 &&
+        textRect.top == -90 &&
+        textRect.bottom == -90;
+
+    return initial && moved && rectMatches ? 0 : 1;
+}
+
+extern "C" int zhud_element_get_rect_smoke(void) {
+    HudUiElement element{};
+    element.Constructor(11, -22);
+
+    HudUiRect rect{};
+    element.GetTextRect(&rect);
+    const bool initial =
+        rect.left == 11 &&
+        rect.right == 11 &&
+        rect.top == -22 &&
+        rect.bottom == -22;
+
+    element.SetPos(-33, 44);
+    element.GetTextRect(&rect);
+    const bool moved =
+        rect.left == -33 &&
+        rect.right == -33 &&
+        rect.top == 44 &&
+        rect.bottom == 44;
+
+    return initial && moved ? 0 : 1;
+}
+
 extern "C" int zhud_element_hit_test_true_smoke(void) {
     HudUiElement element{};
 
@@ -10517,6 +10561,8 @@ int main(int argc, char **argv) {
         {"zhud_element_visible_smoke", zhud_element_visible_smoke},
         {"zhud_element_position_mutators_smoke",
          zhud_element_position_mutators_smoke},
+        {"zhud_element_get_xy_smoke", zhud_element_get_xy_smoke},
+        {"zhud_element_get_rect_smoke", zhud_element_get_rect_smoke},
         {"zhud_element_hit_test_true_smoke",
          zhud_element_hit_test_true_smoke},
         {"zhud_circle_constructor_and_hit_test_smoke",

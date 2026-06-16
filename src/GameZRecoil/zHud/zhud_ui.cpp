@@ -5119,7 +5119,12 @@ void HudUiElement::SetBltSourceAndClipRect(
     SetClipRect(rectOrNull);
 }
 
-// Reimplements 0x4b41b0: HudUiElement::SetClipRect
+/**
+ * Reimplements 0x4b41b0: HudUiElement::SetClipRect.
+ * Purpose: replace the element clip rectangle when a source rectangle is supplied.
+ * Binary Ninja: 0x4b41b0 returns immediately for a null argument; otherwise it
+ * copies the four HudUiRect fields into the clipRect member at offset 0x20.
+ */
 void HudUiElement::SetClipRect(
     const HudUiRect *rect
 ) {

@@ -38002,29 +38002,29 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x404d50:
   - [✅] Reconstructed (Name: HudUiElement::GetX)
-  - [❌] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
-  - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Source dependencies satisfied
+  - [✅] Source owner (Kind: class; Parent: HudUiElement; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiElement::GetX;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_element_get_x;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
+    - Model: source-faithful;
+    - Blocker: tier S open: grouped VC5 target hud_ui_element_get_xy currently expects stale GetX symbol while source-faithful method is GetCenterX; global S verification deferred
 
 - 0x404d60:
   - [✅] Reconstructed (Name: HudUiElement::GetY)
-  - [❌] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
-  - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Source dependencies satisfied
+  - [✅] Source owner (Kind: class; Parent: HudUiElement; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiElement::GetY;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_element_get_y;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
+    - Model: source-faithful;
+    - Blocker: tier S open: grouped VC5 target hud_ui_element_get_xy currently expects stale GetY symbol while source-faithful method is GetCenterY; global S verification deferred
 
 - 0x404d70:
   - [✅] Reconstructed (Name: HudUiElement::ScalarDeletingDestructor)
@@ -40064,16 +40064,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x4b41b0:
   - [✅] Reconstructed (Name: HudUiElement::SetClipRect)
-  - [❌] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
-  - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Source dependencies satisfied
+  - [✅] Source owner (Kind: class; Parent: HudUiElement; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiElement::SetClipRect;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_element_set_clip_rect;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
+    - Model: source-faithful;
+    - Blocker: tier S open: no VC5 verification target currently covers 0x4b41b0; global S verification deferred
 
 - 0x4b41e0:
   - [☑️] Reconstructed (Name: HudUiElement::Update)
@@ -40103,16 +40103,16 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x4b42c0:
   - [✅] Reconstructed (Name: HudUiElement::GetRect)
-  - [❌] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiElement; State: parent-pending)
-  - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Source dependencies satisfied
+  - [✅] Source owner (Kind: class; Parent: HudUiElement; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiElement::GetTextRect;
+    - File: src/GameZRecoil/zHud/zhud_ui.cpp;
+    - Target: hud_ui_element_get_rect;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudUiElement/HudUi* class/interface virtual owner remains represented by forbidden FTable globals, factories, and raw slot dispatch helpers
+    - Model: source-faithful;
+    - Blocker: tier S byte evidence exists via hud_ui_element_get_rect with zero unmasked mismatches, but pure tier S promotion is deferred until global authored owner/data gates are clear
 
 - 0x4b42f0:
   - [✅] Reconstructed (Name: HudUiTextInput::Constructor)
