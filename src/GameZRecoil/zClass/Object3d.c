@@ -847,7 +847,7 @@ namespace zClass_Object3D {
         data->scale.x = x;
         data->scale.y = y;
         data->scale.z = z;
-        if ((data->flags & 0x08) != 0 && (x != 1.0f || y != 1.0f || z != 1.0f)) {
+        if ((data->flags & 0x08) != 0 && (x != 1.0 || y != 1.0 || z != 1.0)) {
             data->flags &= ~0x08;
         }
 

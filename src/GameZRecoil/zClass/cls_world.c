@@ -50,7 +50,13 @@ namespace {
         *outGridRow = -1;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Recovered original static helper in D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * No standalone retail function; observed caller includes
+     * 0x450f60 zClass_World::AddChildToGridCell.
+     * Evidence: add-path source-cluster callers share the append-and-count pattern.
+     * Purpose: append a node reference to a dynamically resized node-reference list.
+     */
     void AppendNodeRef(
         zClass_NodePartial * **list,
         int *count,
@@ -66,7 +72,12 @@ namespace {
         ++*count;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Recovered original static helper in D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * No standalone retail function; observed caller includes
+     * 0x451240 zClass_World::RemoveChildAtGrid.
+     * Purpose: compact a node-reference array after removal and decrement the count.
+     */
     void CompactNodeRefList(
         zClass_NodePartial * *list,
         int *count,
@@ -78,7 +89,14 @@ namespace {
         --*count;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Recovered original static helper in D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * No standalone retail function; observed callers include
+     * 0x450f60 zClass_World::AddChildToGridCell and
+     * 0x451240 zClass_World::RemoveChildAtGrid.
+     * Evidence: grid add/remove source-cluster callers share area-grid indexing.
+     * Purpose: return the world area record for a grid column and row.
+     */
     zWorldAreaPartial *AreaAt(
         zClass_WorldDataPartial * data,
         int gridCol,
@@ -688,7 +706,11 @@ namespace zClass_World {
         return zClass_Class::TryFreeNode(world);
     }
 
-    // Reimplements 0x450030: zClass_World::QueueAreaUpdate
+    /**
+     * Reimplements 0x450030: zClass_World::QueueAreaUpdate
+     * Evidence: Binary Ninja/original source path D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: Queues a pending area update record, marks the area pending, and sets world update flags for later processing.
+     */
     int __fastcall QueueAreaUpdate(
         zClass_NodePartial * world,
         zClass_WorldDataPartial * worldData,

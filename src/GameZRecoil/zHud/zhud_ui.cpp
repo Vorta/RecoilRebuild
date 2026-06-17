@@ -135,6 +135,9 @@ HudUiStringMenu *g_HudUiMgrStringMenu = 0;
 HudUiStatsListElement *g_HudUiMgrStatsList = 0;
 zSndSample *g_HudUi_PowerupSample = 0;
 unsigned char g_HudUi_PowerupSampleInitFlags = 0;
+extern "C" {
+HudUiMgrSensorTrackList g_HudUiMgrSensor_TrackList = {0};
+}
 zVidImagePartial *g_HudUiMgrSensorTargetMarkerImages[5] = {0};
 HudUiMessage g_HudUiMgrMessages[10];
 int g_HudUiMgrActiveWeaponMessageIndex = 0;

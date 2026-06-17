@@ -103,21 +103,6 @@ struct Player_ProjectileCameraFxPass3Ui : zVideoFxPass3Element {
 };
 RECOIL_STATIC_ASSERT(sizeof(Player_ProjectileCameraFxPass3Ui) == 0x38);
 
-struct HudUiMgrSensorTrackNode {
-    int trackKind;
-    void *payload;
-    HudUiMgrSensorTrackNode *next;
-};
-
-enum HudUiMgrSensorTrackKind { HUD_SENSOR_TRACK_KIND_PLAYER = 2, HUD_SENSOR_TRACK_KIND_TURRET = 3 };
-
-struct HudUiMgrSensorTrackList {
-    int trackListAux;
-    HudUiMgrSensorTrackNode *head;
-    HudUiMgrSensorTrackNode *tail;
-    int count;
-};
-
 struct PlayerMasterWeaponSpec {
     PlayerMasterWeaponSpec *next;
     char optCatalogName[0x50];
@@ -340,7 +325,6 @@ struct PlayerNodeFlagRestoreEntry {
 };
 
 extern "C" {
-extern HudUiMgrSensorTrackList g_HudUiMgrSensor_TrackList;
 extern unsigned char g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy;
 extern PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesBegin;
 extern PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesEnd;
@@ -1096,49 +1080,6 @@ void __fastcall DestroySaveGameState(zUtil_SaveGameState *saveState);
 void ShutdownMissionRuntime();
 } // namespace Player
 
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMgrSensorTrackNode,
-        next
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMgrSensorTrackNode,
-        trackKind
-    ) == 0x00
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMgrSensorTrackNode,
-        payload
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(sizeof(HudUiMgrSensorTrackList) == 0x10);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMgrSensorTrackList,
-        trackListAux
-    ) == 0x00
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMgrSensorTrackList,
-        head
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMgrSensorTrackList,
-        tail
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMgrSensorTrackList,
-        count
-    ) == 0x0c
-);
 RECOIL_STATIC_ASSERT(
     offsetof(
         PlayerMasterWeaponSpec,

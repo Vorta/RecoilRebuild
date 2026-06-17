@@ -82,7 +82,13 @@ namespace {
         zClass_NodePartial *
     );
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original helper evidence: no standalone retail function; recovered from
+     * address-backed caller 0x44f1d0 by factoring its repeated child-removal
+     * loop pattern.
+     * Purpose: remove all secondary children from a node through the supplied
+     * child-removal routine.
+     */
     int RemoveAllChildren(
         zClass_NodePartial * node,
         RemoveChildProc removeChild
@@ -100,7 +106,13 @@ namespace {
         return 0;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original helper evidence: no standalone retail function; recovered from
+     * address-backed caller 0x44f1d0 by factoring its repeated
+     * detached-object deletion pattern.
+     * Purpose: delete a 3D object node only after it has no remaining primary
+     * parents.
+     */
     int DeleteObject3DWhenDetached(zClass_NodePartial * node) {
         if (node->listCountA != 0) {
             return 1;
@@ -111,7 +123,11 @@ namespace {
 }
 
 namespace zClass_List {
-    // Reimplements 0x44f000: zClass_List::DeleteNodeFromLists
+    /**
+     * Reimplements 0x44f000: zClass_List::DeleteNodeFromLists.
+     * Purpose: queue a node for removal from every type, callback, and
+     * update list that can reference it.
+     */
     int __fastcall DeleteNodeFromLists(zClass_NodePartial * node) {
         switch (node->classId) {
         case 1:
@@ -164,12 +180,13 @@ namespace zClass_List {
             break;
         default:
             if ((unsigned int)(node->classId) > 11) {
-                zError::ReportOld(
-                    0x200,
+                sprintf(
+                    g_zError_DebugMsgBuffer,
+                    "%s: Line %d: Unknown class type while deleting node from lists.\n",
                     kListSourceFile,
-                    0x75d,
-                    "Unknown class type while deleting node from lists.\n"
+                    0x75d
                 );
+                zError::EmitDebugBuffer(1);
             }
             break;
         }
@@ -196,9 +213,12 @@ namespace zClass_List {
         return 0;
     }
 
-    // Reimplements 0x44f690: zClass_List::IterateBucketFiltered
-    zClass_NodePartial *__fastcall
-    IterateBucketFiltered(
+    /**
+     * Reimplements 0x44f690: zClass_List::IterateBucketFiltered.
+     * Purpose: initialize or continue filtered iteration over one type-list
+     * bucket using a caller-supplied predicate.
+     */
+    zClass_NodePartial *__fastcall IterateBucketFiltered(
         const char *filterText,
         int bucket,
         zClass_NodePredicate predicate
@@ -222,7 +242,11 @@ namespace zClass_List {
         return 0;
     }
 
-    // Reimplements 0x44f1d0: zClass_List::gwListDeleteANode (GameZRecoil/zClass/List.c)
+    /**
+     * Reimplements 0x44f1d0: zClass_List::gwListDeleteANode.
+     * Purpose: delete one node according to its class-specific child,
+     * ownership, and object-data cleanup rules.
+     */
     int __fastcall gwListDeleteANode(zClass_NodePartial * node) {
         unsigned int displayInstanceWord = 0;
         int result = zClass_Class::gwNodeGetUserData(
@@ -446,7 +470,11 @@ namespace zClass_List {
         }
     }
 
-    // Reimplements 0x44f120: zClass_List::DeleteAllOfType
+    /**
+     * Reimplements 0x44f120: zClass_List::DeleteAllOfType.
+     * Purpose: repeatedly delete every node in one type-list bucket and
+     * verify that the bucket is empty afterward.
+     */
     int __fastcall DeleteAllOfType(int bucket) {
         zClass::ProcessDeferredWork();
 
@@ -530,7 +558,11 @@ namespace zClass_TypeList {
         ));
     }
 
-    // Reimplements 0x44e690: zClass_TypeList::FreeLink
+    /**
+     * Reimplements 0x44e690: zClass_TypeList::FreeLink.
+     * Purpose: return an unused type-list link to the global recycled-link
+     * list and update live link accounting.
+     */
     void __fastcall FreeLink(zClass_TypeListLink * link) {
         --g_zClass_TypeList_LiveLinkCount;
 
@@ -548,7 +580,11 @@ namespace zClass_TypeList {
         g_zClass_TypeList_FreeLinkHead = link;
     }
 
-    // Reimplements 0x44e6d0: zClass_TypeList::FreeAll
+    /**
+     * Reimplements 0x44e6d0: zClass_TypeList::FreeAll.
+     * Purpose: release every recycled type-list link owned by the global
+     * free-list cache.
+     */
     void FreeAll() {
         zClass_TypeListLink *link = g_zClass_TypeList_FreeLinkHead;
         while (link != 0) {
@@ -558,7 +594,11 @@ namespace zClass_TypeList {
         }
     }
 
-    // Reimplements 0x44e700: zClass_TypeList::ProcessPendingRemovals
+    /**
+     * Reimplements 0x44e700: zClass_TypeList::ProcessPendingRemovals.
+     * Purpose: unlink deferred-removal entries from one type-list bucket and
+     * recycle their list links.
+     */
     void __fastcall ProcessPendingRemovals(int bucket) {
         if (g_zClass_DeferredProcessingEnabled == 0) {
             return;
@@ -608,7 +648,10 @@ namespace zClass_TypeList {
         }
     }
 
-    // Reimplements 0x44ec90: zClass_TypeList::CountNodes
+    /**
+     * Reimplements 0x44ec90: zClass_TypeList::CountNodes.
+     * Purpose: count the links currently present in one type-list bucket.
+     */
     int __fastcall CountNodes(int bucket) {
         int count = 0;
         for (zClass_TypeListLink *link = zClass_TypeList::Head(bucket); link != 0;
@@ -618,7 +661,10 @@ namespace zClass_TypeList {
         return count;
     }
 
-    // Reimplements 0x44ecb0: zClass_TypeList::PrintBucket
+    /**
+     * Reimplements 0x44ecb0: zClass_TypeList::PrintBucket.
+     * Purpose: print each node name in one type-list bucket for diagnostics.
+     */
     void __fastcall PrintBucket(int bucket) {
         int index = 0;
         for (zClass_TypeListLink *link = zClass_TypeList::Head(bucket); link != 0;
@@ -632,7 +678,10 @@ namespace zClass_TypeList {
         }
     }
 
-    // Reimplements 0x44ed50: zClass_TypeList::GetBucketHead
+    /**
+     * Reimplements 0x44ed50: zClass_TypeList::GetBucketHead.
+     * Purpose: return the head link for one type-list bucket.
+     */
     zClass_TypeListLink *__fastcall GetBucketHead(int bucket) {
         return zClass_TypeList::Head(bucket);
     }
@@ -748,7 +797,11 @@ namespace zClass_TypeList {
         return 0;
     }
 
-    // Reimplements 0x44ea70: zClass_TypeList::UpdateAllBuckets
+    /**
+     * Reimplements 0x44ea70: zClass_TypeList::UpdateAllBuckets.
+     * Purpose: update each non-empty callback-priority bucket and then flush
+     * queued node update work.
+     */
     void UpdateAllBuckets() {
         for (int i = 0; i < 6; ++i) {
             zClass_TypeListLink *bucket = *g_zClassCallbackPriorityHeadSlotPtrs[i];
@@ -759,7 +812,11 @@ namespace zClass_TypeList {
         }
     }
 
-    // Reimplements 0x44eaa0: zClass_TypeList::UpdateBucket
+    /**
+     * Reimplements 0x44eaa0: zClass_TypeList::UpdateBucket.
+     * Purpose: run eligible action callbacks in one bucket while deferring
+     * list mutations until the pass completes.
+     */
     void __fastcall UpdateBucket(zClass_TypeListLink * bucket) {
         const int wasDeferredEnabled = g_zClass_DeferredProcessingEnabled;
         g_zClass_DeferredProcessingEnabled = 0;
@@ -778,7 +835,11 @@ namespace zClass_TypeList {
         zClass::ProcessDeferredWork();
     }
 
-    // Reimplements 0x44eba0: zClass_TypeList::UpdateQueuedTrees
+    /**
+     * Reimplements 0x44eba0: zClass_TypeList::UpdateQueuedTrees.
+     * Purpose: process queued tree-update nodes until the queued-tree bucket
+     * contains no remaining active work.
+     */
     int UpdateQueuedTrees() {
         zClass_TypeListLink *link = zClass_TypeList::Head(kQueuedTreeBucket);
         while (link != 0) {
@@ -796,7 +857,11 @@ namespace zClass_TypeList {
         return 0;
     }
 
-    // Reimplements 0x44ebe0: zClass_TypeList::UpdateSequences
+    /**
+     * Reimplements 0x44ebe0: zClass_TypeList::UpdateSequences.
+     * Purpose: update all non-pending sequence nodes while deferring list
+     * mutations during the pass.
+     */
     int UpdateSequences() {
         zClass_TypeListLink *link = zClass_TypeList::Head(11);
         if (link == 0) {
@@ -818,7 +883,11 @@ namespace zClass_TypeList {
         return 0;
     }
 
-    // Reimplements 0x44ec30: zClass_TypeList::UpdateAnimations
+    /**
+     * Reimplements 0x44ec30: zClass_TypeList::UpdateAnimations.
+     * Purpose: update active animation nodes while deferring list mutations
+     * during the pass.
+     */
     int UpdateAnimations() {
         zClass_TypeListLink *link = zClass_TypeList::Head(12);
         if (link == 0) {
@@ -842,7 +911,11 @@ namespace zClass_TypeList {
 }
 
 namespace gwNode {
-    // Reimplements 0x44eb00: gwNode::UpdateSubtree
+    /**
+     * Reimplements 0x44eb00: gwNode::UpdateSubtree.
+     * Purpose: update a node subtree and mark each visited node for queued
+     * tree-list removal.
+     */
     int __fastcall UpdateSubtree(zClass_NodePartial * node) {
         for (int i = 0; i < node->listCountB; ++i) {
             zClass_NodePartial *child = node->listB[i];
@@ -859,7 +932,11 @@ namespace gwNode {
         return 0;
     }
 
-    // Reimplements 0x44eb50: gwNode::UpdateTree
+    /**
+     * Reimplements 0x44eb50: gwNode::UpdateTree.
+     * Purpose: update a node tree upward through its non-world parents and
+     * process deferred work when enabled.
+     */
     void __fastcall UpdateTree(zClass_NodePartial * node) {
         UpdateSubtree(node);
         for (int i = 0; i < node->listCountA; ++i) {
@@ -876,7 +953,11 @@ namespace gwNode {
 }
 
 namespace zClass_NodeList {
-    // Reimplements 0x44ed60: zClass_NodeList::Insert
+    /**
+     * Reimplements 0x44ed60: zClass_NodeList::Insert.
+     * Purpose: queue a node for deferred free processing on the pending-free
+     * node list.
+     */
     int __fastcall Insert(zClass_NodePartial * node) {
         zClass_TypeListLink *link = zClass_TypeList::AllocLink();
         link->node = node;
@@ -890,7 +971,11 @@ namespace zClass_NodeList {
         return 0;
     }
 
-    // Reimplements 0x44eea0: zClass_NodeList::ProcessPendingFrees
+    /**
+     * Reimplements 0x44eea0: zClass_NodeList::ProcessPendingFrees.
+     * Purpose: drain pending node frees through the class free-list and
+     * recycle their queue links.
+     */
     void ProcessPendingFrees() {
         zClass_TypeListLink *link = g_zClass_NodeList_PendingFreeHead;
         while (link != 0) {
@@ -903,7 +988,11 @@ namespace zClass_NodeList {
 }
 
 namespace zClass {
-    // Reimplements 0x44e920: zClass::ProcessDeferredWork
+    /**
+     * Reimplements 0x44e920: zClass::ProcessDeferredWork.
+     * Purpose: process dirty deferred-removal buckets and then drain pending
+     * node frees while deferred work is enabled.
+     */
     int ProcessDeferredWork() {
         if (g_zClass_DeferredProcessingEnabled == 0) {
             return 1;
@@ -942,11 +1031,9 @@ namespace zClass {
 
     /**
      * Reimplements 0x44ecf0: zClass::FindByTypeAndName.
-     *
      * Purpose: find the first node in a type-list bucket whose name matches.
      */
-    zClass_NodePartial *__fastcall
-    FindByTypeAndName(
+    zClass_NodePartial *__fastcall FindByTypeAndName(
         int bucket,
         const char *name
     ){
@@ -963,7 +1050,10 @@ namespace zClass {
         return 0;
     }
 
-    // Reimplements 0x44f720: zClass::FindNextByTypePrefix_Predicate
+    /**
+     * Reimplements 0x44f720: zClass::FindNextByTypePrefix_Predicate.
+     * Purpose: test whether a node name matches the active prefix-search text.
+     */
     int __fastcall FindNextByTypePrefix_Predicate(zClass_NodePartial * node) {
         return strncmp(
                    node->name,
@@ -972,9 +1062,11 @@ namespace zClass {
                ) == 0;
     }
 
-    // Reimplements 0x44f6f0: zClass::FindNextByTypePrefix
-    zClass_NodePartial *__fastcall
-    FindNextByTypePrefix(
+    /**
+     * Reimplements 0x44f6f0: zClass::FindNextByTypePrefix.
+     * Purpose: initialize or continue prefix search over one type-list bucket.
+     */
+    zClass_NodePartial *__fastcall FindNextByTypePrefix(
         const char *prefixText,
         int bucket
     ){
@@ -989,9 +1081,12 @@ namespace zClass {
         );
     }
 
-    // Reimplements 0x452810: zClass::AnyNodeMatchesPredicateRecursive
-    int __fastcall
-    AnyNodeMatchesPredicateRecursive(
+    /**
+     * Reimplements 0x452810: zClass::AnyNodeMatchesPredicateRecursive.
+     * Purpose: recursively test a node and its secondary children with a
+     * caller-supplied predicate.
+     */
+    int __fastcall AnyNodeMatchesPredicateRecursive(
         zClass_NodePartial * root,
         zClass_NodePredicate predicate
     ){
@@ -1011,9 +1106,12 @@ namespace zClass {
         return 0;
     }
 
-    // Reimplements 0x44f870: zClass::RemoveChildChecked
-    int __fastcall
-    RemoveChildChecked(
+    /**
+     * Reimplements 0x44f870: zClass::RemoveChildChecked.
+     * Purpose: validate parent and child pointers before removing the child
+     * through the generic class helper.
+     */
+    int __fastcall RemoveChildChecked(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
     ){
@@ -1044,14 +1142,21 @@ namespace zClass {
 }
 
 namespace zClass_Class {
-    // Reimplements 0x44ec80: zClass_Class::gwNodeUpdateAll
+    /**
+     * Reimplements 0x44ec80: zClass_Class::gwNodeUpdateAll.
+     * Purpose: update sequence, animation, and queued-tree work in order.
+     */
     int gwNodeUpdateAll() {
         zClass_TypeList::UpdateSequences();
         zClass_TypeList::UpdateAnimations();
         return zClass_TypeList::UpdateQueuedTrees();
     }
 
-    // Reimplements 0x44f750: zClass_Class::gwNodeFindNextByName_Predicate
+    /**
+     * Reimplements 0x44f750: zClass_Class::gwNodeFindNextByName_Predicate.
+     * Purpose: test whether a node name matches the active exact-name search
+     * text.
+     */
     int __fastcall gwNodeFindNextByName_Predicate(zClass_NodePartial * node) {
         return strcmp(
             node->name,
@@ -1059,9 +1164,12 @@ namespace zClass_Class {
         ) == 0;
     }
 
-    // Reimplements 0x44f740: zClass_Class::gwNodeFindNextByName
-    zClass_NodePartial *__fastcall
-    gwNodeFindNextByName(
+    /**
+     * Reimplements 0x44f740: zClass_Class::gwNodeFindNextByName.
+     * Purpose: initialize or continue exact-name search over one type-list
+     * bucket.
+     */
+    zClass_NodePartial *__fastcall gwNodeFindNextByName(
         const char *name,
         int bucket
     ){

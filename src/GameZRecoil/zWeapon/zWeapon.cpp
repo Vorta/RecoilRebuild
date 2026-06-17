@@ -17,13 +17,12 @@ float g_zWeapon_MaxTetherAltitude = 0.0f;
 namespace {
 template <typename T>
 /**
- * Local ABI adapter with no standalone retail function.
- * Observed in caller 0x4b1090.
+ * Original helper evidence: no standalone retail function; observed in
+ * caller 0x4b1090.
  *
  * Purpose: preserve the typed callback declaration at each registration site
  * while passing the raw ZAR section-callback pointer expected by zUtil_ZAR.
  */
-// Source-faithful helper recovered from address-backed callers in this source file.
 zZbdSectionCallback ZbdCallbackPtr(
     T callback
 ) {

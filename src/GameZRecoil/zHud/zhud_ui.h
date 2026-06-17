@@ -51,10 +51,29 @@ struct zFMV_Stream;
 
 extern int g_HudCmdMouseDebounceFrames;
 struct HudUiWidget;
-struct HudUiMgrSensorTrackNode;
 struct HudUiMgrData;
 struct PlayerProgressTargetSlotRuntime;
 struct HudUiNetGameSetupOverlayOwner;
+
+struct HudUiMgrSensorTrackNode {
+    int trackKind;
+    void *payload;
+    HudUiMgrSensorTrackNode *next;
+};
+
+enum HudUiMgrSensorTrackKind { HUD_SENSOR_TRACK_KIND_PLAYER = 2, HUD_SENSOR_TRACK_KIND_TURRET = 3 };
+
+struct HudUiMgrSensorTrackList {
+    int trackListAux;
+    HudUiMgrSensorTrackNode *head;
+    HudUiMgrSensorTrackNode *tail;
+    int count;
+};
+
+extern "C" {
+extern HudUiMgrSensorTrackList g_HudUiMgrSensor_TrackList;
+}
+
 extern zVidImagePartial *g_HudUiWidget_ExclusiveDrawImage;
 extern HudUiMgrData g_HudUiMgr;
 extern HudUiTimerPanel *g_HudUiMgrTimerPanel;
@@ -2753,6 +2772,49 @@ struct HudUiChatMessageStack : HudUiTextStack4 {
 
 #if defined(_M_IX86) || defined(__i386__)
 RECOIL_STATIC_ASSERT(sizeof(HudUiRect) == 0x10);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorTrackNode,
+        next
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorTrackNode,
+        trackKind
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorTrackNode,
+        payload
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(sizeof(HudUiMgrSensorTrackList) == 0x10);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorTrackList,
+        trackListAux
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorTrackList,
+        head
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorTrackList,
+        tail
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorTrackList,
+        count
+    ) == 0x0c
+);
 RECOIL_STATIC_ASSERT(sizeof(HudUiElement) == 0x34);
 RECOIL_STATIC_ASSERT(
     offsetof(

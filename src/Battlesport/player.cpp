@@ -32,7 +32,6 @@
 
 extern "C" {
 int g_Player_HudCounterValue = 0;
-HudUiMgrSensorTrackList g_HudUiMgrSensor_TrackList = {0};
 unsigned char g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0;
 PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesBegin = 0;
 PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesEnd = 0;
@@ -360,8 +359,14 @@ const char *PlayerZrdArrayString(
     return PlayerZrdArrayBase(node)[index].value.str;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-void PlayerDetachDisplayInstanceIfRequested(
+/**
+ * Recovered original inline helper: Player::DetachDisplayInstanceIfRequested.
+ * No standalone retail function; observed in 0x4390d0 hardpoint detach
+ * blocks after fpnt_c/fpnt_l/fpnt_r lookups.
+ * Purpose: clear a hardpoint display instance and release/free the detached
+ * zDi when the node carried one.
+ */
+static inline void PlayerDetachDisplayInstanceIfRequested(
     zClass_NodePartial *node
 ) {
     unsigned int displayInstanceValue = 0;
@@ -381,8 +386,13 @@ void PlayerDetachDisplayInstanceIfRequested(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-void PlayerCacheGunHardpoint(
+/**
+ * Recovered original inline helper: Player::CacheGunHardpoint.
+ * No standalone retail function; observed in 0x4390d0 as three repeated
+ * FindNodeRecursiveByName/gwObject3DGetPosition/detach blocks.
+ * Purpose: cache one gun hardpoint position and optionally detach its display.
+ */
+static inline void PlayerCacheGunHardpoint(
     zUtil_PlayerStateStorage *playerState,
     const char *nodeName,
     zVec3 *outPosition,
@@ -1065,8 +1075,14 @@ void PlayerRefreshPreviousWeaponControllerHud(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-void PlayerResetWeaponController(
+/**
+ * Recovered original inline helper: Player::ResetWeaponController.
+ * No standalone retail function; observed in 0x438ba0's ten-bank reset loop
+ * for controller A and controller B.
+ * Purpose: initialize one saved weapon controller's bank/side identity and
+ * clear runtime attachment/trail state.
+ */
+static inline void PlayerResetWeaponController(
     PlayerGunFireController *controller,
     int bankIndex,
     int sideIndex,
@@ -1080,8 +1096,14 @@ void PlayerResetWeaponController(
     controller->trailRuntimeState = 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-zDiPartial *PlayerFindScrollTextureModel(
+/**
+ * Recovered original inline helper: Player::FindScrollTextureModel.
+ * No standalone retail function; observed in 0x438ba0's dual-mount "_L" and
+ * "_R" mount setup after the "%sSCROLL" name build.
+ * Purpose: find a mount scroll child, read its display instance, and set the
+ * scroll texture scale used by weapon display models.
+ */
+static inline zDiPartial *PlayerFindScrollTextureModel(
     zClass_NodePartial *root,
     const char *mountName
 ) {
@@ -1092,11 +1114,10 @@ zDiPartial *PlayerFindScrollTextureModel(
         mountName
     );
 
-    zClass_NodePartial *const scrollNode =
-        root != 0 ? zClass_Class::FindNodeRecursiveByName(
-            root,
-            scrollName
-        ) : 0;
+    zClass_NodePartial *const scrollNode = zClass_Class::FindNodeRecursiveByName(
+        root,
+        scrollName
+    );
     if (scrollNode == 0) {
         return 0;
     }
@@ -1116,8 +1137,14 @@ zDiPartial *PlayerFindScrollTextureModel(
     return textureModel;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-void PlayerBindDualWeaponMount(
+/**
+ * Recovered original inline helper: Player::BindDualWeaponMount.
+ * No standalone retail function; observed in 0x438ba0's dual-mount branch for
+ * weapon specs whose mount layout flag is set.
+ * Purpose: bind left/right gun mount nodes and their optional scroll texture
+ * display models to a weapon controller.
+ */
+static inline void PlayerBindDualWeaponMount(
     zUtil_PlayerStateStorage *playerState,
     PlayerGunFireController *controller
 ) {
@@ -1167,8 +1194,13 @@ void PlayerBindDualWeaponMount(
         );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-void PlayerBindSingleWeaponMount(
+/**
+ * Recovered original inline helper: Player::BindSingleWeaponMount.
+ * No standalone retail function; observed in 0x438ba0's single-mount branch
+ * after the controller opt catalog entry is resolved.
+ * Purpose: bind the primary weapon mount node and cache its local position.
+ */
+static inline void PlayerBindSingleWeaponMount(
     zUtil_PlayerStateStorage *playerState,
     PlayerGunFireController *controller
 ) {
@@ -2895,8 +2927,12 @@ void SyncLocalPoseFromRootNode() {
     playerState->previousTransform = playerState->motionBasis;
 }
 
-// Reimplements 0x4390d0: Player::CacheGunHardpointsAndDetachDisplays
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x4390d0: Player::CacheGunHardpointsAndDetachDisplays
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: cache the gun node and its fpnt_c/fpnt_l/fpnt_r hardpoint
+ * positions, detaching display instances during bootstrap when requested.
+ */
 void __fastcall CacheGunHardpointsAndDetachDisplays(
     zUtil_SaveGameState *saveState,
     int detachDisplays
@@ -11220,8 +11256,12 @@ int __fastcall ZAR_WriteVehicleListSection(
     return writeOk;
 }
 
-// Reimplements 0x43cdf0: Player::Mines_ZAR_ReadEntryOrReset
-// (D:\Proj\GameZRecoil\Player\player_weapon.c)
+/**
+ * Reimplements 0x43cdf0: Player::Mines_ZAR_ReadEntryOrReset
+ * BN source path: D:\Proj\GameZRecoil\Player\player_weapon.c.
+ * Purpose: handle Mines ZAR blobs by clearing live mine runtimes on the
+ * sentinel record or respawning one saved mine at its stored owner node.
+ */
 void __fastcall Mines_ZAR_ReadEntryOrReset(
     zZbdSectionCallbackCtx *,
     const char *,
@@ -11266,8 +11306,12 @@ void __fastcall Mines_ZAR_ReadEntryOrReset(
     }
 }
 
-// Reimplements 0x43cc70: Player::WriteMinesZarSection
-// (D:\Proj\GameZRecoil\Player\player_weapon.c)
+/**
+ * Reimplements 0x43cc70: Player::WriteMinesZarSection
+ * BN source path: D:\Proj\GameZRecoil\Player\player_weapon.c.
+ * Purpose: serialize deployed mine runtime instances for banks 4 and 5 into
+ * the Mines ZAR section after an initial sentinel blob.
+ */
 int __fastcall WriteMinesZarSection(
     zZbdSectionCallbackCtx *writer,
     void *userData
@@ -11651,7 +11695,12 @@ int __fastcall UpdateStatusMeter(
     return 1;
 }
 
-// Reimplements 0x438b60: Player::FreeAltWeaponTrailRuntimeStates (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x438b60: Player::FreeAltWeaponTrailRuntimeStates
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: release existing trail runtime state storage before rebuilding
+ * alternate weapon banks.
+ */
 void __fastcall FreeAltWeaponTrailRuntimeStates(
     zUtil_SaveGameState *saveState
 ) {
@@ -11669,8 +11718,13 @@ void __fastcall FreeAltWeaponTrailRuntimeStates(
     }
 }
 
-// Reimplements 0x438ba0: Player::LoadWeaponBanksAndSelectDefaults
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x438ba0: Player::LoadWeaponBanksAndSelectDefaults
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: rebuild weapon-bank controller state from master weapon specs,
+ * bind weapon mount nodes/trails, select default controllers, and refresh
+ * cached selection/timed-hit state.
+ */
 void __fastcall LoadWeaponBanksAndSelectDefaults(
     zUtil_SaveGameState *saveState
 ) {
@@ -11713,12 +11767,10 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(
         PlayerMasterWeaponSpec *weaponSpec = masterCommonData->weaponSpecHead;
         while (weaponSpec != 0) {
             char optCatalogName[0x50];
-            strncpy(
+            strcpy(
                 optCatalogName,
-                weaponSpec->optCatalogName,
-                sizeof(optCatalogName)
+                weaponSpec->optCatalogName
             );
-            optCatalogName[sizeof(optCatalogName) - 1] = 0;
 
             const int bankIndex = optCatalogName[4] - '0';
             const int sideIndex = optCatalogName[6] - '0';
@@ -11757,7 +11809,7 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(
                                 (weaponSpec->fireSlotRecoilFlags & kPlayerGunControllerRecoilFlag);
             controller->initialHardpointSelectState = weaponSpec->initialHardpointSelectState;
 
-            if (playerState->gunNode != 0 && controller->optCatalogEntry != 0) {
+            if (playerState->gunNode != 0) {
                 if ((controller->flags & kPlayerGunControllerDualMountFlag) != 0) {
                     PlayerBindDualWeaponMount(
                         playerState,
@@ -11771,8 +11823,7 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(
                 }
             }
 
-            if (controller->optCatalogEntry != 0 &&
-                (controller->optCatalogEntry->flags & kOptCatalogFlagCreateTrail) != 0) {
+            if ((controller->optCatalogEntry->flags & kOptCatalogFlagCreateTrail) != 0) {
                 controller->trailRuntimeState = OptCatalog::CreateTrailRuntimeState(
                     controller->optCatalogEntry,
                     playerState->rootNode,
@@ -11881,8 +11932,12 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(
     );
 }
 
-// Reimplements 0x43ca90: Player::CheckMissionWeaponAvailability
-// (D:\Proj\GameZRecoil\Player\player_weapon.c)
+/**
+ * Reimplements 0x43ca90: Player::CheckMissionWeaponAvailability
+ * BN source path: D:\Proj\GameZRecoil\Player\player_weapon.c.
+ * Purpose: decide whether the current mission/network rules allow one packed
+ * weapon bank/side slot, using the stack-local multiplayer whitelist.
+ */
 void __fastcall CheckMissionWeaponAvailability(
     zUtil_SaveGameState *saveState,
     int missionThreshold,
@@ -11914,10 +11969,6 @@ void __fastcall CheckMissionWeaponAvailability(
     };
 
     *availableOut = 0;
-    if (currentMissionId < 1 || currentMissionId > 13) {
-        return;
-    }
-
     const int *const row = networkWhitelist[currentMissionId - 1];
     for (int i = 0; i < 4; ++i) {
         if (packedWeaponSlotId == row[i]) {
@@ -12920,8 +12971,12 @@ void __fastcall AutoSwitchToNextUsableAltWeapon(
     }
 }
 
-// Reimplements 0x439600: Player::ApplyPrimaryWeaponSwitch
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x439600: Player::ApplyPrimaryWeaponSwitch
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: activate the selected primary weapon controller, toggle previous
+ * and new mount nodes, and cache the selected bank/side display code.
+ */
 void __fastcall ApplyPrimaryWeaponSwitch(
     zUtil_SaveGameState *saveState,
     PlayerGunFireController *previousController,
@@ -12961,8 +13016,12 @@ void __fastcall ApplyPrimaryWeaponSwitch(
         activeController->weaponSideIndex + activeController->weaponBankIndex * 100;
 }
 
-// Reimplements 0x439540: Player::ApplyAltWeaponSwitch
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x439540: Player::ApplyAltWeaponSwitch
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: install the selected alternate weapon controller, start the
+ * transition state, stop any held trail fire, and cache the bank/side code.
+ */
 void __fastcall ApplyAltWeaponSwitch(
     zUtil_SaveGameState *saveState,
     PlayerGunFireController *previousController,

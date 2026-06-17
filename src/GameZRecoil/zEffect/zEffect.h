@@ -1855,7 +1855,7 @@ extern float g_zEffect_ConditionalRefPosZ;
 extern int g_zEffect_ConditionalEffectLevel;
 extern int g_zEffect_VariantOverrideEnabled;
 extern unsigned int g_zEffect_VariantOverridePackedIds;
-extern unsigned char g_zEffect_VariantCycleId;
+extern int g_zEffect_VariantCycleId;
 extern int g_zEffect_SkipStopDelay;
 extern float g_zEffect_FrameDeltaRemainingSec;
 extern int g_zEffect_Anim_DebugFrameTag;
