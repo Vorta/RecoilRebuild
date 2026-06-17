@@ -15352,7 +15352,7 @@ int HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent() {
     HudUiNetGameSetupPanel *panel =
         (HudUiNetGameSetupPanel *) ::operator new(sizeof(HudUiNetGameSetupPanel));
     if (panel != 0) {
-        panel = panel->Constructor(m_reconfigureExistingSession);
+        panel = new (panel) HudUiNetGameSetupPanel(m_reconfigureExistingSession);
     }
 
     m_panel = panel;
