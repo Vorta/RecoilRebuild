@@ -42056,27 +42056,27 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: HudUiNetGameSetupPanel_NextWorldButton::OnActivate)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiNetGameSetupPanel_NextWorldButton::OnActivate;
     - File: src/Battlesport/HudUiNetGameSetup.cpp;
     - Target: hud_ui_net_game_setup_next_world_button;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: Data gate remains open for shared ApplyWorldSelectionSideEffects formatting literal/source data path.
+    - Blocker: none
 
 - 0x41a9c0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupPanel_PrevWorldButton::OnActivate)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: HudUiNetGameSetupPanel_PrevWorldButton::OnActivate;
     - File: src/Battlesport/HudUiNetGameSetup.cpp;
     - Target: hud_ui_net_game_setup_prev_world_button;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: Data gate remains open for shared ApplyWorldSelectionSideEffects formatting literal/source data path.
+    - Blocker: none
 
 - 0x41ab60:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit)

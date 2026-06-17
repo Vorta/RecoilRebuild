@@ -107,82 +107,6 @@ inline void SetWidgetVisible(
     ((HudUiElement *)(widget))->SetVisible(visible);
 }
 
-/**
- * Original helper evidence: no standalone retail function; observed in
- * callers 0x41a820 and 0x41a9c0.
- * Source: D:\Proj\Battlesport\HudUi.cpp
- * Purpose: Apply world selection changes to goal, timer, and refresh state.
- */
-inline void ApplyWorldSelectionSideEffects(
-    HudUiNetGameSetupPanel *panel,
-    int selectedIndex
-) {
-    panel->worldSelector.SetIndexClamped(selectedIndex);
-
-    if (panel->worldSelector.selectedIndex == 2) {
-        SetWidgetVisible(
-            &panel->killsSwitch,
-            0
-        );
-        SetWidgetVisible(
-            &panel->lapsSwitch,
-            1
-        );
-
-        if (panel->killsInput.CommitAndGetValue() == 1) {
-            char valueText[20];
-            sprintf(
-                valueText,
-                "%d",
-                ClampInt(
-                    2,
-                    panel->killsInput.minValue,
-                    panel->killsInput.maxValue
-                )
-            );
-            panel->killsInput.Update(valueText);
-        }
-        panel->killsInput.minValue = 2;
-        panel->killsInput.maxValue = 99;
-
-        SetZrdWidgetEnabled(
-            &panel->incTimeLimitButton,
-            0
-        );
-        SetZrdWidgetEnabled(
-            &panel->decTimeLimitButton,
-            0
-        );
-    } else {
-        SetWidgetVisible(
-            &panel->killsSwitch,
-            1
-        );
-        SetWidgetVisible(
-            &panel->lapsSwitch,
-            0
-        );
-        panel->killsInput.minValue = 1;
-        panel->killsInput.maxValue = 99;
-
-        SetZrdWidgetEnabled(
-            &panel->timeLimitInput,
-            1
-        );
-        SetZrdWidgetEnabled(
-            &panel->incTimeLimitButton,
-            1
-        );
-        SetZrdWidgetEnabled(
-            &panel->decTimeLimitButton,
-            1
-        );
-    }
-
-    panel->killsInput.Invalidate();
-    panel->incKillsButton.Invalidate();
-    panel->decKillsButton.Invalidate();
-}
 } // namespace
 
 /**
@@ -748,10 +672,77 @@ void HudUiNetGameSetupPanel_LaunchButton::OnActivate() {
  */
 void HudUiNetGameSetupPanel_NextWorldButton::OnActivate() {
     HudUiNetGameSetupPanel *const ownerPanel = (HudUiNetGameSetupPanel *)(owner);
-    ApplyWorldSelectionSideEffects(
-        ownerPanel,
-        ownerPanel->worldSelector.selectedIndex + 1
-    );
+    ownerPanel->worldSelector.SetIndexClamped(ownerPanel->worldSelector.selectedIndex + 1);
+
+    HudUiClampedIntTextInput *killsInput;
+    if (ownerPanel->worldSelector.selectedIndex == 2) {
+        SetWidgetVisible(
+            &ownerPanel->killsSwitch,
+            0
+        );
+        SetWidgetVisible(
+            &ownerPanel->lapsSwitch,
+            1
+        );
+
+        killsInput = &ownerPanel->killsInput;
+        if (killsInput->CommitAndGetValue() == 1) {
+            char valueText[20];
+            int clampedValue = 2;
+            if (killsInput->minValue > clampedValue) {
+                clampedValue = killsInput->minValue;
+            }
+            if (clampedValue > killsInput->maxValue) {
+                clampedValue = killsInput->maxValue;
+            }
+            sprintf(
+                valueText,
+                "%d",
+                clampedValue
+            );
+            killsInput->Update(valueText);
+        }
+        killsInput->minValue = 2;
+        killsInput->maxValue = 99;
+
+        SetZrdWidgetEnabled(
+            &ownerPanel->incTimeLimitButton,
+            0
+        );
+        SetZrdWidgetEnabled(
+            &ownerPanel->decTimeLimitButton,
+            0
+        );
+    } else {
+        SetWidgetVisible(
+            &ownerPanel->killsSwitch,
+            1
+        );
+        SetWidgetVisible(
+            &ownerPanel->lapsSwitch,
+            0
+        );
+        killsInput = &ownerPanel->killsInput;
+        killsInput->minValue = 1;
+        killsInput->maxValue = 99;
+
+        SetZrdWidgetEnabled(
+            &ownerPanel->timeLimitInput,
+            1
+        );
+        SetZrdWidgetEnabled(
+            &ownerPanel->incTimeLimitButton,
+            1
+        );
+        SetZrdWidgetEnabled(
+            &ownerPanel->decTimeLimitButton,
+            1
+        );
+    }
+
+    killsInput->Invalidate();
+    ownerPanel->incKillsButton.Invalidate();
+    ownerPanel->decKillsButton.Invalidate();
     HudUiZrdWidget::OnActivate();
 }
 
@@ -762,9 +753,76 @@ void HudUiNetGameSetupPanel_NextWorldButton::OnActivate() {
  */
 void HudUiNetGameSetupPanel_PrevWorldButton::OnActivate() {
     HudUiNetGameSetupPanel *const ownerPanel = (HudUiNetGameSetupPanel *)(owner);
-    ApplyWorldSelectionSideEffects(
-        ownerPanel,
-        ownerPanel->worldSelector.selectedIndex - 1
-    );
+    ownerPanel->worldSelector.SetIndexClamped(ownerPanel->worldSelector.selectedIndex - 1);
+
+    HudUiClampedIntTextInput *killsInput;
+    if (ownerPanel->worldSelector.selectedIndex == 2) {
+        SetWidgetVisible(
+            &ownerPanel->killsSwitch,
+            0
+        );
+        SetWidgetVisible(
+            &ownerPanel->lapsSwitch,
+            1
+        );
+
+        killsInput = &ownerPanel->killsInput;
+        if (killsInput->CommitAndGetValue() == 1) {
+            char valueText[20];
+            int clampedValue = 2;
+            if (killsInput->minValue > clampedValue) {
+                clampedValue = killsInput->minValue;
+            }
+            if (clampedValue > killsInput->maxValue) {
+                clampedValue = killsInput->maxValue;
+            }
+            sprintf(
+                valueText,
+                "%d",
+                clampedValue
+            );
+            killsInput->Update(valueText);
+        }
+        killsInput->minValue = 2;
+        killsInput->maxValue = 99;
+
+        SetZrdWidgetEnabled(
+            &ownerPanel->incTimeLimitButton,
+            0
+        );
+        SetZrdWidgetEnabled(
+            &ownerPanel->decTimeLimitButton,
+            0
+        );
+    } else {
+        SetWidgetVisible(
+            &ownerPanel->killsSwitch,
+            1
+        );
+        SetWidgetVisible(
+            &ownerPanel->lapsSwitch,
+            0
+        );
+        killsInput = &ownerPanel->killsInput;
+        killsInput->minValue = 1;
+        killsInput->maxValue = 99;
+
+        SetZrdWidgetEnabled(
+            &ownerPanel->timeLimitInput,
+            1
+        );
+        SetZrdWidgetEnabled(
+            &ownerPanel->incTimeLimitButton,
+            1
+        );
+        SetZrdWidgetEnabled(
+            &ownerPanel->decTimeLimitButton,
+            1
+        );
+    }
+
+    killsInput->Invalidate();
+    ownerPanel->incKillsButton.Invalidate();
+    ownerPanel->decKillsButton.Invalidate();
     HudUiZrdWidget::OnActivate();
 }
