@@ -1754,8 +1754,12 @@ zZbdSectionCallback ZbdCallbackPtr(
 }
 } // namespace
 
-// Reimplements 0x4385a0: Player::StartMasterTypeLoopSfxHandle
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x4385a0: Player::StartMasterTypeLoopSfxHandle
+ * (D:\Proj\Battlesport\player.cpp).
+ * Purpose: start the selected master-type weapon-up loop sample and cache the
+ * returned play handle in the player state.
+ */
 zSndPlayHandle * zUtil_SaveGameState::StartMasterTypeLoopSfxHandle(
     int modeIndex,
     float sfxVolume
