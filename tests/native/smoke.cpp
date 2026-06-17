@@ -175,12 +175,15 @@ extern "C" int player_load_weapon_banks_and_select_defaults_smoke(void);
 extern "C" int player_free_alt_weapon_trail_runtime_states_smoke(void);
 extern "C" int player_check_mission_weapon_availability_smoke(void);
 extern "C" int player_apply_primary_weapon_switch_smoke(void);
+extern "C" int player_start_master_type_loop_sfx_handle_smoke(void);
 extern "C" int player_apply_alt_weapon_switch_smoke(void);
 extern "C" int player_write_mines_zar_section_smoke(void);
 extern "C" int player_mines_zar_read_entry_or_reset_smoke(void);
 extern "C" int zweapon_optcatalog_find_entry_by_name_smoke(void);
 extern "C" int zweapon_optcatalog_create_trail_segment_node_smoke(void);
 extern "C" int zweapon_optcatalog_create_trail_runtime_state_smoke(void);
+extern "C" int zweapon_optcatalog_deactivate_trail_runtime_state_smoke(void);
+extern "C" int light_alloc_from_free_list_and_attach_smoke(void);
 extern "C" int player_timed_hit_status_smoke(void);
 extern "C" int player_create_from_names_at_pose_smoke(void);
 extern "C" int zutil_save_game_state_list_smoke(void);
@@ -652,6 +655,7 @@ extern "C" int zclass_node_propagate_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_reset_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_init_smoke(void);
 extern "C" int zclass_light_new_smoke(void);
+extern "C" int zclass_object3d_alpha_scale_and_lit_smoke(void);
 extern "C" int zclass_object3d_transform_getters_smoke(void);
 extern "C" int zclass_object3d_transform_setters_smoke(void);
 extern "C" int zclass_child_generic_link_smoke(void);
@@ -10672,6 +10676,8 @@ int main(int argc, char **argv) {
          player_check_mission_weapon_availability_smoke},
         {"player_apply_primary_weapon_switch_smoke",
          player_apply_primary_weapon_switch_smoke},
+        {"player_start_master_type_loop_sfx_handle_smoke",
+         player_start_master_type_loop_sfx_handle_smoke},
         {"player_apply_alt_weapon_switch_smoke",
          player_apply_alt_weapon_switch_smoke},
         {"player_write_mines_zar_section_smoke",
@@ -10684,6 +10690,10 @@ int main(int argc, char **argv) {
          zweapon_optcatalog_create_trail_segment_node_smoke},
         {"zweapon_optcatalog_create_trail_runtime_state_smoke",
          zweapon_optcatalog_create_trail_runtime_state_smoke},
+        {"zweapon_optcatalog_deactivate_trail_runtime_state_smoke",
+         zweapon_optcatalog_deactivate_trail_runtime_state_smoke},
+        {"light_alloc_from_free_list_and_attach_smoke",
+         light_alloc_from_free_list_and_attach_smoke},
         {"player_timed_hit_status_smoke", player_timed_hit_status_smoke},
         {"player_create_from_names_at_pose_smoke",
          player_create_from_names_at_pose_smoke},
@@ -11446,6 +11456,8 @@ int main(int argc, char **argv) {
          zclass_object3d_reset_transform_dirty_smoke},
         {"zclass_object3d_init_smoke", zclass_object3d_init_smoke},
         {"zclass_light_new_smoke", zclass_light_new_smoke},
+        {"zclass_object3d_alpha_scale_and_lit_smoke",
+         zclass_object3d_alpha_scale_and_lit_smoke},
         {"zclass_object3d_transform_getters_smoke",
          zclass_object3d_transform_getters_smoke},
         {"zclass_object3d_transform_setters_smoke",

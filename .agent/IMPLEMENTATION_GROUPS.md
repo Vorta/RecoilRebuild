@@ -491,6 +491,34 @@ Active queue sections:
     BN/source owner review, functional coverage, and no-authored-globals
     review.
   - Continue 0x438ba0 through 0x43ca90
-    `Player::CheckMissionWeaponAvailability`, now the lowest visible owner
-    blocker. Keep its remaining OptCatalog and zUtil callees routed to their
-    own owner sections rather than absorbing them into the Player class pass.
+    `Player::CheckMissionWeaponAvailability` is now accepted at tier B after
+    BN/source owner review, `player_check_mission_weapon_availability`
+    functional coverage, clean focused source-shape/original-symbol/raw-offset
+    guards for `src/Battlesport`, and no-direct-authored-global data review.
+    0x44de80 `zClass_Object3D::gwObject3DSetLitFlag` is also accepted at tier B
+    after registering the existing alpha/lit native smoke in the built zClass
+    smoke translation unit, rerunning functional evidence, and verifying its
+    shared zClass/Object3D diagnostic strings with VC5 data-symbol evidence.
+    0x4b1ec0 `OptCatalog::CreateTrailRuntimeState` is accepted at tier B after
+    its functional smoke passed, the 0x44de80 callee cleared, and VC5
+    data-symbol evidence covered `g_OptCatalogRuntimeWorld` plus the local
+    ignored `BeamReflect_%d` string manifest entry. Refreshed
+    `frontier 0x438ba0 --depth 1 --lane binary` routed next to 0x439540
+    `Player::ApplyAltWeaponSwitch`.
+  - 0x4385a0 `Player::StartMasterTypeLoopSfxHandle` is accepted at tier B
+    after adding the required provenance docblock, registering its native
+    smoke in the built bootstrap-smoke translation unit, rerunning functional
+    evidence, and accepting no-authored-globals data. 0x453400
+    `zClass_Light::gwLightSetRange` and 0x4b2570 `Light::ReturnToFreeList`
+    are accepted at tier B after focused source/data review; `ReturnToFreeList`
+    has passing VC5 function-byte evidence but tier S remains globally
+    deferred. 0x4aefb0 `OptCatalog::DeactivateTrailRuntimeState` is accepted
+    at tier B after registering its existing native smoke, repairing its
+    provenance docblock, rerunning functional evidence, and accepting
+    no-direct-authored-global data. 0x439540 `Player::ApplyAltWeaponSwitch`
+    is accepted at tier B after its functional target passed and
+    `g_GameStateOrMapTable` reverified with VC5 data-symbol evidence.
+    Refreshed `frontier 0x438ba0 --depth 1 --lane binary` now routes next to
+    0x439600 `Player::ApplyPrimaryWeaponSwitch`; keep the remaining zUtil
+    callee routed to its own owner section rather than absorbing it into the
+    Player class pass.

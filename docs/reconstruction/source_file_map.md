@@ -588,8 +588,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## Battlesport/OptCatalog.cpp
 
-- `0x4aefb0` `OptCatalog::DeactivateTrailRuntimeState` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2118`
-- `0x4b0640` `OptCatalog::PlayNoAmmoWarning` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2323`
+- `0x4b0640` `OptCatalog::PlayNoAmmoWarning` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2327`
 
 ## Battlesport/pickup.cpp
 
@@ -655,120 +654,119 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## Battlesport/player.cpp
 
-- `0x403750` `Player::BuildAiPeerRingsByAiNetId` -> `src/Battlesport/player.cpp:3279`
-- `0x405650` `Player::UpdateThirdPersonCamera` -> `src/Battlesport/player.cpp:13622`
-- `0x405c90` `Player::ApplyCameraState` -> `src/Battlesport/player.cpp:13685`
-- `0x41bbf0` `Player::DestroyedStateResetCallback` -> `src/Battlesport/player.cpp:7991`
-- `0x41bca0` `Player::DestroyedStateResetFinalizeCallback` -> `src/Battlesport/player.cpp:7964`
-- `0x41bd20` `Player::DestroyedStateResetLocalFinalize` -> `src/Battlesport/player.cpp:7944`
-- `0x41ea90` `Player::InitMasterCommonDataList` -> `src/Battlesport/player.cpp:2111`
-- `0x41eac0` `Player::InitMasterModalDataList` -> `src/Battlesport/player.cpp:2120`
-- `0x41ec80` `Player::InitAndRegisterTopMsgPanel2` -> `src/Battlesport/player.cpp:2204`
-- `0x41ec90` `Player_TopMsgPanel2::Constructor` -> `src/Battlesport/player.cpp:2057`
-- `0x41ecb0` `Player::RegisterTopMsgPanel2Cleanup` -> `src/Battlesport/player.cpp:2211`
-- `0x41ecc0` `Player_TopMsgPanel2::Destructor` -> `src/Battlesport/player.cpp:2067`
-- `0x41ecd0` `Player::RecordNodeFlagsForRestore` -> `src/Battlesport/player.cpp:10917`
-- `0x41ef30` `PlayerNodeFlagRestore::InitGlobals` -> `src/Battlesport/player.cpp:2077`
-- `0x41ef40` `PlayerNodeFlagRestore::InitInstance` -> `src/Battlesport/player.cpp:2084`
-- `0x41ef60` `PlayerNodeFlagRestore::RegisterAtExit` -> `src/Battlesport/player.cpp:2093`
-- `0x41ef70` `PlayerNodeFlagRestore::ShutdownInstance` -> `src/Battlesport/player.cpp:2099`
-- `0x41efa0` `Player::RestoreRecordedNodeFlags` -> `src/Battlesport/player.cpp:10965`
-- `0x41f010` `Player::BuildMissionSaveData` -> `src/Battlesport/player.cpp:10687`
-- `0x41f1d0` `Player::ApplyMissionSaveData` -> `src/Battlesport/player.cpp:10759`
-- `0x41f5b0` `Player::ZAR_RegisterSections` -> `src/Battlesport/player.cpp:11019`
-- `0x41f5f0` `Player::ZAR_WriteMissionSaveDataSection` -> `src/Battlesport/player.cpp:11039`
-- `0x41f640` `Player::ZAR_ReadMissionSaveDataSection` -> `src/Battlesport/player.cpp:10993`
-- `0x41f6a0` `Player::ZAR_WriteVehicleListSection` -> `src/Battlesport/player.cpp:11208`
-- `0x41f850` `Player::ZAR_ReadVehicleListSection` -> `src/Battlesport/player.cpp:11058`
-- `0x41fb80` `Player::ShutdownMissionRuntime` -> `src/Battlesport/player.cpp:16716`
-- `0x41fd20` `Player::DestroySaveGameState` -> `src/Battlesport/player.cpp:16661`
-- `0x41fe40` `Player::GetAivZrdPath` -> `src/Battlesport/player.cpp:2217`
-- `0x41fe50` `zVehicle::SelectZrdByDifficulty` -> `src/Battlesport/player.cpp:2010`
-- `0x41fe90` `Player::InitMissionRuntimeFromWorldAndCamera` -> `src/Battlesport/player.cpp:2498`
-- `0x421470` `Player::BindModalStateFromMasterModalData` -> `src/Battlesport/player.cpp:3300`
-- `0x421790` `Player::InitSpawnStateFromPrimaryModalData` -> `src/Battlesport/player.cpp:3430`
-- `0x421830` `Player::SampleGroundAndAlignRootToSurface` -> `src/Battlesport/player.cpp:3462`
-- `0x421a40` `Player::CloneType6NodeFromTemplateAndRename` -> `src/Battlesport/player.cpp:2249`
-- `0x421ab0` `Player::CreateFromNamesAtPose` -> `src/Battlesport/player.cpp:2305`
-- `0x421ed0` `Player::BuildCollisionPointsFromModel` -> `src/Battlesport/player.cpp:3561`
-- `0x4220f0` `Player::BuildSupportPointsFromModel` -> `src/Battlesport/player.cpp:3614`
-- `0x422170` `Player::LoadMasterCommonDataFromNode` -> `src/Battlesport/player.cpp:3654`
-- `0x4226d0` `Player::LoadMasterModalDataFromNode` -> `src/Battlesport/player.cpp:3943`
-- `0x423150` `Player::ExtractVehicleNameFromAivName` -> `src/Battlesport/player.cpp:2223`
-- `0x4231b0` `Player::RefreshHudFromState` -> `src/Battlesport/player.cpp:11499`
-- `0x423380` `Player::IsMissionProbeType1EnabledById` -> `src/Battlesport/player.cpp:8658`
-- `0x425920` `Player::RegisterGameplayCommandCallbacksAndCreateFfEffects` -> `src/Battlesport/player.cpp:9057`
-- `0x4266b0` `Player::TickMasterTypeAndForceFeedback` -> `src/Battlesport/player.cpp:12544`
-- `0x427140` `Player::UpdateMasterTypeHover` -> `src/Battlesport/player.cpp:15537`
-- `0x427440` `Player::UpdateMasterTypeHover_FromModalProbe` -> `src/Battlesport/player.cpp:15117`
-- `0x4279f0` `Player::UpdateMasterTypeAmphib` -> `src/Battlesport/player.cpp:15387`
-- `0x427ec0` `Player::UpdateMasterTypeAmphib_FromModalProbe` -> `src/Battlesport/player.cpp:15291`
-- `0x428120` `Player::UpdateMasterTypeBasic` -> `src/Battlesport/player.cpp:15634`
-- `0x428350` `Player::UpdateMasterTypeBasicOrTrack_FromModalProbe` -> `src/Battlesport/player.cpp:15075`
-- `0x428520` `Player::UpdateMasterTypeSub` -> `src/Battlesport/player.cpp:12411`
-- `0x4289f0` `Player::UpdateSubModeWaterProbeState` -> `src/Battlesport/player.cpp:12161`
-- `0x428d60` `Player::ProbeModalSampleHeights` -> `src/Battlesport/player.cpp:13885`
-- `0x4290f0` `Player::SelectProbeSampleHeightFromCandidates` -> `src/Battlesport/player.cpp:13819`
-- `0x429240` `Player::ApplyAmphibSpeedOscillation` -> `src/Battlesport/player.cpp:10493`
-- `0x429750` `Player::UpdateAutoTurnAndSteerFromTarget` -> `src/Battlesport/player.cpp:10379`
-- `0x42a9f0` `Player::AddScaledHudCounterValue` -> `src/Battlesport/player.cpp:5452`
-- `0x42aa50` `Player::UpdateDebugOverlayHud` -> `src/Battlesport/player.cpp:11390`
-- `0x42ac90` `Player::TransitionToMasterTypeTrack` -> `src/Battlesport/player.cpp:4551`
-- `0x42aeb0` `Player::TransitionToMasterTypeAmphib` -> `src/Battlesport/player.cpp:4676`
-- `0x42b0f0` `Player::TransitionToMasterTypeHover` -> `src/Battlesport/player.cpp:4912`
-- `0x42b2a0` `Player::TransitionToMasterTypeSub` -> `src/Battlesport/player.cpp:4796`
-- `0x42b4a0` `Player::StopBftBubbleFxHandle` -> `src/Battlesport/player.cpp:4513`
-- `0x42b4c0` `Player::TransitionToMasterTypeFly` -> `src/Battlesport/player.cpp:4526`
-- `0x42b520` `Player::ApplyMasterTypeTransition` -> `src/Battlesport/player.cpp:5004`
-- `0x42b5a0` `Player::ReactivateCopterSndNodesIfHealthy` -> `src/Battlesport/player.cpp:4459`
-- `0x42b630` `Player::CacheDisableCopterSndNodesAndStopSample` -> `src/Battlesport/player.cpp:4406`
-- `0x42b810` `Player::SyncLocalPoseFromRootNode` -> `src/Battlesport/player.cpp:2899`
-- `0x42b8c0` `Player::RebuildSteerBasisRawFromRef` -> `src/Battlesport/player.cpp:10473`
-- `0x42bab0` `Player::SetAutoTurnTargetDirFromWorldPoint` -> `src/Battlesport/player.cpp:10664`
-- `0x42bb30` `Player::AsyncCommandCallback` -> `src/Battlesport/player.cpp:9116`
-- `0x42be00` `Player::SetWorldPoseAndRestartAnchor` -> `src/Battlesport/player.cpp:9299`
-- `0x42be70` `Player::CaptureCurrentObjectPoseAsRestartAnchor` -> `src/Battlesport/player.cpp:9323`
-- `0x42bed0` `Player::ResetMotionTransientState` -> `src/Battlesport/player.cpp:10330`
-- `0x42bf90` `Player::UpdatePostMoveEnvironment` -> `src/Battlesport/player.cpp:14734`
-- `0x42c0d0` `Player::ProcessEnvProbeResults` -> `src/Battlesport/player.cpp:14804`
-- `0x42c2e0` `Player::UpdateVerticalVelocityAndTransform` -> `src/Battlesport/player.cpp:15029`
-- `0x42c420` `Player::AccumulateSlopeForces` -> `src/Battlesport/player.cpp:15003`
-- `0x42c520` `Player::ComputeSurfaceFrom1Probe` -> `src/Battlesport/player.cpp:14479`
-- `0x42c640` `Player::ComputeSurfaceFrom2Probes` -> `src/Battlesport/player.cpp:14518`
-- `0x42c8d0` `Player::ApplyTerrainTilt` -> `src/Battlesport/player.cpp:14398`
-- `0x42ca40` `Player::ComputeSurfaceFrom3Probes` -> `src/Battlesport/player.cpp:14696`
-- `0x42cb50` `Player::ResetTerrainContactImpulsesAndPlayImpactSfx` -> `src/Battlesport/player.cpp:14373`
-- `0x42cbd0` `Player::CheckProbeSampleMaskOverlap` -> `src/Battlesport/player.cpp:14593`
-- `0x42cc00` `Player::SelectBestProbesByDotProduct` -> `src/Battlesport/player.cpp:14617`
-- `0x42cde0` `Player::SolveHeightOnSurface` -> `src/Battlesport/player.cpp:14356`
-- `0x42ce50` `Player::ComputeTriangleNormal` -> `src/Battlesport/player.cpp:14446`
-- `0x42cf60` `Player::RebuildAboveGroundIndices` -> `src/Battlesport/player.cpp:14605`
-- `0x42cf90` `Player::BuildEnvironmentProbeResult` -> `src/Battlesport/player.cpp:14037`
-- `0x42d320` `Player::FindThirdProbeAndComputeNormal` -> `src/Battlesport/player.cpp:14933`
-- `0x42d5c0` `Player::ApplyEnvironmentProbeResult` -> `src/Battlesport/player.cpp:14172`
-- `0x42da40` `Player::RebuildOrientationFromNormal` -> `src/Battlesport/player.cpp:14897`
-- `0x438540` `Player::SelectModalStateByMasterType` -> `src/Battlesport/player.cpp:1823`
-- `0x4385a0` `Player::StartMasterTypeLoopSfxHandle` -> `src/Battlesport/player.cpp:1757`
-- `0x438630` `Player::EnsureMasterTypeLoopSfxHandle` -> `src/Battlesport/player.cpp:1776`
-- `0x438660` `Player::StopMasterTypeLoopSfxHandle` -> `src/Battlesport/player.cpp:1848`
-- `0x438690` `Player::StopModalLoopSfxHandle` -> `src/Battlesport/player.cpp:1810`
-- `0x4386c0` `Player::UpdateModalLoopSfx` -> `src/Battlesport/player.cpp:1861`
-- `0x439460` `Player::HandlePrimaryWeaponVariantToggleInput` -> `src/Battlesport/player.cpp:13315`
-- `0x439ba0` `Player::TickAltGunRuntimeState` -> `src/Battlesport/player.cpp:16549`
-- `0x43a400` `Player::ProcessPrimaryGunDispatchTick` -> `src/Battlesport/player.cpp:16488`
-- `0x43a900` `Player::DecayAndApplyAltFireSlotOffsetToNode` -> `src/Battlesport/player.cpp:16026`
-- `0x43a980` `Player::ApplyGunFireSlotOffsetToNode` -> `src/Battlesport/player.cpp:16051`
-- `0x43aa30` `Player::SelectAltGunFirePointAndSlot` -> `src/Battlesport/player.cpp:16090`
-- `0x43acf0` `Player::SelectPrimaryGunFirePointAndSlot` -> `src/Battlesport/player.cpp:16157`
-- `0x43afd0` `Player::ComposeAimBasisWorldMatrix` -> `src/Battlesport/player.cpp:15974`
-- `0x43bc40` `Player::EnterLocalInactiveDestroyedLifecycle` -> `src/Battlesport/player.cpp:8107`
-- `0x43c0c0` `Player::StartDestroyedStateVehicleEffect` -> `src/Battlesport/player.cpp:8666`
-- `0x43c330` `Player::EnsureGunAuxEffectActive` -> `src/Battlesport/player.cpp:16261`
-- `0x43c630` `Player::IsAltWeaponAllowedInCurrentMasterMode` -> `src/Battlesport/player.cpp:12896`
-- `0x43c660` `Player::AutoSwitchToNextUsableAltWeapon` -> `src/Battlesport/player.cpp:12926`
-- `0x43c800` `Player::ResetAltGunDoorAnimationState` -> `src/Battlesport/player.cpp:13065`
-- `0x43c850` `Player::ResetAltGunRuntimeState` -> `src/Battlesport/player.cpp:13121`
-- `0x43c950` `Player::RemoveAllDeployedMines` -> `src/Battlesport/player.cpp:13161`
+- `0x403750` `Player::BuildAiPeerRingsByAiNetId` -> `src/Battlesport/player.cpp:3283`
+- `0x405650` `Player::UpdateThirdPersonCamera` -> `src/Battlesport/player.cpp:13626`
+- `0x405c90` `Player::ApplyCameraState` -> `src/Battlesport/player.cpp:13689`
+- `0x41bbf0` `Player::DestroyedStateResetCallback` -> `src/Battlesport/player.cpp:7995`
+- `0x41bca0` `Player::DestroyedStateResetFinalizeCallback` -> `src/Battlesport/player.cpp:7968`
+- `0x41bd20` `Player::DestroyedStateResetLocalFinalize` -> `src/Battlesport/player.cpp:7948`
+- `0x41ea90` `Player::InitMasterCommonDataList` -> `src/Battlesport/player.cpp:2115`
+- `0x41eac0` `Player::InitMasterModalDataList` -> `src/Battlesport/player.cpp:2124`
+- `0x41ec80` `Player::InitAndRegisterTopMsgPanel2` -> `src/Battlesport/player.cpp:2208`
+- `0x41ec90` `Player_TopMsgPanel2::Constructor` -> `src/Battlesport/player.cpp:2061`
+- `0x41ecb0` `Player::RegisterTopMsgPanel2Cleanup` -> `src/Battlesport/player.cpp:2215`
+- `0x41ecc0` `Player_TopMsgPanel2::Destructor` -> `src/Battlesport/player.cpp:2071`
+- `0x41ecd0` `Player::RecordNodeFlagsForRestore` -> `src/Battlesport/player.cpp:10921`
+- `0x41ef30` `PlayerNodeFlagRestore::InitGlobals` -> `src/Battlesport/player.cpp:2081`
+- `0x41ef40` `PlayerNodeFlagRestore::InitInstance` -> `src/Battlesport/player.cpp:2088`
+- `0x41ef60` `PlayerNodeFlagRestore::RegisterAtExit` -> `src/Battlesport/player.cpp:2097`
+- `0x41ef70` `PlayerNodeFlagRestore::ShutdownInstance` -> `src/Battlesport/player.cpp:2103`
+- `0x41efa0` `Player::RestoreRecordedNodeFlags` -> `src/Battlesport/player.cpp:10969`
+- `0x41f010` `Player::BuildMissionSaveData` -> `src/Battlesport/player.cpp:10691`
+- `0x41f1d0` `Player::ApplyMissionSaveData` -> `src/Battlesport/player.cpp:10763`
+- `0x41f5b0` `Player::ZAR_RegisterSections` -> `src/Battlesport/player.cpp:11023`
+- `0x41f5f0` `Player::ZAR_WriteMissionSaveDataSection` -> `src/Battlesport/player.cpp:11043`
+- `0x41f640` `Player::ZAR_ReadMissionSaveDataSection` -> `src/Battlesport/player.cpp:10997`
+- `0x41f6a0` `Player::ZAR_WriteVehicleListSection` -> `src/Battlesport/player.cpp:11212`
+- `0x41f850` `Player::ZAR_ReadVehicleListSection` -> `src/Battlesport/player.cpp:11062`
+- `0x41fb80` `Player::ShutdownMissionRuntime` -> `src/Battlesport/player.cpp:16720`
+- `0x41fd20` `Player::DestroySaveGameState` -> `src/Battlesport/player.cpp:16665`
+- `0x41fe40` `Player::GetAivZrdPath` -> `src/Battlesport/player.cpp:2221`
+- `0x41fe50` `zVehicle::SelectZrdByDifficulty` -> `src/Battlesport/player.cpp:2014`
+- `0x41fe90` `Player::InitMissionRuntimeFromWorldAndCamera` -> `src/Battlesport/player.cpp:2502`
+- `0x421470` `Player::BindModalStateFromMasterModalData` -> `src/Battlesport/player.cpp:3304`
+- `0x421790` `Player::InitSpawnStateFromPrimaryModalData` -> `src/Battlesport/player.cpp:3434`
+- `0x421830` `Player::SampleGroundAndAlignRootToSurface` -> `src/Battlesport/player.cpp:3466`
+- `0x421a40` `Player::CloneType6NodeFromTemplateAndRename` -> `src/Battlesport/player.cpp:2253`
+- `0x421ab0` `Player::CreateFromNamesAtPose` -> `src/Battlesport/player.cpp:2309`
+- `0x421ed0` `Player::BuildCollisionPointsFromModel` -> `src/Battlesport/player.cpp:3565`
+- `0x4220f0` `Player::BuildSupportPointsFromModel` -> `src/Battlesport/player.cpp:3618`
+- `0x422170` `Player::LoadMasterCommonDataFromNode` -> `src/Battlesport/player.cpp:3658`
+- `0x4226d0` `Player::LoadMasterModalDataFromNode` -> `src/Battlesport/player.cpp:3947`
+- `0x423150` `Player::ExtractVehicleNameFromAivName` -> `src/Battlesport/player.cpp:2227`
+- `0x4231b0` `Player::RefreshHudFromState` -> `src/Battlesport/player.cpp:11503`
+- `0x423380` `Player::IsMissionProbeType1EnabledById` -> `src/Battlesport/player.cpp:8662`
+- `0x425920` `Player::RegisterGameplayCommandCallbacksAndCreateFfEffects` -> `src/Battlesport/player.cpp:9061`
+- `0x4266b0` `Player::TickMasterTypeAndForceFeedback` -> `src/Battlesport/player.cpp:12548`
+- `0x427140` `Player::UpdateMasterTypeHover` -> `src/Battlesport/player.cpp:15541`
+- `0x427440` `Player::UpdateMasterTypeHover_FromModalProbe` -> `src/Battlesport/player.cpp:15121`
+- `0x4279f0` `Player::UpdateMasterTypeAmphib` -> `src/Battlesport/player.cpp:15391`
+- `0x427ec0` `Player::UpdateMasterTypeAmphib_FromModalProbe` -> `src/Battlesport/player.cpp:15295`
+- `0x428120` `Player::UpdateMasterTypeBasic` -> `src/Battlesport/player.cpp:15638`
+- `0x428350` `Player::UpdateMasterTypeBasicOrTrack_FromModalProbe` -> `src/Battlesport/player.cpp:15079`
+- `0x428520` `Player::UpdateMasterTypeSub` -> `src/Battlesport/player.cpp:12415`
+- `0x4289f0` `Player::UpdateSubModeWaterProbeState` -> `src/Battlesport/player.cpp:12165`
+- `0x428d60` `Player::ProbeModalSampleHeights` -> `src/Battlesport/player.cpp:13889`
+- `0x4290f0` `Player::SelectProbeSampleHeightFromCandidates` -> `src/Battlesport/player.cpp:13823`
+- `0x429240` `Player::ApplyAmphibSpeedOscillation` -> `src/Battlesport/player.cpp:10497`
+- `0x429750` `Player::UpdateAutoTurnAndSteerFromTarget` -> `src/Battlesport/player.cpp:10383`
+- `0x42a9f0` `Player::AddScaledHudCounterValue` -> `src/Battlesport/player.cpp:5456`
+- `0x42aa50` `Player::UpdateDebugOverlayHud` -> `src/Battlesport/player.cpp:11394`
+- `0x42ac90` `Player::TransitionToMasterTypeTrack` -> `src/Battlesport/player.cpp:4555`
+- `0x42aeb0` `Player::TransitionToMasterTypeAmphib` -> `src/Battlesport/player.cpp:4680`
+- `0x42b0f0` `Player::TransitionToMasterTypeHover` -> `src/Battlesport/player.cpp:4916`
+- `0x42b2a0` `Player::TransitionToMasterTypeSub` -> `src/Battlesport/player.cpp:4800`
+- `0x42b4a0` `Player::StopBftBubbleFxHandle` -> `src/Battlesport/player.cpp:4517`
+- `0x42b4c0` `Player::TransitionToMasterTypeFly` -> `src/Battlesport/player.cpp:4530`
+- `0x42b520` `Player::ApplyMasterTypeTransition` -> `src/Battlesport/player.cpp:5008`
+- `0x42b5a0` `Player::ReactivateCopterSndNodesIfHealthy` -> `src/Battlesport/player.cpp:4463`
+- `0x42b630` `Player::CacheDisableCopterSndNodesAndStopSample` -> `src/Battlesport/player.cpp:4410`
+- `0x42b810` `Player::SyncLocalPoseFromRootNode` -> `src/Battlesport/player.cpp:2903`
+- `0x42b8c0` `Player::RebuildSteerBasisRawFromRef` -> `src/Battlesport/player.cpp:10477`
+- `0x42bab0` `Player::SetAutoTurnTargetDirFromWorldPoint` -> `src/Battlesport/player.cpp:10668`
+- `0x42bb30` `Player::AsyncCommandCallback` -> `src/Battlesport/player.cpp:9120`
+- `0x42be00` `Player::SetWorldPoseAndRestartAnchor` -> `src/Battlesport/player.cpp:9303`
+- `0x42be70` `Player::CaptureCurrentObjectPoseAsRestartAnchor` -> `src/Battlesport/player.cpp:9327`
+- `0x42bed0` `Player::ResetMotionTransientState` -> `src/Battlesport/player.cpp:10334`
+- `0x42bf90` `Player::UpdatePostMoveEnvironment` -> `src/Battlesport/player.cpp:14738`
+- `0x42c0d0` `Player::ProcessEnvProbeResults` -> `src/Battlesport/player.cpp:14808`
+- `0x42c2e0` `Player::UpdateVerticalVelocityAndTransform` -> `src/Battlesport/player.cpp:15033`
+- `0x42c420` `Player::AccumulateSlopeForces` -> `src/Battlesport/player.cpp:15007`
+- `0x42c520` `Player::ComputeSurfaceFrom1Probe` -> `src/Battlesport/player.cpp:14483`
+- `0x42c640` `Player::ComputeSurfaceFrom2Probes` -> `src/Battlesport/player.cpp:14522`
+- `0x42c8d0` `Player::ApplyTerrainTilt` -> `src/Battlesport/player.cpp:14402`
+- `0x42ca40` `Player::ComputeSurfaceFrom3Probes` -> `src/Battlesport/player.cpp:14700`
+- `0x42cb50` `Player::ResetTerrainContactImpulsesAndPlayImpactSfx` -> `src/Battlesport/player.cpp:14377`
+- `0x42cbd0` `Player::CheckProbeSampleMaskOverlap` -> `src/Battlesport/player.cpp:14597`
+- `0x42cc00` `Player::SelectBestProbesByDotProduct` -> `src/Battlesport/player.cpp:14621`
+- `0x42cde0` `Player::SolveHeightOnSurface` -> `src/Battlesport/player.cpp:14360`
+- `0x42ce50` `Player::ComputeTriangleNormal` -> `src/Battlesport/player.cpp:14450`
+- `0x42cf60` `Player::RebuildAboveGroundIndices` -> `src/Battlesport/player.cpp:14609`
+- `0x42cf90` `Player::BuildEnvironmentProbeResult` -> `src/Battlesport/player.cpp:14041`
+- `0x42d320` `Player::FindThirdProbeAndComputeNormal` -> `src/Battlesport/player.cpp:14937`
+- `0x42d5c0` `Player::ApplyEnvironmentProbeResult` -> `src/Battlesport/player.cpp:14176`
+- `0x42da40` `Player::RebuildOrientationFromNormal` -> `src/Battlesport/player.cpp:14901`
+- `0x438540` `Player::SelectModalStateByMasterType` -> `src/Battlesport/player.cpp:1827`
+- `0x438630` `Player::EnsureMasterTypeLoopSfxHandle` -> `src/Battlesport/player.cpp:1780`
+- `0x438660` `Player::StopMasterTypeLoopSfxHandle` -> `src/Battlesport/player.cpp:1852`
+- `0x438690` `Player::StopModalLoopSfxHandle` -> `src/Battlesport/player.cpp:1814`
+- `0x4386c0` `Player::UpdateModalLoopSfx` -> `src/Battlesport/player.cpp:1865`
+- `0x439460` `Player::HandlePrimaryWeaponVariantToggleInput` -> `src/Battlesport/player.cpp:13319`
+- `0x439ba0` `Player::TickAltGunRuntimeState` -> `src/Battlesport/player.cpp:16553`
+- `0x43a400` `Player::ProcessPrimaryGunDispatchTick` -> `src/Battlesport/player.cpp:16492`
+- `0x43a900` `Player::DecayAndApplyAltFireSlotOffsetToNode` -> `src/Battlesport/player.cpp:16030`
+- `0x43a980` `Player::ApplyGunFireSlotOffsetToNode` -> `src/Battlesport/player.cpp:16055`
+- `0x43aa30` `Player::SelectAltGunFirePointAndSlot` -> `src/Battlesport/player.cpp:16094`
+- `0x43acf0` `Player::SelectPrimaryGunFirePointAndSlot` -> `src/Battlesport/player.cpp:16161`
+- `0x43afd0` `Player::ComposeAimBasisWorldMatrix` -> `src/Battlesport/player.cpp:15978`
+- `0x43bc40` `Player::EnterLocalInactiveDestroyedLifecycle` -> `src/Battlesport/player.cpp:8111`
+- `0x43c0c0` `Player::StartDestroyedStateVehicleEffect` -> `src/Battlesport/player.cpp:8670`
+- `0x43c330` `Player::EnsureGunAuxEffectActive` -> `src/Battlesport/player.cpp:16265`
+- `0x43c630` `Player::IsAltWeaponAllowedInCurrentMasterMode` -> `src/Battlesport/player.cpp:12900`
+- `0x43c660` `Player::AutoSwitchToNextUsableAltWeapon` -> `src/Battlesport/player.cpp:12930`
+- `0x43c800` `Player::ResetAltGunDoorAnimationState` -> `src/Battlesport/player.cpp:13069`
+- `0x43c850` `Player::ResetAltGunRuntimeState` -> `src/Battlesport/player.cpp:13125`
+- `0x43c950` `Player::RemoveAllDeployedMines` -> `src/Battlesport/player.cpp:13165`
 
 ## Battlesport/Recoil.cpp
 
@@ -911,7 +909,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## Battlesport/zWeapon.cpp
 
-- `0x439260` `Player::HandleAltWeaponBankSelectInput` -> `src/Battlesport/player.cpp:13206`
+- `0x439260` `Player::HandleAltWeaponBankSelectInput` -> `src/Battlesport/player.cpp:13210`
 
 ## GameZ/z_math.cpp
 
@@ -920,8 +918,8 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## GameZRecoil/checkpoint.cpp
 
-- `0x420c60` `Checkpoint::InstantiateNamedObjects` -> `src/Battlesport/player.cpp:5121`
-- `0x425150` `Checkpoint::UpdatePlayerLapProgressAndNotifyNet` -> `src/Battlesport/player.cpp:5155`
+- `0x420c60` `Checkpoint::InstantiateNamedObjects` -> `src/Battlesport/player.cpp:5125`
+- `0x425150` `Checkpoint::UpdatePlayerLapProgressAndNotifyNet` -> `src/Battlesport/player.cpp:5159`
 
 ## GameZRecoil/GameNet.cpp
 
@@ -937,46 +935,46 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## GameZRecoil/Player.cpp
 
-- `0x401580` `Player::AiAdvancePathCursorAndComputeTargetVec` -> `src/Battlesport/player.cpp:5592`
-- `0x401e50` `Player::TestScenePathBetweenCameraTargetAndPoint` -> `src/Battlesport/player.cpp:13472`
-- `0x401f60` `Player::AiRebuildSyntheticPathToNodeIfFar` -> `src/Battlesport/player.cpp:5929`
+- `0x401580` `Player::AiAdvancePathCursorAndComputeTargetVec` -> `src/Battlesport/player.cpp:5596`
+- `0x401e50` `Player::TestScenePathBetweenCameraTargetAndPoint` -> `src/Battlesport/player.cpp:13476`
+- `0x401f60` `Player::AiRebuildSyntheticPathToNodeIfFar` -> `src/Battlesport/player.cpp:5933`
 
 ## GameZRecoil/player.cpp
 
-- `0x41b950` `Player::TickRemoteNetworkPlayer` -> `src/Battlesport/player.cpp:8422`
-- `0x426390` `PlayerMgr::TickAllPlayers` -> `src/Battlesport/player.cpp:9366`
-- `0x4283f0` `Player::UpdateBankVelocityFromSteerInput` -> `src/Battlesport/player.cpp:10356`
-- `0x428490` `Player::IntegrateYawAndWrapFromYawVelocity` -> `src/Battlesport/player.cpp:10420`
-- `0x4399c0` `Player::ResetDamageVisualsAndTimedStatus` -> `src/Battlesport/player.cpp:13395`
+- `0x41b950` `Player::TickRemoteNetworkPlayer` -> `src/Battlesport/player.cpp:8426`
+- `0x426390` `PlayerMgr::TickAllPlayers` -> `src/Battlesport/player.cpp:9370`
+- `0x4283f0` `Player::UpdateBankVelocityFromSteerInput` -> `src/Battlesport/player.cpp:10360`
+- `0x428490` `Player::IntegrateYawAndWrapFromYawVelocity` -> `src/Battlesport/player.cpp:10424`
+- `0x4399c0` `Player::ResetDamageVisualsAndTimedStatus` -> `src/Battlesport/player.cpp:13399`
 
 ## GameZRecoil/Player/player_camera.c
 
-- `0x404e90` `Player::TickActiveCameraState` -> `src/Battlesport/player.cpp:9544`
-- `0x405040` `Player::UpdateChaseCameraFromInput` -> `src/Battlesport/player.cpp:9619`
-- `0x4057d0` `Player::UpdateTopDownCameraState` -> `src/Battlesport/player.cpp:9822`
-- `0x405870` `Player::UpdateCameraFromStoredTargetTowardPlayer` -> `src/Battlesport/player.cpp:9934`
-- `0x4059a0` `Player::UpdateFirstPersonCameraFromInput` -> `src/Battlesport/player.cpp:9849`
-- `0x405ec0` `Player::ToggleSteeringModeAndResetMouseLook` -> `src/Battlesport/player.cpp:10323`
-- `0x405ee0` `Player::AdjustThirdPersonCameraByOffsetProbes` -> `src/Battlesport/player.cpp:6836`
-- `0x406110` `Player::AdjustThirdPersonCameraBySideProbes` -> `src/Battlesport/player.cpp:7046`
-- `0x4063f0` `Player::RestoreThirdPersonCameraFromObstructionState` -> `src/Battlesport/player.cpp:9977`
-- `0x406430` `Player::UnbindCurrentSaveStateIfSinglePlayer` -> `src/Battlesport/player.cpp:2882`
-- `0x406450` `Player::BindActiveGameStateAsCurrentSaveState` -> `src/Battlesport/player.cpp:2891`
-- `0x406470` `Player::UpdateCameraVariantFromCameraPos` -> `src/Battlesport/player.cpp:6998`
-- `0x406510` `Player::UpdateCameraVariantFromAnchor` -> `src/Battlesport/player.cpp:6942`
-- `0x406610` `Player::UpdateCameraWeatherFxEmitterVisibility` -> `src/Battlesport/player.cpp:9990`
-- `0x406730` `Player::FilterCameraProbeBlockingHits` -> `src/Battlesport/player.cpp:6690`
-- `0x4067a0` `Player::AdjustSubCameraFocusForObstruction` -> `src/Battlesport/player.cpp:6787`
-- `0x42b6e0` `Player::FindNearestThirdPersonCameraProbePoint` -> `src/Battlesport/player.cpp:6731`
+- `0x404e90` `Player::TickActiveCameraState` -> `src/Battlesport/player.cpp:9548`
+- `0x405040` `Player::UpdateChaseCameraFromInput` -> `src/Battlesport/player.cpp:9623`
+- `0x4057d0` `Player::UpdateTopDownCameraState` -> `src/Battlesport/player.cpp:9826`
+- `0x405870` `Player::UpdateCameraFromStoredTargetTowardPlayer` -> `src/Battlesport/player.cpp:9938`
+- `0x4059a0` `Player::UpdateFirstPersonCameraFromInput` -> `src/Battlesport/player.cpp:9853`
+- `0x405ec0` `Player::ToggleSteeringModeAndResetMouseLook` -> `src/Battlesport/player.cpp:10327`
+- `0x405ee0` `Player::AdjustThirdPersonCameraByOffsetProbes` -> `src/Battlesport/player.cpp:6840`
+- `0x406110` `Player::AdjustThirdPersonCameraBySideProbes` -> `src/Battlesport/player.cpp:7050`
+- `0x4063f0` `Player::RestoreThirdPersonCameraFromObstructionState` -> `src/Battlesport/player.cpp:9981`
+- `0x406430` `Player::UnbindCurrentSaveStateIfSinglePlayer` -> `src/Battlesport/player.cpp:2886`
+- `0x406450` `Player::BindActiveGameStateAsCurrentSaveState` -> `src/Battlesport/player.cpp:2895`
+- `0x406470` `Player::UpdateCameraVariantFromCameraPos` -> `src/Battlesport/player.cpp:7002`
+- `0x406510` `Player::UpdateCameraVariantFromAnchor` -> `src/Battlesport/player.cpp:6946`
+- `0x406610` `Player::UpdateCameraWeatherFxEmitterVisibility` -> `src/Battlesport/player.cpp:9994`
+- `0x406730` `Player::FilterCameraProbeBlockingHits` -> `src/Battlesport/player.cpp:6694`
+- `0x4067a0` `Player::AdjustSubCameraFocusForObstruction` -> `src/Battlesport/player.cpp:6791`
+- `0x42b6e0` `Player::FindNearestThirdPersonCameraProbePoint` -> `src/Battlesport/player.cpp:6735`
 
 ## GameZRecoil/Player/player_status.cpp
 
-- `0x43b5d0` `Player::ApplyStatusMeterChange` -> `src/Battlesport/player.cpp:11616`
-- `0x43b660` `Player::UpdateStatusMeter` -> `src/Battlesport/player.cpp:11642`
+- `0x43b5d0` `Player::ApplyStatusMeterChange` -> `src/Battlesport/player.cpp:11620`
+- `0x43b660` `Player::UpdateStatusMeter` -> `src/Battlesport/player.cpp:11646`
 
 ## GameZRecoil/Player/player_weapon.c
 
-- `0x43c9c0` `Player::FindAltGunFireControllerForWeaponId` -> `src/Battlesport/player.cpp:12873`
+- `0x43c9c0` `Player::FindAltGunFireControllerForWeaponId` -> `src/Battlesport/player.cpp:12877`
 
 ## GameZRecoil/recoilapp.cpp
 
@@ -1334,11 +1332,11 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## GameZRecoil/zGame/Player/Player_Camera.cpp
 
-- `0x426330` `Player::ResetMouseControlStateAndRecenterCursor` -> `src/Battlesport/player.cpp:9355`
+- `0x426330` `Player::ResetMouseControlStateAndRecenterCursor` -> `src/Battlesport/player.cpp:9359`
 
 ## GameZRecoil/zGame/Player/Player_Damage.cpp
 
-- `0x439990` `Player::ResetDamageStateAndTimedHitStatus` -> `src/Battlesport/player.cpp:13382`
+- `0x439990` `Player::ResetDamageStateAndTimedHitStatus` -> `src/Battlesport/player.cpp:13386`
 
 ## GameZRecoil/zGame/zGame_Options.cpp
 
@@ -1796,14 +1794,14 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## GameZRecoil/zWeapon.cpp
 
-- `0x43c190` `Player::ProcessAltGunDispatchRequest` -> `src/Battlesport/player.cpp:16413`
-- `0x43c2d0` `Player::UpdateContinuousAltGunFireController` -> `src/Battlesport/player.cpp:16234`
-- `0x43c430` `Player::AltGunLaunchProjectile` -> `src/Battlesport/player.cpp:16308`
-- `0x43c550` `Player::AltGunFireSimpleProjectile` -> `src/Battlesport/player.cpp:16376`
+- `0x43c190` `Player::ProcessAltGunDispatchRequest` -> `src/Battlesport/player.cpp:16417`
+- `0x43c2d0` `Player::UpdateContinuousAltGunFireController` -> `src/Battlesport/player.cpp:16238`
+- `0x43c430` `Player::AltGunLaunchProjectile` -> `src/Battlesport/player.cpp:16312`
+- `0x43c550` `Player::AltGunFireSimpleProjectile` -> `src/Battlesport/player.cpp:16380`
 
 ## GameZRecoil/zWeapon/OptCatalog.c
 
-- `0x4b26f0` `OptCatalog::InvokeDamageFeedbackAndHitCallback` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2328`
+- `0x4b26f0` `OptCatalog::InvokeDamageFeedbackAndHitCallback` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2332`
 
 ## GameZRecoil/zWeapon/zWeapon.cpp
 
@@ -1821,32 +1819,32 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4aeb50` `OptCatalog::RecycleRuntimeInstance` -> `src/GameZRecoil/zWeapon/OptCatalog.c:1868`
 - `0x4aebc0` `OptCatalog::ClearRuntimeInstances` -> `src/GameZRecoil/zWeapon/OptCatalog.c:1911`
 - `0x4aebf0` `OptCatalog::RemoveRuntimeInstance` -> `src/GameZRecoil/zWeapon/OptCatalog.c:1926`
-- `0x4aed00` `OptCatalog::ProcessRuntimeInstance` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2790`
-- `0x4aee40` `OptCatalog::ActivateTrailRuntimeState` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2176`
-- `0x4af060` `OptCatalog::ProcessRuntimeInstances` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2857`
-- `0x4b0530` `OptCatalog::ComputeAimPitchForTarget` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2262`
-- `0x4b0600` `OptCatalog::PlayTriggerInactiveWarning` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2311`
-- `0x4b0620` `OptCatalog::PlayWeaponInactiveWarning` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2317`
-- `0x4b0660` `OptCatalog::EmitQSandImpactEvent` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2485`
-- `0x4b0710` `OptCatalog::EmitCraterImpactEvent` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2450`
-- `0x4b07d0` `OptCatalog::HandleImpactEvent` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2565`
-- `0x4b0980` `OptCatalog::HandleImpactEventFromRuntimeState` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2676`
-- `0x4b09d0` `OptCatalog::BuildImpactHitList` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2698`
-- `0x4b0a50` `OptCatalog::HandleImpactFromRuntimeProbe` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2741`
-- `0x4b0ba0` `OptCatalog::CanSpawnThroughRay` -> `src/GameZRecoil/zWeapon/OptCatalog.c:3102`
-- `0x4b0ca0` `OptCatalog::ReflectAndSortImpactTraceList` -> `src/GameZRecoil/zWeapon/OptCatalog.c:3152`
-- `0x4b0e20` `OptCatalog::ComputeTrailImpactResponse` -> `src/GameZRecoil/zWeapon/OptCatalog.c:3213`
-- `0x4b0f70` `OptCatalog::UpdateTrailSegmentVisual` -> `src/GameZRecoil/zWeapon/OptCatalog.c:3291`
-- `0x4b0fd0` `OptCatalog::PlayImpactSound` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2519`
-- `0x4b1030` `OptCatalog::PlayBounceSound` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2542`
+- `0x4aed00` `OptCatalog::ProcessRuntimeInstance` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2794`
+- `0x4aee40` `OptCatalog::ActivateTrailRuntimeState` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2180`
+- `0x4af060` `OptCatalog::ProcessRuntimeInstances` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2861`
+- `0x4b0530` `OptCatalog::ComputeAimPitchForTarget` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2266`
+- `0x4b0600` `OptCatalog::PlayTriggerInactiveWarning` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2315`
+- `0x4b0620` `OptCatalog::PlayWeaponInactiveWarning` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2321`
+- `0x4b0660` `OptCatalog::EmitQSandImpactEvent` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2489`
+- `0x4b0710` `OptCatalog::EmitCraterImpactEvent` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2454`
+- `0x4b07d0` `OptCatalog::HandleImpactEvent` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2569`
+- `0x4b0980` `OptCatalog::HandleImpactEventFromRuntimeState` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2680`
+- `0x4b09d0` `OptCatalog::BuildImpactHitList` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2702`
+- `0x4b0a50` `OptCatalog::HandleImpactFromRuntimeProbe` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2745`
+- `0x4b0ba0` `OptCatalog::CanSpawnThroughRay` -> `src/GameZRecoil/zWeapon/OptCatalog.c:3106`
+- `0x4b0ca0` `OptCatalog::ReflectAndSortImpactTraceList` -> `src/GameZRecoil/zWeapon/OptCatalog.c:3156`
+- `0x4b0e20` `OptCatalog::ComputeTrailImpactResponse` -> `src/GameZRecoil/zWeapon/OptCatalog.c:3217`
+- `0x4b0f70` `OptCatalog::UpdateTrailSegmentVisual` -> `src/GameZRecoil/zWeapon/OptCatalog.c:3295`
+- `0x4b0fd0` `OptCatalog::PlayImpactSound` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2523`
+- `0x4b1030` `OptCatalog::PlayBounceSound` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2546`
 - `0x4b1180` `OptCatalog::Shutdown` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2102`
 - `0x4b1ec0` `OptCatalog::CreateTrailRuntimeState` -> `src/GameZRecoil/zWeapon/OptCatalog.c:1198`
 - `0x4b1fa0` `OptCatalog::LoadFxSpecFromReaderNode` -> `src/GameZRecoil/zWeapon/OptCatalog.c:1403`
 - `0x4b2130` `OptCatalog::CreateTrailSegmentNodeFromTemplate` -> `src/GameZRecoil/zWeapon/OptCatalog.c:1174`
-- `0x4b28e0` `OptCatalog::SetDamageContext` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2409`
-- `0x4b2900` `DamageFeedback::SetIntensityScalar` -> `src/GameZRecoil/zWeapon/OptCatalog.c:3328`
-- `0x4b2910` `OptCatalog::GetCapturedHitSourcePtr` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2444`
-- `0x4b2920` `HitContext::GetCurrentOwnerOrCtx` -> `src/GameZRecoil/zWeapon/OptCatalog.c:3336`
+- `0x4b28e0` `OptCatalog::SetDamageContext` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2413`
+- `0x4b2900` `DamageFeedback::SetIntensityScalar` -> `src/GameZRecoil/zWeapon/OptCatalog.c:3332`
+- `0x4b2910` `OptCatalog::GetCapturedHitSourcePtr` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2448`
+- `0x4b2920` `HitContext::GetCurrentOwnerOrCtx` -> `src/GameZRecoil/zWeapon/OptCatalog.c:3340`
 - `0x4b2930` `OptCatalog_MineIterator::Begin` -> `src/GameZRecoil/zWeapon/OptCatalog.c:1267`
 - `0x4b2940` `OptCatalog_MineIterator::Next` -> `src/GameZRecoil/zWeapon/OptCatalog.c:1276`
 
@@ -1896,91 +1894,91 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## src/Battlesport/player.cpp
 
-- `0x401060` `Player::TickAiMode2TopLevel` -> `src/Battlesport/player.cpp:5655`
-- `0x401180` `Player::TickAiMode2PathFollow` -> `src/Battlesport/player.cpp:5729`
-- `0x401420` `Player::AiMode2ForwardProbeRequiresAutoTurn` -> `src/Battlesport/player.cpp:5511`
-- `0x4016a0` `Player::AiChooseNextPathBranchIndex` -> `src/Battlesport/player.cpp:5556`
-- `0x401710` `Player::TickAiMode2SteeringSubstate` -> `src/Battlesport/player.cpp:5972`
-- `0x401970` `Player::UpdateAiMode2MoveAndTurnTowardTarget` -> `src/Battlesport/player.cpp:6087`
-- `0x401a40` `Player::TickAiMode2OffsetTargetSteering` -> `src/Battlesport/player.cpp:6469`
-- `0x401ab0` `Player::TickAiMode2DynamicOffsetTargetSteering` -> `src/Battlesport/player.cpp:6505`
-- `0x401b20` `Player::AiTryEnterMode2AttackPursuitIfLineOfSight` -> `src/Battlesport/player.cpp:5884`
-- `0x401c00` `Player::AiAlertAttackBuddies` -> `src/Battlesport/player.cpp:5863`
-- `0x401c60` `Player::AiEnterMode2SteeringPursuit` -> `src/Battlesport/player.cpp:5829`
-- `0x401d50` `Player::HasLineOfSightFromLocalPlayerFxOffset` -> `src/Battlesport/player.cpp:13537`
-- `0x402080` `Player::AiRestoreSavedTopLevelState` -> `src/Battlesport/player.cpp:6541`
-- `0x402090` `Player::UpdateAiMode2TurnTowardPlayerNoThrottle` -> `src/Battlesport/player.cpp:6116`
-- `0x402170` `Player::UpdateAiMode2TurnInPlaceTowardPlayer` -> `src/Battlesport/player.cpp:6148`
-- `0x402250` `Player::TickAiMode2AltGunAttackWindow` -> `src/Battlesport/player.cpp:6180`
-- `0x4024a0` `Player::SolveAltGunLeadTargetPoint` -> `src/Battlesport/player.cpp:6272`
-- `0x4026d0` `Player::UpdateAiMode2MoveAndTurnTowardOffsetTarget` -> `src/Battlesport/player.cpp:6327`
-- `0x4028c0` `Player::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget` -> `src/Battlesport/player.cpp:6389`
-- `0x402b70` `Player::TickAiMode2TimedPathSteering` -> `src/Battlesport/player.cpp:6652`
-- `0x402be0` `Player::AiSteerTowardPathNodeForward` -> `src/Battlesport/player.cpp:6550`
-- `0x402d60` `Player::AiSteerTowardPathNodeReverse` -> `src/Battlesport/player.cpp:6599`
-- `0x402f10` `Player::AiFinalizeMode2State1ForAllPlayers` -> `src/Battlesport/player.cpp:9283`
-- `0x403830` `Player::AiDiscardNegativeBranchPathNodes` -> `src/Battlesport/player.cpp:5495`
-- `0x41bab0` `Player::UpdateGunDispatchRequestsFromTriggerLatches` -> `src/Battlesport/player.cpp:5466`
-- `0x41bb30` `Player::DestroyedStateRespawnCallback` -> `src/Battlesport/player.cpp:8049`
-- `0x41bd10` `Player::ClearRespawnTransitionFlagCallback` -> `src/Battlesport/player.cpp:8041`
-- `0x41eaf0` `Player::InitAndRegisterUnderwaterFxPass3UiSingleton` -> `src/Battlesport/player.cpp:2129`
-- `0x41eb00` `Player::InitUnderwaterFxPass3UiSingleton` -> `src/Battlesport/player.cpp:2136`
-- `0x41eb10` `Player::RegisterUnderwaterFxPass3UiOnExit` -> `src/Battlesport/player.cpp:2142`
-- `0x41eb20` `Player::ResetUnderwaterFxPass3UiSingleton` -> `src/Battlesport/player.cpp:2148`
-- `0x41eb50` `Player::InitAndRegisterProjectileCameraFxPass3UiSingleton` -> `src/Battlesport/player.cpp:2153`
-- `0x41eb60` `Player::InitProjectileCameraFxPass3UiSingleton` -> `src/Battlesport/player.cpp:2160`
-- `0x41eb70` `Player::RegisterProjectileCameraFxPass3UiCleanup` -> `src/Battlesport/player.cpp:2166`
-- `0x41eb80` `Player::ResetProjectileCameraFxPass3UiSingleton` -> `src/Battlesport/player.cpp:2172`
-- `0x41ec30` `Player::InitAndRegisterTopMsgPanel1` -> `src/Battlesport/player.cpp:2191`
-- `0x41ec40` `Player_TopMsgPanel1::Constructor` -> `src/Battlesport/player.cpp:2037`
-- `0x41ec60` `Player::RegisterTopMsgPanel1OnExit` -> `src/Battlesport/player.cpp:2198`
-- `0x41ec70` `Player_TopMsgPanel1::Destructor` -> `src/Battlesport/player.cpp:2047`
-- `0x421ea0` `Player::CreateFromNamesAtPoseGetState` -> `src/Battlesport/player.cpp:2470`
-- `0x423460` `Player::ProcessPendingContactQueues` -> `src/Battlesport/player.cpp:8949`
-- `0x423530` `Player::ClearPendingContactQueues` -> `src/Battlesport/player.cpp:6676`
-- `0x4236b0` `Player::BuildPendingContactQueues` -> `src/Battlesport/player.cpp:8724`
-- `0x423b10` `Player::CollectPendingContactsForSegments` -> `src/Battlesport/player.cpp:7270`
-- `0x423c20` `Player::ClassifyPendingContactsForSegment` -> `src/Battlesport/player.cpp:7192`
-- `0x423fc0` `Player::SelectAndResolvePreferredPendingCollisionContact` -> `src/Battlesport/player.cpp:7500`
-- `0x424010` `PlayerPendingContact::SelectPreferred` -> `src/Battlesport/player.cpp:5195`
-- `0x424110` `Player::ResolvePendingWorldCollisionContact` -> `src/Battlesport/player.cpp:7578`
-- `0x424150` `PlayerPickupContact::PassesCollectionTest` -> `src/Battlesport/player.cpp:7354`
-- `0x424210` `Player::ProcessPendingPickupContacts` -> `src/Battlesport/player.cpp:7320`
-- `0x424270` `Player::ResolvePendingCollisionContact` -> `src/Battlesport/player.cpp:7629`
-- `0x4248e0` `Player::PreparePendingWorldCollisionResponse` -> `src/Battlesport/player.cpp:7520`
-- `0x424ac0` `Player::ResolvePendingPlayerCollisionContact` -> `src/Battlesport/player.cpp:7798`
-- `0x424bf0` `Player::Vec3_FastNormalize` -> `src/Battlesport/player.cpp:12066`
-- `0x424c90` `Player::ConstrainToUnitDistanceFrom` -> `src/Battlesport/player.cpp:12098`
-- `0x424d00` `Player::ProcessTransferContactQueue` -> `src/Battlesport/player.cpp:7853`
-- `0x424ed0` `Player::TryResolvePendingCollisionProbeSweep` -> `src/Battlesport/player.cpp:7464`
-- `0x425060` `HudSensorTracker::ParseCheckpointNumberFromNode` -> `src/Battlesport/player.cpp:5047`
-- `0x4251f0` `Player::CollectPendingCollisionContactsForQuadProbe` -> `src/Battlesport/player.cpp:7409`
-- `0x425770` `Player::ApplyPendingCollisionProbeVelocity` -> `src/Battlesport/player.cpp:9002`
-- `0x426350` `Player::FloatSign` -> `src/Battlesport/player.cpp:11981`
-- `0x426770` `Player::UpdateMasterTypeTrack` -> `src/Battlesport/player.cpp:12594`
-- `0x428c20` `Player::UpdateSubVerticalDamping` -> `src/Battlesport/player.cpp:12267`
-- `0x429430` `Player::ApplyPitchRollVelocityImpulseFromDirection` -> `src/Battlesport/player.cpp:7601`
-- `0x4294d0` `Player::RebuildSteerBasisFromMotionBasis` -> `src/Battlesport/player.cpp:10450`
-- `0x429560` `Player::RebuildSteerBasisFromMotionAxes` -> `src/Battlesport/player.cpp:10577`
-- `0x429870` `Player::UpdateYawVelocityFromSteerInput` -> `src/Battlesport/player.cpp:12311`
-- `0x429b40` `Player::UpdateBankAndTurnDynamics` -> `src/Battlesport/player.cpp:12018`
-- `0x429d30` `Player::ComputeTurnSlipDelta` -> `src/Battlesport/player.cpp:12114`
-- `0x429ed0` `Player::StartSlipSfx` -> `src/Battlesport/player.cpp:11997`
-- `0x429ef0` `Player::StopSlipSfx` -> `src/Battlesport/player.cpp:12009`
-- `0x42b970` `Player::RebuildMotionBasisFromSteerBasis` -> `src/Battlesport/player.cpp:10545`
-- `0x4385f0` `Player::StartModalLoopSfxHandle` -> `src/Battlesport/player.cpp:1793`
-- `0x43a4f0` `Player::UpdateGunAndTurretAimNodes` -> `src/Battlesport/player.cpp:15819`
-- `0x43a600` `Player::UpdateAltGunAimDirection` -> `src/Battlesport/player.cpp:15873`
-- `0x43b1b0` `Player::BuildGunFireTransform` -> `src/Battlesport/player.cpp:15715`
-- `0x43b3e0` `Player::UpdateAltGunAimBasisOrigin` -> `src/Battlesport/player.cpp:15778`
-- `0x43b500` `Player::ApplyAimPitchToDirection` -> `src/Battlesport/player.cpp:13594`
-- `0x43b730` `Player::RecordRecentHitFeedback` -> `src/Battlesport/player.cpp:7906`
-- `0x43b790` `Player::UpdateTimedHitStatusFromHitSource` -> `src/Battlesport/player.cpp:8314`
-- `0x43b800` `Player::ClearDestroyedRespawnEffectHandleCallback` -> `src/Battlesport/player.cpp:7934`
-- `0x43b810` `Player::HitCallback_RecordNetContextAndTimedStatus` -> `src/Battlesport/player.cpp:8343`
-- `0x43b870` `Player::HitCallback_RecordContextAndTimedStatus` -> `src/Battlesport/player.cpp:8484`
-- `0x43bcc0` `Player::EnterDestroyedState` -> `src/Battlesport/player.cpp:8141`
-- `0x43c010` `Player::ApplyDamageLocal` -> `src/Battlesport/player.cpp:8376`
+- `0x401060` `Player::TickAiMode2TopLevel` -> `src/Battlesport/player.cpp:5659`
+- `0x401180` `Player::TickAiMode2PathFollow` -> `src/Battlesport/player.cpp:5733`
+- `0x401420` `Player::AiMode2ForwardProbeRequiresAutoTurn` -> `src/Battlesport/player.cpp:5515`
+- `0x4016a0` `Player::AiChooseNextPathBranchIndex` -> `src/Battlesport/player.cpp:5560`
+- `0x401710` `Player::TickAiMode2SteeringSubstate` -> `src/Battlesport/player.cpp:5976`
+- `0x401970` `Player::UpdateAiMode2MoveAndTurnTowardTarget` -> `src/Battlesport/player.cpp:6091`
+- `0x401a40` `Player::TickAiMode2OffsetTargetSteering` -> `src/Battlesport/player.cpp:6473`
+- `0x401ab0` `Player::TickAiMode2DynamicOffsetTargetSteering` -> `src/Battlesport/player.cpp:6509`
+- `0x401b20` `Player::AiTryEnterMode2AttackPursuitIfLineOfSight` -> `src/Battlesport/player.cpp:5888`
+- `0x401c00` `Player::AiAlertAttackBuddies` -> `src/Battlesport/player.cpp:5867`
+- `0x401c60` `Player::AiEnterMode2SteeringPursuit` -> `src/Battlesport/player.cpp:5833`
+- `0x401d50` `Player::HasLineOfSightFromLocalPlayerFxOffset` -> `src/Battlesport/player.cpp:13541`
+- `0x402080` `Player::AiRestoreSavedTopLevelState` -> `src/Battlesport/player.cpp:6545`
+- `0x402090` `Player::UpdateAiMode2TurnTowardPlayerNoThrottle` -> `src/Battlesport/player.cpp:6120`
+- `0x402170` `Player::UpdateAiMode2TurnInPlaceTowardPlayer` -> `src/Battlesport/player.cpp:6152`
+- `0x402250` `Player::TickAiMode2AltGunAttackWindow` -> `src/Battlesport/player.cpp:6184`
+- `0x4024a0` `Player::SolveAltGunLeadTargetPoint` -> `src/Battlesport/player.cpp:6276`
+- `0x4026d0` `Player::UpdateAiMode2MoveAndTurnTowardOffsetTarget` -> `src/Battlesport/player.cpp:6331`
+- `0x4028c0` `Player::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget` -> `src/Battlesport/player.cpp:6393`
+- `0x402b70` `Player::TickAiMode2TimedPathSteering` -> `src/Battlesport/player.cpp:6656`
+- `0x402be0` `Player::AiSteerTowardPathNodeForward` -> `src/Battlesport/player.cpp:6554`
+- `0x402d60` `Player::AiSteerTowardPathNodeReverse` -> `src/Battlesport/player.cpp:6603`
+- `0x402f10` `Player::AiFinalizeMode2State1ForAllPlayers` -> `src/Battlesport/player.cpp:9287`
+- `0x403830` `Player::AiDiscardNegativeBranchPathNodes` -> `src/Battlesport/player.cpp:5499`
+- `0x41bab0` `Player::UpdateGunDispatchRequestsFromTriggerLatches` -> `src/Battlesport/player.cpp:5470`
+- `0x41bb30` `Player::DestroyedStateRespawnCallback` -> `src/Battlesport/player.cpp:8053`
+- `0x41bd10` `Player::ClearRespawnTransitionFlagCallback` -> `src/Battlesport/player.cpp:8045`
+- `0x41eaf0` `Player::InitAndRegisterUnderwaterFxPass3UiSingleton` -> `src/Battlesport/player.cpp:2133`
+- `0x41eb00` `Player::InitUnderwaterFxPass3UiSingleton` -> `src/Battlesport/player.cpp:2140`
+- `0x41eb10` `Player::RegisterUnderwaterFxPass3UiOnExit` -> `src/Battlesport/player.cpp:2146`
+- `0x41eb20` `Player::ResetUnderwaterFxPass3UiSingleton` -> `src/Battlesport/player.cpp:2152`
+- `0x41eb50` `Player::InitAndRegisterProjectileCameraFxPass3UiSingleton` -> `src/Battlesport/player.cpp:2157`
+- `0x41eb60` `Player::InitProjectileCameraFxPass3UiSingleton` -> `src/Battlesport/player.cpp:2164`
+- `0x41eb70` `Player::RegisterProjectileCameraFxPass3UiCleanup` -> `src/Battlesport/player.cpp:2170`
+- `0x41eb80` `Player::ResetProjectileCameraFxPass3UiSingleton` -> `src/Battlesport/player.cpp:2176`
+- `0x41ec30` `Player::InitAndRegisterTopMsgPanel1` -> `src/Battlesport/player.cpp:2195`
+- `0x41ec40` `Player_TopMsgPanel1::Constructor` -> `src/Battlesport/player.cpp:2041`
+- `0x41ec60` `Player::RegisterTopMsgPanel1OnExit` -> `src/Battlesport/player.cpp:2202`
+- `0x41ec70` `Player_TopMsgPanel1::Destructor` -> `src/Battlesport/player.cpp:2051`
+- `0x421ea0` `Player::CreateFromNamesAtPoseGetState` -> `src/Battlesport/player.cpp:2474`
+- `0x423460` `Player::ProcessPendingContactQueues` -> `src/Battlesport/player.cpp:8953`
+- `0x423530` `Player::ClearPendingContactQueues` -> `src/Battlesport/player.cpp:6680`
+- `0x4236b0` `Player::BuildPendingContactQueues` -> `src/Battlesport/player.cpp:8728`
+- `0x423b10` `Player::CollectPendingContactsForSegments` -> `src/Battlesport/player.cpp:7274`
+- `0x423c20` `Player::ClassifyPendingContactsForSegment` -> `src/Battlesport/player.cpp:7196`
+- `0x423fc0` `Player::SelectAndResolvePreferredPendingCollisionContact` -> `src/Battlesport/player.cpp:7504`
+- `0x424010` `PlayerPendingContact::SelectPreferred` -> `src/Battlesport/player.cpp:5199`
+- `0x424110` `Player::ResolvePendingWorldCollisionContact` -> `src/Battlesport/player.cpp:7582`
+- `0x424150` `PlayerPickupContact::PassesCollectionTest` -> `src/Battlesport/player.cpp:7358`
+- `0x424210` `Player::ProcessPendingPickupContacts` -> `src/Battlesport/player.cpp:7324`
+- `0x424270` `Player::ResolvePendingCollisionContact` -> `src/Battlesport/player.cpp:7633`
+- `0x4248e0` `Player::PreparePendingWorldCollisionResponse` -> `src/Battlesport/player.cpp:7524`
+- `0x424ac0` `Player::ResolvePendingPlayerCollisionContact` -> `src/Battlesport/player.cpp:7802`
+- `0x424bf0` `Player::Vec3_FastNormalize` -> `src/Battlesport/player.cpp:12070`
+- `0x424c90` `Player::ConstrainToUnitDistanceFrom` -> `src/Battlesport/player.cpp:12102`
+- `0x424d00` `Player::ProcessTransferContactQueue` -> `src/Battlesport/player.cpp:7857`
+- `0x424ed0` `Player::TryResolvePendingCollisionProbeSweep` -> `src/Battlesport/player.cpp:7468`
+- `0x425060` `HudSensorTracker::ParseCheckpointNumberFromNode` -> `src/Battlesport/player.cpp:5051`
+- `0x4251f0` `Player::CollectPendingCollisionContactsForQuadProbe` -> `src/Battlesport/player.cpp:7413`
+- `0x425770` `Player::ApplyPendingCollisionProbeVelocity` -> `src/Battlesport/player.cpp:9006`
+- `0x426350` `Player::FloatSign` -> `src/Battlesport/player.cpp:11985`
+- `0x426770` `Player::UpdateMasterTypeTrack` -> `src/Battlesport/player.cpp:12598`
+- `0x428c20` `Player::UpdateSubVerticalDamping` -> `src/Battlesport/player.cpp:12271`
+- `0x429430` `Player::ApplyPitchRollVelocityImpulseFromDirection` -> `src/Battlesport/player.cpp:7605`
+- `0x4294d0` `Player::RebuildSteerBasisFromMotionBasis` -> `src/Battlesport/player.cpp:10454`
+- `0x429560` `Player::RebuildSteerBasisFromMotionAxes` -> `src/Battlesport/player.cpp:10581`
+- `0x429870` `Player::UpdateYawVelocityFromSteerInput` -> `src/Battlesport/player.cpp:12315`
+- `0x429b40` `Player::UpdateBankAndTurnDynamics` -> `src/Battlesport/player.cpp:12022`
+- `0x429d30` `Player::ComputeTurnSlipDelta` -> `src/Battlesport/player.cpp:12118`
+- `0x429ed0` `Player::StartSlipSfx` -> `src/Battlesport/player.cpp:12001`
+- `0x429ef0` `Player::StopSlipSfx` -> `src/Battlesport/player.cpp:12013`
+- `0x42b970` `Player::RebuildMotionBasisFromSteerBasis` -> `src/Battlesport/player.cpp:10549`
+- `0x4385f0` `Player::StartModalLoopSfxHandle` -> `src/Battlesport/player.cpp:1797`
+- `0x43a4f0` `Player::UpdateGunAndTurretAimNodes` -> `src/Battlesport/player.cpp:15823`
+- `0x43a600` `Player::UpdateAltGunAimDirection` -> `src/Battlesport/player.cpp:15877`
+- `0x43b1b0` `Player::BuildGunFireTransform` -> `src/Battlesport/player.cpp:15719`
+- `0x43b3e0` `Player::UpdateAltGunAimBasisOrigin` -> `src/Battlesport/player.cpp:15782`
+- `0x43b500` `Player::ApplyAimPitchToDirection` -> `src/Battlesport/player.cpp:13598`
+- `0x43b730` `Player::RecordRecentHitFeedback` -> `src/Battlesport/player.cpp:7910`
+- `0x43b790` `Player::UpdateTimedHitStatusFromHitSource` -> `src/Battlesport/player.cpp:8318`
+- `0x43b800` `Player::ClearDestroyedRespawnEffectHandleCallback` -> `src/Battlesport/player.cpp:7938`
+- `0x43b810` `Player::HitCallback_RecordNetContextAndTimedStatus` -> `src/Battlesport/player.cpp:8347`
+- `0x43b870` `Player::HitCallback_RecordContextAndTimedStatus` -> `src/Battlesport/player.cpp:8488`
+- `0x43bcc0` `Player::EnterDestroyedState` -> `src/Battlesport/player.cpp:8145`
+- `0x43c010` `Player::ApplyDamageLocal` -> `src/Battlesport/player.cpp:8380`
 
 ## src/zin_ff.cpp
 
@@ -2328,16 +2326,16 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x41c4a0` `HudUiNumericTextInput::ScalarDeletingDestructorThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:15093`
 - `0x41c4c0` `HudUiZrdWidgetEx17C::ScalarDeletingDestructorThunk` -> `src/GameZRecoil/zHud/zhud_ui.cpp:10537`
 - `0x41cca0` `PickupTypeTable::FreeOptMeta` -> `src/Battlesport/pickup.cpp:2301`
-- `0x41eb30` `Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui` -> `src/Battlesport/player.cpp:1959`
-- `0x41eb90` `Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui` -> `src/Battlesport/player.cpp:1975`
-- `0x41ec00` `Player::InitSaveStateList` -> `src/Battlesport/player.cpp:2178`
+- `0x41eb30` `Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui` -> `src/Battlesport/player.cpp:1963`
+- `0x41eb90` `Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui` -> `src/Battlesport/player.cpp:1979`
+- `0x41ec00` `Player::InitSaveStateList` -> `src/Battlesport/player.cpp:2182`
 - `0x420be0` `zReader::LoadMoversFromZrd` -> `src/GameZRecoil/zReader/zreader_load.cpp:1688`
-- `0x420d10` `Player::InitStateFromNameAndMasterCommonData` -> `src/Battlesport/player.cpp:2978`
+- `0x420d10` `Player::InitStateFromNameAndMasterCommonData` -> `src/Battlesport/player.cpp:2982`
 - `0x421da0` `zClass_Node::PropagateExtraFlagsRecursive` -> `src/GameZRecoil/zClass/Class.c:2619`
 - `0x421e20` `zReader::BuildResolvedParentDir` -> `src/GameZRecoil/zReader/zreader_load.cpp:1601`
-- `0x423440` `Player_UnderwaterFxPass3Ui::ApplyBlueTint` -> `src/Battlesport/player.cpp:1991`
-- `0x423450` `Player_ProjectileCameraFxPass3Ui::ApplyGreenMask` -> `src/Battlesport/player.cpp:2000`
-- `0x425a20` `Player::TickLocalPlayerControls` -> `src/Battlesport/player.cpp:10068`
+- `0x423440` `Player_UnderwaterFxPass3Ui::ApplyBlueTint` -> `src/Battlesport/player.cpp:1995`
+- `0x423450` `Player_ProjectileCameraFxPass3Ui::ApplyGreenMask` -> `src/Battlesport/player.cpp:2004`
+- `0x425a20` `Player::TickLocalPlayerControls` -> `src/Battlesport/player.cpp:10072`
 - `0x429f10` `zInput::BindGroupList_StaticInitAndRegisterAtExit` -> `src/GameZRecoil/zInput/zInput.cpp:736`
 - `0x429f20` `zInput::BindGroupListStaticInit` -> `src/GameZRecoil/zInput/zInput.cpp:706`
 - `0x429f40` `zInput::BindGroupListRegisterAtExit` -> `src/GameZRecoil/zInput/zInput.cpp:728`
@@ -2355,7 +2353,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x42a500` `zInput::BindMap_AddDefaultBinding` -> `src/GameZRecoil/zInput/zInput.cpp:1915`
 - `0x42a550` `zInput::BindMap_InitDefaultBindings` -> `src/GameZRecoil/zInput/zInput.cpp:1939`
 - `0x42a9d0` `zInput_BindGroupInfoVec::Count` -> `src/GameZRecoil/zInput/zInput.cpp:679`
-- `0x42aa40` `Player::GetSaveStateListHead` -> `src/Battlesport/player.cpp:2872`
+- `0x42aa40` `Player::GetSaveStateListHead` -> `src/Battlesport/player.cpp:2876`
 - `0x42db50` `zCom::QueryInterfaceFromInterfaceMap` -> `src/GameZRecoil/zCom/zCom.cpp:24`
 - `0x42dc30` `zCom::ConnectionPointContainer_Advise` -> `src/GameZRecoil/zCom/zCom.cpp:90`
 - `0x42dcf0` `zCom::ConnectionPointContainer_Unadvise` -> `src/GameZRecoil/zCom/zCom.cpp:126`
@@ -2496,16 +2494,17 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4383e0` `zUtil_SaveGameStateList_Init` -> `src/GameZRecoil/zUtil/zSaveGame.cpp:11`
 - `0x438430` `zUtil_SaveGameState::FreeOwnedResources` -> `src/GameZRecoil/zUtil/zSaveGame.cpp:77`
 - `0x4384e0` `zUtil_SaveGameStateList_AllocAppend` -> `src/GameZRecoil/zUtil/zSaveGame.cpp:40`
+- `0x4385a0` `Player::StartMasterTypeLoopSfxHandle` -> `src/Battlesport/player.cpp:1758`
 - `0x438980` `RecoilVersion::GetString` -> `src/Battlesport/RecoilVersion.cpp:5`
 - `0x438b10` `PickupAirdropSpawnRef::ShutdownGlobal` -> `src/Battlesport/pickup.cpp:390`
-- `0x438b60` `Player::FreeAltWeaponTrailRuntimeStates` -> `src/Battlesport/player.cpp:11699`
-- `0x438ba0` `Player::LoadWeaponBanksAndSelectDefaults` -> `src/Battlesport/player.cpp:11722`
-- `0x4390d0` `Player::CacheGunHardpointsAndDetachDisplays` -> `src/Battlesport/player.cpp:2931`
-- `0x439540` `Player::ApplyAltWeaponSwitch` -> `src/Battlesport/player.cpp:13020`
-- `0x439600` `Player::ApplyPrimaryWeaponSwitch` -> `src/Battlesport/player.cpp:12975`
-- `0x43ca90` `Player::CheckMissionWeaponAvailability` -> `src/Battlesport/player.cpp:11936`
-- `0x43cc70` `Player::WriteMinesZarSection` -> `src/Battlesport/player.cpp:11310`
-- `0x43cdf0` `Player::Mines_ZAR_ReadEntryOrReset` -> `src/Battlesport/player.cpp:11260`
+- `0x438b60` `Player::FreeAltWeaponTrailRuntimeStates` -> `src/Battlesport/player.cpp:11703`
+- `0x438ba0` `Player::LoadWeaponBanksAndSelectDefaults` -> `src/Battlesport/player.cpp:11726`
+- `0x4390d0` `Player::CacheGunHardpointsAndDetachDisplays` -> `src/Battlesport/player.cpp:2935`
+- `0x439540` `Player::ApplyAltWeaponSwitch` -> `src/Battlesport/player.cpp:13024`
+- `0x439600` `Player::ApplyPrimaryWeaponSwitch` -> `src/Battlesport/player.cpp:12979`
+- `0x43ca90` `Player::CheckMissionWeaponAvailability` -> `src/Battlesport/player.cpp:11940`
+- `0x43cc70` `Player::WriteMinesZarSection` -> `src/Battlesport/player.cpp:11314`
+- `0x43cdf0` `Player::Mines_ZAR_ReadEntryOrReset` -> `src/Battlesport/player.cpp:11264`
 - `0x43ce80` `NetUi::VerifyWinsock2OrPromptContinue` -> `src/Battlesport/NetUi.cpp:11`
 - `0x43d130` `WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig` -> `src/Battlesport/WestwoodOnlineUpgradeApi.cpp:390`
 - `0x43d280` `WestwoodOnlineUpgradeApi::Shutdown` -> `src/Battlesport/WestwoodOnlineUpgradeApi.cpp:459`
@@ -3740,6 +3739,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4ad250` `zVideo_dd3d::FlushOverwritePolys` -> `src/GameZRecoil/zVideo/zVideo.cpp:8984`
 - `0x4ad680` `zVideo_dd3d::FloorPowerOfTwo` -> `src/GameZRecoil/zVideo/zVideo.cpp:9245`
 - `0x4ad6a0` `zVideo_dd::ReportError` -> `src/GameZRecoil/zVideo/zVideo.cpp:11973`
+- `0x4aefb0` `OptCatalog::DeactivateTrailRuntimeState` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2119`
 - `0x4b1090` `zWepInit` -> `src/GameZRecoil/zWeapon/zWeapon.cpp:39`
 - `0x4b1140` `zWeapon::OnWeaponsSectionPreLoad` -> `src/GameZRecoil/zWeapon/zWeapon.cpp:84`
 - `0x4b1160` `zWeapon::OnWeaponsSectionDataReady` -> `src/GameZRecoil/zWeapon/zWeapon.cpp:104`
@@ -3759,7 +3759,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4b2630` `zClass_Node::ClearDamageHandler` -> `src/GameZRecoil/zClass/Class.c:2839`
 - `0x4b2670` `zClass_Node::ClearDamageHandlerRecursive` -> `src/GameZRecoil/zClass/Class.c:2792`
 - `0x4b26b0` `zClass_Node::SetDamageTimerCallback` -> `src/GameZRecoil/zClass/Class.c:2863`
-- `0x4b2880` `OptCatalog::CaptureHitSnapshotAndInvokeDamageTimerCallback` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2423`
+- `0x4b2880` `OptCatalog::CaptureHitSnapshotAndInvokeDamageTimerCallback` -> `src/GameZRecoil/zWeapon/OptCatalog.c:2427`
 - `0x4b2960` `zGame::Options_LoadFromRegistry` -> `src/GameZRecoil/zGame/zGame.cpp:465`
 - `0x4b2bf0` `zGame::Options_SaveToRegistry` -> `src/GameZRecoil/zGame/zGame.cpp:579`
 - `0x4b2e80` `zGame::Options_GetOrCreateOption` -> `src/GameZRecoil/zGame/zGame.cpp:396`

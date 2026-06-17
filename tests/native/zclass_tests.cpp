@@ -398,6 +398,36 @@ extern "C" int zclass_object3d_init_smoke() {
     return result;
 }
 
+extern "C" int zclass_object3d_alpha_scale_and_lit_smoke() {
+    zClass_Object3DDataPartial data = {};
+    zClass_NodePartial node = {};
+    node.classId = 5;
+    node.classData = &data;
+
+    if (zClass_Object3D::gwObject3DSetAlphaScale(&node, 0.375f) != 0) {
+        return 1;
+    }
+
+    float alphaScale = 0.0f;
+    if (zClass_Object3D::gwObject3DGetAlphaScale(&node, &alphaScale) != 0 ||
+        alphaScale != 0.375f) {
+        return 2;
+    }
+
+    if (zClass_Object3D::gwObject3DSetLitFlag(&node, 1) != 0 ||
+        (data.flags & 2) == 0) {
+        return 3;
+    }
+    if (zClass_Object3D::gwObject3DSetLitFlag(&node, 0) != 0 ||
+        (data.flags & 2) != 0) {
+        return 4;
+    }
+
+    zClass_NodePartial nullDataNode = {};
+    nullDataNode.classId = 5;
+    return zClass_Object3D::gwObject3DGetAlphaScale(&nullDataNode, &alphaScale) == 5 ? 0 : 5;
+}
+
 extern "C" int zclass_object3d_transform_getters_smoke() {
     zClass_Object3DDataPartial data{};
     data.rotation = {1.0f, 2.0f, 3.0f};

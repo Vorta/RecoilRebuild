@@ -5184,15 +5184,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x44de80:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DSetLitFlag)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Object3D::gwObject3DSetLitFlag;
     - File: src/GameZRecoil/zClass/Object3d.c;
     - Target: zclass_object3d_set_lit_flag;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x44df00:
   - [☑️] Reconstructed (Name: zClass_Object3D::gwObject3DSetScale)
@@ -6913,15 +6913,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x453400:
   - [☑️] Reconstructed (Name: zClass_Light::gwLightSetRange)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: zClass_LightDataPartial/zClass_Light Light.c record-source cluster; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Light::gwLightSetRange;
     - File: src/GameZRecoil/zClass/Light.c;
     - Target: zclass_light_set_range;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x453500:
   - [✅] Reconstructed (Name: zClass_Light::gwLightGetRange)
@@ -7057,8 +7057,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: Light::ReturnToFreeList)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Light::ReturnToFreeList;
     - File: src/GameZRecoil/zClass/Light.c;
     - Target: light_return_to_free_list;
@@ -26706,15 +26706,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4aefb0:
   - [✅] Reconstructed (Name: OptCatalog::DeactivateTrailRuntimeState)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zWeapon; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zWeapon; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::DeactivateTrailRuntimeState;
     - File: src/GameZRecoil/zWeapon/OptCatalog.c;
     - Target: optcatalog_deactivate_trail_runtime_state;
     - Group: engine.zweapon;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4af060:
   - [☑️] Reconstructed (Name: OptCatalog::ProcessRuntimeInstances)
@@ -27031,15 +27031,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b1ec0:
   - [✅] Reconstructed (Name: OptCatalog::CreateTrailRuntimeState)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zWeapon; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zWeapon; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::CreateTrailRuntimeState;
     - File: src/GameZRecoil/zWeapon/OptCatalog.c;
     - Target: optcatalog_create_trail_runtime_state;
     - Group: engine.zweapon;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b1f90:
   - [✅] Reconstructed (Name: OptCatalog::FreeTrailRuntimeStateStorage)
@@ -29416,15 +29416,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4385a0:
   - [✅] Reconstructed (Name: Player::StartMasterTypeLoopSfxHandle)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: Player; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: Player; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zUtil_SaveGameState::StartMasterTypeLoopSfxHandle;
     - File: src/Battlesport/player.cpp;
     - Target: player_start_master_type_loop_sfx_handle;
     - Group: battlesport.player;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x438b60:
   - [✅] Reconstructed (Name: Player::FreeAltWeaponTrailRuntimeStates)
@@ -30924,15 +30924,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x439540:
   - [✅] Reconstructed (Name: Player::ApplyAltWeaponSwitch)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: Player; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: Player; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Player::ApplyAltWeaponSwitch;
     - File: src/Battlesport/player.cpp;
     - Target: player_apply_alt_weapon_switch;
     - Group: battlesport.player;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x439600:
   - [✅] Reconstructed (Name: Player::ApplyPrimaryWeaponSwitch)
@@ -31327,15 +31327,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x43ca90:
   - [☑️] Reconstructed (Name: Player::CheckMissionWeaponAvailability)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: Player; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: Player; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Player::CheckMissionWeaponAvailability;
     - File: src/Battlesport/player.cpp;
     - Target: player_check_mission_weapon_availability;
     - Group: battlesport.player;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x43cc70:
   - [✅] Reconstructed (Name: Player::WriteMinesZarSection)

@@ -2115,8 +2115,12 @@ namespace OptCatalog {
         free(trailRuntimeState);
     }
 
-    // Reimplements 0x4aefb0: OptCatalog::DeactivateTrailRuntimeState
-    // (D:\Proj\Battlesport\OptCatalog.cpp)
+    /**
+     * Reimplements 0x4aefb0: OptCatalog::DeactivateTrailRuntimeState
+     * (D:\Proj\Battlesport\OptCatalog.cpp).
+     * Purpose: stop trail runtime resources, unlink the active trail state,
+     * return any glow light, and deactivate live trail segment nodes.
+     */
     int __fastcall DeactivateTrailRuntimeState(
         OptCatalogTrailRuntimeState * trailRuntimeState
     ) {

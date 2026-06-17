@@ -632,6 +632,52 @@ extern "C" int player_apply_primary_weapon_switch_smoke(void) {
                : 2;
 }
 
+extern "C" int player_start_master_type_loop_sfx_handle_smoke(void) {
+    TestDirectSoundBufferVTable vtable = {};
+    vtable.GetStatus = &TestDirectSoundGetStatus;
+    vtable.Play = &TestDirectSoundPlay;
+    vtable.SetCurrentPosition = &TestDirectSoundSetInt;
+    vtable.SetVolume = &TestDirectSoundSetInt;
+    TestDirectSoundBuffer directSoundBuffer = {&vtable};
+
+    float globalVolume = 1.0f;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolume;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_MuteDepth = 0;
+    g_zSnd_Flag10PlaybackEnabled = 1;
+
+    zSndSample sample = {};
+    sample.replayFields.flags = 8;
+    sample.replayFields.gain = 0.5f;
+    sample.markerBaseTime = 12.0f;
+    sample.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+
+    PlayerMasterCommonData commonData = {};
+    commonData.sfxWeaponUp[3] = &sample;
+    zUtil_PlayerStateStorage playerState = {};
+    playerState.masterCommonData = &commonData;
+    playerState.worldPos = {2.0f, 3.0f, 4.0f};
+    zUtil_SaveGameState saveState = {};
+    saveState.playerState = &playerState;
+
+    zSndPlayHandle *const handle = saveState.StartMasterTypeLoopSfxHandle(3, 0.25f);
+
+    g_zSnd_GlobalVolumeScalePtr = nullptr;
+    g_zSnd_IsInitialized = 0;
+    g_zSnd_PreInitialized = 0;
+
+    if (handle == nullptr || handle != &sample.primaryVoice) {
+        return 1;
+    }
+    if (playerState.modeLoopSfxHandle[3] != handle || sample.primaryVoice.ownerSample != &sample) {
+        return 2;
+    }
+
+    return sample.markerBaseTime == 0.0f ? 0 : 3;
+}
+
 extern "C" int player_apply_alt_weapon_switch_smoke(void) {
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
     void *const oldVolumeScalePtr = g_zSnd_GlobalVolumeScalePtr;
