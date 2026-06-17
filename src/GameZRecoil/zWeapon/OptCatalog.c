@@ -2105,7 +2105,12 @@ namespace OptCatalog {
         return 0;
     }
 
-    // Reimplements 0x4b1f90: OptCatalog::FreeTrailRuntimeStateStorage
+    /**
+     * Reimplements 0x4b1f90: OptCatalog::FreeTrailRuntimeStateStorage
+     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+     * Purpose: release trail runtime-state storage owned by player and
+     * turret cleanup paths.
+     */
     void __fastcall FreeTrailRuntimeStateStorage(void *trailRuntimeState) {
         free(trailRuntimeState);
     }
