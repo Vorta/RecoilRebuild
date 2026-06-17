@@ -658,6 +658,7 @@ struct HudUiBackgroundContainer : HudUiContainer {
 
     HudUiBackgroundContainer(int initFlag);
     ~HudUiBackgroundContainer();
+    virtual void UpdateAll(float deltaSeconds);
     virtual void SetEnabled(int enabled);
     void SetInputFocus(HudUiElement *element);
     HudUiElement * GetInputFocus();
@@ -2118,7 +2119,7 @@ struct HudUiBackground : HudUiBackgroundContainer {
     );
     void FreeLoadedTreeRoots(int unused);
     virtual HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
-    virtual void Update(float deltaSeconds);
+    void Update(float deltaSeconds);
 };
 
 struct HudCmdSimpleWidget : HudUiZrdWidget {
