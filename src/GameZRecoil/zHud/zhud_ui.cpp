@@ -7783,15 +7783,17 @@ void HudUiBackground::FreeLoadedTreeRoots(
 }
 
 /**
- * Reimplements 0x4bc570: HudUiBackground::Update.
+ * Reimplements 0x4bc570: HudUiBackgroundContainer::UpdateAll.
  * Purpose: Dispatch background mouse input, update child widgets, and move the focus cursor.
  */
-void HudUiBackground::Update(
+void HudUiBackgroundContainer::UpdateAll(
     float deltaSeconds
 ) {
     if (enabled == 0) {
         return;
     }
+
+    HudUiBackground *const background = (HudUiBackground *)this;
 
     memcpy(
         &mouseState,
@@ -7807,7 +7809,7 @@ void HudUiBackground::Update(
         const int hovered = hit == 1 ? 1 : 0;
 
         if (widget->ShouldHandleInput(
-            this,
+            background,
             hovered
         ) != 0) {
             if ((mouseState.button2Transition & 4) != 0 && (widget->state & 2) == 2) {
@@ -7869,7 +7871,7 @@ void HudUiBackground::Update(
         }
 
         widget->AfterInputUpdate(
-            this,
+            background,
             hovered
         );
     }
@@ -7879,7 +7881,7 @@ void HudUiBackground::Update(
         focusBeforeUpdate->DrawBase();
     }
 
-    UpdateAll(deltaSeconds);
+    HudUiContainer::UpdateAll(deltaSeconds);
 
     HudUiElement *const focusAfterUpdate = inputFocusElement;
     if (focusAfterUpdate != 0) {
@@ -7889,6 +7891,19 @@ void HudUiBackground::Update(
         );
         focusAfterUpdate->Update(deltaSeconds);
     }
+}
+
+/**
+ * Compatibility helper: HudUiBackground::Update.
+ * No standalone retail function exists after the background update routine is
+ * modeled as the HudUiBackgroundContainer slot-0 override at 0x4bc570.
+ * Purpose: preserve existing direct source calls without adding a trailing
+ * virtual slot to HudUiBackground.
+ */
+void HudUiBackground::Update(
+    float deltaSeconds
+) {
+    HudUiBackgroundContainer::UpdateAll(deltaSeconds);
 }
 
 // Reimplements 0x4ba4a0: HudFontStyle::HudFontStyle

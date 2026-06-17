@@ -40909,12 +40909,12 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Blocker: none
 
 - 0x4bc570:
-  - [✅] Reconstructed (Name: HudUiBackground::Update)
+  - [✅] Reconstructed (Name: HudUiBackgroundContainer::UpdateAll)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiBackground; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: HudUiBackgroundContainer; State: implemented)
   - [❎] Data reimplemented
   - [✅] Reimplemented [B]
-    - Name: HudUiBackground::Update;
+    - Name: HudUiBackgroundContainer::UpdateAll;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_background_update;
     - Group: ui.zhud;
@@ -42004,14 +42004,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [☑️] Reconstructed (Name: HudUiNetGameSetupPanel::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiNetGameSetupPanel::Constructor;
     - File: src/Battlesport/HudUiNetGameSetup.cpp;
     - Target: hud_ui_net_game_setup_panel_constructor;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: Data gate now narrowed to 0x4cf138 HudUiNetGameSetupPanel vftable relocation identity: VC5 emits ??_7HudUiNetGameSetupPanel@@6B@ with zero unmasked bytes after relocation masking, but slot identity still reflects the broader HudUiContainer/HudUiBackground virtual model mismatch. Child-widget vtables and setup literals are locally evidenced.
+    - Blocker: none
 
 - 0x41a160:
   - [✅] Reconstructed (Name: HudUiNetGameSetupPanel_CancelButton::OnActivate)
