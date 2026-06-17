@@ -9,8 +9,11 @@ zZbdManager *g_zUtil_ZbdManager = 0;
 }
 
 namespace zUtil {
-// Reimplements 0x4c0030: zUtil::ZBD_LoadEntriesGlobal
-// (D:\Proj\GameZRecoil\zUtil\zutl_zar.cpp)
+/**
+ * Reimplements 0x4c0030: zUtil::ZBD_LoadEntriesGlobal
+ * (D:\Proj\GameZRecoil\zUtil\zutl_zar.cpp).
+ * Purpose: load ZBD entries through the active global ZBD manager when present.
+ */
 int __fastcall ZBD_LoadEntriesGlobal(
     const char *filename
 ) {
@@ -22,8 +25,11 @@ int __fastcall ZBD_LoadEntriesGlobal(
     return manager->LoadEntries(filename);
 }
 
-// Reimplements 0x4c0050: zUtil::ZAR_LoadFileGlobal
-// (D:\Proj\GameZRecoil\zUtil\zutl_zar.cpp)
+/**
+ * Reimplements 0x4c0050: zUtil::ZAR_LoadFileGlobal
+ * (D:\Proj\GameZRecoil\zUtil\zutl_zar.cpp).
+ * Purpose: load a ZAR file through the active global ZBD manager when present.
+ */
 int __fastcall ZAR_LoadFileGlobal(
     const char *filepath
 ) {
@@ -35,8 +41,11 @@ int __fastcall ZAR_LoadFileGlobal(
     return manager->LoadZarFile(filepath);
 }
 
-// Reimplements 0x4c0070: zUtil::ZAR_RequestStopGlobal
-// (D:\Proj\GameZRecoil\zUtil\zutl_zar.cpp)
+/**
+ * Reimplements 0x4c0070: zUtil::ZAR_RequestStopGlobal
+ * (D:\Proj\GameZRecoil\zUtil\zutl_zar.cpp).
+ * Purpose: request cooperative ZAR loading stop through the active manager.
+ */
 void ZAR_RequestStopGlobal() {
     zZbdManager *const manager = g_zUtil_ZbdManager;
     if (manager != 0) {
@@ -44,7 +53,11 @@ void ZAR_RequestStopGlobal() {
     }
 }
 
-// Reimplements 0x4c0100: zUtil::ZBD_Init
+/**
+ * Reimplements 0x4c0100: zUtil::ZBD_Init
+ * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp).
+ * Purpose: allocate and initialize the global ZBD manager and handler sentinel.
+ */
 int ZBD_Init() {
     zZbdManager *manager = new zZbdManager;
     if (manager != 0) {
@@ -66,7 +79,11 @@ int ZBD_Init() {
     return 0;
 }
 
-// Reimplements 0x4c0180: zUtil::ZBD_DestroyGlobalManager
+/**
+ * Reimplements 0x4c0180: zUtil::ZBD_DestroyGlobalManager
+ * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp).
+ * Purpose: destroy and clear the active global ZBD manager.
+ */
 void ZBD_DestroyGlobalManager() {
     zZbdManager *const manager = g_zUtil_ZbdManager;
     if (manager == 0) {
@@ -79,8 +96,11 @@ void ZBD_DestroyGlobalManager() {
 }
 } // namespace zUtil
 
-// Reimplements 0x4c0260: zZbdSectionHandler::CompareSortOrderLessThan
-// (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp)
+/**
+ * Reimplements 0x4c0260: zZbdSectionHandler::CompareSortOrderLessThan
+ * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp).
+ * Purpose: compare section handlers by ascending sort order.
+ */
 bool __fastcall zZbdSectionHandler::CompareSortOrderLessThan(
     const zZbdSectionHandler *nodeA,
     const zZbdSectionHandler *nodeB
@@ -88,8 +108,11 @@ bool __fastcall zZbdSectionHandler::CompareSortOrderLessThan(
     return nodeA->sortOrder < nodeB->sortOrder;
 }
 
-// Reimplements 0x4c0b70: zZbdSectionHandlerList::Constructor
-// (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support)
+/**
+ * Reimplements 0x4c0b70: zZbdSectionHandlerList::Constructor
+ * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support).
+ * Purpose: initialize an empty section-handler list with a sentinel node.
+ */
 void zZbdSectionHandlerList::Constructor() {
     allocatorByte = 0;
     sentinel = new zZbdSectionHandlerNode;
@@ -98,16 +121,22 @@ void zZbdSectionHandlerList::Constructor() {
     count = 0;
 }
 
-// Reimplements 0x4c0b60: zZbdSectionHandlerList::Front
-// (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support)
+/**
+ * Reimplements 0x4c0b60: zZbdSectionHandlerList::Front
+ * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support).
+ * Purpose: return an iterator to the first section-handler list node.
+ */
 void zZbdSectionHandlerList::Front(
     zZbdSectionHandlerNode **outIter
 ) {
     *outIter = sentinel->next;
 }
 
-// Reimplements 0x4c0ba0: zZbdSectionHandlerList::Swap
-// (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support)
+/**
+ * Reimplements 0x4c0ba0: zZbdSectionHandlerList::Swap
+ * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support).
+ * Purpose: exchange sentinels and counts for two handler lists.
+ */
 void zZbdSectionHandlerList::Swap(
     zZbdSectionHandlerList *other
 ) {
@@ -120,8 +149,11 @@ void zZbdSectionHandlerList::Swap(
     other->count = oldCount;
 }
 
-// Reimplements 0x4c0ce0: zZbdSectionHandlerList::SpliceThreeNodes
-// (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support)
+/**
+ * Reimplements 0x4c0ce0: zZbdSectionHandlerList::SpliceThreeNodes
+ * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support).
+ * Purpose: splice a node range before the requested list position.
+ */
 void zZbdSectionHandlerList::SpliceThreeNodes(
     zZbdSectionHandlerNode *position,
     zZbdSectionHandlerList *source,
@@ -143,8 +175,11 @@ void zZbdSectionHandlerList::SpliceThreeNodes(
     position->prev = lastPrev;
 }
 
-// Reimplements 0x4c0bd0: zZbdSectionHandlerList::Merge
-// (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support)
+/**
+ * Reimplements 0x4c0bd0: zZbdSectionHandlerList::Merge
+ * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp; MSVC 5.0 STL list support).
+ * Purpose: merge another sorted handler list into this list.
+ */
 void zZbdSectionHandlerList::Merge(
     zZbdSectionHandlerList *source
 ) {
@@ -185,7 +220,11 @@ void zZbdSectionHandlerList::Merge(
     source->count = 0;
 }
 
-// Reimplements 0x4c01b0: zZbdManager::Destroy
+/**
+ * Reimplements 0x4c01b0: zZbdManager::Destroy
+ * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp).
+ * Purpose: release manager buffers, archive records, handler nodes, and sentinel.
+ */
 void zZbdManager::Destroy() {
     if (tempBuffer != 0) {
         ::operator delete(tempBuffer);
@@ -210,7 +249,11 @@ void zZbdManager::Destroy() {
     sectionHandlerCount = 0;
 }
 
-// Reimplements 0x4c0280: zZbdManager::RegisterSectionHandler
+/**
+ * Reimplements 0x4c0280: zZbdManager::RegisterSectionHandler
+ * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp).
+ * Purpose: add a unique section handler node to the manager's handler list.
+ */
 void zZbdManager::RegisterSectionHandler(
     const char *sectionName,
     zZbdSectionCallback onPreLoad,
@@ -247,8 +290,11 @@ void zZbdManager::RegisterSectionHandler(
     ++sectionHandlerCount;
 }
 
-// Reimplements 0x4c0370: zZbdManager::LoadEntries
-// (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp)
+/**
+ * Reimplements 0x4c0370: zZbdManager::LoadEntries
+ * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp).
+ * Purpose: create a write archive and invoke registered pre-load handlers.
+ */
 int zZbdManager::LoadEntries(
     const char *filename
 ) {
@@ -271,8 +317,11 @@ int zZbdManager::LoadEntries(
     return result;
 }
 
-// Reimplements 0x4c0400: zZbdManager::LoadZarFile
-// (D:\Proj\GameZRecoil\zZbd\zzbd.c)
+/**
+ * Reimplements 0x4c0400: zZbdManager::LoadZarFile
+ * (D:\Proj\GameZRecoil\zZbd\zzbd.c).
+ * Purpose: load a ZAR archive and dispatch matching section records.
+ */
 int zZbdManager::LoadZarFile(
     const char *filepath
 ) {
@@ -362,13 +411,20 @@ int zZbdManager::LoadZarFile(
     return 1;
 }
 
-// Reimplements 0x4c0620: zZbdManager::RequestStop
-// (D:\Proj\GameZRecoil\zUtil\zutl_zar.cpp)
+/**
+ * Reimplements 0x4c0620: zZbdManager::RequestStop
+ * (D:\Proj\GameZRecoil\zUtil\zutl_zar.cpp).
+ * Purpose: set the cooperative stop flag for archive loading.
+ */
 void zZbdManager::RequestStop() {
     stopRequested = 1;
 }
 
-// Reimplements 0x4c0630: zZbdManager::WriteSectionRecord
+/**
+ * Reimplements 0x4c0630: zZbdManager::WriteSectionRecord
+ * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp).
+ * Purpose: format a section/token record path and append the payload.
+ */
 int zZbdManager::WriteSectionRecord(
     zZbdSectionCallbackCtx *callbackCtx,
     const char *sectionToken,
@@ -391,8 +447,11 @@ int zZbdManager::WriteSectionRecord(
     );
 }
 
-// Reimplements 0x4c0700: zZbdManager::FlushTempStreamToSectionRecord
-// (D:\Proj\GameZRecoil\zUtil\zzbd.c)
+/**
+ * Reimplements 0x4c0700: zZbdManager::FlushTempStreamToSectionRecord
+ * (D:\Proj\GameZRecoil\zUtil\zzbd.c).
+ * Purpose: copy a temp stream into a section record and remove temp files.
+ */
 void zZbdManager::FlushTempStreamToSectionRecord(
     FILE *tempStream,
     zZbdSectionCallbackCtx *callbackCtx,
@@ -427,8 +486,11 @@ void zZbdManager::FlushTempStreamToSectionRecord(
     _rmtmp();
 }
 
-// Reimplements 0x4c0780: zZbdManager::CreateTempReadStreamFromBuffer
-// (D:\Proj\GameZRecoil\zUtil\zzbd.c)
+/**
+ * Reimplements 0x4c0780: zZbdManager::CreateTempReadStreamFromBuffer
+ * (D:\Proj\GameZRecoil\zUtil\zzbd.c).
+ * Purpose: create a rewound temp stream containing the supplied buffer.
+ */
 FILE * zZbdManager::CreateTempReadStreamFromBuffer(
     void *buffer,
     unsigned int size
@@ -445,8 +507,11 @@ FILE * zZbdManager::CreateTempReadStreamFromBuffer(
     return tempStream;
 }
 
-// Reimplements 0x4c07c0: zZbdManager::RemoveTempFiles
-// (D:\Proj\GameZRecoil\zUtil\zzbd.c)
+/**
+ * Reimplements 0x4c07c0: zZbdManager::RemoveTempFiles
+ * (D:\Proj\GameZRecoil\zUtil\zzbd.c).
+ * Purpose: remove CRT temp files associated with ZBD streaming.
+ */
 void zZbdManager::RemoveTempFiles(
     FILE *tempStream
 ) {
@@ -455,8 +520,11 @@ void zZbdManager::RemoveTempFiles(
     _rmtmp();
 }
 
-// Reimplements 0x4c06a0: zZbdSectionHandler::InvokePreLoad
-// (D:\Proj\GameZRecoil\zZbd\zzbd.c)
+/**
+ * Reimplements 0x4c06a0: zZbdSectionHandler::InvokePreLoad
+ * (D:\Proj\GameZRecoil\zZbd\zzbd.c).
+ * Purpose: invoke an optional pre-load section callback with user data.
+ */
 int zZbdSectionHandler::InvokePreLoad(
     zZbdSectionCallbackCtx *callbackCtx
 ) {
@@ -474,8 +542,11 @@ int zZbdSectionHandler::InvokePreLoad(
     );
 }
 
-// Reimplements 0x4c06c0: zZbdSectionHandler::InvokeDataReady
-// (D:\Proj\GameZRecoil\zZbd\zzbd.c)
+/**
+ * Reimplements 0x4c06c0: zZbdSectionHandler::InvokeDataReady
+ * (D:\Proj\GameZRecoil\zZbd\zzbd.c).
+ * Purpose: invoke an optional section data-ready callback with payload data.
+ */
 void zZbdSectionHandler::InvokeDataReady(
     zZbdSectionCallbackCtx *callbackCtx,
     const char *sectionToken,
@@ -500,8 +571,11 @@ void zZbdSectionHandler::InvokeDataReady(
     }
 }
 
-// Reimplements 0x4c07d0: zZbdManager::SortSectionHandlers
-// (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp)
+/**
+ * Reimplements 0x4c07d0: zZbdManager::SortSectionHandlers
+ * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp).
+ * Purpose: order registered section handlers by ascending sort order.
+ */
 void zZbdManager::SortSectionHandlers() {
     if (sectionHandlerCount < 2) {
         return;
@@ -541,7 +615,11 @@ void zZbdManager::SortSectionHandlers() {
 }
 
 namespace zUtil_ZAR {
-// Reimplements 0x4bffe0: zUtil_ZAR::RegisterSectionHandler
+/**
+ * Reimplements 0x4bffe0: zUtil_ZAR::RegisterSectionHandler
+ * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp).
+ * Purpose: forward a section handler registration to the active ZBD manager.
+ */
 void __fastcall RegisterSectionHandler(
     const char *sectionName,
     zZbdSectionCallback onPreLoad,
@@ -561,7 +639,11 @@ void __fastcall RegisterSectionHandler(
     }
 }
 
-// Reimplements 0x4c0010: zUtil_ZAR::WriteSectionBlob
+/**
+ * Reimplements 0x4c0010: zUtil_ZAR::WriteSectionBlob
+ * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp).
+ * Purpose: write a ZAR section blob through the callback manager context.
+ */
 int __fastcall WriteSectionBlob(
     zZbdSectionCallbackCtx *callbackCtx,
     const char *sectionToken,
@@ -578,8 +660,11 @@ int __fastcall WriteSectionBlob(
 } // namespace zUtil_ZAR
 
 namespace zUtil_ZBD {
-// Reimplements 0x4c0080: zUtil_ZBD::OpenTempWriteStream
-// (D:\Proj\GameZRecoil\zUtil\zbd_save.c)
+/**
+ * Reimplements 0x4c0080: zUtil_ZBD::OpenTempWriteStream
+ * (D:\Proj\GameZRecoil\zUtil\zbd_save.c).
+ * Purpose: open a temp write stream when a global ZBD manager is active.
+ */
 FILE *OpenTempWriteStream() {
     if (g_zUtil_ZbdManager == 0) {
         return 0;
@@ -588,8 +673,11 @@ FILE *OpenTempWriteStream() {
     return tmpfile();
 }
 
-// Reimplements 0x4c00c0: zUtil_ZBD::OpenTempReadStream
-// (D:\Proj\GameZRecoil\zUtil\zbd_save.c)
+/**
+ * Reimplements 0x4c00c0: zUtil_ZBD::OpenTempReadStream
+ * (D:\Proj\GameZRecoil\zUtil\zbd_save.c).
+ * Purpose: create a temp read stream from a buffer through the active manager.
+ */
 FILE *__fastcall OpenTempReadStream(
     void *buffer,
     unsigned int size
@@ -605,8 +693,11 @@ FILE *__fastcall OpenTempReadStream(
     );
 }
 
-// Reimplements 0x4c00a0: zUtil_ZBD::FlushTempWriteStreamToSectionRecord
-// (D:\Proj\GameZRecoil\zUtil\zbd_save.c)
+/**
+ * Reimplements 0x4c00a0: zUtil_ZBD::FlushTempWriteStreamToSectionRecord
+ * (D:\Proj\GameZRecoil\zUtil\zbd_save.c).
+ * Purpose: flush a temp write stream into a named section record.
+ */
 void __fastcall FlushTempWriteStreamToSectionRecord(
     FILE *tempStream,
     zZbdSectionCallbackCtx *callbackCtx,
@@ -622,8 +713,11 @@ void __fastcall FlushTempWriteStreamToSectionRecord(
     }
 }
 
-// Reimplements 0x4c00e0: zUtil_ZBD::CloseTempReadStream
-// (D:\Proj\GameZRecoil\zUtil\zbd_save.c)
+/**
+ * Reimplements 0x4c00e0: zUtil_ZBD::CloseTempReadStream
+ * (D:\Proj\GameZRecoil\zUtil\zbd_save.c).
+ * Purpose: close ZBD temp read-stream state through the active manager.
+ */
 void __fastcall CloseTempReadStream(
     FILE *tempStream
 ) {
