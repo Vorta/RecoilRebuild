@@ -258,18 +258,33 @@ Active queue sections:
     methods. 0x41a160, 0x41a400, and 0x41a5b0 are accepted at tier B after
     current `g_RecoilApp`, `g_HudSensorTracker`, and no-authored-global data
     review as applicable.
+  - `src/Battlesport/HudUiNetGameSetup.h`/`.cpp` now recover concrete
+    constructor-local member widget classes for the setup panel child controls
+    instead of relying on generic widget construction plus table identity
+    scaffolding.
+  - Local ignored VC5 target
+    `tools/vc5_verify_targets/hud_ui_net_game_setup_panel_constructor_data.json`
+    verifies the constructor child-widget vtables at 0x4cf148..0x4cf9e8 and
+    setup-panel-local ZRD/string literals at 0x4db4b4..0x4db5a4 plus `%d` at
+    0x4dacbc with zero unmasked COFF data-byte mismatches. `k_dialogZrdPath`
+    at 0x4da3b8 is already covered by the cheat-code dialog constructor
+    target and resolves ambiguously by address when both local manifests exist.
 - Current blockers:
-  - 0x419aa0 remains data-blocked by constructor-touched panel/child widget
-    table data plus ZRD name and string-literal cluster evidence.
+  - 0x419aa0 remains data-blocked by the panel-owned vtable at 0x4cf138:
+    VC5 does not emit `??_7HudUiNetGameSetupPanel@@6B@` from the current
+    source-faithful constructor model, while the matched child-widget tables
+    and string literals are now locally evidenced.
   - 0x41a820 and 0x41a9c0 remain data-blocked by the shared
     `ApplyWorldSelectionSideEffects` formatting literal/source data path. The
     source now keeps the `%d` formatting path inline and both functional
     targets pass, but the local VC5 comparison still has source-shape/codegen
     drift and does not support tier S.
 - Next action:
-  - Route the constructor table/string data cluster first, then resolve the
-    next/prev world formatting literal data gate before returning to broader
-    HudUiNetGameSetupPanel tier B cleanup.
+  - Resolve the source-faithful model for the 0x4cf138 panel vtable without
+    introducing production table scaffolding, then rerun the constructor data
+    target and promote 0x419aa0 only if the full data gate is satisfied.
+  - After 0x419aa0 data is resolved, revisit the 0x41a820/0x41a9c0 shared
+    world-button formatting/data gate for tier B cleanup.
 
 ### Group: GameNet launch/session-sync owner-data cleanup
 

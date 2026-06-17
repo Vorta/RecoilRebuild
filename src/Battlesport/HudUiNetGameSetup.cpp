@@ -16,8 +16,9 @@
 
 namespace {
 /**
- * Original helper evidence: no standalone retail function; observed in
- * callers 0x419aa0, 0x41a820, and 0x41a9c0.
+ * Original helper evidence: no standalone retail function; repeated inlined
+ * min/max clamp sequence in 0x419aa0 and shared world-button callers
+ * 0x41a820/0x41a9c0 immediately before "%d" formatting.
  * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Clamp integer setup values to the active input bounds.
  */
@@ -36,8 +37,9 @@ inline int ClampInt(
 }
 
 /**
- * Original helper evidence: no standalone retail function; observed in
- * callers 0x419aa0, 0x41a820, and 0x41a9c0.
+ * Original helper evidence: no standalone retail function; repeated store to
+ * modeOrEnabled followed by the ftable slot 0x78 RefreshState dispatch in
+ * 0x419aa0 and world-button side-effect callers 0x41a820/0x41a9c0.
  * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Store the enabled flag and refresh the ZRD widget state.
  */
@@ -50,8 +52,10 @@ inline void SetZrdWidgetEnabled(
 }
 
 /**
- * Original helper evidence: no standalone retail function; observed in
- * caller 0x419aa0.
+ * Original helper evidence: no standalone retail function; repeated
+ * constructor-lowered pattern in 0x419aa0 for time, kills, and max players:
+ * min/max stores, clamped value, sprintf("%d"), then
+ * HudUiNumericTextInput::Update.
  * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Initialize clamped integer text input bounds and visible text.
  */
@@ -74,8 +78,9 @@ void InitClampedInput(
 }
 
 /**
- * Original helper evidence: no standalone retail function; observed in
- * caller 0x419aa0.
+ * Original helper evidence: no standalone retail function; repeated
+ * constructor-local targetInput and stepDelta stores in 0x419aa0 for the
+ * increment/decrement time, kills, and max players buttons.
  * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Bind a step button to its target clamped integer input.
  */
@@ -89,8 +94,9 @@ void ConfigureStepButton(
 }
 
 /**
- * Original helper evidence: no standalone retail function; observed in
- * callers 0x419aa0, 0x41a820, and 0x41a9c0.
+ * Original helper evidence: no standalone retail function; repeated indirect
+ * ftable slot 0x60 visibility dispatch in 0x419aa0 and world-button callers
+ * 0x41a820/0x41a9c0.
  * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Dispatch a widget visibility change through its installed table.
  */
@@ -180,6 +186,166 @@ inline void ApplyWorldSelectionSideEffects(
 } // namespace
 
 /**
+ * Original helper evidence: no standalone retail function; observed in caller
+ * 0x419aa0 as compiler-emitted construction installing this concrete member
+ * widget table.
+ * Purpose: construct the launch button through its ZRD widget base.
+ */
+HudUiNetGameSetupPanel_LaunchButton::HudUiNetGameSetupPanel_LaunchButton()
+    : HudUiZrdWidget() {
+}
+
+/**
+ * Original helper evidence: no standalone retail function; observed in caller
+ * 0x419aa0 as compiler-emitted construction installing this concrete member
+ * widget table.
+ * Purpose: construct the cancel button through its ZRD widget base.
+ */
+HudUiNetGameSetupPanel_CancelButton::HudUiNetGameSetupPanel_CancelButton()
+    : HudUiZrdWidget() {
+}
+
+/**
+ * Original helper evidence: no standalone retail function; observed in caller
+ * 0x419aa0 as compiler-emitted construction installing this concrete member
+ * widget table.
+ * Purpose: construct the next-world button through its ZRD widget base.
+ */
+HudUiNetGameSetupPanel_NextWorldButton::HudUiNetGameSetupPanel_NextWorldButton()
+    : HudUiZrdWidget() {
+}
+
+/**
+ * Original helper evidence: no standalone retail function; observed in caller
+ * 0x419aa0 as compiler-emitted construction installing this concrete member
+ * widget table.
+ * Purpose: construct the previous-world button through its ZRD widget base.
+ */
+HudUiNetGameSetupPanel_PrevWorldButton::HudUiNetGameSetupPanel_PrevWorldButton()
+    : HudUiZrdWidget() {
+}
+
+/**
+ * Original helper evidence: no standalone retail function; observed in caller
+ * 0x419aa0 as compiler-emitted construction installing the world selector
+ * member table at panel offset 0xaf5c.
+ * Purpose: construct the world selector through its cycle-selector base.
+ */
+HudUiNetGameSetupPanel_WorldSelector::HudUiNetGameSetupPanel_WorldSelector()
+    : HudUiCycleSelectorWidget() {
+}
+
+/**
+ * Original helper evidence: no standalone retail function; observed in caller
+ * 0x419aa0 as compiler-emitted construction installing the time-limit input
+ * member table at panel offset 0xb3fc.
+ * Purpose: construct the time-limit input with the four-digit clamp buffer.
+ */
+HudUiNetGameSetupPanel_TimeLimitInput::HudUiNetGameSetupPanel_TimeLimitInput()
+    : HudUiClampedIntTextInput(4) {
+}
+
+/**
+ * Original helper evidence: no standalone retail function; observed in caller
+ * 0x419aa0 as compiler-emitted construction installing the kills input member
+ * table at panel offset 0xba20.
+ * Purpose: construct the kills input with the two-digit clamp buffer.
+ */
+HudUiNetGameSetupPanel_KillsInput::HudUiNetGameSetupPanel_KillsInput()
+    : HudUiClampedIntTextInput(2) {
+}
+
+/**
+ * Original helper evidence: no standalone retail function; observed in caller
+ * 0x419aa0 as compiler-emitted construction installing the max-players input
+ * member table at panel offset 0xc044.
+ * Purpose: construct the max-players input with the two-digit clamp buffer.
+ */
+HudUiNetGameSetupPanel_MaxPlayersInput::HudUiNetGameSetupPanel_MaxPlayersInput()
+    : HudUiClampedIntTextInput(2) {
+}
+
+/**
+ * Original helper evidence: no standalone retail function; observed in caller
+ * 0x419aa0 as compiler-emitted construction installing this increment button
+ * table.
+ * Purpose: construct the time-limit increment button through its step-button base.
+ */
+HudUiNetGameSetupPanel_IncTimeLimitButton::HudUiNetGameSetupPanel_IncTimeLimitButton()
+    : HudUiClampedIntStepButton() {
+}
+
+/**
+ * Original helper evidence: no standalone retail function; observed in caller
+ * 0x419aa0 as compiler-emitted construction installing this decrement button
+ * table.
+ * Purpose: construct the time-limit decrement button through its step-button base.
+ */
+HudUiNetGameSetupPanel_DecTimeLimitButton::HudUiNetGameSetupPanel_DecTimeLimitButton()
+    : HudUiClampedIntStepButton() {
+}
+
+/**
+ * Original helper evidence: no standalone retail function; observed in caller
+ * 0x419aa0 as compiler-emitted construction installing this increment button
+ * table.
+ * Purpose: construct the kills increment button through its step-button base.
+ */
+HudUiNetGameSetupPanel_IncKillsButton::HudUiNetGameSetupPanel_IncKillsButton()
+    : HudUiClampedIntStepButton() {
+}
+
+/**
+ * Original helper evidence: no standalone retail function; observed in caller
+ * 0x419aa0 as compiler-emitted construction installing this decrement button
+ * table.
+ * Purpose: construct the kills decrement button through its step-button base.
+ */
+HudUiNetGameSetupPanel_DecKillsButton::HudUiNetGameSetupPanel_DecKillsButton()
+    : HudUiClampedIntStepButton() {
+}
+
+/**
+ * Original helper evidence: no standalone retail function; observed in caller
+ * 0x419aa0 as compiler-emitted construction installing this increment button
+ * table.
+ * Purpose: construct the max-players increment button through its step-button base.
+ */
+HudUiNetGameSetupPanel_IncMaxPlayersButton::HudUiNetGameSetupPanel_IncMaxPlayersButton()
+    : HudUiClampedIntStepButton() {
+}
+
+/**
+ * Original helper evidence: no standalone retail function; observed in caller
+ * 0x419aa0 as compiler-emitted construction installing this decrement button
+ * table.
+ * Purpose: construct the max-players decrement button through its step-button base.
+ */
+HudUiNetGameSetupPanel_DecMaxPlayersButton::HudUiNetGameSetupPanel_DecMaxPlayersButton()
+    : HudUiClampedIntStepButton() {
+}
+
+/**
+ * Original helper evidence: no standalone retail function; observed in caller
+ * 0x419aa0 as compiler-emitted construction installing the allow-maps toggle
+ * table at panel offset 0xc668.
+ * Purpose: construct the allow-maps toggle through its check-toggle base.
+ */
+HudUiNetGameSetupPanel_AllowMapsToggle::HudUiNetGameSetupPanel_AllowMapsToggle()
+    : HudUiCheckToggleWidget() {
+}
+
+/**
+ * Original helper evidence: no standalone retail function; observed in caller
+ * 0x419aa0 as compiler-emitted construction installing the name-tags toggle
+ * table at panel offset 0xc7cc.
+ * Purpose: construct the name-tags toggle through its check-toggle base.
+ */
+HudUiNetGameSetupPanel_NameTagsToggle::HudUiNetGameSetupPanel_NameTagsToggle()
+    : HudUiCheckToggleWidget() {
+}
+
+/**
  * Reimplements 0x419aa0: HudUiNetGameSetupPanel::Constructor
  * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Initialize the network game setup panel controls and default session options.
@@ -189,35 +355,38 @@ HudUiNetGameSetupPanel * HudUiNetGameSetupPanel::Constructor(
 ) {
     new ((HudUiBackground *)this) HudUiBackground;
 
-    playButton.Constructor();
-    cancelButton.Constructor();
-    gameNameInput.Constructor(21);
-    worldSelector.Constructor();
-    nextWorldButton.Constructor();
-    prevWorldButton.Constructor();
-    new (&timeLimitInput) HudUiClampedIntTextInput(4);
-    incTimeLimitButton.Constructor();
+    new (&playButton) HudUiNetGameSetupPanel_LaunchButton;
+    new (&cancelButton) HudUiNetGameSetupPanel_CancelButton;
+    new (&gameNameInput) HudUiNetGameSetupTextInput;
+    gameNameInput.AllocTextBuffer(21);
+    gameNameInput.Update("");
+    gameNameInput.SetInputActive(0);
+    new (&worldSelector) HudUiNetGameSetupPanel_WorldSelector;
+    new (&nextWorldButton) HudUiNetGameSetupPanel_NextWorldButton;
+    new (&prevWorldButton) HudUiNetGameSetupPanel_PrevWorldButton;
+    new (&timeLimitInput) HudUiNetGameSetupPanel_TimeLimitInput;
+    new (&incTimeLimitButton) HudUiNetGameSetupPanel_IncTimeLimitButton;
     incTimeLimitButton.targetInput = 0;
     incTimeLimitButton.stepDelta = 1;
-    decTimeLimitButton.Constructor();
+    new (&decTimeLimitButton) HudUiNetGameSetupPanel_DecTimeLimitButton;
     decTimeLimitButton.targetInput = 0;
     decTimeLimitButton.stepDelta = 1;
-    new (&killsInput) HudUiClampedIntTextInput(2);
-    incKillsButton.Constructor();
+    new (&killsInput) HudUiNetGameSetupPanel_KillsInput;
+    new (&incKillsButton) HudUiNetGameSetupPanel_IncKillsButton;
     incKillsButton.targetInput = 0;
     incKillsButton.stepDelta = 1;
-    decKillsButton.Constructor();
+    new (&decKillsButton) HudUiNetGameSetupPanel_DecKillsButton;
     decKillsButton.targetInput = 0;
     decKillsButton.stepDelta = 1;
-    new (&maxPlayersInput) HudUiClampedIntTextInput(2);
-    incMaxPlayersButton.Constructor();
+    new (&maxPlayersInput) HudUiNetGameSetupPanel_MaxPlayersInput;
+    new (&incMaxPlayersButton) HudUiNetGameSetupPanel_IncMaxPlayersButton;
     incMaxPlayersButton.targetInput = 0;
     incMaxPlayersButton.stepDelta = 1;
-    decMaxPlayersButton.Constructor();
+    new (&decMaxPlayersButton) HudUiNetGameSetupPanel_DecMaxPlayersButton;
     decMaxPlayersButton.targetInput = 0;
     decMaxPlayersButton.stepDelta = 1;
-    allowMapsToggle.Constructor();
-    nameTagsToggle.Constructor();
+    new (&allowMapsToggle) HudUiNetGameSetupPanel_AllowMapsToggle;
+    new (&nameTagsToggle) HudUiNetGameSetupPanel_NameTagsToggle;
     killsSwitch.Constructor(0);
     lapsSwitch.Constructor(0);
 
