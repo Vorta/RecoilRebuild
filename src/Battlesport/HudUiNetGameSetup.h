@@ -113,7 +113,16 @@ struct HudUiNetGameSetupPanel : HudUiBackground {
     HudUiWidget lapsSwitch;
     int reconfigureExistingSession;
 
-    HudUiNetGameSetupPanel * Constructor(int reconfigureExistingSessionValue);
+    HudUiNetGameSetupPanel(int reconfigureExistingSessionValue);
+    /**
+     * Original inline constructor evidence: no standalone retail function;
+     * local reconstructed callers need the previous constructor-shaped entry,
+     * while 0x419aa0 is now the compiler-emitted C++ constructor body.
+     * Purpose: construct the setup panel in caller-provided storage.
+     */
+    HudUiNetGameSetupPanel * Constructor(int reconfigureExistingSessionValue) {
+        return new (this) HudUiNetGameSetupPanel(reconfigureExistingSessionValue);
+    }
     void Destructor();
     HudUiBackground * ScalarDeletingDestructor(
         unsigned int flags

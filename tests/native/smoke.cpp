@@ -322,6 +322,7 @@ extern "C" int hud_ui_net_game_setup_cancel_button_smoke(void);
 extern "C" int hud_ui_net_game_setup_launch_button_smoke(void);
 extern "C" int hud_ui_net_game_setup_next_world_button_smoke(void);
 extern "C" int hud_ui_net_game_setup_prev_world_button_smoke(void);
+extern "C" int hud_ui_net_game_setup_overlay_owner_on_try_smoke(void);
 extern "C" int zhud_slot_draw_smoke(void);
 extern "C" int zhud_triplet_panel_draw_smoke(void);
 extern "C" int zhud_triplet_panel_set_visible_count_smoke(void);
@@ -10728,6 +10729,8 @@ int main(int argc, char **argv) {
          hud_ui_net_game_setup_next_world_button_smoke},
         {"hud_ui_net_game_setup_prev_world_button_smoke",
          hud_ui_net_game_setup_prev_world_button_smoke},
+        {"hud_ui_net_game_setup_overlay_owner_on_try_smoke",
+         hud_ui_net_game_setup_overlay_owner_on_try_smoke},
         {"zhud_slot_draw_smoke", zhud_slot_draw_smoke},
         {"zhud_triplet_panel_draw_smoke", zhud_triplet_panel_draw_smoke},
         {"zhud_triplet_panel_set_visible_count_smoke",

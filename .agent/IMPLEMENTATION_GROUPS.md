@@ -250,7 +250,8 @@ Active queue sections:
     local helpers.
   - `tests/native/zhud_net_game_setup_smokes.cpp` registers focused native
     smokes for the constructor, destructor, cancel, launch, next-world, and
-    prev-world methods through `tests/native/smoke.cpp`.
+    prev-world methods plus the overlay-owner OnTryBecomeCurrent entry path
+    through `tests/native/smoke.cpp`.
   - The six functional targets pass locally after the x86 native smoke build.
   - 0x419aa0, 0x41a160, 0x41a400, 0x41a5b0, 0x41a820, and 0x41a9c0 now have
     accepted dependency gates and `Reimplemented [C]` functional markers.
@@ -269,20 +270,35 @@ Active queue sections:
     0x4dacbc with zero unmasked COFF data-byte mismatches. `k_dialogZrdPath`
     at 0x4da3b8 is already covered by the cheat-code dialog constructor
     target and resolves ambiguously by address when both local manifests exist.
+  - `HudUiNetGameSetupPanel::Constructor` is now recovered as the compiler
+    C++ constructor `HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(int)`;
+    the inline `Constructor(int)` compatibility wrapper only constructs into
+    caller-provided storage for existing reconstructed/native-smoke callers.
+    The overlay owner allocation path now uses placement-new on the real
+    constructor.
+  - Local ignored VC5 data coverage now resolves 0x4cf138 to generated symbol
+    `??_7HudUiNetGameSetupPanel@@6B@` with zero unmasked bytes after COFF
+    relocation masking, but relocation identity still differs from retail:
+    VC5 emits slot 0 as `HudUiContainer::UpdateAll` and slot 3 as
+    `HudUiBackground::Update`, while BN retail has slot 0 as
+    `HudUiBackground::Update` and a null/padding value at slot 3.
 - Current blockers:
   - 0x419aa0 remains data-blocked by the panel-owned vtable at 0x4cf138:
-    VC5 does not emit `??_7HudUiNetGameSetupPanel@@6B@` from the current
-    source-faithful constructor model, while the matched child-widget tables
-    and string literals are now locally evidenced.
+    although VC5 now emits the panel vftable symbol, relocation identity proves
+    the broader `HudUiContainer`/`HudUiBackground` virtual owner model still
+    has the wrong slot order for this retail table. The matched child-widget
+    tables and string literals remain locally evidenced.
   - 0x41a820 and 0x41a9c0 remain data-blocked by the shared
     `ApplyWorldSelectionSideEffects` formatting literal/source data path. The
     source now keeps the `%d` formatting path inline and both functional
     targets pass, but the local VC5 comparison still has source-shape/codegen
     drift and does not support tier S.
 - Next action:
-  - Resolve the source-faithful model for the 0x4cf138 panel vtable without
-    introducing production table scaffolding, then rerun the constructor data
-    target and promote 0x419aa0 only if the full data gate is satisfied.
+  - Resolve the broader source-faithful `HudUiContainer`/`HudUiBackground`
+    virtual owner model so the 0x4cf138 panel vtable relocation identity
+    matches retail without production table scaffolding, then rerun the
+    constructor data target and promote 0x419aa0 only if the full data gate is
+    satisfied.
   - After 0x419aa0 data is resolved, revisit the 0x41a820/0x41a9c0 shared
     world-button formatting/data gate for tier B cleanup.
 

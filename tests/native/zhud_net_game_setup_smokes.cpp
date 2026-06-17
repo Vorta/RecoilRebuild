@@ -5,6 +5,9 @@
 #include "Battlesport/RecoilApp.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zNetwork/zNetwork.h"
+#include "GameZRecoil/zRndr/zRndr.h"
+#include "GameZRecoil/zSound/zSound.h"
+#include "GameZRecoil/zVideo/zVideo.h"
 
 #include <cstdint>
 #include <cstring>
@@ -174,6 +177,27 @@ int g_netSetupHostUpdateStatusFlags;
 int g_netSetupUnregisterCalls;
 int g_netSetupResetRemoteCalls;
 CZRecoilFrame g_netSetupFrame;
+int g_netSetupTryHalfResCalls;
+int g_netSetupTryHalfResMode;
+int g_netSetupTryInvalidateCalls;
+int g_netSetupTryInvalidateMode;
+int g_netSetupTryPitchCalls;
+int g_netSetupTryBppCalls;
+int g_netSetupTryWindowCalls;
+int g_netSetupTryPixelsCalls;
+void *g_netSetupTryPixels;
+zOpt_ViewRectSection *g_netSetupTryWindow;
+void *g_netSetupTryFramePixels;
+zOpt_ViewRectSection *g_netSetupTryFrameRect;
+int g_netSetupTryFrameBpp;
+int g_netSetupTryFramePitch;
+int g_netSetupTrySampleCalls;
+const char *g_netSetupTrySampleName;
+int g_netSetupTryCdAudioOption;
+int g_netSetupTryCdOptionCalls;
+int g_netSetupTryCdPlayCalls;
+int g_netSetupTryCdTrack;
+int g_netSetupTryCdMode;
 
 void ResetNetGameSetupProbe() {
     g_netSetupLoadPath = 0;
@@ -255,6 +279,30 @@ void ResetNetGameSetupProbe() {
     g_netSetupUnregisterCalls = 0;
     g_netSetupResetRemoteCalls = 0;
     g_netSetupFrame.m_useArchiveBanks = 7;
+}
+
+void ResetNetGameSetupTryProbe() {
+    g_netSetupTryHalfResCalls = 0;
+    g_netSetupTryHalfResMode = -1;
+    g_netSetupTryInvalidateCalls = 0;
+    g_netSetupTryInvalidateMode = -1;
+    g_netSetupTryPitchCalls = 0;
+    g_netSetupTryBppCalls = 0;
+    g_netSetupTryWindowCalls = 0;
+    g_netSetupTryPixelsCalls = 0;
+    g_netSetupTryPixels = reinterpret_cast<void *>(0x12345678);
+    g_netSetupTryWindow = reinterpret_cast<zOpt_ViewRectSection *>(0x87654321);
+    g_netSetupTryFramePixels = 0;
+    g_netSetupTryFrameRect = 0;
+    g_netSetupTryFrameBpp = 0;
+    g_netSetupTryFramePitch = 0;
+    g_netSetupTrySampleCalls = 0;
+    g_netSetupTrySampleName = 0;
+    g_netSetupTryCdAudioOption = 1;
+    g_netSetupTryCdOptionCalls = 0;
+    g_netSetupTryCdPlayCalls = 0;
+    g_netSetupTryCdTrack = 0;
+    g_netSetupTryCdMode = 0;
 }
 
 char *FakeNetGameSetupGetPlayerName() {
@@ -556,6 +604,69 @@ void FreeZeroPanel(HudUiNetGameSetupPanel *panel) {
     ::operator delete(panel);
 }
 
+struct NetGameSetupTryPatchOps {
+    static int __fastcall SetHalfResAdjustMode(int mode) {
+        ++g_netSetupTryHalfResCalls;
+        g_netSetupTryHalfResMode = mode;
+        return 3;
+    }
+
+    static void __fastcall SetInvalidateMode(int mode) {
+        ++g_netSetupTryInvalidateCalls;
+        g_netSetupTryInvalidateMode = mode;
+    }
+
+    static int GetPrimarySurfacePitch() {
+        ++g_netSetupTryPitchCalls;
+        return 3200;
+    }
+
+    static int GetDisplaySectionBitsPerPixel() {
+        ++g_netSetupTryBppCalls;
+        return 16;
+    }
+
+    static zOpt_ViewRectSection *GetWindowSection() {
+        ++g_netSetupTryWindowCalls;
+        return g_netSetupTryWindow;
+    }
+
+    static void *GetPrimarySurfacePixels() {
+        ++g_netSetupTryPixelsCalls;
+        return g_netSetupTryPixels;
+    }
+
+    static void __fastcall SetFrameBufferRegion(
+        void *pixels,
+        zOpt_ViewRectSection *region,
+        int bitsPerPixel,
+        int pitchBytes
+    ) {
+        g_netSetupTryFramePixels = pixels;
+        g_netSetupTryFrameRect = region;
+        g_netSetupTryFrameBpp = bitsPerPixel;
+        g_netSetupTryFramePitch = pitchBytes;
+    }
+
+    static int __fastcall InitSampleSetByName(const char *setName) {
+        ++g_netSetupTrySampleCalls;
+        g_netSetupTrySampleName = setName;
+        return 1;
+    }
+
+    static int GetCDAudioOption() {
+        ++g_netSetupTryCdOptionCalls;
+        return g_netSetupTryCdAudioOption;
+    }
+
+    static int __fastcall PlayTrackWithMode(int track, int mode) {
+        ++g_netSetupTryCdPlayCalls;
+        g_netSetupTryCdTrack = track;
+        g_netSetupTryCdMode = mode;
+        return 1;
+    }
+};
+
 bool InstallConstructorPatches(
     CodeFunctionPatch *patches,
     int &patchCount
@@ -605,7 +716,162 @@ bool InstallConstructorPatches(
         );
     return installed;
 }
+
+bool InstallOverlayTryPatches(
+    CodeFunctionPatch *patches,
+    int &patchCount
+) {
+    bool installed = InstallConstructorPatches(
+        patches,
+        patchCount
+    );
+    installed = installed &&
+        PatchFunctionJump(
+            (void *)(&zVideo::SetHalfResAdjustMode),
+            (void *)(&NetGameSetupTryPatchOps::SetHalfResAdjustMode),
+            patches[patchCount++]
+        );
+    installed = installed &&
+        PatchFunctionJump(
+            (void *)(&HudUi::SetInvalidateMode),
+            (void *)(&NetGameSetupTryPatchOps::SetInvalidateMode),
+            patches[patchCount++]
+        );
+    installed = installed &&
+        PatchFunctionJump(
+            (void *)(&zVideo::GetPrimarySurfacePitch),
+            (void *)(&NetGameSetupTryPatchOps::GetPrimarySurfacePitch),
+            patches[patchCount++]
+        );
+    installed = installed &&
+        PatchFunctionJump(
+            (void *)(&zOpt::GetDisplaySectionBitsPerPixel),
+            (void *)(&NetGameSetupTryPatchOps::GetDisplaySectionBitsPerPixel),
+            patches[patchCount++]
+        );
+    installed = installed &&
+        PatchFunctionJump(
+            (void *)(&zOpt::GetWindowSection),
+            (void *)(&NetGameSetupTryPatchOps::GetWindowSection),
+            patches[patchCount++]
+        );
+    installed = installed &&
+        PatchFunctionJump(
+            (void *)(&zVideo::GetPrimarySurfacePixels),
+            (void *)(&NetGameSetupTryPatchOps::GetPrimarySurfacePixels),
+            patches[patchCount++]
+        );
+    installed = installed &&
+        PatchFunctionJump(
+            (void *)(&zRndr::SetFrameBufferRegion),
+            (void *)(&NetGameSetupTryPatchOps::SetFrameBufferRegion),
+            patches[patchCount++]
+        );
+    installed = installed &&
+        PatchFunctionJump(
+            (void *)(&zSndSampleSet_InitByName),
+            (void *)(&NetGameSetupTryPatchOps::InitSampleSetByName),
+            patches[patchCount++]
+        );
+    installed = installed &&
+        PatchFunctionJump(
+            (void *)(&zSnd::GetCDAudioOption),
+            (void *)(&NetGameSetupTryPatchOps::GetCDAudioOption),
+            patches[patchCount++]
+        );
+    installed = installed &&
+        PatchFunctionJump(
+            (void *)(&zSndCd::PlayTrackWithMode),
+            (void *)(&NetGameSetupTryPatchOps::PlayTrackWithMode),
+            patches[patchCount++]
+        );
+    return installed;
+}
 } // namespace
+
+extern "C" int hud_ui_net_game_setup_overlay_owner_on_try_smoke(void) {
+    CodeFunctionPatch patches[18] = {};
+    int patchCount = 0;
+    const bool installed = InstallOverlayTryPatches(
+        patches,
+        patchCount
+    );
+
+    char fakeNodeStorage = 0;
+    ResetNetGameSetupProbe();
+    ResetNetGameSetupTryProbe();
+    g_netSetupLoadResult = reinterpret_cast<zReader::Node *>(&fakeNodeStorage);
+    g_netSetupTryCdAudioOption = 1;
+
+    HudUiNetGameSetupOverlayOwner state;
+    state.m_reconfigureExistingSession = 1;
+    const int result = installed ? state.OnTryBecomeCurrent() : 0;
+    HudUiNetGameSetupPanel *const panel = state.m_panel;
+    const bool cdEnabledPath =
+        installed &&
+        result == 1 &&
+        panel != 0 &&
+        panel->reconfigureExistingSession == 1 &&
+        panel->enabled == 1 &&
+        g_netSetupTryHalfResCalls == 1 &&
+        g_netSetupTryHalfResMode == 0 &&
+        g_netSetupTryInvalidateCalls == 1 &&
+        g_netSetupTryInvalidateMode == 0 &&
+        g_netSetupTryPitchCalls == 1 &&
+        g_netSetupTryBppCalls == 1 &&
+        g_netSetupTryWindowCalls == 1 &&
+        g_netSetupTryPixelsCalls == 1 &&
+        g_netSetupTryFramePixels == g_netSetupTryPixels &&
+        g_netSetupTryFrameRect == g_netSetupTryWindow &&
+        g_netSetupTryFrameBpp == 16 &&
+        g_netSetupTryFramePitch == 3200 &&
+        g_netSetupTrySampleCalls == 1 &&
+        std::strcmp(g_netSetupTrySampleName, "DIALOG") == 0 &&
+        std::strcmp(g_netSetupLoadPath, "dialog.zrd") == 0 &&
+        std::strcmp(g_netSetupLoadSection, "MP_NEW_GAME") == 0 &&
+        g_netSetupTryCdOptionCalls == 1 &&
+        g_netSetupTryCdPlayCalls == 1 &&
+        g_netSetupTryCdTrack == 2 &&
+        g_netSetupTryCdMode == 5;
+    if (panel != 0) {
+        panel->Destructor();
+        ::operator delete(panel);
+    }
+
+    state.m_panel = 0;
+    state.m_reconfigureExistingSession = 0;
+    ResetNetGameSetupProbe();
+    ResetNetGameSetupTryProbe();
+    g_netSetupLoadResult = reinterpret_cast<zReader::Node *>(&fakeNodeStorage);
+    g_netSetupTryCdAudioOption = 0;
+    const int noCdResult = installed ? state.OnTryBecomeCurrent() : 0;
+    HudUiNetGameSetupPanel *const noCdPanel = state.m_panel;
+    const bool cdDisabledPath =
+        installed &&
+        noCdResult == 1 &&
+        noCdPanel != 0 &&
+        noCdPanel->reconfigureExistingSession == 0 &&
+        noCdPanel->enabled == 1 &&
+        g_netSetupTryCdOptionCalls == 1 &&
+        g_netSetupTryCdPlayCalls == 0;
+    if (noCdPanel != 0) {
+        noCdPanel->Destructor();
+        ::operator delete(noCdPanel);
+    }
+    state.m_panel = 0;
+
+    RestorePatches(
+        patches,
+        patchCount
+    );
+    if (!cdEnabledPath) {
+        return 2;
+    }
+    if (!cdDisabledPath) {
+        return 3;
+    }
+    return 0;
+}
 
 extern "C" int hud_ui_net_game_setup_panel_constructor_smoke(void) {
     CodeFunctionPatch patches[8] = {};

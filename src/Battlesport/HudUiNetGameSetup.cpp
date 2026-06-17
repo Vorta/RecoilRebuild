@@ -350,45 +350,43 @@ HudUiNetGameSetupPanel_NameTagsToggle::HudUiNetGameSetupPanel_NameTagsToggle()
  * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Initialize the network game setup panel controls and default session options.
  */
-HudUiNetGameSetupPanel * HudUiNetGameSetupPanel::Constructor(
+HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
     int reconfigureExistingSessionValue
-) {
-    new ((HudUiBackground *)this) HudUiBackground;
-
-    new (&playButton) HudUiNetGameSetupPanel_LaunchButton;
-    new (&cancelButton) HudUiNetGameSetupPanel_CancelButton;
-    new (&gameNameInput) HudUiNetGameSetupTextInput;
+) : HudUiBackground(),
+    playButton(),
+    cancelButton(),
+    gameNameInput(),
+    worldSelector(),
+    nextWorldButton(),
+    prevWorldButton(),
+    timeLimitInput(),
+    incTimeLimitButton(),
+    decTimeLimitButton(),
+    killsInput(),
+    incKillsButton(),
+    decKillsButton(),
+    maxPlayersInput(),
+    incMaxPlayersButton(),
+    decMaxPlayersButton(),
+    allowMapsToggle(),
+    nameTagsToggle(),
+    killsSwitch(),
+    lapsSwitch() {
     gameNameInput.AllocTextBuffer(21);
     gameNameInput.Update("");
     gameNameInput.SetInputActive(0);
-    new (&worldSelector) HudUiNetGameSetupPanel_WorldSelector;
-    new (&nextWorldButton) HudUiNetGameSetupPanel_NextWorldButton;
-    new (&prevWorldButton) HudUiNetGameSetupPanel_PrevWorldButton;
-    new (&timeLimitInput) HudUiNetGameSetupPanel_TimeLimitInput;
-    new (&incTimeLimitButton) HudUiNetGameSetupPanel_IncTimeLimitButton;
     incTimeLimitButton.targetInput = 0;
     incTimeLimitButton.stepDelta = 1;
-    new (&decTimeLimitButton) HudUiNetGameSetupPanel_DecTimeLimitButton;
     decTimeLimitButton.targetInput = 0;
     decTimeLimitButton.stepDelta = 1;
-    new (&killsInput) HudUiNetGameSetupPanel_KillsInput;
-    new (&incKillsButton) HudUiNetGameSetupPanel_IncKillsButton;
     incKillsButton.targetInput = 0;
     incKillsButton.stepDelta = 1;
-    new (&decKillsButton) HudUiNetGameSetupPanel_DecKillsButton;
     decKillsButton.targetInput = 0;
     decKillsButton.stepDelta = 1;
-    new (&maxPlayersInput) HudUiNetGameSetupPanel_MaxPlayersInput;
-    new (&incMaxPlayersButton) HudUiNetGameSetupPanel_IncMaxPlayersButton;
     incMaxPlayersButton.targetInput = 0;
     incMaxPlayersButton.stepDelta = 1;
-    new (&decMaxPlayersButton) HudUiNetGameSetupPanel_DecMaxPlayersButton;
     decMaxPlayersButton.targetInput = 0;
     decMaxPlayersButton.stepDelta = 1;
-    new (&allowMapsToggle) HudUiNetGameSetupPanel_AllowMapsToggle;
-    new (&nameTagsToggle) HudUiNetGameSetupPanel_NameTagsToggle;
-    killsSwitch.Constructor(0);
-    lapsSwitch.Constructor(0);
 
     reconfigureExistingSession = reconfigureExistingSessionValue;
 
@@ -604,7 +602,6 @@ HudUiNetGameSetupPanel * HudUiNetGameSetupPanel::Constructor(
     allowMapsToggle.SetChecked(1);
     nameTagsToggle.SetChecked(0);
     SetChildFlags(0);
-    return this;
 }
 
 /**
