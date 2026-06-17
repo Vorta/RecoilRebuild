@@ -230,6 +230,13 @@ Active queue sections:
   - The compiler intrinsic provider-boundary entry for BN symbolic
     `__builtin_memset` at 0x7c8ed4 is accepted for the inline `rep stos`
     zero/fill pattern used by 0x4320f0 and 0x4345a0.
+  - 0x431c50 source/data audit confirms the registration body is source-shaped
+    and its functional target passes. Local VC5 data-symbol targets now cover
+    the zDEClient relay callback slots and OptCatalog runtime callback slots
+    with zero unmasked mismatches, in addition to the existing GameNet,
+    zEffect activation-dispatch, and zNetwork dispatch-list data evidence.
+    Keep 0x431c50 owner/data pending until the installed callback owner band is
+    accepted; do not reroute this as missing callback-slot data evidence.
 - Current blockers:
   - 0x4321b0 is accepted at tier B after registering/rerunning the existing
     packet-handler unregister smoke, documenting the paired 0x431c50
@@ -243,8 +250,9 @@ Active queue sections:
     callback-slot globals and source-blocked by zNetwork/zEffect registration
     helpers.
     0x432830 is accepted at tier B after row-list data-symbol evidence;
-    0x4327e0, 0x432860, and 0x432ae0 still need broader pkt06/player/HUD/zVideo
-    owner-data routing before tier B.
+    0x431c50, 0x4327e0, 0x432860, and 0x432ae0 still need broader
+    pkt06/player/HUD/zVideo and registered-callback owner-data routing before
+    tier B.
   - The pkt06 data correction sets `g_GameNetPkt06InitialSyncGate` to the BN
     initial value 1. Ignored local VC5 target `gamenet_pkt06_globals` now
     covers `g_GameNetPlayerRowStyleColors_00RRGGBB`,
@@ -318,10 +326,12 @@ Active queue sections:
     evidence, and BN zero-data evidence for the zEffect activation-dispatch
     globals; neither helper has accepted tier S byte evidence.
 - Next action:
-  - Return to the `HudUiNetGameSetupPanel_LaunchButton::OnActivate` owner
-    group; its visible direct dependencies are now tier B/S/provider, so audit
-    touched globals and route any remaining launch source-model blocker at the
-    panel owner boundary.
+  - Continue at the GameNet registered-callback owner band. Start with
+    `python tools/recoil.py status 0x4327e0 --lane binary`, then inspect
+    `python tools/recoil.py frontier 0x4327e0 --depth 1 --lane binary` before
+    assigning a source worker. Keep OptCatalog, Pickup, zDEClient, and zEffect
+    callback targets routed to their own owner sections rather than absorbing
+    them into the GameNet source-file owner.
 
 ### Group: Player create-from-names bootstrap owner-data
 
@@ -467,13 +477,20 @@ Active queue sections:
     The visible route through 0x45dde0 `SetVelocity_Thunk`, 0x45dcb0
     `SetVelocity`, 0x45d930 `ActivateRuntime`, and 0x45e730
     `CloneEntryForNode` has cleared 0x452fd0 `zClass_Light::gwLightNew`.
-    Continue from 0x45d930 through the 0x45d570 stop/cleanup owner route; the
-    current actionable blocker is the stop/event-dispatch SCC around 0x45c040,
-    0x45d570, and 0x45cc00, with 0x45d6c0 separately blocked by zClass
-    0x449ab0 `gwNodeGetRoot`. The first event-handler blockers now route
-    through zClass transform helpers such as 0x4497b0
-    `gwNode::GetWorldPosition` via 0x449480
-    `gwNode::BuildNodeToAncestorMatrix` and the 0x4532f0-0x453aa0 light setter
-    cluster; keep zClass camera setters and
-    any remaining zEffect event-handler data gates as adjacent separate
-    owner-data slices before promoting 0x421ab0 or 0x421ea0.
+    The 0x4390d0 `Player::CacheGunHardpointsAndDetachDisplays` slice is now
+    accepted at tier B after BN/source owner review, functional smoke coverage,
+    original-helper guard, and local VC5 data-symbol evidence for the four
+    hardpoint-name strings.
+  - Current 0x420d10 frontier now routes to 0x438ba0
+    `Player::LoadWeaponBanksAndSelectDefaults`. 0x4b1f90
+    `OptCatalog::FreeTrailRuntimeStateStorage` is now accepted at tier B after
+    adding the required provenance docblock, rerunning functional evidence, and
+    accepting no-authored-globals data; tier S remains blocked by the known
+    VC5 free-call byte diff. 0x438b60
+    `Player::FreeAltWeaponTrailRuntimeStates` is also accepted at tier B after
+    BN/source owner review, functional coverage, and no-authored-globals
+    review.
+  - Continue 0x438ba0 through 0x43ca90
+    `Player::CheckMissionWeaponAvailability`, now the lowest visible owner
+    blocker. Keep its remaining OptCatalog and zUtil callees routed to their
+    own owner sections rather than absorbing them into the Player class pass.

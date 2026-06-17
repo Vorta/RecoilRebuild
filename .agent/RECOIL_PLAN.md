@@ -27044,15 +27044,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b1f90:
   - [✅] Reconstructed (Name: OptCatalog::FreeTrailRuntimeStateStorage)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zWeapon; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zWeapon; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::FreeTrailRuntimeStateStorage;
     - File: src/GameZRecoil/zWeapon/OptCatalog.c;
     - Target: optcatalog_free_trail_runtime_state_storage;
     - Group: engine.zweapon;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S remains blocked by the documented VC5 free-call byte diff; owner/data are accepted at tier B
 
 - 0x4b1fa0:
   - [☑️] Reconstructed (Name: OptCatalog::LoadFxSpecFromReaderNode)
@@ -29429,15 +29429,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x438b60:
   - [✅] Reconstructed (Name: Player::FreeAltWeaponTrailRuntimeStates)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: Player; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: Player; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Player::FreeAltWeaponTrailRuntimeStates;
     - File: src/Battlesport/player.cpp;
     - Target: player_free_alt_weapon_trail_runtime_states;
     - Group: battlesport.player;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4385f0:
   - [✅] Reconstructed (Name: Player::StartModalLoopSfxHandle)
@@ -30885,15 +30885,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4390d0:
   - [☑️] Reconstructed (Name: Player::CacheGunHardpointsAndDetachDisplays)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: Player; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: Player; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Player::CacheGunHardpointsAndDetachDisplays;
     - File: src/Battlesport/player.cpp;
     - Target: player_cache_gun_hardpoints_and_detach_displays;
     - Group: battlesport.player;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x439260:
   - [☑️] Reconstructed (Name: Player::HandleAltWeaponBankSelectInput)
@@ -32547,7 +32547,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: gamenet_register_gameplay_handlers_and_callbacks;
     - Group: battlesport.network_game;
     - Model: pending;
-    - Blocker: source-shape audit pending
+    - Blocker: Current BN/source audit shows the registration body is source-shaped and functional target gamenet_register_gameplay_handlers_and_callbacks passes. Keep owner/data pending because the installed callback band still includes unresolved GameNet/OptCatalog/Pickup/zDEClient callback owner markers; zDEClient and OptCatalog callback-slot globals now have local VC5 data-symbol evidence, but cross-owner source/data acceptance is not complete.
 
 - 0x4320b0:
   - [✅] Reconstructed (Name: GameNet::WaitForLocalPlayerColorIndex)
