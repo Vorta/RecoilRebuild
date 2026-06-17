@@ -1679,15 +1679,15 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## GameZRecoil/zReader/zreader.cpp
 
-- `0x48cda0` `zReader_AllocateNode` -> `src/GameZRecoil/zReader/zreader_load.cpp:1354`
-- `0x48cdc0` `zReader::LoadNodeFromPath` -> `src/GameZRecoil/zReader/zreader_load.cpp:1637`
-- `0x48ce40` `zReader::FreeLoadedTree` -> `src/GameZRecoil/zReader/zreader_load.cpp:1674`
-- `0x48ce60` `zReader_FreeNodeRecursive` -> `src/GameZRecoil/zReader/zreader_load.cpp:1501`
+- `0x48cda0` `zReader_AllocateNode` -> `src/GameZRecoil/zReader/zreader_load.cpp:1465`
+- `0x48cdc0` `zReader::LoadNodeFromPath` -> `src/GameZRecoil/zReader/zreader_load.cpp:1757`
+- `0x48ce40` `zReader::FreeLoadedTree` -> `src/GameZRecoil/zReader/zreader_load.cpp:1794`
+- `0x48ce60` `zReader_FreeNodeRecursive` -> `src/GameZRecoil/zReader/zreader_load.cpp:1612`
 - `0x48cec0` `zReader_FindChildRecursive` -> `src/GameZRecoil/zReader/zreader_lookup.cpp:7`
 - `0x48cf70` `zReader_GetNamedNode` -> `src/GameZRecoil/zReader/zreader_lookup.cpp:51`
-- `0x48d080` `zReader_ReadNode` -> `src/GameZRecoil/zReader/zreader_load.cpp:1408`
-- `0x48d1c0` `zReader_OpenFileFromMountedArchives` -> `src/GameZRecoil/zReader/zreader_load.cpp:1526`
-- `0x4a6110` `zReader_ReadString` -> `src/GameZRecoil/zReader/zreader_load.cpp:1367`
+- `0x48d080` `zReader_ReadNode` -> `src/GameZRecoil/zReader/zreader_load.cpp:1519`
+- `0x48d1c0` `zReader_OpenFileFromMountedArchives` -> `src/GameZRecoil/zReader/zreader_load.cpp:1637`
+- `0x4a6110` `zReader_ReadString` -> `src/GameZRecoil/zReader/zreader_load.cpp:1478`
 
 ## GameZRecoil/zRndr/zRndr_Draw.cpp
 
@@ -1722,20 +1722,6 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4b3640` `zSys::ReadCpuidVendorAndFamily` -> `src/GameZRecoil/zSys/zSys_cpu_asm.inl:151`
 - `0x4b3b20` `zSys::ReadTsc64` -> `src/GameZRecoil/zSys/zSys_cpu_asm.inl:224`
 - `0x4b3ca0` `zSys::Sub64` -> `src/GameZRecoil/zSys/zSys_cpu_asm.inl:246`
-
-## GameZRecoil/zUtil/zUtil.cpp
-
-- `0x42ecb0` `zUtil::SetMissionZrdrPathsAndMountZbd` -> `src/GameZRecoil/zReader/zreader_load.cpp:892`
-
-## GameZRecoil/zUtil/zutl_zar.cpp
-
-- `0x4a6270` `zIndexArchive::OpenCreateWrite` -> `src/GameZRecoil/zReader/zreader_load.cpp:1004`
-
-## GameZRecoil/zUtil/zutl_zrdr.cpp
-
-- `0x4a5c50` `zUtil::ZRDR_GetFileSize` -> `src/GameZRecoil/zReader/zreader_load.cpp:481`
-- `0x4a5f90` `zUtil_ZRDR::InitWildcardPath` -> `src/GameZRecoil/zReader/zreader_load.cpp:597`
-- `0x4a6070` `zUtil_ZRDR::NextWildcardPath` -> `src/GameZRecoil/zReader/zreader_load.cpp:633`
 
 ## GameZRecoil/zVideo/zVideo.cpp
 
@@ -2292,10 +2278,10 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x41eb30` `Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui` -> `src/Battlesport/player.cpp:1963`
 - `0x41eb90` `Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui` -> `src/Battlesport/player.cpp:1979`
 - `0x41ec00` `Player::InitSaveStateList` -> `src/Battlesport/player.cpp:2182`
-- `0x420be0` `zReader::LoadMoversFromZrd` -> `src/GameZRecoil/zReader/zreader_load.cpp:1688`
+- `0x420be0` `zReader::LoadMoversFromZrd` -> `src/GameZRecoil/zReader/zreader_load.cpp:1809`
 - `0x420d10` `Player::InitStateFromNameAndMasterCommonData` -> `src/Battlesport/player.cpp:2982`
 - `0x421da0` `zClass_Node::PropagateExtraFlagsRecursive` -> `src/GameZRecoil/zClass/Class.c:2619`
-- `0x421e20` `zReader::BuildResolvedParentDir` -> `src/GameZRecoil/zReader/zreader_load.cpp:1601`
+- `0x421e20` `zReader::BuildResolvedParentDir` -> `src/GameZRecoil/zReader/zreader_load.cpp:1719`
 - `0x423440` `Player_UnderwaterFxPass3Ui::ApplyBlueTint` -> `src/Battlesport/player.cpp:1995`
 - `0x423450` `Player_ProjectileCameraFxPass3Ui::ApplyGreenMask` -> `src/Battlesport/player.cpp:2004`
 - `0x425a20` `Player::TickLocalPlayerControls` -> `src/Battlesport/player.cpp:10072`
@@ -2349,6 +2335,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x42ebf0` `RecoilApp_AttractFmvState::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:3034`
 - `0x42ec80` `RecoilApp_AttractFmvState::OnUpdateShouldQuit` -> `src/Battlesport/RecoilApp.cpp:3071`
 - `0x42eca0` `RecoilApp_AttractFmvState::OnDeactivate` -> `src/Battlesport/RecoilApp.cpp:3085`
+- `0x42ecb0` `zUtil::SetMissionZrdrPathsAndMountZbd` -> `src/GameZRecoil/zReader/zreader_load.cpp:983`
 - `0x42ed30` `RecoilApp_MissionFmvState::Constructor` -> `src/Battlesport/RecoilApp.cpp:3090`
 - `0x42ee40` `HudUiBackgroundContainer::SetEnabled` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6119`
 - `0x42eea0` `RecoilApp_PlayState::RecoilApp_PlayState` -> `src/Battlesport/RecoilApp.cpp:2613`
@@ -3245,36 +3232,36 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x48c120` `zNetwork::UnregisterPacketHandler` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:2089`
 - `0x48c200` `zNetwork_DPlay::DispatchPacketToHandlers` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:2138`
 - `0x48c250` `zNetwork_DPlay_ReportError` -> `src/GameZRecoil/zNetwork/znet_dplay.cpp:509`
-- `0x48c7d0` `zUtil::ZRDR_PreallocNodePool` -> `src/GameZRecoil/zReader/zreader_load.cpp:111`
-- `0x48c800` `zUtil_ZRDR_GrowFreePool` -> `src/GameZRecoil/zReader/zreader_load.cpp:103`
-- `0x48c820` `zUtil_ZRDR_PushFreeNode` -> `src/GameZRecoil/zReader/zreader_load.cpp:77`
-- `0x48c890` `zUtil_ZRDR_FreeNodePool` -> `src/GameZRecoil/zReader/zreader_load.cpp:829`
-- `0x48c8e0` `zUtil_ZRDR_PopFreeNode` -> `src/GameZRecoil/zReader/zreader_load.cpp:127`
-- `0x48c950` `zArchiveList_CreateEmpty` -> `src/GameZRecoil/zReader/zreader_load.cpp:49`
-- `0x48c970` `zArchiveList_Destroy` -> `src/GameZRecoil/zReader/zreader_load.cpp:61`
-- `0x48c9a0` `zArchiveList_LinkNodeBetween` -> `src/GameZRecoil/zReader/zreader_load.cpp:37`
-- `0x48c9c0` `zArchiveList_PushFrontPayload` -> `src/GameZRecoil/zReader/zreader_load.cpp:167`
-- `0x48ca10` `zUtil_ZRDR_AllocNodeWithPayload` -> `src/GameZRecoil/zReader/zreader_load.cpp:158`
-- `0x48ca30` `zArchiveList_PushBackPayload` -> `src/GameZRecoil/zReader/zreader_load.cpp:195`
-- `0x48ca70` `zArchiveList_RemovePayload` -> `src/GameZRecoil/zReader/zreader_load.cpp:223`
-- `0x48cae0` `zArchiveList_FreeNode` -> `src/GameZRecoil/zReader/zreader_load.cpp:262`
-- `0x48cb00` `zArchiveList_FindNodeByPayload` -> `src/GameZRecoil/zReader/zreader_load.cpp:279`
-- `0x48cb30` `zArchiveList_GetAt` -> `src/GameZRecoil/zReader/zreader_load.cpp:344`
-- `0x48cb70` `zArchiveList_PopFrontPayload` -> `src/GameZRecoil/zReader/zreader_load.cpp:309`
-- `0x48cbd0` `zArchiveList_FindPayloadByPredicate` -> `src/GameZRecoil/zReader/zreader_load.cpp:368`
-- `0x48cc20` `zArchiveList_FindPayloadByValue` -> `src/GameZRecoil/zReader/zreader_load.cpp:405`
-- `0x48cc50` `zArchiveList_FindPayloadByPredicate_Thunk` -> `src/GameZRecoil/zReader/zreader_load.cpp:435`
-- `0x48cc60` `zArchiveList_GetCount` -> `src/GameZRecoil/zReader/zreader_load.cpp:333`
-- `0x48cc70` `zUtil::ZRDR_Init` -> `src/GameZRecoil/zReader/zreader_load.cpp:879`
-- `0x48cca0` `zUtil_ZRDR_SetSearchPath` -> `src/GameZRecoil/zReader/zreader_load.cpp:845`
-- `0x48cce0` `zUtil_ZRDR_AppendSearchPath` -> `src/GameZRecoil/zReader/zreader_load.cpp:862`
-- `0x48cd10` `zUtil_ZRDR_Shutdown` -> `src/GameZRecoil/zReader/zreader_load.cpp:819`
-- `0x48cd40` `zReader::TryResolvePath` -> `src/GameZRecoil/zReader/zreader_load.cpp:1570`
+- `0x48c7d0` `zUtil::ZRDR_PreallocNodePool` -> `src/GameZRecoil/zReader/zreader_load.cpp:124`
+- `0x48c800` `zUtil_ZRDR_GrowFreePool` -> `src/GameZRecoil/zReader/zreader_load.cpp:113`
+- `0x48c820` `zUtil_ZRDR_PushFreeNode` -> `src/GameZRecoil/zReader/zreader_load.cpp:84`
+- `0x48c890` `zUtil_ZRDR_FreeNodePool` -> `src/GameZRecoil/zReader/zreader_load.cpp:908`
+- `0x48c8e0` `zUtil_ZRDR_PopFreeNode` -> `src/GameZRecoil/zReader/zreader_load.cpp:143`
+- `0x48c950` `zArchiveList_CreateEmpty` -> `src/GameZRecoil/zReader/zreader_load.cpp:53`
+- `0x48c970` `zArchiveList_Destroy` -> `src/GameZRecoil/zReader/zreader_load.cpp:67`
+- `0x48c9a0` `zArchiveList_LinkNodeBetween` -> `src/GameZRecoil/zReader/zreader_load.cpp:38`
+- `0x48c9c0` `zArchiveList_PushFrontPayload` -> `src/GameZRecoil/zReader/zreader_load.cpp:189`
+- `0x48ca10` `zUtil_ZRDR_AllocNodeWithPayload` -> `src/GameZRecoil/zReader/zreader_load.cpp:177`
+- `0x48ca30` `zArchiveList_PushBackPayload` -> `src/GameZRecoil/zReader/zreader_load.cpp:220`
+- `0x48ca70` `zArchiveList_RemovePayload` -> `src/GameZRecoil/zReader/zreader_load.cpp:250`
+- `0x48cae0` `zArchiveList_FreeNode` -> `src/GameZRecoil/zReader/zreader_load.cpp:289`
+- `0x48cb00` `zArchiveList_FindNodeByPayload` -> `src/GameZRecoil/zReader/zreader_load.cpp:306`
+- `0x48cb30` `zArchiveList_GetAt` -> `src/GameZRecoil/zReader/zreader_load.cpp:375`
+- `0x48cb70` `zArchiveList_PopFrontPayload` -> `src/GameZRecoil/zReader/zreader_load.cpp:336`
+- `0x48cbd0` `zArchiveList_FindPayloadByPredicate` -> `src/GameZRecoil/zReader/zreader_load.cpp:402`
+- `0x48cc20` `zArchiveList_FindPayloadByValue` -> `src/GameZRecoil/zReader/zreader_load.cpp:441`
+- `0x48cc50` `zArchiveList_FindPayloadByPredicate_Thunk` -> `src/GameZRecoil/zReader/zreader_load.cpp:472`
+- `0x48cc60` `zArchiveList_GetCount` -> `src/GameZRecoil/zReader/zreader_load.cpp:361`
+- `0x48cc70` `zUtil::ZRDR_Init` -> `src/GameZRecoil/zReader/zreader_load.cpp:967`
+- `0x48cca0` `zUtil_ZRDR_SetSearchPath` -> `src/GameZRecoil/zReader/zreader_load.cpp:927`
+- `0x48cce0` `zUtil_ZRDR_AppendSearchPath` -> `src/GameZRecoil/zReader/zreader_load.cpp:947`
+- `0x48cd10` `zUtil_ZRDR_Shutdown` -> `src/GameZRecoil/zReader/zreader_load.cpp:895`
+- `0x48cd40` `zReader::TryResolvePath` -> `src/GameZRecoil/zReader/zreader_load.cpp:1685`
 - `0x48cf80` `zReader::ReadNamedString` -> `src/GameZRecoil/zReader/zreader_lookup.cpp:108`
 - `0x48cfb0` `zReader::ReadNamedFloat` -> `src/GameZRecoil/zReader/zreader_lookup.cpp:140`
 - `0x48d030` `zReader::ReadNamedInt` -> `src/GameZRecoil/zReader/zreader_lookup.cpp:185`
-- `0x48d210` `zArchive::MountIndexArchive` -> `src/GameZRecoil/zReader/zreader_load.cpp:1324`
-- `0x48d2c0` `zUtil_ZRDR_UnloadMountedArchives` -> `src/GameZRecoil/zReader/zreader_load.cpp:790`
+- `0x48d210` `zArchive::MountIndexArchive` -> `src/GameZRecoil/zReader/zreader_load.cpp:1433`
+- `0x48d2c0` `zUtil_ZRDR_UnloadMountedArchives` -> `src/GameZRecoil/zReader/zreader_load.cpp:863`
 - `0x48d340` `zVid::Noise_InitBuffers` -> `src/GameZRecoil/zVideo/zVideo.cpp:4375`
 - `0x48d3e0` `zVid::Noise_ShutdownBuffers` -> `src/GameZRecoil/zVideo/zVideo.cpp:4401`
 - `0x48d420` `zVideo::Fx_SetSurfaceState` -> `src/GameZRecoil/zVideo/zVideo.cpp:2914`
@@ -3538,30 +3525,34 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4a5b40` `zLoc::ResolveMessageKeyOrFallback` -> `src/GameZRecoil/zLoc/zLoc.cpp:61`
 - `0x4a5b60` `zLoc::FormatMessage` -> `src/GameZRecoil/zLoc/zLoc.cpp:76`
 - `0x4a5bf0` `zLoc::GetMessageString` -> `src/GameZRecoil/zLoc/zLoc.cpp:118`
-- `0x4a5c20` `zReader::FileExists` -> `src/GameZRecoil/zReader/zreader_load.cpp:1558`
-- `0x4a5c40` `zReader_FileExists_Wrapper` -> `src/GameZRecoil/zReader/zreader_load.cpp:1725`
-- `0x4a5ca0` `zUtil_ZRDR_CreateSearchPathList` -> `src/GameZRecoil/zReader/zreader_load.cpp:715`
-- `0x4a5cc0` `zUtil_ZRDR_FreeSearchPathList` -> `src/GameZRecoil/zReader/zreader_load.cpp:749`
-- `0x4a5ce0` `zUtil::ZRDR_AddSearchPaths` -> `src/GameZRecoil/zReader/zreader_load.cpp:661`
-- `0x4a5da0` `zUtil_ZRDR_StrCmpPredicate` -> `src/GameZRecoil/zReader/zreader_load.cpp:448`
-- `0x4a5df0` `zUtil_ZRDR_FreeScratchSearchPathList` -> `src/GameZRecoil/zReader/zreader_load.cpp:760`
-- `0x4a5e10` `zUtil_ZRDR_FreePathList` -> `src/GameZRecoil/zReader/zreader_load.cpp:728`
-- `0x4a5e50` `zUtil_ZRDR_ResolvePathInSearchPathList` -> `src/GameZRecoil/zReader/zreader_load.cpp:507`
-- `0x4a5f20` `zUtil_ZRDR_SearchPathContainsFilePredicate` -> `src/GameZRecoil/zReader/zreader_load.cpp:464`
-- `0x4a5f50` `zUtil_ZRDR_OpenFileResolved` -> `src/GameZRecoil/zReader/zreader_load.cpp:564`
-- `0x4a6100` `zUtil_ZRDR_ShutdownWildcardPath` -> `src/GameZRecoil/zReader/zreader_load.cpp:769`
-- `0x4a6190` `zIndexArchive::Reset` -> `src/GameZRecoil/zReader/zreader_load.cpp:931`
-- `0x4a61b0` `zIndexArchive::Destroy` -> `src/GameZRecoil/zReader/zreader_load.cpp:945`
-- `0x4a61d0` `zIndexArchive::Init` -> `src/GameZRecoil/zReader/zreader_load.cpp:956`
-- `0x4a62b0` `zIndexArchive::CloseAndFreeRecords` -> `src/GameZRecoil/zReader/zreader_load.cpp:1024`
-- `0x4a62f0` `zIndexArchive::EnsureCapacity` -> `src/GameZRecoil/zReader/zreader_load.cpp:1166`
-- `0x4a6330` `zIndexArchive::FreeRecordsAndReset` -> `src/GameZRecoil/zReader/zreader_load.cpp:1043`
-- `0x4a6360` `zIndexArchive::FlushIndexToTail` -> `src/GameZRecoil/zReader/zreader_load.cpp:1061`
-- `0x4a63f0` `zIndexArchive::LoadIndexFromTail` -> `src/GameZRecoil/zReader/zreader_load.cpp:1100`
-- `0x4a64d0` `zIndexArchive::AddFileRecord` -> `src/GameZRecoil/zReader/zreader_load.cpp:1189`
-- `0x4a65d0` `zIndexArchive::FindRecordByNameCI` -> `src/GameZRecoil/zReader/zreader_load.cpp:1249`
-- `0x4a6630` `zIndexArchive::OpenFileByName` -> `src/GameZRecoil/zReader/zreader_load.cpp:1266`
-- `0x4a6670` `zIndexArchive::ReadFileByName` -> `src/GameZRecoil/zReader/zreader_load.cpp:1289`
+- `0x4a5c20` `zReader::FileExists` -> `src/GameZRecoil/zReader/zreader_load.cpp:1670`
+- `0x4a5c40` `zReader_FileExists_Wrapper` -> `src/GameZRecoil/zReader/zreader_load.cpp:1849`
+- `0x4a5c50` `zUtil::ZRDR_GetFileSize` -> `src/GameZRecoil/zReader/zreader_load.cpp:524`
+- `0x4a5ca0` `zUtil_ZRDR_CreateSearchPathList` -> `src/GameZRecoil/zReader/zreader_load.cpp:775`
+- `0x4a5cc0` `zUtil_ZRDR_FreeSearchPathList` -> `src/GameZRecoil/zReader/zreader_load.cpp:811`
+- `0x4a5ce0` `zUtil::ZRDR_AddSearchPaths` -> `src/GameZRecoil/zReader/zreader_load.cpp:718`
+- `0x4a5da0` `zUtil_ZRDR_StrCmpPredicate` -> `src/GameZRecoil/zReader/zreader_load.cpp:488`
+- `0x4a5df0` `zUtil_ZRDR_FreeScratchSearchPathList` -> `src/GameZRecoil/zReader/zreader_load.cpp:823`
+- `0x4a5e10` `zUtil_ZRDR_FreePathList` -> `src/GameZRecoil/zReader/zreader_load.cpp:790`
+- `0x4a5e50` `zUtil_ZRDR_ResolvePathInSearchPathList` -> `src/GameZRecoil/zReader/zreader_load.cpp:552`
+- `0x4a5f20` `zUtil_ZRDR_SearchPathContainsFilePredicate` -> `src/GameZRecoil/zReader/zreader_load.cpp:506`
+- `0x4a5f50` `zUtil_ZRDR_OpenFileResolved` -> `src/GameZRecoil/zReader/zreader_load.cpp:609`
+- `0x4a5f90` `zUtil_ZRDR::InitWildcardPath` -> `src/GameZRecoil/zReader/zreader_load.cpp:648`
+- `0x4a6070` `zUtil_ZRDR::NextWildcardPath` -> `src/GameZRecoil/zReader/zreader_load.cpp:687`
+- `0x4a6100` `zUtil_ZRDR_ShutdownWildcardPath` -> `src/GameZRecoil/zReader/zreader_load.cpp:835`
+- `0x4a6190` `zIndexArchive::Reset` -> `src/GameZRecoil/zReader/zreader_load.cpp:1024`
+- `0x4a61b0` `zIndexArchive::Destroy` -> `src/GameZRecoil/zReader/zreader_load.cpp:1038`
+- `0x4a61d0` `zIndexArchive::Init` -> `src/GameZRecoil/zReader/zreader_load.cpp:1049`
+- `0x4a6270` `zIndexArchive::OpenCreateWrite` -> `src/GameZRecoil/zReader/zreader_load.cpp:1098`
+- `0x4a62b0` `zIndexArchive::CloseAndFreeRecords` -> `src/GameZRecoil/zReader/zreader_load.cpp:1120`
+- `0x4a62f0` `zIndexArchive::EnsureCapacity` -> `src/GameZRecoil/zReader/zreader_load.cpp:1262`
+- `0x4a6330` `zIndexArchive::FreeRecordsAndReset` -> `src/GameZRecoil/zReader/zreader_load.cpp:1139`
+- `0x4a6360` `zIndexArchive::FlushIndexToTail` -> `src/GameZRecoil/zReader/zreader_load.cpp:1157`
+- `0x4a63f0` `zIndexArchive::LoadIndexFromTail` -> `src/GameZRecoil/zReader/zreader_load.cpp:1196`
+- `0x4a64d0` `zIndexArchive::AddFileRecord` -> `src/GameZRecoil/zReader/zreader_load.cpp:1286`
+- `0x4a65d0` `zIndexArchive::FindRecordByNameCI` -> `src/GameZRecoil/zReader/zreader_load.cpp:1349`
+- `0x4a6630` `zIndexArchive::OpenFileByName` -> `src/GameZRecoil/zReader/zreader_load.cpp:1369`
+- `0x4a6670` `zIndexArchive::ReadFileByName` -> `src/GameZRecoil/zReader/zreader_load.cpp:1395`
 - `0x4a66e0` `zVideo::GetDisplayModeBpp` -> `src/GameZRecoil/zVideo/zVideo.cpp:2628`
 - `0x4a66f0` `zVideo::Init_ApplyModeIndex` -> `src/GameZRecoil/zVideo/zVideo.cpp:2803`
 - `0x4a6710` `zVideo::GetSwSurfacePixels` -> `src/GameZRecoil/zVideo/zVideo.cpp:2532`

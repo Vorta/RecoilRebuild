@@ -3608,15 +3608,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4c0630:
   - [✅] Reconstructed (Name: zZbdManager::WriteSectionRecord)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zUtil; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: zZbdManager; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: zZbdManager::WriteSectionRecord;
     - File: src/GameZRecoil/zUtil/zZbd.cpp;
     - Target: zzbd_manager_write_section_record;
     - Group: engine.zutil;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4c0700:
   - [✅] Reconstructed (Name: zZbdManager::FlushTempStreamToSectionRecord)
@@ -4279,15 +4279,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a64d0:
   - [✅] Reconstructed (Name: zIndexArchive::AddFileRecord)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zReader; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: zIndexArchive; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zIndexArchive::AddFileRecord;
     - File: src/GameZRecoil/zReader/zreader_load.cpp;
     - Target: zindex_archive_add_file_record;
     - Group: engine.zreader;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a65d0:
   - [✅] Reconstructed (Name: zIndexArchive::FindRecordByNameCI)
