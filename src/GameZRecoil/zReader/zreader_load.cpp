@@ -34,7 +34,10 @@ extern "C" int g_zUtil_ZRDR_WildcardStarCount = 0;
 extern "C" char *g_zUtil_ZRDR_WildcardStarPtrs[5] = {0};
 extern "C" zClass_NodePartial *g_Mover_LastLoadedNode = 0;
 
-// Reimplements 0x48c9a0: zArchiveList_LinkNodeBetween
+/**
+ * Reimplements 0x48c9a0: zArchiveList_LinkNodeBetween.
+ * Purpose: link a node between two existing circular-list neighbors.
+ */
 extern "C" void __fastcall zArchiveList_LinkNodeBetween(
     zArchiveListNode *after,
     zArchiveListNode *newNode,
@@ -46,7 +49,10 @@ extern "C" void __fastcall zArchiveList_LinkNodeBetween(
     newNode->prev = after;
 }
 
-// Reimplements 0x48c950: zArchiveList_CreateEmpty
+/**
+ * Reimplements 0x48c950: zArchiveList_CreateEmpty.
+ * Purpose: allocate and initialize an empty circular archive list.
+ */
 extern "C" zArchiveList *zArchiveList_CreateEmpty() {
     zArchiveList *result = (zArchiveList *)(malloc(sizeof(zArchiveList)));
     memset(
@@ -74,7 +80,10 @@ extern "C" int __fastcall zArchiveList_Destroy(
     return 0;
 }
 
-// Reimplements 0x48c820: zUtil_ZRDR_PushFreeNode
+/**
+ * Reimplements 0x48c820: zUtil_ZRDR_PushFreeNode.
+ * Purpose: return a node to the shared ZRDR free-node list.
+ */
 extern "C" void __fastcall zUtil_ZRDR_PushFreeNode(
     zArchiveListNode *node
 ) {
@@ -100,7 +109,10 @@ extern "C" void __fastcall zUtil_ZRDR_PushFreeNode(
     ++g_zUtil_ZRDR_FreeCount;
 }
 
-// Reimplements 0x48c800: zUtil_ZRDR_GrowFreePool
+/**
+ * Reimplements 0x48c800: zUtil_ZRDR_GrowFreePool.
+ * Purpose: allocate a batch of reusable ZRDR archive-list nodes.
+ */
 extern "C" void zUtil_ZRDR_GrowFreePool() {
     zArchiveListNode *node = (zArchiveListNode *)(malloc(sizeof(zArchiveListNode)));
     zUtil_ZRDR_PushFreeNode(node);
@@ -108,7 +120,10 @@ extern "C" void zUtil_ZRDR_GrowFreePool() {
 }
 
 namespace zUtil {
-// Reimplements 0x48c7d0: zUtil::ZRDR_PreallocNodePool
+/**
+ * Reimplements 0x48c7d0: zUtil::ZRDR_PreallocNodePool.
+ * Purpose: ensure the free-node pool has at least the requested node count.
+ */
 void __fastcall ZRDR_PreallocNodePool(
     int count
 ) {
@@ -124,7 +139,10 @@ void __fastcall ZRDR_PreallocNodePool(
 }
 } // namespace zUtil
 
-// Reimplements 0x48c8e0: zUtil_ZRDR_PopFreeNode
+/**
+ * Reimplements 0x48c8e0: zUtil_ZRDR_PopFreeNode.
+ * Purpose: pop one reusable node from the ZRDR free-node list.
+ */
 extern "C" zArchiveListNode *__fastcall zUtil_ZRDR_PopFreeNode(
     int allowGrow
 ) {
@@ -155,7 +173,10 @@ extern "C" zArchiveListNode *__fastcall zUtil_ZRDR_PopFreeNode(
     return head;
 }
 
-// Reimplements 0x48ca10: zUtil_ZRDR_AllocNodeWithPayload
+/**
+ * Reimplements 0x48ca10: zUtil_ZRDR_AllocNodeWithPayload.
+ * Purpose: allocate a list node and attach the supplied payload pointer.
+ */
 extern "C" zArchiveListNode *__fastcall zUtil_ZRDR_AllocNodeWithPayload(
     void *payload
 ) {
@@ -164,7 +185,10 @@ extern "C" zArchiveListNode *__fastcall zUtil_ZRDR_AllocNodeWithPayload(
     return result;
 }
 
-// Reimplements 0x48c9c0: zArchiveList_PushFrontPayload
+/**
+ * Reimplements 0x48c9c0: zArchiveList_PushFrontPayload.
+ * Purpose: insert a payload node at the head of an archive list.
+ */
 extern "C" int __fastcall zArchiveList_PushFrontPayload(
     zArchiveList *list,
     void *payload
@@ -192,7 +216,10 @@ extern "C" int __fastcall zArchiveList_PushFrontPayload(
     return list->count;
 }
 
-// Reimplements 0x48ca30: zArchiveList_PushBackPayload
+/**
+ * Reimplements 0x48ca30: zArchiveList_PushBackPayload.
+ * Purpose: insert a payload node at the tail of an archive list.
+ */
 extern "C" int __fastcall zArchiveList_PushBackPayload(
     zArchiveList *list,
     void *payload
@@ -330,7 +357,10 @@ extern "C" void *__fastcall zArchiveList_PopFrontPayload(
     return zArchiveList_FreeNode(head);
 }
 
-// Reimplements 0x48cc60: zArchiveList_GetCount
+/**
+ * Reimplements 0x48cc60: zArchiveList_GetCount.
+ * Purpose: return the number of payload nodes in an archive list.
+ */
 extern "C" int __fastcall zArchiveList_GetCount(
     zArchiveList *list
 ) {
@@ -341,7 +371,10 @@ extern "C" int __fastcall zArchiveList_GetCount(
     return list->count;
 }
 
-// Reimplements 0x48cb30: zArchiveList_GetAt
+/**
+ * Reimplements 0x48cb30: zArchiveList_GetAt.
+ * Purpose: return the payload at a zero-based archive-list index.
+ */
 extern "C" void *__fastcall zArchiveList_GetAt(
     zArchiveList *list,
     int index
@@ -365,7 +398,10 @@ extern "C" void *__fastcall zArchiveList_GetAt(
     return node->payload;
 }
 
-// Reimplements 0x48cbd0: zArchiveList_FindPayloadByPredicate
+/**
+ * Reimplements 0x48cbd0: zArchiveList_FindPayloadByPredicate.
+ * Purpose: find the first payload accepted by a caller-supplied predicate.
+ */
 extern "C" void *__fastcall zArchiveList_FindPayloadByPredicate(
     zArchiveList *list,
     zArchiveListPredicate predicate,
@@ -432,7 +468,10 @@ extern "C" void *__fastcall zArchiveList_FindPayloadByValue(
     }
 }
 
-// Reimplements 0x48cc50: zArchiveList_FindPayloadByPredicate_Thunk
+/**
+ * Reimplements 0x48cc50: zArchiveList_FindPayloadByPredicate_Thunk.
+ * Purpose: adapt predicate payload search to the original fastcall callback shape.
+ */
 extern "C" void *__fastcall zArchiveList_FindPayloadByPredicate_Thunk(
     zArchiveList *list,
     zArchiveListPredicate predicate,
@@ -445,7 +484,10 @@ extern "C" void *__fastcall zArchiveList_FindPayloadByPredicate_Thunk(
     );
 }
 
-// Reimplements 0x4a5da0: zUtil_ZRDR_StrCmpPredicate
+/**
+ * Reimplements 0x4a5da0: zUtil_ZRDR_StrCmpPredicate.
+ * Purpose: compare a payload string against the requested string key.
+ */
 extern "C" int __fastcall zUtil_ZRDR_StrCmpPredicate(
     void *str1,
     void *str2
@@ -478,8 +520,11 @@ extern "C" int __fastcall zUtil_ZRDR_SearchPathContainsFilePredicate(
 }
 
 namespace zUtil {
-// Reimplements 0x4a5c50: zUtil::ZRDR_GetFileSize
-// (D:\Proj\GameZRecoil\zUtil\zutl_zrdr.cpp)
+/**
+ * Reimplements 0x4a5c50: zUtil::ZRDR_GetFileSize.
+ * Source: D:\Proj\GameZRecoil\zUtil\zutl_zrdr.cpp.
+ * Purpose: return the file size for a resolved ZRDR path.
+ */
 int __fastcall ZRDR_GetFileSize(
     FILE *fileHandle
 ) {
@@ -581,6 +626,11 @@ extern "C" FILE *__fastcall zUtil_ZRDR_OpenFileResolved(
 
 namespace {
 // Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: local helper used by zUtil_ZRDR_InitWildcardPath and
+ * zUtil_ZRDR_NextWildcardPath to maintain the active wildcard path string.
+ * Purpose: update wildcard digit placeholders in the active ZRDR wildcard path.
+ */
 void zUtil_ZRDR_WriteWildcardDigits() {
     for (int i = g_zUtil_ZRDR_WildcardStarCount - 1; i >= 0; --i) {
         char digitText[16];
@@ -594,8 +644,11 @@ void zUtil_ZRDR_WriteWildcardDigits() {
 }
 } // namespace
 
-// Reimplements 0x4a5f90: zUtil_ZRDR::InitWildcardPath
-// (D:\Proj\GameZRecoil\zUtil\zutl_zrdr.cpp)
+/**
+ * Reimplements 0x4a5f90: zUtil_ZRDR::InitWildcardPath.
+ * Source: D:\Proj\GameZRecoil\zUtil\zutl_zrdr.cpp.
+ * Purpose: initialize wildcard path state from a path template.
+ */
 extern "C" char *__fastcall zUtil_ZRDR_InitWildcardPath(
     char *pattern
 ) {
@@ -630,8 +683,11 @@ extern "C" char *__fastcall zUtil_ZRDR_InitWildcardPath(
     return g_zUtil_ZRDR_WildcardPath;
 }
 
-// Reimplements 0x4a6070: zUtil_ZRDR::NextWildcardPath
-// (D:\Proj\GameZRecoil\zUtil\zutl_zrdr.cpp)
+/**
+ * Reimplements 0x4a6070: zUtil_ZRDR::NextWildcardPath.
+ * Source: D:\Proj\GameZRecoil\zUtil\zutl_zrdr.cpp.
+ * Purpose: advance wildcard digits and return the next generated path.
+ */
 extern "C" char *zUtil_ZRDR_NextWildcardPath() {
     int carryOut = 0;
     int digitIndex = 0;
@@ -658,7 +714,10 @@ extern "C" char *zUtil_ZRDR_NextWildcardPath() {
 }
 
 namespace zUtil {
-// Reimplements 0x4a5ce0: zUtil::ZRDR_AddSearchPaths
+/**
+ * Reimplements 0x4a5ce0: zUtil::ZRDR_AddSearchPaths.
+ * Purpose: split and append semicolon-delimited paths to a search-path list.
+ */
 void __fastcall ZRDR_AddSearchPaths(
     zArchiveList *list,
     const char *pathText
@@ -712,7 +771,10 @@ void __fastcall ZRDR_AddSearchPaths(
 }
 } // namespace zUtil
 
-// Reimplements 0x4a5ca0: zUtil_ZRDR_CreateSearchPathList
+/**
+ * Reimplements 0x4a5ca0: zUtil_ZRDR_CreateSearchPathList.
+ * Purpose: allocate a search-path list and populate it from a path string.
+ */
 extern "C" zArchiveList *__fastcall zUtil_ZRDR_CreateSearchPathList(
     const char *pathText
 ) {
@@ -757,7 +819,10 @@ extern "C" zArchiveList *__fastcall zUtil_ZRDR_FreeSearchPathList(
     return 0;
 }
 
-// Reimplements 0x4a5df0: zUtil_ZRDR_FreeScratchSearchPathList
+/**
+ * Reimplements 0x4a5df0: zUtil_ZRDR_FreeScratchSearchPathList.
+ * Purpose: release the scratch search-path list and clear its global pointer.
+ */
 extern "C" void zUtil_ZRDR_FreeScratchSearchPathList() {
     if (g_zRdr_ScratchSearchPathList != 0) {
         zUtil_ZRDR_FreeSearchPathList(g_zRdr_ScratchSearchPathList);
@@ -766,7 +831,10 @@ extern "C" void zUtil_ZRDR_FreeScratchSearchPathList() {
     g_zRdr_ScratchSearchPathList = 0;
 }
 
-// Reimplements 0x4a6100: zUtil_ZRDR_ShutdownWildcardPath
+/**
+ * Reimplements 0x4a6100: zUtil_ZRDR_ShutdownWildcardPath.
+ * Purpose: free the active wildcard path buffer and reset wildcard state.
+ */
 extern "C" int zUtil_ZRDR_ShutdownWildcardPath() {
     zUtil_ZRDR_FreeScratchSearchPathList();
     return 0;
@@ -774,6 +842,10 @@ extern "C" int zUtil_ZRDR_ShutdownWildcardPath() {
 
 namespace {
 // Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: local callback used by zUtil_ZRDR_UnloadMountedArchives.
+ * Purpose: release one mounted archive payload during mounted-archive teardown.
+ */
 void DestroyMountedArchive(
     zIndexArchive *archive
 ) {
@@ -787,7 +859,10 @@ void DestroyMountedArchive(
 }
 } // namespace
 
-// Reimplements 0x48d2c0: zUtil_ZRDR_UnloadMountedArchives
+/**
+ * Reimplements 0x48d2c0: zUtil_ZRDR_UnloadMountedArchives.
+ * Purpose: destroy mounted archives and reset mounted/current archive globals.
+ */
 extern "C" int __fastcall zUtil_ZRDR_UnloadMountedArchives(
     int destroyCurrentToo
 ) {
@@ -816,7 +891,10 @@ extern "C" int __fastcall zUtil_ZRDR_UnloadMountedArchives(
     return 0;
 }
 
-// Reimplements 0x48cd10: zUtil_ZRDR_Shutdown
+/**
+ * Reimplements 0x48cd10: zUtil_ZRDR_Shutdown.
+ * Purpose: shut down ZRDR path state, mounted archives, and node pools.
+ */
 extern "C" int zUtil_ZRDR_Shutdown() {
     zUtil_ZRDR_FreeSearchPathList(g_zRdr_SearchPathList);
     zUtil_ZRDR_UnloadMountedArchives(1);
@@ -826,7 +904,10 @@ extern "C" int zUtil_ZRDR_Shutdown() {
     return 0;
 }
 
-// Reimplements 0x48c890: zUtil_ZRDR_FreeNodePool
+/**
+ * Reimplements 0x48c890: zUtil_ZRDR_FreeNodePool.
+ * Purpose: release all nodes currently held in the ZRDR free-node pool.
+ */
 extern "C" void zUtil_ZRDR_FreeNodePool() {
     if (g_zUtil_ZRDR_FreePool == 0) {
         return;
@@ -842,7 +923,10 @@ extern "C" void zUtil_ZRDR_FreeNodePool() {
     g_zUtil_ZRDR_FreePool = 0;
 }
 
-// Reimplements 0x48cca0: zUtil_ZRDR_SetSearchPath
+/**
+ * Reimplements 0x48cca0: zUtil_ZRDR_SetSearchPath.
+ * Purpose: replace the current ZRDR search path list.
+ */
 extern "C" int __fastcall zUtil_ZRDR_SetSearchPath(
     const char *pathText
 ) {
@@ -859,7 +943,10 @@ extern "C" int __fastcall zUtil_ZRDR_SetSearchPath(
     return 0;
 }
 
-// Reimplements 0x48cce0: zUtil_ZRDR_AppendSearchPath
+/**
+ * Reimplements 0x48cce0: zUtil_ZRDR_AppendSearchPath.
+ * Purpose: append additional paths to the current ZRDR search path list.
+ */
 extern "C" int __fastcall zUtil_ZRDR_AppendSearchPath(
     const char *pathText
 ) {
@@ -876,7 +963,10 @@ extern "C" int __fastcall zUtil_ZRDR_AppendSearchPath(
 }
 
 namespace zUtil {
-// Reimplements 0x48cc70: zUtil::ZRDR_Init
+/**
+ * Reimplements 0x48cc70: zUtil::ZRDR_Init.
+ * Purpose: initialize ZRDR search-path and node-pool state.
+ */
 int __fastcall ZRDR_Init(
     const char *pathText
 ) {
@@ -889,8 +979,11 @@ int __fastcall ZRDR_Init(
     return 0;
 }
 
-// Reimplements 0x42ecb0: zUtil::SetMissionZrdrPathsAndMountZbd
-// (D:\Proj\GameZRecoil\zUtil\zUtil.cpp)
+/**
+ * Reimplements 0x42ecb0: zUtil::SetMissionZrdrPathsAndMountZbd.
+ * Source: D:\Proj\GameZRecoil\zUtil\zUtil.cpp.
+ * Purpose: configure mission ZRDR search paths and mount the mission archive.
+ */
 int __fastcall SetMissionZrdrPathsAndMountZbd(
     int missionId
 ) {
@@ -1001,8 +1094,11 @@ int zIndexArchive::Init(
     return initialized;
 }
 
-// Reimplements 0x4a6270: zIndexArchive::OpenCreateWrite
-// (D:\Proj\GameZRecoil\zUtil\zutl_zar.cpp)
+/**
+ * Reimplements 0x4a6270: zIndexArchive::OpenCreateWrite.
+ * Source: D:\Proj\GameZRecoil\zUtil\zutl_zar.cpp.
+ * Purpose: create an archive file for writing and initialize record storage.
+ */
 int zIndexArchive::OpenCreateWrite(
     const char *filepath
 ) {
@@ -1186,7 +1282,10 @@ void zIndexArchive::EnsureCapacity(
     ));
 }
 
-// Reimplements 0x4a64d0: zIndexArchive::AddFileRecord
+/**
+ * Reimplements 0x4a64d0: zIndexArchive::AddFileRecord.
+ * Purpose: append a named payload to the archive file and record its index data.
+ */
 int zIndexArchive::AddFileRecord(
     const char *name,
     const void *data,
@@ -1205,7 +1304,7 @@ int zIndexArchive::AddFileRecord(
         FILE_END
     );
 
-    zZarFileRecord record = {0};
+    zZarFileRecord record;
     record.fileOffset = GetFileSize(
         file,
         0
@@ -1246,7 +1345,10 @@ int zIndexArchive::AddFileRecord(
     return numberOfBytesWritten == dataSize ? 1 : 0;
 }
 
-// Reimplements 0x4a65d0: zIndexArchive::FindRecordByNameCI
+/**
+ * Reimplements 0x4a65d0: zIndexArchive::FindRecordByNameCI.
+ * Purpose: find an archive file record by case-insensitive name.
+ */
 zZarFileRecord * zIndexArchive::FindRecordByNameCI(
     const char *filename
 ) {
@@ -1263,7 +1365,10 @@ zZarFileRecord * zIndexArchive::FindRecordByNameCI(
     return 0;
 }
 
-// Reimplements 0x4a6630: zIndexArchive::OpenFileByName
+/**
+ * Reimplements 0x4a6630: zIndexArchive::OpenFileByName.
+ * Purpose: open a file member from the archive and optionally return its size.
+ */
 void * zIndexArchive::OpenFileByName(
     const char *filename,
     unsigned int *outSize
@@ -1286,7 +1391,10 @@ void * zIndexArchive::OpenFileByName(
     return hFile;
 }
 
-// Reimplements 0x4a6670: zIndexArchive::ReadFileByName
+/**
+ * Reimplements 0x4a6670: zIndexArchive::ReadFileByName.
+ * Purpose: read a named archive member into the caller-provided buffer.
+ */
 int zIndexArchive::ReadFileByName(
     const char *filename,
     void *buffer,
@@ -1321,7 +1429,10 @@ int zIndexArchive::ReadFileByName(
 }
 
 namespace zArchive {
-// Reimplements 0x48d210: zArchive::MountIndexArchive
+/**
+ * Reimplements 0x48d210: zArchive::MountIndexArchive.
+ * Purpose: allocate, initialize, and register a mounted index archive.
+ */
 int __fastcall MountIndexArchive(
     const char *path,
     int setCurrent
@@ -1555,8 +1666,11 @@ extern "C" void *__fastcall zReader_OpenFileFromMountedArchives(
 }
 
 namespace zReader {
-// Reimplements 0x4a5c20: zReader::FileExists
-// Uses the imported CRT `_access` provider and returns a 1/0 existence flag.
+/**
+ * Reimplements 0x4a5c20: zReader::FileExists.
+ * Uses the imported CRT `_access` provider and returns a 1/0 existence flag.
+ * Purpose: test whether a path exists for ZRDR file lookup.
+ */
 int __fastcall FileExists(
     const char *path
 ) {
@@ -1567,7 +1681,10 @@ int __fastcall FileExists(
     return accessResult == 0;
 }
 
-// Reimplements 0x48cd40: zReader::TryResolvePath
+/**
+ * Reimplements 0x48cd40: zReader::TryResolvePath.
+ * Purpose: resolve a filename through mounted archives and search paths.
+ */
 const char *__fastcall TryResolvePath(
     const char *filename,
     const char *extraSearchPath
@@ -1598,7 +1715,10 @@ const char *__fastcall TryResolvePath(
     return result;
 }
 
-// Reimplements 0x421e20: zReader::BuildResolvedParentDir
+/**
+ * Reimplements 0x421e20: zReader::BuildResolvedParentDir.
+ * Purpose: build the parent directory for the currently resolved ZRDR path.
+ */
 int __fastcall BuildResolvedParentDir(
     const char *filename,
     char *outParentDir
@@ -1685,7 +1805,10 @@ int __fastcall FreeLoadedTree(
     return 0;
 }
 
-// Reimplements 0x420be0: zReader::LoadMoversFromZrd
+/**
+ * Reimplements 0x420be0: zReader::LoadMoversFromZrd.
+ * Purpose: load mover definitions from the current ZRD tree.
+ */
 void LoadMoversFromZrd() {
     Node *const treeRoot = LoadNodeFromPath(
         "movers.zrd",
@@ -1722,7 +1845,10 @@ void LoadMoversFromZrd() {
 }
 } // namespace zReader
 
-// Reimplements 0x4a5c40: zReader_FileExists_Wrapper
+/**
+ * Reimplements 0x4a5c40: zReader_FileExists_Wrapper.
+ * Purpose: expose zReader::FileExists through the original wrapper entry point.
+ */
 extern "C" int __fastcall zReader_FileExists_Wrapper(
     const char *path
 ) {
