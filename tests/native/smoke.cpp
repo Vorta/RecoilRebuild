@@ -165,6 +165,7 @@ extern "C" int gamenet_player_row_destroy_embedded_panel_smoke(void);
 extern "C" int gamenet_apply_pkt06_player_state_snapshot_smoke(void);
 extern "C" int gamenet_handle_pkt06_player_state_snapshot_smoke(void);
 extern "C" int gamenet_spawn_remote_player_missing_template_smoke(void);
+extern "C" int gamenet_scoreboard_snapshot_packet_smoke(void);
 extern "C" int ainet_find_by_net_id_smoke(void);
 extern "C" int ainet_find_nearest_node_smoke(void);
 extern "C" int player_get_save_state_list_head_smoke(void);
@@ -10660,6 +10661,8 @@ int main(int argc, char **argv) {
          gamenet_handle_pkt06_player_state_snapshot_smoke},
         {"gamenet_spawn_remote_player_missing_template_smoke",
          gamenet_spawn_remote_player_missing_template_smoke},
+        {"gamenet_scoreboard_snapshot_packet_smoke",
+         gamenet_scoreboard_snapshot_packet_smoke},
         {"ainet_find_by_net_id_smoke", ainet_find_by_net_id_smoke},
         {"ainet_find_nearest_node_smoke", ainet_find_nearest_node_smoke},
         {"player_get_save_state_list_head_smoke",

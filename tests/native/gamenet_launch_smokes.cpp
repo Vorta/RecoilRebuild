@@ -59,6 +59,12 @@ struct FakeDirectPlay4 {
     void **vtable;
 };
 
+struct ScoreboardPacket2 {
+    zNetworkPacketHeader header;
+    std::int32_t entryCount;
+    NetPkt09_PlayerScoreboardEntry entries[2];
+};
+
 void InitDirectPlayVtable(
     void **vtable
 ) {
@@ -961,6 +967,143 @@ extern "C" int gamenet_handle_pkt06_player_state_snapshot_smoke(void) {
     ::operator delete(row);
 
     return nullResult == -1 && ignoredOk && handledOk ? 0 : 1;
+}
+
+extern "C" int gamenet_scoreboard_snapshot_packet_smoke(void) {
+    HudUiStatsListElement *const oldStatsList = g_HudUiMgrStatsList;
+    const std::int32_t oldRaceMode = g_HudSensorTracker.raceCheckpointMode;
+    const std::int32_t oldGoalValue = g_HudSensorTracker.runtimeGoalValue;
+    const std::int32_t oldOneLapShown = g_GameNetOneLapLeftMessageShown;
+    GameNetPlayerRow *const oldHead = g_GameNetPlayerRowHead;
+    GameNetPlayerRow *const oldTail = g_GameNetPlayerRowTail;
+    const std::uint32_t oldCount = g_GameNetPlayerRowCount;
+    zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
+    zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
+    const std::int32_t oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+    const std::int32_t oldIsHost = g_zNetwork_IsHostFlag;
+    const std::int32_t oldTcpIpAsync = g_zNetwork_TcpIpAsyncSendEnabled;
+
+    HudUiTriplet triplet;
+    triplet.Constructor();
+    HudUiStatsListElement statsList = {};
+    statsList.triplet = &triplet;
+    g_HudUiMgrStatsList = &statsList;
+
+    GameNetPlayerRow *const alpha = (GameNetPlayerRow *)(::operator new(sizeof(GameNetPlayerRow)));
+    GameNetPlayerRow *const bravo = (GameNetPlayerRow *)(::operator new(sizeof(GameNetPlayerRow)));
+    std::memset(
+        alpha,
+        0,
+        sizeof(*alpha)
+    );
+    std::memset(
+        bravo,
+        0,
+        sizeof(*bravo)
+    );
+
+    alpha->playerKey = 0x101;
+    alpha->playerColorPackedRgb = 0x00112233;
+    std::strcpy(
+        alpha->displayName,
+        "Alpha"
+    );
+
+    bravo->playerKey = 0x202;
+    bravo->playerColorPackedRgb = 0x00445566;
+    std::strcpy(
+        bravo->displayName,
+        "Bravo"
+    );
+    alpha->next = bravo;
+
+    g_GameNetPlayerRowHead = alpha;
+    g_GameNetPlayerRowTail = bravo;
+    g_GameNetPlayerRowCount = 2;
+    g_HudSensorTracker.raceCheckpointMode = 0;
+    g_HudSensorTracker.runtimeGoalValue = 999;
+    g_GameNetOneLapLeftMessageShown = 0;
+    g_zNetwork_IsHostFlag = 0;
+
+    GameNet::RefreshPlayerListMenu(alpha);
+    GameNet::RefreshPlayerListMenu(bravo);
+
+    ScoreboardPacket2 packet = {};
+    packet.header.packetType = 0x09;
+    packet.header.packetSizeBytes = sizeof(packet);
+    packet.entryCount = 2;
+    packet.entries[0].playerKey = alpha->playerKey;
+    packet.entries[0].packedScoreAndLapCount = (std::uint16_t)((3 << 9) | 17);
+    packet.entries[1].playerKey = bravo->playerKey;
+    packet.entries[1].packedScoreAndLapCount = (std::uint16_t)((4 << 9) | 22);
+
+    const std::int32_t handleResult = GameNet::HandlePkt09_PlayerScoreboardSnapshot(
+        0,
+        (NetPkt09_PlayerScoreboardSnapshot *)(&packet)
+    );
+    const bool applied =
+        handleResult == 1 && alpha->score == 17 && alpha->lapCount == 3 &&
+        bravo->score == 22 && bravo->lapCount == 4 &&
+        triplet.entries.begin[0].playerKey == bravo->playerKey &&
+        triplet.entries.begin[1].playerKey == alpha->playerKey;
+
+    void *vtable[52];
+    InitDirectPlayVtable(vtable);
+    FakeDirectPlay4 dplay = {vtable};
+    zNetwork_PlayerRecord localPlayer = {};
+    localPlayer.playerKey = 0x4444;
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&dplay);
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = 0x5678;
+    g_zNetwork_IsHostFlag = 1;
+    g_zNetwork_TcpIpAsyncSendEnabled = 0;
+    g_sendCalls = 0;
+    g_sendFlags = 0;
+    g_sendPacket = 0;
+    g_sendPacketSize = 0;
+    g_sendPacketBytesSize = 0;
+    std::memset(
+        g_sendPacketBytes,
+        0,
+        sizeof(g_sendPacketBytes)
+    );
+
+    alpha->score = 33;
+    alpha->lapCount = 7;
+    bravo->score = 44;
+    bravo->lapCount = 5;
+    GameNet::SendPkt09_PlayerScoreboardSnapshot();
+
+    const ScoreboardPacket2 *const sentPacket =
+        (const ScoreboardPacket2 *)(g_sendPacketBytes);
+    const bool sent =
+        g_sendCalls == 1 && g_sendFlags == 1 && g_sendPacketSize == sizeof(ScoreboardPacket2) &&
+        g_sendPacketBytesSize == sizeof(ScoreboardPacket2) &&
+        sentPacket->header.packetType == 0x09 &&
+        sentPacket->header.packetSizeBytes == sizeof(ScoreboardPacket2) &&
+        sentPacket->header.payloadDword0 == 0x5678 && sentPacket->entryCount == 2 &&
+        sentPacket->entries[0].playerKey == alpha->playerKey &&
+        sentPacket->entries[0].packedScoreAndLapCount == (std::uint16_t)((7 << 9) | 33) &&
+        sentPacket->entries[1].playerKey == bravo->playerKey &&
+        sentPacket->entries[1].packedScoreAndLapCount == (std::uint16_t)((5 << 9) | 44);
+
+    g_HudUiMgrStatsList = oldStatsList;
+    g_HudSensorTracker.raceCheckpointMode = oldRaceMode;
+    g_HudSensorTracker.runtimeGoalValue = oldGoalValue;
+    g_GameNetOneLapLeftMessageShown = oldOneLapShown;
+    g_GameNetPlayerRowHead = oldHead;
+    g_GameNetPlayerRowTail = oldTail;
+    g_GameNetPlayerRowCount = oldCount;
+    g_zNetwork_pDirectPlay4 = oldDPlay;
+    g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    g_zNetwork_IsHostFlag = oldIsHost;
+    g_zNetwork_TcpIpAsyncSendEnabled = oldTcpIpAsync;
+    triplet.DestructorCore();
+    ::operator delete(alpha);
+    ::operator delete(bravo);
+
+    return applied && sent ? 0 : 1;
 }
 
 extern "C" int gamenet_spawn_remote_player_missing_template_smoke(void) {

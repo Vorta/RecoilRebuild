@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "owners": [
+    {
+      "id": "battlesport_gameplay.player_create_from_names_bootstrap",
+      "kind": "record",
+      "name": "Player create-from-names bootstrap",
+      "section": "battlesport_gameplay",
+      "state": "active",
+      "anchors": [
+        "0x421ab0"
+      ],
+      "member_addresses": [
+        "0x420d10",
+        "0x421ab0",
+        "0x421ea0",
+        "0x432860",
+        "0x45d930"
+      ],
+      "data_addresses": [],
+      "source_paths": [
+        "src/Battlesport"
+      ],
+      "dependencies": [
+        "network_online.gamenet_launch_session_sync"
+      ],
+      "gates": {
+        "boundary": "pending",
+        "source": "pending",
+        "data": "pending",
+        "functional": "pending",
+        "byte": "deferred"
+      },
+      "blocker": "Recover the owner record/source cluster before treating create-from-names helper slices as complete.",
+      "evidence": [
+        "Seeded from active implementation group after owner-first workflow hardening."
+      ]
+    },
+    {
+      "id": "hud_ui.hud_ui_mgr_data",
+      "kind": "data-owner",
+      "name": "HudUiMgrData / g_HudUiMgr",
+      "section": "hud_ui",
+      "state": "blocked",
+      "anchors": [
+        "0x4132b0",
+        "0x4118b0"
+      ],
+      "member_addresses": [
+        "0x40d7e0",
+        "0x411750",
+        "0x4118b0",
+        "0x4132b0"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4e5ed0",
+          "name": "g_HudUiMgr"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zHud/zhud_ui.cpp",
+        "src/GameZRecoil/zHud/zhud_ui.h"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "blocked",
+        "source": "blocked",
+        "data": "blocked",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Complete HudUiMgrData/g_HudUiMgr ownership, initialized data, and touched HUD globals before Data reimplemented can be accepted.",
+      "evidence": [
+        "0x4132b0 was previously marked Data reimplemented despite touching g_HudUiMgr; downgraded in data-owner audit."
+      ]
+    },
+    {
+      "id": "network_online.gamenet_launch_session_sync",
+      "kind": "subsystem",
+      "name": "GameNet launch/session-sync owner-data cleanup",
+      "section": "network_online",
+      "state": "active",
+      "anchors": [
+        "0x431c50"
+      ],
+      "member_addresses": [
+        "0x420d10",
+        "0x431c50",
+        "0x4327e0",
+        "0x432860",
+        "0x432ae0"
+      ],
+      "data_addresses": [],
+      "source_paths": [
+        "src/GameZRecoil",
+        "src/Battlesport"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "pending",
+        "source": "pending",
+        "data": "pending",
+        "functional": "pending",
+        "byte": "deferred"
+      },
+      "blocker": "Resolve GameNet session/global owner shape and data before promoting dependent launch helpers beyond functional evidence.",
+      "evidence": [
+        "Seeded from active implementation group after owner-first workflow hardening."
+      ]
+    },
+    {
+      "id": "render_video.zvideo_renderer_dispatch",
+      "kind": "subsystem",
+      "name": "zVideo renderer dispatch/global owner audit",
+      "section": "render_video",
+      "state": "active",
+      "anchors": [
+        "0x4a77a0"
+      ],
+      "member_addresses": [
+        "0x4a77a0"
+      ],
+      "data_addresses": [],
+      "source_paths": [
+        "src/GameZRecoil",
+        "src/Battlesport"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "pending",
+        "source": "pending",
+        "data": "pending",
+        "functional": "pending",
+        "byte": "deferred"
+      },
+      "blocker": "Recover renderer owner/global dispatch boundary before isolated zVideo function work is accepted.",
+      "evidence": [
+        "Seeded from active implementation group after owner-first workflow hardening."
+      ]
+    }
+  ]
+}

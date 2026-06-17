@@ -37,9 +37,9 @@ for authored game dispatch. Provider tables require provider-boundary
 classification and real provider headers. Incomplete evidence blocks source;
 improve BN instead of adding production scaffolds.
 
-Temporary ABI/source-shape scaffolds are scratch only, outside committed
-production source and durable evidence. Remove them before handoff. Never stage,
-commit, cite in plan markers, or use them for `Model: source-faithful`.
+Temporary ABI/source-shape scaffolds are scratch only, outside production source
+and durable evidence. Remove them before handoff. Never cite them in plan
+markers or use them for `Model: source-faithful`.
 
 ## Class-Promotion Gate
 

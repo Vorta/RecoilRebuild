@@ -4,10 +4,12 @@ Compact launch reminder for address-led reconstruction. It does not replace
 `AGENTS.md`; Binary Ninja and `.agent/RECOIL_PLAN.md` remain authoritative for
 function evidence and plan state.
 
-`AGENTS.md` and `.agent/AGENTS.md` are local ignored instruction surfaces.
-`tools/` and `tests/tools/` are ignored but required local verification
-infrastructure. Do not stage ignored local infrastructure, private inputs, or
-generated state.
+`AGENTS.md` and `.agent/AGENTS.md` are local instruction surfaces.
+`tools/` and `tests/tools/` are required local verification infrastructure.
+Agents must not run git commands or report version-control state; private
+inputs and generated state remain local workspace details.
+Durable owner scopes live in `.agent/SOURCE_OWNERS.json` and must be inspected
+or updated through `python tools/recoil.py owner ...`, not by hand.
 
 ## Preflight
 
@@ -22,9 +24,8 @@ irrelevant. For documentation or tooling cleanup, inspect target files and run
 targeted checks instead of selecting an address. For active implementation or
 verification handoff, also run the address-specific doctor command from
 `AGENTS.md`.
-The quick doctor includes temporary group WIP hygiene and fails if checks
-introduce new tracked dirty paths. Use `--allow-dirty-delta` only when a
-tooling-maintenance task intentionally changes tracked files.
+The quick doctor includes temporary group WIP hygiene and avoids any
+version-control state checks.
 
 For agent-facing command, doc, skill, or role drift:
 
@@ -63,6 +64,8 @@ Resume active WIP before starting new work:
 
 ```powershell
 python tools/recoil.py audit groups --summary --wip-limit 4
+python tools/recoil.py owner audit --strict
+python tools/recoil.py owner next --lane binary
 python tools/recoil.py audit sections --strict
 ```
 
@@ -81,6 +84,7 @@ python tools/recoil.py plan next --lane binary
 python tools/recoil.py plan batch --lane binary
 python tools/recoil.py section show ui.zhud
 python tools/recoil.py plan group app.recoil_app --lane binary
+python tools/recoil.py owner show 0xNNNNNN
 python tools/recoil.py status 0xNNNNNN
 ```
 
@@ -153,10 +157,10 @@ python tools/recoil.py audit handoff --path .agent/IMPLEMENTATION_GROUPS.md --st
 
 Workers may inspect BN and edit only assigned source/test files. They must not
 change BN names/types/comments, save BN, update plan markers, file workspace
-issues, commit, or select follow-up work. They return changed paths, evidence,
-checks, blockers, and non-authoritative marker recommendations. The parent
-reviews diffs, reruns checks, performs BN/plan/issue/checkpoint work, and owns
-final claims.
+issues, run git commands, or select follow-up work. They return changed paths,
+evidence, checks, blockers, and non-authoritative marker recommendations. The
+parent reviews changed files, reruns checks, performs BN/plan/issue work, and
+owns final claims.
 
 Parent source edits are limited to small integration/conflict fixes after worker
 return, or cases where delegation is impossible; record the exception before
@@ -168,23 +172,19 @@ failures, or final results. Any unavoidable interim update must be one short
 sentence with no evidence dump or command output unless requested.
 
 Normal binary-lane selection is owner-first after reconstruction/dependency
-readiness: unresolved `Source owner` markers come before isolated
-implementation or tier `C` behavior work, then `Data reimplemented`. Pure tier
-`S` verification is globally deferred until every authored `Source owner`
-marker is `✅` and every authored `Data reimplemented` marker is `✅` or `❎`,
-unless the user explicitly directs tier `S` work.
-
-For initialized table/data blockers, `python tools/recoil.py verify vc5
-0xNNNNNN` may resolve a `data_symbols` manifest entry and emit
-relocation-masked COFF data-byte evidence plus a relocation identity report.
-Use this only after the table/data owner is classified; it does not replace
-source-owner or source-shape review.
+readiness: resolve owner structure and touched data before isolated behavior or
+pure tier `S` work. For the detailed owner/data gates, use
+`owner_led_workflow.md` and `data_owner_audit.md`; this checklist only names
+the launch commands.
 
 Treat the address as an evidence anchor, not necessarily the implementation
 unit. Expand to the proven owner boundary: class/interface, table-shaped
 dispatch owner, provider boundary, source-file cluster, or dependency group.
 Identify every affected address before editing source, BN state, plan markers,
 VC manifests, or group notes.
+Create or update the matching source-owner record before accepting owner/data
+markers. The plan CLI rejects positive owner/data/tier-B+ updates unless the
+linked owner gates prove the higher-order source/data scope.
 
 If BN proves an authored class/interface/method cluster, restore that owner
 before any `Reimplemented` tier or `Model: source-faithful`. Flattened functions
@@ -196,23 +196,12 @@ Before ending a multi-step reconstruction session:
 python tools/recoil.py handoff 0xNNNNNN --include-artifacts
 ```
 
-## Git And Groups
-
-After verified qualifying source progress, create a local commit before final
-handoff unless a blocking rule applies. Commit only completed batches with
-tracked production source under `src/`. Do not commit plan-only, docs-only,
-tools-only, manifest-only, or test-only changes. If a qualifying source commit
-is being made and `.agent/RECOIL_PLAN.md` is dirty, stage it with that
-checkpoint. Do not push. Do not use `git add .`. Never `git add -f` ignored
-paths. Stage only the agent's related changes; do not stage ignored, private,
-generated, runtime, or unrelated files. Final reports include the commit hash
-and subject, or the exact no-commit blocker.
+## Local Groups
 
 `.agent/IMPLEMENTATION_GROUPS.md` is temporary. If stale or contradicted by BN,
-`.agent/RECOIL_PLAN.md`, or `recoil.py status`, refresh or prune it. Stage it
-only with a qualifying source checkpoint. Active groups are the default
-no-address startup queue; do not start unrelated new work while actionable WIP
-remains.
+`.agent/RECOIL_PLAN.md`, or `recoil.py status`, refresh or prune it after
+moving durable facts elsewhere. Active groups are the default no-address
+startup queue; do not start unrelated new work while actionable WIP remains.
 
 ## Native Build Shell
 
@@ -252,10 +241,10 @@ Regenerate explicitly:
 python tools/recoil.py audit source-map --update --output docs/reconstruction/source_file_map.md
 ```
 
-For docblock checks, audit changed source files before marker work:
+For docblock checks, audit touched source files before marker work:
 
 ```powershell
-python tools/recoil.py audit docblocks --changed --summary --max 50
+python tools/recoil.py audit docblocks --path src/path/to/touched_file.cpp --summary --max 50
 ```
 
 A broad `python tools/recoil.py audit docblocks --path src --summary --max 20`
@@ -283,6 +272,6 @@ constants. Use hex only where hex grouping is evidence: addresses, bitmasks,
 byte patterns, PE/RVA/file offsets, serialized wire values, or equivalent
 contracts.
 
-Before handoff or a qualifying checkpoint, move durable facts into source
-comments or `docs/reconstruction/`, prune completed group notes, and state the
-documentation decision.
+Before handoff, move durable facts into source comments or
+`docs/reconstruction/`, prune completed group notes, and state the documentation
+decision.

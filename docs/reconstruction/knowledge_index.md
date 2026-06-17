@@ -6,16 +6,19 @@ for function identity, types, markers, and acceptance state.
 
 ## Current Ledgers
 
-- `agent_launch_checklist.md` - compact preflight checklist for launching
-  reconstruction agents, including Binary Ninja, native x86 shell, source-map,
-  and temporary-state hygiene checks.
+- `agent_launch_checklist.md` - compact preflight and task-selection checklist
+  for reconstruction agents.
 - `compiler_linker_provenance.md` - compiler, linker, and verification-profile
   assumptions guarded by `python tools/recoil.py audit provenance --strict`.
+- `data_owner_audit.md` - complete data-owner acceptance rules and the current
+  compact data-gate ledger.
 - `inlined_helpers.md` - compact ledger for likely original helpers and methods
   that were fully inlined by the retail compiler, with caller evidence and
   verification limits.
 - `original_classes.md` - compact policy and ledger for class, record,
   vtable/function-table, provider, and namespace-style subsystem boundaries.
+- `owner_led_workflow.md` - durable source-owner ledger commands and promotion
+  gate routing.
 - `provider_abi_notes.md` - repo-local provider assumptions for VC5SP3, MFC42,
   legacy DirectX, imports, and runtime verification.
 - `recoil_app_destructor_tier_s.md` - RecoilApp constructor/destructor EH and
@@ -68,6 +71,9 @@ progress notes or duplicated plan state.
   touched functions need immediate provenance/Purpose docblocks.
 - For new agent handoff, start with `agent_launch_checklist.md`, then use
   `AGENTS.md` for the full workflow rules.
+- For owner/data promotion, inspect `.agent/SOURCE_OWNERS.json` through
+  `python tools/recoil.py owner show/find/audit`; do not treat one address as
+  the accepted unit when BN proves a larger owner.
 - For compiler or provider questions, check `provider_abi_notes.md` and
   `compiler_linker_provenance.md` before adding one-off flags or stand-ins.
 - Before introducing or reshaping class, vtable, function-table, record, or

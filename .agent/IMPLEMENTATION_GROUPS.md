@@ -1,9 +1,9 @@
 # Implementation Groups
 
 Use this tracked file for temporary dependency-group notes during
-reconstruction. The plan remains address-based; this file lists only active
-multi-function, source-readiness, owner, or data groups currently being
-coordinated. Pure tier `S` verification groups are active only after
+reconstruction. `.agent/SOURCE_OWNERS.json` is the durable owner-scope ledger;
+this file lists only active multi-function, source-readiness, owner, or data
+groups currently being coordinated. Pure tier `S` verification groups are active only after
 `tier_s_priority_ready=true` or explicit user direction. Active groups are the
 default no-address startup queue: new agents should resume actionable WIP here
 before selecting new work with
@@ -14,6 +14,9 @@ available even when no groups are active.
 
 - Create or update a group before editing when a task touches more than one
   function or a shared type/global/vtable.
+- Create or update the matching source-owner record with `python tools/recoil.py
+  owner ...` before accepting `Source owner`, `Data reimplemented`, or tier
+  `B`/`A`/`S` plan markers. This file is not source-owner evidence.
 - When launching without a user-specified address or source group, inspect
   active groups first and resume the first actionable one. Start unrelated new
   work only when active groups are absent, stale, contradicted, completed, or
@@ -53,6 +56,7 @@ available even when no groups are active.
 ### Group: short descriptive name
 
 - Anchor: 0xNNNNNN Name
+- Owner id:
 - Section:
 - Queue: ready owner/data work / blocked pending evidence or policy / shared blocker / deferred verify-only debt
 - Reason: dependency closure / class cluster / recursive cycle / shared ABI layout / source file cluster
@@ -79,6 +83,7 @@ available even when no groups are active.
 
 - Section:
 - Owner/source scope:
+- Owner id:
 - Anchor addresses/groups:
 - Allowed write paths:
 - Forbidden paths:

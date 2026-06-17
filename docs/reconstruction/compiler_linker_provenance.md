@@ -43,7 +43,10 @@ VC verification manifests may contain `functions`, `data_symbols`, or both.
 `data_symbols` entries compare a BN data address and byte length against a VC5
 COFF symbol with relocation masking, and write a relocation identity report for
 pointer/symbol review. Passing data-symbol bytes can support initialized-data
-evidence only after the normal source-owner and data-gate criteria are met.
+evidence only after the normal source-owner and complete data-gate criteria are
+met. The compared symbol must cover the complete touched authored data owner or
+the complete initialized-global data set being accepted; a passing field-sized
+slice inside a larger authored global is not enough for `Data reimplemented ✅`.
 
 ## Required Checks
 
