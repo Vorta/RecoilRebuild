@@ -38,7 +38,11 @@ add_executable(recoil_native_smoke
     recoil_version_tests.cpp
     zrndr_tests.cpp
     zturret_tests.cpp
+    zmodel_di_smokes.cpp
     zclass_tests.cpp
+    zeffect_tests.cpp
+    zweapon_tests.cpp
+    zweapon_timed_hit_smokes.cpp
     zsys_tests.cpp
     zcom_tests.cpp
     time_tests.cpp
@@ -47,6 +51,11 @@ add_executable(recoil_native_smoke
 )
 
 target_link_libraries(recoil_native_smoke PRIVATE recoil_native)
+
+set_source_files_properties(
+    zweapon_tests.cpp
+    PROPERTIES COMPILE_DEFINITIONS RECOIL_NATIVE_ZWEAPON_SKIP_DUPLICATE_TIMED_HIT_SMOKE
+)
 
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
 

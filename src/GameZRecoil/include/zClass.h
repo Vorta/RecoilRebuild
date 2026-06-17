@@ -79,8 +79,9 @@ struct zVec3 {
 };
 
 /**
- * Original inline helper observed in zClass vector-field initialization callers
- * (D:\Proj\GameZRecoil\zClass\*.c).
+ * Original inline helper; no standalone retail function exists. Observed
+ * zClass vector-field initialization callers include 0x452fd0, 0x453560, and
+ * 0x4535c0 in D:\Proj\GameZRecoil\zClass\Light.c.
  * Purpose: construct a zVec3 value from explicit x, y, and z components.
  */
 inline zVec3 zVec3_Make(
@@ -3268,28 +3269,56 @@ extern char g_zClass_GWWorldNodeName[8];
 }
 
 namespace zClass_TypeList {
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists. Observed in
+ * the List.c type-list accessor cluster used by callers including 0x44e700,
+ * 0x44e920, 0x44ed90, 0x44ee10, and 0x44eed0; evidence basis is the repeated
+ * bucket head, tail, and dirty-field access through the recovered bucket slot
+ * tables and g_zClass_TypeList_Buckets.
+ * Purpose: recover typed bucket record access for shared type-list bucket
+ * fields while preserving the proven bucket mapping.
+ */
 inline zClass_TypeListBucket &Bucket(
     int bucket
 ) {
     return *(zClass_TypeListBucket *)(g_zClass_TypeList_HeadSlotPtrs[bucket]);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists. Observed in
+ * address-backed List.c callers including 0x44e700, 0x44ed90, 0x44ee10, and
+ * the active 0x44f000 -> 0x44eed0 deferred-removal path as the repeated
+ * mutable type-list head slot access.
+ * Purpose: return the bucket head link slot used by type-list traversal,
+ * insertion, and pending-removal processing.
+ */
 inline zClass_TypeListLink *&Head(
     int bucket
 ) {
     return *g_zClass_TypeList_HeadSlotPtrs[bucket];
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists. Observed in
+ * address-backed List.c callers including 0x44e700, 0x44ed90, 0x44ee10, and
+ * the active 0x44f000 deletion cluster through tail repair after list updates.
+ * Purpose: return the bucket tail link slot used when appending, trimming, or
+ * clearing type-list buckets.
+ */
 inline zClass_TypeListLink *&Tail(
     int bucket
 ) {
     return *g_zClass_TypeList_TailSlotPtrs[bucket];
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists. Observed in
+ * 0x44e920 zClass::ProcessDeferredWork as the repeated pending-removal dirty
+ * check for each bucket; evidence basis is the BN-visible bucket processing
+ * order and the matching recovered g_zClass_TypeList_Buckets field reads.
+ * Purpose: expose the mapped pending-removal dirty flag for the requested
+ * type-list bucket.
+ */
 inline int &PendingRemovalDirty(
     int bucket
 ) {
@@ -3331,7 +3360,14 @@ inline int &PendingRemovalDirty(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists. Observed in
+ * 0x44eed0 zClass_TypeList::MarkPendingRemoval and 0x44e700
+ * zClass_TypeList::ProcessPendingRemovals as the repeated dirty-flag write
+ * after marking or draining deferred removals.
+ * Purpose: store the mapped pending-removal dirty flag for the requested
+ * type-list bucket without altering the recovered bucket order.
+ */
 inline void SetPendingRemovalDirty(
     int bucket,
     int value

@@ -13,7 +13,7 @@
 extern "C" {
 zClass_NodeFreeListSlot *g_zClass_NodeArray = 0;
 int g_zClass_ActiveNodeCount = 0;
-int g_zClass_NodeFreeHeadIndex = 0;
+int g_zClass_NodeFreeHeadIndex = -1;
 char g_zClass_CurrentZbdPath[260] = {0};
 zClass_NodePartial *g_MainCamera = 0;
 zClass_NodePartial *g_Player_RuntimeDiScene = 0;
@@ -46,7 +46,8 @@ namespace {
     /**
      * Original-source helper evidence: no standalone retail function is
      * present; observed in Class.c callers including 0x447dc0, 0x447e30,
-     * 0x447f00, and 0x448180 as the repeated null-node ReportOld pattern.
+     * 0x447f00, 0x447f30, 0x447fe0, 0x448090, and 0x448180 as the
+     * repeated null-node ReportOld pattern.
      * Purpose: report a null zClass node pointer and let the caller return
      * its address-specific failure value.
      */
@@ -67,7 +68,13 @@ namespace {
         return true;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in Class.c callers 0x447f30, 0x447fe0, and 0x448090
+     * as the repeated signed range check before callback type-list use.
+     * Purpose: decide whether a callback priority selects one of the active
+     * callback type-list buckets.
+     */
     bool IsCallbackPriorityValid(int priority) {
         return priority >= 0 && priority < 6;
     }
@@ -1007,9 +1014,13 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x447e60: zClass_Class::gwNodeSetDisplayInstance
-    int __fastcall
-    gwNodeSetDisplayInstance(
+    /**
+     * Reimplements 0x447e60: zClass_Class::gwNodeSetDisplayInstance
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: replace a node's display-instance reference, maintain zDi
+     * reference counts, rebuild its bounds, and queue transform updates.
+     */
+    int __fastcall gwNodeSetDisplayInstance(
         zClass_NodePartial * node,
         zDiPartial * displayInstance
     ){
@@ -1123,24 +1134,25 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x447f30: zClass_Class::gwNodeSetActionCallback
-    int __fastcall
-    gwNodeSetActionCallback(
+    /**
+     * Reimplements 0x447f30: zClass_Class::gwNodeSetActionCallback
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: install or clear the node action callback in its priority
+     * bucket using head insertion for newly active callback nodes.
+     */
+    int __fastcall gwNodeSetActionCallback(
         zClass_NodePartial * node,
         void *actionCallback
     ){
-        if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
-                0x47e,
-                "Null node pointer."
-            );
+        if (ReportNullNode(
+            0x47e,
+            node
+        )) {
             return 5;
         }
 
         int callbackPriority = node->callbackPriority;
-        if (callbackPriority < 0 || callbackPriority >= 6) {
+        if (!IsCallbackPriorityValid(callbackPriority)) {
             zError::ReportOld(
                 0x400,
                 "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
@@ -1179,23 +1191,19 @@ namespace zClass_Class {
      * Purpose: install or clear a node action callback using tail insertion
      * for newly active callback buckets.
      */
-    int __fastcall
-    gwNodeSetActionCallbackTail(
+    int __fastcall gwNodeSetActionCallbackTail(
         zClass_NodePartial * node,
         void *actionCallback
     ){
-        if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
-                0x4c3,
-                "Null node pointer."
-            );
+        if (ReportNullNode(
+            0x4c3,
+            node
+        )) {
             return 5;
         }
 
         int callbackPriority = node->callbackPriority;
-        if (callbackPriority < 0 || callbackPriority >= 6) {
+        if (!IsCallbackPriorityValid(callbackPriority)) {
             zError::ReportOld(
                 0x400,
                 "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
@@ -1229,7 +1237,12 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x448090: zClass_Class::gwNodeSetPriority
+    /**
+     * Reimplements 0x448090: zClass_Class::gwNodeSetPriority
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: move an active callback node between priority buckets and store
+     * the caller-supplied priority value.
+     */
     int __fastcall gwNodeSetPriority(
         zClass_NodePartial * node,
         int priority
@@ -1529,7 +1542,11 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x449ab0: zClass_Class::gwNodeGetRoot
+    /**
+     * Reimplements 0x449ab0: zClass_Class::gwNodeGetRoot
+     * (D:\Proj\GameZRecoil\zClass\Class.c).
+     * Purpose: walk a node's single-parent chain and return the root node.
+     */
     zClass_NodePartial *__fastcall gwNodeGetRoot(zClass_NodePartial * node) {
         zClass_NodePartial *current = node;
         if (current == 0) {
@@ -1591,10 +1608,16 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x447bc0: zClass_Class::FindNodeRecursiveByName
-    // (D:\Proj\GameZRecoil\zClass\Class.c)
-    zClass_NodePartial *__fastcall
-    FindNodeRecursiveByName(
+    /**
+     * Reimplements 0x447bc0: zClass_Class::FindNodeRecursiveByName
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * BN caveat: the inlined strcmp-style comparison has a known sbb
+     * flag-generation limitation; assembly still proves the typed node-name
+     * comparison and forward child recursion.
+     * Purpose: search a zClass node subtree by exact node name, returning the
+     * first matching node in forward child-list order.
+     */
+    zClass_NodePartial *__fastcall FindNodeRecursiveByName(
         zClass_NodePartial * root,
         const char *name
     ){
@@ -2050,7 +2073,11 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x447a70: zClass_Class::FreeNodeToFreeList
+    /**
+     * Reimplements 0x447a70: zClass_Class::FreeNodeToFreeList.
+     * Purpose: release owned node lists/data and return the node slot to the
+     * global zClass free-list while preserving the slot free-tag flags.
+     */
     int __fastcall FreeNodeToFreeList(zClass_NodePartial * node) {
         if (node == 0) {
             zError::ReportOld(
@@ -2095,7 +2122,11 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x447b60: zClass_Class::TryFreeNode
+    /**
+     * Reimplements 0x447b60: zClass_Class::TryFreeNode.
+     * Purpose: remove a node from active lists, then either free it
+     * immediately or enqueue it for deferred freeing.
+     */
     int __fastcall TryFreeNode(zClass_NodePartial * node) {
         if (ReportNullNode(
             0x2f0,
@@ -2164,9 +2195,12 @@ namespace zClass_Class {
 }
 
 namespace gwNode {
-    // Reimplements 0x449480: gwNode::BuildNodeToAncestorMatrix
-    int __fastcall
-    BuildNodeToAncestorMatrix(
+    /**
+     * Reimplements 0x449480: gwNode::BuildNodeToAncestorMatrix
+     * (D:\Proj\GameZRecoil\zClass\Class.c).
+     * Purpose: apply a node's parent-chain transforms into the current matrix.
+     */
+    int __fastcall BuildNodeToAncestorMatrix(
         zClass_NodePartial * node,
         int matMode
     ){
@@ -2349,10 +2383,12 @@ namespace gwNode {
         return 0;
     }
 
-    // Reimplements 0x4497b0: gwNode::GetWorldPosition
-    // (D:\Proj\GameZRecoil\zClass\Class.c)
-    int __fastcall
-    GetWorldPosition(
+    /**
+     * Reimplements 0x4497b0: gwNode::GetWorldPosition
+     * (D:\Proj\GameZRecoil\zClass\Class.c).
+     * Purpose: resolve a node's world-space translation into the output vector.
+     */
+    int __fastcall GetWorldPosition(
         zClass_NodePartial * node,
         zVec3 * outPosition
     ){
@@ -2613,9 +2649,13 @@ namespace zClass_Node {
         }
     }
 
-    // Reimplements 0x437e60: zClass_Node::SetContextRecursive
-    void __fastcall
-    SetContextRecursive(
+    /**
+     * Reimplements 0x437e60: zClass_Node::SetContextRecursive
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: assign a callback context and OR flag bits through a node
+     * subtree using the zClass child-list links.
+     */
+    void __fastcall SetContextRecursive(
         zClass_NodePartial * self,
         zClass_NodePartial * context,
         int flagMask

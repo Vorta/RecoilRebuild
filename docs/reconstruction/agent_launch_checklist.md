@@ -42,22 +42,10 @@ python tools/recoil.py audit artifacts
 rerunning with `--delete`.
 
 If a tool, instruction, environment, or workspace setup blocks work or forces a
-workaround, record it for a future agent instead of burying it in the final
-report:
-
-```powershell
-python tools/recoil.py issue report --kind tool-error --severity high --summary "..." --area tools/recoil.py --impact "..." --actual "..." --repro "..." --next-action "..."
-python tools/recoil.py issue request --severity medium --summary "..." --area tools/recoil.py --impact "..." --requested-change "..." --benefit "..." --next-action "..."
-python tools/recoil.py issue list --status open
-```
-
-Follow the `AGENTS.md` issue-ledger boundary: do not file normal
-reconstruction backlog, stale tests/code/manifests/markers, owner/data
-blockers, tier debt, or missing evidence as workspace issues.
-Unknown smoke names, missing native smoke tests, stale functional targets, and
-smoke crashes from source-model drift are verification debt for the active
-agent to repair or reroute. Use workspace issues only when the tool or
-environment prevents that work after the documented wrappers are used.
+workaround, use the `AGENTS.md` issue commands and boundary rules. Do not file
+normal reconstruction backlog, stale tests/code/manifests/markers, missing or
+unregistered smokes, owner/data blockers, tier debt, or missing evidence as
+workspace issues.
 
 Address-led launch packet for a known anchor:
 
@@ -75,6 +63,7 @@ Resume active WIP before starting new work:
 
 ```powershell
 python tools/recoil.py audit groups --summary --wip-limit 4
+python tools/recoil.py audit sections --strict
 ```
 
 If active groups exist, choose the first actionable group in
@@ -83,27 +72,33 @@ focused status/frontier checks. Skip a group only when current BN, plan, or
 source evidence proves it stale, contradicted, completed, or explicitly lower
 priority than another active group.
 
-Use current plan state, not stale notes:
+Use current plan state, not stale notes. Run `plan next --lane binary` only
+when no active group exists, active groups have been refreshed/pruned or proven
+unactionable, or the user explicitly directs new work:
 
 ```powershell
 python tools/recoil.py plan next --lane binary
+python tools/recoil.py plan batch --lane binary
+python tools/recoil.py section show ui.zhud
 python tools/recoil.py plan group app.recoil_app --lane binary
 python tools/recoil.py status 0xNNNNNN
 ```
 
 `plan next --lane binary` prints `primary`, `secondary`, and `tertiary`
-ranked owner/work scopes. The parent agent should use those sections to
-schedule non-overlapping subagent handoffs after checking active WIP and
-allowed/forbidden paths.
+ranked owner/work scopes. `plan batch --lane binary` prints section-isolated
+worker candidates for parallel scheduling. The parent agent should use those
+sections to schedule non-overlapping subagent handoffs after checking active WIP
+and allowed/forbidden paths.
+If evidence shows a plan group is in the wrong scheduling section, inspect with
+`section show`, then the parent validates `section move <plan-group>
+<section-id> --reason "..." --dry-run` before applying the same command without
+`--dry-run`. Workers should recommend section moves only; they must not edit the
+section catalog.
 
 Use `plan reclassify` for existing authored/provider entries. Use
 `python tools/recoil.py plan add-provider-boundary ... --dry-run` only when BN
 proves a provider/compiler/import boundary is absent from the plan. Do not
 hand-edit provider marker blocks.
-
-Use `plan next --lane binary` only when no active group exists, active groups
-have been refreshed/pruned or proven unactionable, or the user explicitly
-directs new work.
 
 ## Parent Orchestration Loop
 
@@ -121,15 +116,16 @@ handoff. It should record the task kind, active group or address, evidence
 packets required and received, worker allocation, validation scope, and exit
 criteria.
 
-Source-worker handoffs must name the owner/source scope, address or group
-anchor, allowed and forbidden paths, evidence inputs, expected source model, and
-narrow validation commands. Do not assign overlapping production source files,
-verification manifests, generated outputs, BN database state, or `.agent`
-ledgers.
+Source-worker handoffs must name the owner/source scope, selected section,
+address or group anchor, allowed and forbidden paths, evidence inputs, expected
+source model, and narrow validation commands. Do not assign overlapping
+production source files, verification manifests, generated outputs, BN database
+state, or `.agent` ledgers.
 
 Minimum source-worker handoff fields:
 
 - Owner/source scope.
+- Section.
 - Anchor addresses or group.
 - Allowed write paths and forbidden paths.
 - Evidence packet inputs.
@@ -141,6 +137,7 @@ Minimum source-worker handoff fields:
 Minimum verifier handoff fields:
 
 - Validation scope.
+- Section.
 - Anchor addresses or group.
 - Exact commands.
 - Evidence packet inputs.

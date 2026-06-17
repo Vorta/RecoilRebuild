@@ -16,7 +16,16 @@ namespace {
     const int kZClassNodeLight = 9;
     const char *kLightSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Light.c";
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original inline helper; no standalone retail function exists.
+     * Observed zClass_Light callers in this file: 0x453200, 0x453250,
+     * 0x4532a0, 0x4532f0, 0x453350, 0x4533b0, 0x453400, 0x453500,
+     * 0x453560, 0x4535c0, 0x453a40, and 0x453aa0.
+     * Original inline helper evidence: repeated light class-data null checks,
+     * source-line diagnostics, and the shared classData cast pattern in
+     * address-backed zClass_Light getters/setters.
+     * Purpose: validate a light node and return its light-class data record.
+     */
     zClass_LightDataPartial *GetLightData(
         zClass_NodePartial * node,
         int nullLine,
@@ -46,8 +55,11 @@ namespace {
     }
 
     /**
-     * Original static helper observed in callers 0x453620 and 0x453880
+     * Original inline helper; no standalone retail function exists.
+     * Observed callers 0x453620 and 0x453880
      * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * Evidence: shared active-matrix transform fragment in the
+     * address-backed light world/view transform callers.
      * Purpose: transform a point through the active zMath matrix unless the
      * active matrix identity flag says the point can be reused unchanged.
      */
@@ -65,8 +77,10 @@ namespace {
     }
 
     /**
-     * Original static helper observed in caller 0x44b140
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * Original inline helper; no standalone retail function exists.
+     * Observed caller 0x44b140 (D:\Proj\GameZRecoil\zClass\Light.c).
+     * Evidence: a single recovered render-traverse culling fragment with
+     * no separate retail xrefed body.
      * Purpose: refresh a node's view bounding sphere when needed, run the
      * frustum sphere clip-mask test, and honor no-near-clip render flags.
      */
@@ -107,8 +121,10 @@ namespace {
     }
 
     /**
-     * Original static helper observed in caller 0x44b140
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
+     * Original inline helper; no standalone retail function exists.
+     * Observed caller 0x44b140 (D:\Proj\GameZRecoil\zClass\Light.c).
+     * Evidence: a single recovered render-traverse render/child-walk
+     * fragment with no separate retail xrefed body.
      * Purpose: mark the node as rendered, apply range-fade DI state, render it,
      * and recurse through child render dispatch while preserving clip masks.
      */
@@ -309,7 +325,10 @@ namespace zClass_Light {
         data->range2Sq = 4096.0f;
         data->invRangeDelta = 0.03125f;
         data->dirty = 1;
-        node->flags |= 0x04;
+        zClass_Class::gwNodeSetActive(
+            node,
+            1
+        );
         data->attachedWorldCount = 0;
         data->attachedWorlds = 0;
 
@@ -368,14 +387,13 @@ namespace zClass_Light {
         return zClass_Class::TryFreeNode(node);
     }
 
-    int __fastcall
     /**
      * Reimplements 0x4531c0: zClass_Light::RemoveChild
      * (D:\Proj\GameZRecoil\zClass\Light.c).
      * Purpose: validate parent and child light-node pointers before delegating
      * removal to the generic zClass child-list helper.
      */
-    RemoveChild(
+    int __fastcall RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
     ){
@@ -405,14 +423,13 @@ namespace zClass_Light {
         );
     }
 
-    int __fastcall
     /**
      * Reimplements 0x453200: zClass_Light::gwLightSetIntensity
      * (D:\Proj\GameZRecoil\zClass\Light.c).
      * Purpose: validate light data, store the intensity scale, and mark the
      * light transform/state dirty.
      */
-    gwLightSetIntensity(
+    int __fastcall gwLightSetIntensity(
         zClass_NodePartial * node,
         float intensity
     ){
@@ -430,14 +447,13 @@ namespace zClass_Light {
         return 0;
     }
 
-    int __fastcall
     /**
      * Reimplements 0x453250: zClass_Light::gwLightSetFalloff
      * (D:\Proj\GameZRecoil\zClass\Light.c).
      * Purpose: validate light data, store the falloff value, and mark the light
      * transform/state dirty.
      */
-    gwLightSetFalloff(
+    int __fastcall gwLightSetFalloff(
         zClass_NodePartial * node,
         float falloff
     ){
@@ -455,14 +471,13 @@ namespace zClass_Light {
         return 0;
     }
 
-    int __fastcall
     /**
      * Reimplements 0x4532a0: zClass_Light::gwLightSetConeAngle
      * (D:\Proj\GameZRecoil\zClass\Light.c).
      * Purpose: validate light data, preserve the incoming cone-angle bit pattern
      * as a float, and mark the light transform/state dirty.
      */
-    gwLightSetConeAngle(
+    int __fastcall gwLightSetConeAngle(
         zClass_NodePartial * node,
         unsigned int coneAngleBits
     ){
@@ -552,14 +567,13 @@ namespace zClass_Light {
         return 0;
     }
 
-    int __fastcall
     /**
      * Reimplements 0x453400: zClass_Light::gwLightSetRange
      * (D:\Proj\GameZRecoil\zClass\Light.c).
      * Purpose: validate light data, order and store the two range values, repair
      * equal ranges with the original debug path, and cache range-derived values.
      */
-    gwLightSetRange(
+    int __fastcall gwLightSetRange(
         zClass_NodePartial * node,
         float rangeA,
         float rangeB
@@ -592,14 +606,13 @@ namespace zClass_Light {
         return 0;
     }
 
-    int __fastcall
     /**
      * Reimplements 0x453500: zClass_Light::gwLightGetRange
      * (D:\Proj\GameZRecoil\zClass\Light.c).
      * Purpose: validate light data and return the cached inner and outer light
      * range values.
      */
-    gwLightGetRange(
+    int __fastcall gwLightGetRange(
         zClass_NodePartial * node,
         float *outRange1,
         float *outRange2
@@ -618,14 +631,13 @@ namespace zClass_Light {
         return 0;
     }
 
-    int __fastcall
     /**
      * Reimplements 0x453560: zClass_Light::gwLightSetPosition
      * (D:\Proj\GameZRecoil\zClass\Light.c).
      * Purpose: validate light data, store local position components, and mark
      * the light transform/state dirty.
      */
-    gwLightSetPosition(
+    int __fastcall gwLightSetPosition(
         zClass_NodePartial * node,
         float x,
         float y,
@@ -649,14 +661,13 @@ namespace zClass_Light {
         return 0;
     }
 
-    int __fastcall
     /**
      * Reimplements 0x4535c0: zClass_Light::gwLightSetRotation
      * (D:\Proj\GameZRecoil\zClass\Light.c).
      * Purpose: validate light data, store local rotation components, and mark
      * the light transform/state dirty.
      */
-    gwLightSetRotation(
+    int __fastcall gwLightSetRotation(
         zClass_NodePartial * node,
         float x,
         float y,
@@ -680,14 +691,13 @@ namespace zClass_Light {
         return 0;
     }
 
-    int __fastcall
     /**
      * Reimplements 0x453620: zClass_Light::ComputeWorldTransform
      * (D:\Proj\GameZRecoil\zClass\Light.c).
      * Purpose: build the node-to-world transform, update world position,
      * direction, and rotation caches, then restore the zMath matrix stack.
      */
-    ComputeWorldTransform(
+    int __fastcall ComputeWorldTransform(
         zClass_NodePartial * node,
         zClass_LightDataPartial * data
     ){
@@ -814,14 +824,13 @@ namespace zClass_Light {
         return 0;
     }
 
-    int __fastcall
     /**
      * Reimplements 0x453aa0: zClass_Light::gwLightSetSpecularColor
      * (D:\Proj\GameZRecoil\zClass\Light.c).
      * Purpose: validate light data, store clamped/staged specular RGB color
      * state, and mark the light transform/state dirty.
      */
-    gwLightSetSpecularColor(
+    int __fastcall gwLightSetSpecularColor(
         zClass_NodePartial * node,
         float red,
         float green,
@@ -844,14 +853,13 @@ namespace zClass_Light {
         return 0;
     }
 
-    int __fastcall
     /**
      * Reimplements 0x44b140: zClass_Light::RenderTraverse
      * (D:\Proj\GameZRecoil\zClass\Light.c).
      * Purpose: cull an enabled light node, push render-bounds context when
      * needed, apply local transform, render the node subtree, and restore state.
      */
-    RenderTraverse(
+    int __fastcall RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint
     ){

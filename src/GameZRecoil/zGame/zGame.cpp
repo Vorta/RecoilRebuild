@@ -59,7 +59,7 @@ zOpt_ViewRectSection **g_zOpt_DisplaySectionOption = 0;
 zOpt_ViewRectSection **g_zOpt_WindowSectionOption = 0;
 zOpt_CameraSection **g_zOpt_CameraSectionOption = 0;
 int g_zOpt_HwMode = 0;
-int *ZOPT_GAME_CONTROL_OPTIONS = 0;
+zOptGameControlFlags *ZOPT_GAME_CONTROL_OPTIONS = 0;
 zGame_OptionsRuntimeConfig g_zGame_Options_RuntimeConfig = {0};
 }
 
@@ -266,7 +266,7 @@ const int ZGAME_OPTION_SCOPE_USER = 1;
 const int ZGAME_OPTION_SCOPE_TRANSIENT = 2;
 const int ZVID_HW_MODE_SOFTWARE = 0;
 const int ZVID_HW_MODE_HARDWARE = 1;
-const int ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON = 0x08;
+const zOptGameControlFlags ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON = 0x08;
 const int ZOPT_GRAPHICS_MMX = 1;
 const int ZOPT_GRAPHICS_TRANSPARENCY = 2;
 const int ZOPT_GRAPHICS_LIGHTING = 4;
@@ -1195,10 +1195,10 @@ const zOpt_NameInt32Pair g_zOpt_NamedScalarValues[] = {
     {"SOUND_API_A3D", 1},
 };
 
-const int ZOPT_GAME_CONTROL_THROTTLE = 0x01;
-const int ZOPT_GAME_CONTROL_STEERING = 0x02;
-const int ZOPT_GAME_CONTROL_CURSOR = 0x04;
-const int ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON = 0x08;
+const zOptGameControlFlags ZOPT_GAME_CONTROL_THROTTLE = 0x01;
+const zOptGameControlFlags ZOPT_GAME_CONTROL_STEERING = 0x02;
+const zOptGameControlFlags ZOPT_GAME_CONTROL_CURSOR = 0x04;
+const zOptGameControlFlags ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON = 0x08;
 const double ZOPT_COMPARE_TOLERANCE_PCT = 0.02;
 
 // Source-faithful helper recovered from address-backed callers in this source file.
@@ -1398,14 +1398,22 @@ int __fastcall EvalIntCompareOp(
     return 0;
 }
 
-// Reimplements 0x407e20: zOpt::SetGameControlOptions
+/**
+ * Reimplements 0x407e20: zOpt::SetGameControlOptions.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: replace the packed game-control option bitmask.
+ */
 void __fastcall SetGameControlOptions(
-    int value
+    zOptGameControlFlags value
 ) {
     *ZOPT_GAME_CONTROL_OPTIONS = value;
 }
 
-// Reimplements 0x407e30: zOpt::SetThrottleMode
+/**
+ * Reimplements 0x407e30: zOpt::SetThrottleMode.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: set or clear the throttle-control bit in the game-control option mask.
+ */
 void __fastcall SetThrottleMode(
     int enable
 ) {
@@ -1416,12 +1424,20 @@ void __fastcall SetThrottleMode(
     }
 }
 
-// Reimplements 0x407e50: zOpt::GetThrottleMode
+/**
+ * Reimplements 0x407e50: zOpt::GetThrottleMode.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: return the throttle-control bit from the game-control option mask.
+ */
 int GetThrottleMode() {
     return *ZOPT_GAME_CONTROL_OPTIONS & ZOPT_GAME_CONTROL_THROTTLE;
 }
 
-// Reimplements 0x407e60: zOpt::SetSteeringMode
+/**
+ * Reimplements 0x407e60: zOpt::SetSteeringMode.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: set or clear the steering-control bit in the game-control option mask.
+ */
 void __fastcall SetSteeringMode(
     int enable
 ) {
@@ -1432,12 +1448,20 @@ void __fastcall SetSteeringMode(
     }
 }
 
-// Reimplements 0x407e80: zOpt::GetSteeringMode
+/**
+ * Reimplements 0x407e80: zOpt::GetSteeringMode.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: return the steering-control bit from the game-control option mask.
+ */
 int GetSteeringMode() {
     return (*ZOPT_GAME_CONTROL_OPTIONS >> 1) & 1;
 }
 
-// Reimplements 0x407e90: zOpt::SetCursorMode
+/**
+ * Reimplements 0x407e90: zOpt::SetCursorMode.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: set or clear the cursor-control bit in the game-control option mask.
+ */
 void __fastcall SetCursorMode(
     int enable
 ) {
@@ -1448,12 +1472,20 @@ void __fastcall SetCursorMode(
     }
 }
 
-// Reimplements 0x407eb0: zOpt::GetCursorMode
+/**
+ * Reimplements 0x407eb0: zOpt::GetCursorMode.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: return the cursor-control bit from the game-control option mask.
+ */
 int GetCursorMode() {
     return (*ZOPT_GAME_CONTROL_OPTIONS >> 2) & 1;
 }
 
-// Reimplements 0x407ec0: zOpt::SetCameraMode
+/**
+ * Reimplements 0x407ec0: zOpt::SetCameraMode.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: store first-person or third-person camera mode and apply the player camera state.
+ */
 void __fastcall SetCameraMode(
     int enableThirdPerson
 ) {
@@ -1466,7 +1498,11 @@ void __fastcall SetCameraMode(
     }
 }
 
-// Reimplements 0x407ef0: zOpt::GetCameraModePlayerState
+/**
+ * Reimplements 0x407ef0: zOpt::GetCameraModeAsPlayerCameraState.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: map the third-person camera option bit to the player camera state value.
+ */
 int GetCameraModePlayerState() {
     return ((~*ZOPT_GAME_CONTROL_OPTIONS & ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON) | 4) >> 2;
 }

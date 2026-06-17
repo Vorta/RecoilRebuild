@@ -5,6 +5,7 @@
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zMath/zMath.h"
+#include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/zUtil/zZbd.h"
@@ -22,6 +23,10 @@
 
 extern "C" unsigned int g_HudUi_InvalidateMask;
 extern "C" int g_Hud_MapOverlayRefCount;
+
+struct zVideoFxPass3Config {
+    static zVideoFxPass3Config *ConstructGlobalSingleton();
+};
 
 namespace {
 constexpr std::size_t kEffectFxPass3ConfigSize = 0x1f0;
@@ -251,8 +256,13 @@ template <typename T> T &EffectFxPass3FieldAt(std::size_t offset) {
     return *reinterpret_cast<T *>(EffectFxPass3ConfigBytes() + offset);
 }
 
+void ResetEffectFxPass3Config() {
+    std::memset(EffectFxPass3ConfigBytes(), 0, kEffectFxPass3ConfigSize);
+    zVideoFxPass3Config::ConstructGlobalSingleton();
+}
+
 HudUiPanel *EffectTextStackLineAt(HudUiTextStack4 *stack, int index) {
-    return reinterpret_cast<HudUiPanel *>(&stack->lines[index][0]);
+    return &stack->lines[index];
 }
 
 void EffectDeleteTextStackLineFonts(HudUiTextStack4 *stack) {
@@ -670,7 +680,7 @@ extern "C" int hud_sensor_register_mission_sections_smoke(void) {
     return ok ? 0 : 1;
 }
 
-extern "C" int hud_sensor_mission_identity_smoke(void) {
+static int hud_sensor_mission_identity_zeffect_local_smoke(void) {
     HudSensorTracker tracker = {};
     if (tracker.SetZbdPath("missions\\m01.zbd") != 1 ||
         !CStringEquals(tracker.zbdPath, "missions\\m01.zbd")) {
@@ -1815,7 +1825,7 @@ extern "C" int zeffect_anim_shutdown_entry_smoke(void) {
                : 1;
 }
 
-extern "C" int zeffect_anim_find_entry_by_name_smoke(void) {
+static int zeffect_anim_find_entry_by_name_zeffect_local_smoke(void) {
     g_zEffectAnim_EntryList = nullptr;
     g_zEffectAnim_EntryCount = 2;
     if (zEffectAnim::FindEntryByName(nullptr) != nullptr) {
@@ -3734,9 +3744,7 @@ extern "C" int zeffect_handle_screen_fx_events_smoke(void) {
     std::uint8_t savedConfig[kEffectFxPass3ConfigSize] = {};
     std::memcpy(savedConfig, EffectFxPass3ConfigBytes(), sizeof(savedConfig));
 
-    std::memset(EffectFxPass3ConfigBytes(), 0, kEffectFxPass3ConfigSize);
-    EffectFxPass3FieldAt<const HudUiCommon_FTable *>(kEffectFxPass3RootElementOffset) =
-        &g_HudUiCommon_FTable;
+    ResetEffectFxPass3Config();
     g_HudUi_InvalidateMask = 0;
     g_zVideo_PixelPack.rMaskShifted = 0xf8;
     g_zVideo_PixelPack.gMaskShifted = 0xfc;
@@ -3795,15 +3803,11 @@ extern "C" int zeffect_handle_screen_fx_events_smoke(void) {
         return 2;
     }
 
-    std::memset(EffectFxPass3ConfigBytes(), 0, kEffectFxPass3ConfigSize);
-    EffectFxPass3FieldAt<const HudUiCommon_FTable *>(kEffectFxPass3RootElementOffset) =
-        &g_HudUiCommon_FTable;
+    ResetEffectFxPass3Config();
     HudUiElement *const slot0 =
         reinterpret_cast<HudUiElement *>(EffectFxPass3ConfigBytes() + kEffectFxPass3SlotsOffset);
     HudUiElement *const slot1 = reinterpret_cast<HudUiElement *>(
         EffectFxPass3ConfigBytes() + kEffectFxPass3SlotsOffset + kEffectFxPass3SlotSize);
-    slot0->ftable = &g_HudUiCommon_FTable;
-    slot1->ftable = &g_HudUiCommon_FTable;
 
     zClass_NodePartial callbackNode = {};
     entry.callbackNode = &callbackNode;
@@ -3842,12 +3846,10 @@ extern "C" int zeffect_handle_screen_fx_events_smoke(void) {
         !FloatNear(overlayEvent.maxRadiusPixelsSlope, 20.0f) ||
         EffectFxPass3FieldAt<int>(kEffectFxPass3SlotWriteIndexOffset) != 1 ||
         slot0->x != 110 || slot0->y != 180 ||
-        !FloatNear(EffectFxPass3FieldAt<float>(kEffectFxPass3SlotsOffset +
-                                               kEffectFxPass3SlotMaxRadiusOffset),
-                   50.0f) ||
-        !FloatNear(EffectFxPass3FieldAt<float>(kEffectFxPass3SlotsOffset +
-                                               kEffectFxPass3SlotExtentOffset),
-                   14.0f) ||
+        EffectFxPass3FieldAt<int>(kEffectFxPass3SlotsOffset +
+                                  kEffectFxPass3SlotMaxRadiusOffset) != 50 ||
+        EffectFxPass3FieldAt<int>(kEffectFxPass3SlotsOffset +
+                                  kEffectFxPass3SlotExtentOffset) != 14 ||
         !FloatNear(EffectFxPass3FieldAt<float>(kEffectFxPass3SlotsOffset +
                                                kEffectFxPass3SlotSinFreqOffset),
                    6.0f) ||
@@ -3876,10 +3878,8 @@ extern "C" int zeffect_handle_screen_fx_events_smoke(void) {
         !FloatNear(g_zEffect_FrameDeltaRemainingSec, 0.25f) ||
         EffectFxPass3FieldAt<int>(kEffectFxPass3SlotWriteIndexOffset) != 2 ||
         slot1->x != 150 || slot1->y != 175 ||
-        !FloatNear(EffectFxPass3FieldAt<float>(slot1Offset + kEffectFxPass3SlotMaxRadiusOffset),
-                   80.0f) ||
-        !FloatNear(EffectFxPass3FieldAt<float>(slot1Offset + kEffectFxPass3SlotExtentOffset),
-                   44.0f) ||
+        EffectFxPass3FieldAt<int>(slot1Offset + kEffectFxPass3SlotMaxRadiusOffset) != 80 ||
+        EffectFxPass3FieldAt<int>(slot1Offset + kEffectFxPass3SlotExtentOffset) != 44 ||
         !FloatNear(EffectFxPass3FieldAt<float>(slot1Offset + kEffectFxPass3SlotSinFreqOffset),
                    7.0f) ||
         !FloatNear(EffectFxPass3FieldAt<float>(slot1Offset + kEffectFxPass3SlotSinPhaseOffset),
@@ -6505,6 +6505,15 @@ extern "C" int zeffect_anim_runtime_sequence_group_smoke(void) {
     const int oldSkipStopDelay = g_zEffect_SkipStopDelay;
     const float oldFrameDelta = g_FrameDeltaTimeSec;
     const float oldEffectDelta = g_zEffect_FrameDeltaRemainingSec;
+    const int oldConditionalRefPosEnabled = g_zEffect_ConditionalRefPosEnabled;
+    const float oldConditionalRefPosX = g_zEffect_ConditionalRefPosX;
+    const float oldConditionalRefPosY = g_zEffect_ConditionalRefPosY;
+    const float oldConditionalRefPosZ = g_zEffect_ConditionalRefPosZ;
+    const int oldVariantOverrideEnabled = g_zEffect_VariantOverrideEnabled;
+    const unsigned int oldVariantOverridePackedIds = g_zEffect_VariantOverridePackedIds;
+    const int oldVariantCycleId = g_zEffect_VariantCycleId;
+    const int oldVariantFilterEnabled = g_Variant_FilterEnabled;
+    const zTag4Partial oldCurrentTag = g_Variant_CurrentTag;
 
     auto cleanup = [&]() {
         zEffect_Anim::ClearActivationRecords();
@@ -6517,6 +6526,15 @@ extern "C" int zeffect_anim_runtime_sequence_group_smoke(void) {
         g_zEffect_SkipStopDelay = oldSkipStopDelay;
         g_FrameDeltaTimeSec = oldFrameDelta;
         g_zEffect_FrameDeltaRemainingSec = oldEffectDelta;
+        g_zEffect_ConditionalRefPosEnabled = oldConditionalRefPosEnabled;
+        g_zEffect_ConditionalRefPosX = oldConditionalRefPosX;
+        g_zEffect_ConditionalRefPosY = oldConditionalRefPosY;
+        g_zEffect_ConditionalRefPosZ = oldConditionalRefPosZ;
+        g_zEffect_VariantOverrideEnabled = oldVariantOverrideEnabled;
+        g_zEffect_VariantOverridePackedIds = oldVariantOverridePackedIds;
+        g_zEffect_VariantCycleId = oldVariantCycleId;
+        g_Variant_FilterEnabled = oldVariantFilterEnabled;
+        g_Variant_CurrentTag = oldCurrentTag;
         g_zEffect_World = oldWorld;
         FreeZClassRuntimeForZEffectTest();
     };
@@ -6626,6 +6644,28 @@ extern "C" int zeffect_anim_runtime_sequence_group_smoke(void) {
         return 6;
     }
 
+    zEffectAnimLoopEvent loopEvent = {};
+    zEffectAnimEventHeader *const loopHeader =
+        reinterpret_cast<zEffectAnimEventHeader *>(&loopEvent);
+    loopHeader->eventType = 0x1e;
+    loopHeader->startMode = 2;
+    loopHeader->recordSize = sizeof(loopEvent);
+    runtime = {};
+    runtime.eventStream = &loopEvent;
+    runtime.eventStreamSize = sizeof(loopEvent);
+    runtime.currentEvent = &loopEvent;
+    runtime.runState = 0;
+    runtime.resetMode = 0;
+    runtime.loopIterationCount = 0;
+    entry.triggerCurrentValue = 90000.0f;
+    g_zEffect_FrameDeltaRemainingSec = 0.125f;
+    if (zEffect_Anim::RunSequenceEvents(&entry, &runtime) != 0 || runtime.runState != 0 ||
+        runtime.currentEvent != &loopEvent || runtime.loopIterationCount != 1 ||
+        entry.triggerCurrentValue != 86400.0f) {
+        cleanup();
+        return 62;
+    }
+
     zEffectAnimEventHeader sequenceEvent = {};
     sequenceEvent.eventType = 0x22;
     sequenceEvent.startMode = 2;
@@ -6650,6 +6690,55 @@ extern "C" int zeffect_anim_runtime_sequence_group_smoke(void) {
         entry.activationState != 3) {
         cleanup();
         return 61;
+    }
+
+    zClass_Object3DDataPartial conditionalData = {};
+    zClass_NodePartial conditionalNode = {};
+    conditionalNode.classId = 5;
+    conditionalNode.flags = 0x00080000;
+    conditionalNode.classData = &conditionalData;
+    conditionalData.cachedWorldMatrix[9] = 2.0f;
+    conditionalData.cachedWorldMatrix[10] = 0.0f;
+    conditionalData.cachedWorldMatrix[11] = 0.0f;
+
+    entry = {};
+    entry.callbackNode = &conditionalNode;
+    entry.flags = 0x02;
+    entry.priority = 1;
+    entry.distRefMinSq = 0.0f;
+    entry.distRefMaxSq = 1.0f;
+    runtimeNode.callbackContext = reinterpret_cast<zClass_NodePartial *>(&entry);
+    g_zEffect_ConditionalRefPosEnabled = 1;
+    g_zEffect_ConditionalRefPosX = 0.0f;
+    g_zEffect_ConditionalRefPosY = 0.0f;
+    g_zEffect_ConditionalRefPosZ = 0.0f;
+    g_zEffect_VariantCycleId = 2;
+    if (zEffect_Anim::RunSequence(&runtimeNode) != 0 || entry.variantCycleDelay != 2 ||
+        g_zEffect_VariantCycleId != 1) {
+        cleanup();
+        return 63;
+    }
+
+    zTag4Partial variantTag = {};
+    variantTag.count = 1;
+    variantTag.tags[0] = 9;
+    unsigned int packedVariantTag = 0;
+    std::memcpy(&packedVariantTag, &variantTag, sizeof(packedVariantTag));
+
+    entry = {};
+    entry.callbackNode = &conditionalNode;
+    entry.flags = 0x08;
+    conditionalNode.nodeType = 7;
+    runtimeNode.callbackContext = reinterpret_cast<zClass_NodePartial *>(&entry);
+    g_Variant_FilterEnabled = 1;
+    g_zEffect_VariantOverrideEnabled = 1;
+    g_zEffect_VariantOverridePackedIds = packedVariantTag;
+    g_zEffect_VariantCycleId = 0;
+    if (zEffect_Anim::RunSequence(&runtimeNode) != 0 || entry.variantCycleDelay != 0 ||
+        g_zEffect_VariantCycleId != 1 || g_Variant_CurrentTag.count != 1 ||
+        g_Variant_CurrentTag.tags[0] != 9) {
+        cleanup();
+        return 64;
     }
 
     zEffectAnimEntry entries[2] = {};

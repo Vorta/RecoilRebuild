@@ -40,6 +40,8 @@ struct zOpt_CameraSection {
     zClass_NodePartial *m_pCamera;
 };
 
+typedef int zOptGameControlFlags;
+
 struct zGame_OptionsRuntimeConfig {
     char cpuVendor[0x10];
     int cpuClass;
@@ -92,7 +94,7 @@ extern zOpt_ViewRectSection **g_zOpt_DisplaySectionOption;
 extern zOpt_ViewRectSection **g_zOpt_WindowSectionOption;
 extern zOpt_CameraSection **g_zOpt_CameraSectionOption;
 extern int g_zOpt_HwMode;
-extern int *ZOPT_GAME_CONTROL_OPTIONS;
+extern zOptGameControlFlags *ZOPT_GAME_CONTROL_OPTIONS;
 }
 
 enum zOptHudTypeOption {
@@ -196,7 +198,7 @@ void __fastcall WindowSection_SetSize(
     int height
 );
 void __fastcall CameraSection_SetActiveCamera(zClass_NodePartial *camera);
-void __fastcall SetGameControlOptions(int value);
+void __fastcall SetGameControlOptions(zOptGameControlFlags value);
 void __fastcall SetThrottleMode(int enable);
 int GetThrottleMode();
 void __fastcall SetSteeringMode(int enable);

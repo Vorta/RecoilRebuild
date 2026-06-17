@@ -1,8 +1,14 @@
 #include "zClass.h"
 #include "zDi.h"
+#include "GameZRecoil/zError/zError.h"
+#include "GameZRecoil/include/zImage.h"
+#include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zSound/zSound.h"
+#include "GameZRecoil/zVideo/zVideo.h"
 
+#include <cmath>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
@@ -41,6 +47,16 @@ void FreeTypeListsForTest() {
     g_zClass_TypeList_FreeLinkHead = nullptr;
     g_zClass_TypeList_LiveLinkCount = 0;
     g_zClass_TypeList_PeakLiveLinkCount = 0;
+}
+
+std::int32_t FloatBitsForTest(float value) {
+    std::int32_t raw = 0;
+    std::memcpy(&raw, &value, sizeof(raw));
+    return raw;
+}
+
+std::int32_t __fastcall zclass_test_node_type_0x42(zClass_NodePartial *node) {
+    return node->nodeType == 0x42 ? 1 : 0;
 }
 } // namespace
 
@@ -203,6 +219,35 @@ extern "C" int zclass_type_list_alloc_and_insert_smoke() {
     g_zClass_TypeList_FreeLinkHead = freeA;
     zClass_TypeList::FreeAll();
     return g_zClass_TypeList_FreeLinkHead == nullptr ? 0 : 12;
+}
+
+extern "C" int zclass_zbd_leaf_helpers_smoke() {
+    zClass_NodeFreeListSlot slots[3] = {};
+    g_zClass_NodeArray = slots;
+    g_zClass_NodeArraySize = 3;
+    slots[0].freeTag = 0x01000000u;
+    slots[1].freeTag = 0x00ffffffu;
+
+    int result = 0;
+    if (GameZ_ZBD::NodePtrToIndex(0) != -1) {
+        result = 1;
+    } else if (GameZ_ZBD::NodePtrToIndex(&slots[2].node) != 2) {
+        result = 2;
+    } else if (GameZ_ZBD::NodeIndexToPtr(-1) != 0) {
+        result = 3;
+    } else if (GameZ_ZBD::NodeIndexToPtr(1) != &slots[1].node) {
+        result = 4;
+    } else if (zClass::NodePtrToValidatedIndex(0) != -1) {
+        result = 5;
+    } else if (zClass::NodePtrToValidatedIndex(&slots[0].node) != 0) {
+        result = 6;
+    } else if (zClass::NodePtrToValidatedIndex(&slots[1].node) != -1) {
+        result = 7;
+    }
+
+    g_zClass_NodeArray = 0;
+    g_zClass_NodeArraySize = 0;
+    return result;
 }
 
 extern "C" int zclass_alloc_node_from_free_list_smoke() {
@@ -562,6 +607,90 @@ extern "C" int zclass_child_generic_link_smoke() {
     return result;
 }
 
+extern "C" int zclass_child_generic_remove_smoke() {
+    ResetTypeListsForTest();
+
+    int result = 0;
+    zClass_NodePartial parent{};
+    zClass_NodePartial remainingParent{};
+    zClass_NodePartial child{};
+    zClass_NodePartial sibling{};
+    zClass_NodePartial grandchild{};
+    zClass_NodePartial *parentChildren[] = {&child, &sibling};
+    zClass_NodePartial *childParents[] = {&parent, &remainingParent};
+    zClass_NodePartial *childChildren[] = {&grandchild};
+    parent.flags = 0x00080000;
+    parent.listCountB = 2;
+    parent.listB = parentChildren;
+    child.listCountA = 2;
+    child.listA = childParents;
+    child.listCountB = 1;
+    child.listB = childChildren;
+
+    if (zClass_Class::RemoveChildGeneric(&parent, &child) != 0 ||
+        parent.listCountB != 1 || parent.listB[0] != &sibling ||
+        child.listCountA != 1 || child.listA[0] != &remainingParent ||
+        (child.flags & 0x00080000) == 0 || (grandchild.flags & 0x00080000) == 0 ||
+        (parent.boundsFlags & 2) == 0 || (parent.flags & 3) != 3) {
+        result = 1;
+    }
+
+    zClass_NodePartial missing{};
+    if (result == 0 &&
+        (zClass_Class::RemoveChildGeneric(&parent, &missing) != 0 ||
+         parent.listCountB != 1 || missing.listCountA != 0)) {
+        result = 2;
+    }
+
+    zClass_NodePartial checkedParent{};
+    zClass_NodePartial checkedChild{};
+    zClass_NodePartial *checkedChildren[] = {&checkedChild};
+    zClass_NodePartial *checkedParents[] = {&checkedParent};
+    checkedParent.listCountB = 1;
+    checkedParent.listB = checkedChildren;
+    checkedChild.listCountA = 1;
+    checkedChild.listA = checkedParents;
+    if (result == 0 &&
+        (zClass::RemoveChildChecked(&checkedParent, &checkedChild) != 0 ||
+         checkedParent.listCountB != 0 || checkedChild.listCountA != 0)) {
+        result = 3;
+    }
+    if (result == 0 &&
+        (zClass::RemoveChildChecked(nullptr, &checkedChild) != 5 ||
+         zClass::RemoveChildChecked(&checkedParent, nullptr) != 5)) {
+        result = 4;
+    }
+
+    int validatedClassData = 0;
+    zClass_NodePartial validatedParent{};
+    zClass_NodePartial validatedChild{};
+    zClass_NodePartial *validatedChildren[] = {&validatedChild};
+    zClass_NodePartial *validatedParents[] = {&validatedParent};
+    validatedParent.classData = &validatedClassData;
+    validatedParent.listCountB = 1;
+    validatedParent.listB = validatedChildren;
+    validatedChild.listCountA = 1;
+    validatedChild.listA = validatedParents;
+    if (result == 0 &&
+        (zClass_Class::RemoveChildValidated(&validatedParent, &validatedChild) != 0 ||
+         validatedParent.listCountB != 0 || validatedChild.listCountA != 0)) {
+        result = 5;
+    }
+    if (result == 0 &&
+        (zClass_Class::RemoveChildValidated(nullptr, &validatedChild) != 5 ||
+         zClass_Class::RemoveChildValidated(&validatedParent, nullptr) != 5)) {
+        result = 6;
+    }
+    validatedParent.classData = nullptr;
+    if (result == 0 &&
+        zClass_Class::RemoveChildValidated(&validatedParent, &validatedChild) != 5) {
+        result = 7;
+    }
+
+    FreeTypeListsForTest();
+    return result;
+}
+
 extern "C" int zclass_remove_dispatch_smoke() {
     ResetTypeListsForTest();
 
@@ -725,6 +854,48 @@ extern "C" int zclass_world_add_child_at_grid_smoke() {
     return result;
 }
 
+extern "C" int zclass_world_queue_area_update_smoke() {
+    zClass_WorldDataPartial worldData{};
+    zClass_NodePartial world{};
+    zWorldAreaPartial firstArea{};
+    zWorldAreaPartial secondArea{};
+
+    world.flags = 1;
+    world.classData = &worldData;
+
+    if (zClass_World::QueueAreaUpdate(&world, &worldData, &firstArea) != 0) {
+        return 1;
+    }
+    if (worldData.pendingAreaUpdateCapacity != 1 ||
+        worldData.pendingAreaUpdateCount != 1 ||
+        worldData.pendingAreaUpdates == nullptr ||
+        worldData.pendingAreaUpdates[0] != &firstArea ||
+        (firstArea.areaFlags & 1) == 0 ||
+        (world.flags & 3) != 3 ||
+        (worldData.flags & 0x10) == 0) {
+        std::free(worldData.pendingAreaUpdates);
+        return 2;
+    }
+
+    if (zClass_World::QueueAreaUpdate(&world, &worldData, &secondArea) != 0) {
+        std::free(worldData.pendingAreaUpdates);
+        return 3;
+    }
+    if (worldData.pendingAreaUpdateCapacity != 2 ||
+        worldData.pendingAreaUpdateCount != 2 ||
+        worldData.pendingAreaUpdates[0] != &firstArea ||
+        worldData.pendingAreaUpdates[1] != &secondArea ||
+        (secondArea.areaFlags & 1) == 0 ||
+        (world.flags & 3) != 3 ||
+        (worldData.flags & 0x10) == 0) {
+        std::free(worldData.pendingAreaUpdates);
+        return 4;
+    }
+
+    std::free(worldData.pendingAreaUpdates);
+    return 0;
+}
+
 extern "C" int zclass_node_metadata_accessors_smoke() {
     zClass_NodePartial node = {};
     node.userDataOrDiRef = 0x12345678;
@@ -836,6 +1007,37 @@ extern "C" int zclass_copy_node_display_instance_smoke() {
     g_zClass_CopyNodeDiArg0 = 0;
     g_zClass_CopyNodeDiArg1 = 0;
     return 0;
+}
+
+extern "C" int zclass_set_display_instance_smoke() {
+    ResetTypeListsForTest();
+
+    zClass_NodePartial node = {};
+    zDiPartial oldDisplay = {};
+    zDiPartial newDisplay = {};
+    oldDisplay.refCount = 2;
+    node.userDataOrDiRef =
+        static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&oldDisplay));
+
+    if (zClass_Class::gwNodeSetDisplayInstance(&node, &newDisplay) != 0 ||
+        oldDisplay.refCount != 1 || newDisplay.refCount != 1 ||
+        node.userDataOrDiRef !=
+            static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&newDisplay)) ||
+        (node.flags & 0x203) != 0x203 || (node.boundsFlags & 1) == 0 ||
+        zClass_TypeList::Head(7) == nullptr) {
+        FreeTypeListsForTest();
+        return 1;
+    }
+
+    if (zClass_Class::gwNodeSetDisplayInstance(&node, nullptr) != 0 ||
+        newDisplay.refCount != 0 || node.userDataOrDiRef != 0 ||
+        (node.flags & 0x200) != 0) {
+        FreeTypeListsForTest();
+        return 2;
+    }
+
+    FreeTypeListsForTest();
+    return zClass_Class::gwNodeSetDisplayInstance(nullptr, nullptr) == 5 ? 0 : 3;
 }
 
 extern "C" int zclass_copy_node_base_data_smoke() {
@@ -1200,6 +1402,112 @@ extern "C" int zclass_node_pick_flag_accessors_smoke() {
                : 7;
 }
 
+extern "C" int zclass_node_extra_flag_setters_smoke() {
+    zClass_NodePartial node{};
+    zClass_NodePartial child{};
+    zClass_NodePartial grandchild{};
+    zClass_NodePartial *children[] = {&child};
+    zClass_NodePartial *grandchildren[] = {&grandchild};
+
+    if (zClass_Class::gwNodeSetHasHitCallback(&node, 1) != 0 || (node.flags & 0x40) == 0) {
+        return 1;
+    }
+    if (zClass_Class::gwNodeSetHasHitCallback(&node, 0) != 0 || (node.flags & 0x40) != 0) {
+        return 2;
+    }
+    if (zClass_Class::gwNodeSetBypassFarClip(&node, 1) != 0 || (node.flags & 0x80) == 0) {
+        return 3;
+    }
+    if (zClass_Class::gwNodeSetBypassFarClip(&node, 0) != 0 || (node.flags & 0x80) != 0) {
+        return 4;
+    }
+
+    node.flags = 0x01000000;
+    if (zClass_Class::gwNodeClearVariantGate(&node, 1) != 0 ||
+        (node.flags & 0x01000000) == 0) {
+        return 5;
+    }
+    if (zClass_Class::gwNodeClearVariantGate(&node, 0) != 0 ||
+        (node.flags & 0x01000000) != 0) {
+        return 6;
+    }
+
+    node.listCountB = 1;
+    node.listB = children;
+    child.listCountB = 1;
+    child.listB = grandchildren;
+    zClass_Node::PropagateExtraFlagsRecursive(&node, 0x22);
+    if (node.auxFlags != 0x22 || child.auxFlags != 0x22 || grandchild.auxFlags != 0x22) {
+        return 7;
+    }
+
+    child.auxFlags = 0x3f;
+    grandchild.auxFlags = 0x15;
+    zClass_Node::MaskExtraFlagsRecursive(&node, 0x14);
+    if (node.auxFlags != 0x00 || child.auxFlags != 0x14 || grandchild.auxFlags != 0x14) {
+        return 10;
+    }
+
+    zClass_Node::PropagateFlagsRecursive(&node, 0x400);
+    if ((node.flags & 0x400) == 0 || (child.flags & 0x400) == 0 ||
+        (grandchild.flags & 0x400) == 0) {
+        return 11;
+    }
+
+    zClass_Node::SetContextRecursive(&node, &node, 0x200000);
+    if ((node.flags & 0x200000) == 0 || (child.flags & 0x200000) == 0 ||
+        (grandchild.flags & 0x200000) == 0 || node.callbackContext != &node ||
+        child.callbackContext != &node || grandchild.callbackContext != &node) {
+        return 8;
+    }
+
+    return zClass_Class::gwNodeSetHasHitCallback(nullptr, 1) == 5 &&
+                   zClass_Class::gwNodeSetBypassFarClip(nullptr, 1) == 5 &&
+                   zClass_Class::gwNodeClearVariantGate(nullptr, 0) == 5
+               ? 0
+               : 9;
+}
+
+extern "C" int zclass_node_vertex_alpha_and_root_smoke() {
+    zClass_NodePartial node{};
+
+    if (zClass_Class::gwNodeSetVertexAlphaOverride(&node, 1) != 0 ||
+        (node.flags & 0x00800000) == 0) {
+        return 1;
+    }
+    if (zClass_Class::gwNodeSetVertexAlphaOverride(&node, 0) != 0 ||
+        (node.flags & 0x00800000) != 0) {
+        return 2;
+    }
+
+    zClass_NodePartial root{};
+    zClass_NodePartial mid{};
+    zClass_NodePartial child{};
+    zClass_NodePartial *midParentList[] = {&root};
+    zClass_NodePartial *childParentList[] = {&mid};
+    mid.listCountA = 1;
+    mid.listA = midParentList;
+    child.listCountA = 1;
+    child.listA = childParentList;
+
+    if (zClass_Class::gwNodeGetRoot(&child) != &root) {
+        return 3;
+    }
+    if (zClass_Class::gwNodeGetRoot(nullptr) != nullptr) {
+        return 4;
+    }
+
+    zClass_NodePartial secondParent{};
+    zClass_NodePartial *multiParentList[] = {&root, &secondParent};
+    child.listCountA = 2;
+    child.listA = multiParentList;
+    if (zClass_Class::gwNodeGetRoot(&child) != nullptr) {
+        return 5;
+    }
+
+    return zClass_Class::gwNodeSetVertexAlphaOverride(nullptr, 1) == 5 ? 0 : 6;
+}
+
 extern "C" int zclass_find_by_name_and_filtered_iter_smoke() {
     ResetTypeListsForTest();
 
@@ -1232,6 +1540,311 @@ extern "C" int zclass_find_by_name_and_filtered_iter_smoke() {
     FreeTypeListsForTest();
     return found == &first && missing == nullptr && empty == nullptr ? 0 : 1;
 }
+
+extern "C" int zclass_find_node_recursive_by_name_smoke() {
+    zClass_NodePartial root{};
+    zClass_NodePartial firstChild{};
+    zClass_NodePartial secondChild{};
+    zClass_NodePartial grandchild{};
+    std::strcpy(root.name, "root");
+    std::strcpy(firstChild.name, "shared");
+    std::strcpy(secondChild.name, "shared");
+    std::strcpy(grandchild.name, "deep");
+
+    zClass_NodePartial *rootChildren[2] = {&firstChild, &secondChild};
+    zClass_NodePartial *childChildren[1] = {&grandchild};
+    root.listCountB = 2;
+    root.listB = rootChildren;
+    firstChild.listCountB = 1;
+    firstChild.listB = childChildren;
+
+    if (zClass_Class::FindNodeRecursiveByName(nullptr, "root") != nullptr) {
+        return 1;
+    }
+    if (zClass_Class::FindNodeRecursiveByName(&root, "root") != &root) {
+        return 2;
+    }
+    if (zClass_Class::FindNodeRecursiveByName(&root, "shared") != &firstChild) {
+        return 3;
+    }
+    if (zClass_Class::FindNodeRecursiveByName(&root, "deep") != &grandchild) {
+        return 4;
+    }
+
+    return zClass_Class::FindNodeRecursiveByName(&root, "missing") == nullptr ? 0 : 5;
+}
+
+extern "C" int zclass_light_new_smoke() {
+    for (int i = 0; i < 16; ++i) {
+        zClass_TypeList::Head(i) = nullptr;
+        zClass_TypeList::Tail(i) = nullptr;
+        zClass_TypeList::PendingRemovalDirty(i) = 0;
+    }
+    g_zClass_TypeList_FreeLinkHead = nullptr;
+    g_zClass_NodeList_PendingFreeHead = nullptr;
+    g_zClass_TypeList_LiveLinkCount = 0;
+    g_zClass_TypeList_PeakLiveLinkCount = 0;
+
+    zClass_NodeFreeListSlot slot{};
+    slot.freeTag = 0x00ffffff;
+    g_zClass_NodeArray = &slot;
+    g_zClass_NodeFreeHeadIndex = 0;
+    g_zClass_ActiveNodeCount = 0;
+    g_zClass_DeferredProcessingEnabled = 1;
+
+    zClass_NodePartial *node = zClass_Light::gwLightNew();
+    if (node != &slot.node || node->classId != 9 || (node->flags & 0x104) != 0x104 ||
+        node->classData == nullptr || zClass_TypeList::Head(9) == nullptr ||
+        zClass_TypeList::Head(9)->node != node) {
+        return 1;
+    }
+
+    if (node->cachedBounds[0] != 1.0f || node->cachedBounds[1] != 1.0f ||
+        node->cachedBounds[2] != -2.0f || node->cachedBounds[3] != 2.0f ||
+        node->cachedBounds[4] != 2.0f || node->cachedBounds[5] != -1.0f) {
+        return 2;
+    }
+
+    zClass_LightDataPartial *data = static_cast<zClass_LightDataPartial *>(node->classData);
+    if (data->dirty != 1 || data->enabled != 1 || data->worldDir.x != 0.0f ||
+        data->worldDir.y != 1.0f || data->worldDir.z != 0.0f || data->specularColor.red != 1.0f ||
+        data->specularColor.green != 1.0f || data->specularColor.blue != 1.0f ||
+        data->falloff != 0.0f || data->intensityScale != 1.0f || data->coneAngle != 0.0f ||
+        data->isPointMode != 0 || data->isDirectionalMode != 1 || data->lightParam != 1 ||
+        data->lightSubMode != 1 || data->range1 != 32.0f || data->range2 != 64.0f ||
+        data->range2Sq != 4096.0f || data->invRangeDelta != 0.03125f ||
+        data->attachedWorldCount != 0 || data->attachedWorlds != nullptr) {
+        return 3;
+    }
+
+    zClass_NodePartial removeParent{};
+    zClass_NodePartial child{};
+    zClass_NodePartial *children[] = {&child};
+    zClass_NodePartial *parents[] = {&removeParent};
+    removeParent.flags = 1;
+    removeParent.listCountB = 1;
+    removeParent.listB = children;
+    child.listCountA = 1;
+    child.listA = parents;
+    if (zClass_Light::RemoveChild(&removeParent, &child) != 0 || removeParent.listCountB != 0 ||
+        child.listCountA != 0 || zClass_Light::RemoveChild(nullptr, &child) != 5 ||
+        zClass_Light::RemoveChild(&removeParent, nullptr) != 5) {
+        return 4;
+    }
+
+    data->dirty = 0;
+    if (zClass_Light::gwLightSetIntensity(node, 0.25f) != 0 || data->dirty != 1 ||
+        data->intensityScale != 0.25f) {
+        return 5;
+    }
+    data->dirty = 0;
+    if (zClass_Light::gwLightSetFalloff(node, 0.75f) != 0 || data->dirty != 1 ||
+        data->falloff != 0.75f) {
+        return 6;
+    }
+
+    zClass_NodePartial nullLightData{};
+    float coneAngle = 0.5f;
+    std::uint32_t coneAngleBits = 0;
+    std::memcpy(&coneAngleBits, &coneAngle, sizeof(coneAngleBits));
+    data->dirty = 0;
+    if (zClass_Light::gwLightSetConeAngle(node, coneAngleBits) != 0 || data->dirty != 1 ||
+        data->coneAngle != 0.5f) {
+        return 7;
+    }
+    data->dirty = 0;
+    if (zClass_Light::gwLightSetPointMode(node) != 0 || data->dirty != 1 ||
+        data->isPointMode != 1 || data->isDirectionalMode != 0) {
+        return 8;
+    }
+    data->dirty = 0;
+    if (zClass_Light::gwLightSetDirectionalMode(node) != 0 || data->dirty != 1 ||
+        data->isPointMode != 0 || data->isDirectionalMode != 1) {
+        return 9;
+    }
+    data->dirty = 0;
+    if (zClass_Light::gwLightSetParam(node, 7) != 0 || data->dirty != 1 || data->lightParam != 7) {
+        return 10;
+    }
+    data->dirty = 0;
+    if (zClass_Light::gwLightSetRange(node, 20.0f, 10.0f) != 0 || data->dirty != 1 ||
+        data->range1 != 10.0f || data->range2 != 20.0f || data->range2Sq != 400.0f ||
+        data->invRangeDelta != 0.1f) {
+        return 11;
+    }
+    data->dirty = 0;
+    if (zClass_Light::gwLightSetRange(node, 5.0f, 5.0f) != 0 || data->dirty != 1 ||
+        data->range1 != 5.0f || data->range2 != 15.0f || data->range2Sq != 225.0f ||
+        data->invRangeDelta != 0.1f ||
+        std::strcmp(g_zError_DebugMsgBuffer,
+                    "D:\\Proj\\GameZRecoil\\zClass\\Light.c: Line 540: ERROR setting light ranges; "
+                    "Range2 can't be equal to Range1.\n") != 0) {
+        return 12;
+    }
+    float rangeA = 0.0f;
+    float rangeB = 0.0f;
+    if (zClass_Light::gwLightGetRange(node, &rangeA, &rangeB) != 0 || rangeA != 5.0f ||
+        rangeB != 15.0f) {
+        return 13;
+    }
+    data->dirty = 0;
+    if (zClass_Light::gwLightSetPosition(node, 1.0f, 2.0f, 3.0f) != 0 || data->dirty != 1 ||
+        data->localPosition.x != 1.0f || data->localPosition.y != 2.0f ||
+        data->localPosition.z != 3.0f) {
+        return 14;
+    }
+    data->dirty = 0;
+    if (zClass_Light::gwLightSetRotation(node, 4.0f, 5.0f, 6.0f) != 0 || data->dirty != 1 ||
+        data->localRotation.x != 4.0f || data->localRotation.y != 5.0f ||
+        data->localRotation.z != 6.0f) {
+        return 15;
+    }
+    int lightMatrixIdentityFlags[4] = {};
+    float *lightMatrixSlots[4] = {};
+    zMat4x3 lightBaseMatrix{};
+    lightMatrixIdentityFlags[0] = 1;
+    lightMatrixSlots[0] = reinterpret_cast<float *>(&lightBaseMatrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &lightMatrixIdentityFlags[0];
+    zMath::g_currentMatrixPtrSlot = &lightMatrixSlots[0];
+
+    data->localRotation = {0.0f, 0.0f, 0.0f};
+    data->localPosition = {1.0f, 2.0f, 3.0f};
+    data->isPointMode = 0;
+    data->coneAngle = 0.0f;
+    if (zClass_Light::ComputeWorldTransform(node, data) != 0 || data->worldPosition.x != 1.0f ||
+        data->worldPosition.y != 2.0f || data->worldPosition.z != 3.0f ||
+        data->worldDir.x != 0.0f || data->worldDir.y != 0.0f || data->worldDir.z != -1.0f) {
+        return 151;
+    }
+    data->localPosition = {0.0f, 0.0f, 0.0f};
+    data->isPointMode = 1;
+    if (zClass_Light::ComputeWorldTransform(node, data) != 0 || data->worldRotation.x != 0.0f ||
+        data->worldRotation.y != 0.0f || data->worldRotation.z != 0.0f) {
+        return 152;
+    }
+    const int activeLightFlags = node->flags;
+    node->flags = activeLightFlags & ~0x04;
+    data->dirty = 1;
+    if (zClass_Light::gwLightUpdate(node) != 0 || data->dirty != 1) {
+        return 153;
+    }
+    node->flags = activeLightFlags;
+    zClass_NodePartial updateNullData{};
+    updateNullData.flags = 0x04;
+    if (zClass_Light::gwLightUpdate(nullptr) != 5 ||
+        zClass_Light::gwLightUpdate(&updateNullData) != 5) {
+        return 154;
+    }
+
+    zMath::g_zMath_CameraScratchB = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                                     0.0f, 0.0f, 1.0f, 10.0f, 20.0f, 30.0f};
+    data->dirty = 1;
+    data->localPosition = {2.0f, 3.0f, 4.0f};
+    data->localRotation = {0.0f, 0.0f, 0.0f};
+    data->isPointMode = 1;
+    data->coneAngle = 0.0f;
+    data->isDirectionalMode = 1;
+    data->viewDir = {};
+    data->viewPos = {};
+    data->worldPosScratch = {};
+    if (zClass_Light::gwLightUpdate(node) != 0 || data->dirty != 0 ||
+        data->worldPosition.x != 2.0f || data->worldPosition.y != 3.0f ||
+        data->worldPosition.z != 4.0f || data->worldDir.x != 0.0f ||
+        data->worldDir.y != 0.0f || data->worldDir.z != -1.0f ||
+        data->viewDir.x != 0.0f || data->viewDir.y != 0.0f || data->viewDir.z != 1.0f ||
+        data->worldPosScratch.x != 2.0f || data->worldPosScratch.y != 3.0f ||
+        data->worldPosScratch.z != 4.0f || data->viewPos.x != 12.0f ||
+        data->viewPos.y != 23.0f || data->viewPos.z != 34.0f) {
+        return 155;
+    }
+
+    data->specularColor = {0.2f, 0.4f, 0.6f};
+    float specR = 0.0f;
+    float specG = 0.0f;
+    float specB = 0.0f;
+    if (zClass_Light::gwLightGetSpecularColor(node, &specR, &specG, &specB) != 0 || specR != 0.2f ||
+        specG != 0.4f || specB != 0.6f) {
+        return 16;
+    }
+    const int savedRendererPath = g_zVideo_ActiveRendererPath;
+    const int savedRendererType = g_zVideo_RendererType;
+    const int savedNormalizeChannel = g_zVideo_D3DColorNormalizeChannelIndex;
+    zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
+    zRndr::g_fogTargetParamsStaged = {};
+    g_zVideo_ActiveRendererPath = 1;
+    g_zVideo_RendererType = 1;
+    g_zVideo_D3DColorNormalizeChannelIndex = -1;
+    data->dirty = 0;
+    if (zClass_Light::gwLightSetSpecularColor(node, 1.2f, -0.5f, 0.5f) != 0 || data->dirty != 1 ||
+        data->specularColor.red != 1.0f || data->specularColor.green != 0.0f ||
+        data->specularColor.blue != 0.5f ||
+        zRndr::g_fogTargetParamsStaged.packedColor16 != 0xf810 ||
+        g_zVideo_D3DColorNormalizeChannelIndex != 0) {
+        g_zVideo_ActiveRendererPath = savedRendererPath;
+        g_zVideo_RendererType = savedRendererType;
+        g_zVideo_D3DColorNormalizeChannelIndex = savedNormalizeChannel;
+        return 17;
+    }
+    g_zVideo_ActiveRendererPath = savedRendererPath;
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_D3DColorNormalizeChannelIndex = savedNormalizeChannel;
+    if (zClass_Light::gwLightSetIntensity(nullptr, 1.0f) != 5 ||
+        zClass_Light::gwLightSetIntensity(&nullLightData, 1.0f) != 5 ||
+        zClass_Light::gwLightSetFalloff(nullptr, 1.0f) != 5 ||
+        zClass_Light::gwLightSetFalloff(&nullLightData, 1.0f) != 5 ||
+        zClass_Light::gwLightSetConeAngle(nullptr, coneAngleBits) != 5 ||
+        zClass_Light::gwLightSetConeAngle(&nullLightData, coneAngleBits) != 5 ||
+        zClass_Light::gwLightSetPointMode(nullptr) != 5 ||
+        zClass_Light::gwLightSetPointMode(&nullLightData) != 5 ||
+        zClass_Light::gwLightSetDirectionalMode(nullptr) != 5 ||
+        zClass_Light::gwLightSetDirectionalMode(&nullLightData) != 5 ||
+        zClass_Light::gwLightSetParam(nullptr, 1) != 5 ||
+        zClass_Light::gwLightSetParam(&nullLightData, 1) != 5 ||
+        zClass_Light::gwLightSetRange(nullptr, 1.0f, 2.0f) != 5 ||
+        zClass_Light::gwLightSetRange(&nullLightData, 1.0f, 2.0f) != 5 ||
+        zClass_Light::gwLightGetRange(nullptr, &rangeA, &rangeB) != 5 ||
+        zClass_Light::gwLightGetRange(&nullLightData, &rangeA, &rangeB) != 5 ||
+        zClass_Light::gwLightSetPosition(nullptr, 1.0f, 2.0f, 3.0f) != 5 ||
+        zClass_Light::gwLightSetPosition(&nullLightData, 1.0f, 2.0f, 3.0f) != 5 ||
+        zClass_Light::gwLightSetRotation(nullptr, 1.0f, 2.0f, 3.0f) != 5 ||
+        zClass_Light::gwLightSetRotation(&nullLightData, 1.0f, 2.0f, 3.0f) != 5 ||
+        zClass_Light::gwLightGetSpecularColor(nullptr, &specR, &specG, &specB) != 5 ||
+        zClass_Light::gwLightGetSpecularColor(&nullLightData, &specR, &specG, &specB) != 5 ||
+        zClass_Light::gwLightSetSpecularColor(nullptr, 1.0f, 1.0f, 1.0f) != 5 ||
+        zClass_Light::gwLightSetSpecularColor(&nullLightData, 1.0f, 1.0f, 1.0f) != 5) {
+        return 18;
+    }
+
+    if (zClass_Light::DeleteNode(nullptr) != 5) {
+        return 19;
+    }
+
+    zClass_NodePartial nullData{};
+    if (zClass_Light::DeleteNode(&nullData) != 5) {
+        return 20;
+    }
+
+    data->attachedWorldCount = 2;
+    if (zClass_Light::DeleteNode(node) != 1 || node->classData == nullptr) {
+        return 21;
+    }
+
+    data->attachedWorldCount = 0;
+    data->attachedWorlds =
+        static_cast<zClass_NodePartial **>(std::calloc(1, sizeof(zClass_NodePartial *)));
+    if (data->attachedWorlds == nullptr) {
+        return 22;
+    }
+
+    if (zClass_Light::DeleteNode(node) != 0 || g_zClass_ActiveNodeCount != 0) {
+        return 23;
+    }
+    zClass_TypeList::FreeAll();
+
+    g_zClass_NodeFreeHeadIndex = -1;
+    return zClass_Light::gwLightNew() == nullptr ? 0 : 24;
+}
+
 
 extern "C" int zclass_sound_leaf_smoke() {
     ResetTypeListsForTest();
@@ -1395,4 +2008,815 @@ extern "C" int zclass_sound_get_position_smoke() {
     }
 
     return 0;
+}
+
+extern "C" int zclass_gwnode_build_node_to_ancestor_matrix_smoke() {
+    int flags[2] = {};
+    float *slots[2] = {};
+    zMat4x3 matrix{};
+    zMath::g_currentMatrixIdentityFlagSlot = &flags[0];
+    zMath::g_currentMatrixPtrSlot = &slots[0];
+    zMath::MatStackPushPtr(reinterpret_cast<float *>(&matrix));
+
+    if (gwNode::BuildNodeToAncestorMatrix(nullptr, 1) != 5) {
+        zMath::MatStackPopPtr();
+        return 1;
+    }
+
+    zClass_Object3DDataPartial data{};
+    zClass_NodePartial node{};
+    node.classId = 5;
+    node.flags = 0x00080000;
+    node.classData = &data;
+    data.cachedWorldMatrix[0] = 1.0f;
+    data.cachedWorldMatrix[4] = 1.0f;
+    data.cachedWorldMatrix[8] = 1.0f;
+    data.cachedWorldMatrix[9] = 3.0f;
+    data.cachedWorldMatrix[10] = 4.0f;
+    data.cachedWorldMatrix[11] = 5.0f;
+
+    zMath::MatLoadIdentity();
+    if (gwNode::BuildNodeToAncestorMatrix(&node, 1) != 0 || matrix.posX != 3.0f ||
+        matrix.posY != 4.0f || matrix.posZ != 5.0f) {
+        zMath::MatStackPopPtr();
+        return 2;
+    }
+
+    data.flags = 0x20;
+    data.localMatrix[0] = 1.0f;
+    data.localMatrix[4] = 1.0f;
+    data.localMatrix[8] = 1.0f;
+    data.localMatrix[9] = 7.0f;
+    data.localMatrix[10] = 8.0f;
+    data.localMatrix[11] = 9.0f;
+    zMath::MatLoadIdentity();
+    if (gwNode::BuildNodeToAncestorMatrix(&node, 1) != 0 || matrix.posX != 7.0f ||
+        matrix.posY != 8.0f || matrix.posZ != 9.0f || data.cachedWorldMatrix[9] != 7.0f ||
+        data.cachedWorldMatrix[10] != 8.0f || data.cachedWorldMatrix[11] != 9.0f ||
+        (data.flags & 0x20) != 0) {
+        zMath::MatStackPopPtr();
+        return 3;
+    }
+
+    zMath::MatStackPopPtr();
+    return 0;
+}
+
+extern "C" int zclass_gwnode_get_world_position_smoke() {
+    int flags[3] = {};
+    float *slots[3] = {};
+    zMath::g_currentMatrixIdentityFlagSlot = &flags[0];
+    zMath::g_currentMatrixPtrSlot = &slots[0];
+
+    zVec3 outPosition{9.0f, 9.0f, 9.0f};
+    if (gwNode::GetWorldPosition(nullptr, &outPosition) != 1) {
+        return 1;
+    }
+
+    zClass_Object3DDataPartial data{};
+    zClass_NodePartial node{};
+    node.classId = 5;
+    node.flags = 0x00080000;
+    node.classData = &data;
+    data.cachedWorldMatrix[9] = 1.0f;
+    data.cachedWorldMatrix[10] = 2.0f;
+    data.cachedWorldMatrix[11] = 3.0f;
+    if (gwNode::GetWorldPosition(&node, &outPosition) != 0 || outPosition.x != 1.0f ||
+        outPosition.y != 2.0f || outPosition.z != 3.0f) {
+        return 2;
+    }
+
+    data.flags = 0x20;
+    data.localMatrix[0] = 1.0f;
+    data.localMatrix[4] = 1.0f;
+    data.localMatrix[8] = 1.0f;
+    data.localMatrix[9] = 4.0f;
+    data.localMatrix[10] = 5.0f;
+    data.localMatrix[11] = 6.0f;
+    if (gwNode::GetWorldPosition(&node, &outPosition) != 0) {
+        return 3;
+    }
+
+    if (outPosition.x != 4.0f || outPosition.y != 5.0f || outPosition.z != 6.0f ||
+        (data.flags & 0x20) != 0) {
+        return 4;
+    }
+
+    zVec3 point{};
+    if (gwNode::TransformPoint(nullptr, &point) != 1 ||
+        gwNode::TransformPoint(&node, &point) != 0 || point.x != 4.0f ||
+        point.y != 5.0f || point.z != 6.0f) {
+        return 5;
+    }
+
+    data.flags = 0x20;
+    data.localMatrix[9] = 10.0f;
+    data.localMatrix[10] = 20.0f;
+    data.localMatrix[11] = 30.0f;
+    point = {1.0f, 2.0f, 3.0f};
+    if (gwNode::TransformPoint(&node, &point) != 0 || point.x != 11.0f ||
+        point.y != 22.0f || point.z != 33.0f) {
+        return 6;
+    }
+
+    auto nearFloat = [](float lhs, float rhs) { return std::fabs(lhs - rhs) <= 0.0001f; };
+    zVec3 orientation{};
+    if (gwNode::GetWorldPosAndOrientation(nullptr, &point, &orientation) != 1) {
+        return 7;
+    }
+
+    data.flags = 0x20;
+    data.localMatrix[0] = 1.0f;
+    data.localMatrix[4] = 1.0f;
+    data.localMatrix[8] = 1.0f;
+    data.localMatrix[9] = 10.0f;
+    data.localMatrix[10] = 20.0f;
+    data.localMatrix[11] = 30.0f;
+    point = {};
+    if (gwNode::GetWorldPosAndOrientation(&node, &point, &orientation) != 0 ||
+        !nearFloat(point.x, 10.0f) || !nearFloat(point.y, 20.0f) ||
+        !nearFloat(point.z, 30.0f) || !nearFloat(orientation.x, 0.0f) ||
+        !nearFloat(orientation.y, 0.0f) || !nearFloat(orientation.z, 1.57079637f)) {
+        return 8;
+    }
+
+    data.flags = 0x20;
+    point = {1.0f, 2.0f, 3.0f};
+    if (gwNode::GetWorldPosAndOrientation(&node, &point, &orientation) != 0 ||
+        !nearFloat(point.x, 11.0f) || !nearFloat(point.y, 22.0f) ||
+        !nearFloat(point.z, 33.0f) || !nearFloat(orientation.x, 0.0f) ||
+        !nearFloat(orientation.y, 0.0f) || !nearFloat(orientation.z, 1.57079637f)) {
+        return 9;
+    }
+
+    return 0;
+}
+
+extern "C" int zclass_node_predicate_helpers_smoke() {
+    zBBox3f bbox{-2.0f, 4.0f, 1.0f, 6.0f, 10.0f, 9.0f};
+    zVec3 center{};
+    float radius = 0.0f;
+    if (BBox::MinMaxToBoundingSphere(&bbox, &center, &radius) != &radius ||
+        center.x != 2.0f || center.y != 7.0f || center.z != 5.0f) {
+        return 7;
+    }
+    const float radiusSq = 4.0f * 4.0f + 3.0f * 3.0f + 4.0f * 4.0f;
+    std::int32_t expectedRadiusBits = FloatBitsForTest(radiusSq);
+    expectedRadiusBits = (expectedRadiusBits >> 1) + 0x1fc00000;
+    if (FloatBitsForTest(radius) != expectedRadiusBits) {
+        return 8;
+    }
+
+    const zVec3 cornerValues[8] = {{6.0f, 4.0f, 9.0f},  {-2.0f, 10.0f, 1.0f},
+                                   {6.0f, 10.0f, 9.0f}, {-2.0f, 4.0f, 1.0f},
+                                   {6.0f, 4.0f, 1.0f},  {-2.0f, 10.0f, 9.0f},
+                                   {6.0f, 10.0f, 1.0f}, {-2.0f, 4.0f, 9.0f}};
+    zBBoxCorners minMaxCorners{};
+    for (std::int32_t i = 0; i < 8; ++i) {
+        minMaxCorners.values[i * 3 + 0] = cornerValues[i].x;
+        minMaxCorners.values[i * 3 + 1] = cornerValues[i].y;
+        minMaxCorners.values[i * 3 + 2] = cornerValues[i].z;
+    }
+    center = {};
+    radius = 0.0f;
+    BBox::CornersToBoundingSphere(&minMaxCorners, &center, &radius);
+    if (center.x != 2.0f || center.y != 7.0f || center.z != 5.0f) {
+        return 680;
+    }
+    if (FloatBitsForTest(radius) != expectedRadiusBits) {
+        return 681;
+    }
+
+    zBBoxCorners expandedCorners{};
+    BBox::ExpandToCorners(&bbox, &expandedCorners);
+    if (expandedCorners.values[0] != -2.0f || expandedCorners.values[1] != 4.0f ||
+        expandedCorners.values[2] != 9.0f || expandedCorners.values[6] != 6.0f ||
+        expandedCorners.values[7] != 4.0f || expandedCorners.values[8] != 1.0f ||
+        expandedCorners.values[21] != -2.0f || expandedCorners.values[22] != 10.0f ||
+        expandedCorners.values[23] != 1.0f) {
+        return 682;
+    }
+
+    zDiPartial di{1, 0};
+    zClass_NodePartial node{};
+    node.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&di);
+    if (zClass_Node::HasRenderableDiPredicate(&node) != 1) {
+        return 1;
+    }
+    di.flags = 0x10;
+    if (zClass_Node::HasRenderableDiPredicate(&node) != 0) {
+        return 2;
+    }
+    node.userDataOrDiRef = 0;
+    if (zClass_Node::HasRenderableDiPredicate(&node) != 0) {
+        return 3;
+    }
+
+    zDiPartial flagTarget{0, 0x12};
+    zDi::SetFlagBit0(&flagTarget, 1);
+    if (flagTarget.flags != 0x13) {
+        return 4;
+    }
+    zDi::SetFlagBit0(&flagTarget, 0);
+    if (flagTarget.flags != 0x12) {
+        return 5;
+    }
+    zDi::SetFlagBit0(nullptr, 1);
+    if (zModel_Material_SetFlagBit9(nullptr, 1) != 0) {
+        return 6;
+    }
+
+    zDiPartial flagRootDi{0, 0x12};
+    zDiPartial flagGrandchildDi{0, 0x04};
+    zClass_NodePartial flagRootNode{};
+    zClass_NodePartial flagChildNode{};
+    zClass_NodePartial flagGrandchildNode{};
+    zClass_NodePartial *flagRootChildren[1] = {&flagChildNode};
+    zClass_NodePartial *flagChildChildren[1] = {&flagGrandchildNode};
+    flagRootNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&flagRootDi);
+    flagRootNode.listCountB = 1;
+    flagRootNode.listB = flagRootChildren;
+    flagChildNode.listCountB = 1;
+    flagChildNode.listB = flagChildChildren;
+    flagGrandchildNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&flagGrandchildDi);
+    zClass_Node::SetDiFlagBit0Recursive(&flagRootNode, 1);
+    if (flagRootDi.flags != 0x13 || flagGrandchildDi.flags != 0x05) {
+        return 7;
+    }
+    zClass_Node::SetDiFlagBit0Recursive(&flagRootNode, 0);
+    if (flagRootDi.flags != 0x12 || flagGrandchildDi.flags != 0x04) {
+        return 8;
+    }
+
+    zDiEntryPartial variantEntries[3] = {};
+    variantEntries[1].variantTagInitialized = 1;
+    variantEntries[1].variantTag = 0x44;
+    zDiPartial variantDi{};
+    variantDi.entryCount = 3;
+    variantDi.entries = variantEntries;
+    zDi::SetVariantTagIfUnset(&variantDi, 0x21);
+    if (variantEntries[0].variantTagInitialized != 1 || variantEntries[0].variantTag != 0x21 ||
+        variantEntries[1].variantTagInitialized != 1 || variantEntries[1].variantTag != 0x44 ||
+        variantEntries[2].variantTagInitialized != 1 || variantEntries[2].variantTag != 0x21) {
+        return 9;
+    }
+    zDi::SetVariantTagIfUnset(nullptr, 0x22);
+
+    g_Variant_FilterEnabled = 0;
+    if (VariantTag::CurrentAllowsId(0x33) != 1) {
+        return 31;
+    }
+    g_Variant_FilterEnabled = 1;
+    g_Variant_CurrentTag.count = 0;
+    if (VariantTag::CurrentAllowsId(0x33) != 1 || VariantTag::CurrentAllowsId(0xff) != 1) {
+        return 32;
+    }
+    g_Variant_CurrentTag.count = 2;
+    g_Variant_CurrentTag.tags[0] = 0x44;
+    g_Variant_CurrentTag.tags[1] = 0x55;
+    if (VariantTag::CurrentAllowsId(0x44) != 1 || VariantTag::CurrentAllowsId(0x33) != 0) {
+        return 33;
+    }
+    g_Variant_CurrentTag.tags[1] = 0xff;
+    if (VariantTag::CurrentAllowsId(0x33) != 1) {
+        return 34;
+    }
+
+    zTag4Partial overlapA = {};
+    zTag4Partial overlapB = {};
+    overlapA.count = 2;
+    overlapA.tags[0] = 0x12;
+    overlapA.tags[1] = 0x34;
+    overlapB.count = 2;
+    overlapB.tags[0] = 0x56;
+    overlapB.tags[1] = 0x34;
+    if (VariantTag::TagsOverlap(&overlapA, &overlapB) != 1) {
+        return 35;
+    }
+    overlapB.tags[1] = 0x78;
+    if (VariantTag::TagsOverlap(&overlapA, &overlapB) != 0) {
+        return 36;
+    }
+    overlapA.tags[1] = 0xff;
+    if (VariantTag::TagsOverlap(&overlapA, &overlapB) != 1) {
+        return 37;
+    }
+    overlapA.tags[1] = 0x34;
+    overlapB.tags[0] = 0xff;
+    if (VariantTag::TagsOverlap(&overlapA, &overlapB) != 1) {
+        return 38;
+    }
+    overlapB.count = 0;
+    if (VariantTag::TagsOverlap(&overlapA, &overlapB) != 1) {
+        return 39;
+    }
+    g_Variant_FilterEnabled = 0;
+    overlapB.count = 2;
+    overlapB.tags[0] = 0x56;
+    if (VariantTag::TagsOverlap(&overlapA, &overlapB) != 1) {
+        return 40;
+    }
+    g_Variant_FilterEnabled = 1;
+
+    zVec3 boundsVerts[2] = {{-1.0f, 2.0f, -3.0f}, {5.0f, -6.0f, 7.0f}};
+    zDiPartial boundsDi{};
+    boundsDi.mode = 0;
+    boundsDi.vertCount = 2;
+    boundsDi.verts = boundsVerts;
+    zBoundsMinMaxPartial bounds{};
+    zDi::RebuildBounds(&boundsDi, &bounds);
+    if (bounds.min.x != -1.0f || bounds.min.y != -6.0f || bounds.min.z != -3.0f ||
+        bounds.max.x != 5.0f || bounds.max.y != 2.0f || bounds.max.z != 7.0f ||
+        boundsDi.bboxCenter.x != 2.0f || boundsDi.bboxCenter.y != -2.0f ||
+        boundsDi.bboxCenter.z != 2.0f || boundsDi.bboxRadius <= 0.0f) {
+        return 61;
+    }
+
+    g_zModel_SharedVec3ScratchA = g_zModel_SharedVec3ScratchAStorage;
+    zVec3 boundsBaseVerts[2] = {{1.0f, 2.0f, 3.0f}, {5.0f, -2.0f, 1.0f}};
+    zVec3 boundsBlendVerts[2] = {{10.0f, 0.0f, -8.0f}, {-1.0f, 4.0f, 2.0f}};
+    zVec3 pointEntry0Cams[1] = {{-4.0f, 1.0f, 6.0f}};
+    zVec3 pointEntry1Cams[2] = {{2.0f, -5.0f, 0.0f}, {7.0f, 3.0f, -9.0f}};
+    zModel_PointEntryPartial pointEntries[2] = {};
+    pointEntries[0].pointCamCount = 1;
+    pointEntries[0].pointCamList = pointEntry0Cams;
+    pointEntries[1].pointCamCount = 2;
+    pointEntries[1].pointCamList = pointEntry1Cams;
+    zDiPartial aabbDi{};
+    aabbDi.vertCount = 2;
+    aabbDi.blendVertCount = 2;
+    aabbDi.pointCount = 2;
+    aabbDi.verts = boundsBaseVerts;
+    aabbDi.blendVerts = boundsBlendVerts;
+    aabbDi.pointEntries = pointEntries;
+    zBoundsMinMaxPartial aabbBounds{};
+    zDi::BuildAabb(&aabbDi, &aabbBounds);
+    if (aabbBounds.min.x != -4.0f || aabbBounds.min.y != -5.0f ||
+        aabbBounds.min.z != -9.0f || aabbBounds.max.x != 11.0f ||
+        aabbBounds.max.y != 3.0f || aabbBounds.max.z != 6.0f ||
+        g_zModel_SharedVec3ScratchA[0].x != 11.0f ||
+        g_zModel_SharedVec3ScratchA[0].z != -5.0f ||
+        g_zModel_SharedVec3ScratchA[1].x != 4.0f ||
+        g_zModel_SharedVec3ScratchA[1].y != 2.0f) {
+        return 641;
+    }
+
+    zVec3 symmetricVerts[2] = {{-2.0f, -3.0f, -4.0f}, {5.0f, 1.0f, 6.0f}};
+    zDiPartial symmetricDi{};
+    symmetricDi.mode = 1;
+    symmetricDi.flags = 0x20;
+    symmetricDi.vertCount = 2;
+    symmetricDi.verts = symmetricVerts;
+    zBoundsMinMaxPartial symmetricBounds{};
+    zDi::BuildOriginSymmetricAabb(&symmetricDi, &symmetricBounds);
+    if (symmetricBounds.min.x != -6.0f || symmetricBounds.min.y != -3.0f ||
+        symmetricBounds.min.z != -6.0f || symmetricBounds.max.x != 6.0f ||
+        symmetricBounds.max.y != 3.0f || symmetricBounds.max.z != 6.0f) {
+        return 642;
+    }
+
+    symmetricDi.flags = 0x10;
+    zDi::BuildOriginSymmetricAabb(&symmetricDi, &symmetricBounds);
+    if (symmetricBounds.min.x != -6.0f || symmetricBounds.min.y != -6.0f ||
+        symmetricBounds.min.z != -6.0f || symmetricBounds.max.x != 6.0f ||
+        symmetricBounds.max.y != 6.0f || symmetricBounds.max.z != 6.0f) {
+        return 643;
+    }
+
+    zClass_NodeFreeListSlot displaySlot{};
+    displaySlot.node.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&boundsDi);
+    if (zClass_Class::gwNodeUpdateDisplayInstance(&displaySlot.node) != 0 ||
+        (displaySlot.node.flags & 0x200) == 0) {
+        return 62;
+    }
+    zBoundsMinMaxPartial *displayBounds =
+        reinterpret_cast<zBoundsMinMaxPartial *>(&displaySlot.primaryBounds);
+    if (displayBounds->min.x != -1.0f || displayBounds->max.z != 7.0f) {
+        return 63;
+    }
+    displaySlot.node.userDataOrDiRef = 0;
+    if (zClass_Class::gwNodeUpdateDisplayInstance(&displaySlot.node) != 0 ||
+        (displaySlot.node.flags & 0x200) != 0 ||
+        zClass_Class::gwNodeUpdateDisplayInstance(nullptr) != 5) {
+        return 64;
+    }
+
+    zClass_NodePartial bboxNode{};
+    std::int32_t bboxClassData = 0;
+    bboxNode.classData = &bboxClassData;
+    bboxNode.flags = 0x100;
+    bboxNode.cachedBounds[0] = 1.0f;
+    bboxNode.cachedBounds[1] = 2.0f;
+    bboxNode.cachedBounds[2] = 3.0f;
+    bboxNode.cachedBounds[3] = 4.0f;
+    bboxNode.cachedBounds[4] = 5.0f;
+    bboxNode.cachedBounds[5] = 6.0f;
+    zBBox3f bboxOut{};
+    if (zClass_Class::gwNodeGetBBox(&bboxNode, &bboxOut) != 0 || bboxOut.minX != 1.0f ||
+        bboxOut.minY != 2.0f || bboxOut.minZ != 3.0f || bboxOut.maxX != 4.0f ||
+        bboxOut.maxY != 5.0f || bboxOut.maxZ != 6.0f) {
+        return 650;
+    }
+    zBBoxCorners bboxCorners{};
+    if (zClass_Class::gwNodeGetWorldBBoxCorners(&bboxNode, &bboxCorners) != 0 ||
+        bboxCorners.values[0] != 1.0f || bboxCorners.values[1] != 2.0f ||
+        bboxCorners.values[2] != 6.0f || bboxCorners.values[6] != 4.0f ||
+        bboxCorners.values[7] != 2.0f || bboxCorners.values[8] != 3.0f ||
+        bboxCorners.values[21] != 1.0f || bboxCorners.values[22] != 5.0f ||
+        bboxCorners.values[23] != 3.0f) {
+        return 65;
+    }
+    bboxNode.flags = 0;
+    if (zClass_Class::gwNodeGetBBox(&bboxNode, &bboxOut) != 1 ||
+        zClass_Class::gwNodeGetWorldBBoxCorners(&bboxNode, &bboxCorners) != 1) {
+        return 66;
+    }
+    bboxNode.classData = nullptr;
+    bboxNode.flags = 0x100;
+    if (zClass_Class::gwNodeGetBBox(&bboxNode, &bboxOut) != 5 ||
+        zClass_Class::gwNodeGetBBox(nullptr, &bboxOut) != 5 ||
+        zClass_Class::gwNodeGetWorldBBoxCorners(&bboxNode, &bboxCorners) != 5 ||
+        zClass_Class::gwNodeGetWorldBBoxCorners(nullptr, &bboxCorners) != 5) {
+        return 67;
+    }
+
+    zClass_Object3DDataPartial objectData{};
+    objectData.localMatrix[0] = 1.0f;
+    objectData.localMatrix[4] = 1.0f;
+    objectData.localMatrix[8] = 1.0f;
+    objectData.localMatrix[9] = 10.0f;
+    objectData.localMatrix[10] = 20.0f;
+    objectData.localMatrix[11] = 30.0f;
+    bboxNode.classId = 5;
+    bboxNode.classData = &objectData;
+    if (zClass_Class::gwNodeGetWorldBBoxCorners(&bboxNode, &bboxCorners) != 0 ||
+        bboxCorners.values[0] != 11.0f || bboxCorners.values[1] != 22.0f ||
+        bboxCorners.values[2] != 36.0f) {
+        return 68;
+    }
+
+    static std::int32_t viewMatrixFlags[1];
+    static float *viewMatrixSlots[1];
+    static zMat4x3 viewCurrentMatrix;
+    zMath::g_currentMatrixIdentityFlagSlot = &viewMatrixFlags[0];
+    zMath::g_currentMatrixPtrSlot = &viewMatrixSlots[0];
+
+    viewMatrixFlags[0] = 0;
+    viewMatrixSlots[0] = nullptr;
+    objectData.flags = 0;
+    if (zClass_Class::gwNodeGetViewBBoxCorners(&bboxNode, &bboxCorners) != 0 ||
+        bboxCorners.values[0] != 11.0f || bboxCorners.values[1] != 22.0f ||
+        bboxCorners.values[2] != 36.0f) {
+        return 681;
+    }
+
+    viewCurrentMatrix = {};
+    viewCurrentMatrix.xx = 1.0f;
+    viewCurrentMatrix.yy = 1.0f;
+    viewCurrentMatrix.zz = 1.0f;
+    viewCurrentMatrix.posX = 100.0f;
+    viewCurrentMatrix.posY = -10.0f;
+    viewCurrentMatrix.posZ = 1.0f;
+    viewMatrixFlags[0] = 0;
+    viewMatrixSlots[0] = reinterpret_cast<float *>(&viewCurrentMatrix);
+    objectData.flags = 0x08;
+    if (zClass_Class::gwNodeGetViewBBoxCorners(&bboxNode, &bboxCorners) != 0 ||
+        bboxCorners.values[0] != 101.0f || bboxCorners.values[1] != -8.0f ||
+        bboxCorners.values[2] != 7.0f) {
+        return 682;
+    }
+
+    objectData.flags = 0;
+    if (zClass_Class::gwNodeGetViewBBoxCorners(&bboxNode, &bboxCorners) != 0 ||
+        bboxCorners.values[0] != 111.0f || bboxCorners.values[1] != 12.0f ||
+        bboxCorners.values[2] != 37.0f) {
+        return 683;
+    }
+
+    viewMatrixFlags[0] = 1;
+    viewMatrixSlots[0] = reinterpret_cast<float *>(&viewCurrentMatrix);
+    bboxNode.classId = 3;
+    bboxNode.classData = &bboxClassData;
+    if (zClass_Class::gwNodeGetViewBBoxCorners(&bboxNode, &bboxCorners) != 3 ||
+        bboxCorners.values[0] != 1.0f || bboxCorners.values[1] != 2.0f ||
+        bboxCorners.values[2] != 6.0f) {
+        return 684;
+    }
+    bboxNode.classId = 5;
+    bboxNode.classData = &objectData;
+
+    zClass_NodeFreeListSlot parentSlot{};
+    zClass_NodePartial childA{};
+    zClass_NodePartial childB{};
+    zClass_NodePartial childIgnored{};
+    std::int32_t childClassData = 0;
+    childA.classData = &childClassData;
+    childB.classData = &childClassData;
+    childIgnored.classData = &childClassData;
+    childA.flags = 0x100;
+    childB.flags = 0x100;
+    childA.cachedBounds[0] = 0.0f;
+    childA.cachedBounds[1] = 1.0f;
+    childA.cachedBounds[2] = 2.0f;
+    childA.cachedBounds[3] = 3.0f;
+    childA.cachedBounds[4] = 4.0f;
+    childA.cachedBounds[5] = 5.0f;
+    childB.cachedBounds[0] = -2.0f;
+    childB.cachedBounds[1] = 6.0f;
+    childB.cachedBounds[2] = -1.0f;
+    childB.cachedBounds[3] = 10.0f;
+    childB.cachedBounds[4] = 7.0f;
+    childB.cachedBounds[5] = 8.0f;
+    childIgnored.cachedBounds[0] = -100.0f;
+    childIgnored.cachedBounds[1] = -100.0f;
+    childIgnored.cachedBounds[2] = -100.0f;
+    childIgnored.cachedBounds[3] = 100.0f;
+    childIgnored.cachedBounds[4] = 100.0f;
+    childIgnored.cachedBounds[5] = 100.0f;
+    zClass_NodePartial *children[] = {&childIgnored, &childA, &childB};
+    parentSlot.node.listCountB = 3;
+    parentSlot.node.listB = children;
+    parentSlot.node.flags = 0x400;
+    if (zClass_Class::gwNodeComputeChildBBox(&parentSlot.node) != 0 ||
+        (parentSlot.node.flags & 0x400) == 0) {
+        return 69;
+    }
+    zBBox3f *childBounds = &parentSlot.secondaryBounds;
+    if (childBounds->minX != -2.0f || childBounds->minY != 1.0f || childBounds->minZ != -1.0f ||
+        childBounds->maxX != 10.0f || childBounds->maxY != 7.0f || childBounds->maxZ != 8.0f) {
+        return 70;
+    }
+    parentSlot.node.classId = 2;
+    if (zClass_Class::gwNodeComputeChildBBox(&parentSlot.node) != 0 ||
+        (parentSlot.node.flags & 0x400) != 0 ||
+        zClass_Class::gwNodeComputeChildBBox(nullptr) != 5) {
+        return 71;
+    }
+
+    zWorldAreaPartial row0[2]{};
+    zWorldAreaPartial row1[2]{};
+    row0[0].cellMinX = 0.0f;
+    row0[0].cellMinZ = 100.0f;
+    row0[1].cellMinX = 50.0f;
+    row0[1].cellMinZ = 100.0f;
+    row1[0].cellMinX = 0.0f;
+    row1[0].cellMinZ = 50.0f;
+    row1[1].cellMinX = 50.0f;
+    row1[1].cellMinZ = 50.0f;
+    zWorldAreaPartial *rows[] = {row0, row1};
+    zClass_WorldDataPartial worldData{};
+    worldData.originX = 0.0f;
+    worldData.originZ = 100.0f;
+    worldData.worldMaxX = 100.0f;
+    worldData.worldMaxZ = 0.0f;
+    worldData.areaCellSizeX = 50.0f;
+    worldData.areaCellSizeZ = -50.0f;
+    worldData.areaInvSizeX = 0.02f;
+    worldData.areaInvSizeZ = -0.02f;
+    worldData.partitionInclusionTolX = 2.0f;
+    worldData.partitionInclusionTolZ = 2.0f;
+    worldData.areaGridColCount = 2;
+    worldData.areaGridRowCount = 2;
+    worldData.areaGridRows = rows;
+    zClass_NodePartial worldNode{};
+    worldNode.classData = &worldData;
+    std::int32_t gridCol = -99;
+    std::int32_t gridRow = -99;
+    if (zClass_World::WorldRectToGridIndex(&worldNode, &gridCol, 10.0f, 20.0f, 70.0f, 80.0f,
+                                           &gridRow) != 0 ||
+        gridCol != 0 || gridRow != 0) {
+        return 72;
+    }
+    if (zClass_World::WorldRectToGridIndex(&worldNode, &gridCol, 60.0f, 70.0f, 20.0f, 40.0f,
+                                           &gridRow) != 0 ||
+        gridCol != 1 || gridRow != 1) {
+        return 73;
+    }
+    if (zClass_World::WorldRectToGridIndex(&worldNode, &gridCol, -5.0f, 10.0f, 70.0f, 80.0f,
+                                           &gridRow) != 0 ||
+        gridCol != -1 || gridRow != -1) {
+        return 74;
+    }
+    if (zClass_World::WorldRectToGridIndex(&worldNode, &gridCol, 40.0f, 60.0f, 70.0f, 80.0f,
+                                           &gridRow) != 0 ||
+        gridCol != -1 || gridRow != -1) {
+        return 75;
+    }
+    worldNode.flags = 1;
+    row0[0].areaFlags = 0;
+    if (zClass_World::EnsureGridCellDisplayPosition(&worldNode, 0, 0) != 0 ||
+        worldData.pendingAreaUpdateCount != 1 || worldData.pendingAreaUpdateCapacity != 1 ||
+        worldData.pendingAreaUpdates[0] != &row0[0] || (row0[0].areaFlags & 1) == 0 ||
+        (worldNode.flags & 3) != 3 || (worldData.flags & 0x10) == 0) {
+        return 76;
+    }
+    if (zClass_World::EnsureGridCellDisplayPosition(&worldNode, 0, 0) != 0 ||
+        worldData.pendingAreaUpdateCount != 1) {
+        return 77;
+    }
+
+    zClass_NodePartial gridChild{};
+    if (zClass_World::AddChildToGridCell(&worldNode, &gridChild, 1, 0) != 0 ||
+        row0[1].childCount != 1 || row0[1].childList[0] != &gridChild || gridChild.gridCol != 1 ||
+        gridChild.gridRow != 0 || gridChild.listCountA != 1 || gridChild.listA[0] != &worldNode ||
+        worldData.pendingAreaUpdateCount != 2 || (row0[1].areaFlags & 1) == 0) {
+        return 80;
+    }
+    if (zClass_World::RemoveChildAtGrid(&worldNode, &gridChild) != 0 || row0[1].childCount != 0 ||
+        gridChild.gridCol != -1 || gridChild.gridRow != -1 || gridChild.listCountA != 0) {
+        return 81;
+    }
+    std::free(row0[1].childList);
+    row0[1].childList = nullptr;
+    std::free(gridChild.listA);
+    gridChild.listA = nullptr;
+
+    zClass_NodePartial fallbackChild{};
+    if (zClass_World::AddChildToGridCell(&worldNode, &fallbackChild, -1, -1) != 0 ||
+        worldNode.listCountB != 1 || worldNode.listB[0] != &fallbackChild ||
+        fallbackChild.gridCol != -1 || fallbackChild.gridRow != -1 ||
+        fallbackChild.listCountA != 1 || fallbackChild.listA[0] != &worldNode) {
+        return 82;
+    }
+    std::free(worldNode.listB);
+    worldNode.listB = nullptr;
+    worldNode.listCountB = 0;
+    std::free(fallbackChild.listA);
+    fallbackChild.listA = nullptr;
+    fallbackChild.listCountA = 0;
+
+    zClass_NodeFreeListSlot recalcSlot{};
+    zClass_NodePartial recalcParent{};
+    zClass_NodePartial *recalcParents[] = {&recalcParent};
+    recalcParent.flags = 1;
+    recalcSlot.node.classData = &childClassData;
+    recalcSlot.node.flags = 0x200 | 0x400;
+    recalcSlot.node.listCountA = 1;
+    recalcSlot.node.listA = recalcParents;
+    zBBox3f *primaryBounds = &recalcSlot.primaryBounds;
+    zBBox3f *secondaryBounds = &recalcSlot.secondaryBounds;
+    *primaryBounds = {0.0f, 2.0f, -1.0f, 4.0f, 8.0f, 6.0f};
+    *secondaryBounds = {-3.0f, 3.0f, -2.0f, 2.0f, 9.0f, 5.0f};
+    if (zClass_Class::gwNodeRecalcBBox(&recalcSlot.node) != 0 ||
+        (recalcSlot.node.flags & 0x100) == 0 || recalcSlot.node.cachedBounds[0] != -3.0f ||
+        recalcSlot.node.cachedBounds[1] != 2.0f || recalcSlot.node.cachedBounds[2] != -2.0f ||
+        recalcSlot.node.cachedBounds[3] != 4.0f || recalcSlot.node.cachedBounds[4] != 9.0f ||
+        recalcSlot.node.cachedBounds[5] != 6.0f || (recalcSlot.node.boundsFlags & 0x04) == 0 ||
+        (recalcParent.boundsFlags & 0x02) == 0 || (recalcParent.flags & 0x02) == 0) {
+        return 83;
+    }
+    recalcSlot.node.flags = 0x100;
+    recalcSlot.node.listCountA = 0;
+    if (zClass_Class::gwNodeRecalcBBox(&recalcSlot.node) != 0 ||
+        (recalcSlot.node.flags & 0x100) != 0 || zClass_Class::gwNodeRecalcBBox(nullptr) != 5) {
+        return 84;
+    }
+
+    zClass_NodePartial areaChildA{};
+    zClass_NodePartial areaChildB{};
+    areaChildA.classData = &childClassData;
+    areaChildB.classData = &childClassData;
+    areaChildA.flags = 0x100;
+    areaChildB.flags = 0x100;
+    areaChildA.cachedBounds[1] = -2.0f;
+    areaChildA.cachedBounds[4] = 3.0f;
+    areaChildB.cachedBounds[1] = -5.0f;
+    areaChildB.cachedBounds[4] = 10.0f;
+    zClass_NodePartial *areaChildren[] = {&areaChildA, &areaChildB};
+    zWorldAreaPartial rebuildArea{};
+    rebuildArea.areaFlags = 1;
+    rebuildArea.bbox[0] = 0.0f;
+    rebuildArea.bbox[2] = 0.0f;
+    rebuildArea.bbox[3] = 20.0f;
+    rebuildArea.bbox[5] = 20.0f;
+    rebuildArea.childCount = 2;
+    rebuildArea.childList = areaChildren;
+    if (zClass_World::RebuildAreaBounds(&worldData, &rebuildArea) != 0 ||
+        (rebuildArea.areaFlags & 1) == 0 || (rebuildArea.areaFlags & 0x100) == 0 ||
+        rebuildArea.bbox[1] != -5.0f || rebuildArea.bbox[4] != 10.0f ||
+        rebuildArea.bboxCenter.y != 2.5f || rebuildArea.bboxRadius <= 0.0f) {
+        return 85;
+    }
+
+    std::free(worldData.pendingAreaUpdates);
+    worldData.pendingAreaUpdates = nullptr;
+    if (zClass_World::EnsureGridCellDisplayPosition(nullptr, 0, 0) != 5) {
+        return 78;
+    }
+    worldNode.classData = nullptr;
+    if (zClass_World::EnsureGridCellDisplayPosition(&worldNode, 0, 0) != 5) {
+        return 79;
+    }
+
+    zModel_MaterialPartial materialDirect{0xffff};
+    if (zModel_Material_SetFlagBit9(&materialDirect, 0) != 1 ||
+        (materialDirect.flags & 0x0200) != 0 || (materialDirect.flags & 0xfdff) != 0xfdff) {
+        return 7;
+    }
+
+    zClass_NodePartial root{};
+    zClass_NodePartial first{};
+    zClass_NodePartial second{};
+    zClass_NodePartial grandchild{};
+    zClass_NodePartial *rootChildren[] = {&first, &second};
+    zClass_NodePartial *secondChildren[] = {&grandchild};
+    zDiPartial rootDi{0, 0};
+    zDiPartial firstDi{0, 1};
+    zDiPartial grandchildDi{0, 0x20};
+    root.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&rootDi);
+    first.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&firstDi);
+    grandchild.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&grandchildDi);
+    root.listCountB = 2;
+    root.listB = rootChildren;
+    second.listCountB = 1;
+    second.listB = secondChildren;
+    zClass_Node::AssignInt32ToDiRecursive(&root, 1);
+    if ((rootDi.flags & 1) == 0 || (firstDi.flags & 1) == 0 || (grandchildDi.flags & 1) == 0) {
+        return 6;
+    }
+    zClass_Node::AssignInt32ToDiRecursive(&root, 0);
+    if ((rootDi.flags & 1) != 0 || (firstDi.flags & 1) != 0 || (grandchildDi.flags & 1) != 0) {
+        return 8;
+    }
+
+    zModel_MaterialPartial rootMaterial{0x0100};
+    zModel_MaterialPartial skippedMaterial{0};
+    zModel_MaterialPartial childMaterial{0x0100};
+    zDiEntryPartial rootEntries[2]{};
+    zDiEntryPartial childEntries[1]{};
+    zDiPartial materialRootDi{};
+    zDiPartial materialChildDi{};
+    rootEntries[0].material = &rootMaterial;
+    rootEntries[1].material = &skippedMaterial;
+    childEntries[0].material = &childMaterial;
+    materialRootDi.entryCount = 2;
+    materialRootDi.entries = rootEntries;
+    materialChildDi.entryCount = 1;
+    materialChildDi.entries = childEntries;
+    root.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&materialRootDi);
+    first.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&materialChildDi);
+    grandchild.userDataOrDiRef = 0;
+    zClass_Node::SetMaterialFlagBit9ForFlagBit0EntriesRecursive(&root, 1);
+    if ((rootMaterial.flags & 0x0200) == 0 || (skippedMaterial.flags & 0x0200) != 0 ||
+        (childMaterial.flags & 0x0200) == 0) {
+        return 9;
+    }
+    zClass_Node::SetMaterialFlagBit9ForFlagBit0EntriesRecursive(&root, 0);
+    if ((rootMaterial.flags & 0x0200) != 0 || (childMaterial.flags & 0x0200) != 0) {
+        return 10;
+    }
+
+    zVid_Image::ReleaseIfNotDefault(&zVid_Image::g_zImage_DefaultImage);
+    zImage_TexDirEntryPartial loadedEntry{};
+    zImage_TexDirEntryPartial stoppedEntry{};
+    zVidImagePartial *loadedImage =
+        static_cast<zVidImagePartial *>(std::calloc(1, sizeof(zVidImagePartial)));
+    if (loadedImage == nullptr) {
+        return 11;
+    }
+    loadedEntry.image = loadedImage;
+    loadedEntry.loadState = 1;
+    loadedEntry.nextVariant = &stoppedEntry;
+    stoppedEntry.image = &zVid_Image::g_zImage_DefaultImage;
+    stoppedEntry.loadState = 2;
+    zImage::InvalidateLoadedVariantChain(&loadedEntry);
+    if (loadedEntry.image != nullptr || loadedEntry.loadState != 3 ||
+        stoppedEntry.image != &zVid_Image::g_zImage_DefaultImage || stoppedEntry.loadState != 2) {
+        return 12;
+    }
+
+    zImage_TexDirEntryPartial materialEntry{};
+    zImage_TexDirEntryPartial frameEntry{};
+    materialEntry.image = &zVid_Image::g_zImage_DefaultImage;
+    materialEntry.loadState = 1;
+    frameEntry.image = &zVid_Image::g_zImage_DefaultImage;
+    frameEntry.loadState = 1;
+    zImage_TexDirEntryPartial *frameTable[] = {&frameEntry};
+    zModel_MaterialCyclePartial cycle{};
+    cycle.frameCount = 1;
+    cycle.frameTable = frameTable;
+    zModel_MaterialPartial invalidateMaterial{};
+    invalidateMaterial.flags = 0x0300;
+    invalidateMaterial.currentTextureDirectoryEntry = &materialEntry;
+    invalidateMaterial.cycle = &cycle;
+    zDiEntryPartial invalidateEntries[1]{};
+    zDiPartial invalidateDi{};
+    invalidateEntries[0].material = &invalidateMaterial;
+    invalidateDi.entryCount = 1;
+    invalidateDi.entries = invalidateEntries;
+    root.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&invalidateDi);
+    first.userDataOrDiRef = 0;
+    zClass_Node::InvalidateFlagBit8MaterialImagesRecursive(&root);
+    if (materialEntry.loadState != 3 || frameEntry.loadState != 3) {
+        return 13;
+    }
+
+    grandchild.nodeType = 0x42;
+
+    if (zClass::AnyNodeMatchesPredicateRecursive(&root, zclass_test_node_type_0x42) != 1) {
+        return 14;
+    }
+    grandchild.nodeType = 0;
+    return zClass::AnyNodeMatchesPredicateRecursive(&root, zclass_test_node_type_0x42) == 0 ? 0
+                                                                                            : 15;
 }

@@ -9,90 +9,46 @@
 #include <string.h>
 
 namespace {
-    // Source-faithful helper recovered from address-backed callers in this source file.
-    template<class T> const T &MinValue(
-        const T &lhs,
-        const T &rhs
-    ){
-        return lhs < rhs ? lhs : rhs;
-    }
-
-    // Source-faithful helper recovered from address-backed callers in this source file.
-    template<class T> const T &MaxValue(
-        const T &lhs,
-        const T &rhs
-    ){
-        return lhs < rhs ? rhs : lhs;
-    }
-
     /**
-     * Original static helper observed in zModel display-instance bounds rebuilds
-     * (D:\Proj\GameZRecoil\zModel\gdi.c).
+     * Original inline helper evidence: no standalone retail function exists;
+     * observed fully inlined in 0x483b80 zDi::BuildAabb.
      * Purpose: expand a min/max bounds record to include one point.
      */
-    void IncludePoint(
+    inline void IncludePoint(
         zBoundsMinMaxPartial * bounds,
-        const zVec3 &point
+        const zVec3 *point
     ){
-        bounds->min.x = MinValue(
-            bounds->min.x,
-            point.x
-        );
-        bounds->max.x = MaxValue(
-            bounds->max.x,
-            point.x
-        );
-        bounds->min.y = MinValue(
-            bounds->min.y,
-            point.y
-        );
-        bounds->max.y = MaxValue(
-            bounds->max.y,
-            point.y
-        );
-        bounds->min.z = MinValue(
-            bounds->min.z,
-            point.z
-        );
-        bounds->max.z = MaxValue(
-            bounds->max.z,
-            point.z
-        );
+        if (point->x < bounds->min.x) {
+            bounds->min.x = point->x;
+        }
+        if (bounds->max.x < point->x) {
+            bounds->max.x = point->x;
+        }
+        if (point->y < bounds->min.y) {
+            bounds->min.y = point->y;
+        }
+        if (bounds->max.y < point->y) {
+            bounds->max.y = point->y;
+        }
+        if (point->z < bounds->min.z) {
+            bounds->min.z = point->z;
+        }
+        if (bounds->max.z < point->z) {
+            bounds->max.z = point->z;
+        }
     }
 
     /**
-     * Original static helper observed in zModel display-instance bounds rebuilds
-     * (D:\Proj\GameZRecoil\zModel\gdi.c).
+     * Original inline helper evidence: no standalone retail function exists;
+     * observed fully inlined in 0x483b80 zDi::BuildAabb.
      * Purpose: initialize a min/max bounds record from its first point.
      */
-    void InitializeBounds(
+    inline void InitializeBounds(
         zBoundsMinMaxPartial * bounds,
-        const zVec3 &point
+        const zVec3 *point
     ){
-        bounds->min = point;
-        bounds->max = point;
-    }
-
-    /**
-     * Original static helper observed in zModel display-instance bounds rebuilds
-     * (D:\Proj\GameZRecoil\zModel\gdi.c).
-     * Purpose: approximate a square root with the original bit-level exponent estimate.
-     */
-    float FastSqrtApprox(float value) {
-        int bits = 0;
-        memcpy(
-            &bits,
-            &value,
-            sizeof(bits)
-        );
-        bits = (bits >> 1) + 0x1fc00000;
-        float out = 0.0f;
-        memcpy(
-            &out,
-            &bits,
-            sizeof(out)
-        );
-        return out;
+        bounds->min = *point;
+        bounds->max = *point;
     }
 
     struct MaterialClonePair {
@@ -448,58 +404,50 @@ namespace zDi {
         zDiPartial * self,
         zBoundsMinMaxPartial * outBoundsMinMax
     ){
-        bool initialized = false;
+        int i;
+        int j;
 
-        if (self->vertCount > 0 && self->verts != 0) {
+        if (self->vertCount > 0) {
             InitializeBounds(
                 outBoundsMinMax,
-                self->verts[0]
+                &self->verts[0]
             );
-            initialized = true;
-        } else if (self->pointCount > 0 && self->pointEntries != 0 &&
-                   self->pointEntries[0].pointCamCount > 0 &&
-                   self->pointEntries[0].pointCamList != 0) {
+        } else if (self->pointCount > 0) {
             InitializeBounds(
                 outBoundsMinMax,
-                self->pointEntries[0].pointCamList[0]
+                &self->pointEntries[0].pointCamList[0]
             );
-            initialized = true;
         }
 
-        if (!initialized) {
-            return;
-        }
-
-        if (self->pointEntries != 0) {
-            for (int i = 0; i < self->pointCount; ++i) {
-                const zModel_PointEntryPartial &entry = self->pointEntries[i];
-                if (entry.pointCamList == 0) {
-                    continue;
-                }
-                for (int j = 0; j < entry.pointCamCount; ++j) {
-                    IncludePoint(
-                        outBoundsMinMax,
-                        entry.pointCamList[j]
-                    );
-                }
+        for (i = 0; i < self->pointCount; ++i) {
+            zModel_PointEntryPartial *entry = &self->pointEntries[i];
+            for (j = 0; j < entry->pointCamCount; ++j) {
+                IncludePoint(
+                    outBoundsMinMax,
+                    &entry->pointCamList[j]
+                );
             }
         }
 
-        for (int i = 1; i < self->vertCount; ++i) {
+        for (i = 1; i < self->vertCount; ++i) {
             IncludePoint(
                 outBoundsMinMax,
-                self->verts[i]
+                &self->verts[i]
             );
         }
 
-        if (self->blendVertCount > 0 && self->verts != 0 && self->blendVerts != 0) {
-            for (int i = 0; i < self->blendVertCount; ++i) {
-                zVec3 blended = {self->verts[i].x + self->blendVerts[i].x,
-                    self->verts[i].y + self->blendVerts[i].y,
-                    self->verts[i].z + self->blendVerts[i].z};
+        if (self->blendVertCount > 0) {
+            zMath_Vec3Array_AddScaled(
+                g_zModel_SharedVec3ScratchA,
+                self->verts,
+                self->blendVerts,
+                self->blendVertCount,
+                1.0f
+            );
+            for (i = 0; i < self->blendVertCount; ++i) {
                 IncludePoint(
                     outBoundsMinMax,
-                    blended
+                    &g_zModel_SharedVec3ScratchA[i]
                 );
             }
         }
@@ -519,24 +467,27 @@ namespace zDi {
             outBoundsMinMax
         );
 
-        float extentX = MaxValue(
-            (float)fabs(outBoundsMinMax->min.x),
-            outBoundsMinMax->max.x
-        );
-        float extentY = MaxValue(
-            (float)fabs(outBoundsMinMax->min.y),
-            outBoundsMinMax->max.y
-        );
-        float extentZ = MaxValue(
-            (float)fabs(outBoundsMinMax->min.z),
-            outBoundsMinMax->max.z
-        );
+        float extentX = (float)fabs(outBoundsMinMax->min.x);
+        if (extentX < outBoundsMinMax->max.x) {
+            extentX = outBoundsMinMax->max.x;
+        }
+        float extentY = (float)fabs(outBoundsMinMax->min.y);
+        if (extentY < outBoundsMinMax->max.y) {
+            extentY = outBoundsMinMax->max.y;
+        }
+        float extentZ = (float)fabs(outBoundsMinMax->min.z);
+        if (extentZ < outBoundsMinMax->max.z) {
+            extentZ = outBoundsMinMax->max.z;
+        }
 
         if ((self->flags & 0x10) != 0) {
-            const float maxExtent = MaxValue(
-                extentX,
-                MaxValue(extentY, extentZ)
-            );
+            float maxExtent = extentX;
+            if (maxExtent < extentY) {
+                maxExtent = extentY;
+            }
+            if (maxExtent < extentZ) {
+                maxExtent = extentZ;
+            }
             outBoundsMinMax->min.x = -maxExtent;
             outBoundsMinMax->min.y = -maxExtent;
             outBoundsMinMax->min.z = -maxExtent;
@@ -546,13 +497,10 @@ namespace zDi {
             return;
         }
 
-        if ((self->flags & 0x20) == 0) {
-            const float xzExtent = MaxValue(
-                extentX,
-                extentZ
-            );
-            extentX = xzExtent;
-            extentZ = xzExtent;
+        if (extentX < extentZ) {
+            extentX = extentZ;
+        } else {
+            extentZ = extentX;
         }
 
         outBoundsMinMax->min.x = -extentX;
@@ -594,7 +542,13 @@ namespace zDi {
         self->bboxCenter.x = halfX + outBoundsMinMax->min.x;
         self->bboxCenter.y = halfY + outBoundsMinMax->min.y;
         self->bboxCenter.z = halfZ + outBoundsMinMax->min.z;
-        self->bboxRadius = FastSqrtApprox(halfX * halfX + halfY * halfY + halfZ * halfZ);
+        union {
+            float radius;
+            int bits;
+        } radiusEstimate;
+        radiusEstimate.radius = halfX * halfX + halfY * halfY + halfZ * halfZ;
+        radiusEstimate.bits = (radiusEstimate.bits >> 1) + 0x1fc00000;
+        self->bboxRadius = radiusEstimate.radius;
     }
 }
 

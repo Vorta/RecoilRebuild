@@ -1138,8 +1138,12 @@ namespace OptCatalog {
         zMath::Vec3Normalize(direction);
     }
 
-    // Reimplements 0x4ae3c0: OptCatalog::FindEntryByName
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4ae3c0: OptCatalog::FindEntryByName
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * Purpose: return the first loaded OptCatalog entry whose keyName matches
+     * the requested catalog name.
+     */
     OptCatalogEntryDef *__fastcall FindEntryByName(const char *name) {
         for (int i = 0; i < g_OptCatalog_EntryCount; ++i) {
             OptCatalogEntryDef &entry = g_OptCatalog_EntryTable[i];
@@ -1166,8 +1170,12 @@ namespace OptCatalog {
         return 0;
     }
 
-    // Reimplements 0x4b2130: OptCatalog::CreateTrailSegmentNodeFromTemplate
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b2130: OptCatalog::CreateTrailSegmentNodeFromTemplate
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * Purpose: allocate an active Object3D segment node and attach an optional
+     * template child to it.
+     */
     zClass_NodePartial *__fastcall CreateTrailSegmentNodeFromTemplate(
         zClass_NodePartial * templateNode
     ) {
@@ -1186,8 +1194,12 @@ namespace OptCatalog {
         return parent;
     }
 
-    // Reimplements 0x4b1ec0: OptCatalog::CreateTrailRuntimeState
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b1ec0: OptCatalog::CreateTrailRuntimeState
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * Purpose: allocate trail runtime state, create inactive BeamReflect
+     * segment nodes, and attach them to the OptCatalog runtime world.
+     */
     OptCatalogTrailRuntimeState *__fastcall CreateTrailRuntimeState(
         OptCatalogEntryDef * entry,
         zClass_NodePartial * projectileNode,

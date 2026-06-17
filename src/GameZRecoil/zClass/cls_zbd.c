@@ -312,7 +312,11 @@ namespace GameZ {
 }
 
 namespace zClass {
-    // Reimplements 0x4543a0: zClass::NodePtrToValidatedIndex
+    /**
+     * Reimplements 0x4543a0: zClass::NodePtrToValidatedIndex
+     * Purpose: convert a node-array pointer to its index only when the slot is
+     * marked live in the ZBD node table.
+     */
     int __fastcall NodePtrToValidatedIndex(zClass_NodePartial * node) {
         const int index = GameZ_ZBD::NodePtrToIndex(node);
         if (index >= 0 && (g_zClass_NodeArray[index].freeTag & 0x01000000u) != 0) {
@@ -324,7 +328,10 @@ namespace zClass {
 }
 
 namespace GameZ_ZBD {
-    // Reimplements 0x454370: GameZ_ZBD::NodePtrToIndex
+    /**
+     * Reimplements 0x454370: GameZ_ZBD::NodePtrToIndex
+     * Purpose: convert a node pointer in the ZBD node table to its slot index.
+     */
     int __fastcall NodePtrToIndex(zClass_NodePartial * node) {
         if (node == 0) {
             return -1;
@@ -333,7 +340,11 @@ namespace GameZ_ZBD {
         return (int)((zClass_NodeFreeListSlot *)(node)-g_zClass_NodeArray);
     }
 
-    // Reimplements 0x4543d0: GameZ_ZBD::NodeIndexToPtr
+    /**
+     * Reimplements 0x4543d0: GameZ_ZBD::NodeIndexToPtr
+     * Purpose: convert a non-negative ZBD node table index back to its node
+     * pointer.
+     */
     zClass_NodePartial *__fastcall NodeIndexToPtr(int index) {
         if (index < 0) {
             return 0;

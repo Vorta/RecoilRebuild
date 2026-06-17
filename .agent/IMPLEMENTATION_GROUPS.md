@@ -53,6 +53,7 @@ available even when no groups are active.
 ### Group: short descriptive name
 
 - Anchor: 0xNNNNNN Name
+- Section:
 - Queue: ready owner/data work / blocked pending evidence or policy / shared blocker / deferred verify-only debt
 - Reason: dependency closure / class cluster / recursive cycle / shared ABI layout / source file cluster
 - Source blockers:
@@ -76,6 +77,7 @@ available even when no groups are active.
 
 ### Source-worker handoff: short scope name
 
+- Section:
 - Owner/source scope:
 - Anchor addresses/groups:
 - Allowed write paths:
@@ -101,6 +103,7 @@ available even when no groups are active.
 ```text
 ### Verifier handoff: short scope name
 
+- Section:
 - Validation scope:
 - Anchor addresses/groups:
 - Exact commands:
@@ -121,8 +124,9 @@ available even when no groups are active.
 
 Active queue sections:
 
-- Ready owner/data work: HUD app-state class cleanup remains actionable through
-  the HudCmdDialog/HudCmd* table/source-shape data blocker.
+- Ready owner/data work: GameNet launch/session-sync and Player
+  create-from-names bootstrap owner/data cleanup remain actionable through
+  shared 0x420d10/0x432860 blockers.
 - Blocked pending evidence or policy: zVideo/zRndr renderer dispatch remains
   blocked on the ESP-pivot span-family source model unless new evidence or
   explicit policy direction appears.
@@ -135,6 +139,7 @@ Active queue sections:
 ### Group: zVideo renderer dispatch/global owner audit
 
 - Anchor: 0x4a77a0 zVideo::BindRendererDispatch
+- Section: render_video
 - Queue: blocked pending evidence or policy; shared blocker.
 - Reason: renderer dispatch globals and DirectDraw hardware-device data shared
   by memory-query, surface, palette, mode-setting, restore, and teardown
@@ -183,62 +188,12 @@ Active queue sections:
     each owner/data update and prune this group again when it becomes
     verify-only.
 
-### Group: HUD app-state class cleanup
-
-- Anchor: 0x406ed0 RecoilStateCheatCode::RecoilStateCheatCode,
-  0x408d60 RecoilStateControls::RecoilStateControls, 0x415850
-  RecoilStateConfirmQuit::RecoilStateConfirmQuit, 0x41c560
-  HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent, and 0x40d150
-  HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent
-- Queue: ready owner/data work.
-- Reason: HUD app-state, overlay, and dialog class source-shape cleanup.
-- Current blockers:
-  - Selected app-state and overlay owners no longer rely on local
-    RecoilApp_IState vtable globals, local virtual dispatch views, or manual
-    scalar-deleting-destructor source.
-  - Broader HUD widget/callback table debt remains in HUD source files, so
-    affected constructor/destructor/dialog owners stay below accepted source
-    owner/data/tier S until the wider class-family owner is recovered.
-  - Active affected families include cheat-code, controls, confirm-quit,
-    new-game/options overlay, HudCmd dialog state, net-game setup overlay,
-    credits panel, command dialog, options dialog, and clamped-int step-button
-    owners.
-  - Current data blocker reported by `audit groups --summary`: 0x40a5b0.
-    HudCmdDialog/HudCmd* table emission remains the known source-shape/data
-    blocker for dependent HudCmd dialog state entries. The latest pass replaced
-    placement-new member construction with explicit concrete/base constructor
-    calls and improved VC5 drift from 636 to 633 mismatches, but Data/B/S stay
-    blocked because VC5 still emits out-of-line concrete constructor calls
-    instead of BN's inline base-constructor plus generated table-store sequence.
-  - The HudCmdBindButtonBase class pass is no longer active owner/data WIP:
-    0x40c280, 0x4b90e0, and 0x4b8de0 are accepted at tier B with
-    HudCmdBindButtonBase class ownership and generated/table string data
-    classified; remaining work there is verify-only and deferred by the global
-    owner/data gate.
-  - Deferred verify-only addresses reported by `audit groups --summary`
-    include 0x40cf60, 0x443310, 0x4b8b60, 0x41c400, 0x406d20, 0x4b5900,
-    0x4138d0, and 0x4a6e80. Do not route those ahead of 0x40a5b0 or other
-    current owner/data blockers while `tier_s_priority_ready=false`.
-  - Historical smoke-registration, VC5 probe, and queue/helper details are
-    captured in functional manifests, VC5 manifests, source docblocks, and plan
-    markers; this temporary group should stay focused on current routing.
-- Next action:
-  - Do not reselect 0x40a5b0 for another isolated constructor-shape probe
-    without new BN/source evidence for the larger real C++ constructor body.
-    Recheck `python tools/recoil.py status 0x40a5b0 --lane binary` and
-    `python tools/recoil.py frontier 0x40a5b0 --depth 1 --lane binary` before
-    any future HudCmdDialog work.
-  - Use focused status/frontier checks for the current owner/data anchor and
-    source-shape guards over touched HUD files before editing.
-  - Defer the Time::Tick and zNetwork::ShutdownSessionRuntime tier S blockers
-    discovered through the MpExit frontier until `tier_s_priority_ready=true`
-    or until the user explicitly directs tier S work.
-
 ### Group: GameNet launch/session-sync owner-data cleanup
 
 - Anchor: 0x433710 GameNet::SetStatusBitsFromFlags, with launch-path
   dependencies 0x434460, 0x434550, 0x4321b0, 0x4320f0, 0x419470, and
   0x417770.
+- Section: network_online
 - Queue: active owner/data cleanup for the GameNet launch/session-start
   dependency cluster under HudUiNetGameSetupPanel.
 - Reason: HudUiNetGameSetupPanel_LaunchButton now routes past zOpt and
@@ -356,8 +311,169 @@ Active queue sections:
     zClass flag-accessor owner, registering and running
     `zclass_node_pick_flag_accessors_smoke`, and accepting the shared Class.c
     null-node/source-file string data with local VC5 data-symbol evidence.
+    The direct registration helper blockers 0x48c0a0
+    `zNetwork::RegisterPacketHandler` and 0x461eb0
+    `zEffect_Anim::SetActivationDispatchContext` are accepted at tier B after
+    functional coverage, owner/data review, zNetwork dispatch-list VC5 data
+    evidence, and BN zero-data evidence for the zEffect activation-dispatch
+    globals; neither helper has accepted tier S byte evidence.
 - Next action:
   - Return to the `HudUiNetGameSetupPanel_LaunchButton::OnActivate` owner
     group; its visible direct dependencies are now tier B/S/provider, so audit
     touched globals and route any remaining launch source-model blocker at the
     panel owner boundary.
+
+### Group: Player create-from-names bootstrap owner-data
+
+- Anchor: 0x421ab0 Player::CreateFromNamesAtPose, with wrapper 0x421ea0
+  Player::CreateFromNamesAtPoseGetState.
+- Section: battlesport_gameplay
+- Queue: ready owner/data work; dependency slice for the GameNet pkt06 remote
+  spawn path through 0x432860.
+- Reason: Player class bootstrap/save-state creation owner and touched
+  Player/HUD/zClass/zEffect data gates block GameNet pkt06 tier B promotion.
+- Current evidence:
+  - `python tools/recoil.py frontier 0x432860 --depth 1 --lane binary`
+    recommends 0x421ea0, and `frontier 0x421ea0` routes directly to
+    0x421ab0.
+  - 0x421ab0 has accepted dependencies for zOpt network mode, zClass type/name
+    lookup and clone helpers, Object3D pose setters, zClass AddChild,
+    Player::CloneType6NodeFromTemplateAndRename, and zUtil save-state-list
+    allocation/append helpers.
+  - Remaining visible blockers under 0x421ab0 include 0x420d10
+    `Player::InitStateFromNameAndMasterCommonData`,
+    Player modal/spawn/hit/destroyed-state helpers, zClass damage/camera/material
+    helpers, HudSensorTracker::SetTrackedSaveState, OptCatalog damage-mask
+    lookup, and zEffectAnim::FindEntryByName.
+  - The zEffect leaf lookup 0x45ff10 `zEffectAnim::FindEntryByName` is
+    accepted at tier B after a linked native smoke, source-owner review, and
+    BN/source zero-data evidence for `g_zEffectAnim_EntryCount` and
+    `g_zEffectAnim_EntryList`.
+  - Source-owner mapping for the remaining zEffect velocity path classifies
+    0x45d930/0x45dcb0/0x45dde0/0x461aa0 as a zEffect animation
+    runtime/activation-record source cluster in `zEffect.cpp`/`zEffect.h`;
+    do not fold it into Player. The slice now has linked native-smoke
+    coverage for activation runtime, velocity, thunk dispatch, and type-2
+    activation-record queue behavior; the record/dispatch queue globals are
+    corrected to BN-matching enabled initializers. The activation-record queue
+    owner slice 0x4603d0/0x460400/0x460470/0x460480/0x460ae0/0x461800/
+    0x461970/0x461aa0/0x461a90/0x461ba0/0x461d00 is accepted at tier B after
+    docblock cleanup, functional coverage, `strncmp` provider-boundary
+    classification, and BN/source data review for the queue/dispatch globals.
+    The remaining zEffect velocity path still stays below tier B because
+    `zEffectAnim::ActivateRuntime` and the zClass camera setter dependencies
+    remain owner/data blockers.
+  - The zClass callback-priority/type-list cluster 0x447f30
+    `zClass_Class::gwNodeSetActionCallback` and 0x448090
+    `zClass_Class::gwNodeSetPriority` is accepted at tier B after shared
+    recovered-helper provenance, functional coverage, owner review, and
+    no-direct-authored-global data review. 0x447fe0 remained tier B after the
+    shared helper cleanup and functional recheck.
+  - zMath data gates found through the same launch/bootstrap frontier were
+    resolved for 0x472670 `zMath::Vec3DeltaLengthSq` and 0x474260
+    `zMath::MatBuildEulerRotation3x3`; both are accepted at tier B, with
+    0x474260 using `Data reimplemented ❎` because it touches no authored
+    globals and only reads compiler/CRT x87 threshold rdata.
+  - The ZBD node-array leaf slice 0x454370 `GameZ_ZBD::NodePtrToIndex`,
+    0x4543a0 `zClass::NodePtrToValidatedIndex`, and 0x4543d0
+    `GameZ_ZBD::NodeIndexToPtr` is accepted at tier B after touched
+    docblocks, linked native smoke coverage, source-owner review, and shared
+    zClass node-array/free-list data evidence.
+  - Separate zClass blockers remain for camera setters and zClass light/sound
+    clone helpers under `zEffectAnim::CloneEntryForNode`.
+  - Source-owner mapping for 0x452fd0 `zClass_Light::gwLightNew`
+    expands the blocker to the `zClass_LightDataPartial`/`zClass_Light`
+    record-source cluster in `Light.c`, not a standalone leaf or C++ table
+    owner. The first cleanup slice repaired Light.c recovered-helper
+    provenance and split-signature docblock placement, moved the existing
+    `zclass_light_new_smoke` into the linked zClass native-smoke source, and
+    reran `verify functional 0x452fd0` successfully. The 0x453110
+    `zClass_Light::DeleteNode` path is now accepted at tier B after the
+    zClass_Light record-source owner audit, direct Light.c diagnostic-string
+    VC5 data evidence, functional coverage, and accepted transitive
+    `zClass_Class::TryFreeNode`/zError data/provider gates. 0x452fd0 is also
+    accepted at tier B after the source-shape repair from direct active-flag
+    write to `zClass_Class::gwNodeSetActive(node, 1)`, functional coverage,
+    direct Light.c diagnostic-string data evidence, and accepted node/type-list
+    data/provider gates.
+  - The 0x447b60 `TryFreeNode` path now routes through 0x44f000
+    `zClass_List::DeleteNodeFromLists`. Owner mapping classifies 0x44f000 as
+    part of a small authored `List.c` deferred-removal source cluster, not a
+    standalone leaf: 0x44e700 `zClass_TypeList::ProcessPendingRemovals` and
+    0x44e920 `zClass::ProcessDeferredWork` are now source-owner accepted with
+    0x44eea0 `zClass_NodeList::ProcessPendingFrees` and 0x44f000. Broader
+    0x44f120 `DeleteAllOfType` and 0x44f1d0
+    `gwListDeleteANode` are adjacent deletion-path work, not required for the
+    0x44f000 owner gate. Data classification proves 0x44f000 is not
+    no-globals: it touches List.c error/source strings, `g_zError_DebugMsgBuffer`,
+    and, through `MarkPendingRemoval`, the authored type-list head-slot table
+    and bucket dirty fields. 0x44e690 `zClass_TypeList::FreeLink`,
+    0x44e700 `ProcessPendingRemovals`, and 0x44f000
+    `DeleteNodeFromLists` are now accepted at tier B after BN repaired the
+    `g_zClass_TypeList_Buckets` aggregate as `zClass_TypeListBucket[16]`,
+    ignored local VC5 data-symbol evidence passed for the List.c typed
+    globals/error strings, and the 0x44f000 error path was corrected to BN's
+    direct `sprintf` + `zError::EmitDebugBuffer` shape. 0x447a70
+    `zClass_Class::FreeNodeToFreeList` is now source-owner/data accepted and
+    tier B after the Class.c node-pool globals were matched to BN/VC5 data
+    evidence (`g_zClass_NodeFreeHeadIndex` initializes to -1), the Class.c
+    strings were rechecked, and `verify functional 0x447a70` passed through
+    `zclass_node_free_and_deferred_work_smoke`. With that callee cleared,
+    0x44ed60 `zClass_NodeList::Insert`, 0x44eea0
+    `zClass_NodeList::ProcessPendingFrees`, 0x44e920
+    `zClass::ProcessDeferredWork`, and 0x447b60
+    `zClass_Class::TryFreeNode` are also accepted at tier B after their
+    functional targets passed with the same registered smoke and their direct
+    data/callee data gates were accepted.
+  - Current zEffect route from 0x420d10 is the velocity/activation and
+    stop/cleanup record-source subsystem in `zEffect.cpp`: 0x45dde0 ->
+    0x45dcb0 -> 0x45d930 -> 0x45d570 -> 0x45c040. Source-owner evidence maps
+    the slice to `zEffectAnimEntry`/runtime records, not Player and not a C++
+    class owner. Local provenance/docblock blockers for the stop/cleanup helper
+    slice were repaired, and 0x45e730/0x45ed80 clone/rebind data symbols are
+    now accepted at tier B. The zClass world light/sound add/remove
+    attachment-list subcluster 0x451360/0x451410/0x451590/0x451640 is also
+    accepted at tier B, and Object3D transform setters 0x44df00/0x44e4f0 are
+    accepted at tier B after repairing the SetScale double-literal source drift.
+    The small zEffect reset helper slice 0x45c2f0 `HandleEmitterResetEvent`,
+    0x45d240 `CaptureNodeStates`, and 0x45d310 `RestoreNodeStates` is accepted
+    at tier B after registering the existing native smokes, rerunning the
+    functional targets, repairing touched docblock provenance, and confirming
+    no direct authored globals are touched. The stop cleanup refs 0x45bf60
+    `CleanupLightRefs` and 0x45bfd0 `CleanupSoundRefs` are accepted at tier B
+    after registering `zeffect_cleanup_light_sound_refs_smoke`, rerunning their
+    functional targets, and verifying `g_zEffect_World`/stop-cleanup globals
+    with local VC5 data-symbol evidence. Local VC5 data-symbol evidence also
+    confirms the shared Time frame-delta global `g_FrameDeltaTimeSec`, but the
+    remaining zEffect velocity/stop route still needs the
+    recursive 0x45c040 `Stop` / 0x45d3d0 `FinalizeStop` /
+    0x45d770 `RunStopDelayCallback` / 0x45d6b0 `NodeActionCallback` /
+    0x45d570 `StopAndCleanup` owner loop plus 0x45d4c0
+    `RunStopSequenceCallback`, 0x45cc00 `RunSequenceEvents`/event-dispatch
+    ownership, 0x45d6c0 `ResetForNode` through external 0x449ab0
+    `gwNodeGetRoot`, and the zClass sound/light/camera setter gates before
+    0x45d930/0x45dcb0/0x45dde0 promotion.
+    The zEffect runtime-ref creation helpers 0x45e380
+    `FindOrCreateSoundRef` and 0x45e4a0 `FindOrCreateLightRef` are accepted
+    at tier B after registering their shared native smoke and verifying the
+    zeff_anim_init.c source-path plus sound/light overflow-format rdata with
+    local VC5 data-symbol evidence. zClass 0x452d00
+    `zClass_Sound::gwSoundSetPosition` is also accepted at tier B after the
+    existing sound leaf smoke passed and the Sound.c diagnostic/source rdata
+    target reverified.
+- Next action:
+  - Start with `python tools/recoil.py status 0x420d10` and
+    `python tools/recoil.py frontier 0x420d10 --depth 1 --lane binary`.
+    The visible route through 0x45dde0 `SetVelocity_Thunk`, 0x45dcb0
+    `SetVelocity`, 0x45d930 `ActivateRuntime`, and 0x45e730
+    `CloneEntryForNode` has cleared 0x452fd0 `zClass_Light::gwLightNew`.
+    Continue from 0x45d930 through the 0x45d570 stop/cleanup owner route; the
+    current actionable blocker is the stop/event-dispatch SCC around 0x45c040,
+    0x45d570, and 0x45cc00, with 0x45d6c0 separately blocked by zClass
+    0x449ab0 `gwNodeGetRoot`. The first event-handler blockers now route
+    through zClass transform helpers such as 0x4497b0
+    `gwNode::GetWorldPosition` via 0x449480
+    `gwNode::BuildNodeToAncestorMatrix` and the 0x4532f0-0x453aa0 light setter
+    cluster; keep zClass camera setters and
+    any remaining zEffect event-handler data gates as adjacent separate
+    owner-data slices before promoting 0x421ab0 or 0x421ea0.

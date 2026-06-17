@@ -2,6 +2,7 @@
 #include "Battlesport/HudUiMpExitDialog.h"
 #include "Battlesport/RecoilApp.h"
 #include "Battlesport/hud.h"
+#include "Battlesport/player.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/include/zImage.h"
@@ -8815,4 +8816,32 @@ extern "C" int zhud_std_ptr_vector_clear_no_op_destroy_smoke(void) {
     vector.ClearNoOpDestroy(values + 1, values + 1);
 
     return values[0] == 1 && values[1] == 2 && values[2] == 3 ? 0 : 1;
+}
+
+extern "C" int zhud_sensor_track_list_add_smoke(void) {
+    g_HudUiMgrSensor_TrackList = {};
+    g_HudUiMgrSensor_TrackList.trackListAux = 77;
+    int payloadA = 11;
+    int payloadB = 22;
+
+    HudUiMgrSensorTrackNode *const nodeA =
+        HudUiMgrSensor::TrackList_Add(HUD_SENSOR_TRACK_KIND_PLAYER, &payloadA);
+    const bool first =
+        nodeA != nullptr && nodeA->trackKind == HUD_SENSOR_TRACK_KIND_PLAYER &&
+        nodeA->payload == &payloadA && nodeA->next == nullptr &&
+        g_HudUiMgrSensor_TrackList.head == nodeA && g_HudUiMgrSensor_TrackList.tail == nodeA &&
+        g_HudUiMgrSensor_TrackList.count == 1 && g_HudUiMgrSensor_TrackList.trackListAux == 77;
+
+    HudUiMgrSensorTrackNode *const nodeB =
+        HudUiMgrSensor::TrackList_Add(HUD_SENSOR_TRACK_KIND_TURRET, &payloadB);
+    const bool second =
+        nodeB != nullptr && nodeB->trackKind == HUD_SENSOR_TRACK_KIND_TURRET &&
+        nodeB->payload == &payloadB && nodeB->next == nullptr && nodeA->next == nodeB &&
+        g_HudUiMgrSensor_TrackList.head == nodeA && g_HudUiMgrSensor_TrackList.tail == nodeB &&
+        g_HudUiMgrSensor_TrackList.count == 2 && g_HudUiMgrSensor_TrackList.trackListAux == 77;
+
+    std::free(nodeA);
+    std::free(nodeB);
+    g_HudUiMgrSensor_TrackList = {};
+    return first && second ? 0 : 1;
 }

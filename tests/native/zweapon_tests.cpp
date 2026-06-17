@@ -2908,6 +2908,7 @@ extern "C" int light_init_thermal_glow_pool_smoke(void) {
     return failCode;
 }
 
+#if !defined(RECOIL_NATIVE_ZWEAPON_SKIP_DUPLICATE_TIMED_HIT_SMOKE)
 extern "C" int player_timed_hit_status_smoke(void) {
     zClass_NodePartial parent = {};
     zClass_NodePartial oldHitSourceNode = {};
@@ -3102,6 +3103,7 @@ extern "C" int player_timed_hit_status_smoke(void) {
     }
     return waitingOk ? 0 : 8;
 }
+#endif
 
 extern "C" int zweapon_optcatalog_warning_samples_smoke(void) {
     zSndSample trigger = {};
