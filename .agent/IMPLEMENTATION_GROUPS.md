@@ -518,7 +518,20 @@ Active queue sections:
     no-direct-authored-global data. 0x439540 `Player::ApplyAltWeaponSwitch`
     is accepted at tier B after its functional target passed and
     `g_GameStateOrMapTable` reverified with VC5 data-symbol evidence.
-    Refreshed `frontier 0x438ba0 --depth 1 --lane binary` now routes next to
-    0x439600 `Player::ApplyPrimaryWeaponSwitch`; keep the remaining zUtil
-    callee routed to its own owner section rather than absorbing it into the
-    Player class pass.
+    0x439600 `Player::ApplyPrimaryWeaponSwitch` is accepted at tier B after
+    BN/source owner review, functional coverage, and no-direct-authored-global
+    data review. 0x4b21c0 `PlayerTimedHitStatus::ResetFields` is accepted at
+    tier B after functional coverage, typed `PlayerTimedHitStatus` owner
+    review, and no-direct-authored-global data review. The zUtil ZAR
+    registration route 0x4c0280 `zZbdManager::RegisterSectionHandler` and
+    0x4bffe0 `zUtil_ZAR::RegisterSectionHandler` is accepted at tier B after
+    registering the existing native smoke, converting `zZbd.cpp` provenance
+    comments to docblocks, and verifying `g_zUtil_ZbdManager` with local VC5
+    data-symbol evidence. Refreshed
+    `frontier 0x438ba0 --depth 1 --lane binary` now routes through the Mines
+    save callbacks; 0x43cc70 `Player::WriteMinesZarSection` points to
+    0x4b2930/0x4b2940 OptCatalog mine-iterator owner/data gates and the
+    zUtil write-section route, which bottoms out at 0x4a64d0
+    `zIndexArchive::AddFileRecord`. Keep the remaining zUtil/zReader/zWeapon
+    callees routed to their own owner sections rather than absorbing them into
+    the Player class pass.

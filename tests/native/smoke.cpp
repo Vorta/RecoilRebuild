@@ -288,6 +288,8 @@ extern "C" int hud_ui_save_game_dialog_init_layout_smoke(void);
 extern "C" int hud_ui_main_menu_dialog_save_load_checks_smoke(void);
 extern "C" int zarchive_list_get_at_smoke(void);
 extern "C" int zarchive_list_get_count_smoke(void);
+extern "C" int zutil_zar_register_section_handler_smoke(void);
+extern "C" int zutil_zar_write_section_blob_smoke(void);
 extern "C" int zreader_archive_list_and_search_paths_smoke(void);
 extern "C" int zreader_zrdr_free_search_path_list_smoke(void);
 extern "C" int zutil_set_mission_zrdr_paths_and_mount_zbd_smoke(void);
@@ -10881,6 +10883,10 @@ int main(int argc, char **argv) {
          hud_ui_main_menu_dialog_save_load_checks_smoke},
         {"zarchive_list_get_at_smoke", zarchive_list_get_at_smoke},
         {"zarchive_list_get_count_smoke", zarchive_list_get_count_smoke},
+        {"zutil_zar_register_section_handler_smoke",
+         zutil_zar_register_section_handler_smoke},
+        {"zutil_zar_write_section_blob_smoke",
+         zutil_zar_write_section_blob_smoke},
         {"zreader_archive_list_and_search_paths_smoke",
          zreader_archive_list_and_search_paths_smoke},
         {"zreader_zrdr_free_search_path_list_smoke",

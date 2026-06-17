@@ -2971,15 +2971,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bffe0:
   - [✅] Reconstructed (Name: zUtil_ZAR::RegisterSectionHandler)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zUtil; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zUtil_ZAR; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zUtil_ZAR::RegisterSectionHandler;
     - File: src/GameZRecoil/zUtil/zZbd.cpp;
     - Target: zutil_zar_register_section_handler;
     - Group: engine.zutil;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4c0010:
   - [✅] Reconstructed (Name: zUtil_ZAR::WriteSectionBlob)
@@ -3543,15 +3543,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4c0280:
   - [☑️] Reconstructed (Name: zZbdManager::RegisterSectionHandler)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zUtil; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: zZbdManager; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zZbdManager::RegisterSectionHandler;
     - File: src/GameZRecoil/zUtil/zZbd.cpp;
     - Target: zzbd_manager_register_section_handler;
     - Group: engine.zutil;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4c0370:
   - [☑️] Reconstructed (Name: zZbdManager::LoadEntries)
@@ -30937,15 +30937,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x439600:
   - [✅] Reconstructed (Name: Player::ApplyPrimaryWeaponSwitch)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: Player; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: Player; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Player::ApplyPrimaryWeaponSwitch;
     - File: src/Battlesport/player.cpp;
     - Target: player_apply_primary_weapon_switch;
     - Group: battlesport.player;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4399c0:
   - [☑️] Reconstructed (Name: Player::ResetDamageVisualsAndTimedStatus)
@@ -31704,15 +31704,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b21c0:
   - [✅] Reconstructed (Name: PlayerTimedHitStatus::ResetFields)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: Player; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: PlayerTimedHitStatus; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: PlayerTimedHitStatus::ResetFields;
     - File: src/GameZRecoil/zWeapon/zWeapon.cpp;
     - Target: player_timed_hit_status_reset_fields;
     - Group: battlesport.player;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b22d0:
   - [✅] Reconstructed (Name: PlayerTimedHitStatus::ClearLightAndReset)

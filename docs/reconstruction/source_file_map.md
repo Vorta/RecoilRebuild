@@ -1723,50 +1723,19 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4b3b20` `zSys::ReadTsc64` -> `src/GameZRecoil/zSys/zSys_cpu_asm.inl:224`
 - `0x4b3ca0` `zSys::Sub64` -> `src/GameZRecoil/zSys/zSys_cpu_asm.inl:246`
 
-## GameZRecoil/zUtil/zbd_save.c
-
-- `0x4c0080` `zUtil_ZBD::OpenTempWriteStream` -> `src/GameZRecoil/zUtil/zZbd.cpp:581`
-- `0x4c00a0` `zUtil_ZBD::FlushTempWriteStreamToSectionRecord` -> `src/GameZRecoil/zUtil/zZbd.cpp:608`
-- `0x4c00c0` `zUtil_ZBD::OpenTempReadStream` -> `src/GameZRecoil/zUtil/zZbd.cpp:591`
-- `0x4c00e0` `zUtil_ZBD::CloseTempReadStream` -> `src/GameZRecoil/zUtil/zZbd.cpp:625`
-
 ## GameZRecoil/zUtil/zUtil.cpp
 
 - `0x42ecb0` `zUtil::SetMissionZrdrPathsAndMountZbd` -> `src/GameZRecoil/zReader/zreader_load.cpp:892`
 
-## GameZRecoil/zUtil/zUtil_ZBD.cpp
-
-- `0x4c0260` `zZbdSectionHandler::CompareSortOrderLessThan` -> `src/GameZRecoil/zUtil/zZbd.cpp:82`
-- `0x4c0370` `zZbdManager::LoadEntries` -> `src/GameZRecoil/zUtil/zZbd.cpp:250`
-- `0x4c07d0` `zZbdManager::SortSectionHandlers` -> `src/GameZRecoil/zUtil/zZbd.cpp:503`
-
-## GameZRecoil/zUtil/zUtil_ZBD.cpp; MSVC 5.0 STL list support
-
-- `0x4c0b60` `zZbdSectionHandlerList::Front` -> `src/GameZRecoil/zUtil/zZbd.cpp:101`
-- `0x4c0b70` `zZbdSectionHandlerList::Constructor` -> `src/GameZRecoil/zUtil/zZbd.cpp:91`
-- `0x4c0ba0` `zZbdSectionHandlerList::Swap` -> `src/GameZRecoil/zUtil/zZbd.cpp:109`
-- `0x4c0bd0` `zZbdSectionHandlerList::Merge` -> `src/GameZRecoil/zUtil/zZbd.cpp:146`
-- `0x4c0ce0` `zZbdSectionHandlerList::SpliceThreeNodes` -> `src/GameZRecoil/zUtil/zZbd.cpp:123`
-
 ## GameZRecoil/zUtil/zutl_zar.cpp
 
 - `0x4a6270` `zIndexArchive::OpenCreateWrite` -> `src/GameZRecoil/zReader/zreader_load.cpp:1004`
-- `0x4c0030` `zUtil::ZBD_LoadEntriesGlobal` -> `src/GameZRecoil/zUtil/zZbd.cpp:12`
-- `0x4c0050` `zUtil::ZAR_LoadFileGlobal` -> `src/GameZRecoil/zUtil/zZbd.cpp:25`
-- `0x4c0070` `zUtil::ZAR_RequestStopGlobal` -> `src/GameZRecoil/zUtil/zZbd.cpp:38`
-- `0x4c0620` `zZbdManager::RequestStop` -> `src/GameZRecoil/zUtil/zZbd.cpp:365`
 
 ## GameZRecoil/zUtil/zutl_zrdr.cpp
 
 - `0x4a5c50` `zUtil::ZRDR_GetFileSize` -> `src/GameZRecoil/zReader/zreader_load.cpp:481`
 - `0x4a5f90` `zUtil_ZRDR::InitWildcardPath` -> `src/GameZRecoil/zReader/zreader_load.cpp:597`
 - `0x4a6070` `zUtil_ZRDR::NextWildcardPath` -> `src/GameZRecoil/zReader/zreader_load.cpp:633`
-
-## GameZRecoil/zUtil/zzbd.c
-
-- `0x4c0700` `zZbdManager::FlushTempStreamToSectionRecord` -> `src/GameZRecoil/zUtil/zZbd.cpp:394`
-- `0x4c0780` `zZbdManager::CreateTempReadStreamFromBuffer` -> `src/GameZRecoil/zUtil/zZbd.cpp:430`
-- `0x4c07c0` `zZbdManager::RemoveTempFiles` -> `src/GameZRecoil/zUtil/zZbd.cpp:448`
 
 ## GameZRecoil/zVideo/zVideo.cpp
 
@@ -1852,12 +1821,6 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 - `0x43ca20` `zWeapon_OptCatalog::LoadKillVerbString` -> `src/GameZRecoil/zWeapon/OptCatalog.c:551`
 - `0x4b1190` `zWeapon::LoadOptCatalogFromPath` -> `src/GameZRecoil/zWeapon/OptCatalog.c:587`
-
-## GameZRecoil/zZbd/zzbd.c
-
-- `0x4c0400` `zZbdManager::LoadZarFile` -> `src/GameZRecoil/zUtil/zZbd.cpp:274`
-- `0x4c06a0` `zZbdSectionHandler::InvokePreLoad` -> `src/GameZRecoil/zUtil/zZbd.cpp:458`
-- `0x4c06c0` `zZbdSectionHandler::InvokeDataReady` -> `src/GameZRecoil/zUtil/zZbd.cpp:477`
 
 ## HudSensorMapNode.cpp
 
@@ -4005,13 +3968,35 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4bf8b0` `HudUiPolyline::SetPoint` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14663`
 - `0x4bf900` `HudUiPolyline::Draw` -> `src/GameZRecoil/zHud/zhud_ui.cpp:14629`
 - `0x4bfe20` `HudUiBackgroundVideoWidget::SetColorKey565` -> `src/GameZRecoil/zHud/zhud_ui.cpp:8271`
-- `0x4bffe0` `zUtil_ZAR::RegisterSectionHandler` -> `src/GameZRecoil/zUtil/zZbd.cpp:544`
-- `0x4c0010` `zUtil_ZAR::WriteSectionBlob` -> `src/GameZRecoil/zUtil/zZbd.cpp:564`
-- `0x4c0100` `zUtil::ZBD_Init` -> `src/GameZRecoil/zUtil/zZbd.cpp:47`
-- `0x4c0180` `zUtil::ZBD_DestroyGlobalManager` -> `src/GameZRecoil/zUtil/zZbd.cpp:69`
-- `0x4c01b0` `zZbdManager::Destroy` -> `src/GameZRecoil/zUtil/zZbd.cpp:188`
-- `0x4c0280` `zZbdManager::RegisterSectionHandler` -> `src/GameZRecoil/zUtil/zZbd.cpp:213`
-- `0x4c0630` `zZbdManager::WriteSectionRecord` -> `src/GameZRecoil/zUtil/zZbd.cpp:371`
+- `0x4bffe0` `zUtil_ZAR::RegisterSectionHandler` -> `src/GameZRecoil/zUtil/zZbd.cpp:619`
+- `0x4c0010` `zUtil_ZAR::WriteSectionBlob` -> `src/GameZRecoil/zUtil/zZbd.cpp:643`
+- `0x4c0030` `zUtil::ZBD_LoadEntriesGlobal` -> `src/GameZRecoil/zUtil/zZbd.cpp:13`
+- `0x4c0050` `zUtil::ZAR_LoadFileGlobal` -> `src/GameZRecoil/zUtil/zZbd.cpp:29`
+- `0x4c0070` `zUtil::ZAR_RequestStopGlobal` -> `src/GameZRecoil/zUtil/zZbd.cpp:45`
+- `0x4c0080` `zUtil_ZBD::OpenTempWriteStream` -> `src/GameZRecoil/zUtil/zZbd.cpp:664`
+- `0x4c00a0` `zUtil_ZBD::FlushTempWriteStreamToSectionRecord` -> `src/GameZRecoil/zUtil/zZbd.cpp:697`
+- `0x4c00c0` `zUtil_ZBD::OpenTempReadStream` -> `src/GameZRecoil/zUtil/zZbd.cpp:677`
+- `0x4c00e0` `zUtil_ZBD::CloseTempReadStream` -> `src/GameZRecoil/zUtil/zZbd.cpp:717`
+- `0x4c0100` `zUtil::ZBD_Init` -> `src/GameZRecoil/zUtil/zZbd.cpp:57`
+- `0x4c0180` `zUtil::ZBD_DestroyGlobalManager` -> `src/GameZRecoil/zUtil/zZbd.cpp:83`
+- `0x4c01b0` `zZbdManager::Destroy` -> `src/GameZRecoil/zUtil/zZbd.cpp:224`
+- `0x4c0260` `zZbdSectionHandler::CompareSortOrderLessThan` -> `src/GameZRecoil/zUtil/zZbd.cpp:100`
+- `0x4c0280` `zZbdManager::RegisterSectionHandler` -> `src/GameZRecoil/zUtil/zZbd.cpp:253`
+- `0x4c0370` `zZbdManager::LoadEntries` -> `src/GameZRecoil/zUtil/zZbd.cpp:294`
+- `0x4c0400` `zZbdManager::LoadZarFile` -> `src/GameZRecoil/zUtil/zZbd.cpp:321`
+- `0x4c0620` `zZbdManager::RequestStop` -> `src/GameZRecoil/zUtil/zZbd.cpp:415`
+- `0x4c0630` `zZbdManager::WriteSectionRecord` -> `src/GameZRecoil/zUtil/zZbd.cpp:424`
+- `0x4c06a0` `zZbdSectionHandler::InvokePreLoad` -> `src/GameZRecoil/zUtil/zZbd.cpp:524`
+- `0x4c06c0` `zZbdSectionHandler::InvokeDataReady` -> `src/GameZRecoil/zUtil/zZbd.cpp:546`
+- `0x4c0700` `zZbdManager::FlushTempStreamToSectionRecord` -> `src/GameZRecoil/zUtil/zZbd.cpp:451`
+- `0x4c0780` `zZbdManager::CreateTempReadStreamFromBuffer` -> `src/GameZRecoil/zUtil/zZbd.cpp:490`
+- `0x4c07c0` `zZbdManager::RemoveTempFiles` -> `src/GameZRecoil/zUtil/zZbd.cpp:511`
+- `0x4c07d0` `zZbdManager::SortSectionHandlers` -> `src/GameZRecoil/zUtil/zZbd.cpp:575`
+- `0x4c0b60` `zZbdSectionHandlerList::Front` -> `src/GameZRecoil/zUtil/zZbd.cpp:125`
+- `0x4c0b70` `zZbdSectionHandlerList::Constructor` -> `src/GameZRecoil/zUtil/zZbd.cpp:112`
+- `0x4c0ba0` `zZbdSectionHandlerList::Swap` -> `src/GameZRecoil/zUtil/zZbd.cpp:136`
+- `0x4c0bd0` `zZbdSectionHandlerList::Merge` -> `src/GameZRecoil/zUtil/zZbd.cpp:179`
+- `0x4c0ce0` `zZbdSectionHandlerList::SpliceThreeNodes` -> `src/GameZRecoil/zUtil/zZbd.cpp:153`
 
 ## WestwoodOnlineUpgradeConfigDialog.cpp
 
