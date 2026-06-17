@@ -7,44 +7,108 @@
 struct HudUiNetGameSetupPanel;
 
 struct HudUiNetGameSetupPanel_LaunchButton : HudUiZrdWidget {
+    HudUiNetGameSetupPanel_LaunchButton();
     void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_LaunchButton) == 0x14c);
 
 struct HudUiNetGameSetupPanel_CancelButton : HudUiZrdWidget {
+    HudUiNetGameSetupPanel_CancelButton();
     void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_CancelButton) == 0x14c);
 
 struct HudUiNetGameSetupPanel_NextWorldButton : HudUiZrdWidget {
+    HudUiNetGameSetupPanel_NextWorldButton();
     void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_NextWorldButton) == 0x14c);
 
 struct HudUiNetGameSetupPanel_PrevWorldButton : HudUiZrdWidget {
+    HudUiNetGameSetupPanel_PrevWorldButton();
     void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_PrevWorldButton) == 0x14c);
+
+struct HudUiNetGameSetupPanel_WorldSelector : HudUiCycleSelectorWidget {
+    HudUiNetGameSetupPanel_WorldSelector();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_WorldSelector) == 0x208);
+
+struct HudUiNetGameSetupPanel_TimeLimitInput : HudUiClampedIntTextInput {
+    HudUiNetGameSetupPanel_TimeLimitInput();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_TimeLimitInput) == 0x37c);
+
+struct HudUiNetGameSetupPanel_KillsInput : HudUiClampedIntTextInput {
+    HudUiNetGameSetupPanel_KillsInput();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_KillsInput) == 0x37c);
+
+struct HudUiNetGameSetupPanel_MaxPlayersInput : HudUiClampedIntTextInput {
+    HudUiNetGameSetupPanel_MaxPlayersInput();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_MaxPlayersInput) == 0x37c);
+
+struct HudUiNetGameSetupPanel_IncTimeLimitButton : HudUiClampedIntStepButton {
+    HudUiNetGameSetupPanel_IncTimeLimitButton();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_IncTimeLimitButton) == 0x154);
+
+struct HudUiNetGameSetupPanel_DecTimeLimitButton : HudUiClampedIntStepButton {
+    HudUiNetGameSetupPanel_DecTimeLimitButton();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_DecTimeLimitButton) == 0x154);
+
+struct HudUiNetGameSetupPanel_IncKillsButton : HudUiClampedIntStepButton {
+    HudUiNetGameSetupPanel_IncKillsButton();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_IncKillsButton) == 0x154);
+
+struct HudUiNetGameSetupPanel_DecKillsButton : HudUiClampedIntStepButton {
+    HudUiNetGameSetupPanel_DecKillsButton();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_DecKillsButton) == 0x154);
+
+struct HudUiNetGameSetupPanel_IncMaxPlayersButton : HudUiClampedIntStepButton {
+    HudUiNetGameSetupPanel_IncMaxPlayersButton();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_IncMaxPlayersButton) == 0x154);
+
+struct HudUiNetGameSetupPanel_DecMaxPlayersButton : HudUiClampedIntStepButton {
+    HudUiNetGameSetupPanel_DecMaxPlayersButton();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_DecMaxPlayersButton) == 0x154);
+
+struct HudUiNetGameSetupPanel_AllowMapsToggle : HudUiCheckToggleWidget {
+    HudUiNetGameSetupPanel_AllowMapsToggle();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_AllowMapsToggle) == 0x164);
+
+struct HudUiNetGameSetupPanel_NameTagsToggle : HudUiCheckToggleWidget {
+    HudUiNetGameSetupPanel_NameTagsToggle();
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_NameTagsToggle) == 0x164);
 
 struct HudUiNetGameSetupPanel : HudUiBackground {
     HudUiNumericTextInput *currentFocusWidget;
     HudUiNetGameSetupPanel_LaunchButton playButton;
     HudUiNetGameSetupPanel_CancelButton cancelButton;
     HudUiNetGameSetupTextInput gameNameInput;
-    HudUiCycleSelectorWidget worldSelector;
+    HudUiNetGameSetupPanel_WorldSelector worldSelector;
     HudUiNetGameSetupPanel_NextWorldButton nextWorldButton;
     HudUiNetGameSetupPanel_PrevWorldButton prevWorldButton;
-    HudUiClampedIntTextInput timeLimitInput;
-    HudUiClampedIntStepButton incTimeLimitButton;
-    HudUiClampedIntStepButton decTimeLimitButton;
-    HudUiClampedIntTextInput killsInput;
-    HudUiClampedIntStepButton incKillsButton;
-    HudUiClampedIntStepButton decKillsButton;
-    HudUiClampedIntTextInput maxPlayersInput;
-    HudUiClampedIntStepButton incMaxPlayersButton;
-    HudUiClampedIntStepButton decMaxPlayersButton;
-    HudUiCheckToggleWidget allowMapsToggle;
-    HudUiCheckToggleWidget nameTagsToggle;
+    HudUiNetGameSetupPanel_TimeLimitInput timeLimitInput;
+    HudUiNetGameSetupPanel_IncTimeLimitButton incTimeLimitButton;
+    HudUiNetGameSetupPanel_DecTimeLimitButton decTimeLimitButton;
+    HudUiNetGameSetupPanel_KillsInput killsInput;
+    HudUiNetGameSetupPanel_IncKillsButton incKillsButton;
+    HudUiNetGameSetupPanel_DecKillsButton decKillsButton;
+    HudUiNetGameSetupPanel_MaxPlayersInput maxPlayersInput;
+    HudUiNetGameSetupPanel_IncMaxPlayersButton incMaxPlayersButton;
+    HudUiNetGameSetupPanel_DecMaxPlayersButton decMaxPlayersButton;
+    HudUiNetGameSetupPanel_AllowMapsToggle allowMapsToggle;
+    HudUiNetGameSetupPanel_NameTagsToggle nameTagsToggle;
     HudUiWidget killsSwitch;
     HudUiWidget lapsSwitch;
     int reconfigureExistingSession;
