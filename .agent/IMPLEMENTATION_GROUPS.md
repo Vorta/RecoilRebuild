@@ -252,18 +252,24 @@ Active queue sections:
     smokes for the constructor, destructor, cancel, launch, next-world, and
     prev-world methods through `tests/native/smoke.cpp`.
   - The six functional targets pass locally after the x86 native smoke build.
-  - 0x419aa0, 0x41a160, 0x41a400, 0x41a820, and 0x41a9c0 now have accepted
-    dependency gates and `Reimplemented [C]` functional markers.
+  - 0x419aa0, 0x41a160, 0x41a400, 0x41a5b0, 0x41a820, and 0x41a9c0 now have
+    accepted dependency gates and `Reimplemented [C]` functional markers.
+  - The HudUiNetGameSetupPanel class owner is accepted for all six panel-local
+    methods. 0x41a160, 0x41a400, and 0x41a5b0 are accepted at tier B after
+    current `g_RecoilApp`, `g_HudSensorTracker`, and no-authored-global data
+    review as applicable.
 - Current blockers:
-  - 0x41a5b0 remains below tier C because its launch path depends on upstream
-    zNetwork/GameNet/HUD functions with open source-owner or data gates.
-  - Data acceptance remains per-method: constructor/launch/cancel touch app,
-    network, HUD tracker, option, or ZRD/provider globals and cannot be
-    treated as no-authored-globals by default; next/prev world side-effect
-    buttons may still require focused touched-global review.
+  - 0x419aa0 remains data-blocked by constructor-touched panel/child widget
+    table data plus ZRD name and string-literal cluster evidence.
+  - 0x41a820 and 0x41a9c0 remain data-blocked by the shared
+    `ApplyWorldSelectionSideEffects` formatting literal/source data path. The
+    source now keeps the `%d` formatting path inline and both functional
+    targets pass, but the local VC5 comparison still has source-shape/codegen
+    drift and does not support tier S.
 - Next action:
-  - Resolve the launch dependency blockers, then resolve HudUiNetGameSetupPanel
-    source-owner and per-method data gates for the tier C methods.
+  - Route the constructor table/string data cluster first, then resolve the
+    next/prev world formatting literal data gate before returning to broader
+    HudUiNetGameSetupPanel tier B cleanup.
 
 ### Group: GameNet launch/session-sync owner-data cleanup
 
@@ -311,10 +317,13 @@ Active queue sections:
     packet-handler unregister smoke, documenting the paired 0x431c50
     registration function, accepting the GameNet registration subsystem owner
     for unregister, and reusing `gamenet_launch_session_globals` VC5
-    data-symbol evidence for `g_GameNet_HandlersRegistered`. 0x431c50 remains
-    data-blocked by zDEClient/OptCatalog/zEffect callback-slot globals and
-    source-blocked by zNetwork/zEffect registration helpers. 0x4320f0 remains
-    the launch-panel caller's lowest visible GameNet owner/data blocker.
+    data-symbol evidence for `g_GameNet_HandlersRegistered`. 0x4320f0 is
+    accepted at tier B after resolving the HUD row-removal chain, accepting
+    `g_HudUiTopMessageStack` with local VC5 data-symbol evidence, and reusing
+    `gamenet_launch_session_globals` for the player-row and spawn-point list
+    globals. 0x431c50 remains data-blocked by zDEClient/OptCatalog/zEffect
+    callback-slot globals and source-blocked by zNetwork/zEffect registration
+    helpers.
     0x432830 is accepted at tier B after row-list data-symbol evidence;
     0x4327e0, 0x432860, and 0x432ae0 still need broader pkt06/player/HUD/zVideo
     owner-data routing before tier B.
@@ -385,6 +394,7 @@ Active queue sections:
     `zclass_node_pick_flag_accessors_smoke`, and accepting the shared Class.c
     null-node/source-file string data with local VC5 data-symbol evidence.
 - Next action:
-  - Refresh 0x4320f0 `GameNet::ResetRemotePlayersAndSpawnLists`, then route
-    the scoreboard-removal/triplet data chain before returning to
-    HudUiNetGameSetupPanel_LaunchButton.
+  - Return to the `HudUiNetGameSetupPanel_LaunchButton::OnActivate` owner
+    group; its visible direct dependencies are now tier B/S/provider, so audit
+    touched globals and route any remaining launch source-model blocker at the
+    panel owner boundary.

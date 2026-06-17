@@ -21,7 +21,7 @@ namespace {
  * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Clamp integer setup values to the active input bounds.
  */
-int ClampInt(
+inline int ClampInt(
     int value,
     int minValue,
     int maxValue
@@ -41,7 +41,7 @@ int ClampInt(
  * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Store the enabled flag and refresh the ZRD widget state.
  */
-void SetZrdWidgetEnabled(
+inline void SetZrdWidgetEnabled(
     HudUiZrdWidget *widget,
     int enabled
 ) {
@@ -94,7 +94,7 @@ void ConfigureStepButton(
  * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Dispatch a widget visibility change through its installed table.
  */
-void SetWidgetVisible(
+inline void SetWidgetVisible(
     HudUiWidget *widget,
     int visible
 ) {
@@ -107,7 +107,7 @@ void SetWidgetVisible(
  * Source: D:\Proj\Battlesport\HudUi.cpp
  * Purpose: Apply world selection changes to goal, timer, and refresh state.
  */
-void ApplyWorldSelectionSideEffects(
+inline void ApplyWorldSelectionSideEffects(
     HudUiNetGameSetupPanel *panel,
     int selectedIndex
 ) {
@@ -124,7 +124,17 @@ void ApplyWorldSelectionSideEffects(
         );
 
         if (panel->killsInput.CommitAndGetValue() == 1) {
-            panel->killsInput.Update("2");
+            char valueText[20];
+            sprintf(
+                valueText,
+                "%d",
+                ClampInt(
+                    2,
+                    panel->killsInput.minValue,
+                    panel->killsInput.maxValue
+                )
+            );
+            panel->killsInput.Update(valueText);
         }
         panel->killsInput.minValue = 2;
         panel->killsInput.maxValue = 99;

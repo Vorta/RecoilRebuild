@@ -279,6 +279,10 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: MSVC_EH_ArrayDestructor_OrphanEpilogue)
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: MSVC_EH_ArrayDestructor_OrphanEpilogue; Origin: compiler-generated; File: external; Target: pending; Group: provider.compiler)
 
+- 0x4c60a0:
+  - [✅] Reconstructed (Name: __CxxFrameHandler_iat_thunk)
+  - [✅] Provider-boundary (Kind: VC5 CRT/compiler runtime; Name: __CxxFrameHandler_iat_thunk; Origin: MSVC __CxxFrameHandler import thunk used by compiler-generated C++ EH frame handlers; File: external; Target: pending; Group: provider.compiler)
+
 - 0x4c62b7:
   - [☑️] Reconstructed (Name: no_bn_function_0x4c62b7)
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: no_bn_function_0x4c62b7; Origin: compiler-generated; File: external; Target: pending; Group: provider.compiler)
@@ -32553,15 +32557,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4320f0:
   - [✅] Reconstructed (Name: GameNet::ResetRemotePlayersAndSpawnLists)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: GameNet; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::ResetRemotePlayersAndSpawnLists;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_reset_remote_players_and_spawn_lists;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: GameNet row/spawn list globals are typed and VC5 data-verified; tier B remains blocked by HudUiTopMessageStack and HudUi row-removal owner/data gates
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4321b0:
   - [✅] Reconstructed (Name: GameNet::UnregisterGameplayPacketHandlers)
@@ -35966,8 +35970,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: HudUiTriplet::RebuildDisplay)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: HudUiTriplet; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiTriplet::RebuildDisplay;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_triplet_rebuild_display;
@@ -36004,15 +36008,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40e880:
   - [☑️] Reconstructed (Name: HudUiTriplet::RemoveEntry)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiTriplet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Source owner (Kind: class; Parent: HudUiTriplet; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiTriplet::RemoveEntry;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_triplet_remove_entry;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudUiTriplet::RemoveEntry functional evidence passes and owner maps to class HudUiTriplet, but tier B remains blocked by transitive HudUiTriplet::RebuildDisplay / g_HudSensorTracker data gate
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40e910:
   - [✅] Reconstructed (Name: HudUiTriplet::InterpolateLayout)
@@ -41999,80 +42003,80 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x419aa0:
   - [☑️] Reconstructed (Name: HudUiNetGameSetupPanel::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiNetGameSetupPanel::Constructor;
     - File: src/Battlesport/HudUiNetGameSetup.cpp;
     - Target: hud_ui_net_game_setup_panel_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudUiNetGameSetupPanel owner-local table factories/globals and constructor table overwrites were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
+    - Model: source-faithful;
+    - Blocker: Source owner accepted for HudUiNetGameSetupPanel class. Tier B remains blocked by constructor-touched panel/child widget vtable and ZRD/string literal data cluster evidence.
 
 - 0x41a160:
   - [✅] Reconstructed (Name: HudUiNetGameSetupPanel_CancelButton::OnActivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiNetGameSetupPanel_CancelButton::OnActivate;
     - File: src/Battlesport/HudUiNetGameSetup.cpp;
     - Target: hud_ui_net_game_setup_cancel_button;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudUiNetGameSetupPanel owner-local table factories/globals and constructor table overwrites were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41a400:
   - [✅] Reconstructed (Name: HudUiNetGameSetupPanel::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUiNetGameSetupPanel::Destructor;
     - File: src/Battlesport/HudUiNetGameSetup.cpp;
     - Target: hud_ui_net_game_setup_panel_destructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudUiNetGameSetupPanel owner-local table factories/globals and constructor table overwrites were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41a5b0:
   - [☑️] Reconstructed (Name: HudUiNetGameSetupPanel_LaunchButton::OnActivate)
-  - [❌] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [❌] Reimplemented [X]
-    - Name: pending;
-    - File: pending;
-    - Target: pending;
+  - [✅] Source dependencies satisfied
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HudUiNetGameSetupPanel_LaunchButton::OnActivate;
+    - File: src/Battlesport/HudUiNetGameSetup.cpp;
+    - Target: hud_ui_net_game_setup_launch_button;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudUiNetGameSetupPanel owner-local table factories/globals and constructor table overwrites were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41a820:
   - [✅] Reconstructed (Name: HudUiNetGameSetupPanel_NextWorldButton::OnActivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiNetGameSetupPanel_NextWorldButton::OnActivate;
     - File: src/Battlesport/HudUiNetGameSetup.cpp;
     - Target: hud_ui_net_game_setup_next_world_button;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudUiNetGameSetupPanel owner-local table factories/globals and constructor table overwrites were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
+    - Model: source-faithful;
+    - Blocker: Data gate remains open for shared ApplyWorldSelectionSideEffects formatting literal/source data path.
 
 - 0x41a9c0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupPanel_PrevWorldButton::OnActivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupPanel; State: implemented)
   - [❌] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: HudUiNetGameSetupPanel_PrevWorldButton::OnActivate;
     - File: src/Battlesport/HudUiNetGameSetup.cpp;
     - Target: hud_ui_net_game_setup_prev_world_button;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudUiNetGameSetupPanel owner-local table factories/globals and constructor table overwrites were removed from production source. BN proves class-shaped embedded child dispatch, but source remains blocked on the broader HudUiBackground/HudUiElement/HUD widget C++ dispatch owner and virtual delete model before retiering.
+    - Model: source-faithful;
+    - Blocker: Data gate remains open for shared ApplyWorldSelectionSideEffects formatting literal/source data path.
 
 - 0x41ab60:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit)
@@ -42571,15 +42575,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4143c0:
   - [✅] Reconstructed (Name: HudUi::RemoveScoreboardEntryRow)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: HudUi; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: cluster; Parent: HudUi-scoreboard-wrapper; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUi::RemoveScoreboardEntryRow;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_remove_scoreboard_entry_row;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: HudUi::RemoveScoreboardEntryRow functional evidence passes and wrapper source is documented, but data remains blocked by g_HudUiMgrStatsList / HudUiStatsListElement::triplet global-owner data gate at 0x4ed4e0
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4143b0:
   - [✅] Reconstructed (Name: HudUi::RefreshScoreboardEntryRow)
