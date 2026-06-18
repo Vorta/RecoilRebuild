@@ -593,7 +593,8 @@ namespace zClass_Object3D {
     /**
      * Reimplements 0x44db00: zClass_Object3D::DeleteNode
      * (D:\Proj\GameZRecoil\zClass\Object3d.c).
-     * Purpose: release an Object3D node through the generic node free-list path.
+     * Purpose: release Object3D class data and return the node to the generic
+     * free-list path.
      */
     int __fastcall DeleteNode(zClass_NodePartial * node) {
         return zClass_Class::TryFreeNode(node);

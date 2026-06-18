@@ -1715,8 +1715,12 @@ float __fastcall GetNearestOtherPlayerDistanceToSpawnPoint(
     return nearestDistanceSq;
 }
 
-// Reimplements 0x433200: GameNet::AreAllPlayersAtLapTarget
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x433200: GameNet::AreAllPlayersAtLapTarget
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Mark the multiplayer lap-target check as started and report
+ * whether every player row has reached the race goal.
+ */
 int AreAllPlayersAtLapTarget() {
     if (g_GameNetAllPlayersLapTargetCheckStarted == 0) {
         g_GameNetAllPlayersLapTargetCheckStarted = 1;
@@ -2346,8 +2350,12 @@ int __fastcall AltGunDispatchNoOpCallback(
     return 1;
 }
 
-// Reimplements 0x433ca0: GameNet::SendPkt10_QSandEvent
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x433ca0: GameNet::SendPkt10_QSandEvent
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: relay local quicksand feature events through packet 0x10 after
+ * validating local damage ownership.
+ */
 int __fastcall SendPkt10_QSandEvent(
     zDEClient_QSandEventTemplate *eventTemplate
 ) {
@@ -2378,8 +2386,11 @@ int __fastcall SendPkt10_QSandEvent(
     return 0;
 }
 
-// Reimplements 0x433de0: GameNet::HostSendPkt10_QSandFeature
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x433de0: GameNet::HostSendPkt10_QSandFeature
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Relay a host-authored quicksand feature event to network peers.
+ */
 int __fastcall HostSendPkt10_QSandFeature(
     zDEClient_QSandEventTemplate *eventTemplate
 ) {
@@ -2395,8 +2406,11 @@ int __fastcall HostSendPkt10_QSandFeature(
     return 1;
 }
 
-// Reimplements 0x433c30: GameNet::HostSendPkt0F_CraterFeature
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x433c30: GameNet::HostSendPkt0F_CraterFeature
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Relay a host-authored crater feature event to network peers.
+ */
 int __fastcall HostSendPkt0F_CraterFeature(
     zDEClient_CraterEventTemplate *eventTemplate
 ) {
@@ -2756,7 +2770,11 @@ int __fastcall UpdateRemotePlayerHudWidgetScreenPos(
     return 1;
 }
 
-// Reimplements 0x414330: GameNet::ShowPlayerKillMessage (D:\Proj\Battlesport\HudUi.cpp)
+/**
+ * Reimplements 0x414330: GameNet::ShowPlayerKillMessage
+ * Source: D:\Proj\Battlesport\HudUi.cpp
+ * Purpose: Format and display a multiplayer kill-feed message.
+ */
 void __fastcall ShowPlayerKillMessage(
     GameNetPlayerRow *victimRow,
     OptCatalogEntryDef *killEntry,
@@ -2809,8 +2827,12 @@ int ReassignPlayerColorsAndRefreshRows(
     return 1;
 }
 
-// Reimplements 0x432ed0: GameNet::HandlePkt03_RemoveRemotePlayer
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x432ed0: GameNet::HandlePkt03_RemoveRemotePlayer
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Handle the remote-player remove packet by retiring the player's
+ * runtime state, unlinking the HUD row, and deleting the player row.
+ */
 int __fastcall HandlePkt03_RemoveRemotePlayer(
     int senderPlayerId,
     zNetworkPacketHeader *
@@ -2948,8 +2970,11 @@ int __fastcall HandlePkt0C_HudTimerStatusBits(
     return 1;
 }
 
-// Reimplements 0x4337e0: GameNet::HandlePkt0B_ChatMessage
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x4337e0: GameNet::HandlePkt0B_ChatMessage
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Copy an incoming chat payload into a bounded local string and show it.
+ */
 int __fastcall HandlePkt0B_ChatMessage(
     int,
     NetPkt0B_ChatMessage *packet
@@ -2976,8 +3001,11 @@ int __fastcall HandlePkt0B_ChatMessage(
     return 1;
 }
 
-// Reimplements 0x433750: GameNet::SendPkt0B_ChatMessage
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x433750: GameNet::SendPkt0B_ChatMessage
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Build and send a packet-0B chat message for the local player.
+ */
 void __fastcall SendPkt0B_ChatMessage(
     const char *message
 ) {
@@ -3059,7 +3087,12 @@ int __fastcall HandlePkt0D_HudTimerPanelState(
     return 1;
 }
 
-// Reimplements 0x433060: GameNet::HandlePkt08_PlayerKillEvent (D:\Proj\Battlesport\ai_net.cpp)
+/**
+ * Reimplements 0x433060: GameNet::HandlePkt08_PlayerKillEvent
+ * Source: D:\Proj\Battlesport\ai_net.cpp
+ * Purpose: Apply an incoming packet-08 player kill event and host-side
+ * scoreboard update.
+ */
 int __fastcall HandlePkt08_PlayerKillEvent(
     int localPlayerKey,
     NetPkt08_PlayerKillEvent *packet
@@ -3099,7 +3132,11 @@ int __fastcall HandlePkt08_PlayerKillEvent(
     return 1;
 }
 
-// Reimplements 0x433000: GameNet::SendPkt08_PlayerKillEvent (D:\Proj\Battlesport\ai_net.cpp)
+/**
+ * Reimplements 0x433000: GameNet::SendPkt08_PlayerKillEvent
+ * Source: D:\Proj\Battlesport\ai_net.cpp
+ * Purpose: Build, send, and locally dispatch a packet-08 player kill event.
+ */
 void __fastcall SendPkt08_PlayerKillEvent(
     zUtil_SaveGameState *saveState,
     short killMethodOrOptCatalogEntryId
@@ -3123,8 +3160,11 @@ void __fastcall SendPkt08_PlayerKillEvent(
     );
 }
 
-// Reimplements 0x4330f0: GameNet::SendPkt0E_PlayerLapProgress
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x4330f0: GameNet::SendPkt0E_PlayerLapProgress
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Publish the local player's packed lap count and lap time packet.
+ */
 void __fastcall SendPkt0E_PlayerLapProgress(
     zUtil_SaveGameState *saveState
 ) {
@@ -3305,8 +3345,12 @@ void __fastcall SendPkt0D_HudTimerPanelState(
     );
 }
 
-// Reimplements 0x433170: GameNet::HandlePkt0E_PlayerLapProgress
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x433170: GameNet::HandlePkt0E_PlayerLapProgress
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Apply a host-side player lap-progress packet and refresh race HUD
+ * state when the lap target is reached.
+ */
 int __fastcall HandlePkt0E_PlayerLapProgress(
     int senderPlayerId,
     NetPkt0E_PlayerLapProgress *packet
@@ -3466,8 +3510,11 @@ int __fastcall SendPkt14_HudTimerAndFlagsSync(
     return zNetwork_SendPacketReliable(&g_NetPkt14_HudTimerAndFlagsSyncBuf.header);
 }
 
-// Reimplements 0x4344b0: GameNet::HandlePkt14_HudTimerAndFlagsSync
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x4344b0: GameNet::HandlePkt14_HudTimerAndFlagsSync
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Receive the HUD timer/status sync packet and start the matching mission state.
+ */
 int __fastcall HandlePkt14_HudTimerAndFlagsSync(
     int senderPlayerId,
     NetPkt14_HudTimerAndFlagsSync *packet

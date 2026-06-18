@@ -197,7 +197,12 @@ namespace zClass {
 }
 
 namespace zClass_Util {
-    // Reimplements 0x451a60: zClass_Util::DestroyNodeRecursive
+    /**
+     * Reimplements 0x451a60: zClass_Util::DestroyNodeRecursive.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_util.c.
+     * Purpose: recursively remove children, release display/class data, and
+     * return nodes to the zClass free list.
+     */
     int __fastcall DestroyNodeRecursive(zClass_NodePartial * node) {
         if (node == 0) {
             zError::ReportOld(

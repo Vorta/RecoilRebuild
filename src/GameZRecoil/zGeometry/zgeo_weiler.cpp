@@ -10,6 +10,10 @@
 namespace {
 const char kZGeoWeilerSourceFile[] = "D:\\Proj\\GameZRecoil\\zGeometry\\zgeo_weiler.cpp";
 
+/**
+ * Data evidence: BN 0x4dfdd0 is int32_t[0x51], xrefed by 0x468fa0, and matches these case ids byte-for-byte.
+ * Purpose: Map the four ternary edge-side sign classes to the Weiler intersection case id.
+ */
 const int kIntersect2dCaseIdBySignClass[0x51] = {0,
     0,
     0,
@@ -92,6 +96,10 @@ const int kIntersect2dCaseIdBySignClass[0x51] = {0,
     0,
     0};
 
+/**
+ * Data evidence: BN 0x468f80 is uint8_t[0x18], xrefed by 0x468c40, and matches these output kinds byte-for-byte.
+ * Purpose: Map each Weiler intersection case id to the output crossing construction branch.
+ */
 const unsigned char kIntersect2dOutputKindByXingType[0x18] =
     {0, 6, 6, 6, 1, 1, 2, 2, 3, 3, 6, 6, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5};
 
@@ -111,7 +119,11 @@ struct WeilerPointBoundsXY {
     float maxY;
 };
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered as a local source helper observed in caller 0x468a10.
+ * Evidence: repeated float comparison-to-pivot idiom inside the Weiler point-in-contour classifier.
+ * Purpose: Classify a scalar as less than, equal to, or greater than a pivot value.
+ */
 int ClassifyFloatAgainstPivot(
     float value,
     float pivot
@@ -127,7 +139,12 @@ int ClassifyFloatAgainstPivot(
     return 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: ComputePointBoundsXY
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Original-source inline helper evidence: No standalone retail function; observed inlined into 0x464c90.
+ * Purpose: Compute the XY axis-aligned bounds for a contour point list.
+ */
 void ComputePointBoundsXY(
     zVec3 *points,
     int pointCount,
@@ -158,7 +175,12 @@ void ComputePointBoundsXY(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered source helper: BuildPointSideTable
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Original-source helper evidence: No standalone retail function; observed in caller 0x468470.
+ * Purpose: Fill one caller-owned point-side table with each test point's signed side against each contour edge.
+ */
 void BuildPointSideTable(
     zVec3 *edgePoints,
     int edgePointCount,
@@ -225,7 +247,10 @@ void RecenterPoints(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from repeated XY edge-side calculations in Weiler callers including 0x468fa0 and 0x468c40.
+ * Purpose: Return the signed XY side of a point relative to a directed edge.
+ */
 float EdgeSideXY(
     zVec3 *point,
     zVec3 *start,
@@ -236,7 +261,10 @@ float EdgeSideXY(
     return (point->x - start->x) * edgeDeltaY - (point->y - start->y) * edgeDeltaX;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from the ternary lookup-index construction in caller 0x468fa0.
+ * Purpose: Convert a signed side value to the ternary class used by the intersection case table.
+ */
 int SignClassForIntersectTable(
     float value
 ) {
@@ -251,7 +279,10 @@ int SignClassForIntersectTable(
     return 2;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from the strict early-reject side tests in caller 0x468fa0.
+ * Purpose: Detect when two signed side values are both strictly positive or both strictly negative.
+ */
 bool HasStrictSameSign(
     float first,
     float second
@@ -259,7 +290,10 @@ bool HasStrictSameSign(
     return (first < 0.0f && second < 0.0f) || (first > 0.0f && second > 0.0f);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from Weiler crossing allocation sites including caller 0x468c40 and accepted callee 0x467660.
+ * Purpose: Append one crossing record and report the original zgeo_weiler.cpp line on allocation failure.
+ */
 zGeometry_WeilerXingPartial *AllocWeilerXing(
     zGeometry_WeilerStatePartial *self,
     int errorLine
@@ -282,7 +316,11 @@ zGeometry_WeilerXingPartial *AllocWeilerXing(
     return xing;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed caller 0x46a1f0.
+ * Evidence basis: ValidateXings delegates the xingType dispatch and required segment slot checks to this recovered zgeo_weiler.cpp helper body.
+ * Purpose: Validate that a Weiler crossing has the segment slots required by its crossing type.
+ */
 int ValidateWeilerXingSegmentSet(
     zGeometry_WeilerXingPartial *xing
 ) {
@@ -383,7 +421,12 @@ int ValidateWeilerXingSegmentSet(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * No standalone retail function; recovered original helper observed in caller 0x467710.
+ * Evidence: MergeContours output allocation/error-reporting paths use accepted callee
+ * 0x4676c0 EnsureContourOutput before reporting missing merged contour output records.
+ * Purpose: Report that MergeContours could not attach a new contour output record.
+ */
 void ReportMergeContourOutputFailure(
     int errorLine
 ) {
@@ -395,7 +438,12 @@ void ReportMergeContourOutputFailure(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * No standalone retail function; recovered original helper observed in caller 0x467710.
+ * Evidence: MergeContours single-segment output paths call accepted callee 0x4676c0
+ * EnsureContourOutput and then use the shared merge-contour output failure report.
+ * Purpose: Ensure one merged contour segment has an output record before chaining.
+ */
 int EnsureMergedContourOutput(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerContourSegmentPartial *segment,
@@ -412,7 +460,12 @@ int EnsureMergedContourOutput(
     return 1;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * No standalone retail function; recovered original helper observed in caller 0x467710.
+ * Evidence: MergeContours paired output paths call accepted callee 0x4676c0
+ * EnsureContourOutput for both segments and then use the shared failure report.
+ * Purpose: Ensure two merged contour segments have output records before chaining.
+ */
 int EnsureMergedContourOutputs(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerContourSegmentPartial *firstSegment,
@@ -522,7 +575,10 @@ void UnlinkWeilerContourSegmentPair(
     contourDWalker->next->prev = contourDWalker->prev;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from contained-contour intersection cleanup observed in caller 0x465ac0.
+ * Purpose: Clear all segment back-references from a newly produced Weiler crossing.
+ */
 void ClearWeilerXingSegments(
     zGeometry_WeilerXingPartial *xing
 ) {
@@ -540,7 +596,10 @@ void ClearWeilerXingSegments(
     xing->segment1 = 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from the dirty-bounds overlap gate observed in caller 0x465ac0.
+ * Purpose: Test whether two contour segments have overlapping XY bounds after refreshing dirty bounds.
+ */
 bool SegmentBoundsOverlapXY(
     zGeometry_WeilerContourSegmentPartial *first,
     zGeometry_WeilerContourSegmentPartial *second
@@ -557,7 +616,10 @@ bool SegmentBoundsOverlapXY(
            first->minY <= second->maxY && first->maxY >= second->minY;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from existing-crossing checks observed in caller 0x465ac0.
+ * Purpose: Report whether a crossing is already attached to either segment in a contour pair.
+ */
 bool XingTouchesContourPair(
     zGeometry_WeilerXingPartial *xing,
     zGeometry_WeilerContourSegmentPartial *firstSegment,
@@ -567,7 +629,10 @@ bool XingTouchesContourPair(
            xing == secondSegment->startXing || xing == secondSegment->endXing;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from paired contour-segment duplicate crossing checks observed in caller 0x465ac0.
+ * Purpose: Detect whether either contained-contour segment already has a crossing with the active source contour pair.
+ */
 bool HasExistingXingWithContourPair(
     zGeometry_WeilerContourSegmentPartial *contourCSegment,
     zGeometry_WeilerContourSegmentPartial *contourDSegment,
@@ -596,7 +661,10 @@ bool HasExistingXingWithContourPair(
                ));
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from the Intersect2d error branch observed in caller 0x465ac0.
+ * Purpose: Report the legacy weilerIntersect error at the original source line.
+ */
 void ReportWeilerIntersectError(
     int errorLine
 ) {
@@ -609,7 +677,10 @@ void ReportWeilerIntersectError(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from divide-at-crossing failure exits observed in caller 0x465ac0.
+ * Purpose: Print the legacy divide-edge failure diagnostic for contained-contour splitting.
+ */
 void ReportWeilerIntersectDivideFailure(
     int errorLine
 ) {
@@ -621,7 +692,10 @@ void ReportWeilerIntersectDivideFailure(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from repeated divide-at-crossing calls observed in caller 0x465ac0.
+ * Purpose: Split one contour segment at a crossing point and report failure through the legacy diagnostic.
+ */
 int DivideContainedContourSegment(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerXingPartial *xing,
@@ -642,7 +716,10 @@ int DivideContainedContourSegment(
     return 1;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from the four-segment divide sequence observed in caller 0x465ac0.
+ * Purpose: Split both paired contour rings at one crossing and return failure if any split fails.
+ */
 int DivideContainedContourPairAtXing(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerXingPartial *xing,
@@ -678,7 +755,10 @@ int DivideContainedContourPairAtXing(
                : 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from the post-intersection crossing repair pass observed in caller 0x465ac0.
+ * Purpose: Rebuild crossing back-references for each segment in the four contained-contour rings.
+ */
 void PropagateXingBackReferencesForContourPair(
     zGeometry_WeilerContourSegmentPartial *contourAStart,
     zGeometry_WeilerContourSegmentPartial *contourBStart,
@@ -756,7 +836,10 @@ void CopyPointAndAdvance(
     ++outPoint;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from the adjacent-edge-pair classifier source pattern and observed in caller 0x469560.
+ * Purpose: Classify a point as inside or outside the wedge formed by two linked contour segments.
+ */
 int ClassifyPointAgainstAdjacentEdgePair(
     zVec3 *point,
     zGeometry_WeilerContourSegmentPartial *firstSegment,
@@ -792,7 +875,10 @@ int ClassifyPointAgainstAdjacentEdgePair(
     return -1;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from the adjacent-edge-pair classifier source pattern and observed in caller 0x469560.
+ * Purpose: Test whether both points are strictly negative to both segments in an adjacent edge pair.
+ */
 bool ArePointsStrictlyNegativeToAdjacentEdgePair(
     zVec3 *firstPoint,
     zVec3 *secondPoint,
@@ -858,9 +944,11 @@ int __fastcall IntersectsSegmentXY(
 } // namespace zGeometry_Segment
 
 namespace zGeometry_Model {
-// Reimplements 0x46b650:
-// zGeometry_Model::GetLinearBufferOfPolygonVertices
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x46b650: zGeometry_Model::GetLinearBufferOfPolygonVertices
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Expand a model polygon's indexed vertices into a linear point buffer.
+ */
 zVec3 *__fastcall GetLinearBufferOfPolygonVertices(
     zModel_DrawBatchBasePartial *model,
     zModel_PolygonPartial *polygon,
@@ -882,8 +970,11 @@ zVec3 *__fastcall GetLinearBufferOfPolygonVertices(
 } // namespace zGeometry_Model
 
 namespace zGeometry_Vec3 {
-// Reimplements 0x469ca0: zGeometry_Vec3::IsBetweenEndpointsXY
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x469ca0: zGeometry_Vec3::IsBetweenEndpointsXY
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Test whether a point lies within the inclusive XY endpoint span of a segment.
+ */
 int __fastcall IsBetweenEndpointsXY(
     zVec3 *testPoint,
     zVec3 *startPoint,
@@ -906,9 +997,11 @@ int __fastcall IsBetweenEndpointsXY(
 } // namespace zGeometry_Vec3
 
 namespace zGeometry_Vec3Array {
-// Reimplements 0x46a080:
-// zGeometry_Vec3Array::RemoveAdjacentDuplicatePointsXY
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x46a080: zGeometry_Vec3Array::RemoveAdjacentDuplicatePointsXY
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Collapse adjacent duplicate XY vertices from a polygon point list.
+ */
 int __fastcall RemoveAdjacentDuplicatePointsXY(
     zVec3 *vertices,
     int count
@@ -954,8 +1047,11 @@ int __fastcall RemoveAdjacentDuplicatePointsXY(
     return result;
 }
 
-// Reimplements 0x46a600: zGeometry_Vec3Array::RotatePos90AroundX
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x46a600: zGeometry_Vec3Array::RotatePos90AroundX
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Rotate an array of vectors positive ninety degrees around X.
+ */
 void __fastcall RotatePos90AroundX(
     int pointCount,
     zVec3 *points
@@ -971,8 +1067,11 @@ void __fastcall RotatePos90AroundX(
     }
 }
 
-// Reimplements 0x46a9c0: zGeometry_Vec3Array::ComputeBoundsXY
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x46a9c0: zGeometry_Vec3Array::ComputeBoundsXY
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Compute XY min/max bounds for a point array.
+ */
 void __fastcall ComputeBoundsXY(
     zGeometry_BoundsXY *outBounds,
     zVec3 *points,
@@ -1005,8 +1104,11 @@ void __fastcall ComputeBoundsXY(
 } // namespace zGeometry_Vec3Array
 
 namespace zGeometry_WeilerBuffer {
-// Reimplements 0x467600: zGeometry_WeilerBuffer::Init
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x467600: zGeometry_WeilerBuffer::Init
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Allocate zero-filled Weiler buffer storage and initialize append state.
+ */
 void __fastcall Init(
     zGeometry_WeilerBufferPartial *self,
     int initialCapacity,
@@ -1023,8 +1125,11 @@ void __fastcall Init(
     self->appendPtr = base;
 }
 
-// Reimplements 0x467660: zGeometry_WeilerBuffer::GetAppendSpace
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x467660: zGeometry_WeilerBuffer::GetAppendSpace
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Reserve contiguous append slots, growing backing storage when needed.
+ */
 void *__fastcall GetAppendSpace(
     zGeometry_WeilerBufferPartial *self,
     int appendCount,
@@ -1051,8 +1156,11 @@ void *__fastcall GetAppendSpace(
     return result;
 }
 
-// Reimplements 0x469ae0: zGeometry_WeilerBuffer::SetCountAndAppendPtr
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x469ae0: zGeometry_WeilerBuffer::SetCountAndAppendPtr
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Reset the logical count and append pointer within the backing store.
+ */
 void __fastcall SetCountAndAppendPtr(
     zGeometry_WeilerBufferPartial *self,
     int count
@@ -1061,8 +1169,11 @@ void __fastcall SetCountAndAppendPtr(
     self->appendPtr = (void *)((unsigned int)(self->base) + count * self->elementSize);
 }
 
-// Reimplements 0x467630: zGeometry_WeilerBuffer::Destroy
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x467630: zGeometry_WeilerBuffer::Destroy
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Release backing storage and clear buffer bookkeeping.
+ */
 void __fastcall Destroy(
     zGeometry_WeilerBufferPartial *self
 ) {
@@ -1078,9 +1189,11 @@ void __fastcall Destroy(
 } // namespace zGeometry_WeilerBuffer
 
 namespace zGeometry_WeilerContourSegment {
-// Reimplements 0x468410:
-// zGeometry_WeilerContourSegment::UpdateBounds
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x468410: zGeometry_WeilerContourSegment::UpdateBounds
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Refresh a contour segment's cached XY bounds from its endpoints.
+ */
 void __fastcall UpdateBounds(
     zGeometry_WeilerContourSegmentPartial *segment
 ) {
@@ -1108,9 +1221,11 @@ void __fastcall UpdateBounds(
 } // namespace zGeometry_WeilerContourSegment
 
 namespace zGeometry_WeilerContourSegmentArray {
-// Reimplements 0x4693a0:
-// zGeometry_WeilerContourSegmentArray::UpdateBounds
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x4693a0: zGeometry_WeilerContourSegmentArray::UpdateBounds
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Refresh cached XY bounds for each segment in a contour segment array.
+ */
 void __fastcall UpdateBounds(
     zGeometry_WeilerContourSegmentPartial *segments,
     int segmentCount
@@ -1120,9 +1235,11 @@ void __fastcall UpdateBounds(
     }
 }
 
-// Reimplements 0x4693c0:
-// zGeometry_WeilerContourSegmentArray::InitFromPointList
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x4693c0: zGeometry_WeilerContourSegmentArray::InitFromPointList
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Build a linked contour segment ring from a point list.
+ */
 void __fastcall InitFromPointList(
     zGeometry_WeilerContourSegmentPartial *segments,
     zVec3 *points,
@@ -1151,8 +1268,12 @@ void __fastcall InitFromPointList(
 } // namespace zGeometry_WeilerContourSegmentArray
 
 namespace zGeometry_Weiler {
-// Reimplements 0x464670: zGeometry_Weiler::GetInputContourAPointList
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x464670: zGeometry_Weiler::GetInputContourAPointList
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: expose contour A's point buffer and count from an initialized
+ * Weiler state.
+ */
 int __fastcall GetInputContourAPointList(
     zGeometry_WeilerStatePartial *self,
     zVec3 **outPoints
@@ -1165,8 +1286,11 @@ int __fastcall GetInputContourAPointList(
     return self->inputContourABuffer.count;
 }
 
-// Reimplements 0x464680: zGeometry_Weiler::Init
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x464680: zGeometry_Weiler::Init
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Allocate and initialize Weiler clip state from an input contour.
+ */
 zGeometry_WeilerStatePartial *__fastcall Init(
     zVec3 *points,
     int pointCount,
@@ -1250,8 +1374,11 @@ zGeometry_WeilerStatePartial *__fastcall Init(
     return result;
 }
 
-// Reimplements 0x464b90: zGeometry_Weiler::InitInputContourPair
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x464b90: zGeometry_Weiler::InitInputContourPair
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Allocate forward and reverse contour segment rings for an input contour.
+ */
 int __fastcall InitInputContourPair(
     zGeometry_WeilerStatePartial *self,
     zVec3 *points,
@@ -1323,8 +1450,11 @@ int __fastcall InitInputContourPair(
     return 1;
 }
 
-// Reimplements 0x464810: zGeometry_Weiler::ClipPointList
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x464810: zGeometry_Weiler::ClipPointList
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Initialize clip output state, handle preclassified contour relationships, dispatch the Weiler clipping pipeline, and restore caller-visible output state.
+ */
 int __fastcall ClipPointList(
     zGeometry_WeilerStatePartial *self,
     int clipMode,
@@ -1574,8 +1704,11 @@ int __fastcall ClipPointList(
     return outputMode;
 }
 
-// Reimplements 0x4676c0: zGeometry_Weiler::EnsureContourOutput
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x4676c0: zGeometry_Weiler::EnsureContourOutput
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Ensure a contour segment has an attached contour output record.
+ */
 int __fastcall EnsureContourOutput(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerContourSegmentPartial *segment
@@ -1607,8 +1740,11 @@ int __fastcall EnsureContourOutput(
     return 1;
 }
 
-// Reimplements 0x467710: zGeometry_Weiler::MergeContours
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x467710: zGeometry_Weiler::MergeContours
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Merge classified Weiler contour segments into contour output chains.
+ */
 int __fastcall MergeContours(
     zGeometry_WeilerStatePartial *self
 ) {
@@ -2049,9 +2185,11 @@ int __fastcall MergeContours(
     return 1;
 }
 
-// Reimplements 0x468580:
-// zGeometry_Weiler::DivideContourSegmentAtPoint
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x468580: zGeometry_Weiler::DivideContourSegmentAtPoint
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Split a contour segment at a crossing point while preserving contour links.
+ */
 int __fastcall DivideContourSegmentAtPoint(
     zGeometry_WeilerStatePartial *self,
     zVec3 *xing,
@@ -2111,9 +2249,11 @@ int __fastcall DivideContourSegmentAtPoint(
     return 1;
 }
 
-// Reimplements 0x468650:
-// zGeometry_Weiler::CreateForwardSegmentPairAtPoint
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x468650: zGeometry_Weiler::CreateForwardSegmentPairAtPoint
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Insert matching forward contour split segments at a shared point.
+ */
 int __fastcall CreateForwardSegmentPairAtPoint(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerContourSegmentPartial *firstSegment,
@@ -2163,11 +2303,12 @@ int __fastcall CreateForwardSegmentPairAtPoint(
     return 1;
 }
 
-// Reimplements 0x469430:
-// zGeometry_Weiler::GetNextContourSegmentForTraversal
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
-zGeometry_WeilerContourSegmentPartial *__fastcall
-GetNextContourSegmentForTraversal(
+/**
+ * Reimplements 0x469430: zGeometry_Weiler::GetNextContourSegmentForTraversal
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Advance Weiler contour traversal while reversing adjacent segment links for two-node contour cases.
+ */
+zGeometry_WeilerContourSegmentPartial *__fastcall GetNextContourSegmentForTraversal(
     zGeometry_WeilerContourSegmentPartial *segment
 ) {
     zGeometry_WeilerContourSegmentPartial *const next = segment->next;
@@ -2185,8 +2326,11 @@ GetNextContourSegmentForTraversal(
     return next;
 }
 
-// Reimplements 0x4680b0: zGeometry_Weiler::NewContour
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x4680b0: zGeometry_Weiler::NewContour
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Rebuild contour output type and point counts, clear stale segment output ownership, and track all-single-sided state.
+ */
 void __fastcall NewContour(
     zGeometry_WeilerStatePartial *self
 ) {
@@ -2255,9 +2399,11 @@ void __fastcall NewContour(
     }
 }
 
-// Reimplements 0x468a10:
-// zGeometry_Weiler::ClassifyPointInContourPointListXY
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x468a10: zGeometry_Weiler::ClassifyPointInContourPointListXY
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Classify a test point as outside, on, or inside an XY contour by crossing parity.
+ */
 int __fastcall ClassifyPointInContourPointListXY(
     zVec3 *point,
     int contourPointCount,
@@ -2337,9 +2483,11 @@ int __fastcall ClassifyPointInContourPointListXY(
     return (crossingParity & 1) != 0 ? 1 : -1;
 }
 
-// Reimplements 0x464ea0:
-// zGeometry_Weiler::OutputPreclassifiedContourPairResult
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x464ea0: zGeometry_Weiler::OutputPreclassifiedContourPairResult
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Resolve a preclassified containment result by rejecting unmatched outside points.
+ */
 int __fastcall OutputPreclassifiedContourPairResult(
     int contourAPointCount,
     zVec3 *contourAPoints,
@@ -2396,9 +2544,11 @@ int __fastcall OutputPreclassifiedContourPairResult(
     return resultCode;
 }
 
-// Reimplements 0x464c90:
-// zGeometry_Weiler::ClassifyInputContourPairBounds
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x464c90: zGeometry_Weiler::ClassifyInputContourPairBounds
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Preclassify the two input contours by comparing their XY bounding boxes.
+ */
 int __fastcall ClassifyInputContourPairBounds(
     zGeometry_WeilerStatePartial *self
 ) {
@@ -2450,9 +2600,11 @@ int __fastcall ClassifyInputContourPairBounds(
     return 0;
 }
 
-// Reimplements 0x468700:
-// zGeometry_Weiler::OutputSelectedInputContourToPolygonSetA
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x468700: zGeometry_Weiler::OutputSelectedInputContourToPolygonSetA
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Append the selected input contour into polygon set A of the caller-owned Weiler clip output.
+ */
 int __fastcall OutputSelectedInputContourToPolygonSetA(
     zGeometry_WeilerStatePartial *self,
     int mode
@@ -2494,8 +2646,11 @@ int __fastcall OutputSelectedInputContourToPolygonSetA(
     return 1;
 }
 
-// Reimplements 0x4682c0: zGeometry_Weiler::OutputContourToPolygonSet
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x4682c0: zGeometry_Weiler::OutputContourToPolygonSet
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Append a polygon span and copy contour segment points into the output point list.
+ */
 int __fastcall OutputContourToPolygonSet(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerContourOutputPartial *contour,
@@ -2548,8 +2703,11 @@ int __fastcall OutputContourToPolygonSet(
     return 1;
 }
 
-// Reimplements 0x4681a0: zGeometry_Weiler::OutputContoursForClipMode
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x4681a0: zGeometry_Weiler::OutputContoursForClipMode
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Route contour outputs to polygon sets A, B, and C according to clip mode bits and contour type.
+ */
 int __fastcall OutputContoursForClipMode(
     zGeometry_WeilerStatePartial *self
 ) {
@@ -2625,9 +2783,11 @@ int __fastcall OutputContoursForClipMode(
     return 1;
 }
 
-// Reimplements 0x469d60:
-// zGeometry_Weiler::SelectForwardStartPointInContourA
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x469d60: zGeometry_Weiler::SelectForwardStartPointInContourA
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Choose the forward start point on contour A for outside-results bridge traversal.
+ */
 void __fastcall SelectForwardStartPointInContourA(
     zVec3 *point,
     zVec3 **selectedPoint,
@@ -2676,8 +2836,11 @@ void __fastcall SelectForwardStartPointInContourA(
     }
 }
 
-// Reimplements 0x4687b0: zGeometry_Weiler::GenerateOutsideResults
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x4687b0: zGeometry_Weiler::GenerateOutsideResults
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Emit an outside-result polygon span and wrapped B/A point bridge when clip mode requests outside output.
+ */
 int __fastcall GenerateOutsideResults(
     zGeometry_WeilerStatePartial *self
 ) {
@@ -2793,9 +2956,11 @@ int __fastcall GenerateOutsideResults(
     return 1;
 }
 
-// Reimplements 0x469a30:
-// zGeometry_Weiler::PreclassifyInputContourAAdjacentEdgePairs
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x469a30: zGeometry_Weiler::PreclassifyInputContourAAdjacentEdgePairs
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Reset clipping scratch buffers and seed contour A's forward and reverse adjacent-edge segment rings.
+ */
 void __fastcall PreclassifyInputContourAAdjacentEdgePairs(
     zGeometry_WeilerStatePartial *self
 ) {
@@ -2863,9 +3028,11 @@ void __fastcall PreclassifyInputContourAAdjacentEdgePairs(
     );
 }
 
-// Reimplements 0x468470:
-// zGeometry_Weiler::BuildPointSideTablesForContourPair
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x468470: zGeometry_Weiler::BuildPointSideTablesForContourPair
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Fill the contour A/B point-side tables used by Weiler contour-pair classification.
+ */
 void __fastcall BuildPointSideTablesForContourPair(
     zGeometry_WeilerStatePartial *self
 ) {
@@ -2886,9 +3053,11 @@ void __fastcall BuildPointSideTablesForContourPair(
     );
 }
 
-// Reimplements 0x464f70:
-// zGeometry_Weiler::PreclassifyInputContourPair
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x464f70: zGeometry_Weiler::PreclassifyInputContourPair
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Preclassify overlapping input contours by splitting coincident segments and merging contour type flags.
+ */
 int __fastcall PreclassifyInputContourPair(
     zGeometry_WeilerStatePartial *self
 ) {
@@ -3259,9 +3428,11 @@ int __fastcall PreclassifyInputContourPair(
     return 1;
 }
 
-// Reimplements 0x465ac0:
-// zGeometry_Weiler::ClassifyContainedContour
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x465ac0: zGeometry_Weiler::ClassifyContainedContour
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Classify contained contour pairs by intersecting segment rings, splitting at crossings, and repairing crossing back-references.
+ */
 int __fastcall ClassifyContainedContour(
     zGeometry_WeilerStatePartial *self
 ) {
@@ -3353,8 +3524,11 @@ int __fastcall ClassifyContainedContour(
     return aggregateIntersectResult;
 }
 
-// Reimplements 0x468fa0: zGeometry_Weiler::ClassifyIntersect2d
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x468fa0: zGeometry_Weiler::ClassifyIntersect2d
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp; BN x87 sign-class HLIL is limited, so assembly is source of truth.
+ * Purpose: Classify two XY edges into the Weiler intersection case table, including contour-side disambiguation for vertex cases.
+ */
 int __fastcall ClassifyIntersect2d(
     zVec3 *edge0Start,
     zVec3 *edge0End,
@@ -3451,8 +3625,11 @@ int __fastcall ClassifyIntersect2d(
     return kIntersect2dCaseIdBySignClass[index];
 }
 
-// Reimplements 0x468c40: zGeometry_Weiler::Intersect2d
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x468c40: zGeometry_Weiler::Intersect2d
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp; BN x87 rendering is limited at the classifier callsite and computed Y store, so assembly is source of truth.
+ * Purpose: Build the crossing record, if any, for the classified intersection between two XY edges.
+ */
 int __fastcall Intersect2d(
     zGeometry_WeilerStatePartial *self,
     zGeometry_WeilerXingPartial **outXing,
@@ -3579,9 +3756,11 @@ int __fastcall Intersect2d(
     return xingType;
 }
 
-// Reimplements 0x469450:
-// zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x469450: zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Classify whether an adjacent edge pair crosses or lies to one side of a contour segment.
+ */
 int __fastcall ClassifyAdjacentEdgePairAgainstContourSegment(
     zGeometry_WeilerContourSegmentPartial *firstSegment,
     zGeometry_WeilerContourSegmentPartial *secondSegment,
@@ -3618,9 +3797,11 @@ int __fastcall ClassifyAdjacentEdgePairAgainstContourSegment(
                : 2;
 }
 
-// Reimplements 0x469560:
-// zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x469560: zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Classify two linked adjacent edge pairs by their endpoint wedge relationship.
+ */
 int __fastcall ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
     zGeometry_WeilerContourSegmentPartial *pairAFirstSegment,
     zGeometry_WeilerContourSegmentPartial *pairASecondSegment,
@@ -3669,8 +3850,11 @@ int __fastcall ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
     return startClass == -1 ? 8 : 9;
 }
 
-// Reimplements 0x46a1f0: zGeometry_Weiler::ValidateXings
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x46a1f0: zGeometry_Weiler::ValidateXings
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Walk the Weiler crossing array, report the first invalid crossing, and return the validation status.
+ */
 int __fastcall ValidateXings(
     int xingCount,
     zGeometry_WeilerXingPartial *xingArray,
@@ -3716,9 +3900,11 @@ int __fastcall ValidateXings(
     return isValid;
 }
 
-// Reimplements 0x4683a0:
-// zGeometry_Weiler::TogglePointAxesForContourSource
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x4683a0: zGeometry_Weiler::TogglePointAxesForContourSource
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Swap point axes in the active input contour buffer for the contour source.
+ */
 void __fastcall TogglePointAxesForContourSource(
     zGeometry_WeilerStatePartial *self
 ) {
@@ -3736,9 +3922,11 @@ void __fastcall TogglePointAxesForContourSource(
     );
 }
 
-// Reimplements 0x469960:
-// zGeometry_Weiler::RecenterPointSetsIfOutOfRange
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x469960: zGeometry_Weiler::RecenterPointSetsIfOutOfRange
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Translate input points when their coordinates are outside the local range.
+ */
 void __fastcall RecenterPointSetsIfOutOfRange(
     zGeometry_WeilerStatePartial *self
 ) {
@@ -3774,8 +3962,11 @@ void __fastcall RecenterPointSetsIfOutOfRange(
     }
 }
 
-// Reimplements 0x469af0: zGeometry_Weiler::RestorePointTranslation
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x469af0: zGeometry_Weiler::RestorePointTranslation
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Restore the saved XY translation to caller-owned input points and generated output points.
+ */
 void __fastcall RestorePointTranslation(
     zGeometry_WeilerStatePartial *self
 ) {
@@ -3798,9 +3989,11 @@ void __fastcall RestorePointTranslation(
     }
 }
 
-// Reimplements 0x469b60:
-// zGeometry_Weiler::RestoreOutputZFromInputPlane
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x469b60: zGeometry_Weiler::RestoreOutputZFromInputPlane
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Restore output point Z values from the input contour B plane.
+ */
 void __fastcall RestoreOutputZFromInputPlane(
     zGeometry_WeilerStatePartial *self
 ) {
@@ -3840,8 +4033,11 @@ void __fastcall RestoreOutputZFromInputPlane(
     }
 }
 
-// Reimplements 0x4647d0: zGeometry_Weiler::DestroyState
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x4647d0: zGeometry_Weiler::DestroyState
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Release Weiler clip state buffers and state storage.
+ */
 void __fastcall DestroyState(
     zGeometry_WeilerStatePartial *self
 ) {
@@ -3858,8 +4054,11 @@ void __fastcall DestroyState(
 } // namespace zGeometry_Weiler
 
 namespace zGeometry_WeilerClipOutput {
-// Reimplements 0x464b30: zGeometry_WeilerClipOutput::Destroy
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x464b30: zGeometry_WeilerClipOutput::Destroy
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Free and clear the point list and three polygon-set buffers owned by a clip output.
+ */
 void __fastcall Destroy(
     zGeometry_WeilerClipOutputPartial *self
 ) {
@@ -3890,8 +4089,11 @@ void __fastcall Destroy(
 } // namespace zGeometry_WeilerClipOutput
 
 namespace zGeometry_ClipPolygon {
-// Reimplements 0x46ab40: zGeometry_ClipPolygon::FindPointIndexXY
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x46ab40: zGeometry_ClipPolygon::FindPointIndexXY
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Find the first clip-polygon point whose XY coordinates match the candidate point within tolerance.
+ */
 int __fastcall FindPointIndexXY(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zVec3 *point
@@ -3909,9 +4111,11 @@ int __fastcall FindPointIndexXY(
     return -1;
 }
 
-// Reimplements 0x46ac80:
-// zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x46ac80: zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Find the clip-polygon edge that contains a candidate point in XY.
+ */
 int __fastcall FindPointInsertionEdgeXYIndex(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zVec3 *point
@@ -3955,8 +4159,11 @@ int __fastcall FindPointInsertionEdgeXYIndex(
     return -1;
 }
 
-// Reimplements 0x46ab90: zGeometry_ClipPolygon::UpsertPointListXY
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x46ab90: zGeometry_ClipPolygon::UpsertPointListXY
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Update matching clip-polygon points and insert candidate points that lie on clip-polygon edges.
+ */
 int __fastcall UpsertPointListXY(
     zGeometry_ClipPolygonPartial *clipPolygon,
     int pointCount,
@@ -4011,9 +4218,11 @@ int __fastcall UpsertPointListXY(
     return result;
 }
 
-// Reimplements 0x464790:
-// zGeometry_ClipPolygon::ResetWeilerStateFromContourPoints
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x464790: zGeometry_ClipPolygon::ResetWeilerStateFromContourPoints
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Replace the clip polygon's Weiler state from a point list while preserving the old contour source.
+ */
 int __fastcall ResetWeilerStateFromContourPoints(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zVec3 *points,
@@ -4035,8 +4244,11 @@ int __fastcall ResetWeilerStateFromContourPoints(
     return 1;
 }
 
-// Reimplements 0x46ab10: zGeometry_ClipPolygon::FinalizeAndDestroy
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x46ab10: zGeometry_ClipPolygon::FinalizeAndDestroy
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Release clip polygon point storage and associated Weiler state.
+ */
 void __fastcall FinalizeAndDestroy(
     zGeometry_ClipPolygonPartial *clipPolygon
 ) {

@@ -198,7 +198,10 @@ PickupType *__fastcall PickupType::GetByIndex_Pure(
     return 0;
 }
 
-// Reimplements 0x41e1c0: PickupType::GetByIndex (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e1c0: PickupType::GetByIndex (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: return the pickup type record for an in-range pickup type index.
+ */
 PickupType *__fastcall PickupType::GetByIndex(
     int pickupTypeIndex
 ) {
@@ -289,7 +292,11 @@ int __fastcall IsOptEntryActiveInAnySlot(
 } // namespace Net
 
 namespace zClass_Node {
-// Reimplements 0x41ceb0: zClass_Node::ClearPickupFlagsRecursive (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41ceb0: zClass_Node::ClearPickupFlagsRecursive (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: clear pickup interaction flags from a node and each child in its
+ * secondary child list.
+ */
 int __fastcall ClearPickupFlagsRecursive(
     zClass_NodePartial *node
 ) {
@@ -453,7 +460,10 @@ void PickupRespawnQueue::Init() {
     g_PickupRespawnQueue.count = 0;
 }
 
-// Reimplements 0x41d8a0: PickupSpawnList::RemoveAndFreeNode (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41d8a0: PickupSpawnList::RemoveAndFreeNode (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: unlink a pickup spawn from a spawn list and release its node.
+ */
 void __fastcall PickupSpawnList::RemoveAndFreeNode(
     PickupSpawnDef *node,
     PickupSpawnList *list
@@ -1018,8 +1028,11 @@ void __fastcall SendPkt11_CreateDelta(
     free(packet);
 }
 
-// Reimplements 0x433f40: Pickup::HandlePkt11_SpawnDelta
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x433f40: Pickup::HandlePkt11_SpawnDelta (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: apply a network pkt11 pickup spawn delta by creating, deleting, or
+ * hiding the addressed spawn.
+ */
 int __fastcall HandlePkt11_SpawnDelta(
     int,
     PickupPkt11CreateDelta *packet
@@ -1098,8 +1111,10 @@ void __fastcall SendPkt12_AirdropSpawnChuteRelay(
     zNetwork_SendPacketReliable(&g_PickupPkt12AirdropSpawnChuteRelay.header);
 }
 
-// Reimplements 0x4340a0: Pickup::HandlePkt12_AirdropSpawnChuteRelay
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x4340a0: Pickup::HandlePkt12_AirdropSpawnChuteRelay (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: relay an airdrop chute spawn packet into the local pickup state.
+ */
 int __fastcall HandlePkt12_AirdropSpawnChuteRelay(
     int,
     PickupPkt12AirdropSpawnChuteRelay *packet
@@ -1161,8 +1176,10 @@ int __fastcall AssignBvolGroupAndId(
     return 1;
 }
 
-// Reimplements 0x41dab0: Pickup::CreateObjectInstance
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41dab0: Pickup::CreateObjectInstance (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: clone a pickup template node, assign its runtime fields, and name it for spawning.
+ */
 zClass_NodePartial *__fastcall CreateObjectInstance(
     int typeIndex,
     int overrideAmount
@@ -1271,8 +1288,10 @@ PickupSpawnDef *__fastcall CreateSpawnDefAndLink(
     return spawn;
 }
 
-// Reimplements 0x41dcf0: Pickup::RegisterExistingObject
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41dcf0: Pickup::RegisterExistingObject (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: activate an existing pickup object, preserve its world position, and link a spawn record.
+ */
 void __fastcall RegisterExistingObject(
     int,
     zClass_NodePartial *pickupObj,
@@ -1310,8 +1329,11 @@ void __fastcall RegisterExistingObject(
     );
 }
 
-// Reimplements 0x41dc60: Pickup::SpawnWithAirdropChute
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41dc60: Pickup::SpawnWithAirdropChute (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: create a pickup object at an airdrop position and attach its chute
+ * animation state.
+ */
 int __fastcall SpawnWithAirdropChute(
     int typeIndex,
     zVec3 *position
@@ -1364,8 +1386,10 @@ int __fastcall SpawnWithAirdropChute(
     return 1;
 }
 
-// Reimplements 0x41da20: Pickup::SpawnAt
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41da20: Pickup::SpawnAt (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: create a pickup object at a supplied transform and link its spawn definition.
+ */
 PickupSpawnDef *__fastcall SpawnAt(
     int typeIndex,
     int amount,
@@ -1453,8 +1477,10 @@ void __fastcall SpawnAtCarrierNodeByName(
     );
 }
 
-// Reimplements 0x41dc30: Pickup::SpawnFromParsedZrdEntry
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41dc30: Pickup::SpawnFromParsedZrdEntry (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: create a pickup spawn from parsed ZRD pickup placement data.
+ */
 PickupSpawnDef *__fastcall SpawnFromParsedZrdEntry(
     PickupParsedZrdEntry *entry
 ) {
@@ -1471,8 +1497,10 @@ PickupSpawnDef *__fastcall SpawnFromParsedZrdEntry(
     return spawn;
 }
 
-// Reimplements 0x41e330: Pickup::SetVariantFromTerrain
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e330: Pickup::SetVariantFromTerrain (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: choose the pickup variant tag from terrain below the spawn point.
+ */
 void __fastcall SetVariantFromTerrain(
     zClass_NodePartial *pickupObj,
     zVec3 *position
@@ -1584,8 +1612,10 @@ void __fastcall RespawnSpawnDef(
     );
 }
 
-// Reimplements 0x41cf50: Pickup::RemoveObject
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41cf50: Pickup::RemoveObject (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: deactivate a pickup object and return its spawn to respawn timing.
+ */
 void __fastcall RemoveObject(
     zEffectAnimEntry *animEntry,
     zClass_NodePartial *pickupObj,
@@ -1834,7 +1864,10 @@ int __fastcall ResolveOwnerFromBvolHit(
     return 1;
 }
 
-// Reimplements 0x41e930: Pickup::FindSpawnByPickupId (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e930: Pickup::FindSpawnByPickupId (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: search a pickup spawn list for the spawn with the requested pickup id.
+ */
 PickupSpawnDef *__fastcall FindSpawnByPickupId(
     int pickupId,
     PickupSpawnList *list
@@ -2308,7 +2341,10 @@ void __fastcall ArchiveReadRecord(
     }
 }
 
-// Reimplements 0x41e960: Pickup::SetNextPickupId (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e960: Pickup::SetNextPickupId (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: update the next pickup id counter and return its previous value.
+ */
 int __fastcall SetNextPickupId(
     int nextPickupId
 ) {

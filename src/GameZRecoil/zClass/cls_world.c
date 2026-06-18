@@ -642,7 +642,11 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450e40: zClass_World::FreeVirtualAreaPartitions
+    /**
+     * Reimplements 0x450e40: zClass_World::FreeVirtualAreaPartitions.
+     * Purpose: release virtual-area child lists and owned grid storage, then
+     * clear the installed partition metrics.
+     */
     int __fastcall FreeVirtualAreaPartitions(zClass_NodePartial * world) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         if (data->areaGridRows == 0) {
@@ -679,7 +683,11 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450240: zClass_World::DeleteNode
+    /**
+     * Reimplements 0x450240: zClass_World::DeleteNode.
+     * Purpose: release world-owned partition/light/sound/update lists and
+     * return the world node to the shared zClass free-list machinery.
+     */
     int __fastcall DeleteNode(zClass_NodePartial * world) {
         const int freeResult = FreeVirtualAreaPartitions(world);
         if (freeResult != 0) {
@@ -947,8 +955,11 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450650: zClass_World::WorldToGridCoordsClampedEx
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
+    /**
+     * Reimplements 0x450650: zClass_World::WorldToGridCoordsClampedEx.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: clamp world X/Z coordinates to valid grid coordinates while also returning unclamped grid coordinates and an inside-bounds flag.
+     */
     int __fastcall WorldToGridCoordsClampedEx(
         zClass_NodePartial * world,
         int *outGridCol,
@@ -995,8 +1006,11 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450790: zClass_World::WorldToGridCoordsClamped
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
+    /**
+     * Reimplements 0x450790: zClass_World::WorldToGridCoordsClamped.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: clamp a world X/Z position to the world's grid extents and return the corresponding grid coordinates.
+     */
     int __fastcall WorldToGridCoordsClamped(
         zClass_NodePartial * world,
         int *outGridCol,

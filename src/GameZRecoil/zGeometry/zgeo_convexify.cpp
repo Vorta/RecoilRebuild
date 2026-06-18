@@ -17,7 +17,12 @@ zGeometry_TriangleIndexTriple
     g_zGeometry_TriangulateHole_TriangleIndices[kTriangulateHoleMaxTriangles];
 zGeometry_PlaneEquationPartial g_zGeometry_TriangulateHole_CachedPlane;
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function is present.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Observed in callers 0x46ced0 and 0x46d140.
+ * Purpose: Read the X component from a point-dword offset list.
+ */
 float OffsetX(
     const float *pointDwords,
     const int *pointDwordOffsets,
@@ -27,7 +32,12 @@ float OffsetX(
     return pointDwords[pointDwordOffsets[index * stride]];
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function is present.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Observed in callers 0x46ced0 and 0x46d140.
+ * Purpose: Read the Y component from a point-dword offset list.
+ */
 float OffsetY(
     const float *pointDwords,
     const int *pointDwordOffsets,
@@ -37,7 +47,12 @@ float OffsetY(
     return pointDwords[pointDwordOffsets[index * stride + 1]];
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function is present.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Observed in callers 0x46ced0, 0x46d140, and zGeometry XY helpers.
+ * Purpose: Compute the signed two-dimensional cross product.
+ */
 float Cross2D(
     float ax,
     float ay,
@@ -49,7 +64,12 @@ float Cross2D(
     return (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function is present.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Observed in caller 0x46ced0.
+ * Purpose: Accumulate signed polygon area from offset point dwords.
+ */
 float PolygonArea2D(
     const float *pointDwords,
     const int *pointDwordOffsets,
@@ -88,7 +108,12 @@ float PolygonArea2D(
     return area;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function is present.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Observed in caller 0x46ced0.
+ * Purpose: Test whether an XY point lies inside a candidate triangle.
+ */
 bool PointInTriangle2D(
     float px,
     float py,
@@ -132,7 +157,12 @@ bool PointInTriangle2D(
     return cross0 <= 0.0f && cross1 <= 0.0f && cross2 <= 0.0f;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function is present.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Observed in caller 0x46ced0.
+ * Purpose: Copy one point's dword-offset tuple into triangle output storage.
+ */
 void CopyOffsetVertex(
     int *dest,
     const int *source,
@@ -175,7 +205,12 @@ zVec3 *CopySpanPoints(
     return outputPointWriteCursor + pointCount;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function is present.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Observed in caller 0x46d140.
+ * Purpose: Classify a four-point XY span as convex before preserving it.
+ */
 bool IsConvexQuadXY(
     const zVec3 *points
 ) {
@@ -262,7 +297,12 @@ int *TrianglePayload(
     return list->triangleDwordOffsets;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function is present.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Observed in caller 0x46ced0.
+ * Purpose: Append one triangle's source point offsets into the output list.
+ */
 void AppendTriangleOffsets(
     zGeometry_TriangleDwordOffsetList *list,
     int triangleIndex,
@@ -290,7 +330,12 @@ void AppendTriangleOffsets(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function is present.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Observed in caller 0x46ced0.
+ * Purpose: Reject non-ears and ears containing another polygon point.
+ */
 bool IsEar(
     const float *pointDwords,
     const int *pointDwordOffsets,
@@ -387,7 +432,12 @@ bool IsEar(
     return true;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function is present.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Observed in caller 0x46c3a0.
+ * Purpose: Produce the VC-era fast square-root estimate used for plane scale.
+ */
 float EstimateMagnitudeFromSquaredLength(
     float squaredLength
 ) {
@@ -403,8 +453,11 @@ float EstimateMagnitudeFromSquaredLength(
 } // namespace
 
 namespace zGeometry_Vec3Array {
-// Reimplements 0x46c5b0: zGeometry_Vec3Array::ReversePoints
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
+/**
+ * Reimplements 0x46c5b0.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Purpose: Reverse all points after the anchor point in a polygon ring.
+ */
 void __fastcall ReversePoints(
     int pointCount,
     zVec3 *points
@@ -422,8 +475,11 @@ void __fastcall ReversePoints(
     }
 }
 
-// Reimplements 0x46c620: zGeometry_Vec3Array::EnsurePositiveCrossZ
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
+/**
+ * Reimplements 0x46c620.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Purpose: Ensure the first two polygon edges produce a positive Z cross.
+ */
 int __fastcall EnsurePositiveCrossZ(
     int pointCount,
     zVec3 *points,
@@ -453,8 +509,11 @@ int __fastcall EnsurePositiveCrossZ(
     return 1;
 }
 
-// Reimplements 0x46c3a0: zGeometry_Vec3Array::ComputeNewellPlane
-// (D:\Proj\GameZRecoil\zGeometry\zgeometry.cpp)
+/**
+ * Reimplements 0x46c3a0.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeometry.cpp.
+ * Purpose: Compute a normalized Newell plane equation from a point ring.
+ */
 void __fastcall ComputeNewellPlane(
     int pointCount,
     zVec3 *points,
@@ -501,9 +560,11 @@ void __fastcall ComputeNewellPlane(
 } // namespace zGeometry_Vec3Array
 
 namespace zGeometry_TriangulateHole {
-// Reimplements 0x46bf70:
-// zGeometry_TriangulateHole::FindActiveEdgeState
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
+/**
+ * Reimplements 0x46bf70.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Purpose: Find a live edge between two combined-ring vertex indices.
+ */
 zGeometry_TriangulateHole_EdgeState *__fastcall FindActiveEdgeState(
     int vertexIndex0,
     int vertexIndex1,
@@ -525,9 +586,11 @@ zGeometry_TriangulateHole_EdgeState *__fastcall FindActiveEdgeState(
     return 0;
 }
 
-// Reimplements 0x46bd50:
-// zGeometry_TriangulateHole::TryAppendBridgeEdge
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
+/**
+ * Reimplements 0x46bd50.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Purpose: Append a bridge edge when it is unique and does not cross live edges.
+ */
 int __fastcall TryAppendBridgeEdge(
     zGeometry_TriangulateHole_EdgeState *edgeState,
     int edgeCount,
@@ -568,9 +631,11 @@ int __fastcall TryAppendBridgeEdge(
     return edgeCount + 1;
 }
 
-// Reimplements 0x46bf30:
-// zGeometry_TriangulateHole::CollectActiveEdgeIndicesForVertex
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
+/**
+ * Reimplements 0x46bf30.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Purpose: Collect live edge-state indices incident to one combined-ring vertex.
+ */
 int __fastcall CollectActiveEdgeIndicesForVertex(
     int vertexIndex,
     int edgeCount,
@@ -590,9 +655,11 @@ int __fastcall CollectActiveEdgeIndicesForVertex(
     return result;
 }
 
-// Reimplements 0x46bfc0:
-// zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
+/**
+ * Reimplements 0x46bfc0.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Purpose: Emit a triangle from two incident live edges and their closing edge.
+ */
 void __fastcall TryEmitTriangleFromEdgePair(
     int edgeIndex0,
     int edgeIndex1,
@@ -644,9 +711,11 @@ void __fastcall TryEmitTriangleFromEdgePair(
     --closingEdge->remainingUseCount;
 }
 
-// Reimplements 0x46c390:
-// zGeometry_TriangulateHole::CacheCombinedPlane
-// (D:\Proj\GameZRecoil\zGeometry\zgeometry.cpp)
+/**
+ * Reimplements 0x46c390.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeometry.cpp.
+ * Purpose: Cache the plane equation used to project the inner ring.
+ */
 void __fastcall CacheCombinedPlane(
     int pointCount,
     zVec3 *points
@@ -658,9 +727,11 @@ void __fastcall CacheCombinedPlane(
     );
 }
 
-// Reimplements 0x46c570:
-// zGeometry_TriangulateHole::ProjectInnerRingOntoCachedPlane
-// (D:\Proj\GameZRecoil\zGeometry\zgeometry.cpp)
+/**
+ * Reimplements 0x46c570.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeometry.cpp.
+ * Purpose: Project inner-ring Z values onto the cached outer-ring plane.
+ */
 void __fastcall ProjectInnerRingOntoCachedPlane(
     int pointCount,
     zVec3 *points
@@ -676,8 +747,11 @@ void __fastcall ProjectInnerRingOntoCachedPlane(
 } // namespace zGeometry_TriangulateHole
 
 namespace zGeometry {
-// Reimplements 0x46c070: zGeometry::TriangulatePolygonWithHole
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
+/**
+ * Reimplements 0x46c070.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Purpose: Bridge an inner polygon ring to an outer ring and emit triangle soup.
+ */
 zGeometry_TriangleSoup *__fastcall TriangulatePolygonWithHole(
     int outerPointCount,
     zVec3 *outerPoints,
@@ -826,9 +900,12 @@ zGeometry_TriangleSoup *__fastcall TriangulatePolygonWithHole(
 } // namespace zGeometry
 
 namespace zGeometry_Polygon {
-// Reimplements 0x46ced0:
-// zGeometry_Polygon::TrySplitPointDwordOffsetsAtBestDiagonal
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
+/**
+ * Reimplements 0x46ced0.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Purpose: Split a polygon point-dword offset list across the chosen diagonal
+ * into two smaller polygon offset lists.
+ */
 int __fastcall TrySplitPointDwordOffsetsAtBestDiagonal(
     int pointCount,
     float *pointDwords,
@@ -918,11 +995,13 @@ int __fastcall TrySplitPointDwordOffsetsAtBestDiagonal(
     return 1;
 }
 
-// Reimplements 0x46cb50:
-// zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
-zGeometry_TriangleDwordOffsetList *__fastcall
-TriangulatePointDwordOffsetsRecursive(
+/**
+ * Reimplements 0x46cb50.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Purpose: Recursively split a polygon point-dword offset list and append the
+ * resulting triangle offset lists.
+ */
+zGeometry_TriangleDwordOffsetList *__fastcall TriangulatePointDwordOffsetsRecursive(
     int pointCount,
     float *pointDwords,
     int *pointDwordOffsets,
@@ -952,89 +1031,90 @@ TriangulatePointDwordOffsetsRecursive(
     ));
     result->triangleCount = triangleCount;
 
-    const bool ccw =
-        PolygonArea2D(
+    if (pointCount == 3) {
+        AppendTriangleOffsets(
+            result,
+            0,
+            workingOffsets,
+            0,
+            1,
+            2,
+            pointDwordStride
+        );
+        if (pointDwordOffsets == 0) {
+            free(workingOffsets);
+        }
+
+        return result;
+    }
+
+    const int splitPointCount = pointCount + 2;
+    zGeometry_PolygonSplitDwordOffsetListPair *splitPointLists =
+        (zGeometry_PolygonSplitDwordOffsetListPair *)(malloc(
+            sizeof(zGeometry_PolygonSplitDwordOffsetListPair) +
+            (size_t)(splitPointCount * pointDwordStride - 1) * sizeof(int)
+        ));
+
+    if (TrySplitPointDwordOffsetsAtBestDiagonal(
+            pointCount,
             pointDwords,
             workingOffsets,
-            pointCount,
+            splitPointLists,
             pointDwordStride
-        ) >= 0.0f;
-
-    int *indices = (int *)(malloc((size_t)(pointCount) * sizeof(int)));
-    for (int i = 0; i < pointCount; ++i) {
-        indices[i] = i;
-    }
-
-    int remaining = pointCount;
-    int outTriangle = 0;
-    while (remaining > 3) {
-        bool emitted = false;
-        for (int i = 0; i < remaining; ++i) {
-            const int prev = indices[(i + remaining - 1) % remaining];
-            const int curr = indices[i];
-            const int next = indices[(i + 1) % remaining];
-
-            if (!IsEar(
-                    pointDwords,
-                    workingOffsets,
-                    pointCount,
-                    pointDwordStride,
-                    prev,
-                    curr,
-                    next,
-                    ccw
-                )) {
-                continue;
-            }
-
-            AppendTriangleOffsets(
-                result,
-                outTriangle,
-                workingOffsets,
-                prev,
-                curr,
-                next,
-                pointDwordStride
-            );
-            ++outTriangle;
-
-            for (int j = i; j < remaining - 1; ++j) {
-                indices[j] = indices[j + 1];
-            }
-            --remaining;
-            emitted = true;
-            break;
+        ) == 0) {
+        free(splitPointLists);
+        free(result);
+        if (pointDwordOffsets == 0) {
+            free(workingOffsets);
         }
 
-        if (!emitted) {
-            AppendTriangleOffsets(
-                result,
-                outTriangle,
-                workingOffsets,
-                indices[0],
-                indices[1],
-                indices[2],
-                pointDwordStride
-            );
-            ++outTriangle;
-            for (int j = 1; j < remaining - 1; ++j) {
-                indices[j] = indices[j + 1];
-            }
-            --remaining;
-        }
+        return 0;
     }
 
-    AppendTriangleOffsets(
-        result,
-        outTriangle,
-        workingOffsets,
-        indices[0],
-        indices[1],
-        indices[2],
-        pointDwordStride
+    zGeometry_TriangleDwordOffsetList *triangles0 =
+        TriangulatePointDwordOffsetsRecursive(
+            splitPointLists->pointCount0,
+            pointDwords,
+            splitPointLists->pointDwordOffsets,
+            pointDwordStrideMode
+        );
+    zGeometry_TriangleDwordOffsetList *triangles1 =
+        TriangulatePointDwordOffsetsRecursive(
+            splitPointLists->pointCount1,
+            pointDwords,
+            splitPointLists->pointDwordOffsets +
+                splitPointLists->pointCount0 * pointDwordStride,
+            pointDwordStrideMode
+        );
+
+    if (triangles0 == 0 || triangles1 == 0) {
+        free(triangles0);
+        free(triangles1);
+        free(splitPointLists);
+        free(result);
+        if (pointDwordOffsets == 0) {
+            free(workingOffsets);
+        }
+
+        return 0;
+    }
+
+    int *outTriangleOffsets = result->triangleDwordOffsets;
+    memcpy(
+        outTriangleOffsets,
+        triangles0->triangleDwordOffsets,
+        (size_t)(triangles0->triangleCount * pointDwordStride * 3) * sizeof(int)
+    );
+    outTriangleOffsets += triangles0->triangleCount * pointDwordStride * 3;
+    memcpy(
+        outTriangleOffsets,
+        triangles1->triangleDwordOffsets,
+        (size_t)(triangles1->triangleCount * pointDwordStride * 3) * sizeof(int)
     );
 
-    free(indices);
+    free(triangles0);
+    free(triangles1);
+    free(splitPointLists);
     if (pointDwordOffsets == 0) {
         free(workingOffsets);
     }
@@ -1042,8 +1122,12 @@ TriangulatePointDwordOffsetsRecursive(
     return result;
 }
 
-// Reimplements 0x46c760: zGeometry_Polygon::Convexify
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
+/**
+ * Reimplements 0x46c760.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Purpose: Convert polygon spans into convex polygon output, copying already
+ * convex spans and triangulating non-convex spans through the polygon splitter.
+ */
 zGeometry_ConvexPolygonSetPartial *__fastcall Convexify(
     zGeometry_PolygonSpanArrayPartial *polygonSet,
     int inputPointCount,
@@ -1131,8 +1215,11 @@ zGeometry_ConvexPolygonSetPartial *__fastcall Convexify(
 } // namespace zGeometry_Polygon
 
 namespace zGeometry_ConvexPolygonSet {
-// Reimplements 0x46c720: zGeometry_ConvexPolygonSet::Destroy
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp)
+/**
+ * Reimplements 0x46c720.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Purpose: Release a convex polygon set and its owned point and polygon arrays.
+ */
 void __fastcall Destroy(
     zGeometry_ConvexPolygonSetPartial *self
 ) {

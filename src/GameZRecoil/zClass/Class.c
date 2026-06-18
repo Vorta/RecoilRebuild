@@ -972,7 +972,11 @@ namespace zClass_Class {
         }
     }
 
-    // Reimplements 0x447d20: zClass_Class::gwNodeSetFlag16
+    /**
+     * Reimplements 0x447d20: zClass_Class::gwNodeSetFlag16
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: set or clear node flag bit 16.
+     */
     int __fastcall gwNodeSetFlag16(
         zClass_NodePartial * node,
         int value
@@ -993,7 +997,11 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x447d70: zClass_Class::gwNodeSetFlag17
+    /**
+     * Reimplements 0x447d70: zClass_Class::gwNodeSetFlag17
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: set or clear node flag bit 17.
+     */
     int __fastcall gwNodeSetFlag17(
         zClass_NodePartial * node,
         int value
@@ -2152,7 +2160,11 @@ namespace zClass_Class {
 }
 
 namespace zClass_Class {
-    // Reimplements 0x447980: zClass_Class::DeleteNodeByType
+    /**
+     * Reimplements 0x447980: zClass_Class::DeleteNodeByType.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
+     * Purpose: validate node ownership and dispatch deletion by classId.
+     */
     int __fastcall DeleteNodeByType(zClass_NodePartial * node) {
         if (ReportNullNode(
             0x231,

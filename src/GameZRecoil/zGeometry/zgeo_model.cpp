@@ -56,7 +56,12 @@ zModel_DrawBatchBasePartial *ModelDrawBatchFromNode(
     return (zModel_DrawBatchBasePartial *)((unsigned int)(node->userDataOrDiRef));
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function is assigned;
+ * observed in address-backed caller 0x46b550 in this source file.
+ * Purpose: reject clip-patch model nodes whose XY bounds sit outside the
+ * active clip polygon bounds with the retail one-unit margin.
+ */
 bool IsClipPatchNodeOutsideClipBoundsXY(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zGeometry_ClipPatchNodeView *node
@@ -95,8 +100,11 @@ zModel_MaterialPartial *g_zGeometry_Model_LastRandomDebugMaterial = 0;
 } // namespace
 
 namespace zGeometry_Bounds2D {
-// Reimplements 0x46a620: zGeometry_Bounds2D::OverlapsWithUnitMargin
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
+/**
+ * Reimplements 0x46a620: zGeometry_Bounds2D::OverlapsWithUnitMargin
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * Purpose: Test XY bounds overlap with the retail one-unit margin.
+ */
 int __fastcall OverlapsWithUnitMargin(
     zGeometry_BoundsXY *boundsA,
     zGeometry_BoundsXY *boundsB
@@ -123,8 +131,11 @@ int __fastcall OverlapsWithUnitMargin(
 
 namespace zGeometry_Model {
 
-// Reimplements 0x46b6d0: zGeometry_Model::ProcessClipPatchNode
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
+/**
+ * Reimplements 0x46b6d0: zGeometry_Model::ProcessClipPatchNode
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * Purpose: Clip one model node against the active patch polygon and return DI output.
+ */
 int __fastcall ProcessClipPatchNode(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zModel_DrawBatchBasePartial *model,
@@ -375,8 +386,11 @@ int __fastcall ProcessClipPatchNode(
     return 1;
 }
 
-// Reimplements 0x46b1f0: zGeometry_Model::ClipPatch
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
+/**
+ * Reimplements 0x46b1f0: zGeometry_Model::ClipPatch
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * Purpose: Clip an outline against visible feature-grid nodes and build patch output.
+ */
 int __fastcall ClipPatch(
     int pointCount,
     zVec3 *points,
@@ -577,9 +591,11 @@ int __fastcall ClipPatch(
 } // namespace zGeometry_Model
 
 namespace zGeometry_ClipPolygon {
-// Reimplements 0x46b550:
-// zGeometry_ClipPolygon::ProcessNodePolygonSetXY
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
+/**
+ * Reimplements 0x46b550: zGeometry_ClipPolygon::ProcessNodePolygonSetXY
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * Purpose: Process a node polygon set against the clip polygon in XY space.
+ */
 int __fastcall ProcessNodePolygonSetXY(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zGeometry_ClipPatchNodeView *node,
@@ -623,8 +639,11 @@ int __fastcall ProcessNodePolygonSetXY(
 } // namespace zGeometry_ClipPolygon
 
 namespace zGeometry_Vec3 {
-// Reimplements 0x469e50: zGeometry_Vec3::IsNearEqualXY
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
+/**
+ * Reimplements 0x469e50: zGeometry_Vec3::IsNearEqualXY
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * Purpose: Compare two vectors in XY using the caller-supplied tolerance.
+ */
 int __fastcall IsNearEqualXY(
     zVec3 *vecA,
     zVec3 *vecB,
@@ -637,8 +656,11 @@ int __fastcall IsNearEqualXY(
     return 0;
 }
 
-// Reimplements 0x469e90: zGeometry_Vec3::SnapPointToSegmentXYIfNear
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
+/**
+ * Reimplements 0x469e90: zGeometry_Vec3::SnapPointToSegmentXYIfNear
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * Purpose: Snap a nearby point onto a segment in XY while preserving Z.
+ */
 int __fastcall SnapPointToSegmentXYIfNear(
     zVec3 *lineStart,
     zVec3 *lineEnd,
@@ -687,9 +709,11 @@ int __fastcall SnapPointToSegmentXYIfNear(
 } // namespace zGeometry_Vec3
 
 namespace zGeometry_Polygon {
-// Reimplements 0x46a8e0:
-// zGeometry_Polygon::SolveUvAxisCoefficientsXZ
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
+/**
+ * Reimplements 0x46a8e0: zGeometry_Polygon::SolveUvAxisCoefficientsXZ
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * Purpose: Solve XZ-plane linear coefficients for one polygon UV axis.
+ */
 void __fastcall SolveUvAxisCoefficientsXZ(
     zVec3 *point0,
     zVec3 *point1,
@@ -718,8 +742,11 @@ void __fastcall SolveUvAxisCoefficientsXZ(
     outCoefficients->y = (value21 * x01 - x21 * value01) * invDeterminant;
 }
 
-// Reimplements 0x46a130: zGeometry_Polygon::SnapPointsXYIfNear
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
+/**
+ * Reimplements 0x46a130: zGeometry_Polygon::SnapPointsXYIfNear
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * Purpose: Snap target polygon points to nearby source vertices or XY edges.
+ */
 int __fastcall SnapPointsXYIfNear(
     zVec3 *polygon,
     int polyCount,
@@ -768,8 +795,11 @@ int __fastcall SnapPointsXYIfNear(
 } // namespace zGeometry_Polygon
 
 namespace zGeometry_Vec3Array {
-// Reimplements 0x46a5e0: zGeometry_Vec3Array::RotateNeg90AroundX
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
+/**
+ * Reimplements 0x46a5e0: zGeometry_Vec3Array::RotateNeg90AroundX
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * Purpose: Rotate an array of vectors negative ninety degrees around X.
+ */
 void __fastcall RotateNeg90AroundX(
     int pointCount,
     zVec3 *points
@@ -787,9 +817,11 @@ void __fastcall RotateNeg90AroundX(
 } // namespace zGeometry_Vec3Array
 
 namespace zGeometry_ClipPolygon {
-// Reimplements 0x46b030:
-// zGeometry_ClipPolygon::SnapPointsNearNodeModelXY
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
+/**
+ * Reimplements 0x46b030: zGeometry_ClipPolygon::SnapPointsNearNodeModelXY
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * Purpose: Snap clip polygon points to nearby model polygon edges in XY space.
+ */
 int __fastcall SnapPointsNearNodeModelXY(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zGeometry_ClipPatchNodeView *node
@@ -893,8 +925,11 @@ int __fastcall SnapPointsNearNodeModelXY(
     return result;
 }
 
-// Reimplements 0x46aa40: zGeometry_ClipPolygon::CreateFromPointList
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
+/**
+ * Reimplements 0x46aa40: zGeometry_ClipPolygon::CreateFromPointList
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * Purpose: Allocate a clip polygon, rotate source points, and initialize bounds/state.
+ */
 zGeometry_ClipPolygonPartial *__fastcall CreateFromPointList(
     int pointCount,
     zVec3 *points
@@ -929,9 +964,11 @@ zGeometry_ClipPolygonPartial *__fastcall CreateFromPointList(
     return result;
 }
 
-// Reimplements 0x46aab0:
-// zGeometry_ClipPolygon::CopyPointsOutRotatedBack
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
+/**
+ * Reimplements 0x46aab0: zGeometry_ClipPolygon::CopyPointsOutRotatedBack
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * Purpose: Copy clip polygon points to caller storage and restore model-space rotation.
+ */
 int __fastcall CopyPointsOutRotatedBack(
     zGeometry_ClipPolygonPartial *clipPolygon,
     int *outPointCount,
@@ -959,9 +996,11 @@ int __fastcall CopyPointsOutRotatedBack(
 } // namespace zGeometry_ClipPolygon
 
 namespace zGeometry_Model {
-// Reimplements 0x46a690:
-// zGeometry_Model::FindOrCreateRandomDebugMaterial
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
+/**
+ * Reimplements 0x46a690: zGeometry_Model::FindOrCreateRandomDebugMaterial
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * Purpose: Create or reuse a randomized debug material and remember the last result.
+ */
 zModel_MaterialPartial *FindOrCreateRandomDebugMaterial() {
     zModel_MaterialPartial material;
     zModel_Material::ResetDefaults(&material);
@@ -980,8 +1019,12 @@ zModel_MaterialPartial *FindOrCreateRandomDebugMaterial() {
     return g_zGeometry_Model_LastRandomDebugMaterial;
 }
 
-// Reimplements 0x46a770: zGeometry_Model::AddPolygonToDi
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
+/**
+ * Reimplements 0x46a770: zGeometry_Model::AddPolygonToDi
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * Purpose: validate a generated polygon, choose a debug material when needed,
+ * and forward the point list to the DI polygon sink.
+ */
 int __fastcall AddPolygonToDi(
     zDiPartial *di,
     int pointCount,
@@ -1022,8 +1065,11 @@ int __fastcall AddPolygonToDi(
     );
 }
 
-// Reimplements 0x46a7f0: zGeometry_Model::BuildPolygonUvList
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
+/**
+ * Reimplements 0x46a7f0: zGeometry_Model::BuildPolygonUvList
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * Purpose: Allocate and fill clipped polygon UVs from the source polygon UV basis.
+ */
 zClipUV *__fastcall BuildPolygonUvList(
     int pointCount,
     zVec3 *points,
@@ -1070,8 +1116,12 @@ zClipUV *__fastcall BuildPolygonUvList(
     return result;
 }
 
-// Reimplements 0x46ba90: zGeometry_Model::AddPointListPolygonToDi
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
+/**
+ * Reimplements 0x46ba90: zGeometry_Model::AddPointListPolygonToDi
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * Purpose: add a clipped child polygon to a DI, rebuilding UVs from the source
+ * model polygon when UV basis data is present.
+ */
 int __fastcall AddPointListPolygonToDi(
     zDiPartial *di,
     int pointCount,
@@ -1125,8 +1175,12 @@ int __fastcall AddPointListPolygonToDi(
     return result;
 }
 
-// Reimplements 0x46bb30: zGeometry_Model::AddIndexedPolygonToDi
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Reimplements 0x46bb30: zGeometry_Model::AddIndexedPolygonToDi
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: expand an indexed model polygon into a temporary point list and
+ * submit it to the DI polygon sink with its source material, UVs, and tag.
+ */
 int __fastcall AddIndexedPolygonToDi(
     zDiPartial *di,
     zModel_DrawBatchBasePartial *model,
@@ -1159,9 +1213,11 @@ int __fastcall AddIndexedPolygonToDi(
     return result;
 }
 
-// Reimplements 0x46bb90:
-// zGeometry_Model::IsFullyInsideClipPolygonXY
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp)
+/**
+ * Reimplements 0x46bb90: zGeometry_Model::IsFullyInsideClipPolygonXY
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_model.cpp
+ * Purpose: Test whether every model polygon lies fully inside the clip polygon.
+ */
 int __fastcall IsFullyInsideClipPolygonXY(
     zGeometry_ClipPolygonPartial *clipPolygon,
     zModel_DrawBatchBasePartial *model
